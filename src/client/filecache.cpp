@@ -28,6 +28,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include <cstdlib>
 
+void FileCache::createDir()
+{
+	if (!fs::CreateAllDirs(m_dir)) {
+		errorstream << "Could not create cache directory: "
+			<< m_dir << std::endl;
+	}
+}
+
 bool FileCache::loadByPath(const std::string &path, std::ostream &os)
 {
 	std::ifstream fis(path.c_str(), std::ios_base::binary);
@@ -40,8 +48,8 @@ bool FileCache::loadByPath(const std::string &path, std::ostream &os)
 
 	bool bad = false;
 	for(;;){
-		char buf[1024];
-		fis.read(buf, 1024);
+		char buf[4096];
+		fis.read(buf, sizeof(buf));
 		std::streamsize len = fis.gcount();
 		os.write(buf, len);
 		if(fis.eof())
@@ -61,6 +69,7 @@ bool FileCache::loadByPath(const std::string &path, std::ostream &os)
 
 bool FileCache::updateByPath(const std::string &path, const std::string &data)
 {
+	createDir();
 	std::ofstream file(path.c_str(), std::ios_base::binary |
 			std::ios_base::trunc);
 
@@ -94,4 +103,12 @@ bool FileCache::exists(const std::string &name)
 	std::string path = m_dir + DIR_DELIM + name;
 	std::ifstream fis(path.c_str(), std::ios_base::binary);
 	return fis.good();
+}
+
+bool FileCache::updateCopyFile(const std::string &name, const std::string &src_path)
+{
+	std::string path = m_dir + DIR_DELIM + name;
+
+	createDir();
+	return fs::CopyFileContents(src_path, path);
 }
