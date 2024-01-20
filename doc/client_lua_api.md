@@ -5,7 +5,7 @@
 
 ## Introduction
 
-> **Warning**: The client API is currently unstable, and may break/change without warning.
+> [!WARNING] The client API is currently unstable, and may break/change without warning.
 
 Content and functionality can be added to Minetest by using Lua
 scripting in run-time loaded mods.
@@ -35,7 +35,7 @@ In order to load client-side mods, the following conditions need to be satisfied
 2. The client-side mod located in `$path_user/clientmods/<modname>` is added to
    `$path_user/clientmods/mods.conf` as `load_mod_<modname> = true`.
 
-> **Note**: Depending on the remote server's settings, client-side mods might not
+> [!NOTE] Depending on the remote server's settings, client-side mods might not
 be loaded or have limited functionality. See setting `csm_restriction_flags` for reference.
 
 
@@ -111,7 +111,7 @@ The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on minetest calling the
 registered callbacks.
 
-> **Note**: Client mods currently can't provide textures, sounds, or models by
+> [!NOTE] Client mods currently can't provide textures, sounds, or models by
   themselves. Any media referenced in function calls must already be loaded
   (provided by mods that exist on the server).
 
@@ -147,7 +147,7 @@ The `:` prefix can also be used for maintaining backwards compatibility.
 
 # Sounds
 
-> **Note**: Connecting sounds to objects is not implemented.
+> [!NOTE] Connecting sounds to objects is not implemented.
 
 Only Ogg Vorbis files are supported.
 
@@ -340,7 +340,7 @@ Call these functions only at load time!
     * Called just after mods have finished loading.
 * `minetest.register_on_shutdown(function())`
     * Called before client shutdown
-    > **Warning**: If the client terminates abnormally (i.e. crashes), the registered
+    > [!WARNING] If the client terminates abnormally (i.e. crashes), the registered
       callbacks **will likely not be run**. Data should be saved at
       semi-frequent intervals as well as on server shutdown.
 * `minetest.register_on_receiving_chat_message(function(message))`
@@ -527,7 +527,7 @@ Call these functions only at load time!
     * Client joins channel `channel_name`, and creates it, if necessary. You
       should listen from incoming messages with `minetest.register_on_modchannel_message`
       call to receive incoming messages.
-    > **Warning**: This function is asynchronous.
+    > [!WARNING] This function is asynchronous.
 
 ## Particles
 
@@ -552,7 +552,7 @@ Call these functions only at load time!
     * Convert a Lua table into a JSON string
     * styled: Outputs in a human-readable format if this is set, defaults to false
     * Unserializable things like functions and userdata are saved as null.
-    > **Warning**: JSON is more strict than the Lua table format.
+    > [!WARNING] JSON is more strict than the Lua table format.
     >  1. You can only use strings and positive integers of at least one as keys.
     >  2. You cannot mix string and integer keys. This is due to the fact that JSON has
     >     two distinct array and object values.

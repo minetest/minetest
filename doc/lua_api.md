@@ -7614,7 +7614,7 @@ child will follow movement and rotation of that bone.
           (for nodes with `liquid_move_physics`); the higher this value, the lower the
           resistance to movement. At `math.huge`, the resistance is zero and you can
           move through any liquid like air. (default: `1`)
-            * Warning: Values below 1 are currently unsupported.
+            > [!WARNING] Values below 1 are currently unsupported.
         * `liquid_fluidity_smooth`: multiplier to default maximum liquid resistance value
           (for nodes with `liquid_move_physics`); controls deceleration when entering
           node at high speed. At higher values you come to a halt more quickly

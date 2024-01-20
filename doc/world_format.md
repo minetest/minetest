@@ -183,7 +183,7 @@ For `load_mod_<mod>`, the possible values are:
 # Player File Format
 
 Should be pretty self-explanatory.
-> **Note**: Position is in `nodes * 10`
+> [!NOTE] Position is in `nodes * 10`
 
 Example content:
 
@@ -410,7 +410,7 @@ Timestamp and node ID mappings were introduced in map format version 29.
 * Always 2
 
 ## Node Data
-> **Note**: Zlib-compressed before map format version 29
+> [!NOTE] Zlib-compressed before map format version 29
 
 * If `content_width` is 1:
     * `u8[4096]`: `param0` fields
@@ -425,7 +425,7 @@ Timestamp and node ID mappings were introduced in map format version 29.
 * The location of a node in each of those arrays is `(z*16*16 + y*16 + x)`.
 
 ### Node Metadata List
-> **Note**: Zlib-compressed before map version format 29
+> [!NOTE] Zlib-compressed before map version format 29
 * Before map format version 23:
     * `u16` version (=1)
     * `u16` count of metadata
@@ -437,7 +437,7 @@ Timestamp and node ID mappings were introduced in map format version 29.
 
 * Since map format version 23:
     * `u8` version
-        > **Note**: Type was `u16` before map format version 23
+        > [!NOTE] Type was `u16` before map format version 23
         * = 1 before map format version 28
         * = 2 since map format version 28
     * `u16` count of metadata
@@ -458,7 +458,7 @@ Timestamp and node ID mappings were introduced in map format version 29.
     * `u8` unused version (always 0)
 
 * Map format version 24:
-    > **Note**: Not released as stable
+    > [!NOTE] Not released as stable
     * `u8` `nodetimer_version`
     * if `nodetimer_version` == 1:
         * `u16` `num_of_timers`
