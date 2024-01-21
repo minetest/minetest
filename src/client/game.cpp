@@ -3349,6 +3349,11 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	if (pointed != runData.pointed_old)
 		infostream << "Pointing at " << pointed.dump() << std::endl;
 
+#ifdef HAVE_TOUCHSCREENGUI
+	if (g_touchscreengui)
+		g_touchscreengui->applyContextControls(selected_def.touch_interaction.getMode(pointed));
+#endif
+
 	// Note that updating the selection mesh every frame is not particularly efficient,
 	// but the halo rendering code is already inefficient so there's no point in optimizing it here
 	hud->updateSelectionMesh(camera_offset);
@@ -4484,8 +4489,8 @@ void Game::showPauseMenu()
 	static const std::string control_text = strgettext("Controls:\n"
 		"No menu open:\n"
 		"- slide finger: look around\n"
-		"- tap: place/use\n"
-		"- long tap: dig/punch/use\n"
+		"- tap: place/punch/use (default)\n"
+		"- long tap: dig/use (default)\n"
 		"Menu/inventory open:\n"
 		"- double tap (outside):\n"
 		" --> close\n"

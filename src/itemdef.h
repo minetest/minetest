@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class IGameDef;
 class Client;
 struct ToolCapabilities;
+struct PointedThing;
 #ifndef SERVER
 #include "client/tile.h"
 struct ItemMesh;
@@ -48,6 +49,25 @@ enum ItemType : u8
 	ITEM_CRAFT,
 	ITEM_TOOL,
 	ItemType_END // Dummy for validity check
+};
+
+enum TouchInteractionMode : u8
+{
+	LONG_DIG_SHORT_PLACE,
+	SHORT_DIG_LONG_PLACE,
+	TouchInteractionMode_END, // Dummy for validity check
+};
+
+struct TouchInteraction
+{
+	TouchInteractionMode pointed_nothing;
+	TouchInteractionMode pointed_node;
+	TouchInteractionMode pointed_object;
+
+	TouchInteraction();
+	TouchInteractionMode getMode(const PointedThing &pointed) const;
+	void serialize(std::ostream &os) const;
+	void deSerialize(std::istream &is);
 };
 
 struct ItemDefinition
@@ -91,6 +111,8 @@ struct ItemDefinition
 	std::string node_placement_prediction;
 	std::optional<u8> place_param2;
 	bool wallmounted_rotate_vertical;
+
+	TouchInteraction touch_interaction;
 
 	/*
 		Some helpful methods
