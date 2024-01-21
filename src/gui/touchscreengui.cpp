@@ -659,7 +659,10 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 		// handle the point used for moving view
 		m_has_move_id = false;
 
-		if (!m_move_has_really_moved && m_tap_state == TapState::None) {
+		// If m_tap_state is already set to TapState::ShortTap, we must keep
+		// that value. Otherwise, many short taps will be ignored if you tap
+		// very fast.
+		if (!m_move_has_really_moved && m_tap_state != TapState::LongTap) {
 			m_tap_state = TapState::ShortTap;
 		} else {
 			m_tap_state = TapState::None;
