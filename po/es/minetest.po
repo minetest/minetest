@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-12-02 05:17+0000\n"
-"Last-Translator: chocomint <silentxe1@gmail.com>\n"
+"PO-Revision-Date: 2024-01-21 20:43+0000\n"
+"Last-Translator: 56 independent <emailchecker506@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.3-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1692,13 +1692,12 @@ msgid "Control Key"
 msgstr "Tecla de control"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Delete Key"
-msgstr "Borrar"
+msgstr "Tecla de borrar"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
-msgstr ""
+msgstr "Flecha por abajo"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1745,9 +1744,8 @@ msgid "Insert"
 msgstr "Insertar"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Arrow"
-msgstr "Control izquierdo"
+msgstr "Control izquerda"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1771,9 +1769,8 @@ msgstr "Win izq"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Menu Key"
-msgstr "Menú"
+msgstr "Tecla de Menú"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
@@ -1859,9 +1856,8 @@ msgstr "Av. pág"
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Pause Key"
-msgstr "Pausa"
+msgstr "Tecla de Pausa"
 
 #: src/client/keycode.cpp
 msgid "Play"
@@ -1934,7 +1930,7 @@ msgstr "Tabulador"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
-msgstr ""
+msgstr "Flecha por arriba"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -2286,7 +2282,7 @@ msgstr "Ruido 2D para ubicar los ríos, valles y canales."
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr ""
+msgstr "el 3-D"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -4991,7 +4987,7 @@ msgstr "Mapa mip"
 
 #: src/settings_translation_file.cpp
 msgid "Miscellaneous"
-msgstr ""
+msgstr "De todo tipo"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Profiler"
