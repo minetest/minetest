@@ -19,10 +19,12 @@
 | JsonCPP    | 1.0.0+  | Bundled JsonCPP is used if not present |
 | Curl       | 7.56.0+ | Optional   |
 | gettext    | -       | Optional   |
+| doxygen    | -       | (only needed when building documentation) |
+| dot        | -       | (only needed when building documentation) |
 
 For Debian/Ubuntu users:
 
-    sudo apt install g++ make libc6-dev cmake libpng-dev libjpeg-dev libxi-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev libzstd-dev libluajit-5.1-dev gettext libsdl2-dev
+    sudo apt install g++ make libc6-dev cmake libpng-dev libjpeg-dev libxi-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev libzstd-dev libluajit-5.1-dev gettext libsdl2-dev doxygen dot
 
 For Fedora users:
 
