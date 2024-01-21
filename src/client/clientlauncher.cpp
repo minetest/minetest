@@ -201,6 +201,9 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	std::string error_message;
 	bool reconnect_requested = false;
 
+	std::string reconnect_address;
+	std::string reconnect_port;
+
 	bool first_loop = true;
 
 	/*
@@ -231,10 +234,13 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 				core::rect<s32>(0, 0, 10000, 10000));
 
 			bool game_has_run = launch_game(error_message, reconnect_requested,
-				start_data, cmd_args);
+				reconnect_address, reconnect_port, start_data, cmd_args);
 
 			// Reset the reconnect_requested flag
 			reconnect_requested = false;
+
+			reconnect_address = "";
+			reconnect_port = "";
 
 			// If skip_main_menu, we only want to startup once
 			if (skip_main_menu && !first_loop)
@@ -271,7 +277,9 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 				start_data,
 				error_message,
 				chat_backend,
-				&reconnect_requested
+				&reconnect_requested,
+				reconnect_address,
+				reconnect_port
 			);
 		} //try
 		catch (con::PeerNotFoundException &e) {
@@ -374,7 +382,8 @@ void ClientLauncher::init_input()
 }
 
 bool ClientLauncher::launch_game(std::string &error_message,
-		bool reconnect_requested, GameStartData &start_data,
+		bool reconnect_requested, std::string reconnect_address,
+		std::string reconnect_port, GameStartData &start_data,
 		const Settings &cmd_args)
 {
 	// Prepare and check the start data to launch a game
@@ -420,6 +429,10 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		menudata.port                            = itos(start_data.socket_port);
 		menudata.script_data.errormessage        = std::move(error_message_lua);
 		menudata.script_data.reconnect_requested = reconnect_requested;
+		menudata.script_data.transfer_address    = reconnect_address;
+		menudata.script_data.transfer_port       = reconnect_port;
+		menudata.script_data.transfer_playername = start_data.name;
+		menudata.script_data.transfer_password   = start_data.password;
 
 		main_menu(&menudata);
 

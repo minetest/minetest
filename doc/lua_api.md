@@ -6610,6 +6610,9 @@ Bans
   optional reason, this will not prefix with 'Kicked: ' like kick_player.
   If no reason is given, it will default to 'Disconnected.'
     * Returns boolean indicating success (false if player nonexistent)
+* `minetest.transfer_player(name, address, port)`: Disconnect a player and
+  request the client re-connect at a new address and port. The connection
+  to the new server will occur using the same player name and password.
 
 Particles
 ---------
