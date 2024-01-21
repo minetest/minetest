@@ -5837,8 +5837,20 @@ Authentication
     * `name`: string; if omitted, all auth data should be considered modified
 * `minetest.set_player_password(name, password_hash)`: Set password hash of
   player `name`.
-* `minetest.set_player_privs(name, {priv1=true,...})`: Set privileges of player
-  `name`.
+* `minetest.set_player_privs(name, privs)`: Set privileges of player `name`.
+  * `privs` is a **set** of privileges:
+    A table where the keys are names of privileges and the values are `true`.
+  * Example: `minetest.set_player_privs("singleplayer", {interact = true, fly = true})`.
+    This **sets** the player privileges to `interact` and `fly`;
+    `singleplayer` will only have these two privileges afterwards.
+* `minetest.change_player_privs(name, changes)`: Helper to grant or revoke privileges.
+  * `changes`: Table of changes to make.
+    A field `[privname] = true` grants a privilege,
+    whereas `[privname] = false` revokes a privilege.
+  * Example: `minetest.change_player_privs("singleplayer", {interact = true, fly = false})`
+    will grant singleplayer the `interact` privilege
+    and revoke singleplayer's `fly` privilege.
+    All other privileges will remain unchanged.
 * `minetest.auth_reload()`
     * See `reload()` in authentication handler definition
 
@@ -10714,8 +10726,8 @@ Used by `minetest.register_authentication_handler`.
 
     set_privileges = function(name, privileges),
     -- Set privileges of player `name`.
-    -- `privileges` is in table form, auth data should be created if not
-    -- present.
+    -- `privileges` is in table form: keys are privilege names, values are `true`;
+    -- auth data should be created if not present.
 
     reload = function(),
     -- Reload authentication data from the storage location.
