@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-01-21 20:43+0000\n"
-"Last-Translator: 56 independent <emailchecker506@gmail.com>\n"
+"PO-Revision-Date: 2024-06-09 15:09+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1845,14 +1845,12 @@ msgid "OEM Clear"
 msgstr "Limpiar OEM"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Down"
-msgstr "Re. pág"
+msgstr "Página abajo"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Up"
-msgstr "Av. pág"
+msgstr "Página arriba"
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
@@ -1869,14 +1867,12 @@ msgid "Print"
 msgstr "Captura"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Return Key"
-msgstr "Retorno"
+msgstr "Tecla de retorno"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Arrow"
-msgstr "Control der"
+msgstr "flechas de dirección"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1908,9 +1904,8 @@ msgid "Select"
 msgstr "Seleccionar"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Shift Key"
-msgstr "Shift"
+msgstr "Mayús"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
@@ -2282,7 +2277,7 @@ msgstr "Ruido 2D para ubicar los ríos, valles y canales."
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr "el 3-D"
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -2629,7 +2624,7 @@ msgstr "Optimizar la distancia del envío de bloques"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr "Destello de lente"
+msgstr "Floración"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Intensity"
@@ -3759,7 +3754,6 @@ msgid "Fullscreen mode."
 msgstr "Modo de pantalla completa."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "GUI"
 msgstr "Interfaz gráfica de usuario"
 
@@ -5910,6 +5904,14 @@ msgid ""
 "draw calls, benefiting especially high-end GPUs.\n"
 "Systems with a low-end GPU (or no GPU) would benefit from smaller values."
 msgstr ""
+"Longitud lateral de un cubo de bloques de mapa que el cliente considerará "
+"juntos\n"
+"al generar mallas.\n"
+"Los valores más grandes aumentan la utilización de la GPU al reducir el "
+"número de\n"
+"llamar, beneficiando especialmente a las GPU de gama alta.\n"
+"Los sistemas con una GPU de gama baja (o sin GPU) se beneficiarían de "
+"valores más pequeños."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5920,6 +5922,13 @@ msgid ""
 "Altering this value is for special usage, leaving it unchanged is\n"
 "recommended."
 msgstr ""
+"Tamaño de los mapchunks generados por mapgen, expresado en mapblocks (16 "
+"nodos).\n"
+"ADVERTENCIA: No hay ningún beneficio, y hay varios peligros, en\n"
+"aumentar este valor por encima de 5.\n"
+"Reducir este valor aumenta la densidad de cuevas y mazmorras.\n"
+"Alterar este valor es para uso especial, dejarlo sin cambios es\n"
+"recomendable"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5927,30 +5936,37 @@ msgid ""
 "increase the cache hit %, reducing the data being copied from the main\n"
 "thread, thus reducing jitter."
 msgstr ""
+"Tamaño de caché del generador de terreno del generador de malla. Esto hace "
+"que\n"
+"aumenta el porcentaje de aciertos de caché al reducir los datos que se "
+"copian del hilo\n"
+"principal, reducindo así la fluctuación."
 
 #: src/settings_translation_file.cpp
 msgid "Sky Body Orbit Tilt"
-msgstr ""
+msgstr "Inclinación orbital del cuerpo celeste"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
-msgstr ""
+msgstr "Porción w"
 
 #: src/settings_translation_file.cpp
 msgid "Slope and fill work together to modify the heights."
-msgstr ""
+msgstr "La pendiente y el relleno trabajan juntos para modificar las alturas."
 
 #: src/settings_translation_file.cpp
 msgid "Small cave maximum number"
-msgstr ""
+msgstr "Cantidad máxima de cuevas pequeñas"
 
 #: src/settings_translation_file.cpp
 msgid "Small cave minimum number"
-msgstr ""
+msgstr "Cantidad mínima de cuevas pequeñas"
 
 #: src/settings_translation_file.cpp
 msgid "Small-scale humidity variation for blending biomes on borders."
 msgstr ""
+"Variación de humedad a pequeña escala para mezclar en los límites de los "
+"biomas."
 
 #: src/settings_translation_file.cpp
 msgid "Small-scale temperature variation for blending biomes on borders."
