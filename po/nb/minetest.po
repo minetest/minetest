@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Norwegian Bokmål (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-10-22 17:18+0000\n"
-"Last-Translator: ROllerozxa <rollerozxa@voxelmanip.se>\n"
+"PO-Revision-Date: 2024-01-21 20:43+0000\n"
+"Last-Translator: Blood Axe <bloodaxenor@protonmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "minetest/minetest/nb_NO/>\n"
 "Language: nb\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.1\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -206,7 +206,7 @@ msgstr "Laster ned..."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Feil ved installering av \"$1\": $2"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Failed to download \"$1\""
@@ -281,7 +281,7 @@ msgstr "Teksturpakker"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "The package $1 was not found."
-msgstr ""
+msgstr "Pakken $1 ble ikke funnet."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
@@ -303,7 +303,7 @@ msgstr "Se mer informasjon i nettleseren"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "Du må installere ett spill før du kan installere en mod"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -336,7 +336,7 @@ msgstr "Kan ikke installere en $1 som en teksturpakke"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Aktivert, har feil)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
@@ -625,11 +625,11 @@ msgstr "Bekreft passord"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "Blir med $1"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
-msgstr ""
+msgstr "Mangler navn"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
@@ -651,7 +651,7 @@ msgstr "Registrer"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr ""
+msgstr "Avvis"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -659,20 +659,25 @@ msgid ""
 "\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
 "game."
 msgstr ""
+"I lang tid ble Minetest-spillmotoren levert med et standardspill kalt "
+"\"Minetest Game\". Siden Minetest 5.8.0, leveres Minetest uten et "
+"standardspill."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
 "If you want to continue playing in your Minetest Game worlds, you need to "
 "reinstall Minetest Game."
 msgstr ""
+"Hvis du vil fortsette å spille i Minetest Game-verdenene dine, må du "
+"installere Minetest-spillet på nytt."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Minetest Game is no longer installed by default"
-msgstr ""
+msgstr "Minetest Game er ikke lenger installert på forhånd"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Reinstall Minetest Game"
-msgstr ""
+msgstr "Reinstaller Minetest Game"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -692,7 +697,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
-msgstr ""
+msgstr "En ny $1 versjon er tilgjengelig"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid ""
@@ -701,18 +706,22 @@ msgid ""
 "Visit $3 to find out how to get the newest version and stay up to date with "
 "features and bugfixes."
 msgstr ""
+"Installert versjon: $1\n"
+"Ny versjon: $2\n"
+"Besøk $3 for å finne ut hvordan du får den nyeste versjonen og holder deg "
+"oppdatert med funksjoner og feilrettinger."
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Later"
-msgstr ""
+msgstr "Senere"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Never"
-msgstr ""
+msgstr "Aldri"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Visit website"
-msgstr ""
+msgstr "Besøk nettsted"
 
 #: builtin/mainmenu/init.lua
 msgid "Settings"
@@ -815,11 +824,11 @@ msgstr "myknet"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
-msgstr ""
+msgstr "(Bruk systemspråk)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Accessibility"
-msgstr ""
+msgstr "Tilgjengelighet"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
@@ -844,21 +853,19 @@ msgstr "Kontroller"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "Generelt"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Movement"
-msgstr "Rask bevegelse"
+msgstr "Bevegelse"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Reset setting to default"
-msgstr "Gjenopprette standard"
+msgstr "Tilbakestill til standard"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
-msgstr ""
+msgstr "Tilbakestill til standard ($1)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
@@ -866,7 +873,7 @@ msgstr "Søk"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
-msgstr ""
+msgstr "Vis avanserte innstillinger"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
@@ -887,11 +894,11 @@ msgstr "Innhold: Mods"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
-msgstr ""
+msgstr "(Spillet må også aktivere skygger)"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Custom"
-msgstr ""
+msgstr "Tilpasset"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Disabled"
@@ -940,7 +947,7 @@ msgstr "Kjerneutviklere"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr ""
+msgstr "Kjerneteam"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Irrlicht device:"
@@ -1112,11 +1119,11 @@ msgstr "Ta del i spill"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "Logg på"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
-msgstr "Latens"
+msgstr "Forsinkelse"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Public Servers"
@@ -1868,9 +1875,8 @@ msgid "Return Key"
 msgstr "Return"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Arrow"
-msgstr "Høyre Ctrl"
+msgstr "Pil høyre"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1924,7 +1930,7 @@ msgstr "Tab"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
-msgstr ""
+msgstr "Pil opp"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -1986,7 +1992,7 @@ msgstr "Klarte ikke laste ned $1"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
-msgstr ""
+msgstr "Åpner nettside"
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
@@ -2071,7 +2077,7 @@ msgstr "Tast allerede i bruk"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings."
-msgstr ""
+msgstr "Tastebindinger."
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
@@ -2189,11 +2195,12 @@ msgstr "nb"
 msgid ""
 "Name is not registered. To create an account on this server, click 'Register'"
 msgstr ""
+"Navnet er ikke registrert. For å lage en konto på denne tjeneren, klikk "
+"'Registrer'"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Name is taken. Please choose another name"
-msgstr "Vennligst velg et navn!"
+msgstr "Navnet er tatt. Vennligst velg et annet navn"
 
 #: src/server.cpp
 #, c-format
@@ -2270,7 +2277,7 @@ msgstr "2D-støytall som plasserer elvedaler og elveleier."
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -2425,9 +2432,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Admin name"
-msgstr "Legg til elementnavn"
+msgstr "Administratornavn"
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2448,9 +2454,8 @@ msgstr ""
 "belysning - det har lite å si for naturlig nattelys."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Always fly fast"
-msgstr "Alltid flymodus og rask forflytning"
+msgstr "Alltid fly raskt"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
@@ -2535,7 +2540,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
@@ -2760,6 +2765,8 @@ msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
 msgstr ""
+"Klikkbare nettkoblinger (midtklikk eller Ctrl+venstreklikk) aktivert i "
+"tekstpratkonsollens utdata."
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -3699,9 +3706,8 @@ msgid "HUD"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HUD scaling"
-msgstr "HUD vist"
+msgstr "HUD skalering"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4109,7 +4115,7 @@ msgstr "Hoppehastighet"
 
 #: src/settings_translation_file.cpp
 msgid "Keyboard and Mouse"
-msgstr ""
+msgstr "Tastatur og mus"
 
 #: src/settings_translation_file.cpp
 msgid "Kick players who sent more than X messages per 10 seconds."
@@ -4578,7 +4584,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can be connected simultaneously."
-msgstr ""
+msgstr "Maksimalt antall spillere som kan kobles til samtidig."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of recent chat messages to show"
