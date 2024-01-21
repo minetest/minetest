@@ -87,6 +87,7 @@ typedef enum
 
 // Our simulated clicks last some milliseconds so that server-side mods have a
 // chance to detect them via l_get_player_control.
+// If you tap faster than this value, the simulated clicks are of course shorter.
 #define SIMULATED_CLICK_DURATION_MS 50
 
 extern const std::string button_image_names[];

@@ -783,7 +783,8 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					m_move_id                  = event.TouchInput.ID;
 					m_move_has_really_moved    = false;
 					m_move_downtime            = porting::getTimeMs();
-					m_tap_state                = TapState::None;
+					// DON'T reset m_tap_state here, otherwise many short taps
+					// will be ignored if you tap very fast.
 				}
 			}
 		}
