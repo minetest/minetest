@@ -1995,15 +1995,21 @@ int ObjectRef::l_set_sky(lua_State *L)
 			if (!lua_isnil(L, -1))
 				sky_params.fog_tint_type = luaL_checkstring(L, -1);
 			lua_pop(L, 1);
-
-			// pop "sky_color" table
-			lua_pop(L, 1);
 		}
+		lua_pop(L, 1);
+
 		lua_getfield(L, 2, "fog");
 		if (lua_istable(L, -1)) {
-			sky_params.fog_distance = getintfield_default(L, -1,  "fog_distance", sky_params.fog_distance);
-			sky_params.fog_start = getfloatfield_default(L, -1,  "fog_start", sky_params.fog_start);
+			sky_params.fog_distance = getintfield_default(L, -1,
+				"fog_distance", sky_params.fog_distance);
+			sky_params.fog_start = getfloatfield_default(L, -1,
+				"fog_start", sky_params.fog_start);
+
+			lua_getfield(L, -1, "fog_color");
+			read_color(L, -1, &sky_params.fog_color);
+			lua_pop(L, 1);
 		}
+		lua_pop(L, 1);
 	} else {
 		// Handle old set_sky calls, and log deprecated:
 		log_deprecated(L, "Deprecated call to set_sky, please check lua_api.md");
