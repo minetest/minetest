@@ -386,7 +386,7 @@ void ContentFeatures::reset()
 	light_propagates = false;
 	sunlight_propagates = false;
 	walkable = true;
-	pointable = true;
+	pointable = PointabilityType::POINTABLE;
 	diggable = true;
 	climbable = false;
 	buildable_to = false;
@@ -504,7 +504,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 
 	// interaction
 	writeU8(os, walkable);
-	writeU8(os, pointable);
+	Pointabilities::serializePointabilityType(os, pointable);
 	writeU8(os, diggable);
 	writeU8(os, climbable);
 	writeU8(os, buildable_to);
@@ -617,7 +617,7 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 
 	// interaction
 	walkable = readU8(is);
-	pointable = readU8(is);
+	pointable = Pointabilities::deSerializePointabilityType(is);
 	diggable = readU8(is);
 	climbable = readU8(is);
 	buildable_to = readU8(is);
@@ -1083,7 +1083,7 @@ void NodeDefManager::clear()
 		f.light_propagates    = true;
 		f.sunlight_propagates = true;
 		f.walkable            = false;
-		f.pointable           = false;
+		f.pointable           = PointabilityType::POINTABLE_NOT;
 		f.diggable            = false;
 		f.buildable_to        = true;
 		f.floodable           = true;
@@ -1104,7 +1104,7 @@ void NodeDefManager::clear()
 		f.light_propagates    = false;
 		f.sunlight_propagates = false;
 		f.walkable            = false;
-		f.pointable           = false;
+		f.pointable           = PointabilityType::POINTABLE_NOT;
 		f.diggable            = false;
 		f.buildable_to        = true; // A way to remove accidental CONTENT_IGNOREs
 		f.is_ground_content   = true;

@@ -5298,6 +5298,10 @@ Utilities
       -- wallmounted nodes mounted at floor or ceiling may additionally
       -- be rotated by 90° with special param2 values (5.9.0)
       wallmounted_rotate = true,
+      -- Availability of the `pointabilities` property in the item definition (5.9.0)
+      item_specific_pointabilities = true,
+      -- Nodes `pointable` property can be `"blocking"` (5.9.0)
+      blocking_pointability_type = true,
   }
   ```
 
@@ -8382,7 +8386,9 @@ Player properties need to be saved manually.
 
 
     pointable = true,
-    -- Whether the object can be pointed at
+    -- Can be `true` if it is pointable, `false` if it can be pointed through,
+    -- or `"blocking"` if it is pointable but not selectable.
+    -- Can be overridden by the `pointabilities` of the held item.
 
     visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem" / "item",
     -- "cube" is a node-sized cube.
@@ -8746,6 +8752,27 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     -- If true, item can point to all liquid nodes (`liquidtype ~= "none"`),
     -- even those for which `pointable = false`
 
+    pointabilities = {
+		nodes = {
+			["default:stone"] = "blocking",
+			["group:leaves"] = false,
+		},
+		objects = {
+			["modname:entityname"] = true,
+			["group:ghosty"] = true, -- (an armor group)
+		}
+    },
+    -- Contains lists to override the `pointable` property of pointed nodes and objects.
+    -- The index can be a node/entity name or a group with the prefix `"group:"`.
+    -- (For objects `armor_groups` are used and for players the entity name is irrelevant.)
+    -- If multiple fields fit, the following priority order is applied:
+    --  value of matching node/entity name
+	--	`true` for any group
+	--	`false` for any group
+	--	`"blocking"` for any group
+	--	`liquids_pointable` if it is a liquid node
+	--	`pointable` property of the node or object
+
     light_source = 0,
     -- When used for nodes: Defines amount of light emitted by node.
     -- Otherwise: Defines texture glow when viewed as a dropped item
@@ -8971,7 +8998,11 @@ Used by `minetest.register_node`.
 
     walkable = true,  -- If true, objects collide with node
 
-    pointable = true,  -- If true, can be pointed at
+    pointable = true,
+    -- Can be `true` if it is pointable, `false` if it can be pointed through,
+    -- or `"blocking"` if it is pointable but not selectable.
+    -- Can be overridden by the `pointabilities` of the held item.
+    -- A client may be able to point non-pointable nodes, since it isn't checked server-side.
 
     diggable = true,  -- If false, can never be dug
 

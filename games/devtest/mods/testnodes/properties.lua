@@ -663,3 +663,23 @@ minetest.register_node("testnodes:post_effect_color_shaded_true", {
 	is_ground_content = false,
 	groups = {dig_immediate=3},
 })
+
+-- Pointability
+
+-- Register wrapper for compactness
+local function register_pointable_test_node(name, description, pointable)
+	local texture = "testnodes_"..name..".png"
+	minetest.register_node("testnodes:"..name, {
+		description = S(description),
+		tiles = {texture},
+		drawtype = "glasslike_framed",
+		paramtype = "light",
+		walkable = false,
+		pointable = pointable,
+		groups = {dig_immediate=3, [name.."_test"]=1},
+	})
+end
+
+register_pointable_test_node("pointable", "Pointable Node", true)
+register_pointable_test_node("not_pointable", "Not Pointable Node", false)
+register_pointable_test_node("blocking_pointable", "Blocking Pointable Node", "blocking")

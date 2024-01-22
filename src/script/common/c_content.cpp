@@ -83,6 +83,12 @@ void read_item_definition(lua_State* L, int index,
 
 	getboolfield(L, index, "liquids_pointable", def.liquids_pointable);
 
+	lua_getfield(L, index, "pointabilities");
+	if(lua_istable(L, -1)){
+		def.pointabilities = std::make_optional<Pointabilities>(
+				read_pointabilities(L, -1));
+	}
+
 	lua_getfield(L, index, "tool_capabilities");
 	if(lua_istable(L, -1)){
 		def.tool_capabilities = new ToolCapabilities(
@@ -199,6 +205,10 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "usable");
 	lua_pushboolean(L, i.liquids_pointable);
 	lua_setfield(L, -2, "liquids_pointable");
+	if (i.pointabilities) {
+		push_pointabilities(L, *i.pointabilities);
+		lua_setfield(L, -2, "pointabilities");
+	}
 	if (i.tool_capabilities) {
 		push_tool_capabilities(L, *i.tool_capabilities);
 		lua_setfield(L, -2, "tool_capabilities");
@@ -311,7 +321,12 @@ void read_object_properties(lua_State *L, int index,
 	}
 	lua_pop(L, 1);
 
-	getboolfield(L, -1, "pointable", prop->pointable);
+	lua_getfield(L, -1, "pointable");
+	if(!lua_isnil(L, -1)){
+		prop->pointable = read_pointability_type(L, -1);
+	}
+	lua_pop(L, 1);
+
 	getstringfield(L, -1, "visual", prop->visual);
 
 	getstringfield(L, -1, "mesh", prop->mesh);
@@ -452,7 +467,7 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_pushboolean(L, prop->rotate_selectionbox);
 	lua_setfield(L, -2, "rotate");
 	lua_setfield(L, -2, "selectionbox");
-	lua_pushboolean(L, prop->pointable);
+	push_pointability_type(L, prop->pointable);
 	lua_setfield(L, -2, "pointable");
 	lua_pushlstring(L, prop->visual.c_str(), prop->visual.size());
 	lua_setfield(L, -2, "visual");
@@ -781,8 +796,14 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	// This is used for collision detection.
 	// Also for general solidness queries.
 	getboolfield(L, index, "walkable", f.walkable);
-	// Player can point to these
-	getboolfield(L, index, "pointable", f.pointable);
+
+	// Player can point to these, point through or it is blocking
+	lua_getfield(L, index, "pointable");
+	if(!lua_isnil(L, -1)){
+		f.pointable = read_pointability_type(L, -1);
+	}
+	lua_pop(L, 1);
+
 	// Player can dig these
 	getboolfield(L, index, "diggable", f.diggable);
 	// Player can climb these
@@ -1005,7 +1026,7 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "is_ground_content");
 	lua_pushboolean(L, c.walkable);
 	lua_setfield(L, -2, "walkable");
-	lua_pushboolean(L, c.pointable);
+	push_pointability_type(L, c.pointable);
 	lua_setfield(L, -2, "pointable");
 	lua_pushboolean(L, c.diggable);
 	lua_setfield(L, -2, "diggable");
@@ -1590,6 +1611,125 @@ ToolCapabilities read_tool_capabilities(
 	}
 	lua_pop(L, 1);
 	return toolcap;
+}
+
+/******************************************************************************/
+PointabilityType read_pointability_type(lua_State *L, int index)
+{
+	if (lua_isboolean(L, index)) {
+		if (lua_toboolean(L, index))
+			return PointabilityType::POINTABLE;
+		else
+			return PointabilityType::POINTABLE_NOT;
+	} else {
+		const char* s = luaL_checkstring(L, index);
+		if (s && !strcmp(s, "blocking")) {
+			return PointabilityType::POINTABLE_BLOCKING;
+		}
+	}
+	throw LuaError("Invalid pointable type.");
+}
+
+/******************************************************************************/
+Pointabilities read_pointabilities(lua_State *L, int index)
+{
+	Pointabilities pointabilities;
+
+	lua_getfield(L, index, "nodes");
+	if(lua_istable(L, -1)){
+		int ti = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, ti) != 0) {
+			// key at index -2 and value at index -1
+			std::string name = luaL_checkstring(L, -2);
+
+			// handle groups
+			if(std::string_view(name).substr(0,6)=="group:") {
+				pointabilities.node_groups[name.substr(6)] = read_pointability_type(L, -1);
+			} else {
+				pointabilities.nodes[name] = read_pointability_type(L, -1);
+			}
+
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "objects");
+	if(lua_istable(L, -1)){
+		int ti = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, ti) != 0) {
+			// key at index -2 and value at index -1
+			std::string name = luaL_checkstring(L, -2);
+
+			// handle groups
+			if(std::string_view(name).substr(0,6)=="group:") {
+				pointabilities.object_groups[name.substr(6)] = read_pointability_type(L, -1);
+			} else {
+				pointabilities.objects[name] = read_pointability_type(L, -1);
+			}
+
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
+
+	return pointabilities;
+}
+
+/******************************************************************************/
+void push_pointability_type(lua_State *L, PointabilityType pointable)
+{
+	switch(pointable)
+	{
+	case PointabilityType::POINTABLE:
+		lua_pushboolean(L, true);
+		break;
+	case PointabilityType::POINTABLE_NOT:
+		lua_pushboolean(L, false);
+		break;
+	case PointabilityType::POINTABLE_BLOCKING:
+		lua_pushliteral(L, "blocking");
+		break;
+	}
+}
+
+/******************************************************************************/
+void push_pointabilities(lua_State *L, const Pointabilities &pointabilities)
+{
+	// pointabilities table
+	lua_newtable(L);
+
+	if (!pointabilities.nodes.empty() || !pointabilities.node_groups.empty()) {
+		// Create and fill table
+		lua_newtable(L);
+		for (const auto &entry : pointabilities.nodes) {
+			push_pointability_type(L, entry.second);
+			lua_setfield(L, -2, entry.first.c_str());
+		}
+		for (const auto &entry : pointabilities.node_groups) {
+			push_pointability_type(L, entry.second);
+			lua_setfield(L, -2, ("group:" + entry.first).c_str());
+		}
+		lua_setfield(L, -2, "nodes");
+	}
+
+	if (!pointabilities.objects.empty() || !pointabilities.object_groups.empty()) {
+		// Create and fill table
+		lua_newtable(L);
+		for (const auto &entry : pointabilities.objects) {
+			push_pointability_type(L, entry.second);
+			lua_setfield(L, -2, entry.first.c_str());
+		}
+		for (const auto &entry : pointabilities.object_groups) {
+			push_pointability_type(L, entry.second);
+			lua_setfield(L, -2, ("group:" + entry.first).c_str());
+		}
+		lua_setfield(L, -2, "objects");
+	}
 }
 
 /******************************************************************************/

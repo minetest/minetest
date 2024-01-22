@@ -315,7 +315,8 @@ public:
 
 	virtual void getSelectedActiveObjects(
 		const core::line3d<f32> &shootline_on_map,
-		std::vector<PointedThing> &objects
+		std::vector<PointedThing> &objects,
+		const std::optional<Pointabilities> &pointabilities
 	);
 
 	/*

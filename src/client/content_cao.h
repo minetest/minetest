@@ -174,6 +174,8 @@ public:
 
 	inline const ObjectProperties &getProperties() const { return m_prop; }
 
+	inline const std::string &getName() const { return m_name; }
+
 	scene::ISceneNode *getSceneNode() const override;
 
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const override;
@@ -206,6 +208,11 @@ public:
 	inline bool isLocalPlayer() const override
 	{
 		return m_is_local_player;
+	}
+
+	inline bool isPlayer() const
+	{
+		return m_is_player;
 	}
 
 	inline bool isVisible() const

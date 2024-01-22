@@ -841,6 +841,7 @@ protected:
 	 * the camera position. This also gives the maximal distance
 	 * of the search.
 	 * @param[in]  liquids_pointable if false, liquids are ignored
+	 * @param[in]  pointabilities    item specific pointable overriding
 	 * @param[in]  look_for_object   if false, objects are ignored
 	 * @param[in]  camera_offset     offset of the camera
 	 * @param[out] selected_object   the selected object or
@@ -848,6 +849,7 @@ protected:
 	 */
 	PointedThing updatePointedThing(
 			const core::line3d<f32> &shootline, bool liquids_pointable,
+			const std::optional<Pointabilities> &pointabilities,
 			bool look_for_object, const v3s16 &camera_offset);
 	void handlePointingAtNothing(const ItemStack &playerItem);
 	void handlePointingAtNode(const PointedThing &pointed,
@@ -3343,6 +3345,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 
 	PointedThing pointed = updatePointedThing(shootline,
 			selected_def.liquids_pointable,
+			selected_def.pointabilities,
 			!runData.btn_down_for_dig,
 			camera_offset);
 
@@ -3454,6 +3457,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 PointedThing Game::updatePointedThing(
 	const core::line3d<f32> &shootline,
 	bool liquids_pointable,
+	const std::optional<Pointabilities> &pointabilities,
 	bool look_for_object,
 	const v3s16 &camera_offset)
 {
@@ -3470,7 +3474,7 @@ PointedThing Game::updatePointedThing(
 	runData.selected_object = NULL;
 	hud->pointing_at_object = false;
 
-	RaycastState s(shootline, look_for_object, liquids_pointable);
+	RaycastState s(shootline, look_for_object, liquids_pointable, pointabilities);
 	PointedThing result;
 	env.continueRaycast(&s, &result);
 	if (result.type == POINTEDTHING_OBJECT) {

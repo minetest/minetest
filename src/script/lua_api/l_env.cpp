@@ -188,7 +188,7 @@ int LuaRaycast::create_object(lua_State *L)
 	}
 
 	LuaRaycast *o = new LuaRaycast(core::line3d<f32>(pos1, pos2),
-		objects, liquids);
+		objects, liquids, std::nullopt);
 
 	*(void **) (lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
