@@ -1621,11 +1621,11 @@ PointabilityType read_pointability_type(lua_State *L, int index)
 			return PointabilityType::POINTABLE;
 		else
 			return PointabilityType::POINTABLE_NOT;
-	} else if (lua_isstring(L, index)) {
-		size_t len;
-		const char* s = lua_tolstring(L, index, &len);
-		if (!strcmp(s, "blocking"))
+	} else {
+		const char* s = luaL_checkstring(L, index);
+		if (s && !strcmp(s, "blocking")) {
 			return PointabilityType::POINTABLE_BLOCKING;
+		}
 	}
 	throw LuaError("Invalid pointable type.");
 }
