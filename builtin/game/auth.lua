@@ -196,7 +196,7 @@ function core.change_player_privs(name, changes)
 		elseif change == false then
 			privs[priv] = nil
 		else
-			error("non-bool value in `changes` table")
+			error("non-bool value given to `minetest.change_player_privs`")
 		end
 	end
 	core.set_player_privs(name, privs)
