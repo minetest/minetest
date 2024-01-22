@@ -102,14 +102,14 @@ core.builtin_auth_handler = {
 				core.log('deprecated', "non-`true` value given to `minetest.set_player_privs`")
 			end
 			-- Run grant callbacks
-			if not prev_privs[priv] then
+			if prev_privs[priv] == nil then
 				core.run_priv_callbacks(name, priv, nil, "grant")
 			end
 		end
 
 		-- Run revoke callbacks
 		for priv, _ in pairs(prev_privs) do
-			if not privileges[priv] then
+			if privileges[priv] == nil then
 				core.run_priv_callbacks(name, priv, nil, "revoke")
 			end
 		end
