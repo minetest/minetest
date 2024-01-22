@@ -96,10 +96,10 @@ void read_item_definition(lua_State* L, int index,
 	}
 	lua_getfield(L, index, "wear_color");
 	if (lua_istable(L, -1)) {
-		def.wear_bar_params = new WearBarParams(read_wear_bar_params(L, -1));
+		def.wear_bar_params = std::optional(new WearBarParams(read_wear_bar_params(L, -1)));
 	} else if (lua_isstring(L, -1)) {
-		def.wear_bar_params = new WearBarParams();
-		parseColorString(luaL_checkstring(L, -1), def.wear_bar_params->defaultColor, false);
+		def.wear_bar_params = std::optional(new WearBarParams());
+		parseColorString(luaL_checkstring(L, -1), def.wear_bar_params.value()->defaultColor, false);
 	}
 
 	// If name is "" (hand), ensure there are ToolCapabilities
@@ -220,8 +220,8 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 		push_tool_capabilities(L, *i.tool_capabilities);
 		lua_setfield(L, -2, "tool_capabilities");
 	}
-	if (i.wear_bar_params) {
-		push_wear_bar_params(L, *i.wear_bar_params);
+	if (i.wear_bar_params.has_value()) {
+		push_wear_bar_params(L, *i.wear_bar_params.value());
 		lua_setfield(L, -2, "wear_color");
 	}
 	push_groups(L, i.groups);

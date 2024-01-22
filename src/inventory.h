@@ -136,12 +136,12 @@ struct ItemStack
 			const IItemDefManager *itemdef,
 			WearBarParams &params) const
 	{
-		WearBarParams *params_ = itemdef->get(name).wear_bar_params;
+		std::optional<WearBarParams *> params_ = itemdef->get(name).wear_bar_params;
 
-		if (params_ == NULL)
+		if (!params_.has_value())
 			return metadata.getWearBarParamOverride(params);
 
-		params = metadata.getWearBarParams(*params_);
+		params = metadata.getWearBarParams(*params_.value());
 		return true;
 	}
 

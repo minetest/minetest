@@ -103,8 +103,7 @@ struct ItemDefinition
 
 	// They may be NULL. If non-NULL, deleted by destructor
 	ToolCapabilities *tool_capabilities;
-	// May be NULL. If non-NULL, deleted by destructor
-	WearBarParams *wear_bar_params;
+	std::optional<WearBarParams*> wear_bar_params;
 
 	ItemGroupList groups;
 	SoundSpec sound_place;
