@@ -1685,16 +1685,14 @@ void push_pointability_type(lua_State *L, PointabilityType pointable)
 {
 	switch(pointable)
 	{
-	  case PointabilityType::POINTABLE:
+	case PointabilityType::POINTABLE:
 		lua_pushboolean(L, true);
 		break;
-	  case PointabilityType::POINTABLE_NOT:
+	case PointabilityType::POINTABLE_NOT:
 		lua_pushboolean(L, false);
 		break;
-	  case PointabilityType::POINTABLE_BLOCKING:
+	case PointabilityType::POINTABLE_BLOCKING:
 		lua_pushliteral(L, "blocking");
-		break;
-	  default:
 		break;
 	}
 }

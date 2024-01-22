@@ -71,6 +71,11 @@ std::optional<PointabilityType> Pointabilities::matchObject(const std::string &n
 	return i == objects.end() ? matchGroups(groups, object_groups) : i->second;
 }
 
+std::optional<PointabilityType> Pointabilities::matchPlayer(const ItemGroupList &groups) const
+{
+	return matchGroups(groups, object_groups);
+}
+
 std::optional<PointabilityType> Pointabilities::matchGroups(const ItemGroupList &groups,
 	const std::unordered_map<std::string, PointabilityType> &pointable_groups)
 {

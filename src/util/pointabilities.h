@@ -49,6 +49,8 @@ struct Pointabilities
 		const ItemGroupList &groups) const;
 	std::optional<PointabilityType> matchObject(const std::string &name,
 		const ItemGroupList &groups) const;
+	// For players only armor groups will work
+	std::optional<PointabilityType> matchPlayer(const ItemGroupList &groups) const;
 
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);

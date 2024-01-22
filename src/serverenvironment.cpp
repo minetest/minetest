@@ -1870,8 +1870,8 @@ void ServerEnvironment::getSelectedActiveObjects(
 					pointable = pointabilities->matchObject(lsao->getName(),
 							usao->getArmorGroups()).value_or(props->pointable);
 				} else if (PlayerSAO* psao = dynamic_cast<PlayerSAO*>(obj)) {
-					pointable = pointabilities->matchObject("",
-							psao->getArmorGroups()).value_or(props->pointable);
+					pointable = pointabilities->matchPlayer(psao->getArmorGroups()).value_or(
+							props->pointable);
 				} else {
 					pointable = props->pointable;
 				}
