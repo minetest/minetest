@@ -3568,10 +3568,11 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 	SendDeleteParticleSpawner(peer_id, id);
 }
 
-bool Server::dynamicAddMedia(std::string filepath,
+bool Server::dynamicAddMedia(std::string filename, std::string filepath,
 	const u32 token, const std::string &to_player, bool ephemeral)
 {
-	std::string filename = fs::GetFilenameFromPath(filepath.c_str());
+	if (filename.empty())
+		filename = fs::GetFilenameFromPath(filepath.c_str());
 	auto it = m_media.find(filename);
 	if (it != m_media.end()) {
 		// Allow the same path to be "added" again in certain conditions
