@@ -849,7 +849,7 @@ protected:
 	 */
 	PointedThing updatePointedThing(
 			const core::line3d<f32> &shootline, bool liquids_pointable,
-			const Pointabilities *pointabilities,
+			const std::optional<Pointabilities> &pointabilities,
 			bool look_for_object, const v3s16 &camera_offset);
 	void handlePointingAtNothing(const ItemStack &playerItem);
 	void handlePointingAtNode(const PointedThing &pointed,
@@ -3457,7 +3457,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 PointedThing Game::updatePointedThing(
 	const core::line3d<f32> &shootline,
 	bool liquids_pointable,
-	const Pointabilities *pointabilities,
+	const std::optional<Pointabilities> &pointabilities,
 	bool look_for_object,
 	const v3s16 &camera_offset)
 {

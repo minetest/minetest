@@ -1831,7 +1831,7 @@ bool ServerEnvironment::getActiveObjectMessage(ActiveObjectMessage *dest)
 void ServerEnvironment::getSelectedActiveObjects(
 	const core::line3d<f32> &shootline_on_map,
 	std::vector<PointedThing> &objects,
-	const Pointabilities *pointabilities)
+	const std::optional<Pointabilities> &pointabilities)
 {
 	std::vector<ServerActiveObject *> objs;
 	getObjectsInsideRadius(objs, shootline_on_map.start,

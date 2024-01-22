@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <atomic>
 #include <mutex>
+#include <optional>
 #include "irr_v3d.h"
 #include "util/basic_macros.h"
 #include "line3d.h"
@@ -99,7 +100,7 @@ public:
 	 */
 	virtual void getSelectedActiveObjects(const core::line3d<f32> &shootline_on_map,
 			std::vector<PointedThing> &objects,
-			const Pointabilities *pointabilities) = 0;
+			const std::optional<Pointabilities> &pointabilities) = 0;
 
 	/*!
 	 * Returns the next node or object the shootline meets.

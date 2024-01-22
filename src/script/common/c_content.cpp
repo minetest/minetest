@@ -85,7 +85,7 @@ void read_item_definition(lua_State* L, int index,
 
 	lua_getfield(L, index, "pointabilities");
 	if(lua_istable(L, -1)){
-		def.pointabilities = new Pointabilities(
+		def.pointabilities = std::make_optional<Pointabilities>(
 				read_pointabilities(L, -1));
 	}
 

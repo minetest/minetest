@@ -122,8 +122,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	stack_max = def.stack_max;
 	usable = def.usable;
 	liquids_pointable = def.liquids_pointable;
-	if (def.pointabilities)
-		pointabilities = new Pointabilities(*def.pointabilities);
+	pointabilities = def.pointabilities;
 	if (def.tool_capabilities)
 		tool_capabilities = new ToolCapabilities(*def.tool_capabilities);
 	groups = def.groups;
@@ -150,7 +149,6 @@ void ItemDefinition::resetInitial()
 {
 	// Initialize pointers to NULL so reset() does not delete undefined pointers
 	tool_capabilities = NULL;
-	pointabilities = NULL;
 	reset();
 }
 
@@ -170,8 +168,7 @@ void ItemDefinition::reset()
 	stack_max = 99;
 	usable = false;
 	liquids_pointable = false;
-	delete pointabilities;
-	pointabilities = NULL;
+	pointabilities = std::nullopt;
 	delete tool_capabilities;
 	tool_capabilities = NULL;
 	groups.clear();
@@ -333,7 +330,7 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 		std::string pointabilities_s = deSerializeString16(is);
 		if (!pointabilities_s.empty()) {
 			std::istringstream tmp_is(pointabilities_s, std::ios::binary);
-			pointabilities = new Pointabilities();
+			pointabilities = std::make_optional<Pointabilities>();
 			pointabilities->deSerialize(tmp_is);
 		}
 	} catch(SerializationError &e) {};

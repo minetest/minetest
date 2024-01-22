@@ -28,11 +28,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "sound.h"
 #include "texture_override.h" // TextureOverride
+#include "util/pointabilities.h"
 class IGameDef;
 class Client;
 struct ToolCapabilities;
 struct PointedThing;
-struct Pointabilities;
 #ifndef SERVER
 #include "client/tile.h"
 struct ItemMesh;
@@ -98,9 +98,9 @@ struct ItemDefinition
 	u16 stack_max;
 	bool usable;
 	bool liquids_pointable;
+	std::optional<Pointabilities> pointabilities;
 
 	// They may be NULL. If non-NULL, deleted by destructor
-	Pointabilities *pointabilities;
 	ToolCapabilities *tool_capabilities;
 
 	ItemGroupList groups;

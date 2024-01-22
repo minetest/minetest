@@ -337,7 +337,7 @@ public:
 		const core::line3d<f32> &shootline,
 		bool objects_pointable,
 		bool liquids_pointable,
-		const Pointabilities *pointabilities) :
+		const std::optional<Pointabilities> &pointabilities) :
 		state(shootline, objects_pointable, liquids_pointable, pointabilities)
 	{}
 
