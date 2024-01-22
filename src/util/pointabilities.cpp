@@ -82,7 +82,6 @@ std::optional<PointabilityType> Pointabilities::matchGroups(const ItemGroupList 
 			switch(ability.second) {
 				case PointabilityType::POINTABLE:
 					return PointabilityType::POINTABLE;
-					break;
 				case PointabilityType::POINTABLE_NOT:
 					not_pointable = true;
 					break;
