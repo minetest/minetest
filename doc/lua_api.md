@@ -6601,7 +6601,9 @@ Server
     * Returns boolean indicating success (false if player nonexistent)
 * `minetest.dynamic_add_media(options, callback)`
     * `options`: table containing the following parameters
-        * `filepath`: path to a media file on the filesystem
+        * `filename`: name the media file will be usable as
+                      (optional, default taken from path)
+        * `filepath`: path to the file on the filesystem
         * `to_player`: name of the player the media should be sent to instead of
                        all players (optional)
         * `ephemeral`: boolean that marks the media as ephemeral,

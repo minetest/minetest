@@ -159,14 +159,17 @@ end
 
 local textures_path = core.get_worldpath() .. "/"
 core.safe_file_write(
-	textures_path .. "testnodes_generated_mb.png",
+	textures_path .. "testnodes1.png",
 	encode_and_check(512, 512, "rgb", data_mb)
 )
 core.safe_file_write(
 	textures_path .. "testnodes_generated_ck.png",
 	encode_and_check(512, 512, "gray", data_ck)
 )
-core.dynamic_add_media(textures_path .. "testnodes_generated_mb.png")
+core.dynamic_add_media({
+	filename = "testnodes_generated_mb.png",
+	filepath = textures_path .. "testnodes1.png"
+})
 core.dynamic_add_media(textures_path .. "testnodes_generated_ck.png")
 
 minetest.register_node("testnodes:generated_png_mb", {
