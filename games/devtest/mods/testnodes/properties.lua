@@ -666,31 +666,20 @@ minetest.register_node("testnodes:post_effect_color_shaded_true", {
 
 -- Pointability
 
-minetest.register_node("testnodes:pointable", {
-	description = S("Pointable Node"),
-	tiles = {"testnodes_pointable.png"},
-	drawtype = "glasslike_framed",
-	paramtype = "light",
-	walkable = false,
-	groups = {dig_immediate=3, pointable_test=1},
-})
+-- Register wrapper for compactness
+local function register_pointable_test_node(name, description, pointable)
+	local texture = "testnodes_"..name..".png"
+	minetest.register_node("testnodes:"..name, {
+		description = S(description),
+		tiles = {texture},
+		drawtype = "glasslike_framed",
+		paramtype = "light",
+		walkable = false,
+		pointable = pointable,
+		groups = {dig_immediate=3, [name.."_test"]=1},
+	})
+end
 
-minetest.register_node("testnodes:not_pointable", {
-	description = S("Not Pointable Node"),
-	tiles = {"testnodes_not_pointable.png"},
-	drawtype = "glasslike_framed",
-	paramtype = "light",
-	walkable = false,
-	groups = {dig_immediate=3, not_pointable_test=1},
-	pointable = false
-})
-
-minetest.register_node("testnodes:blocking_pointable", {
-	description = S("Blocking Pointable Node"),
-	tiles = {"testnodes_blocking_pointable.png"},
-	drawtype = "glasslike_framed",
-	paramtype = "light",
-	walkable = false,
-	groups = {dig_immediate=3, blocking_pointable_test=1},
-	pointable = "blocking"
-})
+register_pointable_test_node("pointable", "Pointable Node", true)
+register_pointable_test_node("not_pointable", "Not Pointable Node", false)
+register_pointable_test_node("blocking_pointable", "Blocking Pointable Node", "blocking")
