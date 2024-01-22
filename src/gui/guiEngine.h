@@ -171,12 +171,16 @@ public:
 	 *
 	 * Only loads a single textdomain from the path, as specified by `domain`,
 	 * for performance reasons.
+	 *
+	 * WARNING: Do not store the returned pointer for long as the contents may
+	 * change with the next call to `getContentTranslations`.
 	 * */
 	Translations *getContentTranslations(const std::string &path,
 			const std::string &domain, const std::string &lang_code);
 
 private:
-	std::unordered_map<std::string, Translations> translations;
+	std::string last_translations_key;
+	Translations last_translations;
 
 	/** find and run the main menu script */
 	bool loadMainMenuScript();
