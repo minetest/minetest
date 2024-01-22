@@ -34,8 +34,8 @@ PointabilityType Pointabilities::deSerializePointabilityType(std::istream &is)
 		default:
 			pointable_type = PointabilityType::POINTABLE;
 			break;
-    }
-    return pointable_type;
+	}
+	return pointable_type;
 }
 
 void Pointabilities::serializePointabilityType(std::ostream &os, PointabilityType pointable_type)
@@ -54,7 +54,7 @@ std::string Pointabilities::toStringPointabilityType(PointabilityType pointable_
 			return "\"blocking\"";
 		default:
 			return "unknown";
-    }
+	}
 }
 
 std::optional<PointabilityType> Pointabilities::matchNode(const std::string &name,
