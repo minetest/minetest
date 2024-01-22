@@ -76,7 +76,7 @@ std::optional<PointabilityType> Pointabilities::matchGroups(const ItemGroupList 
 {
 	// prefers POINTABLE over POINTABLE_NOT over POINTABLE_BLOCKING
 	bool blocking = false;
-	bool not_pontable = false;
+	bool not_pointable = false;
 	for (auto const &ability : pointable_groups) {
 		if (itemgroup_get(groups, ability.first) > 0) {
 			switch(ability.second) {
@@ -84,7 +84,7 @@ std::optional<PointabilityType> Pointabilities::matchGroups(const ItemGroupList 
 					return PointabilityType::POINTABLE;
 					break;
 				case PointabilityType::POINTABLE_NOT:
-					not_pontable = true;
+					not_pointable = true;
 					break;
 				default:
 					blocking = true;
@@ -92,7 +92,7 @@ std::optional<PointabilityType> Pointabilities::matchGroups(const ItemGroupList 
 			}
 		}
 	}
-	if (not_pontable)
+	if (not_pointable)
 		return PointabilityType::POINTABLE_NOT;
 	if (blocking)
 		return PointabilityType::POINTABLE_BLOCKING;
