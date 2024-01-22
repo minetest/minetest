@@ -95,7 +95,7 @@ std::optional<PointabilityType> Pointabilities::matchGroups(const ItemGroupList 
 		return PointabilityType::POINTABLE_NOT;
 	if (blocking)
 		return PointabilityType::POINTABLE_BLOCKING;
-	return {};
+	return std::nullopt;
 }
 
 void Pointabilities::serializeTypeMap(std::ostream &os,
