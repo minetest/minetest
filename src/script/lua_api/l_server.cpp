@@ -545,9 +545,8 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	if (!getEnv(L))
-		throw LuaError("Dynamic media cannot be added before server has started up");
 	Server *server = getServer(L);
+	const bool at_startup = !getEnv(L);
 
 	std::string filepath;
 	std::string to_player;
@@ -562,7 +561,16 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 	}
 	if (filepath.empty())
 		luaL_typerror(L, 1, "non-empty string");
-	luaL_checktype(L, 2, LUA_TFUNCTION);
+	if (at_startup) {
+		if (!lua_isnoneornil(L, 2))
+			throw LuaError("must be called without callback at load-time");
+		// In order to keep edge cases to a minimum actually use an empty function.
+		int err = luaL_loadstring(L, "");
+		SANITY_CHECK(err == 0);
+		lua_replace(L, 2);
+	} else {
+		luaL_checktype(L, 2, LUA_TFUNCTION);
+	}
 
 	CHECK_SECURE_PATH(L, filepath.c_str(), false);
 

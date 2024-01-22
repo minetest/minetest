@@ -3582,6 +3582,13 @@ bool Server::dynamicAddMedia(std::string filepath,
 		}
 	}
 
+	if (!m_env && (!to_player.empty() || ephemeral)) {
+		errorstream << "Server::dynamicAddMedia(): "
+			"adding ephemeral or player-specific media at startup is nonsense"
+			<< std::endl;
+		return false;
+	}
+
 	// Load the file and add it to our media cache
 	std::string filedata, raw_hash;
 	bool ok = addMediaFile(filename, filepath, &filedata, &raw_hash);
@@ -3618,19 +3625,20 @@ bool Server::dynamicAddMedia(std::string filepath,
 		m_media[filename].no_announce = true;
 	}
 
-	// Push file to existing clients
-	NetworkPacket pkt(TOCLIENT_MEDIA_PUSH, 0);
-	pkt << raw_hash << filename << (bool)ephemeral;
-
-	NetworkPacket legacy_pkt = pkt;
-
-	// Newer clients get asked to fetch the file (asynchronous)
-	pkt << token;
-	// Older clients have an awful hack that just throws the data at them
-	legacy_pkt.putLongString(filedata);
-
 	std::unordered_set<session_t> delivered, waiting;
-	{
+
+	// Push file to existing clients
+	if (m_env) {
+		NetworkPacket pkt(TOCLIENT_MEDIA_PUSH, 0);
+		pkt << raw_hash << filename << static_cast<bool>(ephemeral);
+
+		NetworkPacket legacy_pkt = pkt;
+
+		// Newer clients get asked to fetch the file (asynchronous)
+		pkt << token;
+		// Older clients have an awful hack that just throws the data at them
+		legacy_pkt.putLongString(filedata);
+
 		ClientInterface::AutoLock clientlock(m_clients);
 		for (auto &pair : m_clients.getClientList()) {
 			if (pair.second->getState() == CS_DefinitionsSent && !ephemeral) {

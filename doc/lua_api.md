@@ -5304,6 +5304,8 @@ Utilities
       item_specific_pointabilities = true,
       -- Nodes `pointable` property can be `"blocking"` (5.9.0)
       blocking_pointability_type = true,
+      -- dynamic_add_media can be called at startup when leaving callback as `nil` (5.9.0)
+      dynamic_add_media_startup = true,
   }
   ```
 
@@ -6621,6 +6623,9 @@ Server
         name twice is not possible/guaranteed to work. An exception to this is the
         use of `to_player` to send the same, already existent file to multiple
         chosen players.
+      * You can also call this at startup time. In that case `callback` MUST
+        be `nil` and you cannot use `ephemeral` or `to_player`, as these logically
+        do not make sense.
     * Clients will attempt to fetch files added this way via remote media,
       this can make transfer of bigger files painless (if set up). Nevertheless
       it is advised not to use dynamic media for big media files.

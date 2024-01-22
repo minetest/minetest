@@ -92,11 +92,8 @@ cmake_install.cmake
 CMakeCache.txt
 CPackConfig.cmake
 CPackSourceConfig.cmake
-src/test_config.h
 src/cmake_config.h
 src/cmake_config_githash.h
-src/unittest/test_world/world.mt
-games/devtest/mods/testnodes/textures/testnodes_generated_*.png
 /locale/
 .directory
 *.cbp

@@ -149,15 +149,25 @@ fractal = nil
 frac_emb = nil
 checker = nil
 
-local textures_path = minetest.get_modpath( minetest.get_current_modname() ) .. "/textures/"
-minetest.safe_file_write(
+do
+	-- we used to write the textures to our mod folder. in order to avoid
+	-- duplicate errors delete them if they still exist.
+	local path = core.get_modpath(core.get_current_modname()) .. "/textures/"
+	os.remove(path .. "testnodes_generated_mb.png")
+	os.remove(path .. "testnodes_generated_ck.png")
+end
+
+local textures_path = core.get_worldpath() .. "/"
+core.safe_file_write(
 	textures_path .. "testnodes_generated_mb.png",
 	encode_and_check(512, 512, "rgb", data_mb)
 )
-minetest.safe_file_write(
+core.safe_file_write(
 	textures_path .. "testnodes_generated_ck.png",
 	encode_and_check(512, 512, "gray", data_ck)
 )
+core.dynamic_add_media(textures_path .. "testnodes_generated_mb.png")
+core.dynamic_add_media(textures_path .. "testnodes_generated_ck.png")
 
 minetest.register_node("testnodes:generated_png_mb", {
 	description = S("Generated Mandelbrot PNG Test Node"),
