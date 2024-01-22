@@ -32,6 +32,7 @@ PointabilityType Pointabilities::deSerializePointabilityType(std::istream &is)
 		case PointabilityType::POINTABLE_BLOCKING:
 			break;
 		default:
+			// Default to POINTABLE in case of unknown PointabilityType type.
 			pointable_type = PointabilityType::POINTABLE;
 			break;
 	}
@@ -52,9 +53,8 @@ std::string Pointabilities::toStringPointabilityType(PointabilityType pointable_
 			return "false";
 		case PointabilityType::POINTABLE_BLOCKING:
 			return "\"blocking\"";
-		default:
-			return "unknown";
 	}
+	return "unknown";
 }
 
 std::optional<PointabilityType> Pointabilities::matchNode(const std::string &name,
