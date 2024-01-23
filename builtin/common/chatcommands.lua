@@ -116,11 +116,7 @@ local function do_help_cmd(name, param)
 		end
 		return true, msg
 	elseif #args == 0 or (args[1] == "all" and use_gui) then
-		if INIT == "client" then
-			core.show_client_help_formspec()
-		else
-			core.show_general_help_formspec(name)
-		end
+		core.show_general_help_formspec(name)
 		return true
 	elseif args[1] == "all" then
 		local cmds = {}
