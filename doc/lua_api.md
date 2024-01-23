@@ -8294,33 +8294,41 @@ child will follow movement and rotation of that bone.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
 * `respawn()`: Respawns the player using the same mechanism as the death screen,
   including calling `on_respawnplayer` callbacks.
-* `add_camera()`: Creates a secondary camera on the client. Returns a ID.
-* `set_camera(id, camera_parameters)`
+* `add_camera()`: Creates a secondary camera on the server (only). Returns a ID.
+* `set_camera(id, camera_parameters)`:
+    * Defines new parameters for a camera. Changes only those ones which are overriden in the table.
+    * Creates a secondary camera with the parameters on the server (if it wasn't created still) and sends to clients.
     * `id`: int, ID of the camera returned from `add_camera`.
       `-1` is the main camera which is also deactivatable.
     * `camera_parameters` is a table with the following optional fields:
         * `enabled`: boolean, sets the active state of the camera.
           Maximum limit of 256 active cameras per client.
-        * `viewport`: rectangle of floats.
+          (default: `false`).
+        * `viewport`: rectangle of floats `{x=float, y=float, w=float, h=float}`.
           Sets the dimensions and the position of the camera on the screen.
           Coordinates go from `0.0` to `1.0`.
+          (default: `{x=0, y=0, w=0, h=0}`).
         * `texture` is a table with the following optional fields:
             * `name`: string, name of the render target texture of the camera.
               Can be used on an entity's `textures` property.
             * `aspect`: float, aspect ratio of the render target texture.
-        * `pos`: vector, world-space position of the camera.
-        * `target`: vector, world-space position which the camera is looking at.
-        * `rotation`: vector, rotates the camera on three axis (pitch, yaw, roll). In degrees.
-        * `fov`: int, sets the field of view.
-        * `zoom`: int, sets the zoom value.
+          (default: `{name="", aspect_ratio=1}`).
+        * `pos`: vector, world-space position of the camera (default: `{x=0, y=0, z=0}`).
+        * `target`: vector, world-space position which the camera is looking at (default: `{x=0, y=0, z=0}`).
+        * `rotation`: vector, rotates the camera on three axis (pitch, yaw, roll). In degrees. Default: `{x=0, y=0, z=0}`.
+        * `fov`: int, sets the field of view (default: `72`).
+        * `zoom`: int, sets the zoom value (default: `0`).
           Go from `0` (closest to target position) to `1000` (farthest to target position).
         * `attachment` is a table with the following optional fields:
             * `object`: `ObjectRef` which the camera will be attached to.
             * `follow`: boolean, whether the camera position follows its parent or not.
               If disabled, the camera will only "watch" its parent.
+          (default: `{follow=false}`).
         * `interpolate_[pos,rotation,fov,zoom]` is a table with the following optional fields:
             * `enabled`: boolean, sets the active state of the interpolation.
             * `speed`: float, sets the interpolation speed.
+          Interpolates position/rotation/fov/zoom of the camera from the previous value to a new set one.
+          (default: `{enabled=false, speed=0}`).
 * `get_camera(id)` returns a table of the camera parameters.
     * `id`: int, ID of the camera returned from `add_camera`.
 * `remove_camera(id)` removes the camera.
