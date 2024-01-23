@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/enriched_string.h"
 #include "StyleSpec.h"
+#include <IGUIStaticText.h>
 
 class InventoryManager;
 class ISimpleTextureSource;
@@ -282,8 +283,11 @@ public:
 	GUITable* getTable(const std::string &tablename);
 	std::vector<std::string>* getDropDownValues(const std::string &name);
 
+	// This will only return a meaningful value if called after drawMenu().
+	core::rect<s32> getAbsoluteRect();
+
 #ifdef __ANDROID__
-	bool getAndroidUIInput();
+	void getAndroidUIInput();
 #endif
 
 protected:
@@ -499,6 +503,9 @@ private:
 
 	int m_btn_height;
 	gui::IGUIFont *m_font = nullptr;
+
+	// used by getAbsoluteRect
+	s32 m_tabheader_upper_edge = 0;
 };
 
 class FormspecFormSource: public IFormSource

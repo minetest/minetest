@@ -78,7 +78,7 @@ local function buttonhandler(this, fields)
 
 		local maintab = ui.find_by_name("maintab")
 
-		local dlg = create_store_dlg(nil, { author = "Minetest", name = "minetest_game" })
+		local dlg = create_store_dlg(nil, "minetest/minetest")
 		dlg:set_parent(maintab)
 		maintab:hide()
 		dlg:show()

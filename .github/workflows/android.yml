@@ -8,6 +8,8 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
       - 'android/**'
       - '.github/workflows/android.yml'
   pull_request:
@@ -16,6 +18,8 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
       - 'android/**'
       - '.github/workflows/android.yml'
 

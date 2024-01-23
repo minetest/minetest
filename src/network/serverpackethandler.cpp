@@ -147,10 +147,8 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	client->net_proto_version = net_proto_version;
 
-	if ((g_settings->getBool("strict_protocol_version_checking") &&
-			net_proto_version != LATEST_PROTOCOL_VERSION) ||
-			net_proto_version < SERVER_PROTOCOL_VERSION_MIN ||
-			net_proto_version > SERVER_PROTOCOL_VERSION_MAX) {
+	if (net_proto_version < Server::getProtocolVersionMin() ||
+			net_proto_version > Server::getProtocolVersionMax()) {
 		actionstream << "Server: A mismatched client tried to connect from " <<
 			addr_s << " proto_max=" << (int)max_net_proto_version << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_VERSION);
@@ -1517,8 +1515,7 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 			return;
 		}
 
-		std::string initial_ver_key;
-		initial_ver_key = encode_srp_verifier(verification_key, salt);
+		std::string encpwd = encode_srp_verifier(verification_key, salt);
 
 		// It is possible for multiple connections to get this far with the same
 		// player name. In the end only one player with a given name will be emerged
@@ -1531,9 +1528,11 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_ALREADY_CONNECTED);
 			return;
 		}
-		m_script->createAuth(playername, initial_ver_key);
-		m_script->on_authplayer(playername, addr_s, true);
 
+		m_script->createAuth(playername, encpwd);
+		client->setEncryptedPassword(encpwd);
+
+		m_script->on_authplayer(playername, addr_s, true);
 		acceptAuth(peer_id, false);
 	} else {
 		if (cstate < CS_SudoMode) {
@@ -1552,12 +1551,13 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 			return;
 		}
 
-		std::string pw_db_field = encode_srp_verifier(verification_key, salt);
-		bool success = m_script->setPassword(playername, pw_db_field);
+		std::string encpwd = encode_srp_verifier(verification_key, salt);
+		bool success = m_script->setPassword(playername, encpwd);
 		if (success) {
 			actionstream << playername << " changes password" << std::endl;
 			SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
 				L"Password change successful."));
+			client->setEncryptedPassword(encpwd);
 		} else {
 			actionstream << playername <<
 				" tries to change password but it fails" << std::endl;
@@ -1608,7 +1608,8 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 		AUTH_MECHANISM_LEGACY_PASSWORD : AUTH_MECHANISM_SRP;
 
 	if (wantSudo) {
-		if (!client->isSudoMechAllowed(chosen)) {
+		// Right now, the auth mechs don't change between login and sudo mode.
+		if (!client->isMechAllowed(chosen)) {
 			actionstream << "Server: Player \"" << client->getName() <<
 				"\" at " << getPeerAddress(peer_id).serializeString() <<
 				" tried to change password using unallowed mech " << chosen <<
@@ -1873,6 +1874,12 @@ void Server::handleCommand_UpdateClientInfo(NetworkPacket *pkt)
 	*pkt >> info.real_hud_scaling;
 	*pkt >> info.max_fs_size.X;
 	*pkt >> info.max_fs_size.Y;
+	try {
+		// added in 5.9.0
+		*pkt >> info.touch_controls;
+	} catch (PacketError &e) {
+		info.touch_controls = false;
+	}
 
 	session_t peer_id = pkt->getPeerId();
 	RemoteClient *client = getClient(peer_id, CS_Invalid);

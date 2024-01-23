@@ -178,7 +178,6 @@ void GUIEditBox::setTextMarkers(s32 begin, s32 end)
 		m_mark_begin = begin;
 		m_mark_end = end;
 
-#if IRRLICHT_VERSION_MT_REVISION >= 11
 		if (!m_passwordbox && m_operator && m_mark_begin != m_mark_end) {
 			// copy to primary selection
 			const s32 realmbgn = m_mark_begin < m_mark_end ? m_mark_begin : m_mark_end;
@@ -187,7 +186,6 @@ void GUIEditBox::setTextMarkers(s32 begin, s32 end)
 			std::string s = stringw_to_utf8(Text.subString(realmbgn, realmend - realmbgn));
 			m_operator->copyToPrimarySelection(s.c_str());
 		}
-#endif
 
 		sendGuiEvent(EGET_EDITBOX_MARKING_CHANGED);
 	}
@@ -455,7 +453,6 @@ bool GUIEditBox::processKey(const SEvent &event)
 
 bool GUIEditBox::onKeyUp(const SEvent &event, s32 &mark_begin, s32 &mark_end)
 {
-	// clang-format off
 	if (m_multiline || (m_word_wrap && m_broken_text.size() > 1)) {
 		s32 lineNo = getLineFromPos(m_cursor_pos);
 		s32 mb = (m_mark_begin == m_mark_end) ? m_cursor_pos :
@@ -481,13 +478,11 @@ bool GUIEditBox::onKeyUp(const SEvent &event, s32 &mark_begin, s32 &mark_end)
 		return true;
 	}
 
-	// clang-format on
 	return false;
 }
 
 bool GUIEditBox::onKeyDown(const SEvent &event, s32 &mark_begin, s32 &mark_end)
 {
-	// clang-format off
 	if (m_multiline || (m_word_wrap && m_broken_text.size() > 1)) {
 		s32 lineNo = getLineFromPos(m_cursor_pos);
 		s32 mb = (m_mark_begin == m_mark_end) ? m_cursor_pos :
@@ -513,7 +508,6 @@ bool GUIEditBox::onKeyDown(const SEvent &event, s32 &mark_begin, s32 &mark_end)
 		return true;
 	}
 
-	// clang-format on
 	return false;
 }
 
@@ -800,7 +794,6 @@ bool GUIEditBox::processMouse(const SEvent &event)
 		m_mouse_marking = false;
 		setTextMarkers(m_cursor_pos, m_cursor_pos);
 
-#if IRRLICHT_VERSION_MT_REVISION >= 11
 		// paste from the primary selection
 		inputString([&] {
 			if (!m_operator)
@@ -810,7 +803,6 @@ bool GUIEditBox::processMouse(const SEvent &event)
 				return core::stringw();
 			return utf8_to_stringw(inserted_text_utf8);
 		}());
-#endif
 
 		return true;
 	}

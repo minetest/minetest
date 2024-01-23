@@ -139,6 +139,12 @@ HudElement* Player::getHud(u32 id)
 	return NULL;
 }
 
+void Player::hudApply(std::function<void(const std::vector<HudElement*>&)> f)
+{
+	MutexAutoLock lock(m_mutex);
+	f(hud);
+}
+
 HudElement* Player::removeHud(u32 id)
 {
 	MutexAutoLock lock(m_mutex);

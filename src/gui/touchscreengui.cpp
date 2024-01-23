@@ -2,6 +2,8 @@
 Copyright (C) 2014 sapier
 Copyright (C) 2018 srifqi, Muhammad Rifqi Priyo Susanto
 		<muhammadrifqipriyosusanto@gmail.com>
+Copyright (C) 2024 grorp, Gregor Parzefall
+		<gregor.parzefall@posteo.de>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -29,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/keycode.h"
 #include "client/renderingengine.h"
 #include "util/numeric.h"
+#include <ISceneCollisionManager.h>
 
 #include <iostream>
 #include <algorithm>
@@ -656,23 +659,13 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 		// handle the point used for moving view
 		m_has_move_id = false;
 
-		// if this pointer issued a mouse event issue symmetric release here
-		if (m_move_sent_as_mouse_event) {
-			SEvent translated {};
-			translated.EventType               = EET_MOUSE_INPUT_EVENT;
-			translated.MouseInput.X            = m_move_downlocation.X;
-			translated.MouseInput.Y            = m_move_downlocation.Y;
-			translated.MouseInput.Shift        = false;
-			translated.MouseInput.Control      = false;
-			translated.MouseInput.ButtonStates = 0;
-			translated.MouseInput.Event        = EMIE_LMOUSE_LEFT_UP;
-			if (m_draw_crosshair) {
-				translated.MouseInput.X = m_screensize.X / 2;
-				translated.MouseInput.Y = m_screensize.Y / 2;
-			}
-			m_receiver->OnEvent(translated);
-		} else if (!m_move_has_really_moved) {
-			doRightClick();
+		// If m_tap_state is already set to TapState::ShortTap, we must keep
+		// that value. Otherwise, many short taps will be ignored if you tap
+		// very fast.
+		if (!m_move_has_really_moved && m_tap_state != TapState::LongTap) {
+			m_tap_state = TapState::ShortTap;
+		} else {
+			m_tap_state = TapState::None;
 		}
 	}
 
@@ -793,10 +786,8 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					m_move_id                  = event.TouchInput.ID;
 					m_move_has_really_moved    = false;
 					m_move_downtime            = porting::getTimeMs();
-					m_move_downlocation        = touch_pos;
-					m_move_sent_as_mouse_event = false;
-					if (m_draw_crosshair)
-						m_move_downlocation = v2s32(m_screensize.X / 2, m_screensize.Y / 2);
+					// DON'T reset m_tap_state here, otherwise many short taps
+					// will be ignored if you tap very fast.
 				}
 			}
 		}
@@ -819,33 +810,20 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 
 		const double touch_threshold_sq = m_touchscreen_threshold * m_touchscreen_threshold;
 
-		if (m_has_move_id) {
-			if (event.TouchInput.ID == m_move_id &&
-					(!m_move_sent_as_mouse_event || m_draw_crosshair)) {
-				if (dir_free.getLengthSQ() > touch_threshold_sq || m_move_has_really_moved) {
-					m_move_has_really_moved = true;
+		if (m_has_move_id && event.TouchInput.ID == m_move_id) {
+			if (dir_free.getLengthSQ() > touch_threshold_sq || m_move_has_really_moved) {
+				m_move_has_really_moved = true;
 
-					// update camera_yaw and camera_pitch
-					m_pointer_pos[event.TouchInput.ID] = touch_pos;
+				m_pointer_pos[event.TouchInput.ID] = touch_pos;
 
+				if (m_tap_state == TapState::None || m_draw_crosshair) {
 					// adapt to similar behavior as pc screen
 					const double d = g_settings->getFloat("touchscreen_sensitivity", 0.001f, 10.0f) * 3.0f;
 
+					// update camera_yaw and camera_pitch
 					m_camera_yaw_change -= dir_free.X * d;
-					m_camera_pitch = MYMIN(MYMAX(m_camera_pitch + (dir_free.Y * d), -180.0f), 180.0f);
-
-					// update shootline
-					// no need to update (X, Y) when using crosshair since the shootline is not used
-					m_shootline = m_device
-							->getSceneManager()
-							->getSceneCollisionManager()
-							->getRayFromScreenCoordinates(touch_pos);
+					m_camera_pitch_change += dir_free.Y * d;
 				}
-			} else if (event.TouchInput.ID == m_move_id && m_move_sent_as_mouse_event) {
-				m_shootline = m_device
-						->getSceneManager()
-						->getSceneCollisionManager()
-						->getRayFromScreenCoordinates(touch_pos);
 			}
 		}
 
@@ -930,40 +908,6 @@ void TouchScreenGUI::handleChangedButton(const SEvent &event)
 		handleButtonEvent((touch_gui_button_id) current_button_id, event.TouchInput.ID, true);
 }
 
-bool TouchScreenGUI::doRightClick()
-{
-	v2s32 mPos = v2s32(m_move_downlocation.X, m_move_downlocation.Y);
-	if (m_draw_crosshair) {
-		mPos.X = m_screensize.X / 2;
-		mPos.Y = m_screensize.Y / 2;
-	}
-
-	SEvent translated {};
-	translated.EventType               = EET_MOUSE_INPUT_EVENT;
-	translated.MouseInput.X            = mPos.X;
-	translated.MouseInput.Y            = mPos.Y;
-	translated.MouseInput.Shift        = false;
-	translated.MouseInput.Control      = false;
-	translated.MouseInput.ButtonStates = EMBSM_RIGHT;
-
-	// update shootline
-	m_shootline = m_device
-			->getSceneManager()
-			->getSceneCollisionManager()
-			->getRayFromScreenCoordinates(mPos);
-
-	translated.MouseInput.Event = EMIE_RMOUSE_PRESSED_DOWN;
-	verbosestream << "TouchScreenGUI::translateEvent right click press" << std::endl;
-	m_receiver->OnEvent(translated);
-
-	translated.MouseInput.ButtonStates = 0;
-	translated.MouseInput.Event = EMIE_RMOUSE_LEFT_UP;
-	verbosestream << "TouchScreenGUI::translateEvent right click release" << std::endl;
-	m_receiver->OnEvent(translated);
-
-	return true;
-}
-
 void TouchScreenGUI::applyJoystickStatus()
 {
 	if (m_joystick_triggers_aux1) {
@@ -1037,35 +981,25 @@ void TouchScreenGUI::step(float dtime)
 	applyJoystickStatus();
 
 	// if a new placed pointer isn't moved for some time start digging
-	if (m_has_move_id &&
-			(!m_move_has_really_moved) &&
-			(!m_move_sent_as_mouse_event)) {
+	if (m_has_move_id && !m_move_has_really_moved && m_tap_state == TapState::None) {
 		u64 delta = porting::getDeltaMs(m_move_downtime, porting::getTimeMs());
 
 		if (delta > MIN_DIG_TIME_MS) {
-			s32 mX = m_move_downlocation.X;
-			s32 mY = m_move_downlocation.Y;
-			if (m_draw_crosshair) {
-				mX = m_screensize.X / 2;
-				mY = m_screensize.Y / 2;
-			}
-			m_shootline = m_device
-					->getSceneManager()
-					->getSceneCollisionManager()
-					->getRayFromScreenCoordinates(v2s32(mX, mY));
-
-			SEvent translated {};
-			translated.EventType               = EET_MOUSE_INPUT_EVENT;
-			translated.MouseInput.X            = mX;
-			translated.MouseInput.Y            = mY;
-			translated.MouseInput.Shift        = false;
-			translated.MouseInput.Control      = false;
-			translated.MouseInput.ButtonStates = EMBSM_LEFT;
-			translated.MouseInput.Event        = EMIE_LMOUSE_PRESSED_DOWN;
-			verbosestream << "TouchScreenGUI::step left click press" << std::endl;
-			m_receiver->OnEvent(translated);
-			m_move_sent_as_mouse_event         = true;
+			m_tap_state = TapState::LongTap;
 		}
+	}
+
+	// Update the shootline.
+	// Since not only the pointer position, but also the player position and
+	// thus the camera position can change, it doesn't suffice to update the
+	// shootline when a touch event occurs.
+	// Note that the shootline isn't used if touch_use_crosshair is enabled.
+	if (!m_draw_crosshair) {
+		v2s32 pointer_pos = getPointerPos();
+		m_shootline = m_device
+				->getSceneManager()
+				->getSceneCollisionManager()
+				->getRayFromScreenCoordinates(pointer_pos);
 	}
 
 	m_settings_bar.step(dtime);
@@ -1123,4 +1057,101 @@ void TouchScreenGUI::show()
 		return;
 
 	setVisible(true);
+}
+
+v2s32 TouchScreenGUI::getPointerPos()
+{
+	if (m_draw_crosshair)
+		return v2s32(m_screensize.X / 2, m_screensize.Y / 2);
+	return m_pointer_pos[m_move_id];
+}
+
+void TouchScreenGUI::emitMouseEvent(EMOUSE_INPUT_EVENT type)
+{
+	v2s32 pointer_pos = getPointerPos();
+
+	SEvent event{};
+	event.EventType               = EET_MOUSE_INPUT_EVENT;
+	event.MouseInput.X            = pointer_pos.X;
+	event.MouseInput.Y            = pointer_pos.Y;
+	event.MouseInput.Shift        = false;
+	event.MouseInput.Control      = false;
+	event.MouseInput.ButtonStates = 0;
+	event.MouseInput.Event        = type;
+	m_receiver->OnEvent(event);
+}
+
+void TouchScreenGUI::applyContextControls(const TouchInteractionMode &mode)
+{
+	// Since the pointed thing has already been determined when this function
+	// is called, we cannot use this function to update the shootline.
+
+	bool target_dig_pressed = false;
+	bool target_place_pressed = false;
+
+	u64 now = porting::getTimeMs();
+
+	switch (m_tap_state) {
+	case TapState::ShortTap:
+		if (mode == SHORT_DIG_LONG_PLACE) {
+			if (!m_dig_pressed) {
+				// The button isn't currently pressed, we can press it.
+				m_dig_pressed_until = now + SIMULATED_CLICK_DURATION_MS;
+				// We're done with this short tap.
+				m_tap_state = TapState::None;
+			}  else {
+				// The button is already pressed, perhaps due to another short tap.
+				// Release it now, press it again during the next client step.
+				// We can't release and press during the same client step because
+				// the digging code simply ignores that.
+				m_dig_pressed_until = 0;
+			}
+		} else {
+			if (!m_place_pressed) {
+				// The button isn't currently pressed, we can press it.
+				m_place_pressed_until = now + SIMULATED_CLICK_DURATION_MS;
+				// We're done with this short tap.
+				m_tap_state = TapState::None;
+			}  else {
+				// The button is already pressed, perhaps due to another short tap.
+				// Release it now, press it again during the next client step.
+				// We can't release and press during the same client step because
+				// the digging code simply ignores that.
+				m_place_pressed_until = 0;
+			}
+		}
+		break;
+
+	case TapState::LongTap:
+		if (mode == SHORT_DIG_LONG_PLACE)
+			target_place_pressed = true;
+		else
+			target_dig_pressed = true;
+		break;
+
+	case TapState::None:
+		break;
+	}
+
+	// Apply short taps.
+	target_dig_pressed |= now < m_dig_pressed_until;
+	target_place_pressed |= now < m_place_pressed_until;
+
+	if (target_dig_pressed && !m_dig_pressed) {
+		emitMouseEvent(EMIE_LMOUSE_PRESSED_DOWN);
+		m_dig_pressed = true;
+
+	} else if (!target_dig_pressed && m_dig_pressed) {
+		emitMouseEvent(EMIE_LMOUSE_LEFT_UP);
+		m_dig_pressed = false;
+	}
+
+	if (target_place_pressed && !m_place_pressed) {
+		emitMouseEvent(EMIE_RMOUSE_PRESSED_DOWN);
+		m_place_pressed = true;
+
+	} else if (!target_place_pressed && m_place_pressed) {
+		emitMouseEvent(irr::EMIE_RMOUSE_LEFT_UP);
+		m_place_pressed = false;
+	}
 }

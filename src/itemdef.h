@@ -28,9 +28,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "sound.h"
 #include "texture_override.h" // TextureOverride
+#include "util/pointabilities.h"
 class IGameDef;
 class Client;
 struct ToolCapabilities;
+struct PointedThing;
 #ifndef SERVER
 #include "client/tile.h"
 struct ItemMesh;
@@ -41,12 +43,32 @@ struct ItemStack;
 	Base item definition
 */
 
-enum ItemType
+enum ItemType : u8
 {
 	ITEM_NONE,
 	ITEM_NODE,
 	ITEM_CRAFT,
 	ITEM_TOOL,
+	ItemType_END // Dummy for validity check
+};
+
+enum TouchInteractionMode : u8
+{
+	LONG_DIG_SHORT_PLACE,
+	SHORT_DIG_LONG_PLACE,
+	TouchInteractionMode_END, // Dummy for validity check
+};
+
+struct TouchInteraction
+{
+	TouchInteractionMode pointed_nothing;
+	TouchInteractionMode pointed_node;
+	TouchInteractionMode pointed_object;
+
+	TouchInteraction();
+	TouchInteractionMode getMode(const PointedThing &pointed) const;
+	void serialize(std::ostream &os) const;
+	void deSerialize(std::istream &is);
 };
 
 struct ItemDefinition
@@ -76,8 +98,11 @@ struct ItemDefinition
 	u16 stack_max;
 	bool usable;
 	bool liquids_pointable;
-	// May be NULL. If non-NULL, deleted by destructor
+	std::optional<Pointabilities> pointabilities;
+
+	// They may be NULL. If non-NULL, deleted by destructor
 	ToolCapabilities *tool_capabilities;
+
 	ItemGroupList groups;
 	SoundSpec sound_place;
 	SoundSpec sound_place_failed;
@@ -89,6 +114,9 @@ struct ItemDefinition
 	// "" = no prediction
 	std::string node_placement_prediction;
 	std::optional<u8> place_param2;
+	bool wallmounted_rotate_vertical;
+
+	TouchInteraction touch_interaction;
 
 	/*
 		Some helpful methods

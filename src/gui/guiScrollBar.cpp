@@ -155,7 +155,6 @@ bool GUIScrollBar::OnEvent(const SEvent &event)
 				if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
 					is_dragging = false;
 
-				// clang-format off
 				if (!dragged_by_slider) {
 					if (is_inside) {
 						dragged_by_slider = slider_rect.isPointInside(p);
@@ -167,7 +166,6 @@ bool GUIScrollBar::OnEvent(const SEvent &event)
 							return is_inside;
 					}
 				}
-				// clang-format on
 
 				const s32 new_pos = getPosFromMousePos(p);
 				const s32 old_pos = scroll_pos;
@@ -266,8 +264,8 @@ void GUIScrollBar::setPos(const s32 &pos)
 	}
 
 	if (is_auto_scaling)
-		thumb_size = s32(thumb_area /
-				 (f32(page_size) / f32(thumb_area + border_size * 2)));
+		thumb_size = (s32)std::fmin(S32_MAX,
+				thumb_area / (f32(page_size) / f32(thumb_area + border_size * 2)));
 
 	thumb_size = core::s32_clamp(thumb_size, thumb_min, thumb_area);
 	scroll_pos = core::s32_clamp(pos, min_pos, max_pos);

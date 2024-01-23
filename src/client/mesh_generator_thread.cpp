@@ -54,7 +54,6 @@ MeshUpdateQueue::MeshUpdateQueue(Client *client):
 {
 	m_cache_enable_shaders = g_settings->getBool("enable_shaders");
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
-	m_meshgen_block_cache_size = g_settings->getS32("meshgen_block_cache_size");
 }
 
 MeshUpdateQueue::~MeshUpdateQueue()

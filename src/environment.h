@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <atomic>
 #include <mutex>
+#include <optional>
 #include "irr_v3d.h"
 #include "util/basic_macros.h"
 #include "line3d.h"
@@ -42,6 +43,7 @@ class IGameDef;
 class Map;
 struct PointedThing;
 class RaycastState;
+struct Pointabilities;
 
 class Environment
 {
@@ -97,7 +99,8 @@ public:
 	 * @param[out] objects          found objects
 	 */
 	virtual void getSelectedActiveObjects(const core::line3d<f32> &shootline_on_map,
-			std::vector<PointedThing> &objects) = 0;
+			std::vector<PointedThing> &objects,
+			const std::optional<Pointabilities> &pointabilities) = 0;
 
 	/*!
 	 * Returns the next node or object the shootline meets.

@@ -27,9 +27,9 @@ local core_developers = {
 	"Krock/SmallJoker <mk939@ymail.com>",
 	"Lars Hofhansl <larsh@apache.org>",
 	"v-rob <robinsonvincent89@gmail.com>",
-	"Hugues Ross <hugues.ross@gmail.com>",
-	"Dmitry Kostenko (x2048) <codeforsmile@gmail.com>",
-	"Desour",
+	"Desour/DS",
+	"srifqi",
+	"Gregor Parzefall (grorp)",
 }
 
 -- currently only https://github.com/orgs/minetest/teams/triagers/members
@@ -43,18 +43,19 @@ local core_team = {
 -- For updating active/previous contributors, see the script in ./util/gather_git_credits.py
 
 local active_contributors = {
-	"Wuzzy [Features, translations, devtest]",
-	"Lars Müller [Bugfixes and entity features]",
-	"paradust7 [Bugfixes]",
-	"ROllerozxa [Bugfixes, Android]",
-	"srifqi [Android, translations]",
-	"Lexi Hale [Particlespawner animation]",
+	"Wuzzy [Features, translations, documentation]",
+	"numzero [Optimizations, work on OpenGL driver]",
+	"ROllerozxa [Bugfixes, Mainmenu]",
+	"Lars Müller [Bugfixes]",
+	"AFCMS [Documentation]",
 	"savilli [Bugfixes]",
 	"fluxionary [Bugfixes]",
-	"Gregor Parzefall [Bugfixes]",
+	"Bradley Pierce (Thresher) [Documentation]",
+	"Stvk imension [Android]",
+	"JosiahWI [Code cleanups]",
+	"OgelGames [UI, Bugfixes]",
+	"ndren [Bugfixes]",
 	"Abdou-31 [Documentation]",
-	"pecksin [Bouncy physics]",
-	"Daroc Alden [Fixes]",
 }
 
 local previous_core_developers = {
@@ -75,13 +76,14 @@ local previous_core_developers = {
 	"Pierre-Yves Rollo <dev@pyrollo.com>",
 	"hecks",
 	"Jude Melton-Houghton (TurkeyMcMac) [RIP]",
+	"Hugues Ross <hugues.ross@gmail.com>",
+	"Dmitry Kostenko (x2048) <codeforsmile@gmail.com>",
 }
 
 local previous_contributors = {
 	"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net> [Minetest logo]",
 	"red-001 <red-001@outlook.ie>",
 	"Giuseppe Bilotta",
-	"numzero",
 	"HybridDog",
 	"ClobberXD",
 	"Dániel Juhász (juhdanad) <juhdanad@gmail.com>",
@@ -126,12 +128,6 @@ return {
 		}
 
 		table.insert_all(hypertext, {
-			"<style color=#000>Dedication of the current release</style>\n",
-			"The 5.7.0 release is dedicated to the memory of\n",
-			"Minetest developer Jude Melton-Houghton (TurkeyMcMac)\n",
-			"who died on February 1, 2023.\n",
-			"Our thoughts are with his family and friends.\n",
-			"\n",
 			"<heading>", fgettext_ne("Core Developers"), "</heading>\n",
 		})
 		prepare_credits(hypertext, core_developers)

@@ -246,14 +246,14 @@ The format is documented in `builtin/settingtypes.txt`.
 It is parsed by the main menu settings dialogue to list mod-specific
 settings in the "Mods" category.
 
+`minetest.settings` can be used to read custom or engine settings.
+See [`Settings`].
+
 ### `init.lua`
 
 The main Lua script. Running this script should register everything it
-wants to register. Subsequent execution depends on minetest calling the
+wants to register. Subsequent execution depends on Minetest calling the
 registered callbacks.
-
-`minetest.settings` can be used to read custom or existing settings at load
-time, if necessary. (See [`Settings`])
 
 ### `textures`, `sounds`, `media`, `models`, `locale`
 
@@ -1091,6 +1091,7 @@ Table used to specify how a sound is played:
     -- its end in `-start_time` seconds.
     -- It is unspecified what happens if `loop` is false and `start_time` is
     -- smaller than minus the sound's length.
+    -- Available since feature `sound_params_start_time`.
 
     loop = false,
     -- If true, sound is played in a loop.
@@ -1269,11 +1270,15 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * The rotation of the node is stored in `param2`
     * Node is 'mounted'/facing towards one of 6 directions
     * You can make this value by using `minetest.dir_to_wallmounted()`
-    * Values range 0 - 5
+    * Values range 0 - 7
     * The value denotes at which direction the node is "mounted":
       0 = y+,   1 = y-,   2 = x+,   3 = x-,   4 = z+,   5 = z-
+      6 = y+, but rotated by  90°
+      7 = y-, but rotated by -90°
     * By default, on placement the param2 is automatically set to the
-      appropriate rotation, depending on which side was pointed at
+      appropriate rotation (0 to 5), depending on which side was
+      pointed at. With the node field `wallmounted_rotate_vertical = true`,
+      the param2 values 6 and 7 might additionally be set
 * `paramtype2 = "facedir"`
     * Supported drawtypes: "normal", "nodebox", "mesh"
     * The rotation of the node is stored in `param2`.
@@ -1629,7 +1634,7 @@ HUD
 HUD element types
 -----------------
 
-The position field is used for all element types.
+The `position` field is used for all element types.
 To account for differing resolutions, the position coordinates are the
 percentage of the screen, ranging in value from `0` to `1`.
 
@@ -1677,10 +1682,12 @@ type are ignored.
 
 Displays an image on the HUD.
 
-* `scale`: The scale of the image, with 1 being the original texture size.
-  Only the X coordinate scale is used (positive values).
-  Negative values represent that percentage of the screen it
-  should take; e.g. `x=-100` means 100% (width).
+* `scale`: The scale of the image, with `{x = 1, y = 1}` being the original texture size.
+  The `x` and `y` fields apply to the respective axes.
+  Positive values scale the source image.
+  Negative values represent percentages relative to screen dimensions.
+  Example: `{x = -20, y = 3}` means the image will be drawn 20% of screen width wide,
+  and 3 times as high as the source image is.
 * `text`: The name of the texture that is displayed.
 * `alignment`: The alignment of the image.
 * `offset`: offset in pixels from position.
@@ -1747,10 +1754,12 @@ Displays distance to selected world position.
 
 Same as `image`, but does not accept a `position`; the position is instead determined by `world_pos`, the world position of the waypoint.
 
-* `scale`: The scale of the image, with 1 being the original texture size.
-  Only the X coordinate scale is used (positive values).
-  Negative values represent that percentage of the screen it
-  should take; e.g. `x=-100` means 100% (width).
+* `scale`: The scale of the image, with `{x = 1, y = 1}` being the original texture size.
+  The `x` and `y` fields apply to the respective axes.
+  Positive values scale the source image.
+  Negative values represent percentages relative to screen dimensions.
+  Example: `{x = -20, y = 3}` means the image will be drawn 20% of screen width wide,
+  and 3 times as high as the source image is.
 * `text`: The name of the texture that is displayed.
 * `alignment`: The alignment of the image.
 * `world_pos`: World position of the waypoint.
@@ -2148,11 +2157,13 @@ to games.
 * `fall_damage_add_percent`: modifies the fall damage suffered when hitting
   the top of this node. There's also an armor group with the same name.
   The final player damage is determined by the following formula:
+    ```lua
     damage =
       collision speed
       * ((node_fall_damage_add_percent   + 100) / 100) -- node group
       * ((player_fall_damage_add_percent + 100) / 100) -- player armor group
       - (14)                                           -- constant tolerance
+    ```
   Negative damage values are discarded as no damage.
 * `falling_node`: if there is no walkable block under the node it will fall
 * `float`: the node will not fall through liquids (`liquidtype ~= "none"`)
@@ -4006,9 +4017,9 @@ Translations
 Texts can be translated client-side with the help of `minetest.translate` and
 translation files.
 
-Consider using the script `util/mtt_update.py` in the Minetest repository
-to generate and update translation files automatically from the Lua sources.
-See `util/README_mtt_update.md` for an explanation.
+Consider using the script `util/mod_translation_updater.py` in the Minetest
+repository to generate and update translation files automatically from the Lua
+sources. See `util/README_mod_translation_updater.md` for an explanation.
 
 Translating a string
 --------------------
@@ -4111,9 +4122,10 @@ On some specific cases, server translation could be useful. For example, filter
 a list on labels and send results to client. A method is supplied to achieve
 that:
 
-`minetest.get_translated_string(lang_code, string)`: Translates `string` using
-translations for `lang_code` language. It gives the same result as if the string
-was translated by the client.
+`minetest.get_translated_string(lang_code, string)`: resolves translations in
+the given string just like the client would, using the translation files for
+`lang_code`. For this to have any effect, the string needs to contain translation
+markup, e.g. `minetest.get_translated_string("fr", S("Hello"))`.
 
 The `lang_code` to use for a given player can be retrieved from
 the table returned by `minetest.get_player_information(name)`.
@@ -5268,6 +5280,28 @@ Utilities
       mod_storage_on_disk = true,
       -- "zstd" method for compress/decompress (5.7.0)
       compress_zstd = true,
+      -- Sound parameter tables support start_time (5.8.0)
+      sound_params_start_time = true,
+      -- New fields for set_physics_override: speed_climb, speed_crouch,
+      -- liquid_fluidity, liquid_fluidity_smooth, liquid_sink,
+      -- acceleration_default, acceleration_air (5.8.0)
+      physics_overrides_v2 = true,
+      -- In HUD definitions the field `type` is used and `hud_elem_type` is deprecated (5.9.0)
+      hud_def_type_field = true,
+      -- PseudoRandom and PcgRandom state is restorable
+      -- PseudoRandom has get_state method
+      -- PcgRandom has get_state and set_state methods (5.9.0)
+      random_state_restore = true,
+      -- minetest.after guarantees that coexisting jobs are executed primarily
+      -- in order of expiry and secondarily in order of registration (5.9.0)
+      after_order_expiry_registration = true,
+      -- wallmounted nodes mounted at floor or ceiling may additionally
+      -- be rotated by 90° with special param2 values (5.9.0)
+      wallmounted_rotate = true,
+      -- Availability of the `pointabilities` property in the item definition (5.9.0)
+      item_specific_pointabilities = true,
+      -- Nodes `pointable` property can be `"blocking"` (5.9.0)
+      blocking_pointability_type = true,
   }
   ```
 
@@ -5340,6 +5374,12 @@ Utilities
       -- HUD Scaling multiplier
       -- Equal to the setting `hud_scaling` multiplied by `dpi / 96`
       real_hud_scaling = 1,
+
+      -- Whether the touchscreen controls are enabled.
+      -- Usually (but not always) `true` on Android.
+      -- Requires at least Minetest 5.9.0 on the client. For older clients, it
+      -- is always set to `false`.
+      touch_controls = false,
   }
   ```
 
@@ -5402,10 +5442,12 @@ Utilities
     * `compression`: Optional zlib compression level, number in range 0 to 9.
   The data is one-dimensional, starting in the upper left corner of the image
   and laid out in scanlines going from left to right, then top to bottom.
-  Please note that it's not safe to use string.char to generate raw data,
-  use `colorspec_to_bytes` to generate raw RGBA values in a predictable way.
-  The resulting PNG image is always 32-bit. Palettes are not supported at the moment.
+  You can use `colorspec_to_bytes` to generate raw RGBA values.
+  Palettes are not supported at the moment.
   You may use this to procedurally generate textures during server init.
+* `minetest.urlencode(str)`: Encodes non-unreserved URI characters by a
+  percent sign followed by two hex digits. See
+  [RFC 3986, section 2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-2.3).
 
 Logging
 -------
@@ -5748,7 +5790,7 @@ Setting-related
 ---------------
 
 * `minetest.settings`: Settings object containing all of the settings from the
-  main config file (`minetest.conf`).
+  main config file (`minetest.conf`). See [`Settings`].
 * `minetest.setting_get_pos(name)`: Loads a setting from the main settings and
   parses it as a position (in the format `(1,2,3)`). Returns a position or nil.
 
@@ -5799,8 +5841,20 @@ Authentication
     * `name`: string; if omitted, all auth data should be considered modified
 * `minetest.set_player_password(name, password_hash)`: Set password hash of
   player `name`.
-* `minetest.set_player_privs(name, {priv1=true,...})`: Set privileges of player
-  `name`.
+* `minetest.set_player_privs(name, privs)`: Set privileges of player `name`.
+    * `privs` is a **set** of privileges:
+      A table where the keys are names of privileges and the values are `true`.
+    * Example: `minetest.set_player_privs("singleplayer", {interact = true, fly = true})`.
+      This **sets** the player privileges to `interact` and `fly`;
+      `singleplayer` will only have these two privileges afterwards.
+* `minetest.change_player_privs(name, changes)`: Helper to grant or revoke privileges.
+    * `changes`: Table of changes to make.
+      A field `[privname] = true` grants a privilege,
+      whereas `[privname] = false` revokes a privilege.
+    * Example: `minetest.change_player_privs("singleplayer", {interact = true, fly = false})`
+      will grant singleplayer the `interact` privilege
+      and revoke singleplayer's `fly` privilege.
+      All other privileges will remain unchanged.
 * `minetest.auth_reload()`
     * See `reload()` in authentication handler definition
 
@@ -5907,7 +5961,7 @@ Environment access
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
 * `minetest.get_timeofday()`
 * `minetest.get_gametime()`: returns the time, in seconds, since the world was
-  created.
+  created. The time is not available (`nil`) before the first server step.
 * `minetest.get_day_count()`: returns number days elapsed since world was
   created.
     * accounts for time changes.
@@ -6430,6 +6484,8 @@ Timing
 * `minetest.after(time, func, ...)`: returns job table to use as below.
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
+    * Jobs set for earlier times are executed earlier. If multiple jobs expire
+      at exactly the same time, then they are executed in registration order.
 
 * `job:cancel()`
     * Cancels the job function from being called
@@ -7445,15 +7501,20 @@ child will follow movement and rotation of that bone.
     * Sets the position of the object.
     * No-op if object is attached.
     * `pos` is a vector `{x=num, y=num, z=num}`
+* `add_pos(pos)`:
+    * Changes position by adding to the current position.
+    * No-op if object is attached.
+    * `pos` is a vector `{x=num, y=num, z=num}`.
+    * In comparison to using `set_pos`, `add_pos` will avoid synchronization problems.
 * `get_velocity()`: returns the velocity, a vector.
 * `add_velocity(vel)`
     * Changes velocity by adding to the current velocity.
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
-    * In comparison to using get_velocity, adding the velocity and then using
-      set_velocity, add_velocity is supposed to avoid synchronization problems.
-      Additionally, players also do not support set_velocity.
+    * In comparison to using `get_velocity`, adding the velocity and then using
+      `set_velocity`, `add_velocity` is supposed to avoid synchronization problems.
+      Additionally, players also do not support `set_velocity`.
     * If object is a player:
-        * Does not apply during free_move.
+        * Does not apply during `free_move`.
         * Note that since the player speed is normalized at each move step,
           increasing e.g. Y velocity beyond what would usually be achieved
           (see: physics overrides) will cause existing X/Z velocity to be reduced.
@@ -7537,17 +7598,32 @@ child will follow movement and rotation of that bone.
     object.
 * `set_detach()`: Detaches object. No-op if object was not attached.
 * `set_bone_position([bone, position, rotation])`
-    * `bone`: string. Default is `""`, the root bone
-    * `position`: `{x=num, y=num, z=num}`, relative, `default {x=0, y=0, z=0}`
-    * `rotation`: `{x=num, y=num, z=num}`, default `{x=0, y=0, z=0}`
-* `get_bone_position(bone)`:
-    * returns bone parameters previously set by `set_bone_position`
-    * returns `position, rotation` of the specified bone (as vectors)
-    * note: position is relative to the object
-* `set_properties(object property table)`:
-    * set a number of object properties in the given table
-    * only properties listed in the table will be changed
-    * see the 'Object properties' section for details
+	* Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
+	* **Note:** Rotation is in degrees, not radians.
+	* **Deprecated:** Use `set_bone_override` instead.
+* `get_bone_position(bone)`: returns the previously set position and rotation of the bone
+	* Shorthand for `get_bone_override(bone).position.vec, get_bone_override(bone).rotation.vec:apply(math.deg)`.
+	* **Note:** Returned rotation is in degrees, not radians.
+	* **Deprecated:** Use `get_bone_override` instead.
+* `set_bone_override(bone, override)`
+    * `bone`: string
+    * `override`: `{ position = property, rotation = property, scale = property }` or `nil`
+        * `property`: `{ vec = vector, interpolation = 0, absolute = false}` or `nil`;
+            * `vec` is in the same coordinate system as the model, and in degrees for rotation
+        * `property = nil` is equivalent to no override on that property
+        * `absolute`: If set to `false`, the override will be relative to the animated property:
+            * Transposition in the case of `position`;
+            * Composition in the case of `rotation`;
+            * Multiplication in the case of `scale`
+        * `interpolation`: Old and new values are interpolated over this timeframe (in seconds)
+    * `override = nil` (including omission) is shorthand for `override = {}` which clears the override
+    * **Note:** Unlike `set_bone_position`, the rotation is in radians, not degrees.
+    * Compatibility note: Clients prior to 5.9.0 only support absolute position and rotation.
+      All values are treated as absolute and are set immediately (no interpolation).
+* `get_bone_override(bone)`: returns `override` in the above format
+	* **Note:** Unlike `get_bone_position`, the returned rotation is in radians, not degrees.
+* `get_bone_overrides()`: returns all bone overrides as table `{[bonename] = override, ...}`
+* `set_properties(object property table)`
 * `get_properties()`: returns a table of all object properties
 * `is_player()`: returns true for players, false otherwise
 * `get_nametag_attributes()`
@@ -7747,6 +7823,8 @@ child will follow movement and rotation of that bone.
       settings (e.g. via the game's `minetest.conf`) to set a global base value
       for all players and only use `set_physics_override` when you need to change
       from the base value on a per-player basis
+    * Note: Some of the fields don't exist in old API versions, see feature
+      `physics_overrides_v2`.
 
 * `get_physics_override()`: returns the table given to `set_physics_override`
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
@@ -7755,8 +7833,12 @@ child will follow movement and rotation of that bone.
 * `hud_change(id, stat, value)`: change a value of a previously added HUD
   element.
     * `stat` supports the same keys as in the hud definition table except for
-      `"hud_elem_type"`.
+      `"type"` (or the deprecated `"hud_elem_type"`).
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
+* `hud_get_all()`:
+    * Returns a table in the form `{ [id] = HUD definition, [id] = ... }`.
+    * A mod should keep track of its introduced IDs and only use this to access foreign elements.
+    * It is discouraged to change foreign HUD elements.
 * `hud_set_flags(flags)`: sets specified HUD flags of player.
     * `flags`: A table with the following fields set to boolean values
         * `hotbar`
@@ -7986,9 +8068,8 @@ child will follow movement and rotation of that bone.
     * Passing no arguments resets lighting to its default values.
     * `light_definition` is a table with the following optional fields:
       * `saturation` sets the saturation (vividness; default: `1.0`).
-          values > 1 increase the saturation
-          values in [0,1) decrease the saturation
-            * This value has no effect on clients who have the "Tone Mapping" shader disabled.
+        * values > 1 increase the saturation
+        * values in [0,1] decrease the saturation
       * `shadows` is a table that controls ambient shadows
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
             * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
@@ -8000,11 +8081,14 @@ child will follow movement and rotation of that bone.
         * `speed_dark_bright` set the speed of adapting to bright light (default: `1000.0`)
         * `speed_bright_dark` set the speed of adapting to dark scene (default: `1000.0`)
         * `center_weight_power` set the power factor for center-weighted luminance measurement (default: `1.0`)
+      * `volumetric_light`: is a table that controls volumetric light (a.k.a. "godrays")
+        * `strength`: sets the strength of the volumetric light effect from 0 (off, default) to 1 (strongest)
+           * This value has no effect on clients who have the "Volumetric Lighting" or "Bloom" shaders disabled.
 
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
 * `respawn()`: Respawns the player using the same mechanism as the death screen,
-  including calling on_respawnplayer callbacks.
+  including calling `on_respawnplayer` callbacks.
 
 `PcgRandom`
 -----------
@@ -8013,7 +8097,9 @@ A 32-bit pseudorandom number generator.
 Uses PCG32, an algorithm of the permuted congruential generator family,
 offering very strong randomness.
 
-It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
+* constructor `PcgRandom(seed, [seq])`
+  * `seed`: 64-bit unsigned seed
+  * `seq`: 64-bit unsigned sequence, optional
 
 ### Methods
 
@@ -8025,6 +8111,8 @@ It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
     * `mean = (max - min) / 2`, and
     * `variance = (((max - min + 1) ^ 2) - 1) / (12 * num_trials)`
     * Increasing `num_trials` improves accuracy of the approximation
+* `get_state()`: return generator state encoded in string
+* `set_state(state_string)`: restore generator state from encoded string
 
 `PerlinNoise`
 -------------
@@ -8108,14 +8196,22 @@ Can be obtained using `player:get_meta()`.
 A 16-bit pseudorandom number generator.
 Uses a well-known LCG algorithm introduced by K&R.
 
-It can be created via `PseudoRandom(seed)`.
+**Note**:
+`PseudoRandom` is slower and has worse random distribution than `PcgRandom`.
+Use `PseudoRandom` only if you need output to match the well-known LCG algorithm introduced by K&R.
+Otherwise, use `PcgRandom`.
+
+* constructor `PseudoRandom(seed)`
+  * `seed`: 32-bit signed number
 
 ### Methods
 
 * `next()`: return next integer random number [`0`...`32767`]
 * `next(min, max)`: return next integer random number [`min`...`max`]
-    * `((max - min) == 32767) or ((max-min) <= 6553))` must be true
-      due to the simple implementation making bad distribution otherwise.
+    * Either `max - min == 32767` or `max - min <= 6553` must be true
+      due to the simple implementation making a bad distribution otherwise.
+* `get_state()`: return state of pseudorandom generator as number
+    * use returned number as seed in PseudoRandom constructor to restore
 
 `Raycast`
 ---------
@@ -8181,37 +8277,47 @@ secure random device cannot be found on the system.
 
 An interface to read config files in the format of `minetest.conf`.
 
-It can be created via `Settings(filename)`.
+`minetest.settings` is a `Settings` instance that can be used to access the
+main config file (`minetest.conf`). Instances for other config files can be
+created via `Settings(filename)`.
+
+Engine settings on the `minetest.settings` object have internal defaults that
+will be returned if a setting is unset.
+The engine does *not* (yet) read `settingtypes.txt` for this purpose. This
+means that no defaults will be returned for mod settings.
 
 ### Methods
 
 * `get(key)`: returns a value
+    * Returns `nil` if `key` is not found.
 * `get_bool(key, [default])`: returns a boolean
     * `default` is the value returned if `key` is not found.
     * Returns `nil` if `key` is not found and `default` not specified.
 * `get_np_group(key)`: returns a NoiseParams table
+    * Returns `nil` if `key` is not found.
 * `get_flags(key)`:
     * Returns `{flag = true/false, ...}` according to the set flags.
     * Is currently limited to mapgen flags `mg_flags` and mapgen-specific
       flags like `mgv5_spflags`.
+    * Returns `nil` if `key` is not found.
 * `set(key, value)`
     * Setting names can't contain whitespace or any of `="{}#`.
     * Setting values can't contain the sequence `\n"""`.
     * Setting names starting with "secure." can't be set on the main settings
       object (`minetest.settings`).
 * `set_bool(key, value)`
-    * See documentation for set() above.
+    * See documentation for `set()` above.
 * `set_np_group(key, value)`
     * `value` is a NoiseParams table.
-    * Also, see documentation for set() above.
+    * Also, see documentation for `set()` above.
 * `remove(key)`: returns a boolean (`true` for success)
 * `get_names()`: returns `{key1,...}`
 * `has(key)`:
     * Returns a boolean indicating whether `key` exists.
-    * Note that for the main settings object (`minetest.settings`), `get(key)`
-      might return a value even if `has(key)` returns `false`. That's because
-      `get` can fall back to the so-called parent of the `Settings` object, i.e.
-      the default values.
+    * In contrast to the various getter functions, `has()` doesn't consider
+      any default values.
+    * This means that on the main settings object (`minetest.settings`),
+      `get(key)` might return a value even if `has(key)` returns `false`.
 * `write()`: returns a boolean (`true` for success)
     * Writes changes to file.
 * `to_table()`: returns `{[key1]=value1,...}`
@@ -8292,7 +8398,9 @@ Player properties need to be saved manually.
 
 
     pointable = true,
-    -- Whether the object can be pointed at
+    -- Can be `true` if it is pointable, `false` if it can be pointed through,
+    -- or `"blocking"` if it is pointable but not selectable.
+    -- Can be overridden by the `pointabilities` of the held item.
 
     visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem" / "item",
     -- "cube" is a node-sized cube.
@@ -8656,6 +8764,27 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     -- If true, item can point to all liquid nodes (`liquidtype ~= "none"`),
     -- even those for which `pointable = false`
 
+    pointabilities = {
+		nodes = {
+			["default:stone"] = "blocking",
+			["group:leaves"] = false,
+		},
+		objects = {
+			["modname:entityname"] = true,
+			["group:ghosty"] = true, -- (an armor group)
+		}
+    },
+    -- Contains lists to override the `pointable` property of pointed nodes and objects.
+    -- The index can be a node/entity name or a group with the prefix `"group:"`.
+    -- (For objects `armor_groups` are used and for players the entity name is irrelevant.)
+    -- If multiple fields fit, the following priority order is applied:
+    -- 1. value of matching node/entity name
+    -- 2. `true` for any group
+    -- 3. `false` for any group
+    -- 4. `"blocking"` for any group
+    -- 5. `liquids_pointable` if it is a liquid node
+    -- 6. `pointable` property of the node or object
+
     light_source = 0,
     -- When used for nodes: Defines amount of light emitted by node.
     -- Otherwise: Defines texture glow when viewed as a dropped item
@@ -8696,6 +8825,20 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     -- if "air", node is removed.
     -- Otherwise should be name of node which the client immediately places
     -- upon digging. Server will always update with actual result shortly.
+
+    touch_interaction = {
+        -- Only affects touchscreen clients.
+        -- Defines the meaning of short and long taps with the item in hand.
+        -- The fields in this table have two valid values:
+        -- * "long_dig_short_place" (long tap  = dig, short tap = place)
+        -- * "short_dig_long_place" (short tap = dig, long tap  = place)
+        -- The field to be used is selected according to the current
+        -- `pointed_thing`.
+
+        pointed_nothing = "long_dig_short_place",
+        pointed_node    = "long_dig_short_place",
+        pointed_object  = "short_dig_long_place",
+    },
 
     sound = {
         -- Definition of item sounds to be played at various events.
@@ -8822,8 +8965,8 @@ Used by `minetest.register_node`.
     --           depending on the alpha channel being below/above 50% in value
     -- * "blend": The alpha channel specifies how transparent a given pixel
     --            of the rendered node is
-    -- The default is "opaque" for drawtypes normal, liquid and flowingliquid;
-    -- "clip" otherwise.
+    -- The default is "opaque" for drawtypes normal, liquid and flowingliquid,
+    -- mesh and nodebox or "clip" otherwise.
     -- If set to a boolean value (deprecated): true either sets it to blend
     -- or clip, false sets it to clip or opaque mode depending on the drawtype.
 
@@ -8848,6 +8991,13 @@ Used by `minetest.register_node`.
     place_param2 = 0,
     -- Value for param2 that is set when player places node
 
+    wallmounted_rotate_vertical = false,
+    -- If true, place_param2 is nil, and this is a wallmounted node,
+    -- this node might use the special 90° rotation when placed
+    -- on the floor or ceiling, depending on the direction.
+    -- See the explanation about wallmounted for details.
+    -- Otherwise, the rotation is always the same on vertical placement.
+
     is_ground_content = true,
     -- If false, the cave generator and dungeon generator will not carve
     -- through this node.
@@ -8860,7 +9010,11 @@ Used by `minetest.register_node`.
 
     walkable = true,  -- If true, objects collide with node
 
-    pointable = true,  -- If true, can be pointed at
+    pointable = true,
+    -- Can be `true` if it is pointable, `false` if it can be pointed through,
+    -- or `"blocking"` if it is pointable but not selectable.
+    -- Can be overridden by the `pointabilities` of the held item.
+    -- A client may be able to point non-pointable nodes, since it isn't checked server-side.
 
     diggable = true,  -- If false, can never be dug
 
@@ -10012,9 +10166,14 @@ Used by `ObjectRef:hud_add`. Returned by `ObjectRef:hud_get`.
 
 ```lua
 {
-    hud_elem_type = "image",
+    type = "image",
     -- Type of element, can be "image", "text", "statbar", "inventory",
     -- "waypoint", "image_waypoint", "compass" or "minimap"
+    -- If undefined "text" will be used.
+
+    hud_elem_type = "image",
+    -- Deprecated, same as `type`.
+    -- In case both are specified `type` will be used.
 
     position = {x=0.5, y=0.5},
     -- Top left corner position of element
@@ -10598,8 +10757,8 @@ Used by `minetest.register_authentication_handler`.
 
     set_privileges = function(name, privileges),
     -- Set privileges of player `name`.
-    -- `privileges` is in table form, auth data should be created if not
-    -- present.
+    -- `privileges` is in table form: keys are privilege names, values are `true`;
+    -- auth data should be created if not present.
 
     reload = function(),
     -- Reload authentication data from the storage location.

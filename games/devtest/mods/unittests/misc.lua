@@ -1,10 +1,37 @@
-local function test_random()
-	-- Try out PseudoRandom
-	local pseudo = PseudoRandom(13)
-	assert(pseudo:next() == 22290)
-	assert(pseudo:next() == 13854)
+local function test_pseudo_random()
+	-- We have comprehensive unit tests in C++, this is just to make sure the API code isn't messing up
+	local gen1 = PseudoRandom(13)
+	assert(gen1:next() == 22290)
+	assert(gen1:next() == 13854)
+
+	local gen2 = PseudoRandom(gen1:get_state())
+	for n = 0, 16 do
+		assert(gen1:next() == gen2:next())
+	end
+
+	local pr3 = PseudoRandom(-101)
+	assert(pr3:next(0, 100) == 35)
+	-- unusual case that is normally disallowed:
+	assert(pr3:next(10000, 42767) == 12485)
 end
-unittests.register("test_random", test_random)
+unittests.register("test_pseudo_random", test_pseudo_random)
+
+local function test_pcg_random()
+	-- We have comprehensive unit tests in C++, this is just to make sure the API code isn't messing up
+	local gen1 = PcgRandom(55)
+
+	for n = 0, 16 do
+		gen1:next()
+	end
+
+	local gen2 = PcgRandom(26)
+	gen2:set_state(gen1:get_state())
+
+	for n = 16, 32 do
+		assert(gen1:next() == gen2:next())
+	end
+end
+unittests.register("test_pcg_random", test_pcg_random)
 
 local function test_dynamic_media(cb, player)
 	if core.get_player_information(player:get_player_name()).protocol_version < 40 then

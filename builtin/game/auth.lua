@@ -87,20 +87,29 @@ core.builtin_auth_handler = {
 					core.settings:get("default_password")))
 		end
 
+		local prev_privs = auth_entry.privileges
 		auth_entry.privileges = privileges
 
 		core_auth.save(auth_entry)
 
-		-- Run grant callbacks
-		for priv, _ in pairs(privileges) do
-			if not auth_entry.privileges[priv] then
+		for priv, value in pairs(privileges) do
+			-- Warnings for improper API usage
+			if value == false then
+				core.log('deprecated', "`false` value given to `minetest.set_player_privs`, "..
+						"this is almost certainly a bug, "..
+						"granting a privilege rather than revoking it")
+			elseif value ~= true then
+				core.log('deprecated', "non-`true` value given to `minetest.set_player_privs`")
+			end
+			-- Run grant callbacks
+			if prev_privs[priv] == nil then
 				core.run_priv_callbacks(name, priv, nil, "grant")
 			end
 		end
 
 		-- Run revoke callbacks
-		for priv, _ in pairs(auth_entry.privileges) do
-			if not privileges[priv] then
+		for priv, _ in pairs(prev_privs) do
+			if privileges[priv] == nil then
 				core.run_priv_callbacks(name, priv, nil, "revoke")
 			end
 		end
@@ -178,6 +187,20 @@ core.set_player_password = auth_pass("set_password")
 core.set_player_privs    = auth_pass("set_privileges")
 core.remove_player_auth  = auth_pass("delete_auth")
 core.auth_reload         = auth_pass("reload")
+
+function core.change_player_privs(name, changes)
+	local privs = core.get_player_privs(name)
+	for priv, change in pairs(changes) do
+		if change == true then
+			privs[priv] = true
+		elseif change == false then
+			privs[priv] = nil
+		else
+			error("non-bool value given to `minetest.change_player_privs`")
+		end
+	end
+	core.set_player_privs(name, privs)
+end
 
 local record_login = auth_pass("record_login")
 core.register_on_joinplayer(function(player)

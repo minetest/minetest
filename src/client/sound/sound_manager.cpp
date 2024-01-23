@@ -18,7 +18,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License along
-with this program; ifnot, write to the Free Software Foundation, Inc.,
+with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
@@ -181,11 +181,10 @@ std::shared_ptr<PlayingSound> OpenALSoundManager::createPlayingSound(
 	}
 
 	auto sound = std::make_shared<PlayingSound>(source_id, std::move(lsnd), loop,
-			volume, pitch, start_time, pos_vel_opt);
+			volume, pitch, start_time, pos_vel_opt, m_exts);
 
 	sound->play();
-	if (m_is_paused)
-		sound->pause();
+
 	warn_if_al_error("createPlayingSound");
 	return sound;
 }
@@ -272,7 +271,8 @@ OpenALSoundManager::OpenALSoundManager(SoundManagerSingleton *smg,
 	Thread("OpenALSoundManager"),
 	m_fallback_path_provider(std::move(fallback_path_provider)),
 	m_device(smg->m_device.get()),
-	m_context(smg->m_context.get())
+	m_context(smg->m_context.get()),
+	m_exts(m_device)
 {
 	SANITY_CHECK(!!m_fallback_path_provider);
 
@@ -517,7 +517,7 @@ void *OpenALSoundManager::run()
 		if (stop_requested)
 			break;
 
-		f32 dtime = get_time_since_last_step();
+		f32 dtime = get_time_since_last_step() * 1.0e-3f;
 		t_step_start = porting::getTimeMs();
 		step(dtime);
 	}

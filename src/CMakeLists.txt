@@ -47,7 +47,7 @@ option(ENABLE_CURL "Enable cURL support for fetching media" TRUE)
 set(USE_CURL FALSE)
 
 if(ENABLE_CURL)
-	find_package(CURL)
+	find_package(CURL 7.28.0)
 	if (CURL_FOUND)
 		message(STATUS "cURL support enabled.")
 		set(USE_CURL TRUE)
@@ -313,6 +313,21 @@ else()
 		set(PLATFORM_LIBS ${PLATFORM_LIBS} android log)
 	endif()
 endif()
+
+# On clang and gcc, some functionalities of std::atomic require -latomic.
+# See <https://en.cppreference.com/w/cpp/atomic/atomic#Notes>.
+# Note that find_library does not reliably find it so we have to resort to this.
+# Also, passing -latomic is not always the same as adding atomic to the library list.
+include(CheckCSourceCompiles)
+set(CMAKE_REQUIRED_LIBRARIES "-latomic")
+check_c_source_compiles("int main(){}" HAVE_LINK_ATOMIC)
+set(CMAKE_REQUIRED_LIBRARIES "")
+if(HAVE_LINK_ATOMIC)
+	set(PLATFORM_LIBS ${PLATFORM_LIBS} "-latomic")
+endif()
+
+include(CheckSymbolExists)
+check_symbol_exists(strlcpy "string.h" HAVE_STRLCPY)
 
 check_include_files(endian.h HAVE_ENDIAN_H)
 
@@ -681,7 +696,6 @@ endif()
 # Set some optimizations and tweaks
 
 include(CheckCSourceCompiles)
-include(CheckSymbolExists)
 
 set(CMAKE_REQUIRED_INCLUDES ${LUA_INCLUDE_DIR})
 if(USE_LUAJIT)
@@ -761,7 +775,9 @@ else()
 	endif()
 
 	if(MINGW)
-		set(OTHER_FLAGS "${OTHER_FLAGS} -mthreads -fexceptions")
+		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+			set(OTHER_FLAGS "${OTHER_FLAGS} -mthreads")
+		endif()
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_WIN32_WINNT=0x0601 -DWIN32_LEAN_AND_MEAN")
 	endif()
 
@@ -801,7 +817,7 @@ else()
 	endif()
 
 	if(MINGW)
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -mwindows")
+		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-mwindows")
 	endif()
 endif()
 

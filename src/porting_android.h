@@ -20,44 +20,40 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #ifndef __ANDROID__
-#error this include has to be included on android port only!
+#error This header has to be included on Android port only!
 #endif
 
 #include <jni.h>
 #include <android_native_app_glue.h>
 #include <android/log.h>
 
+#include "irrlichttypes_bloated.h"
+
 #include <string>
 
 namespace porting {
-// java app
+// Java app
 extern android_app *app_global;
 
-// java <-> c++ interaction interface
+// Java <-> C++ interaction interface
 extern JNIEnv *jnienv;
 
-// do initialization required on android only
-void initAndroid();
-
-void cleanupAndroid();
+/**
+ * Show a text input dialog in Java
+ * @param hint Hint to be shown
+ * @param current Initial value to be displayed
+ * @param editType Type of the text field
+ * (1 = multi-line text input; 2 = single-line text input; 3 = password field)
+ */
+void showTextInputDialog(const std::string &hint, const std::string &current, int editType);
 
 /**
- * Initializes path_* variables for Android
+ * Show a selection dialog in Java
+ * @param optionList The list of options
+ * @param listSize Size of the list
+ * @param selectedIdx Selected index
  */
-void initializePathsAndroid();
-
-/**
- * show text input dialog in java
- * @param acceptButton text to display on accept button
- * @param hint hint to show
- * @param current initial value to display
- * @param editType type of texfield
- * (1==multiline text input; 2==single line text input; 3=password field)
- */
-void showInputDialog(const std::string &acceptButton,
-					const std::string &hint, const std::string &current, int editType);
-
-void openURIAndroid(const std::string &url);
+void showComboBoxDialog(const std::string optionList[], s32 listSize, s32 selectedIdx);
 
 /**
  * Opens a share intent to the file at path
@@ -66,22 +62,52 @@ void openURIAndroid(const std::string &url);
  */
 void shareFileAndroid(const std::string &path);
 
-/**
- * WORKAROUND for not working callbacks from java -> c++
- * get current state of input dialog
+/*
+ * Types of Android input dialog:
+ * 1. Text input (single/multi-line text and password field)
+ * 2. Selection input (combo box)
  */
-int getInputDialogState();
+enum AndroidDialogType { TEXT_INPUT, SELECTION_INPUT };
 
-/**
- * WORKAROUND for not working callbacks from java -> c++
- * get text in current input dialog
+/*
+ * WORKAROUND for not working callbacks from Java -> C++
+ * Get the type of the last input dialog
  */
-std::string getInputDialogValue();
+AndroidDialogType getLastInputDialogType();
+
+/*
+ * States of Android input dialog:
+ * 1. The dialog is currently shown.
+ * 2. The dialog has its input sent.
+ * 3. The dialog is canceled/dismissed.
+ */
+enum AndroidDialogState { DIALOG_SHOWN, DIALOG_INPUTTED, DIALOG_CANCELED };
+
+/*
+ * WORKAROUND for not working callbacks from Java -> C++
+ * Get the state of the input dialog
+ */
+AndroidDialogState getInputDialogState();
+
+/*
+ * WORKAROUND for not working callbacks from Java -> C++
+ * Get the text in the current/last input dialog
+ * This function clears the dialog state (set to canceled). Make sure to save
+ * the dialog state before calling this function.
+ */
+std::string getInputDialogMessage();
+
+/*
+ * WORKAROUND for not working callbacks from Java -> C++
+ * Get the selection in the current/last input dialog
+ * This function clears the dialog state (set to canceled). Make sure to save
+ * the dialog state before calling this function.
+ */
+int getInputDialogSelection();
 
 #ifndef SERVER
 float getDisplayDensity();
 v2u32 getDisplaySize();
 #endif
 
-std::string getLanguageAndroid();
 }

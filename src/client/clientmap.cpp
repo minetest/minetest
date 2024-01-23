@@ -34,33 +34,43 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <queue>
 
-// struct MeshBufListList
-void MeshBufListList::clear()
-{
-	for (auto &list : lists)
-		list.clear();
-}
+namespace {
+	// A helper struct
+	struct MeshBufListMaps
+	{
+		struct MaterialHash
+		{
+			size_t operator()(const video::SMaterial &m) const noexcept
+			{
+				// Only hash first texture. Simple and fast.
+				return std::hash<video::ITexture *>{}(m.TextureLayers[0].Texture);
+			}
+		};
 
-void MeshBufListList::add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
-{
-	// Append to the correct layer
-	std::vector<MeshBufList> &list = lists[layer];
-	const video::SMaterial &m = buf->getMaterial();
-	for (MeshBufList &l : list) {
-		// comparing a full material is quite expensive so we don't do it if
-		// not even first texture is equal
-		if (l.m.TextureLayers[0].Texture != m.TextureLayers[0].Texture)
-			continue;
+		using MeshBufListMap = std::unordered_map<
+				video::SMaterial,
+				std::vector<std::pair<v3s16, scene::IMeshBuffer *>>,
+				MaterialHash>;
 
-		if (l.m == m) {
-			l.bufs.emplace_back(position, buf);
-			return;
+		std::array<MeshBufListMap, MAX_TILE_LAYERS> maps;
+
+		void clear()
+		{
+			for (auto &map : maps)
+				map.clear();
 		}
-	}
-	MeshBufList l;
-	l.m = m;
-	l.bufs.emplace_back(position, buf);
-	list.emplace_back(l);
+
+		void add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
+		{
+			assert(layer < MAX_TILE_LAYERS);
+
+			// Append to the correct layer
+			auto &map = maps[layer];
+			const video::SMaterial &m = buf->getMaterial();
+			auto &bufs = map[m]; // default constructs if non-existent
+			bufs.emplace_back(position, buf);
+		}
+	};
 }
 
 static void on_settings_changed(const std::string &name, void *data)
@@ -319,7 +329,7 @@ void ClientMap::updateDrawList()
 		MapBlockVect sectorblocks;
 
 		for (auto &sector_it : m_sectors) {
-			MapSector *sector = sector_it.second;
+			const MapSector *sector = sector_it.second;
 			v2s16 sp = sector->getPos();
 
 			blocks_loaded += sector->size();
@@ -329,18 +339,16 @@ void ClientMap::updateDrawList()
 					continue;
 			}
 
-			sectorblocks.clear();
-			sector->getBlocks(sectorblocks);
-
 			// Loop through blocks in sector
-			for (MapBlock *block : sectorblocks) {
+			for (const auto &entry : sector->getBlocks()) {
+				MapBlock *block = entry.second.get();
 				MapBlockMesh *mesh = block->mesh;
 
 				// Calculate the coordinates for range and frustum culling
 				v3f mesh_sphere_center;
 				f32 mesh_sphere_radius;
 
-				v3s16 block_pos_nodes = block->getPos() * MAP_BLOCKSIZE;
+				v3s16 block_pos_nodes = block->getPosRelative();
 
 				if (mesh) {
 					mesh_sphere_center = intToFloat(block_pos_nodes, BS)
@@ -639,7 +647,7 @@ void ClientMap::touchMapBlocks()
 	u32 blocks_in_range_with_mesh = 0;
 
 	for (const auto &sector_it : m_sectors) {
-		MapSector *sector = sector_it.second;
+		const MapSector *sector = sector_it.second;
 		v2s16 sp = sector->getPos();
 
 		blocks_loaded += sector->size();
@@ -649,21 +657,19 @@ void ClientMap::touchMapBlocks()
 				continue;
 		}
 
-		MapBlockVect sectorblocks;
-		sector->getBlocks(sectorblocks);
-
 		/*
 			Loop through blocks in sector
 		*/
 
-		for (MapBlock *block : sectorblocks) {
+		for (const auto &entry : sector->getBlocks()) {
+			MapBlock *block = entry.second.get();
 			MapBlockMesh *mesh = block->mesh;
 
 			// Calculate the coordinates for range and frustum culling
 			v3f mesh_sphere_center;
 			f32 mesh_sphere_radius;
 
-			v3s16 block_pos_nodes = block->getPos() * MAP_BLOCKSIZE;
+			v3s16 block_pos_nodes = block->getPosRelative();
 
 			if (mesh) {
 				mesh_sphere_center = intToFloat(block_pos_nodes, BS)
@@ -737,7 +743,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		Draw the selected MapBlocks
 	*/
 
-	MeshBufListList grouped_buffers;
+	MeshBufListMaps grouped_buffers;
 	std::vector<DrawDescriptor> draw_order;
 	video::SMaterial previous_material;
 
@@ -793,7 +799,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		}
 		else {
 			// otherwise, group buffers across meshes
-			// using MeshBufListList
+			// using MeshBufListMaps
 			for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
 				scene::IMesh *mesh = block_mesh->getMesh(layer);
 				assert(mesh);
@@ -819,11 +825,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	}
 
 	// Capture draw order for all solid meshes
-	for (auto &lists : grouped_buffers.lists) {
-		for (MeshBufList &list : lists) {
+	for (auto &map : grouped_buffers.maps) {
+		for (auto &list : map) {
 			// iterate in reverse to draw closest blocks first
-			for (auto it = list.bufs.rbegin(); it != list.bufs.rend(); ++it) {
-				draw_order.emplace_back(it->first, it->second, it != list.bufs.rbegin());
+			for (auto it = list.second.rbegin(); it != list.second.rend(); ++it) {
+				draw_order.emplace_back(it->first, it->second, it != list.second.rbegin());
 			}
 		}
 	}
@@ -1103,7 +1109,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	u32 drawcall_count = 0;
 	u32 vertex_count = 0;
 
-	MeshBufListList grouped_buffers;
+	MeshBufListMaps grouped_buffers;
 	std::vector<DrawDescriptor> draw_order;
 
 
@@ -1144,7 +1150,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		}
 		else {
 			// otherwise, group buffers across meshes
-			// using MeshBufListList
+			// using MeshBufListMaps
 			MapBlockMesh *mapBlockMesh = block->mesh;
 			assert(mapBlockMesh);
 
@@ -1167,18 +1173,18 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	}
 
 	u32 buffer_count = 0;
-	for (auto &lists : grouped_buffers.lists)
-		for (MeshBufList &list : lists)
-			buffer_count += list.bufs.size();
+	for (auto &map : grouped_buffers.maps)
+		for (auto &list : map)
+			buffer_count += list.second.size();
 
 	draw_order.reserve(draw_order.size() + buffer_count);
 
 	// Capture draw order for all solid meshes
-	for (auto &lists : grouped_buffers.lists) {
-		for (MeshBufList &list : lists) {
+	for (auto &map : grouped_buffers.maps) {
+		for (auto &list : map) {
 			// iterate in reverse to draw closest blocks first
-			for (auto it = list.bufs.rbegin(); it != list.bufs.rend(); ++it)
-				draw_order.emplace_back(it->first, it->second, it != list.bufs.rbegin());
+			for (auto it = list.second.rbegin(); it != list.second.rend(); ++it)
+				draw_order.emplace_back(it->first, it->second, it != list.second.rbegin());
 		}
 	}
 
@@ -1239,11 +1245,6 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 {
 	ScopeProfiler sp(g_profiler, "CM::updateDrawListShadow()", SPT_AVG);
 
-	v3s16 cam_pos_nodes = floatToInt(shadow_light_pos, BS);
-	v3s16 p_blocks_min;
-	v3s16 p_blocks_max;
-	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max, radius + length);
-
 	for (auto &i : m_drawlist_shadow) {
 		MapBlock *block = i.second;
 		block->refDrop();
@@ -1256,25 +1257,23 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 	u32 blocks_in_range_with_mesh = 0;
 
 	for (auto &sector_it : m_sectors) {
-		MapSector *sector = sector_it.second;
+		const MapSector *sector = sector_it.second;
 		if (!sector)
 			continue;
 		blocks_loaded += sector->size();
 
-		MapBlockVect sectorblocks;
-		sector->getBlocks(sectorblocks);
-
 		/*
 			Loop through blocks in sector
 		*/
-		for (MapBlock *block : sectorblocks) {
+		for (const auto &entry : sector->getBlocks()) {
+			MapBlock *block = entry.second.get();
 			MapBlockMesh *mesh = block->mesh;
 			if (!mesh) {
 				// Ignore if mesh doesn't exist
 				continue;
 			}
 
-			v3f block_pos = intToFloat(block->getPos() * MAP_BLOCKSIZE, BS) + mesh->getBoundingSphereCenter();
+			v3f block_pos = intToFloat(block->getPosRelative(), BS) + mesh->getBoundingSphereCenter();
 			v3f projection = shadow_light_pos + shadow_light_dir * shadow_light_dir.dotProduct(block_pos - shadow_light_pos);
 			if (projection.getDistanceFrom(block_pos) > (radius + mesh->getBoundingRadius()))
 				continue;

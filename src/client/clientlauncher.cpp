@@ -34,6 +34,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "renderingengine.h"
 #include "network/networkexceptions.h"
+#include <IGUISpriteBank.h>
+#include <ICameraSceneNode.h>
 
 #if USE_SOUND
 	#include "sound/sound_openal.h"
@@ -213,7 +215,8 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		m_rendering_engine->get_raw_device()->
 			setWindowCaption((utf8_to_wide(PROJECT_NAME_C) +
 			L" " + utf8_to_wide(g_version_hash) +
-			L" [" + wstrgettext("Main Menu") + L"]").c_str());
+			L" [" + wstrgettext("Main Menu") + L"]" +
+			L" [" + m_rendering_engine->getVideoDriver()->getName() + L"]"	).c_str());
 
 		try {	// This is used for catching disconnects
 
@@ -273,6 +276,10 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		} //try
 		catch (con::PeerNotFoundException &e) {
 			error_message = gettext("Connection error (timed out?)");
+			errorstream << error_message << std::endl;
+		}
+		catch (ShaderException &e) {
+			error_message = e.what();
 			errorstream << error_message << std::endl;
 		}
 
@@ -542,13 +549,13 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 	}
 	infostream << "Waited for other menus" << std::endl;
 
-#ifndef ANDROID
-	// Cursor can be non-visible when coming from the game
-	m_rendering_engine->get_raw_device()->getCursorControl()->setVisible(true);
-
-	// Set absolute mouse mode
-	m_rendering_engine->get_raw_device()->getCursorControl()->setRelativeMode(false);
-#endif
+	auto *cur_control = m_rendering_engine->get_raw_device()->getCursorControl();
+	if (cur_control) {
+		// Cursor can be non-visible when coming from the game
+		cur_control->setVisible(true);
+		// Set absolute mouse mode
+		cur_control->setRelativeMode(false);
+	}
 
 	/* show main menu */
 	GUIEngine mymenu(&input->joystick, guiroot, m_rendering_engine, &g_menumgr, menudata, *kill);

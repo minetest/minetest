@@ -92,7 +92,7 @@ minetest.register_node("testnodes:mesh_color4dir", {
 -- Wallmounted mesh: pyramid
 minetest.register_node("testnodes:mesh_wallmounted", {
 	description = S("Wallmounted Mesh Test Node").."\n"..
-		S("param2 = wallmounted rotation (0..5)"),
+		S("param2 = wallmounted rotation (0..7)"),
 	drawtype = "mesh",
 	mesh = "testnodes_pyramid.obj",
 	tiles = {"testnodes_mesh_stripes9.png"},
@@ -105,7 +105,7 @@ minetest.register_node("testnodes:mesh_wallmounted", {
 
 minetest.register_node("testnodes:mesh_colorwallmounted", {
 	description = S("Color Wallmounted Mesh Test Node").."\n"..
-		S("param2 = color + wallmounted rotation (0..5, 8..13, ...)"),
+		S("param2 = color + wallmounted rotation (0..7, 8..15, ...)"),
 	drawtype = "mesh",
 	mesh = "testnodes_pyramid.obj",
 	tiles = {"testnodes_mesh_stripes10.png"},
