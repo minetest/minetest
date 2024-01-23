@@ -26,8 +26,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 enum class PointabilityType : u8
 {
+	// Can be pointed through.
+	// Note: This MUST be the 0-th item in the enum for backwards compat.
+	// Older Minetest versions send "pointable=false" as "0".
+	POINTABLE_NOT,
+	// Is pointable.
+	// Note: This MUST be the 1-th item in the enum for backwards compat:
+	// Older Minetest versions send "pointable=true" as "1".
 	POINTABLE,
-	POINTABLE_NOT, // Can be pointed through.
+	// Note: Since (u8) 2 is truthy,
+	// older clients will understand this as "pointable=true",
+	// which is a reasonable fallback.
 	POINTABLE_BLOCKING,
 };
 
