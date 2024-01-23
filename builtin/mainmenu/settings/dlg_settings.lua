@@ -608,6 +608,16 @@ local function get_formspec(dialogdata)
 end
 
 
+-- On Android, closing the app via the "Recents screen" won't result in a clean
+-- exit, discarding any setting changes made by the user.
+-- To avoid that, we write the settings file in more cases on Android.
+function write_settings_early()
+	if PLATFORM == "Android" then
+		core.settings:write()
+	end
+end
+
+
 local function buttonhandler(this, fields)
 	local dialogdata = this.data
 	dialogdata.leftscroll = core.explode_scrollbar_event(fields.leftscroll).value or dialogdata.leftscroll
@@ -622,12 +632,15 @@ local function buttonhandler(this, fields)
 	if fields.show_technical_names ~= nil then
 		local value = core.is_yes(fields.show_technical_names)
 		core.settings:set_bool("show_technical_names", value)
+		write_settings_early()
+
 		return true
 	end
 
 	if fields.show_advanced ~= nil then
 		local value = core.is_yes(fields.show_advanced)
 		core.settings:set_bool("show_advanced", value)
+		write_settings_early()
 
 		local suggested_page_id = update_filtered_pages(dialogdata.query)
 
@@ -672,12 +685,15 @@ local function buttonhandler(this, fields)
 
 	for i, comp in ipairs(dialogdata.components) do
 		if comp.on_submit and comp:on_submit(fields, this) then
+			write_settings_early()
+
 			-- Clear components so they regenerate
 			dialogdata.components = nil
 			return true
 		end
 		if comp.setting and fields["reset_" .. i] then
 			core.settings:remove(comp.setting.name)
+			write_settings_early()
 
 			-- Clear components so they regenerate
 			dialogdata.components = nil
