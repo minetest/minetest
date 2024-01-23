@@ -642,8 +642,8 @@ int ModApiServer::l_register_async_dofile(lua_State *L)
 	return 1;
 }
 
-// register_mapgen_dofile(path)
-int ModApiServer::l_register_mapgen_dofile(lua_State *L)
+// register_mapgen_script(path)
+int ModApiServer::l_register_mapgen_script(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -725,7 +725,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(register_async_dofile);
 	API_FCT(serialize_roundtrip);
 
-	API_FCT(register_mapgen_dofile);
+	API_FCT(register_mapgen_script);
 }
 
 void ModApiServer::InitializeAsync(lua_State *L, int top)

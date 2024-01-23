@@ -993,7 +993,7 @@ GenerateNotifier::GenerateNotifier(u32 notify_on,
 bool GenerateNotifier::addEvent(GenNotifyType type, v3s16 pos)
 {
 	assert(type != GENNOTIFY_DECORATION && type != GENNOTIFY_CUSTOM);
-	if (!notifyOn(type))
+	if (!shouldNotifyOn(type))
 		return false;
 
 	GenNotifyEvent gne;
@@ -1006,8 +1006,9 @@ bool GenerateNotifier::addEvent(GenNotifyType type, v3s16 pos)
 
 bool GenerateNotifier::addDecorationEvent(v3s16 pos, u32 id)
 {
-	if (!notifyOn(GENNOTIFY_DECORATION))
+	if (!shouldNotifyOn(GENNOTIFY_DECORATION))
 		return false;
+	// check if data relating to this decoration was requested
 	assert(m_notify_on_deco_ids);
 	if (m_notify_on_deco_ids->find(id) == m_notify_on_deco_ids->cend())
 		return false;
@@ -1023,8 +1024,9 @@ bool GenerateNotifier::addDecorationEvent(v3s16 pos, u32 id)
 
 bool GenerateNotifier::setCustom(const std::string &key, const std::string &value)
 {
-	if (!notifyOn(GENNOTIFY_CUSTOM))
+	if (!shouldNotifyOn(GENNOTIFY_CUSTOM))
 		return false;
+	// check if this key was requested to be saved
 	assert(m_notify_on_custom);
 	if (m_notify_on_custom->count(key) == 0)
 		return false;

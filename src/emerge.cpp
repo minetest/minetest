@@ -608,7 +608,7 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 }
 
 
-void EmergeThread::initScripting()
+bool EmergeThread::initScripting()
 {
 	m_script = std::make_unique<EmergeScripting>(this);
 
@@ -617,9 +617,9 @@ void EmergeThread::initScripting()
 			BUILTIN_MOD_NAME);
 		m_script->checkSetByBuiltin();
 	} catch (const ModError &e) {
-		errorstream << "Execution of mapgen base environment failed: "
-			<< e.what() << std::endl;
-		FATAL_ERROR("Execution of mapgen base environment failed");
+		errorstream << "Execution of mapgen base environment failed." << std::endl;
+		m_server->setAsyncFatalError(e.what());
+		return false;
 	}
 
 	const auto &list = m_server->m_mapgen_init_files;
@@ -631,7 +631,10 @@ void EmergeThread::initScripting()
 	} catch (const ModError &e) {
 		errorstream << "Failed to load mod script inside mapgen environment." << std::endl;
 		m_server->setAsyncFatalError(e.what());
+		return false;
 	}
+
+	return true;
 }
 
 
@@ -647,7 +650,10 @@ void *EmergeThread::run()
 	m_mapgen = m_emerge->m_mapgens[id];
 	enable_mapgen_debug_info = m_emerge->enable_mapgen_debug_info;
 
-	initScripting();
+	if (!initScripting()) {
+		m_script.reset();
+		stop(); // do not enter main loop
+	}
 
 	try {
 	while (!stopRequested()) {
@@ -734,7 +740,8 @@ void *EmergeThread::run()
 	}
 
 	try {
-		m_script->on_shutdown();
+		if (m_script)
+			m_script->on_shutdown();
 	} catch (const ModError &e) {
 		m_server->setAsyncFatalError(e.what());
 	}

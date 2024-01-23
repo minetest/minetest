@@ -6547,7 +6547,7 @@ Internally it is referred to as "emerge environment".
 
 Refer to the above section for the usual disclaimer on what environment isolation entails.
 
-* `minetest.register_mapgen_dofile(path)`:
+* `minetest.register_mapgen_script(path)`:
     * Register a path to a Lua file to be imported when a mapgen environment
       is initialized. You'd put your mapgen-related code in there.
 
@@ -6569,6 +6569,8 @@ Refer to the above section for the usual disclaimer on what environment isolatio
       By convention these should be the mod name with an optional
       colon and specifier added, e.g. `"default"` or `"default:dungeon_loot"`
     * `data`: any Lua object (will be serialized, no userdata allowed)
+    * returns `true` if the data was remembered. That is if `minetest.set_gen_notify`
+      was called with the same user-defined ID before.
 
 ### List of APIs available in the mapgen env
 

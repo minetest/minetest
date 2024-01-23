@@ -98,7 +98,7 @@ public:
 	bool addDecorationEvent(v3s16 pos, u32 deco_id);
 	bool setCustom(const std::string &key, const std::string &value);
 	void getEvents(std::map<std::string, std::vector<v3s16>> &map) const;
-	const StringMap &getCustom() const { return m_notify_custom; }
+	const StringMap &getCustomData() const { return m_notify_custom; }
 	void clearEvents();
 
 private:
@@ -108,7 +108,7 @@ private:
 	std::list<GenNotifyEvent> m_notify_events;
 	StringMap m_notify_custom;
 
-	inline bool notifyOn(GenNotifyType type) const {
+	inline bool shouldNotifyOn(GenNotifyType type) const {
 		return m_notify_on & (1 << type);
 	}
 };

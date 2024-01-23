@@ -75,7 +75,7 @@ private:
 	Event m_queue_event;
 	std::queue<v3s16> m_block_queue;
 
-	void initScripting();
+	bool initScripting();
 
 	bool popBlockEmerge(v3s16 *pos, BlockEmergeData *bedata);
 
@@ -89,22 +89,22 @@ private:
 	friend class ModApiMapgen;
 };
 
+// Scoped helper to set Server::m_ignore_map_edit_events_area
 class MapEditEventAreaIgnorer
 {
 public:
 	MapEditEventAreaIgnorer(VoxelArea *ignorevariable, const VoxelArea &a):
 		m_ignorevariable(ignorevariable)
 	{
-		if(m_ignorevariable->getVolume() == 0)
+		if (m_ignorevariable->getVolume() == 0)
 			*m_ignorevariable = a;
 		else
-			m_ignorevariable = NULL;
+			m_ignorevariable = nullptr;
 	}
 
 	~MapEditEventAreaIgnorer()
 	{
-		if(m_ignorevariable)
-		{
+		if (m_ignorevariable) {
 			assert(m_ignorevariable->getVolume() != 0);
 			*m_ignorevariable = VoxelArea();
 		}

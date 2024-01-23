@@ -696,7 +696,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 		}
 
 		// push user-defined data
-		auto &custom_map = mg->gennotify.getCustom();
+		auto &custom_map = mg->gennotify.getCustomData();
 
 		lua_createtable(L, 0, custom_map.size());
 		lua_getglobal(L, "core");
@@ -1054,14 +1054,14 @@ int ModApiMapgen::l_get_gen_notify(lua_State *L)
 	push_flags_string(L, flagdesc_gennotify, emerge->gen_notify_on,
 		emerge->gen_notify_on);
 
-	lua_newtable(L);
+	lua_createtable(L, emerge->gen_notify_on_deco_ids.size(), 0);
 	int i = 1;
 	for (u32 id : emerge->gen_notify_on_deco_ids) {
 		lua_pushnumber(L, id);
 		lua_rawseti(L, -2, i++);
 	}
 
-	lua_newtable(L);
+	lua_createtable(L, emerge->gen_notify_on_custom.size(), 0);
 	int j = 1;
 	for (const auto &id : emerge->gen_notify_on_custom) {
 		lua_pushstring(L, id.c_str());
