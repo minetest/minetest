@@ -85,6 +85,17 @@ public class GameActivity extends NativeActivity {
 		makeFullScreen();
 	}
 
+	private native void saveSettings();
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		// Avoid losing setting changes in case the app is onDestroy()ed later.
+		// Saving stuff in onStop() is recommended in the Android activity
+		// lifecycle documentation.
+		saveSettings();
+	}
+
 	@Override
 	public void onBackPressed() {
 		// Ignore the back press so Minetest can handle it

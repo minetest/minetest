@@ -250,11 +250,8 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			}
 
 			// Break out of menu-game loop to shut down cleanly
-			if (!m_rendering_engine->run() || *kill) {
-				if (!g_settings_path.empty())
-					g_settings->updateConfigFile(g_settings_path.c_str());
+			if (!m_rendering_engine->run() || *kill)
 				break;
-			}
 
 			m_rendering_engine->get_video_driver()->setTextureCreationFlag(
 					video::ETCF_CREATE_MIP_MAPS, g_settings->getBool("mip_map"));
@@ -298,6 +295,16 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		g_touchscreengui = NULL;
 		receiver->m_touchscreengui = NULL;
 #endif
+
+		/* Save the settings when leaving the game.
+		 * This makes sure that setting changes made in-game are persisted even
+		 * in case of a later unclean exit from the mainmenu.
+		 * This is especially useful on Android because closing the app from the
+		 * "Recents screen" results in an unclean exit.
+		 * Caveat: This means that the settings are saved twice when exiting Minetest.
+		 */
+		if (!g_settings_path.empty())
+			g_settings->updateConfigFile(g_settings_path.c_str());
 
 		// If no main menu, show error and exit
 		if (skip_main_menu) {
@@ -562,6 +569,16 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 
 	/* leave scene manager in a clean state */
 	m_rendering_engine->get_scene_manager()->clear();
+
+	/* Save the settings when leaving the mainmenu.
+	 * This makes sure that setting changes made in the mainmenu are persisted
+	 * even in case of a later unclean exit from the game.
+	 * This is especially useful on Android because closing the app from the
+	 * "Recents screen" results in an unclean exit.
+	 * Caveat: This means that the settings are saved twice when exiting Minetest.
+	 */
+	if (!g_settings_path.empty())
+		g_settings->updateConfigFile(g_settings_path.c_str());
 }
 
 void ClientLauncher::speed_tests()
