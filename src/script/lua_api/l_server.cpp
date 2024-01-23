@@ -548,19 +548,22 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 	Server *server = getServer(L);
 	const bool at_startup = !getEnv(L);
 
-	std::string filename, filepath, to_player;
-	bool ephemeral = false;
+	std::string tmp;
+	Server::DynamicMediaArgs args;
 
 	if (lua_istable(L, 1)) {
-		getstringfield(L, 1, "filename", filename);
-		getstringfield(L, 1, "filepath", filepath);
-		getstringfield(L, 1, "to_player", to_player);
-		getboolfield(L, 1, "ephemeral", ephemeral);
+		getstringfield(L, 1, "filename", args.filename);
+		if (getstringfield(L, 1, "filepath", tmp))
+			args.filepath = tmp;
+		args.data.emplace();
+		if (!getstringfield(L, 1, "filedata", *args.data))
+			args.data.reset();
+		getstringfield(L, 1, "to_player", args.to_player);
+		getboolfield(L, 1, "ephemeral", args.ephemeral);
 	} else {
-		filepath = readParam<std::string>(L, 1);
+		tmp = readParam<std::string>(L, 1);
+		args.filepath = tmp;
 	}
-	if (filepath.empty())
-		luaL_typerror(L, 1, "non-empty string");
 	if (at_startup) {
 		if (!lua_isnoneornil(L, 2))
 			throw LuaError("must be called without callback at load-time");
@@ -572,13 +575,27 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 		luaL_checktype(L, 2, LUA_TFUNCTION);
 	}
 
-	CHECK_SECURE_PATH(L, filepath.c_str(), false);
+	// validate
+	if (args.filepath) {
+		if (args.filepath->empty())
+			throw LuaError("filepath must be non-empty");
+		if (args.data)
+			throw LuaError("cannot provide both filepath and filedata");
+	} else if (args.data) {
+		if (args.filename.empty())
+			throw LuaError("filename required");
+	} else {
+		throw LuaError("either filepath or filedata must be provided");
+	}
 
-	u32 token = server->getScriptIface()->allocateDynamicMediaCallback(L, 2);
+	if (args.filepath)
+		CHECK_SECURE_PATH(L, args.filepath->c_str(), false);
 
-	bool ok = server->dynamicAddMedia(filename, filepath, token, to_player, ephemeral);
+	args.token = server->getScriptIface()->allocateDynamicMediaCallback(L, 2);
+
+	bool ok = server->dynamicAddMedia(args);
 	if (!ok)
-		server->getScriptIface()->freeDynamicMediaCallback(token);
+		server->getScriptIface()->freeDynamicMediaCallback(args.token);
 	lua_pushboolean(L, ok);
 
 	return 1;

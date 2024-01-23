@@ -5306,6 +5306,8 @@ Utilities
       blocking_pointability_type = true,
       -- dynamic_add_media can be called at startup when leaving callback as `nil` (5.9.0)
       dynamic_add_media_startup = true,
+      -- dynamic_add_media supports `filename` and `filedata` parameters (5.9.0)
+      dynamic_add_media_filepath = true,
   }
   ```
 
@@ -6602,12 +6604,14 @@ Server
 * `minetest.dynamic_add_media(options, callback)`
     * `options`: table containing the following parameters
         * `filename`: name the media file will be usable as
-                      (optional, default taken from path)
-        * `filepath`: path to the file on the filesystem
+                      (optional if `filepath` present)
+        * `filepath`: path to the file on the filesystem [*]
+        * `filedata`: the data of the file to be sent [*]
         * `to_player`: name of the player the media should be sent to instead of
                        all players (optional)
         * `ephemeral`: boolean that marks the media as ephemeral,
                        it will not be cached on the client (optional, default false)
+        * Exactly one of the paramters marked [*] must be specified.
     * `callback`: function with arguments `name`, which is a player name
     * Pushes the specified media file to client(s). (details below)
       The file must be a supported image, sound or model format.
