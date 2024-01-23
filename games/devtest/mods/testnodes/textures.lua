@@ -151,7 +151,7 @@ checker = nil
 
 do
 	-- we used to write the textures to our mod folder. in order to avoid
-	-- duplicate errors delete them if they still exist.
+	-- duplication errors delete them if they still exist.
 	local path = core.get_modpath(core.get_current_modname()) .. "/textures/"
 	os.remove(path .. "testnodes_generated_mb.png")
 	os.remove(path .. "testnodes_generated_ck.png")
@@ -162,15 +162,15 @@ core.safe_file_write(
 	textures_path .. "testnodes1.png",
 	encode_and_check(512, 512, "rgb", data_mb)
 )
-core.safe_file_write(
-	textures_path .. "testnodes_generated_ck.png",
-	encode_and_check(512, 512, "gray", data_ck)
-)
+local png_ck = encode_and_check(512, 512, "gray", data_ck)
 core.dynamic_add_media({
 	filename = "testnodes_generated_mb.png",
 	filepath = textures_path .. "testnodes1.png"
 })
-core.dynamic_add_media(textures_path .. "testnodes_generated_ck.png")
+core.dynamic_add_media({
+	filename = "testnodes_generated_ck.png",
+	filedata = png_ck,
+})
 
 minetest.register_node("testnodes:generated_png_mb", {
 	description = S("Generated Mandelbrot PNG Test Node"),
@@ -213,6 +213,8 @@ minetest.register_node("testnodes:generated_png_dst_emb", {
 	groups = { dig_immediate = 2 },
 })
 
+png_ck = nil
+png_emb = nil
 data_emb = nil
 data_mb = nil
 data_ck = nil
