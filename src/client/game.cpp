@@ -374,7 +374,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	bool *m_force_fog_off;
 	f32 *m_fog_range;
 	bool m_fog_enabled;
-	CachedPixelShaderSetting<float, 4> m_sky_bg_color{"skyBgColor"};
+	CachedPixelShaderSetting<float, 4> m_fog_color{"fogColor"};
 	CachedPixelShaderSetting<float> m_fog_distance{"fogDistance"};
 	CachedPixelShaderSetting<float>
 		m_fog_shading_parameter{"fogShadingParameter"};
@@ -475,20 +475,13 @@ public:
 
 	void onSetConstants(video::IMaterialRendererServices *services) override
 	{
-		// Background color
-		video::SColor bgcolor = m_sky->getBgColor();
-		video::SColorf bgcolorf(bgcolor);
-		float bgcolorfa[4] = {
-			bgcolorf.r,
-			bgcolorf.g,
-			bgcolorf.b,
-			bgcolorf.a,
+		video::SColorf fogcolorf(m_sky->getFogColor());
+		float fogcolorfa[4] = {
+			fogcolorf.r, fogcolorf.g, fogcolorf.b, fogcolorf.a,
 		};
-		m_sky_bg_color.set(bgcolorfa, services);
+		m_fog_color.set(fogcolorfa, services);
 
-		// Fog distance
 		float fog_distance = 10000 * BS;
-
 		if (m_fog_enabled && !*m_force_fog_off)
 			fog_distance = *m_fog_range;
 
@@ -983,7 +976,6 @@ private:
 	bool *kill;
 	std::string *error_message;
 	bool *reconnect_requested;
-	scene::ISceneNode *skybox;
 	PausedNodesList paused_animated_nodes;
 
 	bool simple_singleplayer_mode;
@@ -1522,7 +1514,6 @@ bool Game::createClient(const GameStartData &start_data)
 	 */
 	sky = new Sky(-1, m_rendering_engine, texture_src, shader_src);
 	scsf->setSky(sky);
-	skybox = NULL;	// This is used/set later on in the main run loop
 
 	/* Pre-calculated values
 	 */
@@ -3045,10 +3036,6 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 	// Whether clouds are visible in front of a custom skybox.
 	sky->setCloudsEnabled(event->set_sky->clouds);
 
-	if (skybox) {
-		skybox->remove();
-		skybox = NULL;
-	}
 	// Clear the old textures out in case we switch rendering type.
 	sky->clearSkyboxTextures();
 	// Handle according to type
@@ -3107,6 +3094,8 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		sky->setFogStart(rangelim(event->set_sky->fog_start, 0.0f, 0.99f));
 	else
 		sky->setFogStart(rangelim(g_settings->getFloat("fog_start"), 0.0f, 0.99f));
+
+	sky->setFogColor(event->set_sky->fog_color);
 
 	delete event->set_sky;
 }
@@ -4055,7 +4044,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		draw_control->wanted_range = MYMIN(draw_control->wanted_range, sky->getFogDistance());
 	}
 	if (draw_control->range_all && sky->getFogDistance() < 0) {
-		runData.fog_range = 100000 * BS;
+		runData.fog_range = FOG_RANGE_ALL;
 	} else {
 		runData.fog_range = draw_control->wanted_range * BS;
 	}
@@ -4297,7 +4286,7 @@ void Game::updateShadows()
 
 void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 {
-	const video::SColor bg_color = this->sky->getBgColor();
+	const video::SColor fog_color = this->sky->getFogColor();
 	const video::SColor sky_color = this->sky->getSkyColor();
 
 	/*
@@ -4305,21 +4294,21 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 	*/
 	if (this->m_cache_enable_fog) {
 		this->driver->setFog(
-				bg_color,
+				fog_color,
 				video::EFT_FOG_LINEAR,
 				this->runData.fog_range * this->sky->getFogStart(),
 				this->runData.fog_range * 1.0f,
-				0.01f,
+				0.f, // unused
 				false, // pixel fog
 				true // range fog
 		);
 	} else {
 		this->driver->setFog(
-				bg_color,
+				fog_color,
 				video::EFT_FOG_LINEAR,
-				100000 * BS,
-				110000 * BS,
-				0.01f,
+				FOG_RANGE_ALL,
+				FOG_RANGE_ALL + 100 * BS,
+				0.f, // unused
 				false, // pixel fog
 				false // range fog
 		);
