@@ -6558,8 +6558,8 @@ Refer to the above section for the usual disclaimer on what environment isolatio
       The chunk data resides in `vmanip`. Other parts of the map are not accessible.
       The area of the chunk if comprised of `minp` and `maxp`, note that is smaller
       than the emerged area of the VoxelManip.
-      Note that you don't need to call `read_from_map()` or `write_to_map()` on
-      the VoxelManipulator, doing so is in fact disallowed.
+      Note: calling `read_from_map()` or `write_to_map()` on the VoxelManipulator object
+      is not necessary and is disallowed.
     * `blockseed`: 64-bit seed number used for this chunk
 * `minetest.save_gen_notify(id, data)`
     * Saves data for retrieval using the gennotify mechanism (see [Mapgen objects]).

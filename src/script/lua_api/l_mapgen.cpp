@@ -702,7 +702,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 		lua_getglobal(L, "core");
 		lua_getfield(L, -1, "deserialize");
 		lua_remove(L, -2); // remove 'core'
-		for (auto it : custom_map) {
+		for (const auto &it : custom_map) {
 			lua_pushvalue(L, -1); // deserialize func
 			lua_pushlstring(L, it.second.c_str(), it.second.size());
 			lua_pushboolean(L, true);

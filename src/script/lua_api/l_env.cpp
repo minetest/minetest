@@ -1677,6 +1677,7 @@ MMVManip *ModApiEnvVM::getVManip(lua_State *L)
 
 void ModApiEnvVM::InitializeEmerge(lua_State *L, int top)
 {
+	// other, more trivial functions are in builtin/emerge/env.lua
 	API_FCT(get_node_max_level);
 	API_FCT(get_node_level);
 	API_FCT(set_node_level);

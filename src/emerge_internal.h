@@ -70,7 +70,7 @@ private:
 
 	std::unique_ptr<EmergeScripting> m_script;
 	// read from scripting:
-	UniqueQueue<v3s16> *m_trans_liquid;
+	UniqueQueue<v3s16> *m_trans_liquid; //< non-null only when generating a mapblock
 
 	Event m_queue_event;
 	std::queue<v3s16> m_block_queue;
