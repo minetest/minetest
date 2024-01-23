@@ -950,9 +950,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 			}
 			case MEET_OTHER:
 				prof.add("MEET_OTHER", 1);
-				for (const v3s16 &modified_block : event->modified_blocks) {
-					m_clients.markBlockposAsNotSent(modified_block);
-				}
+				m_clients.markBlocksNotSent(event->modified_blocks);
 				break;
 			default:
 				prof.add("unknown", 1);
@@ -964,19 +962,9 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 			/*
 				Set blocks not sent to far players
 			*/
-			if (!far_players.empty()) {
-				// Convert list format to that wanted by SetBlocksNotSent
-				std::map<v3s16, MapBlock*> modified_blocks2;
-				for (const v3s16 &modified_block : event->modified_blocks) {
-					modified_blocks2[modified_block] =
-							m_env->getMap().getBlockNoCreateNoEx(modified_block);
-				}
-
-				// Set blocks not sent
-				for (const u16 far_player : far_players) {
-					if (RemoteClient *client = getClient(far_player))
-						client->SetBlocksNotSent(modified_blocks2);
-				}
+			for (const u16 far_player : far_players) {
+				if (RemoteClient *client = getClient(far_player))
+					client->SetBlocksNotSent(event->modified_blocks);
 			}
 
 			delete event;

@@ -480,12 +480,11 @@ void RemoteClient::SetBlockNotSent(v3s16 p)
 		m_blocks_modified.insert(p);
 }
 
-void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
+void RemoteClient::SetBlocksNotSent(const std::vector<v3s16> &blocks)
 {
 	m_nothing_to_send_pause_timer = 0;
 
-	for (auto &block : blocks) {
-		v3s16 p = block.first;
+	for (v3s16 p : blocks) {
 		// remove the block from sending and sent sets,
 		// and mark as modified if found
 		if (m_blocks_sending.erase(p) + m_blocks_sent.erase(p) > 0)
@@ -707,12 +706,12 @@ std::vector<session_t> ClientInterface::getClientIDs(ClientState min_state)
 	return reply;
 }
 
-void ClientInterface::markBlockposAsNotSent(const v3s16 &pos)
+void ClientInterface::markBlocksNotSent(const std::vector<v3s16> &positions)
 {
 	RecursiveMutexAutoLock clientslock(m_clients_mutex);
 	for (const auto &client : m_clients) {
 		if (client.second->getState() >= CS_Active)
-			client.second->SetBlockNotSent(pos);
+			client.second->SetBlocksNotSent(positions);
 	}
 }
 
