@@ -267,7 +267,7 @@ public:
 	void SentBlock(v3s16 p);
 
 	void SetBlockNotSent(v3s16 p);
-	void SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks);
+	void SetBlocksNotSent(const std::vector<v3s16> &blocks);
 
 	/**
 	 * tell client about this block being modified right now.
@@ -473,8 +473,8 @@ public:
 	/* get list of active client id's */
 	std::vector<session_t> getClientIDs(ClientState min_state=CS_Active);
 
-	/* mark block as not sent to active client sessions */
-	void markBlockposAsNotSent(const v3s16 &pos);
+	/* mark blocks as not sent on all active clients */
+	void markBlocksNotSent(const std::vector<v3s16> &positions);
 
 	/* verify is server user limit was reached */
 	bool isUserLimitReached();
