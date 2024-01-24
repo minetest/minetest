@@ -95,6 +95,9 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		return;
 	}
 
+	if (denyIfBanned(peer_id))
+		return;
+
 	// First byte after command is maximum supported
 	// serialization version
 	u8 client_max;
