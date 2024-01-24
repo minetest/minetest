@@ -5204,6 +5204,10 @@ Minetest includes the following settings to control behavior of privileges:
       -- wallmounted nodes mounted at floor or ceiling may additionally
       -- be rotated by 90° with special param2 values (5.9.0)
       wallmounted_rotate = true,
+      -- Availability of the `pointabilities` property in the item definition (5.9.0)
+      item_specific_pointabilities = true,
+      -- Nodes `pointable` property can be `"blocking"` (5.9.0)
+      blocking_pointability_type = true,
   }
   ```
 
@@ -5739,8 +5743,20 @@ Call these functions only at load time!
     * `name`: string; if omitted, all auth data should be considered modified
 * `minetest.set_player_password(name, password_hash)`: Set password hash of
   player `name`.
-* `minetest.set_player_privs(name, {priv1=true,...})`: Set privileges of player
-  `name`.
+* `minetest.set_player_privs(name, privs)`: Set privileges of player `name`.
+    * `privs` is a **set** of privileges:
+      A table where the keys are names of privileges and the values are `true`.
+    * Example: `minetest.set_player_privs("singleplayer", {interact = true, fly = true})`.
+      This **sets** the player privileges to `interact` and `fly`;
+      `singleplayer` will only have these two privileges afterwards.
+* `minetest.change_player_privs(name, changes)`: Helper to grant or revoke privileges.
+    * `changes`: Table of changes to make.
+      A field `[privname] = true` grants a privilege,
+      whereas `[privname] = false` revokes a privilege.
+    * Example: `minetest.change_player_privs("singleplayer", {interact = true, fly = false})`
+      will grant singleplayer the `interact` privilege
+      and revoke singleplayer's `fly` privilege.
+      All other privileges will remain unchanged.
 * `minetest.auth_reload()`
     * See `reload()` in authentication handler definition
 
@@ -7744,8 +7760,7 @@ child will follow movement and rotation of that bone.
       whether `set_sky` accepts this format. Check the legacy format otherwise.
     * Passing no arguments resets the sky to its default values.
     * `sky_parameters` is a table with the following optional fields:
-        * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
-          (default: `#ffffff`)
+        * `base_color`: ColorSpec, meaning depends on `type` (default: `#ffffff`)
         * `body_orbit_tilt`: Float, rotation angle of sun/moon orbit in degrees.
            By default, orbit is controlled by a client-side setting, and this field is not set.
            After a value is assigned, it can only be changed to another float value.
@@ -7798,6 +7813,9 @@ child will follow movement and rotation of that bone.
                Any value between [0.0, 0.99] set the fog_start as a fraction of the viewing_range.
                Any value < 0, resets the behavior to being client-controlled.
                (default: -1)
+            * `fog_color`: ColorSpec, override the color of the fog.
+               Unlike `base_color` above this will apply regardless of the skybox type.
+               (default: `"#00000000"`, which means no override)
 > [!WARNING]
 > The darkening of the ColorSpec is subject to change.
 * `set_sky(base_color, type, {texture names}, clouds)`
@@ -8039,10 +8057,10 @@ Can be obtained using `player:get_meta()`.
 A 16-bit pseudorandom number generator.
 Uses a well-known LCG algorithm introduced by K&R.
 
-> [!NOTE]
-> `PseudoRandom` is slower and has worse random distribution than `PcgRandom`.
-> Use `PseudoRandom` only if you need output to match the well-known LCG algorithm introduced by K&R.
-> Otherwise, use `PcgRandom`.
+**Note**:
+`PseudoRandom` is slower and has worse random distribution than `PcgRandom`.
+Use `PseudoRandom` only if you need output to match the well-known LCG algorithm introduced by K&R.
+Otherwise, use `PcgRandom`.
 
 ### Constructor
 
@@ -8236,7 +8254,9 @@ Player properties need to be saved manually.
 
 
     pointable = true,
-    -- Whether the object can be pointed at
+    -- Can be `true` if it is pointable, `false` if it can be pointed through,
+    -- or `"blocking"` if it is pointable but not selectable.
+    -- Can be overridden by the `pointabilities` of the held item.
 
     visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem" / "item",
     -- "cube" is a node-sized cube.
@@ -8593,6 +8613,27 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     -- If true, item can point to all liquid nodes (`liquidtype ~= "none"`),
     -- even those for which `pointable = false`
 
+    pointabilities = {
+		nodes = {
+			["default:stone"] = "blocking",
+			["group:leaves"] = false,
+		},
+		objects = {
+			["modname:entityname"] = true,
+			["group:ghosty"] = true, -- (an armor group)
+		}
+    },
+    -- Contains lists to override the `pointable` property of pointed nodes and objects.
+    -- The index can be a node/entity name or a group with the prefix `"group:"`.
+    -- (For objects `armor_groups` are used and for players the entity name is irrelevant.)
+    -- If multiple fields fit, the following priority order is applied:
+    -- 1. value of matching node/entity name
+    -- 2. `true` for any group
+    -- 3. `false` for any group
+    -- 4. `"blocking"` for any group
+    -- 5. `liquids_pointable` if it is a liquid node
+    -- 6. `pointable` property of the node or object
+
     light_source = 0,
     -- When used for nodes: Defines amount of light emitted by node.
     -- Otherwise: Defines texture glow when viewed as a dropped item
@@ -8633,6 +8674,20 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     -- if "air", node is removed.
     -- Otherwise should be name of node which the client immediately places
     -- upon digging. Server will always update with actual result shortly.
+
+    touch_interaction = {
+        -- Only affects touchscreen clients.
+        -- Defines the meaning of short and long taps with the item in hand.
+        -- The fields in this table have two valid values:
+        -- * "long_dig_short_place" (long tap  = dig, short tap = place)
+        -- * "short_dig_long_place" (short tap = dig, long tap  = place)
+        -- The field to be used is selected according to the current
+        -- `pointed_thing`.
+
+        pointed_nothing = "long_dig_short_place",
+        pointed_node    = "long_dig_short_place",
+        pointed_object  = "short_dig_long_place",
+    },
 
     sound = {
         -- Definition of item sounds to be played at various events.
@@ -8803,7 +8858,11 @@ Used by `minetest.register_node`.
 
     walkable = true,  -- If true, objects collide with node
 
-    pointable = true,  -- If true, can be pointed at
+    pointable = true,
+    -- Can be `true` if it is pointable, `false` if it can be pointed through,
+    -- or `"blocking"` if it is pointable but not selectable.
+    -- Can be overridden by the `pointabilities` of the held item.
+    -- A client may be able to point non-pointable nodes, since it isn't checked server-side.
 
     diggable = true,  -- If false, can never be dug
 
@@ -10535,8 +10594,8 @@ Used by `minetest.register_authentication_handler`.
 
     set_privileges = function(name, privileges),
     -- Set privileges of player `name`.
-    -- `privileges` is in table form, auth data should be created if not
-    -- present.
+    -- `privileges` is in table form: keys are privilege names, values are `true`;
+    -- auth data should be created if not present.
 
     reload = function(),
     -- Reload authentication data from the storage location.

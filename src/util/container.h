@@ -376,10 +376,16 @@ public:
 			assert(false);
 			return;
 		}
-		if (m_iterating)
-			m_new.emplace(key, value);
-		else
-			m_values.emplace(key, value);
+		if (m_iterating) {
+			auto it = m_values.find(key);
+			if (it != m_values.end()) {
+				it->second = V();
+				m_garbage++;
+			}
+			m_new[key] = value;
+		} else {
+			m_values[key] = value;
+		}
 	}
 
 	void put(const K &key, V &&value) {
@@ -387,10 +393,16 @@ public:
 			assert(false);
 			return;
 		}
-		if (m_iterating)
-			m_new.emplace(key, std::move(value));
-		else
-			m_values.emplace(key, std::move(value));
+		if (m_iterating) {
+			auto it = m_values.find(key);
+			if (it != m_values.end()) {
+				it->second = V();
+				m_garbage++;
+			}
+			m_new[key] = std::move(value);
+		} else {
+			m_values[key] = std::move(value);
+		}
 	}
 
 	V take(const K &key) {
@@ -405,7 +417,8 @@ public:
 		auto it = m_values.find(key);
 		if (it == m_values.end())
 			return ret;
-		ret = std::move(it->second);
+		if (!ret)
+			ret = std::move(it->second);
 		if (m_iterating) {
 			it->second = V();
 			m_garbage++;
@@ -516,7 +529,8 @@ private:
 	std::map<K, V> m_values;
 	std::map<K, V> m_new;
 	unsigned int m_iterating = 0;
-	size_t m_garbage = 0; // upper bound for null-placeholders in m_values
+	// approximate amount of null-placeholders in m_values, reliable for != 0 tests
+	size_t m_garbage = 0;
 
 	static constexpr size_t GC_MIN_SIZE = 30;
 };

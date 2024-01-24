@@ -7,6 +7,20 @@ dofile(minetest.get_modpath("testtools") .. "/light.lua")
 dofile(minetest.get_modpath("testtools") .. "/privatizer.lua")
 dofile(minetest.get_modpath("testtools") .. "/particles.lua")
 
+local pointabilities_nodes = {
+	nodes = {
+		["group:blocking_pointable_test"] = true,
+		["group:not_pointable_test"] = true,
+	},
+}
+
+local pointabilities_objects = {
+	objects = {
+		["group:blocking_pointable_test"] = true,
+		["group:not_pointable_test"] = true,
+	},
+}
+
 minetest.register_tool("testtools:param2tool", {
 	description = S("Param2 Tool") .."\n"..
 		S("Modify param2 value of nodes") .."\n"..
@@ -16,6 +30,7 @@ minetest.register_tool("testtools:param2tool", {
 		S("Sneak+Place: -8"),
 	inventory_image = "testtools_param2tool.png",
 	groups = { testtool = 1, disable_repair = 1 },
+	pointabilities = pointabilities_nodes,
 	on_use = function(itemstack, user, pointed_thing)
 		local pos = minetest.get_pointed_thing_position(pointed_thing)
 		if pointed_thing.type ~= "node" or (not pos) then
@@ -58,6 +73,7 @@ minetest.register_tool("testtools:node_setter", {
 		S("Place in air: Manually select a node"),
 	inventory_image = "testtools_node_setter.png",
 	groups = { testtool = 1, disable_repair = 1 },
+	pointabilities = pointabilities_nodes,
 	on_use = function(itemstack, user, pointed_thing)
 		local pos = minetest.get_pointed_thing_position(pointed_thing)
 		if pointed_thing.type == "nothing" then
@@ -118,6 +134,10 @@ minetest.register_tool("testtools:remover", {
 		S("Punch: Remove pointed node or object"),
 	inventory_image = "testtools_remover.png",
 	groups = { testtool = 1, disable_repair = 1 },
+	pointabilities = {
+		nodes = pointabilities_nodes.nodes,
+		objects = pointabilities_objects.objects,
+	},
 	on_use = function(itemstack, user, pointed_thing)
 		local pos = minetest.get_pointed_thing_position(pointed_thing)
 		if pointed_thing.type == "node" and pos ~= nil then
@@ -139,6 +159,7 @@ minetest.register_tool("testtools:falling_node_tool", {
 		S("Place: Move pointed node 2 units upwards, then make it fall"),
 	inventory_image = "testtools_falling_node_tool.png",
 	groups = { testtool = 1, disable_repair = 1 },
+	pointabilities = pointabilities_nodes,
 	on_place = function(itemstack, user, pointed_thing)
 		-- Teleport node 1-2 units upwards (if possible) and make it fall
 		local pos = minetest.get_pointed_thing_position(pointed_thing)
@@ -192,6 +213,7 @@ minetest.register_tool("testtools:rotator", {
 		S("Aux1+Punch: Roll"),
 	inventory_image = "testtools_entity_rotator.png",
 	groups = { testtool = 1, disable_repair = 1 },
+	pointabilities = pointabilities_objects,
 	on_use = function(itemstack, user, pointed_thing)
 		if pointed_thing.type ~= "object" then
 			return
@@ -250,6 +272,7 @@ minetest.register_tool("testtools:object_mover", {
 		S("Sneak+Place: Decrease distance"),
 	inventory_image = "testtools_object_mover.png",
 	groups = { testtool = 1, disable_repair = 1 },
+	pointabilities = pointabilities_objects,
 	on_place = mover_config,
 	on_secondary_use = mover_config,
 	on_use = function(itemstack, user, pointed_thing)
@@ -296,6 +319,7 @@ minetest.register_tool("testtools:entity_scaler", {
 		S("Sneak+Punch: Decrease scale"),
 	inventory_image = "testtools_entity_scaler.png",
 	groups = { testtool = 1, disable_repair = 1 },
+	pointabilities = pointabilities_objects,
 	on_use = function(itemstack, user, pointed_thing)
 		if pointed_thing.type ~= "object" then
 			return
@@ -355,6 +379,7 @@ minetest.register_tool("testtools:branding_iron", {
 		S("Devices that accept the returned name also accept \"player:<playername>\" for players."),
 	inventory_image = "testtools_branding_iron.png",
 	groups = { testtool = 1, disable_repair = 1 },
+	pointabilities = pointabilities_objects,
 	on_use = function(_itemstack, user, pointed_thing)
 		local obj
 		local msg
@@ -499,6 +524,7 @@ minetest.register_tool("testtools:object_editor", {
 		S("Punch air: Edit yourself"),
 	inventory_image = "testtools_object_editor.png",
 	groups = { testtool = 1, disable_repair = 1 },
+	pointabilities = pointabilities_objects,
 	on_use = function(itemstack, user, pointed_thing)
 		if user and user:is_player() then
 			local name = user:get_player_name()
@@ -586,6 +612,7 @@ minetest.register_tool("testtools:object_attacher", {
 		S("Aux1+Sneak+Place: Decrease attachment rotation"),
 	inventory_image = "testtools_object_attacher.png",
 	groups = { testtool = 1, disable_repair = 1 },
+	pointabilities = pointabilities_objects,
 	on_place = attacher_config,
 	on_secondary_use = attacher_config,
 	on_use = function(itemstack, user, pointed_thing)
@@ -679,6 +706,7 @@ minetest.register_tool("testtools:children_getter", {
 		S("Punch air to show your own 'children'"),
 	inventory_image = "testtools_children_getter.png",
 	groups = { testtool = 1, disable_repair = 1 },
+	pointabilities = pointabilities_objects,
 	on_use = function(itemstack, user, pointed_thing)
 		if user and user:is_player() then
 			local name = user:get_player_name()
@@ -998,3 +1026,41 @@ minetest.register_on_leaveplayer(function(player)
 	meta_latest_keylist[name] = nil
 	node_meta_posses[name] = nil
 end)
+
+-- Pointing Staffs
+
+minetest.register_tool("testtools:blocked_pointing_staff", {
+	description = S("Blocked Pointing Staff").."\n"..
+			S("Can point the Blocking Pointable Node/Object and "..
+			"the Pointable Node/Object is point blocking."),
+	inventory_image = "testtools_blocked_pointing_staff.png",
+	pointabilities = {
+		nodes = {
+			["testnodes:blocking_pointable"] = true,
+			["group:pointable_test"] = "blocking"
+		},
+		objects = {
+			["testentities:blocking_pointable"] = true,
+			["group:pointable_test"] = "blocking"
+		}
+	}
+})
+
+minetest.register_tool("testtools:ultimate_pointing_staff", {
+	description = S("Ultimate Pointing Staff").."\n"..
+			S("Can point all pointable test nodes, objects and liquids."),
+	inventory_image = "testtools_ultimate_pointing_staff.png",
+	liquids_pointable = true,
+	pointabilities = {
+		nodes = {
+			["group:blocking_pointable_test"] = true,
+			["group:pointable_test"] = true,
+			["testnodes:not_pointable"] = true
+		},
+		objects = {
+			["group:blocking_pointable_test"] = true,
+			["group:pointable_test"] = true,
+			["testentities:not_pointable"] = true
+		}
+	}
+})

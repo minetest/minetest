@@ -35,6 +35,7 @@ class Client;
 #include "constants.h" // BS
 #include "texture_override.h" // TextureOverride
 #include "tileanimation.h"
+#include "util/pointabilities.h"
 
 class IItemDefManager;
 class ITextureSource;
@@ -395,8 +396,8 @@ struct ContentFeatures
 	// This is used for collision detection.
 	// Also for general solidness queries.
 	bool walkable;
-	// Player can point to these
-	bool pointable;
+	// Player can point to these, point through or it is blocking
+	PointabilityType pointable;
 	// Player can dig these
 	bool diggable;
 	// Player can climb these
