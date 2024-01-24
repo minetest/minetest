@@ -482,8 +482,11 @@ public:
 	/* get list of client player names */
 	const std::vector<std::string> &getPlayerNames() const { return m_clients_names; }
 
-	/* send message to client */
-	void send(session_t peer_id, u8 channelnum, NetworkPacket *pkt, bool reliable);
+	/* send to one client */
+	void send(session_t peer_id, NetworkPacket *pkt);
+
+	/* send to one client, deviating from the standard params */
+	void sendCustom(session_t peer_id, u8 channel, NetworkPacket *pkt, bool reliable);
 
 	/* send to all clients */
 	void sendToAll(NetworkPacket *pkt);

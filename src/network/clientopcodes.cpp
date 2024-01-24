@@ -19,8 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "clientopcodes.h"
+#include "client/client.h"
 
-const static ToClientCommandHandler null_command_handler = {"TOCLIENT_NULL", TOCLIENT_STATE_ALL, &Client::handleCommand_Null};
+const static ToClientCommandHandler null_command_handler =
+	{"TOCLIENT_NULL", TOCLIENT_STATE_ALL, &Client::handleCommand_Null};
 
 const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 {
@@ -126,7 +128,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_SET_LIGHTING",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_SetLighting }, // 0x63,
 };
 
-const static ServerCommandFactory null_command_factory = { "TOSERVER_NULL", 0, false };
+const static ServerCommandFactory null_command_factory = { nullptr, 0, false };
 
 /*
 	Channels used for Client -> Server communication
@@ -223,5 +225,5 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_FIRST_SRP",          1, true }, // 0x50
 	{ "TOSERVER_SRP_BYTES_A",        1, true }, // 0x51
 	{ "TOSERVER_SRP_BYTES_M",        1, true }, // 0x52
-	{ "TOSERVER_UPDATE_CLIENT_INFO", 1, true }, // 0x53
+	{ "TOSERVER_UPDATE_CLIENT_INFO", 2, true }, // 0x53
 };
