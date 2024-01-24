@@ -423,24 +423,24 @@ minetest.register_tool("basetools:dagger_steel", {
 -- Test tool uses, punch_attack_uses, and wear bar coloring
 local uses = { 1, 2, 3, 5, 10, 50, 100, 1000, 10000, 65535 }
 local wear_colors = { nil, nil, nil, "#5865f2", "slateblue",
-    {
-    	color_stops = {
-    		[0] = "red",
-    		[0.5] = "yellow",
-    		[1.0] = "blue"
-    	},
-    	blend = "linear"
-    },
-    {
-    	color_stops = {
-    		[0] = "#ffff00",
-    		[0.2] = "#ff00ff",
-    		[0.3] = "#ffff00",
-    		[0.45] = "#c0ffee",
-    		[0.6] = {r=255, g=255, b=0, a=100}, -- continues until the end
-    	},
-    	blend = "constant"
-    }, nil, nil, nil }
+	{
+		color_stops = {
+			[0] = "red",
+			[0.5] = "yellow",
+			[1.0] = "blue"
+		},
+		blend = "linear"
+	},
+	{
+		color_stops = {
+			[0] = "#ffff00",
+			[0.2] = "#ff00ff",
+			[0.3] = "#ffff00",
+			[0.45] = "#c0ffee",
+			[0.6] = {r=255, g=255, b=0, a=100}, -- continues until the end
+		},
+		blend = "constant"
+	}, nil, nil, nil }
 local wear_color_desc = { nil, nil, nil, "Solid color: #5865f2", "Solid color: slateblue", "Ranges from blue to yellow to red", "Random blocks", nil, nil, nil }
 for i=1, #uses do
 	local u = uses[i]
@@ -489,8 +489,8 @@ minetest.register_chatcommand("wear_color", {
 		local wear_desc = "Reset override"
 
 		if param ~= "" then
-		    wear_color = wear_colors[tonumber(param)]
-		    wear_desc = "Set override: "..(wear_color_desc[tonumber(param)] or "Default behavior")
+			wear_color = wear_colors[tonumber(param)]
+			wear_desc = "Set override: "..(wear_color_desc[tonumber(param)] or "Default behavior")
 		end
 		local tool = player:get_wielded_item()
 		if tool:get_count() == 0 then
