@@ -99,7 +99,9 @@ void read_item_definition(lua_State* L, int index,
 		def.wear_bar_params = std::optional(new WearBarParams(read_wear_bar_params(L, -1)));
 	} else if (lua_isstring(L, -1)) {
 		def.wear_bar_params = std::optional(new WearBarParams());
-		parseColorString(luaL_checkstring(L, -1), def.wear_bar_params.value()->defaultColor, false);
+		video::SColor color;
+		read_color(L, -1, &color);
+		def.wear_bar_params.value()->colorStops.emplace(0.0, color);
 	}
 
 	// If name is "" (hand), ensure there are ToolCapabilities
@@ -1470,35 +1472,15 @@ void push_wear_bar_params(lua_State *L,
 		const WearBarParams &params)
 {
 	lua_newtable(L);
-	setstringfield(L, -1, "default", encodeHexColorString(params.defaultColor));
-	if (params.blend) {
-		// insert into table using minPercent as key, and the ColorString as the value
-		for (const WearBarParam &param : params.params) {
-			lua_pushnumber(L, param.minPercent); // key
-			lua_pushstring(L, encodeHexColorString(param.color).c_str()); // value
-			lua_rawset(L, -3);
-			//setstringfield(L, -1, std::to_string(param.minPercent).c_str(),
-			//	       encodeHexColorString(param.color));
-		}
-	} else {
-		// For each value
-		int i = 0;
-		for (const WearBarParam &param : params.params) {
-			i++;
-			lua_pushnumber(L, i); // key
+	setstringfield(L, -1, "blend", es_BlendMode[params.blend].str);
 
-			// Create value table
-			lua_newtable(L);
-			// Set simple parameters
-			setfloatfield(L, -1, "min_durability", param.minPercent);
-			setfloatfield(L, -1, "max_durability", param.maxPercent);
-			setstringfield(L, -1, "color", encodeHexColorString(param.color));
-
-			// Insert value table
-			lua_rawset(L, -3);
-		}
+	lua_newtable(L);
+	for (const std::pair<const float, const video::SColor> item: params.colorStops) {
+		lua_pushnumber(L, item.first); // key
+		push_ARGB8(L, item.second);
+		lua_rawset(L, -3);
 	}
-	setboolfield(L, -1, "blend", params.blend);
+	lua_setfield(L, -2, "color_stops");
 }
 
 /******************************************************************************/
@@ -1784,39 +1766,41 @@ WearBarParams read_wear_bar_params(
 		lua_State *L, int table)
 {
 	WearBarParams params;
-	std::basic_string<char> default_color_string;
-	if (getstringfield(L, table, "default", default_color_string))
-		parseColorString(default_color_string, params.defaultColor, false);
-	bool blend = getboolfield_default(L, table, "blend", false);
-	params.blend = blend;
 
+	lua_getfield(L, table, "color_stops");
+	if (!check_field_or_nil(L, -1, LUA_TTABLE, "color_stops")) {
+		video::SColor color;
+		read_color(L, -1, &color);
+		params.colorStops.emplace(0.0, color);
+		lua_pop(L, 1);
+		return params;
+	}
+
+	// color stops table is on the stack
 	int table_values = lua_gettop(L);
 	lua_pushnil(L);
 	while(lua_next(L, table_values) != 0) {
 		// key at index -2 and value at index -1 within table_values
-		// color value entries are stored in a flat 'list' along with the default color,
-		// but in non-blend mode color entries can be distinguished by that value being a table
-		// (in blend mode, color entries can be distinguished by having a numerical key)
-		if (lua_istable(L, -1)) {
-			int value_table = lua_gettop(L);
-			WearBarParam param;
-			getfloatfield(L, value_table, "min_durability", param.minPercent);
-			getfloatfield(L, value_table, "max_durability", param.maxPercent);
-			std::string color_string;
-			if (getstringfield(L, value_table, "color", color_string))
-				parseColorString(color_string, param.color, false);
-			params.params.push_back(param);
-		} else if (blend && lua_isnumber(L, -2) && lua_isstring(L, -1)) {
-			WearBarParam param;
-			float point = luaL_checknumber(L, -2);
-			std::string color_string = luaL_checkstring(L, -1);
-			param.minPercent = param.maxPercent = point;
-			parseColorString(color_string, param.color, false);
-			params.params.push_back(param);
-		}
+		float point = luaL_checknumber(L, -2);
+		video::SColor color;
+		read_color(L, -1, &color);
+		params.colorStops.emplace(point, color);
+
 		// removes value, keeps key for next iteration
 		lua_pop(L, 1);
 	}
+	lua_pop(L, 1); // pop color stops table
+
+	lua_getfield(L, table, "blend");
+	if (check_field_or_nil(L, -1, LUA_TSTRING, "blend")) {
+		std::string blend = getstringfield_default(L, table, "blend", "constant");
+		int result = params.blend;
+		string_to_enum(es_BlendMode, result,
+			       std::string(lua_tostring(L, -1)));
+		params.blend = static_cast<enum BlendMode>(result);
+	}
+	lua_pop(L, 1);
+
 	return params;
 }
 

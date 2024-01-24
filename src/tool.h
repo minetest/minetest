@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include "itemgroup.h"
 #include "json-forwards.h"
+#include "common/c_types.h"
 #include <json/json.h>
 #include <SColor.h>
 
@@ -99,28 +100,30 @@ struct WearBarParam
 			maxPercent(maxPercent_)
 	{}
 
-	void fromJson(Json::Value &value);
-	void toJson(Json::Value &value) const;
-
 	bool matches(float percent) const
 	{
 		return minPercent <= percent && percent < maxPercent;
 	}
 };
 
+enum BlendMode: u8 {
+    BLEND_MODE_CONSTANT,
+    BLEND_MODE_LINEAR,
+    BlendMode_END // Dummy for validity check
+};
+
+extern const EnumString es_BlendMode[];
+
 struct WearBarParams
 {
-	video::SColor defaultColor;
-	std::vector<WearBarParam> params;
-	bool blend;
+	std::map<float, video::SColor> colorStops;
+	BlendMode blend;
 
 	WearBarParams(
-			const video::SColor &defaultColor_ = video::SColor(255, 255, 255, 255),
-			const std::vector<WearBarParam> &params_ = std::vector<WearBarParam>(),
-			const bool blend_ = false
+			const std::map<float, video::SColor> &color_stops_ = std::map<float, video::SColor>(),
+			const BlendMode blend_ = BLEND_MODE_CONSTANT
 			):
-			defaultColor(defaultColor_),
-			params(params_),
+			colorStops(color_stops_),
 			blend(blend_)
 	{}
 

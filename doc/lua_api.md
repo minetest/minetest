@@ -2400,62 +2400,31 @@ Wear bar colors definition
 
 ### Syntax
 
-For non-blending mode:
 ```lua
 {
-    {
-        color = "#ff00ff",
-        min_durability = 0.2, -- inclusive
-        max_durability = 0.3  -- exclusive
-    },
-    {
-        color = "#c0ffee",
-        min_durability = 0.45,
-        max_durability = 0.6
-    },
-    -- color to use if no other ranges match the durability
-    default = "#ffff00",
-    blend = false
-}
-```
-
-For blending mode:
-```lua
-{
-    -- specify color for a specific durability percent, and blend between them
-    [0.2] = "#ff00ff",
-    [0.45] = "#c0ffee",
-    -- used for 0% and 100% durability if no color explicitly specified
-    default = "#ffff00",
-    blend = true
+    -- 'constant' or 'linear'
+    -- (nil defaults to 'constant')
+    blend = "linear",
+    color_stops = {
+        [0.0] = "#ff0000",
+        [0.5] = "slateblue",
+        [1.0] = {r=0, g=255, b=0, a=150},
+    }
 }
 ```
 
 ### Blend mode `blend`
 
-* If true, it blends smoothly between each defined color point.
-* If false, no interpolation is used and instead colors are defined for ranges of durabilities.
-`blend` is optional and defaults false.
+* `linear`: blends smoothly between each defined color point.
+* `constant`: each color starts at its defined point, and continues up to to the next point
 
-### Default color `default`
+### Color stops `color_stops`
 
-* If `blend` is false, the color to use if the percentage of remaining durability does not match any values.
-* If `blend` is true, the color to use on the outside of the range of colors if no such color is defined.
-
-### Color values
-
-In blending mode, specified as `float` keys assigned to a `ColorString` values.
-
-In non-blending mode, specified as tables containing the following keys:
-* `min_durability`: `float`, minimum durability to show color at (inclusive)
-* `max_durability`: `float`, maximum durability to show color at (exclusive)
-* `color`: `ColorString`, color to use for bar in the specified range
+Specified as `float` keys assigned to `ColorSpec` values.
 
 ### Shortcut usage
 
-Wear bar color can also be specified as a single `ColorString` instead of a table.
-In this case, it is automatically converted to a table, where there are no color points,
-`blend` is false, and `default` is the specified `ColorString`.
+Wear bar color can also be specified as a single `ColorSpec` instead of a table.
 
 
 
@@ -8893,23 +8862,17 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- fallback behavior.
     },
 
-    -- Set wear bar color of the tool by setting color points or ranges
-    -- See "Wear Bar Color" section for further explanation including example
+    -- Set wear bar color of the tool by setting color stops and blend mode
+    -- See "Wear Bar Color" section for further explanation including an example
     wear_color = {
-        {
-            color = "#ff00ff",
-            min_durability = 0.2,
-            max_durability = 0.3
-        },
-        {
-            color = "#c0ffee",
-            min_durability = 0.45,
-            max_durability = 0.6
-        },
-        default = "#ffff00",
-        -- default color for fallback
-        blend = false
-        -- whether to blend the colors
+        -- interpolation mode: 'constant' or 'linear'
+        -- (nil defaults to 'constant')
+        blend = "linear",
+        color_stops = {
+            [0.0] = "#ff0000",
+            [0.5] = "#ffff00",
+            [1.0] = "#00ff00",
+        }
     },
 
     node_placement_prediction = nil,

@@ -379,7 +379,7 @@ int LuaItemStack::l_add_wear_by_uses(lua_State *L)
 // get_wear_bar_params(self) -> table
 // Returns the effective wear bar parameters.
 // Returns nil if this item has none associated.
-int LuaItemStack::l_get_wear_bar_params(lua_State *L) // todo test
+int LuaItemStack::l_get_wear_bar_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkObject<LuaItemStack>(L, 1);
