@@ -1062,11 +1062,13 @@ void Server::Receive(float timeout)
 			infostream << "Server::Receive(): SerializationError: what()="
 					<< e.what() << std::endl;
 		} catch (const ClientStateError &e) {
-			errorstream << "ProcessData: peer=" << peer_id << " what()="
+			errorstream << "ClientStateError: peer=" << peer_id << " what()="
 					 << e.what() << std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_UNEXPECTED_DATA);
-		} catch (const con::PeerNotFoundException &e) {
-			// Do nothing
+		} catch (con::PeerNotFoundException &e) {
+			infostream << "Server: PeerNotFoundException" << std::endl;
+		} catch (ClientNotFoundException &e) {
+			infostream << "Server: ClientNotFoundException" << std::endl;
 		}
 	}
 }
@@ -1189,7 +1191,7 @@ void Server::ProcessData(NetworkPacket *pkt)
 		// Command must be handled into ToServerCommandHandler
 		if (command >= TOSERVER_NUM_MSG_TYPES) {
 			infostream << "Server: Ignoring unknown command "
-					 << command << std::endl;
+					 << static_cast<unsigned>(command) << std::endl;
 			return;
 		}
 
@@ -1201,9 +1203,9 @@ void Server::ProcessData(NetworkPacket *pkt)
 		u8 peer_ser_ver = getClient(peer_id, CS_InitDone)->serialization_version;
 
 		if(peer_ser_ver == SER_FMT_VER_INVALID) {
-			errorstream << "Server::ProcessData(): Cancelling: Peer"
-					" serialization format invalid or not initialized."
-					" Skipping incoming command=" << command << std::endl;
+			errorstream << "Server: Peer serialization format invalid. "
+					"Skipping incoming command "
+					<< static_cast<unsigned>(command) << std::endl;
 			return;
 		}
 
@@ -1216,9 +1218,10 @@ void Server::ProcessData(NetworkPacket *pkt)
 		if (m_clients.getClientState(peer_id) < CS_Active) {
 			if (command == TOSERVER_PLAYERPOS) return;
 
-			errorstream << "Got packet command: " << command << " for peer id "
-					<< peer_id << " but client isn't active yet. Dropping packet "
-					<< std::endl;
+			errorstream << "Server: Got packet command "
+					<< static_cast<unsigned>(command)
+					<< " for peer id " << peer_id
+					<< " but client isn't active yet. Dropping packet." << std::endl;
 			return;
 		}
 
@@ -1346,15 +1349,13 @@ void Server::printToConsoleOnly(const std::string &text)
 
 void Server::Send(NetworkPacket *pkt)
 {
+	FATAL_ERROR_IF(pkt->getPeerId() == 0, "Server::Send() missing peer ID");
 	Send(pkt->getPeerId(), pkt);
 }
 
 void Server::Send(session_t peer_id, NetworkPacket *pkt)
 {
-	m_clients.send(peer_id,
-		clientCommandFactoryTable[pkt->getCommand()].channel,
-		pkt,
-		clientCommandFactoryTable[pkt->getCommand()].reliable);
+	m_clients.send(peer_id, pkt);
 }
 
 void Server::SendMovement(session_t peer_id)
@@ -2137,9 +2138,8 @@ void Server::SendActiveObjectMessages(session_t peer_id, const std::string &data
 
 	pkt.putRawString(datas.c_str(), datas.size());
 
-	m_clients.send(pkt.getPeerId(),
-			reliable ? clientCommandFactoryTable[pkt.getCommand()].channel : 1,
-			&pkt, reliable);
+	auto &ccf = clientCommandFactoryTable[pkt.getCommand()];
+	m_clients.sendCustom(pkt.getPeerId(), reliable ? ccf.channel : 1, &pkt, reliable);
 }
 
 void Server::SendCSMRestrictionFlags(session_t peer_id)
@@ -2237,12 +2237,12 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 			<< params.spec.loop << params.spec.fade << params.spec.pitch
 			<< ephemeral << params.spec.start_time;
 
-	bool as_reliable = !ephemeral;
+	const bool as_reliable = !ephemeral;
 
 	for (const session_t peer_id : dst_clients) {
 		if (!ephemeral)
 			params.clients.insert(peer_id);
-		m_clients.send(peer_id, 0, &pkt, as_reliable);
+		m_clients.sendCustom(peer_id, 0, &pkt, as_reliable);
 	}
 
 	if (!ephemeral)
@@ -2261,8 +2261,7 @@ void Server::stopSound(s32 handle)
 	pkt << handle;
 
 	for (session_t peer_id : psound.clients) {
-		// Send as reliable
-		m_clients.send(peer_id, 0, &pkt, true);
+		Send(peer_id, &pkt);
 	}
 
 	// Remove sound reference
@@ -2282,8 +2281,7 @@ void Server::fadeSound(s32 handle, float step, float gain)
 	pkt << handle << step << gain;
 
 	for (session_t peer_id : psound.clients) {
-		// Send as reliable
-		m_clients.send(peer_id, 0, &pkt, true);
+		Send(peer_id, &pkt);
 	}
 
 	// Remove sound reference
@@ -2340,8 +2338,7 @@ void Server::sendNodeChangePkt(NetworkPacket &pkt, v3s16 block_pos,
 			continue;
 		}
 
-		// Send as reliable
-		m_clients.send(client_id, 0, &pkt, true);
+		Send(client_id, &pkt);
 	}
 }
 
@@ -3670,8 +3667,8 @@ bool Server::dynamicAddMedia(std::string filepath,
 					to push the media over ALL channels to ensure it is processed before
 					it is used. In practice this means channels 1 and 0.
 				*/
-				m_clients.send(peer_id, 1, &legacy_pkt, true);
-				m_clients.send(peer_id, 0, &legacy_pkt, true);
+				m_clients.sendCustom(peer_id, 1, &legacy_pkt, true);
+				m_clients.sendCustom(peer_id, 0, &legacy_pkt, true);
 			} else {
 				waiting.emplace(peer_id);
 				Send(peer_id, &pkt);

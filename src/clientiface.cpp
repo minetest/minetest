@@ -784,10 +784,21 @@ void ClientInterface::UpdatePlayerList()
 	}
 }
 
-void ClientInterface::send(session_t peer_id, u8 channelnum,
-		NetworkPacket *pkt, bool reliable)
+void ClientInterface::send(session_t peer_id, NetworkPacket *pkt)
 {
-	m_con->Send(peer_id, channelnum, pkt, reliable);
+	auto &ccf = clientCommandFactoryTable[pkt->getCommand()];
+	FATAL_ERROR_IF(!ccf.name, "packet type missing in table");
+
+	m_con->Send(peer_id, ccf.channel, pkt, ccf.reliable);
+}
+
+void ClientInterface::sendCustom(session_t peer_id, u8 channel, NetworkPacket *pkt, bool reliable)
+{
+	// check table anyway to prevent mistakes
+	FATAL_ERROR_IF(!clientCommandFactoryTable[pkt->getCommand()].name,
+		"packet type missing in table");
+
+	m_con->Send(peer_id, channel, pkt, reliable);
 }
 
 void ClientInterface::sendToAll(NetworkPacket *pkt)
@@ -797,9 +808,9 @@ void ClientInterface::sendToAll(NetworkPacket *pkt)
 		RemoteClient *client = client_it.second;
 
 		if (client->net_proto_version != 0) {
-			m_con->Send(client->peer_id,
-					clientCommandFactoryTable[pkt->getCommand()].channel, pkt,
-					clientCommandFactoryTable[pkt->getCommand()].reliable);
+			auto &ccf = clientCommandFactoryTable[pkt->getCommand()];
+			FATAL_ERROR_IF(!ccf.name, "packet type missing in table");
+			m_con->Send(client->peer_id, ccf.channel, pkt, ccf.reliable);
 		}
 	}
 }
