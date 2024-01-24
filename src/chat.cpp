@@ -775,9 +775,9 @@ void ChatPrompt::clampView()
 
 
 ChatBackend::ChatBackend():
-	m_console_buffer(500),
+	m_console_buffer(1500),
 	m_recent_buffer(6),
-	m_prompt(L"]", 500)
+	m_prompt(L"]", 1500)
 {
 }
 
