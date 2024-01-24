@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+// Note that client serverlist handling is all in Lua, this is only announcements now.
+
 namespace ServerList
 {
 #if USE_CURL
@@ -36,4 +38,4 @@ void sendAnnounce(AnnounceAction, u16 port,
 		bool dedicated = false);
 #endif
 
-} // namespace ServerList
+}
