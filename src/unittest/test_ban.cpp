@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 
-#include "ban.h"
+#include "server/ban.h"
 
 class TestBan : public TestBase
 {
