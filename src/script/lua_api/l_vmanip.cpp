@@ -48,10 +48,8 @@ int LuaVoxelManip::l_read_from_map(lua_State *L)
 	if (vm->isOrphan())
 		return 0;
 
-	if (getEmergeThread(L)) {
-		log_deprecated(L, "read_from_map called in mapgen environment");
-		return 0;
-	}
+	if (getEmergeThread(L))
+		throw LuaError("VoxelManip:read_from_map called in mapgen environment");
 
 	v3s16 bp1 = getNodeBlockPos(check_v3s16(L, 2));
 	v3s16 bp2 = getNodeBlockPos(check_v3s16(L, 3));
@@ -122,10 +120,8 @@ int LuaVoxelManip::l_write_to_map(lua_State *L)
 		return 0;
 
 	// This wouldn't work anyway as we have no env ptr, but it's still unsafe.
-	if (getEmergeThread(L)) {
-		log_deprecated(L, "write_to_map called in mapgen environment");
-		return 0;
-	}
+	if (getEmergeThread(L))
+		throw LuaError("VoxelManip:write_to_map called in mapgen environment");
 
 	GET_ENV_PTR;
 
