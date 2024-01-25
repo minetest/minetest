@@ -345,11 +345,13 @@ void RemoteClient::GetNextBlocks (
 			if (m_blocks_sent.find(p) != m_blocks_sent.end())
 				continue;
 
-			bool block_not_found = false;
 			if (block) {
-				// Check whether the block exists (with data)
-				if (!block->isGenerated())
-					block_not_found = true;
+				/*
+					If block is not generated and generating new ones is
+					not wanted, skip block.
+				*/
+				if (!block->isGenerated() && !generate)
+					continue;
 
 				/*
 					If block is not close, don't send it unless it is near
@@ -380,18 +382,9 @@ void RemoteClient::GetNextBlocks (
 			}
 
 			/*
-				If block has been marked to not exist on disk (dummy) or is
-				not generated and generating new ones is not wanted, skip block.
-			*/
-			if (!generate && block_not_found) {
-				// get next one.
-				continue;
-			}
-
-			/*
 				Add inexistent block to emerge queue.
 			*/
-			if (block == NULL || block_not_found) {
+			if (!block || !block->isGenerated()) {
 				if (emerge->enqueueBlockEmerge(peer_id, p, generate)) {
 					if (nearest_emerged_d == -1)
 						nearest_emerged_d = d;
