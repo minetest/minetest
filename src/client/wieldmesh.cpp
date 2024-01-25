@@ -586,7 +586,9 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 		case NDT_NORMAL:
 		case NDT_ALLFACES:
 		case NDT_LIQUID:
-		case NDT_FLOWINGLIQUID: {
+		case NDT_FLOWINGLIQUID:
+		case NDT_SUNKEN:
+		case NDT_COVERED: {
 			scene::IMesh *cube = g_extrusion_mesh_cache->createCube();
 			mesh = cloneMesh(cube);
 			cube->drop();
