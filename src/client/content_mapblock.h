@@ -91,6 +91,9 @@ private:
 		f32 scale;
 	} cur_node;
 
+// camera node
+  const ContentFeatures *cam_f;
+
 // lighting
 	void getSmoothLightFrame();
 	LightInfo blendLight(const v3f &vertex_pos);

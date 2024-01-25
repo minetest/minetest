@@ -63,6 +63,7 @@ public:
 	}
 
 	void updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset, video::SColor light_color);
+	void updateMesh(MapBlockMesh *mesh);
 
 	/*
 		Forcefully get a sector from somewhere
@@ -180,6 +181,9 @@ private:
 	v3s16 m_camera_offset;
 	video::SColor m_camera_light_color = video::SColor(0xFFFFFFFF);
 	bool m_needs_update_transparent_meshes = true;
+
+	content_t m_camera_liquid_source_id = CONTENT_IGNORE;
+	content_t m_camera_liquid_flowing_id = CONTENT_IGNORE;
 
 	std::map<v3s16, MapBlock*, MapBlockComparer> m_drawlist;
 	std::vector<MapBlock*> m_keeplist;
