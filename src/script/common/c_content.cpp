@@ -952,9 +952,6 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index, NodeDefM
 		errorstream << "Field \"liquid_move_physics\": Invalid type!" << std::endl;
 	}
 	lua_pop(L, 1);
-
-	// inner_node for sunken and covered drawtype
-	getstringfield(L, index, "inner_node", f.inner_node);
 }
 
 void push_content_features(lua_State *L, const ContentFeatures &c)

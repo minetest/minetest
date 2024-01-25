@@ -9,6 +9,7 @@
 #include "util/numeric.h"
 #include "client/tile.h"
 #include "voxel.h"
+#include "nodemetadata.h"
 #include <array>
 #include <map>
 #include <unordered_map>
@@ -29,6 +30,7 @@ struct MinimapMapblock;
 struct MeshMakeData
 {
 	VoxelManipulator m_vmanip;
+	std::map<v3s16, RenderCachedMetadataMap> m_render_cache;
 	v3s16 m_blockpos = v3s16(-1337,-1337,-1337);
 	v3s16 m_crack_pos_relative = v3s16(-1337,-1337,-1337);
 	bool m_smooth_lighting = false;
@@ -44,6 +46,7 @@ struct MeshMakeData
 	*/
 	void fillBlockDataBegin(const v3s16 &blockpos);
 	void fillBlockData(const v3s16 &bp, MapNode *data);
+	void fillMetadataCache(RenderCachedMetadataMap &&cache);
 
 	/*
 		Set the (node) position of a crack
