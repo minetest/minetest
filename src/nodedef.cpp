@@ -424,8 +424,6 @@ void ContentFeatures::reset()
 	move_resistance = 0;
 	liquid_move_physics = false;
 	post_effect_color_shaded = false;
-	inner_node.clear();
-	inner_node_id = CONTENT_IGNORE;
 }
 
 void ContentFeatures::setAlphaFromLegacy(u8 legacy_alpha)
@@ -553,7 +551,6 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, move_resistance);
 	writeU8(os, liquid_move_physics);
 	writeU8(os, post_effect_color_shaded);
-	os << serializeString16(inner_node);
 }
 
 void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
@@ -684,9 +681,6 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 		if (is.eof())
 			throw SerializationError("");
 		post_effect_color_shaded = tmp;
-		inner_node = deSerializeString16(is);
-		if (is.eof())
-			throw SerializationError("");
 	} catch(SerializationError &e) {};
 }
 
@@ -1675,9 +1669,6 @@ static void removeDupes(std::vector<content_t> &list)
 void NodeDefManager::resolveCrossrefs()
 {
 	for (ContentFeatures &f : m_content_features) {
-		if (f.drawtype == NDT_SUNKEN || f.drawtype == NDT_COVERED) {
-			f.inner_node_id = getId(f.inner_node);
-		}
 		if (f.isLiquid() || f.isLiquidRender()) {
 			f.liquid_alternative_flowing_id = getId(f.liquid_alternative_flowing);
 			f.liquid_alternative_source_id = getId(f.liquid_alternative_source);
