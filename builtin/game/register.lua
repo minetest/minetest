@@ -171,14 +171,6 @@ function core.register_item(name, itemdef)
 		itemdef.paramtype2 = "flowingliquid"
 	end
 
-	if itemdef.type == "node" and (itemdef.drawtype == "sunken" or itemdef.drawtype == "covered") then
-		if not core.registered_nodes[itemdef.inner_node] then
-			error("Unable to register item " .. name .. ": Inner node not registered: " .. itemdef.inner_node)
-		end
-	else
-		itemdef.inner_node = nil
-	end
-
 	-- BEGIN Legacy stuff
 	if itemdef.cookresult_itemstring ~= nil and itemdef.cookresult_itemstring ~= "" then
 		core.register_craft({

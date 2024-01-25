@@ -1755,7 +1755,7 @@ void MapblockMeshGenerator::drawCoveredNode()
 		cur_node.f = store_f;
 	}
 
-	drawSolidNode();
+	drawNodeboxNode();
 }
 
 // also called when the drawtype is known but should have been pre-converted
