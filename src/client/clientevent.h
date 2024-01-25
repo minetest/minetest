@@ -23,6 +23,7 @@ enum ClientEventType : u8
 	CE_DEATHSCREEN_LEGACY,
 	CE_SHOW_FORMSPEC,
 	CE_SHOW_LOCAL_FORMSPEC,
+	CE_UI_MESSAGE,
 	CE_SPAWN_PARTICLE,
 	CE_ADD_PARTICLESPAWNER,
 	CE_DELETE_PARTICLESPAWNER,
@@ -85,6 +86,10 @@ struct ClientEvent
 			std::string *formspec;
 			std::string *formname;
 		} show_formspec;
+		struct
+		{
+			std::string *data;
+		} ui_message;
 		// struct{
 		//} textures_updated;
 		ParticleParameters *spawn_particle;
