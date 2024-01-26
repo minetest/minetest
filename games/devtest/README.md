@@ -17,7 +17,7 @@ This is a basic testing environment that contains a bunch of things to test the 
 
 Basically, just create a world and start. A few important things to note:
 
-* Items are gotten from the “Chest of Everything” (`chest_of_everything:chest`)
+* Items are gotten from the "Chest of Everything" (`chest_of_everything:chest`)
 * When you lost your initial items, type in `/stuff` command to get them back
 * By default, Creative Mode activates infinite node placement. This behavior can be changed with the `devtest_infplace` setting
 * Use the `/infplace` command to toggle infinite node placement in-game

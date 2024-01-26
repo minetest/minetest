@@ -47,7 +47,7 @@ For Void users:
 ## Download
 
 You can install Git for easily keeping your copy up to date.
-If you don’t want Git, read below on how to get the source without Git.
+If you don't want Git, read below on how to get the source without Git.
 This is an example for installing Git on Debian/Ubuntu:
 
     sudo apt install git

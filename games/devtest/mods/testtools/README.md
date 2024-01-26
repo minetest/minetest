@@ -55,8 +55,8 @@ Changes the entity rotation (with `set_rotation`).
 Usage:
 
 * Punch entity: Rotate yaw
-* Punch entity while holding down “Sneak” key: Rotate pitch
-* Punch entity while holding down “Special” key (aka “Aux”): Rotate roll
+* Punch entity while holding down "Sneak" key: Rotate pitch
+* Punch entity while holding down "Special" key (aka "Aux"): Rotate roll
 
 Each usage rotates the entity by 22.5°.
 
@@ -77,7 +77,7 @@ Usage:
 * Punch air to edit properties of your own player object
 
 To edit a property, select it in the list, enter a new value (in Lua syntax)
-and hit “Submit”.
+and hit "Submit".
 
 ## Object Attacher
 Allows you to attach an object to another one.

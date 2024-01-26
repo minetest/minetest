@@ -20,7 +20,7 @@ Texture pack directory structure
 ### Texture Pack
 This is a directory containing the entire contents of a single texture pack.
 It can be chosen more or less freely and will also become the name of the
-texture pack. The name must not be “base”.
+texture pack. The name must not be "base".
 
 ### `texture_pack.conf`
 A key-value config file with the following keys:
