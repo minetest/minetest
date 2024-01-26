@@ -1091,6 +1091,15 @@ void TouchScreenGUI::applyContextControls(const TouchInteractionMode &mode)
 
 	u64 now = porting::getTimeMs();
 
+	// If the meanings of short and long taps have been swapped, abort any ongoing
+	// short taps because they would do something else than the player expected.
+	// Long taps don't need this, they're adjusted to the swapped meanings instead.
+	if (mode != m_last_mode) {
+		m_dig_pressed_until = 0;
+		m_place_pressed_until = 0;
+	}
+	m_last_mode = mode;
+
 	switch (m_tap_state) {
 	case TapState::ShortTap:
 		if (mode == SHORT_DIG_LONG_PLACE) {
