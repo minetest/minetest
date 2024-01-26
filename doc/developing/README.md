@@ -1,4 +1,4 @@
-# Developer documentation
+# Developer Documentation
 
 ## Wiki
 
@@ -12,7 +12,7 @@ Notable pages:
 * [Organisation](https://dev.minetest.net/Organisation)
 * [Code style guidelines](https://dev.minetest.net/Code_style_guidelines)
 
-## In this folder
+## In This Folder
 
 * [Developing minetestserver with Docker](docker.md)
 * [Miscellaneous](misc.md)
