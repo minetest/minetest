@@ -2218,8 +2218,8 @@ groups to enable interaction with items.
 
 'Tool capabilities' is a property of items that defines two things:
 
-1) Which nodes it can dig and how fast
-2) Which objects it can hurt by punching and by how much
+1. Which nodes it can dig and how fast
+2. Which objects it can hurt by punching and by how much
 
 Tool capabilities are available for all items, not just tools.
 But only tools can receive wear from digging and punching.
@@ -5989,11 +5989,11 @@ handler.
 * `minetest.get_mapgen_setting(name)`
     * Gets the *active* mapgen setting (or nil if none exists) in string
       format with the following order of precedence:
-        1) Settings loaded from map_meta.txt or overrides set during mod
+        1. Settings loaded from map_meta.txt or overrides set during mod
            execution.
-        2) Settings set by mods without a metafile override
-        3) Settings explicitly set in the user config file, minetest.conf
-        4) Settings set as the user config default
+        2. Settings set by mods without a metafile override
+        3. Settings explicitly set in the user config file, minetest.conf
+        4. Settings set as the user config default
 * `minetest.get_mapgen_setting_noiseparams(name)`
     * Same as above, but returns the value as a NoiseParams table if the
       setting `name` exists and is a valid NoiseParams.
@@ -8945,9 +8945,9 @@ Used by `minetest.register_node`.
     -- Liquids consist of up to two nodes: source and flowing.
     --
     -- There are two ways to define a liquid:
-    -- 1) Source node and flowing node. This requires both fields to be
+    -- 1. Source node and flowing node. This requires both fields to be
     --    specified for both nodes.
-    -- 2) Standalone source node (cannot flow). `liquid_alternative_source`
+    -- 2. Standalone source node (cannot flow). `liquid_alternative_source`
     --    must be specified and `liquid_range` must be set to 0.
     --
     -- Example:
