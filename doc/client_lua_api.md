@@ -881,6 +881,8 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 * `next()`: returns a `pointed_thing` with exact pointing location
     * Returns the next thing pointed by the ray or nil.
 
+
+
 # Definitions
 
 * `minetest.get_node_def(nodename)`

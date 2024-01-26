@@ -12,6 +12,8 @@ The block serialization version does not fully specify every aspect of this
 format; if compliance with this format is to be checked, it needs to be
 done by detecting if the files and data indeed follows it.
 
+
+
 # Files
 
 Everything is contained in a directory, the name of which is freeform, but
@@ -180,6 +182,8 @@ For `load_mod_<mod>`, the possible values are:
     redis_port = 6379          - (optional) Connection port
     redis_password = hunter2   - (optional) Server password
 
+
+
 # Player File Format
 
 Should be pretty self-explanatory.
@@ -247,6 +251,8 @@ Example content:
     Empty
     EndInventoryList
     EndInventory
+
+
 
 # Map File Format
 
@@ -329,6 +335,8 @@ def unsignedToSigned(i, max_positive):
 The blob is the data that would have otherwise gone into the file.
 
 See below for description.
+
+
 
 # MapBlock Serialization Format
 
@@ -508,6 +516,8 @@ Before map format version 29:
 
 End of File (EOF).
 
+
+
 # Format of Nodes
 
 A node is composed of the `u8` fields `param0`, `param1` and `param2`.
@@ -522,9 +532,13 @@ Since map format version 24:
 
 The purpose of `param1` and `param2` depend on the definition of the node.
 
+
+
 # Name-ID-Mapping
 
 The mapping maps node content IDs to node names.
+
+
 
 # Node Metadata Format (Before Map Format Version 23)
 
@@ -565,6 +579,8 @@ The node metadata is serialized depending on the `type_id` field.
 * `u8[len]` `owner`
 * serialized inventory
 
+
+
 # Static Objects
 
 Static objects are persistent freely moving objects in the world.
@@ -588,6 +604,8 @@ Since protocol version 37:
 * `s32` pitch * 1000
 * `s32` roll * 1000
 
+
+
 # Itemstring Format
 
 Examples:
@@ -602,6 +620,8 @@ Older formats:
 * `'ToolItem WPick 21323'`
 
 The wear value in tools is 0...65535.
+
+
 
 # Inventory Serialization Format
 

@@ -109,6 +109,8 @@ translated by editing a `.tr` text file. See
 If you'd like to monetarily support Minetest development, you can find donation
 methods on [our website](https://www.minetest.net/get-involved/#donate).
 
+
+
 # Maintaining
 
 * This is a concise version of the
