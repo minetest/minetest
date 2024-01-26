@@ -16,9 +16,10 @@ It is recommended to set the textdomain name (for `minetest.get_translator`) to 
 of the mod name as the script will automatically detect it. If the textdomain name differs,
 you may have to manually change the `# textdomain:` line of newly generated files.
 
-**Note:** In each `*.tr` file, there **must** be only one textdomain. Multiple textdomains in
-the same file are not supported by this script and any additional textdomain line will be
-removed.
+> [!NOTE]
+> In each `*.tr` file, there **must** be only one textdomain. Multiple textdomains in
+> the same file are not supported by this script and any additional textdomain line will be
+> removed.
 
 ### Defining the helper functions
 
@@ -134,8 +135,9 @@ The script will add (if not already present) a `# textdomain: <modname>` at the 
 will be moved to the top, with the textdomain name being left intact (even if it differs
 from the mod name).
 
-**Note:** If there are multiple `# textdomain:` lines in the file, all of them except the
-first one will be deleted. This script only supports one textdomain per `*.tr` file.
+> [!NOTE]
+> If there are multiple `# textdomain:` lines in the file, all of them except the
+> first one will be deleted. This script only supports one textdomain per `*.tr` file.
 
 ### Strings
 

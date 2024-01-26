@@ -23,7 +23,8 @@ Change the value param2 of nodes.
 * Place: Subtract 1 from param2
 * Sneak+Place: Subtract 8 from param2
 
-Note: Use the debug screen (F5) to see the param2 of the pointed node.
+> [!NOTE]
+> Use the debug screen (F5) to see the param2 of the pointed node.
 
 ## Falling Node Tool
 Turns nodes into falling nodes.

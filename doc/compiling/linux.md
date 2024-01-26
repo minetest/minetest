@@ -117,4 +117,5 @@ Run it:
     2. `${PROJECT_SOURCE_DIR}/lib/irrlichtmt` (if existent)
     3. Installation of IrrlichtMt in the system-specific library paths
     4. For server builds with disabled `BUILD_CLIENT` variable, the headers from `IRRLICHT_INCLUDE_DIR` will be used.
-    * NOTE: Changing the IrrlichtMt build directory (includes system installs) requires regenerating the CMake cache (`rm CMakeCache.txt`)
+> [!NOTE]
+> Changing the IrrlichtMt build directory (includes system installs) requires regenerating the CMake cache (`rm CMakeCache.txt`)

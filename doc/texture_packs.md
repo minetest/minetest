@@ -115,8 +115,9 @@ by texture packs. All existing fallback textures can be found in the directory
 
 * `wieldhand.png`: texture of the wieldhand
 
-Note: The default textures of `player.png`, `player_back.png` and `wieldhand.png`
-are placeholders intended to be overwritten by the game.
+> [!NOTE]
+> The default textures of `player.png`, `player_back.png` and `wieldhand.png`
+> are placeholders intended to be overwritten by the game.
 
 ### Mainmenu textures
 

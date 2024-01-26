@@ -340,12 +340,16 @@ See below for description.
 
 # MapBlock Serialization Format
 
-> **Notes**:
->  * NOTE: Byte order is MSB first (big-endian).
->  * NOTE: Zlib data is in such a format that Python's `zlib` at least can
->          directly decompress.
->  * NOTE: Since version 29 zstd is used instead of zlib. In addition, the entire
->          block is first serialized and then compressed (except the version byte).
+> [!NOTE]
+> Byte order is MSB first (big-endian).
+
+> [!NOTE]
+> Zlib data is in such a format that Python's `zlib` at least can
+> directly decompress.
+
+> [!NOTE]
+> Since version 29 zstd is used instead of zlib. In addition, the entire
+> block is first serialized and then compressed (except the version byte).
 
 `u8` version
 * map format version number, see serialization.h for the latest number

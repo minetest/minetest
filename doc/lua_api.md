@@ -156,7 +156,8 @@ The file is a key-value store of modpack details.
              internal ID used to track versions.
 * `title`: A human-readable title to address the modpack.
 
-Note: to support 0.4.x, please also create an empty modpack.txt file.
+> [!NOTE]
+> To support 0.4.x, please also create an empty modpack.txt file.
 
 ## Mod Directory Structure
 
@@ -2101,9 +2102,10 @@ to games.
            direction. Otherwise, the node is attached to the node below.
     * `2`: if the node is facedir or 4dir, the facedir or 4dir direction is checked.
            No effect for other nodes.
-           Note: The "attaching face" of this node is tile no. 5 (back face).
     * `3`: the node is always attached to the node below.
     * `4`: the node is always attached to the node above.
+> [!NOTE]
+> The "attaching face" of this node is tile no. 5 (back face).
 * `bouncy`: value is bounce speed in percent.
   If positive, jump/sneak on floor impact will increase/decrease bounce height.
   Negative value is the same bounciness, but non-controllable.
@@ -2113,10 +2115,14 @@ to games.
     * `2`: the node always gets the digging time 0.5 seconds (rail, sign)
     * `3`: the node always gets the digging time 0 seconds (torch)
 * `disable_jump`: Player (and possibly other things) cannot jump from node
-  or if their feet are in the node. Note: not supported for `new_move = false`
+  or if their feet are in the node.
+> [!NOTE]
+> Not supported for `new_move = false`
 * `disable_descend`: Player (and possibly other things) cannot *actively*
   descend in node using Sneak or Aux1 key (for liquids and climbable nodes
-  only). Note: not supported for `new_move = false`
+  only).
+> [!NOTE]
+> Not supported for `new_move = false`
 * `fall_damage_add_percent`: modifies the fall damage suffered when hitting
   the top of this node. There's also an armor group with the same name.
   The final player damage is determined by the following formula:
@@ -2700,9 +2706,10 @@ background elements are drawn before all other elements.
 * `scroll factor`: optional, defaults to `0.1`.
 * Nesting is possible.
 * Some elements might work a little different if they are in a `scroll_container`.
-* Note: If you want the `scroll_container` to actually work, you also need to add a
-  scrollbar element with the specified name. Furthermore, it is highly recommended
-  to use a `scrollbaroptions` element on this scrollbar.
+> [!NOTE]
+> If you want the `scroll_container` to actually work, you also need to add a
+> scrollbar element with the specified name. Furthermore, it is highly recommended
+> to use a `scrollbaroptions` element on this scrollbar.
 
 ### `scroll_container_end[]`
 
@@ -2821,9 +2828,12 @@ background elements are drawn before all other elements.
     * `true`: Only the fullscreen background color is drawn.
     * `both`: The non-fullscreen and the fullscreen background color are drawn.
     * `neither`: No background color is drawn.
-* Note: Leave a parameter empty to not modify the value.
-* Note: `fbgcolor`, leaving parameters empty and values for `fullscreen` that
-  are not bools are only available since formspec version 3.
+> [!NOTE]
+> Leave a parameter empty to not modify the value.
+
+> [!NOTE]
+> `fbgcolor`, leaving parameters empty and values for `fullscreen` that
+> are not bools are only available since formspec version 3.
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>]`
 
@@ -3189,8 +3199,9 @@ background elements are drawn before all other elements.
 * `state` is a list of states separated by the `+` character.
     * If a state is provided, the style will only take effect when the element is in that state.
     * All provided states must be active for the style to apply.
-* Note: this **must** be before the element is defined.
 * See [Styling Formspecs].
+> [!NOTE]
+> This **must** be before the element is defined.
 
 ### `style_type[<selector 1>,<selector 2>,...;<prop1>;<prop2>;...]`
 
@@ -3654,8 +3665,9 @@ by any of the following notations:
 
 Vectors used to be defined as tables of the form `{x = num, y = num, z = num}`.
 Since Minetest 5.5.0, vectors additionally have a metatable to enable easier use.
-Note: Those old-style vectors can still be found in old mod code. Hence, mod and
-engine APIs still need to be able to cope with them in many places.
+> [!NOTE]
+> Those old-style vectors can still be found in old mod code. Hence, mod and
+> engine APIs still need to be able to cope with them in many places.
 
 Manually constructed tables are deprecated and highly discouraged. This interface
 should be used to ensure seamless compatibility between mods and the Minetest API.
@@ -3675,7 +3687,8 @@ Vectors can be indexed with numbers and allow method and operator syntax.
 
 All these forms of addressing a vector `v` are valid:
 `v[1]`, `v[3]`, `v.x`, `v[1] = 42`, `v.y = 13`
-Note: Prefer letter over number indexing for performance and compatibility reasons.
+> [!NOTE]
+> Prefer letter over number indexing for performance and compatibility reasons.
 
 Where `v` is a vector and `foo` stands for any function name, `v:foo(...)` does
 the same as `vector.foo(v, ...)`, apart from deprecated functionality.
@@ -3784,10 +3797,12 @@ Operators can be used if all of the involved vectors have metatables:
     * Returns the additive inverse of v.
 * `v1 + v2`:
     * Returns the sum of both vectors.
-    * Note: `+` cannot be used together with scalars.
+> [!NOTE]
+> `+` cannot be used together with scalars.
 * `v1 - v2`:
     * Returns the difference of `v1` subtracted by `v2`.
-    * Note: `-` cannot be used together with scalars.
+> [!NOTE]
+> `-` cannot be used together with scalars.
 * `v * s` or `s * v`:
     * Returns `v` scaled by `s`.
 * `v / s`:
@@ -4625,33 +4640,38 @@ inside the VoxelManip.
 
 ### Notes
 
-* Attempting to read data from a VoxelManip object before map is read will
-  result in a zero-length array table for `VoxelManip:get_data()`, and an
-  "ignore" node at any position for `VoxelManip:get_node_at()`.
+> [!NOTE]
+> Attempting to read data from a VoxelManip object before map is read will
+> result in a zero-length array table for `VoxelManip:get_data()`, and an
+> "ignore" node at any position for `VoxelManip:get_node_at()`.
 
-* If you attempt to use a VoxelManip to read a region of the map that has
-  already been generated, but is not currently loaded, that region will be
-  loaded from disk. This means that reading a region of the map with a
-  VoxelManip has a similar effect as calling `minetest.load_area` on that
-  region.
+> [!NOTE]
+> If you attempt to use a VoxelManip to read a region of the map that has
+> already been generated, but is not currently loaded, that region will be
+> loaded from disk. This means that reading a region of the map with a
+> VoxelManip has a similar effect as calling `minetest.load_area` on that
+> region.
 
-* If a region of the map has either not yet been generated or is outside the
-  map boundaries, it is filled with "ignore" nodes. Writing to regions of the
-  map that are not yet generated may result in unexpected behavior. You
-  can use `minetest.emerge_area` to make sure that the area you want to
-  read/write is already generated.
+> [!NOTE]
+> If a region of the map has either not yet been generated or is outside the
+> map boundaries, it is filled with "ignore" nodes. Writing to regions of the
+> map that are not yet generated may result in unexpected behavior. You
+> can use `minetest.emerge_area` to make sure that the area you want to
+> read/write is already generated.
 
-* Other mods, or the core itself, could possibly modify the area of the map
-  currently loaded into a VoxelManip object. With the exception of Mapgen
-  VoxelManips (see above section), the internal buffers are not updated. For
-  this reason, it is strongly encouraged to complete the usage of a particular
-  VoxelManip object in the same callback it had been created.
+> [!NOTE]
+> Other mods, or the core itself, could possibly modify the area of the map
+> currently loaded into a VoxelManip object. With the exception of Mapgen
+> VoxelManips (see above section), the internal buffers are not updated. For
+> this reason, it is strongly encouraged to complete the usage of a particular
+> VoxelManip object in the same callback it had been created.
 
-* If a VoxelManip object will be used often, such as in an `on_generated()`
-  callback, consider passing a file-scoped table as the optional parameter to
-  `VoxelManip:get_data()`, which serves as a static buffer the function can use
-  to write map data to instead of returning a new table each call. This greatly
-  enhances performance by avoiding unnecessary memory allocations.
+> [!NOTE]
+> If a VoxelManip object will be used often, such as in an `on_generated()`
+> callback, consider passing a file-scoped table as the optional parameter to
+> `VoxelManip:get_data()`, which serves as a static buffer the function can use
+> to write map data to instead of returning a new table each call. This greatly
+> enhances performance by avoiding unnecessary memory allocations.
 
 ## Methods
 
@@ -5371,9 +5391,10 @@ Call these functions only at load time!
 * `minetest.register_tool(name, item definition)`
 * `minetest.override_item(name, redefinition)`
     * Overrides fields of an item registered with register_node/tool/craftitem.
-    * Note: Item must already be defined, (opt)depend on the mod defining it.
     * Example: `minetest.override_item("default:mese",
       {light_source=minetest.LIGHT_MAX})`
+> [!NOTE]
+> Item must already be defined, (opt.) depend on the mod defining it.
 * `minetest.unregister_item(name)`
     * Unregisters the item from the engine, and deletes the entry with key
       `name` from `minetest.registered_items` and from the associated item table
@@ -5488,7 +5509,6 @@ Call these functions only at load time!
     * Called when a new player enters the world for the first time
 * `minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
     * Called when a player is punched
-    * Note: This callback is invoked even if the punched player is dead.
     * `player`: ObjectRef - Player that was punched
     * `hitter`: ObjectRef - Player that hit
     * `time_from_last_punch`: Meant for disallowing spamming of clicks
@@ -5498,6 +5518,8 @@ Call these functions only at load time!
       the puncher to the punched.
     * `damage`: Number that represents the damage calculated by the engine
     * should return `true` to prevent the default damage mechanism
+> [!NOTE]
+> This callback is invoked even if the punched player is dead.
 * `minetest.register_on_rightclickplayer(function(player, clicker))`
     * Called when the 'place/use' key was used while pointing a player
       (not necessarily an actual rightclick)
@@ -5521,9 +5543,10 @@ Call these functions only at load time!
         * Any of the above types may have additional fields from mods.
         * `reason.from` will be `mod` or `engine`.
     * `modifier`: when true, the function should return the actual `hp_change`.
-       Note: modifiers only get a temporary `hp_change` that can be modified by later modifiers.
-       Modifiers can return true as a second argument to stop the execution of further functions.
-       Non-modifiers receive the final HP change calculated by the modifiers.
+> [!NOTE]
+> Modifiers only get a temporary `hp_change` that can be modified by later modifiers.
+> Modifiers can return true as a second argument to stop the execution of further functions.
+> Non-modifiers receive the final HP change calculated by the modifiers.
 * `minetest.register_on_dieplayer(function(ObjectRef, reason))`
     * Called when a player dies
     * `reason`: a PlayerHPChangeReason table, see register_on_player_hpchange
@@ -5685,7 +5708,8 @@ Call these functions only at load time!
       and can be converted to positions with `minetest.get_position_from_hash`.
       The set is a table where the keys are hashes and the values are `true`.
     * `modified_block_count` is the number of entries in the set.
-    * Note: callbacks must be registered at mod load time.
+> [!NOTE]
+> Callbacks must be registered at mod load time.
 
 ## Settings-Related
 
@@ -5976,7 +6000,8 @@ handler.
     * `override_meta` is an optional boolean (default: `false`). If this is set
       to true, the setting will become the active setting regardless of the map
       metafile contents.
-    * Note: to set the seed, use `"seed"`, not `"fixed_map_seed"`.
+> [!NOTE]
+> To set the seed, use `"seed"`, not `"fixed_map_seed"`.
 * `minetest.set_mapgen_setting_noiseparams(name, value, [override_meta])`
     * Same as above, except value is a NoiseParams table.
 * `minetest.set_noiseparams(name, noiseparams, set_default)`
@@ -6364,10 +6389,11 @@ You can find mod channels communication scheme in `doc/mod_channels.png`.
     * `step` determines how fast a sound will fade.
       The gain will change by this much per second,
       until it reaches the target gain.
-      Note: Older versions used a signed step. This is deprecated, but old
-      code will still work. (the client uses abs(step) to correct it)
     * `gain` the target gain for the fade.
       Fading to zero will delete the sound.
+> [!NOTE]
+> Older versions used a signed step. This is deprecated, but old code will
+> still work. (the client uses `abs(step)` to correct it)
 
 ## Timing
 
@@ -6481,19 +6507,22 @@ Variables:
     * Returns false on error, true if the request was accepted
     * The given callback will be called for every player as soon as the
       media is available on the client.
-    * Details/Notes:
-        * If `ephemeral`=false and `to_player` is unset the file is added to the media
-        sent to clients on startup, this means the media will appear even on
-        old clients if they rejoin the server.
-        * If `ephemeral`=false the file must not be modified, deleted, moved or
-        renamed after calling this function.
-        * Regardless of any use of `ephemeral`, adding media files with the same
-        name twice is not possible/guaranteed to work. An exception to this is the
-        use of `to_player` to send the same, already existent file to multiple
-        chosen players.
     * Clients will attempt to fetch files added this way via remote media,
       this can make transfer of bigger files painless (if set up). Nevertheless
       it is advised not to use dynamic media for big media files.
+> [!NOTE]
+> If `ephemeral` = false and `to_player` is unset, then the file is added to the media
+> sent to clients on startup. This means the media will appear even on old clients if
+> they rejoin the server.
+
+> [!NOTE]
+> If `ephemeral` = false, then the file must not be modified, deleted, moved or
+> renamed after calling this function.
+
+> [!NOTE]
+> Regardless of any use of `ephemeral`, adding media files with the same name twice
+> is not possible/guaranteed to work. An exception to this is the use of `to_player`
+> to send the same, already existent file to multiple chosen players.
 
 ## Bans
 
@@ -6910,8 +6939,9 @@ Variables:
 * `minetest.registered_entities`
     * Map of registered entity prototypes, indexed by name
     * Values in this table may be modified directly.
-      Note: changes to initial properties will only affect entities spawned afterwards,
-      as they are only read when spawning.
+> [!NOTE]
+> Changes to initial properties will only affect entities spawned afterwards,
+> as they are only read when spawning.
 * `minetest.object_refs`
     * Map of object references, indexed by active object ID
 * `minetest.luaentities`
@@ -7159,21 +7189,19 @@ an itemstring, a table or `nil`.
     * `n`: number, default: `1`
 * `equals(other)`:
     * returns `true` if this stack is identical to `other`.
-    * Note: `stack1:to_string() == stack2:to_string()` is not reliable,
-      as stack metadata can be serialized in arbitrary order.
-    * Note: if `other` is an itemstring or table representation of an
-      ItemStack, this will always return false, even if it is
-      "equivalent".
+> [!NOTE]
+> `stack1:to_string() == stack2:to_string()` is not reliable, as stack
+> metadata can be serialized in arbitrary order.
+
+> [!NOTE]
+> If `other` is an itemstring or table representation of an `ItemStack`,
+> this will always return false, even if it is "equivalent".
 
 ### Operators
 
 * `stack1 == stack2`:
     * Returns whether `stack1` and `stack2` are identical.
-    * Note: `stack1:to_string() == stack2:to_string()` is not reliable,
-      as stack metadata can be serialized in arbitrary order.
-    * Note: if `stack2` is an itemstring or table representation of an
-      ItemStack, this will always return false, even if it is
-      "equivalent".
+    * See above notes.
 
 ## `ItemStackMetaRef`
 
@@ -7402,7 +7430,8 @@ child will follow movement and rotation of that bone.
     * simulates using the 'place/use' key on the object
     * triggers all consequences as if a real player had done this
     * `clicker` is another `ObjectRef` which has clicked
-    * note: this is called `right_click` for historical reasons only
+> [!NOTE]
+> This is called `right_click` for historical reasons only.
 * `get_hp()`: returns number of health points
 * `set_hp(hp, reason)`: set number of health points
     * See reason in register_on_player_hpchange
@@ -7423,7 +7452,8 @@ child will follow movement and rotation of that bone.
 * `set_armor_groups({group1=rating, group2=rating, ...})`
     * sets the object's full list of armor groups
     * same table syntax as for `get_armor_groups`
-    * note: all armor groups not in the table will be removed
+> [!NOTE]
+> All armor groups not in the table will be removed.
 * `set_animation(frame_range, frame_speed, frame_blend, frame_loop)`
     * Sets the object animation parameters and (re)starts the animation
     * Animations only work with a `"mesh"` visual
@@ -7464,12 +7494,18 @@ child will follow movement and rotation of that bone.
 * `set_detach()`: Detaches object. No-op if object was not attached.
 * `set_bone_position([bone, position, rotation])`
 	* Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
-	* **Note:** Rotation is in degrees, not radians.
-	* **Deprecated:** Use `set_bone_override` instead.
+> [!WARNING]
+> **Deprecated**, use `set_bone_override` instead.
+
+> [!NOTE]
+> Rotation is in degrees, not radians.
 * `get_bone_position(bone)`: returns the previously set position and rotation of the bone
 	* Shorthand for `get_bone_override(bone).position.vec, get_bone_override(bone).rotation.vec:apply(math.deg)`.
-	* **Note:** Returned rotation is in degrees, not radians.
-	* **Deprecated:** Use `get_bone_override` instead.
+> [!WARNING]
+> **Deprecated**, use `get_bone_override` instead.
+
+> [!NOTE]
+> Returned rotation is in degrees, not radians.
 * `set_bone_override(bone, override)`
     * `bone`: string
     * `override`: `position = property, rotation = property, scale = property}` or `nil`
@@ -7482,11 +7518,13 @@ child will follow movement and rotation of that bone.
             * Multiplication in the case of `scale`
         * `interpolation`: Old and new values are interpolated over this timeframe (in seconds)
     * `override = nil` (including omission) is shorthand for `override = {}` which clears the override
-    * **Note:** Unlike `set_bone_position`, the rotation is in radians, not degrees.
-    * Compatibility note: Clients prior to 5.9.0 only support absolute position and rotation.
-      All values are treated as absolute and are set immediately (no interpolation).
+> [!NOTE]
+> Unlike `set_bone_position`, the rotation is in radians, not degrees.
+> Compatibility note: Clients prior to 5.9.0 only support absolute position and rotation.
+> All values are treated as absolute and are set immediately (no interpolation).
 * `get_bone_override(bone)`: returns `override` in the above format
-	* **Note:** Unlike `get_bone_position`, the returned rotation is in radians, not degrees.
+> [!NOTE]
+> Unlike `get_bone_position`, the returned rotation is in radians, not degrees.
 * `get_bone_overrides()`: returns all bone overrides as table `{[bonename] = override, ...}`
 * `set_properties(object property table)`
 * `get_properties()`: returns a table of all object properties
@@ -7849,8 +7887,9 @@ child will follow movement and rotation of that bone.
         * `sunrise_visible`: Boolean for whether the sunrise texture is visible.
             (default: `true`)
         * `scale`: Float controlling the overall size of the sun. (default: `1`)
-            Note: For legacy reasons, the sun is bigger than the moon by a factor
-            of about `1.57` for equal `scale` values.
+> [!NOTE]
+> For legacy reasons, the sun is bigger than the moon by a factor
+> of about `1.57` for equal `scale` values.
 * `get_sun()`: returns a table with the current sun parameters as in `set_sun`.
 * `set_moon(moon_parameters)`:
     * Passing no arguments resets the moon to its default values.
@@ -7861,13 +7900,12 @@ child will follow movement and rotation of that bone.
             will re-enable the mesh moon. (default: `"moon.png"`, if it exists)
             The texture appears non-rotated at sunrise / moonset and rotated 180
             degrees (upside down) at sunset / moonrise.
-            Note: Relative to the sun, the moon texture is hence rotated by 180°.
-            You can use the `^[transformR180` texture modifier to achieve the same orientation.
         * `tonemap`: A 512x1 texture containing the tonemap for the moon
             (default: `"moon_tonemap.png"`)
         * `scale`: Float controlling the overall size of the moon (default: `1`)
-            Note: For legacy reasons, the sun is bigger than the moon by a factor
-            of about `1.57` for equal `scale` values.
+> [!NOTE]
+> Relative to the sun, the moon texture is hence rotated by 180°.
+> You can use the `^[transformR180` texture modifier to achieve the same orientation.
 * `get_moon()`: returns a table with the current moon parameters as in `set_moon`.
 * `set_stars(star_parameters)`:
     * Passing no arguments resets stars to their default values.
@@ -8505,12 +8543,13 @@ gets activated (not loaded!)
     * align style determines whether the texture will be rotated with the node
       or kept aligned with its surroundings. "user" means that client
       setting will be used, similar to `glasslike_framed_optional`.
-      Note: supported by solid nodes and nodeboxes only.
     * scale is used to make texture span several (exactly `scale`) nodes,
       instead of just one, in each direction. Works for world-aligned
       textures only.
       Note that as the effect is applied on per-mapblock basis, `16` should
       be equally divisible by `scale` or you may get wrong results.
+> [!NOTE]
+> Supported by solid nodes and nodeboxes only.
 * `{name="image.png", color=ColorSpec}`
     * the texture's color will be multiplied with this color.
     * the tile's color overrides the owning node's color in all cases.
@@ -9453,8 +9492,9 @@ Parameters:
                   that utilize cooking recipes (e.g. for adding a furnace
                   node) need to implement replacements on their own
 
-Note: Games and mods are free to re-interpret the cooktime in special
-cases, e.g. for a super furnace that cooks items twice as fast.
+> [!NOTE]
+> Games and mods are free to re-interpret the cooktime in special
+> cases, e.g. for a super furnace that cooks items twice as fast.
 
 #### Example
 
@@ -9489,9 +9529,9 @@ Parameters:
                   that utilize fuels need to implement replacements
                   on their own
 
-Note: Games and mods are free to re-interpret the burntime in special
-cases, e.g. for an efficient furnace in which fuels burn twice as
-long.
+> [!NOTE]
+> Games and mods are free to re-interpret the burntime in special cases,
+> e.g. for an efficient furnace in which fuels burn twice as long.
 
 #### Examples
 
