@@ -703,7 +703,7 @@ video::ITexture* TextureSource::getTextureForMesh(const std::string &name, u32 *
 	const bool filter_needed =
 		m_setting_mipmap || m_setting_trilinear_filter ||
 		m_setting_bilinear_filter || m_setting_anisotropic_filter;
-	if (filter_needed)
+	if (filter_needed && !name.empty())
 		return getTexture(name + "^[applyfiltersformesh", id);
 	return getTexture(name, id);
 }
@@ -1062,6 +1062,12 @@ video::IImage* TextureSource::generateImage(const std::string &name, std::set<st
 	if (baseimg == NULL) {
 		errorstream << "generateImage(): baseimg is NULL (attempted to"
 				" create texture \"" << name << "\")" << std::endl;
+	} else if (baseimg->getDimension().Width == 0 ||
+			baseimg->getDimension().Height == 0) {
+		errorstream << "generateImage(): zero-sized image was created?! "
+			"(attempted to create texture \"" << name << "\")" << std::endl;
+		baseimg->drop();
+		baseimg = nullptr;
 	}
 
 	return baseimg;
@@ -1173,20 +1179,25 @@ void blitBaseImage(video::IImage* &src, video::IImage* &dst)
 #define CHECK_BASEIMG() \
 	do { \
 		if (!baseimg) { \
-			errorstream << "generateImagePart(): baseimg == NULL " \
-					<< "for part_of_name=\"" << part_of_name \
+			errorstream << "generateImagePart(): baseimg == NULL" \
+					<< " for part_of_name=\"" << part_of_name \
 					<< "\", cancelling." << std::endl; \
 			return false; \
 		} \
 	} while(0)
 
+#define COMPLAIN_INVALID(description) \
+	do { \
+		errorstream << "generateImagePart(): invalid " << (description) \
+			<< " for part_of_name=\"" << part_of_name \
+			<< "\", cancelling." << std::endl; \
+		return false; \
+	} while(0)
+
 #define CHECK_DIM(w, h) \
 	do { \
 		if ((w) <= 0 || (h) <= 0 || (w) >= 0xffff || (h) >= 0xffff) { \
-			errorstream << "generateImagePart(): invalid width or height " \
-					<< "for part_of_name=\"" << part_of_name \
-					<< "\", cancelling." << std::endl; \
-			return false; \
+			COMPLAIN_INVALID("width or height"); \
 		} \
 	} while(0)
 
@@ -1197,26 +1208,34 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	sanity_check(driver);
 
+	if (baseimg && (baseimg->getDimension().Width == 0 ||
+			baseimg->getDimension().Height == 0)) {
+		errorstream << "generateImagePart(): baseimg is zero-sized?!"
+			<< std::endl;
+		baseimg->drop();
+		baseimg = nullptr;
+	}
+
 	// Stuff starting with [ are special commands
 	if (part_of_name.empty() || part_of_name[0] != '[') {
 		source_image_names.insert(part_of_name);
 		video::IImage *image = m_sourcecache.getOrLoad(part_of_name);
-		if (image == NULL) {
-			if (!part_of_name.empty()) {
+		if (!image) {
+			// Do not create the dummy texture
+			if (part_of_name.empty())
+				return true;
 
-				// Do not create normalmap dummies
-				if (part_of_name.find("_normal.png") != std::string::npos) {
-					warningstream << "generateImage(): Could not load normal map \""
-						<< part_of_name << "\"" << std::endl;
-					return true;
-				}
-
-				errorstream << "generateImage(): Could not load image \""
-					<< part_of_name << "\" while building texture; "
-					"Creating a dummy image" << std::endl;
+			// Do not create normalmap dummies
+			if (str_ends_with(part_of_name, "_normal.png")) {
+				warningstream << "generateImagePart(): Could not load normal map \""
+					<< part_of_name << "\"" << std::endl;
+				return true;
 			}
 
-			// Just create a dummy image
+			errorstream << "generateImagePart(): Could not load image \""
+				<< part_of_name << "\" while building texture; "
+				"Creating a dummy image" << std::endl;
+
 			core::dimension2d<u32> dim(1,1);
 			image = driver->createImage(video::ECF_A8R8G8B8, dim);
 			sanity_check(image != NULL);
@@ -1314,9 +1333,13 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				u32 x = stoi(sf.next(","));
 				u32 y = stoi(sf.next("="));
 				std::string filename = unescape_string(sf.next_esc(":", escape), escape);
+
+				if (x >= w0 || y >= h0)
+					COMPLAIN_INVALID("X or Y offset");
 				infostream<<"Adding \""<<filename
 						<<"\" to combined ("<<x<<","<<y<<")"
 						<<std::endl;
+
 				video::IImage *img = generateImage(filename, source_image_names);
 				if (img) {
 					core::dimension2d<u32> dim = img->getDimension();
@@ -1341,8 +1364,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		*/
 		else if (str_starts_with(part_of_name, "[fill"))
 		{
-			s32 x = 0;
-			s32 y = 0;
+			u32 x = 0;
+			u32 y = 0;
 
 			Strfnd sf(part_of_name);
 			sf.next(":");
@@ -1362,6 +1385,12 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			core::dimension2d<u32> dim(width, height);
 
 			CHECK_DIM(dim.Width, dim.Height);
+			if (baseimg) {
+				auto basedim = baseimg->getDimension();
+				if (x >= basedim.Width || y >= basedim.Height)
+					COMPLAIN_INVALID("X or Y offset");
+			}
+
 			video::IImage *img = driver->createImage(video::ECF_A8R8G8B8, dim);
 			img->fill(color);
 
@@ -1497,8 +1526,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				errorstream << "generateImagePart(): Failed to create textures"
 						<< " for inventorycube \"" << part_of_name << "\""
 						<< std::endl;
-				baseimg = generateImage(imagename_top, source_image_names);
-				return true;
+				return false;
 			}
 
 			baseimg = createInventoryCubeImage(img_top, img_left, img_right);
@@ -1518,30 +1546,26 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		{
 			Strfnd sf(part_of_name);
 			sf.next(":");
-			u32 percent = stoi(sf.next(":"));
+			u32 percent = stoi(sf.next(":"), 0, 100);
 			std::string filename = unescape_string(sf.next_esc(":", escape), escape);
 
-			if (baseimg == NULL)
-				baseimg = driver->createImage(video::ECF_A8R8G8B8, v2u32(16,16));
 			video::IImage *img = generateImage(filename, source_image_names);
-			if (img)
-			{
+			if (img) {
 				core::dimension2d<u32> dim = img->getDimension();
+				if (!baseimg)
+					baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+
 				core::position2d<s32> pos_base(0, 0);
-				video::IImage *img2 =
-						driver->createImage(video::ECF_A8R8G8B8, dim);
-				img->copyTo(img2);
-				img->drop();
 				core::position2d<s32> clippos(0, 0);
 				clippos.Y = dim.Height * (100-percent) / 100;
 				core::dimension2d<u32> clipdim = dim;
 				clipdim.Height = clipdim.Height * percent / 100 + 1;
 				core::rect<s32> cliprect(clippos, clipdim);
-				img2->copyToWithAlpha(baseimg, pos_base,
+				img->copyToWithAlpha(baseimg, pos_base,
 						core::rect<s32>(v2s32(0,0), dim),
 						video::SColor(255,255,255,255),
 						&cliprect);
-				img2->drop();
+				img->drop();
 			}
 		}
 		/*
@@ -1564,6 +1588,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 						<< "\", using frame_count = 1 instead." << std::endl;
 				frame_count = 1;
 			}
+			if (frame_index >= frame_count)
+				frame_index = frame_count - 1;
 
 			v2u32 frame_size = baseimg->getDimension();
 			frame_size.Y /= frame_count;
@@ -1603,8 +1629,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 						img->getDimension());
 				img->drop();
 			} else {
-				errorstream << "generateImage(): Failed to load \""
-						<< filename << "\".";
+				errorstream << "generateImagePart(): Failed to load image \""
+						<< filename << "\" for [mask" << std::endl;
 			}
 		}
 		/*
@@ -1696,7 +1722,6 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				 * equal to the target minimum.  If e.g. this is a vertical frames
 				 * animation, the short dimension will be the real size.
 				 */
-				CHECK_DIM(dim.Width, dim.Height);
 				u32 xscale = scaleto / dim.Width;
 				u32 yscale = scaleto / dim.Height;
 				const s32 scale = std::max(xscale, yscale);
@@ -1728,7 +1753,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			u32 height = stoi(sf.next(""));
 			CHECK_DIM(width, height);
 
-			video::IImage *image = RenderingEngine::get_video_driver()->
+			video::IImage *image = driver->
 				createImage(video::ECF_A8R8G8B8, {width, height});
 			baseimg->copyToScaling(image);
 			baseimg->drop();
@@ -1810,14 +1835,20 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			u32 y0 = stoi(sf.next(":"));
 
 			CHECK_DIM(w0, h0);
+			if (x0 >= w0 || y0 >= h0)
+				COMPLAIN_INVALID("tile position (X,Y)");
 
 			core::dimension2d<u32> img_dim = baseimg->getDimension();
 			core::dimension2d<u32> tile_dim(v2u32(img_dim) / v2u32(w0, h0));
+			if (tile_dim.Width == 0)
+				tile_dim.Width = 1;
+			if (tile_dim.Height == 0)
+				tile_dim.Height = 1;
 
 			video::IImage *img = driver->createImage(
 					video::ECF_A8R8G8B8, tile_dim);
-
 			img->fill(video::SColor(0,0,0,0));
+
 			v2u32 vdim(tile_dim);
 			core::rect<s32> rect(v2s32(x0 * vdim.X, y0 * vdim.Y), tile_dim);
 			baseimg->copyToWithAlpha(img, v2s32(0), rect,
@@ -1834,15 +1865,12 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			to produce a valid string.
 		*/
 		else if (str_starts_with(part_of_name, "[png:")) {
-			Strfnd sf(part_of_name);
-			sf.next(":");
 			std::string png;
 			{
-				std::string blob = sf.next("");
+				std::string blob = part_of_name.substr(5);
 				if (!base64_is_valid(blob)) {
 					errorstream << "generateImagePart(): "
-								<< "malformed base64 in '[png'"
-								<< std::endl;
+								<< "malformed base64 in [png" << std::endl;
 					return false;
 				}
 				png = base64_decode(blob);
@@ -1939,8 +1967,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 						img->getDimension(), hardlight);
 				img->drop();
 			} else {
-				errorstream << "generateImage(): Failed to load \""
-					<< filename << "\".";
+				errorstream << "generateImage(): Failed to load image \""
+					<< filename << "\" for [overlay or [hardlight" << std::endl;
 			}
 		}
 		/*
@@ -1973,6 +2001,12 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 
 	return true;
 }
+
+#undef CHECK_BASEIMG
+
+#undef COMPLAIN_INVALID
+
+#undef CHECK_DIM
 
 /*
 	Calculate the color of a single pixel drawn on top of another pixel.
