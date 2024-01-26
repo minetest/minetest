@@ -52,13 +52,16 @@ configuration file can usually be found at:
 ## Useful Settings
 
 ### `gui_scaling`
+
 This is a user-specified scaling factor for the GUI. If the main menu is too big or small on your device, try changing
 this value.
 
 ### `mapblock_limit`
+
 Mobile devices generally have less RAM than PC, this setting limits how many mapblock can be kept in RAM.
 
 ### `fps_limit`
+
 This setting limits maximum FPS. The default value is `60`, which is the lowest commonly found
 Android refresh rate, but if you're using a device with a lower refresh rate, change this.
 

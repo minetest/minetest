@@ -288,6 +288,7 @@ storing coordinates separately), but the format has been kept unchanged for
 that part.
 
 ## `map.sqlite`
+
 `map.sqlite` is a `SQLite3` database, containing a single table, called
 `blocks`. It looks like this:
 
@@ -423,6 +424,7 @@ Timestamp and node ID mappings were introduced in map format version 29.
 * Always 2
 
 ## Node Data
+
 > [!NOTE]
 > Zlib-compressed before map format version 29
 
@@ -439,6 +441,7 @@ Timestamp and node ID mappings were introduced in map format version 29.
 * The location of a node in each of those arrays is `(z*16*16 + y*16 + x)`.
 
 ### Node Metadata List
+
 > [!NOTE]
 > Zlib-compressed before map version format 29
 * Before map format version 23:
@@ -470,6 +473,7 @@ Timestamp and node ID mappings were introduced in map format version 29.
 > Version type was `u16` before map format version 23
 
 ## Node Timers
+
 * Map format version 23:
     * `u8` unused version (always 0)
 

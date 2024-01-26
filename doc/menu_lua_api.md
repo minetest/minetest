@@ -1,4 +1,5 @@
 # Minetest Lua Mainmenu API Reference 5.8.0
+
 ## Introduction
 
 The main menu is defined as a formspec by Lua in `builtin/mainmenu/`

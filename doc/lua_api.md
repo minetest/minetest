@@ -2936,6 +2936,7 @@ background elements are drawn before all other elements.
   coordinate. With the old system, newlines are spaced 2/5 of an inventory slot.
 
 ### `hypertext[<X>,<Y>;<W>,<H>;<name>;<text>]`
+
 * Displays a static formatted text with hyperlinks.
 > [!WARNING]
 > This element is currently unstable and subject to change.
@@ -2944,6 +2945,7 @@ background elements are drawn before all other elements.
 * `text` is the formatted text using `Markup Language` described below.
 
 ### `vertlabel[<X>,<Y>;<label>]`
+
 * Textual label drawn vertically
 * `label` is the text on the label
 > [!NOTE]
@@ -3112,6 +3114,7 @@ background elements are drawn before all other elements.
 * See also `minetest.explode_scrollbar_event`
 
 ### `scrollbaroptions[opt1;opt2;...]`
+
 * Sets options for all following `scrollbar[]` elements
 * `min=<int>`
     * Sets scrollbar minimum value, defaults to `0`.

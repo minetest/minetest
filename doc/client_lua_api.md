@@ -709,6 +709,7 @@ Please do not try to access the reference until the camera is initialized, other
     * Returns aspect ratio of screen
 
 ## `LocalPlayer`
+
 An interface to retrieve information about the player.
 This object will only be available after the client is initialized. Earlier accesses will yield a `nil` value.
 
@@ -825,6 +826,7 @@ Methods:
     * Returns `true` on success, otherwise returns `nil`
 
 ## `Settings`
+
 An interface to read config files in the format of `minetest.conf`.
 
 It can be created via `Settings(filename)`.
@@ -841,6 +843,7 @@ It can be created via `Settings(filename)`.
 * `to_table()`: returns `{[key1]=value1,...}`
 
 ## `NodeMetaRef`
+
 Node metadata: reference extra data and functionality stored in a node.
 Can be obtained via `minetest.get_meta(pos)`.
 
