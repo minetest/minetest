@@ -1,11 +1,9 @@
-Minetest Texture Pack Reference
-===============================
+# Minetest Texture Pack Reference
 
 Texture packs allow you to replace textures provided by a mod with your own
 textures.
 
-Texture pack directory structure
---------------------------------
+## Texture Pack Directory Structure
 
     textures
     |-- Texture Pack
@@ -17,7 +15,7 @@ Texture pack directory structure
     |   |-- your_texture_2.png
     `-- Another Texture Pack
 
-### Texture Pack
+### `Texture Pack`
 
 This is a directory containing the entire contents of a single texture pack.
 It can be chosen more or less freely and will also become the name of the
@@ -53,19 +51,13 @@ The custom textures do not necessarily require the same size as their
 originals, but this might be required for a few particular textures. When
 unsure, just test your texture pack in-game.
 
-Texture modifiers
------------------
-
-See lua_api.md for texture modifiers
-
-Special textures
-----------------
+## Special Textures
 
 These texture names are hardcoded into the engine but can also be overwritten
 by texture packs. All existing fallback textures can be found in the directory
 `textures/base/pack`.
 
-### Gameplay textures
+### Gameplay Textures
 
 * `bubble.png`: the bubble texture when the player is drowning
                 (default size: 12×12)
@@ -124,7 +116,7 @@ by texture packs. All existing fallback textures can be found in the directory
 > The default textures of `player.png`, `player_back.png` and `wieldhand.png`
 > are placeholders intended to be overwritten by the game.
 
-### Mainmenu textures
+### Main Menu Textures
 
 * `menu_bg.png`: used as mainmenu background when the clouds are disabled
 * `menu_header.png`: header texture when no texture pack is selected
@@ -137,7 +129,7 @@ by texture packs. All existing fallback textures can be found in the directory
 * `server_flags_favorite.png`: icon for your favorite servers
 * `server_flags_pvp.png`: icon for enabled PvP on servers
 
-### Android textures
+### Android Textures
 
 * `drop_btn.png`
 * `fast_btn.png`
@@ -155,8 +147,7 @@ by texture packs. All existing fallback textures can be found in the directory
 * `rare_controls.png`
 * `exit_btn.png`
 
-Texture Overrides
------------------
+## Texture Overrides
 
 You can override the textures of nodes and items from a
 texture pack using texture overrides. To do this, create one or
@@ -213,7 +204,7 @@ and 'wield'.
 
 ¹ : `N` is an integer [0,255]. Sets align_style = "world" and scale = N on the tile, refer to lua_api.md for details.
 
-### Using the special targets
+### Using the Special Targets
 
 The special* targets only apply to specific drawtypes:
 
@@ -223,8 +214,7 @@ The special* targets only apply to specific drawtypes:
 * `glasslike_framed_optional`: Same as `glasslike_framed`
 * `plantlike_rooted`: special1 sets the plant's texture
 
-Designing leaves textures for the leaves rendering options
-----------------------------------------------------------
+## Designing Leaves Textures for the Leaves Rendering Options
 
 Minetest has three modes for rendering leaves nodes if the node has the
 `allfaces_optional` drawtype.
