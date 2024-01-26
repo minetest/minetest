@@ -1755,10 +1755,10 @@ Displays an image oriented or translated according to current heading direction.
 * `alignment`: The alignment of the image.
 * `offset`: Offset in pixels from position.
 * `direction`: How the image is rotated/translated:
-  * 0 - Rotate as heading direction
-  * 1 - Rotate in reverse direction
-  * 2 - Translate as landscape direction
-  * 3 - Translate in reverse direction
+    * 0 - Rotate as heading direction
+    * 1 - Rotate in reverse direction
+    * 2 - Translate as landscape direction
+    * 3 - Translate in reverse direction
 
 If translation is chosen, texture is repeated horizontally to fill the whole element.
 
@@ -1924,12 +1924,12 @@ Examples:
 * `"default:pick_stone"`: a new stone pickaxe
 * `"default:pick_wood 1 21323"`: a wooden pickaxe, ca. 1/3 worn out
 * `[[default:pick_wood 1 21323 "\u0001description\u0002My worn out pick\u0003"]]`:
-  * a wooden pickaxe from the `default` mod,
-  * amount must be 1 (pickaxe is a tool), ca. 1/3 worn out (it's a tool),
-  * with the `description` field set to `"My worn out pick"` in its metadata
+    * a wooden pickaxe from the `default` mod,
+    * amount must be 1 (pickaxe is a tool), ca. 1/3 worn out (it's a tool),
+    * with the `description` field set to `"My worn out pick"` in its metadata
 * `[[default:dirt 5 0 "\u0001description\u0002Special dirt\u0003"]]`:
-  * analogous to the above example
-  * note how the wear is set to `0` as dirt is not a tool
+    * analogous to the above example
+    * note how the wear is set to `0` as dirt is not a tool
 
 You should ideally use the `ItemStack` format to build complex item strings
 (especially if they use item metadata)
@@ -2123,8 +2123,8 @@ to games.
     ```lua
     damage =
       collision speed
-      * ((node_fall_damage_add_percent   + 100) / 100) -- node group
-      * ((player_fall_damage_add_percent + 100) / 100) -- player armor group
+        * ((node_fall_damage_add_percent   + 100) / 100) -- node group
+        * ((player_fall_damage_add_percent + 100) / 100) -- player armor group
       - (14)                                           -- constant tolerance
     ```
   Negative damage values are discarded as no damage.
@@ -2347,8 +2347,8 @@ for group in cap.damage_groups do
     armor = object.armor_groups[group] or 0
     damage = damage
       + cap.damage_groups[group]
-      * limit(actual_interval / cap.full_punch_interval, 0.0, 1.0)
-      * (armor / 100.0)
+        * limit(actual_interval / cap.full_punch_interval, 0.0, 1.0)
+        * (armor / 100.0)
 end
 return damage
 ```
@@ -2588,24 +2588,24 @@ background elements are drawn before all other elements.
 ## Version History
 
 * Formspec version 1 (pre-5.1.0):
-  * (too much)
+    * (too much)
 * Formspec version 2 (5.1.0):
-  * Forced real coordinates
-  * `background9[]`: 9-slice scaling parameters
+    * Forced real coordinates
+    * `background9[]`: 9-slice scaling parameters
 * Formspec version 3 (5.2.0):
-  * Formspec elements are drawn in the order of definition
-  * `bgcolor[]`: use 3 parameters (`bgcolor`, `formspec` (now an enum), `fbgcolor`)
-  * `box[]` and `image[]` elements enable clipping by default
-  * new element: `scroll_container[]`
+    * Formspec elements are drawn in the order of definition
+    * `bgcolor[]`: use 3 parameters (`bgcolor`, `formspec` (now an enum), `fbgcolor`)
+    * `box[]` and `image[]` elements enable clipping by default
+    * new element: `scroll_container[]`
 * Formspec version 4 (5.4.0):
-  * Allow dropdown indexing events
+    * Allow dropdown indexing events
 * Formspec version 5 (5.5.0):
-  * Added `padding[]` element
+    * Added `padding[]` element
 * Formspec version 6 (5.6.0):
-  * Add nine-slice images, `animated_image`, and `fgimg_middle`
+    * Add nine-slice images, `animated_image`, and `fgimg_middle`
 * Formspec version 7 (5.8.0):
-  * `style[]`: Add focused state for buttons
-  * Add `field_enter_after_edit[]` (experimental)
+    * `style[]`: Add focused state for buttons
+    * Add `field_enter_after_edit[]` (experimental)
 
 ## Elements
 
@@ -2692,10 +2692,10 @@ background elements are drawn before all other elements.
 ### `scroll_container[<X>,<Y>;<W>,<H>;<scrollbar name>;<orientation>;<scroll factor>]`
 
 * Start of a scroll_container block. All contained elements will:
-  * Take the scroll_container coordinate as position origin,
-  * Be additionally moved by the current value of the scrollbar with the name
+    * Take the scroll_container coordinate as position origin,
+    * Be additionally moved by the current value of the scrollbar with the name
     `scrollbar name` times `scroll factor` along the orientation `orientation` and
-  * Be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
+    * Be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
 * `orientation`: possible values are `vertical` and `horizontal`.
 * `scroll factor`: optional, defaults to `0.1`.
 * Nesting is possible.
@@ -2817,10 +2817,10 @@ background elements are drawn before all other elements.
 * `bgcolor` and `fbgcolor` (optional) are `ColorString`s, they define the color
   of the non-fullscreen and the fullscreen background.
 * `fullscreen` (optional) can be one of the following:
-  * `false`: Default, only the non-fullscreen background color is drawn.
-  * `true`: Only the fullscreen background color is drawn.
-  * `both`: The non-fullscreen and the fullscreen background color are drawn.
-  * `neither`: No background color is drawn.
+    * `false`: Default, only the non-fullscreen background color is drawn.
+    * `true`: Only the fullscreen background color is drawn.
+    * `both`: The non-fullscreen and the fullscreen background color are drawn.
+    * `neither`: No background color is drawn.
 * Note: Leave a parameter empty to not modify the value.
 * Note: `fbgcolor`, leaving parameters empty and values for `fullscreen` that
   are not bools are only available since formspec version 3.
@@ -3358,17 +3358,17 @@ Some types may inherit styles from parent types.
     * `bgimg_pressed` - background image when pressed. Defaults to `bgimg` when not provided.
         * This is deprecated, use states instead.
     * `font` - Sets font type. This is a comma separated list of options. Valid options:
-      * Main font type options. These cannot be combined with each other:
+        * Main font type options. These cannot be combined with each other:
         * `normal`: Default font
         * `mono`: Monospaced font
-      * Font modification options. If used without a main font type, `normal` is used:
+        * Font modification options. If used without a main font type, `normal` is used:
         * `bold`: Makes font bold.
         * `italic`: Makes font italic.
       Default `normal`.
     * `font_size` - Sets font size. Default is user-set. Can have multiple values:
-      * `<number>`: Sets absolute font size to `number`.
-      * `+<number>`/`-<number>`: Offsets default font size by `number` points.
-      * `*<number>`: Multiplies default font size by `number`, similar to CSS `em`.
+        * `<number>`: Sets absolute font size to `number`.
+        * `+<number>`/`-<number>`: Offsets default font size by `number` points.
+        * `*<number>`: Multiplies default font size by `number`, similar to CSS `em`.
     * `border` - boolean, draw border. Set to `false` to hide the bevelled button pane. Default `true`.
     * `content_offset` - 2d vector, shifts the position of the button's content without resizing it.
     * `noclip` - boolean, set to true to allow the element to exceed formspec bounds.
@@ -5045,49 +5045,46 @@ and `minetest.register_on_priv_revoke` functions.
 Minetest includes a set of built-in privileges that control capabilities
 provided by the Minetest engine and can be used by mods:
 
-  * Basic privileges are normally granted to all players:
-      * `shout`: can communicate using the in-game chat.
-      * `interact`: can modify the world by digging, building and interacting
-        with the nodes, entities and other players. Players without the `interact`
-        privilege can only travel and observe the world.
-
-  * Advanced privileges allow bypassing certain aspects of the gameplay:
-      * `fast`: can use "fast mode" to move with maximum speed.
-      * `fly`: can use "fly mode" to move freely above the ground without falling.
-      * `noclip`: can use "noclip mode" to fly through solid nodes (e.g. walls).
-      * `teleport`: can use `/teleport` command to move to any point in the world.
-      * `creative`: can access creative inventory.
-      * `bring`: can teleport other players to oneself.
-      * `give`: can use `/give` and `/giveme` commands to give any item
-        in the game to oneself or others.
-      * `settime`: can use `/time` command to change current in-game time.
-      * `debug`: can enable wireframe rendering mode.
-
-  * Security-related privileges:
-      * `privs`: can modify privileges of the players using `/grant[me]` and
-        `/revoke[me]` commands.
-      * `basic_privs`: can grant and revoke basic privileges as defined by
-        the `basic_privs` setting.
-      * `kick`: can kick other players from the server using `/kick` command.
-      * `ban`: can ban other players using `/ban` command.
-      * `password`: can use `/setpassword` and `/clearpassword` commands
-        to manage players' passwords.
-      * `protection_bypass`: can bypass node protection. Note that the engine does not act upon this privilege,
-        it is only an implementation suggestion for games.
-
-  * Administrative privileges:
-      * `server`: can use `/fixlight`, `/deleteblocks` and `/deleteobjects`
-        commands. Can clear inventory of other players using `/clearinv` command.
-      * `rollback`: can use `/rollback_check` and `/rollback` commands.
+* Basic privileges are normally granted to all players:
+    * `shout`: can communicate using the in-game chat.
+    * `interact`: can modify the world by digging, building and interacting
+    with the nodes, entities and other players. Players without the `interact`
+    privilege can only travel and observe the world.
+* Advanced privileges allow bypassing certain aspects of the gameplay:
+    * `fast`: can use "fast mode" to move with maximum speed.
+    * `fly`: can use "fly mode" to move freely above the ground without falling.
+    * `noclip`: can use "noclip mode" to fly through solid nodes (e.g. walls).
+    * `teleport`: can use `/teleport` command to move to any point in the world.
+    * `creative`: can access creative inventory.
+    * `bring`: can teleport other players to oneself.
+    * `give`: can use `/give` and `/giveme` commands to give any item
+    in the game to oneself or others.
+    * `settime`: can use `/time` command to change current in-game time.
+    * `debug`: can enable wireframe rendering mode.
+* Security-related privileges:
+    * `privs`: can modify privileges of the players using `/grant[me]` and
+    `/revoke[me]` commands.
+    * `basic_privs`: can grant and revoke basic privileges as defined by
+    the `basic_privs` setting.
+    * `kick`: can kick other players from the server using `/kick` command.
+    * `ban`: can ban other players using `/ban` command.
+    * `password`: can use `/setpassword` and `/clearpassword` commands
+    to manage players' passwords.
+    * `protection_bypass`: can bypass node protection. Note that the engine does not act upon this privilege,
+    it is only an implementation suggestion for games.
+* Administrative privileges:
+    * `server`: can use `/fixlight`, `/deleteblocks` and `/deleteobjects`
+    commands. Can clear inventory of other players using `/clearinv` command.
+    * `rollback`: can use `/rollback_check` and `/rollback` commands.
 
 ## Related Settings
 
 Minetest includes the following settings to control behavior of privileges:
 
-   * `default_privs`: defines privileges granted to new players.
-   * `basic_privs`: defines privileges that can be granted/revoked by players having
-    the `basic_privs` privilege. This can be used, for example, to give
-    limited moderation powers to selected users.
+* `default_privs`: defines privileges granted to new players.
+* `basic_privs`: defines privileges that can be granted/revoked by players having
+  the `basic_privs` privilege. This can be used, for example, to give
+  limited moderation powers to selected users.
 
 
 
@@ -5337,7 +5334,7 @@ Minetest includes the following settings to control behavior of privileges:
     * `colorspec`: The ColorSpec to convert
 * `minetest.colorspec_to_bytes(colorspec)`: Converts a ColorSpec to a raw
   string of four bytes in an RGBA layout, returned as a string.
-  * `colorspec`: The ColorSpec to convert
+    * `colorspec`: The ColorSpec to convert
 * `minetest.encode_png(width, height, data, [compression])`: Encode a PNG
   image and return it in string form.
     * `width`: Width of the image
@@ -6162,7 +6159,7 @@ You can find mod channels communication scheme in `doc/mod_channels.png`.
       expression.
     * to close a formspec regardless of the formname, call
       `minetest.close_formspec(playername, "")`.
-      **USE THIS ONLY WHEN ABSOLUTELY NECESSARY!**
+        **USE THIS ONLY WHEN ABSOLUTELY NECESSARY!**
 * `minetest.formspec_escape(string)`: returns a string
     * escapes the characters "[", "]", "\", "," and ";", which cannot be used
       in formspecs.
@@ -6314,7 +6311,7 @@ You can find mod channels communication scheme in `doc/mod_channels.png`.
     * `prevent_after_place`: if set to `true`, `after_place_node` is not called
       for the newly placed node to prevent a callback and placement loop
     * returns `itemstack, position`
-      * `position`: the location the node was placed to. `nil` if nothing was placed.
+        * `position`: the location the node was placed to. `nil` if nothing was placed.
 * `minetest.item_place_object(itemstack, placer, pointed_thing)`
     * Place item as-is
     * returns the leftover itemstack
@@ -6325,7 +6322,7 @@ You can find mod channels communication scheme in `doc/mod_channels.png`.
     * Calls `on_rightclick` of `pointed_thing.under` if defined instead
     * `param2` overrides facedir and wallmounted `param2`
     * returns `itemstack, position`
-      * `position`: the location the node was placed to. `nil` if nothing was placed.
+        * `position`: the location the node was placed to. `nil` if nothing was placed.
 > [!NOTE]
 > `on_rightclick` is not called when wielded item overrides `on_place`
 * `minetest.item_pickup(itemstack, picker, pointed_thing, time_from_last_punch, ...)`
@@ -6485,12 +6482,12 @@ Variables:
     * The given callback will be called for every player as soon as the
       media is available on the client.
     * Details/Notes:
-      * If `ephemeral`=false and `to_player` is unset the file is added to the media
+        * If `ephemeral`=false and `to_player` is unset the file is added to the media
         sent to clients on startup, this means the media will appear even on
         old clients if they rejoin the server.
-      * If `ephemeral`=false the file must not be modified, deleted, moved or
+        * If `ephemeral`=false the file must not be modified, deleted, moved or
         renamed after calling this function.
-      * Regardless of any use of `ephemeral`, adding media files with the same
+        * Regardless of any use of `ephemeral`, adding media files with the same
         name twice is not possible/guaranteed to work. An exception to this is the
         use of `to_player` to send the same, already existent file to multiple
         chosen players.
@@ -7931,13 +7928,13 @@ child will follow movement and rotation of that bone.
 * `set_lighting(light_definition)`: sets lighting for the player
     * Passing no arguments resets lighting to its default values.
     * `light_definition` is a table with the following optional fields:
-      * `saturation` sets the saturation (vividness; default: `1.0`).
+        * `saturation` sets the saturation (vividness; default: `1.0`).
           values > 1 increase the saturation
           values in [0,1) decrease the saturation
-      * `shadows` is a table that controls ambient shadows
+        * `shadows` is a table that controls ambient shadows
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
             * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
-      * `exposure` is a table that controls automatic exposure.
+        * `exposure` is a table that controls automatic exposure.
         The basic exposure factor equation is `e = 2^exposure_correction / clamp(luminance, 2^luminance_min, 2^luminance_max)`
         * `luminance_min` set the lower luminance boundary to use in the calculation (default: `-3.0`)
         * `luminance_max` set the upper luminance boundary to use in the calculation (default: `-3.0`)
@@ -7945,7 +7942,7 @@ child will follow movement and rotation of that bone.
         * `speed_dark_bright` set the speed of adapting to bright light (default: `1000.0`)
         * `speed_bright_dark` set the speed of adapting to dark scene (default: `1000.0`)
         * `center_weight_power` set the power factor for center-weighted luminance measurement (default: `1.0`)
-      * `volumetric_light`: is a table that controls volumetric light (a.k.a. "godrays")
+        * `volumetric_light`: is a table that controls volumetric light (a.k.a. "godrays")
         * `strength`: sets the strength of the volumetric light effect from 0 (off, default) to 1 (strongest)
            * This value has no effect on clients who have the "Volumetric Lighting" or "Bloom" shaders disabled.
 
@@ -8065,7 +8062,7 @@ Otherwise, use `PcgRandom`.
 ### Constructor
 
 `PseudoRandom(seed)`
-  * `seed`: 32-bit signed number
+    * `seed`: 32-bit signed number
 
 ### Methods
 
@@ -10355,7 +10352,7 @@ Types used are defined in the previous section.
   velocity values within a range. the velocity calculated by this method will
   be **added** to that specified by `vel` if `vel` is also set, so in most
   cases **`vel` should be set to 0**. `attract` has the fields:
-  * string `kind`: selects the kind of shape towards which the particles will
+    * string `kind`: selects the kind of shape towards which the particles will
     be oriented. it must have one of the following values:
     * `"none"`: no attractor is set and the `attractor` table is ignored
     * `"point"`: the particles are attracted to a specific point in space.
@@ -10367,22 +10364,22 @@ Types used are defined in the previous section.
     * `"plane"`: the particles are attracted to an (infinite) plane on whose
       surface `origin` designates a point in world coordinate space. use this
       for e.g. particles entering or emerging from a portal.
-  * float range `strength`: the speed with which particles will move towards
+    * float range `strength`: the speed with which particles will move towards
     `attractor`. If negative, the particles will instead move away from that
     point.
-  * vec3 `origin`: the origin point of the shape towards which particles will
+    * vec3 `origin`: the origin point of the shape towards which particles will
     initially be oriented. functions as an offset if `origin_attached` is also
     set.
-  * vec3 `direction`: sets the direction in which the attractor shape faces. for
+    * vec3 `direction`: sets the direction in which the attractor shape faces. for
     lines, this sets the angle of the line; e.g. a vector of (0,1,0) will
     create a vertical line that passes through `origin`. for planes, `direction`
     is the surface normal of an infinite plane on whose surface `origin` is
     a point. functions as an offset if `direction_attached` is also set.
-  * entity `origin_attached`: allows the origin to be specified as an offset
+    * entity `origin_attached`: allows the origin to be specified as an offset
     from the position of an entity rather than a coordinate in world space.
-  * entity `direction_attached`: allows the direction to be specified as an offset
+    * entity `direction_attached`: allows the direction to be specified as an offset
     from the position of an entity rather than a coordinate in world space.
-  * bool `die_on_contact`: if true, the particles' lifetimes are adjusted so
+    * bool `die_on_contact`: if true, the particles' lifetimes are adjusted so
     that they will die as they cross the attractor threshold. this behavior
     is the default but is undesirable for some kinds of animations; set it to
     false to allow particles to live out their natural lives.

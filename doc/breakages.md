@@ -10,12 +10,12 @@ This list is largely advisory and items may be reevaluated once the time comes.
 * `game.conf` name/id mess
 * Remove `depends.txt` / `description.txt` (would simplify ContentDB and Minetest code a little)
 * Rotate moon texture by 180°, making it coherent with the sun
-  * https://github.com/minetest/minetest/pull/11902
+    * https://github.com/minetest/minetest/pull/11902
 * Remove undocumented `set_physics_override(num, num, num)`
 * Remove special handling of `${key}` syntax in metadata values
 * Remove `old_move`
 * Change physics_override `sneak` to disable the speed change and not just the node clipping
-  * https://github.com/minetest/minetest/issues/13699
+    * https://github.com/minetest/minetest/issues/13699
 * Migrate from player names to UUIDs, this would enable renaming of accounts and unicode player names (if desired)
 * Harmonize `use_texture_alpha` between entities & nodes, change default to 'opaque' and remove bool compat code
 * Merge `sound` and `sounds` table in itemdef

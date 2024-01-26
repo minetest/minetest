@@ -9,9 +9,9 @@ Description of formspec language to show your menu is in `lua_api.md`
 # Callbacks
 
 * `core.button_handler(fields)`: called when a button is pressed.
-  * `fields` = `{name1 = value1, name2 = value2, ...}`
+    * `fields` = `{name1 = value1, name2 = value2, ...}`
 * `core.event_handler(event)`
-  * `event`: `"MenuQuit"`, `"KeyEnter"`, `"ExitButton"` or `"EditBoxEnter"`
+    * `event`: `"MenuQuit"`, `"KeyEnter"`, `"ExitButton"` or `"EditBoxEnter"`
 
 
 
@@ -35,65 +35,65 @@ The "gamedata" table is read when calling `core.start()`. It should contain:
 # Functions
 
 * `core.start()`
-  * start game session
+    * start game session
 * `core.close()`
-  * exit engine
+    * exit engine
 * `core.get_min_supp_proto()`
-  * returns the minimum supported network protocol version
+    * returns the minimum supported network protocol version
 * `core.get_max_supp_proto()`
-  * returns the maximum supported network protocol version
+    * returns the maximum supported network protocol version
 * `core.open_url(url)`
-  * opens the URL in a web browser, returns false on failure.
-  * Must begin with http:// or https://
+    * opens the URL in a web browser, returns false on failure.
+    * Must begin with http:// or https://
 * `core.open_dir(path)`
-  * opens the path in the system file browser/explorer, returns false on failure.
-  * Must be an existing directory.
+    * opens the path in the system file browser/explorer, returns false on failure.
+    * Must be an existing directory.
 * `core.share_file(path)`
-  * Android only. Shares file using the share popup
+    * Android only. Shares file using the share popup
 * `core.get_version()` (possible in async calls)
-  * returns current core version
+    * returns current core version
 * `core.set_once(key, value)`:
-  * save a string value that persists even if menu is closed
+    * save a string value that persists even if menu is closed
 * `core.get_once(key)`:
-  * get a string value saved by above function, or `nil`
+    * get a string value saved by above function, or `nil`
 
 
 
 # Filesystem
 
 * `core.get_builtin_path()`
-  * returns path to builtin root
+    * returns path to builtin root
 * `core.create_dir(absolute_path)` (possible in async calls)
-  * `absolute_path` to directory to create (needs to be absolute)
-  * returns true/false
+    * `absolute_path` to directory to create (needs to be absolute)
+    * returns true/false
 * `core.delete_dir(absolute_path)` (possible in async calls)
-  * `absolute_path` to directory to delete (needs to be absolute)
-  * returns true/false
+    * `absolute_path` to directory to delete (needs to be absolute)
+    * returns true/false
 * `core.copy_dir(source,destination,keep_source)` (possible in async calls)
-  * `source` folder
-  * `destination` folder
-  * `keep_source` DEFAULT true --> if set to false `source` is deleted after copying
-  * returns true/false
+    * `source` folder
+    * `destination` folder
+    * `keep_source` DEFAULT true --> if set to false `source` is deleted after copying
+    * returns true/false
 * `core.is_dir(path)` (possible in async calls)
-  * returns true if `path` is a valid dir
+    * returns true if `path` is a valid dir
 * `core.extract_zip(zipfile,destination)` [unzip within path required]
-  * `zipfile` to extract
-  * `destination` folder to extract to
-  * returns true/false
+    * `zipfile` to extract
+    * `destination` folder to extract to
+    * returns true/false
 * `core.sound_play(spec, looped)` -> handle
-  * `spec` = `SimpleSoundSpec` (see `lua_api.md`)
-  * `looped` = bool
+    * `spec` = `SimpleSoundSpec` (see `lua_api.md`)
+    * `looped` = bool
 * `handle:stop()` or `core.sound_stop(handle)`
 * `core.get_video_drivers()`
-  * get list of video drivers supported by engine (not all modes are guaranteed to work)
-  * returns list of available video drivers' settings name and 'friendly' display name
+    * get list of video drivers supported by engine (not all modes are guaranteed to work)
+    * returns list of available video drivers' settings name and 'friendly' display name
     e.g. `{{name="opengl", friendly_name="OpenGL"}, {name="software", friendly_name="Software Renderer"}}`
-  * first element of returned list is guaranteed to be the NULL driver
+    * first element of returned list is guaranteed to be the NULL driver
 * `core.get_mapgen_names([include_hidden=false])` -> table of map generator algorithms
     registered in the core (possible in async calls)
 * `core.get_cache_path()` -> path of cache
 * `core.get_temp_path([param])` (possible in async calls)
-  * `param`=true: returns path to a temporary file
+    * `param`=true: returns path to a temporary file
     otherwise: returns path to the temporary folder
 
 
@@ -178,45 +178,45 @@ Passed to `HTTPApiTable.fetch` callback. Returned by
 
 * `core.update_formspec(formspec)`
 * `core.get_table_index(tablename)` -> index
-  * can also handle textlists
+    * can also handle textlists
 * `core.formspec_escape(string)` -> string
-  * escapes characters [ ] \ , ; that cannot be used in formspecs
+    * escapes characters [ ] \ , ; that cannot be used in formspecs
 * `core.explode_table_event(string)` -> table
-  * returns e.g. `{type="CHG", row=1, column=2}`
-  * `type`: "INV" (no row selected), "CHG" (selected) or "DCL" (double-click)
+    * returns e.g. `{type="CHG", row=1, column=2}`
+    * `type`: "INV" (no row selected), "CHG" (selected) or "DCL" (double-click)
 * `core.explode_textlist_event(string)` -> table
-  * returns e.g. `{type="CHG", index=1}`
-  * `type`: "INV" (no row selected), "CHG" (selected) or "DCL" (double-click)
+    * returns e.g. `{type="CHG", index=1}`
+    * `type`: "INV" (no row selected), "CHG" (selected) or "DCL" (double-click)
 * `core.set_formspec_prepend(formspec)`
-  * `formspec`: string to be added to every mainmenu formspec, to be used for theming.
+    * `formspec`: string to be added to every mainmenu formspec, to be used for theming.
 
 
 
 # GUI
 
 * `core.set_background(type,texturepath,[tile],[minsize])`
-  * `type`: "background", "overlay", "header" or "footer"
-  * `tile`: tile the image instead of scaling (background only)
-  * `minsize`: minimum tile size, images are scaled to at least this size prior
+    * `type`: "background", "overlay", "header" or "footer"
+    * `tile`: tile the image instead of scaling (background only)
+    * `minsize`: minimum tile size, images are scaled to at least this size prior
    doing tiling (background only)
 * `core.set_clouds(<true/false>)`
 * `core.set_topleft_text(text)`
 * `core.show_keys_menu()`
 * `core.show_path_select_dialog(formname, caption, is_file_select)`
-  * shows a path select dialog
-  * `formname` is base name of dialog response returned in fields
+    * shows a path select dialog
+    * `formname` is base name of dialog response returned in fields
      - if dialog was accepted `"_accepted"`
         will be added to fieldname containing the path
      - if dialog was canceled `"_cancelled"`
         will be added to fieldname value is set to formname itself
-  * if `is_file_select` is `true`, a file and not a folder will be selected
-  * returns nil or selected file/folder
+    * if `is_file_select` is `true`, a file and not a folder will be selected
+    * returns nil or selected file/folder
 * `core.get_active_driver()`:
-  * technical name of active video driver, e.g. "opengl"
+    * technical name of active video driver, e.g. "opengl"
 * `core.get_active_renderer()`:
-  * name of current renderer, e.g. "OpenGL 4.6"
+    * name of current renderer, e.g. "OpenGL 4.6"
 * `core.get_active_irrlicht_device()`:
-  * name of current irrlicht device, e.g. "SDL"
+    * name of current irrlicht device, e.g. "SDL"
 * `core.get_window_info()`: Same as server-side `get_player_window_information` API.
   ```lua
   -- Note that none of these things are constant, they are likely to change
@@ -340,10 +340,10 @@ Package - content which is downloadable from the content db, may or may not be i
 # Logging
 
 * `core.debug(line)` (possible in async calls)
-  * Always printed to `stderr` and logfile (`print()` is redirected here)
+    * Always printed to `stderr` and logfile (`print()` is redirected here)
 * `core.log(line)` (possible in async calls)
 * `core.log(loglevel, line)` (possible in async calls)
-  * `loglevel` one of "error", "action", "info", "verbose"
+    * `loglevel` one of "error", "action", "info", "verbose"
 
 
 
@@ -363,7 +363,7 @@ For a complete list of methods of the `Settings` object see
 # Worlds
 
 * `core.get_worlds()` -> list of worlds (possible in async calls)
-  * returns
+    * returns
     ```lua
     {
         [1] = {
@@ -381,28 +381,28 @@ For a complete list of methods of the `Settings` object see
 # Helpers
 
 * `core.get_us_time()`
-  * returns time with microsecond precision
+    * returns time with microsecond precision
 * `core.gettext(string)` -> string
-  * look up the translation of a string in the gettext message catalog
+    * look up the translation of a string in the gettext message catalog
 * `fgettext_ne(string, ...)`
-  * call `core.gettext(string)`, replace "$1"..."$9" with the given
+    * call `core.gettext(string)`, replace "$1"..."$9" with the given
   extra arguments and return the result
 * `fgettext(string, ...)` -> string
-  * same as `fgettext_ne()`, but calls `core.formspec_escape` before returning result
+    * same as `fgettext_ne()`, but calls `core.formspec_escape` before returning result
 * `core.parse_json(string[, nullvalue])` -> something (possible in async calls)
-  * see `core.parse_json` (`lua_api.md`)
+    * see `core.parse_json` (`lua_api.md`)
 * `dump(obj, dumped={})`
-  * Return object serialized as a string
+    * Return object serialized as a string
 * `string:split(separator)`
-  * eg. `string:split("a,b", ",")` == `{"a","b"}`
+    * eg. `string:split("a,b", ",")` == `{"a","b"}`
 * `string:trim()`
-  * eg. `string.trim("\n \t\tfoo bar\t ")` == `"foo bar"`
+    * eg. `string.trim("\n \t\tfoo bar\t ")` == `"foo bar"`
 * `core.is_yes(arg)` (possible in async calls)
-  * returns whether `arg` can be interpreted as yes
+    * returns whether `arg` can be interpreted as yes
 * `core.encode_base64(string)` (possible in async calls)
-  * Encodes a string in base64.
+    * Encodes a string in base64.
 * `core.decode_base64(string)` (possible in async calls)
-  * Decodes a string encoded in base64.
+    * Decodes a string encoded in base64.
 * `core.urlencode(str)`: Encodes non-unreserved URI characters by a
   percent sign followed by two hex digits. See
   [RFC 3986, section 2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-2.3).
@@ -412,10 +412,10 @@ For a complete list of methods of the `Settings` object see
 # Async
 
 * `core.handle_async(async_job,parameters,finished)`
-  * execute a function asynchronously
-  * `async_job` is a function receiving one parameter and returning one parameter
-  * `parameters` parameter table passed to `async_job`
-  * `finished` function to be called once `async_job` has finished
+    * execute a function asynchronously
+    * `async_job` is a function receiving one parameter and returning one parameter
+    * `parameters` parameter table passed to `async_job`
+    * `finished` function to be called once `async_job` has finished
     the result of `async_job` is passed to this function
 
 ## Limitations of Async Operations

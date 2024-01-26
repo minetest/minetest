@@ -298,8 +298,8 @@ Refer to `lua_api.md`.
    contained in your mod:
    e.g. `dofile(minetest.get_modpath(minetest.get_current_modname()) .. "stuff.lua")`
 * `minetest.get_language()`: returns two strings
-   * the current gettext locale
-   * the current language code (the same as used for client-side translations)
+    * the current gettext locale
+    * the current language code (the same as used for client-side translations)
 * `minetest.get_version()`: returns a table containing components of the
    engine version. Components:
     * `project`: Name of the project, eg, "Minetest"
@@ -319,8 +319,8 @@ Refer to `lua_api.md`.
     * `colorspec`: The ColorSpec to convert
 * `minetest.get_csm_restrictions()`: returns a table of `Flags` indicating the
    restrictions applied to the current mod.
-   * If a flag in this table is set to true, the feature is RESTRICTED.
-   * Possible flags: `load_client_mods`, `chat_messages`, `read_itemdefs`,
+    * If a flag in this table is set to true, the feature is RESTRICTED.
+    * Possible flags: `load_client_mods`, `chat_messages`, `read_itemdefs`,
                    `read_nodedefs`, `lookup_nodes`, `read_playerinfo`
 * `minetest.urlencode(str)`: Encodes non-unreserved URI characters by a
   percent sign followed by two hex digits. See
