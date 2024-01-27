@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-01-27 15:10+0000\n"
-"Last-Translator: IFRFSX <1079092922@qq.com>\n"
+"PO-Revision-Date: 2024-01-28 16:01+0000\n"
+"Last-Translator: ZhiZe-ZG <qi_wang_zz@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -6101,6 +6101,9 @@ msgid ""
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
 msgstr ""
+"液体队列可能超出处理时间的时间（以秒为单位）\n"
+"直到尝试通过转储旧队列项目来减小其大小为止。\n"
+"值为0将禁用该功能。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6262,6 +6265,10 @@ msgid ""
 "image.\n"
 "Higher values result in a less detailed image."
 msgstr ""
+"欠采样类似于使用较低的屏幕分辨率，但是它适用\n"
+"仅限于游戏世界，保持GUI完整。\n"
+"它应该以不那么详细的图像为代价显着提高性能。\n"
+"较高的值会导致图像不太清晰。"
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6388,16 +6395,20 @@ msgid ""
 "Variation of terrain vertical scale.\n"
 "When noise is < -0.55 terrain is near-flat."
 msgstr ""
+"地形垂直比例的变化。\n"
+"当噪声< -0.55 地形接近平坦。"
 
 #: src/settings_translation_file.cpp
 msgid "Varies depth of biome surface nodes."
-msgstr ""
+msgstr "变化生物群落表面节点的深度。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Varies roughness of terrain.\n"
 "Defines the 'persistence' value for terrain_base and terrain_alt noises."
 msgstr ""
+"改变地形的粗糙度。\n"
+"定义 terrain_base 和 terrain_alt 噪音的 \"持久性 \"值。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
