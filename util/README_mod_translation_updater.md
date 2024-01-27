@@ -40,10 +40,12 @@ Here is the list of all recognized function names. All functions return a string
 
 Here is the boilerplate code you have to add at the top of your source code file:
 
-    local S = minetest.get_translator("<textdomain>")
-    local NS = function(s) return s end
-    local FS = function(...) return minetest.formspec_escape(S(...)) end
-    local NFS = function(s) return minetest.formspec_escape(s) end
+```lua
+local S = minetest.get_translator("<textdomain>")
+local NS = function(s) return s end
+local FS = function(...) return minetest.formspec_escape(S(...)) end
+local NFS = function(s) return minetest.formspec_escape(s) end
+```
 
 Replace `<textdomain>` above and optionally delete `NS`, `FS` and/or `NFS` if you don't need
 them.
@@ -73,28 +75,34 @@ Undetectable notations:
 This minimal code example sends "Hello world!" to all players, but translated according to
 each player's language:
 
-    local S = minetest.get_translator("example")
-    minetest.chat_send_all(S("Hello world!"))
+```lua
+local S = minetest.get_translator("example")
+minetest.chat_send_all(S("Hello world!"))
+```
 
 ### How to Use `NS`
 
 The reason why `NS` exists is for cases like this: Sometimes, you want to define a list of
 strings to they can be later output in a function. Like so:
 
-    local fruit = {"Apple", "Orange", "Pear"}
-    local function return_fruit(fruit_id)
-       return fruit[fruit_id]
-    end
+```lua
+local fruit = {"Apple", "Orange", "Pear"}
+local function return_fruit(fruit_id)
+   return fruit[fruit_id]
+end
+```
 
 If you want to translate the fruit names when `return_fruit` is run, but have the
 *untranslated* fruit names in the `fruit` table stored, this is where `NS` will help.
 It will show the script the string without Minetest translating it. The script could be made
 translatable like this:
 
-    local fruit = {NS("Apple"), NS("Orange"), NS("Pear")}
-    local function return_fruit(fruit_id)
-       return S(fruit[fruit_id])
-    end
+```lua
+local fruit = {NS("Apple"), NS("Orange"), NS("Pear")}
+local function return_fruit(fruit_id)
+   return S(fruit[fruit_id])
+end
+```
 
 ## How to Run the Script
 
