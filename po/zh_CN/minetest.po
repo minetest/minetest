@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-01-28 16:01+0000\n"
-"Last-Translator: ZhiZe-ZG <qi_wang_zz@outlook.com>\n"
+"PO-Revision-Date: 2024-01-29 14:52+0000\n"
+"Last-Translator: yue weikai <send52@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -6110,6 +6110,8 @@ msgid ""
 "The time budget allowed for ABMs to execute on each step\n"
 "(as a fraction of the ABM Interval)"
 msgstr ""
+"abms允许的时间预算在每一步上执行\n"
+"（作为ABM间隔的一小部分）"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6124,8 +6126,8 @@ msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
 msgstr ""
-"按住位置按钮时，两次重复节点放置之间花费的时间\n"
-"（以秒为单位）。"
+"按住放置按钮时，\n"
+"会重复放置方块。"
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -6179,15 +6181,16 @@ msgid ""
 "This determines how long they are slowed down after placing or removing a "
 "node."
 msgstr ""
+"为了减少延迟，当一个玩家正在构建某个东西时，阻塞传输会减慢。\n"
+"这决定了放置或删除方块后它们的速度减慢的时间。"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr "工具提示延迟"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen"
-msgstr "触屏阈值"
+msgstr "触摸屏"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6195,9 +6198,8 @@ msgid "Touchscreen sensitivity"
 msgstr "鼠标灵敏度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen sensitivity multiplier."
-msgstr "鼠标灵敏度倍数。"
+msgstr "触摸屏灵敏度倍增器."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6210,7 +6212,7 @@ msgstr "性能权衡"
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
-msgstr ""
+msgstr "透明度排序距离"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
@@ -6243,11 +6245,17 @@ msgid ""
 "\n"
 "This setting should only be changed if you have performance problems."
 msgstr ""
+"闭塞剔除器类型\n"
+"\n"
+"\"loops \"是传统算法，带有嵌套循环，复杂度为 O(n³)\n"
+"\"bfs \"是基于广度优先搜索和边剔除的新算法\n"
+"\n"
+"只有在出现性能问题时，才应更改此设置。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "URL to JSON file which provides information about the newest Minetest release"
-msgstr ""
+msgstr "提供最新 Minetest 版本信息的 JSON 文件的 URL"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
@@ -6280,7 +6288,7 @@ msgstr "卸载未用服务器数据"
 
 #: src/settings_translation_file.cpp
 msgid "Update information URL"
-msgstr ""
+msgstr "更新有信息的链接"
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
@@ -6310,13 +6318,15 @@ msgstr "缩放材质时使用双线过滤。"
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
-msgstr ""
+msgstr "在触摸屏上使用准星操控"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Use crosshair to select object instead of whole screen.\n"
 "If enabled, a crosshair will be shown and will be used for selecting object."
 msgstr ""
+"用准星选择物体而不是整个屏幕.\n"
+"如果启用，准星会被展示并且用于选择物体."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6324,6 +6334,9 @@ msgid ""
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
+"缩放纹理时使用 mipmaps。可能会略微提高性能、\n"
+"尤其是在使用高分辨率纹理包时。\n"
+"不支持伽玛校正降频。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6331,6 +6344,9 @@ msgid ""
 "This flag enables use of raytraced occlusion culling test for\n"
 "client mesh sizes smaller than 4x4x4 map blocks."
 msgstr ""
+"在新剔除器中使用光线追踪遮挡剔除。\n"
+"此标记可启用光线追踪遮挡剔除测试，用于\n"
+"客户端网格尺寸小于 4x4x4 的贴图块。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6338,6 +6354,9 @@ msgid ""
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
+"缩放纹理时使用三线性过滤。\n"
+"如果同时启用了双线性和三线性滤波，则会应用三线性滤波。\n"
+"会被应用。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6351,7 +6370,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "User Interfaces"
-msgstr ""
+msgstr "用户界面"
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
@@ -6417,13 +6436,13 @@ msgstr "控制山丘的坡度/高度。"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
-msgstr ""
+msgstr "垂直爬升速度（方块/秒）."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Vertical screen synchronization. Your system may still force VSync on even "
 "if this is disabled."
-msgstr ""
+msgstr "垂直屏幕同步。即使禁用了此功能，系统仍可能强制开启 VSync。"
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
@@ -6443,20 +6462,19 @@ msgstr "可视范围"
 
 #: src/settings_translation_file.cpp
 msgid "Virtual joystick triggers Aux1 button"
-msgstr ""
+msgstr "虚拟操纵杆触发 Aux1 按钮"
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
 msgstr "音量"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Volume of all sounds.\n"
 "Requires the sound system to be enabled."
 msgstr ""
-"启用视差闭塞映射。\n"
-"需要着色器已启用。"
+"所有声音的音量.\n"
+"需要启用声音系统."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6466,6 +6484,11 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"生成的 4D 分形 3D 切片的 W 坐标。\n"
+"确定生成的 4D 形状的 3D 切片。\n"
+"更改分形的形状。\n"
+"对 3D 分形没有影响。\n"
+"范围大约 -2 到 2。"
 
 #: src/settings_translation_file.cpp
 msgid "Walking and flying speed, in nodes per second."
@@ -6484,9 +6507,8 @@ msgid "Water level"
 msgstr "水位"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Water surface level of the world."
-msgstr "世界水平面级别。"
+msgstr "世界水平面高度。"
 
 #: src/settings_translation_file.cpp
 msgid "Waving Nodes"
@@ -6527,6 +6549,9 @@ msgid ""
 "filtered in software, but some images are generated directly\n"
 "to hardware (e.g. render-to-texture for nodes in inventory)."
 msgstr ""
+"当gui_scaling_filter为 true 时，所有 GUI 映像都需要\n"
+"在软件中过滤，但一些图像是直接生成的\n"
+"硬件（例如，库存中材质的渲染到纹理）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6535,6 +6560,10 @@ msgid ""
 "to the old scaling method, for video drivers that don't\n"
 "properly support downloading textures back from hardware."
 msgstr ""
+"当gui_scaling_filter_txr2img为 true 时，复制这些图像\n"
+"从硬件到软件进行扩展。 当 false 时，回退\n"
+"到旧的缩放方法，对于不\n"
+"正确支持从硬件下载纹理。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6547,12 +6576,22 @@ msgid ""
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
 msgstr ""
+"使用双线性/三线性/各向异性滤镜时\n"
+"低分辨率纹理\n"
+"可能会变得模糊，因此会自动使用最近邻插值\n"
+"对纹理进行放大，以保留清晰的像素。这将为放大后的纹理设置最小纹理尺寸；\n"
+"数值越大，看起来越清晰，但需要的内存也越大。\n"
+"建议使用 2 的幂。\n"
+"只有在启用双线性/三线性/各向异性过滤时，才会应用此设置。\n"
+"这也是世界对齐纹理自动缩放的基本方块纹理尺寸。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
+"无论默认情况下应显示名称标签背景.\n"
+"模组都可能仍然设置一个背景."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
