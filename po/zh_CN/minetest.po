@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-01-04 05:46+0000\n"
-"Last-Translator: Tianshu Feng <me@theaceblock.dev>\n"
+"PO-Revision-Date: 2024-01-27 08:45+0000\n"
+"Last-Translator: yue weikai <send52@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -316,7 +316,6 @@ msgid "Failed to install $1 to $2"
 msgstr "无法把$1安装到$2"
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
 msgstr "安装mod：无法找到mod包$1的合适文件夹名"
 
@@ -766,7 +765,6 @@ msgid "Offset"
 msgstr "补偿"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#, fuzzy
 msgid "Persistence"
 msgstr "持续性"
 
@@ -937,7 +935,6 @@ msgid "Core Team"
 msgstr "核心团队"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Irrlicht device:"
 msgstr "Irrlicht 渲染设备："
 
@@ -1335,7 +1332,6 @@ msgstr ""
 "- %s：聊天\n"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
@@ -1350,11 +1346,11 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
-"默认控制:\n"
+"控制指南:\n"
 "菜单不可见时:\n"
-"- 单击: 激活按钮\n"
-"- 双击: 放置/使用\n"
-"- 滑动手指: 改变视角\n"
+"- 长安: 挖/按压/使用\n"
+"- 单击: 放置/使用\n"
+"- 滑动手指: 环顾四周\n"
 "菜单/物品栏可见时:\n"
 "- 双击 (界面区域外):\n"
 " --> 关闭\n"
@@ -1570,14 +1566,14 @@ msgid "Unlimited viewing range enabled, but forbidden by game or mod"
 msgstr "无限视野已启用，但是受子游戏或者 Mod 限制"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing changed to %d (the minimum)"
-msgstr "视野范围已达到最小：%d"
+msgstr "视野范围被变为%d（最小范围）"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
-msgstr ""
+msgstr "视野被调至 %d（最小）,但是受%d的约束因为游戏或者模组"
 
 #: src/client/game.cpp
 #, c-format
@@ -1585,15 +1581,15 @@ msgid "Viewing range changed to %d"
 msgstr "视野范围已改变至%d"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d (the maximum)"
-msgstr "视野范围已改变至%d"
+msgstr "视野范围已改变至%d（最大）"
 
 #: src/client/game.cpp
 #, c-format
 msgid ""
 "Viewing range changed to %d (the maximum), but limited to %d by game or mod"
-msgstr ""
+msgstr "查看范围更改为 %d（最大值），但游戏或模组限制为 %d"
 
 #: src/client/game.cpp
 #, c-format
@@ -1665,14 +1661,12 @@ msgid "Caps Lock"
 msgstr "大写锁定键"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Clear Key"
-msgstr "Clear键"
+msgstr "清除键"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Control Key"
-msgstr "Ctrl键"
+msgstr "控制键"
 
 #: src/client/keycode.cpp
 #, fuzzy
@@ -1681,7 +1675,7 @@ msgstr "删除"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
-msgstr ""
+msgstr "⇩"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1728,9 +1722,8 @@ msgid "Insert"
 msgstr "Insert键"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Arrow"
-msgstr "左Control键"
+msgstr "⇦"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1754,9 +1747,8 @@ msgstr "左Windows键"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Menu Key"
-msgstr "菜单"
+msgstr "菜单键"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
@@ -1842,9 +1834,8 @@ msgstr "上一页"
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Pause Key"
-msgstr "Pause键"
+msgstr "暂停键"
 
 #: src/client/keycode.cpp
 msgid "Play"
@@ -1861,9 +1852,8 @@ msgid "Return Key"
 msgstr "回车键"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Arrow"
-msgstr "右Control键"
+msgstr "⇨"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1917,7 +1907,7 @@ msgstr "Tab键"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
-msgstr ""
+msgstr "⇧"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -3044,6 +3034,9 @@ msgid ""
 "Smaller values make bloom more subtle\n"
 "Range: from 0.01 to 1.0, default: 0.05"
 msgstr ""
+"定义对渲染图像的晕染程度\n"
+"数值越小，晕染越细腻\n"
+"范围：0.01 至 1.0，默认值：0.05"
 
 #: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
@@ -3066,6 +3059,8 @@ msgid ""
 "Defines the magnitude of bloom overexposure.\n"
 "Range: from 0.1 to 10.0, default: 1.0"
 msgstr ""
+"定义泛光的程度。\n"
+"范围：0.1 至 10.0，默认值：1.0"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3077,6 +3072,8 @@ msgid ""
 "methods.\n"
 "Value of 2 means taking 2x2 = 4 samples."
 msgstr ""
+"定义 FSAA 和 SSAA 抗锯齿方法的采样网格大小。\n"
+"值为 2 表示取 2x2 = 4 个样本。"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the width of the river channel."
@@ -3165,6 +3162,8 @@ msgid ""
 "Distance in nodes at which transparency depth sorting is enabled\n"
 "Use this to limit the performance impact of transparency depth sorting"
 msgstr ""
+"启用透明度深度排序的节点距离\n"
+"用于限制透明度深度排序对性能的影响"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -3233,7 +3232,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
-msgstr ""
+msgstr "启用光线追踪剔除"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3242,6 +3241,10 @@ msgid ""
 "automatically adjust to the brightness of the scene,\n"
 "simulating the behavior of human eye."
 msgstr ""
+"启用自动曝光校正\n"
+"启用后，后期处理引擎将\n"
+"自动调整场景亮度、\n"
+"模拟人眼的行为。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3273,7 +3276,7 @@ msgstr "启用 mod 安全"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
-msgstr ""
+msgstr "启用鼠标滚轮（滚动），以便在热栏中选择项目。"
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3289,7 +3292,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable split login/register"
-msgstr ""
+msgstr "启用分页登录/注册"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3380,7 +3383,6 @@ msgid "Entity methods"
 msgstr "实体方法"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
@@ -3391,7 +3393,8 @@ msgid ""
 msgstr ""
 "悬空岛锥度的指数，更改锥度的行为。\n"
 "值等于1.0，创建一个统一的，线性锥度。\n"
-"值大于1.0，创建一个平滑的、合适的锥度，默认分隔的悬空岛。\n"
+"值大于1.0，创建一个平滑的、合适的锥度，默认分隔的\n"
+"悬空岛。\n"
 "值小于1.0，（例如0.25）创建一个带有平坦低地的更加轮廓分明的表面级别，\n"
 "适用于固体悬空岛层。"
 
@@ -3547,7 +3550,7 @@ msgstr "字体大小"
 
 #: src/settings_translation_file.cpp
 msgid "Font size divisible by"
-msgstr ""
+msgstr "字体大小被整除因为"
 
 #: src/settings_translation_file.cpp
 msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
@@ -3575,6 +3578,10 @@ msgid ""
 "be\n"
 "sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
+"对于不能很好缩放的像素风字体，该值可确保与该字体一起使用的字体大小\n"
+"的字体大小总是能被该值除以像素。例如\n"
+"高 16 像素的像素字体应将此值设为 16，这样它的字体大小就只能是\n"
+"大小为 16、32、48 等，因此要求 25 大小的模式将得到 32。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3837,11 +3844,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar: Enable mouse wheel for selection"
-msgstr ""
+msgstr "快捷栏：启用鼠标滚轮用来选择"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar: Invert mouse wheel direction"
-msgstr ""
+msgstr "快捷栏：反转鼠标滚轮方向"
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
@@ -3954,7 +3961,6 @@ msgid ""
 msgstr "如果启用，玩家将无法在没有密码的情况下加入或修改密码为空密码。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, the server will perform map block occlusion culling based on\n"
 "on the eye position of the player. This can reduce the number of blocks\n"
@@ -3964,7 +3970,7 @@ msgstr ""
 "如果启用，服务器会根据玩家的视野遮挡\n"
 "剔除地图区块。这可以减少向客户端发送\n"
 "的 50-80% 的区块。客户端将不会收到最\n"
-"不可见的内容，降低 noclip 模式的实用性。"
+"不可见的内容，降低穿墙模式的实用性。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4269,27 +4275,23 @@ msgstr ""
 "时间间隔。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Length of liquid waves."
-msgstr "波动液体波动速度"
+msgstr "波动液体波动速度."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Length of time between Active Block Modifier (ABM) execution cycles, stated "
 "in seconds."
-msgstr "ABM执行循环时长"
+msgstr "ABM执行循环时长."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Length of time between NodeTimer execution cycles, stated in seconds."
-msgstr "NodeTimer执行循环时长"
+msgstr "NodeTimer执行循环时长."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Length of time between active block management cycles, stated in seconds."
-msgstr "活动方块管理循环时长"
+msgstr "活动方块管理循环时长."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4417,6 +4419,9 @@ msgid ""
 "from the bright objects.\n"
 "Range: from 0.1 to 8, default: 1"
 msgstr ""
+"逻辑值，用于控制泛光效果\n"
+"从明亮物体扩散的距离。\n"
+"范围：0.1 至 8，默认：1"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -4539,9 +4544,8 @@ msgid "Mapblock mesh generation delay"
 msgstr "地图生成延时"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapblock mesh generation threads"
-msgstr "地图生成延时"
+msgstr "区块网格生成线程"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
@@ -5004,6 +5008,8 @@ msgid ""
 "Value of 0 (default) will let Minetest autodetect the number of available "
 "threads."
 msgstr ""
+"用于生成网格的线程数。\n"
+"默认值为 0 时，Minetest 会自动检测可用线程数。"
 
 #: src/settings_translation_file.cpp
 msgid "Occlusion Culler"
