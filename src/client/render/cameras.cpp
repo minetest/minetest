@@ -74,7 +74,10 @@ void SelectPrimaryCamera::run(PipelineContext &context)
 
 	const auto &it = cameras.find(-1);
 	if (it != cameras.end() && it->second && !it->second->isVisible())
+	{
+		infostream << "SelectPrimaryCamera::run(): stop the run for the camera with id = -1" << std::endl;
 		return;
+	}
 
 	auto smgr = context.client->getSceneManager();
 	smgr->setActiveCamera(context.client->getCamera()->getCameraNode());

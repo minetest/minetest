@@ -133,7 +133,11 @@ public:
 
 	s16 addCamera()
 	{
-		auto id = ++m_camera_count;
+		s16 id = 0;
+
+		while (m_cam_params.find(id) != m_cam_params.end())
+			++id;
+
 		m_cam_params[id] = CameraParams(id);
 		return id;
 	}
@@ -192,7 +196,6 @@ private:
 	Lighting m_lighting;
 
 	std::unordered_map<s16, CameraParams> m_cam_params;
-	s16 m_camera_count {0};
 
 	session_t m_peer_id = PEER_ID_INEXISTENT;
 };

@@ -2628,9 +2628,10 @@ int ObjectRef::l_set_camera(lua_State *L)
 	auto params = player->getCameraParameters(cam_id);
 	params.change_flags = 0;
 
+	luaL_checktype(L, 3, LUA_TTABLE);
+
 	params.enabled = getboolfield_default(L, 3, "enabled", params.enabled);
 
-	luaL_checktype(L, 3, LUA_TTABLE);
 	lua_getfield(L, 3, "pos");
 	if (lua_istable(L, -1)) {
 		params.change_flags |= CAM_CHANGE_POS;
@@ -2846,7 +2847,7 @@ int ObjectRef::l_remove_camera(lua_State *L)
 	params.id = cam_id;
 	params.change_flags = CAM_REMOVE;
 
-	getServer(L)->setCamera(player, params);
+	getServer(L)->setCamera(player, params, true);
 
 	return 1;
 }

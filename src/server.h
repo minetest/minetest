@@ -358,7 +358,7 @@ public:
 
 	void setLighting(RemotePlayer *player, const Lighting &lighting);
 
-	void setCamera(RemotePlayer *player, const CameraParams &params);
+	void setCamera(RemotePlayer *player, const CameraParams &params, bool remove=false);
 
 	void RespawnPlayer(session_t peer_id);
 

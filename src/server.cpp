@@ -3614,10 +3614,12 @@ void Server::setLighting(RemotePlayer *player, const Lighting &lighting)
 	SendSetLighting(player->getPeerId(), lighting);
 }
 
-void Server::setCamera(RemotePlayer *player, const CameraParams &params)
+void Server::setCamera(RemotePlayer *player, const CameraParams &params, bool remove)
 {
 	sanity_check(player);
-	player->setCameraParameters(params);
+
+	if (!remove)
+		player->setCameraParameters(params);
 	SendSetCamera(player->getPeerId(), params);
 }
 

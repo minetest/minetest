@@ -160,7 +160,6 @@ void populatePlainPipeline(RenderPipeline *pipeline, Client *client)
 	auto downscale_factor = getDownscaleFactor();
 	auto step3D = nested_pipeline->own(create3DStage(client, downscale_factor));
 	nested_pipeline->addStep(step3D);
-	nested_pipeline->addStep<DrawWield>();
 	nested_pipeline->addStep<MapPostFxStep>();
 
 	step3D = addUpscaling(nested_pipeline, step3D, downscale_factor);
@@ -171,5 +170,6 @@ void populatePlainPipeline(RenderPipeline *pipeline, Client *client)
 
 	pipeline->addStep<DrawSecondaryCameras>(nested_pipeline, client)->setRenderTarget(screen);
 
+	pipeline->addStep<DrawWield>();
 	pipeline->addStep<DrawHUD>();
 }
