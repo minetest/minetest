@@ -1900,11 +1900,6 @@ u16 ServerEnvironment::addActiveObjectRaw(std::unique_ptr<ServerActiveObject> ob
 		return 0;
 	}
 
-	// Register reference in scripting api (must be done before post-init)
-	m_script->addObjectReference(object);
-	// Post-initialize object
-	object->addedToEnvironment(dtime_s);
-
 	// Add static data to block
 	if (object->isStaticAllowed()) {
 		// Add static object to active static list of the block
@@ -1914,6 +1909,7 @@ u16 ServerEnvironment::addActiveObjectRaw(std::unique_ptr<ServerActiveObject> ob
 		v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
 		MapBlock *block = m_map->emergeBlock(blockpos);
 		if (block) {
+			block->setTimestampNoChangedFlag(m_game_time);
 			block->m_static_objects.setActive(object->getId(), s_obj);
 			object->m_static_exists = true;
 			object->m_static_block = blockpos;
@@ -1926,8 +1922,15 @@ u16 ServerEnvironment::addActiveObjectRaw(std::unique_ptr<ServerActiveObject> ob
 			errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
 				<<"could not emerge block for storing id="<<object->getId()
 				<<" statically (pos="<<p<<")"<<std::endl;
+			m_ao_manager.removeObject(object->getId());
+			return 0;
 		}
 	}
+
+	// Register reference in scripting api (must be done before post-init)
+	m_script->addObjectReference(object);
+	// Post-initialize object
+	object->addedToEnvironment(dtime_s);
 
 	return object->getId();
 }
