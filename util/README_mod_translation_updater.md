@@ -1,16 +1,16 @@
-# `mod_translation_updater.py`—Minetest Mod Translation Updater
+# `mod_translation_updater.py` — Minetest Mod Translation Updater
 
 This Python script is intended for use with localized Minetest mods, i.e., mods that use
 `*.tr` and contain translatable strings of the form `S("This string can be translated")`.
 It extracts the strings from the mod's source code and updates the localization files
 accordingly. It can also be used to update the `*.tr` files in Minetest's `builtin` component.
 
-## Preparing your source code
+## Preparing Your Source Code
 
 This script makes assumptions about your source code. Before it is usable, you first have
 to prepare your source code accordingly.
 
-### Choosing the textdomain name
+### Choosing the `textdomain` Name
 
 It is recommended to set the textdomain name (for `minetest.get_translator`) to be identical
 of the mod name as the script will automatically detect it. If the textdomain name differs,
@@ -21,7 +21,7 @@ you may have to manually change the `# textdomain:` line of newly generated file
 > the same file are not supported by this script and any additional textdomain line will be
 > removed.
 
-### Defining the helper functions
+### Defining the Helper Functions
 
 In any source code file with translatable strings, you have to manually define helper
 functions at the top with something like `local S = minetest.get_translator("<textdomain>")`.
@@ -48,7 +48,7 @@ Here is the boilerplate code you have to add at the top of your source code file
 Replace `<textdomain>` above and optionally delete `NS`, `FS` and/or `NFS` if you don't need
 them.
 
-### Preparing the strings
+### Preparing the Strings
 
 This script can detect translatable strings of the notations listed below.
 Additional function arguments followed after a literal string are ignored.
@@ -68,7 +68,7 @@ Undetectable notations:
   Use placeholders (`@1`, ...) for variable text.
 * Any literal string concatenation using `[[...]]`
 
-### A minimal example
+### A Minimal Example
 
 This minimal code example sends "Hello world!" to all players, but translated according to
 each player's language:
@@ -76,7 +76,7 @@ each player's language:
     local S = minetest.get_translator("example")
     minetest.chat_send_all(S("Hello world!"))
 
-### How to use `NS`
+### How to Use `NS`
 
 The reason why `NS` exists is for cases like this: Sometimes, you want to define a list of
 strings to they can be later output in a function. Like so:
@@ -96,7 +96,7 @@ translatable like this:
        return S(fruit[fruit_id])
     end
 
-## How to run the script
+## How to Run the Script
 
 First, change the working directory to the directory of the mod you want the files to be
 updated. From this directory, run the script.
@@ -122,13 +122,13 @@ It has the following command line options:
     --verbose, -v: add output information
     --truncate-unused, -t: delete unused strings from files
 
-## Script output
+## Script Output
 
 This section explains how the output of this script works, roughly. This script aims to make
 the output more or less stable, i.e. given identical source files and arguments, the script
 should produce the same output.
 
-### Textdomain
+### `textdomain`
 
 The script will add (if not already present) a `# textdomain: <modname>` at the top, where
 `<modname>` is identical to the mod directory name. If a `# textdomain` already exists, it
@@ -178,7 +178,7 @@ files, associating them with the line that follows them. So for example:
 
 There are also a couple of special comments that this script gives special treatment to.
 
-#### Source file comments
+#### Source File Comments
 
 If `--print-source` or `-p` is provided as option, the script will insert comments to show
 from which file or files each string has come from.
@@ -203,7 +203,7 @@ If the print source option is not provided, these comments will disappear.
 Note that all comments of the form `##[something]##` will be treated as "source file" comments
 so they may be moved, changed or removed by the script at will.
 
-#### "not used anymore" section
+#### `not used anymore` Section
 
 By default, the exact comment `##### not used anymore #####` will be automatically added to
 mark the beginning of a section where old/unused strings will go. Leave the exact wording of
