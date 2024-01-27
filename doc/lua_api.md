@@ -3060,8 +3060,8 @@ background elements are drawn before all other elements.
 * Show a dropdown field
 > [!NOTE]
 > There are two different operation modes:
->  1. handle directly on change (only changed dropdown is submitted)
->  2. read the value on pressing a button (all dropdown values are available)
+> 1. handle directly on change (only changed dropdown is submitted)
+> 2. read the value on pressing a button (all dropdown values are available)
 * `X` and `Y`: position of the dropdown
 * `W`: width of the dropdown. Height is automatically chosen with this syntax.
 * Fieldname data is transferred to Lua
@@ -3080,8 +3080,8 @@ background elements are drawn before all other elements.
 
 > [!NOTE]
 > There are two different operation modes:
->  1. handle directly on change (only changed dropdown is submitted)
->  2. read the value on pressing a button (all dropdown values are available)
+> 1. handle directly on change (only changed dropdown is submitted)
+> 2. read the value on pressing a button (all dropdown values are available)
 * `X` and `Y`: position of the dropdown
 * `W` and `H`: width and height of the dropdown
 * Fieldname data is transferred to Lua

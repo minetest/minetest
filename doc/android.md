@@ -17,11 +17,11 @@ shown), the following controls are available:
 * Press back: Pause menu
 * Touch buttons: Press button
 * Buttons:
-  1. Upper-left corner: Chat
-  2. Lower-right corner: Jump
-  3. Lower-right corner: Crouch
-  4. Lower-left corner (Joystick): Walk
-  5. Lower-left corner: Display inventory
+    1. Upper-left corner: Chat
+    2. Lower-right corner: Jump
+    3. Lower-right corner: Crouch
+    4. Lower-left corner (Joystick): Walk
+    5. Lower-left corner: Display inventory
 
 When a menu or inventory is displayed:
 * Double tap outside menu area / Press back: Close menu
