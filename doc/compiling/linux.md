@@ -30,7 +30,7 @@ For Fedora users:
 
 For openSUSE users:
 
-	sudo zypper install gcc cmake libjpeg8-devel libpng16-devel openal-soft-devel libcurl-devel sqlite3-devel luajit-devel libzstd-devel Mesa-libGL-devel libXi-devel libvorbis-devel freetype2-devel SDL2-devel
+    sudo zypper install gcc cmake libjpeg8-devel libpng16-devel openal-soft-devel libcurl-devel sqlite3-devel luajit-devel libzstd-devel Mesa-libGL-devel libXi-devel libvorbis-devel freetype2-devel SDL2-devel
 
 For Arch users:
 
@@ -58,11 +58,11 @@ For Fedora users:
 
 For Arch users:
 
-	sudo pacman -S git
+    sudo pacman -S git
 
 For Alpine users:
 
-	sudo apk add git
+    sudo apk add git
 
 For Void users:
 

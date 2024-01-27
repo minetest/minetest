@@ -404,7 +404,7 @@ Timestamp and node ID mappings were introduced in map format version 29.
 * `u32` timestamp
     * Timestamp when last saved, as seconds from starting the game.
     * `0xffffffff` = invalid/unknown timestamp, nothing should be done with the time
-                     difference when loaded
+      difference when loaded
 
 * `u8` `name_id_mapping_version`
     * Should be zero for map format version 29.

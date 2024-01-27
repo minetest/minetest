@@ -60,9 +60,9 @@ by texture packs. All existing fallback textures can be found in the directory
 ### Gameplay Textures
 
 * `bubble.png`: the bubble texture when the player is drowning
-                (default size: 12×12)
+  (default size: 12×12)
 * `bubble_gone.png`: like `bubble.png`, but denotes lack of breath
-                     (transparent by default, same size as bubble.png)
+  (transparent by default, same size as bubble.png)
 
 * `crack_anylength.png`: node overlay texture when digging
 
@@ -79,9 +79,9 @@ by texture packs. All existing fallback textures can be found in the directory
 * `halo.png`: used for the node highlighting mesh
 
 * `heart.png`: used to display the health points of the player
-               (default size: 12×12)
+  (default size: 12×12)
 * `heart_gone.png`: like `heart.png`, but denotes lack of health points
-                    (transparent by default, same size as heart.png)
+  (transparent by default, same size as heart.png)
 
 * `minimap_mask_round.png`: round minimap mask, white gets replaced by the map
 * `minimap_mask_square.png`: mask used for the square minimap
@@ -155,23 +155,23 @@ more files in a texture pack called override.txt
 
 Each line in an override.txt file is a rule. It consists of
 
-	itemname target texture
+    itemname target texture
 
 For example,
 
-	default:dirt_with_grass sides default_stone.png
+    default:dirt_with_grass sides default_stone.png
 
 or
 
-	default:sword_steel inventory my_steel_sword.png
+    default:sword_steel inventory my_steel_sword.png
 
 You can list multiple targets on one line as a comma-separated list:
 
-	default:tree top,bottom my_special_tree.png
+    default:tree top,bottom my_special_tree.png
 
 You can use texture modifiers, as usual:
 
-	default:dirt_with_grass sides default_stone.png^[brighten
+    default:dirt_with_grass sides default_stone.png^[brighten
 
 Finally, if a line is empty or starts with '#' it will be considered
 a comment and not read as a rule. You can use this to better organize

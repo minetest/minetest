@@ -199,16 +199,16 @@ Passed to `HTTPApiTable.fetch` callback. Returned by
     * `type`: "background", "overlay", "header" or "footer"
     * `tile`: tile the image instead of scaling (background only)
     * `minsize`: minimum tile size, images are scaled to at least this size prior
-   doing tiling (background only)
+      doing tiling (background only)
 * `core.set_clouds(<true/false>)`
 * `core.set_topleft_text(text)`
 * `core.show_keys_menu()`
 * `core.show_path_select_dialog(formname, caption, is_file_select)`
     * shows a path select dialog
     * `formname` is base name of dialog response returned in fields
-     - if dialog was accepted `"_accepted"`
+      * if dialog was accepted `"_accepted"`
         will be added to fieldname containing the path
-     - if dialog was canceled `"_cancelled"`
+      * if dialog was canceled `"_cancelled"`
         will be added to fieldname value is set to formname itself
     * if `is_file_select` is `true`, a file and not a folder will be selected
     * returns nil or selected file/folder
@@ -420,10 +420,10 @@ For a complete list of methods of the `Settings` object see
     the result of `async_job` is passed to this function
 
 ## Limitations of Async Operations
- * No access to global lua variables, don't even try
- * Limited set of available functions
-    e.g. No access to functions modifying menu like `core.start`, `core.close`,
-    `core.show_path_select_dialog`
+
+* No access to global lua variables, don't even try
+* Limited set of available functions, e.g. No access to functions modifying menu
+  like `core.start`, `core.close`, `core.show_path_select_dialog`
 
 
 

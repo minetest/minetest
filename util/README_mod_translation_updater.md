@@ -30,13 +30,13 @@ Optionally, you can also define additional helper functions `FS`, `NS` and `NFS`
 Here is the list of all recognized function names. All functions return a string.
 
 * `S`: Returns translation of input. See Minetest's `lua_api.md`. You should always have at
-       least this function defined.
+  least this function defined.
 * `NS`: Returns the input. Useful to make a string visible to the script without actually
-        translating it here.
+  translating it here.
 * `FS`: Same as `S`, but returns a formspec-escaped version of the translation of the input.
-        Supported for convenience.
+  Supported for convenience.
 * `NFS`: Returns a formspec-escaped version of the input, but not translated.
-         Supported for convenience.
+  Supported for convenience.
 
 Here is the boilerplate code you have to add at the top of your source code file:
 

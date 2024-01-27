@@ -53,7 +53,7 @@ Edit and view metadata of items.
 Usage:
 
 * Place/Punch: Opens item metadata editor of the item in the next
-               inventory slot from the wielded item
+  inventory slot from the wielded item
 
 ## Entity Rotator
 

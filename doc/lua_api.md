@@ -84,9 +84,9 @@ The game directory can contain the following files:
     * `map_persistent`: Specifies whether newly created worlds should use
       a persistent map backend. Defaults to `true` (= "sqlite3")
     * `author`: The author of the game. It only appears when downloaded from
-                ContentDB.
+      ContentDB.
     * `release`: Ignore this: Should only ever be set by ContentDB, as it is
-                 an internal ID used to track versions.
+      an internal ID used to track versions.
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
@@ -147,13 +147,13 @@ should be a mod, contains a file named `modpack.conf`.
 The file is a key-value store of modpack details.
 
 * `name`: The modpack name. Allows Minetest to determine the modpack name even
-          if the folder is wrongly named.
+  if the folder is wrongly named.
 * `description`: Description of mod to be shown in the Mods tab of the main
-                 menu.
+  menu.
 * `author`: The author of the modpack. It only appears when downloaded from
-            ContentDB.
+  ContentDB.
 * `release`: Ignore this: Should only ever be set by ContentDB, as it is an
-             internal ID used to track versions.
+  internal ID used to track versions.
 * `title`: A human-readable title to address the modpack.
 
 > [!NOTE]
@@ -192,17 +192,17 @@ The location of this directory can be fetched by using
 A `Settings` file that provides meta information about the mod.
 
 * `name`: The mod name. Allows Minetest to determine the mod name even if the
-          folder is wrongly named.
+  folder is wrongly named.
 * `description`: Description of mod to be shown in the Mods tab of the main
-                 menu.
+  menu.
 * `depends`: A comma separated list of dependencies. These are mods that must be
-             loaded before this mod.
+  loaded before this mod.
 * `optional_depends`: A comma separated list of optional dependencies.
-                      Like a dependency, but no error if the mod doesn't exist.
+  Like a dependency, but no error if the mod doesn't exist.
 * `author`: The author of the mod. It only appears when downloaded from
-            ContentDB.
+  ContentDB.
 * `release`: Ignore this: Should only ever be set by ContentDB, as it is an
-             internal ID used to track versions.
+  internal ID used to track versions.
 * `title`: A human-readable title to address the mod.
 
 ### `screenshot.png`
@@ -1160,10 +1160,10 @@ These sound groups are played back by the engine if provided.
 
 * `player_damage`: Played when the local player takes damage (gain = 0.5)
 * `player_falling_damage`: Played when the local player takes
-   damage by falling (gain = 0.5)
+  damage by falling (gain = 0.5)
 * `player_jump`: Played when the local player jumps
 * `default_dig_<groupname>`: Default node digging sound (gain = 0.5)
-   (see node sound definition for details)
+  (see node sound definition for details)
 
 
 
@@ -1642,15 +1642,15 @@ Lower z-index elements are displayed behind higher z-index elements. Elements
 with same z-index are displayed in an arbitrary order. Default 0.
 Supports negative values. By convention, the following values are recommended:
 
-*  -400: Graphical effects, such as vignette
-*  -300: Name tags, waypoints
-*  -200: Wieldhand
-*  -100: Things that block the player's view, e.g. masks
-*     0: Default. For standard in-game HUD elements like crosshair, hotbar,
-         minimap, builtin statbars, etc.
-*   100: Temporary text messages or notification icons
-*  1000: Full-screen effects such as full-black screen or credits.
-         This includes effects that cover the entire screen
+* -400: Graphical effects, such as vignette
+* -300: Name tags, waypoints
+* -200: Wieldhand
+* -100: Things that block the player's view, e.g. masks
+*    0: Default. For standard in-game HUD elements like crosshair, hotbar,
+  minimap, builtin statbars, etc.
+*  100: Temporary text messages or notification icons
+* 1000: Full-screen effects such as full-black screen or credits.
+  This includes effects that cover the entire screen
 
 If your HUD element doesn't fit into any category, pick a number
 between the suggested values
@@ -2096,12 +2096,12 @@ to games.
 ### Node-Only Groups
 
 * `attached_node`: the node is 'attached' to a neighboring node. It checks
-                   whether the node it is attached to is walkable. If it
-                   isn't, the node will drop as an item.
+  whether the node it is attached to is walkable. If it
+  isn't, the node will drop as an item.
     * `1`: if the node is wallmounted, the node is attached in the wallmounted
-           direction. Otherwise, the node is attached to the node below.
+      direction. Otherwise, the node is attached to the node below.
     * `2`: if the node is facedir or 4dir, the facedir or 4dir direction is checked.
-           No effect for other nodes.
+      No effect for other nodes.
     * `3`: the node is always attached to the node below.
     * `4`: the node is always attached to the node above.
 > [!NOTE]
@@ -2137,12 +2137,12 @@ to games.
 * `falling_node`: if there is no walkable block under the node it will fall
 * `float`: the node will not fall through liquids (`liquidtype ~= "none"`)
 * `level`: Can be used to give an additional sense of progression in the game.
-     * A larger level will cause e.g. a weapon of a lower level make much less
-       damage, and get worn out much faster, or not be able to get drops
-       from destroyed nodes.
-     * `0` is something that is directly accessible at the start of gameplay
-     * There is no upper limit
-     * See also: `leveldiff` in [Tool Capabilities]
+    * A larger level will cause e.g. a weapon of a lower level make much less
+      damage, and get worn out much faster, or not be able to get drops
+      from destroyed nodes.
+    * `0` is something that is directly accessible at the start of gameplay
+    * There is no upper limit
+    * See also: `leveldiff` in [Tool Capabilities]
 * `slippery`: Players and items will slide on the node.
   Slipperiness rises steadily with `slippery` value, starting at 1.
 
@@ -2175,11 +2175,11 @@ to games.
   some blood effects when hitting.
 * `explody`: Especially prone to explosions
 * `oddly_breakable_by_hand`:
-   Can be added to nodes that shouldn't logically be breakable by the
-   hand but are. Somewhat similar to `dig_immediate`, but times are more
-   like `{[1]=3.50,[2]=2.00,[3]=0.70}` and this does not override the
-   digging speed of an item if it can dig at a faster speed than this
-   suggests for the hand.
+  Can be added to nodes that shouldn't logically be breakable by the
+  hand but are. Somewhat similar to `dig_immediate`, but times are more
+  like `{[1]=3.50,[2]=2.00,[3]=0.70}` and this does not override the
+  digging speed of an item if it can dig at a faster speed than this
+  suggests for the hand.
 
 ## Examples of Custom Groups
 
@@ -2386,7 +2386,7 @@ the entity itself.
 * `time_from_last_punch` is time from last punch (by `puncher`) or `nil`.
 * `tool_capabilities` can be `nil`.
 * `direction` is a unit vector, pointing from the source of the punch to
-   the punched object.
+  the punched object.
 * `damage` damage that will be done to entity
 Return value of this function will determine if damage is done by this function
 (retval true) or shall be done by engine (retval false)
@@ -2680,7 +2680,7 @@ background elements are drawn before all other elements.
     * Formspec prepends are not affected by the coordinates in the main form.
     They must enable it explicitly.
 * For information on converting forms to the new coordinate system, see `Migrating
-   to Real Coordinates`.
+  to Real Coordinates`.
 
 ### `container[<X>,<Y>]`
 
@@ -2804,7 +2804,7 @@ background elements are drawn before all other elements.
 * `name`: Element name that can be used for styling
 * `mesh`: The mesh model to use.
 * `textures`: The mesh textures to use according to the mesh materials.
-   Texture names must be separated by commas.
+  Texture names must be separated by commas.
 * `rotation {X,Y}` (Optional): Initial rotation of the camera.
   The axes are euler angles in degrees.
 * `continuous` (Optional): Whether the rotation is continuous. Default `false`.
@@ -3367,8 +3367,8 @@ Some types may inherit styles from parent types.
     * `bgimg_hovered` - background image when hovered. Defaults to bgimg when not provided.
         * This is deprecated, use states instead.
     * `bgimg_middle` - Makes the bgimg textures render in 9-sliced mode and defines the middle rect.
-                     See `background9[]` documentation for more details. This property also pads the
-                     button's content when set.
+      See `background9[]` documentation for more details. This property also pads the
+      button's content when set.
     * `bgimg_pressed` - background image when pressed. Defaults to `bgimg` when not provided.
         * This is deprecated, use states instead.
     * `font` - Sets font type. This is a comma separated list of options. Valid options:
@@ -3387,7 +3387,7 @@ Some types may inherit styles from parent types.
     * `content_offset` - 2d vector, shifts the position of the button's content without resizing it.
     * `noclip` - boolean, set to true to allow the element to exceed formspec bounds.
     * `padding` - rect, adds space between the edges of the button and the content. This value is
-                relative to bgimg_middle.
+      relative to bgimg_middle.
     * `sound` - a sound to be played when triggered.
     * `textcolor` - color, default `white`.
 * `checkbox`
@@ -3426,7 +3426,7 @@ Some types may inherit styles from parent types.
     * `fgimg_pressed` - image when pressed. Defaults to `fgimg` when not provided.
         * This is deprecated, use states instead.
     * `fgimg_middle` - Makes the fgimg textures render in 9-sliced mode and defines the middle rect.
-                     See `background9[]` documentation for more details.
+      See `background9[]` documentation for more details.
     * `sound` - a sound to be played when triggered.
 > [!NOTE]
 > The parameters of any given `image_button` will take precedence over `fgimg`/`fgimg_pressed`
@@ -3725,8 +3725,8 @@ vectors are written like this: `(x, y, z)`:
       `np` is the next position in the string after the vector.
     * Returns `nil` on failure.
     * `s`: Has to begin with a substring of the form `"(x, y, z)"`. Additional
-           spaces, leaving away commas and adding an additional comma to the end
-           is allowed.
+      spaces, leaving away commas and adding an additional comma to the end
+      is allowed.
     * `init`: If given starts looking for the vector at this string index.
 * `vector.to_string(v)`:
     * Returns a string of the form `"(x, y, z)"`.
@@ -3897,8 +3897,9 @@ For example:
     * X1, Y1, ... Z2 are coordinates
     * `relative_to`: Optional. If set to a position, each coordinate
       can use the tilde notation for relative positions
-    * Tilde notation: "~": Relative coordinate
-                      "~<number>": Relative coordinate plus <number>
+    * Tilde notation:
+        * `"~"`: Relative coordinate
+        * `"~<number>"`: Relative coordinate plus `<number>`
     * Example: `minetest.string_to_area("(1,2,3) (~5,~-5,~)", {x=10,y=10,z=10})`
       returns `{x=1,y=2,z=3}, {x=15,y=5,z=10}`
 * `minetest.formspec_escape(string)`: returns a string
@@ -5335,7 +5336,7 @@ Minetest includes the following settings to control behavior of privileges:
       way. Use this instead of below code when writing e.g. database files:
       `local f = io.open(path, "wb"); f:write(content); f:close()`
 * `minetest.get_version()`: returns a table containing components of the
-   engine version. Components:
+  engine version. Components:
     * `project`: Name of the project, eg, "Minetest"
     * `string`: Simple version, eg, "1.2.3-dev"
     * `proto_min`: The minimum supported protocol version
@@ -5535,12 +5536,13 @@ Call these functions only at load time!
     * `reason`: a PlayerHPChangeReason table.
         * The `type` field will have one of the following values:
             * `set_hp`: A mod or the engine called `set_hp` without
-                        giving a type - use this for custom damage types.
+              giving a type - use this for custom damage types.
             * `punch`: Was punched. `reason.object` will hold the puncher, or nil if none.
             * `fall`
-            * `node_damage`: `damage_per_second` from a neighboring node.
-                             `reason.node` will hold the node name or nil.
-                             `reason.node_pos` will hold the position of the node
+            * `node_damage`:
+                * `damage_per_second` from a neighboring node.
+                * `reason.node` will hold the node name or nil.
+                * `reason.node_pos` will hold the position of the node
             * `drown`
             * `respawn`
         * Any of the above types may have additional fields from mods.
@@ -6027,10 +6029,10 @@ handler.
     * Clear all objects in the environment
     * Takes an optional table as an argument with the field `mode`.
         * mode = `"full"`: Load and go through every mapblock, clearing
-                            objects (default).
+          objects (default).
         * mode = `"quick"`: Clear objects immediately in loaded mapblocks,
-                            clear objects in unloaded mapblocks only when the
-                            mapblocks are next activated.
+          clear objects in unloaded mapblocks only when the
+          mapblocks are next activated.
 * `minetest.load_area(pos1[, pos2])`
     * Load the mapblocks containing the area from `pos1` to `pos2`.
       `pos2` defaults to `pos1` if not specified.
@@ -6069,7 +6071,7 @@ handler.
     * `pos2`: end of the ray
     * `objects`: if false, only nodes will be returned. Default is `true`.
     * `liquids`: if false, liquid nodes (`liquidtype ~= "none"`) won't be
-                 returned. Default is `false`.
+      returned. Default is `false`.
 * `minetest.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)`
     * returns table containing path that can be walked on
     * returns a table of 3D points representing a path from `pos1` to `pos2` or
@@ -6500,9 +6502,9 @@ Variables:
     * `options`: table containing the following parameters
         * `filepath`: path to a media file on the filesystem
         * `to_player`: name of the player the media should be sent to instead of
-                       all players (optional)
+          all players (optional)
         * `ephemeral`: boolean that marks the media as ephemeral,
-                       it will not be cached on the client (optional, default false)
+          it will not be cached on the client (optional, default false)
     * `callback`: function with arguments `name`, which is a player name
     * Pushes the specified media file to client(s). (details below)
       The file must be a supported image, sound or model format.
@@ -6769,8 +6771,8 @@ Variables:
       restriction with maliciously crafted Lua bytecode if mod security is
       disabled.
     * This function should not be used on untrusted data, regardless of the
-     value of `safe`. It is fine to serialize then deserialize user-provided
-     data, but directly providing user input to deserialize is always unsafe.
+      value of `safe`. It is fine to serialize then deserialize user-provided
+      data, but directly providing user input to deserialize is always unsafe.
     * Example: `deserialize('return {["foo"] = "bar"}')`,
       returns `{foo="bar"}`
     * Example: `deserialize('print("foo")')`, returns `nil`
@@ -6805,7 +6807,7 @@ Variables:
     * Decodes a string encoded in base64.
 * `minetest.is_protected(pos, name)`: returns boolean
     * Returning `true` restricts the player `name` from modifying (i.e. digging,
-       placing) the node at position `pos`.
+      placing) the node at position `pos`.
     * `name` will be `""` for non-players or unknown players.
     * This function should be overridden by protection mods. It is highly
       recommended to grant access to players with the `protection_bypass` privilege.
@@ -7077,7 +7079,7 @@ An `InvRef` is a reference to an inventory.
 * `get_stack(listname, i)`: get a copy of stack index `i` in list
 * `set_stack(listname, i, stack)`: copy `stack` to index `i` in list
 * `get_list(listname)`: returns full list (list of `ItemStack`s)
-                        or `nil` if list doesn't exist (size 0)
+  or `nil` if list doesn't exist (size 0)
 * `set_list(listname, list)`: set full list (size will not change)
 * `get_lists()`: returns table that maps listnames to inventory lists
 * `set_lists(lists)`: sets inventory lists (size will not change)
@@ -7442,7 +7444,7 @@ child will follow movement and rotation of that bone.
     * For players: HP are also limited by `hp_max` specified in object properties
 * `get_inventory()`: returns an `InvRef` for players, otherwise returns `nil`
 * `get_wield_list()`: returns the name of the inventory list the wielded item
-   is in.
+  is in.
 * `get_wield_index()`: returns the wield list index of the wielded item (starting with 1)
 * `get_wielded_item()`: returns a copy of the wielded item as an `ItemStack`
 * `set_wielded_item(item)`: replaces the wielded item, returns `true` if
@@ -7461,17 +7463,17 @@ child will follow movement and rotation of that bone.
     * Sets the object animation parameters and (re)starts the animation
     * Animations only work with a `"mesh"` visual
     * `frame_range`: Beginning and end frame (as specified in the mesh file).
-       * Syntax: `{x=start_frame, y=end_frame}`
-       * Animation interpolates towards the end frame but stops when it is reached
-       * If looped, there is no interpolation back to the start frame
-       * If looped, the model should look identical at start and end
-       * Only integer numbers are supported
-       * default: `{x=1, y=1}`
+      * Syntax: `{x=start_frame, y=end_frame}`
+      * Animation interpolates towards the end frame but stops when it is reached
+      * If looped, there is no interpolation back to the start frame
+      * If looped, the model should look identical at start and end
+      * Only integer numbers are supported
+      * default: `{x=1, y=1}`
     * `frame_speed`: How fast the animation plays, in frames per second (number)
-       * default: `15.0`
+      * default: `15.0`
     * `frame_blend`: number, default: `0.0`
     * `frame_loop`: If `true`, animation will loop. If false, it will play once
-       * default: `true`
+      * default: `true`
 * `get_animation()`: returns current animation parameters set by `set_animation`:
     * `frame_range`, `frame_speed`, `frame_blend`, `frame_loop`.
 * `set_animation_frame_speed(frame_speed)`
@@ -7486,7 +7488,7 @@ child will follow movement and rotation of that bone.
     * `position`: relative position, default `{x=0, y=0, z=0}`
     * `rotation`: relative rotation in degrees, default `{x=0, y=0, z=0}`
     * `forced_visible`: Boolean to control whether the attached entity
-       should appear in first person, default `false`.
+      should appear in first person, default `false`.
     * This command may fail silently (do nothing) when it would result
       in circular attachments.
 * `get_attach()`:
@@ -7496,14 +7498,14 @@ child will follow movement and rotation of that bone.
     object.
 * `set_detach()`: Detaches object. No-op if object was not attached.
 * `set_bone_position([bone, position, rotation])`
-	* Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
+    * Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
 > [!WARNING]
 > **Deprecated**, use `set_bone_override` instead.
 
 > [!NOTE]
 > Rotation is in degrees, not radians.
 * `get_bone_position(bone)`: returns the previously set position and rotation of the bone
-	* Shorthand for `get_bone_override(bone).position.vec, get_bone_override(bone).rotation.vec:apply(math.deg)`.
+    * Shorthand for `get_bone_override(bone).position.vec, get_bone_override(bone).rotation.vec:apply(math.deg)`.
 > [!WARNING]
 > **Deprecated**, use `get_bone_override` instead.
 
@@ -7734,7 +7736,7 @@ child will follow movement and rotation of that bone.
 > Some of the fields don't exist in old API versions, see feature `physics_overrides_v2`.
 * `get_physics_override()`: returns the table given to `set_physics_override`
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
-   number on success
+  number on success
 * `hud_remove(id)`: remove the HUD element of the specified ID
 * `hud_change(id, stat, value)`: change a value of a previously added HUD
   element.
@@ -7800,9 +7802,9 @@ child will follow movement and rotation of that bone.
     * `sky_parameters` is a table with the following optional fields:
         * `base_color`: ColorSpec, meaning depends on `type` (default: `#ffffff`)
         * `body_orbit_tilt`: Float, rotation angle of sun/moon orbit in degrees.
-           By default, orbit is controlled by a client-side setting, and this field is not set.
-           After a value is assigned, it can only be changed to another float value.
-           Valid range [-60.0,60.0] (default: not set)
+          By default, orbit is controlled by a client-side setting, and this field is not set.
+          After a value is assigned, it can only be changed to another float value.
+          Valid range [-60.0,60.0] (default: not set)
         * `type`: Available types:
             * `"regular"`: Uses 0 textures, `base_color` ignored
             * `"skybox"`: Uses 6 textures, `base_color` used as fog.
@@ -7836,24 +7838,24 @@ child will follow movement and rotation of that bone.
             * `fog_moon_tint`: ColorSpec, changes the fog tinting for the moon
               at sunrise and sunset. (default: `#7f99cc`)
             * `fog_tint_type`: string, changes which mode the directional fog
-                abides by, `"custom"` uses `sun_tint` and `moon_tint`, while
-                `"default"` uses the classic Minetest sun and moon tinting.
-                Will use tonemaps, if set to `"default"`. (default: `"default"`)
+              abides by, `"custom"` uses `sun_tint` and `moon_tint`, while
+              `"default"` uses the classic Minetest sun and moon tinting.
+              Will use tonemaps, if set to `"default"`. (default: `"default"`)
         * `fog`: A table with following optional fields:
             * `fog_distance`: integer, set an upper bound the client's viewing_range (inluding range_all).
-               By default, fog_distance is controlled by the client's viewing_range, and this field is not set.
-               Any value >= 0 sets the desired upper bound for the client's viewing_range and disables range_all.
-               Any value < 0, resets the behavior to being client-controlled.
-               (default: -1)
+              By default, fog_distance is controlled by the client's viewing_range, and this field is not set.
+              Any value >= 0 sets the desired upper bound for the client's viewing_range and disables range_all.
+              Any value < 0, resets the behavior to being client-controlled.
+              (default: -1)
             * `fog_start`: float, override the client's fog_start.
-               Fraction of the visible distance at which fog starts to be rendered.
-               By default, fog_start is controlled by the client's `fog_start` setting, and this field is not set.
-               Any value between [0.0, 0.99] set the fog_start as a fraction of the viewing_range.
-               Any value < 0, resets the behavior to being client-controlled.
-               (default: -1)
+              Fraction of the visible distance at which fog starts to be rendered.
+              By default, fog_start is controlled by the client's `fog_start` setting, and this field is not set.
+              Any value between [0.0, 0.99] set the fog_start as a fraction of the viewing_range.
+              Any value < 0, resets the behavior to being client-controlled.
+              (default: -1)
             * `fog_color`: ColorSpec, override the color of the fog.
-               Unlike `base_color` above this will apply regardless of the skybox type.
-               (default: `"#00000000"`, which means no override)
+              Unlike `base_color` above this will apply regardless of the skybox type.
+              (default: `"#00000000"`, which means no override)
 > [!WARNING]
 > The darkening of the ColorSpec is subject to change.
 * `set_sky(base_color, type, {texture names}, clouds)`
@@ -7985,7 +7987,7 @@ child will follow movement and rotation of that bone.
         * `center_weight_power` set the power factor for center-weighted luminance measurement (default: `1.0`)
         * `volumetric_light`: is a table that controls volumetric light (a.k.a. "godrays")
         * `strength`: sets the strength of the volumetric light effect from 0 (off, default) to 1 (strongest)
-           * This value has no effect on clients who have the "Volumetric Lighting" or "Bloom" shaders disabled.
+            * This value has no effect on clients who have the "Volumetric Lighting" or "Bloom" shaders disabled.
 
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
@@ -8136,7 +8138,7 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 * `pos2`: end of the ray
 * `objects`: if false, only nodes will be returned. Default is true.
 * `liquids`: if false, liquid nodes (`liquidtype ~= "none"`) won't be
-             returned. Default is false.
+  returned. Default is false.
 
 ### Limitations
 
@@ -8653,14 +8655,14 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     -- even those for which `pointable = false`
 
     pointabilities = {
-		nodes = {
-			["default:stone"] = "blocking",
-			["group:leaves"] = false,
-		},
-		objects = {
-			["modname:entityname"] = true,
-			["group:ghosty"] = true, -- (an armor group)
-		}
+        nodes = {
+            ["default:stone"] = "blocking",
+            ["group:leaves"] = false,
+        },
+        objects = {
+            ["modname:entityname"] = true,
+            ["group:ghosty"] = true, -- (an armor group)
+        }
     },
     -- Contains lists to override the `pointable` property of pointed nodes and objects.
     -- The index can be a node/entity name or a group with the prefix `"group:"`.
@@ -9490,10 +9492,10 @@ Parameters:
 * `output`: Same as for shaped recipe
 * `recipe`: An itemname of the single input item
 * `cooktime`: (optional) Time it takes to cook this item, in seconds.
-              A floating-point number. (default: 3.0)
+  A floating-point number. (default: 3.0)
 * `replacements`: Same meaning as for shaped recipes, but the mods
-                  that utilize cooking recipes (e.g. for adding a furnace
-                  node) need to implement replacements on their own
+  that utilize cooking recipes (e.g. for adding a furnace
+  node) need to implement replacements on their own
 
 > [!NOTE]
 > Games and mods are free to re-interpret the cooktime in special
@@ -9527,10 +9529,10 @@ Parameters:
 * `type = "fuel"`: Mandatory
 * `recipe`: Itemname of the item to be used as fuel
 * `burntime`: (optional) Burning time this item provides, in seconds.
-              A floating-point number. (default: 1.0)
+  A floating-point number. (default: 1.0)
 * `replacements`: Same meaning as for shaped recipes, but the mods
-                  that utilize fuels need to implement replacements
-                  on their own
+  that utilize fuels need to implement replacements
+  on their own
 
 > [!NOTE]
 > Games and mods are free to re-interpret the burntime in special cases,

@@ -49,10 +49,10 @@ Contributions are welcome! Here's how you can help:
     * The following lines should describe the commit, starting a new line for each point.
 
 5. Once you are happy with your changes, submit a pull request.
-     * Open the [pull request form](https://github.com/minetest/minetest/pull/new/master).
-     * Add a description explaining what you've done (or if it's a work-in-progress -
-       what you need to do).
-     * Make sure to fill out the pull request template.
+    * Open the [pull request form](https://github.com/minetest/minetest/pull/new/master).
+    * Add a description explaining what you've done (or if it's a work-in-progress -
+      what you need to do).
+    * Make sure to fill out the pull request template.
 
 ### A pull request is Considered Mergeable When:
 

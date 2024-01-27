@@ -79,7 +79,7 @@ The file is a key-value store of modpack details.
 
 * `name`: The modpack name.
 * `description`: Description of mod to be shown in the Mods tab of the main
-                 menu.
+  menu.
 
 Mod directory structure
 ------------------------
@@ -99,13 +99,13 @@ The location of this directory.
 An (optional) settings file that provides meta information about the mod.
 
 * `name`: The mod name. Allows Minetest to determine the mod name even if the
-          folder is wrongly named.
+  folder is wrongly named.
 * `description`: Description of mod to be shown in the Mods tab of the main
-                 menu.
+  menu.
 * `depends`: A comma separated list of dependencies. These are mods that must be
-             loaded before this mod.
+  loaded before this mod.
 * `optional_depends`: A comma separated list of optional dependencies.
-                      Like a dependency, but no error if the mod doesn't exist.
+  Like a dependency, but no error if the mod doesn't exist.
 
 ### `init.lua`
 
@@ -254,7 +254,7 @@ Refer to `lua_api.md`.
 # Helper Functions
 
 * `dump2(obj, name="_", dumped={})`
-     * Return object serialized as a string, handles reference loops
+    * Return object serialized as a string, handles reference loops
 * `dump(obj, dumped={})`
     * Return object serialized as a string
 * `math.hypot(x, y)`
@@ -294,14 +294,14 @@ Refer to `lua_api.md`.
 
 * `minetest.get_current_modname()`: returns the currently loading mod's name, when we are loading a mod
 * `minetest.get_modpath(modname)`: returns virtual path of given mod including
-   the trailing separator. This is useful to load additional Lua files
-   contained in your mod:
-   e.g. `dofile(minetest.get_modpath(minetest.get_current_modname()) .. "stuff.lua")`
+  the trailing separator. This is useful to load additional Lua files
+  contained in your mod:
+  e.g. `dofile(minetest.get_modpath(minetest.get_current_modname()) .. "stuff.lua")`
 * `minetest.get_language()`: returns two strings
     * the current gettext locale
     * the current language code (the same as used for client-side translations)
 * `minetest.get_version()`: returns a table containing components of the
-   engine version. Components:
+  engine version. Components:
     * `project`: Name of the project, eg, "Minetest"
     * `string`: Simple version, eg, "1.2.3-dev"
     * `hash`: Full git version (only set if available), eg, "1.2.3-dev-01234567-dirty"
@@ -318,10 +318,10 @@ Refer to `lua_api.md`.
   ColorString. If the ColorSpec is invalid, returns `nil`.
     * `colorspec`: The ColorSpec to convert
 * `minetest.get_csm_restrictions()`: returns a table of `Flags` indicating the
-   restrictions applied to the current mod.
+  restrictions applied to the current mod.
     * If a flag in this table is set to true, the feature is RESTRICTED.
     * Possible flags: `load_client_mods`, `chat_messages`, `read_itemdefs`,
-                   `read_nodedefs`, `lookup_nodes`, `read_playerinfo`
+      `read_nodedefs`, `lookup_nodes`, `read_playerinfo`
 * `minetest.urlencode(str)`: Encodes non-unreserved URI characters by a
   percent sign followed by two hex digits. See
   [RFC 3986, section 2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-2.3).
