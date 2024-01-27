@@ -539,12 +539,9 @@ u32 TextureSource::getTextureId(const std::string &name)
 
 // Draw an image on top of another one, using the alpha channel of the
 // source image
+// overlay: only modify destination pixels that are fully opaque.
+template<bool overlay = false>
 static void blit_with_alpha(video::IImage *src, video::IImage *dst,
-		v2s32 src_pos, v2s32 dst_pos, v2u32 size);
-
-// Like blit_with_alpha, but only modifies destination pixels that
-// are fully opaque
-static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 		v2s32 src_pos, v2s32 dst_pos, v2u32 size);
 
 // Apply a color to an image.  Uses an int (0-255) to calculate the ratio.
@@ -2042,35 +2039,21 @@ static inline video::SColor blitPixel(const video::SColor src_c, const video::SC
 	This exists because IImage::copyToWithAlpha() doesn't seem to always
 	work.
 */
+template<bool overlay>
 static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 		v2s32 src_pos, v2s32 dst_pos, v2u32 size)
 {
-	// FIXME: loop should be restricted to actual overlap
-	// (if dst smaller than size or dst_pos negative)
-	for (u32 y0=0; y0<size.Y; y0++)
-	for (u32 x0=0; x0<size.X; x0++)
-	{
-		s32 src_x = src_pos.X + x0;
-		s32 src_y = src_pos.Y + y0;
-		s32 dst_x = dst_pos.X + x0;
-		s32 dst_y = dst_pos.Y + y0;
-		video::SColor src_c = src->getPixel(src_x, src_y);
-		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
-		dst_c = blitPixel(src_c, dst_c, src_c.getAlpha());
-		dst->setPixel(dst_x, dst_y, dst_c);
-	}
-}
+	auto src_dim = src->getDimension();
+	auto dst_dim = dst->getDimension();
 
-/*
-	Draw an image on top of another one, using the alpha channel of the
-	source image; only modify fully opaque pixels in destinaion
-*/
-static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
-		v2s32 src_pos, v2s32 dst_pos, v2u32 size)
-{
-	// FIXME: same as above here
-	for (u32 y0=0; y0<size.Y; y0++)
-	for (u32 x0=0; x0<size.X; x0++)
+	// Limit y and x to the overlapping ranges
+	// s.t. the positions are all in bounds after offsetting.
+	for (u32 y0 = std::max(0, -dst_pos.Y);
+			y0 < std::min<s64>({size.Y, src_dim.Height, dst_dim.Height - (s64) dst_pos.Y});
+			++y0)
+	for (u32 x0 = std::max(0, -dst_pos.X);
+			x0 < std::min<s64>({size.X, src_dim.Width, dst_dim.Width - (s64) dst_pos.X});
+			++x0)
 	{
 		s32 src_x = src_pos.X + x0;
 		s32 src_y = src_pos.Y + y0;
@@ -2078,44 +2061,12 @@ static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 		s32 dst_y = dst_pos.Y + y0;
 		video::SColor src_c = src->getPixel(src_x, src_y);
 		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
-		if (dst_c.getAlpha() == 255 && src_c.getAlpha() != 0)
-		{
+		if (!overlay || (dst_c.getAlpha() == 255 && src_c.getAlpha() != 0)) {
 			dst_c = blitPixel(src_c, dst_c, src_c.getAlpha());
 			dst->setPixel(dst_x, dst_y, dst_c);
 		}
 	}
 }
-
-// This function has been disabled because it is currently unused.
-// Feel free to re-enable if you find it handy.
-#if 0
-/*
-	Draw an image on top of another one, using the specified ratio
-	modify all partially-opaque pixels in the destination.
-*/
-static void blit_with_interpolate_overlay(video::IImage *src, video::IImage *dst,
-		v2s32 src_pos, v2s32 dst_pos, v2u32 size, int ratio)
-{
-	for (u32 y0 = 0; y0 < size.Y; y0++)
-	for (u32 x0 = 0; x0 < size.X; x0++)
-	{
-		s32 src_x = src_pos.X + x0;
-		s32 src_y = src_pos.Y + y0;
-		s32 dst_x = dst_pos.X + x0;
-		s32 dst_y = dst_pos.Y + y0;
-		video::SColor src_c = src->getPixel(src_x, src_y);
-		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
-		if (dst_c.getAlpha() > 0 && src_c.getAlpha() != 0)
-		{
-			if (ratio == -1)
-				dst_c = src_c.getInterpolated(dst_c, (float)src_c.getAlpha()/255.0f);
-			else
-				dst_c = src_c.getInterpolated(dst_c, (float)ratio/255.0f);
-			dst->setPixel(dst_x, dst_y, dst_c);
-		}
-	}
-}
-#endif
 
 /*
 	Apply color to destination, using a weighted interpolation blend
@@ -2455,7 +2406,7 @@ static void draw_crack(video::IImage *crack, video::IImage *dst,
 	if (!crack_scaled)
 		return;
 
-	auto blit = use_overlay ? blit_with_alpha_overlay : blit_with_alpha;
+	auto blit = use_overlay ? blit_with_alpha<true> : blit_with_alpha<false>;
 	for (s32 i = 0; i < frame_count; ++i) {
 		v2s32 dst_pos(0, frame_size.Height * i);
 		blit(crack_scaled, dst, v2s32(0,0), dst_pos, frame_size);
