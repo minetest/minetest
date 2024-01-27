@@ -345,11 +345,13 @@ void RemoteClient::GetNextBlocks (
 			if (m_blocks_sent.find(p) != m_blocks_sent.end())
 				continue;
 
-			bool block_not_found = false;
 			if (block) {
-				// Check whether the block exists (with data)
-				if (!block->isGenerated())
-					block_not_found = true;
+				/*
+					If block is not generated and generating new ones is
+					not wanted, skip block.
+				*/
+				if (!block->isGenerated() && !generate)
+					continue;
 
 				/*
 					If block is not close, don't send it unless it is near
@@ -380,18 +382,9 @@ void RemoteClient::GetNextBlocks (
 			}
 
 			/*
-				If block has been marked to not exist on disk (dummy) or is
-				not generated and generating new ones is not wanted, skip block.
-			*/
-			if (!generate && block_not_found) {
-				// get next one.
-				continue;
-			}
-
-			/*
 				Add inexistent block to emerge queue.
 			*/
-			if (block == NULL || block_not_found) {
+			if (!block || !block->isGenerated()) {
 				if (emerge->enqueueBlockEmerge(peer_id, p, generate)) {
 					if (nearest_emerged_d == -1)
 						nearest_emerged_d = d;
@@ -791,10 +784,21 @@ void ClientInterface::UpdatePlayerList()
 	}
 }
 
-void ClientInterface::send(session_t peer_id, u8 channelnum,
-		NetworkPacket *pkt, bool reliable)
+void ClientInterface::send(session_t peer_id, NetworkPacket *pkt)
 {
-	m_con->Send(peer_id, channelnum, pkt, reliable);
+	auto &ccf = clientCommandFactoryTable[pkt->getCommand()];
+	FATAL_ERROR_IF(!ccf.name, "packet type missing in table");
+
+	m_con->Send(peer_id, ccf.channel, pkt, ccf.reliable);
+}
+
+void ClientInterface::sendCustom(session_t peer_id, u8 channel, NetworkPacket *pkt, bool reliable)
+{
+	// check table anyway to prevent mistakes
+	FATAL_ERROR_IF(!clientCommandFactoryTable[pkt->getCommand()].name,
+		"packet type missing in table");
+
+	m_con->Send(peer_id, channel, pkt, reliable);
 }
 
 void ClientInterface::sendToAll(NetworkPacket *pkt)
@@ -804,9 +808,9 @@ void ClientInterface::sendToAll(NetworkPacket *pkt)
 		RemoteClient *client = client_it.second;
 
 		if (client->net_proto_version != 0) {
-			m_con->Send(client->peer_id,
-					clientCommandFactoryTable[pkt->getCommand()].channel, pkt,
-					clientCommandFactoryTable[pkt->getCommand()].reliable);
+			auto &ccf = clientCommandFactoryTable[pkt->getCommand()];
+			FATAL_ERROR_IF(!ccf.name, "packet type missing in table");
+			m_con->Send(client->peer_id, ccf.channel, pkt, ccf.reliable);
 		}
 	}
 }

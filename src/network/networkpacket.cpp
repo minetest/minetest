@@ -23,27 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "networkprotocol.h"
 
-NetworkPacket::NetworkPacket(u16 command, u32 datasize, session_t peer_id):
-m_datasize(datasize), m_command(command), m_peer_id(peer_id)
-{
-	m_data.resize(m_datasize);
-}
-
-NetworkPacket::NetworkPacket(u16 command, u32 datasize):
-m_datasize(datasize), m_command(command)
-{
-	m_data.resize(m_datasize);
-}
-
-NetworkPacket::~NetworkPacket()
-{
-	m_data.clear();
-}
-
-void NetworkPacket::checkReadOffset(u32 from_offset, u32 field_size)
+void NetworkPacket::checkReadOffset(u32 from_offset, u32 field_size) const
 {
 	if (from_offset + field_size > m_datasize) {
-		std::stringstream ss;
+		std::ostringstream ss;
 		ss << "Reading outside packet (offset: " <<
 				from_offset << ", packet size: " << getSize() << ")";
 		throw PacketError(ss.str());
@@ -56,6 +39,7 @@ void NetworkPacket::putRawPacket(const u8 *data, u32 datasize, session_t peer_id
 	// This is not permitted
 	assert(m_command == 0);
 
+	assert(datasize >= 2);
 	m_datasize = datasize - 2;
 	m_peer_id = peer_id;
 
@@ -76,7 +60,7 @@ void NetworkPacket::clear()
 	m_peer_id = 0;
 }
 
-const char* NetworkPacket::getString(u32 from_offset)
+const char* NetworkPacket::getString(u32 from_offset) const
 {
 	checkReadOffset(from_offset, 0);
 
@@ -85,10 +69,7 @@ const char* NetworkPacket::getString(u32 from_offset)
 
 void NetworkPacket::putRawString(const char* src, u32 len)
 {
-	if (m_read_offset + len > m_datasize) {
-		m_datasize = m_read_offset + len;
-		m_data.resize(m_datasize);
-	}
+	checkDataSize(len);
 
 	if (len == 0)
 		return;
@@ -279,7 +260,7 @@ NetworkPacket& NetworkPacket::operator<<(bool src)
 {
 	checkDataSize(1);
 
-	writeU8(&m_data[m_read_offset], src);
+	writeU8(&m_data[m_read_offset], src ? 1 : 0);
 
 	m_read_offset += 1;
 	return *this;
@@ -329,7 +310,7 @@ NetworkPacket& NetworkPacket::operator>>(bool& dst)
 {
 	checkReadOffset(m_read_offset, 1);
 
-	dst = readU8(&m_data[m_read_offset]);
+	dst = readU8(&m_data[m_read_offset]) != 0;
 
 	m_read_offset += 1;
 	return *this;
@@ -360,7 +341,7 @@ u8* NetworkPacket::getU8Ptr(u32 from_offset)
 
 	checkReadOffset(from_offset, 1);
 
-	return (u8*)&m_data[from_offset];
+	return &m_data[from_offset];
 }
 
 NetworkPacket& NetworkPacket::operator>>(u16& dst)

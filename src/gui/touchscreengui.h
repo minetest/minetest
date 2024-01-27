@@ -314,6 +314,7 @@ private:
 
 	v2s32 getPointerPos();
 	void emitMouseEvent(EMOUSE_INPUT_EVENT type);
+	TouchInteractionMode m_last_mode = TouchInteractionMode_END;
 	TapState m_tap_state = TapState::None;
 
 	bool m_dig_pressed = false;

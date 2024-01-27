@@ -83,8 +83,10 @@ u32 PacketCounter::sum() const
 void PacketCounter::print(std::ostream &o) const
 {
 	for (const auto &it : m_packets) {
-		auto name = it.first >= TOCLIENT_NUM_MSG_TYPES ? "?"
+		auto name = it.first >= TOCLIENT_NUM_MSG_TYPES ? nullptr
 			: toClientCommandTable[it.first].name;
+		if (!name)
+			name = "?";
 		o << "cmd " << it.first << " (" << name << ") count "
 			<< it.second << std::endl;
 	}
@@ -991,27 +993,25 @@ inline void Client::handleCommand(NetworkPacket* pkt)
 void Client::ProcessData(NetworkPacket *pkt)
 {
 	ToClientCommand command = (ToClientCommand) pkt->getCommand();
-	u32 sender_peer_id = pkt->getPeerId();
 
-	//infostream<<"Client: received command="<<command<<std::endl;
-	m_packetcounter.add((u16)command);
+	m_packetcounter.add(static_cast<u16>(command));
 	g_profiler->graphAdd("client_received_packets", 1);
 
 	/*
 		If this check is removed, be sure to change the queue
 		system to know the ids
 	*/
-	if(sender_peer_id != PEER_ID_SERVER) {
+	if (pkt->getPeerId() != PEER_ID_SERVER) {
 		infostream << "Client::ProcessData(): Discarding data not "
-			"coming from server: peer_id=" << sender_peer_id << " command=" << pkt->getCommand()
-			<< std::endl;
+			"coming from server: peer_id=" << static_cast<int>(pkt->getPeerId())
+			<< " command=" << static_cast<unsigned>(command) << std::endl;
 		return;
 	}
 
 	// Command must be handled into ToClientCommandHandler
 	if (command >= TOCLIENT_NUM_MSG_TYPES) {
 		infostream << "Client: Ignoring unknown command "
-			<< command << std::endl;
+			<< static_cast<unsigned>(command) << std::endl;
 		return;
 	}
 
@@ -1020,31 +1020,26 @@ void Client::ProcessData(NetworkPacket *pkt)
 	 * But we must use the new ToClientConnectionState in the future,
 	 * as a byte mask
 	 */
-	if(toClientCommandTable[command].state == TOCLIENT_STATE_NOT_CONNECTED) {
+	if (toClientCommandTable[command].state == TOCLIENT_STATE_NOT_CONNECTED) {
 		handleCommand(pkt);
 		return;
 	}
 
-	if(m_server_ser_ver == SER_FMT_VER_INVALID) {
+	if (m_server_ser_ver == SER_FMT_VER_INVALID) {
 		infostream << "Client: Server serialization"
-				" format invalid or not initialized."
-				" Skipping incoming command=" << command << std::endl;
+				" format invalid. Skipping incoming command "
+				<< static_cast<unsigned>(command) << std::endl;
 		return;
 	}
-
-	/*
-	  Handle runtime commands
-	*/
 
 	handleCommand(pkt);
 }
 
 void Client::Send(NetworkPacket* pkt)
 {
-	m_con->Send(PEER_ID_SERVER,
-		serverCommandFactoryTable[pkt->getCommand()].channel,
-		pkt,
-		serverCommandFactoryTable[pkt->getCommand()].reliable);
+	auto &scf = serverCommandFactoryTable[pkt->getCommand()];
+	FATAL_ERROR_IF(!scf.name, "packet type missing in table");
+	m_con->Send(PEER_ID_SERVER, scf.channel, pkt, scf.reliable);
 }
 
 // Will fill up 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1 bytes

@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/connection.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
-#include "ban.h"
+#include "server/ban.h"
 #include "environment.h"
 #include "map.h"
 #include "threading/mutex_auto_lock.h"
@@ -49,9 +49,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_nodemeta.h"
 #include "content/mods.h"
 #include "modchannels.h"
-#include "serverlist.h"
+#include "server/serverlist.h"
 #include "util/string.h"
-#include "rollback.h"
+#include "server/rollback.h"
 #include "util/serialize.h"
 #include "util/thread.h"
 #include "defaultsettings.h"
@@ -1062,11 +1062,13 @@ void Server::Receive(float timeout)
 			infostream << "Server::Receive(): SerializationError: what()="
 					<< e.what() << std::endl;
 		} catch (const ClientStateError &e) {
-			errorstream << "ProcessData: peer=" << peer_id << " what()="
+			errorstream << "ClientStateError: peer=" << peer_id << " what()="
 					 << e.what() << std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_UNEXPECTED_DATA);
-		} catch (const con::PeerNotFoundException &e) {
-			// Do nothing
+		} catch (con::PeerNotFoundException &e) {
+			infostream << "Server: PeerNotFoundException" << std::endl;
+		} catch (ClientNotFoundException &e) {
+			infostream << "Server: ClientNotFoundException" << std::endl;
 		}
 	}
 }
@@ -1159,37 +1161,12 @@ void Server::ProcessData(NetworkPacket *pkt)
 	u32 peer_id = pkt->getPeerId();
 
 	try {
-		Address address = getPeerAddress(peer_id);
-		std::string addr_s = address.serializeString();
-
-		// FIXME: Isn't it a bit excessive to check this for every packet?
-		if (m_banmanager->isIpBanned(addr_s)) {
-			std::string ban_name = m_banmanager->getBanName(addr_s);
-			infostream << "Server: A banned client tried to connect from "
-					<< addr_s << "; banned name was " << ban_name << std::endl;
-			DenyAccess(peer_id, SERVER_ACCESSDENIED_CUSTOM_STRING,
-				"Your IP is banned. Banned name was " + ban_name);
-			return;
-		}
-	} catch (con::PeerNotFoundException &e) {
-		/*
-		 * no peer for this packet found
-		 * most common reason is peer timeout, e.g. peer didn't
-		 * respond for some time, your server was overloaded or
-		 * things like that.
-		 */
-		infostream << "Server::ProcessData(): Canceling: peer "
-				<< peer_id << " not found" << std::endl;
-		return;
-	}
-
-	try {
 		ToServerCommand command = (ToServerCommand) pkt->getCommand();
 
 		// Command must be handled into ToServerCommandHandler
 		if (command >= TOSERVER_NUM_MSG_TYPES) {
 			infostream << "Server: Ignoring unknown command "
-					 << command << std::endl;
+					 << static_cast<unsigned>(command) << std::endl;
 			return;
 		}
 
@@ -1201,9 +1178,9 @@ void Server::ProcessData(NetworkPacket *pkt)
 		u8 peer_ser_ver = getClient(peer_id, CS_InitDone)->serialization_version;
 
 		if(peer_ser_ver == SER_FMT_VER_INVALID) {
-			errorstream << "Server::ProcessData(): Cancelling: Peer"
-					" serialization format invalid or not initialized."
-					" Skipping incoming command=" << command << std::endl;
+			errorstream << "Server: Peer serialization format invalid. "
+					"Skipping incoming command "
+					<< static_cast<unsigned>(command) << std::endl;
 			return;
 		}
 
@@ -1216,9 +1193,10 @@ void Server::ProcessData(NetworkPacket *pkt)
 		if (m_clients.getClientState(peer_id) < CS_Active) {
 			if (command == TOSERVER_PLAYERPOS) return;
 
-			errorstream << "Got packet command: " << command << " for peer id "
-					<< peer_id << " but client isn't active yet. Dropping packet "
-					<< std::endl;
+			errorstream << "Server: Got packet command "
+					<< static_cast<unsigned>(command)
+					<< " for peer id " << peer_id
+					<< " but client isn't active yet. Dropping packet." << std::endl;
 			return;
 		}
 
@@ -1346,15 +1324,13 @@ void Server::printToConsoleOnly(const std::string &text)
 
 void Server::Send(NetworkPacket *pkt)
 {
+	FATAL_ERROR_IF(pkt->getPeerId() == 0, "Server::Send() missing peer ID");
 	Send(pkt->getPeerId(), pkt);
 }
 
 void Server::Send(session_t peer_id, NetworkPacket *pkt)
 {
-	m_clients.send(peer_id,
-		clientCommandFactoryTable[pkt->getCommand()].channel,
-		pkt,
-		clientCommandFactoryTable[pkt->getCommand()].reliable);
+	m_clients.send(peer_id, pkt);
 }
 
 void Server::SendMovement(session_t peer_id)
@@ -2137,9 +2113,8 @@ void Server::SendActiveObjectMessages(session_t peer_id, const std::string &data
 
 	pkt.putRawString(datas.c_str(), datas.size());
 
-	m_clients.send(pkt.getPeerId(),
-			reliable ? clientCommandFactoryTable[pkt.getCommand()].channel : 1,
-			&pkt, reliable);
+	auto &ccf = clientCommandFactoryTable[pkt.getCommand()];
+	m_clients.sendCustom(pkt.getPeerId(), reliable ? ccf.channel : 1, &pkt, reliable);
 }
 
 void Server::SendCSMRestrictionFlags(session_t peer_id)
@@ -2237,12 +2212,12 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 			<< params.spec.loop << params.spec.fade << params.spec.pitch
 			<< ephemeral << params.spec.start_time;
 
-	bool as_reliable = !ephemeral;
+	const bool as_reliable = !ephemeral;
 
 	for (const session_t peer_id : dst_clients) {
 		if (!ephemeral)
 			params.clients.insert(peer_id);
-		m_clients.send(peer_id, 0, &pkt, as_reliable);
+		m_clients.sendCustom(peer_id, 0, &pkt, as_reliable);
 	}
 
 	if (!ephemeral)
@@ -2261,8 +2236,7 @@ void Server::stopSound(s32 handle)
 	pkt << handle;
 
 	for (session_t peer_id : psound.clients) {
-		// Send as reliable
-		m_clients.send(peer_id, 0, &pkt, true);
+		Send(peer_id, &pkt);
 	}
 
 	// Remove sound reference
@@ -2282,8 +2256,7 @@ void Server::fadeSound(s32 handle, float step, float gain)
 	pkt << handle << step << gain;
 
 	for (session_t peer_id : psound.clients) {
-		// Send as reliable
-		m_clients.send(peer_id, 0, &pkt, true);
+		Send(peer_id, &pkt);
 	}
 
 	// Remove sound reference
@@ -2340,8 +2313,7 @@ void Server::sendNodeChangePkt(NetworkPacket &pkt, v3s16 block_pos,
 			continue;
 		}
 
-		// Send as reliable
-		m_clients.send(client_id, 0, &pkt, true);
+		Send(client_id, &pkt);
 	}
 }
 
@@ -3290,6 +3262,11 @@ void Server::reportFormspecPrependModified(const std::string &name)
 void Server::setIpBanned(const std::string &ip, const std::string &name)
 {
 	m_banmanager->add(ip, name);
+
+	auto clients = m_clients.getClientIDs(CS_Created);
+	for (const auto peer_id : clients) {
+		denyIfBanned(peer_id);
+	}
 }
 
 void Server::unsetIpBanned(const std::string &ip_or_name)
@@ -3300,6 +3277,22 @@ void Server::unsetIpBanned(const std::string &ip_or_name)
 std::string Server::getBanDescription(const std::string &ip_or_name)
 {
 	return m_banmanager->getBanDescription(ip_or_name);
+}
+
+bool Server::denyIfBanned(session_t peer_id)
+{
+	Address address = getPeerAddress(peer_id);
+	std::string addr_s = address.serializeString();
+
+	if (m_banmanager->isIpBanned(addr_s)) {
+		std::string ban_name = m_banmanager->getBanName(addr_s);
+		actionstream << "Server: A banned client tried to connect from "
+			<< addr_s << "; banned name was " << ban_name << std::endl;
+		DenyAccess(peer_id, SERVER_ACCESSDENIED_CUSTOM_STRING,
+			"Your IP is banned. Banned name was " + ban_name);
+		return true;
+	}
+	return false;
 }
 
 void Server::notifyPlayer(const char *name, const std::wstring &msg)
@@ -3670,8 +3663,8 @@ bool Server::dynamicAddMedia(std::string filepath,
 					to push the media over ALL channels to ensure it is processed before
 					it is used. In practice this means channels 1 and 0.
 				*/
-				m_clients.send(peer_id, 1, &legacy_pkt, true);
-				m_clients.send(peer_id, 0, &legacy_pkt, true);
+				m_clients.sendCustom(peer_id, 1, &legacy_pkt, true);
+				m_clients.sendCustom(peer_id, 0, &legacy_pkt, true);
 			} else {
 				waiting.emplace(peer_id);
 				Send(peer_id, &pkt);

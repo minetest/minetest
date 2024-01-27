@@ -366,9 +366,7 @@ set(common_SRCS
 	${mapgen_SRCS}
 	${server_SRCS}
 	${content_SRCS}
-	ban.cpp
 	chat.cpp
-	clientiface.cpp
 	collision.cpp
 	content_mapnode.cpp
 	content_nodemeta.cpp
@@ -413,12 +411,10 @@ set(common_SRCS
 	raycast.cpp
 	reflowscan.cpp
 	remoteplayer.cpp
-	rollback.cpp
 	rollback_interface.cpp
 	serialization.cpp
 	server.cpp
 	serverenvironment.cpp
-	serverlist.cpp
 	settings.cpp
 	staticobject.cpp
 	terminal_chat_console.cpp
