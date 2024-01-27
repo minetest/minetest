@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-01-27 08:45+0000\n"
-"Last-Translator: yue weikai <send52@outlook.com>\n"
+"PO-Revision-Date: 2024-01-27 09:30+0000\n"
+"Last-Translator: 秘密の店 <19917589166@163.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -1669,9 +1669,8 @@ msgid "Control Key"
 msgstr "控制键"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Delete Key"
-msgstr "删除"
+msgstr "删除键"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
@@ -4088,7 +4087,7 @@ msgstr "反转鼠标"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse wheel (scroll) direction for item selection in hotbar."
-msgstr ""
+msgstr "为快捷栏中选择物品反转鼠标滚轮(滚动)方向."
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
@@ -4828,7 +4827,7 @@ msgstr "Mip 贴图"
 
 #: src/settings_translation_file.cpp
 msgid "Miscellaneous"
-msgstr ""
+msgstr "杂项"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Profiler"
@@ -5013,7 +5012,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Occlusion Culler"
-msgstr ""
+msgstr "摔落保护"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5112,7 +5111,7 @@ msgstr "双线性过滤"
 
 #: src/settings_translation_file.cpp
 msgid "Post Processing"
-msgstr ""
+msgstr "后期处理"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5575,6 +5574,8 @@ msgid ""
 "Set to true to enable bloom effect.\n"
 "Bright colors will bleed over the neighboring objects."
 msgstr ""
+"设置为 \"true \"可启用泛光效果.\n"
+"邻近的物体会被明亮的色彩会渗入."
 
 #: src/settings_translation_file.cpp
 msgid "Set to true to enable waving leaves."
@@ -5968,6 +5969,8 @@ msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
 msgstr ""
+"保存配置文件的默认格式，\n"
+"调用 `/profiler save [format]`时不带格式"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5976,7 +5979,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
-msgstr ""
+msgstr "使用手柄的标识符"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
