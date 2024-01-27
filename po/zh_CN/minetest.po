@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2024-01-27 15:01+0000\n"
-"Last-Translator: \"Y.W.\" <y5nw@outlook.com>\n"
+"Last-Translator: yue weikai <send52@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -317,7 +317,7 @@ msgstr "无法把$1安装到$2"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr "安装mod：无法找到mod包$1的合适文件夹名"
+msgstr "安装mod：无法找到mod包 $1 的合适文件夹名"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to find a valid mod, modpack, or game"
@@ -345,7 +345,7 @@ msgstr "全部禁用"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "禁用 mod 包"
+msgstr "禁用整合包"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -353,7 +353,7 @@ msgstr "全部启用"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "启用 mod 包"
+msgstr "启用整合包"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -379,11 +379,11 @@ msgstr "未提供游戏描述。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr "无依赖项"
+msgstr "无硬性依赖"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr "未提供 mod 包描述。"
+msgstr "未提供整合包描述。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
@@ -675,14 +675,13 @@ msgstr "接受"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "重命名MOD包："
+msgstr "重命名整合包："
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
-msgstr ""
-"此 mod 包在它的 modpack.conf 中有一个明确的名称，它将覆盖这里的任何重命名。"
+msgstr "此整合包在它的 modpack.conf 中有一个明确的名称，它将覆盖这里的任何重命名。"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
@@ -1106,7 +1105,7 @@ msgstr "登录"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
-msgstr "应答速度"
+msgstr "ping值"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Public Servers"
@@ -5619,6 +5618,10 @@ msgid ""
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
+"设为 true 时，将呈现 Bloom 效果的调试分解。\n"
+"在调试模式下，屏幕会分成 4 个象限：\n"
+"左上角--处理后的基础图像，右上角--最终图像\n"
+"左下角--原始基础图像，右下角--泛光材质。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5711,6 +5714,11 @@ msgid ""
 "draw calls, benefiting especially high-end GPUs.\n"
 "Systems with a low-end GPU (or no GPU) would benefit from smaller values."
 msgstr ""
+"客户端在生成网格时将一并\n"
+"考虑的立方体地图块的边长。\n"
+"数值越大，GPU 的利用率越高，因为它可以减少\n"
+"绘制调用次数，从而提高 GPU 的利用率，这对高端 GPU 尤为有利。\n"
+"使用低端 GPU（或无 GPU）的系统则可从较小的数值中获益。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6016,6 +6024,10 @@ msgid ""
 "0.0 = Wave doesn't move at all.\n"
 "Default is 1.0 (1/2 node)."
 msgstr ""
+"波动液体表面的最大高度。\n"
+"4.0 = 波浪高度为两个方块。\n"
+"0.0 = 波浪完全不动。\n"
+"默认值为 1.0（1/2 方块）。"
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -6047,6 +6059,10 @@ msgid ""
 "OpenGL is the default for desktop, and OGLES2 for Android.\n"
 "Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
+"关于渲染的后端引擎\n"
+"注：更改之后要重启游戏！\n"
+"OpenGL是默认的电脑端渲染引擎，OGLES2是用于安卓的.\n"
+"实验性：被OpenGL和OGLES2的着色器."
 
 #: src/settings_translation_file.cpp
 msgid ""
