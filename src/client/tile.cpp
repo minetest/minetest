@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiscalingfilter.h"
 #include "renderingengine.h"
 #include "util/base64.h"
+#include "irrlicht_changes/printing.h"
 
 /*
 	A cache from texture name to texture path
@@ -1323,37 +1324,45 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			sf.next(":");
 			u32 w0 = stoi(sf.next("x"));
 			u32 h0 = stoi(sf.next(":"));
-			CHECK_DIM(w0, h0);
-			core::dimension2d<u32> dim(w0,h0);
-			if (baseimg == NULL) {
-				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+			if (!baseimg) {
+				CHECK_DIM(w0, h0);
+				baseimg = driver->createImage(video::ECF_A8R8G8B8, {w0, h0});
 				baseimg->fill(video::SColor(0,0,0,0));
 			}
+
 			while (!sf.at_end()) {
-				u32 x = stoi(sf.next(","));
-				u32 y = stoi(sf.next("="));
+				v2s32 pos_base;
+				pos_base.X = stoi(sf.next(","));
+				pos_base.Y = stoi(sf.next("="));
 				std::string filename = unescape_string(sf.next_esc(":", escape), escape);
 
-				if (x >= w0 || y >= h0)
-					COMPLAIN_INVALID("X or Y offset");
-				infostream<<"Adding \""<<filename
-						<<"\" to combined ("<<x<<","<<y<<")"
-						<<std::endl;
+				auto basedim = baseimg->getDimension();
+				if (pos_base.X > (s32)basedim.Width || pos_base.Y > (s32)basedim.Height) {
+					warningstream << "generateImagePart(): Skipping \""
+						<< filename << "\" as it's out-of-bounds " << pos_base
+						<< " for [combine" << std::endl;
+					continue;
+				}
+				infostream << "Adding \"" << filename<< "\" to combined "
+					<< pos_base << std::endl;
 
 				video::IImage *img = generateImage(filename, source_image_names);
-				if (img) {
-					core::dimension2d<u32> dim = img->getDimension();
-					core::position2d<s32> pos_base(x, y);
-					video::IImage *img2 =
-							driver->createImage(video::ECF_A8R8G8B8, dim);
-					img->copyTo(img2);
-					img->drop();
-					blit_with_alpha(img2, baseimg, v2s32(0,0), pos_base, dim);
-					img2->drop();
-				} else {
+				if (!img) {
 					errorstream << "generateImagePart(): Failed to load image \""
 						<< filename << "\" for [combine" << std::endl;
+					continue;
 				}
+				const auto dim = img->getDimension();
+				if (pos_base.X + dim.Width <= 0 || pos_base.Y + dim.Height <= 0) {
+					warningstream << "generateImagePart(): Skipping \""
+						<< filename << "\" as it's out-of-bounds " << pos_base
+						<< " for [combine" << std::endl;
+					img->drop();
+					continue;
+				}
+
+				blit_with_alpha(img, baseimg, v2s32(0,0), pos_base, dim);
+				img->drop();
 			}
 		}
 		/*
@@ -2036,6 +2045,8 @@ static inline video::SColor blitPixel(const video::SColor src_c, const video::SC
 static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 		v2s32 src_pos, v2s32 dst_pos, v2u32 size)
 {
+	// FIXME: loop should be restricted to actual overlap
+	// (if dst smaller than size or dst_pos negative)
 	for (u32 y0=0; y0<size.Y; y0++)
 	for (u32 x0=0; x0<size.X; x0++)
 	{
@@ -2057,6 +2068,7 @@ static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 		v2s32 src_pos, v2s32 dst_pos, v2u32 size)
 {
+	// FIXME: same as above here
 	for (u32 y0=0; y0<size.Y; y0++)
 	for (u32 x0=0; x0<size.X; x0++)
 	{
