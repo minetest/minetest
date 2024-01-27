@@ -19,8 +19,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "unit_sao.h"
+#include "player_sao.h"
 #include "scripting_server.h"
 #include "serverenvironment.h"
+#include "server.h"
+#include "nodedef.h"
 #include "util/serialize.h"
 
 UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos) : ServerActiveObject(env, pos)
@@ -120,6 +123,50 @@ void UnitSAO::sendOutdatedData()
 	if (!m_attachment_sent) {
 		m_attachment_sent = true;
 		m_messages_out.emplace(getId(), true, generateUpdateAttachmentCommand());
+	}
+}
+
+void UnitSAO::stepNodeDamage(float dtime)
+{
+	bool not_immortal = !isImmortal();
+
+	if (not_immortal && (m_prop.engine_mask&SAO_ENGINE_NODE_HURT) && m_node_hurt_interval.step(dtime, 1.0f)) {
+		u32 damage_per_second = 0;
+		std::string nodename;
+		v3s16 node_pos;
+		// Lowest and highest damage points are 0.1 within collisionbox
+		float dam_top = m_prop.collisionbox.MaxEdge.Y - 0.1f;
+
+		// Sequence of damage points, starting 0.1 above feet and progressing
+		// upwards in 1 node intervals, stopping below top damage point.
+		for (float dam_height = 0.1f; dam_height < dam_top; dam_height++) {
+			v3s16 p = floatToInt(m_base_position +
+				v3f(0.0f, dam_height * BS, 0.0f), BS);
+			MapNode n = m_env->getMap().getNode(p);
+			const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
+			if (c.damage_per_second > damage_per_second) {
+				damage_per_second = c.damage_per_second;
+				nodename = c.name;
+				node_pos = p;
+			}
+		}
+
+		// Top damage point
+		v3s16 ptop = floatToInt(m_base_position +
+			v3f(0.0f, dam_top * BS, 0.0f), BS);
+		MapNode ntop = m_env->getMap().getNode(ptop);
+		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(ntop);
+		if (c.damage_per_second > damage_per_second) {
+			damage_per_second = c.damage_per_second;
+			nodename = c.name;
+			node_pos = ptop;
+		}
+
+		if (damage_per_second != 0 && m_hp > 0) {
+			s32 newhp = (s32)m_hp - (s32)damage_per_second;
+			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE, nodename, node_pos);
+			setHP(newhp, reason);
+		}
 	}
 }
 

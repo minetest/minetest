@@ -62,7 +62,6 @@ public:
 
 	void setHP(s32 hp, const PlayerHPChangeReason &reason);
 	u16 getHP() const;
-	void setBreath(const s32 breath);
 
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
@@ -105,11 +104,4 @@ private:
 	float m_last_sent_position_timer = 0.0f;
 	float m_last_sent_move_precision = 0.0f;
 	std::string m_current_texture_modifier = "";
-	
-	// Timers
-	IntervalLimiter m_breathing_interval;
-	IntervalLimiter m_drowning_interval;
-	IntervalLimiter m_node_hurt_interval;
-	
-	u16 m_breath = 0;
 };

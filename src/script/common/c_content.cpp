@@ -446,9 +446,6 @@ void read_object_properties(lua_State *L, int index,
 	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
 	
 	getintfield(L, -1, "engine_mask", prop->engine_mask);
-	getfloatfield(L, -1, "drowning_interval", prop->drowning_interval);
-	getfloatfield(L, -1, "breathing_interval", prop->breathing_interval);
-	getfloatfield(L, -1, "node_hurt_interval", prop->node_hurt_interval);
 
 	// Remember to update object_property_keys above
 	// when adding a new property
@@ -552,12 +549,6 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 
 	lua_pushinteger(L, prop->engine_mask);
 	lua_setfield(L, -2, "engine_mask");
-	lua_pushnumber(L, prop->drowning_interval);
-	lua_setfield(L, -2, "drowning_interval");
-	lua_pushnumber(L, prop->breathing_interval);
-	lua_setfield(L, -2, "breathing_interval");
-	lua_pushnumber(L, prop->node_hurt_interval);
-	lua_setfield(L, -2, "node_hurt_interval");
 	// Remember to update object_property_keys above
 	// when adding a new property
 }

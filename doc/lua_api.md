@@ -5560,6 +5560,8 @@ Call these functions only at load time!
 
 * `minetest.register_globalstep(function(dtime))`
     * Called every server step, usually interval of 0.1s
+* `minetest.register_playerstep(function(ObjectRef, dtime))`
+    * Called every player step for every player.
 * `minetest.register_on_mods_loaded(function())`
     * Called after mods have finished loading and before the media is cached or the
       aliases handled.
@@ -8527,6 +8529,12 @@ Player properties need to be saved manually.
     show_on_minimap = false,
     -- Defaults to true for players, false for other entities.
     -- If set to true the entity will show as a marker on the minimap.
+
+    engine_mask = 7,
+    -- This can be used for enable/disable some part of engine.
+    -- 0x01 - Drowning (Only avaliable for players)
+    -- 0x02 - Breathing (Only avaliable for players)
+    -- 0x04 - Node damage
 }
 ```
 

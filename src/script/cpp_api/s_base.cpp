@@ -292,44 +292,6 @@ void ScriptApiBase::loadModFromMemory(const std::string &mod_name)
 }
 #endif
 
-// Push the callback (a lua function).
-// Then push nargs arguments.
-// Then call this function, which
-// - runs the callback
-// - replaces the table and arguments with the return value,
-//     computed depending on mode
-// This function must only be called with scriptlock held (i.e. inside of a
-// code block with SCRIPTAPI_PRECHECKHEADER declared)
-void ScriptApiBase::runCallbackRaw(int nargs, const char *fxn)
-{
-#ifndef SERVER
-	// Hard fail for bad guarded callbacks
-	// Only run callbacks when the scripting enviroment is loaded
-	FATAL_ERROR_IF(m_type == ScriptingType::Client &&
-			!getClient()->modsLoaded(), fxn);
-#endif
-
-#ifdef SCRIPTAPI_LOCK_DEBUG
-	assert(m_lock_recursion_count > 0);
-#endif
-	lua_State *L = getStack();
-	FATAL_ERROR_IF(lua_gettop(L) < nargs + 1, "Not enough arguments");
-
-	// Insert error handler
-	PUSH_ERROR_HANDLER(L);
-	int error_handler = lua_gettop(L) - nargs - 1;
-	lua_insert(L, error_handler);
-
-	// Stack now looks like this:
-	// ... <error handler> <lua_function> <arg#1> <arg#2> ... <arg#n>
-
-	int result = lua_pcall(L, nargs, 1, error_handler);
-	if (result != 0)
-		scriptError(result, fxn);
-
-	lua_remove(L, error_handler);
-}
-
 // Push the list of callbacks (a lua table).
 // Then push nargs arguments.
 // Then call this function, which

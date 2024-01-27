@@ -93,6 +93,9 @@ public:
 	void notifyObjectPropertiesModified();
 	void sendOutdatedData();
 
+	// Shared engine methods
+	void stepNodeDamage(float dtime);
+
 	// Update packets
 	std::string generateUpdateAttachmentCommand() const;
 	std::string generateUpdateAnimationSpeedCommand() const;
@@ -150,4 +153,7 @@ private:
 	v3f m_attachment_rotation;
 	bool m_attachment_sent = false;
 	bool m_force_visible = false;
+
+	// Timers
+	IntervalLimiter m_node_hurt_interval;
 };

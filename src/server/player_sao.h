@@ -209,7 +209,6 @@ private:
 	// Timers
 	IntervalLimiter m_breathing_interval;
 	IntervalLimiter m_drowning_interval;
-	IntervalLimiter m_node_hurt_interval;
 
 	bool m_position_not_sent = false;
 

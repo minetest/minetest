@@ -155,11 +155,9 @@ void PlayerSAO::getStaticData(std::string * result) const
 void PlayerSAO::step(float dtime, bool send_recommended)
 {
 	bool not_immortal = !isImmortal();
-	bool do_drowning = m_drowning_interval.step(dtime, m_prop.drowning_interval);
-	bool do_breathing = m_breathing_interval.step(dtime, m_prop.breathing_interval);
-	bool do_node_hurt = m_node_hurt_interval.step(dtime, m_prop.node_hurt_interval);
 
-	if (not_immortal && do_drowning && (m_prop.engine_mask&SAO_ENGINE_DROWNING)) {
+	if (not_immortal && m_drowning_interval.step(dtime, 2.0f)
+		&& (m_prop.engine_mask&SAO_ENGINE_DROWNING)) {
 		// Get nose/mouth position, approximate with eye position
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNode(p);
@@ -177,7 +175,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if (not_immortal && do_breathing && (m_prop.engine_mask&SAO_ENGINE_BREATHING)) {
+	if (not_immortal && m_breathing_interval.step(dtime, 0.5f)
+		&& (m_prop.engine_mask&SAO_ENGINE_BREATHING)) {
 		// Get nose/mouth position, approximate with eye position
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNode(p);
@@ -188,48 +187,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			setBreath(m_breath + 1);
 	}
 
-	if (not_immortal && do_node_hurt && (m_prop.engine_mask&SAO_ENGINE_NODE_HURT)) {
-		u32 damage_per_second = 0;
-		std::string nodename;
-		v3s16 node_pos;
-		// Lowest and highest damage points are 0.1 within collisionbox
-		float dam_top = m_prop.collisionbox.MaxEdge.Y - 0.1f;
+	stepNodeDamage(dtime);
 
-		// Sequence of damage points, starting 0.1 above feet and progressing
-		// upwards in 1 node intervals, stopping below top damage point.
-		for (float dam_height = 0.1f; dam_height < dam_top; dam_height++) {
-			v3s16 p = floatToInt(m_base_position +
-				v3f(0.0f, dam_height * BS, 0.0f), BS);
-			MapNode n = m_env->getMap().getNode(p);
-			const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
-			if (c.damage_per_second > damage_per_second) {
-				damage_per_second = c.damage_per_second;
-				nodename = c.name;
-				node_pos = p;
-			}
-		}
-
-		// Top damage point
-		v3s16 ptop = floatToInt(m_base_position +
-			v3f(0.0f, dam_top * BS, 0.0f), BS);
-		MapNode ntop = m_env->getMap().getNode(ptop);
-		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(ntop);
-		if (c.damage_per_second > damage_per_second) {
-			damage_per_second = c.damage_per_second;
-			nodename = c.name;
-			node_pos = ptop;
-		}
-
-		if (damage_per_second != 0 && m_hp > 0) {
-			s32 newhp = (s32)m_hp - (s32)damage_per_second;
-			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE, nodename, node_pos);
-			setHP(newhp, reason);
-		}
-	}
-
-	if (m_prop.engine_mask&SAO_ENGINE_LUA_STEP) {
-		m_env->getScriptIface()->on_stepplayer(this, dtime, do_drowning, do_breathing, do_node_hurt);
-	}
+	m_env->getScriptIface()->on_playerstep(this, dtime);
 
 	if (!m_properties_sent) {
 		m_properties_sent = true;
@@ -466,12 +426,6 @@ u32 PlayerSAO::punch(v3f dir,
 	float time_from_last_punch,
 	u16 initial_wear)
 {
-/* TODO: delete or change
-	if (!(m_prop.engine_mask&PLAYER_ENGINE_PUNCH)) {
-		
-	}
-*/
-	
 	if (!toolcap)
 		return 0;
 

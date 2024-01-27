@@ -30,10 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SAO_ENGINE_DROWNING 0x0001
 #define SAO_ENGINE_BREATHING 0x0002
 #define SAO_ENGINE_NODE_HURT 0x0004
-#define SAO_ENGINE_LUA_STEP 0x0100
-#define SAO_ENGINE_LUA_PUNCH 0x0200
-#define SAO_ENGINE_LUA_HIT_PARAMS 0x0400
-#define SAO_ENGINE_LUA_PUNCH_DAMAGE 0x0800
 
 struct ObjectProperties
 {
@@ -76,9 +72,6 @@ struct ObjectProperties
 	bool shaded = true;
 	bool show_on_minimap = false;
 	u16 engine_mask = 0;
-	float drowning_interval = 2.0f;
-	float breathing_interval = 0.5f;
-	float node_hurt_interval = 1.0f;
 
 	ObjectProperties();
 	std::string dump();

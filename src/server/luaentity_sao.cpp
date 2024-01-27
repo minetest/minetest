@@ -135,77 +135,7 @@ void LuaEntitySAO::dispatchScriptDeactivate(bool removal)
 
 void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
-	bool not_immortal = !isImmortal();
-
-	if (not_immortal && (m_prop.engine_mask&SAO_ENGINE_DROWNING) && m_drowning_interval.step(dtime, m_prop.drowning_interval)) {
-		// Get nose/mouth position, approximate with eye position
-		// TODO: Better pos, mouth/eye pos
-		v3s16 p = floatToInt(getBasePosition(), BS);
-		MapNode n = m_env->getMap().getNode(p);
-		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
-		// If node generates drown
-		if (c.drowning > 0 && m_hp > 0) {
-			if (m_breath > 0)
-				setBreath(m_breath - 1);
-
-			// No more breath, damage player
-			if (m_breath == 0) {
-				PlayerHPChangeReason reason(PlayerHPChangeReason::DROWNING);
-				setHP(m_hp - c.drowning, reason);
-			}
-		}
-	}
-
-	if (not_immortal && (m_prop.engine_mask&SAO_ENGINE_BREATHING) && m_breathing_interval.step(dtime, m_prop.breathing_interval)) {
-		// Get nose/mouth position, approximate with eye position
-		// TODO: Better pos, mouth/eye pos
-		v3s16 p = floatToInt(getBasePosition(), BS);
-		MapNode n = m_env->getMap().getNode(p);
-		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
-		// If player is alive & not drowning & not in ignore & not immortal, breathe
-		if (m_breath < m_prop.breath_max && c.drowning == 0 &&
-				n.getContent() != CONTENT_IGNORE && m_hp > 0)
-			setBreath(m_breath + 1);
-	}
-
-	if (not_immortal && (m_prop.engine_mask&SAO_ENGINE_NODE_HURT) && m_node_hurt_interval.step(dtime, m_prop.node_hurt_interval)) {
-		u32 damage_per_second = 0;
-		std::string nodename;
-		v3s16 node_pos;
-		// Lowest and highest damage points are 0.1 within collisionbox
-		float dam_top = m_prop.collisionbox.MaxEdge.Y - 0.1f;
-
-		// Sequence of damage points, starting 0.1 above feet and progressing
-		// upwards in 1 node intervals, stopping below top damage point.
-		for (float dam_height = 0.1f; dam_height < dam_top; dam_height++) {
-			v3s16 p = floatToInt(m_base_position +
-				v3f(0.0f, dam_height * BS, 0.0f), BS);
-			MapNode n = m_env->getMap().getNode(p);
-			const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
-			if (c.damage_per_second > damage_per_second) {
-				damage_per_second = c.damage_per_second;
-				nodename = c.name;
-				node_pos = p;
-			}
-		}
-
-		// Top damage point
-		v3s16 ptop = floatToInt(m_base_position +
-			v3f(0.0f, dam_top * BS, 0.0f), BS);
-		MapNode ntop = m_env->getMap().getNode(ptop);
-		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(ntop);
-		if (c.damage_per_second > damage_per_second) {
-			damage_per_second = c.damage_per_second;
-			nodename = c.name;
-			node_pos = ptop;
-		}
-
-		if (damage_per_second != 0 && m_hp > 0) {
-			s32 newhp = (s32)m_hp - (s32)damage_per_second;
-			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE, nodename, node_pos);
-			setHP(newhp, reason);
-		}
-	}
+	stepNodeDamage(dtime);
 
 	if(!m_properties_sent)
 	{
@@ -493,11 +423,6 @@ void LuaEntitySAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 u16 LuaEntitySAO::getHP() const
 {
 	return m_hp;
-}
-
-void LuaEntitySAO::setBreath(const s32 breath)
-{
-	m_breath = rangelim(breath, 0, m_prop.breath_max);
 }
 
 void LuaEntitySAO::setVelocity(v3f velocity)

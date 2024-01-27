@@ -530,6 +530,7 @@ local make_registration_reverse = builtin_shared.make_registration_reverse
 core.registered_on_chat_messages, core.register_on_chat_message = make_registration()
 core.registered_on_chatcommands, core.register_on_chatcommand = make_registration()
 core.registered_globalsteps, core.register_globalstep = make_registration()
+core.registered_playersteps, core.register_playerstep = make_registration()
 core.registered_playerevents, core.register_playerevent = make_registration()
 core.registered_on_mods_loaded, core.register_on_mods_loaded = make_registration()
 core.registered_on_shutdown, core.register_on_shutdown = make_registration()

@@ -173,9 +173,6 @@ void ObjectProperties::serialize(std::ostream &os) const
 
 	writeU8(os, rotate_selectionbox);
 
-	writeF32(os, drowning_interval);
-	writeF32(os, breathing_interval);
-	writeF32(os, node_hurt_interval);
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
 }
@@ -248,18 +245,5 @@ void ObjectProperties::deSerialize(std::istream &is)
 		if (is.eof())
 			return;
 		rotate_selectionbox = tmp;
-
-		float interval = readF32(is);
-		if (is.eof())
-			return;
-		drowning_interval = interval;
-		interval = readF32(is);
-		if (is.eof())
-			return;
-		breathing_interval = interval;
-		interval = readF32(is);
-		if (is.eof())
-			return;
-		node_hurt_interval = interval;
 	} catch (SerializationError &e) {}
 }
