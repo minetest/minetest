@@ -89,6 +89,7 @@ void PlayerSAO::addedToEnvironment(u32 dtime_s)
 	ServerActiveObject::setBasePosition(m_base_position);
 	m_player->setPlayerSAO(this);
 	m_player->setPeerId(m_peer_id_initial);
+	m_peer_id_initial = PEER_ID_INEXISTENT; // don't try to use it again.
 	m_last_good_position = m_base_position;
 }
 
@@ -96,11 +97,13 @@ void PlayerSAO::addedToEnvironment(u32 dtime_s)
 void PlayerSAO::removingFromEnvironment()
 {
 	ServerActiveObject::removingFromEnvironment();
-	if (m_player->getPlayerSAO() == this) {
-		unlinkPlayerSessionAndSave();
-		for (u32 attached_particle_spawner : m_attached_particle_spawners) {
-			m_env->deleteParticleSpawner(attached_particle_spawner, false);
-		}
+
+	// If this fails, fix the ActiveObjectMgr code in ServerEnvironment
+	SANITY_CHECK(m_player->getPlayerSAO() == this);
+
+	unlinkPlayerSessionAndSave();
+	for (u32 attached_particle_spawner : m_attached_particle_spawners) {
+		m_env->deleteParticleSpawner(attached_particle_spawner, false);
 	}
 }
 
@@ -584,10 +587,8 @@ void PlayerSAO::disconnected()
 
 session_t PlayerSAO::getPeerID() const
 {
-	// This function must not be called before the player
-	// is added to the environment
-	SANITY_CHECK(m_player);
-	return m_player->getPeerId();
+	// Before adding `this` to the server env, m_player is still nullptr.
+	return m_player ? m_player->getPeerId() : PEER_ID_INEXISTENT;
 }
 
 void PlayerSAO::unlinkPlayerSessionAndSave()
