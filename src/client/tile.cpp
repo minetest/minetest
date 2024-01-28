@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiscalingfilter.h"
 #include "renderingengine.h"
 #include "util/base64.h"
+#include "irrlicht_changes/printing.h"
 
 /*
 	A cache from texture name to texture path
@@ -538,12 +539,9 @@ u32 TextureSource::getTextureId(const std::string &name)
 
 // Draw an image on top of another one, using the alpha channel of the
 // source image
+// overlay: only modify destination pixels that are fully opaque.
+template<bool overlay = false>
 static void blit_with_alpha(video::IImage *src, video::IImage *dst,
-		v2s32 src_pos, v2s32 dst_pos, v2u32 size);
-
-// Like blit_with_alpha, but only modifies destination pixels that
-// are fully opaque
-static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 		v2s32 src_pos, v2s32 dst_pos, v2u32 size);
 
 // Apply a color to an image.  Uses an int (0-255) to calculate the ratio.
@@ -1323,37 +1321,45 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			sf.next(":");
 			u32 w0 = stoi(sf.next("x"));
 			u32 h0 = stoi(sf.next(":"));
-			CHECK_DIM(w0, h0);
-			core::dimension2d<u32> dim(w0,h0);
-			if (baseimg == NULL) {
-				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+			if (!baseimg) {
+				CHECK_DIM(w0, h0);
+				baseimg = driver->createImage(video::ECF_A8R8G8B8, {w0, h0});
 				baseimg->fill(video::SColor(0,0,0,0));
 			}
+
 			while (!sf.at_end()) {
-				u32 x = stoi(sf.next(","));
-				u32 y = stoi(sf.next("="));
+				v2s32 pos_base;
+				pos_base.X = stoi(sf.next(","));
+				pos_base.Y = stoi(sf.next("="));
 				std::string filename = unescape_string(sf.next_esc(":", escape), escape);
 
-				if (x >= w0 || y >= h0)
-					COMPLAIN_INVALID("X or Y offset");
-				infostream<<"Adding \""<<filename
-						<<"\" to combined ("<<x<<","<<y<<")"
-						<<std::endl;
+				auto basedim = baseimg->getDimension();
+				if (pos_base.X > (s32)basedim.Width || pos_base.Y > (s32)basedim.Height) {
+					warningstream << "generateImagePart(): Skipping \""
+						<< filename << "\" as it's out-of-bounds " << pos_base
+						<< " for [combine" << std::endl;
+					continue;
+				}
+				infostream << "Adding \"" << filename<< "\" to combined "
+					<< pos_base << std::endl;
 
 				video::IImage *img = generateImage(filename, source_image_names);
-				if (img) {
-					core::dimension2d<u32> dim = img->getDimension();
-					core::position2d<s32> pos_base(x, y);
-					video::IImage *img2 =
-							driver->createImage(video::ECF_A8R8G8B8, dim);
-					img->copyTo(img2);
-					img->drop();
-					blit_with_alpha(img2, baseimg, v2s32(0,0), pos_base, dim);
-					img2->drop();
-				} else {
+				if (!img) {
 					errorstream << "generateImagePart(): Failed to load image \""
 						<< filename << "\" for [combine" << std::endl;
+					continue;
 				}
+				const auto dim = img->getDimension();
+				if (pos_base.X + dim.Width <= 0 || pos_base.Y + dim.Height <= 0) {
+					warningstream << "generateImagePart(): Skipping \""
+						<< filename << "\" as it's out-of-bounds " << pos_base
+						<< " for [combine" << std::endl;
+					img->drop();
+					continue;
+				}
+
+				blit_with_alpha(img, baseimg, v2s32(0,0), pos_base, dim);
+				img->drop();
 			}
 		}
 		/*
@@ -2033,32 +2039,21 @@ static inline video::SColor blitPixel(const video::SColor src_c, const video::SC
 	This exists because IImage::copyToWithAlpha() doesn't seem to always
 	work.
 */
+template<bool overlay>
 static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 		v2s32 src_pos, v2s32 dst_pos, v2u32 size)
 {
-	for (u32 y0=0; y0<size.Y; y0++)
-	for (u32 x0=0; x0<size.X; x0++)
-	{
-		s32 src_x = src_pos.X + x0;
-		s32 src_y = src_pos.Y + y0;
-		s32 dst_x = dst_pos.X + x0;
-		s32 dst_y = dst_pos.Y + y0;
-		video::SColor src_c = src->getPixel(src_x, src_y);
-		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
-		dst_c = blitPixel(src_c, dst_c, src_c.getAlpha());
-		dst->setPixel(dst_x, dst_y, dst_c);
-	}
-}
+	auto src_dim = src->getDimension();
+	auto dst_dim = dst->getDimension();
 
-/*
-	Draw an image on top of another one, using the alpha channel of the
-	source image; only modify fully opaque pixels in destinaion
-*/
-static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
-		v2s32 src_pos, v2s32 dst_pos, v2u32 size)
-{
-	for (u32 y0=0; y0<size.Y; y0++)
-	for (u32 x0=0; x0<size.X; x0++)
+	// Limit y and x to the overlapping ranges
+	// s.t. the positions are all in bounds after offsetting.
+	for (u32 y0 = std::max(0, -dst_pos.Y);
+			y0 < std::min<s64>({size.Y, src_dim.Height, dst_dim.Height - (s64) dst_pos.Y});
+			++y0)
+	for (u32 x0 = std::max(0, -dst_pos.X);
+			x0 < std::min<s64>({size.X, src_dim.Width, dst_dim.Width - (s64) dst_pos.X});
+			++x0)
 	{
 		s32 src_x = src_pos.X + x0;
 		s32 src_y = src_pos.Y + y0;
@@ -2066,44 +2061,12 @@ static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 		s32 dst_y = dst_pos.Y + y0;
 		video::SColor src_c = src->getPixel(src_x, src_y);
 		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
-		if (dst_c.getAlpha() == 255 && src_c.getAlpha() != 0)
-		{
+		if (!overlay || (dst_c.getAlpha() == 255 && src_c.getAlpha() != 0)) {
 			dst_c = blitPixel(src_c, dst_c, src_c.getAlpha());
 			dst->setPixel(dst_x, dst_y, dst_c);
 		}
 	}
 }
-
-// This function has been disabled because it is currently unused.
-// Feel free to re-enable if you find it handy.
-#if 0
-/*
-	Draw an image on top of another one, using the specified ratio
-	modify all partially-opaque pixels in the destination.
-*/
-static void blit_with_interpolate_overlay(video::IImage *src, video::IImage *dst,
-		v2s32 src_pos, v2s32 dst_pos, v2u32 size, int ratio)
-{
-	for (u32 y0 = 0; y0 < size.Y; y0++)
-	for (u32 x0 = 0; x0 < size.X; x0++)
-	{
-		s32 src_x = src_pos.X + x0;
-		s32 src_y = src_pos.Y + y0;
-		s32 dst_x = dst_pos.X + x0;
-		s32 dst_y = dst_pos.Y + y0;
-		video::SColor src_c = src->getPixel(src_x, src_y);
-		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
-		if (dst_c.getAlpha() > 0 && src_c.getAlpha() != 0)
-		{
-			if (ratio == -1)
-				dst_c = src_c.getInterpolated(dst_c, (float)src_c.getAlpha()/255.0f);
-			else
-				dst_c = src_c.getInterpolated(dst_c, (float)ratio/255.0f);
-			dst->setPixel(dst_x, dst_y, dst_c);
-		}
-	}
-}
-#endif
 
 /*
 	Apply color to destination, using a weighted interpolation blend
@@ -2443,7 +2406,7 @@ static void draw_crack(video::IImage *crack, video::IImage *dst,
 	if (!crack_scaled)
 		return;
 
-	auto blit = use_overlay ? blit_with_alpha_overlay : blit_with_alpha;
+	auto blit = use_overlay ? blit_with_alpha<true> : blit_with_alpha<false>;
 	for (s32 i = 0; i < frame_count; ++i) {
 		v2s32 dst_pos(0, frame_size.Height * i);
 		blit(crack_scaled, dst, v2s32(0,0), dst_pos, frame_size);

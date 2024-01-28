@@ -497,8 +497,8 @@ Example:
 
 * `<w>`: width
 * `<h>`: height
-* `<x>`: x position
-* `<y>`: y position
+* `<x>`: x position, negative numbers allowed
+* `<y>`: y position, negative numbers allowed
 * `<file>`: texture to combine
 
 Creates a texture of size `<w>` times `<h>` and blits the listed files to their
@@ -606,13 +606,13 @@ Creates an inventorycube with `grass.png`, `dirt.png^grass_side.png` and
 * `<y>`: y position
 * `<color>`: a `ColorString`.
 
-Creates a texture of the given size and color, optionally with an <x>,<y>
+Creates a texture of the given size and color, optionally with an `<x>,<y>`
 position. An alpha value may be specified in the `Colorstring`.
 
-The optional <x>,<y> position is only used if the [fill is being overlaid
+The optional `<x>,<y>` position is only used if the `[fill` is being overlaid
 onto another texture with '^'.
 
-When [fill is overlaid onto another texture it will not upscale or change
+When `[fill` is overlaid onto another texture it will not upscale or change
 the resolution of the texture, the base texture will determine the output
 resolution.
 
@@ -8296,6 +8296,7 @@ Player properties need to be saved manually.
     pointable = true,
     -- Can be `true` if it is pointable, `false` if it can be pointed through,
     -- or `"blocking"` if it is pointable but not selectable.
+    -- Clients older than 5.9.0 interpret `pointable = "blocking"` as `pointable = true`.
     -- Can be overridden by the `pointabilities` of the held item.
 
     visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem" / "item",
@@ -8902,6 +8903,7 @@ Used by `minetest.register_node`.
     pointable = true,
     -- Can be `true` if it is pointable, `false` if it can be pointed through,
     -- or `"blocking"` if it is pointable but not selectable.
+    -- Clients older than 5.9.0 interpret `pointable = "blocking"` as `pointable = true`.
     -- Can be overridden by the `pointabilities` of the held item.
     -- A client may be able to point non-pointable nodes, since it isn't checked server-side.
 
