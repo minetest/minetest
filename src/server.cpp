@@ -1114,7 +1114,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	SendPlayerInventoryFormspec(peer_id);
 
 	// Send inventory
-	SendInventory(playersao, false);
+	SendInventory(player, false);
 
 	// Send HP
 	SendPlayerHP(playersao, false);
@@ -1458,10 +1458,8 @@ void Server::SendNodeDef(session_t peer_id,
 	Non-static send methods
 */
 
-void Server::SendInventory(PlayerSAO *sao, bool incremental)
+void Server::SendInventory(RemotePlayer *player, bool incremental)
 {
-	RemotePlayer *player = sao->getPlayer();
-
 	// Do not send new format to old clients
 	incremental &= player->protocol_version >= 38;
 
@@ -1471,11 +1469,11 @@ void Server::SendInventory(PlayerSAO *sao, bool incremental)
 		Serialize it
 	*/
 
-	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, sao->getPeerID());
+	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, player->getPeerId());
 
 	std::ostringstream os(std::ios::binary);
-	sao->getInventory()->serialize(os, incremental);
-	sao->getInventory()->setModified(false);
+	player->inventory.serialize(os, incremental);
+	player->inventory.setModified(false);
 	player->setModified(true);
 
 	const std::string &s = os.str();
