@@ -213,7 +213,7 @@ void Particle::step(float dtime)
 
 	if (m_p.animation.type != TAT_NONE) {
 		m_animation_time += dtime;
-		int frame_length_i;
+		int frame_length_i = 0;
 		m_p.animation.determineParams(
 				m_material.getTexture(0)->getSize(),
 				NULL, &frame_length_i, NULL);
