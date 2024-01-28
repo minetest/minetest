@@ -1105,7 +1105,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	/*
 		Send complete position information
 	*/
-	SendMovePlayer(peer_id);
+	SendMovePlayer(playersao);
 
 	// Send privileges
 	SendPlayerPrivileges(peer_id);
@@ -1900,17 +1900,12 @@ void Server::SendPlayerBreath(PlayerSAO *sao)
 	SendBreath(sao->getPeerID(), sao->getBreath());
 }
 
-void Server::SendMovePlayer(session_t peer_id)
+void Server::SendMovePlayer(PlayerSAO *sao)
 {
-	RemotePlayer *player = m_env->getPlayer(peer_id);
-	assert(player);
-	PlayerSAO *sao = player->getPlayerSAO();
-	assert(sao);
-
 	// Send attachment updates instantly to the client prior updating position
 	sao->sendOutdatedData();
 
-	NetworkPacket pkt(TOCLIENT_MOVE_PLAYER, sizeof(v3f) + sizeof(f32) * 2, peer_id);
+	NetworkPacket pkt(TOCLIENT_MOVE_PLAYER, sizeof(v3f) + sizeof(f32) * 2, sao->getPeerID());
 	pkt << sao->getBasePosition() << sao->getLookPitch() << sao->getRotation().Y;
 
 	{
@@ -3928,6 +3923,23 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 				" peer_id already exists"<<std::endl;
 		return NULL;
 	}
+
+	/*
+		Object construction sequence/hierarchy
+		--------------------------------------
+		1. RemoteClient (tightly connection-bound)
+		2. RemotePlayer (controls, in-game appearance)
+		3. PlayerSAO (movable object in-game)
+			PlayerSAO controls the peer_id assignment of RemotePlayer,
+			indicating whether the player is ready
+
+		Destruction sequence
+		--------------------
+		1. PlayerSAO pending removal flag
+		2. PlayerSAO save data before free
+		3. RemotePlayer, then PlayerSAO freed
+		4. RemoteClient freed
+	*/
 
 	if (!player) {
 		player = new RemotePlayer(name, idef());

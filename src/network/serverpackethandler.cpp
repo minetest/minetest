@@ -512,7 +512,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	if (playersao->checkMovementCheat()) {
 		// Call callbacks
 		m_script->on_cheat(playersao, "moved_too_fast");
-		SendMovePlayer(pkt->getPeerId());
+		SendMovePlayer(playersao);
 	}
 }
 

@@ -1640,11 +1640,11 @@ void ServerEnvironment::step(float dtime)
 
 	// Send outdated player inventories
 	for (RemotePlayer *player : m_players) {
-		if (player->getPeerId() == PEER_ID_INEXISTENT)
+		PlayerSAO *sao = player->getPlayerSAO();
+		if (!sao || sao->isGone())
 			continue;
 
-		PlayerSAO *sao = player->getPlayerSAO();
-		if (sao && player->inventory.checkModified())
+		if (player->inventory.checkModified())
 			m_server->SendInventory(sao, true);
 	}
 
