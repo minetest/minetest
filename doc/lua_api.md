@@ -1751,6 +1751,15 @@ Displays a horizontal bar made up of half-images with an optional background.
 * `item`: Position of item that is selected.
 * `direction`: Direction the list will be displayed in
 * `offset`: offset in pixels from position.
+* `alignment`: The alignment of the inventory.
+  It starts at the top left corner and not at the center like the most other types.
+
+### `hotbar`
+
+* `direction`: Direction the list will be displayed in
+* `offset`: offset in pixels from position.
+* `alignment`: The alignment of the inventory.
+  It starts at the top left corner and not at the center like the most other types.
 
 ### `waypoint`
 
@@ -5435,6 +5444,9 @@ Utilities
       -- Allow passing an optional "actor" ObjectRef to the following functions:
       -- minetest.place_node, minetest.dig_node, minetest.punch_node (5.9.0)
       node_interaction_actor = true,
+      -- HUD elements of type hotbar exist and
+      -- the predefined hotbar is a Lua HUD elements. (5.9.0)
+      hotbar_hud_element = true,
   }
   ```
 
@@ -7041,7 +7053,7 @@ Misc.
   (regardless of online status)
 * `minetest.hud_replace_builtin(name, hud_definition)`
     * Replaces definition of a builtin hud element
-    * `name`: `"breath"`, `"health"` or `"minimap"`
+    * `name`: `"breath"`, `"health"`, `"minimap"` or `"hotbar"`
     * `hud_definition`: definition to replace builtin definition
 * `minetest.parse_relative_number(arg, relative_to)`: returns number or nil
     * Helper function for chat commands.
@@ -10527,7 +10539,7 @@ Used by `ObjectRef:hud_add`. Returned by `ObjectRef:hud_get`.
 ```lua
 {
     type = "image",
-    -- Type of element, can be "image", "text", "statbar", "inventory",
+    -- Type of element, can be "image", "text", "statbar", "inventory", "hotbar",
     -- "waypoint", "image_waypoint", "compass" or "minimap"
     -- If undefined "text" will be used.
 
