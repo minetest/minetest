@@ -65,18 +65,7 @@ public:
 	}
 };
 
-/* Fill in RGB values for transparent pixels, to correct for odd colors
- * appearing at borders when blending.  This is because many PNG optimizers
- * like to discard RGB values of transparent pixels, but when blending then
- * with non-transparent neighbors, their RGB values will show up nonetheless.
- *
- * This function modifies the original image in-place.
- *
- * Parameter "threshold" is the alpha level below which pixels are considered
- * transparent. Should be 127 when the texture is used with ALPHA_CHANNEL_REF,
- * 0 when alpha blending is used.
- */
-void imageCleanTransparent(video::IImage *src, u32 threshold)
+static void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
 {
 	core::dimension2d<u32> dim = src->getDimension();
 
@@ -152,6 +141,23 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 	newmap.copy(bitmap);
 
 	}
+}
+
+
+/* Fill in RGB values for transparent pixels, to correct for odd colors
+ * appearing at borders when blending.  This is because many PNG optimizers
+ * like to discard RGB values of transparent pixels, but when blending then
+ * with non-transparent neighbors, their RGB values will show up nonetheless.
+ *
+ * This function modifies the original image in-place.
+ *
+ * Parameter "threshold" is the alpha level below which pixels are considered
+ * transparent. Should be 127 when the texture is used with ALPHA_CHANNEL_REF,
+ * 0 when alpha blending is used.
+ */
+void imageCleanTransparent(video::IImage *src, u32 threshold)
+{
+	imageCleanTransparentWithInlining(sry, threshold);
 }
 
 /* Scale a region of an image into another image, using nearest-neighbor with
