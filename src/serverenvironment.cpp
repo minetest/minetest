@@ -1901,11 +1901,6 @@ u16 ServerEnvironment::addActiveObjectRaw(std::unique_ptr<ServerActiveObject> ob
 		return 0;
 	}
 
-	// Register reference in scripting api (must be done before post-init)
-	m_script->addObjectReference(object);
-	// Post-initialize object
-	object->addedToEnvironment(dtime_s);
-
 	// Add static data to block
 	if (object->isStaticAllowed()) {
 		// Add static object to active static list of the block
@@ -1928,12 +1923,15 @@ u16 ServerEnvironment::addActiveObjectRaw(std::unique_ptr<ServerActiveObject> ob
 				<< "could not emerge block " << p << " for storing id="
 				<< object->getId() << " statically" << std::endl;
 			// clean in case of error
-			object->removingFromEnvironment();
-			m_script->removeObjectReference(object);
 			m_ao_manager.removeObject(object->getId());
 			return 0;
 		}
 	}
+
+	// Register reference in scripting api (must be done before post-init)
+	m_script->addObjectReference(object);
+	// Post-initialize object
+	object->addedToEnvironment(dtime_s);
 
 	return object->getId();
 }
