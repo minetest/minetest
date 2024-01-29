@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-01-29 14:52+0000\n"
-"Last-Translator: ZhiZe-ZG <qi_wang_zz@outlook.com>\n"
+"PO-Revision-Date: 2024-01-29 14:56+0000\n"
+"Last-Translator: yue weikai <send52@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -6575,9 +6575,9 @@ msgid ""
 "texture autoscaling."
 msgstr ""
 "使用双线性/三线性/各向异性滤镜时\n"
-"低分辨率纹理\n"
+"低分辨率材质\n"
 "可能会变得模糊，因此会自动使用最近邻插值\n"
-"对纹理进行放大，以保留清晰的像素。这将为放大后的纹理设置最小纹理尺寸；\n"
+"对材质进行放大，以保留清晰的像素。这将为放大后的材质设置最小纹理尺寸；\n"
 "数值越大，看起来越清晰，但需要的内存也越大。\n"
 "建议使用 2 的幂。\n"
 "只有在启用双线性/三线性/各向异性过滤时，才会应用此设置。\n"
@@ -6593,17 +6593,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
-msgstr "节点纹理动画是否应按地图块同步，否则取消同步。"
+msgstr "方块材质动画是否应按地图块同步，否则取消同步。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
 msgstr ""
+"玩家是否显示给客户端没有任何范围限制。\n"
+"已弃用，请player_transfer_distance设置来替代。"
 
 #: src/settings_translation_file.cpp
 msgid "Whether the window is maximized."
-msgstr ""
+msgstr "这个窗口是否会被放大."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6624,6 +6626,10 @@ msgid ""
 "In-game, you can toggle the mute state with the mute key or by using the\n"
 "pause menu."
 msgstr ""
+"是否将声音静音。您可随时取消静音声音，除非\n"
+"音响系统已禁用（enable_sound=false）。\n"
+"在游戏中，您可以使用静音键切换静音状态，或者使用\n"
+"暂停菜单。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6642,7 +6648,7 @@ msgstr "结点周围的选择框的线宽。"
 
 #: src/settings_translation_file.cpp
 msgid "Window maximized"
-msgstr ""
+msgstr "窗口放大"
 
 #: src/settings_translation_file.cpp
 msgid ""
