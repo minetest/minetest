@@ -163,9 +163,6 @@ static void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
 	}
 }
 
-#include "util/timetaker.h"
-#include "log.h"
-
 /* Fill in RGB values for transparent pixels, to correct for odd colors
  * appearing at borders when blending.  This is because many PNG optimizers
  * like to discard RGB values of transparent pixels, but when blending then
@@ -179,24 +176,10 @@ static void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
  */
 void imageCleanTransparent(video::IImage *src, u32 threshold)
 {
-	TimeTaker tt("imageCleanTransparent", nullptr, PRECISION_MICRO);
-
 	if (src->getColorFormat() == video::ECF_A8R8G8B8)
 		imageCleanTransparentWithInlining<true>(src, threshold);
 	else
 		imageCleanTransparentWithInlining<false>(src, threshold);
-
-	u64 t = tt.stop(true);
-	static thread_local u64 s_t_sum = 0;
-	static thread_local u64 s_ctr = 0;
-	s_t_sum += t;
-	s_ctr += 1;
-	if (s_t_sum >= 500000) {
-		errorstream << "imageCleanTransparent: " << s_ctr << " invocations after "
-				<< ((double)s_t_sum * 1.0e-6) << " s" << std::endl;
-		s_t_sum = 0;
-		s_ctr = 0;
-	}
 }
 
 /* Scale a region of an image into another image, using nearest-neighbor with
