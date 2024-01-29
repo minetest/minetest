@@ -295,6 +295,8 @@ private:
 	// apply joystick status
 	void applyJoystickStatus();
 
+	// map to store the IDs and original positions of currently pressed pointers
+	std::unordered_map<size_t, v2s32> m_pointer_downpos;
 	// map to store the IDs and positions of currently pressed pointers
 	std::unordered_map<size_t, v2s32> m_pointer_pos;
 

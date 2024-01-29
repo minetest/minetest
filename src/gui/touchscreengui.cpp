@@ -718,6 +718,7 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 
 	// By the way: Android reuses pointer IDs, so m_pointer_pos[evt_id]
 	// will be overwritten soon anyway.
+	m_pointer_downpos.erase(evt_id);
 	m_pointer_pos.erase(evt_id);
 }
 
@@ -808,6 +809,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			}
 		}
 
+		m_pointer_downpos[event.TouchInput.ID] = touch_pos;
 		m_pointer_pos[event.TouchInput.ID] = touch_pos;
 	}
 	else if (event.TouchInput.Event == ETIE_LEFT_UP) {
@@ -820,25 +822,24 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 				m_pointer_pos[event.TouchInput.ID] == touch_pos)
 			return;
 
+		const v2s32 dir_free_original = touch_pos - m_pointer_downpos[event.TouchInput.ID];
 		const v2s32 free_joystick_center = m_pointer_pos[event.TouchInput.ID];
 		const v2s32 dir_free = touch_pos - free_joystick_center;
 
 		const double touch_threshold_sq = m_touchscreen_threshold * m_touchscreen_threshold;
 
 		if (m_has_move_id && event.TouchInput.ID == m_move_id) {
-			if (dir_free.getLengthSQ() > touch_threshold_sq || m_move_has_really_moved) {
+			m_move_pos = touch_pos;
+			m_pointer_pos[event.TouchInput.ID] = touch_pos;
+
+			// update camera_yaw and camera_pitch
+			const double d = g_settings->getFloat("touchscreen_sensitivity", 0.001f, 10.0f)
+					* 6.0f / RenderingEngine::getDisplayDensity();
+			m_camera_yaw_change -= dir_free.X * d;
+			m_camera_pitch_change += dir_free.Y * d;
+
+			if (dir_free_original.getLengthSQ() > touch_threshold_sq)
 				m_move_has_really_moved = true;
-
-				m_move_pos = touch_pos;
-				m_pointer_pos[event.TouchInput.ID] = touch_pos;
-
-				const double d = g_settings->getFloat("touchscreen_sensitivity", 0.001f, 10.0f)
-						* 6.0f / RenderingEngine::getDisplayDensity();
-
-				// update camera_yaw and camera_pitch
-				m_camera_yaw_change -= dir_free.X * d;
-				m_camera_pitch_change += dir_free.Y * d;
-			}
 		}
 
 		if (m_has_joystick_id && event.TouchInput.ID == m_joystick_id) {
