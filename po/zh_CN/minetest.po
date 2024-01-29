@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2024-01-29 15:03+0000\n"
-"Last-Translator: Conight <xfddwhh@gmail.com>\n"
+"Last-Translator: Mivik <mivik@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -5243,7 +5243,7 @@ msgstr "山脊扩散噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge noise"
-msgstr "山脊噪声"
+msgstr "河流噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge underwater noise"
