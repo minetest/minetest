@@ -259,3 +259,18 @@ register_builtin_hud_element("minimap", {
 				core.get_player_information(player:get_player_name()).protocol_version >= 44
 	end,
 })
+
+--- Hotbar
+
+register_builtin_hud_element("hotbar", {
+	elem_def = {
+		type = "hotbar",
+		position = {x = 0.5, y = 1},
+		direction = 0,
+		alignment = {x = 0, y = -1},
+		offset = {x = 0, y = -4}, -- Extra padding below.
+	},
+	show_elem = function(player, flags)
+		return flags.hotbar
+	end,
+})
