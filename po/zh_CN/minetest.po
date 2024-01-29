@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2024-01-29 15:03+0000\n"
-"Last-Translator: ferrumcccp <wushuzhen1975@icloud.com>\n"
+"Last-Translator: \"Y.W.\" <y5nw@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -2531,7 +2531,7 @@ msgstr "用于攀登/降落的Aux1键"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
-msgstr "平地级别"
+msgstr "地图生成器平地级别"
 
 #: src/settings_translation_file.cpp
 msgid "Base terrain height."
