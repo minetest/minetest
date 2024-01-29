@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2024-01-29 14:52+0000\n"
-"Last-Translator: yue weikai <send52@outlook.com>\n"
+"Last-Translator: AISS <cretaceous@mail.ee>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -6595,7 +6595,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
-msgstr ""
+msgstr "节点纹理动画是否应按地图块同步，否则取消同步。"
 
 #: src/settings_translation_file.cpp
 msgid ""
