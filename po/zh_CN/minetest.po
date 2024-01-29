@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2024-01-29 15:03+0000\n"
-"Last-Translator: ZhiZe-ZG <qi_wang_zz@outlook.com>\n"
+"Last-Translator: ferrumcccp <wushuzhen1975@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -5756,7 +5756,7 @@ msgstr "切片 w"
 
 #: src/settings_translation_file.cpp
 msgid "Slope and fill work together to modify the heights."
-msgstr "斜率和填充共同工作来修改高度。"
+msgstr "斜率和坡度共同工作来修改高度。"
 
 #: src/settings_translation_file.cpp
 msgid "Small cave maximum number"
