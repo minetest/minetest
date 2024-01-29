@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-01-29 15:03+0000\n"
-"Last-Translator: Mivik <mivik@qq.com>\n"
+"PO-Revision-Date: 2024-01-30 16:01+0000\n"
+"Last-Translator: yue weikai <send52@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -998,7 +998,6 @@ msgid "Rename"
 msgstr "重命名"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Update available?"
 msgstr "有更新可用？"
 
@@ -1298,7 +1297,7 @@ msgid "Continue"
 msgstr "继续"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1560,7 +1559,6 @@ msgid "Unlimited viewing range enabled"
 msgstr "无限视野已启用"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range enabled, but forbidden by game or mod"
 msgstr "无限视野已启用，但是受子游戏或者 Mod 限制"
 
@@ -1651,7 +1649,6 @@ msgstr "退格"
 
 #. ~ Usually paired with the Pause key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Break Key"
 msgstr "取消键"
 
@@ -1821,12 +1818,10 @@ msgid "OEM Clear"
 msgstr "OEM Clear键"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Down"
 msgstr "下一页"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Up"
 msgstr "上一页"
 
@@ -1845,7 +1840,6 @@ msgid "Print"
 msgstr "打印"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Return Key"
 msgstr "回车键"
 
@@ -1883,7 +1877,6 @@ msgid "Select"
 msgstr "选择键"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Shift Key"
 msgstr "Shift键"
 
@@ -1916,7 +1909,6 @@ msgid "X Button 2"
 msgstr "X键2"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Zoom Key"
 msgstr "缩放"
 
@@ -2300,7 +2292,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "确定每个地图块的地窖数量的3D噪声。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2385,7 +2376,6 @@ msgid ""
 msgstr "为支持4K等屏幕，调节像素点密度（非 X11/Android 环境才有效）。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr "调整检测到的显示密度，用来缩放 UI 元素。"
 
@@ -2753,7 +2743,6 @@ msgid "Client-side Modding"
 msgstr "客户端修改"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client-side node lookup range restriction"
 msgstr "客户端方块查询范围限制"
 
@@ -2770,7 +2759,6 @@ msgid "Clouds"
 msgstr "云彩"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds are a client-side effect."
 msgstr "云是客户端效果。"
 
@@ -2928,7 +2916,6 @@ msgid "Crosshair alpha"
 msgstr "准星透明"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "This also applies to the object crosshair."
@@ -3368,7 +3355,6 @@ msgid ""
 msgstr "允许不影响可玩性的轻微视觉错误，以此减少 CPU 负载，或提高渲染性能。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Engine Profiler"
 msgstr "引擎性能分析"
 
@@ -3478,7 +3464,6 @@ msgid "Fixed virtual joystick"
 msgstr "固定虚拟摇杆"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Fixes the position of virtual joystick.\n"
 "If disabled, virtual joystick will center to first-touch's position."
@@ -3656,7 +3641,6 @@ msgid "Fullscreen mode."
 msgstr "全屏模式。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "GUI"
 msgstr "界面"
 
@@ -3776,7 +3760,6 @@ msgid "Heat noise"
 msgstr "热噪声"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Height component of the initial window size."
 msgstr "初始窗口高度，全屏模式下忽略该值。"
 
@@ -3971,7 +3954,6 @@ msgstr ""
 "不可见的内容，降低穿墙模式的实用性。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, you can place nodes at the position (feet + eye level) where you "
 "stand.\n"
@@ -4042,7 +4024,6 @@ msgstr ""
 "通常只有核心／内部构建者需要"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Instrument chat commands on registration."
 msgstr "登录时的聊天命令。"
 
@@ -4263,7 +4244,6 @@ msgstr ""
 "-   不透明：  取消树叶透明度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Length of a server tick and the interval at which objects are generally "
 "updated over\n"
@@ -4529,9 +4509,8 @@ msgid "Map save interval"
 msgstr "地图保存间隔"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Map shadows update frames"
-msgstr "液体更新时钟间隔"
+msgstr "地图阴影更新帧率"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
@@ -4759,12 +4738,10 @@ msgid "Maximum simultaneous block sends per client"
 msgstr "给每个客户端发送方块的最大次数"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum size of the outgoing chat queue"
 msgstr "显示最大聊天记录的行度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum size of the outgoing chat queue.\n"
 "0 to disable queueing and -1 to make the queue size unlimited."
@@ -4853,7 +4830,6 @@ msgid "Monospace font size"
 msgstr "等宽字体大小"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Monospace font size divisible by"
 msgstr "等宽字体大小"
 
@@ -4985,7 +4961,6 @@ msgstr ""
 "佳值为'1'。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Number of extra blocks that can be loaded by /clearobjects at once.\n"
 "This is a trade-off between SQLite transaction overhead and\n"
@@ -4996,7 +4971,6 @@ msgstr ""
 "（4096=100MB，按经验法则）。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Number of messages a player may send per 10 seconds."
 msgstr "每10秒发送给玩家的消息量。"
 
@@ -5014,7 +4988,6 @@ msgid "Occlusion Culler"
 msgstr "摔落保护"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Occlusion Culling"
 msgstr "服务器端遮挡删除"
 
@@ -5104,7 +5077,6 @@ msgid "Player transfer distance"
 msgstr "玩家转移距离"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Poisson filtering"
 msgstr "双线性过滤"
 
@@ -5189,7 +5161,6 @@ msgid "Regular font path"
 msgstr "常规字体路径"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Remember screen size"
 msgstr "自动保存屏幕大小"
 
@@ -5483,7 +5454,6 @@ msgid "Server"
 msgstr "服务器"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server Gameplay"
 msgstr "服务器名称"
 
@@ -5512,7 +5482,6 @@ msgid "Server port"
 msgstr "服务器端口"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server-side occlusion culling"
 msgstr "服务器端遮挡删除"
 
@@ -5561,7 +5530,6 @@ msgstr ""
 "变更后须重新启动。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the maximum length of a chat message (in characters) sent by clients."
 msgstr "设定客户端传送的聊天讯息的最大字符长度。"
@@ -5652,9 +5620,8 @@ msgstr ""
 "仅用于OpenGL视频后端。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Shadow filter quality"
-msgstr "截图品质"
+msgstr "阴影过滤质量"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow map max distance in nodes to render shadows"
@@ -5665,9 +5632,8 @@ msgid "Shadow map texture in 32 bits"
 msgstr "32 位阴影贴图纹理"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Shadow map texture size"
-msgstr "最小材质大小"
+msgstr "阴影贴图纹理尺寸"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5676,7 +5642,6 @@ msgid ""
 msgstr "默认字体阴影偏移（单位为像素），0 表示不绘制阴影。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Shadow strength gamma"
 msgstr "阴影强度"
 
@@ -5697,7 +5662,6 @@ msgstr ""
 "修改后需要重新启动才能生效。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Show name tag backgrounds by default"
 msgstr "默认显示名称标签背景"
 
@@ -5720,7 +5684,6 @@ msgstr ""
 "使用低端 GPU（或无 GPU）的系统则可从较小的数值中获益。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING: There is no benefit, and there are several dangers, in\n"
@@ -5779,14 +5742,12 @@ msgid "Smooth lighting"
 msgstr "平滑光照"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
 "cinematic mode by using the key set in Change Keys."
 msgstr "在电影模式中让摄影机旋转变流畅。设为 0 以停用。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Smooths rotation of camera, also called look or mouse smoothing. 0 to "
 "disable."
@@ -5826,7 +5787,6 @@ msgstr ""
 "请注意，mod或游戏可能会为某些（或所有）项目明确设置堆栈。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Spread a complete update of shadow map over given number of frames.\n"
 "Higher values might make shadows laggy, lower values\n"
@@ -5849,7 +5809,6 @@ msgstr ""
 "光曲线的标准偏差可提升高斯。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Static spawn point"
 msgstr "静态重生点"
 
@@ -5888,7 +5847,6 @@ msgid "Strip color codes"
 msgstr "条形颜色代码"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Surface level of optional water placed on a solid floatland layer.\n"
 "Water is disabled by default and will only be placed if this value is set\n"
@@ -5995,7 +5953,6 @@ msgid "The URL for the content repository"
 msgstr "内容存储库的 URL"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The dead zone of the joystick"
 msgstr "摇杆的无效区"
 
@@ -6017,7 +5974,6 @@ msgid "The identifier of the joystick to use"
 msgstr "使用手柄的标识符"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The length in pixels it takes for touchscreen interaction to start."
 msgstr "开始触摸屏交互所需的长度（以像素为单位）。"
 
@@ -6166,7 +6122,6 @@ msgid "Time speed"
 msgstr "速度时间"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr "客户端从内存中移除未用地图数据的超时。"
 
@@ -6189,16 +6144,14 @@ msgid "Touchscreen"
 msgstr "触摸屏"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen sensitivity"
-msgstr "鼠标灵敏度"
+msgstr "灵敏度（触摸屏）"
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen sensitivity multiplier."
 msgstr "触摸屏灵敏度倍增器."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen threshold"
 msgstr "触屏阈值"
 
@@ -6303,12 +6256,10 @@ msgid "Use a cloud animation for the main menu background."
 msgstr "主菜单背景使用云动画。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use anisotropic filtering when looking at textures from an angle."
 msgstr "缩放材质时使用三线过滤。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use bilinear filtering when scaling textures."
 msgstr "缩放材质时使用双线过滤。"
 
@@ -6355,7 +6306,6 @@ msgstr ""
 "会被应用。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use virtual joystick to trigger \"Aux1\" button.\n"
 "If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
@@ -6425,9 +6375,8 @@ msgstr ""
 "定义 terrain_base 和 terrain_alt 噪音的 \"持久性 \"值。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Varies steepness of cliffs."
-msgstr "控制山丘的坡度/高度。"
+msgstr "因情况设置的山丘的陡度"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
@@ -6449,9 +6398,7 @@ msgstr "视野晃动系数"
 
 #: src/settings_translation_file.cpp
 msgid "View distance in nodes."
-msgstr ""
-"节点间可视距离。\n"
-"最小 = 20"
+msgstr "节点间可视距离。(最小 = 20)."
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range"
@@ -6635,7 +6582,6 @@ msgid ""
 msgstr "是否显示客户端调试信息（与按 F5 的效果相同）。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Width component of the initial window size."
 msgstr "初始窗口大小的宽度。"
 
@@ -6699,9 +6645,8 @@ msgid ""
 msgstr "Y的山地密度梯度为零。用于垂直移动山脉。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Y of upper limit of large caves."
-msgstr "大型随机洞穴的Y轴最大值。"
+msgstr "大型随机洞穴的Y轴最大值."
 
 #: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
@@ -6748,7 +6693,6 @@ msgid "cURL file download timeout"
 msgstr "cURL 文件下载超时"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "cURL interactive timeout"
 msgstr "cURL 超时"
 
