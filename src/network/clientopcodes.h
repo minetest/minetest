@@ -20,10 +20,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "client/client.h"
 #include "networkprotocol.h"
 
 class NetworkPacket;
-class Client;
+// Note: don't forward-declare Client here (#14324)
 
 enum ToClientConnectionState {
 	TOCLIENT_STATE_NOT_CONNECTED,
