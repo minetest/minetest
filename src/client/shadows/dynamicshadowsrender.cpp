@@ -183,7 +183,7 @@ void ShadowRenderer::addNodeToShadowList(
 {
 	m_shadow_node_array.emplace_back(node, shadowMode);
 	// node should never be ClientMap
-	assert(strcmp(node->getName(), "ClientMap") != 0);
+	assert(!node->getName().has_value() || *node->getName() != "ClientMap");
 
 	node->forEachMaterial([this] (auto &mat) {
 		mat.setTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
