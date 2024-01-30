@@ -13,42 +13,36 @@ libdir=$builddir/libs
 
 source $topdir/common.sh
 
-# Test which win64 compiler is present
-command -v x86_64-w64-mingw32-gcc >/dev/null &&
-	compiler=x86_64-w64-mingw32-gcc
-command -v x86_64-w64-mingw32-gcc-posix >/dev/null &&
-	compiler=x86_64-w64-mingw32-gcc-posix
+compiler=x86_64-w64-mingw32-clang
 
-if [ -z "$compiler" ]; then
-	echo "Unable to determine which MinGW compiler to use"
+if ! command -v "$compiler" >/dev/null; then
+	echo "Unable to find $compiler"
 	exit 1
 fi
-toolchain_file=$topdir/toolchain_${compiler/-gcc/}.cmake
+toolchain_file=$topdir/toolchain_${compiler%-*}.cmake
 echo "Using $toolchain_file"
 
-find_runtime_dlls x86_64-w64-mingw32
+find_runtime_dlls ${compiler%-*}
 
 # Get stuff
 irrlicht_version=$(cat $topdir/../../misc/irrlichtmt_tag.txt)
 
 mkdir -p $libdir
 
-# 'ucrt' just points to rebuilt versions after a toolchain change
-
 cd $libdir
 libhost="http://minetest.kitsunemimi.pw"
-download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win64.zip" irrlicht-$irrlicht_version-win64.zip
-download "$libhost/zlib-$zlib_version-win64.zip"
-download "$libhost/ucrt/zstd-$zstd_version-win64.zip"
-download "$libhost/ucrt/libogg-$ogg_version-win64.zip"
-download "$libhost/ucrt/libvorbis-$vorbis_version-win64.zip"
-download "$libhost/curl-$curl_version-win64.zip"
+download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win64-llvm.zip" irrlicht-$irrlicht_version-win64.zip
+download "$libhost/llvm/zlib-$zlib_version-win64.zip"
+download "$libhost/llvm/zstd-$zstd_version-win64.zip"
+download "$libhost/llvm/libogg-$ogg_version-win64.zip"
+download "$libhost/llvm/libvorbis-$vorbis_version-win64.zip"
+download "$libhost/llvm/curl-$curl_version-win64.zip"
 download "$libhost/ucrt/gettext-$gettext_version-win64.zip"
-download "$libhost/freetype-$freetype_version-win64.zip"
-download "$libhost/sqlite3-$sqlite3_version-win64.zip"
-download "$libhost/luajit-$luajit_version-win64.zip"
-download "$libhost/ucrt/libleveldb-$leveldb_version-win64.zip" leveldb-$leveldb_version-win64.zip
-download "$libhost/openal-soft-$openal_version-win64.zip"
+download "$libhost/llvm/freetype-$freetype_version-win64.zip"
+download "$libhost/llvm/sqlite3-$sqlite3_version-win64.zip"
+download "$libhost/llvm/luajit-$luajit_version-win64.zip"
+download "$libhost/llvm/libleveldb-$leveldb_version-win64.zip"
+download "$libhost/llvm/openal-soft-$openal_version-win64.zip"
 
 # Set source dir, downloading Minetest as needed
 get_sources
