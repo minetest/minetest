@@ -438,6 +438,13 @@ static void print_version(std::ostream &os)
 #else
 	os << "Using " << LUA_RELEASE << std::endl;
 #endif
+#if defined(__clang__)
+	os << "Built by Clang " << __clang_major__ << "." << __clang_minor__ << std::endl;
+#elif defined(__GNUC__)
+	os << "Built by GCC " << __GNUC__ << "." << __GNUC_MINOR__ << std::endl;
+#elif defined(_MSC_VER)
+	os << "Built by MSVC " << (_MSC_VER / 100) << "." << (_MSC_VER % 100) << std::endl;
+#endif
 	os << "Running on " << porting::get_sysinfo() << std::endl;
 	os << g_build_info << std::endl;
 }
