@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-01-21 10:01+0000\n"
-"Last-Translator: Balázs Kovács <kovacs.balazs.ktk@gmail.com>\n"
+"PO-Revision-Date: 2024-04-27 21:16+0000\n"
+"Last-Translator: Unacceptium <unacceptium@proton.me>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -244,7 +244,7 @@ msgstr "Betöltés…"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Mods"
-msgstr "Modifikációk \"Modok\""
+msgstr "Modok"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "No packages could be retrieved"
@@ -930,7 +930,7 @@ msgstr "Nagyon alacsony"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr "Névjegy"
+msgstr "Róla"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -6627,7 +6627,7 @@ msgid ""
 "Vertical screen synchronization. Your system may still force VSync on even "
 "if this is disabled."
 msgstr ""
-"Függőleges képernyő szinkronizálás. a rendszer\n"
+"Függőleges képernyő szinkronizálás (VSync). a rendszer\n"
 "akkor is engedélyezettre kényszerítheti, ha itt\n"
 "ki van kapcsolva."
 
