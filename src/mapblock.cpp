@@ -340,8 +340,8 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	if(is_underground)
 		flags |= 0x01;
 	// This flag used to be day-night-differs, and it is no longer used.
-	// We write it anyway so that old servers can still read this.
-	// isAir implies !day-night-differs, !isAir is good enough for old servers
+	// We write it anyway so that old servers can still use this.
+	// Above ground isAir implies !day-night-differs, !isAir is good enough for old servers
 	// to check whether above ground blocks should be sent.
 	// See RemoteClient::getNextBlocks(...)
 	if(!isAir())
@@ -464,6 +464,7 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 
 	u8 flags = readU8(is);
 	is_underground = (flags & 0x01) != 0;
+	m_is_air = (flags & 0x02) == 0;
 	if (version < 27)
 		m_lighting_complete = 0xFFFF;
 	else
