@@ -2416,7 +2416,7 @@ Wear bar colors definition
 ### Blend mode `blend`
 
 * `linear`: blends smoothly between each defined color point.
-* `constant`: each color starts at its defined point, and continues up to to the next point
+* `constant`: each color starts at its defined point, and continues up to the next point
 
 ### Color stops `color_stops`
 
