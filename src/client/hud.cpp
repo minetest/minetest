@@ -369,6 +369,20 @@ void Hud::drawLuaElements(const v3s16 &camera_offset, bool draw_crosshairs)
 		elems.insert(it, e);
 	}
 
+	// Legacy (Remove this when version 5.8.0 and older is not supported anymore.)
+	// If a new client connects to a sever version 5.8.0 and older some HUD elements
+	// are not hard coded in the client code anymore, but handled in builtin.
+	// So the client must add them again.
+
+	// Crosshair
+	if ((player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) && !hasElementOfType(HUD_ELEM_CROSSHAIR)) {
+		HudElement crosshair{HUD_ELEM_CROSSHAIR, v2f(0.5, 0.5), "", v2f(1, 1), "", 0 , 0, 0, v2f(),
+				v2f(), v3f(), v2s32(), 0, "", 0};
+		elems.push_back(&crosshair);
+	}
+
+	// End of legacy support code.
+
 	for (HudElement *e : elems) {
 
 		v2s32 pos(floor(e->pos.X * (float) m_screensize.X + 0.5),
