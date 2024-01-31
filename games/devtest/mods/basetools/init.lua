@@ -421,59 +421,76 @@ minetest.register_tool("basetools:dagger_steel", {
 })
 
 -- Test tool uses, punch_attack_uses, and wear bar coloring
-local uses = { 1, 2, 3, 5, 10, 50, 100, 1000, 10000, 65535 }
-local wear_colors = { nil, nil, nil, "#5865f2", "slateblue",
+local tool_params = {
+	{uses = 1},
+	{uses = 2},
+	{uses = 3},
 	{
-		color_stops = {
-			[0] = "red",
-			[0.5] = "yellow",
-			[1.0] = "blue"
-		},
-		blend = "linear"
+		uses = 5,
+		wear_color = "#5865f2",
+		wear_description = "Solid color: #5865f2",
 	},
 	{
-		color_stops = {
-			[0] = "#ffff00",
-			[0.2] = "#ff00ff",
-			[0.3] = "#ffff00",
-			[0.45] = "#c0ffee",
-			[0.6] = {r=255, g=255, b=0, a=100}, -- continues until the end
+		uses = 10,
+		wear_color = "slateblue",
+		wear_description = "Solid color: slateblue",
+	},
+	{
+		uses = 50,
+		wear_color = {
+			color_stops = {
+				[0] = "red",
+				[0.5] = "yellow",
+				[1.0] = "blue"
+			},
+			blend = "linear"
 		},
-		blend = "constant"
-	}, nil, nil, nil }
-local wear_color_desc = { nil, nil, nil, "Solid color: #5865f2", "Solid color: slateblue", "Ranges from blue to yellow to red", "Random blocks", nil, nil, nil }
-for i=1, #uses do
-	local u = uses[i]
-	local wc = wear_colors[i]
-	local wcd = wear_color_desc[i] or "Default"
-	local ustring
-	if i == 1 then
-		ustring = u.."-Use"
-	else
-		ustring = u.."-Uses"
-	end
-	local color = string.format("#FF00%02X", math.floor(((i-1)/#uses) * 255))
-	minetest.register_tool("basetools:pick_uses_"..string.format("%05d", u), {
+		wear_description = "Ranges from blue to yellow to red",
+	},
+	{
+		uses = 100,
+		wear_color = {
+			color_stops = {
+				[0] = "#ffff00",
+				[0.2] = "#ff00ff",
+				[0.3] = "#ffff00",
+				[0.45] = "#c0ffee",
+				[0.6] = {r=255, g=255, b=0, a=100}, -- continues until the end
+			},
+			blend = "constant"
+		},
+		wear_description = "Misc. colors, constant interpolation",
+	},
+	{uses = 1e3},
+	{uses = 1e4},
+	{uses = 65535},
+}
+
+for i, params in ipairs(tool_params) do
+	local uses = params.uses
+	local ustring = uses.."-Use"..(uses == 1 and "" or "s")
+	local color = string.format("#FF00%02X", math.floor(((i-1)/#tool_params) * 255))
+	minetest.register_tool("basetools:pick_uses_"..string.format("%05d", uses), {
 		description = ustring.." Pickaxe".."\n"..
 			"Digs cracky=3".."\n"..
-			"Wear bar: "..wcd,
+			(params.wear_description and "Wear bar: " .. params.wear_description or ""),
 		inventory_image = "basetools_usespick.png^[colorize:"..color..":127",
 		tool_capabilities = {
 			max_drop_level=0,
 			groupcaps={
-				cracky={times={[3]=0.1, [2]=0.2, [1]=0.3}, uses=u, maxlevel=0}
+				cracky={times={[3]=0.1, [2]=0.2, [1]=0.3}, uses=uses, maxlevel=0}
 			},
 		},
-		wear_color = wc
+		wear_color = params.wear_color
 	})
 
-	minetest.register_tool("basetools:sword_uses_"..string.format("%05d", u), {
+	minetest.register_tool("basetools:sword_uses_"..string.format("%05d", uses), {
 		description = ustring.." Sword".."\n"..
 			"Damage: fleshy=1",
 		inventory_image = "basetools_usessword.png^[colorize:"..color..":127",
 		tool_capabilities = {
 			damage_groups = {fleshy=1},
-			punch_attack_uses = u,
+			punch_attack_uses = uses,
 		},
 	})
 end
@@ -482,15 +499,19 @@ minetest.register_chatcommand("wear_color", {
 	params = "[idx]",
 	description = "Set wear bar color override",
 	func = function(player_name, param)
-		local player = minetest.get_player_by_name(player_name);
+		local player = minetest.get_player_by_name(player_name)
 		if not player then return end
 
 		local wear_color = nil
 		local wear_desc = "Reset override"
 
 		if param ~= "" then
-			wear_color = wear_colors[tonumber(param)]
-			wear_desc = "Set override: "..(wear_color_desc[tonumber(param)] or "Default behavior")
+			local params = tool_params[tonumber(param)]
+			if not params then
+				return false, "idx out of bounds"
+			end
+			wear_color = params.wear_color
+			wear_desc = "Set override: "..(params.wear_description or "Default behavior")
 		end
 		local tool = player:get_wielded_item()
 		if tool:get_count() == 0 then
@@ -502,13 +523,14 @@ minetest.register_chatcommand("wear_color", {
 	end
 })
 
--- Punch handler to set random color with "color" argument in item metadata
+-- Punch handler to set random color & wear
 local wear_on_use = function(itemstack, user, pointed_thing)
 	local meta = itemstack:get_meta()
-	local color = math.random(0x0, 0xFFFFFF)
+	local color = math.random(0, 0xFFFFFF)
 	local colorstr = string.format("#%06x", color)
 	meta:set_wear_bar_params(colorstr)
 	minetest.log("action", "[basetool] Wear bar color of "..itemstack:get_name().." changed to "..colorstr)
+	itemstack:set_wear(math.random(0, 65535))
 	return itemstack
 end
 
@@ -521,7 +543,7 @@ end
 
 minetest.register_tool("basetools:random_wear_bar", {
 	description = "Wear Bar Color Test\n" ..
-			"Punch: Set random color\n" ..
+			"Punch: Set random color & wear\n" ..
 			"Place: Clear color",
 	-- Base texture: A grayscale square (can be colorized)
 	inventory_image = "basetools_usespick.png^[colorize:#FFFFFF:127",

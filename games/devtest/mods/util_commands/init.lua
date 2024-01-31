@@ -215,9 +215,7 @@ minetest.register_chatcommand("dump_itemdef", {
 	description = "Prints a dump of the wielded item's definition in table form",
 	func = function(name, param)
 		local player = minetest.get_player_by_name(name)
-		local item = player:get_wielded_item()
-		local def = minetest.registered_items[item:get_name()]
-		local str = dump(def)
+		local str = dump(player:get_wielded_item():get_definition())
 		print(str)
 		return true, str
 	end,
