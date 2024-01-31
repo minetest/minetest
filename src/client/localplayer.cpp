@@ -392,10 +392,14 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 			// Move player to the maximal height when falling or when
 			// the ledge is climbed on the next step.
 
-			// Smoothen the movement (based on 'position.Y = bmax.Y')
-			position.Y += y_diff * dtime * 22.0f + BS * 0.01f;
-			position.Y = std::min(position.Y, bmax.Y);
-			m_speed.Y = 0.0f;
+			// Check if there is space for sneak glitch
+			v3f pos(position.X, position.Y + y_diff * dtime * 22.0f + BS * 0.01f, position.Z);
+			if (!collisionCheckIntersection(env, m_client, m_collisionbox, pos)) {
+				// Smoothen the movement (based on 'position.Y = bmax.Y')
+				position.Y = pos.Y;
+				position.Y = std::min(position.Y, bmax.Y);
+				m_speed.Y = 0.0f;
+			}
 		}
 
 		// Allow jumping on node edges while sneaking
@@ -491,6 +495,12 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	// Prevent sliding on the ground when jump speed is 0
 	m_can_jump = m_can_jump && jumpspeed != 0.0f;
+
+	// Prevent jump if in node/object
+	if (m_can_jump && could_sneak) {
+		if (collisionCheckIntersection(env, m_client, m_collisionbox, initial_position))
+			m_can_jump = false;
+	}
 
 	// Autojump
 	handleAutojump(dtime, env, result, initial_position, initial_speed, pos_max_d);

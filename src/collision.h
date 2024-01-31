@@ -72,6 +72,11 @@ collisionMoveResult collisionMoveSimple(Environment *env,IGameDef *gamedef,
 		v3f accel_f, ActiveObject *self=NULL,
 		bool collideWithObjects=true);
 
+// check if box is in collision on actual position
+bool collisionCheckIntersection(Environment *env, IGameDef *gamedef,
+		const aabb3f &box_0, const v3f &pos_f, ActiveObject *self = nullptr,
+		bool collideWithObjects = true);
+
 // Helper function:
 // Checks for collision of a moving aabbox with a static aabbox
 // Returns -1 if no collision, 0 if X collision, 1 if Y collision, 2 if Z collision
