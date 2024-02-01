@@ -371,19 +371,12 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 		elems.insert(it, e);
 	}
 
-	// Legacy (Remove this when version 5.8.0 and older is not supported anymore.)
-	// If a new client connects to a sever version 5.8.0 and older some HUD elements
-	// are not hard coded in the client code anymore, but handled in builtin.
-	// So the client must add them again.
-
-	// Hotbar
-	if ((player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) && !hasElementOfType(HUD_ELEM_HOTBAR)) {
+	// Add builtin hotbar if the server doesn't send it.
+	if (client->getProtoVersion() < 44 && (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE)) {
 		HudElement hotbar{HUD_ELEM_HOTBAR, v2f(0.5, 1), "", v2f(), "", 0 , 0, 0, v2f(-0.5, -1),
 				v2f(0, -4), v3f(), v2s32(), 0, "", 0};
 		elems.push_back(&hotbar);
 	}
-
-	// End of legacy support code.
 
 	for (HudElement *e : elems) {
 
