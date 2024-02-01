@@ -384,9 +384,9 @@ int LuaItemStack::l_get_wear_bar_params(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkObject<LuaItemStack>(L, 1);
 	ItemStack &item = o->m_stack;
-	WearBarParams params;
-	if (item.getWearBarParams(getGameDef(L)->idef(), params)) {
-		push_wear_bar_params(L, params);
+	auto params = item.getWearBarParams(getGameDef(L)->idef());
+	if (params.has_value()) {
+		push_wear_bar_params(L, *params);
 		return 1;
 	}
 	return 0;

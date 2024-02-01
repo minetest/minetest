@@ -1185,10 +1185,10 @@ void drawItemStack(
 		//   wear = 1.0: red
 
 		video::SColor color;
-		WearBarParams barParams;
-		if (item.getWearBarParams(client->idef(), barParams)) {
-			float durabilityPercent = 1.0 - wear;
-			color = barParams.getWearBarColor(durabilityPercent);
+		auto barParams = item.getWearBarParams(client->idef());
+		if (barParams.has_value()) {
+			f32 durabilityPercent = 1.0 - wear;
+			color = barParams->getWearBarColor(durabilityPercent);
 		} else {
 			color = video::SColor(255, 255, 255, 255);
 			int wear_i = MYMIN(std::floor(wear * 600), 511);

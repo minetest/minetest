@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "common/c_content.h"
 #include "common/c_converter.h"
+#include "tool.h"
 
 /*
 	ItemStackMetaRef
@@ -64,15 +65,8 @@ int ItemStackMetaRef::l_set_wear_bar_params(lua_State *L)
 	ItemStackMetaRef *metaref = checkObject<ItemStackMetaRef>(L, 1);
 	if (lua_isnoneornil(L, 2)) {
 		metaref->clearWearBarParams();
-	} else if (lua_istable(L, 2)) {
-		WearBarParams params = read_wear_bar_params(L, 2);
-		metaref->setWearBarParams(params);
-	} else if (lua_isstring(L, 2)) {
-		WearBarParams params;
-		video::SColor color;
-		read_color(L, 2, &color);
-		params.colorStops.emplace(0, color);
-		metaref->setWearBarParams(params);
+	} else if (lua_istable(L, 2) || lua_isstring(L, 2)) {
+		metaref->setWearBarParams(read_wear_bar_params(L, 2));
 	} else {
 		luaL_typerror(L, 2, "table, ColorString, or nil");
 	}

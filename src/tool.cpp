@@ -29,13 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/hex.h"
 #include "common/c_content.h"
 #include <json/json.h>
-
-const struct EnumString es_BlendMode[] =
-	{
-		{BLEND_MODE_CONSTANT, "constant"},
-		{BLEND_MODE_LINEAR, "linear"},
-		{0, NULL}
-	};
+	
 
 void ToolGroupCap::toJson(Json::Value &object) const
 {
@@ -192,76 +186,86 @@ void ToolCapabilities::deserializeJson(std::istream &is)
 	}
 }
 
-void WearBarParams::serialize(std::ostream &os, u16 version) const
+void WearBarParams::serialize(std::ostream &os) const
 {
 	writeU8(os, 1); // Version for future-proofing
 	writeU8(os, blend);
 	writeU16(os, colorStops.size());
-	for (const std::pair<float, video::SColor> item : colorStops) {
+	for (const std::pair<f32, video::SColor> item : colorStops) {
 		writeF32(os, item.first);
 		writeARGB8(os, item.second);
 	}
 }
 
-void WearBarParams::deSerialize(std::istream &is)
+WearBarParams WearBarParams::deserialize(std::istream &is)
 {
 	u8 version = readU8(is);
 	if (version > 1)
 		throw SerializationError("unsupported WearBarParams version");
 
-	blend = static_cast<BlendMode>(readU8(is));
+	auto blend = static_cast<WearBarParams::BlendMode>(readU8(is));
 	if (blend >= BlendMode_END)
-		blend = BLEND_MODE_CONSTANT;
+		throw SerializationError("invalid blend mode");
 	u16 count = readU16(is);
-	colorStops.clear();
-	for (int i = 0; i < count; i++) {
-		float key = readF32(is);
+	if (count == 0)
+		throw SerializationError("no stops");
+	std::map<f32, video::SColor> colorStops;
+	for (u16 i = 0; i < count; i++) {
+		f32 key = readF32(is);
+		if (key < 0 || key > 1)
+			throw SerializationError("key out of range");
 		video::SColor color = readARGB8(is);
 		colorStops.emplace(key, color);
 	}
+	return WearBarParams(colorStops, blend);
 }
 
 void WearBarParams::serializeJson(std::ostream &os) const
 {
 	Json::Value root;
 	Json::Value color_stops;
-	for (const std::pair<float, video::SColor> item : colorStops) {
+	for (const std::pair<f32, video::SColor> item : colorStops) {
 		color_stops[ftos(item.first)] = encodeHexColorString(item.second);
 	}
 	root["color_stops"] = color_stops;
-	root["blend"] = es_BlendMode[blend].str;
+	root["blend"] = WearBarParams::es_BlendMode[blend].str;
 
 	fastWriteJson(root, os);
 }
 
-void WearBarParams::deserializeJson(std::istream &is)
+std::optional<WearBarParams> WearBarParams::deserializeJson(std::istream &is)
 {
 	Json::Value root;
 	is >> root;
-	if (root.isObject()) {
-		if (root["color_stops"].isObject()) {
-			Json::Value &color_stops_object = root["color_stops"];
-			colorStops.clear();
+	if (!root.isObject() || !root["color_stops"].isObject() || !root["blend"].isString())
+		return std::nullopt;
 
-			for (const std::string& key : color_stops_object.getMemberNames()) {
-				float stop = stof(key);
-				Json::Value &value = color_stops_object[key];
-				if (value.isString()) {
-					video::SColor color;
-					parseColorString(value.asString(), color, false);
-					colorStops.emplace(stop, color);
-				}
-			}
-		}
-		if (root["blend"].isString()) {
-			int result = blend;
-			string_to_enum(es_BlendMode, result, root["blend"].asString());
-			blend = static_cast<BlendMode>(result);
+	int blendInt;
+	WearBarParams::BlendMode blend;
+	if (string_to_enum(WearBarParams::es_BlendMode, blendInt, root["blend"].asString()))
+		blend = static_cast<WearBarParams::BlendMode>(blendInt);
+	else
+		return std::nullopt;
+	
+	const Json::Value &color_stops_object = root["color_stops"];
+	std::map<f32, video::SColor> colorStops;
+	for (const std::string &key : color_stops_object.getMemberNames()) {
+		f32 stop = stof(key);
+		if (stop < 0 || stop > 1)
+			return std::nullopt;
+		const Json::Value &value = color_stops_object[key];
+		if (value.isString()) {
+			video::SColor color;
+			parseColorString(value.asString(), color, false);
+			colorStops.emplace(stop, color);
 		}
 	}
+	if (colorStops.empty())
+		return std::nullopt;
+	return WearBarParams(colorStops, blend);
 }
 
-video::SColor WearBarParams::getWearBarColor(float durabilityPercent) {
+video::SColor WearBarParams::getWearBarColor(f32 durabilityPercent) {
 	if (colorStops.empty())
 		return video::SColor();
 
@@ -285,12 +289,12 @@ video::SColor WearBarParams::getWearBarColor(float durabilityPercent) {
 		return upper->second;
 
 	auto lower = std::prev(upper);
-	float lower_bound = lower->first;
+	f32 lower_bound = lower->first;
 	video::SColor lower_color = lower->second;
-	float upper_bound = upper->first;
+	f32 upper_bound = upper->first;
 	video::SColor upper_color = upper->second;
 
-	float progress = (durabilityPercent - lower_bound) / (upper_bound - lower_bound);
+	f32 progress = (durabilityPercent - lower_bound) / (upper_bound - lower_bound);
 
 	switch (blend) {
 		case BLEND_MODE_CONSTANT:
@@ -298,52 +302,10 @@ video::SColor WearBarParams::getWearBarColor(float durabilityPercent) {
 		case BLEND_MODE_LINEAR:
 			return upper_color.getInterpolated(lower_color, progress);
 		case BlendMode_END:
-			return lower_color;
+			throw std::logic_error("dummy value");
 	}
-
-	return video::SColor();
+	throw std::logic_error("invalid blend value");
 }
-
-/*video::SColor WearBarParams::getWearBarColorFake(float durabilityPercent) {
-	video::SColor color = defaultColor;
-	if (blend) {
-		const video::SColor *upperBoundColor = &defaultColor;
-		const video::SColor *lowerBoundColor = &defaultColor;
-		float upperBound = 2.0f;
-		float lowerBound = -1.0f;
-		for (const WearBarParam &param: params) {
-			if (param.minPercent <= durabilityPercent && param.minPercent > lowerBound) {
-				lowerBound = param.minPercent;
-				lowerBoundColor = &param.color;
-			}
-			if (durabilityPercent < param.minPercent && param.minPercent < upperBound) {
-				upperBound = param.minPercent;
-				upperBoundColor = &param.color;
-			}
-		}
-		if (upperBound == 2.0f && lowerBound == -1.0f) {
-			color = *upperBoundColor;
-		} else {
-			if (upperBound == 2.0f) {
-				upperBound = 1.0f;
-			} else if (lowerBound == -1.0f) {
-				lowerBound = 0.0f;
-			}
-			//from lower to upper
-			float progress = (durabilityPercent - lowerBound) / (upperBound - lowerBound);
-			// TODO: add support for quadratic interpolation
-			color = upperBoundColor->getInterpolated(*lowerBoundColor, progress);
-		}
-	} else {
-		for (const WearBarParam &param: params) {
-			if (param.matches(durabilityPercent)) {
-				color = param.color;
-				break;
-			}
-		}
-	}
-	return color;
-}*/
 
 u32 calculateResultWear(const u32 uses, const u16 initial_wear)
 {

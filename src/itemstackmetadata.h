@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "metadata.h"
 #include "tool.h"
 
+#include <optional>
+
 class Inventory;
 class IItemDefManager;
 
@@ -29,8 +31,7 @@ class ItemStackMetadata : public SimpleMetadata
 {
 public:
 	ItemStackMetadata():
-			toolcaps_overridden(false),
-			wear_bar_overridden(false)
+			toolcaps_overridden(false)
 	{}
 
 	// Overrides
@@ -49,18 +50,11 @@ public:
 	void setToolCapabilities(const ToolCapabilities &caps);
 	void clearToolCapabilities();
 
-	const WearBarParams &getWearBarParams(
-			const WearBarParams &default_params) const
+	const std::optional<WearBarParams> &getWearBarParamOverride() const
 	{
-		return wear_bar_overridden ? wear_bar_override : default_params;
+		return wear_bar_override;
 	}
 
-	const bool &getWearBarParamOverride(WearBarParams &target) const
-	{
-		if (wear_bar_overridden)
-			target = wear_bar_override;
-		return wear_bar_overridden;
-	}
 
 	void setWearBarParams(const WearBarParams &params);
 	void clearWearBarParams();
@@ -71,6 +65,5 @@ private:
 
 	bool toolcaps_overridden;
 	ToolCapabilities toolcaps_override;
-	bool wear_bar_overridden;
-	WearBarParams wear_bar_override;
+	std::optional<WearBarParams> wear_bar_override;
 };

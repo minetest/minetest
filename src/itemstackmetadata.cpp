@@ -21,7 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemstackmetadata.h"
 #include "util/serialize.h"
 #include "util/strfnd.h"
+
 #include <algorithm>
+#include <optional>
 
 #define DESERIALIZE_START '\x01'
 #define DESERIALIZE_KV_DELIM '\x02'
@@ -125,12 +127,10 @@ void ItemStackMetadata::clearToolCapabilities()
 void ItemStackMetadata::updateWearBarParams()
 {
 	if (contains(WEAR_BAR_KEY)) {
-		wear_bar_overridden = true;
-		wear_bar_override = WearBarParams();
 		std::istringstream is(getString(WEAR_BAR_KEY));
-		wear_bar_override.deserializeJson(is);
+		wear_bar_override = WearBarParams::deserializeJson(is);
 	} else {
-		wear_bar_overridden = false;
+		wear_bar_override.reset();
 	}
 }
 

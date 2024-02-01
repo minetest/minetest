@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/player_sao.h"
 #include "util/pointedthing.h"
 #include "debug.h" // For FATAL_ERROR
+#include <SColor.h>
 #include <json/json.h>
 
 struct EnumString es_TileAnimationType[] =
@@ -96,12 +97,12 @@ void read_item_definition(lua_State* L, int index,
 	}
 	lua_getfield(L, index, "wear_color");
 	if (lua_istable(L, -1)) {
-		def.wear_bar_params = std::optional(new WearBarParams(read_wear_bar_params(L, -1)));
+		def.wear_bar_params = read_wear_bar_params(L, -1);
 	} else if (lua_isstring(L, -1)) {
-		def.wear_bar_params = std::optional(new WearBarParams());
 		video::SColor color;
 		read_color(L, -1, &color);
-		def.wear_bar_params.value()->colorStops.emplace(0.0, color);
+		def.wear_bar_params = WearBarParams({{0.0, color}},
+				WearBarParams::BLEND_MODE_CONSTANT);
 	}
 
 	// If name is "" (hand), ensure there are ToolCapabilities
@@ -223,7 +224,7 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 		lua_setfield(L, -2, "tool_capabilities");
 	}
 	if (i.wear_bar_params.has_value()) {
-		push_wear_bar_params(L, *i.wear_bar_params.value());
+		push_wear_bar_params(L, *i.wear_bar_params);
 		lua_setfield(L, -2, "wear_color");
 	}
 	push_groups(L, i.groups);
@@ -1472,10 +1473,10 @@ void push_wear_bar_params(lua_State *L,
 		const WearBarParams &params)
 {
 	lua_newtable(L);
-	setstringfield(L, -1, "blend", es_BlendMode[params.blend].str);
+	setstringfield(L, -1, "blend", WearBarParams::es_BlendMode[params.blend].str);
 
 	lua_newtable(L);
-	for (const std::pair<const float, const video::SColor> item: params.colorStops) {
+	for (const std::pair<const f32, const video::SColor> item: params.colorStops) {
 		lua_pushnumber(L, item.first); // key
 		push_ARGB8(L, item.second);
 		lua_rawset(L, -3);
@@ -1763,45 +1764,50 @@ void push_pointabilities(lua_State *L, const Pointabilities &pointabilities)
 
 /******************************************************************************/
 WearBarParams read_wear_bar_params(
-		lua_State *L, int table)
+		lua_State *L, int stack_idx)
 {
-	WearBarParams params;
-
-	lua_getfield(L, table, "color_stops");
-	if (!check_field_or_nil(L, -1, LUA_TTABLE, "color_stops")) {
+	if (lua_isstring(L, stack_idx)) {
 		video::SColor color;
-		read_color(L, -1, &color);
-		params.colorStops.emplace(0.0, color);
-		lua_pop(L, 1);
-		return params;
+		read_color(L, stack_idx, &color);
+		return WearBarParams(color);
 	}
 
+	if (!lua_istable(L, stack_idx))
+		throw LuaError("expected wear bar color table or colorstring");
+
+	lua_getfield(L, stack_idx, "color_stops");
+	if (!check_field_or_nil(L, -1, LUA_TTABLE, "color_stops"))
+		throw LuaError("color_stops must be a table");
+
+	std::map<f32, video::SColor> colorStops;
 	// color stops table is on the stack
 	int table_values = lua_gettop(L);
 	lua_pushnil(L);
-	while(lua_next(L, table_values) != 0) {
+	while (lua_next(L, table_values) != 0) {
 		// key at index -2 and value at index -1 within table_values
-		float point = luaL_checknumber(L, -2);
+		f32 point = luaL_checknumber(L, -2);
+		if (point < 0 || point > 1)
+			throw LuaError("wear bar color stop key out of range");
 		video::SColor color;
 		read_color(L, -1, &color);
-		params.colorStops.emplace(point, color);
+		colorStops.emplace(point, color);
 
 		// removes value, keeps key for next iteration
 		lua_pop(L, 1);
 	}
 	lua_pop(L, 1); // pop color stops table
 
-	lua_getfield(L, table, "blend");
+	auto blend = WearBarParams::BLEND_MODE_CONSTANT;
+	lua_getfield(L, stack_idx, "blend");
 	if (check_field_or_nil(L, -1, LUA_TSTRING, "blend")) {
-		std::string blend = getstringfield_default(L, table, "blend", "constant");
-		int result = params.blend;
-		string_to_enum(es_BlendMode, result,
-			       std::string(lua_tostring(L, -1)));
-		params.blend = static_cast<enum BlendMode>(result);
+		int blendInt;
+		if (!string_to_enum(WearBarParams::es_BlendMode, blendInt, std::string(lua_tostring(L, -1))))
+			throw LuaError("invalid wear bar color blend mode");
+		blend = static_cast<WearBarParams::BlendMode>(blendInt);
 	}
 	lua_pop(L, 1);
 
-	return params;
+	return WearBarParams(colorStops, blend);
 }
 
 /******************************************************************************/

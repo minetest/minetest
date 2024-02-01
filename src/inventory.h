@@ -131,18 +131,13 @@ struct ItemStack
 		return metadata.getToolCapabilities(*item_cap); // Check for override
 	}
 
-	// Get wear bar parameters, returning true if they exist
-	bool getWearBarParams(
-			const IItemDefManager *itemdef,
-			WearBarParams &params) const
+	const std::optional<WearBarParams> &getWearBarParams(
+			const IItemDefManager *itemdef) const
 	{
-		std::optional<WearBarParams *> params_ = itemdef->get(name).wear_bar_params;
-
-		if (!params_.has_value())
-			return metadata.getWearBarParamOverride(params);
-
-		params = metadata.getWearBarParams(*params_.value());
-		return true;
+		auto &meta_override = metadata.getWearBarParamOverride();
+		if (meta_override.has_value())
+			return meta_override;
+		return itemdef->get(name).wear_bar_params;
 	}
 
 	// Wear out (only tools)

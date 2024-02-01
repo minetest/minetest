@@ -20,13 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes.h"
-#include <string>
-#include <iostream>
 #include "itemgroup.h"
 #include "json-forwards.h"
 #include "common/c_types.h"
 #include <json/json.h>
 #include <SColor.h>
+
+#include <string>
+#include <iostream>
+#include <optional>
 
 struct ItemDefinition;
 
@@ -85,53 +87,35 @@ struct ToolCapabilities
 	void deserializeJson(std::istream &is);
 };
 
-struct WearBarParam
-{
-	video::SColor color;
-	float minPercent; // minimum percentage *durability* to apply color for (inclusive)
-	float maxPercent; // maximum percentage *durability* to apply color for (exclusive)
-	WearBarParam(
-			const video::SColor &color_ = video::SColor(255, 255, 255, 255),
-			float minPercent_ = 0.0f,
-			float maxPercent_ = 0.0f
-			):
-			color(color_),
-			minPercent(minPercent_),
-			maxPercent(maxPercent_)
-	{}
-
-	bool matches(float percent) const
-	{
-		return minPercent <= percent && percent < maxPercent;
-	}
-};
-
-enum BlendMode: u8 {
-    BLEND_MODE_CONSTANT,
-    BLEND_MODE_LINEAR,
-    BlendMode_END // Dummy for validity check
-};
-
-extern const EnumString es_BlendMode[];
-
 struct WearBarParams
 {
-	std::map<float, video::SColor> colorStops;
+	std::map<f32, video::SColor> colorStops;
+	enum BlendMode: u8 {
+	    BLEND_MODE_CONSTANT,
+	    BLEND_MODE_LINEAR,
+	    BlendMode_END // Dummy for validity check
+	};
+	constexpr const static EnumString es_BlendMode[3] = {
+		{WearBarParams::BLEND_MODE_CONSTANT, "constant"},
+		{WearBarParams::BLEND_MODE_LINEAR, "linear"},
+		{0, NULL}
+	};
 	BlendMode blend;
 
-	WearBarParams(
-			const std::map<float, video::SColor> &color_stops_ = std::map<float, video::SColor>(),
-			const BlendMode blend_ = BLEND_MODE_CONSTANT
-			):
-			colorStops(color_stops_),
-			blend(blend_)
+	WearBarParams(const std::map<f32, video::SColor> &colorStops, BlendMode blend):
+		colorStops(colorStops),
+		blend(blend)
 	{}
 
-	void serialize(std::ostream &os, u16 version) const;
-	void deSerialize(std::istream &is);
+	WearBarParams(const video::SColor color):
+		WearBarParams({{0.0, color}}, WearBarParams::BLEND_MODE_CONSTANT)
+	{};
+
+	void serialize(std::ostream &os) const;
+	static WearBarParams deserialize(std::istream &is);
 	void serializeJson(std::ostream &os) const;
-	void deserializeJson(std::istream &is);
-	video::SColor getWearBarColor(float durabilityPercent);
+	static std::optional<WearBarParams> deserializeJson(std::istream &is);
+	video::SColor getWearBarColor(f32 durabilityPercent);
 };
 
 struct DigParams

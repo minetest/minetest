@@ -125,8 +125,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	pointabilities = def.pointabilities;
 	if (def.tool_capabilities)
 		tool_capabilities = new ToolCapabilities(*def.tool_capabilities);
-	if (def.wear_bar_params.has_value())
-		wear_bar_params = std::optional(new WearBarParams(*def.wear_bar_params.value()));
+	wear_bar_params = def.wear_bar_params;
 	groups = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
 	place_param2 = def.place_param2;
@@ -145,10 +144,6 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 ItemDefinition::~ItemDefinition()
 {
 	reset();
-}
-
-std::optional<WearBarParams> nullInit() {
-	return std::nullopt;
 }
 
 void ItemDefinition::resetInitial()
@@ -262,7 +257,7 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 
 	if (wear_bar_params.has_value()) {
 		writeU8(os, 1);
-		wear_bar_params.value()->serialize(os, protocol_version);
+		wear_bar_params->serialize(os);
 	} else {
 		writeU8(os, 0);
 	}
@@ -350,8 +345,7 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 		}
 
 		if (readU8(is)) {
-			wear_bar_params = std::optional(new WearBarParams());
-			wear_bar_params.value()->deSerialize(is);
+			wear_bar_params = WearBarParams::deserialize(is);
 		}
 	} catch(SerializationError &e) {};
 }
