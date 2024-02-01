@@ -1831,7 +1831,7 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 void Client::handleCommand_CameraRoll(NetworkPacket* pkt)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player);
 
 	*pkt >> player->camera_roll;
 }
