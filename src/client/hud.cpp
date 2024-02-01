@@ -352,7 +352,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 		elems.insert(it, e);
 	}
 
-	// Add builtin minimap if the sever doesn't send it.
+	// Add builtin minimap if the server doesn't send it.
 	if (client->getProtoVersion() < 44 && (player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE)) {
 		HudElement minimap{HUD_ELEM_MINIMAP, v2f(1, 0), "", v2f(), "", 0 , 0, 0, v2f(-1, 1),
 				v2f(-10, 10), v3f(), v2s32(256, 256), 0, "", 0};
