@@ -10,7 +10,7 @@ local minimap_hud_id = {}
 local function update_builtin_minimap(player)
 	local name = player:get_player_name()
 
-	-- Don't add a minimap for clients which already have it hardcoded in C++
+	-- Don't add a minimap for clients which already have it hardcoded in C++.
 	if minetest.get_player_information(name).protocol_version < 44 then
 		return
 	end
