@@ -121,6 +121,24 @@ public:
 
 	void onSettingChanged(const std::string &name);
 
+	/*! \brief Change a node and remember the change for reapplying
+	 *
+	 * \param p Position where the node is set
+	 * \param n The to-be-set node
+	 * \param modified_blocks Mapblocks TODO
+	 * \param remove_metadata If true, remove node metadata information
+	 * \param seqnum A reliable packet's sequence number which
+	 *   `updateBlockAndPredictions` uses for the decision whether the change
+	 *   needs to be reapplied when a mapblock from the server arrives
+	 */
+	void addPredictedNode(const v3s16 &p, const MapNode &n,
+		std::map<v3s16, MapBlock*> &modified_blocks, bool remove_metadata,
+		u16 seqnum);
+
+	/// Update a mapblock and reapply predictions where needed
+	void updateBlockAndPredictions(std::istringstream &in_compressed,
+		u8 version, MapBlock &block);
+
 protected:
 	void reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks) override;
 private:
@@ -191,6 +209,16 @@ private:
 	bool m_needs_update_drawlist;
 
 	std::set<v2s16> m_last_drawn_sectors;
+
+	/*! \brief Positions and sequence numbers of predicted node changes
+	 *
+	 * As long as the packet with the given sequence number is not acknowledged,
+	 * and if there is no packet reordering,
+	 * any mapblock received from the server was sent before the server has
+	 * handled the interaction packet related to the prediction.
+	 * If there is packet reordering, TODO
+	 */
+	std::unordered_map<v3s16, u16> m_predictions;
 
 	bool m_cache_trilinear_filter;
 	bool m_cache_bilinear_filter;

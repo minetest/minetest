@@ -3838,10 +3838,10 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 				(predicted_f.walkable &&
 					neighborpos != player->getStandingNodePos() + v3s16(0, 1, 0) &&
 					neighborpos != player->getStandingNodePos() + v3s16(0, 2, 0))) {
-			// This triggers the required mesh update too
-			client->addNode(p, predicted_node);
 			// Report to server
-			client->interact(INTERACT_PLACE, pointed);
+			u16 seqnum_next = client->interact(INTERACT_PLACE, pointed);
+			// This triggers the required mesh update too
+			client->addPredictedNode(p, predicted_node, false, seqnum_next);
 			// A node is predicted, also play a sound
 			soundmaker->m_player_rightpunch_sound = selected_def.sound_place;
 			return true;
@@ -4008,17 +4008,17 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 			return;
 		}
 
+		u16 seqnum_next = client->interact(INTERACT_DIGGING_COMPLETED, pointed);
+
 		if (features.node_dig_prediction == "air") {
-			client->removeNode(nodepos);
+			client->addPredictedNode(nodepos, CONTENT_AIR, true, seqnum_next);
 		} else if (!features.node_dig_prediction.empty()) {
 			content_t id;
 			bool found = nodedef_manager->getId(features.node_dig_prediction, id);
 			if (found)
-				client->addNode(nodepos, id, true);
+				client->addPredictedNode(nodepos, id, true, seqnum_next);
 		}
 		// implicit else: no prediction
-
-		client->interact(INTERACT_DIGGING_COMPLETED, pointed);
 
 		if (m_cache_enable_particles) {
 			client->getParticleManager()->addDiggingParticles(client,

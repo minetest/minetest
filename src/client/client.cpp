@@ -1074,18 +1074,18 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 	*pkt << camera_inverted;
 }
 
-void Client::interact(InteractAction action, const PointedThing& pointed)
+u16 Client::interact(InteractAction action, const PointedThing& pointed)
 {
 	if(m_state != LC_Ready) {
 		errorstream << "Client::interact() "
 				"Canceled (not connected)"
 				<< std::endl;
-		return;
+		return 0;
 	}
 
 	LocalPlayer *myplayer = m_env.getLocalPlayer();
 	if (myplayer == NULL)
-		return;
+		return 0;
 
 	/*
 		[0] u16 command
@@ -1108,7 +1108,10 @@ void Client::interact(InteractAction action, const PointedThing& pointed)
 
 	writePlayerPos(myplayer, &m_env.getClientMap(), &pkt, m_camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT);
 
+	auto &scf = serverCommandFactoryTable[TOSERVER_INTERACT];
+	u16 next_seqnum = m_con->getNextSequenceNumber(PEER_ID_SERVER, scf.channel);
 	Send(&pkt);
+	return next_seqnum;
 }
 
 void Client::deleteAuthData()
@@ -1533,6 +1536,17 @@ void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
 	catch(InvalidPositionException &e) {
 	}
 
+	for (const auto &modified_block : modified_blocks) {
+		addUpdateMeshTaskWithEdge(modified_block.first, false, true);
+	}
+}
+
+void Client::addPredictedNode(const v3s16 &p, const MapNode &n,
+	bool remove_metadata, u16 seqnum)
+{
+	std::map<v3s16, MapBlock*> modified_blocks;
+	m_env.getClientMap().addPredictedNode(p, n, modified_blocks,
+		remove_metadata, seqnum);
 	for (const auto &modified_block : modified_blocks) {
 		addUpdateMeshTaskWithEdge(modified_block.first, false, true);
 	}
@@ -2122,4 +2136,10 @@ ModChannel* Client::getModChannel(const std::string &channel)
 const std::string &Client::getFormspecPrepend() const
 {
 	return m_env.getLocalPlayer()->formspec_prepend;
+}
+
+bool Client::isUnackedOnInteractChan(u16 seqnum) const
+{
+	return m_con->isUnacked(PEER_ID_SERVER,
+		serverCommandFactoryTable[TOSERVER_INTERACT].channel, seqnum);
 }

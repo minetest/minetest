@@ -129,6 +129,51 @@ void ClientMap::onSettingChanged(const std::string &name)
 		m_enable_raytraced_culling = g_settings->getBool("enable_raytraced_culling");
 }
 
+void ClientMap::addPredictedNode(const v3s16 &p, const MapNode &n,
+	std::map<v3s16, MapBlock*> &modified_blocks, bool remove_metadata,
+	u16 seqnum)
+{
+	try {
+		addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
+	} catch(InvalidPositionException &e) {
+	}
+	m_predictions[p] = seqnum;
+}
+
+void ClientMap::updateBlockAndPredictions(std::istringstream &in_compressed,
+	u8 version, MapBlock &block)
+{
+	core::aabbox3d<s16> block_extent = block.getBox();
+	std::vector<std::pair<v3s16, MapNode>> to_reapply;
+	for (auto pred = m_predictions.begin(); pred != m_predictions.end();) {
+		// Remove outdated predictions
+		const u16 &seqnum = pred->second;
+// TODO: With packet reordering, the packet where in_compressed comes from could arrive before the acknowledgement of seqnum. In this case, the prediction should also be removed even if seqnum is not acknowledged, ideally.
+		if (!m_client->isUnackedOnInteractChan(seqnum)) {
+			pred = m_predictions.erase(pred);
+			continue;
+		}
+
+		// Remember the node if a prediction needs to be reapplied
+		const v3s16 &pos = pred->first;
+		if (block_extent.isPointInside(pos)) {
+			v3s16 pos_in_block = pos - block.getPosRelative();
+			to_reapply.emplace_back(pos_in_block,
+				block.getNodeNoEx(pos_in_block));
+		}
+		++pred;
+	}
+
+	// Apply the server-sent mapblock changes
+	block.deSerialize(in_compressed, version, false);
+	block.deSerializeNetworkSpecific(in_compressed);
+
+	// Reapply predictions
+	for (const auto &change : to_reapply) {
+		block.setNode(change.first, change.second);
+	}
+}
+
 ClientMap::~ClientMap()
 {
 	g_settings->deregisterChangedCallback("occlusion_culler", on_settings_changed, this);

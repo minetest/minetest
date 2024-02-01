@@ -256,6 +256,9 @@ public:
 	ReliablePacketBuffer() = default;
 
 	bool getFirstSeqnum(u16& result);
+	bool hasPacket(u16 seqnum) {
+		MutexAutoLock listlock(m_list_mutex);
+		return findPacketNoLock(seqnum) != m_list.end(); }
 
 	BufferedPacketPtr popFirst();
 	BufferedPacketPtr popSeqnum(u16 seqnum);
@@ -374,6 +377,12 @@ public:
 
 	u16 readNextSplitSeqNum();
 	void setNextSplitSeqNum(u16 seqnum);
+
+	/// Check if a reliable packet is not yet acknowledged
+	/// TODO: more than 2 lines -> it goes to .cpp
+	bool isUnacked(u16 seqnum) {
+		MutexAutoLock internal(m_internal_mutex);
+		return outgoing_reliables_sent.hasPacket(seqnum); }
 
 	// This is for buffering the incoming packets that are coming in
 	// the wrong order
@@ -541,6 +550,11 @@ class Peer {
 			return SharedBuffer<u8>(0);
 		};
 
+		/// Get the sequence number of the next outgoing reliable packet
+		virtual u16 getNextSequenceNumber(u8 channel) { return 0; }
+		/// Check if a reliable packet is not yet acknowledged
+		virtual bool isUnacked(u8 channel, u16 seqnum) { return false; }
+
 		virtual bool Ping(float dtime, SharedBuffer<u8>& data) { return false; };
 
 		virtual float getStat(rtt_stat_type type) const {
@@ -637,6 +651,11 @@ public:
 
 	SharedBuffer<u8> addSplitPacket(u8 channel, BufferedPacketPtr &toadd,
 		bool reliable);
+
+	u16 getNextSequenceNumber(u8 channel)
+		{ return channels[channel].readOutgoingSequenceNumber(); }
+	bool isUnacked(u8 channel, u16 seqnum) override
+		{ return channels[channel].isUnacked(seqnum); }
 
 	bool isTimedOut(float timeout, std::string &reason) override;
 
@@ -743,6 +762,10 @@ public:
 	u32 GetProtocolID() const { return m_protocol_id; };
 	const std::string getDesc();
 	void DisconnectPeer(session_t peer_id);
+	/// Check if a reliable packet is not yet acknowledged
+	bool isUnacked(session_t peer_id, u8 channel, u16 seqnum);
+	/// Get the sequence number of the next outgoing reliable packet
+	u16 getNextSequenceNumber(session_t peer_id, u8 channel);
 
 protected:
 	PeerHelper getPeerNoEx(session_t peer_id);

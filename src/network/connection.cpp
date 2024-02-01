@@ -1670,6 +1670,23 @@ void Connection::DisconnectPeer(session_t peer_id)
 	putCommand(ConnectionCommand::disconnect_peer(peer_id));
 }
 
+bool Connection::isUnacked(session_t peer_id, u8 channel, u16 seqnum)
+{
+	PeerHelper peer = getPeerNoEx(peer_id);
+	if (!peer)
+		// We couldn't get our own peer? are you serious???
+		return false;
+	return dynamic_cast<Peer *>(&peer)->isUnacked(channel, seqnum);
+}
+
+u16 Connection::getNextSequenceNumber(session_t peer_id, u8 channel)
+{
+	PeerHelper peer = getPeerNoEx(peer_id);
+	if (!peer)
+		throw PeerNotFoundException("Could not get the peer!");
+	return dynamic_cast<Peer *>(&peer)->getNextSequenceNumber(channel);
+}
+
 void Connection::doResendOne(session_t peer_id)
 {
 	assert(peer_id != PEER_ID_INEXISTENT);
