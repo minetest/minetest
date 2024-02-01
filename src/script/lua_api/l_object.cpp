@@ -1250,7 +1250,7 @@ int ObjectRef::l_get_look_roll(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
-	if (player == nullptr)
+	if (!player)
 		return 0;
 
 	lua_pushnumber(L, player->camera_roll / core::RADTODEG);
