@@ -1773,7 +1773,7 @@ WearBarParams read_wear_bar_params(
 	}
 
 	if (!lua_istable(L, stack_idx))
-		throw LuaError("expected wear bar color table or colorstring");
+		throw LuaError("Expected wear bar color table or colorstring");
 
 	lua_getfield(L, stack_idx, "color_stops");
 	if (!check_field_or_nil(L, -1, LUA_TTABLE, "color_stops"))
@@ -1787,7 +1787,7 @@ WearBarParams read_wear_bar_params(
 		// key at index -2 and value at index -1 within table_values
 		f32 point = luaL_checknumber(L, -2);
 		if (point < 0 || point > 1)
-			throw LuaError("wear bar color stop key out of range");
+			throw LuaError("Wear bar color stop key out of range");
 		video::SColor color;
 		read_color(L, -1, &color);
 		colorStops.emplace(point, color);
@@ -1802,7 +1802,7 @@ WearBarParams read_wear_bar_params(
 	if (check_field_or_nil(L, -1, LUA_TSTRING, "blend")) {
 		int blendInt;
 		if (!string_to_enum(WearBarParams::es_BlendMode, blendInt, std::string(lua_tostring(L, -1))))
-			throw LuaError("invalid wear bar color blend mode");
+			throw LuaError("Invalid wear bar color blend mode");
 		blend = static_cast<WearBarParams::BlendMode>(blendInt);
 	}
 	lua_pop(L, 1);

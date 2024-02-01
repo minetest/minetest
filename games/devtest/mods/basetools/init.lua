@@ -472,8 +472,8 @@ for i, params in ipairs(tool_params) do
 	local color = string.format("#FF00%02X", math.floor(((i-1)/#tool_params) * 255))
 	minetest.register_tool("basetools:pick_uses_"..string.format("%05d", uses), {
 		description = ustring.." Pickaxe".."\n"..
-			"Digs cracky=3".."\n"..
-			(params.wear_description and "Wear bar: " .. params.wear_description or ""),
+			"Digs cracky=3"..
+			(params.wear_description and "\n".."Wear bar: " .. params.wear_description or ""),
 		inventory_image = "basetools_usespick.png^[colorize:"..color..":127",
 		tool_capabilities = {
 			max_drop_level=0,
