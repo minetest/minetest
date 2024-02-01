@@ -9,8 +9,13 @@ local minimap_def = {
 local minimap_hud_id = {}
 local function update_builtin_minimap(player)
 	local name = player:get_player_name()
+
+	-- Don't add a minimap for clients which already have it hardcoded in C++
+	if minetest.get_player_information(name).protocol_version < 44 then
+		return
+	end
+
 	local id = minimap_hud_id[name]
-	-- mimic wired flag behavior of deprecated non HUD element minimap
 	if player:hud_get_flags().minimap then
 		if not id then
 			minimap_hud_id[name] = player:hud_add(minimap_def)
