@@ -343,7 +343,7 @@ Server::~Server()
 			kick_msg = g_settings->get("kick_msg_shutdown");
 		}
 		m_env->saveLoadedPlayers(true);
-		m_env->kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
+		kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
 			kick_msg, reconnect);
 	}
 
@@ -590,7 +590,7 @@ void Server::step()
 	std::string async_err = m_async_fatal_error.get();
 	if (!async_err.empty()) {
 		if (!m_simple_singleplayer_mode) {
-			m_env->kickAllPlayers(SERVER_ACCESSDENIED_CRASH,
+			kickAllPlayers(SERVER_ACCESSDENIED_CRASH,
 				g_settings->get("kick_msg_crash"),
 				g_settings->getBool("ask_reconnect_on_crash"));
 		}
@@ -2868,6 +2868,15 @@ void Server::DenyAccess(session_t peer_id, AccessDeniedCode reason,
 	SendAccessDenied(peer_id, reason, custom_reason, reconnect);
 	m_clients.event(peer_id, CSE_SetDenied);
 	DisconnectPeer(peer_id);
+}
+
+void Server::kickAllPlayers(AccessDeniedCode reason,
+		const std::string &str_reason, bool reconnect)
+{
+	std::vector<session_t> clients = m_clients.getClientIDs();
+	for (const session_t client_id : clients) {
+		DenyAccess(client_id, reason, str_reason, reconnect);
+	}
 }
 
 void Server::DisconnectPeer(session_t peer_id)

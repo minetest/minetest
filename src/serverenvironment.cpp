@@ -625,13 +625,6 @@ bool ServerEnvironment::removePlayerFromDatabase(const std::string &name)
 	return m_player_database->removePlayer(name);
 }
 
-void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
-	const std::string &str_reason, bool reconnect)
-{
-	for (RemotePlayer *player : m_players)
-		m_server->DenyAccess(player->getPeerId(), reason, str_reason, reconnect);
-}
-
 void ServerEnvironment::saveLoadedPlayers(bool force)
 {
 	for (RemotePlayer *player : m_players) {

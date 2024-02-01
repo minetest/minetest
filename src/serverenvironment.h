@@ -239,8 +239,6 @@ public:
 	float getSendRecommendedInterval()
 	{ return m_recommended_send_interval; }
 
-	void kickAllPlayers(AccessDeniedCode reason,
-		const std::string &str_reason, bool reconnect);
 	// Save players
 	void saveLoadedPlayers(bool force = false);
 	void savePlayer(RemotePlayer *player);
