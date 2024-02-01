@@ -629,6 +629,7 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype, bool special)
 		lua_getfield(L, index, "animation");
 		tiledef.animation = read_animation_definition(L, -1);
 		lua_pop(L, 1);
+		tiledef.rtt = getboolfield_default(L, index, "rtt", tiledef.rtt);
 	}
 
 	return tiledef;

@@ -290,6 +290,9 @@ struct TileDef
 
 	struct TileAnimationParams animation;
 
+	// Whether the tile contains the RTT texture
+	bool rtt = false;
+
 	TileDef()
 	{
 		animation.type = TAT_NONE;
@@ -753,6 +756,8 @@ public:
 	 * Must be called after node registration has finished!
 	 */
 	void resolveCrossrefs();
+
+	void reloadRTTexturesOnDemand(IGameDef *gamedef, const std::string &name);
 
 private:
 	/*!

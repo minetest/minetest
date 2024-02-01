@@ -186,6 +186,11 @@ void DrawSecondaryCameras::run(PipelineContext &context)
 		if (!cam->isVisible())
 			continue;
 
+		if (cam->render_texture_set) {
+			cam->render_texture_set = false;
+			cam->render_texture_updated = true;
+		}
+
 		if (cam->getRenderTextureName().size() != 0)
 			overrides->mapName(cam->getRenderTextureName(), textures->getTexture(idx));
 		else {

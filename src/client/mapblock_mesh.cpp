@@ -738,6 +738,14 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 				// Replace tile texture with the first animation frame
 				p.layer.texture = (*p.layer.frames)[0].texture;
 			}
+			// RTT layers
+			if (p.layer.material_flags & MATERIAL_FLAG_RTT) {
+				m_update_rtts = true;
+
+				m_rtt_layers.insert(std::make_pair(
+						std::pair<u8, u32>(layer, i), p.layer.texture)
+				);
+			}
 
 			if (!m_enable_shaders) {
 				// Extract colors for day-night animation
@@ -890,6 +898,17 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 			if (frame.normal_texture)
 				buf->getMaterial().setTexture(1, frame.normal_texture);
 			buf->getMaterial().setTexture(2, frame.flags_texture);
+		}
+	}
+
+	// RTT layers
+	if (m_update_rtts) {
+		m_update_rtts = false;
+
+		for (auto &it : m_rtt_layers) {
+			scene::IMeshBuffer *buf = m_mesh[it.first.first]->getMeshBuffer(it.first.second);
+
+			buf->getMaterial().setTexture(0, it.second);
 		}
 	}
 
