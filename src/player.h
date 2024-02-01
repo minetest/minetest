@@ -183,6 +183,8 @@ public:
 	v3f eye_offset_third;
 	v3f eye_offset_third_front;
 
+	float camera_roll = 0.0f;
+
 	Inventory inventory;
 
 	f32 movement_acceleration_default;

@@ -1244,6 +1244,21 @@ int ObjectRef::l_get_look_horizontal(lua_State *L)
 	return 1;
 }
 
+// get_look_roll(self)
+int ObjectRef::l_get_look_roll(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
+		return 0;
+
+	lua_pushnumber(L, player->camera_roll / core::RADTODEG);
+
+	return 1;
+}
+
+
 // set_look_vertical(self, radians)
 int ObjectRef::l_set_look_vertical(lua_State *L)
 {
@@ -1271,6 +1286,22 @@ int ObjectRef::l_set_look_horizontal(lua_State *L)
 	float yaw = readParam<float>(L, 2) * core::RADTODEG;
 
 	playersao->setPlayerYawAndSend(yaw);
+	return 0;
+}
+
+// set_look_roll(self, radians)
+int ObjectRef::l_set_look_roll(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
+		return 0;
+	
+
+	float roll = readParam<float>(L, 2) * core::RADTODEG;
+
+	getServer(L)->setPlayerCameraRoll(player,roll);
 	return 0;
 }
 
@@ -2696,10 +2727,12 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_look_yaw),
 	luamethod(ObjectRef, get_look_vertical),
 	luamethod(ObjectRef, get_look_horizontal),
+	luamethod(ObjectRef, get_look_roll),
 	luamethod(ObjectRef, set_look_horizontal),
 	luamethod(ObjectRef, set_look_vertical),
 	luamethod(ObjectRef, set_look_yaw),
 	luamethod(ObjectRef, set_look_pitch),
+	luamethod(ObjectRef, set_look_roll),
 	luamethod(ObjectRef, get_fov),
 	luamethod(ObjectRef, set_fov),
 	luamethod(ObjectRef, get_breath),

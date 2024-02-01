@@ -1961,6 +1961,13 @@ void Server::SendEyeOffset(session_t peer_id, v3f first, v3f third, v3f third_fr
 	Send(&pkt);
 }
 
+void Server::SendCameraRoll(session_t peer_id, float roll)
+{
+	NetworkPacket pkt(TOCLIENT_CAMERA_ROLL, 0, peer_id);
+	pkt << roll;
+	Send(&pkt);
+}
+
 void Server::SendPlayerPrivileges(session_t peer_id)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
@@ -3442,6 +3449,13 @@ void Server::setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3
 	player->eye_offset_third = third;
 	player->eye_offset_third_front = third_front;
 	SendEyeOffset(player->getPeerId(), first, third, third_front);
+}
+
+void Server::setPlayerCameraRoll(RemotePlayer *player, float roll)
+{
+	sanity_check(player);
+	player->camera_roll = roll;
+	SendCameraRoll(player->getPeerId(), roll);
 }
 
 void Server::setSky(RemotePlayer *player, const SkyboxParams &params)

@@ -7709,10 +7709,14 @@ child will follow movement and rotation of that bone.
       respectively.
 * `get_look_horizontal()`: yaw in radians
     * Angle is counter-clockwise from the +z direction.
+* `get_look_roll()`: roll in radians
+    * Angle is clockwise from the player's perspective.
 * `set_look_vertical(radians)`: sets look pitch
     * radians: Angle from looking forward, where positive is downwards.
 * `set_look_horizontal(radians)`: sets look yaw
     * radians: Angle from the +z direction, where positive is counter-clockwise.
+* `set_look_roll(radians)`:
+    * radians: Angle from upright, where positive is clockwise from the player's perspective.
 * `get_look_pitch()`: pitch in radians - Deprecated as broken. Use
   `get_look_vertical`.
     * Angle ranges between -pi/2 and pi/2, which are straight down and up
