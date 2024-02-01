@@ -338,12 +338,21 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 	std::vector<HudElement*> elems;
 	elems.reserve(player->maxHudId());
 
-	// Add builtin minimap if the server doesn't send it.
+	// Add builtin elements if the server doesn't send them.
+	// Declared here such that they have the same lifetime as the elems vector
 	HudElement minimap;
-	if (client->getProtoVersion() < 44 && (player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE)) {
-		minimap = {HUD_ELEM_MINIMAP, v2f(1, 0), "", v2f(), "", 0 , 0, 0, v2f(-1, 1),
-				v2f(-10, 10), v3f(), v2s32(256, 256), 0, "", 0};
-		elems.push_back(&minimap);
+	HudElement hotbar;
+	if (client->getProtoVersion() < 44) {
+		if (player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE) {
+			minimap = {HUD_ELEM_MINIMAP, v2f(1, 0), "", v2f(), "", 0 , 0, 0, v2f(-1, 1),
+					v2f(-10, 10), v3f(), v2s32(256, 256), 0, "", 0};
+			elems.push_back(&minimap);
+		}
+		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
+			hotbar = {HUD_ELEM_HOTBAR, v2f(0.5, 1), "", v2f(), "", 0 , 0, 0, v2f(-0.5, -1),
+					v2f(0, -4), v3f(), v2s32(), 0, "", 0};
+			elems.push_back(&hotbar);
+		}
 	}
 
 	for (size_t i = 0; i != player->maxHudId(); i++) {
@@ -356,13 +365,6 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 			++it;
 
 		elems.insert(it, e);
-	}
-
-	// Add builtin hotbar if the server doesn't send it.
-	if (client->getProtoVersion() < 44 && (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE)) {
-		HudElement hotbar{HUD_ELEM_HOTBAR, v2f(0.5, 1), "", v2f(), "", 0 , 0, 0, v2f(-0.5, -1),
-				v2f(0, -4), v3f(), v2s32(), 0, "", 0};
-		elems.push_back(&hotbar);
 	}
 
 	for (HudElement *e : elems) {
