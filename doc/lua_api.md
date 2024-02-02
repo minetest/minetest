@@ -655,8 +655,9 @@ The mask is applied using binary AND.
 
 #### `[sheet:<w>x<h>:<x>,<y>`
 
-Retrieves a tile at position x,y from the base image
-which it assumes to be a tilesheet with dimensions w,h.
+Retrieves a tile at position x, y (in tiles, 0-indexed)
+from the base image, which it assumes to be a tilesheet
+with dimensions w, h (in tiles).
 
 #### `[colorize:<color>:<ratio>`
 
