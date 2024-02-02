@@ -343,7 +343,7 @@ Server::~Server()
 			kick_msg = g_settings->get("kick_msg_shutdown");
 		}
 		m_env->saveLoadedPlayers(true);
-		m_env->kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
+		kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
 			kick_msg, reconnect);
 	}
 
@@ -590,7 +590,7 @@ void Server::step()
 	std::string async_err = m_async_fatal_error.get();
 	if (!async_err.empty()) {
 		if (!m_simple_singleplayer_mode) {
-			m_env->kickAllPlayers(SERVER_ACCESSDENIED_CRASH,
+			kickAllPlayers(SERVER_ACCESSDENIED_CRASH,
 				g_settings->get("kick_msg_crash"),
 				g_settings->getBool("ask_reconnect_on_crash"));
 		}
@@ -1105,7 +1105,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	/*
 		Send complete position information
 	*/
-	SendMovePlayer(peer_id);
+	SendMovePlayer(playersao);
 
 	// Send privileges
 	SendPlayerPrivileges(peer_id);
@@ -1114,7 +1114,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	SendPlayerInventoryFormspec(peer_id);
 
 	// Send inventory
-	SendInventory(playersao, false);
+	SendInventory(player, false);
 
 	// Send HP
 	SendPlayerHP(playersao, false);
@@ -1458,10 +1458,8 @@ void Server::SendNodeDef(session_t peer_id,
 	Non-static send methods
 */
 
-void Server::SendInventory(PlayerSAO *sao, bool incremental)
+void Server::SendInventory(RemotePlayer *player, bool incremental)
 {
-	RemotePlayer *player = sao->getPlayer();
-
 	// Do not send new format to old clients
 	incremental &= player->protocol_version >= 38;
 
@@ -1471,11 +1469,11 @@ void Server::SendInventory(PlayerSAO *sao, bool incremental)
 		Serialize it
 	*/
 
-	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, sao->getPeerID());
+	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, player->getPeerId());
 
 	std::ostringstream os(std::ios::binary);
-	sao->getInventory()->serialize(os, incremental);
-	sao->getInventory()->setModified(false);
+	player->inventory.serialize(os, incremental);
+	player->inventory.setModified(false);
 	player->setModified(true);
 
 	const std::string &s = os.str();
@@ -1900,17 +1898,12 @@ void Server::SendPlayerBreath(PlayerSAO *sao)
 	SendBreath(sao->getPeerID(), sao->getBreath());
 }
 
-void Server::SendMovePlayer(session_t peer_id)
+void Server::SendMovePlayer(PlayerSAO *sao)
 {
-	RemotePlayer *player = m_env->getPlayer(peer_id);
-	assert(player);
-	PlayerSAO *sao = player->getPlayerSAO();
-	assert(sao);
-
 	// Send attachment updates instantly to the client prior updating position
 	sao->sendOutdatedData();
 
-	NetworkPacket pkt(TOCLIENT_MOVE_PLAYER, sizeof(v3f) + sizeof(f32) * 2, peer_id);
+	NetworkPacket pkt(TOCLIENT_MOVE_PLAYER, sizeof(v3f) + sizeof(f32) * 2, sao->getPeerID());
 	pkt << sao->getBasePosition() << sao->getLookPitch() << sao->getRotation().Y;
 
 	{
@@ -2875,6 +2868,15 @@ void Server::DenyAccess(session_t peer_id, AccessDeniedCode reason,
 	SendAccessDenied(peer_id, reason, custom_reason, reconnect);
 	m_clients.event(peer_id, CSE_SetDenied);
 	DisconnectPeer(peer_id);
+}
+
+void Server::kickAllPlayers(AccessDeniedCode reason,
+		const std::string &str_reason, bool reconnect)
+{
+	std::vector<session_t> clients = m_clients.getClientIDs();
+	for (const session_t client_id : clients) {
+		DenyAccess(client_id, reason, str_reason, reconnect);
+	}
 }
 
 void Server::DisconnectPeer(session_t peer_id)
@@ -3928,6 +3930,23 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 				" peer_id already exists"<<std::endl;
 		return NULL;
 	}
+
+	/*
+		Object construction sequence/hierarchy
+		--------------------------------------
+		1. RemoteClient (tightly connection-bound)
+		2. RemotePlayer (controls, in-game appearance)
+		3. PlayerSAO (movable object in-game)
+			PlayerSAO controls the peer_id assignment of RemotePlayer,
+			indicating whether the player is ready
+
+		Destruction sequence
+		--------------------
+		1. PlayerSAO pending removal flag
+		2. PlayerSAO save data before free
+		3. RemotePlayer, then PlayerSAO freed
+		4. RemoteClient freed
+	*/
 
 	if (!player) {
 		player = new RemotePlayer(name, idef());
