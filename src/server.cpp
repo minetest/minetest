@@ -3454,7 +3454,7 @@ void Server::setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3
 void Server::setPlayerCameraRoll(RemotePlayer *player, float roll)
 {
 	sanity_check(player);
-	player->camera_roll = roll;
+	player->set_camera_roll(roll);
 	SendCameraRoll(player->getPeerId(), roll);
 }
 

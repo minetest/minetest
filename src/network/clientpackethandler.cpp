@@ -1833,5 +1833,8 @@ void Client::handleCommand_CameraRoll(NetworkPacket* pkt)
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player);
 
-	*pkt >> player->camera_roll;
+	f32 roll;
+
+	*pkt >> roll;
+	player->set_camera_roll(roll);
 }
