@@ -1521,6 +1521,59 @@ void GenericCAO::updateTextures(std::string mod)
 		updateMeshCulling();
 }
 
+void GenericCAO::updateRTTextures(const std::string &name)
+{
+	ITextureSource *tsrc = m_client->tsrc();
+	video::ITexture *texture = tsrc->getTextureForMesh(name);
+
+	if (m_prop.textures.empty())
+		return;
+
+	if (m_spritenode) {
+		if (m_prop.visual == "sprite") {
+			if (m_prop.textures[0] == name) {
+				auto &material = m_spritenode->getMaterial(0);
+				material.setTexture(0, texture);
+			}
+		}
+	}
+	else if (m_animated_meshnode) {
+		if (m_prop.visual == "mesh") {
+			for (u32 i = 0; i < m_prop.textures.size(); ++i)
+				if (m_prop.textures[i] == name) {
+					auto &material = m_animated_meshnode->getMaterial(i);
+					material.setTexture(0,texture);
+				}
+		}
+	}
+	else if (m_meshnode) {
+		if (m_prop.visual == "cube") {
+			for (u32 i = 0; i < 6; ++i)
+				if (m_prop.textures[i] == name) {
+					auto &material = m_meshnode->getMaterial(i);
+					material.setTexture(0, texture);
+					material.getTextureMatrix(0).makeIdentity();
+				}
+		}
+		else if (m_prop.visual == "upright_sprite") {
+			if (m_prop.textures[0] == name) {
+				auto &material = m_meshnode->getMaterial(0);
+				material.setTexture(0, texture);
+			}
+
+			std::string next_texname = m_prop.textures[0];
+
+			if (m_prop.textures.size() >= 2)
+				next_texname = m_prop.textures[1];
+
+			if (next_texname == name) {
+				auto &material = m_meshnode->getMaterial(1);
+				material.setTexture(0, texture);
+			}
+		}
+	}
+}
+
 void GenericCAO::updateAnimation()
 {
 	if (!m_animated_meshnode)

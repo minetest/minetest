@@ -757,6 +757,11 @@ public:
 	 */
 	void resolveCrossrefs();
 
+	/*!
+	 * Updates all RTTs in tile layers having name `name`.
+	 * Actually it just attempts to take current generated textures from
+	 * DynamicTextureSource mappings, otherwise loads/takes from cache as usually.
+	 */
 	void reloadRTTexturesOnDemand(IGameDef *gamedef, const std::string &name);
 
 private:

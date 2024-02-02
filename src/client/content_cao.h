@@ -273,6 +273,8 @@ public:
 	// Reason: updateTextures(m_previous_texture_modifier);
 	void updateTextures(std::string mod);
 
+	void updateRTTextures(const std::string &name);
+
 	void updateAnimation();
 
 	void updateAnimationSpeed();

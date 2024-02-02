@@ -418,7 +418,7 @@ void UniversalCamera::step()
 
 	if (render_texture_updated) {
 		render_texture_updated = false;
-		m_env->getGameDef()->demandReloadAndUpdateRTTs(m_render_texture_name);
+		m_env->getGameDef()->demandUpdateRTTs(m_render_texture_name);
 	}
 
 	// Camera not attached to a parent

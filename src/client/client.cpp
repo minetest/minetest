@@ -2124,9 +2124,13 @@ const std::string &Client::getFormspecPrepend() const
 	return m_env.getLocalPlayer()->formspec_prepend;
 }
 
-void Client::demandReloadAndUpdateRTTs(const std::string &name)
+void Client::demandUpdateRTTs(const std::string &name)
 {
 	m_nodedef->reloadRTTexturesOnDemand(this, name);
 
-	getEnv().getClientMap().updateVisibleMapblocksMeshes();
+	ClientEnvironment &env = getEnv();
+
+	env.getClientMap().updateVisibleMapblocksMeshes();
+
+	env.updateRTTexturesOnDemand(name);
 }

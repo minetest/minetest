@@ -39,6 +39,8 @@ public:
 	void getActiveObjects(const v3f &origin, f32 max_d,
 			std::vector<DistanceSortedActiveObject> &dest);
 
+	void updateRTTexturesOnDemand(const std::string &name);
+
 	/// Gets all CAOs whose selection boxes may intersect the @p shootline.
 	/// @note CAOs without a selection box are not returned.
 	/// @note Distances are along the @p shootline.

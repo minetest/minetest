@@ -444,7 +444,7 @@ public:
 		return m_mesh_grid;
 	}
 
-	void demandReloadAndUpdateRTTs(const std::string &name);
+	void demandUpdateRTTs(const std::string &name);
 
 	bool inhibit_inventory_revert = false;
 

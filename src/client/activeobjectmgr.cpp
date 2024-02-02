@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <log.h>
 #include "profiler.h"
 #include "activeobjectmgr.h"
+#include "content_cao.h"
 
 namespace client
 {
@@ -102,6 +103,28 @@ void ActiveObjectMgr::getActiveObjects(const v3f &origin, f32 max_d,
 			continue;
 
 		dest.emplace_back(obj, d2);
+	}
+}
+
+void ActiveObjectMgr::updateRTTexturesOnDemand(const std::string &name)
+{
+	if (m_active_objects.empty())
+		return;
+
+	u16 id = 1;
+
+	for (; id <= m_active_objects.size(); ++id) {
+		auto cao = getActiveObject(id);
+
+		if (!cao)
+			continue;
+
+		GenericCAO *generic_cao = dynamic_cast<GenericCAO*>(cao);
+
+		if (!generic_cao)
+			continue;
+
+		generic_cao->updateRTTextures(name);
 	}
 }
 

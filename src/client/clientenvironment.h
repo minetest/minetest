@@ -126,6 +126,8 @@ public:
 		return m_ao_manager.getActiveObjects(origin, max_d, dest);
 	}
 
+	void updateRTTexturesOnDemand(const std::string &name) { m_ao_manager.updateRTTexturesOnDemand(name); }
+
 	bool hasClientEnvEvents() const { return !m_client_event_queue.empty(); }
 
 	// Get event from queue. If queue is empty, it triggers an assertion failure.

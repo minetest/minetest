@@ -810,6 +810,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	TileDef tdef_overlay[6];
 	for (u32 j = 0; j < 6; j++)
 		tdef_overlay[j] = tiledef_overlay[j];
+
 	// also the special tiles
 	TileDef tdef_spec[6];
 	for (u32 j = 0; j < CF_SPECIAL_COUNT; j++) {
@@ -1690,7 +1691,7 @@ void NodeDefManager::reloadRTTexturesOnDemand(IGameDef *gamedef, const std::stri
 		for (int i = 0; i < 6; i++) {
 			TileDef &tdef = f.tiledef[i];
 
-			if (tdef.rtt) {
+			if (tdef.rtt && tdef.name == name) {
 				TileLayer &layer = f.tiles[i].layers[0];
 				layer.texture = tsrc->getTextureForMesh(tdef.name, &layer.texture_id);
 			}
