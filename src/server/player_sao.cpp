@@ -370,7 +370,8 @@ void PlayerSAO::setBasePosition(v3f position)
 
 v3f PlayerSAO::getPos() const
 {
-	if (isAttached()) {
+  // keep it in old style if client is old version
+	if (isAttached() && (m_player->protocol_version >= 44)) {
 		return m_base_position + m_transformation.getTranslation();
 	}
 	else {

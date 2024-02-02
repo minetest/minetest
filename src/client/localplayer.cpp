@@ -731,7 +731,8 @@ v3s16 LocalPlayer::getLightPosition() const
 
 v3f LocalPlayer::getEyeOffset() const
 {
-	if (getParent()) {
+  // keep it in old style if server is old version
+	if (getParent() && (m_client->getProtoVersion() >= 44)) {
 		GenericCAO *parent = dynamic_cast<GenericCAO *>(getParent());
 
 		int parent_id;
