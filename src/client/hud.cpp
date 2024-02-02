@@ -1179,7 +1179,7 @@ void drawItemStack(
 			(1 - wear) * progressrect.LowerRightCorner.X;
 
 		// Compute progressbar color
-		// old scheme:
+		// default scheme:
 		//   wear = 0.0: green
 		//   wear = 0.5: yellow
 		//   wear = 1.0: red
