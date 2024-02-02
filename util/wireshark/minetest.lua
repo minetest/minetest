@@ -1280,7 +1280,7 @@ do
 
 	function p_minetest.dissector(buffer, pinfo, tree)
 
-		-- Defer if payload doesn't have Mintest's magic number
+		-- Defer if payload doesn't have Minetest's magic number
 		if buffer(0,4):uint() ~= minetest_id then
 			return false
 		end
