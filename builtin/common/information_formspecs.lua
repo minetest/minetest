@@ -14,7 +14,7 @@ local LIST_FORMSPEC_DESCRIPTION = [[
 		size[13,7.5]
 		label[0,-0.1;%s]
 		tablecolumns[color;tree;text;text]
-		table[0,0.5;12.8,4.8;list;%s;%i]
+		table[0,0.5;12.8,4.8;list;%s;%i]F
 		box[0,5.5;12.8,1.5;#000]
 		textarea[0.3,5.5;13.05,1.9;;;%s]
 		button_exit[5,7;3,1;quit;%s]
@@ -91,9 +91,6 @@ end
 -- PRIVILEGES FORMSPEC
 
 local function build_privs_formspec(name)
-	if INIT == "client" then
-		return
-	end
 	local privs = {}
 	for priv_name, def in pairs(core.registered_privileges) do
 		privs[#privs + 1] = { priv_name, def }
