@@ -125,6 +125,11 @@ private:
 	// Returns true if the item is (or was) a tool.
 	static int l_add_wear_by_uses(lua_State *L);
 
+	// get_wear_bar_params(self) -> table
+	// Returns the effective wear bar parameters.
+	// Returns nil if this item has none associated.
+	static int l_get_wear_bar_params(lua_State *L);
+
 	// add_item(self, itemstack or itemstring or table or nil) -> itemstack
 	// Returns leftover item stack
 	static int l_add_item(lua_State *L);

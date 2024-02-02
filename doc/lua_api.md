@@ -7273,6 +7273,8 @@ an itemstring, a table or `nil`.
       the item breaks after `max_uses` times
     * Valid `max_uses` range is [0,65536]
     * Does nothing if item is not a tool or if `max_uses` is 0
+* `get_wear_bar_params()`: returns the wear bar parameters of the item,
+  or nil if none are defined for this item type or in the stack's meta
 * `add_item(item)`: returns leftover `ItemStack`
     * Put some item or stack onto this stack
 * `item_fits(item)`: returns `true` if item or stack can be fully added to
@@ -7312,6 +7314,10 @@ Can be obtained via `item:get_meta()`.
 * All methods in MetaDataRef
 * `set_tool_capabilities([tool_capabilities])`
     * Overrides the item's tool capabilities
+    * A nil value will clear the override data and restore the original
+      behavior.
+* `set_wear_bar_params([wear_bar_params])`
+    * Overrides the item's wear bar parameters (see "Wear Bar Color" section)
     * A nil value will clear the override data and restore the original
       behavior.
 
@@ -8815,6 +8821,19 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- fallback behavior.
     },
 
+    -- Set wear bar color of the tool by setting color stops and blend mode
+    -- See "Wear Bar Color" section for further explanation including an example
+    wear_color = {
+        -- interpolation mode: 'constant' or 'linear'
+        -- (nil defaults to 'constant')
+        blend = "linear",
+        color_stops = {
+            [0.0] = "#ff0000",
+            [0.5] = "#ffff00",
+            [1.0] = "#00ff00",
+        }
+    },
+
     node_placement_prediction = nil,
     -- If nil and item is node, prediction is made automatically.
     -- If nil and item is not a node, no prediction is made.
@@ -9381,6 +9400,46 @@ Used by `minetest.register_node`.
     -- nodename will show "othermodname", but mod_origin will say "modname"
 }
 ```
+
+Wear Bar Color
+--------------
+
+'Wear Bar' is a property of items that defines the coloring
+of the bar that appears under damaged tools.
+If it is absent, the default behavior of green-yellow-red is
+used.
+
+### Wear bar colors definition
+
+#### Syntax
+
+```lua
+{
+    -- 'constant' or 'linear'
+    -- (nil defaults to 'constant')
+    blend = "linear",
+    color_stops = {
+        [0.0] = "#ff0000",
+        [0.5] = "slateblue",
+        [1.0] = {r=0, g=255, b=0, a=150},
+    }
+}
+```
+
+#### Blend mode `blend`
+
+* `linear`: blends smoothly between each defined color point.
+* `constant`: each color starts at its defined point, and continues up to the next point
+
+#### Color stops `color_stops`
+
+Specified as `ColorSpec` color values assigned to `float` durability keys.
+
+"Durability" is defined as `1 - (wear / 65535)`.
+
+#### Shortcut usage
+
+Wear bar color can also be specified as a single `ColorSpec` instead of a table.
 
 Crafting recipes
 ----------------

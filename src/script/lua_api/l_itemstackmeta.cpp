@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_itemstackmeta.h"
 #include "lua_api/l_internal.h"
 #include "common/c_content.h"
+#include "common/c_converter.h"
+#include "tool.h"
 
 /*
 	ItemStackMetaRef
@@ -53,6 +55,20 @@ int ItemStackMetaRef::l_set_tool_capabilities(lua_State *L)
 		metaref->setToolCapabilities(caps);
 	} else {
 		luaL_typerror(L, 2, "table or nil");
+	}
+
+	return 0;
+}
+
+int ItemStackMetaRef::l_set_wear_bar_params(lua_State *L)
+{
+	ItemStackMetaRef *metaref = checkObject<ItemStackMetaRef>(L, 1);
+	if (lua_isnoneornil(L, 2)) {
+		metaref->clearWearBarParams();
+	} else if (lua_istable(L, 2) || lua_isstring(L, 2)) {
+		metaref->setWearBarParams(read_wear_bar_params(L, 2));
+	} else {
+		luaL_typerror(L, 2, "table, ColorString, or nil");
 	}
 
 	return 0;
@@ -102,5 +118,6 @@ const luaL_Reg ItemStackMetaRef::methods[] = {
 	luamethod(MetaDataRef, from_table),
 	luamethod(MetaDataRef, equals),
 	luamethod(ItemStackMetaRef, set_tool_capabilities),
+	luamethod(ItemStackMetaRef, set_wear_bar_params),
 	{0,0}
 };

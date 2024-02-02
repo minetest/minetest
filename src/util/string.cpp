@@ -574,6 +574,20 @@ bool parseColorString(const std::string &value, video::SColor &color, bool quiet
 	return success;
 }
 
+std::string encodeHexColorString(const video::SColor &color)
+{
+	std::string color_string = "#";
+	const char red = color.getRed();
+	const char green = color.getGreen();
+	const char blue = color.getBlue();
+	const char alpha = color.getAlpha();
+	color_string += hex_encode(&red, 1);
+	color_string += hex_encode(&green, 1);
+	color_string += hex_encode(&blue, 1);
+	color_string += hex_encode(&alpha, 1);
+	return color_string;
+}
+
 void str_replace(std::string &str, char from, char to)
 {
 	std::replace(str.begin(), str.end(), from, to);

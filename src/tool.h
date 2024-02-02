@@ -20,10 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes.h"
-#include <string>
-#include <iostream>
 #include "itemgroup.h"
 #include "json-forwards.h"
+#include "common/c_types.h"
+#include <json/json.h>
+#include <SColor.h>
+
+#include <string>
+#include <iostream>
+#include <optional>
 
 struct ItemDefinition;
 
@@ -80,6 +85,37 @@ struct ToolCapabilities
 	void deSerialize(std::istream &is);
 	void serializeJson(std::ostream &os) const;
 	void deserializeJson(std::istream &is);
+};
+
+struct WearBarParams
+{
+	std::map<f32, video::SColor> colorStops;
+	enum BlendMode: u8 {
+	    BLEND_MODE_CONSTANT,
+	    BLEND_MODE_LINEAR,
+	    BlendMode_END // Dummy for validity check
+	};
+	constexpr const static EnumString es_BlendMode[3] = {
+		{WearBarParams::BLEND_MODE_CONSTANT, "constant"},
+		{WearBarParams::BLEND_MODE_LINEAR, "linear"},
+		{0, NULL}
+	};
+	BlendMode blend;
+
+	WearBarParams(const std::map<f32, video::SColor> &colorStops, BlendMode blend):
+		colorStops(colorStops),
+		blend(blend)
+	{}
+
+	WearBarParams(const video::SColor color):
+		WearBarParams({{0.0, color}}, WearBarParams::BLEND_MODE_CONSTANT)
+	{};
+
+	void serialize(std::ostream &os) const;
+	static WearBarParams deserialize(std::istream &is);
+	void serializeJson(std::ostream &os) const;
+	static std::optional<WearBarParams> deserializeJson(std::istream &is);
+	video::SColor getWearBarColor(f32 durabilityPercent);
 };
 
 struct DigParams
