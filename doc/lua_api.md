@@ -9433,6 +9433,8 @@ used.
 
 Specified as `ColorSpec` color values assigned to `float` durability keys.
 
+"Durability" is defined as `1 - (wear / 65535)`.
+
 #### Shortcut usage
 
 Wear bar color can also be specified as a single `ColorSpec` instead of a table.
