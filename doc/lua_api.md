@@ -7695,8 +7695,12 @@ child will follow movement and rotation of that bone.
         * Fourth column: subject looking to the right
         * Fifth column:  subject viewed from above
         * Sixth column:  subject viewed from below
-* `get_entity_name()` (**Deprecated**: Will be removed in a future version, use the field `self.name` instead)
 * `get_luaentity()`: returns the object's associated luaentity table
+* `get_entity_name()`:
+    * **Deprecated**: Will be removed in a future version,
+      use the luaentity field `entity.name` instead.
+    * If you have an `object` which is tied to a luaentity,
+      you would have to do `object:get_luaentity().name` to get its name.
 
 #### Player only (no-op for other objects)
 
