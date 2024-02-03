@@ -66,11 +66,11 @@ public:
 };
 
 template <bool IS_A8R8G8B8>
-void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
+static void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
 {
-	void *src_data = src->getData();
-	core::dimension2d<u32> dim = src->getDimension();
-	u32 src_pitch = src->getPitch();
+	void *const src_data = src->getData();
+	const core::dimension2d<u32> dim = src->getDimension();
+	const u32 src_pitch = src->getPitch();
 
 	auto get_pixel = [src, src_data, dim](u32 x, u32 y) -> video::SColor {
 		if constexpr (IS_A8R8G8B8) {
