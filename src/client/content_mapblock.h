@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "nodedef.h"
 #include <IMeshManipulator.h>
+#include "client/localplayer.h"
 
 struct MeshMakeData;
 struct MeshCollector;
@@ -75,6 +76,7 @@ private:
 
 	const v3s16 blockpos_nodes;
 
+	LocalPlayer *player;
 // options
 	const bool enable_mesh_cache;
 

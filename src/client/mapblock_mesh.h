@@ -295,8 +295,10 @@ private:
  * the last 8 bits are night light
  * \param emissive_light amount of light the surface emits,
  * from 0 to LIGHT_SUN.
+ * \param ambient_light amount of ambient light that the surface should have
+ * from 0 to LIGHT_SUN.
  */
-video::SColor encode_light(u16 light, u8 emissive_light);
+video::SColor encode_light(u16 light, u8 emissive_light, u8 ambient_light=0);
 
 // Compute light at node
 u16 getInteriorLight(MapNode n, s32 increment, const NodeDefManager *ndef);

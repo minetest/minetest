@@ -295,7 +295,7 @@ void final_color_blend(video::SColor *result,
 	video::SColorf dayLight;
 	get_sunlight_color(&dayLight, daynight_ratio);
 	final_color_blend(result,
-		encode_light(light, 0), dayLight);
+		encode_light(light, 0, 0), dayLight);
 }
 
 void final_color_blend(video::SColor *result,
@@ -975,13 +975,24 @@ void MapBlockMesh::consolidateTransparentBuffers()
 	}
 }
 
-video::SColor encode_light(u16 light, u8 emissive_light)
+video::SColor encode_light(u16 light, u8 emissive_light, u8 ambient_light)
 {
 	// Get components
 	u32 day = (light & 0xff);
 	u32 night = (light >> 8);
+
 	// Add emissive light
 	night += emissive_light * 2.5f;
+
+	f32 ratio = ambient_light/16.f;
+
+	u32 ambient_light_32 = ratio * 255;
+
+	if (day < ambient_light_32)
+		day = ambient_light_32;
+	if (night < ambient_light_32)
+		night = ambient_light_32;
+
 	if (night > 255)
 		night = 255;
 	// Since we don't know if the day light is sunlight or

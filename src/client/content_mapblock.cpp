@@ -80,6 +80,7 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	nodedef(data->nodedef),
 	meshmanip(mm),
 	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE),
+	player(data->m_client->getEnv().getLocalPlayer()),
 	enable_mesh_cache(g_settings->getBool("enable_mesh_cache") &&
 			!data->m_smooth_lighting) // Mesh cache is not supported with smooth lighting
 {
@@ -92,7 +93,8 @@ void MapblockMeshGenerator::useTile(int index, u8 set_flags, u8 reset_flags, boo
 	else
 		getTile(index, &cur_node.tile);
 	if (!data->m_smooth_lighting)
-		cur_node.color = encode_light(cur_node.light, cur_node.f->light_source);
+		cur_node.color = encode_light(cur_node.light, cur_node.f->light_source,
+			player->getLighting().ambient_light.luminance);
 
 	for (auto &layer : cur_node.tile.layers) {
 		layer.material_flags |= set_flags;
@@ -301,7 +303,8 @@ LightInfo MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
 video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos)
 {
 	LightInfo light = blendLight(vertex_pos);
-	return encode_light(light.getPair(), cur_node.f->light_source);
+	return encode_light(light.getPair(), cur_node.f->light_source,
+		player->getLighting().ambient_light.luminance);
 }
 
 video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos,
@@ -309,7 +312,8 @@ video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos,
 {
 	LightInfo light = blendLight(vertex_pos);
 	video::SColor color = encode_light(light.getPair(MYMAX(0.0f, vertex_normal.Y)),
-			cur_node.f->light_source);
+			cur_node.f->light_source,
+			player->getLighting().ambient_light.luminance);
 	if (!cur_node.f->light_source)
 		applyFacesShading(color, vertex_normal);
 	return color;
@@ -384,7 +388,8 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 			for (int j = 0; j < 4; j++) {
 				video::S3DVertex &vertex = vertices[j];
 				final_lights[j] = lights[light_indices[face][j]].getPair(MYMAX(0.0f, vertex.Normal.Y));
-				vertex.Color = encode_light(final_lights[j], cur_node.f->light_source);
+				vertex.Color = encode_light(final_lights[j], cur_node.f->light_source,
+					player->getLighting().ambient_light.luminance);
 				if (!cur_node.f->light_source)
 					applyFacesShading(vertex.Color, vertex.Normal);
 			}
@@ -394,7 +399,8 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 		});
 	} else {
 		drawCuboid(box, tiles, tile_count, txc, mask, [&] (int face, video::S3DVertex vertices[4]) {
-			video::SColor color = encode_light(cur_node.light, cur_node.f->light_source);
+			video::SColor color = encode_light(cur_node.light, cur_node.f->light_source,
+				player->getLighting().ambient_light.luminance);
 			if (!cur_node.f->light_source)
 				applyFacesShading(color, vertices[0].Normal);
 			for (int j = 0; j < 4; j++) {
@@ -474,7 +480,8 @@ void MapblockMeshGenerator::drawSolidNode()
 			auto final_lights = lights[face];
 			for (int j = 0; j < 4; j++) {
 				video::S3DVertex &vertex = vertices[j];
-				vertex.Color = encode_light(final_lights[j], cur_node.f->light_source);
+				vertex.Color = encode_light(final_lights[j], cur_node.f->light_source,
+					player->getLighting().ambient_light.luminance);
 				if (!cur_node.f->light_source)
 					applyFacesShading(vertex.Color, vertex.Normal);
 			}
@@ -484,7 +491,8 @@ void MapblockMeshGenerator::drawSolidNode()
 		});
 	} else {
 		drawCuboid(box, tiles, 6, texture_coord_buf, mask, [&] (int face, video::S3DVertex vertices[4]) {
-			video::SColor color = encode_light(lights[face], cur_node.f->light_source);
+			video::SColor color = encode_light(lights[face], cur_node.f->light_source,
+				player->getLighting().ambient_light.luminance);
 			if (!cur_node.f->light_source)
 				applyFacesShading(color, vertices[0].Normal);
 			for (int j = 0; j < 4; j++) {
@@ -566,8 +574,10 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 		cur_node.light = LightPair(getInteriorLight(ntop, 0, nodedef));
 	}
 
-	cur_liquid.color_top = encode_light(cur_node.light, cur_node.f->light_source);
-	cur_node.color = encode_light(cur_node.light, cur_node.f->light_source);
+	cur_liquid.color_top = encode_light(cur_node.light, cur_node.f->light_source,
+		player->getLighting().ambient_light.luminance);
+	cur_node.color = encode_light(cur_node.light, cur_node.f->light_source,
+		player->getLighting().ambient_light.luminance);
 }
 
 void MapblockMeshGenerator::getLiquidNeighborhood()
@@ -859,7 +869,8 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		getTile(g_6dirs[face], &tiles[face]);
 
 	if (!data->m_smooth_lighting)
-		cur_node.color = encode_light(cur_node.light, cur_node.f->light_source);
+		cur_node.color = encode_light(cur_node.light, cur_node.f->light_source,
+			player->getLighting().ambient_light.luminance);
 
 	TileSpec glass_tiles[6];
 	for (auto &glass_tile : glass_tiles)

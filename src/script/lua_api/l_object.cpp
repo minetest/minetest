@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/player_sao.h"
 #include "server/serverinventorymgr.h"
 #include "server/unit_sao.h"
+#include "light.h"
 
 /*
 	ObjectRef
@@ -2519,6 +2520,18 @@ int ObjectRef::l_set_lighting(lua_State *L)
 			getfloatfield(L, -1, "intensity", lighting.shadow_intensity);
 		}
 		lua_pop(L, 1); // shadows
+
+		lua_getfield(L, 2, "ambient_light");
+		if(lua_istable(L, -1)) {
+			getintfield(L, -1, "luminance", lighting.ambient_light.luminance);
+			lighting.ambient_light.luminance = rangelim(lighting.ambient_light.luminance, 0, LIGHT_SUN);
+
+			lua_getfield(L, -1, "color");
+			if (!lua_isnil(L, -1))
+				read_color(L, -1, &lighting.ambient_light.color);
+			lua_pop(L, 1);
+		}
+		lua_pop(L, 1); // ambient light
 
 		getfloatfield(L, -1, "saturation", lighting.saturation);
 

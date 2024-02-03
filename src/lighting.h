@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #pragma once
+#include "irrlichttypes_bloated.h"
 
 
 /**
@@ -46,11 +47,25 @@ struct AutoExposure
 	AutoExposure();
 };
 
+/*
+ * Parameters for adjusting ambient light affecting on colors of map nodes and entities
+ */
+struct AmbientLight
+{
+	AmbientLight() : luminance(0), color(255, 255, 255, 255) {}
+	/// @brief Minimal threshold of luminance of ambience. Can be from 0 - 14.
+	u8 luminance;
+
+	/// @brief Color of ambient light. Default is white color.
+	video::SColor color;
+};
+
 /** Describes ambient light settings for a player
  */
 struct Lighting
 {
 	AutoExposure exposure;
+	AmbientLight ambient_light;
 	float shadow_intensity {0.0f};
 	float saturation {1.0f};
 	float volumetric_light_strength {0.0f};
