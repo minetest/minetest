@@ -894,6 +894,23 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	}
 
 	/*
+		Remove sounds with removed active objects
+	*/
+	{
+		MutexAutoLock envlock(m_env_mutex);
+
+		for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); it++) {
+			ServerPlayingSound &sound = it->second;
+
+			if (sound.type != SoundLocation::Object)
+				continue;;
+
+			if (!m_env->getActiveObject(sound.object))
+				m_playing_sounds.erase(it);
+		}
+	}
+
+	/*
 		Send queued-for-sending map edit events.
 	*/
 	{
@@ -2049,6 +2066,7 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 
 		// Remove from known objects
 		client->m_known_objects.erase(id);
+		removeSoundsClient(id, client->peer_id);
 
 		if (obj && obj->m_known_by_count > 0)
 			obj->m_known_by_count--;
@@ -2255,6 +2273,25 @@ void Server::fadeSound(s32 handle, float step, float gain)
 	// Remove sound reference
 	if (gain <= 0 || psound.clients.empty())
 		m_playing_sounds.erase(it);
+}
+
+void Server::removeSoundsClient(u16 id, session_t peer_id)
+{
+	assert(id);
+
+	for (auto sit: m_playing_sounds) {
+		ServerPlayingSound &sound = sit.second;
+
+		if (sound.object != id)
+			continue;
+
+		auto pit = sound.clients.find(peer_id);
+		if (pit == sound.clients.end())
+			continue;
+
+		// Remove peer_id
+		sound.clients.erase(pit);
+	}
 }
 
 void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,
