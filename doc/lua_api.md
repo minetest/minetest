@@ -8416,7 +8416,8 @@ Player properties need to be saved manually.
     -- "mesh" uses the defined mesh model.
     -- "wielditem" is used for dropped items.
     --   (see builtin/game/item_entity.lua).
-    --   For this use 'wield_item = itemname' (Deprecated: 'textures = {itemname}').
+    --   For this use 'wield_item = itemname'.
+    --   Setting 'textures = {itemname}' has the same effect, but is deprecated.
     --   If the item has a 'wield_image' the object will be an extrusion of
     --   that, otherwise:
     --   If 'itemname' is a cubic node or nodebox the object will appear
@@ -8443,8 +8444,8 @@ Player properties need to be saved manually.
     -- "cube" uses 6 textures just like a node, but all 6 must be defined.
     -- "sprite" uses 1 texture.
     -- "upright_sprite" uses 2 textures: {front, back}.
-    -- "wielditem" expects 'textures = {itemname}' (see 'visual' above).
     -- "mesh" requires one texture for each mesh buffer/material (in order)
+    -- Deprecated usage of "wielditem" expects 'textures = {itemname}' (see 'visual' above).
 
     colors = {},
     -- Number of required colors depends on visual
