@@ -553,6 +553,7 @@ private:
 	void SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersao);
 	void SendActiveObjectMessages(session_t peer_id, const std::string &datas,
 		bool reliable = true);
+	void SendSound(session_t peer_id, s32 sound_id, const ServerPlayingSound &params, const v3f &pos);
 	void SendCSMRestrictionFlags(session_t peer_id);
 
 	/*

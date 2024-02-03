@@ -901,6 +901,50 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	}
 
 	/*
+		Send sounds if needed
+	*/
+	{
+		// We will be accessing the environment
+		MutexAutoLock lock(m_env_mutex);
+
+		ClientInterface::AutoLock clientlock(m_clients);
+		const RemoteClientMap &clients = m_clients.getClientList();
+
+		for (const auto &client_it : clients) {
+			RemoteClient *client = client_it.second;
+
+			if (client->getState() < CS_DefinitionsSent)
+				continue;
+
+			// This can happen if the client times out somehow
+			if (!m_env->getPlayer(client->peer_id))
+				continue;
+
+			PlayerSAO *playersao = getPlayerSAO(client->peer_id);
+			if (!playersao)
+				continue;
+
+			for (auto it : m_playing_sounds) {
+				ServerPlayingSound &sound = it.second;
+				bool have_pos;
+
+				v3f pos = sound.getPos(m_env, &have_pos);
+
+				if (!have_pos)
+					continue;
+
+				if (sound.clients.find(client->peer_id) != sound.clients.end())
+					continue;
+
+				if (pos.getDistanceFrom(playersao->getBasePosition()) <= sound.max_hear_distance) {
+					SendSound(client->peer_id, it.first, sound, pos);
+					sound.clients.insert(client->peer_id);
+				}
+			}
+		}
+	}
+
+	/*
 		Send queued-for-sending map edit events.
 	*/
 	{
@@ -2117,6 +2161,18 @@ void Server::SendActiveObjectMessages(session_t peer_id, const std::string &data
 	m_clients.sendCustom(pkt.getPeerId(), reliable ? ccf.channel : 1, &pkt, reliable);
 }
 
+void Server::SendSound(session_t peer_id, s32 sound_id, const ServerPlayingSound &params, const v3f &pos)
+{
+	float gain = params.gain * params.spec.gain;
+	NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0, peer_id);
+	pkt << sound_id << params.spec.name << gain
+			<< (u8) params.type << pos << params.object
+			<< params.spec.loop << params.spec.fade << params.spec.pitch
+			<< false << params.spec.start_time;
+
+	Send(&pkt);
+}
+
 void Server::SendCSMRestrictionFlags(session_t peer_id)
 {
 	NetworkPacket pkt(TOCLIENT_CSM_RESTRICTION_FLAGS,
@@ -2197,27 +2253,26 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 		}
 	}
 
-	if(dst_clients.empty())
-		return -1;
-
 	// old clients will still use this, so pick a reserved ID (-1)
 	const s32 id = ephemeral ? -1 : nextSoundId();
 	if (id == 0)
 		return 0;
 
-	float gain = params.gain * params.spec.gain;
-	NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0);
-	pkt << id << params.spec.name << gain
-			<< (u8) params.type << pos << params.object
-			<< params.spec.loop << params.spec.fade << params.spec.pitch
-			<< ephemeral << params.spec.start_time;
+	if (!dst_clients.empty()) {
+		float gain = params.gain * params.spec.gain;
+		NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0);
+		pkt << id << params.spec.name << gain
+				<< (u8) params.type << pos << params.object
+				<< params.spec.loop << params.spec.fade << params.spec.pitch
+				<< ephemeral << params.spec.start_time;
 
-	const bool as_reliable = !ephemeral;
+		const bool as_reliable = !ephemeral;
 
-	for (const session_t peer_id : dst_clients) {
-		if (!ephemeral)
-			params.clients.insert(peer_id);
-		m_clients.sendCustom(peer_id, 0, &pkt, as_reliable);
+		for (const session_t peer_id : dst_clients) {
+			if (!ephemeral)
+				params.clients.insert(peer_id);
+			m_clients.sendCustom(peer_id, 0, &pkt, as_reliable);
+		}
 	}
 
 	if (!ephemeral)
