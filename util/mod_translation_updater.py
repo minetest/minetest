@@ -463,6 +463,8 @@ def update_tr_file(dNew, mod_name, tr_file):
 
 # Updates translation files for the mod in the given folder
 def update_mod(folder):
+	if not os.path.exists(os.path.join(folder, "init.lua")):
+		print(f"Warning: Mod folder {folder} is missing init.lua.")
 	modname = get_modname(folder)
 	if modname is not None:
 		print(f"Updating translations for {modname}")
@@ -483,7 +485,7 @@ def update_folder(folder):
 	if is_modpack:
 		subfolders = [f.path for f in os.scandir(folder) if f.is_dir() and not f.name.startswith('.')]
 		for subfolder in subfolders:
-			update_mod(subfolder)
+			update_folder(subfolder)
 	else:
 		update_mod(folder)
 	print("Done.")
