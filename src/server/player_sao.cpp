@@ -82,7 +82,7 @@ v3f PlayerSAO::getEyePosition() const
 
 v3f PlayerSAO::getEyeOffset() const
 {
-	if (isAttached()) {
+	if (isAttached() && (m_player->protocol_version >= 44)) {
 		v3f eye_offset(0.0f, BS * m_prop.eye_height, 0.0f);
 		m_transformation.rotateVect(eye_offset);
 		return eye_offset;

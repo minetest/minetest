@@ -33,7 +33,15 @@ minetest.register_entity("testlookdir:fire", {
 })
 
 local function fire_fire_entity(user, lookdir)
-	local obj = minetest.add_entity(user:get_eye_pos(), "testlookdir:fire")
+	local eye_pos;
+	if user.get_eye_pos then
+		eye_pos = user:get_eye_pos();
+	else
+		local props = user:get_properties();
+		eye_pos = user:get_pos();
+		eye_pos.y = eye_pos.y + props.eye_height;
+	end
+	local obj = minetest.add_entity(eye_pos, "testlookdir:fire")
 	obj:set_velocity(lookdir)
 	obj:set_rotation(vector.dir_to_rotation(lookdir))
 end

@@ -326,22 +326,24 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	// mods expect the player head to be at the parent's position
 	// plus eye height.
 	if (auto cao = player->getParent()) {
-		GenericCAO *parent = dynamic_cast<GenericCAO *>(cao);
-		int parent_id;
-		v3f attach_pos;
-		v3f attach_rot;
-		std::string bone;
-		bool force_visible;
-		GenericCAO *player_cao = player->getCAO();
-		player_cao->getAttachment(&parent_id, &bone, &attach_pos, &attach_rot, &force_visible);
+		if (m_client->getProtoVersion() >= 44) {
+			GenericCAO *parent = dynamic_cast<GenericCAO *>(cao);
+			int parent_id;
+			v3f attach_pos;
+			v3f attach_rot;
+			std::string bone;
+			bool force_visible;
+			GenericCAO *player_cao = player->getCAO();
+			player_cao->getAttachment(&parent_id, &bone, &attach_pos, &attach_rot, &force_visible);
 
-		core::matrix4 prot;
-		core::matrix4 arot;
-		setPitchYawRoll(prot, parent->getRotation());
-		arot.setRotationDegrees(-attach_rot);
+			core::matrix4 prot;
+			core::matrix4 arot;
+			setPitchYawRoll(prot, parent->getRotation());
+			arot.setRotationDegrees(-attach_rot);
 
-		prot = prot * arot;
-		parent_rotation = prot.getRotationDegrees();
+			prot = prot * arot;
+			parent_rotation = prot.getRotationDegrees();
+		}
 	}
 
 	// Smooth the camera movement after the player instantly moves upward due to stepheight.
