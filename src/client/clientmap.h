@@ -119,6 +119,8 @@ public:
 	f32 getWantedRange() const { return m_control.wanted_range; }
 	f32 getCameraFov() const { return m_camera_fov; }
 
+	void forceUpdateMapblocksMeshes() { m_update_mapblocks_meshes = true; }
+
 	void onSettingChanged(const std::string &name);
 
 protected:
@@ -199,4 +201,6 @@ private:
 
 	bool m_loops_occlusion_culler;
 	bool m_enable_raytraced_culling;
+
+	bool m_update_mapblocks_meshes;
 };

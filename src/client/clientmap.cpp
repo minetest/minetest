@@ -623,6 +623,14 @@ void ClientMap::updateDrawList()
 		}
 	}
 
+	// Force update meshes of all loaded mapblocks
+	if (m_update_mapblocks_meshes) {
+		m_update_mapblocks_meshes = false;
+
+		for (auto &p : m_drawlist)
+			m_client->addUpdateMeshTask(p.first, false, true);
+	}
+
 	g_profiler->avg("MapBlocks occlusion culled [#]", blocks_occlusion_culled);
 	g_profiler->avg("MapBlocks frustum culled [#]", blocks_frustum_culled);
 	g_profiler->avg("MapBlocks drawn [#]", m_drawlist.size());

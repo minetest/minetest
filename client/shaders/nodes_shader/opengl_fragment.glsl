@@ -10,6 +10,7 @@ uniform vec3 eyePosition;
 uniform vec3 cameraOffset;
 uniform float animationTimer;
 
+uniform float ambientLight;
 uniform vec3 ambientColor;
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	// shadow texture
@@ -381,7 +382,9 @@ void main(void)
 #endif
 
 	color = base.rgb;
-	vec4 col = vec4(color.rgb * varColor.rgb * ambientColor.rgb, 1.0);
+	vec4 col = vec4(color.rgb * varColor.rgb, 1.0);
+
+	col.rgb += ambientLight * ambientColor.rgb;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	if (f_shadow_strength > 0.0) {

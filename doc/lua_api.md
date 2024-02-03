@@ -8264,6 +8264,9 @@ child will follow movement and rotation of that bone.
 * `set_lighting(light_definition)`: sets lighting for the player
     * Passing no arguments resets lighting to its default values.
     * `light_definition` is a table with the following optional fields:
+      * `ambient_light` is a table controlling amount and color of ambient light (global lighting)
+        * `luminance` sets the amount of ambient light in range (0... LIGHT_SUN) like `light_source` has (default: `0`)
+        * `color` sets the color of ambient light (ColorSpec) (default: `{a = 0, r = 0, g = 0, b = 0}`)
       * `saturation` sets the saturation (vividness; default: `1.0`).
         * values > 1 increase the saturation
         * values in [0,1] decrease the saturation

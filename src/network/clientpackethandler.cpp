@@ -47,6 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "skyparams.h"
 #include "particles.h"
 #include <memory>
+#include "client/clientmap.h"
 
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -1805,9 +1806,12 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 		*pkt >> lighting.shadow_intensity;
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.saturation;
-	if (pkt->getRemainingBytes() >= 1)
+	if (pkt->getRemainingBytes() >= 1) {
 		*pkt >> lighting.ambient_light.luminance
 				>> lighting.ambient_light.color;
+
+		getEnv().getClientMap().forceUpdateMapblocksMeshes();
+	}
 	if (pkt->getRemainingBytes() >= 24) {
 		*pkt >> lighting.exposure.luminance_min
 				>> lighting.exposure.luminance_max
