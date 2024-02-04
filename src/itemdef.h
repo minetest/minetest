@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "sound.h"
 #include "texture_override.h" // TextureOverride
+#include "tool.h"
 #include "util/pointabilities.h"
 class IGameDef;
 class Client;
@@ -102,6 +103,8 @@ struct ItemDefinition
 
 	// They may be NULL. If non-NULL, deleted by destructor
 	ToolCapabilities *tool_capabilities;
+
+	std::optional<WearBarParams> wear_bar_params;
 
 	ItemGroupList groups;
 	SoundSpec sound_place;

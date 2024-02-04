@@ -29,10 +29,10 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 		bool is_singleplayer):
 	UnitSAO(env_, v3f(0,0,0)),
 	m_player(player_),
-	m_peer_id(peer_id_),
+	m_peer_id_initial(peer_id_),
 	m_is_singleplayer(is_singleplayer)
 {
-	SANITY_CHECK(m_peer_id != PEER_ID_INEXISTENT);
+	SANITY_CHECK(m_peer_id_initial != PEER_ID_INEXISTENT);
 
 	m_prop.hp_max = PLAYER_MAX_HP_DEFAULT;
 	m_prop.breath_max = PLAYER_MAX_BREATH_DEFAULT;
@@ -88,7 +88,8 @@ void PlayerSAO::addedToEnvironment(u32 dtime_s)
 	ServerActiveObject::addedToEnvironment(dtime_s);
 	ServerActiveObject::setBasePosition(m_base_position);
 	m_player->setPlayerSAO(this);
-	m_player->setPeerId(m_peer_id);
+	m_player->setPeerId(m_peer_id_initial);
+	m_peer_id_initial = PEER_ID_INEXISTENT; // don't try to use it again.
 	m_last_good_position = m_base_position;
 }
 
@@ -96,11 +97,13 @@ void PlayerSAO::addedToEnvironment(u32 dtime_s)
 void PlayerSAO::removingFromEnvironment()
 {
 	ServerActiveObject::removingFromEnvironment();
-	if (m_player->getPlayerSAO() == this) {
-		unlinkPlayerSessionAndSave();
-		for (u32 attached_particle_spawner : m_attached_particle_spawners) {
-			m_env->deleteParticleSpawner(attached_particle_spawner, false);
-		}
+
+	// If this fails, fix the ActiveObjectMgr code in ServerEnvironment
+	SANITY_CHECK(m_player->getPlayerSAO() == this);
+
+	unlinkPlayerSessionAndSave();
+	for (u32 attached_particle_spawner : m_attached_particle_spawners) {
+		m_env->deleteParticleSpawner(attached_particle_spawner, false);
 	}
 }
 
@@ -236,7 +239,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			" is attached to nonexistent parent. This is a bug." << std::endl;
 		clearParentAttachment();
 		setBasePosition(m_last_good_position);
-		m_env->getGameDef()->SendMovePlayer(m_peer_id);
+		m_env->getGameDef()->SendMovePlayer(this);
 	}
 
 	//dstream<<"PlayerSAO::step: dtime: "<<dtime<<std::endl;
@@ -357,14 +360,14 @@ void PlayerSAO::setPos(const v3f &pos)
 
 	// Send mapblock of target location
 	v3s16 blockpos = v3s16(pos.X / MAP_BLOCKSIZE, pos.Y / MAP_BLOCKSIZE, pos.Z / MAP_BLOCKSIZE);
-	m_env->getGameDef()->SendBlock(m_peer_id, blockpos);
+	m_env->getGameDef()->SendBlock(getPeerID(), blockpos);
 
 	setBasePosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = getBasePosition();
 	m_move_pool.empty();
 	m_time_from_last_teleport = 0.0;
-	m_env->getGameDef()->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(this);
 }
 
 void PlayerSAO::addPos(const v3f &added_pos)
@@ -381,14 +384,14 @@ void PlayerSAO::addPos(const v3f &added_pos)
 	// Send mapblock of target location
 	v3f pos = getBasePosition() + added_pos;
 	v3s16 blockpos = v3s16(pos.X / MAP_BLOCKSIZE, pos.Y / MAP_BLOCKSIZE, pos.Z / MAP_BLOCKSIZE);
-	m_env->getGameDef()->SendBlock(m_peer_id, blockpos);
+	m_env->getGameDef()->SendBlock(getPeerID(), blockpos);
 
 	setBasePosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = getBasePosition();
 	m_move_pool.empty();
 	m_time_from_last_teleport = 0.0;
-	m_env->getGameDef()->SendMovePlayerRel(m_peer_id, added_pos);
+	m_env->getGameDef()->SendMovePlayerRel(getPeerID(), added_pos);
 }
 
 void PlayerSAO::moveTo(v3f pos, bool continuous)
@@ -401,7 +404,7 @@ void PlayerSAO::moveTo(v3f pos, bool continuous)
 	m_last_good_position = getBasePosition();
 	m_move_pool.empty();
 	m_time_from_last_teleport = 0.0;
-	m_env->getGameDef()->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(this);
 }
 
 void PlayerSAO::setPlayerYaw(const float yaw)
@@ -433,7 +436,7 @@ void PlayerSAO::setWantedRange(const s16 range)
 void PlayerSAO::setPlayerYawAndSend(const float yaw)
 {
 	setPlayerYaw(yaw);
-	m_env->getGameDef()->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(this);
 }
 
 void PlayerSAO::setLookPitch(const float pitch)
@@ -447,7 +450,7 @@ void PlayerSAO::setLookPitch(const float pitch)
 void PlayerSAO::setLookPitchAndSend(const float pitch)
 {
 	setLookPitch(pitch);
-	m_env->getGameDef()->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(this);
 }
 
 u32 PlayerSAO::punch(v3f dir,
@@ -578,16 +581,20 @@ bool PlayerSAO::setWieldedItem(const ItemStack &item)
 
 void PlayerSAO::disconnected()
 {
-	m_peer_id = PEER_ID_INEXISTENT;
 	markForRemoval();
+	m_player->setPeerId(PEER_ID_INEXISTENT);
+}
+
+session_t PlayerSAO::getPeerID() const
+{
+	// Before adding `this` to the server env, m_player is still nullptr.
+	return m_player ? m_player->getPeerId() : PEER_ID_INEXISTENT;
 }
 
 void PlayerSAO::unlinkPlayerSessionAndSave()
 {
 	assert(m_player->getPlayerSAO() == this);
-	m_player->setPeerId(PEER_ID_INEXISTENT);
 	m_env->savePlayer(m_player);
-	m_player->setPlayerSAO(NULL);
 	m_env->removePlayer(m_player);
 }
 

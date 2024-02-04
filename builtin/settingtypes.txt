@@ -1068,7 +1068,8 @@ mgv5_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2
 #    The 'snowbiomes' flag enables the new 5 biome system.
 #    When the 'snowbiomes' flag is enabled jungles are automatically enabled and
 #    the 'jungles' flag is ignored.
-mgv6_spflags (Mapgen V6 specific flags) flags jungles,biomeblend,mudflow,snowbiomes,noflat,trees jungles,biomeblend,mudflow,snowbiomes,flat,trees,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat,notrees
+#    The 'temples' flag disables generation of desert temples. Normal dungeons will appear instead.
+mgv6_spflags (Mapgen V6 specific flags) flags jungles,biomeblend,mudflow,snowbiomes,noflat,trees,temples jungles,biomeblend,mudflow,snowbiomes,flat,trees,temples,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat,notrees,notemples
 
 #    Deserts occur when np_biome exceeds this value.
 #    When the 'snowbiomes' flag is enabled, this is ignored.

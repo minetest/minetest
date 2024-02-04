@@ -352,6 +352,8 @@ public:
 	void DenySudoAccess(session_t peer_id);
 	void DenyAccess(session_t peer_id, AccessDeniedCode reason,
 		const std::string &custom_reason = "", bool reconnect = false);
+	void kickAllPlayers(AccessDeniedCode reason,
+		const std::string &str_reason, bool reconnect);
 	void acceptAuth(session_t peer_id, bool forSudoMode);
 	void DisconnectPeer(session_t peer_id);
 	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
@@ -363,8 +365,8 @@ public:
 	void HandlePlayerHPChange(PlayerSAO *sao, const PlayerHPChangeReason &reason);
 	void SendPlayerHP(PlayerSAO *sao, bool effect);
 	void SendPlayerBreath(PlayerSAO *sao);
-	void SendInventory(PlayerSAO *playerSAO, bool incremental);
-	void SendMovePlayer(session_t peer_id);
+	void SendInventory(RemotePlayer *player, bool incremental);
+	void SendMovePlayer(PlayerSAO *sao);
 	void SendMovePlayerRel(session_t peer_id, const v3f &added_pos);
 	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
 	void SendPlayerFov(session_t peer_id);

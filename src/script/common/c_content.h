@@ -116,6 +116,9 @@ void               push_pointabilities       (lua_State *L, const Pointabilities
 ToolCapabilities   read_tool_capabilities    (lua_State *L, int table);
 void               push_tool_capabilities    (lua_State *L,
                                               const ToolCapabilities &prop);
+WearBarParams      read_wear_bar_params      (lua_State *L, int table);
+void               push_wear_bar_params      (lua_State *L,
+                                              const WearBarParams &prop);
 
 void read_item_definition (lua_State *L, int index, const ItemDefinition &default_def,
 		ItemDefinition &def);

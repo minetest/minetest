@@ -512,7 +512,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	if (playersao->checkMovementCheat()) {
 		// Call callbacks
 		m_script->on_cheat(playersao, "moved_too_fast");
-		SendMovePlayer(pkt->getPeerId());
+		SendMovePlayer(playersao);
 	}
 }
 
@@ -993,7 +993,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		return;
 	}
 
-	playersao->getPlayer()->setWieldIndex(item_i);
+	player->setWieldIndex(item_i);
 
 	// Get pointed to object (NULL if not POINTEDTYPE_OBJECT)
 	ServerActiveObject *pointed_object = NULL;
@@ -1161,7 +1161,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			// Get player's wielded item
 			// See also: Game::handleDigging
 			ItemStack selected_item, hand_item;
-			playersao->getPlayer()->getWieldedItem(&selected_item, &hand_item);
+			player->getWieldedItem(&selected_item, &hand_item);
 
 			// Get diggability and expected digging time
 			DigParams params = getDigParams(m_nodedef->get(n).groups,
@@ -1253,7 +1253,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			// Do stuff
 			if (m_script->item_OnSecondaryUse(selected_item, playersao, pointed)) {
 				if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
-					SendInventory(playersao, true);
+					SendInventory(player, true);
 			}
 
 			pointed_object->rightClick(playersao);
@@ -1262,7 +1262,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 			// Apply returned ItemStack
 			if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
-				SendInventory(playersao, true);
+				SendInventory(player, true);
 		}
 
 		if (pointed.type != POINTEDTHING_NODE)
@@ -1296,7 +1296,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		if (m_script->item_OnUse(selected_item, playersao, pointed)) {
 			// Apply returned ItemStack
 			if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
-				SendInventory(playersao, true);
+				SendInventory(player, true);
 		}
 
 		return;
@@ -1315,7 +1315,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		if (m_script->item_OnSecondaryUse(selected_item, playersao, pointed)) {
 			// Apply returned ItemStack
 			if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
-				SendInventory(playersao, true);
+				SendInventory(player, true);
 		}
 
 		return;

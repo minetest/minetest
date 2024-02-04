@@ -142,8 +142,9 @@ public:
 
 	void disconnected();
 
+	void setPlayer(RemotePlayer *player) { m_player = player; }
 	RemotePlayer *getPlayer() { return m_player; }
-	session_t getPeerID() const { return m_peer_id; }
+	session_t getPeerID() const;
 
 	// Cheat prevention
 
@@ -193,7 +194,7 @@ private:
 	std::string generateUpdatePhysicsOverrideCommand() const;
 
 	RemotePlayer *m_player = nullptr;
-	session_t m_peer_id = 0;
+	session_t m_peer_id_initial = 0; ///< only used to initialize RemotePlayer
 
 	// Cheat prevention
 	LagPool m_dig_pool;

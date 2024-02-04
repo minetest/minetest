@@ -625,13 +625,6 @@ bool ServerEnvironment::removePlayerFromDatabase(const std::string &name)
 	return m_player_database->removePlayer(name);
 }
 
-void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
-	const std::string &str_reason, bool reconnect)
-{
-	for (RemotePlayer *player : m_players)
-		m_server->DenyAccess(player->getPeerId(), reason, str_reason, reconnect);
-}
-
 void ServerEnvironment::saveLoadedPlayers(bool force)
 {
 	for (RemotePlayer *player : m_players) {
@@ -1643,9 +1636,8 @@ void ServerEnvironment::step(float dtime)
 		if (player->getPeerId() == PEER_ID_INEXISTENT)
 			continue;
 
-		PlayerSAO *sao = player->getPlayerSAO();
-		if (sao && player->inventory.checkModified())
-			m_server->SendInventory(sao, true);
+		if (player->inventory.checkModified())
+			m_server->SendInventory(player, true);
 	}
 
 	// Send outdated detached inventories
@@ -1834,8 +1826,8 @@ void ServerEnvironment::getSelectedActiveObjects(
 	const std::optional<Pointabilities> &pointabilities)
 {
 	std::vector<ServerActiveObject *> objs;
-	getObjectsInsideRadius(objs, shootline_on_map.start,
-		shootline_on_map.getLength() + 10.0f, nullptr);
+	getObjectsInsideRadius(objs, shootline_on_map.getMiddle(),
+		0.5 * shootline_on_map.getLength() + 5 * BS, nullptr);
 	const v3f line_vector = shootline_on_map.getVector();
 
 	for (auto obj : objs) {

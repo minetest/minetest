@@ -210,6 +210,29 @@ minetest.register_chatcommand("dump_item", {
 	end,
 })
 
+minetest.register_chatcommand("dump_itemdef", {
+	params = "",
+	description = "Prints a dump of the wielded item's definition in table form",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		local str = dump(player:get_wielded_item():get_definition())
+		print(str)
+		return true, str
+	end,
+})
+
+minetest.register_chatcommand("dump_wear_bar", {
+	params = "",
+	description = "Prints a dump of the wielded item's wear bar parameters in table form",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		local item = player:get_wielded_item()
+		local str = dump(item:get_wear_bar_params())
+		print(str)
+		return true, str
+	end,
+})
+
 core.register_chatcommand("set_saturation", {
     params = "<saturation>",
     description = "Set the saturation for current player.",
