@@ -8,13 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-02-05 04:01+0000\n"
+"Last-Translator: cora de la mouche <coradelamouche@gmx.ch>\n"
+"Language-Team: Toki Pona <https://hosted.weblate.org/projects/minetest/"
+"minetest/tok/>\n"
 "Language: tok\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
@@ -30,7 +33,7 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr ""
+msgstr "o lukin e jan mute lon"
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
@@ -38,11 +41,11 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr ""
+msgstr "jan mute lon "
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
-msgstr ""
+msgstr "o tawa"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -54,11 +57,11 @@ msgstr ""
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr ""
+msgstr "sina moli"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "o kama sin"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
@@ -87,7 +90,7 @@ msgstr ""
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "pona"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -143,7 +146,7 @@ msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Games"
-msgstr ""
+msgstr "musi"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Mods"
@@ -179,7 +182,7 @@ msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Not found"
-msgstr ""
+msgstr "ala lon"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
@@ -203,7 +206,7 @@ msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Base Game:"
-msgstr ""
+msgstr "musi lawa:"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
@@ -332,7 +335,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "ma:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
