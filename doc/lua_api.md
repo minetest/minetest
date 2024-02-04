@@ -5385,6 +5385,8 @@ Utilities
       dynamic_add_media_filepath = true,
        -- L-system decoration type (5.9.0)
       lsystem_decoration_type = true,
+      -- Overrideable pointing range using the itemstack meta key `"range"`
+      item_meta_range = true,
   }
   ```
 
