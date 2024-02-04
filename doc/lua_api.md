@@ -9095,20 +9095,20 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     -- Otherwise should be name of node which the client immediately places
     -- upon digging. Server will always update with actual result shortly.
 
-    touch_interaction = {
-        -- Only affects touchscreen clients.
-        -- Defines the meaning of short and long taps with the item in hand.
-        -- The fields in this table can be set to the following values:
-        -- * "user"                 (meaning depends on client-side settings)
-        -- * "long_dig_short_place" (long tap  = dig, short tap = place)
-        -- * "short_dig_long_place" (short tap = dig, long tap  = place)
-        -- The field to be used is selected according to the current
-        -- `pointed_thing`.
-
-        pointed_nothing = "user",
-        pointed_node    = "user",
-        pointed_object  = "user",
+    touch_interaction = <TouchInteractionMode> OR {
+        pointed_nothing = <TouchInteractionMode>,
+        pointed_node    = <TouchInteractionMode>,
+        pointed_object  = <TouchInteractionMode>,
     },
+      -- Only affects touchscreen clients.
+      -- Defines the meaning of short and long taps with the item in hand.
+      -- If specified as a table, the field to be used is selected according to
+      -- the current `pointed_thing`.
+      -- There are three possible TouchInteractionMode values:
+      -- * "user"                 (meaning depends on client-side settings)
+      -- * "long_dig_short_place" (long tap  = dig, short tap = place)
+      -- * "short_dig_long_place" (short tap = dig, long tap  = place)
+      -- The default value is "user".
 
     sound = {
         -- Definition of item sounds to be played at various events.
