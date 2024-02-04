@@ -8403,6 +8403,8 @@ Player properties need to be saved manually.
     -- If `rotate = false`, the selection box will not rotate with the object itself, remaining fixed to the axes.
     -- If `rotate = true`, it will match the object's rotation and any attachment rotations.
     -- Raycasts use the selection box and object's rotation, but do *not* obey attachment rotations.
+    -- For server-side raycasts to work correctly,
+    -- the selection box should extend at most 5 units in each direction.
 
 
     pointable = true,

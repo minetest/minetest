@@ -1826,8 +1826,8 @@ void ServerEnvironment::getSelectedActiveObjects(
 	const std::optional<Pointabilities> &pointabilities)
 {
 	std::vector<ServerActiveObject *> objs;
-	getObjectsInsideRadius(objs, shootline_on_map.start,
-		shootline_on_map.getLength() + 10.0f, nullptr);
+	getObjectsInsideRadius(objs, shootline_on_map.getMiddle(),
+		0.5 * shootline_on_map.getLength() + 5 * BS, nullptr);
 	const v3f line_vector = shootline_on_map.getVector();
 
 	for (auto obj : objs) {
