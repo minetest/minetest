@@ -8244,12 +8244,18 @@ child will follow movement and rotation of that bone.
       bgcolor[], any non-style elements (eg: label) may result in weird behavior.
     * Only affects formspecs shown after this is called.
 * `get_formspec_prepend()`: returns a formspec string.
-* `get_player_control()`: returns table with player pressed keys
-    * The table consists of fields with the following boolean values
-      representing the pressed keys: `up`, `down`, `left`, `right`, `jump`,
-      `aux1`, `sneak`, `dig`, `place`, `LMB`, `RMB`, and `zoom`.
+* `get_player_control()`: returns table with player input
+    * The table contains the following boolean fields representing the pressed
+      keys: `up`, `down`, `left`, `right`, `jump`, `aux1`, `sneak`, `dig`,
+      `place`, `LMB`, `RMB`, and `zoom`.
     * The fields `LMB` and `RMB` are equal to `dig` and `place` respectively,
       and exist only to preserve backwards compatibility.
+    * The table also contains the float fields `movement_x` and `movement_y`.
+        * They represent the movement of the player. Values are floats in the
+          range [-1,+1].
+        * They take both keyboard and joystick input into account.
+        * You should ALWAYS use them for movement instead of `up`, `down`,
+          `left` and `right` to support different input methods correctly.
     * Returns an empty table `{}` if the object is not a player.
 * `get_player_control_bits()`: returns integer with bit packed player pressed
   keys.
