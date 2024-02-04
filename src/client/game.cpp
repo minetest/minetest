@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/mapblock_mesh.h"
 #include "client/sound.h"
 #include "clientmap.h"
+#include "clientmedia.h" // For clientMediaUpdateCacheCopy
 #include "clouds.h"
 #include "config.h"
 #include "content_cao.h"
@@ -769,6 +770,7 @@ protected:
 	bool initSound();
 	bool createSingleplayerServer(const std::string &map_dir,
 			const SubgameSpec &gamespec, u16 port);
+	void copyServerClientCache();
 
 	// Client creation
 	bool createClient(const GameStartData &start_data);
@@ -1453,7 +1455,29 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 			false, nullptr, error_message);
 	server->start();
 
+	copyServerClientCache();
+
 	return true;
+}
+
+void Game::copyServerClientCache()
+{
+	// It would be possible to let the client directly read the media files
+	// from where the server knows they are. But aside from being more complicated
+	// it would also *not* fill the media cache and cause slower joining of 
+	// remote servers.
+	// (Imagine that you launch a game once locally and then connect to a server.)
+
+	assert(server);
+	auto map = server->getMediaList();
+	u32 n = 0;
+	for (auto &it : map) {
+		assert(it.first.size() == 20); // SHA1
+		if (clientMediaUpdateCacheCopy(it.first, it.second))
+			n++;
+	}
+	infostream << "Copied " << n << " files directly from server to client cache"
+		<< std::endl;
 }
 
 bool Game::createClient(const GameStartData &start_data)

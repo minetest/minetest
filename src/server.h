@@ -388,6 +388,10 @@ public:
 	// Get or load translations for a language
 	Translations *getTranslationLanguage(const std::string &lang_code);
 
+	// Returns all media files the server knows about
+	// map key = binary sha1, map value = file path
+	std::unordered_map<std::string, std::string> getMediaList();
+
 	static ModStorageDatabase *openModStorageDatabase(const std::string &world_path);
 
 	static ModStorageDatabase *openModStorageDatabase(const std::string &backend,

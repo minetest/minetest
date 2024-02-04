@@ -35,9 +35,13 @@ public:
 	bool load(const std::string &name, std::ostream &os);
 	bool exists(const std::string &name);
 
+	// Copy another file on disk into the cache
+	bool updateCopyFile(const std::string &name, const std::string &src_path);
+
 private:
 	std::string m_dir;
 
+	void createDir();
 	bool loadByPath(const std::string &path, std::ostream &os);
 	bool updateByPath(const std::string &path, const std::string &data);
 };

@@ -108,6 +108,8 @@ void TestDataStructures::testMap1()
 			break;
 	}
 	UASSERT(once);
+
+	map.clear(); // ASan complains about stack-use-after-scope otherwise
 }
 
 void TestDataStructures::testMap2()
@@ -121,6 +123,8 @@ void TestDataStructures::testMap2()
 	UASSERT(t0.deleted);
 	UASSERT(!t1.copied);
 	UASSERT(!t1.deleted);
+
+	map.clear();
 }
 
 void TestDataStructures::testMap3()
