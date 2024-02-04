@@ -179,4 +179,5 @@ PunchDamageResult getPunchDamage(
 );
 
 u32 calculateResultWear(const u32 uses, const u16 initial_wear);
-f32 getToolRange(const ItemDefinition &def_selected, const ItemDefinition &def_hand);
+f32 getToolRange(const ItemDefinition &def_wielded, const ItemDefinition &def_hand,
+		const ItemStack &wielded_item, const ItemStack &hand_item);

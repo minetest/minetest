@@ -2560,6 +2560,7 @@ Some of the values in the key-value store are handled specially:
   0 = default, 1 = left / up, 2 = middle, 3 = right / down
   The default currently is the same as right/down.
   Example: 6 = 2 + 1*4 = middle,up
+* `range`: Overrides the pointing range
 
 Example:
 
@@ -8967,6 +8968,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
     range = 4.0,
     -- Range of node and object pointing that is possible with this item held
+    -- Can be overridden with itemstack meta.
 
     liquids_pointable = false,
     -- If true, item can point to all liquid nodes (`liquidtype ~= "none"`),

@@ -29,7 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/hex.h"
 #include "common/c_content.h"
 #include <json/json.h>
-	
+#include <string>
+
 
 void ToolGroupCap::toJson(Json::Value &object) const
 {
@@ -246,7 +247,7 @@ std::optional<WearBarParams> WearBarParams::deserializeJson(std::istream &is)
 		blend = static_cast<WearBarParams::BlendMode>(blendInt);
 	else
 		return std::nullopt;
-	
+
 	const Json::Value &color_stops_object = root["color_stops"];
 	std::map<f32, video::SColor> colorStops;
 	for (const std::string &key : color_stops_object.getMemberNames()) {
@@ -491,10 +492,14 @@ PunchDamageResult getPunchDamage(
 	return result;
 }
 
-f32 getToolRange(const ItemDefinition &def_selected, const ItemDefinition &def_hand)
+f32 getToolRange(const ItemDefinition &def_wielded, const ItemDefinition &def_hand,
+		const ItemStack &wielded_item, const ItemStack &hand_item)
 {
-	float max_d = def_selected.range;
-	float max_d_hand = def_hand.range;
+	const std::string &wielded_meta_range = wielded_item.metadata.getString("range");
+	const std::string &hand_meta_range = hand_item.metadata.getString("range");
+
+	float max_d = wielded_meta_range.empty() ? def_wielded.range : stof(wielded_meta_range);
+	float max_d_hand = hand_meta_range.empty() ? def_hand.range : stof(hand_meta_range);
 
 	if (max_d < 0 && max_d_hand >= 0)
 		max_d = max_d_hand;

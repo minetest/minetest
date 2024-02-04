@@ -3232,7 +3232,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	const ItemStack &tool_item = player->getWieldedItem(&selected_item, &hand_item);
 
 	const ItemDefinition &selected_def = selected_item.getDefinition(itemdef_manager);
-	f32 d = getToolRange(selected_def, hand_item.getDefinition(itemdef_manager));
+	f32 d = getToolRange(selected_def, hand_item.getDefinition(itemdef_manager), selected_item,
+			hand_item);
 
 	core::line3d<f32> shootline;
 
