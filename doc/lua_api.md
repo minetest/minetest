@@ -5948,8 +5948,11 @@ Environment access
 * `minetest.add_entity(pos, name, [staticdata])`: Spawn Lua-defined entity at
   position.
     * Returns `ObjectRef`, or `nil` if failed
+    * Entities with `static_save = true` can be added also 
+      to unloaded and non-generated blocks.
 * `minetest.add_item(pos, item)`: Spawn item
     * Returns `ObjectRef`, or `nil` if failed
+    * Items can be added also to unloaded and non-generated blocks.
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
 * `minetest.get_objects_inside_radius(pos, radius)`: returns a list of
   ObjectRefs.
