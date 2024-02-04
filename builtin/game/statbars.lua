@@ -24,6 +24,13 @@ local bar_definitions = {
 		size = {x = 24, y = 24},
 		offset = {x = 25, y= -(48 + 24 + 16)},
 	},
+	minimap = {
+		hud_elem_type = "minimap",
+		position = {x = 1, y = 0},
+		alignment = {x = -1, y = 1},
+		offset = {x = -10, y = 10},
+		size = {x = 256 , y = 256},
+	},
 }
 
 local hud_ids = {}
@@ -91,6 +98,16 @@ local function update_builtin_statbars(player)
 			end
 		end, name, hud.id_breathbar)
 		hud.id_breathbar = nil
+	end
+
+	-- Don't add a minimap for clients which already have it hardcoded in C++.
+	local show_minimap = flags.minimap and
+			minetest.get_player_information(name).protocol_version >= 44
+	if show_minimap and not hud.id_minimap then
+		hud.id_minimap = player:hud_add(bar_definitions.minimap)
+	elseif not show_minimap and hud.id_minimap then
+		player:hud_remove(hud.id_minimap)
+		hud.id_minimap = nil
 	end
 end
 
@@ -169,6 +186,20 @@ function core.hud_replace_builtin(hud_name, definition)
 			if player and ids.id_breathbar then
 				player:hud_remove(ids.id_breathbar)
 				ids.id_breathbar = nil
+				update_builtin_statbars(player)
+			end
+		end
+		return true
+	end
+
+	if hud_name == "minimap" then
+		bar_definitions.minimap = definition
+
+		for name, ids in pairs(hud_ids) do
+			local player = core.get_player_by_name(name)
+			if player and ids.id_minimap then
+				player:hud_remove(ids.id_minimap)
+				ids.id_minimap = nil
 				update_builtin_statbars(player)
 			end
 		end
