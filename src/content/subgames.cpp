@@ -78,7 +78,13 @@ struct GameFindPath
 std::string getSubgamePathEnv()
 {
 	char *subgame_path = getenv("MINETEST_SUBGAME_PATH");
-	return subgame_path ? std::string(subgame_path) : "";
+	if (subgame_path) {
+		warningstream << "MINETEST_SUBGAME_PATH is deprecated, use MINETEST_GAME_PATH instead."
+				<< std::endl;
+	}
+
+	char *game_path = getenv("MINETEST_GAME_PATH");
+	return game_path ? std::string(game_path) : subgame_path ? std::string(subgame_path) : "";
 }
 
 SubgameSpec findSubgame(const std::string &id)
