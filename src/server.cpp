@@ -916,16 +916,12 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 			if (client->getState() < CS_DefinitionsSent)
 				continue;
 
-			// This can happen if the client times out somehow
-			if (!m_env->getPlayer(client->peer_id))
-				continue;
-
 			PlayerSAO *playersao = getPlayerSAO(client->peer_id);
 			if (!playersao)
 				continue;
 
-			for (auto it : m_playing_sounds) {
-				ServerPlayingSound &sound = it.second;
+			for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); it++) {
+				ServerPlayingSound &sound = it->second;
 				bool have_pos;
 
 				v3f pos = sound.getPos(m_env, &have_pos);
@@ -937,7 +933,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 					continue;
 
 				if (pos.getDistanceFrom(playersao->getBasePosition()) <= sound.max_hear_distance) {
-					SendSound(client->peer_id, it.first, sound, pos);
+					SendSound(client->peer_id, it->first, sound, pos);
 					sound.clients.insert(client->peer_id);
 				}
 			}
@@ -2163,12 +2159,8 @@ void Server::SendActiveObjectMessages(session_t peer_id, const std::string &data
 
 void Server::SendSound(session_t peer_id, s32 sound_id, const ServerPlayingSound &params, const v3f &pos)
 {
-	float gain = params.gain * params.spec.gain;
 	NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0, peer_id);
-	pkt << sound_id << params.spec.name << gain
-			<< (u8) params.type << pos << params.object
-			<< params.spec.loop << params.spec.fade << params.spec.pitch
-			<< false << params.spec.start_time;
+  createSoundPacket(pkt, sound_id, params, pos);
 
 	Send(&pkt);
 }
@@ -2259,12 +2251,8 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 		return 0;
 
 	if (!dst_clients.empty()) {
-		float gain = params.gain * params.spec.gain;
 		NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0);
-		pkt << id << params.spec.name << gain
-				<< (u8) params.type << pos << params.object
-				<< params.spec.loop << params.spec.fade << params.spec.pitch
-				<< ephemeral << params.spec.start_time;
+    createSoundPacket(pkt, id, params, pos, ephemeral);
 
 		const bool as_reliable = !ephemeral;
 
@@ -2333,6 +2321,15 @@ void Server::stopAttachedSounds(u16 id)
 		else
 			it++;
 	}
+}
+
+void Server::createSoundPacket(NetworkPacket &pkt, s32 sound_id, const ServerPlayingSound &params, const v3f &pos, bool ephemeral)
+{
+	float gain = params.gain * params.spec.gain;
+	pkt << sound_id << params.spec.name << gain
+			<< (u8) params.type << pos << params.object
+			<< params.spec.loop << params.spec.fade << params.spec.pitch
+			<< ephemeral << params.spec.start_time;
 }
 
 void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,

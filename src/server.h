@@ -240,6 +240,7 @@ public:
 	void stopSound(s32 handle);
 	void fadeSound(s32 handle, float step, float gain);
 	void stopAttachedSounds(u16 id);
+	void createSoundPacket(NetworkPacket &pkt, s32 sound_id, const ServerPlayingSound &params, const v3f &pos, bool ephemeral = false);
 
 	// Envlock
 	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);
