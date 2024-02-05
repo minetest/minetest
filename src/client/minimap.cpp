@@ -447,7 +447,7 @@ void Minimap::blitMinimapPixelsToImageSurface(
 video::IImage *Minimap::getMinimapMask()
 {
 	if (data->minimap_shape_round) {
-		if (not data->minimap_mask_round) {
+		if (!data->minimap_mask_round) {
 			// Get round minimap textures
 			data->minimap_mask_round = driver->createImage(
 				m_tsrc->getTexture("minimap_mask_round.png"),
@@ -457,7 +457,7 @@ video::IImage *Minimap::getMinimapMask()
 		return data->minimap_mask_round;
 	}
 
-	if (not data->minimap_mask_square) {
+	if (!data->minimap_mask_square) {
 		// Get square minimap textures
 		data->minimap_mask_square = driver->createImage(
 			m_tsrc->getTexture("minimap_mask_square.png"),
@@ -583,7 +583,7 @@ void Minimap::drawMinimap(core::rect<s32> rect)
 	video::ITexture *minimap_texture = getMinimapTexture();
 	if (!minimap_texture)
 		return;
-	if (not data->textures_initialised) {
+	if (!data->textures_initialised) {
 		data->minimap_overlay_round = m_tsrc->getTexture("minimap_overlay_round.png");
 		data->minimap_overlay_square = m_tsrc->getTexture("minimap_overlay_square.png");
 		data->player_marker = m_tsrc->getTexture("player_marker.png");
