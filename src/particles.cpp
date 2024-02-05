@@ -254,6 +254,7 @@ void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 	writeV3F32(os, drag);
 	jitter.serialize(os);
 	bounce.serialize(os);
+	texture.serialize(os, protocol_ver, true);
 }
 
 template <typename T, T (reader)(std::istream& is)>
@@ -291,4 +292,7 @@ void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
 		return;
 	jitter.deSerialize(is);
 	bounce.deSerialize(is);
+	if (is.eof())
+		return;
+	texture.deSerialize(is, protocol_ver, true);
 }

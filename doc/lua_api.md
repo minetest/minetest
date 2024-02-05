@@ -10532,7 +10532,7 @@ Used by `minetest.add_particle`.
 
     texture = "image.png",
     -- The texture of the particle
-    -- v5.6.0 and later: also supports the table format described in the
+    -- v5.9.0 and later: also supports the table format described in the
     -- following section
 
     playername = "singleplayer",
