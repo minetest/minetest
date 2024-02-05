@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "particles.h"
+#include "exceptions.h"
 #include <type_traits>
 
 using namespace ParticleParamTypes;
@@ -204,8 +205,7 @@ void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver, bool n
 	FlagT flags = 0;
 	if (animated)
 		flags |= FlagT(ParticleTextureFlags::animated);
-	if (blendmode != BlendMode::alpha)
-		flags |= FlagT(blendmode) << 1;
+	flags |= FlagT(blendmode) << 1;
 	serializeParameterValue(os, flags);
 
 	alpha.serialize(os);
@@ -224,6 +224,8 @@ void ServerParticleTexture::deSerialize(std::istream &is, u16 protocol_ver, bool
 
 	animated = !!(flags & FlagT(ParticleTextureFlags::animated));
 	blendmode = BlendMode((flags & FlagT(ParticleTextureFlags::blend)) >> 1);
+	if (blendmode >= BlendMode::BlendMode_END)
+		throw SerializationError("invalid blend mode");
 
 	alpha.deSerialize(is);
 	scale.deSerialize(is);
