@@ -904,6 +904,8 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 		Send sounds if needed
 	*/
 	{
+		m_playing_sounds_time += dtime;
+
 		// We will be accessing the environment
 		MutexAutoLock lock(m_env_mutex);
 
@@ -2250,6 +2252,8 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 	if (id == 0)
 		return 0;
 
+	params.start_time = m_playing_sounds_time;
+
 	if (!dst_clients.empty()) {
 		NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0);
     createSoundPacket(pkt, id, params, pos, ephemeral);
@@ -2329,7 +2333,8 @@ void Server::createSoundPacket(NetworkPacket &pkt, s32 sound_id, const ServerPla
 	pkt << sound_id << params.spec.name << gain
 			<< (u8) params.type << pos << params.object
 			<< params.spec.loop << params.spec.fade << params.spec.pitch
-			<< ephemeral << params.spec.start_time;
+			<< ephemeral 
+			<< (params.spec.start_time + m_playing_sounds_time - params.start_time);
 }
 
 void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,

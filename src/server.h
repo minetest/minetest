@@ -115,6 +115,8 @@ struct ServerPlayingSound
 	std::string to_player;
 	std::string exclude_player;
 
+	float start_time;
+
 	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
 
 	SoundSpec spec;
@@ -732,6 +734,7 @@ private:
 	std::unordered_map<s32, ServerPlayingSound> m_playing_sounds;
 	s32 m_playing_sounds_id_last_used = 0; // positive values only
 	s32 nextSoundId();
+	float m_playing_sounds_time = 0.0f;
 
 	ModStorageDatabase *m_mod_storage_database = nullptr;
 	float m_mod_storage_save_timer = 10.0f;
