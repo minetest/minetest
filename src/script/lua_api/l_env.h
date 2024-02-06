@@ -120,7 +120,7 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_add_node_level(lua_State *L);
 
-	// get_node_boxes(pos, box_type) -> table
+	// get_node_boxes(box_type, pos, [node]) -> table
 	// pos = {x=num, y=num, z=num}
 	// box_type = string
 	static int l_get_node_boxes(lua_State *L);
