@@ -223,6 +223,9 @@ void ServerParticleTexture::deSerialize(std::istream &is, u16 protocol_ver, bool
 {
 	FlagT flags = 0;
 	deSerializeParameterValue(is, flags);
+	// Backwards compatibility: Older clients don't send these, leave them at the defaults
+	if (is.eof())
+		return;
 
 	animated = !!(flags & FlagT(ParticleTextureFlags::animated));
 	blendmode = BlendMode((flags & FlagT(ParticleTextureFlags::blend)) >> 1);
@@ -296,7 +299,5 @@ void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
 		return;
 	jitter.deSerialize(is);
 	bounce.deSerialize(is);
-	if (is.eof())
-		return;
 	texture.deSerialize(is, protocol_ver, true);
 }
