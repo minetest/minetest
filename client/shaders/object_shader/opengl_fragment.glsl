@@ -383,7 +383,8 @@ void main(void)
 
 	color = base.rgb;
 	vec4 col = vec4(color.rgb * varColor.rgb, 1.0);
-	col.rgb += ambientLight * ambientColor.rgb;
+	if (!(ambientColor.r == ambientColor.g && ambientColor.r == ambientColor.b))
+		col.rgb += ambientLight * ambientColor.rgb;
 	col.rgb *= vIDiff;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS

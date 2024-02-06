@@ -908,7 +908,7 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 	// based on the entity glow.
 	if (m_enable_shaders)
 		light = encode_light(light_at_pos, m_prop.glow,
-			m_client->getEnv().getLocalPlayer()->getLighting().ambient_light.luminance);
+			m_env->getLocalPlayer()->getLighting().ambient_light.luminance);
 	else
 		final_color_blend(&light, light_at_pos, day_night_ratio);
 

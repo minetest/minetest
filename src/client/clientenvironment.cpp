@@ -262,7 +262,7 @@ void ClientEnvironment::step(float dtime)
 
 		u16 light = getInteriorLight(node_at_lplayer, 0, m_client->ndef());
 		lplayer->light_color = encode_light(light, 0,
-			m_client->getEnv().getLocalPlayer()->getLighting().ambient_light.luminance); // this transfers light.alpha
+			lplayer->getLighting().ambient_light.luminance); // this transfers light.alpha
 		final_color_blend(&lplayer->light_color, light, day_night_ratio);
 	}
 
