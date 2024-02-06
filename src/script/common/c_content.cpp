@@ -1110,7 +1110,7 @@ void push_nodebox(lua_State *L, const NodeBox &box)
 		case NODEBOX_FIXED:
 			lua_pushstring(L, "fixed");
 			lua_setfield(L, -2, "type");
-			push_box(L, box.fixed);
+			push_aabb3f_vector(L, box.fixed);
 			lua_setfield(L, -2, "fixed");
 			break;
 		case NODEBOX_WALLMOUNTED:
@@ -1127,17 +1127,17 @@ void push_nodebox(lua_State *L, const NodeBox &box)
 			lua_pushstring(L, "connected");
 			lua_setfield(L, -2, "type");
 			const auto &c = box.getConnected();
-			push_box(L, c.connect_top);
+			push_aabb3f_vector(L, c.connect_top);
 			lua_setfield(L, -2, "connect_top");
-			push_box(L, c.connect_bottom);
+			push_aabb3f_vector(L, c.connect_bottom);
 			lua_setfield(L, -2, "connect_bottom");
-			push_box(L, c.connect_front);
+			push_aabb3f_vector(L, c.connect_front);
 			lua_setfield(L, -2, "connect_front");
-			push_box(L, c.connect_back);
+			push_aabb3f_vector(L, c.connect_back);
 			lua_setfield(L, -2, "connect_back");
-			push_box(L, c.connect_left);
+			push_aabb3f_vector(L, c.connect_left);
 			lua_setfield(L, -2, "connect_left");
-			push_box(L, c.connect_right);
+			push_aabb3f_vector(L, c.connect_right);
 			lua_setfield(L, -2, "connect_right");
 			// half the boxes are missing here?
 			break;
@@ -1145,16 +1145,6 @@ void push_nodebox(lua_State *L, const NodeBox &box)
 		default:
 			FATAL_ERROR("Invalid box.type");
 			break;
-	}
-}
-
-void push_box(lua_State *L, const std::vector<aabb3f> &box)
-{
-	lua_createtable(L, box.size(), 0);
-	u8 i = 1;
-	for (const aabb3f &it : box) {
-		push_aabb3f(L, it);
-		lua_rawseti(L, -2, i++);
 	}
 }
 

@@ -562,6 +562,40 @@ int ModApiEnv::l_add_node_level(lua_State *L)
 	return 1;
 }
 
+// get_node_boxes(box_type, pos, [node]) -> table
+// box_type = string
+// pos = {x=num, y=num, z=num}
+// node = {name=string, param1=num, param2=num} or nil
+int ModApiEnv::l_get_node_boxes(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	std::string box_type = luaL_checkstring(L, 1);
+	v3s16 pos = read_v3s16(L, 2);
+	MapNode n;
+	if (lua_istable(L, 3))
+		n = readnode(L, 3);
+	else
+		n = env->getMap().getNode(pos);
+
+	u8 neighbors = n.getNeighbors(pos, &env->getMap());
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
+
+	std::vector<aabb3f> boxes;
+	if (box_type == "node_box")
+		n.getNodeBoxes(ndef, &boxes, neighbors);
+	else if (box_type == "collision_box")
+		n.getCollisionBoxes(ndef, &boxes, neighbors);
+	else if (box_type == "selection_box")
+		n.getSelectionBoxes(ndef, &boxes, neighbors);
+	else
+		luaL_error(L, "get_node_boxes: box_type is invalid. Allowed values: \"node_box\", \"collision_box\", \"selection_box\"");
+
+	push_aabb3f_vector(L, boxes, BS);
+
+	return 1;
+}
+
 // find_nodes_with_meta(pos1, pos2)
 int ModApiEnv::l_find_nodes_with_meta(lua_State *L)
 {
@@ -1456,6 +1490,7 @@ void ModApiEnv::Initialize(lua_State *L, int top)
 	API_FCT(get_node_level);
 	API_FCT(set_node_level);
 	API_FCT(add_node_level);
+	API_FCT(get_node_boxes);
 	API_FCT(add_entity);
 	API_FCT(find_nodes_with_meta);
 	API_FCT(get_meta);

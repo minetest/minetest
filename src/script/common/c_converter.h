@@ -110,11 +110,13 @@ void                push_v2s16          (lua_State *L, v2s16 p);
 void                push_v2s32          (lua_State *L, v2s32 p);
 void                push_v2u32          (lua_State *L, v2u32 p);
 void                push_v3s16          (lua_State *L, v3s16 p);
-void                push_aabb3f         (lua_State *L, aabb3f box);
+void                push_aabb3f         (lua_State *L, aabb3f box, f32 divisor = 1.0f);
 void                push_ARGB8          (lua_State *L, video::SColor color);
 void                pushFloatPos        (lua_State *L, v3f p);
 void                push_v3f            (lua_State *L, v3f p);
 void                push_v2f            (lua_State *L, v2f p);
+void                push_aabb3f_vector  (lua_State *L, const std::vector<aabb3f> &boxes,
+                                         f32 divisor = 1.0f);
 
 void                warn_if_field_exists(lua_State *L, int table,
                                          const char *fieldname,

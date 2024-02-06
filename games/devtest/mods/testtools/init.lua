@@ -6,6 +6,7 @@ testtools = {}
 dofile(minetest.get_modpath("testtools") .. "/light.lua")
 dofile(minetest.get_modpath("testtools") .. "/privatizer.lua")
 dofile(minetest.get_modpath("testtools") .. "/particles.lua")
+dofile(minetest.get_modpath("testtools") .. "/node_box_visualizer.lua")
 
 local pointabilities_nodes = {
 	nodes = {

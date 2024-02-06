@@ -364,20 +364,20 @@ aabb3f read_aabb3f(lua_State *L, int index, f32 scale)
 	return box;
 }
 
-void push_aabb3f(lua_State *L, aabb3f box)
+void push_aabb3f(lua_State *L, aabb3f box, f32 divisor)
 {
 	lua_createtable(L, 6, 0);
-	lua_pushnumber(L, box.MinEdge.X);
+	lua_pushnumber(L, box.MinEdge.X / divisor);
 	lua_rawseti(L, -2, 1);
-	lua_pushnumber(L, box.MinEdge.Y);
+	lua_pushnumber(L, box.MinEdge.Y / divisor);
 	lua_rawseti(L, -2, 2);
-	lua_pushnumber(L, box.MinEdge.Z);
+	lua_pushnumber(L, box.MinEdge.Z / divisor);
 	lua_rawseti(L, -2, 3);
-	lua_pushnumber(L, box.MaxEdge.X);
+	lua_pushnumber(L, box.MaxEdge.X / divisor);
 	lua_rawseti(L, -2, 4);
-	lua_pushnumber(L, box.MaxEdge.Y);
+	lua_pushnumber(L, box.MaxEdge.Y / divisor);
 	lua_rawseti(L, -2, 5);
-	lua_pushnumber(L, box.MaxEdge.Z);
+	lua_pushnumber(L, box.MaxEdge.Z / divisor);
 	lua_rawseti(L, -2, 6);
 }
 
@@ -407,6 +407,16 @@ std::vector<aabb3f> read_aabb3f_vector(lua_State *L, int index, f32 scale)
 		}
 	}
 	return boxes;
+}
+
+void push_aabb3f_vector(lua_State *L, const std::vector<aabb3f> &boxes, f32 divisor)
+{
+	lua_createtable(L, boxes.size(), 0);
+	int i = 1;
+	for (const aabb3f &box : boxes) {
+		push_aabb3f(L, box, divisor);
+		lua_rawseti(L, -2, i++);
+	}
 }
 
 size_t read_stringlist(lua_State *L, int index, std::vector<std::string> *result)
