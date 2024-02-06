@@ -77,10 +77,12 @@ struct GameFindPath
 
 std::string getSubgamePathEnv()
 {
+	static bool has_warned = false;
 	char *subgame_path = getenv("MINETEST_SUBGAME_PATH");
-	if (subgame_path) {
+	if (subgame_path and !has_warned) {
 		warningstream << "MINETEST_SUBGAME_PATH is deprecated, use MINETEST_GAME_PATH instead."
 				<< std::endl;
+		has_warned = true;
 	}
 
 	char *game_path = getenv("MINETEST_GAME_PATH");
