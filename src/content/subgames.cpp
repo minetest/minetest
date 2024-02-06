@@ -86,7 +86,12 @@ std::string getSubgamePathEnv()
 	}
 
 	char *game_path = getenv("MINETEST_GAME_PATH");
-	return game_path ? std::string(game_path) : subgame_path ? std::string(subgame_path) : "";
+
+	if (game_path)
+		return std::string(game_path);
+	else if (subgame_path)
+		return std::string(subgame_path);
+	return "";
 }
 
 SubgameSpec findSubgame(const std::string &id)
