@@ -117,6 +117,7 @@ Client::Client(
 	m_sound(sound),
 	m_event(event),
 	m_rendering_engine(rendering_engine),
+	m_line_scenenode_manager(&m_env),
 	m_mesh_update_manager(std::make_unique<MeshUpdateManager>(this)),
 	m_env(
 		new ClientMap(this, rendering_engine, control, 666),

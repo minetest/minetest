@@ -387,6 +387,7 @@ set(common_SRCS
 	itemstackmetadata.cpp
 	light.cpp
 	lighting.cpp
+	line_params.cpp
 	log.cpp
 	main.cpp
 	map.cpp

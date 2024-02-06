@@ -1707,6 +1707,38 @@ void Server::SendDeleteParticleSpawner(session_t peer_id, u32 id)
 
 }
 
+void Server::Send3DLine(session_t peer_id, u32 proto_ver,
+	u32 id, u16 action, const LineParams *p)
+{
+	assert(proto_ver != 0);
+
+	ToClientCommand line_cmd;
+
+	switch (action) {
+		case 0:
+			line_cmd = TOCLIENT_ADD_3DLINE;
+			break;
+		case 1:
+			line_cmd = TOCLIENT_CHANGE_3DLINE_PROPERTIES;
+			break;
+		case 2:
+			line_cmd = TOCLIENT_REMOVE_3DLINE;
+			break;
+	}
+
+	NetworkPacket pkt(line_cmd, 500, peer_id);
+	pkt << id;
+
+	if (line_cmd != TOCLIENT_REMOVE_3DLINE) {
+		std::ostringstream oss(std::ios_base::binary);
+		p->serialize(oss, proto_ver);
+
+		pkt.putRawString(oss.str());
+	}
+
+	Send(&pkt);
+}
+
 void Server::SendHUDAdd(session_t peer_id, u32 id, HudElement *form)
 {
 	NetworkPacket pkt(TOCLIENT_HUDADD, 0 , peer_id);
@@ -3566,6 +3598,82 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 
 	m_env->deleteParticleSpawner(id);
 	SendDeleteParticleSpawner(peer_id, id);
+}
+
+u32 Server::add3DLine(const LineParams &p)
+{
+	if (!m_env)
+		return 0;
+
+	u32 id = m_env->addNew3DLine();
+
+	if (!p.playername.empty())
+		add3DLineToClient(p, m_env->getPlayer(p.playername.c_str()), id);
+	else {
+		const std::vector<RemotePlayer*> clients = m_env->getPlayers();
+		for (auto client : clients)
+			add3DLineToClient(p, client, id);
+	}
+
+	return id;
+}
+
+void Server::change3DLineProperties(u32 id, const LineParams &new_p)
+{
+	const std::vector<RemotePlayer*> clients = m_env->getPlayers();
+
+	for (auto client : clients) {
+		if (!new_p.playername.empty())
+			if (client->getName() == new_p.playername.c_str())
+				change3DLinePropertiesToClient(new_p, client, id);
+			else
+				remove3DLineToClient(client, id);
+		else
+			change3DLinePropertiesToClient(new_p, client, id);
+	}
+}
+
+void Server::remove3DLine(u32 id)
+{
+	m_env->remove3DLine(id);
+
+	const std::vector<RemotePlayer*> clients = m_env->getPlayers();
+
+	for (auto client: clients)
+		remove3DLineToClient(client, id);
+}
+
+void Server::add3DLineToClient(const LineParams &p, RemotePlayer *player, u32 id)
+{
+	if (!player)
+		return;
+
+	session_t peer_id = player->getPeerId();
+	u32 proto_ver = player->protocol_version;
+
+	Send3DLine(peer_id, proto_ver, id, 0, &p);
+}
+
+void Server::change3DLinePropertiesToClient(const LineParams &new_p, RemotePlayer *player, u32 id)
+{
+	if (!player)
+		return;
+
+	session_t peer_id = player->getPeerId();
+	u32 proto_ver = player->protocol_version;
+
+	Send3DLine(peer_id, proto_ver, id, 1, &new_p);
+}
+
+void Server::remove3DLineToClient(RemotePlayer *player, u32 id)
+{
+	if (!player)
+		return;
+
+	session_t peer_id = player->getPeerId();
+	u32 proto_ver = player->protocol_version;
+
+	Send3DLine(peer_id, proto_ver, id, 2);
 }
 
 bool Server::dynamicAddMedia(std::string filepath,

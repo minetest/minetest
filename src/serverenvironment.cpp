@@ -1712,6 +1712,34 @@ void ServerEnvironment::deleteParticleSpawner(u32 id, bool remove_from_object)
 	}
 }
 
+u32 ServerEnvironment::addNew3DLine()
+{
+	static thread_local u32 id = 0;
+
+	// Searching for free id
+	std::set<u32>::iterator it;
+	do {
+		id++;
+		it = m_3dlines_ids.find(id);
+	}
+	while (it != m_3dlines_ids.end());
+
+	m_3dlines_ids.insert(id);
+
+	return id;
+}
+
+void ServerEnvironment::remove3DLine(u32 id)
+{
+	if (m_3dlines_ids.find(id) != m_3dlines_ids.end())
+		m_3dlines_ids.erase(id);
+}
+
+bool ServerEnvironment::is3DLineExists(u32 id)
+{
+	return m_3dlines_ids.find(id) != m_3dlines_ids.end();
+}
+
 u16 ServerEnvironment::addActiveObject(std::unique_ptr<ServerActiveObject> object)
 {
 	assert(object);	// Pre-condition

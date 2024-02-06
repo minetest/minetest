@@ -850,7 +850,45 @@ enum ToClientCommand : u16
 			f32 center_weight_power
 	*/
 
-	TOCLIENT_NUM_MSG_TYPES = 0x64,
+	TOCLIENT_ADD_3DLINE = 0x64,
+	/*
+		u32 id
+		LineType type
+		std::pair<v3f> pos
+		std::pair<video::SColor> color
+		std::pair<u16> attached_ids
+		f32 width
+		std::string texture
+		std::string playername
+		bool backface_culling
+		TileAnimationParams animation
+		u8 light_level
+		std::unordered_map<LineProperty, bool> last_changed
+	*/
+
+	TOCLIENT_CHANGE_3DLINE_PROPERTIES = 0x65,
+	/*
+		u32 id
+		LineType type
+		std::pair<v3f> pos
+		std::pair<video::SColor> color
+		std::pair<u16> attached_ids
+		f32 width
+		std::string texture
+		std::string playername
+		bool backface_culling
+		TileAnimationParams animation
+		u8 light_level
+		std::unordered_map<LineProperty, bool> last_changed
+	*/
+
+	TOCLIENT_REMOVE_3DLINE = 0x66,
+	/*
+		u32 id
+	*/
+
+	TOCLIENT_NUM_MSG_TYPES = 0x67,
+
 };
 
 enum ToServerCommand : u16

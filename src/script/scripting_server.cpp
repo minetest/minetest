@@ -154,6 +154,7 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	LuaSettings::Register(L);
 	StorageRef::Register(L);
 	ModChannelRef::Register(L);
+	Lua3DLine::Register(L);
 
 	// Initialize mod api modules
 	ModApiAuth::Initialize(L, top);

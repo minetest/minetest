@@ -1827,3 +1827,51 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.volumetric_light_strength;
 }
+
+void Client::handleCommand_Add3DLine(NetworkPacket *pkt)
+{
+	std::string datastring(pkt->getString(0), pkt->getSize());
+	std::istringstream is(datastring, std::ios_base::binary);
+
+	u32 id = readU32(is);
+
+	LineParams *params = new LineParams();
+
+	params->deserialize(is, getProtoVersion());
+
+	ClientEvent *event = new ClientEvent();
+	event->type = CE_ADD_3DLINE;
+	event->line.p = params;
+	event->line.id = id;
+
+	m_client_event_queue.push(event);
+}
+
+void Client::handleCommand_Change3DLineProperties(NetworkPacket *pkt)
+{
+	std::string datastring(pkt->getString(0), pkt->getSize());
+	std::istringstream is(datastring, std::ios_base::binary);
+	u32 id = readU32(is);
+
+	LineParams *params = new LineParams();
+
+	params->deserialize(is, getProtoVersion());
+
+	ClientEvent *event = new ClientEvent();
+	event->type = CE_CHANGE_3DLINE_PROPERTIES;
+	event->line.p = params;
+	event->line.id = id;
+	m_client_event_queue.push(event);
+}
+
+void Client::handleCommand_Remove3DLine(NetworkPacket *pkt)
+{
+	std::string datastring(pkt->getString(0), pkt->getSize());
+	std::istringstream is(datastring, std::ios_base::binary);
+	u32 id = readU32(is);
+
+	ClientEvent *event = new ClientEvent();
+	event->type = CE_REMOVE_3DLINE;
+	event->remove_line.id = id;
+	m_client_event_queue.push(event);
+}
