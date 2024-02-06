@@ -1342,7 +1342,7 @@ int ModApiEnv::l_find_path(lua_State *L)
 	return 0;
 }
 
-static bool read_tree_def(lua_State *L, int idx,
+bool ModApiEnv::read_tree_def(lua_State *L, int idx,
 	const NodeDefManager *ndef, treegen::TreeDef &tree_def)
 {
 	std::string trunk, leaves, fruit;

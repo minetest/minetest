@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_mapgen.h"
 #include "lua_api/l_internal.h"
 #include "lua_api/l_vmanip.h"
+#include "lua_api/l_env.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "cpp_api/s_security.h"
@@ -110,6 +111,7 @@ bool read_schematic_def(lua_State *L, int index,
 
 bool read_deco_simple(lua_State *L, DecoSimple *deco);
 bool read_deco_schematic(lua_State *L, SchematicManager *schemmgr, DecoSchematic *deco);
+bool read_deco_lsystem(lua_State *L, const NodeDefManager *ndef, DecoLSystem *deco);
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1226,6 +1228,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 		success = read_deco_schematic(L, schemmgr, (DecoSchematic *)deco);
 		break;
 	case DECO_LSYSTEM:
+		success = read_deco_lsystem(L, ndef, (DecoLSystem *)deco);
 		break;
 	}
 
@@ -1306,6 +1309,17 @@ bool read_deco_schematic(lua_State *L, SchematicManager *schemmgr, DecoSchematic
 
 	deco->schematic = schem;
 	return schem != NULL;
+}
+
+bool read_deco_lsystem(lua_State *L, const NodeDefManager *ndef, DecoLSystem *deco)
+{
+	deco->ndef = ndef;
+
+	lua_getfield(L, 1, "treedef");
+	bool has_def = ModApiEnv::read_tree_def(L, -1, ndef, deco->tree_def);
+	lua_pop(L, 1);
+
+	return has_def;
 }
 
 

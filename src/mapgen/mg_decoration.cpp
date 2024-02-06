@@ -472,3 +472,21 @@ size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceilin
 
 	return 1;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+ObjDef *DecoLSystem::clone() const
+{
+	auto def = new DecoLSystem();
+	Decoration::cloneTo(def);
+
+	def->ndef = ndef;
+
+	def->tree_def = tree_def;
+	return def;
+}
+
+
+size_t DecoLSystem::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
+{
+	return treegen::make_ltree(*vm, p, ndef, tree_def);
+}

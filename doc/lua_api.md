@@ -4517,6 +4517,12 @@ Can specify a probability of a node randomly appearing when placed.
 This decoration type is intended to be used for multi-node sized discrete
 structures, such as trees, cave spikes, rocks, and so on.
 
+`lsystem`
+-----------
+Generates a L-system tree at the position where the decoration is placed.
+Uses the same L-system as `minetest.spawn_tree`, but is faster than using it manually.
+The `treedef` field in the decoration definition is used for the tree definition.
+
 
 
 
@@ -10101,7 +10107,7 @@ See [Decoration types]. Used by `minetest.register_decoration`.
 ```lua
 {
     deco_type = "simple",
-    -- Type. "simple" or "schematic" supported
+    -- Type. "simple", "schematic" or "lsystem" supported
 
     place_on = "default:dirt_with_grass",
     -- Node (or list of nodes) that the decoration can be placed on
@@ -10254,6 +10260,23 @@ See [Decoration types]. Used by `minetest.register_decoration`.
     -- Effect is inverted for "all_ceilings" decorations.
     -- Ignored by 'y_min', 'y_max' and 'spawn_by' checks, which always refer
     -- to the 'place_on' node.
+
+    treedef = {
+		axiom="FFFFFAFFBF",
+		rules_a="[&&&FFFFF&&FFFF][&&&++++FFFFF&&FFFF][&&&----FFFFF&&FFFF]",
+		rules_b="[&&&++FFFFF&&FFFF][&&&--FFFFF&&FFFF][&&&------FFFFF&&FFFF]",
+		trunk="default:tree",
+		leaves="default:leaves",
+		angle=30,
+		iterations=2,
+		random_level=0,
+		trunk_type="single",
+		thin_branches=true,
+		fruit_chance=10,
+		fruit="default:apple"
+	},
+    -- Same as for `minetest.spawn_tree`.
+    -- See section [L-system trees] for more details.
 }
 ```
 

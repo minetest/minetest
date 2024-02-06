@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "objdef.h"
 #include "noise.h"
 #include "nodedef.h"
+#include "mapgen/treegen.h"
 
 typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
 
@@ -112,12 +113,15 @@ public:
 };
 
 
-/*
 class DecoLSystem : public Decoration {
 public:
-	virtual void generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	ObjDef *clone() const;
+
+	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling);
+
+	const NodeDefManager *ndef;
+	treegen::TreeDef tree_def;
 };
-*/
 
 
 class DecorationManager : public ObjDefManager {
@@ -139,8 +143,8 @@ public:
 			return new DecoSimple;
 		case DECO_SCHEMATIC:
 			return new DecoSchematic;
-		//case DECO_LSYSTEM:
-		//	return new DecoLSystem;
+		case DECO_LSYSTEM:
+			return new DecoLSystem;
 		default:
 			return NULL;
 		}

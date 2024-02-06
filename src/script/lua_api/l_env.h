@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_base.h"
 #include "serverenvironment.h"
 #include "raycast.h"
+#include "mapgen/treegen.h"
 
 // base class containing helpers
 class ModApiEnvBase : public ModApiBase {
@@ -241,6 +242,8 @@ private:
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeClient(lua_State *L, int top);
+	static bool read_tree_def(lua_State *L, int idx,
+			const NodeDefManager *ndef, treegen::TreeDef &tree_def);
 };
 
 /*
