@@ -79,7 +79,7 @@ std::string getSubgamePathEnv()
 {
 	static bool has_warned = false;
 	char *subgame_path = getenv("MINETEST_SUBGAME_PATH");
-	if (subgame_path and !has_warned) {
+	if (subgame_path && !has_warned) {
 		warningstream << "MINETEST_SUBGAME_PATH is deprecated, use MINETEST_GAME_PATH instead."
 				<< std::endl;
 		has_warned = true;
