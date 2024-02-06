@@ -155,8 +155,7 @@ local function player_event_handler(player,eventname)
 end
 
 function core.hud_replace_builtin(hud_name, definition)
-	if type(definition) ~= "table" or
-			(definition.type or definition.hud_elem_type) ~= "statbar" then
+	if type(definition) ~= "table" then
 		return false
 	end
 
