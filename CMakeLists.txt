@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.9)
 
 # Set policies up to 3.9 since we want to enable the IPO option
 if(${CMAKE_VERSION} VERSION_LESS 3.9)
@@ -44,11 +44,12 @@ set(BUILD_UNITTESTS TRUE CACHE BOOL "Build unittests")
 set(BUILD_BENCHMARKS FALSE CACHE BOOL "Build benchmarks")
 set(BUILD_DOCUMENTATION TRUE CACHE BOOL "Build documentation")
 
-set(ENABLE_LTO TRUE CACHE BOOL "Use Link Time Optimization")
+set(DEFAULT_ENABLE_LTO TRUE)
 # by default don't enable on Debug builds to get faster builds
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(ENABLE_LTO FALSE)
+  set(DEFAULT_ENABLE_LTO FALSE)
 endif()
+set(ENABLE_LTO ${DEFAULT_ENABLE_LTO} CACHE BOOL "Use Link Time Optimization")
 
 set(DEFAULT_RUN_IN_PLACE FALSE)
 if(WIN32)
@@ -72,7 +73,7 @@ if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type: Debug or Release" FORCE)
 endif()
 
-# CMake >= 3.9.0 supports LTO/IPO.
+# FIXME: Windows build fails in multiple places to link, needs to be investigated.
 if (ENABLE_LTO AND NOT WIN32)
 	include(CheckIPOSupported)
 	check_ipo_supported(RESULT lto_supported OUTPUT lto_output)
