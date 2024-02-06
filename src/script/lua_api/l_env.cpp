@@ -563,8 +563,9 @@ int ModApiEnv::l_add_node_level(lua_State *L)
 }
 
 // get_node_boxes(box_type, pos, [node]) -> table
-// pos = {x=num, y=num, z=num}
 // box_type = string
+// pos = {x=num, y=num, z=num}
+// node = {name=string, param1=num, param2=num} or nil
 int ModApiEnv::l_get_node_boxes(lua_State *L)
 {
 	GET_ENV_PTR;
