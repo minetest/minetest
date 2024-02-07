@@ -3324,10 +3324,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	if (pointed != runData.pointed_old)
 		infostream << "Pointing at " << pointed.dump() << std::endl;
 
-#ifdef HAVE_TOUCHSCREENGUI
 	if (g_touchscreengui)
 		g_touchscreengui->applyContextControls(selected_def.touch_interaction.getMode(pointed));
-#endif
 
 	// Note that updating the selection mesh every frame is not particularly efficient,
 	// but the halo rendering code is already inefficient so there's no point in optimizing it here
