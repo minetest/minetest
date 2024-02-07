@@ -43,7 +43,7 @@ if(NOT (BUILD_CLIENT OR BUILD_SERVER))
 endif()
 
 
-option(PRECOMPILE_HEADERS "Precompile some headers (experimental)" FALSE)
+option(PRECOMPILE_HEADERS "Precompile some headers (experimental; requires CMake 3.16 or later)" FALSE)
 set(PRECOMPILED_HEADERS_PATH "" CACHE FILEPATH "Path to a file listing all headers to precompile")
 
 if(PRECOMPILE_HEADERS)
