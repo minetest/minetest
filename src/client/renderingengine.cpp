@@ -319,9 +319,9 @@ void RenderingEngine::finalize()
 }
 
 void RenderingEngine::draw_scene(video::SColor skycolor, bool show_hud,
-		bool show_minimap, bool draw_wield_tool, bool draw_crosshair)
+		bool draw_wield_tool, bool draw_crosshair)
 {
-	core->draw(skycolor, show_hud, show_minimap, draw_wield_tool, draw_crosshair);
+	core->draw(skycolor, show_hud, draw_wield_tool, draw_crosshair);
 }
 
 const VideoDriverInfo &RenderingEngine::getVideoDriverInfo(irr::video::E_DRIVER_TYPE type)

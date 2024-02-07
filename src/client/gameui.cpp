@@ -219,11 +219,6 @@ void GameUI::initFlags()
 	m_flags.show_minimal_debug = g_settings->getBool("show_debug");
 }
 
-void GameUI::showMinimap(bool show)
-{
-	m_flags.show_minimap = show;
-}
-
 void GameUI::showTranslatedStatusText(const char *str)
 {
 	showStatusText(wstrgettext(str));

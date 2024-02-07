@@ -1290,9 +1290,6 @@ void Game::run()
 		updateFrame(&graph, &stats, dtime, cam_view);
 		updateProfilerGraphs(&graph);
 
-		// Update if minimap has been disabled by the server
-		m_game_ui->m_flags.show_minimap &= client->shouldShowMinimap();
-
 		if (m_does_lost_focus_pause_game && !device->isWindowFocused() && !isMenuActive()) {
 			showPauseMenu();
 		}
@@ -2474,23 +2471,16 @@ void Game::toggleMinimap(bool shift_pressed)
 	// -->
 	u32 hud_flags = client->getEnv().getLocalPlayer()->hud_flags;
 
-	if (!(hud_flags & HUD_FLAG_MINIMAP_VISIBLE)) {
-		m_game_ui->m_flags.show_minimap = false;
-	} else {
-
+	if (hud_flags & HUD_FLAG_MINIMAP_VISIBLE) {
 	// If radar is disabled, try to find a non radar mode or fall back to 0
 		if (!(hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE))
 			while (mapper->getModeIndex() &&
 					mapper->getModeDef().type == MINIMAP_TYPE_RADAR)
 				mapper->nextMode();
-
-		m_game_ui->m_flags.show_minimap = mapper->getModeDef().type !=
-				MINIMAP_TYPE_OFF;
 	}
 	// <--
 	// End of 'not so satifying code'
-	if ((hud_flags & HUD_FLAG_MINIMAP_VISIBLE) ||
-			(hud && hud->hasElementOfType(HUD_ELEM_MINIMAP)))
+	if (hud && hud->hasElementOfType(HUD_ELEM_MINIMAP))
 		m_game_ui->showStatusText(utf8_to_wide(mapper->getModeDef().label));
 	else
 		m_game_ui->showTranslatedStatusText("Minimap currently disabled by game or mod");
@@ -4358,7 +4348,7 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 		draw_crosshair = false;
 #endif
 	this->m_rendering_engine->draw_scene(sky_color, this->m_game_ui->m_flags.show_hud,
-			this->m_game_ui->m_flags.show_minimap, draw_wield_tool, draw_crosshair);
+			draw_wield_tool, draw_crosshair);
 
 	/*
 		Profiler graph

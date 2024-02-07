@@ -118,7 +118,7 @@ public:
 			float dtime = 0, int percent = 0, bool sky = true);
 
 	void draw_scene(video::SColor skycolor, bool show_hud,
-			bool show_minimap, bool draw_wield_tool, bool draw_crosshair);
+			bool draw_wield_tool, bool draw_crosshair);
 
 	void initialize(Client *client, Hud *hud);
 	void finalize();

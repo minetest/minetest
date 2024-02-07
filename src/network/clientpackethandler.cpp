@@ -1281,24 +1281,15 @@ void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
-	bool was_minimap_visible = player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE;
 	bool was_minimap_radar_visible = player->hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE;
 
 	player->hud_flags &= ~mask;
 	player->hud_flags |= flags;
 
-	m_minimap_disabled_by_server = !(player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE);
 	bool m_minimap_radar_disabled_by_server = !(player->hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE);
 
 	// Not so satisying code to keep compatibility with old fixed mode system
 	// -->
-
-	// Hide minimap if it has been disabled by the server
-	if (m_minimap && m_minimap_disabled_by_server && was_minimap_visible)
-		// defers a minimap update, therefore only call it if really
-		// needed, by checking that minimap was visible before
-		m_minimap->setModeIndex(0);
-
 	// If radar has been disabled, try to find a non radar mode or fall back to 0
 	if (m_minimap && m_minimap_radar_disabled_by_server
 			&& was_minimap_radar_visible) {
