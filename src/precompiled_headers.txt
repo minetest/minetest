@@ -57,28 +57,35 @@
 <condition_variable>
 <future>
 <mutex>
+<shared_mutex>
 <thread>
 
 # Other:
 <algorithm>
+<any>
 <bitset>
+<charconv>
 <chrono>
 <codecvt>
 <complex>
 <exception>
+<execution>
 <functional>
 <initializer_list>
 <iterator>
 <limits>
 <locale>
 <memory>
+<memory_resource>
 <new>
 <numeric>
+<optional>
 <random>
 <ratio>
 <regex>
 <stdexcept>
 <string>
+<string_view>
 <system_error>
 <tuple>
 <typeindex>
@@ -86,6 +93,7 @@
 <type_traits>
 <utility>
 <valarray>
+<variant>
 
 
 # libs
