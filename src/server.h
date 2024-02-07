@@ -332,7 +332,7 @@ public:
 			f32 frame_speed);
 	void setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third, const v3f &third_front);
 
-	void setPlayerCameraRoll(RemotePlayer *player, float roll);
+	void setPlayerCameraRoll(RemotePlayer *player, f32 roll);
 
 	void setSky(RemotePlayer *player, const SkyboxParams &params);
 	void setSun(RemotePlayer *player, const SunParams &params);

@@ -185,7 +185,7 @@ public:
 
 	void set_camera_roll(f32 roll)
 	{
-		m_camera_roll=roll;
+		m_camera_roll = roll;
 	}
 	f32 get_camera_roll() const
 	{
