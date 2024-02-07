@@ -39,6 +39,7 @@ extern "C" {
 #include "util/string.h"
 #include "itemgroup.h"
 #include "itemdef.h"
+#include "util/pointabilities.h"
 #include "c_types.h"
 // We do an explicit path include because by default c_content.h include src/client/hud.h
 // prior to the src/hud.h, which is not good on server only build
@@ -82,9 +83,6 @@ void               push_content_features     (lua_State *L,
 
 void               push_nodebox              (lua_State *L,
                                               const NodeBox &box);
-void               push_box                  (lua_State *L,
-                                              const std::vector<aabb3f> &box);
-
 void               push_palette              (lua_State *L,
                                               const std::vector<video::SColor> *palette);
 
@@ -107,9 +105,17 @@ ItemStack          read_item                 (lua_State *L, int index, IItemDefM
 
 struct TileAnimationParams read_animation_definition(lua_State *L, int index);
 
+PointabilityType   read_pointability_type    (lua_State *L, int index);
+Pointabilities     read_pointabilities       (lua_State *L, int index);
+void               push_pointability_type    (lua_State *L, PointabilityType pointable);
+void               push_pointabilities       (lua_State *L, const Pointabilities &pointabilities);
+
 ToolCapabilities   read_tool_capabilities    (lua_State *L, int table);
 void               push_tool_capabilities    (lua_State *L,
                                               const ToolCapabilities &prop);
+WearBarParams      read_wear_bar_params      (lua_State *L, int table);
+void               push_wear_bar_params      (lua_State *L,
+                                              const WearBarParams &prop);
 
 void read_item_definition (lua_State *L, int index, const ItemDefinition &default_def,
 		ItemDefinition &def);

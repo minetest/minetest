@@ -22,7 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "porting.h"
 #include "server.h"
+#ifndef SERVER
 #include "client/client.h"
+#endif
 #include "settings.h"
 
 #include <cerrno>

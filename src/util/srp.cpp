@@ -26,7 +26,6 @@
  *
  */
 
-// clang-format off
 
 #include <cstddef>
 
@@ -37,7 +36,6 @@
 	#include <ctime>
 
 #endif
-// clang-format on
 
 #include <cstdlib>
 #include <cstring>
@@ -52,11 +50,13 @@
 	#include <mini-gmp.h>
 #endif
 
-#include <util/sha2.h>
+#include "util/sha256.h"
 
 #include "srp.h"
 //#define CSRP_USE_SHA1
 #define CSRP_USE_SHA256
+
+#define CSRP_MAX_HASH (SHA256_DIGEST_LENGTH)
 
 #define srp_dbg_data(data, datalen, prevtext) ;
 /*void srp_dbg_data(unsigned char * data, size_t datalen, char * prevtext)
@@ -80,7 +80,6 @@ void *(*srp_alloc)(size_t) = &malloc;
 void *(*srp_realloc)(void *, size_t) = &realloc;
 void (*srp_free)(void *) = &free;
 
-// clang-format off
 void srp_set_memory_functions(
 		void *(*new_srp_alloc)(size_t),
 		void *(*new_srp_realloc)(void *, size_t),
@@ -90,7 +89,6 @@ void srp_set_memory_functions(
 	srp_realloc = new_srp_realloc;
 	srp_free = new_srp_free;
 }
-// clang-format on
 
 typedef struct {
 	mpz_t N;
@@ -222,7 +220,7 @@ static NGConstant *new_ng(SRP_NGType ng_type, const char *n_hex, const char *g_h
 }
 
 typedef union {
-	SHA_CTX sha;
+	// SHA_CTX sha;
 	SHA256_CTX sha256;
 	// SHA512_CTX sha512;
 } HashCTX;
@@ -235,9 +233,9 @@ struct SRPVerifier {
 	unsigned char *bytes_B;
 	int authenticated;
 
-	unsigned char M[SHA512_DIGEST_LENGTH];
-	unsigned char H_AMK[SHA512_DIGEST_LENGTH];
-	unsigned char session_key[SHA512_DIGEST_LENGTH];
+	unsigned char M[CSRP_MAX_HASH];
+	unsigned char H_AMK[CSRP_MAX_HASH];
+	unsigned char session_key[CSRP_MAX_HASH];
 };
 
 struct SRPUser {
@@ -256,12 +254,11 @@ struct SRPUser {
 	unsigned char *password;
 	size_t password_len;
 
-	unsigned char M[SHA512_DIGEST_LENGTH];
-	unsigned char H_AMK[SHA512_DIGEST_LENGTH];
-	unsigned char session_key[SHA512_DIGEST_LENGTH];
+	unsigned char M[CSRP_MAX_HASH];
+	unsigned char H_AMK[CSRP_MAX_HASH];
+	unsigned char session_key[CSRP_MAX_HASH];
 };
 
-// clang-format off
 static int hash_init(SRP_HashAlgorithm alg, HashCTX *c)
 {
 	switch (alg) {
@@ -357,7 +354,6 @@ static size_t hash_length(SRP_HashAlgorithm alg)
 		default: return 0;
 	};
 }
-// clang-format on
 
 inline static int mpz_num_bytes(const mpz_t op)
 {
@@ -401,7 +397,7 @@ inline static void mpz_subm(
 static SRP_Result H_nn(
 	mpz_t result, SRP_HashAlgorithm alg, const mpz_t N, const mpz_t n1, const mpz_t n2)
 {
-	unsigned char buff[SHA512_DIGEST_LENGTH];
+	unsigned char buff[CSRP_MAX_HASH];
 	size_t len_N = mpz_num_bytes(N);
 	size_t len_n1 = mpz_num_bytes(n1);
 	size_t len_n2 = mpz_num_bytes(n2);
@@ -424,7 +420,7 @@ static SRP_Result H_nn(
 static SRP_Result H_ns(mpz_t result, SRP_HashAlgorithm alg, const unsigned char *n,
 	size_t len_n, const unsigned char *bytes, size_t len_bytes)
 {
-	unsigned char buff[SHA512_DIGEST_LENGTH];
+	unsigned char buff[CSRP_MAX_HASH];
 	size_t nbytes = len_n + len_bytes;
 	unsigned char *bin = (unsigned char *)srp_alloc(nbytes);
 	if (!bin) return SRP_ERR;
@@ -440,7 +436,7 @@ static int calculate_x(mpz_t result, SRP_HashAlgorithm alg, const unsigned char 
 	size_t salt_len, const char *username, const unsigned char *password,
 	size_t password_len)
 {
-	unsigned char ucp_hash[SHA512_DIGEST_LENGTH];
+	unsigned char ucp_hash[CSRP_MAX_HASH];
 	HashCTX ctx;
 	hash_init(alg, &ctx);
 
@@ -481,10 +477,10 @@ static SRP_Result calculate_M(SRP_HashAlgorithm alg, NGConstant *ng, unsigned ch
 	const char *I, const unsigned char *s_bytes, size_t s_len, const mpz_t A,
 	const mpz_t B, const unsigned char *K)
 {
-	unsigned char H_N[SHA512_DIGEST_LENGTH];
-	unsigned char H_g[SHA512_DIGEST_LENGTH];
-	unsigned char H_I[SHA512_DIGEST_LENGTH];
-	unsigned char H_xor[SHA512_DIGEST_LENGTH];
+	unsigned char H_N[CSRP_MAX_HASH];
+	unsigned char H_g[CSRP_MAX_HASH];
+	unsigned char H_I[CSRP_MAX_HASH];
+	unsigned char H_xor[CSRP_MAX_HASH];
 	HashCTX ctx;
 	size_t i = 0;
 	size_t hash_len = hash_length(alg);
@@ -588,7 +584,6 @@ static SRP_Result init_random()
  *
  ***********************************************************************************************************/
 
-// clang-format off
 SRP_Result srp_create_salted_verification_key( SRP_HashAlgorithm alg,
 	SRP_NGType ng_type, const char *username_for_verifier,
 	const unsigned char *password, size_t len_password,
@@ -600,7 +595,6 @@ SRP_Result srp_create_salted_verification_key( SRP_HashAlgorithm alg,
 
 	mpz_t v; mpz_init(v);
 	mpz_t x; mpz_init(x);
-	// clang-format on
 
 	NGConstant *ng = new_ng(ng_type, n_hex, g_hex);
 
@@ -646,7 +640,6 @@ error_and_exit:
 	goto cleanup_and_exit;
 }
 
-// clang-format off
 
 /* Out: bytes_B, len_B.
  *
@@ -671,7 +664,6 @@ struct SRPVerifier *srp_verifier_new(SRP_HashAlgorithm alg,
 	mpz_t tmp1; mpz_init(tmp1);
 	mpz_t tmp2; mpz_init(tmp2);
 	mpz_t tmp3; mpz_init(tmp3);
-	// clang-format on
 	size_t ulen = strlen(username) + 1;
 	NGConstant *ng = new_ng(ng_type, n_hex, g_hex);
 	struct SRPVerifier *ver = 0;
@@ -808,7 +800,7 @@ size_t srp_verifier_get_session_key_length(struct SRPVerifier *ver)
 	return hash_length(ver->hash_alg);
 }
 
-/* user_M must be exactly SHA512_DIGEST_LENGTH bytes in size */
+/* user_M must be exactly CSRP_MAX_HASH bytes in size */
 void srp_verifier_verify_session(
 	struct SRPVerifier *ver, const unsigned char *user_M, unsigned char **bytes_HAMK)
 {
@@ -922,13 +914,11 @@ size_t srp_user_get_session_key_length(struct SRPUser *usr)
 	return hash_length(usr->hash_alg);
 }
 
-// clang-format off
 /* Output: username, bytes_A, len_A */
 SRP_Result srp_user_start_authentication(struct SRPUser *usr, char **username,
 	const unsigned char *bytes_a, size_t len_a,
 	unsigned char **bytes_A, size_t *len_A)
 {
-	// clang-format on
 	if (bytes_a) {
 		mpz_from_bin(bytes_a, len_a, usr->a);
 	} else {
@@ -956,8 +946,7 @@ error_and_exit:
 	return SRP_ERR;
 }
 
-// clang-format off
-/* Output: bytes_M. Buffer length is SHA512_DIGEST_LENGTH */
+/* Output: bytes_M. Buffer length is CSRP_MAX_HASH */
 void  srp_user_process_challenge(struct SRPUser *usr,
 	const unsigned char *bytes_s, size_t len_s,
 	const unsigned char *bytes_B, size_t len_B,
@@ -972,7 +961,6 @@ void  srp_user_process_challenge(struct SRPUser *usr,
 	mpz_t tmp2; mpz_init(tmp2);
 	mpz_t tmp3; mpz_init(tmp3);
 	mpz_t tmp4; mpz_init(tmp4);
-	// clang-format on
 
 	*len_M = 0;
 	*bytes_M = 0;
@@ -996,7 +984,6 @@ void  srp_user_process_challenge(struct SRPUser *usr,
 
 		srp_dbg_num(v, "Client calculated v: ");
 
-		// clang-format off
 		/* S = (B - k*(g^x)) ^ (a + ux) */
 		mpz_mul(tmp1, u, x);
 		mpz_add(tmp2, usr->a, tmp1);               /* tmp2 = (a + ux)      */
@@ -1004,7 +991,6 @@ void  srp_user_process_challenge(struct SRPUser *usr,
 		mpz_mulm(tmp3, k, tmp1, usr->ng->N, tmp4); /* tmp3 = k*(g^x)       */
 		mpz_subm(tmp1, B, tmp3, usr->ng->N, tmp4); /* tmp1 = (B - K*(g^x)) */
 		mpz_powm(usr->S, tmp1, tmp2, usr->ng->N);
-		// clang-format on
 
 		if (!hash_num(usr->hash_alg, usr->S, usr->session_key)) goto cleanup_and_exit;
 

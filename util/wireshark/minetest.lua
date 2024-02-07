@@ -1280,13 +1280,14 @@ do
 
 	function p_minetest.dissector(buffer, pinfo, tree)
 
-		-- Add Minetest tree item and verify the ID
+		-- Defer if payload doesn't have Minetest's magic number
+		if buffer(0,4):uint() ~= minetest_id then
+			return false
+		end
+
+		-- Add Minetest tree item
 		local t = tree:add(p_minetest, buffer(0,8))
 		t:add(f_id, buffer(0,4))
-		if buffer(0,4):uint() ~= minetest_id then
-			t:add_expert_info(PI_UNDECODED, PI_WARN, "Invalid ID, this is not a Minetest packet")
-			return
-		end
 
 		-- ID is valid, so replace packet's shown protocol
 		pinfo.cols.protocol = "Minetest"
@@ -1299,6 +1300,7 @@ do
 		t:set_text("Minetest, Peer: " .. buffer(4,2):uint() .. ", Channel: " .. buffer(6,1):uint())
 
 		local reliability_info
+		local pos
 		if buffer(7,1):uint() == 3 then
 			-- Reliable message
 			reliability_info = "Seq=" .. buffer(8,2):uint()
@@ -1338,12 +1340,11 @@ do
 		end
 
 		pinfo.cols.info:append(" (" .. reliability_info .. ")")
+		return true
 
 	end
 
-	-- FIXME Is there a way to let the dissector table check if the first payload bytes are 0x4f457403?
-	DissectorTable.get("udp.port"):add(30000, p_minetest)
-	DissectorTable.get("udp.port"):add(30001, p_minetest)
+	p_minetest:register_heuristic("udp", p_minetest.dissector)
 end
 
 

@@ -30,6 +30,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #ifndef SERVER
 #include "irr_ptr.h"
+#include <IFileArchive.h>
+#include <IFileSystem.h>
+#endif
+#ifdef __linux__
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#ifndef FICLONE
+#define FICLONE _IOW(0x94, 9, int)
+#endif
 #endif
 
 namespace fs
@@ -212,6 +221,31 @@ std::string CreateTempFile()
 		return "";
 	CloseHandle(file);
 	return path;
+}
+
+bool CopyFileContents(const std::string &source, const std::string &target)
+{
+	BOOL ok = CopyFileEx(source.c_str(), target.c_str(), nullptr, nullptr,
+		nullptr, COPY_FILE_ALLOW_DECRYPTED_DESTINATION);
+	if (!ok) {
+		errorstream << "copying " << source << " to " << target
+			<< " failed: " << GetLastError() << std::endl;
+		return false;
+	}
+
+	// docs: "File attributes for the existing file are copied to the new file."
+	// This is not our intention so get rid of unwanted attributes:
+	DWORD attr = GetFileAttributes(target.c_str());
+	if (attr == INVALID_FILE_ATTRIBUTES) {
+		errorstream << target << ": file disappeared after copy" << std::endl;
+		return false;
+	}
+	attr &= ~(FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_HIDDEN);
+	SetFileAttributes(target.c_str(), attr);
+
+	tracestream << "copied " << source << " to " << target
+		<< " using CopyFileEx" << std::endl;
+	return true;
 }
 
 #else
@@ -412,6 +446,101 @@ std::string CreateTempFile()
 	return path;
 }
 
+namespace {
+	struct FileDeleter {
+		void operator()(FILE *stream) {
+			fclose(stream);
+		}
+	};
+
+	typedef std::unique_ptr<FILE, FileDeleter> FileUniquePtr;
+}
+
+bool CopyFileContents(const std::string &source, const std::string &target)
+{
+	FileUniquePtr sourcefile, targetfile;
+
+#ifdef __linux__
+	// Try to clone using Copy-on-Write (CoW). This is instant but supported
+	// only by some filesystems.
+
+	int srcfd, tgtfd;
+	srcfd = open(source.c_str(), O_RDONLY);
+	if (srcfd == -1) {
+		errorstream << source << ": can't open for reading: "
+			<< strerror(errno) << std::endl;
+		return false;
+	}
+	tgtfd = open(target.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (tgtfd == -1) {
+		errorstream << target << ": can't open for writing: "
+			<< strerror(errno) << std::endl;
+		close(srcfd);
+		return false;
+	}
+
+	if (ioctl(tgtfd, FICLONE, srcfd) == 0) {
+		tracestream << "copied " << source << " to " << target
+			<< " using FICLONE" << std::endl;
+		close(srcfd);
+		close(tgtfd);
+		return true;
+	}
+
+	// fallback to normal copy, but no need to reopen the files
+	sourcefile.reset(fdopen(srcfd, "rb"));
+	targetfile.reset(fdopen(tgtfd, "wb"));
+	goto fallback;
+
+#endif
+
+	sourcefile.reset(fopen(source.c_str(), "rb"));
+	targetfile.reset(fopen(target.c_str(), "wb"));
+
+fallback:
+
+	if (!sourcefile) {
+		errorstream << source << ": can't open for reading: "
+			<< strerror(errno) << std::endl;
+		return false;
+	}
+	if (!targetfile) {
+		errorstream << target << ": can't open for writing: "
+			<< strerror(errno) << std::endl;
+		return false;
+	}
+
+	size_t total = 0;
+	bool done = false;
+	char readbuffer[BUFSIZ];
+	while (!done) {
+		size_t readbytes = fread(readbuffer, 1,
+				sizeof(readbuffer), sourcefile.get());
+		total += readbytes;
+		if (ferror(sourcefile.get())) {
+			errorstream << source << ": IO error: "
+				<< strerror(errno) << std::endl;
+			return false;
+		}
+		if (readbytes > 0)
+			fwrite(readbuffer, 1, readbytes, targetfile.get());
+		if (feof(sourcefile.get())) {
+			// flush destination file to catch write errors (e.g. disk full)
+			fflush(targetfile.get());
+			done = true;
+		}
+		if (ferror(targetfile.get())) {
+			errorstream << target << ": IO error: "
+					<< strerror(errno) << std::endl;
+			return false;
+		}
+	}
+	tracestream << "copied " << total << " bytes from "
+		<< source << " to " << target << std::endl;
+
+	return true;
+}
+
 #endif
 
 /****************************
@@ -484,60 +613,6 @@ bool CreateAllDirs(const std::string &path)
 		if(!CreateDir(tocreate[i]))
 			return false;
 	return true;
-}
-
-bool CopyFileContents(const std::string &source, const std::string &target)
-{
-	FILE *sourcefile = fopen(source.c_str(), "rb");
-	if(sourcefile == NULL){
-		errorstream<<source<<": can't open for reading: "
-			<<strerror(errno)<<std::endl;
-		return false;
-	}
-
-	FILE *targetfile = fopen(target.c_str(), "wb");
-	if(targetfile == NULL){
-		errorstream<<target<<": can't open for writing: "
-			<<strerror(errno)<<std::endl;
-		fclose(sourcefile);
-		return false;
-	}
-
-	size_t total = 0;
-	bool retval = true;
-	bool done = false;
-	char readbuffer[BUFSIZ];
-	while(!done){
-		size_t readbytes = fread(readbuffer, 1,
-				sizeof(readbuffer), sourcefile);
-		total += readbytes;
-		if(ferror(sourcefile)){
-			errorstream<<source<<": IO error: "
-				<<strerror(errno)<<std::endl;
-			retval = false;
-			done = true;
-		}
-		if(readbytes > 0){
-			fwrite(readbuffer, 1, readbytes, targetfile);
-		}
-		if(feof(sourcefile) || ferror(sourcefile)){
-			// flush destination file to catch write errors
-			// (e.g. disk full)
-			fflush(targetfile);
-			done = true;
-		}
-		if(ferror(targetfile)){
-			errorstream<<target<<": IO error: "
-					<<strerror(errno)<<std::endl;
-			retval = false;
-			done = true;
-		}
-	}
-	infostream<<"copied "<<total<<" bytes from "
-		<<source<<" to "<<target<<std::endl;
-	fclose(sourcefile);
-	fclose(targetfile);
-	return retval;
 }
 
 bool CopyDir(const std::string &source, const std::string &target)
@@ -758,14 +833,32 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 	std::string tmp_file = path + ".~mt";
 
 	// Write to a tmp file
-	std::ofstream os(tmp_file.c_str(), std::ios::binary);
-	if (!os.good())
+	bool tmp_success = false;
+
+#ifdef _WIN32
+	// We've observed behavior suggesting that the MSVC implementation of std::ofstream::flush doesn't
+	// actually flush, so we use win32 APIs.
+	HANDLE tmp_handle = CreateFile(
+		tmp_file.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	if (tmp_handle == INVALID_HANDLE_VALUE) {
 		return false;
+	}
+	DWORD bytes_written;
+	tmp_success = (WriteFile(tmp_handle, content.c_str(), content.size(), &bytes_written, nullptr) &&
+					FlushFileBuffers(tmp_handle));
+	CloseHandle(tmp_handle);
+#else
+	std::ofstream os(tmp_file.c_str(), std::ios::binary);
+	if (!os.good()) {
+		return false;
+	}
 	os << content;
 	os.flush();
 	os.close();
-	if (os.fail()) {
-		// Remove the temporary file because writing it failed and it's useless.
+	tmp_success = !os.fail();
+#endif
+
+	if (!tmp_success) {
 		remove(tmp_file.c_str());
 		return false;
 	}
@@ -777,14 +870,12 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 	// When creating the file, it can cause Windows Search indexer, virus scanners and other apps
 	// to query the file. This can make the move file call below fail.
 	// We retry up to 5 times, with a 1ms sleep between, before we consider the whole operation failed
-	int number_attempts = 0;
-	while (number_attempts < 5) {
+	for (int attempt = 0; attempt < 5; attempt++) {
 		rename_success = MoveFileEx(tmp_file.c_str(), path.c_str(),
 				MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH);
 		if (rename_success)
 			break;
 		sleep_ms(1);
-		++number_attempts;
 	}
 #else
 	// On POSIX compliant systems rename() is specified to be able to swap the

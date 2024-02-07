@@ -22,6 +22,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "irr_ptr.h"
 #include "util/string.h"
+#ifdef __ANDROID__
+	#include <porting_android.h>
+#endif
+
+enum class PointerType {
+	Mouse,
+	Touch,
+};
 
 class GUIModalMenu;
 
@@ -54,41 +62,37 @@ public:
 	virtual bool OnEvent(const SEvent &event) { return false; };
 	virtual bool pausesGame() { return false; } // Used for pause menu
 #ifdef __ANDROID__
-	virtual bool getAndroidUIInput() { return false; }
-	bool hasAndroidUIInput();
+	virtual void getAndroidUIInput() {};
+	porting::AndroidDialogState getAndroidUIInputState();
 #endif
+
+	PointerType getPointerType() { return m_pointer_type; };
 
 protected:
 	virtual std::wstring getLabelByID(s32 id) = 0;
 	virtual std::string getNameByID(s32 id) = 0;
 
-	/**
-	 * check if event is part of a double click
-	 * @param event event to evaluate
-	 * @return true/false if a doubleclick was detected
-	 */
-	bool DoubleClickDetection(const SEvent &event);
-
+	// Stores the last known pointer type.
+	PointerType m_pointer_type = PointerType::Mouse;
+	// Stores the last known pointer position.
+	// If the last input event was a mouse event, it's the cursor position.
+	// If the last input event was a touch event, it's the finger position.
 	v2s32 m_pointer;
 	v2s32 m_old_pointer;  // Mouse position after previous mouse event
+
 	v2u32 m_screensize_old;
 	float m_gui_scale;
 #ifdef __ANDROID__
 	std::string m_jni_field_name;
 #endif
-#ifdef HAVE_TOUCHSCREENGUI
-	v2s32 m_down_pos;
-	bool m_touchscreen_visible = true;
-#endif
+
+	// This is set to true if the menu is currently processing a second-touch event.
+	bool m_second_touch = false;
+	// This is set to true if the menu is currently processing a mouse event
+	// that was synthesized by the menu itself from a touch event.
+	bool m_simulated_mouse = false;
 
 private:
-	struct clickpos
-	{
-		v2s32 pos;
-		s64 time;
-	};
-	clickpos m_doubleclickdetect[2];
-
 	IMenuManager *m_menumgr;
 	/* If true, remap a double-click (or double-tap) action to ESC. This is so
 	 * that, for example, Android users can double-tap to close a formspec.
@@ -97,15 +101,23 @@ private:
 	 * and the default value for the setting is true.
 	 */
 	bool m_remap_dbl_click;
+	bool remapDoubleClick(const SEvent &event);
+
 	// This might be necessary to expose to the implementation if it
 	// wants to launch other menus
 	bool m_allow_focus_removal = false;
 
-#ifdef HAVE_TOUCHSCREENGUI
-	irr_ptr<gui::IGUIElement> m_hovered;
+	// Stuff related to touchscreen input
 
-	bool simulateMouseEvent(gui::IGUIElement *target, ETOUCH_INPUT_EVENT touch_event);
+	irr_ptr<gui::IGUIElement> m_touch_hovered;
+
+	bool simulateMouseEvent(ETOUCH_INPUT_EVENT touch_event, bool second_try=false);
 	void enter(gui::IGUIElement *element);
 	void leave();
-#endif
+
+	// Used to detect double-taps and convert them into double-click events.
+	struct {
+		v2s32 pos;
+		s64 time;
+	} m_last_touch;
 };

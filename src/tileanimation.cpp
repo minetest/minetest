@@ -41,16 +41,23 @@ void TileAnimationParams::serialize(std::ostream &os, u16 protocol_ver) const
 
 void TileAnimationParams::deSerialize(std::istream &is, u16 protocol_ver)
 {
-	type = (TileAnimationType) readU8(is);
-
-	if (type == TAT_VERTICAL_FRAMES) {
-		vertical_frames.aspect_w = readU16(is);
-		vertical_frames.aspect_h = readU16(is);
-		vertical_frames.length = readF32(is);
-	} else if (type == TAT_SHEET_2D) {
-		sheet_2d.frames_w = readU8(is);
-		sheet_2d.frames_h = readU8(is);
-		sheet_2d.frame_length = readF32(is);
+	type = static_cast<TileAnimationType>(readU8(is));
+	switch(type) {
+		case TAT_NONE:
+			break;
+		case TAT_VERTICAL_FRAMES:
+			vertical_frames.aspect_w = readU16(is);
+			vertical_frames.aspect_h = readU16(is);
+			vertical_frames.length = readF32(is);
+			break;
+		case TAT_SHEET_2D:
+			sheet_2d.frames_w = readU8(is);
+			sheet_2d.frames_h = readU8(is);
+			sheet_2d.frame_length = readF32(is);
+			break;
+		default:
+			type = TAT_NONE;
+			break;
 	}
 }
 

@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_internal.h"
 #include "common/c_converter.h"
 
-void ScriptApiMainMenu::setMainMenuData(MainMenuDataForScript *data)
+void ScriptApiMainMenu::setMainMenuData(const MainMenuDataForScript *data)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -38,7 +38,7 @@ void ScriptApiMainMenu::setMainMenuData(MainMenuDataForScript *data)
 	lua_pop(L, 1);
 }
 
-void ScriptApiMainMenu::handleMainMenuEvent(std::string text)
+void ScriptApiMainMenu::handleMainMenuEvent(const std::string &text)
 {
 	SCRIPTAPI_PRECHECKHEADER
 

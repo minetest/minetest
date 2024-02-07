@@ -27,7 +27,6 @@ local full_settings = settingtypes.parse_config_file(false, true)
 local info_icon_path = core.formspec_escape(defaulttexturedir .. "settings_info.png")
 local reset_icon_path = core.formspec_escape(defaulttexturedir .. "settings_reset.png")
 
-local gettext = fgettext_ne
 local all_pages = {}
 local page_by_id = {}
 local filtered_pages = all_pages
@@ -48,13 +47,13 @@ end
 
 
 local change_keys = {
-	query_text = "Change keys",
+	query_text = "Controls",
 	requires = {
 		keyboard_mouse = true,
 	},
 	get_formspec = function(self, avail_w)
 		local btn_w = math.min(avail_w, 3)
-		return ("button[0,0;%f,0.8;btn_change_keys;%s]"):format(btn_w, fgettext("Change keys")), 0.8
+		return ("button[0,0;%f,0.8;btn_change_keys;%s]"):format(btn_w, fgettext("Controls")), 0.8
 	end,
 	on_submit = function(self, fields)
 		if fields.btn_change_keys then
@@ -66,23 +65,23 @@ local change_keys = {
 
 add_page({
 	id = "accessibility",
-	title = gettext("Accessibility"),
+	title = fgettext_ne("Accessibility"),
 	content = {
 		"language",
-		{ heading = gettext("General") },
+		{ heading = fgettext_ne("General") },
 		"font_size",
 		"chat_font_size",
 		"gui_scaling",
 		"hud_scaling",
 		"show_nametag_backgrounds",
-		{ heading = gettext("Chat") },
+		{ heading = fgettext_ne("Chat") },
 		"console_height",
 		"console_alpha",
 		"console_color",
-		{ heading = gettext("Controls") },
+		{ heading = fgettext_ne("Controls") },
 		"autojump",
 		"safe_dig_and_place",
-		{ heading = gettext("Movement") },
+		{ heading = fgettext_ne("Movement") },
 		"arm_inertia",
 		"view_bobbing_amount",
 		"fall_bobbing_amount",
@@ -97,7 +96,7 @@ local function load_settingtypes()
 		if not page then
 			page = add_page({
 				id = (section or "general"):lower():gsub(" ", "_"),
-				title = section or gettext("General"),
+				title = section or fgettext_ne("General"),
 				section = section,
 				content = {},
 			})
@@ -117,13 +116,11 @@ local function load_settingtypes()
 					content = {},
 				}
 
-				if page.title:sub(1, 5) ~= "Hide:" then
-					page = add_page(page)
-				end
+				page = add_page(page)
 			elseif entry.level == 2 then
 				ensure_page_started()
 				page.content[#page.content + 1] = {
-					heading = gettext(entry.readable_name or entry.name),
+					heading = fgettext_ne(entry.readable_name or entry.name),
 				}
 			end
 		else
@@ -315,7 +312,7 @@ local function check_requirements(name, requires)
 	end
 
 	local video_driver = core.get_active_driver()
-	local shaders_support = video_driver == "opengl" or video_driver == "ogles2"
+	local shaders_support = video_driver == "opengl" or video_driver == "opengl3" or video_driver == "ogles2"
 	local special = {
 		android = PLATFORM == "Android",
 		desktop = PLATFORM ~= "Android",
@@ -611,6 +608,16 @@ local function get_formspec(dialogdata)
 end
 
 
+-- On Android, closing the app via the "Recents screen" won't result in a clean
+-- exit, discarding any setting changes made by the user.
+-- To avoid that, we write the settings file in more cases on Android.
+function write_settings_early()
+	if PLATFORM == "Android" then
+		core.settings:write()
+	end
+end
+
+
 local function buttonhandler(this, fields)
 	local dialogdata = this.data
 	dialogdata.leftscroll = core.explode_scrollbar_event(fields.leftscroll).value or dialogdata.leftscroll
@@ -625,12 +632,15 @@ local function buttonhandler(this, fields)
 	if fields.show_technical_names ~= nil then
 		local value = core.is_yes(fields.show_technical_names)
 		core.settings:set_bool("show_technical_names", value)
+		write_settings_early()
+
 		return true
 	end
 
 	if fields.show_advanced ~= nil then
 		local value = core.is_yes(fields.show_advanced)
 		core.settings:set_bool("show_advanced", value)
+		write_settings_early()
 
 		local suggested_page_id = update_filtered_pages(dialogdata.query)
 
@@ -675,12 +685,15 @@ local function buttonhandler(this, fields)
 
 	for i, comp in ipairs(dialogdata.components) do
 		if comp.on_submit and comp:on_submit(fields, this) then
+			write_settings_early()
+
 			-- Clear components so they regenerate
 			dialogdata.components = nil
 			return true
 		end
 		if comp.setting and fields["reset_" .. i] then
 			core.settings:remove(comp.setting.name)
+			write_settings_early()
 
 			-- Clear components so they regenerate
 			dialogdata.components = nil

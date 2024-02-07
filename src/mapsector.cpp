@@ -71,9 +71,12 @@ std::unique_ptr<MapBlock> MapSector::createBlankBlockNoInsert(s16 y)
 {
 	assert(getBlockBuffered(y) == nullptr); // Pre-condition
 
+	if (blockpos_over_max_limit(v3s16(0, y, 0)))
+		throw InvalidPositionException("createBlankBlockNoInsert(): pos over max mapgen limit");
+
 	v3s16 blockpos_map(m_pos.X, y, m_pos.Y);
 
-	return std::make_unique<MapBlock>(m_parent, blockpos_map, m_gamedef);
+	return std::make_unique<MapBlock>(blockpos_map, m_gamedef);
 }
 
 MapBlock *MapSector::createBlankBlock(s16 y)

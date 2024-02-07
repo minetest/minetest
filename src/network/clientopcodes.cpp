@@ -19,8 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "clientopcodes.h"
+#include "client/client.h"
 
-const static ToClientCommandHandler null_command_handler = {"TOCLIENT_NULL", TOCLIENT_STATE_ALL, &Client::handleCommand_Null};
+const static ToClientCommandHandler null_command_handler =
+	{"TOCLIENT_NULL", TOCLIENT_STATE_ALL, &Client::handleCommand_Null};
 
 const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 {
@@ -117,16 +119,16 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_SET_SUN",                  TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HudSetSun }, // 0x5a
 	{ "TOCLIENT_SET_MOON",                 TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HudSetMoon }, // 0x5b
 	{ "TOCLIENT_SET_STARS",                TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HudSetStars }, // 0x5c
-	null_command_handler,
+	{ "TOCLIENT_MOVE_PLAYER_REL",          TOCLIENT_STATE_CONNECTED, &Client::handleCommand_MovePlayerRel }, // 0x5d,
 	null_command_handler,
 	null_command_handler,
 	{ "TOCLIENT_SRP_BYTES_S_B",            TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_SrpBytesSandB }, // 0x60
 	{ "TOCLIENT_FORMSPEC_PREPEND",         TOCLIENT_STATE_CONNECTED, &Client::handleCommand_FormspecPrepend }, // 0x61,
 	{ "TOCLIENT_MINIMAP_MODES",            TOCLIENT_STATE_CONNECTED, &Client::handleCommand_MinimapModes }, // 0x62,
-	{ "TOCLIENT_SET_LIGHTING",        TOCLIENT_STATE_CONNECTED, &Client::handleCommand_SetLighting }, // 0x63,
+	{ "TOCLIENT_SET_LIGHTING",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_SetLighting }, // 0x63,
 };
 
-const static ServerCommandFactory null_command_factory = { "TOSERVER_NULL", 0, false };
+const static ServerCommandFactory null_command_factory = { nullptr, 0, false };
 
 /*
 	Channels used for Client -> Server communication
@@ -223,5 +225,5 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_FIRST_SRP",          1, true }, // 0x50
 	{ "TOSERVER_SRP_BYTES_A",        1, true }, // 0x51
 	{ "TOSERVER_SRP_BYTES_M",        1, true }, // 0x52
-	{ "TOSERVER_UPDATE_CLIENT_INFO", 1, true }, // 0x53
+	{ "TOSERVER_UPDATE_CLIENT_INFO", 2, true }, // 0x53
 };

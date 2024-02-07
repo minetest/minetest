@@ -193,7 +193,6 @@ void LuaCamera::Register(lua_State *L)
 	registerClass(L, className, methods, metamethods);
 }
 
-// clang-format off
 const char LuaCamera::className[] = "Camera";
 const luaL_Reg LuaCamera::methods[] = {
 	luamethod(LuaCamera, set_camera_mode),
@@ -208,4 +207,3 @@ const luaL_Reg LuaCamera::methods[] = {
 
 	{0, 0}
 };
-// clang-format on

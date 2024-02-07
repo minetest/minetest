@@ -164,11 +164,11 @@ MapNode Map::getNode(v3s16 p, bool *is_valid_position)
 	return node;
 }
 
-static void set_node_in_block(MapBlock *block, v3s16 relpos, MapNode n)
+static void set_node_in_block(const NodeDefManager *nodedef, MapBlock *block,
+		v3s16 relpos, MapNode n)
 {
 	// Never allow placing CONTENT_IGNORE, it causes problems
 	if(n.getContent() == CONTENT_IGNORE){
-		const NodeDefManager *nodedef = block->getParent()->getNodeDefManager();
 		v3s16 blockpos = block->getPos();
 		v3s16 p = blockpos * MAP_BLOCKSIZE + relpos;
 		errorstream<<"Not allowing to place CONTENT_IGNORE"
@@ -186,7 +186,7 @@ void Map::setNode(v3s16 p, MapNode n)
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreate(blockpos);
 	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-	set_node_in_block(block, relpos, n);
+	set_node_in_block(m_gamedef->ndef(), block, relpos, n);
 }
 
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
@@ -215,14 +215,14 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		// No light update needed, just copy over the old light.
 		n.setLight(LIGHTBANK_DAY, oldnode.getLightRaw(LIGHTBANK_DAY, oldf), f);
 		n.setLight(LIGHTBANK_NIGHT, oldnode.getLightRaw(LIGHTBANK_NIGHT, oldf), f);
-		set_node_in_block(block, relpos, n);
+		set_node_in_block(m_gamedef->ndef(), block, relpos, n);
 
 		modified_blocks[blockpos] = block;
 	} else {
 		// Ignore light (because calling voxalgo::update_lighting_nodes)
 		n.setLight(LIGHTBANK_DAY, 0, f);
 		n.setLight(LIGHTBANK_NIGHT, 0, f);
-		set_node_in_block(block, relpos, n);
+		set_node_in_block(m_gamedef->ndef(), block, relpos, n);
 
 		// Update lighting
 		std::vector<std::pair<v3s16, MapNode> > oldnodes;
@@ -512,6 +512,31 @@ struct NodeNeighbor {
 	{ }
 };
 
+static s8 get_max_liquid_level(NodeNeighbor nb, s8 current_max_node_level)
+{
+	s8 max_node_level = current_max_node_level;
+	u8 nb_liquid_level = (nb.n.param2 & LIQUID_LEVEL_MASK);
+	switch (nb.t) {
+		case NEIGHBOR_UPPER:
+			if (nb_liquid_level + WATER_DROP_BOOST > current_max_node_level) {
+				max_node_level = LIQUID_LEVEL_MAX;
+				if (nb_liquid_level + WATER_DROP_BOOST < LIQUID_LEVEL_MAX)
+					max_node_level = nb_liquid_level + WATER_DROP_BOOST;
+			} else if (nb_liquid_level > current_max_node_level) {
+				max_node_level = nb_liquid_level;
+			}
+			break;
+		case NEIGHBOR_LOWER:
+			break;
+		case NEIGHBOR_SAME_LEVEL:
+			if ((nb.n.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK &&
+					nb_liquid_level > 0 && nb_liquid_level - 1 > max_node_level)
+				max_node_level = nb_liquid_level - 1;
+			break;
+	}
+	return max_node_level;
+}
+
 void ServerMap::transforming_liquid_add(v3s16 p) {
 		m_transforming_liquid.push_back(p);
 }
@@ -578,6 +603,8 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 					continue;
 				floodable_node = n0.getContent();
 				liquid_kind = CONTENT_AIR;
+				break;
+			case LiquidType_END:
 				break;
 		}
 
@@ -654,7 +681,13 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 						(nb.n.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK) {
 						// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
 						// but exclude falling liquids on the same level, they cannot flow here anyway
-						if (liquid_kind == CONTENT_AIR)
+
+						// used to determine if the neighbor can even flow into this node
+						s8 max_level_from_neighbor = get_max_liquid_level(nb, -1);
+						u8 range = m_nodedef->get(cfnb.liquid_alternative_flowing_id).liquid_range;
+
+						if (liquid_kind == CONTENT_AIR &&
+								max_level_from_neighbor >= (LIQUID_LEVEL_MAX + 1 - range))
 							liquid_kind = cfnb.liquid_alternative_flowing_id;
 					}
 					if (cfnb.liquid_alternative_flowing_id != liquid_kind) {
@@ -664,6 +697,8 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 						if (nb.t == NEIGHBOR_LOWER)
 							flowing_down = true;
 					}
+					break;
+				case LiquidType_END:
 					break;
 			}
 		}
@@ -699,25 +734,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		} else {
 			// no surrounding sources, so get the maximum level that can flow into this node
 			for (u16 i = 0; i < num_flows; i++) {
-				u8 nb_liquid_level = (flows[i].n.param2 & LIQUID_LEVEL_MASK);
-				switch (flows[i].t) {
-					case NEIGHBOR_UPPER:
-						if (nb_liquid_level + WATER_DROP_BOOST > max_node_level) {
-							max_node_level = LIQUID_LEVEL_MAX;
-							if (nb_liquid_level + WATER_DROP_BOOST < LIQUID_LEVEL_MAX)
-								max_node_level = nb_liquid_level + WATER_DROP_BOOST;
-						} else if (nb_liquid_level > max_node_level) {
-							max_node_level = nb_liquid_level;
-						}
-						break;
-					case NEIGHBOR_LOWER:
-						break;
-					case NEIGHBOR_SAME_LEVEL:
-						if ((flows[i].n.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK &&
-								nb_liquid_level > 0 && nb_liquid_level - 1 > max_node_level)
-							max_node_level = nb_liquid_level - 1;
-						break;
-				}
+				max_node_level = get_max_liquid_level(flows[i], max_node_level);
 			}
 
 			u8 viscosity = m_nodedef->get(liquid_kind).liquid_viscosity;
@@ -834,6 +851,8 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 				// this flow has turned to air; neighboring flows might need to do the same
 				for (u16 i = 0; i < num_flows; i++)
 					m_transforming_liquid.push_back(flows[i].p);
+				break;
+			case LiquidType_END:
 				break;
 		}
 	}
@@ -1142,7 +1161,7 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 	return false;
 }
 
-bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
+bool Map::isBlockOccluded(v3s16 pos_relative, v3s16 cam_pos_nodes, bool simple_check)
 {
 	// Check occlusion for center and all 8 corners of the mapblock
 	// Overshoot a little for less flickering
@@ -1159,7 +1178,7 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 		v3s16(-1, -1, -1) * bs2,
 	};
 
-	v3s16 pos_blockcenter = block->getPosRelative() + (MAP_BLOCKSIZE / 2);
+	v3s16 pos_blockcenter = pos_relative + (MAP_BLOCKSIZE / 2);
 
 	// Starting step size, value between 1m and sqrt(3)m
 	float step = BS * 1.2f;
@@ -1180,9 +1199,18 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 	// this is a HACK, we should think of a more precise algorithm
 	u32 needed_count = 2;
 
+	// This should be only used in server occlusion cullung.
+	// The client recalculates the complete drawlist periodically,
+	// and random sampling could lead to visible flicker.
+	if (simple_check) {
+		v3s16 random_point(myrand_range(-bs2, bs2), myrand_range(-bs2, bs2), myrand_range(-bs2, bs2));
+		return isOccluded(cam_pos_nodes, pos_blockcenter + random_point, step, stepfac,
+					start_offset, end_offset, 1);
+	}
+
 	// Additional occlusion check, see comments in that function
 	v3s16 check;
-	if (determineAdditionalOcclusionCheck(cam_pos_nodes, block->getBox(), check)) {
+	if (determineAdditionalOcclusionCheck(cam_pos_nodes, MapBlock::getBox(pos_relative), check)) {
 		// node is always on a side facing the camera, end_offset can be lower
 		if (!isOccluded(cam_pos_nodes, check, step, stepfac, start_offset,
 				-1.0f, needed_count))
@@ -1478,12 +1506,11 @@ MapSector *ServerMap::createSector(v2s16 p2d)
 		Do not create over max mapgen limit
 	*/
 	if (blockpos_over_max_limit(v3s16(p2d.X, 0, p2d.Y)))
-		throw InvalidPositionException("createSector(): pos. over max mapgen limit");
+		throw InvalidPositionException("createSector(): pos over max mapgen limit");
 
 	/*
 		Generate blank sector
 	*/
-
 	sector = new MapSector(this, p2d, m_gamedef);
 
 	/*
@@ -1496,20 +1523,11 @@ MapSector *ServerMap::createSector(v2s16 p2d)
 
 MapBlock * ServerMap::createBlock(v3s16 p)
 {
-	/*
-		Do not create over max mapgen limit
-	*/
-	if (blockpos_over_max_limit(p))
-		throw InvalidPositionException("createBlock(): pos. over max mapgen limit");
-
 	v2s16 p2d(p.X, p.Z);
 	s16 block_y = p.Y;
+
 	/*
 		This will create or load a sector if not found in memory.
-		If block exists on disk, it will be loaded.
-
-		NOTE: On old save formats, this will be slow, as it generates
-		      lighting on blocks for them.
 	*/
 	MapSector *sector;
 	try {
@@ -1524,11 +1542,16 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 	*/
 
 	MapBlock *block = sector->getBlockNoCreateNoEx(block_y);
-	if (block) {
+	if (block)
 		return block;
-	}
+
 	// Create blank
-	block = sector->createBlankBlock(block_y);
+	try {
+		block = sector->createBlankBlock(block_y);
+	} catch (InvalidPositionException &e) {
+		infostream << "createBlock: createBlankBlock() failed" << std::endl;
+		throw e;
+	}
 
 	return block;
 }
@@ -1548,20 +1571,20 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 	}
 
 	if (create_blank) {
-		MapSector *sector = createSector(v2s16(p.X, p.Z));
-		MapBlock *block = sector->createBlankBlock(p.Y);
-
-		return block;
+		try {
+			MapSector *sector = createSector(v2s16(p.X, p.Z));
+			return sector->createBlankBlock(p.Y);
+		} catch (InvalidPositionException &e) {}
 	}
 
 	return NULL;
 }
 
-MapBlock *ServerMap::getBlockOrEmerge(v3s16 p3d)
+MapBlock *ServerMap::getBlockOrEmerge(v3s16 p3d, bool generate)
 {
 	MapBlock *block = getBlockNoCreateNoEx(p3d);
 	if (block == NULL)
-		m_emerge->enqueueBlockEmerge(PEER_ID_INEXISTENT, p3d, false);
+		m_emerge->enqueueBlockEmerge(PEER_ID_INEXISTENT, p3d, generate);
 
 	return block;
 }
@@ -1972,9 +1995,7 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 		u8 flags = 0;
 		MapBlock *block;
 		v3s16 p(x,y,z);
-		std::map<v3s16, u8>::iterator n;
-		n = m_loaded_blocks.find(p);
-		if(n != m_loaded_blocks.end())
+		if (m_loaded_blocks.count(p) > 0)
 			continue;
 
 		bool block_data_inexistent = false;
@@ -1992,10 +2013,7 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 		{
 
 			if (load_if_inexistent && !blockpos_over_max_limit(p)) {
-				ServerMap *svrmap = (ServerMap *)m_map;
-				block = svrmap->emergeBlock(p, false);
-				if (block == NULL)
-					block = svrmap->createBlock(p);
+				block = m_map->emergeBlock(p, true);
 				block->copyTo(*this);
 			} else {
 				flags |= VMANIP_BLOCK_DATA_INEXIST;

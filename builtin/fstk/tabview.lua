@@ -154,13 +154,17 @@ end
 local function tab_header(self, size)
 	local toadd = ""
 
-	for i=1,#self.tablist,1 do
-
+	for i = 1, #self.tablist do
 		if toadd ~= "" then
 			toadd = toadd .. ","
 		end
 
-		toadd = toadd .. self.tablist[i].caption
+		local caption = self.tablist[i].caption
+		if type(caption) == "function" then
+			caption = caption(self)
+		end
+
+		toadd = toadd .. caption
 	end
 	return string.format("tabheader[%f,%f;%f,%f;%s;%s;%i;true;false]",
 			self.header_x, self.header_y, size.width, size.height, self.name, toadd, self.last_tab_index)

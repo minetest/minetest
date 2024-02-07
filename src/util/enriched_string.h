@@ -34,7 +34,7 @@ public:
 		const video::SColor &color = video::SColor(255, 255, 255, 255));
 	EnrichedString(const std::wstring &string,
 		const std::vector<video::SColor> &colors);
-	void operator=(const wchar_t *str);
+	EnrichedString &operator=(const wchar_t *str);
 
 	void clear();
 

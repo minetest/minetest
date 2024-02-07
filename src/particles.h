@@ -202,7 +202,8 @@ namespace ParticleParamTypes
 	}
 
 	// Animation styles (fwd is normal, linear interpolation)
-	enum class TweenStyle : u8 { fwd, rev, pulse, flicker };
+	// TweenStyle_END is a dummy value for validity check
+	enum class TweenStyle : u8 { fwd, rev, pulse, flicker, TweenStyle_END};
 
 	// "Tweened" pretty much means "animated" in this context
 	template <typename T>

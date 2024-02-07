@@ -376,6 +376,22 @@ int LuaItemStack::l_add_wear_by_uses(lua_State *L)
 	return 1;
 }
 
+// get_wear_bar_params(self) -> table
+// Returns the effective wear bar parameters.
+// Returns nil if this item has none associated.
+int LuaItemStack::l_get_wear_bar_params(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaItemStack *o = checkObject<LuaItemStack>(L, 1);
+	ItemStack &item = o->m_stack;
+	auto params = item.getWearBarParams(getGameDef(L)->idef());
+	if (params.has_value()) {
+		push_wear_bar_params(L, *params);
+		return 1;
+	}
+	return 0;
+}
+
 // add_item(self, itemstack or itemstring or table or nil) -> itemstack
 // Returns leftover item stack
 int LuaItemStack::l_add_item(lua_State *L)
@@ -551,6 +567,7 @@ const luaL_Reg LuaItemStack::methods[] = {
 	luamethod(LuaItemStack, get_tool_capabilities),
 	luamethod(LuaItemStack, add_wear),
 	luamethod(LuaItemStack, add_wear_by_uses),
+	luamethod(LuaItemStack, get_wear_bar_params),
 	luamethod(LuaItemStack, add_item),
 	luamethod(LuaItemStack, item_fits),
 	luamethod(LuaItemStack, take_item),
@@ -678,7 +695,7 @@ int ModApiItem::l_get_content_id(lua_State *L)
 
 	// If this is called at mod load time, NodeDefManager isn't aware of
 	// aliases yet, so we need to handle them manually
-	std::string alias_name = idef->getAlias(name);
+	const auto &alias_name = idef->getAlias(name);
 
 	content_t content_id;
 	if (alias_name != name) {

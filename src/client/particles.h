@@ -169,7 +169,6 @@ private:
 	LocalPlayer *m_player;
 	ParticleSpawnerParameters p;
 	std::vector<ClientParticleTexture> m_texpool;
-	size_t m_texcount;
 	std::vector<float> m_spawntimes;
 	u16 m_attached_id;
 };

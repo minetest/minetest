@@ -19,8 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "serveropcodes.h"
+#include "server.h"
 
-const static ToServerCommandHandler null_command_handler = { "TOSERVER_NULL", TOSERVER_STATE_ALL, &Server::handleCommand_Null };
+const static ToServerCommandHandler null_command_handler =
+	{ "TOSERVER_NULL", TOSERVER_STATE_ALL, &Server::handleCommand_Null };
 
 const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 {
@@ -110,7 +112,7 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_UPDATE_CLIENT_INFO",       TOSERVER_STATE_INGAME, &Server::handleCommand_UpdateClientInfo }, // 0x53
 };
 
-const static ClientCommandFactory null_command_factory = { "TOCLIENT_NULL", 0, false };
+const static ClientCommandFactory null_command_factory = { nullptr, 0, false };
 
 /*
 	Channels used for Server -> Client communication
@@ -140,7 +142,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_factory, // 0x0D
 	null_command_factory, // 0x0E
 	null_command_factory, // 0x0F
-	{ "TOCLIENT_INIT",                     0, true }, // 0x10
+	null_command_factory, // 0x10
 	null_command_factory, // 0x11
 	null_command_factory, // 0x12
 	null_command_factory, // 0x13
@@ -217,7 +219,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_SET_SUN",                  0, true }, // 0x5a
 	{ "TOCLIENT_SET_MOON",                 0, true }, // 0x5b
 	{ "TOCLIENT_SET_STARS",                0, true }, // 0x5c
-	null_command_factory, // 0x5d
+	{ "TOCLIENT_MOVE_PLAYER_REL",          0, true }, // 0x5d
 	null_command_factory, // 0x5e
 	null_command_factory, // 0x5f
 	{ "TOCLIENT_SRP_BYTES_S_B",            0, true }, // 0x60

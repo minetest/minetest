@@ -34,10 +34,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include "util/metricsbackend.h"
 #include "serverenvironment.h"
-#include "clientiface.h"
+#include "server/clientiface.h"
 #include "chatmessage.h"
 #include "sound.h"
 #include "translation.h"
+#include <atomic>
 #include <string>
 #include <list>
 #include <map>
@@ -157,12 +158,12 @@ public:
 
 	void start();
 	void stop();
-	// This is mainly a way to pass the time to the server.
 	// Actual processing is done in another thread.
-	void step(float dtime);
+	// This just checks if there was an error in that thread.
+	void step();
 	// This is run by ServerThread and does the actual processing
-	void AsyncRunStep(bool initial_step=false);
-	void Receive();
+	void AsyncRunStep(float dtime, bool initial_step = false);
+	void Receive(float timeout);
 	PlayerSAO* StageTwoClientInit(session_t peer_id);
 
 	/*
@@ -244,6 +245,7 @@ public:
 	void setIpBanned(const std::string &ip, const std::string &name);
 	void unsetIpBanned(const std::string &ip_or_name);
 	std::string getBanDescription(const std::string &ip_or_name);
+	bool denyIfBanned(session_t peer_id);
 
 	void notifyPlayer(const char *name, const std::wstring &msg);
 	void notifyPlayers(const std::wstring &msg);
@@ -292,6 +294,14 @@ public:
 
 	inline bool isSingleplayer() const
 			{ return m_simple_singleplayer_mode; }
+
+	struct StepSettings {
+		float steplen;
+		bool pause;
+	};
+
+	void setStepSettings(StepSettings spdata) { m_step_settings.store(spdata); }
+	StepSettings getStepSettings() { return m_step_settings.load(); }
 
 	inline void setAsyncFatalError(const std::string &error)
 			{ m_async_fatal_error.set(error); }
@@ -342,6 +352,8 @@ public:
 	void DenySudoAccess(session_t peer_id);
 	void DenyAccess(session_t peer_id, AccessDeniedCode reason,
 		const std::string &custom_reason = "", bool reconnect = false);
+	void kickAllPlayers(AccessDeniedCode reason,
+		const std::string &str_reason, bool reconnect);
 	void acceptAuth(session_t peer_id, bool forSudoMode);
 	void DisconnectPeer(session_t peer_id);
 	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
@@ -353,8 +365,9 @@ public:
 	void HandlePlayerHPChange(PlayerSAO *sao, const PlayerHPChangeReason &reason);
 	void SendPlayerHP(PlayerSAO *sao, bool effect);
 	void SendPlayerBreath(PlayerSAO *sao);
-	void SendInventory(PlayerSAO *playerSAO, bool incremental);
-	void SendMovePlayer(session_t peer_id);
+	void SendInventory(RemotePlayer *player, bool incremental);
+	void SendMovePlayer(PlayerSAO *sao);
+	void SendMovePlayerRel(session_t peer_id, const v3f &added_pos);
 	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
 	void SendPlayerFov(session_t peer_id);
 
@@ -375,6 +388,10 @@ public:
 	// Get or load translations for a language
 	Translations *getTranslationLanguage(const std::string &lang_code);
 
+	// Returns all media files the server knows about
+	// map key = binary sha1, map value = file path
+	std::unordered_map<std::string, std::string> getMediaList();
+
 	static ModStorageDatabase *openModStorageDatabase(const std::string &world_path);
 
 	static ModStorageDatabase *openModStorageDatabase(const std::string &backend,
@@ -382,6 +399,9 @@ public:
 
 	static bool migrateModStorageDatabase(const GameParams &game_params,
 			const Settings &cmd_args);
+
+	static u16 getProtocolVersionMin();
+	static u16 getProtocolVersionMax();
 
 	// Lua files registered for init of async env, pair of modname + path
 	std::vector<std::pair<std::string, std::string>> m_async_init_files;
@@ -502,7 +522,7 @@ private:
 	void fillMediaCache();
 	void sendMediaAnnouncement(session_t peer_id, const std::string &lang_code);
 	void sendRequestedMedia(session_t peer_id,
-			const std::vector<std::string> &tosend);
+			const std::unordered_set<std::string> &tosend);
 	void stepPendingDynMediaCallbacks(float dtime);
 
 	// Adds a ParticleSpawner on peer with peer_id (PEER_ID_INEXISTENT == all)
@@ -621,10 +641,8 @@ private:
 	/*
 		Threads
 	*/
-	// A buffer for time steps
-	// step() increments and AsyncRunStep() run by m_thread reads it.
-	float m_step_dtime = 0.0f;
-	std::mutex m_step_dtime_mutex;
+	// Set by Game
+	std::atomic<StepSettings> m_step_settings{{0.1f, false}};
 
 	// The server mainly operates in this thread
 	ServerThread *m_thread = nullptr;
@@ -695,7 +713,7 @@ private:
 		Sounds
 	*/
 	std::unordered_map<s32, ServerPlayingSound> m_playing_sounds;
-	s32 m_next_sound_id = 0; // positive values only
+	s32 m_playing_sounds_id_last_used = 0; // positive values only
 	s32 nextSoundId();
 
 	ModStorageDatabase *m_mod_storage_database = nullptr;

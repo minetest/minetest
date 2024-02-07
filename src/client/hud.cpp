@@ -416,7 +416,9 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 										 (e->number >> 0)  & 0xFF);
 				std::wstring text = unescape_translate(utf8_to_wide(e->name));
 				const std::string &unit = e->text;
-				// waypoints reuse the item field to store precision, item = precision + 1
+				// Waypoints reuse the item field to store precision,
+				// item = precision + 1 and item = 0 <=> precision = 10 for backwards compatibility.
+				// Also see `push_hud_element`.
 				u32 item = e->item;
 				float precision = (item == 0) ? 10.0f : (item - 1.f);
 				bool draw_precision = precision > 0;
@@ -1177,17 +1179,26 @@ void drawItemStack(
 			(1 - wear) * progressrect.LowerRightCorner.X;
 
 		// Compute progressbar color
+		// default scheme:
 		//   wear = 0.0: green
 		//   wear = 0.5: yellow
 		//   wear = 1.0: red
-		video::SColor color(255, 255, 255, 255);
-		int wear_i = MYMIN(std::floor(wear * 600), 511);
-		wear_i = MYMIN(wear_i + 10, 511);
 
-		if (wear_i <= 255)
-			color.set(255, wear_i, 255, 0);
-		else
-			color.set(255, 255, 511 - wear_i, 0);
+		video::SColor color;
+		auto barParams = item.getWearBarParams(client->idef());
+		if (barParams.has_value()) {
+			f32 durabilityPercent = 1.0 - wear;
+			color = barParams->getWearBarColor(durabilityPercent);
+		} else {
+			color = video::SColor(255, 255, 255, 255);
+			int wear_i = MYMIN(std::floor(wear * 600), 511);
+			wear_i = MYMIN(wear_i + 10, 511);
+
+			if (wear_i <= 255)
+				color.set(255, wear_i, 255, 0);
+			else
+				color.set(255, 255, 511 - wear_i, 0);
+		}
 
 		core::rect<s32> progressrect2 = progressrect;
 		progressrect2.LowerRightCorner.X = progressmid;

@@ -255,7 +255,7 @@ std::string writeFlagString(u32 flags, const FlagDesc *flagdesc, u32 flagmask)
 	return result;
 }
 
-size_t mystrlcpy(char *dst, const char *src, size_t size)
+size_t mystrlcpy(char *dst, const char *src, size_t size) noexcept
 {
 	size_t srclen  = strlen(src) + 1;
 	size_t copylen = MYMIN(srclen, size);
@@ -268,7 +268,7 @@ size_t mystrlcpy(char *dst, const char *src, size_t size)
 	return srclen;
 }
 
-char *mystrtok_r(char *s, const char *sep, char **lasts)
+char *mystrtok_r(char *s, const char *sep, char **lasts) noexcept
 {
 	char *t;
 
@@ -574,6 +574,20 @@ bool parseColorString(const std::string &value, video::SColor &color, bool quiet
 	return success;
 }
 
+std::string encodeHexColorString(const video::SColor &color)
+{
+	std::string color_string = "#";
+	const char red = color.getRed();
+	const char green = color.getGreen();
+	const char blue = color.getBlue();
+	const char alpha = color.getAlpha();
+	color_string += hex_encode(&red, 1);
+	color_string += hex_encode(&green, 1);
+	color_string += hex_encode(&blue, 1);
+	color_string += hex_encode(&alpha, 1);
+	return color_string;
+}
+
 void str_replace(std::string &str, char from, char to)
 {
 	std::replace(str.begin(), str.end(), from, to);
@@ -846,7 +860,7 @@ std::string sanitizeDirName(const std::string &str, const std::string &optional_
 {
 	std::wstring safe_name = utf8_to_wide(str);
 
-	for (std::wstring disallowed_name : disallowed_dir_names) {
+	for (auto &disallowed_name : disallowed_dir_names) {
 		if (str_equal(safe_name, disallowed_name, true)) {
 			safe_name = utf8_to_wide(optional_prefix) + safe_name;
 			break;

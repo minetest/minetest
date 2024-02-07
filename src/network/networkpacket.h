@@ -20,19 +20,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "util/pointer.h"
-#include "util/numeric.h"
 #include "networkprotocol.h"
 #include <SColor.h>
 
 class NetworkPacket
 {
-
 public:
-	NetworkPacket(u16 command, u32 datasize, session_t peer_id);
-	NetworkPacket(u16 command, u32 datasize);
+	NetworkPacket(u16 command, u32 preallocate, session_t peer_id) :
+		m_command(command), m_peer_id(peer_id)
+	{
+		m_data.reserve(preallocate);
+	}
+	NetworkPacket(u16 command, u32 preallocate) :
+		m_command(command)
+	{
+		m_data.reserve(preallocate);
+	}
 	NetworkPacket() = default;
 
-	~NetworkPacket();
+	~NetworkPacket() = default;
 
 	void putRawPacket(const u8 *data, u32 datasize, session_t peer_id);
 	void clear();
@@ -40,13 +46,13 @@ public:
 	// Getters
 	u32 getSize() const { return m_datasize; }
 	session_t getPeerId() const { return m_peer_id; }
-	u16 getCommand() { return m_command; }
+	u16 getCommand() const { return m_command; }
 	u32 getRemainingBytes() const { return m_datasize - m_read_offset; }
 	const char *getRemainingString() { return getString(m_read_offset); }
 
 	// Returns a c-string without copying.
 	// A better name for this would be getRawString()
-	const char *getString(u32 from_offset);
+	const char *getString(u32 from_offset) const;
 	// major difference to putCString(): doesn't write len into the buffer
 	void putRawString(const char *src, u32 len);
 	void putRawString(const std::string &src)
@@ -115,11 +121,11 @@ public:
 	NetworkPacket &operator<<(video::SColor src);
 
 	// Temp, we remove SharedBuffer when migration finished
-	// ^ this comment has been here for 4 years
+	// ^ this comment has been here for 7 years
 	Buffer<u8> oldForgePacket();
 
 private:
-	void checkReadOffset(u32 from_offset, u32 field_size);
+	void checkReadOffset(u32 from_offset, u32 field_size) const;
 
 	inline void checkDataSize(u32 field_size)
 	{

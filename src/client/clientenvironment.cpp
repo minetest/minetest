@@ -47,10 +47,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class CAOShaderConstantSetter : public IShaderConstantSetter
 {
 public:
-	CAOShaderConstantSetter():
-			m_emissive_color_setting("emissiveColor")
-	{}
-
 	~CAOShaderConstantSetter() override = default;
 
 	void onSetConstants(video::IMaterialRendererServices *services) override
@@ -74,7 +70,8 @@ public:
 
 private:
 	video::SColor m_emissive_color;
-	CachedPixelShaderSetting<float, 4> m_emissive_color_setting;
+	CachedPixelShaderSetting<float, 4>
+		m_emissive_color_setting{"emissiveColor"};
 };
 
 class CAOShaderConstantSetterFactory : public IShaderConstantSetterFactory
@@ -492,7 +489,8 @@ ClientEnvEvent ClientEnvironment::getClientEnvEvent()
 
 void ClientEnvironment::getSelectedActiveObjects(
 	const core::line3d<f32> &shootline_on_map,
-	std::vector<PointedThing> &objects)
+	std::vector<PointedThing> &objects,
+	const std::optional<Pointabilities> &pointabilities)
 {
 	auto allObjects = m_ao_manager.getActiveSelectableObjects(shootline_on_map);
 	const v3f line_vector = shootline_on_map.getVector();
@@ -519,9 +517,23 @@ void ClientEnvironment::getSelectedActiveObjects(
 			current_raw_normal = current_normal;
 		}
 		if (collision) {
-			current_intersection += obj->getPosition();
-			objects.emplace_back(obj->getId(), current_intersection, current_normal, current_raw_normal,
-				(current_intersection - shootline_on_map.start).getLengthSQ());
+			PointabilityType pointable;
+			if (pointabilities) {
+				if (gcao->isPlayer()) {
+					pointable = pointabilities->matchPlayer(gcao->getGroups()).value_or(
+							gcao->getProperties().pointable);
+				} else {
+					pointable = pointabilities->matchObject(gcao->getName(),
+							gcao->getGroups()).value_or(gcao->getProperties().pointable);
+				}
+			} else {
+				pointable = gcao->getProperties().pointable;
+			}
+			if (pointable != PointabilityType::POINTABLE_NOT) {
+				current_intersection += obj->getPosition();
+				objects.emplace_back(obj->getId(), current_intersection, current_normal, current_raw_normal,
+					(current_intersection - shootline_on_map.start).getLengthSQ(), pointable);
+			}
 		}
 	}
 }

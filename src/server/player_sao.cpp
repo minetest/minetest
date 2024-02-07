@@ -29,17 +29,17 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 		bool is_singleplayer):
 	UnitSAO(env_, v3f(0,0,0)),
 	m_player(player_),
-	m_peer_id(peer_id_),
+	m_peer_id_initial(peer_id_),
 	m_is_singleplayer(is_singleplayer)
 {
-	SANITY_CHECK(m_peer_id != PEER_ID_INEXISTENT);
+	SANITY_CHECK(m_peer_id_initial != PEER_ID_INEXISTENT);
 
 	m_prop.hp_max = PLAYER_MAX_HP_DEFAULT;
 	m_prop.breath_max = PLAYER_MAX_BREATH_DEFAULT;
 	m_prop.physical = false;
 	m_prop.collisionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
 	m_prop.selectionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
-	m_prop.pointable = true;
+	m_prop.pointable = PointabilityType::POINTABLE;
 	// Start of default appearance, this should be overwritten by Lua
 	m_prop.visual = "upright_sprite";
 	m_prop.visual_size = v3f(1, 2, 1);
@@ -88,7 +88,8 @@ void PlayerSAO::addedToEnvironment(u32 dtime_s)
 	ServerActiveObject::addedToEnvironment(dtime_s);
 	ServerActiveObject::setBasePosition(m_base_position);
 	m_player->setPlayerSAO(this);
-	m_player->setPeerId(m_peer_id);
+	m_player->setPeerId(m_peer_id_initial);
+	m_peer_id_initial = PEER_ID_INEXISTENT; // don't try to use it again.
 	m_last_good_position = m_base_position;
 }
 
@@ -96,11 +97,13 @@ void PlayerSAO::addedToEnvironment(u32 dtime_s)
 void PlayerSAO::removingFromEnvironment()
 {
 	ServerActiveObject::removingFromEnvironment();
-	if (m_player->getPlayerSAO() == this) {
-		unlinkPlayerSessionAndSave();
-		for (u32 attached_particle_spawner : m_attached_particle_spawners) {
-			m_env->deleteParticleSpawner(attached_particle_spawner, false);
-		}
+
+	// If this fails, fix the ActiveObjectMgr code in ServerEnvironment
+	SANITY_CHECK(m_player->getPlayerSAO() == this);
+
+	unlinkPlayerSessionAndSave();
+	for (u32 attached_particle_spawner : m_attached_particle_spawners) {
+		m_env->deleteParticleSpawner(attached_particle_spawner, false);
 	}
 }
 
@@ -121,14 +124,14 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	msg_os << serializeString32(getPropertyPacket()); // message 1
 	msg_os << serializeString32(generateUpdateArmorGroupsCommand()); // 2
 	msg_os << serializeString32(generateUpdateAnimationCommand()); // 3
-	for (const auto &bone_pos : m_bone_position) {
-		msg_os << serializeString32(generateUpdateBonePositionCommand(
-			bone_pos.first, bone_pos.second.X, bone_pos.second.Y)); // 3 + N
+	for (const auto &it : m_bone_override) {
+		msg_os << serializeString32(generateUpdateBoneOverrideCommand(
+			it.first, it.second)); // 3 + N
 	}
-	msg_os << serializeString32(generateUpdateAttachmentCommand()); // 4 + m_bone_position.size
-	msg_os << serializeString32(generateUpdatePhysicsOverrideCommand()); // 5 + m_bone_position.size
+	msg_os << serializeString32(generateUpdateAttachmentCommand()); // 4 + m_bone_override.size
+	msg_os << serializeString32(generateUpdatePhysicsOverrideCommand()); // 5 + m_bone_override.size
 
-	int message_count = 5 + m_bone_position.size();
+	int message_count = 5 + m_bone_override.size();
 
 	for (const auto &id : getAttachmentChildIds()) {
 		if (ServerActiveObject *obj = m_env->getActiveObject(id)) {
@@ -236,7 +239,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			" is attached to nonexistent parent. This is a bug." << std::endl;
 		clearParentAttachment();
 		setBasePosition(m_last_good_position);
-		m_env->getGameDef()->SendMovePlayer(m_peer_id);
+		m_env->getGameDef()->SendMovePlayer(this);
 	}
 
 	//dstream<<"PlayerSAO::step: dtime: "<<dtime<<std::endl;
@@ -352,19 +355,43 @@ void PlayerSAO::setBasePosition(v3f position)
 
 void PlayerSAO::setPos(const v3f &pos)
 {
-	if(isAttached())
+	if (isAttached())
 		return;
 
 	// Send mapblock of target location
 	v3s16 blockpos = v3s16(pos.X / MAP_BLOCKSIZE, pos.Y / MAP_BLOCKSIZE, pos.Z / MAP_BLOCKSIZE);
-	m_env->getGameDef()->SendBlock(m_peer_id, blockpos);
+	m_env->getGameDef()->SendBlock(getPeerID(), blockpos);
 
 	setBasePosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = getBasePosition();
 	m_move_pool.empty();
 	m_time_from_last_teleport = 0.0;
-	m_env->getGameDef()->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(this);
+}
+
+void PlayerSAO::addPos(const v3f &added_pos)
+{
+	if (isAttached())
+		return;
+
+	// Backward compatibility for older clients
+	if (m_player->protocol_version < 44) {
+		setPos(getBasePosition() + added_pos);
+		return;
+	}
+
+	// Send mapblock of target location
+	v3f pos = getBasePosition() + added_pos;
+	v3s16 blockpos = v3s16(pos.X / MAP_BLOCKSIZE, pos.Y / MAP_BLOCKSIZE, pos.Z / MAP_BLOCKSIZE);
+	m_env->getGameDef()->SendBlock(getPeerID(), blockpos);
+
+	setBasePosition(pos);
+	// Movement caused by this command is always valid
+	m_last_good_position = getBasePosition();
+	m_move_pool.empty();
+	m_time_from_last_teleport = 0.0;
+	m_env->getGameDef()->SendMovePlayerRel(getPeerID(), added_pos);
 }
 
 void PlayerSAO::moveTo(v3f pos, bool continuous)
@@ -377,7 +404,7 @@ void PlayerSAO::moveTo(v3f pos, bool continuous)
 	m_last_good_position = getBasePosition();
 	m_move_pool.empty();
 	m_time_from_last_teleport = 0.0;
-	m_env->getGameDef()->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(this);
 }
 
 void PlayerSAO::setPlayerYaw(const float yaw)
@@ -409,7 +436,7 @@ void PlayerSAO::setWantedRange(const s16 range)
 void PlayerSAO::setPlayerYawAndSend(const float yaw)
 {
 	setPlayerYaw(yaw);
-	m_env->getGameDef()->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(this);
 }
 
 void PlayerSAO::setLookPitch(const float pitch)
@@ -423,7 +450,7 @@ void PlayerSAO::setLookPitch(const float pitch)
 void PlayerSAO::setLookPitchAndSend(const float pitch)
 {
 	setLookPitch(pitch);
-	m_env->getGameDef()->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(this);
 }
 
 u32 PlayerSAO::punch(v3f dir,
@@ -554,16 +581,20 @@ bool PlayerSAO::setWieldedItem(const ItemStack &item)
 
 void PlayerSAO::disconnected()
 {
-	m_peer_id = PEER_ID_INEXISTENT;
 	markForRemoval();
+	m_player->setPeerId(PEER_ID_INEXISTENT);
+}
+
+session_t PlayerSAO::getPeerID() const
+{
+	// Before adding `this` to the server env, m_player is still nullptr.
+	return m_player ? m_player->getPeerId() : PEER_ID_INEXISTENT;
 }
 
 void PlayerSAO::unlinkPlayerSessionAndSave()
 {
 	assert(m_player->getPlayerSAO() == this);
-	m_player->setPeerId(PEER_ID_INEXISTENT);
 	m_env->savePlayer(m_player);
-	m_player->setPlayerSAO(NULL);
 	m_env->removePlayer(m_player);
 }
 
@@ -617,9 +648,14 @@ bool PlayerSAO::checkMovementCheat()
 	float player_max_walk = 0; // horizontal movement
 	float player_max_jump = 0; // vertical upwards movement
 
-	float speed_walk = m_player->movement_speed_walk * m_player->physics_override.speed;
-	float speed_fast = m_player->movement_speed_fast;
+	float speed_walk   = m_player->movement_speed_walk;
+	float speed_fast   = m_player->movement_speed_fast;
 	float speed_crouch = m_player->movement_speed_crouch * m_player->physics_override.speed_crouch;
+	float speed_climb  = m_player->movement_speed_climb  * m_player->physics_override.speed_climb;
+	speed_walk   *= m_player->physics_override.speed;
+	speed_fast   *= m_player->physics_override.speed;
+	speed_crouch *= m_player->physics_override.speed;
+	speed_climb  *= m_player->physics_override.speed;
 
 	// Get permissible max. speed
 	if (m_privs.count("fast") != 0) {
@@ -641,7 +677,7 @@ bool PlayerSAO::checkMovementCheat()
 	// FIXME: Bouncy nodes cause practically unbound increase in Y speed,
 	//        until this can be verified correctly, tolerate higher jumping speeds
 	player_max_jump *= 2.0;
-	player_max_jump = MYMAX(player_max_jump, m_player->movement_speed_climb * m_player->physics_override.speed_climb);
+	player_max_jump = MYMAX(player_max_jump, speed_climb);
 	player_max_jump = MYMAX(player_max_jump, override_max_V);
 
 	// Don't divide by zero!
@@ -659,7 +695,8 @@ bool PlayerSAO::checkMovementCheat()
 	// FIXME: Checking downwards movement is not easily possible currently,
 	//        the server could calculate speed differences to examine the gravity
 	if (d_vert > 0) {
-		// In certain cases (water, ladders) walking speed is applied vertically
+		// In certain cases (swimming, climbing, flying) walking speed is applied
+		// vertically
 		float s = MYMAX(player_max_jump, player_max_walk);
 		required_time = MYMAX(required_time, d_vert / s);
 	}
@@ -694,7 +731,7 @@ bool PlayerSAO::getCollisionBox(aabb3f *toset) const
 
 bool PlayerSAO::getSelectionBox(aabb3f *toset) const
 {
-	if (!m_prop.is_visible || !m_prop.pointable) {
+	if (!m_prop.is_visible) {
 		return false;
 	}
 

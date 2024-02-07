@@ -9,7 +9,8 @@ set (UNITTEST_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_compression.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_connection.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_craft.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/test_filepath.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_datastructures.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_filesys.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_inventory.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_irrptr.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_lua.cpp
@@ -47,12 +48,3 @@ set (UNITTEST_CLIENT_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_keycode.cpp
 	PARENT_SCOPE)
 
-set (TEST_WORLDDIR ${CMAKE_CURRENT_SOURCE_DIR}/test_world)
-set (TEST_SUBGAME_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../games/devtest)
-set (TEST_MOD_PATH ${CMAKE_CURRENT_SOURCE_DIR}/test_mod)
-set (HELPERS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/helpers)
-
-configure_file(
-	"${CMAKE_CURRENT_SOURCE_DIR}/test_config.h.in"
-	"${PROJECT_BINARY_DIR}/test_config.h"
-)

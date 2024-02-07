@@ -27,13 +27,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chat.h"
 #include "gettext.h"
 #include "profiler.h"
-#include "serverlist.h"
 #include "gui/guiEngine.h"
 #include "fontengine.h"
 #include "clientlauncher.h"
 #include "version.h"
 #include "renderingengine.h"
 #include "network/networkexceptions.h"
+#include <IGUISpriteBank.h>
+#include <ICameraSceneNode.h>
 
 #if USE_SOUND
 	#include "sound/sound_openal.h"
@@ -106,13 +107,6 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		return false;
 	}
 
-	// Speed tests (done after irrlicht is loaded to get timer)
-	if (cmd_args.getFlag("speedtests")) {
-		dstream << "Running speed tests" << std::endl;
-		speed_tests();
-		return true;
-	}
-
 	if (m_rendering_engine->get_video_driver() == NULL) {
 		errorstream << "Could not initialize video driver." << std::endl;
 		return false;
@@ -138,6 +132,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 	guienv = m_rendering_engine->get_gui_env();
 	skin = guienv->getSkin();
+	skin->setColor(gui::EGDC_WINDOW_SYMBOL, video::SColor(255, 255, 255, 255));
 	skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255, 255, 255, 255));
 	skin->setColor(gui::EGDC_3D_LIGHT, video::SColor(0, 0, 0, 0));
 	skin->setColor(gui::EGDC_3D_HIGH_LIGHT, video::SColor(255, 30, 30, 30));
@@ -212,7 +207,8 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		m_rendering_engine->get_raw_device()->
 			setWindowCaption((utf8_to_wide(PROJECT_NAME_C) +
 			L" " + utf8_to_wide(g_version_hash) +
-			L" [" + wstrgettext("Main Menu") + L"]").c_str());
+			L" [" + wstrgettext("Main Menu") + L"]" +
+			L" [" + m_rendering_engine->getVideoDriver()->getName() + L"]"	).c_str());
 
 		try {	// This is used for catching disconnects
 
@@ -246,11 +242,8 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			}
 
 			// Break out of menu-game loop to shut down cleanly
-			if (!m_rendering_engine->run() || *kill) {
-				if (!g_settings_path.empty())
-					g_settings->updateConfigFile(g_settings_path.c_str());
+			if (!m_rendering_engine->run() || *kill)
 				break;
-			}
 
 			m_rendering_engine->get_video_driver()->setTextureCreationFlag(
 					video::ETCF_CREATE_MIP_MAPS, g_settings->getBool("mip_map"));
@@ -274,6 +267,10 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			error_message = gettext("Connection error (timed out?)");
 			errorstream << error_message << std::endl;
 		}
+		catch (ShaderException &e) {
+			error_message = e.what();
+			errorstream << error_message << std::endl;
+		}
 
 #ifdef NDEBUG
 		catch (std::exception &e) {
@@ -290,6 +287,16 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		g_touchscreengui = NULL;
 		receiver->m_touchscreengui = NULL;
 #endif
+
+		/* Save the settings when leaving the game.
+		 * This makes sure that setting changes made in-game are persisted even
+		 * in case of a later unclean exit from the mainmenu.
+		 * This is especially useful on Android because closing the app from the
+		 * "Recents screen" results in an unclean exit.
+		 * Caveat: This means that the settings are saved twice when exiting Minetest.
+		 */
+		if (!g_settings_path.empty())
+			g_settings->updateConfigFile(g_settings_path.c_str());
 
 		// If no main menu, show error and exit
 		if (skip_main_menu) {
@@ -379,7 +386,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	if (cmd_args.exists("password-file")) {
 		std::ifstream passfile(cmd_args.get("password-file"));
 		if (passfile.good()) {
-			getline(passfile, start_data.password);
+			std::getline(passfile, start_data.password);
 		} else {
 			error_message = gettext("Provided password file "
 					"failed to open: ")
@@ -436,8 +443,6 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 		int world_index = menudata.selected_world;
 		if (world_index >= 0 && world_index < (int)worldspecs.size()) {
-			g_settings->set("selected_world_path",
-					worldspecs[world_index].path);
 			start_data.world_spec = worldspecs[world_index];
 		}
 
@@ -509,15 +514,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 			return false;
 		}
 
-		if (porting::signal_handler_killstatus())
-			return true;
-
-		if (!start_data.game_spec.isValid()) {
-			error_message = gettext("Invalid gamespec.");
-			error_message += " (world.gameid=" + worldspec.gameid + ")";
-			errorstream << error_message << std::endl;
-			return false;
-		}
+		return true;
 	}
 
 	start_data.world_path = start_data.world_spec.path;
@@ -541,118 +538,27 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 	}
 	infostream << "Waited for other menus" << std::endl;
 
-#ifndef ANDROID
-	// Cursor can be non-visible when coming from the game
-	m_rendering_engine->get_raw_device()->getCursorControl()->setVisible(true);
-
-	// Set absolute mouse mode
-	m_rendering_engine->get_raw_device()->getCursorControl()->setRelativeMode(false);
-#endif
+	auto *cur_control = m_rendering_engine->get_raw_device()->getCursorControl();
+	if (cur_control) {
+		// Cursor can be non-visible when coming from the game
+		cur_control->setVisible(true);
+		// Set absolute mouse mode
+		cur_control->setRelativeMode(false);
+	}
 
 	/* show main menu */
 	GUIEngine mymenu(&input->joystick, guiroot, m_rendering_engine, &g_menumgr, menudata, *kill);
 
 	/* leave scene manager in a clean state */
 	m_rendering_engine->get_scene_manager()->clear();
-}
 
-void ClientLauncher::speed_tests()
-{
-	// volatile to avoid some potential compiler optimisations
-	volatile static s16 temp16;
-	volatile static f32 tempf;
-	// Silence compiler warning
-	(void)temp16;
-	static v3f tempv3f1;
-	static v3f tempv3f2;
-	static std::string tempstring;
-	static std::string tempstring2;
-
-	tempv3f1 = v3f();
-	tempv3f2 = v3f();
-	tempstring.clear();
-	tempstring2.clear();
-
-	{
-		infostream << "The following test should take around 20ms." << std::endl;
-		TimeTaker timer("Testing std::string speed");
-		const u32 jj = 10000;
-		for (u32 j = 0; j < jj; j++) {
-			tempstring.clear();
-			tempstring2.clear();
-			const u32 ii = 10;
-			for (u32 i = 0; i < ii; i++) {
-				tempstring2 += "asd";
-			}
-			for (u32 i = 0; i < ii+1; i++) {
-				tempstring += "asd";
-				if (tempstring == tempstring2)
-					break;
-			}
-		}
-	}
-
-	infostream << "All of the following tests should take around 100ms each."
-	           << std::endl;
-
-	{
-		TimeTaker timer("Testing floating-point conversion speed");
-		tempf = 0.001;
-		for (u32 i = 0; i < 4000000; i++) {
-			temp16 += tempf;
-			tempf += 0.001;
-		}
-	}
-
-	{
-		TimeTaker timer("Testing floating-point vector speed");
-
-		tempv3f1 = v3f(1, 2, 3);
-		tempv3f2 = v3f(4, 5, 6);
-		for (u32 i = 0; i < 10000000; i++) {
-			tempf += tempv3f1.dotProduct(tempv3f2);
-			tempv3f2 += v3f(7, 8, 9);
-		}
-	}
-
-	{
-		TimeTaker timer("Testing std::map speed");
-
-		std::map<v2s16, f32> map1;
-		tempf = -324;
-		const s16 ii = 300;
-		for (s16 y = 0; y < ii; y++) {
-			for (s16 x = 0; x < ii; x++) {
-				map1[v2s16(x, y)] =  tempf;
-				tempf += 1;
-			}
-		}
-		for (s16 y = ii - 1; y >= 0; y--) {
-			for (s16 x = 0; x < ii; x++) {
-				tempf = map1[v2s16(x, y)];
-			}
-		}
-	}
-
-	{
-		infostream << "Around 5000/ms should do well here." << std::endl;
-		TimeTaker timer("Testing mutex speed");
-
-		std::mutex m;
-		u32 n = 0;
-		u32 i = 0;
-		do {
-			n += 10000;
-			for (; i < n; i++) {
-				m.lock();
-				m.unlock();
-			}
-		}
-		// Do at least 10ms
-		while(timer.getTimerTime() < 10);
-
-		u32 dtime = timer.stop();
-		u32 per_ms = n / dtime;
-		infostream << "Done. " << dtime << "ms, " << per_ms << "/ms" << std::endl;
-	}
+	/* Save the settings when leaving the mainmenu.
+	 * This makes sure that setting changes made in the mainmenu are persisted
+	 * even in case of a later unclean exit from the game.
+	 * This is especially useful on Android because closing the app from the
+	 * "Recents screen" results in an unclean exit.
+	 * Caveat: This means that the settings are saved twice when exiting Minetest.
+	 */
+	if (!g_settings_path.empty())
+		g_settings->updateConfigFile(g_settings_path.c_str());
 }

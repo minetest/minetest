@@ -165,9 +165,11 @@ void Clouds::render()
 	driver->getFog(fog_color, fog_type, fog_start, fog_end, fog_density,
 			fog_pixelfog, fog_rangefog);
 
-	// Set our own fog
-	driver->setFog(fog_color, fog_type, cloud_full_radius * 0.5,
+	// Set our own fog, unless it was already disabled
+	if (fog_start < FOG_RANGE_ALL) {
+		driver->setFog(fog_color, fog_type, cloud_full_radius * 0.5,
 			cloud_full_radius*1.2, fog_density, fog_pixelfog, fog_rangefog);
+	}
 
 	// Read noise
 

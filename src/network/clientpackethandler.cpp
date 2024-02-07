@@ -163,6 +163,7 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 
 	m_state = LC_Init;
 }
+
 void Client::handleCommand_AcceptSudoMode(NetworkPacket* pkt)
 {
 	deleteAuthData();
@@ -633,6 +634,17 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 	event->player_force_move.pitch = pitch;
 	event->player_force_move.yaw = yaw;
 	m_client_event_queue.push(event);
+}
+
+void Client::handleCommand_MovePlayerRel(NetworkPacket *pkt)
+{
+	v3f added_pos;
+
+	*pkt >> added_pos;
+
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player);
+	player->addPosition(added_pos);
 }
 
 void Client::handleCommand_DeathScreen(NetworkPacket* pkt)
@@ -1218,8 +1230,13 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 
 	*pkt >> server_id >> stat;
 
+	// Do nothing if stat is not known
+	if (stat >= HudElementStat_END) {
+		return;
+	}
+
 	// Keep in sync with:server.cpp -> SendHUDChange
-	switch ((HudElementStat)stat) {
+	switch (static_cast<HudElementStat>(stat)) {
 		case HUD_STAT_POS:
 		case HUD_STAT_SCALE:
 		case HUD_STAT_ALIGN:
@@ -1374,41 +1391,44 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 		star_event->type = CE_SET_STARS;
 		star_event->star_params = new StarParams(stars);
 		m_client_event_queue.push(star_event);
-	} else {
-		SkyboxParams skybox;
+		return;
+	}
+
+	SkyboxParams skybox;
+
+	*pkt >> skybox.bgcolor >> skybox.type >> skybox.clouds >>
+		skybox.fog_sun_tint >> skybox.fog_moon_tint >> skybox.fog_tint_type;
+
+	if (skybox.type == "skybox") {
 		u16 texture_count;
 		std::string texture;
-
-		*pkt >> skybox.bgcolor >> skybox.type >> skybox.clouds >>
-			skybox.fog_sun_tint >> skybox.fog_moon_tint >> skybox.fog_tint_type;
-
-		if (skybox.type == "skybox") {
-			*pkt >> texture_count;
-			for (int i = 0; i < texture_count; i++) {
-				*pkt >> texture;
-				skybox.textures.emplace_back(texture);
-			}
+		*pkt >> texture_count;
+		for (u16 i = 0; i < texture_count; i++) {
+			*pkt >> texture;
+			skybox.textures.emplace_back(texture);
 		}
-		else if (skybox.type == "regular") {
-			*pkt >> skybox.sky_color.day_sky >> skybox.sky_color.day_horizon
-				>> skybox.sky_color.dawn_sky >> skybox.sky_color.dawn_horizon
-				>> skybox.sky_color.night_sky >> skybox.sky_color.night_horizon
-				>> skybox.sky_color.indoors;
-		}
-
-		if (pkt->getRemainingBytes() >= 4) {
-			*pkt >> skybox.body_orbit_tilt;
-		}
-
-		if (pkt->getRemainingBytes() >= 6) {
-			*pkt >> skybox.fog_distance >> skybox.fog_start;
-		}
-
-		ClientEvent *event = new ClientEvent();
-		event->type = CE_SET_SKY;
-		event->set_sky = new SkyboxParams(skybox);
-		m_client_event_queue.push(event);
+	} else if (skybox.type == "regular") {
+		auto &c = skybox.sky_color;
+		*pkt >> c.day_sky >> c.day_horizon >> c.dawn_sky >> c.dawn_horizon
+			>> c.night_sky >> c.night_horizon >> c.indoors;
 	}
+
+	if (pkt->getRemainingBytes() >= 4) {
+		*pkt >> skybox.body_orbit_tilt;
+	}
+
+	if (pkt->getRemainingBytes() >= 6) {
+		*pkt >> skybox.fog_distance >> skybox.fog_start;
+	}
+
+	if (pkt->getRemainingBytes() >= 4) {
+		*pkt >> skybox.fog_color;
+	}
+
+	ClientEvent *event = new ClientEvent();
+	event->type = CE_SET_SKY;
+	event->set_sky = new SkyboxParams(skybox);
+	m_client_event_queue.push(event);
 }
 
 void Client::handleCommand_HudSetSun(NetworkPacket *pkt)
@@ -1804,4 +1824,6 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 				>> lighting.exposure.speed_bright_dark
 				>> lighting.exposure.center_weight_power;
 	}
+	if (pkt->getRemainingBytes() >= 4)
+		*pkt >> lighting.volumetric_light_strength;
 }
