@@ -62,8 +62,7 @@
 #define __attribute__(a)
 #endif
 
-// TODO: fix this
-#define HAVE_ENDIAN_H
+#include "cmake_config.h" /* HAVE_ENDIAN_H */
 
 /** endian.h **/
 /*
