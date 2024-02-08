@@ -5366,6 +5366,8 @@ Utilities
       dynamic_add_media_startup = true,
       -- dynamic_add_media supports `filename` and `filedata` parameters (5.9.0)
       dynamic_add_media_filepath = true,
+       -- L-system decoration type (5.9.0)
+      lsystem_decoration_type = true,
   }
   ```
 
@@ -6017,7 +6019,7 @@ Environment access
 * `minetest.add_entity(pos, name, [staticdata])`: Spawn Lua-defined entity at
   position.
     * Returns `ObjectRef`, or `nil` if failed
-    * Entities with `static_save = true` can be added also 
+    * Entities with `static_save = true` can be added also
       to unloaded and non-generated blocks.
 * `minetest.add_item(pos, item)`: Spawn item
     * Returns `ObjectRef`, or `nil` if failed
