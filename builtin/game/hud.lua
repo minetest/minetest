@@ -219,3 +219,20 @@ register_builtin_hud_element("breath", {
 		player:hud_change(id, "number", scaleToHudMax(player, "breath"))
 	end,
 })
+
+--- Minimap
+
+register_builtin_hud_element("minimap", {
+	elem_def = {
+		type = "minimap",
+		position = {x = 1, y = 0},
+		alignment = {x = -1, y = 1},
+		offset = {x = -10, y = 10},
+		size = {x = 256, y = 256},
+	},
+	show_elem = function(player, flags)
+		-- Don't add a minimap for clients which already have it hardcoded in C++.
+		return minetest.get_player_information(player:get_player_name()).protocol_version >= 44
+				and flags.minimap
+	end,
+})
