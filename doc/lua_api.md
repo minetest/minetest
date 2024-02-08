@@ -10261,20 +10261,9 @@ See [Decoration types]. Used by `minetest.register_decoration`.
     -- Ignored by 'y_min', 'y_max' and 'spawn_by' checks, which always refer
     -- to the 'place_on' node.
 
-    treedef = {
-		axiom="FFFFFAFFBF",
-		rules_a="[&&&FFFFF&&FFFF][&&&++++FFFFF&&FFFF][&&&----FFFFF&&FFFF]",
-		rules_b="[&&&++FFFFF&&FFFF][&&&--FFFFF&&FFFF][&&&------FFFFF&&FFFF]",
-		trunk="default:tree",
-		leaves="default:leaves",
-		angle=30,
-		iterations=2,
-		random_level=0,
-		trunk_type="single",
-		thin_branches=true,
-		fruit_chance=10,
-		fruit="default:apple"
-	},
+    ----- L-system-type parameters
+
+    treedef = {},
     -- Same as for `minetest.spawn_tree`.
     -- See section [L-system trees] for more details.
 }
