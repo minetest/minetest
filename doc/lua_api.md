@@ -10534,8 +10534,10 @@ Used by `minetest.add_particle`.
 
     texture = "image.png",
     -- The texture of the particle
-    -- v5.9.0 and later: also supports the table format described in the
-    -- following section
+    -- v5.6.0 and later: also supports the table format described in the
+    -- following section, but due to a bug this did not take effect
+    -- (beyond the texture name).
+    -- v5.9.0 and later: fixes the bug.
 
     playername = "singleplayer",
     -- Optional, if specified spawns particle only on the player's client
