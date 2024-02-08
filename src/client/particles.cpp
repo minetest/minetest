@@ -143,7 +143,7 @@ Particle::Particle(
 void Particle::OnRegisterSceneNode()
 {
 	if (IsVisible) {
-		bool solid = m_texture.tex && m_texture.tex->blendmode == ParticleParamTypes::BlendMode::clip;
+		bool solid = m_material.MaterialType == video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		SceneManager->registerNodeForRendering(this,
 				solid ? scene::ESNRP_SOLID : scene::ESNRP_TRANSPARENT_EFFECT);
 	}
