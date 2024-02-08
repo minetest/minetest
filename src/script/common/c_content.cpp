@@ -83,6 +83,12 @@ void read_item_definition(lua_State* L, int index,
 
 	getboolfield(L, index, "liquids_pointable", def.liquids_pointable);
 
+	lua_getfield(L, index, "pointabilities");
+	if(lua_istable(L, -1)){
+		def.pointabilities = std::make_optional<Pointabilities>(
+				read_pointabilities(L, -1));
+	}
+
 	lua_getfield(L, index, "tool_capabilities");
 	if(lua_istable(L, -1)){
 		def.tool_capabilities = new ToolCapabilities(
@@ -136,6 +142,22 @@ void read_item_definition(lua_State* L, int index,
 	int place_param2;
 	if (getintfield(L, index, "place_param2", place_param2))
 		def.place_param2 = rangelim(place_param2, 0, U8_MAX);
+
+	getboolfield(L, index, "wallmounted_rotate_vertical", def.wallmounted_rotate_vertical);
+
+	lua_getfield(L, index, "touch_interaction");
+	if (!lua_isnil(L, -1)) {
+		luaL_checktype(L, -1, LUA_TTABLE);
+
+		TouchInteraction &inter = def.touch_interaction;
+		inter.pointed_nothing = (TouchInteractionMode)getenumfield(L, -1, "pointed_nothing",
+				es_TouchInteractionMode, inter.pointed_nothing);
+		inter.pointed_node = (TouchInteractionMode)getenumfield(L, -1, "pointed_node",
+				es_TouchInteractionMode, inter.pointed_node);
+		inter.pointed_object = (TouchInteractionMode)getenumfield(L, -1, "pointed_object",
+				es_TouchInteractionMode, inter.pointed_object);
+	}
+	lua_pop(L, 1);
 }
 
 /******************************************************************************/
@@ -183,6 +205,10 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "usable");
 	lua_pushboolean(L, i.liquids_pointable);
 	lua_setfield(L, -2, "liquids_pointable");
+	if (i.pointabilities) {
+		push_pointabilities(L, *i.pointabilities);
+		lua_setfield(L, -2, "pointabilities");
+	}
 	if (i.tool_capabilities) {
 		push_tool_capabilities(L, *i.tool_capabilities);
 		lua_setfield(L, -2, "tool_capabilities");
@@ -195,6 +221,18 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "sound_place_failed");
 	lua_pushstring(L, i.node_placement_prediction.c_str());
 	lua_setfield(L, -2, "node_placement_prediction");
+	lua_pushboolean(L, i.wallmounted_rotate_vertical);
+	lua_setfield(L, -2, "wallmounted_rotate_vertical");
+
+	lua_createtable(L, 0, 3);
+	const TouchInteraction &inter = i.touch_interaction;
+	lua_pushstring(L, es_TouchInteractionMode[inter.pointed_nothing].str);
+	lua_setfield(L, -2,"pointed_nothing");
+	lua_pushstring(L, es_TouchInteractionMode[inter.pointed_node].str);
+	lua_setfield(L, -2,"pointed_node");
+	lua_pushstring(L, es_TouchInteractionMode[inter.pointed_object].str);
+	lua_setfield(L, -2,"pointed_object");
+	lua_setfield(L, -2, "touch_interaction");
 }
 
 /******************************************************************************/
@@ -283,7 +321,12 @@ void read_object_properties(lua_State *L, int index,
 	}
 	lua_pop(L, 1);
 
-	getboolfield(L, -1, "pointable", prop->pointable);
+	lua_getfield(L, -1, "pointable");
+	if(!lua_isnil(L, -1)){
+		prop->pointable = read_pointability_type(L, -1);
+	}
+	lua_pop(L, 1);
+
 	getstringfield(L, -1, "visual", prop->visual);
 
 	getstringfield(L, -1, "mesh", prop->mesh);
@@ -424,7 +467,7 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_pushboolean(L, prop->rotate_selectionbox);
 	lua_setfield(L, -2, "rotate");
 	lua_setfield(L, -2, "selectionbox");
-	lua_pushboolean(L, prop->pointable);
+	push_pointability_type(L, prop->pointable);
 	lua_setfield(L, -2, "pointable");
 	lua_pushlstring(L, prop->visual.c_str(), prop->visual.size());
 	lua_setfield(L, -2, "visual");
@@ -753,8 +796,14 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	// This is used for collision detection.
 	// Also for general solidness queries.
 	getboolfield(L, index, "walkable", f.walkable);
-	// Player can point to these
-	getboolfield(L, index, "pointable", f.pointable);
+
+	// Player can point to these, point through or it is blocking
+	lua_getfield(L, index, "pointable");
+	if(!lua_isnil(L, -1)){
+		f.pointable = read_pointability_type(L, -1);
+	}
+	lua_pop(L, 1);
+
 	// Player can dig these
 	getboolfield(L, index, "diggable", f.diggable);
 	// Player can climb these
@@ -977,7 +1026,7 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "is_ground_content");
 	lua_pushboolean(L, c.walkable);
 	lua_setfield(L, -2, "walkable");
-	lua_pushboolean(L, c.pointable);
+	push_pointability_type(L, c.pointable);
 	lua_setfield(L, -2, "pointable");
 	lua_pushboolean(L, c.diggable);
 	lua_setfield(L, -2, "diggable");
@@ -1565,6 +1614,125 @@ ToolCapabilities read_tool_capabilities(
 }
 
 /******************************************************************************/
+PointabilityType read_pointability_type(lua_State *L, int index)
+{
+	if (lua_isboolean(L, index)) {
+		if (lua_toboolean(L, index))
+			return PointabilityType::POINTABLE;
+		else
+			return PointabilityType::POINTABLE_NOT;
+	} else {
+		const char* s = luaL_checkstring(L, index);
+		if (s && !strcmp(s, "blocking")) {
+			return PointabilityType::POINTABLE_BLOCKING;
+		}
+	}
+	throw LuaError("Invalid pointable type.");
+}
+
+/******************************************************************************/
+Pointabilities read_pointabilities(lua_State *L, int index)
+{
+	Pointabilities pointabilities;
+
+	lua_getfield(L, index, "nodes");
+	if(lua_istable(L, -1)){
+		int ti = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, ti) != 0) {
+			// key at index -2 and value at index -1
+			std::string name = luaL_checkstring(L, -2);
+
+			// handle groups
+			if(std::string_view(name).substr(0,6)=="group:") {
+				pointabilities.node_groups[name.substr(6)] = read_pointability_type(L, -1);
+			} else {
+				pointabilities.nodes[name] = read_pointability_type(L, -1);
+			}
+
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "objects");
+	if(lua_istable(L, -1)){
+		int ti = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, ti) != 0) {
+			// key at index -2 and value at index -1
+			std::string name = luaL_checkstring(L, -2);
+
+			// handle groups
+			if(std::string_view(name).substr(0,6)=="group:") {
+				pointabilities.object_groups[name.substr(6)] = read_pointability_type(L, -1);
+			} else {
+				pointabilities.objects[name] = read_pointability_type(L, -1);
+			}
+
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
+
+	return pointabilities;
+}
+
+/******************************************************************************/
+void push_pointability_type(lua_State *L, PointabilityType pointable)
+{
+	switch(pointable)
+	{
+	case PointabilityType::POINTABLE:
+		lua_pushboolean(L, true);
+		break;
+	case PointabilityType::POINTABLE_NOT:
+		lua_pushboolean(L, false);
+		break;
+	case PointabilityType::POINTABLE_BLOCKING:
+		lua_pushliteral(L, "blocking");
+		break;
+	}
+}
+
+/******************************************************************************/
+void push_pointabilities(lua_State *L, const Pointabilities &pointabilities)
+{
+	// pointabilities table
+	lua_newtable(L);
+
+	if (!pointabilities.nodes.empty() || !pointabilities.node_groups.empty()) {
+		// Create and fill table
+		lua_newtable(L);
+		for (const auto &entry : pointabilities.nodes) {
+			push_pointability_type(L, entry.second);
+			lua_setfield(L, -2, entry.first.c_str());
+		}
+		for (const auto &entry : pointabilities.node_groups) {
+			push_pointability_type(L, entry.second);
+			lua_setfield(L, -2, ("group:" + entry.first).c_str());
+		}
+		lua_setfield(L, -2, "nodes");
+	}
+
+	if (!pointabilities.objects.empty() || !pointabilities.object_groups.empty()) {
+		// Create and fill table
+		lua_newtable(L);
+		for (const auto &entry : pointabilities.objects) {
+			push_pointability_type(L, entry.second);
+			lua_setfield(L, -2, entry.first.c_str());
+		}
+		for (const auto &entry : pointabilities.object_groups) {
+			push_pointability_type(L, entry.second);
+			lua_setfield(L, -2, ("group:" + entry.first).c_str());
+		}
+		lua_setfield(L, -2, "objects");
+	}
+}
+
+/******************************************************************************/
 void push_dig_params(lua_State *L,const DigParams &params)
 {
 	lua_createtable(L, 0, 3);
@@ -1997,11 +2165,16 @@ void read_hud_element(lua_State *L, HudElement *elem)
 	elem->name    = getstringfield_default(L, 2, "name", "");
 	elem->text    = getstringfield_default(L, 2, "text", "");
 	elem->number  = getintfield_default(L, 2, "number", 0);
-	if (elem->type == HUD_ELEM_WAYPOINT)
-		// waypoints reuse the item field to store precision, item = precision + 1
-		elem->item = getintfield_default(L, 2, "precision", -1) + 1;
-	else
+	if (elem->type == HUD_ELEM_WAYPOINT) {
+		// Waypoints reuse the item field to store precision,
+		// item = precision + 1 and item = 0 <=> precision = 10 for backwards compatibility.
+		int precision = getintfield_default(L, 2, "precision", 10);
+		if (precision < 0)
+			throw LuaError("Waypoint precision must be non-negative");
+		elem->item = precision + 1;
+	} else {
 		elem->item = getintfield_default(L, 2, "item", 0);
+	}
 	elem->dir     = getintfield_default(L, 2, "direction", 0);
 	elem->z_index = MYMAX(S16_MIN, MYMIN(S16_MAX,
 			getintfield_default(L, 2, "z_index", 0)));
@@ -2053,8 +2226,10 @@ void push_hud_element(lua_State *L, HudElement *elem)
 	lua_setfield(L, -2, "number");
 
 	if (elem->type == HUD_ELEM_WAYPOINT) {
-		// waypoints reuse the item field to store precision, precision = item - 1
-		lua_pushnumber(L, elem->item - 1);
+		// Waypoints reuse the item field to store precision,
+		// item = precision + 1 and item = 0 <=> precision = 10 for backwards compatibility.
+		// See `Hud::drawLuaElements`, case `HUD_ELEM_WAYPOINT`.
+		lua_pushnumber(L, (elem->item == 0) ? 10 : (elem->item - 1));
 		lua_setfield(L, -2, "precision");
 	}
 	// push the item field for waypoints as well for backwards compatibility
@@ -2100,7 +2275,7 @@ bool read_hud_change(lua_State *L, HudElementStat &stat, HudElement *elem, void 
 			return false;
 		}
 
-		stat = (HudElementStat)statint;
+		stat = static_cast<HudElementStat>(statint);
 	}
 
 	switch (stat) {
@@ -2161,6 +2336,9 @@ bool read_hud_change(lua_State *L, HudElementStat &stat, HudElement *elem, void 
 		case HUD_STAT_STYLE:
 			elem->style = luaL_checknumber(L, 4);
 			*value = &elem->style;
+			break;
+		case HudElementStat_END:
+			return false;
 			break;
 	}
 

@@ -39,6 +39,7 @@ extern "C" {
 #include "util/string.h"
 #include "itemgroup.h"
 #include "itemdef.h"
+#include "util/pointabilities.h"
 #include "c_types.h"
 // We do an explicit path include because by default c_content.h include src/client/hud.h
 // prior to the src/hud.h, which is not good on server only build
@@ -106,6 +107,11 @@ void               push_hit_params           (lua_State *L,
 ItemStack          read_item                 (lua_State *L, int index, IItemDefManager *idef);
 
 struct TileAnimationParams read_animation_definition(lua_State *L, int index);
+
+PointabilityType   read_pointability_type    (lua_State *L, int index);
+Pointabilities     read_pointabilities       (lua_State *L, int index);
+void               push_pointability_type    (lua_State *L, PointabilityType pointable);
+void               push_pointabilities       (lua_State *L, const Pointabilities &pointabilities);
 
 ToolCapabilities   read_tool_capabilities    (lua_State *L, int table);
 void               push_tool_capabilities    (lua_State *L,

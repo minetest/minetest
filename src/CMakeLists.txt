@@ -47,7 +47,7 @@ option(ENABLE_CURL "Enable cURL support for fetching media" TRUE)
 set(USE_CURL FALSE)
 
 if(ENABLE_CURL)
-	find_package(CURL)
+	find_package(CURL 7.28.0)
 	if (CURL_FOUND)
 		message(STATUS "cURL support enabled.")
 		set(USE_CURL TRUE)
@@ -326,6 +326,9 @@ if(HAVE_LINK_ATOMIC)
 	set(PLATFORM_LIBS ${PLATFORM_LIBS} "-latomic")
 endif()
 
+include(CheckSymbolExists)
+check_symbol_exists(strlcpy "string.h" HAVE_STRLCPY)
+
 check_include_files(endian.h HAVE_ENDIAN_H)
 
 configure_file(
@@ -363,9 +366,7 @@ set(common_SRCS
 	${mapgen_SRCS}
 	${server_SRCS}
 	${content_SRCS}
-	ban.cpp
 	chat.cpp
-	clientiface.cpp
 	collision.cpp
 	content_mapnode.cpp
 	content_nodemeta.cpp
@@ -410,12 +411,10 @@ set(common_SRCS
 	raycast.cpp
 	reflowscan.cpp
 	remoteplayer.cpp
-	rollback.cpp
 	rollback_interface.cpp
 	serialization.cpp
 	server.cpp
 	serverenvironment.cpp
-	serverlist.cpp
 	settings.cpp
 	staticobject.cpp
 	terminal_chat_console.cpp
@@ -693,7 +692,6 @@ endif()
 # Set some optimizations and tweaks
 
 include(CheckCSourceCompiles)
-include(CheckSymbolExists)
 
 set(CMAKE_REQUIRED_INCLUDES ${LUA_INCLUDE_DIR})
 if(USE_LUAJIT)

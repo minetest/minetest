@@ -87,7 +87,6 @@ private:
 	// TODO: Add callback to update these when g_settings changes
 	bool m_cache_enable_shaders;
 	bool m_cache_smooth_lighting;
-	int m_meshgen_block_cache_size;
 
 	void fillDataFromMapBlocks(QueuedMeshUpdate *q);
 	void cleanupCache();

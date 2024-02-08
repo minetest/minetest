@@ -43,27 +43,27 @@ class VoxelManipulator;
 //// MapBlock modified reason flags
 ////
 
-#define MOD_REASON_INITIAL                   (1 << 0)
-#define MOD_REASON_REALLOCATE                (1 << 1)
-#define MOD_REASON_SET_IS_UNDERGROUND        (1 << 2)
-#define MOD_REASON_SET_LIGHTING_COMPLETE     (1 << 3)
-#define MOD_REASON_SET_GENERATED             (1 << 4)
-#define MOD_REASON_SET_NODE                  (1 << 5)
-#define MOD_REASON_SET_NODE_NO_CHECK         (1 << 6)
-#define MOD_REASON_SET_TIMESTAMP             (1 << 7)
-#define MOD_REASON_REPORT_META_CHANGE        (1 << 8)
-#define MOD_REASON_CLEAR_ALL_OBJECTS         (1 << 9)
-#define MOD_REASON_BLOCK_EXPIRED             (1 << 10)
-#define MOD_REASON_ADD_ACTIVE_OBJECT_RAW     (1 << 11)
-#define MOD_REASON_REMOVE_OBJECTS_REMOVE     (1 << 12)
-#define MOD_REASON_REMOVE_OBJECTS_DEACTIVATE (1 << 13)
-#define MOD_REASON_TOO_MANY_OBJECTS          (1 << 14)
-#define MOD_REASON_STATIC_DATA_ADDED         (1 << 15)
-#define MOD_REASON_STATIC_DATA_REMOVED       (1 << 16)
-#define MOD_REASON_STATIC_DATA_CHANGED       (1 << 17)
-#define MOD_REASON_EXPIRE_DAYNIGHTDIFF       (1 << 18)
-#define MOD_REASON_VMANIP                    (1 << 19)
-#define MOD_REASON_UNKNOWN                   (1 << 20)
+enum ModReason : u32 {
+	MOD_REASON_REALLOCATE                 = 1 << 0,
+	MOD_REASON_SET_IS_UNDERGROUND         = 1 << 1,
+	MOD_REASON_SET_LIGHTING_COMPLETE      = 1 << 2,
+	MOD_REASON_SET_GENERATED              = 1 << 3,
+	MOD_REASON_SET_NODE                   = 1 << 4,
+	MOD_REASON_SET_TIMESTAMP              = 1 << 5,
+	MOD_REASON_REPORT_META_CHANGE         = 1 << 6,
+	MOD_REASON_CLEAR_ALL_OBJECTS          = 1 << 7,
+	MOD_REASON_BLOCK_EXPIRED              = 1 << 8,
+	MOD_REASON_ADD_ACTIVE_OBJECT_RAW      = 1 << 9,
+	MOD_REASON_REMOVE_OBJECTS_REMOVE      = 1 << 10,
+	MOD_REASON_REMOVE_OBJECTS_DEACTIVATE  = 1 << 11,
+	MOD_REASON_TOO_MANY_OBJECTS           = 1 << 12,
+	MOD_REASON_STATIC_DATA_ADDED          = 1 << 13,
+	MOD_REASON_STATIC_DATA_REMOVED        = 1 << 14,
+	MOD_REASON_STATIC_DATA_CHANGED        = 1 << 15,
+	MOD_REASON_EXPIRE_DAYNIGHTDIFF        = 1 << 16,
+	MOD_REASON_VMANIP                     = 1 << 17,
+	MOD_REASON_UNKNOWN                    = 1 << 18,
+};
 
 ////
 //// MapBlock itself
@@ -155,7 +155,7 @@ public:
 	{
 		if (newflags != m_lighting_complete) {
 			m_lighting_complete = newflags;
-			raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_LIGHTING_COMPLETE);
+			raiseModified(MOD_STATE_WRITE_AT_UNLOAD, MOD_REASON_SET_LIGHTING_COMPLETE);
 		}
 	}
 
@@ -296,7 +296,7 @@ public:
 	inline void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode n)
 	{
 		data[z * zstride + y * ystride + x] = n;
-		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_NODE_NO_CHECK);
+		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_NODE);
 	}
 
 	inline void setNodeNoCheck(v3s16 p, MapNode n)
@@ -525,8 +525,8 @@ private:
 		  block has been modified from the one on disk.
 		- On the client, this is used for nothing.
 	*/
-	u16 m_modified = MOD_STATE_WRITE_NEEDED;
-	u32 m_modified_reason = MOD_REASON_INITIAL;
+	u16 m_modified = MOD_STATE_CLEAN;
+	u32 m_modified_reason = 0;
 
 	/*
 		When block is removed from active blocks, this is set to gametime.

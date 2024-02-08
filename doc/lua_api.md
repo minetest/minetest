@@ -506,8 +506,8 @@ Example:
 
 * `<w>`: width
 * `<h>`: height
-* `<x>`: x position
-* `<y>`: y position
+* `<x>`: x position, negative numbers allowed
+* `<y>`: y position, negative numbers allowed
 * `<file>`: texture to combine
 
 Creates a texture of size `<w>` times `<h>` and blits the listed files to their
@@ -613,13 +613,13 @@ Creates an inventorycube with `grass.png`, `dirt.png^grass_side.png` and
 * `<y>`: y position
 * `<color>`: a `ColorString`.
 
-Creates a texture of the given size and color, optionally with an <x>,<y>
+Creates a texture of the given size and color, optionally with an `<x>,<y>`
 position. An alpha value may be specified in the `Colorstring`.
 
-The optional <x>,<y> position is only used if the [fill is being overlaid
+The optional `<x>,<y>` position is only used if the `[fill` is being overlaid
 onto another texture with '^'.
 
-When [fill is overlaid onto another texture it will not upscale or change
+When `[fill` is overlaid onto another texture it will not upscale or change
 the resolution of the texture, the base texture will determine the output
 resolution.
 
@@ -1270,11 +1270,15 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * The rotation of the node is stored in `param2`
     * Node is 'mounted'/facing towards one of 6 directions
     * You can make this value by using `minetest.dir_to_wallmounted()`
-    * Values range 0 - 5
+    * Values range 0 - 7
     * The value denotes at which direction the node is "mounted":
       0 = y+,   1 = y-,   2 = x+,   3 = x-,   4 = z+,   5 = z-
+      6 = y+, but rotated by  90°
+      7 = y-, but rotated by -90°
     * By default, on placement the param2 is automatically set to the
-      appropriate rotation, depending on which side was pointed at
+      appropriate rotation (0 to 5), depending on which side was
+      pointed at. With the node field `wallmounted_rotate_vertical = true`,
+      the param2 values 6 and 7 might additionally be set
 * `paramtype2 = "facedir"`
     * Supported drawtypes: "normal", "nodebox", "mesh"
     * The rotation of the node is stored in `param2`.
@@ -5295,6 +5299,13 @@ Utilities
       -- minetest.after guarantees that coexisting jobs are executed primarily
       -- in order of expiry and secondarily in order of registration (5.9.0)
       after_order_expiry_registration = true,
+      -- wallmounted nodes mounted at floor or ceiling may additionally
+      -- be rotated by 90° with special param2 values (5.9.0)
+      wallmounted_rotate = true,
+      -- Availability of the `pointabilities` property in the item definition (5.9.0)
+      item_specific_pointabilities = true,
+      -- Nodes `pointable` property can be `"blocking"` (5.9.0)
+      blocking_pointability_type = true,
   }
   ```
 
@@ -5837,8 +5848,20 @@ Authentication
     * `name`: string; if omitted, all auth data should be considered modified
 * `minetest.set_player_password(name, password_hash)`: Set password hash of
   player `name`.
-* `minetest.set_player_privs(name, {priv1=true,...})`: Set privileges of player
-  `name`.
+* `minetest.set_player_privs(name, privs)`: Set privileges of player `name`.
+    * `privs` is a **set** of privileges:
+      A table where the keys are names of privileges and the values are `true`.
+    * Example: `minetest.set_player_privs("singleplayer", {interact = true, fly = true})`.
+      This **sets** the player privileges to `interact` and `fly`;
+      `singleplayer` will only have these two privileges afterwards.
+* `minetest.change_player_privs(name, changes)`: Helper to grant or revoke privileges.
+    * `changes`: Table of changes to make.
+      A field `[privname] = true` grants a privilege,
+      whereas `[privname] = false` revokes a privilege.
+    * Example: `minetest.change_player_privs("singleplayer", {interact = true, fly = false})`
+      will grant singleplayer the `interact` privilege
+      and revoke singleplayer's `fly` privilege.
+      All other privileges will remain unchanged.
 * `minetest.auth_reload()`
     * See `reload()` in authentication handler definition
 
@@ -7945,8 +7968,7 @@ child will follow movement and rotation of that bone.
       whether `set_sky` accepts this format. Check the legacy format otherwise.
     * Passing no arguments resets the sky to its default values.
     * `sky_parameters` is a table with the following optional fields:
-        * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
-          (default: `#ffffff`)
+        * `base_color`: ColorSpec, meaning depends on `type` (default: `#ffffff`)
         * `body_orbit_tilt`: Float, rotation angle of sun/moon orbit in degrees.
            By default, orbit is controlled by a client-side setting, and this field is not set.
            After a value is assigned, it can only be changed to another float value.
@@ -8003,6 +8025,9 @@ child will follow movement and rotation of that bone.
                Any value between [0.0, 0.99] set the fog_start as a fraction of the viewing_range.
                Any value < 0, resets the behavior to being client-controlled.
                (default: -1)
+            * `fog_color`: ColorSpec, override the color of the fog.
+               Unlike `base_color` above this will apply regardless of the skybox type.
+               (default: `"#00000000"`, which means no override)
 * `set_sky(base_color, type, {texture names}, clouds)`
     * Deprecated. Use `set_sky(sky_parameters)`
     * `base_color`: ColorSpec, defaults to white
@@ -8249,6 +8274,11 @@ Can be obtained using `player:get_meta()`.
 A 16-bit pseudorandom number generator.
 Uses a well-known LCG algorithm introduced by K&R.
 
+**Note**:
+`PseudoRandom` is slower and has worse random distribution than `PcgRandom`.
+Use `PseudoRandom` only if you need output to match the well-known LCG algorithm introduced by K&R.
+Otherwise, use `PcgRandom`.
+
 * constructor `PseudoRandom(seed)`
   * `seed`: 32-bit signed number
 
@@ -8446,7 +8476,10 @@ Player properties need to be saved manually.
 
 
     pointable = true,
-    -- Whether the object can be pointed at
+    -- Can be `true` if it is pointable, `false` if it can be pointed through,
+    -- or `"blocking"` if it is pointable but not selectable.
+    -- Clients older than 5.9.0 interpret `pointable = "blocking"` as `pointable = true`.
+    -- Can be overridden by the `pointabilities` of the held item.
 
     visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem" / "item",
     -- "cube" is a node-sized cube.
@@ -8810,6 +8843,27 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     -- If true, item can point to all liquid nodes (`liquidtype ~= "none"`),
     -- even those for which `pointable = false`
 
+    pointabilities = {
+		nodes = {
+			["default:stone"] = "blocking",
+			["group:leaves"] = false,
+		},
+		objects = {
+			["modname:entityname"] = true,
+			["group:ghosty"] = true, -- (an armor group)
+		}
+    },
+    -- Contains lists to override the `pointable` property of pointed nodes and objects.
+    -- The index can be a node/entity name or a group with the prefix `"group:"`.
+    -- (For objects `armor_groups` are used and for players the entity name is irrelevant.)
+    -- If multiple fields fit, the following priority order is applied:
+    -- 1. value of matching node/entity name
+    -- 2. `true` for any group
+    -- 3. `false` for any group
+    -- 4. `"blocking"` for any group
+    -- 5. `liquids_pointable` if it is a liquid node
+    -- 6. `pointable` property of the node or object
+
     light_source = 0,
     -- When used for nodes: Defines amount of light emitted by node.
     -- Otherwise: Defines texture glow when viewed as a dropped item
@@ -8850,6 +8904,20 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     -- if "air", node is removed.
     -- Otherwise should be name of node which the client immediately places
     -- upon digging. Server will always update with actual result shortly.
+
+    touch_interaction = {
+        -- Only affects touchscreen clients.
+        -- Defines the meaning of short and long taps with the item in hand.
+        -- The fields in this table have two valid values:
+        -- * "long_dig_short_place" (long tap  = dig, short tap = place)
+        -- * "short_dig_long_place" (short tap = dig, long tap  = place)
+        -- The field to be used is selected according to the current
+        -- `pointed_thing`.
+
+        pointed_nothing = "long_dig_short_place",
+        pointed_node    = "long_dig_short_place",
+        pointed_object  = "short_dig_long_place",
+    },
 
     sound = {
         -- Definition of item sounds to be played at various events.
@@ -9002,6 +9070,13 @@ Used by `minetest.register_node`.
     place_param2 = 0,
     -- Value for param2 that is set when player places node
 
+    wallmounted_rotate_vertical = false,
+    -- If true, place_param2 is nil, and this is a wallmounted node,
+    -- this node might use the special 90° rotation when placed
+    -- on the floor or ceiling, depending on the direction.
+    -- See the explanation about wallmounted for details.
+    -- Otherwise, the rotation is always the same on vertical placement.
+
     is_ground_content = true,
     -- If false, the cave generator and dungeon generator will not carve
     -- through this node.
@@ -9014,7 +9089,12 @@ Used by `minetest.register_node`.
 
     walkable = true,  -- If true, objects collide with node
 
-    pointable = true,  -- If true, can be pointed at
+    pointable = true,
+    -- Can be `true` if it is pointable, `false` if it can be pointed through,
+    -- or `"blocking"` if it is pointable but not selectable.
+    -- Clients older than 5.9.0 interpret `pointable = "blocking"` as `pointable = true`.
+    -- Can be overridden by the `pointabilities` of the held item.
+    -- A client may be able to point non-pointable nodes, since it isn't checked server-side.
 
     diggable = true,  -- If false, can never be dug
 
@@ -10757,8 +10837,8 @@ Used by `minetest.register_authentication_handler`.
 
     set_privileges = function(name, privileges),
     -- Set privileges of player `name`.
-    -- `privileges` is in table form, auth data should be created if not
-    -- present.
+    -- `privileges` is in table form: keys are privilege names, values are `true`;
+    -- auth data should be created if not present.
 
     reload = function(),
     -- Reload authentication data from the storage location.

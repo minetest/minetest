@@ -35,8 +35,59 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/container.h"
 #include "util/thread.h"
+#include "util/pointedthing.h"
 #include <map>
 #include <set>
+
+TouchInteraction::TouchInteraction()
+{
+	pointed_nothing = LONG_DIG_SHORT_PLACE;
+	pointed_node    = LONG_DIG_SHORT_PLACE;
+	// Map punching to single tap by default.
+	pointed_object  = SHORT_DIG_LONG_PLACE;
+}
+
+TouchInteractionMode TouchInteraction::getMode(const PointedThing &pointed) const
+{
+	switch (pointed.type) {
+	case POINTEDTHING_NOTHING:
+		return pointed_nothing;
+	case POINTEDTHING_NODE:
+		return pointed_node;
+	case POINTEDTHING_OBJECT:
+		return pointed_object;
+	default:
+		FATAL_ERROR("Invalid PointedThingType given to TouchInteraction::getMode");
+	}
+}
+
+void TouchInteraction::serialize(std::ostream &os) const
+{
+	writeU8(os, pointed_nothing);
+	writeU8(os, pointed_node);
+	writeU8(os, pointed_object);
+}
+
+void TouchInteraction::deSerialize(std::istream &is)
+{
+	u8 tmp = readU8(is);
+	if (is.eof())
+		throw SerializationError("");
+	if (tmp < TouchInteractionMode_END)
+		pointed_nothing = (TouchInteractionMode)tmp;
+
+	tmp = readU8(is);
+	if (is.eof())
+		throw SerializationError("");
+	if (tmp < TouchInteractionMode_END)
+		pointed_node = (TouchInteractionMode)tmp;
+
+	tmp = readU8(is);
+	if (is.eof())
+		throw SerializationError("");
+	if (tmp < TouchInteractionMode_END)
+		pointed_object = (TouchInteractionMode)tmp;
+}
 
 /*
 	ItemDefinition
@@ -71,11 +122,13 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	stack_max = def.stack_max;
 	usable = def.usable;
 	liquids_pointable = def.liquids_pointable;
+	pointabilities = def.pointabilities;
 	if (def.tool_capabilities)
 		tool_capabilities = new ToolCapabilities(*def.tool_capabilities);
 	groups = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
 	place_param2 = def.place_param2;
+	wallmounted_rotate_vertical = def.wallmounted_rotate_vertical;
 	sound_place = def.sound_place;
 	sound_place_failed = def.sound_place_failed;
 	sound_use = def.sound_use;
@@ -83,6 +136,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	range = def.range;
 	palette_image = def.palette_image;
 	color = def.color;
+	touch_interaction = def.touch_interaction;
 	return *this;
 }
 
@@ -114,6 +168,7 @@ void ItemDefinition::reset()
 	stack_max = 99;
 	usable = false;
 	liquids_pointable = false;
+	pointabilities = std::nullopt;
 	delete tool_capabilities;
 	tool_capabilities = NULL;
 	groups.clear();
@@ -124,6 +179,8 @@ void ItemDefinition::reset()
 	range = -1;
 	node_placement_prediction.clear();
 	place_param2.reset();
+	wallmounted_rotate_vertical = false;
+	touch_interaction = TouchInteraction();
 }
 
 void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
@@ -183,6 +240,17 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	os << (u8)place_param2.has_value(); // protocol_version >= 43
 	if (place_param2)
 		os << *place_param2;
+
+	writeU8(os, wallmounted_rotate_vertical);
+	touch_interaction.serialize(os);
+
+	std::string pointabilities_s;
+	if (pointabilities) {
+		std::ostringstream tmp_os(std::ios::binary);
+		pointabilities->serialize(tmp_os);
+		pointabilities_s = tmp_os.str();
+	}
+	os << serializeString16(pointabilities_s);
 }
 
 void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
@@ -195,7 +263,11 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 	if (version < 6)
 		throw SerializationError("unsupported ItemDefinition version");
 
-	type = (enum ItemType)readU8(is);
+	type = static_cast<ItemType>(readU8(is));
+	if (type >= ItemType_END) {
+		type = ITEM_NONE;
+	}
+
 	name = deSerializeString16(is);
 	description = deSerializeString16(is);
 	inventory_image = deSerializeString16(is);
@@ -251,6 +323,16 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 
 		if (readU8(is)) // protocol_version >= 43
 			place_param2 = readU8(is);
+
+		wallmounted_rotate_vertical = readU8(is); // 0 if missing
+		touch_interaction.deSerialize(is);
+
+		std::string pointabilities_s = deSerializeString16(is);
+		if (!pointabilities_s.empty()) {
+			std::istringstream tmp_is(pointabilities_s, std::ios::binary);
+			pointabilities = std::make_optional<Pointabilities>();
+			pointabilities->deSerialize(tmp_is);
+		}
 	} catch(SerializationError &e) {};
 }
 

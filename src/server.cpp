@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/connection.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
-#include "ban.h"
+#include "server/ban.h"
 #include "environment.h"
 #include "map.h"
 #include "threading/mutex_auto_lock.h"
@@ -49,9 +49,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_nodemeta.h"
 #include "content/mods.h"
 #include "modchannels.h"
-#include "serverlist.h"
+#include "server/serverlist.h"
 #include "util/string.h"
-#include "rollback.h"
+#include "server/rollback.h"
 #include "util/serialize.h"
 #include "util/thread.h"
 #include "defaultsettings.h"
@@ -137,6 +137,7 @@ void *ServerThread::run()
 		} catch (con::PeerNotFoundException &e) {
 			infostream<<"Server: PeerNotFoundException"<<std::endl;
 		} catch (ClientNotFoundException &e) {
+			infostream<<"Server: ClientNotFoundException"<<std::endl;
 		} catch (con::ConnectionBindFailed &e) {
 			m_server->setAsyncFatalError(e.what());
 		} catch (LuaError &e) {
@@ -949,9 +950,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 			}
 			case MEET_OTHER:
 				prof.add("MEET_OTHER", 1);
-				for (const v3s16 &modified_block : event->modified_blocks) {
-					m_clients.markBlockposAsNotSent(modified_block);
-				}
+				m_clients.markBlocksNotSent(event->modified_blocks);
 				break;
 			default:
 				prof.add("unknown", 1);
@@ -963,19 +962,9 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 			/*
 				Set blocks not sent to far players
 			*/
-			if (!far_players.empty()) {
-				// Convert list format to that wanted by SetBlocksNotSent
-				std::map<v3s16, MapBlock*> modified_blocks2;
-				for (const v3s16 &modified_block : event->modified_blocks) {
-					modified_blocks2[modified_block] =
-							m_env->getMap().getBlockNoCreateNoEx(modified_block);
-				}
-
-				// Set blocks not sent
-				for (const u16 far_player : far_players) {
-					if (RemoteClient *client = getClient(far_player))
-						client->SetBlocksNotSent(modified_blocks2);
-				}
+			for (const u16 far_player : far_players) {
+				if (RemoteClient *client = getClient(far_player))
+					client->SetBlocksNotSent(event->modified_blocks);
 			}
 
 			delete event;
@@ -1073,11 +1062,13 @@ void Server::Receive(float timeout)
 			infostream << "Server::Receive(): SerializationError: what()="
 					<< e.what() << std::endl;
 		} catch (const ClientStateError &e) {
-			errorstream << "ProcessData: peer=" << peer_id << " what()="
+			errorstream << "ClientStateError: peer=" << peer_id << " what()="
 					 << e.what() << std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_UNEXPECTED_DATA);
-		} catch (const con::PeerNotFoundException &e) {
-			// Do nothing
+		} catch (con::PeerNotFoundException &e) {
+			infostream << "Server: PeerNotFoundException" << std::endl;
+		} catch (ClientNotFoundException &e) {
+			infostream << "Server: ClientNotFoundException" << std::endl;
 		}
 	}
 }
@@ -1170,37 +1161,12 @@ void Server::ProcessData(NetworkPacket *pkt)
 	u32 peer_id = pkt->getPeerId();
 
 	try {
-		Address address = getPeerAddress(peer_id);
-		std::string addr_s = address.serializeString();
-
-		// FIXME: Isn't it a bit excessive to check this for every packet?
-		if (m_banmanager->isIpBanned(addr_s)) {
-			std::string ban_name = m_banmanager->getBanName(addr_s);
-			infostream << "Server: A banned client tried to connect from "
-					<< addr_s << "; banned name was " << ban_name << std::endl;
-			DenyAccess(peer_id, SERVER_ACCESSDENIED_CUSTOM_STRING,
-				"Your IP is banned. Banned name was " + ban_name);
-			return;
-		}
-	} catch (con::PeerNotFoundException &e) {
-		/*
-		 * no peer for this packet found
-		 * most common reason is peer timeout, e.g. peer didn't
-		 * respond for some time, your server was overloaded or
-		 * things like that.
-		 */
-		infostream << "Server::ProcessData(): Canceling: peer "
-				<< peer_id << " not found" << std::endl;
-		return;
-	}
-
-	try {
 		ToServerCommand command = (ToServerCommand) pkt->getCommand();
 
 		// Command must be handled into ToServerCommandHandler
 		if (command >= TOSERVER_NUM_MSG_TYPES) {
 			infostream << "Server: Ignoring unknown command "
-					 << command << std::endl;
+					 << static_cast<unsigned>(command) << std::endl;
 			return;
 		}
 
@@ -1212,9 +1178,9 @@ void Server::ProcessData(NetworkPacket *pkt)
 		u8 peer_ser_ver = getClient(peer_id, CS_InitDone)->serialization_version;
 
 		if(peer_ser_ver == SER_FMT_VER_INVALID) {
-			errorstream << "Server::ProcessData(): Cancelling: Peer"
-					" serialization format invalid or not initialized."
-					" Skipping incoming command=" << command << std::endl;
+			errorstream << "Server: Peer serialization format invalid. "
+					"Skipping incoming command "
+					<< static_cast<unsigned>(command) << std::endl;
 			return;
 		}
 
@@ -1227,9 +1193,10 @@ void Server::ProcessData(NetworkPacket *pkt)
 		if (m_clients.getClientState(peer_id) < CS_Active) {
 			if (command == TOSERVER_PLAYERPOS) return;
 
-			errorstream << "Got packet command: " << command << " for peer id "
-					<< peer_id << " but client isn't active yet. Dropping packet "
-					<< std::endl;
+			errorstream << "Server: Got packet command "
+					<< static_cast<unsigned>(command)
+					<< " for peer id " << peer_id
+					<< " but client isn't active yet. Dropping packet." << std::endl;
 			return;
 		}
 
@@ -1357,15 +1324,13 @@ void Server::printToConsoleOnly(const std::string &text)
 
 void Server::Send(NetworkPacket *pkt)
 {
+	FATAL_ERROR_IF(pkt->getPeerId() == 0, "Server::Send() missing peer ID");
 	Send(pkt->getPeerId(), pkt);
 }
 
 void Server::Send(session_t peer_id, NetworkPacket *pkt)
 {
-	m_clients.send(peer_id,
-		clientCommandFactoryTable[pkt->getCommand()].channel,
-		pkt,
-		clientCommandFactoryTable[pkt->getCommand()].reliable);
+	m_clients.send(peer_id, pkt);
 }
 
 void Server::SendMovement(session_t peer_id)
@@ -1826,22 +1791,21 @@ void Server::SendSetSky(session_t peer_id, const SkyboxParams &params)
 		pkt << params.clouds;
 	} else { // Handle current clients and future clients
 		pkt << params.bgcolor << params.type
-		<< params.clouds << params.fog_sun_tint
-		<< params.fog_moon_tint << params.fog_tint_type;
+			<< params.clouds << params.fog_sun_tint
+			<< params.fog_moon_tint << params.fog_tint_type;
 
 		if (params.type == "skybox") {
 			pkt << (u16) params.textures.size();
 			for (const std::string &texture : params.textures)
 				pkt << texture;
 		} else if (params.type == "regular") {
-			pkt << params.sky_color.day_sky << params.sky_color.day_horizon
-				<< params.sky_color.dawn_sky << params.sky_color.dawn_horizon
-				<< params.sky_color.night_sky << params.sky_color.night_horizon
-				<< params.sky_color.indoors;
+			auto &c = params.sky_color;
+			pkt << c.day_sky << c.day_horizon << c.dawn_sky << c.dawn_horizon
+				<< c.night_sky << c.night_horizon << c.indoors;
 		}
 
-		pkt << params.body_orbit_tilt;
-		pkt << params.fog_distance << params.fog_start;
+		pkt << params.body_orbit_tilt << params.fog_distance << params.fog_start
+			<< params.fog_color;
 	}
 
 	Send(&pkt);
@@ -2149,9 +2113,8 @@ void Server::SendActiveObjectMessages(session_t peer_id, const std::string &data
 
 	pkt.putRawString(datas.c_str(), datas.size());
 
-	m_clients.send(pkt.getPeerId(),
-			reliable ? clientCommandFactoryTable[pkt.getCommand()].channel : 1,
-			&pkt, reliable);
+	auto &ccf = clientCommandFactoryTable[pkt.getCommand()];
+	m_clients.sendCustom(pkt.getPeerId(), reliable ? ccf.channel : 1, &pkt, reliable);
 }
 
 void Server::SendCSMRestrictionFlags(session_t peer_id)
@@ -2249,12 +2212,12 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 			<< params.spec.loop << params.spec.fade << params.spec.pitch
 			<< ephemeral << params.spec.start_time;
 
-	bool as_reliable = !ephemeral;
+	const bool as_reliable = !ephemeral;
 
 	for (const session_t peer_id : dst_clients) {
 		if (!ephemeral)
 			params.clients.insert(peer_id);
-		m_clients.send(peer_id, 0, &pkt, as_reliable);
+		m_clients.sendCustom(peer_id, 0, &pkt, as_reliable);
 	}
 
 	if (!ephemeral)
@@ -2273,8 +2236,7 @@ void Server::stopSound(s32 handle)
 	pkt << handle;
 
 	for (session_t peer_id : psound.clients) {
-		// Send as reliable
-		m_clients.send(peer_id, 0, &pkt, true);
+		Send(peer_id, &pkt);
 	}
 
 	// Remove sound reference
@@ -2294,8 +2256,7 @@ void Server::fadeSound(s32 handle, float step, float gain)
 	pkt << handle << step << gain;
 
 	for (session_t peer_id : psound.clients) {
-		// Send as reliable
-		m_clients.send(peer_id, 0, &pkt, true);
+		Send(peer_id, &pkt);
 	}
 
 	// Remove sound reference
@@ -2352,8 +2313,7 @@ void Server::sendNodeChangePkt(NetworkPacket &pkt, v3s16 block_pos,
 			continue;
 		}
 
-		// Send as reliable
-		m_clients.send(client_id, 0, &pkt, true);
+		Send(client_id, &pkt);
 	}
 }
 
@@ -2628,28 +2588,30 @@ void Server::fillMediaCache()
 
 void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_code)
 {
+	std::string lang_suffix = ".";
+	lang_suffix.append(lang_code).append(".tr");
+
+	auto include = [&] (const std::string &name, const MediaInfo &info) -> bool {
+		if (info.no_announce)
+			return false;
+		if (str_ends_with(name, ".tr") && !str_ends_with(name, lang_suffix))
+			return false;
+		return true;
+	};
+
 	// Make packet
 	NetworkPacket pkt(TOCLIENT_ANNOUNCE_MEDIA, 0, peer_id);
 
 	u16 media_sent = 0;
-	std::string lang_suffix;
-	lang_suffix.append(".").append(lang_code).append(".tr");
 	for (const auto &i : m_media) {
-		if (i.second.no_announce)
-			continue;
-		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
-			continue;
-		media_sent++;
+		if (include(i.first, i.second))
+			media_sent++;
 	}
-
 	pkt << media_sent;
 
 	for (const auto &i : m_media) {
-		if (i.second.no_announce)
-			continue;
-		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
-			continue;
-		pkt << i.first << i.second.sha1_digest;
+		if (include(i.first, i.second))
+			pkt << i.first << i.second.sha1_digest;
 	}
 
 	pkt << g_settings->get("remote_media");
@@ -2659,10 +2621,12 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 		<< "): count=" << media_sent << " size=" << pkt.getSize() << std::endl;
 }
 
+namespace {
+
 struct SendableMedia
 {
-	std::string name;
-	std::string path;
+	const std::string &name;
+	const std::string &path;
 	std::string data;
 
 	SendableMedia(const std::string &name, const std::string &path,
@@ -2671,30 +2635,53 @@ struct SendableMedia
 	{}
 };
 
+}
+
 void Server::sendRequestedMedia(session_t peer_id,
-		const std::vector<std::string> &tosend)
+		const std::unordered_set<std::string> &tosend)
 {
-	verbosestream<<"Server::sendRequestedMedia(): "
-			<<"Sending files to client"<<std::endl;
+	auto *client = getClient(peer_id, CS_DefinitionsSent);
+	assert(client);
 
-	/* Read files */
+	infostream << "Server::sendRequestedMedia(): Sending "
+		<< tosend.size() << " files to " << client->getName() << std::endl;
 
-	// Put 5kB in one bunch (this is not accurate)
-	u32 bytes_per_bunch = 5000;
+	/* Read files and prepare bunches */
 
-	std::vector< std::vector<SendableMedia> > file_bunches;
+	// Put 5KB in one bunch (this is not accurate)
+	// This is a tradeoff between burdening the network with too many packets
+	// and burdening it with too large split packets.
+	const u32 bytes_per_bunch = 5000;
+
+	std::vector<std::vector<SendableMedia>> file_bunches;
 	file_bunches.emplace_back();
 
-	u32 file_size_bunch_total = 0;
+	// Note that applying a "real" bin packing algorithm here is not necessarily
+	// an improvement (might even perform worse) since games usually have lots
+	// of files larger than 5KB and the current algorithm already minimized
+	// the amount of bunches quite well (at the expense of overshooting).
 
+	u32 file_size_bunch_total = 0;
 	for (const std::string &name : tosend) {
-		if (m_media.find(name) == m_media.end()) {
+		auto it = m_media.find(name);
+
+		if (it == m_media.end()) {
 			errorstream<<"Server::sendRequestedMedia(): Client asked for "
 					<<"unknown file \""<<(name)<<"\""<<std::endl;
 			continue;
 		}
+		const auto &m = it->second;
 
-		const auto &m = m_media[name];
+		// no_announce <=> usually ephemeral dynamic media, which may
+		// have duplicate filenames. So we can't check it.
+		if (!m.no_announce) {
+			if (!client->markMediaSent(name)) {
+				infostream << "Server::sendRequestedMedia(): Client asked has "
+					"requested \"" << name << "\" before, not sending it again."
+					<< std::endl;
+				continue;
+			}
+		}
 
 		// Read data
 		std::string data;
@@ -2713,16 +2700,15 @@ void Server::sendRequestedMedia(session_t peer_id,
 			file_bunches.emplace_back();
 			file_size_bunch_total = 0;
 		}
-
 	}
 
 	/* Create and send packets */
 
-	u16 num_bunches = file_bunches.size();
+	const u16 num_bunches = file_bunches.size();
 	for (u16 i = 0; i < num_bunches; i++) {
+		auto &bunch = file_bunches[i];
 		/*
-			u16 command
-			u16 total number of texture bunches
+			u16 total number of media bunches
 			u16 index of this bunch
 			u32 number of files in this bunch
 			for each file {
@@ -2732,18 +2718,20 @@ void Server::sendRequestedMedia(session_t peer_id,
 				data
 			}
 		*/
-
 		NetworkPacket pkt(TOCLIENT_MEDIA, 4 + 0, peer_id);
-		pkt << num_bunches << i << (u32) file_bunches[i].size();
 
-		for (const SendableMedia &j : file_bunches[i]) {
+		const u32 bunch_size = bunch.size();
+		pkt << num_bunches << i << bunch_size;
+
+		for (auto &j : bunch) {
 			pkt << j.name;
 			pkt.putLongString(j.data);
 		}
+		bunch.clear(); // free memory early
 
 		verbosestream << "Server::sendRequestedMedia(): bunch "
 				<< i << "/" << num_bunches
-				<< " files=" << file_bunches[i].size()
+				<< " files=" << bunch_size
 				<< " size="  << pkt.getSize() << std::endl;
 		Send(&pkt);
 	}
@@ -2902,13 +2890,9 @@ void Server::acceptAuth(session_t peer_id, bool forSudoMode)
 
 		NetworkPacket resp_pkt(TOCLIENT_AUTH_ACCEPT, 1 + 6 + 8 + 4, peer_id);
 
-		// Right now, the auth mechs don't change between login and sudo mode.
-		u32 sudo_auth_mechs = client->allowed_auth_mechs;
-		client->allowed_sudo_mechs = sudo_auth_mechs;
-
 		resp_pkt << v3f(0,0,0) << (u64) m_env->getServerMap().getSeed()
 				<< g_settings->getFloat("dedicated_server_step")
-				<< sudo_auth_mechs;
+				<< client->allowed_auth_mechs;
 
 		Send(&resp_pkt);
 		m_clients.event(peer_id, CSE_AuthAccept);
@@ -3278,6 +3262,11 @@ void Server::reportFormspecPrependModified(const std::string &name)
 void Server::setIpBanned(const std::string &ip, const std::string &name)
 {
 	m_banmanager->add(ip, name);
+
+	auto clients = m_clients.getClientIDs(CS_Created);
+	for (const auto peer_id : clients) {
+		denyIfBanned(peer_id);
+	}
 }
 
 void Server::unsetIpBanned(const std::string &ip_or_name)
@@ -3288,6 +3277,22 @@ void Server::unsetIpBanned(const std::string &ip_or_name)
 std::string Server::getBanDescription(const std::string &ip_or_name)
 {
 	return m_banmanager->getBanDescription(ip_or_name);
+}
+
+bool Server::denyIfBanned(session_t peer_id)
+{
+	Address address = getPeerAddress(peer_id);
+	std::string addr_s = address.serializeString();
+
+	if (m_banmanager->isIpBanned(addr_s)) {
+		std::string ban_name = m_banmanager->getBanName(addr_s);
+		actionstream << "Server: A banned client tried to connect from "
+			<< addr_s << "; banned name was " << ban_name << std::endl;
+		DenyAccess(peer_id, SERVER_ACCESSDENIED_CUSTOM_STRING,
+			"Your IP is banned. Banned name was " + ban_name);
+		return true;
+	}
+	return false;
 }
 
 void Server::notifyPlayer(const char *name, const std::wstring &msg)
@@ -3658,8 +3663,8 @@ bool Server::dynamicAddMedia(std::string filepath,
 					to push the media over ALL channels to ensure it is processed before
 					it is used. In practice this means channels 1 and 0.
 				*/
-				m_clients.send(peer_id, 1, &legacy_pkt, true);
-				m_clients.send(peer_id, 0, &legacy_pkt, true);
+				m_clients.sendCustom(peer_id, 1, &legacy_pkt, true);
+				m_clients.sendCustom(peer_id, 0, &legacy_pkt, true);
 			} else {
 				waiting.emplace(peer_id);
 				Send(peer_id, &pkt);

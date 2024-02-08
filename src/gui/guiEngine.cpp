@@ -231,6 +231,7 @@ bool GUIEngine::loadMainMenuScript()
 /******************************************************************************/
 void GUIEngine::run()
 {
+	IrrlichtDevice *device = m_rendering_engine->get_raw_device();
 	// Always create clouds because they may or may not be
 	// needed based on the game selected
 	video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
@@ -265,7 +266,7 @@ void GUIEngine::run()
 	f32 dtime = 0.0f;
 
 	while (m_rendering_engine->run() && (!m_startgame) && (!m_kill)) {
-		if (RenderingEngine::shouldRender()) {
+		if (device->isWindowVisible()) {
 			// check if we need to update the "upper left corner"-text
 			if (text_height != g_fontengine->getTextHeight()) {
 				updateTopLeftTextSize();
@@ -294,8 +295,6 @@ void GUIEngine::run()
 
 			driver->endScene();
 		}
-
-		IrrlichtDevice *device = m_rendering_engine->get_raw_device();
 
 		u32 frametime_min = 1000 / (device->isWindowFocused()
 			? g_settings->getFloat("fps_max")

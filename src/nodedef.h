@@ -35,6 +35,7 @@ class Client;
 #include "constants.h" // BS
 #include "texture_override.h" // TextureOverride
 #include "tileanimation.h"
+#include "util/pointabilities.h"
 
 class IItemDefManager;
 class ITextureSource;
@@ -45,13 +46,14 @@ class NodeResolver;
 class TestSchematic;
 #endif
 
-enum ContentParamType
+enum ContentParamType : u8
 {
 	CPT_NONE,
 	CPT_LIGHT,
+	ContentParamType_END // Dummy for validity check
 };
 
-enum ContentParamType2
+enum ContentParamType2 : u8
 {
 	CPT2_NONE,
 	// Need 8-bit param2
@@ -82,16 +84,19 @@ enum ContentParamType2
 	CPT2_4DIR,
 	// 6 bits of palette index, then 4dir
 	CPT2_COLORED_4DIR,
+	// Dummy for validity check
+	ContentParamType2_END
 };
 
-enum LiquidType
+enum LiquidType : u8
 {
 	LIQUID_NONE,
 	LIQUID_FLOWING,
 	LIQUID_SOURCE,
+	LiquidType_END // Dummy for validity check
 };
 
-enum NodeBoxType
+enum NodeBoxType : u8
 {
 	NODEBOX_REGULAR, // Regular block; allows buildable_to
 	NODEBOX_FIXED, // Static separately defined box(es)
@@ -189,7 +194,7 @@ public:
 	void readSettings();
 };
 
-enum NodeDrawType
+enum NodeDrawType : u8
 {
 	// A basic solid block
 	NDT_NORMAL,
@@ -233,6 +238,8 @@ enum NodeDrawType
 	NDT_MESH,
 	// Combined plantlike-on-solid
 	NDT_PLANTLIKE_ROOTED,
+	// Dummy for validity check
+	NodeDrawType_END
 };
 
 // Mesh options for NDT_PLANTLIKE with CPT2_MESHOPTIONS
@@ -252,6 +259,7 @@ enum AlignStyle : u8 {
 	ALIGN_STYLE_NODE,
 	ALIGN_STYLE_WORLD,
 	ALIGN_STYLE_USER_DEFINED,
+	AlignStyle_END // Dummy for validity check
 };
 
 enum AlphaMode : u8 {
@@ -259,6 +267,7 @@ enum AlphaMode : u8 {
 	ALPHAMODE_CLIP,
 	ALPHAMODE_OPAQUE,
 	ALPHAMODE_LEGACY_COMPAT, /* only sent by old servers, equals OPAQUE */
+	AlphaMode_END // Dummy for validity check
 };
 
 
@@ -387,8 +396,8 @@ struct ContentFeatures
 	// This is used for collision detection.
 	// Also for general solidness queries.
 	bool walkable;
-	// Player can point to these
-	bool pointable;
+	// Player can point to these, point through or it is blocking
+	PointabilityType pointable;
 	// Player can dig these
 	bool diggable;
 	// Player can climb these

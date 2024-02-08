@@ -1,5 +1,7 @@
 /*
 Copyright (C) 2014 sapier
+Copyright (C) 2024 grorp, Gregor Parzefall
+		<gregor.parzefall@posteo.de>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -29,12 +31,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unordered_map>
 #include <vector>
 
+#include "itemdef.h"
 #include "client/tile.h"
 #include "client/game.h"
 
 using namespace irr;
 using namespace irr::core;
 using namespace irr::gui;
+
+enum class TapState
+{
+	None,
+	ShortTap,
+	LongTap,
+};
 
 typedef enum
 {
@@ -74,6 +84,11 @@ typedef enum
 #define BUTTON_REPEAT_DELAY 0.2f
 #define SETTINGS_BAR_Y_OFFSET 5
 #define RARE_CONTROLS_BAR_Y_OFFSET 5
+
+// Our simulated clicks last some milliseconds so that server-side mods have a
+// chance to detect them via l_get_player_control.
+// If you tap faster than this value, the simulated clicks are of course shorter.
+#define SIMULATED_CLICK_DURATION_MS 50
 
 extern const std::string button_image_names[];
 extern const std::string joystick_image_names[];
@@ -161,6 +176,7 @@ public:
 	~TouchScreenGUI();
 
 	void translateEvent(const SEvent &event);
+	void applyContextControls(const TouchInteractionMode &mode);
 
 	void init(ISimpleTextureSource *tsrc);
 
@@ -230,8 +246,6 @@ private:
 	size_t m_move_id;
 	bool m_move_has_really_moved = false;
 	u64 m_move_downtime = 0;
-	bool m_move_sent_as_mouse_event = false;
-	v2s32 m_move_downlocation = v2s32(-10000, -10000); // off-screen
 
 	bool m_has_joystick_id = false;
 	size_t m_joystick_id;
@@ -283,9 +297,6 @@ private:
 	// handle pressing hotbar items
 	bool isHotbarButton(const SEvent &event);
 
-	// do a right-click
-	bool doRightClick();
-
 	// handle release event
 	void handleReleaseEvent(size_t evt_id);
 
@@ -300,6 +311,17 @@ private:
 
 	// rare controls bar
 	AutoHideButtonBar m_rare_controls_bar;
+
+	v2s32 getPointerPos();
+	void emitMouseEvent(EMOUSE_INPUT_EVENT type);
+	TouchInteractionMode m_last_mode = TouchInteractionMode_END;
+	TapState m_tap_state = TapState::None;
+
+	bool m_dig_pressed = false;
+	u64 m_dig_pressed_until = 0;
+
+	bool m_place_pressed = false;
+	u64 m_place_pressed_until = 0;
 };
 
 extern TouchScreenGUI *g_touchscreengui;

@@ -374,7 +374,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	bool *m_force_fog_off;
 	f32 *m_fog_range;
 	bool m_fog_enabled;
-	CachedPixelShaderSetting<float, 4> m_sky_bg_color{"skyBgColor"};
+	CachedPixelShaderSetting<float, 4> m_fog_color{"fogColor"};
 	CachedPixelShaderSetting<float> m_fog_distance{"fogDistance"};
 	CachedPixelShaderSetting<float>
 		m_fog_shading_parameter{"fogShadingParameter"};
@@ -475,20 +475,13 @@ public:
 
 	void onSetConstants(video::IMaterialRendererServices *services) override
 	{
-		// Background color
-		video::SColor bgcolor = m_sky->getBgColor();
-		video::SColorf bgcolorf(bgcolor);
-		float bgcolorfa[4] = {
-			bgcolorf.r,
-			bgcolorf.g,
-			bgcolorf.b,
-			bgcolorf.a,
+		video::SColorf fogcolorf(m_sky->getFogColor());
+		float fogcolorfa[4] = {
+			fogcolorf.r, fogcolorf.g, fogcolorf.b, fogcolorf.a,
 		};
-		m_sky_bg_color.set(bgcolorfa, services);
+		m_fog_color.set(fogcolorfa, services);
 
-		// Fog distance
 		float fog_distance = 10000 * BS;
-
 		if (m_fog_enabled && !*m_force_fog_off)
 			fog_distance = *m_fog_range;
 
@@ -841,6 +834,7 @@ protected:
 	 * the camera position. This also gives the maximal distance
 	 * of the search.
 	 * @param[in]  liquids_pointable if false, liquids are ignored
+	 * @param[in]  pointabilities    item specific pointable overriding
 	 * @param[in]  look_for_object   if false, objects are ignored
 	 * @param[in]  camera_offset     offset of the camera
 	 * @param[out] selected_object   the selected object or
@@ -848,6 +842,7 @@ protected:
 	 */
 	PointedThing updatePointedThing(
 			const core::line3d<f32> &shootline, bool liquids_pointable,
+			const std::optional<Pointabilities> &pointabilities,
 			bool look_for_object, const v3s16 &camera_offset);
 	void handlePointingAtNothing(const ItemStack &playerItem);
 	void handlePointingAtNode(const PointedThing &pointed,
@@ -981,7 +976,6 @@ private:
 	bool *kill;
 	std::string *error_message;
 	bool *reconnect_requested;
-	scene::ISceneNode *skybox;
 	PausedNodesList paused_animated_nodes;
 
 	bool simple_singleplayer_mode;
@@ -1520,7 +1514,6 @@ bool Game::createClient(const GameStartData &start_data)
 	 */
 	sky = new Sky(-1, m_rendering_engine, texture_src, shader_src);
 	scsf->setSky(sky);
-	skybox = NULL;	// This is used/set later on in the main run loop
 
 	/* Pre-calculated values
 	 */
@@ -1750,7 +1743,7 @@ bool Game::getServerContent(bool *aborted)
 		// End condition
 		if (client->mediaReceived() && client->itemdefReceived() &&
 				client->nodedefReceived()) {
-			break;
+			return true;
 		}
 
 		// Error conditions
@@ -1809,7 +1802,9 @@ bool Game::getServerContent(bool *aborted)
 		}
 	}
 
-	return true;
+	*aborted = true;
+	infostream << "Connect aborted [device]" << std::endl;
+	return false;
 }
 
 
@@ -3027,6 +3022,9 @@ void Game::handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *ca
 		CASE_SET(HUD_STAT_TEXT2, text2, sdata);
 
 		CASE_SET(HUD_STAT_STYLE, style, data);
+
+		case HudElementStat_END:
+			break;
 	}
 
 #undef CASE_SET
@@ -3040,10 +3038,6 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 	// Whether clouds are visible in front of a custom skybox.
 	sky->setCloudsEnabled(event->set_sky->clouds);
 
-	if (skybox) {
-		skybox->remove();
-		skybox = NULL;
-	}
 	// Clear the old textures out in case we switch rendering type.
 	sky->clearSkyboxTextures();
 	// Handle according to type
@@ -3102,6 +3096,8 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		sky->setFogStart(rangelim(event->set_sky->fog_start, 0.0f, 0.99f));
 	else
 		sky->setFogStart(rangelim(g_settings->getFloat("fog_start"), 0.0f, 0.99f));
+
+	sky->setFogColor(event->set_sky->fog_color);
 
 	delete event->set_sky;
 }
@@ -3340,11 +3336,17 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 
 	PointedThing pointed = updatePointedThing(shootline,
 			selected_def.liquids_pointable,
+			selected_def.pointabilities,
 			!runData.btn_down_for_dig,
 			camera_offset);
 
 	if (pointed != runData.pointed_old)
 		infostream << "Pointing at " << pointed.dump() << std::endl;
+
+#ifdef HAVE_TOUCHSCREENGUI
+	if (g_touchscreengui)
+		g_touchscreengui->applyContextControls(selected_def.touch_interaction.getMode(pointed));
+#endif
 
 	// Note that updating the selection mesh every frame is not particularly efficient,
 	// but the halo rendering code is already inefficient so there's no point in optimizing it here
@@ -3446,6 +3448,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 PointedThing Game::updatePointedThing(
 	const core::line3d<f32> &shootline,
 	bool liquids_pointable,
+	const std::optional<Pointabilities> &pointabilities,
 	bool look_for_object,
 	const v3s16 &camera_offset)
 {
@@ -3462,7 +3465,7 @@ PointedThing Game::updatePointedThing(
 	runData.selected_object = NULL;
 	hud->pointing_at_object = false;
 
-	RaycastState s(shootline, look_for_object, liquids_pointable);
+	RaycastState s(shootline, look_for_object, liquids_pointable, pointabilities);
 	PointedThing result;
 	env.continueRaycast(&s, &result);
 	if (result.type == POINTEDTHING_OBJECT) {
@@ -3704,7 +3707,36 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		v3s16 dir = nodepos - neighborpos;
 
 		if (abs(dir.Y) > MYMAX(abs(dir.X), abs(dir.Z))) {
-			predicted_node.setParam2(dir.Y < 0 ? 1 : 0);
+			// If you change this code, also change builtin/game/item.lua
+			u8 predicted_param2 = dir.Y < 0 ? 1 : 0;
+			if (selected_def.wallmounted_rotate_vertical) {
+				bool rotate90 = false;
+				v3f fnodepos = v3f(neighborpos.X, neighborpos.Y, neighborpos.Z);
+				v3f ppos = client->getEnv().getLocalPlayer()->getPosition() / BS;
+				v3f pdir = fnodepos - ppos;
+				switch (predicted_f.drawtype) {
+					case NDT_TORCHLIKE: {
+						rotate90 = !((pdir.X < 0 && pdir.Z > 0) ||
+								(pdir.X > 0 && pdir.Z < 0));
+						if (dir.Y > 0) {
+							rotate90 = !rotate90;
+						}
+						break;
+					};
+					case NDT_SIGNLIKE: {
+						rotate90 = abs(pdir.X) < abs(pdir.Z);
+						break;
+					}
+					default: {
+						rotate90 = abs(pdir.X) > abs(pdir.Z);
+						break;
+					}
+				}
+				if (rotate90) {
+					predicted_param2 += 6;
+				}
+			}
+			predicted_node.setParam2(predicted_param2);
 		} else if (abs(dir.X) > abs(dir.Z)) {
 			predicted_node.setParam2(dir.X < 0 ? 3 : 2);
 		} else {
@@ -4014,7 +4046,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		draw_control->wanted_range = MYMIN(draw_control->wanted_range, sky->getFogDistance());
 	}
 	if (draw_control->range_all && sky->getFogDistance() < 0) {
-		runData.fog_range = 100000 * BS;
+		runData.fog_range = FOG_RANGE_ALL;
 	} else {
 		runData.fog_range = draw_control->wanted_range * BS;
 	}
@@ -4175,7 +4207,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		==================== Drawing begins ====================
 	*/
-	if (RenderingEngine::shouldRender())
+	if (device->isWindowVisible())
 		drawScene(graph, stats);
 	/*
 		==================== End scene ====================
@@ -4256,7 +4288,7 @@ void Game::updateShadows()
 
 void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 {
-	const video::SColor bg_color = this->sky->getBgColor();
+	const video::SColor fog_color = this->sky->getFogColor();
 	const video::SColor sky_color = this->sky->getSkyColor();
 
 	/*
@@ -4264,21 +4296,21 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 	*/
 	if (this->m_cache_enable_fog) {
 		this->driver->setFog(
-				bg_color,
+				fog_color,
 				video::EFT_FOG_LINEAR,
 				this->runData.fog_range * this->sky->getFogStart(),
 				this->runData.fog_range * 1.0f,
-				0.01f,
+				0.f, // unused
 				false, // pixel fog
 				true // range fog
 		);
 	} else {
 		this->driver->setFog(
-				bg_color,
+				fog_color,
 				video::EFT_FOG_LINEAR,
-				100000 * BS,
-				110000 * BS,
-				0.01f,
+				FOG_RANGE_ALL,
+				FOG_RANGE_ALL + 100 * BS,
+				0.f, // unused
 				false, // pixel fog
 				false // range fog
 		);
@@ -4452,8 +4484,8 @@ void Game::showPauseMenu()
 	static const std::string control_text = strgettext("Controls:\n"
 		"No menu open:\n"
 		"- slide finger: look around\n"
-		"- tap: place/use\n"
-		"- long tap: dig/punch/use\n"
+		"- tap: place/punch/use (default)\n"
+		"- long tap: dig/use (default)\n"
 		"Menu/inventory open:\n"
 		"- double tap (outside):\n"
 		" --> close\n"

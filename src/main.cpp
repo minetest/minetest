@@ -379,8 +379,6 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("recompress", ValueSpec(VALUETYPE_FLAG,
 			_("Recompress the blocks of the given map database."))));
 #ifndef SERVER
-	allowed_options->insert(std::make_pair("speedtests", ValueSpec(VALUETYPE_FLAG,
-			_("Run speed tests"))));
 	allowed_options->insert(std::make_pair("address", ValueSpec(VALUETYPE_STRING,
 			_("Address to connect to. ('' = local game)"))));
 	allowed_options->insert(std::make_pair("random-input", ValueSpec(VALUETYPE_FLAG,
@@ -691,8 +689,12 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 	init_log_streams(cmd_args);
 
 	// Initialize random seed
-	srand(time(0));
-	mysrand(time(0));
+	{
+		u32 seed = static_cast<u32>(time(nullptr)) << 16;
+		seed |= porting::getTimeUs() & 0xffff;
+		srand(seed);
+		mysrand(seed);
+	}
 
 	// Initialize HTTP fetcher
 	httpfetch_init(g_settings->getS32("curl_parallel_limit"));

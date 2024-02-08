@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include "util/metricsbackend.h"
 #include "serverenvironment.h"
-#include "clientiface.h"
+#include "server/clientiface.h"
 #include "chatmessage.h"
 #include "sound.h"
 #include "translation.h"
@@ -245,6 +245,7 @@ public:
 	void setIpBanned(const std::string &ip, const std::string &name);
 	void unsetIpBanned(const std::string &ip_or_name);
 	std::string getBanDescription(const std::string &ip_or_name);
+	bool denyIfBanned(session_t peer_id);
 
 	void notifyPlayer(const char *name, const std::wstring &msg);
 	void notifyPlayers(const std::wstring &msg);
@@ -517,7 +518,7 @@ private:
 	void fillMediaCache();
 	void sendMediaAnnouncement(session_t peer_id, const std::string &lang_code);
 	void sendRequestedMedia(session_t peer_id,
-			const std::vector<std::string> &tosend);
+			const std::unordered_set<std::string> &tosend);
 	void stepPendingDynMediaCallbacks(float dtime);
 
 	// Adds a ParticleSpawner on peer with peer_id (PEER_ID_INEXISTENT == all)

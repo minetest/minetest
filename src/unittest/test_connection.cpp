@@ -245,7 +245,7 @@ void TestConnection::testConnectSendReceive()
 	UASSERT(hand_client.last_id == 1);
 	// Server should have the client
 	UASSERT(hand_server.count == 1);
-	UASSERT(hand_server.last_id == 2);
+	UASSERT(hand_server.last_id >= 2);
 
 	//sleep_ms(50);
 
@@ -277,8 +277,8 @@ void TestConnection::testConnectSendReceive()
 		Simple send-receive test
 	*/
 	{
-		NetworkPacket pkt;
-		pkt.putRawPacket((u8*) "Hello World !", 14, 0);
+		NetworkPacket pkt(0x4b, 0);
+		pkt.putRawString("Hello World !", 14);
 
 		auto sentdata = pkt.oldForgePacket();
 
@@ -300,15 +300,15 @@ void TestConnection::testConnectSendReceive()
 		UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
 	}
 
-	session_t peer_id_client = 2;
+	const session_t peer_id_client = hand_server.last_id;
 	/*
 		Send a large packet
 	*/
 	{
 		const int datasize = 30000;
-		NetworkPacket pkt(0, datasize);
+		NetworkPacket pkt(0xff, datasize);
 		for (u16 i=0; i<datasize; i++) {
-			pkt << (u8) i/4;
+			pkt << static_cast<u8>(i/4);
 		}
 
 		infostream << "Sending data (size=" << datasize << "):";
@@ -374,5 +374,5 @@ void TestConnection::testConnectSendReceive()
 	UASSERT(hand_client.count == 1);
 	UASSERT(hand_client.last_id == 1);
 	UASSERT(hand_server.count == 1);
-	UASSERT(hand_server.last_id == 2);
+	UASSERT(hand_server.last_id >= 2);
 }

@@ -46,7 +46,7 @@ struct SkyboxParams
 	float body_orbit_tilt { INVALID_SKYBOX_TILT };
 	s16 fog_distance { -1 };
 	float fog_start { -1.0f };
-	float volumetric_light_strength { 0.0f };
+	video::SColor fog_color; // override, only used if alpha > 0
 };
 
 struct SunParams
@@ -102,6 +102,7 @@ public:
 		sky.fog_sun_tint = video::SColor(255, 244, 125, 29);
 		sky.fog_moon_tint = video::SColorf(0.5, 0.6, 0.8, 1).toSColor();
 		sky.fog_tint_type = "default";
+		sky.fog_color = video::SColor(0);
 		return sky;
 	}
 

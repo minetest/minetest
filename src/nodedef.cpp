@@ -126,57 +126,62 @@ void NodeBox::deSerialize(std::istream &is)
 
 	reset();
 
-	type = (enum NodeBoxType)readU8(is);
-
-	if(type == NODEBOX_FIXED || type == NODEBOX_LEVELED)
-	{
-		u16 fixed_count = readU16(is);
-		while(fixed_count--)
-		{
-			aabb3f box;
-			box.MinEdge = readV3F32(is);
-			box.MaxEdge = readV3F32(is);
-			fixed.push_back(box);
+	type = static_cast<NodeBoxType>(readU8(is));
+	switch (type) {
+		case NODEBOX_REGULAR:
+			break;
+		case NODEBOX_FIXED:
+		case NODEBOX_LEVELED: {
+			u16 fixed_count = readU16(is);
+			while(fixed_count--) {
+				aabb3f box;
+				box.MinEdge = readV3F32(is);
+				box.MaxEdge = readV3F32(is);
+				fixed.push_back(box);
+			}
+			break;
 		}
-	}
-	else if(type == NODEBOX_WALLMOUNTED)
-	{
-		wall_top.MinEdge = readV3F32(is);
-		wall_top.MaxEdge = readV3F32(is);
-		wall_bottom.MinEdge = readV3F32(is);
-		wall_bottom.MaxEdge = readV3F32(is);
-		wall_side.MinEdge = readV3F32(is);
-		wall_side.MaxEdge = readV3F32(is);
-	}
-	else if (type == NODEBOX_CONNECTED)
-	{
+		case NODEBOX_WALLMOUNTED:
+			wall_top.MinEdge = readV3F32(is);
+			wall_top.MaxEdge = readV3F32(is);
+			wall_bottom.MinEdge = readV3F32(is);
+			wall_bottom.MaxEdge = readV3F32(is);
+			wall_side.MinEdge = readV3F32(is);
+			wall_side.MaxEdge = readV3F32(is);
+			break;
+		case NODEBOX_CONNECTED: {
 #define READBOXES(box) { \
-		count = readU16(is); \
-		(box).reserve(count); \
-		while (count--) { \
-			v3f min = readV3F32(is); \
-			v3f max = readV3F32(is); \
-			(box).emplace_back(min, max); }; }
+			count = readU16(is); \
+			(box).reserve(count); \
+			while (count--) { \
+				v3f min = readV3F32(is); \
+				v3f max = readV3F32(is); \
+				(box).emplace_back(min, max); }; }
 
-		u16 count;
+			u16 count;
 
-		auto &c = getConnected();
+			auto &c = getConnected();
 
-		READBOXES(fixed);
-		READBOXES(c.connect_top);
-		READBOXES(c.connect_bottom);
-		READBOXES(c.connect_front);
-		READBOXES(c.connect_left);
-		READBOXES(c.connect_back);
-		READBOXES(c.connect_right);
-		READBOXES(c.disconnected_top);
-		READBOXES(c.disconnected_bottom);
-		READBOXES(c.disconnected_front);
-		READBOXES(c.disconnected_left);
-		READBOXES(c.disconnected_back);
-		READBOXES(c.disconnected_right);
-		READBOXES(c.disconnected);
-		READBOXES(c.disconnected_sides);
+			READBOXES(fixed);
+			READBOXES(c.connect_top);
+			READBOXES(c.connect_bottom);
+			READBOXES(c.connect_front);
+			READBOXES(c.connect_left);
+			READBOXES(c.connect_back);
+			READBOXES(c.connect_right);
+			READBOXES(c.disconnected_top);
+			READBOXES(c.disconnected_bottom);
+			READBOXES(c.disconnected_front);
+			READBOXES(c.disconnected_left);
+			READBOXES(c.disconnected_back);
+			READBOXES(c.disconnected_right);
+			READBOXES(c.disconnected);
+			READBOXES(c.disconnected_sides);
+			break;
+		}
+		default:
+			type = NODEBOX_REGULAR;
+			break;
 	}
 }
 
@@ -266,10 +271,13 @@ void TileDef::deSerialize(std::istream &is, NodeDrawType drawtype, u16 protocol_
 		color.setBlue(readU8(is));
 	}
 	scale = has_scale ? readU8(is) : 0;
-	if (has_align_style)
+	if (has_align_style) {
 		align_style = static_cast<AlignStyle>(readU8(is));
-	else
+		if (align_style >= AlignStyle_END)
+			align_style = ALIGN_STYLE_NODE;
+	} else {
 		align_style = ALIGN_STYLE_NODE;
+	}
 }
 
 void TextureSettings::readSettings()
@@ -378,7 +386,7 @@ void ContentFeatures::reset()
 	light_propagates = false;
 	sunlight_propagates = false;
 	walkable = true;
-	pointable = true;
+	pointable = PointabilityType::POINTABLE;
 	diggable = true;
 	climbable = false;
 	buildable_to = false;
@@ -496,7 +504,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 
 	// interaction
 	writeU8(os, walkable);
-	writeU8(os, pointable);
+	Pointabilities::serializePointabilityType(os, pointable);
 	writeU8(os, diggable);
 	writeU8(os, climbable);
 	writeU8(os, buildable_to);
@@ -559,11 +567,19 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 		int value = readS16(is);
 		groups[name] = value;
 	}
-	param_type = (enum ContentParamType) readU8(is);
-	param_type_2 = (enum ContentParamType2) readU8(is);
+
+	param_type = static_cast<ContentParamType>(readU8(is));
+	if (param_type >= ContentParamType_END)
+		param_type = CPT_NONE;
+
+	param_type_2 = static_cast<ContentParamType2>(readU8(is));
+	if (param_type_2 >= ContentParamType2_END)
+		param_type_2 = CPT2_NONE;
 
 	// visual
-	drawtype = (enum NodeDrawType) readU8(is);
+	drawtype = static_cast<NodeDrawType>(readU8(is));
+	if (drawtype >= NodeDrawType_END)
+		drawtype = NDT_NORMAL;
 	mesh = deSerializeString16(is);
 	visual_scale = readF32(is);
 	if (readU8(is) != 6)
@@ -601,7 +617,7 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 
 	// interaction
 	walkable = readU8(is);
-	pointable = readU8(is);
+	pointable = Pointabilities::deSerializePointabilityType(is);
 	diggable = readU8(is);
 	climbable = readU8(is);
 	buildable_to = readU8(is);
@@ -609,7 +625,9 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 	damage_per_second = readU32(is);
 
 	// liquid
-	liquid_type = (enum LiquidType) readU8(is);
+	liquid_type = static_cast<LiquidType>(readU8(is));
+	if (liquid_type >= LiquidType_END)
+		liquid_type = LIQUID_NONE;
 	liquid_move_physics = liquid_type != LIQUID_NONE;
 	liquid_alternative_flowing = deSerializeString16(is);
 	liquid_alternative_source = deSerializeString16(is);
@@ -646,7 +664,7 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 		if (is.eof())
 			throw SerializationError("");
 		alpha = static_cast<enum AlphaMode>(tmp);
-		if (alpha == ALPHAMODE_LEGACY_COMPAT)
+		if (alpha >= AlphaMode_END || alpha == ALPHAMODE_LEGACY_COMPAT)
 			alpha = ALPHAMODE_OPAQUE;
 
 		tmp = readU8(is);
@@ -1065,7 +1083,7 @@ void NodeDefManager::clear()
 		f.light_propagates    = true;
 		f.sunlight_propagates = true;
 		f.walkable            = false;
-		f.pointable           = false;
+		f.pointable           = PointabilityType::POINTABLE_NOT;
 		f.diggable            = false;
 		f.buildable_to        = true;
 		f.floodable           = true;
@@ -1086,7 +1104,7 @@ void NodeDefManager::clear()
 		f.light_propagates    = false;
 		f.sunlight_propagates = false;
 		f.walkable            = false;
-		f.pointable           = false;
+		f.pointable           = PointabilityType::POINTABLE_NOT;
 		f.diggable            = false;
 		f.buildable_to        = true; // A way to remove accidental CONTENT_IGNOREs
 		f.is_ground_content   = true;

@@ -245,7 +245,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 
 	// PROTOCOL_VERSION >= 37
 	writeU8(os, 1); // version
-	os << serializeString16(""); // name
+	os << serializeString16(m_init_name); // name
 	writeU8(os, 0); // is_player
 	writeU16(os, getId()); //id
 	writeV3F32(os, m_base_position);
@@ -553,7 +553,7 @@ bool LuaEntitySAO::getCollisionBox(aabb3f *toset) const
 
 bool LuaEntitySAO::getSelectionBox(aabb3f *toset) const
 {
-	if (!m_prop.is_visible || !m_prop.pointable) {
+	if (!m_prop.is_visible) {
 		return false;
 	}
 

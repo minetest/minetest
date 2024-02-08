@@ -44,8 +44,6 @@ private:
 
 	void main_menu(MainMenuData *menudata);
 
-	void speed_tests();
-
 	bool skip_main_menu = false;
 	bool random_input = false;
 	RenderingEngine *m_rendering_engine = nullptr;

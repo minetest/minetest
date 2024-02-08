@@ -43,6 +43,9 @@ class Minimap;
 
 class RenderingCore;
 
+// Instead of a mechanism to disable fog we just set it to be really far away
+#define FOG_RANGE_ALL (100000 * BS)
+
 class RenderingEngine
 {
 public:
@@ -137,17 +140,6 @@ public:
 	static void autosaveScreensizeAndCo(
 			const irr::core::dimension2d<u32> initial_screen_size,
 			const bool initial_window_maximized);
-
-	static bool shouldRender()
-	{
-		// On Android, pause rendering while the app is in background (generally not visible).
-		// Don't do this on desktop because windows can be partially visible.
-#ifdef __ANDROID__
-		return get_raw_device()->isWindowActive();
-#else
-		return true;
-#endif
-	};
 
 private:
 	v2u32 _getWindowSize() const;

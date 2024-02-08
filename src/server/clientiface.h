@@ -181,8 +181,8 @@ enum ClientState
 	CS_Disconnecting,
 	CS_Denied,
 	CS_Created,
-	CS_AwaitingInit2,
 	CS_HelloSent,
+	CS_AwaitingInit2,
 	CS_InitDone,
 	CS_DefinitionsSent,
 	CS_Active,
@@ -243,14 +243,13 @@ public:
 	AuthMechanism chosen_mech  = AUTH_MECHANISM_NONE;
 	void *auth_data = nullptr;
 	u32 allowed_auth_mechs = 0;
-	u32 allowed_sudo_mechs = 0;
 
 	void resetChosenMech();
 
-	bool isSudoMechAllowed(AuthMechanism mech)
-	{ return allowed_sudo_mechs & mech; }
 	bool isMechAllowed(AuthMechanism mech)
 	{ return allowed_auth_mechs & mech; }
+
+	void setEncryptedPassword(const std::string& pwd);
 
 	RemoteClient();
 	~RemoteClient() = default;
@@ -268,7 +267,7 @@ public:
 	void SentBlock(v3s16 p);
 
 	void SetBlockNotSent(v3s16 p);
-	void SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks);
+	void SetBlocksNotSent(const std::vector<v3s16> &blocks);
 
 	/**
 	 * tell client about this block being modified right now.
@@ -285,10 +284,10 @@ public:
 		return m_blocks_sent.find(p) != m_blocks_sent.end();
 	}
 
-	// Increments timeouts and removes timed-out blocks from list
-	// NOTE: This doesn't fix the server-not-sending-block bug
-	//       because it is related to emerging, not sending.
-	//void RunSendingTimeouts(float dtime, float timeout);
+	bool markMediaSent(const std::string &name) {
+		auto insert_result = m_media_sent.emplace(name);
+		return insert_result.second; // true = was inserted
+	}
 
 	void PrintInfo(std::ostream &o)
 	{
@@ -311,7 +310,7 @@ public:
 
 	ClientState getState() const { return m_state; }
 
-	std::string getName() const { return m_name; }
+	const std::string &getName() const { return m_name; }
 
 	void setName(const std::string &name) { m_name = name; }
 
@@ -329,16 +328,10 @@ public:
 		{ serialization_version = m_pending_serialization_version; }
 
 	/* get uptime */
-	u64 uptime() const;
+	u64 uptime() const { return porting::getTimeS() - m_connection_time; }
 
 	/* set version information */
-	void setVersionInfo(u8 major, u8 minor, u8 patch, const std::string &full)
-	{
-		m_version_major = major;
-		m_version_minor = minor;
-		m_version_patch = patch;
-		m_full_version = full;
-	}
+	void setVersionInfo(u8 major, u8 minor, u8 patch, const std::string &full);
 
 	/* read version information */
 	u8 getMajor() const { return m_version_major; }
@@ -346,7 +339,7 @@ public:
 	u8 getPatch() const { return m_version_patch; }
 	const std::string &getFullVer() const { return m_full_version; }
 
-	void setLangCode(const std::string &code) { m_lang_code = code; }
+	void setLangCode(const std::string &code);
 	const std::string &getLangCode() const { return m_lang_code; }
 
 	void setCachedAddress(const Address &addr) { m_addr = addr; }
@@ -400,6 +393,12 @@ private:
 	const s16 m_block_cull_optimize_distance;
 	const s16 m_max_gen_distance;
 	const bool m_occ_cull;
+
+	/*
+		Set of media files the client has already requested
+		We won't send the same file twice to avoid bandwidth consumption attacks.
+	*/
+	std::unordered_set<std::string> m_media_sent;
 
 	/*
 		Blocks that are currently on the line.
@@ -474,8 +473,8 @@ public:
 	/* get list of active client id's */
 	std::vector<session_t> getClientIDs(ClientState min_state=CS_Active);
 
-	/* mark block as not sent to active client sessions */
-	void markBlockposAsNotSent(const v3s16 &pos);
+	/* mark blocks as not sent on all active clients */
+	void markBlocksNotSent(const std::vector<v3s16> &positions);
 
 	/* verify is server user limit was reached */
 	bool isUserLimitReached();
@@ -483,8 +482,11 @@ public:
 	/* get list of client player names */
 	const std::vector<std::string> &getPlayerNames() const { return m_clients_names; }
 
-	/* send message to client */
-	void send(session_t peer_id, u8 channelnum, NetworkPacket *pkt, bool reliable);
+	/* send to one client */
+	void send(session_t peer_id, NetworkPacket *pkt);
+
+	/* send to one client, deviating from the standard params */
+	void sendCustom(session_t peer_id, u8 channel, NetworkPacket *pkt, bool reliable);
 
 	/* send to all clients */
 	void sendToAll(NetworkPacket *pkt);
@@ -550,7 +552,10 @@ private:
 	// Environment
 	ServerEnvironment *m_env;
 
-	float m_print_info_timer;
+	float m_print_info_timer = 0;
+	float m_check_linger_timer = 0;
 
 	static const char *statenames[];
+
+	static constexpr int LINGER_TIMEOUT = 10;
 };
