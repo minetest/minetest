@@ -167,26 +167,6 @@ int ModApiServer::l_get_player_information(lua_State *L)
 		return 1;
 	}
 
-	/*
-		Be careful not to introduce a depdendency on the connection to
-		the peer here. This function is >>REQUIRED<< to still be able to return
-		values even when the peer unexpectedly disappears.
-		Hence all the ConInfo values here are optional.
-	*/
-
-	auto getConInfo = [&] (con::rtt_stat_type type, float *value) -> bool {
-		return server->getClientConInfo(player->getPeerId(), type, value);
-	};
-
-	float min_rtt, max_rtt, avg_rtt, min_jitter, max_jitter, avg_jitter;
-	bool have_con_info =
-		getConInfo(con::MIN_RTT, &min_rtt) &&
-		getConInfo(con::MAX_RTT, &max_rtt) &&
-		getConInfo(con::AVG_RTT, &avg_rtt) &&
-		getConInfo(con::MIN_JITTER, &min_jitter) &&
-		getConInfo(con::MAX_JITTER, &max_jitter) &&
-		getConInfo(con::AVG_JITTER, &avg_jitter);
-
 	ClientInfo info;
 	if (!server->getClientInfo(player->getPeerId(), info)) {
 		warningstream << FUNCTION_NAME << ": no client info?!" << std::endl;
@@ -210,6 +190,26 @@ int ModApiServer::l_get_player_information(lua_State *L)
 		lua_pushnumber(L, 0);
 	}
 	lua_settable(L, table);
+
+	/*
+		Be careful not to introduce a depdendency on the connection to
+		the peer here. This function is >>REQUIRED<< to still be able to return
+		values even when the peer unexpectedly disappears.
+		Hence all the ConInfo values here are optional.
+	*/
+
+	auto getConInfo = [&] (con::rtt_stat_type type, float *value) -> bool {
+		return server->getClientConInfo(player->getPeerId(), type, value);
+	};
+
+	float min_rtt, max_rtt, avg_rtt, min_jitter, max_jitter, avg_jitter;
+	bool have_con_info =
+		getConInfo(con::MIN_RTT, &min_rtt) &&
+		getConInfo(con::MAX_RTT, &max_rtt) &&
+		getConInfo(con::AVG_RTT, &avg_rtt) &&
+		getConInfo(con::MIN_JITTER, &min_jitter) &&
+		getConInfo(con::MAX_JITTER, &max_jitter) &&
+		getConInfo(con::AVG_JITTER, &avg_jitter);
 
 	if (have_con_info) { // may be missing
 		lua_pushstring(L, "min_rtt");
