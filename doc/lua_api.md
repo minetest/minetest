@@ -4911,8 +4911,10 @@ generated chunk by the current mapgen.
 
 Returns a table mapping requested generation notification types to arrays of
 positions at which the corresponding generated structures are located within
-the current chunk. To enable the capture of positions of interest to be recorded
-call `minetest.set_gen_notify()` first.
+the current chunk.
+
+For this to contain anything you need to announce your interest in a specific
+field by calling `minetest.set_gen_notify()` *before* map generation happens.
 
 Possible fields of the returned table are:
 
@@ -4923,9 +4925,10 @@ Possible fields of the returned table are:
 * `large_cave_begin`
 * `large_cave_end`
 * `custom`: user-defined data
-  * not an array of positions. instead a table:
+  * not an array of positions. instead a table with
   * key = user-defined ID, value = arbitrary Lua value
-* `decoration#id` (see below)
+* `decoration#id`: decorations
+  * (see below)
 
 Decorations have a key in the format of `"decoration#id"`, where `id` is the
 numeric unique decoration ID as returned by `minetest.get_decoration_id()`.
@@ -5585,11 +5588,11 @@ Call these functions only at load time!
 * `minetest.register_on_punchnode(function(pos, node, puncher, pointed_thing))`
     * Called when a node is punched
 * `minetest.register_on_generated(function(minp, maxp, blockseed))`
-    * Called after generating a piece of world. Modifying nodes inside the area
-      is a bit faster than usual.
-    * **Avoid using this** whenever possible because the main thread is
-      latency-sensitive and this callback will block it.
-      Read [Mapgen environment] for an alternative.
+    * Called after generating a piece of world between `minp` and `maxp`.
+      Modifying nodes inside the area is a bit faster than usual.
+    * **Avoid using this** whenever possible. As with other callbacks this blocks
+      the main thread and introduces noticable latency.
+      Consider [Mapgen environment] for an alternative.
 * `minetest.register_on_newplayer(function(ObjectRef))`
     * Called when a new player enters the world for the first time
 * `minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
@@ -6570,15 +6573,22 @@ Internally it is referred to as "emerge environment".
 
 Refer to the above section for the usual disclaimer on what environment isolation entails.
 
+The map generator threads, which also contained the above mentioned Lua environment,
+are initialized after all mods have been loaded by the server. After that the
+registered scripts (not all mods!) - see below - are run during initialization of
+the mapgen environment. After that only callbacks happen. The mapgen env
+does not have a global step or timer.
+
 * `minetest.register_mapgen_script(path)`:
     * Register a path to a Lua file to be imported when a mapgen environment
-      is initialized. You'd put your mapgen-related code in there.
+      is initialized. Run in order of registration.
 
 ### List of APIs exclusive to the mapgen env
 
 * `minetest.register_on_generated(function(vmanip, minp, maxp, blockseed))`
-    * Called after the engine mapgen finishes a chunk.
-      The chunk data resides in `vmanip`. Other parts of the map are not accessible.
+    * Called after the engine mapgen finishes a chunk but before it is written to
+      the map.
+    * Chunk data resides in `vmanip`. Other parts of the map are not accessible.
       The area of the chunk if comprised of `minp` and `maxp`, note that is smaller
       than the emerged area of the VoxelManip.
       Note: calling `read_from_map()` or `write_to_map()` on the VoxelManipulator object
@@ -6587,7 +6597,7 @@ Refer to the above section for the usual disclaimer on what environment isolatio
 * `minetest.save_gen_notify(id, data)`
     * Saves data for retrieval using the gennotify mechanism (see [Mapgen objects]).
     * Data is bound to the chunk that is currently being processed, so this function
-      only makes sense inside the above-mentioned generation callback.
+      only makes sense inside the `on_generated` callback.
     * `id`: user-defined ID (a string)
       By convention these should be the mod name with an optional
       colon and specifier added, e.g. `"default"` or `"default:dungeon_loot"`
@@ -6607,7 +6617,7 @@ Classes:
 * `SecureRandom`
 * `VoxelArea`
 * `VoxelManip`
-    * only given by callbacks; no access to rest of map
+    * only given by callbacks; cannot access rest of map
 * `Settings`
 
 Functions:
@@ -6619,7 +6629,7 @@ Functions:
   `get_mapgen_setting`, `get_noiseparams`, `get_decoration_id` and more
 * `minetest.get_node`, `set_node`, `find_node_near`, `find_nodes_in_area`,
   `spawn_tree` and similar
-    * these only operate on the current chunk
+    * these only operate on the current chunk (if inside a callback)
 
 Variables:
 * `minetest.settings`
