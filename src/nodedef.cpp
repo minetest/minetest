@@ -734,7 +734,7 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	int frame_count = 1;
 	if (layer->material_flags & MATERIAL_FLAG_ANIMATION) {
 		assert(layer->texture);
-		int frame_length_ms;
+		int frame_length_ms = 0;
 		tiledef.animation.determineParams(layer->texture->getOriginalSize(),
 				&frame_count, &frame_length_ms, NULL);
 		layer->animation_frame_count = frame_count;

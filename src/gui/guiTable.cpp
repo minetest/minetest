@@ -210,7 +210,7 @@ void GUITable::setTable(const TableOptions &options,
 	s32 colcount = columns.size();
 	assert(colcount >= 1);
 	// rowcount = ceil(cellcount / colcount) but use integer arithmetic
-	s32 rowcount = (content.size() + colcount - 1) / colcount;
+	s32 rowcount = std::min(((u32)content.size() + colcount - 1) / colcount, (u32)S32_MAX);
 	assert(rowcount >= 0);
 	// Append empty strings to content if there is an incomplete row
 	s32 cellcount = rowcount * colcount;
