@@ -32,12 +32,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 PointerAction PointerAction::fromEvent(const SEvent &event) {
 	switch (event.EventType) {
-	case irr::EET_MOUSE_INPUT_EVENT:
+	case EET_MOUSE_INPUT_EVENT:
 		return {v2s32(event.MouseInput.X, event.MouseInput.Y), porting::getTimeMs()};
-	case irr::EET_TOUCH_INPUT_EVENT:
+	case EET_TOUCH_INPUT_EVENT:
 		return {v2s32(event.TouchInput.X, event.TouchInput.Y), porting::getTimeMs()};
 	default:
-		FATAL_ERROR("SEvent given to PointerAction::fromEvent has invalid EventType");
+		FATAL_ERROR("SEvent given to PointerAction::fromEvent has wrong EventType");
 	}
 }
 
@@ -139,9 +139,11 @@ bool GUIModalMenu::remapClickOutside(const SEvent &event)
 					event.MouseInput.Event != EMIE_LMOUSE_LEFT_UP))
 		return false;
 
-	PointerAction pressed_down = m_last_pressed_down;
-	// Make sure it's already reset, no matter whether we ignore or handle this event.
-	m_last_pressed_down = {};
+	// The formspec must only be closed if both the EMIE_LMOUSE_PRESSED_DOWN and
+	// the EMIE_LMOUSE_LEFT_UP event haven't been absorbed by something else.
+
+	PointerAction last = m_last_click_outside;
+	m_last_click_outside = {}; // always reset
 	PointerAction current = PointerAction::fromEvent(event);
 
 	gui::IGUIElement *hovered =
@@ -152,19 +154,19 @@ bool GUIModalMenu::remapClickOutside(const SEvent &event)
 	// Dropping items is also done by tapping outside the formspec. If an item
 	// is selected, make sure it is dropped without closing the formspec.
 	// We have to explicitly restrict this to GUIInventoryList because other
-	// GUI elements like text fields sometimes absorb events for no reason.
+	// GUI elements like text fields like to absorb events for no reason.
 	GUIInventoryList *focused = dynamic_cast<GUIInventoryList *>(Environment->getFocus());
 	if (focused && focused->OnEvent(event))
 		// Return true since the event was handled, even if it wasn't handled by us.
 		return true;
 
 	if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
-		m_last_pressed_down = current;
+		m_last_click_outside = current;
 		return true;
 	}
 
 	if (event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP &&
-			current.isRelated(pressed_down)) {
+			current.isRelated(last)) {
 		SEvent translated{};
 		translated.EventType            = EET_KEY_INPUT_EVENT;
 		translated.KeyInput.Key         = KEY_ESCAPE;
@@ -346,11 +348,11 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 			// Detect double-taps and convert them into double-click events.
 			if (event.TouchInput.Event == ETIE_PRESSED_DOWN) {
 				PointerAction current = PointerAction::fromEvent(event);
-				if (current.isRelated(m_last_touch_pressed_down)) {
+				if (current.isRelated(m_last_touch)) {
 					// ETIE_COUNT is used for double-tap events.
 					simulateMouseEvent(ETIE_COUNT);
 				}
-				m_last_touch_pressed_down = current;
+				m_last_touch = current;
 			}
 
 			return ret;
