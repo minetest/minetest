@@ -1342,8 +1342,10 @@ void Server::handleCommand_RemovedSounds(NetworkPacket* pkt)
 
 		ServerPlayingSound &psound = i->second;
 		psound.clients.erase(pkt->getPeerId());
-		if (psound.clients.empty())
+		if (!psound.can_be_send_later && psound.clients.empty())
 			m_playing_sounds.erase(i);
+		else
+			psound.done_clients.insert(pkt->getPeerId());
 	}
 }
 

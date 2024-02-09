@@ -912,26 +912,38 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 		ClientInterface::AutoLock clientlock(m_clients);
 		const RemoteClientMap &clients = m_clients.getClientList();
 
-		for (const auto &client_it : clients) {
-			RemoteClient *client = client_it.second;
+		for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); it++) {
+			ServerPlayingSound &sound = it->second;
 
-			if (client->getState() < CS_DefinitionsSent)
+			if (!sound.can_be_send_later)
 				continue;
 
-			PlayerSAO *playersao = getPlayerSAO(client->peer_id);
-			if (!playersao)
+			if (!sound.spec.loop && (sound.keep_time < m_playing_sounds_time)) {
+				sound.can_be_send_later = false;
 				continue;
+			}
 
-			for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); it++) {
-				ServerPlayingSound &sound = it->second;
-				bool have_pos;
+			// this shold be never called for sound not attached to pos or object
+			v3f pos = sound.getPos(m_env, nullptr);
 
-				v3f pos = sound.getPos(m_env, &have_pos);
+			for (const auto &client_it : clients) {
+				RemoteClient *client = client_it.second;
 
-				if (!have_pos)
+				if (client->getState() < CS_DefinitionsSent)
+					continue;
+
+				PlayerSAO *playersao = getPlayerSAO(client->peer_id);
+				if (!playersao)
 					continue;
 
 				if (sound.clients.find(client->peer_id) != sound.clients.end())
+					continue;
+
+				if (sound.done_clients.find(client->peer_id) != sound.clients.end())
+					continue;
+
+				if (!sound.exclude_player.empty() &&
+						sound.exclude_player == client->getName())
 					continue;
 
 				if (pos.getDistanceFrom(playersao->getBasePosition()) <= sound.max_hear_distance) {
@@ -2159,10 +2171,11 @@ void Server::SendActiveObjectMessages(session_t peer_id, const std::string &data
 	m_clients.sendCustom(pkt.getPeerId(), reliable ? ccf.channel : 1, &pkt, reliable);
 }
 
-void Server::SendSound(session_t peer_id, s32 sound_id, const ServerPlayingSound &params, const v3f &pos)
+void Server::SendSound(session_t peer_id, s32 sound_id,
+		const ServerPlayingSound &params, const v3f &pos)
 {
 	NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0, peer_id);
-  createSoundPacket(pkt, sound_id, params, pos);
+	createSoundPacket(pkt, sound_id, params, pos);
 
 	Send(&pkt);
 }
@@ -2208,6 +2221,8 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 	if(pos_exists != (params.type != SoundLocation::Local))
 		return -1;
 
+	params.can_be_send_later = pos_exists;
+
 	// Filter destination clients
 	std::vector<session_t> dst_clients;
 	if (!params.to_player.empty()) {
@@ -2223,6 +2238,7 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 			return -1;
 		}
 		dst_clients.push_back(player->getPeerId());
+		params.can_be_send_later = false;
 	} else {
 		std::vector<session_t> clients = m_clients.getClientIDs();
 
@@ -2247,12 +2263,16 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 		}
 	}
 
+	if (dst_clients.empty() && !params.spec.loop)
+		return 0;
+
 	// old clients will still use this, so pick a reserved ID (-1)
 	const s32 id = ephemeral ? -1 : nextSoundId();
 	if (id == 0)
 		return 0;
 
 	params.start_time = m_playing_sounds_time;
+	params.keep_time = m_playing_sounds_time + params.spec.keep_time;
 
 	if (!dst_clients.empty()) {
 		NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0);
@@ -2327,14 +2347,15 @@ void Server::stopAttachedSounds(u16 id)
 	}
 }
 
-void Server::createSoundPacket(NetworkPacket &pkt, s32 sound_id, const ServerPlayingSound &params, const v3f &pos, bool ephemeral)
+void Server::createSoundPacket(NetworkPacket &pkt, s32 sound_id, const ServerPlayingSound &params,
+		const v3f &pos, bool ephemeral)
 {
 	float gain = params.gain * params.spec.gain;
+	float start_time = params.spec.start_time + m_playing_sounds_time - params.start_time;
 	pkt << sound_id << params.spec.name << gain
 			<< (u8) params.type << pos << params.object
 			<< params.spec.loop << params.spec.fade << params.spec.pitch
-			<< ephemeral 
-			<< (params.spec.start_time + m_playing_sounds_time - params.start_time);
+			<< ephemeral << start_time;
 }
 
 void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,

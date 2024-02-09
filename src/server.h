@@ -115,12 +115,20 @@ struct ServerPlayingSound
 	std::string to_player;
 	std::string exclude_player;
 
-	float start_time;
-
 	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
 
 	SoundSpec spec;
 
+	// server processing values
+
+	// relative server time when sound has been added
+	// used for update spec.start_time when sending sound to new client
+	float start_time;
+	// hold time limit for sound sending to new clients
+	float keep_time;
+	bool can_be_send_later = false;
+
+	std::unordered_set<session_t> done_clients; // peer ids
 	std::unordered_set<session_t> clients; // peer ids
 };
 
