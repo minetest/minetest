@@ -66,7 +66,7 @@ struct NearbyCollisionInfo {
 	aabb3f box;
 };
 
-static bool add_area_node_boxes(const v3s16 &min, const v3s16 &max, IGameDef *gamedef,
+static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *gamedef,
 		Map *map, std::vector<NearbyCollisionInfo> &cinfo);
 static void add_object_boxes(Environment *env, const aabb3f &box_0, f32 dtime,
 		const v3f &pos_f, const v3f &speed_f, ActiveObject *self,
@@ -552,7 +552,7 @@ bool collisionCheckIntersection(Environment *env, IGameDef *gamedef,
 	return false;
 }
 
-static bool add_area_node_boxes(const v3s16 &min, const v3s16 &max, IGameDef *gamedef,
+static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *gamedef,
 		Map *map, std::vector<NearbyCollisionInfo> &cinfo)
 {
 	bool any_position_valid = false;
