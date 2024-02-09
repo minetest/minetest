@@ -5365,6 +5365,9 @@ Utilities
       dynamic_add_media_startup = true,
       -- dynamic_add_media supports `filename` and `filedata` parameters (5.9.0)
       dynamic_add_media_filepath = true,
+      -- Sounds can be send to players which comes to hear distance.
+      -- Field `keep_time` added to sound parameters.
+      sounds_updating = true,
   }
   ```
 
