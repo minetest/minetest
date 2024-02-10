@@ -48,6 +48,46 @@ static bool check_integer(const std::string &str)
 	return *endptr == '\0';
 }
 
+struct size_with_unit {
+	double size;
+	std::string unit;
+};
+
+static size_with_unit parse_length(const std::string &str)
+{
+	char *unitptr = nullptr;
+	double size = strtod(str.c_str(), &unitptr);
+	size_with_unit length;
+
+	if (size <= 0)
+		size = 0;
+	length.size = size;
+	length.unit = unitptr;
+
+	return length;
+}
+
+static bool check_length(const std::string &str)
+{
+	return parse_length(str).size > 0;
+}
+
+static u32 get_length_value(const std::string &str, ParsedText::Element &parent)
+{
+	size_with_unit length = parse_length(str);
+	if (!length.unit.empty())
+	{
+		printf("%g %s\n", length.size, length.unit.c_str());
+		printf("%d\n", parent.font_size);
+	}
+	if (length.unit.empty())
+		return length.size;
+	else if (length.unit == "em")
+		return length.size * parent.font_size;
+	else
+		return 0;
+}
+
 // -----------------------------------------------------------------------------
 // ParsedText - A text parser
 
@@ -62,7 +102,7 @@ void ParsedText::Element::setStyle(StyleList &style)
 	if (parseColorString(style["hovercolor"], color, false))
 		this->hovercolor = color;
 
-	unsigned int font_size = std::atoi(style["fontsize"].c_str());
+	font_size = get_length_value(style["fontsize"], *this);
 
 	FontMode font_mode = FM_Standard;
 	if (style["fontstyle"] == "mono")
@@ -340,7 +380,7 @@ void ParsedText::parseGenericStyleAttr(
 		style[name] = is_yes(value);
 
 	} else if (name == "size") {
-		if (check_integer(value))
+		if (check_length(value))
 			style["fontsize"] = value;
 
 	} else if (name == "font") {
@@ -511,13 +551,13 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 		}
 
 		if (attrs.count("width")) {
-			int width = stoi(attrs["width"]);
+			int width = get_length_value(attrs["width"], *m_element);
 			if (width > 0)
 				m_element->dim.Width = width;
 		}
 
 		if (attrs.count("height")) {
-			int height = stoi(attrs["height"]);
+			int height = get_length_value(attrs["height"], *m_element);
 			if (height > 0)
 				m_element->dim.Height = height;
 		}

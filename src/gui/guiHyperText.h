@@ -98,6 +98,7 @@ public:
 		ValignType valign;
 
 		gui::IGUIFont *font;
+		unsigned int font_size;
 
 		irr::video::SColor color;
 		irr::video::SColor hovercolor;
