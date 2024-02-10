@@ -2261,13 +2261,15 @@ void Server::stopAttachedSounds(u16 id)
 {
 	assert(id);
 
-	for (const auto &sit: m_playing_sounds) {
-		const ServerPlayingSound &sound = sit.second;
+	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); ) {
+		const ServerPlayingSound &sound = it->second;
 
-		if (sound.object != id)
-			continue;
-
-		stopSound(sit.first);
+		if (sound.object == id) {
+			// Remove sound reference
+			it = m_playing_sounds.erase(it);
+		}
+		else
+			it++;
 	}
 }
 

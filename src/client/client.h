@@ -475,8 +475,8 @@ private:
 
 	bool canSendChatMessage() const;
 
-	// helper method for manage sounds
-  void removeActiveObjectSounds(u16 id);
+	// remove sounds attached to object
+	void removeActiveObjectSounds(u16 id);
 
 	float m_packetcounter_timer = 0.0f;
 	float m_connection_reinit_timer = 0.1f;
