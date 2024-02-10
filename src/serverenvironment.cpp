@@ -1256,6 +1256,8 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 		obj->removingFromEnvironment();
 		// Deregister in scripting api
 		m_script->removeObjectReference(obj);
+		// stop attached sounds
+		m_server->stopAttachedSounds(id);
 
 		// Delete active object
 		return true;
@@ -1977,6 +1979,8 @@ void ServerEnvironment::removeRemovedObjects()
 		obj->removingFromEnvironment();
 		// Deregister in scripting api
 		m_script->removeObjectReference(obj);
+		// stop attached sounds
+		m_server->stopAttachedSounds(id);
 
 		// Delete
 		return true;
@@ -2217,6 +2221,8 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		obj->removingFromEnvironment();
 		// Deregister in scripting api
 		m_script->removeObjectReference(obj);
+		// stop attached sounds
+		m_server->stopAttachedSounds(id);
 
 		// Delete active object
 		return true;
