@@ -571,17 +571,6 @@ scene::SMeshBuffer *Minimap::getMinimapMeshBuffer()
 	return buf;
 }
 
-void Minimap::drawMinimap()
-{
-	// Non hud managed minimap drawing (legacy minimap)
-	v2u32 screensize = RenderingEngine::getWindowSize();
-	const u32 size = 0.25 * screensize.Y;
-
-	drawMinimap(core::rect<s32>(
-		screensize.X - size - 10, 10,
-		screensize.X - 10, size + 10));
-}
-
 void Minimap::drawMinimap(core::rect<s32> rect) {
 
 	video::ITexture *minimap_texture = getMinimapTexture();

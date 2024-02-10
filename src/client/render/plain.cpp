@@ -64,9 +64,6 @@ void DrawHUD::run(PipelineContext &context)
 		context.hud->drawHotbar(context.client->getEnv().getLocalPlayer()->getWieldIndex());
 		context.hud->drawLuaElements(context.client->getCamera()->getOffset());
 		context.client->getCamera()->drawNametags();
-		auto mapper = context.client->getMinimap();
-		if (mapper && context.show_minimap)
-			mapper->drawMinimap();
 	}
 	context.device->getGUIEnvironment()->drawAll();
 }
