@@ -416,8 +416,7 @@ DigParams getDigParams(const ItemGroupList &groups,
 			// The actual number of uses increases
 			// exponentially with leveldiff.
 			// If the levels are equal, real_uses equals cap.uses.
-			u32 real_uses = cap.uses * pow(3.0, leveldiff);
-			real_uses = MYMIN(real_uses, U16_MAX);
+			const u32 real_uses = std::min<f64>(cap.uses * pow(3.0, leveldiff), U16_MAX);
 			result_wear = calculateResultWear(real_uses, initial_wear);
 			result_main_group = groupname;
 		}
