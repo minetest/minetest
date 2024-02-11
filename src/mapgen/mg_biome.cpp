@@ -297,7 +297,11 @@ Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 po
 	// Carefully tune pseudorandom seed variation to avoid single node dither
 	// and create larger scale blending patterns similar to horizontal biome
 	// blend.
-	const u64 seed = pos.Y + (heat + humidity) * 0.9f;
+	// The calculation can be a negative floating point number, which is an
+	// undefined behavior if assigned to unsigned integer. Cast the result
+	// into signed integer before it is casted into unsigned integer to
+	// eliminate the undefined behavior.
+	const u64 seed = static_cast<s64>(pos.Y + (heat + humidity) * 0.9f);
 	PcgRandom rng(seed);
 
 	if (biome_closest_blend && dist_min_blend <= dist_min &&
