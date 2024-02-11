@@ -1464,21 +1464,6 @@ void Client::sendUpdateClientInfo(const ClientDynamicInfo& info)
 	Send(&pkt);
 }
 
-void Client::removeNode(v3s16 p)
-{
-	std::map<v3s16, MapBlock*> modified_blocks;
-
-	try {
-		m_env.getMap().removeNodeAndUpdate(p, modified_blocks);
-	}
-	catch(InvalidPositionException &e) {
-	}
-
-	for (const auto &modified_block : modified_blocks) {
-		addUpdateMeshTaskWithEdge(modified_block.first, false, true);
-	}
-}
-
 /**
  * Helper function for Client Side Modding
  * CSM restrictions are applied there, this should not be used for core engine
@@ -1523,19 +1508,12 @@ v3s16 Client::CSMClampPos(v3s16 pos)
 	);
 }
 
-void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
+void Client::addReceivedNode(const v3s16 &p, const MapNode &n,
+	bool remove_metadata)
 {
-	//TimeTaker timer1("Client::addNode()");
-
 	std::map<v3s16, MapBlock*> modified_blocks;
-
-	try {
-		//TimeTaker timer3("Client::addNode(): addNodeAndUpdate");
-		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
-	}
-	catch(InvalidPositionException &e) {
-	}
-
+	m_env.getClientMap().addReceivedNode(p, n, modified_blocks,
+		remove_metadata);
 	for (const auto &modified_block : modified_blocks) {
 		addUpdateMeshTaskWithEdge(modified_block.first, false, true);
 	}

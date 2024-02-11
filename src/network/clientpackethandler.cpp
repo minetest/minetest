@@ -246,7 +246,8 @@ void Client::handleCommand_RemoveNode(NetworkPacket* pkt)
 
 	v3s16 p;
 	*pkt >> p;
-	removeNode(p);
+
+	addReceivedNode(p, MapNode{CONTENT_AIR}, true);
 }
 
 void Client::handleCommand_AddNode(NetworkPacket* pkt)
@@ -266,7 +267,7 @@ void Client::handleCommand_AddNode(NetworkPacket* pkt)
 		remove_metadata = false;
 	}
 
-	addNode(p, n, remove_metadata);
+	addReceivedNode(p, n, remove_metadata);
 }
 
 void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)

@@ -140,6 +140,29 @@ void ClientMap::addPredictedNode(const v3s16 &p, const MapNode &n,
 	m_predictions[p] = seqnum;
 }
 
+void ClientMap::addReceivedNode(const v3s16 &p, const MapNode &n,
+	std::map<v3s16, MapBlock*> &modified_blocks, bool remove_metadata)
+{
+	// Get a prediction and check if it is newer than the received node
+	auto pred{m_predictions.find(p)};
+	if (pred != m_predictions.end()) {
+		const u16 &seqnum = pred->second;
+		if (m_client->isUnackedOnInteractChan(seqnum)) {
+			// The prediction is still active; ignore the node change sent by
+			// the server
+			// TODO: remember nodes
+			return;
+		}
+		m_predictions.erase(pred);
+		pred = m_predictions.end();
+	}
+
+	try {
+		addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
+	} catch(InvalidPositionException &e) {
+	}
+}
+
 void ClientMap::updateBlockAndPredictions(std::istringstream &in_compressed,
 	u8 version, MapBlock &block)
 {
@@ -150,6 +173,8 @@ void ClientMap::updateBlockAndPredictions(std::istringstream &in_compressed,
 		const u16 &seqnum = pred->second;
 // TODO: With packet reordering, the packet where in_compressed comes from could arrive before the acknowledgement of seqnum. In this case, the prediction should also be removed even if seqnum is not acknowledged, ideally.
 		if (!m_client->isUnackedOnInteractChan(seqnum)) {
+			// TODO: if pred is not inside block, it needs to be reverted due to packet reordering
+			// However, if an unrelated mapblock arrives between the interact acknowledgement arrival and the arrival of the mapblock where interact was acknowledged, the reverting may be wrong
 			pred = m_predictions.erase(pred);
 			continue;
 		}

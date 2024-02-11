@@ -270,15 +270,16 @@ public:
 	const std::vector<ModSpec> &getMods() const override;
 	const ModSpec* getModSpec(const std::string &modname) const override;
 
-	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
-	void removeNode(v3s16 p);
-
 	// helpers to enforce CSM restrictions
 	MapNode CSMGetNode(v3s16 p, bool *is_valid_position);
 	int CSMClampRadius(v3s16 pos, int radius);
 	v3s16 CSMClampPos(v3s16 pos);
 
-	void addNode(v3s16 p, MapNode n, bool remove_metadata = true);
+	/// Change a node in the local map and reapply a prediction if needed.
+	/// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
+	void addReceivedNode(const v3s16 &p, const MapNode &n,
+		bool remove_metadata);
+
 	/// Change a node in the local map and make ClientMap remember the
 	/// local-only change until it is no longer needed
 	void addPredictedNode(const v3s16 &p, const MapNode &n,

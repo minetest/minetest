@@ -121,7 +121,7 @@ public:
 
 	void onSettingChanged(const std::string &name);
 
-	/*! \brief Change a node and remember the change for reapplying
+	/*! \brief Change a node because of a prediction and remember the change
 	 *
 	 * \param p Position where the node is set
 	 * \param n The to-be-set node
@@ -134,6 +134,10 @@ public:
 	void addPredictedNode(const v3s16 &p, const MapNode &n,
 		std::map<v3s16, MapBlock*> &modified_blocks, bool remove_metadata,
 		u16 seqnum);
+
+	/// Update a node unless it is older than a prediction
+	void addReceivedNode(const v3s16 &p, const MapNode &n,
+		std::map<v3s16, MapBlock*> &modified_blocks, bool remove_metadata);
 
 	/// Update a mapblock and reapply predictions where needed
 	void updateBlockAndPredictions(std::istringstream &in_compressed,
