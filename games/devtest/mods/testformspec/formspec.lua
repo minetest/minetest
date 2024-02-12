@@ -112,8 +112,8 @@ Normal:
 <img name=testformspec_item.png float=right>
 <mono>width=1em height=2em</mono>:
 <img name=testformspec_item.png width=1em height=2em>
-<mono>width=2em</mono> inside <mono>width=2em</mono>
-<style fontsize=2em><img name=testformspec_item.png width=2em></style>
+<mono>width=2em</mono> inside <mono>width=2em</mono> (should render at <mono>width=4em</mono>):
+<style size=2em><img name=testformspec_item.png width=2em></style>
 
 <bigger><mono>item</mono> test</bigger>
 Normal:
