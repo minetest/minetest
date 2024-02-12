@@ -48,27 +48,23 @@ static bool check_integer(const std::string &str)
 	return *endptr == '\0';
 }
 
-static ParsedText::LengthValue parse_length(const std::string &str)
-{
-	char *unitptr = nullptr;
-	double size = strtod(str.c_str(), &unitptr);
-	ParsedText::LengthValue length;
-
-	if (size <= 0)
-		size = 0;
-	length.size = size;
-	length.unit = unitptr;
-
-	return length;
-}
-
 static bool check_length(const std::string &str)
 {
-	return parse_length(str).isValid();
+	return ParsedText::LengthValue(str).isValid();
 }
 
 // -----------------------------------------------------------------------------
 // LengthValue - A data structure representing a (possibly relative) length
+
+ParsedText::LengthValue::LengthValue(const std::string &str)
+{
+	char *unitptr = nullptr;
+	this->size = strtod(str.c_str(), &unitptr);
+
+	if (this->size <= 0)
+		this->size = 0;
+	this->unit = unitptr;
+}
 
 bool ParsedText::LengthValue::isValid()
 {
@@ -557,13 +553,13 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 		}
 
 		if (attrs.count("width")) {
-			int width = parse_length(attrs["width"]).getAbsoluteValue(m_element->font_size);
+			int width = LengthValue(attrs["width"]).getAbsoluteValue(m_element->font_size);
 			if (width > 0)
 				m_element->dim.Width = width;
 		}
 
 		if (attrs.count("height")) {
-			int height = parse_length(attrs["height"]).getAbsoluteValue(m_element->font_size);
+			int height = LengthValue(attrs["height"]).getAbsoluteValue(m_element->font_size);
 			if (height > 0)
 				m_element->dim.Height = height;
 		}
@@ -645,7 +641,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 		for (const auto &prop : (*tag)->style) {
 			if (prop.first == "fontsize") {
 				// resolve font size
-				font_size = parse_length(prop.second).getAbsoluteValue(font_size);
+				font_size = LengthValue(prop.second).getAbsoluteValue(font_size);
 			} else {
 				m_style[prop.first] = prop.second;
 			}

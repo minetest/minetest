@@ -80,6 +80,7 @@ public:
 	{
 		double size;
 		std::string unit;
+		LengthValue(const std::string &str);
 		bool isValid();
 		bool isAbsolute();
 		double getAbsoluteValue();
