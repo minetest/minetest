@@ -76,6 +76,16 @@ public:
 	typedef std::unordered_map<std::string, std::string> StyleList;
 	typedef std::unordered_map<std::string, std::string> AttrsList;
 
+	struct LengthValue
+	{
+		double size;
+		std::string unit;
+		bool isValid();
+		bool isAbsolute();
+		double getAbsoluteValue();
+		double getAbsoluteValue(const double &em_size);
+	};
+
 	struct Tag
 	{
 		std::string name;

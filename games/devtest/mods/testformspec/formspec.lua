@@ -68,7 +68,8 @@ This is a normal text.
 <bigger><mono>style</mono> test</bigger>
 <style color=#FFFF00>Yellow text.</style> <style color=#FF0000>Red text.</style>
 <style size=24>Size 24.</style> <style size=16>Size 16.</style> <style size=12>Size 12.</style>
-<style size=2em>Size 2em.</style> <style size=0.5em>Size 0.5em.</style>
+<style size=2em>Size 2em.</style> <style size=1em>Size 1em.</style> <style size=0.5em>Size 0.5em.</style>
+<style size=3em>Size 3em. <style size=0.5em>Half of 3em.</style></style>
 <style font=normal>Normal font.</style> <style font=mono>Mono font.</style>
 
 <bigger>Tag test</bigger>
@@ -111,6 +112,8 @@ Normal:
 <img name=testformspec_item.png float=right>
 <mono>width=1em height=2em</mono>:
 <img name=testformspec_item.png width=1em height=2em>
+<mono>width=2em</mono> inside <mono>width=2em</mono>
+<style fontsize=2em><img name=testformspec_item.png width=2em></style>
 
 <bigger><mono>item</mono> test</bigger>
 Normal:
