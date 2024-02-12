@@ -82,7 +82,7 @@ void TestServerModManager::runTests(IGameDef *gamedef)
 	TEST(testGetModNames);
 	TEST(testGetModMediaPathsWrongDir);
 	TEST(testGetModMediaPaths);
-	// TODO: test MINETEST_SUBGAME_PATH
+	// TODO: test MINETEST_GAME_PATH
 
 	unsetenv("MINETEST_MOD_PATH");
 }
