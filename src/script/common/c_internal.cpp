@@ -189,7 +189,7 @@ void log_deprecated(lua_State *L, std::string message, int stack_depth, bool onc
 	}
 
 	if (mode == DeprecatedHandlingMode::Error)
-		script_error(L, LUA_ERRRUN, nullptr, nullptr);
+		throw LuaError(message);
 	else if (log)
 		infostream << script_get_backtrace(L) << std::endl;
 }

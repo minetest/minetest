@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include <algorithm>
 #include <cmath>
+#include <sstream>
 
 ScriptApiBase *ModApiBase::getScriptApiBase(lua_State *L)
 {
@@ -147,11 +148,14 @@ int ModApiBase::l_deprecated_function(lua_State *L, const char *good, const char
 			== deprecated_logged.end()) {
 
 		deprecated_logged.emplace_back(hash);
-		warningstream << "Call to deprecated function '"  << bad << "', please use '"
-			<< good << "' at " << backtrace << std::endl;
+
+		std::stringstream msg;
+		msg << "Call to deprecated function '"  << bad << "', use '" << good << "' instead";
+
+		warningstream << msg.str() << " at " << backtrace << std::endl;
 
 		if (dep_mode == DeprecatedHandlingMode::Error)
-			script_error(L, LUA_ERRRUN, NULL, NULL);
+			throw LuaError(msg.str());
 	}
 
 	u64 end_time = porting::getTimeUs();
