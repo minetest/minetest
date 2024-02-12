@@ -70,7 +70,6 @@ static void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
 {
 	void *const src_data = src->getData();
 	const core::dimension2d<u32> dim = src->getDimension();
-	const u32 src_pitch = src->getPitch();
 
 	auto get_pixel = [src, src_data, dim](u32 x, u32 y) -> video::SColor {
 		if constexpr (IS_A8R8G8B8) {
@@ -79,10 +78,9 @@ static void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
 			return src->getPixel(x, y);
 		}
 	};
-	auto set_pixel = [src, src_data, src_pitch, dim](u32 x, u32 y, video::SColor color) {
+	auto set_pixel = [src, src_data, dim](u32 x, u32 y, video::SColor color) {
 		if constexpr (IS_A8R8G8B8) {
-			u32 *dest = reinterpret_cast<u32 *>(
-					reinterpret_cast<u8 *>(src_data) + (y * src_pitch) + (x << 2));
+			u32 *dest = &reinterpret_cast<u32 *>(src_data)[y*dim.Width + x];
 			*dest = color.color;
 		} else {
 			src->setPixel(x, y, color);
