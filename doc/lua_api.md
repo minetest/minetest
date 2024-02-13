@@ -4913,7 +4913,7 @@ Returns a table. You need to announce your interest in a specific
 field by calling `minetest.set_gen_notify()` *before* map generation happens.
 
 * key = string: generation notification type
-* value = list of positions (generally)
+* value = list of positions (usually)
    * Exceptions are denoted in the listing below.
 
 Available generation notification types:
@@ -6571,7 +6571,7 @@ Internally it is referred to as "emerge environment".
 
 Refer to [Async environment] for the usual disclaimer on what environment isolation entails.
 
-The map generator threads, which also contained the above mentioned Lua environment,
+The map generator threads, which also contain the above mentioned Lua environment,
 are initialized after all mods have been loaded by the server. After that the
 registered scripts (not all mods!) - see below - are run during initialization of
 the mapgen environment. After that only callbacks happen. The mapgen env
