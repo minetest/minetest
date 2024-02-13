@@ -57,14 +57,14 @@ void TestCompression::runTests(IGameDef *gamedef)
 
 void TestCompression::testRLECompression()
 {
-	SharedBuffer<u8> fromdata(4);
+	Buffer<u8> fromdata(4);
 	fromdata[0]=1;
 	fromdata[1]=5;
 	fromdata[2]=5;
 	fromdata[3]=1;
 
 	std::ostringstream os(std::ios_base::binary);
-	compress(fromdata, os, 0);
+	compress(*fromdata, fromdata.getSize(), os, 0);
 
 	std::string str_out = os.str();
 
@@ -106,7 +106,7 @@ void TestCompression::testRLECompression()
 
 void TestCompression::testZlibCompression()
 {
-	SharedBuffer<u8> fromdata(4);
+	Buffer<u8> fromdata(4);
 	fromdata[0]=1;
 	fromdata[1]=5;
 	fromdata[2]=5;

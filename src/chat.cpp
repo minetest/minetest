@@ -577,6 +577,7 @@ void ChatPrompt::historyNext()
 
 void ChatPrompt::nickCompletion(const std::set<std::string> &names, bool backwards)
 {
+	const std::wstring_view line(getLineRef());
 	// Two cases:
 	// (a) m_nick_completion_start == m_nick_completion_end == 0
 	//     Then no previous nick completion is active.
@@ -586,7 +587,6 @@ void ChatPrompt::nickCompletion(const std::set<std::string> &names, bool backwar
 	//     m_nick_completion_start..m_nick_completion_end are the
 	//     interval where the originally used prefix was. Cycle
 	//     through the list of completions of that prefix.
-	const std::wstring &line = getLineRef();
 	u32 prefix_start = m_nick_completion_start;
 	u32 prefix_end = m_nick_completion_end;
 	bool initial = (prefix_end == 0);
@@ -601,7 +601,7 @@ void ChatPrompt::nickCompletion(const std::set<std::string> &names, bool backwar
 		if (prefix_start == prefix_end)
 			return;
 	}
-	std::wstring prefix = line.substr(prefix_start, prefix_end - prefix_start);
+	auto prefix = line.substr(prefix_start, prefix_end - prefix_start);
 
 	// find all names that start with the selected prefix
 	std::vector<std::wstring> completions;
@@ -624,7 +624,7 @@ void ChatPrompt::nickCompletion(const std::set<std::string> &names, bool backwar
 	{
 		while (word_end < line.size() && !iswspace(line[word_end]))
 			++word_end;
-		std::wstring word = line.substr(prefix_start, word_end - prefix_start);
+		auto word = line.substr(prefix_start, word_end - prefix_start);
 
 		// cycle through completions
 		for (u32 i = 0; i < completions.size(); ++i)
@@ -640,7 +640,7 @@ void ChatPrompt::nickCompletion(const std::set<std::string> &names, bool backwar
 			}
 		}
 	}
-	std::wstring replacement = completions[replacement_index];
+	const auto &replacement = completions[replacement_index];
 	if (word_end < line.size() && iswspace(line[word_end]))
 		++word_end;
 

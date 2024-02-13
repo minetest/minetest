@@ -997,7 +997,7 @@ bool Settings::remove(const std::string &name)
 SettingsParseEvent Settings::parseConfigObject(const std::string &line,
 	std::string &name, std::string &value)
 {
-	std::string trimmed_line = trim(line);
+	auto trimmed_line = trim(line);
 
 	if (trimmed_line.empty())
 		return SPE_NONE;

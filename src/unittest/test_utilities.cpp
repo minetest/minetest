@@ -240,20 +240,26 @@ void TestUtilities::testPadString()
 
 void TestUtilities::testStartsWith()
 {
-	UASSERT(str_starts_with(std::string(), std::string()) == true);
+	std::string the("the");
+	UASSERT(str_starts_with(std::string(), "") == true);
 	UASSERT(str_starts_with(std::string("the sharp pickaxe"),
 		std::string()) == true);
 	UASSERT(str_starts_with(std::string("the sharp pickaxe"),
-		std::string("the")) == true);
+		std::string_view(the)) == true);
 	UASSERT(str_starts_with(std::string("the sharp pickaxe"),
 		std::string("The")) == false);
 	UASSERT(str_starts_with(std::string("the sharp pickaxe"),
 		std::string("The"), true) == true);
-	UASSERT(str_starts_with(std::string("T"), std::string("The")) == false);
+	UASSERT(str_starts_with(std::string("T"), "The") == false);
 }
 
 void TestUtilities::testStrEqual()
 {
+	std::string foo("foo");
+	UASSERT(str_equal(foo, std::string_view(foo)));
+	UASSERT(!str_equal(foo, std::string("bar")));
+	UASSERT(str_equal(std::string_view(foo), std::string_view(foo)));
+	UASSERT(str_equal(std::wstring(L"FOO"), std::wstring(L"foo"), true));
 	UASSERT(str_equal(utf8_to_wide("abc"), utf8_to_wide("abc")));
 	UASSERT(str_equal(utf8_to_wide("ABC"), utf8_to_wide("abc"), true));
 }

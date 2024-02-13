@@ -106,9 +106,9 @@ void compressZlib(const u8 *data, size_t data_size, std::ostream &os, int level)
 	}
 }
 
-void compressZlib(const std::string &data, std::ostream &os, int level)
+void compressZlib(std::string_view data, std::ostream &os, int level)
 {
-	compressZlib((u8*)data.c_str(), data.size(), os, level);
+	compressZlib((const u8*)data.data(), data.size(), os, level);
 }
 
 void decompressZlib(std::istream &is, std::ostream &os, size_t limit)
@@ -247,9 +247,9 @@ void compressZstd(const u8 *data, size_t data_size, std::ostream &os, int level)
 
 }
 
-void compressZstd(const std::string &data, std::ostream &os, int level)
+void compressZstd(std::string_view data, std::ostream &os, int level)
 {
-	compressZstd((u8*)data.c_str(), data.size(), os, level);
+	compressZstd((const u8*)data.data(), data.size(), os, level);
 }
 
 void decompressZstd(std::istream &is, std::ostream &os)
@@ -295,7 +295,7 @@ void decompressZstd(std::istream &is, std::ostream &os)
 	}
 }
 
-void compress(u8 *data, u32 size, std::ostream &os, u8 version, int level)
+void compress(const u8 *data, u32 size, std::ostream &os, u8 version, int level)
 {
 	if(version >= 29)
 	{
@@ -345,14 +345,9 @@ void compress(u8 *data, u32 size, std::ostream &os, u8 version, int level)
 	os.write((char*)&current_byte, 1);
 }
 
-void compress(const SharedBuffer<u8> &data, std::ostream &os, u8 version, int level)
+void compress(std::string_view data, std::ostream &os, u8 version, int level)
 {
-	compress(*data, data.getSize(), os, version, level);
-}
-
-void compress(const std::string &data, std::ostream &os, u8 version, int level)
-{
-	compress((u8*)data.c_str(), data.size(), os, version, level);
+	compress((const u8*)data.data(), data.size(), os, version, level);
 }
 
 void decompress(std::istream &is, std::ostream &os, u8 version)

@@ -1873,7 +1873,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		else if (str_starts_with(part_of_name, "[png:")) {
 			std::string png;
 			{
-				std::string blob = part_of_name.substr(5);
+				auto blob = std::string_view(part_of_name).substr(5);
 				if (!base64_is_valid(blob)) {
 					errorstream << "generateImagePart(): "
 								<< "malformed base64 in [png" << std::endl;

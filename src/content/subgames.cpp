@@ -239,9 +239,9 @@ std::set<std::string> getAvailableGameIds()
 
 			// Add it to result
 			const char *ends[] = {"_game", NULL};
-			std::string shorter = removeStringEnd(dln.name, ends);
+			auto shorter = removeStringEnd(dln.name, ends);
 			if (!shorter.empty())
-				gameids.insert(shorter);
+				gameids.emplace(shorter);
 			else
 				gameids.insert(dln.name);
 		}
