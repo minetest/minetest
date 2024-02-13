@@ -667,6 +667,25 @@ int ModApiServer::l_register_async_dofile(lua_State *L)
 	return 1;
 }
 
+// register_mapgen_script(path)
+int ModApiServer::l_register_mapgen_script(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	std::string path = readParam<std::string>(L, 1);
+	CHECK_SECURE_PATH(L, path.c_str(), false);
+
+	// Find currently running mod name (only at init time)
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	if (!lua_isstring(L, -1))
+		return 0;
+	std::string modname = readParam<std::string>(L, -1);
+
+	getServer(L)->m_mapgen_init_files.emplace_back(modname, path);
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 // serialize_roundtrip(value)
 // Meant for unit testing the packer from Lua
 int ModApiServer::l_serialize_roundtrip(lua_State *L)
@@ -730,6 +749,8 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(do_async_callback);
 	API_FCT(register_async_dofile);
 	API_FCT(serialize_roundtrip);
+
+	API_FCT(register_mapgen_script);
 }
 
 void ModApiServer::InitializeAsync(lua_State *L, int top)

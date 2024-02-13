@@ -237,8 +237,8 @@ end
 core.dynamic_media_callbacks = {}
 
 
--- Transfer of certain globals into async environment
--- see builtin/async/game.lua for the other side
+-- Transfer of certain globals into seconday Lua environments
+-- see builtin/async/game.lua or builtin/emerge/register.lua for the unpacking
 
 local function copy_filtering(t, seen)
 	if type(t) == "userdata" or type(t) == "function" then
@@ -261,6 +261,9 @@ function core.get_globals_to_transfer()
 	local all = {
 		registered_items = copy_filtering(core.registered_items),
 		registered_aliases = core.registered_aliases,
+		registered_biomes = core.registered_biomes,
+		registered_ores = core.registered_ores,
+		registered_decorations = core.registered_decorations,
 
 		nodedef_default = copy_filtering(core.nodedef_default),
 		craftitemdef_default = copy_filtering(core.craftitemdef_default),

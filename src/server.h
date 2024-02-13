@@ -418,6 +418,8 @@ public:
 
 	// Lua files registered for init of async env, pair of modname + path
 	std::vector<std::pair<std::string, std::string>> m_async_init_files;
+	// Identical but for mapgen env
+	std::vector<std::pair<std::string, std::string>> m_mapgen_init_files;
 
 	// Data transferred into other Lua envs at init time
 	std::unique_ptr<PackedValue> m_lua_globals_data;

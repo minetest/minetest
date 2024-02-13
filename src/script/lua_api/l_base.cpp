@@ -75,6 +75,11 @@ GUIEngine *ModApiBase::getGuiEngine(lua_State *L)
 }
 #endif
 
+EmergeThread *ModApiBase::getEmergeThread(lua_State *L)
+{
+	return getScriptApiBase(L)->getEmergeThread();
+}
+
 std::string ModApiBase::getCurrentModPath(lua_State *L)
 {
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);

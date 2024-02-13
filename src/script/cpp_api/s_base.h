@@ -61,13 +61,15 @@ enum class ScriptingType: u8 {
 	Async, // either mainmenu (client) or ingame (server)
 	Client,
 	MainMenu,
-	Server
+	Server,
+	Emerge
 };
 
 class Server;
 #ifndef SERVER
 class Client;
 #endif
+class EmergeThread;
 class IGameDef;
 class Environment;
 class GUIEngine;
@@ -158,6 +160,9 @@ protected:
 	void setGuiEngine(GUIEngine* guiengine) { m_guiengine = guiengine; }
 #endif
 
+	EmergeThread* getEmergeThread() { return m_emerge; }
+	void setEmergeThread(EmergeThread *emerge) { m_emerge = emerge; }
+
 	void objectrefGetOrCreate(lua_State *L, ServerActiveObject *cobj);
 
 	void pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason& reason);
@@ -180,5 +185,7 @@ private:
 #ifndef SERVER
 	GUIEngine      *m_guiengine = nullptr;
 #endif
+	EmergeThread   *m_emerge = nullptr;
+
 	ScriptingType  m_type;
 };
