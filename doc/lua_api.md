@@ -3496,6 +3496,10 @@ Some tags can enclose text, they open with `<tagname>` and close with `</tagname
 Tags can have attributes, in that case, attributes are in the opening tag in
 form of a key/value separated with equal signs. Attribute values should not be quoted.
 
+Attributes that describe lengths (font size and image dimensions) can be a regular
+number, which describes the size in pixels, or a number with the unit `em`, which
+describes the size in relation to the font size of the enclosing element.
+
 If you want to insert a literal greater-than sign or a backslash into the text,
 you must escape it by preceding it with a backslash.
 
@@ -5948,7 +5952,7 @@ Environment access
 * `minetest.add_entity(pos, name, [staticdata])`: Spawn Lua-defined entity at
   position.
     * Returns `ObjectRef`, or `nil` if failed
-    * Entities with `static_save = true` can be added also 
+    * Entities with `static_save = true` can be added also
       to unloaded and non-generated blocks.
 * `minetest.add_item(pos, item)`: Spawn item
     * Returns `ObjectRef`, or `nil` if failed
