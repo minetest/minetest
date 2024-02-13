@@ -2657,6 +2657,8 @@ Version History
 * Formspec version 7 (5.8.0):
   * style[]: Add focused state for buttons
   * Add field_enter_after_edit[] (experimental)
+* Formspec version 8 (5.9.0):
+  * hypertext[]: Allow `em` as a length unit
 
 Elements
 --------
