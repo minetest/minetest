@@ -4909,14 +4909,14 @@ generated chunk by the current mapgen.
 
 ### `gennotify`
 
-Returns a table mapping requested generation notification types to arrays of
-positions at which the corresponding generated structures are located within
-the current chunk.
-
-For this to contain anything you need to announce your interest in a specific
+Returns a table. You need to announce your interest in a specific
 field by calling `minetest.set_gen_notify()` *before* map generation happens.
 
-Possible fields of the returned table are:
+* key = string: generation notification type
+* value = list of positions (generally)
+   * Exceptions are denoted in the listing below.
+
+Available generation notification types:
 
 * `dungeon`: bottom center position of dungeon rooms
 * `temple`: as above but for desert temples (mgv6 only)
@@ -4924,9 +4924,10 @@ Possible fields of the returned table are:
 * `cave_end`
 * `large_cave_begin`
 * `large_cave_end`
-* `custom`: user-defined data
-  * not an array of positions. instead a table with
-  * key = user-defined ID, value = arbitrary Lua value
+* `custom`: data originating from [Mapgen environment] (Lua API)
+   * This is a table.
+   * key = user-defined ID (string)
+   * value = arbitrary Lua value
 * `decoration#id`: decorations
   * (see below)
 
@@ -5589,7 +5590,6 @@ Call these functions only at load time!
     * Called when a node is punched
 * `minetest.register_on_generated(function(minp, maxp, blockseed))`
     * Called after generating a piece of world between `minp` and `maxp`.
-      Modifying nodes inside the area is a bit faster than usual.
     * **Avoid using this** whenever possible. As with other callbacks this blocks
       the main thread and introduces noticable latency.
       Consider [Mapgen environment] for an alternative.
@@ -6005,11 +6005,9 @@ Environment access
 * `minetest.get_voxel_manip([pos1, pos2])`
     * Return voxel manipulator object.
     * Loads the manipulator from the map if positions are passed.
-* `minetest.set_gen_notify(flags, deco_ids, custom_ids)`
+* `minetest.set_gen_notify(flags, [deco_ids], [custom_ids])`
     * Set the types of on-generate notifications that should be collected.
-    * `flags` is a flag field with the available flags:
-        * dungeon, template, cave_begin, cave_end, large_cave_begin
-        * large_cave_end, decoration, custom
+    * `flags`: flag field, see [`gennotify`] for available generation notification types.
     * The following parameters are optional:
     * `deco_ids` is a list of IDs of decorations which notification
       is requested for.
@@ -6571,7 +6569,7 @@ a Lua environment. Its primary purpose is to allow mods to operate on newly
 generated parts of the map to e.g. generate custom structures.
 Internally it is referred to as "emerge environment".
 
-Refer to the above section for the usual disclaimer on what environment isolation entails.
+Refer to [Async environment] for the usual disclaimer on what environment isolation entails.
 
 The map generator threads, which also contained the above mentioned Lua environment,
 are initialized after all mods have been loaded by the server. After that the
