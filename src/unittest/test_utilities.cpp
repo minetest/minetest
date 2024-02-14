@@ -635,14 +635,14 @@ void TestUtilities::testBase64()
 
 void TestUtilities::testSanitizeDirName()
 {
-	UASSERT(sanitizeDirName("a", "~") == "a");
-	UASSERT(sanitizeDirName("  ", "~") == "__");
-	UASSERT(sanitizeDirName(" a ", "~") == "_a_");
-	UASSERT(sanitizeDirName("COM1", "~") == "~COM1");
-	UASSERT(sanitizeDirName("COM1", ":") == "_COM1");
-	UASSERT(sanitizeDirName("cOm\u00B2", "~") == "~cOm\u00B2");
-	UASSERT(sanitizeDirName("cOnIn$", "~") == "~cOnIn$");
-	UASSERT(sanitizeDirName(" cOnIn$ ", "~") == "_cOnIn$_");
+	UASSERTEQ(auto, sanitizeDirName("a", "~"), "a");
+	UASSERTEQ(auto, sanitizeDirName("  ", "~"), "__");
+	UASSERTEQ(auto, sanitizeDirName(" a ", "~"), "_a_");
+	UASSERTEQ(auto, sanitizeDirName("COM1", "~"), "~COM1");
+	UASSERTEQ(auto, sanitizeDirName("COM1", ":"), "_COM1");
+	UASSERTEQ(auto, sanitizeDirName("cOm\u00B2", "~"), "~cOm\u00B2");
+	UASSERTEQ(auto, sanitizeDirName("cOnIn$", "~"), "~cOnIn$");
+	UASSERTEQ(auto, sanitizeDirName(" cOnIn$ ", "~"), "_cOnIn$_");
 }
 
 template <typename F, typename C>

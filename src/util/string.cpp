@@ -852,10 +852,10 @@ static const std::array<std::wstring_view, 30> disallowed_dir_names = {
 /**
  * List of characters that are blacklisted from created directories
  */
-static const std::wstring disallowed_path_chars = L"<>:\"/\\|?*.";
+static const std::wstring_view disallowed_path_chars = L"<>:\"/\\|?*.";
 
 
-std::string sanitizeDirName(const std::string &str, const std::string &optional_prefix)
+std::string sanitizeDirName(std::string_view str, std::string_view optional_prefix)
 {
 	std::wstring safe_name = utf8_to_wide(str);
 

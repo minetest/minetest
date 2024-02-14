@@ -830,7 +830,7 @@ inline irr::core::stringw utf8_to_stringw(std::string_view input)
  *    and add a prefix to them
  * 2. Remove 'unsafe' characters from the name by replacing them with '_'
  */
-std::string sanitizeDirName(const std::string &str, const std::string &optional_prefix);
+std::string sanitizeDirName(std::string_view str, std::string_view optional_prefix);
 
 /**
  * Prints a sanitized version of a string without control characters.
