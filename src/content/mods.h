@@ -123,7 +123,7 @@ public:
 
 	bool contains(const std::string &name) const override;
 
-	bool setString(const std::string &name, const std::string &var) override;
+	bool setString(const std::string &name, std::string_view var) override;
 
 	const StringMap &getStrings(StringMap *place) const override;
 

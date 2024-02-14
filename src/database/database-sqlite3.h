@@ -64,10 +64,10 @@ protected:
 		sqlite3_vrfy(sqlite3_bind_double(s, iCol, val));
 	}
 
-	inline std::string sqlite_to_string(sqlite3_stmt *s, int iCol)
+	inline std::string_view sqlite_to_string(sqlite3_stmt *s, int iCol)
 	{
 		const char* text = reinterpret_cast<const char*>(sqlite3_column_text(s, iCol));
-		return std::string(text ? text : "");
+		return text ? std::string_view(text) : std::string_view();
 	}
 
 	inline s32 sqlite_to_int(sqlite3_stmt *s, int iCol)

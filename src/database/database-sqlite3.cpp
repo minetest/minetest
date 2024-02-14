@@ -258,7 +258,7 @@ bool MapDatabaseSQLite3::deleteBlock(const v3s16 &pos)
 	return good;
 }
 
-bool MapDatabaseSQLite3::saveBlock(const v3s16 &pos,std::string_view data)
+bool MapDatabaseSQLite3::saveBlock(const v3s16 &pos, std::string_view data)
 {
 	verifyDatabase();
 
@@ -543,7 +543,7 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 	str_to_sqlite(m_stmt_player_load_inventory, 1, player->getName());
 	while (sqlite3_step(m_stmt_player_load_inventory) == SQLITE_ROW) {
 		InventoryList *invList = player->inventory.addList(
-			sqlite_to_string(m_stmt_player_load_inventory, 2),
+			std::string(sqlite_to_string(m_stmt_player_load_inventory, 2)),
 			sqlite_to_uint(m_stmt_player_load_inventory, 3));
 		invList->setWidth(sqlite_to_uint(m_stmt_player_load_inventory, 1));
 
@@ -552,8 +552,8 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 		str_to_sqlite(m_stmt_player_load_inventory_items, 1, player->getName());
 		int_to_sqlite(m_stmt_player_load_inventory_items, 2, invId);
 		while (sqlite3_step(m_stmt_player_load_inventory_items) == SQLITE_ROW) {
-			const std::string itemStr = sqlite_to_string(m_stmt_player_load_inventory_items, 1);
-			if (itemStr.length() > 0) {
+			const std::string itemStr(sqlite_to_string(m_stmt_player_load_inventory_items, 1));
+			if (!itemStr.empty()) {
 				ItemStack stack;
 				stack.deSerialize(itemStr);
 				invList->changeItem(sqlite_to_uint(m_stmt_player_load_inventory_items, 0), stack);
@@ -566,8 +566,8 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 
 	str_to_sqlite(m_stmt_player_metadata_load, 1, sao->getPlayer()->getName());
 	while (sqlite3_step(m_stmt_player_metadata_load) == SQLITE_ROW) {
-		std::string attr = sqlite_to_string(m_stmt_player_metadata_load, 0);
-		std::string value = sqlite_to_string(m_stmt_player_metadata_load, 1);
+		std::string attr(sqlite_to_string(m_stmt_player_metadata_load, 0));
+		auto value = sqlite_to_string(m_stmt_player_metadata_load, 1);
 
 		sao->getMeta().setString(attr, value);
 	}
@@ -592,7 +592,7 @@ void PlayerDatabaseSQLite3::listPlayers(std::vector<std::string> &res)
 	verifyDatabase();
 
 	while (sqlite3_step(m_stmt_player_list) == SQLITE_ROW)
-		res.push_back(sqlite_to_string(m_stmt_player_list, 0));
+		res.emplace_back(sqlite_to_string(m_stmt_player_list, 0));
 
 	sqlite3_reset(m_stmt_player_list);
 }
@@ -741,7 +741,7 @@ void AuthDatabaseSQLite3::listNames(std::vector<std::string> &res)
 	verifyDatabase();
 
 	while (sqlite3_step(m_stmt_list_names) == SQLITE_ROW) {
-		res.push_back(sqlite_to_string(m_stmt_list_names, 0));
+		res.emplace_back(sqlite_to_string(m_stmt_list_names, 0));
 	}
 	sqlite3_reset(m_stmt_list_names);
 }
