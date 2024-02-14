@@ -450,6 +450,17 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 		lua_pop(L, 1);
 	}
 
+	// try to preserve metatable information
+	if (lua_getmetatable(L, idx)) {
+		lua_getglobal(L, "core");
+		lua_getfield(L, -1, "registered_async_metatables");
+		lua_pushvalue(L, -3);
+		lua_gettable(L, -2);
+		if (lua_isstring(L, -1))
+			rtable->sdata2 = std::string(lua_tostring(L, -1));
+		lua_pop(L, 4);
+	}
+
 	// exactly the table should be left on stack
 	assert(vidx == vi_table + 1);
 	return rtable;
@@ -530,6 +541,16 @@ void script_unpack(lua_State *L, PackedValue *pv)
 				break;
 			case LUA_TTABLE:
 				lua_createtable(L, i.uidata1, i.uidata2);
+				lua_getglobal(L, "core");
+				lua_getfield(L, -1, "registered_async_metatables");
+				if (lua_istable(L, -1)) {
+					lua_getfield(L, -1, i.sdata2.c_str());
+					if (lua_istable(L, -1))
+						lua_setmetatable(L, -4);
+					else
+						lua_pop(L, 1);
+				}
+				lua_pop(L, 2);
 				break;
 			case LUA_TFUNCTION:
 				luaL_loadbuffer(L, i.sdata.data(), i.sdata.size(), nullptr);

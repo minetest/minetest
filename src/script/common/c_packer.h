@@ -72,6 +72,7 @@ struct PackedInstr
 		- userdata: name in registry
 	*/
 	std::string sdata;
+	std::string sdata2; // table: name of the metatable
 
 	PackedInstr() : type(0), set_into(0), keep_ref(false), pop(false) {}
 };

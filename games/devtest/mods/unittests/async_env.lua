@@ -166,3 +166,17 @@ local function test_userdata_passing2(cb, _, pos)
 	end, vm, pos)
 end
 unittests.register("test_userdata_passing2", test_userdata_passing2, {map=true, async=true})
+
+local function test_vector_preserve(cb)
+	local vec = vector.new(1, 2, 3)
+	core.handle_async(function(x)
+		return x
+	end, function(ret)
+		if ret == vec then
+			cb()
+		else
+			return cb("Vector value mismatch")
+		end
+	end, vec)
+end
+unittests.register("test_async_vector", test_vector_preserve, {async=true})
