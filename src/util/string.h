@@ -205,7 +205,7 @@ inline bool str_equal(const std::basic_string<T> &s1,
  * @return true if the str begins with prefix
  */
 template <typename T>
-inline bool str_starts_with(const std::basic_string<T> &str,
+inline bool str_starts_with(std::basic_string_view<T> str,
 		std::basic_string_view<T> prefix,
 		bool case_insensitive = false)
 {
@@ -227,6 +227,34 @@ inline bool str_starts_with(const std::basic_string<T> &str,
 		const std::basic_string<T> &prefix,
 		bool case_insensitive = false)
 {
+	return str_starts_with(std::basic_string_view<T>(str), std::basic_string_view<T>(prefix),
+			case_insensitive);
+}
+
+template <typename T>
+inline bool str_starts_with(std::basic_string_view<T>str,
+		const std::basic_string<T> &prefix,
+		bool case_insensitive = false)
+{
+	return str_starts_with(str, std::basic_string_view<T>(prefix),
+			case_insensitive);
+}
+
+template <typename T>
+inline bool str_starts_with(const std::basic_string<T> &str,
+		std::basic_string_view<T> prefix,
+		bool case_insensitive = false)
+{
+	return str_starts_with(std::basic_string_view<T>(str), prefix,
+			case_insensitive);
+}
+
+// to disambiguate the overload with char pointers
+template <typename T>
+inline bool str_starts_with(std::basic_string_view<T> str,
+		const T *prefix,
+		bool case_insensitive = false)
+{
 	return str_starts_with(str, std::basic_string_view<T>(prefix),
 			case_insensitive);
 }
@@ -236,7 +264,7 @@ inline bool str_starts_with(const std::basic_string<T> &str,
 		const T *prefix,
 		bool case_insensitive = false)
 {
-	return str_starts_with(str, std::basic_string_view<T>(prefix),
+	return str_starts_with(std::basic_string_view<T>(str), std::basic_string_view<T>(prefix),
 			case_insensitive);
 }
 
@@ -252,7 +280,7 @@ inline bool str_starts_with(const std::basic_string<T> &str,
  * @return true if the str begins with suffix
  */
 template <typename T>
-inline bool str_ends_with(const std::basic_string<T> &str,
+inline bool str_ends_with(std::basic_string_view<T> str,
 		std::basic_string_view<T> suffix,
 		bool case_insensitive = false)
 {
@@ -275,6 +303,34 @@ inline bool str_ends_with(const std::basic_string<T> &str,
 		const std::basic_string<T> &suffix,
 		bool case_insensitive = false)
 {
+	return str_ends_with(std::basic_string_view<T>(str), std::basic_string_view<T>(suffix),
+			case_insensitive);
+}
+
+template <typename T>
+inline bool str_ends_with(std::basic_string_view<T>str,
+		const std::basic_string<T> &suffix,
+		bool case_insensitive = false)
+{
+	return str_ends_with(str, std::basic_string_view<T>(suffix),
+			case_insensitive);
+}
+
+template <typename T>
+inline bool str_ends_with(const std::basic_string<T> &str,
+		std::basic_string_view<T> suffix,
+		bool case_insensitive = false)
+{
+	return str_ends_with(std::basic_string_view<T>(str), suffix,
+			case_insensitive);
+}
+
+// to disambiguate the overload with char pointers
+template <typename T>
+inline bool str_ends_with(std::basic_string_view<T> str,
+		const T *suffix,
+		bool case_insensitive = false)
+{
 	return str_ends_with(str, std::basic_string_view<T>(suffix),
 			case_insensitive);
 }
@@ -284,7 +340,7 @@ inline bool str_ends_with(const std::basic_string<T> &str,
 		const T *suffix,
 		bool case_insensitive = false)
 {
-	return str_ends_with(str, std::basic_string_view<T>(suffix),
+	return str_ends_with(std::basic_string_view<T>(str), std::basic_string_view<T>(suffix),
 			case_insensitive);
 }
 
