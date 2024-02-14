@@ -434,7 +434,7 @@ bool ModStorageDatabaseFiles::setModEntry(const std::string &modname,
 	if (!meta)
 		return false;
 
-	Json::Value value_v(value.begin(), value.end());
+	Json::Value value_v(value.data(), value.data() + value.size());
 	(*meta)[key] = std::move(value_v);
 	m_modified.insert(modname);
 
