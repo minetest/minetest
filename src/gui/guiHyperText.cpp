@@ -59,7 +59,7 @@ static bool check_length(const std::string &str)
 ParsedText::LengthValue::LengthValue(const std::string &str)
 {
 	char *unitptr = nullptr;
-	this->size = strtod(str.c_str(), &unitptr);
+	this->size = std::strtod(str.c_str(), &unitptr);
 
 	if (this->size <= 0)
 		this->size = 0;
@@ -105,7 +105,7 @@ void ParsedText::Element::setStyle(StyleList &style)
 	if (parseColorString(style["hovercolor"], color, false))
 		this->hovercolor = color;
 
-	this->font_size = atoi(style["fontsize"].c_str());
+	this->font_size = std::atoi(style["fontsize"].c_str());
 
 	FontMode font_mode = FM_Standard;
 	if (style["fontstyle"] == "mono")
