@@ -258,7 +258,7 @@ bool MapDatabaseSQLite3::deleteBlock(const v3s16 &pos)
 	return good;
 }
 
-bool MapDatabaseSQLite3::saveBlock(const v3s16 &pos, const std::string &data)
+bool MapDatabaseSQLite3::saveBlock(const v3s16 &pos,std::string_view data)
 {
 	verifyDatabase();
 
@@ -881,7 +881,7 @@ bool ModStorageDatabaseSQLite3::hasModEntry(const std::string &modname,
 }
 
 bool ModStorageDatabaseSQLite3::setModEntry(const std::string &modname,
-	const std::string &key, const std::string &value)
+	const std::string &key, std::string_view value)
 {
 	verifyDatabase();
 

@@ -91,12 +91,12 @@ void Database_Redis::endSave() {
 	freeReplyObject(reply);
 }
 
-bool Database_Redis::saveBlock(const v3s16 &pos, const std::string &data)
+bool Database_Redis::saveBlock(const v3s16 &pos, std::string_view data)
 {
 	std::string tmp = i64tos(getBlockAsInteger(pos));
 
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "HSET %s %s %b",
-			hash.c_str(), tmp.c_str(), data.c_str(), data.size()));
+			hash.c_str(), tmp.c_str(), data.data(), data.size()));
 	if (!reply) {
 		warningstream << "saveBlock: redis command 'HSET' failed on "
 			"block " << pos << ": " << ctx->errstr << std::endl;

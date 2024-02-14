@@ -25,7 +25,7 @@ Dummy database class
 #include "remoteplayer.h"
 
 
-bool Database_Dummy::saveBlock(const v3s16 &pos, const std::string &data)
+bool Database_Dummy::saveBlock(const v3s16 &pos, std::string_view data)
 {
 	m_database[getBlockAsInteger(pos)] = data;
 	return true;
@@ -128,11 +128,12 @@ bool Database_Dummy::hasModEntry(const std::string &modname, const std::string &
 }
 
 bool Database_Dummy::setModEntry(const std::string &modname,
-	const std::string &key, const std::string &value)
+	const std::string &key, std::string_view value)
 {
 	auto mod_pair = m_mod_storage_database.find(modname);
 	if (mod_pair == m_mod_storage_database.end()) {
-		m_mod_storage_database[modname] = StringMap({{key, value}});
+		auto &map = m_mod_storage_database[modname];
+		map[key] = value;
 	} else {
 		mod_pair->second[key] = value;
 	}

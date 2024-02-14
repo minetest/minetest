@@ -353,7 +353,7 @@ int ModApiUtil::l_decompress(lua_State *L)
 
 	LuaCompressMethod method = get_compress_method(L, 2);
 
-	// FIXME: zero copy
+	// FIXME: zero copy possible in c++26 or with custom rdbuf
 	std::istringstream is(std::string(data), std::ios_base::binary);
 	std::ostringstream os(std::ios_base::binary);
 

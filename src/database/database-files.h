@@ -84,7 +84,7 @@ public:
 		const std::string &key, std::string *value);
 	virtual bool hasModEntry(const std::string &modname, const std::string &key);
 	virtual bool setModEntry(const std::string &modname,
-		const std::string &key, const std::string &value);
+		const std::string &key, std::string_view value);
 	virtual bool removeModEntry(const std::string &modname, const std::string &key);
 	virtual bool removeModEntries(const std::string &modname);
 	virtual void listMods(std::vector<std::string> *res);

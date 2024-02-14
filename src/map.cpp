@@ -1798,6 +1798,7 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db, int compression_leve
 	o.write((char*) &version, 1);
 	block->serialize(o, version, true, compression_level);
 
+	// FIXME: zero copy possible in c++20 or with custom rdbuf
 	bool ret = db->saveBlock(p3d, o.str());
 	if (ret) {
 		// We just wrote it to the disk so clear modified flag

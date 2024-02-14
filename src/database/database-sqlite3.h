@@ -44,14 +44,9 @@ protected:
 	void verifyDatabase();
 
 	// Convertors
-	inline void str_to_sqlite(sqlite3_stmt *s, int iCol, const std::string &str) const
+	inline void str_to_sqlite(sqlite3_stmt *s, int iCol, std::string_view str) const
 	{
-		sqlite3_vrfy(sqlite3_bind_text(s, iCol, str.c_str(), str.size(), NULL));
-	}
-
-	inline void str_to_sqlite(sqlite3_stmt *s, int iCol, const char *str) const
-	{
-		sqlite3_vrfy(sqlite3_bind_text(s, iCol, str, strlen(str), NULL));
+		sqlite3_vrfy(sqlite3_bind_text(s, iCol, str.data(), str.size(), NULL));
 	}
 
 	inline void int_to_sqlite(sqlite3_stmt *s, int iCol, int val) const
@@ -146,7 +141,7 @@ public:
 	MapDatabaseSQLite3(const std::string &savedir);
 	virtual ~MapDatabaseSQLite3();
 
-	bool saveBlock(const v3s16 &pos, const std::string &data);
+	bool saveBlock(const v3s16 &pos, std::string_view data);
 	void loadBlock(const v3s16 &pos, std::string *block);
 	bool deleteBlock(const v3s16 &pos);
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
@@ -245,7 +240,7 @@ public:
 		const std::string &key, std::string *value);
 	virtual bool hasModEntry(const std::string &modname, const std::string &key);
 	virtual bool setModEntry(const std::string &modname,
-		const std::string &key, const std::string &value);
+		const std::string &key,std::string_view value);
 	virtual bool removeModEntry(const std::string &modname, const std::string &key);
 	virtual bool removeModEntries(const std::string &modname);
 	virtual void listMods(std::vector<std::string> *res);
