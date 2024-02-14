@@ -166,6 +166,7 @@ inline bool str_equal(std::basic_string_view<T> s1,
 // For some reason an std::string will not implicitly get converted
 // to an std::basic_string_view<char> in the template case above, so we need
 // these three wrappers. It works if you take out the template parameters.
+// see also <https://stackoverflow.com/questions/68380141/>
 template <typename T>
 inline bool str_equal(const std::basic_string<T> &s1,
 		const std::basic_string<T> &s2,
@@ -176,7 +177,7 @@ inline bool str_equal(const std::basic_string<T> &s1,
 }
 
 template <typename T>
-inline bool str_equal(std::basic_string_view<T>s1,
+inline bool str_equal(std::basic_string_view<T> s1,
 		const std::basic_string<T> &s2,
 		bool case_insensitive = false)
 {
@@ -249,7 +250,7 @@ inline bool str_starts_with(const std::basic_string<T> &str,
 			case_insensitive);
 }
 
-// to disambiguate the overload with char pointers
+// (the same but with char pointers, only for the prefix argument)
 template <typename T>
 inline bool str_starts_with(std::basic_string_view<T> str,
 		const T *prefix,
@@ -325,7 +326,7 @@ inline bool str_ends_with(const std::basic_string<T> &str,
 			case_insensitive);
 }
 
-// to disambiguate the overload with char pointers
+// (the same but with char pointers, only for the suffix argument)
 template <typename T>
 inline bool str_ends_with(std::basic_string_view<T> str,
 		const T *suffix,
