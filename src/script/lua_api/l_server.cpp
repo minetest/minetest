@@ -440,7 +440,11 @@ int ModApiServer::l_show_formspec(lua_State *L)
 int ModApiServer::l_get_current_modname(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	std::string s = ScriptApiBase::getCurrentModNameInsecure(L);
+	if (!s.empty())
+		lua_pushstring(L, s.c_str());
+	else
+		lua_pushnil(L);
 	return 1;
 }
 
@@ -656,11 +660,9 @@ int ModApiServer::l_register_async_dofile(lua_State *L)
 	std::string path = readParam<std::string>(L, 1);
 	CHECK_SECURE_PATH(L, path.c_str(), false);
 
-	// Find currently running mod name (only at init time)
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	if (!lua_isstring(L, -1))
-		return 0;
-	std::string modname = readParam<std::string>(L, -1);
+	std::string modname = ScriptApiBase::getCurrentModNameInsecure(L);
+	if (modname.empty())
+		throw ModError("cannot determine mod name");
 
 	getServer(L)->m_async_init_files.emplace_back(modname, path);
 	lua_pushboolean(L, true);
@@ -675,11 +677,9 @@ int ModApiServer::l_register_mapgen_script(lua_State *L)
 	std::string path = readParam<std::string>(L, 1);
 	CHECK_SECURE_PATH(L, path.c_str(), false);
 
-	// Find currently running mod name (only at init time)
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	if (!lua_isstring(L, -1))
-		return 0;
-	std::string modname = readParam<std::string>(L, -1);
+	std::string modname = ScriptApiBase::getCurrentModNameInsecure(L);
+	if (modname.empty())
+		throw ModError("cannot determine mod name");
 
 	getServer(L)->m_mapgen_init_files.emplace_back(modname, path);
 	lua_pushboolean(L, true);

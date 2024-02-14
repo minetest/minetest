@@ -110,13 +110,29 @@ public:
 	Client* getClient();
 #endif
 
-	// IMPORTANT: these cannot be used for any security-related uses, they exist
-	// only to enrich error messages
+	// IMPORTANT: These cannot be used for any security-related uses, they exist
+	// only to enrich error messages.
 	const std::string &getOrigin() { return m_last_run_mod; }
 	void setOriginDirect(const char *origin);
 	void setOriginFromTableRaw(int index, const char *fxn);
 
+	// Returns the currently running mod, only during init time.
+	// The reason this is "insecure" is that mods can mess with each others code,
+	// so the boundary of who is responsible is fuzzy.
+	// Note: checking this against BUILTIN_MOD_NAME is always safe (not spoofable).
+	// returns "" on error
+	static std::string getCurrentModNameInsecure(lua_State *L);
+	// Returns the currently running mod, only during init time.
+	// This checks the Lua stack to only permit direct calls in the file
+	// scope. That way it is assured that it's really the mod it claims to be.
+	// returns "" on error
+	static std::string getCurrentModName(lua_State *L);
+
+#ifdef SERVER
+	inline void clientOpenLibs(lua_State *L) { assert(false); }
+#else
 	void clientOpenLibs(lua_State *L);
+#endif
 
 	// Check things that should be set by the builtin mod.
 	void checkSetByBuiltin();
