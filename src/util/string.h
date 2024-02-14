@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstring>
 #include <vector>
 #include <limits>
-#include <map>
 #include <sstream>
 #include <iomanip>
 #include <cctype>

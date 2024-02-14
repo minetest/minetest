@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/basic_macros.h"
 #include <string>
-#include <list>
 #include <set>
+#include <map>
 #include <mutex>
 
 class Settings;
@@ -276,9 +276,7 @@ private:
 	// For sane mutex locking when iterating
 	friend class LuaSettings;
 
-	void updateNoLock(const Settings &other);
 	void clearNoLock();
-	void clearDefaultsNoLock();
 
 	void doCallbacks(const std::string &name) const;
 
