@@ -135,6 +135,17 @@ inline std::string_view removeStringEnd(std::string_view str,
 }
 
 
+#define VARIANT_TEMPLATE typename T,
+#define VARIANT_CAST_TO std::basic_string_view<T>
+#define MAKE_VARIANT(_name, _t0, _t1) \
+	template <VARIANT_TEMPLATE typename... Args> \
+	inline auto _name(_t0 arg1, _t1 arg2, Args... args) \
+	{ \
+		return (_name)(VARIANT_CAST_TO(arg1), VARIANT_CAST_TO(arg2), \
+			std::forward<Args>(args)...); \
+	}
+
+
 /**
  * Check two strings for equivalence.  If \p case_insensitive is true
  * then the case of the strings is ignored (default is false).
@@ -166,32 +177,11 @@ inline bool str_equal(std::basic_string_view<T> s1,
 // to an std::basic_string_view<char> in the template case above, so we need
 // these three wrappers. It works if you take out the template parameters.
 // see also <https://stackoverflow.com/questions/68380141/>
-template <typename T>
-inline bool str_equal(const std::basic_string<T> &s1,
-		const std::basic_string<T> &s2,
-		bool case_insensitive = false)
-{
-	return str_equal(std::basic_string_view<T>(s1), std::basic_string_view<T>(s2),
-			case_insensitive);
-}
+MAKE_VARIANT(str_equal, const std::basic_string<T> &, const std::basic_string<T> &)
 
-template <typename T>
-inline bool str_equal(std::basic_string_view<T> s1,
-		const std::basic_string<T> &s2,
-		bool case_insensitive = false)
-{
-	return str_equal(s1, std::basic_string_view<T>(s2),
-			case_insensitive);
-}
+MAKE_VARIANT(str_equal, std::basic_string_view<T>, const std::basic_string<T> &)
 
-template <typename T>
-inline bool str_equal(const std::basic_string<T> &s1,
-		std::basic_string_view<T> s2,
-		bool case_insensitive = false)
-{
-	return str_equal(std::basic_string_view<T>(s1), s2,
-			case_insensitive);
-}
+MAKE_VARIANT(str_equal, const std::basic_string<T> &, std::basic_string_view<T>)
 
 
 /**
@@ -222,51 +212,16 @@ inline bool str_starts_with(std::basic_string_view<T> str,
 }
 
 // (same conversion issue here)
-template <typename T>
-inline bool str_starts_with(const std::basic_string<T> &str,
-		const std::basic_string<T> &prefix,
-		bool case_insensitive = false)
-{
-	return str_starts_with(std::basic_string_view<T>(str), std::basic_string_view<T>(prefix),
-			case_insensitive);
-}
+MAKE_VARIANT(str_starts_with, const std::basic_string<T> &, const std::basic_string<T> &)
 
-template <typename T>
-inline bool str_starts_with(std::basic_string_view<T>str,
-		const std::basic_string<T> &prefix,
-		bool case_insensitive = false)
-{
-	return str_starts_with(str, std::basic_string_view<T>(prefix),
-			case_insensitive);
-}
+MAKE_VARIANT(str_starts_with, std::basic_string_view<T>, const std::basic_string<T> &)
 
-template <typename T>
-inline bool str_starts_with(const std::basic_string<T> &str,
-		std::basic_string_view<T> prefix,
-		bool case_insensitive = false)
-{
-	return str_starts_with(std::basic_string_view<T>(str), prefix,
-			case_insensitive);
-}
+MAKE_VARIANT(str_starts_with, const std::basic_string<T> &, std::basic_string_view<T>)
 
 // (the same but with char pointers, only for the prefix argument)
-template <typename T>
-inline bool str_starts_with(std::basic_string_view<T> str,
-		const T *prefix,
-		bool case_insensitive = false)
-{
-	return str_starts_with(str, std::basic_string_view<T>(prefix),
-			case_insensitive);
-}
+MAKE_VARIANT(str_starts_with, const std::basic_string<T> &, const T*)
 
-template <typename T>
-inline bool str_starts_with(const std::basic_string<T> &str,
-		const T *prefix,
-		bool case_insensitive = false)
-{
-	return str_starts_with(std::basic_string_view<T>(str), std::basic_string_view<T>(prefix),
-			case_insensitive);
-}
+MAKE_VARIANT(str_starts_with, std::basic_string_view<T>, const T*)
 
 
 /**
@@ -298,51 +253,21 @@ inline bool str_ends_with(std::basic_string_view<T> str,
 }
 
 // (same conversion issue here)
-template <typename T>
-inline bool str_ends_with(const std::basic_string<T> &str,
-		const std::basic_string<T> &suffix,
-		bool case_insensitive = false)
-{
-	return str_ends_with(std::basic_string_view<T>(str), std::basic_string_view<T>(suffix),
-			case_insensitive);
-}
+MAKE_VARIANT(str_ends_with, const std::basic_string<T> &, const std::basic_string<T> &)
 
-template <typename T>
-inline bool str_ends_with(std::basic_string_view<T>str,
-		const std::basic_string<T> &suffix,
-		bool case_insensitive = false)
-{
-	return str_ends_with(str, std::basic_string_view<T>(suffix),
-			case_insensitive);
-}
+MAKE_VARIANT(str_ends_with, std::basic_string_view<T>, const std::basic_string<T> &)
 
-template <typename T>
-inline bool str_ends_with(const std::basic_string<T> &str,
-		std::basic_string_view<T> suffix,
-		bool case_insensitive = false)
-{
-	return str_ends_with(std::basic_string_view<T>(str), suffix,
-			case_insensitive);
-}
+MAKE_VARIANT(str_ends_with, const std::basic_string<T> &, std::basic_string_view<T>)
 
 // (the same but with char pointers, only for the suffix argument)
-template <typename T>
-inline bool str_ends_with(std::basic_string_view<T> str,
-		const T *suffix,
-		bool case_insensitive = false)
-{
-	return str_ends_with(str, std::basic_string_view<T>(suffix),
-			case_insensitive);
-}
+MAKE_VARIANT(str_ends_with, const std::basic_string<T> &, const T*)
 
-template <typename T>
-inline bool str_ends_with(const std::basic_string<T> &str,
-		const T *suffix,
-		bool case_insensitive = false)
-{
-	return str_ends_with(std::basic_string_view<T>(str), std::basic_string_view<T>(suffix),
-			case_insensitive);
-}
+MAKE_VARIANT(str_ends_with, std::basic_string_view<T>, const T*)
+
+
+#undef VARIANT_TEMPLATE
+#undef VARIANT_CAST_TO
+#undef MAKE_VARIANT
 
 
 /**
