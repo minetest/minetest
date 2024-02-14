@@ -6572,7 +6572,6 @@ Class instances that can be transferred between environments:
 Functions:
 * Standalone helpers such as logging, filesystem, encoding,
   hashing or compression APIs
-* `minetest.request_insecure_environment` (same restrictions apply)
 
 Variables:
 * `minetest.settings`
@@ -6641,7 +6640,6 @@ Classes:
 Functions:
 * Standalone helpers such as logging, filesystem, encoding,
   hashing or compression APIs
-* `minetest.request_insecure_environment` (same restrictions apply)
 * `minetest.get_biome_id`, `get_biome_name`, `get_heat`, `get_humidity`,
   `get_biome_data`, `get_mapgen_object`, `get_mapgen_params`, `get_mapgen_edges`,
   `get_mapgen_setting`, `get_noiseparams`, `get_decoration_id` and more
