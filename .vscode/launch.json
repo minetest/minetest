@@ -45,6 +45,18 @@
                 "127.0.0.1"
             ],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "attach",
+            "name": "lldb attach",
+            "pid": "${command:pickMyProcess}"
+        },
+        {
+            "type": "cppdbg",
+            "request": "attach",
+            "name": "cppdbg attach",
+            "program": "/home/garymm/src/Astera-org/minetest/output/bld/rattler-build_minetest_1708046090/work/test/run/bin/minetest"
         }
     ]
 }

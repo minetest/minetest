@@ -16,7 +16,11 @@ cmake -B build \
 	-DCMAKE_BUILD_TYPE="Release" \
 	-DBUILD_SERVER=FALSE \
 	-DENABLE_GETTEXT=TRUE \
-    -DENABLE_SOUND=FALSE
+    -DENABLE_SOUND=FALSE \
+    -DBUILD_UNITTESTS=FALSE \
+    -DINSTALL_DEVTEST=TRUE
 
 cmake --build build
 cmake --install build
+
+python -m pip install ./python -v

@@ -1,0 +1,83 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+# https://prefix-dev.github.io/rattler-build/latest/recipe_file/
+context: {}
+package:
+  name: minetest
+  version: ${{ env.get_default("GIT_DESCRIBE_TAG", env.get_default("GIT_FULL_HASH", "0")) }}
+
+source:
+  path: ../
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - ${{ compiler("cxx") }}
+    - cmake
+    - ninja
+    # All of the below libraries (not compilers or build tools) seem
+    # like they belong in host conceptually, but CMake can't
+    # find them that way for some reason. I think it doesn't really
+    # matter since these aren't available as regular conda packages
+    # so we'd ask the user to install them system-wide anyways.
+    - if: linux
+      then:
+        - ${{ cdt("mesa-libgl-devel") }}
+  host:
+    # minetest deps
+    - capnproto =0.10.2 # pycapnp currently requires this. https://github.com/conda-forge/pycapnp-feedstock/pull/33
+    - freetype
+    - gmp
+    - jsoncpp
+    - libcurl
+    - libiconv
+    - libjpeg-turbo
+    - libpng
+    - libsqlite
+    - luajit-openresty
+    - ncurses
+    - pkg-config
+    - sdl2
+    - zeromq
+    - zlib
+    - zmqpp
+    - zstd
+    # python deps
+    - pip
+    - python =3.11
+  run:
+    # I think needed because their recipe doesn't specify run_exports.
+    # Otherwise this should be inferred from presence in host.
+    - luajit-openresty
+    # python deps
+    - gymnasium
+    - numpy =1.26
+    - pycapnp >=1.1.1 # need 4b75fe3b5ea97a80a0d349a42c143c989fe85d5e
+    - pyzmq
+
+about:
+  repository: https://github.com/Astera-org/minetest
+  summary: 'Minetest + gymnasium interface'
+
+tests:
+  # We should probably run minetest --run-unittests, but last time I tried
+  # it failed in a way that seemed pretty unrelated to anything I had changed.
+  - package_contents:
+      bin:
+        - minetest
+  - python:
+      imports:
+        - minetester
+  - script:
+    - cd python && pytest --timeout=60 -v .
+    files:
+      source:
+        - python/tests/
+        - python/pyproject.toml
+    requirements:
+      run:
+        - pillow
+        - pytest
+        - pytest-timeout
+

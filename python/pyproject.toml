@@ -1,3 +1,9 @@
+[project]
+name = "minetester" # TODO: rename to minetest
+version = "0.1.0"
+description = "A Gym environment for minetest"
+dependencies = ["gymnasium", "numpy", "pycapnp", "pyzmq"]
+
 [tool.ruff]
 # 1. Enable flake8-bugbear (`B`) rules, in addition to the defaults.
 select = [
@@ -16,8 +22,18 @@ select = [
 ]
 # 2. Avoid enforcing line-length violations (`E501`)
 ignore = ["E501"]
+
 [tool.pytest.ini_options]
 filterwarnings = [
-    'ignore::DeprecationWarning:pygame.pkgdata.*',
-    'ignore:.*PYGAME_DETECT_AVX2=1.*:RuntimeWarning',
+  'ignore::DeprecationWarning:pygame.pkgdata.*',
+  'ignore:.*PYGAME_DETECT_AVX2=1.*:RuntimeWarning',
 ]
+
+[tool.setuptools]
+packages = ["minetester", "minetester.proto"]
+
+[tool.setuptools.package-data]
+"minetester.proto" = ["*.capnp"]
+
+[build-system]
+requires = ["setuptools"]

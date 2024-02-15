@@ -34,14 +34,14 @@ dependencies:
   # python deps
   - gymnasium
   - numpy
-  - pillow
+  - pillow # test only
   - pip
   - pip:
     - -e python
   - pycapnp
   - pygame
-  - pytest
-  - pytest-repeat # useful for debugging flakiness
+  - pytest # test only
+  - pytest-repeat # test only
   - python=3.11
   - pyzmq
   # others

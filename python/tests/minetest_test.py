@@ -27,21 +27,23 @@ def world_dir():
 
 def test_minetest_basic(world_dir, caplog):
     caplog.set_level(logging.DEBUG)
-    is_mac = sys.platform == "darwin"
-    repo_root = Path(__file__).parent.parent.parent
-    if is_mac:
-        minetest_executable = (
-            repo_root
-            / "build"
-            / "macos"
-            / "minetest.app"
-            / "Contents"
-            / "MacOS"
-            / "minetest"
-        )
-    else:
-        minetest_executable = repo_root / "bin" / "minetest"
-    assert minetest_executable.exists()
+    minetest_executable = shutil.which("minetest")
+    if not minetest_executable:
+        is_mac = sys.platform == "darwin"
+        repo_root = Path(__file__).parent.parent.parent
+        if is_mac:
+            minetest_executable = (
+                repo_root
+                / "build"
+                / "macos"
+                / "minetest.app"
+                / "Contents"
+                / "MacOS"
+                / "minetest"
+            )
+        else:
+            minetest_executable = repo_root / "bin" / "minetest"
+        assert minetest_executable.exists()
 
     artifact_dir = tempfile.mkdtemp()
     env = gym.make(
@@ -52,6 +54,7 @@ def test_minetest_basic(world_dir, caplog):
         display_size=(223, 111),
         world_dir=world_dir,
         headless=True,
+        verbose_logging=True,
     )
     env.reset()
 
