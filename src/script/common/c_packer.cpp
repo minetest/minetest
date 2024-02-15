@@ -99,6 +99,23 @@ static inline bool suitable_key(lua_State *L, int idx)
 	}
 }
 
+// get core.known_metatables for indexing
+// returns true if the tables exists (which is pushed onto the stack),
+// false otherwise (nothing is pushed onto the stack)
+static inline bool get_known_lua_metatables(lua_State *L)
+{
+	lua_getglobal(L, "core");
+	if (lua_istable(L, -1)) {
+		lua_getfield(L, -1, "known_metatables");
+		lua_insert(L, -2);
+	}
+	lua_pop(L, 1); // pop core
+	if (lua_istable(L, -1))
+		return true;
+	lua_pop(L, 2); // pop core.known_metatables as it is not useful here
+	return false;
+}
+
 namespace {
 	// checks if you left any values on the stack, for debugging
 	class StackChecker {
@@ -451,14 +468,14 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 	}
 
 	// try to preserve metatable information
-	if (lua_getmetatable(L, idx)) {
-		lua_getglobal(L, "core");
-		lua_getfield(L, -1, "known_metatables");
-		lua_pushvalue(L, -3);
+	if (lua_getmetatable(L, idx) && get_known_lua_metatables(L)) {
+		lua_insert(L, -2);
 		lua_gettable(L, -2);
-		if (lua_isstring(L, -1))
-			rtable->sdata2 = std::string(lua_tostring(L, -1));
-		lua_pop(L, 4);
+		if (lua_isstring(L, -1)) {
+			auto r = emplace(pv, INSTR_SETMETATABLE);
+			r->sdata = std::string(lua_tostring(L, -1));
+		}
+		lua_pop(L, 2);
 	}
 
 	// exactly the table should be left on stack
@@ -525,6 +542,16 @@ void script_unpack(lua_State *L, PackedValue *pv)
 				lua_pushinteger(L, i.sidata1);
 				lua_rawget(L, top);
 				break;
+			case INSTR_SETMETATABLE:
+				if (get_known_lua_metatables(L)) {
+					lua_getfield(L, -1, i.sdata.c_str());
+					if (lua_istable(L, -1))
+						lua_setmetatable(L, -3);
+					else
+						lua_pop(L, 1);
+					lua_pop(L, 1);
+				}
+				break;
 
 			/* Lua types */
 			case LUA_TNIL:
@@ -541,16 +568,6 @@ void script_unpack(lua_State *L, PackedValue *pv)
 				break;
 			case LUA_TTABLE:
 				lua_createtable(L, i.uidata1, i.uidata2);
-				lua_getglobal(L, "core");
-				lua_getfield(L, -1, "known_metatables");
-				if (lua_istable(L, -1)) {
-					lua_getfield(L, -1, i.sdata2.c_str());
-					if (lua_istable(L, -1))
-						lua_setmetatable(L, -4);
-					else
-						lua_pop(L, 1);
-				}
-				lua_pop(L, 2);
 				break;
 			case LUA_TFUNCTION:
 				luaL_loadbuffer(L, i.sdata.data(), i.sdata.size(), nullptr);

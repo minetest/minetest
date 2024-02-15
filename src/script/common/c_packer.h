@@ -34,9 +34,10 @@ extern "C" {
 	states and cannot be used for persistence or network transfer.
 */
 
-#define INSTR_SETTABLE (-10)
-#define INSTR_POP      (-11)
-#define INSTR_PUSHREF  (-12)
+#define INSTR_SETTABLE     (-10)
+#define INSTR_POP          (-11)
+#define INSTR_PUSHREF      (-12)
+#define INSTR_SETMETATABLE (-13)
 
 /**
  * Represents a single instruction that pushes a new value or operates with existing ones.
@@ -70,9 +71,9 @@ struct PackedInstr
 		- function: buffer
 		- w/ set_into: string key (no null bytes!)
 		- userdata: name in registry
+		- INSTR_SETMETATABLE: name of the metatable
 	*/
 	std::string sdata;
-	std::string sdata2; // table: name of the metatable
 
 	PackedInstr() : type(0), set_into(0), keep_ref(false), pop(false) {}
 };
