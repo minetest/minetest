@@ -123,9 +123,9 @@ void BanManager::add(const std::string &ip, const std::string &name)
 void BanManager::remove(const std::string &ip_or_name)
 {
 	MutexAutoLock lock(m_mutex);
-	for (StringMap::iterator it = m_ips.begin(); it != m_ips.end();) {
+	for (auto it = m_ips.begin(); it != m_ips.end();) {
 		if ((it->first == ip_or_name) || (it->second == ip_or_name)) {
-			m_ips.erase(it++);
+			it = m_ips.erase(it);
 			m_modified = true;
 		} else {
 			++it;

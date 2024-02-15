@@ -1616,9 +1616,8 @@ void ServerEnvironment::step(float dtime)
 		Manage particle spawner expiration
 	*/
 	if (m_particle_management_interval.step(dtime, 1.0)) {
-		for (std::unordered_map<u32, float>::iterator i = m_particle_spawners.begin();
-			i != m_particle_spawners.end(); ) {
-			//non expiring spawners
+		for (auto i = m_particle_spawners.begin(); i != m_particle_spawners.end(); ) {
+			// non expiring spawners
 			if (i->second == PARTICLE_SPAWNER_NO_EXPIRY) {
 				++i;
 				continue;
@@ -1626,7 +1625,7 @@ void ServerEnvironment::step(float dtime)
 
 			i->second -= 1.0f;
 			if (i->second <= 0.f)
-				m_particle_spawners.erase(i++);
+				i = m_particle_spawners.erase(i);
 			else
 				++i;
 		}

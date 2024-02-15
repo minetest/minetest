@@ -54,7 +54,6 @@ class IWritableItemDefManager;
 class NodeDefManager;
 class IWritableCraftDefManager;
 class BanManager;
-class EventManager;
 class Inventory;
 class ModChannelMgr;
 class RemotePlayer;
