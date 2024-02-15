@@ -79,6 +79,7 @@ struct MinimapData {
 	video::IImage *minimap_mask_square = nullptr;
 	video::ITexture *texture = nullptr;
 	video::ITexture *heightmap_texture = nullptr;
+	bool textures_initialised = false; // True if the following textures are not nullptrs.
 	video::ITexture *minimap_overlay_round = nullptr;
 	video::ITexture *minimap_overlay_square = nullptr;
 	video::ITexture *player_marker = nullptr;
@@ -140,6 +141,7 @@ public:
 
 	MinimapModeDef getModeDef() const { return data->mode; }
 
+	video::IImage *getMinimapMask();
 	video::ITexture *getMinimapTexture();
 
 	void blitMinimapPixelsToImageRadar(video::IImage *map_image);
