@@ -2924,12 +2924,11 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 		/*
 			Clear references to playing sounds
 		*/
-		for (std::unordered_map<s32, ServerPlayingSound>::iterator
-				 i = m_playing_sounds.begin(); i != m_playing_sounds.end();) {
+		for (auto i = m_playing_sounds.begin(); i != m_playing_sounds.end();) {
 			ServerPlayingSound &psound = i->second;
 			psound.clients.erase(peer_id);
 			if (psound.clients.empty())
-				m_playing_sounds.erase(i++);
+				i = m_playing_sounds.erase(i);
 			else
 				++i;
 		}
