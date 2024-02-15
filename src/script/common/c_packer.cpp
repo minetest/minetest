@@ -99,20 +99,25 @@ static inline bool suitable_key(lua_State *L, int idx)
 	}
 }
 
-// get core.known_metatables for indexing
-// returns true if the tables exists (which is pushed onto the stack),
-// false otherwise (nothing is pushed onto the stack)
+/**
+ * Push core.known_metatables to the stack if it exists.
+ * @param L Lua state
+ * @return true if core.known_metatables exists, false otherwise.
+*/
 static inline bool get_known_lua_metatables(lua_State *L)
 {
 	lua_getglobal(L, "core");
-	if (lua_istable(L, -1)) {
-		lua_getfield(L, -1, "known_metatables");
-		lua_insert(L, -2);
+	if (!lua_istable(L, -1)) {
+		lua_pop(L, 1);
+		return false;
 	}
-	lua_pop(L, 1); // pop core
-	if (lua_istable(L, -1))
+	lua_getfield(L, -1, "known_metatables");
+	if (lua_istable(L, -1)) {
+		lua_insert(L, -2);
+		lua_pop(L, 1);
 		return true;
-	lua_pop(L, 2); // pop core.known_metatables as it is not useful here
+	}
+	lua_pop(L, 2);
 	return false;
 }
 
