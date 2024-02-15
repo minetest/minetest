@@ -356,6 +356,8 @@ void ContentFeatures::reset()
 	has_on_construct = false;
 	has_on_destruct = false;
 	has_after_destruct = false;
+	floats = false;
+	
 	/*
 		Actual data
 
