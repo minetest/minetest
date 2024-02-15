@@ -4,7 +4,7 @@
 core.registered_async_metatables = {}
 function core.register_async_metatable(name, mt)
 	if type(name) ~= "string" then
-		return error(("attempt to use %s value as metatable name"):format(type(mt)))
+		return error(("attempt to use %s value as metatable name"):format(type(name)))
 	elseif type(mt) ~= "table" then
 		return error(("attempt to register a %s value as metatable"):format(type(mt)))
 	elseif core.registered_async_metatables[name] ~= nil then
