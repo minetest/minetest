@@ -13,8 +13,12 @@ from typing import Any, Dict, Optional, Tuple
 import capnp
 import gymnasium as gym
 import numpy as np
-import pygame
 import zmq
+
+try:
+    import pygame
+except ImportError:
+    pygame = None
 
 remoteclient_capnp = capnp.load(
     os.path.join(os.path.dirname(__file__), "proto/remoteclient.capnp")
@@ -292,6 +296,11 @@ class MinetestEnv(gym.Env):
         write_config_file(self.config_path, config)
 
     def _start_pygame(self):
+        if pygame is None:
+            raise ImportError(
+                "pygame is required for rendering in human mode. "
+                "Please install it: mamba install -c conda-forge pygame",
+            )
         pygame.init()
         self.screen = pygame.display.set_mode(
             (self.display_size.width, self.display_size.height)
