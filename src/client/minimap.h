@@ -78,8 +78,8 @@ struct MinimapData {
 	video::IImage *minimap_mask_round = nullptr;
 	video::IImage *minimap_mask_square = nullptr;
 	video::ITexture *texture = nullptr;
-	bool textures_initialised = false; // True if the following textures are not nullptrs.
 	video::ITexture *heightmap_texture = nullptr;
+	bool textures_initialised = false; // True if the following textures are not nullptrs.
 	video::ITexture *minimap_overlay_round = nullptr;
 	video::ITexture *minimap_overlay_square = nullptr;
 	video::ITexture *player_marker = nullptr;
