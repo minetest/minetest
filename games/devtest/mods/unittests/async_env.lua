@@ -172,7 +172,7 @@ local function test_vector_preserve(cb)
 	core.handle_async(function(x)
 		return x
 	end, function(ret)
-		if ret == vec then
+		if ret == vec then -- only succeeds if metatable was preserved
 			cb()
 		else
 			return cb("Vector value mismatch")
