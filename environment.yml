@@ -16,9 +16,10 @@ dependencies:
   - gmp
   - jsoncpp
   - libcurl
+  - libjpeg-turbo
+  - libpng
   - libsqlite
   - luajit-openresty
-  - make
   - ncurses
   # TODO: move mold from
   # Dockerfile / apt-get to here once
@@ -27,6 +28,7 @@ dependencies:
   - ninja
   - pkg-config
   - sdl2
+  - zlib
   - zmqpp
   - zstd
   # python deps

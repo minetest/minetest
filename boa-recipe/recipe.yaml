@@ -1,0 +1,55 @@
+# https://boa-build.readthedocs.io/en/latest/recipe_spec.html
+context: {}
+package:
+  name: minetest
+  version: '{{ environ.get("GIT_DESCRIBE_TAG", environ.get("GIT_FULL_HASH", "0")) }}'
+
+source:
+  path: ../
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - '{{ compiler("cxx") }}'
+    - cmake
+    - ninja
+    # All of the below libraries (not compilers or build tools) seem
+    # like they belong in host conceptually, but CMake can't
+    # find them that way for some reason. I think it doesn't really
+    # matter since these aren't available as regular conda packages
+    # so we'd ask the user to install them system-wide anyways.
+    - sel(linux): '{{ cdt("mesa-dri-drivers") }}'
+    - sel(linux): '{{ cdt("mesa-libgl-devel") }}'
+  host:
+    - capnproto
+    - freetype
+    - gmp
+    - jsoncpp
+    - libcurl
+    - libiconv
+    - libjpeg-turbo
+    - libpng
+    - libsqlite
+    - luajit-openresty
+    - ncurses
+    - pkg-config
+    - sdl2
+    - zeromq
+    - zlib
+    - zmqpp
+    - zstd
+  run:
+    # I think needed because their recipe doesn't specify run_exports.
+    # Otherwise this should be inferred from presence in host.
+    - luajit-openresty
+
+about:
+  home: https://github.com/Astera-org/minetest
+  summary: 'Minetest + gymnasium interface'
+
+test:
+  exists:
+    bin:
+      - minetest
