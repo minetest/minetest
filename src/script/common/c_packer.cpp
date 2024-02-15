@@ -453,7 +453,7 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 	// try to preserve metatable information
 	if (lua_getmetatable(L, idx)) {
 		lua_getglobal(L, "core");
-		lua_getfield(L, -1, "registered_async_metatables");
+		lua_getfield(L, -1, "known_metatables");
 		lua_pushvalue(L, -3);
 		lua_gettable(L, -2);
 		if (lua_isstring(L, -1))
@@ -542,7 +542,7 @@ void script_unpack(lua_State *L, PackedValue *pv)
 			case LUA_TTABLE:
 				lua_createtable(L, i.uidata1, i.uidata2);
 				lua_getglobal(L, "core");
-				lua_getfield(L, -1, "registered_async_metatables");
+				lua_getfield(L, -1, "known_metatables");
 				if (lua_istable(L, -1)) {
 					lua_getfield(L, -1, i.sdata2.c_str());
 					if (lua_istable(L, -1))

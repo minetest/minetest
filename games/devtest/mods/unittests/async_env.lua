@@ -167,16 +167,31 @@ local function test_userdata_passing2(cb, _, pos)
 end
 unittests.register("test_userdata_passing2", test_userdata_passing2, {map=true, async=true})
 
+local function test_async_metatable_registration(cb)
+	if not pcall(function(x)
+		core.register_async_metatable("__builtin:vector", vector.metatable)
+	end) then
+		error("Metatable name aliasing throws an error when it should be allowed")
+	end
+
+	if pcall(function(x)
+		core.register_async_metatable("__builtin:vector", {})
+	end) then
+		error("Illegal metatable overriding allowed")
+	end
+end
+unittests.register("test_async_metatable_registration", test_async_metatable_registration)
+
 local function test_vector_preserve(cb)
 	local vec = vector.new(1, 2, 3)
 	core.handle_async(function(x)
-		return x
+		return x[1]
 	end, function(ret)
 		if ret == vec then -- only succeeds if metatable was preserved
 			cb()
 		else
 			return cb("Vector value mismatch")
 		end
-	end, vec)
+	end, {vec})
 end
 unittests.register("test_async_vector", test_vector_preserve, {async=true})
