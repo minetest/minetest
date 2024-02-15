@@ -17,9 +17,7 @@ import pygame
 import zmq
 
 remoteclient_capnp = capnp.load(
-    os.path.join(
-        os.path.dirname(__file__), "../../src/network/proto/remoteclient.capnp"
-    )
+    os.path.join(os.path.dirname(__file__), "proto/remoteclient.capnp")
 )
 
 
