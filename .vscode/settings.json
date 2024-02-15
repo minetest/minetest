@@ -15,5 +15,10 @@
     "[jsonc]": {
         "editor.formatOnSave": true
     },
-    "cmake.cmakePath": "/opt/conda/envs/minetest/bin/cmake"
+    "cmake.cmakePath": "/opt/conda/envs/minetest/bin/cmake",
+    "cmake.configureArgs": [
+        "-DRUN_IN_PLACE=TRUE",
+        "-DENABLE_GETTEXT=TRUE",
+        "-DENABLE_SOUND=FALSE"
+    ]
 }

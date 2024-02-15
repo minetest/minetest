@@ -1,0 +1,10 @@
+[
+  {
+    "name": "GCC 11.4.0 x86_64-linux-gnu",
+    "compilers": {
+      "C": "/usr/bin/gcc",
+      "CXX": "/usr/bin/g++"
+    },
+    "isTrusted": true,
+    "environmentSetupScript": "/opt/conda/etc/profile.d/conda.sh\" ; conda activate minetest\""  }
+]
