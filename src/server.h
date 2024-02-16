@@ -89,8 +89,8 @@ struct MediaInfo
 	std::string sha1_digest; // base64-encoded
 	bool no_announce; // true: not announced in TOCLIENT_ANNOUNCE_MEDIA (at player join)
 
-	MediaInfo(const std::string &path_="",
-	          const std::string &sha1_digest_=""):
+	MediaInfo(std::string_view path_ = "",
+	          std::string_view sha1_digest_ = ""):
 		path(path_),
 		sha1_digest(sha1_digest_),
 		no_announce(false)

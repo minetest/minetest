@@ -97,7 +97,7 @@ void SettingsHierarchy::onLayerRemoved(int layer)
 
 /* Settings implementation */
 
-Settings *Settings::createLayer(SettingsLayer sl, const std::string &end_tag)
+Settings *Settings::createLayer(SettingsLayer sl, std::string_view end_tag)
 {
 	return new Settings(end_tag, &g_hierarchy, (int)sl);
 }
@@ -109,7 +109,7 @@ Settings *Settings::getLayer(SettingsLayer sl)
 }
 
 
-Settings::Settings(const std::string &end_tag, SettingsHierarchy *h,
+Settings::Settings(std::string_view end_tag, SettingsHierarchy *h,
 		int settings_layer) :
 	m_end_tag(end_tag),
 	m_hierarchy(h),
@@ -131,7 +131,7 @@ Settings::~Settings()
 }
 
 
-Settings & Settings::operator = (const Settings &other)
+Settings & Settings::operator=(const Settings &other)
 {
 	if (&other == this)
 		return *this;
@@ -151,7 +151,7 @@ Settings & Settings::operator = (const Settings &other)
 }
 
 
-bool Settings::checkNameValid(const std::string &name)
+bool Settings::checkNameValid(std::string_view name)
 {
 	bool valid = name.find_first_of("=\"{}#") == std::string::npos;
 	if (valid)
@@ -166,7 +166,7 @@ bool Settings::checkNameValid(const std::string &name)
 }
 
 
-bool Settings::checkValueValid(const std::string &value)
+bool Settings::checkValueValid(std::string_view value)
 {
 	if (value.substr(0, 3) == "\"\"\"" ||
 		value.find("\n\"\"\"") != std::string::npos) {

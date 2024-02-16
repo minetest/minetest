@@ -134,7 +134,7 @@ void SHA1::process()
 }
 
 // addBytes **********************************************************
-void SHA1::addBytes( const char* data, int num )
+void SHA1::addBytes( const char* data, Uint32 num )
 {
 	assert( data );
 	assert( num >= 0 );

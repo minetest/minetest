@@ -26,7 +26,10 @@ SOFTWARE.
 
 #pragma once
 
-typedef unsigned int Uint32;
+#include <cstdint>
+#include <string_view>
+
+typedef uint32_t Uint32;
 
 class SHA1
 {
@@ -45,8 +48,12 @@ private:
 public:
 	SHA1();
 	~SHA1();
-	void addBytes(const char *data, int num);
+	void addBytes(const char *data, Uint32 num);
+	inline void addBytes(std::string_view data) {
+		addBytes(data.data(), data.size());
+	}
 	unsigned char *getDigest();
+
 	// utility methods
 	static Uint32 lrot(Uint32 x, int bits);
 	static void storeBigEndianUint32(unsigned char *byte, Uint32 num);

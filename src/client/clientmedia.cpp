@@ -542,7 +542,7 @@ bool IClientMediaDownloader::checkAndLoad(
 	std::string data_sha1;
 	{
 		SHA1 data_sha1_calculator;
-		data_sha1_calculator.addBytes(data.c_str(), data.size());
+		data_sha1_calculator.addBytes(data);
 		unsigned char *data_tmpdigest = data_sha1_calculator.getDigest();
 		data_sha1.assign((char*) data_tmpdigest, 20);
 		free(data_tmpdigest);

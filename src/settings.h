@@ -124,18 +124,17 @@ typedef std::unordered_map<std::string, SettingsEntry> SettingEntries;
 class Settings {
 public:
 	/* These functions operate on the global hierarchy! */
-	static Settings *createLayer(SettingsLayer sl, const std::string &end_tag = "");
+	static Settings *createLayer(SettingsLayer sl, std::string_view end_tag = "");
 	static Settings *getLayer(SettingsLayer sl);
 	/**/
 
-	Settings(const std::string &end_tag = "") :
+	Settings(std::string_view end_tag = "") :
 		m_end_tag(end_tag)
 	{}
-	Settings(const std::string &end_tag, SettingsHierarchy *h, int settings_layer);
+	Settings(std::string_view end_tag, SettingsHierarchy *h, int settings_layer);
 	~Settings();
 
-	Settings & operator += (const Settings &other);
-	Settings & operator = (const Settings &other);
+	Settings & operator=(const Settings &other);
 
 	/***********************
 	 * Reading and writing *
@@ -258,8 +257,8 @@ private:
 	bool updateConfigObject(std::istream &is, std::ostream &os,
 		u32 tab_depth=0);
 
-	static bool checkNameValid(const std::string &name);
-	static bool checkValueValid(const std::string &value);
+	static bool checkNameValid(std::string_view name);
+	static bool checkValueValid(std::string_view value);
 	static std::string getMultiline(std::istream &is, size_t *num_lines=NULL);
 	static void printEntry(std::ostream &os, const std::string &name,
 		const SettingsEntry &entry, u32 tab_depth=0);

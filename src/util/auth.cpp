@@ -39,7 +39,7 @@ std::string translate_password(const std::string &name,
 
 	std::string slt = name + password;
 	SHA1 sha1;
-	sha1.addBytes(slt.c_str(), slt.length());
+	sha1.addBytes(slt);
 	unsigned char *digest = sha1.getDigest();
 	std::string_view digest_sv(reinterpret_cast<char*>(digest), 20);
 	std::string pwd = base64_encode(digest_sv);

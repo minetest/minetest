@@ -2527,7 +2527,7 @@ bool Server::addMediaFile(const std::string &filename,
 	}
 
 	SHA1 sha1;
-	sha1.addBytes(filedata.c_str(), filedata.length());
+	sha1.addBytes(filedata);
 
 	unsigned char *digest = sha1.getDigest();
 	std::string_view digest_sv(reinterpret_cast<char*>(digest), 20);

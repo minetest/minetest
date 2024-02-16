@@ -1651,7 +1651,7 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 		std::string computed_hash;
 		{
 			SHA1 ctx;
-			ctx.addBytes(filedata.c_str(), filedata.size());
+			ctx.addBytes(filedata);
 			unsigned char *buf = ctx.getDigest();
 			computed_hash.assign((char*) buf, 20);
 			free(buf);

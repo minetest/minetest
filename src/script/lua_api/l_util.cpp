@@ -552,7 +552,7 @@ int ModApiUtil::l_sha1(lua_State *L)
 	std::string data_sha1;
 	{
 		SHA1 ctx;
-		ctx.addBytes(data.data(), data.size());
+		ctx.addBytes(data);
 		unsigned char *data_tmpdigest = ctx.getDigest();
 		data_sha1.assign((char*) data_tmpdigest, 20);
 		free(data_tmpdigest);
