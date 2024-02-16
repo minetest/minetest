@@ -113,8 +113,7 @@ static inline bool get_known_lua_metatables(lua_State *L)
 	}
 	lua_getfield(L, -1, "known_metatables");
 	if (lua_istable(L, -1)) {
-		lua_insert(L, -2);
-		lua_pop(L, 1);
+		lua_remove(L, -2);
 		return true;
 	}
 	lua_pop(L, 2);
@@ -479,6 +478,7 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 		if (lua_isstring(L, -1)) {
 			auto r = emplace(pv, INSTR_SETMETATABLE);
 			r->sdata = std::string(lua_tostring(L, -1));
+			r->set_into = vi_table;
 		}
 		lua_pop(L, 2);
 	}
@@ -550,13 +550,13 @@ void script_unpack(lua_State *L, PackedValue *pv)
 			case INSTR_SETMETATABLE:
 				if (get_known_lua_metatables(L)) {
 					lua_getfield(L, -1, i.sdata.c_str());
+					lua_remove(L, -2);
 					if (lua_istable(L, -1))
-						lua_setmetatable(L, -3);
+						lua_setmetatable(L, top+i.set_into);
 					else
 						lua_pop(L, 1);
-					lua_pop(L, 1);
 				}
-				break;
+				continue;
 
 			/* Lua types */
 			case LUA_TNIL:
@@ -656,6 +656,9 @@ void script_dump_packed(const PackedValue *val)
 				break;
 			case INSTR_PUSHREF:
 				printf("PUSHREF(%d)", i.sidata1);
+				break;
+			case INSTR_SETMETATABLE:
+				printf("SETMETATABLE(%d, %s)", i.set_into, i.sdata.c_str());
 				break;
 			case LUA_TNIL:
 				printf("nil");

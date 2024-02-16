@@ -1,5 +1,3 @@
--- NOTE: This script is used by the main thread and async worker threads
-
 -- Registered metatables, used in C++ for deserialization
 local known_metatables = {}
 function core.register_async_metatable(name, mt)
