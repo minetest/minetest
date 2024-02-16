@@ -27,6 +27,7 @@ SOFTWARE.
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include <string_view>
 
 typedef uint32_t Uint32;
@@ -41,7 +42,7 @@ private:
 	Uint32 H3 = 0x10325476;
 	Uint32 H4 = 0xc3d2e1f0;
 	unsigned char bytes[64];
-	int unprocessedBytes = 0;
+	Uint32 unprocessedBytes = 0;
 	Uint32 size = 0;
 	void process();
 
@@ -52,7 +53,12 @@ public:
 	inline void addBytes(std::string_view data) {
 		addBytes(data.data(), data.size());
 	}
-	unsigned char *getDigest();
+	void getDigest(unsigned char *to);
+	inline std::string getDigest() {
+		std::string ret(20, '\000');
+		getDigest(reinterpret_cast<unsigned char*>(ret.data()));
+		return ret;
+	}
 
 	// utility methods
 	static Uint32 lrot(Uint32 x, int bits);

@@ -64,7 +64,7 @@ void TestCompression::testRLECompression()
 	fromdata[3]=1;
 
 	std::ostringstream os(std::ios_base::binary);
-	compress(*fromdata, fromdata.getSize(), os, 0);
+	compress(fromdata, os, 0);
 
 	std::string str_out = os.str();
 

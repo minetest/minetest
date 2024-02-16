@@ -553,9 +553,7 @@ int ModApiUtil::l_sha1(lua_State *L)
 	{
 		SHA1 ctx;
 		ctx.addBytes(data);
-		unsigned char *data_tmpdigest = ctx.getDigest();
-		data_sha1.assign((char*) data_tmpdigest, 20);
-		free(data_tmpdigest);
+		data_sha1 = ctx.getDigest();
 	}
 
 	if (hex) {

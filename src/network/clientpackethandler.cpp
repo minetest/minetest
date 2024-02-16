@@ -1652,9 +1652,7 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 		{
 			SHA1 ctx;
 			ctx.addBytes(filedata);
-			unsigned char *buf = ctx.getDigest();
-			computed_hash.assign((char*) buf, 20);
-			free(buf);
+			computed_hash = ctx.getDigest();
 		}
 		if (raw_hash != computed_hash) {
 			verbosestream << "Hash of file data mismatches, ignoring." << std::endl;
