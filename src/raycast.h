@@ -55,7 +55,7 @@ public:
 
 	bool m_objects_pointable;
 	bool m_liquids_pointable;
-	const std::optional<Pointabilities> &m_pointabilities;
+	const std::optional<Pointabilities> m_pointabilities;
 
 	//! The code needs to search these nodes around the center node.
 	core::aabbox3d<s16> m_search_range { 0, 0, 0, 0, 0, 0 };
