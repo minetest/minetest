@@ -135,13 +135,11 @@ inline std::string_view removeStringEnd(std::string_view str,
 }
 
 
-#define VARIANT_TEMPLATE typename T,
-#define VARIANT_CAST_TO std::basic_string_view<T>
 #define MAKE_VARIANT(_name, _t0, _t1) \
-	template <VARIANT_TEMPLATE typename... Args> \
-	inline auto _name(_t0 arg1, _t1 arg2, Args... args) \
+	template <typename T, typename... Args> \
+	inline auto _name(_t0 arg1, _t1 arg2, Args&&... args) \
 	{ \
-		return (_name)(VARIANT_CAST_TO(arg1), VARIANT_CAST_TO(arg2), \
+		return (_name)(std::basic_string_view<T>(arg1), std::basic_string_view<T>(arg2), \
 			std::forward<Args>(args)...); \
 	}
 
@@ -265,8 +263,6 @@ MAKE_VARIANT(str_ends_with, const std::basic_string<T> &, const T*)
 MAKE_VARIANT(str_ends_with, std::basic_string_view<T>, const T*)
 
 
-#undef VARIANT_TEMPLATE
-#undef VARIANT_CAST_TO
 #undef MAKE_VARIANT
 
 
@@ -438,8 +434,8 @@ inline std::string ftos(float f)
  * @param pattern The pattern to replace.
  * @param replacement What to replace the pattern with.
  */
-inline void str_replace(std::string &str, const std::string &pattern,
-		const std::string &replacement)
+inline void str_replace(std::string &str, std::string_view pattern,
+		std::string_view replacement)
 {
 	std::string::size_type start = str.find(pattern, 0);
 	while (start != str.npos) {
@@ -449,7 +445,7 @@ inline void str_replace(std::string &str, const std::string &pattern,
 }
 
 /**
- * Escapes characters [ ] \ , ; that cannot be used in formspecs
+ * Escapes characters that cannot be used in formspecs
  */
 inline void str_formspec_escape(std::string &str)
 {
@@ -481,7 +477,7 @@ void str_replace(std::string &str, char from, char to);
  *
  * @see string_allowed_blacklist()
  */
-inline bool string_allowed(std::string_view str, const std::string &allowed_chars)
+inline bool string_allowed(std::string_view str, std::string_view allowed_chars)
 {
 	return str.find_first_not_of(allowed_chars) == str.npos;
 }
@@ -498,7 +494,7 @@ inline bool string_allowed(std::string_view str, const std::string &allowed_char
  * @see string_allowed()
  */
 inline bool string_allowed_blacklist(std::string_view str,
-		const std::string &blacklisted_chars)
+		std::string_view blacklisted_chars)
 {
 	return str.find_first_of(blacklisted_chars) == str.npos;
 }
@@ -519,13 +515,12 @@ inline bool string_allowed_blacklist(std::string_view str,
  * @param row_len The row length (in characters).
  * @return A new string with the wrapping applied.
  */
-inline std::string wrap_rows(const std::string &from,
-		unsigned row_len)
+inline std::string wrap_rows(std::string_view from, unsigned row_len)
 {
 	std::string to;
 	to.reserve(from.size());
 
-	size_t character_idx = 0;
+	unsigned character_idx = 0;
 	for (size_t i = 0; i < from.size(); i++) {
 		if (!IS_UTF8_MULTB_INNER(from[i])) {
 			// Wrap string after last inner byte of char
@@ -718,7 +713,7 @@ inline const std::string duration_to_string(int sec)
  * @return A std::string
  */
 inline std::string str_join(const std::vector<std::string> &list,
-		const std::string &delimiter)
+		std::string_view delimiter)
 {
 	std::ostringstream oss;
 	bool first = true;
@@ -768,7 +763,7 @@ void safe_print_string(std::ostream &os, std::string_view str);
 /**
  * Parses a string of form `(1, 2, 3)` to a v3f
  *
- * @param str String
- * @return
+ * @param str string
+ * @return float vector
  */
-v3f str_to_v3f(const std::string &str);
+v3f str_to_v3f(std::string_view str);

@@ -164,7 +164,7 @@ std::string wide_to_utf8(std::wstring_view input)
 
 std::string urlencode(std::string_view str)
 {
-	// Encodes non-unreserved URI characters by a percent sign
+	// Encodes reserved URI characters by a percent sign
 	// followed by two hex digits. See RFC 3986, section 2.3.
 	static const char url_hex_chars[] = "0123456789ABCDEF";
 	std::ostringstream oss(std::ios::binary);
@@ -912,7 +912,7 @@ void safe_print_string(std::ostream &os, std::string_view str)
 }
 
 
-v3f str_to_v3f(const std::string &str)
+v3f str_to_v3f(std::string_view str)
 {
 	v3f value;
 	Strfnd f(str);

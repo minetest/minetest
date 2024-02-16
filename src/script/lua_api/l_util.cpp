@@ -651,8 +651,8 @@ int ModApiUtil::l_urlencode(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	const char *value = luaL_checkstring(L, 1);
-	lua_pushstring(L, urlencode(value).c_str());
+	auto s = readParam<std::string_view>(L, 1);
+	lua_pushstring(L, urlencode(s).c_str());
 	return 1;
 }
 
