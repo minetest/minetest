@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "threading/mutex_auto_lock.h"
 #include "clientdynamicinfo.h"
+#include "util/pointedthing.h"
 
 #include <list>
 #include <vector>
@@ -38,7 +39,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <mutex>
 
 class MapBlock;
-class PointedThing;
 class ServerEnvironment;
 class EmergeManager;
 
