@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-11-17 00:07+0000\n"
+"PO-Revision-Date: 2024-02-17 00:36+0000\n"
 "Last-Translator: Wuzzy <Wuzzy@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.2\n"
+"X-Generator: Weblate 5.4\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -6544,9 +6544,8 @@ msgstr ""
 "heraus geschaut wird."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use bilinear filtering when scaling textures."
-msgstr "Trilineare Filterung bei der Skalierung von Texturen benutzen."
+msgstr "Bilineare Filterung bei der Skalierung von Texturen benutzen."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6563,13 +6562,12 @@ msgstr ""
 "Objekten gebraucht."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
-"Mipmaps zum Verkleinern von Texturen verwenden. Könnte die Performanz\n"
+"Mipmaps bei der Skalierung von Texturen verwenden. Könnte die Performanz\n"
 "leicht erhöhen, besonders, wenn ein hochauflösendes Texturenpaket benutzt "
 "wird.\n"
 "Eine gammakorrigierte Herunterskalierung wird nicht unterstützt."
@@ -6586,13 +6584,12 @@ msgstr ""
 "für Client-Meshgroßen, die kleiner als 4×4×4 Kartenblöcke große sind."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
-"Trilineare Filterung bei der Herunterskalierung von Texturen benutzen.\n"
+"Trilineare Filterung bei der Skalierung von Texturen benutzen.\n"
 "Falls sowohl die bilineare als auch trilineare Filterung aktiviert sind,\n"
 "wird die trilineare Filterung angewandt."
 
