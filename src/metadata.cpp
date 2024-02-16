@@ -70,7 +70,7 @@ bool IMetadata::getStringToRef(const std::string &name,
 const std::string &IMetadata::resolveString(const std::string &str, std::string *place,
 		u16 recursion, bool deprecated) const
 {
-	if (recursion <= 1 && str.substr(0, 2) == "${" && str[str.length() - 1] == '}') {
+	if (recursion <= 1 && str_starts_with(str, "${") && str.back() == '}') {
 		if (deprecated) {
 			warningstream << "Deprecated use of recursive resolution syntax in metadata: ";
 			safe_print_string(warningstream, str);

@@ -407,13 +407,13 @@ bool Settings::parseCommandLine(int argc, char *argv[],
 {
 	int nonopt_index = 0;
 	for (int i = 1; i < argc; i++) {
-		std::string arg_name = argv[i];
+		std::string_view arg_name(argv[i]);
 		if (arg_name.substr(0, 2) != "--") {
 			// If option doesn't start with -, read it in as nonoptX
-			if (arg_name[0] != '-'){
+			if (arg_name[0] != '-') {
 				std::string name = "nonopt";
 				name += itos(nonopt_index);
-				set(name, arg_name);
+				set(name, std::string(arg_name));
 				nonopt_index++;
 				continue;
 			}
@@ -422,7 +422,7 @@ bool Settings::parseCommandLine(int argc, char *argv[],
 			return false;
 		}
 
-		std::string name = arg_name.substr(2);
+		std::string name(arg_name.substr(2));
 
 		auto n = allowed_options.find(name);
 		if (n == allowed_options.end()) {

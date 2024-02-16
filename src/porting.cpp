@@ -832,7 +832,7 @@ static bool open_uri(const std::string &uri)
 
 bool open_url(const std::string &url)
 {
-	if (url.substr(0, 7) != "http://" && url.substr(0, 8) != "https://") {
+	if (!str_starts_with(url, "http://") && !str_starts_with(url, "https://")) {
 		errorstream << "Unable to open browser as URL is missing schema: " << url << std::endl;
 		return false;
 	}
