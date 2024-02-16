@@ -103,7 +103,7 @@ jobs:
           git clone https://github.com/minetest/irrlicht lib\irrlichtmt --depth 1 -b $ref[0]
 
       - name: Restore from cache and run vcpkg
-        uses: lukka/run-vcpkg@v10
+        uses: lukka/run-vcpkg@v9
         with:
           vcpkgArguments: ${{env.vcpkg_packages}}
           vcpkgDirectory: '${{ github.workspace }}\vcpkg'
