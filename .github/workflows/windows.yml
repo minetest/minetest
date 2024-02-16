@@ -103,7 +103,7 @@ jobs:
           git clone https://github.com/minetest/irrlicht lib\irrlichtmt --depth 1 -b $ref[0]
 
       - name: Restore from cache and run vcpkg
-        uses: lukka/run-vcpkg@v7
+        uses: lukka/run-vcpkg@v10
         with:
           vcpkgArguments: ${{env.vcpkg_packages}}
           vcpkgDirectory: '${{ github.workspace }}\vcpkg'
@@ -145,7 +145,7 @@ jobs:
         env:
           TYPE: ${{matrix.type}}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: msvc-${{ matrix.config.arch }}-${{ matrix.type }}
           path: .\Package\
