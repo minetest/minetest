@@ -552,7 +552,7 @@ void script_unpack(lua_State *L, PackedValue *pv)
 					lua_getfield(L, -1, i.sdata.c_str());
 					lua_remove(L, -2);
 					if (lua_istable(L, -1))
-						lua_setmetatable(L, top+i.set_into);
+						lua_setmetatable(L, top + i.set_into);
 					else
 						lua_pop(L, 1);
 				}
@@ -658,7 +658,7 @@ void script_dump_packed(const PackedValue *val)
 				printf("PUSHREF(%d)", i.sidata1);
 				break;
 			case INSTR_SETMETATABLE:
-				printf("SETMETATABLE(%d, %s)", i.set_into, i.sdata.c_str());
+				printf("SETMETATABLE(%s)", i.sdata.c_str());
 				break;
 			case LUA_TNIL:
 				printf("nil");
@@ -682,7 +682,7 @@ void script_dump_packed(const PackedValue *val)
 				printf("userdata %s %p", i.sdata.c_str(), i.ptrdata);
 				break;
 			default:
-				printf("!!UNKNOWN!!");
+				FATAL_ERROR("unknown type");
 				break;
 		}
 		if (i.set_into) {

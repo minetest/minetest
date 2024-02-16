@@ -6599,15 +6599,15 @@ This allows you easy interoperability for delegating work to jobs.
       is initialized. You can use this to preload code which you can then call
       later using `minetest.handle_async()`.
 * `minetest.register_async_metatable(name, mt)`:
-    * Register a metatable that should be preserved when data is transferred
-      between the main thread and the async environment.
-    * `name` is a string that identifies the metatable.
+  * Register a metatable that should be preserved when data is transferred
+    between the main thread and the async environment.
+  * `name` is a string that identifies the metatable.
 	* `mt` is the metatable to register.
 	* Note that it is allowed to register the same metatable under multiple
 	  names, but it is not allowed to register multiple metatables under the
 	  same name.
-    * Please note that the metatable must be registered in the main environment
-      and the async environment.
+  * You must register the metatable in both the main environment
+    and the async environment for this mechanism to work.
 
 
 ### List of APIs available in an async environment

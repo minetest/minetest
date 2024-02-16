@@ -53,7 +53,7 @@ local test_object = {
 	end,
 	sunlight_propagates = true,
 	is_ground_content = false,
-	light_source = 0,
+	pos = vector.new(-1, -2, -3),
 }
 
 local function test_object_passing()
@@ -168,15 +168,11 @@ end
 unittests.register("test_userdata_passing2", test_userdata_passing2, {map=true, async=true})
 
 local function test_async_metatable_registration(cb)
-	if not pcall(function(x)
-		core.register_async_metatable("__builtin:vector", vector.metatable)
-	end) then
+	if not pcall(core.register_async_metatable, "__builtin:vector", vector.metatable) then
 		error("Metatable name aliasing throws an error when it should be allowed")
 	end
 
-	if pcall(function(x)
-		core.register_async_metatable("__builtin:vector", {})
-	end) then
+	if pcall(core.register_async_metatable, "__builtin:vector", {}) then
 		error("Illegal metatable overriding allowed")
 	end
 end
