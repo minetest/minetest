@@ -47,13 +47,18 @@ GUIOpenURLMenu::GUIOpenURLMenu(gui::IGUIEnvironment* env,
 {
 }
 
-std::wstring colorize_url(const std::string &url) {
+std::string colorize_url(const std::string &url) {
 #ifdef USE_CURL
+	// Forbid escape codes in URL
+	if (url.find('\x1b') != std::string::npos) {
+		return "";
+	}
+
 	CURLU *h = curl_url();
 	auto rc = curl_url_set(h, CURLUPART_URL, url.c_str(), 0);
 	if (rc != CURLUE_OK) {
 		curl_url_cleanup(h);
-		return L"";
+		return "";
 	}
 
 	char *fragment;
@@ -66,7 +71,8 @@ std::wstring colorize_url(const std::string &url) {
 	char *user;
 	char *zoneid;
 	curl_url_get(h, CURLUPART_FRAGMENT, &fragment, 0);
-	curl_url_get(h, CURLUPART_HOST, &host, 0);
+	// Get host as punycode to explicitly show homographs
+	curl_url_get(h, CURLUPART_HOST, &host, CURLU_PUNYCODE);
 	curl_url_get(h, CURLUPART_PASSWORD, &password, 0);
 	curl_url_get(h, CURLUPART_PATH, &path, 0);
 	curl_url_get(h, CURLUPART_PORT, &port, 0);
@@ -77,8 +83,6 @@ std::wstring colorize_url(const std::string &url) {
 
 	std::ostringstream os;
 
-	const std::string red = "\x1b(c@#f00)";
-	const std::string blue = "\x1b(c@#06f)";
 	const std::string white = "\x1b(c@#fff)";
 	const std::string grey = "\x1b(c@#aaa)";
 
@@ -90,22 +94,7 @@ std::wstring colorize_url(const std::string &url) {
 	if (user != NULL || password != NULL)
 		os << "@";
 
-	std::wstring whost = utf8_to_wide(host);
-	for (size_t i = 0; i < whost.size(); i++) {
-		wchar_t c = whost[i];
-		if ((c >= L'A' && c <= L'Z') || (c >= L'a' && c <= L'z') || c == L'.' || c == L'-') {
-			os << white;
-		} else if (c >= L'0' && c <= L'9') {
-			os << blue;
-		} else {
-			os << red;
-		}
-
-		wchar_t c_s[2] = { c, L'\0' };
-		os << wide_to_utf8(c_s);
-	}
-
-	os << grey;
+	os << white << host << grey;
 	if (port != NULL)
 		os << ":" << port;
 	os << path;
@@ -115,9 +104,9 @@ std::wstring colorize_url(const std::string &url) {
 		os << "#" << fragment;
 
 	curl_url_cleanup(h);
-	return utf8_to_wide(os.str());
+	return os.str();
 #else
-	return utf8_to_wide(str);
+	return str;
 #endif
 }
 
@@ -161,11 +150,24 @@ void GUIOpenURLMenu::regenerateGui(v2u32 screensize)
 
 	ypos += 50 * s;
 
-
 	{
 		core::rect<s32> rect(0, 0, 440 * s, 60 * s);
+
+		auto mono_font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_Mono);
+		int scrollbar_width = Environment->getSkin()->getSize(gui::EGDS_SCROLLBAR_SIZE);
+		int max_cols = (rect.getWidth() - scrollbar_width - 10) / mono_font->getDimension(L"x").Width;
+		errorstream << max_cols << std::endl;
+
+		std::string text = colorize_url(url);
+		if (text.empty()) {
+			quitMenu();
+			return;
+		}
+
+		text = wrap_rows(text, max_cols, true);
+
 		rect += topleft_client + v2s32(20 * s, ypos);
-		IGUIEditBox *e = new GUIEditBoxWithScrollBar(colorize_url(url).c_str(), true, Environment,
+		IGUIEditBox *e = new GUIEditBoxWithScrollBar(utf8_to_wide(text).c_str(), true, Environment,
 				this, ID_url, rect, m_tsrc, false, true);
 		e->setMultiLine(true);
 		e->setWordWrap(true);
@@ -173,7 +175,6 @@ void GUIOpenURLMenu::regenerateGui(v2u32 screensize)
 		e->setDrawBorder(true);
 		e->setDrawBackground(true);
 
-		auto mono_font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_Mono);
 		e->setOverrideFont(mono_font);
 		e->drop();
 	}
