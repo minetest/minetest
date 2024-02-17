@@ -469,6 +469,11 @@ bool setSystemPaths()
 	// It is identified by containing the subdirectory "builtin".
 	std::vector<std::string> trylist;
 	std::string static_sharedir = STATIC_SHAREDIR;
+	// This should be unnecessary but it seems that GCC 13.2.0, CMake 3.28.3,
+	// Linux x86_64, Release build type results in static_sharedir having
+	// trailing nulls, so we remove them.
+	static_sharedir = static_sharedir.substr(0, static_sharedir.find(static_cast<char>(0)));
+
 	if (!static_sharedir.empty() && static_sharedir != ".")
 		trylist.push_back(static_sharedir);
 
