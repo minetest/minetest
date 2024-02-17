@@ -163,6 +163,9 @@ function make.enum(setting)
 			self.resettable = core.settings:has(setting.name)
 
 			local labels = setting.option_labels or {}
+			if type(labels) == "function" then
+				labels = labels(self, setting, value)
+			end
 
 			local items = {}
 			for i, option in ipairs(setting.values) do
@@ -187,6 +190,14 @@ function make.enum(setting)
 			end
 
 			core.settings:set(setting.name, value)
+
+			if setting.name == "language" then
+				-- Refresh content to update translations
+				pkgmgr.refresh_globals()
+				pkgmgr.update_gamelist()
+				reset_contentdb()
+			end
+
 			return true
 		end,
 	}

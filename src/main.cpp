@@ -708,6 +708,10 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 	init_gettext(porting::path_locale.c_str(),
 		g_settings->get("language"), argc, argv);
 
+	g_settings->registerChangedCallback("language", [](auto _name, auto _data) {
+		set_gettext_language(g_settings->get("language"));
+	});
+
 	return true;
 }
 

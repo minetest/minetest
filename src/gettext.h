@@ -46,6 +46,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 void init_gettext(const char *path, const std::string &configured_language,
 	int argc, char *argv[]);
 
+/**
+ * Change the language
+ *
+ * @param configured_language Language code
+ */
+void set_gettext_language(std::string configured_language);
+
 inline std::string strgettext(const char *str)
 {
 	// We must check here that is not an empty string to avoid trying to translate it

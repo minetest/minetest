@@ -74,6 +74,19 @@ local REASON_UPDATE = "update"
 local REASON_DEPENDENCY = "dependency"
 
 
+function reset_contentdb()
+	store.load_ok = false
+	store.loading = false
+	store.load_error = false
+	store.packages = {}
+	store.packages_full = {}
+	store.packages_full_unordered = {}
+	store.aliases = {}
+	search_string = ""
+	cur_page = 1
+end
+
+
 local function get_download_url(package, reason)
 	local base_url = core.settings:get("contentdb_url")
 	local ret = base_url .. ("/packages/%s/releases/%d/download/"):format(
