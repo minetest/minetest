@@ -41,7 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstring> // for memcpy
 #include <iostream>
 #include <string>
-#include <vector>
+#include <string_view>
 
 #define FIXEDPOINT_FACTOR 1000.0f
 
@@ -450,26 +450,26 @@ inline v3f clampToF1000(v3f v)
 }
 
 // Creates a string with the length as the first two bytes
-std::string serializeString16(const std::string &plain);
+std::string serializeString16(std::string_view plain);
 
 // Reads a string with the length as the first two bytes
 std::string deSerializeString16(std::istream &is);
 
 // Creates a string with the length as the first four bytes
-std::string serializeString32(const std::string &plain);
+std::string serializeString32(std::string_view plain);
 
 // Reads a string with the length as the first four bytes
 std::string deSerializeString32(std::istream &is);
 
 // Creates a string encoded in JSON format (almost equivalent to a C string literal)
-std::string serializeJsonString(const std::string &plain);
+std::string serializeJsonString(std::string_view plain);
 
 // Reads a string encoded in JSON format
 std::string deSerializeJsonString(std::istream &is);
 
 // If the string contains spaces, quotes or control characters, encodes as JSON.
 // Else returns the string unmodified.
-std::string serializeJsonStringIfNeeded(const std::string &s);
+std::string serializeJsonStringIfNeeded(std::string_view s);
 
 // Parses a string serialized by serializeJsonStringIfNeeded.
 std::string deSerializeJsonStringIfNeeded(std::istream &is);

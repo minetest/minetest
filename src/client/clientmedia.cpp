@@ -541,11 +541,9 @@ bool IClientMediaDownloader::checkAndLoad(
 	// Compute actual checksum of data
 	std::string data_sha1;
 	{
-		SHA1 data_sha1_calculator;
-		data_sha1_calculator.addBytes(data.c_str(), data.size());
-		unsigned char *data_tmpdigest = data_sha1_calculator.getDigest();
-		data_sha1.assign((char*) data_tmpdigest, 20);
-		free(data_tmpdigest);
+		SHA1 ctx;
+		ctx.addBytes(data);
+		data_sha1 = ctx.getDigest();
 	}
 
 	// Check that received file matches announced checksum

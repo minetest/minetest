@@ -99,7 +99,7 @@ NetworkPacket& NetworkPacket::operator>>(std::string& dst)
 	return *this;
 }
 
-NetworkPacket& NetworkPacket::operator<<(const std::string &src)
+NetworkPacket& NetworkPacket::operator<<(std::string_view src)
 {
 	if (src.size() > STRING_MAX_LEN) {
 		throw PacketError("String too long");
@@ -109,12 +109,12 @@ NetworkPacket& NetworkPacket::operator<<(const std::string &src)
 
 	*this << msgsize;
 
-	putRawString(src.c_str(), (u32)msgsize);
+	putRawString(src.data(), (u32)msgsize);
 
 	return *this;
 }
 
-void NetworkPacket::putLongString(const std::string &src)
+void NetworkPacket::putLongString(std::string_view src)
 {
 	if (src.size() > LONG_STRING_MAX_LEN) {
 		throw PacketError("String too long");
@@ -124,7 +124,7 @@ void NetworkPacket::putLongString(const std::string &src)
 
 	*this << msgsize;
 
-	putRawString(src.c_str(), msgsize);
+	putRawString(src.data(), msgsize);
 }
 
 static constexpr bool NEED_SURROGATE_CODING = sizeof(wchar_t) > 2;
@@ -160,7 +160,7 @@ NetworkPacket& NetworkPacket::operator>>(std::wstring& dst)
 	return *this;
 }
 
-NetworkPacket& NetworkPacket::operator<<(const std::wstring &src)
+NetworkPacket& NetworkPacket::operator<<(std::wstring_view src)
 {
 	if (src.size() > WIDE_STRING_MAX_LEN) {
 		throw PacketError("String too long");

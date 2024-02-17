@@ -46,7 +46,7 @@ enum ActiveObjectType {
 
 struct ActiveObjectMessage
 {
-	ActiveObjectMessage(u16 id_, bool reliable_=true, const std::string &data_ = "") :
+	ActiveObjectMessage(u16 id_, bool reliable_=true, std::string_view data_ = "") :
 		id(id_),
 		reliable(reliable_),
 		datastring(data_)

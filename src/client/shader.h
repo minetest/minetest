@@ -192,4 +192,4 @@ public:
 IWritableShaderSource *createShaderSource();
 
 void dumpShaderProgram(std::ostream &output_stream,
-	const std::string &program_type, const std::string &program);
+	const std::string &program_type, std::string_view program);

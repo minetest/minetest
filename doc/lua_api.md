@@ -5459,7 +5459,7 @@ Utilities
   You can use `colorspec_to_bytes` to generate raw RGBA values.
   Palettes are not supported at the moment.
   You may use this to procedurally generate textures during server init.
-* `minetest.urlencode(str)`: Encodes non-unreserved URI characters by a
+* `minetest.urlencode(str)`: Encodes reserved URI characters by a
   percent sign followed by two hex digits. See
   [RFC 3986, section 2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-2.3).
 

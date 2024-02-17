@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "filesys.h"
 #include "gettext.h"
+#include "exceptions.h"
 
 
 std::string ModConfiguration::getUnsatisfiedModsError() const

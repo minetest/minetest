@@ -133,6 +133,12 @@ local function test_compress()
 end
 unittests.register("test_compress", test_compress)
 
+local function test_urlencode()
+	-- checks that API code handles null bytes
+	assert(core.urlencode("foo\000bar!") == "foo%00bar%21")
+end
+unittests.register("test_urlencode", test_urlencode)
+
 local function test_game_info()
 	local info = minetest.get_game_info()
 	local game_conf = Settings(info.path .. "/game.conf")

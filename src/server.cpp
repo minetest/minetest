@@ -2534,14 +2534,13 @@ bool Server::addMediaFile(const std::string &filename,
 	}
 
 	SHA1 sha1;
-	sha1.addBytes(filedata.c_str(), filedata.length());
+	sha1.addBytes(filedata);
 
-	unsigned char *digest = sha1.getDigest();
-	std::string sha1_base64 = base64_encode(digest, 20);
-	std::string sha1_hex = hex_encode((char*) digest, 20);
+	std::string digest = sha1.getDigest();
+	std::string sha1_base64 = base64_encode(digest);
+	std::string sha1_hex = hex_encode(digest);
 	if (digest_to)
-		*digest_to = std::string((char*) digest, 20);
-	free(digest);
+		*digest_to = digest;
 
 	// Put in list
 	m_media[filename] = MediaInfo(filepath, sha1_base64);

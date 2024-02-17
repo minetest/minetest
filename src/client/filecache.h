@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <iostream>
 #include <string>
+#include <string_view>
 
 class FileCache
 {
@@ -31,7 +32,7 @@ public:
 	*/
 	FileCache(const std::string &dir) : m_dir(dir) {}
 
-	bool update(const std::string &name, const std::string &data);
+	bool update(const std::string &name, std::string_view data);
 	bool load(const std::string &name, std::ostream &os);
 	bool exists(const std::string &name);
 
@@ -43,5 +44,5 @@ private:
 
 	void createDir();
 	bool loadByPath(const std::string &path, std::ostream &os);
-	bool updateByPath(const std::string &path, const std::string &data);
+	bool updateByPath(const std::string &path, std::string_view data);
 };

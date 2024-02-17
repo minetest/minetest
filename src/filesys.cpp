@@ -828,7 +828,7 @@ const char *GetFilenameFromPath(const char *path)
 	return filename ? filename + 1 : path;
 }
 
-bool safeWriteToFile(const std::string &path, const std::string &content)
+bool safeWriteToFile(const std::string &path, std::string_view content)
 {
 	std::string tmp_file = path + ".~mt";
 
@@ -844,7 +844,7 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 		return false;
 	}
 	DWORD bytes_written;
-	tmp_success = (WriteFile(tmp_handle, content.c_str(), content.size(), &bytes_written, nullptr) &&
+	tmp_success = (WriteFile(tmp_handle, content.data(), content.size(), &bytes_written, nullptr) &&
 					FlushFileBuffers(tmp_handle));
 	CloseHandle(tmp_handle);
 #else

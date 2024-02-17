@@ -1142,17 +1142,16 @@ bool NodeDefManager::getIds(const std::string &name,
 		std::vector<content_t> &result) const
 {
 	//TimeTaker t("getIds", NULL, PRECISION_MICRO);
-	if (name.substr(0,6) != "group:") {
+	if (!str_starts_with(name, "group:")) {
 		content_t id = CONTENT_IGNORE;
 		bool exists = getId(name, id);
 		if (exists)
 			result.push_back(id);
 		return exists;
 	}
-	std::string group = name.substr(6);
 
-	std::unordered_map<std::string, std::vector<content_t>>::const_iterator
-		i = m_group_to_items.find(group);
+	std::string group = name.substr(6);
+	auto i = m_group_to_items.find(group);
 	if (i == m_group_to_items.end())
 		return true;
 
@@ -1847,7 +1846,7 @@ bool NodeResolver::getIdsFromNrBacklog(std::vector<content_t> *result_out,
 		content_t c;
 		std::string &name = m_nodenames[m_nodenames_idx++];
 
-		if (name.substr(0,6) != "group:") {
+		if (!str_starts_with(name, "group:")) {
 			if (m_ndef->getId(name, c)) {
 				result_out->push_back(c);
 			} else if (all_required) {
