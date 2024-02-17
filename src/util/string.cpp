@@ -593,6 +593,40 @@ void str_replace(std::string &str, char from, char to)
 	std::replace(str.begin(), str.end(), from, to);
 }
 
+std::string wrap_rows(std::string_view from, unsigned row_len, bool has_color_codes)
+{
+	std::string to;
+	to.reserve(from.size());
+	std::string last_color_code;
+
+	unsigned character_idx = 0;
+	bool inside_colorize = false;
+	for (size_t i = 0; i < from.size(); i++) {
+		if (!IS_UTF8_MULTB_INNER(from[i])) {
+			if (inside_colorize) {
+				last_color_code += from[i];
+				if (from[i] == ')') {
+					inside_colorize = false;
+				} else {
+					// keep reading
+				}
+			} else if (has_color_codes && from[i] == '\x1b') {
+				inside_colorize = true;
+				last_color_code = "\x1b";
+			} else {
+				// Wrap string after last inner byte of char
+				if (character_idx > 0 && character_idx % row_len == 0) {
+					to += '\n' + last_color_code;
+				}
+				character_idx++;
+			}
+		}
+		to += from[i];
+	}
+
+	return to;
+}
+
 /* Translated strings have the following format:
  * \x1bT marks the beginning of a translated string
  * \x1bE marks its end

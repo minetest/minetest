@@ -524,35 +524,7 @@ inline bool string_allowed_blacklist(std::string_view str,
  * @param has_color_codes Whether the source string has colorize codes.
  * @return A new string with the wrapping applied.
  */
-inline std::string wrap_rows(std::string_view from, unsigned row_len, bool has_color_codes = false)
-{
-	std::string to;
-	to.reserve(from.size());
-
-	unsigned character_idx = 0;
-	bool inside_colorize = false;
-	for (size_t i = 0; i < from.size(); i++) {
-		if (!IS_UTF8_MULTB_INNER(from[i])) {
-			if (inside_colorize) {
-				if (from[i] == ')') {
-					inside_colorize = false;
-				} else {
-					// keep reading
-				}
-			} else if (has_color_codes && from[i] == '\x1b') {
-				inside_colorize = true;
-			} else {
-				// Wrap string after last inner byte of char
-				if (character_idx > 0 && character_idx % row_len == 0)
-					to += '\n';
-				character_idx++;
-			}
-		}
-		to += from[i];
-	}
-
-	return to;
-}
+std::string wrap_rows(std::string_view from, unsigned row_len, bool has_color_codes = false);
 
 
 /**

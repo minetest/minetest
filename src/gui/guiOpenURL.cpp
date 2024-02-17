@@ -156,7 +156,6 @@ void GUIOpenURLMenu::regenerateGui(v2u32 screensize)
 		auto mono_font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_Mono);
 		int scrollbar_width = Environment->getSkin()->getSize(gui::EGDS_SCROLLBAR_SIZE);
 		int max_cols = (rect.getWidth() - scrollbar_width - 10) / mono_font->getDimension(L"x").Width;
-		errorstream << max_cols << std::endl;
 
 		std::string text = colorize_url(url);
 		if (text.empty()) {
