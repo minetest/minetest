@@ -93,11 +93,16 @@ void GUIOpenURLMenu::regenerateGui(v2u32 screensize)
 		int scrollbar_width = Environment->getSkin()->getSize(gui::EGDS_SCROLLBAR_SIZE);
 		int max_cols = (rect.getWidth() - scrollbar_width - 10) / mono_font->getDimension(L"x").Width;
 
-		std::string text = colorize_url(url);
-		if (text.empty()) {
+#ifdef USE_CURL
+		std::string text;
+		if (!colorize_url(text, url)) {
+			errorstream << text << " when attempting to show open dialog for " << url << std::endl;
 			quitMenu();
 			return;
 		}
+#else
+		std::string text = url;
+#endif
 
 		text = wrap_rows(text, max_cols, true);
 

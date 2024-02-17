@@ -4986,8 +4986,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 					if (!s.url.empty()) {
 						if (m_client) {
+							// in game
 							g_gamecallback->showOpenURLDialog(s.url);
 						} else {
+							// main menu
 							porting::open_url(s.url);
 						}
 					}

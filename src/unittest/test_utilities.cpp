@@ -721,9 +721,13 @@ void TestUtilities::testColorizeURL()
 	#define GREY COLOR_CODE("#aaa")
 	#define WHITE COLOR_CODE("#fff")
 
-	UASSERT(colorize_url("http://example.com/") ==
-		(GREY "http://" WHITE "example.com" GREY "/"));
-	UASSERT(colorize_url("https://u:p@wikipediа.org:1234/heIIoll?a=b#c") ==
+	std::string result;
+
+	UASSERT(colorize_url(result, "http://example.com/"));
+	UASSERT(result == (GREY "http://" WHITE "example.com" GREY "/"));
+
+	UASSERT(colorize_url(result, "https://u:p@wikipedi\ud0b0.org:1234/heIIoll?a=b#c"));
+	UASSERT(result ==
 		(GREY "https://u:p@" WHITE "wikipedi" RED "%d0%b0" WHITE ".org" GREY ":1234/heIIoll?a=b#c"));
 #endif
 }

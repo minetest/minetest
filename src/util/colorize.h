@@ -18,7 +18,19 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #pragma once
 
 #include <string>
+#include "config.h"
 
 #define COLOR_CODE(color) "\x1b(c@" color ")"
 
-std::string colorize_url(const std::string &url);
+#ifdef USE_CURL
+
+/**
+ * Colorize URL to highlight domain and unsafe characters
+ *
+ * @param out either the output string or an error message
+ * @param url URL to format
+ * @return true for success, false otherwise
+ */
+bool colorize_url(std::string &out, const std::string &url);
+
+#endif

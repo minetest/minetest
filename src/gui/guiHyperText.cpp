@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "irrlicht_changes/CGUITTFont.h"
 #include "mainmenumanager.h"
+#include "porting.h"
 
 using namespace irr::gui;
 
@@ -998,7 +999,7 @@ GUIHyperText::GUIHyperText(const wchar_t *text, IGUIEnvironment *environment,
 		IGUIElement *parent, s32 id, const core::rect<s32> &rectangle,
 		Client *client, ISimpleTextureSource *tsrc) :
 		IGUIElement(EGUIET_ELEMENT, environment, parent, id, rectangle),
-		m_tsrc(tsrc), m_vscrollbar(nullptr),
+		m_client(client), m_tsrc(tsrc), m_vscrollbar(nullptr),
 		m_drawer(text, client, environment, tsrc), m_text_scrollpos(0, 0)
 {
 
@@ -1110,7 +1111,13 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 
 						auto url_it = tag->attrs.find("url");
 						if (url_it != tag->attrs.end()) {
-							g_gamecallback->showOpenURLDialog(url_it->second);
+							if (m_client) {
+								// in game
+								g_gamecallback->showOpenURLDialog(url_it->second);
+							} else {
+								// main menu
+								porting::open_url(url_it->second);
+							}
 						}
 
 						break;

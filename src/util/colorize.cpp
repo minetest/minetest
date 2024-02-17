@@ -15,42 +15,31 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "config.h"
+#include "colorize.h"
 
 #ifdef USE_CURL
-#include <curl/urlapi.h>
-#endif
 
-#include "colorize.h"
+#include <curl/urlapi.h>
 #include "log.h"
 #include "string.h"
 #include <sstream>
 
-std::string colorize_url(const std::string &url) {
-#ifdef USE_CURL
+bool colorize_url(std::string &out, const std::string &url) {
 	// Forbid escape codes in URL
 	if (url.find('\x1b') != std::string::npos) {
-		errorstream << "Unable to open URL as it contains escape codes" << std::endl;
-		return "";
+		out = "Unable to open URL as it contains escape codes";
+		return false;
 	}
 
 	CURLU *h = curl_url();
 	auto rc = curl_url_set(h, CURLUPART_URL, url.c_str(), 0);
 	if (rc != CURLUE_OK) {
-		errorstream << "Unable to open URL as it is not valid ( " << url << " )" << std::endl;
+		out = "Unable to open URL as it is not valid";
 		curl_url_cleanup(h);
-		return "";
+		return false;
 	}
 
-	char *fragment;
-	char *host;
-	char *password;
-	char *path;
-	char *port;
-	char *query;
-	char *scheme;
-	char *user;
-	char *zoneid;
+	char *fragment, *host, *password, *path, *port, *query, *scheme, *user, *zoneid;
 	curl_url_get(h, CURLUPART_FRAGMENT, &fragment, 0);
 	curl_url_get(h, CURLUPART_HOST, &host, 0);
 	curl_url_get(h, CURLUPART_PASSWORD, &password, 0);
@@ -63,16 +52,16 @@ std::string colorize_url(const std::string &url) {
 
 	std::ostringstream os;
 
-	const std::string red = COLOR_CODE("#faa");
-	const std::string white = COLOR_CODE("#fff");
-	const std::string grey = COLOR_CODE("#aaa");
+	std::string_view red = COLOR_CODE("#faa");
+	std::string_view white = COLOR_CODE("#fff");
+	std::string_view grey = COLOR_CODE("#aaa");
 
 	os << grey << scheme << "://";
-	if (user != NULL)
+	if (user)
 		os << user;
-	if (password != NULL)
+	if (password)
 		os << ":" << password;
-	if (user != NULL || password != NULL)
+	if (user || password)
 		os << "@";
 
 	os << white;
@@ -109,8 +98,8 @@ std::string colorize_url(const std::string &url) {
 		os << "#" << fragment;
 
 	curl_url_cleanup(h);
-	return os.str();
-#else
-	return str;
-#endif
+	out = os.str();
+	return true;
 }
+
+#endif
