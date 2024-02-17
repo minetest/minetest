@@ -242,13 +242,11 @@ private:
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeClient(lua_State *L, int top);
-	static bool read_tree_def(lua_State *L, int idx,
-			const NodeDefManager *ndef, treegen::TreeDef &tree_def);
 };
 
 /*
  * Duplicates of certain env APIs that operate not on the global
- * map but on a VoxelManipulator. This is for emerge scripting. 
+ * map but on a VoxelManipulator. This is for emerge scripting.
  */
 class ModApiEnvVM : public ModApiEnvBase {
 private:
@@ -282,6 +280,8 @@ private:
 
 public:
 	static void InitializeEmerge(lua_State *L, int top);
+	static bool read_tree_def(lua_State *L, int idx,
+			const NodeDefManager *ndef, treegen::TreeDef &tree_def);
 };
 
 class LuaABM : public ActiveBlockModifier {

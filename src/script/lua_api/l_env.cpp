@@ -1342,7 +1342,7 @@ int ModApiEnv::l_find_path(lua_State *L)
 	return 0;
 }
 
-bool ModApiEnv::read_tree_def(lua_State *L, int idx,
+bool ModApiEnvVM::read_tree_def(lua_State *L, int idx,
 	const NodeDefManager *ndef, treegen::TreeDef &tree_def)
 {
 	std::string trunk, leaves, fruit;
@@ -1391,7 +1391,7 @@ int ModApiEnv::l_spawn_tree(lua_State *L)
 	treegen::TreeDef tree_def;
 	const NodeDefManager *ndef = env->getGameDef()->ndef();
 
-	if (!read_tree_def(L, 2, ndef, tree_def))
+	if (!ModApiEnvVM::read_tree_def(L, 2, ndef, tree_def))
 		return 0;
 
 	ServerMap *map = &env->getServerMap();

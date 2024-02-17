@@ -1316,7 +1316,7 @@ bool read_deco_lsystem(lua_State *L, const NodeDefManager *ndef, DecoLSystem *de
 	deco->ndef = ndef;
 
 	lua_getfield(L, 1, "treedef");
-	bool has_def = ModApiEnv::read_tree_def(L, -1, ndef, deco->tree_def);
+	bool has_def = ModApiEnvVM::read_tree_def(L, -1, ndef, deco->tree_def);
 	lua_pop(L, 1);
 
 	return has_def;
