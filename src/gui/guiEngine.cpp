@@ -241,6 +241,7 @@ Translations *GUIEngine::getContentTranslations(const std::string &path,
 		trans_path = findLocaleFileInMods(path + DIR_DELIM "mods" DIR_DELIM, filename);
 	else if (type == ContentType::MODPACK)
 		trans_path = findLocaleFileInMods(path, filename);
+	// We don't need to search for locale files in a mod, as there's only one `locale` folder.
 
 	if (trans_path.empty())
 		return nullptr;
