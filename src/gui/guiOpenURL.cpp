@@ -114,7 +114,6 @@ void GUIOpenURLMenu::regenerateGui(v2u32 screensize)
 		e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_UPPERLEFT);
 		e->setDrawBorder(true);
 		e->setDrawBackground(true);
-
 		e->setOverrideFont(mono_font);
 		e->drop();
 	}

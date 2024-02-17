@@ -99,6 +99,15 @@ bool colorize_url(std::string &out, const std::string &url) {
 	if (fragment)
 		os << "#" << fragment;
 
+	curl_free(fragment);
+	curl_free(host);
+	curl_free(password);
+	curl_free(path);
+	curl_free(port);
+	curl_free(query);
+	curl_free(scheme);
+	curl_free(user);
+	curl_free(zoneid);
 	curl_url_cleanup(h);
 	out = os.str();
 	return true;
