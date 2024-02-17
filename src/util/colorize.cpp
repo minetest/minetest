@@ -64,6 +64,7 @@ bool colorize_url(std::string &out, const std::string &url) {
 	if (user || password)
 		os << "@";
 
+	// Print hostname, escaping unsafe characters
 	os << white;
 	bool was_alphanum = true;
 	std::string host_s = host;
@@ -83,18 +84,19 @@ bool colorize_url(std::string &out, const std::string &url) {
 			os << c;
 		} else {
 			os << "%" << std::setfill('0') << std::setw(2) << std::hex
-			   << (static_cast<unsigned int>(c) & 0xff);
+				<< (static_cast<unsigned int>(c) & 0xff);
 		}
 	}
 
-
 	os << grey;
-	if (port != NULL)
+	if (zoneid)
+		os << "%" << zoneid;
+	if (port)
 		os << ":" << port;
 	os << path;
-	if (query != NULL)
+	if (query)
 		os << "?" << query;
-	if (fragment != NULL)
+	if (fragment)
 		os << "#" << fragment;
 
 	curl_url_cleanup(h);
