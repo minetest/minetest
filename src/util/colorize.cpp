@@ -22,18 +22,21 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #endif
 
 #include "colorize.h"
+#include "log.h"
 #include <sstream>
 
 std::string colorize_url(const std::string &url) {
 #ifdef USE_CURL
 	// Forbid escape codes in URL
 	if (url.find('\x1b') != std::string::npos) {
+		errorstream << "Unable to open URL as it contains escape codes" << std::endl;
 		return "";
 	}
 
 	CURLU *h = curl_url();
 	auto rc = curl_url_set(h, CURLUPART_URL, url.c_str(), 0);
 	if (rc != CURLUE_OK) {
+		errorstream << "Unable to open URL as it is not valid ( " << url << " )" << std::endl;
 		curl_url_cleanup(h);
 		return "";
 	}

@@ -19,6 +19,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <string>
 
-#define COLOR_CODE(color) "\x1b(c@" color
+#define COLOR_CODE(color) "\x1b(c@" color ")"
 
 std::string colorize_url(const std::string &url);

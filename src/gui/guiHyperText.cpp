@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "util/string.h"
 #include "irrlicht_changes/CGUITTFont.h"
+#include "mainmenumanager.h"
 
 using namespace irr::gui;
 
@@ -1106,6 +1107,12 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 							newEvent.GUIEvent.EventType = EGET_BUTTON_CLICKED;
 							Parent->OnEvent(newEvent);
 						}
+
+						auto url_it = tag->attrs.find("url");
+						if (url_it != tag->attrs.end()) {
+							g_gamecallback->showOpenURLDialog(url_it->second);
+						}
+
 						break;
 					}
 				}
