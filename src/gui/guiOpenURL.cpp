@@ -28,6 +28,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "porting.h"
 #include "gettext.h"
+#ifdef USE_CURL
+#include <curl/urlapi.h>
+#endif
 
 const int ID_url = 256;
 const int ID_open = 259;
@@ -42,6 +45,80 @@ GUIOpenURLMenu::GUIOpenURLMenu(gui::IGUIEnvironment* env,
 	m_tsrc(tsrc),
 	url(url)
 {
+}
+
+std::wstring colorize_url(const std::string &url) {
+#ifdef USE_CURL
+	CURLU *h = curl_url();
+	auto rc = curl_url_set(h, CURLUPART_URL, url.c_str(), 0);
+	if (rc != CURLUE_OK) {
+		curl_url_cleanup(h);
+		return L"";
+	}
+
+	char *fragment;
+	char *host;
+	char *password;
+	char *path;
+	char *port;
+	char *query;
+	char *scheme;
+	char *user;
+	char *zoneid;
+	curl_url_get(h, CURLUPART_FRAGMENT, &fragment, 0);
+	curl_url_get(h, CURLUPART_HOST, &host, 0);
+	curl_url_get(h, CURLUPART_PASSWORD, &password, 0);
+	curl_url_get(h, CURLUPART_PATH, &path, 0);
+	curl_url_get(h, CURLUPART_PORT, &port, 0);
+	curl_url_get(h, CURLUPART_QUERY, &query, 0);
+	curl_url_get(h, CURLUPART_SCHEME, &scheme, 0);
+	curl_url_get(h, CURLUPART_USER, &user, 0);
+	curl_url_get(h, CURLUPART_ZONEID, &zoneid, 0);
+
+	std::ostringstream os;
+
+	const std::string red = "\x1b(c@#f00)";
+	const std::string blue = "\x1b(c@#06f)";
+	const std::string white = "\x1b(c@#fff)";
+	const std::string grey = "\x1b(c@#aaa)";
+
+	os << grey << scheme << "://";
+	if (user != NULL)
+		os << user;
+	if (password != NULL)
+		os << ":" << password;
+	if (user != NULL || password != NULL)
+		os << "@";
+
+	std::wstring whost = utf8_to_wide(host);
+	for (size_t i = 0; i < whost.size(); i++) {
+		wchar_t c = whost[i];
+		if ((c >= L'A' && c <= L'Z') || (c >= L'a' && c <= L'z') || c == L'.' || c == L'-') {
+			os << white;
+		} else if (c >= L'0' && c <= L'9') {
+			os << blue;
+		} else {
+			os << red;
+		}
+
+		wchar_t c_s[2] = { c, L'\0' };
+		os << wide_to_utf8(c_s);
+	}
+
+	os << grey;
+	if (port != NULL)
+		os << ":" << port;
+	os << path;
+	if (query != NULL)
+		os << "?" << query;
+	if (fragment != NULL)
+		os << "#" << fragment;
+
+	curl_url_cleanup(h);
+	return utf8_to_wide(os.str());
+#else
+	return utf8_to_wide(str);
+#endif
 }
 
 void GUIOpenURLMenu::regenerateGui(v2u32 screensize)
@@ -84,16 +161,20 @@ void GUIOpenURLMenu::regenerateGui(v2u32 screensize)
 
 	ypos += 50 * s;
 
+
 	{
 		core::rect<s32> rect(0, 0, 440 * s, 60 * s);
 		rect += topleft_client + v2s32(20 * s, ypos);
-		IGUIEditBox *e = new GUIEditBoxWithScrollBar(utf8_to_wide(url).c_str(), true, Environment,
+		IGUIEditBox *e = new GUIEditBoxWithScrollBar(colorize_url(url).c_str(), true, Environment,
 				this, ID_url, rect, m_tsrc, false, true);
 		e->setMultiLine(true);
 		e->setWordWrap(true);
 		e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_UPPERLEFT);
 		e->setDrawBorder(true);
 		e->setDrawBackground(true);
+
+		auto mono_font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_Mono);
+		e->setOverrideFont(mono_font);
 		e->drop();
 	}
 
