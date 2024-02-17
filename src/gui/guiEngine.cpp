@@ -232,8 +232,8 @@ Translations *GUIEngine::getContentTranslations(const std::string &path,
 	std::string filename = domain + "." + lang_code + ".tr";
 	std::string key = path + DIR_DELIM "locale" DIR_DELIM + filename;
 
-	if (key == last_translations_key)
-		return &last_translations;
+	if (key == m_last_translations_key)
+		return &m_last_translations;
 
 	std::string trans_path = key;
 	ContentType type = getContentType(path);
@@ -245,15 +245,15 @@ Translations *GUIEngine::getContentTranslations(const std::string &path,
 	if (trans_path.empty())
 		return nullptr;
 
-	last_translations_key = key;
-	last_translations = {};
+	m_last_translations_key = key;
+	m_last_translations = {};
 
 	std::string data;
 	if (fs::ReadFile(trans_path, data)) {
-		last_translations.loadTranslation(data);
+		m_last_translations.loadTranslation(data);
 	}
 
-	return &last_translations;
+	return &m_last_translations;
 }
 
 /******************************************************************************/

@@ -437,8 +437,8 @@ int ModApiMainMenu::l_check_mod_configuration(lua_State *L)
 	while (lua_next(L, 2)) {
 		// Ignore non-string keys
 		if (lua_type(L, -2) != LUA_TSTRING) {
-			throw LuaError("Unexpected non-string key in table passed to "
-						   "core.check_mod_configuration");
+			throw LuaError(
+				"Unexpected non-string key in table passed to core.check_mod_configuration");
 		}
 
 		std::string modpath = luaL_checkstring(L, -1);

@@ -341,12 +341,13 @@ Package - content which is downloadable from the content db, may or may not be i
           error_message = "",  -- message or nil
       }
       ```
-* core.get_content_translation(path, domain, string)
+* `core.get_content_translation(path, domain, string)`
   * Translates `string` using `domain` in content directory at `path`.
   * Textdomains will be found by looking through all locale folders.
   * String should contain translation markup from `core.translate(textdomain, ...)`.
-  * Ex: `core.get_content_translation("mods/mymod", "mymod", core.translate("mymod", "Hello World"))` will translate
-    "Hello World" into the current user's language using `mods/mymod/locale/mymod.fr.tr`.
+  * Ex: `core.get_content_translation("mods/mymod", "mymod", core.translate("mymod", "Hello World"))`
+    will translate "Hello World" into the current user's language
+    using `mods/mymod/locale/mymod.fr.tr`.
 
 Logging
 -------

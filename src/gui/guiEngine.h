@@ -179,8 +179,9 @@ public:
 			const std::string &domain, const std::string &lang_code);
 
 private:
-	std::string last_translations_key;
-	Translations last_translations;
+	std::string m_last_translations_key;
+	/** Only the most recently used translation set is kept loaded */
+	Translations m_last_translations;
 
 	/** find and run the main menu script */
 	bool loadMainMenuScript();

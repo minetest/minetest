@@ -4173,8 +4173,9 @@ description = This is the game's short description
 textdomain = mygame
 ```
 
-Minetest will then look for the textdomain `mygame` in all mods, for example, `mygame/mods/anymod/locale/mygame.fr.tr`.
-Note that it is still recommended that your textdomain match the mod name, but this isn't required.
+Minetest will then look for the textdomain `mygame` in all mods, for example,
+`mygame/mods/anymod/locale/mygame.fr.tr`. Note that it is still recommended that your
+textdomain match the mod name, but this isn't required.
 
 
 
