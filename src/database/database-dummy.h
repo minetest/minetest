@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <map>
+#include <set>
 #include <string>
 #include "database.h"
 #include "irrlichttypes.h"

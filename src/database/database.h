@@ -19,13 +19,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 #include "irr_v3d.h"
 #include "irrlichttypes.h"
-#include "util/basic_macros.h"
 #include "util/string.h"
 
 class Database
