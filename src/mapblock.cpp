@@ -448,7 +448,7 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 
 	TRACESTREAM(<<"MapBlock::deSerialize "<<getPos()<<std::endl);
 
-	m_is_air_expired = false;
+	m_is_air_expired = true;
 
 	if(version <= 21)
 	{
@@ -464,12 +464,8 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 
 	u8 flags = readU8(is);
 	is_underground = (flags & 0x01) != 0;
-
-	if (version >= 30)
-		m_is_air = (flags & 0x02) == 0;
-	else
-		// if disk is true, m_is_air will be set later
-		m_is_air_expired = !disk;
+	// IMPORTANT: when the version is bumped to 30 we can read m_is_air from here
+	// m_is_air = (flags & 0x02) == 0;
 
 	if (version < 27)
 		m_lighting_complete = 0xFFFF;
@@ -583,6 +579,7 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 
 		u16 dummy;
 		m_is_air = nimap.size() == 1 && nimap.getId("air", dummy);
+		m_is_air_expired = false;
 	}
 
 	TRACESTREAM(<<"MapBlock::deSerialize "<<getPos()
