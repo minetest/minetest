@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/string.h"
 #include "util/base64.h"
+#include "util/colorize.h"
 
 class TestUtilities : public TestBase {
 public:
@@ -59,6 +60,7 @@ public:
 	void testBase64();
 	void testSanitizeDirName();
 	void testIsBlockInSight();
+	void testColorizeURL();
 };
 
 static TestUtilities g_test_instance;
@@ -92,6 +94,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testBase64);
 	TEST(testSanitizeDirName);
 	TEST(testIsBlockInSight);
+	TEST(testColorizeURL);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -709,4 +712,19 @@ void TestUtilities::testIsBlockInSight()
 		// should still be considered visible
 		UASSERT(isBlockInSight({-1, 0, 0}, cam_pos, cam_dir, fov, range));
 	}
+}
+
+void TestUtilities::testColorizeURL()
+{
+#ifdef USE_CURL
+	#define GREY COLOR_CODE("#aaa")
+	#define WHITE COLOR_CODE("#fff")
+
+	UASSERT(colorize_url("http://example.com/") ==
+		(GREY "http://" WHITE "example.com" GREY "/"));
+	UASSERT(colorize_url("https://u:p@wikipediа.org:1234/heIIoll?a=b#c") ==
+		(GREY "https://u:p@" WHITE "xn--wikipedi-86g.org" GREY ":1234/heIIoll?a=b#c"));
+	UASSERT(colorize_url("https://räksmörgås.se/path?q#frag") ==
+		(GREY "https://" WHITE "xn--rksmrgs-5wao1o.se" GREY "/path?q#frag"));
+#endif
 }
