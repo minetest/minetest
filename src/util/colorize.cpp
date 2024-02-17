@@ -23,6 +23,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "colorize.h"
 #include "log.h"
+#include "string.h"
 #include <sstream>
 
 std::string colorize_url(const std::string &url) {
@@ -51,17 +52,7 @@ std::string colorize_url(const std::string &url) {
 	char *user;
 	char *zoneid;
 	curl_url_get(h, CURLUPART_FRAGMENT, &fragment, 0);
-	// Get host as punycode to explicitly show homographs
-#ifdef CURLU_PUNYCODE
-	rc = curl_url_get(h, CURLUPART_HOST, &host, CURLU_PUNYCODE);
-	if (rc == CURLUE_LACKS_IDN) {
-#endif
-		curl_url_get(h, CURLUPART_HOST, &host, 0);
-		// TODO: manually punycode here
-#ifdef CURLU_PUNYCODE
-	}
-#endif
-
+	curl_url_get(h, CURLUPART_HOST, &host, 0);
 	curl_url_get(h, CURLUPART_PASSWORD, &password, 0);
 	curl_url_get(h, CURLUPART_PATH, &path, 0);
 	curl_url_get(h, CURLUPART_PORT, &port, 0);
@@ -72,6 +63,7 @@ std::string colorize_url(const std::string &url) {
 
 	std::ostringstream os;
 
+	const std::string red = COLOR_CODE("#faa");
 	const std::string white = COLOR_CODE("#fff");
 	const std::string grey = COLOR_CODE("#aaa");
 
@@ -83,7 +75,31 @@ std::string colorize_url(const std::string &url) {
 	if (user != NULL || password != NULL)
 		os << "@";
 
-	os << white << host << grey;
+	os << white;
+	bool was_alphanum = true;
+	std::string host_s = host;
+	for (size_t i = 0; i < host_s.size(); i++) {
+		char c = host_s[i];
+		bool is_alphanum = !IS_UTF8_MULTB_INNER(c) && (isalnum(c) || ispunct(c));
+		if (is_alphanum == was_alphanum) {
+			// skip
+		} else if (is_alphanum) {
+			os << white;
+		} else {
+			os << red;
+		}
+		was_alphanum = is_alphanum;
+
+		if (is_alphanum) {
+			os << c;
+		} else {
+			os << "%" << std::setfill('0') << std::setw(2) << std::hex
+			   << (static_cast<unsigned int>(c) & 0xff);
+		}
+	}
+
+
+	os << grey;
 	if (port != NULL)
 		os << ":" << port;
 	os << path;

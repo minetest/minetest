@@ -717,14 +717,13 @@ void TestUtilities::testIsBlockInSight()
 void TestUtilities::testColorizeURL()
 {
 #ifdef USE_CURL
+	#define RED COLOR_CODE("#faa")
 	#define GREY COLOR_CODE("#aaa")
 	#define WHITE COLOR_CODE("#fff")
 
 	UASSERT(colorize_url("http://example.com/") ==
 		(GREY "http://" WHITE "example.com" GREY "/"));
 	UASSERT(colorize_url("https://u:p@wikipediа.org:1234/heIIoll?a=b#c") ==
-		(GREY "https://u:p@" WHITE "xn--wikipedi-86g.org" GREY ":1234/heIIoll?a=b#c"));
-	UASSERT(colorize_url("https://räksmörgås.se/path?q#frag") ==
-		(GREY "https://" WHITE "xn--rksmrgs-5wao1o.se" GREY "/path?q#frag"));
+		(GREY "https://u:p@" WHITE "wikipedi" RED "%d0%b0" WHITE ".org" GREY ":1234/heIIoll?a=b#c"));
 #endif
 }
