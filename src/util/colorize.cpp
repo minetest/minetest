@@ -53,11 +53,15 @@ std::string colorize_url(const std::string &url) {
 	curl_url_get(h, CURLUPART_FRAGMENT, &fragment, 0);
 	// Get host as punycode to explicitly show homographs
 #ifdef CURLU_PUNYCODE
-	curl_url_get(h, CURLUPART_HOST, &host, CURLU_PUNYCODE);
-#else
-	// TODO: confirm this renders as `xn--`
-	curl_url_get(h, CURLUPART_HOST, &host, 0);
+	rc = curl_url_get(h, CURLUPART_HOST, &host, CURLU_PUNYCODE);
+	if (rc == CURLUE_LACKS_IDN) {
 #endif
+		curl_url_get(h, CURLUPART_HOST, &host, 0);
+		// TODO: manually punycode here
+#ifdef CURLU_PUNYCODE
+	}
+#endif
+
 	curl_url_get(h, CURLUPART_PASSWORD, &password, 0);
 	curl_url_get(h, CURLUPART_PATH, &path, 0);
 	curl_url_get(h, CURLUPART_PORT, &port, 0);
