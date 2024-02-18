@@ -43,19 +43,25 @@ android {
 }
 
 // get precompiled deps
-task downloadDeps(type: Download) {
-	def depsDir = new File(buildDir.parent, 'deps')
-	def depsZip = new File(buildDir, 'deps.zip')
+def depsDir = new File(buildDir.parent, 'deps')
+if (new File(depsDir, 'armeabi-v7a').exists()) {
+	task getDeps {
+		doLast { logger.lifecycle('Using existing deps from {}', depsDir) }
+	}
+} else {
+	task downloadDeps(type: Download) {
+		def depsZip = new File(buildDir, 'deps.zip')
 
-	src 'https://github.com/minetest/minetest_android_deps/releases/download/latest/deps.zip'
-	dest depsZip
-	overwrite false
+		src 'https://github.com/minetest/minetest_android_deps/releases/download/latest/deps.zip'
+		dest depsZip
+		overwrite false
 
-	task getDeps(dependsOn: downloadDeps, type: Copy) {
-		depsDir.mkdir()
-		from zipTree(depsZip)
-		into depsDir
-		doFirst { logger.lifecycle('Extracting to {}', depsDir) }
+		task getDeps(dependsOn: downloadDeps, type: Copy) {
+			depsDir.mkdir()
+			from zipTree(depsZip)
+			into depsDir
+			doFirst { logger.lifecycle('Extracting to {}', depsDir) }
+		}
 	}
 }
 
