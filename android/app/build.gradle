@@ -108,6 +108,10 @@ task prepareAssets() {
 preBuild.dependsOn zipAssets
 prepareAssets.dependsOn ':native:getDeps'
 
+clean {
+	delete new File("src/main/assets", "Minetest.zip")
+}
+
 // Map for the version code that gives each ABI a value.
 import com.android.build.OutputFile
 
