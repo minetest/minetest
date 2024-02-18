@@ -532,7 +532,7 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 							+ 0.5f * button_size),
 			AHBB_Dir_Right_Left, 3.0f);
 
-	std::map<touch_gui_button_id, std::string> settings_bar_buttons {
+	const static std::map<touch_gui_button_id, std::string> settings_bar_buttons {
 		{fly_id, "fly"},
 		{noclip_id, "noclip"},
 		{fast_id, "fast"},
@@ -564,7 +564,7 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 							+ 0.5f * button_size),
 			AHBB_Dir_Left_Right, 2.0f);
 
-	std::map<touch_gui_button_id, std::string> rare_controls_bar_buttons {
+	const static std::map<touch_gui_button_id, std::string> rare_controls_bar_buttons {
 		{chat_id, "chat"},
 		{inventory_id, "inventory"},
 		{drop_id, "drop"},
