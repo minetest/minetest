@@ -24,7 +24,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
-#include "client/renderingengine.h"
 
 #include "porting.h"
 #include "gettext.h"
