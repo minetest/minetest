@@ -67,12 +67,14 @@ extern "C" {
 #error Minetest cannot be built without exceptions or RTTI
 #endif
 
-#if defined(__MINGW32__) && !defined(__MINGW64__) && !defined(__clang__) && \
-	(__GNUC__ < 11 || (__GNUC__ == 11 && __GNUC_MINOR__ < 1))
-// see e.g. https://github.com/minetest/minetest/issues/10137
-#warning ==================================
-#warning 32-bit MinGW gcc before 11.1 has known issues with crashes on thread exit, you should upgrade.
-#warning ==================================
+#if defined(__MINGW32__) && !defined(__clang__)
+// see https://github.com/minetest/minetest/issues/14140 or
+// https://github.com/minetest/minetest/issues/10137 for one of the various issues we had
+#error ==================================
+#error MinGW gcc has a broken TLS implementation and is not supported for building \
+	Minetest. Look at testTLS() in test_threading.cpp and see for yourself. \
+	Please use a clang-based compiler or alternatively MSVC.
+#error ==================================
 #endif
 
 #define DEBUGFILE "debug.txt"
@@ -435,6 +437,13 @@ static void print_version(std::ostream &os)
 	os << "Using " << LUAJIT_VERSION << std::endl;
 #else
 	os << "Using " << LUA_RELEASE << std::endl;
+#endif
+#if defined(__clang__)
+	os << "Built by Clang " << __clang_major__ << "." << __clang_minor__ << std::endl;
+#elif defined(__GNUC__)
+	os << "Built by GCC " << __GNUC__ << "." << __GNUC_MINOR__ << std::endl;
+#elif defined(_MSC_VER)
+	os << "Built by MSVC " << (_MSC_VER / 100) << "." << (_MSC_VER % 100) << std::endl;
 #endif
 	os << "Running on " << porting::get_sysinfo() << std::endl;
 	os << g_build_info << std::endl;

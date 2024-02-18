@@ -404,7 +404,7 @@ private:
 	// Generate image based on a string like "stone.png" or "[crack:1:0".
 	// if baseimg is NULL, it is created. Otherwise stuff is made on it.
 	// source_image_names is important to determine when to flush the image from a cache (dynamic media)
-	bool generateImagePart(std::string part_of_name, video::IImage *& baseimg, std::set<std::string> &source_image_names);
+	bool generateImagePart(std::string_view part_of_name, video::IImage *& baseimg, std::set<std::string> &source_image_names);
 
 	/*! Generates an image from a full string like
 	 * "stone.png^mineral_coal.png^[crack:1:0".
@@ -412,7 +412,7 @@ private:
 	 * The returned Image should be dropped.
 	 * source_image_names is important to determine when to flush the image from a cache (dynamic media)
 	 */
-	video::IImage* generateImage(const std::string &name, std::set<std::string> &source_image_names);
+	video::IImage* generateImage(std::string_view name, std::set<std::string> &source_image_names);
 
 	// Thread-safe cache of what source images are known (true = known)
 	MutexedMap<std::string, bool> m_source_image_existence;
@@ -593,7 +593,7 @@ static void draw_crack(video::IImage *crack, video::IImage *dst,
 // Brighten image
 void brighten(video::IImage *image);
 // Parse a transform name
-u32 parseImageTransform(const std::string& s);
+u32 parseImageTransform(std::string_view s);
 // Apply transform to image dimension
 core::dimension2d<u32> imageTransformDimension(u32 transform, core::dimension2d<u32> dim);
 // Apply transform to image data
@@ -963,7 +963,8 @@ static video::IImage *createInventoryCubeImage(
 	return result;
 }
 
-video::IImage* TextureSource::generateImage(const std::string &name, std::set<std::string> &source_image_names)
+video::IImage* TextureSource::generateImage(std::string_view name,
+		std::set<std::string> &source_image_names)
 {
 	// Get the base image
 
@@ -1024,15 +1025,15 @@ video::IImage* TextureSource::generateImage(const std::string &name, std::set<st
 		according to it
 	*/
 
-	std::string last_part_of_name = name.substr(last_separator_pos + 1);
+	auto last_part_of_name = name.substr(last_separator_pos + 1);
 
 	/*
 		If this name is enclosed in parentheses, generate it
 		and blit it onto the base image
 	*/
 	if (last_part_of_name[0] == paren_open
-			&& last_part_of_name[last_part_of_name.size() - 1] == paren_close) {
-		std::string name2 = last_part_of_name.substr(1,
+			&& last_part_of_name.back() == paren_close) {
+		auto name2 = last_part_of_name.substr(1,
 				last_part_of_name.size() - 2);
 		video::IImage *tmp = generateImage(name2, source_image_names);
 		if (!tmp) {
@@ -1199,7 +1200,7 @@ void blitBaseImage(video::IImage* &src, video::IImage* &dst)
 		} \
 	} while(0)
 
-bool TextureSource::generateImagePart(std::string part_of_name,
+bool TextureSource::generateImagePart(std::string_view part_of_name,
 		video::IImage *& baseimg, std::set<std::string> &source_image_names)
 {
 	const char escape = '\\'; // same as in generateImage()
@@ -1216,8 +1217,9 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 
 	// Stuff starting with [ are special commands
 	if (part_of_name.empty() || part_of_name[0] != '[') {
-		source_image_names.insert(part_of_name);
-		video::IImage *image = m_sourcecache.getOrLoad(part_of_name);
+		std::string part_s(part_of_name);
+		source_image_names.insert(part_s);
+		video::IImage *image = m_sourcecache.getOrLoad(part_s);
 		if (!image) {
 			// Do not create the dummy texture
 			if (part_of_name.empty())
@@ -1516,8 +1518,10 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				return false;
 			}
 
-			str_replace(part_of_name, '&', '^');
-			Strfnd sf(part_of_name);
+			std::string part_s(part_of_name);
+			str_replace(part_s, '&', '^');
+
+			Strfnd sf(part_s);
 			sf.next("{");
 			std::string imagename_top = sf.next("{");
 			std::string imagename_left = sf.next("{");
@@ -1873,7 +1877,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		else if (str_starts_with(part_of_name, "[png:")) {
 			std::string png;
 			{
-				std::string blob = part_of_name.substr(5);
+				auto blob = part_of_name.substr(5);
 				if (!base64_is_valid(blob)) {
 					errorstream << "generateImagePart(): "
 								<< "malformed base64 in [png" << std::endl;
@@ -2433,7 +2437,7 @@ void brighten(video::IImage *image)
 	}
 }
 
-u32 parseImageTransform(const std::string& s)
+u32 parseImageTransform(std::string_view s)
 {
 	int total_transform = 0;
 

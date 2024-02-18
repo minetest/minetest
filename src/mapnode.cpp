@@ -690,7 +690,7 @@ void MapNode::deSerialize(u8 *source, u8 version)
 	}
 }
 
-SharedBuffer<u8> MapNode::serializeBulk(int version,
+Buffer<u8> MapNode::serializeBulk(int version,
 		const MapNode *nodes, u32 nodecount,
 		u8 content_width, u8 params_width)
 {
@@ -706,7 +706,7 @@ SharedBuffer<u8> MapNode::serializeBulk(int version,
 		throw SerializationError("MapNode::serializeBulk: serialization to "
 				"version < 24 not possible");
 
-	SharedBuffer<u8> databuf(nodecount * (content_width + params_width));
+	Buffer<u8> databuf(nodecount * (content_width + params_width));
 
 	u32 start1 = content_width * nodecount;
 	u32 start2 = (content_width + 1) * nodecount;

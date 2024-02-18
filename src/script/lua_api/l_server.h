@@ -118,6 +118,9 @@ private:
 	// register_async_dofile(path)
 	static int l_register_async_dofile(lua_State *L);
 
+	// register_mapgen_script(path)
+	static int l_register_mapgen_script(lua_State *L);
+
 	// serialize_roundtrip(obj)
 	static int l_serialize_roundtrip(lua_State *L);
 

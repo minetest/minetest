@@ -70,7 +70,7 @@ bool IMetadata::getStringToRef(const std::string &name,
 const std::string &IMetadata::resolveString(const std::string &str, std::string *place,
 		u16 recursion, bool deprecated) const
 {
-	if (recursion <= 1 && str.substr(0, 2) == "${" && str[str.length() - 1] == '}') {
+	if (recursion <= 1 && str_starts_with(str, "${") && str.back() == '}') {
 		if (deprecated) {
 			warningstream << "Deprecated use of recursive resolution syntax in metadata: ";
 			safe_print_string(warningstream, str);
@@ -128,7 +128,7 @@ const std::string *SimpleMetadata::getStringRaw(const std::string &name, std::st
 	return found != m_stringvars.cend() ? &found->second : nullptr;
 }
 
-bool SimpleMetadata::setString(const std::string &name, const std::string &var)
+bool SimpleMetadata::setString(const std::string &name, std::string_view var)
 {
 	if (var.empty()) {
 		if (m_stringvars.erase(name) == 0)
@@ -137,7 +137,7 @@ bool SimpleMetadata::setString(const std::string &name, const std::string &var)
 		StringMap::iterator it = m_stringvars.find(name);
 		if (it != m_stringvars.end() && it->second == var)
 			return false;
-		m_stringvars[name] = var;
+		m_stringvars[name].assign(var);
 	}
 	m_modified = true;
 	return true;

@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <vector>
-#include <unordered_map>
+#include <string_view>
 
 #include "irrlichttypes_bloated.h"
 #include "common/c_types.h"
@@ -67,11 +67,11 @@ v3s16              getv3s16field_default(lua_State *L, int table,
 
 bool               getstringfield(lua_State *L, int table,
                              const char *fieldname, std::string &result);
+bool               getstringfield(lua_State *L, int table,
+                             const char *fieldname, std::string_view &result);
 size_t             getstringlistfield(lua_State *L, int table,
                              const char *fieldname,
                              std::vector<std::string> *result);
-void               read_groups(lua_State *L, int index,
-                             std::unordered_map<std::string, int> &result);
 bool               getboolfield(lua_State *L, int table,
                              const char *fieldname, bool &result);
 bool               getfloatfield(lua_State *L, int table,

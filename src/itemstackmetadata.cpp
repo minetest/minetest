@@ -49,10 +49,10 @@ static void sanitize_string(std::string &str)
 	str.erase(std::remove(str.begin(), str.end(), DESERIALIZE_PAIR_DELIM), str.end());
 }
 
-bool ItemStackMetadata::setString(const std::string &name, const std::string &var)
+bool ItemStackMetadata::setString(const std::string &name, std::string_view var)
 {
 	std::string clean_name = name;
-	std::string clean_var = var;
+	std::string clean_var(var);
 	sanitize_string(clean_name);
 	sanitize_string(clean_var);
 

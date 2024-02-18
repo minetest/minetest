@@ -484,6 +484,17 @@ bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname
 bool getstringfield(lua_State *L, int table,
 		const char *fieldname, std::string &result)
 {
+	std::string_view sv;
+	if (getstringfield(L, table, fieldname, sv)) {
+		result = sv;
+		return true;
+	}
+	return false;
+}
+
+bool getstringfield(lua_State *L, int table,
+		const char *fieldname, std::string_view &result)
+{
 	lua_getfield(L, table, fieldname);
 	bool got = false;
 
@@ -491,7 +502,7 @@ bool getstringfield(lua_State *L, int table,
 		size_t len = 0;
 		const char *ptr = lua_tolstring(L, -1, &len);
 		if (ptr) {
-			result.assign(ptr, len);
+			result = std::string_view(ptr, len);
 			got = true;
 		}
 	}

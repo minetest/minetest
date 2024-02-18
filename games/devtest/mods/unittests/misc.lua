@@ -1,3 +1,6 @@
+core.register_mapgen_script(core.get_modpath(core.get_current_modname()) ..
+	DIR_DELIM .. "inside_mapgen_env.lua")
+
 local function test_pseudo_random()
 	-- We have comprehensive unit tests in C++, this is just to make sure the API code isn't messing up
 	local gen1 = PseudoRandom(13)
@@ -130,6 +133,12 @@ local function test_compress()
 end
 unittests.register("test_compress", test_compress)
 
+local function test_urlencode()
+	-- checks that API code handles null bytes
+	assert(core.urlencode("foo\000bar!") == "foo%00bar%21")
+end
+unittests.register("test_urlencode", test_urlencode)
+
 local function test_game_info()
 	local info = minetest.get_game_info()
 	local game_conf = Settings(info.path .. "/game.conf")
@@ -204,3 +213,30 @@ local function test_on_mapblocks_changed(cb, player, pos)
 	end
 end
 unittests.register("test_on_mapblocks_changed", test_on_mapblocks_changed, {map=true, async=true})
+
+local function test_gennotify_api()
+	local DECO_ID = 123
+	local UD_ID = "unittests:dummy"
+
+	-- the engine doesn't check if the id is actually valid, maybe it should
+	core.set_gen_notify({decoration=true}, {DECO_ID})
+
+	core.set_gen_notify({custom=true}, nil, {UD_ID})
+
+	local flags, deco, custom = core.get_gen_notify()
+	local function ff(flag)
+		return (" " .. flags .. " "):match("[ ,]" .. flag .. "[ ,]") ~= nil
+	end
+	assert(ff("decoration"), "'decoration' flag missing")
+	assert(ff("custom"), "'custom' flag missing")
+	assert(table.indexof(deco, DECO_ID) > 0)
+	assert(table.indexof(custom, UD_ID) > 0)
+
+	core.set_gen_notify({decoration=false, custom=false})
+
+	flags, deco, custom = core.get_gen_notify()
+	assert(not ff("decoration") and not ff("custom"))
+	assert(#deco == 0, "deco ids not empty")
+	assert(#custom == 0, "custom ids not empty")
+end
+unittests.register("test_gennotify_api", test_gennotify_api)

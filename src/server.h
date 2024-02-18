@@ -44,6 +44,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <vector>
 #include <unordered_set>
+#include <optional>
+#include <string_view>
 
 class ChatEvent;
 struct ChatEventChat;
@@ -52,7 +54,6 @@ class IWritableItemDefManager;
 class NodeDefManager;
 class IWritableCraftDefManager;
 class BanManager;
-class EventManager;
 class Inventory;
 class ModChannelMgr;
 class RemotePlayer;
@@ -87,13 +88,17 @@ struct MediaInfo
 {
 	std::string path;
 	std::string sha1_digest; // base64-encoded
-	bool no_announce; // true: not announced in TOCLIENT_ANNOUNCE_MEDIA (at player join)
+	// true = not announced in TOCLIENT_ANNOUNCE_MEDIA (at player join)
+	bool no_announce;
+	// does what it says. used by some cases of dynamic media.
+	bool delete_at_shutdown;
 
-	MediaInfo(const std::string &path_="",
-	          const std::string &sha1_digest_=""):
+	MediaInfo(std::string_view path_ = "",
+	          std::string_view sha1_digest_ = ""):
 		path(path_),
 		sha1_digest(sha1_digest_),
-		no_announce(false)
+		no_announce(false),
+		delete_at_shutdown(false)
 	{
 	}
 };
@@ -258,8 +263,15 @@ public:
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
-	bool dynamicAddMedia(std::string filepath, u32 token,
-		const std::string &to_player, bool ephemeral);
+	struct DynamicMediaArgs {
+		std::string filename;
+		std::optional<std::string> filepath;
+		std::optional<std::string_view> data;
+		u32 token;
+		std::string to_player;
+		bool ephemeral = false;
+	};
+	bool dynamicAddMedia(const DynamicMediaArgs &args);
 
 	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
 	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);
@@ -405,6 +417,8 @@ public:
 
 	// Lua files registered for init of async env, pair of modname + path
 	std::vector<std::pair<std::string, std::string>> m_async_init_files;
+	// Identical but for mapgen env
+	std::vector<std::pair<std::string, std::string>> m_mapgen_init_files;
 
 	// Data transferred into other Lua envs at init time
 	std::unique_ptr<PackedValue> m_lua_globals_data;

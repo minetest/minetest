@@ -35,6 +35,8 @@ core.features = {
 	wallmounted_rotate = true,
 	item_specific_pointabilities = true,
 	blocking_pointability_type = true,
+	dynamic_add_media_startup = true,
+	dynamic_add_media_filepath = true,
 }
 
 function core.has_feature(arg)

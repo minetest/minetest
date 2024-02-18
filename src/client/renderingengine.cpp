@@ -152,6 +152,9 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	driver = m_device->getVideoDriver();
 	infostream << "Using the " << RenderingEngine::getVideoDriverInfo(driver->getDriverType()).friendly_name << " video driver" << std::endl;
 
+	// This changes the minimum allowed number of vertices in a VBO. Default is 500.
+	driver->setMinHardwareBufferVertexCount(4);
+
 	s_singleton = this;
 
 	auto skin = createSkin(m_device->getGUIEnvironment(),

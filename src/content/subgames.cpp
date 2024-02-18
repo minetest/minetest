@@ -77,8 +77,21 @@ struct GameFindPath
 
 std::string getSubgamePathEnv()
 {
+	static bool has_warned = false;
 	char *subgame_path = getenv("MINETEST_SUBGAME_PATH");
-	return subgame_path ? std::string(subgame_path) : "";
+	if (subgame_path && !has_warned) {
+		warningstream << "MINETEST_SUBGAME_PATH is deprecated, use MINETEST_GAME_PATH instead."
+				<< std::endl;
+		has_warned = true;
+	}
+
+	char *game_path = getenv("MINETEST_GAME_PATH");
+
+	if (game_path)
+		return std::string(game_path);
+	else if (subgame_path)
+		return std::string(subgame_path);
+	return "";
 }
 
 SubgameSpec findSubgame(const std::string &id)
@@ -226,9 +239,9 @@ std::set<std::string> getAvailableGameIds()
 
 			// Add it to result
 			const char *ends[] = {"_game", NULL};
-			std::string shorter = removeStringEnd(dln.name, ends);
+			auto shorter = removeStringEnd(dln.name, ends);
 			if (!shorter.empty())
-				gameids.insert(shorter);
+				gameids.emplace(shorter);
 			else
 				gameids.insert(dln.name);
 		}

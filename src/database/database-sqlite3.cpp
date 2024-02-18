@@ -258,7 +258,7 @@ bool MapDatabaseSQLite3::deleteBlock(const v3s16 &pos)
 	return good;
 }
 
-bool MapDatabaseSQLite3::saveBlock(const v3s16 &pos, const std::string &data)
+bool MapDatabaseSQLite3::saveBlock(const v3s16 &pos, std::string_view data)
 {
 	verifyDatabase();
 
@@ -283,13 +283,8 @@ void MapDatabaseSQLite3::loadBlock(const v3s16 &pos, std::string *block)
 		return;
 	}
 
-	const char *data = (const char *) sqlite3_column_blob(m_stmt_read, 0);
-	size_t len = sqlite3_column_bytes(m_stmt_read, 0);
-
-	if (data)
-		block->assign(data, len);
-	else
-		block->clear();
+	auto data = sqlite_to_blob(m_stmt_read, 0);
+	block->assign(data);
 
 	sqlite3_step(m_stmt_read);
 	// We should never get more than 1 row, so ok to reset
@@ -553,7 +548,7 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 		int_to_sqlite(m_stmt_player_load_inventory_items, 2, invId);
 		while (sqlite3_step(m_stmt_player_load_inventory_items) == SQLITE_ROW) {
 			const std::string itemStr = sqlite_to_string(m_stmt_player_load_inventory_items, 1);
-			if (itemStr.length() > 0) {
+			if (!itemStr.empty()) {
 				ItemStack stack;
 				stack.deSerialize(itemStr);
 				invList->changeItem(sqlite_to_uint(m_stmt_player_load_inventory_items, 0), stack);
@@ -567,7 +562,7 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 	str_to_sqlite(m_stmt_player_metadata_load, 1, sao->getPlayer()->getName());
 	while (sqlite3_step(m_stmt_player_metadata_load) == SQLITE_ROW) {
 		std::string attr = sqlite_to_string(m_stmt_player_metadata_load, 0);
-		std::string value = sqlite_to_string(m_stmt_player_metadata_load, 1);
+		auto value = sqlite_to_string_view(m_stmt_player_metadata_load, 1);
 
 		sao->getMeta().setString(attr, value);
 	}
@@ -592,7 +587,7 @@ void PlayerDatabaseSQLite3::listPlayers(std::vector<std::string> &res)
 	verifyDatabase();
 
 	while (sqlite3_step(m_stmt_player_list) == SQLITE_ROW)
-		res.push_back(sqlite_to_string(m_stmt_player_list, 0));
+		res.emplace_back(sqlite_to_string_view(m_stmt_player_list, 0));
 
 	sqlite3_reset(m_stmt_player_list);
 }
@@ -669,14 +664,14 @@ bool AuthDatabaseSQLite3::getAuth(const std::string &name, AuthEntry &res)
 		return false;
 	}
 	res.id = sqlite_to_uint(m_stmt_read, 0);
-	res.name = sqlite_to_string(m_stmt_read, 1);
-	res.password = sqlite_to_string(m_stmt_read, 2);
+	res.name = sqlite_to_string_view(m_stmt_read, 1);
+	res.password = sqlite_to_string_view(m_stmt_read, 2);
 	res.last_login = sqlite_to_int64(m_stmt_read, 3);
 	sqlite3_reset(m_stmt_read);
 
 	int64_to_sqlite(m_stmt_read_privs, 1, res.id);
 	while (sqlite3_step(m_stmt_read_privs) == SQLITE_ROW) {
-		res.privileges.emplace_back(sqlite_to_string(m_stmt_read_privs, 0));
+		res.privileges.emplace_back(sqlite_to_string_view(m_stmt_read_privs, 0));
 	}
 	sqlite3_reset(m_stmt_read_privs);
 
@@ -741,7 +736,7 @@ void AuthDatabaseSQLite3::listNames(std::vector<std::string> &res)
 	verifyDatabase();
 
 	while (sqlite3_step(m_stmt_list_names) == SQLITE_ROW) {
-		res.push_back(sqlite_to_string(m_stmt_list_names, 0));
+		res.emplace_back(sqlite_to_string_view(m_stmt_list_names, 0));
 	}
 	sqlite3_reset(m_stmt_list_names);
 }
@@ -815,11 +810,9 @@ void ModStorageDatabaseSQLite3::getModEntries(const std::string &modname, String
 
 	str_to_sqlite(m_stmt_get_all, 1, modname);
 	while (sqlite3_step(m_stmt_get_all) == SQLITE_ROW) {
-		const char *key_data = (const char *) sqlite3_column_blob(m_stmt_get_all, 0);
-		size_t key_len = sqlite3_column_bytes(m_stmt_get_all, 0);
-		const char *value_data = (const char *) sqlite3_column_blob(m_stmt_get_all, 1);
-		size_t value_len = sqlite3_column_bytes(m_stmt_get_all, 1);
-		(*storage)[std::string(key_data, key_len)] = std::string(value_data, value_len);
+		auto key = sqlite_to_blob(m_stmt_get_all, 0);
+		auto value = sqlite_to_blob(m_stmt_get_all, 1);
+		(*storage)[std::string(key)].assign(value);
 	}
 	sqlite3_vrfy(sqlite3_errcode(m_database), SQLITE_DONE);
 
@@ -833,9 +826,8 @@ void ModStorageDatabaseSQLite3::getModKeys(const std::string &modname,
 
 	str_to_sqlite(m_stmt_get_keys, 1, modname);
 	while (sqlite3_step(m_stmt_get_keys) == SQLITE_ROW) {
-		const char *key_data = (const char *) sqlite3_column_blob(m_stmt_get_keys, 0);
-		size_t key_len = sqlite3_column_bytes(m_stmt_get_keys, 0);
-		storage->emplace_back(key_data, key_len);
+		auto key = sqlite_to_blob(m_stmt_get_keys, 0);
+		storage->emplace_back(key);
 	}
 	sqlite3_vrfy(sqlite3_errcode(m_database), SQLITE_DONE);
 
@@ -852,9 +844,8 @@ bool ModStorageDatabaseSQLite3::getModEntry(const std::string &modname,
 		"Internal error: failed to bind query at " __FILE__ ":" TOSTRING(__LINE__));
 	bool found = sqlite3_step(m_stmt_get) == SQLITE_ROW;
 	if (found) {
-		const char *value_data = (const char *) sqlite3_column_blob(m_stmt_get, 0);
-		size_t value_len = sqlite3_column_bytes(m_stmt_get, 0);
-		value->assign(value_data, value_len);
+		auto sv = sqlite_to_blob(m_stmt_get, 0);
+		value->assign(sv);
 		sqlite3_step(m_stmt_get);
 	}
 
@@ -881,7 +872,7 @@ bool ModStorageDatabaseSQLite3::hasModEntry(const std::string &modname,
 }
 
 bool ModStorageDatabaseSQLite3::setModEntry(const std::string &modname,
-	const std::string &key, const std::string &value)
+	const std::string &key, std::string_view value)
 {
 	verifyDatabase();
 

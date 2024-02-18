@@ -381,6 +381,13 @@ Server::~Server()
 	if (m_mod_storage_database)
 		m_mod_storage_database->endSave();
 
+	// Clean up files
+	for (auto &it : m_media) {
+		if (it.second.delete_at_shutdown) {
+			fs::DeleteSingleFileOrEmptyDirectory(it.second.path);
+		}
+	}
+
 	// Delete things in the reverse order of creation
 	delete m_emerge;
 	delete m_env;
@@ -2527,14 +2534,13 @@ bool Server::addMediaFile(const std::string &filename,
 	}
 
 	SHA1 sha1;
-	sha1.addBytes(filedata.c_str(), filedata.length());
+	sha1.addBytes(filedata);
 
-	unsigned char *digest = sha1.getDigest();
-	std::string sha1_base64 = base64_encode(digest, 20);
-	std::string sha1_hex = hex_encode((char*) digest, 20);
+	std::string digest = sha1.getDigest();
+	std::string sha1_base64 = base64_encode(digest);
+	std::string sha1_hex = hex_encode(digest);
 	if (digest_to)
-		*digest_to = std::string((char*) digest, 20);
-	free(digest);
+		*digest_to = digest;
 
 	// Put in list
 	m_media[filename] = MediaInfo(filepath, sha1_base64);
@@ -2917,12 +2923,11 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 		/*
 			Clear references to playing sounds
 		*/
-		for (std::unordered_map<s32, ServerPlayingSound>::iterator
-				 i = m_playing_sounds.begin(); i != m_playing_sounds.end();) {
+		for (auto i = m_playing_sounds.begin(); i != m_playing_sounds.end();) {
 			ServerPlayingSound &psound = i->second;
 			psound.clients.erase(peer_id);
 			if (psound.clients.empty())
-				m_playing_sounds.erase(i++);
+				i = m_playing_sounds.erase(i);
 			else
 				++i;
 		}
@@ -3568,18 +3573,69 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 	SendDeleteParticleSpawner(peer_id, id);
 }
 
-bool Server::dynamicAddMedia(std::string filepath,
-	const u32 token, const std::string &to_player, bool ephemeral)
+namespace {
+	std::string writeToTempFile(std::string_view content)
+	{
+		auto filepath = fs::CreateTempFile();
+		if (filepath.empty())
+			return "";
+		std::ofstream os(filepath, std::ios::binary);
+		if (!os.good())
+			return "";
+		os << content;
+		os.close();
+		if (os.fail()) {
+			fs::DeleteSingleFileOrEmptyDirectory(filepath);
+			return "";
+		}
+		return filepath;
+	}
+}
+
+bool Server::dynamicAddMedia(const DynamicMediaArgs &a)
 {
-	std::string filename = fs::GetFilenameFromPath(filepath.c_str());
+	std::string filename = a.filename;
+	std::string filepath;
+
+	// Deal with file -or- data, as provided
+	// (Note: caller must ensure validity, so sanity_check is okay)
+	if (a.filepath) {
+		sanity_check(!a.data);
+		filepath = *a.filepath;
+		if (filename.empty())
+			filename = fs::GetFilenameFromPath(filepath.c_str());
+	} else {
+		sanity_check(a.data);
+		sanity_check(!filename.empty());
+
+		// Write the file to disk. addMediaFile() will read it right back but this
+		// is the best way without turning the media loading code into spaghetti.
+		filepath = writeToTempFile(*a.data);
+		if (filepath.empty()) {
+			errorstream << "Server: failed writing media file \""
+				<< filename << "\" to disk" << std::endl;
+			return false;
+		}
+		verbosestream << "Server: \"" << filename << "\" temporarily written to "
+			<< filepath << std::endl;
+	}
+
+	// Do some checks
 	auto it = m_media.find(filename);
 	if (it != m_media.end()) {
 		// Allow the same path to be "added" again in certain conditions
-		if (ephemeral || it->second.path != filepath) {
+		if (a.ephemeral || it->second.path != filepath) {
 			errorstream << "Server::dynamicAddMedia(): file \"" << filename
 				<< "\" already exists in media cache" << std::endl;
 			return false;
 		}
+	}
+
+	if (!m_env && (!a.to_player.empty() || a.ephemeral)) {
+		errorstream << "Server::dynamicAddMedia(): "
+			"adding ephemeral or player-specific media at startup is nonsense"
+			<< std::endl;
+		return false;
 	}
 
 	// Load the file and add it to our media cache
@@ -3587,53 +3643,56 @@ bool Server::dynamicAddMedia(std::string filepath,
 	bool ok = addMediaFile(filename, filepath, &filedata, &raw_hash);
 	if (!ok)
 		return false;
+	assert(!filedata.empty());
 
-	if (ephemeral) {
-		// Create a copy of the file and swap out the path, this removes the
-		// requirement that mods keep the file accessible at the original path.
-		filepath = fs::CreateTempFile();
-		bool ok = ([&] () -> bool {
-			if (filepath.empty())
+	const auto &media_it = m_media.find(filename);
+	assert(media_it != m_media.end());
+
+	if (a.ephemeral) {
+		if (!a.data) {
+			// Create a copy of the file and swap out the path, this removes the
+			// requirement that mods keep the file accessible at the original path.
+			filepath = writeToTempFile(filedata);
+			if (filepath.empty()) {
+				errorstream << "Server: failed creating a copy of media file \""
+					<< filename << "\"" << std::endl;
+				m_media.erase(filename);
 				return false;
-			std::ofstream os(filepath.c_str(), std::ios::binary);
-			if (!os.good())
-				return false;
-			os << filedata;
-			os.close();
-			return !os.fail();
-		})();
-		if (!ok) {
-			errorstream << "Server: failed to create a copy of media file "
-				<< "\"" << filename << "\"" << std::endl;
-			m_media.erase(filename);
-			return false;
+			}
+			verbosestream << "Server: \"" << filename << "\" temporarily copied to "
+				<< filepath << std::endl;
+			media_it->second.path = filepath;
 		}
-		verbosestream << "Server: \"" << filename << "\" temporarily copied to "
-			<< filepath << std::endl;
 
-		m_media[filename].path = filepath;
-		m_media[filename].no_announce = true;
-		// stepPendingDynMediaCallbacks will clean this up later.
-	} else if (!to_player.empty()) {
-		m_media[filename].no_announce = true;
+		media_it->second.no_announce = true;
+		// stepPendingDynMediaCallbacks will clean the file up later
+	} else if (a.data) {
+		// data is in a temporary file but not ephemeral, so the cleanup point
+		// is different.
+		media_it->second.delete_at_shutdown = true;
+	}
+	if (!a.to_player.empty()) {
+		// only sent to one player (who must be online), so shouldn't announce.
+		media_it->second.no_announce = true;
 	}
 
-	// Push file to existing clients
-	NetworkPacket pkt(TOCLIENT_MEDIA_PUSH, 0);
-	pkt << raw_hash << filename << (bool)ephemeral;
-
-	NetworkPacket legacy_pkt = pkt;
-
-	// Newer clients get asked to fetch the file (asynchronous)
-	pkt << token;
-	// Older clients have an awful hack that just throws the data at them
-	legacy_pkt.putLongString(filedata);
-
 	std::unordered_set<session_t> delivered, waiting;
-	{
+
+	// Push file to existing clients
+	if (m_env) {
+		NetworkPacket pkt(TOCLIENT_MEDIA_PUSH, 0);
+		pkt << raw_hash << filename << static_cast<bool>(a.ephemeral);
+
+		NetworkPacket legacy_pkt = pkt;
+
+		// Newer clients get asked to fetch the file (asynchronous)
+		pkt << a.token;
+		// Older clients have an awful hack that just throws the data at them
+		legacy_pkt.putLongString(filedata);
+
 		ClientInterface::AutoLock clientlock(m_clients);
 		for (auto &pair : m_clients.getClientList()) {
-			if (pair.second->getState() == CS_DefinitionsSent && !ephemeral) {
+			if (pair.second->getState() == CS_DefinitionsSent && !a.ephemeral) {
 				/*
 					If a client is in the DefinitionsSent state it is too late to
 					transfer the file via sendMediaAnnouncement() but at the same
@@ -3654,7 +3713,7 @@ bool Server::dynamicAddMedia(std::string filepath,
 				continue;
 
 			const session_t peer_id = pair.second->peer_id;
-			if (!to_player.empty() && getPlayerName(peer_id) != to_player)
+			if (!a.to_player.empty() && getPlayerName(peer_id) != a.to_player)
 				continue;
 
 			if (proto_ver < 40) {
@@ -3677,15 +3736,15 @@ bool Server::dynamicAddMedia(std::string filepath,
 	// Run callback for players that already had the file delivered (legacy-only)
 	for (session_t peer_id : delivered) {
 		if (auto player = m_env->getPlayer(peer_id))
-			getScriptIface()->on_dynamic_media_added(token, player->getName());
+			getScriptIface()->on_dynamic_media_added(a.token, player->getName());
 	}
 
 	// Save all others in our pending state
-	auto &state = m_pending_dyn_media[token];
+	auto &state = m_pending_dyn_media[a.token];
 	state.waiting_players = std::move(waiting);
 	// regardless of success throw away the callback after a while
 	state.expiry_timer = 60.0f;
-	if (ephemeral)
+	if (a.ephemeral)
 		state.filename = filename;
 
 	return true;

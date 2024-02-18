@@ -114,12 +114,6 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 	m_rendering_engine->setupTopLevelWindow();
 
-	/*
-		This changes the minimum allowed number of vertices in a VBO.
-		Default is 500.
-	*/
-	//driver->setMinHardwareBufferVertexCount(50);
-
 	// Create game callback for menus
 	g_gamecallback = new MainGameCallback();
 
