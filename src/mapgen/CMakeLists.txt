@@ -6,11 +6,11 @@ set(mapgen_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/mapgen_flat.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mapgen_fractal.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mapgen_singlenode.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/mapgen_trailgen.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mapgen_v5.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mapgen_v6.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mapgen_v7.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mapgen_valleys.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/mapgen_trailgen.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mg_biome.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mg_decoration.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/mg_ore.cpp

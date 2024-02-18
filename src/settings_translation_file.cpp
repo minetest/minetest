@@ -787,8 +787,6 @@ fake_function() {
 	gettext("Y-distance over which caverns expand to full size.");
 	gettext("Cavern threshold");
 	gettext("Defines full size of caverns, smaller values create larger caverns.");
-	gettext("Adjust Map Generation Height");
-	gettext("Adjust map generation height.\nWhen joining trailgen and v6 worlds together input a 2 for a smoother transition between the two mapgen types.");
 	gettext("Dungeon minimum Y");
 	gettext("Lower Y limit of dungeons.");
 	gettext("Dungeon maximum Y");

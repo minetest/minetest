@@ -23,8 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 
-/////// Mapgen Trailgen flags
-#define MGTRAILGEN_CAVERNS 0x04
+#define MGTRAILGEN_CAVERNS 0x01
 
 class BiomeManager;
 
@@ -42,11 +41,10 @@ struct MapgenTrailgenParams : public MapgenParams
 	s16 cavern_limit = -256;
 	s16 cavern_taper = 256;
 	float cavern_threshold = 0.7f;
-	u16 map_height_mod = 1;
 	s16 dungeon_ymin = -31000;
 	s16 dungeon_ymax = 31000;
 
-	NoiseParams np_terrain;
+	NoiseParams np_terrain_base;
 	NoiseParams np_terrain_higher;
 	NoiseParams np_steepness;
 	NoiseParams np_height_select;
@@ -68,28 +66,26 @@ class MapgenTrailgen : public MapgenBasic
 {
 public:
 	MapgenTrailgen(MapgenTrailgenParams *params, EmergeParams *emerge);
-	~MapgenTrailgen();
+	virtual ~MapgenTrailgen() override;
 
-	virtual MapgenType getType() const { return MAPGEN_TRAILGEN; }
+	virtual MapgenType getType() const override { return MAPGEN_TRAILGEN; }
 
-	virtual void makeChunk(BlockMakeData *data);
-
-	int getGroundLevelAtPoint(v2s16 p);
-	int getSpawnLevelAtPoint(v2s16 p);
+	virtual void makeChunk(BlockMakeData *data) override;
 
 	float baseTerrainLevel(float terrain_base, float terrain_higher,
 		float steepness, float height_select);
 
-	virtual float baseTerrainLevelFromNoise(v2s16 p);
-	virtual float baseTerrainLevelFromMap(v2s16 p);
-	virtual float baseTerrainLevelFromMap(int index);
+	float baseTerrainLevelFromNoise(v2s16 p);
+	float baseTerrainLevelFromMap(u32 index);
+
+	virtual int getSpawnLevelAtPoint(v2s16 p) override;
 
 	s16 generateTerrain();
-
-	virtual void calculateNoise();
+	void calculateNoise();
 
 private:
-	Noise *noise_terrain;
+
+	Noise *noise_terrain_base;
 	Noise *noise_terrain_higher;
 	Noise *noise_steepness;
 	Noise *noise_height_select;

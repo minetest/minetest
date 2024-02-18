@@ -960,7 +960,7 @@ fixed_map_seed (Fixed map seed) string
 #    Creating a world in the main menu will override this.
 #    Current mapgens in a highly unstable state:
 #    -    The optional floatlands of v7 (disabled by default).
-mg_name (Mapgen name) enum v7 v7,valleys,carpathian,v5,flat,fractal,singlenode,v6,trailgen
+mg_name (Mapgen name) enum v7 v7,valleys,carpathian,trailgen,v5,flat,fractal,singlenode,v6
 
 #    Water surface level of the world.
 water_level (Water level) int 1 -31000 31000
@@ -1068,8 +1068,7 @@ mgv5_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2
 #    The 'snowbiomes' flag enables the new 5 biome system.
 #    When the 'snowbiomes' flag is enabled jungles are automatically enabled and
 #    the 'jungles' flag is ignored.
-#    The 'temples' flag disables generation of desert temples. Normal dungeons will appear instead.
-mgv6_spflags (Mapgen V6 specific flags) flags jungles,biomeblend,mudflow,snowbiomes,noflat,trees,temples jungles,biomeblend,mudflow,snowbiomes,flat,trees,temples,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat,notrees,notemples
+mgv6_spflags (Mapgen V6 specific flags) flags jungles,biomeblend,mudflow,snowbiomes,noflat,trees jungles,biomeblend,mudflow,snowbiomes,flat,trees,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat,notrees
 
 #    Deserts occur when np_biome exceeds this value.
 #    When the 'snowbiomes' flag is enabled, this is ignored.
@@ -1096,7 +1095,7 @@ mgv6_np_terrain_higher (Terrain higher noise) noise_params_2d 20, 16, (500, 500,
 mgv6_np_steepness (Steepness noise) noise_params_2d 0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 2.0, eased
 
 #    Defines distribution of higher terrain.
-mgv6_np_height_select (Height select noise) noise_params_2d 0.5, 1, (250, 250, 250), 4213, 5, 0.69, 2.0, eased
+mgv6_np_height_select (Height select noise) noise_params_2d 0, 1, (250, 250, 250), 4213, 5, 0.69, 2.0, eased
 
 #    Varies depth of biome surface nodes.
 mgv6_np_mud (Mud noise) noise_params_2d 4, 2, (200, 200, 200), 91013, 3, 0.55, 2.0, eased
@@ -1578,6 +1577,66 @@ mgfractal_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 
 #    3D noise that determines number of dungeons per mapchunk.
 mgfractal_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2, 0.8, 2.0
 
+[*Mapgen Trailgen]
+
+#    Map generation attributes specific to Mapgen trailgen.
+mgtrailgen_spflags (Mapgen Trailgen specific flags) flags caverns caverns,nocaverns
+
+#    Y of upper limit of large caves.
+mgtrailgen_large_cave_depth (Large cave depth) int -33
+
+#    Minimum limit of random number of small caves per mapchunk.
+mgtrailgen_small_cave_num_min (Small cave minimum number) int 0 0 256
+
+#    Maximum limit of random number of small caves per mapchunk.
+mgtrailgen_small_cave_num_max (Small cave maximum number) int 0 0 256
+
+#    Minimum limit of random number of large caves per mapchunk.
+mgtrailgen_large_cave_num_min (Large cave minimum number) int 0 0 64
+
+#    Maximum limit of random number of large caves per mapchunk.
+mgtrailgen_large_cave_num_max (Large cave maximum number) int 2 0 64
+
+#    Proportion of large caves that contain liquid.
+mgtrailgen_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
+
+#    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
+mgtrailgen_cave_width (Cave width) float 0.09
+
+#    Y-level of cavern upper limit.
+mgtrailgen_cavern_limit (Cavern limit) int -256
+
+#    Y-distance over which caverns expand to full size.
+mgtrailgen_cavern_taper (Cavern taper) int 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+mgtrailgen_cavern_threshold (Cavern threshold) float 0.7
+
+#    Lower Y limit of dungeons.
+mgtrailgen_dungeon_ymin (Dungeon minimum Y) int -31000
+
+#    Upper Y limit of dungeons.
+mgtrailgen_dungeon_ymax (Dungeon maximum Y) int 31000
+
+[**Noises]
+
+#    Y-level of lower terrain and seabed.
+mgtrailgen_np_terrain_base (Terrain base noise) noise_params_2d -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0, eased
+
+#    Y-level of higher terrain that creates cliffs.
+mgtrailgen_np_terrain_higher (Terrain higher noise) noise_params_2d 20, 16, (500, 500, 500), 85039, 5, 0.6, 2.0, eased
+
+#    Varies steepness of cliffs.
+mgtrailgen_np_steepness (Steepness noise) noise_params_2d 0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 2.0, eased
+
+#    Defines distribution of higher terrain.
+mgtrailgen_np_height_select (Height select noise) noise_params_2d 0, 1, (250, 250, 250), 4213, 5, 0.69, 2.0, eased
+
+#    Variation of biome filler depth.
+mgtrailgen_np_filler_depth (Filler Depth) noise_params_2d 1, 2, (200, 200, 200), 91013, 3, 0.7, 2.0, eased
+
 [*Mapgen Valleys]
 
 #    Map generation attributes specific to Mapgen Valleys.
@@ -1671,70 +1730,6 @@ mgvalleys_np_inter_valley_slope (Valley slope) noise_params_2d 0.5, 0.5, (128, 1
 
 #    3D noise that determines number of dungeons per mapchunk.
 mgvalleys_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2, 0.8, 2.0
-
-[*Mapgen Trailgen]
-
-#    Map generation attributes specific to Mapgen trailgen.
-mgtrailgen_spflags (Mapgen Trailgen specific flags) flags caverns caverns,nocaverns
-
-#    Y of upper limit of large caves.
-mgtrailgen_large_cave_depth (Large cave depth) int -33
-
-#    Minimum limit of random number of small caves per mapchunk.
-mgtrailgen_small_cave_num_min (Small cave minimum number) int 0 0 256
-
-#    Maximum limit of random number of small caves per mapchunk.
-mgtrailgen_small_cave_num_max (Small cave maximum number) int 0 0 256
-
-#    Minimum limit of random number of large caves per mapchunk.
-mgtrailgen_large_cave_num_min (Large cave minimum number) int 0 0 64
-
-#    Maximum limit of random number of large caves per mapchunk.
-mgtrailgen_large_cave_num_max (Large cave maximum number) int 2 0 64
-
-#    Proportion of large caves that contain liquid.
-mgtrailgen_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
-
-#    Controls width of tunnels, a smaller value creates wider tunnels.
-#    Value >= 10.0 completely disables generation of tunnels and avoids the
-#    intensive noise calculations.
-mgtrailgen_cave_width (Cave width) float 0.09
-
-#    Y-level of cavern upper limit.
-mgtrailgen_cavern_limit (Cavern limit) int -256
-
-#    Y-distance over which caverns expand to full size.
-mgtrailgen_cavern_taper (Cavern taper) int 256
-
-#    Defines full size of caverns, smaller values create larger caverns.
-mgtrailgen_cavern_threshold (Cavern threshold) float 0.7
-
-#    Adjust map generation height.
-#    When joining trailgen and v6 worlds together input a 2 for a smoother transition between the two mapgen types.
-mgtrailgen_map_height_mod (Adjust Map Generation Height) int 1
-
-#    Lower Y limit of dungeons.
-mgtrailgen_dungeon_ymin (Dungeon minimum Y) int -31000
-
-#    Upper Y limit of dungeons.
-mgtrailgen_dungeon_ymax (Dungeon maximum Y) int 31000
-
-[**Noises]
-
-#    Y-level of lower terrain and seabed.
-mgtrailgen_np_terrain_base (Terrain base noise) noise_params_2d -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0, eased
-
-#    Y-level of higher terrain that creates cliffs.
-mgtrailgen_np_terrain_higher (Terrain higher noise) noise_params_2d 20, 16, (500, 500, 500), 85039, 5, 0.6, 2.0, eased
-
-#    Varies steepness of cliffs.
-mgtrailgen_np_steepness (Steepness noise) noise_params_2d 0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 2.0, eased
-
-#    Defines distribution of higher terrain.
-mgtrailgen_np_height_select (Height select noise) noise_params_2d 0.5, 1, (250, 250, 250), 4213, 5, 0.69, 2.0, eased
-
-#    Variation of biome filler depth.
-mgtrailgen_np_filler_depth (Filler Depth) noise_params_2d 1, 2, (200, 200, 200), 91013, 3, 0.7, 2.0, eased
 
 [Advanced]
 
