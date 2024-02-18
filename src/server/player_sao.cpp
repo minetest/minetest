@@ -515,8 +515,9 @@ void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool fr
 		return; // Nothing to do
 
 	s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, target_hp - (s32)m_hp, reason);
+	hp_change = std::min<s32>(hp_change, U16_MAX); // Protect against overflow
 
-	s32 hp = (s32)m_hp + std::min(hp_change, U16_MAX); // Protection against s32 overflow
+	s32 hp = (s32)m_hp + hp_change;
 	hp = rangelim(hp, 0, U16_MAX);
 
 	if (hp > m_prop.hp_max)
