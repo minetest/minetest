@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Norwegian Bokmål (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-01-21 20:43+0000\n"
-"Last-Translator: Blood Axe <bloodaxenor@protonmail.com>\n"
+"PO-Revision-Date: 2024-02-18 16:59+0000\n"
+"Last-Translator: Petter Reinholdtsen <pere-weblate@hungry.com>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "minetest/minetest/nb_NO/>\n"
 "Language: nb\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.4\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -393,7 +393,7 @@ msgstr "Ingen modpakke-beskrivelse tilgjengelig."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr "Ingen valgfrie pakker"
+msgstr "Ingen valgfrie avhengigheter"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -1016,9 +1016,8 @@ msgid "Rename"
 msgstr "Gi nytt navn"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Update available?"
-msgstr "<ingen tilgjengelig>"
+msgstr "Oppdatering tilgjengelig?"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1417,35 +1416,35 @@ msgstr "Avslutt til operativsystem"
 
 #: src/client/game.cpp
 msgid "Fast mode disabled"
-msgstr "Rask modus deaktivert"
+msgstr "Hurtigmodus slått av"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled"
-msgstr "Hurtigmodus aktivert"
+msgstr "Hurtigmodus slått på"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
-msgstr "Hurtigmodus aktivert (merk: ingen \"rask\"-rettigheter)"
+msgstr "Hurtigmodus slått på (merk: ingen «hurtig»-rettigheter)"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
-msgstr "Flymodus deaktivert"
+msgstr "Flymodus slått av"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled"
-msgstr "Flymodus aktivert"
+msgstr "Flymodus slått på"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr "Flymodus aktivert (merk: ingen 'fly'-privilegium)"
+msgstr "Flymodus slått på (merk: ingen 'fly'-rettigheter)"
 
 #: src/client/game.cpp
 msgid "Fog disabled"
-msgstr "Tåke deaktivert"
+msgstr "Tåke slått av"
 
 #: src/client/game.cpp
 msgid "Fog enabled"
-msgstr "Tåke aktivert"
+msgstr "Tåke slått på"
 
 #: src/client/game.cpp
 msgid "Game info:"
@@ -1981,9 +1980,8 @@ msgid ""
 msgstr ""
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Krever ingen andre modder"
+msgstr "Noen modder har utilfredstilte avhengigheter:"
 
 #: src/gui/guiChatConsole.cpp
 #, fuzzy
@@ -2478,14 +2476,12 @@ msgid "Announce to this serverlist."
 msgstr "Offentliggjør for denne serverlisten."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Anti-aliasing scale"
-msgstr "Kantutjevning:"
+msgstr "Kantutgjevningsskala"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Antialiasing method"
-msgstr "Kantutjevning:"
+msgstr "Kantutjevningsmetode"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -3435,9 +3431,8 @@ msgid "Filmic tone mapping"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Filtering and Antialiasing"
-msgstr "Kantutjevning:"
+msgstr "Filtrering og kantutjevning"
 
 #: src/settings_translation_file.cpp
 msgid "First of 4 2D noises that together define hill/mountain range height."
@@ -3820,11 +3815,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How much you are slowed down when moving inside a liquid.\n"
 "Decrease this to increase liquid resistance to movement."
-msgstr "Reduksjon av denne verdien øker bevegelsesmotstanden i væsker."
+msgstr ""
+"Hvor mye du bremses når du beveger deg gjennom væsker.\n"
+"Reduksjon av denne verdien øker bevegelsesmotstanden i væsker."
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers."
@@ -4173,9 +4169,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Length of liquid waves."
-msgstr "Bølgende blader"
+msgstr "Lengden på flytende bølger."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5117,9 +5112,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screen"
-msgstr "Skjerm:"
+msgstr "Skjerm"
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
@@ -5867,9 +5861,8 @@ msgid "Touchscreen sensitivity"
 msgstr "Pekerfølsomhet"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen sensitivity multiplier."
-msgstr "Pekerfølsomhet"
+msgstr "Berøringsskjermfølsomhetsfaktor."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
