@@ -2561,6 +2561,7 @@ Some of the values in the key-value store are handled specially:
   The default currently is the same as right/down.
   Example: 6 = 2 + 1*4 = middle,up
 * `range`: Overrides the pointing range
+  Example: `meta:set_float("range", 4.2)`
 
 Example:
 
