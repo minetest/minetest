@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <optional>
 
 struct ItemDefinition;
-struct IItemDefManager;
+class IItemDefManager;
 
 struct ToolGroupCap
 {
