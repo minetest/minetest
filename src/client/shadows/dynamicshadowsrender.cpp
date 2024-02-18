@@ -183,8 +183,12 @@ void ShadowRenderer::addNodeToShadowList(
 {
 	m_shadow_node_array.emplace_back(node, shadowMode);
 	// node should never be ClientMap
+#if IRRLICHT_VERSION_MT_REVISION >= 15
+	assert(!node->getName().has_value() || *node->getName() != "ClientMap");
+#else
+	// TODO: Remove this as soon as we require 1.9.0mt15
 	assert(strcmp(node->getName(), "ClientMap") != 0);
-
+#endif
 	node->forEachMaterial([this] (auto &mat) {
 		mat.setTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
 	});
