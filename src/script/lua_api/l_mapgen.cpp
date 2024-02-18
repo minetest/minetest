@@ -1560,10 +1560,9 @@ int ModApiMapgen::l_generate_ores(lua_State *L)
 	mg.vm   = checkObject<LuaVoxelManip>(L, 1)->vm;
 	mg.ndef = emerge->ndef;
 
-	Mapgen *mg_current = emerge->getCurrentMapgen();
-	if (mg_current && mg_current->biomegen &&
-			mg_current->biomegen->getType() == BIOMEGEN_ORIGINAL)
-		mg.biomemap = mg_current->biomegen->biomemap;
+	auto *bgen = getBiomeGen(L);
+	if (bgen && bgen->getType() == BIOMEGEN_ORIGINAL)
+		mg.biomemap = bgen->biomemap;
 
 	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) :
 			mg.vm->m_area.MinEdge + v3s16(1,1,1) * MAP_BLOCKSIZE;
@@ -1600,10 +1599,9 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 	mg.vm   = checkObject<LuaVoxelManip>(L, 1)->vm;
 	mg.ndef = emerge->ndef;
 
-	Mapgen *mg_current = emerge->getCurrentMapgen();
-	if (mg_current && mg_current->biomegen &&
-			mg_current->biomegen->getType() == BIOMEGEN_ORIGINAL)
-		mg.biomemap = mg_current->biomegen->biomemap;
+	auto *bgen = getBiomeGen(L);
+	if (bgen && bgen->getType() == BIOMEGEN_ORIGINAL)
+		mg.biomemap = bgen->biomemap;
 
 	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) :
 			mg.vm->m_area.MinEdge + v3s16(1,1,1) * MAP_BLOCKSIZE;
@@ -1624,16 +1622,17 @@ int ModApiMapgen::l_generate_biomes(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	auto *emerge = getEmergeManager(L);
 	if (!emerge)
 		return 0;
 
-	Mapgen *mg_current = emerge->getCurrentMapgen();
-	if (!mg_current || !mg_current->biomegen ||
-			mg_current->biomegen->getType() != BIOMEGEN_ORIGINAL)
+	auto *mg_current = getMapgen(L);
+	auto *bgen = getBiomeGen(L);
+	if (!mg_current || !bgen ||
+			bgen->getType() != BIOMEGEN_ORIGINAL)
 		return 0;
 
-	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	const NodeDefManager *ndef = mg_current->ndef;
 
 	MapgenBasic mg;
 
@@ -1644,7 +1643,7 @@ int ModApiMapgen::l_generate_biomes(lua_State *L)
 	mg.vm   = checkObject<LuaVoxelManip>(L, 1)->vm;
 	mg.ndef = ndef;
 	mg.biomegen = mg_current->biomegen;
-	mg.biomemap = mg_current->biomegen->biomemap;
+	mg.biomemap = bgen->biomemap;
 	mg.water_level = mg_current->water_level;
 
 	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) :
@@ -1686,16 +1685,17 @@ int ModApiMapgen::l_generate_biome_dust(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	auto *emerge = getEmergeManager(L);
 	if (!emerge)
 		return 0;
 
-	Mapgen *mg_current = emerge->getCurrentMapgen();
-	if (!mg_current || !mg_current->biomegen ||
-			mg_current->biomegen->getType() != BIOMEGEN_ORIGINAL)
+	auto *mg_current = getMapgen(L);
+	auto *bgen = getBiomeGen(L);
+	if (!mg_current || !bgen ||
+			bgen->getType() != BIOMEGEN_ORIGINAL)
 		return 0;
 
-	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	const NodeDefManager *ndef = mg_current->ndef;
 
 	MapgenBasic mg;
 
@@ -1703,7 +1703,7 @@ int ModApiMapgen::l_generate_biome_dust(lua_State *L)
 	mg.m_bmgr = mg_current->m_emerge->biomemgr;
 	mg.ndef = ndef;
 	mg.biomegen = mg_current->biomegen;
-	mg.biomemap = mg_current->biomegen->biomemap;
+	mg.biomemap = bgen->biomemap;
 	mg.water_level = mg_current->water_level;
 
 	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) :
@@ -2163,6 +2163,8 @@ void ModApiMapgen::InitializeEmerge(lua_State *L, int top)
 
 	API_FCT(generate_ores);
 	API_FCT(generate_decorations);
+	API_FCT(generate_biomes);
+	API_FCT(generate_biome_dust);
 	API_FCT(place_schematic_on_vmanip);
 	API_FCT(serialize_schematic);
 	API_FCT(read_schematic);
