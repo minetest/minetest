@@ -115,7 +115,7 @@ static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 	try {
 		code = keyname_to_keycode(resolved.c_str());
 	} catch (UnknownKeycode &e) {
-		code = KEY_KEY_CODES_COUNT;
+		code = KEY_UNKNOWN;
 		warningstream << "TouchScreenGUI: Unknown key '" << resolved
 			      << "' for '" << key << "', hiding button." << std::endl;
 	}
@@ -542,7 +542,7 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 		{minimap_id, "minimap"},
 	};
 	for (const auto &pair : settings_bar_buttons) {
-		if (id_to_keycode(pair.first) == KEY_KEY_CODES_COUNT)
+		if (id_to_keycode(pair.first) == KEY_UNKNOWN)
 			continue;
 
 		std::wstring wide = utf8_to_wide(pair.second);
@@ -571,7 +571,7 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 		{exit_id, "exit"},
 	};
 	for (const auto &pair : rare_controls_bar_buttons) {
-		if (id_to_keycode(pair.first) == KEY_KEY_CODES_COUNT)
+		if (id_to_keycode(pair.first) == KEY_UNKNOWN)
 			continue;
 
 		std::wstring wide = utf8_to_wide(pair.second);
