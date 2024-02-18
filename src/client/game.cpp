@@ -1551,18 +1551,20 @@ bool Game::createClient(const GameStartData &start_data)
 
 	/* Set window caption
 	 */
-	std::wstring str = utf8_to_wide(PROJECT_NAME_C);
-	str += L" ";
-	str += utf8_to_wide(g_version_hash);
-	str += L" [";
-	str += simple_singleplayer_mode ? wstrgettext("Singleplayer")
-			: wstrgettext("Multiplayer");
-	str += L"]";
-	str += L" [";
-	str += driver->getName();
-	str += L"]";
+#if IRRLICHT_VERSION_MT_REVISION >= 15
+	auto driver_name = driver->getName();
+#else
+	auto driver_name = wide_to_utf8(driver->getName());
+#endif
+	std::string str = std::string(PROJECT_NAME_C) +
+			" " + g_version_hash + " [";
+	str += simple_singleplayer_mode ? gettext("Singleplayer")
+			: gettext("Multiplayer");
+	str += "] [";
+	str += driver_name;
+	str += "]";
 
-	device->setWindowCaption(str.c_str());
+	device->setWindowCaption(utf8_to_wide(str).c_str());
 
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	player->hurt_tilt_timer = 0;

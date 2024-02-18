@@ -240,37 +240,6 @@ CGUITTFont* CGUITTFont::createTTFont(IGUIEnvironment *env, const io::path& filen
 	return font;
 }
 
-CGUITTFont* CGUITTFont::createTTFont(IrrlichtDevice *device, const io::path& filename, const u32 size, const bool antialias, const bool transparency)
-{
-	if (!c_libraryLoaded)
-	{
-		if (FT_Init_FreeType(&c_library))
-			return 0;
-		c_libraryLoaded = true;
-	}
-
-	CGUITTFont* font = new CGUITTFont(device->getGUIEnvironment());
-	font->Device = device;
-	bool ret = font->load(filename, size, antialias, transparency);
-	if (!ret)
-	{
-		font->drop();
-		return 0;
-	}
-
-	return font;
-}
-
-CGUITTFont* CGUITTFont::create(IGUIEnvironment *env, const io::path& filename, const u32 size, const bool antialias, const bool transparency)
-{
-	return CGUITTFont::createTTFont(env, filename, size, antialias, transparency);
-}
-
-CGUITTFont* CGUITTFont::create(IrrlichtDevice *device, const io::path& filename, const u32 size, const bool antialias, const bool transparency)
-{
-	return CGUITTFont::createTTFont(device, filename, size, antialias, transparency);
-}
-
 //////////////////////
 
 //! Constructor.
@@ -304,6 +273,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 
 	io::IFileSystem* filesystem = Environment->getFileSystem();
 	irr::ILogger* logger = (Device != 0 ? Device->getLogger() : 0);
+	// FIXME: this is always null ^
 	this->size = size;
 	this->filename = filename;
 
@@ -314,7 +284,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 
 	// Log.
 	if (logger)
-		logger->log(L"CGUITTFont", core::stringw(core::stringw(L"Creating new font: ") + core::stringw(filename) + L" " + core::stringc(size) + L"pt " + (antialias ? L"+antialias " : L"-antialias ") + (transparency ? L"+transparency" : L"-transparency")).c_str(), irr::ELL_INFORMATION);
+		logger->log("CGUITTFont", (core::stringc(L"Creating new font: ") + filename + " " + core::stringc(size) + "pt " + (antialias ? "+antialias " : "-antialias ") + (transparency ? "+transparency" : "-transparency")).c_str(), irr::ELL_INFORMATION);
 
 	// Grab the face.
 	SGUITTFace* face = 0;
@@ -330,7 +300,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 			io::IReadFile* file = filesystem->createAndOpenFile(filename);
 			if (file == 0)
 			{
-				if (logger) logger->log(L"CGUITTFont", L"Failed to open the file.", irr::ELL_INFORMATION);
+				if (logger) logger->log("CGUITTFont", "Failed to open the file.", irr::ELL_INFORMATION);
 
 				c_faces.erase(filename);
 				delete face;
@@ -345,7 +315,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 			// Create the face.
 			if (FT_New_Memory_Face(c_library, face->face_buffer, face->face_buffer_size, 0, &face->face))
 			{
-				if (logger) logger->log(L"CGUITTFont", L"FT_New_Memory_Face failed.", irr::ELL_INFORMATION);
+				if (logger) logger->log("CGUITTFont", "FT_New_Memory_Face failed.", irr::ELL_INFORMATION);
 
 				c_faces.erase(filename);
 				delete face;
@@ -357,7 +327,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 		{
 			if (FT_New_Face(c_library, reinterpret_cast<const char*>(filename.c_str()), 0, &face->face))
 			{
-				if (logger) logger->log(L"CGUITTFont", L"FT_New_Face failed.", irr::ELL_INFORMATION);
+				if (logger) logger->log("CGUITTFont", "FT_New_Face failed.", irr::ELL_INFORMATION);
 
 				c_faces.erase(filename);
 				delete face;
