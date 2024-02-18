@@ -1017,7 +1017,7 @@ private:
 	// this happens in pause menu in singleplayer
 	bool m_is_paused = false;
 
-	bool m_touch_simulate_aux1;
+	bool m_touch_simulate_aux1 = false;
 	bool m_touch_use_crosshair;
 	inline bool isTouchCrosshairDisabled() {
 		return !m_touch_use_crosshair && camera->getCameraMode() == CAMERA_MODE_FIRST;
@@ -1069,9 +1069,6 @@ Game::Game() :
 		&settingChangedCallback, this);
 
 	readSettings();
-
-	m_touch_simulate_aux1 = false;	// This is initialised properly later
-
 }
 
 
