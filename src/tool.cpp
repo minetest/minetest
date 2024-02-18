@@ -498,9 +498,9 @@ f32 getToolRange(const ItemStack &wielded_item, const ItemStack &hand_item,
 	const std::string &wielded_meta_range = wielded_item.metadata.getString("range");
 	const std::string &hand_meta_range = hand_item.metadata.getString("range");
 
-	float max_d = wielded_meta_range.empty() ? wielded_item.getDefinition(itemdef_manager).range :
+	f32 max_d = wielded_meta_range.empty() ? wielded_item.getDefinition(itemdef_manager).range :
 			stof(wielded_meta_range);
-	float max_d_hand = hand_meta_range.empty() ? hand_item.getDefinition(itemdef_manager).range :
+	f32 max_d_hand = hand_meta_range.empty() ? hand_item.getDefinition(itemdef_manager).range :
 			stof(hand_meta_range);
 
 	if (max_d < 0 && max_d_hand >= 0)
