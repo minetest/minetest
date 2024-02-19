@@ -466,10 +466,6 @@ public:
 		if (!inventory_image.empty())
 			cc->inventory_texture = tsrc->getTexture(inventory_image);
 		getItemMesh(client, item, &(cc->wield_mesh));
-		// note: vertices are modified frequently (see hud.cpp) so only indices
-		// can be mapped
-		if (auto mesh = cc->wield_mesh.mesh)
-			mesh->setHardwareMappingHint(scene::EHM_STATIC, scene::EBT_INDEX);
 
 		cc->palette = tsrc->getPalette(def.palette_image);
 

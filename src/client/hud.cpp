@@ -1100,24 +1100,23 @@ void drawItemStack(
 		video::SColor basecolor =
 			client->idef()->getItemstackColor(item, client);
 
-		u32 mc = mesh->getMeshBufferCount();
+		const u32 mc = mesh->getMeshBufferCount();
+		if (mc > imesh->buffer_colors.size())
+			imesh->buffer_colors.resize(mc);
 		for (u32 j = 0; j < mc; ++j) {
 			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-			// we can modify vertices relatively fast,
-			// because these meshes are not buffered.
-			assert(buf->getHardwareMappingHint_Vertex() == scene::EHM_NEVER);
 			video::SColor c = basecolor;
 
-			if (imesh->buffer_colors.size() > j) {
-				ItemPartColor *p = &imesh->buffer_colors[j];
-				if (p->override_base)
-					c = p->color;
-			}
+			auto &p = imesh->buffer_colors[j];
+			p.applyOverride(c);
 
-			if (imesh->needs_shading)
-				colorizeMeshBuffer(buf, &c);
-			else
-				setMeshBufferColor(buf, c);
+			if (p.needColorize(c)) {
+				buf->setDirty(scene::EBT_VERTEX);
+				if (imesh->needs_shading)
+					colorizeMeshBuffer(buf, &c);
+				else
+					setMeshBufferColor(buf, c);
+			}
 
 			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
