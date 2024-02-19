@@ -69,10 +69,16 @@ Clouds::Clouds(scene::ISceneManager* mgr,
 		&cloud_3d_setting_changed, this);
 
 	updateBox();
+
+	m_meshbuffer = new scene::SMeshBuffer();
+	m_meshbuffer->setHardwareMappingHint(scene::EHM_STREAM);
 }
 
 Clouds::~Clouds()
 {
+	if (m_meshbuffer)
+		m_meshbuffer->drop();
+
 	g_settings->deregisterChangedCallback("enable_3d_clouds",
 		&cloud_3d_setting_changed, this);
 }
@@ -85,29 +91,6 @@ void Clouds::OnRegisterSceneNode()
 	}
 
 	ISceneNode::OnRegisterSceneNode();
-}
-
-
-// TODO: Irrlicht should gain an api to both resize and reserve mesh buffers
-// Then this would be less awkward.
-
-static inline void resizeMeshBuffer(scene::SMeshBuffer *&mb, u32 vertexCount, u32 indexCount)
-{
-	if (mb) {
-		if (mb->getVertexCount() == vertexCount && mb->getIndexCount() == indexCount)
-			return;
-		mb->drop();
-	}
-	verbosestream << "Clouds: recreating SMeshBuffer(" << vertexCount << ", "
-		<< indexCount << ")" << std::endl;
-
-	mb = new scene::SMeshBuffer();
-	// fill with zero bytes
-	std::vector<char> empty;
-	empty.resize(std::max(sizeof(video::S3DVertex) * vertexCount,
-		sizeof(u16) * indexCount));
-	mb->append(empty.data(), vertexCount,
-		reinterpret_cast<u16*>(empty.data()), indexCount);
 }
 
 void Clouds::updateMesh()
@@ -170,18 +153,23 @@ void Clouds::updateMesh()
 		}
 	}
 
-	const u32 vertex_count = num_faces_to_draw * 16 * m_cloud_radius_i * m_cloud_radius_i;
-	const u32 quad_count = vertex_count / 4;
-	const u32 index_count = quad_count * 6;
-	resizeMeshBuffer(m_meshbuffer, vertex_count, index_count);
-	auto *mb = m_meshbuffer;
 
-	video::S3DVertex *vptr = reinterpret_cast<video::S3DVertex*>(mb->getVertices());
+	auto *mb = m_meshbuffer;
+	{
+		const u32 vertex_count = num_faces_to_draw * 16 * m_cloud_radius_i * m_cloud_radius_i;
+		const u32 quad_count = vertex_count / 4;
+		const u32 index_count = quad_count * 6;
+
+		// reserve memory
+		mb->Vertices.reallocate(vertex_count);
+		mb->Indices.reallocate(index_count);
+	}
 
 #define GETINDEX(x, z, radius) (((z)+(radius))*(radius)*2 + (x)+(radius))
 #define INAREA(x, z, radius) \
 	((x) >= -(radius) && (x) < (radius) && (z) >= -(radius) && (z) < (radius))
 
+	mb->Vertices.set_used(0);
 	for (s16 zi0= -m_cloud_radius_i; zi0 < m_cloud_radius_i; zi0++)
 	for (s16 xi0= -m_cloud_radius_i; xi0 < m_cloud_radius_i; xi0++)
 	{
@@ -302,22 +290,32 @@ void Clouds::updateMesh()
 
 			for (video::S3DVertex &vertex : v) {
 				vertex.Pos += pos;
-				*vptr++ = vertex;
+				mb->Vertices.push_back(vertex);
 			}
 		}
 	}
+	mb->setDirty(scene::EBT_VERTEX);
 
-	u16 *iptr = mb->getIndices();
-	for (u32 k = 0; k < quad_count; k++) {
-		*iptr++ = 4 * k + 0;
-		*iptr++ = 4 * k + 1;
-		*iptr++ = 4 * k + 2;
-		*iptr++ = 4 * k + 2;
-		*iptr++ = 4 * k + 3;
-		*iptr++ = 4 * k + 0;
+	const u32 quad_count = mb->getVertexCount() / 4;
+	const u32 index_count = quad_count * 6;
+	// rewrite index array as needed
+	if (mb->getIndexCount() > index_count) {
+		mb->Indices.set_used(index_count);
+		mb->setDirty(scene::EBT_INDEX);
+	} else if (mb->getIndexCount() < index_count) {
+		const u32 start = mb->getIndexCount() / 6;
+		assert(start * 6 == mb->getIndexCount());
+		for (u32 k = start; k < quad_count; k++) {
+			mb->Indices.push_back(4 * k + 0);
+			mb->Indices.push_back(4 * k + 1);
+			mb->Indices.push_back(4 * k + 2);
+			mb->Indices.push_back(4 * k + 2);
+			mb->Indices.push_back(4 * k + 3);
+			mb->Indices.push_back(4 * k + 0);
+		}
+		mb->setDirty(scene::EBT_INDEX);
 	}
 
-	//mb->recalculateBoundingBox();
 }
 
 void Clouds::render()
