@@ -222,7 +222,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 44:
 		AO_CMD_SET_BONE_POSITION extended
 		Add TOCLIENT_MOVE_PLAYER_REL
-		Move default minimap from client-side C++ to server-side builtin Lua
+		Move default minimap and crosshair from client-side C++ to server-side builtin Lua
 		[scheduled bump for 5.9.0]
 */
 
