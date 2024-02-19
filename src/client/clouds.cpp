@@ -97,17 +97,6 @@ void Clouds::OnRegisterSceneNode()
 
 void Clouds::updateMesh()
 {
-	// Only update mesh if it has moved enough, this saves lots of GPU buffer uploads.
-	// In practice the fog hides the delay updating.
-	constexpr float max_d = 5 * BS;
-	if (m_meshbuffer->getIndexCount() > 0 && m_mesh_origin.getDistanceFrom(m_origin) < max_d)
-		return;
-
-	ScopeProfiler sp(g_profiler, "Clouds::updateMesh()", SPT_AVG);
-	m_mesh_origin = m_origin;
-
-	const u32 num_faces_to_draw = m_enable_3d ? 6 : 1;
-
 	// Clouds move from Z+ towards Z-
 
 	v2f camera_pos_2d(m_camera_pos.X, m_camera_pos.Z);
@@ -120,6 +109,29 @@ void Clouds::updateMesh()
 		std::floor(center_of_drawing_in_noise_f.X / cloud_size),
 		std::floor(center_of_drawing_in_noise_f.Y / cloud_size)
 	);
+
+	// Only update mesh if it has moved enough, this saves lots of GPU buffer uploads.
+	// In practice the fog hides the delay in updating.
+	constexpr float max_d = 5 * BS;
+
+	if (!m_mesh_valid) {
+		// mesh was never created or invalidated
+	} else if (m_mesh_origin.getDistanceFrom(m_origin) >= max_d) {
+		// clouds moved
+	} else if (center_of_drawing_in_noise_i != m_last_noise_center) {
+		// noise offset changed
+		// I think in practice this never happens due to the camera offset
+		// being smaller than the cloud size.(?)
+	} else {
+		return;
+	}
+
+	ScopeProfiler sp(g_profiler, "Clouds::updateMesh()", SPT_AVG);
+	m_mesh_origin = m_origin;
+	m_last_noise_center = center_of_drawing_in_noise_i;
+	m_mesh_valid = true;
+
+	const u32 num_faces_to_draw = m_enable_3d ? 6 : 1;
 
 	// The world position of the integer center point of drawing in the noise
 	v2f world_center_of_drawing_in_noise_f = v2f(
@@ -330,6 +342,8 @@ void Clouds::updateMesh()
 		mb->setDirty(scene::EBT_INDEX);
 	}
 
+	tracestream << "Cloud::updateMesh(): " << mb->getVertexCount() << " vertices"
+		<< std::endl;
 }
 
 void Clouds::render()
@@ -418,9 +432,12 @@ void Clouds::update(const v3f &camera_p, const video::SColorf &color_diffuse)
 
 void Clouds::readSettings()
 {
-	// Upper limit was chosen due to posible render bugs
-	m_cloud_radius_i = rangelim(g_settings->getU16("cloud_radius"), 1, 62);
+	// The code isn't designed to go over 64k vertices so the upper limits were
+	// chosen to avoid exactly that.
+	// refer to vertex_count in updateMesh()
 	m_enable_3d = g_settings->getBool("enable_3d_clouds");
+	const u16 maximum = m_enable_3d ? 62 : 25;
+	m_cloud_radius_i = rangelim(g_settings->getU16("cloud_radius"), 1, maximum);
 
 	invalidateMesh();
 }

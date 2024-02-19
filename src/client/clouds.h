@@ -84,6 +84,8 @@ public:
 
 	void setDensity(float density)
 	{
+		if (m_params.density == density)
+			return;
 		m_params.density = density;
 		invalidateMesh();
 	}
@@ -100,6 +102,8 @@ public:
 
 	void setHeight(float height)
 	{
+		if (m_params.height == height)
+			return;
 		m_params.height = height;
 		updateBox();
 		invalidateMesh();
@@ -112,6 +116,8 @@ public:
 
 	void setThickness(float thickness)
 	{
+		if (m_params.thickness == thickness)
+			return;
 		m_params.thickness = thickness;
 		updateBox();
 		invalidateMesh();
@@ -133,8 +139,7 @@ private:
 	void updateMesh();
 	void invalidateMesh()
 	{
-		if (m_meshbuffer)
-			m_meshbuffer->Vertices.set_used(0);
+		m_mesh_valid = false;
 	}
 
 	bool gridFilled(int x, int y) const;
@@ -143,6 +148,10 @@ private:
 	scene::SMeshBuffer *m_meshbuffer = nullptr;
 	// Value of m_origin at the time the mesh was last updated
 	v2f m_mesh_origin;
+	// Value of center_of_drawing_in_noise_i at the time the mesh was last updated
+	v2s16 m_last_noise_center;
+	// Was the mesh ever generated?
+	bool m_mesh_valid = false;
 
 	aabb3f m_box;
 	v2f m_origin;
