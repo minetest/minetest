@@ -34,6 +34,10 @@ void KeyCache::populate()
 	key[KeyType::BACKWARD] = getKeySetting("keymap_backward");
 	key[KeyType::LEFT] = getKeySetting("keymap_left");
 	key[KeyType::RIGHT] = getKeySetting("keymap_right");
+	key[KeyType::LOOK_UP] = getKeySetting("keymap_look_up");
+	key[KeyType::LOOK_DOWN] = getKeySetting("keymap_look_down");
+	key[KeyType::LOOK_LEFT] = getKeySetting("keymap_look_left");
+	key[KeyType::LOOK_RIGHT] = getKeySetting("keymap_look_right");
 	key[KeyType::JUMP] = getKeySetting("keymap_jump");
 	key[KeyType::AUX1] = getKeySetting("keymap_aux1");
 	key[KeyType::SNEAK] = getKeySetting("keymap_sneak");

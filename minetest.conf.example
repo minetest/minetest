@@ -31,6 +31,14 @@
 #    type: bool
 # enable_build_where_you_stand = false
 
+#    Horizontal look sensitivity with the keyboard, in degree per second.
+#    type: float
+# key_look_sensitivity_horizontal = 100.0
+
+#    Vertical look sensitivity with the keyboard, in degree per second.
+#    type: float
+# key_look_sensitivity_vertical = 75.0
+
 #    If enabled, "Aux1" key instead of "Sneak" key is used for climbing down and
 #    descending.
 #    type: bool
@@ -3298,6 +3306,26 @@
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_right = KEY_KEY_D
+
+#    Key for looking upward.
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
+#    type: key
+# keymap_look_up = KEY_UP
+
+#    Key for looking downward.
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
+#    type: key
+# keymap_look_down = KEY_DOWN
+
+#    Key for looking to the left.
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
+#    type: key
+# keymap_look_up = KEY_LEFT
+
+#    Key for looking to the right.
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
+#    type: key
+# keymap_look_up = KEY_RIGHT
 
 #    Key for jumping.
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
