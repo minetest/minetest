@@ -1046,6 +1046,7 @@ void CGUITTFont::createSharedPlane()
 	buf->append(vertices, 4, indices, 6);
 
 	shared_plane_.addMeshBuffer( buf );
+	shared_plane_.setHardwareMappingHint(EHM_STATIC);
 
 	shared_plane_ptr_ = &shared_plane_;
 	buf->drop(); //the addMeshBuffer method will grab it, so we can drop this ptr.
