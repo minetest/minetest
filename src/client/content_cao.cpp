@@ -812,7 +812,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			(m_prop.visual == "wielditem"));
 
 		m_wield_meshnode->setScale(m_prop.visual_size / 2.0f);
-		m_wield_meshnode->setColor(video::SColor(0xFFFFFFFF));
 	} else {
 		infostream<<"GenericCAO::addToScene(): \""<<m_prop.visual
 				<<"\" not supported"<<std::endl;

@@ -19,25 +19,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiEngine.h"
 
-#include <IGUIStaticText.h>
-#include <ICameraSceneNode.h>
-#include "client/renderingengine.h"
-#include "scripting_mainmenu.h"
-#include "config.h"
-#include "version.h"
-#include "porting.h"
-#include "filesys.h"
-#include "settings.h"
-#include "guiMainMenu.h"
-#include "sound.h"
-#include "httpfetch.h"
-#include "log.h"
 #include "client/fontengine.h"
 #include "client/guiscalingfilter.h"
-#include "irrlicht_changes/static_text.h"
+#include "client/renderingengine.h"
+#include "client/shader.h"
 #include "client/tile.h"
+#include "config.h"
 #include "content/content.h"
 #include "content/mods.h"
+#include "filesys.h"
+#include "guiMainMenu.h"
+#include "httpfetch.h"
+#include "irrlicht_changes/static_text.h"
+#include "log.h"
+#include "porting.h"
+#include "scripting_mainmenu.h"
+#include "settings.h"
+#include "sound.h"
+#include "version.h"
+#include <ICameraSceneNode.h>
+#include <IGUIStaticText.h>
 
 #if USE_SOUND
 	#include "client/sound/sound_openal.h"
@@ -138,6 +139,10 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 
 	// create texture source
 	m_texture_source = std::make_unique<MenuTextureSource>(rendering_engine->get_video_driver());
+
+	// create shader source
+	// (currently only used by clouds)
+	m_shader_source.reset(createShaderSource());
 
 	// create soundmanager
 #if USE_SOUND
@@ -285,10 +290,10 @@ bool GUIEngine::loadMainMenuScript()
 void GUIEngine::run()
 {
 	IrrlichtDevice *device = m_rendering_engine->get_raw_device();
+	video::IVideoDriver *driver = device->getVideoDriver();
+
 	// Always create clouds because they may or may not be
 	// needed based on the game selected
-	video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
-
 	cloudInit();
 
 	unsigned int text_height = g_fontengine->getTextHeight();
@@ -375,23 +380,24 @@ GUIEngine::~GUIEngine()
 
 	m_sound_manager.reset();
 
-	m_irr_toplefttext->setText(L"");
+	m_irr_toplefttext->remove();
 
-	//clean up texture pointers
+	m_cloud.clouds.reset();
+
+	// delete textures
 	for (image_definition &texture : m_textures) {
 		if (texture.texture)
 			m_rendering_engine->get_video_driver()->removeTexture(texture.texture);
 	}
-
-	m_texture_source.reset();
-
-	m_cloud.clouds.reset();
 }
 
 /******************************************************************************/
 void GUIEngine::cloudInit()
 {
-	m_cloud.clouds = make_irr<Clouds>(m_smgr, -1, rand());
+	m_shader_source->addShaderConstantSetterFactory(
+		new FogShaderConstantSetterFactory());
+
+	m_cloud.clouds = make_irr<Clouds>(m_smgr, m_shader_source.get(), -1, rand());
 	m_cloud.clouds->setHeight(100.0f);
 	m_cloud.clouds->update(v3f(0, 0, 0), video::SColor(255,240,240,255));
 
@@ -404,7 +410,6 @@ void GUIEngine::cloudInit()
 void GUIEngine::drawClouds(float dtime)
 {
 	m_cloud.clouds->step(dtime*3);
-	m_cloud.clouds->render();
 	m_smgr->drawAll();
 }
 

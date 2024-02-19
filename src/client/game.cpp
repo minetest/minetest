@@ -379,7 +379,6 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float>
 		m_animation_timer_delta_pixel{"animationTimerDelta"};
 	CachedPixelShaderSetting<float, 3> m_day_light{"dayLight"};
-	CachedPixelShaderSetting<float, 4> m_star_color{"starColor"};
 	CachedPixelShaderSetting<float, 3> m_eye_position_pixel{"eyePosition"};
 	CachedVertexShaderSetting<float, 3> m_eye_position_vertex{"eyePosition"};
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
@@ -473,10 +472,6 @@ public:
 		get_sunlight_color(&sunlight, daynight_ratio);
 		m_day_light.set(sunlight, services);
 
-		video::SColorf star_color = m_sky->getCurrentStarColor();
-		float clr[4] = {star_color.r, star_color.g, star_color.b, star_color.a};
-		m_star_color.set(clr, services);
-
 		u32 animation_timer = m_client->getEnv().getFrameTime() % 1000000;
 		float animation_timer_f = (float)animation_timer / 100000.f;
 		m_animation_timer_vertex.set(&animation_timer_f, services);
@@ -529,7 +524,9 @@ public:
 			m_bloom_radius_pixel.set(&m_bloom_radius, services);
 			m_bloom_strength_pixel.set(&m_bloom_strength, services);
 		}
-		float saturation = m_client->getEnv().getLocalPlayer()->getLighting().saturation;
+
+		const auto &lighting = m_client->getEnv().getLocalPlayer()->getLighting();
+		float saturation = lighting.saturation;
 		m_saturation_pixel.set(&saturation, services);
 
 		if (m_volumetric_light_enabled) {
@@ -540,13 +537,13 @@ public:
 
 			if (m_sky->getSunVisible()) {
 				v3f sun_position = camera_node->getAbsolutePosition() +
-						10000. * m_sky->getSunDirection();
+						10000.f * m_sky->getSunDirection();
 				transform.transformVect(sun_position);
 				sun_position.normalize();
 
 				m_sun_position_pixel.set(sun_position, services);
 
-				float sun_brightness = rangelim(107.143f * m_sky->getSunDirection().dotProduct(v3f(0.f, 1.f, 0.f)), 0.f, 1.f);
+				float sun_brightness = core::clamp(107.143f * m_sky->getSunDirection().Y, 0.f, 1.f);
 				m_sun_brightness_pixel.set(&sun_brightness, services);
 			} else {
 				m_sun_position_pixel.set(v3f(0.f, 0.f, -1.f), services);
@@ -557,13 +554,13 @@ public:
 
 			if (m_sky->getMoonVisible()) {
 				v3f moon_position = camera_node->getAbsolutePosition() +
-						10000. * m_sky->getMoonDirection();
+						10000.f * m_sky->getMoonDirection();
 				transform.transformVect(moon_position);
 				moon_position.normalize();
 
 				m_moon_position_pixel.set(moon_position, services);
 
-				float moon_brightness = rangelim(107.143f * m_sky->getMoonDirection().dotProduct(v3f(0.f, 1.f, 0.f)), 0.f, 1.f);
+				float moon_brightness = core::clamp(107.143f * m_sky->getMoonDirection().Y, 0.f, 1.f);
 				m_moon_brightness_pixel.set(&moon_brightness, services);
 			} else {
 				m_moon_position_pixel.set(v3f(0.f, 0.f, -1.f), services);
@@ -571,7 +568,8 @@ public:
 				float moon_brightness = 0.f;
 				m_moon_brightness_pixel.set(&moon_brightness, services);
 			}
-			float volumetric_light_strength = m_client->getEnv().getLocalPlayer()->getLighting().volumetric_light_strength;
+
+			float volumetric_light_strength = lighting.volumetric_light_strength;
 			m_volumetric_light_strength_pixel.set(&volumetric_light_strength, services);
 		}
 	}
@@ -1099,6 +1097,8 @@ bool Game::startup(bool *kill,
 	driver = device->getVideoDriver();
 	smgr = m_rendering_engine->get_scene_manager();
 
+	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, g_settings->getBool("mip_map"));
+
 	smgr->getParameters()->setAttribute(scene::OBJ_LOADER_IGNORE_MATERIAL_FILES, true);
 
 	// Reinit runData
@@ -1454,7 +1454,7 @@ bool Game::createClient(const GameStartData &start_data)
 	/* Clouds
 	 */
 	if (m_cache_enable_clouds)
-		clouds = new Clouds(smgr, -1, time(0));
+		clouds = new Clouds(smgr, shader_src, -1, rand());
 
 	/* Skybox
 	 */

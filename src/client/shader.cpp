@@ -217,13 +217,22 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	// Texture matrix
 	CachedVertexShaderSetting<float, 16> m_texture{"mTexture"};
 
+	// commonly used way to pass material color to shader
+	video::SColor m_emissive_color;
+	CachedPixelShaderSetting<float, 4> m_emissive_color_setting{"emissiveColor"};
+
 public:
 	~MainShaderConstantSetter() = default;
+
+	virtual void onSetMaterial(const video::SMaterial& material) override
+	{
+		m_emissive_color = material.EmissiveColor;
+	}
 
 	virtual void onSetConstants(video::IMaterialRendererServices *services) override
 	{
 		video::IVideoDriver *driver = services->getVideoDriver();
-		sanity_check(driver);
+		assert(driver);
 
 		// Set world matrix
 		core::matrix4 world = driver->getTransform(video::ETS_WORLD);
@@ -244,6 +253,9 @@ public:
 			m_world_view.set(worldView, services);
 			m_texture.set(texture, services);
 		}
+
+		video::SColorf emissive_color(m_emissive_color);
+		m_emissive_color_setting.set(emissive_color, services);
 	}
 };
 
@@ -545,11 +557,11 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		return shaderinfo;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (!driver->queryFeature(video::EVDF_ARB_GLSL)) {
+	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
+	if (!driver->queryFeature(video::EVDF_ARB_GLSL) || !gpu) {
 		throw ShaderException(gettext("Shaders are enabled but GLSL is not "
 			"supported by the driver."));
 	}
-	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
 
 	// Create shaders header
 	bool fully_programmable = driver->getDriverType() == video::EDT_OGLES2 || driver->getDriverType() == video::EDT_OPENGL3;
@@ -609,14 +621,6 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		#define normalTexture texture1
 		#define textureFlags texture2
 	)";
-
-	// Since this is the first time we're using the GL bindings be extra careful.
-	// This should be removed before 5.6.0 or similar.
-	if (!GL.GetString) {
-		errorstream << "OpenGL procedures were not loaded correctly, "
-			"please open a bug report with details about your platform/OS." << std::endl;
-		abort();
-	}
 
 	bool use_discard = fully_programmable;
 	// For renderers that should use discard instead of GL_ALPHA_TEST

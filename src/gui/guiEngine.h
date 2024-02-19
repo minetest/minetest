@@ -54,6 +54,7 @@ struct image_definition {
 class GUIEngine;
 class RenderingEngine;
 class MainMenuScripting;
+class IWritableShaderSource;
 struct MainMenuData;
 
 /******************************************************************************/
@@ -203,7 +204,9 @@ private:
 	MainMenuData                         *m_data = nullptr;
 	/** texture source */
 	std::unique_ptr<ISimpleTextureSource> m_texture_source;
-	/** sound manager*/
+	/** shader source */
+	std::unique_ptr<IWritableShaderSource> m_shader_source;
+	/** sound manager */
 	std::unique_ptr<ISoundManager>        m_sound_manager;
 
 	/** representation of form source to be used in mainmenu formspec */

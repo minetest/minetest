@@ -94,7 +94,7 @@ class FogShaderConstantSetter : public IShaderConstantSetter
 public:
 	void onSetConstants(video::IMaterialRendererServices *services) override
 	{
-		auto *driver = RenderingEngine::get_video_driver();
+		auto *driver = services->getVideoDriver();
 		assert(driver);
 
 		video::SColor fog_color(0);
@@ -314,15 +314,17 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 			gui::StaticText::add(guienv, text, textrect, false, false);
 	guitext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 
-	if (sky && g_settings->getBool("menu_clouds")) {
-		g_menuclouds->step(dtime * 3);
-		g_menuclouds->render();
-		get_video_driver()->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
-		g_menucloudsmgr->drawAll();
-	} else if (sky)
-		get_video_driver()->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
-	else
-		get_video_driver()->beginScene(true, true, video::SColor(255, 0, 0, 0));
+	auto *driver = get_video_driver();
+
+	if (sky) {
+		driver->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
+		if (g_settings->getBool("menu_clouds")) {
+			g_menuclouds->step(dtime * 3);
+			g_menucloudsmgr->drawAll();
+		}
+	} else {
+		driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
+	}
 
 	// draw progress bar
 	if ((percent >= 0) && (percent <= 100)) {
@@ -367,7 +369,7 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 	}
 
 	guienv->drawAll();
-	get_video_driver()->endScene();
+	driver->endScene();
 	guitext->remove();
 }
 

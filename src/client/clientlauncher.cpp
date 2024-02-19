@@ -107,7 +107,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		return false;
 	}
 
-	if (m_rendering_engine->get_video_driver() == NULL) {
+	if (!m_rendering_engine->get_video_driver()) {
 		errorstream << "Could not initialize video driver." << std::endl;
 		return false;
 	}
@@ -125,51 +125,16 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
 	guienv = m_rendering_engine->get_gui_env();
-	skin = guienv->getSkin();
-	skin->setColor(gui::EGDC_WINDOW_SYMBOL, video::SColor(255, 255, 255, 255));
-	skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255, 255, 255, 255));
-	skin->setColor(gui::EGDC_3D_LIGHT, video::SColor(0, 0, 0, 0));
-	skin->setColor(gui::EGDC_3D_HIGH_LIGHT, video::SColor(255, 30, 30, 30));
-	skin->setColor(gui::EGDC_3D_SHADOW, video::SColor(255, 0, 0, 0));
-	skin->setColor(gui::EGDC_HIGH_LIGHT, video::SColor(255, 70, 120, 50));
-	skin->setColor(gui::EGDC_HIGH_LIGHT_TEXT, video::SColor(255, 255, 255, 255));
-
-	float density = rangelim(g_settings->getFloat("gui_scaling"), 0.5, 20) *
-		RenderingEngine::getDisplayDensity();
-	skin->setSize(gui::EGDS_CHECK_BOX_WIDTH, (s32)(17.0f * density));
-	skin->setSize(gui::EGDS_SCROLLBAR_SIZE, (s32)(14.0f * density));
-	skin->setSize(gui::EGDS_WINDOW_BUTTON_WIDTH, (s32)(15.0f * density));
-	if (density > 1.5f) {
-		std::string sprite_path = porting::path_share + "/textures/base/pack/";
-		if (density > 3.5f)
-			sprite_path.append("checkbox_64.png");
-		else if (density > 2.0f)
-			sprite_path.append("checkbox_32.png");
-		else
-			sprite_path.append("checkbox_16.png");
-		// Texture dimensions should be a power of 2
-		gui::IGUISpriteBank *sprites = skin->getSpriteBank();
-		video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
-		video::ITexture *sprite_texture = driver->getTexture(sprite_path.c_str());
-		if (sprite_texture) {
-			s32 sprite_id = sprites->addTextureAsSprite(sprite_texture);
-			if (sprite_id != -1)
-				skin->setIcon(gui::EGDI_CHECK_BOX_CHECKED, sprite_id);
-		}
-	}
+	init_guienv(guienv);
 
 	g_fontengine = new FontEngine(guienv);
-	FATAL_ERROR_IF(g_fontengine == NULL, "Font engine creation failed.");
-
-	// Irrlicht 1.8 input colours
-	skin->setColor(gui::EGDC_EDITABLE, video::SColor(255, 128, 128, 128));
-	skin->setColor(gui::EGDC_FOCUSED_EDITABLE, video::SColor(255, 96, 134, 49));
+	FATAL_ERROR_IF(!g_fontengine, "Font engine creation failed.");
 
 	// Create the menu clouds
-	if (!g_menucloudsmgr)
-		g_menucloudsmgr = m_rendering_engine->get_scene_manager()->createNewSceneManager();
-	if (!g_menuclouds)
-		g_menuclouds = new Clouds(g_menucloudsmgr, -1, rand());
+	// This is only global so it can be used by RenderingEngine::draw_load_screen().
+	assert(!g_menucloudsmgr && !g_menuclouds);
+	g_menucloudsmgr = m_rendering_engine->get_scene_manager()->createNewSceneManager();
+	g_menuclouds = new Clouds(g_menucloudsmgr, nullptr, -1, rand());
 	g_menuclouds->setHeight(100.0f);
 	g_menuclouds->update(v3f(0, 0, 0), video::SColor(255, 240, 240, 255));
 	scene::ICameraSceneNode* camera;
@@ -223,7 +188,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			guiroot = m_rendering_engine->get_gui_env()->addStaticText(L"",
 				core::rect<s32>(0, 0, 10000, 10000));
 
-			bool game_has_run = launch_game(error_message, reconnect_requested,
+			bool should_run_game = launch_game(error_message, reconnect_requested,
 				start_data, cmd_args);
 
 			// Reset the reconnect_requested flag
@@ -232,22 +197,17 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			// If skip_main_menu, we only want to startup once
 			if (skip_main_menu && !first_loop)
 				break;
-
 			first_loop = false;
 
-			if (!game_has_run) {
+			if (!should_run_game) {
 				if (skip_main_menu)
 					break;
-
 				continue;
 			}
 
 			// Break out of menu-game loop to shut down cleanly
 			if (!m_rendering_engine->run() || *kill)
 				break;
-
-			m_rendering_engine->get_video_driver()->setTextureCreationFlag(
-					video::ETCF_CREATE_MIP_MAPS, g_settings->getBool("mip_map"));
 
 			if (g_settings->getBool("enable_touch")) {
 				receiver->m_touchscreengui = new TouchScreenGUI(m_rendering_engine->get_raw_device(), receiver);
@@ -301,17 +261,18 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 		// If no main menu, show error and exit
 		if (skip_main_menu) {
-			if (!error_message.empty()) {
-				verbosestream << "error_message = "
-				              << error_message << std::endl;
+			if (!error_message.empty())
 				retval = false;
-			}
 			break;
 		}
 	} // Menu-game loop
 
+	assert(g_menuclouds->getReferenceCount() == 1);
 	g_menuclouds->drop();
+	g_menuclouds = nullptr;
+	assert(g_menucloudsmgr->getReferenceCount() == 1);
 	g_menucloudsmgr->drop();
+	g_menucloudsmgr = nullptr;
 
 	return retval;
 }
@@ -369,6 +330,45 @@ void ClientLauncher::init_input()
 			input->joystick.onJoystickConnect(joystick_infos);
 		} else {
 			errorstream << "Could not activate joystick support." << std::endl;
+		}
+	}
+}
+
+void ClientLauncher::init_guienv(gui::IGUIEnvironment *guienv)
+{
+	gui::IGUISkin *skin = guienv->getSkin();
+
+	skin->setColor(gui::EGDC_WINDOW_SYMBOL, video::SColor(255, 255, 255, 255));
+	skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255, 255, 255, 255));
+	skin->setColor(gui::EGDC_3D_LIGHT, video::SColor(0, 0, 0, 0));
+	skin->setColor(gui::EGDC_3D_HIGH_LIGHT, video::SColor(255, 30, 30, 30));
+	skin->setColor(gui::EGDC_3D_SHADOW, video::SColor(255, 0, 0, 0));
+	skin->setColor(gui::EGDC_HIGH_LIGHT, video::SColor(255, 70, 120, 50));
+	skin->setColor(gui::EGDC_HIGH_LIGHT_TEXT, video::SColor(255, 255, 255, 255));
+	skin->setColor(gui::EGDC_EDITABLE, video::SColor(255, 128, 128, 128));
+	skin->setColor(gui::EGDC_FOCUSED_EDITABLE, video::SColor(255, 96, 134, 49));
+
+	float density = rangelim(g_settings->getFloat("gui_scaling"), 0.5f, 20) *
+		RenderingEngine::getDisplayDensity();
+	skin->setSize(gui::EGDS_CHECK_BOX_WIDTH, (s32)(17.0f * density));
+	skin->setSize(gui::EGDS_SCROLLBAR_SIZE, (s32)(14.0f * density));
+	skin->setSize(gui::EGDS_WINDOW_BUTTON_WIDTH, (s32)(15.0f * density));
+	if (density > 1.5f) {
+		std::string sprite_path = porting::path_share + "/textures/base/pack/";
+		if (density > 3.5f)
+			sprite_path.append("checkbox_64.png");
+		else if (density > 2.0f)
+			sprite_path.append("checkbox_32.png");
+		else
+			sprite_path.append("checkbox_16.png");
+		// Texture dimensions should be a power of 2
+		gui::IGUISpriteBank *sprites = skin->getSpriteBank();
+		video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
+		video::ITexture *sprite_texture = driver->getTexture(sprite_path.c_str());
+		if (sprite_texture) {
+			s32 sprite_id = sprites->addTextureAsSprite(sprite_texture);
+			if (sprite_id != -1)
+				skin->setIcon(gui::EGDI_CHECK_BOX_CHECKED, sprite_id);
 		}
 	}
 }
