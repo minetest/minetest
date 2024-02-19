@@ -97,7 +97,7 @@ Hud::Hud(Client *client, LocalPlayer *player,
 
 	if (g_settings->getBool("enable_shaders")) {
 		IShaderSource *shdrsrc = client->getShaderSource();
-		u16 shader_id = shdrsrc->getShader(
+		auto shader_id = shdrsrc->getShader(
 			m_mode == HIGHLIGHT_HALO ? "selection_shader" : "default_shader", TILE_MATERIAL_ALPHA);
 		m_selection_material.MaterialType = shdrsrc->getShaderInfo(shader_id).material;
 	} else {
