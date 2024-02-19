@@ -82,38 +82,39 @@ void Clouds::OnRegisterSceneNode()
 	if(IsVisible)
 	{
 		SceneManager->registerNodeForRendering(this, scene::ESNRP_TRANSPARENT);
-		//SceneManager->registerNodeForRendering(this, scene::ESNRP_SOLID);
 	}
 
 	ISceneNode::OnRegisterSceneNode();
 }
 
-void Clouds::render()
+
+// TODO: Irrlicht should gain an api to both resize and reserve mesh buffers
+// Then this would be less awkward.
+
+static inline void resizeMeshBuffer(scene::SMeshBuffer *&mb, u32 vertexCount, u32 indexCount)
 {
+	if (mb) {
+		if (mb->getVertexCount() == vertexCount && mb->getIndexCount() == indexCount)
+			return;
+		mb->drop();
+	}
+	verbosestream << "Clouds: recreating SMeshBuffer(" << vertexCount << ", "
+		<< indexCount << ")" << std::endl;
 
-	if (m_params.density <= 0.0f)
-		return; // no need to do anything
+	mb = new scene::SMeshBuffer();
+	// fill with zero bytes
+	std::vector<char> empty;
+	empty.resize(std::max(sizeof(video::S3DVertex) * vertexCount,
+		sizeof(u16) * indexCount));
+	mb->append(empty.data(), vertexCount,
+		reinterpret_cast<u16*>(empty.data()), indexCount);
+}
 
-	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+void Clouds::updateMesh()
+{
+	const u32 num_faces_to_draw = m_enable_3d ? 6 : 1;
 
-	if(SceneManager->getSceneNodeRenderPass() != scene::ESNRP_TRANSPARENT)
-	//if(SceneManager->getSceneNodeRenderPass() != scene::ESNRP_SOLID)
-		return;
-
-	ScopeProfiler sp(g_profiler, "Clouds::render()", SPT_AVG);
-
-	int num_faces_to_draw = m_enable_3d ? 6 : 1;
-
-	m_material.BackfaceCulling = m_enable_3d;
-
-	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-	driver->setMaterial(m_material);
-
-	/*
-		Clouds move from Z+ towards Z-
-	*/
-
-	const float cloud_full_radius = cloud_size * m_cloud_radius_i;
+	// Clouds move from Z+ towards Z-
 
 	v2f camera_pos_2d(m_camera_pos.X, m_camera_pos.Z);
 	// Position of cloud noise origin from the camera
@@ -132,50 +133,29 @@ void Clouds::render()
 		center_of_drawing_in_noise_i.Y * cloud_size
 	) + m_origin;
 
-	/*video::SColor c_top(128,b*240,b*240,b*255);
-	video::SColor c_side_1(128,b*230,b*230,b*255);
-	video::SColor c_side_2(128,b*220,b*220,b*245);
-	video::SColor c_bottom(128,b*205,b*205,b*230);*/
+	// Colors with primitive shading
+
 	video::SColorf c_top_f(m_color);
 	video::SColorf c_side_1_f(m_color);
 	video::SColorf c_side_2_f(m_color);
 	video::SColorf c_bottom_f(m_color);
-	c_side_1_f.r *= 0.95;
-	c_side_1_f.g *= 0.95;
-	c_side_1_f.b *= 0.95;
-	c_side_2_f.r *= 0.90;
-	c_side_2_f.g *= 0.90;
-	c_side_2_f.b *= 0.90;
-	c_bottom_f.r *= 0.80;
-	c_bottom_f.g *= 0.80;
-	c_bottom_f.b *= 0.80;
+	c_side_1_f.r *= 0.95f;
+	c_side_1_f.g *= 0.95f;
+	c_side_1_f.b *= 0.95f;
+	c_side_2_f.r *= 0.90f;
+	c_side_2_f.g *= 0.90f;
+	c_side_2_f.b *= 0.90f;
+	c_bottom_f.r *= 0.80f;
+	c_bottom_f.g *= 0.80f;
+	c_bottom_f.b *= 0.80f;
 	video::SColor c_top = c_top_f.toSColor();
 	video::SColor c_side_1 = c_side_1_f.toSColor();
 	video::SColor c_side_2 = c_side_2_f.toSColor();
 	video::SColor c_bottom = c_bottom_f.toSColor();
 
-	// Get fog parameters for setting them back later
-	video::SColor fog_color(0,0,0,0);
-	video::E_FOG_TYPE fog_type = video::EFT_FOG_LINEAR;
-	f32 fog_start = 0;
-	f32 fog_end = 0;
-	f32 fog_density = 0;
-	bool fog_pixelfog = false;
-	bool fog_rangefog = false;
-	driver->getFog(fog_color, fog_type, fog_start, fog_end, fog_density,
-			fog_pixelfog, fog_rangefog);
-
-	// Set our own fog, unless it was already disabled
-	if (fog_start < FOG_RANGE_ALL) {
-		driver->setFog(fog_color, fog_type, cloud_full_radius * 0.5,
-			cloud_full_radius*1.2, fog_density, fog_pixelfog, fog_rangefog);
-	}
-
 	// Read noise
 
 	std::vector<bool> grid(m_cloud_radius_i * 2 * m_cloud_radius_i * 2);
-	std::vector<video::S3DVertex> vertices;
-	vertices.reserve(16 * m_cloud_radius_i * m_cloud_radius_i);
 
 	for(s16 zi = -m_cloud_radius_i; zi < m_cloud_radius_i; zi++) {
 		u32 si = (zi + m_cloud_radius_i) * m_cloud_radius_i * 2 + m_cloud_radius_i;
@@ -189,6 +169,14 @@ void Clouds::render()
 			);
 		}
 	}
+
+	const u32 vertex_count = num_faces_to_draw * 16 * m_cloud_radius_i * m_cloud_radius_i;
+	const u32 quad_count = vertex_count / 4;
+	const u32 index_count = quad_count * 6;
+	resizeMeshBuffer(m_meshbuffer, vertex_count, index_count);
+	auto *mb = m_meshbuffer;
+
+	video::S3DVertex *vptr = reinterpret_cast<video::S3DVertex*>(mb->getVertices());
 
 #define GETINDEX(x, z, radius) (((z)+(radius))*(radius)*2 + (x)+(radius))
 #define INAREA(x, z, radius) \
@@ -224,7 +212,7 @@ void Clouds::render()
 		const f32 ry = m_enable_3d ? m_params.thickness * BS : 0.0f;
 		const f32 rz = cloud_size / 2;
 
-		for(int i=0; i<num_faces_to_draw; i++)
+		for(u32 i = 0; i < num_faces_to_draw; i++)
 		{
 			switch(i)
 			{
@@ -314,23 +302,64 @@ void Clouds::render()
 
 			for (video::S3DVertex &vertex : v) {
 				vertex.Pos += pos;
-				vertices.push_back(vertex);
+				*vptr++ = vertex;
 			}
 		}
 	}
-	int quad_count = vertices.size() / 4;
-	std::vector<u16> indices;
-	indices.reserve(quad_count * 6);
-	for (int k = 0; k < quad_count; k++) {
-		indices.push_back(4 * k + 0);
-		indices.push_back(4 * k + 1);
-		indices.push_back(4 * k + 2);
-		indices.push_back(4 * k + 2);
-		indices.push_back(4 * k + 3);
-		indices.push_back(4 * k + 0);
+
+	u16 *iptr = mb->getIndices();
+	for (u32 k = 0; k < quad_count; k++) {
+		*iptr++ = 4 * k + 0;
+		*iptr++ = 4 * k + 1;
+		*iptr++ = 4 * k + 2;
+		*iptr++ = 4 * k + 2;
+		*iptr++ = 4 * k + 3;
+		*iptr++ = 4 * k + 0;
 	}
-	driver->drawVertexPrimitiveList(vertices.data(), vertices.size(), indices.data(), 2 * quad_count,
-			video::EVT_STANDARD, scene::EPT_TRIANGLES, video::EIT_16BIT);
+
+	//mb->recalculateBoundingBox();
+}
+
+void Clouds::render()
+{
+	if (m_params.density <= 0.0f)
+		return; // no need to do anything
+
+	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+
+	if (SceneManager->getSceneNodeRenderPass() != scene::ESNRP_TRANSPARENT)
+		return;
+
+	ScopeProfiler sp(g_profiler, "Clouds::render()", SPT_AVG);
+
+	updateMesh();
+	assert(m_meshbuffer);
+
+	m_material.BackfaceCulling = m_enable_3d;
+
+	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+	driver->setMaterial(m_material);
+
+	const float cloud_full_radius = cloud_size * m_cloud_radius_i;
+
+	// Get fog parameters for setting them back later
+	video::SColor fog_color(0,0,0,0);
+	video::E_FOG_TYPE fog_type = video::EFT_FOG_LINEAR;
+	f32 fog_start = 0;
+	f32 fog_end = 0;
+	f32 fog_density = 0;
+	bool fog_pixelfog = false;
+	bool fog_rangefog = false;
+	driver->getFog(fog_color, fog_type, fog_start, fog_end, fog_density,
+			fog_pixelfog, fog_rangefog);
+
+	// Set our own fog, unless it was already disabled
+	if (fog_start < FOG_RANGE_ALL) {
+		driver->setFog(fog_color, fog_type, cloud_full_radius * 0.5,
+				cloud_full_radius*1.2, fog_density, fog_pixelfog, fog_rangefog);
+	}
+
+	driver->drawMeshBuffer(m_meshbuffer);
 
 	// Restore fog settings
 	driver->setFog(fog_color, fog_type, fog_start, fog_end, fog_density,

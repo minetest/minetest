@@ -126,9 +126,12 @@ private:
 				BS * 1000000.0f, height_bs + thickness_bs - BS * m_camera_offset.Y, BS * 1000000.0f);
 	}
 
+	void updateMesh();
+
 	bool gridFilled(int x, int y) const;
 
 	video::SMaterial m_material;
+	scene::SMeshBuffer *m_meshbuffer = nullptr;
 	aabb3f m_box;
 	u16 m_cloud_radius_i;
 	bool m_enable_3d;
