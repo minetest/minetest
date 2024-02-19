@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/base64.h"
 #include "client/camera.h"
 #include "client/mesh_generator_thread.h"
+#include "client/clientmap.h"
 #include "chatmessage.h"
 #include "client/clientmedia.h"
 #include "log.h"
@@ -245,7 +246,8 @@ void Client::handleCommand_RemoveNode(NetworkPacket* pkt)
 
 	v3s16 p;
 	*pkt >> p;
-	removeNode(p);
+
+	addReceivedNode(p, MapNode{CONTENT_AIR}, true);
 }
 
 void Client::handleCommand_AddNode(NetworkPacket* pkt)
@@ -265,7 +267,7 @@ void Client::handleCommand_AddNode(NetworkPacket* pkt)
 		remove_metadata = false;
 	}
 
-	addNode(p, n, remove_metadata);
+	addReceivedNode(p, n, remove_metadata);
 }
 
 void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
@@ -316,16 +318,11 @@ void Client::handleCommand_BlockData(NetworkPacket* pkt)
 
 	block = sector->getBlockNoCreateNoEx(p.Y);
 	if (block) {
-		/*
-			Update an existing block
-		*/
-		block->deSerialize(istr, m_server_ser_ver, false);
-		block->deSerializeNetworkSpecific(istr);
-	}
-	else {
-		/*
-			Create a new block
-		*/
+		// Update an existing block and reapply predictions if needed
+		m_env.getClientMap().updateBlockAndPredictions(istr, m_server_ser_ver,
+			*block);
+	} else {
+		// Create a new block
 		block = sector->createBlankBlock(p.Y);
 		block->deSerialize(istr, m_server_ser_ver, false);
 		block->deSerializeNetworkSpecific(istr);

@@ -235,7 +235,16 @@ public:
 
 	void Send(NetworkPacket* pkt);
 
-	void interact(InteractAction action, const PointedThing &pointed);
+	/*! \brief Enqueue the sending of interaction information
+	 *
+	 * \param action Type of interaction, e.g. INTERACT_PLACE
+	 * \param pointed Thing with which the client interacts
+	 *
+	 * \return Sequence number of the next outgoing reliable packet.
+	 *   That packet or a later one contains the interaction information.
+	 *   In an unexpected error condition this method also returns 0.
+	 */
+	u16 interact(InteractAction action, const PointedThing &pointed);
 
 	void sendNodemetaFields(v3s16 p, const std::string &formname,
 		const StringMap &fields);
@@ -261,15 +270,20 @@ public:
 	const std::vector<ModSpec> &getMods() const override;
 	const ModSpec* getModSpec(const std::string &modname) const override;
 
-	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
-	void removeNode(v3s16 p);
-
 	// helpers to enforce CSM restrictions
 	MapNode CSMGetNode(v3s16 p, bool *is_valid_position);
 	int CSMClampRadius(v3s16 pos, int radius);
 	v3s16 CSMClampPos(v3s16 pos);
 
-	void addNode(v3s16 p, MapNode n, bool remove_metadata = true);
+	/// Change a node in the local map and reapply a prediction if needed.
+	/// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
+	void addReceivedNode(const v3s16 &p, const MapNode &n,
+		bool remove_metadata);
+
+	/// Change a node in the local map and make ClientMap remember the
+	/// local-only change until it is no longer needed
+	void addPredictedNode(const v3s16 &p, const MapNode &n,
+		bool remove_metadata, u16 seqnum);
 
 	void setPlayerControl(PlayerControl &control);
 
@@ -441,6 +455,10 @@ public:
 	{
 		return m_mesh_grid;
 	}
+
+	/// Check if a reliable packet is not yet acknowledged on the channel
+	/// where interact (and other) packets are sent to the server
+	bool isUnackedOnInteractChan(u16 seqnum) const;
 
 	bool inhibit_inventory_revert = false;
 

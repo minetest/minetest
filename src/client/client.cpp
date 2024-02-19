@@ -1074,18 +1074,18 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 	*pkt << camera_inverted;
 }
 
-void Client::interact(InteractAction action, const PointedThing& pointed)
+u16 Client::interact(InteractAction action, const PointedThing& pointed)
 {
 	if(m_state != LC_Ready) {
 		errorstream << "Client::interact() "
 				"Canceled (not connected)"
 				<< std::endl;
-		return;
+		return 0;
 	}
 
 	LocalPlayer *myplayer = m_env.getLocalPlayer();
 	if (myplayer == NULL)
-		return;
+		return 0;
 
 	/*
 		[0] u16 command
@@ -1108,7 +1108,10 @@ void Client::interact(InteractAction action, const PointedThing& pointed)
 
 	writePlayerPos(myplayer, &m_env.getClientMap(), &pkt, m_camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT);
 
+	auto &scf = serverCommandFactoryTable[TOSERVER_INTERACT];
+	u16 next_seqnum = m_con->getNextSequenceNumber(PEER_ID_SERVER, scf.channel);
 	Send(&pkt);
+	return next_seqnum;
 }
 
 void Client::deleteAuthData()
@@ -1461,21 +1464,6 @@ void Client::sendUpdateClientInfo(const ClientDynamicInfo& info)
 	Send(&pkt);
 }
 
-void Client::removeNode(v3s16 p)
-{
-	std::map<v3s16, MapBlock*> modified_blocks;
-
-	try {
-		m_env.getMap().removeNodeAndUpdate(p, modified_blocks);
-	}
-	catch(InvalidPositionException &e) {
-	}
-
-	for (const auto &modified_block : modified_blocks) {
-		addUpdateMeshTaskWithEdge(modified_block.first, false, true);
-	}
-}
-
 /**
  * Helper function for Client Side Modding
  * CSM restrictions are applied there, this should not be used for core engine
@@ -1520,19 +1508,23 @@ v3s16 Client::CSMClampPos(v3s16 pos)
 	);
 }
 
-void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
+void Client::addReceivedNode(const v3s16 &p, const MapNode &n,
+	bool remove_metadata)
 {
-	//TimeTaker timer1("Client::addNode()");
-
 	std::map<v3s16, MapBlock*> modified_blocks;
-
-	try {
-		//TimeTaker timer3("Client::addNode(): addNodeAndUpdate");
-		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
+	m_env.getClientMap().addReceivedNode(p, n, modified_blocks,
+		remove_metadata);
+	for (const auto &modified_block : modified_blocks) {
+		addUpdateMeshTaskWithEdge(modified_block.first, false, true);
 	}
-	catch(InvalidPositionException &e) {
-	}
+}
 
+void Client::addPredictedNode(const v3s16 &p, const MapNode &n,
+	bool remove_metadata, u16 seqnum)
+{
+	std::map<v3s16, MapBlock*> modified_blocks;
+	m_env.getClientMap().addPredictedNode(p, n, modified_blocks,
+		remove_metadata, seqnum);
 	for (const auto &modified_block : modified_blocks) {
 		addUpdateMeshTaskWithEdge(modified_block.first, false, true);
 	}
@@ -2122,4 +2114,10 @@ ModChannel* Client::getModChannel(const std::string &channel)
 const std::string &Client::getFormspecPrepend() const
 {
 	return m_env.getLocalPlayer()->formspec_prepend;
+}
+
+bool Client::isUnackedOnInteractChan(u16 seqnum) const
+{
+	return m_con->isUnacked(PEER_ID_SERVER,
+		serverCommandFactoryTable[TOSERVER_INTERACT].channel, seqnum);
 }
