@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "client/renderingengine.h"
+#include "client/shader.h"
 #include "clouds.h"
 #include "constants.h"
 #include "debug.h"
@@ -41,29 +42,29 @@ static void cloud_3d_setting_changed(const std::string &settingname, void *data)
 	((Clouds *)data)->readSettings();
 }
 
-Clouds::Clouds(scene::ISceneManager* mgr,
+Clouds::Clouds(scene::ISceneManager* mgr, IShaderSource *ssrc,
 		s32 id,
 		u32 seed
 ):
 	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
 	m_seed(seed)
 {
+	m_enable_shaders = g_settings->getBool("enable_shaders");
+	// menu clouds use shader-less clouds for simplicity (ssrc == NULL)
+	m_enable_shaders = m_enable_shaders && ssrc;
+
 	m_material.Lighting = false;
 	m_material.BackfaceCulling = true;
 	m_material.FogEnable = true;
 	m_material.AntiAliasing = video::EAAM_SIMPLE;
-	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-	m_material.forEachTexture([] (auto &tex) {
-		tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
-		tex.MagFilter = video::ETMAGF_NEAREST;
-	});
+	if (m_enable_shaders) {
+		auto sid = ssrc->getShader("cloud_shader", TILE_MATERIAL_ALPHA);
+		m_material.MaterialType = ssrc->getShaderInfo(sid).material;
+	} else {
+		m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	}
 
-	m_params.height        = 120;
-	m_params.density       = 0.4f;
-	m_params.thickness     = 16.0f;
-	m_params.color_bright  = video::SColor(229, 240, 240, 255);
-	m_params.color_ambient = video::SColor(255, 0, 0, 0);
-	m_params.speed         = v2f(0.0f, -2.0f);
+	m_params = SkyboxDefaults::getCloudDefaults();
 
 	readSettings();
 	g_settings->registerChangedCallback("enable_3d_clouds",
@@ -132,6 +133,10 @@ void Clouds::updateMesh()
 	video::SColorf c_side_1_f(m_color);
 	video::SColorf c_side_2_f(m_color);
 	video::SColorf c_bottom_f(m_color);
+	if (m_enable_shaders) {
+		// shader mixes the base color, set via EmissiveColor
+		c_top_f = c_side_1_f = c_side_2_f = c_bottom_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
+	}
 	c_side_1_f.r *= 0.95f;
 	c_side_1_f.g *= 0.95f;
 	c_side_1_f.b *= 0.95f;
@@ -349,6 +354,8 @@ void Clouds::render()
 	}
 
 	m_material.BackfaceCulling = m_enable_3d;
+	if (m_enable_shaders)
+		m_material.EmissiveColor = m_color.toSColor();
 
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 	driver->setMaterial(m_material);
@@ -388,13 +395,13 @@ void Clouds::update(const v3f &camera_p, const video::SColorf &color_diffuse)
 {
 	video::SColorf ambient(m_params.color_ambient);
 	video::SColorf bright(m_params.color_bright);
-	m_camera_pos = camera_p;
 	m_color.r = core::clamp(color_diffuse.r * bright.r, ambient.r, 1.0f);
 	m_color.g = core::clamp(color_diffuse.g * bright.g, ambient.g, 1.0f);
 	m_color.b = core::clamp(color_diffuse.b * bright.b, ambient.b, 1.0f);
 	m_color.a = bright.a;
 
 	// is the camera inside the cloud mesh?
+	m_camera_pos = camera_p;
 	m_camera_inside_cloud = false; // default
 	if (m_enable_3d) {
 		float camera_height = camera_p.Y - BS * m_camera_offset.Y;

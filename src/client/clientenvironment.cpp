@@ -43,7 +43,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	CAOShaderConstantSetter
 */
 
-//! Shader constant setter for passing material emissive color to the CAO object_shader
+// Shader constant setter for passing material emissive color to a shader
+// Used by:
+// - CAO shader
+// - cloud shader
 class CAOShaderConstantSetter : public IShaderConstantSetter
 {
 public:
@@ -51,7 +54,6 @@ public:
 
 	void onSetConstants(video::IMaterialRendererServices *services) override
 	{
-		// Ambient color
 		video::SColorf emissive_color(m_emissive_color);
 
 		float as_array[4] = {

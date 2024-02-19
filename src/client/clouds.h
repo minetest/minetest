@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "skyparams.h"
 
+class IShaderSource;
+
 // Menu clouds
 class Clouds;
 extern Clouds *g_menuclouds;
@@ -34,7 +36,7 @@ extern scene::ISceneManager *g_menucloudsmgr;
 class Clouds : public scene::ISceneNode
 {
 public:
-	Clouds(scene::ISceneManager* mgr,
+	Clouds(scene::ISceneManager* mgr, IShaderSource *ssrc,
 			s32 id,
 			u32 seed
 	);
@@ -151,7 +153,7 @@ private:
 	v3s16 m_camera_offset;
 	bool m_camera_inside_cloud = false;
 
-	bool m_enable_3d;
+	bool m_enable_shaders, m_enable_3d;
 	video::SColorf m_color = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	CloudParams m_params;
 };
