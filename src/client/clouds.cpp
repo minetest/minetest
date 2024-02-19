@@ -19,9 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "client/renderingengine.h"
 #include "clouds.h"
-#include "noise.h"
 #include "constants.h"
 #include "debug.h"
+#include "irrlicht_changes/printing.h"
+#include "noise.h"
 #include "profiler.h"
 #include "settings.h"
 #include <cmath>
@@ -71,7 +72,7 @@ Clouds::Clouds(scene::ISceneManager* mgr,
 	updateBox();
 
 	m_meshbuffer = new scene::SMeshBuffer();
-	m_meshbuffer->setHardwareMappingHint(scene::EHM_STREAM);
+	m_meshbuffer->setHardwareMappingHint(scene::EHM_DYNAMIC);
 }
 
 Clouds::~Clouds()
@@ -95,6 +96,15 @@ void Clouds::OnRegisterSceneNode()
 
 void Clouds::updateMesh()
 {
+	// Only update mesh if it has moved enough, this saves lots of GPU buffer uploads.
+	// In practice the fog hides the delay updating.
+	constexpr float max_d = 5 * BS;
+	if (m_meshbuffer->getIndexCount() > 0 && m_mesh_origin.getDistanceFrom(m_origin) < max_d)
+		return;
+
+	ScopeProfiler sp(g_profiler, "Clouds::updateMesh()", SPT_AVG);
+	m_mesh_origin = m_origin;
+
 	const u32 num_faces_to_draw = m_enable_3d ? 6 : 1;
 
 	// Clouds move from Z+ towards Z-
@@ -286,7 +296,6 @@ void Clouds::updateMesh()
 			}
 
 			v3f pos(p0.X, m_params.height * BS, p0.Y);
-			pos -= intToFloat(m_camera_offset, BS);
 
 			for (video::S3DVertex &vertex : v) {
 				vertex.Pos += pos;
@@ -328,10 +337,16 @@ void Clouds::render()
 	if (SceneManager->getSceneNodeRenderPass() != scene::ESNRP_TRANSPARENT)
 		return;
 
-	ScopeProfiler sp(g_profiler, "Clouds::render()", SPT_AVG);
-
 	updateMesh();
-	assert(m_meshbuffer);
+
+	// Update position
+	{
+		v2f off_origin = m_origin - m_mesh_origin;
+		v3f rel(off_origin.X, 0, off_origin.Y);
+		rel -= intToFloat(m_camera_offset, BS);
+		setPosition(rel);
+		updateAbsolutePosition();
+	}
 
 	m_material.BackfaceCulling = m_enable_3d;
 
@@ -399,6 +414,8 @@ void Clouds::readSettings()
 	// Upper limit was chosen due to posible render bugs
 	m_cloud_radius_i = rangelim(g_settings->getU16("cloud_radius"), 1, 62);
 	m_enable_3d = g_settings->getBool("enable_3d_clouds");
+
+	invalidateMesh();
 }
 
 bool Clouds::gridFilled(int x, int y) const

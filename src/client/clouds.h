@@ -72,7 +72,7 @@ public:
 
 	void update(const v3f &camera_p, const video::SColorf &color);
 
-	void updateCameraOffset(const v3s16 &camera_offset)
+	void updateCameraOffset(v3s16 camera_offset)
 	{
 		m_camera_offset = camera_offset;
 		updateBox();
@@ -83,23 +83,24 @@ public:
 	void setDensity(float density)
 	{
 		m_params.density = density;
-		// currently does not need bounding
+		invalidateMesh();
 	}
 
-	void setColorBright(const video::SColor &color_bright)
+	void setColorBright(video::SColor color_bright)
 	{
 		m_params.color_bright = color_bright;
 	}
 
-	void setColorAmbient(const video::SColor &color_ambient)
+	void setColorAmbient(video::SColor color_ambient)
 	{
 		m_params.color_ambient = color_ambient;
 	}
 
 	void setHeight(float height)
 	{
-		m_params.height = height; // add bounding when necessary
+		m_params.height = height;
 		updateBox();
+		invalidateMesh();
 	}
 
 	void setSpeed(v2f speed)
@@ -111,6 +112,7 @@ public:
 	{
 		m_params.thickness = thickness;
 		updateBox();
+		invalidateMesh();
 	}
 
 	bool isCameraInsideCloud() const { return m_camera_inside_cloud; }
@@ -127,20 +129,29 @@ private:
 	}
 
 	void updateMesh();
+	void invalidateMesh()
+	{
+		if (m_meshbuffer)
+			m_meshbuffer->Vertices.set_used(0);
+	}
 
 	bool gridFilled(int x, int y) const;
 
 	video::SMaterial m_material;
 	scene::SMeshBuffer *m_meshbuffer = nullptr;
+	// Value of m_origin at the time the mesh was last updated
+	v2f m_mesh_origin;
+
 	aabb3f m_box;
+	v2f m_origin;
 	u16 m_cloud_radius_i;
-	bool m_enable_3d;
 	u32 m_seed;
 	v3f m_camera_pos;
-	v2f m_origin;
+
 	v3s16 m_camera_offset;
-	video::SColorf m_color = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
-	CloudParams m_params;
 	bool m_camera_inside_cloud = false;
 
+	bool m_enable_3d;
+	video::SColorf m_color = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
+	CloudParams m_params;
 };
