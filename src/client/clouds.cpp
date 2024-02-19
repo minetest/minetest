@@ -72,15 +72,12 @@ Clouds::Clouds(scene::ISceneManager* mgr, IShaderSource *ssrc,
 
 	updateBox();
 
-	m_meshbuffer = new scene::SMeshBuffer();
+	m_meshbuffer.reset(new scene::SMeshBuffer());
 	m_meshbuffer->setHardwareMappingHint(scene::EHM_DYNAMIC);
 }
 
 Clouds::~Clouds()
 {
-	if (m_meshbuffer)
-		m_meshbuffer->drop();
-
 	g_settings->deregisterChangedCallback("enable_3d_clouds",
 		&cloud_3d_setting_changed, this);
 }
@@ -181,7 +178,7 @@ void Clouds::updateMesh()
 	}
 
 
-	auto *mb = m_meshbuffer;
+	auto *mb = m_meshbuffer.get();
 	{
 		const u32 vertex_count = num_faces_to_draw * 16 * m_cloud_radius_i * m_cloud_radius_i;
 		const u32 quad_count = vertex_count / 4;
@@ -393,7 +390,7 @@ void Clouds::render()
 				cloud_full_radius*1.2, fog_density, fog_pixelfog, fog_rangefog);
 	}
 
-	driver->drawMeshBuffer(m_meshbuffer);
+	driver->drawMeshBuffer(m_meshbuffer.get());
 
 	// Restore fog settings
 	driver->setFog(fog_color, fog_type, fog_start, fog_end, fog_density,

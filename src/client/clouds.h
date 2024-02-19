@@ -19,10 +19,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
-#include <iostream>
 #include "constants.h"
+#include "irr_ptr.h"
+#include "irrlichttypes_extrabloated.h"
 #include "skyparams.h"
+#include <iostream>
 
 class IShaderSource;
 
@@ -145,7 +146,7 @@ private:
 	bool gridFilled(int x, int y) const;
 
 	video::SMaterial m_material;
-	scene::SMeshBuffer *m_meshbuffer = nullptr;
+	irr_ptr<scene::SMeshBuffer> m_meshbuffer;
 	// Value of m_origin at the time the mesh was last updated
 	v2f m_mesh_origin;
 	// Value of center_of_drawing_in_noise_i at the time the mesh was last updated
