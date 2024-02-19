@@ -25,7 +25,7 @@ local bar_definitions = {
 		offset = {x = 25, y= -(48 + 24 + 16)},
 	},
 	minimap = {
-		hud_elem_type = "minimap",
+		type = "minimap",
 		position = {x = 1, y = 0},
 		alignment = {x = -1, y = 1},
 		offset = {x = -10, y = 10},
