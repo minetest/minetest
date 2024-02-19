@@ -250,7 +250,6 @@ private:
 	v3f m_bounding_sphere_center;
 
 	bool m_enable_shaders;
-	bool m_enable_vbo;
 
 	// Must animate() be called before rendering?
 	bool m_has_animation;
