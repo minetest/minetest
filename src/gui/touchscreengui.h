@@ -246,6 +246,8 @@ private:
 	size_t m_move_id;
 	bool m_move_has_really_moved = false;
 	u64 m_move_downtime = 0;
+	// m_move_pos stays valid even after m_move_id has been released.
+	v2s32 m_move_pos;
 
 	bool m_has_joystick_id = false;
 	size_t m_joystick_id;
@@ -281,16 +283,6 @@ private:
 			const rect<s32> &button_rect, int texture_id,
 			bool visible = true);
 
-	struct id_status
-	{
-		size_t id;
-		int X;
-		int Y;
-	};
-
-	// vector to store known ids and their initial touch positions
-	std::vector<id_status> m_known_ids;
-
 	// handle a button event
 	void handleButtonEvent(touch_gui_button_id bID, size_t eventID, bool action);
 
@@ -303,7 +295,7 @@ private:
 	// apply joystick status
 	void applyJoystickStatus();
 
-	// array for saving last known position of a pointer
+	// map to store the IDs and positions of currently pressed pointers
 	std::unordered_map<size_t, v2s32> m_pointer_pos;
 
 	// settings bar
