@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-02-17 00:36+0000\n"
-"Last-Translator: Wuzzy <Wuzzy@disroot.org>\n"
+"PO-Revision-Date: 2024-02-21 17:02+0000\n"
+"Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -3490,7 +3490,7 @@ msgstr "Bildwiederholrate"
 
 #: src/settings_translation_file.cpp
 msgid "FPS when unfocused or paused"
-msgstr "Bildwiederholrate bei Bildwiederholrate/Pause"
+msgstr "Bildwiederholrate wenn Fenster im Hintergrund/Spiel pausiert"
 
 #: src/settings_translation_file.cpp
 msgid "Factor noise"
@@ -5827,9 +5827,9 @@ msgid ""
 "On false, 16 bits texture will be used.\n"
 "This can cause much more artifacts in the shadow."
 msgstr ""
-"Setzt die Schattentexturqualität auf 32 Bits.\n"
+"Setzt die Schattentexturqualität auf 32 Bit.\n"
 "Falls deaktiviert, werden 16-Bit-Texturen benutzt.\n"
-"Dies kann zu viel mehr Artefakten im Schatten führen."
+"Dies kann zu viel mehr Artefakten in Schatten führen."
 
 #: src/settings_translation_file.cpp
 msgid "Shader path"
@@ -5861,7 +5861,7 @@ msgstr "Maximale Schattenrenderdistanz von Schattenkarten in Blöcken"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow map texture in 32 bits"
-msgstr "Schattenkartentextur in 32 Bits"
+msgstr "Schattenkartentextur mit 32 Bit"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow map texture size"
