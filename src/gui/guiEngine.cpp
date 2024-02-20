@@ -315,10 +315,15 @@ void GUIEngine::run()
 		);
 	const bool initial_window_maximized = g_settings->getBool("window_maximized");
 
-	u64 t_last_frame = porting::getTimeUs();
+	FpsControl fps_control;
 	f32 dtime = 0.0f;
 
-	while (m_rendering_engine->run() && (!m_startgame) && (!m_kill)) {
+	fps_control.reset();
+
+	while (m_rendering_engine->run() && !m_startgame && !m_kill) {
+
+		fps_control.limit(device, &dtime);
+
 		if (device->isWindowVisible()) {
 			// check if we need to update the "upper left corner"-text
 			if (text_height != g_fontengine->getTextHeight()) {
@@ -328,13 +333,12 @@ void GUIEngine::run()
 
 			driver->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
 
-			if (m_clouds_enabled)
-			{
-				cloudPreProcess();
+			if (m_clouds_enabled) {
+				drawClouds(dtime);
 				drawOverlay(driver);
-			}
-			else
+			} else {
 				drawBackground(driver);
+			}
 
 			drawFooter(driver);
 
@@ -349,22 +353,9 @@ void GUIEngine::run()
 			driver->endScene();
 		}
 
-		u32 frametime_min = 1000 / (device->isWindowFocused()
-			? g_settings->getFloat("fps_max")
-			: g_settings->getFloat("fps_max_unfocused"));
-		if (m_clouds_enabled)
-			cloudPostProcess(frametime_min, device);
-		else
-			sleep_ms(frametime_min);
-
-		u64 t_now = porting::getTimeUs();
-		dtime = static_cast<f32>(t_now - t_last_frame) * 1.0e-6f;
-		t_last_frame = t_now;
-
 		m_script->step();
 
 		sound_volume_control(m_sound_manager.get(), device->isWindowActive());
-
 		m_sound_manager->step(dtime);
 
 #ifdef __ANDROID__
@@ -407,45 +398,14 @@ void GUIEngine::cloudInit()
 	m_cloud.camera = m_smgr->addCameraSceneNode(0,
 				v3f(0,0,0), v3f(0, 60, 100));
 	m_cloud.camera->setFarValue(10000);
-
-	m_cloud.lasttime = m_rendering_engine->get_timer_time();
 }
 
 /******************************************************************************/
-void GUIEngine::cloudPreProcess()
+void GUIEngine::drawClouds(float dtime)
 {
-	u32 time = m_rendering_engine->get_timer_time();
-
-	if(time > m_cloud.lasttime)
-		m_cloud.dtime = (time - m_cloud.lasttime) / 1000.0;
-	else
-		m_cloud.dtime = 0;
-
-	m_cloud.lasttime = time;
-
-	m_cloud.clouds->step(m_cloud.dtime*3);
+	m_cloud.clouds->step(dtime*3);
 	m_cloud.clouds->render();
 	m_smgr->drawAll();
-}
-
-/******************************************************************************/
-void GUIEngine::cloudPostProcess(u32 frametime_min, IrrlichtDevice *device)
-{
-	// Time of frame without fps limit
-	u32 busytime_u32;
-
-	// not using getRealTime is necessary for wine
-	u32 time = m_rendering_engine->get_timer_time();
-	if(time > m_cloud.lasttime)
-		busytime_u32 = time - m_cloud.lasttime;
-	else
-		busytime_u32 = 0;
-
-	// FPS limit
-	if (busytime_u32 < frametime_min) {
-		u32 sleeptime = frametime_min - busytime_u32;
-		device->sleep(sleeptime);
-	}
 }
 
 /******************************************************************************/
