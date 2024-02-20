@@ -398,7 +398,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture3{"texture3"};
 	CachedVertexShaderSetting<float, 2> m_texel_size0_vertex{"texelSize0"};
 	CachedPixelShaderSetting<float, 2> m_texel_size0_pixel{"texelSize0"};
-	std::array<float, 2> m_texel_size0_values;
+	v2f m_texel_size0;
 	CachedStructPixelShaderSetting<float, 7> m_exposure_params_pixel{
 		"exposureParams",
 		std::array<const char*, 7> {
@@ -477,10 +477,7 @@ public:
 	void onSetConstants(video::IMaterialRendererServices *services) override
 	{
 		video::SColorf fogcolorf(m_sky->getFogColor());
-		float fogcolorfa[4] = {
-			fogcolorf.r, fogcolorf.g, fogcolorf.b, fogcolorf.a,
-		};
-		m_fog_color.set(fogcolorfa, services);
+		m_fog_color.set(fogcolorf, services);
 
 		float fog_distance = 10000 * BS;
 		if (m_fog_enabled && !*m_force_fog_off)
@@ -494,11 +491,7 @@ public:
 		u32 daynight_ratio = (float)m_client->getEnv().getDayNightRatio();
 		video::SColorf sunlight;
 		get_sunlight_color(&sunlight, daynight_ratio);
-		float dnc[3] = {
-			sunlight.r,
-			sunlight.g,
-			sunlight.b };
-		m_day_light.set(dnc, services);
+		m_day_light.set(sunlight, services);
 
 		video::SColorf star_color = m_sky->getCurrentStarColor();
 		float clr[4] = {star_color.r, star_color.g, star_color.b, star_color.a};
@@ -513,24 +506,18 @@ public:
 		m_animation_timer_delta_vertex.set(&animation_timer_delta_f, services);
 		m_animation_timer_delta_pixel.set(&animation_timer_delta_f, services);
 
-		float eye_position_array[3];
 		v3f epos = m_client->getEnv().getLocalPlayer()->getEyePosition();
-		epos.getAs3Values(eye_position_array);
-		m_eye_position_pixel.set(eye_position_array, services);
-		m_eye_position_vertex.set(eye_position_array, services);
+		m_eye_position_pixel.set(epos, services);
+		m_eye_position_vertex.set(epos, services);
 
 		if (m_client->getMinimap()) {
-			float minimap_yaw_array[3];
 			v3f minimap_yaw = m_client->getMinimap()->getYawVec();
-			minimap_yaw.getAs3Values(minimap_yaw_array);
-			m_minimap_yaw.set(minimap_yaw_array, services);
+			m_minimap_yaw.set(minimap_yaw, services);
 		}
 
-		float camera_offset_array[3];
 		v3f offset = intToFloat(m_client->getCamera()->getOffset(), BS);
-		offset.getAs3Values(camera_offset_array);
-		m_camera_offset_pixel.set(camera_offset_array, services);
-		m_camera_offset_vertex.set(camera_offset_array, services);
+		m_camera_offset_pixel.set(offset, services);
+		m_camera_offset_vertex.set(offset, services);
 
 		SamplerLayer_t tex_id;
 		tex_id = 0;
@@ -542,8 +529,8 @@ public:
 		tex_id = 3;
 		m_texture3.set(&tex_id, services);
 
-		m_texel_size0_vertex.set(m_texel_size0_values.data(), services);
-		m_texel_size0_pixel.set(m_texel_size0_values.data(), services);
+		m_texel_size0_vertex.set(m_texel_size0, services);
+		m_texel_size0_pixel.set(m_texel_size0, services);
 
 		const AutoExposure &exposure_params = m_client->getEnv().getLocalPlayer()->getLighting().exposure;
 		std::array<float, 7> exposure_buffer = {
@@ -577,14 +564,12 @@ public:
 				transform.transformVect(sun_position);
 				sun_position.normalize();
 
-				float sun_position_array[3] = { sun_position.X, sun_position.Y, sun_position.Z};
-				m_sun_position_pixel.set(sun_position_array, services);
+				m_sun_position_pixel.set(sun_position, services);
 
 				float sun_brightness = rangelim(107.143f * m_sky->getSunDirection().dotProduct(v3f(0.f, 1.f, 0.f)), 0.f, 1.f);
 				m_sun_brightness_pixel.set(&sun_brightness, services);
 			} else {
-				float sun_position_array[3] = { 0.f, 0.f, -1.f };
-				m_sun_position_pixel.set(sun_position_array, services);
+				m_sun_position_pixel.set(v3f(0.f, 0.f, -1.f), services);
 
 				float sun_brightness = 0.f;
 				m_sun_brightness_pixel.set(&sun_brightness, services);
@@ -596,15 +581,12 @@ public:
 				transform.transformVect(moon_position);
 				moon_position.normalize();
 
-				float moon_position_array[3] = { moon_position.X, moon_position.Y, moon_position.Z};
-				m_moon_position_pixel.set(moon_position_array, services);
+				m_moon_position_pixel.set(moon_position, services);
 
 				float moon_brightness = rangelim(107.143f * m_sky->getMoonDirection().dotProduct(v3f(0.f, 1.f, 0.f)), 0.f, 1.f);
 				m_moon_brightness_pixel.set(&moon_brightness, services);
-			}
-			else {
-				float moon_position_array[3] = { 0.f, 0.f, -1.f };
-				m_moon_position_pixel.set(moon_position_array, services);
+			} else {
+				m_moon_position_pixel.set(v3f(0.f, 0.f, -1.f), services);
 
 				float moon_brightness = 0.f;
 				m_moon_brightness_pixel.set(&moon_brightness, services);
@@ -619,12 +601,9 @@ public:
 		video::ITexture *texture = material.getTexture(0);
 		if (texture) {
 			core::dimension2du size = texture->getSize();
-			m_texel_size0_values[0] = 1.f / size.Width;
-			m_texel_size0_values[1] = 1.f / size.Height;
-		}
-		else {
-			m_texel_size0_values[0] = 0.f;
-			m_texel_size0_values[1] = 0.f;
+			m_texel_size0 = v2f(1.f / size.Width, 1.f / size.Height);
+		} else {
+			m_texel_size0 = v2f();
 		}
 	}
 };
