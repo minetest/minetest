@@ -407,7 +407,6 @@ void GUIEngine::cloudInit()
 void GUIEngine::drawClouds(float dtime)
 {
 	m_cloud.clouds->step(dtime*3);
-	m_cloud.clouds->render();
 	m_smgr->drawAll();
 }
 

@@ -203,9 +203,9 @@ private:
 	MainMenuData                         *m_data = nullptr;
 	/** texture source */
 	std::unique_ptr<ISimpleTextureSource> m_texture_source;
-	/** shader source*/
+	/** shader source */
 	std::unique_ptr<IShaderSource>        m_shader_source;
-	/** sound manager*/
+	/** sound manager */
 	std::unique_ptr<ISoundManager>        m_sound_manager;
 
 	/** representation of form source to be used in mainmenu formspec */
