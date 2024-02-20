@@ -77,6 +77,7 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 	// Create materials
 
 	m_materials[0] = baseMaterial();
+	// FIXME: shouldn't this check m_enable_shaders?
 	m_materials[0].MaterialType = ssrc->getShaderInfo(ssrc->getShader("stars_shader", TILE_MATERIAL_ALPHA)).material;
 	m_materials[0].Lighting = true;
 	m_materials[0].ColorMaterial = video::ECM_NONE;
