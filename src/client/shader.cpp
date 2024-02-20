@@ -389,8 +389,10 @@ private:
 	// The former container is behind this mutex
 	std::mutex m_shaderinfo_cache_mutex;
 
+#if 0
 	// Queued shader fetches (to be processed by the main thread)
 	RequestQueue<std::string, u32, u8, u8> m_get_shader_queue;
+#endif
 
 	// Global constant setter factories
 	std::vector<std::unique_ptr<IShaderConstantSetterFactory>> m_setter_factories;
@@ -427,8 +429,10 @@ u32 ShaderSource::getShader(const std::string &name,
 		return getShaderIdDirect(name, material_type, drawtype);
 	}
 
-	/*errorstream<<"getShader(): Queued: name=\""<<name<<"\""<<std::endl;*/
+	errorstream << "ShaderSource::getShader(): getting from "
+		"other thread not implemented" << std::endl;
 
+#if 0
 	// We're gonna ask the result to be put into here
 
 	static ResultQueue<std::string, u32, u8, u8> result_queue;
@@ -451,6 +455,7 @@ u32 ShaderSource::getShader(const std::string &name,
 	}
 
 	infostream << "getShader(): Failed" << std::endl;
+#endif
 
 	return 0;
 }
