@@ -17,8 +17,7 @@ cmake -B build \
 	-DBUILD_SERVER=FALSE \
 	-DENABLE_GETTEXT=TRUE \
     -DENABLE_SOUND=FALSE \
-    -DBUILD_UNITTESTS=FALSE \
-    -DINSTALL_DEVTEST=TRUE
+    -DBUILD_UNITTESTS=FALSE
 
 cmake --build build
 cmake --install build
