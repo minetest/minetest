@@ -118,20 +118,29 @@ void ShadowRenderer::disable()
 		});
 }
 
+void ShadowRenderer::preInit(IWritableShaderSource *shsrc)
+{
+	if (g_settings->getBool("enable_shaders") &&
+			g_settings->getBool("enable_dynamic_shadows")) {
+		shsrc->addShaderConstantSetterFactory(new ShadowConstantSetterFactory());
+	}
+}
+
 void ShadowRenderer::initialize()
 {
 	auto *gpu = m_driver->getGPUProgrammingServices();
 
 	// we need glsl
-	if (m_shadows_supported && gpu && m_driver->queryFeature(video::EVDF_ARB_GLSL)) {
-		createShaders();
-	} else {
+	if (!m_shadows_supported || !gpu || !m_driver->queryFeature(video::EVDF_ARB_GLSL)) {
 		m_shadows_supported = false;
 
 		warningstream << "Shadows: GLSL Shader not supported on this system."
 			<< std::endl;
 		return;
 	}
+
+	createShaders();
+	
 
 	m_texture_format = m_shadow_map_texture_32bit
 					   ? video::ECOLOR_FORMAT::ECF_R32F

@@ -1495,6 +1495,8 @@ bool Game::createClient(const GameStartData &start_data)
 			&m_flags.force_fog_off, &runData.fog_range, client);
 	shader_src->addShaderConstantSetterFactory(scsf);
 
+	ShadowRenderer::preInit(shader_src);
+
 	// Update cached textures, meshes and materials
 	client->afterContentReceived();
 
