@@ -545,11 +545,11 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		return shaderinfo;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (!driver->queryFeature(video::EVDF_ARB_GLSL)) {
+	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
+	if (!driver->queryFeature(video::EVDF_ARB_GLSL) || !gpu) {
 		throw ShaderException(gettext("Shaders are enabled but GLSL is not "
 			"supported by the driver."));
 	}
-	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
 
 	// Create shaders header
 	bool fully_programmable = driver->getDriverType() == video::EDT_OGLES2 || driver->getDriverType() == video::EDT_OPENGL3;
@@ -609,14 +609,6 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		#define normalTexture texture1
 		#define textureFlags texture2
 	)";
-
-	// Since this is the first time we're using the GL bindings be extra careful.
-	// This should be removed before 5.6.0 or similar.
-	if (!GL.GetString) {
-		errorstream << "OpenGL procedures were not loaded correctly, "
-			"please open a bug report with details about your platform/OS." << std::endl;
-		abort();
-	}
 
 	bool use_discard = fully_programmable;
 	// For renderers that should use discard instead of GL_ALPHA_TEST
