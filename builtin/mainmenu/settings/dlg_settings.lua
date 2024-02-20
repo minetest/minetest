@@ -643,6 +643,8 @@ local function buttonhandler(this, fields)
 		write_settings_early()
 	end
 
+	-- enable_touch is a checkbox in a setting component. We handle this
+	-- setting differently so we can hide/show pages using the next if-statement
 	if fields.enable_touch ~= nil then
 		local value = core.is_yes(fields.enable_touch)
 		core.settings:set_bool("enable_touch", value)
