@@ -90,7 +90,6 @@ public:
 
 	bool setupTopLevelWindow();
 	bool setWindowIcon();
-	static bool print_video_modes();
 	void cleanupMeshCache();
 
 	void removeMesh(const scene::IMesh* mesh);

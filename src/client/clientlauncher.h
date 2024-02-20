@@ -38,6 +38,7 @@ private:
 	void init_args(GameStartData &start_data, const Settings &cmd_args);
 	bool init_engine();
 	void init_input();
+	void init_guienv(gui::IGUIEnvironment *guienv);
 
 	bool launch_game(std::string &error_message, bool reconnect_requested,
 		GameStartData &start_data, const Settings &cmd_args);
@@ -49,5 +50,4 @@ private:
 	RenderingEngine *m_rendering_engine = nullptr;
 	InputHandler *input = nullptr;
 	MyEventReceiver *receiver = nullptr;
-	gui::IGUISkin *skin = nullptr;
 };
