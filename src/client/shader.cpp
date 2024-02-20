@@ -264,6 +264,7 @@ class ShaderSource : public IWritableShaderSource
 {
 public:
 	ShaderSource();
+	~ShaderSource() override;
 
 	/*
 		- If shader material specified by name is found from cache,
@@ -349,6 +350,22 @@ ShaderSource::ShaderSource()
 
 	// Add main global constant setter
 	addShaderConstantSetterFactory(new MainShaderConstantSetterFactory());
+}
+
+ShaderSource::~ShaderSource()
+{
+	MutexAutoLock lock(m_shaderinfo_cache_mutex);
+
+#if IRRLICHT_VERSION_MT_REVISION >= 15
+	// Delete materials
+	video::IGPUProgrammingServices *gpu = RenderingEngine::get_video_driver()->
+		getGPUProgrammingServices();
+	for (ShaderInfo &i : m_shaderinfo_cache) {
+		if (!i.name.empty())
+			gpu->deleteShaderMaterial(i.material);
+	}
+	m_shaderinfo_cache.clear();
+#endif
 }
 
 u32 ShaderSource::getShader(const std::string &name,
@@ -472,15 +489,17 @@ void ShaderSource::rebuildShaders()
 {
 	MutexAutoLock lock(m_shaderinfo_cache_mutex);
 
-	/*// Oh well... just clear everything, they'll load sometime.
-	m_shaderinfo_cache.clear();
-	m_name_to_id.clear();*/
-
-	/*
-		FIXME: Old shader materials can't be deleted in Irrlicht,
-		or can they?
-		(This would be nice to do in the destructor too)
-	*/
+#if IRRLICHT_VERSION_MT_REVISION >= 15
+	// Delete materials
+	video::IGPUProgrammingServices *gpu = RenderingEngine::get_video_driver()->
+		getGPUProgrammingServices();
+	for (ShaderInfo &i : m_shaderinfo_cache) {
+		if (!i.name.empty()) {
+			gpu->deleteShaderMaterial(i.material);
+			i.material = video::EMT_SOLID; // invalidate
+		}
+	}
+#endif
 
 	// Recreate shaders
 	for (ShaderInfo &i : m_shaderinfo_cache) {
