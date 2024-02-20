@@ -46,6 +46,19 @@ class RenderingCore;
 // Instead of a mechanism to disable fog we just set it to be really far away
 #define FOG_RANGE_ALL (100000 * BS)
 
+struct FpsControl {
+	FpsControl() : last_time(0), busy_time(0), sleep_time(0) {}
+
+	void reset();
+
+	void limit(IrrlichtDevice *device, f32 *dtime, bool assume_paused = false);
+
+	u32 getBusyMs() const { return busy_time / 1000; }
+
+	// all values in microseconds (us)
+	u64 last_time, busy_time, sleep_time;
+};
+
 class RenderingEngine
 {
 public:
@@ -101,11 +114,6 @@ public:
 	{
 		sanity_check(s_singleton && s_singleton->m_device);
 		return s_singleton->m_device;
-	}
-
-	u32 get_timer_time()
-	{
-		return m_device->getTimer()->getTime();
 	}
 
 	gui::IGUIEnvironment *get_gui_env()

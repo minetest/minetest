@@ -650,20 +650,6 @@ public:
 
 const static float object_hit_delay = 0.2;
 
-struct FpsControl {
-	FpsControl() : last_time(0), busy_time(0), sleep_time(0) {}
-
-	void reset();
-
-	void limit(IrrlichtDevice *device, f32 *dtime);
-
-	u32 getBusyMs() const { return busy_time / 1000; }
-
-	// all values in microseconds (us)
-	u64 last_time, busy_time, sleep_time;
-};
-
-
 /* The reason the following structs are not anonymous structs within the
  * class is that they are not used by the majority of member functions and
  * many functions that do require objects of thse types do not modify them
@@ -1201,7 +1187,7 @@ void Game::run()
 		// Calculate dtime =
 		//    m_rendering_engine->run() from this iteration
 		//  + Sleep time until the wanted FPS are reached
-		draw_times.limit(device, &dtime);
+		draw_times.limit(device, &dtime, g_menumgr.pausesGame());
 
 		const auto current_dynamic_info = ClientDynamicInfo::getCurrent();
 		if (!current_dynamic_info.equal(client_display_info)) {
@@ -4329,48 +4315,6 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 /****************************************************************************
  Misc
  ****************************************************************************/
-
-void FpsControl::reset()
-{
-	last_time = porting::getTimeUs();
-}
-
-/*
- * On some computers framerate doesn't seem to be automatically limited
- */
-void FpsControl::limit(IrrlichtDevice *device, f32 *dtime)
-{
-	const float fps_limit = (device->isWindowFocused() && !g_menumgr.pausesGame())
-			? g_settings->getFloat("fps_max")
-			: g_settings->getFloat("fps_max_unfocused");
-	const u64 frametime_min = 1000000.0f / std::max(fps_limit, 1.0f);
-
-	u64 time = porting::getTimeUs();
-
-	if (time > last_time) // Make sure time hasn't overflowed
-		busy_time = time - last_time;
-	else
-		busy_time = 0;
-
-	if (busy_time < frametime_min) {
-		sleep_time = frametime_min - busy_time;
-		if (sleep_time > 0)
-			sleep_us(sleep_time);
-	} else {
-		sleep_time = 0;
-	}
-
-	// Read the timer again to accurately determine how long we actually slept,
-	// rather than calculating it by adding sleep_time to time.
-	time = porting::getTimeUs();
-
-	if (time > last_time) // Make sure last_time hasn't overflowed
-		*dtime = (time - last_time) / 1000000.0f;
-	else
-		*dtime = 0;
-
-	last_time = time;
-}
 
 void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_sky)
 {

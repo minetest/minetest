@@ -44,6 +44,46 @@ RenderingEngine *RenderingEngine::s_singleton = nullptr;
 const video::SColor RenderingEngine::MENU_SKY_COLOR = video::SColor(255, 140, 186, 250);
 const float RenderingEngine::BASE_BLOOM_STRENGTH = 1.0f;
 
+/* Helper stuff */
+
+void FpsControl::reset()
+{
+	last_time = porting::getTimeUs();
+}
+
+void FpsControl::limit(IrrlichtDevice *device, f32 *dtime, bool assume_paused)
+{
+	const float fps_limit = (device->isWindowFocused() && !assume_paused)
+			? g_settings->getFloat("fps_max")
+			: g_settings->getFloat("fps_max_unfocused");
+	const u64 frametime_min = 1000000.0f / std::max(fps_limit, 1.0f);
+
+	u64 time = porting::getTimeUs();
+
+	if (time > last_time) // Make sure time hasn't overflowed
+		busy_time = time - last_time;
+	else
+		busy_time = 0;
+
+	if (busy_time < frametime_min) {
+		sleep_time = frametime_min - busy_time;
+		if (sleep_time > 0)
+			sleep_us(sleep_time);
+	} else {
+		sleep_time = 0;
+	}
+
+	// Read the timer again to accurately determine how long we actually slept,
+	// rather than calculating it by adding sleep_time to time.
+	time = porting::getTimeUs();
+
+	if (time > last_time) // Make sure last_time hasn't overflowed
+		*dtime = (time - last_time) / 1000000.0f;
+	else
+		*dtime = 0;
+
+	last_time = time;
+}
 
 static gui::GUISkin *createSkin(gui::IGUIEnvironment *environment,
 		gui::EGUI_SKIN_TYPE type, video::IVideoDriver *driver)
@@ -65,7 +105,6 @@ static gui::GUISkin *createSkin(gui::IGUIEnvironment *environment,
 
 	return skin;
 }
-
 
 static std::optional<video::E_DRIVER_TYPE> chooseVideoDriver()
 {
@@ -105,6 +144,8 @@ static irr::IrrlichtDevice *createDevice(SIrrlichtCreationParameters params, std
 
 	throw std::runtime_error("Could not initialize the device with any supported video driver");
 }
+
+/* RenderingEngine class */
 
 RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 {

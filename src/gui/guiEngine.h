@@ -280,16 +280,10 @@ private:
 	/** initialize cloud subsystem */
 	void cloudInit();
 	/** do preprocessing for cloud subsystem */
-	void cloudPreProcess();
-	/** do postprocessing for cloud subsystem */
-	void cloudPostProcess(u32 frametime_min, IrrlichtDevice *device);
+	void drawClouds(float dtime);
 
 	/** internam data required for drawing clouds */
 	struct clouddata {
-		/** delta time since last cloud processing */
-		f32 dtime;
-		/** absolute time of last cloud processing */
-		u32 lasttime;
 		/** pointer to cloud class */
 		irr_ptr<Clouds> clouds;
 		/** camera required for drawing clouds */
