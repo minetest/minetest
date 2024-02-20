@@ -32,9 +32,7 @@ void ShadowConstantSetter::onSetConstants(video::IMaterialRendererServices *serv
 	shadowViewProj *= light.getViewMatrix();
 	m_shadow_view_proj.set(shadowViewProj.pointer(), services);
 
-	f32 v_LightDirection[3];
-	light.getDirection().getAs3Values(v_LightDirection);
-	m_light_direction.set(v_LightDirection, services);
+	m_light_direction.set(light.getDirection(), services);
 
 	f32 TextureResolution = light.getMapResolution();
 	m_texture_res.set(&TextureResolution, services);
@@ -79,7 +77,7 @@ void ShadowDepthShaderCB::OnSetConstants(
 
 	lightMVP *= driver->getTransform(video::ETS_WORLD);
 
-	m_light_mvp_setting.set(lightMVP.pointer(), services);
+	m_light_mvp_setting.set(lightMVP, services);
 	m_map_resolution_setting.set(&MapRes, services);
 	m_max_far_setting.set(&MaxFar, services);
 	s32 TextureId = 0;
