@@ -152,6 +152,9 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	driver = m_device->getVideoDriver();
 	infostream << "Using the " << RenderingEngine::getVideoDriverInfo(driver->getDriverType()).friendly_name << " video driver" << std::endl;
 
+	// This changes the minimum allowed number of vertices in a VBO. Default is 500.
+	driver->setMinHardwareBufferVertexCount(4);
+
 	s_singleton = this;
 
 	auto skin = createSkin(m_device->getGUIEnvironment(),
@@ -319,9 +322,9 @@ void RenderingEngine::finalize()
 }
 
 void RenderingEngine::draw_scene(video::SColor skycolor, bool show_hud,
-		bool show_minimap, bool draw_wield_tool, bool draw_crosshair)
+		bool draw_wield_tool, bool draw_crosshair)
 {
-	core->draw(skycolor, show_hud, show_minimap, draw_wield_tool, draw_crosshair);
+	core->draw(skycolor, show_hud, draw_wield_tool, draw_crosshair);
 }
 
 const VideoDriverInfo &RenderingEngine::getVideoDriverInfo(irr::video::E_DRIVER_TYPE type)

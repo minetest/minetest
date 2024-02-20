@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <unordered_set>
+#include <map>
 #include "metadata.h"
 
 /*

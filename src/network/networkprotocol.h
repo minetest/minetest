@@ -222,6 +222,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 44:
 		AO_CMD_SET_BONE_POSITION extended
 		Add TOCLIENT_MOVE_PLAYER_REL
+		Move default minimap from client-side C++ to server-side builtin Lua
 		[scheduled bump for 5.9.0]
 */
 
@@ -233,8 +234,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SERVER_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
 // Client's supported network protocol range
-// The minimal version depends on whether
-// send_pre_v25_init is enabled or not
 #define CLIENT_PROTOCOL_VERSION_MIN 37
 #define CLIENT_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 

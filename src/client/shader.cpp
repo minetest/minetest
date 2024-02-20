@@ -804,7 +804,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 }
 
 void dumpShaderProgram(std::ostream &output_stream,
-		const std::string &program_type, const std::string &program)
+		const std::string &program_type, std::string_view program)
 {
 	output_stream << program_type << " shader program:" << std::endl <<
 		"----------------------------------" << std::endl;

@@ -166,16 +166,9 @@ def get_modname(folder):
 				if match:
 					return match.group(1)
 	except FileNotFoundError:
-		if not os.path.isfile(os.path.join(folder, "modpack.txt")):
-			folder_name = os.path.basename(folder)
-			# Special case when run in Minetest's builtin directory
-			if folder_name == "builtin":
-				return "__builtin"
-			else:
-				return folder_name
-		else:
-			return None
-	return None
+		folder_name = os.path.basename(folder)
+		# Special case when run in Minetest's builtin directory
+		return "__builtin" if folder_name == "builtin" else folder_name
 
 # If there are already .tr files in /locale, returns a list of their names
 def get_existing_tr_files(folder):
@@ -463,27 +456,32 @@ def update_tr_file(dNew, mod_name, tr_file):
 
 # Updates translation files for the mod in the given folder
 def update_mod(folder):
-	modname = get_modname(folder)
-	if modname is not None:
-		print(f"Updating translations for {modname}")
-		data = generate_template(folder, modname)
-		if data == None:
-			print(f"No translatable strings found in {modname}")
-		else:
-			for tr_file in get_existing_tr_files(folder):
-				update_tr_file(data, modname, os.path.join(folder, "locale/", tr_file))
-	else:
-		print(f"Unable to determine the mod name in folder {folder}. Missing 'name' field in mod.conf.", file=_stderr)
+	if not os.path.exists(os.path.join(folder, "init.lua")):
+		print(f"Mod folder {folder} is missing init.lua, aborting.")
 		exit(1)
+	assert not is_modpack(folder)
+	modname = get_modname(folder)
+	print(f"Updating translations for {modname}")
+	data = generate_template(folder, modname)
+	if data == None:
+		print(f"No translatable strings found in {modname}")
+	else:
+		for tr_file in get_existing_tr_files(folder):
+			update_tr_file(data, modname, os.path.join(folder, "locale/", tr_file))
 
-# Determines if the folder being pointed to is a mod or a mod pack
+def is_modpack(folder):
+	return os.path.exists(os.path.join(folder, "modpack.txt")) or os.path.exists(os.path.join(folder, "modpack.conf"))
+
+def is_game(folder):
+	return os.path.exists(os.path.join(folder, "game.conf")) and os.path.exists(os.path.join(folder, "mods"))
+
+# Determines if the folder being pointed to is a game, mod or a mod pack
 # and then runs update_mod accordingly
 def update_folder(folder):
-	is_modpack = os.path.exists(os.path.join(folder, "modpack.txt")) or os.path.exists(os.path.join(folder, "modpack.conf"))
-	if is_modpack:
-		subfolders = [f.path for f in os.scandir(folder) if f.is_dir() and not f.name.startswith('.')]
-		for subfolder in subfolders:
-			update_mod(subfolder)
+	if is_game(folder):
+		run_all_subfolders(os.path.join(folder, "mods"))
+	elif is_modpack(folder):
+		run_all_subfolders(folder)
 	else:
 		update_mod(folder)
 	print("Done.")

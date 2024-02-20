@@ -67,7 +67,7 @@ bool FileCache::loadByPath(const std::string &path, std::ostream &os)
 	return !bad;
 }
 
-bool FileCache::updateByPath(const std::string &path, const std::string &data)
+bool FileCache::updateByPath(const std::string &path, std::string_view data)
 {
 	createDir();
 	std::ofstream file(path.c_str(), std::ios_base::binary |
@@ -80,13 +80,13 @@ bool FileCache::updateByPath(const std::string &path, const std::string &data)
 		return false;
 	}
 
-	file.write(data.c_str(), data.length());
+	file << data;
 	file.close();
 
 	return !file.fail();
 }
 
-bool FileCache::update(const std::string &name, const std::string &data)
+bool FileCache::update(const std::string &name, std::string_view data)
 {
 	std::string path = m_dir + DIR_DELIM + name;
 	return updateByPath(path, data);

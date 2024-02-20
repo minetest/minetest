@@ -34,7 +34,7 @@ FloatType g_serialize_f32_type = FLOATTYPE_UNKNOWN;
 //// String
 ////
 
-std::string serializeString16(const std::string &plain)
+std::string serializeString16(std::string_view plain)
 {
 	std::string s;
 	char buf[2];
@@ -76,7 +76,7 @@ std::string deSerializeString16(std::istream &is)
 //// Long String
 ////
 
-std::string serializeString32(const std::string &plain)
+std::string serializeString32(std::string_view plain)
 {
 	std::string s;
 	char buf[4];
@@ -122,7 +122,7 @@ std::string deSerializeString32(std::istream &is)
 //// JSON-like strings
 ////
 
-std::string serializeJsonString(const std::string &plain)
+std::string serializeJsonString(std::string_view plain)
 {
 	std::string tmp;
 
@@ -263,13 +263,13 @@ std::string deSerializeJsonString(std::istream &is)
 	return tmp;
 }
 
-std::string serializeJsonStringIfNeeded(const std::string &s)
+std::string serializeJsonStringIfNeeded(std::string_view s)
 {
 	for (size_t i = 0; i < s.size(); ++i) {
 		if (s[i] <= 0x1f || s[i] >= 0x7f || s[i] == ' ' || s[i] == '\"')
 			return serializeJsonString(s);
 	}
-	return s;
+	return std::string(s);
 }
 
 std::string deSerializeJsonStringIfNeeded(std::istream &is)

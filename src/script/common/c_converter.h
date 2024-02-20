@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <vector>
-#include <unordered_map>
+#include <string_view>
 
 #include "irrlichttypes_bloated.h"
 #include "common/c_types.h"
@@ -67,11 +67,11 @@ v3s16              getv3s16field_default(lua_State *L, int table,
 
 bool               getstringfield(lua_State *L, int table,
                              const char *fieldname, std::string &result);
+bool               getstringfield(lua_State *L, int table,
+                             const char *fieldname, std::string_view &result);
 size_t             getstringlistfield(lua_State *L, int table,
                              const char *fieldname,
                              std::vector<std::string> *result);
-void               read_groups(lua_State *L, int index,
-                             std::unordered_map<std::string, int> &result);
 bool               getboolfield(lua_State *L, int table,
                              const char *fieldname, bool &result);
 bool               getfloatfield(lua_State *L, int table,
@@ -110,11 +110,13 @@ void                push_v2s16          (lua_State *L, v2s16 p);
 void                push_v2s32          (lua_State *L, v2s32 p);
 void                push_v2u32          (lua_State *L, v2u32 p);
 void                push_v3s16          (lua_State *L, v3s16 p);
-void                push_aabb3f         (lua_State *L, aabb3f box);
+void                push_aabb3f         (lua_State *L, aabb3f box, f32 divisor = 1.0f);
 void                push_ARGB8          (lua_State *L, video::SColor color);
 void                pushFloatPos        (lua_State *L, v3f p);
 void                push_v3f            (lua_State *L, v3f p);
 void                push_v2f            (lua_State *L, v2f p);
+void                push_aabb3f_vector  (lua_State *L, const std::vector<aabb3f> &boxes,
+                                         f32 divisor = 1.0f);
 
 void                warn_if_field_exists(lua_State *L, int table,
                                          const char *fieldname,

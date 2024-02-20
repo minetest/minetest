@@ -70,6 +70,7 @@ FlagDesc flagdesc_gennotify[] = {
 	{"large_cave_begin", 1 << GENNOTIFY_LARGECAVE_BEGIN},
 	{"large_cave_end",   1 << GENNOTIFY_LARGECAVE_END},
 	{"decoration",       1 << GENNOTIFY_DECORATION},
+	{"custom",           1 << GENNOTIFY_CUSTOM},
 	{NULL,               0}
 };
 
@@ -108,7 +109,7 @@ static_assert(
 ////
 
 Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeParams *emerge) :
-	gennotify(emerge->gen_notify_on, emerge->gen_notify_on_deco_ids)
+	gennotify(emerge->createNotifier())
 {
 	id           = mapgenid;
 	water_level  = params->water_level;
@@ -980,39 +981,67 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 ////
 
 GenerateNotifier::GenerateNotifier(u32 notify_on,
-	const std::set<u32> *notify_on_deco_ids)
+	const std::set<u32> *notify_on_deco_ids,
+	const std::set<std::string> *notify_on_custom)
 {
 	m_notify_on = notify_on;
 	m_notify_on_deco_ids = notify_on_deco_ids;
+	m_notify_on_custom = notify_on_custom;
 }
 
 
-bool GenerateNotifier::addEvent(GenNotifyType type, v3s16 pos, u32 id)
+bool GenerateNotifier::addEvent(GenNotifyType type, v3s16 pos)
 {
-	if (!(m_notify_on & (1 << type)))
-		return false;
-
-	if (type == GENNOTIFY_DECORATION &&
-		m_notify_on_deco_ids->find(id) == m_notify_on_deco_ids->cend())
+	assert(type != GENNOTIFY_DECORATION && type != GENNOTIFY_CUSTOM);
+	if (!shouldNotifyOn(type))
 		return false;
 
 	GenNotifyEvent gne;
 	gne.type = type;
 	gne.pos  = pos;
-	gne.id   = id;
-	m_notify_events.push_back(gne);
+	m_notify_events.emplace_back(std::move(gne));
+	return true;
+}
 
+
+bool GenerateNotifier::addDecorationEvent(v3s16 pos, u32 id)
+{
+	if (!shouldNotifyOn(GENNOTIFY_DECORATION))
+		return false;
+	// check if data relating to this decoration was requested
+	assert(m_notify_on_deco_ids);
+	if (m_notify_on_deco_ids->find(id) == m_notify_on_deco_ids->cend())
+		return false;
+
+	GenNotifyEvent gne;
+	gne.type = GENNOTIFY_DECORATION;
+	gne.pos  = pos;
+	gne.id   = id;
+	m_notify_events.emplace_back(std::move(gne));
+	return true;
+}
+
+
+bool GenerateNotifier::setCustom(const std::string &key, const std::string &value)
+{
+	if (!shouldNotifyOn(GENNOTIFY_CUSTOM))
+		return false;
+	// check if this key was requested to be saved
+	assert(m_notify_on_custom);
+	if (m_notify_on_custom->count(key) == 0)
+		return false;
+
+	m_notify_custom[key] = value;
 	return true;
 }
 
 
 void GenerateNotifier::getEvents(
-	std::map<std::string, std::vector<v3s16> > &event_map)
+	std::map<std::string, std::vector<v3s16>> &event_map) const
 {
-	std::list<GenNotifyEvent>::iterator it;
+	for (auto &gn : m_notify_events) {
+		assert(gn.type != GENNOTIFY_CUSTOM); // never stored in this list
 
-	for (it = m_notify_events.begin(); it != m_notify_events.end(); ++it) {
-		GenNotifyEvent &gn = *it;
 		std::string name = (gn.type == GENNOTIFY_DECORATION) ?
 			"decoration#"+ itos(gn.id) :
 			flagdesc_gennotify[gn.type].name;
@@ -1025,6 +1054,7 @@ void GenerateNotifier::getEvents(
 void GenerateNotifier::clearEvents()
 {
 	m_notify_events.clear();
+	m_notify_custom.clear();
 }
 
 

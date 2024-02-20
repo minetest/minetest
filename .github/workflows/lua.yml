@@ -19,7 +19,7 @@ jobs:
     name: "Compile and run multiplayer tests"
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Install deps
       run: |
         source ./util/ci/common.sh
@@ -43,11 +43,11 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v3
-    - uses: leafo/gh-actions-lua@v9
+    - uses: actions/checkout@v4
+    - uses: leafo/gh-actions-lua@v10
       with:
         luaVersion: "5.1.5"
-    - uses: leafo/gh-actions-luarocks@v4
+    - uses: leafo/gh-actions-luarocks@v4.3.0
 
     - name: Install LuaJIT
       run: |

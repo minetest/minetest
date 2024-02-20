@@ -1,11 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
-
-# Set policies up to 3.9 since we want to enable the IPO option
-if(${CMAKE_VERSION} VERSION_LESS 3.9)
-	cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
-else()
-	cmake_policy(VERSION 3.9)
-endif()
+cmake_minimum_required(VERSION 3.12)
 
 # This can be read from ${PROJECT_NAME} after project() is called
 project(minetest)
@@ -44,6 +37,13 @@ set(BUILD_UNITTESTS TRUE CACHE BOOL "Build unittests")
 set(BUILD_BENCHMARKS FALSE CACHE BOOL "Build benchmarks")
 set(BUILD_DOCUMENTATION TRUE CACHE BOOL "Build documentation")
 
+set(DEFAULT_ENABLE_LTO TRUE)
+# by default don't enable on Debug builds to get faster builds
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(DEFAULT_ENABLE_LTO FALSE)
+endif()
+set(ENABLE_LTO ${DEFAULT_ENABLE_LTO} CACHE BOOL "Use Link Time Optimization")
+
 set(DEFAULT_RUN_IN_PLACE FALSE)
 if(WIN32)
 	set(DEFAULT_RUN_IN_PLACE TRUE)
@@ -64,6 +64,20 @@ set(WARN_ALL TRUE CACHE BOOL "Enable -Wall for Release build")
 if(NOT CMAKE_BUILD_TYPE)
 	# Default to release
 	set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type: Debug or Release" FORCE)
+endif()
+
+# FIXME: Windows build fails in multiple places to link, needs to be investigated.
+if (ENABLE_LTO AND NOT WIN32)
+	include(CheckIPOSupported)
+	check_ipo_supported(RESULT lto_supported OUTPUT lto_output)
+	if(lto_supported)
+		set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+		message(STATUS "LTO/IPO is enabled")
+	else()
+		message(STATUS "LTO/IPO requested but it is not supported by the compiler: ${lto_output}")
+	endif()
+else()
+	message(STATUS "LTO/IPO is not enabled")
 endif()
 
 set(ENABLE_UPDATE_CHECKER (NOT ${DEVELOPMENT_BUILD}) CACHE BOOL

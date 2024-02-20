@@ -369,8 +369,6 @@ public:
 	Camera* getCamera () { return m_camera; }
 	scene::ISceneManager *getSceneManager();
 
-	bool shouldShowMinimap() const;
-
 	// IGameDef interface
 	IItemDefManager* getItemDefManager() override;
 	const NodeDefManager* getNodeDefManager() override;
@@ -411,8 +409,6 @@ public:
 	bool modsLoaded() const { return m_mods_loaded; }
 
 	void pushToEventQueue(ClientEvent *event);
-
-	void showMinimap(bool show = true);
 
 	// IP and port we're connected to
 	const Address getServerAddress();
@@ -498,7 +494,6 @@ private:
 	ELoginRegister m_allow_login_or_register = ELoginRegister::Any;
 	Camera *m_camera = nullptr;
 	Minimap *m_minimap = nullptr;
-	bool m_minimap_disabled_by_server = false;
 
 	// Server serialization version
 	u8 m_server_ser_ver;

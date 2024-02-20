@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "daynightratio.h"
 #include "util/pointedthing.h"
 #include "mapgen/treegen.h"
-#include "emerge.h"
+#include "emerge_internal.h"
 #include "pathfinder.h"
 #include "face_position_cache.h"
 #include "remoteplayer.h"
@@ -241,7 +241,7 @@ void LuaEmergeAreaCallback(v3s16 blockpos, EmergeAction action, void *param)
 		delete state;
 }
 
-// Exported functions
+/* Exported functions */
 
 // set_node(pos, node)
 // pos = {x=num, y=num, z=num}
@@ -559,6 +559,40 @@ int ModApiEnv::l_add_node_level(lua_State *L)
 	MapNode n = env->getMap().getNode(pos);
 	lua_pushnumber(L, n.addLevel(env->getGameDef()->ndef(), level));
 	env->swapNode(pos, n);
+	return 1;
+}
+
+// get_node_boxes(box_type, pos, [node]) -> table
+// box_type = string
+// pos = {x=num, y=num, z=num}
+// node = {name=string, param1=num, param2=num} or nil
+int ModApiEnv::l_get_node_boxes(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	std::string box_type = luaL_checkstring(L, 1);
+	v3s16 pos = read_v3s16(L, 2);
+	MapNode n;
+	if (lua_istable(L, 3))
+		n = readnode(L, 3);
+	else
+		n = env->getMap().getNode(pos);
+
+	u8 neighbors = n.getNeighbors(pos, &env->getMap());
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
+
+	std::vector<aabb3f> boxes;
+	if (box_type == "node_box")
+		n.getNodeBoxes(ndef, &boxes, neighbors);
+	else if (box_type == "collision_box")
+		n.getCollisionBoxes(ndef, &boxes, neighbors);
+	else if (box_type == "selection_box")
+		n.getSelectionBoxes(ndef, &boxes, neighbors);
+	else
+		luaL_error(L, "get_node_boxes: box_type is invalid. Allowed values: \"node_box\", \"collision_box\", \"selection_box\"");
+
+	push_aabb3f_vector(L, boxes, BS);
+
 	return 1;
 }
 
@@ -1456,6 +1490,7 @@ void ModApiEnv::Initialize(lua_State *L, int top)
 	API_FCT(get_node_level);
 	API_FCT(set_node_level);
 	API_FCT(add_node_level);
+	API_FCT(get_node_boxes);
 	API_FCT(add_entity);
 	API_FCT(find_nodes_with_meta);
 	API_FCT(get_meta);
@@ -1503,3 +1538,189 @@ void ModApiEnv::InitializeClient(lua_State *L, int top)
 	API_FCT(line_of_sight);
 	API_FCT(raycast);
 }
+
+#define GET_VM_PTR               \
+	MMVManip *vm = getVManip(L); \
+	if (!vm)                     \
+		return 0
+
+// get_node_max_level(pos)
+int ModApiEnvVM::l_get_node_max_level(lua_State *L)
+{
+	GET_VM_PTR;
+
+	v3s16 pos = read_v3s16(L, 1);
+	MapNode n = vm->getNodeNoExNoEmerge(pos);
+	lua_pushnumber(L, n.getMaxLevel(getGameDef(L)->ndef()));
+	return 1;
+}
+
+// get_node_level(pos)
+int ModApiEnvVM::l_get_node_level(lua_State *L)
+{
+	GET_VM_PTR;
+
+	v3s16 pos = read_v3s16(L, 1);
+	MapNode n = vm->getNodeNoExNoEmerge(pos);
+	lua_pushnumber(L, n.getLevel(getGameDef(L)->ndef()));
+	return 1;
+}
+
+// set_node_level(pos, level)
+int ModApiEnvVM::l_set_node_level(lua_State *L)
+{
+	GET_VM_PTR;
+
+	v3s16 pos = read_v3s16(L, 1);
+	u8 level = 1;
+	if (lua_isnumber(L, 2))
+		level = lua_tonumber(L, 2);
+	MapNode n = vm->getNodeNoExNoEmerge(pos);
+	lua_pushnumber(L, n.setLevel(getGameDef(L)->ndef(), level));
+	vm->setNodeNoEmerge(pos, n);
+	return 1;
+}
+
+// add_node_level(pos, level)
+int ModApiEnvVM::l_add_node_level(lua_State *L)
+{
+	GET_VM_PTR;
+
+	v3s16 pos = read_v3s16(L, 1);
+	u8 level = 1;
+	if (lua_isnumber(L, 2))
+		level = lua_tonumber(L, 2);
+	MapNode n = vm->getNodeNoExNoEmerge(pos);
+	lua_pushnumber(L, n.addLevel(getGameDef(L)->ndef(), level));
+	vm->setNodeNoEmerge(pos, n);
+	return 1;
+}
+
+// find_node_near(pos, radius, nodenames, [search_center])
+int ModApiEnvVM::l_find_node_near(lua_State *L)
+{
+	GET_VM_PTR;
+
+	const NodeDefManager *ndef = getGameDef(L)->ndef();
+
+	v3s16 pos = read_v3s16(L, 1);
+	int radius = luaL_checkinteger(L, 2);
+	std::vector<content_t> filter;
+	collectNodeIds(L, 3, ndef, filter);
+	int start_radius = (lua_isboolean(L, 4) && readParam<bool>(L, 4)) ? 0 : 1;
+
+	auto getNode = [&vm] (v3s16 p) -> MapNode {
+		return vm->getNodeNoExNoEmerge(p);
+	};
+	return findNodeNear(L, pos, radius, filter, start_radius, getNode);
+}
+
+// find_nodes_in_area(minp, maxp, nodenames, [grouped])
+int ModApiEnvVM::l_find_nodes_in_area(lua_State *L)
+{
+	GET_VM_PTR;
+
+	const NodeDefManager *ndef = getGameDef(L)->ndef();
+
+	v3s16 minp = read_v3s16(L, 1);
+	v3s16 maxp = read_v3s16(L, 2);
+	sortBoxVerticies(minp, maxp);
+
+	checkArea(minp, maxp);
+	// avoid the loop going out-of-bounds
+	{
+		VoxelArea cropped = VoxelArea(minp, maxp).intersect(vm->m_area);
+		minp = cropped.MinEdge;
+		maxp = cropped.MaxEdge;
+	}
+
+	std::vector<content_t> filter;
+	collectNodeIds(L, 3, ndef, filter);
+
+	bool grouped = lua_isboolean(L, 4) && readParam<bool>(L, 4);
+
+	auto iterate = [&] (auto callback) {
+		for (s16 z = minp.Z; z <= maxp.Z; z++)
+		for (s16 y = minp.Y; y <= maxp.Y; y++) {
+			u32 vi = vm->m_area.index(minp.X, y, z);
+			for (s16 x = minp.X; x <= maxp.X; x++) {
+				v3s16 pos(x, y, z);
+				MapNode n = vm->m_data[vi];
+				if (!callback(pos, n))
+					return;
+				++vi;
+			}
+		}
+	};
+	return findNodesInArea(L, ndef, filter, grouped, iterate);
+}
+
+// find_nodes_in_area_under_air(minp, maxp, nodenames)
+int ModApiEnvVM::l_find_nodes_in_area_under_air(lua_State *L)
+{
+	GET_VM_PTR;
+
+	const NodeDefManager *ndef = getGameDef(L)->ndef();
+
+	v3s16 minp = read_v3s16(L, 1);
+	v3s16 maxp = read_v3s16(L, 2);
+	sortBoxVerticies(minp, maxp);
+	checkArea(minp, maxp);
+
+	std::vector<content_t> filter;
+	collectNodeIds(L, 3, ndef, filter);
+
+	auto getNode = [&vm] (v3s16 p) -> MapNode {
+		return vm->getNodeNoExNoEmerge(p);
+	};
+	return findNodesInAreaUnderAir(L, minp, maxp, filter, getNode);
+}
+
+// spawn_tree(pos, treedef)
+int ModApiEnvVM::l_spawn_tree(lua_State *L)
+{
+	GET_VM_PTR;
+
+	const NodeDefManager *ndef = getGameDef(L)->ndef();
+
+	v3s16 p0 = read_v3s16(L, 1);
+
+	treegen::TreeDef tree_def;
+	if (!read_tree_def(L, 2, ndef, tree_def))
+		return 0;
+
+	treegen::error e;
+	if ((e = treegen::make_ltree(*vm, p0, ndef, tree_def)) != treegen::SUCCESS) {
+		if (e == treegen::UNBALANCED_BRACKETS) {
+			throw LuaError("spawn_tree(): closing ']' has no matching opening bracket");
+		} else {
+			throw LuaError("spawn_tree(): unknown error");
+		}
+	}
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+MMVManip *ModApiEnvVM::getVManip(lua_State *L)
+{
+	auto emerge = getEmergeThread(L);
+	if (emerge)
+		return emerge->getMapgen()->vm;
+	return nullptr;
+}
+
+void ModApiEnvVM::InitializeEmerge(lua_State *L, int top)
+{
+	// other, more trivial functions are in builtin/emerge/env.lua
+	API_FCT(get_node_max_level);
+	API_FCT(get_node_level);
+	API_FCT(set_node_level);
+	API_FCT(add_node_level);
+	API_FCT(find_node_near);
+	API_FCT(find_nodes_in_area);
+	API_FCT(find_nodes_in_area_under_air);
+	API_FCT(spawn_tree);
+}
+
+#undef GET_VM_PTR

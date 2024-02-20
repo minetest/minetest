@@ -37,7 +37,7 @@ jobs:
   gcc_7:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install deps
         run: |
           source ./util/ci/common.sh
@@ -58,7 +58,7 @@ jobs:
   gcc_12:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install deps
         run: |
           source ./util/ci/common.sh
@@ -82,7 +82,7 @@ jobs:
   clang_7:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install deps
         run: |
           source ./util/ci/common.sh
@@ -104,7 +104,7 @@ jobs:
   clang_14:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install deps
         run: |
           source ./util/ci/common.sh
@@ -130,7 +130,7 @@ jobs:
     name: "clang_9 (PROMETHEUS=1)"
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install deps
         run: |
           source ./util/ci/common.sh
@@ -156,7 +156,7 @@ jobs:
     name: "Docker image"
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build docker image
         run: |
           docker build . -t minetest:latest

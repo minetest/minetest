@@ -36,7 +36,7 @@ public:
 
 	// Overrides
 	void clear() override;
-	bool setString(const std::string &name, const std::string &var) override;
+	bool setString(const std::string &name, std::string_view var) override;
 
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);

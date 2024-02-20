@@ -83,9 +83,6 @@ void               push_content_features     (lua_State *L,
 
 void               push_nodebox              (lua_State *L,
                                               const NodeBox &box);
-void               push_box                  (lua_State *L,
-                                              const std::vector<aabb3f> &box);
-
 void               push_palette              (lua_State *L,
                                               const std::vector<video::SColor> *palette);
 

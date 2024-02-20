@@ -120,6 +120,12 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_add_node_level(lua_State *L);
 
+	// get_node_boxes(box_type, pos, [node]) -> table
+	// box_type = string
+	// pos = {x=num, y=num, z=num}
+	// node = {name=string, param1=num, param2=num} or nil
+	static int l_get_node_boxes(lua_State *L);
+
 	// find_nodes_with_meta(pos1, pos2)
 	static int l_find_nodes_with_meta(lua_State *L);
 
@@ -235,6 +241,44 @@ private:
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeClient(lua_State *L, int top);
+};
+
+/*
+ * Duplicates of certain env APIs that operate not on the global
+ * map but on a VoxelManipulator. This is for emerge scripting. 
+ */
+class ModApiEnvVM : public ModApiEnvBase {
+private:
+
+	// get_node_max_level(pos)
+	static int l_get_node_max_level(lua_State *L);
+
+	// get_node_level(pos)
+	static int l_get_node_level(lua_State *L);
+
+	// set_node_level(pos)
+	static int l_set_node_level(lua_State *L);
+
+	// add_node_level(pos)
+	static int l_add_node_level(lua_State *L);
+
+	// find_node_near(pos, radius, nodenames, [search_center])
+	static int l_find_node_near(lua_State *L);
+
+	// find_nodes_in_area(minp, maxp, nodenames, [grouped])
+	static int l_find_nodes_in_area(lua_State *L);
+
+	// find_surface_nodes_in_area(minp, maxp, nodenames)
+	static int l_find_nodes_in_area_under_air(lua_State *L);
+
+	// spawn_tree(pos, treedef)
+	static int l_spawn_tree(lua_State *L);
+
+	// Helper: get the vmanip we're operating on
+	static MMVManip *getVManip(lua_State *L);
+
+public:
+	static void InitializeEmerge(lua_State *L, int top);
 };
 
 class LuaABM : public ActiveBlockModifier {

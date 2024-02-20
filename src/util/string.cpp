@@ -82,14 +82,14 @@ const char *DEFAULT_ENCODING = "UTF-32LE";
 const char *DEFAULT_ENCODING = "WCHAR_T";
 #endif
 
-std::wstring utf8_to_wide(const std::string &input)
+std::wstring utf8_to_wide(std::string_view input)
 {
 	const size_t inbuf_size = input.length();
 	// maximum possible size, every character is sizeof(wchar_t) bytes
 	size_t outbuf_size = input.length() * sizeof(wchar_t);
 
 	char *inbuf = new char[inbuf_size]; // intentionally NOT null-terminated
-	memcpy(inbuf, input.c_str(), inbuf_size);
+	memcpy(inbuf, input.data(), inbuf_size);
 	std::wstring out;
 	out.resize(outbuf_size / sizeof(wchar_t));
 
@@ -110,14 +110,14 @@ std::wstring utf8_to_wide(const std::string &input)
 	return out;
 }
 
-std::string wide_to_utf8(const std::wstring &input)
+std::string wide_to_utf8(std::wstring_view input)
 {
 	const size_t inbuf_size = input.length() * sizeof(wchar_t);
 	// maximum possible size: utf-8 encodes codepoints using 1 up to 4 bytes
 	size_t outbuf_size = input.length() * 4;
 
 	char *inbuf = new char[inbuf_size]; // intentionally NOT null-terminated
-	memcpy(inbuf, input.c_str(), inbuf_size);
+	memcpy(inbuf, input.data(), inbuf_size);
 	std::string out;
 	out.resize(outbuf_size);
 
@@ -135,24 +135,24 @@ std::string wide_to_utf8(const std::wstring &input)
 
 #else // _WIN32
 
-std::wstring utf8_to_wide(const std::string &input)
+std::wstring utf8_to_wide(std::string_view input)
 {
 	size_t outbuf_size = input.size() + 1;
 	wchar_t *outbuf = new wchar_t[outbuf_size];
 	memset(outbuf, 0, outbuf_size * sizeof(wchar_t));
-	MultiByteToWideChar(CP_UTF8, 0, input.c_str(), input.size(),
+	MultiByteToWideChar(CP_UTF8, 0, input.data(), input.size(),
 		outbuf, outbuf_size);
 	std::wstring out(outbuf);
 	delete[] outbuf;
 	return out;
 }
 
-std::string wide_to_utf8(const std::wstring &input)
+std::string wide_to_utf8(std::wstring_view input)
 {
 	size_t outbuf_size = (input.size() + 1) * 6;
 	char *outbuf = new char[outbuf_size];
 	memset(outbuf, 0, outbuf_size);
-	WideCharToMultiByte(CP_UTF8, 0, input.c_str(), input.size(),
+	WideCharToMultiByte(CP_UTF8, 0, input.data(), input.size(),
 		outbuf, outbuf_size, NULL, NULL);
 	std::string out(outbuf);
 	delete[] outbuf;
@@ -162,9 +162,9 @@ std::string wide_to_utf8(const std::wstring &input)
 #endif // _WIN32
 
 
-std::string urlencode(const std::string &str)
+std::string urlencode(std::string_view str)
 {
-	// Encodes non-unreserved URI characters by a percent sign
+	// Encodes reserved URI characters by a percent sign
 	// followed by two hex digits. See RFC 3986, section 2.3.
 	static const char url_hex_chars[] = "0123456789ABCDEF";
 	std::ostringstream oss(std::ios::binary);
@@ -180,7 +180,7 @@ std::string urlencode(const std::string &str)
 	return oss.str();
 }
 
-std::string urldecode(const std::string &str)
+std::string urldecode(std::string_view str)
 {
 	// Inverse of urlencode
 	std::ostringstream oss(std::ios::binary);
@@ -615,10 +615,10 @@ void str_replace(std::string &str, char from, char to)
  * before filling it again.
  */
 
-void translate_all(const std::wstring &s, size_t &i,
+static void translate_all(const std::wstring &s, size_t &i,
 		Translations *translations, std::wstring &res);
 
-void translate_string(const std::wstring &s, Translations *translations,
+static void translate_string(const std::wstring &s, Translations *translations,
 		const std::wstring &textdomain, size_t &i, std::wstring &res)
 {
 	std::wostringstream output;
@@ -732,14 +732,15 @@ void translate_string(const std::wstring &s, Translations *translations,
 	res = result.str();
 }
 
-void translate_all(const std::wstring &s, size_t &i,
+static void translate_all(const std::wstring &s, size_t &i,
 		Translations *translations, std::wstring &res)
 {
-	std::wostringstream output;
+	res.clear();
+	res.reserve(s.length());
 	while (i < s.length()) {
 		// Not an escape sequence: just add the character.
 		if (s[i] != '\x1b') {
-			output.put(s[i]);
+			res.append(1, s[i]);
 			++i;
 			continue;
 		}
@@ -747,7 +748,7 @@ void translate_all(const std::wstring &s, size_t &i,
 		// We have an escape sequence: locate it and its data
 		// It is either a single character, or it begins with '('
 		// and extends up to the following ')', with '\' as an escape character.
-		size_t escape_start = i;
+		const size_t escape_start = i;
 		++i;
 		size_t start_index = i;
 		size_t length;
@@ -784,14 +785,12 @@ void translate_all(const std::wstring &s, size_t &i,
 				textdomain = parts[1];
 			std::wstring translated;
 			translate_string(s, translations, textdomain, i, translated);
-			output << translated;
+			res.append(translated);
 		} else {
 			// Another escape sequence, such as colors. Preserve it.
-			output << std::wstring(s, escape_start, i - escape_start);
+			res.append(&s[escape_start], i - escape_start);
 		}
 	}
-
-	res = output.str();
 }
 
 // Translate string server side
@@ -813,7 +812,7 @@ std::wstring translate_string(const std::wstring &s)
 #endif
 }
 
-static const std::array<std::wstring, 30> disallowed_dir_names = {
+static const std::array<std::wstring_view, 30> disallowed_dir_names = {
 	// Problematic filenames from here:
 	// https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#file-and-directory-names
 	// Plus undocumented values from here:
@@ -853,10 +852,10 @@ static const std::array<std::wstring, 30> disallowed_dir_names = {
 /**
  * List of characters that are blacklisted from created directories
  */
-static const std::wstring disallowed_path_chars = L"<>:\"/\\|?*.";
+static const std::wstring_view disallowed_path_chars = L"<>:\"/\\|?*.";
 
 
-std::string sanitizeDirName(const std::string &str, const std::string &optional_prefix)
+std::string sanitizeDirName(std::string_view str, std::string_view optional_prefix)
 {
 	std::wstring safe_name = utf8_to_wide(str);
 
@@ -897,7 +896,7 @@ std::string sanitizeDirName(const std::string &str, const std::string &optional_
 }
 
 
-void safe_print_string(std::ostream &os, const std::string &str)
+void safe_print_string(std::ostream &os, std::string_view str)
 {
 	std::ostream::fmtflags flags = os.flags();
 	os << std::hex;
@@ -913,7 +912,7 @@ void safe_print_string(std::ostream &os, const std::string &str)
 }
 
 
-v3f str_to_v3f(const std::string &str)
+v3f str_to_v3f(std::string_view str)
 {
 	v3f value;
 	Strfnd f(str);

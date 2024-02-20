@@ -1971,19 +1971,9 @@ void Client::makeScreenshot()
 	raw_image->drop();
 }
 
-bool Client::shouldShowMinimap() const
-{
-	return !m_minimap_disabled_by_server;
-}
-
 void Client::pushToEventQueue(ClientEvent *event)
 {
 	m_client_event_queue.push(event);
-}
-
-void Client::showMinimap(const bool show)
-{
-	m_game_ui->showMinimap(show);
 }
 
 // IGameDef interface

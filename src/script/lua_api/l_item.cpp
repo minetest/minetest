@@ -163,6 +163,9 @@ int LuaItemStack::l_get_metadata(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkObject<LuaItemStack>(L, 1);
 	ItemStack &item = o->m_stack;
+
+	log_deprecated(L, "ItemStack:get_metadata is deprecated", 1, true);
+
 	const std::string &value = item.metadata.getString("");
 	lua_pushlstring(L, value.c_str(), value.size());
 	return 1;
@@ -175,6 +178,8 @@ int LuaItemStack::l_set_metadata(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkObject<LuaItemStack>(L, 1);
 	ItemStack &item = o->m_stack;
+
+	log_deprecated(L, "ItemStack:set_metadata is deprecated", 1, true);
 
 	size_t len = 0;
 	const char *ptr = luaL_checklstring(L, 2, &len);
