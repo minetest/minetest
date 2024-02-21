@@ -44,7 +44,7 @@ RenderingEngine *RenderingEngine::s_singleton = nullptr;
 const video::SColor RenderingEngine::MENU_SKY_COLOR = video::SColor(255, 140, 186, 250);
 const float RenderingEngine::BASE_BLOOM_STRENGTH = 1.0f;
 
-/* Helper stuff */
+/* Helper classes */
 
 void FpsControl::reset()
 {
@@ -84,6 +84,47 @@ void FpsControl::limit(IrrlichtDevice *device, f32 *dtime, bool assume_paused)
 
 	last_time = time;
 }
+
+class FogShaderConstantSetter : public IShaderConstantSetter
+{
+	CachedPixelShaderSetting<float, 4> m_fog_color{"fogColor"};
+	CachedPixelShaderSetting<float> m_fog_distance{"fogDistance"};
+	CachedPixelShaderSetting<float> m_fog_shading_parameter{"fogShadingParameter"};
+
+public:
+	void onSetConstants(video::IMaterialRendererServices *services) override
+	{
+		auto *driver = RenderingEngine::get_video_driver();
+		assert(driver);
+
+		video::SColor fog_color(0);
+		video::E_FOG_TYPE fog_type = video::EFT_FOG_LINEAR;
+		f32 fog_start = 0;
+		f32 fog_end = 0;
+		f32 fog_density = 0;
+		bool fog_pixelfog = false;
+		bool fog_rangefog = false;
+		driver->getFog(fog_color, fog_type, fog_start, fog_end, fog_density,
+				fog_pixelfog, fog_rangefog);
+
+		video::SColorf fog_colorf(fog_color);
+		m_fog_color.set(fog_colorf, services);
+
+		m_fog_distance.set(&fog_end, services);
+
+		float parameter = 0;
+		if (fog_end > 0)
+			parameter = 1.0f / (1.0f - fog_start / fog_end);
+		m_fog_shading_parameter.set(&parameter, services);
+	}
+};
+
+IShaderConstantSetter *FogShaderConstantSetterFactory::create()
+{
+	return new FogShaderConstantSetter();
+}
+
+/* Other helpers */
 
 static gui::GUISkin *createSkin(gui::IGUIEnvironment *environment,
 		gui::EGUI_SKIN_TYPE type, video::IVideoDriver *driver)
