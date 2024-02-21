@@ -15,6 +15,9 @@
     "[jsonc]": {
         "editor.formatOnSave": true
     },
+    "clangd.arguments": [
+        "-compile-commands-dir=build"
+    ],
     "cmake.cmakePath": "/opt/conda/envs/minetest/bin/cmake",
     "cmake.configureArgs": [
         "-DRUN_IN_PLACE=TRUE",
