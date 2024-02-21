@@ -108,7 +108,6 @@ void Clouds::updateMesh()
 	);
 
 	// Only update mesh if it has moved enough, this saves lots of GPU buffer uploads.
-	// In practice the fog hides the delay in updating.
 	constexpr float max_d = 5 * BS;
 
 	if (!m_mesh_valid) {

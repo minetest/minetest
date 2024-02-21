@@ -2,6 +2,8 @@ uniform vec4 emissiveColor;
 
 varying lowp vec4 varColor;
 
+varying vec3 eyeVec;
+
 void main(void)
 {
 	gl_Position = mWorldViewProj * inVertexPosition;
@@ -13,6 +15,7 @@ void main(void)
 #endif
 
 	color *= emissiveColor;
-
 	varColor = color;
+
+	eyeVec = -(mWorldView * inVertexPosition).xyz;
 }
