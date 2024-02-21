@@ -425,6 +425,7 @@ def generate_template(folder, mod_name):
 		sources = sorted(list(sources), key=str.lower)
 		newSources = []
 		for i in sources:
+			i = "/".join(os.path.split(i)).lstrip("/")
 			newSources.append(f"{symbol_source_prefix} {i} {symbol_source_suffix}")
 		dOut[d] = newSources
 
