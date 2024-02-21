@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <sstream>
 
 #include <capnp/blob.h>
 #include <capnp/message.h>
@@ -75,7 +76,9 @@ void RemoteInputHandler::step(float dtime) {
       constexpr char kRewardHUDPrefix[] = "Reward: ";
       std::string_view reward_string = hud_element->text;
       reward_string.remove_prefix(std::size(kRewardHUDPrefix) - 1); // -1 for null terminator
-      obs_builder.setReward(stof(std::string(reward_string)));
+      // I'd rather use std::from_chars, but it's not available in libc++ yet.
+      std::stringstream ss{std::string(reward_string)};
+      ss >> reward;
       break;
     }
   }

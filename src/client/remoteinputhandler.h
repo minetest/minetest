@@ -1,7 +1,9 @@
 #pragma once
 #include "gui/mainmenumanager.h"
 #include "inputhandler.h"
-#include "remoteclient.capnp.h"
+
+#include <string>
+
 #include <capnp/message.h>
 #include <capnp/serialize-packed.h>
 #include <zmqpp/zmqpp.hpp>
