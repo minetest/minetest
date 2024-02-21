@@ -285,6 +285,8 @@ class MinetestEnv(gym.Env):
             emergequeue_limit_diskonly=1000000,
             emergequeue_limit_generate=1000000,
         )
+        # Some games we carea bout currently use insecure lua features.
+        config["secure.enable_security"] = False
 
         # Seed the map generator if not using a custom map
         if self.world_seed:
@@ -446,9 +448,6 @@ class MinetestEnv(gym.Env):
             # TODO: should probably check for NVidia GPU before doing this.
             client_env["__GLX_VENDOR_LIBRARY_NAME"] = "indirect"  # "nvidia"
             client_env["__NV_PRIME_RENDER_OFFLOAD"] = "1"
-            # TODO: this seems to be in conflict with the above, which suggets we
-            # want to use OpenGL but this suggests we want to use software rendering.
-            client_env["SDL_RENDER_DRIVER"] = "software"
             # disable vsync
             client_env["__GL_SYNC_TO_VBLANK"] = "0"
             client_env["vblank_mode"] = "0"
