@@ -77,6 +77,7 @@ class MinetestEnv(gym.Env):
         config_dict: Dict[str, Any] = None,
         headless: bool = True,
         verbose_logging: bool = False,
+        log_to_stderr: bool = False,
     ):
         if config_dict is None:
             config_dict = {}
@@ -103,6 +104,20 @@ class MinetestEnv(gym.Env):
         self._set_artifact_dirs(
             artifact_dir, world_dir, config_path
         )  # Stores minetest artifacts and outputs
+
+        self._logger = logging.getLogger(f"{__name__}_{self.unique_env_id}")
+        self._logger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler(os.path.join(self.log_dir, f"env_{self.unique_env_id}.log"))
+        handler.setLevel(logging.DEBUG)
+        handler.setFormatter(logging.Formatter("%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s", datefmt="%H:%M:%S"))
+        self._logger.addHandler(handler)
+        if log_to_stderr:
+            handler = logging.StreamHandler()
+            handler.setLevel(logging.DEBUG)
+            self._logger.addHandler(handler)
+
+        self._logger.debug("logging to %s", self.log_dir)
+
         if minetest_executable:
             self.minetest_executable = Path(minetest_executable)
             assert shutil.which(
@@ -110,7 +125,7 @@ class MinetestEnv(gym.Env):
             ), f"minetest_executable not found: {self.minetest_executable}"
         else:
             self.minetest_executable = None
-            logging.debug(
+            self._logger.debug(
                 "minetest_executable not specified, will attempt to connect "
                 "to running minetest instance."
             )
@@ -149,15 +164,6 @@ class MinetestEnv(gym.Env):
         # Write minetest.conf
         self.config_dict = config_dict
         self._write_config()
-
-        # Configure logging
-        logging.basicConfig(
-            filename=os.path.join(self.log_dir, f"env_{self.unique_env_id}.log"),
-            filemode="a",
-            format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
-            datefmt="%H:%M:%S",
-            level=logging.DEBUG,
-        )
 
     def _configure_spaces(self):
         # Define action and observation space
@@ -202,7 +208,6 @@ class MinetestEnv(gym.Env):
             self.world_dir = world_dir
 
         self.log_dir = os.path.join(self.artifact_dir, "log")
-        logging.debug("logging to %s", self.log_dir)
         self.media_cache_dir = os.path.join(self.artifact_dir, "media_cache")
 
         os.makedirs(self.log_dir, exist_ok=True)
@@ -339,7 +344,7 @@ class MinetestEnv(gym.Env):
         # And sometimes it goes valid -> invalid -> valid.
         min_num_valid_obs = 3
         valid_obs_seen = 0
-        logging.debug("Waiting for first obs...")
+        self._logger.debug("Waiting for first obs...")
         for attempt in range(valid_obs_max_attempts):
             self.socket.send(empty_action_bytes)
             if not attempt:
@@ -359,11 +364,11 @@ class MinetestEnv(gym.Env):
             ) = deserialize_obs(byte_obs)
             if _is_loading(obs):
                 valid_obs_seen = 0
-                logging.debug(f"Still loading... {attempt}/{valid_obs_max_attempts}")
+                self._logger.debug(f"Still loading... {attempt}/{valid_obs_max_attempts}")
                 continue
             valid_obs_seen += 1
             if valid_obs_seen >= min_num_valid_obs:
-                logging.debug(f"Received first obs: {obs.shape}")
+                self._logger.debug(f"Received first obs: {obs.shape}")
                 self.last_obs = obs
                 return obs, {}
         raise RuntimeError(
@@ -381,7 +386,7 @@ class MinetestEnv(gym.Env):
         if isinstance(action["MOUSE"], np.ndarray):
             action["MOUSE"] = action["MOUSE"].tolist()
         pb_action = serialize_action(action)
-        logging.debug(f"Sending action: {pb_action}")
+        self._logger.debug(f"Sending action: {pb_action}")
         self.socket.send(pb_action.to_bytes())
 
         # TODO more robust check for whether a server/client is alive while receiving observations
@@ -392,7 +397,7 @@ class MinetestEnv(gym.Env):
         next_obs, rew, done = deserialize_obs(byte_obs)
 
         self.last_obs = next_obs
-        logging.debug(f"Received obs - {next_obs.shape}; reward - {rew}")
+        self._logger.debug(f"Received obs - {next_obs.shape}; reward - {rew}")
 
         if self.render_mode == "human":
             self._display_pygame()
@@ -459,7 +464,7 @@ class MinetestEnv(gym.Env):
                 cmd, stdout=out, stderr=err, env=client_env
             )
             out.write(f"Client started with pid {client_process.pid}\n")
-        logging.debug(f"Client started with pid {client_process.pid}")
+        self._logger.debug(f"Client started with pid {client_process.pid}")
         return client_process
 
 
