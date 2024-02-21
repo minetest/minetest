@@ -115,7 +115,13 @@ int MetaDataRef::l_set_string(lua_State *L)
 
 	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
-	auto str = readParam<std::string_view>(L, 3);
+	std::string_view str;
+	if (!lua_isnoneornil(L, 3)) {
+		str = readParam<std::string_view>(L, 3);
+	} else {
+		log_deprecated(L, "Value passed to set_string is nil. This behaviour is"
+			" undocumented and will result in an error in the future.", 1, true);
+	}
 
 	IMetadata *meta = ref->getmeta(!str.empty());
 	if (meta != NULL && meta->setString(name, str))
