@@ -981,7 +981,9 @@ void TouchScreenGUI::step(float dtime)
 	// thus the camera position can change, it doesn't suffice to update the
 	// shootline when a touch event occurs.
 	// Note that the shootline isn't used if touch_use_crosshair is enabled.
-	if (!m_draw_crosshair) {
+	// Only updating when m_has_move_id means that the shootline will stay at
+	// it's last in-world position when the player doesn't need it.
+	if (!m_draw_crosshair && m_has_move_id) {
 		v2s32 pointer_pos = getPointerPos();
 		m_shootline = m_device
 				->getSceneManager()
@@ -1050,6 +1052,8 @@ v2s32 TouchScreenGUI::getPointerPos()
 {
 	if (m_draw_crosshair)
 		return v2s32(m_screensize.X / 2, m_screensize.Y / 2);
+	// We can't just use m_pointer_pos[m_move_id] because applyContextControls
+	// may emit release events after m_pointer_pos[m_move_id] is erased.
 	return m_move_pos;
 }
 
