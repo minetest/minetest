@@ -372,13 +372,6 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 {
 	Sky *m_sky;
 	Client *m_client;
-	bool *m_force_fog_off;
-	f32 *m_fog_range;
-	bool m_fog_enabled;
-	CachedPixelShaderSetting<float, 4> m_fog_color{"fogColor"};
-	CachedPixelShaderSetting<float> m_fog_distance{"fogDistance"};
-	CachedPixelShaderSetting<float>
-		m_fog_shading_parameter{"fogShadingParameter"};
 	CachedVertexShaderSetting<float> m_animation_timer_vertex{"animationTimer"};
 	CachedPixelShaderSetting<float> m_animation_timer_pixel{"animationTimer"};
 	CachedVertexShaderSetting<float>
@@ -425,11 +418,16 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float>
 		m_volumetric_light_strength_pixel{"volumetricLightStrength"};
 
+	static constexpr std::array<const char*, 4> SETTING_CALLBACKS = {
+		"exposure_compensation",
+		"bloom_intensity",
+		"bloom_strength_factor",
+		"bloom_radius"
+	};
+
 public:
 	void onSettingsChange(const std::string &name)
 	{
-		if (name == "enable_fog")
-			m_fog_enabled = g_settings->getBool("enable_fog");
 		if (name == "exposure_compensation")
 			m_user_exposure_compensation = g_settings->getFloat("exposure_compensation", -1.0f, 1.0f);
 		if (name == "bloom_intensity")
@@ -447,20 +445,13 @@ public:
 
 	void setSky(Sky *sky) { m_sky = sky; }
 
-	GameGlobalShaderConstantSetter(Sky *sky, bool *force_fog_off,
-			f32 *fog_range, Client *client) :
+	GameGlobalShaderConstantSetter(Sky *sky, Client *client) :
 		m_sky(sky),
-		m_client(client),
-		m_force_fog_off(force_fog_off),
-		m_fog_range(fog_range)
+		m_client(client)
 	{
-		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
-		g_settings->registerChangedCallback("exposure_compensation", settingsCallback, this);
-		g_settings->registerChangedCallback("bloom_intensity", settingsCallback, this);
-		g_settings->registerChangedCallback("bloom_strength_factor", settingsCallback, this);
-		g_settings->registerChangedCallback("bloom_radius", settingsCallback, this);
-		g_settings->registerChangedCallback("saturation", settingsCallback, this);
-		m_fog_enabled = g_settings->getBool("enable_fog");
+		for (auto &name : SETTING_CALLBACKS)
+			g_settings->registerChangedCallback(name, settingsCallback, this);
+
 		m_user_exposure_compensation = g_settings->getFloat("exposure_compensation", -1.0f, 1.0f);
 		m_bloom_enabled = g_settings->getBool("enable_bloom");
 		m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
@@ -471,23 +462,12 @@ public:
 
 	~GameGlobalShaderConstantSetter()
 	{
-		g_settings->deregisterChangedCallback("enable_fog", settingsCallback, this);
+		for (auto &name : SETTING_CALLBACKS)
+			g_settings->deregisterChangedCallback(name, settingsCallback, this);
 	}
 
 	void onSetConstants(video::IMaterialRendererServices *services) override
 	{
-		video::SColorf fogcolorf(m_sky->getFogColor());
-		m_fog_color.set(fogcolorf, services);
-
-		float fog_distance = 10000 * BS;
-		if (m_fog_enabled && !*m_force_fog_off)
-			fog_distance = *m_fog_range;
-
-		float fog_shading_parameter = 1.0 / ( 1.0 - m_sky->getFogStart());
-
-		m_fog_distance.set(&fog_distance, services);
-		m_fog_shading_parameter.set(&fog_shading_parameter, services);
-
 		u32 daynight_ratio = (float)m_client->getEnv().getDayNightRatio();
 		video::SColorf sunlight;
 		get_sunlight_color(&sunlight, daynight_ratio);
@@ -611,17 +591,11 @@ public:
 
 class GameGlobalShaderConstantSetterFactory : public IShaderConstantSetterFactory
 {
-	Sky *m_sky;
-	bool *m_force_fog_off;
-	f32 *m_fog_range;
+	Sky *m_sky = nullptr;
 	Client *m_client;
 	std::vector<GameGlobalShaderConstantSetter *> created_nosky;
 public:
-	GameGlobalShaderConstantSetterFactory(bool *force_fog_off,
-			f32 *fog_range, Client *client) :
-		m_sky(NULL),
-		m_force_fog_off(force_fog_off),
-		m_fog_range(fog_range),
+	GameGlobalShaderConstantSetterFactory(Client *client) :
 		m_client(client)
 	{}
 
@@ -635,8 +609,7 @@ public:
 
 	virtual IShaderConstantSetter* create()
 	{
-		auto *scs = new GameGlobalShaderConstantSetter(
-				m_sky, m_force_fog_off, m_fog_range, m_client);
+		auto *scs = new GameGlobalShaderConstantSetter(m_sky, m_client);
 		if (!m_sky)
 			created_nosky.push_back(scs);
 		return scs;
@@ -1456,9 +1429,11 @@ bool Game::createClient(const GameStartData &start_data)
 		return false;
 	}
 
-	auto *scsf = new GameGlobalShaderConstantSetterFactory(
-			&m_flags.force_fog_off, &runData.fog_range, client);
+	auto *scsf = new GameGlobalShaderConstantSetterFactory(client);
 	shader_src->addShaderConstantSetterFactory(scsf);
+
+	shader_src->addShaderConstantSetterFactory(
+		new FogShaderConstantSetterFactory());
 
 	ShadowRenderer::preInit(shader_src);
 

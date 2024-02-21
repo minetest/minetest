@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
+#include "client/shader.h"
 #include "client/render/core.h"
 // include the shadow mapper classes too
 #include "client/shadows/dynamicshadowsrender.h"
@@ -46,6 +47,8 @@ class RenderingCore;
 // Instead of a mechanism to disable fog we just set it to be really far away
 #define FOG_RANGE_ALL (100000 * BS)
 
+/* Helpers */
+
 struct FpsControl {
 	FpsControl() : last_time(0), busy_time(0), sleep_time(0) {}
 
@@ -58,6 +61,16 @@ struct FpsControl {
 	// all values in microseconds (us)
 	u64 last_time, busy_time, sleep_time;
 };
+
+// Populates fogColor, fogDistance, fogShadingParameter with values from Irrlicht
+class FogShaderConstantSetterFactory : public IShaderConstantSetterFactory
+{
+public:
+	FogShaderConstantSetterFactory() {};
+	virtual IShaderConstantSetter *create();
+};
+
+/* Rendering engine class */
 
 class RenderingEngine
 {
