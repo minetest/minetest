@@ -467,7 +467,7 @@ PunchDamageResult getPunchDamage(
 	{
 		if (do_hit && punchitem) {
 			if (itemgroup_get(armor_groups, "punch_operable") &&
-					(toolcap == NULL || (punchitem && punchitem->name.empty())))
+					(toolcap == NULL || punchitem->name.empty()))
 				do_hit = false;
 		}
 

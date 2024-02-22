@@ -170,15 +170,9 @@ int ObjectRef::l_punch(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
-	ObjectRef *puncher_ref = nullptr;
-	try {
-		puncher_ref = checkObject<ObjectRef>(L, 2);
-	}
-	catch (...) {
-		puncher_ref = nullptr;
-	}
+	ObjectRef *puncher_ref = lua_isnoneornil(L, 2) ? nullptr : checkObject<ObjectRef>(L, 2);
 	ServerActiveObject *sao = getobject(ref);
-	ServerActiveObject *puncher = (puncher_ref)?(getobject(puncher_ref)):(nullptr);
+	ServerActiveObject *puncher = puncher_ref ? getobject(puncher_ref) : nullptr;
 	if (sao == nullptr)
 		return 0;
 

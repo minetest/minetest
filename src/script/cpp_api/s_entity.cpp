@@ -277,7 +277,7 @@ bool ScriptApiEntity::luaentity_Punch(u16 id,
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object);  // self
 	if (puncher)
-		objectrefGetOrCreate(L, puncher);  // Clicker reference
+		objectrefGetOrCreate(L, puncher);  // Puncher reference
 	else
 		lua_pushnil(L);
 	lua_pushnumber(L, time_from_last_punch);
