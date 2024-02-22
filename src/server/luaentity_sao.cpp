@@ -341,7 +341,7 @@ u32 LuaEntitySAO::punch(v3f dir,
 	PunchDamageResult result = getPunchDamage(
 			m_armor_groups,
 			toolcap,
-			(puncher)?(&tool_item):(nullptr),
+			puncher ? &tool_item : nullptr,
 			time_from_last_punch,
 			initial_wear);
 
@@ -355,17 +355,16 @@ u32 LuaEntitySAO::punch(v3f dir,
 		}
 	}
 
-	if (puncher)
+	if (puncher) {
 		actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
-			", hp=" << puncher->getHP() << ") punched " <<
-			getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
-			"), damage=" << (old_hp - (s32)getHP()) <<
-			(damage_handled ? " (handled by Lua)" : "") << std::endl;
-	else
-		actionstream << getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
-			"), damage=" << (old_hp - (s32)getHP()) <<
-			(damage_handled ? " (handled by Lua)" : "") << " punched without puncher" << std::endl;
-
+				", hp=" << puncher->getHP() << ")";
+	} else {
+		actionstream << "(none)";
+	}
+	actionstream << " punched " <<
+		  getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
+		  "), damage=" << (old_hp - (s32)getHP()) <<
+		  (damage_handled ? " (handled by Lua)" : "") << std::endl;
 	// TODO: give Lua control over wear
 	return result.wear;
 }
