@@ -19,10 +19,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "exceptions.h"
 #include "irrlichttypes.h"
 #include "Keycodes.h"
 #include <IEventReceiver.h>
 #include <string>
+
+class UnknownKeycode : public BaseException
+{
+public:
+	UnknownKeycode(const char *s) :
+		BaseException(s) {};
+};
 
 /* A key press, consisting of either an Irrlicht keycode
    or an actual char */

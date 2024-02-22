@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "settings.h"
 #include "client/renderingengine.h"
+#include "gui/touchscreengui.h"
 #endif
 
 
@@ -50,11 +51,7 @@ public:
 		f32 hud_scaling = g_settings->getFloat("hud_scaling", 0.5f, 20.0f);
 		f32 real_gui_scaling = gui_scaling * density;
 		f32 real_hud_scaling = hud_scaling * density;
-#ifdef HAVE_TOUCHSCREENGUI
-		bool touch_controls = true;
-#else
-		bool touch_controls = false;
-#endif
+		bool touch_controls = g_touchscreengui;
 
 		return {
 			screen_size, real_gui_scaling, real_hud_scaling,
@@ -67,12 +64,7 @@ public:
 private:
 #ifndef SERVER
 	static v2f32 calculateMaxFSSize(v2u32 render_target_size, f32 gui_scaling) {
-		f32 factor =
-#ifdef HAVE_TOUCHSCREENGUI
-				10 / gui_scaling;
-#else
-				15 / gui_scaling;
-#endif
+		f32 factor = (g_settings->getBool("enable_touch") ? 10 : 15) / gui_scaling;
 		f32 ratio = (f32)render_target_size.X / (f32)render_target_size.Y;
 		if (ratio < 1)
 			return { factor, factor / ratio };

@@ -55,6 +55,7 @@ const std::string joystick_image_names[] = {
 
 static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 {
+	EKEY_CODE code;
 	// ESC isn't part of the keymap.
 	if (id == exit_id)
 		return KEY_ESCAPE;
@@ -110,7 +111,15 @@ static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 			break;
 	}
 	assert(!key.empty());
-	return keyname_to_keycode(g_settings->get("keymap_" + key).c_str());
+	std::string resolved = g_settings->get("keymap_" + key);
+	try {
+		code = keyname_to_keycode(resolved.c_str());
+	} catch (UnknownKeycode &e) {
+		code = KEY_UNKNOWN;
+		warningstream << "TouchScreenGUI: Unknown key '" << resolved
+			      << "' for '" << key << "', hiding button." << std::endl;
+	}
+	return code;
 }
 
 static void load_button_texture(const button_info *btn, const std::string &path,
@@ -523,13 +532,23 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 							+ 0.5f * button_size),
 			AHBB_Dir_Right_Left, 3.0f);
 
-	m_settings_bar.addButton(fly_id, L"fly", "fly_btn.png");
-	m_settings_bar.addButton(noclip_id, L"noclip", "noclip_btn.png");
-	m_settings_bar.addButton(fast_id, L"fast", "fast_btn.png");
-	m_settings_bar.addButton(debug_id, L"debug", "debug_btn.png");
-	m_settings_bar.addButton(camera_id, L"camera", "camera_btn.png");
-	m_settings_bar.addButton(range_id, L"rangeview", "rangeview_btn.png");
-	m_settings_bar.addButton(minimap_id, L"minimap", "minimap_btn.png");
+	const static std::map<touch_gui_button_id, std::string> settings_bar_buttons {
+		{fly_id, "fly"},
+		{noclip_id, "noclip"},
+		{fast_id, "fast"},
+		{debug_id, "debug"},
+		{camera_id, "camera"},
+		{range_id, "rangeview"},
+		{minimap_id, "minimap"},
+	};
+	for (const auto &pair : settings_bar_buttons) {
+		if (id_to_keycode(pair.first) == KEY_UNKNOWN)
+			continue;
+
+		std::wstring wide = utf8_to_wide(pair.second);
+		m_settings_bar.addButton(pair.first, wide.c_str(),
+				pair.second + "_btn.png");
+	}
 
 	// Chat is shown by default, so chat_hide_btn.png is shown first.
 	m_settings_bar.addToggleButton(toggle_chat_id, L"togglechat",
@@ -545,10 +564,20 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 							+ 0.5f * button_size),
 			AHBB_Dir_Left_Right, 2.0f);
 
-	m_rare_controls_bar.addButton(chat_id, L"chat", "chat_btn.png");
-	m_rare_controls_bar.addButton(inventory_id, L"inv", "inventory_btn.png");
-	m_rare_controls_bar.addButton(drop_id, L"drop", "drop_btn.png");
-	m_rare_controls_bar.addButton(exit_id, L"exit", "exit_btn.png");
+	const static std::map<touch_gui_button_id, std::string> rare_controls_bar_buttons {
+		{chat_id, "chat"},
+		{inventory_id, "inventory"},
+		{drop_id, "drop"},
+		{exit_id, "exit"},
+	};
+	for (const auto &pair : rare_controls_bar_buttons) {
+		if (id_to_keycode(pair.first) == KEY_UNKNOWN)
+			continue;
+
+		std::wstring wide = utf8_to_wide(pair.second);
+		m_rare_controls_bar.addButton(pair.first, wide.c_str(),
+				pair.second + "_btn.png");
+	}
 
 	m_initialized = true;
 }

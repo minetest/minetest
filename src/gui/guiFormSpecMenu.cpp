@@ -316,13 +316,11 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 		data->invsize.Y = MYMAX(0, stof(parts[1]));
 
 		lockSize(false);
-#ifndef HAVE_TOUCHSCREENGUI
-		if (parts.size() == 3) {
+		if (!g_settings->getBool("enable_touch") && parts.size() == 3) {
 			if (parts[2] == "true") {
 				lockSize(true,v2u32(800,600));
 			}
 		}
-#endif
 		data->explicit_size = true;
 		return;
 	}
@@ -3284,14 +3282,15 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 			s32 min_screen_dim = std::min(padded_screensize.X, padded_screensize.Y);
 
-#ifdef HAVE_TOUCHSCREENGUI
-			// In Android, the preferred imgsize should be larger to accommodate the
-			// smaller screensize.
-			double prefer_imgsize = min_screen_dim / 10 * gui_scaling;
-#else
-			// Desktop computers have more space, so try to fit 15 coordinates.
-			double prefer_imgsize = min_screen_dim / 15 * gui_scaling;
-#endif
+			double prefer_imgsize;
+			if (g_settings->getBool("enable_touch")) {
+				// The preferred imgsize should be larger to accommodate the
+				// smaller screensize.
+				prefer_imgsize = min_screen_dim / 10 * gui_scaling;
+			} else {
+				// Desktop computers have more space, so try to fit 15 coordinates.
+				prefer_imgsize = min_screen_dim / 15 * gui_scaling;
+			}
 			// Try to use the preferred imgsize, but if that's bigger than the maximum
 			// size, use the maximum size.
 			use_imgsize = std::min(prefer_imgsize,

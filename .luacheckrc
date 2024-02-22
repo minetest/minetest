@@ -71,7 +71,6 @@ files["builtin/mainmenu"] = {
 
 	read_globals = {
 		"PLATFORM",
-		"TOUCHSCREEN_GUI",
 	},
 }
 
@@ -80,11 +79,5 @@ files["builtin/common/tests"] = {
 		"describe",
 		"it",
 		"assert",
-	},
-}
-
-files["builtin/fstk"] = {
-	read_globals = {
-		"TOUCHSCREEN_GUI",
 	},
 }

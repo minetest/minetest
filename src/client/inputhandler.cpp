@@ -102,11 +102,9 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 		React to nothing here if a menu is active
 	*/
 	if (isMenuActive()) {
-#ifdef HAVE_TOUCHSCREENGUI
 		if (m_touchscreengui) {
 			m_touchscreengui->setVisible(false);
 		}
-#endif
 		return g_menumgr.preprocessEvent(event);
 	}
 
@@ -130,12 +128,10 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 			return true;
 		}
 
-#ifdef HAVE_TOUCHSCREENGUI
 	} else if (m_touchscreengui && event.EventType == irr::EET_TOUCH_INPUT_EVENT) {
 		// In case of touchscreengui, we have to handle different events
 		m_touchscreengui->translateEvent(event);
 		return true;
-#endif
 
 	} else if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
 		// joystick may be nullptr if game is launched with '--random-input' parameter

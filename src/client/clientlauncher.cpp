@@ -249,10 +249,10 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			m_rendering_engine->get_video_driver()->setTextureCreationFlag(
 					video::ETCF_CREATE_MIP_MAPS, g_settings->getBool("mip_map"));
 
-#ifdef HAVE_TOUCHSCREENGUI
-			receiver->m_touchscreengui = new TouchScreenGUI(m_rendering_engine->get_raw_device(), receiver);
-			g_touchscreengui = receiver->m_touchscreengui;
-#endif
+			if (g_settings->getBool("enable_touch")) {
+				receiver->m_touchscreengui = new TouchScreenGUI(m_rendering_engine->get_raw_device(), receiver);
+				g_touchscreengui = receiver->m_touchscreengui;
+			}
 
 			the_game(
 				kill,
@@ -283,11 +283,11 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 		m_rendering_engine->get_scene_manager()->clear();
 
-#ifdef HAVE_TOUCHSCREENGUI
-		delete g_touchscreengui;
-		g_touchscreengui = NULL;
-		receiver->m_touchscreengui = NULL;
-#endif
+		if (g_touchscreengui) {
+			delete g_touchscreengui;
+			g_touchscreengui = NULL;
+			receiver->m_touchscreengui = NULL;
+		}
 
 		/* Save the settings when leaving the game.
 		 * This makes sure that setting changes made in-game are persisted even
