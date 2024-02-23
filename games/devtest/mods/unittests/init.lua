@@ -108,9 +108,9 @@ local function wait_for_player(callback)
 	end)
 end
 
-local function wait_for_map(player, callback)
+local function wait_for_map(pos, callback)
 	local function check()
-		if core.get_node_or_nil(player:get_pos()) ~= nil then
+		if core.get_node(pos).name ~= "ignore" then
 			callback()
 		else
 			core.after(0, check)
@@ -119,8 +119,8 @@ local function wait_for_map(player, callback)
 	check()
 end
 
+-- This runs in a coroutine so it uses await()
 function unittests.run_all()
-	-- This runs in a coroutine so it uses await().
 	local counters = { time = 0, total = 0, passed = 0 }
 
 	-- Run standalone tests first
@@ -143,10 +143,11 @@ function unittests.run_all()
 	end
 
 	-- Wait for the world to generate/load, run tests that require map access
+	local pos = player:get_pos():round():offset(0, 5, 0)
+	core.forceload_block(pos, true, -1)
 	await(function(cb)
-		wait_for_map(player, cb)
+		wait_for_map(pos, cb)
 	end)
-	local pos = vector.round(player:get_pos())
 	for idx = 1, #unittests.list do
 		local def = unittests.list[idx]
 		if not def.done then

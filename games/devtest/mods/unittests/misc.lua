@@ -99,17 +99,24 @@ local function test_clear_meta(_, pos)
 end
 unittests.register("test_clear_meta", test_clear_meta, {map=true})
 
-local on_punch_called
-minetest.register_on_punchnode(function()
+local on_punch_called, on_place_called
+core.register_on_placenode(function()
+	on_place_called = true
+end)
+core.register_on_punchnode(function()
 	on_punch_called = true
 end)
-unittests.register("test_punch_node", function(_, pos)
-	minetest.place_node(pos, {name="basenodes:dirt"})
+local function test_node_callbacks(_, pos)
+	on_place_called = false
 	on_punch_called = false
-	minetest.punch_node(pos)
-	minetest.remove_node(pos)
-	-- currently failing: assert(on_punch_called)
-end, {map=true})
+
+	core.place_node(pos, {name="basenodes:dirt"})
+	assert(on_place_called, "on_place not called")
+	core.punch_node(pos)
+	assert(on_punch_called, "on_punch not called")
+	core.remove_node(pos)
+end
+unittests.register("test_node_callbacks", test_node_callbacks, {map=true})
 
 local function test_hashing()
 	local input = "hello\000world"
