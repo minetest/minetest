@@ -330,6 +330,7 @@ int ModApiEnv::l_get_node_raw(lua_State *L)
 	GET_ENV_PTR;
 
 	// pos
+	// mirrors implementation of read_v3s16 (with the exact same rounding)
 	double x = lua_tonumber(L, 1);
 	double y = lua_tonumber(L, 2);
 	double z = lua_tonumber(L, 3);
