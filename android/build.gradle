@@ -10,7 +10,7 @@ project.ext.set("versionCode", 46)      // Android Version Code
 // each APK must have a larger `versionCode` than the previous
 
 buildscript {
-	ext.ndk_version = '25.2.9519653'
+	ext.ndk_version = '26.2.11394342'
 	repositories {
 		google()
 		mavenCentral()
