@@ -182,9 +182,8 @@ int ObjectRef::l_punch(lua_State *L)
 	if (puncher) {
 		dir = readParam<v3f>(L, 5, sao->getBasePosition() - puncher->getBasePosition());
 		dir.normalize();
-	}
-	else {
-		dir = readParam<v3f>(L, 5, dir);
+	} else {
+		dir = readParam<v3f>(L, 5, v3f(0));
 	}
 
 	u32 wear = sao->punch(dir, &toolcap, puncher, time_from_last_punch);

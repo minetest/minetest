@@ -464,7 +464,7 @@ u32 PlayerSAO::punch(v3f dir,
 
 	// No effect if PvP disabled or if immortal
 	if (isImmortal() || !g_settings->getBool("enable_pvp")) {
-		if (puncher && (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER)) {
+		if (puncher && puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			// create message and add to list
 			sendPunchCommand();
 			return 0;
@@ -491,16 +491,16 @@ u32 PlayerSAO::punch(v3f dir,
 		}
 	}
 
-  if (puncher)
-	  actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
-		  ", hp=" << puncher->getHP() << ") punched " <<
-		  getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
-		  "), damage=" << (old_hp - (s32)getHP()) <<
-		  (damage_handled ? " (handled by Lua)" : "") << std::endl;
-  else
-	  actionstream << getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
-		  "), damage=" << (old_hp - (s32)getHP()) <<
-		  (damage_handled ? " (handled by Lua)" : "") << " punched without puncher" << std::endl;
+  if (puncher) {
+		actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
+				", hp=" << puncher->getHP() << ")";
+  } else {
+		actionstream << "(none)";
+	}
+	actionstream << " puched " <<
+			getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
+			"), damage=" << (old_hp - (s32)getHP()) <<
+			(damage_handled ? " (handled by Lua)" : "") << std::endl;
 
 	return hitparams.wear;
 }
