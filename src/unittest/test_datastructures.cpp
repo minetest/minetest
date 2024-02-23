@@ -104,7 +104,7 @@ void TestDataStructures::testMap1()
 		UASSERT(t0.deleted);
 		UASSERT(!t1.copied);
 		UASSERT(!t1.deleted);
-		if (once |= 1)
+		if ((once |= 1))
 			break;
 	}
 	UASSERT(once);
