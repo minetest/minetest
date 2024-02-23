@@ -182,7 +182,7 @@ void ClientEnvironment::step(float dtime)
 		Stuff that has a maximum time increment
 	*/
 
-	u32 steps = ceil(dtime / dtime_max_increment);
+	u32 steps = std::ceil(dtime / dtime_max_increment);
 	f32 dtime_part = dtime / steps;
 	for (; steps > 0; --steps) {
 		/*

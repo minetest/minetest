@@ -1305,7 +1305,7 @@ void ClientMap::updateTransparentMeshBuffers()
 	ScopeProfiler sp(g_profiler, "CM::updateTransparentMeshBuffers", SPT_AVG);
 	u32 sorted_blocks = 0;
 	u32 unsorted_blocks = 0;
-	f32 sorting_distance_sq = pow(m_cache_transparency_sorting_distance * BS, 2.0f);
+	f32 sorting_distance_sq = std::pow(m_cache_transparency_sorting_distance * BS, 2.0f);
 
 
 	// Update the order of transparent mesh buffers in each mesh
