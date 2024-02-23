@@ -5874,11 +5874,6 @@ Environment access
     * Returns list of nodes in the same order as the input list.
     * e.g. `minetest.bulk_get_node({{x=0, y=1, z=1}, {x=1, y=2, z=2}})`
     * For node specification or position syntax see `minetest.get_node` call
-    * Faster than `get_node` due to single call, but still considerably slower
-      than Lua Voxel Manipulators (LVM) for large numbers of nodes.
-      It also allows getting nodes from spread out positions which would cause
-      LVMs to waste memory.
-      For getting a cube of size 99x99x99, this is 1.3x faster than `get_node`.
 * `minetest.get_node_light(pos[, timeofday])`
     * Gets the light value at the given position. Note that the light value
       "inside" the node at the given position is returned, so you usually want
