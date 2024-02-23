@@ -2091,8 +2091,7 @@ liquid_update (Liquid update tick) float 1.0 0.001
 #    At this distance the server will aggressively optimize which blocks are sent to
 #    clients.
 #    Small values potentially improve performance a lot, at the expense of visible
-#    rendering glitches (some blocks will not be rendered under water and in caves,
-#    as well as sometimes on land).
+#    rendering glitches (some blocks might not be rendered correctly in caves).
 #    Setting this to a value greater than max_block_send_distance disables this
 #    optimization.
 #    Stated in MapBlocks (16 nodes).

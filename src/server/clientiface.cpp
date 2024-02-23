@@ -354,18 +354,12 @@ void RemoteClient::GetNextBlocks (
 					continue;
 
 				/*
-					If block is not close, don't send it unless it is near
-					ground level.
-
-					Block is near ground level if night-time mesh
-					differs from day-time mesh.
+					If block is not close, don't send it if it
+					consists of air only.
 				*/
-				if (d >= d_opt) {
-					if (!block->getIsUnderground() && !block->getDayNightDiff())
+				if (d >= d_opt && block->isAir())
 						continue;
-				}
 			}
-
 			/*
 				Check occlusion cache first.
 			 */
