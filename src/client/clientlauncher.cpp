@@ -362,7 +362,7 @@ void ClientLauncher::init_input()
 	if (random_input)
 		input = new RandomInputHandler();
 	else if (!remote_input_addr.empty())
-		input = new RemoteInputHandler("tcp://" + remote_input_addr, m_rendering_engine, receiver);
+		input = new RemoteInputHandler(remote_input_addr, m_rendering_engine, receiver);
 	else
 		input = new RealInputHandler(receiver);
 

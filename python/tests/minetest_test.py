@@ -48,7 +48,7 @@ def test_minetest_basic(world_dir, caplog):
     artifact_dir = tempfile.mkdtemp()
     env = gym.make(
         "minetest-v0",
-        minetest_executable=minetest_executable,
+        executable=minetest_executable,
         artifact_dir=artifact_dir,
         render_mode="rgb_array",
         display_size=(223, 111),

@@ -13,7 +13,6 @@ from typing import Any, Dict, Optional, Tuple
 import capnp
 import gymnasium as gym
 import numpy as np
-import zmq
 
 try:
     import pygame
@@ -62,12 +61,13 @@ class MinetestEnv(gym.Env):
 
     def __init__(
         self,
-        minetest_executable: Optional[os.PathLike] = "minetest",
+        executable: Optional[os.PathLike] = "minetest",
         world_dir: Optional[os.PathLike] = None,
         artifact_dir: Optional[os.PathLike] = None,
         config_path: Optional[os.PathLike] = None,
-        zmq_host: str = "127.0.0.1",
-        zmq_port: Optional[int] = None,
+        # TODO: switch to using a URL and default to unix domain socket
+        host: str = "127.0.0.1",
+        port: Optional[int] = None,
         display_size: Tuple[int, int] = (600, 400),
         render_mode: str = "rgb_array",
         game_dir: Optional[os.PathLike] = None,
@@ -89,9 +89,9 @@ class MinetestEnv(gym.Env):
         self.render_mode = render_mode
         self.headless = headless
         self.game_dir = game_dir
-        if not ((zmq_host and zmq_port) or game_dir or world_dir):
+        if not ((host and port) or game_dir or world_dir):
             raise ValueError(
-                "Either zmq_host and zmq_port or game_dir or a world_dir must be provided!"
+                "Either host and port or game_dir or a world_dir must be provided!"
             )
 
         if render_mode == "human":
@@ -107,9 +107,16 @@ class MinetestEnv(gym.Env):
 
         self._logger = logging.getLogger(f"{__name__}_{self.unique_env_id}")
         self._logger.setLevel(logging.DEBUG)
-        handler = logging.FileHandler(os.path.join(self.log_dir, f"env_{self.unique_env_id}.log"))
+        handler = logging.FileHandler(
+            os.path.join(self.log_dir, f"env_{self.unique_env_id}.log")
+        )
         handler.setLevel(logging.DEBUG)
-        handler.setFormatter(logging.Formatter("%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s", datefmt="%H:%M:%S"))
+        handler.setFormatter(
+            logging.Formatter(
+                "%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
+                datefmt="%H:%M:%S",
+            )
+        )
         self._logger.addHandler(handler)
         if log_to_stderr:
             handler = logging.StreamHandler()
@@ -118,34 +125,28 @@ class MinetestEnv(gym.Env):
 
         self._logger.debug("logging to %s", self.log_dir)
 
-        if minetest_executable:
-            self.minetest_executable = Path(minetest_executable)
+        if executable:
+            self.executable = Path(executable)
             assert shutil.which(
-                self.minetest_executable
-            ), f"minetest_executable not found: {self.minetest_executable}"
+                self.executable
+            ), f"executable not found: {self.executable}"
         else:
-            self.minetest_executable = None
+            self.executable = None
             self._logger.debug(
-                "minetest_executable not specified, will attempt to connect "
+                "executable not specified, will attempt to connect "
                 "to running minetest instance."
             )
-            if not (zmq_host and zmq_port):
-                raise ValueError(
-                    "if minetest_executable not specified, zmq_host and zmq_port must be"
-                )
+            if not (host and port):
+                raise ValueError("if executable not specified, host and port must be")
 
-        # ZMQ port
-        if zmq_host == "localhost":
-            zmq_host = "127.0.0.1"  # see https://stackoverflow.com/questions/6024003/why-doesnt-zeromq-work-on-localhost
-        self.zmq_socket_addr = f"{zmq_host}:{zmq_port or get_free_port()}"
+        if host == "localhost":
+            # Force IPv4 and don't rely on DNS.
+            host = "127.0.0.1"
+        self.socket_addr = f"{host}:{port or get_free_port()}"
         self.verbose_logging = verbose_logging
 
-        # ZMQ objects
-        self.socket = None
-        self.context = None
-
-        # Minetest processes
-        self.client_process = None
+        self.capnp_client = None
+        self.minetest_process = None
 
         # Env objects
         self.last_obs = None
@@ -213,15 +214,23 @@ class MinetestEnv(gym.Env):
         os.makedirs(self.log_dir, exist_ok=True)
         os.makedirs(self.media_cache_dir, exist_ok=True)
 
-    def _reset_zmq(self):
-        if self.socket:
-            self.socket.close()
-        self.context = zmq.Context()
-        self.socket = self.context.socket(zmq.REQ)
-        self.socket.connect(f"tcp://{self.zmq_socket_addr}")
+    def _reset_capnp(self):
+        # TODO: figure out how to close the connection first if it exists.
+        # pretty sure I can do this if I pass in a socket rather than a string.
+        max_attempts = 10
+        for _ in range(max_attempts):
+            try:
+                self.capnp_client = (
+                    capnp.TwoPartyClient(self.socket_addr)
+                    .bootstrap()
+                    .cast_as(remoteclient_capnp.Minetest)
+                )
+                break
+            except ConnectionRefusedError:
+                time.sleep(0.1)
 
     def _reset_minetest(self):
-        if not self.minetest_executable:
+        if not self.executable:
             logging.warning("Minetest executable not provided, reset is a no-op.")
             return None
         reset_timestamp = datetime.datetime.now().strftime("%m-%d-%Y,%H:%M:%S")
@@ -230,10 +239,10 @@ class MinetestEnv(gym.Env):
             f"{{}}_{reset_timestamp}_{self.unique_env_id}.log",
         )
 
-        if self.client_process:
-            self.client_process.kill()
+        if self.minetest_process:
+            self.minetest_process.kill()
 
-        self.client_process = self._start_minetest_client(
+        self.minetest_process = self._start_minetest_client(
             log_path,
         )
 
@@ -336,9 +345,11 @@ class MinetestEnv(gym.Env):
             if self.reseed_on_reset:
                 self.world_seed = self._np_random.randint(np.iinfo(np.int64).max)
         self._reset_minetest()
-        self._reset_zmq()
+        self._reset_capnp()
 
-        empty_action_bytes = remoteclient_capnp.Action.new_message().to_bytes()
+        self._logger.debug("capnp_client.init()...")
+        self.capnp_client.init().wait()
+        empty_request = {}
         # Annoyingly sometimes minetest returns observations but has not finished loading.
         valid_obs_max_attempts = 100
         # And sometimes it goes valid -> invalid -> valid.
@@ -346,25 +357,26 @@ class MinetestEnv(gym.Env):
         valid_obs_seen = 0
         self._logger.debug("Waiting for first obs...")
         for attempt in range(valid_obs_max_attempts):
-            self.socket.send(empty_action_bytes)
+            step_promise = self.capnp_client.step(empty_request)
             if not attempt:
                 time.sleep(1)
                 # Check for crash triggered by first action
-                if self.client_process.poll() is not None:
+                if self.minetest_process.poll() is not None:
                     raise RuntimeError(
                         "Minetest terminated during handshake! Return code: "
-                        f"{self.client_process.returncode}, logs in {self.log_dir}",
+                        f"{self.minetest_process.returncode}, logs in {self.log_dir}",
                     )
 
-            byte_obs = self.socket.recv()
             (
                 obs,
                 _,
                 _,
-            ) = deserialize_obs(byte_obs)
+            ) = deserialize_obs(step_promise.wait())
             if _is_loading(obs):
                 valid_obs_seen = 0
-                self._logger.debug(f"Still loading... {attempt}/{valid_obs_max_attempts}")
+                self._logger.debug(
+                    f"Still loading... {attempt}/{valid_obs_max_attempts}"
+                )
                 continue
             valid_obs_seen += 1
             if valid_obs_seen >= min_num_valid_obs:
@@ -376,25 +388,25 @@ class MinetestEnv(gym.Env):
         )
 
     def step(self, action: Dict[str, Any]):
-        if self.client_process and self.client_process.poll() is not None:
+        if self.minetest_process and self.minetest_process.poll() is not None:
             raise RuntimeError(
                 "Minetest terminated! Return code: "
-                f"{self.client_process.returncode}, logs in {self.log_dir}",
+                f"{self.minetest_process.returncode}, logs in {self.log_dir}",
             )
 
         # Send action
         if isinstance(action["MOUSE"], np.ndarray):
             action["MOUSE"] = action["MOUSE"].tolist()
-        pb_action = serialize_action(action)
-        self._logger.debug(f"Sending action: {pb_action}")
-        self.socket.send(pb_action.to_bytes())
+        step_request = self.capnp_client.step_request()
+        serialize_action(action, step_request.action)
+        self._logger.debug(f"Sending action: {step_request.action}")
+        step_response = step_request.send().wait()
 
         # TODO more robust check for whether a server/client is alive while receiving observations
-        if self.client_process and self.client_process.poll() is not None:
+        if self.minetest_process and self.minetest_process.poll() is not None:
             return self.last_obs, 0.0, True, False, {}
 
-        byte_obs = self.socket.recv()
-        next_obs, rew, done = deserialize_obs(byte_obs)
+        next_obs, rew, done = deserialize_obs(step_response)
 
         self.last_obs = next_obs
         self._logger.debug(f"Received obs - {next_obs.shape}; reward - {rew}")
@@ -411,10 +423,10 @@ class MinetestEnv(gym.Env):
         return self.last_obs
 
     def close(self):
-        if self.socket is not None:
-            self.socket.close()
-        if self.client_process:
-            self.client_process.kill()
+        # if self.socket is not None:
+        #     self.socket.close()
+        if self.minetest_process:
+            self.minetest_process.kill()
         if self.reset_world:
             self._delete_world()
 
@@ -429,12 +441,12 @@ class MinetestEnv(gym.Env):
         log_path: str,
     ):
         cmd = [
-            self.minetest_executable,
+            self.executable,
             "--go",  # skip menu
             "--config",
             self.config_path,
             "--remote-input",
-            self.zmq_socket_addr,
+            self.socket_addr,
         ]
         if self.headless:
             cmd.append("--headless")
@@ -460,30 +472,27 @@ class MinetestEnv(gym.Env):
                 f"Starting client with command: {' '.join(str(x) for x in cmd)}\n"
             )
             out.write(f"Client environment: {client_env}\n")
-            client_process = subprocess.Popen(
+            minetest_process = subprocess.Popen(
                 cmd, stdout=out, stderr=err, env=client_env
             )
-            out.write(f"Client started with pid {client_process.pid}\n")
-        self._logger.debug(f"Client started with pid {client_process.pid}")
-        return client_process
+            out.write(f"Client started with pid {minetest_process.pid}\n")
+        self._logger.debug(f"Client started with pid {minetest_process.pid}")
+        return minetest_process
 
 
-def deserialize_obs(received_obs: bytes):
-    with remoteclient_capnp.Observation.from_bytes(received_obs) as obs_msg:
-        # Convert the response to a numpy array
-        img = obs_msg.image
-        img_data = np.frombuffer(img.data, dtype=np.uint8).reshape(
-            (img.height, img.width, 3)
-        )
-        # Reshape the numpy array to the correct dimensions
-        reward = obs_msg.reward
-        done = obs_msg.done
+def deserialize_obs(step_response):
+    # Convert the response to a numpy array
+    img = step_response.observation.image
+    img_data = np.frombuffer(img.data, dtype=np.uint8).reshape(
+        (img.height, img.width, 3)
+    )
+    # Reshape the numpy array to the correct dimensions
+    reward = step_response.observation.reward
+    done = step_response.observation.done
     return img_data, reward, done
 
 
-def serialize_action(action: Dict[str, Any]):
-    action_msg = remoteclient_capnp.Action.new_message()
-
+def serialize_action(action: Dict[str, Any], action_msg):
     action_msg.mouseDx = action["MOUSE"][0]
     action_msg.mouseDy = action["MOUSE"][1]
 
@@ -493,7 +502,6 @@ def serialize_action(action: Dict[str, Any]):
         if pressed:
             keyEvents[setIdx] = KEY_MAP[idx]
             setIdx += 1
-    return action_msg
 
 
 # Python impl of Minetest's config file parser in main.cpp:read_config_file

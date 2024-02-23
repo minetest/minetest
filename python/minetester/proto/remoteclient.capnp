@@ -108,6 +108,12 @@ struct Image {
 
 struct Observation {
   image @0 :Image;
+  # TODO: make this optional so that the agent can tell if the game is done loading.
   reward @1 :Float32;
   done @2 :Bool;
+}
+
+interface Minetest {
+  init @0 () -> ();
+  step @1 (action :Action) -> (observation :Observation);
 }

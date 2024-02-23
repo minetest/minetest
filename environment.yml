@@ -29,7 +29,6 @@ dependencies:
   - pkg-config
   - sdl2
   - zlib
-  - zmqpp
   - zstd
   # python deps
   - gymnasium

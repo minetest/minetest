@@ -1,18 +1,53 @@
 #pragma once
 #include "gui/mainmenumanager.h"
 #include "inputhandler.h"
+#include "remoteclient.capnp.h"
 
+#include <condition_variable>
+#include <mutex>
 #include <string>
 
 #include <capnp/message.h>
+#include <capnp/rpc-twoparty.h>
 #include <capnp/serialize-packed.h>
-#include <zmqpp/zmqpp.hpp>
+#include <kj/async-io.h>
+
+namespace detail {
+struct Channel {
+  std::condition_variable m_action_cv;
+  std::condition_variable m_obs_cv;
+  std::mutex m_action_mutex;
+  std::mutex m_obs_mutex;
+  ::capnp::MallocMessageBuilder m_obs_msg_builder;
+  Observation::Builder m_obs_builder; // GUARDED_BY(m_obs_mutex)
+  Image::Builder m_image_builder; // GUARDED_BY(m_obs_mutex)
+  Action::Reader *m_action; // GUARDED_BY(m_action_mutex)
+  bool m_has_obs{}; // GUARDED_BY(m_obs_mutex)
+  bool m_did_init{}; // GUARDED_BY(m_action_mutex)
+
+  Channel() : m_obs_builder{m_obs_msg_builder.initRoot<Observation>()}, m_image_builder{nullptr}, m_action{} {
+    m_obs_builder.initImage();
+    m_image_builder = m_obs_builder.getImage();
+  }
+};
+
+class MinetestImpl : public Minetest::Server {
+public:
+  MinetestImpl(Channel *chan) : m_chan(chan) {}
+  kj::Promise<void> init(InitContext context) override;
+  kj::Promise<void> step(StepContext context) override;
+private:
+  Channel *m_chan;
+};
+} // namespace detail
 
 class RemoteInputHandler : public InputHandler {
 public:
   RemoteInputHandler(const std::string &endpoint,
                      RenderingEngine *rendering_engine,
                      MyEventReceiver *receiver);
+
+  virtual ~RemoteInputHandler() noexcept override = default;
 
   bool isDetached() const override { return true; }
 
@@ -99,9 +134,7 @@ public:
 private:
   RenderingEngine *m_rendering_engine;
 
-  // zmq state
-  zmqpp::context m_context;
-  zmqpp::socket m_socket;
+  detail::Channel m_chan;
 
   // Event receiver to simulate events
   MyEventReceiver *m_receiver = nullptr;
