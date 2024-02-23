@@ -74,6 +74,21 @@ RemoteInputHandler::RemoteInputHandler(const std::string &endpoint,
   m_chan.m_action_cv.wait(lock, [this] { return m_chan.m_did_init; });
 };
 
+void RemoteInputHandler::fill_observation(irr::video::IImage *image, float reward) {
+  std::unique_lock<std::mutex> lock(m_chan.m_obs_mutex);
+  m_chan.m_obs_cv.wait(lock, [this] { return !m_chan.m_has_obs; });
+
+  m_chan.m_obs_builder.setReward(reward);
+  m_chan.m_image_builder.setWidth(image->getDimension().Width);
+  m_chan.m_image_builder.setHeight(image->getDimension().Height);
+  m_chan.m_image_builder.setData(
+      capnp::Data::Reader(reinterpret_cast<const uint8_t *>(image->getData()),
+                          image->getImageDataSizeInBytes()));
+  m_chan.m_has_obs = true;
+  m_chan.m_obs_cv.notify_one();
+  image->drop();
+}
+
 void RemoteInputHandler::step(float dtime) {
   // skip first loop, because we don't have an observation yet
   // as draw is called after step
@@ -92,7 +107,6 @@ void RemoteInputHandler::step(float dtime) {
   {
     std::unique_lock<std::mutex> lock(m_chan.m_action_mutex);
     m_chan.m_action_cv.wait(lock, [this] { return m_chan.m_action; });
-
 
     for (auto keyEvent : m_chan.m_action->getKeyEvents()) {
       new_key_code = keycache.key[static_cast<int>(keyEvent)];
@@ -120,40 +134,28 @@ void RemoteInputHandler::step(float dtime) {
     image = driver->createScreenShot(video::ECF_R8G8B8);
   }
 
-  {
-    std::unique_lock<std::mutex> lock(m_chan.m_obs_mutex);
-    m_chan.m_obs_cv.wait(lock, [this] { return !m_chan.m_has_obs; });
-    // parse reward from hud
-    // during game startup, the hud is not yet initialized, so there'll be no
-    // reward for the first 1-2 steps
-    assert(m_player && "Player is null");
-    for (u32 i = 0; i < m_player->maxHudId(); ++i) {
-      auto hud_element = m_player->getHud(i);
-      if (hud_element->name == "reward") {
-        // parse 'Reward: <reward>' from hud
-        constexpr char kRewardHUDPrefix[] = "Reward: ";
-        std::string_view reward_string = hud_element->text;
-        reward_string.remove_prefix(std::size(kRewardHUDPrefix) - 1); // -1 for null terminator
-
-        float reward{};
-        // I'd rather use std::from_chars, but it's not available in libc++ yet.
-        std::stringstream ss{std::string(reward_string)};
-        ss >> reward;
-        m_chan.m_obs_builder.setReward(reward);
-        break;
-      }
+  // parse reward from hud
+  // during game startup, the hud is not yet initialized, so there'll be no
+  // reward for the first 1-2 steps
+  float reward{};
+  for (u32 i = 0; i < m_player->maxHudId(); ++i) {
+    auto hud_element = m_player->getHud(i);
+    if (hud_element->name == "reward") {
+      // parse 'Reward: <reward>' from hud
+      constexpr char kRewardHUDPrefix[] = "Reward: ";
+      std::string_view reward_string = hud_element->text;
+      reward_string.remove_prefix(std::size(kRewardHUDPrefix) - 1); // -1 for null terminator
+      // I'd rather use std::from_chars, but it's not available in libc++ yet.
+      std::stringstream ss{std::string(reward_string)};
+      ss >> reward;
+      break;
     }
-
-    m_chan.m_image_builder.setWidth(image->getDimension().Width);
-    m_chan.m_image_builder.setHeight(image->getDimension().Height);
-    m_chan.m_image_builder.setData(
-        capnp::Data::Reader(reinterpret_cast<const uint8_t *>(image->getData()),
-                            image->getImageDataSizeInBytes()));
-    m_chan.m_has_obs = true;
-    m_chan.m_obs_cv.notify_one();
   }
-  if (image)
-    image->drop();
+
+  // copying the image into the capnp message is slow, so we do it in a separate thread
+  std::thread([this, image, reward]() {
+    fill_observation(image, reward);
+  }).detach();
 };
 
 void RemoteInputHandler::clearInput() {

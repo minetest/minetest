@@ -132,6 +132,8 @@ public:
   }
 
 private:
+  void fill_observation(irr::video::IImage *image, float reward);
+
   RenderingEngine *m_rendering_engine;
 
   detail::Channel m_chan;
