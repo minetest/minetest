@@ -1252,12 +1252,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 			return false;
 		}
 
-		// Tell the object about removal
-		obj->removingFromEnvironment();
-		// Deregister in scripting api
-		m_script->removeObjectReference(obj);
-		// stop attached sounds
-		m_server->stopAttachedSounds(id);
+		processActiveObjectRemove(obj, id);
 
 		// Delete active object
 		return true;
@@ -1975,12 +1970,7 @@ void ServerEnvironment::removeRemovedObjects()
 			}
 		}
 
-		// Tell the object about removal
-		obj->removingFromEnvironment();
-		// Deregister in scripting api
-		m_script->removeObjectReference(obj);
-		// stop attached sounds
-		m_server->stopAttachedSounds(id);
+		processActiveObjectRemove(obj, id);
 
 		// Delete
 		return true;
@@ -2217,12 +2207,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 			return false;
 		}
 
-		// Tell the object about removal
-		obj->removingFromEnvironment();
-		// Deregister in scripting api
-		m_script->removeObjectReference(obj);
-		// stop attached sounds
-		m_server->stopAttachedSounds(id);
+		processActiveObjectRemove(obj, id);
 
 		// Delete active object
 		return true;
@@ -2283,6 +2268,16 @@ bool ServerEnvironment::saveStaticToBlock(
 	obj->m_static_block = blockpos;
 
 	return true;
+}
+
+void ServerEnvironment::processActiveObjectRemove(ServerActiveObject *obj, u16 id)
+{
+	// Tell the object about removal
+	obj->removingFromEnvironment();
+	// Deregister in scripting api
+	m_script->removeObjectReference(obj);
+	// stop attached sounds
+	m_server->stopAttachedSounds(id);
 }
 
 PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
