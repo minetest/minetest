@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import socket
 import sys
 import tempfile
 from pathlib import Path
@@ -25,11 +26,22 @@ def world_dir():
         yield temp_world_dir
 
 
+# take a lucky guess at a free port
+# this works by having the OS return a free port, then immediately closing the socket
+# not guaranteed to be free, but should be good enough for our purposes
+def get_free_port():
+    s = socket.socket()
+    s.bind(("", 0))
+    port = s.getsockname()[1]
+    s.close()
+    return port
+
+
 def test_minetest_basic(world_dir, caplog):
     caplog.set_level(logging.DEBUG)
     minetest_executable = shutil.which("minetest")
+    is_mac = sys.platform == "darwin"
     if not minetest_executable:
-        is_mac = sys.platform == "darwin"
         repo_root = Path(__file__).parent.parent.parent
         if is_mac:
             minetest_executable = (
@@ -45,11 +57,16 @@ def test_minetest_basic(world_dir, caplog):
             minetest_executable = repo_root / "bin" / "minetest"
         assert minetest_executable.exists()
 
+    server_addr = None
+    if is_mac:
+        # mac doesn't support abstract unix sockets, so use TCP
+        server_addr = f"localhost:{get_free_port()}"
     artifact_dir = tempfile.mkdtemp()
     env = gym.make(
         "minetest-v0",
         executable=minetest_executable,
         artifact_dir=artifact_dir,
+        server_addr=server_addr,
         render_mode="rgb_array",
         display_size=(223, 111),
         world_dir=world_dir,

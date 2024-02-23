@@ -4,6 +4,7 @@ import os
 import shutil
 import socket
 import subprocess
+import sys
 import time
 import uuid
 from collections import namedtuple
@@ -22,7 +23,6 @@ except ImportError:
 remoteclient_capnp = capnp.load(
     os.path.join(os.path.dirname(__file__), "proto/remoteclient.capnp")
 )
-
 
 # Define default keys / buttons
 KEY_MAP = [
@@ -65,9 +65,7 @@ class MinetestEnv(gym.Env):
         world_dir: Optional[os.PathLike] = None,
         artifact_dir: Optional[os.PathLike] = None,
         config_path: Optional[os.PathLike] = None,
-        # TODO: switch to using a URL and default to unix domain socket
-        host: str = "127.0.0.1",
-        port: Optional[int] = None,
+        server_addr: Optional[str] = None,
         display_size: Tuple[int, int] = (600, 400),
         render_mode: str = "rgb_array",
         game_dir: Optional[os.PathLike] = None,
@@ -89,9 +87,9 @@ class MinetestEnv(gym.Env):
         self.render_mode = render_mode
         self.headless = headless
         self.game_dir = game_dir
-        if not ((host and port) or game_dir or world_dir):
+        if not (server_addr or game_dir or world_dir):
             raise ValueError(
-                "Either host and port or game_dir or a world_dir must be provided!"
+                "Either server_addr or game_dir or a world_dir must be provided!"
             )
 
         if render_mode == "human":
@@ -126,23 +124,29 @@ class MinetestEnv(gym.Env):
         self._logger.debug("logging to %s", self.log_dir)
 
         if executable:
+            assert shutil.which(executable), f"executable not found: {executable}"
             self.executable = Path(executable)
-            assert shutil.which(
-                self.executable
-            ), f"executable not found: {self.executable}"
         else:
             self.executable = None
             self._logger.debug(
                 "executable not specified, will attempt to connect "
                 "to running minetest instance."
             )
-            if not (host and port):
-                raise ValueError("if executable not specified, host and port must be")
+            if not server_addr:
+                raise ValueError("if executable not specified, server_addr must be")
 
-        if host == "localhost":
+        if server_addr:
             # Force IPv4 and don't rely on DNS.
-            host = "127.0.0.1"
-        self.socket_addr = f"{host}:{port or get_free_port()}"
+            self.socket_addr = server_addr.replace("localhost", "127.0.0.1")
+        else:
+            assert (
+                sys.platform == "linux"
+            ), "abstract sockets require linux. you can set server_addr = host:port to use TCP"
+            self.socket_addr = os.path.join(
+                self.artifact_dir, f"minetest_{self.unique_env_id}.sock"
+            )
+        self.socket = None
+
         self.verbose_logging = verbose_logging
 
         self.capnp_client = None
@@ -215,19 +219,31 @@ class MinetestEnv(gym.Env):
         os.makedirs(self.media_cache_dir, exist_ok=True)
 
     def _reset_capnp(self):
-        # TODO: figure out how to close the connection first if it exists.
-        # pretty sure I can do this if I pass in a socket rather than a string.
-        max_attempts = 10
+        if self.socket:
+            self.socket.close()
+            self.socket = None
+        if ":" in self.socket_addr:
+            my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        else:
+            my_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        max_attempts = 100
         for _ in range(max_attempts):
             try:
-                self.capnp_client = (
-                    capnp.TwoPartyClient(self.socket_addr)
-                    .bootstrap()
-                    .cast_as(remoteclient_capnp.Minetest)
-                )
+                my_socket.connect(self.socket_addr)
+                self.socket = my_socket
                 break
-            except ConnectionRefusedError:
+            except (ConnectionRefusedError, FileNotFoundError):
                 time.sleep(0.1)
+        if not self.socket:
+            raise RuntimeError(
+                f"Failed to connect to minetest server at {self.socket_addr} after "
+                f"{max_attempts} attempts. See logs in {self.log_dir}."
+            )
+        self.capnp_client = (
+            capnp.TwoPartyClient(self.socket)
+            .bootstrap()
+            .cast_as(remoteclient_capnp.Minetest)
+        )
 
     def _reset_minetest(self):
         if not self.executable:
@@ -423,8 +439,8 @@ class MinetestEnv(gym.Env):
         return self.last_obs
 
     def close(self):
-        # if self.socket is not None:
-        #     self.socket.close()
+        if self.socket:
+            self.socket.close()
         if self.minetest_process:
             self.minetest_process.kill()
         if self.reset_world:
@@ -440,13 +456,16 @@ class MinetestEnv(gym.Env):
         self,
         log_path: str,
     ):
+        remote_input_addr = self.socket_addr
+        if ":" not in remote_input_addr:
+            remote_input_addr = f"unix:{remote_input_addr}"
         cmd = [
             self.executable,
             "--go",  # skip menu
             "--config",
             self.config_path,
             "--remote-input",
-            self.socket_addr,
+            remote_input_addr,
         ]
         if self.headless:
             cmd.append("--headless")
@@ -531,14 +550,3 @@ def write_config_file(file_path, config):
     with open(file_path, "w") as f:
         for key, value in config.items():
             f.write(f"{key} = {value}\n")
-
-
-# take a lucky guess at a free port
-# this works by having the OS return a free port, then immediately closing the socket
-# not guaranteed to be free, but should be good enough for our purposes
-def get_free_port():
-    s = socket.socket()
-    s.bind(("", 0))
-    port = s.getsockname()[1]
-    s.close()
-    return port
