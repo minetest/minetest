@@ -570,19 +570,21 @@ int ModApiUtil::l_sha1(lua_State *L)
 int ModApiUtil::l_sha256(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	size_t size;
-	const char *data = luaL_checklstring(L, 1, &size);
-	const bool hex = !lua_isboolean(L, 2) || !readParam<bool>(L, 2);
+
+	auto data = readParam<std::string_view>(L, 1);
+	bool hex = !lua_isboolean(L, 2) || !readParam<bool>(L, 2);
 	
 	std::string data_sha256;
-	data_sha256.assign((char *) SHA256((const unsigned char*) data, size, NULL), SHA256_DIGEST_LENGTH);
+	data_sha256.resize(SHA256_DIGEST_LENGTH);
+	SHA256(reinterpret_cast<const unsigned char*>(data.data()), data.size(),
+		reinterpret_cast<unsigned char *>(data_sha256.data()));
 
 	if (hex) {
-		std::string sha256_hex = hex_encode(data_sha256);
-		lua_pushstring(L, sha256_hex.c_str());
+		lua_pushstring(L, hex_encode(data_sha256).c_str());
 	} else {
 		lua_pushlstring(L, data_sha256.data(), data_sha256.size());
 	}
+
 	return 1;
 }
 

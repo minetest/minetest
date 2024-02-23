@@ -111,6 +111,13 @@ unittests.register("test_punch_node", function(_, pos)
 	-- currently failing: assert(on_punch_called)
 end, {map=true})
 
+local function test_hashing()
+	local input = "hello\000world"
+	assert(core.sha1(input) == "f85b420f1e43ebf88649dfcab302b898d889606c")
+	assert(core.sha256(input) == "b206899bc103669c8e7b36de29d73f95b46795b508aa87d612b2ce84bfb29df2")
+end
+unittests.register("test_hashing", test_hashing)
+
 local function test_compress()
 	-- This text should be compressible, to make sure the results are... normal
 	local text = "The\000 icey canoe couldn't move very well on the\128 lake. The\000 ice was too stiff and the icey canoe's paddles simply wouldn't punch through."
