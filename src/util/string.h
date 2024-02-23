@@ -43,13 +43,19 @@ class Translations;
 	( (unsigned int)(x) <= 0x7e))
 
 // Checks whether a value is in a Unicode private use area
-#define IS_PRIVATE_USE_CHAR(x)    \
-	(((wchar_t)(x) >= 0xE000 &&   \
-	  (wchar_t)(x) <= 0xF8FF) ||  \
-	 ((wchar_t)(x) >= 0xF0000 &&  \
+#define IS_PRIVATE_USE_CHAR16(x)    \
+	((wchar_t)(x) >= 0xE000 &&   \
+	  (wchar_t)(x) <= 0xF8FF)
+#define IS_PRIVATE_USE_CHAR32(x)    \
+	(((wchar_t)(x) >= 0xF0000 &&  \
 	  (wchar_t)(x) <= 0xFFFFD) || \
 	 ((wchar_t)(x) >= 0x100000 && \
-	  (wchar_t)(x) <= 0x10FFFD))  \
+	  (wchar_t)(x) <= 0x10FFFD))
+#if WCHAR_MAX > 0xFFFF
+#define IS_PRIVATE_USE_CHAR(x) (IS_PRIVATE_USE_CHAR16(x) || IS_PRIVATE_USE_CHAR32(x))
+#else
+#define IS_PRIVATE_USE_CHAR(x) IS_PRIVATE_USE_CHAR16(x)
+#endif
 
 // Checks whether a byte is an inner byte for an utf-8 multibyte sequence
 #define IS_UTF8_MULTB_INNER(x)       \
