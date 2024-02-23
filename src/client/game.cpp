@@ -2648,7 +2648,7 @@ f32 Game::getSensitivityScaleFactor() const
 	// Multiply by a constant such that it becomes 1.0 at 72 degree FOV and
 	// 16:9 aspect ratio to minimize disruption of existing sensitivity
 	// settings.
-	return tan(fov_y / 2.0f) * 1.3763818698f;
+	return std::tan(fov_y / 2.0f) * 1.3763819f;
 }
 
 void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
@@ -2711,8 +2711,8 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 			client->activeObjectsReceived() && !player->isDead()) {
 		control.movement_speed = 1.0f;
 		// sideways movement only
-		float dx = sin(control.movement_direction);
-		control.movement_direction = atan2(dx, 1.0f);
+		float dx = std::sin(control.movement_direction);
+		control.movement_direction = std::atan2(dx, 1.0f);
 	}
 
 	/* For touch, simulate holding down AUX1 (fast move) if the user has
@@ -4250,14 +4250,14 @@ void Game::updateShadows()
 	if (!shadow)
 		return;
 
-	float in_timeofday = fmod(runData.time_of_day_smooth, 1.0f);
+	float in_timeofday = std::fmod(runData.time_of_day_smooth, 1.0f);
 
 	float timeoftheday = getWickedTimeOfDay(in_timeofday);
 	bool is_day = timeoftheday > 0.25 && timeoftheday < 0.75;
 	bool is_shadow_visible = is_day ? sky->getSunVisible() : sky->getMoonVisible();
 	shadow->setShadowIntensity(is_shadow_visible ? client->getEnv().getLocalPlayer()->getLighting().shadow_intensity : 0.0f);
 
-	timeoftheday = fmod(timeoftheday + 0.75f, 0.5f) + 0.25f;
+	timeoftheday = std::fmod(timeoftheday + 0.75f, 0.5f) + 0.25f;
 	const float offset_constant = 10000.0f;
 
 	v3f light = is_day ? sky->getSunDirection() : sky->getMoonDirection();

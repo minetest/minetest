@@ -31,11 +31,11 @@ void TileAnimationParams::serialize(std::ostream &os, u16 protocol_ver) const
 	if (type == TAT_VERTICAL_FRAMES) {
 		writeU16(os, vertical_frames.aspect_w);
 		writeU16(os, vertical_frames.aspect_h);
-		writeF32(os, need_abs ? fabs(vertical_frames.length) : vertical_frames.length);
+		writeF32(os, need_abs ? std::abs(vertical_frames.length) : vertical_frames.length);
 	} else if (type == TAT_SHEET_2D) {
 		writeU8(os, sheet_2d.frames_w);
 		writeU8(os, sheet_2d.frames_h);
-		writeF32(os, need_abs ? fabs(sheet_2d.frame_length) : sheet_2d.frame_length);
+		writeF32(os, need_abs ? std::abs(sheet_2d.frame_length) : sheet_2d.frame_length);
 	}
 }
 

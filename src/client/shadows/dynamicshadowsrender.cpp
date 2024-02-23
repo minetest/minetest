@@ -171,8 +171,8 @@ f32 ShadowRenderer::getMaxShadowFar() const
 
 void ShadowRenderer::setShadowIntensity(float shadow_intensity)
 {
-	m_shadow_strength = pow(shadow_intensity, 1.0f / m_shadow_strength_gamma);
-	if (m_shadow_strength > 1E-2)
+	m_shadow_strength = std::pow(shadow_intensity, 1.0f / m_shadow_strength_gamma);
+	if (m_shadow_strength > 1e-2f)
 		enable();
 	else
 		disable();
