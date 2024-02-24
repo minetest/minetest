@@ -54,6 +54,7 @@ const std::wstring &Translations::getTranslation(
 void Translations::loadTranslation(const std::string &data)
 {
 	std::istringstream is(data);
+	std::string textdomain_narrow;
 	std::wstring textdomain;
 	std::string line;
 
@@ -70,7 +71,8 @@ void Translations::loadTranslation(const std::string &data)
 						<< "\"" << std::endl;
 				continue;
 			}
-			textdomain = utf8_to_wide(trim(parts[1]));
+			textdomain_narrow = trim(parts[1]);
+			textdomain = utf8_to_wide(textdomain_narrow);
 		}
 		if (line.empty() || line[0] == '#')
 			continue;
@@ -116,7 +118,7 @@ void Translations::loadTranslation(const std::string &data)
 
 		if (i == wline.length()) {
 			errorstream << "Malformed translation line \"" << line << "\""
-			            << std::endl;
+			            << " in text domain " << textdomain_narrow << std::endl;
 			continue;
 		}
 		i++;
