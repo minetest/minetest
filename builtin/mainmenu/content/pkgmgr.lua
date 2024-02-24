@@ -150,6 +150,8 @@ function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 			toadd.virtual_path = mod_virtual_path
 			toadd.type = "mod"
 
+			pkgmgr.update_translations({ toadd })
+
 			-- Check modpack.txt
 			-- Note: modpack.conf is already checked above
 			local modpackfile = io.open(mod_path .. DIR_DELIM .. "modpack.txt")
@@ -188,6 +190,8 @@ function pkgmgr.get_texture_packs()
 	if txtpath ~= txtpath_system then
 		load_texture_packs(txtpath_system, retval)
 	end
+
+	pkgmgr.update_translations(retval)
 
 	table.sort(retval, function(a, b)
 		return a.title:lower() < b.title:lower()
@@ -775,6 +779,29 @@ function pkgmgr.update_gamelist()
 	table.sort(pkgmgr.games, function(a, b)
 		return a.title:lower() < b.title:lower()
 	end)
+	pkgmgr.update_translations(pkgmgr.games)
+end
+
+--------------------------------------------------------------------------------
+function pkgmgr.update_translations(list)
+	for _, item in ipairs(list) do
+		local info = core.get_content_info(item.path)
+		assert(info.path)
+		assert(info.textdomain)
+
+		assert(not item.is_translated)
+		item.is_translated = true
+
+		if info.title and info.title ~= "" then
+			item.title = core.get_content_translation(info.path, info.textdomain,
+				core.translate(info.textdomain, info.title))
+		end
+
+		if info.description and info.description ~= "" then
+			item.description = core.get_content_translation(info.path, info.textdomain,
+				core.translate(info.textdomain, info.description))
+		end
+	end
 end
 
 --------------------------------------------------------------------------------

@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/sound.h"
 #include "client/tile.h"
 #include "util/enriched_string.h"
+#include "translation.h"
 
 /******************************************************************************/
 /* Structs and macros                                                         */
@@ -165,7 +166,22 @@ public:
 		return m_scriptdir;
 	}
 
+	/**
+	 * Get translations for content
+	 *
+	 * Only loads a single textdomain from the path, as specified by `domain`,
+	 * for performance reasons.
+	 *
+	 * WARNING: Do not store the returned pointer for long as the contents may
+	 * change with the next call to `getContentTranslations`.
+	 * */
+	Translations *getContentTranslations(const std::string &path,
+			const std::string &domain, const std::string &lang_code);
+
 private:
+	std::string m_last_translations_key;
+	/** Only the most recently used translation set is kept loaded */
+	Translations m_last_translations;
 
 	/** find and run the main menu script */
 	bool loadMainMenuScript();

@@ -36,6 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/guiscalingfilter.h"
 #include "irrlicht_changes/static_text.h"
 #include "client/tile.h"
+#include "content/content.h"
+#include "content/mods.h"
 
 #if USE_SOUND
 	#include "client/sound/sound_openal.h"
@@ -202,6 +204,57 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 
 	m_menu->quitMenu();
 	m_menu.reset();
+}
+
+
+/******************************************************************************/
+std::string findLocaleFileInMods(const std::string &path, const std::string &filename)
+{
+	std::vector<ModSpec> mods = flattenMods(getModsInPath(path, "root", true));
+
+	for (const auto &mod : mods) {
+		std::string ret = mod.path + DIR_DELIM "locale" DIR_DELIM + filename;
+		if (fs::PathExists(ret)) {
+			return ret;
+		}
+	}
+
+	return "";
+}
+
+/******************************************************************************/
+Translations *GUIEngine::getContentTranslations(const std::string &path,
+		const std::string &domain, const std::string &lang_code)
+{
+	if (domain.empty() || lang_code.empty())
+		return nullptr;
+
+	std::string filename = domain + "." + lang_code + ".tr";
+	std::string key = path + DIR_DELIM "locale" DIR_DELIM + filename;
+
+	if (key == m_last_translations_key)
+		return &m_last_translations;
+
+	std::string trans_path = key;
+	ContentType type = getContentType(path);
+	if (type == ContentType::GAME)
+		trans_path = findLocaleFileInMods(path + DIR_DELIM "mods" DIR_DELIM, filename);
+	else if (type == ContentType::MODPACK)
+		trans_path = findLocaleFileInMods(path, filename);
+	// We don't need to search for locale files in a mod, as there's only one `locale` folder.
+
+	if (trans_path.empty())
+		return nullptr;
+
+	m_last_translations_key = key;
+	m_last_translations = {};
+
+	std::string data;
+	if (fs::ReadFile(trans_path, data)) {
+		m_last_translations.loadTranslation(data);
+	}
+
+	return &m_last_translations;
 }
 
 /******************************************************************************/

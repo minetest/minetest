@@ -61,7 +61,8 @@ The game directory can contain the following files:
 * `game.conf`, with the following keys:
     * `title`: Required, a human-readable title to address the game, e.g. `title = Minetest Game`.
     * `name`: (Deprecated) same as title.
-    * `description`: Short description to be shown in the content tab
+    * `description`: Short description to be shown in the content tab.
+      See [Translating content meta](#translating-content-meta).
     * `allowed_mapgens = <comma-separated mapgens>`
       e.g. `allowed_mapgens = v5,v6,flat`
       Mapgens not in this list are removed from the list of mapgens for the
@@ -87,10 +88,11 @@ The game directory can contain the following files:
           `enable_damage`, `creative_mode`, `enable_server`.
     * `map_persistent`: Specifies whether newly created worlds should use
       a persistent map backend. Defaults to `true` (= "sqlite3")
-    * `author`: The author of the game. It only appears when downloaded from
-                ContentDB.
+    * `author`: The author's ContentDB username.
     * `release`: Ignore this: Should only ever be set by ContentDB, as it is
                  an internal ID used to track versions.
+    * `textdomain`: Textdomain used to translate description. Defaults to game id.
+      See [Translating content meta](#translating-content-meta).
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
@@ -156,13 +158,14 @@ The file is a key-value store of modpack details.
 
 * `name`: The modpack name. Allows Minetest to determine the modpack name even
           if the folder is wrongly named.
+* `title`: A human-readable title to address the modpack. See [Translating content meta](#translating-content-meta).
 * `description`: Description of mod to be shown in the Mods tab of the main
-                 menu.
-* `author`: The author of the modpack. It only appears when downloaded from
-            ContentDB.
+                 menu. See [Translating content meta](#translating-content-meta).
+* `author`: The author's ContentDB username.
 * `release`: Ignore this: Should only ever be set by ContentDB, as it is an
              internal ID used to track versions.
-* `title`: A human-readable title to address the modpack.
+* `textdomain`: Textdomain used to translate title and description. Defaults to modpack name.
+  See [Translating content meta](#translating-content-meta).
 
 Note: to support 0.4.x, please also create an empty modpack.txt file.
 
@@ -201,17 +204,18 @@ A `Settings` file that provides meta information about the mod.
 
 * `name`: The mod name. Allows Minetest to determine the mod name even if the
           folder is wrongly named.
+* `title`: A human-readable title to address the mod. See [Translating content meta](#translating-content-meta).
 * `description`: Description of mod to be shown in the Mods tab of the main
-                 menu.
+                 menu. See [Translating content meta](#translating-content-meta).
 * `depends`: A comma separated list of dependencies. These are mods that must be
              loaded before this mod.
 * `optional_depends`: A comma separated list of optional dependencies.
                       Like a dependency, but no error if the mod doesn't exist.
-* `author`: The author of the mod. It only appears when downloaded from
-            ContentDB.
+* `author`: The author's ContentDB username.
 * `release`: Ignore this: Should only ever be set by ContentDB, as it is an
              internal ID used to track versions.
-* `title`: A human-readable title to address the mod.
+* `textdomain`: Textdomain used to translate title and description. Defaults to modname.
+  See [Translating content meta](#translating-content-meta).
 
 ### `screenshot.png`
 
@@ -4134,6 +4138,46 @@ the table returned by `minetest.get_player_information(name)`.
 
 IMPORTANT: This functionality should only be used for sorting, filtering or similar purposes.
 You do not need to use this to get translated strings to show up on the client.
+
+Translating content meta
+------------------------
+
+You can translate content meta, such as `title` and `description`, by placing
+translations in a `locale/DOMAIN.LANG.tr` file. The textdomain defaults to the
+content name, but can be customised using `textdomain` in the content's .conf.
+
+### Mods and Texture Packs
+
+Say you have a mod called `mymod` with a short description in mod.conf:
+
+```
+description = This is the short description
+```
+
+Minetest will look for translations in the `mymod` textdomain as there's no
+textdomain specified in mod.conf. For example, `mymod/locale/mymod.fr.tr`:
+
+```
+# textdomain:mymod
+This is the short description=Voici la description succincte
+```
+
+### Games and Modpacks
+
+For games and modpacks, Minetest will look for the textdomain in all mods.
+
+Say you have a game called `mygame` with the following game.conf:
+
+```
+description = This is the game's short description
+textdomain = mygame
+```
+
+Minetest will then look for the textdomain `mygame` in all mods, for example,
+`mygame/mods/anymod/locale/mygame.fr.tr`. Note that it is still recommended that your
+textdomain match the mod name, but this isn't required.
+
+
 
 Perlin noise
 ============
