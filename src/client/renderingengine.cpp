@@ -94,7 +94,7 @@ class FogShaderConstantSetter : public IShaderConstantSetter
 public:
 	void onSetConstants(video::IMaterialRendererServices *services) override
 	{
-		auto *driver = RenderingEngine::get_video_driver();
+		auto *driver = services->getVideoDriver();
 		assert(driver);
 
 		video::SColor fog_color(0);

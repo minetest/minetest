@@ -524,7 +524,9 @@ public:
 			m_bloom_radius_pixel.set(&m_bloom_radius, services);
 			m_bloom_strength_pixel.set(&m_bloom_strength, services);
 		}
-		float saturation = m_client->getEnv().getLocalPlayer()->getLighting().saturation;
+
+		const auto &lighting = m_client->getEnv().getLocalPlayer()->getLighting();
+		float saturation = lighting.saturation;
 		m_saturation_pixel.set(&saturation, services);
 
 		if (m_volumetric_light_enabled) {
@@ -535,13 +537,13 @@ public:
 
 			if (m_sky->getSunVisible()) {
 				v3f sun_position = camera_node->getAbsolutePosition() +
-						10000. * m_sky->getSunDirection();
+						10000.f * m_sky->getSunDirection();
 				transform.transformVect(sun_position);
 				sun_position.normalize();
 
 				m_sun_position_pixel.set(sun_position, services);
 
-				float sun_brightness = rangelim(107.143f * m_sky->getSunDirection().dotProduct(v3f(0.f, 1.f, 0.f)), 0.f, 1.f);
+				float sun_brightness = core::clamp(107.143f * m_sky->getSunDirection().Y, 0.f, 1.f);
 				m_sun_brightness_pixel.set(&sun_brightness, services);
 			} else {
 				m_sun_position_pixel.set(v3f(0.f, 0.f, -1.f), services);
@@ -552,13 +554,13 @@ public:
 
 			if (m_sky->getMoonVisible()) {
 				v3f moon_position = camera_node->getAbsolutePosition() +
-						10000. * m_sky->getMoonDirection();
+						10000.f * m_sky->getMoonDirection();
 				transform.transformVect(moon_position);
 				moon_position.normalize();
 
 				m_moon_position_pixel.set(moon_position, services);
 
-				float moon_brightness = rangelim(107.143f * m_sky->getMoonDirection().dotProduct(v3f(0.f, 1.f, 0.f)), 0.f, 1.f);
+				float moon_brightness = core::clamp(107.143f * m_sky->getMoonDirection().Y, 0.f, 1.f);
 				m_moon_brightness_pixel.set(&moon_brightness, services);
 			} else {
 				m_moon_position_pixel.set(v3f(0.f, 0.f, -1.f), services);
@@ -566,7 +568,8 @@ public:
 				float moon_brightness = 0.f;
 				m_moon_brightness_pixel.set(&moon_brightness, services);
 			}
-			float volumetric_light_strength = m_client->getEnv().getLocalPlayer()->getLighting().volumetric_light_strength;
+
+			float volumetric_light_strength = lighting.volumetric_light_strength;
 			m_volumetric_light_strength_pixel.set(&volumetric_light_strength, services);
 		}
 	}

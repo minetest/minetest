@@ -232,7 +232,7 @@ public:
 	virtual void onSetConstants(video::IMaterialRendererServices *services) override
 	{
 		video::IVideoDriver *driver = services->getVideoDriver();
-		sanity_check(driver);
+		assert(driver);
 
 		// Set world matrix
 		core::matrix4 world = driver->getTransform(video::ETS_WORLD);
