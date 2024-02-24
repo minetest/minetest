@@ -247,6 +247,9 @@ public:
 class ModApiEnvVM : public ModApiEnvBase {
 private:
 
+	// get_node_or_nil(pos)
+	static int l_get_node_or_nil(lua_State *L);
+
 	// get_node_max_level(pos)
 	static int l_get_node_max_level(lua_State *L);
 

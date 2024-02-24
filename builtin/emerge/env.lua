@@ -31,11 +31,6 @@ function core.get_node(pos)
 	return core.vmanip:get_node_at(pos)
 end
 
-function core.get_node_or_nil(pos)
-	local node = core.vmanip:get_node_at(pos)
-	return node.name ~= "ignore" and node
-end
-
 function core.get_perlin(seed, octaves, persist, spread)
 	local params
 	if type(seed) == "table" then

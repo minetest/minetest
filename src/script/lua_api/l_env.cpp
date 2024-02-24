@@ -1534,6 +1534,19 @@ void ModApiEnv::InitializeClient(lua_State *L, int top)
 	if (!vm)                     \
 		return 0
 
+// get_node_or_nil(pos)
+int ModApiEnvVM::l_get_node_or_nil(lua_State *L)
+{
+	GET_VM_PTR;
+
+	v3s16 pos = read_v3s16(L, 1);
+	if (vm->exists(pos))
+		pushnode(L, vm->getNodeRefUnsafe(pos));
+	else
+		lua_pushnil(L);
+	return 1;
+}
+
 // get_node_max_level(pos)
 int ModApiEnvVM::l_get_node_max_level(lua_State *L)
 {
@@ -1703,6 +1716,7 @@ MMVManip *ModApiEnvVM::getVManip(lua_State *L)
 void ModApiEnvVM::InitializeEmerge(lua_State *L, int top)
 {
 	// other, more trivial functions are in builtin/emerge/env.lua
+	API_FCT(get_node_or_nil);
 	API_FCT(get_node_max_level);
 	API_FCT(get_node_level);
 	API_FCT(set_node_level);
