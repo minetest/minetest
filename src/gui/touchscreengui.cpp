@@ -716,12 +716,9 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 				<< evt_id << std::endl;
 	}
 
-	for (auto iter = m_known_ids.begin(); iter != m_known_ids.end(); ++iter) {
-		if (iter->id == evt_id) {
-			m_known_ids.erase(iter);
-			break;
-		}
-	}
+	// By the way: Android reuses pointer IDs, so m_pointer_pos[evt_id]
+	// will be overwritten soon anyway.
+	m_pointer_pos.erase(evt_id);
 }
 
 void TouchScreenGUI::translateEvent(const SEvent &event)
@@ -748,17 +745,6 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 	const v2s32 dir_fixed = touch_pos - fixed_joystick_center;
 
 	if (event.TouchInput.Event == ETIE_PRESSED_DOWN) {
-		/*
-		 * Add to own copy of event list...
-		 * android would provide this information but Irrlicht guys don't
-		 * wanna design an efficient interface
-		 */
-		id_status to_be_added{};
-		to_be_added.id = event.TouchInput.ID;
-		to_be_added.X  = event.TouchInput.X;
-		to_be_added.Y  = event.TouchInput.Y;
-		m_known_ids.push_back(to_be_added);
-
 		size_t eventID = event.TouchInput.ID;
 
 		touch_gui_button_id button = getButtonID(X, Y);
@@ -815,6 +801,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					m_move_id                  = event.TouchInput.ID;
 					m_move_has_really_moved    = false;
 					m_move_downtime            = porting::getTimeMs();
+					m_move_pos                 = touch_pos;
 					// DON'T reset m_tap_state here, otherwise many short taps
 					// will be ignored if you tap very fast.
 				}
@@ -833,8 +820,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 				m_pointer_pos[event.TouchInput.ID] == touch_pos)
 			return;
 
-		const v2s32 free_joystick_center = v2s32(m_pointer_pos[event.TouchInput.ID].X,
-				m_pointer_pos[event.TouchInput.ID].Y);
+		const v2s32 free_joystick_center = m_pointer_pos[event.TouchInput.ID];
 		const v2s32 dir_free = touch_pos - free_joystick_center;
 
 		const double touch_threshold_sq = m_touchscreen_threshold * m_touchscreen_threshold;
@@ -843,6 +829,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			if (dir_free.getLengthSQ() > touch_threshold_sq || m_move_has_really_moved) {
 				m_move_has_really_moved = true;
 
+				m_move_pos = touch_pos;
 				m_pointer_pos[event.TouchInput.ID] = touch_pos;
 
 				if (m_tap_state == TapState::None || m_draw_crosshair) {
@@ -1023,7 +1010,9 @@ void TouchScreenGUI::step(float dtime)
 	// thus the camera position can change, it doesn't suffice to update the
 	// shootline when a touch event occurs.
 	// Note that the shootline isn't used if touch_use_crosshair is enabled.
-	if (!m_draw_crosshair) {
+	// Only updating when m_has_move_id means that the shootline will stay at
+	// it's last in-world position when the player doesn't need it.
+	if (!m_draw_crosshair && m_has_move_id) {
 		v2s32 pointer_pos = getPointerPos();
 		m_shootline = m_device
 				->getSceneManager()
@@ -1061,8 +1050,8 @@ void TouchScreenGUI::setVisible(bool visible)
 
 	// clear all active buttons
 	if (!visible) {
-		while (!m_known_ids.empty())
-			handleReleaseEvent(m_known_ids.begin()->id);
+		while (!m_pointer_pos.empty())
+			handleReleaseEvent(m_pointer_pos.begin()->first);
 
 		m_settings_bar.hide();
 		m_rare_controls_bar.hide();
@@ -1092,7 +1081,9 @@ v2s32 TouchScreenGUI::getPointerPos()
 {
 	if (m_draw_crosshair)
 		return v2s32(m_screensize.X / 2, m_screensize.Y / 2);
-	return m_pointer_pos[m_move_id];
+	// We can't just use m_pointer_pos[m_move_id] because applyContextControls
+	// may emit release events after m_pointer_pos[m_move_id] is erased.
+	return m_move_pos;
 }
 
 void TouchScreenGUI::emitMouseEvent(EMOUSE_INPUT_EVENT type)
