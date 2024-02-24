@@ -76,7 +76,6 @@ private:
 
 	const v3s16 blockpos_nodes;
 
-	LocalPlayer *player;
 // options
 	const bool enable_mesh_cache;
 

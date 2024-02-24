@@ -10,8 +10,7 @@ uniform vec3 eyePosition;
 uniform vec3 cameraOffset;
 uniform float animationTimer;
 
-uniform float ambientLight;
-uniform vec3 ambientColor;
+uniform vec3 ambientLight;
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	// shadow texture
 	uniform sampler2D ShadowMapSampler;
@@ -382,10 +381,8 @@ void main(void)
 #endif
 
 	color = base.rgb;
-	vec4 col = vec4(color.rgb * varColor.rgb, 1.0);
 
-	if (!(ambientColor.r == ambientColor.g && ambientColor.r == ambientColor.b))
-		col.rgb += ambientLight * ambientColor.rgb;
+	vec4 col = vec4(color.rgb * (varColor.rgb + ambientLight), 1.0);
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	if (f_shadow_strength > 0.0) {

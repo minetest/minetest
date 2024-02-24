@@ -52,7 +52,8 @@ struct AutoExposure
  */
 struct AmbientLight
 {
-	AmbientLight() : luminance(0), color(255, 255, 255, 255) {}
+	AmbientLight() : luminance(0), color(255, 255, 255, 255)
+	{}
 	/// @brief Minimal threshold of luminance of ambience. Can be from 0 - 14.
 	u8 luminance;
 

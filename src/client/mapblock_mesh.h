@@ -190,7 +190,7 @@ public:
 	//   daynight_ratio: 0 .. 1000
 	//   crack: -1 .. CRACK_ANIMATION_LENGTH-1 (-1 for off)
 	// Returns true if anything has been changed.
-	bool animate(bool faraway, float time, int crack, u32 daynight_ratio);
+	bool animate(bool faraway, float time, int crack, u32 daynight_ratio, const video::SColor &ambient_light);
 
 	scene::IMesh *getMesh()
 	{
@@ -295,10 +295,10 @@ private:
  * the last 8 bits are night light
  * \param emissive_light amount of light the surface emits,
  * from 0 to LIGHT_SUN.
- * \param ambient_light amount of ambient light that the surface should have
- * from 0 to LIGHT_SUN.
  */
-video::SColor encode_light(u16 light, u8 emissive_light, u8 ambient_light=0);
+video::SColor encode_light(u16 light, u8 emissive_light);
+
+video::SColor encodeAmbientLight(u8 light, video::SColor color);
 
 // Compute light at node
 u16 getInteriorLight(MapNode n, s32 increment, const NodeDefManager *ndef);
@@ -320,7 +320,7 @@ void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio);
  * night light
  */
 void final_color_blend(video::SColor *result,
-		u16 light, u32 daynight_ratio);
+		u16 light, u32 daynight_ratio, const video::SColor &ambientLight);
 
 /*!
  * Gives the final  SColor shown on screen.
@@ -330,7 +330,8 @@ void final_color_blend(video::SColor *result,
  * \param dayLight color of the sunlight
  */
 void final_color_blend(video::SColor *result,
-		const video::SColor &data, const video::SColorf &dayLight);
+		const video::SColor &data, const video::SColorf &dayLight,
+		const video::SColor &ambientLight);
 
 // Retrieves the TileSpec of a face of a node
 // Adds MATERIAL_FLAG_CRACK if the node is cracked

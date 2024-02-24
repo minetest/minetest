@@ -727,6 +727,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	const float animation_time = m_client->getAnimationTime();
 	const int crack = m_client->getCrackLevel();
 	const u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
+	const video::SColor &ambient_light = m_client->getEnv().getAmbientLight();
 
 	const v3f camera_position = m_camera_position;
 
@@ -788,7 +789,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 					mesh_animate_count < (m_control.range_all ? 200 : 50)) {
 
 				bool animated = block_mesh->animate(faraway, animation_time,
-					crack, daynight_ratio);
+					crack, daynight_ratio, ambient_light);
 				if (animated)
 					mesh_animate_count++;
 			} else {

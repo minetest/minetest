@@ -290,16 +290,17 @@ void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio){
 }
 
 void final_color_blend(video::SColor *result,
-		u16 light, u32 daynight_ratio)
+		u16 light, u32 daynight_ratio, const video::SColor &ambientLight)
 {
 	video::SColorf dayLight;
 	get_sunlight_color(&dayLight, daynight_ratio);
 	final_color_blend(result,
-		encode_light(light, 0, 0), dayLight);
+		encode_light(light, 0), dayLight, ambientLight);
 }
 
 void final_color_blend(video::SColor *result,
-		const video::SColor &data, const video::SColorf &dayLight)
+		const video::SColor &data, const video::SColorf &dayLight,
+		const video::SColor &ambientLight)
 {
 	static const video::SColorf artificialColor(1.04f, 1.04f, 1.04f);
 
@@ -320,9 +321,14 @@ void final_color_blend(video::SColor *result,
 	b += emphase_blue_when_dark[irr::core::clamp((s32) ((r + g + b) / 3 * 255),
 		0, 255) / 8] / 255.0f;
 
-	result->setRed(core::clamp((s32) (r * 255.0f), 0, 255));
-	result->setGreen(core::clamp((s32) (g * 255.0f), 0, 255));
-	result->setBlue(core::clamp((s32) (b * 255.0f), 0, 255));
+	// Add ambient light
+	r += ambientLight.getRed() / 255.f;
+	g += ambientLight.getGreen() / 255.f;
+	b += ambientLight.getBlue() / 255.f;
+
+	result->setRed(core::clamp((s32)(r * 255.f), 0, 255));
+	result->setGreen(core::clamp((s32)(g * 255.f), 0, 255));
+	result->setBlue(core::clamp((s32)(b * 255.f), 0, 255));
 }
 
 /*
@@ -745,13 +751,15 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 				video::SColorf sunlight;
 				get_sunlight_color(&sunlight, 0);
 
+				auto ambientlight = client->getEnv().getAmbientLight();
+
 				std::map<u32, video::SColor> colors;
 				const u32 vertex_count = p.vertices.size();
 				for (u32 j = 0; j < vertex_count; j++) {
 					video::SColor *vc = &p.vertices[j].Color;
 					video::SColor copy = *vc;
 					if (vc->getAlpha() == 0) // No sunlight - no need to animate
-						final_color_blend(vc, copy, sunlight); // Finalize color
+						final_color_blend(vc, copy, sunlight, ambientlight); // Finalize color
 					else // Record color to animate
 						colors[j] = copy;
 
@@ -762,6 +770,17 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 				if (!colors.empty())
 					m_daynight_diffs[{layer, i}] = std::move(colors);
 			}
+
+			// Apply the ambient light to all vertices
+			/*auto ambient_light = data->m_client->getEnv().getAmbientLight();
+
+			for (u32 i = 0; i < p.vertices.size(); i++) {
+				video::SColor &vert_c = p.vertices[i].Color;
+
+				vert_c.setRed(vert_c.getRed() + ambient_light.getRed());
+				vert_c.setGreen(vert_c.getGreen() + ambient_light.getGreen());
+				vert_c.setBlue(vert_c.getBlue() + ambient_light.getBlue());
+			}*/
 
 			// Create material
 			video::SMaterial material;
@@ -834,7 +853,7 @@ MapBlockMesh::~MapBlockMesh()
 }
 
 bool MapBlockMesh::animate(bool faraway, float time, int crack,
-	u32 daynight_ratio)
+	u32 daynight_ratio, const video::SColor &ambient_light)
 {
 	if (!m_has_animation) {
 		m_animation_force_timer = 100000;
@@ -906,7 +925,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 			video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
 			for (const auto &j : daynight_diff.second)
 				final_color_blend(&(vertices[j.first].Color), j.second,
-						day_color);
+						day_color, ambient_light);
 		}
 		m_last_daynight_ratio = daynight_ratio;
 	}
@@ -975,7 +994,7 @@ void MapBlockMesh::consolidateTransparentBuffers()
 	}
 }
 
-video::SColor encode_light(u16 light, u8 emissive_light, u8 ambient_light)
+video::SColor encode_light(u16 light, u8 emissive_light)
 {
 	// Get components
 	u32 day = (light & 0xff);
@@ -983,15 +1002,6 @@ video::SColor encode_light(u16 light, u8 emissive_light, u8 ambient_light)
 
 	// Add emissive light
 	night += emissive_light * 2.5f;
-
-	f32 ratio = ambient_light/16.f;
-
-	u32 ambient_light_32 = ratio * 255;
-
-	if (day < ambient_light_32)
-		day = ambient_light_32;
-	if (night < ambient_light_32)
-		night = ambient_light_32;
 
 	if (night > 255)
 		night = 255;
@@ -1012,6 +1022,19 @@ video::SColor encode_light(u16 light, u8 emissive_light, u8 ambient_light)
 	// Average light:
 	float b = (day + night) / 2;
 	return video::SColor(r, b, b, b);
+}
+
+video::SColor encodeAmbientLight(u8 light, video::SColor color)
+{
+	video::SColor res_color(0, 0, 0, 0);
+
+	float light_f = light / 15.f;
+
+	res_color.setRed(core::round32(light_f * color.getRed()));
+	res_color.setGreen(core::round32(light_f * color.getGreen()));
+	res_color.setBlue(core::round32(light_f * color.getBlue()));
+
+	return res_color;
 }
 
 u8 get_solid_sides(MeshMakeData *data)
