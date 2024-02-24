@@ -239,18 +239,3 @@ if core.set_read_node and core.set_push_node then
 	core.set_push_node(push_node)
 	core.set_push_node = nil
 end
-
-if INIT == "game" then
-	local get_node_raw = core.get_node_raw
-	core.get_node_raw = nil
-
-	function core.get_node(pos)
-		local content, param1, param2 = get_node_raw(pos.x, pos.y, pos.z)
-		return {name = content2name[content], param1 = param1, param2 = param2}
-	end
-
-	function core.get_node_or_nil(pos)
-		local content, param1, param2, pos_ok = get_node_raw(pos.x, pos.y, pos.z)
-		return pos_ok and {name = content2name[content], param1 = param1, param2 = param2} or nil
-	end
-end
