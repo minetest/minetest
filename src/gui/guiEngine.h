@@ -240,13 +240,6 @@ private:
 	bool setTexture(texture_layer layer, const std::string &texturepath,
 			bool tile_image, unsigned int minsize);
 
-	/**
-	 * download a file using curl
-	 * @param url url to download
-	 * @param target file to store to
-	 */
-	static bool downloadFile(const std::string &url, const std::string &target);
-
 	/** array containing pointers to current specified texture layers */
 	image_definition m_textures[TEX_LAYER_MAX];
 

@@ -18,8 +18,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "httpfetch.h"
+#include "filesys.h"
 #include "porting.h" // for sleep_ms(), get_sysinfo(), secure_rand_fill_buf()
+#include <fstream>
 #include <iostream>
+#include <optional>
 #include <sstream>
 #include <list>
 #include <unordered_map>
@@ -151,7 +154,7 @@ bool httpfetch_async_get(u64 caller, HTTPFetchResult &fetch_result)
 static size_t httpfetch_writefunction(
 		char *ptr, size_t size, size_t nmemb, void *userdata)
 {
-	std::ostringstream *stream = (std::ostringstream*)userdata;
+	std::ostream *stream = (std::ostream*)userdata;
 	size_t count = size * nmemb;
 	stream->write(ptr, count);
 	return count;
@@ -214,7 +217,8 @@ private:
 	CURLM *multi = nullptr;
 	HTTPFetchRequest request;
 	HTTPFetchResult result;
-	std::ostringstream oss;
+	std::optional<std::ostringstream> oss_str;
+	std::optional<std::ofstream> oss_file;
 	struct curl_slist *http_header = nullptr;
 	curl_mime *multipart_mime = nullptr;
 };
@@ -224,8 +228,7 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 		CurlHandlePool *pool_):
 	pool(pool_),
 	request(request_),
-	result(request_),
-	oss(std::ios::binary)
+	result(request_)
 {
 	curl = pool->alloc();
 	if (curl == NULL) {
@@ -276,9 +279,8 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 	if (!request.useragent.empty())
 		curl_easy_setopt(curl, CURLOPT_USERAGENT, request.useragent.c_str());
 
-	// Set up a write callback that writes to the
-	// ostringstream ongoing->oss, unless the data
-	// is to be discarded
+	// Set up a write callback that writes to oss_str or oss_file, unless the
+	// data is to be discarded
 	if (request.caller == HTTPFETCH_DISCARD) {
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
 				httpfetch_discardfunction);
@@ -286,7 +288,13 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 	} else {
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
 				httpfetch_writefunction);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &oss);
+		if (request.output_path.empty()) {
+			oss_str = std::ostringstream(std::ios::binary);
+			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &oss_str);
+		} else {
+			oss_file = std::ofstream(request.output_path, std::ios::binary);
+			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &oss_file);
+		}
 	}
 
 	// Set data from fields or raw_data
@@ -372,7 +380,13 @@ const HTTPFetchResult * HTTPFetchOngoing::complete(CURLcode res)
 {
 	result.succeeded = (res == CURLE_OK);
 	result.timeout = (res == CURLE_OPERATION_TIMEDOUT);
-	result.data = oss.str();
+
+	if (request.output_path.empty()) {
+		result.data = oss_str->str();
+	} else if (!result.succeeded) {
+		oss_file->close();
+		fs::DeleteSingleFileOrEmptyDirectory(request.output_path);
+	}
 
 	// Get HTTP/FTP response code
 	result.response_code = 0;

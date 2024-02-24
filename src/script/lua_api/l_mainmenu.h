@@ -146,8 +146,6 @@ private:
 
 	static int l_may_modify_path(lua_State *L);
 
-	static int l_download_file(lua_State *L);
-
 	static int l_get_video_drivers(lua_State *L);
 
 	//version compatibility

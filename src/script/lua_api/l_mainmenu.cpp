@@ -869,28 +869,6 @@ int ModApiMainMenu::l_show_path_select_dialog(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_download_file(lua_State *L)
-{
-	const char *url    = luaL_checkstring(L, 1);
-	const char *target = luaL_checkstring(L, 2);
-
-	//check path
-	std::string absolute_destination = fs::RemoveRelativePathComponents(target);
-
-	if (ModApiMainMenu::mayModifyPath(absolute_destination)) {
-		if (GUIEngine::downloadFile(url,absolute_destination)) {
-			lua_pushboolean(L,true);
-			return 1;
-		}
-	} else {
-		errorstream << "DOWNLOAD denied: " << absolute_destination
-				<< " isn't an allowed path" << std::endl;
-	}
-	lua_pushboolean(L,false);
-	return 1;
-}
-
-/******************************************************************************/
 int ModApiMainMenu::l_get_video_drivers(lua_State *L)
 {
 	auto drivers = RenderingEngine::getSupportedVideoDrivers();
@@ -1127,7 +1105,6 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(may_modify_path);
 	API_FCT(get_mainmenu_path);
 	API_FCT(show_path_select_dialog);
-	API_FCT(download_file);
 	API_FCT(gettext);
 	API_FCT(get_video_drivers);
 	API_FCT(get_window_info);
@@ -1165,7 +1142,6 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 	API_FCT(is_dir);
 	API_FCT(extract_zip);
 	API_FCT(may_modify_path);
-	API_FCT(download_file);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
 	API_FCT(gettext);

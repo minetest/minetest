@@ -596,36 +596,6 @@ bool GUIEngine::setTexture(texture_layer layer, const std::string &texturepath,
 }
 
 /******************************************************************************/
-bool GUIEngine::downloadFile(const std::string &url, const std::string &target)
-{
-#if USE_CURL
-	std::ofstream target_file(target.c_str(), std::ios::out | std::ios::binary);
-	if (!target_file.good()) {
-		return false;
-	}
-
-	HTTPFetchRequest fetch_request;
-	HTTPFetchResult fetch_result;
-	fetch_request.url = url;
-	fetch_request.caller = HTTPFETCH_SYNC;
-	fetch_request.timeout = std::max(MIN_HTTPFETCH_TIMEOUT,
-		(long)g_settings->getS32("curl_file_download_timeout"));
-	httpfetch_sync(fetch_request, fetch_result);
-
-	if (!fetch_result.succeeded) {
-		target_file.close();
-		fs::DeleteSingleFileOrEmptyDirectory(target);
-		return false;
-	}
-	target_file << fetch_result.data;
-
-	return true;
-#else
-	return false;
-#endif
-}
-
-/******************************************************************************/
 void GUIEngine::setTopleftText(const std::string &text)
 {
 	m_toplefttext = translate_string(utf8_to_wide(text));

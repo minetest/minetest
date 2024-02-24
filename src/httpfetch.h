@@ -89,6 +89,10 @@ struct HTTPFetchRequest
 	// useragent to use
 	std::string useragent;
 
+	// If output_path is not empty, the result of the request is written to
+	// output_path instead of HTTPFetchResult::data.
+	std::string output_path = "";
+
 	HTTPFetchRequest();
 };
 

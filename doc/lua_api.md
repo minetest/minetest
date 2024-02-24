@@ -10875,6 +10875,10 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
 
     post_data = "Raw POST request data string" OR {field1 = "data1", field2 = "data2"},
     -- Deprecated, use `data` instead. Forces `method = "POST"`.
+
+    output_path = "/tmp/12ef1506-68d2-4ade-a984-34d09c3d0065",
+    -- Optional, if specified the response is written to the specified file path
+    -- instead of being put into `HTTPRequestResult.data`.
 }
 ```
 

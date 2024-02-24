@@ -104,9 +104,6 @@ Filesystem
 HTTP Requests
 -------------
 
-* `core.download_file(url, target)` (possible in async calls)
-    * `url` to download, and `target` to store to
-    * returns true/false
 * `core.get_http_api()` (possible in async calls)
     * returns `HTTPApiTable` containing http functions.
     * The returned table contains the functions `fetch_sync`, `fetch_async` and
@@ -149,6 +146,10 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
     multipart = boolean
     -- Optional, if true performs a multipart HTTP request.
     -- Default is false.
+
+    output_path = "/tmp/12ef1506-68d2-4ade-a984-34d09c3d0065",
+    -- Optional, if specified the response is written to the specified file path
+    -- instead of being put into `HTTPRequestResult.data`.
 }
 ```
 

@@ -41,6 +41,8 @@ void ModApiHttp::read_http_fetch_request(lua_State *L, HTTPFetchRequest &req)
 
 	req.caller = httpfetch_caller_alloc_secure();
 	getstringfield(L, 1, "url", req.url);
+	// TODO: mainmenu / mod security!!!
+	getstringfield(L, 1, "output_path", req.output_path);
 	getstringfield(L, 1, "user_agent", req.useragent);
 	req.multipart = getboolfield_default(L, 1, "multipart", false);
 	if (getintfield(L, 1, "timeout", req.timeout))

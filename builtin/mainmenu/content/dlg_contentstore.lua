@@ -88,12 +88,25 @@ end
 local function download_and_extract(param)
 	local package = param.package
 
-	local filename = core.get_temp_path(true)
-	if filename == "" or not core.download_file(param.url, filename) then
+	local function err_out()
 		core.log("error", "Downloading " .. dump(param.url) .. " failed")
 		return {
 			msg = fgettext_ne("Failed to download \"$1\"", package.title)
 		}
+	end
+
+	local filename = core.get_temp_path(true)
+	if filename == "" then
+		return err_out()
+	end
+	local http = core.get_http_api()
+	local response = http.fetch_sync({
+		url = param.url,
+		output_path = filename,
+		timeout = tonumber(core.settings:get("curl_file_download_timeout")) / 1000,
+	})
+	if not response.succeeded then
+		return err_out()
 	end
 
 	local tempfolder = core.get_temp_path()
@@ -607,7 +620,13 @@ local function get_screenshot(package)
 	-- Download
 
 	local function download_screenshot(params)
-		return core.download_file(params.url, params.dest)
+		local http = core.get_http_api()
+		local response = http.fetch_sync({
+			url = params.url,
+			output_path = params.dest,
+			timeout = tonumber(core.settings:get("curl_file_download_timeout")) / 1000,
+		})
+		return response.succeeded
 	end
 	local function callback(success)
 		screenshot_downloading[package.thumbnail] = nil
