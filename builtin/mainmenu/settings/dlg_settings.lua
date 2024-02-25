@@ -456,6 +456,7 @@ local function get_formspec(dialogdata)
 	local scrollbar_w = core.settings:get_bool("enable_touch") and 0.6 or 0.4
 
 	local left_pane_width = core.settings:get_bool("enable_touch") and 4.5 or 4.25
+	local left_pane_padding = 0.25
 	local search_width = left_pane_width + scrollbar_w - (0.75 * 2)
 
 	local back_w = 3
@@ -516,9 +517,9 @@ local function get_formspec(dialogdata)
 			y = y + 0.82
 		end
 		fs[#fs + 1] = ("box[0,%f;%f,0.8;%s]"):format(
-			y, left_pane_width, other_page.id == page_id and "#467832FF" or "#3339")
+			y, left_pane_width-left_pane_padding, other_page.id == page_id and "#467832FF" or "#3339")
 		fs[#fs + 1] = ("button[0,%f;%f,0.8;page_%s;%s]")
-			:format(y, left_pane_width, other_page.id, fgettext(other_page.title))
+			:format(y, left_pane_width-left_pane_padding, other_page.id, fgettext(other_page.title))
 		y = y + 0.82
 	end
 
