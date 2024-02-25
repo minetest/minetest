@@ -35,7 +35,7 @@ public:
 	MainMenuScripting(GUIEngine* guiengine);
 
 	// Global step handler to pass back async events
-	void step();
+	void step(float dtime);
 
 	// Pass async events from engine to async threads
 	u32 queueAsync(std::string &&serialized_func,

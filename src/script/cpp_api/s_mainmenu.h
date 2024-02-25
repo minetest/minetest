@@ -42,4 +42,10 @@ public:
 	 * @param fields data in field format
 	 */
 	void handleMainMenuButtons(const StringMap &fields);
+
+	/**
+	* call the Lua step function
+	* @param dtime time delta in seconds
+	*/
+	void handleStep(float dtime);
 };

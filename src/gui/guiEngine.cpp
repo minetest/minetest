@@ -308,7 +308,7 @@ void GUIEngine::run()
 		dtime = static_cast<f32>(t_now - t_last_frame) * 1.0e-6f;
 		t_last_frame = t_now;
 
-		m_script->step();
+		m_script->step(dtime);
 
 		sound_volume_control(m_sound_manager.get(), device->isWindowActive());
 

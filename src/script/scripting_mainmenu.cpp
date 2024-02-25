@@ -87,8 +87,9 @@ void MainMenuScripting::registerLuaClasses(lua_State *L, int top)
 }
 
 /******************************************************************************/
-void MainMenuScripting::step()
+void MainMenuScripting::step(float dtime)
 {
+	handleStep(dtime);
 	asyncEngine.step(getStack());
 }
 

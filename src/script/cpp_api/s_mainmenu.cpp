@@ -91,3 +91,25 @@ void ScriptApiMainMenu::handleMainMenuButtons(const StringMap &fields)
 	PCALL_RES(lua_pcall(L, 1, 0, error_handler));
 	lua_pop(L, 1); // Pop error handler
 }
+
+void ScriptApiMainMenu::handleStep(float dtime)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	// Get handler function
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "step_handler");
+	lua_remove(L, -2); // Remove core
+	if (lua_isnil(L, -1)) {
+		lua_pop(L, 1); // Pop step function
+		return;
+	}
+	luaL_checktype(L, -1, LUA_TFUNCTION);
+
+	// Call it
+	lua_pushnumber(L, dtime);
+	PCALL_RES(lua_pcall(L, 1, 0, error_handler));
+	lua_pop(L, 1); // Pop error handler
+}

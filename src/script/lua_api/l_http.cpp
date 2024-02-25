@@ -193,10 +193,23 @@ int ModApiHttp::l_get_http_api(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_HTTP_API_LUA);
+	bool has_callback = lua_isfunction(L, -1);
+	// no callback in the async environment
+	if (!has_callback)
+		lua_pop(L, 1);
+
 	lua_newtable(L);
 	HTTP_API(fetch_async);
 	HTTP_API(fetch_async_get);
 	HTTP_API(fetch_sync);
+
+	if (has_callback) {
+		// Stack now looks like this:
+		// <function> <table with fetch_async, fetch_async_get, fetch_sync>
+		// Now call it to append .fetch(request, callback) to table
+		lua_call(L, 1, 1);
+	}
 
 	return 1;
 }
@@ -232,8 +245,8 @@ void ModApiHttp::Initialize(lua_State *L, int top)
 		API_FCT(get_http_api);
 	} else {
 		API_FCT(request_http_api);
-		API_FCT(set_http_api_lua);
 	}
+	API_FCT(set_http_api_lua);
 
 #else
 

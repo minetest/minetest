@@ -30,6 +30,8 @@ defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 
 dofile(menupath .. DIR_DELIM .. "misc.lua")
 
+dofile(basepath .. "common" .. DIR_DELIM .. "after.lua")
+dofile(basepath .. "common" .. DIR_DELIM .. "http.lua")
 dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "dialog.lua")
