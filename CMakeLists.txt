@@ -42,6 +42,18 @@ set(DEFAULT_ENABLE_LTO TRUE)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(DEFAULT_ENABLE_LTO FALSE)
 endif()
+#### LTO testing list ####
+# - Linux: seems to work always
+# - win32/msvc: works
+# - win32/gcc: fails to link
+# - win32/clang: works
+# - macOS on x86: seems to be fine
+# - macOS on ARM: crashes, see <https://github.com/minetest/minetest/issues/14397>
+# Note: since CMake has no easy architecture detection disabling for Mac entirely
+#### ####
+if((WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU") OR APPLE)
+	set(DEFAULT_ENABLE_LTO FALSE)
+endif()
 set(ENABLE_LTO ${DEFAULT_ENABLE_LTO} CACHE BOOL "Use Link Time Optimization")
 
 set(DEFAULT_RUN_IN_PLACE FALSE)
@@ -64,20 +76,6 @@ set(WARN_ALL TRUE CACHE BOOL "Enable -Wall for Release build")
 if(NOT CMAKE_BUILD_TYPE)
 	# Default to release
 	set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type: Debug or Release" FORCE)
-endif()
-
-# FIXME: Windows build fails in multiple places to link, needs to be investigated.
-if (ENABLE_LTO AND NOT WIN32)
-	include(CheckIPOSupported)
-	check_ipo_supported(RESULT lto_supported OUTPUT lto_output)
-	if(lto_supported)
-		set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-		message(STATUS "LTO/IPO is enabled")
-	else()
-		message(STATUS "LTO/IPO requested but it is not supported by the compiler: ${lto_output}")
-	endif()
-else()
-	message(STATUS "LTO/IPO is not enabled")
 endif()
 
 set(ENABLE_UPDATE_CHECKER (NOT ${DEVELOPMENT_BUILD}) CACHE BOOL
@@ -161,6 +159,20 @@ elseif(BUILD_CLIENT AND TARGET IrrlichtMt::IrrlichtMt)
 	elseif(NOT DEVELOPMENT_BUILD AND IrrlichtMt_VERSION VERSION_GREATER ${TARGET_VER})
 		message(FATAL_ERROR "IrrlichtMt ${TARGET_VER_S} is required to build")
 	endif()
+endif()
+
+if (ENABLE_LTO OR CMAKE_INTERPROCEDURAL_OPTIMIZATION)
+	include(CheckIPOSupported)
+	check_ipo_supported(RESULT lto_supported OUTPUT lto_output)
+	if(lto_supported)
+		set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+		message(STATUS "LTO/IPO is enabled")
+	else()
+		set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
+		message(STATUS "LTO/IPO was requested but is not supported by the compiler: ${lto_output}")
+	endif()
+else()
+	message(STATUS "LTO/IPO is not enabled")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
