@@ -456,7 +456,7 @@ local function get_formspec(dialogdata)
 	local scrollbar_w = core.settings:get_bool("enable_touch") and 0.6 or 0.4
 
 	local left_pane_width = core.settings:get_bool("enable_touch") and 4.5 or 4.25
-	local left_pane_padding = 0.2
+	local left_pane_padding = 0.25
 	local search_width = left_pane_width + scrollbar_w - (0.75 * 2)
 
 	local back_w = 3
