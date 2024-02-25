@@ -154,7 +154,9 @@ local function start_install(package, reason)
 
 				if conf_path then
 					local conf = Settings(conf_path)
-					conf:set("title", package.title)
+					if not conf:get("title") then
+						conf:set("title", package.title)
+					end
 					if not name_is_title then
 						conf:set("name", package.name)
 					end
@@ -642,8 +644,21 @@ local function fetch_pkgs()
 		end
 	end
 
+	local languages
+	local current_language = core.get_language()
+	if current_language ~= "" then
+		languages = { current_language, "en;q=0.8" }
+	else
+		languages = { "en" }
+	end
+
 	local http = core.get_http_api()
-	local response = http.fetch_sync({ url = url })
+	local response = http.fetch_sync({
+		url = url,
+		extra_headers = {
+			"Accept-Language: " .. table.concat(languages, ", ")
+		},
+	})
 	if not response.succeeded then
 		return
 	end
