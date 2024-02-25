@@ -646,7 +646,7 @@ local function fetch_pkgs()
 
 	local languages
 	local current_language = core.get_language()
-	if current_language ~= "" and current_language ~= "en" then
+	if current_language ~= "" then
 		languages = { current_language, "en;q=0.8" }
 	else
 		languages = { "en" }
