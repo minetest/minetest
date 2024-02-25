@@ -37,27 +37,24 @@ do
 end
 
 
-local function fetch_latest_releases()
+--- Get a table from package key (author/name) to latest release id
+---
+--- @param callback function that takes a single argument, table or nil
+local function get_latest_releases(callback)
 	local version = core.get_version()
 	local base_url = core.settings:get("contentdb_url")
 	local url = base_url ..
 			"/api/updates/?type=mod&type=game&type=txp&protocol_version=" ..
 			core.get_max_supp_proto() .. "&engine_version=" .. core.urlencode(version.string)
+
 	local http = core.get_http_api()
-	local response = http.fetch_sync({ url = url })
-	if not response.succeeded then
-		return
-	end
+	http.fetch({ url = url }, function(response)
+		if not response.succeeded then
+			return callback(nil)
+		end
 
-	return core.parse_json(response.data)
-end
-
-
---- Get a table from package key (author/name) to latest release id
----
---- @param callback function that takes a single argument, table or nil
-local function get_latest_releases(callback)
-	core.handle_async(fetch_latest_releases, nil, callback)
+		return callback(core.parse_json(response.data))
+	end)
 end
 
 

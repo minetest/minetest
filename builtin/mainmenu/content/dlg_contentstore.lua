@@ -648,7 +648,7 @@ local function fetch_pkgs(callback)
 	end
 
 	local http = core.get_http_api()
-	local response = http.fetch({ url = url }, function(response)
+	http.fetch({ url = url }, function(response)
 		if not response.succeeded then
 			return callback(nil)
 		end

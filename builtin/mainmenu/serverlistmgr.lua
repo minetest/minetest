@@ -161,32 +161,29 @@ function serverlistmgr.sync()
 	end
 	public_downloading = true
 
-	core.handle_async(
-		function(param)
-			local http = core.get_http_api()
-			local url = ("%s/list?proto_version_min=%d&proto_version_max=%d"):format(
-				core.settings:get("serverlist_url"),
-				core.get_min_supp_proto(),
-				core.get_max_supp_proto())
+	local http = core.get_http_api()
+	local url = ("%s/list?proto_version_min=%d&proto_version_max=%d"):format(
+		core.settings:get("serverlist_url"),
+		core.get_min_supp_proto(),
+		core.get_max_supp_proto())
 
-			local response = http.fetch_sync({ url = url })
-			if not response.succeeded then
-				return {}
-			end
+	http.fetch({ url = url }, function(response)
+		public_downloading = false
 
-			local retval = core.parse_json(response.data)
-			return retval and retval.list or {}
-		end,
-		nil,
-		function(result)
-			public_downloading = false
-			local favs = order_server_list(result)
-			if favs[1] then
-				serverlistmgr.servers = favs
+		local result = {}
+		if response.succeeded then
+			local parsed = core.parse_json(response.data)
+			if parsed and parsed.list then
+				result = parsed.list
 			end
-			core.event_handler("Refresh")
 		end
-	)
+
+		local favs = order_server_list(result)
+		if favs[1] then
+			serverlistmgr.servers = favs
+		end
+		core.event_handler("Refresh")
+	end)
 end
 
 --------------------------------------------------------------------------------
