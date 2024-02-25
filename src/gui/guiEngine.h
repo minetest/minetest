@@ -203,6 +203,8 @@ private:
 	MainMenuData                         *m_data = nullptr;
 	/** texture source */
 	std::unique_ptr<ISimpleTextureSource> m_texture_source;
+	/** shader source*/
+	std::unique_ptr<IShaderSource>        m_shader_source;
 	/** sound manager*/
 	std::unique_ptr<ISoundManager>        m_sound_manager;
 

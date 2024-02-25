@@ -217,8 +217,17 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	// Texture matrix
 	CachedVertexShaderSetting<float, 16> m_texture{"mTexture"};
 
+	// commonly used way to pass material color to shader
+	video::SColor m_emissive_color;
+	CachedPixelShaderSetting<float, 4> m_emissive_color_setting{"emissiveColor"};
+
 public:
 	~MainShaderConstantSetter() = default;
+
+	virtual void onSetMaterial(const video::SMaterial& material) override
+	{
+		m_emissive_color = material.EmissiveColor;
+	}
 
 	virtual void onSetConstants(video::IMaterialRendererServices *services) override
 	{
@@ -244,6 +253,9 @@ public:
 			m_world_view.set(worldView, services);
 			m_texture.set(texture, services);
 		}
+
+		video::SColorf emissive_color(m_emissive_color);
+		m_emissive_color_setting.set(emissive_color, services);
 	}
 };
 
