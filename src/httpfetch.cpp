@@ -42,15 +42,6 @@ static std::unordered_map<u64, std::queue<HTTPFetchResult>>
 	g_httpfetch_results;
 static PcgRandom g_callerid_randomness;
 
-struct QueuedFree {
-	u64 caller;
-	Event *event;
-
-	QueuedFree(u64 caller, Event *event): caller(caller), event(event) {}
-};
-
-static MutexedQueue<QueuedFree> g_httpfetch_frees;
-
 HTTPFetchRequest::HTTPFetchRequest() :
 	timeout(g_settings->getS32("curl_timeout")),
 	connect_timeout(10 * 1000),
@@ -70,8 +61,6 @@ static void httpfetch_deliver_result(const HTTPFetchResult &fetch_result)
 }
 
 static void httpfetch_request_clear(u64 caller);
-
-static Event *httpfetch_request_clear_async(u64 caller);
 
 u64 httpfetch_caller_alloc()
 {
@@ -131,16 +120,6 @@ void httpfetch_caller_free(u64 caller)
 		MutexAutoLock lock(g_httpfetch_mutex);
 		g_httpfetch_results.erase(caller);
 	}
-}
-
-void httpfetch_caller_free_async(u64 caller)
-{
-	verbosestream<<"httpfetch_caller_free_async: freeing "
-			<<caller<<std::endl;
-
-	Event *event = httpfetch_request_clear_async(caller);
-	if (event)
-		g_httpfetch_frees.push_back(QueuedFree(caller, event));
 }
 
 bool httpfetch_async_get(u64 caller, HTTPFetchResult &fetch_result)
@@ -723,31 +702,7 @@ protected:
 	}
 };
 
-class FreeThread : public Thread
-{
-public:
-	FreeThread(): Thread("FreeThread") {}
-
-protected:
-	void *run()
-	{
-		while (!stopRequested()) {
-			QueuedFree f = g_httpfetch_frees.pop_frontNoEx();
-			if (f.event) {
-				f.event->wait();
-				delete f.event;
-				if (f.caller != HTTPFETCH_DISCARD) {
-					MutexAutoLock lock(g_httpfetch_mutex);
-					g_httpfetch_results.erase(f.caller);
-				}
-			}
-		}
-		return NULL;
-	}
-};
-
 static std::unique_ptr<CurlFetchThread> g_httpfetch_thread;
-static std::unique_ptr<FreeThread> g_httpfetch_free_thread;
 
 void httpfetch_init(int parallel_limit)
 {
@@ -761,9 +716,6 @@ void httpfetch_init(int parallel_limit)
 
 	g_httpfetch_thread = std::make_unique<CurlFetchThread>(parallel_limit);
 
-	g_httpfetch_free_thread = std::make_unique<FreeThread>();
-	g_httpfetch_free_thread->start();
-
 	// Initialize g_callerid_randomness for httpfetch_caller_alloc_secure
 	u64 randbuf[2];
 	porting::secure_rand_fill_buf(randbuf, sizeof(u64) * 2);
@@ -773,13 +725,6 @@ void httpfetch_init(int parallel_limit)
 void httpfetch_cleanup()
 {
 	verbosestream<<"httpfetch_cleanup: cleaning up"<<std::endl;
-
-	if (g_httpfetch_free_thread) {
-		g_httpfetch_free_thread->stop();
-		g_httpfetch_frees.push_back(QueuedFree(0, NULL));
-		g_httpfetch_free_thread->wait();
-		g_httpfetch_free_thread.reset();
-	}
 
 	if (g_httpfetch_thread) {
 		g_httpfetch_thread->stop();
@@ -809,18 +754,6 @@ static void httpfetch_request_clear(u64 caller)
 	}
 }
 
-static Event *httpfetch_request_clear_async(u64 caller)
-{
-	if (g_httpfetch_thread->isRunning()) {
-		Event *event = new Event();
-		g_httpfetch_thread->requestClear(caller, event);
-		return event;
-	} else {
-		g_httpfetch_thread->requestClear(caller, nullptr);
-		return nullptr;
-	}
-}
-
 void httpfetch_sync(const HTTPFetchRequest &fetch_request,
 		HTTPFetchResult &fetch_result)
 {
@@ -843,12 +776,12 @@ bool httpfetch_sync_interruptible(const HTTPFetchRequest &fetch_request,
 		httpfetch_async(req);
 		do {
 			if (thread->stopRequested()) {
-				httpfetch_caller_free_async(req.caller);
+				httpfetch_caller_free(req.caller);
 				return false;
 			}
 			sleep_ms(interval);
 		} while (!httpfetch_async_get(req.caller, fetch_result));
-		httpfetch_caller_free_async(req.caller);
+		httpfetch_caller_free(req.caller);
 	} else {
 		httpfetch_sync(fetch_request, fetch_result);
 	}
@@ -882,11 +815,6 @@ void httpfetch_async(const HTTPFetchRequest &fetch_request)
 
 static void httpfetch_request_clear(u64 caller)
 {
-}
-
-static Event *httpfetch_request_clear_async(u64 caller)
-{
-	return nullptr;
 }
 
 void httpfetch_sync(const HTTPFetchRequest &fetch_request,
