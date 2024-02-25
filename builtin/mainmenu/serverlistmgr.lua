@@ -132,34 +132,28 @@ function serverlistmgr.sync()
 	-- only fetched once per MT instance
 	if not serverlistmgr.my_continent and not geoip_downloading then
 		geoip_downloading = true
-		core.handle_async(
-			function(param)
-				local http = core.get_http_api()
-				local url = core.settings:get("serverlist_url") .. "/geoip"
+		local http = core.get_http_api()
+		local url = core.settings:get("serverlist_url") .. "/geoip"
+		http.fetch({ url = url }, function(response)
+			geoip_downloading = false
 
-				local response = http.fetch_sync({ url = url })
-				if not response.succeeded then
-					return
-				end
-
-				local retval = core.parse_json(response.data)
-				return retval and type(retval.continent) == "string" and retval.continent
-			end,
-			nil,
-			function(result)
-				geoip_downloading = false
-				if not result then
-					return
-				end
-				serverlistmgr.my_continent = result
-				core.set_once("continent", result)
-				-- reorder list if we already have it
-				if serverlistmgr.servers then
-					serverlistmgr.servers = order_server_list(serverlistmgr.servers)
-					core.event_handler("Refresh")
-				end
+			if not response.succeeded then
+				return
 			end
-		)
+	
+			local result = core.parse_json(response.data)
+			if not result or type(result.continent) ~= "string" then
+				return
+			end
+
+			serverlistmgr.my_continent = result.continent
+			core.set_once("continent", result.continent)
+			-- reorder list if we already have it
+			if serverlistmgr.servers then
+				serverlistmgr.servers = order_server_list(serverlistmgr.servers)
+				core.event_handler("Refresh")
+			end
+		end)
 	end
 
 	if public_downloading then

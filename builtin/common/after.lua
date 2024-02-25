@@ -115,14 +115,12 @@ local time = 0.0
 local time_next = math.huge
 
 local register_step
-if INIT == "game" then
-	register_step = core.register_globalstep
-elseif INIT == "mainmenu" then
+if INIT == "mainmenu" then
 	register_step = function(callback)
 		core.step_handler = callback
 	end
 else
-	assert(false)
+	register_step = core.register_globalstep
 end
 
 register_step(function(dtime)
