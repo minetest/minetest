@@ -140,7 +140,7 @@ function serverlistmgr.sync()
 			if not response.succeeded then
 				return
 			end
-	
+
 			local result = core.parse_json(response.data)
 			if not result or type(result.continent) ~= "string" then
 				return

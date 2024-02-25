@@ -84,20 +84,20 @@ local function get_download_url(package, reason)
 	return ret
 end
 
-local function extract(filename)
+local function extract(param)
 	local tempfolder = core.get_temp_path()
 	if tempfolder ~= "" then
 		tempfolder = tempfolder .. DIR_DELIM .. "MT_" .. math.random(1, 1024000)
-		if not core.extract_zip(filename, tempfolder) then
+		if not core.extract_zip(param.filename, tempfolder) then
 			tempfolder = nil
 		end
 	else
 		tempfolder = nil
 	end
-	os.remove(filename)
+	os.remove(param.filename)
 	if not tempfolder then
 		return {
-			msg = fgettext_ne("Failed to extract \"$1\" (unsupported file type or broken archive)", package.title),
+			msg = fgettext_ne("Failed to extract \"$1\" (unsupported file type or broken archive)", param.package.title),
 		}
 	end
 
@@ -129,7 +129,7 @@ local function download_and_extract(package, url, callback)
 			return err_out()
 		end
 
-		if not core.handle_async(extract, filename, callback) then
+		if not core.handle_async(extract, {package = package, filename = filename}, callback) then
 			return err_out()
 		end
 	end)
@@ -658,7 +658,7 @@ local function fetch_pkgs(callback)
 			return callback(nil)
 		end
 		local aliases = {}
-	
+
 		for _, package in pairs(packages) do
 			local name_len = #package.name
 			-- This must match what store.update_paths() does!
@@ -668,9 +668,9 @@ local function fetch_pkgs(callback)
 			else
 				package.id = package.id .. package.name
 			end
-	
+
 			package.url_part = core.urlencode(package.author) .. "/" .. core.urlencode(package.name)
-	
+
 			if package.aliases then
 				for _, alias in ipairs(package.aliases) do
 					-- We currently don't support name changing
@@ -681,7 +681,7 @@ local function fetch_pkgs(callback)
 				end
 			end
 		end
-	
+
 		return callback({ packages = packages, aliases = aliases })
 	end)
 end
