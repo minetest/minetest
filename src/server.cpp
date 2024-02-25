@@ -2264,6 +2264,22 @@ void Server::fadeSound(s32 handle, float step, float gain)
 		m_playing_sounds.erase(it);
 }
 
+void Server::stopAttachedSounds(u16 id)
+{
+	assert(id);
+
+	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); ) {
+		const ServerPlayingSound &sound = it->second;
+
+		if (sound.object == id) {
+			// Remove sound reference
+			it = m_playing_sounds.erase(it);
+		}
+		else
+			it++;
+	}
+}
+
 void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,
 		float far_d_nodes)
 {

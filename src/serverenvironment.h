@@ -454,6 +454,8 @@ private:
 	bool saveStaticToBlock(v3s16 blockpos, u16 store_id,
 			ServerActiveObject *obj, const StaticObject &s_obj, u32 mod_reason);
 
+	void processActiveObjectRemove(ServerActiveObject *obj, u16 id);
+
 	/*
 		Member variables
 	*/
