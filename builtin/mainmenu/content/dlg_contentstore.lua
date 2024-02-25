@@ -84,31 +84,7 @@ local function get_download_url(package, reason)
 	return ret
 end
 
-
-local function download_and_extract(param)
-	local package = param.package
-
-	local function err_out()
-		core.log("error", "Downloading " .. dump(param.url) .. " failed")
-		return {
-			msg = fgettext_ne("Failed to download \"$1\"", package.title)
-		}
-	end
-
-	local filename = core.get_temp_path(true)
-	if filename == "" then
-		return err_out()
-	end
-	local http = core.get_http_api()
-	local response = http.fetch_sync({
-		url = param.url,
-		output_path = filename,
-		timeout = tonumber(core.settings:get("curl_file_download_timeout")) / 1000,
-	})
-	if not response.succeeded then
-		return err_out()
-	end
-
+local function extract(filename)
 	local tempfolder = core.get_temp_path()
 	if tempfolder ~= "" then
 		tempfolder = tempfolder .. DIR_DELIM .. "MT_" .. math.random(1, 1024000)
@@ -130,12 +106,36 @@ local function download_and_extract(param)
 	}
 end
 
-local function start_install(package, reason)
-	local params = {
-		package = package,
-		url = get_download_url(package, reason),
-	}
+local function download_and_extract(package, url, callback)
+	local function err_out()
+		core.log("error", "Downloading " .. dump(url) .. " failed")
+		callback({
+			msg = fgettext_ne("Failed to download \"$1\"", package.title)
+		})
+	end
 
+	local filename = core.get_temp_path(true)
+	if filename == "" then
+		return err_out()
+	end
+
+	local http = core.get_http_api()
+	http.fetch({
+		url = url,
+		output_path = filename,
+		timeout = tonumber(core.settings:get("curl_file_download_timeout")) / 1000,
+	}, function(response)
+		if not response.succeeded then
+			return err_out()
+		end
+
+		if not core.handle_async(extract, filename, callback) then
+			return err_out()
+		end
+	end)
+end
+
+local function start_install(package, reason)
 	number_downloading = number_downloading + 1
 
 	local function callback(result)
@@ -198,11 +198,7 @@ local function start_install(package, reason)
 	package.queued = false
 	package.downloading = true
 
-	if not core.handle_async(download_and_extract, params, callback) then
-		core.log("error", "ERROR: async event failed")
-		gamedata.errormessage = fgettext_ne("Failed to download $1", package.name)
-		return
-	end
+	download_and_extract(package, get_download_url(package, reason), callback)
 end
 
 local function queue_download(package, reason)
@@ -618,36 +614,26 @@ local function get_screenshot(package)
 	end
 
 	-- Download
+	screenshot_downloading[package.thumbnail] = true
 
-	local function download_screenshot(params)
-		local http = core.get_http_api()
-		local response = http.fetch_sync({
-			url = params.url,
-			output_path = params.dest,
-			timeout = tonumber(core.settings:get("curl_file_download_timeout")) / 1000,
-		})
-		return response.succeeded
-	end
-	local function callback(success)
+	local http = core.get_http_api()
+	http.fetch({
+		url = package.thumbnail,
+		output_path = filepath,
+		timeout = tonumber(core.settings:get("curl_file_download_timeout")) / 1000,
+	}, function(response)
 		screenshot_downloading[package.thumbnail] = nil
 		screenshot_downloaded[package.thumbnail] = true
-		if not success then
+		if not response.succeeded then
 			core.log("warning", "Screenshot download failed for some reason")
 		end
 		ui.update()
-	end
-	if core.handle_async(download_screenshot,
-			{ dest = filepath, url = package.thumbnail }, callback) then
-		screenshot_downloading[package.thumbnail] = true
-	else
-		core.log("error", "ERROR: async event failed")
-		return defaulttexturedir .. "error_screenshot.png"
-	end
+	end)
 
 	return defaulttexturedir .. "loading_screenshot.png"
 end
 
-local function fetch_pkgs()
+local function fetch_pkgs(callback)
 	local version = core.get_version()
 	local base_url = core.settings:get("contentdb_url")
 	local url = base_url ..
@@ -662,41 +648,42 @@ local function fetch_pkgs()
 	end
 
 	local http = core.get_http_api()
-	local response = http.fetch_sync({ url = url })
-	if not response.succeeded then
-		return
-	end
-
-	local packages = core.parse_json(response.data)
-	if not packages or #packages == 0 then
-		return
-	end
-	local aliases = {}
-
-	for _, package in pairs(packages) do
-		local name_len = #package.name
-		-- This must match what store.update_paths() does!
-		package.id = package.author:lower() .. "/"
-		if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
-			package.id = package.id .. package.name:sub(1, name_len - 5)
-		else
-			package.id = package.id .. package.name
+	local response = http.fetch({ url = url }, function(response)
+		if not response.succeeded then
+			return callback(nil)
 		end
 
-		package.url_part = core.urlencode(package.author) .. "/" .. core.urlencode(package.name)
-
-		if package.aliases then
-			for _, alias in ipairs(package.aliases) do
-				-- We currently don't support name changing
-				local suffix = "/" .. package.name
-				if alias:sub(-#suffix) == suffix then
-					aliases[alias:lower()] = package.id
+		local packages = core.parse_json(response.data)
+		if not packages or #packages == 0 then
+			return callback(nil)
+		end
+		local aliases = {}
+	
+		for _, package in pairs(packages) do
+			local name_len = #package.name
+			-- This must match what store.update_paths() does!
+			package.id = package.author:lower() .. "/"
+			if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
+				package.id = package.id .. package.name:sub(1, name_len - 5)
+			else
+				package.id = package.id .. package.name
+			end
+	
+			package.url_part = core.urlencode(package.author) .. "/" .. core.urlencode(package.name)
+	
+			if package.aliases then
+				for _, alias in ipairs(package.aliases) do
+					-- We currently don't support name changing
+					local suffix = "/" .. package.name
+					if alias:sub(-#suffix) == suffix then
+						aliases[alias:lower()] = package.id
+					end
 				end
 			end
 		end
-	end
-
-	return { packages = packages, aliases = aliases }
+	
+		return callback({ packages = packages, aliases = aliases })
+	end)
 end
 
 local function sort_and_filter_pkgs()
@@ -766,28 +753,24 @@ function store.load()
 		return
 	end
 	store.loading = true
-	core.handle_async(
-		fetch_pkgs,
-		nil,
-		function(result)
-			if result then
-				store.load_ok = true
-				store.load_error = false
-				store.packages = result.packages
-				store.packages_full = result.packages
-				store.packages_full_unordered = result.packages
-				store.aliases = result.aliases
+	fetch_pkgs(function(result)
+		if result then
+			store.load_ok = true
+			store.load_error = false
+			store.packages = result.packages
+			store.packages_full = result.packages
+			store.packages_full_unordered = result.packages
+			store.aliases = result.aliases
 
-				sort_and_filter_pkgs()
-				do_auto_install()
-			else
-				store.load_error = true
-			end
-
-			store.loading = false
-			ui.update()
+			sort_and_filter_pkgs()
+			do_auto_install()
+		else
+			store.load_error = true
 		end
-	)
+
+		store.loading = false
+		ui.update()
+	end)
 end
 
 function store.update_paths()
