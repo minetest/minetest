@@ -312,6 +312,7 @@ void set_default_settings()
 #else
 	settings->setDefault("autojump", "false");
 #endif
+	settings->setDefault("toggle_sneak", "false");
 	settings->setDefault("continuous_forward", "false");
 	settings->setDefault("enable_joysticks", "false");
 	settings->setDefault("joystick_id", "0");
