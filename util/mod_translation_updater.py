@@ -21,6 +21,7 @@ params = {"recursive": False,
 	"break-long-lines": False,
 	"print-source": False,
 	"truncate-unused": False,
+	"propagate-comment": False,
 }
 # Available CLI options
 options = {"recursive": ['--recursive', '-r'],
@@ -30,6 +31,7 @@ options = {"recursive": ['--recursive', '-r'],
 	"break-long-lines": ['--break-long-lines', '-b'],
 	"print-source": ['--print-source', '-p'],
 	"truncate-unused": ['--truncate-unused', '-t'],
+	"propagate-comment": ['--propagate-comment', '-c'],
 }
 
 # Strings longer than this will have extra space added between
@@ -84,6 +86,8 @@ DESCRIPTION
 		add output information
 	{', '.join(options["truncate-unused"])}
 		delete unused strings from files
+	{', '.join(options["propagate-comment"])}
+		propagate comments from the template file into the translation files
 ''')
 
 def main():
@@ -194,13 +198,16 @@ def mkdir_p(path):
 # dKeyStrings is a dictionary of localized string to source file sets
 # dOld is a dictionary of existing translations and comments from
 # the previous version of this text
-def strings_to_text(dkeyStrings, dOld, mod_name, header_comments, textdomain):
+def strings_to_text(dkeyStrings, dOld, mod_name, header_comments, textdomain, templ = None):
 	# if textdomain is specified, insert it at the top
 	if textdomain != None:
 		lOut = [textdomain] # argument is full textdomain line
 	# otherwise, use mod name as textdomain automatically
 	else:
 		lOut = [f"# textdomain: {mod_name}"]
+	if templ is not None and templ[2] and (header_comments is None or not header_comments.startswith(templ[2])):
+		# header comments in the template file
+		lOut.append(templ[2])
 	if header_comments is not None:
 		lOut.append(header_comments)
 
@@ -225,8 +232,14 @@ def strings_to_text(dkeyStrings, dOld, mod_name, header_comments, textdomain):
 			val = dOld.get(localizedString, {})
 			translation = val.get("translation", "")
 			comment = val.get("comment")
+			templ_comment = None
+			if templ:
+				templ_val = templ[0].get(localizedString, {})
+				templ_comment = templ_val.get("comment")
 			if params["break-long-lines"] and len(localizedString) > doublespace_threshold and not lOut[-1] == "":
 				lOut.append("")
+			if templ_comment != None and templ_comment != "" and (comment is None or comment == "" or not comment.startswith(templ_comment)):
+				lOut.append(templ_comment)
 			if comment != None and comment != "" and not comment.startswith("# textdomain:"):
 				lOut.append(comment)
 			lOut.append(f"{localizedString}={translation}")
@@ -431,13 +444,16 @@ def generate_template(folder, mod_name):
 
 	templ_file = os.path.join(folder, "locale/template.txt")
 	write_template(templ_file, dOut, mod_name)
-	return dOut
+	new_template = None
+	if params["propagate-comment"]:
+		new_template = import_tr_file(templ_file) # re-import to get all new data
+	return (dOut, new_template)
 
 # Updates an existing .tr file, copying the old one to a ".old" file
 # if any changes have happened
 # dNew is the data used to generate the template, it has all the
 # currently-existing localized strings
-def update_tr_file(dNew, mod_name, tr_file):
+def update_tr_file(dNew, templ, mod_name, tr_file):
 	if params["verbose"]:
 		print(f"updating {tr_file}")
 
@@ -445,7 +461,7 @@ def update_tr_file(dNew, mod_name, tr_file):
 	dOld = tr_import[0]
 	textOld = tr_import[1]
 
-	textNew = strings_to_text(dNew, dOld, mod_name, tr_import[2], tr_import[3])
+	textNew = strings_to_text(dNew, dOld, mod_name, tr_import[2], tr_import[3], templ)
 
 	if textOld and textOld != textNew:
 		print(f"{tr_file} has changed.")
@@ -463,12 +479,12 @@ def update_mod(folder):
 	assert not is_modpack(folder)
 	modname = get_modname(folder)
 	print(f"Updating translations for {modname}")
-	data = generate_template(folder, modname)
+	(data, templ) = generate_template(folder, modname)
 	if data == None:
 		print(f"No translatable strings found in {modname}")
 	else:
 		for tr_file in get_existing_tr_files(folder):
-			update_tr_file(data, modname, os.path.join(folder, "locale/", tr_file))
+			update_tr_file(data, templ, modname, os.path.join(folder, "locale/", tr_file))
 
 def is_modpack(folder):
 	return os.path.exists(os.path.join(folder, "modpack.txt")) or os.path.exists(os.path.join(folder, "modpack.conf"))
