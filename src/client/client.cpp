@@ -1806,7 +1806,7 @@ struct TextureUpdateArgs {
 void Client::showUpdateProgressTexture(void *args, u32 progress, u32 max_progress)
 {
 		TextureUpdateArgs* targs = (TextureUpdateArgs*) args;
-		u16 cur_percent = ceil(progress / (double) max_progress * 100.);
+		u16 cur_percent = std::ceil(progress / max_progress * 100.f);
 
 		// update the loading menu -- if necessary
 		bool do_draw = false;

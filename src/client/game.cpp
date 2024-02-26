@@ -3708,11 +3708,11 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 						break;
 					};
 					case NDT_SIGNLIKE: {
-						rotate90 = abs(pdir.X) < abs(pdir.Z);
+						rotate90 = std::abs(pdir.X) < std::abs(pdir.Z);
 						break;
 					}
 					default: {
-						rotate90 = abs(pdir.X) > abs(pdir.Z);
+						rotate90 = std::abs(pdir.X) > std::abs(pdir.Z);
 						break;
 					}
 				}
