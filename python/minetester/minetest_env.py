@@ -85,6 +85,9 @@ class MinetestEnv(gym.Env):
         self.fov_y = fov
         self.fov_x = self.fov_y * self.display_size.width / self.display_size.height
         self.render_mode = render_mode
+        if headless and sys.platform != "linux":
+            raise ValueError("headless mode only supported on linux")
+
         self.headless = headless
         self.game_dir = game_dir
         if not (server_addr or game_dir or world_dir):
@@ -150,7 +153,9 @@ class MinetestEnv(gym.Env):
         self.verbose_logging = verbose_logging
 
         self.capnp_client = None
-        self.minetest_process = None
+        self.minetest_process: Optional[subprocess.Popen] = None
+        self.xvfb_process: Optional[subprocess.Popen] = None
+        self.x_display: Optional[str] = None
 
         # Env objects
         self.last_obs = None
@@ -443,6 +448,8 @@ class MinetestEnv(gym.Env):
             self.socket.close()
         if self.minetest_process:
             self.minetest_process.kill()
+        if self.xvfb_process:
+            self.xvfb_process.kill()
         if self.reset_world:
             self._delete_world()
 
@@ -452,6 +459,35 @@ class MinetestEnv(gym.Env):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
+    def _start_xvfb(self):
+        if self.xvfb_process:
+            return
+        if not shutil.which("Xvfb"):
+            raise RuntimeError(
+                "Xvfb is required for headless mode. "
+                "Please install it: sudo apt install xvfb",
+            )
+        for i in range(100):
+            if not os.path.exists(f"/tmp/.X{i}-lock"):
+                self.x_display = f":{i}"
+                break
+        if not self.x_display:
+            raise RuntimeError("Failed to find an available X display")
+        self.xvfb_process = subprocess.Popen(
+            (
+                "Xvfb",
+                self.x_display,
+                "-screen",
+                "0",
+                f"{self.display_size[0]}x{self.display_size[1]}x24",
+            )
+        )
+        self._logger.debug(
+            f"Started Xvfb with PID {self.xvfb_process.pid} on {self.x_display}"
+        )
+        self._logger.debug("sleeping to wait for xvfb to start.")
+        time.sleep(1)
+
     def _start_minetest_client(
         self,
         log_path: str,
@@ -459,6 +495,8 @@ class MinetestEnv(gym.Env):
         remote_input_addr = self.socket_addr
         if ":" not in remote_input_addr:
             remote_input_addr = f"unix:{remote_input_addr}"
+        if self.headless:
+            self._start_xvfb()
         cmd = [
             self.executable,
             "--go",  # skip menu
@@ -467,8 +505,6 @@ class MinetestEnv(gym.Env):
             "--remote-input",
             remote_input_addr,
         ]
-        if self.headless:
-            cmd.append("--headless")
         if self.verbose_logging:
             cmd.append("--verbose")
         if self.world_dir is not None:
@@ -490,6 +526,8 @@ class MinetestEnv(gym.Env):
             # disable vsync
             client_env["__GL_SYNC_TO_VBLANK"] = "0"
             client_env["vblank_mode"] = "0"
+            if self.x_display:
+                client_env["DISPLAY"] = self.x_display
             out.write(
                 f"Starting client with command: {' '.join(str(x) for x in cmd)}\n"
             )
