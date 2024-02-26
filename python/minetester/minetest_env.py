@@ -420,7 +420,6 @@ class MinetestEnv(gym.Env):
             action["MOUSE"] = action["MOUSE"].tolist()
         step_request = self.capnp_client.step_request()
         serialize_action(action, step_request.action)
-        self._logger.debug(f"Sending action: {step_request.action}")
         step_response = step_request.send().wait()
 
         # TODO more robust check for whether a server/client is alive while receiving observations
@@ -428,9 +427,7 @@ class MinetestEnv(gym.Env):
             return self.last_obs, 0.0, True, False, {}
 
         next_obs, rew, done = deserialize_obs(step_response)
-
         self.last_obs = next_obs
-        self._logger.debug(f"Received obs - {next_obs.shape}; reward - {rew}")
 
         if self.render_mode == "human":
             self._display_pygame()
