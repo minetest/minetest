@@ -2019,9 +2019,10 @@ ask_reconnect_on_crash (Ask to reconnect after crash) bool false
 
 [**Server/Env Performance]
 
-#    Length of a server tick and the interval at which objects are generally updated over
-#    network, stated in seconds.
-dedicated_server_step (Dedicated server step) float 0.09 0.0
+#    Length of a server tick (the interval at which everything is generally updated),
+#    stated in seconds.
+#    Does not apply to sessions hosted from the client menu.
+dedicated_server_step (Dedicated server step) float 0.09 0.0 1.0
 
 #    Whether players are shown to clients without any range limit.
 #    Deprecated, use the setting player_transfer_distance instead.

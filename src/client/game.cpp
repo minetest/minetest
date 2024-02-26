@@ -2751,10 +2751,16 @@ inline void Game::step(f32 dtime)
 				g_settings->getFloat("fps_max_unfocused") :
 				g_settings->getFloat("fps_max");
 		fps_max = std::max(fps_max, 1.0f);
-		float steplen = 1.0f / fps_max;
+		/*
+		 * Unless you have a barebones game, running the server at more than 60Hz
+		 * is hardly realistic and you're at the point of diminishing returns.
+		 * fps_max is also not necessarily anywhere near the FPS actually achieved
+		 * (also due to vsync).
+		 */
+		fps_max = std::min(fps_max, 60.0f);
 
 		server->setStepSettings(Server::StepSettings{
-				steplen,
+				1.0f / fps_max,
 				m_is_paused
 			});
 
