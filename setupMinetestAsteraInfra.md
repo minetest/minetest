@@ -31,7 +31,6 @@ cmake -B build -S . \
 	-DRUN_IN_PLACE=TRUE \
 	-DENABLE_SOUND=FALSE \
 	-DENABLE_GETTEXT=TRUE \
-	-DBUILD_HEADLESS=TRUE \
 	-GNinja \
 	-DCMAKE_CXX_FLAGS="-fuse-ld=mold" \
 	-DCMAKE_BUILD_TYPE=Debug \

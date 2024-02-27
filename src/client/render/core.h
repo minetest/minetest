@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <memory>
 
 #include "irrlichttypes_extrabloated.h"
-#include "pipeline.h"
 
 class ShadowRenderer;
 class Camera;
@@ -53,7 +52,6 @@ protected:
 	v2f virtual_size_scale;
 	v2u32 virtual_size { 0, 0 };
 	std::unique_ptr<video::IImage, DropDeleter> screenshot = nullptr;
-	TextureBuffer *headless_buffer = nullptr;
 
 public:
 	RenderingCore(IrrlichtDevice *device, Client *client, Hud *hud,

@@ -41,9 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../gui/guiSkin.h"
 #include "irrlicht_changes/static_text.h"
 #include "irr_ptr.h"
-#if BUILD_HEADLESS
-#include <SDL_video.h>
-#endif
 
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
 const video::SColor RenderingEngine::MENU_SKY_COLOR = video::SColor(255, 140, 186, 250);
@@ -152,12 +149,6 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	std::string rel_path = std::string("client") + DIR_DELIM
 			+ "shaders" + DIR_DELIM + "Irrlicht";
 	params.OGLES2ShaderPath = (porting::path_share + DIR_DELIM + rel_path + DIR_DELIM).c_str();
-
-#if BUILD_HEADLESS
-	if (g_settings->getBool("headless")) {
-		SDL_VideoInit("offscreen");
-	}
-#endif
 
 	m_device = createDevice(params, driverType);
 	driver = m_device->getVideoDriver();
@@ -322,9 +313,8 @@ std::vector<video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers()
 	return drivers;
 }
 
-void RenderingEngine::initialize(Client *client, Hud *hud, bool headless)
+void RenderingEngine::initialize(Client *client, Hud *hud)
 {
-	this->headless = headless;
 	const std::string &draw_mode = g_settings->get("3d_mode");
 	core.reset(createRenderingCore(draw_mode, m_device, client, hud));
 }

@@ -22,6 +22,7 @@ Download source (this is the URL to the latest of source repository, which might
 ```bash
 git clone --depth 1 https://github.com/minetest/minetest.git
 cd minetest
+git submodule update --init --recursive
 ```
 
 ## Build
@@ -34,7 +35,6 @@ cmake -B build -S . \
     -DCMAKE_FIND_FRAMEWORK=LAST \
     -DCMAKE_INSTALL_PREFIX=$(pwd)/build/macos/ \
     -GNinja \
-    -DBUILD_HEADLESS=FALSE \
     -DRUN_IN_PLACE=FALSE  \
     -DENABLE_GETTEXT=TRUE \
     -DINSTALL_DEVTEST=TRUE \

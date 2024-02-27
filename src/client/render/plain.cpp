@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/hud.h"
 #include "client/minimap.h"
 #include "client/shadows/dynamicshadowsrender.h"
-#include "client/renderingengine.h"
 
 /// Draw3D pipeline step
 void Draw3D::run(PipelineContext &context)
@@ -162,12 +161,7 @@ void populatePlainPipeline(RenderPipeline *pipeline, Client *client)
 
 	step3D = addUpscaling(pipeline, step3D, downscale_factor);
 
-	if (client->getRenderingEngine()->headless) {
-		step3D->setRenderTarget(&pipeline->m_output);
-		pipeline->addStep(step3D);
-	} else {
-		step3D->setRenderTarget(pipeline->createOwned<ScreenTarget>());
-	}
+	step3D->setRenderTarget(pipeline->createOwned<ScreenTarget>());
 
 	pipeline->addStep<DrawHUD>();
 }

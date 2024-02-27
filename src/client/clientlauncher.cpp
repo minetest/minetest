@@ -346,8 +346,6 @@ void ClientLauncher::init_args(GameStartData &start_data, const Settings &cmd_ar
 			remote_input_addr.clear();
 		}
 	}
-
-	start_data.headless = isRemote && cmd_args.getFlag("headless");
 }
 
 bool ClientLauncher::init_engine()

@@ -126,13 +126,8 @@ void RemoteInputHandler::step(float dtime) {
   }
 
   // send current observation
-  irr::video::IImage *image;
-  if (m_rendering_engine->headless) {
-    image = m_rendering_engine->get_screenshot();
-  } else {
-    irr::video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
-    image = driver->createScreenShot(video::ECF_R8G8B8);
-  }
+  irr::video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
+  irr::video::IImage *image = driver->createScreenShot(video::ECF_R8G8B8);
 
   // parse reward from hud
   // during game startup, the hud is not yet initialized, so there'll be no

@@ -49,7 +49,6 @@ jobs:
             -DRUN_IN_PLACE=FALSE \
             -DENABLE_GETTEXT=TRUE \
             -DCMAKE_BUILD_TYPE=Debug \
-            -DBUILD_HEADLESS=FALSE \
             -GNinja \
             -DINSTALL_DEVTEST=TRUE \
             -DICONV_LIBRARY="${CONDA_PREFIX}/lib/libiconv.dylib" \

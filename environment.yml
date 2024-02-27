@@ -27,7 +27,6 @@ dependencies:
   # (currently mold requires OpenSSL 3 and capnproto requires 1)
   - ninja
   - pkg-config
-  - sdl2
   - zlib
   - zstd
   # python deps
@@ -42,6 +41,5 @@ dependencies:
   - pytest # test only
   - pytest-repeat # test only
   - python=3.11
-  - pyzmq
   # others
   - pre-commit

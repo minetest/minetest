@@ -39,7 +39,6 @@ endif()
 
 # Configuration options
 set(BUILD_CLIENT TRUE CACHE BOOL "Build client")
-set(BUILD_HEADLESS TRUE CACHE BOOL "Build in headless mode")
 set(BUILD_SERVER FALSE CACHE BOOL "Build server")
 set(BUILD_UNITTESTS TRUE CACHE BOOL "Build unittests")
 set(BUILD_BENCHMARKS FALSE CACHE BOOL "Build benchmarks")

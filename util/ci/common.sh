@@ -9,6 +9,7 @@ install_linux_deps() {
 		libgl1-mesa-dev
 		libhiredis-dev libogg-dev libgmp-dev libvorbis-dev
 		libopenal-dev libpq-dev libleveldb-dev
+		xorg-dev
 	)
 
 	if [[ "$1" == "--no-irr" ]]; then

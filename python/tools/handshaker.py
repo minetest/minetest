@@ -8,7 +8,7 @@ from PIL import Image
 
 """
 For debugging, it's useful to do something like this:
-- lldb -- bin/minetest --go --worldname test_world_minetestenv --config artifacts/2dd22d78-8c03-445e-83ad-8fff429569d4.conf --remote-input 127.0.01:54321 --headless
+- lldb -- bin/minetest --go --worldname test_world_minetestenv --config artifacts/2dd22d78-8c03-445e-83ad-8fff429569d4.conf --remote-input 127.0.01:54321
 - Then run python tools/handshaker.py
 """
 

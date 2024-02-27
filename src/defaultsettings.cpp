@@ -295,7 +295,6 @@ void set_default_settings()
 	settings->setDefault("repeat_place_time", "0.25");
 	settings->setDefault("safe_dig_and_place", "false");
 	settings->setDefault("remote_input", "");
-	settings->setDefault("headless", "false");
 	settings->setDefault("random_input", "false");
 	settings->setDefault("aux1_descends", "false");
 	settings->setDefault("doubletap_jump", "false");

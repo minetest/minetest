@@ -1223,7 +1223,7 @@ bool Game::startup(bool *kill,
 	// RemoteInputHandler needs ref to local player to access reward via HUD
 	input->registerLocalPlayer(client->getEnv().getLocalPlayer());
 
-	m_rendering_engine->initialize(client, hud, start_data.isHeadless());
+	m_rendering_engine->initialize(client, hud);
 
 	return true;
 }
