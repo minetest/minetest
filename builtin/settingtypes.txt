@@ -119,6 +119,7 @@ repeat_place_time (Place repetition interval) float 0.25 0.16 2
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
 
+#    Sneak button toggles sneaking instead of requiring it to be held down.
 toggle_sneak (Toggle sneak) bool false
 
 #    Prevent digging and placing from repeating when holding the respective buttons.

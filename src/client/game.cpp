@@ -709,7 +709,7 @@ struct GameRunData {
 	float time_from_last_punch;
 	ClientActiveObject *selected_object;
 
-	bool isSneaking = false;
+	bool is_sneaking = false;
 
 	float jump_timer_up;          // from key up until key down
 	float jump_timer_down;        // since last key down
@@ -1447,7 +1447,7 @@ void Game::copyServerClientCache()
 {
 	// It would be possible to let the client directly read the media files
 	// from where the server knows they are. But aside from being more complicated
-	// it would also *not* fill the media cache and cause slower joining of
+	// it would also *not* fill the media cache and cause slower joining of 
 	// remote servers.
 	// (Imagine that you launch a game once locally and then connect to a server.)
 
@@ -2693,9 +2693,10 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 
 
 	if (g_settings->getBool("toggle_sneak")) {
-		if (wasKeyPressed(KeyType::SNEAK)) runData.isSneaking = !runData.isSneaking;
+		if (wasKeyPressed(KeyType::SNEAK))
+			runData.is_sneaking = !runData.is_sneaking;
 	} else {
-		runData.isSneaking = isKeyDown(KeyType::SNEAK);
+		runData.is_sneaking = isKeyDown(KeyType::SNEAK);
 	}
 
 
@@ -2706,7 +2707,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		isKeyDown(KeyType::RIGHT),
 		isKeyDown(KeyType::JUMP) || player->getAutojump(),
 		isKeyDown(KeyType::AUX1),
-		runData.isSneaking,
+		runData.is_sneaking,
 		isKeyDown(KeyType::ZOOM),
 		isKeyDown(KeyType::DIG),
 		isKeyDown(KeyType::PLACE),
