@@ -1,7 +1,6 @@
 #include "guiAnimatedImage.h"
 
 #include "client/guiscalingfilter.h"
-#include "client/tile.h" // ITextureSource
 #include "log.h"
 #include "porting.h"
 #include "util/string.h"

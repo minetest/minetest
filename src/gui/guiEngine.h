@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiFormSpecMenu.h"
 #include "client/clouds.h"
 #include "client/sound.h"
-#include "client/tile.h"
 #include "util/enriched_string.h"
 #include "translation.h"
 

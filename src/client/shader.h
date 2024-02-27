@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include <IMaterialRendererServices.h>
 #include <string>
-#include "tile.h"
 #include "nodedef.h"
 
 class IGameDef;

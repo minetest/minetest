@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 
 #ifndef SERVER
-#include "client/tile.h" // getImagePath
+#include "client/texturepaths.h"
 #endif
 
 // The maximum number of identical world names allowed
