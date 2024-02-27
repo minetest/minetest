@@ -920,6 +920,8 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 
 			if (!sound.spec.loop && (sound.keep_time < m_playing_sounds_time)) {
 				sound.can_be_send_later = false;
+				verbosestream << "Server: Sound " << it->first
+						<< " cannot be send anymore." << std::endl;
 				continue;
 			}
 
@@ -949,6 +951,8 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 				if (pos.getDistanceFrom(playersao->getBasePosition()) <= sound.max_hear_distance) {
 					SendSound(client->peer_id, it->first, sound, pos);
 					sound.clients.insert(client->peer_id);
+					verbosestream << "Server: Sound " << it->first << " add peer "
+							<< client->peer_id << "." << std::endl;
 				}
 			}
 		}
@@ -2287,8 +2291,11 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 		}
 	}
 
-	if (!ephemeral)
+	if (!ephemeral) {
 		m_playing_sounds[id] = std::move(params);
+		verbosestream << "Server:playSound: Create sound "
+				<< id << "." << std::endl;
+	}
 	return id;
 }
 void Server::stopSound(s32 handle)
@@ -2308,6 +2315,9 @@ void Server::stopSound(s32 handle)
 
 	// Remove sound reference
 	m_playing_sounds.erase(it);
+
+	verbosestream << "Server:stopSound: Stop sound "
+			<< handle << "." << std::endl;
 }
 
 void Server::fadeSound(s32 handle, float step, float gain)
@@ -2340,6 +2350,8 @@ void Server::stopAttachedSounds(u16 id)
 
 		if (sound.object == id) {
 			// Remove sound reference
+			verbosestream << "Server:stopAttachedSounds: Stop sound "
+					<< it->first << "." << std::endl;
 			it = m_playing_sounds.erase(it);
 		}
 		else
@@ -2347,11 +2359,12 @@ void Server::stopAttachedSounds(u16 id)
 	}
 }
 
-void Server::createSoundPacket(NetworkPacket &pkt, s32 sound_id, const ServerPlayingSound &params,
-		const v3f &pos, bool ephemeral)
+void Server::createSoundPacket(NetworkPacket &pkt, s32 sound_id,
+		const ServerPlayingSound &params, const v3f &pos, bool ephemeral)
 {
 	float gain = params.gain * params.spec.gain;
-	float start_time = params.spec.start_time + m_playing_sounds_time - params.start_time;
+	float start_time = params.spec.start_time +
+	                   m_playing_sounds_time - params.start_time;
 	pkt << sound_id << params.spec.name << gain
 			<< (u8) params.type << pos << params.object
 			<< params.spec.loop << params.spec.fade << params.spec.pitch
