@@ -46,9 +46,9 @@ T RangedParameter<T>::pickWithin() const
 	auto p = numericAbsolute(bias) + 1;
 	for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); ++i) {
 		if (bias < 0)
-			values[i] = 1.0f - pow(myrand_float(), p);
+			values[i] = 1.0f - std::pow(myrand_float(), p);
 		else
-			values[i] = pow(myrand_float(), p);
+			values[i] = std::pow(myrand_float(), p);
 	}
 	return T::pick(values, min, max);
 }

@@ -615,7 +615,7 @@ class Peer {
 		u64 m_last_timeout_check;
 };
 
-class UDPPeer : public Peer
+class UDPPeer final : public Peer
 {
 public:
 
@@ -628,15 +628,15 @@ public:
 	virtual ~UDPPeer() = default;
 
 	void PutReliableSendCommand(ConnectionCommandPtr &c,
-							unsigned int max_packet_size);
+							unsigned int max_packet_size) override;
 
-	bool getAddress(MTProtocols type, Address& toset);
+	bool getAddress(MTProtocols type, Address& toset) override;
 
-	u16 getNextSplitSequenceNumber(u8 channel);
-	void setNextSplitSequenceNumber(u8 channel, u16 seqnum);
+	u16 getNextSplitSequenceNumber(u8 channel) override;
+	void setNextSplitSequenceNumber(u8 channel, u16 seqnum) override;
 
 	SharedBuffer<u8> addSplitPacket(u8 channel, BufferedPacketPtr &toadd,
-		bool reliable);
+		bool reliable) override;
 
 	bool isTimedOut(float timeout, std::string &reason) override;
 
@@ -645,7 +645,7 @@ protected:
 		Calculates avg_rtt and resend_timeout.
 		rtt=-1 only recalculates resend_timeout
 	*/
-	void reportRTT(float rtt);
+	void reportRTT(float rtt) override;
 
 	void RunCommandQueues(
 					unsigned int max_packet_size,
@@ -657,7 +657,7 @@ protected:
 	void setResendTimeout(float timeout)
 		{ MutexAutoLock lock(m_exclusive_access_mutex); resend_timeout = timeout; }
 
-	bool Ping(float dtime,SharedBuffer<u8>& data);
+	bool Ping(float dtime, SharedBuffer<u8>& data) override;
 
 	Channel channels[CHANNEL_COUNT];
 	bool m_pending_disconnect = false;

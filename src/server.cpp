@@ -646,15 +646,29 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 
 	{
 		MutexAutoLock lock(m_env_mutex);
-		// Figure out and report maximum lag to environment
 		float max_lag = m_env->getMaxLagEstimate();
-		max_lag *= 0.9998; // Decrease slowly (about half per 5 minutes)
-		if(dtime > max_lag){
-			if(dtime > 0.1 && dtime > max_lag * 2.0)
-				infostream<<"Server: Maximum lag peaked to "<<dtime
-						<<" s"<<std::endl;
-			max_lag = dtime;
+		constexpr float lag_warn_threshold = 2.0f;
+
+		// Decrease value gradually, halve it every minute.
+		if (m_max_lag_decrease.step(dtime, 0.5f)) {
+			// To reproduce this number enter "solve (x)**(60/0.5) = 0.5"
+			// into Wolfram Alpha.
+			max_lag *= 0.99425f;
 		}
+
+		// Report a 20% change to the log but only if we're >10% off target
+		// also report if we crossed into the warning boundary
+		if (dtime >= max_lag * 1.2f ||
+			(max_lag < lag_warn_threshold && dtime >= lag_warn_threshold)) {
+			const float steplen = getStepSettings().steplen;
+			if (dtime > steplen * 1.1f) {
+				auto &to = dtime >= lag_warn_threshold ? warningstream : infostream;
+				to << "Server: Maximum lag peaked at " << dtime
+					<< " (steplen=" << steplen << ")" << std::endl;
+			}
+		}
+		max_lag = std::max(max_lag, dtime),
+
 		m_env->reportMaxLagEstimate(max_lag);
 
 		// Step environment
@@ -2262,6 +2276,22 @@ void Server::fadeSound(s32 handle, float step, float gain)
 	// Remove sound reference
 	if (gain <= 0 || psound.clients.empty())
 		m_playing_sounds.erase(it);
+}
+
+void Server::stopAttachedSounds(u16 id)
+{
+	assert(id);
+
+	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); ) {
+		const ServerPlayingSound &sound = it->second;
+
+		if (sound.object == id) {
+			// Remove sound reference
+			it = m_playing_sounds.erase(it);
+		}
+		else
+			it++;
+	}
 }
 
 void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,

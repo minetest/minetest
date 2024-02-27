@@ -109,9 +109,10 @@ if(BUILD_CLIENT AND ENABLE_SOUND)
 	endif()
 endif()
 
-option(ENABLE_TOUCH "Enable Touchscreen support" FALSE)
+option(ENABLE_TOUCH "Enable touchscreen by default" FALSE)
 if(ENABLE_TOUCH)
-	add_definitions(-DHAVE_TOUCHSCREENGUI)
+	message(STATUS "Touchscreen support enabled by default.")
+	add_definitions(-DENABLE_TOUCH)
 endif()
 
 if(BUILD_CLIENT)

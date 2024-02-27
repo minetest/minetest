@@ -203,7 +203,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if (fabs(m_prop.automatic_rotate) > 0.001f) {
+	if (std::abs(m_prop.automatic_rotate) > 0.001f) {
 		m_rotation_add_yaw = modulo360f(m_rotation_add_yaw + dtime * core::RADTODEG *
 				m_prop.automatic_rotate);
 	}

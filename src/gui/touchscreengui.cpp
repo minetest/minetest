@@ -55,6 +55,7 @@ const std::string joystick_image_names[] = {
 
 static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 {
+	EKEY_CODE code;
 	// ESC isn't part of the keymap.
 	if (id == exit_id)
 		return KEY_ESCAPE;
@@ -110,7 +111,15 @@ static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 			break;
 	}
 	assert(!key.empty());
-	return keyname_to_keycode(g_settings->get("keymap_" + key).c_str());
+	std::string resolved = g_settings->get("keymap_" + key);
+	try {
+		code = keyname_to_keycode(resolved.c_str());
+	} catch (UnknownKeycode &e) {
+		code = KEY_UNKNOWN;
+		warningstream << "TouchScreenGUI: Unknown key '" << resolved
+			      << "' for '" << key << "', hiding button." << std::endl;
+	}
+	return code;
 }
 
 static void load_button_texture(const button_info *btn, const std::string &path,
@@ -523,13 +532,23 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 							+ 0.5f * button_size),
 			AHBB_Dir_Right_Left, 3.0f);
 
-	m_settings_bar.addButton(fly_id, L"fly", "fly_btn.png");
-	m_settings_bar.addButton(noclip_id, L"noclip", "noclip_btn.png");
-	m_settings_bar.addButton(fast_id, L"fast", "fast_btn.png");
-	m_settings_bar.addButton(debug_id, L"debug", "debug_btn.png");
-	m_settings_bar.addButton(camera_id, L"camera", "camera_btn.png");
-	m_settings_bar.addButton(range_id, L"rangeview", "rangeview_btn.png");
-	m_settings_bar.addButton(minimap_id, L"minimap", "minimap_btn.png");
+	const static std::map<touch_gui_button_id, std::string> settings_bar_buttons {
+		{fly_id, "fly"},
+		{noclip_id, "noclip"},
+		{fast_id, "fast"},
+		{debug_id, "debug"},
+		{camera_id, "camera"},
+		{range_id, "rangeview"},
+		{minimap_id, "minimap"},
+	};
+	for (const auto &pair : settings_bar_buttons) {
+		if (id_to_keycode(pair.first) == KEY_UNKNOWN)
+			continue;
+
+		std::wstring wide = utf8_to_wide(pair.second);
+		m_settings_bar.addButton(pair.first, wide.c_str(),
+				pair.second + "_btn.png");
+	}
 
 	// Chat is shown by default, so chat_hide_btn.png is shown first.
 	m_settings_bar.addToggleButton(toggle_chat_id, L"togglechat",
@@ -545,10 +564,20 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 							+ 0.5f * button_size),
 			AHBB_Dir_Left_Right, 2.0f);
 
-	m_rare_controls_bar.addButton(chat_id, L"chat", "chat_btn.png");
-	m_rare_controls_bar.addButton(inventory_id, L"inv", "inventory_btn.png");
-	m_rare_controls_bar.addButton(drop_id, L"drop", "drop_btn.png");
-	m_rare_controls_bar.addButton(exit_id, L"exit", "exit_btn.png");
+	const static std::map<touch_gui_button_id, std::string> rare_controls_bar_buttons {
+		{chat_id, "chat"},
+		{inventory_id, "inventory"},
+		{drop_id, "drop"},
+		{exit_id, "exit"},
+	};
+	for (const auto &pair : rare_controls_bar_buttons) {
+		if (id_to_keycode(pair.first) == KEY_UNKNOWN)
+			continue;
+
+		std::wstring wide = utf8_to_wide(pair.second);
+		m_rare_controls_bar.addButton(pair.first, wide.c_str(),
+				pair.second + "_btn.png");
+	}
 
 	m_initialized = true;
 }
@@ -687,12 +716,9 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 				<< evt_id << std::endl;
 	}
 
-	for (auto iter = m_known_ids.begin(); iter != m_known_ids.end(); ++iter) {
-		if (iter->id == evt_id) {
-			m_known_ids.erase(iter);
-			break;
-		}
-	}
+	// By the way: Android reuses pointer IDs, so m_pointer_pos[evt_id]
+	// will be overwritten soon anyway.
+	m_pointer_pos.erase(evt_id);
 }
 
 void TouchScreenGUI::translateEvent(const SEvent &event)
@@ -719,17 +745,6 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 	const v2s32 dir_fixed = touch_pos - fixed_joystick_center;
 
 	if (event.TouchInput.Event == ETIE_PRESSED_DOWN) {
-		/*
-		 * Add to own copy of event list...
-		 * android would provide this information but Irrlicht guys don't
-		 * wanna design an efficient interface
-		 */
-		id_status to_be_added{};
-		to_be_added.id = event.TouchInput.ID;
-		to_be_added.X  = event.TouchInput.X;
-		to_be_added.Y  = event.TouchInput.Y;
-		m_known_ids.push_back(to_be_added);
-
 		size_t eventID = event.TouchInput.ID;
 
 		touch_gui_button_id button = getButtonID(X, Y);
@@ -786,6 +801,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					m_move_id                  = event.TouchInput.ID;
 					m_move_has_really_moved    = false;
 					m_move_downtime            = porting::getTimeMs();
+					m_move_pos                 = touch_pos;
 					// DON'T reset m_tap_state here, otherwise many short taps
 					// will be ignored if you tap very fast.
 				}
@@ -804,8 +820,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 				m_pointer_pos[event.TouchInput.ID] == touch_pos)
 			return;
 
-		const v2s32 free_joystick_center = v2s32(m_pointer_pos[event.TouchInput.ID].X,
-				m_pointer_pos[event.TouchInput.ID].Y);
+		const v2s32 free_joystick_center = m_pointer_pos[event.TouchInput.ID];
 		const v2s32 dir_free = touch_pos - free_joystick_center;
 
 		const double touch_threshold_sq = m_touchscreen_threshold * m_touchscreen_threshold;
@@ -814,6 +829,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			if (dir_free.getLengthSQ() > touch_threshold_sq || m_move_has_really_moved) {
 				m_move_has_really_moved = true;
 
+				m_move_pos = touch_pos;
 				m_pointer_pos[event.TouchInput.ID] = touch_pos;
 
 				if (m_tap_state == TapState::None || m_draw_crosshair) {
@@ -994,7 +1010,9 @@ void TouchScreenGUI::step(float dtime)
 	// thus the camera position can change, it doesn't suffice to update the
 	// shootline when a touch event occurs.
 	// Note that the shootline isn't used if touch_use_crosshair is enabled.
-	if (!m_draw_crosshair) {
+	// Only updating when m_has_move_id means that the shootline will stay at
+	// it's last in-world position when the player doesn't need it.
+	if (!m_draw_crosshair && m_has_move_id) {
 		v2s32 pointer_pos = getPointerPos();
 		m_shootline = m_device
 				->getSceneManager()
@@ -1032,8 +1050,8 @@ void TouchScreenGUI::setVisible(bool visible)
 
 	// clear all active buttons
 	if (!visible) {
-		while (!m_known_ids.empty())
-			handleReleaseEvent(m_known_ids.begin()->id);
+		while (!m_pointer_pos.empty())
+			handleReleaseEvent(m_pointer_pos.begin()->first);
 
 		m_settings_bar.hide();
 		m_rare_controls_bar.hide();
@@ -1063,7 +1081,9 @@ v2s32 TouchScreenGUI::getPointerPos()
 {
 	if (m_draw_crosshair)
 		return v2s32(m_screensize.X / 2, m_screensize.Y / 2);
-	return m_pointer_pos[m_move_id];
+	// We can't just use m_pointer_pos[m_move_id] because applyContextControls
+	// may emit release events after m_pointer_pos[m_move_id] is erased.
+	return m_move_pos;
 }
 
 void TouchScreenGUI::emitMouseEvent(EMOUSE_INPUT_EVENT type)

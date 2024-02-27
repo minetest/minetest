@@ -239,6 +239,7 @@ public:
 	s32 playSound(ServerPlayingSound &params, bool ephemeral=false);
 	void stopSound(s32 handle);
 	void fadeSound(s32 handle, float step, float gain);
+	void stopAttachedSounds(u16 id);
 
 	// Envlock
 	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);
@@ -608,12 +609,14 @@ private:
 	MutexedVariable<std::string> m_async_fatal_error;
 
 	// Some timers
+	float m_time_of_day_send_timer = 0.0f;
 	float m_liquid_transform_timer = 0.0f;
 	float m_liquid_transform_every = 1.0f;
 	float m_masterserver_timer = 0.0f;
 	float m_emergethread_trigger_timer = 0.0f;
 	float m_savemap_timer = 0.0f;
 	IntervalLimiter m_map_timer_and_unload_interval;
+	IntervalLimiter m_max_lag_decrease;
 
 	// Environment
 	ServerEnvironment *m_env = nullptr;
@@ -660,12 +663,6 @@ private:
 
 	// The server mainly operates in this thread
 	ServerThread *m_thread = nullptr;
-
-	/*
-		Time related stuff
-	*/
-	// Timer for sending time of day over network
-	float m_time_of_day_send_timer = 0.0f;
 
 	/*
 	 	Client interface

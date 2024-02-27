@@ -60,7 +60,7 @@ enum ModReason : u32 {
 	MOD_REASON_STATIC_DATA_ADDED          = 1 << 13,
 	MOD_REASON_STATIC_DATA_REMOVED        = 1 << 14,
 	MOD_REASON_STATIC_DATA_CHANGED        = 1 << 15,
-	MOD_REASON_EXPIRE_DAYNIGHTDIFF        = 1 << 16,
+	MOD_REASON_EXPIRE_IS_AIR              = 1 << 16,
 	MOD_REASON_VMANIP                     = 1 << 17,
 	MOD_REASON_UNKNOWN                    = 1 << 18,
 };
@@ -310,20 +310,19 @@ public:
 	// Copies data from VoxelManipulator getPosRelative()
 	void copyFrom(VoxelManipulator &dst);
 
-	// Update day-night lighting difference flag.
-	// Sets m_day_night_differs to appropriate value.
-	// These methods don't care about neighboring blocks.
-	void actuallyUpdateDayNightDiff();
+	// Update is air flag.
+	// Sets m_is_air to appropriate value.
+	void actuallyUpdateIsAir();
 
 	// Call this to schedule what the previous function does to be done
 	// when the value is actually needed.
-	void expireDayNightDiff();
+	void expireIsAirCache();
 
-	inline bool getDayNightDiff()
+	inline bool isAir()
 	{
-		if (m_day_night_differs_expired)
-			actuallyUpdateDayNightDiff();
-		return m_day_night_differs;
+		if (m_is_air_expired)
+			actuallyUpdateIsAir();
+		return m_is_air;
 	}
 
 	bool onObjectsActivation();
@@ -517,8 +516,8 @@ public:
 
 private:
 	// Whether day and night lighting differs
-	bool m_day_night_differs = false;
-	bool m_day_night_differs_expired = true;
+	bool m_is_air = false;
+	bool m_is_air_expired = true;
 
 	/*
 		- On the server, this is used for telling whether the

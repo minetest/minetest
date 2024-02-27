@@ -6,7 +6,9 @@
 
 Install dependencies with homebrew:
 
-    brew install cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd gettext
+```bash
+brew install cmake freetype gettext gmp hiredis jpeg-turbo jsoncpp leveldb libogg libpng libvorbis luajit zstd gettext
+```
 
 ## Download
 
@@ -43,6 +45,6 @@ codesign --force --deep -s - macos/minetest.app
 
 ## Run
 
-```
+```bash
 open ./build/macos/minetest.app
 ```

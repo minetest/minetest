@@ -74,6 +74,8 @@ private:
 
 	static int l_get_mapgen_names(lua_State *L);
 
+	static int l_get_language(lua_State *L);
+
 	static int l_gettext(lua_State *L);
 
 	//packages
@@ -83,6 +85,8 @@ private:
 	static int l_get_content_info(lua_State *L);
 
 	static int l_check_mod_configuration(lua_State *L);
+
+	static int l_get_content_translation(lua_State *L);
 
 	//gui
 

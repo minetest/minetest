@@ -24,10 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include "keycode.h"
 #include "renderingengine.h"
-
-#ifdef HAVE_TOUCHSCREENGUI
 #include "gui/touchscreengui.h"
-#endif
 
 class InputHandler;
 
@@ -203,16 +200,12 @@ public:
 
 	MyEventReceiver()
 	{
-#ifdef HAVE_TOUCHSCREENGUI
 		m_touchscreengui = NULL;
-#endif
 	}
 
 	JoystickController *joystick = nullptr;
 
-#ifdef HAVE_TOUCHSCREENGUI
 	TouchScreenGUI *m_touchscreengui;
-#endif
 
 private:
 	s32 mouse_wheel = 0;
@@ -332,11 +325,9 @@ public:
 				return 0.0f;
 			return 1.0f; // If there is a keyboard event, assume maximum speed
 		}
-#ifdef HAVE_TOUCHSCREENGUI
-		return m_receiver->m_touchscreengui->getMovementSpeed();
-#else
+		if (m_receiver->m_touchscreengui && m_receiver->m_touchscreengui->getMovementSpeed())
+			return m_receiver->m_touchscreengui->getMovementSpeed();
 		return joystick.getMovementSpeed();
-#endif
 	}
 
 	virtual float getMovementDirection()
@@ -355,12 +346,9 @@ public:
 
 		if (x != 0 || z != 0) /* If there is a keyboard event, it takes priority */
 			return atan2(x, z);
-		else
-#ifdef HAVE_TOUCHSCREENGUI
+		else if (m_receiver->m_touchscreengui && m_receiver->m_touchscreengui->getMovementDirection())
 			return m_receiver->m_touchscreengui->getMovementDirection();
-#else
-			return joystick.getMovementDirection();
-#endif
+		return joystick.getMovementDirection();
 	}
 
 	virtual bool cancelPressed()

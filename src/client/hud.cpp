@@ -39,10 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "wieldmesh.h"
 #include "client/renderingengine.h"
 #include "client/minimap.h"
-
-#ifdef HAVE_TOUCHSCREENGUI
 #include "gui/touchscreengui.h"
-#endif
 
 #define OBJECT_CROSSHAIR_LINE_SIZE 8
 #define CROSSHAIR_LINE_SIZE 10
@@ -292,10 +289,8 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 
 		drawItem(mainlist->getItem(i), item_rect, (i + 1) == selectitem);
 
-#ifdef HAVE_TOUCHSCREENGUI
 		if (is_hotbar && g_touchscreengui)
 			g_touchscreengui->registerHotbarRect(i, item_rect);
-#endif
 	}
 }
 
@@ -749,10 +744,8 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 
 void Hud::drawHotbar(u16 playeritem)
 {
-#ifdef HAVE_TOUCHSCREENGUI
 	if (g_touchscreengui)
 		g_touchscreengui->resetHotbarRects();
-#endif
 
 	InventoryList *mainlist = inventory->getList("main");
 	if (mainlist == NULL) {

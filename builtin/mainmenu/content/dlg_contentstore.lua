@@ -154,7 +154,9 @@ local function start_install(package, reason)
 
 				if conf_path then
 					local conf = Settings(conf_path)
-					conf:set("title", package.title)
+					if not conf:get("title") then
+						conf:set("title", package.title)
+					end
 					if not name_is_title then
 						conf:set("name", package.name)
 					end
@@ -642,8 +644,21 @@ local function fetch_pkgs()
 		end
 	end
 
+	local languages
+	local current_language = core.get_language()
+	if current_language ~= "" then
+		languages = { current_language, "en;q=0.8" }
+	else
+		languages = { "en" }
+	end
+
 	local http = core.get_http_api()
-	local response = http.fetch_sync({ url = url })
+	local response = http.fetch_sync({
+		url = url,
+		extra_headers = {
+			"Accept-Language: " .. table.concat(languages, ", ")
+		},
+	})
 	if not response.succeeded then
 		return
 	end
@@ -898,7 +913,7 @@ local function get_info_formspec(text)
 	return table.concat({
 		"formspec_version[6]",
 		"size[15.75,9.5]",
-		TOUCHSCREEN_GUI and "padding[0.01,0.01]" or "position[0.5,0.55]",
+		core.settings:get_bool("enable_touch") and "padding[0.01,0.01]" or "position[0.5,0.55]",
 
 		"label[4,4.35;", text, "]",
 		"container[0,", H - 0.8 - 0.375, "]",
@@ -928,7 +943,7 @@ function store.get_formspec(dlgdata)
 	local formspec = {
 		"formspec_version[6]",
 		"size[15.75,9.5]",
-		TOUCHSCREEN_GUI and "padding[0.01,0.01]" or "position[0.5,0.55]",
+		core.settings:get_bool("enable_touch") and "padding[0.01,0.01]" or "position[0.5,0.55]",
 
 		"style[status,downloading,queued;border=false]",
 
@@ -1175,8 +1190,8 @@ end
 
 function store.handle_events(event)
 	if event == "DialogShow" then
-		-- On mobile, don't show the "MINETEST" header behind the dialog.
-		mm_game_theme.set_engine(TOUCHSCREEN_GUI)
+		-- On touchscreen, don't show the "MINETEST" header behind the dialog.
+		mm_game_theme.set_engine(core.settings:get_bool("enable_touch"))
 
 		-- If the store is already loaded, auto-install packages here.
 		do_auto_install()

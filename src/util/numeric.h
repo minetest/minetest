@@ -350,12 +350,10 @@ class IntervalLimiter
 public:
 	IntervalLimiter() = default;
 
-	/*
-		dtime: time from last call to this method
-		wanted_interval: interval wanted
-		return value:
-			true: action should be skipped
-			false: action should be done
+	/**
+		@param dtime time from last call to this method
+		@param wanted_interval interval wanted
+		@return true if action should be done
 	*/
 	bool step(float dtime, float wanted_interval)
 	{

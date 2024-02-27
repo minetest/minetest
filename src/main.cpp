@@ -50,9 +50,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiEngine.h"
 #include "gui/mainmenumanager.h"
 #endif
-#ifdef HAVE_TOUCHSCREENGUI
-	#include "gui/touchscreengui.h"
-#endif
 
 // for version information only
 extern "C" {

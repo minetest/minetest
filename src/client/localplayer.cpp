@@ -600,7 +600,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		}
 	}
 
-	speedH = v3f(sin(control.movement_direction), 0.0f, cos(control.movement_direction));
+	speedH = v3f(std::sin(control.movement_direction), 0.0f,
+			std::cos(control.movement_direction));
 
 	if (m_autojump) {
 		// release autojump after a given time

@@ -77,6 +77,29 @@ local function test_metadata(meta)
 	assert(not meta:equals(compare_meta))
 end
 
+local function test_metadata_compat(meta)
+	-- key/value removal using set_string (undocumented, deprecated way)
+	meta:set_string("key", "value")
+	assert(meta:get_string("key") == "value")
+	meta:set_string("key", nil) -- ignore warning
+	assert(meta:to_table().fields["key"] == nil)
+
+	-- undocumented but supported consequence of Lua's
+	-- automatic string <--> number cast
+	meta:set_string("key", 2)
+	assert(meta:get_string("key") == "2")
+
+	-- from_table with non-string keys (supported)
+	local values = meta:to_table()
+	values.fields["new"] = 420
+	meta:from_table(values)
+	assert(meta:get_int("new") == 420)
+	values.fields["new"] = nil
+	meta:from_table(values)
+	assert(meta:get("new") == nil)
+end
+
+
 local storage_a = core.get_mod_storage()
 local storage_b = core.get_mod_storage()
 local function test_mod_storage()
@@ -86,7 +109,9 @@ end
 unittests.register("test_mod_storage", test_mod_storage)
 
 local function test_item_metadata()
-	test_metadata(ItemStack("unittest:coal_lump"):get_meta())
+	local meta = ItemStack("unittest:coal_lump"):get_meta()
+	test_metadata(meta)
+	test_metadata_compat(meta)
 end
 unittests.register("test_item_metadata", test_item_metadata)
 

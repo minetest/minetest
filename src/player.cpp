@@ -191,7 +191,7 @@ u32 PlayerControl::getKeysPressed() const
 		float abs_d;
 
 		// (absolute value indicates forward / backward)
-		abs_d = abs(movement_direction);
+		abs_d = std::abs(movement_direction);
 		if (abs_d < 3.0f / 8.0f * M_PI)
 			keypress_bits |= (u32)1; // Forward
 		if (abs_d > 5.0f / 8.0f * M_PI)
@@ -201,7 +201,7 @@ u32 PlayerControl::getKeysPressed() const
 		abs_d = movement_direction + M_PI_2;
 		if (abs_d >= M_PI)
 			abs_d -= 2 * M_PI;
-		abs_d = abs(abs_d);
+		abs_d = std::abs(abs_d);
 		// (value now indicates left / right)
 		if (abs_d < 3.0f / 8.0f * M_PI)
 			keypress_bits |= (u32)1 << 2; // Left

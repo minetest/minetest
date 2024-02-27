@@ -138,8 +138,8 @@ void Camera::notifyFovChange()
 // Returns the fractional part of x
 inline f32 my_modf(f32 x)
 {
-	double dummy;
-	return modf(x, &dummy);
+	float dummy;
+	return std::modf(x, &dummy);
 }
 
 void Camera::step(f32 dtime)
@@ -407,10 +407,10 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 		f32 bobdir = (m_view_bobbing_anim < 0.5) ? 1.0 : -1.0;
 
 		f32 bobknob = 1.2;
-		f32 bobtmp = sin(pow(bobfrac, bobknob) * M_PI);
+		f32 bobtmp = std::sin(std::pow(bobfrac, bobknob) * M_PI);
 
 		v3f bobvec = v3f(
-			0.3 * bobdir * sin(bobfrac * M_PI),
+			0.3 * bobdir * std::sin(bobfrac * M_PI),
 			-0.28 * bobtmp * bobtmp,
 			0.);
 
@@ -531,11 +531,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 		addArmInertia(yaw);
 
 	// Position the wielded item
-	//v3f wield_position = v3f(45, -35, 65);
 	v3f wield_position = v3f(m_wieldmesh_offset.X, m_wieldmesh_offset.Y, 65);
-	//v3f wield_rotation = v3f(-100, 120, -100);
 	v3f wield_rotation = v3f(-100, 120, -100);
-	wield_position.Y += fabs(m_wield_change_timer)*320 - 40;
+	wield_position.Y += std::abs(m_wield_change_timer)*320 - 40;
 	if(m_digging_anim < 0.05 || m_digging_anim > 0.5)
 	{
 		f32 frac = 1.0;
@@ -543,33 +541,29 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 			frac = 2.0 * (m_digging_anim - 0.5);
 		// This value starts from 1 and settles to 0
 		f32 ratiothing = std::pow((1.0f - tool_reload_ratio), 0.5f);
-		//f32 ratiothing2 = pow(ratiothing, 0.5f);
 		f32 ratiothing2 = (easeCurve(ratiothing*0.5))*2.0;
-		wield_position.Y -= frac * 25.0 * pow(ratiothing2, 1.7f);
-		//wield_position.Z += frac * 5.0 * ratiothing2;
-		wield_position.X -= frac * 35.0 * pow(ratiothing2, 1.1f);
-		wield_rotation.Y += frac * 70.0 * pow(ratiothing2, 1.4f);
-		//wield_rotation.X -= frac * 15.0 * pow(ratiothing2, 1.4f);
-		//wield_rotation.Z += frac * 15.0 * pow(ratiothing2, 1.0f);
+		wield_position.Y -= frac * 25.0f * std::pow(ratiothing2, 1.7f);
+		wield_position.X -= frac * 35.0f * std::pow(ratiothing2, 1.1f);
+		wield_rotation.Y += frac * 70.0f * std::pow(ratiothing2, 1.4f);
 	}
 	if (m_digging_button != -1)
 	{
 		f32 digfrac = m_digging_anim;
-		wield_position.X -= 50 * sin(pow(digfrac, 0.8f) * M_PI);
-		wield_position.Y += 24 * sin(digfrac * 1.8 * M_PI);
+		wield_position.X -= 50 * std::sin(std::pow(digfrac, 0.8f) * M_PI);
+		wield_position.Y += 24 * std::sin(digfrac * 1.8 * M_PI);
 		wield_position.Z += 25 * 0.5;
 
 		// Euler angles are PURE EVIL, so why not use quaternions?
 		core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
 		core::quaternion quat_end(v3f(80, 30, 100) * core::DEGTORAD);
 		core::quaternion quat_slerp;
-		quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * M_PI));
+		quat_slerp.slerp(quat_begin, quat_end, std::sin(digfrac * M_PI));
 		quat_slerp.toEuler(wield_rotation);
 		wield_rotation *= core::RADTODEG;
 	} else {
 		f32 bobfrac = my_modf(m_view_bobbing_anim);
-		wield_position.X -= sin(bobfrac*M_PI*2.0) * 3.0;
-		wield_position.Y += sin(my_modf(bobfrac*2.0)*M_PI) * 3.0;
+		wield_position.X -= std::sin(bobfrac*M_PI*2.0) * 3.0;
+		wield_position.Y += std::sin(my_modf(bobfrac*2.0)*M_PI) * 3.0;
 	}
 	m_wieldnode->setPosition(wield_position);
 	m_wieldnode->setRotation(wield_rotation);
@@ -584,8 +578,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	// view bobbing is enabled and free_move is off,
 	// start (or continue) the view bobbing animation.
 	const v3f &speed = player->getSpeed();
-	const bool movement_XZ = hypot(speed.X, speed.Z) > BS;
-	const bool movement_Y = fabs(speed.Y) > BS;
+	const bool movement_XZ = std::hypot(speed.X, speed.Z) > BS;
+	const bool movement_Y = std::abs(speed.Y) > BS;
 
 	const bool walking = movement_XZ && player->touching_ground;
 	const bool swimming = (movement_XZ || player->swimming_vertical) && player->in_liquid;
