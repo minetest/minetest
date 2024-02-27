@@ -7,13 +7,11 @@ Requires conda to be installed.
 ```bash
 set -euox pipefail
 
-# BEGIN unnecessary if using dev container
-
 # To match the toolchain that rattler-build uses,
 # set up GCC-13:
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
 # minetest deps. Only the ones not available in conda.
-sudo apt install gcc-13 g++-13 libgl1-mesa-dev mold -yq
+sudo apt install gcc-13 g++-13 libgl1-mesa-dev mold xorg-dev -yq
 # make GCC-13 the default
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 60 --slave /usr/bin/g++ g++ /usr/bin/g++-13
 
@@ -23,7 +21,6 @@ cd minetest
 # activate conda environment
 mamba env create && conda activate minetest
 
-# END unnecessary if using dev container
 git submodule update --init --recursive
 
 cmake -B build -S . \
