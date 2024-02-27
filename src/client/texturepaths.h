@@ -27,7 +27,7 @@ void clearTextureNameCache();
 
 // Find out the full path of an image by trying different filename extensions.
 // If failed, return "".
-std::string getImagePath(std::string path);
+std::string getImagePath(std::string_view path);
 
 /* Gets the path to a texture by first checking if the texture exists
  * in texture_path and if not, using the data path.
