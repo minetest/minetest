@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 # Split lua_api.md on top level headings
-cat ../lua_api.md | csplit -sz -f docs/section - '/^=/-1' '{*}'
+cat ../lua_api.md | csplit -sz -f docs/section - '/^# /' '{*}'
 
 cat > mkdocs.yml << EOF
 site_name: Minetest API Documentation
@@ -30,6 +30,7 @@ mv docs/section00 docs/index.md
 for f in docs/section*
 do
 	title=$(head -1 $f)
+    title="${title#??}"
 	fname=$(echo $title | tr '[:upper:]' '[:lower:]')
 	fname=$(echo $fname | sed 's/ /-/g')
 	fname=$(echo $fname | sed "s/'//g").md
