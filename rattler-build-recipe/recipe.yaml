@@ -69,7 +69,7 @@ tests:
         - minetest
   - python:
       imports:
-        - minetester
+        - minetest
   - script:
     # Install the devtest game, which is needed for python test.
     - mkdir ${CONDA_PREFIX}/share/minetest/games

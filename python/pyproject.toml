@@ -1,8 +1,8 @@
 [project]
-name = "minetester" # TODO: rename to minetest
+name = "minetest"
 version = "0.1.0"
-description = "A Gym environment for minetest"
-dependencies = ["gymnasium", "numpy", "pycapnp", "pyzmq"]
+description = "A Gymnasium environment for minetest"
+dependencies = ["gymnasium", "numpy", "pycapnp"]
 
 [tool.ruff]
 # 1. Enable flake8-bugbear (`B`) rules, in addition to the defaults.
@@ -30,10 +30,10 @@ filterwarnings = [
 ]
 
 [tool.setuptools]
-packages = ["minetester", "minetester.proto"]
+packages = ["minetest", "minetest.proto"]
 
 [tool.setuptools.package-data]
-"minetester.proto" = ["*.capnp"]
+"minetest.proto" = ["*.capnp"]
 
 [build-system]
 requires = ["setuptools"]

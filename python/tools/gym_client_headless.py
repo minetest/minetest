@@ -1,12 +1,13 @@
-import gymnasium as gym
-import pygame
-import numpy as np
-from minetester.minetest_env import KEY_MAP
-from pathlib import Path
 import sys
-from gym_client import open_world_dir
+from pathlib import Path
 
+import gymnasium as gym
+import numpy as np
+import pygame
+from gym_client import open_world_dir
 from PIL import Image  # only needed to save images to disk
+
+from minetest.minetest_env import KEY_MAP
 
 STORE_FILES = False
 repo_root = Path(__file__).parent.parent.parent

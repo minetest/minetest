@@ -10,7 +10,7 @@ import gymnasium as gym
 import numpy as np
 import pygame
 
-from minetester.minetest_env import INVERSE_KEY_MAP, KEY_MAP
+from minetest.minetest_env import INVERSE_KEY_MAP, KEY_MAP
 
 KEY_TO_KEYTYPE = {
     "W": "forward",

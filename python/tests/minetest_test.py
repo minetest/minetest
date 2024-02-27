@@ -11,7 +11,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from minetester.minetest_env import INVERSE_KEY_MAP
+from minetest.minetest_env import INVERSE_KEY_MAP
 
 
 @pytest.fixture
