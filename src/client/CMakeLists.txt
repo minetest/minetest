@@ -67,6 +67,8 @@ set(client_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/shader.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/sky.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/tile.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/texturepaths.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/texturesource.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/wieldmesh.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/shadows/dynamicshadows.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/shadows/dynamicshadowsrender.cpp

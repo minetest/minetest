@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include <ICameraSceneNode.h>
 #include <IGUIStaticText.h>
+#include "client/imagefilters.h"
 
 #if USE_SOUND
 	#include "client/sound/sound_openal.h"

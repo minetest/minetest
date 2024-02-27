@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "client/tile.h" // ITextureSource
+#include "client/texturesource.h"
 #include "client/fontengine.h"
 #include "debug.h"
 #include "irrlichttypes_extrabloated.h"

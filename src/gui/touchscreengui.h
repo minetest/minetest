@@ -32,7 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 
 #include "itemdef.h"
-#include "client/tile.h"
 #include "client/game.h"
 
 using namespace irr;

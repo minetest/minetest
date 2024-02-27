@@ -20,118 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes.h"
-#include "irr_v3d.h"
 #include <ITexture.h>
-#include <string>
 #include <vector>
 #include <SMaterial.h>
-#include "util/numeric.h"
-#include "config.h"
-
-class IGameDef;
-struct TileSpec;
-struct TileDef;
-
-namespace irr::video { class IVideoDriver; }
-
-typedef std::vector<video::SColor> Palette;
-
-/*
-	tile.{h,cpp}: Texture handling stuff.
-*/
-
-/*
-	Find out the full path of an image by trying different filename
-	extensions.
-
-	If failed, return "".
-
-	TODO: Should probably be moved out from here, because things needing
-	      this function do not need anything else from this header
-*/
-std::string getImagePath(std::string path);
-
-/*
-	Gets the path to a texture by first checking if the texture exists
-	in texture_path and if not, using the data path.
-
-	Checks all supported extensions by replacing the original extension.
-
-	If not found, returns "".
-
-	Utilizes a thread-safe cache.
-*/
-std::string getTexturePath(const std::string &filename, bool *is_base_pack = nullptr);
-
-void clearTextureNameCache();
-
-/*
-	TextureSource creates and caches textures.
-*/
-
-class ISimpleTextureSource
-{
-public:
-	ISimpleTextureSource() = default;
-
-	virtual ~ISimpleTextureSource() = default;
-
-	virtual video::ITexture* getTexture(
-			const std::string &name, u32 *id = nullptr) = 0;
-};
-
-class ITextureSource : public ISimpleTextureSource
-{
-public:
-	ITextureSource() = default;
-
-	virtual ~ITextureSource() = default;
-
-	virtual u32 getTextureId(const std::string &name)=0;
-	virtual std::string getTextureName(u32 id)=0;
-	virtual video::ITexture* getTexture(u32 id)=0;
-	virtual video::ITexture* getTexture(
-			const std::string &name, u32 *id = nullptr)=0;
-	virtual video::ITexture* getTextureForMesh(
-			const std::string &name, u32 *id = nullptr) = 0;
-	/*!
-	 * Returns a palette from the given texture name.
-	 * The pointer is valid until the texture source is
-	 * destructed.
-	 * Should be called from the main thread.
-	 */
-	virtual Palette* getPalette(const std::string &name) = 0;
-	virtual bool isKnownSourceImage(const std::string &name)=0;
-	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
-	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
-	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)=0;
-};
-
-class IWritableTextureSource : public ITextureSource
-{
-public:
-	IWritableTextureSource() = default;
-
-	virtual ~IWritableTextureSource() = default;
-
-	virtual u32 getTextureId(const std::string &name)=0;
-	virtual std::string getTextureName(u32 id)=0;
-	virtual video::ITexture* getTexture(u32 id)=0;
-	virtual video::ITexture* getTexture(
-			const std::string &name, u32 *id = nullptr)=0;
-	virtual bool isKnownSourceImage(const std::string &name)=0;
-
-	virtual void processQueue()=0;
-	virtual void insertSourceImage(const std::string &name, video::IImage *img)=0;
-	virtual void rebuildImagesAndTextures()=0;
-	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
-	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
-	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)=0;
-};
-
-IWritableTextureSource *createTextureSource();
-
-video::IImage *Align2Npot2(video::IImage *image, video::IVideoDriver *driver);
 
 enum MaterialType{
 	TILE_MATERIAL_BASIC,
@@ -318,5 +209,3 @@ struct TileSpec
 	//! The first is base texture, the second is overlay.
 	TileLayer layers[MAX_TILE_LAYERS];
 };
-
-std::vector<std::string> getTextureDirs();

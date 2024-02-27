@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/mapblock_mesh.h"
 #include "client/mesh.h"
 #include "client/wieldmesh.h"
-#include "client/tile.h"
 #include "client/client.h"
 #endif
 #include "log.h"

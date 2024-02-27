@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiHyperText.h"
 #include "guiScrollBar.h"
 #include "client/fontengine.h"
-#include "client/tile.h"
 #include "IVideoDriver.h"
 #include "client/client.h"
 #include "client/renderingengine.h"

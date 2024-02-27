@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/keycode.h"
 #include "settings.h"
 #include "porting.h"
-#include "client/tile.h"
+#include "client/texturesource.h"
 #include "client/fontengine.h"
 #include "log.h"
 #include "gettext.h"

@@ -39,7 +39,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IAnimatedMeshSceneNode.h>
 #include "client/renderingengine.h"
 #include "log.h"
-#include "client/tile.h" // ITextureSource
 #include "client/hud.h" // drawItemStack
 #include "filesys.h"
 #include "gettime.h"

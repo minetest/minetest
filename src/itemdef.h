@@ -35,7 +35,7 @@ class Client;
 struct ToolCapabilities;
 struct PointedThing;
 #ifndef SERVER
-#include "client/tile.h"
+#include "client/texturesource.h"
 struct ItemMesh;
 struct ItemStack;
 #endif
