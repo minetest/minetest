@@ -396,8 +396,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 			// Check if there is space for sneak glitch
 			v3f pos(position.X, position.Y + y_diff * dtime * 22.0f + BS * 0.01f, position.Z);
 			if (!collisionCheckIntersection(env, m_client, m_collisionbox, pos)) {
-				position.Y = pos.Y;
-				position.Y = std::min(position.Y, bmax.Y);
+				position.Y = std::min(pos.Y, bmax.Y);
 				m_speed.Y = 0.0f;
 			}
 		}
