@@ -21,7 +21,6 @@ params = {"recursive": False,
 	"break-long-lines": False,
 	"print-source": False,
 	"truncate-unused": False,
-	"propagate-comment": False,
 }
 # Available CLI options
 options = {"recursive": ['--recursive', '-r'],
@@ -31,7 +30,6 @@ options = {"recursive": ['--recursive', '-r'],
 	"break-long-lines": ['--break-long-lines', '-b'],
 	"print-source": ['--print-source', '-p'],
 	"truncate-unused": ['--truncate-unused', '-t'],
-	"propagate-comment": ['--propagate-comment', '-c'],
 }
 
 # Strings longer than this will have extra space added between
@@ -86,8 +84,6 @@ DESCRIPTION
 		add output information
 	{', '.join(options["truncate-unused"])}
 		delete unused strings from files
-	{', '.join(options["propagate-comment"])}
-		propagate comments from the template file into the translation files
 ''')
 
 def main():
@@ -444,9 +440,7 @@ def generate_template(folder, mod_name):
 
 	templ_file = os.path.join(folder, "locale/template.txt")
 	write_template(templ_file, dOut, mod_name)
-	new_template = None
-	if params["propagate-comment"]:
-		new_template = import_tr_file(templ_file) # re-import to get all new data
+	new_template = import_tr_file(templ_file) # re-import to get all new data
 	return (dOut, new_template)
 
 # Updates an existing .tr file, copying the old one to a ".old" file
