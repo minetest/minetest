@@ -146,24 +146,6 @@ public:
 	};
 };
 
-struct PlayerSettings
-{
-	bool free_move = false;
-	bool pitch_move = false;
-	bool fast_move = false;
-	bool continuous_forward = false;
-	bool always_fly_fast = false;
-	bool aux1_descends = false;
-	bool noclip = false;
-	bool autojump = false;
-
-	const std::string setting_names[8] = {
-		"free_move", "pitch_move", "fast_move", "continuous_forward", "always_fly_fast",
-		"aux1_descends", "noclip", "autojump"
-	};
-	void readGlobalSettings();
-};
-
 class Map;
 struct CollisionInfo;
 struct HudElement;
@@ -185,16 +167,13 @@ public:
 	{}
 
 	// in BS-space
-	v3f getSpeed() const
-	{
-		return m_speed;
-	}
-
-	// in BS-space
-	void setSpeed(v3f speed)
+	inline void setSpeed(v3f speed)
 	{
 		m_speed = speed;
 	}
+
+	// in BS-space
+	v3f getSpeed() const { return m_speed; }
 
 	const char *getName() const { return m_name; }
 
@@ -235,9 +214,8 @@ public:
 
 	PlayerControl control;
 	const PlayerControl& getPlayerControl() { return control; }
+
 	PlayerPhysicsOverride physics_override;
-	PlayerSettings &getPlayerSettings() { return m_player_settings; }
-	static void settingsChangedCallback(const std::string &name, void *data);
 
 	// Returns non-empty `selected` ItemStack. `hand` is a fallback, if specified
 	ItemStack &getWieldedItem(ItemStack *selected, ItemStack *hand) const;
@@ -273,10 +251,11 @@ protected:
 	PlayerFovSpec m_fov_override_spec = { 0.0f, false, 0.0f };
 
 	std::vector<HudElement *> hud;
+
 private:
 	// Protect some critical areas
 	// hud for example can be modified by EmergeThread
 	// and ServerThread
+	// FIXME: ^ this sounds like nonsense. should be checked.
 	std::mutex m_mutex;
-	PlayerSettings m_player_settings;
 };
