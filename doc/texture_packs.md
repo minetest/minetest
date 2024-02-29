@@ -1,11 +1,9 @@
-Minetest Texture Pack Reference
-===============================
+# Minetest Texture Pack Reference
 
 Texture packs allow you to replace textures provided by a mod with your own
 textures.
 
-Texture pack directory structure
---------------------------------
+## Texture Pack Directory Structure
 
     textures
     |-- Texture Pack
@@ -17,12 +15,14 @@ Texture pack directory structure
     |   |-- your_texture_2.png
     `-- Another Texture Pack
 
-### Texture Pack
+### `Texture Pack`
+
 This is a directory containing the entire contents of a single texture pack.
 It can be chosen more or less freely and will also become the name of the
-texture pack. The name must not be “base”.
+texture pack. The name must not be "base".
 
 ### `texture_pack.conf`
+
 A key-value config file with the following keys:
 
 * `name`: The texture pack name. Allows Minetest to determine the texture pack name even if
@@ -35,17 +35,20 @@ A key-value config file with the following keys:
   See [Translating content meta](lua_api.md#translating-content-meta).
 
 ### `description.txt`
+
 **Deprecated**, you should use texture_pack.conf instead.
 
 A file containing a short description of the texture pack to be shown in the
 content tab.
 
 ### `screenshot.png`
+
 A preview image showing an in-game screenshot of this texture pack; it will be
 shown in the texture packs tab. It should have an aspect ratio of 3:2 and a
 minimum size of 300×200 pixels.
 
 ### `your_texture_1.png`, `your_texture_2.png`, etc.
+
 Any other PNG files will be interpreted as textures. They must have the same
 names as the textures they are supposed to override. For example, to override
 the apple texture of Minetest Game, add a PNG file named `default_apple.png`.
@@ -54,24 +57,18 @@ The custom textures do not necessarily require the same size as their
 originals, but this might be required for a few particular textures. When
 unsure, just test your texture pack in-game.
 
-Texture modifiers
------------------
-
-See lua_api.md for texture modifiers
-
-Special textures
-----------------
+## Special Textures
 
 These texture names are hardcoded into the engine but can also be overwritten
 by texture packs. All existing fallback textures can be found in the directory
 `textures/base/pack`.
 
-### Gameplay textures
+### Gameplay Textures
 
 * `bubble.png`: the bubble texture when the player is drowning
-                (default size: 12×12)
+  (default size: 12×12)
 * `bubble_gone.png`: like `bubble.png`, but denotes lack of breath
-                     (transparent by default, same size as bubble.png)
+  (transparent by default, same size as bubble.png)
 
 * `crack_anylength.png`: node overlay texture when digging
 
@@ -88,9 +85,9 @@ by texture packs. All existing fallback textures can be found in the directory
 * `halo.png`: used for the node highlighting mesh
 
 * `heart.png`: used to display the health points of the player
-               (default size: 12×12)
+  (default size: 12×12)
 * `heart_gone.png`: like `heart.png`, but denotes lack of health points
-                    (transparent by default, same size as heart.png)
+  (transparent by default, same size as heart.png)
 
 * `minimap_mask_round.png`: round minimap mask, white gets replaced by the map
 * `minimap_mask_square.png`: mask used for the square minimap
@@ -121,10 +118,11 @@ by texture packs. All existing fallback textures can be found in the directory
 
 * `wieldhand.png`: texture of the wieldhand
 
-Note: The default textures of `player.png`, `player_back.png` and `wieldhand.png`
-are placeholders intended to be overwritten by the game.
+> [!NOTE]
+> The default textures of `player.png`, `player_back.png` and `wieldhand.png`
+> are placeholders intended to be overwritten by the game.
 
-### Mainmenu textures
+### Main Menu Textures
 
 * `menu_bg.png`: used as mainmenu background when the clouds are disabled
 * `menu_header.png`: header texture when no texture pack is selected
@@ -137,7 +135,7 @@ are placeholders intended to be overwritten by the game.
 * `server_flags_favorite.png`: icon for your favorite servers
 * `server_flags_pvp.png`: icon for enabled PvP on servers
 
-### Android textures
+### Android Textures
 
 * `drop_btn.png`
 * `fast_btn.png`
@@ -155,8 +153,7 @@ are placeholders intended to be overwritten by the game.
 * `rare_controls.png`
 * `exit_btn.png`
 
-Texture Overrides
------------------
+## Texture Overrides
 
 You can override the textures of nodes and items from a
 texture pack using texture overrides. To do this, create one or
@@ -164,23 +161,23 @@ more files in a texture pack called override.txt
 
 Each line in an override.txt file is a rule. It consists of
 
-	itemname target texture
+    itemname target texture
 
 For example,
 
-	default:dirt_with_grass sides default_stone.png
+    default:dirt_with_grass sides default_stone.png
 
 or
 
-	default:sword_steel inventory my_steel_sword.png
+    default:sword_steel inventory my_steel_sword.png
 
 You can list multiple targets on one line as a comma-separated list:
 
-	default:tree top,bottom my_special_tree.png
+    default:tree top,bottom my_special_tree.png
 
 You can use texture modifiers, as usual:
 
-	default:dirt_with_grass sides default_stone.png^[brighten
+    default:dirt_with_grass sides default_stone.png^[brighten
 
 Finally, if a line is empty or starts with '#' it will be considered
 a comment and not read as a rule. You can use this to better organize
@@ -214,7 +211,7 @@ and 'wield'.
 ¹ : `N` is an integer [0,255]. Sets align_style = "world" and scale = N on the tile,
      refer to lua_api.md for details.
 
-### Using the special targets
+### Using the Special Targets
 
 The special* targets only apply to specific drawtypes:
 
@@ -224,8 +221,7 @@ The special* targets only apply to specific drawtypes:
 * `glasslike_framed_optional`: Same as `glasslike_framed`
 * `plantlike_rooted`: special1 sets the plant's texture
 
-Designing leaves textures for the leaves rendering options
-----------------------------------------------------------
+## Designing Leaves Textures for the Leaves Rendering Options
 
 Minetest has three modes for rendering leaves nodes if the node has the
 `allfaces_optional` drawtype.

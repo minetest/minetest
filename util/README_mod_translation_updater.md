@@ -1,26 +1,27 @@
-# `mod_translation_updater.py`—Minetest Mod Translation Updater
+# `mod_translation_updater.py` — Minetest Mod Translation Updater
 
 This Python script is intended for use with localized Minetest mods, i.e., mods that use
 `*.tr` and contain translatable strings of the form `S("This string can be translated")`.
 It extracts the strings from the mod's source code and updates the localization files
 accordingly. It can also be used to update the `*.tr` files in Minetest's `builtin` component.
 
-## Preparing your source code
+## Preparing Your Source Code
 
 This script makes assumptions about your source code. Before it is usable, you first have
 to prepare your source code accordingly.
 
-### Choosing the textdomain name
+### Choosing the `textdomain` Name
 
 It is recommended to set the textdomain name (for `minetest.get_translator`) to be identical
 of the mod name as the script will automatically detect it. If the textdomain name differs,
 you may have to manually change the `# textdomain:` line of newly generated files.
 
-**Note:** In each `*.tr` file, there **must** be only one textdomain. Multiple textdomains in
-the same file are not supported by this script and any additional textdomain line will be
-removed.
+> [!NOTE]
+> In each `*.tr` file, there **must** be only one textdomain. Multiple textdomains in
+> the same file are not supported by this script and any additional textdomain line will be
+> removed.
 
-### Defining the helper functions
+### Defining the Helper Functions
 
 In any source code file with translatable strings, you have to manually define helper
 functions at the top with something like `local S = minetest.get_translator("<textdomain>")`.
@@ -29,25 +30,27 @@ Optionally, you can also define additional helper functions `FS`, `NS` and `NFS`
 Here is the list of all recognized function names. All functions return a string.
 
 * `S`: Returns translation of input. See Minetest's `lua_api.md`. You should always have at
-       least this function defined.
+  least this function defined.
 * `NS`: Returns the input. Useful to make a string visible to the script without actually
-        translating it here.
+  translating it here.
 * `FS`: Same as `S`, but returns a formspec-escaped version of the translation of the input.
-        Supported for convenience.
+  Supported for convenience.
 * `NFS`: Returns a formspec-escaped version of the input, but not translated.
-         Supported for convenience.
+  Supported for convenience.
 
 Here is the boilerplate code you have to add at the top of your source code file:
 
-    local S = minetest.get_translator("<textdomain>")
-    local NS = function(s) return s end
-    local FS = function(...) return minetest.formspec_escape(S(...)) end
-    local NFS = function(s) return minetest.formspec_escape(s) end
+```lua
+local S = minetest.get_translator("<textdomain>")
+local NS = function(s) return s end
+local FS = function(...) return minetest.formspec_escape(S(...)) end
+local NFS = function(s) return minetest.formspec_escape(s) end
+```
 
 Replace `<textdomain>` above and optionally delete `NS`, `FS` and/or `NFS` if you don't need
 them.
 
-### Preparing the strings
+### Preparing the Strings
 
 This script can detect translatable strings of the notations listed below.
 Additional function arguments followed after a literal string are ignored.
@@ -67,35 +70,41 @@ Undetectable notations:
   Use placeholders (`@1`, ...) for variable text.
 * Any literal string concatenation using `[[...]]`
 
-### A minimal example
+### A Minimal Example
 
 This minimal code example sends "Hello world!" to all players, but translated according to
 each player's language:
 
-    local S = minetest.get_translator("example")
-    minetest.chat_send_all(S("Hello world!"))
+```lua
+local S = minetest.get_translator("example")
+minetest.chat_send_all(S("Hello world!"))
+```
 
-### How to use `NS`
+### How to Use `NS`
 
 The reason why `NS` exists is for cases like this: Sometimes, you want to define a list of
 strings to they can be later output in a function. Like so:
 
-    local fruit = { "Apple", "Orange", "Pear" }
-    local function return_fruit(fruit_id)
-       return fruit[fruit_id]
-    end
+```lua
+local fruit = {"Apple", "Orange", "Pear"}
+local function return_fruit(fruit_id)
+   return fruit[fruit_id]
+end
+```
 
 If you want to translate the fruit names when `return_fruit` is run, but have the
 *untranslated* fruit names in the `fruit` table stored, this is where `NS` will help.
 It will show the script the string without Minetest translating it. The script could be made
 translatable like this:
 
-    local fruit = { NS("Apple"), NS("Orange"), NS("Pear") }
-    local function return_fruit(fruit_id)
-       return S(fruit[fruit_id])
-    end
+```lua
+local fruit = {NS("Apple"), NS("Orange"), NS("Pear")}
+local function return_fruit(fruit_id)
+   return S(fruit[fruit_id])
+end
+```
 
-## How to run the script
+## How to Run the Script
 
 First, change the working directory to the directory of the mod you want the files to be
 updated. From this directory, run the script.
@@ -121,21 +130,22 @@ It has the following command line options:
     --verbose, -v: add output information
     --truncate-unused, -t: delete unused strings from files
 
-## Script output
+## Script Output
 
 This section explains how the output of this script works, roughly. This script aims to make
 the output more or less stable, i.e. given identical source files and arguments, the script
 should produce the same output.
 
-### Textdomain
+### `textdomain`
 
 The script will add (if not already present) a `# textdomain: <modname>` at the top, where
 `<modname>` is identical to the mod directory name. If a `# textdomain` already exists, it
 will be moved to the top, with the textdomain name being left intact (even if it differs
 from the mod name).
 
-**Note:** If there are multiple `# textdomain:` lines in the file, all of them except the
-first one will be deleted. This script only supports one textdomain per `*.tr` file.
+> [!NOTE]
+> If there are multiple `# textdomain:` lines in the file, all of them except the
+> first one will be deleted. This script only supports one textdomain per `*.tr` file.
 
 ### Strings
 
@@ -176,7 +186,7 @@ files, associating them with the line that follows them. So for example:
 
 There are also a couple of special comments that this script gives special treatment to.
 
-#### Source file comments
+#### Source File Comments
 
 If `--print-source` or `-p` is provided as option, the script will insert comments to show
 from which file or files each string has come from.
@@ -201,7 +211,7 @@ If the print source option is not provided, these comments will disappear.
 Note that all comments of the form `##[something]##` will be treated as "source file" comments
 so they may be moved, changed or removed by the script at will.
 
-#### "not used anymore" section
+#### `not used anymore` Section
 
 By default, the exact comment `##### not used anymore #####` will be automatically added to
 mark the beginning of a section where old/unused strings will go. Leave the exact wording of

@@ -10,8 +10,8 @@ See the [releases page](https://github.com/minetest/minetest/releases).
 We ask that you report vulnerabilities privately, by contacting a core developer,
 to give us time to fix them. You can do that by emailing one of the following addresses:
 
-* celeron55@gmail.com
-* rubenwardy@minetest.net
+* <celeron55@gmail.com>
+* <rubenwardy@minetest.net>
 
 Depending on severity, we will either create a private issue for the vulnerability
 and release a patch version of Minetest, or give you permission to file the issue publicly.

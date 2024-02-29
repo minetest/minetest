@@ -9,7 +9,7 @@ Before installing them onto a device they however need to be signed.
 This requires an installation of the Android SDK and `adb`.
 ```bash
 .../android-sdk/build-tools/30.0.3/apksigner sign --ks ~/.android/debug.keystore \
-	app-arm64-v8a-release-unsigned.apk
+    app-arm64-v8a-release-unsigned.apk
 # Enter 'android' (without quotes) when asked for a password
 ```
 
