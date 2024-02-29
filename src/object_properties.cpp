@@ -32,7 +32,7 @@ ObjectProperties::ObjectProperties()
 	colors.emplace_back(255,255,255,255);
 }
 
-std::string ObjectProperties::dump()
+std::string ObjectProperties::dump() const
 {
 	std::ostringstream os(std::ios::binary);
 	os << "hp_max=" << hp_max;
