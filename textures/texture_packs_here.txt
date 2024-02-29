@@ -1,1 +1,1 @@
-Put your texture pack folders in this folder. Textures in the "server" pack will be used by the server.
+Put your texture pack folders in this folder. The texture pack will be used by the game for your world. Textures in the "server" pack will be used by the server.
