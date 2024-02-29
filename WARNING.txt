@@ -2,5 +2,10 @@ Copyright (C) 2010-2024 Perttu Ahola celeron55@gmail.com and contributors (see s
 
 YOU ARE RESPONSIBLE FOR ANY LOSS OR DAMAGE.
 MINETEST is a free open-source voxel game engine with easy modding and game creation.
-It is licensed under the LPGL VERSION 3.
-IT CAN BE OBATINED AT: https://www.gnu.org/licenses/lgpl-3.0.html
+It is licensed under the LPGL VERSION 2.1.
+
+YOU ARE THE OWNERS OF YOUR MODS, GAMES, TEXTURE PACKS, CONTENTS, AND ETC.
+
+HAVE FUN AND DONT FORGET TO USE OTHER PEOPLES CONTENT RESPECTFULLY AND ALWAYS CREDIT THE ORGINAL AUTHORS!
+
+HAVE FUN!
