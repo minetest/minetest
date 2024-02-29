@@ -130,7 +130,7 @@ void               read_object_properties    (lua_State *L, int index,
                                               IItemDefManager *idef);
 
 void               push_object_properties    (lua_State *L,
-                                              ObjectProperties *prop);
+                                              const ObjectProperties *prop);
 
 void               push_inventory_list       (lua_State *L,
                                               const InventoryList &invlist);

@@ -1789,7 +1789,7 @@ void Server::SendHUDSetFlags(session_t peer_id, u32 flags, u32 mask)
 	Send(&pkt);
 }
 
-void Server::SendHUDSetParam(session_t peer_id, u16 param, const std::string &value)
+void Server::SendHUDSetParam(session_t peer_id, u16 param, std::string_view value)
 {
 	NetworkPacket pkt(TOCLIENT_HUD_SET_PARAM, 0, peer_id);
 	pkt << param << value;
@@ -3433,6 +3433,9 @@ bool Server::hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount)
 	if (hotbar_itemcount <= 0 || hotbar_itemcount > HUD_HOTBAR_ITEMCOUNT_MAX)
 		return false;
 
+	if (player->getHotbarItemcount() == hotbar_itemcount)
+		return true;
+
 	player->setHotbarItemcount(hotbar_itemcount);
 	std::ostringstream os(std::ios::binary);
 	writeS32(os, hotbar_itemcount);
@@ -3445,6 +3448,9 @@ void Server::hudSetHotbarImage(RemotePlayer *player, const std::string &name)
 	if (!player)
 		return;
 
+	if (player->getHotbarImage() == name)
+		return;
+
 	player->setHotbarImage(name);
 	SendHUDSetParam(player->getPeerId(), HUD_PARAM_HOTBAR_IMAGE, name);
 }
@@ -3452,6 +3458,9 @@ void Server::hudSetHotbarImage(RemotePlayer *player, const std::string &name)
 void Server::hudSetHotbarSelectedImage(RemotePlayer *player, const std::string &name)
 {
 	if (!player)
+		return;
+
+	if (player->getHotbarSelectedImage() == name)
 		return;
 
 	player->setHotbarSelectedImage(name);
@@ -3472,9 +3481,13 @@ void Server::setLocalPlayerAnimations(RemotePlayer *player,
 	SendLocalPlayerAnimations(player->getPeerId(), animation_frames, frame_speed);
 }
 
-void Server::setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third, const v3f &third_front)
+void Server::setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third, v3f third_front)
 {
 	sanity_check(player);
+	if (std::tie(player->eye_offset_first, player->eye_offset_third,
+			player->eye_offset_third_front) == std::tie(first, third, third_front))
+		return; // no change
+
 	player->eye_offset_first = first;
 	player->eye_offset_third = third;
 	player->eye_offset_third_front = third_front;

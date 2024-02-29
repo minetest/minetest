@@ -343,7 +343,7 @@ public:
 
 	void setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
 			f32 frame_speed);
-	void setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third, const v3f &third_front);
+	void setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third, v3f third_front);
 
 	void setSky(RemotePlayer *player, const SkyboxParams &params);
 	void setSun(RemotePlayer *player, const SunParams &params);
@@ -496,7 +496,7 @@ private:
 	void SendHUDRemove(session_t peer_id, u32 id);
 	void SendHUDChange(session_t peer_id, u32 id, HudElementStat stat, void *value);
 	void SendHUDSetFlags(session_t peer_id, u32 flags, u32 mask);
-	void SendHUDSetParam(session_t peer_id, u16 param, const std::string &value);
+	void SendHUDSetParam(session_t peer_id, u16 param, std::string_view value);
 	void SendSetSky(session_t peer_id, const SkyboxParams &params);
 	void SendSetSun(session_t peer_id, const SunParams &params);
 	void SendSetMoon(session_t peer_id, const MoonParams &params);

@@ -134,12 +134,16 @@ void LuaEntitySAO::dispatchScriptDeactivate(bool removal)
 
 void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
-	if(!m_properties_sent)
-	{
+	if (!m_properties_sent) {
 		m_properties_sent = true;
 		std::string str = getPropertyPacket();
 		// create message and add to list
-		m_messages_out.emplace(getId(), true, str);
+		m_messages_out.emplace(getId(), true, std::move(str));
+	}
+
+	if (!m_texture_modifier_sent) {
+		m_texture_modifier_sent = true;
+		m_messages_out.emplace(getId(), true, generateSetTextureModCommand());
 	}
 
 	// If attached, check that our parent is still there. If it isn't, detach.
@@ -444,16 +448,16 @@ v3f LuaEntitySAO::getAcceleration()
 
 void LuaEntitySAO::setTextureMod(const std::string &mod)
 {
-	m_current_texture_modifier = mod;
-	// create message and add to list
-	m_messages_out.emplace(getId(), true, generateSetTextureModCommand());
+	if (m_texture_modifier == mod)
+		return;
+	m_texture_modifier = mod;
+	m_texture_modifier_sent = false;
 }
 
 std::string LuaEntitySAO::getTextureMod() const
 {
-	return m_current_texture_modifier;
+	return m_texture_modifier;
 }
-
 
 std::string LuaEntitySAO::generateSetTextureModCommand() const
 {
@@ -461,7 +465,7 @@ std::string LuaEntitySAO::generateSetTextureModCommand() const
 	// command
 	writeU8(os, AO_CMD_SET_TEXTURE_MOD);
 	// parameters
-	os << serializeString16(m_current_texture_modifier);
+	os << serializeString16(m_texture_modifier);
 	return os.str();
 }
 

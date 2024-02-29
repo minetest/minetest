@@ -601,8 +601,10 @@ ItemStack InventoryList::changeItem(u32 i, const ItemStack &newitem)
 		return newitem;
 
 	ItemStack olditem = m_items[i];
-	m_items[i] = newitem;
-	setModified();
+	if (olditem != newitem) {
+		m_items[i] = newitem;
+		setModified();
+	}
 	return olditem;
 }
 

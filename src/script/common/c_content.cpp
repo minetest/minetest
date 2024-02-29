@@ -412,9 +412,12 @@ void read_object_properties(lua_State *L, int index,
 		prop->automatic_face_movement_dir_offset = luaL_checknumber(L, -1);
 	} else if (lua_isboolean(L, -1)) {
 		prop->automatic_face_movement_dir = lua_toboolean(L, -1);
-		prop->automatic_face_movement_dir_offset = 0.0;
+		prop->automatic_face_movement_dir_offset = 0;
 	}
 	lua_pop(L, 1);
+	getfloatfield(L, -1, "automatic_face_movement_max_rotation_per_sec",
+		prop->automatic_face_movement_max_rotation_per_sec);
+
 	getboolfield(L, -1, "backface_culling", prop->backface_culling);
 	getintfield(L, -1, "glow", prop->glow);
 
@@ -438,12 +441,6 @@ void read_object_properties(lua_State *L, int index,
 	}
 	lua_pop(L, 1);
 
-	lua_getfield(L, -1, "automatic_face_movement_max_rotation_per_sec");
-	if (lua_isnumber(L, -1)) {
-		prop->automatic_face_movement_max_rotation_per_sec = luaL_checknumber(L, -1);
-	}
-	lua_pop(L, 1);
-
 	getstringfield(L, -1, "infotext", prop->infotext);
 	getboolfield(L, -1, "static_save", prop->static_save);
 
@@ -464,7 +461,7 @@ void read_object_properties(lua_State *L, int index,
 }
 
 /******************************************************************************/
-void push_object_properties(lua_State *L, ObjectProperties *prop)
+void push_object_properties(lua_State *L, const ObjectProperties *prop)
 {
 	lua_newtable(L);
 	lua_pushnumber(L, prop->hp_max);
@@ -525,6 +522,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	else
 		lua_pushboolean(L, false);
 	lua_setfield(L, -2, "automatic_face_movement_dir");
+	lua_pushnumber(L, prop->automatic_face_movement_max_rotation_per_sec);
+	lua_setfield(L, -2, "automatic_face_movement_max_rotation_per_sec");
 	lua_pushboolean(L, prop->backface_culling);
 	lua_setfield(L, -2, "backface_culling");
 	lua_pushnumber(L, prop->glow);
@@ -540,8 +539,6 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 		lua_pushboolean(L, false);
 		lua_setfield(L, -2, "nametag_bgcolor");
 	}
-	lua_pushnumber(L, prop->automatic_face_movement_max_rotation_per_sec);
-	lua_setfield(L, -2, "automatic_face_movement_max_rotation_per_sec");
 	lua_pushlstring(L, prop->infotext.c_str(), prop->infotext.size());
 	lua_setfield(L, -2, "infotext");
 	lua_pushboolean(L, prop->static_save);

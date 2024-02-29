@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <mutex>
 #include <functional>
+#include <tuple>
 
 #define PLAYERNAME_SIZE 20
 
@@ -42,7 +43,17 @@ struct PlayerFovSpec
 
 	// The time to be take to trasition to the new FOV value.
 	// Transition is instantaneous if omitted. Omitted by default.
-	f32 transition_time;
+	f32 transition_time = 0;
+
+	inline bool operator==(const PlayerFovSpec &other) const {
+		// transition_time is compared here since that could be relevant
+		// when aborting a running transition.
+		return fov == other.fov && is_multiplier == other.is_multiplier &&
+			transition_time == other.transition_time;
+	}
+	inline bool operator!=(const PlayerFovSpec &other) const {
+		return !(*this == other);
+	}
 };
 
 struct PlayerControl
@@ -115,6 +126,24 @@ struct PlayerPhysicsOverride
 	float liquid_sink = 1.f;
 	float acceleration_default = 1.f;
 	float acceleration_air = 1.f;
+
+private:
+	auto tie() const {
+		// Make sure to add new members to this list!
+		return std::tie(
+		speed, jump, gravity, sneak, sneak_glitch, new_move, speed_climb, speed_crouch,
+		liquid_fluidity, liquid_fluidity_smooth, liquid_sink, acceleration_default,
+		acceleration_air
+		);
+	}
+
+public:
+	bool operator==(const PlayerPhysicsOverride &other) const {
+		return tie() == other.tie();
+	};
+	bool operator!=(const PlayerPhysicsOverride &other) const {
+		return tie() != other.tie();
+	};
 };
 
 struct PlayerSettings
@@ -215,9 +244,12 @@ public:
 	void setWieldIndex(u16 index);
 	u16 getWieldIndex() const { return m_wield_index; }
 
-	void setFov(const PlayerFovSpec &spec)
+	bool setFov(const PlayerFovSpec &spec)
 	{
+		if (m_fov_override_spec == spec)
+			return false;
 		m_fov_override_spec = spec;
+		return true;
 	}
 
 	const PlayerFovSpec &getFov() const
