@@ -280,8 +280,6 @@ private:
 
 public:
 	static void InitializeEmerge(lua_State *L, int top);
-	static bool read_tree_def(lua_State *L, int idx,
-			const NodeDefManager *ndef, treegen::TreeDef &tree_def);
 };
 
 class LuaABM : public ActiveBlockModifier {
