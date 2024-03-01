@@ -267,12 +267,12 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		}
 	} // Menu-game loop
 
-	assert(g_menuclouds->getReferenceCount() == 1);
-	g_menuclouds->drop();
-	g_menuclouds = nullptr;
 	assert(g_menucloudsmgr->getReferenceCount() == 1);
 	g_menucloudsmgr->drop();
 	g_menucloudsmgr = nullptr;
+	assert(g_menuclouds->getReferenceCount() == 1);
+	g_menuclouds->drop();
+	g_menuclouds = nullptr;
 
 	return retval;
 }
