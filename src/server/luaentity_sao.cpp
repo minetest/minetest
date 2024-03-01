@@ -71,7 +71,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &d
 		break;
 	}
 	// create object
-	infostream << "LuaEntitySAO::create(name=\"" << name << "\" state is";
+	infostream << "LuaEntitySAO(name=\"" << name << "\" state is ";
 	if (state.empty())
 		infostream << "empty";
 	else
@@ -289,6 +289,8 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 
 void LuaEntitySAO::getStaticData(std::string *result) const
 {
+	assert(isStaticAllowed());
+
 	std::ostringstream os(std::ios::binary);
 	// version must be 1 to keep backwards-compatibility. See version2
 	writeU8(os, 1);
