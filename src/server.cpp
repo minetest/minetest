@@ -321,7 +321,6 @@ Server::Server(
 
 Server::~Server()
 {
-
 	// Send shutdown message
 	SendChatMessage(PEER_ID_INEXISTENT, ChatMessage(CHATMESSAGE_TYPE_ANNOUNCE,
 			L"*** Server shutting down"));
@@ -349,18 +348,31 @@ Server::~Server()
 
 	actionstream << "Server: Shutting down" << std::endl;
 
-	// Do this before stopping the server in case mapgen callbacks need to access
-	// server-controlled resources (like ModStorages). Also do them before
-	// shutdown callbacks since they may modify state that is finalized in a
+	// Stop server step from happening
+	if (m_thread) {
+		stop();
+		delete m_thread;
+	}
+
+	// Stop all emerge activity and finish off mapgen callbacks. Do this before
+	// shutdown callbacks since there may be state that is finalized in a
 	// callback.
+	// Note: The emerge manager is not deleted yet because further code can
+	//       still interact with map loading.
 	if (m_emerge)
 		m_emerge->stopThreads();
 
 	if (m_env) {
 		MutexAutoLock envlock(m_env_mutex);
 
-		// Execute script shutdown hooks
-		infostream << "Executing shutdown hooks" << std::endl;
+		try {
+			// Empty out the environment, this can also invoke callbacks.
+			m_env->deactivateBlocksAndObjects();
+		} catch (ModError &e) {
+			addShutdownError(e);
+		}
+
+		infostream << "Server: Executing shutdown hooks" << std::endl;
 		try {
 			m_script->on_shutdown();
 		} catch (ModError &e) {
@@ -369,12 +381,10 @@ Server::~Server()
 
 		infostream << "Server: Saving environment metadata" << std::endl;
 		m_env->saveMeta();
-	}
 
-	// Stop threads
-	if (m_thread) {
-		stop();
-		delete m_thread;
+		// Note that this also deletes and saves the map.
+		delete m_env;
+		m_env = nullptr;
 	}
 
 	// Write any changes before deletion.
@@ -388,21 +398,17 @@ Server::~Server()
 		}
 	}
 
-	// Delete things in the reverse order of creation
+	// Delete the rest in the reverse order of creation
+	delete m_game_settings;
 	delete m_emerge;
-	delete m_env;
-	delete m_rollback;
-	delete m_mod_storage_database;
 	delete m_banmanager;
+	delete m_mod_storage_database;
+	delete m_startup_server_map; // if available
+	delete m_script;
+	delete m_rollback;
 	delete m_itemdef;
 	delete m_nodedef;
 	delete m_craftdef;
-
-	// Deinitialize scripting
-	infostream << "Server: Deinitializing scripting" << std::endl;
-	delete m_script;
-	delete m_startup_server_map; // if available
-	delete m_game_settings;
 
 	while (!m_unsent_map_edit_queue.empty()) {
 		delete m_unsent_map_edit_queue.front();
@@ -582,7 +588,7 @@ void Server::start()
 
 void Server::stop()
 {
-	infostream<<"Server: Stopping and waiting threads"<<std::endl;
+	infostream<<"Server: Stopping and waiting for threads"<<std::endl;
 
 	// Stop threads (set run=false first so both start stopping)
 	m_thread->stop();
