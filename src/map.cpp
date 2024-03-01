@@ -1328,8 +1328,8 @@ ServerMap::~ServerMap()
 	}
 	catch(std::exception &e)
 	{
-		infostream<<"ServerMap: Failed to save map to "<<m_savedir
-				<<", exception: "<<e.what()<<std::endl;
+		errorstream << "ServerMap: Failed to save map to " << m_savedir
+				 << ", exception: " << e.what() << std::endl;
 	}
 
 	/*
