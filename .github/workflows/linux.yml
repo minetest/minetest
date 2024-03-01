@@ -108,7 +108,7 @@ jobs:
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-14 gdb
+          install_linux_deps clang-14 lldb
 
       - name: Build
         run: |
