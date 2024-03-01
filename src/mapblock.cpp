@@ -94,7 +94,7 @@ bool MapBlock::onObjectsActivation()
 
 	const auto count = m_static_objects.getStoredSize();
 	verbosestream << "MapBlock::onObjectsActivation(): "
-			<< "activating " << count << "objects in block " << getPos()
+			<< "activating " << count << " objects in block " << getPos()
 			<< std::endl;
 
 	if (count > g_settings->getU16("max_objects_per_block")) {

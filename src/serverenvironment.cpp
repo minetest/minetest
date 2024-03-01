@@ -1251,12 +1251,11 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 		// Delete static object if block is loaded
 		deleteStaticFromBlock(obj, id, MOD_REASON_CLEAR_ALL_OBJECTS, true);
+		obj->markForRemoval();
 
 		// If known by some client, don't delete immediately
-		if (obj->m_known_by_count > 0) {
-			obj->markForRemoval();
+		if (obj->m_known_by_count > 0)
 			return false;
-		}
 
 		processActiveObjectRemove(obj);
 
@@ -1894,6 +1893,12 @@ u16 ServerEnvironment::addActiveObjectRaw(std::unique_ptr<ServerActiveObject> ob
 		return 0;
 	}
 
+	// Register reference in scripting api (must be done before post-init)
+	m_script->addObjectReference(object);
+	// Post-initialize object
+	// Note that this can change the value of isStaticAllowed() in case of LuaEntitySAO
+	object->addedToEnvironment(dtime_s);
+
 	// Add static data to block
 	if (object->isStaticAllowed()) {
 		// Add static object to active static list of the block
@@ -1916,15 +1921,14 @@ u16 ServerEnvironment::addActiveObjectRaw(std::unique_ptr<ServerActiveObject> ob
 				<< "could not emerge block " << p << " for storing id="
 				<< object->getId() << " statically" << std::endl;
 			// clean in case of error
+			object->markForRemoval();
+			processActiveObjectRemove(object);
 			m_ao_manager.removeObject(object->getId());
 			return 0;
 		}
 	}
 
-	// Register reference in scripting api (must be done before post-init)
-	m_script->addObjectReference(object);
-	// Post-initialize object
-	object->addedToEnvironment(dtime_s);
+	assert(object->m_static_exists == object->isStaticAllowed());
 
 	return object->getId();
 }
@@ -1937,13 +1941,6 @@ void ServerEnvironment::removeRemovedObjects()
 	ScopeProfiler sp(g_profiler, "ServerEnvironment::removeRemovedObjects()", SPT_AVG);
 
 	auto clear_cb = [this](ServerActiveObject *obj, u16 id) {
-		// This shouldn't happen but check it
-		if (!obj) {
-			errorstream << "ServerEnvironment::removeRemovedObjects(): "
-					<< "NULL object found. id=" << id << std::endl;
-			return true;
-		}
-
 		/*
 			We will handle objects marked for removal or deactivation
 		*/
@@ -2280,6 +2277,11 @@ bool ServerEnvironment::saveStaticToBlock(
 
 void ServerEnvironment::processActiveObjectRemove(ServerActiveObject *obj)
 {
+	// markForRemoval or markForDeactivation should have been called before
+	// Not because it's strictly necessary but because the Lua callback is
+	// bound to that.
+	assert(obj->isGone());
+
 	// Tell the object about removal
 	obj->removingFromEnvironment();
 	// Deregister in scripting api
