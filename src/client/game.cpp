@@ -4272,14 +4272,6 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		runData.damage_flash -= 384.0f * dtime;
 	}
 
-	/*
-		==================== End scene ====================
-	*/
-
-	driver->endScene();
-
-	stats->drawtime = tt_draw.stop(true);
-	g_profiler->graphAdd("Draw scene [us]", stats->drawtime);
 	g_profiler->avg("Game::updateFrame(): update frame [ms]", tt_update.stop(true));
 }
 

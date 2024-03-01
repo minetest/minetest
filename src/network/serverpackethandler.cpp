@@ -919,8 +919,8 @@ static inline void getWieldedItem(const PlayerSAO *playersao, std::optional<Item
 	playersao->getWieldedItem(&(*ret));
 }
 
-static inline bool getOffhandWieldedItem(const PlayerSAO *playersao, Optional<ItemStack> &offhand,
-	Optional<ItemStack> &place, IItemDefManager *idef, const PointedThing &pointed)
+static inline bool getOffhandWieldedItem(const PlayerSAO *playersao, std::optional<ItemStack> &offhand,
+	std::optional<ItemStack> &place, IItemDefManager *idef, const PointedThing &pointed)
 {
 	offhand = ItemStack();
 	place = ItemStack();
@@ -1263,7 +1263,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				if (use_offhand
 						? (offhand_item.has_value() && playersao->setOffhandWieldedItem(*offhand_item))
 						: (main_item.has_value() && playersao->setWieldedItem(*main_item)))
-					SendInventory(playersao, true);
+					SendInventory(player, true);
 			}
 
 			pointed_object->rightClick(playersao);
@@ -1274,7 +1274,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			if (use_offhand
 					? (offhand_item.has_value() && playersao->setOffhandWieldedItem(*offhand_item))
 					: (main_item.has_value() && playersao->setWieldedItem(*main_item)))
-				SendInventory(playersao, true);
+				SendInventory(player, true);
 		}
 
 		if (pointed.type != POINTEDTHING_NODE)
