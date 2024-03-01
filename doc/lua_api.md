@@ -4519,10 +4519,10 @@ structures, such as trees, cave spikes, rocks, and so on.
 
 `lsystem`
 -----------
+
 Generates a L-system tree at the position where the decoration is placed.
 Uses the same L-system as `minetest.spawn_tree`, but is faster than using it manually.
 The `treedef` field in the decoration definition is used for the tree definition.
-
 
 
 
