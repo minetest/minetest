@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h" // For FATAL_ERROR
 #include <SColor.h>
 #include <json/json.h>
+#include "mapgen/treegen.h"
 
 struct EnumString es_TileAnimationType[] =
 {

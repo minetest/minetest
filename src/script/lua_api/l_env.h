@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_base.h"
 #include "serverenvironment.h"
 #include "raycast.h"
-#include "mapgen/treegen.h"
 
 // base class containing helpers
 class ModApiEnvBase : public ModApiBase {

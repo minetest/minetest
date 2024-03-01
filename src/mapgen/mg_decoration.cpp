@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include <algorithm>
 #include <vector>
+#include "mapgen/treegen.h"
 
 
 FlagDesc flagdesc_deco[] = {
@@ -486,5 +487,5 @@ ObjDef *DecoLSystem::clone() const
 
 size_t DecoLSystem::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 {
-	return treegen::make_ltree(*vm, p, m_ndef, tree_def);
+	return treegen::make_ltree(*vm, p, m_ndef, *tree_def);
 }

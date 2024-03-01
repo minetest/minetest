@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "objdef.h"
 #include "noise.h"
 #include "nodedef.h"
-#include "mapgen/treegen.h"
 
 typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
 
@@ -32,6 +31,7 @@ class Mapgen;
 class MMVManip;
 class PcgRandom;
 class Schematic;
+namespace treegen { struct TreeDef; }
 
 enum DecorationType {
 	DECO_SIMPLE,
@@ -119,7 +119,8 @@ public:
 
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling);
 
-	treegen::TreeDef tree_def;
+	// In case it gets cloned it uses the same tree def.
+	std::shared_ptr<treegen::TreeDef> tree_def;
 };
 
 

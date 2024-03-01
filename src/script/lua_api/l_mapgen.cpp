@@ -1314,7 +1314,7 @@ bool read_deco_schematic(lua_State *L, SchematicManager *schemmgr, DecoSchematic
 bool read_deco_lsystem(lua_State *L, const NodeDefManager *ndef, DecoLSystem *deco)
 {
 	lua_getfield(L, 1, "treedef");
-	bool has_def = read_tree_def(L, -1, ndef, deco->tree_def);
+	bool has_def = read_tree_def(L, -1, ndef, *(deco->tree_def));
 	lua_pop(L, 1);
 
 	return has_def;
