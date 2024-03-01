@@ -479,8 +479,6 @@ ObjDef *DecoLSystem::clone() const
 	auto def = new DecoLSystem();
 	Decoration::cloneTo(def);
 
-	def->ndef = ndef;
-
 	def->tree_def = tree_def;
 	return def;
 }
@@ -488,5 +486,5 @@ ObjDef *DecoLSystem::clone() const
 
 size_t DecoLSystem::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 {
-	return treegen::make_ltree(*vm, p, ndef, tree_def);
+	return treegen::make_ltree(*vm, p, m_ndef, tree_def);
 }

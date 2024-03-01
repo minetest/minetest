@@ -119,7 +119,6 @@ public:
 
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling);
 
-	const NodeDefManager *ndef;
 	treegen::TreeDef tree_def;
 };
 
