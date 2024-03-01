@@ -177,6 +177,7 @@ int LuaRaycast::create_object(lua_State *L)
 
 	bool objects = true;
 	bool liquids = false;
+	std::optional<Pointabilities> pointabilities = std::nullopt;
 
 	v3f pos1 = checkFloatPos(L, 1);
 	v3f pos2 = checkFloatPos(L, 2);
@@ -186,9 +187,12 @@ int LuaRaycast::create_object(lua_State *L)
 	if (lua_isboolean(L, 4)) {
 		liquids = readParam<bool>(L, 4);
 	}
+	if (lua_istable(L, 5)) {
+		pointabilities = read_pointabilities(L, 5);
+	}
 
 	LuaRaycast *o = new LuaRaycast(core::line3d<f32>(pos1, pos2),
-		objects, liquids, std::nullopt);
+		objects, liquids, pointabilities);
 
 	*(void **) (lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);

@@ -182,6 +182,7 @@ dofile(modpath .. "/get_version.lua")
 dofile(modpath .. "/itemstack_equals.lua")
 dofile(modpath .. "/content_ids.lua")
 dofile(modpath .. "/metadata.lua")
+dofile(modpath .. "/raycast.lua")
 
 --------------
 

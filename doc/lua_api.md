@@ -6202,13 +6202,16 @@ Environment access
     * Returns the position of the blocking node when `false`
     * `pos1`: First position
     * `pos2`: Second position
-* `minetest.raycast(pos1, pos2, objects, liquids)`: returns `Raycast`
+* `minetest.raycast(pos1, pos2, objects, liquids, pointabilities)`: returns `Raycast`
     * Creates a `Raycast` object.
     * `pos1`: start of the ray
     * `pos2`: end of the ray
     * `objects`: if false, only nodes will be returned. Default is `true`.
     * `liquids`: if false, liquid nodes (`liquidtype ~= "none"`) won't be
                  returned. Default is `false`.
+    * `pointabilities`: Allows overriding the `pointable` property of
+      nodes and objects. Uses the same format as the `pointabilities` property
+      of item definitions. Default is `nil`.
 * `minetest.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)`
     * returns table containing path that can be walked on
     * returns a table of 3D points representing a path from `pos1` to `pos2` or
@@ -8932,16 +8935,16 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     -- even those for which `pointable = false`
 
     pointabilities = {
-		nodes = {
-			["default:stone"] = "blocking",
-			["group:leaves"] = false,
-		},
-		objects = {
-			["modname:entityname"] = true,
-			["group:ghosty"] = true, -- (an armor group)
-		}
+        nodes = {
+            ["default:stone"] = "blocking",
+            ["group:leaves"] = false,
+        },
+        objects = {
+            ["modname:entityname"] = true,
+            ["group:ghosty"] = true, -- (an armor group)
+        },
     },
-    -- Contains lists to override the `pointable` property of pointed nodes and objects.
+    -- Contains lists to override the `pointable` property of nodes and objects.
     -- The index can be a node/entity name or a group with the prefix `"group:"`.
     -- (For objects `armor_groups` are used and for players the entity name is irrelevant.)
     -- If multiple fields fit, the following priority order is applied:
