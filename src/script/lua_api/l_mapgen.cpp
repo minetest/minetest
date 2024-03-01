@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_mapgen.h"
 #include "lua_api/l_internal.h"
 #include "lua_api/l_vmanip.h"
-#include "lua_api/l_env.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "cpp_api/s_security.h"
@@ -34,10 +33,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen/mg_schematic.h"
 #include "mapgen/mapgen_v5.h"
 #include "mapgen/mapgen_v7.h"
+#include "mapgen/treegen.h"
 #include "filesys.h"
 #include "settings.h"
 #include "log.h"
-#include "mapgen/treegen.h"
 
 struct EnumString ModApiMapgen::es_BiomeTerrainType[] =
 {
