@@ -5360,6 +5360,8 @@ Utilities
       dynamic_add_media_startup = true,
       -- dynamic_add_media supports `filename` and `filedata` parameters (5.9.0)
       dynamic_add_media_filepath = true,
+      -- ABM supports field without_neighbors
+      abm_without_neighbors = true,
   }
   ```
 
@@ -8752,6 +8754,11 @@ Used by `minetest.register_abm`.
     -- Only apply `action` to nodes that have one of, or any
     -- combination of, these neighbors.
     -- If left out or empty, any neighbor will do.
+    -- `group:groupname` can also be used here.
+    
+    without_neighbors = {"default:lava_source", "default:lava_flowing"},
+    -- Only apply `action` to nodes that have no one of these neighbors.
+    -- If left out or empty, any no neighbor will prevent ABM call.
     -- `group:groupname` can also be used here.
 
     interval = 10.0,

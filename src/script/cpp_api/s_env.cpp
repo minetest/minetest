@@ -132,6 +132,23 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 		}
 		lua_pop(L, 1);
 
+		std::vector<std::string> without_neighbors;
+		lua_getfield(L, current_abm, "without_neighbors");
+		if (lua_istable(L, -1)) {
+			int table = lua_gettop(L);
+			lua_pushnil(L);
+			while (lua_next(L, table)) {
+				// key at index -2 and value at index -1
+				luaL_checktype(L, -1, LUA_TSTRING);
+				without_neighbors.emplace_back(readParam<std::string>(L, -1));
+				// removes value, keeps key for next iteration
+				lua_pop(L, 1);
+			}
+		} else if (lua_isstring(L, -1)) {
+			without_neighbors.emplace_back(readParam<std::string>(L, -1));
+		}
+		lua_pop(L, 1);
+
 		float trigger_interval = 10.0;
 		getfloatfield(L, current_abm, "interval", trigger_interval);
 
@@ -151,8 +168,9 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 		luaL_checktype(L, current_abm + 1, LUA_TFUNCTION);
 		lua_pop(L, 1);
 
-		LuaABM *abm = new LuaABM(L, id, trigger_contents, required_neighbors,
-			trigger_interval, trigger_chance, simple_catch_up, min_y, max_y);
+		LuaABM *abm = new LuaABM(L, id, trigger_contents,
+			required_neighbors, without_neighbors, trigger_interval, 
+			trigger_chance, simple_catch_up, min_y, max_y);
 
 		env->addActiveBlockModifier(abm);
 
