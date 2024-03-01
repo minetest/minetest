@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/pointedthing.h"
 
+class IItemDefManager;
+
 /*
 	PlayerSAO needs some internals exposed.
 */

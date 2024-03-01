@@ -373,13 +373,6 @@ void Camera::notifyFovChange()
 	}
 }
 
-// Returns the fractional part of x
-inline f32 my_modf(f32 x)
-{
-	float dummy;
-	return std::modf(x, &dummy);
-}
-
 void Camera::step(f32 dtime)
 {
 	for (auto node : m_wieldnodes)
@@ -390,14 +383,6 @@ void Camera::step(f32 dtime)
 		m_view_bobbing_fall -= 3 * dtime;
 		if(m_view_bobbing_fall <= 0)
 			m_view_bobbing_fall = -1; // Mark the effect as finished
-	}
-
-	bool was_under_zero = m_wield_change_timer < 0;
-	m_wield_change_timer = MYMIN(m_wield_change_timer + dtime, 0.125);
-
-	if (m_wield_change_timer >= 0 && was_under_zero) {
-		m_wieldnode->setItem(m_wield_item_next, m_client);
-		m_wieldnode->setNodeLightColor(m_player_light_color);
 	}
 
 	if (m_view_bobbing_state != 0)
@@ -434,26 +419,6 @@ void Camera::step(f32 dtime)
 					(was > 0.5f && m_view_bobbing_anim <= 0.5f));
 			if(step) {
 				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::VIEW_BOBBING_STEP));
-			}
-		}
-	}
-
-	if (m_digging_button != -1) {
-		f32 offset = dtime * 3.5f;
-		float m_digging_anim_was = m_digging_anim;
-		m_digging_anim += offset;
-		if (m_digging_anim >= 1)
-		{
-			m_digging_anim = 0;
-			m_digging_button = -1;
-		}
-		float lim = 0.15;
-		if(m_digging_anim_was < lim && m_digging_anim >= lim)
-		{
-			if (m_digging_button == 0) {
-				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_LEFT));
-			} else if(m_digging_button == 1) {
-				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_RIGHT));
 			}
 		}
 	}
