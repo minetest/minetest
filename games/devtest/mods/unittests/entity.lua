@@ -130,3 +130,26 @@ local function test_entity_attach(player, pos)
 	obj:remove()
 end
 unittests.register("test_entity_attach", test_entity_attach, {player=true, map=true})
+
+local function test_entity_cleared(_, pos)
+	log = {}
+
+	-- with binary in staticdata
+	local obj = core.add_entity(pos, "unittests:callbacks", "abc\000def")
+	check_log({"on_activate(7)"})
+
+	minetest.clear_objects({
+			mode = "soft",
+			callback = function (name, staticdata, params)
+					assert(params=="test")
+					return name == "unittests:callbacks"
+				end,
+			params = "test",
+		});
+
+	check_log({nil})
+
+	-- objectref must be invalid now
+	assert(obj:get_velocity() == nil)
+end
+unittests.register("test_entity_cleared", test_entity_cleared, {map=true})

@@ -216,6 +216,16 @@ enum ClearObjectsMode {
 		CLEAR_OBJECTS_MODE_QUICK,
 };
 
+// clearObject Callback
+typedef bool (*ClearObjectCallback)(const std::string &name, const std::string &staticdata, void *param);
+
+struct ClearObjectsConfig {
+	ClearObjectsMode mode;
+
+	ClearObjectCallback callback;
+	void *param;
+};
+
 class ServerEnvironment final : public Environment
 {
 public:
@@ -359,7 +369,7 @@ public:
 	}
 
 	// Clear objects, loading and going through every MapBlock
-	void clearObjects(ClearObjectsMode mode);
+	void clearObjects(ClearObjectsConfig &config);
 
 	// This makes stuff happen
 	void step(f32 dtime);

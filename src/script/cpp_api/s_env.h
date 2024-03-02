@@ -55,5 +55,8 @@ public:
 	// Determines whether there are any on_mapblocks_changed callbacks
 	bool has_on_mapblocks_changed();
 
+	// Called to determine if object should or should not be cleared by clearObjects
+	bool on_clear_object(const std::string &name, const std::string &staticdata, ScriptCallbackState *state);
+
 	void initializeEnvironment(ServerEnvironment *env);
 };

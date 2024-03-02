@@ -53,6 +53,7 @@ minetest.register_entity("testentities:mesh", {
 			"testnodes_mesh_stripes2.png"
 		},
 	},
+	prevent_soft_clearobjects = true,
 })
 
 minetest.register_entity("testentities:mesh_unshaded", {
