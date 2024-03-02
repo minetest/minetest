@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "translation.h"
 #include "log.h"
 #include "util/string.h"
+#include "gettext.h"
 #include <unordered_map>
 
 
@@ -27,6 +28,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Client translations
 static Translations client_translations;
 Translations *g_client_translations = &client_translations;
+
+std::string get_client_language_code() {
+	/*~ DO NOT TRANSLATE THIS LITERALLY!
+	This is a special string which needs to contain the translation's
+	language code (e.g. "de" for German). */
+	std::string lang = gettext("LANG_CODE");
+	if (lang == "LANG_CODE")
+		lang.clear();
+	return lang;
+}
 #endif
 
 
