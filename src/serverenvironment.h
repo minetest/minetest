@@ -281,15 +281,6 @@ public:
 	u16 addActiveObject(std::unique_ptr<ServerActiveObject> object);
 
 	/*
-		Add an active object as a static object to the corresponding
-		MapBlock.
-		Caller allocates memory, ServerEnvironment frees memory.
-		Return value: true if succeeded, false if failed.
-		(note:  not used, pending removal from engine)
-	*/
-	//bool addActiveObjectAsStatic(ServerActiveObject *object);
-
-	/*
 		Find out what new objects have been added to
 		inside a radius around a position
 	*/
@@ -428,7 +419,7 @@ private:
 		Returns 0 if not added and thus deleted.
 	*/
 	u16 addActiveObjectRaw(std::unique_ptr<ServerActiveObject> object,
-			bool set_changed, u32 dtime_s);
+			const StaticObject *from_static, u32 dtime_s);
 
 	/*
 		Remove all objects that satisfy (isGone() && m_known_by_count==0)
