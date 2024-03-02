@@ -4217,14 +4217,20 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 	// [] will create an entry
 	server_translations[lang_code] = base_server_translations;
 	auto *translations = &server_translations[lang_code];
-	translations->setPreferredLanguage(lang_code);
+	translations->setPreferredLanguages(lang_code);
 
-	std::string suffix = "." + lang_code + ".tr";
-	for (const auto &i : m_media) {
-		if (str_ends_with(i.first, suffix)) {
-			std::string data;
-			if (fs::ReadFile(i.second.path, data)) {
-				translations->loadTranslation(data);
+	if (wide_to_utf8(translations->getPreferredPrimaryLanguage()) != lang_code) {
+		// Load translation file for each language listed in lang_code
+		for (auto language: translations->getPreferredLanguages())
+			getTranslationLanguage(wide_to_utf8(language));
+	} else {
+		std::string suffix = "." + lang_code + ".tr";
+		for (const auto &i : m_media) {
+			if (str_ends_with(i.first, suffix)) {
+				std::string data;
+				if (fs::ReadFile(i.second.path, data)) {
+					translations->loadTranslation(data);
+				}
 			}
 		}
 	}
