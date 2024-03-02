@@ -42,8 +42,7 @@ std::string get_client_language_code() {
 
 #define INDEX(language, textdomain, s) (language + L"|" + (textdomain) + L"|" + (s))
 
-Translations::Translations(const std::wstring &language):
-	m_preferred_language(language),
+Translations::Translations():
 	m_translations(new std::unordered_map<std::wstring, std::wstring>)
 {}
 
@@ -53,12 +52,14 @@ void Translations::clear()
 }
 
 const std::wstring &Translations::getTranslation(
-		const std::wstring &language, const std::wstring &textdomain, const std::wstring &s)
+		const std::vector<std::wstring> &languages, const std::wstring &textdomain, const std::wstring &s) const
 {
-	std::wstring key = INDEX(language, textdomain, s);
-	auto it = m_translations->find(key);
-	if (it != m_translations->end())
-		return it->second;
+	for (const auto &language: languages) {
+		std::wstring key = INDEX(language, textdomain, s);
+		auto it = m_translations->find(key);
+		if (it != m_translations->end())
+			return it->second;
+	}
 	return s;
 }
 
