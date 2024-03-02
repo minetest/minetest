@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scripting_server.h"
 #include "server.h"
 #include "serverenvironment.h"
+#include "nodedef.h"
 
 LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &data)
 	: UnitSAO(env, pos)
@@ -134,6 +135,8 @@ void LuaEntitySAO::dispatchScriptDeactivate(bool removal)
 
 void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
+	stepNodeDamage(dtime);
+
 	if(!m_properties_sent)
 	{
 		m_properties_sent = true;

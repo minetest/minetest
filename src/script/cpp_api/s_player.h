@@ -53,6 +53,7 @@ public:
 	void on_playerReceiveFields(ServerActiveObject *player,
 			const std::string &formname, const StringMap &fields);
 	void on_authplayer(const std::string &name, const std::string &ip, bool is_success);
+	void on_playerstep(ServerActiveObject *player, float dtime);
 
 	// Player inventory callbacks
 	// Return number of accepted items to be moved

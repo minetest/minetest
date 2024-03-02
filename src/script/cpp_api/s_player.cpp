@@ -248,6 +248,21 @@ void ScriptApiPlayer::on_authplayer(const std::string &name, const std::string &
 	runCallbacks(3, RUN_CALLBACKS_MODE_FIRST);
 }
 
+void ScriptApiPlayer::on_playerstep(ServerActiveObject *player, float dtime)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_playersteps
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_playersteps");
+
+	// Callback params
+	objectrefGetOrCreate(L, player);
+	lua_pushnumber(L, dtime);
+	// Call it
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+}
+
 void ScriptApiPlayer::pushMoveArguments(
 		const MoveAction &ma, int count,
 		ServerActiveObject *player)

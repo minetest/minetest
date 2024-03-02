@@ -27,6 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include "util/pointabilities.h"
 
+#define SAO_ENGINE_DROWNING 0x0001
+#define SAO_ENGINE_BREATHING 0x0002
+#define SAO_ENGINE_NODE_HURT 0x0004
+
 struct ObjectProperties
 {
 	u16 hp_max = 1;
@@ -67,6 +71,7 @@ struct ObjectProperties
 	bool use_texture_alpha = false;
 	bool shaded = true;
 	bool show_on_minimap = false;
+	u16 engine_mask = 0;
 
 	ObjectProperties();
 	std::string dump();

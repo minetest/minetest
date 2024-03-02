@@ -210,7 +210,6 @@ private:
 	// Timers
 	IntervalLimiter m_breathing_interval;
 	IntervalLimiter m_drowning_interval;
-	IntervalLimiter m_node_hurt_interval;
 
 	bool m_position_not_sent = false;
 
@@ -299,10 +298,7 @@ struct PlayerHPChangeReason
 
 	PlayerHPChangeReason(Type type) : type(type) {}
 
-	PlayerHPChangeReason(Type type, ServerActiveObject *object) :
-			type(type), object(object)
-	{
-	}
+	PlayerHPChangeReason(Type type, ServerActiveObject *object) : type(type), object(object) {}
 
 	PlayerHPChangeReason(Type type, std::string node, v3s16 node_pos) : type(type), node(node), node_pos(node_pos) {}
 };

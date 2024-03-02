@@ -81,6 +81,7 @@ std::string ObjectProperties::dump()
 	os << ", damage_texture_modifier=" << damage_texture_modifier;
 	os << ", shaded=" << shaded;
 	os << ", show_on_minimap=" << show_on_minimap;
+	os << ", engine_mask=0x" << std::hex << engine_mask;
 	return os.str();
 }
 
@@ -171,6 +172,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 		writeARGB8(os, nametag_bgcolor.value());
 
 	writeU8(os, rotate_selectionbox);
+
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
 }

@@ -56,6 +56,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_prop.makes_footstep_sound = true;
 	m_prop.stepheight = PLAYER_DEFAULT_STEPHEIGHT * BS;
 	m_prop.show_on_minimap = true;
+	m_prop.engine_mask = SAO_ENGINE_DROWNING|SAO_ENGINE_BREATHING|SAO_ENGINE_NODE_HURT;
 	m_hp = m_prop.hp_max;
 	m_breath = m_prop.breath_max;
 	// Disable zoom in survival mode using a value of 0
@@ -156,7 +157,10 @@ void PlayerSAO::getStaticData(std::string * result) const
 
 void PlayerSAO::step(float dtime, bool send_recommended)
 {
-	if (!isImmortal() && m_drowning_interval.step(dtime, 2.0f)) {
+	bool not_immortal = !isImmortal();
+
+	if (not_immortal && m_drowning_interval.step(dtime, 2.0f)
+		&& (m_prop.engine_mask&SAO_ENGINE_DROWNING)) {
 		// Get nose/mouth position, approximate with eye position
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNode(p);
@@ -174,7 +178,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if (m_breathing_interval.step(dtime, 0.5f) && !isImmortal()) {
+	if (not_immortal && m_breathing_interval.step(dtime, 0.5f)
+		&& (m_prop.engine_mask&SAO_ENGINE_BREATHING)) {
 		// Get nose/mouth position, approximate with eye position
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNode(p);
@@ -185,44 +190,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			setBreath(m_breath + 1);
 	}
 
-	if (!isImmortal() && m_node_hurt_interval.step(dtime, 1.0f)) {
-		u32 damage_per_second = 0;
-		std::string nodename;
-		v3s16 node_pos;
-		// Lowest and highest damage points are 0.1 within collisionbox
-		float dam_top = m_prop.collisionbox.MaxEdge.Y - 0.1f;
+	stepNodeDamage(dtime);
 
-		// Sequence of damage points, starting 0.1 above feet and progressing
-		// upwards in 1 node intervals, stopping below top damage point.
-		for (float dam_height = 0.1f; dam_height < dam_top; dam_height++) {
-			v3s16 p = floatToInt(m_base_position +
-				v3f(0.0f, dam_height * BS, 0.0f), BS);
-			MapNode n = m_env->getMap().getNode(p);
-			const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
-			if (c.damage_per_second > damage_per_second) {
-				damage_per_second = c.damage_per_second;
-				nodename = c.name;
-				node_pos = p;
-			}
-		}
-
-		// Top damage point
-		v3s16 ptop = floatToInt(m_base_position +
-			v3f(0.0f, dam_top * BS, 0.0f), BS);
-		MapNode ntop = m_env->getMap().getNode(ptop);
-		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(ntop);
-		if (c.damage_per_second > damage_per_second) {
-			damage_per_second = c.damage_per_second;
-			nodename = c.name;
-			node_pos = ptop;
-		}
-
-		if (damage_per_second != 0 && m_hp > 0) {
-			s32 newhp = (s32)m_hp - (s32)damage_per_second;
-			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE, nodename, node_pos);
-			setHP(newhp, reason);
-		}
-	}
+	m_env->getScriptIface()->on_playerstep(this, dtime);
 
 	if (!m_properties_sent) {
 		m_properties_sent = true;
