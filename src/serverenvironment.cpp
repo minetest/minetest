@@ -1716,7 +1716,7 @@ u16 ServerEnvironment::addActiveObject(std::unique_ptr<ServerActiveObject> objec
 {
 	assert(object);	// Pre-condition
 	m_added_objects++;
-	u16 id = addActiveObjectRaw(std::move(object), true, 0);
+	u16 id = addActiveObjectRaw(std::move(object), nullptr, 0);
 	return id;
 }
 
@@ -1886,7 +1886,7 @@ void ServerEnvironment::getSelectedActiveObjects(
 */
 
 u16 ServerEnvironment::addActiveObjectRaw(std::unique_ptr<ServerActiveObject> object_u,
-	bool set_changed, u32 dtime_s)
+	const StaticObject *from_static, u32 dtime_s)
 {
 	auto object = object_u.get();
 	if (!m_ao_manager.registerObject(std::move(object_u))) {
@@ -1899,9 +1899,29 @@ u16 ServerEnvironment::addActiveObjectRaw(std::unique_ptr<ServerActiveObject> ob
 	// Note that this can change the value of isStaticAllowed() in case of LuaEntitySAO
 	object->addedToEnvironment(dtime_s);
 
+	// Activate object
+	if (object->m_static_exists)
+	{
+		sanity_check(from_static);
+		/*
+		 * Note: Don't check isStaticAllowed() here. If an object has static data
+		 * when it shouldn't, we still need to activate it so the static data
+		 * can be properly removed.
+		 */
+		auto blockpos = object->m_static_block;
+		MapBlock *block = m_map->emergeBlock(blockpos);
+		if (block) {
+			block->m_static_objects.setActive(object->getId(), *from_static);
+		} else {
+			warningstream << "ServerEnvironment::addActiveObjectRaw(): "
+				<< "object was supposed to be in block " << blockpos
+				<< ", but this block disappeared." << std::endl;
+			object->m_static_exists = false;
+		}
+	}
 	// Add static data to block
-	if (object->isStaticAllowed()) {
-		// Add static object to active static list of the block
+	else if (object->isStaticAllowed())
+	{
 		v3f objectpos = object->getBasePosition();
 		StaticObject s_obj(object, objectpos);
 		// Add to the block where the object is located in
@@ -1912,9 +1932,8 @@ u16 ServerEnvironment::addActiveObjectRaw(std::unique_ptr<ServerActiveObject> ob
 			object->m_static_exists = true;
 			object->m_static_block = blockpos;
 
-			if(set_changed)
-				block->raiseModified(MOD_STATE_WRITE_NEEDED,
-					MOD_REASON_ADD_ACTIVE_OBJECT_RAW);
+			block->raiseModified(MOD_STATE_WRITE_NEEDED,
+				MOD_REASON_ADD_ACTIVE_OBJECT_RAW);
 		} else {
 			v3s16 p = floatToInt(objectpos, BS);
 			errorstream << "ServerEnvironment::addActiveObjectRaw(): "
@@ -1927,8 +1946,6 @@ u16 ServerEnvironment::addActiveObjectRaw(std::unique_ptr<ServerActiveObject> ob
 			return 0;
 		}
 	}
-
-	assert(object->m_static_exists == object->isStaticAllowed());
 
 	return object->getId();
 }
@@ -2051,18 +2068,26 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 		if (!obj) {
 			errorstream << "ServerEnvironment::activateObjects(): "
 				<< "failed to create active object from static object "
-				<< "in block " << (s_obj.pos / BS)
+				<< "in block " << block->getPos()
 				<< " type=" << (int)s_obj.type << " data:" << std::endl;
 			print_hexdump(verbosestream, s_obj.data);
 
 			new_stored.push_back(s_obj);
 			continue;
 		}
-		verbosestream << "ServerEnvironment::activateObjects(): "
-			<< "activated static object pos=" << (s_obj.pos / BS)
-			<< " type=" << (int)s_obj.type << std::endl;
+
+		obj->m_static_exists = true;
+		obj->m_static_block = block->getPos();
+
 		// This will also add the object to the active static list
-		addActiveObjectRaw(std::move(obj), false, dtime_s);
+		bool ok = addActiveObjectRaw(std::move(obj), &s_obj, dtime_s) != 0;
+		if (ok) {
+			verbosestream << "ServerEnvironment::activateObjects(): "
+				<< "activated static object pos=" << (s_obj.pos / BS)
+				<< " type=" << (int)s_obj.type << std::endl;
+		}
+
+		// callbacks could invalidate this block
 		if (block->isOrphan())
 			return;
 	}
@@ -2095,7 +2120,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 
 	If block wasn't generated (not in memory or on disk),
 */
-void ServerEnvironment::deactivateFarObjects(bool _force_delete)
+void ServerEnvironment::deactivateFarObjects(const bool _force_delete)
 {
 	auto cb_deactivate = [this, _force_delete](ServerActiveObject *obj, u16 id) {
 		// force_delete might be overridden per object
@@ -2117,7 +2142,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		// If object's static data is stored in a deactivated block and object
 		// is actually located in an active block, re-save to the block in
 		// which the object is actually located in.
-		if (!force_delete && obj->m_static_exists &&
+		if (!force_delete && obj->isStaticAllowed() && obj->m_static_exists &&
 		   !m_active_blocks.contains(obj->m_static_block) &&
 		   m_active_blocks.contains(blockpos_o)) {
 
@@ -2194,6 +2219,9 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 			u16 store_id = pending_delete ? id : 0;
 			if (!saveStaticToBlock(blockpos, store_id, obj, s_obj, reason))
 				force_delete = true;
+		} else {
+			// If the object has static data but shouldn't we need to get rid of it.
+			deleteStaticFromBlock(obj, id, MOD_REASON_STATIC_DATA_REMOVED, false);
 		}
 
 		// Regardless of what happens to the object at this point, deactivate it first.

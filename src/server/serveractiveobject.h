@@ -229,6 +229,10 @@ public:
 
 	/*
 		Whether the object's static data has been stored to a block
+
+		Note that `!isStaticAllowed() && m_static_exists` is a valid state
+		(though it usually doesn't persist long) and you need to be careful
+		about handling it.
 	*/
 	bool m_static_exists = false;
 	/*
