@@ -754,7 +754,7 @@ static void httpfetch_request_clear(u64 caller)
 	}
 }
 
-void httpfetch_sync(const HTTPFetchRequest &fetch_request,
+static void httpfetch_sync(const HTTPFetchRequest &fetch_request,
 		HTTPFetchResult &fetch_result)
 {
 	// Create ongoing fetch data and make a cURL handle
@@ -815,15 +815,6 @@ void httpfetch_async(const HTTPFetchRequest &fetch_request)
 
 static void httpfetch_request_clear(u64 caller)
 {
-}
-
-void httpfetch_sync(const HTTPFetchRequest &fetch_request,
-		HTTPFetchResult &fetch_result)
-{
-	errorstream << "httpfetch_sync: unable to fetch " << fetch_request.url
-			<< " because USE_CURL=0" << std::endl;
-
-	fetch_result = HTTPFetchResult(fetch_request); // sets succeeded = false etc.
 }
 
 bool httpfetch_sync_interruptible(const HTTPFetchRequest &fetch_request,
