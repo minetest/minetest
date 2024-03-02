@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Translations;
 #ifndef SERVER
 extern Translations *g_client_translations;
+std::string get_client_language_code();
 #endif
 
 class Translations

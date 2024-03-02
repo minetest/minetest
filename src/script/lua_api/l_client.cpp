@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "cpp_api/s_base.h"
 #include "gettext.h"
+#include "translation.h"
 #include "l_internal.h"
 #include "lua_api/l_nodemeta.h"
 #include "gui/mainmenumanager.h"
@@ -214,10 +215,7 @@ int ModApiClient::l_get_language(lua_State *L)
 #else
 	char *locale = setlocale(LC_MESSAGES, NULL);
 #endif
-	std::string lang = gettext("LANG_CODE");
-	if (lang == "LANG_CODE")
-		lang.clear();
-
+	std::string lang = get_client_language_code();
 	lua_pushstring(L, locale);
 	lua_pushstring(L, lang.c_str());
 	return 2;
