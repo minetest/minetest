@@ -4148,7 +4148,9 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 		return &it->second; // Already loaded
 
 	// [] will create an entry
+	server_translations[lang_code] = base_server_translations;
 	auto *translations = &server_translations[lang_code];
+	translations->setPreferredLanguage(lang_code);
 
 	std::string suffix = "." + lang_code + ".tr";
 	for (const auto &i : m_media) {

@@ -19,8 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "util/string.h"
 #include <unordered_map>
 #include <string>
+#include <memory>
 
 class Translations;
 #ifndef SERVER
@@ -31,11 +33,32 @@ std::string get_client_language_code();
 class Translations
 {
 public:
-	void loadTranslation(const std::string &data);
+	Translations(const std::wstring &language = L"");
+
+	void loadTranslation(const std::wstring &language, const std::string &data);
+	inline void loadTranslation(const std::string &data) {
+		loadTranslation(m_preferred_language, data);
+	}
 	void clear();
-	const std::wstring &getTranslation(const std::wstring &textdomain,
-		const std::wstring &s) const;
+
+	const std::wstring &getTranslation(const std::wstring &language,
+			const std::wstring &textdomain, const std::wstring &s) const;
+	inline const std::wstring &getTranslation(
+			const std::wstring &textdomain, const std::wstring &s) const {
+		return getTranslation(m_preferred_language, textdomain, s);
+	}
+
+	inline const std::wstring &getPreferredLanguage() const {
+		return m_preferred_language;
+	}
+	inline void setPreferredLanguage(const std::string &language) {
+		setPreferredLanguage(utf8_to_wide(language));
+	}
+	inline void setPreferredLanguage(const std::wstring &language) {
+		m_preferred_language = language;
+	}
 
 private:
-	std::unordered_map<std::wstring, std::wstring> m_translations;
+	std::wstring m_preferred_language;
+	std::shared_ptr<std::unordered_map<std::wstring, std::wstring>> m_translations;
 };

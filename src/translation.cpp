@@ -40,23 +40,29 @@ std::string get_client_language_code() {
 }
 #endif
 
+#define INDEX(language, textdomain, s) (language + L"|" + (textdomain) + L"|" + (s))
+
+Translations::Translations(const std::wstring &language):
+	m_preferred_language(language),
+	m_translations(new std::unordered_map<std::wstring, std::wstring>)
+{}
 
 void Translations::clear()
 {
-	m_translations.clear();
+	m_translations->clear();
 }
 
 const std::wstring &Translations::getTranslation(
-		const std::wstring &textdomain, const std::wstring &s) const
+		const std::wstring &language, const std::wstring &textdomain, const std::wstring &s)
 {
-	std::wstring key = textdomain + L"|" + s;
-	auto it = m_translations.find(key);
-	if (it != m_translations.end())
+	std::wstring key = INDEX(language, textdomain, s);
+	auto it = m_translations->find(key);
+	if (it != m_translations->end())
 		return it->second;
 	return s;
 }
 
-void Translations::loadTranslation(const std::string &data)
+void Translations::loadTranslation(const std::wstring &language, const std::string &data)
 {
 	std::istringstream is(data);
 	std::string textdomain_narrow;
@@ -158,9 +164,8 @@ void Translations::loadTranslation(const std::string &data)
 
 		std::wstring oword1 = word1.str(), oword2 = word2.str();
 		if (!oword2.empty()) {
-			std::wstring translation_index = textdomain + L"|";
-			translation_index.append(oword1);
-			m_translations.emplace(std::move(translation_index), std::move(oword2));
+			std::wstring translation_index = INDEX(language, textdomain, oword1);
+			m_translations->emplace(std::move(translation_index), std::move(oword2));
 		}
 	}
 }
