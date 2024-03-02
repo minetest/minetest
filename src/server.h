@@ -655,6 +655,7 @@ private:
 	std::unique_ptr<ServerModManager> m_modmgr;
 
 	std::unordered_map<std::string, Translations> server_translations;
+	Translations base_server_translations;
 
 	/*
 		Threads
