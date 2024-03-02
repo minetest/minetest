@@ -32,6 +32,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace treegen
 {
 
+void TreeDef::resolveNodeNames()
+{
+	sanity_check(m_ndef);
+
+	getIdFromNrBacklog(&trunknode.param0, "", CONTENT_IGNORE, false);
+	getIdFromNrBacklog(&leavesnode.param0, "", CONTENT_IGNORE, false);
+	if(leaves2_chance)
+		getIdFromNrBacklog(&leaves2node.param0, "", CONTENT_IGNORE, false);
+	if(fruit_chance)
+		getIdFromNrBacklog(&fruitnode.param0, "", CONTENT_IGNORE, false);
+}
+
 void make_tree(MMVManip &vmanip, v3s16 p0, bool is_apple_tree,
 	const NodeDefManager *ndef, s32 seed)
 {

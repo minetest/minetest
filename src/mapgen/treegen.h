@@ -35,7 +35,14 @@ namespace treegen {
 		UNBALANCED_BRACKETS
 	};
 
-	struct TreeDef {
+	struct TreeDef : public NodeResolver {
+		void resolveNodeNames();
+
+		// Needed since m_ndef can't be accessed in read_tree_def.
+		void setNodeDefManager(const NodeDefManager* ndef) {
+			NodeResolver::m_ndef = ndef;
+		}
+
 		std::string initial_axiom;
 		std::string rules_a;
 		std::string rules_b;

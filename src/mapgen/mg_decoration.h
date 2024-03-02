@@ -117,6 +117,7 @@ class DecoLSystem : public Decoration {
 public:
 	ObjDef *clone() const;
 
+	virtual void resolveNodeNames();
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling);
 
 	// In case it gets cloned it uses the same tree def.

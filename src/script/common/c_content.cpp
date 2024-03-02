@@ -2010,12 +2010,23 @@ void push_noiseparams(lua_State *L, NoiseParams *np)
 	lua_setfield(L, -2, "spread");
 }
 
+// If unresolved = true, tree_def.resolveNodeNames can be used to handle aliases.
 bool read_tree_def(lua_State *L, int idx, const NodeDefManager *ndef,
-		treegen::TreeDef &tree_def)
+		treegen::TreeDef &tree_def, bool unresolved)
 {
 	std::string trunk, leaves, fruit;
 	if (!lua_istable(L, idx))
 		return false;
+
+	auto handle_node_id = [&] (std::string &name, MapNode &node) {
+		if (unresolved)
+			tree_def.m_nodenames.push_back(name);
+		else
+			node = ndef->getId(name);
+	};
+	if (unresolved) {
+		tree_def.setNodeDefManager(ndef);
+	}
 
 	getstringfield(L, idx, "axiom", tree_def.initial_axiom);
 	getstringfield(L, idx, "rules_a", tree_def.rules_a);
@@ -2023,13 +2034,13 @@ bool read_tree_def(lua_State *L, int idx, const NodeDefManager *ndef,
 	getstringfield(L, idx, "rules_c", tree_def.rules_c);
 	getstringfield(L, idx, "rules_d", tree_def.rules_d);
 	getstringfield(L, idx, "trunk", trunk);
-	tree_def.trunknode = ndef->getId(trunk);
+	handle_node_id(trunk, tree_def.trunknode);
 	getstringfield(L, idx, "leaves", leaves);
-	tree_def.leavesnode = ndef->getId(leaves);
+	handle_node_id(leaves, tree_def.leavesnode);
 	tree_def.leaves2_chance = 0;
 	getstringfield(L, idx, "leaves2", leaves);
 	if (!leaves.empty()) {
-		tree_def.leaves2node = ndef->getId(leaves);
+		handle_node_id(leaves, tree_def.leavesnode);
 		getintfield(L, idx, "leaves2_chance", tree_def.leaves2_chance);
 	}
 	getintfield(L, idx, "angle", tree_def.angle);
@@ -2041,7 +2052,7 @@ bool read_tree_def(lua_State *L, int idx, const NodeDefManager *ndef,
 	tree_def.fruit_chance = 0;
 	getstringfield(L, idx, "fruit", fruit);
 	if (!fruit.empty()) {
-		tree_def.fruitnode = ndef->getId(fruit);
+		handle_node_id(leaves, tree_def.leavesnode);
 		getintfield(L, idx, "fruit_chance", tree_def.fruit_chance);
 	}
 	tree_def.explicit_seed = getintfield(L, idx, "seed", tree_def.seed);
