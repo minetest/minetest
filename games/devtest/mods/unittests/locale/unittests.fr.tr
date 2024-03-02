@@ -1,0 +1,5 @@
+# textdomain: unittests
+# Note that the "translations" here are only for testing; it is not necessary
+# to actually translate any text here.
+Only in secondary language.=Result in secondary language.
+Available in both languages.=Result in secondary language.
