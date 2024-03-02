@@ -890,7 +890,7 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 			m_sounds_server_to_client[server_id] = client_id;
 			m_sounds_client_to_server[client_id] = server_id;
 		}
-		if (object_id != 0)
+		if (object_id != 0 && !ephemeral)
 			m_sounds_to_objects[client_id] = object_id;
 	}
 }
