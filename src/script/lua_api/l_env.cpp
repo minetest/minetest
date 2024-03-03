@@ -328,39 +328,26 @@ int ModApiEnv::l_swap_node(lua_State *L)
 	return 1;
 }
 
-// get_node(pos)
-// pos = {x=num, y=num, z=num}
-int ModApiEnv::l_get_node(lua_State *L)
+// get_node_raw(x, y, z) -> content, param1, param2, pos_ok
+int ModApiEnv::l_get_node_raw(lua_State *L)
 {
 	GET_ENV_PTR;
 
 	// pos
-	v3s16 pos = read_v3s16(L, 1);
-	// Do it
-	MapNode n = env->getMap().getNode(pos);
-	// Return node
-	pushnode(L, n);
-	return 1;
-}
-
-// get_node_or_nil(pos)
-// pos = {x=num, y=num, z=num}
-int ModApiEnv::l_get_node_or_nil(lua_State *L)
-{
-	GET_ENV_PTR;
-
-	// pos
-	v3s16 pos = read_v3s16(L, 1);
+	// mirrors implementation of read_v3s16 (with the exact same rounding)
+	double x = lua_tonumber(L, 1);
+	double y = lua_tonumber(L, 2);
+	double z = lua_tonumber(L, 3);
+	v3s16 pos = doubleToInt(v3d(x, y, z), 1.0);
 	// Do it
 	bool pos_ok;
 	MapNode n = env->getMap().getNode(pos, &pos_ok);
-	if (pos_ok) {
-		// Return node
-		pushnode(L, n);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
+	// Return node and pos_ok
+	lua_pushinteger(L, n.getContent());
+	lua_pushinteger(L, n.getParam1());
+	lua_pushinteger(L, n.getParam2());
+	lua_pushboolean(L, pos_ok);
+	return 4;
 }
 
 // get_node_light(pos, timeofday)
@@ -1483,8 +1470,7 @@ void ModApiEnv::Initialize(lua_State *L, int top)
 	API_FCT(swap_node);
 	API_FCT(add_item);
 	API_FCT(remove_node);
-	API_FCT(get_node);
-	API_FCT(get_node_or_nil);
+	API_FCT(get_node_raw);
 	API_FCT(get_node_light);
 	API_FCT(get_natural_light);
 	API_FCT(place_node);
