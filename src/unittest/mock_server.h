@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <server.h>
+#include "server.h"
 
 class MockServer : public Server
 {
@@ -30,6 +30,9 @@ public:
 			Address(), true, nullptr
 		)
 	{}
+
+	void start() = delete;
+	void stop() = delete;
 
 private:
 	void SendChatMessage(session_t peer_id, const ChatMessage &message) {}

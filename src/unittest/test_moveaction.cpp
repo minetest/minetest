@@ -22,10 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mock_inventorymanager.h"
 #include "mock_server.h"
 #include "mock_serveractiveobject.h"
-
 #include "scripting_server.h"
 #include "server/mods.h"
-
 
 class TestMoveAction : public TestBase
 {
@@ -63,7 +61,7 @@ void TestMoveAction::runTests(IGameDef *gamedef)
 		server.m_modmgr = std::make_unique<ServerModManager>(server.m_path_world);
 
 		std::string builtin = Server::getBuiltinLuaPath() + DIR_DELIM;
-		server_scripting.loadMod(builtin + "init.lua", BUILTIN_MOD_NAME);
+		server_scripting.loadBuiltin();
 		server_scripting.loadMod(builtin + "game" DIR_DELIM "tests" DIR_DELIM "test_moveaction.lua", BUILTIN_MOD_NAME);
 	} catch (ModError &e) {
 		// Print backtrace in case of syntax errors

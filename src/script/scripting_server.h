@@ -49,6 +49,7 @@ class ServerScripting:
 public:
 	ServerScripting(Server* server);
 
+	void loadBuiltin();
 	// use ScriptApiBase::loadMod() to load mods
 
 	// Save globals that are copied into other Lua envs
