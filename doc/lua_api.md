@@ -1097,6 +1097,11 @@ Table used to specify how a sound is played:
     -- smaller than minus the sound's length.
     -- Available since feature `sound_params_start_time`.
 
+    keep_time = 0.0,
+    -- Define time window which allow sound to be sent to players
+        whos comes into hearing distance.
+    -- This value is expected to be lees or equal to `sound_lenght - start_time`.
+
     loop = false,
     -- If true, sound is played in a loop.
 
@@ -5360,6 +5365,9 @@ Utilities
       dynamic_add_media_startup = true,
       -- dynamic_add_media supports `filename` and `filedata` parameters (5.9.0)
       dynamic_add_media_filepath = true,
+      -- Sounds can be send to players which comes to hear distance.
+      -- Field `keep_time` added to sound parameters.
+      sounds_updating = true,
   }
   ```
 
@@ -6539,6 +6547,8 @@ Sounds
 ------
 
 * `minetest.sound_play(spec, parameters, [ephemeral])`: returns a handle
+    * Returned handle is positive number if function sucessufully
+      create sound and `ephernal` if `false`.
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
     * `ephemeral` is a boolean (default: false)
