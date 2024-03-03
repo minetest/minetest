@@ -679,7 +679,7 @@ protected:
 				that the thread should be stopped.)
 			*/
 			if (m_all_ongoing.empty())
-				waitForRequest(5000);
+				waitForRequest(100000000);
 			else
 				waitForIO(100);
 
