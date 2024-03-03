@@ -623,14 +623,6 @@ void ClientMap::updateDrawList()
 		}
 	}
 
-	// Force update meshes of all loaded mapblocks
-	if (m_update_mapblocks_meshes) {
-		m_update_mapblocks_meshes = false;
-
-		for (auto &p : m_drawlist)
-			m_client->addUpdateMeshTask(p.first, false, true);
-	}
-
 	g_profiler->avg("MapBlocks occlusion culled [#]", blocks_occlusion_culled);
 	g_profiler->avg("MapBlocks frustum culled [#]", blocks_frustum_culled);
 	g_profiler->avg("MapBlocks drawn [#]", m_drawlist.size());
@@ -786,7 +778,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			// Pretty random but this should work somewhat nicely
 			bool faraway = d >= BS * 50;
 			if (block_mesh->isAnimationForced() || !faraway ||
-					mesh_animate_count < (m_control.range_all ? 200 : 50)) {
+					mesh_animate_count < (m_control.range_all ? 200 : 50) ||
+					m_force_update_light_color) {
 
 				bool animated = block_mesh->animate(faraway, animation_time,
 					crack, daynight_ratio, ambient_light);
@@ -832,6 +825,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			}
 		}
 	}
+
+	m_force_update_light_color = false;
 
 	// Capture draw order for all solid meshes
 	for (auto &map : grouped_buffers.maps) {

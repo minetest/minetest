@@ -382,7 +382,7 @@ void main(void)
 
 	color = base.rgb;
 
-	vec4 col = vec4(color.rgb * (varColor.rgb + ambientLight), 1.0);
+	vec4 col = vec4(color.rgb * min(varColor.rgb + ambientLight, 1.0), 1.0);
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	if (f_shadow_strength > 0.0) {

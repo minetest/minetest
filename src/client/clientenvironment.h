@@ -146,7 +146,7 @@ public:
 	u64 getFrameTime() const { return m_frame_time; }
 	u64 getFrameTimeDelta() const { return m_frame_dtime; }
 
-	const video::SColor& getAmbientLight() const { return m_ambient_light; }
+	video::SColor getAmbientLight() const { return m_ambient_light; }
 
 private:
 	ClientMap *m_map;

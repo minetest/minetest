@@ -290,7 +290,7 @@ void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio){
 }
 
 void final_color_blend(video::SColor *result,
-		u16 light, u32 daynight_ratio, const video::SColor &ambientLight)
+		u16 light, u32 daynight_ratio, video::SColor ambientLight)
 {
 	video::SColorf dayLight;
 	get_sunlight_color(&dayLight, daynight_ratio);
@@ -853,7 +853,7 @@ MapBlockMesh::~MapBlockMesh()
 }
 
 bool MapBlockMesh::animate(bool faraway, float time, int crack,
-	u32 daynight_ratio, const video::SColor &ambient_light)
+	u32 daynight_ratio, video::SColor ambient_light)
 {
 	if (!m_has_animation) {
 		m_animation_force_timer = 100000;
@@ -912,11 +912,11 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 		}
 	}
 
+	video::SColorf day_color;
+	get_sunlight_color(&day_color, daynight_ratio);
+
 	// Day-night transition
 	if (!m_enable_shaders && (daynight_ratio != m_last_daynight_ratio)) {
-		video::SColorf day_color;
-		get_sunlight_color(&day_color, daynight_ratio);
-
 		for (auto &daynight_diff : m_daynight_diffs) {
 			auto *mesh = m_mesh[daynight_diff.first.first];
 			mesh->setDirty(scene::EBT_VERTEX); // force reload to VBO
@@ -925,9 +925,22 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 			video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
 			for (const auto &j : daynight_diff.second)
 				final_color_blend(&(vertices[j.first].Color), j.second,
-						day_color, ambient_light);
+						day_color, video::SColor(255, 0, 0, 0));
 		}
 		m_last_daynight_ratio = daynight_ratio;
+	}
+
+	// Ambient light
+	if (!m_enable_shaders) {
+		for (u32 i = 0; i < MAX_TILE_LAYERS; i++)
+			for (u32 j = 0; j < m_mesh[i]->getMeshBufferCount(); j++) {
+				scene::IMeshBuffer *buf = m_mesh[i]->getMeshBuffer(j);
+				video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
+
+				for (u32 k = 0; k < buf->getVertexCount(); k++)
+					final_color_blend(&(vertices[k].Color), vertices[k].Color,
+						day_color, ambient_light);
+			}
 	}
 
 	return true;

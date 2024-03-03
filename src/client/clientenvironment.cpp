@@ -249,13 +249,13 @@ void ClientEnvironment::step(float dtime)
 		m_script->environment_step(dtime);
 
 	// Update the ambient light
-	Lighting &lighting = getLocalPlayer()->getLighting();
+	AmbientLight &ambient_light = getLocalPlayer()->getLighting().ambient_light;
 
-	auto new_ambient_light = encodeAmbientLight(lighting.ambient_light.luminance, lighting.ambient_light.color);
+	video::SColor new_ambient_light_clr = encodeAmbientLight(ambient_light.luminance, ambient_light.color);
 
-	if (new_ambient_light != m_ambient_light) {
-		m_ambient_light = new_ambient_light;
-		getClientMap().forceUpdateMapblocksMeshes();
+	if (new_ambient_light_clr != m_ambient_light) {
+		getClientMap().forceUpdateLightColor();
+		m_ambient_light = new_ambient_light_clr;
 	}
 
 	// Update lighting on local player (used for wield item)
