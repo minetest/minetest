@@ -298,8 +298,6 @@ private:
  */
 video::SColor encode_light(u16 light, u8 emissive_light);
 
-video::SColor encodeAmbientLight(u8 light, video::SColor color);
-
 // Compute light at node
 u16 getInteriorLight(MapNode n, s32 increment, const NodeDefManager *ndef);
 u16 getFaceLight(MapNode n, MapNode n2, const NodeDefManager *ndef);

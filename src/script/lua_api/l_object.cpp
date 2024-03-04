@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_object.h"
 #include <cmath>
+#include "common/c_types.h"
 #include "lua_api/l_internal.h"
 #include "lua_api/l_inventory.h"
 #include "lua_api/l_item.h"
@@ -2522,14 +2523,10 @@ int ObjectRef::l_set_lighting(lua_State *L)
 		lua_pop(L, 1); // shadows
 
 		lua_getfield(L, 2, "ambient_light");
-		if(lua_istable(L, -1)) {
-			getintfield(L, -1, "luminance", lighting.ambient_light.luminance);
-			lighting.ambient_light.luminance = rangelim(lighting.ambient_light.luminance, 0, LIGHT_SUN);
-
-			lua_getfield(L, -1, "color");
-			if (!lua_isnil(L, -1))
-				read_color(L, -1, &lighting.ambient_light.color);
-			lua_pop(L, 1);
+		if (!lua_isnil(L, -1)) {
+			read_color(L, -1, &lighting.ambient_light);
+			if (lighting.ambient_light.getAlpha() != 255)
+				throw LuaError("ambient light alpha must be 255");
 		}
 		lua_pop(L, 1); // ambient light
 
@@ -2552,7 +2549,7 @@ int ObjectRef::l_set_lighting(lua_State *L)
 			lighting.volumetric_light_strength = rangelim(lighting.volumetric_light_strength, 0.0f, 1.0f);
 		}
 		lua_pop(L, 1); // volumetric_light
-}
+	}
 
 	getServer(L)->setLighting(player, lighting);
 	return 0;

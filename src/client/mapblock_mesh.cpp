@@ -1037,19 +1037,6 @@ video::SColor encode_light(u16 light, u8 emissive_light)
 	return video::SColor(r, b, b, b);
 }
 
-video::SColor encodeAmbientLight(u8 light, video::SColor color)
-{
-	video::SColor res_color(0, 0, 0, 0);
-
-	float light_f = light / 15.f;
-
-	res_color.setRed(core::round32(light_f * color.getRed()));
-	res_color.setGreen(core::round32(light_f * color.getGreen()));
-	res_color.setBlue(core::round32(light_f * color.getBlue()));
-
-	return res_color;
-}
-
 u8 get_solid_sides(MeshMakeData *data)
 {
 	std::unordered_map<v3s16, u8> results;

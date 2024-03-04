@@ -719,7 +719,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	const float animation_time = m_client->getAnimationTime();
 	const int crack = m_client->getCrackLevel();
 	const u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
-	const video::SColor &ambient_light = m_client->getEnv().getAmbientLight();
+	const auto ambient_light = m_client->getEnv().getAmbientLight();
 
 	const v3f camera_position = m_camera_position;
 

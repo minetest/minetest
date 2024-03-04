@@ -249,9 +249,7 @@ void ClientEnvironment::step(float dtime)
 		m_script->environment_step(dtime);
 
 	// Update the ambient light
-	AmbientLight &ambient_light = getLocalPlayer()->getLighting().ambient_light;
-
-	video::SColor new_ambient_light_clr = encodeAmbientLight(ambient_light.luminance, ambient_light.color);
+	auto new_ambient_light_clr = getLocalPlayer()->getLighting().ambient_light;
 
 	if (new_ambient_light_clr != m_ambient_light) {
 		getClientMap().forceUpdateLightColor();
