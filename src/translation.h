@@ -32,8 +32,8 @@ class Translations
 public:
 	void loadTranslation(const std::string &data);
 	void clear();
-	const std::wstring &getTranslation(
-			const std::wstring &textdomain, const std::wstring &s);
+	const std::wstring &getTranslation(const std::wstring &textdomain,
+		const std::wstring &s) const;
 
 private:
 	std::unordered_map<std::wstring, std::wstring> m_translations;
