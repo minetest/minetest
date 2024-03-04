@@ -40,6 +40,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content/mod_configuration.h"
 #include "threading/mutex_auto_lock.h"
 #include "common/c_converter.h"
+#include "util/languagemap.h"
+#include "util/langcode.h"
 
 /******************************************************************************/
 std::string ModApiMainMenu::getTextData(lua_State *L, const std::string &name)
@@ -1172,6 +1174,15 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(do_async_callback);
 	API_FCT(set_once);
 	API_FCT(get_once);
+
+	// Insert table of language names
+	lua_newtable(L);
+#define NAME(code, name) \
+	lua_pushstring(L, name), \
+	lua_setfield(L, -2, code)
+	LANGUAGE_MAP(NAME);
+#undef NAME
+	lua_setfield(L, top, "language_names");
 }
 
 /******************************************************************************/
