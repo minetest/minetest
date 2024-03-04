@@ -18,6 +18,7 @@
 #    - noise_params_2d
 #    - noise_params_3d
 #    - v3f
+#    - language_list
 #
 # `type_args` can be:
 #   * int:
@@ -49,6 +50,9 @@
 #            - default
 #   * v3f:
 #            Format is (<X>, <Y>, <Z>)
+#            - default
+#   * language_list:
+#            Each entry is separated by a colon without spaces.
 #            - default
 #
 # Comments directly above a setting are bound to this setting.
@@ -683,7 +687,7 @@ mute_sound (Mute sound) bool false
 
 #    Set the language. By default, the system language is used.
 #    A restart is required after changing this.
-language (Language) enum   ,be,bg,ca,cs,da,de,el,en,eo,es,et,eu,fi,fr,gd,gl,hu,id,it,ja,jbo,kk,ko,lt,lv,ms,nb,nl,nn,pl,pt,pt_BR,ro,ru,sk,sl,sr_Cyrl,sr_Latn,sv,sw,tr,uk,vi,zh_CN,zh_TW
+language (Language) language_list
 
 [**GUI]
 

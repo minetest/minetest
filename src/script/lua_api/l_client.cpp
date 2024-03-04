@@ -28,12 +28,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "cpp_api/s_base.h"
 #include "gettext.h"
-#include "translation.h"
 #include "l_internal.h"
 #include "lua_api/l_nodemeta.h"
 #include "gui/mainmenumanager.h"
 #include "map.h"
 #include "util/string.h"
+#include "util/langcode.h"
 #include "nodedef.h"
 
 #define checkCSMRestrictionFlag(flag) \
