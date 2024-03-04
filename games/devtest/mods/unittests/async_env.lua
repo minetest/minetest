@@ -167,15 +167,16 @@ local function test_userdata_passing2(cb, _, pos)
 end
 unittests.register("test_userdata_passing2", test_userdata_passing2, {map=true, async=true})
 
+local function test_async_metatable_override()
+	assert(pcall(core.register_async_metatable, "__builtin:vector", vector.metatable),
+			"Metatable name aliasing throws an error when it should be allowed")
+
+	assert(not pcall(core.register_async_metatable, "__builtin:vector", {}),
+			"Illegal metatable overriding allowed")
+end
+unittests.register("test_async_metatable_override", test_async_metatable_override)
+
 local function test_async_metatable_registration(cb)
-	if not pcall(core.register_async_metatable, "__builtin:vector", vector.metatable) then
-		error("Metatable name aliasing throws an error when it should be allowed")
-	end
-
-	if pcall(core.register_async_metatable, "__builtin:vector", {}) then
-		error("Illegal metatable overriding allowed")
-	end
-
 	local custom_metatable = {}
 	core.register_async_metatable("unittests:custom_metatable", custom_metatable)
 
