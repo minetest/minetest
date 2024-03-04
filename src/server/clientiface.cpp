@@ -655,7 +655,7 @@ void RemoteClient::setVersionInfo(u8 major, u8 minor, u8 patch, const std::strin
 
 void RemoteClient::setLangCode(const std::string &code)
 {
-	m_lang_code = string_sanitize_ascii(code, 12);
+	m_lang_code = string_sanitize_ascii(code, 30);
 }
 
 ClientInterface::ClientInterface(const std::shared_ptr<con::Connection> & con)

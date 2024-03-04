@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "util/string.h"
 #include <unordered_map>
 #include <string>
 #include <memory>
@@ -28,25 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Translations;
 #ifndef SERVER
 extern Translations *g_client_translations;
-std::string get_client_language_code();
 #endif
-
-template<typename T> static std::vector<T> parse_language_list(const T& language)
-{
-	std::vector<T> list;
-	size_t begin = 0, next;
-	while ((next = language.find(':', begin)) != std::wstring::npos)
-	{
-		T entry = language.substr(begin, next-begin);
-		if (!entry.empty())
-			list.push_back(entry);
-		begin = next+1;
-	}
-	T last = language.substr(begin);
-	if (!last.empty())
-		list.push_back(last);
-	return list;
-}
 
 class Translations
 {
@@ -54,17 +35,14 @@ public:
 	Translations();
 
 	void loadTranslation(const std::wstring &language, const std::string &data);
-	inline void loadTranslation(const std::string &data) {
-		loadTranslation(getPreferredPrimaryLanguage(), data);
-	}
+	void loadTranslation(const std::string &language, const std::string &data);
+	void loadTranslation(const std::string &data);
 	void clear();
 
 	const std::wstring &getTranslation(const std::vector<std::wstring> &languages,
 			const std::wstring &textdomain, const std::wstring &s) const;
-	inline const std::wstring &getTranslation(
-			const std::wstring &textdomain, const std::wstring &s) const {
-		return getTranslation(m_preferred_languages, textdomain, s);
-	}
+	const std::wstring &getTranslation(
+			const std::wstring &textdomain, const std::wstring &s) const;
 
 	inline const std::wstring getPreferredPrimaryLanguage() const {
 		if (m_preferred_languages.empty())
@@ -77,12 +55,8 @@ public:
 	inline void setPreferredLanguages(const std::vector<std::wstring> &languages) {
 		m_preferred_languages = languages;
 	}
-	inline void setPreferredLanguages(const std::wstring &languages) {
-		setPreferredLanguages(parse_language_list(languages));
-	}
-	inline void setPreferredLanguages(const std::string &languages) {
-		setPreferredLanguages(utf8_to_wide(languages));
-	}
+	void setPreferredLanguages(const std::wstring &languages);
+	void setPreferredLanguages(const std::string &languages);
 
 private:
 	std::vector<std::wstring> m_preferred_languages;

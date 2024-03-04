@@ -59,6 +59,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/base64.h"
 #include "util/sha1.h"
 #include "util/hex.h"
+#include "util/langcode.h"
 #include "database/database.h"
 #include "chatmessage.h"
 #include "chat_interface.h"
@@ -2574,14 +2575,19 @@ void Server::fillMediaCache()
 
 void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_code)
 {
-	std::string lang_suffix = ".";
-	lang_suffix.append(lang_code).append(".tr");
+	auto lang_list = parse_language_list(lang_code);
 
 	auto include = [&] (const std::string &name, const MediaInfo &info) -> bool {
 		if (info.no_announce)
 			return false;
-		if (str_ends_with(name, ".tr") && !str_ends_with(name, lang_suffix))
+		if (str_ends_with(name, ".tr")) {
+			for (auto lang: lang_list) {
+				std::string suffix = "." + lang + ".tr";
+				if (str_ends_with(name, suffix))
+					return true;
+			}
 			return false;
+		}
 		return true;
 	};
 

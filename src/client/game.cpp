@@ -72,6 +72,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
 #include "util/quicktune_shortcutter.h"
+#include "util/langcode.h"
 #include "irrlicht_changes/static_text.h"
 #include "irr_ptr.h"
 #include "version.h"

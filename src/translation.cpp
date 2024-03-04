@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "translation.h"
 #include "log.h"
 #include "util/string.h"
-#include "gettext.h"
+#include "util/langcode.h"
 #include <unordered_map>
 
 
@@ -28,16 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Client translations
 static Translations client_translations;
 Translations *g_client_translations = &client_translations;
-
-std::string get_client_language_code() {
-	/*~ DO NOT TRANSLATE THIS LITERALLY!
-	This is a special string which needs to contain the translation's
-	language code (e.g. "de" for German). */
-	std::string lang = gettext("LANG_CODE");
-	if (lang == "LANG_CODE")
-		lang.clear();
-	return lang;
-}
 #endif
 
 #define INDEX(language, textdomain, s) (language + L"|" + (textdomain) + L"|" + (s))
@@ -61,6 +51,12 @@ const std::wstring &Translations::getTranslation(
 			return it->second;
 	}
 	return s;
+}
+
+const std::wstring &Translations::getTranslation(
+		const std::wstring &textdomain, const std::wstring &s) const
+{
+	return getTranslation(m_preferred_languages, textdomain, s);
 }
 
 void Translations::loadTranslation(const std::wstring &language, const std::string &data)
@@ -169,4 +165,24 @@ void Translations::loadTranslation(const std::wstring &language, const std::stri
 			m_translations->emplace(std::move(translation_index), std::move(oword2));
 		}
 	}
+}
+
+void Translations::loadTranslation(const std::string &language, const std::string &data)
+{
+	loadTranslation(utf8_to_wide(language), data);
+}
+
+void Translations::loadTranslation(const std::string &data)
+{
+	loadTranslation(getPreferredPrimaryLanguage(), data);
+}
+
+void Translations::setPreferredLanguages(const std::wstring &languages)
+{
+	setPreferredLanguages(parse_language_list(languages));
+}
+
+void Translations::setPreferredLanguages(const std::string &languages)
+{
+	setPreferredLanguages(utf8_to_wide(languages));
 }

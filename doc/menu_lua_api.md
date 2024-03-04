@@ -416,6 +416,9 @@ Helpers
 * `core.urlencode(str)`: Encodes non-unreserved URI characters by a
   percent sign followed by two hex digits. See
   [RFC 3986, section 2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-2.3).
+* `core.language_names`: Table of language names recognized by Minetest.
+  * The key includes the language code; the value is the native name of the language.
+  * The value may be an empty string, which indicates that native name is unknown.
 
 
 Async
