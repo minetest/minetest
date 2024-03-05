@@ -2123,11 +2123,3 @@ const std::string &Client::getFormspecPrepend() const
 {
 	return m_env.getLocalPlayer()->formspec_prepend;
 }
-
-void Client::removeActiveObjectSounds(u16 id)
-{
-	for (auto it : m_sounds_to_objects) {
-		if (it.second == id)
-			m_sound->stopSound(it.first);
-	}
-}

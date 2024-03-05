@@ -2043,7 +2043,11 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 
 	std::queue<u16> removed_objects, added_objects;
 	m_env->getRemovedActiveObjects(playersao, my_radius, player_radius,
-		client->m_known_objects, removed_objects);
+		client->m_known_objects, [&](bool gone, u16 id) {
+		if (!gone)
+			stopAttachedSounds(client->peer_id, id);
+		removed_objects.push(id);
+	});
 	m_env->getAddedActiveObjects(playersao, my_radius, player_radius,
 		client->m_known_objects, added_objects);
 
@@ -2278,19 +2282,27 @@ void Server::fadeSound(s32 handle, float step, float gain)
 		m_playing_sounds.erase(it);
 }
 
-void Server::stopAttachedSounds(u16 id)
+void Server::stopAttachedSounds(session_t peer_id, u16 object_id)
 {
-	assert(id);
+	assert(object_id);
 
-	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); ) {
-		const ServerPlayingSound &sound = it->second;
+	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); it++) {
+		ServerPlayingSound &sound = it->second;
 
-		if (sound.object == id) {
-			// Remove sound reference
-			it = m_playing_sounds.erase(it);
-		}
-		else
-			it++;
+		if (sound.object != object_id)
+			continue;
+
+		auto clients_it = sound.clients.find(peer_id);
+		if (clients_it == sound.clients.end())
+			continue;
+
+		NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
+		pkt << it->first;
+		Send(peer_id, &pkt);
+
+		sound.clients.erase(clients_it);
+		if (sound.clients.empty())
+			m_playing_sounds.erase(it);
 	}
 }
 

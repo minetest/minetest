@@ -471,7 +471,6 @@ void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
 		for (u16 i = 0; i < removed_count; i++) {
 			*pkt >> id;
 			m_env.removeActiveObject(id);
-			removeActiveObjectSounds(id);
 		}
 
 		// Read added objects

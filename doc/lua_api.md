@@ -1095,6 +1095,7 @@ Table used to specify how a sound is played:
     -- its end in `-start_time` seconds.
     -- It is unspecified what happens if `loop` is false and `start_time` is
     -- smaller than minus the sound's length.
+
     -- Available since feature `sound_params_start_time`.
 
     loop = false,
@@ -1107,6 +1108,17 @@ Table used to specify how a sound is played:
     object = <an ObjectRef>,
     -- Attach the sound to an object.
     -- Can't be used together with `pos`.
+
+    -- For backwards compatibility, sounds continue playing
+    -- at the last location of the object if an object is removed
+    -- (for example if an entity dies).
+
+    -- It is not recommended to rely on this.
+    -- For death sounds, prefer playing a positional sound at the objects last location.
+
+    -- Sounds stop playing on clients if objects leave the active object range;
+    -- they should start playing again if objects come back into range
+    -- (but due to a known bug, they don't yet).
 
     to_player = name,
     -- Only play for this player.
