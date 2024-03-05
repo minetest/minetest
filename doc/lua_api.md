@@ -1114,9 +1114,17 @@ Table used to specify how a sound is played:
     -- (for example if an entity dies).
 
     -- It is not recommended to rely on this.
-    -- For death sounds, prefer playing a positional sound at the objects last location.
+    -- For death sounds, prefer playing a positional sound at the object's last location.
 
-    -- Sounds stop playing on clients if objects leave the active object range;
+    -- If you want to stop a sound when an entity dies or is deactivated,
+    -- store the handle and call `minetest.sound_stop` in `on_die` / `on_deactivate`.
+
+    -- Ephemeral sounds are entirely unaffected
+    -- by the object being removed
+    -- or leaving the active object range.
+
+    -- Non-ephemeral sounds stop playing on clients
+    -- if objects leave the active object range;
     -- they should start playing again if objects come back into range
     -- (but due to a known bug, they don't yet).
 

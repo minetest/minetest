@@ -2043,11 +2043,16 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 
 	std::queue<u16> removed_objects, added_objects;
 	m_env->getRemovedActiveObjects(playersao, my_radius, player_radius,
-		client->m_known_objects, [&](bool gone, u16 id) {
-		if (!gone)
-			stopAttachedSounds(client->peer_id, id);
-		removed_objects.push(id);
-	});
+		client->m_known_objects,
+		[&](bool gone, u16 id) {
+			// Stop sounds if objects go out of range.
+			// This fixes https://github.com/minetest/minetest/issues/8094.
+			// We may not remove sounds if an entity was removed on the server
+			// See https://github.com/minetest/minetest/issues/14422.
+			if (!gone)
+				stopAttachedSounds(client->peer_id, id);
+			removed_objects.push(id);
+		});
 	m_env->getAddedActiveObjects(playersao, my_radius, player_radius,
 		client->m_known_objects, added_objects);
 

@@ -2275,7 +2275,6 @@ bool ServerEnvironment::saveStaticToBlock(
 
 void ServerEnvironment::processActiveObjectRemove(ServerActiveObject *obj)
 {
-	u16 id = obj->getId();
 	// Tell the object about removal
 	obj->removingFromEnvironment();
 	// Deregister in scripting api
