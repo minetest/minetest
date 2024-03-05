@@ -416,8 +416,13 @@ table.sort(language_options)
 
 local language_dropdown = {}
 for idx, langcode in ipairs(language_options) do
-	language_dropdown[idx] = core.formspec_escape(("%s [%s]"):format(
-			language_option_labels[langcode], langcode))
+	local langname = language_option_labels[langcode]
+	if langname == "" then
+		langname = langcode
+	else
+		langname = ("%s [%s]"):format(langname, langcode)
+	end
+	language_dropdown[idx] = core.formspec_escape(langname)
 	language_options[langcode] = idx
 end
 language_dropdown = table.concat(language_dropdown, ",")
