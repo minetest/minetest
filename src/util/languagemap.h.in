@@ -1,6 +1,5 @@
 #pragma once
 #define LANGUAGE_MAP(_) \
-	/* _("ar", ""), blacklisted */ \
 	_("be", "Беларуская"), \
 	_("bg", "Български"), \
 	_("ca", "Català"), \
@@ -8,7 +7,6 @@
 	_("cy", "Cymraeg"), \
 	_("da", "Dansk"), \
 	_("de", "Deutsch"), \
-	/* _("dv", ""), blacklisted */ \
 	_("el", "Ελληνικά"), \
 	_("en", "English"), \
 	_("eo", "Esperanto"), \
@@ -20,15 +18,12 @@
 	_("fr", "Français"), \
 	_("gd", "Gàidhlig"), \
 	_("gl", "Galego"), \
-	/* _("he", ""), blacklisted */ \
-	/* _("hi", ""), blacklisted */ \
 	_("hu", "Magyar"), \
 	_("id", "Bahasa Indonesia"), \
 	_("it", "Italiano"), \
 	_("ja", "日本語"), \
 	_("jbo", "Lojban"), \
 	_("kk", "Қазақша"), \
-	/* _("kn", ""), blacklisted */ \
 	_("ko", "한국어"), \
 	_("ky", "Kırgızca / Кыргызча"), \
 	_("lt", "Lietuvių"), \
@@ -36,7 +31,6 @@
 	_("mn", "Монгол"), \
 	_("mr", "मराठी"),\
 	_("ms", "Bahasa Melayu"), \
-	/* _("ms_Arab", ""), blacklisted */ \
 	_("nb", "Norsk Bokmål"), \
 	_("nl", "Nederlands"), \
 	_("nn", "Norsk Nynorsk"), \
@@ -52,11 +46,11 @@
 	_("sr_Latn", "Srpski (Latinica)"), \
 	_("sv", "Svenska"), \
 	_("sw", "Kiswahili"), \
-	/* _("th", ""), blacklisted */ \
 	_("tr", "Türkçe"), \
 	_("tt", "Tatarça"), \
 	_("uk", "Українська"), \
 	_("vi", "Tiếng Việt"), \
 	_("yue", "粵語"), \
 	_("zh_CN", "中文 (简体)"), \
-	_("zh_TW", "正體中文 (繁體)")
+	_("zh_TW", "正體中文 (繁體)") \
+	@LANGUAGE_MAP_UNNAMED@
