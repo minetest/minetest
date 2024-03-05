@@ -1127,9 +1127,9 @@ void push_nodebox(lua_State *L, const NodeBox &box)
 			else if (box.type == NODEBOX_LEVELED_PLANTLIKE_ROOTED)
 				lua_pushstring(L, "leveled_plantlike_rooted");
 			lua_setfield(L, -2, "type");
-			push_box(L, box.fixed);
+			push_aabb3f_vector(L, box.fixed);
 			lua_setfield(L, -2, "fixed");
-			push_box(L, box.leveled_fixed);
+			push_aabb3f_vector(L, box.leveled_fixed);
 			lua_setfield(L, -2, "leveled_fixed");
 			break;
 		case NODEBOX_WALLMOUNTED:
