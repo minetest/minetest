@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/printing.h"
 #include "filesys.h"
 #include "log.h"
-#include "map.h"
+#include "servermap.h"
 #include "mapblock.h"
 #include "mapgen/mg_biome.h"
 #include "mapgen/mg_ore.h"

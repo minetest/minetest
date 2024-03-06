@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "activeobject.h"
 #include "environment.h"
-#include "map.h"
+#include "servermap.h"
 #include "settings.h"
 #include "server/activeobjectmgr.h"
 #include "util/numeric.h"

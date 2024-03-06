@@ -417,6 +417,7 @@ set(common_SRCS
 	serialization.cpp
 	server.cpp
 	serverenvironment.cpp
+	servermap.cpp
 	settings.cpp
 	staticobject.cpp
 	terminal_chat_console.cpp

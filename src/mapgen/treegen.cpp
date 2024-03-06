@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stack>
 #include "util/pointer.h"
 #include "util/numeric.h"
-#include "map.h"
+#include "servermap.h"
 #include "mapblock.h"
 #include "nodedef.h"
 #include "treegen.h"
