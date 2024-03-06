@@ -229,9 +229,8 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 	oss(std::ios::binary)
 {
 	curl = pool->alloc();
-	if (curl == NULL) {
+	if (!curl)
 		return;
-	}
 
 	// Set static cURL options
 	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
@@ -417,10 +416,12 @@ HTTPFetchOngoing::~HTTPFetchOngoing()
 	// Set safe options for the reusable cURL handle
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
 			httpfetch_discardfunction);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, NULL);
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, nullptr);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, nullptr);
+	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, nullptr);
+	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, nullptr);
 	if (http_header) {
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, NULL);
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, nullptr);
 		curl_slist_free_all(http_header);
 	}
 	if (multipart_mime) {
