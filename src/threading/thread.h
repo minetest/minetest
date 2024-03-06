@@ -120,7 +120,7 @@ public:
 	bool setPriority(int prio);
 
 	/*
-	 * Returns the current thread object if it exists.
+	 * Returns the thread object of the current thread if it exists.
 	 */
 	static Thread *getCurrentThread();
 
