@@ -2047,91 +2047,72 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 	if (my_radius <= 0)
 		my_radius = radius;
 
-	std::queue<std::pair<bool, u16>> removed_objects;
-	std::queue<u16> added_objects;
+	std::vector<std::pair<bool, u16>> removed_objects;
+	std::vector<u16> added_objects;
 	m_env->getRemovedActiveObjects(playersao, my_radius, player_radius,
 		client->m_known_objects, removed_objects);
 	m_env->getAddedActiveObjects(playersao, my_radius, player_radius,
 		client->m_known_objects, added_objects);
 
-	int removed_count = removed_objects.size();
-	int added_count   = added_objects.size();
-
 	if (removed_objects.empty() && added_objects.empty())
 		return;
 
-	char buf[4];
-	std::string data;
+	NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD,
+		2 * removed_objects.size() + 32 * added_objects.size(), client->peer_id);
 
-	// Handle removed objects
+	// Removed objects
+	pkt << static_cast<u16>(removed_objects.size());
 
-	writeU16((u8*)buf, removed_objects.size());
-	data.append(buf, 2);
-	while (!removed_objects.empty()) {
-		// Get object
-		const auto [gone, id] = removed_objects.front();
-		ServerActiveObject* obj = m_env->getActiveObject(id);
+	std::vector<u16> sounds_to_stop;
+
+	for (auto &it : removed_objects) {
+		const auto [gone, id] = it;
+		ServerActiveObject *obj = m_env->getActiveObject(id);
 
 		// Stop sounds if objects go out of range.
 		// This fixes https://github.com/minetest/minetest/issues/8094.
 		// We may not remove sounds if an entity was removed on the server.
 		// See https://github.com/minetest/minetest/issues/14422.
 		if (!gone) // just out of range for client, not gone on server?
-			stopAttachedSounds(client->peer_id, id);
+			sounds_to_stop.push_back(id);
 
-		// Add to data buffer for sending
-		writeU16((u8*)buf, id);
-		data.append(buf, 2);
+		pkt << id;
 
 		// Remove from known objects
 		client->m_known_objects.erase(id);
-
 		if (obj && obj->m_known_by_count > 0)
 			obj->m_known_by_count--;
-
-		removed_objects.pop();
 	}
 
-	// Handle added objects
-	writeU16((u8*)buf, added_objects.size());
-	data.append(buf, 2);
-	while (!added_objects.empty()) {
-		// Get object
-		u16 id = added_objects.front();
-		ServerActiveObject *obj = m_env->getActiveObject(id);
-		added_objects.pop();
+	if (!sounds_to_stop.empty())
+		stopAttachedSounds(client->peer_id, sounds_to_stop);
 
+	// Added objects
+	pkt << static_cast<u16>(added_objects.size());
+
+	for (u16 id : added_objects) {
+		ServerActiveObject *obj = m_env->getActiveObject(id);
 		if (!obj) {
-			warningstream << FUNCTION_NAME << ": NULL object id="
+			warningstream << FUNCTION_NAME << ": found NULL object id="
 				<< (int)id << std::endl;
 			continue;
 		}
 
-		// Get object type
 		u8 type = obj->getSendType();
 
-		// Add to data buffer for sending
-		writeU16((u8*)buf, id);
-		data.append(buf, 2);
-		writeU8((u8*)buf, type);
-		data.append(buf, 1);
-
-		data.append(serializeString32(
-			obj->getClientInitializationData(client->net_proto_version)));
+		pkt << id << type;
+		pkt.putLongString(obj->getClientInitializationData(client->net_proto_version));
 
 		// Add to known objects
 		client->m_known_objects.insert(id);
-
 		obj->m_known_by_count++;
 	}
 
-	NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD, data.size(), client->peer_id);
-	pkt.putRawString(data.c_str(), data.size());
 	Send(&pkt);
 
-	verbosestream << "Server::SendActiveObjectRemoveAdd: "
-		<< removed_count << " removed, " << added_count << " added, "
-		<< "packet size is " << pkt.getSize() << std::endl;
+	verbosestream << "Server::SendActiveObjectRemoveAdd(): "
+		<< removed_objects.size() << " removed, " << added_objects.size()
+		<< " added, packet size is " << pkt.getSize() << std::endl;
 }
 
 void Server::SendActiveObjectMessages(session_t peer_id, const std::string &datas,
@@ -2288,13 +2269,14 @@ void Server::fadeSound(s32 handle, float step, float gain)
 		m_playing_sounds.erase(it);
 }
 
-void Server::stopAttachedSounds(session_t peer_id, u16 object_id)
+void Server::stopAttachedSounds(session_t peer_id,
+	const std::vector<u16> &object_ids)
 {
 	assert(peer_id != PEER_ID_INEXISTENT);
-	assert(object_id);
+	assert(!object_ids.empty());
 
 	auto cb = [&] (const s32 id, ServerPlayingSound &sound) -> bool {
-		if (sound.object != object_id)
+		if (!CONTAINS(object_ids, sound.object))
 			return false;
 
 		auto clients_it = sound.clients.find(peer_id);

@@ -286,8 +286,8 @@ public:
 	*/
 	void getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 		s16 player_radius,
-		std::set<u16> &current_objects,
-		std::queue<u16> &added_objects);
+		const std::set<u16> &current_objects,
+		std::vector<u16> &added_objects);
 
 	/*
 		Find out what new objects have been removed from
@@ -295,8 +295,8 @@ public:
 	*/
 	void getRemovedActiveObjects(PlayerSAO *playersao, s16 radius,
 		s16 player_radius,
-		std::set<u16> &current_objects,
-		std::queue<std::pair<bool /* gone? */, u16>> &removed_objects);
+		const std::set<u16> &current_objects,
+		std::vector<std::pair<bool /* gone? */, u16>> &removed_objects);
 
 	/*
 		Get the next message emitted by some active object.

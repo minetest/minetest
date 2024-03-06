@@ -173,12 +173,12 @@ void TestServerActiveObjectMgr::testGetAddedActiveObjectsAroundPos()
 		saomgr.registerObject(std::make_unique<MockServerActiveObject>(nullptr, p));
 	}
 
-	std::queue<u16> result;
+	std::vector<u16> result;
 	std::set<u16> cur_objects;
 	saomgr.getAddedActiveObjectsAroundPos(v3f(), 100, 50, cur_objects, result);
 	UASSERTCMP(int, ==, result.size(), 1);
 
-	result = std::queue<u16>();
+	result.clear();
 	cur_objects.clear();
 	saomgr.getAddedActiveObjectsAroundPos(v3f(), 740, 50, cur_objects, result);
 	UASSERTCMP(int, ==, result.size(), 2);
