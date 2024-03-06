@@ -2041,7 +2041,8 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 	if (my_radius <= 0)
 		my_radius = radius;
 
-	std::queue<u16> removed_objects, added_objects;
+	std::queue<std::pair<bool, u16>> removed_objects;
+	std::queue<u16> added_objects;
 	m_env->getRemovedActiveObjects(playersao, my_radius, player_radius,
 		client->m_known_objects, removed_objects);
 	m_env->getAddedActiveObjects(playersao, my_radius, player_radius,
@@ -2057,12 +2058,20 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 	std::string data;
 
 	// Handle removed objects
+
 	writeU16((u8*)buf, removed_objects.size());
 	data.append(buf, 2);
 	while (!removed_objects.empty()) {
 		// Get object
-		u16 id = removed_objects.front();
+		const auto [gone, id] = removed_objects.front();
 		ServerActiveObject* obj = m_env->getActiveObject(id);
+
+		// Stop sounds if objects go out of range.
+		// This fixes https://github.com/minetest/minetest/issues/8094.
+		// We may not remove sounds if an entity was removed on the server.
+		// See https://github.com/minetest/minetest/issues/14422.
+		if (!gone) // just out of range for client, not gone on server?
+			stopAttachedSounds(client->peer_id, id);
 
 		// Add to data buffer for sending
 		writeU16((u8*)buf, id);
@@ -2278,19 +2287,30 @@ void Server::fadeSound(s32 handle, float step, float gain)
 		m_playing_sounds.erase(it);
 }
 
-void Server::stopAttachedSounds(u16 id)
+void Server::stopAttachedSounds(session_t peer_id, u16 object_id)
 {
-	assert(id);
+	assert(peer_id != PEER_ID_INEXISTENT);
+	assert(object_id);
 
-	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); ) {
-		const ServerPlayingSound &sound = it->second;
+	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end();) {
+		ServerPlayingSound &sound = it->second;
 
-		if (sound.object == id) {
-			// Remove sound reference
+		if (sound.object != object_id)
+			continue;
+
+		auto clients_it = sound.clients.find(peer_id);
+		if (clients_it == sound.clients.end())
+			continue;
+
+		NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
+		pkt << it->first;
+		Send(peer_id, &pkt);
+
+		sound.clients.erase(clients_it);
+		if (sound.clients.empty())
 			it = m_playing_sounds.erase(it);
-		}
 		else
-			it++;
+			++it;
 	}
 }
 

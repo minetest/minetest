@@ -239,7 +239,8 @@ public:
 	s32 playSound(ServerPlayingSound &params, bool ephemeral=false);
 	void stopSound(s32 handle);
 	void fadeSound(s32 handle, float step, float gain);
-	void stopAttachedSounds(u16 id);
+	// Stop all sounds attached to an object for a certain client
+	void stopAttachedSounds(session_t peer_id, u16 object_id);
 
 	// Envlock
 	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);

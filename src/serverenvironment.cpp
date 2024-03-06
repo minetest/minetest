@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <algorithm>
 #include <stack>
+#include <utility>
 #include "serverenvironment.h"
 #include "settings.h"
 #include "log.h"
@@ -1253,7 +1254,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 			return false;
 		}
 
-		processActiveObjectRemove(obj, id);
+		processActiveObjectRemove(obj);
 
 		// Delete active object
 		return true;
@@ -1742,7 +1743,7 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius,
 	s16 player_radius,
 	std::set<u16> &current_objects,
-	std::queue<u16> &removed_objects)
+	std::queue<std::pair<bool /* gone? */, u16>> &removed_objects)
 {
 	f32 radius_f = radius * BS;
 	f32 player_radius_f = player_radius * BS;
@@ -1763,12 +1764,12 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 		if (object == NULL) {
 			infostream << "ServerEnvironment::getRemovedActiveObjects():"
 				<< " object in current_objects is NULL" << std::endl;
-			removed_objects.push(id);
+			removed_objects.emplace(true, id);
 			continue;
 		}
 
 		if (object->isGone()) {
-			removed_objects.push(id);
+			removed_objects.emplace(true, id);
 			continue;
 		}
 
@@ -1780,7 +1781,7 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 			continue;
 
 		// Object is no longer visible
-		removed_objects.push(id);
+		removed_objects.emplace(false, id);
 	}
 }
 
@@ -1973,7 +1974,7 @@ void ServerEnvironment::removeRemovedObjects()
 			}
 		}
 
-		processActiveObjectRemove(obj, id);
+		processActiveObjectRemove(obj);
 
 		// Delete
 		return true;
@@ -2210,7 +2211,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 			return false;
 		}
 
-		processActiveObjectRemove(obj, id);
+		processActiveObjectRemove(obj);
 
 		// Delete active object
 		return true;
@@ -2273,14 +2274,12 @@ bool ServerEnvironment::saveStaticToBlock(
 	return true;
 }
 
-void ServerEnvironment::processActiveObjectRemove(ServerActiveObject *obj, u16 id)
+void ServerEnvironment::processActiveObjectRemove(ServerActiveObject *obj)
 {
 	// Tell the object about removal
 	obj->removingFromEnvironment();
 	// Deregister in scripting api
 	m_script->removeObjectReference(obj);
-	// stop attached sounds
-	m_server->stopAttachedSounds(id);
 }
 
 PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,

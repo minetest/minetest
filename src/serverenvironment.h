@@ -19,6 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <set>
+#include <random>
+#include <utility>
+
 #include "activeobject.h"
 #include "environment.h"
 #include "map.h"
@@ -26,8 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/activeobjectmgr.h"
 #include "util/numeric.h"
 #include "util/metricsbackend.h"
-#include <set>
-#include <random>
 
 class IGameDef;
 struct GameParams;
@@ -303,7 +305,7 @@ public:
 	void getRemovedActiveObjects(PlayerSAO *playersao, s16 radius,
 		s16 player_radius,
 		std::set<u16> &current_objects,
-		std::queue<u16> &removed_objects);
+		std::queue<std::pair<bool /* gone? */, u16>> &removed_objects);
 
 	/*
 		Get the next message emitted by some active object.
@@ -454,7 +456,7 @@ private:
 	bool saveStaticToBlock(v3s16 blockpos, u16 store_id,
 			ServerActiveObject *obj, const StaticObject &s_obj, u32 mod_reason);
 
-	void processActiveObjectRemove(ServerActiveObject *obj, u16 id);
+	void processActiveObjectRemove(ServerActiveObject *obj);
 
 	/*
 		Member variables
