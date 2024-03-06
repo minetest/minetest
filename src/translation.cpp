@@ -41,8 +41,8 @@ void Translations::clear()
 	m_translations->clear();
 }
 
-const std::wstring &Translations::getTranslation(
-		const std::vector<std::wstring> &languages, const std::wstring &textdomain, const std::wstring &s)
+const std::wstring &Translations::getTranslation(const std::vector<std::wstring> &languages,
+		const std::wstring &textdomain, const std::wstring &s) const
 {
 	for (auto language: languages) {
 		std::wstring key = INDEX(language, textdomain, s);
@@ -54,7 +54,7 @@ const std::wstring &Translations::getTranslation(
 }
 
 const std::wstring &Translations::getTranslation(
-		const std::wstring &textdomain, const std::wstring &s)
+		const std::wstring &textdomain, const std::wstring &s) const
 {
 	return getTranslation(m_preferred_languages, textdomain, s);
 }
