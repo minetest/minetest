@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/serveropcodes.h"
 #include "server/ban.h"
 #include "environment.h"
-#include "map.h"
+#include "servermap.h"
 #include "threading/mutex_auto_lock.h"
 #include "constants.h"
 #include "voxel.h"
