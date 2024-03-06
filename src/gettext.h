@@ -46,6 +46,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 void init_gettext(const char *path, const std::string &configured_language,
 	int argc, char *argv[]);
 
+const std::string &get_current_locale();
+
 inline std::string strgettext(const char *str)
 {
 	// We must check here that is not an empty string to avoid trying to translate it

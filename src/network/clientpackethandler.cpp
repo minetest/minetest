@@ -42,7 +42,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/srp.h"
 #include "util/sha1.h"
-#include "util/langcode.h"
 #include "tileanimation.h"
 #include "gettext.h"
 #include "skyparams.h"
@@ -151,7 +150,7 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 					<< m_recommended_send_interval<<std::endl;
 
 	// Reply to server
-	std::string lang = get_client_language_code();
+	std::string lang = get_current_locale();
 	if (m_proto_ver < 44) {
 		// Old server: only send the primary language
 		auto separator_pos = lang.find(':');
