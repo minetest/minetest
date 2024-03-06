@@ -33,7 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/mainmenumanager.h"
 #include "map.h"
 #include "util/string.h"
-#include "util/langcode.h"
 #include "nodedef.h"
 
 #define checkCSMRestrictionFlag(flag) \
@@ -215,7 +214,7 @@ int ModApiClient::l_get_language(lua_State *L)
 #else
 	char *locale = setlocale(LC_MESSAGES, NULL);
 #endif
-	std::string lang = get_client_language_code();
+	std::string lang = get_current_locale();
 	lua_pushstring(L, locale);
 	lua_pushstring(L, lang.c_str());
 	return 2;
