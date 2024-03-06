@@ -2627,7 +2627,7 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 		if (info.no_announce)
 			return false;
 		if (str_ends_with(name, ".tr")) {
-			for (auto lang: lang_list) {
+			for (const auto &lang: lang_list) {
 				std::string suffix = "." + lang + ".tr";
 				if (str_ends_with(name, suffix))
 					return true;

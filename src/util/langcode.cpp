@@ -35,7 +35,7 @@ static std::string find_tr_language(const std::string &code)
 std::vector<std::string> get_tr_language(const std::vector<std::string> &languages)
 {
 	std::vector<std::string> list;
-	for (auto language: languages) {
+	for (const auto &language: languages) {
 		std::string tr_lang = find_tr_language(language);
 		if (!tr_lang.empty())
 			list.push_back(std::move(tr_lang));
