@@ -21,16 +21,3 @@ std::vector<std::string> get_tr_language(const std::vector<std::string> &languag
 	}
 	return list;
 }
-
-#ifndef SERVER
-std::string get_client_language_code() {
-#if USE_GETTEXT
-	const char *lang = getenv("LANGUAGE");
-	if (!lang)
-		return "";
-	return get_tr_language(lang);
-#else
-	return "";
-#endif
-}
-#endif

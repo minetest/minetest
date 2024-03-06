@@ -20,7 +20,3 @@ inline const std::string get_tr_language(const std::string &lang)
 {
 	return language_list_to_string(get_tr_language(parse_language_list(lang)));
 }
-
-#ifndef SERVER
-std::string get_client_language_code();
-#endif
