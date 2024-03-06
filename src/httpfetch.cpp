@@ -777,6 +777,7 @@ bool httpfetch_sync_interruptible(const HTTPFetchRequest &fetch_request,
 		do {
 			if (thread->stopRequested()) {
 				httpfetch_caller_free(req.caller);
+				fetch_result = HTTPFetchResult(fetch_request);
 				return false;
 			}
 			sleep_ms(interval);
