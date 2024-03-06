@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-02-05 04:01+0000\n"
-"Last-Translator: cora de la mouche <coradelamouche@gmx.ch>\n"
+"PO-Revision-Date: 2024-05-13 09:00+0000\n"
+"Last-Translator: ElonSatoshi <elonsatoshi@riseup.net>\n"
 "Language-Team: Toki Pona <https://hosted.weblate.org/projects/minetest/"
 "minetest/tok/>\n"
 "Language: tok\n"
@@ -17,19 +17,20 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5.5-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
 msgstr ""
 
 #: builtin/client/chatcommands.lua
+#, fuzzy
 msgid "Empty command."
-msgstr ""
+msgstr "toki lawa sina li weka."
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr ""
+msgstr "ni li toki lawa ala: "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
@@ -37,7 +38,7 @@ msgstr "o lukin e jan mute lon"
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "ilo lawa li lawa e ni: toki lawa ni li ken ala."
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
@@ -49,11 +50,11 @@ msgstr "o tawa"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr ""
+msgstr "o weka e linja toki"
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "tenpo ni la linja toki li weka."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
@@ -65,12 +66,14 @@ msgstr "o kama sin"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
-msgstr ""
+msgstr "toki lawa mute ni li lon: "
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"sina sona ala e toki lawa la o sitelen e ni: '.help <cmd>'. anu la sina wile "
+"sona e toki lawa ale la o sitelen e ni: '.help all'."
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
@@ -94,7 +97,7 @@ msgstr "pona"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
-msgstr ""
+msgstr "<lon ala>"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
