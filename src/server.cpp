@@ -2289,9 +2289,10 @@ void Server::fadeSound(s32 handle, float step, float gain)
 
 void Server::stopAttachedSounds(session_t peer_id, u16 object_id)
 {
+	assert(peer_id != PEER_ID_INEXISTENT);
 	assert(object_id);
 
-	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); it++) {
+	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end();) {
 		ServerPlayingSound &sound = it->second;
 
 		if (sound.object != object_id)
@@ -2307,7 +2308,9 @@ void Server::stopAttachedSounds(session_t peer_id, u16 object_id)
 
 		sound.clients.erase(clients_it);
 		if (sound.clients.empty())
-			m_playing_sounds.erase(it);
+			it = m_playing_sounds.erase(it);
+		else
+			++it;
 	}
 }
 
