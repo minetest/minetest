@@ -20,3 +20,12 @@ inline const std::string get_tr_language(const std::string &lang)
 {
 	return language_list_to_string(get_tr_language(parse_language_list(lang)));
 }
+
+template<typename T>
+inline const std::basic_string<T> get_primary_language(const std::basic_string<T> &lang)
+{
+	auto delimiter_pos = lang.find(':');
+	if (delimiter_pos == std::basic_string<T>::npos)
+		return lang;
+	return lang.substr(0, delimiter_pos);
+}
