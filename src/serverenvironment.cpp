@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <algorithm>
 #include <stack>
+#include <utility>
 #include "serverenvironment.h"
 #include "settings.h"
 #include "log.h"
@@ -1742,7 +1743,7 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius,
 	s16 player_radius,
 	std::set<u16> &current_objects,
-	const std::function<void(bool /* gone? */, u16 /* id */)> &callback)
+	std::queue<std::pair<bool /* gone? */, u16>> &removed_objects)
 {
 	f32 radius_f = radius * BS;
 	f32 player_radius_f = player_radius * BS;
@@ -1763,12 +1764,12 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 		if (object == NULL) {
 			infostream << "ServerEnvironment::getRemovedActiveObjects():"
 				<< " object in current_objects is NULL" << std::endl;
-			callback(true, id);
+			removed_objects.emplace(true, id);
 			continue;
 		}
 
 		if (object->isGone()) {
-			callback(true, id);
+			removed_objects.emplace(true, id);
 			continue;
 		}
 
@@ -1780,7 +1781,7 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 			continue;
 
 		// Object is no longer visible
-		callback(false, id);
+		removed_objects.emplace(false, id);
 	}
 }
 
