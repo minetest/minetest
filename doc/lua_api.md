@@ -6012,7 +6012,7 @@ Environment access
 * `minetest.add_entity(pos, name, [staticdata])`: Spawn Lua-defined entity at
   position.
     * Returns `ObjectRef`, or `nil` if failed
-    * Entities with `static_save = true` can be added also 
+    * Entities with `static_save = true` can be added also
       to unloaded and non-generated blocks.
 * `minetest.add_item(pos, item)`: Spawn item
     * Returns `ObjectRef`, or `nil` if failed
@@ -6598,6 +6598,18 @@ This allows you easy interoperability for delegating work to jobs.
     * Register a path to a Lua file to be imported when an async environment
       is initialized. You can use this to preload code which you can then call
       later using `minetest.handle_async()`.
+* `minetest.register_async_metatable(name, mt)`:
+    * Register a metatable that should be preserved when data is transferred
+    between the main thread and the async environment.
+    * `name` is a string that identifies the metatable. It is recommended to
+      follow the `modname:name` convention for this identifier.
+    * `mt` is the metatable to register.
+    * Note that it is allowed to register the same metatable under multiple
+      names, but it is not allowed to register multiple metatables under the
+      same name.
+    * You must register the metatable in both the main environment
+      and the async environment for this mechanism to work.
+
 
 ### List of APIs available in an async environment
 
@@ -6623,6 +6635,7 @@ Class instances that can be transferred between environments:
 Functions:
 * Standalone helpers such as logging, filesystem, encoding,
   hashing or compression APIs
+* `minetest.register_async_metatable` (see above)
 
 Variables:
 * `minetest.settings`

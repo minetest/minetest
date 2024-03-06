@@ -18,6 +18,7 @@ if core.settings:get_bool("profiler.load") then
 end
 
 dofile(commonpath .. "after.lua")
+dofile(commonpath .. "metatable.lua")
 dofile(commonpath .. "mod_storage.lua")
 dofile(gamepath .. "item_entity.lua")
 dofile(gamepath .. "deprecated.lua")

@@ -53,7 +53,7 @@ local test_object = {
 	end,
 	sunlight_propagates = true,
 	is_ground_content = false,
-	light_source = 0,
+	pos = vector.new(-1, -2, -3),
 }
 
 local function test_object_passing()
@@ -166,3 +166,44 @@ local function test_userdata_passing2(cb, _, pos)
 	end, vm, pos)
 end
 unittests.register("test_userdata_passing2", test_userdata_passing2, {map=true, async=true})
+
+local function test_async_metatable_override()
+	assert(pcall(core.register_async_metatable, "__builtin:vector", vector.metatable),
+			"Metatable name aliasing throws an error when it should be allowed")
+
+	assert(not pcall(core.register_async_metatable, "__builtin:vector", {}),
+			"Illegal metatable overriding allowed")
+end
+unittests.register("test_async_metatable_override", test_async_metatable_override)
+
+local function test_async_metatable_registration(cb)
+	local custom_metatable = {}
+	core.register_async_metatable("unittests:custom_metatable", custom_metatable)
+
+	core.handle_async(function(x)
+		-- unittests.custom_metatable is registered in inside_async_env.lua
+		return getmetatable(x) == unittests.custom_metatable, x
+	end, function(metatable_preserved_async, table_after_roundtrip)
+		if not metatable_preserved_async then
+			return cb("Custom metatable not preserved (main -> async)")
+		end
+		if getmetatable(table_after_roundtrip) ~= custom_metatable then
+			return cb("Custom metable not preserved (after roundtrip)")
+		end
+		cb()
+	end, setmetatable({}, custom_metatable))
+end
+unittests.register("test_async_metatable_registration", test_async_metatable_registration, {async=true})
+
+local function test_vector_preserve(cb)
+	local vec = vector.new(1, 2, 3)
+	core.handle_async(function(x)
+		return x[1]
+	end, function(ret)
+		if ret ~= vec then -- fails if metatable was not preserved
+			return cb("Vector value mismatch")
+		end
+		cb()
+	end, {vec})
+end
+unittests.register("test_async_vector", test_vector_preserve, {async=true})

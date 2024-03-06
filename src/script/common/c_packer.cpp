@@ -99,6 +99,27 @@ static inline bool suitable_key(lua_State *L, int idx)
 	}
 }
 
+/**
+ * Push core.known_metatables to the stack if it exists.
+ * @param L Lua state
+ * @return true if core.known_metatables exists, false otherwise.
+*/
+static inline bool get_known_lua_metatables(lua_State *L)
+{
+	lua_getglobal(L, "core");
+	if (!lua_istable(L, -1)) {
+		lua_pop(L, 1);
+		return false;
+	}
+	lua_getfield(L, -1, "known_metatables");
+	if (lua_istable(L, -1)) {
+		lua_remove(L, -2);
+		return true;
+	}
+	lua_pop(L, 2);
+	return false;
+}
+
 namespace {
 	// checks if you left any values on the stack, for debugging
 	class StackChecker {
@@ -450,6 +471,18 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 		lua_pop(L, 1);
 	}
 
+	// try to preserve metatable information
+	if (lua_getmetatable(L, idx) && get_known_lua_metatables(L)) {
+		lua_insert(L, -2);
+		lua_gettable(L, -2);
+		if (lua_isstring(L, -1)) {
+			auto r = emplace(pv, INSTR_SETMETATABLE);
+			r->sdata = std::string(lua_tostring(L, -1));
+			r->set_into = vi_table;
+		}
+		lua_pop(L, 2);
+	}
+
 	// exactly the table should be left on stack
 	assert(vidx == vi_table + 1);
 	return rtable;
@@ -514,6 +547,16 @@ void script_unpack(lua_State *L, PackedValue *pv)
 				lua_pushinteger(L, i.sidata1);
 				lua_rawget(L, top);
 				break;
+			case INSTR_SETMETATABLE:
+				if (get_known_lua_metatables(L)) {
+					lua_getfield(L, -1, i.sdata.c_str());
+					lua_remove(L, -2);
+					if (lua_istable(L, -1))
+						lua_setmetatable(L, top + i.set_into);
+					else
+						lua_pop(L, 1);
+				}
+				continue;
 
 			/* Lua types */
 			case LUA_TNIL:
@@ -614,6 +657,9 @@ void script_dump_packed(const PackedValue *val)
 			case INSTR_PUSHREF:
 				printf("PUSHREF(%d)", i.sidata1);
 				break;
+			case INSTR_SETMETATABLE:
+				printf("SETMETATABLE(%s)", i.sdata.c_str());
+				break;
 			case LUA_TNIL:
 				printf("nil");
 				break;
@@ -636,7 +682,7 @@ void script_dump_packed(const PackedValue *val)
 				printf("userdata %s %p", i.sdata.c_str(), i.ptrdata);
 				break;
 			default:
-				printf("!!UNKNOWN!!");
+				FATAL_ERROR("unknown type");
 				break;
 		}
 		if (i.set_into) {
