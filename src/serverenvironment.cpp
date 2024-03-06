@@ -1727,8 +1727,8 @@ u16 ServerEnvironment::addActiveObject(std::unique_ptr<ServerActiveObject> objec
 */
 void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 	s16 player_radius,
-	std::set<u16> &current_objects,
-	std::queue<u16> &added_objects)
+	const std::set<u16> &current_objects,
+	std::vector<u16> &added_objects)
 {
 	f32 radius_f = radius * BS;
 	f32 player_radius_f = player_radius * BS;
@@ -1746,8 +1746,8 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 */
 void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius,
 	s16 player_radius,
-	std::set<u16> &current_objects,
-	std::queue<std::pair<bool /* gone? */, u16>> &removed_objects)
+	const std::set<u16> &current_objects,
+	std::vector<std::pair<bool /* gone? */, u16>> &removed_objects)
 {
 	f32 radius_f = radius * BS;
 	f32 player_radius_f = player_radius * BS;
@@ -1765,15 +1765,15 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 	for (u16 id : current_objects) {
 		ServerActiveObject *object = getActiveObject(id);
 
-		if (object == NULL) {
-			infostream << "ServerEnvironment::getRemovedActiveObjects():"
-				<< " object in current_objects is NULL" << std::endl;
-			removed_objects.emplace(true, id);
+		if (!object) {
+			warningstream << FUNCTION_NAME << ": found NULL object id="
+				<< (int)id << std::endl;
+			removed_objects.emplace_back(true, id);
 			continue;
 		}
 
 		if (object->isGone()) {
-			removed_objects.emplace(true, id);
+			removed_objects.emplace_back(true, id);
 			continue;
 		}
 
@@ -1785,7 +1785,7 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 			continue;
 
 		// Object is no longer visible
-		removed_objects.emplace(false, id);
+		removed_objects.emplace_back(false, id);
 	}
 }
 

@@ -153,9 +153,9 @@ void ActiveObjectMgr::getObjectsInArea(const aabb3f &box,
 	}
 }
 
-void ActiveObjectMgr::getAddedActiveObjectsAroundPos(const v3f &player_pos, f32 radius,
-		f32 player_radius, std::set<u16> &current_objects,
-		std::queue<u16> &added_objects)
+void ActiveObjectMgr::getAddedActiveObjectsAroundPos(v3f player_pos, f32 radius,
+		f32 player_radius, const std::set<u16> &current_objects,
+		std::vector<u16> &added_objects)
 {
 	/*
 		Go through the object list,
@@ -188,7 +188,7 @@ void ActiveObjectMgr::getAddedActiveObjectsAroundPos(const v3f &player_pos, f32 
 		if (n != current_objects.end())
 			continue;
 		// Add to added_objects
-		added_objects.push(id);
+		added_objects.push_back(id);
 	}
 }
 
