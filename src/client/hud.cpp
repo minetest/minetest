@@ -250,7 +250,7 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount, v2f 
 	}
 
 	// Position of upper left corner of bar
-	v2s32 pos = screen_offset * m_scale_factor;
+	v2s32 pos(screen_offset.X * m_scale_factor, screen_offset.Y * m_scale_factor);
 	pos += upperleftpos;
 	pos.X += alignment.X * width;
 	pos.Y += alignment.Y * height;
