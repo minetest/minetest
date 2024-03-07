@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cerrno>
 #include <algorithm>
 #include <cmath>
-#include "connection.h"
+#include "connection_internal.h"
 #include "serialization.h"
 #include "log.h"
 #include "porting.h"

@@ -20,9 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+/********************************************/
+/* may only be included from in src/network */
+/********************************************/
+
 #include <cassert>
 #include "threading/thread.h"
-#include "connection.h"
+#include "connection_internal.h"
 
 namespace con
 {
