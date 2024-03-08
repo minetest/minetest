@@ -118,6 +118,16 @@ void ActiveObjectMgr::removeObject(u16 id)
 	}
 }
 
+void ActiveObjectMgr::invalidateActiveObjectObserverCaches()
+{
+	for (auto &activeObject : m_active_objects.iter()) {
+		ServerActiveObject *obj = activeObject.second.get();
+		if (!obj)
+			continue;
+		obj->invalidateEffectiveObservers();
+	}
+}
+
 void ActiveObjectMgr::getObjectsInsideRadius(const v3f &pos, float radius,
 		std::vector<ServerActiveObject *> &result,
 		std::function<bool(ServerActiveObject *obj)> include_obj_cb)
@@ -185,7 +195,7 @@ void ActiveObjectMgr::getAddedActiveObjectsAroundPos(
 		} else if (distance_f > radius)
 			continue;
 
-		if (!object->isObservedBy(player_name))
+		if (!object->isEffectivelyObservedBy(player_name))
 			continue;
 
 		// Discard if already on current_objects

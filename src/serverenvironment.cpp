@@ -1711,6 +1711,11 @@ u16 ServerEnvironment::addActiveObject(std::unique_ptr<ServerActiveObject> objec
 	return id;
 }
 
+void ServerEnvironment::invalidateActiveObjectObserverCaches()
+{
+	m_ao_manager.invalidateActiveObjectObserverCaches();
+}
+
 /*
 	Finds out what new objects have been added to
 	inside a radius around a position
@@ -1747,7 +1752,7 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 	if (player_radius_f < 0)
 		player_radius_f = 0;
 
-	const std::string player_name = playersao->getPlayer()->getName();
+	const std::string &player_name = playersao->getPlayer()->getName();
 
 	/*
 		Go through current_objects; object is removed if:
@@ -1755,7 +1760,8 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 		  error condition; objects should be removed only after all clients
 		  have been informed about removal), or
 		- object is to be removed or deactivated, or
-		- object is too far away
+		- object is too far away, or
+		- object is marked as not observable by the client
 	*/
 	for (u16 id : current_objects) {
 		ServerActiveObject *object = getActiveObject(id);
@@ -1777,7 +1783,7 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 			? distance_f <= player_radius_f || player_radius_f == 0
 			: distance_f <= radius_f;
 
-		if (!inRange || !object->isObservedBy(player_name))
+		if (!inRange || !object->isEffectivelyObservedBy(player_name))
 			removed_objects.emplace_back(false, id); // out of range or not observed anymore
 	}
 }

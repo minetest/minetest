@@ -242,14 +242,25 @@ public:
 	*/
 	v3s16 m_static_block = v3s16(1337,1337,1337);
 
-	bool isObservedBy(const std::string &player_name) const;
+	// Names of players to whom the object is to be sent, not considering parents.
+	using Observers = std::optional<std::unordered_set<std::string>>;
+	Observers m_observers;
 
-	/*
-		Names of players to whom the object is to be sent
-	*/
-	std::optional<std::unordered_set<std::string>> m_observer_names;
+	// Invalidate final observer cache. This needs to be done whenever
+	// the observers of this object or any of its ancestors may have changed.
+	void invalidateEffectiveObservers();
+	// Get from cache (or compute) final observers.
+	const Observers &getEffectiveObservers();
+	// Force a recalculation of final observers (including all parents).
+	const Observers &recalculateEffectiveObservers();
+	// Check whether an object is finally observed by a player.
+	// Requires the cached final observers to be up to date.
+	bool isEffectivelyObservedBy(const std::string &player_name);
 
 protected:
+	// Cached intersection of m_observers of this object and all its parents.
+	std::optional<Observers> m_effective_observers;
+
 	virtual void onMarkedForDeactivation() {}
 	virtual void onMarkedForRemoval() {}
 

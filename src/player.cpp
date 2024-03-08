@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"  // strlcpy
 
 
-Player::Player(const std::string name, IItemDefManager *idef):
+Player::Player(const std::string &name, IItemDefManager *idef):
 	inventory(idef)
 {
 	m_name = name;
