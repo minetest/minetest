@@ -1118,10 +1118,10 @@ Table used to specify how a sound is played:
     -- store the handle and call `minetest.sound_stop` in `on_die` / `on_deactivate`.
 
     -- Ephemeral sounds are entirely unaffected by the object
-	-- disappearing clientside for any reason.
+    -- disappearing clientside for any reason.
 
     -- Non-ephemeral sounds stop playing if objects disappear on the client,
-	-- (but not on the server); they should start playing again if objects
+    -- (but not on the server); they should start playing again if objects
     -- reappear on the client (but due to a known bug, they don't yet).
 
     to_player = name,
@@ -7852,13 +7852,20 @@ child will follow movement and rotation of that bone.
         * A player is an observer if and only if the player's name is a key in the `observers` table.
         * Since this is a set, the values need to be `true`.
     * If players are managed, they always need to have themselves as observers.
-    * Attachments:
-        * If an object's observers are managed, the observers of all children need to be managed too.
-        * The observers of children need to be a subset of the observers of parents.
-	* Object activation and deactivation are unaffected by observability.
+    * Attachments: The "final observers" are the intersection of all observer sets
+      of all ancestors of an object and the object itself.
+      The intersection of an unmanaged observer set with a managed one is the managed one,
+      the intersection of two unmanaged observer sets is unmanaged.
+    * Object activation and deactivation are unaffected by observability.
 * `get_observers()`:
+    * throws an error if the object is invalid
     * returns `nil` if the observers are unmanaged
     * returns a table with all observer names as keys and `true` values (a "set") otherwise
+* `get_final_observers()`:
+    * Like `get_observers()`, but returns the final observers, taking into account attachments
+    * Time complexity: O(nm)
+        * n: number of observers of the involved entities
+        * m: number of ancestors along the attachment chain
 * `is_player()`: returns true for players, false otherwise
 * `get_nametag_attributes()`
     * returns a table with the attributes of the nametag of an object

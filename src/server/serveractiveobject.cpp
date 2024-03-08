@@ -18,25 +18,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "serveractiveobject.h"
+#include <algorithm>
+#include <cstddef>
+#include <cstdio>
 #include <fstream>
+#include <unordered_map>
 #include "inventory.h"
 #include "inventorymanager.h"
 #include "constants.h" // BS
 #include "log.h"
 
-ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
+using SAO = ServerActiveObject;
+
+SAO::ServerActiveObject(ServerEnvironment *env, v3f pos):
 	ActiveObject(0),
 	m_env(env),
 	m_base_position(pos)
 {
 }
 
-float ServerActiveObject::getMinimumSavedMovement()
+float SAO::getMinimumSavedMovement()
 {
 	return 2.0*BS;
 }
 
-ItemStack ServerActiveObject::getWieldedItem(ItemStack *selected, ItemStack *hand) const
+ItemStack SAO::getWieldedItem(ItemStack *selected, ItemStack *hand) const
 {
 	*selected = ItemStack();
 	if (hand)
@@ -45,12 +51,12 @@ ItemStack ServerActiveObject::getWieldedItem(ItemStack *selected, ItemStack *han
 	return ItemStack();
 }
 
-bool ServerActiveObject::setWieldedItem(const ItemStack &item)
+bool SAO::setWieldedItem(const ItemStack &item)
 {
 	return false;
 }
 
-std::string ServerActiveObject::generateUpdateInfantCommand(u16 infant_id, u16 protocol_version)
+std::string SAO::generateUpdateInfantCommand(u16 infant_id, u16 protocol_version)
 {
 	std::ostringstream os(std::ios::binary);
 	// command
@@ -67,7 +73,7 @@ std::string ServerActiveObject::generateUpdateInfantCommand(u16 infant_id, u16 p
 	return os.str();
 }
 
-void ServerActiveObject::dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &queue)
+void SAO::dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &queue)
 {
 	while (!m_messages_out.empty()) {
 		queue.push(std::move(m_messages_out.front()));
@@ -75,7 +81,7 @@ void ServerActiveObject::dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &
 	}
 }
 
-void ServerActiveObject::markForRemoval()
+void SAO::markForRemoval()
 {
 	if (!m_pending_removal) {
 		onMarkedForRemoval();
@@ -83,7 +89,7 @@ void ServerActiveObject::markForRemoval()
 	}
 }
 
-void ServerActiveObject::markForDeactivation()
+void SAO::markForDeactivation()
 {
 	if (!m_pending_deactivation) {
 		onMarkedForDeactivation();
@@ -91,12 +97,54 @@ void ServerActiveObject::markForDeactivation()
 	}
 }
 
-InventoryLocation ServerActiveObject::getInventoryLocation() const
+InventoryLocation SAO::getInventoryLocation() const
 {
 	return InventoryLocation();
 }
 
-bool ServerActiveObject::isObservedBy(const std::string &player_name) const
+void SAO::invalidateFinalObservers()
 {
-	return !m_observer_names.has_value() || m_observer_names.value().count(player_name) > 0;
+	m_final_observers.reset();
+}
+
+const SAO::Observers &SAO::getFinalObservers()
+{
+	if (m_final_observers) {
+		return *m_final_observers;
+	}
+	auto parent = getParent();
+	if (parent == nullptr) {
+		return *(m_final_observers = m_observers);
+	}
+	auto parent_observers = parent->getFinalObservers();
+	if (!parent_observers) {
+		return *(m_final_observers = m_observers);
+	}
+	if (!m_observers) {
+		return *(m_final_observers = parent_observers);
+	}
+	// Set intersection between parent_observers and m_observers
+	m_final_observers = std::unordered_set<std::string>(
+			std::min(m_observers->size(), parent_observers->size()));
+	std::copy_if(m_observers->begin(), m_observers->end(),
+			std::inserter(**m_final_observers, (*m_final_observers)->begin()),
+			[&](auto observer_name) {
+				return parent_observers->count(observer_name) > 0;
+			});
+	return *m_final_observers;
+}
+
+const SAO::Observers &SAO::recalculateFinalObservers()
+{
+	// Invalidate final observers for this object and all of its parents.
+	for (auto obj = this; obj != nullptr; obj = obj->getParent())
+		obj->invalidateFinalObservers();
+	// getFinalObservers will now be forced to recalculate.
+	return getFinalObservers();
+}
+
+bool SAO::isFinallyObservedBy(const std::string &player_name)
+{
+	auto final_observers = getFinalObservers();
+	return !final_observers || final_observers->count(player_name) > 0;
 }

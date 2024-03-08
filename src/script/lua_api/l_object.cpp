@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_content.h"
 #include "log.h"
 #include "player.h"
+#include "server/serveractiveobject.h"
 #include "tool.h"
 #include "remoteplayer.h"
 #include "server.h"
@@ -847,10 +848,7 @@ int ObjectRef::l_set_observers(lua_State *L)
 
 	// Reset object to "unmanaged" (sent to everyone)?
 	if (lua_isnoneornil(L, 2)) {
-		ServerActiveObject *parent = sao->getParent();
-		if (parent != nullptr && parent->m_observer_names.has_value())
-			throw LuaError("Child observers need to be managed if parent observers are managed");
-		sao->m_observer_names.reset();
+		sao->m_observers.reset();
 		return 0;
 	}
 
@@ -876,51 +874,47 @@ int ObjectRef::l_set_observers(lua_State *L)
 			throw LuaError("Players need to observe themselves");
 	}
 
-	// Check attachments
-	ServerActiveObject *parent = sao->getParent();
-	if (parent != nullptr) {
-		for (auto &name : observer_names) {
-			if (!parent->isObservedBy(name))
-				throw LuaError("Child observers not a subset of parent observers");
-		}
-	}
-	auto child_ids = sao->getAttachmentChildIds();
-	for (auto child_id : child_ids) {
-		ServerActiveObject *child = env->getActiveObject(child_id);
-		assert(child);
-		if (!child->m_observer_names.has_value())
-			throw LuaError("Child observers need to be managed if parent observers are managed");
-		for (auto &name : child->m_observer_names.value()) {
-			if (!sao->isObservedBy(name))
-				throw LuaError("Child observers not a subset of parent observers");
-		}
-	}
-	sao->m_observer_names = observer_names;
+	sao->m_observers = observer_names;
 	return 0;
+}
+
+template<typename F>
+static int _get_observers(lua_State *L, F get_observers)
+{
+	ObjectRef *ref = ObjectRef::checkObject<ObjectRef>(L, 1);
+	ServerActiveObject *sao = ObjectRef::getobject(ref);
+	if (sao == nullptr)
+		throw LuaError("invalid ObjectRef");
+
+	const auto observers = get_observers(sao);
+	if (!observers) {
+		lua_pushnil(L);
+		return 1;
+	}
+	// Push set of observers {[name] = true}
+	lua_createtable(L, 0, observers->size());
+	for (auto &name : *observers) {
+		lua_pushboolean(L, true);
+		lua_setfield(L, -2, name.c_str());
+	}
+	return 1;
 }
 
 // get_observers(self)
 int ObjectRef::l_get_observers(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
-	ServerActiveObject *sao = getobject(ref);
-	if (sao == nullptr)
-		throw LuaError("invalid ObjectRef");
+	return _get_observers(L, [](auto sao) { return sao->m_observers; });
+}
 
-	if (!sao->m_observer_names.has_value()) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	const auto &observer_names = sao->m_observer_names.value();
-	// Push set of observers {[name] = true}
-	lua_createtable(L, 0, observer_names.size());
-	for (auto &name : observer_names) {
-		lua_pushboolean(L, true);
-		lua_setfield(L, -2, name.c_str());
-	}
-	return 1;
+// get_final_observers(self)
+int ObjectRef::l_get_final_observers(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	return _get_observers(L, [](auto sao) {
+		// The cache may be outdated, so we always have to recalculate.
+		return sao->recalculateFinalObservers();
+	});
 }
 
 // is_player(self)

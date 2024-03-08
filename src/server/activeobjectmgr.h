@@ -38,6 +38,8 @@ public:
 	bool registerObject(std::unique_ptr<ServerActiveObject> obj) override;
 	void removeObject(u16 id) override;
 
+	void invalidateActiveObjectObserverCaches();
+
 	void getObjectsInsideRadius(const v3f &pos, float radius,
 			std::vector<ServerActiveObject *> &result,
 			std::function<bool(ServerActiveObject *obj)> include_obj_cb);

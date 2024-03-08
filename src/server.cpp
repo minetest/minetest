@@ -781,6 +781,8 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 		//infostream<<"Server: Checking added and deleted active objects"<<std::endl;
 		MutexAutoLock envlock(m_env_mutex);
 
+		m_env->invalidateActiveObjectObserverCaches();
+
 		{
 			ClientInterface::AutoLock clientlock(m_clients);
 			const RemoteClientMap &clients = m_clients.getClientList();

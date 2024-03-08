@@ -166,6 +166,9 @@ private:
 	// get_observers(self)
 	static int l_get_observers(lua_State *L);
 
+	// get_final_observers(self)
+	static int l_get_final_observers(lua_State *L);
+
 	// is_player(self)
 	static int l_is_player(lua_State *L);
 
