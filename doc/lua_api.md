@@ -8266,6 +8266,7 @@ child will follow movement and rotation of that bone.
     * `light_definition` is a table with the following optional fields:
       * `ambient_light` is a ColorSpec controlling lightness & color of ambient light; alpha must be 255
         (global lighting; default: `{a = 255, r = 0, g = 0, b = 0}` / last set value).
+        * It works only if 'enable_shaders' setting is set to true.
       * `saturation` sets the saturation (vividness; default: `1.0`).
         * values > 1 increase the saturation
         * values in [0,1] decrease the saturation

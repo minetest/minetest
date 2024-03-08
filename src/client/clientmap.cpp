@@ -719,7 +719,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	const float animation_time = m_client->getAnimationTime();
 	const int crack = m_client->getCrackLevel();
 	const u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
-	const auto ambient_light = m_client->getEnv().getAmbientLight();
 
 	const v3f camera_position = m_camera_position;
 
@@ -778,11 +777,10 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			// Pretty random but this should work somewhat nicely
 			bool faraway = d >= BS * 50;
 			if (block_mesh->isAnimationForced() || !faraway ||
-					mesh_animate_count < (m_control.range_all ? 200 : 50) ||
-					m_force_update_light_color) {
+					mesh_animate_count < (m_control.range_all ? 200 : 50)) {
 
 				bool animated = block_mesh->animate(faraway, animation_time,
-					crack, daynight_ratio, ambient_light);
+					crack, daynight_ratio);
 				if (animated)
 					mesh_animate_count++;
 			} else {
@@ -825,8 +823,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			}
 		}
 	}
-
-	m_force_update_light_color = false;
 
 	// Capture draw order for all solid meshes
 	for (auto &map : grouped_buffers.maps) {

@@ -379,7 +379,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float>
 		m_animation_timer_delta_pixel{"animationTimerDelta"};
 	CachedPixelShaderSetting<float, 3> m_day_light{"dayLight"};
-	CachedPixelShaderSetting<float, 1> m_ambient_light{"ambientLight"};
+	CachedPixelShaderSetting<float, 3> m_ambient_light{"ambientLight"};
 	CachedPixelShaderSetting<float, 3> m_eye_position_pixel{"eyePosition"};
 	CachedVertexShaderSetting<float, 3> m_eye_position_vertex{"eyePosition"};
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
@@ -473,14 +473,7 @@ public:
 		get_sunlight_color(&sunlight, daynight_ratio);
 		m_day_light.set(sunlight, services);
 
-		auto ambient_light = m_client->getEnv().getAmbientLight();
-
-		float ambient_light_f[3] = {
-			ambient_light.getRed() / 255.f,
-			ambient_light.getGreen() / 255.f,
-			ambient_light.getBlue() / 255.f
-		};
-
+		video::SColorf ambient_light_f(m_client->getEnv().getAmbientLight());
 		m_ambient_light.set(ambient_light_f, services);
 
 		u32 animation_timer = m_client->getEnv().getFrameTime() % 1000000;
@@ -3461,7 +3454,7 @@ PointedThing Game::updatePointedThing(
 
 		u32 daynight_ratio = client->getEnv().getDayNightRatio();
 		video::SColor c;
-		final_color_blend(&c, light_level, daynight_ratio, client->getEnv().getAmbientLight());
+		final_color_blend(&c, light_level, daynight_ratio);
 
 		// Modify final color a bit with time
 		u32 timer = client->getEnv().getFrameTime() % 5000;

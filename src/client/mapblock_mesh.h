@@ -190,7 +190,7 @@ public:
 	//   daynight_ratio: 0 .. 1000
 	//   crack: -1 .. CRACK_ANIMATION_LENGTH-1 (-1 for off)
 	// Returns true if anything has been changed.
-	bool animate(bool faraway, float time, int crack, u32 daynight_ratio, video::SColor ambient_light);
+	bool animate(bool faraway, float time, int crack, u32 daynight_ratio);
 
 	scene::IMesh *getMesh()
 	{
@@ -318,7 +318,7 @@ void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio);
  * night light
  */
 void final_color_blend(video::SColor *result,
-		u16 light, u32 daynight_ratio, video::SColor ambientLight);
+		u16 light, u32 daynight_ratio, video::SColor ambientLight=video::SColor(255,0,0,0));
 
 /*!
  * Gives the final  SColor shown on screen.
@@ -329,7 +329,7 @@ void final_color_blend(video::SColor *result,
  */
 void final_color_blend(video::SColor *result,
 		const video::SColor &data, const video::SColorf &dayLight,
-		const video::SColor &ambientLight);
+		const video::SColor &ambientLight=video::SColor(255,0,0,0));
 
 // Retrieves the TileSpec of a face of a node
 // Adds MATERIAL_FLAG_CRACK if the node is cracked

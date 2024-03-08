@@ -909,8 +909,7 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 	if (m_enable_shaders)
 		light = encode_light(light_at_pos, m_prop.glow);
 	else
-		final_color_blend(&light, light_at_pos, day_night_ratio,
-			m_client->getEnv().getAmbientLight());
+		final_color_blend(&light, light_at_pos, day_night_ratio);
 
 	if (light != m_last_light) {
 		m_last_light = light;
