@@ -589,9 +589,8 @@ RemotePlayer *ServerEnvironment::getPlayer(const char* name, bool match_invalid_
 		if (strcmp(player->getName(), name) != 0)
 			continue;
 
-		if (match_invalid_peer || player->getPeerId() != PEER_ID_INEXISTENT) {
+		if (match_invalid_peer || player->getPeerId() != PEER_ID_INEXISTENT)
 			return player;
-		}
 		break;
 	}
 	return nullptr;
