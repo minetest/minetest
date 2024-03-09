@@ -919,12 +919,10 @@ static inline void getWieldedItem(const PlayerSAO *playersao, std::optional<Item
 	playersao->getWieldedItem(&(*ret));
 }
 
-static inline bool getOffhandWieldedItem(const PlayerSAO *playersao, std::optional<ItemStack> &offhand,
-	std::optional<ItemStack> &place, IItemDefManager *idef, const PointedThing &pointed)
+static inline void getOffhandWieldedItem(const PlayerSAO *playersao, std::optional<ItemStack> &offhand)
 {
 	offhand = ItemStack();
-	place = ItemStack();
-	return playersao->getOffhandWieldedItem(&(*offhand), &(*place), idef, pointed);
+	playersao->getOffhandWieldedItem(&(*offhand));
 }
 
 void Server::handleCommand_Interact(NetworkPacket *pkt)
@@ -1237,7 +1235,14 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	case INTERACT_PLACE: {
 		std::optional<ItemStack> main_item, offhand_item, place_item;
 		getWieldedItem(playersao, main_item);
-		bool use_offhand = getOffhandWieldedItem(playersao, offhand_item, place_item, m_itemdef, pointed);
+		getOffhandWieldedItem(playersao, offhand_item);
+
+		HandIndex used_hand = playersao->getCurrentUsedHand(m_itemdef, pointed);
+
+		if (used_hand == MAINHAND)
+			place_item = main_item;
+		else
+			place_item = offhand_item;
 
 		// Reset build time counter
 		if (pointed.type == POINTEDTHING_NODE &&
@@ -1259,22 +1264,30 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 					<< pointed_object->getDescription() << std::endl;
 
 			// Do stuff
-			if (m_script->item_OnSecondaryUse(use_offhand ? offhand_item : main_item, playersao, pointed)) {
-				if (use_offhand
+			playersao->getPlayer()->current_used_hand = used_hand;
+			if (m_script->item_OnSecondaryUse(used_hand == MAINHAND ? main_item : offhand_item, playersao, pointed)) {
+				if (used_hand == OFFHAND
 						? (offhand_item.has_value() && playersao->setOffhandWieldedItem(*offhand_item))
 						: (main_item.has_value() && playersao->setWieldedItem(*main_item)))
 					SendInventory(player, true);
 			}
 
-			pointed_object->rightClick(playersao);
-		} else if (m_script->item_OnPlace(use_offhand ? offhand_item : main_item, playersao, pointed)) {
-			// Placement was handled in lua
+			playersao->getPlayer()->current_used_hand = MAINHAND;
 
-			// Apply returned ItemStack
-			if (use_offhand
-					? (offhand_item.has_value() && playersao->setOffhandWieldedItem(*offhand_item))
-					: (main_item.has_value() && playersao->setWieldedItem(*main_item)))
+			pointed_object->rightClick(playersao);
+		}
+		else {
+			playersao->getPlayer()->current_used_hand = used_hand;
+			if (m_script->item_OnPlace(used_hand == MAINHAND ? main_item : offhand_item, playersao, pointed)) {
+				// Placement was handled in lua
+
+				// Apply returned ItemStack
+				if (used_hand == OFFHAND
+						? (offhand_item.has_value() && playersao->setOffhandWieldedItem(*offhand_item))
+						: (main_item.has_value() && playersao->setWieldedItem(*main_item)))
 				SendInventory(player, true);
+			}
+			playersao->getPlayer()->current_used_hand = MAINHAND;
 		}
 
 		if (pointed.type != POINTEDTHING_NODE)
@@ -1318,20 +1331,28 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	case INTERACT_ACTIVATE: {
 		std::optional<ItemStack> main_item, offhand_item, place_item;
 		getWieldedItem(playersao, main_item);
-		bool use_offhand = getOffhandWieldedItem(playersao, offhand_item, place_item, m_itemdef, pointed);
+		getOffhandWieldedItem(playersao, offhand_item);
+		HandIndex used_hand = playersao->getCurrentUsedHand(m_itemdef, pointed);
+
+		if (used_hand == MAINHAND)
+			place_item = main_item;
+		else
+			place_item = offhand_item;
 
 		actionstream << player->getName() << " activates "
 				<< place_item->name << std::endl;
 
 		pointed.type = POINTEDTHING_NOTHING; // can only ever be NOTHING
 
-		if (m_script->item_OnSecondaryUse(use_offhand ? offhand_item : main_item, playersao, pointed)) {
+		playersao->getPlayer()->current_used_hand = used_hand;
+		if (m_script->item_OnSecondaryUse(used_hand == MAINHAND ? main_item : offhand_item, playersao, pointed)) {
 			// Apply returned ItemStack
-			if (use_offhand
+			if (used_hand == OFFHAND
 					? (offhand_item.has_value() && playersao->setOffhandWieldedItem(*offhand_item))
 					: (main_item.has_value() && playersao->setWieldedItem(*main_item)))
 				SendInventory(player, true);
 		}
+		playersao->getPlayer()->current_used_hand = MAINHAND;
 
 		return;
 	}
