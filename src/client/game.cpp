@@ -776,10 +776,10 @@ protected:
 			const core::line3d<f32> &shootline, bool liquids_pointable,
 			const std::optional<Pointabilities> &pointabilities,
 			bool look_for_object, const v3s16 &camera_offset);
-	void handlePointingAtNothing(const ItemStack &playerItem);
+	void handlePointingAtNothing(HandIndex used_hand);
 	void handlePointingAtNode(const PointedThing &pointed,
 			const ItemStack &selected_item, const ItemStack &hand_item,
-			const ItemStack &place_item, f32 dtime);
+			HandIndex used_hand, f32 dtime);
 	void handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
 			const v3f &player_position, bool show_debug);
 	void handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
@@ -3379,8 +3379,6 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 			!runData.btn_down_for_dig,
 			camera_offset);
 
-	player->getOffhandWieldedItem(&offhand_item, &place_item, itemdef_manager, pointed);
-
 	if (pointed != runData.pointed_old)
 		infostream << "Pointing at " << pointed.dump() << std::endl;
 
@@ -3446,12 +3444,14 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	else
 		runData.repeat_place_timer = 0;
 
+	HandIndex cur_used_hand = player->getCurrentUsedHand(itemdef_manager, pointed);
+
 	if (selected_def.usable && isKeyDown(KeyType::DIG)) {
 		if (wasKeyPressed(KeyType::DIG) && (!client->modsLoaded() ||
 				!client->getScript()->on_item_use(selected_item, pointed)))
 			client->interact(INTERACT_USE, pointed);
 	} else if (pointed.type == POINTEDTHING_NODE) {
-		handlePointingAtNode(pointed, selected_item, hand_item, place_item, dtime);
+		handlePointingAtNode(pointed, selected_item, hand_item, cur_used_hand, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		v3f player_position  = player->getPosition();
 		bool basic_debug_allowed = client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_BASIC_DEBUG);
@@ -3464,7 +3464,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 		if (wasKeyPressed(KeyType::DIG) && client->modsLoaded())
 			client->getScript()->on_item_use(selected_item, pointed);
 	} else if (wasKeyPressed(KeyType::PLACE)) {
-		handlePointingAtNothing(place_item);
+		handlePointingAtNothing(cur_used_hand);
 	}
 
 	runData.pointed_old = pointed;
@@ -3585,7 +3585,7 @@ PointedThing Game::updatePointedThing(
 }
 
 
-void Game::handlePointingAtNothing(const ItemStack &playerItem)
+void Game::handlePointingAtNothing(HandIndex used_hand)
 {
 	infostream << "Attempted to place item while pointing at nothing" << std::endl;
 	PointedThing fauxPointed;
@@ -3596,7 +3596,7 @@ void Game::handlePointingAtNothing(const ItemStack &playerItem)
 
 void Game::handlePointingAtNode(const PointedThing &pointed,
 	const ItemStack &selected_item, const ItemStack &hand_item,
-	const ItemStack &place_item, f32 dtime)
+	HandIndex used_hand, f32 dtime)
 {
 	v3s16 nodepos = pointed.node_undersurface;
 	v3s16 neighborpos = pointed.node_abovesurface;
@@ -3630,14 +3630,14 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 	if ((wasKeyPressed(KeyType::PLACE) ||
 			runData.repeat_place_timer >= m_repeat_place_time) &&
 			client->checkPrivilege("interact")) {
+		LocalPlayer *player = client->getEnv().getLocalPlayer();
+		player->current_used_hand = used_hand;
+
 		runData.repeat_place_timer = 0;
 		infostream << "Place button pressed while looking at ground" << std::endl;
 
 		// Placing animation (always shown for feedback)
-		if (place_item == selected_item)
-			camera->setDigging(1, MAINHAND);
-		else
-			camera->setDigging(1, OFFHAND);
+		camera->setDigging(1, used_hand);
 
 		soundmaker->m_player_rightpunch_sound = SoundSpec();
 
@@ -3645,12 +3645,22 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		// make that happen
 		// And also set the sound and send the interact
 		// But first check for meta formspec and rightclickable
+		ItemStack place_item;
+
+		if (used_hand == MAINHAND)
+			player->getWieldedItem(&place_item, nullptr);
+		else
+			player->getOffhandWieldedItem(&place_item);
+
 		auto &def = place_item.getDefinition(itemdef_manager);
 		bool placed = nodePlacement(def, place_item, nodepos, neighborpos,
 			pointed, meta);
 
 		if (placed && client->modsLoaded())
 			client->getScript()->on_placenode(pointed, def);
+
+		// Resets the hand index after 'on_place' callback run.
+		player->current_used_hand = MAINHAND;
 	}
 }
 
@@ -4195,7 +4205,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		ItemStack selected_item, hand_item, offhand_item;
 		ItemStack &tool_item = player->getWieldedItem(&selected_item, &hand_item);
 		camera->wield(tool_item, MAINHAND);
-		player->getOffhandWieldedItem(&offhand_item, nullptr, itemdef_manager, PointedThing());
+		player->getOffhandWieldedItem(&offhand_item);
 		camera->wield(offhand_item, OFFHAND);
 	}
 

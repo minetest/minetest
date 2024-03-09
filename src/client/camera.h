@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <array>
 #include <list>
 #include <optional>
+#include "player.h"
 
 class LocalPlayer;
 struct MapDrawControl;
@@ -71,8 +72,6 @@ struct Nametag
 			return video::SColor(50, 255, 255, 255);
 	}
 };
-
-enum HandIndex { MAINHAND = 0, OFFHAND = 1 };
 
 class WieldNode
 {
