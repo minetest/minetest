@@ -2253,7 +2253,6 @@ void Game::dropSelectedItem(bool single_item)
 
 void Game::swapOffhand()
 {
-
 	IMoveAction *a = new IMoveAction();
 	a->count = 0;
 	a->from_inv.setCurrentPlayer();
@@ -2267,12 +2266,8 @@ void Game::swapOffhand()
 	client->getEnv().getLocalPlayer()->getWieldedItem(&selected, nullptr);
 
 	if (selected.name == "") {
-		auto tmp_list = a->from_list;
-		auto tmp_i = a->from_i;
-		a->from_list = a->to_list;
-		a->from_i = a->to_i;
-		a->to_list = tmp_list;
-		a->to_i = tmp_i;
+		std::swap(a->from_list, a->to_list);
+		std::swap(a->from_i, a->to_i);
 	}
 
 	client->inventoryAction(a);

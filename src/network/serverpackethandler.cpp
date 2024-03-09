@@ -1265,7 +1265,8 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 			// Do stuff
 			playersao->getPlayer()->current_used_hand = used_hand;
-			if (m_script->item_OnSecondaryUse(used_hand == MAINHAND ? main_item : offhand_item, playersao, pointed)) {
+			if (m_script->item_OnSecondaryUse(used_hand == MAINHAND ? main_item : offhand_item,
+					playersao, pointed, (bool)used_hand)) {
 				if (used_hand == OFFHAND
 						? (offhand_item.has_value() && playersao->setOffhandWieldedItem(*offhand_item))
 						: (main_item.has_value() && playersao->setWieldedItem(*main_item)))
@@ -1278,7 +1279,8 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		}
 		else {
 			playersao->getPlayer()->current_used_hand = used_hand;
-			if (m_script->item_OnPlace(used_hand == MAINHAND ? main_item : offhand_item, playersao, pointed)) {
+			if (m_script->item_OnPlace(used_hand == MAINHAND ? main_item : offhand_item,
+					playersao, pointed, (bool)used_hand)) {
 				// Placement was handled in lua
 
 				// Apply returned ItemStack
@@ -1345,7 +1347,8 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		pointed.type = POINTEDTHING_NOTHING; // can only ever be NOTHING
 
 		playersao->getPlayer()->current_used_hand = used_hand;
-		if (m_script->item_OnSecondaryUse(used_hand == MAINHAND ? main_item : offhand_item, playersao, pointed)) {
+		if (m_script->item_OnSecondaryUse(used_hand == MAINHAND ? main_item : offhand_item,
+				playersao, pointed, (bool)used_hand)) {
 			// Apply returned ItemStack
 			if (used_hand == OFFHAND
 					? (offhand_item.has_value() && playersao->setOffhandWieldedItem(*offhand_item))

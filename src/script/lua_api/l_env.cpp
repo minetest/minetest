@@ -466,7 +466,7 @@ int ModApiEnv::l_place_node(lua_State *L)
 
 	// Place it with a nullptr placer (appears in Lua as nil)
 	// or the given ObjectRef
-	bool success = scriptIfaceItem->item_OnPlace(item, placer, pointed);
+	bool success = scriptIfaceItem->item_OnPlace(item, placer, pointed, false);
 	lua_pushboolean(L, success);
 	return 1;
 }

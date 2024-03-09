@@ -9306,17 +9306,19 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- When item is used with the 'punch/mine' key pointing at nothing (air)
     },
 
-    on_place = function(itemstack, placer, pointed_thing),
-    -- When the 'place' key was pressed with the item one of the hands
+    on_place = function(itemstack, placer, pointed_thing, offhand),
+    -- When the 'place' key was pressed with the item in one of the hands
     -- and a node was pointed at.
     -- 'itemstack' may be the offhand item in cases where the main hand has
     -- no on_place handler and no node_placement_prediction.
+    -- 'offhand' is a boolean indicating whether the callback was called
+    -- from the item of the main hand (false) or the offhand (true).
     -- Shall place item and return the leftover itemstack
     -- or nil to not modify the inventory.
     -- The placer may be any ObjectRef or nil.
     -- default: minetest.item_place
 
-    on_secondary_use = function(itemstack, user, pointed_thing),
+    on_secondary_use = function(itemstack, user, pointed_thing, offhand),
     -- Same as on_place but called when not pointing at a node,
     -- whereas `user` is the same as `placer` above.
     -- default: nil

@@ -61,7 +61,7 @@ bool ScriptApiItem::item_OnDrop(ItemStack &item,
 }
 
 bool ScriptApiItem::item_OnPlace(std::optional<ItemStack> &ret_item,
-		ServerActiveObject *placer, const PointedThing &pointed)
+		ServerActiveObject *placer, const PointedThing &pointed, bool offhand)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -81,7 +81,9 @@ bool ScriptApiItem::item_OnPlace(std::optional<ItemStack> &ret_item,
 		objectrefGetOrCreate(L, placer);
 
 	pushPointedThing(pointed);
-	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
+	lua_pushboolean(L, (int)offhand);
+
+	PCALL_RES(lua_pcall(L, 4, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
 		try {
 			ret_item = read_item(L, -1, getServer()->idef());
@@ -126,7 +128,7 @@ bool ScriptApiItem::item_OnUse(std::optional<ItemStack> &ret_item,
 }
 
 bool ScriptApiItem::item_OnSecondaryUse(std::optional<ItemStack> &ret_item,
-		ServerActiveObject *user, const PointedThing &pointed)
+		ServerActiveObject *user, const PointedThing &pointed, bool offhand)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -139,7 +141,9 @@ bool ScriptApiItem::item_OnSecondaryUse(std::optional<ItemStack> &ret_item,
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(L, user);
 	pushPointedThing(pointed);
-	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
+	lua_pushboolean(L, (int)offhand);
+
+	PCALL_RES(lua_pcall(L, 4, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
 		try {
 			ret_item = read_item(L, -1, getServer()->idef());

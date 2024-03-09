@@ -321,7 +321,7 @@ view_bobbing_amount (View bobbing factor) float 1.0 0.0 7.9
 fall_bobbing_amount (Fall bobbing factor) float 0.03 0.0 100.0
 
 #    Draw main hand on left side of screen, offhand on right side.
-mirror_hands (Mirror hands) bool false
+swap_hands (Swap hands) bool false
 
 [**Camera]
 
@@ -2418,7 +2418,6 @@ keymap_fullscreen (Fullscreen key) key KEY_F11
 keymap_drop (Drop item key) key KEY_KEY_Q
 
 #    Key for swapping items between main hand and offhand.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_swap_offhand (Swap hand items) key KEY_KEY_F
 
 #    Key to use view zoom when possible.
