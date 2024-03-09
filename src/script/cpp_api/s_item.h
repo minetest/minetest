@@ -46,11 +46,11 @@ public:
 	bool item_OnDrop(ItemStack &item,
 			ServerActiveObject *dropper, v3f pos);
 	bool item_OnPlace(std::optional<ItemStack> &item,
-			ServerActiveObject *placer, const PointedThing &pointed);
+			ServerActiveObject *placer, const PointedThing &pointed, bool offhand);
 	bool item_OnUse(std::optional<ItemStack> &item,
 			ServerActiveObject *user, const PointedThing &pointed);
 	bool item_OnSecondaryUse(std::optional<ItemStack> &item,
-			ServerActiveObject *user, const PointedThing &pointed);
+			ServerActiveObject *user, const PointedThing &pointed, bool offhand);
 	bool item_OnCraft(ItemStack &item, ServerActiveObject *user,
 			const InventoryList *old_craft_grid, const InventoryLocation &craft_inv);
 	bool item_CraftPredict(ItemStack &item, ServerActiveObject *user,

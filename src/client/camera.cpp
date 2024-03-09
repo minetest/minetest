@@ -46,10 +46,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define WIELDMESH_AMPLITUDE_Y 10.0f
 
 // Returns the fractional part of x
-inline f32 my_modf(f32 x)
+inline f32 frac_part(f32 x)
 {
-	f32 dummy;
-	return modff(x, &dummy);
+	f32 integral_part;
+	return modff(x, &integral_part);
 }
 
 WieldNode::WieldNode(HandIndex index, Client *client, scene::ISceneManager *mgr) :
@@ -65,7 +65,7 @@ WieldNode::WieldNode(HandIndex index, Client *client, scene::ISceneManager *mgr)
 
 int WieldNode::getDirection()
 {
-	return g_settings->getBool("mirror_hands") ? -m_direction : m_direction;
+	return g_settings->getBool("swap_hands") ? -m_direction : m_direction;
 }
 
 void WieldNode::step(f32 dtime)
@@ -100,7 +100,7 @@ void WieldNode::step(f32 dtime)
 	}
 }
 
-static inline v2f dir(const v2f &pos_dist)
+static inline v2f get_arm_dir(const v2f &pos_dist)
 {
 	f32 x = pos_dist.X - WIELDMESH_OFFSET_X;
 	f32 y = pos_dist.Y - WIELDMESH_OFFSET_Y;
@@ -166,7 +166,7 @@ void WieldNode::addArmInertia(f32 player_yaw, v3f camera_direction)
 				WIELDMESH_OFFSET_Y + (WIELDMESH_AMPLITUDE_Y * 0.5f));
 		}
 
-		m_arm_dir = dir(m_offset);
+		m_arm_dir = get_arm_dir(m_offset);
 	} else {
 		/*
 			Now the arm gets back to its default position when the camera stops,
@@ -243,10 +243,10 @@ void WieldNode::update(video::SColor player_light_color, f32 view_bobbing_anim, 
 		rot *= core::RADTODEG;
 		pos.X *= direction;
 	} else {
-		f32 bobfrac = my_modf(view_bobbing_anim);
+		f32 bobfrac = frac_part(view_bobbing_anim);
 		pos.X *= direction;
 		pos.X -= sin(bobfrac*M_PI*2.0+M_PI*m_index) * 3.0 * direction;
-		pos.Y += sin(my_modf(bobfrac*2.0)*M_PI+M_PI*m_index) * 3.0;
+		pos.Y += sin(frac_part(bobfrac*2.0)*M_PI+M_PI*m_index) * 3.0;
 	}
 
 	m_meshnode->setPosition(pos);
@@ -413,7 +413,7 @@ void Camera::step(f32 dtime)
 		}
 		else {
 			float was = m_view_bobbing_anim;
-			m_view_bobbing_anim = my_modf(m_view_bobbing_anim + offset);
+			m_view_bobbing_anim = frac_part(m_view_bobbing_anim + offset);
 			bool step = (was == 0 ||
 					(was < 0.5f && m_view_bobbing_anim >= 0.5f) ||
 					(was > 0.5f && m_view_bobbing_anim <= 0.5f));
@@ -522,7 +522,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 
 	if (m_cache_view_bobbing_amount != 0.0f && m_view_bobbing_anim != 0.0f &&
 		m_camera_mode < CAMERA_MODE_THIRD) {
-		f32 bobfrac = my_modf(m_view_bobbing_anim * 2);
+		f32 bobfrac = frac_part(m_view_bobbing_anim * 2);
 		f32 bobdir = (m_view_bobbing_anim < 0.5) ? 1.0 : -1.0;
 
 		f32 bobknob = 1.2;

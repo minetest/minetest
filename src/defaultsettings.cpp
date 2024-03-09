@@ -223,7 +223,7 @@ void set_default_settings()
 	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("view_bobbing_amount", "1.0");
 	settings->setDefault("fall_bobbing_amount", "0.03");
-	settings->setDefault("mirror_hands", "false");
+	settings->setDefault("swap_hands", "false");
 	settings->setDefault("enable_3d_clouds", "true");
 	settings->setDefault("cloud_radius", "12");
 	settings->setDefault("menu_clouds", "true");
