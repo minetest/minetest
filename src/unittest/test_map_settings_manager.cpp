@@ -168,7 +168,7 @@ void TestMapSettingsManager::testMapSettingsManager()
 	check_noise_params(&v5params->np_height, &meta_np_height);
 	check_noise_params(&v5params->np_ground, &user_np_ground);
 
-	UASSERT(mgr.setMapSetting("foobar", "25") == false);
+	UASSERT(mgr.setMapSetting("foobar", "25") != false);
 
 	// Pretend the ServerMap is shutting down
 	UASSERT(mgr.saveMapMeta());
