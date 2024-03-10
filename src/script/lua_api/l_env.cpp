@@ -695,8 +695,6 @@ int ModApiEnv::l_get_connected_players(lua_State *L)
 	lua_createtable(L, env->getPlayerCount(), 0);
 	u32 i = 0;
 	for (RemotePlayer *player : env->getPlayers()) {
-		if (player->getPeerId() == PEER_ID_INEXISTENT)
-			continue;
 		PlayerSAO *sao = player->getPlayerSAO();
 		if (sao && !sao->isGone()) {
 			getScriptApiBase(L)->objectrefGetOrCreate(L, sao);
@@ -714,7 +712,7 @@ int ModApiEnv::l_get_player_by_name(lua_State *L)
 	// Do it
 	const char *name = luaL_checkstring(L, 1);
 	RemotePlayer *player = env->getPlayer(name);
-	if (!player || player->getPeerId() == PEER_ID_INEXISTENT)
+	if (!player)
 		return 0;
 	PlayerSAO *sao = player->getPlayerSAO();
 	if (!sao || sao->isGone())

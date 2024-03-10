@@ -584,13 +584,17 @@ RemotePlayer *ServerEnvironment::getPlayer(const session_t peer_id)
 	return NULL;
 }
 
-RemotePlayer *ServerEnvironment::getPlayer(const char* name)
+RemotePlayer *ServerEnvironment::getPlayer(const char* name, bool match_invalid_peer)
 {
 	for (RemotePlayer *player : m_players) {
-		if (strcmp(player->getName(), name) == 0)
+		if (strcmp(player->getName(), name) != 0)
+			continue;
+
+		if (match_invalid_peer || player->getPeerId() != PEER_ID_INEXISTENT)
 			return player;
+		break;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void ServerEnvironment::addPlayer(RemotePlayer *player)

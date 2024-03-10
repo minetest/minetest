@@ -1107,7 +1107,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 		}
 	}
 
-	RemotePlayer *player = m_env->getPlayer(playername.c_str());
+	RemotePlayer *player = m_env->getPlayer(playername.c_str(), true);
 
 	// If failed, cancel
 	if (!playersao || !player) {
@@ -1948,9 +1948,13 @@ void Server::SendMovePlayerRel(session_t peer_id, const v3f &added_pos)
 
 void Server::SendPlayerFov(session_t peer_id)
 {
+	RemotePlayer *player = m_env->getPlayer(peer_id);
+	if (!player)
+		return;
+
 	NetworkPacket pkt(TOCLIENT_FOV, 4 + 1 + 4, peer_id);
 
-	PlayerFovSpec fov_spec = m_env->getPlayer(peer_id)->getFov();
+	PlayerFovSpec fov_spec = player->getFov();
 	pkt << fov_spec.fov << fov_spec.is_multiplier << fov_spec.transition_time;
 
 	Send(&pkt);
@@ -1978,8 +1982,7 @@ void Server::SendEyeOffset(session_t peer_id, v3f first, v3f third, v3f third_fr
 void Server::SendPlayerPrivileges(session_t peer_id)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
-	assert(player);
-	if(player->getPeerId() == PEER_ID_INEXISTENT)
+	if (!player)
 		return;
 
 	std::set<std::string> privs;
@@ -1998,8 +2001,7 @@ void Server::SendPlayerPrivileges(session_t peer_id)
 void Server::SendPlayerInventoryFormspec(session_t peer_id)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
-	assert(player);
-	if (player->getPeerId() == PEER_ID_INEXISTENT)
+	if (!player)
 		return;
 
 	NetworkPacket pkt(TOCLIENT_INVENTORY_FORMSPEC, 0, peer_id);
@@ -2011,8 +2013,7 @@ void Server::SendPlayerInventoryFormspec(session_t peer_id)
 void Server::SendPlayerFormspecPrepend(session_t peer_id)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
-	assert(player);
-	if (player->getPeerId() == PEER_ID_INEXISTENT)
+	if (!player)
 		return;
 
 	NetworkPacket pkt(TOCLIENT_FORMSPEC_PREPEND, 0, peer_id);
@@ -2188,11 +2189,6 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 		if(!player){
 			infostream<<"Server::playSound: Player \""<<params.to_player
 					<<"\" not found"<<std::endl;
-			return -1;
-		}
-		if (player->getPeerId() == PEER_ID_INEXISTENT) {
-			infostream<<"Server::playSound: Player \""<<params.to_player
-					<<"\" not connected"<<std::endl;
 			return -1;
 		}
 		dst_clients.push_back(player->getPeerId());
@@ -2817,8 +2813,7 @@ void Server::SendMinimapModes(session_t peer_id,
 		std::vector<MinimapMode> &modes, size_t wanted_mode)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
-	assert(player);
-	if (player->getPeerId() == PEER_ID_INEXISTENT)
+	if (!player)
 		return;
 
 	NetworkPacket pkt(TOCLIENT_MINIMAP_MODES, 0, peer_id);
@@ -3363,11 +3358,7 @@ void Server::notifyPlayer(const char *name, const std::wstring &msg)
 	}
 
 	RemotePlayer *player = m_env->getPlayer(name);
-	if (!player) {
-		return;
-	}
-
-	if (player->getPeerId() == PEER_ID_INEXISTENT)
+	if (!player)
 		return;
 
 	SendChatMessage(player->getPeerId(), ChatMessage(msg));
@@ -4039,7 +4030,7 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 	RemotePlayer *player = m_env->getPlayer(name);
 
 	// If player is already connected, cancel
-	if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
+	if (player) {
 		infostream<<"emergePlayer(): Player already connected"<<std::endl;
 		return NULL;
 	}
