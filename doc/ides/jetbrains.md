@@ -6,19 +6,19 @@ When opening the folder for the first time, select `Open as CMake project` if th
 
 The IDE will open the folder and display the open project wizard:
 
-![Open Project Wizard](jetbrains_open_project_wizard_profiles.png)
+![Open Project Wizard](images/jetbrains_open_project_wizard_profiles.png)
 
 CLion try to determine a base configuration, but Minetest define it's own presets for easier setup. So you need to
 delete the `Debug` profile with the `-` sign and close the dialog.
 
 You should notice a notification telling you 4 presets have been loaded in the bottom right corner.
 
-![Notification Popup](jetbrains_notification_profiles.png)
+![Notification Popup](images/jetbrains_notification_profiles.png)
 
 Clicking on the `View` link or going to `Settings > Build, Execution, Deployment > CMake` you should get a window
 similar to the Open Project Wizard, but with the readonly presets listed.
 
-![CMake Profiles](jetbrains_cmake_profiles.png)
+![CMake Profiles](images/jetbrains_cmake_profiles.png)
 
 By default, none of the presets are enabled. You can select them and enable the ones you want. Keep in mind that
 triggering the CMake project reload (VCS updates, config changes, etc) will reload all the enabled profiles, so unless
@@ -32,7 +32,7 @@ After these steps you should get an IDE like this.
 
 On the main toolbar at the top right, you have a dropdown for selecting the CMake profile to use for the build. You have another dropdown next to it to select the build target; by default the `minetest` executable will be selected, but you may also have to use `IrrlichtMt` for building just the library .
 
-![Jetbrains IDE](jetbrains_ide.png)
+![Jetbrains IDE](images/jetbrains_ide.png)
 
 You can rightclick the topbar to change the project icon and color, for fancier looking IDE.
 
@@ -49,14 +49,14 @@ CLion may ask you in the open project wisard for your compilers, with MinGW and 
 
 If not you can go to `Settings > Build, Execution, Deployment > Toolchains` to change it.
 
-![Jetbrains Open Project Wizard](jetbrains_open_project_wizard_windows_compiler.png)
+![Jetbrains Open Project Wizard](images/jetbrains_open_project_wizard_windows_compiler.png)
 
 
 
 
 Then, the process is roughly similar to Linux, you just need to pick `Visual Studio` as toolchain.
 
-![Jetbrains Open Project Wizard](jetbrains_open_project_wizard_windows_cmake.png)
+![Jetbrains Open Project Wizard](images/jetbrains_open_project_wizard_windows_cmake.png)
 
 
 
@@ -72,7 +72,7 @@ have one installed or you do not plan on using CLion only then install Vcpkg by 
 directory. Don't forget to check `Add vcpkg installation to existing CMake profiles`. If you haven't already installed
 Minetest dependencies in your vcpkg installation, you can do it right from CLion's Vcpkg tool window.
 
-![Jetbrains Vcpkg](jetbrains_vcpkg.png)
+![Jetbrains Vcpkg](images/jetbrains_vcpkg.png)
 
 Reloading the CMake project (should happen automatically, or display a notification for outdated CMake project) will now
 load the dependencies.
