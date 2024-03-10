@@ -34,12 +34,12 @@ namespace treegen
 
 void TreeDef::resolveNodeNames()
 {
-	getIdFromNrBacklog(&trunknode.param0, "", CONTENT_UNKNOWN);
-	getIdFromNrBacklog(&leavesnode.param0, "", CONTENT_UNKNOWN);
+	getIdFromNrBacklog(&trunknode.param0, "", CONTENT_IGNORE);
+	getIdFromNrBacklog(&leavesnode.param0, "", CONTENT_IGNORE);
 	if (leaves2_chance)
-		getIdFromNrBacklog(&leaves2node.param0, "", CONTENT_UNKNOWN);
+		getIdFromNrBacklog(&leaves2node.param0, "", CONTENT_IGNORE);
 	if (fruit_chance)
-		getIdFromNrBacklog(&fruitnode.param0, "", CONTENT_UNKNOWN);
+		getIdFromNrBacklog(&fruitnode.param0, "", CONTENT_IGNORE);
 }
 
 void make_tree(MMVManip &vmanip, v3s16 p0, bool is_apple_tree,
