@@ -2010,23 +2010,12 @@ void push_noiseparams(lua_State *L, NoiseParams *np)
 	lua_setfield(L, -2, "spread");
 }
 
-// If unresolved = true, tree_def.resolveNodeNames can be used to handle aliases.
 bool read_tree_def(lua_State *L, int idx, const NodeDefManager *ndef,
-		treegen::TreeDef &tree_def, bool unresolved)
+		treegen::TreeDef &tree_def)
 {
 	std::string trunk, leaves, fruit;
 	if (!lua_istable(L, idx))
 		return false;
-
-	auto handle_node_id = [&] (std::string &name, MapNode &node) {
-		if (unresolved)
-			tree_def.m_nodenames.push_back(name);
-		else
-			node = ndef->getId(name);
-	};
-	if (unresolved) {
-		tree_def.setNodeDefManager(ndef);
-	}
 
 	getstringfield(L, idx, "axiom", tree_def.initial_axiom);
 	getstringfield(L, idx, "rules_a", tree_def.rules_a);
@@ -2034,14 +2023,15 @@ bool read_tree_def(lua_State *L, int idx, const NodeDefManager *ndef,
 	getstringfield(L, idx, "rules_c", tree_def.rules_c);
 	getstringfield(L, idx, "rules_d", tree_def.rules_d);
 	getstringfield(L, idx, "trunk", trunk);
-	handle_node_id(trunk, tree_def.trunknode);
+	tree_def.m_nodenames.push_back(trunk);
 	getstringfield(L, idx, "leaves", leaves);
-	handle_node_id(leaves, tree_def.leavesnode);
+	tree_def.m_nodenames.push_back(leaves);
 	tree_def.leaves2_chance = 0;
 	getstringfield(L, idx, "leaves2", leaves);
 	if (!leaves.empty()) {
-		handle_node_id(leaves, tree_def.leavesnode);
 		getintfield(L, idx, "leaves2_chance", tree_def.leaves2_chance);
+		if (tree_def.leaves2_chance)
+			tree_def.m_nodenames.push_back(leaves);
 	}
 	getintfield(L, idx, "angle", tree_def.angle);
 	getintfield(L, idx, "iterations", tree_def.iterations);
@@ -2052,10 +2042,15 @@ bool read_tree_def(lua_State *L, int idx, const NodeDefManager *ndef,
 	tree_def.fruit_chance = 0;
 	getstringfield(L, idx, "fruit", fruit);
 	if (!fruit.empty()) {
-		handle_node_id(leaves, tree_def.leavesnode);
 		getintfield(L, idx, "fruit_chance", tree_def.fruit_chance);
+		if (tree_def.fruit_chance)
+			tree_def.m_nodenames.push_back(fruit);
 	}
 	tree_def.explicit_seed = getintfield(L, idx, "seed", tree_def.seed);
+
+	// Resolves the node IDs for trunk, leaves, leaves2 and fruit at runtime,
+	// when tree_def.resolveNodeNames will be called.
+	ndef->pendNodeResolve(&tree_def);
 
 	return true;
 }

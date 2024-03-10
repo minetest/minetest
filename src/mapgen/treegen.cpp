@@ -34,8 +34,6 @@ namespace treegen
 
 void TreeDef::resolveNodeNames()
 {
-	sanity_check(m_ndef);
-
 	getIdFromNrBacklog(&trunknode.param0, "", CONTENT_IGNORE, false);
 	getIdFromNrBacklog(&leavesnode.param0, "", CONTENT_IGNORE, false);
 	if(leaves2_chance)

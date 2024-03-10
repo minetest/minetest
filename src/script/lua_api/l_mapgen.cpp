@@ -1316,7 +1316,7 @@ bool read_deco_lsystem(lua_State *L, const NodeDefManager *ndef, DecoLSystem *de
 	deco->tree_def = std::make_shared<treegen::TreeDef>();
 
 	lua_getfield(L, 1, "treedef");
-	bool has_def = read_tree_def(L, -1, ndef, *(deco->tree_def), true);
+	bool has_def = read_tree_def(L, -1, ndef, *(deco->tree_def));
 	lua_pop(L, 1);
 
 	return has_def;

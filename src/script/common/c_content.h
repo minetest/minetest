@@ -192,8 +192,7 @@ void               push_noiseparams          (lua_State *L, NoiseParams *np);
 
 bool               read_tree_def             (lua_State *L, int idx,
                                               const NodeDefManager *ndef,
-                                              treegen::TreeDef &tree_def,
-                                              bool unresolved = false);
+                                              treegen::TreeDef &tree_def);
 
 void               luaentity_get             (lua_State *L,u16 id);
 

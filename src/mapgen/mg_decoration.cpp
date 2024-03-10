@@ -491,9 +491,3 @@ size_t DecoLSystem::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 		return 0;
 	return treegen::make_ltree(*vm, p, m_ndef, *tree_def);
 }
-
-void DecoLSystem::resolveNodeNames()
-{
-	Decoration::resolveNodeNames();
-	tree_def->resolveNodeNames();
-}

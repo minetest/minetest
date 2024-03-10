@@ -36,12 +36,7 @@ namespace treegen {
 	};
 
 	struct TreeDef : public NodeResolver {
-		void resolveNodeNames();
-
-		// Needed since m_ndef can't be accessed in read_tree_def.
-		void setNodeDefManager(const NodeDefManager* ndef) {
-			NodeResolver::m_ndef = ndef;
-		}
+		virtual void resolveNodeNames();
 
 		std::string initial_axiom;
 		std::string rules_a;
