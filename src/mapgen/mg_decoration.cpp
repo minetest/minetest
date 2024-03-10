@@ -490,7 +490,7 @@ size_t DecoLSystem::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 	if (!canPlaceDecoration(vm, p))
 		return 0;
 
-	// Make sure that tree_def can't be overridden, since it is shared.
+	// Make sure that tree_def can't be modified, since it is shared.
 	const auto &ref = *tree_def;
 	return treegen::make_ltree(*vm, p, m_ndef, ref);
 }
