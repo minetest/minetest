@@ -245,7 +245,7 @@ public:
 
 /*
  * Duplicates of certain env APIs that operate not on the global
- * map but on a VoxelManipulator. This is for emerge scripting.
+ * map but on a VoxelManipulator. This is for emerge scripting. 
  */
 class ModApiEnvVM : public ModApiEnvBase {
 private:
