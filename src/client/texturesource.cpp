@@ -898,7 +898,9 @@ video::IImage* TextureSource::generateImage(std::string_view name,
 		If this name is enclosed in parentheses, generate it
 		and blit it onto the base image
 	*/
-	if (last_part_of_name[0] == paren_open
+	if (last_part_of_name.empty()) {
+		// keep baseimg == nullptr
+	} else if (last_part_of_name[0] == paren_open
 			&& last_part_of_name.back() == paren_close) {
 		auto name2 = last_part_of_name.substr(1,
 				last_part_of_name.size() - 2);
