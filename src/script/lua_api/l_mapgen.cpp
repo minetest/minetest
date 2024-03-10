@@ -927,10 +927,7 @@ int ModApiMapgen::l_set_mapgen_setting(lua_State *L)
 	const char *value  = luaL_checkstring(L, 2);
 	bool override_meta = readParam<bool>(L, 3, false);
 
-	if (!settingsmgr->setMapSetting(name, value, override_meta)) {
-		errorstream << "set_mapgen_setting: cannot set '"
-			<< name << "' after initialization" << std::endl;
-	}
+	settingsmgr->setMapSetting(name, value, override_meta);
 
 	return 0;
 }

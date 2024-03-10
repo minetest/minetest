@@ -67,9 +67,6 @@ bool MapSettingsManager::getMapSettingNoiseParams(
 bool MapSettingsManager::setMapSetting(
 	const std::string &name, const std::string &value, bool override_meta)
 {
-	if (mapgen_params)
-		return false;
-
 	if (override_meta)
 		m_map_settings->set(name, value);
 	else
