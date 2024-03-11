@@ -82,5 +82,5 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Test Docker Image
-        run: docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$(echo ${{ steps.meta.outputs.tags }} | cut -d',' -f1) minetestserver --version
+        run: docker run --rm $(echo ${{ steps.meta.outputs.tags }} | cut -d',' -f1) minetestserver --version
         shell: bash
