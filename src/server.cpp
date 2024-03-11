@@ -2172,6 +2172,17 @@ inline s32 Server::nextSoundId()
 	return free_id;
 }
 
+std::pair<
+	std::unordered_map<s32, ServerPlayingSound>::iterator,
+	std::unordered_multimap<u16, s32>::iterator
+> Server::removeSoundReference(std::unordered_map<s32, ServerPlayingSound>::iterator it)
+{
+	auto range = m_attached_sound_ids.equal_range(it->second.object);
+	auto snd = m_attached_sound_ids.erase(range.first, range.second);
+	auto fst = m_playing_sounds.erase(it);
+	return std::make_pair(fst, snd);
+}
+
 s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 {
 	// Find out initial position of sound
@@ -2243,8 +2254,12 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 		m_clients.sendCustom(peer_id, 0, &pkt, as_reliable);
 	}
 
-	if (!ephemeral)
+	if (!ephemeral) {
 		m_playing_sounds[id] = std::move(params);
+		if (params.object) {
+			m_attached_sound_ids.emplace(params.object, id);
+		}
+	}
 	return id;
 }
 void Server::stopSound(s32 handle)
@@ -2262,8 +2277,7 @@ void Server::stopSound(s32 handle)
 		Send(peer_id, &pkt);
 	}
 
-	// Remove sound reference
-	m_playing_sounds.erase(it);
+	removeSoundReference(it);
 }
 
 void Server::fadeSound(s32 handle, float step, float gain)
@@ -2284,7 +2298,7 @@ void Server::fadeSound(s32 handle, float step, float gain)
 
 	// Remove sound reference
 	if (gain <= 0 || psound.clients.empty())
-		m_playing_sounds.erase(it);
+		removeSoundReference(it);
 }
 
 void Server::stopAttachedSounds(session_t peer_id, u16 object_id)
@@ -2292,23 +2306,24 @@ void Server::stopAttachedSounds(session_t peer_id, u16 object_id)
 	assert(peer_id != PEER_ID_INEXISTENT);
 	assert(object_id);
 
-	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end();) {
-		ServerPlayingSound &sound = it->second;
-
-		if (sound.object != object_id)
-			continue;
+	auto range = m_attached_sound_ids.equal_range(object_id);
+	for (auto it = range.first; it != range.second; ++it) {
+		s32 sound_id = it->second;
+		auto sound_it = m_playing_sounds.find(sound_id);
+		assert(sound_it != m_playing_sounds.end());
+		auto &sound = sound_it->second;
 
 		auto clients_it = sound.clients.find(peer_id);
 		if (clients_it == sound.clients.end())
 			continue;
 
 		NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
-		pkt << it->first;
+		pkt << sound_id;
 		Send(peer_id, &pkt);
 
 		sound.clients.erase(clients_it);
 		if (sound.clients.empty())
-			it = m_playing_sounds.erase(it);
+			it = removeSoundReference(sound_it).second;
 		else
 			++it;
 	}
@@ -2977,7 +2992,7 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 			ServerPlayingSound &psound = i->second;
 			psound.clients.erase(peer_id);
 			if (psound.clients.empty())
-				i = m_playing_sounds.erase(i);
+				i = removeSoundReference(i).first;
 			else
 				++i;
 		}
