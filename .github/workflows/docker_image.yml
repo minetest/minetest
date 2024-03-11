@@ -13,6 +13,18 @@ on:
   pull_request:
     # Build docker image on pull requests to master. (but do not publish)
     branches: [ "master" ]
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/ci/**'
+      - 'misc/irrlichtmt_tag.txt'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - '.github/workflows/docker_image.yml'
   workflow_dispatch:
 
 env:
