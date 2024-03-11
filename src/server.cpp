@@ -2988,13 +2988,16 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 		/*
 			Clear references to playing sounds
 		*/
-		for (auto i = m_playing_sounds.begin(); i != m_playing_sounds.end();) {
-			ServerPlayingSound &psound = i->second;
-			psound.clients.erase(peer_id);
-			if (psound.clients.empty())
-				i = removeSoundReference(i).first;
-			else
-				++i;
+		{
+			MutexAutoLock env_lock(m_env_mutex);
+			for (auto i = m_playing_sounds.begin(); i != m_playing_sounds.end();) {
+				ServerPlayingSound &psound = i->second;
+				psound.clients.erase(peer_id);
+				if (psound.clients.empty())
+					i = removeSoundReference(i).first;
+				else
+					++i;
+			}
 		}
 
 		// clear formspec info so the next client can't abuse the current state
