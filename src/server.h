@@ -44,7 +44,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
 #include <optional>
+#include <utility>
 #include <string_view>
 
 class ChatEvent;
@@ -725,8 +727,14 @@ private:
 		Sounds
 	*/
 	std::unordered_map<s32, ServerPlayingSound> m_playing_sounds;
+	// Index for attached sound IDs by object ID. Must be kept in sync with m_playing_sounds.
+	std::unordered_multimap<u16, s32> m_attached_sound_ids;
 	s32 m_playing_sounds_id_last_used = 0; // positive values only
 	s32 nextSoundId();
+	std::pair<
+		std::unordered_map<s32, ServerPlayingSound>::iterator,
+		std::unordered_multimap<u16, s32>::iterator
+	> removeSoundReference(std::unordered_map<s32, ServerPlayingSound>::iterator it);
 
 	ModStorageDatabase *m_mod_storage_database = nullptr;
 	float m_mod_storage_save_timer = 10.0f;
