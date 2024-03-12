@@ -4533,6 +4533,12 @@ Can specify a probability of a node randomly appearing when placed.
 This decoration type is intended to be used for multi-node sized discrete
 structures, such as trees, cave spikes, rocks, and so on.
 
+`lsystem`
+-----------
+
+Generates a L-system tree at the position where the decoration is placed.
+Uses the same L-system as `minetest.spawn_tree`, but is faster than using it manually.
+The `treedef` field in the decoration definition is used for the tree definition.
 
 
 
@@ -5376,6 +5382,8 @@ Utilities
       dynamic_add_media_startup = true,
       -- dynamic_add_media supports `filename` and `filedata` parameters (5.9.0)
       dynamic_add_media_filepath = true,
+       -- L-system decoration type (5.9.0)
+      lsystem_decoration_type = true,
   }
   ```
 
@@ -10134,7 +10142,7 @@ See [Decoration types]. Used by `minetest.register_decoration`.
 ```lua
 {
     deco_type = "simple",
-    -- Type. "simple" or "schematic" supported
+    -- Type. "simple", "schematic" or "lsystem" supported
 
     place_on = "default:dirt_with_grass",
     -- Node (or list of nodes) that the decoration can be placed on
@@ -10287,6 +10295,12 @@ See [Decoration types]. Used by `minetest.register_decoration`.
     -- Effect is inverted for "all_ceilings" decorations.
     -- Ignored by 'y_min', 'y_max' and 'spawn_by' checks, which always refer
     -- to the 'place_on' node.
+
+    ----- L-system-type parameters
+
+    treedef = {},
+    -- Same as for `minetest.spawn_tree`.
+    -- See section [L-system trees] for more details.
 }
 ```
 

@@ -1331,45 +1331,6 @@ int ModApiEnv::l_find_path(lua_State *L)
 	return 0;
 }
 
-static bool read_tree_def(lua_State *L, int idx,
-	const NodeDefManager *ndef, treegen::TreeDef &tree_def)
-{
-	std::string trunk, leaves, fruit;
-	if (!lua_istable(L, idx))
-		return false;
-
-	getstringfield(L, idx, "axiom", tree_def.initial_axiom);
-	getstringfield(L, idx, "rules_a", tree_def.rules_a);
-	getstringfield(L, idx, "rules_b", tree_def.rules_b);
-	getstringfield(L, idx, "rules_c", tree_def.rules_c);
-	getstringfield(L, idx, "rules_d", tree_def.rules_d);
-	getstringfield(L, idx, "trunk", trunk);
-	tree_def.trunknode = ndef->getId(trunk);
-	getstringfield(L, idx, "leaves", leaves);
-	tree_def.leavesnode = ndef->getId(leaves);
-	tree_def.leaves2_chance = 0;
-	getstringfield(L, idx, "leaves2", leaves);
-	if (!leaves.empty()) {
-		tree_def.leaves2node = ndef->getId(leaves);
-		getintfield(L, idx, "leaves2_chance", tree_def.leaves2_chance);
-	}
-	getintfield(L, idx, "angle", tree_def.angle);
-	getintfield(L, idx, "iterations", tree_def.iterations);
-	if (!getintfield(L, idx, "random_level", tree_def.iterations_random_level))
-		tree_def.iterations_random_level = 0;
-	getstringfield(L, idx, "trunk_type", tree_def.trunk_type);
-	getboolfield(L, idx, "thin_branches", tree_def.thin_branches);
-	tree_def.fruit_chance = 0;
-	getstringfield(L, idx, "fruit", fruit);
-	if (!fruit.empty()) {
-		tree_def.fruitnode = ndef->getId(fruit);
-		getintfield(L, idx, "fruit_chance", tree_def.fruit_chance);
-	}
-	tree_def.explicit_seed = getintfield(L, idx, "seed", tree_def.seed);
-
-	return true;
-}
-
 // spawn_tree(pos, treedef)
 int ModApiEnv::l_spawn_tree(lua_State *L)
 {

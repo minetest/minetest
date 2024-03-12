@@ -35,7 +35,9 @@ namespace treegen {
 		UNBALANCED_BRACKETS
 	};
 
-	struct TreeDef {
+	struct TreeDef : public NodeResolver {
+		virtual void resolveNodeNames();
+
 		std::string initial_axiom;
 		std::string rules_a;
 		std::string rules_b;

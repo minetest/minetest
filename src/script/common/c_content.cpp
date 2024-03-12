@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h" // For FATAL_ERROR
 #include <SColor.h>
 #include <json/json.h>
+#include "mapgen/treegen.h"
 
 struct EnumString es_TileAnimationType[] =
 {
@@ -2004,6 +2005,51 @@ void push_noiseparams(lua_State *L, NoiseParams *np)
 
 	push_v3f(L, np->spread);
 	lua_setfield(L, -2, "spread");
+}
+
+bool read_tree_def(lua_State *L, int idx, const NodeDefManager *ndef,
+		treegen::TreeDef &tree_def)
+{
+	std::string trunk, leaves, fruit;
+	if (!lua_istable(L, idx))
+		return false;
+
+	getstringfield(L, idx, "axiom", tree_def.initial_axiom);
+	getstringfield(L, idx, "rules_a", tree_def.rules_a);
+	getstringfield(L, idx, "rules_b", tree_def.rules_b);
+	getstringfield(L, idx, "rules_c", tree_def.rules_c);
+	getstringfield(L, idx, "rules_d", tree_def.rules_d);
+	getstringfield(L, idx, "trunk", trunk);
+	tree_def.m_nodenames.push_back(trunk);
+	getstringfield(L, idx, "leaves", leaves);
+	tree_def.m_nodenames.push_back(leaves);
+	tree_def.leaves2_chance = 0;
+	getstringfield(L, idx, "leaves2", leaves);
+	if (!leaves.empty()) {
+		getintfield(L, idx, "leaves2_chance", tree_def.leaves2_chance);
+		if (tree_def.leaves2_chance)
+			tree_def.m_nodenames.push_back(leaves);
+	}
+	getintfield(L, idx, "angle", tree_def.angle);
+	getintfield(L, idx, "iterations", tree_def.iterations);
+	if (!getintfield(L, idx, "random_level", tree_def.iterations_random_level))
+		tree_def.iterations_random_level = 0;
+	getstringfield(L, idx, "trunk_type", tree_def.trunk_type);
+	getboolfield(L, idx, "thin_branches", tree_def.thin_branches);
+	tree_def.fruit_chance = 0;
+	getstringfield(L, idx, "fruit", fruit);
+	if (!fruit.empty()) {
+		getintfield(L, idx, "fruit_chance", tree_def.fruit_chance);
+		if (tree_def.fruit_chance)
+			tree_def.m_nodenames.push_back(fruit);
+	}
+	tree_def.explicit_seed = getintfield(L, idx, "seed", tree_def.seed);
+
+	// Resolves the node IDs for trunk, leaves, leaves2 and fruit at runtime,
+	// when tree_def.resolveNodeNames will be called.
+	ndef->pendNodeResolve(&tree_def);
+
+	return true;
 }
 
 /******************************************************************************/
