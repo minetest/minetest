@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "server/player_sao.h"
 #include "util/string.h"
+#include <json/json.h>
 #include <cassert>
 
 // !!! WARNING !!!

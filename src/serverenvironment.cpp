@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scripting_server.h"
 #include "server.h"
 #include "util/serialize.h"
+#include "util/numeric.h"
 #include "util/basic_macros.h"
 #include "util/pointedthing.h"
 #include "threading/mutex_auto_lock.h"
@@ -158,8 +159,7 @@ void LBMManager::loadIntroductionTimes(const std::string &times,
 	// Storing it in a map first instead of
 	// handling the stuff directly in the loop
 	// removes all duplicate entries.
-	// TODO make this std::unordered_map
-	std::map<std::string, u32> introduction_times;
+	std::unordered_map<std::string, u32> introduction_times;
 
 	/*
 	The introduction times string consists of name~time entries,
@@ -181,13 +181,11 @@ void LBMManager::loadIntroductionTimes(const std::string &times,
 	}
 
 	// Put stuff from introduction_times into m_lbm_lookup
-	for (std::map<std::string, u32>::const_iterator it = introduction_times.begin();
-		it != introduction_times.end(); ++it) {
-		const std::string &name = it->first;
-		u32 time = it->second;
+	for (auto &it : introduction_times) {
+		const std::string &name = it.first;
+		u32 time = it.second;
 
-		std::map<std::string, LoadingBlockModifierDef *>::iterator def_it =
-			m_lbm_defs.find(name);
+		auto def_it = m_lbm_defs.find(name);
 		if (def_it == m_lbm_defs.end()) {
 			// This seems to be an LBM entry for
 			// an LBM we haven't loaded. Discard it.
@@ -298,7 +296,7 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block,
 	ActiveBlockList
 */
 
-void fillRadiusBlock(v3s16 p0, s16 r, std::set<v3s16> &list)
+static void fillRadiusBlock(v3s16 p0, s16 r, std::set<v3s16> &list)
 {
 	v3s16 p;
 	for(p.X=p0.X-r; p.X<=p0.X+r; p.X++)
@@ -313,7 +311,7 @@ void fillRadiusBlock(v3s16 p0, s16 r, std::set<v3s16> &list)
 			}
 }
 
-void fillViewConeBlock(v3s16 p0,
+static void fillViewConeBlock(v3s16 p0,
 	const s16 r,
 	const v3f camera_pos,
 	const v3f camera_dir,
@@ -435,18 +433,12 @@ void OnMapblocksChangedReceiver::onMapEditEvent(const MapEditEvent &event)
 	ServerEnvironment
 */
 
-// Random device to seed pseudo random generators.
-static std::random_device seed;
-
-ServerEnvironment::ServerEnvironment(ServerMap *map,
-	ServerScripting *script_iface, Server *server,
-	const std::string &path_world, MetricsBackend *mb):
+ServerEnvironment::ServerEnvironment(std::unique_ptr<ServerMap> map,
+		Server *server, MetricsBackend *mb):
 	Environment(server),
-	m_map(map),
-	m_script(script_iface),
-	m_server(server),
-	m_path_world(path_world),
-	m_rgen(seed())
+	m_map(std::move(map)),
+	m_script(server->getScriptIface()),
+	m_server(server)
 {
 	m_step_time_counter = mb->addCounter(
 		"minetest_env_step_time", "Time spent in environment step (in microseconds)");
@@ -461,7 +453,8 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 void ServerEnvironment::init()
 {
 	// Determine which database backend to use
-	std::string conf_path = m_path_world + DIR_DELIM + "world.mt";
+	const std::string world_path = m_server->getWorldPath();
+	const std::string conf_path = world_path + DIR_DELIM "world.mt";
 	Settings conf;
 
 	std::string player_backend_name = "sqlite3";
@@ -475,7 +468,7 @@ void ServerEnvironment::init()
 		u16 blocksize = 16;
 		conf.getU16NoEx("blocksize", blocksize);
 		if (blocksize != MAP_BLOCKSIZE) {
-			throw BaseException(std::string("The map's blocksize is not supported."));
+			throw BaseException("The map's blocksize is not supported.");
 		}
 
 		// Read those values before setting defaults
@@ -524,8 +517,8 @@ void ServerEnvironment::init()
 				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
 	}
 
-	m_player_database = openPlayerDatabase(player_backend_name, m_path_world, conf);
-	m_auth_database = openAuthDatabase(auth_backend_name, m_path_world, conf);
+	m_player_database = openPlayerDatabase(player_backend_name, world_path, conf);
+	m_auth_database = openAuthDatabase(auth_backend_name, world_path, conf);
 
 	if (m_map && m_script->has_on_mapblocks_changed()) {
 		m_map->addEventReceiver(&m_on_mapblocks_changed_receiver);
@@ -547,8 +540,7 @@ ServerEnvironment::~ServerEnvironment()
 	assert(m_active_blocks.size() == 0); // deactivateBlocksAndObjects does this
 
 	// Drop/delete map
-	if (m_map)
-		m_map->drop();
+	m_map.reset();
 
 	// Delete ActiveBlockModifiers
 	for (ABMWithState &m_abm : m_abms) {
@@ -702,7 +694,7 @@ void ServerEnvironment::saveMeta()
 	if (!m_meta_loaded)
 		return;
 
-	std::string path = m_path_world + DIR_DELIM "env_meta.txt";
+	std::string path = m_server->getWorldPath() + DIR_DELIM "env_meta.txt";
 
 	// Open file and serialize
 	std::ostringstream ss(std::ios_base::binary);
@@ -730,8 +722,10 @@ void ServerEnvironment::loadMeta()
 	SANITY_CHECK(!m_meta_loaded);
 	m_meta_loaded = true;
 
+	std::string path = m_server->getWorldPath() + DIR_DELIM "env_meta.txt";
+
 	// If file doesn't exist, load default environment metadata
-	if (!fs::PathExists(m_path_world + DIR_DELIM "env_meta.txt")) {
+	if (!fs::PathExists(path)) {
 		infostream << "ServerEnvironment: Loading default environment metadata"
 			<< std::endl;
 		loadDefaultMeta();
@@ -739,8 +733,6 @@ void ServerEnvironment::loadMeta()
 	}
 
 	infostream << "ServerEnvironment: Loading environment metadata" << std::endl;
-
-	std::string path = m_path_world + DIR_DELIM "env_meta.txt";
 
 	// Open file and deserialize
 	std::ifstream is(path.c_str(), std::ios_base::binary);
@@ -786,8 +778,7 @@ void ServerEnvironment::loadMeta()
 	}
 	m_lbm_mgr.loadIntroductionTimes(lbm_introduction_times, m_server, m_game_time);
 
-	m_day_count = args.exists("day_count") ?
-		args.getU64("day_count") : 0;
+	m_day_count = args.exists("day_count") ? args.getU32("day_count") : 0;
 }
 
 /**
@@ -1518,7 +1509,7 @@ void ServerEnvironment::step(float dtime)
 		TimeTaker timer("modify in active blocks per interval");
 
 		// Shuffle to prevent persistent artifacts of ordering
-		std::shuffle(m_abms.begin(), m_abms.end(), m_rgen);
+		std::shuffle(m_abms.begin(), m_abms.end(), MyRandGenerator());
 
 		// Initialize handling of ActiveBlockModifiers
 		ABMHandler abmhandler(m_abms, m_cache_abm_interval, this, true);
@@ -1532,7 +1523,7 @@ void ServerEnvironment::step(float dtime)
 		// Shuffle the active blocks so that each block gets an equal chance
 		// of having its ABMs run.
 		std::copy(m_active_blocks.m_abm_list.begin(), m_active_blocks.m_abm_list.end(), output.begin());
-		std::shuffle(output.begin(), output.end(), m_rgen);
+		std::shuffle(output.begin(), output.end(), MyRandGenerator());
 
 		int i = 0;
 		// determine the time budget for ABMs

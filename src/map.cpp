@@ -600,7 +600,7 @@ void Map::removeNodeTimer(v3s16 p)
 	block->removeNodeTimer(p_rel);
 }
 
-bool Map::determineAdditionalOcclusionCheck(const v3s16 &pos_camera,
+bool Map::determineAdditionalOcclusionCheck(const v3s16 pos_camera,
 	const core::aabbox3d<s16> &block_bounds, v3s16 &check)
 {
 	/*
@@ -664,7 +664,7 @@ bool Map::determineAdditionalOcclusionCheck(const v3s16 &pos_camera,
 	return false;
 }
 
-bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
+bool Map::isOccluded(const v3s16 pos_camera, const v3s16 pos_target,
 	float step, float stepfac, float offset, float end_offset, u32 needed_count)
 {
 	v3f direction = intToFloat(pos_target - pos_camera, BS);

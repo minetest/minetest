@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <set>
-#include <random>
 #include <utility>
 
 #include "activeobject.h"
@@ -113,7 +112,7 @@ struct LBMContentMapping
 	// many times during operation in the lbm_lookup_map.
 	void deleteContents();
 	void addLBM(LoadingBlockModifierDef *lbm_def, IGameDef *gamedef);
-	const std::vector<LoadingBlockModifierDef *> *lookup(content_t c) const;
+	const lbm_map::mapped_type *lookup(content_t c) const;
 };
 
 class LBMManager
@@ -145,8 +144,7 @@ private:
 
 	// For m_query_mode == false:
 	// The key of the map is the LBM def's name.
-	// TODO make this std::unordered_map
-	std::map<std::string, LoadingBlockModifierDef *> m_lbm_defs;
+	std::unordered_map<std::string, LoadingBlockModifierDef *> m_lbm_defs;
 
 	// For m_query_mode == true:
 	// The key of the map is the LBM def's first introduction time.
@@ -221,8 +219,7 @@ enum ClearObjectsMode {
 class ServerEnvironment final : public Environment
 {
 public:
-	ServerEnvironment(ServerMap *map, ServerScripting *script_iface,
-		Server *server, const std::string &path_world, MetricsBackend *mb);
+	ServerEnvironment(std::unique_ptr<ServerMap> map, Server *server, MetricsBackend *mb);
 	~ServerEnvironment();
 
 	void init();
@@ -457,7 +454,7 @@ private:
 	*/
 
 	// The map
-	ServerMap *m_map;
+	std::unique_ptr<ServerMap> m_map;
 	// Lua state
 	ServerScripting* m_script;
 	// Server definition
@@ -466,8 +463,6 @@ private:
 	server::ActiveObjectMgr m_ao_manager;
 	// on_mapblocks_changed map event receiver
 	OnMapblocksChangedReceiver m_on_mapblocks_changed_receiver;
-	// World path
-	const std::string m_path_world;
 	// Outgoing network message buffer for active objects
 	std::queue<ActiveObjectMessage> m_active_object_messages;
 	// Some timers
@@ -503,9 +498,6 @@ private:
 
 	PlayerDatabase *m_player_database = nullptr;
 	AuthDatabase *m_auth_database = nullptr;
-
-	// Pseudo random generator for shuffling, etc.
-	std::mt19937 m_rgen;
 
 	// Particles
 	IntervalLimiter m_particle_management_interval;

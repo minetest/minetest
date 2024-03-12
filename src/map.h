@@ -120,14 +120,6 @@ public:
 	virtual ~Map();
 	DISABLE_CLASS_COPY(Map);
 
-	/*
-		Drop (client) or delete (server) the map.
-	*/
-	virtual void drop()
-	{
-		delete this;
-	}
-
 	void addEventReceiver(MapEventReceiver *event_receiver);
 	void removeEventReceiver(MapEventReceiver *event_receiver);
 	// event shall be deleted by caller after the call.
@@ -314,9 +306,9 @@ protected:
 	// Can be implemented by child class
 	virtual void reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks) {}
 
-	bool determineAdditionalOcclusionCheck(const v3s16 &pos_camera,
-		const core::aabbox3d<s16> &block_bounds, v3s16 &check);
-	bool isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
+	bool determineAdditionalOcclusionCheck(v3s16 pos_camera,
+		const core::aabbox3d<s16> &block_bounds, v3s16 &to_check);
+	bool isOccluded(v3s16 pos_camera, v3s16 pos_target,
 		float step, float stepfac, float start_offset, float end_offset,
 		u32 needed_count);
 };
