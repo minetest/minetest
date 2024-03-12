@@ -122,7 +122,7 @@ static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 	return code;
 }
 
-static void load_button_texture(const button_info *btn, const std::string &path,
+static void load_button_texture(button_info &btn, const std::string &path,
 		const rect<s32> &button_rect, ISimpleTextureSource *tsrc, video::IVideoDriver *driver)
 {
 	u32 tid;
@@ -130,19 +130,19 @@ static void load_button_texture(const button_info *btn, const std::string &path,
 			tsrc->getTexture(path, &tid), button_rect.getWidth(),
 			button_rect.getHeight());
 	if (texture) {
-		btn->gui_button->setUseAlphaChannel(true);
+		btn.gui_button->setUseAlphaChannel(true);
 		if (g_settings->getBool("gui_scaling_filter")) {
 			rect<s32> txr_rect = rect<s32>(0, 0, button_rect.getWidth(), button_rect.getHeight());
-			btn->gui_button->setImage(texture, txr_rect);
-			btn->gui_button->setPressedImage(texture, txr_rect);
-			btn->gui_button->setScaleImage(false);
+			btn.gui_button->setImage(texture, txr_rect);
+			btn.gui_button->setPressedImage(texture, txr_rect);
+			btn.gui_button->setScaleImage(false);
 		} else {
-			btn->gui_button->setImage(texture);
-			btn->gui_button->setPressedImage(texture);
-			btn->gui_button->setScaleImage(true);
+			btn.gui_button->setImage(texture);
+			btn.gui_button->setPressedImage(texture);
+			btn.gui_button->setScaleImage(true);
 		}
-		btn->gui_button->setDrawBorder(false);
-		btn->gui_button->setText(L"");
+		btn.gui_button->setDrawBorder(false);
+		btn.gui_button->setText(L"");
 	}
 }
 
@@ -175,7 +175,7 @@ void AutoHideButtonBar::init(ISimpleTextureSource *tsrc,
 	m_starter.immediate_release = true;
 	m_starter.ids.clear();
 
-	load_button_texture(&m_starter, starter_img, starter_rect,
+	load_button_texture(m_starter, starter_img, starter_rect,
 			m_texturesource, m_driver);
 
 	m_dir = dir;
@@ -193,9 +193,9 @@ AutoHideButtonBar::~AutoHideButtonBar()
 	}
 
 	for (auto &button : m_buttons) {
-		if (button->gui_button) {
-			button->gui_button->drop();
-			button->gui_button = nullptr;
+		if (button.gui_button) {
+			button.gui_button->drop();
+			button.gui_button = nullptr;
 		}
 	}
 }
@@ -253,17 +253,17 @@ void AutoHideButtonBar::addButton(touch_gui_button_id button_id, const wchar_t *
 	IGUIButton *btn_gui_button = m_guienv->addButton(current_button, nullptr, button_id,
 			caption, nullptr);
 
-	std::shared_ptr<button_info> btn(new button_info);
-	btn->gui_button        = btn_gui_button;
-	btn->gui_button->grab();
-	btn->gui_button->setVisible(false);
-	btn->gui_button->setEnabled(false);
-	btn->repeat_counter    = -1.0f;
-	btn->keycode           = id_to_keycode(button_id);
-	btn->immediate_release = true;
-	btn->ids.clear();
+	button_info btn;
+	btn.gui_button        = btn_gui_button;
+	btn.gui_button->grab();
+	btn.gui_button->setVisible(false);
+	btn.gui_button->setEnabled(false);
+	btn.repeat_counter    = -1.0f;
+	btn.keycode           = id_to_keycode(button_id);
+	btn.immediate_release = true;
+	btn.ids.clear();
 
-	load_button_texture(btn.get(), btn_image, current_button, m_texturesource, m_driver);
+	load_button_texture(btn, btn_image, current_button, m_texturesource, m_driver);
 
 	m_buttons.push_back(btn);
 }
@@ -272,10 +272,10 @@ void AutoHideButtonBar::addToggleButton(touch_gui_button_id button_id, const wch
 		const std::string &btn_image_1, const std::string &btn_image_2)
 {
 	addButton(button_id, caption, btn_image_1);
-	std::shared_ptr<button_info> btn = m_buttons.back();
-	btn->toggleable = button_info::FIRST_TEXTURE;
-	btn->textures.push_back(btn_image_1);
-	btn->textures.push_back(btn_image_2);
+	button_info &btn = m_buttons.back();
+	btn.toggleable = button_info::FIRST_TEXTURE;
+	btn.textures.push_back(btn_image_1);
+	btn.textures.push_back(btn_image_2);
 }
 
 bool AutoHideButtonBar::isButton(const SEvent &event)
@@ -293,11 +293,11 @@ bool AutoHideButtonBar::isButton(const SEvent &event)
 
 	if (m_active) {
 		// check for all buttons in vector
-		for (const auto &button : m_buttons) {
-			if (button->gui_button == element) {
+		for (auto &button : m_buttons) {
+			if (button.gui_button == element) {
 				SEvent translated{};
 				translated.EventType        = irr::EET_KEY_INPUT_EVENT;
-				translated.KeyInput.Key     = button->keycode;
+				translated.KeyInput.Key     = button.keycode;
 				translated.KeyInput.Control = false;
 				translated.KeyInput.Shift   = false;
 				translated.KeyInput.Char    = 0;
@@ -310,19 +310,19 @@ bool AutoHideButtonBar::isButton(const SEvent &event)
 				translated.KeyInput.PressedDown = false;
 				m_receiver->OnEvent(translated);
 
-				button->ids.push_back(event.TouchInput.ID);
+				button.ids.push_back(event.TouchInput.ID);
 
 				m_timeout = 0.0f;
 
-				if (button->toggleable == button_info::FIRST_TEXTURE) {
-					button->toggleable = button_info::SECOND_TEXTURE;
-					load_button_texture(button.get(), button->textures[1],
-							button->gui_button->getRelativePosition(),
+				if (button.toggleable == button_info::FIRST_TEXTURE) {
+					button.toggleable = button_info::SECOND_TEXTURE;
+					load_button_texture(button, button.textures[1],
+							button.gui_button->getRelativePosition(),
 							m_texturesource, m_driver);
-				} else if (button->toggleable == button_info::SECOND_TEXTURE) {
-					button->toggleable = button_info::FIRST_TEXTURE;
-					load_button_texture(button.get(), button->textures[0],
-							button->gui_button->getRelativePosition(),
+				} else if (button.toggleable == button_info::SECOND_TEXTURE) {
+					button.toggleable = button_info::FIRST_TEXTURE;
+					load_button_texture(button, button.textures[0],
+							button.gui_button->getRelativePosition(),
 							m_texturesource, m_driver);
 				}
 
@@ -339,8 +339,8 @@ bool AutoHideButtonBar::isButton(const SEvent &event)
 			m_timeout = 0.0f;
 
 			for (const auto &button : m_buttons) {
-				button->gui_button->setVisible(true);
-				button->gui_button->setEnabled(true);
+				button.gui_button->setVisible(true);
+				button.gui_button->setEnabled(true);
 			}
 
 			return true;
@@ -368,8 +368,8 @@ void AutoHideButtonBar::deactivate()
 	m_active = false;
 
 	for (const auto &button : m_buttons) {
-		button->gui_button->setVisible(false);
-		button->gui_button->setEnabled(false);
+		button.gui_button->setVisible(false);
+		button.gui_button->setEnabled(false);
 	}
 }
 
@@ -380,8 +380,8 @@ void AutoHideButtonBar::hide()
 	m_starter.gui_button->setEnabled(false);
 
 	for (const auto &button : m_buttons) {
-		button->gui_button->setVisible(false);
-		button->gui_button->setEnabled(false);
+		button.gui_button->setVisible(false);
+		button.gui_button->setEnabled(false);
 	}
 }
 
@@ -391,8 +391,8 @@ void AutoHideButtonBar::show()
 
 	if (m_active) {
 		for (const auto &button : m_buttons) {
-			button->gui_button->setVisible(true);
-			button->gui_button->setEnabled(true);
+			button.gui_button->setVisible(true);
+			button.gui_button->setEnabled(true);
 		}
 	} else {
 		m_starter.gui_button->setVisible(true);
@@ -430,31 +430,31 @@ void TouchScreenGUI::initButton(touch_gui_button_id id, const rect<s32> &button_
 {
 	IGUIButton *btn_gui_button = m_guienv->addButton(button_rect, nullptr, id, caption.c_str());
 
-	button_info *btn       = &m_buttons[id];
-	btn->gui_button        = btn_gui_button;
-	btn->gui_button->grab();
-	btn->repeat_counter    = -1.0f;
-	btn->repeat_delay      = repeat_delay;
-	btn->keycode           = id_to_keycode(id);
-	btn->immediate_release = immediate_release;
-	btn->ids.clear();
+	button_info &btn      = m_buttons[id];
+	btn.gui_button        = btn_gui_button;
+	btn.gui_button->grab();
+	btn.repeat_counter    = -1.0f;
+	btn.repeat_delay      = repeat_delay;
+	btn.keycode           = id_to_keycode(id);
+	btn.immediate_release = immediate_release;
+	btn.ids.clear();
 
 	load_button_texture(btn, button_image_names[id], button_rect,
 			m_texturesource, m_device->getVideoDriver());
 }
 
-std::shared_ptr<button_info> TouchScreenGUI::initJoystickButton(touch_gui_button_id id,
+button_info TouchScreenGUI::initJoystickButton(touch_gui_button_id id,
 		const rect<s32> &button_rect, int texture_id, bool visible)
 {
 	IGUIButton *btn_gui_button = m_guienv->addButton(button_rect, nullptr, id, L"O");
 
-	std::shared_ptr<button_info> btn(new button_info);
-	btn->gui_button = btn_gui_button;
-	btn->gui_button->setVisible(visible);
-	btn->gui_button->grab();
-	btn->ids.clear();
+	button_info btn;
+	btn.gui_button = btn_gui_button;
+	btn.gui_button->setVisible(visible);
+	btn.gui_button->grab();
+	btn.ids.clear();
 
-	load_button_texture(btn.get(), joystick_image_names[texture_id], button_rect,
+	load_button_texture(btn, joystick_image_names[texture_id], button_rect,
 			m_texturesource, m_device->getVideoDriver());
 
 	return btn;
@@ -713,9 +713,9 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 		m_joystick_status_aux1 = false;
 		applyJoystickStatus();
 
-		m_joystick_btn_off->gui_button->setVisible(true);
-		m_joystick_btn_bg->gui_button->setVisible(false);
-		m_joystick_btn_center->gui_button->setVisible(false);
+		m_joystick_btn_off.gui_button->setVisible(true);
+		m_joystick_btn_bg.gui_button->setVisible(false);
+		m_joystick_btn_center.gui_button->setVisible(false);
 	} else {
 		infostream << "TouchScreenGUI::translateEvent released unknown button: "
 				<< evt_id << std::endl;
@@ -799,16 +799,16 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 				m_joystick_id               = event.TouchInput.ID;
 				m_joystick_has_really_moved = false;
 
-				m_joystick_btn_off->gui_button->setVisible(false);
-				m_joystick_btn_bg->gui_button->setVisible(true);
-				m_joystick_btn_center->gui_button->setVisible(true);
+				m_joystick_btn_off.gui_button->setVisible(false);
+				m_joystick_btn_bg.gui_button->setVisible(true);
+				m_joystick_btn_center.gui_button->setVisible(true);
 
 				// If it's a fixed joystick, don't move the joystick "button".
 				if (!m_fixed_joystick)
-					m_joystick_btn_bg->gui_button->setRelativePosition(
+					m_joystick_btn_bg.gui_button->setRelativePosition(
 							touch_pos - half_button_size * 3);
 
-				m_joystick_btn_center->gui_button->setRelativePosition(
+				m_joystick_btn_center.gui_button->setRelativePosition(
 						touch_pos - half_button_size);
 			}
 		} else {
@@ -883,13 +883,13 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					// move joystick "button"
 					v2s32 new_offset = dir * button_size / distance - half_button_size;
 					if (m_fixed_joystick)
-						m_joystick_btn_center->gui_button->setRelativePosition(
+						m_joystick_btn_center.gui_button->setRelativePosition(
 								fixed_joystick_center + new_offset);
 					else
-						m_joystick_btn_center->gui_button->setRelativePosition(
+						m_joystick_btn_center.gui_button->setRelativePosition(
 								free_joystick_center + new_offset);
 				} else {
-					m_joystick_btn_center->gui_button->setRelativePosition(
+					m_joystick_btn_center.gui_button->setRelativePosition(
 							touch_pos - half_button_size);
 				}
 			}
@@ -963,19 +963,19 @@ TouchScreenGUI::~TouchScreenGUI()
 		}
 	}
 
-	if (m_joystick_btn_off->gui_button) {
-		m_joystick_btn_off->gui_button->drop();
-		m_joystick_btn_off->gui_button = nullptr;
+	if (m_joystick_btn_off.gui_button) {
+		m_joystick_btn_off.gui_button->drop();
+		m_joystick_btn_off.gui_button = nullptr;
 	}
 
-	if (m_joystick_btn_bg->gui_button) {
-		m_joystick_btn_bg->gui_button->drop();
-		m_joystick_btn_bg->gui_button = nullptr;
+	if (m_joystick_btn_bg.gui_button) {
+		m_joystick_btn_bg.gui_button->drop();
+		m_joystick_btn_bg.gui_button = nullptr;
 	}
 
-	if (m_joystick_btn_center->gui_button) {
-		m_joystick_btn_center->gui_button->drop();
-		m_joystick_btn_center->gui_button = nullptr;
+	if (m_joystick_btn_center.gui_button) {
+		m_joystick_btn_center.gui_button->drop();
+		m_joystick_btn_center.gui_button = nullptr;
 	}
 }
 
@@ -1056,8 +1056,8 @@ void TouchScreenGUI::setVisible(bool visible)
 			button.gui_button->setVisible(visible);
 	}
 
-	if (m_joystick_btn_off->gui_button)
-		m_joystick_btn_off->gui_button->setVisible(visible);
+	if (m_joystick_btn_off.gui_button)
+		m_joystick_btn_off.gui_button->setVisible(visible);
 
 	// clear all active buttons
 	if (!visible) {

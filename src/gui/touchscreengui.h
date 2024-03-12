@@ -153,7 +153,7 @@ private:
 	IGUIEnvironment *m_guienv;
 	IEventReceiver *m_receiver;
 	button_info m_starter;
-	std::vector<std::shared_ptr<button_info>> m_buttons;
+	std::vector<button_info> m_buttons;
 
 	v2s32 m_upper_left;
 	v2s32 m_lower_right;
@@ -259,9 +259,9 @@ private:
 	bool m_fixed_joystick = false;
 	bool m_joystick_triggers_aux1 = false;
 	bool m_draw_crosshair = false;
-	std::shared_ptr<button_info> m_joystick_btn_off = nullptr;
-	std::shared_ptr<button_info> m_joystick_btn_bg = nullptr;
-	std::shared_ptr<button_info> m_joystick_btn_center = nullptr;
+	button_info m_joystick_btn_off;
+	button_info m_joystick_btn_bg;
+	button_info m_joystick_btn_center;
 
 	button_info m_buttons[after_last_element_id];
 
@@ -280,7 +280,7 @@ private:
 			float repeat_delay = BUTTON_REPEAT_DELAY);
 
 	// initialize a joystick button
-	std::shared_ptr<button_info> initJoystickButton(touch_gui_button_id id,
+	button_info initJoystickButton(touch_gui_button_id id,
 			const rect<s32> &button_rect, int texture_id,
 			bool visible = true);
 
