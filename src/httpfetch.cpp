@@ -19,8 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "httpfetch.h"
 #include "porting.h" // for sleep_ms(), get_sysinfo(), secure_rand_fill_buf()
-#include <iostream>
-#include <sstream>
 #include <list>
 #include <unordered_map>
 #include <cerrno>
@@ -152,9 +150,9 @@ bool httpfetch_async_get(u64 caller, HTTPFetchResult &fetch_result)
 static size_t httpfetch_writefunction(
 		char *ptr, size_t size, size_t nmemb, void *userdata)
 {
-	std::ostringstream *stream = (std::ostringstream*)userdata;
+	auto *dest = reinterpret_cast<std::string*>(userdata);
 	size_t count = size * nmemb;
-	stream->write(ptr, count);
+	dest->append(ptr, count);
 	return count;
 }
 
@@ -215,7 +213,6 @@ private:
 	CURLM *multi = nullptr;
 	HTTPFetchRequest request;
 	HTTPFetchResult result;
-	std::ostringstream oss;
 	struct curl_slist *http_header = nullptr;
 	curl_mime *multipart_mime = nullptr;
 };
@@ -225,8 +222,7 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 		CurlHandlePool *pool_):
 	pool(pool_),
 	request(request_),
-	result(request_),
-	oss(std::ios::binary)
+	result(request_)
 {
 	curl = pool->alloc();
 	if (!curl)
@@ -277,16 +273,15 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 		curl_easy_setopt(curl, CURLOPT_USERAGENT, request.useragent.c_str());
 
 	// Set up a write callback that writes to the
-	// ostringstream ongoing->oss, unless the data
-	// is to be discarded
+	// result struct, unless the data is to be discarded
 	if (request.caller == HTTPFETCH_DISCARD) {
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
 				httpfetch_discardfunction);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, NULL);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, nullptr);
 	} else {
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
 				httpfetch_writefunction);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &oss);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result.data);
 	}
 
 	// Set data from fields or raw_data
@@ -372,7 +367,6 @@ const HTTPFetchResult * HTTPFetchOngoing::complete(CURLcode res)
 {
 	result.succeeded = (res == CURLE_OK);
 	result.timeout = (res == CURLE_OPERATION_TIMEDOUT);
-	result.data = oss.str();
 
 	// Get HTTP/FTP response code
 	result.response_code = 0;

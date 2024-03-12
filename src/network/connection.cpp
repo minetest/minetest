@@ -68,7 +68,7 @@ u16 BufferedPacket::getSeqnum() const
 	return readU16(&data[BASE_HEADER_SIZE + 1]);
 }
 
-BufferedPacketPtr makePacket(Address &address, const SharedBuffer<u8> &data,
+BufferedPacketPtr makePacket(const Address &address, const SharedBuffer<u8> &data,
 		u32 protocol_id, session_t sender_peer_id, u8 channel)
 {
 	u32 packet_size = data.getSize() + BASE_HEADER_SIZE;
@@ -834,13 +834,6 @@ void Channel::UpdateTimers(float dtime)
 	Peer
 */
 
-PeerHelper::PeerHelper(Peer* peer) :
-	m_peer(peer)
-{
-	if (peer && !peer->IncUseCount())
-		m_peer = nullptr;
-}
-
 PeerHelper::~PeerHelper()
 {
 	if (m_peer)
@@ -851,30 +844,12 @@ PeerHelper::~PeerHelper()
 
 PeerHelper& PeerHelper::operator=(Peer* peer)
 {
+	if (m_peer)
+		m_peer->DecUseCount();
 	m_peer = peer;
 	if (peer && !peer->IncUseCount())
 		m_peer = nullptr;
 	return *this;
-}
-
-Peer* PeerHelper::operator->() const
-{
-	return m_peer;
-}
-
-Peer* PeerHelper::operator&() const
-{
-	return m_peer;
-}
-
-bool PeerHelper::operator!()
-{
-	return ! m_peer;
-}
-
-bool PeerHelper::operator!=(void* ptr)
-{
-	return ((void*) m_peer != ptr);
 }
 
 bool Peer::IncUseCount()
@@ -989,8 +964,8 @@ void Peer::Drop()
 	delete this;
 }
 
-UDPPeer::UDPPeer(session_t a_id, Address a_address, Connection* connection) :
-	Peer(a_address,a_id,connection)
+UDPPeer::UDPPeer(session_t id, const Address &address, Connection *connection) :
+	Peer(id, address, connection)
 {
 	for (Channel &channel : channels)
 		channel.setWindowSize(START_RELIABLE_WINDOW_SIZE);
@@ -1009,17 +984,6 @@ bool UDPPeer::isTimedOut(float timeout, std::string &reason)
 			reason = "outgoing reliables channel=" + itos(i);
 			return true;
 		}
-	}
-
-	return false;
-}
-
-bool UDPPeer::getAddress(MTProtocols type,Address& toset)
-{
-	if ((type == MTP_UDP) || (type == MTP_MINETEST_RELIABLE_UDP) || (type == MTP_PRIMARY))
-	{
-		toset = address;
-		return true;
 	}
 
 	return false;
@@ -1377,20 +1341,12 @@ PeerHelper Connection::getPeerNoEx(session_t peer_id)
 session_t Connection::lookupPeer(const Address& sender)
 {
 	MutexAutoLock peerlock(m_peers_mutex);
-	std::map<u16, Peer*>::iterator j;
-	j = m_peers.begin();
-	for(; j != m_peers.end(); ++j)
-	{
-		Peer *peer = j->second;
+	for (auto &it: m_peers) {
+		Peer *peer = it.second;
 		if (peer->isPendingDeletion())
 			continue;
 
-		Address tocheck;
-
-		if ((peer->getAddress(MTP_MINETEST_RELIABLE_UDP, tocheck)) && (tocheck == sender))
-			return peer->id;
-
-		if ((peer->getAddress(MTP_UDP, tocheck)) && (tocheck == sender))
+		if (peer->getAddress() == sender)
 			return peer->id;
 	}
 
@@ -1427,12 +1383,8 @@ bool Connection::deletePeer(session_t peer_id, bool timeout)
 		m_peer_ids.erase(it);
 	}
 
-	Address peer_address;
-	//any peer has a primary address this never fails!
-	peer->getAddress(MTP_PRIMARY, peer_address);
-
 	// Create event
-	putEvent(ConnectionEvent::peerRemoved(peer_id, timeout, peer_address));
+	putEvent(ConnectionEvent::peerRemoved(peer_id, timeout, peer->getAddress()));
 
 	peer->Drop();
 	return true;
@@ -1562,15 +1514,14 @@ Address Connection::GetPeerAddress(session_t peer_id)
 
 	if (!peer)
 		throw PeerNotFoundException("No address for peer found!");
-	Address peer_address;
-	peer->getAddress(MTP_PRIMARY, peer_address);
-	return peer_address;
+	return peer->getAddress();
 }
 
 float Connection::getPeerStat(session_t peer_id, rtt_stat_type type)
 {
 	PeerHelper peer = getPeerNoEx(peer_id);
-	if (!peer) return -1;
+	if (!peer)
+		return -1;
 	return peer->getStat(type);
 }
 
@@ -1580,7 +1531,7 @@ float Connection::getLocalStat(rate_stat_type type)
 
 	FATAL_ERROR_IF(!peer, "Connection::getLocalStat we couldn't get our own peer? are you serious???");
 
-	float retval = 0.0;
+	float retval = 0;
 
 	for (Channel &channel : dynamic_cast<UDPPeer *>(&peer)->channels) {
 		switch(type) {
@@ -1609,7 +1560,7 @@ float Connection::getLocalStat(rate_stat_type type)
 	return retval;
 }
 
-session_t Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
+session_t Connection::createPeer(const Address &sender, int fd)
 {
 	// Somebody wants to make a new connection
 
@@ -1694,12 +1645,10 @@ void Connection::sendAck(session_t peer_id, u8 channelnum, u16 seqnum)
 	m_sendThread->Trigger();
 }
 
-UDPPeer* Connection::createServerPeer(Address& address)
+UDPPeer* Connection::createServerPeer(const Address &address)
 {
 	if (ConnectedToServer())
-	{
 		throw ConnectionException("Already connected to a server");
-	}
 
 	UDPPeer *peer = new UDPPeer(PEER_ID_SERVER, address, this);
 	peer->SetFullyOpen();

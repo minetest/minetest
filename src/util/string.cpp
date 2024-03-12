@@ -574,7 +574,7 @@ bool parseColorString(const std::string &value, video::SColor &color, bool quiet
 	return success;
 }
 
-std::string encodeHexColorString(const video::SColor &color)
+std::string encodeHexColorString(video::SColor color)
 {
 	std::string color_string = "#";
 	const char red = color.getRed();

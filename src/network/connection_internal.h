@@ -193,7 +193,7 @@ private:
 
 
 // This adds the base headers to the data and makes a packet out of it
-BufferedPacketPtr makePacket(Address &address, const SharedBuffer<u8> &data,
+BufferedPacketPtr makePacket(const Address &address, const SharedBuffer<u8> &data,
 		u32 protocol_id, session_t sender_peer_id, u8 channel);
 
 // Depending on size, make a TYPE_ORIGINAL or TYPE_SPLIT packet
@@ -235,9 +235,7 @@ private:
 class ReliablePacketBuffer
 {
 public:
-	ReliablePacketBuffer() = default;
-
-	bool getFirstSeqnum(u16& result);
+	bool getFirstSeqnum(u16 &result);
 
 	BufferedPacketPtr popFirst();
 	BufferedPacketPtr popSeqnum(u16 seqnum);
@@ -273,6 +271,7 @@ class IncomingSplitBuffer
 {
 public:
 	~IncomingSplitBuffer();
+
 	/*
 		Returns a reference counted buffer of length != 0 when a full split
 		packet is constructed. If not, returns one of length 0.
@@ -450,13 +449,15 @@ public:
 	friend class ConnectionSendThread;
 	friend class Connection;
 
-	UDPPeer(u16 id, Address address, Connection *connection);
+	UDPPeer(session_t id, const Address &address, Connection *connection);
 	virtual ~UDPPeer() = default;
 
 	void PutReliableSendCommand(ConnectionCommandPtr &c,
 							unsigned int max_packet_size) override;
 
-	bool getAddress(MTProtocols type, Address& toset) override;
+	virtual const Address &getAddress() const {
+		return address;
+	}
 
 	u16 getNextSplitSequenceNumber(u8 channel) override;
 	void setNextSplitSequenceNumber(u8 channel, u16 seqnum) override;

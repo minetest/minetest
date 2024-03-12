@@ -22,8 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mock_inventorymanager.h"
 #include "mock_server.h"
 #include "mock_serveractiveobject.h"
-#include "scripting_server.h"
-#include "server/mods.h"
 
 class TestMoveAction : public TestBase
 {
@@ -53,27 +51,21 @@ void TestMoveAction::runTests(IGameDef *gamedef)
 {
 	MockServer server(getTestTempDirectory());
 
-	ServerScripting server_scripting(&server);
+	server.createScripting();
 	try {
-		// FIXME: When removing the line below, the unittest does NOT crash
-		// (but it should) when running all unittests in order or registration.
-		// Some Lua API functions used in builtin require the Mgr to be present.
-		server.m_modmgr = std::make_unique<ServerModManager>(server.m_path_world);
-
 		std::string builtin = Server::getBuiltinLuaPath() + DIR_DELIM;
-		server_scripting.loadBuiltin();
-		server_scripting.loadMod(builtin + "game" DIR_DELIM "tests" DIR_DELIM "test_moveaction.lua", BUILTIN_MOD_NAME);
+		auto script = server.getScriptIface();
+		script->loadBuiltin();
+		script->loadMod(builtin + "game" DIR_DELIM "tests" DIR_DELIM "test_moveaction.lua", BUILTIN_MOD_NAME);
 	} catch (ModError &e) {
-		// Print backtrace in case of syntax errors
 		rawstream << e.what() << std::endl;
 		num_tests_failed = 1;
 		return;
 	}
 
-	server.m_script = &server_scripting;
-
 	MetricsBackend mb;
-	ServerEnvironment server_env(nullptr, &server_scripting, &server, "", &mb);
+	auto null_map = std::unique_ptr<ServerMap>();
+	ServerEnvironment server_env(std::move(null_map), &server, &mb);
 	MockServerActiveObject obj(&server_env);
 
 	TEST(testMove, &obj, gamedef);
@@ -88,8 +80,6 @@ void TestMoveAction::runTests(IGameDef *gamedef)
 
 	TEST(testCallbacks, &obj, &server);
 	TEST(testCallbacksSwap, &obj, &server);
-
-	server.m_script = nullptr; // Do not free stack memory
 }
 
 static ItemStack parse_itemstack(const char *s)

@@ -74,9 +74,9 @@ public:
  * outwards of the surface. If start is in the box, zero vector.
  * @returns true if a collision point was found
  */
-bool boxLineCollision(const aabb3f &box, const v3f &start, const v3f &dir,
+bool boxLineCollision(const aabb3f &box, v3f start, v3f dir,
 	v3f *collision_point, v3f *collision_normal);
 
-bool boxLineCollision(const aabb3f &box, const v3f &box_rotation,
-	const v3f &start, const v3f &dir,
+bool boxLineCollision(const aabb3f &box, v3f box_rotation,
+	v3f start, v3f dir,
 	v3f *collision_point, v3f *collision_normal, v3f *raw_collision_normal);

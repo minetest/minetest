@@ -94,7 +94,6 @@ public:
 
 private:
 	Json::Value *getOrCreateJson(const std::string &modname);
-	bool writeJson(const std::string &modname, const Json::Value &json);
 
 	std::string m_storage_dir;
 	std::unordered_map<std::string, Json::Value> m_mod_storage;

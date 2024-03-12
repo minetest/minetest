@@ -25,8 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "util/pointer.h"
 #include "util/container.h"
-#include "util/thread.h"
 #include "util/numeric.h"
+#include "porting.h"
 #include "networkprotocol.h"
 #include <iostream>
 #include <vector>
@@ -40,12 +40,6 @@ namespace con
 class ConnectionReceiveThread;
 class ConnectionSendThread;
 
-enum MTProtocols {
-	MTP_PRIMARY,
-	MTP_UDP,
-	MTP_MINETEST_RELIABLE_UDP
-};
-
 enum rate_stat_type {
 	CUR_DL_RATE,
 	AVG_DL_RATE,
@@ -57,18 +51,20 @@ enum rate_stat_type {
 
 class Peer;
 
+// FIXME: Peer refcounting should generally be replaced by std::shared_ptr
 class PeerHelper
 {
 public:
 	PeerHelper() = default;
-	PeerHelper(Peer* peer);
+	inline PeerHelper(Peer *peer) { *this = peer; }
 	~PeerHelper();
 
-	PeerHelper&   operator=(Peer* peer);
-	Peer*         operator->() const;
-	bool          operator!();
-	Peer*         operator&() const;
-	bool          operator!=(void* ptr);
+	PeerHelper& operator=(Peer *peer);
+	inline Peer* operator->() const { return m_peer; }
+	inline Peer* operator&() const { return m_peer; }
+
+	inline bool operator!() { return !m_peer; }
+	inline bool operator!=(std::nullptr_t) { return !!m_peer; }
 
 private:
 	Peer *m_peer = nullptr;
@@ -127,18 +123,10 @@ class Peer {
 	public:
 		friend class PeerHelper;
 
-		Peer(Address address_,session_t id_,Connection* connection) :
-			id(id_),
-			m_connection(connection),
-			address(address_),
-			m_last_timeout_check(porting::getTimeMs())
-		{
-		};
-
 		virtual ~Peer() {
 			MutexAutoLock usage_lock(m_exclusive_access_mutex);
 			FATAL_ERROR_IF(m_usage != 0, "Reference counting failure");
-		};
+		}
 
 		// Unique id of the peer
 		const session_t id;
@@ -148,16 +136,25 @@ class Peer {
 		virtual void PutReliableSendCommand(ConnectionCommandPtr &c,
 						unsigned int max_packet_size) {};
 
-		virtual bool getAddress(MTProtocols type, Address& toset) = 0;
+		virtual const Address &getAddress() const = 0;
 
-		bool isPendingDeletion()
-		{ MutexAutoLock lock(m_exclusive_access_mutex); return m_pending_deletion; };
+		bool isPendingDeletion() const {
+			MutexAutoLock lock(m_exclusive_access_mutex);
+			return m_pending_deletion;
+		}
+		void ResetTimeout() {
+			MutexAutoLock lock(m_exclusive_access_mutex);
+			m_timeout_counter = 0;
+		}
 
-		void ResetTimeout()
-			{MutexAutoLock lock(m_exclusive_access_mutex); m_timeout_counter = 0.0; };
-
-		bool isHalfOpen() const { return m_half_open; }
-		void SetFullyOpen() { m_half_open = false; }
+		bool isHalfOpen() const {
+			MutexAutoLock lock(m_exclusive_access_mutex);
+			return m_half_open;
+		}
+		void SetFullyOpen() {
+			MutexAutoLock lock(m_exclusive_access_mutex);
+			m_half_open = false;
+		}
 
 		virtual bool isTimedOut(float timeout, std::string &reason);
 
@@ -168,10 +165,8 @@ class Peer {
 		virtual SharedBuffer<u8> addSplitPacket(u8 channel, BufferedPacketPtr &toadd,
 				bool reliable)
 		{
-			errorstream << "Peer::addSplitPacket called,"
-					<< " this is supposed to be never called!" << std::endl;
-			return SharedBuffer<u8>(0);
-		};
+			FATAL_ERROR("unimplemented in abstract class");
+		}
 
 		virtual bool Ping(float dtime, SharedBuffer<u8>& data) { return false; };
 
@@ -192,7 +187,16 @@ class Peer {
 			}
 			return -1;
 		}
+
 	protected:
+		Peer(session_t id, const Address &address, Connection *connection) :
+			id(id),
+			m_connection(connection),
+			address(address),
+			m_last_timeout_check(porting::getTimeMs())
+		{
+		}
+
 		virtual void reportRTT(float rtt) {};
 
 		void RTTStatistics(float rtt,
@@ -206,15 +210,15 @@ class Peer {
 
 		bool m_pending_deletion = false;
 
-		Connection* m_connection;
+		Connection *m_connection;
 
 		// Address of the peer
 		Address address;
 
 		// Ping timer
 		float m_ping_timer = 0.0f;
-	private:
 
+	private:
 		struct rttstats {
 			float jitter_min = FLT_MAX;
 			float jitter_max = 0.0f;
@@ -222,8 +226,6 @@ class Peer {
 			float min_rtt = FLT_MAX;
 			float max_rtt = 0.0f;
 			float avg_rtt = -1.0f;
-
-			rttstats() = default;
 		};
 
 		rttstats m_rtt;
@@ -285,8 +287,8 @@ protected:
 	PeerHelper getPeerNoEx(session_t peer_id);
 	session_t   lookupPeer(const Address& sender);
 
-	session_t createPeer(Address& sender, MTProtocols protocol, int fd);
-	UDPPeer*  createServerPeer(Address& sender);
+	session_t createPeer(const Address& sender, int fd);
+	UDPPeer*  createServerPeer(const Address& sender);
 	bool deletePeer(session_t peer_id, bool timeout);
 
 	void SetPeerID(session_t id) { m_peer_id = id; }

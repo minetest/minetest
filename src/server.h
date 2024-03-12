@@ -280,7 +280,7 @@ public:
 	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);
 
 	// Envlock and conlock should be locked when using scriptapi
-	ServerScripting *getScriptIface(){ return m_script; }
+	inline ServerScripting *getScriptIface() { return m_script.get(); }
 
 	// actions: time-reversed list
 	// Return value: success/failure
@@ -294,7 +294,7 @@ public:
 	virtual ICraftDefManager* getCraftDefManager();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	IRollbackManager *getRollbackManager() { return m_rollback; }
-	virtual EmergeManager *getEmergeManager() { return m_emerge; }
+	virtual EmergeManager *getEmergeManager() { return m_emerge.get(); }
 	virtual ModStorageDatabase *getModStorageDatabase() { return m_mod_storage_database; }
 
 	IWritableItemDefManager* getWritableItemDefManager();
@@ -432,6 +432,16 @@ public:
 	// Environment mutex (envlock)
 	std::mutex m_env_mutex;
 
+protected:
+	/* Do not add more members here, this is only required to make unit tests work. */
+
+	// Scripting
+	// Envlock and conlock should be locked when using Lua
+	std::unique_ptr<ServerScripting> m_script;
+
+	// Mods
+	std::unique_ptr<ServerModManager> m_modmgr;
+
 private:
 	friend class EmergeThread;
 	friend class RemoteClient;
@@ -478,7 +488,6 @@ private:
 	void SendBreath(session_t peer_id, u16 breath);
 	void SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 		const std::string &custom_reason, bool reconnect = false);
-	void SendAccessDenied_Legacy(session_t peer_id, const std::wstring &reason);
 	void SendDeathscreen(session_t peer_id, bool set_camera_point_target,
 		v3f camera_point_target);
 	void SendItemDef(session_t peer_id, IItemDefManager *itemdef, u16 protocol_version);
@@ -608,6 +617,8 @@ private:
 	u16 m_max_chatmessage_length;
 	// For "dedicated" server list flag
 	bool m_dedicated;
+
+	// Game settings layer
 	Settings *m_game_settings = nullptr;
 
 	// Thread can set; step() will throw as ServerError
@@ -626,10 +637,6 @@ private:
 	// Environment
 	ServerEnvironment *m_env = nullptr;
 
-	// Reference to the server map until ServerEnvironment is initialized
-	// after that this variable must be a nullptr
-	ServerMap *m_startup_server_map = nullptr;
-
 	// server connection
 	std::shared_ptr<con::Connection> m_con;
 
@@ -640,11 +647,7 @@ private:
 	IRollbackManager *m_rollback = nullptr;
 
 	// Emerge manager
-	EmergeManager *m_emerge = nullptr;
-
-	// Scripting
-	// Envlock and conlock should be locked when using Lua
-	ServerScripting *m_script = nullptr;
+	std::unique_ptr<EmergeManager> m_emerge;
 
 	// Item definition manager
 	IWritableItemDefManager *m_itemdef;
@@ -654,9 +657,6 @@ private:
 
 	// Craft definition manager
 	IWritableCraftDefManager *m_craftdef;
-
-	// Mods
-	std::unique_ptr<ServerModManager> m_modmgr;
 
 	std::unordered_map<std::string, Translations> server_translations;
 

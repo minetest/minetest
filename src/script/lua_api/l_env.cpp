@@ -1346,7 +1346,7 @@ int ModApiEnv::l_spawn_tree(lua_State *L)
 
 	ServerMap *map = &env->getServerMap();
 	treegen::error e;
-	if ((e = treegen::spawn_ltree (map, p0, ndef, tree_def)) != treegen::SUCCESS) {
+	if ((e = treegen::spawn_ltree (map, p0, tree_def)) != treegen::SUCCESS) {
 		if (e == treegen::UNBALANCED_BRACKETS) {
 			luaL_error(L, "spawn_tree(): closing ']' has no matching opening bracket");
 		} else {
@@ -1652,7 +1652,7 @@ int ModApiEnvVM::l_spawn_tree(lua_State *L)
 		return 0;
 
 	treegen::error e;
-	if ((e = treegen::make_ltree(*vm, p0, ndef, tree_def)) != treegen::SUCCESS) {
+	if ((e = treegen::make_ltree(*vm, p0, tree_def)) != treegen::SUCCESS) {
 		if (e == treegen::UNBALANCED_BRACKETS) {
 			throw LuaError("spawn_tree(): closing ']' has no matching opening bracket");
 		} else {

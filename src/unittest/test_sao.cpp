@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "test.h"
 
 #include "mock_server.h"
-#include "scripting_server.h"
 #include "server/luaentity_sao.h"
 #include "emerge.h"
 
@@ -73,10 +72,11 @@ void TestSAO::runTests(IGameDef *gamedef)
 		ofs2 << "backend = dummy\n";
 	}
 
-	ServerScripting server_scripting(&server);
+	server.createScripting();
 	try {
-		server_scripting.loadBuiltin();
-		server_scripting.loadMod(helper_lua, BUILTIN_MOD_NAME);
+		auto script = server.getScriptIface();
+		script->loadBuiltin();
+		script->loadMod(helper_lua, BUILTIN_MOD_NAME);
 	} catch (ModError &e) {
 		rawstream << e.what() << std::endl;
 		num_tests_failed = 1;
@@ -88,8 +88,8 @@ void TestSAO::runTests(IGameDef *gamedef)
 	//       EmergeManager should become mockable
 	MetricsBackend mb;
 	EmergeManager emerge(&server, &mb);
-	auto *map = new ServerMap(server.getWorldPath(), gamedef, &emerge, &mb);
-	ServerEnvironment env(map, &server_scripting, &server, "", &mb);
+	auto map = std::make_unique<ServerMap>(server.getWorldPath(), gamedef, &emerge, &mb);
+	ServerEnvironment env(std::move(map), &server, &mb);
 	env.loadMeta();
 
 	m_step_interval = std::max(

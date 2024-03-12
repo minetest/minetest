@@ -89,7 +89,7 @@ static inline v3f truncate(const v3f& vec, const f32 factor)
 // The time after which the collision occurs is stored in dtime.
 CollisionAxis axisAlignedCollision(
 		const aabb3f &staticbox, const aabb3f &movingbox,
-		const v3f &speed, f32 *dtime)
+		const v3f speed, f32 *dtime)
 {
 	//TimeTaker tt("axisAlignedCollision");
 

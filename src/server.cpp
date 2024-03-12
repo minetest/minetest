@@ -400,11 +400,8 @@ Server::~Server()
 
 	// Delete the rest in the reverse order of creation
 	delete m_game_settings;
-	delete m_emerge;
 	delete m_banmanager;
 	delete m_mod_storage_database;
-	delete m_startup_server_map; // if available
-	delete m_script;
 	delete m_rollback;
 	delete m_itemdef;
 	delete m_nodedef;
@@ -438,7 +435,7 @@ void Server::init()
 	}
 
 	// Create emerge manager
-	m_emerge = new EmergeManager(this, m_metrics_backend.get());
+	m_emerge = std::make_unique<EmergeManager>(this, m_metrics_backend.get());
 
 	// Create ban manager
 	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
@@ -460,13 +457,13 @@ void Server::init()
 	MutexAutoLock envlock(m_env_mutex);
 
 	// Create the Map (loads map_meta.txt, overriding configured mapgen params)
-	ServerMap *servermap = new ServerMap(m_path_world, this, m_emerge, m_metrics_backend.get());
-	m_startup_server_map = servermap;
+	auto startup_server_map = std::make_unique<ServerMap>(m_path_world, this,
+			m_emerge.get(), m_metrics_backend.get());
 
 	// Initialize scripting
 	infostream << "Server: Initializing Lua" << std::endl;
 
-	m_script = new ServerScripting(this);
+	m_script = std::make_unique<ServerScripting>(this);
 
 	// Must be created before mod loading because we have some inventory creation
 	m_inventory_mgr = std::make_unique<ServerInventoryManager>();
@@ -474,7 +471,7 @@ void Server::init()
 	m_script->loadBuiltin();
 
 	m_gamespec.checkAndLog();
-	m_modmgr->loadMods(m_script);
+	m_modmgr->loadMods(*m_script);
 
 	m_script->saveGlobals();
 
@@ -506,19 +503,18 @@ void Server::init()
 	m_craftdef->initHashes(this);
 
 	// Initialize Environment
-	m_startup_server_map = nullptr; // Ownership moved to ServerEnvironment
-	m_env = new ServerEnvironment(servermap, m_script, this,
-		m_path_world, m_metrics_backend.get());
+	m_env = new ServerEnvironment(std::move(startup_server_map),
+		this, m_metrics_backend.get());
 	m_env->init();
 
 	m_inventory_mgr->setEnv(m_env);
 	m_clients.setEnv(m_env);
 
-	if (!servermap->settings_mgr.makeMapgenParams())
-		FATAL_ERROR("Couldn't create any mapgen type");
-
 	// Initialize mapgens
-	m_emerge->initMapgens(servermap->getMapgenParams());
+	auto &servermap = m_env->getServerMap();
+	if (!servermap.settings_mgr.makeMapgenParams())
+		FATAL_ERROR("Couldn't create any mapgen type");
+	m_emerge->initMapgens(servermap.getMapgenParams());
 
 	if (g_settings->getBool("enable_rollback_recording")) {
 		// Create rollback manager
@@ -532,7 +528,7 @@ void Server::init()
 	m_script->initAsync();
 
 	// Register us to receive map edit events
-	servermap->addEventReceiver(this);
+	servermap.addEventReceiver(this);
 
 	m_env->loadMeta();
 
@@ -1502,8 +1498,7 @@ void Server::SendInventory(RemotePlayer *player, bool incremental)
 	player->inventory.setModified(false);
 	player->setModified(true);
 
-	const std::string &s = os.str();
-	pkt.putRawString(s.c_str(), s.size());
+	pkt.putRawString(os.str());
 	Send(&pkt);
 }
 
@@ -1638,32 +1633,30 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 
 	pkt << p.amount << p.time;
 
+	std::ostringstream os(std::ios_base::binary);
 	if (protocol_version >= 42) {
 		// Serialize entire thing
-		std::ostringstream os(std::ios_base::binary);
 		p.pos.serialize(os);
 		p.vel.serialize(os);
 		p.acc.serialize(os);
 		p.exptime.serialize(os);
 		p.size.serialize(os);
-		pkt.putRawString(os.str());
 	} else {
 		// serialize legacy fields only (compatibility)
-		std::ostringstream os(std::ios_base::binary);
 		p.pos.start.legacySerialize(os);
 		p.vel.start.legacySerialize(os);
 		p.acc.start.legacySerialize(os);
 		p.exptime.start.legacySerialize(os);
 		p.size.start.legacySerialize(os);
-		pkt.putRawString(os.str());
 	}
+	pkt.putRawString(os.str());
 	pkt << p.collisiondetection;
 
 	pkt.putLongString(p.texture.string);
 
 	pkt << id << p.vertical << p.collision_removal << attached_id;
 	{
-		std::ostringstream os(std::ios_base::binary);
+		os.str("");
 		p.animation.serialize(os, protocol_version);
 		pkt.putRawString(os.str());
 	}
@@ -1671,7 +1664,7 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	pkt << p.node.param0 << p.node.param2 << p.node_tile;
 
 	{ // serialize new fields
-		std::ostringstream os(std::ios_base::binary);
+		os.str("");
 		if (protocol_version < 42) {
 			// initial bias for older properties
 			pkt << p.pos.start.bias
@@ -2121,7 +2114,7 @@ void Server::SendActiveObjectMessages(session_t peer_id, const std::string &data
 	NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_MESSAGES,
 			datas.size(), peer_id);
 
-	pkt.putRawString(datas.c_str(), datas.size());
+	pkt.putRawString(datas);
 
 	auto &ccf = clientCommandFactoryTable[pkt.getCommand()];
 	m_clients.sendCustom(pkt.getPeerId(), reliable ? ccf.channel : 1, &pkt, reliable);
@@ -2459,7 +2452,7 @@ void Server::SendBlocks(float dtime)
 
 			total_sending += client->getSendingCount();
 			const auto old_count = queue.size();
-			client->GetNextBlocks(m_env,m_emerge, dtime, queue);
+			client->GetNextBlocks(m_env, m_emerge.get(), dtime, queue);
 			unique_clients += queue.size() > old_count ? 1 : 0;
 		}
 	}
@@ -2693,7 +2686,7 @@ void Server::sendRequestedMedia(session_t peer_id,
 
 	// Note that applying a "real" bin packing algorithm here is not necessarily
 	// an improvement (might even perform worse) since games usually have lots
-	// of files larger than 5KB and the current algorithm already minimized
+	// of files larger than 5KB and the current algorithm already minimizes
 	// the amount of bunches quite well (at the expense of overshooting).
 
 	u32 file_size_bunch_total = 0;
@@ -3800,7 +3793,7 @@ bool Server::rollbackRevertActions(const std::list<RollbackAction> &actions,
 		std::list<std::string> *log)
 {
 	infostream<<"Server::rollbackRevertActions(len="<<actions.size()<<")"<<std::endl;
-	ServerMap *map = (ServerMap*)(&m_env->getMap());
+	auto *map = &m_env->getServerMap();
 
 	// Fail if no actions to handle
 	if (actions.empty()) {
@@ -3989,24 +3982,22 @@ void Server::requestShutdown(const std::string &msg, bool reconnect, float delay
 	} else if (delay < 0.0f && m_shutdown_state.isTimerRunning()) {
 		// Negative delay, cancel shutdown if requested
 		m_shutdown_state.reset();
-		std::wstringstream ws;
 
-		ws << L"*** Server shutdown canceled.";
+		const char *s = "*** Server shutdown canceled.";
 
-		infostream << wide_to_utf8(ws.str()).c_str() << std::endl;
-		SendChatMessage(PEER_ID_INEXISTENT, ws.str());
-		// m_shutdown_* are already handled, skip.
+		infostream << s << std::endl;
+		SendChatMessage(PEER_ID_INEXISTENT, utf8_to_wide(s));
+		// m_shutdown_state already handled, skip.
 		return;
 	} else if (delay > 0.0f) {
 	// Positive delay, tell the clients when the server will shut down
-		std::wstringstream ws;
+		std::ostringstream oss;
 
-		ws << L"*** Server shutting down in "
-				<< duration_to_string(myround(delay)).c_str()
-				<< ".";
+		oss << "*** Server shutting down in "
+			<< duration_to_string(myround(delay)) << ".";
 
-		infostream << wide_to_utf8(ws.str()).c_str() << std::endl;
-		SendChatMessage(PEER_ID_INEXISTENT, ws.str());
+		infostream << oss.str() << std::endl;
+		SendChatMessage(PEER_ID_INEXISTENT, utf8_to_wide(oss.str()));
 	}
 
 	m_shutdown_state.trigger(delay, msg, reconnect);
