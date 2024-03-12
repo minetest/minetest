@@ -11,8 +11,7 @@ on:
     # Publish semver tags as releases.
     tags: [ "*.*.*" ]
   pull_request:
-    # Build docker image on pull requests to master. (but do not publish)
-    branches: [ "master" ]
+    # Build docker image on pull requests. (but do not publish)
     paths:
       - 'lib/**.[ch]'
       - 'lib/**.cpp'
