@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "debug.h"
 #include "log.h"
+#include "porting.h"
 #include "util/container.h"
 #include "util/thread.h"
 #include "version.h"
@@ -753,7 +754,7 @@ static void httpfetch_request_clear(u64 caller)
 	}
 }
 
-void httpfetch_sync(const HTTPFetchRequest &fetch_request,
+static void httpfetch_sync(const HTTPFetchRequest &fetch_request,
 		HTTPFetchResult &fetch_result)
 {
 	// Create ongoing fetch data and make a cURL handle
@@ -764,6 +765,28 @@ void httpfetch_sync(const HTTPFetchRequest &fetch_request,
 	CURLcode res = ongoing.start(nullptr);
 	// Update fetch result
 	fetch_result = *ongoing.complete(res);
+}
+
+bool httpfetch_sync_interruptible(const HTTPFetchRequest &fetch_request,
+		HTTPFetchResult &fetch_result, long interval)
+{
+	if (Thread *thread = Thread::getCurrentThread()) {
+		HTTPFetchRequest req = fetch_request;
+		req.caller = httpfetch_caller_alloc_secure();
+		httpfetch_async(req);
+		do {
+			if (thread->stopRequested()) {
+				httpfetch_caller_free(req.caller);
+				fetch_result = HTTPFetchResult(fetch_request);
+				return false;
+			}
+			sleep_ms(interval);
+		} while (!httpfetch_async_get(req.caller, fetch_result));
+		httpfetch_caller_free(req.caller);
+	} else {
+		httpfetch_sync(fetch_request, fetch_result);
+	}
+	return true;
 }
 
 #else  // USE_CURL
@@ -795,13 +818,14 @@ static void httpfetch_request_clear(u64 caller)
 {
 }
 
-void httpfetch_sync(const HTTPFetchRequest &fetch_request,
-		HTTPFetchResult &fetch_result)
+bool httpfetch_sync_interruptible(const HTTPFetchRequest &fetch_request,
+		HTTPFetchResult &fetch_result, long interval)
 {
-	errorstream << "httpfetch_sync: unable to fetch " << fetch_request.url
+	errorstream << "httpfetch_sync_interruptible: unable to fetch " << fetch_request.url
 			<< " because USE_CURL=0" << std::endl;
 
 	fetch_result = HTTPFetchResult(fetch_request); // sets succeeded = false etc.
+	return false;
 }
 
 #endif  // USE_CURL
