@@ -1,5 +1,5 @@
 ---
-name: Docker Image
+name: docker_image
 
 # https://docs.github.com/en/actions/publishing-packages/publishing-docker-images
 # https://docs.docker.com/build/ci/github-actions/multi-platform
