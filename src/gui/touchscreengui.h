@@ -145,6 +145,8 @@ public:
 	// unhide the button bar
 	void show();
 
+	bool operator!=(const AutoHideButtonBar &other);
+
 private:
 	ISimpleTextureSource *m_texturesource = nullptr;
 	irr::video::IVideoDriver *m_driver;
@@ -299,11 +301,7 @@ private:
 	// map to store the IDs and positions of currently pressed pointers
 	std::unordered_map<size_t, v2s32> m_pointer_pos;
 
-	// settings bar
-	AutoHideButtonBar m_settings_bar;
-
-	// rare controls bar
-	AutoHideButtonBar m_rare_controls_bar;
+	std::vector<AutoHideButtonBar> m_buttonbars;
 
 	v2s32 getPointerPos();
 	void emitMouseEvent(EMOUSE_INPUT_EVENT type);

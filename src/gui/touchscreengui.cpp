@@ -400,12 +400,14 @@ void AutoHideButtonBar::show()
 	}
 }
 
+bool AutoHideButtonBar::operator!=(const AutoHideButtonBar &other) {
+	return m_starter.gui_button != other.m_starter.gui_button;
+}
+
 TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver):
 		m_device(device),
 		m_guienv(device->getGUIEnvironment()),
-		m_receiver(receiver),
-		m_settings_bar(device, receiver),
-		m_rare_controls_bar(device, receiver)
+		m_receiver(receiver)
 {
 	for (auto &button : m_buttons) {
 		button.gui_button     = nullptr;
@@ -524,7 +526,8 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 						m_screensize.Y - 1.5f * button_size),
 				L"spc1", false);
 
-	m_settings_bar.init(m_texturesource, "gear_icon.png", settings_starter_id,
+	AutoHideButtonBar &settings_bar = m_buttonbars.emplace_back(m_device, m_receiver);
+	settings_bar.init(m_texturesource, "gear_icon.png", settings_starter_id,
 			v2s32(m_screensize.X - 1.25f * button_size,
 					m_screensize.Y - (SETTINGS_BAR_Y_OFFSET + 1.0f) * button_size
 							+ 0.5f * button_size),
@@ -547,15 +550,16 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 			continue;
 
 		std::wstring wide = utf8_to_wide(pair.second);
-		m_settings_bar.addButton(pair.first, wide.c_str(),
+		settings_bar.addButton(pair.first, wide.c_str(),
 				pair.second + "_btn.png");
 	}
 
 	// Chat is shown by default, so chat_hide_btn.png is shown first.
-	m_settings_bar.addToggleButton(toggle_chat_id, L"togglechat",
+	settings_bar.addToggleButton(toggle_chat_id, L"togglechat",
 			"chat_hide_btn.png", "chat_show_btn.png");
 
-	m_rare_controls_bar.init(m_texturesource, "rare_controls.png",
+	AutoHideButtonBar &rare_controls_bar = m_buttonbars.emplace_back(m_device, m_receiver);
+	rare_controls_bar.init(m_texturesource, "rare_controls.png",
 			rare_controls_starter_id,
 			v2s32(0.25f * button_size,
 					m_screensize.Y - (RARE_CONTROLS_BAR_Y_OFFSET + 1.0f) * button_size
@@ -576,7 +580,7 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 			continue;
 
 		std::wstring wide = utf8_to_wide(pair.second);
-		m_rare_controls_bar.addButton(pair.first, wide.c_str(),
+		rare_controls_bar.addButton(pair.first, wide.c_str(),
 				pair.second + "_btn.png");
 	}
 
@@ -748,70 +752,77 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 
 	if (event.TouchInput.Event == ETIE_PRESSED_DOWN) {
 		size_t eventID = event.TouchInput.ID;
-
-		touch_gui_button_id button = getButtonID(X, Y);
+		m_pointer_downpos[eventID] = touch_pos;
+		m_pointer_pos[eventID] = touch_pos;
 
 		// handle button events
+		touch_gui_button_id button = getButtonID(X, Y);
 		if (button != after_last_element_id) {
 			handleButtonEvent(button, eventID, true);
-			m_settings_bar.deactivate();
-			m_rare_controls_bar.deactivate();
-		} else if (isHotbarButton(event)) {
-			m_settings_bar.deactivate();
-			m_rare_controls_bar.deactivate();
+			for (AutoHideButtonBar &bar : m_buttonbars)
+				bar.deactivate();
+			return;
+		}
+
+		if (isHotbarButton(event)) {
 			// already handled in isHotbarButton()
-		} else if (m_settings_bar.isButton(event)) {
-			m_rare_controls_bar.deactivate();
-			// already handled in isSettingsBarButton()
-		} else if (m_rare_controls_bar.isButton(event)) {
-			m_settings_bar.deactivate();
-			// already handled in isSettingsBarButton()
-		} else {
-			// handle non button events
-			if (m_settings_bar.active() || m_rare_controls_bar.active()) {
-				m_settings_bar.deactivate();
-				m_rare_controls_bar.deactivate();
+			for (AutoHideButtonBar &bar : m_buttonbars)
+				bar.deactivate();
+			return;
+		}
+
+		for (AutoHideButtonBar &bar : m_buttonbars) {
+			if (bar.isButton(event)) {
+				// already handled in bar.isButton()
+				for (AutoHideButtonBar &other : m_buttonbars)
+					if (other != bar)
+						other.deactivate();
 				return;
-			}
-
-			// Select joystick when joystick tapped (fixed joystick position) or
-			// when left 1/3 of screen dragged (free joystick position)
-			if ((m_fixed_joystick && dir_fixed.getLengthSQ() <= fixed_joystick_range_sq) ||
-					(!m_fixed_joystick && X < m_screensize.X / 3.0f)) {
-				// If we don't already have a starting point for joystick, make this the one.
-				if (!m_has_joystick_id) {
-					m_has_joystick_id           = true;
-					m_joystick_id               = event.TouchInput.ID;
-					m_joystick_has_really_moved = false;
-
-					m_joystick_btn_off->gui_button->setVisible(false);
-					m_joystick_btn_bg->gui_button->setVisible(true);
-					m_joystick_btn_center->gui_button->setVisible(true);
-
-					// If it's a fixed joystick, don't move the joystick "button".
-					if (!m_fixed_joystick)
-						m_joystick_btn_bg->gui_button->setRelativePosition(
-								touch_pos - half_button_size * 3);
-
-					m_joystick_btn_center->gui_button->setRelativePosition(
-							touch_pos - half_button_size);
-				}
-			} else {
-				// If we don't already have a moving point, make this the moving one.
-				if (!m_has_move_id) {
-					m_has_move_id              = true;
-					m_move_id                  = event.TouchInput.ID;
-					m_move_has_really_moved    = false;
-					m_move_downtime            = porting::getTimeMs();
-					m_move_pos                 = touch_pos;
-					// DON'T reset m_tap_state here, otherwise many short taps
-					// will be ignored if you tap very fast.
-				}
 			}
 		}
 
-		m_pointer_downpos[event.TouchInput.ID] = touch_pos;
-		m_pointer_pos[event.TouchInput.ID] = touch_pos;
+		// handle non button events
+		for (AutoHideButtonBar &bar : m_buttonbars) {
+			if (bar.active()) {
+				bar.deactivate();
+				return;
+			}
+		}
+
+		// Select joystick when joystick tapped (fixed joystick position) or
+		// when left 1/3 of screen dragged (free joystick position)
+		if ((m_fixed_joystick && dir_fixed.getLengthSQ() <= fixed_joystick_range_sq) ||
+				(!m_fixed_joystick && X < m_screensize.X / 3.0f)) {
+			// If we don't already have a starting point for joystick, make this the one.
+			if (!m_has_joystick_id) {
+				m_has_joystick_id           = true;
+				m_joystick_id               = event.TouchInput.ID;
+				m_joystick_has_really_moved = false;
+
+				m_joystick_btn_off->gui_button->setVisible(false);
+				m_joystick_btn_bg->gui_button->setVisible(true);
+				m_joystick_btn_center->gui_button->setVisible(true);
+
+				// If it's a fixed joystick, don't move the joystick "button".
+				if (!m_fixed_joystick)
+					m_joystick_btn_bg->gui_button->setRelativePosition(
+							touch_pos - half_button_size * 3);
+
+				m_joystick_btn_center->gui_button->setRelativePosition(
+						touch_pos - half_button_size);
+			}
+		} else {
+			// If we don't already have a moving point, make this the moving one.
+			if (!m_has_move_id) {
+				m_has_move_id              = true;
+				m_move_id                  = event.TouchInput.ID;
+				m_move_has_really_moved    = false;
+				m_move_downtime            = porting::getTimeMs();
+				m_move_pos                 = touch_pos;
+				// DON'T reset m_tap_state here, otherwise many short taps
+				// will be ignored if you tap very fast.
+			}
+		}
 	}
 	else if (event.TouchInput.Event == ETIE_LEFT_UP) {
 		verbosestream << "Up event for pointerid: " << event.TouchInput.ID << std::endl;
@@ -1020,8 +1031,8 @@ void TouchScreenGUI::step(float dtime)
 				->getRayFromScreenCoordinates(pointer_pos);
 	}
 
-	m_settings_bar.step(dtime);
-	m_rare_controls_bar.step(dtime);
+	for (AutoHideButtonBar &bar : m_buttonbars)
+		bar.step(dtime);
 }
 
 void TouchScreenGUI::resetHotbarRects()
@@ -1052,12 +1063,11 @@ void TouchScreenGUI::setVisible(bool visible)
 	if (!visible) {
 		while (!m_pointer_pos.empty())
 			handleReleaseEvent(m_pointer_pos.begin()->first);
-
-		m_settings_bar.hide();
-		m_rare_controls_bar.hide();
+		for (AutoHideButtonBar &bar : m_buttonbars)
+			bar.hide();
 	} else {
-		m_settings_bar.show();
-		m_rare_controls_bar.show();
+		for (AutoHideButtonBar &bar : m_buttonbars)
+			bar.show();
 	}
 }
 
