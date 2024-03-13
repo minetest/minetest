@@ -97,7 +97,7 @@ struct button_info
 	float repeat_counter;
 	float repeat_delay;
 	EKEY_CODE keycode;
-	std::vector<size_t> ids;
+	std::vector<size_t> pointer_ids;
 	irr_ptr<IGUIButton> gui_button = nullptr;
 	bool immediate_release;
 
@@ -260,8 +260,8 @@ private:
 	// gui button detection
 	touch_gui_button_id getButtonID(s32 x, s32 y);
 
-	// gui button by eventID
-	touch_gui_button_id getButtonID(size_t eventID);
+	// gui button by pointer ID
+	touch_gui_button_id getButtonID(size_t pointer_id);
 
 	// check if a button has changed
 	void handleChangedButton(const SEvent &event);
@@ -277,13 +277,13 @@ private:
 			bool visible = true);
 
 	// handle a button event
-	void handleButtonEvent(touch_gui_button_id bID, size_t eventID, bool action);
+	void handleButtonEvent(touch_gui_button_id id, size_t pointer_id, bool action);
 
 	// handle pressing hotbar items
 	bool isHotbarButton(const SEvent &event);
 
 	// handle release event
-	void handleReleaseEvent(size_t evt_id);
+	void handleReleaseEvent(size_t pointer_id);
 
 	// apply joystick status
 	void applyJoystickStatus();
