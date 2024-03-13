@@ -1555,8 +1555,8 @@ bool Game::initGui()
 	gui_chat_console = new GUIChatConsole(guienv, guienv->getRootGUIElement(),
 			-1, chat_backend, client, &g_menumgr);
 
-	if (g_touchscreengui)
-		g_touchscreengui->init(texture_src);
+	if (g_settings->getBool("enable_touch"))
+		g_touchscreengui = new TouchScreenGUI(device, texture_src);
 
 	return true;
 }

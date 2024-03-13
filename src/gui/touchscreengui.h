@@ -111,11 +111,9 @@ struct button_info
 class AutoHideButtonBar
 {
 public:
-	AutoHideButtonBar(IrrlichtDevice *device, IEventReceiver *receiver);
-
-	void init(ISimpleTextureSource *tsrc, const std::string &starter_img, int button_id,
-			const v2s32 &UpperLeft, const v2s32 &LowerRight,
-			autohide_button_bar_dir dir, float timeout);
+	AutoHideButtonBar(IrrlichtDevice *device, ISimpleTextureSource *tsrc,
+			const std::string &starter_img, touch_gui_button_id starter_id,
+			core::recti starter_rect, autohide_button_bar_dir dir, float timeout);
 
 	~AutoHideButtonBar();
 
@@ -148,10 +146,10 @@ public:
 	bool operator!=(const AutoHideButtonBar &other);
 
 private:
+	irr::video::IVideoDriver *m_driver = nullptr;
+	IGUIEnvironment *m_guienv = nullptr;
+	IEventReceiver *m_receiver = nullptr;
 	ISimpleTextureSource *m_texturesource = nullptr;
-	irr::video::IVideoDriver *m_driver;
-	IGUIEnvironment *m_guienv;
-	IEventReceiver *m_receiver;
 	button_info m_starter;
 	std::vector<button_info> m_buttons;
 
@@ -165,20 +163,17 @@ private:
 	// button bar timeout
 	float m_timeout = 0.0f;
 	float m_timeout_value = 3.0f;
-	bool m_initialized = false;
 	autohide_button_bar_dir m_dir = AHBB_Dir_Right_Left;
 };
 
 class TouchScreenGUI
 {
 public:
-	TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver);
+	TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsrc);
 	~TouchScreenGUI();
 
 	void translateEvent(const SEvent &event);
 	void applyContextControls(const TouchInteractionMode &mode);
-
-	void init(ISimpleTextureSource *tsrc);
 
 	double getYawChange()
 	{
@@ -218,16 +213,15 @@ public:
 	std::optional<u16> getHotbarSelection();
 
 private:
-	bool m_initialized = false;
-	IrrlichtDevice *m_device;
-	IGUIEnvironment *m_guienv;
-	IEventReceiver *m_receiver;
-	ISimpleTextureSource *m_texturesource;
+	IrrlichtDevice *m_device = nullptr;
+	IGUIEnvironment *m_guienv = nullptr;
+	IEventReceiver *m_receiver = nullptr;
+	ISimpleTextureSource *m_texturesource = nullptr;
 	v2u32 m_screensize;
-	s32 button_size;
+	s32 m_button_size;
 	double m_touchscreen_threshold;
 	u16 m_long_tap_delay;
-	bool m_visible; // is the whole touch screen gui visible
+	bool m_visible = true; // is the whole touch screen gui visible
 
 	std::unordered_map<u16, rect<s32>> m_hotbar_rects;
 	std::optional<u16> m_hotbar_selection = std::nullopt;

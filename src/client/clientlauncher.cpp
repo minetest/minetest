@@ -206,10 +206,6 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			if (!m_rendering_engine->run() || *kill)
 				break;
 
-			if (g_settings->getBool("enable_touch")) {
-				g_touchscreengui = new TouchScreenGUI(m_rendering_engine->get_raw_device(), receiver);
-			}
-
 			the_game(
 				kill,
 				input,
