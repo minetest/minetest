@@ -160,8 +160,7 @@ AutoHideButtonBar::AutoHideButtonBar(IrrlichtDevice *device, ISimpleTextureSourc
 	IGUIButton *starter_gui_button = m_guienv->addButton(starter_rect, nullptr,
 			starter_id, L"", nullptr);
 
-	m_starter.gui_button        = starter_gui_button;
-	m_starter.gui_button->grab();
+	m_starter.gui_button.grab(starter_gui_button);
 	m_starter.repeat_counter    = -1.0f;
 	m_starter.keycode           = KEY_OEM_8; // use invalid keycode as it's not relevant
 	m_starter.immediate_release = true;
@@ -172,22 +171,6 @@ AutoHideButtonBar::AutoHideButtonBar(IrrlichtDevice *device, ISimpleTextureSourc
 
 	m_dir = dir;
 	m_timeout_value = timeout;
-}
-
-AutoHideButtonBar::~AutoHideButtonBar()
-{
-	if (m_starter.gui_button) {
-		m_starter.gui_button->setVisible(false);
-		m_starter.gui_button->drop();
-		m_starter.gui_button = nullptr;
-	}
-
-	for (auto &button : m_buttons) {
-		if (button.gui_button) {
-			button.gui_button->drop();
-			button.gui_button = nullptr;
-		}
-	}
 }
 
 void AutoHideButtonBar::addButton(touch_gui_button_id button_id, const wchar_t *caption,
@@ -238,8 +221,7 @@ void AutoHideButtonBar::addButton(touch_gui_button_id button_id, const wchar_t *
 			caption, nullptr);
 
 	button_info btn;
-	btn.gui_button        = btn_gui_button;
-	btn.gui_button->grab();
+	btn.gui_button.grab(btn_gui_button);
 	btn.gui_button->setVisible(false);
 	btn.gui_button->setEnabled(false);
 	btn.repeat_counter    = -1.0f;
@@ -278,7 +260,7 @@ bool AutoHideButtonBar::isButton(const SEvent &event)
 	if (m_active) {
 		// check for all buttons in vector
 		for (auto &button : m_buttons) {
-			if (button.gui_button == element) {
+			if (button.gui_button.get() == element) {
 				SEvent translated{};
 				translated.EventType        = irr::EET_KEY_INPUT_EVENT;
 				translated.KeyInput.Key     = button.keycode;
@@ -315,7 +297,7 @@ bool AutoHideButtonBar::isButton(const SEvent &event)
 		}
 	} else {
 		// check for starter button only
-		if (element == m_starter.gui_button) {
+		if (element == m_starter.gui_button.get()) {
 			m_starter.ids.push_back(event.TouchInput.ID);
 			m_starter.gui_button->setVisible(false);
 			m_starter.gui_button->setEnabled(false);
@@ -532,8 +514,7 @@ void TouchScreenGUI::initButton(touch_gui_button_id id, const rect<s32> &button_
 	IGUIButton *btn_gui_button = m_guienv->addButton(button_rect, nullptr, id, caption.c_str());
 
 	button_info &btn      = m_buttons[id];
-	btn.gui_button        = btn_gui_button;
-	btn.gui_button->grab();
+	btn.gui_button.grab(btn_gui_button);
 	btn.repeat_counter    = -1.0f;
 	btn.repeat_delay      = repeat_delay;
 	btn.keycode           = id_to_keycode(id);
@@ -550,9 +531,8 @@ button_info TouchScreenGUI::initJoystickButton(touch_gui_button_id id,
 	IGUIButton *btn_gui_button = m_guienv->addButton(button_rect, nullptr, id, L"O");
 
 	button_info btn;
-	btn.gui_button = btn_gui_button;
+	btn.gui_button.grab(btn_gui_button);
 	btn.gui_button->setVisible(visible);
-	btn.gui_button->grab();
 	btn.ids.clear();
 
 	load_button_texture(btn, joystick_image_names[texture_id], button_rect,
@@ -571,7 +551,7 @@ touch_gui_button_id TouchScreenGUI::getButtonID(s32 x, s32 y)
 
 		if (element)
 			for (unsigned int i = 0; i < after_last_element_id; i++)
-				if (element == m_buttons[i].gui_button)
+				if (element == m_buttons[i].gui_button.get())
 					return (touch_gui_button_id) i;
 	}
 
@@ -919,31 +899,6 @@ void TouchScreenGUI::applyJoystickStatus()
 			translated.KeyInput.PressedDown = true;
 			m_receiver->OnEvent(translated);
 		}
-	}
-}
-
-TouchScreenGUI::~TouchScreenGUI()
-{
-	for (auto &button : m_buttons) {
-		if (button.gui_button) {
-			button.gui_button->drop();
-			button.gui_button = nullptr;
-		}
-	}
-
-	if (m_joystick_btn_off.gui_button) {
-		m_joystick_btn_off.gui_button->drop();
-		m_joystick_btn_off.gui_button = nullptr;
-	}
-
-	if (m_joystick_btn_bg.gui_button) {
-		m_joystick_btn_bg.gui_button->drop();
-		m_joystick_btn_bg.gui_button = nullptr;
-	}
-
-	if (m_joystick_btn_center.gui_button) {
-		m_joystick_btn_center.gui_button->drop();
-		m_joystick_btn_center.gui_button = nullptr;
 	}
 }
 
