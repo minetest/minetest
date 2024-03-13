@@ -411,7 +411,7 @@ u32 TextureSource::getTextureId(const std::string &name)
  *
  * \tparam overlay If enabled, only modify pixels in dst which are fully opaque.
  *   Defaults to false.
- * \param src Top image. This image must have the ECF_A8R8G8B8 colour format.
+ * \param src Top image. This image must have the ECF_A8R8G8B8 color format.
  * \param dst Bottom image.
  *   The top image is drawn onto this base image in-place.
  * \param dst_pos An offset vector to move src before drawing it onto dst
@@ -419,7 +419,7 @@ u32 TextureSource::getTextureId(const std::string &name)
 */
 template<bool overlay = false>
 static void blit_with_alpha(video::IImage *src, video::IImage *dst,
-	const v2s32 &dst_pos, const v2u32 &size);
+	v2s32 dst_pos, v2u32 size);
 
 // Apply a color to an image.  Uses an int (0-255) to calculate the ratio.
 // If the ratio is 255 or -1 and keep_alpha is true, then it multiples the
@@ -1859,49 +1859,62 @@ bool TextureSource::generateImagePart(std::string_view part_of_name,
 
 namespace {
 
-/// Draw src on top of dst
-template <bool overlay, class Colour>
-void blit_pixel(const Colour &src, Colour &dst)
+/// Draw a source color on top of a destination color
+template <bool overlay>
+void blit_pixel(video::SColor src_col, video::SColor &dst_col)
 {
-	if (src.a == 255 || dst.a == 0) {
-		if constexpr (overlay) {
-			if (dst.a != 255)
-				return;
-		}
-		// The top pixel is fully opaque or the bottom pixel is
-		// fully transparent -> replace the colour
-		dst = src;
-	} else if (src.a == 0) {
+	u8 dst_a{static_cast<u8>(dst_col.getAlpha())};
+	if constexpr (overlay) {
+		if (dst_a != 255)
+			// The bottom pixel has transparency -> do nothing
+			return;
+	}
+	u8 src_a{static_cast<u8>(src_col.getAlpha())};
+	if (src_a == 0) {
 		// A fully transparent pixel is on top -> do nothing
 		return;
-	} else if (dst.a == 255) {
+	}
+	if (src_a == 255 || dst_a == 0) {
+		// The top pixel is fully opaque or the bottom pixel is
+		// fully transparent -> replace the color
+		dst_col = src_col;
+		return;
+	}
+	struct Color { u8 r, g, b; };
+	Color src{
+		static_cast<u8>(src_col.getRed()),
+		static_cast<u8>(src_col.getGreen()),
+		static_cast<u8>(src_col.getBlue())
+	};
+	Color dst{
+		static_cast<u8>(dst_col.getRed()),
+		static_cast<u8>(dst_col.getGreen()),
+		static_cast<u8>(dst_col.getBlue())
+	};
+	if (dst_a == 255) {
 		// A semi-transparent pixel is on top and an opaque one in
 		// the bottom -> lerp r, g, and b
-		dst.r = (dst.r * (255 - src.a) + src.r * src.a) / 255;
-		dst.g = (dst.g * (255 - src.a) + src.g * src.a) / 255;
-		dst.b = (dst.b * (255 - src.a) + src.b * src.a) / 255;
-	} else {
-		if constexpr (overlay) {
-			return;
-		} else {
-			// A semi-transparent pixel is on top of a
-			// semi-transparent pixel -> general alpha compositing
-			auto a_new_255{src.a * 255 + (255 - src.a) * dst.a};
-			dst.r = (dst.r * (255 - src.a) * dst.a + src.r * src.a * 255)
-				/ a_new_255;
-			dst.g = (dst.g * (255 - src.a) * dst.a + src.g * src.a * 255)
-				/ a_new_255;
-			dst.b = (dst.b * (255 - src.a) * dst.a + src.b * src.a * 255)
-				/ a_new_255;
-			dst.a = a_new_255 / 255;
-		}
+		dst.r = (dst.r * (255 - src_a) + src.r * src_a) / 255;
+		dst.g = (dst.g * (255 - src_a) + src.g * src_a) / 255;
+		dst.b = (dst.b * (255 - src_a) + src.b * src_a) / 255;
+		dst_col.set(255, dst.r, dst.g, dst.b);
+		return;
 	}
+	// A semi-transparent pixel is on top of a
+	// semi-transparent pixel -> general alpha compositing
+	auto a_new_255{src_a * 255 + (255 - src_a) * dst_a};
+	dst.r = (dst.r * (255 - src_a) * dst_a + src.r * src_a * 255) / a_new_255;
+	dst.g = (dst.g * (255 - src_a) * dst_a + src.g * src_a * 255) / a_new_255;
+	dst.b = (dst.b * (255 - src_a) * dst_a + src.b * src_a * 255) / a_new_255;
+	dst_a = a_new_255 / 255;
+	dst_col.set(dst_a, dst.r, dst.g, dst.b);
 }
 
-/// A helper function for blit_with_alpha to support different endianesses
-template<bool overlay, class Colour>
-void blit_with_alpha_any_endian(video::IImage *src, video::IImage *dst,
-	const v2s32 &dst_pos, const v2u32 &size)
+}  // namespace
+
+template<bool overlay>
+void blit_with_alpha(video::IImage *src, video::IImage *dst, v2s32 dst_pos,
+	v2u32 size)
 {
 	if (dst->getColorFormat() != video::ECF_A8R8G8B8)
 		throw BaseException("blit_with_alpha() supports only ECF_A8R8G8B8 "
@@ -1921,10 +1934,10 @@ void blit_with_alpha_any_endian(video::IImage *src, video::IImage *dst,
 		src = src_converted;
 		drop_src = true;
 	}
-
-	Colour *pixels_src{reinterpret_cast<Colour *>(src->getData())};
-	Colour *pixels_dst{reinterpret_cast<Colour *>(dst->getData())};
-
+	video::SColor *pixels_src
+		{reinterpret_cast<video::SColor *>(src->getData())};
+	video::SColor *pixels_dst
+		{reinterpret_cast<video::SColor *>(dst->getData())};
 	// Limit y and x to the overlapping ranges
 	// s.t. the positions are all in bounds after offsetting.
 	u32 x_start{static_cast<u32>(std::max(0, -dst_pos.X))};
@@ -1935,36 +1948,13 @@ void blit_with_alpha_any_endian(video::IImage *src, video::IImage *dst,
 		dst_dim.Height - (s64) dst_pos.Y}))};
 	for (u32 y0{y_start}; y0 < y_end; ++y0) {
 		size_t i_src{y0 * src_dim.Width + x_start};
-		size_t i_dst{(dst_pos.Y + y0) * dst_dim.Width
-			+ dst_pos.X + x_start};
+		size_t i_dst{(dst_pos.Y + y0) * dst_dim.Width + dst_pos.X + x_start};
 		for (u32 x0{x_start}; x0 < x_end; ++x0) {
-			blit_pixel<overlay, Colour>(pixels_src[i_src++],
-				pixels_dst[i_dst++]);
+			blit_pixel<overlay>(pixels_src[i_src++], pixels_dst[i_dst++]);
 		}
 	}
 	if (drop_src)
 		src->drop();
-}
-
-}  // namespace
-
-template<bool overlay>
-static void blit_with_alpha(video::IImage *src, video::IImage *dst,
-	const v2s32 &dst_pos, const v2u32 &size)
-{
-	u32 one{1};
-	bool is_little_endian{*reinterpret_cast<u8 *>(&one) == 1};
-	if (is_little_endian) {
-		struct Colour {
-			u8 b, g, r, a;
-		};
-		blit_with_alpha_any_endian<overlay, Colour>(src, dst, dst_pos, size);
-	} else {
-		struct Colour {
-			u8 a, r, g, b;
-		};
-		blit_with_alpha_any_endian<overlay, Colour>(src, dst, dst_pos, size);
-	}
 }
 
 /*
@@ -2098,7 +2088,7 @@ static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 				}
 
 				// Adjusting saturation in the same manner as lightness resulted in
-				// muted colours being affected too much and bright colours not
+				// muted colors being affected too much and bright colors not
 				// affected enough, so I'm borrowing a leaf out of gimp's book and
 				// using a different scaling approach for saturation.
 				// https://github.com/GNOME/gimp/blob/6cc1e035f1822bf5198e7e99a53f7fa6e281396a/app/operations/gimpoperationhuesaturation.c#L139-L145=
@@ -2457,7 +2447,7 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 }
 
 namespace {
-	// For more colourspace transformations, see for example
+	// For more colorspace transformations, see for example
 	// https://github.com/tobspr/GLSL-Color-Spaces/blob/master/ColorSpaces.inc.glsl
 
 	inline float linear_to_srgb_component(float v)
