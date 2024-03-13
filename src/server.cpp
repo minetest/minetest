@@ -2288,22 +2288,25 @@ void Server::stopAttachedSounds(session_t peer_id, u16 object_id)
 	assert(peer_id != PEER_ID_INEXISTENT);
 	assert(object_id);
 
-	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end();) {
-		ServerPlayingSound &sound = it->second;
-
+	auto cb = [&] (const s32 id, ServerPlayingSound &sound) -> bool {
 		if (sound.object != object_id)
-			continue;
+			return false;
 
 		auto clients_it = sound.clients.find(peer_id);
 		if (clients_it == sound.clients.end())
-			continue;
+			return false;
 
 		NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
-		pkt << it->first;
+		pkt << id;
 		Send(peer_id, &pkt);
 
 		sound.clients.erase(clients_it);
-		if (sound.clients.empty())
+		// delete if client list empty
+		return sound.clients.empty();
+	};
+
+	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); ) {
+		if (cb(it->first, it->second))
 			it = m_playing_sounds.erase(it);
 		else
 			++it;
