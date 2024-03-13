@@ -65,7 +65,7 @@ static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 		case jump_id:
 			key = "jump";
 			break;
-		case crunch_id:
+		case sneak_id:
 			key = "sneak";
 			break;
 		case zoom_id:
@@ -425,8 +425,8 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsr
 					m_screensize.Y),
 			L"x", false);
 
-	// init crunch button
-	initButton(crunch_id,
+	// init sneak button
+	initButton(sneak_id,
 			rect<s32>(m_screensize.X - 3.25f * m_button_size,
 					m_screensize.Y - m_button_size,
 					m_screensize.X - 1.75f * m_button_size,

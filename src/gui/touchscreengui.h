@@ -49,7 +49,7 @@ enum class TapState
 typedef enum
 {
 	jump_id = 0,
-	crunch_id,
+	sneak_id,
 	zoom_id,
 	aux1_id,
 	after_last_element_id,
