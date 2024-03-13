@@ -66,7 +66,7 @@ jobs:
           labels: |
             org.opencontainers.image.title=Minetest
             org.opencontainers.image.vendor=Minetest
-            org.opencontainers.image.license=LGPL-2.1-only
+            org.opencontainers.image.licenses=LGPL-2.1-only
 
       # Build and push Docker image
       # https://github.com/docker/build-push-action
