@@ -65,6 +65,8 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           labels: |
             org.opencontainers.image.title=Minetest
+            org.opencontainers.image.vendor=Minetest
+            org.opencontainers.image.license=LGPL-2.1-only
 
       # Build and push Docker image
       # https://github.com/docker/build-push-action
