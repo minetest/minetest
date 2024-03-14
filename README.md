@@ -166,8 +166,8 @@ services:
       - /home/minetest/data/:/var/lib/minetest/
       - /home/minetest/conf/:/etc/minetest/
     ports:
-      - "30000:30000/udp"
-      - "30000:30000/tcp"
+      - "127.0.0.1:30000:30000/udp"
+      - "127.0.0.1:30000:30000/tcp"
 ```
 
 Data will be written to `/home/minetest/data` on the host, and configuration will be read from `/home/minetest/conf/minetest.conf`.
