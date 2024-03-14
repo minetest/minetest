@@ -133,8 +133,8 @@ We provide Minetest server Docker images using the GitHub container registry.
 Images are built on each commit and available using the following tag scheme:
 
 * `ghcr.io/minetest/minetest:master` (latest build)
-* `ghcr.io/minetest/minetest:<tag>` (specific tag)
-* `ghcr.io/minetest/minetest:latest` (latest tag)
+* `ghcr.io/minetest/minetest:<tag>` (specific Git tag)
+* `ghcr.io/minetest/minetest:latest` (latest Git tag)
 
 See [here](https://github.com/minetest/minetest/pkgs/container/minetest) for the available tags.
 
