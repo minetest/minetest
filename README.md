@@ -141,14 +141,14 @@ See [here](https://github.com/minetest/minetest/pkgs/container/minetest) for the
 If you want to test it on a Docker server you can easily run:
 
 ```shell
-sudo docker run ghcr.io/minetest/minetest:master
+docker run ghcr.io/minetest/minetest:master
 ```
 
 If you want to use it in a production environment you should use volumes bound to the Docker host
 to persist data and modify the configuration:
 
 ```shell
-sudo docker create -v /home/minetest/data/:/var/lib/minetest/ -v /home/minetest/conf/:/etc/minetest/ ghcr.io/minetest/minetest:master
+docker create -v /home/minetest/data/:/var/lib/minetest/ -v /home/minetest/conf/:/etc/minetest/ ghcr.io/minetest/minetest:master
 ```
 
 You may also want to use [Docker Compose](https://docs.docker.com/compose):
