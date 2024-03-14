@@ -251,9 +251,9 @@ private:
 	bool m_fixed_joystick = false;
 	bool m_joystick_triggers_aux1 = false;
 	bool m_draw_crosshair = false;
-	button_info m_joystick_btn_off;
-	button_info m_joystick_btn_bg;
-	button_info m_joystick_btn_center;
+	irr_ptr<IGUIButton> m_joystick_btn_off;
+	irr_ptr<IGUIButton> m_joystick_btn_bg;
+	irr_ptr<IGUIButton> m_joystick_btn_center;
 
 	button_info m_buttons[after_last_element_id];
 
@@ -272,9 +272,8 @@ private:
 			float repeat_delay = BUTTON_REPEAT_DELAY);
 
 	// initialize a joystick button
-	button_info initJoystickButton(touch_gui_button_id id,
-			const rect<s32> &button_rect, int texture_id,
-			bool visible = true);
+	IGUIButton *initJoystickButton(touch_gui_button_id id,
+			const rect<s32> &button_rect, bool visible);
 
 	// handle a button event
 	void handleButtonEvent(touch_gui_button_id id, size_t pointer_id, bool action);

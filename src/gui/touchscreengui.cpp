@@ -122,7 +122,7 @@ static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 	return code;
 }
 
-static void load_button_texture(button_info &btn, const std::string &path,
+static void load_button_texture(IGUIButton *gui_button, const std::string &path,
 		const rect<s32> &button_rect, ISimpleTextureSource *tsrc, video::IVideoDriver *driver)
 {
 	u32 tid;
@@ -130,19 +130,19 @@ static void load_button_texture(button_info &btn, const std::string &path,
 			tsrc->getTexture(path, &tid), button_rect.getWidth(),
 			button_rect.getHeight());
 	if (texture) {
-		btn.gui_button->setUseAlphaChannel(true);
+		gui_button->setUseAlphaChannel(true);
 		if (g_settings->getBool("gui_scaling_filter")) {
 			rect<s32> txr_rect = rect<s32>(0, 0, button_rect.getWidth(), button_rect.getHeight());
-			btn.gui_button->setImage(texture, txr_rect);
-			btn.gui_button->setPressedImage(texture, txr_rect);
-			btn.gui_button->setScaleImage(false);
+			gui_button->setImage(texture, txr_rect);
+			gui_button->setPressedImage(texture, txr_rect);
+			gui_button->setScaleImage(false);
 		} else {
-			btn.gui_button->setImage(texture);
-			btn.gui_button->setPressedImage(texture);
-			btn.gui_button->setScaleImage(true);
+			gui_button->setImage(texture);
+			gui_button->setPressedImage(texture);
+			gui_button->setScaleImage(true);
 		}
-		btn.gui_button->setDrawBorder(false);
-		btn.gui_button->setText(L"");
+		gui_button->setDrawBorder(false);
+		gui_button->setText(L"");
 	}
 }
 
@@ -166,7 +166,7 @@ AutoHideButtonBar::AutoHideButtonBar(IrrlichtDevice *device, ISimpleTextureSourc
 	m_starter.immediate_release = true;
 	m_starter.pointer_ids.clear();
 
-	load_button_texture(m_starter, starter_img, starter_rect,
+	load_button_texture(starter_gui_button, starter_img, starter_rect,
 			m_texturesource, m_driver);
 
 	m_dir = dir;
@@ -229,7 +229,7 @@ void AutoHideButtonBar::addButton(touch_gui_button_id button_id, const wchar_t *
 	btn.immediate_release = true;
 	btn.pointer_ids.clear();
 
-	load_button_texture(btn, btn_image, current_button, m_texturesource, m_driver);
+	load_button_texture(btn_gui_button, btn_image, current_button, m_texturesource, m_driver);
 
 	m_buttons.push_back(btn);
 }
@@ -282,12 +282,12 @@ bool AutoHideButtonBar::isButton(const SEvent &event)
 
 				if (button.toggleable == button_info::FIRST_TEXTURE) {
 					button.toggleable = button_info::SECOND_TEXTURE;
-					load_button_texture(button, button.textures[1],
+					load_button_texture(button.gui_button.get(),button.textures[1],
 							button.gui_button->getRelativePosition(),
 							m_texturesource, m_driver);
 				} else if (button.toggleable == button_info::SECOND_TEXTURE) {
 					button.toggleable = button_info::FIRST_TEXTURE;
-					load_button_texture(button, button.textures[0],
+					load_button_texture(button.gui_button.get(), button.textures[0],
 							button.gui_button->getRelativePosition(),
 							m_texturesource, m_driver);
 				}
@@ -394,28 +394,27 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsr
 	// Initialize joystick display "button".
 	// Joystick is placed on the bottom left of screen.
 	if (m_fixed_joystick) {
-		m_joystick_btn_off = initJoystickButton(joystick_off_id,
+		m_joystick_btn_off.grab(initJoystickButton(joystick_off_id,
 				rect<s32>(m_button_size,
 						m_screensize.Y - m_button_size * 4,
 						m_button_size * 4,
-						m_screensize.Y - m_button_size), 0);
+						m_screensize.Y - m_button_size), true));
 	} else {
-		m_joystick_btn_off = initJoystickButton(joystick_off_id,
+		m_joystick_btn_off.grab(initJoystickButton(joystick_off_id,
 				rect<s32>(m_button_size,
 						m_screensize.Y - m_button_size * 3,
 						m_button_size * 3,
-						m_screensize.Y - m_button_size), 0);
+						m_screensize.Y - m_button_size), true));
 	}
 
-	m_joystick_btn_bg = initJoystickButton(joystick_bg_id,
+	m_joystick_btn_bg.grab(initJoystickButton(joystick_bg_id,
 			rect<s32>(m_button_size,
 					m_screensize.Y - m_button_size * 4,
 					m_button_size * 4,
-					m_screensize.Y - m_button_size),
-			1, false);
+					m_screensize.Y - m_button_size), false));
 
-	m_joystick_btn_center = initJoystickButton(joystick_center_id,
-			rect<s32>(0, 0, m_button_size, m_button_size), 2, false);
+	m_joystick_btn_center.grab(initJoystickButton(joystick_center_id,
+			rect<s32>(0, 0, m_button_size, m_button_size), false));
 
 	// init jump button
 	initButton(jump_id,
@@ -521,24 +520,20 @@ void TouchScreenGUI::initButton(touch_gui_button_id id, const rect<s32> &button_
 	btn.immediate_release = immediate_release;
 	btn.pointer_ids.clear();
 
-	load_button_texture(btn, button_image_names[id], button_rect,
+	load_button_texture(btn_gui_button, button_image_names[id], button_rect,
 			m_texturesource, m_device->getVideoDriver());
 }
 
-button_info TouchScreenGUI::initJoystickButton(touch_gui_button_id id,
-		const rect<s32> &button_rect, int texture_id, bool visible)
+IGUIButton *TouchScreenGUI::initJoystickButton(touch_gui_button_id id,
+		const rect<s32> &button_rect, bool visible)
 {
-	IGUIButton *btn_gui_button = m_guienv->addButton(button_rect, nullptr, id, L"O");
+	IGUIButton *btn_gui_button = m_guienv->addButton(button_rect, nullptr, id);
+	btn_gui_button->setVisible(visible);
 
-	button_info btn;
-	btn.gui_button.grab(btn_gui_button);
-	btn.gui_button->setVisible(visible);
-	btn.pointer_ids.clear();
-
-	load_button_texture(btn, joystick_image_names[texture_id], button_rect,
+	load_button_texture(btn_gui_button, joystick_image_names[id], button_rect,
 			m_texturesource, m_device->getVideoDriver());
 
-	return btn;
+	return btn_gui_button;
 }
 
 touch_gui_button_id TouchScreenGUI::getButtonID(s32 x, s32 y)
@@ -666,9 +661,9 @@ void TouchScreenGUI::handleReleaseEvent(size_t pointer_id)
 		m_joystick_status_aux1 = false;
 		applyJoystickStatus();
 
-		m_joystick_btn_off.gui_button->setVisible(true);
-		m_joystick_btn_bg.gui_button->setVisible(false);
-		m_joystick_btn_center.gui_button->setVisible(false);
+		m_joystick_btn_off->setVisible(true);
+		m_joystick_btn_bg->setVisible(false);
+		m_joystick_btn_center->setVisible(false);
 	} else {
 		infostream << "TouchScreenGUI::translateEvent released unknown button: "
 				<< pointer_id << std::endl;
@@ -749,16 +744,16 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 				m_joystick_id               = pointer_id;
 				m_joystick_has_really_moved = false;
 
-				m_joystick_btn_off.gui_button->setVisible(false);
-				m_joystick_btn_bg.gui_button->setVisible(true);
-				m_joystick_btn_center.gui_button->setVisible(true);
+				m_joystick_btn_off->setVisible(false);
+				m_joystick_btn_bg->setVisible(true);
+				m_joystick_btn_center->setVisible(true);
 
 				// If it's a fixed joystick, don't move the joystick "button".
 				if (!m_fixed_joystick)
-					m_joystick_btn_bg.gui_button->setRelativePosition(
+					m_joystick_btn_bg->setRelativePosition(
 							touch_pos - half_button_size * 3);
 
-				m_joystick_btn_center.gui_button->setRelativePosition(
+				m_joystick_btn_center->setRelativePosition(
 						touch_pos - half_button_size);
 			}
 		} else {
@@ -833,13 +828,13 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					// move joystick "button"
 					v2s32 new_offset = dir * m_button_size / distance - half_button_size;
 					if (m_fixed_joystick)
-						m_joystick_btn_center.gui_button->setRelativePosition(
+						m_joystick_btn_center->setRelativePosition(
 								fixed_joystick_center + new_offset);
 					else
-						m_joystick_btn_center.gui_button->setRelativePosition(
+						m_joystick_btn_center->setRelativePosition(
 								free_joystick_center + new_offset);
 				} else {
-					m_joystick_btn_center.gui_button->setRelativePosition(
+					m_joystick_btn_center->setRelativePosition(
 							touch_pos - half_button_size);
 				}
 			}
@@ -972,8 +967,8 @@ void TouchScreenGUI::setVisible(bool visible)
 			button.gui_button->setVisible(visible);
 	}
 
-	if (m_joystick_btn_off.gui_button)
-		m_joystick_btn_off.gui_button->setVisible(visible);
+	if (m_joystick_btn_off)
+		m_joystick_btn_off->setVisible(visible);
 
 	// clear all active buttons
 	if (!visible) {
