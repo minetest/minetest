@@ -90,6 +90,7 @@ typedef enum
 
 #define BUTTON_REPEAT_DELAY 0.5f
 #define BUTTON_REPEAT_INTERVAL 0.333f
+#define BUTTONBAR_HIDE_DELAY 3.0f
 #define SETTINGS_BAR_Y_OFFSET 5
 #define RARE_CONTROLS_BAR_Y_OFFSET 5
 
@@ -123,21 +124,16 @@ class AutoHideButtonBar
 {
 public:
 	AutoHideButtonBar(IrrlichtDevice *device, ISimpleTextureSource *tsrc,
-			const std::string &starter_img, touch_gui_button_id starter_id,
-			core::recti starter_rect, autohide_button_bar_dir dir, float timeout);
+			touch_gui_button_id starter_id, const std::string &starter_image,
+			core::recti starter_rect, autohide_button_bar_dir dir);
 
-	// add button to be shown
-	void addButton(touch_gui_button_id id, const wchar_t *caption,
-			const std::string &btn_image);
-
-	// add toggle button to be shown
-	void addToggleButton(touch_gui_button_id id, const wchar_t *caption,
-			const std::string &btn_image_1, const std::string &btn_image_2);
+	void addButton(touch_gui_button_id id, const std::string &image);
+	void addToggleButton(touch_gui_button_id id,
+			const std::string &image_1, const std::string &image_2);
 
 	bool handlePress(size_t pointer_id, IGUIElement *element);
 	bool handleRelease(size_t pointer_id);
 
-	// step handler
 	void step(float dtime);
 
 	void activate();
@@ -154,19 +150,15 @@ private:
 	IGUIEnvironment *m_guienv = nullptr;
 	IEventReceiver *m_receiver = nullptr;
 	ISimpleTextureSource *m_texturesource = nullptr;
-	button_info m_starter;
+	irr_ptr<IGUIButton> m_starter;
 	std::vector<button_info> m_buttons;
 
 	v2s32 m_upper_left;
 	v2s32 m_lower_right;
 
-	// show button bar
 	bool m_active = false;
 	bool m_visible = true;
-
-	// button bar timeout
 	float m_timeout = 0.0f;
-	float m_timeout_value = 3.0f;
 	autohide_button_bar_dir m_dir = AHBB_Dir_Right_Left;
 
 	void updateVisibility();
@@ -268,13 +260,12 @@ private:
 	void handleChangedButton(const SEvent &event);
 
 	// initialize a button
-	void initButton(touch_gui_button_id id, const rect<s32> &button_rect,
-			const std::wstring &caption, bool immediate_release,
-			float repeat_delay = BUTTON_REPEAT_DELAY);
+	void addButton(touch_gui_button_id id, const std::string &image,
+			const rect<s32> &rect);
 
 	// initialize a joystick button
-	IGUIButton *initJoystickButton(touch_gui_button_id id,
-			const rect<s32> &button_rect, bool visible);
+	IGUIButton *makeJoystickButton(touch_gui_button_id id,
+			const rect<s32> &rect, bool visible);
 
 	// handle pressing hotbar items
 	bool isHotbarButton(const SEvent &event);

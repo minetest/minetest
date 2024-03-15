@@ -47,7 +47,27 @@ using namespace irr::core;
 TouchScreenGUI *g_touchscreengui;
 
 static void load_button_texture(IGUIButton *gui_button, const std::string &path,
-		const rect<s32> &button_rect, ISimpleTextureSource *tsrc, video::IVideoDriver *driver);
+		const rect<s32> &button_rect, ISimpleTextureSource *tsrc, video::IVideoDriver *driver)
+{
+	video::ITexture *texture = guiScalingImageButton(driver,
+			tsrc->getTexture(path), button_rect.getWidth(),
+			button_rect.getHeight());
+	if (texture) {
+		gui_button->setUseAlphaChannel(true);
+		if (g_settings->getBool("gui_scaling_filter")) {
+			rect<s32> txr_rect = rect<s32>(0, 0, button_rect.getWidth(), button_rect.getHeight());
+			gui_button->setImage(texture, txr_rect);
+			gui_button->setPressedImage(texture, txr_rect);
+			gui_button->setScaleImage(false);
+		} else {
+			gui_button->setImage(texture);
+			gui_button->setPressedImage(texture);
+			gui_button->setScaleImage(true);
+		}
+		gui_button->setDrawBorder(false);
+		gui_button->setText(L"");
+	}
+}
 
 void button_info::emitAction(bool action, video::IVideoDriver *driver,
 		IEventReceiver *receiver, ISimpleTextureSource *tsrc)
@@ -244,33 +264,9 @@ static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 	return code;
 }
 
-static void load_button_texture(IGUIButton *gui_button, const std::string &path,
-		const rect<s32> &button_rect, ISimpleTextureSource *tsrc, video::IVideoDriver *driver)
-{
-	u32 tid;
-	video::ITexture *texture = guiScalingImageButton(driver,
-			tsrc->getTexture(path, &tid), button_rect.getWidth(),
-			button_rect.getHeight());
-	if (texture) {
-		gui_button->setUseAlphaChannel(true);
-		if (g_settings->getBool("gui_scaling_filter")) {
-			rect<s32> txr_rect = rect<s32>(0, 0, button_rect.getWidth(), button_rect.getHeight());
-			gui_button->setImage(texture, txr_rect);
-			gui_button->setPressedImage(texture, txr_rect);
-			gui_button->setScaleImage(false);
-		} else {
-			gui_button->setImage(texture);
-			gui_button->setPressedImage(texture);
-			gui_button->setScaleImage(true);
-		}
-		gui_button->setDrawBorder(false);
-		gui_button->setText(L"");
-	}
-}
-
 AutoHideButtonBar::AutoHideButtonBar(IrrlichtDevice *device, ISimpleTextureSource *tsrc,
-		const std::string &starter_img, touch_gui_button_id starter_id,
-		core::recti starter_rect, autohide_button_bar_dir dir, float timeout) :
+		touch_gui_button_id starter_id, const std::string &starter_img,
+		core::recti starter_rect, autohide_button_bar_dir dir) :
 			m_driver(device->getVideoDriver()),
 			m_guienv(device->getGUIEnvironment()),
 			m_receiver(device->getEventReceiver()),
@@ -281,21 +277,14 @@ AutoHideButtonBar::AutoHideButtonBar(IrrlichtDevice *device, ISimpleTextureSourc
 
 	IGUIButton *starter_gui_button = m_guienv->addButton(starter_rect, nullptr,
 			starter_id, L"", nullptr);
-
-	m_starter.gui_button.grab(starter_gui_button);
-	m_starter.repeat_counter    = -1.0f;
-	m_starter.keycode           = KEY_OEM_8; // use invalid keycode as it's not relevant
-	m_starter.pointer_ids.clear();
-
 	load_button_texture(starter_gui_button, starter_img, starter_rect,
 			m_texturesource, m_driver);
 
+	m_starter.grab(starter_gui_button);
 	m_dir = dir;
-	m_timeout_value = timeout;
 }
 
-void AutoHideButtonBar::addButton(touch_gui_button_id button_id, const wchar_t *caption,
-		const std::string &btn_image)
+void AutoHideButtonBar::addButton(touch_gui_button_id id, const std::string &image)
 {
 	int button_size = 0;
 
@@ -338,30 +327,25 @@ void AutoHideButtonBar::addButton(touch_gui_button_id button_id, const wchar_t *
 		current_button = rect<s32>(m_upper_left.X, y_start, m_lower_right.Y, y_end);
 	}
 
-	IGUIButton *btn_gui_button = m_guienv->addButton(current_button, nullptr, button_id,
-			caption, nullptr);
+	IGUIButton *btn_gui_button = m_guienv->addButton(current_button, nullptr, id);
+	btn_gui_button->setVisible(false);
+	btn_gui_button->setEnabled(false);
+	load_button_texture(btn_gui_button, image, current_button, m_texturesource, m_driver);
 
-	button_info btn;
+	button_info btn{};
+	btn.keycode = id_to_keycode(id);
 	btn.gui_button.grab(btn_gui_button);
-	btn.gui_button->setVisible(false);
-	btn.gui_button->setEnabled(false);
-	btn.repeat_counter    = -1.0f;
-	btn.keycode           = id_to_keycode(button_id);
-	btn.pointer_ids.clear();
-
-	load_button_texture(btn_gui_button, btn_image, current_button, m_texturesource, m_driver);
-
 	m_buttons.push_back(btn);
 }
 
-void AutoHideButtonBar::addToggleButton(touch_gui_button_id button_id, const wchar_t *caption,
-		const std::string &btn_image_1, const std::string &btn_image_2)
+void AutoHideButtonBar::addToggleButton(touch_gui_button_id id,
+		const std::string &image_1, const std::string &image_2)
 {
-	addButton(button_id, caption, btn_image_1);
+	addButton(id, image_1);
 	button_info &btn = m_buttons.back();
 	btn.toggleable = button_info::FIRST_TEXTURE;
-	btn.toggle_textures[0] = btn_image_1;
-	btn.toggle_textures[1] = btn_image_2;
+	btn.toggle_textures[0] = image_1;
+	btn.toggle_textures[1] = image_2;
 }
 
 bool AutoHideButtonBar::handlePress(size_t pointer_id, IGUIElement *element)
@@ -370,7 +354,7 @@ bool AutoHideButtonBar::handlePress(size_t pointer_id, IGUIElement *element)
 		return buttons_handlePress(m_buttons, pointer_id, element, m_driver,
 				m_receiver, m_texturesource);
 	}
-	if (m_starter.gui_button.get() == element) {
+	if (m_starter.get() == element) {
 		activate();
 		return true;
 	}
@@ -391,7 +375,7 @@ void AutoHideButtonBar::step(float dtime)
 
 		if (!has_pointers) {
 			m_timeout += dtime;
-			if (m_timeout > m_timeout_value)
+			if (m_timeout > BUTTONBAR_HIDE_DELAY)
 				deactivate();
 		} else {
 			m_timeout = 0.0f;
@@ -404,8 +388,8 @@ void AutoHideButtonBar::updateVisibility() {
 	bool starter_visible = m_visible && !m_active;
 	bool inner_visible = m_visible && m_active;
 
-	m_starter.gui_button->setVisible(starter_visible);
-	m_starter.gui_button->setEnabled(starter_visible);
+	m_starter->setVisible(starter_visible);
+	m_starter->setEnabled(starter_visible);
 
 	for (auto &button : m_buttons) {
 		button.gui_button->setVisible(inner_visible);
@@ -439,7 +423,7 @@ void AutoHideButtonBar::hide()
 }
 
 bool AutoHideButtonBar::operator!=(const AutoHideButtonBar &other) {
-	return m_starter.gui_button != other.m_starter.gui_button;
+	return m_starter.get() != other.m_starter.get();
 }
 
 TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsrc):
@@ -460,70 +444,67 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsr
 	// Initialize joystick display "button".
 	// Joystick is placed on the bottom left of screen.
 	if (m_fixed_joystick) {
-		m_joystick_btn_off.grab(initJoystickButton(joystick_off_id,
+		m_joystick_btn_off.grab(makeJoystickButton(joystick_off_id,
 				rect<s32>(m_button_size,
 						m_screensize.Y - m_button_size * 4,
 						m_button_size * 4,
 						m_screensize.Y - m_button_size), true));
 	} else {
-		m_joystick_btn_off.grab(initJoystickButton(joystick_off_id,
+		m_joystick_btn_off.grab(makeJoystickButton(joystick_off_id,
 				rect<s32>(m_button_size,
 						m_screensize.Y - m_button_size * 3,
 						m_button_size * 3,
 						m_screensize.Y - m_button_size), true));
 	}
 
-	m_joystick_btn_bg.grab(initJoystickButton(joystick_bg_id,
+	m_joystick_btn_bg.grab(makeJoystickButton(joystick_bg_id,
 			rect<s32>(m_button_size,
 					m_screensize.Y - m_button_size * 4,
 					m_button_size * 4,
 					m_screensize.Y - m_button_size), false));
 
-	m_joystick_btn_center.grab(initJoystickButton(joystick_center_id,
+	m_joystick_btn_center.grab(makeJoystickButton(joystick_center_id,
 			rect<s32>(0, 0, m_button_size, m_button_size), false));
 
 	// init jump button
-	initButton(jump_id,
+	addButton(jump_id, button_image_names[jump_id],
 			rect<s32>(m_screensize.X - 1.75f * m_button_size,
 					m_screensize.Y - m_button_size,
 					m_screensize.X - 0.25f * m_button_size,
-					m_screensize.Y),
-			L"x", false);
+					m_screensize.Y));
+
 
 	// init sneak button
-	initButton(sneak_id,
+	addButton(sneak_id, button_image_names[sneak_id],
 			rect<s32>(m_screensize.X - 3.25f * m_button_size,
 					m_screensize.Y - m_button_size,
 					m_screensize.X - 1.75f * m_button_size,
-					m_screensize.Y),
-			L"H", false);
+					m_screensize.Y));
 
 	// init zoom button
-	initButton(zoom_id,
+	addButton(zoom_id, button_image_names[zoom_id],
 			rect<s32>(m_screensize.X - 1.25f * m_button_size,
 					m_screensize.Y - 4 * m_button_size,
 					m_screensize.X - 0.25f * m_button_size,
-					m_screensize.Y - 3 * m_button_size),
-			L"z", false);
+					m_screensize.Y - 3 * m_button_size));
 
 	// init aux1 button
 	if (!m_joystick_triggers_aux1)
-		initButton(aux1_id,
+		addButton(aux1_id, button_image_names[aux1_id],
 				rect<s32>(m_screensize.X - 1.25f * m_button_size,
 						m_screensize.Y - 2.5f * m_button_size,
 						m_screensize.X - 0.25f * m_button_size,
-						m_screensize.Y - 1.5f * m_button_size),
-				L"spc1", false);
+						m_screensize.Y - 1.5f * m_button_size));
 
 	AutoHideButtonBar &settings_bar = m_buttonbars.emplace_back(m_device, m_texturesource,
-			"gear_icon.png", settings_starter_id,
+			settings_starter_id, button_image_names[settings_starter_id],
 			core::recti(m_screensize.X - 1.25f * m_button_size,
 					m_screensize.Y - (SETTINGS_BAR_Y_OFFSET + 1.0f) * m_button_size
 							+ 0.5f * m_button_size,
 					m_screensize.X - 0.25f * m_button_size,
 					m_screensize.Y - SETTINGS_BAR_Y_OFFSET * m_button_size
 							+ 0.5f * m_button_size),
-			AHBB_Dir_Right_Left, 3.0f);
+			AHBB_Dir_Right_Left);
 
 	const static std::vector<touch_gui_button_id> settings_bar_buttons {
 		fly_id, noclip_id, fast_id, debug_id, camera_id, range_id, minimap_id,
@@ -531,22 +512,22 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsr
 	for (auto id : settings_bar_buttons) {
 		if (id_to_keycode(id) == KEY_UNKNOWN)
 			continue;
-		settings_bar.addButton(id, L"", button_image_names[id]);
+		settings_bar.addButton(id, button_image_names[id]);
 	}
 
 	// Chat is shown by default, so chat_hide_btn.png is shown first.
-	settings_bar.addToggleButton(toggle_chat_id, L"togglechat",
+	settings_bar.addToggleButton(toggle_chat_id,
 			"chat_hide_btn.png", "chat_show_btn.png");
 
 	AutoHideButtonBar &rare_controls_bar = m_buttonbars.emplace_back(m_device, m_texturesource,
-			"rare_controls.png", rare_controls_starter_id,
+			rare_controls_starter_id, button_image_names[rare_controls_starter_id],
 			core::recti(0.25f * m_button_size,
 					m_screensize.Y - (RARE_CONTROLS_BAR_Y_OFFSET + 1.0f) * m_button_size
 							+ 0.5f * m_button_size,
 					0.75f * m_button_size,
 					m_screensize.Y - RARE_CONTROLS_BAR_Y_OFFSET * m_button_size
 							+ 0.5f * m_button_size),
-			AHBB_Dir_Left_Right, 2.0f);
+			AHBB_Dir_Left_Right);
 
 	const static std::vector<touch_gui_button_id> rare_controls_bar_buttons {
 		chat_id, inventory_id, drop_id, exit_id,
@@ -554,31 +535,26 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsr
 	for (auto id : rare_controls_bar_buttons) {
 		if (id_to_keycode(id) == KEY_UNKNOWN)
 			continue;
-		rare_controls_bar.addButton(id, L"", button_image_names[id]);
+		rare_controls_bar.addButton(id, button_image_names[id]);
 	}
 }
 
-void TouchScreenGUI::initButton(touch_gui_button_id id, const rect<s32> &button_rect,
-		const std::wstring &caption, bool immediate_release, float repeat_delay)
+void TouchScreenGUI::addButton(touch_gui_button_id id, const std::string &image, const rect<s32> &rect)
 {
-	IGUIButton *btn_gui_button = m_guienv->addButton(button_rect, nullptr, id, caption.c_str());
-
-	button_info &btn      = m_buttons.emplace_back();
-	btn.gui_button.grab(btn_gui_button);
-	btn.repeat_counter    = -1.0f;
-	btn.keycode           = id_to_keycode(id);
-	btn.pointer_ids.clear();
-
-	load_button_texture(btn_gui_button, button_image_names[id], button_rect,
+	IGUIButton *btn_gui_button = m_guienv->addButton(rect, nullptr, id);
+	load_button_texture(btn_gui_button, image, rect,
 			m_texturesource, m_device->getVideoDriver());
+
+	button_info &btn = m_buttons.emplace_back();
+	btn.keycode = id_to_keycode(id);
+	btn.gui_button.grab(btn_gui_button);
 }
 
-IGUIButton *TouchScreenGUI::initJoystickButton(touch_gui_button_id id,
+IGUIButton *TouchScreenGUI::makeJoystickButton(touch_gui_button_id id,
 		const rect<s32> &button_rect, bool visible)
 {
 	IGUIButton *btn_gui_button = m_guienv->addButton(button_rect, nullptr, id);
 	btn_gui_button->setVisible(visible);
-
 	load_button_texture(btn_gui_button, button_image_names[id], button_rect,
 			m_texturesource, m_device->getVideoDriver());
 
