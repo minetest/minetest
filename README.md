@@ -144,8 +144,7 @@ For a quick test you can easily run:
 docker run ghcr.io/minetest/minetest:master
 ```
 
-If you want to use it in a production environment you should use volumes bound to the Docker host
-to persist data and modify the configuration:
+To use it in a production environment, you should use volumes bound to the Docker host to persist data and modify the configuration:
 
 ```shell
 docker create -v /home/minetest/data/:/var/lib/minetest/ -v /home/minetest/conf/:/etc/minetest/ ghcr.io/minetest/minetest:master
