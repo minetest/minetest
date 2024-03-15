@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/hex.h"
 #include "common/c_content.h"
 #include <json/json.h>
-#include <string>
 
 
 void ToolGroupCap::toJson(Json::Value &object) const
