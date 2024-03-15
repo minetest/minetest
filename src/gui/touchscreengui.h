@@ -75,9 +75,6 @@ typedef enum
 	joystick_off_id,
 	joystick_bg_id,
 	joystick_center_id,
-
-	// invalid value
-	touch_gui_button_invalid,
 } touch_gui_button_id;
 
 typedef enum
@@ -98,9 +95,6 @@ typedef enum
 // chance to detect them via l_get_player_control.
 // If you tap faster than this value, the simulated clicks are of course shorter.
 #define SIMULATED_CLICK_DURATION_MS 50
-
-extern const std::string button_image_names[];
-extern const std::string joystick_image_names[];
 
 struct button_info
 {
@@ -255,9 +249,6 @@ private:
 	irr_ptr<IGUIButton> m_joystick_btn_center;
 
 	std::vector<button_info> m_buttons;
-
-	// check if a button has changed
-	void handleChangedButton(const SEvent &event);
 
 	// initialize a button
 	void addButton(touch_gui_button_id id, const std::string &image,
