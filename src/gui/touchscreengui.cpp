@@ -36,8 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <algorithm>
 
-using namespace irr::core;
-
 TouchScreenGUI *g_touchscreengui;
 
 const std::string button_image_names[] = {
@@ -68,7 +66,7 @@ const std::string button_image_names[] = {
 };
 
 static void load_button_texture(IGUIButton *gui_button, const std::string &path,
-		const rect<s32> &button_rect, ISimpleTextureSource *tsrc, video::IVideoDriver *driver)
+		const recti &button_rect, ISimpleTextureSource *tsrc, video::IVideoDriver *driver)
 {
 	video::ITexture *texture = guiScalingImageButton(driver,
 			tsrc->getTexture(path), button_rect.getWidth(),
@@ -76,7 +74,7 @@ static void load_button_texture(IGUIButton *gui_button, const std::string &path,
 	if (texture) {
 		gui_button->setUseAlphaChannel(true);
 		if (g_settings->getBool("gui_scaling_filter")) {
-			rect<s32> txr_rect(0, 0, button_rect.getWidth(), button_rect.getHeight());
+			recti txr_rect(0, 0, button_rect.getWidth(), button_rect.getHeight());
 			gui_button->setImage(texture, txr_rect);
 			gui_button->setPressedImage(texture, txr_rect);
 			gui_button->setScaleImage(false);
@@ -96,7 +94,7 @@ void button_info::emitAction(bool action, video::IVideoDriver *driver,
 		return;
 
 	SEvent translated{};
-	translated.EventType        = irr::EET_KEY_INPUT_EVENT;
+	translated.EventType        = EET_KEY_INPUT_EVENT;
 	translated.KeyInput.Key     = keycode;
 	translated.KeyInput.Control = false;
 	translated.KeyInput.Shift   = false;
@@ -259,7 +257,7 @@ static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 
 AutoHideButtonBar::AutoHideButtonBar(IrrlichtDevice *device, ISimpleTextureSource *tsrc,
 		touch_gui_button_id starter_id, const std::string &starter_img,
-		core::recti starter_rect, autohide_button_bar_dir dir) :
+		recti starter_rect, autohide_button_bar_dir dir) :
 			m_driver(device->getVideoDriver()),
 			m_guienv(device->getGUIEnvironment()),
 			m_receiver(device->getEventReceiver()),
@@ -286,7 +284,7 @@ void AutoHideButtonBar::addButton(touch_gui_button_id id, const std::string &ima
 	else
 		button_size = m_lower_right.Y - m_upper_left.Y;
 
-	irr::core::rect<int> current_button;
+	recti current_button;
 
 	if (m_dir == AHBB_Dir_Right_Left || m_dir == AHBB_Dir_Left_Right) {
 		int x_start = 0;
@@ -302,7 +300,7 @@ void AutoHideButtonBar::addButton(touch_gui_button_id id, const std::string &ima
 			x_start = x_end - button_size;
 		}
 
-		current_button = rect<s32>(x_start, m_upper_left.Y, x_end, m_lower_right.Y);
+		current_button = recti(x_start, m_upper_left.Y, x_end, m_lower_right.Y);
 	} else {
 		double y_start = 0;
 		double y_end = 0;
@@ -317,7 +315,7 @@ void AutoHideButtonBar::addButton(touch_gui_button_id id, const std::string &ima
 			y_start = y_end - button_size;
 		}
 
-		current_button = rect<s32>(m_upper_left.X, y_start, m_lower_right.Y, y_end);
+		current_button = recti(m_upper_left.X, y_start, m_lower_right.Y, y_end);
 	}
 
 	IGUIButton *btn_gui_button = m_guienv->addButton(current_button, nullptr, id);
@@ -440,45 +438,44 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsr
 	// Joystick is placed on the bottom left of screen.
 	if (m_fixed_joystick) {
 		m_joystick_btn_off.grab(makeJoystickButton(joystick_off_id,
-				rect<s32>(m_button_size,
+				recti(m_button_size,
 						m_screensize.Y - m_button_size * 4,
 						m_button_size * 4,
 						m_screensize.Y - m_button_size), true));
 	} else {
 		m_joystick_btn_off.grab(makeJoystickButton(joystick_off_id,
-				rect<s32>(m_button_size,
+				recti(m_button_size,
 						m_screensize.Y - m_button_size * 3,
 						m_button_size * 3,
 						m_screensize.Y - m_button_size), true));
 	}
 
 	m_joystick_btn_bg.grab(makeJoystickButton(joystick_bg_id,
-			rect<s32>(m_button_size,
+			recti(m_button_size,
 					m_screensize.Y - m_button_size * 4,
 					m_button_size * 4,
 					m_screensize.Y - m_button_size), false));
 
 	m_joystick_btn_center.grab(makeJoystickButton(joystick_center_id,
-			rect<s32>(0, 0, m_button_size, m_button_size), false));
+			recti(0, 0, m_button_size, m_button_size), false));
 
 	// init jump button
 	addButton(jump_id, button_image_names[jump_id],
-			rect<s32>(m_screensize.X - 1.75f * m_button_size,
+			recti(m_screensize.X - 1.75f * m_button_size,
 					m_screensize.Y - m_button_size,
 					m_screensize.X - 0.25f * m_button_size,
 					m_screensize.Y));
 
-
 	// init sneak button
 	addButton(sneak_id, button_image_names[sneak_id],
-			rect<s32>(m_screensize.X - 3.25f * m_button_size,
+			recti(m_screensize.X - 3.25f * m_button_size,
 					m_screensize.Y - m_button_size,
 					m_screensize.X - 1.75f * m_button_size,
 					m_screensize.Y));
 
 	// init zoom button
 	addButton(zoom_id, button_image_names[zoom_id],
-			rect<s32>(m_screensize.X - 1.25f * m_button_size,
+			recti(m_screensize.X - 1.25f * m_button_size,
 					m_screensize.Y - 4 * m_button_size,
 					m_screensize.X - 0.25f * m_button_size,
 					m_screensize.Y - 3 * m_button_size));
@@ -486,14 +483,14 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsr
 	// init aux1 button
 	if (!m_joystick_triggers_aux1)
 		addButton(aux1_id, button_image_names[aux1_id],
-				rect<s32>(m_screensize.X - 1.25f * m_button_size,
+				recti(m_screensize.X - 1.25f * m_button_size,
 						m_screensize.Y - 2.5f * m_button_size,
 						m_screensize.X - 0.25f * m_button_size,
 						m_screensize.Y - 1.5f * m_button_size));
 
 	AutoHideButtonBar &settings_bar = m_buttonbars.emplace_back(m_device, m_texturesource,
 			settings_starter_id, button_image_names[settings_starter_id],
-			core::recti(m_screensize.X - 1.25f * m_button_size,
+			recti(m_screensize.X - 1.25f * m_button_size,
 					m_screensize.Y - (SETTINGS_BAR_Y_OFFSET + 1.0f) * m_button_size
 							+ 0.5f * m_button_size,
 					m_screensize.X - 0.25f * m_button_size,
@@ -516,7 +513,7 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsr
 
 	AutoHideButtonBar &rare_controls_bar = m_buttonbars.emplace_back(m_device, m_texturesource,
 			rare_controls_starter_id, button_image_names[rare_controls_starter_id],
-			core::recti(0.25f * m_button_size,
+			recti(0.25f * m_button_size,
 					m_screensize.Y - (RARE_CONTROLS_BAR_Y_OFFSET + 1.0f) * m_button_size
 							+ 0.5f * m_button_size,
 					0.75f * m_button_size,
@@ -534,7 +531,7 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsr
 	}
 }
 
-void TouchScreenGUI::addButton(touch_gui_button_id id, const std::string &image, const rect<s32> &rect)
+void TouchScreenGUI::addButton(touch_gui_button_id id, const std::string &image, const recti &rect)
 {
 	IGUIButton *btn_gui_button = m_guienv->addButton(rect, nullptr, id);
 	load_button_texture(btn_gui_button, image, rect,
@@ -546,7 +543,7 @@ void TouchScreenGUI::addButton(touch_gui_button_id id, const std::string &image,
 }
 
 IGUIButton *TouchScreenGUI::makeJoystickButton(touch_gui_button_id id,
-		const rect<s32> &button_rect, bool visible)
+		const recti &button_rect, bool visible)
 {
 	IGUIButton *btn_gui_button = m_guienv->addButton(button_rect, nullptr, id);
 	btn_gui_button->setVisible(visible);
@@ -802,7 +799,7 @@ void TouchScreenGUI::applyJoystickStatus()
 {
 	if (m_joystick_triggers_aux1) {
 		SEvent translated{};
-		translated.EventType            = irr::EET_KEY_INPUT_EVENT;
+		translated.EventType            = EET_KEY_INPUT_EVENT;
 		translated.KeyInput.Key         = id_to_keycode(aux1_id);
 		translated.KeyInput.PressedDown = false;
 		m_receiver->OnEvent(translated);
@@ -854,7 +851,7 @@ void TouchScreenGUI::resetHotbarRects()
 	m_hotbar_rects.clear();
 }
 
-void TouchScreenGUI::registerHotbarRect(u16 index, const rect<s32> &rect)
+void TouchScreenGUI::registerHotbarRect(u16 index, const recti &rect)
 {
 	m_hotbar_rects[index] = rect;
 }
@@ -1001,7 +998,7 @@ void TouchScreenGUI::applyContextControls(const TouchInteractionMode &mode)
 		m_place_pressed = true;
 
 	} else if (!target_place_pressed && m_place_pressed) {
-		emitMouseEvent(irr::EMIE_RMOUSE_LEFT_UP);
+		emitMouseEvent(EMIE_RMOUSE_LEFT_UP);
 		m_place_pressed = false;
 	}
 }

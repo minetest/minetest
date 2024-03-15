@@ -119,7 +119,7 @@ class AutoHideButtonBar
 public:
 	AutoHideButtonBar(IrrlichtDevice *device, ISimpleTextureSource *tsrc,
 			touch_gui_button_id starter_id, const std::string &starter_image,
-			core::recti starter_rect, autohide_button_bar_dir dir);
+			recti starter_rect, autohide_button_bar_dir dir);
 
 	void addButton(touch_gui_button_id id, const std::string &image);
 	void addToggleButton(touch_gui_button_id id,
@@ -200,7 +200,7 @@ public:
 	void show();
 
 	void resetHotbarRects();
-	void registerHotbarRect(u16 index, const rect<s32> &rect);
+	void registerHotbarRect(u16 index, const recti &rect);
 	std::optional<u16> getHotbarSelection();
 
 private:
@@ -214,7 +214,7 @@ private:
 	u16 m_long_tap_delay;
 	bool m_visible = true; // is the whole touch screen gui visible
 
-	std::unordered_map<u16, rect<s32>> m_hotbar_rects;
+	std::unordered_map<u16, recti> m_hotbar_rects;
 	std::optional<u16> m_hotbar_selection = std::nullopt;
 
 	// value in degree
@@ -252,11 +252,11 @@ private:
 
 	// initialize a button
 	void addButton(touch_gui_button_id id, const std::string &image,
-			const rect<s32> &rect);
+			const recti &rect);
 
 	// initialize a joystick button
 	IGUIButton *makeJoystickButton(touch_gui_button_id id,
-			const rect<s32> &rect, bool visible);
+			const recti &rect, bool visible);
 
 	// handle pressing hotbar items
 	bool isHotbarButton(const SEvent &event);
