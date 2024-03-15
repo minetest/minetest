@@ -130,12 +130,6 @@ bool getCurrentExecPath(char *buf, size_t len);
 std::string getDataPath(const char *subpath);
 
 /*
-	Move cache folder from path_user to the
-	system cache location if possible.
-*/
-void migrateCachePath();
-
-/*
 	Initialize path_*.
 */
 void initializePaths();
