@@ -134,7 +134,7 @@ Images are built on each commit and available using the following tag scheme:
 
 * `ghcr.io/minetest/minetest:master` (latest build)
 * `ghcr.io/minetest/minetest:<tag>` (specific Git tag)
-* `ghcr.io/minetest/minetest:latest` (latest Git tag)
+* `ghcr.io/minetest/minetest:latest` (latest Git tag, which is the stable release)
 
 See [here](https://github.com/minetest/minetest/pkgs/container/minetest) for the available tags.
 
