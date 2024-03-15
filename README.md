@@ -136,9 +136,9 @@ Images are built on each commit and available using the following tag scheme:
 * `ghcr.io/minetest/minetest:<tag>` (specific Git tag)
 * `ghcr.io/minetest/minetest:latest` (latest Git tag, which is the stable release)
 
-See [here](https://github.com/minetest/minetest/pkgs/container/minetest) for the available tags.
+See [here](https://github.com/minetest/minetest/pkgs/container/minetest) for all available tags.
 
-If you want to test it on a Docker server you can easily run:
+For a quick test you can easily run:
 
 ```shell
 docker run ghcr.io/minetest/minetest:master
