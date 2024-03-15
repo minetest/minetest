@@ -165,7 +165,7 @@ services:
       - /home/minetest/data/:/var/lib/minetest/
       - /home/minetest/conf/:/etc/minetest/
     ports:
-      - "127.0.0.1:30000:30000/udp"
+      - "30000:30000/udp"
       - "127.0.0.1:30000:30000/tcp"
 ```
 
