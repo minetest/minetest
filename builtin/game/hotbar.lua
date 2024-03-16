@@ -2,7 +2,7 @@ local hotbar_def = {
 	type = "hotbar",
 	position = {x = 0.5, y = 1},
 	direction = 0,
-	alignment = {x = -0.5, y = -1},
+	alignment = {x = 0, y = -1},
 	offset = {x = 0, y = - 4}, -- Extra padding below.
 }
 

@@ -99,7 +99,7 @@ private:
 			const std::string &texture, const std::string& bgtexture,
 			s32 count, s32 maxcount, v2s32 offset, v2s32 size = v2s32());
 
-	void drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount, v2f alignment,
+	void drawItems(v2s32 screen_pos, v2s32 screen_offset, s32 itemcount, v2f alignment,
 			s32 inv_offset, InventoryList *mainlist, u16 selectitem,
 			u16 direction, bool is_hotbar);
 

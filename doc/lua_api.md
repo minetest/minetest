@@ -1751,15 +1751,13 @@ Displays a horizontal bar made up of half-images with an optional background.
 * `item`: Position of item that is selected.
 * `direction`: Direction the list will be displayed in
 * `offset`: offset in pixels from position.
-* `alignment`: The alignment of the inventory.
-  It starts at the top left corner and not at the center like most other types.
+* `alignment`: The alignment of the inventory. Aligned at the top left corner if not specified.
 
 ### `hotbar`
 
 * `direction`: Direction the list will be displayed in
 * `offset`: offset in pixels from position.
 * `alignment`: The alignment of the inventory.
-  It starts at the top left corner and not at the center like the most other types.
 
 ### `waypoint`
 
