@@ -67,20 +67,18 @@ private:
 	std::unordered_map<std::string, video::ITexture *> mappings;
 };
 
-
 void SelectPrimaryCamera::run(PipelineContext &context)
 {
-	auto cameras = context.client->getEnv().getCameras();
+	auto camera = context.client->getCamera()->getCameraNode();
 
-	const auto &it = cameras.find(-1);
-	if (it != cameras.end() && it->second && !it->second->isVisible())
+	if (!camera->isVisible())
 	{
-		infostream << "SelectPrimaryCamera::run(): stop the run for the camera with id = -1" << std::endl;
+		infostream << "SelectPrimaryCamera::run(): stop the run for the main camera since it is invisible" << std::endl;
 		return;
 	}
 
 	auto smgr = context.client->getSceneManager();
-	smgr->setActiveCamera(context.client->getCamera()->getCameraNode());
+	smgr->setActiveCamera(camera);
 
 	auto cao = context.client->getEnv().getLocalPlayer()->getCAO();
 	if (cao)
@@ -114,10 +112,6 @@ void DrawSecondaryCameras::run(PipelineContext &context)
 
 	for (const auto &it : cameras) {
 		auto idx = it.first;
-
-		if (idx == -1 || idx > 255)
-			continue;
-
 		UniversalCamera *cam = it.second;
 
 		if (!cam->isVisible())
@@ -153,9 +147,6 @@ void DrawSecondaryCameras::run(PipelineContext &context)
 	for (const auto &it : cameras) {
 		auto idx = it.first;
 
-		if (idx == -1 || idx > 255)
-			continue;
-
 		UniversalCamera *cam = it.second;
 
 		if (!cam->isVisible())
@@ -177,9 +168,6 @@ void DrawSecondaryCameras::run(PipelineContext &context)
 
 	for (const auto &it : cameras) {
 		auto idx = it.first;
-
-		if (idx == -1 || idx > 255)
-			continue;
 
 		UniversalCamera *cam = it.second;
 

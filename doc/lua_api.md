@@ -8295,17 +8295,17 @@ child will follow movement and rotation of that bone.
 * `respawn()`: Respawns the player using the same mechanism as the death screen,
   including calling `on_respawnplayer` callbacks.
 * `add_camera()`: Creates a secondary camera on the server (only). Returns a ID.
+    * The accepted IDs range is [0-255].
 * `set_camera(id, camera_parameters)`:
-    * Defines new parameters for a camera. Changes only those ones which are overriden in the table.
+    * Sets new parameters for a secondary camera. Changes only those ones which are present in the table.
     * Creates a secondary camera with the parameters on the server (if it wasn't created still) and sends to clients.
     * `id`: int, ID of the camera returned from `add_camera`.
-      `-1` is the main camera which is also deactivatable.
     * `camera_parameters` is a table with the following optional fields:
         * `enabled`: boolean, sets the active state of the camera.
           Maximum limit of 256 active cameras per client.
           (default: `false`).
-        * `viewport`: rectangle of floats `{x=float, y=float, w=float, h=float}`.
-          Sets the dimensions and the position of the camera on the screen.
+        * `viewport`: a table in a form `{x=float, y=float, w=float, h=float}`.
+          Sets the position (`x`, `y`) and the dimensions (`w`, `h`) of the rectangular render target area on the screen.
           Coordinates go from `0.0` to `1.0`.
           (default: `{x=0, y=0, w=0, h=0}`).
         * `texture` is a table with the following optional fields:

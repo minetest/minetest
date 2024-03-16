@@ -65,6 +65,10 @@ ClientEnvironment::~ClientEnvironment()
 	m_map->drop();
 
 	delete m_local_player;
+
+	// Deletes secondary cameras
+	for (auto &camera: m_cameras)
+		camera.second->remove();
 }
 
 Map & ClientEnvironment::getMap()

@@ -61,7 +61,7 @@ struct CameraParams
 	v3f rotation;
 	CameraInterpolation interpolate_rotation;
 
-	float fov { static_cast<float>(core::PI / 2.5f / M_PI * 180.f) };
+	float fov { 72.f };
 	CameraInterpolation interpolate_fov;
 
 	float zoom { 0.f };

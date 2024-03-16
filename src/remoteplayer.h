@@ -135,8 +135,11 @@ public:
 	{
 		s16 id = 0;
 
-		while (m_cam_params.find(id) != m_cam_params.end())
+		while (m_cam_params.find(id) != m_cam_params.end()) {
+			if (id == 255)
+				throw LuaError("camera object got an ID > 255");
 			++id;
+		}
 
 		m_cam_params[id] = CameraParams(id);
 		return id;
@@ -144,6 +147,9 @@ public:
 
 	const CameraParams getCameraParameters(s16 id) const
 	{
+		if (id < 0 || id > 255)
+			throw LuaError("camera object can not have an ID < 0 or > 255");
+
 		return m_cam_params.find(id) != m_cam_params.end() ? m_cam_params.at(id) : CameraParams(id);
 	}
 
