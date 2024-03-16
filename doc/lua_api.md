@@ -1752,7 +1752,7 @@ Displays a horizontal bar made up of half-images with an optional background.
 * `direction`: Direction the list will be displayed in
 * `offset`: offset in pixels from position.
 * `alignment`: The alignment of the inventory.
-  It starts at the top left corner and not at the center like the most other types.
+  It starts at the top left corner and not at the center like most other types.
 
 ### `hotbar`
 
