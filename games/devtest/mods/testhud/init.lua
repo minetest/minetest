@@ -238,7 +238,8 @@ local hud_hotbar_defs = {
 
 local player_hud_hotbars= {}
 minetest.register_chatcommand("hudhotbars", {
-	description = "Shows some test Lua HUD elements of type hotbar. (add: Adds elements (default). remove: Removes elements)",
+	description = "Shows some test Lua HUD elements of type hotbar. " ..
+			"(add: Adds elements (default). remove: Removes elements)",
 	params = "[ add | remove ]",
 	func = function(name, params)
 		local player = minetest.get_player_by_name(name)
