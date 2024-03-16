@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "string.h"
-#include "pointer.h"
+#include "serialize.h" // BYTE_ORDER
 #include "numeric.h"
 #include "log.h"
 
@@ -67,20 +67,16 @@ static bool convert(const char *to, const char *from, char *outbuf,
 	return true;
 }
 
-#ifdef __ANDROID__
-// On Android iconv disagrees how big a wchar_t is for whatever reason
-const char *DEFAULT_ENCODING = "UTF-32LE";
-#elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(__FreeBSD__)
-	// NetBSD does not allow "WCHAR_T" as a charset input to iconv.
-	#include <sys/endian.h>
-	#if BYTE_ORDER == BIG_ENDIAN
-	const char *DEFAULT_ENCODING = "UTF-32BE";
-	#else
-	const char *DEFAULT_ENCODING = "UTF-32LE";
-	#endif
-#else
-const char *DEFAULT_ENCODING = "WCHAR_T";
-#endif
+// select right encoding for wchar_t size
+constexpr auto DEFAULT_ENCODING = ([] () -> const char* {
+	constexpr auto sz = sizeof(wchar_t);
+	static_assert(sz == 2 || sz == 4, "Unexpected wide char size");
+	if constexpr (sz == 2) {
+		return (BYTE_ORDER == BIG_ENDIAN) ? "UTF-16BE" : "UTF-16LE";
+	} else {
+		return (BYTE_ORDER == BIG_ENDIAN) ? "UTF-32BE" : "UTF-32LE";
+	}
+})();
 
 std::wstring utf8_to_wide(std::string_view input)
 {
@@ -92,10 +88,6 @@ std::wstring utf8_to_wide(std::string_view input)
 	memcpy(inbuf, input.data(), inbuf_size);
 	std::wstring out;
 	out.resize(outbuf_size / sizeof(wchar_t));
-
-#if defined(__ANDROID__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__FreeBSD__)
-	static_assert(sizeof(wchar_t) == 4, "Unexpected wide char size");
-#endif
 
 	char *outbuf = reinterpret_cast<char*>(&out[0]);
 	if (!convert(DEFAULT_ENCODING, "UTF-8", outbuf, &outbuf_size, inbuf, inbuf_size)) {
