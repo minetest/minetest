@@ -290,9 +290,6 @@ struct TileDef
 
 	struct TileAnimationParams animation;
 
-	// Whether the tile contains the RTT texture
-	bool rtt = false;
-
 	TileDef()
 	{
 		animation.type = TAT_NONE;
@@ -756,13 +753,6 @@ public:
 	 * Must be called after node registration has finished!
 	 */
 	void resolveCrossrefs();
-
-	/*!
-	 * Updates all RTTs in tile layers having name `name`.
-	 * Actually it just attempts to take current generated textures from
-	 * DynamicTextureSource mappings, otherwise loads/takes from cache as usually.
-	 */
-	void reloadRTTexturesOnDemand(IGameDef *gamedef, const std::string &name);
 
 private:
 	/*!

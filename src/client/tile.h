@@ -51,8 +51,6 @@ enum MaterialType{
 //#define MATERIAL_FLAG_HIGHLIGHTED 0x10
 #define MATERIAL_FLAG_TILEABLE_HORIZONTAL 0x20
 #define MATERIAL_FLAG_TILEABLE_VERTICAL 0x40
-// Is RTT texture?
-#define MATERIAL_FLAG_RTT 0x80
 
 /*
 	This fully defines the looks of a tile.

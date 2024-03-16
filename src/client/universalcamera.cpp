@@ -416,11 +416,6 @@ void UniversalCamera::step()
 	const v3f current_offset = m_camera_offset;
 	setCameraOffset(m_env->getCameraOffset());
 
-	if (render_texture_updated) {
-		render_texture_updated = false;
-		m_env->getGameDef()->demandUpdateRTTs(m_render_texture_name);
-	}
-
 	// Camera not attached to a parent
 	if (m_parent_id == -1)
 		return;

@@ -130,9 +130,6 @@ public:
 	{
 		m_render_texture_name = name;
 		m_render_texture_aspect_ratio = aspect_ratio;
-
-		render_texture_set = true;
-		//infostream << "setRenderTexture(): texture is set with name \'" << name << "\' for camera with id = " << getID() << std::endl;
 	}
 
 	void setPosition(const v3f &pos, bool interpolation = false, f32 speed = 0.f);
@@ -143,9 +140,6 @@ public:
 	void step();
 	void attachTo(ClientActiveObject *object, bool follow = true);
 	inline void detach() { m_parent_id = -1; }
-
-	bool render_texture_set {false};
-	bool render_texture_updated {false};
 
 private:
 	void interpolate();

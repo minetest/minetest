@@ -626,13 +626,6 @@ void ClientMap::updateDrawList()
 	g_profiler->avg("MapBlocks occlusion culled [#]", blocks_occlusion_culled);
 	g_profiler->avg("MapBlocks frustum culled [#]", blocks_frustum_culled);
 	g_profiler->avg("MapBlocks drawn [#]", m_drawlist.size());
-
-	// Update meshes for all visible mapblocks
-	if (m_update_visible_mapblocks_meshes) {
-		m_update_visible_mapblocks_meshes = false;
-
-		doUpdateVisibleMapblocksMeshes();
-	}
 }
 
 void ClientMap::touchMapBlocks()
@@ -1408,10 +1401,4 @@ bool ClientMap::isMeshOccluded(MapBlock *mesh_block, u16 mesh_size, v3s16 cam_po
 	}
 
 	return true;
-}
-
-void ClientMap::doUpdateVisibleMapblocksMeshes()
-{
-	for (auto &p : m_drawlist)
-		m_client->addUpdateMeshTask(p.first, false, true);
 }

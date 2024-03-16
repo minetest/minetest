@@ -268,8 +268,6 @@ private:
 	// Keys are pairs of (mesh index, buffer index in the mesh)
 	std::map<std::pair<u8, u32>, AnimationInfo> m_animation_info;
 
-	std::map<std::pair<u8, u32>, video::ITexture*> m_rtt_layers;
-
 	// Animation info: day/night transitions
 	// Last daynight_ratio value passed to animate()
 	u32 m_last_daynight_ratio;
@@ -284,8 +282,6 @@ private:
 	MapBlockBspTree m_bsp_tree;
 	// Ordered list of references to parts of transparent buffers to draw
 	std::vector<PartialMeshBuffer> m_transparent_buffers;
-
-	bool m_update_rtts = false;
 };
 
 /*!

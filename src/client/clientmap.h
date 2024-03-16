@@ -121,11 +121,6 @@ public:
 
 	void onSettingChanged(const std::string &name);
 
-	// Whether reload rtts for all tile layers of mesh buffers having MATERIAL_FLAG_RTT flag enabled in the mapblocks within the view range?
-	void updateVisibleMapblocksMeshes() { m_update_visible_mapblocks_meshes = true; }
-
-	void doUpdateVisibleMapblocksMeshes();
-
 protected:
 	void reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks) override;
 private:
@@ -204,6 +199,4 @@ private:
 
 	bool m_loops_occlusion_culler;
 	bool m_enable_raytraced_culling;
-
-	bool m_update_visible_mapblocks_meshes = false;
 };

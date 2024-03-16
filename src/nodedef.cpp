@@ -225,9 +225,6 @@ void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 			os << serializeString16("blank.png^" + name);
 	}
 	animation.serialize(os, version);
-
-	writeU8(os, (u8)rtt);
-
 	bool has_scale = scale > 0;
 	u16 flags = 0;
 	if (backface_culling)
@@ -261,7 +258,6 @@ void TileDef::deSerialize(std::istream &is, NodeDrawType drawtype, u16 protocol_
 
 	name = deSerializeString16(is);
 	animation.deSerialize(is, protocol_version);
-	rtt = (bool)readU8(is);
 	u16 flags = readU16(is);
 	backface_culling = flags & TILE_FLAG_BACKFACE_CULLING;
 	tileable_horizontal = flags & TILE_FLAG_TILEABLE_HORIZONTAL;
@@ -728,8 +724,6 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 		layer->material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
 	if (tiledef.tileable_vertical)
 		layer->material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
-	if (tiledef.rtt)
-		layer->material_flags |= MATERIAL_FLAG_RTT;
 
 	// Color
 	layer->has_color = tiledef.has_color;
@@ -810,7 +804,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	TileDef tdef_overlay[6];
 	for (u32 j = 0; j < 6; j++)
 		tdef_overlay[j] = tiledef_overlay[j];
-
 	// also the special tiles
 	TileDef tdef_spec[6];
 	for (u32 j = 0; j < CF_SPECIAL_COUNT; j++) {
@@ -1680,22 +1673,6 @@ void NodeDefManager::resolveCrossrefs()
 			getIds(name, f.connects_to_ids);
 		}
 		removeDupes(f.connects_to_ids);
-	}
-}
-
-void NodeDefManager::reloadRTTexturesOnDemand(IGameDef *gamedef, const std::string &name) {
-	Client *client = (Client*)gamedef;
-	ITextureSource *tsrc = client->tsrc();
-
-	for (auto &f : m_content_features) {
-		for (int i = 0; i < 6; i++) {
-			TileDef &tdef = f.tiledef[i];
-
-			if (tdef.rtt && tdef.name == name) {
-				TileLayer &layer = f.tiles[i].layers[0];
-				layer.texture = tsrc->getTextureForMesh(tdef.name, &layer.texture_id);
-			}
-		}
 	}
 }
 
