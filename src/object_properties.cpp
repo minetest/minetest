@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/printing.h"
 #include "irrlichttypes_bloated.h"
 #include "exceptions.h"
+#include "log.h"
 #include "util/serialize.h"
 #include <sstream>
 
