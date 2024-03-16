@@ -313,39 +313,58 @@ void Camera::addArmInertia(f32 player_yaw)
 
 void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 {
-	// Get player position
+	// Get eye position
 	// Smooth the movement when walking up stairs
-	v3f old_player_position = m_playernode->getPosition();
-	v3f player_position = player->getPosition();
+	v3f old_eye_position = m_playernode->getPosition();
+	v3f eye_position = player->getEyePosition();;
+	v3f parent_rotation(0, 0, 0);
 
-	f32 yaw = player->getYaw();
-	f32 pitch = player->getPitch();
+	f32 yaw = player->getYawCam();
+	f32 pitch = player->getPitchCam();
 
 	// This is worse than `LocalPlayer::getPosition()` but
 	// mods expect the player head to be at the parent's position
 	// plus eye height.
-	if (player->getParent())
-		player_position = player->getParent()->getPosition();
+	if (auto cao = player->getParent()) {
+		if (m_client->getProtoVersion() >= 44) {
+			GenericCAO *parent = dynamic_cast<GenericCAO *>(cao);
+			int parent_id;
+			v3f attach_pos;
+			v3f attach_rot;
+			std::string bone;
+			bool force_visible;
+			GenericCAO *player_cao = player->getCAO();
+			player_cao->getAttachment(&parent_id, &bone, &attach_pos, &attach_rot, &force_visible);
+
+			core::matrix4 prot;
+			core::matrix4 arot;
+			setPitchYawRoll(prot, parent->getRotation());
+			arot.setRotationDegrees(-attach_rot);
+
+			prot = prot * arot;
+			parent_rotation = prot.getRotationDegrees();
+		}
+	}
 
 	// Smooth the camera movement after the player instantly moves upward due to stepheight.
 	// The smoothing usually continues until the camera position reaches the player position.
 	float player_stepheight = player->getCAO() ? player->getCAO()->getStepHeight() : HUGE_VALF;
-	float upward_movement = player_position.Y - old_player_position.Y;
+	float upward_movement = eye_position.Y - old_eye_position.Y;
 	if (upward_movement < 0.01f || upward_movement > player_stepheight) {
 		m_stepheight_smooth_active = false;
 	} else if (player->touching_ground) {
 		m_stepheight_smooth_active = true;
 	}
 	if (m_stepheight_smooth_active) {
-		f32 oldy = old_player_position.Y;
-		f32 newy = player_position.Y;
+		f32 oldy = old_eye_position.Y;
+		f32 newy = eye_position.Y;
 		f32 t = std::exp(-23 * frametime);
-		player_position.Y = oldy * t + newy * (1-t);
+		eye_position.Y = oldy * t + newy * (1-t);
 	}
 
 	// Set player node transformation
-	m_playernode->setPosition(player_position);
-	m_playernode->setRotation(v3f(0, -1 * yaw, 0));
+	m_playernode->setPosition(eye_position);
+	m_playernode->setRotation(-parent_rotation);
 	m_playernode->updateAbsolutePosition();
 
 	// Get camera tilt timer (hurt animation)
@@ -373,26 +392,25 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 
 	// Calculate and translate the head SceneNode offsets
 	{
-		v3f eye_offset = player->getEyeOffset();
+		v3f camera_offset(0, 0, 0);
 		switch(m_camera_mode) {
 		case CAMERA_MODE_FIRST:
-			eye_offset += player->eye_offset_first;
+			camera_offset += player->eye_offset_first;
 			break;
 		case CAMERA_MODE_THIRD:
-			eye_offset += player->eye_offset_third;
+			camera_offset += player->eye_offset_third;
 			break;
 		case CAMERA_MODE_THIRD_FRONT:
-			eye_offset.X += player->eye_offset_third_front.X;
-			eye_offset.Y += player->eye_offset_third_front.Y;
-			eye_offset.Z -= player->eye_offset_third_front.Z;
+			camera_offset.X += player->eye_offset_third_front.X;
+			camera_offset.Y += player->eye_offset_third_front.Y;
+			camera_offset.Z -= player->eye_offset_third_front.Z;
 			break;
 		}
 
 		// Set head node transformation
-		eye_offset.Y += cameratilt * -player->hurt_tilt_strength + fall_bobbing;
-		m_headnode->setPosition(eye_offset);
-		m_headnode->setRotation(v3f(pitch, 0,
-			cameratilt * player->hurt_tilt_strength));
+		camera_offset.Y += cameratilt * -player->hurt_tilt_strength + fall_bobbing;
+		m_headnode->setPosition(camera_offset);
+		m_headnode->setRotation(v3f(pitch, -1 * yaw, cameratilt * player->hurt_tilt_strength));
 		m_headnode->updateAbsolutePosition();
 	}
 
@@ -425,6 +443,19 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 
 	v3f abs_cam_up;
 	m_headnode->getAbsoluteTransformation().rotateVect(abs_cam_up, rel_cam_up);
+
+	// Calculate absolute pitch and yaw
+  {
+		v2f vec(m_camera_direction.Z, m_camera_direction.X);
+		f32 yaw_world = wrapDegrees_0_360(vec.getAngle());
+
+		vec.X = vec.getLength();
+		vec.Y = m_camera_direction.Y;
+		f32 pitch_world = wrapDegrees_180(vec.getAngle());
+
+		player->setYawWorld(yaw_world);
+		player->setPitchWorld(pitch_world);
+	}
 
 	// Separate camera position for calculation
 	v3f my_cp = m_camera_position;
@@ -461,8 +492,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 		}
 
 		// If node blocks camera position don't move y to heigh
-		if (abort && my_cp.Y > player_position.Y+BS*2)
-			my_cp.Y = player_position.Y+BS*2;
+		if (abort && my_cp.Y > eye_position.Y+BS*2)
+			my_cp.Y = eye_position.Y+BS*2;
 	}
 
 	// Update offset if too far away from the center of the map

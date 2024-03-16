@@ -4020,8 +4020,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	runData.time_of_day_smooth = time_of_day_smooth;
 
 	sky->update(time_of_day_smooth, time_brightness, direct_brightness,
-			sunlight_seen, camera->getCameraMode(), player->getYaw(),
-			player->getPitch());
+			sunlight_seen, camera->getCameraMode(), player->getYawWorld(),
+			player->getPitchWorld());
 
 	/*
 		Update clouds
@@ -4049,7 +4049,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	*/
 	if (mapper && m_game_ui->m_flags.show_hud) {
 		mapper->setPos(floatToInt(player->getPosition(), BS));
-		mapper->setAngle(player->getYaw());
+		mapper->setAngle(player->getYawWorld());
 	}
 
 	/*

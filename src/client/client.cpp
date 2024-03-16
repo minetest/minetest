@@ -1047,8 +1047,8 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 {
 	v3f pf           = myplayer->getPosition() * 100;
 	v3f sf           = myplayer->getSpeed() * 100;
-	s32 pitch        = myplayer->getPitch() * 100;
-	s32 yaw          = myplayer->getYaw() * 100;
+	s32 pitch        = myplayer->getPitchWorld() * 100;
+	s32 yaw          = myplayer->getYawWorld() * 100;
 	u32 keyPressed   = myplayer->control.getKeysPressed();
 	// scaled by 80, so that pi can fit into a u8
 	u8 fov           = std::fmin(255.0f, clientMap->getCameraFov() * 80.0f);
@@ -1410,20 +1410,20 @@ void Client::sendPlayerPos()
 	bool camera_inverted = m_camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT;
 
 	if (
-			player->last_position        == player->getPosition() &&
-			player->last_speed           == player->getSpeed()    &&
-			player->last_pitch           == player->getPitch()    &&
-			player->last_yaw             == player->getYaw()      &&
-			player->last_keyPressed      == keyPressed            &&
-			player->last_camera_fov      == camera_fov            &&
-			player->last_camera_inverted == camera_inverted       &&
+			player->last_position        == player->getPosition()   &&
+			player->last_speed           == player->getSpeed()      &&
+			player->last_pitch           == player->getPitchWorld() &&
+			player->last_yaw             == player->getYawWorld()   &&
+			player->last_keyPressed      == keyPressed              &&
+			player->last_camera_fov      == camera_fov              &&
+			player->last_camera_inverted == camera_inverted         &&
 			player->last_wanted_range    == wanted_range)
 		return;
 
 	player->last_position        = player->getPosition();
 	player->last_speed           = player->getSpeed();
-	player->last_pitch           = player->getPitch();
-	player->last_yaw             = player->getYaw();
+	player->last_pitch           = player->getPitchWorld();
+	player->last_yaw             = player->getYawWorld();
 	player->last_keyPressed      = keyPressed;
 	player->last_camera_fov      = camera_fov;
 	player->last_camera_inverted = camera_inverted;

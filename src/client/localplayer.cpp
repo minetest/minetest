@@ -557,8 +557,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	swimming_vertical = false;
 	swimming_pitch = false;
 
-	setPitch(control.pitch);
-	setYaw(control.yaw);
+	setPitchCam(control.pitch);
+	setYawCam(control.yaw);
 
 	// Nullify speed and don't run positioning code if the player is attached
 	if (getParent()) {
@@ -782,7 +782,31 @@ v3s16 LocalPlayer::getLightPosition() const
 
 v3f LocalPlayer::getEyeOffset() const
 {
-	return v3f(0.0f, BS * m_eye_height, 0.0f);
+  // keep it in old style if server is old version
+	if (getParent() && (m_client->getProtoVersion() >= 44)) {
+		GenericCAO *parent = dynamic_cast<GenericCAO *>(getParent());
+
+		int parent_id;
+		v3f attach_pos;
+		v3f attach_rot;
+		std::string bone;
+		bool force_visible;
+		m_cao->getAttachment(&parent_id, &bone, &attach_pos, &attach_rot, &force_visible);
+
+		core::matrix4 prot;
+		setPitchYawRoll(prot, -parent->getRotation());
+		// First rotate by parent rotation, then rotate by the attach rotation
+		core::matrix4 rot = (core::quaternion(attach_rot * core::DEGTORAD)
+				* core::quaternion(prot.getRotationDegrees() * core::DEGTORAD))
+				.normalize().getMatrix();
+
+		v3f eye_offset(0.0f, BS * m_eye_height, 0.0f);
+		rot.transformVect(eye_offset);
+		return eye_offset;
+	}
+	else {
+		return v3f(0.0f, BS * m_eye_height, 0.0f);
+	}
 }
 
 ClientActiveObject *LocalPlayer::getParent() const
@@ -800,8 +824,8 @@ bool LocalPlayer::isDead() const
 void LocalPlayer::accelerate(const v3f &target_speed, const f32 max_increase_H,
 	const f32 max_increase_V, const bool use_pitch)
 {
-	const f32 yaw = getYaw();
-	const f32 pitch = getPitch();
+	const f32 yaw = getYawWorld();
+	const f32 pitch = getPitchWorld();
 	v3f flat_speed = m_speed;
 	// Rotate speed vector by -yaw and -pitch to make it relative to the player's yaw and pitch
 	flat_speed.rotateXZBy(-yaw);

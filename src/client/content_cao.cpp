@@ -1045,7 +1045,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		LocalPlayer *player = m_env->getLocalPlayer();
 		m_position = player->getPosition();
 		pos_translator.val_current = m_position;
-		m_rotation.Y = wrapDegrees_0_360(player->getYaw());
+		m_rotation.Y = wrapDegrees_0_360(player->getYawWorld());
 		rot_translator.val_current = m_rotation;
 
 		if (m_is_visible) {

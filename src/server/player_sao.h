@@ -89,6 +89,7 @@ public:
 	void getStaticData(std::string *result) const override;
 	void step(float dtime, bool send_recommended) override;
 	void setBasePosition(v3f position);
+	v3f getPos() const override;
 	void setPos(const v3f &pos) override;
 	void addPos(const v3f &added_pos) override;
 	void moveTo(v3f pos, bool continuous) override;
@@ -102,6 +103,7 @@ public:
 	f32 getRadLookPitch() const { return m_pitch * core::DEGTORAD; }
 	// Deprecated
 	f32 getRadLookPitchDep() const { return -1.0 * m_pitch * core::DEGTORAD; }
+	v3f getLookDir() const;
 	void setFov(const float pitch);
 	f32 getFov() const { return m_fov; }
 	void setWantedRange(const s16 range);
@@ -182,7 +184,7 @@ public:
 
 	void finalize(RemotePlayer *player, const std::set<std::string> &privs);
 
-	v3f getEyePosition() const { return m_base_position + getEyeOffset(); }
+	v3f getEyePosition() const;
 	v3f getEyeOffset() const;
 	float getZoomFOV() const;
 

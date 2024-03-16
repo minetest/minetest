@@ -72,9 +72,24 @@ void PlayerSAO::finalize(RemotePlayer *player, const std::set<std::string> &priv
 	m_privs = privs;
 }
 
+v3f PlayerSAO::getEyePosition() const
+{
+	if (isAttached()) {
+		return getPos() + getEyeOffset();
+	}
+	return m_base_position + getEyeOffset();
+}
+
 v3f PlayerSAO::getEyeOffset() const
 {
-	return v3f(0, BS * m_prop.eye_height, 0);
+	if (isAttached() && (m_player->protocol_version >= 44)) {
+		v3f eye_offset(0.0f, BS * m_prop.eye_height, 0.0f);
+		m_transformation.rotateVect(eye_offset);
+		return eye_offset;
+	}
+	else {
+		return v3f(0, BS * m_prop.eye_height, 0);
+	}
 }
 
 std::string PlayerSAO::getDescription()
@@ -271,6 +286,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 		if (m_player)
 			m_player->setSpeed(v3f());
+	} else {
+		updateTransformation();
+		updateChildsTransformation();
 	}
 
 	if (!send_recommended)
@@ -350,6 +368,17 @@ void PlayerSAO::setBasePosition(v3f position)
 	// Updating is not wanted/required for player migration
 	if (m_env) {
 		m_position_not_sent = true;
+	}
+}
+
+v3f PlayerSAO::getPos() const
+{
+  // keep it in old style if client is old version
+	if (isAttached() && (m_player->protocol_version >= 44)) {
+		return m_base_position + m_transformation.getTranslation();
+	}
+	else {
+		return m_base_position;
 	}
 }
 
@@ -451,6 +480,15 @@ void PlayerSAO::setLookPitchAndSend(const float pitch)
 {
 	setLookPitch(pitch);
 	m_env->getGameDef()->SendMovePlayer(this);
+}
+
+v3f PlayerSAO::getLookDir() const
+{
+	v3f look_dir(0.0f, 0.0f, 1.0f);
+	core::matrix4 rot;
+	setPitchYawRoll(rot, v3f(m_pitch, -m_rotation.Y, 0.0));
+	rot.transformVect(look_dir);
+	return look_dir;
 }
 
 u32 PlayerSAO::punch(v3f dir,

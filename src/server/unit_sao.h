@@ -88,6 +88,11 @@ public:
 	void removeAttachmentChild(int child_id);
 	const std::unordered_set<int> &getAttachmentChildIds() const;
 
+	// Transformation
+	void calculateRelativeTransformation(core::matrix4 &relative) const override;
+	void updateTransformation() override;
+	void updateChildsTransformation() override;
+
 	// Object properties
 	ObjectProperties *accessObjectProperties();
 	void notifyObjectPropertiesModified();

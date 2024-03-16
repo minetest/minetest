@@ -258,6 +258,59 @@ void UnitSAO::onDetach(int parent_id)
 		m_env->getScriptIface()->luaentity_on_detach_child(parent_id, this);
 }
 
+void UnitSAO::calculateRelativeTransformation(core::matrix4 &relative) const
+{
+	if (UnitSAO *parent = dynamic_cast<UnitSAO *>(getParent())) {
+		if (m_attachment_bone.empty()) {
+			relative.setTranslation(m_attachment_position);
+			relative.setRotationDegrees(m_attachment_rotation);
+		}
+		else {
+			BoneOverride bone = parent->getBoneOverride(m_attachment_bone);
+
+			core::matrix4 btrans;
+			btrans.setTranslation(bone.position.vector);
+			v3f rot;
+			bone.rotation.next.toEuler(rot);
+			btrans.setRotationRadians(rot);
+
+			relative.setTranslation(m_attachment_position);
+			relative.setRotationDegrees(m_attachment_rotation);
+
+			relative = btrans * relative;
+		}
+	}
+	else {
+		relative.setTranslation(v3f());
+		setPitchYawRoll(relative, -m_rotation);
+		//relative.setRotationDegrees(-m_rotation);
+	}
+}
+
+void UnitSAO::updateTransformation()
+{
+	if (auto parent = getParent()) {
+		core::matrix4 relative;
+		calculateRelativeTransformation(relative);
+		m_transformation = parent->getTransformation() * relative;
+	}
+	else {
+		calculateRelativeTransformation(m_transformation);
+	}
+}
+
+void UnitSAO::updateChildsTransformation()
+{
+	for (int child_id : m_attachment_child_ids) {
+		// Child can be NULL if it was deleted earlier
+		if (ServerActiveObject *child = m_env->getActiveObject(child_id)) {
+			child->updateTransformation();
+			child->updateChildsTransformation();
+		}
+	}
+}
+
+
 ObjectProperties *UnitSAO::accessObjectProperties()
 {
 	return &m_prop;

@@ -115,7 +115,7 @@ int ObjectRef::l_get_pos(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	push_v3f(L, sao->getBasePosition() / BS);
+	push_v3f(L, sao->getPos() / BS);
 	return 1;
 }
 
@@ -449,6 +449,19 @@ int ObjectRef::l_get_local_animation(lua_State *L)
 
 	lua_pushnumber(L, frame_speed);
 	return 5;
+}
+
+// get_eye_pos(self)
+int ObjectRef::l_get_eye_pos(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	PlayerSAO *player = getplayersao(ref);
+	if (player == nullptr)
+		return 0;
+
+	push_v3f(L, player->getEyePosition() / BS);
+	return 1;
 }
 
 // set_eye_offset(self, firstperson, thirdperson_back, thirdperson_front)
@@ -1176,12 +1189,7 @@ int ObjectRef::l_get_look_dir(lua_State *L)
 	if (playersao == nullptr)
 		return 0;
 
-	float pitch = playersao->getRadLookPitchDep();
-	float yaw = playersao->getRadYawDep();
-	v3f v(std::cos(pitch) * std::cos(yaw), std::sin(pitch), std::cos(pitch) *
-		std::sin(yaw));
-
-	push_v3f(L, v);
+	push_v3f(L, playersao->getLookDir());
 	return 1;
 }
 
@@ -2737,6 +2745,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_day_night_ratio),
 	luamethod(ObjectRef, set_local_animation),
 	luamethod(ObjectRef, get_local_animation),
+	luamethod(ObjectRef, get_eye_pos),
 	luamethod(ObjectRef, set_eye_offset),
 	luamethod(ObjectRef, get_eye_offset),
 	luamethod(ObjectRef, send_mapblock),

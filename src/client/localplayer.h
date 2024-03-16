@@ -136,11 +136,17 @@ public:
 
 	v3s16 getLightPosition() const;
 
-	void setYaw(f32 yaw) { m_yaw = yaw; }
-	f32 getYaw() const { return m_yaw; }
+	void setYawWorld(f32 yaw) { m_yaw_world = yaw; }
+	f32 getYawWorld() const { return m_yaw_world; }
 
-	void setPitch(f32 pitch) { m_pitch = pitch; }
-	f32 getPitch() const { return m_pitch; }
+	void setPitchWorld(f32 pitch) { m_pitch_world = pitch; }
+	f32 getPitchWorld() const { return m_pitch_world; }
+
+	void setYawCam(f32 yaw) { m_yaw_cam = yaw; }
+	f32 getYawCam() const { return m_yaw_cam; }
+
+	void setPitchCam(f32 pitch) { m_pitch_cam = pitch; }
+	f32 getPitchCam() const { return m_pitch_cam; }
 
 	inline void setPosition(const v3f &position)
 	{
@@ -218,8 +224,12 @@ private:
 	bool m_disable_jump = false;
 	bool m_disable_descend = false;
 	u16 m_breath = PLAYER_MAX_BREATH_DEFAULT;
-	f32 m_yaw = 0.0f;
-	f32 m_pitch = 0.0f;
+	// yaw and pitch relative to world
+	f32 m_yaw_world = 0.0f;
+	f32 m_pitch_world = 0.0f;
+	// yaw and pitch relative to camera
+	f32 m_yaw_cam = 0.0f;
+	f32 m_pitch_cam = 0.0f;
 	aabb3f m_collisionbox = aabb3f(-BS * 0.30f, 0.0f, -BS * 0.30f, BS * 0.30f,
 		BS * 1.75f, BS * 0.30f);
 	float m_eye_height = 1.625f;
