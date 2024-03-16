@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "gui/mainmenumanager.h"
 #include "clouds.h"
+#include "gui/touchscreengui.h"
 #include "server.h"
 #include "filesys.h"
 #include "gui/guiMainMenu.h"

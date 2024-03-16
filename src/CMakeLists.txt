@@ -368,6 +368,7 @@ set(common_SRCS
 	${server_SRCS}
 	${content_SRCS}
 	chat.cpp
+	clientdynamicinfo.cpp
 	collision.cpp
 	content_mapnode.cpp
 	content_nodemeta.cpp
