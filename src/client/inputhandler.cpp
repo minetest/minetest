@@ -236,7 +236,7 @@ float RealInputHandler::getMovementDirection()
 		x -= 1;
 
 	if (x != 0 || z != 0) /* If there is a keyboard event, it takes priority */
-		return atan2(x, z);
+		return std::atan2(x, z);
 	else if (g_touchscreengui && g_touchscreengui->getMovementDirection())
 		return g_touchscreengui->getMovementDirection();
 	return joystick.getMovementDirection();
