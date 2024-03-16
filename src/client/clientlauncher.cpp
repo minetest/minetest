@@ -211,8 +211,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 				break;
 
 			if (g_settings->getBool("enable_touch")) {
-				receiver->m_touchscreengui = new TouchScreenGUI(m_rendering_engine->get_raw_device(), receiver);
-				g_touchscreengui = receiver->m_touchscreengui;
+				g_touchscreengui = new TouchScreenGUI(m_rendering_engine->get_raw_device(), receiver);
 			}
 
 			the_game(
@@ -247,7 +246,6 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		if (g_touchscreengui) {
 			delete g_touchscreengui;
 			g_touchscreengui = NULL;
-			receiver->m_touchscreengui = NULL;
 		}
 
 		/* Save the settings when leaving the game.

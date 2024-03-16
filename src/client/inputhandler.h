@@ -197,14 +197,7 @@ public:
 		keyWasReleased.clear();
 	}
 
-	MyEventReceiver()
-	{
-		m_touchscreengui = NULL;
-	}
-
 	JoystickController *joystick = nullptr;
-
-	TouchScreenGUI *m_touchscreengui;
 
 private:
 	s32 mouse_wheel = 0;

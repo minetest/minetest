@@ -103,8 +103,8 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 		React to nothing here if a menu is active
 	*/
 	if (isMenuActive()) {
-		if (m_touchscreengui) {
-			m_touchscreengui->setVisible(false);
+		if (g_touchscreengui) {
+			g_touchscreengui->setVisible(false);
 		}
 		return g_menumgr.preprocessEvent(event);
 	}
@@ -129,9 +129,9 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 			return true;
 		}
 
-	} else if (m_touchscreengui && event.EventType == irr::EET_TOUCH_INPUT_EVENT) {
+	} else if (g_touchscreengui && event.EventType == irr::EET_TOUCH_INPUT_EVENT) {
 		// In case of touchscreengui, we have to handle different events
-		m_touchscreengui->translateEvent(event);
+		g_touchscreengui->translateEvent(event);
 		return true;
 
 	} else if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
@@ -216,8 +216,8 @@ float RealInputHandler::getMovementSpeed()
 			return 0.0f;
 		return 1.0f; // If there is a keyboard event, assume maximum speed
 	}
-	if (m_receiver->m_touchscreengui && m_receiver->m_touchscreengui->getMovementSpeed())
-		return m_receiver->m_touchscreengui->getMovementSpeed();
+	if (g_touchscreengui && g_touchscreengui->getMovementSpeed())
+		return g_touchscreengui->getMovementSpeed();
 	return joystick.getMovementSpeed();
 }
 
@@ -237,8 +237,8 @@ float RealInputHandler::getMovementDirection()
 
 	if (x != 0 || z != 0) /* If there is a keyboard event, it takes priority */
 		return atan2(x, z);
-	else if (m_receiver->m_touchscreengui && m_receiver->m_touchscreengui->getMovementDirection())
-		return m_receiver->m_touchscreengui->getMovementDirection();
+	else if (g_touchscreengui && g_touchscreengui->getMovementDirection())
+		return g_touchscreengui->getMovementDirection();
 	return joystick.getMovementDirection();
 }
 
