@@ -5277,6 +5277,23 @@ Minetest includes the following settings to control behavior of privileges:
 'minetest' namespace reference
 ==============================
 
+API Version
+-----------
+
+* `minetest.api_version`: numeric value
+   * Describes the modding API capabilities and behavior. This value
+     depends on the server version and can be used to achieve backwards
+     compatibility in mods.
+   * This supersedes the concept of `minetest.features`.
+   * Exists since Minetest version 5.9.0. Use the expression
+     `(minetest.api_version or 0)` as a fallback.
+
+**API Version History**
+
+ * API version 1 (5.9.0):
+    * All of `minetest.features`
+
+
 Utilities
 ---------
 
@@ -5401,6 +5418,8 @@ Utilities
       lsystem_decoration_type = true,
       -- Overrideable pointing range using the itemstack meta key `"range"` (5.9.0)
       item_meta_range = true,
+
+      -- All the features above are present if `(minetest.api_version or 0) >= 1`
   }
   ```
 
