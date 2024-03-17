@@ -1384,7 +1384,7 @@ void Game::copyServerClientCache()
 {
 	// It would be possible to let the client directly read the media files
 	// from where the server knows they are. But aside from being more complicated
-	// it would also *not* fill the media cache and cause slower joining of
+	// it would also *not* fill the media cache and cause slower joining of 
 	// remote servers.
 	// (Imagine that you launch a game once locally and then connect to a server.)
 
@@ -3233,7 +3233,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	const ItemStack &tool_item = player->getWieldedItem(&selected_item, &hand_item);
 
 	const ItemDefinition &selected_def = selected_item.getDefinition(itemdef_manager);
-	f32 d = getToolRange(selected_def, hand_item.getDefinition(itemdef_manager));
+	f32 d = getToolRange(selected_item, hand_item, itemdef_manager);
 
 	core::line3d<f32> shootline;
 

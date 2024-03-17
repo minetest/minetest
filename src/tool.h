@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <optional>
 
 struct ItemDefinition;
+class IItemDefManager;
 
 struct ToolGroupCap
 {
@@ -179,4 +180,5 @@ PunchDamageResult getPunchDamage(
 );
 
 u32 calculateResultWear(const u32 uses, const u16 initial_wear);
-f32 getToolRange(const ItemDefinition &def_selected, const ItemDefinition &def_hand);
+f32 getToolRange(const ItemStack &wielded_item, const ItemStack &hand_item,
+		const IItemDefManager *itemdef_manager);
