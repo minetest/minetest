@@ -36,6 +36,13 @@ namespace treegen {
 	};
 
 	struct TreeDef : public NodeResolver {
+		TreeDef() :
+			// Initialize param1 and param2
+			trunknode(CONTENT_IGNORE),
+			leavesnode(CONTENT_IGNORE),
+			leaves2node(CONTENT_IGNORE),
+			fruitnode(CONTENT_IGNORE)
+		{}
 		virtual void resolveNodeNames();
 
 		std::string initial_axiom;
