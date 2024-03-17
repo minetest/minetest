@@ -75,13 +75,14 @@ void SourceImageCache::insert(const std::string &name, video::IImage *img, bool 
 		toadd->grab();
 	m_images[name] = toadd;
 }
+
 video::IImage* SourceImageCache::get(const std::string &name)
 {
 	std::map<std::string, video::IImage*>::iterator n;
 	n = m_images.find(name);
 	if (n != m_images.end())
 		return n->second;
-	return NULL;
+	return nullptr;
 }
 
 // Primarily fetches from cache, secondarily tries to read from filesystem
@@ -96,12 +97,12 @@ video::IImage* SourceImageCache::getOrLoad(const std::string &name)
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	std::string path = getTexturePath(name);
 	if (path.empty()) {
-		infostream<<"SourceImageCache::getOrLoad(): No path found for \""
-				<<name<<"\""<<std::endl;
-		return NULL;
+		infostream << "SourceImageCache::getOrLoad(): No path found for \""
+				<< name << "\"" << std::endl;
+		return nullptr;
 	}
-	infostream<<"SourceImageCache::getOrLoad(): Loading path \""<<path
-			<<"\""<<std::endl;
+	infostream << "SourceImageCache::getOrLoad(): Loading path \"" << path
+			<< "\"" << std::endl;
 	video::IImage *img = driver->createImageFromFile(path.c_str());
 
 	if (img){
@@ -1970,6 +1971,6 @@ video::SColor ImageSource::getImageAverageColor(const video::IImage &image)
 	return c;
 }
 
-void ImageSource::insertImage(const std::string &name, video::IImage *img, bool prefer_local) {
+void ImageSource::insertSourceImage(const std::string &name, video::IImage *img, bool prefer_local) {
 	m_sourcecache.insert(name, img, prefer_local);
 }
