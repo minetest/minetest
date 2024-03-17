@@ -20,7 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_bloated.h"
+#ifndef SERVER
 #include "irrString.h"
+#endif
 #include <cstdlib>
 #include <string>
 #include <string_view>
@@ -732,6 +734,7 @@ inline std::string str_join(const std::vector<std::string> &list,
 	return oss.str();
 }
 
+#ifndef SERVER
 /**
  * Create a UTF8 std::string from an irr::core::stringw.
  */
@@ -749,6 +752,7 @@ inline irr::core::stringw utf8_to_stringw(std::string_view input)
 	std::wstring str = utf8_to_wide(input);
 	return irr::core::stringw(str.c_str(), str.size());
 }
+#endif
 
 /**
  * Sanitize the name of a new directory. This consists of two stages:
