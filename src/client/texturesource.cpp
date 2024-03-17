@@ -27,41 +27,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "texturepaths.h"
 #include "imagesource.h"
 
-/*
-	Stores internal information about a texture.
-*/
 
+// Stores internal information about a texture.
 struct TextureInfo
 {
 	std::string name;
-	video::ITexture *texture;
-	std::set<std::string> sourceImages;
+	video::ITexture *texture = nullptr;
 
-	TextureInfo(
-			const std::string &name_,
-			video::ITexture *texture_=NULL
-		):
-		name(name_),
-		texture(texture_)
-	{
-	}
-
-	TextureInfo(
-			const std::string &name_,
-			video::ITexture *texture_,
-			std::set<std::string> &&sourceImages_
-		):
-		name(name_),
-		texture(texture_),
-		sourceImages(std::move(sourceImages_))
-	{
-	}
+	// Stores source image names which ImageSource::generateImage used.
+	std::set<std::string> sourceImages{};
 };
 
-/*
-	TextureSource
-*/
-
+// TextureSource
 class TextureSource : public IWritableTextureSource
 {
 public:
@@ -150,7 +127,7 @@ public:
 	// Shall be called from the main thread.
 	void processQueue();
 
-	// Insert an image into the cache without touching the filesystem.
+	// Insert a source image into the cache without touching the filesystem.
 	// Shall be called from the main thread.
 	void insertSourceImage(const std::string &name, video::IImage *img);
 
@@ -200,11 +177,8 @@ private:
 	// Maps image file names to loaded palettes.
 	std::unordered_map<std::string, Palette> m_palettes;
 
-	// Cached settings needed for making textures from meshes
-	bool m_setting_mipmap;
-	bool m_setting_trilinear_filter;
-	bool m_setting_bilinear_filter;
-	bool m_setting_anisotropic_filter;
+	// Cached from settings for making textures from meshes
+	bool mesh_filter_needed;
 };
 
 IWritableTextureSource *createTextureSource()
@@ -217,16 +191,17 @@ TextureSource::TextureSource()
 	m_main_thread = std::this_thread::get_id();
 
 	// Add a NULL TextureInfo as the first index, named ""
-	m_textureinfo_cache.emplace_back("");
+	m_textureinfo_cache.emplace_back(TextureInfo{""});
 	m_name_to_id[""] = 0;
 
 	// Cache some settings
 	// Note: Since this is only done once, the game must be restarted
-	// for these settings to take effect
-	m_setting_mipmap = g_settings->getBool("mip_map");
-	m_setting_trilinear_filter = g_settings->getBool("trilinear_filter");
-	m_setting_bilinear_filter = g_settings->getBool("bilinear_filter");
-	m_setting_anisotropic_filter = g_settings->getBool("anisotropic_filter");
+	// for these settings to take effect.
+	mesh_filter_needed =
+			g_settings->getBool("mip_map") ||
+			g_settings->getBool("trilinear_filter") ||
+			g_settings->getBool("bilinear_filter") ||
+			g_settings->getBool("anisotropic_filter");
 }
 
 TextureSource::~TextureSource()
@@ -236,45 +211,37 @@ TextureSource::~TextureSource()
 	unsigned int textures_before = driver->getTextureCount();
 
 	for (const auto &iter : m_textureinfo_cache) {
-		//cleanup texture
+		// cleanup texture
 		if (iter.texture)
 			driver->removeTexture(iter.texture);
 	}
 	m_textureinfo_cache.clear();
 
 	for (auto t : m_texture_trash) {
-		//cleanup trashed texture
+		// cleanup trashed texture
 		driver->removeTexture(t);
 	}
 
-	infostream << "~TextureSource() before cleanup: "<< textures_before
+	infostream << "~TextureSource() before cleanup: " << textures_before
 			<< " after: " << driver->getTextureCount() << std::endl;
 }
 
 u32 TextureSource::getTextureId(const std::string &name)
 {
-	{
-		/*
-			See if texture already exists
-		*/
+	{ // See if texture already exists
 		MutexAutoLock lock(m_textureinfo_cache_mutex);
-		std::map<std::string, u32>::iterator n;
-		n = m_name_to_id.find(name);
+		auto n = m_name_to_id.find(name);
 		if (n != m_name_to_id.end())
-		{
 			return n->second;
-		}
 	}
 
-	/*
-		Get texture
-	*/
+	// Get texture
 	if (std::this_thread::get_id() == m_main_thread) {
 		return generateTexture(name);
 	}
 
 
-	infostream<<"getTextureId(): Queued: name=\""<<name<<"\""<<std::endl;
+	infostream << "getTextureId(): Queued: name=\"" << name << "\"" << std::endl;
 
 	// We're gonna ask the result to be put into here
 	static thread_local ResultQueue<std::string, u32, std::thread::id, u8> result_queue;
@@ -302,34 +269,26 @@ u32 TextureSource::getTextureId(const std::string &name)
 	return 0;
 }
 
-/*
-	This method generates all the textures
-*/
+// This method generates all the textures
 u32 TextureSource::generateTexture(const std::string &name)
 {
 	// Empty name means texture 0
 	if (name.empty()) {
-		infostream<<"generateTexture(): name is empty"<<std::endl;
+		infostream << "generateTexture(): name is empty" << std::endl;
 		return 0;
 	}
 
-	{
-		/*
-			See if texture already exists
-		*/
+	{ // See if texture already exists
 		MutexAutoLock lock(m_textureinfo_cache_mutex);
 		auto n = m_name_to_id.find(name);
-		if (n != m_name_to_id.end()) {
+		if (n != m_name_to_id.end())
 			return n->second;
-		}
 	}
 
-	/*
-		Calling only allowed from main thread
-	*/
+	// Calling only allowed from main thread
 	if (std::this_thread::get_id() != m_main_thread) {
-		errorstream<<"TextureSource::generateTexture() "
-				"called not from main thread"<<std::endl;
+		errorstream << "TextureSource::generateTexture() "
+				"called not from main thread" << std::endl;
 		return 0;
 	}
 
@@ -340,9 +299,9 @@ u32 TextureSource::generateTexture(const std::string &name)
 	std::set<std::string> source_image_names;
 	video::IImage *img = m_imagesource.generateImage(name, source_image_names);
 
-	video::ITexture *tex = NULL;
+	video::ITexture *tex = nullptr;
 
-	if (img != NULL) {
+	if (img) {
 		img = Align2Npot2(img, driver);
 		// Create texture from resulting image
 		tex = driver->addTexture(name.c_str(), img);
@@ -350,14 +309,12 @@ u32 TextureSource::generateTexture(const std::string &name)
 		img->drop();
 	}
 
-	/*
-		Add texture to caches (add NULL textures too)
-	*/
+	// Add texture to caches (add NULL textures too)
 
 	MutexAutoLock lock(m_textureinfo_cache_mutex);
 
 	u32 id = m_textureinfo_cache.size();
-	TextureInfo ti(name, tex, std::move(source_image_names));
+	TextureInfo ti{name, tex, std::move(source_image_names)};
 	m_textureinfo_cache.emplace_back(std::move(ti));
 	m_name_to_id[name] = id;
 
@@ -368,11 +325,10 @@ std::string TextureSource::getTextureName(u32 id)
 {
 	MutexAutoLock lock(m_textureinfo_cache_mutex);
 
-	if (id >= m_textureinfo_cache.size())
-	{
-		errorstream<<"TextureSource::getTextureName(): id="<<id
-				<<" >= m_textureinfo_cache.size()="
-				<<m_textureinfo_cache.size()<<std::endl;
+	if (id >= m_textureinfo_cache.size()) {
+		errorstream << "TextureSource::getTextureName(): id=" << id
+				<< " >= m_textureinfo_cache.size()=" << m_textureinfo_cache.size()
+				<< std::endl;
 		return "";
 	}
 
@@ -384,7 +340,7 @@ video::ITexture* TextureSource::getTexture(u32 id)
 	MutexAutoLock lock(m_textureinfo_cache_mutex);
 
 	if (id >= m_textureinfo_cache.size())
-		return NULL;
+		return nullptr;
 
 	return m_textureinfo_cache[id].texture;
 }
@@ -392,19 +348,16 @@ video::ITexture* TextureSource::getTexture(u32 id)
 video::ITexture* TextureSource::getTexture(const std::string &name, u32 *id)
 {
 	u32 actual_id = getTextureId(name);
-	if (id){
+	if (id)
 		*id = actual_id;
-	}
+
 	return getTexture(actual_id);
 }
 
 video::ITexture* TextureSource::getTextureForMesh(const std::string &name, u32 *id)
 {
 	// Avoid duplicating texture if it won't actually change
-	const bool filter_needed =
-		m_setting_mipmap || m_setting_trilinear_filter ||
-		m_setting_bilinear_filter || m_setting_anisotropic_filter;
-	if (filter_needed && !name.empty())
+	if (mesh_filter_needed && !name.empty())
 		return getTexture(name + "^[applyfiltersformesh", id);
 	return getTexture(name, id);
 }
@@ -415,7 +368,7 @@ Palette* TextureSource::getPalette(const std::string &name)
 	sanity_check(std::this_thread::get_id() == m_main_thread);
 
 	if (name.empty())
-		return NULL;
+		return nullptr;
 
 	auto it = m_palettes.find(name);
 	if (it == m_palettes.end()) {
@@ -425,7 +378,7 @@ Palette* TextureSource::getPalette(const std::string &name)
 		if (!img) {
 			warningstream << "TextureSource::getPalette(): palette \"" << name
 				<< "\" could not be loaded." << std::endl;
-			return NULL;
+			return nullptr;
 		}
 		Palette new_palette;
 		u32 w = img->getDimension().Width;
@@ -433,7 +386,7 @@ Palette* TextureSource::getPalette(const std::string &name)
 		// Real area of the image
 		u32 area = h * w;
 		if (area == 0)
-			return NULL;
+			return nullptr;
 		if (area > 256) {
 			warningstream << "TextureSource::getPalette(): the specified"
 				<< " palette image \"" << name << "\" is larger than 256"
@@ -462,17 +415,14 @@ Palette* TextureSource::getPalette(const std::string &name)
 	}
 	if (it != m_palettes.end())
 		return &((*it).second);
-	return NULL;
+	return nullptr;
 }
 
 void TextureSource::processQueue()
 {
-	/*
-		Fetch textures
-	*/
+	// Fetch textures
 	// NOTE: process outstanding requests from all mesh generation threads
-	while (!m_get_texture_queue.empty())
-	{
+	while (!m_get_texture_queue.empty()) {
 		GetRequest<std::string, u32, std::thread::id, u8>
 				request = m_get_texture_queue.pop();
 
@@ -484,7 +434,7 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 {
 	sanity_check(std::this_thread::get_id() == m_main_thread);
 
-	m_imagesource.insertImage(name, img, true);
+	m_imagesource.insertSourceImage(name, img, true);
 	m_source_image_existence.set(name, true);
 
 	// now we need to check for any textures that need updating
@@ -505,7 +455,8 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 		}
 	}
 	if (affected > 0)
-		verbosestream << "TextureSource: inserting \"" << name << "\" caused rebuild of " << affected << " textures." << std::endl;
+		verbosestream << "TextureSource: inserting \"" << name << "\" caused rebuild of "
+				<< affected << " textures." << std::endl;
 }
 
 void TextureSource::rebuildImagesAndTextures()
@@ -516,7 +467,7 @@ void TextureSource::rebuildImagesAndTextures()
 	sanity_check(driver);
 
 	infostream << "TextureSource: recreating " << m_textureinfo_cache.size()
-		<< " textures" << std::endl;
+			<< " textures" << std::endl;
 
 	// Recreate textures
 	for (TextureInfo &ti : m_textureinfo_cache) {
@@ -529,14 +480,15 @@ void TextureSource::rebuildImagesAndTextures()
 void TextureSource::rebuildTexture(video::IVideoDriver *driver, TextureInfo &ti)
 {
 	assert(!ti.name.empty());
+	sanity_check(std::this_thread::get_id() == m_main_thread);
 
-	// replaces the previous sourceImages
-	// shouldn't really need to be done, but can't hurt
+	// Replaces the previous sourceImages.
+	// Shouldn't really need to be done, but can't hurt.
 	std::set<std::string> source_image_names;
 	video::IImage *img = m_imagesource.generateImage(ti.name, source_image_names);
 	img = Align2Npot2(img, driver);
 	// Create texture from resulting image
-	video::ITexture *t = NULL;
+	video::ITexture *t = nullptr;
 	if (img) {
 		t = driver->addTexture(ti.name.c_str(), img);
 		guiScalingCache(io::path(ti.name.c_str()), driver, img);
@@ -569,23 +521,22 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 		}
 		return getTexture(fname_base);
 	}
-	return NULL;
+	return nullptr;
 }
 
 video::SColor TextureSource::getTextureAverageColor(const std::string &name)
 {
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	video::SColor c(0, 0, 0, 0);
 	video::ITexture *texture = getTexture(name);
 	if (!texture)
-		return c;
+		return {0, 0, 0, 0};
 	video::IImage *image = driver->createImage(texture,
 		core::position2d<s32>(0, 0),
 		texture->getOriginalSize());
 	if (!image)
-		return c;
+		return {0, 0, 0, 0};
 
-	c = ImageSource::getImageAverageColor(*image);
+	video::SColor c = ImageSource::getImageAverageColor(*image);
 	image->drop();
 
 	return c;
@@ -604,7 +555,7 @@ video::ITexture *TextureSource::getShaderFlagsTexture(bool normalmap_present)
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	video::IImage *flags_image = driver->createImage(
 		video::ECF_A8R8G8B8, core::dimension2d<u32>(1, 1));
-	sanity_check(flags_image != NULL);
+	sanity_check(flags_image);
 	video::SColor c(255, normalmap_present ? 255 : 0, 0, 0);
 	flags_image->setPixel(0, 0, c);
 	insertSourceImage(tname, flags_image);
