@@ -337,7 +337,7 @@ std::wstring Translations::unescapeC(const std::wstring &str) {
 	return result;
 }
 
-void Translations::loadPoEntry(const std::map<std::wstring, std::wstring> &entry) {
+void Translations::loadPoEntry(const std::wstring &basefilename, const std::map<std::wstring, std::wstring> &entry) {
 	// Process an entry from a PO file and add it to the translation table
 	// Assumes that entry[L"msgid"] is always defined
 	std::wstring textdomain;
@@ -345,7 +345,7 @@ void Translations::loadPoEntry(const std::map<std::wstring, std::wstring> &entry
 	if (ctx != entry.end()) {
 		textdomain = ctx->second;
 	} else {
-		textdomain = L"";
+		textdomain = basefilename;
 	}
 	std::wstring original = entry.at(L"msgid");
 
@@ -373,11 +373,12 @@ void Translations::loadPoEntry(const std::map<std::wstring, std::wstring> &entry
 	}
 }
 
-void Translations::loadPoTranslation(const std::string &data) {
+void Translations::loadPoTranslation(const std::string &basefilename, const std::string &data) {
 	std::istringstream is(data);
 	std::string line;
 	std::map<std::wstring, std::wstring> last_entry;
 	std::wstring last_key;
+	std::wstring wbasefilename = utf8_to_wide(basefilename);
 
 	while (is.good()) {
 		std::getline(is, line);
@@ -421,7 +422,7 @@ void Translations::loadPoTranslation(const std::string &data) {
 
 		if (prefix == L"msgctxt" || (prefix == L"msgid" && last_entry.find(L"msgid") != last_entry.end())) {
 			if (last_entry.find(L"msgid") != last_entry.end()) {
-				loadPoEntry(last_entry);
+				loadPoEntry(wbasefilename, last_entry);
 				last_entry.clear();
 			} else if (!last_entry.empty()) {
 				errorstream << "Unable to parse po file: previous entry has no \"msgid\" field but is not empty" << std::endl;
@@ -437,13 +438,13 @@ void Translations::loadPoTranslation(const std::string &data) {
 	}
 
 	if (last_entry.find(L"msgid") != last_entry.end()) {
-		loadPoEntry(last_entry);
+		loadPoEntry(wbasefilename, last_entry);
 	} else if (!last_entry.empty()) {
 		errorstream << "Unable to parse po file: Last entry has no \"msgid\" field" << std::endl;
 	}
 }
 
-void Translations::loadMoEntry(const std::string &original, const std::string &translated) {
+void Translations::loadMoEntry(const std::wstring &basefilename, const std::string &original, const std::string &translated) {
 	std::wstring textdomain = L"";
 	size_t found;
 	std::string noriginal = original;
@@ -451,6 +452,8 @@ void Translations::loadMoEntry(const std::string &original, const std::string &t
 	if (found != std::string::npos) {
 		textdomain = utf8_to_wide(original.substr(0, found));
 		noriginal = original.substr(found + 1);
+	} else {
+		textdomain = basefilename;
 	}
 
 	found = noriginal.find('\0');
@@ -476,9 +479,10 @@ inline u32 readVarEndian(bool is_be, const char *data)
 	}
 }
 
-void Translations::loadMoTranslation(const std::string &data) {
+void Translations::loadMoTranslation(const std::string &basefilename, const std::string &data) {
 	size_t length = data.length();
 	const char* cdata = data.c_str();
+	std::wstring wbasefilename = utf8_to_wide(basefilename);
 
 	if (length < 20) {
 		errorstream << "Ignoring too short mo file" << std::endl;
@@ -525,7 +529,7 @@ void Translations::loadMoTranslation(const std::string &data) {
 		const std::string original(cdata + original_off, original_len);
 		const std::string translated(cdata + translated_off, translated_len);
 
-		loadMoEntry(original, translated);
+		loadMoEntry(wbasefilename, original, translated);
 	}
 	
 	return;
@@ -538,9 +542,11 @@ void Translations::loadTranslation(const std::string &filename, const std::strin
 	if (!removeStringEnd(filename, trExtension).empty()) {
 		loadTrTranslation(data);
 	} else if (!removeStringEnd(filename, poExtension).empty()) {
-		loadPoTranslation(data);
+		std::string basefilename = str_split(filename, '.')[0];
+		loadPoTranslation(basefilename, data);
 	} else if (!removeStringEnd(filename, moExtension).empty()) {
-		loadMoTranslation(data);
+		std::string basefilename = str_split(filename, '.')[0];
+		loadMoTranslation(basefilename, data);
 	} else {
 		errorstream << "loadTranslation called with invalid filename: \"" << filename << "\"" << std::endl;
 	}
