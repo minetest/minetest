@@ -295,6 +295,35 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 		return
 	end
 
+	if setting_type == "slider" then
+		local default, min, max, steps = remaining_line:match("^"
+				-- first 3 floats are required, the last is optional
+				.. "(" .. CHAR_CLASSES.FLOAT .. "+)" .. CHAR_CLASSES.SPACE .. "*"
+				.. "(" .. CHAR_CLASSES.FLOAT .. "+)" .. CHAR_CLASSES.SPACE .. "*"
+				.. "(" .. CHAR_CLASSES.FLOAT .. "+)" .. CHAR_CLASSES.SPACE .. "*"
+				.. "(" .. CHAR_CLASSES.FLOAT .. "*)"
+				.."$")
+
+		if not default or not tonumber(default) then
+			return "Invalid float setting"
+		end
+
+		min = tonumber(min)
+		max = tonumber(max)
+		table.insert(settings, {
+			name = name,
+			readable_name = readable_name,
+			type = "slider",
+			default = default,
+			min = min,
+			max = max,
+			steps = steps,
+			requires = requires,
+			comment = comment,
+		})
+		return
+	end
+
 	if setting_type == "enum" then
 		local default, values = remaining_line:match("^"
 				-- first value (default) may be empty (i.e. is optional)
