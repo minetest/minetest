@@ -24,6 +24,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "activeobjectmgr.h" // client::ActiveObjectMgr
 #include <set>
 
+#ifdef SERVER
+#error Do not include in server builds
+#endif
+
 class ClientSimpleObject;
 class ClientMap;
 class ClientScripting;

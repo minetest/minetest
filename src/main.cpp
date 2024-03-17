@@ -17,9 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "irrlichttypes.h" // must be included before anything irrlicht, see comment in the file
+#include "irrlichttypes_bloated.h"
 #include "irrlicht.h" // createDevice
-#include "irrlichttypes_extrabloated.h"
 #include "irrlicht_changes/printing.h"
 #include "benchmark/benchmark.h"
 #include "chat_interface.h"
@@ -28,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "filesys.h"
 #include "version.h"
-#include "client/game.h"
 #include "defaultsettings.h"
 #include "gettext.h"
 #include "log.h"

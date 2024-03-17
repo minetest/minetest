@@ -30,6 +30,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // include the shadow mapper classes too
 #include "client/shadows/dynamicshadowsrender.h"
 
+#ifdef SERVER
+#error Do not include in server builds
+#endif
+
 struct VideoDriverInfo {
 	std::string name;
 	std::string friendly_name;
