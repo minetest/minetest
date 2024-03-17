@@ -4239,16 +4239,25 @@ and CoolGuy has set a German locale, they will see `Hallo CoolGuy, wie geht es
 dir heute?`
 
 * `minetest.translate_n(textdomain, str, str_plural, n, ...)` translates the
-   string `str` with the given `textdomain` for disambiguaion. The value of
-   `n`, which must be a nonnegative integer, is used to decide whether to use
-   the singular or the plural version of the string. Depending on the locale of
-   the client, the choice between singular and plural might be more complicated,
-   but the choice will be done automatically using the value of `n`.
+  string `str` with the given `textdomain` for disambiguaion. The value of
+  `n`, which must be a nonnegative integer, is used to decide whether to use
+  the singular or the plural version of the string. Depending on the locale of
+  the client, the choice between singular and plural might be more complicated,
+  but the choice will be done automatically using the value of `n`.
 
-   You can read https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html
-   for more details on the differences of plurals between languages.
+  You can read https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html
+  for more details on the differences of plurals between languages.
 
-   Also note that plurals are only handled in .po or .mo files, and not in .tr files.
+  Also note that plurals are only handled in .po or .mo files, and not in .tr files.
+
+  A typical use of it looks like:
+  ```lua
+  local S, NS = minetest.get_translator()
+  NS("@1 file", "@1 files", n, tostring(n))
+  ```
+  Here, "1 file" will be displayed if `n` is 1, but `[n] files` will be displayed
+  otherwise. On clients with a different locale, the translation file will provide
+  different translation strings depending on the value of `n`.
 
 
 
@@ -4286,7 +4295,17 @@ Gettext translation file format
 Gettext files can also be used as translations. A translation file has the suffix
 `.[lang].po` or `.[lang].mo`, depending on whether it is compiled or not, and must
 also be placed in the `locale` subdirectory of the mod. The value of `textdomain`
-is `msgctx` in the gettext files.
+is `msgctxt` in the gettext files. If `msgctxt` is not provided, the name of the
+translation file is used instead.
+
+A typical entry in a `.po` file would look like:
+
+```po
+msgctxt "textdomain"
+
+msgid "Hello world!"
+msgstr "Bonjour le monde!"
+```
 
 Escapes
 -------

@@ -49,9 +49,9 @@ private:
 			const std::wstring &original,
 			std::vector<std::wstring> &translated);
 	std::wstring unescapeC(const std::wstring &str);
-	void loadPoEntry(const std::map<std::wstring, std::wstring> &entry);
-	void loadMoEntry(const std::string &orignal, const std::string &translated);
+	void loadPoEntry(const std::wstring &basefilename, const std::map<std::wstring, std::wstring> &entry);
+	void loadMoEntry(const std::wstring &basefilename, const std::string &orignal, const std::string &translated);
 	void loadTrTranslation(const std::string &data);
-	void loadPoTranslation(const std::string &data);
-	void loadMoTranslation(const std::string &data);
+	void loadPoTranslation(const std::string &basefilename, const std::string &data);
+	void loadMoTranslation(const std::string &basefilename, const std::string &data);
 };
