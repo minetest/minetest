@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "inputhandler.h"
 #include "gui/mainmenumanager.h"
+#include "gui/touchscreengui.h"
 #include "hud.h"
 
 void KeyCache::populate_nonchanging()
@@ -102,8 +103,8 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 		React to nothing here if a menu is active
 	*/
 	if (isMenuActive()) {
-		if (m_touchscreengui) {
-			m_touchscreengui->setVisible(false);
+		if (g_touchscreengui) {
+			g_touchscreengui->setVisible(false);
 		}
 		return g_menumgr.preprocessEvent(event);
 	}
@@ -128,9 +129,9 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 			return true;
 		}
 
-	} else if (m_touchscreengui && event.EventType == irr::EET_TOUCH_INPUT_EVENT) {
+	} else if (g_touchscreengui && event.EventType == irr::EET_TOUCH_INPUT_EVENT) {
 		// In case of touchscreengui, we have to handle different events
-		m_touchscreengui->translateEvent(event);
+		g_touchscreengui->translateEvent(event);
 		return true;
 
 	} else if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
@@ -193,6 +194,52 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 	}
 	/* always return false in order to continue processing events */
 	return false;
+}
+
+/*
+ * RealInputHandler
+ */
+float RealInputHandler::getMovementSpeed()
+{
+	bool f = m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]),
+		b = m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]),
+		l = m_receiver->IsKeyDown(keycache.key[KeyType::LEFT]),
+		r = m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]);
+	if (f || b || l || r)
+	{
+		// if contradictory keys pressed, stay still
+		if (f && b && l && r)
+			return 0.0f;
+		else if (f && b && !l && !r)
+			return 0.0f;
+		else if (!f && !b && l && r)
+			return 0.0f;
+		return 1.0f; // If there is a keyboard event, assume maximum speed
+	}
+	if (g_touchscreengui && g_touchscreengui->getMovementSpeed())
+		return g_touchscreengui->getMovementSpeed();
+	return joystick.getMovementSpeed();
+}
+
+float RealInputHandler::getMovementDirection()
+{
+	float x = 0, z = 0;
+
+	/* Check keyboard for input */
+	if (m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]))
+		z += 1;
+	if (m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]))
+		z -= 1;
+	if (m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]))
+		x += 1;
+	if (m_receiver->IsKeyDown(keycache.key[KeyType::LEFT]))
+		x -= 1;
+
+	if (x != 0 || z != 0) /* If there is a keyboard event, it takes priority */
+		return std::atan2(x, z);
+	else if (g_touchscreengui && g_touchscreengui->getMovementDirection())
+		return g_touchscreengui->getMovementDirection();
+	return joystick.getMovementDirection();
 }
 
 /*
