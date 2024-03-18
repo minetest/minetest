@@ -691,6 +691,22 @@ elseif (GETTEXTLIB_FOUND)
 	set(GETTEXT_USED_LOCALES ${GETTEXT_AVAILABLE_LOCALES})
 endif()
 
+set(LANGUAGE_MAP_UNNAMED "")
+if (GETTEXTLIB_FOUND)
+	file(READ "${PROJECT_SOURCE_DIR}/util/languagemap.h.in" LANGUAGE_MAP_KNOWN)
+	string(REGEX MATCHALL "\\\\\n\t_\\(\"[^\"]+" LANGUAGE_MAP_KNOWN "${LANGUAGE_MAP_KNOWN}")
+	list(TRANSFORM LANGUAGE_MAP_KNOWN REPLACE "^[^\"]+\"" "")
+	foreach(LOCALE ${GETTEXT_USED_LOCALES})
+		if(NOT "${LOCALE}" IN_LIST LANGUAGE_MAP_KNOWN)
+			string(APPEND LANGUAGE_MAP_UNNAMED ",_(\"${LOCALE}\", \"\")")
+		endif()
+	endforeach()
+endif()
+configure_file(
+	"${PROJECT_SOURCE_DIR}/util/languagemap.h.in"
+	"${PROJECT_BINARY_DIR}/util/languagemap.h"
+)
+
 # Set some optimizations and tweaks
 
 include(CheckCSourceCompiles)

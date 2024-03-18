@@ -113,6 +113,7 @@ CMakeDoxy*
 compile_commands.json
 *.apk
 *.zip
+src/util/languagemap.h
 # Visual Studio
 *.vcxproj*
 *.sln

@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 #include "settings.h"
+#include "util/langcode.h"
 
 #include <sstream>
 #include <exception>
@@ -111,9 +112,10 @@ void osSpecificInit()
 			std::endl;
 
 	// Set default language
-	auto lang = getLanguageAndroid();
-	unsetenv("LANGUAGE");
-	setenv("LANG", lang.c_str(), 1);
+	std::string languages = getLanguageAndroid();
+	std::string primary_language = get_primary_language(languages);
+	setenv("LANGUAGE", languages.c_str(), 1);
+	setenv("LANG", primary_language.c_str(), 1);
 
 #ifdef GPROF
 	// in the start-up code
