@@ -1947,8 +1947,8 @@ void blit_with_alpha(video::IImage *src, video::IImage *dst, v2s32 dst_pos,
 		reinterpret_cast<video::SColor *>(dst->getData());
 	// Limit y and x to the overlapping ranges
 	// s.t. the positions are all in bounds after offsetting.
-	u32 x_start = std::max<u32>(0, -dst_pos.X);
-	u32 y_start = std::max<u32>(0, -dst_pos.Y);
+	u32 x_start = (u32)std::max(0, -dst_pos.X);
+	u32 y_start = (u32)std::max(0, -dst_pos.Y);
 	u32 x_end = (u32)std::min<s64>({size.X, src_dim.Width,
 		dst_dim.Width - (s64)dst_pos.X});
 	u32 y_end = (u32)std::min<s64>({size.Y, src_dim.Height,
