@@ -1863,13 +1863,13 @@ namespace {
 template <bool overlay>
 void blit_pixel(video::SColor src_col, video::SColor &dst_col)
 {
-	u8 dst_a{static_cast<u8>(dst_col.getAlpha())};
+	u8 dst_a = static_cast<u8>(dst_col.getAlpha());
 	if constexpr (overlay) {
 		if (dst_a != 255)
 			// The bottom pixel has transparency -> do nothing
 			return;
 	}
-	u8 src_a{static_cast<u8>(src_col.getAlpha())};
+	u8 src_a = static_cast<u8>(src_col.getAlpha());
 	if (src_a == 0) {
 		// A fully transparent pixel is on top -> do nothing
 		return;
@@ -1902,7 +1902,7 @@ void blit_pixel(video::SColor src_col, video::SColor &dst_col)
 	}
 	// A semi-transparent pixel is on top of a
 	// semi-transparent pixel -> general alpha compositing
-	auto a_new_255{src_a * 255 + (255 - src_a) * dst_a};
+	u16 a_new_255 = src_a * 255 + (255 - src_a) * dst_a;
 	dst.r = (dst.r * (255 - src_a) * dst_a + src.r * src_a * 255) / a_new_255;
 	dst.g = (dst.g * (255 - src_a) * dst_a + src.g * src_a * 255) / a_new_255;
 	dst.b = (dst.b * (255 - src_a) * dst_a + src.b * src_a * 255) / a_new_255;
@@ -1920,13 +1920,13 @@ void blit_with_alpha(video::IImage *src, video::IImage *dst, v2s32 dst_pos,
 		throw BaseException("blit_with_alpha() supports only ECF_A8R8G8B8 "
 			"destination images.");
 
-	auto src_dim{src->getDimension()};
-	auto dst_dim{dst->getDimension()};
-	bool drop_src{false};
+	core::dimension2d<u32> src_dim = src->getDimension();
+	core::dimension2d<u32> dst_dim = dst->getDimension();
+	bool drop_src = false;
 	if (src->getColorFormat() != video::ECF_A8R8G8B8) {
-		video::IVideoDriver *driver{RenderingEngine::get_video_driver()};
-		video::IImage *src_converted{driver->createImage(video::ECF_A8R8G8B8,
-			src_dim)};
+		video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+		video::IImage *src_converted = driver->createImage(video::ECF_A8R8G8B8,
+			src_dim);
 		if (!src_converted)
 			throw BaseException("blit_with_alpha() failed to convert the "
 				"source image to ECF_A8R8G8B8.");
@@ -1934,22 +1934,22 @@ void blit_with_alpha(video::IImage *src, video::IImage *dst, v2s32 dst_pos,
 		src = src_converted;
 		drop_src = true;
 	}
-	video::SColor *pixels_src
-		{reinterpret_cast<video::SColor *>(src->getData())};
-	video::SColor *pixels_dst
-		{reinterpret_cast<video::SColor *>(dst->getData())};
+	video::SColor *pixels_src =
+		reinterpret_cast<video::SColor *>(src->getData());
+	video::SColor *pixels_dst =
+		reinterpret_cast<video::SColor *>(dst->getData());
 	// Limit y and x to the overlapping ranges
 	// s.t. the positions are all in bounds after offsetting.
-	u32 x_start{static_cast<u32>(std::max(0, -dst_pos.X))};
-	u32 y_start{static_cast<u32>(std::max(0, -dst_pos.Y))};
-	u32 x_end{static_cast<u32>(std::min<s64>({size.X, src_dim.Width,
-		dst_dim.Width - (s64) dst_pos.X}))};
-	u32 y_end{static_cast<u32>(std::min<s64>({size.Y, src_dim.Height,
-		dst_dim.Height - (s64) dst_pos.Y}))};
-	for (u32 y0{y_start}; y0 < y_end; ++y0) {
-		size_t i_src{y0 * src_dim.Width + x_start};
-		size_t i_dst{(dst_pos.Y + y0) * dst_dim.Width + dst_pos.X + x_start};
-		for (u32 x0{x_start}; x0 < x_end; ++x0) {
+	u32 x_start = static_cast<u32>(std::max(0, -dst_pos.X));
+	u32 y_start = static_cast<u32>(std::max(0, -dst_pos.Y));
+	u32 x_end = static_cast<u32>(std::min<s64>({size.X, src_dim.Width,
+		dst_dim.Width - (s64) dst_pos.X}));
+	u32 y_end = static_cast<u32>(std::min<s64>({size.Y, src_dim.Height,
+		dst_dim.Height - (s64) dst_pos.Y}));
+	for (u32 y0 = y_start; y0 < y_end; ++y0) {
+		size_t i_src = y0 * src_dim.Width + x_start;
+		size_t i_dst = (dst_pos.Y + y0) * dst_dim.Width + dst_pos.X + x_start;
+		for (u32 x0 = x_start; x0 < x_end; ++x0) {
 			blit_pixel<overlay>(pixels_src[i_src++], pixels_dst[i_dst++]);
 		}
 	}
