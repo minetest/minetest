@@ -1876,13 +1876,13 @@ namespace {
 template <bool overlay>
 void blit_pixel(video::SColor src_col, video::SColor &dst_col)
 {
-	u8 dst_a = static_cast<u8>(dst_col.getAlpha());
+	u8 dst_a = (u8)dst_col.getAlpha();
 	if constexpr (overlay) {
 		if (dst_a != 255)
 			// The bottom pixel has transparency -> do nothing
 			return;
 	}
-	u8 src_a = static_cast<u8>(src_col.getAlpha());
+	u8 src_a = (u8)src_col.getAlpha();
 	if (src_a == 0) {
 		// A fully transparent pixel is on top -> do nothing
 		return;
@@ -1894,16 +1894,10 @@ void blit_pixel(video::SColor src_col, video::SColor &dst_col)
 		return;
 	}
 	struct Color { u8 r, g, b; };
-	Color src{
-		static_cast<u8>(src_col.getRed()),
-		static_cast<u8>(src_col.getGreen()),
-		static_cast<u8>(src_col.getBlue())
-	};
-	Color dst{
-		static_cast<u8>(dst_col.getRed()),
-		static_cast<u8>(dst_col.getGreen()),
-		static_cast<u8>(dst_col.getBlue())
-	};
+	Color src{(u8)src_col.getRed(), (u8)src_col.getGreen(),
+		(u8)src_col.getBlue()};
+	Color dst{(u8)dst_col.getRed(), (u8)dst_col.getGreen(),
+		(u8)dst_col.getBlue()};
 	if (dst_a == 255) {
 		// A semi-transparent pixel is on top and an opaque one in
 		// the bottom -> lerp r, g, and b
@@ -1953,12 +1947,12 @@ void blit_with_alpha(video::IImage *src, video::IImage *dst, v2s32 dst_pos,
 		reinterpret_cast<video::SColor *>(dst->getData());
 	// Limit y and x to the overlapping ranges
 	// s.t. the positions are all in bounds after offsetting.
-	u32 x_start = static_cast<u32>(std::max(0, -dst_pos.X));
-	u32 y_start = static_cast<u32>(std::max(0, -dst_pos.Y));
-	u32 x_end = static_cast<u32>(std::min<s64>({size.X, src_dim.Width,
-		dst_dim.Width - (s64) dst_pos.X}));
-	u32 y_end = static_cast<u32>(std::min<s64>({size.Y, src_dim.Height,
-		dst_dim.Height - (s64) dst_pos.Y}));
+	u32 x_start = std::max<u32>(0, -dst_pos.X);
+	u32 y_start = std::max<u32>(0, -dst_pos.Y);
+	u32 x_end = (u32)std::min<s64>({size.X, src_dim.Width,
+		dst_dim.Width - (s64)dst_pos.X});
+	u32 y_end = (u32)std::min<s64>({size.Y, src_dim.Height,
+		dst_dim.Height - (s64)dst_pos.Y});
 	for (u32 y0 = y_start; y0 < y_end; ++y0) {
 		size_t i_src = y0 * src_dim.Width + x_start;
 		size_t i_dst = (dst_pos.Y + y0) * dst_dim.Width + dst_pos.X + x_start;
