@@ -1859,7 +1859,20 @@ bool TextureSource::generateImagePart(std::string_view part_of_name,
 
 namespace {
 
-/// Draw a source color on top of a destination color
+/** Calculate the color of a single pixel drawn on top of another pixel without
+ * gamma correction
+ *
+ * The color mixing is a little more complicated than just
+ * video::SColor::getInterpolated because getInterpolated does not handle alpha
+ * correctly.
+ * For example, a pixel with alpha=64 drawn atop a pixel with alpha=128 should
+ * yield a pixel with alpha=160, while getInterpolated would yield alpha=96.
+ *
+ * \tparam overlay If enabled, only modify dst_col if it is fully opaque
+ * \param src_col Color of the top pixel
+ * \param dst_col Color of the bottom pixel. This color is modified in-place to
+ *   store the result.
+*/
 template <bool overlay>
 void blit_pixel(video::SColor src_col, video::SColor &dst_col)
 {
@@ -1906,7 +1919,7 @@ void blit_pixel(video::SColor src_col, video::SColor &dst_col)
 	dst.r = (dst.r * (255 - src_a) * dst_a + src.r * src_a * 255) / a_new_255;
 	dst.g = (dst.g * (255 - src_a) * dst_a + src.g * src_a * 255) / a_new_255;
 	dst.b = (dst.b * (255 - src_a) * dst_a + src.b * src_a * 255) / a_new_255;
-	dst_a = a_new_255 / 255;
+	dst_a = (a_new_255 + 127) / 255;
 	dst_col.set(dst_a, dst.r, dst.g, dst.b);
 }
 
