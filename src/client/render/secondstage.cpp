@@ -119,7 +119,11 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	static const u8 TEXTURE_BLOOM = 2;
 	static const u8 TEXTURE_EXPOSURE_1 = 3;
 	static const u8 TEXTURE_EXPOSURE_2 = 4;
-	static const u8 TEXTURE_FXAA = 5;
+	static const u8 TEXTURE_AA_OUTPUT = 5;
+	static const u8 TEXTURE_SSAA_SSIM_L = 6;
+	static const u8 TEXTURE_SSAA_SSIM_L2 = 7;
+	static const u8 TEXTURE_SSAA_SSIM_M = 8;
+	static const u8 TEXTURE_SSAA_SSIM_R = 9;
 	static const u8 TEXTURE_VOLUME = 6;
 	static const u8 TEXTURE_SCALE_DOWN = 10;
 	static const u8 TEXTURE_SCALE_UP = 20;
@@ -129,11 +133,14 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	const std::string antialiasing = g_settings->get("antialiasing");
 	const bool enable_bloom = g_settings->getBool("enable_bloom");
 	const bool enable_auto_exposure = g_settings->getBool("enable_auto_exposure");
-	const bool enable_ssaa = antialiasing == "ssaa";
+	const bool enable_ssaa_smooth = antialiasing == "ssaa";
+	const bool enable_ssaa_ssim_based = antialiasing == "ssaa_ssim_based"
+		&& color_format == video::ECF_A16B16G16R16F
+		&& driver->queryTextureFormat(video::ECF_R32F);
 	const bool enable_fxaa = antialiasing == "fxaa";
 	const bool enable_volumetric_light = g_settings->getBool("enable_volumetric_lighting") && enable_bloom;
 
-	if (enable_ssaa) {
+	if (enable_ssaa_smooth || enable_ssaa_ssim_based) {
 		u16 ssaa_scale = MYMAX(2, g_settings->getU16("fsaa"));
 		scale *= ssaa_scale;
 	}
@@ -227,22 +234,52 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	u8 final_stage_source = TEXTURE_COLOR;
 
 	if (enable_fxaa) {
-		final_stage_source = TEXTURE_FXAA;
+		final_stage_source = TEXTURE_AA_OUTPUT;
 
-		buffer->setTexture(TEXTURE_FXAA, scale, "fxaa", color_format);
+		buffer->setTexture(TEXTURE_AA_OUTPUT, scale, "fxaa", color_format);
 		shader_id = client->getShaderSource()->getShader("fxaa", TILE_MATERIAL_PLAIN);
 		PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR });
 		pipeline->addStep(effect);
 		effect->setBilinearFilter(0, true);
 		effect->setRenderSource(buffer);
-		effect->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_FXAA));
+		effect->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_AA_OUTPUT));
+	} else if (enable_ssaa_ssim_based) {
+		final_stage_source = TEXTURE_AA_OUTPUT;
+
+		// SSAA with SSIM-based downscaling is based on
+		// "Perceptually Based Downscaling of Images"
+		// by A. Cengiz Öztireli and Markus Gross.
+
+		buffer->setTexture(TEXTURE_SSAA_SSIM_L, v2f{1.0f, 1.0f}, "l", color_format);
+		buffer->setTexture(TEXTURE_SSAA_SSIM_L2, v2f{1.0f, 1.0f}, "l2", video::ECF_R32F);
+		shader_id = client->getShaderSource()->getShader("ssaa_ssim_based_1", TILE_MATERIAL_PLAIN);
+		PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8>{TEXTURE_COLOR});
+		pipeline->addStep(effect);
+		effect->setRenderSource(buffer);
+		effect->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, std::vector<u8>{TEXTURE_SSAA_SSIM_L, TEXTURE_SSAA_SSIM_L2}));
+
+		buffer->setTexture(TEXTURE_SSAA_SSIM_M, v2f{1.0f, 1.0f}, "m", video::ECF_R32F);
+		buffer->setTexture(TEXTURE_SSAA_SSIM_R, v2f{1.0f, 1.0f}, "r", video::ECF_R32F);
+		shader_id = client->getShaderSource()->getShader("ssaa_ssim_based_2", TILE_MATERIAL_PLAIN);
+		effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8>{TEXTURE_SSAA_SSIM_L, TEXTURE_SSAA_SSIM_L2});
+		pipeline->addStep(effect);
+		effect->setBilinearFilter(1, true);
+		effect->setRenderSource(buffer);
+		effect->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, std::vector<u8>{TEXTURE_SSAA_SSIM_M, TEXTURE_SSAA_SSIM_R}));
+
+		buffer->setTexture(TEXTURE_AA_OUTPUT, v2f{1.0f, 1.0f}, "ssaa_ssim_based", color_format);
+		shader_id = client->getShaderSource()->getShader("ssaa_ssim_based_3", TILE_MATERIAL_PLAIN);
+		effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8>{TEXTURE_SSAA_SSIM_L, TEXTURE_SSAA_SSIM_M, TEXTURE_SSAA_SSIM_R});
+		pipeline->addStep(effect);
+		effect->setRenderSource(buffer);
+		effect->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_AA_OUTPUT));
 	}
 
 	// final merge
 	shader_id = client->getShaderSource()->getShader("second_stage", TILE_MATERIAL_PLAIN, NDT_MESH);
 	PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8> { final_stage_source, TEXTURE_SCALE_UP, TEXTURE_EXPOSURE_2 });
 	pipeline->addStep(effect);
-	if (enable_ssaa)
+	if (enable_ssaa_smooth)
 		effect->setBilinearFilter(0, true);
 	effect->setBilinearFilter(1, true);
 	effect->setRenderSource(buffer);
