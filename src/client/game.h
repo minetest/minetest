@@ -49,7 +49,7 @@ struct CameraOrientation {
 void the_game(bool *kill,
 		InputHandler *input,
 		RenderingEngine *rendering_engine,
-		const GameStartData &start_data,
+		GameStartData &start_data,
 		std::string &error_message,
 		ChatBackend &chat_backend,
 		bool *reconnect_requested);

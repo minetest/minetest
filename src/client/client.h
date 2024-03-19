@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/peerhandler.h"
 #include "gameparams.h"
 #include "clientdynamicinfo.h"
+#include "clientauth.h"
 #include <fstream>
 #include "util/numeric.h"
 
@@ -120,7 +121,7 @@ public:
 	*/
 
 	Client(
-			const char *playername,
+			const std::string &playername,
 			const std::string &password,
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
@@ -529,12 +530,11 @@ private:
 
 	// Auth data
 	std::string m_playername;
-	std::string m_password;
+	ClientAuth m_auth;
 	// If set, this will be sent (and cleared) upon a TOCLIENT_ACCEPT_SUDO_MODE
-	std::string m_new_password;
+	ClientAuth m_new_auth;
 	// Usable by auth mechanisms.
 	AuthMechanism m_chosen_auth_mech;
-	void *m_auth_data = nullptr;
 
 	bool m_access_denied = false;
 	bool m_access_denied_reconnect = false;

@@ -17,6 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+// enable include of memset_s function
+#define __STDC_WANT_LIB_EXT1__ 1
+
 #include <algorithm>
 #include <string>
 #include "auth.h"
@@ -25,6 +28,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "srp.h"
 #include "util/string.h"
 #include "debug.h"
+
+#ifdef _WIN32
+	#include <windows.h>
+#endif
 
 // Get an sha-1 hash of the player's name combined with
 // the password entered. That's what the server uses as
@@ -133,4 +140,22 @@ bool decode_srp_verifier_and_salt(const std::string &encoded,
 	*verifier = base64_decode(components[3]);
 	return true;
 
+}
+
+/// Override every character before clearing
+void clear_string(std::string &text)
+{
+	#ifdef __STDC_LIB_EXT1__
+	memset_s((void *)text.data(), text.size(), '0', text.size());
+	#elif _WIN32
+	SecureZeroMemory((void *)text.data(), text.size());
+	#else
+	volatile char *ch = (char *)text.data();
+	size_t n = text.size();
+	for (;n>0;n--) {
+		*ch = 0;
+		ch++;
+	}
+	#endif
+	text.clear();
 }
