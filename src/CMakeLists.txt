@@ -109,12 +109,6 @@ if(BUILD_CLIENT AND ENABLE_SOUND)
 	endif()
 endif()
 
-option(ENABLE_TOUCH "Enable touchscreen by default" FALSE)
-if(ENABLE_TOUCH)
-	message(STATUS "Touchscreen support enabled by default.")
-	add_definitions(-DENABLE_TOUCH)
-endif()
-
 if(BUILD_CLIENT)
 	find_package(Freetype REQUIRED)
 endif()
