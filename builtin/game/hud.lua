@@ -94,10 +94,7 @@ end
 -- Returns true if successful, otherwise false,
 -- but currently the return value is not part of the lua API.
 function core.hud_replace_builtin(elem_name, definition)
-	if type(definition) ~= "table" or
-			(definition.type or definition.hud_elem_type) ~= "statbar" then
-		return false
-	end
+	assert(type(definition) == "table")
 
 	local registered = registered_elements[elem_name]
 	if not registered then
