@@ -245,29 +245,6 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 				assert(idx_small == y_small * dim_small.Width + x_small);
 				assert(idx_large == y_small * 2 * dim_large.Width + x_small * 2);
 
-				/*
-				u32 r = 0, g = 0, b = 0, a = 0;
-				auto add_color = [&](video::SColor c) {
-					r += c.getAlpha() * c.getRed();
-					g += c.getAlpha() * c.getGreen();
-					b += c.getAlpha() * c.getBlue();
-					a += c.getAlpha();
-				};
-				//~ add_color(data_large[y_small * 2       * dim_large.Width + x_small * 2]);
-				//~ add_color(data_large[y_small * 2       * dim_large.Width + x_small * 2 + 1]);
-				//~ add_color(data_large[(y_small * 2 + 1) * dim_large.Width + x_small * 2]);
-				//~ add_color(data_large[(y_small * 2 + 1) * dim_large.Width + x_small * 2 + 1]);
-				add_color(data_large[idx_large]);
-				add_color(data_large[idx_large + 1]);
-				add_color(data_large[idx_large + dim_large.Width]);
-				add_color(data_large[idx_large + dim_large.Width + 1]);
-				r /= a;
-				g /= a;
-				b /= a;
-				a = (a + 1) / 4; // +1 for better rounding
-				//~ data_small[y_small * dim_small.Width + x_small] = video::SColor(a, r, g, b).color;
-				data_small[idx_small] = video::SColor(a, r, g, b).color;
-				*/
 				data_small[idx_small] = mix4cols({
 						data_large[idx_large],
 						data_large[idx_large + 1],
@@ -284,22 +261,6 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 				assert(idx_small == y_small * dim_small.Width + x_small);
 				assert(idx_large == y_small * 2 * dim_large.Width + x_small * 2);
 
-				/*
-				u32 r = 0, g = 0, b = 0, a = 0;
-				auto add_color = [&](video::SColor c) {
-					r += c.getAlpha() * c.getRed();
-					g += c.getAlpha() * c.getGreen();
-					b += c.getAlpha() * c.getBlue();
-					a += c.getAlpha();
-				};
-				add_color(data_large[idx_large]);
-				add_color(data_large[idx_large + dim_large.Width]);
-				r /= a;
-				g /= a;
-				b /= a;
-				a = a / 2;
-				data_small[idx_small] = video::SColor(a, r, g, b).color;
-				*/
 				data_small[idx_small] = mix4cols({
 						data_large[idx_large],
 						0,
@@ -321,22 +282,6 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 				assert(idx_small == y_small * dim_small.Width + x_small);
 				assert(idx_large == y_small * 2 * dim_large.Width + x_small * 2);
 
-				/*
-				u32 r = 0, g = 0, b = 0, a = 0;
-				auto add_color = [&](video::SColor c) {
-					r += c.getAlpha() * c.getRed();
-					g += c.getAlpha() * c.getGreen();
-					b += c.getAlpha() * c.getBlue();
-					a += c.getAlpha();
-				};
-				add_color(data_large[idx_large]);
-				add_color(data_large[idx_large + 1]);
-				r /= a;
-				g /= a;
-				b /= a;
-				a = a / 2;
-				data_small[idx_small] = video::SColor(a, r, g, b).color;
-				*/
 				data_small[idx_small] = mix4cols({
 						data_large[idx_large],
 						data_large[idx_large + 1],
@@ -370,68 +315,178 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 	// Step 2: Propagate back
 	// If a pixel's alpha is < threshold, we sample the smaller level with bilinear
 	// interpolation.
-/*
+
 	for (ssize_t lvl = levels.size() - 1; lvl >= 0; --lvl) {
 		u32 *const data_large = levels[lvl].first;
 		u32 *const data_small = levels[lvl+1].first;
 		const core::dimension2d<u32> dim_large = levels[lvl].second;
 		const core::dimension2d<u32> dim_small = levels[lvl+1].second;
 
-		// round dim_large down. odd rows and columns are handled separately
-		u32 idx_small = 0;
-		u32 idx_large = 0; // index of upper left pixel in large image
-		u32 y_small;
-		for (y_small = 0; y_small < dim_large.Height / 2; ++y_small) {
-			u32 x_small;
-			for (x_small = 0; x_small < dim_large.Width / 2; ++x_small) {
-				assert(idx_small == y_small * dim_small.Width + x_small);
-				assert(idx_large == y_small * 2 * dim_large.Width + x_small * 2);
+		bool even_width = !dim_large.Width & 1;
+		bool even_height = !dim_large.Height & 1;
 
-				video::SColor c_old = data_large
+		// c0 is near, c1 middle-far
+		auto bilinear_filter_2 = [](video::SColor c0, video::SColor c1) -> video::SColor {
+			return c0; //TODO
+		};
 
-				idx_small += 1;
-				idx_large += 2;
+		// c0 is near, c1 and c2 middle-far, c3 far
+		// we sample in the quarter of c0:
+		// +----+----+
+		// |    |    |
+		// | c0 | c1 |
+		// |   x|    |
+		// +----+----+
+		// |    |    |
+		// | c2 | c3 |
+		// |    |    |
+		// +----+----+
+		auto bilinear_filter_4 = [](video::SColor c0, video::SColor c1,
+				video::SColor c2, video::SColor c3) -> video::SColor {
+			return c0; //TODO
+		};
+
+		// Corners
+		auto handle_pixel_from_1 = [&](u32 idx_large, u32 idx_small) {
+			u8 alpha = video::SColor(data_large[idx_large]).getAlpha();
+			if (alpha <= threshold) {
+				video::SColor col = data_small[idx_small];
+				col.setAlpha(alpha);
+				data_large[idx_large] = col.color;
 			}
+		};
+		//~ for (auto [idx_small, idx_large] : {
+				//~ std::pair{0, 0},
+				//~ {dim_small.Width - 1, dim_large.Width - 1},
+				//~ {dim_small.Width * (dim_small.Height - 1), dim_large.Width * (dim_large.Height - 1)},
+				//~ {dim_small.Width * dim_small.Height - 1, dim_large.Width * dim_large.Height - 1},
+			//~ }) {}
+		handle_pixel_from_1(0, 0); // (0,0)
+		if (even_width)
+			handle_pixel_from_1(dim_large.Width - 1, dim_small.Width - 1); // (b,0)
+		if (even_height)
+			handle_pixel_from_1(dim_large.Width * (dim_large.Height - 1),
+					dim_small.Width * (dim_small.Height - 1)); // (0,b)
+		if (even_height && even_width)
+			handle_pixel_from_1(dim_large.Width * dim_large.Height - 1,
+					dim_small.Width * dim_small.Height - 1); // (b,b)
 
-			// odd column
-			if (x_small != dim_small.Width) {
-				assert(idx_small == y_small * dim_small.Width + x_small);
-				assert(idx_large == y_small * 2 * dim_large.Width + x_small * 2);
-
-
-
-				idx_small += 1;
+		// Borders (without corners)
+		auto handle_pixel_from_2 = [&](u32 idx_large, u32 idx_small_0, u32 idx_small_1) {
+			u8 alpha = video::SColor(data_large[idx_large]).getAlpha();
+			if (alpha <= threshold) {
+				video::SColor col = bilinear_filter_2(data_small[idx_small_0],
+						data_small[idx_small_1]);
+				col.setAlpha(alpha);
+				data_large[idx_large] = col.color;
+			}
+		};
+		// top row
+		{
+			u32 idx_large = 1; // (1,0)
+			u32 idx_small = 0; // (0,0)
+			for (u32 x_small = 0; x_small + 1 < dim_small.Width; ++x_small) {
+				// left pixel
+				handle_pixel_from_2(idx_large, idx_small, idx_small + 1);
 				idx_large += 1;
+				// right pixel
+				handle_pixel_from_2(idx_large, idx_small + 1, idx_small);
+				idx_large += 1;
+				idx_small += 1;
 			}
-
-			idx_large += dim_large.Width;
+		}
+		// bottom row
+		{
+			u32 idx_large = dim_large.Width * (dim_large.Height - 1) + 1; // (1,b)
+			u32 idx_small = dim_small.Width * (dim_small.Height - 1); // (0,b)
+			for (u32 x_small = 0; x_small + 1 < dim_small.Width; ++x_small) {
+				// left pixel
+				handle_pixel_from_2(idx_large, idx_small, idx_small + 1);
+				idx_large += 1;
+				// right pixel
+				handle_pixel_from_2(idx_large, idx_small + 1, idx_small);
+				idx_large += 1;
+				idx_small += 1;
+			}
+		}
+		// left column
+		{
+			u32 idx_large = dim_large.Width; // (0,1)
+			u32 idx_small = 0; // (0,0)
+			for (u32 y_small = 0; y_small + 1 < dim_small.Height; ++y_small) {
+				// left pixel
+				handle_pixel_from_2(idx_large, idx_small, idx_small + dim_small.Width);
+				idx_large += dim_large.Width;
+				// right pixel
+				handle_pixel_from_2(idx_large, idx_small + dim_small.Width, idx_small);
+				idx_large += dim_large.Width;
+				idx_small += dim_small.Width;
+			}
+		}
+		// right column
+		{
+			u32 idx_large = dim_large.Width * 2 - 1; // (b,1)
+			u32 idx_small = dim_small.Width - 1; // (b,0)
+			for (u32 y_small = 0; y_small + 1 < dim_small.Height; ++y_small) {
+				// left pixel
+				handle_pixel_from_2(idx_large, idx_small, idx_small + dim_small.Width);
+				idx_large += dim_large.Width;
+				// right pixel
+				handle_pixel_from_2(idx_large, idx_small + dim_small.Width, idx_small);
+				idx_large += dim_large.Width;
+				idx_small += dim_small.Width;
+			}
 		}
 
-		// odd row
-		if (y_small != dim_small.Height) {
-			u32 x_small;
-			for (x_small = 0; x_small < dim_large.Width / 2; ++x_small) {
-				assert(idx_small == y_small * dim_small.Width + x_small);
-				assert(idx_large == y_small * 2 * dim_large.Width + x_small * 2);
-
-
-
-				idx_small += 1;
-				idx_large += 2;
+		// Inner pixels
+		auto handle_pixel_from_4 = [&](u32 idx_large, u32 idx_small_0, u32 idx_small_1,
+				u32 idx_small_2, u32 idx_small_3) {
+			u8 alpha = video::SColor(data_large[idx_large]).getAlpha();
+			if (alpha <= threshold) {
+				video::SColor col = bilinear_filter_4(data_small[idx_small_0],
+						data_small[idx_small_1], data_small[idx_small_2],
+						data_small[idx_small_3]);
+				col.setAlpha(alpha);
+				data_large[idx_large] = col.color;
 			}
-
-			// odd column (corner pixel)
-			if (x_small != dim_small.Width) {
-				assert(idx_small == y_small * dim_small.Width + x_small);
-				assert(idx_large == y_small * 2 * dim_large.Width + x_small * 2);
-
-
-				idx_small += 1;
-				idx_large += 1;
+		};
+		{
+			u32 idx_large = dim_large.Width + 1; // (1,1)
+			u32 idx_small = 0; // (0,0)
+			for (u32 y_small = 0; y_small + 1 < dim_small.Height; ++y_small) {
+				for (u32 x_small = 0; x_small + 1 < dim_small.Width; ++x_small) {
+					// left up
+					handle_pixel_from_4(idx_large,
+							idx_small,
+							idx_small + 1,
+							idx_small + dim_small.Width,
+							idx_small + dim_small.Width + 1
+						);
+					// right up
+					handle_pixel_from_4(idx_large + 1,
+							idx_small + 1,
+							idx_small,
+							idx_small + dim_small.Width + 1,
+							idx_small + dim_small.Width
+						);
+					// left down
+					handle_pixel_from_4(idx_large + dim_large.Width,
+							idx_small + dim_small.Width,
+							idx_small + dim_small.Width + 1,
+							idx_small,
+							idx_small + 1
+						);
+					// right down
+					handle_pixel_from_4(idx_large + dim_large.Width + 1,
+							idx_small + dim_small.Width + 1,
+							idx_small + dim_small.Width,
+							idx_small + 1,
+							idx_small
+						);
+				}
 			}
 		}
 	}
-	*/
 }
 
 /* Fill in RGB values for transparent pixels, to correct for odd colors
