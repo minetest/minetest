@@ -66,6 +66,12 @@ struct NearbyCollisionInfo {
 	aabb3f box;
 };
 
+static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *gamedef,
+		Map *map, std::vector<NearbyCollisionInfo> &cinfo);
+static void add_object_boxes(Environment *env, const aabb3f &box_0, f32 dtime,
+		const v3f &pos_f, const v3f &speed_f, ActiveObject *self,
+		std::vector<NearbyCollisionInfo> &cinfo);
+
 // Helper functions:
 // Truncate floating point numbers to specified number of decimal places
 // in order to move all the floating point error to one side of the correct value
@@ -288,73 +294,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	v3s16 min = floatToInt(minpos_f + box_0.MinEdge, BS) - v3s16(1, 1, 1);
 	v3s16 max = floatToInt(maxpos_f + box_0.MaxEdge, BS) + v3s16(1, 1, 1);
 
-	bool any_position_valid = false;
-
-	v3s16 p;
-	for (p.X = min.X; p.X <= max.X; p.X++)
-	for (p.Y = min.Y; p.Y <= max.Y; p.Y++)
-	for (p.Z = min.Z; p.Z <= max.Z; p.Z++) {
-		bool is_position_valid;
-		MapNode n = map->getNode(p, &is_position_valid);
-
-		if (is_position_valid && n.getContent() != CONTENT_IGNORE) {
-			// Object collides into walkable nodes
-
-			any_position_valid = true;
-			const NodeDefManager *nodedef = gamedef->getNodeDefManager();
-			const ContentFeatures &f = nodedef->get(n);
-
-			if (!f.walkable)
-				continue;
-
-			// Negative bouncy may have a meaning, but we need +value here.
-			int n_bouncy_value = abs(itemgroup_get(f.groups, "bouncy"));
-
-			int neighbors = 0;
-			if (f.drawtype == NDT_NODEBOX &&
-				f.node_box.type == NODEBOX_CONNECTED) {
-				v3s16 p2 = p;
-
-				p2.Y++;
-				getNeighborConnectingFace(p2, nodedef, map, n, 1, &neighbors);
-
-				p2 = p;
-				p2.Y--;
-				getNeighborConnectingFace(p2, nodedef, map, n, 2, &neighbors);
-
-				p2 = p;
-				p2.Z--;
-				getNeighborConnectingFace(p2, nodedef, map, n, 4, &neighbors);
-
-				p2 = p;
-				p2.X--;
-				getNeighborConnectingFace(p2, nodedef, map, n, 8, &neighbors);
-
-				p2 = p;
-				p2.Z++;
-				getNeighborConnectingFace(p2, nodedef, map, n, 16, &neighbors);
-
-				p2 = p;
-				p2.X++;
-				getNeighborConnectingFace(p2, nodedef, map, n, 32, &neighbors);
-			}
-			std::vector<aabb3f> nodeboxes;
-			n.getCollisionBoxes(gamedef->ndef(), &nodeboxes, neighbors);
-
-			// Calculate float position only once
-			v3f posf = intToFloat(p, BS);
-			for (auto box : nodeboxes) {
-				box.MinEdge += posf;
-				box.MaxEdge += posf;
-				cinfo.emplace_back(false, n_bouncy_value, p, box);
-			}
-		} else {
-			// Collide with unloaded nodes (position invalid) and loaded
-			// CONTENT_IGNORE nodes (position valid)
-			aabb3f box = getNodeBox(p, BS);
-			cinfo.emplace_back(true, 0, p, box);
-		}
-	}
+	bool any_position_valid = add_area_node_boxes(min, max, gamedef, map, cinfo);
 
 	// Do not move if world has not loaded yet, since custom node boxes
 	// are not available for collision detection.
@@ -370,72 +310,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	if(collideWithObjects)
 	{
 		/* add object boxes to cinfo */
-
-		std::vector<ActiveObject*> objects;
-#ifndef SERVER
-		ClientEnvironment *c_env = dynamic_cast<ClientEnvironment*>(env);
-		if (c_env != 0) {
-			// Calculate distance by speed, add own extent and 1.5m of tolerance
-			f32 distance = speed_f->getLength() * dtime +
-				box_0.getExtent().getLength() + 1.5f * BS;
-			std::vector<DistanceSortedActiveObject> clientobjects;
-			c_env->getActiveObjects(*pos_f, distance, clientobjects);
-
-			for (auto &clientobject : clientobjects) {
-				// Do collide with everything but itself and the parent CAO
-				if (!self || (self != clientobject.obj &&
-						self != clientobject.obj->getParent())) {
-					objects.push_back((ActiveObject*) clientobject.obj);
-				}
-			}
-		}
-		else
-#endif
-		{
-			if (s_env != NULL) {
-				// Calculate distance by speed, add own extent and 1.5m of tolerance
-				f32 distance = speed_f->getLength() * dtime +
-					box_0.getExtent().getLength() + 1.5f * BS;
-
-				// search for objects which are not us, or we are not its parent
-				// we directly use the callback to populate the result to prevent
-				// a useless result loop here
-				auto include_obj_cb = [self, &objects] (ServerActiveObject *obj) {
-					if (!obj->isGone() &&
-						(!self || (self != obj && self != obj->getParent()))) {
-						objects.push_back((ActiveObject *)obj);
-					}
-					return false;
-				};
-
-				std::vector<ServerActiveObject *> s_objects;
-				s_env->getObjectsInsideRadius(s_objects, *pos_f, distance, include_obj_cb);
-			}
-		}
-
-		for (std::vector<ActiveObject*>::const_iterator iter = objects.begin();
-				iter != objects.end(); ++iter) {
-			ActiveObject *object = *iter;
-
-			if (object && object->collideWithObjects()) {
-				aabb3f object_collisionbox;
-				if (object->getCollisionBox(&object_collisionbox))
-					cinfo.emplace_back(object, 0, object_collisionbox);
-			}
-		}
-#ifndef SERVER
-		if (self && c_env) {
-			LocalPlayer *lplayer = c_env->getLocalPlayer();
-			if (lplayer->getParent() == nullptr) {
-				aabb3f lplayer_collisionbox = lplayer->getCollisionbox();
-				v3f lplayer_pos = lplayer->getPosition();
-				lplayer_collisionbox.MinEdge += lplayer_pos;
-				lplayer_collisionbox.MaxEdge += lplayer_pos;
-				ActiveObject *obj = (ActiveObject*) lplayer->getCAO();
-				cinfo.emplace_back(obj, 0, lplayer_collisionbox);
-			}
-		}
-#endif
+		add_object_boxes(env, box_0, dtime, *pos_f, *speed_f, self, cinfo);
 	} //tt3
 
 	/*
@@ -613,4 +488,213 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	}
 
 	return result;
+}
+
+bool collisionCheckIntersection(Environment *env, IGameDef *gamedef,
+		const aabb3f &box_0, const v3f &pos_f, ActiveObject *self,
+		bool collideWithObjects)
+{
+	#define PROFILER_NAME(text) (s_env ? ("Server: " text) : ("Client: " text))
+	Map *map = &env->getMap();
+	ServerEnvironment *s_env = dynamic_cast<ServerEnvironment*>(env);
+
+	ScopeProfiler sp(g_profiler, PROFILER_NAME("collisionInCollision()"), SPT_AVG);
+
+	/*
+		Collect node boxes
+	*/
+	std::vector<NearbyCollisionInfo> cinfo;
+	{
+		//TimeTaker tt2("collisionMoveSimple collect boxes");
+		ScopeProfiler sp2(g_profiler, PROFILER_NAME("collision collect boxes"), SPT_AVG);
+
+		v3s16 min = floatToInt(pos_f + box_0.MinEdge, BS) - v3s16(1, 1, 1);
+		v3s16 max = floatToInt(pos_f + box_0.MaxEdge, BS) + v3s16(1, 1, 1);
+
+		bool any_position_valid = add_area_node_boxes(min, max, gamedef, map, cinfo);
+
+		// Do not move if world has not loaded yet, since custom node boxes
+		// are not available for collision detection.
+		// This also intentionally occurs in the case of the object being positioned
+		// solely on loaded CONTENT_IGNORE nodes, no matter where they come from.
+		if (!any_position_valid) {
+			return true;
+		}
+	} // tt2
+
+	if(collideWithObjects)
+	{
+		/* add object boxes to cinfo */
+		v3f speed;
+		add_object_boxes(env, box_0, 0, pos_f, speed, self, cinfo);
+	} //tt3
+
+	/*
+		Collision detection
+	*/
+
+	{
+		aabb3f checkbox = box_0;
+		checkbox.MinEdge += pos_f;
+		checkbox.MaxEdge += pos_f;
+
+		/*
+			Go through every nodebox, find nearest collision
+		*/
+		for (u32 boxindex = 0; boxindex < cinfo.size(); boxindex++) {
+			const NearbyCollisionInfo &box_info = cinfo[boxindex];
+
+			if (box_info.box.intersectsWithBox(checkbox))
+				return true;
+		}
+	}
+
+	return false;
+}
+
+static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *gamedef,
+		Map *map, std::vector<NearbyCollisionInfo> &cinfo)
+{
+	bool any_position_valid = false;
+	v3s16 p;
+	for (p.X = min.X; p.X <= max.X; p.X++)
+	for (p.Y = min.Y; p.Y <= max.Y; p.Y++)
+	for (p.Z = min.Z; p.Z <= max.Z; p.Z++) {
+		bool is_position_valid;
+		MapNode n = map->getNode(p, &is_position_valid);
+
+		if (is_position_valid && n.getContent() != CONTENT_IGNORE) {
+			// Object collides into walkable nodes
+
+			any_position_valid = true;
+			const NodeDefManager *nodedef = gamedef->getNodeDefManager();
+			const ContentFeatures &f = nodedef->get(n);
+
+			if (!f.walkable)
+				continue;
+
+			// Negative bouncy may have a meaning, but we need +value here.
+			int n_bouncy_value = abs(itemgroup_get(f.groups, "bouncy"));
+
+			int neighbors = 0;
+			if (f.drawtype == NDT_NODEBOX &&
+				f.node_box.type == NODEBOX_CONNECTED) {
+				v3s16 p2 = p;
+
+				p2.Y++;
+				getNeighborConnectingFace(p2, nodedef, map, n, 1, &neighbors);
+
+				p2 = p;
+				p2.Y--;
+				getNeighborConnectingFace(p2, nodedef, map, n, 2, &neighbors);
+
+				p2 = p;
+				p2.Z--;
+				getNeighborConnectingFace(p2, nodedef, map, n, 4, &neighbors);
+
+				p2 = p;
+				p2.X--;
+				getNeighborConnectingFace(p2, nodedef, map, n, 8, &neighbors);
+
+				p2 = p;
+				p2.Z++;
+				getNeighborConnectingFace(p2, nodedef, map, n, 16, &neighbors);
+
+				p2 = p;
+				p2.X++;
+				getNeighborConnectingFace(p2, nodedef, map, n, 32, &neighbors);
+			}
+			std::vector<aabb3f> nodeboxes;
+			n.getCollisionBoxes(gamedef->ndef(), &nodeboxes, neighbors);
+
+			// Calculate float position only once
+			v3f posf = intToFloat(p, BS);
+			for (auto box : nodeboxes) {
+				box.MinEdge += posf;
+				box.MaxEdge += posf;
+				cinfo.emplace_back(false, n_bouncy_value, p, box);
+			}
+		} else {
+			// Collide with unloaded nodes (position invalid) and loaded
+			// CONTENT_IGNORE nodes (position valid)
+			aabb3f box = getNodeBox(p, BS);
+			cinfo.emplace_back(true, 0, p, box);
+		}
+	}
+	return any_position_valid;
+}
+
+static void add_object_boxes(Environment *env,
+		const aabb3f &box_0, f32 dtime,
+		const v3f &pos_f, const v3f &speed_f, ActiveObject *self,
+		std::vector<NearbyCollisionInfo> &cinfo)
+{
+	/* add object boxes to cinfo */
+
+	std::vector<ActiveObject*> objects;
+#ifndef SERVER
+	ClientEnvironment *c_env = dynamic_cast<ClientEnvironment*>(env);
+	if (c_env != 0) {
+		// Calculate distance by speed, add own extent and 1.5m of tolerance
+		f32 distance = speed_f.getLength() * dtime +
+			box_0.getExtent().getLength() + 1.5f * BS;
+		std::vector<DistanceSortedActiveObject> clientobjects;
+		c_env->getActiveObjects(pos_f, distance, clientobjects);
+
+		for (auto &clientobject : clientobjects) {
+			// Do collide with everything but itself and the parent CAO
+			if (!self || (self != clientobject.obj &&
+					self != clientobject.obj->getParent())) {
+				objects.push_back((ActiveObject*) clientobject.obj);
+			}
+		}
+	}
+	else
+#endif
+	{
+		ServerEnvironment *s_env = dynamic_cast<ServerEnvironment*>(env);
+		if (s_env != NULL) {
+			// Calculate distance by speed, add own extent and 1.5m of tolerance
+			f32 distance = speed_f.getLength() * dtime +
+				box_0.getExtent().getLength() + 1.5f * BS;
+
+			// search for objects which are not us, or we are not its parent
+			// we directly use the callback to populate the result to prevent
+			// a useless result loop here
+			auto include_obj_cb = [self, &objects] (ServerActiveObject *obj) {
+				if (!obj->isGone() &&
+					(!self || (self != obj && self != obj->getParent()))) {
+					objects.push_back((ActiveObject *)obj);
+				}
+				return false;
+			};
+
+			std::vector<ServerActiveObject *> s_objects;
+			s_env->getObjectsInsideRadius(s_objects, pos_f, distance, include_obj_cb);
+		}
+	}
+
+	for (std::vector<ActiveObject*>::const_iterator iter = objects.begin();
+			iter != objects.end(); ++iter) {
+		ActiveObject *object = *iter;
+
+		if (object && object->collideWithObjects()) {
+			aabb3f object_collisionbox;
+			if (object->getCollisionBox(&object_collisionbox))
+				cinfo.emplace_back(object, 0, object_collisionbox);
+		}
+	}
+#ifndef SERVER
+	if (self && c_env) {
+		LocalPlayer *lplayer = c_env->getLocalPlayer();
+		if (lplayer->getParent() == nullptr) {
+			aabb3f lplayer_collisionbox = lplayer->getCollisionbox();
+			v3f lplayer_pos = lplayer->getPosition();
+			lplayer_collisionbox.MinEdge += lplayer_pos;
+			lplayer_collisionbox.MaxEdge += lplayer_pos;
+			ActiveObject *obj = (ActiveObject*) lplayer->getCAO();
+			cinfo.emplace_back(obj, 0, lplayer_collisionbox);
+		}
+	}
+#endif
 }
