@@ -316,7 +316,7 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 	// If a pixel's alpha is < threshold, we sample the smaller level with bilinear
 	// interpolation.
 
-	for (ssize_t lvl = levels.size() - 1; lvl >= 0; --lvl) {
+	for (ssize_t lvl = levels.size() - 2; lvl >= 0; --lvl) {
 		u32 *const data_large = levels[lvl].first;
 		u32 *const data_small = levels[lvl+1].first;
 		const core::dimension2d<u32> dim_large = levels[lvl].second;
@@ -355,12 +355,6 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 				data_large[idx_large] = col.color;
 			}
 		};
-		//~ for (auto [idx_small, idx_large] : {
-				//~ std::pair{0, 0},
-				//~ {dim_small.Width - 1, dim_large.Width - 1},
-				//~ {dim_small.Width * (dim_small.Height - 1), dim_large.Width * (dim_large.Height - 1)},
-				//~ {dim_small.Width * dim_small.Height - 1, dim_large.Width * dim_large.Height - 1},
-			//~ }) {}
 		handle_pixel_from_1(0, 0); // (0,0)
 		if (even_width)
 			handle_pixel_from_1(dim_large.Width - 1, dim_small.Width - 1); // (b,0)
@@ -396,7 +390,7 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 			}
 		}
 		// bottom row
-		{
+		if (even_height) {
 			u32 idx_large = dim_large.Width * (dim_large.Height - 1) + 1; // (1,b)
 			u32 idx_small = dim_small.Width * (dim_small.Height - 1); // (0,b)
 			for (u32 x_small = 0; x_small + 1 < dim_small.Width; ++x_small) {
@@ -424,7 +418,7 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 			}
 		}
 		// right column
-		{
+		if (even_width) {
 			u32 idx_large = dim_large.Width * 2 - 1; // (b,1)
 			u32 idx_small = dim_small.Width - 1; // (b,0)
 			for (u32 y_small = 0; y_small + 1 < dim_small.Height; ++y_small) {
@@ -483,7 +477,10 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 							idx_small + 1,
 							idx_small
 						);
+					idx_small += 1;
+					idx_large += 1;
 				}
+				idx_large += dim_large.Width;
 			}
 		}
 	}
