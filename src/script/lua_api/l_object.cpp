@@ -1605,6 +1605,9 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 	getfloatfield(L, 2, "liquid_sink", phys.liquid_sink);
 	getfloatfield(L, 2, "acceleration_default", phys.acceleration_default);
 	getfloatfield(L, 2, "acceleration_air", phys.acceleration_air);
+	getfloatfield(L, 2, "speed_fast", phys.speed_fast);
+	getfloatfield(L, 2, "acceleration_fast", phys.acceleration_fast);
+	getfloatfield(L, 2, "speed_walk", phys.speed_walk);
 
 	if (phys != old)
 		playersao->m_physics_override_sent = false;
