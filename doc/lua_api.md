@@ -1304,6 +1304,7 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * The rotation of the node is stored in `param2`.
     * Node is rotated around face and axis; 24 rotations in total.
     * Can be made by using `minetest.dir_to_facedir()`.
+    * Can also be created or transformed via `minetest.rotate_facedir()`.
     * Chests and furnaces can be rotated that way, and also 'flipped'
     * Values range 0 - 23
     * facedir / 4 = axis direction:
@@ -6432,6 +6433,14 @@ Item handling
 * `minetest.fourdir_to_dir(fourdir)`
     * Convert a 4dir back into a vector aimed directly out the "back" of a
       node.
+* `minetest.rotate_facedir(rotation, vector_name, facedir)`
+    * Returns the facedir value that results from rotating `facedir` around an axis.
+    * `vector_name` is one of `"x+"`, `"x-"`, `"y+"`, `"y-"`, `"z+"` or `"z-"`;
+      rotation is performed around this vector.
+    * `rotation` is in quarter-turns, always right-handed around the chosen vector
+      (see https://en.wikipedia.org/wiki/Right-hand_rule#Rotations). Basically,
+      if ones places the right hand so that its thumb is pointing in the direction
+      of the specified vector, the curled fingers then describe this rotation.
 * `minetest.dir_to_wallmounted(dir)`
     * Convert a vector to a wallmounted value, used for
       `paramtype2="wallmounted"`.
