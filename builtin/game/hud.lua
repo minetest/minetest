@@ -211,7 +211,7 @@ register_builtin_hud_element("breath", {
 			return show_breathbar
 		else
 			-- Only if the element does not already exist the breath amount is considered.
-			return show_breathbar and player:get_breath() < player:get_properties().breath_max
+			return show_breathbar and breath < breath_max
 		end
 	end,
 	event = "breath_changed",
