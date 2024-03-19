@@ -404,12 +404,22 @@ u32 TextureSource::getTextureId(const std::string &name)
 	return 0;
 }
 
-// Draw an image on top of another one, using the alpha channel of the
-// source image
-// overlay: only modify destination pixels that are fully opaque.
+
+/** Draw an image on top of another one with gamma-incorrect alpha compositing
+ *
+ * This exists because IImage::copyToWithAlpha() doesn't seem to always work.
+ *
+ * \tparam overlay If enabled, only modify pixels in dst which are fully opaque.
+ *   Defaults to false.
+ * \param src Top image. This image must have the ECF_A8R8G8B8 color format.
+ * \param dst Bottom image.
+ *   The top image is drawn onto this base image in-place.
+ * \param dst_pos An offset vector to move src before drawing it onto dst
+ * \param size Size limit of the copied area
+*/
 template<bool overlay = false>
 static void blit_with_alpha(video::IImage *src, video::IImage *dst,
-		v2s32 src_pos, v2s32 dst_pos, v2u32 size);
+	v2s32 dst_pos, v2u32 size);
 
 // Apply a color to an image.  Uses an int (0-255) to calculate the ratio.
 // If the ratio is 255 or -1 and keep_alpha is true, then it multiples the
@@ -914,7 +924,7 @@ video::IImage* TextureSource::generateImage(std::string_view name,
 
 		if (baseimg) {
 			core::dimension2d<u32> dim = tmp->getDimension();
-			blit_with_alpha(tmp, baseimg, v2s32(0, 0), v2s32(0, 0), dim);
+			blit_with_alpha(tmp, baseimg, v2s32(0, 0), dim);
 			tmp->drop();
 		} else {
 			baseimg = tmp;
@@ -1001,10 +1011,8 @@ void blitBaseImage(video::IImage* &src, video::IImage* &dst)
 	core::dimension2d<u32> dim_dst = dst->getDimension();
 	// Position to copy the blitted to in the base image
 	core::position2d<s32> pos_to(0,0);
-	// Position to copy the blitted from in the blitted image
-	core::position2d<s32> pos_from(0,0);
 
-	blit_with_alpha(src, dst, pos_from, pos_to, dim_dst);
+	blit_with_alpha(src, dst, pos_to, dim_dst);
 }
 
 #define CHECK_BASEIMG() \
@@ -1192,7 +1200,7 @@ bool TextureSource::generateImagePart(std::string_view part_of_name,
 					continue;
 				}
 
-				blit_with_alpha(img, baseimg, v2s32(0,0), pos_base, dim);
+				blit_with_alpha(img, baseimg, pos_base, dim);
 				img->drop();
 			}
 		}
@@ -1237,7 +1245,7 @@ bool TextureSource::generateImagePart(std::string_view part_of_name,
 			if (baseimg == nullptr) {
 				baseimg = img;
 			} else {
-				blit_with_alpha(img, baseimg, v2s32(0, 0), v2s32(x, y), dim);
+				blit_with_alpha(img, baseimg, v2s32(x, y), dim);
 				img->drop();
 			}
 		}
@@ -1850,58 +1858,112 @@ bool TextureSource::generateImagePart(std::string_view part_of_name,
 
 #undef CHECK_DIM
 
-/*
-	Calculate the color of a single pixel drawn on top of another pixel.
 
-	This is a little more complicated than just video::SColor::getInterpolated
-	because getInterpolated does not handle alpha correctly.  For example, a
-	pixel with alpha=64 drawn atop a pixel with alpha=128 should yield a
-	pixel with alpha=160, while getInterpolated would yield alpha=96.
+namespace {
+
+/** Calculate the color of a single pixel drawn on top of another pixel without
+ * gamma correction
+ *
+ * The color mixing is a little more complicated than just
+ * video::SColor::getInterpolated because getInterpolated does not handle alpha
+ * correctly.
+ * For example, a pixel with alpha=64 drawn atop a pixel with alpha=128 should
+ * yield a pixel with alpha=160, while getInterpolated would yield alpha=96.
+ *
+ * \tparam overlay If enabled, only modify dst_col if it is fully opaque
+ * \param src_col Color of the top pixel
+ * \param dst_col Color of the bottom pixel. This color is modified in-place to
+ *   store the result.
 */
-static inline video::SColor blitPixel(const video::SColor src_c, const video::SColor dst_c, u32 ratio)
+template <bool overlay>
+void blit_pixel(video::SColor src_col, video::SColor &dst_col)
 {
-	if (dst_c.getAlpha() == 0)
-		return src_c;
-	video::SColor out_c = src_c.getInterpolated(dst_c, (float)ratio / 255.0f);
-	out_c.setAlpha(dst_c.getAlpha() + (255 - dst_c.getAlpha()) *
-		src_c.getAlpha() * ratio / (255 * 255));
-	return out_c;
+	u8 dst_a = (u8)dst_col.getAlpha();
+	if constexpr (overlay) {
+		if (dst_a != 255)
+			// The bottom pixel has transparency -> do nothing
+			return;
+	}
+	u8 src_a = (u8)src_col.getAlpha();
+	if (src_a == 0) {
+		// A fully transparent pixel is on top -> do nothing
+		return;
+	}
+	if (src_a == 255 || dst_a == 0) {
+		// The top pixel is fully opaque or the bottom pixel is
+		// fully transparent -> replace the color
+		dst_col = src_col;
+		return;
+	}
+	struct Color { u8 r, g, b; };
+	Color src{(u8)src_col.getRed(), (u8)src_col.getGreen(),
+		(u8)src_col.getBlue()};
+	Color dst{(u8)dst_col.getRed(), (u8)dst_col.getGreen(),
+		(u8)dst_col.getBlue()};
+	if (dst_a == 255) {
+		// A semi-transparent pixel is on top and an opaque one in
+		// the bottom -> lerp r, g, and b
+		dst.r = (dst.r * (255 - src_a) + src.r * src_a) / 255;
+		dst.g = (dst.g * (255 - src_a) + src.g * src_a) / 255;
+		dst.b = (dst.b * (255 - src_a) + src.b * src_a) / 255;
+		dst_col.set(255, dst.r, dst.g, dst.b);
+		return;
+	}
+	// A semi-transparent pixel is on top of a
+	// semi-transparent pixel -> general alpha compositing
+	u16 a_new_255 = src_a * 255 + (255 - src_a) * dst_a;
+	dst.r = (dst.r * (255 - src_a) * dst_a + src.r * src_a * 255) / a_new_255;
+	dst.g = (dst.g * (255 - src_a) * dst_a + src.g * src_a * 255) / a_new_255;
+	dst.b = (dst.b * (255 - src_a) * dst_a + src.b * src_a * 255) / a_new_255;
+	dst_a = (a_new_255 + 127) / 255;
+	dst_col.set(dst_a, dst.r, dst.g, dst.b);
 }
 
-/*
-	Draw an image on top of another one, using the alpha channel of the
-	source image
+}  // namespace
 
-	This exists because IImage::copyToWithAlpha() doesn't seem to always
-	work.
-*/
 template<bool overlay>
-static void blit_with_alpha(video::IImage *src, video::IImage *dst,
-		v2s32 src_pos, v2s32 dst_pos, v2u32 size)
+void blit_with_alpha(video::IImage *src, video::IImage *dst, v2s32 dst_pos,
+	v2u32 size)
 {
-	auto src_dim = src->getDimension();
-	auto dst_dim = dst->getDimension();
+	if (dst->getColorFormat() != video::ECF_A8R8G8B8)
+		throw BaseException("blit_with_alpha() supports only ECF_A8R8G8B8 "
+			"destination images.");
 
+	core::dimension2d<u32> src_dim = src->getDimension();
+	core::dimension2d<u32> dst_dim = dst->getDimension();
+	bool drop_src = false;
+	if (src->getColorFormat() != video::ECF_A8R8G8B8) {
+		video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+		video::IImage *src_converted = driver->createImage(video::ECF_A8R8G8B8,
+			src_dim);
+		if (!src_converted)
+			throw BaseException("blit_with_alpha() failed to convert the "
+				"source image to ECF_A8R8G8B8.");
+		src->copyTo(src_converted);
+		src = src_converted;
+		drop_src = true;
+	}
+	video::SColor *pixels_src =
+		reinterpret_cast<video::SColor *>(src->getData());
+	video::SColor *pixels_dst =
+		reinterpret_cast<video::SColor *>(dst->getData());
 	// Limit y and x to the overlapping ranges
 	// s.t. the positions are all in bounds after offsetting.
-	for (u32 y0 = std::max(0, -dst_pos.Y);
-			y0 < std::min<s64>({size.Y, src_dim.Height, dst_dim.Height - (s64) dst_pos.Y});
-			++y0)
-	for (u32 x0 = std::max(0, -dst_pos.X);
-			x0 < std::min<s64>({size.X, src_dim.Width, dst_dim.Width - (s64) dst_pos.X});
-			++x0)
-	{
-		s32 src_x = src_pos.X + x0;
-		s32 src_y = src_pos.Y + y0;
-		s32 dst_x = dst_pos.X + x0;
-		s32 dst_y = dst_pos.Y + y0;
-		video::SColor src_c = src->getPixel(src_x, src_y);
-		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
-		if (!overlay || (dst_c.getAlpha() == 255 && src_c.getAlpha() != 0)) {
-			dst_c = blitPixel(src_c, dst_c, src_c.getAlpha());
-			dst->setPixel(dst_x, dst_y, dst_c);
+	u32 x_start = (u32)std::max(0, -dst_pos.X);
+	u32 y_start = (u32)std::max(0, -dst_pos.Y);
+	u32 x_end = (u32)std::min<s64>({size.X, src_dim.Width,
+		dst_dim.Width - (s64)dst_pos.X});
+	u32 y_end = (u32)std::min<s64>({size.Y, src_dim.Height,
+		dst_dim.Height - (s64)dst_pos.Y});
+	for (u32 y0 = y_start; y0 < y_end; ++y0) {
+		size_t i_src = y0 * src_dim.Width + x_start;
+		size_t i_dst = (dst_pos.Y + y0) * dst_dim.Width + dst_pos.X + x_start;
+		for (u32 x0 = x_start; x0 < x_end; ++x0) {
+			blit_pixel<overlay>(pixels_src[i_src++], pixels_dst[i_dst++]);
 		}
 	}
+	if (drop_src)
+		src->drop();
 }
 
 /*
@@ -2035,7 +2097,7 @@ static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 				}
 
 				// Adjusting saturation in the same manner as lightness resulted in
-				// muted colours being affected too much and bright colours not
+				// muted colors being affected too much and bright colors not
 				// affected enough, so I'm borrowing a leaf out of gimp's book and
 				// using a different scaling approach for saturation.
 				// https://github.com/GNOME/gimp/blob/6cc1e035f1822bf5198e7e99a53f7fa6e281396a/app/operations/gimpoperationhuesaturation.c#L139-L145=
@@ -2245,7 +2307,7 @@ static void draw_crack(video::IImage *crack, video::IImage *dst,
 	auto blit = use_overlay ? blit_with_alpha<true> : blit_with_alpha<false>;
 	for (s32 i = 0; i < frame_count; ++i) {
 		v2s32 dst_pos(0, frame_size.Height * i);
-		blit(crack_scaled, dst, v2s32(0,0), dst_pos, frame_size);
+		blit(crack_scaled, dst, dst_pos, frame_size);
 	}
 
 	crack_scaled->drop();
@@ -2394,7 +2456,7 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 }
 
 namespace {
-	// For more colourspace transformations, see for example
+	// For more colorspace transformations, see for example
 	// https://github.com/tobspr/GLSL-Color-Spaces/blob/master/ColorSpaces.inc.glsl
 
 	inline float linear_to_srgb_component(float v)
