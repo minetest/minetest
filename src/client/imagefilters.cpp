@@ -214,23 +214,41 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 	// Step 1: Scale down
 
 	auto mix4cols = [](std::array<video::SColor, 4> colors) -> video::SColor {
-		u32 r = 0, g = 0, b = 0, a = 0;
+		u32 sr = 0, sg = 0, sb = 0, sa = 0;
 		auto add_color = [&](video::SColor c) {
 			u32 alph = c.getAlpha();
-			r += alph * c.getRed();
-			g += alph * c.getGreen();
-			b += alph * c.getBlue();
-			a += alph;
+			sr += alph * c.getRed();
+			sg += alph * c.getGreen();
+			sb += alph * c.getBlue();
+			sa += alph;
 		};
 		for (auto c : colors)
 			add_color(c);
-		if (a == 0)
+		if (sa == 0)
 			return 0;
-		r /= a;
-		g /= a;
-		b /= a;
-		a = (a + 1) / 4; // +1 for better rounding // TODO: maybe always round up, to make sure colors are preserved? (+3)
-		return video::SColor(a, r, g, b);
+		//~ if (sa == 255 * 4) { // common case
+			//~ sr = 0, sg = 0, sb = 0;
+			//~ for (auto c : colors) {
+				//~ sr += c.getRed();
+				//~ sg += c.getGreen();
+				//~ sb += c.getBlue();
+			//~ }
+			//~ sr /= 4;
+			//~ sg /= 4;
+			//~ sb /= 4;
+			//~ return video::SColor(255, sr, sg, sb);
+		//~ }
+		//~ u64 d = (1 << 16) / sa;
+		//~ sr = (sr * d) >> 16;
+		//~ sg = (sg * d) >> 16;
+		//~ sb = (sb * d) >> 16;
+		//~ sa = ((sa + 1) * d) >> 16;
+
+		sr /= sa;
+		sg /= sa;
+		sb /= sa;
+		sa = (sa + 1) / 4; // +1 for better rounding // TODO: maybe always round up, to make sure colors are preserved? (+3)
+		return video::SColor(sa, sr, sg, sb);
 	};
 
 	for (size_t lvl = 0; lvl + 1 < levels.size(); ++lvl) {
