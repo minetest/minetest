@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cassert>
 #include <vector>
 #include <algorithm>
+#include <array>
 
 // Simple 2D bitmap class with just the functionality needed here
 class Bitmap {
