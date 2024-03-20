@@ -320,7 +320,7 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 	// If a pixel's alpha is < threshold, we sample the smaller level with bilinear
 	// interpolation.
 
-	for (ssize_t lvl = levels.size() - 2; lvl >= 0; --lvl) {
+	for (int lvl = levels.size() - 2; lvl >= 0; --lvl) {
 		u32 *const data_large = levels[lvl].first;
 		u32 *const data_small = levels[lvl+1].first;
 		const core::dimension2d<u32> dim_large = levels[lvl].second;
