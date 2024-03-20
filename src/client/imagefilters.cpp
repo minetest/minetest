@@ -17,46 +17,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "imagefilters.h"
+#include "irr_v2d.h"
+#include "log.h"
 #include "util/numeric.h"
+#include <array>
 #include <cmath>
 #include <cassert>
+#include <deque>
+#include <limits>
+#include <utility>
 #include <vector>
 #include <algorithm>
 
 // Simple 2D bitmap class with just the functionality needed here
 class Bitmap {
 	u32 linesize, lines;
-	std::vector<u8> data;
-
-	static inline u32 bytepos(u32 index) { return index >> 3; }
-	static inline u8 bitpos(u32 index) { return index & 7; }
+	std::vector<bool> data;
 
 public:
 	Bitmap(u32 width, u32 height) :  linesize(width), lines(height),
-		data(bytepos(width * height) + 1) {}
+		data(width * height) {}
 
 	inline bool get(u32 x, u32 y) const {
-		u32 index = y * linesize + x;
-		return data[bytepos(index)] & (1 << bitpos(index));
+		return data[y * linesize + x];
 	}
 
 	inline void set(u32 x, u32 y) {
-		u32 index = y * linesize + x;
-		data[bytepos(index)] |= 1 << bitpos(index);
-	}
-
-	inline bool all() const {
-		for (u32 i = 0; i < data.size() - 1; i++) {
-			if (data[i] != 0xff)
-				return false;
-		}
-		// last byte not entirely filled
-		for (u8 i = 0; i < bitpos(linesize * lines); i++) {
-			bool value_of_bit = data.back() & (1 << i);
-			if (!value_of_bit)
-				return false;
-		}
-		return true;
+		data[y * linesize + x] = true;
 	}
 
 	inline void copy(Bitmap &to) const {
@@ -65,99 +52,99 @@ public:
 	}
 };
 
+// FIXME benchmark this
 template <bool IS_A8R8G8B8>
 static void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
 {
 	void *const src_data = src->getData();
 	const core::dimension2d<u32> dim = src->getDimension();
 
-	auto get_pixel = [=](u32 x, u32 y) -> video::SColor {
+	assert(dim.Height <= std::numeric_limits<u16>::max() &&
+			dim.Width <= std::numeric_limits<u16>::max());
+	const u16 w = dim.Width, h = dim.Height;
+
+	auto get_pixel = [=](u16 x, u16 y) -> video::SColor {
 		if constexpr (IS_A8R8G8B8) {
-			return reinterpret_cast<u32 *>(src_data)[y*dim.Width + x];
+			return reinterpret_cast<u32 *>(src_data)[y*w + x];
 		} else {
 			return src->getPixel(x, y);
 		}
 	};
-	auto set_pixel = [=](u32 x, u32 y, video::SColor color) {
+	auto set_pixel = [=](u16 x, u16 y, video::SColor color) {
 		if constexpr (IS_A8R8G8B8) {
-			u32 *dest = &reinterpret_cast<u32 *>(src_data)[y*dim.Width + x];
+			u32 *dest = &reinterpret_cast<u32 *>(src_data)[y*w + x];
 			*dest = color.color;
 		} else {
 			src->setPixel(x, y, color);
 		}
 	};
 
-	Bitmap bitmap(dim.Width, dim.Height);
+	Bitmap seen(w, h);
+	Bitmap prev_levels(w, h);
+	std::vector<std::pair<u16, u16>> level, next_level;
 
-	// First pass: Mark all opaque pixels
+	// First pass: Discover all transparent pixels adjacent to opaque pixels.
 	// Note: loop y around x for better cache locality.
-	for (u32 ctry = 0; ctry < dim.Height; ctry++)
-	for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {
-		if (get_pixel(ctrx, ctry).getAlpha() > threshold)
-			bitmap.set(ctrx, ctry);
-	}
-
-	// Exit early if all pixels opaque
-	if (bitmap.all())
-		return;
-
-	Bitmap newmap = bitmap;
-
-	// Cap iterations to keep runtime reasonable, for higher-res textures we can
-	// get away with filling less pixels.
-	int iter_max = 11 - std::max(dim.Width, dim.Height) / 16;
-	iter_max = std::max(iter_max, 2);
-
-	// Then repeatedly look for transparent pixels, filling them in until
-	// we're finished.
-	for (int iter = 0; iter < iter_max; iter++) {
-
-	for (u32 ctry = 0; ctry < dim.Height; ctry++)
-	for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {
-		// Skip pixels we have already processed
-		if (bitmap.get(ctrx, ctry))
+	for (u16 ctry = 0; ctry < h; ++ctry)
+	for (u16 ctrx = 0; ctrx < w; ++ctrx) {
+		if (get_pixel(ctrx, ctry).getAlpha() < threshold)
 			continue;
-
-		// Sample size and total weighted r, g, b values
-		u32 ss = 0, sr = 0, sg = 0, sb = 0;
-
+		seen.set(ctrx, ctry);
+		prev_levels.set(ctrx, ctry);
+		v2s32 pos(ctrx, ctry);
 		// Walk each neighbor pixel (clipped to image bounds)
-		for (u32 sy = (ctry < 1) ? 0 : (ctry - 1);
-				sy <= (ctry + 1) && sy < dim.Height; sy++)
-		for (u32 sx = (ctrx < 1) ? 0 : (ctrx - 1);
-				sx <= (ctrx + 1) && sx < dim.Width; sx++) {
-			// Ignore pixels we haven't processed
-			if (!bitmap.get(sx, sy))
+		for (u16 sy = (ctry < 1) ? 0 : (ctry - 1);
+				sy <= (ctry + 1) && sy < h; sy++)
+		for (u16 sx = (ctrx < 1) ? 0 : (ctrx - 1);
+				sx <= (ctrx + 1) && sx < w; sx++) {
+			if (seen.get(sx, sy))
 				continue;
-
-			// Add RGB values weighted by alpha IF the pixel is opaque, otherwise
-			// use full weight since we want to propagate colors.
-			video::SColor d = get_pixel(sx, sy);
-			u32 a = d.getAlpha() <= threshold ? 255 : d.getAlpha();
-			ss += a;
-			sr += a * d.getRed();
-			sg += a * d.getGreen();
-			sb += a * d.getBlue();
-		}
-
-		// Set pixel to average weighted by alpha
-		if (ss > 0) {
-			video::SColor c = get_pixel(ctrx, ctry);
-			c.setRed(sr / ss);
-			c.setGreen(sg / ss);
-			c.setBlue(sb / ss);
-			set_pixel(ctrx, ctry, c);
-			newmap.set(ctrx, ctry);
+			if (get_pixel(sx, sy).getAlpha() >= threshold)
+				continue;
+			seen.set(sx, sy);
+			level.emplace_back(sx, sy);
 		}
 	}
 
-	if (newmap.all())
-		return;
-
-	// Apply changes to bitmap for next run. This is done so we don't introduce
-	// a bias in color propagation in the direction pixels are processed.
-	newmap.copy(bitmap);
-
+	while (!level.empty()) {
+		next_level.clear();
+		for (auto pos : level) {
+			const auto x = pos.first, y = pos.second;
+			struct { u32 r, g, b, a; } sum {0, 0, 0, 0};
+			// Walk each neighbor pixel (clipped to image bounds)
+			for (u16 sy = (y < 1) ? 0 : (y - 1);
+					sy <= (y + 1) && sy < dim.Height; sy++)
+			for (u16 sx = (x < 1) ? 0 : (x - 1);
+					sx <= (x + 1) && sx < dim.Width; sx++) {
+				auto color = get_pixel(sx, sy);
+				if (!seen.get(sx, sy)) {
+					seen.set(sx, sy);
+					next_level.emplace_back(sx, sy);
+					continue;
+				}
+				if (!prev_levels.get(sx, sy))
+					continue;
+				// FIXME we should not be weighing by alpha when we consider clipping.
+				// This way, propagated colors - even if originating from low alpha colors -
+				// would have higher influence than low alpha colors above the threshold.
+				const u32 a = color.getAlpha() >= threshold ? color.getAlpha() : 255;
+				// FIXME not gamma-correct
+				sum.r += color.getRed() * a;
+				sum.g += color.getGreen() * a;
+				sum.b += color.getBlue() * a;
+				sum.a += a;
+			}
+			assert(sum.a >= threshold);
+			// Set pixel to average weighted by alpha
+			video::SColor c = get_pixel(x, y);
+			c.setRed(sum.r / sum.a);
+			c.setGreen(sum.g / sum.a);
+			c.setBlue(sum.b / sum.a);
+			set_pixel(x, y, c);
+		}
+		for (auto pos : level)
+			prev_levels.set(pos.first, pos.second);
+		level.swap(next_level);
 	}
 }
 
