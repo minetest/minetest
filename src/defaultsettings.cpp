@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 
 
-/* based on https://github.com/systemd/systemd/blob/7aed43437175623e0f3ae8b071bbc500c13ce893/src/hostname/hostnamed.c#L406
+/* inspired by https://github.com/systemd/systemd/blob/7aed43437175623e0f3ae8b071bbc500c13ce893/src/hostname/hostnamed.c#L406
  * this could be done in future with D-Bus using query:
  * busctl get-property org.freedesktop.hostname1 /org/freedesktop/hostname1 org.freedesktop.hostname1 Chassis
  */
@@ -37,7 +37,7 @@ bool detect_touch()
 	return true;
 #else
 	std::string chassis_type;
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
+#if defined(__linux__)
 
 	// device-tree platforms (non-X86)
 	std::ifstream dtb_file("/proc/device-tree/chassis-type");
@@ -50,7 +50,8 @@ bool detect_touch()
 		    chassis_type == "watch")
 			return true;
 
-		return false;
+		if (!chassis_type.empty())
+			return false;
 	}
 	// SMBIOS
 	std::ifstream dmi_file("/sys/class/dmi/id/chassis_type");
