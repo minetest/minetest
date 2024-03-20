@@ -165,6 +165,9 @@ static void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
 
 static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 {
+	// with threshold = 127, the average of the whole texture is far too dominant
+	threshold = 0; //TODO
+
 	using ImgLvl = std::pair<u32 *, core::dimension2d<u32>>;
 
 	sanity_check(src->getColorFormat() == video::ECF_A8R8G8B8);
@@ -225,7 +228,7 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 		r /= a;
 		g /= a;
 		b /= a;
-		a = (a + 1) / 4; // +1 for better rounding // TODO: maybe always round up, to make sure colors are preserved
+		a = (a + 1) / 4; // +1 for better rounding // TODO: maybe always round up, to make sure colors are preserved? (+3)
 		return video::SColor(a, r, g, b);
 	};
 
@@ -322,12 +325,17 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 		const core::dimension2d<u32> dim_large = levels[lvl].second;
 		const core::dimension2d<u32> dim_small = levels[lvl+1].second;
 
-		bool even_width = !dim_large.Width & 1;
-		bool even_height = !dim_large.Height & 1;
+		bool even_width = !(dim_large.Width & 1);
+		bool even_height = !(dim_large.Height & 1);
 
 		// c0 is near, c1 middle-far
 		auto bilinear_filter_2 = [](video::SColor c0, video::SColor c1) -> video::SColor {
-			return c0; //TODO
+			u8 r = std::min<u32>(255, (c0.getRed()   * 3 + c1.getRed()   + 1) / 4);
+			u8 g = std::min<u32>(255, (c0.getGreen() * 3 + c1.getGreen() + 1) / 4);
+			u8 b = std::min<u32>(255, (c0.getBlue()  * 3 + c1.getBlue()  + 1) / 4);
+			u8 a = std::min<u32>(255, (c0.getAlpha() * 3 + c1.getAlpha() + 1) / 4);
+			return video::SColor(a, r, g, b);
+			//~ return c0;
 		};
 
 		// c0 is near, c1 and c2 middle-far, c3 far
@@ -343,7 +351,13 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 		// +----+----+
 		auto bilinear_filter_4 = [](video::SColor c0, video::SColor c1,
 				video::SColor c2, video::SColor c3) -> video::SColor {
-			return c0; //TODO
+			//~ return c0 * 0.75 * 0.75 + (c1 + c2) * 0.25 * 0.75 + c3 * 0.25 * 0.25;
+			u8 r = std::min<u32>(255, (c0.getRed()   * 3 * 3 + (c1.getRed()   + c2.getRed())   * 1 * 3 + c3.getRed()   * 1 * 1 + 7) / 16);
+			u8 g = std::min<u32>(255, (c0.getGreen() * 3 * 3 + (c1.getGreen() + c2.getGreen()) * 1 * 3 + c3.getGreen() * 1 * 1 + 7) / 16);
+			u8 b = std::min<u32>(255, (c0.getBlue()  * 3 * 3 + (c1.getBlue()  + c2.getBlue())  * 1 * 3 + c3.getBlue()  * 1 * 1 + 7) / 16);
+			u8 a = std::min<u32>(255, (c0.getAlpha() * 3 * 3 + (c1.getAlpha() + c2.getAlpha()) * 1 * 3 + c3.getAlpha() * 1 * 1 + 7) / 16);
+			return video::SColor(a, r, g, b);
+			//~ return c0;
 		};
 
 		// Corners
@@ -445,10 +459,12 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 			}
 		};
 		{
-			u32 idx_large = dim_large.Width + 1; // (1,1)
+			//~ u32 idx_large = dim_large.Width + 1; // (1,1)
 			u32 idx_small = 0; // (0,0)
 			for (u32 y_small = 0; y_small + 1 < dim_small.Height; ++y_small) {
+				u32 idx_large = (y_small * 2 + 1) * dim_large.Width + 1; // (1,y)
 				for (u32 x_small = 0; x_small + 1 < dim_small.Width; ++x_small) {
+					assert(idx_small == y_small * dim_small.Width + x_small);
 					// left up
 					handle_pixel_from_4(idx_large,
 							idx_small,
@@ -478,9 +494,10 @@ static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
 							idx_small
 						);
 					idx_small += 1;
-					idx_large += 1;
+					idx_large += 2;
 				}
 				idx_large += dim_large.Width;
+				idx_small += 1;
 			}
 		}
 	}
