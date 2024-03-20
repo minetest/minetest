@@ -285,5 +285,5 @@ bool PlayerPhysicsOverride::operator==(const PlayerPhysicsOverride &other) const
 
 v2f PlayerControl::getMovement() const
 {
-	return v2f(sinf(movement_direction), cosf(movement_direction)) * movement_speed;
+	return v2f(std::sin(movement_direction), std::cos(movement_direction)) * movement_speed;
 }
