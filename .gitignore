@@ -119,7 +119,7 @@ compile_commands.json
 *.sln
 .vs/
 
-# Optional user provided library folder
+# Old irrlichtmt. Still ignored to make bisecting easier.
 lib/irrlichtmt
 
 # Generated mod storage database

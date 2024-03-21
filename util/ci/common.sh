@@ -4,18 +4,10 @@
 install_linux_deps() {
 	local pkgs=(
 		cmake gettext postgresql
-		libpng-dev libjpeg-dev libxi-dev libgl1-mesa-dev
+		libpng-dev libjpeg-dev libgl1-mesa-dev libsdl2-dev
 		libsqlite3-dev libhiredis-dev libogg-dev libgmp-dev libvorbis-dev
 		libopenal-dev libpq-dev libleveldb-dev libcurl4-openssl-dev libzstd-dev
 	)
-
-	if [[ "$1" == "--no-irr" ]]; then
-		shift
-	else
-		local ver=$(cat misc/irrlichtmt_tag.txt)
-		wget "https://github.com/minetest/irrlicht/releases/download/$ver/ubuntu-focal.tar.gz"
-		sudo tar -xaf ubuntu-focal.tar.gz -C /usr/local
-	fi
 
 	sudo apt-get update
 	sudo apt-get install -y --no-install-recommends "${pkgs[@]}" "$@"
