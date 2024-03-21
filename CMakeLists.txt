@@ -91,27 +91,12 @@ if(ANDROID)
 endif()
 
 
-set(IRRLICHTMT_BUILD_DIR "" CACHE PATH "Path to IrrlichtMt build directory.")
-if(ANDROID)
-	# currently manually provided
-elseif(NOT "${IRRLICHTMT_BUILD_DIR}" STREQUAL "")
-	find_package(IrrlichtMt QUIET
-		PATHS "${IRRLICHTMT_BUILD_DIR}"
-		NO_DEFAULT_PATH
-	)
-
-	if(NOT TARGET IrrlichtMt::IrrlichtMt)
-		# find_package() searches certain subdirectories. ${PATH}/cmake is not
-		# the only one, but it is the one where IrrlichtMt is supposed to export
-		# IrrlichtMtConfig.cmake
-		message(FATAL_ERROR "Could not find IrrlichtMtConfig.cmake in ${IRRLICHTMT_BUILD_DIR}/cmake.")
-	endif()
-elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
-	message(STATUS "Using user-provided IrrlichtMt at subdirectory 'lib/irrlichtmt'")
+if(TRUE)
+	message(STATUS "Using imported IrrlichtMt at subdirectory 'irr'")
 	if(BUILD_CLIENT)
 		# tell IrrlichtMt to create a static library
 		set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared library" FORCE)
-		add_subdirectory(lib/irrlichtmt EXCLUDE_FROM_ALL)
+		add_subdirectory(irr EXCLUDE_FROM_ALL)
 		unset(BUILD_SHARED_LIBS CACHE)
 
 		if(NOT TARGET IrrlichtMt)
@@ -120,44 +105,7 @@ elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt")
 	else()
 		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
 		set_target_properties(IrrlichtMt::IrrlichtMt PROPERTIES
-			INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlichtmt/include")
-	endif()
-else()
-	find_package(IrrlichtMt QUIET)
-	if(NOT TARGET IrrlichtMt::IrrlichtMt)
-		string(CONCAT explanation_msg
-			"You must install IrrlichMt as described in docs/compiling/\n")
-		if(BUILD_CLIENT)
-			message(FATAL_ERROR "IrrlichtMt is required to build the client, but it was not found.\n${explanation_msg}")
-		endif()
-
-		include(MinetestFindIrrlichtHeaders)
-		if(NOT IRRLICHT_INCLUDE_DIR)
-			message(FATAL_ERROR "IrrlichtMt headers are required to build the server, but none found.\n${explanation_msg}")
-		endif()
-		message(STATUS "Found IrrlichtMt headers: ${IRRLICHT_INCLUDE_DIR}")
-		add_library(IrrlichtMt::IrrlichtMt INTERFACE IMPORTED)
-		# Note that we can't use target_include_directories() since that doesn't work for IMPORTED targets before CMake 3.11
-		set_target_properties(IrrlichtMt::IrrlichtMt PROPERTIES
-			INTERFACE_INCLUDE_DIRECTORIES "${IRRLICHT_INCLUDE_DIR}")
-	endif()
-endif()
-
-if(ANDROID)
-	# skipped for now
-elseif(BUILD_CLIENT AND TARGET IrrlichtMt::IrrlichtMt)
-	# retrieve version somehow
-	if(NOT IrrlichtMt_VERSION)
-		get_target_property(IrrlichtMt_VERSION IrrlichtMt VERSION)
-	endif()
-	message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}")
-
-	set(TARGET_VER_S 1.9.0mt15)
-	string(REPLACE "mt" "." TARGET_VER ${TARGET_VER_S})
-	if(IrrlichtMt_VERSION VERSION_LESS ${TARGET_VER})
-		message(FATAL_ERROR "At least IrrlichtMt ${TARGET_VER_S} is required to build")
-	elseif(NOT DEVELOPMENT_BUILD AND IrrlichtMt_VERSION VERSION_GREATER ${TARGET_VER})
-		message(FATAL_ERROR "IrrlichtMt ${TARGET_VER_S} is required to build")
+			INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/irr/include")
 	endif()
 endif()
 

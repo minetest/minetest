@@ -33,7 +33,6 @@ jobs:
 
       - name: Build
         run: |
-          git clone https://github.com/minetest/irrlicht lib/irrlichtmt --depth 1 -b $(cat misc/irrlichtmt_tag.txt)
           mkdir build
           cd build
           cmake .. \
