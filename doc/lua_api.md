@@ -4081,11 +4081,11 @@ Two functions are provided to translate strings: `minetest.translate` and
   the given `textdomain` for disambiguation. The textdomain must match the
   textdomain specified in the translation file in order to get the string
   translated. This can be used so that a string is translated differently in
-  different contexts.  
+  different contexts.
   It is advised to use the name of the mod as textdomain whenever possible, to
-  avoid clashes with other mods.  
+  avoid clashes with other mods.
   This function must be given a number of arguments equal to the number of
-  arguments the translated string expects.  
+  arguments the translated string expects.
   Arguments are literal strings -- they will not be translated.
 
 For instance, suppose we want to greet players when they join. We can do the
