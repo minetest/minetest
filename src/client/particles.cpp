@@ -48,9 +48,6 @@ ClientParticleTexture::ClientParticleTexture(const ServerParticleTexture& p, ITe
 */
 
 Particle::Particle(
-		IGameDef *gamedef,
-		LocalPlayer *player,
-		ClientEnvironment *env,
 		const ParticleParameters &p,
 		const ClientParticleTexRef &texture,
 		v2f texpos,
@@ -61,9 +58,8 @@ Particle::Particle(
 	) :
 		m_expiration(p.expirationtime),
 
-		m_env(env),
-		m_gamedef(gamedef),
-		m_collisionbox(aabb3f(v3f(-p.size / 2.0f), v3f(p.size / 2.0f))),
+		m_base_color(color),
+
 		m_texture(texture),
 		m_texpos(texpos),
 		m_texsize(texsize),
@@ -71,16 +67,10 @@ Particle::Particle(
 		m_velocity(p.vel),
 		m_acceleration(p.acc),
 		m_p(p),
-		m_player(player),
-
-		m_base_color(color),
-		m_color(color),
 
 		m_parent(parent),
 		m_owned_texture(std::move(owned_texture))
 {
-	// Init lighting
-	updateLight();
 }
 
 Particle::~Particle()
@@ -100,7 +90,7 @@ bool Particle::attachToBuffer(ParticleBuffer *buffer)
 	return false;
 }
 
-void Particle::step(float dtime)
+void Particle::step(float dtime, ClientEnvironment *env)
 {
 	m_time += dtime;
 
@@ -110,10 +100,10 @@ void Particle::step(float dtime)
 	m_velocity = av*vecSign(m_velocity) + v3f(m_p.jitter.pickWithin())*dtime;
 
 	if (m_p.collisiondetection) {
-		aabb3f box = m_collisionbox;
+		aabb3f box(v3f(-m_p.size / 2.0f), v3f(m_p.size / 2.0f));
 		v3f p_pos = m_pos * BS;
 		v3f p_velocity = m_velocity * BS;
-		collisionMoveResult r = collisionMoveSimple(m_env, m_gamedef, BS * 0.5f,
+		collisionMoveResult r = collisionMoveSimple(env, env->getGameDef(), BS * 0.5f,
 			box, 0.0f, dtime, &p_pos, &p_velocity, m_acceleration * BS, nullptr,
 			m_p.object_collision);
 
@@ -166,19 +156,19 @@ void Particle::step(float dtime)
 	}
 
 	// animate particle alpha in accordance with settings
+	float alpha = 1.f;
 	if (m_texture.tex != nullptr)
-		m_alpha = m_texture.tex -> alpha.blend(m_time / (m_expiration+0.1f));
-	else
-		m_alpha = 1.f;
+		alpha = m_texture.tex -> alpha.blend(m_time / (m_expiration+0.1f));
 
 	// Update lighting
-	updateLight();
+	auto col = updateLight(env);
+	col.setAlpha(255 * alpha);
 
 	// Update model
-	updateVertices();
+	updateVertices(env, col);
 }
 
-void Particle::updateLight()
+video::SColor Particle::updateLight(ClientEnvironment *env)
 {
 	u8 light = 0;
 	bool pos_ok;
@@ -188,21 +178,21 @@ void Particle::updateLight()
 		floor(m_pos.Y+0.5),
 		floor(m_pos.Z+0.5)
 	);
-	MapNode n = m_env->getClientMap().getNode(p, &pos_ok);
+	MapNode n = env->getClientMap().getNode(p, &pos_ok);
 	if (pos_ok)
-		light = n.getLightBlend(m_env->getDayNightRatio(),
-				m_gamedef->ndef()->getLightingFlags(n));
+		light = n.getLightBlend(env->getDayNightRatio(),
+				env->getGameDef()->ndef()->getLightingFlags(n));
 	else
-		light = blend_light(m_env->getDayNightRatio(), LIGHT_SUN, 0);
+		light = blend_light(env->getDayNightRatio(), LIGHT_SUN, 0);
 
 	u8 m_light = decode_light(light + m_p.glow);
-	m_color.set(m_alpha*255,
+	return video::SColor(255,
 		m_light * m_base_color.getRed() / 255,
 		m_light * m_base_color.getGreen() / 255,
 		m_light * m_base_color.getBlue() / 255);
 }
 
-void Particle::updateVertices()
+void Particle::updateVertices(ClientEnvironment *env, video::SColor color)
 {
 	f32 tx0, tx1, ty0, ty1;
 	v2f scale;
@@ -240,26 +230,27 @@ void Particle::updateVertices()
 	     hx   = half * scale.X,
 	     hy   = half * scale.Y;
 	vertices[0] = video::S3DVertex(-hx, -hy,
-		0, 0, 0, 0, m_color, tx0, ty1);
+		0, 0, 0, 0, color, tx0, ty1);
 	vertices[1] = video::S3DVertex(hx, -hy,
-		0, 0, 0, 0, m_color, tx1, ty1);
+		0, 0, 0, 0, color, tx1, ty1);
 	vertices[2] = video::S3DVertex(hx, hy,
-		0, 0, 0, 0, m_color, tx1, ty0);
+		0, 0, 0, 0, color, tx1, ty0);
 	vertices[3] = video::S3DVertex(-hx, hy,
-		0, 0, 0, 0, m_color, tx0, ty0);
+		0, 0, 0, 0, color, tx0, ty0);
 
 	// Update position -- see #10398
-	v3s16 camera_offset = m_env->getCameraOffset();
+	auto *player = env->getLocalPlayer();
+	v3s16 camera_offset = env->getCameraOffset();
 
 	for (u16 i = 0; i < 4; i++) {
 		video::S3DVertex &vertex = vertices[i];
 		if (m_p.vertical) {
-			v3f ppos = m_player->getPosition()/BS;
+			v3f ppos = player->getPosition() / BS;
 			vertex.Pos.rotateXZBy(std::atan2(ppos.Z - m_pos.Z, ppos.X - m_pos.X) /
 				core::DEGTORAD + 90);
 		} else {
-			vertex.Pos.rotateYZBy(m_player->getPitch());
-			vertex.Pos.rotateXZBy(m_player->getYaw());
+			vertex.Pos.rotateYZBy(player->getPitch());
+			vertex.Pos.rotateXZBy(player->getYaw());
 		}
 		vertex.Pos += m_pos * BS - intToFloat(camera_offset, BS);
 	}
@@ -505,9 +496,6 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 
 	++m_active;
 	m_particlemanager->addParticle(std::make_unique<Particle>(
-			m_gamedef,
-			m_player,
-			env,
 			pp,
 			texture,
 			texpos,
@@ -728,7 +716,7 @@ void ParticleManager::stepParticles(float dtime)
 			m_particles[i] = std::move(m_particles.back());
 			m_particles.pop_back();
 		} else {
-			p.step(dtime);
+			p.step(dtime, m_env);
 			++i;
 		}
 	}
@@ -757,7 +745,7 @@ void ParticleManager::stepBuffers(float dtime)
 		}
 	}
 
-	g_profiler->avg("ParticleManager: partible buffer count [#]", m_particle_buffers.size());
+	g_profiler->avg("ParticleManager: particle buffer count [#]", m_particle_buffers.size());
 }
 
 void ParticleManager::clearAll()
@@ -851,7 +839,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 				p.size = oldsize;
 
 			if (texture.ref) {
-				addParticle(std::make_unique<Particle>(client, player, m_env,
+				addParticle(std::make_unique<Particle>(
 						p, texture, texpos, texsize, color, nullptr,
 						std::move(texstore)));
 			}
@@ -951,9 +939,6 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 	);
 
 	addParticle(std::make_unique<Particle>(
-		gamedef,
-		player,
-		m_env,
 		p,
 		ClientParticleTexRef(ref),
 		texpos,

@@ -73,9 +73,6 @@ class Particle
 {
 public:
 	Particle(
-		IGameDef *gamedef,
-		LocalPlayer *player,
-		ClientEnvironment *env,
 		const ParticleParameters &p,
 		const ClientParticleTexRef &texture,
 		v2f texpos,
@@ -89,19 +86,19 @@ public:
 
 	DISABLE_CLASS_COPY(Particle)
 
-	void step(float dtime);
+	void step(float dtime, ClientEnvironment *env);
 
-	bool isExpired ()
+	bool isExpired () const
 	{ return m_expiration < m_time; }
 
-	ParticleSpawner *getParent() { return m_parent; }
+	ParticleSpawner *getParent() const { return m_parent; }
 
 	const ClientParticleTexRef &getTextureRef() const { return m_texture; }
 	bool attachToBuffer(ParticleBuffer *buffer);
 
 private:
-	void updateLight();
-	void updateVertices();
+	video::SColor updateLight(ClientEnvironment *env);
+	void updateVertices(ClientEnvironment *env, video::SColor color);
 
 	ParticleBuffer *m_buffer = nullptr;
 	u16 m_index; // index in m_buffer
@@ -109,25 +106,20 @@ private:
 	float m_time = 0.0f;
 	float m_expiration;
 
-	ClientEnvironment *m_env;
-	IGameDef *m_gamedef;
-	aabb3f m_collisionbox;
+	// Color without lighting
+	video::SColor m_base_color;
+
 	ClientParticleTexRef m_texture;
 	v2f m_texpos;
 	v2f m_texsize;
 	v3f m_pos;
 	v3f m_velocity;
 	v3f m_acceleration;
-	const ParticleParameters m_p;
-	LocalPlayer *m_player;
 
-	//! Color without lighting
-	video::SColor m_base_color;
-	//! Final rendered color
-	video::SColor m_color;
+	const ParticleParameters m_p;
+
 	float m_animation_time = 0.0f;
 	int m_animation_frame = 0;
-	float m_alpha = 0.0f;
 
 	ParticleSpawner *m_parent = nullptr;
 	// Used if not spawned from a particlespawner
