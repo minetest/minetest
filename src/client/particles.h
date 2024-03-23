@@ -161,6 +161,7 @@ private:
 
 class ParticleBuffer : public scene::ISceneNode
 {
+	friend class ParticleManager;
 public:
 	ParticleBuffer(ClientEnvironment *env, const video::SMaterial &material);
 
@@ -175,14 +176,6 @@ public:
 
 	inline bool isEmpty() const {
 		return m_free_list.size() == m_count;
-	}
-
-	// usage timer is reset when a particle is added
-	inline float getUsageTimer() const {
-		return m_usage_timer;
-	}
-	inline void increaseUsageTimer(float dtime) {
-		m_usage_timer += dtime;
 	}
 
 	virtual video::SMaterial &getMaterial(u32 num) override {
@@ -204,7 +197,7 @@ public:
 private:
 	irr_ptr<scene::SMeshBuffer> m_mesh_buffer;
 	std::vector<u16> m_free_list;
-	float m_usage_timer = 0;
+	float m_usage_timer = 0; // reset on allocation
 	u16 m_count = 0;
 	mutable bool m_bounding_box_dirty = true;
 };
@@ -214,7 +207,7 @@ private:
  */
 class ParticleManager
 {
-friend class ParticleSpawner;
+	friend class ParticleSpawner;
 public:
 	ParticleManager(ClientEnvironment* env);
 	DISABLE_CLASS_COPY(ParticleManager)

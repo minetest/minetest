@@ -731,10 +731,11 @@ void ParticleManager::stepBuffers(float dtime)
 	MutexAutoLock lock(m_particle_list_lock);
 
 	// remove buffers that have been unused for 5 seconds
+	size_t alloc = 0;
 	for (size_t i = 0; i < m_particle_buffers.size(); ) {
 		auto &buf = m_particle_buffers[i];
-		buf->increaseUsageTimer(INTERVAL);
-		if (buf->isEmpty() && buf->getUsageTimer() > 5.0f) {
+		buf->m_usage_timer += INTERVAL;
+		if (buf->isEmpty() && buf->m_usage_timer > 5.0f) {
 			// delete
 			buf->remove();
 			buf.reset();
@@ -742,10 +743,13 @@ void ParticleManager::stepBuffers(float dtime)
 			m_particle_buffers.pop_back();
 		} else {
 			i++;
+			alloc += buf->m_count;
 		}
 	}
 
 	g_profiler->avg("ParticleManager: particle buffer count [#]", m_particle_buffers.size());
+	if (!m_particle_buffers.empty())
+		g_profiler->avg("ParticleManager: buffer allocated size [#]", alloc);
 }
 
 void ParticleManager::clearAll()
