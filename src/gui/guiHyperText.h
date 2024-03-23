@@ -217,7 +217,6 @@ public:
 
 protected:
 	// GUI members
-	Client *m_client;
 	ISimpleTextureSource *m_tsrc;
 	GUIScrollBar *m_vscrollbar;
 	TextDrawer m_drawer;

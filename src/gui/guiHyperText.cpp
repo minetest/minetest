@@ -999,7 +999,7 @@ GUIHyperText::GUIHyperText(const wchar_t *text, IGUIEnvironment *environment,
 		IGUIElement *parent, s32 id, const core::rect<s32> &rectangle,
 		Client *client, ISimpleTextureSource *tsrc) :
 		IGUIElement(EGUIET_ELEMENT, environment, parent, id, rectangle),
-		m_client(client), m_tsrc(tsrc), m_vscrollbar(nullptr),
+		m_tsrc(tsrc), m_vscrollbar(nullptr),
 		m_drawer(text, client, environment, tsrc), m_text_scrollpos(0, 0)
 {
 
