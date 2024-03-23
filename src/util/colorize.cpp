@@ -24,12 +24,11 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "string.h"
 #include <sstream>
 
-bool colorize_url(std::string &out, const std::string &url)
+std::string colorize_url(const std::string &url)
 {
 	// Forbid escape codes in URL
 	if (url.find('\x1b') != std::string::npos) {
-		out = "Unable to open URL as it contains escape codes";
-		return false;
+		throw std::runtime_error("Unable to open URL as it contains escape codes");
 	}
 
 	auto urlHandleRAII = std::unique_ptr<CURLU, decltype(&curl_url_cleanup)>(
@@ -38,9 +37,7 @@ bool colorize_url(std::string &out, const std::string &url)
 
 	auto rc = curl_url_set(urlHandle, CURLUPART_URL, url.c_str(), 0);
 	if (rc != CURLUE_OK) {
-		out = "Unable to open URL as it is not valid";
-		curl_url_cleanup(urlHandle);
-		return false;
+		throw std::runtime_error("Unable to open URL as it is not valid");
 	}
 
 	auto url_get = [&] (CURLUPart what) -> std::string {
@@ -110,8 +107,7 @@ bool colorize_url(std::string &out, const std::string &url)
 	if (!fragment.empty())
 		os << "#" << fragment;
 
-	out = os.str();
-	return true;
+	return os.str();
 }
 
 #endif

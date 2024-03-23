@@ -66,6 +66,22 @@ void GUIOpenURLMenu::regenerateGui(v2u32 screensize)
 	v2s32 topleft_client(40 * s, 0);
 
 	/*
+		Get URL text
+	*/
+	bool ok = true;
+	std::string text;
+#ifdef USE_CURL
+	try {
+		text = colorize_url(url);
+	} catch (const std::exception &e) {
+		text = std::string(e.what()) + " (url = " + url + ")";
+		ok = false;
+	}
+#else
+	text = url;
+#endif
+
+	/*
 		Add stuff
 	*/
 	s32 ypos = 40 * s;
@@ -73,7 +89,11 @@ void GUIOpenURLMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 500 * s, 20 * s);
 		rect += topleft_client + v2s32(20 * s, ypos);
-		gui::StaticText::add(Environment, wstrgettext("Open URL?"), rect,
+
+		std::wstring title = ok
+				? wstrgettext("Open URL?")
+				: wstrgettext("Unable to open URL");
+		gui::StaticText::add(Environment, title, rect,
 				false, true, this, -1);
 	}
 
@@ -82,20 +102,10 @@ void GUIOpenURLMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 440 * s, 60 * s);
 
-		auto mono_font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_Mono);
+		auto font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED,
+				ok ? FM_Mono : FM_Standard);
 		int scrollbar_width = Environment->getSkin()->getSize(gui::EGDS_SCROLLBAR_SIZE);
-		int max_cols = (rect.getWidth() - scrollbar_width - 10) / mono_font->getDimension(L"x").Width;
-
-#ifdef USE_CURL
-		std::string text;
-		if (!colorize_url(text, url)) {
-			errorstream << text << " when attempting to show open dialog for " << url << std::endl;
-			quitMenu();
-			return;
-		}
-#else
-		std::string text = url;
-#endif
+		int max_cols = (rect.getWidth() - scrollbar_width - 10) / font->getDimension(L"x").Width;
 
 		text = wrap_rows(text, max_cols, true);
 
@@ -107,12 +117,12 @@ void GUIOpenURLMenu::regenerateGui(v2u32 screensize)
 		e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_UPPERLEFT);
 		e->setDrawBorder(true);
 		e->setDrawBackground(true);
-		e->setOverrideFont(mono_font);
+		e->setOverrideFont(font);
 		e->drop();
 	}
 
 	ypos += 80 * s;
-	{
+	if (ok) {
 		core::rect<s32> rect(0, 0, 100 * s, 40 * s);
 		rect = rect + v2s32(size.X / 2 - 150 * s, ypos);
 		GUIButton::addButton(Environment, rect, m_tsrc, this, ID_open,
@@ -182,5 +192,5 @@ bool GUIOpenURLMenu::OnEvent(const SEvent &event)
 		}
 	}
 
-	return Parent ? Parent->OnEvent(event) : false;
+	return Parent != nullptr && Parent->OnEvent(event);
 }

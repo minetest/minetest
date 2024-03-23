@@ -25,12 +25,10 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifdef USE_CURL
 
 /**
- * Colorize URL to highlight domain and unsafe characters
+ * Colorize URL to highlight the hostname and any unsafe characters
  *
- * @param out either the output string or an error message
- * @param url URL to format
- * @return true for success, false otherwise
+ * Throws an exception if the url is invalid
  */
-bool colorize_url(std::string &out, const std::string &url);
+std::string colorize_url(const std::string &url);
 
 #endif
