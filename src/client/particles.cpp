@@ -27,12 +27,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include "util/numeric.h"
 #include "light.h"
+#include "localplayer.h"
 #include "environment.h"
 #include "clientmap.h"
 #include "mapnode.h"
 #include "nodedef.h"
 #include "client.h"
 #include "settings.h"
+#include "profiler.h"
+
+ClientParticleTexture::ClientParticleTexture(const ServerParticleTexture& p, ITextureSource *tsrc)
+{
+	tex = p;
+	// note: getTextureForMesh not needed here because we don't use texture filtering
+	ref = tsrc->getTexture(p.string);
+}
 
 /*
 	Particle
@@ -589,6 +598,8 @@ std::optional<u16> ParticleBuffer::allocate()
 		return std::nullopt;
 
 	// append new vertices
+	// note: Our buffer never gets smaller, but ParticleManager will delete
+	//       us after a while.
 	std::array<video::S3DVertex, 4> vertices {};
 	m_mesh_buffer->append(&vertices.front(), 4, quad_indices, 6);
 	index = m_count++;
@@ -643,6 +654,9 @@ const core::aabbox3df &ParticleBuffer::getBoundingBox() const
 void ParticleBuffer::render()
 {
 	video::IVideoDriver *driver = SceneManager->getVideoDriver();
+
+	if (isEmpty())
+		return;
 
 	driver->setTransform(video::ETS_WORLD, core::matrix4());
 	driver->setMaterial(m_mesh_buffer->getMaterial());
@@ -742,6 +756,8 @@ void ParticleManager::stepBuffers(float dtime)
 			i++;
 		}
 	}
+
+	g_profiler->avg("ParticleManager: partible buffer count [#]", m_particle_buffers.size());
 }
 
 void ParticleManager::clearAll()

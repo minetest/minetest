@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include "irrlichttypes_extrabloated.h"
 #include "irr_ptr.h"
-#include "localplayer.h"
 #include "../particles.h"
 
 struct ClientEvent;
@@ -31,6 +30,10 @@ class ParticleManager;
 class ClientEnvironment;
 struct MapNode;
 struct ContentFeatures;
+class LocalPlayer;
+class ITextureSource;
+class IGameDef;
+class Client;
 
 struct ClientParticleTexture
 {
@@ -40,9 +43,7 @@ struct ClientParticleTexture
 	video::ITexture *ref = nullptr;
 
 	ClientParticleTexture() = default;
-	ClientParticleTexture(const ServerParticleTexture& p, ITextureSource *t):
-			tex(p),
-			ref(t->getTextureForMesh(p.string)) {}
+	ClientParticleTexture(const ServerParticleTexture& p, ITextureSource *tsrc);
 	ClientParticleTexture(const ParticleTexture& p, video::ITexture *t):
 			tex(p),
 			ref(t) {}
