@@ -3017,11 +3017,12 @@ Elements
   centered on `H`. With the new coordinate system, `H` will modify the height.
 * `label` is the text on the button
 
-### `button_url[<X>,<Y>;<W>,<H>;<name>;<label>;url]`
+### `button_url[<X>,<Y>;<W>,<H>;<name>;<label>;<url>]`
 
 * Clickable button. When clicked, fields will be sent.
 * With the old coordinate system, buttons are a set height, but will be vertically
   centered on `H`. With the new coordinate system, `H` will modify the height.
+* To make this into an `image_button`, you can use formspec styling.
 * `label` is the text on the button.
 * `url` must be a valid web URL, wstarting with `http://` or `https://`.
 
@@ -3051,7 +3052,7 @@ Elements
 * When clicked, fields will be sent and the form will quit.
 * Same as `button` in all other respects.
 
-### `button_url_exit[<X>,<Y>;<W>,<H>;<name>;<label>;url]`
+### `button_url_exit[<X>,<Y>;<W>,<H>;<name>;<label>;<url>]`
 
 * When clicked, fields will be sent and the form will quit.
 * Same as `button_url` in all other respects.
