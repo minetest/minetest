@@ -24,7 +24,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "string.h"
 #include <sstream>
 
-bool colorize_url(std::string &out, const std::string &url) {
+bool colorize_url(std::string &out, const std::string &url)
+{
 	// Forbid escape codes in URL
 	if (url.find('\x1b') != std::string::npos) {
 		out = "Unable to open URL as it contains escape codes";
@@ -80,7 +81,7 @@ bool colorize_url(std::string &out, const std::string &url) {
 	std::string host_s = host;
 	for (size_t i = 0; i < host_s.size(); i++) {
 		char c = host_s[i];
-		bool is_alphanum = !IS_UTF8_MULTB_INNER(c) && (isalnum(c) || ispunct(c));
+		bool is_alphanum = isalnum(c) || ispunct(c);
 		if (is_alphanum == was_alphanum) {
 			// skip
 		} else if (is_alphanum) {
