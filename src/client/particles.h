@@ -32,10 +32,6 @@ class ClientEnvironment;
 struct MapNode;
 struct ContentFeatures;
 
-constexpr size_t MAX_PARTICLES = 64000;
-constexpr u32 PARTICLES_MAX_DISTANCE_NODES = 200;
-constexpr u16 MAX_PARTICLES_PER_BUFFER = 16000;
-
 struct ClientParticleTexture
 {
 	/* per-spawner structure used to store the ParticleTexture structs
@@ -105,7 +101,6 @@ public:
 private:
 	void updateLight();
 	void updateVertices();
-	void setVertexAlpha(float a);
 
 	ParticleBuffer *m_buffer = nullptr;
 	u16 m_index; // index in m_buffer
@@ -115,7 +110,6 @@ private:
 
 	ClientEnvironment *m_env;
 	IGameDef *m_gamedef;
-	aabb3f m_box;
 	aabb3f m_collisionbox;
 	ClientParticleTexRef m_texture;
 	v2f m_texpos;
@@ -175,7 +169,7 @@ private:
 class ParticleBuffer : public scene::ISceneNode
 {
 public:
-	ParticleBuffer(ClientEnvironment *env, const ClientParticleTexRef &texture);
+	ParticleBuffer(ClientEnvironment *env, const video::SMaterial &material);
 
 	// for pointer stability
 	DISABLE_CLASS_COPY(ParticleBuffer)
@@ -183,17 +177,43 @@ public:
 	std::optional<u16> allocate();
 	void release(u16 index);
 
+	// video::S3DVertex[4]
 	video::S3DVertex *getVertices(u16 index);
 
-	virtual const core::aabbox3d<f32> &getBoundingBox() const override;
+	inline bool isEmpty() const {
+		return m_free_list.size() == m_count;
+	}
+
+	// usage timer is reset when a particle is added
+	inline float getUsageTimer() const {
+		return m_usage_timer;
+	}
+	inline void increaseUsageTimer(float dtime) {
+		m_usage_timer += dtime;
+	}
+
+	virtual video::SMaterial &getMaterial(u32 num) override {
+		return m_mesh_buffer->getMaterial();
+	}
+	virtual u32 getMaterialCount() const override {
+		return 1;
+	}
+
+	virtual const core::aabbox3df &getBoundingBox() const override;
+
 	virtual void render() override;
+
 	virtual void OnRegisterSceneNode() override;
+
+	// we have 16-bit indices
+	static constexpr u16 MAX_PARTICLES_PER_BUFFER = 16000;
+
 private:
-	ClientParticleTexture m_texture;
 	irr_ptr<scene::SMeshBuffer> m_mesh_buffer;
-	u16 m_count = 0;
 	std::vector<u16> m_free_list;
-	bool m_bounding_box_dirty = true;
+	float m_usage_timer = 0;
+	u16 m_count = 0;
+	mutable bool m_bounding_box_dirty = true;
 };
 
 /**
@@ -237,7 +257,8 @@ protected:
 		ParticleParameters &p, video::ITexture **texture, v2f &texpos,
 		v2f &texsize, video::SColor *color, u8 tilenum = 0);
 
-	bool canAddParticle() { return m_particles.size() < MAX_PARTICLES; }
+	static video::SMaterial getMaterialForParticle(const ClientParticleTexRef &texture);
+
 	bool addParticle(std::unique_ptr<Particle> toadd);
 
 private:
@@ -246,18 +267,23 @@ private:
 
 	void stepParticles(float dtime);
 	void stepSpawners(float dtime);
+	void stepBuffers(float dtime);
 
 	void clearAll();
 
 	std::vector<std::unique_ptr<Particle>> m_particles;
 	std::unordered_map<u64, std::unique_ptr<ParticleSpawner>> m_particle_spawners;
 	std::vector<std::unique_ptr<ParticleSpawner>> m_dying_particle_spawners;
-	std::unordered_map<video::ITexture *, irr_ptr<ParticleBuffer>> m_particle_buffers;
-	// Start the particle spawner ids generated from here after u32_max. lower values are
-	// for server sent spawners.
-	u64 m_next_particle_spawner_id = U32_MAX + 1;
+	std::vector<irr_ptr<ParticleBuffer>> m_particle_buffers;
+
+	// Start the particle spawner ids generated from here after u32_max.
+	// lower values are for server sent spawners.
+	u64 m_next_particle_spawner_id = static_cast<u64>(U32_MAX) + 1;
 
 	ClientEnvironment *m_env;
+
+	IntervalLimiter m_buffer_gc;
+
 	std::mutex m_particle_list_lock;
 	std::mutex m_spawner_list_lock;
 };
