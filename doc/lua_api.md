@@ -3019,12 +3019,13 @@ Elements
 
 ### `button_url[<X>,<Y>;<W>,<H>;<name>;<label>;<url>]`
 
-* Clickable button. When clicked, fields will be sent.
+* Clickable button. When clicked, fields will be sent and the user will be given the
+  option to open the URL in a browser.
 * With the old coordinate system, buttons are a set height, but will be vertically
   centered on `H`. With the new coordinate system, `H` will modify the height.
 * To make this into an `image_button`, you can use formspec styling.
 * `label` is the text on the button.
-* `url` must be a valid web URL, wstarting with `http://` or `https://`.
+* `url` must be a valid web URL, starting with `http://` or `https://`.
 
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
