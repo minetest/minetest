@@ -103,12 +103,10 @@ void makeSplitPacket(const SharedBuffer<u8> &data, u32 chunksize_max, u16 seqnum
 		std::list<SharedBuffer<u8>> *chunks)
 {
 	// Chunk packets, containing the TYPE_SPLIT header
-	u32 chunk_header_size = 7;
-	u32 maximum_data_size = chunksize_max - chunk_header_size;
-	u32 start = 0;
-	u32 end = 0;
-	u32 chunk_num = 0;
-	u16 chunk_count = 0;
+	const u32 chunk_header_size = 7;
+	const u32 maximum_data_size = chunksize_max - chunk_header_size;
+	u32 start = 0, end = 0;
+	u16 chunk_num = 0;
 	do {
 		end = start + maximum_data_size - 1;
 		if (end > data.getSize() - 1)
@@ -126,16 +124,16 @@ void makeSplitPacket(const SharedBuffer<u8> &data, u32 chunksize_max, u16 seqnum
 		memcpy(&chunk[chunk_header_size], &data[start], payload_size);
 
 		chunks->push_back(chunk);
-		chunk_count++;
 
 		start = end + 1;
+		sanity_check(chunk_num < 0xFFFF); // overflow
 		chunk_num++;
 	}
 	while (end != data.getSize() - 1);
 
-	for (SharedBuffer<u8> &chunk : *chunks) {
+	for (auto &chunk : *chunks) {
 		// Write chunk_count
-		writeU16(&(chunk[3]), chunk_count);
+		writeU16(&chunk[3], chunk_num);
 	}
 }
 
@@ -1061,21 +1059,21 @@ bool UDPPeer::processReliableSendCommand(
 	const auto &c = *c_ptr;
 	Channel &chan = channels[c.channelnum];
 
-	u32 chunksize_max = max_packet_size
+	const u32 chunksize_max = max_packet_size
 							- BASE_HEADER_SIZE
 							- RELIABLE_HEADER_SIZE;
 
-	sanity_check(c.data.getSize() < MAX_RELIABLE_WINDOW_SIZE*512);
-
 	std::list<SharedBuffer<u8>> originals;
-	u16 split_sequence_number = chan.readNextSplitSeqNum();
 
 	if (c.raw) {
 		originals.emplace_back(c.data);
 	} else {
-		makeAutoSplitPacket(c.data, chunksize_max,split_sequence_number, &originals);
-		chan.setNextSplitSeqNum(split_sequence_number);
+		u16 split_seqnum = chan.readNextSplitSeqNum();
+		makeAutoSplitPacket(c.data, chunksize_max, split_seqnum, &originals);
+		chan.setNextSplitSeqNum(split_seqnum);
 	}
+
+	sanity_check(originals.size() < MAX_RELIABLE_WINDOW_SIZE);
 
 	bool have_sequence_number = false;
 	bool have_initial_sequence_number = false;
@@ -1271,7 +1269,7 @@ Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout,
 	m_udpSocket(ipv6),
 	m_protocol_id(protocol_id),
 	m_sendThread(new ConnectionSendThread(max_packet_size, timeout)),
-	m_receiveThread(new ConnectionReceiveThread(max_packet_size)),
+	m_receiveThread(new ConnectionReceiveThread()),
 	m_bc_peerhandler(peerhandler)
 
 {
@@ -1504,6 +1502,15 @@ void Connection::Send(session_t peer_id, u8 channelnum,
 		NetworkPacket *pkt, bool reliable)
 {
 	assert(channelnum < CHANNEL_COUNT); // Pre-condition
+
+	// approximate check similar to UDPPeer::processReliableSendCommand()
+	// to get nicer errors / backtraces if this happens.
+	if (reliable && pkt->getSize() > MAX_RELIABLE_WINDOW_SIZE*512) {
+		std::ostringstream oss;
+		oss << "Packet too big for window, peer_id=" << peer_id
+			<< " command=" << pkt->getCommand() << " size=" << pkt->getSize();
+		FATAL_ERROR(oss.str().c_str());
+	}
 
 	putCommand(ConnectionCommand::send(peer_id, channelnum, pkt, reliable));
 }
