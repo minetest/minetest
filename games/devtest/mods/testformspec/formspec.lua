@@ -149,7 +149,7 @@ local hypertext_fs = "hypertext[0,0;11,9;hypertext;"..minetest.formspec_escape(h
 local style_fs = [[
 	style[one_btn1;bgcolor=red;textcolor=yellow;bgcolor_hovered=orange;
 		bgcolor_pressed=purple]
-	button_url[0,0;2.5,0.8;one_btn1;Button;]] .. unsafe_url .. [[]
+	button_url_exit[0,0;2.5,0.8;one_btn1;Button;]] .. unsafe_url .. [[]
 
 	style[one_btn2;border=false;textcolor=cyan] ]]..
 	"button[0,1.05;2.5,0.8;one_btn2;Text " .. color("#FF0", "Yellow") .. [[]
