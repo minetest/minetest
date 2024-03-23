@@ -1819,7 +1819,7 @@ inline bool Game::handleCallbacks()
 	if (!g_gamecallback->show_open_url_dialog.empty()) {
 		(new GUIOpenURLMenu(guienv, guiroot, -1,
 				 &g_menumgr, texture_src, g_gamecallback->show_open_url_dialog))->drop();
-		g_gamecallback->show_open_url_dialog = "";
+		g_gamecallback->show_open_url_dialog.clear();
 	}
 
 	if (g_gamecallback->keyconfig_changed) {

@@ -1,7 +1,7 @@
 local color = minetest.colorize
 
--- The "a" in this text is actually a cyrillic small a (\u0430)
-local unsafe_url = "https://u:p@wikipediа.org:1233/heIIoll?a=b#c"
+-- \208\176 is a cyrillic small a
+local unsafe_url = minetest.formspec_escape("https://u:p@wikipedi\208\176.org:1233/heIIoll?a=b#c")
 
 local clip_fs = [[
 	style_type[label,button,image_button,item_image_button,

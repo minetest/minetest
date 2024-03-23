@@ -19,20 +19,17 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "guiButton.h"
 #include "guiEditBoxWithScrollbar.h"
 #include <IGUIEditBox.h>
-#include <IGUIStaticText.h>
 #include <IGUIFont.h>
-
-#ifdef HAVE_TOUCHSCREENGUI
-	#include "client/renderingengine.h"
-#endif
-
+#include "client/renderingengine.h"
 #include "porting.h"
 #include "gettext.h"
 #include "util/colorize.h"
 
-const int ID_url = 256;
-const int ID_open = 259;
-const int ID_cancel = 261;
+namespace {
+	constexpr int ID_url = 256;
+	constexpr int ID_open = 259;
+	constexpr int ID_cancel = 261;
+}
 
 GUIOpenURLMenu::GUIOpenURLMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
@@ -56,11 +53,7 @@ void GUIOpenURLMenu::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
-#ifdef HAVE_TOUCHSCREENGUI
-	const float s = m_gui_scale * RenderingEngine::getDisplayDensity() / 2;
-#else
 	const float s = m_gui_scale;
-#endif
 	DesiredRect = core::rect<s32>(
 		screensize.X / 2 - 580 * s / 2,
 		screensize.Y / 2 - 250 * s / 2,

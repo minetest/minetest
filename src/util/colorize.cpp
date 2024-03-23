@@ -31,24 +31,34 @@ bool colorize_url(std::string &out, const std::string &url) {
 		return false;
 	}
 
-	CURLU *h = curl_url();
-	auto rc = curl_url_set(h, CURLUPART_URL, url.c_str(), 0);
+	auto urlHandleRAII = std::unique_ptr<CURLU, decltype(&curl_url_cleanup)>(
+			curl_url(), curl_url_cleanup);
+	CURLU *urlHandle = urlHandleRAII.get();
+
+	auto rc = curl_url_set(urlHandle, CURLUPART_URL, url.c_str(), 0);
 	if (rc != CURLUE_OK) {
 		out = "Unable to open URL as it is not valid";
-		curl_url_cleanup(h);
+		curl_url_cleanup(urlHandle);
 		return false;
 	}
 
-	char *fragment, *host, *password, *path, *port, *query, *scheme, *user, *zoneid;
-	curl_url_get(h, CURLUPART_FRAGMENT, &fragment, 0);
-	curl_url_get(h, CURLUPART_HOST, &host, 0);
-	curl_url_get(h, CURLUPART_PASSWORD, &password, 0);
-	curl_url_get(h, CURLUPART_PATH, &path, 0);
-	curl_url_get(h, CURLUPART_PORT, &port, 0);
-	curl_url_get(h, CURLUPART_QUERY, &query, 0);
-	curl_url_get(h, CURLUPART_SCHEME, &scheme, 0);
-	curl_url_get(h, CURLUPART_USER, &user, 0);
-	curl_url_get(h, CURLUPART_ZONEID, &zoneid, 0);
+	auto url_get = [&] (CURLUPart what) -> std::string {
+		char *tmp = nullptr;
+		curl_url_get(urlHandle, what, &tmp, 0);
+		std::string ret(tmp ? tmp : "");
+		curl_free(tmp);
+		return ret;
+	};
+
+	auto scheme = url_get(CURLUPART_SCHEME);
+	auto user = url_get(CURLUPART_USER);
+	auto password = url_get(CURLUPART_PASSWORD);
+	auto host = url_get(CURLUPART_HOST);
+	auto port = url_get(CURLUPART_PORT);
+	auto path = url_get(CURLUPART_PATH);
+	auto query = url_get(CURLUPART_QUERY);
+	auto fragment = url_get(CURLUPART_FRAGMENT);
+	auto zoneid = url_get(CURLUPART_ZONEID);
 
 	std::ostringstream os;
 
@@ -57,11 +67,11 @@ bool colorize_url(std::string &out, const std::string &url) {
 	std::string_view grey = COLOR_CODE("#aaa");
 
 	os << grey << scheme << "://";
-	if (user)
+	if (!user.empty())
 		os << user;
-	if (password)
+	if (!password.empty())
 		os << ":" << password;
-	if (user || password)
+	if (!(user.empty() && password.empty()))
 		os << "@";
 
 	// Print hostname, escaping unsafe characters
@@ -89,26 +99,16 @@ bool colorize_url(std::string &out, const std::string &url) {
 	}
 
 	os << grey;
-	if (zoneid)
+	if (!zoneid.empty())
 		os << "%" << zoneid;
-	if (port)
+	if (!port.empty())
 		os << ":" << port;
 	os << path;
-	if (query)
+	if (!query.empty())
 		os << "?" << query;
-	if (fragment)
+	if (!fragment.empty())
 		os << "#" << fragment;
 
-	curl_free(fragment);
-	curl_free(host);
-	curl_free(password);
-	curl_free(path);
-	curl_free(port);
-	curl_free(query);
-	curl_free(scheme);
-	curl_free(user);
-	curl_free(zoneid);
-	curl_url_cleanup(h);
 	out = os.str();
 	return true;
 }

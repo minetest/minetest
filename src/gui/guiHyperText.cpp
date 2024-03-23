@@ -1111,7 +1111,7 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 
 						auto url_it = tag->attrs.find("url");
 						if (url_it != tag->attrs.end()) {
-							if (m_client) {
+							if (g_gamecallback) {
 								// in game
 								g_gamecallback->showOpenURLDialog(url_it->second);
 							} else {
