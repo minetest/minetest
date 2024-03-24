@@ -216,15 +216,28 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 
 
 /******************************************************************************/
-std::string findLocaleFileInMods(const std::string &path, const std::string &filename)
+std::string findLocaleFileWithExtension(const std::string &path)
+{
+	if (fs::PathExists(path + ".mo"))
+		return path + ".mo";
+	if (fs::PathExists(path + ".po"))
+		return path + ".po";
+	if (fs::PathExists(path + ".tr"))
+		return path + ".tr";
+	return "";
+}
+
+
+/******************************************************************************/
+std::string findLocaleFileInMods(const std::string &path, const std::string &filename_no_ext)
 {
 	std::vector<ModSpec> mods = flattenMods(getModsInPath(path, "root", true));
 
 	for (const auto &mod : mods) {
-		std::string ret = mod.path + DIR_DELIM "locale" DIR_DELIM + filename;
-		if (fs::PathExists(ret)) {
+		std::string ret = findLocaleFileWithExtension(
+				mod.path + DIR_DELIM "locale" DIR_DELIM + filename_no_ext);
+		if (!ret.empty())
 			return ret;
-		}
 	}
 
 	return "";
@@ -237,19 +250,26 @@ Translations *GUIEngine::getContentTranslations(const std::string &path,
 	if (domain.empty() || lang_code.empty())
 		return nullptr;
 
-	std::string filename = domain + "." + lang_code + ".tr";
-	std::string key = path + DIR_DELIM "locale" DIR_DELIM + filename;
+	std::string filename_no_ext = domain + "." + lang_code;
+	std::string key = path + DIR_DELIM "locale" DIR_DELIM + filename_no_ext;
 
 	if (key == m_last_translations_key)
 		return &m_last_translations;
 
 	std::string trans_path = key;
-	ContentType type = getContentType(path);
-	if (type == ContentType::GAME)
-		trans_path = findLocaleFileInMods(path + DIR_DELIM "mods" DIR_DELIM, filename);
-	else if (type == ContentType::MODPACK)
-		trans_path = findLocaleFileInMods(path, filename);
-	// We don't need to search for locale files in a mod, as there's only one `locale` folder.
+
+	switch (getContentType(path)) {
+	case ContentType::GAME:
+		trans_path = findLocaleFileInMods(path + DIR_DELIM "mods" DIR_DELIM,
+				filename_no_ext);
+		break;
+	case ContentType::MODPACK:
+		trans_path = findLocaleFileInMods(path, filename_no_ext);
+		break;
+	default:
+		trans_path = findLocaleFileWithExtension(trans_path);
+		break;
+	}
 
 	if (trans_path.empty())
 		return nullptr;
