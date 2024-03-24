@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiFormSpecMenu.h"
 #include "gui/guiKeyChangeMenu.h"
 #include "gui/guiPasswordChange.h"
+#include "gui/guiOpenURL.h"
 #include "gui/guiVolumeChange.h"
 #include "gui/mainmenumanager.h"
 #include "gui/profilergraph.h"
@@ -1813,6 +1814,12 @@ inline bool Game::handleCallbacks()
 		(new GUIKeyChangeMenu(guienv, guiroot, -1,
 				      &g_menumgr, texture_src))->drop();
 		g_gamecallback->keyconfig_requested = false;
+	}
+
+	if (!g_gamecallback->show_open_url_dialog.empty()) {
+		(new GUIOpenURLMenu(guienv, guiroot, -1,
+				 &g_menumgr, texture_src, g_gamecallback->show_open_url_dialog))->drop();
+		g_gamecallback->show_open_url_dialog.clear();
 	}
 
 	if (g_gamecallback->keyconfig_changed) {

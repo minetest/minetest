@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/string.h"
 #include "util/base64.h"
+#include "util/colorize.h"
 
 class TestUtilities : public TestBase {
 public:
@@ -59,6 +60,7 @@ public:
 	void testBase64();
 	void testSanitizeDirName();
 	void testIsBlockInSight();
+	void testColorizeURL();
 };
 
 static TestUtilities g_test_instance;
@@ -92,6 +94,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testBase64);
 	TEST(testSanitizeDirName);
 	TEST(testIsBlockInSight);
+	TEST(testColorizeURL);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -709,4 +712,20 @@ void TestUtilities::testIsBlockInSight()
 		// should still be considered visible
 		UASSERT(isBlockInSight({-1, 0, 0}, cam_pos, cam_dir, fov, range));
 	}
+}
+
+void TestUtilities::testColorizeURL()
+{
+#ifdef USE_CURL
+	#define RED COLOR_CODE("#faa")
+	#define GREY COLOR_CODE("#aaa")
+	#define WHITE COLOR_CODE("#fff")
+
+	std::string result = colorize_url("http://example.com/");
+	UASSERT(result == (GREY "http://" WHITE "example.com" GREY "/"));
+
+	result = colorize_url(u8"https://u:p@wikipedi\u0430.org:1234/heIIoll?a=b#c");
+	UASSERT(result ==
+		(GREY "https://u:p@" WHITE "wikipedi" RED "%d0%b0" WHITE ".org" GREY ":1234/heIIoll?a=b#c"));
+#endif
 }

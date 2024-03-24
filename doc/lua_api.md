@@ -3017,6 +3017,16 @@ Elements
   centered on `H`. With the new coordinate system, `H` will modify the height.
 * `label` is the text on the button
 
+### `button_url[<X>,<Y>;<W>,<H>;<name>;<label>;<url>]`
+
+* Clickable button. When clicked, fields will be sent and the user will be given the
+  option to open the URL in a browser.
+* With the old coordinate system, buttons are a set height, but will be vertically
+  centered on `H`. With the new coordinate system, `H` will modify the height.
+* To make this into an `image_button`, you can use formspec styling.
+* `label` is the text on the button.
+* `url` must be a valid web URL, starting with `http://` or `https://`.
+
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
 * `texture name` is the filename of an image
@@ -3042,6 +3052,11 @@ Elements
 
 * When clicked, fields will be sent and the form will quit.
 * Same as `button` in all other respects.
+
+### `button_url_exit[<X>,<Y>;<W>,<H>;<name>;<label>;<url>]`
+
+* When clicked, fields will be sent and the form will quit.
+* Same as `button_url` in all other respects.
 
 ### `image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
@@ -3538,11 +3553,13 @@ Changes the style of the text.
 Sets global style.
 
 Global only styles:
+
 * `background`: Text background, a `colorspec` or `none`.
 * `margin`: Page margins in pixel.
 * `valign`: Text vertical alignment (`top`, `middle`, `bottom`).
 
 Inheriting styles (affects child elements):
+
 * `color`: Default text color. Given color is a `colorspec`.
 * `hovercolor`: Color of <action> tags when mouse is over.
 * `size`: Default text size.
@@ -3556,6 +3573,7 @@ tags appear.
 `<tag name=... color=... hovercolor=... font=... size=...>`
 
 Defines or redefines tag style. This can be used to define new tags.
+
 * `name`: Name of the tag to define or change.
 * `color`: Text color. Given color is a `colorspec`.
 * `hovercolor`: Text color when element hovered (only for `action` tags). Given color is a `colorspec`.
@@ -3588,6 +3606,7 @@ Other tags can be added using `<tag ...>` tag.
 Make that text a clickable text triggering an action.
 
 * `name`: Name of the action (mandatory).
+* `url`: URL to open when the action is triggered (optional).
 
 When clicked, the formspec is send to the server. The value of the text field
 sent to `on_player_receive_fields` will be "action:" concatenated to the action

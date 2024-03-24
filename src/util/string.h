@@ -512,7 +512,7 @@ inline bool string_allowed_blacklist(std::string_view str,
  * Create a string based on \p from where a newline is forcefully inserted
  * every \p row_len characters.
  *
- * @note This function does not honour word wraps and blindy inserts a newline
+ * @note This function does not honour word wraps and blindly inserts a newline
  *	every \p row_len characters whether it breaks a word or not.  It is
  *	intended to be used for, for example, showing paths in the GUI.
  *
@@ -521,26 +521,10 @@ inline bool string_allowed_blacklist(std::string_view str,
  *
  * @param from The (utf-8) string to be wrapped into rows.
  * @param row_len The row length (in characters).
+ * @param has_color_codes Whether the source string has colorize codes.
  * @return A new string with the wrapping applied.
  */
-inline std::string wrap_rows(std::string_view from, unsigned row_len)
-{
-	std::string to;
-	to.reserve(from.size());
-
-	unsigned character_idx = 0;
-	for (size_t i = 0; i < from.size(); i++) {
-		if (!IS_UTF8_MULTB_INNER(from[i])) {
-			// Wrap string after last inner byte of char
-			if (character_idx > 0 && character_idx % row_len == 0)
-				to += '\n';
-			character_idx++;
-		}
-		to += from[i];
-	}
-
-	return to;
-}
+std::string wrap_rows(std::string_view from, unsigned row_len, bool has_color_codes = false);
 
 
 /**
