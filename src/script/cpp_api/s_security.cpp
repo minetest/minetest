@@ -610,7 +610,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 							const char *message =
 									"Writing to mod directories is deprecated, as any changes "
 									"will be overwritten when updating content. "
-									"Use minetest.get_mod_data_path() or minetest.get_worldpath() instead.";
+									"For data storage consider minetest.get_mod_data_path() or minetest.get_worldpath() instead.";
 							log_deprecated(L, message, 1);
 						}
 					}
