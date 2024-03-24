@@ -138,11 +138,23 @@ void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
 	gui::IGUIEnvironment *guienv, JoystickController *joystick, IFormSource *fs_src,
 	TextDest *txt_dest, const std::string &formspecPrepend, ISoundManager *sound_manager)
 {
+	if (cur_formspec && cur_formspec->getReferenceCount() == 1) {
+		/*
+			Why reference count == 1? Reason:
+			1 on creation (see "drop()" remark below)
+			+1 for being a guiroot child
+			+1 when focused (CGUIEnvironment::setFocus)
+
+			Hence re-create the formspec when it's existing without any parent.
+		*/
+		cur_formspec->drop();
+		cur_formspec = nullptr;
+	}
+
 	if (cur_formspec == nullptr) {
 		cur_formspec = new GUIFormSpecMenu(joystick, guiroot, -1, &g_menumgr,
 			client, guienv, client->getTextureSource(), sound_manager, fs_src,
 			txt_dest, formspecPrepend);
-		cur_formspec->doPause = false;
 
 		/*
 			Caution: do not call (*cur_formspec)->drop() here --
@@ -151,12 +163,13 @@ void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
 			remaining reference (i.e. the menu was removed)
 			and delete it in that case.
 		*/
-
 	} else {
 		cur_formspec->setFormspecPrepend(formspecPrepend);
 		cur_formspec->setFormSource(fs_src);
 		cur_formspec->setTextDest(txt_dest);
 	}
+
+	cur_formspec->doPause = false;
 }
 
 void GUIFormSpecMenu::removeTooltip()

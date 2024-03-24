@@ -777,20 +777,18 @@ u32 InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i,
 		return 0;
 
 	// Try to add the item to destination list
-	u32 oldcount = item1.count;
+	count = item1.count;
 	item1 = dest->addItem(dest_i, item1);
 
 	// If something is returned, the item was not fully added
 	if (!item1.empty()) {
-		// If olditem is returned, nothing was added.
-		bool nothing_added = (item1.count == oldcount);
+		bool nothing_added = (item1.count == count);
 
-		// If something else is returned, part of the item was left unadded.
-		// Add the other part back to the source item
-		addItem(i, item1);
+		// Add any leftover stack back to the source stack.
+		item1.add(getItem(i).count); // leftover + source count
+		changeItem(i, item1); // do NOT use addItem to allow oversized stacks!
 
-		// If olditem is returned, nothing was added.
-		// Swap the items
+		// Swap if no items could be moved
 		if (nothing_added && swap_if_needed) {
 			// Tell that we swapped
 			if (did_swap != NULL) {
@@ -802,9 +800,10 @@ u32 InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i,
 			ItemStack item2 = dest->changeItem(dest_i, item1);
 			// Put item from destination list to the source list
 			changeItem(i, item2);
+			item1.clear(); // no leftover
 		}
 	}
-	return (oldcount - item1.count);
+	return (count - item1.count);
 }
 
 void InventoryList::checkResizeLock()

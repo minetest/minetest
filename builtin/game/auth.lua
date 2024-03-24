@@ -87,19 +87,20 @@ core.builtin_auth_handler = {
 					core.settings:get("default_password")))
 		end
 
+		local prev_privs = auth_entry.privileges
 		auth_entry.privileges = privileges
 
 		core_auth.save(auth_entry)
 
 		-- Run grant callbacks
 		for priv, _ in pairs(privileges) do
-			if not auth_entry.privileges[priv] then
+			if not prev_privs[priv] then
 				core.run_priv_callbacks(name, priv, nil, "grant")
 			end
 		end
 
 		-- Run revoke callbacks
-		for priv, _ in pairs(auth_entry.privileges) do
+		for priv, _ in pairs(prev_privs) do
 			if not privileges[priv] then
 				core.run_priv_callbacks(name, priv, nil, "revoke")
 			end

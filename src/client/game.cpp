@@ -1272,6 +1272,9 @@ void Game::shutdown()
 	if (formspec)
 		formspec->quitMenu();
 
+	// Clear text when exiting.
+	m_game_ui->clearText();
+
 #ifdef HAVE_TOUCHSCREENGUI
 	g_touchscreengui->hide();
 #endif
@@ -1428,12 +1431,6 @@ bool Game::createClient(const GameStartData &start_data)
 		return false;
 
 	bool could_connect, connect_aborted;
-#ifdef HAVE_TOUCHSCREENGUI
-	if (g_touchscreengui) {
-		g_touchscreengui->init(texture_src);
-		g_touchscreengui->hide();
-	}
-#endif
 	if (!connectToServer(start_data, &could_connect, &connect_aborted))
 		return false;
 
@@ -1542,10 +1539,8 @@ bool Game::initGui()
 			-1, chat_backend, client, &g_menumgr);
 
 #ifdef HAVE_TOUCHSCREENGUI
-
 	if (g_touchscreengui)
-		g_touchscreengui->show();
-
+		g_touchscreengui->init(texture_src);
 #endif
 
 	return true;
@@ -2616,7 +2611,7 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 #ifdef HAVE_TOUCHSCREENGUI
 	if (g_touchscreengui) {
 		cam->camera_yaw   += g_touchscreengui->getYawChange();
-		cam->camera_pitch  = g_touchscreengui->getPitch();
+		cam->camera_pitch += g_touchscreengui->getPitchChange();
 	} else {
 #endif
 		v2s32 center(driver->getScreenSize().Width / 2, driver->getScreenSize().Height / 2);
@@ -4124,6 +4119,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			break;
 
 		if (formspec->getReferenceCount() == 1) {
+			// See GUIFormSpecMenu::create what refcnt = 1 means
 			m_game_ui->deleteFormspec();
 			break;
 		}

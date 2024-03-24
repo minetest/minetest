@@ -26,10 +26,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "noise.h"
 
-class TestFilePath : public TestBase {
+class TestFileSys : public TestBase
+{
 public:
-	TestFilePath() { TestManager::registerTestModule(this); }
-	const char *getName() { return "TestFilePath"; }
+	TestFileSys() {	TestManager::registerTestModule(this); }
+	const char *getName() {	return "TestFileSys"; }
 
 	void runTests(IGameDef *gamedef);
 
@@ -38,17 +39,19 @@ public:
 	void testRemoveLastPathComponent();
 	void testRemoveLastPathComponentWithTrailingDelimiter();
 	void testRemoveRelativePathComponent();
+	void testSafeWriteToFile();
 };
 
-static TestFilePath g_test_instance;
+static TestFileSys g_test_instance;
 
-void TestFilePath::runTests(IGameDef *gamedef)
+void TestFileSys::runTests(IGameDef *gamedef)
 {
 	TEST(testIsDirDelimiter);
 	TEST(testPathStartsWith);
 	TEST(testRemoveLastPathComponent);
 	TEST(testRemoveLastPathComponentWithTrailingDelimiter);
 	TEST(testRemoveRelativePathComponent);
+	TEST(testSafeWriteToFile);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +77,7 @@ std::string p(std::string path)
 }
 
 
-void TestFilePath::testIsDirDelimiter()
+void TestFileSys::testIsDirDelimiter()
 {
 	UASSERT(fs::IsDirDelimiter('/') == true);
 	UASSERT(fs::IsDirDelimiter('A') == false);
@@ -87,7 +90,7 @@ void TestFilePath::testIsDirDelimiter()
 }
 
 
-void TestFilePath::testPathStartsWith()
+void TestFileSys::testPathStartsWith()
 {
 	const int numpaths = 12;
 	std::string paths[numpaths] = {
@@ -163,7 +166,7 @@ void TestFilePath::testPathStartsWith()
 }
 
 
-void TestFilePath::testRemoveLastPathComponent()
+void TestFileSys::testRemoveLastPathComponent()
 {
 	std::string path, result, removed;
 
@@ -200,7 +203,7 @@ void TestFilePath::testRemoveLastPathComponent()
 }
 
 
-void TestFilePath::testRemoveLastPathComponentWithTrailingDelimiter()
+void TestFileSys::testRemoveLastPathComponentWithTrailingDelimiter()
 {
 	std::string path, result, removed;
 
@@ -236,7 +239,7 @@ void TestFilePath::testRemoveLastPathComponentWithTrailingDelimiter()
 }
 
 
-void TestFilePath::testRemoveRelativePathComponent()
+void TestFileSys::testRemoveRelativePathComponent()
 {
 	std::string path, result;
 
@@ -261,4 +264,16 @@ void TestFilePath::testRemoveRelativePathComponent()
 	path = p("/a/b/c/.././../d/../e/f/g/../h/i/j/../../../..");
 	result = fs::RemoveRelativePathComponents(path);
 	UASSERT(result == p("/a/e"));
+}
+
+
+void TestFileSys::testSafeWriteToFile()
+{
+	const std::string dest_path = fs::TempPath() + DIR_DELIM + "testSafeWriteToFile.txt";
+	const std::string test_data("hello\0world", 11);
+	fs::safeWriteToFile(dest_path, test_data);
+	UASSERT(fs::PathExists(dest_path));
+	std::string contents_actual;
+	UASSERT(fs::ReadFile(dest_path, contents_actual));
+	UASSERT(contents_actual == test_data);
 }

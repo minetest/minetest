@@ -28,6 +28,13 @@ end
 
 local has_fetched = false
 local latest_releases
+do
+	local tmp = core.get_once("cdb_latest_releases")
+	if tmp then
+		latest_releases = core.deserialize(tmp, true)
+		has_fetched = latest_releases ~= nil
+	end
+end
 
 
 local function fetch_latest_releases()
@@ -89,8 +96,9 @@ local function fetch()
 			has_fetched = false
 			return
 		end
-
 		latest_releases = lowercase_keys(releases)
+		core.set_once("cdb_latest_releases", core.serialize(latest_releases))
+
 		if update_detector.get_count() > 0 then
 			local maintab = ui.find_by_name("maintab")
 			if not maintab.hidden then

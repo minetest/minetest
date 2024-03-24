@@ -249,8 +249,10 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 #ifndef __ANDROID__
 			const core::dimension2d<u32> &img_size =
 					progress_img_bg->getSize();
-			u32 imgW = rangelim(img_size.Width, 200, 600) * getDisplayDensity();
-			u32 imgH = rangelim(img_size.Height, 24, 72) * getDisplayDensity();
+			float density = g_settings->getFloat("gui_scaling", 0.5f, 20.0f) *
+					getDisplayDensity();
+			u32 imgW = rangelim(img_size.Width, 200, 600) * density;
+			u32 imgH = rangelim(img_size.Height, 24, 72) * density;
 #else
 			const core::dimension2d<u32> img_size(256, 48);
 			float imgRatio = (float)img_size.Height / img_size.Width;

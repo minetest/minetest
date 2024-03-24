@@ -202,7 +202,6 @@ bool detectMSVCBuildDir(const std::string &path)
 std::string get_sysinfo()
 {
 #ifdef _WIN32
-
 	std::ostringstream oss;
 	LPSTR filePath = new char[MAX_PATH];
 	UINT blockSize;
@@ -222,15 +221,25 @@ std::string get_sysinfo()
 		<< LOWORD(fixedFileInfo->dwProductVersionMS) << '.' // Minor
 		<< HIWORD(fixedFileInfo->dwProductVersionLS) << ' '; // Build
 
-	#ifdef _WIN64
-	oss << "x86_64";
-	#else
-	BOOL is64 = FALSE;
-	if (IsWow64Process(GetCurrentProcess(), &is64) && is64)
-		oss << "x86_64"; // 32-bit app on 64-bit OS
-	else
+	SYSTEM_INFO info;
+	GetNativeSystemInfo(&info);
+	switch (info.wProcessorArchitecture) {
+	case PROCESSOR_ARCHITECTURE_AMD64:
+		oss << "x86_64";
+		break;
+	case PROCESSOR_ARCHITECTURE_ARM:
+		oss << "arm";
+		break;
+	case PROCESSOR_ARCHITECTURE_ARM64:
+		oss << "arm64";
+		break;
+	case PROCESSOR_ARCHITECTURE_INTEL:
 		oss << "x86";
-	#endif
+		break;
+	default:
+		oss << "unknown";
+		break;
+	}
 
 	delete[] lpVersionInfo;
 	delete[] filePath;
@@ -719,12 +728,14 @@ bool secure_rand_fill_buf(void *buf, size_t len)
 void attachOrCreateConsole()
 {
 #ifdef _WIN32
-	static bool consoleAllocated = false;
-	const bool redirected = (_fileno(stdout) == -2 || _fileno(stdout) == -1); // If output is redirected to e.g a file
-	if (!consoleAllocated && redirected && (AttachConsole(ATTACH_PARENT_PROCESS) || AllocConsole())) {
-		freopen("CONOUT$", "w", stdout);
-		freopen("CONOUT$", "w", stderr);
-		consoleAllocated = true;
+	static bool once = false;
+	const bool redirected = _fileno(stdout) >= 0; // If output is redirected to e.g a file
+	if (!once && !redirected) {
+		if (AttachConsole(ATTACH_PARENT_PROCESS) || AllocConsole()) {
+			freopen("CONOUT$", "w", stdout);
+			freopen("CONOUT$", "w", stderr);
+		}
+		once = true;
 	}
 #endif
 }
