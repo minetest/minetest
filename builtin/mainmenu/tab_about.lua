@@ -116,7 +116,9 @@ end
 
 return {
 	name = "about",
-	caption = fgettext("About"),
+	caption = function()
+		return fgettext("About")
+	end,
 
 	cbf_formspec = function(tabview, name, tabdata)
 		local logofile = defaulttexturedir .. "logo.png"

@@ -164,57 +164,33 @@ static void MSVC_LocaleWorkaround(int argc, char* argv[])
 
 #endif
 
+namespace {
+	std::string system_language;
+}
+
+/*
+ * System translations
+ *
+ * Gettext determines the current language by reading env variables in the following order:
+ * LANGUAGE, LC_ALL, LC_<type>, LANG.
+ *
+ * To change the language, Minetest sets LANGUAGE.
+ *
+ * To set the language as the system language, LANGUAGE just needs to be restored
+ * to the value Minetest was started with. We don't need to touch any of the other
+ * environment variables
+ */
+
 /******************************************************************************/
 void init_gettext(const char *path, const std::string &configured_language,
 	int argc, char *argv[])
 {
 #if USE_GETTEXT
-	// First, try to set user override environment
-	if (!configured_language.empty()) {
-		// Set LANGUAGE which overrides all others, see
-		// <https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html>
-#ifndef _MSC_VER
-		setenv("LANGUAGE", configured_language.c_str(), 1);
+	char *system_language_c = getenv("LANGUAGE");
+	if (system_language_c)
+		system_language = system_language_c;
 
-		// Reload locale with changed environment
-		setlocale(LC_ALL, "");
-#else
-		std::string current_language;
-		const char *env_lang = getenv("LANGUAGE");
-		if (env_lang)
-			current_language = env_lang;
-
-		setenv("LANGUAGE", configured_language.c_str(), 1);
-		SetEnvironmentVariableA("LANGUAGE", configured_language.c_str());
-
-#ifndef SERVER
-		// Hack to force gettext to see the right environment
-		if (current_language != configured_language)
-			MSVC_LocaleWorkaround(argc, argv);
-#else
-		errorstream << "*******************************************************" << std::endl;
-		errorstream << "Can't apply locale workaround for server!" << std::endl;
-		errorstream << "Expect language to be broken!" << std::endl;
-		errorstream << "*******************************************************" << std::endl;
-#endif
-
-		setlocale(LC_ALL, configured_language.c_str());
-#endif // ifdef _MSC_VER
-	} else {
-		/* set current system default locale */
-		setlocale(LC_ALL, "");
-	}
-
-#if defined(_WIN32)
-	if (getenv("LANGUAGE") != 0) {
-		setlocale(LC_ALL, getenv("LANGUAGE"));
-	}
-#ifdef _MSC_VER
-	else if (getenv("LANG") != 0) {
-		setlocale(LC_ALL, getenv("LANG"));
-	}
-#endif
-#endif
+	set_gettext_language(configured_language);
 
 	std::string name = lowercase(PROJECT_NAME);
 	infostream << "Gettext: domainname=\"" << name
@@ -232,14 +208,73 @@ void init_gettext(const char *path, const std::string &configured_language,
 #endif
 
 #else
-	/* set current system default locale */
+	/* If gettext is not enabled, still set the default locales */
 	setlocale(LC_ALL, "");
+	setlocale(LC_NUMERIC, "C");
 #endif // if USE_GETTEXT
+}
+
+
+void set_gettext_language(std::string configured_language)
+{
+#if USE_GETTEXT
+	if (configured_language.empty())
+		configured_language = system_language;
+
+#ifdef _MSC_VER
+	std::string current_language;
+	const char *env_lang = getenv("LANGUAGE");
+	if (env_lang)
+		current_language = env_lang;
+#endif
+
+	if (!configured_language.empty()) {
+		// Set LANGUAGE which overrides all others, see
+		// <https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html>
+
+		setenv("LANGUAGE", configured_language.c_str(), 1);
+#ifdef _MSC_VER
+		SetEnvironmentVariableA("LANGUAGE", configured_language.c_str());
+
+		// Reload locale with changed environment
+		setlocale(LC_ALL, configured_language.c_str());
+#else
+		// Reload locale with changed environment
+		setlocale(LC_ALL, "");
+#endif
+	} else {
+		unsetenv("LANGUAGE");
+#ifdef _MSC_VER
+		SetEnvironmentVariableA("LANGUAGE", NULL);
+#endif
+		setlocale(LC_ALL, "");
+	}
+
+#ifdef _MSC_VER
+#ifndef SERVER
+	// Hack to force gettext to see the right environment
+	if (current_language != configured_language)
+		MSVC_LocaleWorkaround(argc, argv);
+#else
+	errorstream << "*******************************************************" << std::endl;
+	errorstream << "Can't apply locale workaround for server!" << std::endl;
+	errorstream << "Expect language to be broken!" << std::endl;
+	errorstream << "*******************************************************" << std::endl;
+#endif
+#endif
+
+	// Notify gettext that the language has changed
+	// Source: https://www.gnu.org/software/gettext/manual/html_node/gettext-grok.html
+	{
+		extern int  _nl_msg_cat_cntr;
+		++_nl_msg_cat_cntr;
+	}
+#endif
 
 	/* no matter what locale is used we need number format to be "C" */
 	/* to ensure formspec parameters are evaluated correctly!        */
-
 	setlocale(LC_NUMERIC, "C");
+
 	infostream << "Message locale is now set to: "
 			<< setlocale(LC_ALL, 0) << std::endl;
 }

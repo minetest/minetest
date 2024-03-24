@@ -58,6 +58,7 @@ xgettext --package-name=minetest \
 	--keyword=fwgettext \
 	--keyword=fgettext \
 	--keyword=fgettext_ne \
+	--keyword=gettext_lazy \
 	--keyword=strgettext \
 	--keyword=wstrgettext \
 	--keyword=core.gettext \

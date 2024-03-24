@@ -15,6 +15,11 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+-- Capture translations without translating
+local function gettext_lazy(x)
+	return x
+end
+
 
 local component_funcs =  dofile(core.get_mainmenu_path() .. DIR_DELIM ..
 		"settings" .. DIR_DELIM .. "components.lua")
@@ -65,23 +70,23 @@ local change_keys = {
 
 add_page({
 	id = "accessibility",
-	title = fgettext_ne("Accessibility"),
+	title = gettext_lazy("Accessibility"),
 	content = {
 		"language",
-		{ heading = fgettext_ne("General") },
+		{ heading = gettext_lazy("General") },
 		"font_size",
 		"chat_font_size",
 		"gui_scaling",
 		"hud_scaling",
 		"show_nametag_backgrounds",
-		{ heading = fgettext_ne("Chat") },
+		{ heading = gettext_lazy("Chat") },
 		"console_height",
 		"console_alpha",
 		"console_color",
-		{ heading = fgettext_ne("Controls") },
+		{ heading = gettext_lazy("Controls") },
 		"autojump",
 		"safe_dig_and_place",
-		{ heading = fgettext_ne("Movement") },
+		{ heading = gettext_lazy("Movement") },
 		"arm_inertia",
 		"view_bobbing_amount",
 		"fall_bobbing_amount",
@@ -96,7 +101,7 @@ local function load_settingtypes()
 		if not page then
 			page = add_page({
 				id = (section or "general"):lower():gsub(" ", "_"),
-				title = section or fgettext_ne("General"),
+				title = section or gettext_lazy("General"),
 				section = section,
 				content = {},
 			})
@@ -120,7 +125,7 @@ local function load_settingtypes()
 			elseif entry.level == 2 then
 				ensure_page_started()
 				page.content[#page.content + 1] = {
-					heading = fgettext_ne(entry.readable_name or entry.name),
+					heading = entry.readable_name or entry.name,
 				}
 			end
 		else
@@ -153,68 +158,70 @@ end
 -- These must not be translated, as they need to show in the local
 -- language no matter the user's current language.
 -- This list must be kept in sync with src/unsupported_language_list.txt.
-get_setting_info("language").option_labels = {
-	[""] = fgettext_ne("(Use system language)"),
-	--ar = " [ar]", blacklisted
-	be = "Беларуская [be]",
-	bg = "Български [bg]",
-	ca = "Català [ca]",
-	cs = "Česky [cs]",
-	cy = "Cymraeg [cy]",
-	da = "Dansk [da]",
-	de = "Deutsch [de]",
-	--dv = " [dv]", blacklisted
-	el = "Ελληνικά [el]",
-	en = "English [en]",
-	eo = "Esperanto [eo]",
-	es = "Español [es]",
-	et = "Eesti [et]",
-	eu = "Euskara [eu]",
-	fi = "Suomi [fi]",
-	fil = "Wikang Filipino [fil]",
-	fr = "Français [fr]",
-	gd = "Gàidhlig [gd]",
-	gl = "Galego [gl]",
-	--he = " [he]", blacklisted
-	--hi = " [hi]", blacklisted
-	hu = "Magyar [hu]",
-	id = "Bahasa Indonesia [id]",
-	it = "Italiano [it]",
-	ja = "日本語 [ja]",
-	jbo = "Lojban [jbo]",
-	kk = "Қазақша [kk]",
-	--kn = " [kn]", blacklisted
-	ko = "한국어 [ko]",
-	ky = "Kırgızca / Кыргызча [ky]",
-	lt = "Lietuvių [lt]",
-	lv = "Latviešu [lv]",
-	mn = "Монгол [mn]",
-	mr = "मराठी [mr]",
-	ms = "Bahasa Melayu [ms]",
-	--ms_Arab = " [ms_Arab]", blacklisted
-	nb = "Norsk Bokmål [nb]",
-	nl = "Nederlands [nl]",
-	nn = "Norsk Nynorsk [nn]",
-	oc = "Occitan [oc]",
-	pl = "Polski [pl]",
-	pt = "Português [pt]",
-	pt_BR = "Português do Brasil [pt_BR]",
-	ro = "Română [ro]",
-	ru = "Русский [ru]",
-	sk = "Slovenčina [sk]",
-	sl = "Slovenščina [sl]",
-	sr_Cyrl = "Српски [sr_Cyrl]",
-	sr_Latn = "Srpski (Latinica) [sr_Latn]",
-	sv = "Svenska [sv]",
-	sw = "Kiswahili [sw]",
-	--th = " [th]", blacklisted
-	tr = "Türkçe [tr]",
-	tt = "Tatarça [tt]",
-	uk = "Українська [uk]",
-	vi = "Tiếng Việt [vi]",
-	zh_CN = "中文 (简体) [zh_CN]",
-	zh_TW = "正體中文 (繁體) [zh_TW]",
-}
+get_setting_info("language").option_labels = function()
+	return {
+		[""] = fgettext_ne("(Use system language)"),
+		--ar = " [ar]", blacklisted
+		be = "Беларуская [be]",
+		bg = "Български [bg]",
+		ca = "Català [ca]",
+		cs = "Česky [cs]",
+		cy = "Cymraeg [cy]",
+		da = "Dansk [da]",
+		de = "Deutsch [de]",
+		--dv = " [dv]", blacklisted
+		el = "Ελληνικά [el]",
+		en = "English [en]",
+		eo = "Esperanto [eo]",
+		es = "Español [es]",
+		et = "Eesti [et]",
+		eu = "Euskara [eu]",
+		fi = "Suomi [fi]",
+		fil = "Wikang Filipino [fil]",
+		fr = "Français [fr]",
+		gd = "Gàidhlig [gd]",
+		gl = "Galego [gl]",
+		--he = " [he]", blacklisted
+		--hi = " [hi]", blacklisted
+		hu = "Magyar [hu]",
+		id = "Bahasa Indonesia [id]",
+		it = "Italiano [it]",
+		ja = "日本語 [ja]",
+		jbo = "Lojban [jbo]",
+		kk = "Қазақша [kk]",
+		--kn = " [kn]", blacklisted
+		ko = "한국어 [ko]",
+		ky = "Kırgızca / Кыргызча [ky]",
+		lt = "Lietuvių [lt]",
+		lv = "Latviešu [lv]",
+		mn = "Монгол [mn]",
+		mr = "मराठी [mr]",
+		ms = "Bahasa Melayu [ms]",
+		--ms_Arab = " [ms_Arab]", blacklisted
+		nb = "Norsk Bokmål [nb]",
+		nl = "Nederlands [nl]",
+		nn = "Norsk Nynorsk [nn]",
+		oc = "Occitan [oc]",
+		pl = "Polski [pl]",
+		pt = "Português [pt]",
+		pt_BR = "Português do Brasil [pt_BR]",
+		ro = "Română [ro]",
+		ru = "Русский [ru]",
+		sk = "Slovenčina [sk]",
+		sl = "Slovenščina [sl]",
+		sr_Cyrl = "Српски [sr_Cyrl]",
+		sr_Latn = "Srpski (Latinica) [sr_Latn]",
+		sv = "Svenska [sv]",
+		sw = "Kiswahili [sw]",
+		--th = " [th]", blacklisted
+		tr = "Türkçe [tr]",
+		tt = "Tatarça [tt]",
+		uk = "Українська [uk]",
+		vi = "Tiếng Việt [vi]",
+		zh_CN = "中文 (简体) [zh_CN]",
+		zh_TW = "正體中文 (繁體) [zh_TW]",
+	}
+end
 
 
 -- See if setting matches keywords
@@ -420,7 +427,7 @@ local function build_page_components(page)
 		elseif item.get_formspec then
 			retval[i] = item
 		elseif item.heading then
-			retval[i] = component_funcs.heading(item.heading)
+			retval[i] = component_funcs.heading(fgettext_ne(item.heading))
 		end
 	end
 	return retval
