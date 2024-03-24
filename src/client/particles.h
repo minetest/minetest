@@ -44,9 +44,6 @@ struct ClientParticleTexture
 
 	ClientParticleTexture() = default;
 	ClientParticleTexture(const ServerParticleTexture& p, ITextureSource *tsrc);
-	ClientParticleTexture(const ParticleTexture& p, video::ITexture *t):
-			tex(p),
-			ref(t) {}
 };
 
 struct ClientParticleTexRef

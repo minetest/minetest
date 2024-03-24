@@ -82,7 +82,7 @@ Particle::~Particle()
 bool Particle::attachToBuffer(ParticleBuffer *buffer)
 {
 	auto index_opt = buffer->allocate();
-	if (index_opt) {
+	if (index_opt.has_value()) {
 		m_index = index_opt.value();
 		m_buffer = buffer;
 		return true;
@@ -796,16 +796,14 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 				texpool.emplace_back(p.texture, client->tsrc());
 			}
 
-			if (m_particle_spawners.size() < 200) {
-				addParticleSpawner(event->add_particlespawner.id,
-						std::make_unique<ParticleSpawner>(
-							player,
-							p,
-							event->add_particlespawner.attached_id,
-							std::move(texpool),
-							this)
-						);
-			}
+			addParticleSpawner(event->add_particlespawner.id,
+					std::make_unique<ParticleSpawner>(
+						player,
+						p,
+						event->add_particlespawner.attached_id,
+						std::move(texpool),
+						this)
+					);
 
 			delete event->add_particlespawner.p;
 			break;
