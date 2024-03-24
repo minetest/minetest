@@ -1105,10 +1105,10 @@ void TouchScreenGUI::applyContextControls(const TouchInteractionMode &mode)
 	// Since the pointed thing has already been determined when this function
 	// is called, we cannot use this function to update the shootline.
 
+	sanity_check(mode != TouchInteractionMode_USER);
+	u64 now = porting::getTimeMs();
 	bool target_dig_pressed = false;
 	bool target_place_pressed = false;
-
-	u64 now = porting::getTimeMs();
 
 	// If the meanings of short and long taps have been swapped, abort any ongoing
 	// short taps because they would do something else than the player expected.

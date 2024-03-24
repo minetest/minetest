@@ -185,6 +185,19 @@ fixed_virtual_joystick (Fixed virtual joystick) bool false
 #    Requires: touchscreen_gui
 virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool false
 
+#    The gesture for for punching players/entities.
+#    This can be overridden by games and mods.
+#
+#    * short_tap
+#      Easy to use and well-known from other games that shall not be named.
+#
+#    * long_tap
+#      Known from the classic Minetest mobile controls.
+#      Combat is more or less impossible.
+#
+#    Requires: touchscreen_gui
+touch_punch_gesture (Punch gesture) enum short_tap short_tap,long_tap
+
 
 [Graphics and Audio]
 

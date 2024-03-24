@@ -490,6 +490,7 @@ void set_default_settings()
 	settings->setDefault("touch_use_crosshair", "false");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux1", "false");
+	settings->setDefault("touch_punch_gesture", "short_tap");
 #ifdef ENABLE_TOUCH
 	settings->setDefault("clickable_chat_weblinks", "false");
 #else
