@@ -4104,25 +4104,31 @@ Two functions are provided to translate strings: `minetest.translate` and
   avoid clashes with other mods.
   This function must be given a number of arguments equal to the number of
   arguments the translated string expects.
-  Arguments are literal strings -- they will not be translated, so if you want
-  them to be, they need to come as outputs of `minetest.translate` as well.
+  Arguments are literal strings -- they will not be translated.
 
-  For instance, suppose we want to translate "@1 Wool" with "@1" being replaced
-  by the translation of "Red". We can do the following:
+For instance, suppose we want to greet players when they join. We can do the
+following:
 
-  ```lua
-  local S = minetest.get_translator()
-  S("@1 Wool", S("Red"))
-  ```
+```lua
+local S = minetest.get_translator("hello")
+minetest.register_on_joinplayer(function(player)
+    local name = player:get_player_name()
+    minetest.chat_send_player(name, S("Hello @1, how are you today?", name))
+end)
+```
 
-  This will be displayed as "Red Wool" on old clients and on clients that do
-  not have localization enabled. However, if we have for instance a translation
-  file named `wool.fr.tr` containing the following:
+When someone called "CoolGuy" joins the game with an old client or a client
+that does not have localization enabled, they will see `Hello CoolGuy, how are
+you today?`
 
-      @1 Wool=Laine @1
-      Red=Rouge
+However, if we have for instance a translation file named `hello.de.tr`
+containing the following:
 
-  this will be displayed as "Laine Rouge" on clients with a French locale.
+    # textdomain: hello
+    Hello @1, how are you today?=Hallo @1, wie geht es dir heute?
+
+and CoolGuy has set a German locale, they will see `Hallo CoolGuy, wie geht es
+dir heute?`
 
 Operations on translated strings
 --------------------------------
