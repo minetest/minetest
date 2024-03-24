@@ -19,8 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <iostream>
 #include <vector>
+#include <unordered_map>
 #include "irrlichttypes_extrabloated.h"
 #include "irr_ptr.h"
 #include "../particles.h"
@@ -129,8 +129,7 @@ private:
 class ParticleSpawner
 {
 public:
-	ParticleSpawner(IGameDef *gamedef,
-		LocalPlayer *player,
+	ParticleSpawner(LocalPlayer *player,
 		const ParticleSpawnerParameters &params,
 		u16 attached_id,
 		std::vector<ClientParticleTexture> &&texpool,
@@ -151,7 +150,6 @@ private:
 	size_t m_active;
 	ParticleManager *m_particlemanager;
 	float m_time;
-	IGameDef *m_gamedef;
 	LocalPlayer *m_player;
 	ParticleSpawnerParameters p;
 	std::vector<ClientParticleTexture> m_texpool;

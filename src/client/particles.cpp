@@ -261,7 +261,6 @@ void Particle::updateVertices(ClientEnvironment *env, video::SColor color)
 */
 
 ParticleSpawner::ParticleSpawner(
-		IGameDef *gamedef,
 		LocalPlayer *player,
 		const ParticleSpawnerParameters &params,
 		u16 attached_id,
@@ -271,7 +270,6 @@ ParticleSpawner::ParticleSpawner(
 		m_active(0),
 		m_particlemanager(p_manager),
 		m_time(0.0f),
-		m_gamedef(gamedef),
 		m_player(player),
 		p(params),
 		m_texpool(std::move(texpool)),
@@ -801,7 +799,6 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			if (m_particle_spawners.size() < 200) {
 				addParticleSpawner(event->add_particlespawner.id,
 						std::make_unique<ParticleSpawner>(
-							client,
 							player,
 							p,
 							event->add_particlespawner.attached_id,
