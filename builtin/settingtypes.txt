@@ -157,15 +157,20 @@ invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
 #    Requires: !android
 enable_touch (Enable touchscreen) bool true
 
-#    The length in pixels it takes for touchscreen interaction to start.
-#
-#    Requires: touchscreen_gui
-touchscreen_threshold (Touchscreen threshold) int 20 0 100
-
 #    Touchscreen sensitivity multiplier.
 #
 #    Requires: touchscreen_gui
 touchscreen_sensitivity (Touchscreen sensitivity) float 0.2 0.001 10.0
+
+#    The length in pixels after which a touch interaction is considered movement.
+#
+#    Requires: touchscreen_gui
+touchscreen_threshold (Movement threshold) int 20 0 100
+
+#    The delay in milliseconds after which a touch interaction is considered a long tap.
+#
+#    Requires: touchscreen_gui
+touch_long_tap_delay (Threshold for long taps) int 400 100 1000
 
 #    Use crosshair to select object instead of whole screen.
 #    If enabled, a crosshair will be shown and will be used for selecting object.

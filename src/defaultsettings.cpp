@@ -485,8 +485,9 @@ void set_default_settings()
 	settings->setDefault("keymap_sneak", "KEY_SHIFT");
 #endif
 
-	settings->setDefault("touchscreen_threshold", "20");
 	settings->setDefault("touchscreen_sensitivity", "0.2");
+	settings->setDefault("touchscreen_threshold", "20");
+	settings->setDefault("touch_long_tap_delay", "400");
 	settings->setDefault("touch_use_crosshair", "false");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux1", "false");
