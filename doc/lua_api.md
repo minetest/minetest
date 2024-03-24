@@ -4084,13 +4084,15 @@ Two functions are provided to translate strings: `minetest.translate` and
 `minetest.get_translator`.
 
 * `minetest.get_translator(textdomain)` is a simple wrapper around
-  `minetest.translate`, and `minetest.get_translator(textdomain)(str, ...)` is
-  equivalent to `minetest.translate(textdomain, str, ...)`.
+  `minetest.translate` and `minetest.translate_n`.
+  After `local S, NS = minetest.get_translator(textdomain)`, we have
+  `S(str, ...)` equivalent to `minetest.translate(textdomain, str, ...)`, and
+  `NS(str, str_plural, n, ...)` to `minetest.translate_n(textdomain, str, str_plural, n, ...)`.
   It is intended to be used in the following way, so that it avoids verbose
   repetitions of `minetest.translate`:
 
   ```lua
-  local S = minetest.get_translator(textdomain)
+  local S, NS = minetest.get_translator(textdomain)
   S(str, ...)
   ```
 
@@ -4112,7 +4114,7 @@ Two functions are provided to translate strings: `minetest.translate` and
   by the translation of "Red". We can do the following:
 
   ```lua
-  local S = minetest.get_translator()
+  local S, NS = minetest.get_translator()
   S("@1 Wool", S("Red"))
   ```
 
@@ -4120,10 +4122,35 @@ Two functions are provided to translate strings: `minetest.translate` and
   not have localization enabled. However, if we have for instance a translation
   file named `wool.fr.tr` containing the following:
 
-      @1 Wool=Laine @1
-      Red=Rouge
+  ```
+  @1 Wool=Laine @1
+  Red=Rouge
+  ```
 
   this will be displayed as "Laine Rouge" on clients with a French locale.
+
+* `minetest.translate_n(textdomain, str, str_plural, n, ...)` translates the
+  string `str` with the given `textdomain` for disambiguaion. The value of
+  `n`, which must be a nonnegative integer, is used to decide whether to use
+  the singular or the plural version of the string. Depending on the locale of
+  the client, the choice between singular and plural might be more complicated,
+  but the choice will be done automatically using the value of `n`.
+
+  You can read https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html
+  for more details on the differences of plurals between languages.
+
+  Also note that plurals are only handled in .po or .mo files, and not in .tr files.
+
+  A typical use of it looks like:
+  ```lua
+  local S, NS = minetest.get_translator()
+  NS("@1 file", "@1 files", n, tostring(n))
+  ```
+  Here, "1 file" will be displayed if `n` is 1, but `[n] files` will be displayed
+  otherwise. On clients with a different locale, the translation file will provide
+  different translation strings depending on the value of `n`.
+
+
 
 Operations on translated strings
 --------------------------------
@@ -4137,8 +4164,8 @@ expected manner. However, string concatenation will still work as expected
 sentences by breaking them into parts; arguments should be used instead), and
 operations such as `minetest.colorize` which are also concatenation.
 
-Translation file format
------------------------
+Old translation file format
+---------------------------
 
 A translation file has the suffix `.[lang].tr`, where `[lang]` is the language
 it corresponds to. It must be put into the `locale` subdirectory of the mod.
@@ -4152,6 +4179,24 @@ The file should be a text file, with the following format:
   arguments, literal `@`, `=` or newline (See [Escapes] below).
   There must be no extraneous whitespace around the `=` or at the beginning or
   the end of the line.
+
+Gettext translation file format
+-------------------------------
+
+Gettext files can also be used as translations. A translation file has the suffix
+`.[lang].po` or `.[lang].mo`, depending on whether it is compiled or not, and must
+also be placed in the `locale` subdirectory of the mod. The value of `textdomain`
+is `msgctxt` in the gettext files. If `msgctxt` is not provided, the name of the
+translation file is used instead.
+
+A typical entry in a `.po` file would look like:
+
+```po
+msgctxt "textdomain"
+
+msgid "Hello world!"
+msgstr "Bonjour le monde!"
+```
 
 Escapes
 -------
