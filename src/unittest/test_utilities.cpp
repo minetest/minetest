@@ -318,6 +318,7 @@ void TestUtilities::testUTF8()
 	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide("")), "");
 	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide("the shovel dug a crumbly node!")),
 		"the shovel dug a crumbly node!");
+
 	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide(u8"-ä-")),
 		u8"-ä-");
 	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide(u8"-\U0002000b-")),
@@ -326,6 +327,12 @@ void TestUtilities::testUTF8()
 		const auto *literal = U"-\U0002000b-";
 		UASSERT(utf8_to_wide(u8"-\U0002000b-") == reinterpret_cast<const wchar_t*>(literal));
 	}
+
+	// try to check that the conversion function does not accidentally keep
+	// its internal state across invocations.
+	// \xC4\x81 is UTF-8 for \u0101
+	utf8_to_wide("\xC4");
+	UASSERT(utf8_to_wide("\x81") != L"\u0101");
 }
 
 void TestUtilities::testRemoveEscapes()
