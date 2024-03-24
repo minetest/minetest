@@ -183,9 +183,11 @@ void TestUtilities::testWrapDegrees_0_360_v3f()
 
 void TestUtilities::testLowercase()
 {
-	UASSERT(lowercase("Foo bAR") == "foo bar");
-	UASSERT(lowercase("eeeeeeaaaaaaaaaaaààààà") == "eeeeeeaaaaaaaaaaaààààà");
-	UASSERT(lowercase("MINETEST-powa") == "minetest-powa");
+	UASSERTEQ(auto, lowercase("Foo bAR"), "foo bar");
+	UASSERTEQ(auto, lowercase(u8"eeeeeeaaaaaaaaaaaààààà"), u8"eeeeeeaaaaaaaaaaaààààà");
+	// intentionally won't handle Unicode, regardless of locale
+	UASSERTEQ(auto, lowercase(u8"ÜÜ"), u8"ÜÜ");
+	UASSERTEQ(auto, lowercase("MINETEST-powa"), "minetest-powa");
 }
 
 
@@ -309,18 +311,21 @@ void TestUtilities::testAsciiPrintableHelper()
 
 void TestUtilities::testUTF8()
 {
-	UASSERT(utf8_to_wide("¤") == L"¤");
+	UASSERT(utf8_to_wide(u8"¤") == L"¤");
 
-	UASSERT(wide_to_utf8(L"¤") == "¤");
+	UASSERTEQ(std::string, wide_to_utf8(L"¤"), u8"¤");
 
 	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide("")), "");
 	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide("the shovel dug a crumbly node!")),
 		"the shovel dug a crumbly node!");
-	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide("-ä-")),
-		"-ä-");
-	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide("-\xF0\xA0\x80\x8B-")),
-		"-\xF0\xA0\x80\x8B-");
-
+	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide(u8"-ä-")),
+		u8"-ä-");
+	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide(u8"-\U0002000b-")),
+		u8"-\U0002000b-");
+	if constexpr (sizeof(wchar_t) == 4) {
+		const auto *literal = U"-\U0002000b-";
+		UASSERT(utf8_to_wide(u8"-\U0002000b-") == reinterpret_cast<const wchar_t*>(literal));
+	}
 }
 
 void TestUtilities::testRemoveEscapes()
@@ -643,7 +648,7 @@ void TestUtilities::testSanitizeDirName()
 	UASSERTEQ(auto, sanitizeDirName(" a ", "~"), "_a_");
 	UASSERTEQ(auto, sanitizeDirName("COM1", "~"), "~COM1");
 	UASSERTEQ(auto, sanitizeDirName("COM1", ":"), "_COM1");
-	UASSERTEQ(auto, sanitizeDirName("cOm\u00B2", "~"), "~cOm\u00B2");
+	UASSERTEQ(auto, sanitizeDirName(u8"cOm\u00B2", "~"), u8"~cOm\u00B2");
 	UASSERTEQ(auto, sanitizeDirName("cOnIn$", "~"), "~cOnIn$");
 	UASSERTEQ(auto, sanitizeDirName(" cOnIn$ ", "~"), "_cOnIn$_");
 }
