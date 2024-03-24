@@ -9098,15 +9098,16 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     touch_interaction = {
         -- Only affects touchscreen clients.
         -- Defines the meaning of short and long taps with the item in hand.
-        -- The fields in this table have two valid values:
+        -- The fields in this table can be set to the following values:
+        -- * "user"                 (meaning depends on client-side settings)
         -- * "long_dig_short_place" (long tap  = dig, short tap = place)
         -- * "short_dig_long_place" (short tap = dig, long tap  = place)
         -- The field to be used is selected according to the current
         -- `pointed_thing`.
 
-        pointed_nothing = "long_dig_short_place",
-        pointed_node    = "long_dig_short_place",
-        pointed_object  = "short_dig_long_place",
+        pointed_nothing = "user",
+        pointed_node    = "user",
+        pointed_object  = "user",
     },
 
     sound = {
