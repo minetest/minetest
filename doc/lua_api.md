@@ -1411,8 +1411,7 @@ Look for examples in `games/devtest` or `games/minetest_game`.
 * `liquid`
     * The cubic source node for a liquid.
     * Faces bordering to the same node are never rendered.
-    * Connects to node specified in `liquid_alternative_flowing`.
-    * You *must* set `liquid_alternative_source` to the node's own name.
+    * Connects to node specified in `liquid_alternative_flowing` if specified.
     * Use `backface_culling = false` for the tiles you want to make
       visible when inside the node.
 * `flowingliquid`
@@ -9315,10 +9314,8 @@ Used by `minetest.register_node`.
     -- flowing version (`liquid_alternative_flowing`) and
     -- source version (`liquid_alternative_source`) of a liquid.
     --
-    -- Specifically, these fields are required if any of these is true:
-    -- * `liquidtype ~= "none" or
-    -- * `drawtype == "liquid" or
-    -- * `drawtype == "flowingliquid"
+    -- Specifically, these fields are required if `liquidtype ~= "none"` or
+    -- `drawtype == "flowingliquid"`.
     --
     -- Liquids consist of up to two nodes: source and flowing.
     --
