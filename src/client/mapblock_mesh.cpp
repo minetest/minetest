@@ -751,10 +751,10 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 				p.layer.texture = (*p.layer.frames)[0].texture;
 			}
 
-			// - Texture hiddable
+			// - Texture hideable
 			if (p.layer.material_flags & MATERIAL_FLAG_HIDDABLE) {
-				// Add to MapBlockMesh to hiddable
-				auto &info = m_hiddable_info[{layer, i}];
+				// Add to MapBlockMesh to hideable
+				auto &info = m_hideable_info[{layer, i}];
 				info.hidden = false;
 				info.liquid_source_id = p.layer.liquid_source_id;
 				info.liquid_flowing_id = p.layer.liquid_flowing_id;
@@ -936,10 +936,10 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 	return true;
 }
 
-void MapBlockMesh::updateHiddable(content_t liquid_source_id, content_t liquid_flowing_id)
+void MapBlockMesh::updateHideable(content_t liquid_source_id, content_t liquid_flowing_id)
 {
 	// Texture animation
-	for (auto &it : m_hiddable_info) {
+	for (auto &it : m_hideable_info) {
 		const TileLayer &tile = it.second.tile;
 
 		scene::IMeshBuffer *buf = m_mesh[it.first.first]->getMeshBuffer(it.first.second);
@@ -947,21 +947,11 @@ void MapBlockMesh::updateHiddable(content_t liquid_source_id, content_t liquid_f
 		bool hide = (it.second.liquid_source_id == liquid_source_id) &&
 				(it.second.liquid_flowing_id == liquid_flowing_id);
 		if (it.second.hidden != hide) {
-			if (hide) {
-				buf->getMaterial().setTexture(0, m_texture_blank);
-				if (m_enable_shaders) {
-					if (tile.normal_texture)
-						buf->getMaterial().setTexture(1, m_texture_blank);
-					buf->getMaterial().setTexture(2, m_texture_blank);
-				}
-			}
-			else {
-				buf->getMaterial().setTexture(0, tile.texture);
-				if (m_enable_shaders) {
-					if (tile.normal_texture)
-						buf->getMaterial().setTexture(1, tile.normal_texture);
-					buf->getMaterial().setTexture(2, tile.flags_texture);
-				}
+			buf->getMaterial().setTexture(0, hide ? m_texture_blank : tile.texture);
+			if (m_enable_shaders) {
+				if (tile.normal_texture)
+					buf->getMaterial().setTexture(1, hide ? m_texture_blank : tile.normal_texture);
+				buf->getMaterial().setTexture(2, hide ? m_texture_blank : tile.flags_texture);
 			}
 			it.second.hidden = hide;
 		}

@@ -194,7 +194,7 @@ public:
 	// Returns true if anything has been changed.
 	bool animate(bool faraway, float time, int crack, u32 daynight_ratio);
 
-	void updateHiddable(content_t liquid_source_id, content_t liquid_flowing_id);
+	void updateHideable(content_t liquid_source_id, content_t liquid_flowing_id);
 
 	scene::IMesh *getMesh()
 	{
@@ -246,7 +246,7 @@ private:
 		int frame_offset;
 		TileLayer tile;
 	};
-	struct HiddableInfo {
+	struct HideableInfo {
 		bool hidden;
 		content_t liquid_source_id;
 		content_t liquid_flowing_id;
@@ -280,9 +280,9 @@ private:
 	// Keys are pairs of (mesh index, buffer index in the mesh)
 	std::map<std::pair<u8, u32>, AnimationInfo> m_animation_info;
 
-	// Hiddable info: hiddable textures
+	// Hideable info: hideable textures
 	// Used for better rendering under liquids
-	std::map<std::pair<u8, u32>, HiddableInfo> m_hiddable_info;
+	std::map<std::pair<u8, u32>, HideableInfo> m_hideable_info;
 
 	// Animation info: day/night transitions
 	// Last daynight_ratio value passed to animate()

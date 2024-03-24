@@ -159,7 +159,10 @@ void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset, video::SCo
 	if (previous_node != current_node)
 		m_needs_update_transparent_meshes = true;
 
-	// regenerate mapblocks meshes if neccessary
+	/* update liquid hideable sides materials if neccessary
+	 * This is used to hide specific liquid sides on a liquid-glass boundary 
+	 * if the player is in the specific liquid.
+	 */
 	if (prev_pos != curr_pos) {
 		MapNode prev_node = getNode(prev_pos);
 		MapNode curr_node = getNode(curr_pos);
@@ -173,7 +176,7 @@ void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset, video::SCo
 			m_camera_liquid_source_id = curr_f.liquid_alternative_source_id;
 			m_camera_liquid_flowing_id = curr_f.liquid_alternative_flowing_id;
 			for (auto &i : m_drawlist) {
-				i.second->mesh->updateHiddable(m_camera_liquid_source_id, m_camera_liquid_flowing_id);
+				i.second->mesh->updateHideable(m_camera_liquid_source_id, m_camera_liquid_flowing_id);
 			}
 		}
 	}
@@ -181,7 +184,7 @@ void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset, video::SCo
 
 void ClientMap::updateMesh(MapBlockMesh *mesh)
 {
-	mesh->updateHiddable(m_camera_liquid_source_id, m_camera_liquid_flowing_id);
+	mesh->updateHideable(m_camera_liquid_source_id, m_camera_liquid_flowing_id);
 }
 
 MapSector * ClientMap::emergeSector(v2s16 p2d)
@@ -288,6 +291,13 @@ private:
 	v3s16 min_pos;
 	v3s16 volume;
 };
+
+void ClientMap::addBlockToDrawList(v3s16 pos, MapBlock *block)
+{
+	block->refGrab();
+	block->mesh->updateHideable(m_camera_liquid_source_id, m_camera_liquid_flowing_id);
+	m_drawlist.emplace(pos, block);
+}
 
 void ClientMap::updateDrawList()
 {
@@ -424,9 +434,7 @@ void ClientMap::updateDrawList()
 					block->refGrab();
 				} else if (mesh) {
 					// without mesh chunking we can add the block to the drawlist
-					block->refGrab();
-					block->mesh->updateHiddable(m_camera_liquid_source_id, m_camera_liquid_flowing_id);
-					m_drawlist.emplace(block->getPos(), block);
+					addBlockToDrawList(block->getPos(), block);
 				}
 			}
 		}
@@ -533,9 +541,7 @@ void ClientMap::updateDrawList()
 				}
 			} else if (mesh) {
 				// without mesh chunking we can add the block to the drawlist
-				block->refGrab();
-				block->mesh->updateHiddable(m_camera_liquid_source_id, m_camera_liquid_flowing_id);
-				m_drawlist.emplace(block_coord, block);
+				addBlockToDrawList(block_coord, block);
 			}
 
 			// Decide which sides to traverse next or to block away
@@ -646,9 +652,7 @@ void ClientMap::updateDrawList()
 	for (auto pos : shortlist) {
 		MapBlock *block = getBlockNoCreateNoEx(pos);
 		if (block) {
-			block->refGrab();
-			block->mesh->updateHiddable(m_camera_liquid_source_id, m_camera_liquid_flowing_id);
-			m_drawlist.emplace(pos, block);
+			addBlockToDrawList(pos, block);
 		}
 	}
 

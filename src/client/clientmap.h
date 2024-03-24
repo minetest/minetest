@@ -126,6 +126,8 @@ private:
 	// update the vertex order in transparent mesh buffers
 	void updateTransparentMeshBuffers();
 
+	// help method for updateDrawList
+	void addBlockToDrawList(v3s16 pos, MapBlock *block);
 
 	// Orders blocks by distance to the camera
 	class MapBlockComparer
