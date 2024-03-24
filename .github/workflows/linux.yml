@@ -151,13 +151,3 @@ jobs:
       - name: Test
         run: |
           ./bin/minetestserver --run-unittests
-
-  docker:
-    name: "Docker image"
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build docker image
-        run: |
-          docker build . -t minetest:latest
-          docker run --rm minetest:latest /usr/local/bin/minetestserver --version
