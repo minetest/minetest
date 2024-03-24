@@ -91,6 +91,8 @@ public:
 	ParticleSpawner *getParent() const { return m_parent; }
 
 	const ClientParticleTexRef &getTextureRef() const { return m_texture; }
+
+	ParticleBuffer *getBuffer() const { return m_buffer; }
 	bool attachToBuffer(ParticleBuffer *buffer);
 
 private:

@@ -1017,14 +1017,22 @@ bool ParticleManager::addParticle(std::unique_ptr<Particle> toadd)
 {
 	MutexAutoLock lock(m_particle_list_lock);
 
-	// find right buffer
 	auto material = getMaterialForParticle(toadd->getTextureRef());
 
 	ParticleBuffer *found = nullptr;
-	for (auto &buffer : m_particle_buffers) {
-		if (buffer->getMaterial(0) == material) {
-			found = buffer.get();
-			break;
+	// simple shortcut when multiple particles of the same type get added
+	if (!m_particles.empty()) {
+		auto &last = m_particles.back();
+		if (last->getBuffer() && last->getBuffer()->getMaterial(0) == material)
+			found = last->getBuffer();
+	}
+	if (!found) {
+		// search right buffer
+		for (auto &buffer : m_particle_buffers) {
+			if (buffer->getMaterial(0) == material) {
+				found = buffer.get();
+				break;
+			}
 		}
 	}
 	if (!found) {
