@@ -602,7 +602,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 						if (is_trusted) {
 							throw LuaError(
 									"Unable to write to a trusted or http mod's directory. "
-									"Use minetest.get_mod_data_path() or minetest.get_worldpath() instead.");
+									"For data storage consider minetest.get_mod_data_path() or minetest.get_worldpath() instead.");
 						} else if (is_dangerous_file) {
 							throw LuaError(
 									"Unable to write to special file for security reasons");
