@@ -701,8 +701,8 @@ bool PathStartsWith(const std::string &path, const std::string &prefix)
 				char pathchar = path[pathpos+len];
 				char prefixchar = prefix[prefixpos+len];
 				if(FILESYS_CASE_INSENSITIVE){
-					pathchar = tolower(pathchar);
-					prefixchar = tolower(prefixchar);
+					pathchar = my_tolower(pathchar);
+					prefixchar = my_tolower(prefixchar);
 				}
 				if(pathchar != prefixchar)
 					return false;

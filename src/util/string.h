@@ -101,6 +101,21 @@ bool parseColorString(const std::string &value, video::SColor &color, bool quiet
 		unsigned char default_alpha = 0xff);
 std::string encodeHexColorString(video::SColor color);
 
+/**
+ * Converts a letter to lowercase, with safe handling of the char type and non-ASCII.
+ * @param c input letter
+ * @returns same letter but lowercase
+*/
+inline char my_tolower(char c)
+{
+	// By design this function cannot handle any Unicode (codepoints don't fit into char),
+	// but make sure to pass it through unchanged.
+	// tolower() can mangle it if the POSIX locale is not UTF-8.
+	if (static_cast<unsigned char>(c) > 0x7f)
+		return c;
+	// toupper(3): "If the argument c is of type char, it must be cast to unsigned char"
+	return tolower(static_cast<unsigned char>(c));
+}
 
 /**
  * Returns a copy of \p str with spaces inserted at the right hand side to ensure
@@ -173,7 +188,7 @@ inline bool str_equal(std::basic_string_view<T> s1,
 		return false;
 
 	for (size_t i = 0; i < s1.size(); ++i)
-		if(tolower(s1[i]) != tolower(s2[i]))
+		if (my_tolower(s1[i]) != my_tolower(s2[i]))
 			return false;
 
 	return true;
@@ -212,7 +227,7 @@ inline bool str_starts_with(std::basic_string_view<T> str,
 		return str.compare(0, prefix.size(), prefix) == 0;
 
 	for (size_t i = 0; i < prefix.size(); ++i)
-		if (tolower(str[i]) != tolower(prefix[i]))
+		if (my_tolower(str[i]) != my_tolower(prefix[i]))
 			return false;
 	return true;
 }
@@ -253,7 +268,7 @@ inline bool str_ends_with(std::basic_string_view<T> str,
 		return str.compare(start, suffix.size(), suffix) == 0;
 
 	for (size_t i = 0; i < suffix.size(); ++i)
-		if (tolower(str[start + i]) != tolower(suffix[i]))
+		if (my_tolower(str[start + i]) != my_tolower(suffix[i]))
 			return false;
 	return true;
 }
@@ -305,7 +320,7 @@ inline std::string lowercase(std::string_view str)
 	std::string s2;
 	s2.resize(str.size());
 	for (size_t i = 0; i < str.size(); i++)
-		s2[i] = tolower(str[i]);
+		s2[i] = my_tolower(str[i]);
 	return s2;
 }
 
