@@ -5306,6 +5306,12 @@ Utilities
 
 * `minetest.get_worldpath()`: returns e.g. `"/home/user/.minetest/world"`
     * Useful for storing custom data
+* `minetest.get_mod_data_path()`: returns e.g. `"/home/user/.minetest/mod_data/mymod"`
+    * Useful for storing custom data *independently of worlds*.
+    * Must be called during mod load time.
+    * Can read or write to this directory at any time.
+    * It's possible that multiple Minetest instances are running at the same
+      time, which may lead to corruption if you are not careful.
 * `minetest.is_singleplayer()`
 * `minetest.features`: Table containing API feature flags
 
