@@ -414,6 +414,7 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver)
 	}
 
 	m_touchscreen_threshold = g_settings->getU16("touchscreen_threshold");
+	m_long_tap_delay = g_settings->getU16("touch_long_tap_delay");
 	m_fixed_joystick = g_settings->getBool("fixed_virtual_joystick");
 	m_joystick_triggers_aux1 = g_settings->getBool("virtual_joystick_triggers_aux1");
 	m_screensize = m_device->getVideoDriver()->getScreenSize();
@@ -999,7 +1000,7 @@ void TouchScreenGUI::step(float dtime)
 	if (m_has_move_id && !m_move_has_really_moved && m_tap_state == TapState::None) {
 		u64 delta = porting::getDeltaMs(m_move_downtime, porting::getTimeMs());
 
-		if (delta > MIN_DIG_TIME_MS) {
+		if (delta > m_long_tap_delay) {
 			m_tap_state = TapState::LongTap;
 		}
 	}
