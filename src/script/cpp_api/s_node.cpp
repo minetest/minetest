@@ -93,6 +93,8 @@ struct EnumString ScriptApiNode::es_NodeBoxType[] =
 		{NODEBOX_WALLMOUNTED, "wallmounted"},
 		{NODEBOX_LEVELED, "leveled"},
 		{NODEBOX_CONNECTED, "connected"},
+		{NODEBOX_LEVELED_PLANTLIKE, "leveled_plantlike"},
+		{NODEBOX_LEVELED_PLANTLIKE_ROOTED, "leveled_plantlike_rooted"},
 		{0, NULL},
 	};
 
