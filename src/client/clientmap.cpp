@@ -1004,7 +1004,7 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 		core::CMatrix4<f32> a;
 		a.buildRotateFromTo(v3f(0,1,0), z_dir);
 		v3f dir = m_camera_direction;
-		a.rotateVect(dir);
+		a.rotateAndScaleVect(dir);
 		int br = 0;
 		float step = BS*1.5;
 		if(max_d > 35*BS)
