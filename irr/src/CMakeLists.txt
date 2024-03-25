@@ -454,12 +454,6 @@ if(ENABLE_OPENGL3)
 endif()
 
 if(ANDROID)
-	target_sources(IRROTHEROBJ PRIVATE
-		Android/CIrrDeviceAndroid.cpp
-		Android/CAndroidAssetReader.cpp
-		Android/CAndroidAssetFileArchive.cpp
-		Android/CKeyEventWrapper.cpp
-	)
 elseif(APPLE)
 	# Build all IRROTHEROBJ sources as objc++, including the .cpp's
 	set_target_properties(IRROTHEROBJ PROPERTIES COMPILE_OPTIONS "-xobjective-c++")
