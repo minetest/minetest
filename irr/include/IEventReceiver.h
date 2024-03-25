@@ -79,9 +79,6 @@ enum EEVENT_TYPE
 	*/
 	EET_USER_EVENT,
 
-	//! Pass on raw events from the OS
-	EET_SYSTEM_EVENT,
-
 	//! Application state events like a resume, pause etc.
 	EET_APPLICATION_EVENT,
 
@@ -185,17 +182,6 @@ enum ETOUCH_INPUT_EVENT
 
 	//! No real event. Just for convenience to get number of events
 	ETIE_COUNT
-};
-
-enum ESYSTEM_EVENT_TYPE
-{
-	//! From Android command handler for native activity messages
-	ESET_ANDROID_CMD = 0,
-
-	// TODO: for example ESET_WINDOWS_MESSAGE for win32 message loop events
-
-	//! No real event, but to get number of event types
-	ESET_COUNT
 };
 
 //! Enumeration for a commonly used application state events (it's useful mainly for mobile devices)
@@ -528,25 +514,6 @@ struct SEvent
 		size_t UserData2;
 	};
 
-	// Raw events from the OS
-	struct SSystemEvent
-	{
-		//! Android command handler native activity messages.
-		struct SAndroidCmd
-		{
-			//!  APP_CMD_ enums defined in android_native_app_glue.h from the Android NDK
-			s32 Cmd;
-		};
-
-		// TOOD: more structs for iphone, Windows, X11, etc.
-
-		ESYSTEM_EVENT_TYPE EventType;
-		union
-		{
-			struct SAndroidCmd AndroidCmd;
-		};
-	};
-
 	// Application state event
 	struct SApplicationEvent
 	{
@@ -567,7 +534,6 @@ struct SEvent
 		struct SJoystickEvent JoystickEvent;
 		struct SLogEvent LogEvent;
 		struct SUserEvent UserEvent;
-		struct SSystemEvent SystemEvent;
 		struct SApplicationEvent ApplicationEvent;
 	};
 };
