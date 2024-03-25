@@ -196,6 +196,7 @@ private:
 
 	RemotePlayer *m_player = nullptr;
 	session_t m_peer_id_initial = 0; ///< only used to initialize RemotePlayer
+	GUId m_guid;
 
 	// Cheat prevention
 	LagPool m_dig_pool;
