@@ -307,10 +307,6 @@ else()
 	endif()
 
 	if (ANDROID)
-		include_directories(${ANDROID_NDK}/sources/android/native_app_glue)
-		add_library(native_app_glue OBJECT ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} native_app_glue)
-
 		set(PLATFORM_LIBS ${PLATFORM_LIBS} android log)
 	endif()
 endif()
@@ -518,6 +514,9 @@ include_directories(SYSTEM
 	${GMP_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 	${LUA_BIT_INCLUDE_DIR}
+	# on Android, Minetest depends on SDL2 directly
+	# on other platforms, only IrrlichtMt depends on SDL2
+	"$<$<PLATFORM_ID:Android>:${SDL2_INCLUDE_DIRS}>"
 )
 
 if(USE_GETTEXT)
@@ -562,6 +561,9 @@ if(BUILD_CLIENT)
 		${LUA_BIT_LIBRARY}
 		${FREETYPE_LIBRARY}
 		${PLATFORM_LIBS}
+		# on Android, Minetest depends on SDL2 directly
+		# on other platforms, only IrrlichtMt depends on SDL2
+		"$<$<PLATFORM_ID:Android>:${SDL2_LIBRARIES}>"
 	)
 	if(NOT USE_LUAJIT)
 		set_target_properties(${PROJECT_NAME} PROPERTIES

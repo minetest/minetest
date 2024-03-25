@@ -10,10 +10,6 @@
 #include "irrArray.h"
 #include "os.h"
 
-#if defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-#include <android/native_activity.h>
-#endif
-
 namespace irr
 {
 namespace video
@@ -55,9 +51,6 @@ bool CEGLManager::initialize(const SIrrlichtCreationParameters &params, const SE
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
 	EglWindow = (NativeWindowType)Data.OpenGLLinux.X11Window;
 	EglDisplay = eglGetDisplay((NativeDisplayType)Data.OpenGLLinux.X11Display);
-#elif defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-	EglWindow = (ANativeWindow *)Data.OGLESAndroid.Window;
-	EglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 #elif defined(_IRR_COMPILE_WITH_FB_DEVICE_)
 	EglWindow = (NativeWindowType)Data.OpenGLFB.Window;
 	EglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
@@ -119,10 +112,6 @@ bool CEGLManager::generateSurface()
 		// at this time only Android support this feature.
 		// this needs an update method instead!
 
-#if defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-	EglWindow = (ANativeWindow *)Data.OGLESAndroid.Window;
-#endif
-
 #if defined(_IRR_EMSCRIPTEN_PLATFORM_)
 	// eglChooseConfig is currently only implemented as stub in emscripten (version 1.37.22 at point of writing)
 	// But the other solution would also be fine as it also only generates a single context so there is not much to choose from.
@@ -135,13 +124,6 @@ bool CEGLManager::generateSurface()
 		os::Printer::log("Could not get config for EGL display.");
 		return false;
 	}
-
-#if defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-	EGLint Format = 0;
-	eglGetConfigAttrib(EglDisplay, EglConfig, EGL_NATIVE_VISUAL_ID, &Format);
-
-	ANativeWindow_setBuffersGeometry(EglWindow, 0, 0, Format);
-#endif
 
 	// Now we are able to create EGL surface.
 	EglSurface = eglCreateWindowSurface(EglDisplay, EglConfig, EglWindow, 0);

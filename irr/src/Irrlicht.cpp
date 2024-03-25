@@ -28,10 +28,6 @@ static const char *const copyright = "Irrlicht Engine (c) 2002-2017 Nikolaus Geb
 #include "CIrrDeviceSDL.h"
 #endif
 
-#ifdef _IRR_COMPILE_WITH_ANDROID_DEVICE_
-#include "Android/CIrrDeviceAndroid.h"
-#endif
-
 namespace irr
 {
 //! stub for calling createDeviceEx
@@ -72,11 +68,6 @@ extern "C" IRRLICHT_API IrrlichtDevice *IRRCALLCONV createDeviceEx(const SIrrlic
 #ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 	if (params.DeviceType == EIDT_X11 || (!dev && params.DeviceType == EIDT_BEST))
 		dev = new CIrrDeviceLinux(params);
-#endif
-
-#ifdef _IRR_COMPILE_WITH_ANDROID_DEVICE_
-	if (params.DeviceType == EIDT_ANDROID || (!dev && params.DeviceType == EIDT_BEST))
-		dev = new CIrrDeviceAndroid(params);
 #endif
 
 #ifdef _IRR_COMPILE_WITH_SDL_DEVICE_

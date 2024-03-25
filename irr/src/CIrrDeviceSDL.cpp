@@ -252,13 +252,31 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters &param) :
 		Window((SDL_Window *)param.WindowId), SDL_Flags(0),
 		MouseX(0), MouseY(0), MouseXRel(0), MouseYRel(0), MouseButtonStates(0),
 		Width(param.WindowSize.Width), Height(param.WindowSize.Height),
-		Resizable(param.WindowResizable == 1 ? true : false), CurrentTouchCount(0)
+		Resizable(param.WindowResizable == 1 ? true : false), CurrentTouchCount(0),
+		IsInBackground(false)
 {
 #ifdef _DEBUG
 	setDebugName("CIrrDeviceSDL");
 #endif
 
 	if (++SDLDeviceInstances == 1) {
+#ifdef __ANDROID__
+		// Blocking on pause causes problems with multiplayer.
+		// See https://github.com/minetest/minetest/issues/10842.
+		SDL_SetHint(SDL_HINT_ANDROID_BLOCK_ON_PAUSE, "0");
+		SDL_SetHint(SDL_HINT_ANDROID_BLOCK_ON_PAUSE_PAUSEAUDIO, "0");
+
+		SDL_SetHint(SDL_HINT_ANDROID_TRAP_BACK_BUTTON, "1");
+
+		// Minetest does its own screen keyboard handling.
+		SDL_SetHint(SDL_HINT_ENABLE_SCREEN_KEYBOARD, "0");
+#endif
+
+		// Minetest has its own code to synthesize mouse events from touch events,
+		// so we prevent SDL from doing it.
+		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
+		SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
+
 		u32 flags = SDL_INIT_TIMER | SDL_INIT_EVENTS;
 		if (CreationParams.DriverType != video::EDT_NULL)
 			flags |= SDL_INIT_VIDEO;
@@ -272,11 +290,6 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters &param) :
 			os::Printer::log("SDL initialized", ELL_INFORMATION);
 		}
 	}
-
-	// Minetest has its own code to synthesize mouse events from touch events,
-	// so we prevent SDL from doing it.
-	SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
-	SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
 
 	// create keymap
 	createKeyMap();
@@ -448,9 +461,13 @@ bool CIrrDeviceSDL::createWindow()
 	default:;
 	}
 
+/*
+Makes context creation fail on some Android devices.
+See discussion in https://github.com/minetest/minetest/pull/14498.
 #ifdef _DEBUG
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG | SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG);
 #endif
+*/
 
 	if (CreationParams.Bits == 16) {
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
@@ -509,6 +526,14 @@ bool CIrrDeviceSDL::createWindow()
 		SDL_DestroyWindow(Window);
 		return false;
 	}
+
+	// Update Width and Height to match the actual window size.
+	// In fullscreen mode, the window size specified in SIrrlichtCreationParameters
+	// is ignored, so we cannot rely on it.
+	int w = 0, h = 0;
+	SDL_GetWindowSize(Window, &w, &h);
+	Width = w;
+	Height = h;
 
 	return true;
 #endif // !_IRR_EMSCRIPTEN_PLATFORM_
@@ -621,7 +646,17 @@ bool CIrrDeviceSDL::run()
 			}
 #endif
 
-			switch (SDL_event.button.button) {
+			auto button = SDL_event.button.button;
+#ifdef __ANDROID__
+			// Android likes to send the right mouse button as the back button.
+			// According to some web searches I did, this is probably
+			// vendor/device-specific.
+			// Since a working right mouse button is very important for
+			// Minetest, we have this little hack.
+			if (button == SDL_BUTTON_X2)
+				button = SDL_BUTTON_RIGHT;
+#endif
+			switch (button) {
 			case SDL_BUTTON_LEFT:
 				if (SDL_event.type == SDL_MOUSEBUTTONDOWN) {
 					irrevent.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
@@ -770,6 +805,20 @@ bool CIrrDeviceSDL::run()
 			}
 
 			postEventFromUser(irrevent);
+			break;
+
+		// Contrary to what the SDL documentation says, SDL_APP_WILLENTERBACKGROUND
+		// and SDL_APP_WILLENTERFOREGROUND are actually sent in onStop/onStart,
+		// not onPause/onResume, on recent Android versions. This can be verified
+		// by testing or by looking at the org.libsdl.app.SDLActivity Java code.
+		// -> This means we can use them to implement isWindowVisible().
+
+		case SDL_APP_WILLENTERBACKGROUND:
+			IsInBackground = true;
+			break;
+
+		case SDL_APP_WILLENTERFOREGROUND:
+			IsInBackground = false;
 			break;
 
 		default:
@@ -1053,6 +1102,11 @@ bool CIrrDeviceSDL::isFullscreen() const
 #endif
 }
 
+bool CIrrDeviceSDL::isWindowVisible() const
+{
+	return !IsInBackground;
+}
+
 //! returns if window is active. if not, nothing need to be drawn
 bool CIrrDeviceSDL::isWindowActive() const
 {
@@ -1110,6 +1164,8 @@ void CIrrDeviceSDL::createKeyMap()
 	KeyMap.reallocate(105);
 
 	// buttons missing
+
+	KeyMap.push_back(SKeyMap(SDLK_AC_BACK, KEY_CANCEL));
 
 	KeyMap.push_back(SKeyMap(SDLK_BACKSPACE, KEY_BACK));
 	KeyMap.push_back(SKeyMap(SDLK_TAB, KEY_TAB));
