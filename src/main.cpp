@@ -384,6 +384,8 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Run speed tests"))));
 	allowed_options->insert(std::make_pair("address", ValueSpec(VALUETYPE_STRING,
 			_("Address to connect to. ('' = local game)"))));
+	allowed_options->insert(std::make_pair("remote-input", ValueSpec(VALUETYPE_STRING,
+			_("Enable user input to be sent from message queue, for AI agent reinforcement learning. Provide an IP:PORT to listen on."))));
 	allowed_options->insert(std::make_pair("random-input", ValueSpec(VALUETYPE_FLAG,
 			_("Enable random user input, for testing"))));
 	allowed_options->insert(std::make_pair("server", ValueSpec(VALUETYPE_FLAG,

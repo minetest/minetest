@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "client/localplayer.h"
 #include "irrlichttypes_extrabloated.h"
 #include "joystick_controller.h"
 #include <list>
@@ -248,9 +249,10 @@ public:
 
 	virtual ~InputHandler() = default;
 
-	virtual bool isRandom() const
-	{
-		return false;
+	// true if no physical keyboard is attached
+	virtual bool isDetached() const { return false; }
+	virtual void registerLocalPlayer(LocalPlayer *player) {
+		m_player = player;
 	}
 
 	virtual bool isKeyDown(GameKeyType k) = 0;
@@ -280,6 +282,8 @@ public:
 
 	JoystickController joystick;
 	KeyCache keycache;
+protected:
+	LocalPlayer *m_player = nullptr;
 };
 /*
 	Separated input handler
@@ -433,7 +437,7 @@ class RandomInputHandler : public InputHandler
 public:
 	RandomInputHandler() = default;
 
-	bool isRandom() const
+	bool isDetached() const override
 	{
 		return true;
 	}

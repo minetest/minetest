@@ -47,6 +47,7 @@ private:
 	void speed_tests();
 
 	bool skip_main_menu = false;
+	std::string remote_input_addr;
 	bool random_input = false;
 	RenderingEngine *m_rendering_engine = nullptr;
 	InputHandler *input = nullptr;

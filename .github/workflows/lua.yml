@@ -17,21 +17,30 @@ jobs:
   # Note that the integration tests are also run build.yml, but only when C++ code is changed.
   integration_tests:
     name: "Compile and run multiplayer tests"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v3
     - name: Install deps
       run: |
         source ./util/ci/common.sh
-        install_linux_deps clang-10 gdb libluajit-5.1-dev
+        install_linux_deps clang-14 gdb
+
+    - uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: '3.11'
+        mamba-version: "*"
+        channels: conda-forge,nodefaults
+        activate-environment: minetest
+        environment-file: environment.yml
 
     - name: Build
+      shell: bash -l {0}
       run: |
         ./util/ci/build.sh
       env:
-        CC: clang-10
-        CXX: clang++-10
-        CMAKE_FLAGS: "-DENABLE_GETTEXT=0 -DBUILD_SERVER=0"
+        CC: clang-14
+        CXX: clang++-14
+        CMAKE_BUILD_SERVER: FALSE
 
     - name: Integration test + devtest
       run: |

@@ -33,27 +33,6 @@ env:
   MINETEST_POSTGRESQL_CONNECT_STRING: 'host=localhost user=minetest password=minetest dbname=minetest'
 
 jobs:
-  # Older gcc version (should be close to our minimum supported version)
-  gcc_7:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install deps
-        run: |
-          source ./util/ci/common.sh
-          install_linux_deps g++-7
-
-      - name: Build
-        run: |
-          ./util/ci/build.sh
-        env:
-          CC: gcc-7
-          CXX: g++-7
-
-      - name: Test
-        run: |
-          ./bin/minetest --run-unittests
-
   # Current gcc version
   gcc_12:
     runs-on: ubuntu-22.04
@@ -64,7 +43,17 @@ jobs:
           source ./util/ci/common.sh
           install_linux_deps g++-12 libluajit-5.1-dev
 
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: '3.11'
+          mamba-version: "*"
+          channels: conda-forge,nodefaults
+          activate-environment: minetest
+          environment-file: environment.yml
+
       - name: Build
+        # Needed so conda environment is active
+        shell: bash -l {0}
         run: |
           ./util/ci/build.sh
         env:
@@ -74,31 +63,6 @@ jobs:
       - name: Test
         run: |
           ./bin/minetest --run-unittests
-
-  # Older clang version (should be close to our minimum supported version)
-  clang_7:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install deps
-        run: |
-          source ./util/ci/common.sh
-          install_linux_deps clang-7 valgrind
-
-      - name: Build
-        run: |
-          ./util/ci/build.sh
-        env:
-          CC: clang-7
-          CXX: clang++-7
-
-      - name: Unittest
-        run: |
-          ./bin/minetest --run-unittests
-
-      - name: Valgrind
-        run: |
-          valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ./bin/minetest --run-unittests
 
   # Current clang version
   clang_14:
@@ -110,7 +74,17 @@ jobs:
           source ./util/ci/common.sh
           install_linux_deps clang-14 gdb
 
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: '3.11'
+          mamba-version: "*"
+          channels: conda-forge,nodefaults
+          activate-environment: minetest
+          environment-file: environment.yml
+
       - name: Build
+        # Needed so conda environment is active
+        shell: bash -l {0}
         run: |
           ./util/ci/build.sh
         env:
@@ -125,6 +99,54 @@ jobs:
         run: |
           ./util/test_multiplayer.sh
 
+      - name: Valgrind
+        # Needed so conda environment is active
+        shell: bash -l {0}
+        run: |
+          mamba install valgrind
+          valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ./bin/minetest --run-unittests
+
+  pytest:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install deps
+        run: |
+          source ./util/ci/common.sh
+          install_linux_deps clang-14
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: '3.11'
+          mamba-version: "*"
+          channels: conda-forge,nodefaults
+          activate-environment: minetest
+          environment-file: environment.yml
+
+      - name: Build
+        # Needed so conda environment is active
+        shell: bash -l {0}
+        run: |
+          ./util/ci/build.sh
+        env:
+          CC: clang-14
+          CXX: clang++-14
+          CMAKE_BUILD_SERVER: FALSE
+
+      - name: Run pytest
+        # Needed so conda environment is active
+        shell: bash -l {0}
+        run: |
+          cd python
+          set +o errexit
+          timeout --signal=KILL 5m pytest -v
+          exit_code=$?
+          if [ $exit_code -ne 0 ]; then
+            echo "test failed, printing minetest logs"
+            find /tmp -type f -name '*.log' -exec cat {} \;
+          fi
+          exit $exit_code
+
   # Build with prometheus-cpp (server-only)
   clang_9_prometheus:
     name: "clang_9 (PROMETHEUS=1)"
@@ -136,28 +158,29 @@ jobs:
           source ./util/ci/common.sh
           install_linux_deps clang-9
 
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: '3.11'
+          mamba-version: "*"
+          channels: conda-forge,nodefaults
+          activate-environment: minetest
+          environment-file: environment.yml
+
       - name: Build prometheus-cpp
+        shell: bash -l {0}
         run: |
           ./util/ci/build_prometheus_cpp.sh
 
       - name: Build
+        # Needed so conda environment is active
+        shell: bash -l {0}
         run: |
           ./util/ci/build.sh
         env:
           CC: clang-9
           CXX: clang++-9
-          CMAKE_FLAGS: "-DENABLE_PROMETHEUS=1 -DBUILD_CLIENT=0"
+          CMAKE_FLAGS: "-DENABLE_PROMETHEUS=1 -DBUILD_CLIENT=0 -DENABLE_CURSES=FALSE"
 
       - name: Test
         run: |
           ./bin/minetestserver --run-unittests
-
-  docker:
-    name: "Docker image"
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build docker image
-        run: |
-          docker build . -t minetest:latest
-          docker run --rm minetest:latest /usr/local/bin/minetestserver --version

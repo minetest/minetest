@@ -1909,7 +1909,8 @@ float Client::getCurRate()
 void Client::makeScreenshot()
 {
 	irr::video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
-	irr::video::IImage* const raw_image = driver->createScreenShot();
+
+	irr::video::IImage* raw_image = driver->createScreenShot();
 
 	if (!raw_image)
 		return;
@@ -1974,6 +1975,11 @@ void Client::makeScreenshot()
 	}
 
 	raw_image->drop();
+}
+
+RenderingEngine *Client::getRenderingEngine()
+{
+	return m_rendering_engine;
 }
 
 bool Client::shouldShowMinimap() const

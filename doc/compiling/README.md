@@ -35,6 +35,7 @@ General options and their default values:
     RUN_IN_PLACE=FALSE         - Create a portable install (worlds, settings etc. in current directory)
     ENABLE_UPDATE_CHECKER=TRUE - Whether to enable update checks by default
     INSTALL_DEVTEST=FALSE      - Whether the Development Test game should be installed alongside Minetest
+    INSTALL_MINETEST_GAME=FALSE- Whether the Minetest game should be installed alongside Minetest. Useful on MacOS for getting pytest to pass without having to symlink minetest game into Application Support.
     USE_GPROF=FALSE            - Enable profiling using GProf
     VERSION_EXTRA=             - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
     ENABLE_TOUCH=FALSE         - Enable Touchscreen support (requires support by IrrlichtMt)

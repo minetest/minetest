@@ -1,0 +1,45 @@
+name: minetest
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  # minetest build deps
+  # NOTE: I was not able to get the build to work
+  # using conda-provided compilers. Doing so led
+  # to strange behavior with CMake's library resolution where it
+  # would refuse to use system-provided OpenGL headers when
+  # compiling Irrlicht no matter how hard I tried.
+  # And unfortunately there is no OpenGL implementation in conda.
+  - capnproto
+  - cmake
+  - gettext
+  - gmp
+  - jsoncpp
+  - libcurl
+  - libjpeg-turbo
+  - libpng
+  - libsqlite
+  - luajit-openresty
+  - ncurses
+  # TODO: move mold from
+  # Dockerfile / apt-get to here once
+  # https://github.com/conda-forge/capnproto-feedstock/pull/32
+  # (currently mold requires OpenSSL 3 and capnproto requires 1)
+  - ninja
+  - pkg-config
+  - zlib
+  - zstd
+  # python deps
+  - gymnasium
+  - numpy
+  - pillow # test only
+  - pip
+  - pip:
+    - -e python
+  - pycapnp
+  - pygame
+  - pytest # test only
+  - pytest-repeat # test only
+  - python=3.11
+  # others
+  - pre-commit

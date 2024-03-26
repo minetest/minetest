@@ -21,10 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "client/hud.h"
 #include "IRenderTarget.h"
+#include "client/renderingengine.h"
 
 #include <vector>
 #include <memory>
-
 
 TextureBuffer::~TextureBuffer()
 {

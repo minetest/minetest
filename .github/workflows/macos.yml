@@ -26,37 +26,36 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: '3.11'
+          mamba-version: "*"
+          channels: conda-forge,nodefaults
+          activate-environment: minetest
+          environment-file: environment.yml
+
       - name: Install deps
         run: |
           source ./util/ci/common.sh
           install_macos_deps
 
       - name: Build
+        shell: bash -l {0}
         run: |
-          git clone https://github.com/minetest/irrlicht lib/irrlichtmt --depth 1 -b $(cat misc/irrlichtmt_tag.txt)
-          mkdir build
-          cd build
-          cmake .. \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
+          cmake -B build -S . \
             -DCMAKE_FIND_FRAMEWORK=LAST \
-            -DCMAKE_INSTALL_PREFIX=../build/macos/ \
-            -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE \
-            -DINSTALL_DEVTEST=TRUE
-          cmake --build . -j$(sysctl -n hw.logicalcpu)
-          make install
+            -DCMAKE_INSTALL_PREFIX=build/macos/ \
+            -DRUN_IN_PLACE=FALSE \
+            -DENABLE_GETTEXT=TRUE \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -GNinja \
+            -DINSTALL_DEVTEST=TRUE \
+            -DICONV_LIBRARY="${CONDA_PREFIX}/lib/libiconv.dylib" \
+            -DCMAKE_INSTALL_RPATH="${CONDA_PREFIX}/lib"
+          cmake --build build
+          cmake --install build
 
       - name: Test
         run: |
           ./build/macos/minetest.app/Contents/MacOS/minetest --run-unittests
-
-      # Zipping the built .app preserves permissions on the contained files,
-      #   which the GitHub artifact pipeline would otherwise strip away.
-      - name: CPack
-        run: |
-          cd build
-          cpack -G ZIP -B macos
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: minetest-macos
-          path: ./build/macos/*.zip

@@ -1220,6 +1220,8 @@ bool Game::startup(bool *kill,
 
 	if (!createClient(start_data))
 		return false;
+	// RemoteInputHandler needs ref to local player to access reward via HUD
+	input->registerLocalPlayer(client->getEnv().getLocalPlayer());
 
 	m_rendering_engine->initialize(client, hud);
 
@@ -2643,10 +2645,10 @@ void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 #endif
 
 	if ((device->isWindowActive() && device->isWindowFocused()
-			&& !isMenuActive()) || input->isRandom()) {
+			&& !isMenuActive()) || input->isDetached()) {
 
 #ifndef __ANDROID__
-		if (!input->isRandom()) {
+		if (!input->isDetached()) {
 			// Mac OSX gets upset if this is set every frame
 			if (device->getCursorControl()->isVisible())
 				device->getCursorControl()->setVisible(false);
@@ -3645,7 +3647,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 	}
 
 	// formspec in meta
-	if (meta && !meta->getString("formspec").empty() && !input->isRandom()
+	if (meta && !meta->getString("formspec").empty() && !input->isDetached()
 			&& !isKeyDown(KeyType::SNEAK)) {
 		// on_rightclick callbacks are called anyway
 		if (nodedef_manager->get(map.getNode(nodepos)).rightclickable)

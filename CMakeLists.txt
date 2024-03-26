@@ -267,6 +267,13 @@ if(INSTALL_DEVTEST)
 		PATTERN ".git*" EXCLUDE )
 endif()
 
+set(INSTALL_MINETEST_GAME FALSE CACHE BOOL "Install Minetest game")
+
+if(INSTALL_MINETEST_GAME)
+	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/minetest_game" DESTINATION "${SHAREDIR}/games/"
+		PATTERN ".git*" EXCLUDE )
+endif()
+
 if(BUILD_CLIENT)
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/shaders" DESTINATION "${SHAREDIR}/client")
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/textures/base/pack" DESTINATION "${SHAREDIR}/textures/base")

@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #pragma once
+#include <memory>
+
 #include "irrlichttypes_extrabloated.h"
 
 class ShadowRenderer;
@@ -31,6 +33,14 @@ class RenderTarget;
 
 class RenderingCore
 {
+private:
+	struct DropDeleter {
+		template<typename T>
+		void operator()(T* ptr) const {
+			if (ptr) ptr->drop();
+		}
+	};
+
 protected:
 	IrrlichtDevice *device;
 	Client *client;
@@ -41,6 +51,7 @@ protected:
 
 	v2f virtual_size_scale;
 	v2u32 virtual_size { 0, 0 };
+	std::unique_ptr<video::IImage, DropDeleter> screenshot = nullptr;
 
 public:
 	RenderingCore(IrrlichtDevice *device, Client *client, Hud *hud,
@@ -59,4 +70,5 @@ public:
 	v2u32 getVirtualSize() const;
 
 	ShadowRenderer *get_shadow_renderer() { return shadow_renderer; };
+	video::IImage *get_screenshot();
 };

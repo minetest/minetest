@@ -52,6 +52,16 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 	pipeline->run(context);
 }
 
+video::IImage *RenderingCore::get_screenshot()
+{
+	if (!screenshot)
+		return nullptr;
+	auto copy = device->getVideoDriver()->createImage(
+			video::ECF_R8G8B8, screenshot->getDimension());
+	screenshot->copyTo(copy);
+	return copy;
+}
+
 v2u32 RenderingCore::getVirtualSize() const
 {
 	return virtual_size;

@@ -2591,6 +2591,9 @@
 #    type: bool
 # random_input = false
 
+#    Enable input via remote message queue (for AI agent training). Provide HOST:PORT.
+# remote_input =
+
 #    Enable mod channels support.
 #    type: bool
 # enable_mod_channels = false

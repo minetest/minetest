@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <memory>
 #include <string>
+#include "IImage.h"
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 #include "client/render/core.h"
@@ -133,6 +134,7 @@ public:
 		return nullptr;
 	}
 	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
+	irr::video::IImage *get_screenshot();
 
 	static void autosaveScreensizeAndCo(
 			const irr::core::dimension2d<u32> initial_screen_size,

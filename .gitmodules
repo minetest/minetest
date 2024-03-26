@@ -1,0 +1,3 @@
+[submodule "lib/irrlichtmt"]
+	path = lib/irrlichtmt
+	url = https://github.com/minetest/irrlicht

@@ -18,11 +18,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "cmake_config.h"
 #include <optional>
 #include <IrrlichtDevice.h>
 #include "fontengine.h"
 #include "client.h"
 #include "clouds.h"
+#include "settings.h"
 #include "util/numeric.h"
 #include "guiscalingfilter.h"
 #include "localplayer.h"
@@ -191,6 +193,11 @@ void RenderingEngine::cleanupMeshCache()
 		if (scene::IAnimatedMesh *mesh = mesh_cache->getMeshByIndex(0))
 			mesh_cache->removeMesh(mesh);
 	}
+}
+
+irr::video::IImage *RenderingEngine::get_screenshot()
+{
+	return core->get_screenshot();
 }
 
 bool RenderingEngine::setupTopLevelWindow()

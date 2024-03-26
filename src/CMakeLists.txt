@@ -36,7 +36,6 @@ set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
 # Set some random things default to not being visible in the GUI
 mark_as_advanced(EXECUTABLE_OUTPUT_PATH LIBRARY_OUTPUT_PATH)
 
-
 if(NOT (BUILD_CLIENT OR BUILD_SERVER))
 	message(WARNING "Neither BUILD_CLIENT nor BUILD_SERVER is set! Setting BUILD_SERVER=true")
 	set(BUILD_SERVER TRUE)
@@ -193,6 +192,15 @@ endif(ENABLE_REDIS)
 
 
 find_package(SQLite3 REQUIRED)
+
+find_package(CapnProto CONFIG REQUIRED)
+include_directories(${CAPNP_INCLUDE_DIRS})
+configure_file(${PROJECT_SOURCE_DIR}/../python/minetest/proto/remoteclient.capnp ${CMAKE_CURRENT_BINARY_DIR}/network/proto/remoteclient.capnp COPYONLY)
+file(GLOB PROTO_FILES ${CMAKE_CURRENT_BINARY_DIR}/network/proto/*.capnp)
+set(CAPNPC_SRC_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
+capnp_generate_cpp(CAPNP_SRCS CAPNP_HDRS ${PROTO_FILES})
+add_custom_target(capnproto ALL DEPENDS ${CAPNP_SRCS} ${CAPNP_HDRS})
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/network/proto)
 
 
 OPTION(ENABLE_PROMETHEUS "Enable prometheus client support" FALSE)
@@ -478,6 +486,7 @@ set(client_SRCS
 	${client_network_SRCS}
 	${client_irrlicht_changes_SRCS}
 	${client_SCRIPT_SRCS}
+	${CAPNP_SRCS}
 )
 
 if(BUILD_UNITTESTS)
@@ -496,13 +505,6 @@ set(server_SRCS
 )
 list(SORT server_SRCS)
 
-# Avoid source_group on broken CMake version.
-# see issue #7074 #7075
-if (CMAKE_VERSION VERSION_GREATER 3.8.1)
-	source_group(TREE ${PROJECT_SOURCE_DIR} PREFIX "Source Files" FILES ${client_SRCS})
-	source_group(TREE ${PROJECT_SOURCE_DIR} PREFIX "Source Files" FILES ${server_SRCS})
-endif()
-
 include_directories(
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}
@@ -511,6 +513,8 @@ include_directories(
 include_directories(SYSTEM
 	${ZLIB_INCLUDE_DIR}
 	${ZSTD_INCLUDE_DIR}
+	${ZMQ_INCLUDE_DIR}
+	${ZMQPP_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
 	${GMP_INCLUDE_DIR}
@@ -551,9 +555,13 @@ if(BUILD_CLIENT)
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
 		IrrlichtMt::IrrlichtMt
+		${SDL2_TARGET}
 		${ZSTD_LIBRARY}
+		${ZMQ_LIBRARY}
+		${ZMQPP_LIBRARY}
 		${SOUND_LIBRARIES}
 		${SQLITE3_LIBRARY}
+		${SDL2_LIBRARIES}
 		${LUA_LIBRARY}
 		${GMP_LIBRARY}
 		${JSON_LIBRARY}
@@ -561,6 +569,8 @@ if(BUILD_CLIENT)
 		${FREETYPE_LIBRARY}
 		${PLATFORM_LIBS}
 	)
+	target_link_libraries(${PROJECT_NAME} ${CAPNP_LIBRARIES})
+
 	if(NOT USE_LUAJIT)
 		set_target_properties(${PROJECT_NAME} PROPERTIES
 			# This is necessary for dynamic Lua modules
