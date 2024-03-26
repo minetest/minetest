@@ -1,5 +1,8 @@
 -- Minetest: builtin/features.lua
 
+-- The changelog is located in doc/lua_api.md
+core.api_version = 1
+
 core.features = {
 	glasslike_framed = true,
 	nodebox_as_selectionbox = true,
