@@ -592,9 +592,12 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 			if (mod) {
 				str = fs::AbsolutePath(mod->path);
 				if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
+					// `mod_name` cannot be trusted here, so we catch the scenarios where this becomes a problem:
 					bool is_trusted = checkModNameWhitelisted(mod_name, "secure.trusted_mods") ||
 							checkModNameWhitelisted(mod_name, "secure.http_mods");
 					std::string filename = lowercase(fs::GetFilenameFromPath(abs_path.c_str()));
+					// By writing to any of these a malicious mod could turn itself into
+					// an existing trusted mod by renaming or becoming a modpack.
 					bool is_dangerous_file = filename == "mod.conf" ||
 							filename == "modpack.conf" ||
 							filename == "modpack.txt";
