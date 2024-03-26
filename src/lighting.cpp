@@ -27,3 +27,8 @@ AutoExposure::AutoExposure()
 	speed_bright_dark(1000.f),
 	center_weight_power(1.f)
 {}
+
+LightIntensity::LightIntensity()
+	: colorOffset_rgb{-0.04, -0.04, 0.078},
+	colorRatioCoef_rgb{1e-3, 1e-3, 0.98e-3}
+{}
