@@ -100,6 +100,7 @@ public:
 
 	/* object */
 	void addObjectReference(ServerActiveObject *cobj);
+	void addObjectByGuid(ServerActiveObject *cobj);
 	void removeObjectReference(ServerActiveObject *cobj);
 
 	ScriptingType getType() { return m_type; }

@@ -448,6 +448,8 @@ ServerEnvironment::ServerEnvironment(std::unique_ptr<ServerMap> map,
 
 	m_active_object_gauge = mb->addGauge(
 		"minetest_env_active_objects", "Number of active objects");
+
+	m_guid_generator.setServerEnvironment(this);
 }
 
 void ServerEnvironment::init()
@@ -1889,6 +1891,8 @@ u16 ServerEnvironment::addActiveObjectRaw(std::unique_ptr<ServerActiveObject> ob
 	// Post-initialize object
 	// Note that this can change the value of isStaticAllowed() in case of LuaEntitySAO
 	object->addedToEnvironment(dtime_s);
+	// After post-initialize, GUID is known
+	m_script->addObjectByGuid(object);
 
 	// Activate object
 	if (object->m_static_exists)
@@ -2199,7 +2203,9 @@ void ServerEnvironment::deactivateFarObjects(const bool _force_delete)
 				While changes are always saved, blocks are only marked as modified
 				if the object has moved or different staticdata. (see above)
 			*/
-			bool shall_be_written = (!stays_in_same_block || data_changed);
+			bool shall_be_written = (!stays_in_same_block || data_changed ||
+					obj->m_force_write_staticdata);
+			obj->m_force_write_staticdata = false;
 			u32 reason = shall_be_written ? MOD_REASON_STATIC_DATA_CHANGED : MOD_REASON_UNKNOWN;
 
 			// Delete old static object

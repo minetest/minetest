@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "activeobject.h"
 #include "environment.h"
 #include "servermap.h"
+#include "guid.h"
+#include "map.h"
 #include "settings.h"
 #include "server/activeobjectmgr.h"
 #include "util/numeric.h"
@@ -237,6 +239,9 @@ public:
 
 	float getSendRecommendedInterval()
 	{ return m_recommended_send_interval; }
+
+	GUIdGenerator & getGUIdGenerator()
+	{ return m_guid_generator; }
 
 	// Save players
 	void saveLoadedPlayers(bool force = false);
@@ -463,6 +468,10 @@ private:
 	server::ActiveObjectMgr m_ao_manager;
 	// on_mapblocks_changed map event receiver
 	OnMapblocksChangedReceiver m_on_mapblocks_changed_receiver;
+	// Generator for luaentity guids
+	GUIdGenerator m_guid_generator;
+	// World path
+	const std::string m_path_world;
 	// Outgoing network message buffer for active objects
 	std::queue<ActiveObjectMessage> m_active_object_messages;
 	// Some timers
