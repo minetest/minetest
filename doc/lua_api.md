@@ -6234,6 +6234,29 @@ Environment access
     * Generate all registered decorations within the VoxelManip `vm` and in the
       area from `pos1` to `pos2`.
     * `pos1` and `pos2` are optional and default to mapchunk minp and maxp.
+* `minetest.generate_biomes(vm, pos1, pos2[, noise_filler_depth])`
+    * Generate biome nodes according to the registered biomes and
+      temperature/humidity noises within the VoxelManip `vm` and in the area
+      from `pos1` to `pos2`.
+    * `noise_filler_depth` is an optional `PerlinNoiseMap` to add an offset to
+      the `depth_filler` of the biomes (see [Biome definition]).
+    * Must be called during mapgen (`on_generated()` callback)
+    * `pos1` and `pos2` should have the same X and Z size than mapgen chunks.
+    * The initial data in `vm` may only contain air, stone, water and
+      river water nodes (see [Essential aliases]). Other nodes are ignored.
+    * Also populates the mapgen objects `heatmap`, `humiditymap` and `biomemap`
+      (see [Mapgen objects]), so that `minetest.generate_decorations`,
+      `minetest.generate_ores` and `minetest.generate_biome_dust` will take
+      them into account.
+* `minetest.generate_biome_dust(vm, pos1, pos2)`
+    * Generate the `node_dust` of the biome (see [Biome definition]) within the
+      VoxelManip `vm` and in the area from `pos1` to `pos2`.
+    * `pos1` and `pos2` should have the same X and Z size than mapgen chunks.
+    * Nodes immediately above `pos2` must be generated (non-ignore). If the
+      mapgen does not over-generate 1 node up, consider offsetting `pos2.y`
+      by -1.
+    * Reads the mapgen object `biomemap` (see [Mapgen Objects]), that must be
+      already computed (ie. using `minetest.generate_biomes`).
 * `minetest.clear_objects([options])`
     * Clear all objects in the environment
     * Takes an optional table as an argument with the field `mode`.
