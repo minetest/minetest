@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "debug.h"
 #include "gettime.h"
-#include "client/keycode.h"
+#include "client/input/keycode.h"
 #include "settings.h"
 #include "porting.h"
 #include "client/texturesource.h"
