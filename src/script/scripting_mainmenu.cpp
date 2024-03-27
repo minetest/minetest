@@ -58,7 +58,6 @@ MainMenuScripting::MainMenuScripting(GUIEngine* guiengine):
 	infostream << "SCRIPTAPI: Initialized main menu modules" << std::endl;
 }
 
-/******************************************************************************/
 void MainMenuScripting::initializeModApi(lua_State *L, int top)
 {
 	registerLuaClasses(L, top);
@@ -79,20 +78,31 @@ void MainMenuScripting::initializeModApi(lua_State *L, int top)
 	asyncEngine.initialize(MAINMENU_NUM_ASYNC_THREADS);
 }
 
-/******************************************************************************/
 void MainMenuScripting::registerLuaClasses(lua_State *L, int top)
 {
 	LuaSettings::Register(L);
 	MainMenuSoundHandle::Register(L);
 }
 
-/******************************************************************************/
+void MainMenuScripting::beforeClose()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "on_before_close");
+
+	PCALL_RES(lua_pcall(L, 0, 0, error_handler));
+
+	lua_pop(L, 2); // Pop core, error handler
+}
+
 void MainMenuScripting::step()
 {
 	asyncEngine.step(getStack());
 }
 
-/******************************************************************************/
 u32 MainMenuScripting::queueAsync(std::string &&serialized_func,
 		std::string &&serialized_param)
 {

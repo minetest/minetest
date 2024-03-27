@@ -369,6 +369,8 @@ void GUIEngine::run()
 #endif
 	}
 
+	m_script->beforeClose();
+
 	RenderingEngine::autosaveScreensizeAndCo(initial_screen_size, initial_window_maximized);
 }
 
