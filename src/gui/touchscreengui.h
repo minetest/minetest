@@ -79,7 +79,6 @@ typedef enum
 	AHBB_Dir_Right_Left
 } autohide_button_bar_dir;
 
-#define MIN_DIG_TIME_MS 500
 #define BUTTON_REPEAT_DELAY 0.2f
 #define SETTINGS_BAR_Y_OFFSET 5
 #define RARE_CONTROLS_BAR_Y_OFFSET 5
@@ -225,6 +224,7 @@ private:
 	v2u32 m_screensize;
 	s32 button_size;
 	double m_touchscreen_threshold;
+	u16 m_long_tap_delay;
 	bool m_visible; // is the whole touch screen gui visible
 
 	std::unordered_map<u16, rect<s32>> m_hotbar_rects;
