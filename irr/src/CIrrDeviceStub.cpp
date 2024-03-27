@@ -38,12 +38,6 @@ CIrrDeviceStub::CIrrDeviceStub(const SIrrlichtCreationParameters &params) :
 	os::Printer::Logger = Logger;
 
 	FileSystem = io::createFileSystem();
-
-	core::stringc s = "Irrlicht Engine version ";
-	s.append(getVersion());
-	os::Printer::log(s.c_str(), ELL_INFORMATION);
-
-	checkVersion(params.SDK_version_do_not_use);
 }
 
 CIrrDeviceStub::~CIrrDeviceStub()
@@ -129,12 +123,6 @@ bool CIrrDeviceStub::setWindowIcon(const video::IImage *img)
 	return false;
 }
 
-//! Returns the version of the engine.
-const char *CIrrDeviceStub::getVersion() const
-{
-	return IRRLICHT_SDK_VERSION;
-}
-
 //! \return Returns a pointer to the mouse cursor control interface.
 gui::ICursorControl *CIrrDeviceStub::getCursorControl()
 {
@@ -145,24 +133,6 @@ gui::ICursorControl *CIrrDeviceStub::getCursorControl()
 video::IContextManager *CIrrDeviceStub::getContextManager()
 {
 	return ContextManager;
-}
-
-//! checks version of sdk and prints warning if there might be a problem
-bool CIrrDeviceStub::checkVersion(const char *version)
-{
-	if (strcmp(getVersion(), version)) {
-		core::stringc w;
-		w = "Warning: The library version of the Irrlicht Engine (";
-		w += getVersion();
-		w += ") does not match the version the application was compiled with (";
-		w += version;
-		w += "). This may cause problems.";
-		os::Printer::log(w.c_str(), ELL_WARNING);
-
-		return false;
-	}
-
-	return true;
 }
 
 //! Compares to the last call of this function to return double and triple clicks.
