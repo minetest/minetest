@@ -702,8 +702,18 @@ Methods:
         ```lua
         {
             speed = float,
+            speed_climb = float,
+            speed_crouch = float,
+            speed_fast = float,
+            speed_walk = float,
+            acceleration_default = float,
+            acceleration_air = float,
+            acceleration_fast = float,
             jump = float,
             gravity = float,
+            liquid_fluidity = float,
+            liquid_fluidity_smooth = float,
+            liquid_sink = float,
             sneak = boolean,
             sneak_glitch = boolean,
             new_move = boolean,
@@ -719,7 +729,8 @@ Methods:
 * `get_breath()`
     * returns the player's breath
 * `get_movement_acceleration()`
-    * returns acceleration of the player in different environments:
+    * returns acceleration of the player in different environments
+      (note: does not take physics overrides into account):
 
         ```lua
         {
@@ -730,7 +741,8 @@ Methods:
         ```
 
 * `get_movement_speed()`
-    * returns player's speed in different environments:
+    * returns player's speed in different environments
+      (note: does not take physics overrides into account):
 
         ```lua
         {
@@ -743,7 +755,8 @@ Methods:
         ```
 
 * `get_movement()`
-    * returns player's movement in different environments:
+    * returns player's movement in different environments
+      (note: does not take physics overrides into account):
 
         ```lua
         {
