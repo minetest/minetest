@@ -215,7 +215,7 @@ void Client::loadMods()
 
 		std::string settings_path = path_user + DIR_DELIM + "mods.conf";
 		modconf.addModsFromConfig(settings_path, paths);
-		modconf.checkConflictsAndDeps();
+		modconf.checkConflictsAndDeps("", "");
 	}
 
 	m_mods = modconf.getMods();

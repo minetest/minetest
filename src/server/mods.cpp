@@ -46,7 +46,7 @@ ServerModManager::ServerModManager(const std::string &worldpath):
 	// Load normal mods
 	std::string worldmt = worldpath + DIR_DELIM + "world.mt";
 	configuration.addModsFromConfig(worldmt, gamespec.addon_mods_paths);
-	configuration.checkConflictsAndDeps();
+	configuration.checkConflictsAndDeps(gamespec.first_mod, gamespec.last_mod);
 }
 
 // This function cannot be currenctly easily tested but it should be ASAP

@@ -83,8 +83,11 @@ public:
 
 	/**
 	 * Call this function once all mods have been added
+	 *
+	 * @param first_mod First mod to be loaded
+	 * @param last_mod Last mod to be loaded
 	 */
-	void checkConflictsAndDeps();
+	void checkConflictsAndDeps(const std::string &first_mod, const std::string &last_mod);
 
 private:
 	std::vector<ModSpec> m_sorted_mods;
@@ -93,7 +96,7 @@ private:
 	 * move mods from m_unsatisfied_mods to m_sorted_mods
 	 * in an order that satisfies dependencies
 	 */
-	void resolveDependencies();
+	void resolveDependencies(const std::string &first_mod, const std::string &last_mod);
 
 	// mods with unmet dependencies. Before dependencies are resolved,
 	// this is where all mods are stored. Afterwards this contains

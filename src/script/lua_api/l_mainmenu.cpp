@@ -457,7 +457,7 @@ int ModApiMainMenu::l_check_mod_configuration(lua_State *L)
 
 	modmgr.addMods(modSpecs);
 	try {
-		modmgr.checkConflictsAndDeps();
+		modmgr.checkConflictsAndDeps("", "");
 	} catch (const ModError &err) {
 		errorstream << err.what() << std::endl;
 
