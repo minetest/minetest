@@ -1,6 +1,6 @@
 -- Registered metatables, used by the C++ packer
 local known_metatables = {}
-function core.register_async_metatable(name, mt)
+function core.register_metatable(name, mt)
 	assert(type(name) == "string", ("attempt to use %s value as metatable name"):format(type(name)))
 	assert(type(mt) == "table", ("attempt to register a %s value as metatable"):format(type(mt)))
 	assert(known_metatables[name] == nil or known_metatables[name] == mt,
@@ -10,4 +10,4 @@ function core.register_async_metatable(name, mt)
 end
 core.known_metatables = known_metatables
 
-core.register_async_metatable("__builtin:vector", vector.metatable)
+core.register_metatable("__builtin:vector", vector.metatable)
