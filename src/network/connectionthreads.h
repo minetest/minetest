@@ -113,7 +113,7 @@ private:
 class ConnectionReceiveThread : public Thread
 {
 public:
-	ConnectionReceiveThread(unsigned int max_packet_size);
+	ConnectionReceiveThread();
 
 	void *run();
 

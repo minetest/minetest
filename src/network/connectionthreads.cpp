@@ -796,7 +796,7 @@ void ConnectionSendThread::sendAsPacket(session_t peer_id, u8 channelnum,
 	m_outgoing_queue.push(packet);
 }
 
-ConnectionReceiveThread::ConnectionReceiveThread(unsigned int max_packet_size) :
+ConnectionReceiveThread::ConnectionReceiveThread() :
 	Thread("ConnectionReceive")
 {
 }
