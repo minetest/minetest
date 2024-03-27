@@ -425,9 +425,6 @@ static void print_version(std::ostream &os)
 {
 	os << PROJECT_NAME_C " " << g_version_hash
 		<< " (" << porting::getPlatformName() << ")" << std::endl;
-#ifndef SERVER
-	os << "Using Irrlicht " IRRLICHT_SDK_VERSION << std::endl;
-#endif
 #if USE_LUAJIT
 	os << "Using " << LUAJIT_VERSION << std::endl;
 #else

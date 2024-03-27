@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiFormSpecMenu.h"
 #include "gui/guiKeyChangeMenu.h"
 #include "gui/guiPasswordChange.h"
+#include "gui/guiOpenURL.h"
 #include "gui/guiVolumeChange.h"
 #include "gui/mainmenumanager.h"
 #include "gui/profilergraph.h"
@@ -1477,11 +1478,7 @@ bool Game::createClient(const GameStartData &start_data)
 
 	/* Set window caption
 	 */
-#if IRRLICHT_VERSION_MT_REVISION >= 15
 	auto driver_name = driver->getName();
-#else
-	auto driver_name = wide_to_utf8(driver->getName());
-#endif
 	std::string str = std::string(PROJECT_NAME_C) +
 			" " + g_version_hash + " [";
 	str += simple_singleplayer_mode ? gettext("Singleplayer")
@@ -1813,6 +1810,12 @@ inline bool Game::handleCallbacks()
 		(new GUIKeyChangeMenu(guienv, guiroot, -1,
 				      &g_menumgr, texture_src))->drop();
 		g_gamecallback->keyconfig_requested = false;
+	}
+
+	if (!g_gamecallback->show_open_url_dialog.empty()) {
+		(new GUIOpenURLMenu(guienv, guiroot, -1,
+				 &g_menumgr, texture_src, g_gamecallback->show_open_url_dialog))->drop();
+		g_gamecallback->show_open_url_dialog.clear();
 	}
 
 	if (g_gamecallback->keyconfig_changed) {

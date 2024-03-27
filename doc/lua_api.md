@@ -1411,8 +1411,7 @@ Look for examples in `games/devtest` or `games/minetest_game`.
 * `liquid`
     * The cubic source node for a liquid.
     * Faces bordering to the same node are never rendered.
-    * Connects to node specified in `liquid_alternative_flowing`.
-    * You *must* set `liquid_alternative_source` to the node's own name.
+    * Connects to node specified in `liquid_alternative_flowing` if specified.
     * Use `backface_culling = false` for the tiles you want to make
       visible when inside the node.
 * `flowingliquid`
@@ -3017,6 +3016,16 @@ Elements
   centered on `H`. With the new coordinate system, `H` will modify the height.
 * `label` is the text on the button
 
+### `button_url[<X>,<Y>;<W>,<H>;<name>;<label>;<url>]`
+
+* Clickable button. When clicked, fields will be sent and the user will be given the
+  option to open the URL in a browser.
+* With the old coordinate system, buttons are a set height, but will be vertically
+  centered on `H`. With the new coordinate system, `H` will modify the height.
+* To make this into an `image_button`, you can use formspec styling.
+* `label` is the text on the button.
+* `url` must be a valid web URL, starting with `http://` or `https://`.
+
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
 * `texture name` is the filename of an image
@@ -3042,6 +3051,11 @@ Elements
 
 * When clicked, fields will be sent and the form will quit.
 * Same as `button` in all other respects.
+
+### `button_url_exit[<X>,<Y>;<W>,<H>;<name>;<label>;<url>]`
+
+* When clicked, fields will be sent and the form will quit.
+* Same as `button_url` in all other respects.
 
 ### `image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
@@ -3538,11 +3552,13 @@ Changes the style of the text.
 Sets global style.
 
 Global only styles:
+
 * `background`: Text background, a `colorspec` or `none`.
 * `margin`: Page margins in pixel.
 * `valign`: Text vertical alignment (`top`, `middle`, `bottom`).
 
 Inheriting styles (affects child elements):
+
 * `color`: Default text color. Given color is a `colorspec`.
 * `hovercolor`: Color of <action> tags when mouse is over.
 * `size`: Default text size.
@@ -3556,6 +3572,7 @@ tags appear.
 `<tag name=... color=... hovercolor=... font=... size=...>`
 
 Defines or redefines tag style. This can be used to define new tags.
+
 * `name`: Name of the tag to define or change.
 * `color`: Text color. Given color is a `colorspec`.
 * `hovercolor`: Text color when element hovered (only for `action` tags). Given color is a `colorspec`.
@@ -3588,6 +3605,7 @@ Other tags can be added using `<tag ...>` tag.
 Make that text a clickable text triggering an action.
 
 * `name`: Name of the action (mandatory).
+* `url`: URL to open when the action is triggered (optional).
 
 When clicked, the formspec is send to the server. The value of the text field
 sent to `on_player_receive_fields` will be "action:" concatenated to the action
@@ -4086,25 +4104,31 @@ Two functions are provided to translate strings: `minetest.translate` and
   avoid clashes with other mods.
   This function must be given a number of arguments equal to the number of
   arguments the translated string expects.
-  Arguments are literal strings -- they will not be translated, so if you want
-  them to be, they need to come as outputs of `minetest.translate` as well.
+  Arguments are literal strings -- they will not be translated.
 
-  For instance, suppose we want to translate "@1 Wool" with "@1" being replaced
-  by the translation of "Red". We can do the following:
+For instance, suppose we want to greet players when they join. We can do the
+following:
 
-  ```lua
-  local S = minetest.get_translator()
-  S("@1 Wool", S("Red"))
-  ```
+```lua
+local S = minetest.get_translator("hello")
+minetest.register_on_joinplayer(function(player)
+    local name = player:get_player_name()
+    minetest.chat_send_player(name, S("Hello @1, how are you today?", name))
+end)
+```
 
-  This will be displayed as "Red Wool" on old clients and on clients that do
-  not have localization enabled. However, if we have for instance a translation
-  file named `wool.fr.tr` containing the following:
+When someone called "CoolGuy" joins the game with an old client or a client
+that does not have localization enabled, they will see `Hello CoolGuy, how are
+you today?`
 
-      @1 Wool=Laine @1
-      Red=Rouge
+However, if we have for instance a translation file named `hello.de.tr`
+containing the following:
 
-  this will be displayed as "Laine Rouge" on clients with a French locale.
+    # textdomain: hello
+    Hello @1, how are you today?=Hallo @1, wie geht es dir heute?
+
+and CoolGuy has set a German locale, they will see `Hallo CoolGuy, wie geht es
+dir heute?`
 
 Operations on translated strings
 --------------------------------
@@ -5306,6 +5330,12 @@ Utilities
 
 * `minetest.get_worldpath()`: returns e.g. `"/home/user/.minetest/world"`
     * Useful for storing custom data
+* `minetest.get_mod_data_path()`: returns e.g. `"/home/user/.minetest/mod_data/mymod"`
+    * Useful for storing custom data *independently of worlds*.
+    * Must be called during mod load time.
+    * Can read or write to this directory at any time.
+    * It's possible that multiple Minetest instances are running at the same
+      time, which may lead to corruption if you are not careful.
 * `minetest.is_singleplayer()`
 * `minetest.features`: Table containing API feature flags
 
@@ -9290,10 +9320,8 @@ Used by `minetest.register_node`.
     -- flowing version (`liquid_alternative_flowing`) and
     -- source version (`liquid_alternative_source`) of a liquid.
     --
-    -- Specifically, these fields are required if any of these is true:
-    -- * `liquidtype ~= "none" or
-    -- * `drawtype == "liquid" or
-    -- * `drawtype == "flowingliquid"
+    -- Specifically, these fields are required if `liquidtype ~= "none"` or
+    -- `drawtype == "flowingliquid"`.
     --
     -- Liquids consist of up to two nodes: source and flowing.
     --

@@ -16,8 +16,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
-
+    if: github.repository == 'minetest/minetest'
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 

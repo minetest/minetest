@@ -368,7 +368,6 @@ ShaderSource::~ShaderSource()
 {
 	MutexAutoLock lock(m_shaderinfo_cache_mutex);
 
-#if IRRLICHT_VERSION_MT_REVISION >= 15
 	// Delete materials
 	video::IGPUProgrammingServices *gpu = RenderingEngine::get_video_driver()->
 		getGPUProgrammingServices();
@@ -377,7 +376,6 @@ ShaderSource::~ShaderSource()
 			gpu->deleteShaderMaterial(i.material);
 	}
 	m_shaderinfo_cache.clear();
-#endif
 }
 
 u32 ShaderSource::getShader(const std::string &name,
@@ -501,7 +499,6 @@ void ShaderSource::rebuildShaders()
 {
 	MutexAutoLock lock(m_shaderinfo_cache_mutex);
 
-#if IRRLICHT_VERSION_MT_REVISION >= 15
 	// Delete materials
 	video::IGPUProgrammingServices *gpu = RenderingEngine::get_video_driver()->
 		getGPUProgrammingServices();
@@ -511,7 +508,6 @@ void ShaderSource::rebuildShaders()
 			i.material = video::EMT_SOLID; // invalidate
 		}
 	}
-#endif
 
 	// Recreate shaders
 	for (ShaderInfo &i : m_shaderinfo_cache) {

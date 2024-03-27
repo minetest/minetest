@@ -883,10 +883,6 @@ if(WIN32)
 			install(FILES ${GETTEXT_DLL} DESTINATION ${BINDIR})
 		endif()
 	endif()
-
-	if(BUILD_CLIENT AND IRRLICHT_DLL)
-		install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
-	endif()
 endif()
 
 if(BUILD_CLIENT AND NOT ANDROID)

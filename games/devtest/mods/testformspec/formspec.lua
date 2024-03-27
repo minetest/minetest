@@ -1,12 +1,15 @@
 local color = minetest.colorize
 
+-- \208\176 is a cyrillic small a
+local unsafe_url = minetest.formspec_escape("https://u:p@wikipedi\208\176.org:1233/heIIoll?a=b#c")
+
 local clip_fs = [[
 	style_type[label,button,image_button,item_image_button,
 			tabheader,scrollbar,table,animated_image
 			,field,textarea,checkbox,dropdown;noclip=%c]
 
 	label[0,0;A clipping test]
-	button[0,1;3,0.8;clip_button;A clipping test]
+	button_url[0,1;3,0.8;clip_button;A clipping test;]] .. unsafe_url .. [[]
 	image_button[0,2;3,0.8;testformspec_button_image.png;clip_image_button;A clipping test]
 	item_image_button[0,3;3,0.8;testformspec:item;clip_item_image_button;A clipping test]
 	tabheader[0,4.7;3,0.63;clip_tabheader;Clip,Test,Text,Tabs;1;false;false]
@@ -92,6 +95,7 @@ This is a normal text.
 <t_green>color=green</t_green>
 Action: <action name=color><t_green>color=green</t_green></action>
 Action: <action name=hovercolor><t_hover>hovercolor=yellow</t_hover></action>
+Action URL: <action name=open url=https://example.com/?a=b#c>open URL</action>
 <t_size>size=24</t_size>
 <t_mono>font=mono</t_mono>
 <t_multi>color=green font=mono size=24</t_multi>
@@ -145,7 +149,7 @@ local hypertext_fs = "hypertext[0,0;11,9;hypertext;"..minetest.formspec_escape(h
 local style_fs = [[
 	style[one_btn1;bgcolor=red;textcolor=yellow;bgcolor_hovered=orange;
 		bgcolor_pressed=purple]
-	button[0,0;2.5,0.8;one_btn1;Button]
+	button_url_exit[0,0;2.5,0.8;one_btn1;Button;]] .. unsafe_url .. [[]
 
 	style[one_btn2;border=false;textcolor=cyan] ]]..
 	"button[0,1.05;2.5,0.8;one_btn2;Text " .. color("#FF0", "Yellow") .. [[]

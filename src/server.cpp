@@ -317,6 +317,10 @@ Server::Server(
 			"Number of map edit events");
 
 	m_lag_gauge->set(g_settings->getFloat("dedicated_server_step"));
+
+	m_path_mod_data = porting::path_user + DIR_DELIM "mod_data";
+	if (!fs::CreateDir(m_path_mod_data))
+		throw ServerError("Failed to create mod data dir");
 }
 
 Server::~Server()
