@@ -20,7 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 package net.minetest.minetest;
 
-import android.app.NativeActivity;
+import org.libsdl.app.SDLActivity;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.content.res.Configuration;
 
 import androidx.annotation.Keep;
 import androidx.appcompat.app.AlertDialog;
@@ -45,11 +47,28 @@ import java.util.Objects;
 // This annotation prevents the minifier/Proguard from mangling them.
 @Keep
 @SuppressWarnings("unused")
-public class GameActivity extends NativeActivity {
-	static {
-		System.loadLibrary("c++_shared");
-		System.loadLibrary("minetest");
+public class GameActivity extends SDLActivity {
+	@Override
+	protected String getMainSharedObject() {
+		return getContext().getApplicationInfo().nativeLibraryDir + "/libminetest.so";
 	}
+
+	@Override
+	protected String getMainFunction() {
+		return "SDL_Main";
+	}
+
+	@Override
+	protected String[] getLibraries() {
+		return new String[] {
+			"minetest"
+		};
+	}
+
+	// Prevent SDL from changing orientation settings since we already set the
+	// correct orientation in our AndroidManifest.xml
+	@Override
+	public void setOrientationBis(int w, int h, boolean resizable, String hint) {}
 
 	enum DialogType { TEXT_INPUT, SELECTION_INPUT }
 	enum DialogState { DIALOG_SHOWN, DIALOG_INPUTTED, DIALOG_CANCELED }
@@ -58,32 +77,6 @@ public class GameActivity extends NativeActivity {
 	private DialogState inputDialogState = DialogState.DIALOG_CANCELED;
 	private String messageReturnValue = "";
 	private int selectionReturnValue = 0;
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-	}
-
-	private void makeFullScreen() {
-		this.getWindow().getDecorView().setSystemUiVisibility(
-				View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-				View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-				View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-	}
-
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		super.onWindowFocusChanged(hasFocus);
-		if (hasFocus)
-			makeFullScreen();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		makeFullScreen();
-	}
 
 	private native void saveSettings();
 
@@ -94,11 +87,6 @@ public class GameActivity extends NativeActivity {
 		// Saving stuff in onStop() is recommended in the Android activity
 		// lifecycle documentation.
 		saveSettings();
-	}
-
-	@Override
-	public void onBackPressed() {
-		// Ignore the back press so Minetest can handle it
 	}
 
 	public void showTextInputDialog(String hint, String current, int editType) {
@@ -264,5 +252,9 @@ public class GameActivity extends NativeActivity {
 		}
 
 		return langCode;
+	}
+
+	public boolean hasPhysicalKeyboard() {
+		return getContext().getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS;
 	}
 }

@@ -239,7 +239,8 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 #ifdef __ANDROID__
 	// display software keyboard when clicking edit boxes
 	if (event.EventType == EET_MOUSE_INPUT_EVENT &&
-			event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+			event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN &&
+			!porting::hasPhysicalKeyboardAndroid()) {
 		gui::IGUIElement *hovered =
 			Environment->getRootGUIElement()->getElementFromPoint(
 				core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));

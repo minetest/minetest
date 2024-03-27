@@ -19,10 +19,6 @@
 #include "CImage.h"
 #include "os.h"
 
-#ifdef _IRR_COMPILE_WITH_ANDROID_DEVICE_
-#include "android_native_app_glue.h"
-#endif
-
 namespace irr
 {
 namespace video

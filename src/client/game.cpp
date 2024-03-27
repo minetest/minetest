@@ -2220,9 +2220,11 @@ void Game::openConsole(float scale, const wchar_t *line)
 	assert(scale > 0.0f && scale <= 1.0f);
 
 #ifdef __ANDROID__
-	porting::showTextInputDialog("", "", 2);
-	m_android_chat_open = true;
-#else
+	if (!porting::hasPhysicalKeyboardAndroid()) {
+		porting::showTextInputDialog("", "", 2);
+		m_android_chat_open = true;
+	} else {
+#endif
 	if (gui_chat_console->isOpenInhibited())
 		return;
 	gui_chat_console->openConsole(scale);
@@ -2230,6 +2232,8 @@ void Game::openConsole(float scale, const wchar_t *line)
 		gui_chat_console->setCloseOnEnter(true);
 		gui_chat_console->replaceAndAddToHistory(line);
 	}
+#ifdef __ANDROID__
+	} // else
 #endif
 }
 

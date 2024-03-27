@@ -1,4 +1,4 @@
-if(NOT ANDROID AND NOT APPLE)
+if(NOT APPLE)
 	set(DEFAULT_SDL2 ON)
 endif()
 
@@ -77,10 +77,11 @@ elseif(APPLE)
 	set(DEVICE "OSX")
 elseif(ANDROID)
 	add_definitions(-D_IRR_ANDROID_PLATFORM_)
-	if(USE_SDL2)
-		message(FATAL_ERROR "SDL2 device is not (yet) supported on Android")
+	# set(DEVICE "ANDROID")
+	# doesn't exist anymore
+	if(NOT USE_SDL2)
+		message(FATAL_ERROR "The Android build requires SDL2")
 	endif()
-	set(DEVICE "ANDROID")
 elseif(EMSCRIPTEN)
 	add_definitions(-D_IRR_EMSCRIPTEN_PLATFORM_ -D_IRR_COMPILE_WITH_EGL_MANAGER_)
 	set(LINUX_PLATFORM TRUE)
@@ -129,8 +130,7 @@ if(NOT (BSD OR SOLARIS OR EMSCRIPTEN))
 endif()
 
 # OpenGL
-
-if(USE_SDL2)
+if(USE_SDL2 AND NOT ANDROID)
 	option(ENABLE_OPENGL3 "Enable OpenGL 3+" TRUE)
 else()
 	set(ENABLE_OPENGL3 FALSE)
@@ -142,13 +142,10 @@ else()
 	option(ENABLE_OPENGL "Enable OpenGL" TRUE)
 endif()
 
-if(EMSCRIPTEN OR APPLE)
+if(USE_SDL2 OR EMSCRIPTEN OR APPLE)
 	set(ENABLE_GLES1 FALSE)
 else()
-	if(ANDROID)
-		set(DEFAULT_GLES1 TRUE)
-	endif()
-	option(ENABLE_GLES1 "Enable OpenGL ES" ${DEFAULT_GLES1})
+	option(ENABLE_GLES1 "Enable OpenGL ES" FALSE)
 endif()
 
 if(APPLE)
@@ -188,19 +185,16 @@ if(ENABLE_OPENGL3)
 endif()
 
 if(ENABLE_GLES1)
-	if (USE_SDL2)
-		message(FATAL_ERROR "OpenGL ES 1 is not supported with SDL2")
-	endif()
 	add_definitions(-D_IRR_COMPILE_WITH_OGLES1_)
 	set(OPENGLES_DIRECT_LINK TRUE)
-	if(DEVICE MATCHES "^(WINDOWS|X11|ANDROID)$")
+	if(DEVICE MATCHES "^(WINDOWS|X11)$")
 		add_definitions(-D_IRR_COMPILE_WITH_EGL_MANAGER_)
 	endif()
 endif()
 
 if(ENABLE_GLES2)
 	add_definitions(-D_IRR_COMPILE_WITH_OGLES2_)
-	if(DEVICE MATCHES "^(WINDOWS|X11|ANDROID)$" OR EMSCRIPTEN)
+	if(DEVICE MATCHES "^(WINDOWS|X11)$" OR EMSCRIPTEN)
 		add_definitions(-D_IRR_COMPILE_WITH_EGL_MANAGER_)
 	endif()
 endif()
@@ -252,7 +246,11 @@ if(ENABLE_OPENGL OR ENABLE_OPENGL3)
 	find_package(OpenGL REQUIRED)
 endif()
 if(USE_SDL2)
-	find_package(SDL2 REQUIRED)
+	if(NOT ANDROID)
+		find_package(SDL2 REQUIRED)
+	else()
+		# provided by MinetestAndroidLibs.cmake
+	endif()
 	message(STATUS "Found SDL2: ${SDL2_LIBRARIES}")
 
 	# unfortunately older SDL does not provide its version to cmake, so check header.
@@ -323,7 +321,6 @@ set(link_includes
 	${OPENGLES2_INCLUDE_DIR}
 	${EGL_INCLUDE_DIR}
 
-	"$<$<PLATFORM_ID:Android>:${ANDROID_NDK}/sources/android/native_app_glue>"
 	"$<$<BOOL:${USE_X11}>:${X11_INCLUDE_DIR}>"
 )
 
@@ -453,8 +450,7 @@ if(ENABLE_OPENGL3)
 	target_compile_definitions(IRROTHEROBJ PRIVATE ENABLE_OPENGL3)
 endif()
 
-if(ANDROID)
-elseif(APPLE)
+if(APPLE)
 	# Build all IRROTHEROBJ sources as objc++, including the .cpp's
 	set_target_properties(IRROTHEROBJ PROPERTIES COMPILE_OPTIONS "-xobjective-c++")
 	target_sources(IRROTHEROBJ PRIVATE
@@ -529,7 +525,7 @@ target_link_libraries(IrrlichtMt PRIVATE
 	"$<$<BOOL:${OPENGLES_DIRECT_LINK}>:${OPENGLES_LIBRARY}>"
 	${EGL_LIBRARY}
 
-	"$<$<PLATFORM_ID:Android>:-landroid -llog>"
+	"$<$<PLATFORM_ID:Android>:-landroid -llog -lGLESv2 -lGLESv1_CM -lOpenSLES>"
 	${COCOA_LIB}
 	${IOKIT_LIB}
 	"$<$<PLATFORM_ID:Windows>:gdi32>"
