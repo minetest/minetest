@@ -49,12 +49,12 @@ public:
 	static bool safeLoadString(lua_State *L, const std::string &code, const char *chunk_name);
 	// Loads a file as Lua code safely (doesn't allow bytecode).
 	static bool safeLoadFile(lua_State *L, const char *path, const char *display_name = NULL);
-	// Checks if mods are allowed to read (and optionally write) to the path
-	static bool checkPath(lua_State *L, const char *path, bool write_required,
-			bool *write_allowed=NULL);
 	// Check if mod is whitelisted in the given setting
 	// This additionally checks that the mod's main file scope is executing.
 	static bool checkWhitelisted(lua_State *L, const std::string &setting);
+	// Checks if mods are allowed to read (and optionally write) to the path
+	static bool checkPath(lua_State *L, const char *path, bool write_required,
+			bool *write_allowed=NULL);
 
 private:
 	int getThread(lua_State *L);
