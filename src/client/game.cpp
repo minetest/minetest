@@ -2655,6 +2655,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		input->getMovementSpeed(),
 		input->getMovementDirection()
 	);
+	control.setMovementFromKeys();
 
 	// autoforward if set: move at maximum speed
 	if (player->getPlayerSettings().continuous_forward &&
