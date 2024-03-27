@@ -165,10 +165,13 @@ public:
 	// for pointer stability
 	DISABLE_CLASS_COPY(ParticleBuffer)
 
+	/// Reserves one more slot for a particle (4 vertices, 6 indices)
+	/// @return particle index within buffer
 	std::optional<u16> allocate();
+	/// Frees the particle at `index`
 	void release(u16 index);
 
-	// video::S3DVertex[4]
+	/// @return video::S3DVertex[4]
 	video::S3DVertex *getVertices(u16 index);
 
 	inline bool isEmpty() const {
@@ -193,8 +196,11 @@ public:
 
 private:
 	irr_ptr<scene::SMeshBuffer> m_mesh_buffer;
+	// unused (e.g. expired) particle indices for re-use
 	std::vector<u16> m_free_list;
-	float m_usage_timer = 0; // reset on allocation
+	// for automatic deletion when unused for a while. is reset on allocate().
+	float m_usage_timer = 0;
+	// total count of contained particles
 	u16 m_count = 0;
 	mutable bool m_bounding_box_dirty = true;
 };

@@ -734,10 +734,9 @@ void ParticleManager::stepBuffers(float dtime)
 		auto &buf = m_particle_buffers[i];
 		buf->m_usage_timer += INTERVAL;
 		if (buf->isEmpty() && buf->m_usage_timer > 5.0f) {
-			// delete
+			// delete and swap with last
 			buf->remove();
-			buf.reset();
-			m_particle_buffers[i] = std::move(m_particle_buffers.back());
+			buf = std::move(m_particle_buffers.back());
 			m_particle_buffers.pop_back();
 		} else {
 			i++;
@@ -755,18 +754,15 @@ void ParticleManager::clearAll()
 	MutexAutoLock lock(m_spawner_list_lock);
 	MutexAutoLock lock2(m_particle_list_lock);
 
-	// clear particle spawners
 	m_particle_spawners.clear();
 	m_dying_particle_spawners.clear();
 
-	// clear particles
 	m_particles.clear();
 
-	// clear buffers
-	for (auto &it : m_particle_buffers) {
+	// have to remove from scene first because it keeps a reference
+	for (auto &it : m_particle_buffers)
 		it->remove();
-		it.reset();
-	}
+	m_particle_buffers.clear();
 }
 
 void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
@@ -1026,8 +1022,8 @@ bool ParticleManager::addParticle(std::unique_ptr<Particle> toadd)
 		if (last->getBuffer() && last->getBuffer()->getMaterial(0) == material)
 			found = last->getBuffer();
 	}
+	// search fitting buffer
 	if (!found) {
-		// search right buffer
 		for (auto &buffer : m_particle_buffers) {
 			if (buffer->getMaterial(0) == material) {
 				found = buffer.get();
@@ -1035,11 +1031,11 @@ bool ParticleManager::addParticle(std::unique_ptr<Particle> toadd)
 			}
 		}
 	}
+	// or create a new one
 	if (!found) {
-		// or create a new one
 		auto tmp = make_irr<ParticleBuffer>(m_env, material);
+		found = tmp.get();
 		m_particle_buffers.push_back(std::move(tmp));
-		found = m_particle_buffers.back().get();
 	}
 
 	if (!toadd->attachToBuffer(found)) {
