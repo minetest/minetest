@@ -62,6 +62,8 @@ cmake_args=(
 	-DENABLE_GETTEXT=1
 	-DENABLE_LEVELDB=1
 )
+# Use ccache if it is available
+command -v ccache >/dev/null && cmake_args+=(-DCMAKE_{C,CXX}_COMPILER_LAUNCHER=ccache)
 add_cmake_libs
 cmake -S $sourcedir -B build "${cmake_args[@]}"
 
