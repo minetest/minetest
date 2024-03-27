@@ -139,6 +139,9 @@ void TestServerModManager::testGetMods()
 
 	UASSERTEQ(bool, default_found, true);
 	UASSERTEQ(bool, test_mod_found, true);
+
+	UASSERT(mods.front().name == "first_mod");
+	UASSERT(mods.back().name == "last_mod");
 }
 
 void TestServerModManager::testGetModspec()

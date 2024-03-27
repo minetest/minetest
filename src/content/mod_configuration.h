@@ -83,10 +83,16 @@ public:
 
 	/**
 	 * Call this function once all mods have been added
+	 *
+	 * @param first_mod First mod to be loaded
+	 * @param last_mod Last mod to be loaded
 	 */
 	void checkConflictsAndDeps();
 
 private:
+	std::string m_first_mod;
+	std::string m_last_mod;
+
 	std::vector<ModSpec> m_sorted_mods;
 
 	/**

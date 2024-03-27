@@ -63,6 +63,8 @@ The game directory can contain the following files:
     * `name`: (Deprecated) same as title.
     * `description`: Short description to be shown in the content tab.
       See [Translating content meta](#translating-content-meta).
+    * `first_mod`: Use this to specify the mod that must be loaded before any other mod.
+    * `last_mod`: Use this to specify the mod that must be loaded after all other mods
     * `allowed_mapgens = <comma-separated mapgens>`
       e.g. `allowed_mapgens = v5,v6,flat`
       Mapgens not in this list are removed from the list of mapgens for the
