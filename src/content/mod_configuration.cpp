@@ -232,6 +232,11 @@ void ModConfiguration::resolveDependencies(const std::string &first_mod, const s
 	std::list<ModSpec> unsatisfied;
 	ModSpec firstModSpec;
 	for (ModSpec mod : m_unsatisfied_mods) {
+		// dependencies are not allowed for first ad last mod
+		if ( (mod.name == first_mod) || (mod.name == last_mod) ) {
+			if (!mod.depends.empty() || !mod.optdepends.empty())
+				throw ModError("Mod selected as first/last by game is not allowed to have dependencies.");
+		}
 		mod.unsatisfied_depends = mod.depends;
 		// check which optional dependencies actually exist
 		for (const std::string &optdep : mod.optdepends) {
@@ -240,23 +245,19 @@ void ModConfiguration::resolveDependencies(const std::string &first_mod, const s
 		}
 		// if a mod has no depends it is initially satisfied
 		if (mod.unsatisfied_depends.empty()) {
-			if (mod.name==last_mod) {
+			if (mod.name == last_mod) {
 				auto it = satisfied.begin();
-			  satisfied.insert(it, mod);
+				satisfied.insert(it, mod);
 			} else {
-				if (mod.name!=first_mod) {
+				if (mod.name != first_mod) {
 					satisfied.push_back(mod);
 				} else {
 					m_sorted_mods.push_back(mod);
 				}
 			}
 		} else {
-      if ( (mod.name!=first_mod) && (mod.name!=last_mod) ) {
-			  unsatisfied.push_back(mod);
-      } else {
-        throw ModError("Mod selected as first/last by game is not allowed to have dependencies.");
-      }
-    }
+			unsatisfied.push_back(mod);
+		}
 	}
 
 	// Step 3: mods without unmet dependencies can be appended to
