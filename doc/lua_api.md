@@ -5431,6 +5431,8 @@ Utilities
       lsystem_decoration_type = true,
       -- Overrideable pointing range using the itemstack meta key `"range"` (5.9.0)
       item_meta_range = true,
+      -- Particles can specify a "clip" blend mode
+      particle_blend_clip = true,
   }
   ```
 
@@ -10561,7 +10563,9 @@ Used by `minetest.add_particle`.
     texture = "image.png",
     -- The texture of the particle
     -- v5.6.0 and later: also supports the table format described in the
-    -- following section
+    -- following section, but due to a bug this did not take effect
+    -- (beyond the texture name).
+    -- v5.9.0 and later: fixes the bug.
 
     playername = "singleplayer",
     -- Optional, if specified spawns particle only on the player's client
@@ -10908,6 +10912,14 @@ texture = {
     -- (default) blends transparent pixels with those they are drawn atop
     -- according to the alpha channel of the source texture. useful for
     -- e.g. material objects like rocks, dirt, smoke, or node chunks
+	blend = "clip",
+	-- pixels are either fully opaque or fully transparent,
+	-- depending on whether alpha is greater than or less than 50%
+	-- (similar to `use_texture_alpha = "clip"` for nodes).
+	-- this fixes rendering bugs (invisibility) that occur when particles
+	-- interact with translucent nodes
+	-- (see https://github.com/minetest/minetest/issues/3761).
+	-- in the future, it may be useful for better performance.
     blend = "add",
     -- adds the value of pixels to those underneath them, modulo the sources
     -- alpha channel. useful for e.g. bright light effects like sparks or fire

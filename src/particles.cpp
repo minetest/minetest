@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "particles.h"
+#include "exceptions.h"
 #include <type_traits>
 
 using namespace ParticleParamTypes;
@@ -204,8 +205,9 @@ void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver, bool n
 	FlagT flags = 0;
 	if (animated)
 		flags |= FlagT(ParticleTextureFlags::animated);
-	if (blendmode != BlendMode::alpha)
-		flags |= FlagT(blendmode) << 1;
+	// Default to `blend = "alpha"` for older clients that don't support `blend = "clip"`
+	flags |= FlagT(protocol_ver < 44 && blendmode == BlendMode::clip
+			? BlendMode::alpha : blendmode) << 1;
 	serializeParameterValue(os, flags);
 
 	alpha.serialize(os);
@@ -221,9 +223,14 @@ void ServerParticleTexture::deSerialize(std::istream &is, u16 protocol_ver, bool
 {
 	FlagT flags = 0;
 	deSerializeParameterValue(is, flags);
+	// Backwards compatibility: Older clients don't send these, leave them at the defaults
+	if (is.eof())
+		return;
 
 	animated = !!(flags & FlagT(ParticleTextureFlags::animated));
 	blendmode = BlendMode((flags & FlagT(ParticleTextureFlags::blend)) >> 1);
+	if (blendmode >= BlendMode::BlendMode_END)
+		throw SerializationError("invalid blend mode");
 
 	alpha.deSerialize(is);
 	scale.deSerialize(is);
@@ -254,6 +261,7 @@ void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 	writeV3F32(os, drag);
 	jitter.serialize(os);
 	bounce.serialize(os);
+	texture.serialize(os, protocol_ver, true);
 }
 
 template <typename T, T (reader)(std::istream& is)>
@@ -291,4 +299,5 @@ void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
 		return;
 	jitter.deSerialize(is);
 	bounce.deSerialize(is);
+	texture.deSerialize(is, protocol_ver, true);
 }

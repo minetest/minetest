@@ -18,7 +18,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "particles.h"
+#include <EMaterialTypes.h>
+#include <SMaterial.h>
 #include <cmath>
+#include <stdexcept>
 #include "client.h"
 #include "collision.h"
 #include "client/content_cao.h"
@@ -75,36 +78,30 @@ Particle::Particle(
 	// Set material
 	{
 		// translate blend modes to GL blend functions
-		video::E_BLEND_FACTOR bfsrc, bfdst;
-		video::E_BLEND_OPERATION blendop;
+		bool blend = true;
+		video::E_BLEND_FACTOR bfsrc = video::EBF_SRC_ALPHA, bfdst = video::EBF_DST_ALPHA;
+		video::E_BLEND_OPERATION blendop = video::EBO_ADD;
 		const auto blendmode = texture.tex != nullptr
 				? texture.tex->blendmode
 				: ParticleParamTypes::BlendMode::alpha;
 
 		switch (blendmode) {
-			case ParticleParamTypes::BlendMode::add:
-				bfsrc = video::EBF_SRC_ALPHA;
-				bfdst = video::EBF_DST_ALPHA;
-				blendop = video::EBO_ADD;
-			break;
-
+			case ParticleParamTypes::BlendMode::clip:
+				blend = false;
+				break;
+			case ParticleParamTypes::BlendMode::alpha:
+				bfdst = video::EBF_ONE_MINUS_SRC_ALPHA;
+				break;
+			case ParticleParamTypes::BlendMode::add: break;
 			case ParticleParamTypes::BlendMode::sub:
-				bfsrc = video::EBF_SRC_ALPHA;
-				bfdst = video::EBF_DST_ALPHA;
 				blendop = video::EBO_REVSUBTRACT;
-			break;
-
+				break;
 			case ParticleParamTypes::BlendMode::screen:
 				bfsrc = video::EBF_ONE;
 				bfdst = video::EBF_ONE_MINUS_SRC_COLOR;
-				blendop = video::EBO_ADD;
-			break;
-
-			default: // includes ParticleParamTypes::BlendMode::alpha
-				bfsrc = video::EBF_SRC_ALPHA;
-				bfdst = video::EBF_ONE_MINUS_SRC_ALPHA;
-				blendop = video::EBO_ADD;
-			break;
+				break;
+			case ParticleParamTypes::BlendMode::BlendMode_END:
+				throw std::logic_error("invalid blend mode");
 		}
 
 		// Texture
@@ -120,12 +117,16 @@ Particle::Particle(
 		m_material.ZWriteEnable = video::EZW_AUTO;
 
 		// enable alpha blending and set blend mode
-		m_material.MaterialType = video::EMT_ONETEXTURE_BLEND;
-		m_material.MaterialTypeParam = video::pack_textureBlendFunc(
-				bfsrc, bfdst,
-				video::EMFN_MODULATE_1X,
-				video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
-		m_material.BlendOperation = blendop;
+		if (blend) {
+			m_material.MaterialType = video::EMT_ONETEXTURE_BLEND;
+			m_material.MaterialTypeParam = video::pack_textureBlendFunc(
+					bfsrc, bfdst,
+					video::EMFN_MODULATE_1X,
+					video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
+			m_material.BlendOperation = blendop;
+		} else {
+			m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		}
 		m_material.setTexture(0, m_texture.ref);
 	}
 
@@ -141,8 +142,11 @@ Particle::Particle(
 
 void Particle::OnRegisterSceneNode()
 {
-	if (IsVisible)
-		SceneManager->registerNodeForRendering(this, scene::ESNRP_TRANSPARENT_EFFECT);
+	if (IsVisible) {
+		bool solid = m_material.MaterialType == video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		SceneManager->registerNodeForRendering(this,
+				solid ? scene::ESNRP_SOLID : scene::ESNRP_TRANSPARENT_EFFECT);
+	}
 
 	ISceneNode::OnRegisterSceneNode();
 }
