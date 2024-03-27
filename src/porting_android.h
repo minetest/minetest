@@ -24,20 +24,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include <jni.h>
-#include <android_native_app_glue.h>
 #include <android/log.h>
 
 #include "irrlichttypes_bloated.h"
 
 #include <string>
 
+
 namespace porting {
-// Java app
-extern android_app *app_global;
-
-// Java <-> C++ interaction interface
-extern JNIEnv *jnienv;
-
 /**
  * Show a text input dialog in Java
  * @param hint Hint to be shown
@@ -104,6 +98,9 @@ std::string getInputDialogMessage();
  * the dialog state before calling this function.
  */
 int getInputDialogSelection();
+
+
+bool hasPhysicalKeyboardAndroid();
 
 #ifndef SERVER
 float getDisplayDensity();
