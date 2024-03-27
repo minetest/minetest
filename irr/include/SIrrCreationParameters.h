@@ -10,7 +10,6 @@
 #include "ILogger.h"
 #include "position2d.h"
 #include "path.h"
-#include "IrrCompileConfig.h" // for IRRLICHT_SDK_VERSION
 
 namespace irr
 {
@@ -44,7 +43,6 @@ struct SIrrlichtCreationParameters
 #else
 			LoggingLevel(ELL_INFORMATION),
 #endif
-			SDK_version_do_not_use(IRRLICHT_SDK_VERSION),
 			PrivateData(0),
 #ifdef IRR_MOBILE_PATHS
 			OGLES2ShaderPath("media/Shaders/")
@@ -52,37 +50,6 @@ struct SIrrlichtCreationParameters
 			OGLES2ShaderPath("../../media/Shaders/")
 #endif
 	{
-	}
-
-	SIrrlichtCreationParameters(const SIrrlichtCreationParameters &other) :
-			SDK_version_do_not_use(IRRLICHT_SDK_VERSION)
-	{
-		*this = other;
-	}
-
-	SIrrlichtCreationParameters &operator=(const SIrrlichtCreationParameters &other)
-	{
-		DeviceType = other.DeviceType;
-		DriverType = other.DriverType;
-		WindowSize = other.WindowSize;
-		WindowPosition = other.WindowPosition;
-		Bits = other.Bits;
-		ZBufferBits = other.ZBufferBits;
-		Fullscreen = other.Fullscreen;
-		WindowMaximized = other.WindowMaximized;
-		WindowResizable = other.WindowResizable;
-		Stencilbuffer = other.Stencilbuffer;
-		Vsync = other.Vsync;
-		AntiAlias = other.AntiAlias;
-		WithAlphaChannel = other.WithAlphaChannel;
-		Doublebuffer = other.Doublebuffer;
-		Stereobuffer = other.Stereobuffer;
-		EventReceiver = other.EventReceiver;
-		WindowId = other.WindowId;
-		LoggingLevel = other.LoggingLevel;
-		PrivateData = other.PrivateData;
-		OGLES2ShaderPath = other.OGLES2ShaderPath;
-		return *this;
 	}
 
 	//! Type of the device.
@@ -246,11 +213,6 @@ struct SIrrlichtCreationParameters
 	then you have to change it here.
 	*/
 	ELOG_LEVEL LoggingLevel;
-
-	//! Don't use or change this parameter.
-	/** Always set it to IRRLICHT_SDK_VERSION, which is done by default.
-	This is needed for sdk version checks. */
-	const c8 *const SDK_version_do_not_use;
 
 	//! Define some private data storage.
 	/** Used when platform devices need access to OS specific data structures etc.

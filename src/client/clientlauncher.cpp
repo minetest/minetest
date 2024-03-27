@@ -164,11 +164,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	while (m_rendering_engine->run() && !*kill &&
 		!g_gamecallback->shutdown_requested) {
 		// Set the window caption
-#if IRRLICHT_VERSION_MT_REVISION >= 15
 		auto driver_name = m_rendering_engine->getVideoDriver()->getName();
-#else
-		auto driver_name = wide_to_utf8(m_rendering_engine->getVideoDriver()->getName());
-#endif
 		std::string caption = std::string(PROJECT_NAME_C) +
 			" " + g_version_hash +
 			" [" + gettext("Main Menu") + "]" +

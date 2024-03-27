@@ -194,12 +194,6 @@ public:
 	/** IrrlichtDevice::run() will always return false after closeDevice() was called. */
 	virtual void closeDevice() = 0;
 
-	//! Get the version of the engine.
-	/** The returned string
-	will look like this: "1.2.3" or this: "1.2".
-	\return String which contains the version. */
-	virtual const c8 *getVersion() const = 0;
-
 	//! Sets a new user event receiver which will receive events from the engine.
 	/** Return true in IEventReceiver::OnEvent to prevent the event from continuing along
 	the chain of event receivers. The path that an event takes through the system depends

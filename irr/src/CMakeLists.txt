@@ -56,20 +56,6 @@ elseif(MSVC)
 	add_compile_options(/D_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
 endif()
 
-# Sanity-check version
-
-include(CheckCXXSourceCompiles)
-set(CMAKE_REQUIRED_INCLUDES ${PROJECT_SOURCE_DIR}/include)
-unset(REVISION_SANITY_CHECK CACHE)
-check_cxx_source_compiles("#include <IrrCompileConfig.h>\n\
-#if IRRLICHT_VERSION_MT_REVISION != ${IRRLICHTMT_REVISION}\n\
-#error\n\
-#endif\n\
-int main() {}" REVISION_SANITY_CHECK)
-if(NOT REVISION_SANITY_CHECK)
-	message(FATAL_ERROR "IrrlichtMt revision number mismatches between CMake and headers.")
-endif()
-
 # Platform-independent configuration (hard-coded currently)
 add_definitions(
 	-DIRR_ENABLE_BUILTIN_FONT
@@ -246,10 +232,11 @@ endif()
 
 # Required libs
 
+include(CheckCXXSourceCompiles)
+
 find_package(ZLIB REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(PNG REQUIRED)
-
 
 if(ENABLE_GLES1)
 	# only tested on Android, probably works on Linux (is this needed anywhere else?)

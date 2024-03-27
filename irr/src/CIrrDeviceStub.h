@@ -70,9 +70,6 @@ public:
 	//! Sets the window icon.
 	bool setWindowIcon(const video::IImage *img) override;
 
-	//! Returns the version of the engine.
-	const char *getVersion() const override;
-
 	//! send the event to the right receiver
 	bool postEventFromUser(const SEvent &event) override;
 
@@ -158,9 +155,6 @@ public:
 
 protected:
 	void createGUIAndScene();
-
-	//! checks version of SDK and prints warning if there might be a problem
-	bool checkVersion(const char *version);
 
 	//! Compares to the last call of this function to return double and triple clicks.
 	/** Needed for win32 device event handling
