@@ -135,7 +135,7 @@ function make.slider(setting)
 
 		get_formspec = function(self, avail_w)
 			local value = core.settings:get(setting.name) or setting.default
-			local scrollbar_value = value/(setting.max - setting.min)*steps - setting.min
+			local scrollbar_value = (value - setting.min)/(setting.max - setting.min)*steps
 
 			self.resettable = true
 
