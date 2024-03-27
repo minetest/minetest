@@ -33,29 +33,9 @@ local cb_caverns = { "caverns", fgettext("Caverns"),
 	fgettext("Very large caverns deep in the underground") }
 
 local flag_checkboxes = {
-	v5 = {
-		cb_caverns,
-	},
-	v7 = {
-		cb_caverns,
-		{ "ridges", fgettext("Rivers"), fgettext("Sea level rivers") },
-		{ "mountains", fgettext("Mountains") },
-		{ "floatlands", fgettext("Floatlands (experimental)"),
-		fgettext("Floating landmasses in the sky") },
-	},
 	carpathian = {
 		cb_caverns,
 		{ "rivers", fgettext("Rivers"), fgettext("Sea level rivers") },
-	},
-	valleys = {
-		{ "altitude_chill", fgettext("Altitude chill"),
-		fgettext("Reduces heat with altitude") },
-		{ "altitude_dry", fgettext("Altitude dry"),
-		fgettext("Reduces humidity with altitude") },
-		{ "humid_rivers", fgettext("Humid rivers"),
-		fgettext("Increases humidity around rivers") },
-		{ "vary_river_depth", fgettext("Vary river depth"),
-		fgettext("Low humidity and high heat causes shallow or dry rivers") },
 	},
 	flat = {
 		cb_caverns,
@@ -66,13 +46,34 @@ local flag_checkboxes = {
 		{ "terrain", fgettext("Additional terrain"),
 		fgettext("Generate non-fractal terrain: Oceans and underground") },
 	},
+	trailgen = {
+		cb_caverns,
+	},
+	v5 = {
+		cb_caverns,
+	},
 	v6 = {
 		{ "trees", fgettext("Trees and jungle grass") },
 		{ "flat", fgettext("Flat terrain") },
 		{ "mudflow", fgettext("Mud flow"), fgettext("Terrain surface erosion") },
-		{ "temples", fgettext("Desert temples"),
-		fgettext("Different dungeon variant generated in desert biomes (only if dungeons enabled)") },
 		-- Biome settings are in mgv6_biomes below
+	},
+	v7 = {
+		cb_caverns,
+		{ "ridges", fgettext("Rivers"), fgettext("Sea level rivers") },
+		{ "mountains", fgettext("Mountains") },
+		{ "floatlands", fgettext("Floatlands (experimental)"),
+		fgettext("Floating landmasses in the sky") },
+	},
+	valleys = {
+		{ "altitude_chill", fgettext("Altitude chill"),
+		fgettext("Reduces heat with altitude") },
+		{ "altitude_dry", fgettext("Altitude dry"),
+		fgettext("Reduces humidity with altitude") },
+		{ "humid_rivers", fgettext("Humid rivers"),
+		fgettext("Increases humidity around rivers") },
+		{ "vary_river_depth", fgettext("Vary river depth"),
+		fgettext("Low humidity and high heat causes shallow or dry rivers") },
 	},
 }
 
@@ -281,7 +282,7 @@ local function create_world_formspec(dialogdata)
 	end
 
 	local retval =
-		"size[12.25,7.4,true]" ..
+		"size[12.25,7,true]" ..
 
 		-- Left side
 		"container[0,0]"..
@@ -323,10 +324,8 @@ local function create_world_formspec(dialogdata)
 		"container_end[]"..
 
 		-- Menu buttons
-		"container[0,6.9]"..
-		"button[3.25,0;3,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
-		"button[6.25,0;3,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]" ..
-		"container_end[]"
+		"button[3.25,6.5;3,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
+		"button[6.25,6.5;3,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
 
 	return retval
 
@@ -389,13 +388,14 @@ local function create_world_buttonhandler(this, fields)
 				fixed_map_seed = this.data.seed,
 				mg_name = this.data.mg,
 				mg_flags = table_to_flags(this.data.flags.main),
+				mgcarpathian_spflags = table_to_flags(this.data.flags.carpathian),
+				mgflat_spflags = table_to_flags(this.data.flags.flat),
+				mgfractal_spflags = table_to_flags(this.data.flags.fractal),
+				mgtrailgen_spflags = table_to_flags(this.data.flags.trailgen),
 				mgv5_spflags = table_to_flags(this.data.flags.v5),
 				mgv6_spflags = table_to_flags(this.data.flags.v6),
 				mgv7_spflags = table_to_flags(this.data.flags.v7),
-				mgfractal_spflags = table_to_flags(this.data.flags.fractal),
-				mgcarpathian_spflags = table_to_flags(this.data.flags.carpathian),
 				mgvalleys_spflags = table_to_flags(this.data.flags.valleys),
-				mgflat_spflags = table_to_flags(this.data.flags.flat),
 			}
 			message = core.create_world(worldname, game.id, settings)
 		end
@@ -472,13 +472,14 @@ function create_create_world_dlg()
 		mg = core.settings:get("mg_name"),
 		flags = {
 			main = core.settings:get_flags("mg_flags"),
+			carpathian = core.settings:get_flags("mgcarpathian_spflags"),
+			flat = core.settings:get_flags("mgflat_spflags"),
+			fractal = core.settings:get_flags("mgfractal_spflags"),
+			trailgen = core.settings:get_flags("mgtrailgen_spflags"),
 			v5 = core.settings:get_flags("mgv5_spflags"),
 			v6 = core.settings:get_flags("mgv6_spflags"),
 			v7 = core.settings:get_flags("mgv7_spflags"),
-			fractal = core.settings:get_flags("mgfractal_spflags"),
-			carpathian = core.settings:get_flags("mgcarpathian_spflags"),
 			valleys = core.settings:get_flags("mgvalleys_spflags"),
-			flat = core.settings:get_flags("mgflat_spflags"),
 		}
 	}
 
