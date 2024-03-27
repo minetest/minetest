@@ -38,7 +38,6 @@ General options and their default values:
     INSTALL_DEVTEST=FALSE      - Whether the Development Test game should be installed alongside Minetest
     USE_GPROF=FALSE            - Enable profiling using GProf
     VERSION_EXTRA=             - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
-    ENABLE_TOUCH=FALSE         - Enable touchscreen support by default (requires support by IrrlichtMt)
 
 Library specific options:
 

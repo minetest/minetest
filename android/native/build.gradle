@@ -12,7 +12,7 @@ android {
             cmake {
 				arguments "-DANDROID_STL=c++_shared",
 					"-DENABLE_CURL=1", "-DENABLE_SOUND=1",
-					"-DENABLE_TOUCH=1", "-DENABLE_GETTEXT=1",
+					"-DENABLE_GETTEXT=1",
 					"-DBUILD_UNITTESTS=0", "-DENABLE_UPDATE_CHECKER=0"
 			}
 		}
