@@ -444,7 +444,7 @@ int ModApiEnv::l_place_node(lua_State *L)
 	pointed.node_abovesurface = pos;
 	pointed.node_undersurface = pos + v3s16(0,-1,0);
 	// Place it with a NULL placer (appears in Lua as nil)
-	bool success = scriptIfaceItem->item_OnPlace(item, nullptr, pointed);
+	bool success = scriptIfaceItem->item_OnPlace(item, nullptr, pointed, false);
 	lua_pushboolean(L, success);
 	return 1;
 }
