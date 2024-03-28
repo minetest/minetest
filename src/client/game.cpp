@@ -647,6 +647,8 @@ struct GameRunData {
 	float time_from_last_punch;
 	ClientActiveObject *selected_object;
 
+	bool is_sneaking = false;
+
 	float jump_timer_up;          // from key up until key down
 	float jump_timer_down;        // since last key down
 	float jump_timer_down_before; // from key down until key down again
@@ -2635,6 +2637,15 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 
 	//TimeTaker tt("update player control", NULL, PRECISION_NANO);
 
+
+	if (g_settings->getBool("toggle_sneak")) {
+		if (wasKeyPressed(KeyType::SNEAK))
+			runData.is_sneaking = !runData.is_sneaking;
+	} else {
+		runData.is_sneaking = isKeyDown(KeyType::SNEAK);
+	}
+
+
 	PlayerControl control(
 		isKeyDown(KeyType::FORWARD),
 		isKeyDown(KeyType::BACKWARD),
@@ -2642,7 +2653,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		isKeyDown(KeyType::RIGHT),
 		isKeyDown(KeyType::JUMP) || player->getAutojump(),
 		isKeyDown(KeyType::AUX1),
-		isKeyDown(KeyType::SNEAK),
+		runData.is_sneaking,
 		isKeyDown(KeyType::ZOOM),
 		isKeyDown(KeyType::DIG),
 		isKeyDown(KeyType::PLACE),
