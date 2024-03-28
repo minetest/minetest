@@ -196,7 +196,7 @@ void ModConfiguration::addModsFromConfig(
 	}
 }
 
-void ModConfiguration::checkConflictsAndDeps()
+void ModConfiguration::checkConflictsAndDeps(const std::string &first_mod, const std::string &last_mod)
 {
 	// report on name conflicts
 	if (!m_name_conflicts.empty()) {
@@ -215,10 +215,10 @@ void ModConfiguration::checkConflictsAndDeps()
 	}
 
 	// get the mods in order
-	resolveDependencies();
+	resolveDependencies(first_mod, last_mod);
 }
 
-void ModConfiguration::resolveDependencies()
+void ModConfiguration::resolveDependencies(const std::string &first_mod, const std::string &last_mod)
 {
 	// Step 1: Compile a list of the mod names we're working with
 	std::set<std::string> modnames;
@@ -230,7 +230,13 @@ void ModConfiguration::resolveDependencies()
 	// of each mod, split mods into satisfied and unsatisfied
 	std::vector<ModSpec> satisfied;
 	std::list<ModSpec> unsatisfied;
+	ModSpec firstModSpec;
 	for (ModSpec mod : m_unsatisfied_mods) {
+		// dependencies are not allowed for first ad last mod
+		if ( (mod.name == first_mod) || (mod.name == last_mod) ) {
+			if (!mod.depends.empty() || !mod.optdepends.empty())
+				throw ModError("Mod selected as first/last by game is not allowed to have dependencies.");
+		}
 		mod.unsatisfied_depends = mod.depends;
 		// check which optional dependencies actually exist
 		for (const std::string &optdep : mod.optdepends) {
@@ -238,10 +244,20 @@ void ModConfiguration::resolveDependencies()
 				mod.unsatisfied_depends.insert(optdep);
 		}
 		// if a mod has no depends it is initially satisfied
-		if (mod.unsatisfied_depends.empty())
-			satisfied.push_back(mod);
-		else
+		if (mod.unsatisfied_depends.empty()) {
+			if (mod.name == last_mod) {
+				auto it = satisfied.begin();
+				satisfied.insert(it, mod);
+			} else {
+				if (mod.name != first_mod) {
+					satisfied.push_back(mod);
+				} else {
+					m_sorted_mods.push_back(mod);
+				}
+			}
+		} else {
 			unsatisfied.push_back(mod);
+		}
 	}
 
 	// Step 3: mods without unmet dependencies can be appended to
