@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "util/serialize.h"
 
 class AsyncEngine;
 
@@ -119,8 +120,17 @@ private:
 	// colorspec_to_colorstring(colorspec)
 	static int l_colorspec_to_colorstring(lua_State *L);
 
+	// colorspec_to_colorint(colorspec)
+	static int l_colorspec_to_colorint(lua_State *L);
+
 	// colorspec_to_bytes(colorspec)
 	static int l_colorspec_to_bytes(lua_State *L);
+
+	// encode_network(format, ...)
+	static int l_encode_network(lua_State *L);
+
+	// decode_network(format, data)
+	static int l_decode_network(lua_State *L);
 
 	// encode_png(w, h, data, level)
 	static int l_encode_png(lua_State *L);

@@ -223,6 +223,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		AO_CMD_SET_BONE_POSITION extended
 		Add TOCLIENT_MOVE_PLAYER_REL
 		Move default minimap from client-side C++ to server-side builtin Lua
+		Add TOCLIENT_UI_MESSAGE
 		[scheduled bump for 5.9.0]
 */
 
@@ -809,6 +810,12 @@ enum ToClientCommand : u16
 	TOCLIENT_MOVE_PLAYER_REL = 0x5d,
 	/*
 		v3f added_pos
+	*/
+
+	TOCLIENT_UI_MESSAGE = 0x5e,
+	/*
+		Complicated variable-length structure with many optional fields and
+		length-prefixed data for future compatibility.
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,

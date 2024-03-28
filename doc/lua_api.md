@@ -4014,7 +4014,11 @@ Helper functions
 * `minetest.get_us_time()`
     * returns time with microsecond precision. May not return wall time.
 * `table.copy(table)`: returns a table
-    * returns a deep copy of `table`
+    * Returns a deep copy of `table`, i.e. a copy of the table and all its
+      nested tables.
+* `table.shallow_copy(table)`:
+    * Returns a shallow copy of `table`, i.e. only a copy of the table itself,
+      but not any of the nested tables.
 * `table.indexof(list, val)`: returns the smallest numerical index containing
       the value `val` in the table `list`. Non-numerical indices are ignored.
       If `val` could not be found, `-1` is returned. `list` must not have
@@ -4022,6 +4026,9 @@ Helper functions
 * `table.insert_all(table, other_table)`:
     * Appends all values in `other_table` to `table` - uses `#table + 1` to
       find new indices.
+* `table.merge(...)`:
+    * Merges multiple tables together into a new single table using
+      `table.insert_all()`.
 * `table.key_value_swap(t)`: returns a table with keys and values swapped
     * If multiple keys in `t` map to the same value, it is unspecified which
       value maps to that key.
@@ -5561,6 +5568,9 @@ Utilities
 * `minetest.colorspec_to_colorstring(colorspec)`: Converts a ColorSpec to a
   ColorString. If the ColorSpec is invalid, returns `nil`.
     * `colorspec`: The ColorSpec to convert
+* `minetest.colorspec_to_colorint(colorspec)`: Converts a ColorSpec to integer
+  form. If the ColorSpec is invalid, returns `nil`.
+    * `colorspec`: The ColorSpec to convert
 * `minetest.colorspec_to_bytes(colorspec)`: Converts a ColorSpec to a raw
   string of four bytes in an RGBA layout, returned as a string.
   * `colorspec`: The ColorSpec to convert
@@ -5569,8 +5579,8 @@ Utilities
     * `width`: Width of the image
     * `height`: Height of the image
     * `data`: Image data, one of:
-        * array table of ColorSpec, length must be width*height
-        * string with raw RGBA pixels, length must be width*height*4
+        * array table of ColorSpec, length must be `width * height`
+        * string with raw RGBA pixels, length must be `width * height * 4`
     * `compression`: Optional zlib compression level, number in range 0 to 9.
   The data is one-dimensional, starting in the upper left corner of the image
   and laid out in scanlines going from left to right, then top to bottom.
@@ -5580,6 +5590,43 @@ Utilities
 * `minetest.urlencode(str)`: Encodes reserved URI characters by a
   percent sign followed by two hex digits. See
   [RFC 3986, section 2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-2.3).
+* `minetest.class([super])`: Creates a new metatable-based class.
+    * `super` (optional): The superclass (i.e. the metatable) of the newly
+      created class. If nil, an empty table will be used.
+    * Lua metamethods may be added to the class, but they are not automatically
+      inherited. Note that `__index` and `__call` metafields are automatically
+      added to the metatable.
+    * When a new object is constructed, the `new()` method, if present, will be
+      called.
+    * Example: The following code, demonstrating a simple example of classes
+      and inheritance, will print `area=6, filled=true`:
+      ```lua
+      local Shape = minetest.class()
+      function Shape:new(filled)
+          self.filled = filled
+      end
+
+      function Shape:describe()
+          return "area=" .. self:get_area() .. ", filled=" .. tostring(self.filled)
+      end
+
+      local Rectangle = minetest.class(Shape)
+      function Rectangle:new(filled, width, height)
+          Shape.new(self, filled)
+
+          self.width = width
+          self.height = height
+      end
+
+      function Rectangle:get_area()
+          return self.width * self.height
+      end
+
+      local shape = Rectangle(true, 2, 3)
+      print(shape:describe())
+      ```
+* `minetest.is_instance(obj, class)`: Returns true if and only if `obj` is an
+  instance of `class` or any of its subclasses.
 
 Logging
 -------
@@ -7110,6 +7157,50 @@ Misc.
     * Example: `deserialize('print("foo")')`, returns `nil`
       (function call fails), returns
       `error:[string "print("foo")"]:1: attempt to call global 'print' (a nil value)`
+* `minetest.encode_network(format, ...)`: Encodes numbers and strings in binary
+  format suitable for network transfer according to a format string.
+    * Each character in the format string corresponds to an argument to the
+      function. Possible format characters:
+        * `b`: Signed 8-bit integer
+        * `h`: Signed 16-bit integer
+        * `i`: Signed 32-bit integer
+        * `l`: Signed 64-bit integer
+        * `B`: Unsigned 8-bit integer
+        * `H`: Unsigned 16-bit integer
+        * `I`: Unsigned 32-bit integer
+        * `L`: Unsigned 64-bit integer
+        * `f`: Single-precision floating point number
+        * `s`: 16-bit size-prefixed string. Max 64 KB in size
+        * `S`: 32-bit size-prefixed string. Max 64 MB in size
+        * `z`: Null-terminated string. Cannot have embedded null characters
+        * `Z`: Verbatim string with no size or terminator
+        * ` `: Spaces are ignored
+    * Integers are encoded in big-endian format, and floating point numbers are
+      encoded in IEEE-754 format. Note that the full range of 64-bit integers
+      cannot be represented in Lua's doubles.
+    * If integers outside of the range of the corresponding type are encoded,
+      integer wraparound will occur.
+    * If a string that is too long for a size-prefixed string is encoded, it
+      will be truncated.
+    * If a string with an embedded null character is encoded as a null
+      terminated string, it is truncated to the first null character.
+    * Verbatim strings are added directly to the output as-is and can therefore
+      have any size or contents, but the code on the decoding end cannot
+      automatically detect its length.
+* `minetest.decode_network(format, data, ...)`: Decodes numbers and strings
+  from a binary format created by `minetest.encode_network()` according to a
+  format string.
+    * The format string follows the same rules as `minetest.encode_network()`.
+      The decoded values are returned as individual values from the function.
+    * `Z` has special behavior; an extra argument has to be passed to the
+      function for every `Z` specifier denoting how many characters to read.
+      To read all remaining characters, use a size of `-1`.
+    * If the end of the data is encountered while still reading values from the
+      string, values of the correct type will still be returned, but strings of
+      variable length will be truncated, and numbers and verbatim strings will
+      use zeros for the missing bytes.
+    * If a size-prefixed string has a size that is greater than the maximum, it
+      will be truncated and the rest of the characters skipped.
 * `minetest.compress(data, method, ...)`: returns `compressed_data`
     * Compress a string of data.
     * `method` is a string identifying the compression method to be used.

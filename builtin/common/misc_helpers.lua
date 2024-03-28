@@ -489,11 +489,29 @@ function table.copy(t, seen)
 end
 
 
+function table.shallow_copy(t)
+	local new = {}
+	for k, v in pairs(t) do
+		new[k] = v
+	end
+	return new
+end
+
+
 function table.insert_all(t, other)
 	for i=1, #other do
 		t[#t + 1] = other[i]
 	end
 	return t
+end
+
+
+function table.merge(...)
+	local new = {}
+	for _, t in ipairs{...} do
+		table.insert_all(new, t)
+	end
+	return new
 end
 
 
@@ -759,4 +777,29 @@ function core.parse_coordinates(x, y, z, relative_to)
 	local ry = core.parse_relative_number(y, relative_to.y)
 	local rz = core.parse_relative_number(z, relative_to.z)
 	return rx and ry and rz and { x = rx, y = ry, z = rz }
+end
+
+local function call(class, ...)
+	local obj = core.class(class)
+	if obj.new then
+		obj:new(...)
+	end
+	return obj
+end
+
+function core.class(super)
+	super = super or {}
+	super.__index = super
+	super.__call = call
+
+	return setmetatable({}, super)
+end
+
+function core.is_instance(obj, class)
+	if type(obj) ~= "table" then
+		return false
+	end
+
+	local meta = getmetatable(obj)
+	return meta == class or core.is_instance(meta, class)
 end

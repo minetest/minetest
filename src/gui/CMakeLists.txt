@@ -1,4 +1,7 @@
 set(gui_SRCS
+	${CMAKE_CURRENT_SOURCE_DIR}/box.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/elem.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/generic_elems.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiAnimatedImage.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiBackgroundImage.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiBox.cpp
@@ -23,8 +26,11 @@ set(gui_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/guiTable.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiHyperText.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiVolumeChange.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/manager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/modalMenu.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/profilergraph.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/texture.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/touchscreengui.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/window.cpp
 	PARENT_SCOPE
 )

@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/hud.h"
 #include "client/minimap.h"
 #include "client/shadows/dynamicshadowsrender.h"
+#include "gui/manager.h"
 
 /// Draw3D pipeline step
 void Draw3D::run(PipelineContext &context)
@@ -43,6 +44,9 @@ void Draw3D::run(PipelineContext &context)
 
 void DrawWield::run(PipelineContext &context)
 {
+	ui::g_manager.preDraw();
+	ui::g_manager.drawType(ui::WindowType::BG);
+
 	if (m_target)
 		m_target->activate(context);
 
@@ -60,12 +64,24 @@ void DrawHUD::run(PipelineContext &context)
 
 		if (context.draw_crosshair)
 			context.hud->drawCrosshair();
+	}
 
+	ui::g_manager.drawType(ui::WindowType::MASK);
+
+	if (context.show_hud) {
 		context.hud->drawHotbar(context.client->getEnv().getLocalPlayer()->getWieldIndex());
+
 		context.hud->drawLuaElements(context.client->getCamera()->getOffset());
+		ui::g_manager.drawType(ui::WindowType::HUD);
+
 		context.client->getCamera()->drawNametags();
 	}
+
+	if (context.show_chat)
+		ui::g_manager.drawType(ui::WindowType::MESSAGE);
+
 	context.device->getGUIEnvironment()->drawAll();
+	ui::g_manager.drawType(ui::WindowType::FG);
 }
 
 
