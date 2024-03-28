@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/hud.h"
 #include "client/minimap.h"
 #include "client/shadows/dynamicshadowsrender.h"
+#include "cameras.h"
 
 /// Draw3D pipeline step
 void Draw3D::run(PipelineContext &context)
@@ -33,7 +34,8 @@ void Draw3D::run(PipelineContext &context)
 	if (m_target)
 		m_target->activate(context);
 
-	context.device->getSceneManager()->drawAll();
+	auto smgr = context.client->getSceneManager();
+	smgr->drawAll();
 	context.device->getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (!context.show_hud)
 		return;
@@ -95,8 +97,9 @@ void UpscaleStep::run(PipelineContext &context)
 {
 	video::ITexture *lowres = m_source->getTexture(0);
 	m_target->activate(context);
+	v2u32 target_size = m_target->getSize(context);
 	context.device->getVideoDriver()->draw2DImage(lowres,
-			core::rect<s32>(0, 0, context.target_size.X, context.target_size.Y),
+			core::rect<s32>(0, 0, target_size.X, target_size.Y),
 			core::rect<s32>(0, 0, lowres->getSize().Width, lowres->getSize().Height));
 }
 
@@ -150,15 +153,23 @@ RenderStep* addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f
 
 void populatePlainPipeline(RenderPipeline *pipeline, Client *client)
 {
+	pipeline->addStep<SelectPrimaryCamera>();
+
+	RenderPipeline *nested_pipeline = pipeline->addStep<RenderPipeline>();
+
 	auto downscale_factor = getDownscaleFactor();
-	auto step3D = pipeline->own(create3DStage(client, downscale_factor));
-	pipeline->addStep(step3D);
+	auto step3D = nested_pipeline->own(create3DStage(client, downscale_factor));
+	nested_pipeline->addStep(step3D);
+	nested_pipeline->addStep<MapPostFxStep>();
+
+	step3D = addUpscaling(nested_pipeline, step3D, downscale_factor);
+	step3D->setRenderTarget(nested_pipeline->getOutput());
+
+	auto screen = pipeline->createOwned<ScreenTarget>();
+	nested_pipeline->setRenderTarget(screen);
+
+	pipeline->addStep<DrawSecondaryCameras>(nested_pipeline, client)->setRenderTarget(screen);
+
 	pipeline->addStep<DrawWield>();
-	pipeline->addStep<MapPostFxStep>();
-
-	step3D = addUpscaling(pipeline, step3D, downscale_factor);
-
-	step3D->setRenderTarget(pipeline->createOwned<ScreenTarget>());
-
 	pipeline->addStep<DrawHUD>();
 }

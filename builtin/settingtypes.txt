@@ -300,6 +300,10 @@ fall_bobbing_amount (Fall bobbing factor) float 0.03 0.0 100.0
 
 [**Camera]
 
+#    Sets the render target resolution for secondary cameras rendered on entities.
+#    Higher values consume more client-side resources.
+render_target_resolution (Render Target Resolution) enum 512 64,128,256,512,1024,2048
+
 #    Field of view in degrees.
 fov (Field of view) int 72 45 160
 

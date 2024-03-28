@@ -233,6 +233,7 @@ public:
 	void handleCommand_MediaPush(NetworkPacket *pkt);
 	void handleCommand_MinimapModes(NetworkPacket *pkt);
 	void handleCommand_SetLighting(NetworkPacket *pkt);
+	void handleCommand_SetCamera(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -377,6 +378,7 @@ public:
 	const NodeDefManager* getNodeDefManager() override;
 	ICraftDefManager* getCraftDefManager() override;
 	ITextureSource* getTextureSource();
+	void setOverrideTextureSource(ITextureSource *source) { m_override_tsrc = source; }
 	virtual IWritableShaderSource* getShaderSource();
 	u16 allocateUnknownNodeId(const std::string &name) override;
 	virtual ISoundManager* getSoundManager();
@@ -481,6 +483,7 @@ private:
 	IntervalLimiter m_map_timer_and_unload_interval;
 
 	IWritableTextureSource *m_tsrc;
+	ITextureSource *m_override_tsrc { nullptr };
 	IWritableShaderSource *m_shsrc;
 	IWritableItemDefManager *m_itemdef;
 	NodeDefManager *m_nodedef;
@@ -571,6 +574,11 @@ private:
 	std::unordered_map<sound_handle_t, s32> m_sounds_client_to_server;
 	// Relation of client id to object id
 	std::unordered_map<sound_handle_t, u16> m_sounds_to_objects;
+
+	// Active cameras per client
+	std::unordered_map<int, bool> m_active_cameras = {
+		{-1, true} // Main camera active by default
+	};
 
 	// Privileges
 	std::unordered_set<std::string> m_privileges;

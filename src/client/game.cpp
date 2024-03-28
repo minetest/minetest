@@ -3241,6 +3241,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	core::line3d<f32> shootline;
 
 	switch (camera->getCameraMode()) {
+	case CAMERA_MODE_NONE:
 	case CAMERA_MODE_FIRST:
 		// Shoot from camera position, with bobbing
 		shootline.start = camera->getPosition();

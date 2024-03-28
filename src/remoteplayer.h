@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "skyparams.h"
 #include "lighting.h"
+#include "cameraparams.h"
 
 class PlayerSAO;
 
@@ -130,6 +131,38 @@ public:
 
 	const Lighting& getLighting() const { return m_lighting; }
 
+	s16 addCamera()
+	{
+		s16 id = 0;
+
+		while (m_cam_params.find(id) != m_cam_params.end()) {
+			if (id == 255)
+				throw LuaError("camera object got an ID > 255");
+			++id;
+		}
+
+		m_cam_params[id] = CameraParams(id);
+		return id;
+	}
+
+	const CameraParams getCameraParameters(s16 id) const
+	{
+		if (id < 0 || id > 255)
+			throw LuaError("camera object can not have an ID < 0 or > 255");
+
+		return m_cam_params.find(id) != m_cam_params.end() ? m_cam_params.at(id) : CameraParams(id);
+	}
+
+	void setCameraParameters(const CameraParams &value)
+	{
+		m_cam_params[value.id] = value;
+	}
+
+	void removeCamera(s16 id)
+	{
+		m_cam_params.erase(id);
+	}
+
 	void setDirty(bool dirty) { m_dirty = true; }
 
 	u16 protocol_version = 0;
@@ -167,6 +200,8 @@ private:
 	StarParams m_star_params;
 
 	Lighting m_lighting;
+
+	std::unordered_map<s16, CameraParams> m_cam_params;
 
 	session_t m_peer_id = PEER_ID_INEXISTENT;
 };

@@ -2598,6 +2598,259 @@ int ObjectRef::l_respawn(lua_State *L)
 	return 1;
 }
 
+// add_camera(self)
+int ObjectRef::l_add_camera(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	RemotePlayer *player = getplayer(ref);
+
+	if (!player)
+		return 0;
+
+	auto id = player->addCamera();
+	lua_pushnumber(L, id);
+
+	return 1;
+}
+
+// set_camera(self, id, params)
+int ObjectRef::l_set_camera(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	RemotePlayer *player = getplayer(ref);
+
+	if (!player)
+		return 0;
+
+	s16 cam_id = luaL_checkinteger(L, 2);
+	auto params = player->getCameraParameters(cam_id);
+	params.change_flags = 0;
+
+	luaL_checktype(L, 3, LUA_TTABLE);
+
+	params.enabled = getboolfield_default(L, 3, "enabled", params.enabled);
+
+	lua_getfield(L, 3, "pos");
+	if (lua_istable(L, -1)) {
+		params.change_flags |= CAM_CHANGE_POS;
+		params.pos.X = getfloatfield_default(L, -1, "x", params.pos.X);
+		params.pos.Y = getfloatfield_default(L, -1, "y", params.pos.Y);
+		params.pos.Z = getfloatfield_default(L, -1, "z", params.pos.Z);
+		if (params.attachment.enabled) {
+			params.change_flags |= CAM_CHANGE_ATTACHMENT;
+			params.attachment.enabled = false;
+		}
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, 3, "interpolate_pos");
+	if (lua_istable(L, -1)) {
+		params.interpolate_pos.enabled = getboolfield_default(L, -1, "enabled", params.interpolate_pos.enabled);
+		params.interpolate_pos.speed   = getfloatfield_default(L, -1, "speed", params.interpolate_pos.speed);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, 3, "rotation");
+	if (lua_istable(L, -1)) {
+		params.change_flags |= CAM_CHANGE_ROTATION;
+		params.rotation.X = getfloatfield_default(L, -1, "x", params.rotation.X);
+		params.rotation.Y = getfloatfield_default(L, -1, "y", params.rotation.Y);
+		params.rotation.Z = getfloatfield_default(L, -1, "z", params.rotation.Z);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, 3, "interpolate_rotation");
+	if (lua_istable(L, -1)) {
+		params.interpolate_rotation.enabled = getboolfield_default(L, -1, "enabled", params.interpolate_rotation.enabled);
+		params.interpolate_rotation.speed   = getfloatfield_default(L, -1, "speed", params.interpolate_rotation.speed);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, 3, "fov");
+	if (lua_isnumber(L, -1)) {
+		params.change_flags |= CAM_CHANGE_FOV;
+		params.fov = lua_tonumber(L, -1);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, 3, "interpolate_fov");
+	if (lua_istable(L, -1)) {
+		params.interpolate_fov.enabled = getboolfield_default(L, -1, "enabled", params.interpolate_fov.enabled);
+		params.interpolate_fov.speed   = getfloatfield_default(L, -1, "speed", params.interpolate_fov.speed);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, 3, "zoom");
+	if (lua_isnumber(L, -1)) {
+		params.change_flags |= CAM_CHANGE_ZOOM;
+		params.zoom = rangelim(lua_tonumber(L, -1), 0.f, 1000.f);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, 3, "interpolate_zoom");
+	if (lua_istable(L, -1)) {
+		params.interpolate_zoom.enabled = getboolfield_default(L, -1, "enabled", params.interpolate_zoom.enabled);
+		params.interpolate_zoom.speed   = getfloatfield_default(L, -1, "speed", params.interpolate_zoom.speed);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, 3, "target");
+	if (lua_istable(L, -1)) {
+		params.change_flags |= CAM_CHANGE_TARGET;
+		params.target.X = getfloatfield_default(L, -1, "x", params.target.X);
+		params.target.Y = getfloatfield_default(L, -1, "y", params.target.Y);
+		params.target.Z = getfloatfield_default(L, -1, "z", params.target.Z);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, 3, "viewport");
+	if (lua_istable(L, -1)) {
+		params.change_flags |= CAM_CHANGE_VIEWPORT;
+		params.viewport[0] = rangelim(getfloatfield_default(L, -1, "x", params.viewport[0]), 0.f, 1.f);
+		params.viewport[1] = rangelim(getfloatfield_default(L, -1, "y", params.viewport[1]), 0.f, 1.f);
+		params.viewport[2] = rangelim(getfloatfield_default(L, -1, "w", params.viewport[2]), 0.f, 1.f);
+		params.viewport[3] = rangelim(getfloatfield_default(L, -1, "h", params.viewport[3]), 0.f, 1.f);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, 3, "attachment");
+	if (lua_istable(L, -1)) {
+		lua_getfield(L, -1, "object");
+		ObjectRef *attachment = checkObject<ObjectRef>(L, -1);
+		lua_pop(L, 1);
+
+		if (attachment && getobject(attachment)) {
+			params.change_flags |= CAM_CHANGE_ATTACHMENT;
+			params.attachment.enabled = true;
+			params.attachment.object_id = getobject(attachment)->getId();
+			params.attachment.follow = getboolfield_default(L, -1, "follow", params.attachment.follow);
+		}
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, 3, "texture");
+	if (lua_istable(L, -1)) {
+		params.change_flags |= CAM_CHANGE_TEXTURE;
+		params.texture_name = getstringfield_default(L, -1, "name", params.texture_name);
+		params.texture_aspect_ratio = getfloatfield_default(L, -1, "aspect_ratio", params.texture_aspect_ratio);
+	}
+	lua_pop(L, 1);
+
+	getServer(L)->setCamera(player, params);
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// get_camera(self, id)
+int ObjectRef::l_get_camera(lua_State *L)
+{
+	GET_ENV_PTR;
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
+		return 0;
+
+	s16 cam_id = luaL_checkinteger(L, 2);
+	auto params = player->getCameraParameters(cam_id);
+
+	struct locals {
+		static void push_interpolation(lua_State *L, const CameraInterpolation &i) {
+			lua_newtable(L);
+			lua_pushboolean(L, i.enabled);
+			lua_setfield(L, -2, "enabled");
+			lua_pushnumber(L, i.speed);
+			lua_setfield(L, -2, "speed");
+		}
+	};
+
+	lua_newtable(L); // result
+
+	push_v3f(L, params.pos);
+	lua_setfield(L, -2, "pos");
+
+	locals::push_interpolation(L, params.interpolate_pos);
+	lua_setfield(L, -2, "interpolate_pos");
+
+	push_v3f(L, params.rotation);
+	lua_setfield(L, -2, "rotation");
+
+	locals::push_interpolation(L, params.interpolate_rotation);
+	lua_setfield(L, -2, "interpolate_rotation");
+
+	lua_pushnumber(L, params.fov);
+	lua_setfield(L, -2, "fov");
+
+	locals::push_interpolation(L, params.interpolate_fov);
+	lua_setfield(L, -2, "interpolate_fov");
+
+	lua_pushnumber(L, params.zoom);
+	lua_setfield(L, -2, "zoom");
+
+	locals::push_interpolation(L, params.interpolate_zoom);
+	lua_setfield(L, -2, "interpolate_zoom");
+
+	push_v3f(L, params.target);
+	lua_setfield(L, -2, "target");
+
+	lua_newtable(L);
+	lua_pushnumber(L, params.viewport[0]); // x
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, params.viewport[1]); // y
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, params.viewport[2]); // w
+	lua_setfield(L, -2, "w");
+	lua_pushnumber(L, params.viewport[3]); // h
+	lua_setfield(L, -2, "h");
+	lua_setfield(L, -2, "viewport");
+
+	lua_newtable(L);
+	if (params.attachment.enabled) {
+		auto sao = env->getActiveObject(params.attachment.object_id);
+		if (sao) {
+			ObjectRef::create(L, sao);
+			lua_setfield(L, -2, "object");
+		}
+	}
+	lua_pushboolean(L, params.attachment.follow);
+	lua_setfield(L, -2, "follow");
+	lua_setfield(L, -2, "attachment");
+
+	lua_newtable(L);
+	lua_pushstring(L, params.texture_name.c_str());
+	lua_setfield(L, -2, "name");
+	lua_pushnumber(L, params.texture_aspect_ratio);
+	lua_setfield(L, -2, "aspect_ratio");
+	lua_setfield(L, -2, "texture");
+
+	return 1;
+}
+
+// get_camera(self, id)
+int ObjectRef::l_remove_camera(lua_State *L)
+{
+	GET_ENV_PTR;
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
+		return 0;
+
+	s16 cam_id = luaL_checkinteger(L, 2);
+
+	player->removeCamera(cam_id);
+
+	CameraParams params;
+	params.id = cam_id;
+	params.change_flags = CAM_REMOVE;
+
+	getServer(L)->setCamera(player, params, true);
+
+	return 1;
+}
 
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
@@ -2744,6 +2997,10 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_lighting),
 	luamethod(ObjectRef, get_lighting),
 	luamethod(ObjectRef, respawn),
+	luamethod(ObjectRef, add_camera),
+	luamethod(ObjectRef, set_camera),
+	luamethod(ObjectRef, get_camera),
+	luamethod(ObjectRef, remove_camera),
 
 	{0,0}
 };

@@ -1900,6 +1900,62 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 	Send(&pkt);
 }
 
+void Server::SendSetCamera(session_t peer_id, const CameraParams &params)
+{
+	NetworkPacket pkt(TOCLIENT_SET_CAMERA, 0, peer_id);
+
+	pkt << params.id << params.change_flags << params.enabled;
+
+	if (params.change_flags & CAM_CHANGE_POS) {
+		pkt << params.pos.X << params.pos.Y << params.pos.Z;
+		pkt << params.interpolate_pos.enabled;
+		if (params.interpolate_pos.enabled)
+			pkt << params.interpolate_pos.speed;
+	}
+	if (params.change_flags & CAM_CHANGE_ROTATION) {
+		pkt << params.rotation.X << params.rotation.Y << params.rotation.Z;
+		pkt << params.interpolate_rotation.enabled;
+		if (params.interpolate_rotation.enabled)
+			pkt << params.interpolate_rotation.speed;
+	}
+
+	if (params.change_flags & CAM_CHANGE_FOV) {
+		pkt << params.fov;
+		pkt << params.interpolate_fov.enabled;
+		if (params.interpolate_fov.enabled)
+			pkt << params.interpolate_fov.speed;
+	}
+
+	if (params.change_flags & CAM_CHANGE_ZOOM) {
+		pkt << params.zoom;
+		pkt << params.interpolate_zoom.enabled;
+		if (params.interpolate_zoom.enabled)
+			pkt << params.interpolate_zoom.speed;
+	}
+
+	if (params.change_flags & CAM_CHANGE_TARGET) {
+		pkt << params.target.X << params.target.Y << params.target.Z;
+	}
+
+	if (params.change_flags & CAM_CHANGE_VIEWPORT) {
+		pkt << params.viewport[0]
+				<< params.viewport[1]
+				<< params.viewport[2]
+				<< params.viewport[3];
+	}
+
+	if (params.change_flags & CAM_CHANGE_ATTACHMENT) {
+		pkt << params.attachment.enabled;
+		if (params.attachment.enabled)
+			pkt << params.attachment.object_id << params.attachment.follow;
+	}
+
+	if (params.change_flags & CAM_CHANGE_TEXTURE)
+		pkt << params.texture_name << params.texture_aspect_ratio;
+
+	Send(&pkt);
+}
+
 void Server::SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed)
 {
 	NetworkPacket pkt(TOCLIENT_TIME_OF_DAY, 0, peer_id);
@@ -3540,6 +3596,15 @@ void Server::setLighting(RemotePlayer *player, const Lighting &lighting)
 	sanity_check(player);
 	player->setLighting(lighting);
 	SendSetLighting(player->getPeerId(), lighting);
+}
+
+void Server::setCamera(RemotePlayer *player, const CameraParams &params, bool remove)
+{
+	sanity_check(player);
+
+	if (!remove)
+		player->setCameraParameters(params);
+	SendSetCamera(player->getPeerId(), params);
 }
 
 void Server::notifyPlayers(const std::wstring &msg)

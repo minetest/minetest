@@ -50,12 +50,26 @@ void TextureBuffer::setTexture(u8 index, core::dimension2du size, const std::str
 
 	auto &definition = m_definitions[index];
 	definition.valid = true;
-	definition.dirty = true;
-	definition.fixed_size = true;
-	definition.size = size;
-	definition.name = name;
-	definition.format = format;
-	definition.clear = clear;
+	if (!definition.fixed_size) {
+		definition.fixed_size = true;
+		definition.dirty = true;
+	}
+	if (definition.size != size) {
+		definition.size = size;
+		definition.dirty = true;
+	}
+	if (definition.name != name) {
+		definition.name = name;
+		definition.dirty = true;
+	}
+	if (definition.format != format) {
+		definition.format = format;
+		definition.dirty = true;
+	}
+	if (definition.clear != clear) {
+		definition.clear = clear;
+		definition.dirty = true;
+	}
 }
 
 void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &name, video::ECOLOR_FORMAT format, bool clear)
@@ -67,12 +81,26 @@ void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &na
 
 	auto &definition = m_definitions[index];
 	definition.valid = true;
-	definition.dirty = true;
-	definition.fixed_size = false;
-	definition.scale_factor = scale_factor;
-	definition.name = name;
-	definition.format = format;
-	definition.clear = clear;
+	if (definition.fixed_size) {
+		definition.fixed_size = false;
+		definition.dirty = true;
+	}
+	if (definition.scale_factor != scale_factor) {
+		definition.scale_factor = scale_factor;
+		definition.dirty = true;
+	}
+	if (definition.name != name) {
+		definition.name = name;
+		definition.dirty = true;
+	}
+	if (definition.format != format) {
+		definition.format = format;
+		definition.dirty = true;
+	}
+	if (definition.clear != clear) {
+		definition.clear = clear;
+		definition.dirty = true;
+	}
 }
 
 void TextureBuffer::reset(PipelineContext &context)
@@ -211,6 +239,11 @@ void TextureBufferOutput::activate(PipelineContext &context)
 	RenderTarget::activate(context);
 }
 
+v2u32 TextureBufferOutput::getSize(PipelineContext &context)
+{
+	return driver->getCurrentRenderTargetSize();
+}
+
 u8 DynamicSource::getTextureCount()
 {
 	assert(isConfigured());
@@ -236,6 +269,13 @@ void DynamicTarget::activate(PipelineContext &context)
 	if (!isConfigured())
 		throw std::logic_error("Dynamic render target is not configured before activation.");
 	upstream->activate(context);
+}
+
+v2u32 DynamicTarget::getSize(PipelineContext &context)
+{
+	if (!isConfigured())
+		throw std::logic_error("Dynamic render target is not configured before activation.");
+	return upstream->getSize(context);
 }
 
 void ScreenTarget::reset(PipelineContext &context)

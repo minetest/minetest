@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "shader.h"
 #include "content_cao.h"
 #include "porting.h"
+#include "cameraparams.h"
 #include <algorithm>
 #include "client/renderingengine.h"
 
@@ -64,6 +65,10 @@ ClientEnvironment::~ClientEnvironment()
 	m_map->drop();
 
 	delete m_local_player;
+
+	// Deletes secondary cameras
+	for (auto &camera: m_cameras)
+		camera.second->remove();
 }
 
 Map & ClientEnvironment::getMap()
@@ -296,6 +301,12 @@ void ClientEnvironment::step(float dtime)
 			++i;
 		}
 	}
+
+	/*
+		Update the cameras
+	*/
+	for (const auto &pair : m_cameras)
+		pair.second->step();
 }
 
 void ClientEnvironment::addSimpleObject(ClientSimpleObject *simple)
@@ -491,6 +502,8 @@ void ClientEnvironment::getSelectedActiveObjects(
 
 void ClientEnvironment::updateFrameTime(bool is_paused)
 {
+	m_paused = is_paused;
+
 	// if paused, m_frame_time_pause_accumulator increases by dtime,
 	// otherwise, m_frame_time increases by dtime
 	if (is_paused) {
@@ -502,4 +515,84 @@ void ClientEnvironment::updateFrameTime(bool is_paused)
 		m_frame_dtime = new_frame_time - MYMAX(m_frame_time, m_frame_time_pause_accumulator);
 		m_frame_time = new_frame_time;
 	}
+}
+
+void ClientEnvironment::setCamera(const CameraParams &params)
+{
+	UniversalCamera *cam;
+	const auto &it = m_cameras.find(params.id);
+
+	if (params.change_flags & CAM_REMOVE) {
+		// Remove the camera
+		if (it != m_cameras.end()) {
+			auto camera = it->second;
+			m_cameras.erase(it);
+
+			camera->remove();
+			camera->drop();
+		}
+
+		return;
+	}
+
+	// Create camera on demand
+	if (it == m_cameras.end()) {
+		auto smgr = m_client->getSceneManager();
+		cam = new UniversalCamera(
+			this, smgr->getVideoDriver(), smgr->getRootSceneNode(), smgr, params.id);
+		m_cameras[params.id] = cam;
+	} else
+		cam = it->second;
+
+	cam->setVisible(params.enabled);
+	v3f offset = v3f(m_camera_offset.X, m_camera_offset.Y, m_camera_offset.Z) * BS;
+
+	if (params.change_flags & CAM_CHANGE_POS) {
+		// Reset the rotation before changing the position
+	//	if (params.change_flags & ~CAM_CHANGE_ROTATION && !params.interpolate_rotation.enabled)
+	//		cam->setRotation(params.rotation, false);
+
+		v3f pos = (params.pos * BS) - (params.attachment.enabled ? v3f() : offset);
+		cam->setPosition(pos, params.interpolate_pos.enabled, params.interpolate_pos.speed);
+	}
+
+	if (params.change_flags & CAM_CHANGE_ROTATION)
+		cam->setRotation(params.rotation,
+				params.interpolate_rotation.enabled, params.interpolate_rotation.speed);
+
+	if (params.change_flags & CAM_CHANGE_FOV)
+		cam->setFOV(params.fov * M_PI / 180.f,
+				params.interpolate_fov.enabled, params.interpolate_fov.speed);
+
+	if (params.change_flags & CAM_CHANGE_ZOOM)
+		cam->setZoom(params.zoom, params.interpolate_zoom.enabled, params.interpolate_zoom.speed);
+
+	if (params.change_flags & CAM_CHANGE_TARGET) {
+		v3f pos = (params.target * BS) - (params.attachment.enabled ? v3f() : offset);
+		cam->setTarget(pos);
+	}
+
+	if (params.change_flags & CAM_CHANGE_VIEWPORT)
+		cam->setViewPort(core::rectf(
+			params.viewport[0], // x
+			params.viewport[1], // y
+			params.viewport[0] + params.viewport[2], // w
+			params.viewport[1] + params.viewport[3] // h
+		));
+
+	if (params.change_flags & CAM_CHANGE_ATTACHMENT) {
+		cam->detach();
+
+		if (params.attachment.enabled) {
+			auto cao = getGenericCAO(params.attachment.object_id);
+			if (cao)
+				cam->attachTo(cao, params.attachment.follow);
+		}
+	}
+
+	if (params.change_flags & CAM_CHANGE_TEXTURE)
+		cam->setRenderTexture(params.texture_name, params.texture_aspect_ratio);
+
+	// Must be set last
+	cam->setCameraOffset(m_camera_offset);
 }

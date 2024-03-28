@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tileanimation.h"
 #include "gettext.h"
 #include "skyparams.h"
+#include "cameraparams.h"
 #include "particles.h"
 #include <memory>
 
@@ -1815,4 +1816,60 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 	}
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.volumetric_light_strength;
+}
+
+void Client::handleCommand_SetCamera(NetworkPacket *pkt)
+{
+	CameraParams params;
+
+	*pkt >> params.id >> params.change_flags >> params.enabled;
+
+	if (params.change_flags & CAM_CHANGE_POS) {
+		*pkt >> params.pos.X >> params.pos.Y >> params.pos.Z;
+		*pkt >> params.interpolate_pos.enabled;
+		if (params.interpolate_pos.enabled)
+			*pkt >> params.interpolate_pos.speed;
+	}
+	if (params.change_flags & CAM_CHANGE_ROTATION) {
+		*pkt >> params.rotation.X >> params.rotation.Y >> params.rotation.Z;
+		*pkt >> params.interpolate_rotation.enabled;
+		if (params.interpolate_rotation.enabled)
+			*pkt >> params.interpolate_rotation.speed;
+	}
+
+	if (params.change_flags & CAM_CHANGE_FOV) {
+		*pkt >> params.fov;
+		*pkt >> params.interpolate_fov.enabled;
+		if (params.interpolate_fov.enabled)
+			*pkt >> params.interpolate_fov.speed;
+	}
+
+	if (params.change_flags & CAM_CHANGE_ZOOM) {
+		*pkt >> params.zoom;
+		*pkt >> params.interpolate_zoom.enabled;
+		if (params.interpolate_zoom.enabled)
+			*pkt >> params.interpolate_zoom.speed;
+	}
+
+	if (params.change_flags & CAM_CHANGE_TARGET) {
+		*pkt >> params.target.X >> params.target.Y >> params.target.Z;
+	}
+
+	if (params.change_flags & CAM_CHANGE_VIEWPORT) {
+		*pkt >> params.viewport[0]
+				>> params.viewport[1]
+				>> params.viewport[2]
+				>> params.viewport[3];
+	}
+
+	if (params.change_flags & CAM_CHANGE_ATTACHMENT) {
+		*pkt >> params.attachment.enabled;
+		if (params.attachment.enabled)
+			*pkt >> params.attachment.object_id >> params.attachment.follow;
+	}
+
+	if (params.change_flags & CAM_CHANGE_TEXTURE)
+		*pkt >> params.texture_name >> params.texture_aspect_ratio;
+
+	m_env.setCamera(params);
 }

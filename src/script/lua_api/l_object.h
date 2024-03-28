@@ -399,4 +399,16 @@ private:
 
 	// respawn(self)
 	static int l_respawn(lua_State *L);
+
+	// add_camera(self)
+	static int l_add_camera(lua_State *L);
+
+	// set_camera(self, id, params)
+	static int l_set_camera(lua_State *L);
+
+	// get_camera(self, id)
+	static int l_get_camera(lua_State *L);
+
+	// remove_camera(self, id)
+	static int l_remove_camera(lua_State *L);
 };

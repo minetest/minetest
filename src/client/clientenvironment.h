@@ -34,6 +34,8 @@ class ClientScripting;
 class ClientActiveObject;
 class GenericCAO;
 class LocalPlayer;
+class UniversalCamera;
+class CameraParams;
 
 /*
 	The client-side environment.
@@ -145,10 +147,14 @@ public:
 	void updateCameraOffset(const v3s16 &camera_offset)
 	{ m_camera_offset = camera_offset; }
 	v3s16 getCameraOffset() const { return m_camera_offset; }
+	bool isGamePaused() const { return m_paused; }
 
 	void updateFrameTime(bool is_paused);
 	u64 getFrameTime() const { return m_frame_time; }
 	u64 getFrameTimeDelta() const { return m_frame_dtime; }
+
+	void setCamera(const CameraParams &params);
+	const std::unordered_map<s16, UniversalCamera *> getCameras() { return m_cameras; }
 
 private:
 	ClientMap *m_map;
@@ -165,4 +171,6 @@ private:
 	u64 m_frame_time = 0;
 	u64 m_frame_dtime = 0;
 	u64 m_frame_time_pause_accumulator = 0;
+	std::unordered_map<s16, UniversalCamera *> m_cameras;
+	bool m_paused = false;
 };
