@@ -248,6 +248,14 @@ void ClientEnvironment::step(float dtime)
 	if (m_client->modsLoaded())
 		m_script->environment_step(dtime);
 
+	// Update the ambient light
+	auto new_ambient_light_clr = getLocalPlayer()->getLighting().ambient_light;
+
+	bool enable_shaders = g_settings->getBool("enable_shaders");
+
+	if (enable_shaders && (new_ambient_light_clr != m_ambient_light))
+		m_ambient_light = new_ambient_light_clr;
+
 	// Update lighting on local player (used for wield item)
 	u32 day_night_ratio = getDayNightRatio();
 	{
@@ -262,7 +270,12 @@ void ClientEnvironment::step(float dtime)
 
 		u16 light = getInteriorLight(node_at_lplayer, 0, m_client->ndef());
 		lplayer->light_color = encode_light(light, 0); // this transfers light.alpha
-		final_color_blend(&lplayer->light_color, light, day_night_ratio);
+
+		video::SColor ambient_light(255, 0, 0, 0);
+
+		if (enable_shaders)
+			ambient_light = m_ambient_light;
+		final_color_blend(&lplayer->light_color, light, day_night_ratio, ambient_light);
 	}
 
 	/*

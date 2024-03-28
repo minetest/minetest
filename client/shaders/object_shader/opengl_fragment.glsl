@@ -9,6 +9,8 @@ uniform vec3 eyePosition;
 // The cameraOffset is the current center of the visible world.
 uniform vec3 cameraOffset;
 uniform float animationTimer;
+
+uniform vec3 ambientLight;
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	// shadow texture
 	uniform sampler2D ShadowMapSampler;
@@ -379,7 +381,8 @@ void main(void)
 #endif
 
 	color = base.rgb;
-	vec4 col = vec4(color.rgb * varColor.rgb, 1.0);
+
+	vec4 col = vec4(color.rgb * min(varColor.rgb + ambientLight, 1.0), 1.0);
 	col.rgb *= vIDiff;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS

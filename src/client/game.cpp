@@ -381,6 +381,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float>
 		m_animation_timer_delta_pixel{"animationTimerDelta"};
 	CachedPixelShaderSetting<float, 3> m_day_light{"dayLight"};
+	CachedPixelShaderSetting<float, 3> m_ambient_light{"ambientLight"};
 	CachedPixelShaderSetting<float, 3> m_eye_position_pixel{"eyePosition"};
 	CachedVertexShaderSetting<float, 3> m_eye_position_vertex{"eyePosition"};
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
@@ -474,6 +475,9 @@ public:
 		get_sunlight_color(&sunlight, daynight_ratio);
 		m_day_light.set(sunlight, services);
 
+		video::SColorf ambient_light_f(m_client->getEnv().getAmbientLight());
+		m_ambient_light.set(ambient_light_f, services);
+
 		u32 animation_timer = m_client->getEnv().getFrameTime() % 1000000;
 		float animation_timer_f = (float)animation_timer / 100000.f;
 		m_animation_timer_vertex.set(&animation_timer_f, services);
@@ -509,7 +513,9 @@ public:
 		m_texel_size0_vertex.set(m_texel_size0, services);
 		m_texel_size0_pixel.set(m_texel_size0, services);
 
-		const AutoExposure &exposure_params = m_client->getEnv().getLocalPlayer()->getLighting().exposure;
+		auto lighting = m_client->getEnv().getLocalPlayer()->getLighting();
+
+		const AutoExposure &exposure_params = lighting.exposure;
 		std::array<float, 7> exposure_buffer = {
 			std::pow(2.0f, exposure_params.luminance_min),
 			std::pow(2.0f, exposure_params.luminance_max),
@@ -526,8 +532,6 @@ public:
 			m_bloom_radius_pixel.set(&m_bloom_radius, services);
 			m_bloom_strength_pixel.set(&m_bloom_strength, services);
 		}
-
-		const auto &lighting = m_client->getEnv().getLocalPlayer()->getLighting();
 		float saturation = lighting.saturation;
 		m_saturation_pixel.set(&saturation, services);
 
@@ -570,7 +574,6 @@ public:
 				float moon_brightness = 0.f;
 				m_moon_brightness_pixel.set(&moon_brightness, services);
 			}
-
 			float volumetric_light_strength = lighting.volumetric_light_strength;
 			m_volumetric_light_strength_pixel.set(&volumetric_light_strength, services);
 		}

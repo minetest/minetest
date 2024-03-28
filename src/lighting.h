@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #pragma once
+#include "irrlichttypes_bloated.h"
 
 
 /**
@@ -46,11 +47,11 @@ struct AutoExposure
 	AutoExposure();
 };
 
-/** Describes ambient light settings for a player
- */
 struct Lighting
 {
 	AutoExposure exposure;
+	/// @brief Ambient light color & intensity for nodes & entities. Alpha is ignored.
+	video::SColor ambient_light {255, 0, 0, 0};
 	float shadow_intensity {0.0f};
 	float saturation {1.0f};
 	float volumetric_light_strength {0.0f};

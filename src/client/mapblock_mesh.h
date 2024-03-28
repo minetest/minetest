@@ -318,7 +318,7 @@ void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio);
  * night light
  */
 void final_color_blend(video::SColor *result,
-		u16 light, u32 daynight_ratio);
+		u16 light, u32 daynight_ratio, video::SColor ambientLight=video::SColor(255,0,0,0));
 
 /*!
  * Gives the final  SColor shown on screen.
@@ -328,7 +328,8 @@ void final_color_blend(video::SColor *result,
  * \param dayLight color of the sunlight
  */
 void final_color_blend(video::SColor *result,
-		const video::SColor &data, const video::SColorf &dayLight);
+		const video::SColor &data, const video::SColorf &dayLight,
+		const video::SColor &ambientLight=video::SColor(255,0,0,0));
 
 // Retrieves the TileSpec of a face of a node
 // Adds MATERIAL_FLAG_CRACK if the node is cracked

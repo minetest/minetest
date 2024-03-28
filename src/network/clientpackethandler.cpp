@@ -47,6 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "skyparams.h"
 #include "particles.h"
 #include <memory>
+#include "client/clientmap.h"
 
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -1801,18 +1802,29 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 {
 	Lighting& lighting = m_env.getLocalPlayer()->getLighting();
 
-	if (pkt->getRemainingBytes() >= 4)
-		*pkt >> lighting.shadow_intensity;
-	if (pkt->getRemainingBytes() >= 4)
-		*pkt >> lighting.saturation;
-	if (pkt->getRemainingBytes() >= 24) {
-		*pkt >> lighting.exposure.luminance_min
-				>> lighting.exposure.luminance_max
-				>> lighting.exposure.exposure_correction
-				>> lighting.exposure.speed_dark_bright
-				>> lighting.exposure.speed_bright_dark
-				>> lighting.exposure.center_weight_power;
-	}
-	if (pkt->getRemainingBytes() >= 4)
-		*pkt >> lighting.volumetric_light_strength;
+	if (pkt->getRemainingBytes() < 4)
+		return;
+	*pkt >> lighting.shadow_intensity;
+
+	if (pkt->getRemainingBytes() < 4)
+		return;
+	*pkt >> lighting.saturation;
+
+	if (pkt->getRemainingBytes() < 24)
+		return;
+	*pkt >> lighting.exposure.luminance_min
+			>> lighting.exposure.luminance_max
+			>> lighting.exposure.exposure_correction
+			>> lighting.exposure.speed_dark_bright
+			>> lighting.exposure.speed_bright_dark
+			>> lighting.exposure.center_weight_power;
+
+	if (pkt->getRemainingBytes() < 4)
+		return;
+	*pkt >> lighting.volumetric_light_strength;
+
+	if (pkt->getRemainingBytes() < 4)
+		return;
+	*pkt >> lighting.ambient_light;
+	lighting.ambient_light.setAlpha(255); // alpha should always be 255
 }
