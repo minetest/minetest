@@ -17,11 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "imagefilters.h"
+#include "debug.h"
 #include "util/numeric.h"
 #include <cmath>
 #include <cassert>
 #include <vector>
 #include <algorithm>
+#include <array>
 
 // Simple 2D bitmap class with just the functionality needed here
 class Bitmap {
@@ -132,6 +134,7 @@ static void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
 
 			// Add RGB values weighted by alpha IF the pixel is opaque, otherwise
 			// use full weight since we want to propagate colors.
+			// FIXME: But why are we weighting them more than opaque pixels?
 			video::SColor d = get_pixel(sx, sy);
 			u32 a = d.getAlpha() <= threshold ? 255 : d.getAlpha();
 			ss += a;
@@ -161,6 +164,364 @@ static void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
 	}
 }
 
+static void imageCleanTransparentNew(video::IImage *src, u32 threshold)
+{
+	// with threshold = 127, the average of the whole texture is far too dominant
+	threshold = 0; //TODO
+
+	using ImgLvl = std::pair<u32 *, core::dimension2d<u32>>;
+
+	sanity_check(src->getColorFormat() == video::ECF_A8R8G8B8);
+
+	// Early return if no alpha < threshold
+	{
+		const core::dimension2d<u32> dim = src->getDimension();
+		u32 *const data = reinterpret_cast<u32 *>(src->getData());
+		bool has_transparent = false;
+		for (u32 idx = 0; idx < dim.Width * dim.Height; ++idx) {
+			if (video::SColor(data[idx]).getAlpha() <= threshold) {
+				has_transparent = true;
+				break;
+			}
+		}
+		if (!has_transparent)
+			return;
+	}
+
+	// Step 0: Allocate images
+	// levels[i+1] is 2 times smaller than levels[i], rounded up
+
+	std::vector<std::unique_ptr<u32[]>> level_ups;
+	std::vector<ImgLvl> levels;
+	{
+		core::dimension2d<u32> dim = src->getDimension();
+		levels.emplace_back(reinterpret_cast<u32 *>(src->getData()), dim);
+
+		while (dim.Width > 1 || dim.Height > 1) {
+			dim.Width  = (dim.Width  + 1) / 2;
+			dim.Height = (dim.Height + 1) / 2;
+			auto data = std::unique_ptr<u32[]>(new u32[dim.Width * dim.Height]);
+			levels.emplace_back(data.get(), dim);
+			level_ups.push_back(std::move(data));
+		}
+	}
+
+	if (levels.size() <= 1) {
+		// just one pixel. can't do anything
+		return;
+	}
+
+	// Step 1: Scale down
+
+	auto mix4cols = [](std::array<video::SColor, 4> colors) -> video::SColor {
+		u32 sr = 0, sg = 0, sb = 0, sa = 0;
+		auto add_color = [&](video::SColor c) {
+			u32 alph = c.getAlpha();
+			sr += alph * c.getRed();
+			sg += alph * c.getGreen();
+			sb += alph * c.getBlue();
+			sa += alph;
+		};
+		for (auto c : colors)
+			add_color(c);
+		if (sa == 0)
+			return 0;
+		//~ if (sa == 255 * 4) { // common case
+			//~ sr = 0, sg = 0, sb = 0;
+			//~ for (auto c : colors) {
+				//~ sr += c.getRed();
+				//~ sg += c.getGreen();
+				//~ sb += c.getBlue();
+			//~ }
+			//~ sr /= 4;
+			//~ sg /= 4;
+			//~ sb /= 4;
+			//~ return video::SColor(255, sr, sg, sb);
+		//~ }
+		//~ u64 d = (1 << 16) / sa;
+		//~ sr = (sr * d) >> 16;
+		//~ sg = (sg * d) >> 16;
+		//~ sb = (sb * d) >> 16;
+		//~ sa = ((sa + 1) * d) >> 16;
+
+		sr /= sa;
+		sg /= sa;
+		sb /= sa;
+		sa = (sa + 1) / 4; // +1 for better rounding // TODO: maybe always round up, to make sure colors are preserved? (+3)
+		return video::SColor(sa, sr, sg, sb);
+	};
+
+	for (size_t lvl = 0; lvl + 1 < levels.size(); ++lvl) {
+		u32 *const data_large = levels[lvl].first;
+		u32 *const data_small = levels[lvl+1].first;
+		const core::dimension2d<u32> dim_large = levels[lvl].second;
+		const core::dimension2d<u32> dim_small = levels[lvl+1].second;
+
+		// round dim_large down. odd rows and columns are handled separately
+		u32 idx_small = 0;
+		u32 idx_large = 0; // index of upper left pixel in large image
+		u32 y_small;
+		for (y_small = 0; y_small < dim_large.Height / 2; ++y_small) {
+			u32 x_small;
+			for (x_small = 0; x_small < dim_large.Width / 2; ++x_small) {
+				assert(idx_small == y_small * dim_small.Width + x_small);
+				assert(idx_large == y_small * 2 * dim_large.Width + x_small * 2);
+
+				data_small[idx_small] = mix4cols({
+						data_large[idx_large],
+						data_large[idx_large + 1],
+						data_large[idx_large + dim_large.Width],
+						data_large[idx_large + dim_large.Width + 1],
+					}).color;
+
+				idx_small += 1;
+				idx_large += 2;
+			}
+
+			// odd column
+			if (x_small != dim_small.Width) {
+				assert(idx_small == y_small * dim_small.Width + x_small);
+				assert(idx_large == y_small * 2 * dim_large.Width + x_small * 2);
+
+				data_small[idx_small] = mix4cols({
+						data_large[idx_large],
+						0,
+						data_large[idx_large + dim_large.Width],
+						0,
+					}).color;
+
+				idx_small += 1;
+				idx_large += 1;
+			}
+
+			idx_large += dim_large.Width;
+		}
+
+		// odd row
+		if (y_small != dim_small.Height) {
+			u32 x_small;
+			for (x_small = 0; x_small < dim_large.Width / 2; ++x_small) {
+				assert(idx_small == y_small * dim_small.Width + x_small);
+				assert(idx_large == y_small * 2 * dim_large.Width + x_small * 2);
+
+				data_small[idx_small] = mix4cols({
+						data_large[idx_large],
+						data_large[idx_large + 1],
+						0,
+						0,
+					}).color;
+
+				idx_small += 1;
+				idx_large += 2;
+			}
+
+			// odd column (corner pixel)
+			if (x_small != dim_small.Width) {
+				assert(idx_small == y_small * dim_small.Width + x_small);
+				assert(idx_large == y_small * 2 * dim_large.Width + x_small * 2);
+
+				//~ data_small[idx_small] = data_large[idx_large];
+				data_small[idx_small] = mix4cols({
+						data_large[idx_large],
+						0,
+						0,
+						0,
+					}).color;
+
+				idx_small += 1;
+				idx_large += 1;
+			}
+		}
+	}
+
+	// Step 2: Propagate back
+	// If a pixel's alpha is < threshold, we sample the smaller level with bilinear
+	// interpolation.
+
+	for (int lvl = levels.size() - 2; lvl >= 0; --lvl) {
+		u32 *const data_large = levels[lvl].first;
+		u32 *const data_small = levels[lvl+1].first;
+		const core::dimension2d<u32> dim_large = levels[lvl].second;
+		const core::dimension2d<u32> dim_small = levels[lvl+1].second;
+
+		bool even_width = !(dim_large.Width & 1);
+		bool even_height = !(dim_large.Height & 1);
+
+		// c0 is near, c1 middle-far
+		auto bilinear_filter_2 = [](video::SColor c0, video::SColor c1) -> video::SColor {
+			u8 r = std::min<u32>(255, (c0.getRed()   * 3 + c1.getRed()   + 1) / 4);
+			u8 g = std::min<u32>(255, (c0.getGreen() * 3 + c1.getGreen() + 1) / 4);
+			u8 b = std::min<u32>(255, (c0.getBlue()  * 3 + c1.getBlue()  + 1) / 4);
+			u8 a = std::min<u32>(255, (c0.getAlpha() * 3 + c1.getAlpha() + 1) / 4);
+			return video::SColor(a, r, g, b);
+			//~ return c0;
+		};
+
+		// c0 is near, c1 and c2 middle-far, c3 far
+		// we sample in the quarter of c0:
+		// +----+----+
+		// |    |    |
+		// | c0 | c1 |
+		// |   x|    |
+		// +----+----+
+		// |    |    |
+		// | c2 | c3 |
+		// |    |    |
+		// +----+----+
+		auto bilinear_filter_4 = [](video::SColor c0, video::SColor c1,
+				video::SColor c2, video::SColor c3) -> video::SColor {
+			//~ return c0 * 0.75 * 0.75 + (c1 + c2) * 0.25 * 0.75 + c3 * 0.25 * 0.25;
+			u8 r = std::min<u32>(255, (c0.getRed()   * 3 * 3 + (c1.getRed()   + c2.getRed())   * 1 * 3 + c3.getRed()   * 1 * 1 + 7) / 16);
+			u8 g = std::min<u32>(255, (c0.getGreen() * 3 * 3 + (c1.getGreen() + c2.getGreen()) * 1 * 3 + c3.getGreen() * 1 * 1 + 7) / 16);
+			u8 b = std::min<u32>(255, (c0.getBlue()  * 3 * 3 + (c1.getBlue()  + c2.getBlue())  * 1 * 3 + c3.getBlue()  * 1 * 1 + 7) / 16);
+			u8 a = std::min<u32>(255, (c0.getAlpha() * 3 * 3 + (c1.getAlpha() + c2.getAlpha()) * 1 * 3 + c3.getAlpha() * 1 * 1 + 7) / 16);
+			return video::SColor(a, r, g, b);
+			//~ return c0;
+		};
+
+		// Corners
+		auto handle_pixel_from_1 = [&](u32 idx_large, u32 idx_small) {
+			u8 alpha = video::SColor(data_large[idx_large]).getAlpha();
+			if (alpha <= threshold) {
+				video::SColor col = data_small[idx_small];
+				col.setAlpha(alpha);
+				data_large[idx_large] = col.color;
+			}
+		};
+		handle_pixel_from_1(0, 0); // (0,0)
+		if (even_width)
+			handle_pixel_from_1(dim_large.Width - 1, dim_small.Width - 1); // (b,0)
+		if (even_height)
+			handle_pixel_from_1(dim_large.Width * (dim_large.Height - 1),
+					dim_small.Width * (dim_small.Height - 1)); // (0,b)
+		if (even_height && even_width)
+			handle_pixel_from_1(dim_large.Width * dim_large.Height - 1,
+					dim_small.Width * dim_small.Height - 1); // (b,b)
+
+		// Borders (without corners)
+		auto handle_pixel_from_2 = [&](u32 idx_large, u32 idx_small_0, u32 idx_small_1) {
+			u8 alpha = video::SColor(data_large[idx_large]).getAlpha();
+			if (alpha <= threshold) {
+				video::SColor col = bilinear_filter_2(data_small[idx_small_0],
+						data_small[idx_small_1]);
+				col.setAlpha(alpha);
+				data_large[idx_large] = col.color;
+			}
+		};
+		// top row
+		{
+			u32 idx_large = 1; // (1,0)
+			u32 idx_small = 0; // (0,0)
+			for (u32 x_small = 0; x_small + 1 < dim_small.Width; ++x_small) {
+				// left pixel
+				handle_pixel_from_2(idx_large, idx_small, idx_small + 1);
+				idx_large += 1;
+				// right pixel
+				handle_pixel_from_2(idx_large, idx_small + 1, idx_small);
+				idx_large += 1;
+				idx_small += 1;
+			}
+		}
+		// bottom row
+		if (even_height) {
+			u32 idx_large = dim_large.Width * (dim_large.Height - 1) + 1; // (1,b)
+			u32 idx_small = dim_small.Width * (dim_small.Height - 1); // (0,b)
+			for (u32 x_small = 0; x_small + 1 < dim_small.Width; ++x_small) {
+				// left pixel
+				handle_pixel_from_2(idx_large, idx_small, idx_small + 1);
+				idx_large += 1;
+				// right pixel
+				handle_pixel_from_2(idx_large, idx_small + 1, idx_small);
+				idx_large += 1;
+				idx_small += 1;
+			}
+		}
+		// left column
+		{
+			u32 idx_large = dim_large.Width; // (0,1)
+			u32 idx_small = 0; // (0,0)
+			for (u32 y_small = 0; y_small + 1 < dim_small.Height; ++y_small) {
+				// left pixel
+				handle_pixel_from_2(idx_large, idx_small, idx_small + dim_small.Width);
+				idx_large += dim_large.Width;
+				// right pixel
+				handle_pixel_from_2(idx_large, idx_small + dim_small.Width, idx_small);
+				idx_large += dim_large.Width;
+				idx_small += dim_small.Width;
+			}
+		}
+		// right column
+		if (even_width) {
+			u32 idx_large = dim_large.Width * 2 - 1; // (b,1)
+			u32 idx_small = dim_small.Width - 1; // (b,0)
+			for (u32 y_small = 0; y_small + 1 < dim_small.Height; ++y_small) {
+				// left pixel
+				handle_pixel_from_2(idx_large, idx_small, idx_small + dim_small.Width);
+				idx_large += dim_large.Width;
+				// right pixel
+				handle_pixel_from_2(idx_large, idx_small + dim_small.Width, idx_small);
+				idx_large += dim_large.Width;
+				idx_small += dim_small.Width;
+			}
+		}
+
+		// Inner pixels
+		auto handle_pixel_from_4 = [&](u32 idx_large, u32 idx_small_0, u32 idx_small_1,
+				u32 idx_small_2, u32 idx_small_3) {
+			u8 alpha = video::SColor(data_large[idx_large]).getAlpha();
+			if (alpha <= threshold) {
+				video::SColor col = bilinear_filter_4(data_small[idx_small_0],
+						data_small[idx_small_1], data_small[idx_small_2],
+						data_small[idx_small_3]);
+				col.setAlpha(alpha);
+				data_large[idx_large] = col.color;
+			}
+		};
+		{
+			//~ u32 idx_large = dim_large.Width + 1; // (1,1)
+			u32 idx_small = 0; // (0,0)
+			for (u32 y_small = 0; y_small + 1 < dim_small.Height; ++y_small) {
+				u32 idx_large = (y_small * 2 + 1) * dim_large.Width + 1; // (1,y)
+				for (u32 x_small = 0; x_small + 1 < dim_small.Width; ++x_small) {
+					assert(idx_small == y_small * dim_small.Width + x_small);
+					// left up
+					handle_pixel_from_4(idx_large,
+							idx_small,
+							idx_small + 1,
+							idx_small + dim_small.Width,
+							idx_small + dim_small.Width + 1
+						);
+					// right up
+					handle_pixel_from_4(idx_large + 1,
+							idx_small + 1,
+							idx_small,
+							idx_small + dim_small.Width + 1,
+							idx_small + dim_small.Width
+						);
+					// left down
+					handle_pixel_from_4(idx_large + dim_large.Width,
+							idx_small + dim_small.Width,
+							idx_small + dim_small.Width + 1,
+							idx_small,
+							idx_small + 1
+						);
+					// right down
+					handle_pixel_from_4(idx_large + dim_large.Width + 1,
+							idx_small + dim_small.Width + 1,
+							idx_small + dim_small.Width,
+							idx_small + 1,
+							idx_small
+						);
+					idx_small += 1;
+					idx_large += 2;
+				}
+				idx_large += dim_large.Width;
+				idx_small += 1;
+			}
+		}
+	}
+}
+
 /* Fill in RGB values for transparent pixels, to correct for odd colors
  * appearing at borders when blending.  This is because many PNG optimizers
  * like to discard RGB values of transparent pixels, but when blending then
@@ -171,11 +532,13 @@ static void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
  * Parameter "threshold" is the alpha level below which pixels are considered
  * transparent. Should be 127 when the texture is used with ALPHA_CHANNEL_REF,
  * 0 when alpha blending is used.
+ * FIXME: Why threshold? PNG optimizers only do their stuff if alpha = 0.
  */
 void imageCleanTransparent(video::IImage *src, u32 threshold)
 {
 	if (src->getColorFormat() == video::ECF_A8R8G8B8)
-		imageCleanTransparentWithInlining<true>(src, threshold);
+		//~ imageCleanTransparentWithInlining<true>(src, threshold);
+		imageCleanTransparentNew(src, threshold);
 	else
 		imageCleanTransparentWithInlining<false>(src, threshold);
 }
