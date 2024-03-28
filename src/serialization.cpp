@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "serialization.h"
-
+#include "log.h"
 #include "util/serialize.h"
 
 #include <zlib.h>

@@ -321,6 +321,10 @@ void TestUtilities::testUTF8()
 	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide("-\xF0\xA0\x80\x8B-")),
 		"-\xF0\xA0\x80\x8B-");
 
+	// try to check that the conversion function does not accidentally keep
+	// its internal state across invocations.
+	utf8_to_wide("\xC4");
+	UASSERT(utf8_to_wide("\x81") != L"\u0101");
 }
 
 void TestUtilities::testRemoveEscapes()
