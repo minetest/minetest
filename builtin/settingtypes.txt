@@ -134,7 +134,7 @@ invert_mouse (Invert mouse) bool false
 #    Mouse sensitivity multiplier.
 #
 #    Requires: keyboard_mouse
-mouse_sensitivity (Mouse sensitivity) float 0.2 0.001 10.0
+mouse_sensitivity (Mouse sensitivity) slider 0.2 0.001 1.0 500
 
 #    Enable mouse wheel (scroll) for item selection in hotbar.
 #
@@ -646,10 +646,10 @@ enable_volumetric_lighting (Volumetric lighting) bool false
 
 #    Volume of all sounds.
 #    Requires the sound system to be enabled.
-sound_volume (Volume) float 0.8 0.0 1.0
+sound_volume (Volume) slider 0.8 0.0 1.0
 
 #    Volume multiplier when the window is unfocused.
-sound_volume_unfocused (Volume when unfocused) float 0.3 0.0 1.0
+sound_volume_unfocused (Volume when unfocused) slider 0.3 0.0 1.0
 
 #    Whether to mute sounds. You can unmute sounds at any time, unless the
 #    sound system is disabled (enable_sound=false).
@@ -704,7 +704,7 @@ menu_clouds (Clouds in menu) bool true
 [**HUD]
 
 #    Modifies the size of the HUD elements.
-hud_scaling (HUD scaling) float 1.0 0.5 20
+hud_scaling (HUD scaling) slider 1.0 0.5 20 1000
 
 #    Whether name tag backgrounds should be shown by default.
 #    Mods may still set a background.
