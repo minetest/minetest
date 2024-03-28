@@ -57,6 +57,7 @@ public:
 
 	Hud(Client *client, LocalPlayer *player,
 			Inventory *inventory);
+	void readScalingSetting();
 	~Hud();
 
 	enum BlockBoundsMode toggleBlockBounds();
