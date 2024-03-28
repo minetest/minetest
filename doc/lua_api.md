@@ -7778,10 +7778,10 @@ child will follow movement and rotation of that bone.
     * no-op if object is attached
 * `punch(puncher, time_from_last_punch, tool_capabilities, dir)`
     * punches the object, triggering all consequences a normal punch would have
-    * `puncher`: another `ObjectRef` which punched the object
+    * `puncher`: another `ObjectRef` which punched the object or nil
     * `dir`: direction vector of punch
     * Other arguments: See `on_punch` for entities
-    * All arguments except `puncher` can be `nil`, in which case a default
+    * All arguments can be `nil`, in which case a default
       value will be used
 * `right_click(clicker)`:
     * simulates using the 'place/use' key on the object

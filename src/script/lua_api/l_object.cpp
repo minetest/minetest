@@ -170,16 +170,21 @@ int ObjectRef::l_punch(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
-	ObjectRef *puncher_ref = checkObject<ObjectRef>(L, 2);
+	ObjectRef *puncher_ref = lua_isnoneornil(L, 2) ? nullptr : checkObject<ObjectRef>(L, 2);
 	ServerActiveObject *sao = getobject(ref);
-	ServerActiveObject *puncher = getobject(puncher_ref);
-	if (sao == nullptr || puncher == nullptr)
+	ServerActiveObject *puncher = puncher_ref ? getobject(puncher_ref) : nullptr;
+	if (sao == nullptr)
 		return 0;
 
 	float time_from_last_punch = readParam<float>(L, 3, 1000000.0f);
 	ToolCapabilities toolcap = read_tool_capabilities(L, 4);
-	v3f dir = readParam<v3f>(L, 5, sao->getBasePosition() - puncher->getBasePosition());
-	dir.normalize();
+	v3f dir;
+	if (puncher) {
+		dir = readParam<v3f>(L, 5, sao->getBasePosition() - puncher->getBasePosition());
+		dir.normalize();
+	} else {
+		dir = readParam<v3f>(L, 5, v3f(0));
+	}
 
 	u32 wear = sao->punch(dir, &toolcap, puncher, time_from_last_punch);
 	lua_pushnumber(L, wear);
