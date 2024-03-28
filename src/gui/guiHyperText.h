@@ -76,6 +76,17 @@ public:
 	typedef std::unordered_map<std::string, std::string> StyleList;
 	typedef std::unordered_map<std::string, std::string> AttrsList;
 
+	struct LengthValue
+	{
+		double size;
+		std::string unit;
+		LengthValue(const std::string &str);
+		bool isValid();
+		bool isAbsolute();
+		double getAbsoluteValue();
+		double getAbsoluteValue(const double &em_size);
+	};
+
 	struct Tag
 	{
 		std::string name;
@@ -98,6 +109,7 @@ public:
 		ValignType valign;
 
 		gui::IGUIFont *font;
+		unsigned int font_size;
 
 		irr::video::SColor color;
 		irr::video::SColor hovercolor;

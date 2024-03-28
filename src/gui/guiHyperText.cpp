@@ -49,6 +49,49 @@ static bool check_integer(const std::string &str)
 	return *endptr == '\0';
 }
 
+static bool check_length(const std::string &str)
+{
+	return ParsedText::LengthValue(str).isValid();
+}
+
+// -----------------------------------------------------------------------------
+// LengthValue - A data structure representing a (possibly relative) length
+
+ParsedText::LengthValue::LengthValue(const std::string &str)
+{
+	char *unitptr = nullptr;
+	this->size = std::strtod(str.c_str(), &unitptr);
+
+	if (this->size <= 0)
+		this->size = 0;
+	this->unit = unitptr;
+}
+
+bool ParsedText::LengthValue::isValid()
+{
+	return this->getAbsoluteValue(1) > 0;
+}
+
+double ParsedText::LengthValue::getAbsoluteValue(const double &em_size)
+{
+	if (this->unit.empty())
+		return this->size;
+	else if (this->unit == "em")
+		return this->size * em_size;
+	else
+		return 0;
+}
+
+double ParsedText::LengthValue::getAbsoluteValue()
+{
+	return getAbsoluteValue(0);
+}
+
+bool ParsedText::LengthValue::isAbsolute()
+{
+	return getAbsoluteValue() > 0;
+}
+
 // -----------------------------------------------------------------------------
 // ParsedText - A text parser
 
@@ -63,7 +106,7 @@ void ParsedText::Element::setStyle(StyleList &style)
 	if (parseColorString(style["hovercolor"], color, false))
 		this->hovercolor = color;
 
-	unsigned int font_size = std::atoi(style["fontsize"].c_str());
+	this->font_size = std::atoi(style["fontsize"].c_str());
 
 	FontMode font_mode = FM_Standard;
 	if (style["fontstyle"] == "mono")
@@ -72,9 +115,9 @@ void ParsedText::Element::setStyle(StyleList &style)
 	// hypertext[] only accepts absolute font size values and has a hardcoded
 	// default font size of 16. This is the only way to make hypertext[]
 	// respect font size settings that I can think of.
-	font_size = myround(font_size / 16.0f * g_fontengine->getFontSize(font_mode));
+	this->font_size = myround(this->font_size / 16.0f * g_fontengine->getFontSize(font_mode));
 
-	FontSpec spec(font_size, font_mode,
+	FontSpec spec(this->font_size, font_mode,
 		is_yes(style["bold"]), is_yes(style["italic"]));
 
 	// TODO: find a way to check font validity
@@ -83,7 +126,7 @@ void ParsedText::Element::setStyle(StyleList &style)
 
 	if (!this->font)
 		printf("No font found ! Size=%d, mode=%d, bold=%s, italic=%s\n",
-				font_size, font_mode, style["bold"].c_str(),
+				this->font_size, font_mode, style["bold"].c_str(),
 				style["italic"].c_str());
 }
 
@@ -341,9 +384,8 @@ void ParsedText::parseGenericStyleAttr(
 		style[name] = is_yes(value);
 
 	} else if (name == "size") {
-		if (check_integer(value))
+		if (check_length(value))
 			style["fontsize"] = value;
-
 	} else if (name == "font") {
 		if (value == "mono" || value == "normal")
 			style["fontstyle"] = value;
@@ -512,13 +554,13 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 		}
 
 		if (attrs.count("width")) {
-			int width = stoi(attrs["width"]);
+			int width = LengthValue(attrs["width"]).getAbsoluteValue(m_element->font_size);
 			if (width > 0)
 				m_element->dim.Width = width;
 		}
 
 		if (attrs.count("height")) {
-			int height = stoi(attrs["height"]);
+			int height = LengthValue(attrs["height"]).getAbsoluteValue(m_element->font_size);
 			if (height > 0)
 				m_element->dim.Height = height;
 		}
@@ -595,9 +637,18 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 
 	// Update styles accordingly
 	m_style.clear();
-	for (auto tag = m_active_tags.crbegin(); tag != m_active_tags.crend(); ++tag)
-		for (const auto &prop : (*tag)->style)
-			m_style[prop.first] = prop.second;
+	unsigned int font_size = 0;
+	for (auto tag = m_active_tags.crbegin(); tag != m_active_tags.crend(); ++tag) {
+		for (const auto &prop : (*tag)->style) {
+			if (prop.first == "fontsize") {
+				// resolve font size
+				font_size = LengthValue(prop.second).getAbsoluteValue(font_size);
+			} else {
+				m_style[prop.first] = prop.second;
+			}
+		}
+	}
+	m_style["fontsize"] = std::to_string(font_size);
 
 	return cursor;
 }

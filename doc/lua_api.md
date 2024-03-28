@@ -2680,6 +2680,8 @@ Version History
 * Formspec version 7 (5.8.0):
   * style[]: Add focused state for buttons
   * Add field_enter_after_edit[] (experimental)
+* Formspec version 8 (5.9.0):
+  * hypertext[]: Allow `em` as a length unit
 
 Elements
 --------
@@ -3533,6 +3535,10 @@ The markup language is currently unstable and subject to change. Use with cautio
 Some tags can enclose text, they open with `<tagname>` and close with `</tagname>`.
 Tags can have attributes, in that case, attributes are in the opening tag in
 form of a key/value separated with equal signs. Attribute values should not be quoted.
+
+Attributes that describe lengths (font size and image dimensions) can be a regular
+number, which describes the size in pixels, or a number with the unit `em`, which
+describes the size in relation to the font size of the enclosing element.
 
 If you want to insert a literal greater-than sign or a backslash into the text,
 you must escape it by preceding it with a backslash.
