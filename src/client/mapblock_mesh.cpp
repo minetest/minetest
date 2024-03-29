@@ -288,7 +288,7 @@ void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio){
 		sunlight->g = core::clamp(std::pow(daynight_ratio_float, 0.7f), 0.f, 1.f);
 		sunlight->b = core::clamp(daynight_ratio_float * 1.5f - 0.5f, 0.f, 1.f);
 
-		f32 fade_factor = clamp((0.6f - daynight_ratio_float) / 0.6f, 0.f, 1.f);
+		f32 fade_factor = core::clamp((0.6f - daynight_ratio_float) / 0.6f, 0.f, 1.f);
 
 		sunlight->r = sunlight->r * (1.f - fade_factor) + 0.171f * fade_factor;
 		sunlight->g = sunlight->g * (1.f - fade_factor) + 0.171f * fade_factor;
