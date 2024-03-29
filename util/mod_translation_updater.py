@@ -394,6 +394,14 @@ def sorted_os_walk(folder):
 			f = f + 1
 	return paths_and_files
 
+def path_split_all(path):
+	all_parts = []
+	while len(path) > 0:
+		head, tail = os.path.split(path)
+		all_parts.insert(0, tail)
+		path = head
+	return all_parts
+
 # Walks all lua files in the mod folder, collects translatable strings,
 # and writes it to a template.txt file
 # Returns a dictionary of localized strings to source file lists
@@ -425,7 +433,7 @@ def generate_template(folder, mod_name):
 		sources = sorted(list(sources), key=str.lower)
 		newSources = []
 		for i in sources:
-			i = "/".join(os.path.split(i)).lstrip("/")
+			i = "/".join(path_split_all(i)).lstrip("/")
 			newSources.append(f"{symbol_source_prefix} {i} {symbol_source_suffix}")
 		dOut[d] = newSources
 
