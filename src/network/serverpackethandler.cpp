@@ -261,7 +261,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		}
 	} else {
 		std::string default_password = g_settings->get("default_password");
-		if (default_password.length() == 0) {
+		if (isSingleplayer() || default_password.length() == 0) {
 			auth_mechs |= AUTH_MECHANISM_FIRST_SRP;
 		} else {
 			// Take care of default passwords.
