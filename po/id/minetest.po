@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-03-24 17:01+0000\n"
-"Last-Translator: Linerly <linerly@proton.me>\n"
+"PO-Revision-Date: 2024-03-29 15:47+0000\n"
+"Last-Translator: Just Playing <aryadhisuma@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
 "minetest/id/>\n"
 "Language: id\n"
@@ -155,7 +155,7 @@ msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 downloading..."
-msgstr "$1 diunduh..."
+msgstr "$1 Diunduh..."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
