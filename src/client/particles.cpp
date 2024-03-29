@@ -997,8 +997,9 @@ video::SMaterial ParticleManager::getMaterialForParticle(const ClientParticleTex
 		tex.MagFilter = video::ETMAGF_NEAREST;
 	});
 
-	// correctly render layered transparent particles -- see #10398
-	material.ZWriteEnable = video::EZW_AUTO;
+	// We don't have working transparency sorting. Disable Z-Write for
+	// correct results for clipped-alpha at least.
+	material.ZWriteEnable = video::EZW_OFF;
 
 	// enable alpha blending and set blend mode
 	material.MaterialType = video::EMT_ONETEXTURE_BLEND;
