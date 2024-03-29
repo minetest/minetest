@@ -381,6 +381,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float>
 		m_animation_timer_delta_pixel{"animationTimerDelta"};
 	CachedPixelShaderSetting<float, 3> m_day_light{"dayLight"};
+	CachedPixelShaderSetting<float, 3> m_artificial_light{"artificialLight"};
 	CachedPixelShaderSetting<float, 3> m_eye_position_pixel{"eyePosition"};
 	CachedVertexShaderSetting<float, 3> m_eye_position_vertex{"eyePosition"};
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
@@ -574,6 +575,11 @@ public:
 			float volumetric_light_strength = lighting.volumetric_light_strength;
 			m_volumetric_light_strength_pixel.set(&volumetric_light_strength, services);
 		}
+
+		std::string artificial_light_enum = g_settings->get("artificial_light");
+		if (artificial_light_enum == "warm") m_artificial_light.set(v3f( 1.2, 0.95, 0.8 ), services);
+		else if (artificial_light_enum == "medium") m_artificial_light.set(v3f(1.1, 1., 0.95), services);
+		else m_artificial_light.set(v3f(1.04), services);
 	}
 
 	void onSetMaterial(const video::SMaterial &material) override

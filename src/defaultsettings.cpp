@@ -207,6 +207,8 @@ void set_default_settings()
 	settings->setDefault("connected_glass", "false");
 	settings->setDefault("smooth_lighting", "true");
 	settings->setDefault("performance_tradeoffs", "false");
+	settings->setDefault("tinted_sunlight", "false");
+	settings->setDefault("artificial_light", "default");
 	settings->setDefault("lighting_alpha", "0.0");
 	settings->setDefault("lighting_beta", "1.5");
 	settings->setDefault("display_gamma", "1.0");

@@ -268,6 +268,15 @@ performance_tradeoffs (Tradeoffs for performance) bool false
 #    Adds particles when digging a node.
 enable_particles (Digging particles) bool true
 
+#   Tint sunlight orange during dusk and dawn.
+tinted_sunlight (Tinted sunlight) bool false
+
+#   The color of light that sources like lamps, torches etc. give off.
+#   -   default: Neutral, white light.
+#   -   medium: Slightly warmer color than default.
+#   -   warm: Warm (yellowish-orangy) light.
+artificial_light (Artificial light color) enum default default,medium,warm
+
 [**3D]
 
 #    3D support.

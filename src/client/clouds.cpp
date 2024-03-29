@@ -149,15 +149,6 @@ void Clouds::updateMesh()
 		// shader mixes the base color, set via EmissiveColor
 		c_top_f = c_side_1_f = c_side_2_f = c_bottom_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	}
-	/*c_side_1_f.r *= 0.90f;
-	c_side_1_f.g *= 0.95f;
-	c_side_1_f.b *= 1.00f;
-	c_side_2_f.r *= 0.70f;
-	c_side_2_f.g *= 0.80f;
-	c_side_2_f.b *= 0.95f;
-	c_bottom_f.r *= 0.50f;
-	c_bottom_f.g *= 0.70f;
-	c_bottom_f.b *= 0.90f;*/
 
 	video::SColorf shadow = m_params.color_shadow;
 	
@@ -338,6 +329,7 @@ void Clouds::updateMesh()
 				}
 			}
 		}
+		// Standard clouds
 		else {
 			for (u32 i = 0; i < num_faces_to_draw; i++)
 			{

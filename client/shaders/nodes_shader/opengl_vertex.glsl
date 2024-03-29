@@ -48,7 +48,7 @@ varying vec3 viewVec;
 varying vec3 eyeVec;
 varying float nightRatio;
 // Color of the light emitted by the light sources.
-const vec3 artificialLight = vec3(1.2, 0.95, 0.8);
+uniform vec3 artificialLight;
 const float e = 2.718281828459;
 const float BS = 10.0;
 uniform float xyPerspectiveBias0;
