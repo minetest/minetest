@@ -46,7 +46,7 @@ float sampleVolumetricLight(vec2 uv, vec3 lightVec, float rawDepth)
 		if (min(samplepos.x, samplepos.y) > 0. && max(samplepos.x, samplepos.y) < 1.)
 			result += texture2D(depthmap, samplepos).r < 1. ? 0.0 : 1.0;
 	}
-	return result / samples;
+	return result / samples * pow(texture2D(depthmap, uv).r, 128.);
 }
 
 vec3 getDirectLightScatteringAtGround(vec3 v_LightDirection)
@@ -58,7 +58,7 @@ vec3 getDirectLightScatteringAtGround(vec3 v_LightDirection)
 	// for Nitrogen at 532nm (green), 2e25 molecules/m3 in atmosphere
 	const vec3 beta_r0_l = vec3(3.3362176e-01, 8.75378289198826e-01, 1.95342379700656) * beta_r0; // wavelength-dependent scattering
 
-	const float atmosphere_height = 15000.; // height of the atmosphere in meters
+	const float atmosphere_height = 50000.; // height of the atmosphere in meters
 	// sun/moon light at the ground level, after going through the atmosphere
 	return exp(-beta_r0_l * atmosphere_height / (1e-5 - dot(v_LightDirection, vec3(0., 1., 0.))));
 }

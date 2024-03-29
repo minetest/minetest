@@ -282,11 +282,22 @@ u16 getSmoothLightTransparent(const v3s16 &p, const v3s16 &corner, MeshMakeData 
 }
 
 void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio){
-	f32 rg = daynight_ratio / 1000.0f - 0.04f;
-	f32 b = (0.98f * daynight_ratio) / 1000.0f + 0.078f;
-	sunlight->r = rg;
-	sunlight->g = rg;
-	sunlight->b = b;
+	//f32 rg = daynight_ratio / 1000.0f - 0.04f;
+	//f32 b = (0.98f * daynight_ratio) / 1000.0f + 0.078f;
+	//sunlight->r = rg;
+	//sunlight->g = rg;
+	//sunlight->b = b;
+
+	f32 daynight_ratio_float = (daynight_ratio - 175) / 825.f;
+	sunlight->r = 1.f;
+	sunlight->g = core::clamp(std::pow(daynight_ratio_float, 0.7f), 0.f, 1.f);
+	sunlight->b = core::clamp(daynight_ratio_float * 1.5f - 0.5f, 0.f, 1.f);
+
+	f32 fade_factor = clamp((0.6f - daynight_ratio_float) / 0.6f, 0.f, 1.f);
+
+	sunlight->r = sunlight->r * (1.f - fade_factor) + 0.171f * fade_factor;
+	sunlight->g = sunlight->g * (1.f - fade_factor) + 0.171f * fade_factor;
+	sunlight->b = sunlight->b * (1.f - fade_factor) + 0.253f * fade_factor;
 }
 
 void final_color_blend(video::SColor *result,

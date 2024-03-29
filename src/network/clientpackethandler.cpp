@@ -1470,11 +1470,12 @@ void Client::handleCommand_CloudParams(NetworkPacket* pkt)
 	f32 density;
 	video::SColor color_bright;
 	video::SColor color_ambient;
+	video::SColor color_shadow;
 	f32 height;
 	f32 thickness;
 	v2f speed;
 
-	*pkt >> density >> color_bright >> color_ambient
+	*pkt >> density >> color_bright >> color_ambient >> color_shadow
 			>> height >> thickness >> speed;
 
 	ClientEvent *event = new ClientEvent();
@@ -1485,6 +1486,7 @@ void Client::handleCommand_CloudParams(NetworkPacket* pkt)
 	// we avoid using new() and delete() for no good reason
 	event->cloud_params.color_bright  = color_bright.color;
 	event->cloud_params.color_ambient = color_ambient.color;
+	event->cloud_params.color_shadow = color_shadow.color;
 	event->cloud_params.height        = height;
 	event->cloud_params.thickness     = thickness;
 	// same here: deconstruct to skip constructor
@@ -1805,6 +1807,12 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 		*pkt >> lighting.shadow_intensity;
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.saturation;
+	u32 tint[3];
+	if (pkt->getRemainingBytes() >= 12)
+		*pkt >> tint[0]
+			>> tint[1]
+			>> tint[2];
+	lighting.shadow_tint.set(255, tint[0], tint[1], tint[2]);
 	if (pkt->getRemainingBytes() >= 24) {
 		*pkt >> lighting.exposure.luminance_min
 				>> lighting.exposure.luminance_max

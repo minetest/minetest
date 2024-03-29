@@ -368,6 +368,7 @@ ShaderSource::~ShaderSource()
 {
 	MutexAutoLock lock(m_shaderinfo_cache_mutex);
 
+#if IRRLICHT_VERSION_MT_REVISION >= 15
 	// Delete materials
 	video::IGPUProgrammingServices *gpu = RenderingEngine::get_video_driver()->
 		getGPUProgrammingServices();
@@ -376,6 +377,7 @@ ShaderSource::~ShaderSource()
 			gpu->deleteShaderMaterial(i.material);
 	}
 	m_shaderinfo_cache.clear();
+#endif
 }
 
 u32 ShaderSource::getShader(const std::string &name,
@@ -499,6 +501,7 @@ void ShaderSource::rebuildShaders()
 {
 	MutexAutoLock lock(m_shaderinfo_cache_mutex);
 
+#if IRRLICHT_VERSION_MT_REVISION >= 15
 	// Delete materials
 	video::IGPUProgrammingServices *gpu = RenderingEngine::get_video_driver()->
 		getGPUProgrammingServices();
@@ -508,6 +511,7 @@ void ShaderSource::rebuildShaders()
 			i.material = video::EMT_SOLID; // invalidate
 		}
 	}
+#endif
 
 	// Recreate shaders
 	for (ShaderInfo &i : m_shaderinfo_cache) {
@@ -688,6 +692,18 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		if (g_settings->getBool("shadow_poisson_filter"))
 			shaders_header << "#define POISSON_FILTER 1\n";
 
+		if (g_settings->getBool("enable_water_reflections"))
+			shaders_header << "#define ENABLE_WATER_REFLECTIONS 1\n";
+
+		if (g_settings->getBool("enable_translucent_foliage"))
+			shaders_header << "#define ENABLE_TRANSLUCENT_FOLIAGE 1\n";
+
+		if (g_settings->getBool("enable_bumpmaps"))
+			shaders_header << "#define ENABLE_BUMPMAPS 1\n";
+
+		if (g_settings->getBool("enable_node_reflections"))
+			shaders_header << "#define ENABLE_NODE_REFLECTIONS 1\n";
+
 		s32 shadow_filter = g_settings->getS32("shadow_filters");
 		shaders_header << "#define SHADOW_FILTER " << shadow_filter << "\n";
 
@@ -705,6 +721,12 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 
 	if (g_settings->getBool("enable_auto_exposure"))
 		shaders_header << "#define ENABLE_AUTO_EXPOSURE 1\n";
+
+	if (g_settings->getBool("enable_color_grading"))
+		shaders_header << "#define ENABLE_COLOR_GRADING 1\n";
+
+	if (g_settings->getBool("enable_vignette"))
+		shaders_header << "#define ENABLE_VIGNETTE 1\n";
 
 	if (g_settings->get("antialiasing") == "ssaa") {
 		shaders_header << "#define ENABLE_SSAA 1\n";

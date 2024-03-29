@@ -1,4 +1,15 @@
+#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || \
+	MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || \
+	MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC || \
+	MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT)
+#define MATERIAL_WAVING_LIQUID
+#define MATERIAL_LIQUID
+#elif (MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE)
+#define MATERIAL_LIQUID
+#endif
+
 uniform sampler2D baseTexture;
+uniform vec2 texelSize0;
 
 uniform vec3 dayLight;
 uniform vec4 fogColor;
@@ -21,6 +32,7 @@ uniform float animationTimer;
 	uniform vec4 CameraPos;
 	uniform float xyPerspectiveBias0;
 	uniform float xyPerspectiveBias1;
+	uniform vec3 shadow_tint;
 
 	varying float adj_shadow_strength;
 	varying float cosLight;
@@ -50,7 +62,42 @@ varying vec3 tsEyeVec;
 varying vec3 lightVec;
 varying vec3 tsLightVec;
 
+varying vec3 viewVec;
+
 #ifdef ENABLE_DYNAMIC_SHADOWS
+vec4 perm(vec4 x)
+{
+	return mod(((x * 34.0) + 1.0) * x, 289.0);
+}
+
+#if ((defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS)) || defined(ENABLE_BUMPMAPS))
+float snoise(vec3 p)
+{
+	vec3 a = floor(p);
+	vec3 d = p - a;
+	d = d * d * (3.0 - 2.0 * d);
+
+	vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
+	vec4 k1 = perm(b.xyxy);
+	vec4 k2 = perm(k1.xyxy + b.zzww);
+
+	vec4 c = k2 + a.zzzz;
+	vec4 k3 = perm(c);
+	vec4 k4 = perm(c + 1.0);
+
+	vec4 o1 = fract(k3 * (1.0 / 41.0));
+	vec4 o2 = fract(k4 * (1.0 / 41.0));
+
+	vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
+	vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
+
+	return o4.y * d.y + o4.x * (1.0 - d.y);
+}
+
+float wave_noise(vec3 p, float off) {
+	return snoise(p + vec3(0., 0., off)) * 0.4 + snoise(2. * p + vec3(0., off, off)) * 0.1 + snoise(3. * p + vec3(0., off, off)) * 0.075 + snoise(4. *p + vec3(-off, off, 0.)) * 0.05;
+}
+#endif
 
 // assuming near is always 1.0
 float getLinearDepth()
@@ -110,7 +157,7 @@ vec4 getHardShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 float getHardShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 {
 	float texDepth = texture2D(shadowsampler, smTexCoord.xy).r;
-	float visibility = step(0.0, realDistance - texDepth);
+	float visibility = step(0., realDistance - texDepth);
 	return visibility;
 }
 
@@ -382,6 +429,26 @@ void main(void)
 	vec4 col = vec4(color.rgb * varColor.rgb, 1.0);
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
+	// Fragment normal, can differ from vNormal which is derived from vertex normals.
+	vec3 fNormal = vNormal;
+
+#if (defined(ENABLE_BUMPMAPS) && !defined(MATERIAL_LIQUID))
+	vec2 dr = vec2(0.25) * texelSize0;
+	// Sample the texture to then compute the derivative
+	float fx0y0 = texture2D(baseTexture, uv).r;
+	float fx1y0 = texture2D(baseTexture, uv + vec2(dr.x, 0.)).r;
+	float fx0y1 = texture2D(baseTexture, uv + vec2(0., dr.y)).r;
+	// Compute a set of orthogonal basis vectors representing the node's surface plane.
+	vec3 orth1 = normalize(cross(vNormal, mix(vec3(0., -1., 0.), vec3(0., 0., -1.), step(0.9, abs(vNormal.y)))));
+	vec3 orth2 = normalize(cross(vNormal, orth1));
+	// The normal is computed using the partial derivatives along the texture space x and y axes. 
+	// These axes in world space are assumed to be parallel to the basis vectors we defined before.
+	fNormal = normalize(vNormal + (orth1 * (fx1y0 - fx0y0) / dr.x + orth2 * (fx0y1 - fx0y0) / dr.y) * 0.25 * snoise(vec3(uv / texelSize0, 0.)));
+	float adj_cosLight = max(1e-5, dot(fNormal, -v_LightDirection));
+#else 
+	float adj_cosLight = cosLight;
+#endif
+
 	if (f_shadow_strength > 0.0) {
 		float shadow_int = 0.0;
 		vec3 shadow_color = vec3(0.0, 0.0, 0.0);
@@ -396,14 +463,14 @@ void main(void)
 
 #ifdef COLORED_SHADOWS
 			vec4 visibility;
-			if (cosLight > 0.0 || f_normal_length < 1e-3)
+			if (adj_cosLight > 0.0 || f_normal_length < 1e-3)
 				visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
 			else
 				visibility = vec4(1.0, 0.0, 0.0, 0.0);
 			shadow_int = visibility.r;
 			shadow_color = visibility.gba;
 #else
-			if (cosLight > 0.0 || f_normal_length < 1e-3)
+			if (adj_cosLight > 0.0 || f_normal_length < 1e-3)
 				shadow_int = getShadow(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
 			else
 				shadow_int = 1.0;
@@ -418,22 +485,81 @@ void main(void)
 		// Power ratio was measured on torches in MTG (brightness = 14).
 		float adjusted_night_ratio = pow(max(0.0, nightRatio), 0.6);
 
+		float shadow_uncorrected = shadow_int;
+
 		// Apply self-shadowing when light falls at a narrow angle to the surface
 		// Cosine of the cut-off angle.
 		const float self_shadow_cutoff_cosine = 0.035;
-		if (f_normal_length != 0 && cosLight < self_shadow_cutoff_cosine) {
-			shadow_int = max(shadow_int, 1 - clamp(cosLight, 0.0, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
-			shadow_color = mix(vec3(0.0), shadow_color, min(cosLight, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
+		if (f_normal_length != 0 && adj_cosLight < self_shadow_cutoff_cosine) {
+			shadow_int = max(shadow_int, 1 - clamp(adj_cosLight, 0.0, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
+			shadow_color = mix(vec3(0.0), shadow_color, min(adj_cosLight, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
+			shadow_uncorrected = mix(shadow_int, shadow_uncorrected, clamp(distance_rate * 4. - 3., 0., 1.));
 		}
 
 		shadow_int *= f_adj_shadow_strength;
+
+		shadow_color *= shadow_tint;
 
 		// calculate fragment color from components:
 		col.rgb =
 				adjusted_night_ratio * col.rgb + // artificial light
 				(1.0 - adjusted_night_ratio) * ( // natural light
-						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color)) +  // filtered texture color
+						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color) * (1. - shadow_tint)) +  // filtered texture color
 						dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
+
+
+		vec3 reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.);
+
+#if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS))
+		vec3 wavePos = worldPosition * vec3(2., 0., 2.);
+		float off = animationTimer * WATER_WAVE_SPEED * 10.0;
+		wavePos.x /= WATER_WAVE_LENGTH * 3.0;
+		wavePos.z /= WATER_WAVE_LENGTH * 2.0;
+
+		// This is an analogous method to the bumpmap.
+		float fxy = wave_noise(wavePos, off);
+		float dydx = (wave_noise(wavePos + vec3(0.1, 0., 0.), off) - fxy) / 0.1;
+		float dydz = (wave_noise(wavePos + vec3(0., 0., 0.1), off) - fxy) / 0.1;
+		fNormal = normalize(normalize(fNormal) + vec3(-dydx, 0., -dydz) * WATER_WAVE_HEIGHT * abs(fNormal.y) * 0.25);
+		reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.);
+		float fresnel_factor = dot(fNormal, viewVec);
+
+		// A little trig hack. We go from the dot product of viewVec and normal to the dot product of viewVec and tangent to apply a fresnel effect.
+		fresnel_factor = clamp(pow(1. - fresnel_factor * fresnel_factor, 8.), 0., 1.);
+		col.rgb *= 0.5;
+		vec3 reflection_color = mix(vec3(max(fogColor.r, max(fogColor.g, fogColor.b))), fogColor.rgb, f_shadow_strength);
+
+		// Sky reflection
+		col.rgb += reflection_color * pow((1. - adjusted_night_ratio) * fresnel_factor, 2.) * 0.5;
+		vec3 water_reflect_color = 12. * dayLight * fresnel_factor * mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0., 1.), 32.)) * max(1. - shadow_uncorrected, 0.);
+
+		// This line exists to prevent ridiculously bright reflection colors.
+		water_reflect_color /= clamp(max(water_reflect_color.r, max(water_reflect_color.g, water_reflect_color.b)) * 0.5, 1., 400.);
+		col.rgb += water_reflect_color * f_adj_shadow_strength;
+#endif
+
+#if (defined(ENABLE_NODE_REFLECTIONS) && !defined(MATERIAL_WAVING_LIQUID))
+
+#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES)
+#define REFLECTION_INTENSITY 2.
+#elif (defined(MATERIAL_WAVING_LIQUID))
+#define REFLECTION_INTENSITY 0.
+#else
+#define REFLECTION_INTENSITY 1.
+#endif
+		// Apply reflections to blocks.
+		if (dot(v_LightDirection, vNormal) < 0.) {
+			col.rgb += 
+				1.5 * dayLight * f_adj_shadow_strength * REFLECTION_INTENSITY * (1. - nightRatio) *
+				pow(max(dot(reflect_ray, viewVec), 0.), 4.) * pow(1. - abs(dot(viewVec, fNormal)), 5.) * 
+				(1. - shadow_uncorrected) * (1. - base.r);
+		}
+#endif
+
+#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES) && defined(ENABLE_TRANSLUCENT_FOLIAGE)
+		// Simulate translucent foliage.
+		col.rgb += 3. * dayLight * base.rgb * normalize(base.rgb) * f_adj_shadow_strength * pow(max(-dot(v_LightDirection, viewVec), 0.), 4.) * max(1. - shadow_uncorrected, 0.);
+#endif
 	}
 #endif
 
@@ -448,7 +574,9 @@ void main(void)
 	// Note: clarity = (1 - fogginess)
 	float clarity = clamp(fogShadingParameter
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
-	col = mix(fogColor, col, clarity);
+	float fogColorMax = max(max(fogColor.r, fogColor.g), fogColor.b);
+	if (fogColorMax < 0.0000001) fogColorMax = 1.;
+	col = mix(fogColor * pow(fogColor / fogColorMax, vec4(2. * clarity)), col, clarity);
 	col = vec4(col.rgb, base.a);
 
 	gl_FragData[0] = col;

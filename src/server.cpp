@@ -1864,7 +1864,7 @@ void Server::SendSetStars(session_t peer_id, const StarParams &params)
 void Server::SendCloudParams(session_t peer_id, const CloudParams &params)
 {
 	NetworkPacket pkt(TOCLIENT_CLOUD_PARAMS, 0, peer_id);
-	pkt << params.density << params.color_bright << params.color_ambient
+	pkt << params.density << params.color_bright << params.color_ambient << params.color_shadow
 			<< params.height << params.thickness << params.speed;
 	Send(&pkt);
 }
@@ -1887,6 +1887,9 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 
 	pkt << lighting.shadow_intensity;
 	pkt << lighting.saturation;
+	pkt << lighting.shadow_tint.getRed();
+	pkt << lighting.shadow_tint.getGreen();
+	pkt << lighting.shadow_tint.getBlue();
 
 	pkt << lighting.exposure.luminance_min
 			<< lighting.exposure.luminance_max

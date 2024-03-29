@@ -44,10 +44,11 @@ centroid varying vec2 varTexCoord;
 
 varying float area_enable_parallax;
 
+varying vec3 viewVec;
 varying vec3 eyeVec;
 varying float nightRatio;
 // Color of the light emitted by the light sources.
-const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
+const vec3 artificialLight = vec3(1.2, 0.95, 0.8);
 const float e = 2.718281828459;
 const float BS = 10.0;
 uniform float xyPerspectiveBias0;
@@ -232,6 +233,8 @@ void main(void)
 #else
 		vec4 shadow_pos = pos;
 #endif
+		viewVec = normalize(worldPosition + cameraOffset - eyePosition);
+
 		vec3 nNormal;
 		f_normal_length = length(vNormal);
 
@@ -262,14 +265,14 @@ void main(void)
 
 		if (f_timeofday < 0.2) {
 			adj_shadow_strength = f_shadow_strength * 0.5 *
-				(1.0 - mtsmoothstep(0.18, 0.2, f_timeofday));
+				(1.0 - mtsmoothstep(0.15, 0.2, f_timeofday));
 		} else if (f_timeofday >= 0.8) {
 			adj_shadow_strength = f_shadow_strength * 0.5 *
-				mtsmoothstep(0.8, 0.83, f_timeofday);
+				mtsmoothstep(0.8, 0.85, f_timeofday);
 		} else {
 			adj_shadow_strength = f_shadow_strength *
 				mtsmoothstep(0.20, 0.25, f_timeofday) *
-				(1.0 - mtsmoothstep(0.7, 0.8, f_timeofday));
+				(1.0 - mtsmoothstep(0.75, 0.8, f_timeofday));
 		}
 	}
 #endif

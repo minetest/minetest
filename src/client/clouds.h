@@ -101,6 +101,11 @@ public:
 		m_params.color_ambient = color_ambient;
 	}
 
+	void setColorShadow(video::SColor color_shadow)
+	{
+		m_params.color_shadow = color_shadow;
+	}
+
 	void setHeight(float height)
 	{
 		if (m_params.height == height)
