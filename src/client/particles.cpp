@@ -574,7 +574,11 @@ std::optional<u16> ParticleBuffer::allocate()
 	if (!m_free_list.empty()) {
 		index = m_free_list.back();
 		m_free_list.pop_back();
+		auto *vertices = static_cast<video::S3DVertex*>(m_mesh_buffer->getVertices());
 		u16 *indices = m_mesh_buffer->getIndices();
+		// reset vertices, because it is only written in Particle::step()
+		for (u16 i = 0; i < 4; i++)
+			vertices[4 * index + i] = video::S3DVertex();
 		for (u16 i = 0; i < 6; i++)
 			indices[6 * index + i] = 4 * index + quad_indices[i];
 		return index;
