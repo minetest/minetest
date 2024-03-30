@@ -678,7 +678,7 @@ enable_volumetric_lighting (Volumetric lighting) bool false
 #   Requires: enable_shaders, enable_dynamic_shadows
 enable_translucent_foliage (Translucent foliage) bool false
 
-#   Apply crude bump maps to nodes.
+#   Apply crude bump maps to nodes. It is recommended to use a tilted sun orbit to go with this (Sky Body Orbit Tilt).
 #
 #   Requires: enable_shaders, enable_dynamic_shadows
 enable_bumpmaps (Bump maps) bool false

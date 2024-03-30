@@ -1475,8 +1475,10 @@ void Client::handleCommand_CloudParams(NetworkPacket* pkt)
 	f32 thickness;
 	v2f speed;
 
-	*pkt >> density >> color_bright >> color_ambient >> color_shadow
-			>> height >> thickness >> speed;
+	*pkt >> density >> color_bright >> color_ambient
+	>> height >> thickness >> speed;
+
+	if (pkt->getRemainingBytes() >= 4) *pkt >> color_shadow;
 
 	ClientEvent *event = new ClientEvent();
 	event->type                       = CE_CLOUD_PARAMS;
@@ -1808,11 +1810,6 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.saturation;
 	u32 tint[3];
-	if (pkt->getRemainingBytes() >= 12)
-		*pkt >> tint[0]
-			>> tint[1]
-			>> tint[2];
-	lighting.shadow_tint.set(255, tint[0], tint[1], tint[2]);
 	if (pkt->getRemainingBytes() >= 24) {
 		*pkt >> lighting.exposure.luminance_min
 				>> lighting.exposure.luminance_max
@@ -1823,4 +1820,6 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 	}
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.volumetric_light_strength;
+	if (pkt->getRemainingBytes() >= 4)
+		*pkt >> lighting.shadow_tint;
 }
