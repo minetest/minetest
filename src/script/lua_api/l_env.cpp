@@ -519,6 +519,7 @@ int ModApiEnv::l_punch_node(lua_State *L)
 	// Punch it with a NULL puncher
 	// (appears in Lua as a non-functional ObjectRef)
 	// or the given ObjectRef SAO
+	// TODO: custom PointedThing (requires a converter function)
 	bool success = scriptIfaceNode->node_on_punch(pos, n, puncher, PointedThing());
 	lua_pushboolean(L, success);
 	return 1;
