@@ -44,6 +44,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define OBJECT_CROSSHAIR_LINE_SIZE 8
 #define CROSSHAIR_LINE_SIZE 10
 
+static void setting_changed_callback(const std::string &name, void *data)
+{
+	static_cast<Hud*>(data)->readScalingSetting();
+}
+
 Hud::Hud(Client *client, LocalPlayer *player,
 		Inventory *inventory)
 {
@@ -52,12 +57,8 @@ Hud::Hud(Client *client, LocalPlayer *player,
 	this->player      = player;
 	this->inventory   = inventory;
 
-	m_hud_scaling      = g_settings->getFloat("hud_scaling", 0.5f, 20.0f);
-	m_scale_factor     = m_hud_scaling * RenderingEngine::getDisplayDensity();
-	m_hotbar_imagesize = std::floor(HOTBAR_IMAGE_SIZE *
-		RenderingEngine::getDisplayDensity() + 0.5f);
-	m_hotbar_imagesize *= m_hud_scaling;
-	m_padding = m_hotbar_imagesize / 12;
+	readScalingSetting();
+	g_settings->registerChangedCallback("hud_scaling", setting_changed_callback, this);
 
 	for (auto &hbar_color : hbar_colors)
 		hbar_color = video::SColor(255, 255, 255, 255);
@@ -138,8 +139,20 @@ Hud::Hud(Client *client, LocalPlayer *player,
 	m_rotation_mesh_buffer.setHardwareMappingHint(scene::EHM_STATIC);
 }
 
+void Hud::readScalingSetting()
+{
+	m_hud_scaling      = g_settings->getFloat("hud_scaling", 0.5f, 20.0f);
+	m_scale_factor     = m_hud_scaling * RenderingEngine::getDisplayDensity();
+	m_hotbar_imagesize = std::floor(HOTBAR_IMAGE_SIZE *
+		RenderingEngine::getDisplayDensity() + 0.5f);
+	m_hotbar_imagesize *= m_hud_scaling;
+	m_padding = m_hotbar_imagesize / 12;
+}
+
 Hud::~Hud()
 {
+	g_settings->deregisterChangedCallback("hud_scaling", setting_changed_callback, this);
+
 	if (m_selection_mesh)
 		m_selection_mesh->drop();
 }
@@ -786,9 +799,9 @@ void Hud::drawCrosshair()
 {
 	auto draw_image_crosshair = [this] (video::ITexture *tex) {
 		core::dimension2di orig_size(tex->getOriginalSize());
-		core::dimension2di scaled_size(
-				core::round32(orig_size.Width * m_scale_factor),
-				core::round32(orig_size.Height * m_scale_factor));
+		// Integer scaling to avoid artifacts, floor instead of round since too
+		// small looks better than too large in this case.
+		core::dimension2di scaled_size = orig_size * std::floor(m_scale_factor);
 
 		core::rect<s32> src_rect(orig_size);
 		core::position2d pos(m_displaycenter.X - scaled_size.Width / 2,
