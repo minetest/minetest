@@ -504,7 +504,7 @@ int ModApiEnv::l_dig_node(lua_State *L)
 	return 1;
 }
 
-// punch_node(pos)
+// punch_node(pos, [puncher])
 // pos = {x=num, y=num, z=num}
 int ModApiEnv::l_punch_node(lua_State *L)
 {
@@ -520,6 +520,22 @@ int ModApiEnv::l_punch_node(lua_State *L)
 		lua_pushboolean(L, false);
 		return 1;
 	}
+
+	if (lua_gettop(L) >= 2 && (! lua_isnoneornil(L, 2))) {
+		ObjectRef *ref = checkObject<ObjectRef>(L, 2);
+		ServerActiveObject *puncher = ObjectRef::getobject(ref);
+
+		if (puncher != nullptr) {
+			// Puncher the node with the provided puncher
+			// TODO: Allow custom PointedThing w/ or w/o custom puncher
+			bool success = scriptIfaceNode->node_on_punch(pos, n, puncher, PointedThing());
+			lua_pushboolean(L, success);
+			return 1;
+		}
+		// Otherwise, fallback to NULL puncher SAO
+		// (Seems like Lua already handle invalid args but anyway)
+	}
+
 	// Punch it with a NULL puncher (appears in Lua as a non-functional
 	// ObjectRef)
 	bool success = scriptIfaceNode->node_on_punch(pos, n, NULL, PointedThing());

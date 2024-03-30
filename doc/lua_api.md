@@ -6068,8 +6068,9 @@ Environment access
     * Dig node with the same effects that a player would cause
     * `digger`: The ObjectRef that digs the node (optional)
     * Returns `true` if successful, `false` on failure (e.g. protected location)
-* `minetest.punch_node(pos)`
+* `minetest.punch_node(pos[, puncher])`
     * Punch node with the same effects that a player would cause
+    * `puncher`: The ObjectRef that punches the node (optional)
 * `minetest.spawn_falling_node(pos)`
     * Change node into falling node
     * Returns `true` and the ObjectRef of the spawned entity if successful, `false` on failure
