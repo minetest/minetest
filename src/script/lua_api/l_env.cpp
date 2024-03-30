@@ -448,7 +448,7 @@ int ModApiEnv::l_place_node(lua_State *L)
 
 	ServerActiveObject *placer = nullptr;
 
-	if (! lua_isnoneornil(L, 3)) {
+	if (!lua_isnoneornil(L, 3)) {
 		ObjectRef *ref = checkObject<ObjectRef>(L, 3);
 		placer = ObjectRef::getobject(ref);
 	}
@@ -479,7 +479,7 @@ int ModApiEnv::l_dig_node(lua_State *L)
 
 	ServerActiveObject *digger = nullptr;
 
-	if (! lua_isnoneornil(L, 2)) {
+	if (!lua_isnoneornil(L, 2)) {
 		ObjectRef *ref = checkObject<ObjectRef>(L, 2);
 		digger = ObjectRef::getobject(ref);
 	}
@@ -511,7 +511,7 @@ int ModApiEnv::l_punch_node(lua_State *L)
 
 	ServerActiveObject *puncher = nullptr;
 
-	if (! lua_isnoneornil(L, 2)) {
+	if (!lua_isnoneornil(L, 2)) {
 		ObjectRef *ref = checkObject<ObjectRef>(L, 2);
 		puncher = ObjectRef::getobject(ref);
 	}
