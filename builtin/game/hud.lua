@@ -106,8 +106,7 @@ function core.hud_replace_builtin(elem_name, definition)
 end
 
 local function cleanup_builtin_hud(player)
-	local name = player:get_player_name()
-	hud_ids[name] = nil
+	hud_ids[player:get_player_name()] = nil
 end
 
 
