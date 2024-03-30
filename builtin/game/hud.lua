@@ -1,13 +1,14 @@
 --[[
 Register function to easily register new builtin hud elements
-Contains:
-  elem_def  the HUD element definion which can be changed with hud_replace_builtin
-  event     (optional) for an additional eventname on which update_element is called
+`def` is a table and contains the following fields:
+  elem_def  the HUD element definition which can be changed with hud_replace_builtin
+  event     (optional) for an additional eventname on which the element will be updated
             ("hud_changed" and "properties_changed" will always be used.)
   hud_change(id, player)
             (optional) a function to change the element after it has been updated
   show_elem(player, flags, id)
             (optional) a function to decide if the element should be shown to a player
+            It is called before the element gets updated.
 ]]--
 local registered_elements = {}
 local update_events = {}
@@ -92,7 +93,7 @@ local function player_event_handler(player, eventname)
 end
 
 -- Returns true if successful, otherwise false,
--- but currently the return value is not part of the lua API.
+-- but currently the return value is not documented in the Lua API.
 function core.hud_replace_builtin(elem_name, definition)
 	assert(type(definition) == "table")
 
