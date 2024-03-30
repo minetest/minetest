@@ -79,7 +79,6 @@ local function player_event_handler(player, eventname)
 	if to_update then
 		update_hud(player, to_update)
 	end
-
 end
 
 -- Returns true if successful, otherwise false,
@@ -108,9 +107,6 @@ end
 
 local function cleanup_builtin_hud(player)
 	local name = player:get_player_name()
-	if name == "" then
-		return
-	end
 	hud_ids[name] = nil
 end
 
