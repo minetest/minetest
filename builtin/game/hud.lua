@@ -49,7 +49,8 @@ local function update_element(player, player_hud_ids, elem_name, flags)
 end
 
 -- Updates all elements
-local function update_hud(player)
+-- If to_update is specified it will only update those elements.
+local function update_hud(player, to_update)
 	local flags = player:hud_get_flags()
 	local playername = player:get_player_name()
 	local player_hud_ids = hud_ids[playername]
@@ -57,8 +58,15 @@ local function update_hud(player)
 		player_hud_ids = {}
 		hud_ids[playername] = player_hud_ids
 	end
-	for elem_name, _ in pairs(registered_elements) do
-		update_element(player, player_hud_ids, elem_name, flags)
+
+	if to_update then
+		for _, elem_name in ipairs(to_update) do
+			update_element(player, player_hud_ids, elem_name, flags)
+		end
+	else
+		for elem_name, _ in pairs(registered_elements) do
+			update_element(player, player_hud_ids, elem_name, flags)
+		end
 	end
 end
 
@@ -73,16 +81,7 @@ local function player_event_handler(player, eventname)
 	-- Custom events
 	local to_update = update_events[eventname]
 	if to_update then
-		local flags = player:hud_get_flags()
-		local playername = player:get_player_name()
-		local player_hud_ids = hud_ids[playername]
-		if not player_hud_ids then
-			player_hud_ids = {}
-			hud_ids[playername] = player_hud_ids
-		end
-		for _, elem_name in ipairs(to_update) do
-			update_element(player, player_hud_ids, elem_name, flags)
-		end
+		update_hud(player, to_update)
 		return true
 	end
 
@@ -125,7 +124,9 @@ end
 -- Append "update_hud" as late as possible
 -- This ensures that the HUD is hidden when the flags are updated in this callback
 core.register_on_mods_loaded(function()
-	core.register_on_joinplayer(update_hud)
+	core.register_on_joinplayer(function(player)
+		update_hud(player)
+	end)
 end)
 core.register_on_leaveplayer(cleanup_builtin_hud)
 core.register_playerevent(player_event_handler)
