@@ -417,7 +417,7 @@ int ModApiEnv::l_get_natural_light(lua_State *L)
 	return 1;
 }
 
-// place_node(pos, node)
+// place_node(pos, node, [placer])
 // pos = {x=num, y=num, z=num}
 int ModApiEnv::l_place_node(lua_State *L)
 {
@@ -437,6 +437,7 @@ int ModApiEnv::l_place_node(lua_State *L)
 		lua_pushboolean(L, false);
 		return 1;
 	}
+
 	// Create item to place
 	std::optional<ItemStack> item = ItemStack(ndef->get(n).name, 1, 0, idef);
 	// Make pointed position
@@ -444,6 +445,21 @@ int ModApiEnv::l_place_node(lua_State *L)
 	pointed.type = POINTEDTHING_NODE;
 	pointed.node_abovesurface = pos;
 	pointed.node_undersurface = pos + v3s16(0,-1,0);
+
+	if (! lua_isnoneornil(L, 3)) {
+		ObjectRef *ref = checkObject<ObjectRef>(L, 3);
+		ServerActiveObject *placer = ObjectRef::getobject(ref);
+
+		if (placer != nullptr) {
+			// Dig the node with the provided placer
+			bool success = scriptIfaceItem->item_OnPlace(item, placer, pointed);
+			lua_pushboolean(L, success);
+			return 1;
+		}
+		// Otherwise, fallback to NULL placer SAO
+		// (Seems like Lua already handle invalid args but anyway)
+	}
+
 	// Place it with a NULL placer (appears in Lua as nil)
 	bool success = scriptIfaceItem->item_OnPlace(item, nullptr, pointed);
 	lua_pushboolean(L, success);

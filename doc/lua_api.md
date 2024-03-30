@@ -6061,8 +6061,9 @@ Environment access
     * Returns a number between `0` and `15`
     * Currently it's the same as `math.floor(param1 / 16)`, except that it
       ensures compatibility.
-* `minetest.place_node(pos, node)`
+* `minetest.place_node(pos, node[, placer])`
     * Place node with the same effects that a player would cause
+    * `placer`: The ObjectRef that places the node (optional)
 * `minetest.dig_node(pos[, digger])`
     * Dig node with the same effects that a player would cause
     * `digger`: The ObjectRef that digs the node (optional)
