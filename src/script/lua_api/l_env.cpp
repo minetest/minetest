@@ -453,8 +453,8 @@ int ModApiEnv::l_place_node(lua_State *L)
 		placer = ObjectRef::getobject(ref);
 	}
 
-	// Place it with a NULL placer (appears in Lua as nil)
-	// or the given ObjectRef SAO
+	// Place it with a nullptr placer (appears in Lua as nil)
+	// or the given ObjectRef
 	bool success = scriptIfaceItem->item_OnPlace(item, placer, pointed);
 	lua_pushboolean(L, success);
 	return 1;
@@ -484,9 +484,9 @@ int ModApiEnv::l_dig_node(lua_State *L)
 		digger = ObjectRef::getobject(ref);
 	}
 
-	// Dig it out with a NULL digger
+	// Dig it out with a nullptr digger
 	// (appears in Lua as a non-functional ObjectRef)
-	// or the given ObjectRef SAO
+	// or the given ObjectRef
 	bool success = scriptIfaceNode->node_on_dig(pos, n, digger);
 	lua_pushboolean(L, success);
 	return 1;
@@ -516,9 +516,9 @@ int ModApiEnv::l_punch_node(lua_State *L)
 		puncher = ObjectRef::getobject(ref);
 	}
 
-	// Punch it with a NULL puncher
+	// Punch it with a nullptr puncher
 	// (appears in Lua as a non-functional ObjectRef)
-	// or the given ObjectRef SAO
+	// or the given ObjectRef
 	// TODO: custom PointedThing (requires a converter function)
 	bool success = scriptIfaceNode->node_on_punch(pos, n, puncher, PointedThing());
 	lua_pushboolean(L, success);
