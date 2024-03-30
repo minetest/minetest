@@ -939,6 +939,7 @@ private:
 	f32  m_cache_mouse_sensitivity;
 	f32  m_cache_joystick_frustum_sensitivity;
 	f32  m_repeat_place_time;
+	f32  m_repeat_dig_time;
 	f32  m_cache_cam_smoothing;
 
 	bool m_invert_mouse;
@@ -984,6 +985,8 @@ Game::Game() :
 	g_settings->registerChangedCallback("joystick_frustum_sensitivity",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("repeat_place_time",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("repeat_dig_time",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("noclip",
 		&settingChangedCallback, this);
@@ -1050,6 +1053,8 @@ Game::~Game()
 	g_settings->deregisterChangedCallback("joystick_frustum_sensitivity",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("repeat_place_time",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("repeat_dig_time",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("noclip",
 		&settingChangedCallback, this);
@@ -3912,12 +3917,14 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.nodig_delay_timer =
 				runData.dig_time_complete / (float)crack_animation_length;
 
-		// We don't want a corresponding delay to very time consuming nodes
-		// and nodes without digging time (e.g. torches) get a fixed delay.
-		if (runData.nodig_delay_timer > 0.3)
-			runData.nodig_delay_timer = 0.3;
-		else if (runData.dig_instantly)
-			runData.nodig_delay_timer = 0.15;
+		// Don't add a corresponding delay to very time consuming nodes.
+		runData.nodig_delay_timer = std::min(runData.nodig_delay_timer, 0.3f);
+
+		// Ensure that the delay between breaking nodes
+		// (dig_time_complete + nodig_delay_timer) is at least the
+		// value of the repeat_dig_time setting.
+		runData.nodig_delay_timer = std::max(runData.nodig_delay_timer,
+				m_repeat_dig_time - runData.dig_time_complete);
 
 		if (client->modsLoaded() &&
 				client->getScript()->on_dignode(nodepos, n)) {
@@ -4315,7 +4322,8 @@ void Game::readSettings()
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
 	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f);
 	m_cache_joystick_frustum_sensitivity = std::max(g_settings->getFloat("joystick_frustum_sensitivity"), 0.001f);
-	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.16f, 2.0);
+	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.15f, 2.0f);
+	m_repeat_dig_time                    = g_settings->getFloat("repeat_dig_time", 0.15f, 2.0f);
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");
