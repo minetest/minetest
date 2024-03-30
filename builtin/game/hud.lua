@@ -53,11 +53,8 @@ end
 local function update_hud(player, to_update)
 	local flags = player:hud_get_flags()
 	local playername = player:get_player_name()
-	local player_hud_ids = hud_ids[playername]
-	if not player_hud_ids then
-		player_hud_ids = {}
-		hud_ids[playername] = player_hud_ids
-	end
+	hud_ids[playername] = hud_ids[playername] or {}
+l	local player_hud_ids = hud_ids[playername]
 
 	if to_update then
 		for _, elem_name in ipairs(to_update) do
