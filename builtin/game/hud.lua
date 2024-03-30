@@ -72,17 +72,14 @@ local function player_event_handler(player, eventname)
 
 	if eventname == "hud_changed" or eventname == "properties_changed" then
 		update_hud(player)
-		return true
 	end
 
 	-- Custom events
 	local to_update = update_events[eventname]
 	if to_update then
 		update_hud(player, to_update)
-		return true
 	end
 
-	return false
 end
 
 -- Returns true if successful, otherwise false,
