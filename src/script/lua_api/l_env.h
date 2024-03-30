@@ -93,7 +93,7 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_place_node(lua_State *L);
 
-	// dig_node(pos)
+	// dig_node(pos, [digger])
 	// pos = {x=num, y=num, z=num}
 	static int l_dig_node(lua_State *L);
 

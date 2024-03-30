@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_nodetimer.h"
 #include "lua_api/l_noise.h"
 #include "lua_api/l_vmanip.h"
+#include "lua_api/l_object.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "scripting_server.h"
@@ -449,7 +450,7 @@ int ModApiEnv::l_place_node(lua_State *L)
 	return 1;
 }
 
-// dig_node(pos)
+// dig_node(pos, [digger])
 // pos = {x=num, y=num, z=num}
 int ModApiEnv::l_dig_node(lua_State *L)
 {
@@ -465,6 +466,21 @@ int ModApiEnv::l_dig_node(lua_State *L)
 		lua_pushboolean(L, false);
 		return 1;
 	}
+
+	if (lua_gettop(L) >= 2 && (! lua_isnoneornil(L, 2))) {
+		ObjectRef *ref = checkObject<ObjectRef>(L, 2);
+		ServerActiveObject *digger = ObjectRef::getobject(ref);
+
+		if (digger != nullptr) {
+			// Dig the node with the provided digger
+			bool success = scriptIfaceNode->node_on_dig(pos, n, digger);
+			lua_pushboolean(L, success);
+			return 1;
+		}
+		// Otherwise, fallback to NULL digger SAO
+		// (Seems like Lua already handle invalid args but anyway)
+	}
+
 	// Dig it out with a NULL digger (appears in Lua as a
 	// non-functional ObjectRef)
 	bool success = scriptIfaceNode->node_on_dig(pos, n, NULL);

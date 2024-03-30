@@ -6063,8 +6063,9 @@ Environment access
       ensures compatibility.
 * `minetest.place_node(pos, node)`
     * Place node with the same effects that a player would cause
-* `minetest.dig_node(pos)`
+* `minetest.dig_node(pos[, digger])`
     * Dig node with the same effects that a player would cause
+    * `digger`: The ObjectRef that digs the node (optional)
     * Returns `true` if successful, `false` on failure (e.g. protected location)
 * `minetest.punch_node(pos)`
     * Punch node with the same effects that a player would cause
