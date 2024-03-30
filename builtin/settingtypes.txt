@@ -776,6 +776,7 @@ serverlist_url (Serverlist URL) string servers.minetest.net
 enable_split_login_register (Enable split login/register) bool true
 
 #    URL to JSON file which provides information about the newest Minetest release
+#    If this is empty the engine will never check for updates.
 update_information_url (Update information URL) string https://www.minetest.net/release_info.json
 
 [*Server]
@@ -2290,20 +2291,6 @@ show_advanced (Show advanced settings) bool false
 #    sound controls will be non-functional.
 #    Changing this setting requires a restart.
 enable_sound (Sound) bool true
-
-#    Unix timestamp (integer) of when the client last checked for an update
-#    Set this value to "disabled" to never check for updates.
-update_last_checked (Last update check) string
-
-#    Version number which was last seen during an update check.
-#
-#    Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch
-#    Ex: 5.5.0 is 005005000
-update_last_known (Last known version update) int 0
-
-#    If this is set to true, the user will never (again) be shown the
-#    "reinstall Minetest Game" notification.
-no_mtg_notification (Don't show "reinstall Minetest Game" notification) bool false
 
 #    Key for moving the player forward.
 keymap_forward (Forward key) key KEY_KEY_W
