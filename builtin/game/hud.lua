@@ -15,12 +15,8 @@ local update_events = {}
 local function register_builtin_hud_element(name, def)
 	registered_elements[name] = def
 	if def.event then
-		local events = update_events[def.event]
-		if events then
-			table.insert(events, name)
-		else
-			update_events[def.event] = {name}
-		end
+		update_events[def.event] = update_events[def.event] or {}
+		table.insert(update_events[def.event], name)
 	end
 end
 
@@ -29,7 +25,7 @@ local hud_ids = {}
 
 -- Updates one element
 -- In case the element is already added, it does only call the hud_change function from
--- registered_elements. (To completely update the element call player:hud_remove(id) first.)
+-- registered_elements. (To completely update the element remove it first.)
 local function update_element(player, player_hud_ids, elem_name, flags)
 	local def = registered_elements[elem_name]
 	local id = player_hud_ids[elem_name]
@@ -37,6 +33,7 @@ local function update_element(player, player_hud_ids, elem_name, flags)
 	if def.show_elem and not def.show_elem(player, flags, id) then
 		if id then
 			player:hud_remove(id)
+			player_hud_ids[elem_name] = nil
 		end
 		return
 	end
@@ -109,6 +106,7 @@ function core.hud_replace_builtin(elem_name, definition)
 		local id = player_hud_ids[elem_name]
 		if player and id then
 			player:hud_remove(id)
+			player_hud_ids[elem_name] = nil
 			update_element(player, player_hud_ids, elem_name, player:hud_get_flags())
 		end
 	end
@@ -197,12 +195,12 @@ register_builtin_hud_element("breath", {
 			if breath == breath_max then
 				local player_name = player:get_player_name()
 				-- The breathbar stays for some time and then gets removed.
-				core.after(1, function(player_name, id)
+				core.after(1, function()
 					local player = core.get_player_by_name(player_name)
 					if player then
 						player:hud_remove(id)
 					end
-				end, player_name, id)
+				end)
 				hud_ids[player_name].breath = nil
 			end
 
