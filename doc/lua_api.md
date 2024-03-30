@@ -5431,8 +5431,8 @@ Utilities
       lsystem_decoration_type = true,
       -- Overrideable pointing range using the itemstack meta key `"range"` (5.9.0)
       item_meta_range = true,
-      -- Allow passing in an optional "actor" ObjectRef into the following functions: (5.9.0)
-      -- minetest.place_node, minetest.dig_node, minetest.punch_node
+      -- Allow passing an optional "actor" ObjectRef to the following functions:
+      -- minetest.place_node, minetest.dig_node, minetest.punch_node (5.9.0)
       node_interaction_actor = true,
   }
   ```
