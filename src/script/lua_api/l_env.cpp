@@ -451,7 +451,7 @@ int ModApiEnv::l_place_node(lua_State *L)
 		ServerActiveObject *placer = ObjectRef::getobject(ref);
 
 		if (placer != nullptr) {
-			// Dig the node with the provided placer
+			// Place the node with the provided placer
 			bool success = scriptIfaceItem->item_OnPlace(item, placer, pointed);
 			lua_pushboolean(L, success);
 			return 1;
