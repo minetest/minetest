@@ -446,22 +446,16 @@ int ModApiEnv::l_place_node(lua_State *L)
 	pointed.node_abovesurface = pos;
 	pointed.node_undersurface = pos + v3s16(0,-1,0);
 
+	ServerActiveObject *placer = nullptr;
+
 	if (! lua_isnoneornil(L, 3)) {
 		ObjectRef *ref = checkObject<ObjectRef>(L, 3);
-		ServerActiveObject *placer = ObjectRef::getobject(ref);
-
-		if (placer != nullptr) {
-			// Place the node with the provided placer
-			bool success = scriptIfaceItem->item_OnPlace(item, placer, pointed);
-			lua_pushboolean(L, success);
-			return 1;
-		}
-		// Otherwise, fallback to NULL placer SAO
-		// (Seems like Lua already handle invalid args but anyway)
+		placer = ObjectRef::getobject(ref);
 	}
 
 	// Place it with a NULL placer (appears in Lua as nil)
-	bool success = scriptIfaceItem->item_OnPlace(item, nullptr, pointed);
+	// or the given ObjectRef SAO
+	bool success = scriptIfaceItem->item_OnPlace(item, placer, pointed);
 	lua_pushboolean(L, success);
 	return 1;
 }
@@ -483,23 +477,17 @@ int ModApiEnv::l_dig_node(lua_State *L)
 		return 1;
 	}
 
-	if (lua_gettop(L) >= 2 && (! lua_isnoneornil(L, 2))) {
-		ObjectRef *ref = checkObject<ObjectRef>(L, 2);
-		ServerActiveObject *digger = ObjectRef::getobject(ref);
+	ServerActiveObject *digger = nullptr;
 
-		if (digger != nullptr) {
-			// Dig the node with the provided digger
-			bool success = scriptIfaceNode->node_on_dig(pos, n, digger);
-			lua_pushboolean(L, success);
-			return 1;
-		}
-		// Otherwise, fallback to NULL digger SAO
-		// (Seems like Lua already handle invalid args but anyway)
+	if (! lua_isnoneornil(L, 2)) {
+		ObjectRef *ref = checkObject<ObjectRef>(L, 2);
+		digger = ObjectRef::getobject(ref);
 	}
 
-	// Dig it out with a NULL digger (appears in Lua as a
-	// non-functional ObjectRef)
-	bool success = scriptIfaceNode->node_on_dig(pos, n, NULL);
+	// Dig it out with a NULL digger
+	// (appears in Lua as a non-functional ObjectRef)
+	// or the given ObjectRef SAO
+	bool success = scriptIfaceNode->node_on_dig(pos, n, digger);
 	lua_pushboolean(L, success);
 	return 1;
 }
@@ -521,24 +509,17 @@ int ModApiEnv::l_punch_node(lua_State *L)
 		return 1;
 	}
 
-	if (lua_gettop(L) >= 2 && (! lua_isnoneornil(L, 2))) {
-		ObjectRef *ref = checkObject<ObjectRef>(L, 2);
-		ServerActiveObject *puncher = ObjectRef::getobject(ref);
+	ServerActiveObject *puncher = nullptr;
 
-		if (puncher != nullptr) {
-			// Puncher the node with the provided puncher
-			// TODO: Allow custom PointedThing w/ or w/o custom puncher
-			bool success = scriptIfaceNode->node_on_punch(pos, n, puncher, PointedThing());
-			lua_pushboolean(L, success);
-			return 1;
-		}
-		// Otherwise, fallback to NULL puncher SAO
-		// (Seems like Lua already handle invalid args but anyway)
+	if (! lua_isnoneornil(L, 2)) {
+		ObjectRef *ref = checkObject<ObjectRef>(L, 2);
+		puncher = ObjectRef::getobject(ref);
 	}
 
-	// Punch it with a NULL puncher (appears in Lua as a non-functional
-	// ObjectRef)
-	bool success = scriptIfaceNode->node_on_punch(pos, n, NULL, PointedThing());
+	// Punch it with a NULL puncher
+	// (appears in Lua as a non-functional ObjectRef)
+	// or the given ObjectRef SAO
+	bool success = scriptIfaceNode->node_on_punch(pos, n, puncher, PointedThing());
 	lua_pushboolean(L, success);
 	return 1;
 }
