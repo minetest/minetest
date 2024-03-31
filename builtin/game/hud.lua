@@ -25,7 +25,7 @@ local hud_ids = {}
 
 -- Updates one element
 -- In case the element is already added, it only calls the hud_change function from
--- registered_elements. (To completely update the element remove it first.)
+-- registered_elements. (To recreate the element remove it first.)
 local function update_element(player, player_hud_ids, elem_name, flags)
 	local def = registered_elements[elem_name]
 	local id = player_hud_ids[elem_name]
