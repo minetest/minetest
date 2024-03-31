@@ -7070,8 +7070,45 @@ Global tables
 All callbacks registered with [Global callback registration functions] are added
 to corresponding `minetest.registered_*` tables.
 
+For backwards compatibility reasons, the names of these tables differ.
+Most names end in `-s`:
 
+* `minetest.registered_on_chat_messages`
+* `minetest.registered_on_chatcommands`
+* `minetest.registered_globalsteps`
+* `minetest.registered_on_punchnodes`
+* `minetest.registered_on_placenodes`
+* `minetest.registered_on_dignodes`
+* `minetest.registered_on_generateds`
+* `minetest.registered_on_newplayers`
+* `minetest.registered_on_dieplayers`
+* `minetest.registered_on_respawnplayers`
+* `minetest.registered_on_prejoinplayers`
+* `minetest.registered_on_joinplayers`
+* `minetest.registered_on_leaveplayers`
+* `minetest.registered_on_player_receive_fields`
+* `minetest.registered_on_cheats`
+* `minetest.registered_on_crafts`
+* `minetest.registered_craft_predicts`
+* `minetest.registered_on_item_eats`
+* `minetest.registered_on_item_pickups`
+* `minetest.registered_on_punchplayers`
+* `minetest.registered_on_authplayers`
+* `minetest.registered_on_player_inventory_actions`
+* `minetest.registered_allow_player_inventory_actions`
+* `minetest.registered_on_rightclickplayers`
 
+But some don't:
+
+* `minetest.registered_on_mods_loaded`
+* `minetest.registered_on_shutdown`
+* `minetest.registered_on_protection_violation`
+* `minetest.registered_on_priv_grant`
+* `minetest.registered_on_priv_revoke`
+* `minetest.registered_can_bypass_userlimit`
+* `minetest.registered_on_modchannel_message`
+* `minetest.registered_on_liquid_transformed`
+* `minetest.registered_on_mapblocks_changed`
 
 Class reference
 ===============
