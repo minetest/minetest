@@ -6,9 +6,15 @@ Register function to easily register new builtin hud elements
             ("hud_changed" and "properties_changed" will always be used.)
   hud_change(id, player)
             (optional) a function to change the element after it has been updated
+            (Is not called when the element is first set or recreated.)
   show_elem(player, flags, id)
             (optional) a function to decide if the element should be shown to a player
             It is called before the element gets updated.
+  init_change(player, elem_def)
+            (optional) a function to change the elem_def before it will be used.
+            (elem_def can be changed, since the table which got set by using
+            hud_replace_builtin isn't unexposed to the API.)
+
 ]]--
 local registered_elements = {}
 local update_events = {}
@@ -39,8 +45,13 @@ local function update_element(player, player_hud_ids, elem_name, flags)
 	end
 
 	if not id then
+		if def.init_change then
+			def.init_change(player, def.elem_def)
+		end
+
 		id = player:hud_add(def.elem_def)
 		player_hud_ids[elem_name] = id
+		return
 	end
 
 	if def.hud_change then
@@ -72,6 +83,7 @@ local function player_event_handler(player, eventname)
 
 	if eventname == "hud_changed" or eventname == "properties_changed" then
 		update_hud(player)
+		return
 	end
 
 	-- Custom events
@@ -160,9 +172,17 @@ register_builtin_hud_element("health", {
 	hud_change = function(player, id)
 		player:hud_change(id, "number", scaleToHudMax(player, "hp"))
 	end,
+	init_change = function(player, elem_def)
+		elem_def.number = scaleToHudMax(player, "hp")
+		-- Deprecated undocumented behavior
+		elem_def.item = elem_def.item or elem_def.number or core.PLAYER_MAX_HP_DEFAULT
+	end,
 })
 
 --- Breathbar
+
+-- Stores core.after calls for every player
+local breathbar_removal_jobs = {}
 
 register_builtin_hud_element("breath", {
 	elem_def = {
@@ -177,33 +197,52 @@ register_builtin_hud_element("breath", {
 		offset = {x = 25, y= -(48 + 24 + 16)},
 	},
 	show_elem = function(player, flags, id)
-		local breath     = player:get_breath()
-		local breath_max = player:get_properties().breath_max
-		local show_breathbar = flags.breathbar and enable_damage and player:get_armor_groups().immortal ~= 1
+		local breath_relevant = player:get_breath() < player:get_properties().breath_max
+		local show_breathbar = flags.breathbar and enable_damage
+				and player:get_armor_groups().immortal ~= 1
+				and player:get_breath() < player:get_properties().breath_max
 
 		if id then
-			if breath == breath_max then
-				local player_name = player:get_player_name()
-				-- The breathbar stays for some time and then gets removed.
-				-- NOTE: This can cause a bug where multiple breathbars are shown at the same time.
-				core.after(1, function()
-					local player = core.get_player_by_name(player_name)
-					if player then
-						player:hud_remove(id)
-					end
-				end)
-				hud_ids[player_name].breath = nil
-			end
+			local player_name = player:get_player_name()
+			if not breath_relevant then
+				if not breathbar_removal_jobs[player_name] then
+					-- The breathbar stays for some time and then gets removed.
+					breathbar_removal_jobs[player_name] = core.after(1, function()
+						local player = core.get_player_by_name(player_name)
+						local id = hud_ids[player_name].breath
+						if player and id then
+							player:hud_remove(id)
+							hud_ids[player_name].breath = nil
+						end
+						breathbar_removal_jobs[player_name] = nil
+					end)
+				end
 
-			return show_breathbar
-		else
-			-- Only if the element does not already exist the breath amount is considered.
-			return show_breathbar and breath < breath_max
+				-- The element will not prematurely be removed by update_element
+				-- (but may still be instantly removed if the flag changed)
+				return show_breathbar
+			else
+				-- Cancel removal
+				local job = breathbar_removal_jobs[player_name]
+				if job then
+					job:cancel()
+					breathbar_removal_jobs[player_name] = nil
+				end
+				return show_breathbar
+			end
 		end
+
+		-- Don't add the element if the breath is full
+		return show_breathbar and breath_relevant
 	end,
 	event = "breath_changed",
 	hud_change = function(player, id)
 		player:hud_change(id, "number", scaleToHudMax(player, "breath"))
+	end,
+	init_change = function(player, elem_def)
+		elem_def.number = scaleToHudMax(player, "breath")
+		-- Deprecated undocumented behavior
+		elem_def.item = elem_def.item or elem_def.number or core.PLAYER_MAX_BREATH_DEFAULT
 	end,
 })
 
