@@ -450,7 +450,9 @@ void main(void)
 	// Note: clarity = (1 - fogginess)
 	float clarity = clamp(fogShadingParameter
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
-	col = mix(fogColor, col, clarity);
+	float fogColorMax = max(max(fogColor.r, fogColor.g), fogColor.b);
+	if (fogColorMax < 0.0000001) fogColorMax = 1.;
+	col = mix(fogColor * pow(fogColor / fogColorMax, vec4(2. * clarity)), col, clarity);
 	col = vec4(col.rgb, base.a);
 
 	gl_FragData[0] = col;
