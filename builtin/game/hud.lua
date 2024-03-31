@@ -185,7 +185,7 @@ register_builtin_hud_element("breath", {
 			if breath == breath_max then
 				local player_name = player:get_player_name()
 				-- The breathbar stays for some time and then gets removed.
-				-- NOTE: This can causes a bug where multiple breathbars are shown at the same time.
+				-- NOTE: This can cause a bug where multiple breathbars are shown at the same time.
 				core.after(1, function()
 					local player = core.get_player_by_name(player_name)
 					if player then
