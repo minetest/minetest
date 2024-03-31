@@ -46,48 +46,6 @@ local filter_types_type = {
 }
 
 
-local function install_or_update_package(this, package)
-	local install_parent
-	if package.type == "mod" then
-		install_parent = core.get_modpath()
-	elseif package.type == "game" then
-		install_parent = core.get_gamepath()
-	elseif package.type == "txp" then
-		install_parent = core.get_texturepath()
-	else
-		error("Unknown package type: " .. package.type)
-	end
-
-	if package.queued or package.downloading then
-		return
-	end
-
-	local function on_confirm()
-		local dlg = create_install_dialog(package)
-		dlg:set_parent(this)
-		this:hide()
-		dlg:show()
-
-		dlg:load_deps()
-	end
-
-	if package.type == "mod" and #pkgmgr.games == 0 then
-		local dlg = messagebox("install_game",
-			fgettext("You need to install a game before you can install a mod"))
-		dlg:set_parent(this)
-		this:hide()
-		dlg:show()
-	elseif not package.path and core.is_dir(install_parent .. DIR_DELIM .. package.name) then
-		local dlg = create_confirm_overwrite(package, on_confirm)
-		dlg:set_parent(this)
-		this:hide()
-		dlg:show()
-	else
-		on_confirm()
-	end
-end
-
-
 -- Resolves the package specification stored in auto_install_spec into an actual package.
 -- May only be called after the package list has been loaded successfully.
 local function resolve_auto_install_spec()
@@ -291,7 +249,7 @@ local function get_formspec(dlgdata)
 
 		-- image
 		formspec[#formspec + 1] = "image[0,0;1.5,1;"
-		formspec[#formspec + 1] = core.formspec_escape(get_screenshot(package))
+		formspec[#formspec + 1] = core.formspec_escape(get_screenshot(package, package.thumbnail, 1))
 		formspec[#formspec + 1] = "]"
 
 		-- title
@@ -301,52 +259,17 @@ local function get_formspec(dlgdata)
 				core.colorize("#BFBFBF", " by " .. package.author))
 		formspec[#formspec + 1] = "]"
 
-		-- buttons
-		local description_width = W - 2.625 - 2 * 0.7 - 2 * 0.15
-
-		local second_base = "image_button[-1.55,0;0.7,0.7;" .. core.formspec_escape(defaulttexturedir)
-		local third_base = "image_button[-2.4,0;0.7,0.7;" .. core.formspec_escape(defaulttexturedir)
-		formspec[#formspec + 1] = "container["
-		formspec[#formspec + 1] = W - 0.375*2
-		formspec[#formspec + 1] = ",0.1]"
-
-		if package.downloading then
-			formspec[#formspec + 1] = "animated_image[-1.7,-0.15;1,1;downloading;"
-			formspec[#formspec + 1] = core.formspec_escape(defaulttexturedir)
-			formspec[#formspec + 1] = "cdb_downloading.png;3;400;]"
-		elseif package.queued then
-			formspec[#formspec + 1] = second_base
-			formspec[#formspec + 1] = "cdb_queued.png;queued;]"
-		elseif not package.path then
-			local elem_name = "install_" .. i .. ";"
-			formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#71aa34]"
-			formspec[#formspec + 1] = second_base .. "cdb_add.png;" .. elem_name .. "]"
-			formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Install") .. tooltip_colors
-		else
-			if package.installed_release < package.release then
-				-- The install_ action also handles updating
-				local elem_name = "install_" .. i .. ";"
-				formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#28ccdf]"
-				formspec[#formspec + 1] = third_base .. "cdb_update.png;" .. elem_name .. "]"
-				formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Update") .. tooltip_colors
-
-				description_width = description_width - 0.7 - 0.15
-			end
-
-			local elem_name = "uninstall_" .. i .. ";"
-			formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#a93b3b]"
-			formspec[#formspec + 1] = second_base .. "cdb_clear.png;" .. elem_name .. "]"
-			formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Uninstall") .. tooltip_colors
-		end
-
-		local web_elem_name = "view_" .. i .. ";"
-		formspec[#formspec + 1] = "image_button[-0.7,0;0.7,0.7;" ..
-			core.formspec_escape(defaulttexturedir) .. "cdb_viewonline.png;" .. web_elem_name .. "]"
-		formspec[#formspec + 1] = "tooltip[" .. web_elem_name ..
-			fgettext("View more information in a web browser") .. tooltip_colors
-		formspec[#formspec + 1] = "container_end[]"
+		-- button
+		formspec[#formspec + 1] = "button["
+		formspec[#formspec + 1] = W-0.375*2-2
+		formspec[#formspec + 1] = ",0.1;2,0.7;view_"
+		formspec[#formspec + 1] = i
+		formspec[#formspec + 1] = ";"
+		formspec[#formspec + 1] = fgettext("View")
+		formspec[#formspec + 1] = "]"
 
 		-- description
+		local description_width = W - 2.625 - 2 * 0.7 - 2 * 0.15
 		formspec[#formspec + 1] = "textarea[1.855,0.3;"
 		formspec[#formspec + 1] = tostring(description_width)
 		formspec[#formspec + 1] = ",0.8;;;"
@@ -434,24 +357,11 @@ local function handle_submit(this, fields)
 		local package = contentdb.packages[i]
 		assert(package)
 
-		if fields["install_" .. i] then
-			install_or_update_package(this, package)
-			return true
-		end
-
-		if fields["uninstall_" .. i] then
-			local dlg = create_delete_content_dlg(package)
+		if fields["view_" .. i] then
+			local dlg = create_package_dialog(package)
 			dlg:set_parent(this)
 			this:hide()
 			dlg:show()
-			return true
-		end
-
-		if fields["view_" .. i] then
-			local url = ("%s/packages/%s?protocol_version=%d"):format(
-					core.settings:get("contentdb_url"), package.url_part,
-					core.get_max_supp_proto())
-			core.open_url(url)
 			return true
 		end
 	end

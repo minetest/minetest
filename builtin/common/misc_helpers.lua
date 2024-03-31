@@ -235,6 +235,16 @@ function core.formspec_escape(text)
 end
 
 
+local hypertext_escapes = {
+	["\\"] = "\\\\",
+	["<"] = "\\<",
+	[">"] = "\\>",
+}
+function core.hypertext_escape(text)
+	return text and text:gsub("[\\<>]", hypertext_escapes)
+end
+
+
 function core.wrap_text(text, max_length, as_table)
 	local result = {}
 	local line = {}
