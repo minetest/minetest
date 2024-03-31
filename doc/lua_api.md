@@ -6581,6 +6581,9 @@ Formspec
 * `minetest.formspec_escape(string)`: returns a string
     * escapes the characters "[", "]", "\", "," and ";", which cannot be used
       in formspecs.
+* `minetest.hypertext_escape(string)`: returns a string
+    * escapes the characters "\", "<", and ">" to show text in a hypertext element.
+    * not safe for use with tag attributes.
 * `minetest.explode_table_event(string)`: returns a table
     * returns e.g. `{type="CHG", row=1, column=2}`
     * `type` is one of:
