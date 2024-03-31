@@ -264,7 +264,7 @@ local function main_button_handler(this, fields, name, tabdata)
 
 	if fields.game_open_cdb then
 		local maintab = ui.find_by_name("maintab")
-		local dlg = create_store_dlg("game")
+		local dlg = create_contentdb_dlg("game")
 		dlg:set_parent(maintab)
 		maintab:hide()
 		dlg:show()
