@@ -182,6 +182,22 @@ function contentdb.get_package_by_id(id)
 end
 
 
+function contentdb.get_package_by_info(author, name)
+	local id = author:lower() .. "/" .. name
+	local package = contentdb.package_by_id[id]
+	if package then
+		return package
+	end
+
+	local name_len = #name
+	if name_len > 5 and name:sub(name_len - 4) == "_game" then
+		id = author:lower() .. "/" .. name:sub(1, name_len - 5)
+		return contentdb.package_by_id[id]
+	end
+	return nil
+end
+
+
 -- Create a coroutine from `fn` and provide results to `callback` when complete (dead).
 -- Returns a resumer function.
 local function make_callback_coroutine(fn, callback)
@@ -415,8 +431,8 @@ local function fetch_pkgs(params)
 	local aliases = {}
 
 	for _, package in pairs(packages) do
-		local name_len = #package.name
 		-- This must match what contentdb.update_paths() does!
+		local name_len = #package.name
 		package.id = package.author:lower() .. "/"
 		if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
 			package.id = package.id .. package.name:sub(1, name_len - 5)
@@ -579,5 +595,47 @@ function contentdb.filter_packages(query, by_type)
 				(by_type == nil or package.type == by_type) then
 			contentdb.packages[#contentdb.packages + 1] = package
 		end
+	end
+end
+
+
+function contentdb.get_full_package_info(package, callback)
+	assert(package)
+
+	local function fetch(params)
+		local version = core.get_version()
+		local base_url = core.settings:get("contentdb_url")
+
+		local languages
+		local current_language = core.get_language()
+		if current_language ~= "" then
+			languages = { current_language, "en;q=0.8" }
+		else
+			languages = { "en" }
+		end
+
+		local url = base_url ..
+				"/api/packages/" .. params.package.url_part .. "/for-client/?" ..
+				"protocol_version=" .. core.get_max_supp_proto() ..
+				"&engine_version=" .. core.urlencode(version.string) ..
+				"&formspec_version=" .. core.urlencode(7) ..
+				"&include_images=false"
+		local http = core.get_http_api()
+		local response = http.fetch_sync({
+			url = url,
+			extra_headers = {
+				"Accept-Language: " .. table.concat(languages, ", ")
+			},
+		})
+		if not response.succeeded then
+			return nil
+		end
+
+		return core.parse_json(response.data)
+	end
+
+	if not core.handle_async(fetch, { package = package }, callback) then
+		core.log("error", "ERROR: async event failed")
+		callback(nil)
 	end
 end

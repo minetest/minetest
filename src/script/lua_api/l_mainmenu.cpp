@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content/mod_configuration.h"
 #include "threading/mutex_auto_lock.h"
 #include "common/c_converter.h"
+#include "gui/guiOpenURL.h"
 
 /******************************************************************************/
 std::string ModApiMainMenu::getTextData(lua_State *L, const std::string &name)
@@ -1039,6 +1040,22 @@ int ModApiMainMenu::l_open_url(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_open_url_dialog(lua_State *L)
+{
+	GUIEngine* engine = getGuiEngine(L);
+	sanity_check(engine != NULL);
+
+	std::string url = luaL_checkstring(L, 1);
+
+	GUIOpenURLMenu* openURLMenu =
+			new GUIOpenURLMenu(engine->m_rendering_engine->get_gui_env(),
+				engine->m_parent, -1, engine->m_menumanager,
+				engine->m_texture_source.get(), url);
+	openURLMenu->drop();
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_open_dir(lua_State *L)
 {
 	std::string path = luaL_checkstring(L, 1);
@@ -1129,6 +1146,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
 	API_FCT(open_url);
+	API_FCT(open_url_dialog);
 	API_FCT(open_dir);
 	API_FCT(share_file);
 	API_FCT(do_async_callback);
