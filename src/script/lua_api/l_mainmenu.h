@@ -162,6 +162,8 @@ private:
 	// other
 	static int l_open_url(lua_State *L);
 
+	static int l_open_url_dialog(lua_State *L);
+
 	static int l_open_dir(lua_State *L);
 
 	static int l_share_file(lua_State *L);
