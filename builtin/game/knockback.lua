@@ -23,7 +23,7 @@ local function vector_absmax(v)
 end
 
 core.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage)
-	if not hitter anod not dir then
+	if not hitter and not dir then
 		return
 	end
 	if player:get_hp() == 0 then

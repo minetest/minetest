@@ -94,8 +94,8 @@ minetest.register_entity("callbacks:callback_puncher", {
 				"Callback entity: on_punch with nil puncher "..
 				"pos="..spos(self).."; "..
 				"time_from_last_punch="..time_from_last_punch.."; "..
-				"tool_capabilities="..tostring(dump(tool_capabilities)).."; "..
-				"dir="..tostring(dump(dir)).."; damage="..damage)
+				"tool_capabilities="..dump(tool_capabilities).."; "..
+				"dir="..dump(dir).."; damage="..damage)
 		end
 	end,
 })
