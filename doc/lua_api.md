@@ -7070,8 +7070,7 @@ Global tables
 All callbacks registered with [Global callback registration functions] are added
 to corresponding `minetest.registered_*` tables.
 
-For backwards compatibility reasons, the names of these tables differ.
-Most names end in `-s`:
+For historical reasons, the use of an -s suffix in these names is inconsistent.
 
 * `minetest.registered_on_chat_messages`
 * `minetest.registered_on_chatcommands`
@@ -7097,9 +7096,6 @@ Most names end in `-s`:
 * `minetest.registered_on_player_inventory_actions`
 * `minetest.registered_allow_player_inventory_actions`
 * `minetest.registered_on_rightclickplayers`
-
-But some don't:
-
 * `minetest.registered_on_mods_loaded`
 * `minetest.registered_on_shutdown`
 * `minetest.registered_on_protection_violation`
