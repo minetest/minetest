@@ -32,11 +32,8 @@ end
 
 
 local function get_formspec(data)
-	-- Padding is increased on Android to account for notches
-	-- TODO: use Android API to determine size of cut outs
-	local window_padding = { x = PLATFORM == "Android" and 1 or 0.5, y = PLATFORM == "Android" and 0.25 or 0.5 }
-	local window = core.get_window_info()
-	local size = { x = window.max_formspec_size.x, y = window.max_formspec_size.y }
+	local window_padding =  contentdb.get_formspec_padding()
+	local size = contentdb.get_formspec_size()
 	size.x = math.min(size.x, 20)
 	local W = size.x - window_padding.x * 2
 	local H = size.y - window_padding.y * 2

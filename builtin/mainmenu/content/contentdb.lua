@@ -641,3 +641,27 @@ function contentdb.get_full_package_info(package, callback)
 		callback(nil)
 	end
 end
+
+
+function contentdb.get_formspec_padding()
+	-- Padding is increased on Android to account for notches
+	-- TODO: use Android API to determine size of cut outs
+	return { x = PLATFORM == "Android" and 1 or 0.5, y = PLATFORM == "Android" and 0.25 or 0.5 }
+end
+
+
+function contentdb.get_formspec_size()
+	local window = core.get_window_info()
+	local size = { x = window.max_formspec_size.x, y = window.max_formspec_size.y }
+
+	-- Minimum formspec size
+	local min_x = 15.5
+	local min_y = 10
+	if size.x < min_x or size.y < min_y then
+		local scale = math.max(min_x / size.x, min_y / size.y)
+		size.x = size.x * scale
+		size.y = size.y * scale
+	end
+
+	return size
+end
