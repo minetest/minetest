@@ -140,7 +140,7 @@ core.register_playerevent(player_event_handler)
 -- Cache setting
 local enable_damage = core.settings:get_bool("enable_damage")
 
-local function scaleToHudMax(player, field)
+local function scale_to_hud_max(player, field)
 	-- Scale "hp" or "breath" to the hud maximum dimensions
 	local current = player["get_" .. field](player)
 	local nominal
@@ -166,15 +166,16 @@ register_builtin_hud_element("health", {
 		offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 16)},
 	},
 	show_elem = function(player, flags)
-		return flags.healthbar and enable_damage and player:get_armor_groups().immortal ~= 1
+		return flags.healthbar and enable_damage and
+				player:get_armor_groups().immortal ~= 1
 	end,
 	event = "health_changed",
 	update_elem = function(player, id)
-		player:hud_change(id, "number", scaleToHudMax(player, "hp"))
+		player:hud_change(id, "number", scale_to_hud_max(player, "hp"))
 	end,
 	update_def = function(player, elem_def)
 		elem_def.item = elem_def.item or elem_def.number or core.PLAYER_MAX_HP_DEFAULT
-		elem_def.number = scaleToHudMax(player, "hp")
+		elem_def.number = scale_to_hud_max(player, "hp")
 	end,
 })
 
@@ -196,8 +197,8 @@ register_builtin_hud_element("breath", {
 		offset = {x = 25, y= -(48 + 24 + 16)},
 	},
 	show_elem = function(player, flags, id)
-		local show_breathbar = flags.breathbar and enable_damage
-				and player:get_armor_groups().immortal ~= 1
+		local show_breathbar = flags.breathbar and enable_damage and
+				player:get_armor_groups().immortal ~= 1
 		if id then
 			-- The element will not prematurely be removed by update_element
 			-- (but may still be instantly removed if the flag changed)
@@ -209,7 +210,7 @@ register_builtin_hud_element("breath", {
 	end,
 	event = "breath_changed",
 	update_elem = function(player, id)
-		player:hud_change(id, "number", scaleToHudMax(player, "breath"))
+		player:hud_change(id, "number", scale_to_hud_max(player, "breath"))
 
 		local player_name = player:get_player_name()
 		local breath_relevant = player:get_breath() < player:get_properties().breath_max
@@ -238,7 +239,7 @@ register_builtin_hud_element("breath", {
 	end,
 	update_def = function(player, elem_def)
 		elem_def.item = elem_def.item or elem_def.number or core.PLAYER_MAX_BREATH_DEFAULT
-		elem_def.number = scaleToHudMax(player, "breath")
+		elem_def.number = scale_to_hud_max(player, "breath")
 	end,
 })
 
@@ -254,7 +255,7 @@ register_builtin_hud_element("minimap", {
 	},
 	show_elem = function(player, flags)
 		-- Don't add a minimap for clients which already have it hardcoded in C++.
-		return minetest.get_player_information(player:get_player_name()).protocol_version >= 44
-				and flags.minimap
+		return flags.minimap and
+				minetest.get_player_information(player:get_player_name()).protocol_version >= 44
 	end,
 })
