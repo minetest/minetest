@@ -194,6 +194,10 @@ Formspec
 * `core.set_formspec_prepend(formspec)`
   * `formspec`: string to be added to every mainmenu formspec, to be used for theming.
 
+Notes:
+
+* `image` and `image_button` support a URL for a fgimg, which it will load from the Internet.
+
 
 GUI
 ---

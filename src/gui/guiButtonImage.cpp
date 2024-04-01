@@ -19,11 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiButtonImage.h"
 
-#include "client/guiscalingfilter.h"
 #include "debug.h"
 #include "IGUIEnvironment.h"
 #include "IGUIImage.h"
-#include "IVideoDriver.h"
 #include "StyleSpec.h"
 
 using namespace irr;
@@ -31,22 +29,18 @@ using namespace gui;
 
 GUIButtonImage::GUIButtonImage(gui::IGUIEnvironment *environment,
 		gui::IGUIElement *parent, s32 id, core::rect<s32> rectangle,
-		ISimpleTextureSource *tsrc, bool noclip)
+		ISimpleTextureSource *tsrc, bool noclip, bool allow_remote_images)
 	: GUIButton(environment, parent, id, rectangle, tsrc, noclip)
 {
 	GUIButton::setScaleImage(true);
-	m_image = make_irr<GUIAnimatedImage>(environment, this, id, rectangle);
+	m_image = make_irr<GUIAnimatedImage>(environment, tsrc, this, id, rectangle, allow_remote_images);
 	sendToBack(m_image.get());
 }
 
-void GUIButtonImage::setForegroundImage(irr_ptr<video::ITexture> image,
+void GUIButtonImage::setForegroundImage(const std::string &image_name,
 		const core::rect<s32> &middle)
 {
-	if (image == m_foreground_image)
-		return;
-
-	m_foreground_image = std::move(image);
-	m_image->setTexture(m_foreground_image.get());
+	m_image->setTexture(image_name);
 	m_image->setMiddleRect(middle);
 }
 
@@ -55,15 +49,9 @@ void GUIButtonImage::setFromStyle(const StyleSpec &style)
 {
 	GUIButton::setFromStyle(style);
 
-	video::IVideoDriver *driver = Environment->getVideoDriver();
-
 	if (style.isNotDefault(StyleSpec::FGIMG)) {
-		video::ITexture *texture = style.getTexture(StyleSpec::FGIMG,
-				getTextureSource());
-
-		setForegroundImage(::grab(guiScalingImageButton(driver, texture,
-				AbsoluteRect.getWidth(), AbsoluteRect.getHeight())),
-				style.getRect(StyleSpec::FGIMG_MIDDLE, m_image->getMiddleRect()));
+		std::string image_name = style.get(StyleSpec::FGIMG, "");
+		setForegroundImage(image_name, style.getRect(StyleSpec::FGIMG_MIDDLE, m_image->getMiddleRect()));
 	} else {
 		setForegroundImage();
 	}
@@ -72,10 +60,10 @@ void GUIButtonImage::setFromStyle(const StyleSpec &style)
 GUIButtonImage *GUIButtonImage::addButton(IGUIEnvironment *environment,
 		const core::rect<s32> &rectangle, ISimpleTextureSource *tsrc,
 		IGUIElement *parent, s32 id, const wchar_t *text,
-		const wchar_t *tooltiptext)
+		const wchar_t *tooltiptext, bool allow_remote_images)
 {
 	auto button = make_irr<GUIButtonImage>(environment,
-			parent ? parent : environment->getRootGUIElement(), id, rectangle, tsrc);
+			parent ? parent : environment->getRootGUIElement(), id, rectangle, tsrc, false, allow_remote_images);
 
 	if (text)
 		button->setText(text);

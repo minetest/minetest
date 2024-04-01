@@ -161,7 +161,7 @@ local function get_formspec(data)
 			local winfo = core.get_window_info()
 			local fs_to_px = winfo.size.x / winfo.max_formspec_size.x
 			for i, ss in ipairs(info.screenshots) do
-				local path = get_screenshot(data.package, ss.url, 2)
+				local path = get_download_screenshot(data.package, ss.url, 2)
 				hypertext = hypertext .. "<action name=\"ss_" .. i .. "\"><img name=\"" ..
 						core.hypertext_escape(path) .. "\" width=" .. (3 * fs_to_px) ..
 						" height=" .. (2 * fs_to_px) .. "></action>"

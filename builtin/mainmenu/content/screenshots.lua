@@ -35,7 +35,29 @@ local function get_file_extension(path)
 end
 
 
-function get_screenshot(package, screenshot_url, level)
+function get_screenshot_url(screenshot_url, level)
+	if not screenshot_url then
+		return defaulttexturedir .. "no_screenshot.png"
+	end
+
+	-- Minetest only supports png and jpg
+	local ext = get_file_extension(screenshot_url)
+	if ext ~= "png" and ext ~= "jpg" then
+		screenshot_url = screenshot_url:sub(0, -#ext - 1) .. "png"
+		level = level or 4
+	end
+
+	-- Set thumbnail level
+	if level then
+		screenshot_url = screenshot_url:gsub("/thumbnails/[0-9]+/", "/thumbnails/" .. level .. "/")
+		screenshot_url = screenshot_url:gsub("/uploads/", "/thumbnails/" .. level .. "/")
+	end
+
+	return screenshot_url
+end
+
+
+function get_download_screenshot(package, screenshot_url, level)
 	if not screenshot_url then
 		return defaulttexturedir .. "no_screenshot.png"
 	end
@@ -59,7 +81,7 @@ function get_screenshot(package, screenshot_url, level)
 
 	local filepath = screenshot_dir .. DIR_DELIM ..
 			("%s-%s-%s-l%d-%s"):format(package.type, package.author, package.name,
-				level or 1, get_filename(screenshot_url))
+					level or 1, get_filename(screenshot_url))
 
 	-- Return if already downloaded
 	local file = io.open(filepath, "r")

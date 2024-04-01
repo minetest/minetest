@@ -6,17 +6,46 @@
 #include "util/string.h"
 #include <string>
 #include <vector>
+#include "filesys.h"
+#include "porting.h"
+#include "client/texturesource.h"
 
-GUIAnimatedImage::GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
-	s32 id, const core::rect<s32> &rectangle) :
-	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle)
+GUIAnimatedImage::GUIAnimatedImage(gui::IGUIEnvironment *env, ISimpleTextureSource *tsrc, gui::IGUIElement *parent,
+	s32 id, const core::rect<s32> &rectangle, bool allow_remote) :
+		gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
+		m_textureSource(tsrc),
+		m_allow_remote_images(allow_remote),
+		source(env->getVideoDriver(), env->getFileSystem())
 {
+}
+
+void GUIAnimatedImage::setTexture(const std::string &image_name)
+{
+	if (str_starts_with(image_name, "https://") ||
+		str_starts_with(image_name, "http://")) {
+		if (m_allow_remote_images) {
+#if USE_CURL
+			source.load(image_name);
+			pollRemoteImage();
+#else
+			errorstream << "Unable to load remote image as Minetest was no compiled with cURL" << std::endl;
+			setTexture(nullptr);
+#endif
+		} else {
+			errorstream << "http images are not permitted in-game" << std::endl;
+			setTexture(nullptr);
+		}
+	} else {
+		setTexture(m_textureSource->getTexture(image_name));
+	}
 }
 
 void GUIAnimatedImage::draw()
 {
 	if (m_texture == nullptr)
 		return;
+
+	pollRemoteImage();
 
 	video::IVideoDriver *driver = Environment->getVideoDriver();
 
@@ -58,4 +87,44 @@ void GUIAnimatedImage::draw()
 		// the remainder
 		m_frame_time %= m_frame_duration;
 	}
+}
+
+
+void GUIAnimatedImage::pollRemoteImage()
+{
+#if USE_CURL
+	if (source.getState() == RemoteTexture::Empty)
+		return;
+
+	source.update();
+
+	std::string textures_pack = fs::RemoveRelativePathComponents(
+			porting::path_share + DIR_DELIM + "textures" + DIR_DELIM + "base" + DIR_DELIM + "pack") + DIR_DELIM;
+
+	switch (source.getState()) {
+		case RemoteTexture::Empty:
+			break;
+		case RemoteTexture::Loading: {
+			auto texture = m_textureSource->getTexture(textures_pack + "loading_screenshot.png");
+			if (texture != m_texture) {
+				setTexture(texture);
+			}
+			break;
+		}
+		case RemoteTexture::Success: {
+			auto texture = source.get();
+			if (texture && texture != m_texture) {
+				setTexture(texture.get());
+			}
+			break;
+		}
+		case RemoteTexture::Failure: {
+			auto texture = m_textureSource->getTexture(textures_pack + "error_screenshot.png");
+			if (texture != m_texture) {
+				setTexture(texture);
+			}
+			break;
+		}
+	}
+#endif
 }

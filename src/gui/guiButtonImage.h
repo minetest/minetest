@@ -32,9 +32,9 @@ public:
 	//! constructor
 	GUIButtonImage(gui::IGUIEnvironment *environment, gui::IGUIElement *parent,
 			s32 id, core::rect<s32> rectangle, ISimpleTextureSource *tsrc,
-			bool noclip = false);
+			bool noclip = false, bool allow_remote_images = false);
 
-	void setForegroundImage(irr_ptr<video::ITexture> image = nullptr,
+	void setForegroundImage(const std::string &image_name = "",
 			const core::rect<s32> &middle = core::rect<s32>());
 
 	//! Set element properties from a StyleSpec
@@ -44,9 +44,8 @@ public:
 	static GUIButtonImage *addButton(gui::IGUIEnvironment *environment,
 			const core::rect<s32> &rectangle, ISimpleTextureSource *tsrc,
 			IGUIElement *parent, s32 id, const wchar_t *text,
-			const wchar_t *tooltiptext = L"");
+			const wchar_t *tooltiptext = L"", bool allow_remote_images = false);
 
 private:
-	irr_ptr<video::ITexture> m_foreground_image;
 	irr_ptr<GUIAnimatedImage> m_image;
 };

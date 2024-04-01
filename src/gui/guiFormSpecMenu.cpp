@@ -785,12 +785,12 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 	}
 
 	std::string name = unescape_string(parts[1 + offset]);
-	video::ITexture *texture = m_tsrc->getTexture(name);
 
 	v2s32 pos;
 	v2s32 geom;
 
 	if (parts.size() < 3) {
+		video::ITexture *texture = m_tsrc->getTexture(name);
 		if (texture != nullptr) {
 			core::dimension2du dim = texture->getOriginalSize();
 			geom.X = dim.Width;
@@ -829,26 +829,15 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 	if (parts.size() >= 4)
 		parseMiddleRect(parts[3], &middle);
 
-	// Temporary fix for issue #12581 in 5.6.0.
-	// Use legacy image when not rendering 9-slice image because GUIAnimatedImage
-	// uses NNAA filter which causes visual artifacts when image uses alpha blending.
+	// TODO: fix issue #12581
+	// This previously used legacy image when not rendering 9-slice image because
+	// GUIAnimatedImage uses NNAA filter which causes visual artifacts when image uses
+	// alpha blending.
 
-	gui::IGUIElement *e;
-	if (middle.getArea() > 0) {
-		GUIAnimatedImage *image = new GUIAnimatedImage(Environment, data->current_parent,
-			spec.fid, rect);
-
-		image->setTexture(texture);
-		image->setMiddleRect(middle);
-		e = image;
-	}
-	else {
-		gui::IGUIImage *image = Environment->addImage(rect, data->current_parent, spec.fid, nullptr, true);
-		image->setImage(texture);
-		image->setScaleImage(true);
-		image->grab(); // compensate for drop in addImage
-		e = image;
-	}
+	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, m_tsrc, data->current_parent,
+		spec.fid, rect, m_client == nullptr);
+	e->setTexture(name);
+	e->setMiddleRect(middle);
 
 	auto style = getDefaultStyleForElement("image", spec.fname);
 	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
@@ -906,7 +895,7 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 	if (parts.size() >= 8)
 		parseMiddleRect(parts[7], &middle);
 
-	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, data->current_parent,
+	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, m_tsrc, data->current_parent,
 		spec.fid, rect);
 
 	e->setTexture(m_tsrc->getTexture(texture_name));
@@ -1984,7 +1973,8 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 		spec.is_exit = true;
 
 	GUIButtonImage *e = GUIButtonImage::addButton(Environment, rect, m_tsrc,
-			data->current_parent, spec.fid, spec.flabel.c_str());
+			data->current_parent, spec.fid, spec.flabel.c_str(), L"",
+			m_client == nullptr);
 
 	if (spec.fname == m_focused_element) {
 		Environment->setFocus(e);

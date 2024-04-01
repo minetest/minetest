@@ -378,7 +378,7 @@ local function get_formspec(dlgdata)
 
 			-- image,
 			"image[0,0;", img_w, ",", cell_h, ";",
-				core.formspec_escape(get_screenshot(package, package.thumbnail, 2)), "]",
+				core.formspec_escape(get_screenshot_url(package.thumbnail, 2)), "]",
 
 			"label[", img_w + 0.25 + 0.05, ",0.5;",
 				core.formspec_escape(
