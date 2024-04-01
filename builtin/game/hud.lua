@@ -197,47 +197,45 @@ register_builtin_hud_element("breath", {
 		offset = {x = 25, y= -(48 + 24 + 16)},
 	},
 	show_elem = function(player, flags, id)
-		local breath_relevant = player:get_breath() < player:get_properties().breath_max
 		local show_breathbar = flags.breathbar and enable_damage
 				and player:get_armor_groups().immortal ~= 1
-				and player:get_breath() < player:get_properties().breath_max
-
 		if id then
-			local player_name = player:get_player_name()
-			if not breath_relevant then
-				if not breathbar_removal_jobs[player_name] then
-					-- The breathbar stays for some time and then gets removed.
-					breathbar_removal_jobs[player_name] = core.after(1, function()
-						local player = core.get_player_by_name(player_name)
-						local id = hud_ids[player_name].breath
-						if player and id then
-							player:hud_remove(id)
-							hud_ids[player_name].breath = nil
-						end
-						breathbar_removal_jobs[player_name] = nil
-					end)
-				end
-
-				-- The element will not prematurely be removed by update_element
-				-- (but may still be instantly removed if the flag changed)
-				return show_breathbar
-			else
-				-- Cancel removal
-				local job = breathbar_removal_jobs[player_name]
-				if job then
-					job:cancel()
-					breathbar_removal_jobs[player_name] = nil
-				end
-				return show_breathbar
-			end
+			-- The element will not prematurely be removed by update_element
+			-- (but may still be instantly removed if the flag changed)
+			return show_breathbar
 		end
-
 		-- Don't add the element if the breath is full
+		local breath_relevant = player:get_breath() < player:get_properties().breath_max
 		return show_breathbar and breath_relevant
 	end,
 	event = "breath_changed",
 	hud_change = function(player, id)
 		player:hud_change(id, "number", scaleToHudMax(player, "breath"))
+
+		local player_name = player:get_player_name()
+		local breath_relevant = player:get_breath() < player:get_properties().breath_max
+
+		if not breath_relevant then
+			if not breathbar_removal_jobs[player_name] then
+				-- The breathbar stays for some time and then gets removed.
+				breathbar_removal_jobs[player_name] = core.after(1, function()
+					local player = core.get_player_by_name(player_name)
+					local id = hud_ids[player_name].breath
+					if player and id then
+						player:hud_remove(id)
+						hud_ids[player_name].breath = nil
+					end
+					breathbar_removal_jobs[player_name] = nil
+				end)
+			end
+		else
+			-- Cancel removal
+			local job = breathbar_removal_jobs[player_name]
+			if job then
+				job:cancel()
+				breathbar_removal_jobs[player_name] = nil
+			end
+		end
 	end,
 	init_change = function(player, elem_def)
 		elem_def.number = scaleToHudMax(player, "breath")
