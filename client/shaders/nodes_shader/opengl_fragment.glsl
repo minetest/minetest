@@ -95,7 +95,7 @@ float snoise(vec3 p)
 }
 
 float wave_noise(vec3 p, float off) {
-	return snoise(p + vec3(0., 0., off)) * 0.4 + snoise(2. * p + vec3(0., off, off)) * 0.1 + snoise(3. * p + vec3(0., off, off)) * 0.075 + snoise(4. *p + vec3(-off, off, 0.)) * 0.05;
+	return snoise(p + vec3(0.0, 0.0, off)) * 0.4 + snoise(2.0 * p + vec3(0.0, off, off)) * 0.1 + snoise(3.0 * p + vec3(0.0, off, off)) * 0.075 + snoise(4.0 * p + vec3(-off, off, 0.0)) * 0.05;
 }
 #endif
 
@@ -157,7 +157,7 @@ vec4 getHardShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 float getHardShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 {
 	float texDepth = texture2D(shadowsampler, smTexCoord.xy).r;
-	float visibility = step(0., realDistance - texDepth);
+	float visibility = step(0.0, realDistance - texDepth);
 	return visibility;
 }
 
@@ -436,14 +436,14 @@ void main(void)
 	vec2 dr = vec2(0.25) * texelSize0;
 	// Sample the texture to then compute the derivative
 	float fx0y0 = texture2D(baseTexture, uv).r;
-	float fx1y0 = texture2D(baseTexture, uv + vec2(dr.x, 0.)).r;
-	float fx0y1 = texture2D(baseTexture, uv + vec2(0., dr.y)).r;
+	float fx1y0 = texture2D(baseTexture, uv + vec2(dr.x, 0.0)).r;
+	float fx0y1 = texture2D(baseTexture, uv + vec2(0.0, dr.y)).r;
 	// Compute a set of orthogonal basis vectors representing the node's surface plane.
-	vec3 orth1 = normalize(cross(vNormal, mix(vec3(0., -1., 0.), vec3(0., 0., -1.), step(0.9, abs(vNormal.y)))));
+	vec3 orth1 = normalize(cross(vNormal, mix(vec3(0.0, -1.0, 0.0), vec3(0.0, 0.0, -1.0), step(0.9, abs(vNormal.y)))));
 	vec3 orth2 = normalize(cross(vNormal, orth1));
 	// The normal is computed using the partial derivatives along the texture space x and y axes. 
 	// These axes in world space are assumed to be parallel to the basis vectors we defined before.
-	fNormal = normalize(vNormal + (orth1 * (fx1y0 - fx0y0) / dr.x + orth2 * (fx0y1 - fx0y0) / dr.y) * 0.25 * snoise(vec3(uv / texelSize0, 0.)));
+	fNormal = normalize(vNormal + (orth1 * (fx1y0 - fx0y0) / dr.x + orth2 * (fx0y1 - fx0y0) / dr.y) * 0.25 * snoise(vec3(uv / texelSize0, 0.0)));
 	float adj_cosLight = max(1e-5, dot(fNormal, -v_LightDirection));
 #else 
 	float adj_cosLight = cosLight;
@@ -493,72 +493,73 @@ void main(void)
 		if (f_normal_length != 0 && adj_cosLight < self_shadow_cutoff_cosine) {
 			shadow_int = max(shadow_int, 1 - clamp(adj_cosLight, 0.0, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
 			shadow_color = mix(vec3(0.0), shadow_color, min(adj_cosLight, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
-			shadow_uncorrected = mix(shadow_int, shadow_uncorrected, clamp(distance_rate * 4. - 3., 0., 1.));
+
+#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES)
+			shadow_uncorrected = mix(shadow_int, shadow_uncorrected, clamp(distance_rate * 4.0 - 3.0, 0.0, 1.0));
+#endif
 		}
 
 		shadow_int *= f_adj_shadow_strength;
-
-		shadow_color *= shadow_tint;
 
 		// calculate fragment color from components:
 		col.rgb =
 				adjusted_night_ratio * col.rgb + // artificial light
 				(1.0 - adjusted_night_ratio) * ( // natural light
-						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color) * (1. - shadow_tint)) +  // filtered texture color
+						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color) * (1.0 - shadow_tint)) +  // filtered texture color
 						dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
 
 
-		vec3 reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.);
+		vec3 reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.0);
 
 #if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS))
-		vec3 wavePos = worldPosition * vec3(2., 0., 2.);
+		vec3 wavePos = worldPosition * vec3(2.0, 0.0, 2.0);
 		float off = animationTimer * WATER_WAVE_SPEED * 10.0;
 		wavePos.x /= WATER_WAVE_LENGTH * 3.0;
 		wavePos.z /= WATER_WAVE_LENGTH * 2.0;
 
 		// This is an analogous method to the bumpmap.
 		float fxy = wave_noise(wavePos, off);
-		float dydx = (wave_noise(wavePos + vec3(0.1, 0., 0.), off) - fxy) / 0.1;
-		float dydz = (wave_noise(wavePos + vec3(0., 0., 0.1), off) - fxy) / 0.1;
-		fNormal = normalize(normalize(fNormal) + vec3(-dydx, 0., -dydz) * WATER_WAVE_HEIGHT * abs(fNormal.y) * 0.25);
-		reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.);
+		float dydx = (wave_noise(wavePos + vec3(0.1, 0.0, 0.0), off) - fxy) / 0.1;
+		float dydz = (wave_noise(wavePos + vec3(0.0, 0.0, 0.1), off) - fxy) / 0.1;
+		fNormal = normalize(normalize(fNormal) + vec3(-dydx, 0.0, -dydz) * WATER_WAVE_HEIGHT * abs(fNormal.y) * 0.25);
+		reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.0);
 		float fresnel_factor = dot(fNormal, viewVec);
 
 		// A little trig hack. We go from the dot product of viewVec and normal to the dot product of viewVec and tangent to apply a fresnel effect.
-		fresnel_factor = clamp(pow(1. - fresnel_factor * fresnel_factor, 8.), 0., 1.);
+		fresnel_factor = clamp(pow(1.0 - fresnel_factor * fresnel_factor, 8.0), 0.0, 1.0);
 		col.rgb *= 0.5;
 		vec3 reflection_color = mix(vec3(max(fogColor.r, max(fogColor.g, fogColor.b))), fogColor.rgb, f_shadow_strength);
 
 		// Sky reflection
-		col.rgb += reflection_color * pow((1. - adjusted_night_ratio) * fresnel_factor, 2.) * 0.5;
-		vec3 water_reflect_color = 12. * dayLight * fresnel_factor * mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0., 1.), 32.)) * max(1. - shadow_uncorrected, 0.);
+		col.rgb += reflection_color * pow((1.0 - adjusted_night_ratio) * fresnel_factor, 2.0) * 0.5;
+		vec3 water_reflect_color = 12.0 * dayLight * fresnel_factor * mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0)) * max(1.0 - shadow_uncorrected, 0.0);
 
 		// This line exists to prevent ridiculously bright reflection colors.
-		water_reflect_color /= clamp(max(water_reflect_color.r, max(water_reflect_color.g, water_reflect_color.b)) * 0.5, 1., 400.);
+		water_reflect_color /= clamp(max(water_reflect_color.r, max(water_reflect_color.g, water_reflect_color.b)) * 0.5, 1.0, 400.0);
 		col.rgb += water_reflect_color * f_adj_shadow_strength;
 #endif
 
 #if (defined(ENABLE_NODE_REFLECTIONS) && !defined(MATERIAL_WAVING_LIQUID))
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES)
-#define REFLECTION_INTENSITY 2.
+#define REFLECTION_INTENSITY 2.0
 #elif (defined(MATERIAL_WAVING_LIQUID))
-#define REFLECTION_INTENSITY 0.
+#define REFLECTION_INTENSITY 0.0
 #else
-#define REFLECTION_INTENSITY 1.
+#define REFLECTION_INTENSITY 1.0
 #endif
 		// Apply reflections to blocks.
-		if (dot(v_LightDirection, vNormal) < 0.) {
+		if (dot(v_LightDirection, vNormal) < 0.0) {
 			col.rgb += 
-				1.5 * dayLight * f_adj_shadow_strength * REFLECTION_INTENSITY * (1. - nightRatio) *
-				pow(max(dot(reflect_ray, viewVec), 0.), 4.) * pow(1. - abs(dot(viewVec, fNormal)), 5.) * 
-				(1. - shadow_uncorrected) * (1. - base.r);
+				1.5 * dayLight * f_adj_shadow_strength * REFLECTION_INTENSITY * (1.0 - nightRatio) *
+				pow(max(dot(reflect_ray, viewVec), 0.0), 4.0) * pow(1.0 - abs(dot(viewVec, fNormal)), 5.0) * 
+				(1.0 - shadow_uncorrected) * (1.0 - base.r);
 		}
 #endif
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES) && defined(ENABLE_TRANSLUCENT_FOLIAGE)
 		// Simulate translucent foliage.
-		col.rgb += 3. * dayLight * base.rgb * normalize(base.rgb) * f_adj_shadow_strength * pow(max(-dot(v_LightDirection, viewVec), 0.), 4.) * max(1. - shadow_uncorrected, 0.);
+		col.rgb += 3.0 * dayLight * base.rgb * normalize(base.rgb) * f_adj_shadow_strength * pow(max(-dot(v_LightDirection, viewVec), 0.0), 4.0) * max(1.0 - shadow_uncorrected, 0.0);
 #endif
 	}
 #endif
@@ -575,8 +576,8 @@ void main(void)
 	float clarity = clamp(fogShadingParameter
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
 	float fogColorMax = max(max(fogColor.r, fogColor.g), fogColor.b);
-	if (fogColorMax < 0.0000001) fogColorMax = 1.;
-	col = mix(fogColor * pow(fogColor / fogColorMax, vec4(2. * clarity)), col, clarity);
+	if (fogColorMax < 0.0000001) fogColorMax = 1.0;
+	col = mix(fogColor * pow(fogColor / fogColorMax, vec4(2.0 * clarity)), col, clarity);
 	col = vec4(col.rgb, base.a);
 
 	gl_FragData[0] = col;

@@ -140,7 +140,7 @@ void main(void)
 	{
 
 	#ifdef ENABLE_VIGNETTE
-		color.rgb *= pow(1. - length(uv - vec2(0.5)) * 1.4, 0.9) + 0.1;
+		color.rgb *= pow(1.0 - length(uv - vec2(0.5)) * 1.4, 0.9) + 0.1;
 	#endif
 
 #if ENABLE_TONE_MAPPING
@@ -150,7 +150,7 @@ void main(void)
 		color.rgb = applySaturation(color.rgb, saturation);
 
 #ifdef ENABLE_COLOR_GRADING
-		color.rgb = pow(color.rgb * vec3(1.5, 1., 0.7), vec3(1.35, 1., 0.8));
+		color.rgb = pow(color.rgb * vec3(1.5, 1.0, 0.7), vec3(1.35, 1.0, 0.8));
 #endif
 	}
 

@@ -434,7 +434,7 @@ void main(void)
 		col.rgb =
 				adjusted_night_ratio * col.rgb + // artificial light
 				(1.0 - adjusted_night_ratio) * ( // natural light
-						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color) * (1. - shadow_tint)) +  // filtered texture color
+						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color) * (1.0 - shadow_tint)) +  // filtered texture color
 						dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
 	}
 #endif
@@ -451,8 +451,8 @@ void main(void)
 	float clarity = clamp(fogShadingParameter
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
 	float fogColorMax = max(max(fogColor.r, fogColor.g), fogColor.b);
-	if (fogColorMax < 0.0000001) fogColorMax = 1.;
-	col = mix(fogColor * pow(fogColor / fogColorMax, vec4(2. * clarity)), col, clarity);
+	if (fogColorMax < 0.0000001) fogColorMax = 1.0;
+	col = mix(fogColor * pow(fogColor / fogColorMax, vec4(2.0 * clarity)), col, clarity);
 	col = vec4(col.rgb, base.a);
 
 	gl_FragData[0] = col;
