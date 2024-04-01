@@ -10,7 +10,7 @@ Register function to easily register new builtin hud elements
   update_def(player, elem_def)
             (optional) a function to change the elem_def before it will be used.
             (elem_def can be changed, since the table which got set by using
-            hud_replace_builtin isn't unexposed to the API.)
+            hud_replace_builtin isn't exposed to the API.)
   update_elem(player, id)
             (optional) a function to change the element after it has been updated
             (Is not called when the element is first set or recreated.)
