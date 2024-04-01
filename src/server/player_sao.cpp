@@ -491,10 +491,10 @@ u32 PlayerSAO::punch(v3f dir,
 		}
 	}
 
-  if (puncher) {
+	if (puncher) {
 		actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
 				", hp=" << puncher->getHP() << ")";
-  } else {
+	} else {
 		actionstream << "(none)";
 	}
 	actionstream << " puched " <<
