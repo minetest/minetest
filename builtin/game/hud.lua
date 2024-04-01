@@ -4,9 +4,6 @@ Register function to easily register new builtin hud elements
   elem_def  the HUD element definition which can be changed with hud_replace_builtin
   event     (optional) for an additional eventname on which the element will be updated
             ("hud_changed" and "properties_changed" will always be used.)
-  update_elem(player, id)
-            (optional) a function to change the element after it has been updated
-            (Is not called when the element is first set or recreated.)
   show_elem(player, flags, id)
             (optional) a function to decide if the element should be shown to a player
             It is called before the element gets updated.
@@ -14,8 +11,11 @@ Register function to easily register new builtin hud elements
             (optional) a function to change the elem_def before it will be used.
             (elem_def can be changed, since the table which got set by using
             hud_replace_builtin isn't unexposed to the API.)
-
+  update_elem(player, id)
+            (optional) a function to change the element after it has been updated
+            (Is not called when the element is first set or recreated.)
 ]]--
+
 local registered_elements = {}
 local update_events = {}
 local function register_builtin_hud_element(name, def)
@@ -165,17 +165,17 @@ register_builtin_hud_element("health", {
 		size = {x = 24, y = 24},
 		offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 16)},
 	},
+	event = "health_changed",
 	show_elem = function(player, flags)
 		return flags.healthbar and enable_damage and
 				player:get_armor_groups().immortal ~= 1
 	end,
-	event = "health_changed",
-	update_elem = function(player, id)
-		player:hud_change(id, "number", scale_to_hud_max(player, "hp"))
-	end,
 	update_def = function(player, elem_def)
 		elem_def.item = elem_def.item or elem_def.number or core.PLAYER_MAX_HP_DEFAULT
 		elem_def.number = scale_to_hud_max(player, "hp")
+	end,
+	update_elem = function(player, id)
+		player:hud_change(id, "number", scale_to_hud_max(player, "hp"))
 	end,
 })
 
@@ -196,6 +196,7 @@ register_builtin_hud_element("breath", {
 		size = {x = 24, y = 24},
 		offset = {x = 25, y= -(48 + 24 + 16)},
 	},
+	event = "breath_changed",
 	show_elem = function(player, flags, id)
 		local show_breathbar = flags.breathbar and enable_damage and
 				player:get_armor_groups().immortal ~= 1
@@ -208,7 +209,10 @@ register_builtin_hud_element("breath", {
 		local breath_relevant = player:get_breath() < player:get_properties().breath_max
 		return show_breathbar and breath_relevant
 	end,
-	event = "breath_changed",
+	update_def = function(player, elem_def)
+		elem_def.item = elem_def.item or elem_def.number or core.PLAYER_MAX_BREATH_DEFAULT
+		elem_def.number = scale_to_hud_max(player, "breath")
+	end,
 	update_elem = function(player, id)
 		player:hud_change(id, "number", scale_to_hud_max(player, "breath"))
 
@@ -236,10 +240,6 @@ register_builtin_hud_element("breath", {
 				breathbar_removal_jobs[player_name] = nil
 			end
 		end
-	end,
-	update_def = function(player, elem_def)
-		elem_def.item = elem_def.item or elem_def.number or core.PLAYER_MAX_BREATH_DEFAULT
-		elem_def.number = scale_to_hud_max(player, "breath")
 	end,
 })
 
