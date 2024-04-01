@@ -2,8 +2,8 @@
 Register function to easily register new builtin hud elements
 `def` is a table and contains the following fields:
   elem_def  the HUD element definition which can be changed with hud_replace_builtin
-  event     (optional) for an additional eventname on which the element will be updated
-            ("hud_changed" and "properties_changed" will always be used.)
+  events    (optional) additional event names on which the element will be updated
+            ("hud_changed" will always be used.)
   show_elem(player, flags, id)
             (optional) a function to decide if the element should be shown to a player
             It is called before the element gets updated.
@@ -20,9 +20,9 @@ local registered_elements = {}
 local update_events = {}
 local function register_builtin_hud_element(name, def)
 	registered_elements[name] = def
-	if def.event then
-		update_events[def.event] = update_events[def.event] or {}
-		table.insert(update_events[def.event], name)
+	for _, event in ipairs(def.events or {}) do
+		update_events[event] = update_events[event] or {}
+		table.insert(update_events[event], name)
 	end
 end
 
@@ -81,7 +81,7 @@ end
 local function player_event_handler(player, eventname)
 	assert(player:is_player())
 
-	if eventname == "hud_changed" or eventname == "properties_changed" then
+	if eventname == "hud_changed" then
 		update_hud(player)
 		return
 	end
@@ -165,7 +165,7 @@ register_builtin_hud_element("health", {
 		size = {x = 24, y = 24},
 		offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 16)},
 	},
-	event = "health_changed",
+	events = {"properties_changed", "health_changed"},
 	show_elem = function(player, flags)
 		return flags.healthbar and enable_damage and
 				player:get_armor_groups().immortal ~= 1
@@ -196,7 +196,7 @@ register_builtin_hud_element("breath", {
 		size = {x = 24, y = 24},
 		offset = {x = 25, y= -(48 + 24 + 16)},
 	},
-	event = "breath_changed",
+	events = {"properties_changed", "breath_changed"},
 	show_elem = function(player, flags, id)
 		local show_breathbar = flags.breathbar and enable_damage and
 				player:get_armor_groups().immortal ~= 1
