@@ -4,13 +4,13 @@ Register function to easily register new builtin hud elements
   elem_def  the HUD element definition which can be changed with hud_replace_builtin
   event     (optional) for an additional eventname on which the element will be updated
             ("hud_changed" and "properties_changed" will always be used.)
-  hud_change(id, player)
+  update_elem(player, id)
             (optional) a function to change the element after it has been updated
             (Is not called when the element is first set or recreated.)
   show_elem(player, flags, id)
             (optional) a function to decide if the element should be shown to a player
             It is called before the element gets updated.
-  init_change(player, elem_def)
+  update_def(player, elem_def)
             (optional) a function to change the elem_def before it will be used.
             (elem_def can be changed, since the table which got set by using
             hud_replace_builtin isn't unexposed to the API.)
@@ -30,7 +30,7 @@ end
 local hud_ids = {}
 
 -- Updates one element
--- In case the element is already added, it only calls the hud_change function from
+-- In case the element is already added, it only calls the update_elem function from
 -- registered_elements. (To recreate the element remove it first.)
 local function update_element(player, player_hud_ids, elem_name, flags)
 	local def = registered_elements[elem_name]
@@ -45,8 +45,8 @@ local function update_element(player, player_hud_ids, elem_name, flags)
 	end
 
 	if not id then
-		if def.init_change then
-			def.init_change(player, def.elem_def)
+		if def.update_def then
+			def.update_def(player, def.elem_def)
 		end
 
 		id = player:hud_add(def.elem_def)
@@ -54,8 +54,8 @@ local function update_element(player, player_hud_ids, elem_name, flags)
 		return
 	end
 
-	if def.hud_change then
-		def.hud_change(player, id)
+	if def.update_elem then
+		def.update_elem(player, id)
 	end
 end
 
@@ -95,15 +95,15 @@ end
 
 -- Returns true if successful, otherwise false,
 -- but currently the return value is not documented in the Lua API.
-function core.hud_replace_builtin(elem_name, definition)
-	assert(type(definition) == "table")
+function core.hud_replace_builtin(elem_name, elem_def)
+	assert(type(elem_def) == "table")
 
 	local registered = registered_elements[elem_name]
 	if not registered then
 		return false
 	end
 
-	registered.elem_def = table.copy(definition)
+	registered.elem_def = table.copy(elem_def)
 
 	for playername, player_hud_ids in pairs(hud_ids) do
 		local player = core.get_player_by_name(playername)
@@ -169,13 +169,12 @@ register_builtin_hud_element("health", {
 		return flags.healthbar and enable_damage and player:get_armor_groups().immortal ~= 1
 	end,
 	event = "health_changed",
-	hud_change = function(player, id)
+	update_elem = function(player, id)
 		player:hud_change(id, "number", scaleToHudMax(player, "hp"))
 	end,
-	init_change = function(player, elem_def)
-		elem_def.number = scaleToHudMax(player, "hp")
-		-- Deprecated undocumented behavior
+	update_def = function(player, elem_def)
 		elem_def.item = elem_def.item or elem_def.number or core.PLAYER_MAX_HP_DEFAULT
+		elem_def.number = scaleToHudMax(player, "hp")
 	end,
 })
 
@@ -209,7 +208,7 @@ register_builtin_hud_element("breath", {
 		return show_breathbar and breath_relevant
 	end,
 	event = "breath_changed",
-	hud_change = function(player, id)
+	update_elem = function(player, id)
 		player:hud_change(id, "number", scaleToHudMax(player, "breath"))
 
 		local player_name = player:get_player_name()
@@ -237,10 +236,9 @@ register_builtin_hud_element("breath", {
 			end
 		end
 	end,
-	init_change = function(player, elem_def)
-		elem_def.number = scaleToHudMax(player, "breath")
-		-- Deprecated undocumented behavior
+	update_def = function(player, elem_def)
 		elem_def.item = elem_def.item or elem_def.number or core.PLAYER_MAX_BREATH_DEFAULT
+		elem_def.number = scaleToHudMax(player, "breath")
 	end,
 })
 
