@@ -525,7 +525,7 @@ void main(void)
 		reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.0);
 		float fresnel_factor = dot(fNormal, viewVec);
 
-		float brightness_factor = 1. - adjusted_night_ratio;
+		float brightness_factor = 1.0 - adjusted_night_ratio;
 
 		// A little trig hack. We go from the dot product of viewVec and normal to the dot product of viewVec and tangent to apply a fresnel effect.
 		fresnel_factor = clamp(pow(1.0 - fresnel_factor * fresnel_factor, 8.0), 0.0, 1.0);
