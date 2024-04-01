@@ -57,12 +57,10 @@ srifqi:
   textures/base/pack/minimap_btn.png
 
 Zughy:
-  textures/base/pack/cdb_add.png
   textures/base/pack/cdb_downloading.png
   textures/base/pack/cdb_queued.png
   textures/base/pack/cdb_update.png
   textures/base/pack/cdb_update_cropped.png
-  textures/base/pack/cdb_viewonline.png
   textures/base/pack/settings_btn.png
   textures/base/pack/settings_info.png
   textures/base/pack/settings_reset.png
@@ -79,7 +77,6 @@ kilbith:
   textures/base/pack/progress_bar_bg.png
 
 SmallJoker:
-  textures/base/pack/cdb_clear.png
   textures/base/pack/server_favorite_delete.png (based on server_favorite.png)
 
 DS:
