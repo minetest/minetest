@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * this could be done in future with D-Bus using query:
  * busctl get-property org.freedesktop.hostname1 /org/freedesktop/hostname1 org.freedesktop.hostname1 Chassis
  */
-bool detect_touch()
+static bool detect_touch()
 {
 #if defined(__ANDROID__)
 	return true;
