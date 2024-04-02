@@ -164,13 +164,19 @@ static std::optional<video::E_DRIVER_TYPE> chooseVideoDriver()
 	return std::nullopt;
 }
 
+static inline auto getVideoDriverName(video::E_DRIVER_TYPE driver)
+{
+	return RenderingEngine::getVideoDriverInfo(driver).friendly_name;
+}
+
 static irr::IrrlichtDevice *createDevice(SIrrlichtCreationParameters params, std::optional<video::E_DRIVER_TYPE> requested_driver)
 {
 	if (requested_driver) {
 		params.DriverType = *requested_driver;
+		verbosestream << "Trying video driver " << getVideoDriverName(params.DriverType) << std::endl;
 		if (auto *device = createDeviceEx(params))
 			return device;
-		errorstream << "Failed to initialize the " << RenderingEngine::getVideoDriverInfo(*requested_driver).friendly_name << " video driver" << std::endl;
+		errorstream << "Failed to initialize the " << getVideoDriverName(params.DriverType) << " video driver" << std::endl;
 	}
 	sanity_check(requested_driver != video::EDT_NULL);
 
@@ -179,6 +185,7 @@ static irr::IrrlichtDevice *createDevice(SIrrlichtCreationParameters params, std
 		if (fallback_driver == video::EDT_NULL || fallback_driver == requested_driver)
 			continue;
 		params.DriverType = fallback_driver;
+		verbosestream << "Trying video driver " << getVideoDriverName(params.DriverType) << std::endl;
 		if (auto *device = createDeviceEx(params))
 			return device;
 	}
@@ -232,7 +239,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 
 	m_device = createDevice(params, driverType);
 	driver = m_device->getVideoDriver();
-	infostream << "Using the " << RenderingEngine::getVideoDriverInfo(driver->getDriverType()).friendly_name << " video driver" << std::endl;
+	verbosestream << "Using the " << getVideoDriverName(driver->getDriverType()) << " video driver" << std::endl;
 
 	// This changes the minimum allowed number of vertices in a VBO. Default is 500.
 	driver->setMinHardwareBufferVertexCount(4);
