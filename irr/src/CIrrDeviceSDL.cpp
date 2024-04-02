@@ -321,19 +321,21 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters &param) :
 //! destructor
 CIrrDeviceSDL::~CIrrDeviceSDL()
 {
-	if (--SDLDeviceInstances == 0) {
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
-		const u32 numJoysticks = Joysticks.size();
-		for (u32 i = 0; i < numJoysticks; ++i)
-			SDL_JoystickClose(Joysticks[i]);
+	const u32 numJoysticks = Joysticks.size();
+	for (u32 i = 0; i < numJoysticks; ++i)
+		SDL_JoystickClose(Joysticks[i]);
 #endif
-		if (Window) {
-			SDL_GL_MakeCurrent(Window, NULL);
-			SDL_GL_DeleteContext(Context);
-			SDL_DestroyWindow(Window);
-		}
-		SDL_Quit();
+	if (Window && Context) {
+		SDL_GL_MakeCurrent(Window, NULL);
+		SDL_GL_DeleteContext(Context);
+	}
+	if (Window) {
+		SDL_DestroyWindow(Window);
+	}
 
+	if (--SDLDeviceInstances == 0) {
+		SDL_Quit();
 		os::Printer::log("Quit SDL", ELL_INFORMATION);
 	}
 }
