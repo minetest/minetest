@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "clientmedia.h"
+#include "gettext.h"
 #include "httpfetch.h"
 #include "client.h"
 #include "filecache.h"
@@ -184,6 +185,11 @@ void ClientMediaDownloader::step(Client *client)
 
 void ClientMediaDownloader::initialStep(Client *client)
 {
+	std::wstring loading_text = wstrgettext("Media...");
+	// Tradeoff between responsiveness during media loading and media loading speed
+	const u64 chunk_time_ms = 33;
+	u64 last_time = porting::getTimeMs();
+
 	// Check media cache
 	m_uncached_count = m_files.size();
 	for (auto &file_it : m_files) {
@@ -194,6 +200,13 @@ void ClientMediaDownloader::initialStep(Client *client)
 		if (tryLoadFromCache(name, sha1, client)) {
 			filestatus->received = true;
 			m_uncached_count--;
+		}
+
+		u64 cur_time = porting::getTimeMs();
+		u64 dtime = porting::getDeltaMs(last_time, cur_time);
+		if (dtime >= chunk_time_ms) {
+			client->drawLoadScreen(loading_text, dtime / 1000.0f, 30);
+			last_time = cur_time;
 		}
 	}
 
