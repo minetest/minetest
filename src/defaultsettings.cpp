@@ -36,9 +36,8 @@ bool detect_touch()
 {
 #if defined(__ANDROID__)
 	return true;
-#else
+#elif defined(__linux__)
 	std::string chassis_type;
-#if defined(__linux__)
 
 	// device-tree platforms (non-X86)
 	std::ifstream dtb_file("/proc/device-tree/chassis-type");
@@ -83,7 +82,7 @@ bool detect_touch()
 		return true;
 
 	return false;
-#endif
+#else
 	// we don't know, return default
 	return false;
 #endif
