@@ -1795,6 +1795,11 @@ float Client::mediaReceiveProgress()
 	return 1.0; // downloader only exists when not yet done
 }
 
+void Client::drawLoadScreen(const std::wstring &text, float dtime, int percent) {
+	m_rendering_engine->run();
+	m_rendering_engine->draw_load_screen(text, guienv, m_tsrc, dtime, percent);
+}
+
 struct TextureUpdateArgs {
 	gui::IGUIEnvironment *guienv;
 	u64 last_time_ms;
