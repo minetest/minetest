@@ -542,7 +542,7 @@ void set_default_settings()
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux1", "false");
 	settings->setDefault("touch_punch_gesture", "short_tap");
-	settings->setDefault("clickable_chat_weblinks", bool_to_cstr(!has_touch));
+	settings->setDefault("clickable_chat_weblinks", "true");
 	// Altered settings for Android
 #ifdef __ANDROID__
 	settings->setDefault("screen_w", "0");
