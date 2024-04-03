@@ -4,7 +4,7 @@ uniform vec3 dayLight;
 uniform vec3 eyePosition;
 
 // The cameraOffset is the current center of the visible world.
-uniform vec3 cameraOffset;
+uniform highp vec3 cameraOffset;
 uniform float animationTimer;
 
 varying vec3 vNormal;
@@ -44,7 +44,7 @@ centroid varying vec2 varTexCoord;
 
 varying float area_enable_parallax;
 
-varying vec3 eyeVec;
+varying highp vec3 eyeVec;
 varying float nightRatio;
 // Color of the light emitted by the light sources.
 const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
