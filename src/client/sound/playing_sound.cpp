@@ -160,9 +160,6 @@ bool PlayingSound::stepStream(bool playback_speed_changed)
 	const f32 playback_to_fill_up = std::max(0.0f, playback_until_next_check - playback_left);
 	const int num_bufs_to_enqueue = std::ceil(playback_to_fill_up / MIN_STREAM_BUFFER_LENGTH);
 
-	errorstream << "num_bufs_to_enqueue: " << num_bufs_to_enqueue << std::endl;
-	errorstream << "num_queued_bufs: " << num_queued_bufs << std::endl;
-
 	// Fill up
 	for (int i = 0; i < num_bufs_to_enqueue; ++i) {
 		if (m_next_sample_pos == m_data->m_decode_info.length_samples) {
