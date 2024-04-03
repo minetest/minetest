@@ -1,6 +1,5 @@
 uniform mat4 mWorld;
 uniform vec3 dayLight;
-uniform vec3 eyePosition;
 uniform float animationTimer;
 uniform lowp vec4 emissiveColor;
 
