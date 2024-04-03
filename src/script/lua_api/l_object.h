@@ -67,6 +67,9 @@ private:
 	// remove(self)
 	static int l_remove(lua_State *L);
 
+	// get_guid()
+	static int l_get_guid(lua_State *L);
+
 	// get_pos(self)
 	static int l_get_pos(lua_State *L);
 
@@ -200,6 +203,9 @@ private:
 
 	// set_sprite(self, start_frame, num_frames, framelength, select_x_by_camera)
 	static int l_set_sprite(lua_State *L);
+	
+	// set_guid(self, guid)
+	static int l_set_guid(lua_State *L);
 
 	// DEPRECATED
 	// get_entity_name(self)

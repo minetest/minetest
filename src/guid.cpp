@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2022 Minetest core developers & community
+Copyright (C) 2021, DS
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,17 +17,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <server/serveractiveobject.h>
+#include "guid.h"
+#include <sstream>
 
-class MockServerActiveObject : public ServerActiveObject
+#include "serverenvironment.h"
+#include "util/base64.h"
+
+GUIdGenerator::GUIdGenerator() :
+	m_uniform(0, UINT64_MAX)
 {
-public:
-	MockServerActiveObject(ServerEnvironment *env = nullptr, const v3f &p = v3f()) :
-		ServerActiveObject(env, p) {}
+	m_rand_usable = m_rand.entropy() > 0.01;
+}
 
-	virtual ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_TEST; }
-	virtual bool getCollisionBox(aabb3f *toset) const { return false; }
-	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
-	virtual bool collideWithObjects() const { return false; }
-	virtual std::string getGuid() {return "";}
-};
+GUId GUIdGenerator::next(const std::string &prefix)
+{
+	std::stringstream s_guid;
+
+	u64 a[2];
+	if (m_rand_usable) {
+		a[0] = m_uniform(m_rand);
+		a[1] = m_uniform(m_rand);
+	}
+	else {
+		a[0] = (static_cast<u64>(m_env->getGameTime()) << 32) + m_next;
+		a[1] = m_uniform(m_rand);
+		m_next++;
+	}
+	s_guid << prefix << base64_encode(std::string_view(reinterpret_cast<char *>(a), 16));
+
+	return s_guid.str();
+}
+
