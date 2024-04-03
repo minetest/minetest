@@ -1,30 +1,15 @@
-local lighting_sections = {
-	{n = "shadows", d = "Shadows",
-		entries = {
-			{ n = "intensity", d = "Shadow Intensity", min = 0, max = 1 }
-		}
-	},
-	{
-		n = "exposure", d = "Exposure",
-		entries = {
-			{n = "luminance_min", d = "Minimum Luminance", min = -10, max = 10},
-			{n = "luminance_max", d = "Maximum Luminance", min = -10, max = 10},
-			{n = "exposure_correction", d = "Exposure Correction", min = -10, max = 10},
-			{n = "speed_dark_bright", d = "Bright light adaptation speed", min = -10, max = 10, type="log2"},
-			{n = "speed_bright_dark", d = "Dark scene adaptation speed", min = -10, max = 10, type="log2"},
-			{n = "center_weight_power", d = "Power factor for center-weighting", min = 0.1, max = 10},
-		}
-	}
-}
 
-local function dump_lighting(lighting)
+local modpath = minetest.get_modpath(minetest.get_current_modname())
+
+
+local function dumpByRecipe(data, recipe)
 	local result = "{\n"
 	local section_count = 0
-	for _,section in ipairs(lighting_sections) do
+	for _,section in ipairs(recipe) do
 		section_count = section_count + 1
 
 		local parameters = section.entries or {}
-		local state = lighting[section.n] or {}
+		local state = data[section.n] or {}
 
 		result = result.."  "..section.n.." = {\n"
 
@@ -40,7 +25,7 @@ local function dump_lighting(lighting)
 
 		result = result.."  }"
 
-		if section_count < #lighting_sections then
+		if section_count < #recipe then
 			result = result..","
 		end
 		result = result.."\n"
@@ -49,74 +34,59 @@ local function dump_lighting(lighting)
 	return result
 end
 
-minetest.register_chatcommand("set_lighting", {
-	params = "",
-	description = "Tune lighting parameters",
-	func = function(player_name, param)
-		local player = minetest.get_player_by_name(player_name);
-		if not player then return end
+local function buildGUI(player, data, recipe, gui_name)
+	local form = {
+		"formspec_version[2]",
+		"size[15,30]",
+		"position[0.99,0.15]",
+		"anchor[1,0]",
+		"padding[0.05,0.1]",
+		"no_prepend[]"
+	};
 
-		local lighting = player:get_lighting()
-		local exposure = lighting.exposure or {}
+	local line = 1
+	for _,section in ipairs(recipe) do
+		local parameters = section.entries or {}
+		local state = data[section.n] or {}
 
-		local form = {
-			"formspec_version[2]",
-			"size[15,30]",
-			"position[0.99,0.15]",
-			"anchor[1,0]",
-			"padding[0.05,0.1]",
-			"no_prepend[]"
-		};
+		table.insert(form, "label[1,"..line..";"..section.d.."]")
+		line  = line + 1
 
-		local line = 1
-		for _,section in ipairs(lighting_sections) do
-			local parameters = section.entries or {}
-			local state = lighting[section.n] or {}
-
-			table.insert(form, "label[1,"..line..";"..section.d.."]")
-			line  = line + 1
-
-			for _,v in ipairs(parameters) do
-				table.insert(form, "label[2,"..line..";"..v.d.."]")
-				table.insert(form, "scrollbaroptions[min=0;max=1000;smallstep=10;largestep=100;thumbsize=10]")
-				local value = state[v.n]
-				if v.type == "log2" then
-					value = math.log(value or 1) / math.log(2)
-				end
-				local sb_scale = math.floor(1000 * (math.max(v.min, value or 0) - v.min) / (v.max - v.min))
-				table.insert(form, "scrollbar[2,"..(line+0.7)..";12,1;horizontal;"..section.n.."."..v.n..";"..sb_scale.."]")
-				line = line + 2.7
+		for _,v in ipairs(parameters) do
+			table.insert(form, "label[2,"..line..";"..v.d.."]")
+			table.insert(form, "scrollbaroptions[min=0;max=1000;smallstep=10;largestep=100;thumbsize=10]")
+			local value = state[v.n]
+			if v.type == "log2" then
+				value = math.log(value or 1) / math.log(2)
 			end
-
-			line = line + 1
+			local sb_scale = math.floor(1000 * (math.max(v.min, value or 0) - v.min) / (v.max - v.min))
+			table.insert(form, "scrollbar[2,"..(line+0.7)..";12,1;horizontal;"..section.n.."."..v.n..";"..sb_scale.."]")
+			line = line + 2.7
 		end
 
-		minetest.show_formspec(player_name, "lighting", table.concat(form))
-		local debug_value = dump_lighting(lighting)
-		local debug_ui = player:hud_add({type="text", position={x=0.1, y=0.3}, scale={x=1,y=1}, alignment = {x=1, y=1}, text=debug_value, number=0xFFFFFF})
-		player:get_meta():set_int("lighting_hud", debug_ui)
+		line = line + 1
 	end
-})
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
-	if formname ~= "lighting" then return end
+	minetest.show_formspec(player:get_player_name(), gui_name, table.concat(form))
+	local debug_value = dumpByRecipe(data, recipe)
+	local debug_ui = player:hud_add({type="text", position={x=0.1, y=0.3}, scale={x=1,y=1}, alignment = {x=1, y=1}, text=debug_value, number=0xFFFFFF})
+	player:get_meta():set_int(gui_name.."_hud", debug_ui)
+end
 
-	if not player then return end
-
-	local hud_id = player:get_meta():get_int("lighting_hud")
+local function receiveFields(player, fields, data, recipe, gui_name)
+	local hud_id = player:get_meta():get_int(gui_name.."_hud")
 
 	if fields.quit then
 		player:hud_remove(hud_id)
-		player:get_meta():set_int("lighting_hud", -1)
+		player:get_meta():set_int(gui_name.."_hud", -1)
 		return
 	end
 
-	local lighting = player:get_lighting()
-	for _,section in ipairs(lighting_sections) do
+	for _,section in ipairs(recipe) do
 		local parameters = section.entries or {}
 
-		local state = (lighting[section.n] or {})
-		lighting[section.n] = state
+		local state = (data[section.n] or {})
+		data[section.n] = state
 
 		for _,v in ipairs(parameters) do
 
@@ -133,8 +103,96 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		end
 	end
 
-	local debug_value = dump_lighting(lighting)
+	local debug_value = dumpByRecipe(data, recipe)
 	player:hud_change(hud_id, "text", debug_value)
+end
+
+local lighting_recipe = {
+	{n = "shadows", d = "Shadows",
+		entries = {
+			{ n = "intensity", d = "Shadow Intensity", min = 0, max = 1 }
+		}
+	},
+	{
+		n = "exposure", d = "Exposure",
+		entries = {
+			{n = "luminance_min", d = "Minimum Luminance", min = -10, max = 10},
+			{n = "luminance_max", d = "Maximum Luminance", min = -10, max = 10},
+			{n = "exposure_correction", d = "Exposure Correction", min = -10, max = 10},
+			{n = "speed_dark_bright", d = "Bright light adaptation speed", min = -10, max = 10, type="log2"},
+			{n = "speed_bright_dark", d = "Dark scene adaptation speed", min = -10, max = 10, type="log2"},
+			{n = "center_weight_power", d = "Power factor for center-weighting", min = 0.1, max = 10},
+		}
+	},
+}
+
+minetest.register_chatcommand("set_lighting", {
+	params = "",
+	description = "Tune lighting parameters",
+	func = function(player_name, param)
+		local player = minetest.get_player_by_name(player_name)
+		if not player then return end
+
+		local lighting = player:get_lighting()
+
+		buildGUI(player, lighting, lighting_recipe, "lighting")
+	end
+})
+
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+	if formname ~= "lighting" then return end
+
+	if not player then return end
+
+	local lighting = player:get_lighting()
+
+	receiveFields(player, fields, lighting, lighting_recipe, "lighting")
 
 	player:set_lighting(lighting)
 end)
+
+local light_intensity_recipe = {
+	{n = "color_offset", d = "Color offset",
+		entries = {
+			{n = "r", d = "Red color offset", min = -1, max = 2},
+			{n = "g", d = "Green color offset", min = -1, max = 2},
+			{n = "b", d = "Blue color offset", min = -1, max = 2},
+		}
+	},
+	{n = "color_ratio_coef", d = "Color day-night ratio coefficient",
+		entries = {
+			{n = "r", d = "Red color day-night ratio coefficient", min = -1e-3, max = 2e-3},
+			{n = "g", d = "Green color day-night ratio coefficient", min = -1e-3, max = 2e-3},
+			{n = "b", d = "Blue color day-night ratio coefficient", min = -1e-3, max = 2e-3},
+		}
+	}
+}
+
+
+minetest.register_chatcommand("set_light_intensity", {
+	params = "",
+	description = "Tune lighting light_intensity parameters",
+	func = function(player_name, param)
+		local player = minetest.get_player_by_name(player_name)
+		if not player then return end
+
+		local lighting = player:get_lighting()
+		local light_intensity = lighting.light_intensity
+
+		buildGUI(player, light_intensity, light_intensity_recipe, "light_intensity")
+	end
+})
+
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+	if formname ~= "light_intensity" then return end
+
+	if not player then return end
+
+	local lighting = player:get_lighting()
+	local light_intensity = lighting.light_intensity
+
+	receiveFields(player, fields, light_intensity, light_intensity_recipe, "light_intensity")
+
+	player:set_lighting(lighting)
+end)
+

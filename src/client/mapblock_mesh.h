@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "client/tile.h"
 #include "voxel.h"
+#include "lighting.h"
 #include <array>
 #include <map>
 #include <unordered_map>
@@ -190,7 +191,7 @@ public:
 	//   daynight_ratio: 0 .. 1000
 	//   crack: -1 .. CRACK_ANIMATION_LENGTH-1 (-1 for off)
 	// Returns true if anything has been changed.
-	bool animate(bool faraway, float time, int crack, u32 daynight_ratio);
+	bool animate(bool faraway, float time, int crack, u32 daynight_ratio, const LightIntensity &lightIntensity);
 
 	scene::IMesh *getMesh()
 	{
@@ -308,7 +309,7 @@ u16 getSmoothLightTransparent(const v3s16 &p, const v3s16 &corner, MeshMakeData 
  * Returns the sunlight's color from the current
  * day-night ratio.
  */
-void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio);
+void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio, const LightIntensity &lightIntensity);
 
 /*!
  * Gives the final  SColor shown on screen.
@@ -318,7 +319,7 @@ void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio);
  * night light
  */
 void final_color_blend(video::SColor *result,
-		u16 light, u32 daynight_ratio);
+		u16 light, u32 daynight_ratio, const LightIntensity &lightIntensity);
 
 /*!
  * Gives the final  SColor shown on screen.
