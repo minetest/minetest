@@ -659,8 +659,9 @@ The mask is applied using binary AND.
 
 #### `[sheet:<w>x<h>:<x>,<y>`
 
-Retrieves a tile at position x,y from the base image
-which it assumes to be a tilesheet with dimensions w,h.
+Retrieves a tile at position x, y (in tiles, 0-indexed)
+from the base image, which it assumes to be a tilesheet
+with dimensions w, h (in tiles).
 
 #### `[colorize:<color>:<ratio>`
 
@@ -7313,8 +7314,41 @@ Global tables
 All callbacks registered with [Global callback registration functions] are added
 to corresponding `minetest.registered_*` tables.
 
+For historical reasons, the use of an -s suffix in these names is inconsistent.
 
-
+* `minetest.registered_on_chat_messages`
+* `minetest.registered_on_chatcommands`
+* `minetest.registered_globalsteps`
+* `minetest.registered_on_punchnodes`
+* `minetest.registered_on_placenodes`
+* `minetest.registered_on_dignodes`
+* `minetest.registered_on_generateds`
+* `minetest.registered_on_newplayers`
+* `minetest.registered_on_dieplayers`
+* `minetest.registered_on_respawnplayers`
+* `minetest.registered_on_prejoinplayers`
+* `minetest.registered_on_joinplayers`
+* `minetest.registered_on_leaveplayers`
+* `minetest.registered_on_player_receive_fields`
+* `minetest.registered_on_cheats`
+* `minetest.registered_on_crafts`
+* `minetest.registered_craft_predicts`
+* `minetest.registered_on_item_eats`
+* `minetest.registered_on_item_pickups`
+* `minetest.registered_on_punchplayers`
+* `minetest.registered_on_authplayers`
+* `minetest.registered_on_player_inventory_actions`
+* `minetest.registered_allow_player_inventory_actions`
+* `minetest.registered_on_rightclickplayers`
+* `minetest.registered_on_mods_loaded`
+* `minetest.registered_on_shutdown`
+* `minetest.registered_on_protection_violation`
+* `minetest.registered_on_priv_grant`
+* `minetest.registered_on_priv_revoke`
+* `minetest.registered_can_bypass_userlimit`
+* `minetest.registered_on_modchannel_message`
+* `minetest.registered_on_liquid_transformed`
+* `minetest.registered_on_mapblocks_changed`
 
 Class reference
 ===============
@@ -7944,8 +7978,12 @@ child will follow movement and rotation of that bone.
         * Fourth column: subject looking to the right
         * Fifth column:  subject viewed from above
         * Sixth column:  subject viewed from below
-* `get_entity_name()` (**Deprecated**: Will be removed in a future version, use the field `self.name` instead)
-* `get_luaentity()`: returns the object's associated luaentity table
+* `get_luaentity()`:
+	* Returns the object's associated luaentity table, if there is one
+	* Otherwise returns `nil` (e.g. for players)
+* `get_entity_name()`:
+    * **Deprecated**: Will be removed in a future version,
+      use `:get_luaentity().name` instead.
 
 #### Player only (no-op for other objects)
 
@@ -8664,7 +8702,8 @@ Player properties need to be saved manually.
     -- "mesh" uses the defined mesh model.
     -- "wielditem" is used for dropped items.
     --   (see builtin/game/item_entity.lua).
-    --   For this use 'wield_item = itemname' (Deprecated: 'textures = {itemname}').
+    --   For this use 'wield_item = itemname'.
+    --   Setting 'textures = {itemname}' has the same effect, but is deprecated.
     --   If the item has a 'wield_image' the object will be an extrusion of
     --   that, otherwise:
     --   If 'itemname' is a cubic node or nodebox the object will appear
@@ -8691,8 +8730,8 @@ Player properties need to be saved manually.
     -- "cube" uses 6 textures just like a node, but all 6 must be defined.
     -- "sprite" uses 1 texture.
     -- "upright_sprite" uses 2 textures: {front, back}.
-    -- "wielditem" expects 'textures = {itemname}' (see 'visual' above).
     -- "mesh" requires one texture for each mesh buffer/material (in order)
+    -- Deprecated usage of "wielditem" expects 'textures = {itemname}' (see 'visual' above).
 
     colors = {},
     -- Number of required colors depends on visual
