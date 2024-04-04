@@ -280,13 +280,13 @@ private:
 	void createDriver();
 
 	bool createWindow();
+	bool createWindowWithContext();
 
 	void createKeyMap();
 
 	void logAttributes();
 	SDL_GLContext Context;
 	SDL_Window *Window;
-	int SDL_Flags;
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 	core::array<SDL_Joystick *> Joysticks;
 #endif
