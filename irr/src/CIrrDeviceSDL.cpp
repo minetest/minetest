@@ -249,7 +249,7 @@ void CIrrDeviceSDL::resetReceiveTextInputEvents()
 //! constructor
 CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters &param) :
 		CIrrDeviceStub(param),
-		Window((SDL_Window *)param.WindowId), SDL_Flags(0),
+		Window((SDL_Window *)param.WindowId),
 		MouseX(0), MouseY(0), MouseXRel(0), MouseYRel(0), MouseButtonStates(0),
 		Width(param.WindowSize.Width), Height(param.WindowSize.Height),
 		Resizable(param.WindowResizable == 1 ? true : false), CurrentTouchCount(0),
@@ -382,6 +382,76 @@ void CIrrDeviceSDL::logAttributes()
 
 bool CIrrDeviceSDL::createWindow()
 {
+	if (Close)
+		return false;
+
+	if (createWindowWithContext())
+		return true;
+
+	while (CreationParams.AntiAlias > 0) {
+		CreationParams.AntiAlias--;
+		if (createWindowWithContext()) {
+			os::Printer::log("AntiAlias reduced/disabled due to lack of support!");
+			return true;
+		}
+	}
+
+	if (CreationParams.WithAlphaChannel) {
+		CreationParams.WithAlphaChannel = false;
+		if (createWindowWithContext()) {
+			os::Printer::log("WithAlphaChannel disabled due to lack of support!");
+			return true;
+		}
+	}
+
+	if (CreationParams.Stencilbuffer) {
+		CreationParams.Stencilbuffer = false;
+		if (createWindowWithContext()) {
+			os::Printer::log("Stencilbuffer disabled due to lack of support!");
+			return true;
+		}
+	}
+
+	while (CreationParams.ZBufferBits > 16) {
+		CreationParams.ZBufferBits -= 8;
+		if (createWindowWithContext()) {
+			os::Printer::log("ZBufferBits reduced due to lack of support!");
+			return true;
+		}
+	}
+
+	while (CreationParams.Bits > 16) {
+		CreationParams.Bits -= 8;
+		if (createWindowWithContext()) {
+			os::Printer::log("Bits reduced due to lack of support!");
+			return true;
+		}
+	}
+
+	if (CreationParams.Stereobuffer) {
+		CreationParams.Stereobuffer = false;
+		if (createWindowWithContext()) {
+			os::Printer::log("Stereobuffer disabled due to lack of support!");
+			return true;
+		}
+	}
+
+	if (CreationParams.Doublebuffer) {
+		// Try single buffer
+		CreationParams.Doublebuffer = false;
+		if (createWindowWithContext()) {
+			os::Printer::log("Doublebuffer disabled due to lack of support!");
+			return true;
+		}
+	}
+
+	os::Printer::log("Could not create window and context!", ELL_ERROR);
+	return false;
+}
+
+bool CIrrDeviceSDL::createWindowWithContext() {
+	u32 SDL_Flags = 0;
+
 	if (CreationParams.Fullscreen) {
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 		SDL_Flags |= SDL_WINDOW_FULLSCREEN;
@@ -434,9 +504,6 @@ bool CIrrDeviceSDL::createWindow()
 
 	return true;
 #else // !_IRR_EMSCRIPTEN_PLATFORM_
-	if (Close)
-		return false;
-
 	switch (CreationParams.DriverType) {
 	case video::EDT_OPENGL:
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
@@ -487,43 +554,22 @@ See discussion in https://github.com/minetest/minetest/pull/14498.
 	if (CreationParams.AntiAlias > 1) {
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, CreationParams.AntiAlias);
-	}
-	if (!Window)
-		Window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_Flags);
-	if (!Window) {
-		os::Printer::log("Could not create window...", SDL_GetError(), ELL_WARNING);
-	}
-	if (!Window && CreationParams.AntiAlias > 1) {
-		while (--CreationParams.AntiAlias > 1) {
-			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, CreationParams.AntiAlias);
-			Window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_Flags);
-			if (Window)
-				break;
-		}
-		if (!Window) {
-			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
-			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
-			Window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_Flags);
-			if (Window)
-				os::Printer::log("AntiAliasing disabled due to lack of support!", ELL_WARNING);
-		}
+	} else {
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 	}
 
-	if (!Window && CreationParams.Doublebuffer) {
-		// Try single buffer
-		if (CreationParams.DriverType == video::EDT_OPENGL)
-			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		Window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_Flags);
-	}
+	Window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_Flags);
 	if (!Window) {
-		os::Printer::log("Could not initialize display", SDL_GetError(), ELL_ERROR);
+		os::Printer::log("Could not create window", SDL_GetError(), ELL_WARNING);
 		return false;
 	}
 
 	Context = SDL_GL_CreateContext(Window);
 	if (!Context) {
-		os::Printer::log("Could not initialize context", SDL_GetError(), ELL_ERROR);
+		os::Printer::log("Could not create context", SDL_GetError(), ELL_WARNING);
 		SDL_DestroyWindow(Window);
+		Window = nullptr;
 		return false;
 	}
 
@@ -1047,11 +1093,6 @@ void CIrrDeviceSDL::setResizable(bool resize)
 	return;
 #else  // !_IRR_EMSCRIPTEN_PLATFORM_
 	if (resize != Resizable) {
-		if (resize)
-			SDL_Flags |= SDL_WINDOW_RESIZABLE;
-		else
-			SDL_Flags &= ~SDL_WINDOW_RESIZABLE;
-
 		if (Window) {
 			SDL_SetWindowResizable(Window, (SDL_bool)resize);
 		}
