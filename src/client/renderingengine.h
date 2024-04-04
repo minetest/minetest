@@ -25,9 +25,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
+#include "client/shader.h"
 #include "client/render/core.h"
 // include the shadow mapper classes too
 #include "client/shadows/dynamicshadowsrender.h"
+
+#ifdef SERVER
+#error Do not include in server builds
+#endif
 
 struct VideoDriverInfo {
 	std::string name;
@@ -45,6 +50,31 @@ class RenderingCore;
 
 // Instead of a mechanism to disable fog we just set it to be really far away
 #define FOG_RANGE_ALL (100000 * BS)
+
+/* Helpers */
+
+struct FpsControl {
+	FpsControl() : last_time(0), busy_time(0), sleep_time(0) {}
+
+	void reset();
+
+	void limit(IrrlichtDevice *device, f32 *dtime, bool assume_paused = false);
+
+	u32 getBusyMs() const { return busy_time / 1000; }
+
+	// all values in microseconds (us)
+	u64 last_time, busy_time, sleep_time;
+};
+
+// Populates fogColor, fogDistance, fogShadingParameter with values from Irrlicht
+class FogShaderConstantSetterFactory : public IShaderConstantSetterFactory
+{
+public:
+	FogShaderConstantSetterFactory() {};
+	virtual IShaderConstantSetter *create();
+};
+
+/* Rendering engine class */
 
 class RenderingEngine
 {
@@ -64,7 +94,6 @@ public:
 
 	bool setupTopLevelWindow();
 	bool setWindowIcon();
-	static bool print_video_modes();
 	void cleanupMeshCache();
 
 	void removeMesh(const scene::IMesh* mesh);
@@ -101,11 +130,6 @@ public:
 	{
 		sanity_check(s_singleton && s_singleton->m_device);
 		return s_singleton->m_device;
-	}
-
-	u32 get_timer_time()
-	{
-		return m_device->getTimer()->getTime();
 	}
 
 	gui::IGUIEnvironment *get_gui_env()

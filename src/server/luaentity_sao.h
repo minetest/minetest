@@ -103,5 +103,7 @@ private:
 	v3f m_last_sent_rotation;
 	float m_last_sent_position_timer = 0.0f;
 	float m_last_sent_move_precision = 0.0f;
-	std::string m_current_texture_modifier = "";
+
+	std::string m_texture_modifier;
+	bool m_texture_modifier_sent = false;
 };

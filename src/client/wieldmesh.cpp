@@ -508,21 +508,26 @@ void WieldMeshSceneNode::setColor(video::SColor c)
 	u8 red = c.getRed();
 	u8 green = c.getGreen();
 	u8 blue = c.getBlue();
-	u32 mc = mesh->getMeshBufferCount();
+
+	const u32 mc = mesh->getMeshBufferCount();
+	if (mc > m_colors.size())
+		m_colors.resize(mc);
 	for (u32 j = 0; j < mc; j++) {
 		video::SColor bc(m_base_color);
-		if ((m_colors.size() > j) && (m_colors[j].override_base))
-			bc = m_colors[j].color;
+		m_colors[j].applyOverride(bc);
 		video::SColor buffercolor(255,
 			bc.getRed() * red / 255,
 			bc.getGreen() * green / 255,
 			bc.getBlue() * blue / 255);
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 
-		if (m_enable_shaders)
-			setMeshBufferColor(buf, buffercolor);
-		else
-			colorizeMeshBuffer(buf, &buffercolor);
+		if (m_colors[j].needColorize(buffercolor)) {
+			buf->setDirty(scene::EBT_VERTEX);
+			if (m_enable_shaders)
+				setMeshBufferColor(buf, buffercolor);
+			else
+				colorizeMeshBuffer(buf, &buffercolor);
+		}
 	}
 }
 
@@ -536,8 +541,7 @@ void WieldMeshSceneNode::setNodeLightColor(video::SColor color)
 			video::SMaterial &material = m_meshnode->getMaterial(i);
 			material.EmissiveColor = color;
 		}
-	}
-	else {
+	} else {
 		setColor(color);
 	}
 }
@@ -557,6 +561,12 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 		dummymesh->drop();  // m_meshnode grabbed it
 	} else {
 		m_meshnode->setMesh(mesh);
+		// without shaders recolored often for lighting
+		// otherwise only once
+		if (m_enable_shaders)
+			mesh->setHardwareMappingHint(scene::EHM_STATIC);
+		else
+			mesh->setHardwareMappingHint(scene::EHM_DYNAMIC);
 	}
 
 	m_meshnode->forEachMaterial([this] (auto &mat) {
@@ -651,8 +661,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 		}
 		}
 
-		u32 mc = mesh->getMeshBufferCount();
-		for (u32 i = 0; i < mc; ++i) {
+		for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
 			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -667,6 +676,12 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 
 		rotateMeshXZby(mesh, -45);
 		rotateMeshYZby(mesh, -30);
+	}
+
+	// might need to be re-colorized, this is done only when needed
+	if (mesh) {
+		mesh->setHardwareMappingHint(scene::EHM_DYNAMIC, scene::EBT_VERTEX);
+		mesh->setHardwareMappingHint(scene::EHM_STATIC, scene::EBT_INDEX);
 	}
 	result->mesh = mesh;
 }
@@ -722,11 +737,10 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 	bool use_shaders, bool set_material, const video::E_MATERIAL_TYPE *mattype,
 	std::vector<ItemPartColor> *colors, bool apply_scale)
 {
-	u32 mc = mesh->getMeshBufferCount();
+	const u32 mc = mesh->getMeshBufferCount();
 	// Allocate colors for existing buffers
 	colors->clear();
-	for (u32 i = 0; i < mc; ++i)
-		colors->push_back(ItemPartColor());
+	colors->resize(mc);
 
 	for (u32 i = 0; i < mc; ++i) {
 		const TileSpec *tile = &(f.tiles[i]);
@@ -741,11 +755,11 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 				mesh->addMeshBuffer(copy);
 				copy->drop();
 				buf = copy;
-				colors->push_back(
-					ItemPartColor(layer->has_color, layer->color));
+				colors->emplace_back(layer->has_color, layer->color);
 			} else {
 				(*colors)[i] = ItemPartColor(layer->has_color, layer->color);
 			}
+
 			video::SMaterial &material = buf->getMaterial();
 			if (set_material)
 				layer->applyMaterialOptions(material);
@@ -768,6 +782,7 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 				}
 				material.setTexture(2, layer->flags_texture);
 			}
+
 			if (apply_scale && tile->world_aligned) {
 				u32 n = buf->getVertexCount();
 				for (u32 k = 0; k != n; ++k)

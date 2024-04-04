@@ -6,7 +6,6 @@
 
 
 #include "client/guiscalingfilter.h"
-#include "client/tile.h"
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
 #include "IVideoDriver.h"

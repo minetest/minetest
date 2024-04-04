@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "inventory.h"
-#include "client/tile.h"
+#include "util/numeric.h"
 #include "client/localplayer.h"
 #include <ICameraSceneNode.h>
 #include <ISceneNode.h>

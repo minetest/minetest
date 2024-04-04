@@ -39,7 +39,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IAnimatedMeshSceneNode.h>
 #include "client/renderingengine.h"
 #include "log.h"
-#include "client/tile.h" // ITextureSource
 #include "client/hud.h" // drawItemStack
 #include "filesys.h"
 #include "gettime.h"
@@ -977,14 +976,18 @@ void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &elemen
 void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 		const std::string &type)
 {
+	int expected_parts = (type == "button_url" || type == "button_url_exit") ? 5 : 4;
 	std::vector<std::string> parts;
-	if (!precheckElement("button", element, 4, 4, parts))
+	if (!precheckElement("button", element, expected_parts, expected_parts, parts))
 		return;
 
 	std::vector<std::string> v_pos = split(parts[0],',');
 	std::vector<std::string> v_geom = split(parts[1],',');
 	std::string name = parts[2];
 	std::string label = parts[3];
+	std::string url;
+	if (type == "button_url" || type == "button_url_exit")
+		url = parts[4];
 
 	MY_CHECKPOS("button",0);
 	MY_CHECKGEOM("button",1);
@@ -1019,8 +1022,10 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 		258 + m_fields.size()
 	);
 	spec.ftype = f_Button;
-	if(type == "button_exit")
+	if (type == "button_exit" || type == "button_url_exit")
 		spec.is_exit = true;
+	if (type == "button_url" || type == "button_url_exit")
+		spec.url = url;
 
 	GUIButton *e = GUIButton::addButton(Environment, rect, m_tsrc,
 			data->current_parent, spec.fid, spec.flabel.c_str());
@@ -2898,7 +2903,7 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
-	if (type == "button" || type == "button_exit") {
+	if (type == "button" || type == "button_exit" || type == "button_url" || type == "button_url_exit") {
 		parseButton(data, description, type);
 		return;
 	}
@@ -4969,6 +4974,17 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						m_sound_manager->playSound(0, SoundSpec(s.sound, 1.0f));
 
 					s.send = true;
+
+					if (!s.url.empty()) {
+						if (m_client) {
+							// in game
+							g_gamecallback->showOpenURLDialog(s.url);
+						} else {
+							// main menu
+							porting::open_url(s.url);
+						}
+					}
+
 					if (s.is_exit) {
 						if (m_allowclose) {
 							acceptInput(quit_mode_accept);

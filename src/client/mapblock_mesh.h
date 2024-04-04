@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_extrabloated.h"
+#include "util/numeric.h"
 #include "client/tile.h"
 #include "voxel.h"
 #include <array>
@@ -29,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Client;
 class NodeDefManager;
 class IShaderSource;
+class ITextureSource;
 
 /*
 	Mesh making stuff
@@ -250,7 +252,6 @@ private:
 	v3f m_bounding_sphere_center;
 
 	bool m_enable_shaders;
-	bool m_enable_vbo;
 
 	// Must animate() be called before rendering?
 	bool m_has_animation;

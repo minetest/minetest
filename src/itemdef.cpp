@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/mapblock_mesh.h"
 #include "client/mesh.h"
 #include "client/wieldmesh.h"
-#include "client/tile.h"
 #include "client/client.h"
 #endif
 #include "log.h"
@@ -41,24 +40,37 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 TouchInteraction::TouchInteraction()
 {
-	pointed_nothing = LONG_DIG_SHORT_PLACE;
-	pointed_node    = LONG_DIG_SHORT_PLACE;
-	// Map punching to single tap by default.
-	pointed_object  = SHORT_DIG_LONG_PLACE;
+	pointed_nothing = TouchInteractionMode_USER;
+	pointed_node    = TouchInteractionMode_USER;
+	pointed_object  = TouchInteractionMode_USER;
 }
 
-TouchInteractionMode TouchInteraction::getMode(const PointedThing &pointed) const
+TouchInteractionMode TouchInteraction::getMode(PointedThingType pointed_type) const
 {
-	switch (pointed.type) {
+	TouchInteractionMode result;
+	switch (pointed_type) {
 	case POINTEDTHING_NOTHING:
-		return pointed_nothing;
+		result = pointed_nothing;
+		break;
 	case POINTEDTHING_NODE:
-		return pointed_node;
+		result = pointed_node;
+		break;
 	case POINTEDTHING_OBJECT:
-		return pointed_object;
+		result = pointed_object;
+		break;
 	default:
 		FATAL_ERROR("Invalid PointedThingType given to TouchInteraction::getMode");
 	}
+
+	if (result == TouchInteractionMode_USER) {
+		if (pointed_type == POINTEDTHING_OBJECT)
+			result = g_settings->get("touch_punch_gesture") == "long_tap" ?
+					LONG_DIG_SHORT_PLACE : SHORT_DIG_LONG_PLACE;
+		else
+			result = LONG_DIG_SHORT_PLACE;
+	}
+
+	return result;
 }
 
 void TouchInteraction::serialize(std::ostream &os) const
@@ -462,7 +474,6 @@ public:
 		// Create new ClientCached
 		auto cc = std::make_unique<ClientCached>();
 
-		// Create an inventory texture
 		cc->inventory_texture = NULL;
 		if (!inventory_image.empty())
 			cc->inventory_texture = tsrc->getTexture(inventory_image);

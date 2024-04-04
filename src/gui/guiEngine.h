@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiFormSpecMenu.h"
 #include "client/clouds.h"
 #include "client/sound.h"
-#include "client/tile.h"
 #include "util/enriched_string.h"
 #include "translation.h"
 
@@ -54,6 +53,7 @@ struct image_definition {
 class GUIEngine;
 class RenderingEngine;
 class MainMenuScripting;
+class IWritableShaderSource;
 struct MainMenuData;
 
 /******************************************************************************/
@@ -203,7 +203,9 @@ private:
 	MainMenuData                         *m_data = nullptr;
 	/** texture source */
 	std::unique_ptr<ISimpleTextureSource> m_texture_source;
-	/** sound manager*/
+	/** shader source */
+	std::unique_ptr<IWritableShaderSource> m_shader_source;
+	/** sound manager */
 	std::unique_ptr<ISoundManager>        m_sound_manager;
 
 	/** representation of form source to be used in mainmenu formspec */
@@ -280,16 +282,10 @@ private:
 	/** initialize cloud subsystem */
 	void cloudInit();
 	/** do preprocessing for cloud subsystem */
-	void cloudPreProcess();
-	/** do postprocessing for cloud subsystem */
-	void cloudPostProcess(u32 frametime_min, IrrlichtDevice *device);
+	void drawClouds(float dtime);
 
 	/** internam data required for drawing clouds */
 	struct clouddata {
-		/** delta time since last cloud processing */
-		f32 dtime;
-		/** absolute time of last cloud processing */
-		u32 lasttime;
 		/** pointer to cloud class */
 		irr_ptr<Clouds> clouds;
 		/** camera required for drawing clouds */

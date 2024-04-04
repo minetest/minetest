@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "client/clientmedia.h"
 #include "log.h"
-#include "map.h"
+#include "servermap.h"
 #include "mapsector.h"
 #include "client/minimap.h"
 #include "modchannels.h"
@@ -471,7 +471,6 @@ void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
 		for (u16 i = 0; i < removed_count; i++) {
 			*pkt >> id;
 			m_env.removeActiveObject(id);
-			removeActiveObjectSounds(id);
 		}
 
 		// Read added objects

@@ -37,5 +37,6 @@ struct EnumString es_TouchInteractionMode[] =
 	{
 		{LONG_DIG_SHORT_PLACE, "long_dig_short_place"},
 		{SHORT_DIG_LONG_PLACE, "short_dig_long_place"},
+		{TouchInteractionMode_USER, "user"},
 		{0, NULL},
 	};

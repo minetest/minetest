@@ -15,6 +15,7 @@ Notable pages:
 ## In This Folder
 
 * [Developing minetestserver with Docker](docker.md)
+* [Android Tips & Tricks](android.md)
 * [Miscellaneous](misc.md)
 
 ## IRC

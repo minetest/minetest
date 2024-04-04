@@ -239,7 +239,9 @@ public:
 	s32 playSound(ServerPlayingSound &params, bool ephemeral=false);
 	void stopSound(s32 handle);
 	void fadeSound(s32 handle, float step, float gain);
-	void stopAttachedSounds(u16 id);
+	// Stop all sounds attached to given objects, for a certain client
+	void stopAttachedSounds(session_t peer_id,
+		const std::vector<u16> &object_ids);
 
 	// Envlock
 	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);
@@ -278,7 +280,7 @@ public:
 	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);
 
 	// Envlock and conlock should be locked when using scriptapi
-	ServerScripting *getScriptIface(){ return m_script; }
+	inline ServerScripting *getScriptIface() { return m_script.get(); }
 
 	// actions: time-reversed list
 	// Return value: success/failure
@@ -292,7 +294,7 @@ public:
 	virtual ICraftDefManager* getCraftDefManager();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	IRollbackManager *getRollbackManager() { return m_rollback; }
-	virtual EmergeManager *getEmergeManager() { return m_emerge; }
+	virtual EmergeManager *getEmergeManager() { return m_emerge.get(); }
 	virtual ModStorageDatabase *getModStorageDatabase() { return m_mod_storage_database; }
 
 	IWritableItemDefManager* getWritableItemDefManager();
@@ -304,6 +306,7 @@ public:
 	virtual const SubgameSpec* getGameSpec() const { return &m_gamespec; }
 	static std::string getBuiltinLuaPath();
 	virtual std::string getWorldPath() const { return m_path_world; }
+	virtual std::string getModDataPath() const { return m_path_mod_data; }
 
 	inline bool isSingleplayer() const
 			{ return m_simple_singleplayer_mode; }
@@ -343,7 +346,7 @@ public:
 
 	void setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
 			f32 frame_speed);
-	void setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third, const v3f &third_front);
+	void setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third, v3f third_front);
 
 	void setSky(RemotePlayer *player, const SkyboxParams &params);
 	void setSun(RemotePlayer *player, const SunParams &params);
@@ -430,10 +433,23 @@ public:
 	// Environment mutex (envlock)
 	std::mutex m_env_mutex;
 
+protected:
+	/* Do not add more members here, this is only required to make unit tests work. */
+
+	// Scripting
+	// Envlock and conlock should be locked when using Lua
+	std::unique_ptr<ServerScripting> m_script;
+
+	// Mods
+	std::unique_ptr<ServerModManager> m_modmgr;
+
 private:
 	friend class EmergeThread;
 	friend class RemoteClient;
+
+	// unittest classes
 	friend class TestServerShutdownState;
+	friend class TestMoveAction;
 
 	struct ShutdownState {
 		friend class TestServerShutdownState;
@@ -473,7 +489,6 @@ private:
 	void SendBreath(session_t peer_id, u16 breath);
 	void SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 		const std::string &custom_reason, bool reconnect = false);
-	void SendAccessDenied_Legacy(session_t peer_id, const std::wstring &reason);
 	void SendDeathscreen(session_t peer_id, bool set_camera_point_target,
 		v3f camera_point_target);
 	void SendItemDef(session_t peer_id, IItemDefManager *itemdef, u16 protocol_version);
@@ -496,7 +511,7 @@ private:
 	void SendHUDRemove(session_t peer_id, u32 id);
 	void SendHUDChange(session_t peer_id, u32 id, HudElementStat stat, void *value);
 	void SendHUDSetFlags(session_t peer_id, u32 flags, u32 mask);
-	void SendHUDSetParam(session_t peer_id, u16 param, const std::string &value);
+	void SendHUDSetParam(session_t peer_id, u16 param, std::string_view value);
 	void SendSetSky(session_t peer_id, const SkyboxParams &params);
 	void SendSetSun(session_t peer_id, const SunParams &params);
 	void SendSetMoon(session_t peer_id, const MoonParams &params);
@@ -595,6 +610,7 @@ private:
 	*/
 	// World directory
 	std::string m_path_world;
+	std::string m_path_mod_data;
 	// Subgame specification
 	SubgameSpec m_gamespec;
 	// If true, do not allow multiple players and hide some multiplayer
@@ -603,6 +619,8 @@ private:
 	u16 m_max_chatmessage_length;
 	// For "dedicated" server list flag
 	bool m_dedicated;
+
+	// Game settings layer
 	Settings *m_game_settings = nullptr;
 
 	// Thread can set; step() will throw as ServerError
@@ -621,10 +639,6 @@ private:
 	// Environment
 	ServerEnvironment *m_env = nullptr;
 
-	// Reference to the server map until ServerEnvironment is initialized
-	// after that this variable must be a nullptr
-	ServerMap *m_startup_server_map = nullptr;
-
 	// server connection
 	std::shared_ptr<con::Connection> m_con;
 
@@ -635,11 +649,7 @@ private:
 	IRollbackManager *m_rollback = nullptr;
 
 	// Emerge manager
-	EmergeManager *m_emerge = nullptr;
-
-	// Scripting
-	// Envlock and conlock should be locked when using Lua
-	ServerScripting *m_script = nullptr;
+	std::unique_ptr<EmergeManager> m_emerge;
 
 	// Item definition manager
 	IWritableItemDefManager *m_itemdef;
@@ -649,9 +659,6 @@ private:
 
 	// Craft definition manager
 	IWritableCraftDefManager *m_craftdef;
-
-	// Mods
-	std::unique_ptr<ServerModManager> m_modmgr;
 
 	std::unordered_map<std::string, Translations> server_translations;
 

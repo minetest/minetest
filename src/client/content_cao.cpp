@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "client/renderingengine.h"
 #include "client/sound.h"
-#include "client/tile.h"
+#include "client/texturesource.h"
 #include "client/mapblock_mesh.h"
 #include "util/basic_macros.h"
 #include "util/numeric.h"
@@ -812,10 +812,21 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			(m_prop.visual == "wielditem"));
 
 		m_wield_meshnode->setScale(m_prop.visual_size / 2.0f);
-		m_wield_meshnode->setColor(video::SColor(0xFFFFFFFF));
 	} else {
 		infostream<<"GenericCAO::addToScene(): \""<<m_prop.visual
 				<<"\" not supported"<<std::endl;
+	}
+
+	/* Set VBO hint */
+	// - if shaders are disabled we modify the mesh often
+	// - sprites are also modified often
+	// - the wieldmesh sets its own hint
+	// - bone transformations do not need to modify the vertex data
+	if (m_enable_shaders && (m_meshnode || m_animated_meshnode)) {
+		if (m_meshnode)
+			m_meshnode->getMesh()->setHardwareMappingHint(scene::EHM_STATIC);
+		if (m_animated_meshnode)
+			m_animated_meshnode->getMesh()->setHardwareMappingHint(scene::EHM_STATIC);
 	}
 
 	/* don't update while punch texture modifier is active */

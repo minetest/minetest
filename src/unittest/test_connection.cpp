@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "settings.h"
 #include "util/serialize.h"
-#include "network/connection.h"
+#include "network/connection_internal.h"
 #include "network/networkpacket.h"
 #include "network/socket.h"
 

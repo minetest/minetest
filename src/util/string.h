@@ -20,7 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_bloated.h"
+#ifndef SERVER
 #include "irrString.h"
+#endif
 #include <cstdlib>
 #include <string>
 #include <string_view>
@@ -97,8 +99,23 @@ char *mystrtok_r(char *s, const char *sep, char **lasts) noexcept;
 u64 read_seed(const char *str);
 bool parseColorString(const std::string &value, video::SColor &color, bool quiet,
 		unsigned char default_alpha = 0xff);
-std::string encodeHexColorString(const video::SColor &color);
+std::string encodeHexColorString(video::SColor color);
 
+/**
+ * Converts a letter to lowercase, with safe handling of the char type and non-ASCII.
+ * @param c input letter
+ * @returns same letter but lowercase
+*/
+inline char my_tolower(char c)
+{
+	// By design this function cannot handle any Unicode (codepoints don't fit into char),
+	// but make sure to pass it through unchanged.
+	// tolower() can mangle it if the POSIX locale is not UTF-8.
+	if (static_cast<unsigned char>(c) > 0x7f)
+		return c;
+	// toupper(3): "If the argument c is of type char, it must be cast to unsigned char"
+	return tolower(static_cast<unsigned char>(c));
+}
 
 /**
  * Returns a copy of \p str with spaces inserted at the right hand side to ensure
@@ -171,7 +188,7 @@ inline bool str_equal(std::basic_string_view<T> s1,
 		return false;
 
 	for (size_t i = 0; i < s1.size(); ++i)
-		if(tolower(s1[i]) != tolower(s2[i]))
+		if (my_tolower(s1[i]) != my_tolower(s2[i]))
 			return false;
 
 	return true;
@@ -210,7 +227,7 @@ inline bool str_starts_with(std::basic_string_view<T> str,
 		return str.compare(0, prefix.size(), prefix) == 0;
 
 	for (size_t i = 0; i < prefix.size(); ++i)
-		if (tolower(str[i]) != tolower(prefix[i]))
+		if (my_tolower(str[i]) != my_tolower(prefix[i]))
 			return false;
 	return true;
 }
@@ -251,7 +268,7 @@ inline bool str_ends_with(std::basic_string_view<T> str,
 		return str.compare(start, suffix.size(), suffix) == 0;
 
 	for (size_t i = 0; i < suffix.size(); ++i)
-		if (tolower(str[start + i]) != tolower(suffix[i]))
+		if (my_tolower(str[start + i]) != my_tolower(suffix[i]))
 			return false;
 	return true;
 }
@@ -303,7 +320,7 @@ inline std::string lowercase(std::string_view str)
 	std::string s2;
 	s2.resize(str.size());
 	for (size_t i = 0; i < str.size(); i++)
-		s2[i] = tolower(str[i]);
+		s2[i] = my_tolower(str[i]);
 	return s2;
 }
 
@@ -510,7 +527,7 @@ inline bool string_allowed_blacklist(std::string_view str,
  * Create a string based on \p from where a newline is forcefully inserted
  * every \p row_len characters.
  *
- * @note This function does not honour word wraps and blindy inserts a newline
+ * @note This function does not honour word wraps and blindly inserts a newline
  *	every \p row_len characters whether it breaks a word or not.  It is
  *	intended to be used for, for example, showing paths in the GUI.
  *
@@ -519,26 +536,10 @@ inline bool string_allowed_blacklist(std::string_view str,
  *
  * @param from The (utf-8) string to be wrapped into rows.
  * @param row_len The row length (in characters).
+ * @param has_color_codes Whether the source string has colorize codes.
  * @return A new string with the wrapping applied.
  */
-inline std::string wrap_rows(std::string_view from, unsigned row_len)
-{
-	std::string to;
-	to.reserve(from.size());
-
-	unsigned character_idx = 0;
-	for (size_t i = 0; i < from.size(); i++) {
-		if (!IS_UTF8_MULTB_INNER(from[i])) {
-			// Wrap string after last inner byte of char
-			if (character_idx > 0 && character_idx % row_len == 0)
-				to += '\n';
-			character_idx++;
-		}
-		to += from[i];
-	}
-
-	return to;
-}
+std::string wrap_rows(std::string_view from, unsigned row_len, bool has_color_codes = false);
 
 
 /**
@@ -732,6 +733,7 @@ inline std::string str_join(const std::vector<std::string> &list,
 	return oss.str();
 }
 
+#ifndef SERVER
 /**
  * Create a UTF8 std::string from an irr::core::stringw.
  */
@@ -749,6 +751,7 @@ inline irr::core::stringw utf8_to_stringw(std::string_view input)
 	std::wstring str = utf8_to_wide(input);
 	return irr::core::stringw(str.c_str(), str.size());
 }
+#endif
 
 /**
  * Sanitize the name of a new directory. This consists of two stages:

@@ -95,7 +95,7 @@ void ProfilerGraph::draw(s32 x_left, s32 y_bottom, video::IVideoDriver *driver,
 		}
 
 		const s32 texth = 15;
-		char buf[10];
+		char buf[20];
 		if (floorf(show_max) == show_max)
 			porting::mt_snprintf(buf, sizeof(buf), "%.5g", show_max);
 		else

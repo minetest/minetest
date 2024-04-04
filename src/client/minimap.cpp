@@ -571,6 +571,7 @@ scene::SMeshBuffer *Minimap::getMinimapMeshBuffer()
 	buf->Indices[4] = 3;
 	buf->Indices[5] = 0;
 
+	buf->setHardwareMappingHint(scene::EHM_STATIC);
 	return buf;
 }
 
@@ -614,7 +615,7 @@ void Minimap::drawMinimap(core::rect<s32> rect)
 	material.TextureLayers[1].Texture = data->heightmap_texture;
 
 	if (m_enable_shaders && data->mode.type == MINIMAP_TYPE_SURFACE) {
-		u16 sid = m_shdrsrc->getShader("minimap_shader", TILE_MATERIAL_ALPHA);
+		auto sid = m_shdrsrc->getShader("minimap_shader", TILE_MATERIAL_ALPHA);
 		material.MaterialType = m_shdrsrc->getShaderInfo(sid).material;
 	} else {
 		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;

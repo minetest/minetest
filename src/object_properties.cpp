@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/printing.h"
 #include "irrlichttypes_bloated.h"
 #include "exceptions.h"
+#include "log.h"
 #include "util/serialize.h"
 #include <sstream>
 
@@ -32,7 +33,7 @@ ObjectProperties::ObjectProperties()
 	colors.emplace_back(255,255,255,255);
 }
 
-std::string ObjectProperties::dump()
+std::string ObjectProperties::dump() const
 {
 	std::ostringstream os(std::ios::binary);
 	os << "hp_max=" << hp_max;

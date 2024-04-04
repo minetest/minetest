@@ -27,7 +27,7 @@ static void allocateSome(MBContainer &vec, u32 n)
 {
 	vec.reserve(vec.size() + n);
 	for (u32 i = 0; i < n; i++) {
-		auto *mb = new MapBlock({i & 0xff, 0, i >> 8}, nullptr);
+		auto *mb = new MapBlock(v3s16(i & 0xff, 0, (i >> 8) & S16_MAX), nullptr);
 		vec.push_back(mb);
 	}
 }

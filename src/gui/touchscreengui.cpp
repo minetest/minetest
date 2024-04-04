@@ -414,6 +414,7 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver)
 	}
 
 	m_touchscreen_threshold = g_settings->getU16("touchscreen_threshold");
+	m_long_tap_delay = g_settings->getU16("touch_long_tap_delay");
 	m_fixed_joystick = g_settings->getBool("fixed_virtual_joystick");
 	m_joystick_triggers_aux1 = g_settings->getBool("virtual_joystick_triggers_aux1");
 	m_screensize = m_device->getVideoDriver()->getScreenSize();
@@ -718,6 +719,7 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 
 	// By the way: Android reuses pointer IDs, so m_pointer_pos[evt_id]
 	// will be overwritten soon anyway.
+	m_pointer_downpos.erase(evt_id);
 	m_pointer_pos.erase(evt_id);
 }
 
@@ -808,6 +810,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			}
 		}
 
+		m_pointer_downpos[event.TouchInput.ID] = touch_pos;
 		m_pointer_pos[event.TouchInput.ID] = touch_pos;
 	}
 	else if (event.TouchInput.Event == ETIE_LEFT_UP) {
@@ -820,27 +823,24 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 				m_pointer_pos[event.TouchInput.ID] == touch_pos)
 			return;
 
+		const v2s32 dir_free_original = touch_pos - m_pointer_downpos[event.TouchInput.ID];
 		const v2s32 free_joystick_center = m_pointer_pos[event.TouchInput.ID];
 		const v2s32 dir_free = touch_pos - free_joystick_center;
 
 		const double touch_threshold_sq = m_touchscreen_threshold * m_touchscreen_threshold;
 
 		if (m_has_move_id && event.TouchInput.ID == m_move_id) {
-			if (dir_free.getLengthSQ() > touch_threshold_sq || m_move_has_really_moved) {
+			m_move_pos = touch_pos;
+			m_pointer_pos[event.TouchInput.ID] = touch_pos;
+
+			// update camera_yaw and camera_pitch
+			const double d = g_settings->getFloat("touchscreen_sensitivity", 0.001f, 10.0f)
+					* 6.0f / RenderingEngine::getDisplayDensity();
+			m_camera_yaw_change -= dir_free.X * d;
+			m_camera_pitch_change += dir_free.Y * d;
+
+			if (dir_free_original.getLengthSQ() > touch_threshold_sq)
 				m_move_has_really_moved = true;
-
-				m_move_pos = touch_pos;
-				m_pointer_pos[event.TouchInput.ID] = touch_pos;
-
-				if (m_tap_state == TapState::None || m_draw_crosshair) {
-					// adapt to similar behavior as pc screen
-					const double d = g_settings->getFloat("touchscreen_sensitivity", 0.001f, 10.0f) * 3.0f;
-
-					// update camera_yaw and camera_pitch
-					m_camera_yaw_change -= dir_free.X * d;
-					m_camera_pitch_change += dir_free.Y * d;
-				}
-			}
 		}
 
 		if (m_has_joystick_id && event.TouchInput.ID == m_joystick_id) {
@@ -1000,7 +1000,7 @@ void TouchScreenGUI::step(float dtime)
 	if (m_has_move_id && !m_move_has_really_moved && m_tap_state == TapState::None) {
 		u64 delta = porting::getDeltaMs(m_move_downtime, porting::getTimeMs());
 
-		if (delta > MIN_DIG_TIME_MS) {
+		if (delta > m_long_tap_delay) {
 			m_tap_state = TapState::LongTap;
 		}
 	}
@@ -1106,10 +1106,10 @@ void TouchScreenGUI::applyContextControls(const TouchInteractionMode &mode)
 	// Since the pointed thing has already been determined when this function
 	// is called, we cannot use this function to update the shootline.
 
+	sanity_check(mode != TouchInteractionMode_USER);
+	u64 now = porting::getTimeMs();
 	bool target_dig_pressed = false;
 	bool target_place_pressed = false;
-
-	u64 now = porting::getTimeMs();
 
 	// If the meanings of short and long taps have been swapped, abort any ongoing
 	// short taps because they would do something else than the player expected.

@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/gameui.h"
 #include "client/renderingengine.h"
 #include "client/sound.h"
-#include "client/tile.h"
+#include "client/texturepaths.h"
 #include "client/mesh_generator_thread.h"
 #include "client/particles.h"
 #include "client/localplayer.h"
@@ -2122,12 +2122,4 @@ ModChannel* Client::getModChannel(const std::string &channel)
 const std::string &Client::getFormspecPrepend() const
 {
 	return m_env.getLocalPlayer()->formspec_prepend;
-}
-
-void Client::removeActiveObjectSounds(u16 id)
-{
-	for (auto it : m_sounds_to_objects) {
-		if (it.second == id)
-			m_sound->stopSound(it.first);
-	}
 }

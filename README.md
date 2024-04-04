@@ -108,9 +108,9 @@ Use `--help`
 
 ## Docker
 
-* [Developing minetestserver with Docker](doc/developing/docker.md)
+- [Developing minetestserver with Docker](doc/developing/docker.md)
 
-We provide a Dockerfile that can be used to build the server.
+- [Running a server with Docker](doc/docker_server.md)
 
 ## Version Scheme
 

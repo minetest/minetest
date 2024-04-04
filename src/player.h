@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <mutex>
 #include <functional>
+#include <tuple>
 
 #define PLAYERNAME_SIZE 20
 
@@ -42,7 +43,17 @@ struct PlayerFovSpec
 
 	// The time to be take to trasition to the new FOV value.
 	// Transition is instantaneous if omitted. Omitted by default.
-	f32 transition_time;
+	f32 transition_time = 0;
+
+	inline bool operator==(const PlayerFovSpec &other) const {
+		// transition_time is compared here since that could be relevant
+		// when aborting a running transition.
+		return fov == other.fov && is_multiplier == other.is_multiplier &&
+			transition_time == other.transition_time;
+	}
+	inline bool operator!=(const PlayerFovSpec &other) const {
+		return !(*this == other);
+	}
 };
 
 struct PlayerControl
@@ -115,24 +126,24 @@ struct PlayerPhysicsOverride
 	float liquid_sink = 1.f;
 	float acceleration_default = 1.f;
 	float acceleration_air = 1.f;
-};
 
-struct PlayerSettings
-{
-	bool free_move = false;
-	bool pitch_move = false;
-	bool fast_move = false;
-	bool continuous_forward = false;
-	bool always_fly_fast = false;
-	bool aux1_descends = false;
-	bool noclip = false;
-	bool autojump = false;
+private:
+	auto tie() const {
+		// Make sure to add new members to this list!
+		return std::tie(
+		speed, jump, gravity, sneak, sneak_glitch, new_move, speed_climb, speed_crouch,
+		liquid_fluidity, liquid_fluidity_smooth, liquid_sink, acceleration_default,
+		acceleration_air
+		);
+	}
 
-	const std::string setting_names[8] = {
-		"free_move", "pitch_move", "fast_move", "continuous_forward", "always_fly_fast",
-		"aux1_descends", "noclip", "autojump"
+public:
+	bool operator==(const PlayerPhysicsOverride &other) const {
+		return tie() == other.tie();
 	};
-	void readGlobalSettings();
+	bool operator!=(const PlayerPhysicsOverride &other) const {
+		return tie() != other.tie();
+	};
 };
 
 class Map;
@@ -156,16 +167,13 @@ public:
 	{}
 
 	// in BS-space
-	v3f getSpeed() const
-	{
-		return m_speed;
-	}
-
-	// in BS-space
-	void setSpeed(v3f speed)
+	inline void setSpeed(v3f speed)
 	{
 		m_speed = speed;
 	}
+
+	// in BS-space
+	v3f getSpeed() const { return m_speed; }
 
 	const char *getName() const { return m_name; }
 
@@ -206,18 +214,20 @@ public:
 
 	PlayerControl control;
 	const PlayerControl& getPlayerControl() { return control; }
+
 	PlayerPhysicsOverride physics_override;
-	PlayerSettings &getPlayerSettings() { return m_player_settings; }
-	static void settingsChangedCallback(const std::string &name, void *data);
 
 	// Returns non-empty `selected` ItemStack. `hand` is a fallback, if specified
 	ItemStack &getWieldedItem(ItemStack *selected, ItemStack *hand) const;
 	void setWieldIndex(u16 index);
 	u16 getWieldIndex() const { return m_wield_index; }
 
-	void setFov(const PlayerFovSpec &spec)
+	bool setFov(const PlayerFovSpec &spec)
 	{
+		if (m_fov_override_spec == spec)
+			return false;
 		m_fov_override_spec = spec;
+		return true;
 	}
 
 	const PlayerFovSpec &getFov() const
@@ -241,10 +251,11 @@ protected:
 	PlayerFovSpec m_fov_override_spec = { 0.0f, false, 0.0f };
 
 	std::vector<HudElement *> hud;
+
 private:
 	// Protect some critical areas
 	// hud for example can be modified by EmergeThread
 	// and ServerThread
+	// FIXME: ^ this sounds like nonsense. should be checked.
 	std::mutex m_mutex;
-	PlayerSettings m_player_settings;
 };

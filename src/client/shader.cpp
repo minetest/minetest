@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IMaterialRendererServices.h>
 #include <IShaderConstantSetCallBack.h>
 #include "client/renderingengine.h"
-#include "EShaderTypes.h"
+#include <EShaderTypes.h>
 #include "gettext.h"
 #include "log.h"
 #include "gamedef.h"
@@ -162,12 +162,10 @@ private:
 
 	std::string readFile(const std::string &path)
 	{
-		std::ifstream is(path.c_str(), std::ios::binary);
-		if(!is.is_open())
-			return "";
-		std::ostringstream tmp_os;
-		tmp_os << is.rdbuf();
-		return tmp_os.str();
+		std::string ret;
+		if (!fs::ReadFile(path, ret))
+			ret.clear();
+		return ret;
 	}
 };
 
@@ -184,15 +182,15 @@ public:
 	template <typename Factories>
 	ShaderCallback(const Factories &factories)
 	{
-		for (auto &&factory : factories)
-			m_setters.emplace_back(factory->create());
+		for (auto &&factory : factories) {
+			auto *setter = factory->create();
+			if (setter)
+				m_setters.emplace_back(setter);
+		}
 	}
 
 	virtual void OnSetConstants(video::IMaterialRendererServices *services, s32 userData) override
 	{
-		video::IVideoDriver *driver = services->getVideoDriver();
-		sanity_check(driver != NULL);
-
 		for (auto &&setter : m_setters)
 			setter->onSetConstants(services);
 	}
@@ -214,43 +212,31 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	CachedVertexShaderSetting<f32, 16> m_world_view_proj{"mWorldViewProj"};
 	CachedVertexShaderSetting<f32, 16> m_world{"mWorld"};
 
-	// Shadow-related
-	CachedPixelShaderSetting<f32, 16> m_shadow_view_proj{"m_ShadowViewProj"};
-	CachedPixelShaderSetting<f32, 3> m_light_direction{"v_LightDirection"};
-	CachedPixelShaderSetting<f32> m_texture_res{"f_textureresolution"};
-	CachedPixelShaderSetting<f32> m_shadow_strength{"f_shadow_strength"};
-	CachedPixelShaderSetting<f32> m_time_of_day{"f_timeofday"};
-	CachedPixelShaderSetting<f32> m_shadowfar{"f_shadowfar"};
-	CachedPixelShaderSetting<f32, 4> m_camera_pos{"CameraPos"};
-	CachedPixelShaderSetting<s32> m_shadow_texture{"ShadowMapSampler"};
-	CachedVertexShaderSetting<f32>
-		m_perspective_bias0_vertex{"xyPerspectiveBias0"};
-	CachedPixelShaderSetting<f32>
-		m_perspective_bias0_pixel{"xyPerspectiveBias0"};
-	CachedVertexShaderSetting<f32>
-		m_perspective_bias1_vertex{"xyPerspectiveBias1"};
-	CachedPixelShaderSetting<f32>
-		m_perspective_bias1_pixel{"xyPerspectiveBias1"};
-	CachedVertexShaderSetting<f32>
-		m_perspective_zbias_vertex{"zPerspectiveBias"};
-	CachedPixelShaderSetting<f32> m_perspective_zbias_pixel{"zPerspectiveBias"};
-
 	// Modelview matrix
 	CachedVertexShaderSetting<float, 16> m_world_view{"mWorldView"};
 	// Texture matrix
 	CachedVertexShaderSetting<float, 16> m_texture{"mTexture"};
 
+	// commonly used way to pass material color to shader
+	video::SColor m_emissive_color;
+	CachedPixelShaderSetting<float, 4> m_emissive_color_setting{"emissiveColor"};
+
 public:
 	~MainShaderConstantSetter() = default;
+
+	virtual void onSetMaterial(const video::SMaterial& material) override
+	{
+		m_emissive_color = material.EmissiveColor;
+	}
 
 	virtual void onSetConstants(video::IMaterialRendererServices *services) override
 	{
 		video::IVideoDriver *driver = services->getVideoDriver();
-		sanity_check(driver);
+		assert(driver);
 
 		// Set world matrix
 		core::matrix4 world = driver->getTransform(video::ETS_WORLD);
-		m_world.set(*reinterpret_cast<float(*)[16]>(world.pointer()), services);
+		m_world.set(world, services);
 
 		// Set clip matrix
 		core::matrix4 worldView;
@@ -260,57 +246,16 @@ public:
 		core::matrix4 worldViewProj;
 		worldViewProj = driver->getTransform(video::ETS_PROJECTION);
 		worldViewProj *= worldView;
-		m_world_view_proj.set(*reinterpret_cast<float(*)[16]>(worldViewProj.pointer()), services);
+		m_world_view_proj.set(worldViewProj, services);
 
 		if (driver->getDriverType() == video::EDT_OGLES2 || driver->getDriverType() == video::EDT_OPENGL3) {
 			core::matrix4 texture = driver->getTransform(video::ETS_TEXTURE_0);
-			m_world_view.set(*reinterpret_cast<float(*)[16]>(worldView.pointer()), services);
-			m_texture.set(*reinterpret_cast<float(*)[16]>(texture.pointer()), services);
+			m_world_view.set(worldView, services);
+			m_texture.set(texture, services);
 		}
 
-		// Set uniforms for Shadow shader
-		if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer()) {
-			const auto &light = shadow->getDirectionalLight();
-
-			core::matrix4 shadowViewProj = light.getProjectionMatrix();
-			shadowViewProj *= light.getViewMatrix();
-			m_shadow_view_proj.set(shadowViewProj.pointer(), services);
-
-			f32 v_LightDirection[3];
-			light.getDirection().getAs3Values(v_LightDirection);
-			m_light_direction.set(v_LightDirection, services);
-
-			f32 TextureResolution = light.getMapResolution();
-			m_texture_res.set(&TextureResolution, services);
-
-			f32 ShadowStrength = shadow->getShadowStrength();
-			m_shadow_strength.set(&ShadowStrength, services);
-
-			f32 timeOfDay = shadow->getTimeOfDay();
-			m_time_of_day.set(&timeOfDay, services);
-
-			f32 shadowFar = shadow->getMaxShadowFar();
-			m_shadowfar.set(&shadowFar, services);
-
-			f32 cam_pos[4];
-			shadowViewProj.transformVect(cam_pos, light.getPlayerPos());
-			m_camera_pos.set(cam_pos, services);
-
-			// I don't like using this hardcoded value. maybe something like
-			// MAX_TEXTURE - 1 or somthing like that??
-			s32 TextureLayerID = 3;
-			m_shadow_texture.set(&TextureLayerID, services);
-
-			f32 bias0 = shadow->getPerspectiveBiasXY();
-			m_perspective_bias0_vertex.set(&bias0, services);
-			m_perspective_bias0_pixel.set(&bias0, services);
-			f32 bias1 = 1.0f - bias0 + 1e-5f;
-			m_perspective_bias1_vertex.set(&bias1, services);
-			m_perspective_bias1_pixel.set(&bias1, services);
-			f32 zbias = shadow->getPerspectiveBiasZ();
-			m_perspective_zbias_vertex.set(&zbias, services);
-			m_perspective_zbias_pixel.set(&zbias, services);
-		}
+		video::SColorf emissive_color(m_emissive_color);
+		m_emissive_color_setting.set(emissive_color, services);
 	}
 };
 
@@ -331,6 +276,7 @@ class ShaderSource : public IWritableShaderSource
 {
 public:
 	ShaderSource();
+	~ShaderSource() override;
 
 	/*
 		- If shader material specified by name is found from cache,
@@ -389,8 +335,10 @@ private:
 	// The former container is behind this mutex
 	std::mutex m_shaderinfo_cache_mutex;
 
+#if 0
 	// Queued shader fetches (to be processed by the main thread)
 	RequestQueue<std::string, u32, u8, u8> m_get_shader_queue;
+#endif
 
 	// Global constant setter factories
 	std::vector<std::unique_ptr<IShaderConstantSetterFactory>> m_setter_factories;
@@ -416,6 +364,20 @@ ShaderSource::ShaderSource()
 	addShaderConstantSetterFactory(new MainShaderConstantSetterFactory());
 }
 
+ShaderSource::~ShaderSource()
+{
+	MutexAutoLock lock(m_shaderinfo_cache_mutex);
+
+	// Delete materials
+	video::IGPUProgrammingServices *gpu = RenderingEngine::get_video_driver()->
+		getGPUProgrammingServices();
+	for (ShaderInfo &i : m_shaderinfo_cache) {
+		if (!i.name.empty())
+			gpu->deleteShaderMaterial(i.material);
+	}
+	m_shaderinfo_cache.clear();
+}
+
 u32 ShaderSource::getShader(const std::string &name,
 		MaterialType material_type, NodeDrawType drawtype)
 {
@@ -427,8 +389,10 @@ u32 ShaderSource::getShader(const std::string &name,
 		return getShaderIdDirect(name, material_type, drawtype);
 	}
 
-	/*errorstream<<"getShader(): Queued: name=\""<<name<<"\""<<std::endl;*/
+	errorstream << "ShaderSource::getShader(): getting from "
+		"other thread not implemented" << std::endl;
 
+#if 0
 	// We're gonna ask the result to be put into here
 
 	static ResultQueue<std::string, u32, u8, u8> result_queue;
@@ -451,6 +415,7 @@ u32 ShaderSource::getShader(const std::string &name,
 	}
 
 	infostream << "getShader(): Failed" << std::endl;
+#endif
 
 	return 0;
 }
@@ -534,15 +499,15 @@ void ShaderSource::rebuildShaders()
 {
 	MutexAutoLock lock(m_shaderinfo_cache_mutex);
 
-	/*// Oh well... just clear everything, they'll load sometime.
-	m_shaderinfo_cache.clear();
-	m_name_to_id.clear();*/
-
-	/*
-		FIXME: Old shader materials can't be deleted in Irrlicht,
-		or can they?
-		(This would be nice to do in the destructor too)
-	*/
+	// Delete materials
+	video::IGPUProgrammingServices *gpu = RenderingEngine::get_video_driver()->
+		getGPUProgrammingServices();
+	for (ShaderInfo &i : m_shaderinfo_cache) {
+		if (!i.name.empty()) {
+			gpu->deleteShaderMaterial(i.material);
+			i.material = video::EMT_SOLID; // invalidate
+		}
+	}
 
 	// Recreate shaders
 	for (ShaderInfo &i : m_shaderinfo_cache) {
@@ -588,11 +553,11 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		return shaderinfo;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (!driver->queryFeature(video::EVDF_ARB_GLSL)) {
+	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
+	if (!driver->queryFeature(video::EVDF_ARB_GLSL) || !gpu) {
 		throw ShaderException(gettext("Shaders are enabled but GLSL is not "
 			"supported by the driver."));
 	}
-	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
 
 	// Create shaders header
 	bool fully_programmable = driver->getDriverType() == video::EDT_OGLES2 || driver->getDriverType() == video::EDT_OPENGL3;
@@ -652,14 +617,6 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		#define normalTexture texture1
 		#define textureFlags texture2
 	)";
-
-	// Since this is the first time we're using the GL bindings be extra careful.
-	// This should be removed before 5.6.0 or similar.
-	if (!GL.GetString) {
-		errorstream << "OpenGL procedures were not loaded correctly, "
-			"please open a bug report with details about your platform/OS." << std::endl;
-		abort();
-	}
 
 	bool use_discard = fully_programmable;
 	// For renderers that should use discard instead of GL_ALPHA_TEST

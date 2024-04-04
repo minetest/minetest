@@ -8,10 +8,11 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - 'util/buildbot/**'
-      - 'misc/irrlichtmt_tag.txt'
       - 'misc/*.manifest'
       - '.github/workflows/windows.yml'
   pull_request:
@@ -23,7 +24,6 @@ on:
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - 'util/buildbot/**'
-      - 'misc/irrlichtmt_tag.txt'
       - 'misc/*.manifest'
       - '.github/workflows/windows.yml'
 
@@ -96,11 +96,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Checkout IrrlichtMt
-        run: |
-          $ref = @(Get-Content misc\irrlichtmt_tag.txt)
-          git clone https://github.com/minetest/irrlicht lib\irrlichtmt --depth 1 -b $ref[0]
 
       - name: Restore from cache and run vcpkg
         uses: lukka/run-vcpkg@v7

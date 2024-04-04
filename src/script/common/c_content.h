@@ -70,6 +70,7 @@ struct NoiseParams;
 class Schematic;
 class ServerActiveObject;
 struct collisionMoveResult;
+namespace treegen { struct TreeDef; }
 
 extern struct EnumString es_TileAnimationType[];
 
@@ -130,7 +131,7 @@ void               read_object_properties    (lua_State *L, int index,
                                               IItemDefManager *idef);
 
 void               push_object_properties    (lua_State *L,
-                                              ObjectProperties *prop);
+                                              const ObjectProperties *prop);
 
 void               push_inventory_list       (lua_State *L,
                                               const InventoryList &invlist);
@@ -188,6 +189,10 @@ bool               string_to_enum            (const EnumString *spec,
 bool               read_noiseparams          (lua_State *L, int index,
                                               NoiseParams *np);
 void               push_noiseparams          (lua_State *L, NoiseParams *np);
+
+bool               read_tree_def             (lua_State *L, int idx,
+                                              const NodeDefManager *ndef,
+                                              treegen::TreeDef &tree_def);
 
 void               luaentity_get             (lua_State *L,u16 id);
 

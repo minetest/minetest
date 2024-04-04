@@ -36,8 +36,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/peerhandler.h"
 #include "gameparams.h"
 #include "clientdynamicinfo.h"
-#include <fstream>
 #include "util/numeric.h"
+
+#ifdef SERVER
+#error Do not include in server builds
+#endif
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
@@ -470,9 +473,6 @@ private:
 	void sendRemovedSounds(const std::vector<s32> &soundList);
 
 	bool canSendChatMessage() const;
-
-	// remove sounds attached to object
-	void removeActiveObjectSounds(u16 id);
 
 	float m_packetcounter_timer = 0.0f;
 	float m_connection_reinit_timer = 0.1f;

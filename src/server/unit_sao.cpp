@@ -41,6 +41,8 @@ ServerActiveObject *UnitSAO::getParent() const
 
 void UnitSAO::setArmorGroups(const ItemGroupList &armor_groups)
 {
+	if (m_armor_groups == armor_groups)
+		return;
 	m_armor_groups = armor_groups;
 	m_armor_groups_sent = false;
 }
@@ -53,7 +55,10 @@ const ItemGroupList &UnitSAO::getArmorGroups() const
 void UnitSAO::setAnimation(
 		v2f frame_range, float frame_speed, float frame_blend, bool frame_loop)
 {
-	// store these so they can be updated to clients
+	if (std::tie(m_animation_range, m_animation_speed, m_animation_blend,
+			m_animation_loop) ==
+			std::tie(frame_range, frame_speed, frame_blend, frame_loop))
+		return; // no change
 	m_animation_range = frame_range;
 	m_animation_speed = frame_speed;
 	m_animation_blend = frame_blend;
@@ -72,6 +77,8 @@ void UnitSAO::getAnimation(v2f *frame_range, float *frame_speed, float *frame_bl
 
 void UnitSAO::setAnimationSpeed(float frame_speed)
 {
+	if (m_animation_speed == frame_speed)
+		return;
 	m_animation_speed = frame_speed;
 	m_animation_speed_sent = false;
 }

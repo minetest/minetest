@@ -77,6 +77,7 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 	// Create materials
 
 	m_materials[0] = baseMaterial();
+	// FIXME: shouldn't this check m_enable_shaders?
 	m_materials[0].MaterialType = ssrc->getShaderInfo(ssrc->getShader("stars_shader", TILE_MATERIAL_ALPHA)).material;
 	m_materials[0].Lighting = true;
 	m_materials[0].ColorMaterial = video::ECM_NONE;
@@ -683,11 +684,12 @@ void Sky::draw_stars(video::IVideoDriver * driver, float wicked_time_of_day)
 	float starbrightness = (0.25f - std::abs(tod)) * 20.0f;
 	float alpha = clamp(starbrightness, day_opacity, 1.0f);
 
-	m_star_color = m_star_params.starcolor;
-	m_star_color.a *= alpha;
-	if (m_star_color.a <= 0.0f) // Stars are only drawn when not fully transparent
+	video::SColorf color(m_star_params.starcolor);
+	color.a *= alpha;
+	if (color.a <= 0.0f) // Stars are only drawn when not fully transparent
 		return;
-	m_materials[0].DiffuseColor = m_materials[0].EmissiveColor = m_star_color.toSColor();
+	m_materials[0].EmissiveColor = color.toSColor();
+
 	auto sky_rotation = core::matrix4().setRotationAxisRadians(2.0f * M_PI * (wicked_time_of_day - 0.25f), v3f(0.0f, 0.0f, 1.0f));
 	auto world_matrix = driver->getTransform(video::ETS_WORLD);
 	driver->setTransform(video::ETS_WORLD, world_matrix * sky_rotation);

@@ -652,8 +652,9 @@ The mask is applied using binary AND.
 
 #### `[sheet:<w>x<h>:<x>,<y>`
 
-Retrieves a tile at position x,y from the base image
-which it assumes to be a tilesheet with dimensions w,h.
+Retrieves a tile at position x, y (in tiles, 0-indexed)
+from the base image, which it assumes to be a tilesheet
+with dimensions w, h (in tiles).
 
 #### `[colorize:<color>:<ratio>`
 
@@ -1085,6 +1086,7 @@ Table used to specify how a sound is played:
     -- its end in `-start_time` seconds.
     -- It is unspecified what happens if `loop` is false and `start_time` is
     -- smaller than minus the sound's length.
+
     -- Available since feature `sound_params_start_time`.
 
     loop = false,
@@ -1097,6 +1099,21 @@ Table used to specify how a sound is played:
     object = <an ObjectRef>,
     -- Attach the sound to an object.
     -- Can't be used together with `pos`.
+
+    -- For backward compatibility, sounds continue playing at the last location
+    -- of the object if an object is removed (for example if an entity dies).
+    -- It is not recommended to rely on this.
+    -- For death sounds, prefer playing a positional sound instead.
+
+    -- If you want to stop a sound when an entity dies or is deactivated,
+    -- store the handle and call `minetest.sound_stop` in `on_die` / `on_deactivate`.
+
+    -- Ephemeral sounds are entirely unaffected by the object being removed
+    -- or leaving the active object range.
+
+    -- Non-ephemeral sounds stop playing on clients if objects leave
+    -- the active object range; they should start playing again if objects
+    --- come back into range (but due to a known bug, they don't yet).
 
     to_player = name,
     -- Only play for this player.
@@ -1382,8 +1399,7 @@ Look for examples in `games/devtest` or `games/minetest_game`.
 * `liquid`
     * The cubic source node for a liquid.
     * Faces bordering to the same node are never rendered.
-    * Connects to node specified in `liquid_alternative_flowing`.
-    * You *must* set `liquid_alternative_source` to the node's own name.
+    * Connects to node specified in `liquid_alternative_flowing` if specified.
     * Use `backface_culling = false` for the tiles you want to make
       visible when inside the node.
 * `flowingliquid`
@@ -2499,6 +2515,8 @@ Some of the values in the key-value store are handled specially:
   0 = default, 1 = left / up, 2 = middle, 3 = right / down
   The default currently is the same as right/down.
   Example: 6 = 2 + 1*4 = middle,up
+* `range`: Overrides the pointing range
+  Example: `meta:set_float("range", 4.2)`
 
 Example:
 
@@ -2965,6 +2983,16 @@ background elements are drawn before all other elements.
   centered on `H`. With the new coordinate system, `H` will modify the height.
 * `label` is the text on the button
 
+### `button_url[<X>,<Y>;<W>,<H>;<name>;<label>;<url>]`
+
+* Clickable button. When clicked, fields will be sent and the user will be given the
+  option to open the URL in a browser.
+* With the old coordinate system, buttons are a set height, but will be vertically
+  centered on `H`. With the new coordinate system, `H` will modify the height.
+* To make this into an `image_button`, you can use formspec styling.
+* `label` is the text on the button.
+* `url` must be a valid web URL, starting with `http://` or `https://`.
+
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
 * `texture name` is the filename of an image
@@ -2990,6 +3018,11 @@ background elements are drawn before all other elements.
 
 * When clicked, fields will be sent and the form will quit.
 * Same as `button` in all other respects.
+
+### `button_url_exit[<X>,<Y>;<W>,<H>;<name>;<label>;<url>]`
+
+* When clicked, fields will be sent and the form will quit.
+* Same as `button_url` in all other respects.
 
 ### `image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
@@ -3482,11 +3515,13 @@ Changes the style of the text.
 Sets global style.
 
 Global only styles:
+
 * `background`: Text background, a `colorspec` or `none`.
 * `margin`: Page margins in pixel.
 * `valign`: Text vertical alignment (`top`, `middle`, `bottom`).
 
 Inheriting styles (affects child elements):
+
 * `color`: Default text color. Given color is a `colorspec`.
 * `hovercolor`: Color of <action> tags when mouse is over.
 * `size`: Default text size.
@@ -3500,6 +3535,7 @@ tags appear.
 `<tag name=... color=... hovercolor=... font=... size=...>`
 
 Defines or redefines tag style. This can be used to define new tags.
+
 * `name`: Name of the tag to define or change.
 * `color`: Text color. Given color is a `colorspec`.
 * `hovercolor`: Text color when element hovered (only for `action` tags). Given color is a `colorspec`.
@@ -3532,6 +3568,7 @@ Other tags can be added using `<tag ...>` tag.
 Make that text a clickable text triggering an action.
 
 * `name`: Name of the action (mandatory).
+* `url`: URL to open when the action is triggered (optional).
 
 When clicked, the formspec is send to the server. The value of the text field
 sent to `on_player_receive_fields` will be "action:" concatenated to the action
@@ -3584,6 +3621,18 @@ X, Y and Z being angles around each three axes. Works only if
 * `hand`: list containing an override for the empty hand
     * Is not created automatically, use `InvRef:set_size`
     * Is only used to enhance the empty hand's tool capabilities
+
+## ItemStack transaction order
+
+This list describes the situation for non-empty ItemStacks in both slots
+that cannot be stacked at all, hence triggering an ItemStack swap operation.
+Put/take callbacks on empty ItemStack are not executed.
+
+1. The "allow take" and "allow put" callbacks are each run once for the source
+   and destination inventory.
+2. The allowed ItemStacks are exchanged.
+3. The "on take" callbacks are run for the source and destination inventories
+4. The "on put" callbacks are run for the source and destination inventories
 
 
 
@@ -4005,25 +4054,31 @@ Two functions are provided to translate strings: `minetest.translate` and
   avoid clashes with other mods.
   This function must be given a number of arguments equal to the number of
   arguments the translated string expects.
-  Arguments are literal strings -- they will not be translated, so if you want
-  them to be, they need to come as outputs of `minetest.translate` as well.
+  Arguments are literal strings -- they will not be translated.
 
-  For instance, suppose we want to translate "@1 Wool" with "@1" being replaced
-  by the translation of "Red". We can do the following:
+For instance, suppose we want to greet players when they join. We can do the
+following:
 
-  ```lua
-  local S = minetest.get_translator()
-  S("@1 Wool", S("Red"))
-  ```
+```lua
+local S = minetest.get_translator("hello")
+minetest.register_on_joinplayer(function(player)
+    local name = player:get_player_name()
+    minetest.chat_send_player(name, S("Hello @1, how are you today?", name))
+end)
+```
 
-  This will be displayed as "Red Wool" on old clients and on clients that do
-  not have localization enabled. However, if we have for instance a translation
-  file named `wool.fr.tr` containing the following:
+When someone called "CoolGuy" joins the game with an old client or a client
+that does not have localization enabled, they will see `Hello CoolGuy, how are
+you today?`
 
-      @1 Wool=Laine @1
-      Red=Rouge
+However, if we have for instance a translation file named `hello.de.tr`
+containing the following:
 
-  this will be displayed as "Laine Rouge" on clients with a French locale.
+    # textdomain: hello
+    Hello @1, how are you today?=Hallo @1, wie geht es dir heute?
+
+and CoolGuy has set a German locale, they will see `Hallo CoolGuy, wie geht es
+dir heute?`
 
 ## Operations on Translated Strings
 
@@ -4450,6 +4505,11 @@ Can specify a probability of a node randomly appearing when placed.
 This decoration type is intended to be used for multi-node sized discrete
 structures, such as trees, cave spikes, rocks, and so on.
 
+## `lsystem`
+
+Generates a L-system tree at the position where the decoration is placed.
+Uses the same L-system as `minetest.spawn_tree`, but is faster than using it manually.
+The `treedef` field in the decoration definition is used for the tree definition.
 
 
 # Schematics
@@ -5187,6 +5247,12 @@ Minetest includes the following settings to control behavior of privileges:
 
 * `minetest.get_worldpath()`: returns e.g. `"/home/user/.minetest/world"`
     * Useful for storing custom data
+* `minetest.get_mod_data_path()`: returns e.g. `"/home/user/.minetest/mod_data/mymod"`
+    * Useful for storing custom data *independently of worlds*.
+    * Must be called during mod load time.
+    * Can read or write to this directory at any time.
+    * It's possible that multiple Minetest instances are running at the same
+      time, which may lead to corruption if you are not careful.
 * `minetest.is_singleplayer()`
 * `minetest.features`: Table containing API feature flags
 
@@ -5278,6 +5344,10 @@ Minetest includes the following settings to control behavior of privileges:
       dynamic_add_media_startup = true,
       -- dynamic_add_media supports `filename` and `filedata` parameters (5.9.0)
       dynamic_add_media_filepath = true,
+       -- L-system decoration type (5.9.0)
+      lsystem_decoration_type = true,
+      -- Overrideable pointing range using the itemstack meta key `"range"` (5.9.0)
+      item_meta_range = true,
   }
   ```
 
@@ -5883,6 +5953,7 @@ handler.
       returns `{name="ignore", param1=0, param2=0}` for unloaded areas.
 * `minetest.get_node_or_nil(pos)`
     * Same as `get_node` but returns `nil` for unloaded areas.
+    * Note that areas may still contain "ignore" despite being loaded.
 * `minetest.get_node_light(pos[, timeofday])`
     * Gets the light value at the given position. Note that the light value
       "inside" the node at the given position is returned, so you usually want
@@ -5928,7 +5999,7 @@ handler.
 * `minetest.add_entity(pos, name, [staticdata])`: Spawn Lua-defined entity at
   position.
     * Returns `ObjectRef`, or `nil` if failed
-    * Entities with `static_save = true` can be added also 
+    * Entities with `static_save = true` can be added also
       to unloaded and non-generated blocks.
 * `minetest.add_item(pos, item)`: Spawn item
     * Returns `ObjectRef`, or `nil` if failed
@@ -6120,13 +6191,16 @@ handler.
     * Returns the position of the blocking node when `false`
     * `pos1`: First position
     * `pos2`: Second position
-* `minetest.raycast(pos1, pos2, objects, liquids)`: returns `Raycast`
+* `minetest.raycast(pos1, pos2, objects, liquids, pointabilities)`: returns `Raycast`
     * Creates a `Raycast` object.
     * `pos1`: start of the ray
     * `pos2`: end of the ray
     * `objects`: if false, only nodes will be returned. Default is `true`.
     * `liquids`: if false, liquid nodes (`liquidtype ~= "none"`) won't be
-      returned. Default is `false`.
+                 returned. Default is `false`.
+    * `pointabilities`: Allows overriding the `pointable` property of
+      nodes and objects. Uses the same format as the `pointabilities` property
+      of item definitions. Default is `nil`.
 * `minetest.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)`
     * returns table containing path that can be walked on
     * returns a table of 3D points representing a path from `pos1` to `pos2` or
@@ -6503,6 +6577,18 @@ This allows you easy interoperability for delegating work to jobs.
     * Register a path to a Lua file to be imported when an async environment
       is initialized. You can use this to preload code which you can then call
       later using `minetest.handle_async()`.
+* `minetest.register_async_metatable(name, mt)`:
+    * Register a metatable that should be preserved when data is transferred
+    between the main thread and the async environment.
+    * `name` is a string that identifies the metatable. It is recommended to
+      follow the `modname:name` convention for this identifier.
+    * `mt` is the metatable to register.
+    * Note that it is allowed to register the same metatable under multiple
+      names, but it is not allowed to register multiple metatables under the
+      same name.
+    * You must register the metatable in both the main environment
+      and the async environment for this mechanism to work.
+
 
 ### List of APIs Available in an Async Environment
 
@@ -6528,6 +6614,7 @@ Class instances that can be transferred between environments:
 Functions:
 * Standalone helpers such as logging, filesystem, encoding,
   hashing or compression APIs
+* `minetest.register_async_metatable` (see above)
 
 Variables:
 * `minetest.settings`
@@ -7143,9 +7230,45 @@ You can use the gennotify mechanism to transfer this information.
 All callbacks registered with [Global callback registration functions] are added
 to corresponding `minetest.registered_*` tables.
 
+For historical reasons, the use of an -s suffix in these names is inconsistent.
+
+* `minetest.registered_on_chat_messages`
+* `minetest.registered_on_chatcommands`
+* `minetest.registered_globalsteps`
+* `minetest.registered_on_punchnodes`
+* `minetest.registered_on_placenodes`
+* `minetest.registered_on_dignodes`
+* `minetest.registered_on_generateds`
+* `minetest.registered_on_newplayers`
+* `minetest.registered_on_dieplayers`
+* `minetest.registered_on_respawnplayers`
+* `minetest.registered_on_prejoinplayers`
+* `minetest.registered_on_joinplayers`
+* `minetest.registered_on_leaveplayers`
+* `minetest.registered_on_player_receive_fields`
+* `minetest.registered_on_cheats`
+* `minetest.registered_on_crafts`
+* `minetest.registered_craft_predicts`
+* `minetest.registered_on_item_eats`
+* `minetest.registered_on_item_pickups`
+* `minetest.registered_on_punchplayers`
+* `minetest.registered_on_authplayers`
+* `minetest.registered_on_player_inventory_actions`
+* `minetest.registered_allow_player_inventory_actions`
+* `minetest.registered_on_rightclickplayers`
+* `minetest.registered_on_mods_loaded`
+* `minetest.registered_on_shutdown`
+* `minetest.registered_on_protection_violation`
+* `minetest.registered_on_priv_grant`
+* `minetest.registered_on_priv_revoke`
+* `minetest.registered_can_bypass_userlimit`
+* `minetest.registered_on_modchannel_message`
+* `minetest.registered_on_liquid_transformed`
+* `minetest.registered_on_mapblocks_changed`
 
 
-# Class Reference
+
+# Class reference
 
 Sorted alphabetically.
 
@@ -7765,10 +7888,14 @@ child will follow movement and rotation of that bone.
         * Second column: subject looking to the left
         * Third column: subject backing the camera
         * Fourth column: subject looking to the right
-        * Fifth column: subject viewed from above
-        * Sixth column: subject viewed from below
-* `get_entity_name()`: (**Deprecated**: Will be removed in a future version, use the field `self.name` instead)
-* `get_luaentity()`
+        * Fifth column:  subject viewed from above
+        * Sixth column:  subject viewed from below
+* `get_luaentity()`:
+	* Returns the object's associated luaentity table, if there is one
+	* Otherwise returns `nil` (e.g. for players)
+* `get_entity_name()`:
+  * **Deprecated**: Will be removed in a future version,
+    use `:get_luaentity().name` instead.
 
 #### Player Only (No-Op for Other Objects)
 
@@ -8473,7 +8600,8 @@ Player properties need to be saved manually.
     -- "mesh" uses the defined mesh model.
     -- "wielditem" is used for dropped items.
     --   (see builtin/game/item_entity.lua).
-    --   For this use 'wield_item = itemname' (Deprecated: 'textures = {itemname}').
+    --   For this use 'wield_item = itemname'.
+    --   Setting 'textures = {itemname}' has the same effect, but is deprecated.
     --   If the item has a 'wield_image' the object will be an extrusion of
     --   that, otherwise:
     --   If 'itemname' is a cubic node or nodebox the object will appear
@@ -8500,8 +8628,8 @@ Player properties need to be saved manually.
     -- "cube" uses 6 textures just like a node, but all 6 must be defined.
     -- "sprite" uses 1 texture.
     -- "upright_sprite" uses 2 textures: {front, back}.
-    -- "wielditem" expects 'textures = {itemname}' (see 'visual' above).
     -- "mesh" requires one texture for each mesh buffer/material (in order)
+    -- Deprecated usage of "wielditem" expects 'textures = {itemname}' (see 'visual' above).
 
     colors = {},
     -- Number of required colors depends on visual
@@ -8817,6 +8945,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
     range = 4.0,
     -- Range of node and object pointing that is possible with this item held
+    -- Can be overridden with itemstack meta.
 
     liquids_pointable = false,
     -- If true, item can point to all liquid nodes (`liquidtype ~= "none"`),
@@ -8830,9 +8959,9 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         objects = {
             ["modname:entityname"] = true,
             ["group:ghosty"] = true, -- (an armor group)
-        }
+        },
     },
-    -- Contains lists to override the `pointable` property of pointed nodes and objects.
+    -- Contains lists to override the `pointable` property of nodes and objects.
     -- The index can be a node/entity name or a group with the prefix `"group:"`.
     -- (For objects `armor_groups` are used and for players the entity name is irrelevant.)
     -- If multiple fields fit, the following priority order is applied:
@@ -8897,19 +9026,20 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     -- Otherwise should be name of node which the client immediately places
     -- upon digging. Server will always update with actual result shortly.
 
-    touch_interaction = {
-        -- Only affects touchscreen clients.
-        -- Defines the meaning of short and long taps with the item in hand.
-        -- The fields in this table have two valid values:
-        -- * "long_dig_short_place" (long tap  = dig, short tap = place)
-        -- * "short_dig_long_place" (short tap = dig, long tap  = place)
-        -- The field to be used is selected according to the current
-        -- `pointed_thing`.
-
-        pointed_nothing = "long_dig_short_place",
-        pointed_node    = "long_dig_short_place",
-        pointed_object  = "short_dig_long_place",
+    touch_interaction = <TouchInteractionMode> OR {
+        pointed_nothing = <TouchInteractionMode>,
+        pointed_node    = <TouchInteractionMode>,
+        pointed_object  = <TouchInteractionMode>,
     },
+      -- Only affects touchscreen clients.
+      -- Defines the meaning of short and long taps with the item in hand.
+      -- If specified as a table, the field to be used is selected according to
+      -- the current `pointed_thing`.
+      -- There are three possible TouchInteractionMode values:
+      -- * "user"                 (meaning depends on client-side settings)
+      -- * "long_dig_short_place" (long tap  = dig, short tap = place)
+      -- * "short_dig_long_place" (short tap = dig, long tap  = place)
+      -- The default value is "user".
 
     sound = {
         -- Definition of item sounds to be played at various events.
@@ -9121,10 +9251,8 @@ Used by `minetest.register_node`.
     -- flowing version (`liquid_alternative_flowing`) and
     -- source version (`liquid_alternative_source`) of a liquid.
     --
-    -- Specifically, these fields are required if any of these is true:
-    -- * `liquidtype ~= "none" or
-    -- * `drawtype == "liquid" or
-    -- * `drawtype == "flowingliquid"
+    -- Specifically, these fields are required if `liquidtype ~= "none"` or
+    -- `drawtype == "flowingliquid"`.
     --
     -- Liquids consist of up to two nodes: source and flowing.
     --
@@ -9988,7 +10116,7 @@ See [Decoration types]. Used by `minetest.register_decoration`.
 ```lua
 {
     deco_type = "simple",
-    -- Type. "simple" or "schematic" supported
+    -- Type. "simple", "schematic" or "lsystem" supported
 
     place_on = "default:dirt_with_grass",
     -- Node (or list of nodes) that the decoration can be placed on
@@ -10141,6 +10269,12 @@ See [Decoration types]. Used by `minetest.register_decoration`.
     -- Effect is inverted for "all_ceilings" decorations.
     -- Ignored by 'y_min', 'y_max' and 'spawn_by' checks, which always refer
     -- to the 'place_on' node.
+
+    ----- L-system-type parameters
+
+    treedef = {},
+    -- Same as for `minetest.spawn_tree`.
+    -- See section [L-system trees] for more details.
 }
 ```
 

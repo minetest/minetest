@@ -553,7 +553,8 @@ bool setSystemPaths()
 
 #endif
 
-void migrateCachePath()
+// Move cache folder from path_user to system cache location if possible.
+[[maybe_unused]] static void migrateCachePath()
 {
 	const std::string local_cache_path = path_user + DIR_DELIM + "cache";
 
@@ -571,6 +572,24 @@ void migrateCachePath()
 		errorstream << "Failed to migrate local cache path "
 			"to system path!" << std::endl;
 	}
+}
+
+// Create tag in cache folder according to <https://bford.info/cachedir/> spec
+static void createCacheDirTag()
+{
+	const auto path = path_cache + DIR_DELIM + "CACHEDIR.TAG";
+
+	if (fs::PathExists(path))
+		return;
+	fs::CreateAllDirs(path_cache);
+	std::ofstream ofs(path, std::ios::out | std::ios::binary);
+	if (!ofs.good())
+		return;
+	ofs << "Signature: 8a477f597d28d172789f06886806bc55\n"
+		"# This file is a cache directory tag automatically created by "
+		PROJECT_NAME_C ".\n"
+		"# For information about cache directory tags, see: "
+		"https://bford.info/cachedir/\n";
 }
 
 void initializePaths()
@@ -651,6 +670,8 @@ void initializePaths()
 	infostream << "Detected share path: " << path_share << std::endl;
 	infostream << "Detected user path: " << path_user << std::endl;
 	infostream << "Detected cache path: " << path_cache << std::endl;
+
+	createCacheDirTag();
 
 #if USE_GETTEXT
 	bool found_localedir = false;

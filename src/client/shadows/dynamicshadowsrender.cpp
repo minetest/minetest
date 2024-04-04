@@ -118,20 +118,29 @@ void ShadowRenderer::disable()
 		});
 }
 
+void ShadowRenderer::preInit(IWritableShaderSource *shsrc)
+{
+	if (g_settings->getBool("enable_shaders") &&
+			g_settings->getBool("enable_dynamic_shadows")) {
+		shsrc->addShaderConstantSetterFactory(new ShadowConstantSetterFactory());
+	}
+}
+
 void ShadowRenderer::initialize()
 {
 	auto *gpu = m_driver->getGPUProgrammingServices();
 
 	// we need glsl
-	if (m_shadows_supported && gpu && m_driver->queryFeature(video::EVDF_ARB_GLSL)) {
-		createShaders();
-	} else {
+	if (!m_shadows_supported || !gpu || !m_driver->queryFeature(video::EVDF_ARB_GLSL)) {
 		m_shadows_supported = false;
 
 		warningstream << "Shadows: GLSL Shader not supported on this system."
 			<< std::endl;
 		return;
 	}
+
+	createShaders();
+	
 
 	m_texture_format = m_shadow_map_texture_32bit
 					   ? video::ECOLOR_FORMAT::ECF_R32F
@@ -183,12 +192,7 @@ void ShadowRenderer::addNodeToShadowList(
 {
 	m_shadow_node_array.emplace_back(node, shadowMode);
 	// node should never be ClientMap
-#if IRRLICHT_VERSION_MT_REVISION >= 15
 	assert(!node->getName().has_value() || *node->getName() != "ClientMap");
-#else
-	// TODO: Remove this as soon as we require 1.9.0mt15
-	assert(strcmp(node->getName(), "ClientMap") != 0);
-#endif
 	node->forEachMaterial([this] (auto &mat) {
 		mat.setTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
 	});

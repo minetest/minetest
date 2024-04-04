@@ -13,6 +13,9 @@ luajit_version=20240125
 leveldb_version=1.23
 zlib_version=1.3.1
 zstd_version=1.5.5
+libjpeg_version=3.0.1
+libpng_version=1.6.40
+sdl2_version=2.28.5
 
 download () {
 	local url=$1
@@ -77,8 +80,13 @@ _dlls () {
 
 add_cmake_libs () {
 	cmake_args+=(
-		-DCMAKE_PREFIX_PATH=$libdir/irrlicht
-		-DIRRLICHT_DLL="$(_dlls $libdir/irrlicht/lib/*)"
+		-DPNG_LIBRARY=$libdir/libpng/lib/libpng.dll.a
+		-DPNG_PNG_INCLUDE_DIR=$libdir/libpng/include
+
+		-DJPEG_LIBRARY=$libdir/libjpeg/lib/libjpeg.dll.a
+		-DJPEG_INCLUDE_DIR=$libdir/libjpeg/include
+
+		-DCMAKE_PREFIX_PATH=$libdir/sdl2/lib/cmake
 
 		-DZLIB_INCLUDE_DIR=$libdir/zlib/include
 		-DZLIB_LIBRARY=$libdir/zlib/lib/libz.dll.a

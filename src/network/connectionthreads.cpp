@@ -348,11 +348,9 @@ bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
 			return false;
 
 		SharedBuffer<u8> reliable = makeReliablePacket(data, seqnum);
-		Address peer_address;
-		peer->getAddress(MTP_MINETEST_RELIABLE_UDP, peer_address);
 
 		// Add base headers and make a packet
-		BufferedPacketPtr p = con::makePacket(peer_address, reliable,
+		BufferedPacketPtr p = con::makePacket(peer->getAddress(), reliable,
 			m_connection->GetProtocolID(), m_connection->GetPeerID(),
 			channelnum);
 
@@ -374,22 +372,14 @@ bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
 		return false;
 	}
 
-	Address peer_address;
-	if (peer->getAddress(MTP_UDP, peer_address)) {
-		// Add base headers and make a packet
-		BufferedPacketPtr p = con::makePacket(peer_address, data,
-			m_connection->GetProtocolID(), m_connection->GetPeerID(),
-			channelnum);
+	// Add base headers and make a packet
+	BufferedPacketPtr p = con::makePacket(peer->getAddress(), data,
+		m_connection->GetProtocolID(), m_connection->GetPeerID(),
+		channelnum);
 
-		// Send the packet
-		rawSend(p.get());
-		return true;
-	}
-
-	LOG(dout_con << m_connection->getDesc()
-		<< " INFO: dropped unreliable packet for peer_id: " << peer_id
-		<< " because of (yet) missing udp address" << std::endl);
-	return false;
+	// Send the packet
+	rawSend(p.get());
+	return true;
 }
 
 void ConnectionSendThread::processReliableCommand(ConnectionCommandPtr &c)
@@ -806,7 +796,7 @@ void ConnectionSendThread::sendAsPacket(session_t peer_id, u8 channelnum,
 	m_outgoing_queue.push(packet);
 }
 
-ConnectionReceiveThread::ConnectionReceiveThread(unsigned int max_packet_size) :
+ConnectionReceiveThread::ConnectionReceiveThread() :
 	Thread("ConnectionReceive")
 {
 }
@@ -984,7 +974,7 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 					l.logged = true;
 					// We simply drop the packet, the client can try again.
 				} else {
-					peer_id = m_connection->createPeer(sender, MTP_MINETEST_RELIABLE_UDP, 0);
+					peer_id = m_connection->createPeer(sender, 0);
 				}
 			}
 		}
@@ -999,17 +989,9 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 
 		// Validate peer address
 
-		Address peer_address;
-		if (peer->getAddress(MTP_UDP, peer_address)) {
-			if (peer_address != sender) {
-				LOG(derr_con << m_connection->getDesc()
-					<< " Peer " << peer_id << " sending from different address."
-					" Ignoring." << std::endl);
-				return;
-			}
-		} else {
+		if (sender != peer->getAddress()) {
 			LOG(derr_con << m_connection->getDesc()
-				<< " Peer " << peer_id << " doesn't have an address?!"
+				<< " Peer " << peer_id << " sending from different address."
 				" Ignoring." << std::endl);
 			return;
 		}
@@ -1284,32 +1266,25 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Original(Channel *cha
 SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Split(Channel *channel,
 	const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable)
 {
-	Address peer_address;
+	// We have to create a packet again for buffering
+	// This isn't actually too bad an idea.
+	BufferedPacketPtr packet = con::makePacket(peer->getAddress(),
+		packetdata,
+		m_connection->GetProtocolID(),
+		peer->id,
+		channelnum);
 
-	if (peer->getAddress(MTP_UDP, peer_address)) {
-		// We have to create a packet again for buffering
-		// This isn't actually too bad an idea.
-		BufferedPacketPtr packet = con::makePacket(peer_address,
-			packetdata,
-			m_connection->GetProtocolID(),
-			peer->id,
-			channelnum);
+	// Buffer the packet
+	SharedBuffer<u8> data = peer->addSplitPacket(channelnum, packet, reliable);
 
-		// Buffer the packet
-		SharedBuffer<u8> data = peer->addSplitPacket(channelnum, packet, reliable);
-
-		if (data.getSize() != 0) {
-			LOG(dout_con << m_connection->getDesc()
-				<< "RETURNING TYPE_SPLIT: Constructed full data, "
-				<< "size=" << data.getSize() << std::endl);
-			return data;
-		}
-		LOG(dout_con << m_connection->getDesc() << "BUFFERED TYPE_SPLIT" << std::endl);
-		throw ProcessedSilentlyException("Buffered a split packet chunk");
+	if (data.getSize() != 0) {
+		LOG(dout_con << m_connection->getDesc()
+			<< "RETURNING TYPE_SPLIT: Constructed full data, "
+			<< "size=" << data.getSize() << std::endl);
+		return data;
 	}
-
-	// We should never get here.
-	FATAL_ERROR("Invalid execution point");
+	LOG(dout_con << m_connection->getDesc() << "BUFFERED TYPE_SPLIT" << std::endl);
+	throw ProcessedSilentlyException("Buffered a split packet chunk");
 }
 
 SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *channel,
@@ -1361,15 +1336,11 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *cha
 	}
 
 	if (seqnum != channel->readNextIncomingSeqNum()) {
-		Address peer_address;
-
-		// this is a reliable packet so we have a udp address for sure
-		peer->getAddress(MTP_MINETEST_RELIABLE_UDP, peer_address);
 		// This one comes later, buffer it.
 		// Actually we have to make a packet to buffer one.
 		// Well, we have all the ingredients, so just do it.
 		BufferedPacketPtr packet = con::makePacket(
-			peer_address,
+			peer->getAddress(),
 			packetdata,
 			m_connection->GetProtocolID(),
 			peer->id,

@@ -75,7 +75,7 @@ task prepareAssets() {
 			from "${projRoot}/client/shaders" into "${assetsFolder}/client/shaders"
 		}
 		copy {
-			from "../native/deps/armeabi-v7a/Irrlicht/Shaders" into "${assetsFolder}/client/shaders/Irrlicht"
+			from "${projRoot}/irr/media/Shaders" into "${assetsFolder}/client/shaders/Irrlicht"
 		}
 		copy {
 			from "${projRoot}/fonts" include "*.ttf" into "${assetsFolder}/fonts"
@@ -107,6 +107,10 @@ task prepareAssets() {
 
 preBuild.dependsOn zipAssets
 prepareAssets.dependsOn ':native:getDeps'
+
+clean {
+	delete new File("src/main/assets", "Minetest.zip")
+}
 
 // Map for the version code that gives each ABI a value.
 import com.android.build.OutputFile

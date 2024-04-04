@@ -45,8 +45,8 @@ public:
 			std::vector<ServerActiveObject *> &result,
 			std::function<bool(ServerActiveObject *obj)> include_obj_cb);
 
-	void getAddedActiveObjectsAroundPos(const v3f &player_pos, f32 radius,
-			f32 player_radius, std::set<u16> &current_objects,
-			std::queue<u16> &added_objects);
+	void getAddedActiveObjectsAroundPos(v3f player_pos, f32 radius,
+			f32 player_radius, const std::set<u16> &current_objects,
+			std::vector<u16> &added_objects);
 };
 } // namespace server

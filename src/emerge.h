@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class EmergeThread;
 class NodeDefManager;
 class Settings;
-
+class MapSettingsManager;
 class BiomeManager;
 class OreManager;
 class DecorationManager;

@@ -368,6 +368,7 @@ set(common_SRCS
 	${server_SRCS}
 	${content_SRCS}
 	chat.cpp
+	clientdynamicinfo.cpp
 	collision.cpp
 	content_mapnode.cpp
 	content_nodemeta.cpp
@@ -416,6 +417,7 @@ set(common_SRCS
 	serialization.cpp
 	server.cpp
 	serverenvironment.cpp
+	servermap.cpp
 	settings.cpp
 	staticobject.cpp
 	terminal_chat_console.cpp
@@ -880,10 +882,6 @@ if(WIN32)
 		if(BUILD_CLIENT AND USE_GETTEXT AND GETTEXT_DLL)
 			install(FILES ${GETTEXT_DLL} DESTINATION ${BINDIR})
 		endif()
-	endif()
-
-	if(BUILD_CLIENT AND IRRLICHT_DLL)
-		install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
 	endif()
 endif()
 

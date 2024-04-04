@@ -29,38 +29,54 @@ class ITextureSource;
 struct ContentFeatures;
 class ShadowRenderer;
 
-/*!
+/*
  * Holds color information of an item mesh's buffer.
  */
-struct ItemPartColor
+class ItemPartColor
 {
-	/*!
-	 * If this is false, the global base color of the item
-	 * will be used instead of the specific color of the
-	 * buffer.
+	/*
+	 * Optional color that overrides the global base color.
 	 */
-	bool override_base = false;
-	/*!
-	 * The color of the buffer.
+	video::SColor override_color;
+	/*
+	 * Stores the last color this mesh buffer was colorized as.
 	 */
-	video::SColor color = 0;
+	video::SColor last_colorized;
+
+	// saves some bytes compared to two std::optionals
+	bool override_color_set = false;
+	bool last_colorized_set = false;
+
+public:
 
 	ItemPartColor() = default;
 
 	ItemPartColor(bool override, video::SColor color) :
-			override_base(override), color(color)
-	{
+		override_color(color), override_color_set(override)
+	{}
+
+	void applyOverride(video::SColor &dest) const {
+		if (override_color_set)
+			dest = override_color;
+	}
+
+	bool needColorize(video::SColor target) {
+		if (last_colorized_set && target == last_colorized)
+			return false;
+		last_colorized_set = true;
+		last_colorized = target;
+		return true;
 	}
 };
 
 struct ItemMesh
 {
 	scene::IMesh *mesh = nullptr;
-	/*!
+	/*
 	 * Stores the color of each mesh buffer.
 	 */
 	std::vector<ItemPartColor> buffer_colors;
-	/*!
+	/*
 	 * If false, all faces of the item should have the same brightness.
 	 * Disables shading based on normal vectors.
 	 */
