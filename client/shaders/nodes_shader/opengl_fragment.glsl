@@ -70,7 +70,7 @@ vec4 perm(vec4 x)
 	return mod(((x * 34.0) + 1.0) * x, 289.0);
 }
 
-#if ((defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS)) || defined(ENABLE_BUMPMAPS))
+#if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS)) || defined(ENABLE_BUMPMAPS)
 float snoise(vec3 p)
 {
 	vec3 a = floor(p);
