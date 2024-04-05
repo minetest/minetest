@@ -98,15 +98,12 @@ local function download_and_extract(param)
 
 	local tempfolder = core.get_temp_path()
 	if tempfolder ~= "" then
-		tempfolder = tempfolder .. DIR_DELIM .. "MT_" .. math.random(1, 1024000)
 		if not core.extract_zip(filename, tempfolder) then
 			tempfolder = nil
 		end
-	else
-		tempfolder = nil
 	end
 	os.remove(filename)
-	if not tempfolder then
+	if not tempfolder or tempfolder == "" then
 		return {
 			msg = fgettext_ne("Failed to extract \"$1\" (unsupported file type or broken archive)", package.title),
 		}
