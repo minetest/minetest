@@ -698,11 +698,13 @@ include(CheckCSourceCompiles)
 
 set(CMAKE_REQUIRED_INCLUDES ${LUA_INCLUDE_DIR})
 if(USE_LUAJIT)
-	set(CMAKE_REQUIRED_LIBRARIES ${LUA_LIBRARY})
+	# libm usually required if statically linking
+	set(CMAKE_REQUIRED_LIBRARIES ${LUA_LIBRARY} m)
 	# LuaJIT provides exactly zero ways to determine how recent it is (the version
 	# is unchanged since 2017), however it happens that string buffers were added
 	# after the changes which we care about so that works as an indicator.
 	# (https://github.com/LuaJIT/LuaJIT/commit/4c6b669 March 2021)
+	# Note: This is no longer true as of August 2023, but we're keeping the old check.
 	unset(HAVE_RECENT_LJ CACHE)
 	check_symbol_exists(luaopen_string_buffer "lualib.h" HAVE_RECENT_LJ)
 	if(NOT HAVE_RECENT_LJ)
