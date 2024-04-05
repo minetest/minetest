@@ -1,4 +1,4 @@
-uniform vec4 emissiveColor;
+uniform lowp vec4 emissiveColor;
 
 void main(void)
 {

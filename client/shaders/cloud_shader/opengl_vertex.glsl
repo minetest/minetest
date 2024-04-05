@@ -1,8 +1,8 @@
-uniform vec4 emissiveColor;
+uniform lowp vec4 emissiveColor;
 
 varying lowp vec4 varColor;
 
-varying vec3 eyeVec;
+varying highp vec3 eyeVec;
 
 void main(void)
 {
