@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_nodetimer.h"
 #include "lua_api/l_noise.h"
 #include "lua_api/l_vmanip.h"
+#include "lua_api/l_object.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "scripting_server.h"
@@ -416,7 +417,7 @@ int ModApiEnv::l_get_natural_light(lua_State *L)
 	return 1;
 }
 
-// place_node(pos, node)
+// place_node(pos, node, [placer])
 // pos = {x=num, y=num, z=num}
 int ModApiEnv::l_place_node(lua_State *L)
 {
@@ -436,6 +437,7 @@ int ModApiEnv::l_place_node(lua_State *L)
 		lua_pushboolean(L, false);
 		return 1;
 	}
+
 	// Create item to place
 	std::optional<ItemStack> item = ItemStack(ndef->get(n).name, 1, 0, idef);
 	// Make pointed position
@@ -443,13 +445,22 @@ int ModApiEnv::l_place_node(lua_State *L)
 	pointed.type = POINTEDTHING_NODE;
 	pointed.node_abovesurface = pos;
 	pointed.node_undersurface = pos + v3s16(0,-1,0);
-	// Place it with a NULL placer (appears in Lua as nil)
-	bool success = scriptIfaceItem->item_OnPlace(item, nullptr, pointed);
+
+	ServerActiveObject *placer = nullptr;
+
+	if (!lua_isnoneornil(L, 3)) {
+		ObjectRef *ref = checkObject<ObjectRef>(L, 3);
+		placer = ObjectRef::getobject(ref);
+	}
+
+	// Place it with a nullptr placer (appears in Lua as nil)
+	// or the given ObjectRef
+	bool success = scriptIfaceItem->item_OnPlace(item, placer, pointed);
 	lua_pushboolean(L, success);
 	return 1;
 }
 
-// dig_node(pos)
+// dig_node(pos, [digger])
 // pos = {x=num, y=num, z=num}
 int ModApiEnv::l_dig_node(lua_State *L)
 {
@@ -465,14 +476,23 @@ int ModApiEnv::l_dig_node(lua_State *L)
 		lua_pushboolean(L, false);
 		return 1;
 	}
-	// Dig it out with a NULL digger (appears in Lua as a
-	// non-functional ObjectRef)
-	bool success = scriptIfaceNode->node_on_dig(pos, n, NULL);
+
+	ServerActiveObject *digger = nullptr;
+
+	if (!lua_isnoneornil(L, 2)) {
+		ObjectRef *ref = checkObject<ObjectRef>(L, 2);
+		digger = ObjectRef::getobject(ref);
+	}
+
+	// Dig it out with a nullptr digger
+	// (appears in Lua as a non-functional ObjectRef)
+	// or the given ObjectRef
+	bool success = scriptIfaceNode->node_on_dig(pos, n, digger);
 	lua_pushboolean(L, success);
 	return 1;
 }
 
-// punch_node(pos)
+// punch_node(pos, [puncher])
 // pos = {x=num, y=num, z=num}
 int ModApiEnv::l_punch_node(lua_State *L)
 {
@@ -488,9 +508,19 @@ int ModApiEnv::l_punch_node(lua_State *L)
 		lua_pushboolean(L, false);
 		return 1;
 	}
-	// Punch it with a NULL puncher (appears in Lua as a non-functional
-	// ObjectRef)
-	bool success = scriptIfaceNode->node_on_punch(pos, n, NULL, PointedThing());
+
+	ServerActiveObject *puncher = nullptr;
+
+	if (!lua_isnoneornil(L, 2)) {
+		ObjectRef *ref = checkObject<ObjectRef>(L, 2);
+		puncher = ObjectRef::getobject(ref);
+	}
+
+	// Punch it with a nullptr puncher
+	// (appears in Lua as a non-functional ObjectRef)
+	// or the given ObjectRef
+	// TODO: custom PointedThing (requires a converter function)
+	bool success = scriptIfaceNode->node_on_punch(pos, n, puncher, PointedThing());
 	lua_pushboolean(L, success);
 	return 1;
 }
