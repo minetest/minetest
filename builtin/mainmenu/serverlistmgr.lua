@@ -80,7 +80,8 @@ local WEIGHT_SORT = 2
 -- how much the estimated latency contributes to the final ranking
 local WEIGHT_LATENCY = 1
 
-local function order_server_list(list)
+--- @param list of servers, will be modified.
+local function order_server_list_internal(list)
 	-- calculate the scores
 	local s1 = Normalizer:new()
 	local s2 = Normalizer:new()
@@ -99,22 +100,36 @@ local function order_server_list(list)
 	s1 = s1:calc()
 	s2 = s2:calc()
 
-	-- make a shallow copy and pre-calculate ordering
-	local res, order = {}, {}
-	for i = 1, #list do
-		local fav = list[i]
-		res[i] = fav
-
-		local n = s1[fav] * WEIGHT_SORT + s2[fav] * WEIGHT_LATENCY
-		order[fav] = n
+	-- pre-calculate ordering
+	local order = {}
+	for _, fav in ipairs(list) do
+		order[fav] = s1[fav] * WEIGHT_SORT + s2[fav] * WEIGHT_LATENCY
 	end
 
 	-- now sort the list
-	table.sort(res, function(fav1, fav2)
+	table.sort(list, function(fav1, fav2)
 		return order[fav1] > order[fav2]
 	end)
+end
 
-	return res
+local function order_server_list(list)
+	-- split the list into two parts and sort them separately, to keep empty
+	-- servers at the bottom.
+	local nonempty, empty = {}, {}
+
+	for _, fav in ipairs(list) do
+		if (fav.clients or 0) > 0 then
+			table.insert(nonempty, fav)
+		else
+			table.insert(empty, fav)
+		end
+	end
+
+	order_server_list_internal(nonempty)
+	order_server_list_internal(empty)
+
+	table.insert_all(nonempty, empty)
+	return nonempty
 end
 
 local public_downloading = false
