@@ -729,7 +729,7 @@ int ModApiMainMenu::l_get_cache_path(lua_State *L)
 int ModApiMainMenu::l_get_temp_path(lua_State *L)
 {
 	if (lua_isnoneornil(L, 1) || !lua_toboolean(L, 1))
-		lua_pushstring(L, fs::TempPath().c_str());
+		lua_pushstring(L, fs::CreateTempDir().c_str());
 	else
 		lua_pushstring(L, fs::CreateTempFile().c_str());
 	return 1;

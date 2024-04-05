@@ -324,13 +324,8 @@ std::string TestBase::getTestTempDirectory()
 	if (!m_test_dir.empty())
 		return m_test_dir;
 
-	char buf[32];
-	porting::mt_snprintf(buf, sizeof(buf), "%08X", myrand());
-
-	m_test_dir = fs::TempPath() + DIR_DELIM "mttest_" + buf;
-	if (!fs::CreateDir(m_test_dir))
-		UASSERT(false);
-
+	m_test_dir = fs::CreateTempDir();
+	UASSERT(!m_test_dir.empty());
 	return m_test_dir;
 }
 
