@@ -94,10 +94,7 @@ endif()
 if(TRUE)
 	message(STATUS "Using imported IrrlichtMt at subdirectory 'irr'")
 	if(BUILD_CLIENT)
-		# tell IrrlichtMt to create a static library
-		set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared library" FORCE)
 		add_subdirectory(irr EXCLUDE_FROM_ALL)
-		unset(BUILD_SHARED_LIBS CACHE)
 
 		if(NOT TARGET IrrlichtMt)
 			message(FATAL_ERROR "IrrlichtMt project is missing a CMake target?!")
