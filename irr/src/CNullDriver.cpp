@@ -983,6 +983,11 @@ IImage *CNullDriver::createImageFromFile(io::IReadFile *file)
 			continue;
 
 		file->seek(0); // reset file position which might have changed due to previous loadImage calls
+		// avoid warnings if extension is wrong
+		if (!SurfaceLoader[i]->isALoadableFileFormat(file))
+			continue;
+
+		file->seek(0);
 		if (IImage *image = SurfaceLoader[i]->loadImage(file))
 			return image;
 	}

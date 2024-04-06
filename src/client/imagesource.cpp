@@ -1704,7 +1704,7 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 			auto *device = RenderingEngine::get_raw_device();
 			auto *fs = device->getFileSystem();
 			auto *vd = device->getVideoDriver();
-			auto *memfile = fs->createMemoryReadFile(png.data(), png.size(), "__temp_png");
+			auto *memfile = fs->createMemoryReadFile(png.data(), png.size(), "[png_tmpfile");
 			video::IImage* pngimg = vd->createImageFromFile(memfile);
 			memfile->drop();
 
