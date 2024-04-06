@@ -4,13 +4,6 @@
 
 static const char *const copyright = "Irrlicht Engine (c) 2002-2017 Nikolaus Gebhardt"; // put string in binary
 
-#ifdef _IRR_WINDOWS_
-#include <windows.h>
-#if defined(_DEBUG) && !defined(__GNUWIN32__)
-#include <crtdbg.h>
-#endif // _DEBUG
-#endif
-
 #include "irrlicht.h"
 #ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 #include "CIrrDeviceWin32.h"
@@ -126,27 +119,3 @@ extern "C" IRRLICHT_API bool IRRCALLCONV isDriverSupported(E_DRIVER_TYPE driver)
 }
 
 } // end namespace irr
-
-#if defined(_IRR_WINDOWS_API_) && !defined(_IRR_STATIC_LIB_)
-
-BOOL APIENTRY DllMain(HANDLE hModule,
-		DWORD ul_reason_for_call,
-		LPVOID lpReserved)
-{
-	// _crtBreakAlloc = 139;
-
-	switch (ul_reason_for_call) {
-	case DLL_PROCESS_ATTACH:
-#if defined(_DEBUG) && !defined(__GNUWIN32__)
-		_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
-#endif
-		break;
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return TRUE;
-}
-
-#endif // defined(_IRR_WINDOWS_)

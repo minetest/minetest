@@ -2,23 +2,9 @@ if(NOT APPLE)
 	set(DEFAULT_SDL2 ON)
 endif()
 
-option(BUILD_SHARED_LIBS "Build shared library" TRUE)
 option(USE_SDL2 "Use the SDL2 backend" ${DEFAULT_SDL2})
 
 # Compiler flags
-
-add_definitions(-DIRRLICHT_EXPORTS)
-if(BUILD_SHARED_LIBS)
-	if(WIN32)
-		set(API_IMPORT "__declspec(dllimport)")
-		set(API_EXPORT "__declspec(dllexport)")
-	elseif(CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang|AppleClang)$")
-		set(API_EXPORT "__attribute__ ((visibility(\"default\")))") # only necessary if default visibility is set to hidden
-	endif()
-else()
-	add_definitions(-D_IRR_STATIC_LIB_)
-endif()
-add_definitions("-DIRRLICHT_API=${API_EXPORT}")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	add_definitions(-D_DEBUG)
@@ -493,7 +479,7 @@ add_library(IRRGUIOBJ OBJECT
 
 # Library
 
-add_library(IrrlichtMt)
+add_library(IrrlichtMt STATIC)
 foreach(object_lib
 	IRRMESHOBJ IRROBJ IRRVIDEOOBJ
 	IRRIOOBJ IRROTHEROBJ IRRGUIOBJ)
@@ -510,7 +496,6 @@ target_include_directories(IrrlichtMt
 	PUBLIC
 		"$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/>"
 		"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
-		"$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/irrlichtmt>"
 	PRIVATE
 		${link_includes}
 )
@@ -540,21 +525,6 @@ target_link_libraries(IrrlichtMt PRIVATE
 if(WIN32)
 	target_compile_definitions(IrrlichtMt INTERFACE _IRR_WINDOWS_API_) # used in _IRR_DEBUG_BREAK_IF definition in a public header
 endif()
-target_compile_definitions(IrrlichtMt INTERFACE "IRRLICHT_API=${API_IMPORT}")
 if(APPLE OR ANDROID OR EMSCRIPTEN)
 	target_compile_definitions(IrrlichtMt PUBLIC IRR_MOBILE_PATHS)
 endif()
-
-set_target_properties(IrrlichtMt PROPERTIES
-	VERSION ${PROJECT_VERSION}
-)
-
-if(WIN32)
-	set_target_properties(IrrlichtMt PROPERTIES PREFIX "") # for DLL name
-endif()
-
-# Installation of library
-install(TARGETS IrrlichtMt
-	EXPORT IrrlichtMt-export
-	DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-)
