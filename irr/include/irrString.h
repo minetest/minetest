@@ -6,12 +6,17 @@
 
 #include "irrTypes.h"
 #include <string>
+#include <string_view>
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <cwchar>
-#include <codecvt>
 #include <locale>
+
+/* HACK: import these string methods from MT's util/string.h */
+extern std::wstring utf8_to_wide(std::string_view input);
+extern std::string wide_to_utf8(std::wstring_view input);
+/* */
 
 namespace irr
 {
@@ -905,8 +910,7 @@ inline size_t multibyteToWString(stringw &destination, const core::stringc &sour
 
 inline size_t utf8ToWString(stringw &destination, const char *source)
 {
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	destination = conv.from_bytes(source);
+	destination = utf8_to_wide(source);
 	return destination.size();
 }
 
@@ -917,8 +921,7 @@ inline size_t utf8ToWString(stringw &destination, const stringc &source)
 
 inline size_t wStringToUTF8(stringc &destination, const wchar_t *source)
 {
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	destination = conv.to_bytes(source);
+	destination = wide_to_utf8(source);
 	return destination.size();
 }
 
