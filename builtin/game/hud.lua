@@ -2,27 +2,27 @@
 Register function to easily register new builtin hud elements
 `def` is a table and contains the following fields:
   elem_def  the HUD element definition which can be changed with hud_replace_builtin
-  event     (optional) for an additional eventname on which the element will be updated
-            ("hud_changed" and "properties_changed" will always be used.)
-  hud_change(id, player)
-            (optional) a function to change the element after it has been updated
-            (Is not called when the element is first set or recreated.)
+  events    (optional) additional event names on which the element will be updated
+            ("hud_changed" will always be used.)
   show_elem(player, flags, id)
             (optional) a function to decide if the element should be shown to a player
             It is called before the element gets updated.
-  init_change(player, elem_def)
+  update_def(player, elem_def)
             (optional) a function to change the elem_def before it will be used.
             (elem_def can be changed, since the table which got set by using
-            hud_replace_builtin isn't unexposed to the API.)
-
+            hud_replace_builtin isn't exposed to the API.)
+  update_elem(player, id)
+            (optional) a function to change the element after it has been updated
+            (Is not called when the element is first set or recreated.)
 ]]--
+
 local registered_elements = {}
 local update_events = {}
 local function register_builtin_hud_element(name, def)
 	registered_elements[name] = def
-	if def.event then
-		update_events[def.event] = update_events[def.event] or {}
-		table.insert(update_events[def.event], name)
+	for _, event in ipairs(def.events or {}) do
+		update_events[event] = update_events[event] or {}
+		table.insert(update_events[event], name)
 	end
 end
 
@@ -30,7 +30,7 @@ end
 local hud_ids = {}
 
 -- Updates one element
--- In case the element is already added, it only calls the hud_change function from
+-- In case the element is already added, it only calls the update_elem function from
 -- registered_elements. (To recreate the element remove it first.)
 local function update_element(player, player_hud_ids, elem_name, flags)
 	local def = registered_elements[elem_name]
@@ -45,8 +45,8 @@ local function update_element(player, player_hud_ids, elem_name, flags)
 	end
 
 	if not id then
-		if def.init_change then
-			def.init_change(player, def.elem_def)
+		if def.update_def then
+			def.update_def(player, def.elem_def)
 		end
 
 		id = player:hud_add(def.elem_def)
@@ -54,8 +54,8 @@ local function update_element(player, player_hud_ids, elem_name, flags)
 		return
 	end
 
-	if def.hud_change then
-		def.hud_change(player, id)
+	if def.update_elem then
+		def.update_elem(player, id)
 	end
 end
 
@@ -81,7 +81,7 @@ end
 local function player_event_handler(player, eventname)
 	assert(player:is_player())
 
-	if eventname == "hud_changed" or eventname == "properties_changed" then
+	if eventname == "hud_changed" then
 		update_hud(player)
 		return
 	end
@@ -95,15 +95,15 @@ end
 
 -- Returns true if successful, otherwise false,
 -- but currently the return value is not documented in the Lua API.
-function core.hud_replace_builtin(elem_name, definition)
-	assert(type(definition) == "table")
+function core.hud_replace_builtin(elem_name, elem_def)
+	assert(type(elem_def) == "table")
 
 	local registered = registered_elements[elem_name]
 	if not registered then
 		return false
 	end
 
-	registered.elem_def = table.copy(definition)
+	registered.elem_def = table.copy(elem_def)
 
 	for playername, player_hud_ids in pairs(hud_ids) do
 		local player = core.get_player_by_name(playername)
@@ -140,7 +140,7 @@ core.register_playerevent(player_event_handler)
 -- Cache setting
 local enable_damage = core.settings:get_bool("enable_damage")
 
-local function scaleToHudMax(player, field)
+local function scale_to_hud_max(player, field)
 	-- Scale "hp" or "breath" to the hud maximum dimensions
 	local current = player["get_" .. field](player)
 	local nominal
@@ -165,17 +165,17 @@ register_builtin_hud_element("health", {
 		size = {x = 24, y = 24},
 		offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 16)},
 	},
+	events = {"properties_changed", "health_changed"},
 	show_elem = function(player, flags)
-		return flags.healthbar and enable_damage and player:get_armor_groups().immortal ~= 1
+		return flags.healthbar and enable_damage and
+				player:get_armor_groups().immortal ~= 1
 	end,
-	event = "health_changed",
-	hud_change = function(player, id)
-		player:hud_change(id, "number", scaleToHudMax(player, "hp"))
-	end,
-	init_change = function(player, elem_def)
-		elem_def.number = scaleToHudMax(player, "hp")
-		-- Deprecated undocumented behavior
+	update_def = function(player, elem_def)
 		elem_def.item = elem_def.item or elem_def.number or core.PLAYER_MAX_HP_DEFAULT
+		elem_def.number = scale_to_hud_max(player, "hp")
+	end,
+	update_elem = function(player, id)
+		player:hud_change(id, "number", scale_to_hud_max(player, "hp"))
 	end,
 })
 
@@ -196,53 +196,50 @@ register_builtin_hud_element("breath", {
 		size = {x = 24, y = 24},
 		offset = {x = 25, y= -(48 + 24 + 16)},
 	},
+	events = {"properties_changed", "breath_changed"},
 	show_elem = function(player, flags, id)
-		local breath_relevant = player:get_breath() < player:get_properties().breath_max
-		local show_breathbar = flags.breathbar and enable_damage
-				and player:get_armor_groups().immortal ~= 1
-				and player:get_breath() < player:get_properties().breath_max
-
+		local show_breathbar = flags.breathbar and enable_damage and
+				player:get_armor_groups().immortal ~= 1
 		if id then
-			local player_name = player:get_player_name()
-			if not breath_relevant then
-				if not breathbar_removal_jobs[player_name] then
-					-- The breathbar stays for some time and then gets removed.
-					breathbar_removal_jobs[player_name] = core.after(1, function()
-						local player = core.get_player_by_name(player_name)
-						local id = hud_ids[player_name].breath
-						if player and id then
-							player:hud_remove(id)
-							hud_ids[player_name].breath = nil
-						end
-						breathbar_removal_jobs[player_name] = nil
-					end)
-				end
-
-				-- The element will not prematurely be removed by update_element
-				-- (but may still be instantly removed if the flag changed)
-				return show_breathbar
-			else
-				-- Cancel removal
-				local job = breathbar_removal_jobs[player_name]
-				if job then
-					job:cancel()
-					breathbar_removal_jobs[player_name] = nil
-				end
-				return show_breathbar
-			end
+			-- The element will not prematurely be removed by update_element
+			-- (but may still be instantly removed if the flag changed)
+			return show_breathbar
 		end
-
 		-- Don't add the element if the breath is full
+		local breath_relevant = player:get_breath() < player:get_properties().breath_max
 		return show_breathbar and breath_relevant
 	end,
-	event = "breath_changed",
-	hud_change = function(player, id)
-		player:hud_change(id, "number", scaleToHudMax(player, "breath"))
-	end,
-	init_change = function(player, elem_def)
-		elem_def.number = scaleToHudMax(player, "breath")
-		-- Deprecated undocumented behavior
+	update_def = function(player, elem_def)
 		elem_def.item = elem_def.item or elem_def.number or core.PLAYER_MAX_BREATH_DEFAULT
+		elem_def.number = scale_to_hud_max(player, "breath")
+	end,
+	update_elem = function(player, id)
+		player:hud_change(id, "number", scale_to_hud_max(player, "breath"))
+
+		local player_name = player:get_player_name()
+		local breath_relevant = player:get_breath() < player:get_properties().breath_max
+
+		if not breath_relevant then
+			if not breathbar_removal_jobs[player_name] then
+				-- The breathbar stays for some time and then gets removed.
+				breathbar_removal_jobs[player_name] = core.after(1, function()
+					local player = core.get_player_by_name(player_name)
+					local id = hud_ids[player_name].breath
+					if player and id then
+						player:hud_remove(id)
+						hud_ids[player_name].breath = nil
+					end
+					breathbar_removal_jobs[player_name] = nil
+				end)
+			end
+		else
+			-- Cancel removal
+			local job = breathbar_removal_jobs[player_name]
+			if job then
+				job:cancel()
+				breathbar_removal_jobs[player_name] = nil
+			end
+		end
 	end,
 })
 
@@ -258,7 +255,7 @@ register_builtin_hud_element("minimap", {
 	},
 	show_elem = function(player, flags)
 		-- Don't add a minimap for clients which already have it hardcoded in C++.
-		return minetest.get_player_information(player:get_player_name()).protocol_version >= 44
-				and flags.minimap
+		return flags.minimap and
+				minetest.get_player_information(player:get_player_name()).protocol_version >= 44
 	end,
 })
