@@ -801,7 +801,7 @@ void Hud::drawCrosshair()
 		core::dimension2di orig_size(tex->getOriginalSize());
 		// Integer scaling to avoid artifacts, floor instead of round since too
 		// small looks better than too large in this case.
-		core::dimension2di scaled_size = orig_size * std::floor(m_scale_factor);
+		core::dimension2di scaled_size = orig_size * std::max(std::floor(m_scale_factor), 1.0f);
 
 		core::rect<s32> src_rect(orig_size);
 		core::position2d pos(m_displaycenter.X - scaled_size.Width / 2,

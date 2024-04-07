@@ -66,6 +66,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "shader.h"
 #include "sky.h"
+#include "threading/lambda.h"
 #include "translation.h"
 #include "util/basic_macros.h"
 #include "util/directiontables.h"
@@ -381,11 +382,9 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float>
 		m_animation_timer_delta_pixel{"animationTimerDelta"};
 	CachedPixelShaderSetting<float, 3> m_day_light{"dayLight"};
-	CachedPixelShaderSetting<float, 3> m_eye_position_pixel{"eyePosition"};
-	CachedVertexShaderSetting<float, 3> m_eye_position_vertex{"eyePosition"};
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
 	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel{"cameraOffset"};
-	CachedPixelShaderSetting<float, 3> m_camera_offset_vertex{"cameraOffset"};
+	CachedVertexShaderSetting<float, 3> m_camera_offset_vertex{"cameraOffset"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture0{"texture0"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture1{"texture1"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture2{"texture2"};
@@ -482,10 +481,6 @@ public:
 		float animation_timer_delta_f = (float)m_client->getEnv().getFrameTimeDelta() / 100000.f;
 		m_animation_timer_delta_vertex.set(&animation_timer_delta_f, services);
 		m_animation_timer_delta_pixel.set(&animation_timer_delta_f, services);
-
-		v3f epos = m_client->getEnv().getLocalPlayer()->getEyePosition();
-		m_eye_position_pixel.set(epos, services);
-		m_eye_position_vertex.set(epos, services);
 
 		if (m_client->getMinimap()) {
 			v3f minimap_yaw = m_client->getMinimap()->getYawVec();
@@ -1020,12 +1015,6 @@ Game::Game() :
 
 Game::~Game()
 {
-	delete client;
-	delete soundmaker;
-	sound_manager.reset();
-
-	delete server; // deleted first to stop all server threads
-
 	delete hud;
 	delete camera;
 	delete quicktune;
@@ -1274,6 +1263,28 @@ void Game::shutdown()
 			sleep_ms(100);
 		}
 	}
+
+	delete client;
+	delete soundmaker;
+	sound_manager.reset();
+
+	auto stop_thread = runInThread([=] {
+		delete server;
+	}, "ServerStop");
+
+	FpsControl fps_control;
+	fps_control.reset();
+
+	while (stop_thread->isRunning()) {
+		m_rendering_engine->run();
+		f32 dtime;
+		fps_control.limit(device, &dtime);
+		showOverlayMessage(N_("Shutting down..."), dtime, 0, false);
+	}
+
+	stop_thread->rethrow();
+
+	// to be continued in Game::~Game
 }
 
 
@@ -1379,11 +1390,33 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 
 	server = new Server(map_dir, gamespec, simple_singleplayer_mode, bind_addr,
 			false, nullptr, error_message);
-	server->start();
 
-	copyServerClientCache();
+	auto start_thread = runInThread([=] {
+		server->start();
+		copyServerClientCache();
+	}, "ServerStart");
 
-	return true;
+	input->clear();
+	bool success = true;
+
+	FpsControl fps_control;
+	fps_control.reset();
+
+	while (start_thread->isRunning()) {
+		if (!m_rendering_engine->run() || input->cancelPressed())
+			success = false;
+		f32 dtime;
+		fps_control.limit(device, &dtime);
+
+		if (success)
+			showOverlayMessage(N_("Creating server..."), dtime, 5);
+		else
+			showOverlayMessage(N_("Shutting down..."), dtime, 0, false);
+	}
+
+	start_thread->rethrow();
+
+	return success;
 }
 
 void Game::copyServerClientCache()

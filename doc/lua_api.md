@@ -5348,6 +5348,9 @@ Minetest includes the following settings to control behavior of privileges:
       lsystem_decoration_type = true,
       -- Overrideable pointing range using the itemstack meta key `"range"` (5.9.0)
       item_meta_range = true,
+      -- Allow passing an optional "actor" ObjectRef to the following functions:
+      -- minetest.place_node, minetest.dig_node, minetest.punch_node (5.9.0)
+      node_interaction_actor = true,
   }
   ```
 
@@ -5977,13 +5980,16 @@ handler.
     * Returns a number between `0` and `15`
     * Currently it's the same as `math.floor(param1 / 16)`, except that it
       ensures compatibility.
-* `minetest.place_node(pos, node)`
+* `minetest.place_node(pos, node[, placer])`
     * Place node with the same effects that a player would cause
-* `minetest.dig_node(pos)`
+    * `placer`: The ObjectRef that places the node (optional)
+* `minetest.dig_node(pos[, digger])`
     * Dig node with the same effects that a player would cause
+    * `digger`: The ObjectRef that digs the node (optional)
     * Returns `true` if successful, `false` on failure (e.g. protected location)
-* `minetest.punch_node(pos)`
+* `minetest.punch_node(pos[, puncher])`
     * Punch node with the same effects that a player would cause
+    * `puncher`: The ObjectRef that punches the node (optional)
 * `minetest.spawn_falling_node(pos)`
     * Change node into falling node
     * Returns `true` and the ObjectRef of the spawned entity if successful, `false` on failure

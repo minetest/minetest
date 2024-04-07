@@ -90,8 +90,8 @@ The "gamedata" table is read when calling `core.start()`. It should contain:
     registered in the core (possible in async calls)
 * `core.get_cache_path()` -> path of cache
 * `core.get_temp_path([param])` (possible in async calls)
-    * `param`=true: returns path to a temporary file
-    otherwise: returns path to the temporary folder
+  * `param == true`: returns path to a newly created temporary file
+  * otherwise: returns path to a newly created temporary folder
 
 
 
