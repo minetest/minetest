@@ -26,8 +26,8 @@ IImageWriter *createImageWriterPNG()
 static void png_cpexcept_error(png_structp png_ptr, png_const_charp msg)
 {
 	io::IWriteFile *file = reinterpret_cast<io::IWriteFile *>(png_get_error_ptr(png_ptr));
-	core::stringc logmsg = core::stringc("PNG fatal error for ") + file->getFileName()
-			+ ": " + msg;
+	std::string logmsg = std::string("PNG fatal error for ")
+			+ file->getFileName().c_str() + ": " + msg;
 	os::Printer::log(logmsg.c_str(), ELL_ERROR);
 	longjmp(png_jmpbuf(png_ptr), 1);
 }
@@ -36,8 +36,8 @@ static void png_cpexcept_error(png_structp png_ptr, png_const_charp msg)
 static void png_cpexcept_warning(png_structp png_ptr, png_const_charp msg)
 {
 	io::IWriteFile *file = reinterpret_cast<io::IWriteFile *>(png_get_error_ptr(png_ptr));
-	core::stringc logmsg = core::stringc("PNG warning for ") + file->getFileName()
-			+ ": " + msg;
+	std::string logmsg = std::string("PNG warning for ")
+			+ file->getFileName().c_str() + ": " + msg;
 	os::Printer::log(logmsg.c_str(), ELL_WARNING);
 }
 
