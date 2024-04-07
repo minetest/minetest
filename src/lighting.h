@@ -18,7 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #pragma once
-#include "irrlichttypes_extrabloated.h"
+#include "SColor.h"
+
+using namespace irr;
 
 /**
  * Parameters for automatic exposure compensation

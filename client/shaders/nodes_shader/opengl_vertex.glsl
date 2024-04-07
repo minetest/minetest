@@ -271,7 +271,7 @@ void main(void)
 				mtsmoothstep(0.8, 0.85, f_timeofday);
 		} else {
 			adj_shadow_strength = f_shadow_strength *
-				mtsmoothstep(0.20, 0.25, f_timeofday) *
+				mtsmoothstep(0.18, 0.25, f_timeofday) *
 				(1.0 - mtsmoothstep(0.75, 0.8, f_timeofday));
 		}
 	}

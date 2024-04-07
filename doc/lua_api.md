@@ -8288,6 +8288,8 @@ child will follow movement and rotation of that bone.
         * `thickness`: cloud thickness in nodes (default `16`)
         * `speed`: 2D cloud speed + direction in nodes per second
           (default `{x=0, z=-2}`).
+        * `shadow`: shadow color, applied to the base of the cloud
+         (default `{a=255, r=204, g=204, b=204}`).
 * `get_clouds()`: returns a table with the current cloud parameters as in
   `set_clouds`.
 * `override_day_night_ratio(ratio or nil)`

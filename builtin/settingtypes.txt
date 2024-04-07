@@ -268,15 +268,6 @@ performance_tradeoffs (Tradeoffs for performance) bool false
 #    Adds particles when digging a node.
 enable_particles (Digging particles) bool true
 
-#   Tint sunlight orange during dusk and dawn.
-tinted_sunlight (Tinted sunlight) bool false
-
-#   The color of light that sources like lamps, torches etc. give off.
-#   -   default: Neutral, white light.
-#   -   medium: Slightly warmer color than default.
-#   -   warm: Warm (yellowish-orangy) light.
-artificial_light (Artificial light color) enum default default,medium,warm
-
 [**3D]
 
 #    3D support.
@@ -687,6 +678,19 @@ enable_bumpmaps (Bump maps) bool false
 #
 #   Requires: enable_shaders, enable_dynamic_shadows
 enable_node_reflections (Node reflections) bool false
+
+#   Tint sunlight orange during dusk and dawn.
+#
+#   Requires: enable_shaders
+tinted_sunlight (Tinted sunlight) bool false
+
+#   The color of light that sources like lamps, torches etc. give off.
+#   -   default: Neutral, white light.
+#   -   medium: Slightly warmer color than default.
+#   -   warm: Warm (yellowish-orangy) light.
+#
+#   Requires: enable_shaders
+artificial_light (Artificial light color) enum default default,medium,warm
 
 [*Audio]
 

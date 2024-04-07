@@ -4208,7 +4208,6 @@ void Game::updateShadows()
 	float timeoftheday = getWickedTimeOfDay(in_timeofday);
 	bool is_day = timeoftheday > 0.25 && timeoftheday < 0.75;
 	bool is_shadow_visible = is_day ? sky->getSunVisible() : sky->getMoonVisible();
-	bool clouds_enabled = g_settings->getBool("enable_clouds");
 	shadow->setShadowIntensity(is_shadow_visible ? client->getEnv().getLocalPlayer()->getLighting().shadow_intensity : 0.0f);
 	shadow->setShadowTint(client->getEnv().getLocalPlayer()->getLighting().shadow_tint);
 

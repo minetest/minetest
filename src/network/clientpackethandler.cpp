@@ -1476,9 +1476,11 @@ void Client::handleCommand_CloudParams(NetworkPacket* pkt)
 	v2f speed;
 
 	*pkt >> density >> color_bright >> color_ambient
-	>> height >> thickness >> speed;
+		>> height >> thickness >> speed;
 
-	if (pkt->getRemainingBytes() >= 4) *pkt >> color_shadow;
+	if (pkt->getRemainingBytes() >= 4) {
+		*pkt >> color_shadow;
+	}
 
 	ClientEvent *event = new ClientEvent();
 	event->type                       = CE_CLOUD_PARAMS;
@@ -1488,7 +1490,7 @@ void Client::handleCommand_CloudParams(NetworkPacket* pkt)
 	// we avoid using new() and delete() for no good reason
 	event->cloud_params.color_bright  = color_bright.color;
 	event->cloud_params.color_ambient = color_ambient.color;
-	event->cloud_params.color_shadow = color_shadow.color;
+	event->cloud_params.color_shadow  = color_shadow.color;
 	event->cloud_params.height        = height;
 	event->cloud_params.thickness     = thickness;
 	// same here: deconstruct to skip constructor
