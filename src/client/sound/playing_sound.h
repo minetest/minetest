@@ -63,7 +63,7 @@ public:
 	DISABLE_CLASS_COPY(PlayingSound)
 
 	// return false means streaming finished
-	bool stepStream();
+	bool stepStream(bool playback_speed_changed = false);
 
 	// retruns true if it wasn't fading already
 	bool fade(f32 step, f32 target_gain) noexcept;
@@ -77,7 +77,7 @@ public:
 
 	f32 getGain() noexcept;
 
-	void setPitch(f32 pitch) noexcept { alSourcef(m_source_id, AL_PITCH, pitch); }
+	void setPitch(f32 pitch);
 
 	bool isStreaming() const noexcept { return m_data->isStreaming(); }
 
