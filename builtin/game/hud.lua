@@ -256,6 +256,6 @@ register_builtin_hud_element("minimap", {
 	show_elem = function(player, flags)
 		-- Don't add a minimap for clients which already have it hardcoded in C++.
 		return flags.minimap and
-				minetest.get_player_information(player:get_player_name()).protocol_version >= 44
+				core.get_player_information(player:get_player_name()).protocol_version >= 44
 	end,
 })
