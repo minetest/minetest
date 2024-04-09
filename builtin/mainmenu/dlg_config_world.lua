@@ -334,7 +334,7 @@ local function handle_buttons(this, fields)
 	if fields.btn_config_world_cdb then
 		this.data.list = nil
 
-		local dlg = create_store_dlg("mod")
+		local dlg = create_contentdb_dlg("mod")
 		dlg:set_parent(this)
 		this:hide()
 		dlg:show()
