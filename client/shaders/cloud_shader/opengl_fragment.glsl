@@ -1,7 +1,7 @@
-uniform vec4 fogColor;
+uniform lowp vec4 fogColor;
 uniform float fogDistance;
 uniform float fogShadingParameter;
-varying vec3 eyeVec;
+varying highp vec3 eyeVec;
 
 varying lowp vec4 varColor;
 

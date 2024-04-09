@@ -17,7 +17,7 @@
 
 serverlistmgr = {
 	-- continent code we detected for ourselves
-	my_continent = core.get_once("continent"),
+	my_continent = nil,
 
 	-- list of locally favorites servers
 	favorites = nil,
@@ -25,6 +25,15 @@ serverlistmgr = {
 	-- list of servers fetched from public list
 	servers = nil,
 }
+
+do
+	if check_cache_age("geoip_last_checked", 3600) then
+		local tmp = cache_settings:get("geoip") or ""
+		if tmp:match("^[A-Z][A-Z]$") then
+			serverlistmgr.my_continent = tmp
+		end
+	end
+end
 
 --------------------------------------------------------------------------------
 -- Efficient data structure for normalizing arbitrary scores attached to objects
@@ -71,7 +80,8 @@ local WEIGHT_SORT = 2
 -- how much the estimated latency contributes to the final ranking
 local WEIGHT_LATENCY = 1
 
-local function order_server_list(list)
+--- @param list of servers, will be modified.
+local function order_server_list_internal(list)
 	-- calculate the scores
 	local s1 = Normalizer:new()
 	local s2 = Normalizer:new()
@@ -90,28 +100,58 @@ local function order_server_list(list)
 	s1 = s1:calc()
 	s2 = s2:calc()
 
-	-- make a shallow copy and pre-calculate ordering
-	local res, order = {}, {}
-	for i = 1, #list do
-		local fav = list[i]
-		res[i] = fav
-
-		local n = s1[fav] * WEIGHT_SORT + s2[fav] * WEIGHT_LATENCY
-		order[fav] = n
+	-- pre-calculate ordering
+	local order = {}
+	for _, fav in ipairs(list) do
+		order[fav] = s1[fav] * WEIGHT_SORT + s2[fav] * WEIGHT_LATENCY
 	end
 
 	-- now sort the list
-	table.sort(res, function(fav1, fav2)
+	table.sort(list, function(fav1, fav2)
 		return order[fav1] > order[fav2]
 	end)
+end
 
-	return res
+local function order_server_list(list)
+	-- split the list into two parts and sort them separately, to keep empty
+	-- servers at the bottom.
+	local nonempty, empty = {}, {}
+
+	for _, fav in ipairs(list) do
+		if (fav.clients or 0) > 0 then
+			table.insert(nonempty, fav)
+		else
+			table.insert(empty, fav)
+		end
+	end
+
+	order_server_list_internal(nonempty)
+	order_server_list_internal(empty)
+
+	table.insert_all(nonempty, empty)
+	return nonempty
 end
 
 local public_downloading = false
 local geoip_downloading = false
 
 --------------------------------------------------------------------------------
+local function fetch_geoip()
+	local http = core.get_http_api()
+	local url = core.settings:get("serverlist_url") .. "/geoip"
+
+	local response = http.fetch_sync({ url = url })
+	if not response.succeeded then
+		return
+	end
+
+	local retval = core.parse_json(response.data)
+	if type(retval) ~= "table" then
+		return
+	end
+	return type(retval.continent) == "string" and retval.continent
+end
+
 function serverlistmgr.sync()
 	if not serverlistmgr.servers then
 		serverlistmgr.servers = {{
@@ -129,37 +169,23 @@ function serverlistmgr.sync()
 		return
 	end
 
-	-- only fetched once per MT instance
 	if not serverlistmgr.my_continent and not geoip_downloading then
 		geoip_downloading = true
-		core.handle_async(
-			function(param)
-				local http = core.get_http_api()
-				local url = core.settings:get("serverlist_url") .. "/geoip"
-
-				local response = http.fetch_sync({ url = url })
-				if not response.succeeded then
-					return
-				end
-
-				local retval = core.parse_json(response.data)
-				return retval and type(retval.continent) == "string" and retval.continent
-			end,
-			nil,
-			function(result)
-				geoip_downloading = false
-				if not result then
-					return
-				end
-				serverlistmgr.my_continent = result
-				core.set_once("continent", result)
-				-- reorder list if we already have it
-				if serverlistmgr.servers then
-					serverlistmgr.servers = order_server_list(serverlistmgr.servers)
-					core.event_handler("Refresh")
-				end
+		core.handle_async(fetch_geoip, nil, function(result)
+			geoip_downloading = false
+			if not result then
+				return
 			end
-		)
+			serverlistmgr.my_continent = result
+			cache_settings:set("geoip", result)
+			cache_settings:set("geoip_last_checked", tostring(os.time()))
+
+			-- re-sort list if applicable
+			if serverlistmgr.servers then
+				serverlistmgr.servers = order_server_list(serverlistmgr.servers)
+				core.event_handler("Refresh")
+			end
+		end)
 	end
 
 	if public_downloading then
@@ -167,6 +193,7 @@ function serverlistmgr.sync()
 	end
 	public_downloading = true
 
+	-- note: this isn't cached because it's way too dynamic
 	core.handle_async(
 		function(param)
 			local http = core.get_http_api()

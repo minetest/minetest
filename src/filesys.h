@@ -75,12 +75,18 @@ bool RecursiveDelete(const std::string &path);
 
 bool DeleteSingleFileOrEmptyDirectory(const std::string &path);
 
-// Returns path to temp directory, can return "" on error
+/// Returns path to temp directory.
+/// You probably don't want to use this directly, see `CreateTempFile` or `CreateTempDir`.
+/// @return path or "" on error
 std::string TempPath();
 
-// Returns path to securely-created temporary file (will already exist when this function returns)
-// can return "" on error
+/// Returns path to securely-created temporary file (will already exist when this function returns).
+/// @return path or "" on error
 std::string CreateTempFile();
+
+/// Returns path to securely-created temporary directory (will already exist when this function returns).
+/// @return path or "" on error
+std::string CreateTempDir();
 
 /* Returns a list of subdirectories, including the path itself, but excluding
        hidden directories (whose names start with . or _)

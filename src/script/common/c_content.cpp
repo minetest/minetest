@@ -156,17 +156,24 @@ void read_item_definition(lua_State* L, int index,
 
 	getboolfield(L, index, "wallmounted_rotate_vertical", def.wallmounted_rotate_vertical);
 
+	TouchInteraction &inter = def.touch_interaction;
 	lua_getfield(L, index, "touch_interaction");
-	if (!lua_isnil(L, -1)) {
-		luaL_checktype(L, -1, LUA_TTABLE);
-
-		TouchInteraction &inter = def.touch_interaction;
+	if (lua_istable(L, -1)) {
 		inter.pointed_nothing = (TouchInteractionMode)getenumfield(L, -1, "pointed_nothing",
 				es_TouchInteractionMode, inter.pointed_nothing);
 		inter.pointed_node = (TouchInteractionMode)getenumfield(L, -1, "pointed_node",
 				es_TouchInteractionMode, inter.pointed_node);
 		inter.pointed_object = (TouchInteractionMode)getenumfield(L, -1, "pointed_object",
 				es_TouchInteractionMode, inter.pointed_object);
+	} else if (lua_isstring(L, -1)) {
+		int value;
+		if (string_to_enum(es_TouchInteractionMode, value, lua_tostring(L, -1))) {
+			inter.pointed_nothing = (TouchInteractionMode)value;
+			inter.pointed_node    = (TouchInteractionMode)value;
+			inter.pointed_object  = (TouchInteractionMode)value;
+		}
+	} else if (!lua_isnil(L, -1)) {
+		throw LuaError("invalid type for 'touch_interaction'");
 	}
 	lua_pop(L, 1);
 }

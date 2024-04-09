@@ -18,14 +18,20 @@ namespace video
 // PNG function for error handling
 static void png_cpexcept_error(png_structp png_ptr, png_const_charp msg)
 {
-	os::Printer::log("PNG fatal error", msg, ELL_ERROR);
+	io::IReadFile *file = reinterpret_cast<io::IReadFile *>(png_get_error_ptr(png_ptr));
+	std::string logmsg = std::string("PNG fatal error for ")
+			+ file->getFileName().c_str() + ": " + msg;
+	os::Printer::log(logmsg.c_str(), ELL_ERROR);
 	longjmp(png_jmpbuf(png_ptr), 1);
 }
 
 // PNG function for warning handling
 static void png_cpexcept_warn(png_structp png_ptr, png_const_charp msg)
 {
-	os::Printer::log("PNG warning", msg, ELL_WARNING);
+	io::IReadFile *file = reinterpret_cast<io::IReadFile *>(png_get_error_ptr(png_ptr));
+	std::string logmsg = std::string("PNG warning for ")
+			+ file->getFileName().c_str() + ": " + msg;
+	os::Printer::log(logmsg.c_str(), ELL_WARNING);
 }
 
 // PNG function for file reading
@@ -88,7 +94,7 @@ IImage *CImageLoaderPng::loadImage(io::IReadFile *file) const
 
 	// Allocate the png read struct
 	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
-			NULL, (png_error_ptr)png_cpexcept_error, (png_error_ptr)png_cpexcept_warn);
+			file, (png_error_ptr)png_cpexcept_error, (png_error_ptr)png_cpexcept_warn);
 	if (!png_ptr) {
 		os::Printer::log("LOAD PNG: Internal PNG create read struct failure", file->getFileName(), ELL_ERROR);
 		return 0;

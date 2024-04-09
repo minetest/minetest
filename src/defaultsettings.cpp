@@ -310,6 +310,7 @@ void set_default_settings()
 	settings->setDefault("invert_hotbar_mouse_wheel", "false");
 	settings->setDefault("mouse_sensitivity", "0.2");
 	settings->setDefault("repeat_place_time", "0.25");
+	settings->setDefault("repeat_dig_time", "0.15");
 	settings->setDefault("safe_dig_and_place", "false");
 	settings->setDefault("random_input", "false");
 	settings->setDefault("aux1_descends", "false");
@@ -364,11 +365,10 @@ void set_default_settings()
 	settings->setDefault("contentdb_flag_blacklist", "nonfree, desktop_default");
 #endif
 
-	settings->setDefault("update_information_url", "https://www.minetest.net/release_info.json");
 #if ENABLE_UPDATE_CHECKER
-	settings->setDefault("update_last_checked", "");
+	settings->setDefault("update_information_url", "https://www.minetest.net/release_info.json");
 #else
-	settings->setDefault("update_last_checked", "disabled");
+	settings->setDefault("update_information_url", "");
 #endif
 
 	// Server
@@ -494,11 +494,13 @@ void set_default_settings()
 	settings->setDefault("keymap_sneak", "KEY_SHIFT");
 #endif
 
-	settings->setDefault("touchscreen_threshold", "20");
 	settings->setDefault("touchscreen_sensitivity", "0.2");
+	settings->setDefault("touchscreen_threshold", "20");
+	settings->setDefault("touch_long_tap_delay", "400");
 	settings->setDefault("touch_use_crosshair", "false");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux1", "false");
+	settings->setDefault("touch_punch_gesture", "short_tap");
 #ifdef ENABLE_TOUCH
 	settings->setDefault("clickable_chat_weblinks", "false");
 #else

@@ -490,6 +490,9 @@ end
 
 
 function table.insert_all(t, other)
+	if table.move then -- LuaJIT
+		return table.move(other, 1, #other, #t + 1, t)
+	end
 	for i=1, #other do
 		t[#t + 1] = other[i]
 	end

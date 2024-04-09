@@ -66,6 +66,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "shader.h"
 #include "sky.h"
+#include "threading/lambda.h"
 #include "translation.h"
 #include "util/basic_macros.h"
 #include "util/directiontables.h"
@@ -386,7 +387,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedVertexShaderSetting<float, 3> m_eye_position_vertex{"eyePosition"};
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
 	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel{"cameraOffset"};
-	CachedPixelShaderSetting<float, 3> m_camera_offset_vertex{"cameraOffset"};
+	CachedVertexShaderSetting<float, 3> m_camera_offset_vertex{"cameraOffset"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture0{"texture0"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture1{"texture1"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture2{"texture2"};
@@ -483,10 +484,6 @@ public:
 		float animation_timer_delta_f = (float)m_client->getEnv().getFrameTimeDelta() / 100000.f;
 		m_animation_timer_delta_vertex.set(&animation_timer_delta_f, services);
 		m_animation_timer_delta_pixel.set(&animation_timer_delta_f, services);
-
-		v3f epos = m_client->getEnv().getLocalPlayer()->getEyePosition();
-		m_eye_position_pixel.set(epos, services);
-		m_eye_position_vertex.set(epos, services);
 
 		if (m_client->getMinimap()) {
 			v3f minimap_yaw = m_client->getMinimap()->getYawVec();
@@ -945,6 +942,7 @@ private:
 	f32  m_cache_mouse_sensitivity;
 	f32  m_cache_joystick_frustum_sensitivity;
 	f32  m_repeat_place_time;
+	f32  m_repeat_dig_time;
 	f32  m_cache_cam_smoothing;
 
 	bool m_invert_mouse;
@@ -991,6 +989,8 @@ Game::Game() :
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("repeat_place_time",
 		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("repeat_dig_time",
+		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("noclip",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("free_move",
@@ -1023,12 +1023,6 @@ Game::Game() :
 
 Game::~Game()
 {
-	delete client;
-	delete soundmaker;
-	sound_manager.reset();
-
-	delete server; // deleted first to stop all server threads
-
 	delete hud;
 	delete camera;
 	delete quicktune;
@@ -1056,6 +1050,8 @@ Game::~Game()
 	g_settings->deregisterChangedCallback("joystick_frustum_sensitivity",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("repeat_place_time",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("repeat_dig_time",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("noclip",
 		&settingChangedCallback, this);
@@ -1275,6 +1271,28 @@ void Game::shutdown()
 			sleep_ms(100);
 		}
 	}
+
+	delete client;
+	delete soundmaker;
+	sound_manager.reset();
+
+	auto stop_thread = runInThread([=] {
+		delete server;
+	}, "ServerStop");
+
+	FpsControl fps_control;
+	fps_control.reset();
+
+	while (stop_thread->isRunning()) {
+		m_rendering_engine->run();
+		f32 dtime;
+		fps_control.limit(device, &dtime);
+		showOverlayMessage(N_("Shutting down..."), dtime, 0, false);
+	}
+
+	stop_thread->rethrow();
+
+	// to be continued in Game::~Game
 }
 
 
@@ -1380,11 +1398,33 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 
 	server = new Server(map_dir, gamespec, simple_singleplayer_mode, bind_addr,
 			false, nullptr, error_message);
-	server->start();
 
-	copyServerClientCache();
+	auto start_thread = runInThread([=] {
+		server->start();
+		copyServerClientCache();
+	}, "ServerStart");
 
-	return true;
+	input->clear();
+	bool success = true;
+
+	FpsControl fps_control;
+	fps_control.reset();
+
+	while (start_thread->isRunning()) {
+		if (!m_rendering_engine->run() || input->cancelPressed())
+			success = false;
+		f32 dtime;
+		fps_control.limit(device, &dtime);
+
+		if (success)
+			showOverlayMessage(N_("Creating server..."), dtime, 5);
+		else
+			showOverlayMessage(N_("Shutting down..."), dtime, 0, false);
+	}
+
+	start_thread->rethrow();
+
+	return success;
 }
 
 void Game::copyServerClientCache()
@@ -2226,9 +2266,11 @@ void Game::openConsole(float scale, const wchar_t *line)
 	assert(scale > 0.0f && scale <= 1.0f);
 
 #ifdef __ANDROID__
-	porting::showTextInputDialog("", "", 2);
-	m_android_chat_open = true;
-#else
+	if (!porting::hasPhysicalKeyboardAndroid()) {
+		porting::showTextInputDialog("", "", 2);
+		m_android_chat_open = true;
+	} else {
+#endif
 	if (gui_chat_console->isOpenInhibited())
 		return;
 	gui_chat_console->openConsole(scale);
@@ -2236,6 +2278,8 @@ void Game::openConsole(float scale, const wchar_t *line)
 		gui_chat_console->setCloseOnEnter(true);
 		gui_chat_console->replaceAndAddToHistory(line);
 	}
+#ifdef __ANDROID__
+	} // else
 #endif
 }
 
@@ -3282,8 +3326,10 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	if (pointed != runData.pointed_old)
 		infostream << "Pointing at " << pointed.dump() << std::endl;
 
-	if (g_touchscreengui)
-		g_touchscreengui->applyContextControls(selected_def.touch_interaction.getMode(pointed));
+	if (g_touchscreengui) {
+		auto mode = selected_def.touch_interaction.getMode(pointed.type);
+		g_touchscreengui->applyContextControls(mode);
+	}
 
 	// Note that updating the selection mesh every frame is not particularly efficient,
 	// but the halo rendering code is already inefficient so there's no point in optimizing it here
@@ -3919,12 +3965,14 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.nodig_delay_timer =
 				runData.dig_time_complete / (float)crack_animation_length;
 
-		// We don't want a corresponding delay to very time consuming nodes
-		// and nodes without digging time (e.g. torches) get a fixed delay.
-		if (runData.nodig_delay_timer > 0.3)
-			runData.nodig_delay_timer = 0.3;
-		else if (runData.dig_instantly)
-			runData.nodig_delay_timer = 0.15;
+		// Don't add a corresponding delay to very time consuming nodes.
+		runData.nodig_delay_timer = std::min(runData.nodig_delay_timer, 0.3f);
+
+		// Ensure that the delay between breaking nodes
+		// (dig_time_complete + nodig_delay_timer) is at least the
+		// value of the repeat_dig_time setting.
+		runData.nodig_delay_timer = std::max(runData.nodig_delay_timer,
+				m_repeat_dig_time - runData.dig_time_complete);
 
 		if (client->modsLoaded() &&
 				client->getScript()->on_dignode(nodepos, n)) {
@@ -4323,7 +4371,8 @@ void Game::readSettings()
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
 	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f);
 	m_cache_joystick_frustum_sensitivity = std::max(g_settings->getFloat("joystick_frustum_sensitivity"), 0.001f);
-	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.16f, 2.0);
+	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.15f, 2.0f);
+	m_repeat_dig_time                    = g_settings->getFloat("repeat_dig_time", 0.15f, 2.0f);
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");

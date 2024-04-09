@@ -659,8 +659,9 @@ The mask is applied using binary AND.
 
 #### `[sheet:<w>x<h>:<x>,<y>`
 
-Retrieves a tile at position x,y from the base image
-which it assumes to be a tilesheet with dimensions w,h.
+Retrieves a tile at position x, y (in tiles, 0-indexed)
+from the base image, which it assumes to be a tilesheet
+with dimensions w, h (in tiles).
 
 #### `[colorize:<color>:<ratio>`
 
@@ -5431,6 +5432,9 @@ Utilities
       lsystem_decoration_type = true,
       -- Overrideable pointing range using the itemstack meta key `"range"` (5.9.0)
       item_meta_range = true,
+      -- Allow passing an optional "actor" ObjectRef to the following functions:
+      -- minetest.place_node, minetest.dig_node, minetest.punch_node (5.9.0)
+      node_interaction_actor = true,
   }
   ```
 
@@ -6061,13 +6065,16 @@ Environment access
     * Returns a number between `0` and `15`
     * Currently it's the same as `math.floor(param1 / 16)`, except that it
       ensures compatibility.
-* `minetest.place_node(pos, node)`
+* `minetest.place_node(pos, node[, placer])`
     * Place node with the same effects that a player would cause
-* `minetest.dig_node(pos)`
+    * `placer`: The ObjectRef that places the node (optional)
+* `minetest.dig_node(pos[, digger])`
     * Dig node with the same effects that a player would cause
+    * `digger`: The ObjectRef that digs the node (optional)
     * Returns `true` if successful, `false` on failure (e.g. protected location)
-* `minetest.punch_node(pos)`
+* `minetest.punch_node(pos[, puncher])`
     * Punch node with the same effects that a player would cause
+    * `puncher`: The ObjectRef that punches the node (optional)
 * `minetest.spawn_falling_node(pos)`
     * Change node into falling node
     * Returns `true` and the ObjectRef of the spawned entity if successful, `false` on failure
@@ -7313,8 +7320,41 @@ Global tables
 All callbacks registered with [Global callback registration functions] are added
 to corresponding `minetest.registered_*` tables.
 
+For historical reasons, the use of an -s suffix in these names is inconsistent.
 
-
+* `minetest.registered_on_chat_messages`
+* `minetest.registered_on_chatcommands`
+* `minetest.registered_globalsteps`
+* `minetest.registered_on_punchnodes`
+* `minetest.registered_on_placenodes`
+* `minetest.registered_on_dignodes`
+* `minetest.registered_on_generateds`
+* `minetest.registered_on_newplayers`
+* `minetest.registered_on_dieplayers`
+* `minetest.registered_on_respawnplayers`
+* `minetest.registered_on_prejoinplayers`
+* `minetest.registered_on_joinplayers`
+* `minetest.registered_on_leaveplayers`
+* `minetest.registered_on_player_receive_fields`
+* `minetest.registered_on_cheats`
+* `minetest.registered_on_crafts`
+* `minetest.registered_craft_predicts`
+* `minetest.registered_on_item_eats`
+* `minetest.registered_on_item_pickups`
+* `minetest.registered_on_punchplayers`
+* `minetest.registered_on_authplayers`
+* `minetest.registered_on_player_inventory_actions`
+* `minetest.registered_allow_player_inventory_actions`
+* `minetest.registered_on_rightclickplayers`
+* `minetest.registered_on_mods_loaded`
+* `minetest.registered_on_shutdown`
+* `minetest.registered_on_protection_violation`
+* `minetest.registered_on_priv_grant`
+* `minetest.registered_on_priv_revoke`
+* `minetest.registered_can_bypass_userlimit`
+* `minetest.registered_on_modchannel_message`
+* `minetest.registered_on_liquid_transformed`
+* `minetest.registered_on_mapblocks_changed`
 
 Class reference
 ===============
@@ -7944,8 +7984,12 @@ child will follow movement and rotation of that bone.
         * Fourth column: subject looking to the right
         * Fifth column:  subject viewed from above
         * Sixth column:  subject viewed from below
-* `get_entity_name()` (**Deprecated**: Will be removed in a future version, use the field `self.name` instead)
-* `get_luaentity()`: returns the object's associated luaentity table
+* `get_luaentity()`:
+	* Returns the object's associated luaentity table, if there is one
+	* Otherwise returns `nil` (e.g. for players)
+* `get_entity_name()`:
+    * **Deprecated**: Will be removed in a future version,
+      use `:get_luaentity().name` instead.
 
 #### Player only (no-op for other objects)
 
@@ -8666,7 +8710,8 @@ Player properties need to be saved manually.
     -- "mesh" uses the defined mesh model.
     -- "wielditem" is used for dropped items.
     --   (see builtin/game/item_entity.lua).
-    --   For this use 'wield_item = itemname' (Deprecated: 'textures = {itemname}').
+    --   For this use 'wield_item = itemname'.
+    --   Setting 'textures = {itemname}' has the same effect, but is deprecated.
     --   If the item has a 'wield_image' the object will be an extrusion of
     --   that, otherwise:
     --   If 'itemname' is a cubic node or nodebox the object will appear
@@ -8693,8 +8738,8 @@ Player properties need to be saved manually.
     -- "cube" uses 6 textures just like a node, but all 6 must be defined.
     -- "sprite" uses 1 texture.
     -- "upright_sprite" uses 2 textures: {front, back}.
-    -- "wielditem" expects 'textures = {itemname}' (see 'visual' above).
     -- "mesh" requires one texture for each mesh buffer/material (in order)
+    -- Deprecated usage of "wielditem" expects 'textures = {itemname}' (see 'visual' above).
 
     colors = {},
     -- Number of required colors depends on visual
@@ -9097,19 +9142,20 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     -- Otherwise should be name of node which the client immediately places
     -- upon digging. Server will always update with actual result shortly.
 
-    touch_interaction = {
-        -- Only affects touchscreen clients.
-        -- Defines the meaning of short and long taps with the item in hand.
-        -- The fields in this table have two valid values:
-        -- * "long_dig_short_place" (long tap  = dig, short tap = place)
-        -- * "short_dig_long_place" (short tap = dig, long tap  = place)
-        -- The field to be used is selected according to the current
-        -- `pointed_thing`.
-
-        pointed_nothing = "long_dig_short_place",
-        pointed_node    = "long_dig_short_place",
-        pointed_object  = "short_dig_long_place",
+    touch_interaction = <TouchInteractionMode> OR {
+        pointed_nothing = <TouchInteractionMode>,
+        pointed_node    = <TouchInteractionMode>,
+        pointed_object  = <TouchInteractionMode>,
     },
+      -- Only affects touchscreen clients.
+      -- Defines the meaning of short and long taps with the item in hand.
+      -- If specified as a table, the field to be used is selected according to
+      -- the current `pointed_thing`.
+      -- There are three possible TouchInteractionMode values:
+      -- * "user"                 (meaning depends on client-side settings)
+      -- * "long_dig_short_place" (long tap  = dig, short tap = place)
+      -- * "short_dig_long_place" (short tap = dig, long tap  = place)
+      -- The default value is "user".
 
     sound = {
         -- Definition of item sounds to be played at various events.

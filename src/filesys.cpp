@@ -223,6 +223,16 @@ std::string CreateTempFile()
 	return path;
 }
 
+std::string CreateTempDir()
+{
+	std::string path = TempPath() + DIR_DELIM "MT_XXXXXX";
+	_mktemp_s(&path[0], path.size() + 1); // modifies path
+	// will error if it already exists
+	if (!CreateDirectory(path.c_str(), nullptr))
+		return "";
+	return path;
+}
+
 bool CopyFileContents(const std::string &source, const std::string &target)
 {
 	BOOL ok = CopyFileEx(source.c_str(), target.c_str(), nullptr, nullptr,
@@ -443,6 +453,15 @@ std::string CreateTempFile()
 	if (fd == -1)
 		return "";
 	close(fd);
+	return path;
+}
+
+std::string CreateTempDir()
+{
+	std::string path = TempPath() + DIR_DELIM "MT_XXXXXX";
+	auto r = mkdtemp(&path[0]); // modifies path
+	if (!r)
+		return "";
 	return path;
 }
 

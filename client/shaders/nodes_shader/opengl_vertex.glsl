@@ -1,10 +1,9 @@
 uniform mat4 mWorld;
 // Color of the light emitted by the sun.
 uniform vec3 dayLight;
-uniform vec3 eyePosition;
 
 // The cameraOffset is the current center of the visible world.
-uniform vec3 cameraOffset;
+uniform highp vec3 cameraOffset;
 uniform float animationTimer;
 
 varying vec3 vNormal;
@@ -45,7 +44,7 @@ centroid varying vec2 varTexCoord;
 varying float area_enable_parallax;
 
 varying vec3 viewVec;
-varying vec3 eyeVec;
+varying highp vec3 eyeVec;
 varying float nightRatio;
 // Color of the light emitted by the light sources.
 uniform vec3 artificialLight;
