@@ -184,13 +184,15 @@ RAIIALSoundBuffer RAIIOggFile::loadBuffer(const OggFileDecodeInfo &decode_info,
 	assert(pcm_start <= decode_info.length_samples);
 
 	// seek
-	if (ov_pcm_tell(&m_file) != pcm_start) {
+	s64 current_pcm = ov_pcm_tell(&m_file);
+	if (current_pcm != pcm_start) {
 		if (ov_pcm_seek(&m_file, pcm_start) != 0) {
-			warningstream << "Audio: Error decoding (could not seek) "
+			warningstream << "Audio: Error decoding (could not seek): "
 					<< decode_info.name_for_logging << std::endl;
 			return RAIIALSoundBuffer();
 		}
 		assert(ov_pcm_tell(&m_file) == pcm_start);
+		current_pcm = pcm_start;
 	}
 
 	const size_t size = static_cast<size_t>(pcm_end - pcm_start)
@@ -199,6 +201,7 @@ RAIIALSoundBuffer RAIIOggFile::loadBuffer(const OggFileDecodeInfo &decode_info,
 	std::unique_ptr<char[]> snd_buffer(new char[size]);
 
 	// read size bytes
+	s64 last_byte_offset = current_pcm * decode_info.bytes_per_sample;
 	size_t read_count = 0;
 	int bitstream;
 	while (read_count < size) {
@@ -220,6 +223,25 @@ RAIIALSoundBuffer RAIIOggFile::loadBuffer(const OggFileDecodeInfo &decode_info,
 					<< decode_info.name_for_logging << std::endl;
 			return RAIIALSoundBuffer();
 		}
+
+		// This usually doesn't happen, but for some sounds ov_read seems to skip
+		// some samples, see #14453.
+		s64 current_byte_offset = ov_pcm_tell(&m_file) * decode_info.bytes_per_sample;
+		if (current_byte_offset != last_byte_offset + num_bytes) {
+			infostream << "Audio: ov_read skipped "
+					<< current_byte_offset - (last_byte_offset + num_bytes)
+					<< " bytes, re-seeking: "
+					<< decode_info.name_for_logging << std::endl;
+			s64 expected_offset = (last_byte_offset + num_bytes) / decode_info.bytes_per_sample;
+			if (ov_pcm_seek(&m_file, expected_offset) != 0) {
+				warningstream << "Audio: Error decoding (could not seek): "
+						<< decode_info.name_for_logging << std::endl;
+				return RAIIALSoundBuffer();
+			}
+			assert(ov_pcm_tell(&m_file) == expected_offset);
+			current_byte_offset = last_byte_offset + num_bytes;
+		}
+		last_byte_offset = current_byte_offset;
 
 		read_count += num_bytes;
 	}
