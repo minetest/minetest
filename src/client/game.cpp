@@ -1132,9 +1132,11 @@ void Game::run()
 	FpsControl draw_times;
 	f32 dtime; // in seconds
 
-	/* Clear the profiler */
-	Profiler::GraphValues dummyvalues;
-	g_profiler->graphGet(dummyvalues);
+	// Clear the profiler
+	{
+		Profiler::GraphValues dummyvalues;
+		g_profiler->graphPop(dummyvalues);
+	}
 
 	draw_times.reset();
 
@@ -4229,7 +4231,7 @@ void Game::updateClouds(float dtime)
 inline void Game::updateProfilerGraphs(ProfilerGraph *graph)
 {
 	Profiler::GraphValues values;
-	g_profiler->graphGet(values);
+	g_profiler->graphPop(values);
 	graph->put(values);
 }
 
