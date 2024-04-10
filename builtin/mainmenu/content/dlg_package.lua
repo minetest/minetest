@@ -30,19 +30,6 @@ local function get_info_formspec(size, text)
 end
 
 
---- Creates a scrollbaroptions for a scroll_container
---
--- @param visible_l the length of the scroll_container and scrollbar
--- @param total_l length of the scrollable area
--- @param scroll_factor as passed to scroll_container
-local function make_scrollbaroptions_for_scroll_container(visible_l, total_l, scroll_factor)
-	assert(total_l >= visible_l)
-	local max = total_l - visible_l
-	local thumb_size = (visible_l / total_l) * max
-	return ("scrollbaroptions[min=0;max=%f;thumbsize=%f]"):format(max / scroll_factor, thumb_size / scroll_factor)
-end
-
-
 local function get_formspec(data)
 	local window = core.get_window_info()
 	local size = { x = window.max_formspec_size.x, y = window.max_formspec_size.y }
@@ -173,48 +160,38 @@ local function get_formspec(data)
 
 		if current_tab == 1 then
 			-- Screenshots and description
-			local hypertext = info.long_description.head ..
-					"<big><b>" .. core.hypertext_escape(info.short_description) .. "</b></big>\n\n" ..
+			local hypertext = "<big><b>" .. core.hypertext_escape(info.short_description) .. "</b></big>\n"
+			local winfo = core.get_window_info()
+			local fs_to_px = winfo.size.x / winfo.max_formspec_size.x
+			for i, ss in ipairs(info.screenshots) do
+				local path = get_screenshot(data.package, ss.url, 2)
+				hypertext = hypertext .. "<action name=ss_" .. i .. "><img name=" ..
+						core.hypertext_escape(path) .. " width=" .. (3 * fs_to_px) ..
+						" height=" .. (2 * fs_to_px) .. "></action>"
+				if i ~= #info.screenshots then
+					hypertext = hypertext .. "<img name=blank.png width=" .. (0.25 * fs_to_px) ..
+							" height=" .. (2.25 * fs_to_px).. ">"
+				end
+			end
+			hypertext = hypertext .. "\n" .. info.long_description.head ..
 					info.long_description.body
 
 			hypertext = hypertext:gsub("<img name=blank.png ",
 					"<img name=" .. core.hypertext_escape(defaulttexturedir) .. "blank.png ")
 
-			local screenshots_w = #info.screenshots*3.25 + 0.375 - 0.25
-			local scroll_factor = 0.1
-			local needs_scrollbar = screenshots_w > size.x
-			local hypertext_y = (#info.screenshots > 0 and 2.25 or 0) + (needs_scrollbar and 0.5 or 0)
-
 			table.insert_all(formspec, {
-				"hypertext[0.375,", hypertext_y, ";",
-					size.x - 2*0.375, ",",
-					tab_body_height - hypertext_y - 0.375,
+				"hypertext[0.375,0;",
+					size.x - 3*0.375, ",",
+					tab_body_height - 0.375,
 					";desc;", core.formspec_escape(hypertext), "]",
 
-				"scroll_container[0,0;", size.x, ",2.25;images_sb;horizontal;", scroll_factor, "]",
 			})
 
-			for i, ss in ipairs(info.screenshots) do
-				local path = get_screenshot(data.package, ss.url, 2)
-				table.insert_all(formspec, {
-					"image_button[", (i-1)*3.25 + 0.375, ",0;3,2;",
-					core.formspec_escape(path), ";ss_", i, ";;false;false]",
-				})
-			end
-
-			formspec[#formspec + 1] = "scroll_container_end[]"
-
-			if needs_scrollbar then
-				table.insert_all(formspec, {
-					make_scrollbaroptions_for_scroll_container(size.x, screenshots_w, scroll_factor),
-					"scrollbar[0,2.25;", size.x, ",0.25;horizontal;images_sb;0]",
-				})
-			end
 		elseif current_tab == 2 then
 			local hypertext = info.info_hypertext.head .. info.info_hypertext.body
 
 			table.insert_all(formspec, {
-				"hypertext[0.375,0;", size.x - 2*0.375, ",", tab_body_height - 0.375,
+				"hypertext[0.375,0;", size.x - 3*0.375, ",", tab_body_height - 0.375,
 					";info;", core.formspec_escape(hypertext), "]",
 			})
 		else
@@ -231,6 +208,13 @@ end
 local function handle_hypertext_event(this, event, hypertext_object)
 	if not (event and event:sub(1, 7) == "action:") then
 		return
+	end
+
+	for i, ss in ipairs(this.data.info.screenshots) do
+		if event == "action:ss_" .. i then
+			core.open_url(ss.url)
+			return true
+		end
 	end
 
 	-- TODO: escape base_url
@@ -318,13 +302,6 @@ local function handle_submit(this, fields)
 	if fields.tabs then
 		this.data.current_tab = tonumber(fields.tabs)
 		return true
-	end
-
-	for i, ss in ipairs(info.screenshots) do
-		if fields["ss_" .. i] then
-			core.open_url(ss.url)
-			return true
-		end
 	end
 
 	if handle_hypertext_event(this, fields.desc, info.long_description) or
