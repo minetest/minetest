@@ -708,15 +708,17 @@ Buffer<u8> MapNode::serializeBulk(int version,
 
 	Buffer<u8> databuf(nodecount * (content_width + params_width));
 
-	u32 start1 = content_width * nodecount;
-	u32 start2 = (content_width + 1) * nodecount;
+	// Writing to the buffer linearly is faster
+	u8 *p = &databuf[0];
+	for (u32 i = 0; i < nodecount; i++, p += 2)
+		writeU16(p, nodes[i].param0);
 
-	// Serialize content
-	for (u32 i = 0; i < nodecount; i++) {
-		writeU16(&databuf[i * 2], nodes[i].param0);
-		writeU8(&databuf[start1 + i], nodes[i].param1);
-		writeU8(&databuf[start2 + i], nodes[i].param2);
-	}
+	for (u32 i = 0; i < nodecount; i++, p++)
+		writeU8(p, nodes[i].param1);
+
+	for (u32 i = 0; i < nodecount; i++, p++)
+		writeU8(p, nodes[i].param2);
+
 	return databuf;
 }
 

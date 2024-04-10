@@ -291,7 +291,7 @@ inline v3f readV3F32(const u8 *data)
 
 inline void writeU8(u8 *data, u8 i)
 {
-	data[0] = (i >> 0) & 0xFF;
+	data[0] = i;
 }
 
 inline void writeS8(u8 *data, s8 i)
