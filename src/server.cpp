@@ -4096,10 +4096,9 @@ void dedicated_server_loop(Server &server, bool &kill)
 		/*
 			Profiler
 		*/
-		if (profiler_print_interval != 0) {
-			if(m_profiler_interval.step(steplen, profiler_print_interval))
-			{
-				infostream<<"Profiler:"<<std::endl;
+		if (profiler_print_interval > 0) {
+			if (m_profiler_interval.step(steplen, profiler_print_interval)) {
+				infostream << "Profiler:" << std::endl;
 				g_profiler->print(infostream);
 				g_profiler->clear();
 			}
@@ -4112,6 +4111,12 @@ void dedicated_server_loop(Server &server, bool &kill)
 		ServerList::sendAnnounce(ServerList::AA_DELETE,
 			server.m_bind_addr.getPort());
 #endif
+
+	if (profiler_print_interval > 0) {
+		infostream << "Profiler:" << std::endl;
+		g_profiler->print(infostream);
+		g_profiler->clear();
+	}
 }
 
 /*
