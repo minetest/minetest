@@ -1904,7 +1904,8 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
 			g_settings->getFloat("profiler_print_interval");
 	bool print_to_log = true;
 
-	if (profiler_print_interval == 0) {
+	// Update game UI anyway but don't log
+	if (profiler_print_interval <= 0) {
 		print_to_log = false;
 		profiler_print_interval = 3;
 	}
@@ -1919,12 +1920,12 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
 		g_profiler->clear();
 	}
 
-	// Update update graphs
+	// Update graphs
 	g_profiler->graphAdd("Time non-rendering [us]",
 		draw_times.busy_time - stats.drawtime);
-
 	g_profiler->graphAdd("Sleep [us]", draw_times.sleep_time);
-	g_profiler->graphAdd("FPS", 1.0f / dtime);
+
+	g_profiler->graphSet("FPS", 1.0f / dtime);
 }
 
 void Game::updateStats(RunStats *stats, const FpsControl &draw_times,

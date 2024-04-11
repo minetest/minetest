@@ -258,6 +258,13 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		}
 	} // Menu-game loop
 
+	// If profiler was enabled print it one last time
+	if (g_settings->getFloat("profiler_print_interval") > 0) {
+		infostream << "Profiler:" << std::endl;
+		g_profiler->print(infostream);
+		g_profiler->clear();
+	}
+
 	assert(g_menucloudsmgr->getReferenceCount() == 1);
 	g_menucloudsmgr->drop();
 	g_menucloudsmgr = nullptr;
