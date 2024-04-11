@@ -236,7 +236,7 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 
 // NOTE: selectitem = 0 -> no selected; selectitem is 1-based
 // mainlist can be NULL, but draw the frame anyway.
-void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount, v2f alignment,
+void Hud::drawItems(v2s32 screen_pos, v2s32 screen_offset, s32 itemcount, v2f alignment,
 		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction,
 		bool is_hotbar)
 {
@@ -249,11 +249,11 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount, v2f 
 		width = tmp;
 	}
 
-	// Position of upper left corner of bar
+	// Position: screen_pos + screen_offset + alignment
 	v2s32 pos(screen_offset.X * m_scale_factor, screen_offset.Y * m_scale_factor);
-	pos += upperleftpos;
-	pos.X += alignment.X * width;
-	pos.Y += alignment.Y * height;
+	pos += screen_pos;
+	pos.X += (alignment.X - 1.0f) * (width * 0.5f);
+	pos.Y += (alignment.Y - 1.0f) * (height * 0.5f);
 
 	// Store hotbar_image in member variable, used by drawItem()
 	if (hotbar_image != player->hotbar_image) {

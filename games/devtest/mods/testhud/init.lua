@@ -213,25 +213,27 @@ local hud_hotbar_defs = {
 		type = "hotbar",
 		position = {x=0.2, y=0.5},
 		direction = 0,
-		alignment = {x=0, y=-1},
+		alignment = {x=1, y=-1},
 	},
 	{
 		type = "hotbar",
 		position = {x=0.2, y=0.5},
 		direction = 2,
+		alignment = {x=1, y=1},
 	},
 	{
 		type = "hotbar",
 		position = {x=0.7, y=0.5},
 		direction = 0,
-		offset = {x=40, y=20},
+		offset = {x=140, y=20},
+		alignment = {x=-1, y=-1},
 	},
 	{
 		type = "hotbar",
 		position = {x=0.7, y=0.5},
 		direction = 2,
-		alignment = {x=0, y=-1},
-		offset = {x=40, y=20},
+		offset = {x=140, y=20},
+		alignment = {x=-1, y=1},
 	},
 }
 
