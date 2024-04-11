@@ -21,8 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 #include <iostream>
-#include <set>
 #include <unordered_map>
+#include <cassert>
 #include "irrlichttypes_bloated.h"
 
 typedef std::unordered_map<u16, std::string> IdToNameMap;
@@ -42,6 +42,7 @@ public:
 
 	void set(u16 id, const std::string &name)
 	{
+		assert(!name.empty());
 		m_id_to_name[id] = name;
 		m_name_to_id[name] = id;
 	}
@@ -67,8 +68,7 @@ public:
 	}
 	bool getName(u16 id, std::string &result) const
 	{
-		IdToNameMap::const_iterator i;
-		i = m_id_to_name.find(id);
+		auto i = m_id_to_name.find(id);
 		if (i == m_id_to_name.end())
 			return false;
 		result = i->second;
@@ -76,8 +76,7 @@ public:
 	}
 	bool getId(const std::string &name, u16 &result) const
 	{
-		NameToIdMap::const_iterator i;
-		i = m_name_to_id.find(name);
+		auto i = m_name_to_id.find(name);
 		if (i == m_name_to_id.end())
 			return false;
 		result = i->second;

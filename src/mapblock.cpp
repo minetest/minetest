@@ -215,21 +215,22 @@ void MapBlock::expireIsAirCache()
 
 // List relevant id-name pairs for ids in the block using nodedef
 // Renumbers the content IDs (starting at 0 and incrementing)
+// Note that there's no technical reason why we *have to* renumber the IDs,
+// but we do it anyway as it also helps compressability.
 static void getBlockNodeIdMapping(NameIdMapping *nimap, MapNode *nodes,
 	const NodeDefManager *nodedef)
 {
-	// The static memory requires about 65535 * sizeof(int) RAM in order to be
+	// The static memory requires about 65535 * 2 bytes RAM in order to be
 	// sure we can handle all content ids. But it's absolutely worth it as it's
 	// a speedup of 4 for one of the major time consuming functions on storing
 	// mapblocks.
 	thread_local std::unique_ptr<content_t[]> mapping;
 	static_assert(sizeof(content_t) == 2, "content_t must be 16-bit");
 	if (!mapping)
-		mapping = std::make_unique<content_t[]>(USHRT_MAX + 1);
+		mapping = std::make_unique<content_t[]>(CONTENT_MAX + 1);
 
-	memset(mapping.get(), 0xFF, (USHRT_MAX + 1) * sizeof(content_t));
+	memset(mapping.get(), 0xFF, (CONTENT_MAX + 1) * sizeof(content_t));
 
-	std::unordered_set<content_t> unknown_contents;
 	content_t id_counter = 0;
 	for (u32 i = 0; i < MapBlock::nodecount; i++) {
 		content_t global_id = nodes[i].getContent();
@@ -243,20 +244,12 @@ static void getBlockNodeIdMapping(NameIdMapping *nimap, MapNode *nodes,
 			id = id_counter++;
 			mapping[global_id] = id;
 
-			const ContentFeatures &f = nodedef->get(global_id);
-			const std::string &name = f.name;
-			if (name.empty())
-				unknown_contents.insert(global_id);
-			else
-				nimap->set(id, name);
+			const auto &name = nodedef->get(global_id).name;
+			nimap->set(id, name);
 		}
 
 		// Update the MapNode
 		nodes[i].setContent(id);
-	}
-	for (u16 unknown_content : unknown_contents) {
-		errorstream << "getBlockNodeIdMapping(): IGNORING ERROR: "
-				<< "Name for node id " << unknown_content << " not known" << std::endl;
 	}
 }
 
