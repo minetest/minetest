@@ -253,8 +253,11 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 
 RenderingEngine::~RenderingEngine()
 {
+	sanity_check(s_singleton == this);
+
 	core.reset();
 	m_device->closeDevice();
+	m_device->drop();
 	s_singleton = nullptr;
 }
 
@@ -278,10 +281,7 @@ void RenderingEngine::removeMesh(const scene::IMesh* mesh)
 void RenderingEngine::cleanupMeshCache()
 {
 	auto mesh_cache = m_device->getSceneManager()->getMeshCache();
-	while (mesh_cache->getMeshCount() != 0) {
-		if (scene::IAnimatedMesh *mesh = mesh_cache->getMeshByIndex(0))
-			mesh_cache->removeMesh(mesh);
-	}
+	mesh_cache->clear();
 }
 
 bool RenderingEngine::setupTopLevelWindow()

@@ -80,7 +80,7 @@ public:
 		return mm && mm->preprocessEvent(event);
 	}
 
-	u32 menuCount()
+	size_t menuCount() const
 	{
 		return m_stack.size();
 	}
@@ -95,12 +95,16 @@ public:
 		return false;
 	}
 
+	// FIXME: why isn't this private?
 	std::list<gui::IGUIElement*> m_stack;
 };
 
 extern MainMenuManager g_menumgr;
 
-extern bool isMenuActive();
+static inline bool isMenuActive()
+{
+	return g_menumgr.menuCount() != 0;
+}
 
 class MainGameCallback : public IGameCallback
 {
@@ -138,7 +142,8 @@ public:
 		keyconfig_changed = true;
 	}
 
-	void showOpenURLDialog(const std::string &url) override {
+	void showOpenURLDialog(const std::string &url) override
+	{
 		show_open_url_dialog = url;
 	}
 
