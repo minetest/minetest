@@ -46,7 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	A cache from shader name to shader path
 */
-MutexedMap<std::string, std::string> g_shadername_to_path_cache;
+static MutexedMap<std::string, std::string> g_shadername_to_path_cache;
 
 /*
 	Gets the path to a shader by first checking if the file

@@ -26,10 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class BaseException : public std::exception
 {
 public:
-	BaseException(const std::string &s) throw(): m_s(s) {}
+	BaseException(const std::string &s) noexcept: m_s(s) {}
 	~BaseException() throw() = default;
 
-	virtual const char * what() const throw()
+	virtual const char * what() const noexcept
 	{
 		return m_s.c_str();
 	}
