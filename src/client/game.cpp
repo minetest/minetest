@@ -4305,7 +4305,7 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 	bool draw_crosshairs = (this->camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT);
 
 	if (g_touchscreengui && isTouchCrosshairDisabled())
-		draw_crosshair = false;
+		draw_crosshairs = false;
 
 	this->m_rendering_engine->draw_scene(sky_color, this->m_game_ui->m_flags.show_hud,
 			draw_wield_tool, draw_crosshairs);
