@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+# https://prefix-dev.github.io/rattler-build/latest/recipe_file/
+context: {}
+package:
+  name: minetest-gymnasium
+  version: ${{ env.get_default("GIT_DESCRIBE_TAG", env.get_default("GIT_FULL_HASH", "0.2")) }}
+
+source:
+  path: ../../
+
+build:
+  number: 0
+  script: python -m pip install ./python -v
+  noarch: python
+
+
+requirements:
+  host:
+    - pip
+    - python
+    - setuptools
+  run:
+    - minetest
+    # python deps
+    - gymnasium
+    - numpy =1.26
+    - pycapnp >=1.1.1 # need 4b75fe3b5ea97a80a0d349a42c143c989fe85d5e
+
+about:
+  repository: https://github.com/Astera-org/minetest
+  summary: 'Minetest gymnasium interface'
+
+tests:
+  - python:
+      imports:
+        - minetest
+  - script:
+    # Install the devtest game, which is needed for python test.
+    - mkdir ${CONDA_PREFIX}/share/minetest/games
+    - ln -s -t ${CONDA_PREFIX}/share/minetest/games ${PWD}/games/devtest
+    - if [[ $(minetest --gameid list) != "devtest" ]]; then exit 1; fi
+    - cd python && pytest --timeout=60 -v .
+    files:
+      source:
+        - games/devtest/
+        - python/tests/
+        - python/pyproject.toml
+    requirements:
+      run:
+        - pillow
+        - pytest
+        - pytest-timeout

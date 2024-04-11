@@ -4,6 +4,6 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-  - minetest
+  - minetest-gymnasium
   - moviepy
   - jupyter
