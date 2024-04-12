@@ -16,6 +16,8 @@
 #include "ExtensionHandler.h"
 #include "IContextManager.h"
 
+#define TEST_GL_ERROR(cls) (cls)->testGLError(__FILE__, __LINE__)
+
 namespace irr
 {
 namespace video
@@ -221,8 +223,9 @@ public:
 	//! Returns an image created from the last rendered frame.
 	IImage *createScreenShot(video::ECOLOR_FORMAT format = video::ECF_UNKNOWN, video::E_RENDER_TARGET target = video::ERT_FRAME_BUFFER) override;
 
-	//! checks if an OpenGL error has happened and prints it (+ some internal code which is usually the line number)
-	bool testGLError(int code = 0);
+	//! checks if an OpenGL error has happened and prints it, use via TEST_GL_ERROR().
+	// Does *nothing* unless in debug mode.
+	bool testGLError(const char *file, int line);
 
 	//! Set/unset a clipping plane.
 	bool setClipPlane(u32 index, const core::plane3df &plane, bool enable = false) override;

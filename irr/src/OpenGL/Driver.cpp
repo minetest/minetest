@@ -134,7 +134,18 @@ void APIENTRY COpenGL3DriverBase::debugCb(GLenum source, GLenum type, GLuint id,
 
 void COpenGL3DriverBase::debugCb(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message)
 {
-	printf("%04x %04x %x %x %.*s\n", source, type, id, severity, length, message);
+	// shader compiler can be very noisy
+	if (source == GL_DEBUG_SOURCE_SHADER_COMPILER && severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+		return;
+
+	ELOG_LEVEL ll = ELL_INFORMATION;
+	if (severity == GL_DEBUG_SEVERITY_HIGH)
+		ll = ELL_ERROR;
+	else if (severity == GL_DEBUG_SEVERITY_MEDIUM)
+		ll = ELL_WARNING;
+	char buf[256];
+	snprintf_irr(buf, sizeof(buf), "%04x %04x %.*s", source, type, length, message);
+	os::Printer::log("GL", buf, ll);
 }
 
 COpenGL3DriverBase::COpenGL3DriverBase(const SIrrlichtCreationParameters &params, io::IFileSystem *io, IContextManager *contextManager) :
@@ -283,7 +294,7 @@ bool COpenGL3DriverBase::genericDriverInit(const core::dimension2d<u32> &screenS
 	// This fixes problems with intermediate changes to the material during texture load.
 	ResetRenderStates = true;
 
-	testGLError(__LINE__);
+	TEST_GL_ERROR(this);
 
 	return true;
 }
@@ -514,7 +525,7 @@ bool COpenGL3DriverBase::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuff
 
 	GL.BindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return (!testGLError(__LINE__));
+	return (!TEST_GL_ERROR(this));
 }
 
 bool COpenGL3DriverBase::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
@@ -571,7 +582,7 @@ bool COpenGL3DriverBase::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffe
 
 	GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	return (!testGLError(__LINE__));
+	return (!TEST_GL_ERROR(this));
 }
 
 //! updates hardware buffer if needed
@@ -845,7 +856,7 @@ void COpenGL3DriverBase::draw2DImage(const video::ITexture *texture, const core:
 	if (clipRect)
 		GL.Disable(GL_SCISSOR_TEST);
 
-	testGLError(__LINE__);
+	TEST_GL_ERROR(this);
 }
 
 void COpenGL3DriverBase::draw2DImage(const video::ITexture *texture, u32 layer, bool flip)
@@ -1126,28 +1137,60 @@ void COpenGL3DriverBase::setMaterial(const SMaterial &material)
 }
 
 //! prints error if an error happened.
-bool COpenGL3DriverBase::testGLError(int code)
+bool COpenGL3DriverBase::testGLError(const char *file, int line)
 {
 	if (!EnableErrorTest)
 		return false;
 
 	GLenum g = GL.GetError();
+	const char *err = nullptr;
 	switch (g) {
 	case GL_NO_ERROR:
 		return false;
 	case GL_INVALID_ENUM:
-		os::Printer::log("GL_INVALID_ENUM", core::stringc(code).c_str(), ELL_ERROR);
+		err = "GL_INVALID_ENUM";
 		break;
 	case GL_INVALID_VALUE:
-		os::Printer::log("GL_INVALID_VALUE", core::stringc(code).c_str(), ELL_ERROR);
+		err = "GL_INVALID_VALUE";
 		break;
 	case GL_INVALID_OPERATION:
-		os::Printer::log("GL_INVALID_OPERATION", core::stringc(code).c_str(), ELL_ERROR);
+		err = "GL_INVALID_OPERATION";
+		break;
+	case GL_STACK_OVERFLOW:
+		err = "GL_STACK_OVERFLOW";
+		break;
+	case GL_STACK_UNDERFLOW:
+		err = "GL_STACK_UNDERFLOW";
 		break;
 	case GL_OUT_OF_MEMORY:
-		os::Printer::log("GL_OUT_OF_MEMORY", core::stringc(code).c_str(), ELL_ERROR);
+		err = "GL_OUT_OF_MEMORY";
 		break;
+	case GL_INVALID_FRAMEBUFFER_OPERATION:
+		err = "GL_INVALID_FRAMEBUFFER_OPERATION";
+		break;
+#ifdef GL_VERSION_4_5
+	case GL_CONTEXT_LOST:
+		err = "GL_CONTEXT_LOST";
+		break;
+#endif
 	};
+
+	// Empty the error queue, see <https://www.khronos.org/opengl/wiki/OpenGL_Error>
+	bool multiple = false;
+	while (GL.GetError() != GL_NO_ERROR)
+		multiple = true;
+
+	// basename
+	for (char sep : {'/', '\\'}) {
+		const char *tmp = strrchr(file, sep);
+		if (tmp)
+			file = tmp+1;
+	}
+
+	char buf[80];
+	snprintf_irr(buf, sizeof(buf), "%s %s:%d%s",
+		err, file, line, multiple ? " (older errors exist)" : "");
+	os::Printer::log(buf, ELL_ERROR);
 	return true;
 }
 
@@ -1797,7 +1840,7 @@ IImage *COpenGL3DriverBase::createScreenShot(video::ECOLOR_FORMAT format, video:
 	}
 
 	GL.ReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, internalformat, type, pixels);
-	testGLError(__LINE__);
+	TEST_GL_ERROR(this);
 
 	// opengl images are horizontally flipped, so we have to fix that here.
 	const s32 pitch = newImage->getPitch();
@@ -1825,11 +1868,10 @@ IImage *COpenGL3DriverBase::createScreenShot(video::ECOLOR_FORMAT format, video:
 		}
 	}
 
-	if (testGLError(__LINE__)) {
+	if (TEST_GL_ERROR(this)) {
 		newImage->drop();
 		return 0;
 	}
-	testGLError(__LINE__);
 	return newImage;
 }
 
