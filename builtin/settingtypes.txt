@@ -381,7 +381,8 @@ crosshair_alpha (Crosshair alpha) int 255 0 255
 
 [**Fog]
 
-#    Whether to fog out the end of the visible area.
+#    Whether to fog out the end of the visible area. This option only works
+#    with the 'debug' privilege.
 enable_fog (Fog) bool true
 
 #    Make fog and sky colors depend on daytime (dawn/sunset) and view direction.
@@ -2507,10 +2508,10 @@ keymap_toggle_chat (Chat toggle key) key KEY_F2
 #    Key for toggling the display of the large chat console.
 keymap_console (Large chat console key) key KEY_F10
 
-#    Key for toggling the display of fog.
-keymap_toggle_force_fog_off (Fog toggle key) key KEY_F3
+#    Key for toggling the display of fog. Only usable with 'debug' privilege.
+keymap_toggle_fog (Fog toggle key) key KEY_F3
 
-#    Key for toggling the camera update. Only used for development
+#    Key for toggling the camera update. Only usable with 'debug' privilege.
 keymap_toggle_update_camera (Camera update toggle key) key
 
 #    Key for toggling the display of debug info.
