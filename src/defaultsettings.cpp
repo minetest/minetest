@@ -114,7 +114,7 @@ void set_default_settings()
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
 	settings->setDefault("keymap_toggle_chat", "KEY_F2");
 	settings->setDefault("keymap_toggle_fog", "KEY_F3");
-#if DEBUG
+#ifndef NDEBUG
 	settings->setDefault("keymap_toggle_update_camera", "KEY_F4");
 #else
 	settings->setDefault("keymap_toggle_update_camera", "");
@@ -174,8 +174,10 @@ void set_default_settings()
 	// Visuals
 #ifdef NDEBUG
 	settings->setDefault("show_debug", "false");
+	settings->setDefault("opengl_debug", "false");
 #else
 	settings->setDefault("show_debug", "true");
+	settings->setDefault("opengl_debug", "true");
 #endif
 	settings->setDefault("fsaa", "2");
 	settings->setDefault("undersampling", "1");

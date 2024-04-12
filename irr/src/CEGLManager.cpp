@@ -529,7 +529,8 @@ bool CEGLManager::swapBuffers()
 
 bool CEGLManager::testEGLError()
 {
-#if defined(EGL_VERSION_1_0) && defined(_DEBUG)
+	if (!Params.DriverDebug)
+		return false;
 	EGLint status = eglGetError();
 
 	switch (status) {
@@ -582,9 +583,6 @@ bool CEGLManager::testEGLError()
 	};
 
 	return true;
-#else
-	return false;
-#endif
 }
 
 }

@@ -1177,7 +1177,9 @@ void COGLES1Driver::setMaterial(const SMaterial &material)
 //! prints error if an error happened.
 bool COGLES1Driver::testGLError(int code)
 {
-#ifdef _DEBUG
+	if (!Params.DriverDebug)
+		return false;
+
 	GLenum g = glGetError();
 	switch (g) {
 	case GL_NO_ERROR:
@@ -1201,11 +1203,7 @@ bool COGLES1Driver::testGLError(int code)
 		os::Printer::log("GL_OUT_OF_MEMORY", core::stringc(code).c_str(), ELL_ERROR);
 		break;
 	};
-	//	_IRR_DEBUG_BREAK_IF(true);
 	return true;
-#else
-	return false;
-#endif
 }
 
 //! sets the needed renderstates

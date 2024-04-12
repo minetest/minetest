@@ -1642,7 +1642,9 @@ void COpenGLDriver::setMaterial(const SMaterial &material)
 //! prints error if an error happened.
 bool COpenGLDriver::testGLError(int code)
 {
-#ifdef _DEBUG
+	if (!Params.DriverDebug)
+		return false;
+
 	GLenum g = glGetError();
 	switch (g) {
 	case GL_NO_ERROR:
@@ -1674,11 +1676,7 @@ bool COpenGLDriver::testGLError(int code)
 		break;
 #endif
 	};
-	//	_IRR_DEBUG_BREAK_IF(true);
 	return true;
-#else
-	return false;
-#endif
 }
 
 //! sets the needed renderstates

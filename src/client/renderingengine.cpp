@@ -229,6 +229,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	params.Stencilbuffer = false;
 	params.Vsync = vsync;
 	params.EventReceiver = receiver;
+	params.DriverDebug = g_settings->getBool("opengl_debug");
 
 	// there is no standardized path for these on desktop
 	std::string rel_path = std::string("client") + DIR_DELIM

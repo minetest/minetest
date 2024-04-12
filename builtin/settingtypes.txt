@@ -1893,6 +1893,9 @@ texture_min_size (Base texture size) int 64 1 32768
 #    Systems with a low-end GPU (or no GPU) would benefit from smaller values.
 client_mesh_chunk (Client Mesh Chunksize) int 1 1 16
 
+#    Enables debug and error-checking in the OpenGL driver.
+opengl_debug (OpenGL debug) bool false
+
 [**Sound]
 #    Comma-separated list of AL and ALC extensions that should not be used.
 #    Useful for testing. See al_extensions.[h,cpp] for details.
