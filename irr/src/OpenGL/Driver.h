@@ -224,9 +224,6 @@ public:
 	//! checks if an OpenGL error has happened and prints it (+ some internal code which is usually the line number)
 	bool testGLError(int code = 0);
 
-	//! checks if an OGLES1 error has happened and prints it
-	bool testEGLError();
-
 	//! Set/unset a clipping plane.
 	bool setClipPlane(u32 index, const core::plane3df &plane, bool enable = false) override;
 
@@ -385,7 +382,7 @@ private:
 
 	void printTextureFormats();
 
-	void addDummyMaterial(E_MATERIAL_TYPE type);
+	bool EnableErrorTest;
 
 	unsigned QuadIndexCount;
 	GLuint QuadIndexBuffer = 0;

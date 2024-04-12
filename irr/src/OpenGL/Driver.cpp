@@ -143,7 +143,7 @@ COpenGL3DriverBase::COpenGL3DriverBase(const SIrrlichtCreationParameters &params
 		MaterialRenderer2DActive(0), MaterialRenderer2DTexture(0), MaterialRenderer2DNoTexture(0),
 		CurrentRenderMode(ERM_NONE), Transformation3DChanged(true),
 		OGLES2ShaderPath(params.OGLES2ShaderPath),
-		ColorFormat(ECF_R8G8B8), ContextManager(contextManager)
+		ColorFormat(ECF_R8G8B8), ContextManager(contextManager), EnableErrorTest(params.DriverDebug)
 {
 #ifdef _DEBUG
 	setDebugName("Driver");
@@ -158,7 +158,10 @@ COpenGL3DriverBase::COpenGL3DriverBase(const SIrrlichtCreationParameters &params
 	ExposedData = ContextManager->getContext();
 	ContextManager->activateContext(ExposedData, false);
 	GL.LoadAllProcedures(ContextManager);
-	GL.DebugMessageCallback(debugCb, this);
+	if (EnableErrorTest) {
+		GL.Enable(GL_DEBUG_OUTPUT);
+		GL.DebugMessageCallback(debugCb, this);
+	}
 	initQuadsIndices();
 }
 
@@ -1125,7 +1128,9 @@ void COpenGL3DriverBase::setMaterial(const SMaterial &material)
 //! prints error if an error happened.
 bool COpenGL3DriverBase::testGLError(int code)
 {
-#ifdef _DEBUG
+	if (!EnableErrorTest)
+		return false;
+
 	GLenum g = GL.GetError();
 	switch (g) {
 	case GL_NO_ERROR:
@@ -1144,66 +1149,6 @@ bool COpenGL3DriverBase::testGLError(int code)
 		break;
 	};
 	return true;
-#else
-	return false;
-#endif
-}
-
-//! prints error if an error happened.
-bool COpenGL3DriverBase::testEGLError()
-{
-#if defined(EGL_VERSION_1_0) && defined(_DEBUG)
-	EGLint g = eglGetError();
-	switch (g) {
-	case EGL_SUCCESS:
-		return false;
-	case EGL_NOT_INITIALIZED:
-		os::Printer::log("Not Initialized", ELL_ERROR);
-		break;
-	case EGL_BAD_ACCESS:
-		os::Printer::log("Bad Access", ELL_ERROR);
-		break;
-	case EGL_BAD_ALLOC:
-		os::Printer::log("Bad Alloc", ELL_ERROR);
-		break;
-	case EGL_BAD_ATTRIBUTE:
-		os::Printer::log("Bad Attribute", ELL_ERROR);
-		break;
-	case EGL_BAD_CONTEXT:
-		os::Printer::log("Bad Context", ELL_ERROR);
-		break;
-	case EGL_BAD_CONFIG:
-		os::Printer::log("Bad Config", ELL_ERROR);
-		break;
-	case EGL_BAD_CURRENT_SURFACE:
-		os::Printer::log("Bad Current Surface", ELL_ERROR);
-		break;
-	case EGL_BAD_DISPLAY:
-		os::Printer::log("Bad Display", ELL_ERROR);
-		break;
-	case EGL_BAD_SURFACE:
-		os::Printer::log("Bad Surface", ELL_ERROR);
-		break;
-	case EGL_BAD_MATCH:
-		os::Printer::log("Bad Match", ELL_ERROR);
-		break;
-	case EGL_BAD_PARAMETER:
-		os::Printer::log("Bad Parameter", ELL_ERROR);
-		break;
-	case EGL_BAD_NATIVE_PIXMAP:
-		os::Printer::log("Bad Native Pixmap", ELL_ERROR);
-		break;
-	case EGL_BAD_NATIVE_WINDOW:
-		os::Printer::log("Bad Native Window", ELL_ERROR);
-		break;
-	case EGL_CONTEXT_LOST:
-		os::Printer::log("Context Lost", ELL_ERROR);
-		break;
-	};
-	return true;
-#else
-	return false;
-#endif
 }
 
 void COpenGL3DriverBase::setRenderStates3DMode()

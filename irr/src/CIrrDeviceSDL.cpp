@@ -388,6 +388,16 @@ bool CIrrDeviceSDL::createWindow()
 	if (createWindowWithContext())
 		return true;
 
+	if (CreationParams.DriverDebug) {
+		CreationParams.DriverDebug = false;
+		if (createWindowWithContext()) {
+			os::Printer::log("DriverDebug reduced due to lack of support!");
+			// Turn it back on because the GL driver can maybe still do something useful.
+			CreationParams.DriverDebug = true;
+			return true;
+		}
+	}
+
 	while (CreationParams.AntiAlias > 0) {
 		CreationParams.AntiAlias--;
 		if (createWindowWithContext()) {
@@ -449,7 +459,8 @@ bool CIrrDeviceSDL::createWindow()
 	return false;
 }
 
-bool CIrrDeviceSDL::createWindowWithContext() {
+bool CIrrDeviceSDL::createWindowWithContext()
+{
 	u32 SDL_Flags = 0;
 
 	if (CreationParams.Fullscreen) {
@@ -464,6 +475,8 @@ bool CIrrDeviceSDL::createWindowWithContext() {
 	if (CreationParams.WindowMaximized)
 		SDL_Flags |= SDL_WINDOW_MAXIMIZED;
 	SDL_Flags |= SDL_WINDOW_OPENGL;
+
+	SDL_GL_ResetAttributes();
 
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 	if (Width != 0 || Height != 0)
@@ -528,13 +541,9 @@ bool CIrrDeviceSDL::createWindowWithContext() {
 	default:;
 	}
 
-/*
-Makes context creation fail on some Android devices.
-See discussion in https://github.com/minetest/minetest/pull/14498.
-#ifdef _DEBUG
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG | SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG);
-#endif
-*/
+	if (CreationParams.DriverDebug) {
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG | SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG);
+	}
 
 	if (CreationParams.Bits == 16) {
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);

@@ -45,10 +45,11 @@ struct SIrrlichtCreationParameters
 #endif
 			PrivateData(0),
 #ifdef IRR_MOBILE_PATHS
-			OGLES2ShaderPath("media/Shaders/")
+			OGLES2ShaderPath("media/Shaders/"),
 #else
-			OGLES2ShaderPath("../../media/Shaders/")
+			OGLES2ShaderPath("../../media/Shaders/"),
 #endif
+			DriverDebug(false)
 	{
 	}
 
@@ -224,6 +225,9 @@ struct SIrrlichtCreationParameters
 	/** This is about the shaders which can be found in media/Shaders by default. It's only necessary
 	to set when using OGL-ES 2.0 */
 	irr::io::path OGLES2ShaderPath;
+
+	//! Enable debug and error checks in video driver.
+	bool DriverDebug;
 };
 
 } // end namespace irr
