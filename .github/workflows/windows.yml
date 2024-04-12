@@ -97,6 +97,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Workaround for regression, see https://github.com/minetest/minetest/pull/14536
+      - name: Pin CMake to 3.28
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: "~3.28.0"
+
       - name: Restore from cache and run vcpkg
         uses: lukka/run-vcpkg@v7
         with:
