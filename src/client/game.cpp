@@ -818,7 +818,6 @@ protected:
 
 private:
 	struct Flags {
-		bool force_fog_off = false;
 		bool disable_camera_update = false;
 	};
 
@@ -1899,8 +1898,10 @@ void Game::updateDebugState()
 	}
 	if (!has_basic_debug)
 		hud->disableBlockBounds();
-	if (!has_debug)
+	if (!has_debug) {
 		draw_control->show_wireframe = false;
+		m_flags.disable_camera_update = false;
+	}
 
 	// noclip
 	draw_control->allow_noclip = m_cache_enable_noclip && client->checkPrivilege("noclip");
@@ -2466,12 +2467,18 @@ void Game::toggleMinimap(bool shift_pressed)
 
 void Game::toggleFog()
 {
-	bool fog_enabled = g_settings->getBool("enable_fog");
-	g_settings->setBool("enable_fog", !fog_enabled);
-	if (fog_enabled)
-		m_game_ui->showTranslatedStatusText("Fog disabled");
-	else
+	bool flag;
+	// do not modify setting if no privilege
+	if (!client->checkPrivilege("debug")) {
+		flag = true;
+	} else {
+		flag = !g_settings->getBool("enable_fog");
+		g_settings->setBool("enable_fog", flag);
+	}
+	if (flag)
 		m_game_ui->showTranslatedStatusText("Fog enabled");
+	else
+		m_game_ui->showTranslatedStatusText("Fog disabled");
 }
 
 
@@ -2525,8 +2532,9 @@ void Game::toggleDebug()
 
 void Game::toggleUpdateCamera()
 {
-	m_flags.disable_camera_update = !m_flags.disable_camera_update;
-	if (m_flags.disable_camera_update)
+	auto &flag = m_flags.disable_camera_update;
+	flag = client->checkPrivilege("debug") ? !flag : false;
+	if (flag)
 		m_game_ui->showTranslatedStatusText("Camera update disabled");
 	else
 		m_game_ui->showTranslatedStatusText("Camera update enabled");
@@ -4222,7 +4230,8 @@ void Game::updateClouds(float dtime)
 		camera_node_position.Y   = camera_node_position.Y + camera_offset.Y * BS;
 		camera_node_position.Z   = camera_node_position.Z + camera_offset.Z * BS;
 		this->clouds->update(camera_node_position, this->sky->getCloudColor());
-		if (this->clouds->isCameraInsideCloud() && this->m_cache_enable_fog) {
+		bool enable_fog = this->m_cache_enable_fog || !client->checkPrivilege("debug");
+		if (this->clouds->isCameraInsideCloud() && enable_fog) {
 			// If camera is inside cloud and fog is enabled, use cloud's colors as sky colors.
 			video::SColor clouds_dark = this->clouds->getColor().getInterpolated(
 					video::SColor(255, 0, 0, 0), 0.9);
@@ -4282,7 +4291,7 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 	/*
 		Fog
 	*/
-	if (this->m_cache_enable_fog) {
+	if (this->m_cache_enable_fog || !client->checkPrivilege("debug")) {
 		this->driver->setFog(
 				fog_color,
 				video::EFT_FOG_LINEAR,
