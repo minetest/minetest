@@ -515,6 +515,11 @@ TouchControls::TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc)
 	}
 }
 
+TouchControls::~TouchControls()
+{
+	releaseAll();
+}
+
 void TouchControls::addButton(touch_gui_button_id id, const std::string &image, const recti &rect)
 {
 	IGUIImage *btn_gui_button = m_guienv->addImage(rect, nullptr, id);
@@ -796,6 +801,23 @@ void TouchControls::applyJoystickStatus()
 	}
 }
 
+void TouchControls::releaseAll()
+{
+	while (!m_pointer_pos.empty())
+		handleReleaseEvent(m_pointer_pos.begin()->first);
+
+	// Release those manually too since the change initiated by
+	// handleReleaseEvent will only be applied later by applyContextControls.
+	if (m_dig_pressed) {
+		emitMouseEvent(EMIE_LMOUSE_LEFT_UP);
+		m_dig_pressed = false;
+	}
+	if (m_place_pressed) {
+		emitMouseEvent(EMIE_RMOUSE_LEFT_UP);
+		m_place_pressed = false;
+	}
+}
+
 void TouchControls::step(float dtime)
 {
 	// simulate keyboard repeats
@@ -844,6 +866,9 @@ void TouchControls::registerHotbarRect(u16 index, const recti &rect)
 
 void TouchControls::setVisible(bool visible)
 {
+	if (m_visible == visible)
+		return;
+
 	m_visible = visible;
 	for (auto &button : m_buttons) {
 		if (button.gui_button)
@@ -853,10 +878,8 @@ void TouchControls::setVisible(bool visible)
 	if (m_joystick_btn_off)
 		m_joystick_btn_off->setVisible(visible);
 
-	// clear all active buttons
 	if (!visible) {
-		while (!m_pointer_pos.empty())
-			handleReleaseEvent(m_pointer_pos.begin()->first);
+		releaseAll();
 		for (AutoHideButtonBar &bar : m_buttonbars) {
 			bar.deactivate();
 			bar.hide();
@@ -869,17 +892,11 @@ void TouchControls::setVisible(bool visible)
 
 void TouchControls::hide()
 {
-	if (!m_visible)
-		return;
-
 	setVisible(false);
 }
 
 void TouchControls::show()
 {
-	if (m_visible) 
-		return;
-
 	setVisible(true);
 }
 
@@ -904,6 +921,7 @@ void TouchControls::emitMouseEvent(EMOUSE_INPUT_EVENT type)
 	event.MouseInput.Control      = false;
 	event.MouseInput.ButtonStates = 0;
 	event.MouseInput.Event        = type;
+	event.MouseInput.Simulated    = true;
 	m_receiver->OnEvent(event);
 }
 

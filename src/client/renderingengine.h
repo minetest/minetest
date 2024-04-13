@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <memory>
 #include <string>
+#include "client/inputhandler.h"
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 #include "client/shader.h"
@@ -82,7 +83,7 @@ public:
 	static const video::SColor MENU_SKY_COLOR;
 	static const float BASE_BLOOM_STRENGTH;
 
-	RenderingEngine(IEventReceiver *eventReceiver);
+	RenderingEngine(MyEventReceiver *eventReceiver);
 	~RenderingEngine();
 
 	void setResizable(bool resize);
@@ -167,6 +168,12 @@ public:
 			const irr::core::dimension2d<u32> initial_screen_size,
 			const bool initial_window_maximized);
 
+	static PointerType getLastPointerType()
+	{
+		sanity_check(s_singleton && s_singleton->m_receiver);
+		return s_singleton->m_receiver->getLastPointerType();
+	}
+
 private:
 	static void settingChangedCallback(const std::string &name, void *data);
 	v2u32 _getWindowSize() const;
@@ -174,5 +181,6 @@ private:
 	std::unique_ptr<RenderingCore> core;
 	irr::IrrlichtDevice *m_device = nullptr;
 	irr::video::IVideoDriver *driver;
+	MyEventReceiver *m_receiver = nullptr;
 	static RenderingEngine *s_singleton;
 };

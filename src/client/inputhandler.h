@@ -23,9 +23,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "joystick_controller.h"
 #include <list>
 #include "keycode.h"
-#include "renderingengine.h"
 
 class InputHandler;
+
+enum class PointerType {
+	Mouse,
+	Touch,
+};
 
 /****************************************************************************
  Fast key cache for main game loop
@@ -199,6 +203,8 @@ public:
 
 	JoystickController *joystick = nullptr;
 
+	PointerType getLastPointerType() { return last_pointer_type; }
+
 private:
 	s32 mouse_wheel = 0;
 
@@ -223,6 +229,8 @@ private:
 
 	// Intentionally not reset by clearInput/releaseAllKeys.
 	bool fullscreen_is_down = false;
+
+	PointerType last_pointer_type = PointerType::Mouse;
 };
 
 class InputHandler
@@ -330,25 +338,8 @@ public:
 		m_receiver->dontListenForKeys();
 	}
 
-	virtual v2s32 getMousePos()
-	{
-		auto control = RenderingEngine::get_raw_device()->getCursorControl();
-		if (control) {
-			return control->getPosition();
-		}
-
-		return m_mousepos;
-	}
-
-	virtual void setMousePos(s32 x, s32 y)
-	{
-		auto control = RenderingEngine::get_raw_device()->getCursorControl();
-		if (control) {
-			control->setPosition(x, y);
-		} else {
-			m_mousepos = v2s32(x, y);
-		}
-	}
+	virtual v2s32 getMousePos();
+	virtual void setMousePos(s32 x, s32 y);
 
 	virtual s32 getMouseWheel()
 	{

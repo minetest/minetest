@@ -195,7 +195,7 @@ static irr::IrrlichtDevice *createDevice(SIrrlichtCreationParameters params, std
 
 /* RenderingEngine class */
 
-RenderingEngine::RenderingEngine(IEventReceiver *receiver)
+RenderingEngine::RenderingEngine(MyEventReceiver *receiver)
 {
 	sanity_check(!s_singleton);
 
@@ -247,6 +247,8 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 
 	// This changes the minimum allowed number of vertices in a VBO. Default is 500.
 	driver->setMinHardwareBufferVertexCount(4);
+
+	m_receiver = receiver;
 
 	s_singleton = this;
 

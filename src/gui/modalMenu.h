@@ -26,11 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <porting_android.h>
 #endif
 
-enum class PointerType {
-	Mouse,
-	Touch,
-};
-
 struct PointerAction {
 	v2s32 pos;
 	u64 time; // ms
@@ -74,14 +69,10 @@ public:
 	porting::AndroidDialogState getAndroidUIInputState();
 #endif
 
-	PointerType getPointerType() { return m_pointer_type; };
-
 protected:
 	virtual std::wstring getLabelByID(s32 id) = 0;
 	virtual std::string getNameByID(s32 id) = 0;
 
-	// Stores the last known pointer type.
-	PointerType m_pointer_type = PointerType::Mouse;
 	// Stores the last known pointer position.
 	// If the last input event was a mouse event, it's the cursor position.
 	// If the last input event was a touch event, it's the finger position.
@@ -102,9 +93,6 @@ protected:
 
 	// This is set to true if the menu is currently processing a second-touch event.
 	bool m_second_touch = false;
-	// This is set to true if the menu is currently processing a mouse event
-	// that was synthesized by the menu itself from a touch event.
-	bool m_simulated_mouse = false;
 
 private:
 	IMenuManager *m_menumgr;
