@@ -6003,8 +6003,9 @@ handler.
 Chat
 ----
 
-* `minetest.chat_send_all(text)`
-* `minetest.chat_send_player(name, text)`
+* `minetest.chat_send_all(text)`: send chat message to all players
+* `minetest.chat_send_player(name, text)`: send chat message to specific player
+    * `name`: Name of the player
 * `minetest.format_chat_message(name, message)`
     * Used by the server to format a chat message, based on the setting `chat_message_format`.
       Refer to the documentation of the setting for a list of valid placeholders.
@@ -6016,13 +6017,14 @@ Environment access
 ------------------
 
 * `minetest.set_node(pos, node)`
-* `minetest.add_node(pos, node)`: alias to `minetest.set_node`
-    * Set node at position `pos`
+    * Set node at position `pos`.
+    * Any existing metadata is deleted.
     * `node`: table `{name=string, param1=number, param2=number}`
-    * If param1 or param2 is omitted, it's set to `0`.
+      If param1 or param2 is omitted, it's set to `0`.
     * e.g. `minetest.set_node({x=0, y=10, z=0}, {name="default:wood"})`
+* `minetest.add_node(pos, node)`: alias to `minetest.set_node`
 * `minetest.bulk_set_node({pos1, pos2, pos3, ...}, node)`
-    * Set node on all positions set in the first argument.
+    * Set the same node at all positions in the first argument.
     * e.g. `minetest.bulk_set_node({{x=0, y=1, z=1}, {x=1, y=2, z=2}}, {name="default:stone"})`
     * For node specification or position syntax see `minetest.set_node` call
     * Faster than set_node due to single call, but still considerably slower
@@ -6032,16 +6034,17 @@ Environment access
       For setting a cube, this is 1.3x faster than set_node whereas LVM is 20
       times faster.
 * `minetest.swap_node(pos, node)`
-    * Set node at position, but don't remove metadata
-* `minetest.remove_node(pos)`
-    * By default it does the same as `minetest.set_node(pos, {name="air"})`
+    * Swap node at position with another.
+    * This keeps the metadata intact and will not run con-/destructor callbacks.
+* `minetest.remove_node(pos)`: Remove a node
+    * Equivalent to `minetest.set_node(pos, {name="air"})`, but a bit faster.
 * `minetest.get_node(pos)`
-    * Returns the node at the given position as table in the format
-      `{name="node_name", param1=0, param2=0}`,
-      returns `{name="ignore", param1=0, param2=0}` for unloaded areas.
+    * Returns the node at the given position as table in the same format as `set_node`.
+    * This function never returns `nil` and instead returns
+      `{name="ignore", param1=0, param2=0}` for unloaded areas.
 * `minetest.get_node_or_nil(pos)`
     * Same as `get_node` but returns `nil` for unloaded areas.
-    * Note that areas may still contain "ignore" despite being loaded.
+    * Note that even loaded areas can contain "ignore" nodes.
 * `minetest.get_node_light(pos[, timeofday])`
     * Gets the light value at the given position. Note that the light value
       "inside" the node at the given position is returned, so you usually want
@@ -6096,20 +6099,21 @@ Environment access
     * Returns `ObjectRef`, or `nil` if failed
     * Items can be added also to unloaded and non-generated blocks.
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
-* `minetest.get_objects_inside_radius(pos, radius)`: returns a list of
-  ObjectRefs.
+    * Returns nothing in case of error (player offline, doesn't exist, ...).
+* `minetest.get_objects_inside_radius(pos, radius)`
+    * returns a list of ObjectRefs.
     * `radius`: using a Euclidean metric
-* `minetest.get_objects_in_area(pos1, pos2)`: returns a list of
-  ObjectRefs.
-     * `pos1` and `pos2` are the min and max positions of the area to search.
-* `minetest.set_timeofday(val)`
+* `minetest.get_objects_in_area(pos1, pos2)`
+    * returns a list of ObjectRefs.
+    * `pos1` and `pos2` are the min and max positions of the area to search.
+* `minetest.set_timeofday(val)`: set time of day
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
-* `minetest.get_timeofday()`
+* `minetest.get_timeofday()`: get time of day
 * `minetest.get_gametime()`: returns the time, in seconds, since the world was
   created. The time is not available (`nil`) before the first server step.
 * `minetest.get_day_count()`: returns number days elapsed since world was
   created.
-    * accounts for time changes.
+    * Time changes are accounted for.
 * `minetest.find_node_near(pos, radius, nodenames, [search_center])`: returns
   pos or `nil`.
     * `radius`: using a maximum metric
