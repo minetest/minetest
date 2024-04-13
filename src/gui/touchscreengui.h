@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes.h"
 #include <IEventReceiver.h>
-#include <IGUIButton.h>
+#include <IGUIImage.h>
 #include <IGUIEnvironment.h>
 #include <IrrlichtDevice.h>
 
@@ -123,7 +123,7 @@ struct button_info
 	float repeat_counter;
 	EKEY_CODE keycode;
 	std::vector<size_t> pointer_ids;
-	std::shared_ptr<IGUIButton> gui_button = nullptr;
+	std::shared_ptr<IGUIImage> gui_button = nullptr;
 
 	enum {
 		NOT_TOGGLEABLE,
@@ -166,7 +166,7 @@ private:
 	IGUIEnvironment *m_guienv = nullptr;
 	IEventReceiver *m_receiver = nullptr;
 	ISimpleTextureSource *m_texturesource = nullptr;
-	std::shared_ptr<IGUIButton> m_starter;
+	std::shared_ptr<IGUIImage> m_starter;
 	std::vector<button_info> m_buttons;
 
 	v2s32 m_upper_left;
@@ -266,9 +266,9 @@ private:
 	bool m_fixed_joystick = false;
 	bool m_joystick_triggers_aux1 = false;
 	bool m_draw_crosshair = false;
-	std::shared_ptr<IGUIButton> m_joystick_btn_off;
-	std::shared_ptr<IGUIButton> m_joystick_btn_bg;
-	std::shared_ptr<IGUIButton> m_joystick_btn_center;
+	std::shared_ptr<IGUIImage> m_joystick_btn_off;
+	std::shared_ptr<IGUIImage> m_joystick_btn_bg;
+	std::shared_ptr<IGUIImage> m_joystick_btn_center;
 
 	std::vector<button_info> m_buttons;
 
@@ -277,7 +277,7 @@ private:
 			const recti &rect);
 
 	// initialize a joystick button
-	IGUIButton *makeJoystickButton(touch_gui_button_id id,
+	IGUIImage *makeJoystickButton(touch_gui_button_id id,
 			const recti &rect, bool visible);
 
 	// handle pressing hotbar items

@@ -65,26 +65,14 @@ const std::string button_image_names[] = {
 	"joystick_center.png",
 };
 
-static void load_button_texture(IGUIButton *gui_button, const std::string &path,
+static void load_button_texture(IGUIImage *gui_button, const std::string &path,
 		const recti &button_rect, ISimpleTextureSource *tsrc, video::IVideoDriver *driver)
 {
 	video::ITexture *texture = guiScalingImageButton(driver,
 			tsrc->getTexture(path), button_rect.getWidth(),
 			button_rect.getHeight());
-	if (texture) {
-		gui_button->setUseAlphaChannel(true);
-		if (g_settings->getBool("gui_scaling_filter")) {
-			recti txr_rect(0, 0, button_rect.getWidth(), button_rect.getHeight());
-			gui_button->setImage(texture, txr_rect);
-			gui_button->setPressedImage(texture, txr_rect);
-			gui_button->setScaleImage(false);
-		} else {
-			gui_button->setImage(texture);
-			gui_button->setPressedImage(texture);
-			gui_button->setScaleImage(true);
-		}
-		gui_button->setDrawBorder(false);
-	}
+	gui_button->setImage(texture);
+	gui_button->setScaleImage(true);
 }
 
 void button_info::emitAction(bool action, video::IVideoDriver *driver,
@@ -266,12 +254,12 @@ AutoHideButtonBar::AutoHideButtonBar(IrrlichtDevice *device, ISimpleTextureSourc
 	m_upper_left = starter_rect.UpperLeftCorner;
 	m_lower_right = starter_rect.LowerRightCorner;
 
-	IGUIButton *starter_gui_button = m_guienv->addButton(starter_rect, nullptr,
+	IGUIImage *starter_gui_button = m_guienv->addImage(starter_rect, nullptr,
 			starter_id);
 	load_button_texture(starter_gui_button, starter_img, starter_rect,
 			m_texturesource, m_driver);
 
-	m_starter = grab_gui_element<IGUIButton>(starter_gui_button);
+	m_starter = grab_gui_element<IGUIImage>(starter_gui_button);
 	m_dir = dir;
 }
 
@@ -318,14 +306,14 @@ void AutoHideButtonBar::addButton(touch_gui_button_id id, const std::string &ima
 		current_button = recti(m_upper_left.X, y_start, m_lower_right.Y, y_end);
 	}
 
-	IGUIButton *btn_gui_button = m_guienv->addButton(current_button, nullptr, id);
+	IGUIImage *btn_gui_button = m_guienv->addImage(current_button, nullptr, id);
 	btn_gui_button->setVisible(false);
 	btn_gui_button->setEnabled(false);
 	load_button_texture(btn_gui_button, image, current_button, m_texturesource, m_driver);
 
 	button_info btn{};
 	btn.keycode = id_to_keycode(id);
-	btn.gui_button = grab_gui_element<IGUIButton>(btn_gui_button);
+	btn.gui_button = grab_gui_element<IGUIImage>(btn_gui_button);
 	m_buttons.push_back(btn);
 }
 
@@ -437,26 +425,26 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsr
 	// Initialize joystick display "button".
 	// Joystick is placed on the bottom left of screen.
 	if (m_fixed_joystick) {
-		m_joystick_btn_off = grab_gui_element<IGUIButton>(makeJoystickButton(joystick_off_id,
+		m_joystick_btn_off = grab_gui_element<IGUIImage>(makeJoystickButton(joystick_off_id,
 				recti(m_button_size,
 						m_screensize.Y - m_button_size * 4,
 						m_button_size * 4,
 						m_screensize.Y - m_button_size), true));
 	} else {
-		m_joystick_btn_off = grab_gui_element<IGUIButton>(makeJoystickButton(joystick_off_id,
+		m_joystick_btn_off = grab_gui_element<IGUIImage>(makeJoystickButton(joystick_off_id,
 				recti(m_button_size,
 						m_screensize.Y - m_button_size * 3,
 						m_button_size * 3,
 						m_screensize.Y - m_button_size), true));
 	}
 
-	m_joystick_btn_bg = grab_gui_element<IGUIButton>(makeJoystickButton(joystick_bg_id,
+	m_joystick_btn_bg = grab_gui_element<IGUIImage>(makeJoystickButton(joystick_bg_id,
 			recti(m_button_size,
 					m_screensize.Y - m_button_size * 4,
 					m_button_size * 4,
 					m_screensize.Y - m_button_size), false));
 
-	m_joystick_btn_center = grab_gui_element<IGUIButton>(makeJoystickButton(joystick_center_id,
+	m_joystick_btn_center = grab_gui_element<IGUIImage>(makeJoystickButton(joystick_center_id,
 			recti(0, 0, m_button_size, m_button_size), false));
 
 	// init jump button
@@ -533,19 +521,19 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsr
 
 void TouchScreenGUI::addButton(touch_gui_button_id id, const std::string &image, const recti &rect)
 {
-	IGUIButton *btn_gui_button = m_guienv->addButton(rect, nullptr, id);
+	IGUIImage *btn_gui_button = m_guienv->addImage(rect, nullptr, id);
 	load_button_texture(btn_gui_button, image, rect,
 			m_texturesource, m_device->getVideoDriver());
 
 	button_info &btn = m_buttons.emplace_back();
 	btn.keycode = id_to_keycode(id);
-	btn.gui_button = grab_gui_element<IGUIButton>(btn_gui_button);
+	btn.gui_button = grab_gui_element<IGUIImage>(btn_gui_button);
 }
 
-IGUIButton *TouchScreenGUI::makeJoystickButton(touch_gui_button_id id,
+IGUIImage *TouchScreenGUI::makeJoystickButton(touch_gui_button_id id,
 		const recti &button_rect, bool visible)
 {
-	IGUIButton *btn_gui_button = m_guienv->addButton(button_rect, nullptr, id);
+	IGUIImage *btn_gui_button = m_guienv->addImage(button_rect, nullptr, id);
 	btn_gui_button->setVisible(visible);
 	load_button_texture(btn_gui_button, button_image_names[id], button_rect,
 			m_texturesource, m_device->getVideoDriver());
