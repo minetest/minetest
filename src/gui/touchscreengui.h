@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irr_ptr.h"
 #include "irrlichttypes.h"
 #include <IEventReceiver.h>
 #include <IGUIButton.h>
@@ -38,6 +37,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 using namespace irr;
 using namespace irr::core;
 using namespace irr::gui;
+
+
+// We cannot use irr_ptr for Irrlicht GUI elements we own.
+// Option 1: Pass IGUIElement* returned by IGUIEnvironment::add* into irr_ptr
+//           constructor.
+//           -> We steal the reference owned by IGUIEnvironment and drop it later,
+//           causing the IGUIElement to be deleted while IGUIEnvironment still
+//           references it.
+// Option 2: Pass IGUIElement* returned by IGUIEnvironment::add* into irr_ptr::grab.
+//           -> We add another reference and drop it later, but since IGUIEnvironment
+//           still references the IGUIElement, it is never deleted.
+// To make IGUIEnvironment drop its reference to the IGUIElement, we have to call
+// IGUIElement::remove, so that's what we'll do.
+template <typename T>
+std::shared_ptr<T> grab_gui_element(T *element)
+{
+	static_assert(std::is_base_of_v<IGUIElement, T>,
+			"grab_gui_element only works for IGUIElement");
+	return std::shared_ptr<T>(element, [](T *e) {
+		e->remove();
+	});
+}
+
 
 enum class TapState
 {
@@ -101,7 +123,7 @@ struct button_info
 	float repeat_counter;
 	EKEY_CODE keycode;
 	std::vector<size_t> pointer_ids;
-	irr_ptr<IGUIButton> gui_button = nullptr;
+	std::shared_ptr<IGUIButton> gui_button = nullptr;
 
 	enum {
 		NOT_TOGGLEABLE,
@@ -144,7 +166,7 @@ private:
 	IGUIEnvironment *m_guienv = nullptr;
 	IEventReceiver *m_receiver = nullptr;
 	ISimpleTextureSource *m_texturesource = nullptr;
-	irr_ptr<IGUIButton> m_starter;
+	std::shared_ptr<IGUIButton> m_starter;
 	std::vector<button_info> m_buttons;
 
 	v2s32 m_upper_left;
@@ -244,9 +266,9 @@ private:
 	bool m_fixed_joystick = false;
 	bool m_joystick_triggers_aux1 = false;
 	bool m_draw_crosshair = false;
-	irr_ptr<IGUIButton> m_joystick_btn_off;
-	irr_ptr<IGUIButton> m_joystick_btn_bg;
-	irr_ptr<IGUIButton> m_joystick_btn_center;
+	std::shared_ptr<IGUIButton> m_joystick_btn_off;
+	std::shared_ptr<IGUIButton> m_joystick_btn_bg;
+	std::shared_ptr<IGUIButton> m_joystick_btn_center;
 
 	std::vector<button_info> m_buttons;
 

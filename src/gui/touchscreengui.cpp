@@ -271,7 +271,7 @@ AutoHideButtonBar::AutoHideButtonBar(IrrlichtDevice *device, ISimpleTextureSourc
 	load_button_texture(starter_gui_button, starter_img, starter_rect,
 			m_texturesource, m_driver);
 
-	m_starter.grab(starter_gui_button);
+	m_starter = grab_gui_element<IGUIButton>(starter_gui_button);
 	m_dir = dir;
 }
 
@@ -325,7 +325,7 @@ void AutoHideButtonBar::addButton(touch_gui_button_id id, const std::string &ima
 
 	button_info btn{};
 	btn.keycode = id_to_keycode(id);
-	btn.gui_button.grab(btn_gui_button);
+	btn.gui_button = grab_gui_element<IGUIButton>(btn_gui_button);
 	m_buttons.push_back(btn);
 }
 
@@ -437,26 +437,26 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsr
 	// Initialize joystick display "button".
 	// Joystick is placed on the bottom left of screen.
 	if (m_fixed_joystick) {
-		m_joystick_btn_off.grab(makeJoystickButton(joystick_off_id,
+		m_joystick_btn_off = grab_gui_element<IGUIButton>(makeJoystickButton(joystick_off_id,
 				recti(m_button_size,
 						m_screensize.Y - m_button_size * 4,
 						m_button_size * 4,
 						m_screensize.Y - m_button_size), true));
 	} else {
-		m_joystick_btn_off.grab(makeJoystickButton(joystick_off_id,
+		m_joystick_btn_off = grab_gui_element<IGUIButton>(makeJoystickButton(joystick_off_id,
 				recti(m_button_size,
 						m_screensize.Y - m_button_size * 3,
 						m_button_size * 3,
 						m_screensize.Y - m_button_size), true));
 	}
 
-	m_joystick_btn_bg.grab(makeJoystickButton(joystick_bg_id,
+	m_joystick_btn_bg = grab_gui_element<IGUIButton>(makeJoystickButton(joystick_bg_id,
 			recti(m_button_size,
 					m_screensize.Y - m_button_size * 4,
 					m_button_size * 4,
 					m_screensize.Y - m_button_size), false));
 
-	m_joystick_btn_center.grab(makeJoystickButton(joystick_center_id,
+	m_joystick_btn_center = grab_gui_element<IGUIButton>(makeJoystickButton(joystick_center_id,
 			recti(0, 0, m_button_size, m_button_size), false));
 
 	// init jump button
@@ -539,7 +539,7 @@ void TouchScreenGUI::addButton(touch_gui_button_id id, const std::string &image,
 
 	button_info &btn = m_buttons.emplace_back();
 	btn.keycode = id_to_keycode(id);
-	btn.gui_button.grab(btn_gui_button);
+	btn.gui_button = grab_gui_element<IGUIButton>(btn_gui_button);
 }
 
 IGUIButton *TouchScreenGUI::makeJoystickButton(touch_gui_button_id id,
