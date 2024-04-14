@@ -1,6 +1,7 @@
 uniform mat4 mWorld;
 // Color of the light emitted by the sun.
 uniform vec3 dayLight;
+uniform vec3 eyePosition;
 
 // The cameraOffset is the current center of the visible world.
 uniform highp vec3 cameraOffset;

@@ -485,6 +485,10 @@ public:
 		m_animation_timer_delta_vertex.set(&animation_timer_delta_f, services);
 		m_animation_timer_delta_pixel.set(&animation_timer_delta_f, services);
 
+		v3f epos = m_client->getEnv().getLocalPlayer()->getEyePosition();
+		m_eye_position_pixel.set(epos, services);
+		m_eye_position_vertex.set(epos, services);
+
 		if (m_client->getMinimap()) {
 			v3f minimap_yaw = m_client->getMinimap()->getYawVec();
 			m_minimap_yaw.set(minimap_yaw, services);
