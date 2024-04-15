@@ -423,12 +423,14 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 		std::string attr_name = "";
 		core::stringw attr_val = L"";
 
+		// Consume whitespace
 		while (c == ' ') {
 			c = text[++cursor];
 			if (c == L'\0' || c == L'=')
 				return 0;
 		}
 
+		// Read attribute name
 		while (c != L' ' && c != L'=') {
 			attr_name += (char)c;
 			c = text[++cursor];
@@ -436,25 +438,48 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 				return 0;
 		}
 
+		// Consume whitespace
 		while (c == L' ') {
 			c = text[++cursor];
 			if (c == L'\0' || c == L'>')
 				return 0;
 		}
 
+		// Skip equals
 		if (c != L'=')
 			return 0;
-
 		c = text[++cursor];
-
 		if (c == L'\0')
 			return 0;
 
-		while (c != L'>' && c != L' ') {
-			attr_val += c;
+		// Read optional quote
+		wchar_t quote_used;
+		if (c == L'"' || c == L'\'') {
+			quote_used = c;
 			c = text[++cursor];
 			if (c == L'\0')
 				return 0;
+		}
+
+		// Read attribute value
+		bool escape = false;
+		while (escape || (quote_used && c != quote_used) || (!quote_used && c != L'>' && c != L' ')) {
+			if (!escape && c == L'\\') {
+				escape = true;
+			} else {
+				escape = false;
+				attr_val += c;
+			}
+			c = text[++cursor];
+			if (c == L'\0')
+				return 0;
+		}
+
+		// Remove quote
+		if (quote_used) {
+			if (c != quote_used)
+				return 0;
+			c = text[++cursor];
 		}
 
 		attrs[attr_name] = stringw_to_utf8(attr_val);
