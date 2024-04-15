@@ -22,8 +22,6 @@ class CIrrDeviceMacOSX;
 #include "COpenGLExtensionHandler.h"
 #include "IContextManager.h"
 
-#define TEST_GL_ERROR(cls) (cls)->testGLError(__LINE__)
-
 namespace irr
 {
 
