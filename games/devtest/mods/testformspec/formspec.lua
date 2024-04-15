@@ -64,7 +64,7 @@ local inv_style_fs = [[
 	list[current_player;main;.5,7;8,4]
 ]]
 
-local hypertext_basic = [[
+local hypertext_basic = [[A hypertext element
 <bigger>Normal test</bigger>
 This is a normal text.
 
