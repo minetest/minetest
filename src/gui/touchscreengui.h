@@ -68,7 +68,7 @@ enum class TapState
 	LongTap,
 };
 
-typedef enum
+enum touch_gui_button_id
 {
 	jump_id = 0,
 	sneak_id,
@@ -97,15 +97,15 @@ typedef enum
 	joystick_off_id,
 	joystick_bg_id,
 	joystick_center_id,
-} touch_gui_button_id;
+};
 
-typedef enum
+enum autohide_button_bar_dir
 {
 	AHBB_Dir_Top_Bottom,
 	AHBB_Dir_Bottom_Top,
 	AHBB_Dir_Left_Right,
 	AHBB_Dir_Right_Left
-} autohide_button_bar_dir;
+};
 
 #define BUTTON_REPEAT_DELAY 0.5f
 #define BUTTON_REPEAT_INTERVAL 0.333f
@@ -159,7 +159,10 @@ public:
 	void show();
 	void hide();
 
-	bool operator!=(const AutoHideButtonBar &other);
+	bool operator==(const AutoHideButtonBar &other)
+			{ return m_starter.get() == other.m_starter.get(); }
+	bool operator!=(const AutoHideButtonBar &other)
+			{ return m_starter.get() != other.m_starter.get(); }
 
 private:
 	irr::video::IVideoDriver *m_driver = nullptr;

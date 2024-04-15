@@ -38,7 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 TouchScreenGUI *g_touchscreengui;
 
-const std::string button_image_names[] = {
+static const char *button_image_names[] = {
 	"jump_btn.png",
 	"down.png",
 	"zoom.png",
@@ -403,10 +403,6 @@ void AutoHideButtonBar::hide()
 	updateVisibility();
 }
 
-bool AutoHideButtonBar::operator!=(const AutoHideButtonBar &other) {
-	return m_starter.get() != other.m_starter.get();
-}
-
 TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsrc):
 		m_device(device),
 		m_guienv(device->getGUIEnvironment()),
@@ -486,7 +482,7 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsr
 							+ 0.5f * m_button_size),
 			AHBB_Dir_Right_Left);
 
-	const static std::vector<touch_gui_button_id> settings_bar_buttons {
+	const static touch_gui_button_id settings_bar_buttons[] {
 		fly_id, noclip_id, fast_id, debug_id, camera_id, range_id, minimap_id,
 	};
 	for (auto id : settings_bar_buttons) {
@@ -509,7 +505,7 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsr
 							+ 0.5f * m_button_size),
 			AHBB_Dir_Left_Right);
 
-	const static std::vector<touch_gui_button_id> rare_controls_bar_buttons {
+	const static touch_gui_button_id rare_controls_bar_buttons[] {
 		chat_id, inventory_id, drop_id, exit_id,
 	};
 	for (auto id : rare_controls_bar_buttons) {
