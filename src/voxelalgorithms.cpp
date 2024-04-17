@@ -1246,34 +1246,34 @@ VoxelLineIterator::VoxelLineIterator(const v3f &start_position, const v3f &line_
 	m_last_index = getIndex(floatToInt(start_position + line_vector, 1));
 
 	if (m_line_vector.X > 0) {
-		m_next_intersection_multi.X = (floorf(m_start_position.X - 0.5) + 1.5
+		m_next_intersection_multi.X = (m_current_node_pos.X + 0.5f
 			- m_start_position.X) / m_line_vector.X;
 		m_intersection_multi_inc.X = 1 / m_line_vector.X;
 	} else if (m_line_vector.X < 0) {
-		m_next_intersection_multi.X = (floorf(m_start_position.X - 0.5)
-			- m_start_position.X + 0.5) / m_line_vector.X;
+		m_next_intersection_multi.X = (m_current_node_pos.X - 0.5f
+			- m_start_position.X) / m_line_vector.X;
 		m_intersection_multi_inc.X = -1 / m_line_vector.X;
 		m_step_directions.X = -1;
 	}
 
 	if (m_line_vector.Y > 0) {
-		m_next_intersection_multi.Y = (floorf(m_start_position.Y - 0.5) + 1.5
+		m_next_intersection_multi.Y = (m_current_node_pos.Y + 0.5f
 			- m_start_position.Y) / m_line_vector.Y;
 		m_intersection_multi_inc.Y = 1 / m_line_vector.Y;
 	} else if (m_line_vector.Y < 0) {
-		m_next_intersection_multi.Y = (floorf(m_start_position.Y - 0.5)
-			- m_start_position.Y + 0.5) / m_line_vector.Y;
+		m_next_intersection_multi.Y = (m_current_node_pos.Y - 0.5f
+			- m_start_position.Y) / m_line_vector.Y;
 		m_intersection_multi_inc.Y = -1 / m_line_vector.Y;
 		m_step_directions.Y = -1;
 	}
 
 	if (m_line_vector.Z > 0) {
-		m_next_intersection_multi.Z = (floorf(m_start_position.Z - 0.5) + 1.5
+		m_next_intersection_multi.Z = (m_current_node_pos.Z + 0.5f
 			- m_start_position.Z) / m_line_vector.Z;
 		m_intersection_multi_inc.Z = 1 / m_line_vector.Z;
 	} else if (m_line_vector.Z < 0) {
-		m_next_intersection_multi.Z = (floorf(m_start_position.Z - 0.5)
-			- m_start_position.Z + 0.5) / m_line_vector.Z;
+		m_next_intersection_multi.Z = (m_current_node_pos.Z - 0.5f
+			- m_start_position.Z) / m_line_vector.Z;
 		m_intersection_multi_inc.Z = -1 / m_line_vector.Z;
 		m_step_directions.Z = -1;
 	}
