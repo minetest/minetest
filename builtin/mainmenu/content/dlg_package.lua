@@ -44,7 +44,14 @@ local function get_formspec(data)
 				if info == nil then
 					data.loading_error = true
 					ui.update()
-				elseif data.package.name == info.name then
+					return
+				end
+
+				if info.forums then
+					info.forums = "https://forum.minetest.net/viewtopic.php?t=" .. info.forums
+				end
+
+				if data.package.name == info.name then
 					data.info = info
 					ui.update()
 				end
@@ -85,21 +92,6 @@ local function get_formspec(data)
 
 			"label[0.375,1.4;", core.formspec_escape(info_line), "]",
 		}
-
-		local x = size.x - 3.375
-		local function add_link_button(label, name)
-			if info[name] then
-				x = x - 3.25
-				table.insert_all(formspec, {
-					"button[", x, ",", bottom_buttons_y, ";3,0.8;open_", name, ";", label, "]",
-				})
-			end
-		end
-		add_link_button(fgettext("Translate"), "translation_url")
-		add_link_button(fgettext("Issue Tracker"), "issue_tracker")
-		add_link_button(fgettext("Forums"), "forums")
-		add_link_button(fgettext("Source"), "repo")
-		add_link_button(fgettext("Website"), "website")
 
 		table.insert_all(formspec, {
 			"container[", size.x - 6.375, ",0.375]"
@@ -158,6 +150,7 @@ local function get_formspec(data)
 			"container[0,2.8]",
 		})
 
+		local safezone_right = PLATFORM == "Android" and 0.375 or 0
 		if current_tab == 1 then
 			-- Screenshots and description
 			local hypertext = "<big><b>" .. core.hypertext_escape(info.short_description) .. "</b></big>\n"
@@ -173,15 +166,35 @@ local function get_formspec(data)
 							" height=" .. (2.25 * fs_to_px).. ">"
 				end
 			end
-			hypertext = hypertext .. "\n" .. info.long_description.head ..
-					info.long_description.body
+			hypertext = hypertext .. "\n" .. info.long_description.head
+
+			local first = true
+			local function add_link_button(label, name)
+				if info[name] then
+					if not first then
+						hypertext = hypertext .. " | "
+					end
+					hypertext = hypertext .. "<action name=link_" .. name .. ">" .. core.hypertext_escape(label) .. "</action>"
+					info.long_description.links["link_" .. name] = info[name]
+					first = false
+				end
+			end
+
+			add_link_button(fgettext("Donate"), "donate_url")
+			add_link_button(fgettext("Website"), "website")
+			add_link_button(fgettext("Source"), "repo")
+			add_link_button(fgettext("Issue Tracker"), "issue_tracker")
+			add_link_button(fgettext("Translate"), "translation_url")
+			add_link_button(fgettext("Forum Topic"), "forums")
+
+			hypertext = hypertext .. "\n\n" .. info.long_description.body
 
 			hypertext = hypertext:gsub("<img name=blank.png ",
 					"<img name=" .. core.hypertext_escape(defaulttexturedir) .. "blank.png ")
 
 			table.insert_all(formspec, {
 				"hypertext[0.375,0;",
-					size.x - 3*0.375, ",",
+					size.x - 2*0.375 - safezone_right, ",",
 					tab_body_height - 0.375,
 					";desc;", core.formspec_escape(hypertext), "]",
 
@@ -191,7 +204,7 @@ local function get_formspec(data)
 			local hypertext = info.info_hypertext.head .. info.info_hypertext.body
 
 			table.insert_all(formspec, {
-				"hypertext[0.375,0;", size.x - 3*0.375, ",", tab_body_height - 0.375,
+				"hypertext[0.375,0;", size.x - 2*0.375 - safezone_right, ",", tab_body_height - 0.375,
 					";info;", core.formspec_escape(hypertext), "]",
 			})
 		else
@@ -258,31 +271,6 @@ local function handle_submit(this, fields)
 			core.settings:get("contentdb_url"), package.url_part,
 			core.get_max_supp_proto())
 		core.open_url(url)
-		return true
-	end
-
-	if fields.open_translation_url then
-		core.open_url_dialog(info.translation_url)
-		return true
-	end
-
-	if fields.open_issue_tracker then
-		core.open_url_dialog(info.issue_tracker)
-		return true
-	end
-
-	if fields.open_forums then
-		core.open_url("https://forum.minetest.net/viewtopic.php?t=" .. info.forums)
-		return true
-	end
-
-	if fields.open_repo then
-		core.open_url_dialog(info.repo)
-		return true
-	end
-
-	if fields.open_website then
-		core.open_url_dialog(info.website)
 		return true
 	end
 
