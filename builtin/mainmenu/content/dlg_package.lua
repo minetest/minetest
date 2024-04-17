@@ -16,23 +16,26 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-local function get_info_formspec(size, text)
+local function get_info_formspec(size, padding, text)
 	return table.concat({
 		"formspec_version[6]",
 		"size[", size.x, ",", size.y, "]",
 		"padding[-0.01,-0.01]",
 
 		"label[4,4.35;", text, "]",
-		"container[0,", size.y - 0.8 - 0.375, "]",
-		"button[0.375,0;2,0.8;back;", fgettext("Back"), "]",
+		"container[", padding.x, ",", size.y - 0.8 - padding.y, "]",
+		"button[0,0;2,0.8;back;", fgettext("Back"), "]",
 		"container_end[]",
 	})
 end
 
 
 local function get_formspec(data)
+	local window_padding = { x = PLATFORM == "Android" and 1 or 0.5, y = PLATFORM == "Android" and 0.25 or 0.5 }
 	local window = core.get_window_info()
 	local size = { x = window.max_formspec_size.x, y = window.max_formspec_size.y }
+	local W = size.x - window_padding.x * 2
+	local H = size.y - window_padding.y * 2
 
 	if not data.info then
 		if not data.loading and not data.loading_error then
@@ -44,7 +47,14 @@ local function get_formspec(data)
 				if info == nil then
 					data.loading_error = true
 					ui.update()
-				elseif data.package.name == info.name then
+					return
+				end
+
+				if info.forums then
+					info.forums = "https://forum.minetest.net/viewtopic.php?t=" .. info.forums
+				end
+
+				if data.package.name == info.name then
 					data.info = info
 					ui.update()
 				end
@@ -52,9 +62,9 @@ local function get_formspec(data)
 		end
 
 		if data.loading_error then
-			return get_info_formspec(size, fgettext("No packages could be retrieved"))
+			return get_info_formspec(size, window_padding, fgettext("No packages could be retrieved"))
 		else
-			return get_info_formspec(size, fgettext("Loading..."))
+			return get_info_formspec(size, window_padding, fgettext("Loading..."))
 		end
 	else
 		-- Check installation status
@@ -67,42 +77,27 @@ local function get_formspec(data)
 						info.author, info.downloads,
 						info.reviews.positive, info.reviews.neutral, info.reviews.negative)
 
-		local bottom_buttons_y = size.y - 0.8 - 0.375
+		local bottom_buttons_y = H - 0.8
 
 		local formspec = {
 			"formspec_version[7]",
 			"size[", size.x, ",",  size.y, "]",
 			"padding[-0.01,-0.01]",
-			"bgcolor[#0000]",
-			"box[0,0;", size.x, ",", size.y, ";#0000008C]",
 
-			"button[0.375,", bottom_buttons_y, ";2,0.8;back;", fgettext("Back"), "]",
-			"button[", size.x - 3.375, ",", bottom_buttons_y, ";3,0.8;open_contentdb;", fgettext("ContentDB page"), "]",
+			"container[", window_padding.x, ",", window_padding.y, "]",
+
+			"button[0,", bottom_buttons_y, ";2,0.8;back;", fgettext("Back"), "]",
+			"button[", W - 3, ",", bottom_buttons_y, ";3,0.8;open_contentdb;", fgettext("ContentDB page"), "]",
 
 			"style_type[label;font_size=+24;font=bold]",
-			"label[0.375,0.7;", core.formspec_escape(info.title), "]",
+			"label[0,0.4;", core.formspec_escape(info.title), "]",
 			"style_type[label;font_size=;font=]",
 
-			"label[0.375,1.4;", core.formspec_escape(info_line), "]",
+			"label[0,1.2;", core.formspec_escape(info_line), "]",
 		}
 
-		local x = size.x - 3.375
-		local function add_link_button(label, name)
-			if info[name] then
-				x = x - 3.25
-				table.insert_all(formspec, {
-					"button[", x, ",", bottom_buttons_y, ";3,0.8;open_", name, ";", label, "]",
-				})
-			end
-		end
-		add_link_button(fgettext("Translate"), "translation_url")
-		add_link_button(fgettext("Issue Tracker"), "issue_tracker")
-		add_link_button(fgettext("Forums"), "forums")
-		add_link_button(fgettext("Source"), "repo")
-		add_link_button(fgettext("Website"), "website")
-
 		table.insert_all(formspec, {
-			"container[", size.x - 6.375, ",0.375]"
+			"container[", W - 6, ",0]"
 		})
 
 		local left_button_rect = "0,0;2.875,1"
@@ -152,7 +147,9 @@ local function get_formspec(data)
 		table.insert_all(formspec, {
 			"container_end[]",
 
-			"tabheader[0.375,2.55;", size.x - 0.375*2, ",0.8;tabs;",
+			"box[0,2.55;", W, ",", tab_body_height, ";#ffffff11]",
+
+			"tabheader[0,2.55;", W, ",0.8;tabs;",
 					table.concat(tab_titles, ","), ";", current_tab, ";true;true]",
 
 			"container[0,2.8]",
@@ -165,24 +162,42 @@ local function get_formspec(data)
 			local fs_to_px = winfo.size.x / winfo.max_formspec_size.x
 			for i, ss in ipairs(info.screenshots) do
 				local path = get_screenshot(data.package, ss.url, 2)
-				hypertext = hypertext .. "<action name=ss_" .. i .. "><img name=" ..
-						core.hypertext_escape(path) .. " width=" .. (3 * fs_to_px) ..
+				hypertext = hypertext .. "<action name=\"ss_" .. i .. "\"><img name=\"" ..
+						core.hypertext_escape(path) .. "\" width=" .. (3 * fs_to_px) ..
 						" height=" .. (2 * fs_to_px) .. "></action>"
 				if i ~= #info.screenshots then
-					hypertext = hypertext .. "<img name=blank.png width=" .. (0.25 * fs_to_px) ..
+					hypertext = hypertext .. "<img name=\"blank.png\" width=" .. (0.25 * fs_to_px) ..
 							" height=" .. (2.25 * fs_to_px).. ">"
 				end
 			end
-			hypertext = hypertext .. "\n" .. info.long_description.head ..
-					info.long_description.body
+			hypertext = hypertext .. "\n" .. info.long_description.head
+
+			local first = true
+			local function add_link_button(label, name)
+				if info[name] then
+					if not first then
+						hypertext = hypertext .. " | "
+					end
+					hypertext = hypertext .. "<action name=link_" .. name .. ">" .. core.hypertext_escape(label) .. "</action>"
+					info.long_description.links["link_" .. name] = info[name]
+					first = false
+				end
+			end
+
+			add_link_button(fgettext("Donate"), "donate_url")
+			add_link_button(fgettext("Website"), "website")
+			add_link_button(fgettext("Source"), "repo")
+			add_link_button(fgettext("Issue Tracker"), "issue_tracker")
+			add_link_button(fgettext("Translate"), "translation_url")
+			add_link_button(fgettext("Forum Topic"), "forums")
+
+			hypertext = hypertext .. "\n\n" .. info.long_description.body
 
 			hypertext = hypertext:gsub("<img name=blank.png ",
-					"<img name=" .. core.hypertext_escape(defaulttexturedir) .. "blank.png ")
+					"<img name=\"" .. core.hypertext_escape(defaulttexturedir) .. "blank.png\" ")
 
 			table.insert_all(formspec, {
-				"hypertext[0.375,0;",
-					size.x - 3*0.375, ",",
-					tab_body_height - 0.375,
+				"hypertext[0,0;", W, ",", tab_body_height - 0.375,
 					";desc;", core.formspec_escape(hypertext), "]",
 
 			})
@@ -191,13 +206,14 @@ local function get_formspec(data)
 			local hypertext = info.info_hypertext.head .. info.info_hypertext.body
 
 			table.insert_all(formspec, {
-				"hypertext[0.375,0;", size.x - 3*0.375, ",", tab_body_height - 0.375,
+				"hypertext[0,0;", W, ",", tab_body_height - 0.375,
 					";info;", core.formspec_escape(hypertext), "]",
 			})
 		else
 			error("Unknown tab " .. current_tab)
 		end
 
+		formspec[#formspec + 1] = "container_end[]"
 		formspec[#formspec + 1] = "container_end[]"
 
 		return table.concat(formspec)
@@ -258,31 +274,6 @@ local function handle_submit(this, fields)
 			core.settings:get("contentdb_url"), package.url_part,
 			core.get_max_supp_proto())
 		core.open_url(url)
-		return true
-	end
-
-	if fields.open_translation_url then
-		core.open_url_dialog(info.translation_url)
-		return true
-	end
-
-	if fields.open_issue_tracker then
-		core.open_url_dialog(info.issue_tracker)
-		return true
-	end
-
-	if fields.open_forums then
-		core.open_url("https://forum.minetest.net/viewtopic.php?t=" .. info.forums)
-		return true
-	end
-
-	if fields.open_repo then
-		core.open_url_dialog(info.repo)
-		return true
-	end
-
-	if fields.open_website then
-		core.open_url_dialog(info.website)
 		return true
 	end
 
