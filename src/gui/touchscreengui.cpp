@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "settings.h"
 #include "client/guiscalingfilter.h"
-#include "client/keycode.h"
+#include "client/input/keycode.h"
 #include "client/renderingengine.h"
 #include "util/numeric.h"
 #include <ISceneCollisionManager.h>

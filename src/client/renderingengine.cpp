@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "renderingengine.h"
 #include "render/core.h"
 #include "render/factory.h"
-#include "inputhandler.h"
+#include "client/input/inputhandler.h"
 #include "gettext.h"
 #include "filesys.h"
 #include "../gui/guiSkin.h"
