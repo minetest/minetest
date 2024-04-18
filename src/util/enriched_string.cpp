@@ -166,6 +166,21 @@ void EnrichedString::operator+=(const EnrichedString &other)
 	}
 }
 
+EnrichedString EnrichedString::getNextLine(size_t *pos) const
+{
+	size_t str_pos = *pos;
+
+	// Split per line
+	size_t str_nl = getString().find(L'\n', str_pos);
+	if (str_nl == std::wstring::npos)
+		str_nl = getString().size();
+	EnrichedString line = substr(str_pos, str_nl - str_pos);
+	str_pos += line.size() + 1;
+
+	*pos = str_pos;
+	return line;
+}
+
 EnrichedString EnrichedString::substr(size_t pos, size_t len) const
 {
 	if (pos >= m_string.length())
