@@ -150,7 +150,7 @@ void TestMapBlock::testSave29(IGameDef *gamedef)
 
 	/*
 	 * Quick note:
-	 * Minetest deals with MapBlocks that violates these invariants (mostly) fine,
+	 * Minetest deals with MapBlocks that violate these invariants (mostly) fine,
 	 * but we should still be careful about them as third-party tools may rely on them.
 	 */
 
@@ -161,7 +161,9 @@ void TestMapBlock::testSave29(IGameDef *gamedef)
 	UASSERT(content_width == 2 && params_width == 2);
 }
 
-// This was generated with: minetestmapper -i testworld --dumpblock 6,0,0 |
+#undef SS2_CHECK
+
+// The array was generated with: minetestmapper -i testworld --dumpblock 6,0,0 |
 // python -c 'import sys;d=bytes.fromhex(sys.stdin.read().strip());print(",".join("%d"%c for c in d))'
 
 static const u8 coded_mapblock29[] = {
@@ -205,10 +207,10 @@ void TestMapBlock::testLoad29(IGameDef *gamedef)
 	auto content_chest = ndef->getId("default:chest");
 	UASSERT(content_chest != CONTENT_IGNORE);
 
-	// there are bricks at each edge pos
+	// there are bricks at each corner
 	const v3s16 pl[] = {
 		{0, 0, 0}, {15, 0, 0}, {0, 15, 0}, {0, 0, 15},
-		{15, 15, 0}, {0, 15, 15}, {15, 15, 15},
+		{15, 15, 0}, {15, 0, 15}, {0, 15, 15}, {15, 15, 15},
 	};
 	for (auto p : pl)
 		UASSERTEQ(int, block.getNodeNoEx(p).getContent(), t_CONTENT_BRICK);
