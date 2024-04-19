@@ -4558,6 +4558,10 @@ void the_game(bool *kill,
 		error_message = std::string("ModError: ") + e.what() +
 				strgettext("\nCheck debug.txt for details.");
 		errorstream << error_message << std::endl;
+	} catch (...) {
+		// Game::shutdown must always be called.
+		game.shutdown();
+		throw;
 	}
 	game.shutdown();
 }
