@@ -294,6 +294,16 @@ void TestMapBlock::testLoad20(IGameDef *gamedef)
 
 	for (size_t i = 0; i < MapBlock::nodecount; ++i)
 		UASSERT(block.getData()[i].getContent() != CONTENT_IGNORE);
+
+	// metadata is also translated
+	auto *meta = block.m_node_metadata.get({11, 6, 3});
+	UASSERT(meta);
+	UASSERT(meta->contains("formspec"));
+	auto *inv = meta->getInventory();
+	UASSERT(inv);
+	auto *ilist = inv->getList("dst");
+	UASSERT(ilist);
+	UASSERTEQ(int, ilist->getSize(), 4);
 }
 
 static const u8 coded_mapblock_nonstd[] = {
