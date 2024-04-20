@@ -622,6 +622,19 @@ void CIrrDeviceSDL::createDriver()
 		os::Printer::log("Could not create video driver", ELL_ERROR);
 }
 
+static int wrap_PollEvent(SDL_Event *ev)
+{
+	u32 t0 = os::Timer::getRealTime();
+	int ret = SDL_PollEvent(ev);
+	u32 d = os::Timer::getRealTime() - t0;
+	if (d >= 5) {
+		auto msg = std::string("SDL_PollEvent took too long: ") + std::to_string(d) + "ms";
+		// 50ms delay => more than three missed frames (at 60fps)
+		os::Printer::log(msg.c_str(), d >= 50 ? ELL_WARNING : ELL_INFORMATION);
+	}
+	return ret;
+}
+
 //! runs the device. Returns false if device wants to be deleted
 bool CIrrDeviceSDL::run()
 {
@@ -630,7 +643,7 @@ bool CIrrDeviceSDL::run()
 	SEvent irrevent;
 	SDL_Event SDL_event;
 
-	while (!Close && SDL_PollEvent(&SDL_event)) {
+	while (!Close && wrap_PollEvent(&SDL_event)) {
 		// os::Printer::log("event: ", core::stringc((int)SDL_event.type).c_str(),   ELL_INFORMATION);	// just for debugging
 
 		switch (SDL_event.type) {
