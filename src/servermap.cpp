@@ -639,8 +639,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 	try {
 		std::istringstream is(*blob, std::ios_base::binary);
 
-		u8 version = SER_FMT_VER_INVALID;
-		is.read((char*)&version, 1);
+		u8 version = readU8(is);
 
 		if(is.fail())
 			throw SerializationError("ServerMap::loadBlock(): Failed"
@@ -655,9 +654,8 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 		}
 
 		{
-		ScopeProfiler sp(g_profiler, "ServerMap: deSer block", SPT_AVG);
-		// Read basic data
-		block->deSerialize(is, version, true);
+			ScopeProfiler sp(g_profiler, "ServerMap: deSer block", SPT_AVG, PRECISION_MICRO);
+			block->deSerialize(is, version, true);
 		}
 
 		// If it's a new block, insert it to the map
@@ -699,7 +697,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 
 MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 {
-	ScopeProfiler sp(g_profiler, "ServerMap: load block", SPT_AVG);
+	ScopeProfiler sp(g_profiler, "ServerMap: load block", SPT_AVG, PRECISION_MICRO);
 	bool created_new = (getBlockNoCreateNoEx(blockpos) == NULL);
 
 	v2s16 p2d(blockpos.X, blockpos.Z);
