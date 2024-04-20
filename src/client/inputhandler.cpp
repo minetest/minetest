@@ -99,19 +99,30 @@ void KeyCache::populate()
 
 bool MyEventReceiver::OnEvent(const SEvent &event)
 {
-	/*
-		React to nothing here if a menu is active
-	*/
+	if (event.EventType == irr::EET_LOG_TEXT_EVENT) {
+		static const LogLevel irr_loglev_conv[] = {
+			LL_VERBOSE, // ELL_DEBUG
+			LL_INFO,    // ELL_INFORMATION
+			LL_WARNING, // ELL_WARNING
+			LL_ERROR,   // ELL_ERROR
+			LL_NONE,    // ELL_NONE
+		};
+		assert(event.LogEvent.Level < ARRLEN(irr_loglev_conv));
+		g_logger.log(irr_loglev_conv[event.LogEvent.Level],
+				std::string("Irrlicht: ") + event.LogEvent.Text);
+		return true;
+	}
+
+	// Let the menu handle events, if one is active.
 	if (isMenuActive()) {
-		if (g_touchscreengui) {
+		if (g_touchscreengui)
 			g_touchscreengui->setVisible(false);
-		}
 		return g_menumgr.preprocessEvent(event);
 	}
 
 	// Remember whether each key is down or up
 	if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
-		const KeyPress &keyCode = event.KeyInput;
+		const KeyPress keyCode(event.KeyInput);
 		if (keysListenedFor[keyCode]) {
 			if (event.KeyInput.PressedDown) {
 				if (!IsKeyDown(keyCode))
@@ -133,7 +144,6 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 		// In case of touchscreengui, we have to handle different events
 		g_touchscreengui->translateEvent(event);
 		return true;
-
 	} else if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
 		// joystick may be nullptr if game is launched with '--random-input' parameter
 		return joystick && joystick->handleEvent(event.JoystickEvent);
@@ -179,20 +189,9 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 			break;
 		default: break;
 		}
-	} else if (event.EventType == irr::EET_LOG_TEXT_EVENT) {
-		static const LogLevel irr_loglev_conv[] = {
-				LL_VERBOSE, // ELL_DEBUG
-				LL_INFO,    // ELL_INFORMATION
-				LL_WARNING, // ELL_WARNING
-				LL_ERROR,   // ELL_ERROR
-				LL_NONE,    // ELL_NONE
-		};
-		assert(event.LogEvent.Level < ARRLEN(irr_loglev_conv));
-		g_logger.log(irr_loglev_conv[event.LogEvent.Level],
-				std::string("Irrlicht: ") + event.LogEvent.Text);
-		return true;
 	}
-	/* always return false in order to continue processing events */
+
+	// tell Irrlicht to continue processing this event
 	return false;
 }
 
