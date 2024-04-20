@@ -234,7 +234,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	Map *map = &env->getMap();
 	ServerEnvironment *s_env = dynamic_cast<ServerEnvironment*>(env);
 
-	ScopeProfiler sp(g_profiler, PROFILER_NAME("collisionMoveSimple()"), SPT_AVG);
+	ScopeProfiler sp(g_profiler, PROFILER_NAME("collisionMoveSimple()"), SPT_AVG, PRECISION_MICRO);
 
 	collisionMoveResult result;
 
@@ -273,7 +273,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	std::vector<NearbyCollisionInfo> cinfo;
 	{
 	//TimeTaker tt2("collisionMoveSimple collect boxes");
-	ScopeProfiler sp2(g_profiler, PROFILER_NAME("collision collect boxes"), SPT_AVG);
+	ScopeProfiler sp2(g_profiler, PROFILER_NAME("collision collect boxes"), SPT_AVG, PRECISION_MICRO);
 
 	v3f minpos_f(
 		MYMIN(pos_f->X, newpos_f.X),

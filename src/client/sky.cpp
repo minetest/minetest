@@ -122,7 +122,7 @@ void Sky::render()
 	if (!camera || !driver)
 		return;
 
-	ScopeProfiler sp(g_profiler, "Sky::render()", SPT_AVG);
+	ScopeProfiler sp(g_profiler, "Sky::render()", SPT_AVG, PRECISION_MICRO);
 
 	// Draw perspective skybox
 
