@@ -321,11 +321,13 @@ endif()
 # Note that find_library does not reliably find it so we have to resort to this.
 # Also, passing -latomic is not always the same as adding atomic to the library list.
 include(CheckCSourceCompiles)
-set(CMAKE_REQUIRED_LIBRARIES "-latomic")
-check_c_source_compiles("int main(){}" HAVE_LINK_ATOMIC)
-set(CMAKE_REQUIRED_LIBRARIES "")
-if(HAVE_LINK_ATOMIC)
-	set(PLATFORM_LIBS ${PLATFORM_LIBS} "-latomic")
+if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+	set(CMAKE_REQUIRED_LIBRARIES "-latomic")
+	check_c_source_compiles("int main(){}" HAVE_LINK_ATOMIC)
+	set(CMAKE_REQUIRED_LIBRARIES "")
+	if(HAVE_LINK_ATOMIC)
+		set(PLATFORM_LIBS ${PLATFORM_LIBS} "-latomic")
+	endif()
 endif()
 
 include(CheckSymbolExists)
