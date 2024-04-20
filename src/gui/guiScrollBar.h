@@ -13,6 +13,7 @@ the arrow buttons where there is insufficient space.
 #pragma once
 
 #include "irrlichttypes_extrabloated.h"
+#include <optional>
 
 class ISimpleTextureSource;
 
@@ -42,12 +43,18 @@ public:
 	s32 getLargeStep() const { return large_step; }
 	s32 getSmallStep() const { return small_step; }
 	s32 getPos() const;
+	s32 getTargetPos() const;
 
 	void setMax(const s32 &max);
 	void setMin(const s32 &min);
 	void setSmallStep(const s32 &step);
 	void setLargeStep(const s32 &step);
+	//! Sets a position immediately, aborting any ongoing interpolation.
 	void setPos(const s32 &pos);
+	//! Sets a target position for interpolation.
+	// If you want to do an interpolated addition, use
+	// setPosInterpolated(getTargetPos() + x).
+	void setPosInterpolated(const s32 &pos);
 	void setPageSize(const s32 &size);
 	void setArrowsVisible(ArrowVisibility visible);
 
@@ -79,4 +86,8 @@ private:
 	video::SColor current_icon_color;
 
 	ISimpleTextureSource *m_tsrc;
+
+	void setPosRaw(const s32 &pos);
+	void updatePos();
+	std::optional<s32> target_pos;
 };
