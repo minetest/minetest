@@ -253,10 +253,8 @@ bool run_tests()
 		<< "++++++++++++++++++++++++++++++++++++++++"
 		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl
 	        << "Catch test results: " << std::endl;
-    auto catch_test_failures = Catch::Session().run();
-	if (catch_test_failures > 0) {
-		++num_modules_failed;
-	}
+	auto catch_test_failures = Catch::Session().run();
+	num_modules_failed += catch_test_failures;
 
 	return num_modules_failed == 0;
 }
@@ -276,7 +274,11 @@ bool run_tests(const std::string &module_name)
 
 	auto testmod = findTestModule(module_name);
 	if (!testmod) {
-		errorstream << "Test module not found: " << module_name << std::endl;
+		infostream << "Did not find module, searching Catch tests: " << module_name << std::endl;
+		Catch::Session session;
+		const char *const conjured_args[]{"internal-not-used", module_name.c_str()};
+		session.applyCommandLine(2, conjured_args);
+		session.run();
 		return 1;
 	}
 
