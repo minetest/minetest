@@ -90,6 +90,12 @@ private:
 		float value = 0;
 		int avgcount = 0;
 
+		inline void reset() {
+			value = 0;
+			// negative values are used for type checking, so leave them alone
+			if (avgcount >= 1)
+				avgcount = 0;
+		}
 		inline float getValue() const {
 			return avgcount >= 1 ? (value / avgcount) : value;
 		}

@@ -96,7 +96,7 @@ void Profiler::avg(const std::string &name, float value)
 	if (it == m_data.end()) {
 		m_data.emplace(name, DataPair{value, 1});
 	} else {
-		assert(it->second.avgcount >= 1);
+		assert(it->second.avgcount >= 0);
 		it->second.value += value;
 		it->second.avgcount++;
 	}
@@ -106,7 +106,7 @@ void Profiler::clear()
 {
 	MutexAutoLock lock(m_mutex);
 	for (auto &it : m_data)
-		it.second = DataPair();
+		it.second.reset();
 	m_start_time = porting::getTimeMs();
 }
 
