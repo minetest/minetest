@@ -185,7 +185,7 @@ bool GUIScrollBar::OnEvent(const SEvent &event)
 	return IGUIElement::OnEvent(event);
 }
 
-s32 interpolate_scroll(s32 from, s32 to)
+static inline s32 interpolate_scroll(s32 from, s32 to)
 {
 	s32 step = core::round32((to - from) * 0.5f);
 	if (step == 0)
