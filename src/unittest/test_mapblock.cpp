@@ -94,7 +94,7 @@ void TestMapBlock::testSaveLoad(IGameDef *gamedef, const u8 version)
 	}
 }
 
-#define SS2_CHECK() UASSERT(!ss2.eof() || !ss2.bad())
+#define SS2_CHECK() UASSERT(!ss2.fail())
 
 void TestMapBlock::testSave29(IGameDef *gamedef)
 {
