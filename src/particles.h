@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <sstream>
 #include <vector>
-#include <ctgmath>
 #include <type_traits>
 #include "irrlicht_changes/printing.h"
 #include "irrlichttypes_bloated.h"
