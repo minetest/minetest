@@ -155,7 +155,7 @@ void set_default_settings()
 	settings->setDefault("keymap_console", "KEY_F10");
 
 	// See https://github.com/minetest/minetest/issues/12792
-	settings->setDefault("keymap_rangeselect", bool_to_cstr(has_touch) ? "KEY_KEY_R" : "");
+	settings->setDefault("keymap_rangeselect", has_touch ? "KEY_KEY_R" : "");
 
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
 	settings->setDefault("keymap_pitchmove", "");
