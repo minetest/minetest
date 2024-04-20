@@ -239,7 +239,7 @@ static const struct table_key table[] = {
 #undef N_
 
 
-struct table_key lookup_keyname(const char *name)
+static const table_key &lookup_keyname(const char *name)
 {
 	for (const auto &table_key : table) {
 		if (strcmp(table_key.Name, name) == 0)
@@ -249,7 +249,7 @@ struct table_key lookup_keyname(const char *name)
 	throw UnknownKeycode(name);
 }
 
-struct table_key lookup_keykey(irr::EKEY_CODE key)
+static const table_key &lookup_keykey(irr::EKEY_CODE key)
 {
 	for (const auto &table_key : table) {
 		if (table_key.Key == key)
@@ -261,7 +261,7 @@ struct table_key lookup_keykey(irr::EKEY_CODE key)
 	throw UnknownKeycode(os.str().c_str());
 }
 
-struct table_key lookup_keychar(wchar_t Char)
+static const table_key &lookup_keychar(wchar_t Char)
 {
 	for (const auto &table_key : table) {
 		if (table_key.Char == Char)
@@ -287,7 +287,7 @@ KeyPress::KeyPress(const char *name)
 		int chars_read = mbtowc(&Char, name, 1);
 		FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
 		try {
-			struct table_key k = lookup_keychar(Char);
+			auto &k = lookup_keychar(Char);
 			m_name = k.Name;
 			Key = k.Key;
 			return;
@@ -296,7 +296,7 @@ KeyPress::KeyPress(const char *name)
 		// Lookup by name
 		m_name = name;
 		try {
-			struct table_key k = lookup_keyname(name);
+			auto &k = lookup_keyname(name);
 			Key = k.Key;
 			Char = k.Char;
 			return;
@@ -350,6 +350,10 @@ const char *KeyPress::name() const
 const KeyPress EscapeKey("KEY_ESCAPE");
 const KeyPress CancelKey("KEY_CANCEL");
 
+const KeyPress LMBKey("KEY_LBUTTON");
+const KeyPress MMBKey("KEY_MBUTTON");
+const KeyPress RMBKey("KEY_RBUTTON");
+
 /*
 	Key config
 */
@@ -357,15 +361,15 @@ const KeyPress CancelKey("KEY_CANCEL");
 // A simple cache for quicker lookup
 static std::unordered_map<std::string, KeyPress> g_key_setting_cache;
 
-KeyPress getKeySetting(const char *settingname)
+const KeyPress &getKeySetting(const char *settingname)
 {
 	auto n = g_key_setting_cache.find(settingname);
 	if (n != g_key_setting_cache.end())
 		return n->second;
 
-	KeyPress k(g_settings->get(settingname).c_str());
-	g_key_setting_cache[settingname] = k;
-	return k;
+	auto &ref = g_key_setting_cache[settingname];
+	ref = g_settings->get(settingname).c_str();
+	return ref;
 }
 
 void clearKeyCache()
