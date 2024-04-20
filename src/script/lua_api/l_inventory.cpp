@@ -151,19 +151,28 @@ int InvRef::l_set_width(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	InvRef *ref = checkObject<InvRef>(L, 1);
 	const char *listname = luaL_checkstring(L, 2);
+
 	int newwidth = luaL_checknumber(L, 3);
+	if (newwidth < 0) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
 	Inventory *inv = getinv(L, ref);
 	if(inv == NULL){
-		return 0;
+		lua_pushboolean(L, false);
+		return 1;
 	}
 	InventoryList *list = inv->getList(listname);
 	if(list){
 		list->setWidth(newwidth);
 	} else {
-		return 0;
+		lua_pushboolean(L, false);
+		return 1;
 	}
 	reportInventoryChange(L, ref);
-	return 0;
+	lua_pushboolean(L, true);
+	return 1;
 }
 
 // get_stack(self, listname, i) -> itemstack
