@@ -149,45 +149,39 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 		return joystick && joystick->handleEvent(event.JoystickEvent);
 	} else if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 		// Handle mouse events
-		KeyPress key;
 		switch (event.MouseInput.Event) {
 		case EMIE_LMOUSE_PRESSED_DOWN:
-			key = "KEY_LBUTTON";
-			keyIsDown.set(key);
-			keyWasDown.set(key);
-			keyWasPressed.set(key);
+			keyIsDown.set(LMBKey);
+			keyWasDown.set(LMBKey);
+			keyWasPressed.set(LMBKey);
 			break;
 		case EMIE_MMOUSE_PRESSED_DOWN:
-			key = "KEY_MBUTTON";
-			keyIsDown.set(key);
-			keyWasDown.set(key);
-			keyWasPressed.set(key);
+			keyIsDown.set(MMBKey);
+			keyWasDown.set(MMBKey);
+			keyWasPressed.set(MMBKey);
 			break;
 		case EMIE_RMOUSE_PRESSED_DOWN:
-			key = "KEY_RBUTTON";
-			keyIsDown.set(key);
-			keyWasDown.set(key);
-			keyWasPressed.set(key);
+			keyIsDown.set(RMBKey);
+			keyWasDown.set(RMBKey);
+			keyWasPressed.set(RMBKey);
 			break;
 		case EMIE_LMOUSE_LEFT_UP:
-			key = "KEY_LBUTTON";
-			keyIsDown.unset(key);
-			keyWasReleased.set(key);
+			keyIsDown.unset(LMBKey);
+			keyWasReleased.set(LMBKey);
 			break;
 		case EMIE_MMOUSE_LEFT_UP:
-			key = "KEY_MBUTTON";
-			keyIsDown.unset(key);
-			keyWasReleased.set(key);
+			keyIsDown.unset(MMBKey);
+			keyWasReleased.set(MMBKey);
 			break;
 		case EMIE_RMOUSE_LEFT_UP:
-			key = "KEY_RBUTTON";
-			keyIsDown.unset(key);
-			keyWasReleased.set(key);
+			keyIsDown.unset(RMBKey);
+			keyWasReleased.set(RMBKey);
 			break;
 		case EMIE_MOUSE_WHEEL:
 			mouse_wheel += event.MouseInput.Wheel;
 			break;
-		default: break;
+		default:
+			break;
 		}
 	}
 

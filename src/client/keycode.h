@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "exceptions.h"
 #include "irrlichttypes.h"
-#include "Keycodes.h"
+#include <Keycodes.h>
 #include <IEventReceiver.h>
 #include <string>
 
@@ -63,11 +63,17 @@ protected:
 	std::string m_name = "";
 };
 
+// Global defines for convenience
+
 extern const KeyPress EscapeKey;
 extern const KeyPress CancelKey;
 
+extern const KeyPress LMBKey;
+extern const KeyPress MMBKey; // Middle Mouse Button
+extern const KeyPress RMBKey;
+
 // Key configuration getter
-KeyPress getKeySetting(const char *settingname);
+const KeyPress &getKeySetting(const char *settingname);
 
 // Clear fast lookup cache
 void clearKeyCache();
