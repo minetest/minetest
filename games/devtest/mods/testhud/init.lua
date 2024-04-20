@@ -8,6 +8,8 @@ local font_states = {
 	{4, "Monospace font"},
 	{5, "Bold and monospace font"},
 	{7, "ZOMG all the font styles"},
+	{7, "Colors test! " .. minetest.colorize("green", "Green") ..
+		minetest.colorize("red", "\nRed") .. " END"},
 }
 
 

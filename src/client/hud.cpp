@@ -40,6 +40,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include "client/minimap.h"
 #include "gui/touchscreengui.h"
+#include "util/enriched_string.h"
+#include "irrlicht_changes/CGUITTFont.h"
 
 #define OBJECT_CROSSHAIR_LINE_SIZE 8
 #define CROSSHAIR_LINE_SIZE 10
@@ -390,10 +392,14 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 					(e->style & HUD_STYLE_MONO) ? FM_Mono : FM_Unspecified,
 					e->style & HUD_STYLE_BOLD, e->style & HUD_STYLE_ITALIC));
 
+				irr::gui::CGUITTFont *ttfont = nullptr;
+				if (textfont->getType() == irr::gui::EGFT_CUSTOM)
+					ttfont = static_cast<irr::gui::CGUITTFont *>(textfont);
+
 				video::SColor color(255, (e->number >> 16) & 0xFF,
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
-				std::wstring text = unescape_translate(utf8_to_wide(e->text));
+				EnrichedString text(unescape_string(utf8_to_wide(e->text)), color);
 				core::dimension2d<u32> textsize = textfont->getDimension(text.c_str());
 
 				v2s32 offset(0, (e->align.Y - 1.0) * (textsize.Height / 2));
@@ -401,13 +407,19 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 						text_height * e->scale.Y * m_scale_factor);
 				v2s32 offs(e->offset.X * m_scale_factor,
 						e->offset.Y * m_scale_factor);
-				std::wstringstream wss(text);
-				std::wstring line;
-				while (std::getline(wss, line, L'\n'))
-				{
+
+				// Draw each line
+				// See also: GUIFormSpecMenu::parseLabel
+				size_t str_pos = 0;
+				while (str_pos < text.size()) {
+					EnrichedString line = text.getNextLine(&str_pos);
+
 					core::dimension2d<u32> linesize = textfont->getDimension(line.c_str());
 					v2s32 line_offset((e->align.X - 1.0) * (linesize.Width / 2), 0);
-					textfont->draw(line.c_str(), size + pos + offset + offs + line_offset, color);
+					if (ttfont)
+						ttfont->draw(line, size + pos + offset + offs + line_offset);
+					else
+						textfont->draw(line.c_str(), size + pos + offset + offs + line_offset, color);
 					offset.Y += linesize.Height;
 				}
 				break; }

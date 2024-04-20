@@ -1719,6 +1719,8 @@ Displays text on the HUD.
 * `scale`: Defines the bounding rectangle of the text.
   A value such as `{x=100, y=100}` should work.
 * `text`: The text to be displayed in the HUD element.
+  Supports `minetest.translate` (always)
+  and `minetest.colorize` (since protocol version 44)
 * `number`: An integer containing the RGB value of the color used to draw the
   text. Specify `0xFFFFFF` for white text, `0xFF0000` for red, and so on.
 * `alignment`: The alignment of the text.
