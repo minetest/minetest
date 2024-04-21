@@ -4137,8 +4137,8 @@ the table returned by `minetest.get_player_information(name)`.
 
 > [!NOTE]
 > This functionality should only be used for sorting, filtering
-or similar purposes. You do not need to use this to get translated strings
-to show up on the client.
+> or similar purposes. You do not need to use this to get translated strings
+> to show up on the client.
 
 ## Translating Content Meta
 
