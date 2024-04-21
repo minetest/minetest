@@ -84,7 +84,7 @@ The game directory can contain the following files:
           `enable_damage`, `creative_mode`, `enable_server`.
     * `map_persistent`: Specifies whether newly created worlds should use
       a persistent map backend. Defaults to `true` (= "sqlite3")
-    * `author`: The author's ContentDB
+    * `author`: The author's ContentDB username.
     * `release`: Ignore this: Should only ever be set by ContentDB, as it is
       an internal ID used to track versions.
     * `textdomain`: Textdomain used to translate description. Defaults to game ID.
