@@ -75,6 +75,8 @@ static bool detect_touch()
 
 		return false;
 	}
+
+	return false;
 #elif defined(_WIN32)
 	// 0x01 The device has an integrated touch digitizer
 	// 0x80 The device is ready to receive digitizer input.
