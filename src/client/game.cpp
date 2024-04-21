@@ -1015,6 +1015,12 @@ Game::Game() :
 
 Game::~Game()
 {
+	delete client;
+	delete soundmaker;
+	sound_manager.reset();
+
+	delete server;
+
 	delete hud;
 	delete camera;
 	delete quicktune;
@@ -1267,11 +1273,14 @@ void Game::shutdown()
 	}
 
 	delete client;
+	client = nullptr;
 	delete soundmaker;
+	soundmaker = nullptr;
 	sound_manager.reset();
 
 	auto stop_thread = runInThread([=] {
 		delete server;
+		server = nullptr;
 	}, "ServerStop");
 
 	FpsControl fps_control;
@@ -4561,6 +4570,13 @@ void the_game(bool *kill,
 		error_message = std::string("ModError: ") + e.what() +
 				strgettext("\nCheck debug.txt for details.");
 		errorstream << error_message << std::endl;
+	} catch (con::PeerNotFoundException &e) {
+		error_message = gettext("Connection error (timed out?)");
+		errorstream << error_message << std::endl;
+	} catch (ShaderException &e) {
+		error_message = e.what();
+		errorstream << error_message << std::endl;
 	}
+
 	game.shutdown();
 }

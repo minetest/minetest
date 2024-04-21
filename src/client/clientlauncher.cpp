@@ -172,8 +172,9 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		m_rendering_engine->get_raw_device()->
 			setWindowCaption(utf8_to_wide(caption).c_str());
 
-		try {	// This is used for catching disconnects
-
+#ifdef NDEBUG
+		try {
+#endif
 			m_rendering_engine->get_gui_env()->clear();
 
 			/*
@@ -214,18 +215,8 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 				chat_backend,
 				&reconnect_requested
 			);
-		} //try
-		catch (con::PeerNotFoundException &e) {
-			error_message = gettext("Connection error (timed out?)");
-			errorstream << error_message << std::endl;
-		}
-		catch (ShaderException &e) {
-			error_message = e.what();
-			errorstream << error_message << std::endl;
-		}
-
 #ifdef NDEBUG
-		catch (std::exception &e) {
+		} catch (std::exception &e) {
 			error_message = "Some exception: ";
 			error_message.append(debug_describe_exc(e));
 			errorstream << error_message << std::endl;
