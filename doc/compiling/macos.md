@@ -2,7 +2,8 @@
 
 ## Requirements
 
-* [Homebrew](https://brew.sh/)* [Git](https://git-scm.com/downloads)
+* [Homebrew](https://brew.sh/)
+* [Git](https://git-scm.com/downloads)
 
 Install dependencies with homebrew:
 

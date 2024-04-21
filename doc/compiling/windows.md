@@ -28,7 +28,7 @@ Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-window
 
 ## Compile Minetest
 
-### a) Using the vcpkg toolchain and CMake GUI
+### a) Using the `vcpkg` toolchain and CMake GUI
 
 1. Start up the CMake GUI
 2. Select **Browse Source...** and select DIR/minetest
@@ -45,7 +45,7 @@ Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-window
 13. Click **Open Project**
 14. Compile Minetest inside Visual studio.
 
-### b) Using the Vcpkg Toolchain and the Command Line
+### b) Using the `vcpkg` Toolchain and the Command Line
 
 Run the following script in PowerShell:
 
