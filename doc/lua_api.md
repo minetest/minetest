@@ -6982,7 +6982,7 @@ You can use the gennotify mechanism to transfer this information.
     * Gets the internal content ID of `name`
 * `minetest.get_name_from_content_id(content_id)`: returns a string
     * Gets the name of the content with that content ID
-* `minetest.parse_json(string[, nullvalue])`: returns parsed datatype
+* `minetest.parse_json(string[, nullvalue])`: returns parsed data
     * Convert a string containing JSON data into the Lua equivalent
     * `nullvalue`: returned in place of the JSON null; defaults to `nil`
     * On success returns a table, a string, a number, a boolean or `nullvalue`
