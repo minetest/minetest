@@ -3723,7 +3723,7 @@ Vectors used to be defined as tables of the form `{x = num, y = num, z = num}`.
 Since Minetest 5.5.0, vectors additionally have a metatable to enable easier use.
 > [!NOTE]
 > Those old-style vectors can still be found in old mod code. Hence, mod and
-> engine APIs still need to be able to cope with them in many places.
+> engine APIs still need to be able to cope with them.
 
 Manually constructed tables are deprecated and highly discouraged. This interface
 should be used to ensure seamless compatibility between mods and the Minetest API.
