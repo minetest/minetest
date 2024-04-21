@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-01-19 19:00+0000\n"
-"Last-Translator: Adam Jagoda <kontakt@lukasz.xyz>\n"
+"PO-Revision-Date: 2024-04-22 15:07+0000\n"
+"Last-Translator: Mateusz Malinowski <bohopicasso@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -6567,7 +6567,7 @@ msgstr "Usuń nieużywane dane serwera"
 
 #: src/settings_translation_file.cpp
 msgid "Update information URL"
-msgstr ""
+msgstr "Zaktualizuj adres URL informacji"
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
@@ -6598,7 +6598,7 @@ msgstr "Użyj filtrowania tri-linearnego podczas skalowania tekstur."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
-msgstr ""
+msgstr "Użyj celownika do ekranu dotykowego"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6897,7 +6897,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether the window is maximized."
-msgstr ""
+msgstr "Kiedy okno jest zmaksymalizowane"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6942,7 +6942,7 @@ msgstr "Szerokość linii zaznaczenia bloków."
 
 #: src/settings_translation_file.cpp
 msgid "Window maximized"
-msgstr ""
+msgstr "Okno zmaksymalizowane"
 
 #: src/settings_translation_file.cpp
 msgid ""
