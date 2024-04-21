@@ -6,7 +6,6 @@
 | ---------- | ------- | ---------- |
 | GCC        | 7.5+    | or Clang 7.0.1+ |
 | CMake      | 3.5+    |            |
-| IrrlichtMt | -       | Custom version of Irrlicht, see https://github.com/minetest/irrlicht |
 | libjpeg    | -       |            |
 | libpng     | -       |            |
 | SDL        | 2.x     |            |
