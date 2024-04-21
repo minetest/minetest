@@ -193,12 +193,6 @@ Examples of sound parameter tables:
     pos = {x = 1, y = 2, z = 3},
     gain = 1.0, -- default
 }
--- Play connected to an object, looped
-{
-    object = <an ObjectRef>,
-    gain = 1.0, -- default
-    loop = true,
-}
 ```
 
 Looped sounds must be played locationless.
