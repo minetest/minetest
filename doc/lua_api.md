@@ -7898,7 +7898,7 @@ child will follow movement and rotation of that bone.
 
 #### Player Only (No-Op for Other Objects)
 
-* `get_player_name()`: returns `""` if is not a player
+* `get_player_name()`: Returns player name or `""` if is not a player.
 * `get_player_velocity()`: **Deprecated**, use `get_velocity()` instead.
   table {x, y, z} representing the player's instantaneous velocity in nodes/s
 * `add_player_velocity(vel)`: **Deprecated**, use `add_velocity(vel)` instead.
