@@ -2695,7 +2695,7 @@ background elements are drawn before all other elements.
 ### `real_coordinates[<bool>]`
 
 > [!NOTE]
-> Enable it automatically using formspec version 2 or higher.
+> Enabled automatically when using formspec version 2 or higher.
 * When set to true, all following formspec elements will use the new coordinate system.
 * If used immediately after `size`, `position`, `anchor`, and `no_prepend` elements
   (if present), the form size will use the new coordinate system.
