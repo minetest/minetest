@@ -102,9 +102,3 @@ automatically. Or you can create a `local.properties` file and specify
 * In order to make a release build, you'll have to have a keystore setup to sign
   the resulting APK package. How this is done is not part of this README. There
   are tutorials online that explain it.
-
-* Once your keystore is setup, enter the android subdirectory and create a new
-  file called `ant.properties` there. Add the following lines to that file:
-
-      key.store=<path to your keystore>
-      key.alias=Minetest
