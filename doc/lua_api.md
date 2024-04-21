@@ -6997,7 +6997,7 @@ You can use the gennotify mechanism to transfer this information.
     * Example: `write_json({10, {a = false}})`,
       returns `'[10, {"a": false}]'`
 > [!WARNING]
-> JSON is more strict than the Lua table format.
+> JSON is stricter than the Lua table format.
 > 1. You can only use strings and positive integers of at least one as
 >    keys.
 > 2. You cannot mix string and integer keys.
