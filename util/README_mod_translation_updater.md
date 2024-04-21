@@ -38,7 +38,7 @@ Here is the list of all recognized function names. All functions return a string
 * `NFS`: Returns a formspec-escaped version of the input, but not translated.
   Supported for convenience.
 
-Here is the boilerplate code you have to add at the top of your source code file:
+Here is the boilerplate code you can add at the top of your source code file:
 
 ```lua
 local S = minetest.get_translator("<textdomain>")
@@ -179,7 +179,7 @@ files, associating them with the line that follows them. So for example:
 
     # This comment pertains to Some Text
     Some text=
-    
+
     # Multi-line comments
     # are also supported
     Text as well=
