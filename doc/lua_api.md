@@ -6755,30 +6755,18 @@ You can use the gennotify mechanism to transfer this information.
     * Returns false on error, true if the request was accepted
     * The given callback will be called for every player as soon as the
       media is available on the client.
-    * Details/Notes:
-      * If `ephemeral`=false and `to_player` is unset the file is added to the media
-        sent to clients on startup, this means the media will appear even on
-        old clients if they rejoin the server.
-      * If `ephemeral`=false the file must not be modified, deleted, moved or
-        renamed after calling this function.
-      * Regardless of any use of `ephemeral`, adding media files with the same
-        name twice is not possible/guaranteed to work. An exception to this is the
-        use of `to_player` to send the same, already existent file to multiple
-        chosen players.
-      * You can also call this at startup time. In that case `callback` MUST
-        be `nil` and you cannot use `ephemeral` or `to_player`, as these logically
-        do not make sense.
     * Clients will attempt to fetch files added this way via remote media,
       this can make transfer of bigger files painless (if set up). Nevertheless
       it is advised not to use dynamic media for big media files.
 > [!NOTE]
-> If `ephemeral` = false and `to_player` is unset, then the file is added to the media
-> sent to clients on startup. This means the media will appear even on old clients if
-> they rejoin the server.
+> You can also call this at startup time. In that case `callback` MUST be `nil` and
+> you cannot use `ephemeral` or `to_player`, as these logically do not make sense.
 
 > [!NOTE]
 > If `ephemeral` = false, then the file must not be modified, deleted, moved or
-> renamed after calling this function.
+> renamed after calling this function. If `to_player` is also unset, then the file
+> is added to the media sent to clients on startup. This means the media will appear
+> even on old clients if they rejoin the server.
 
 > [!NOTE]
 > Regardless of any use of `ephemeral`, adding media files with the same name twice
