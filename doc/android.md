@@ -65,36 +65,6 @@ Mobile devices generally have less RAM than PC, this setting limits how many map
 This setting limits maximum FPS. The default value is `60`, which is the lowest commonly found
 Android refresh rate, but if you're using a device with a lower refresh rate, change this.
 
-## Requirements
-
-The minimal and recommended system requirements for Minetest are listed below.
-
-### CPU
-
-Supported architectures:
-1. ARM v7
-2. ARM v8
-3. x86
-4. x86_64
-
-CPU architectures similar to ARM or x86 might run Minetest but are not tested.
-
-### Minimum
-
-1. Graphics API: OpenGL ES 1.0
-    * Shaders might not work correctly or work at all on OpenGL ES 1.0.
-2. Android version: Android 4.1 (API Level 16)
-3. Free RAM: 500 MB
-4. Free storage: 100 MB
-    * More storage is highly recommended
-
-### Recommended
-
-1. Graphics API: OpenGL ES 2.0
-2. Android version: Android 4.4 (API Level 19) or newer
-3. Empty RAM: 850 MB
-4. Free storage: 480 MB
-
 ## Rendering
 
 Unlike on PC, Android devices use OpenGL ES which less powerful than OpenGL, thus
