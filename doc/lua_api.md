@@ -6549,6 +6549,8 @@ You can find mod channels communication scheme in `doc/mod_channels.png`.
 * `minetest.after(time, func, ...)`: returns job table to use as below.
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
+    * Jobs set for earlier times are executed earlier. If multiple jobs expire
+      at exactly the same time, then they are executed in registration order.
 
 * `job:cancel()`
     * Cancels the job function from being called
