@@ -8842,21 +8842,21 @@ gets activated (not loaded!)
 * `"image.png"`
 * `{name="image.png", animation={Tile Animation definition}}`
 * `{name="image.png", backface_culling=bool, align_style="node"/"world"/"user", scale=int}`
-    * backface culling enabled by default for most nodes
-    * align style determines whether the texture will be rotated with the node
+    * Backface culling enabled by default for most nodes
+    * Align style determines whether the texture will be rotated with the node
       or kept aligned with its surroundings. "user" means that client
       setting will be used, similar to `glasslike_framed_optional`.
-    * scale is used to make texture span several (exactly `scale`) nodes,
+    * Scale is used to make texture span several (exactly `scale`) nodes,
       instead of just one, in each direction. Works for world-aligned
       textures only.
       Note that as the effect is applied on per-mapblock basis, `16` should
       be equally divisible by `scale` or you may get wrong results.
 > [!NOTE]
-> Supported by solid nodes and nodeboxes only.
+> Align style is supported by solid nodes and nodeboxes only.
 * `{name="image.png", color=ColorSpec}`
-    * the texture's color will be multiplied with this color.
-    * the tile's color overrides the owning node's color in all cases.
-* deprecated, yet still supported field names:
+    * The texture's color will be multiplied with this color.
+    * The tile's color overrides the owning node's color in all cases.
+* Deprecated, yet still supported field names:
     * `image` (name)
 
 ## Tile Animation Definition
