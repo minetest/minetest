@@ -2372,8 +2372,7 @@ Damage calculation:
 damage = 0
 for group in cap.damage_groups do
     armor = object.armor_groups[group] or 0
-    damage = damage
-      + cap.damage_groups[group]
+    damage += cap.damage_groups[group]
         * limit(actual_interval / cap.full_punch_interval, 0.0, 1.0)
         * (armor / 100.0)
 end
