@@ -8148,7 +8148,7 @@ child will follow movement and rotation of that bone.
               Unlike `base_color` above this will apply regardless of the skybox type.
               (default: `"#00000000"`, which means no override)
 > [!WARNING]
-> The darkening of the ColorSpec is subject to change.
+> The darkening of the `sky_color` ColorSpecs are subject to change.
 * `set_sky(base_color, type, {texture names}, clouds)`
     * Deprecated. Use `set_sky(sky_parameters)`
     * `base_color`: ColorSpec, defaults to white
