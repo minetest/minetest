@@ -241,14 +241,14 @@ The format is documented in `builtin/settingtypes.txt`.
 It is parsed by the main menu settings dialogue to list mod-specific
 settings in the "Mods" category.
 
+`minetest.settings` can be used to read custom or existing settings at load
+time, if necessary. (See [`Settings`])
+
 ### `init.lua`
 
 The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on Minetest calling the
 registered callbacks.
-
-`minetest.settings` can be used to read custom or existing settings at load
-time, if necessary. (See [`Settings`])
 
 ### `textures`, `sounds`, `media`, `models`, `locale`
 
