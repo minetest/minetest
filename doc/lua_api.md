@@ -8310,6 +8310,8 @@ It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
     * `mean = (max - min) / 2`, and
     * `variance = (((max - min + 1) ^ 2) - 1) / (12 * num_trials)`
     * Increasing `num_trials` improves accuracy of the approximation
+* `get_state()`: return generator state encoded in string
+* `set_state(state_string)`: restore generator state from encoded string
 
 ## `PerlinNoise`
 
