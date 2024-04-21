@@ -26,9 +26,74 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen/mapgen.h" // Mapgen::setDefaultSettings
 #include "util/string.h"
 
+
+/*
+ * inspired by https://github.com/systemd/systemd/blob/7aed43437175623e0f3ae8b071bbc500c13ce893/src/hostname/hostnamed.c#L406
+ * this could be done in future with D-Bus using query:
+ * busctl get-property org.freedesktop.hostname1 /org/freedesktop/hostname1 org.freedesktop.hostname1 Chassis
+ */
+static bool detect_touch()
+{
+#if defined(__ANDROID__)
+	return true;
+#elif defined(__linux__)
+	std::string chassis_type;
+
+	// device-tree platforms (non-X86)
+	std::ifstream dtb_file("/proc/device-tree/chassis-type");
+	if (dtb_file.is_open()) {
+		std::getline(dtb_file, chassis_type);
+		chassis_type.pop_back();
+
+		if (chassis_type == "tablet" ||
+		    chassis_type == "handset" ||
+		    chassis_type == "watch")
+			return true;
+
+		if (!chassis_type.empty())
+			return false;
+	}
+	// SMBIOS
+	std::ifstream dmi_file("/sys/class/dmi/id/chassis_type");
+	if (dmi_file.is_open()) {
+		std::getline(dmi_file, chassis_type);
+
+		if (chassis_type == "11" /* Handheld */ ||
+		    chassis_type == "30" /* Tablet */)
+			return true;
+
+		return false;
+	}
+
+	// ACPI-based platforms
+	std::ifstream acpi_file("/sys/firmware/acpi/pm_profile");
+	if (acpi_file.is_open()) {
+		std::getline(acpi_file, chassis_type);
+
+		if (chassis_type == "8" /* Tablet */)
+			return true;
+
+		return false;
+	}
+
+	return false;
+#elif defined(_WIN32)
+	// 0x01 The device has an integrated touch digitizer
+	// 0x80 The device is ready to receive digitizer input.
+	if ((GetSystemMetrics(SM_DIGITIZER) & 0x81) == 0x81)
+		return true;
+
+	return false;
+#else
+	// we don't know, return default
+	return false;
+#endif
+}
+
 void set_default_settings()
 {
 	Settings *settings = Settings::createLayer(SL_DEFAULTS);
+	bool has_touch = detect_touch();
 
 	// Client and server
 	settings->setDefault("language", "");
@@ -39,11 +104,7 @@ void set_default_settings()
 	// Client
 	settings->setDefault("address", "");
 	settings->setDefault("enable_sound", "true");
-#if ENABLE_TOUCH
-	settings->setDefault("enable_touch", "true");
-#else
-	settings->setDefault("enable_touch", "false");
-#endif
+	settings->setDefault("enable_touch", bool_to_cstr(has_touch));
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("sound_volume_unfocused", "0.3");
 	settings->setDefault("mute_sound", "false");
@@ -94,12 +155,10 @@ void set_default_settings()
 	settings->setDefault("keymap_cmd_local", ".");
 	settings->setDefault("keymap_minimap", "KEY_KEY_V");
 	settings->setDefault("keymap_console", "KEY_F10");
-#if ENABLE_TOUCH
+
 	// See https://github.com/minetest/minetest/issues/12792
-	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
-#else
-	settings->setDefault("keymap_rangeselect", "");
-#endif
+	settings->setDefault("keymap_rangeselect", has_touch ? "KEY_KEY_R" : "");
+
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
 	settings->setDefault("keymap_pitchmove", "");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
@@ -198,11 +257,7 @@ void set_default_settings()
 	settings->setDefault("screen_h", "600");
 	settings->setDefault("window_maximized", "false");
 	settings->setDefault("autosave_screensize", "true");
-#ifdef ENABLE_TOUCH
-	settings->setDefault("fullscreen", "true");
-#else
-	settings->setDefault("fullscreen", "false");
-#endif
+	settings->setDefault("fullscreen", bool_to_cstr(has_touch));
 	settings->setDefault("vsync", "false");
 	settings->setDefault("fov", "72");
 	settings->setDefault("leaves_style", "fancy");
@@ -309,11 +364,7 @@ void set_default_settings()
 	settings->setDefault("aux1_descends", "false");
 	settings->setDefault("doubletap_jump", "false");
 	settings->setDefault("always_fly_fast", "true");
-#ifdef ENABLE_TOUCH
-	settings->setDefault("autojump", "true");
-#else
-	settings->setDefault("autojump", "false");
-#endif
+	settings->setDefault("autojump", bool_to_cstr(has_touch));
 	settings->setDefault("continuous_forward", "false");
 	settings->setDefault("enable_joysticks", "false");
 	settings->setDefault("joystick_id", "0");
@@ -494,11 +545,7 @@ void set_default_settings()
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux1", "false");
 	settings->setDefault("touch_punch_gesture", "short_tap");
-#ifdef ENABLE_TOUCH
-	settings->setDefault("clickable_chat_weblinks", "false");
-#else
 	settings->setDefault("clickable_chat_weblinks", "true");
-#endif
 	// Altered settings for Android
 #ifdef __ANDROID__
 	settings->setDefault("screen_w", "0");
