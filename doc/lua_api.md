@@ -6498,7 +6498,7 @@ You can find mod channels communication scheme in `doc/mod_channels.png`.
     * returns `itemstack, position`
         * `position`: the location the node was placed to. `nil` if nothing was placed.
 > [!NOTE]
-> `on_rightclick` is not called when wielded item overrides `on_place`
+> `on_rightclick` is not called when the wielded item overrides `on_place`.
 * `minetest.item_pickup(itemstack, picker, pointed_thing, time_from_last_punch, ...)`
     * Runs callbacks registered by `minetest.register_on_item_pickup` and adds
       the item to the picker's `"main"` inventory list.
