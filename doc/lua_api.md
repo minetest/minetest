@@ -7800,7 +7800,7 @@ child will follow movement and rotation of that bone.
 > Returned rotation is in degrees, not radians.
 * `set_bone_override(bone, override)`
     * `bone`: string
-    * `override`: `position = property, rotation = property, scale = property}` or `nil`
+    * `override`: `{position = property, rotation = property, scale = property}` or `nil`
         * `property`: `{vec = vector, interpolation = 0, absolute = false}` or `nil`;
             * `vec` is in the same coordinate system as the model, and in degrees for rotation
         * `property = nil` is equivalent to no override on that property
@@ -8035,7 +8035,7 @@ child will follow movement and rotation of that bone.
       `"type"` (or the deprecated `"hud_elem_type"`).
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
 * `hud_get_all()`:
-    * Returns a table in the form `{ [id] = HUD definition, [id] = ...}`.
+    * Returns a table in the form `{[id] = HUD definition, [id] = ...}`.
     * A mod should keep track of its introduced IDs and only use this to access foreign elements.
     * It is discouraged to change foreign HUD elements.
 * `hud_set_flags(flags)`: sets specified HUD flags of player.
