@@ -774,7 +774,7 @@ expensive to compose with `[combine:`.
 
 > [!WARNING]
 > Avoid sending large images this way. This is not a replacement
-for asset files, do not use it to do anything that you could instead achieve
+for asset files. Do not use it to do anything that you could instead achieve
 by just using a file. In particular consider `minetest.dynamic_add_media` and
 test whether using other texture modifiers could result in a shorter string
 than embedding a whole image, this may vary by use case.
