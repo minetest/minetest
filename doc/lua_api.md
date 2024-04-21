@@ -2337,7 +2337,7 @@ tool_capabilities = {
 This makes the item capable of digging nodes that fulfill both of these:
 
 * Have the `crumbly` group
-* Have a `level` group less or equal to `2`\n  [a-z]
+* Have a `level` group less or equal to `2`
 
 Table of resulting digging times:
 
