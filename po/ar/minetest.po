@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-01-26 12:51+0000\n"
-"Last-Translator: Ghurir <tamimzain@hotmail.com>\n"
+"PO-Revision-Date: 2024-05-21 09:01+0000\n"
+"Last-Translator: Jamil Mohamad Alhussein <jamilmohamadalhoseen@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/minetest/minetest/"
 "ar/>\n"
 "Language: ar\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -33,7 +33,7 @@ msgstr "أمر غير صالح: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "امر صادر : "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
@@ -57,7 +57,7 @@ msgstr "أعِد الإحياء"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr "مِت"
+msgstr "لقد مُتْ"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
@@ -68,9 +68,8 @@ msgid "Available commands: "
 msgstr "الأوامر المتاحة: "
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Command not available: "
-msgstr "الأوامر غير المتاحة: "
+msgstr "الأمر غير متاح: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
@@ -207,21 +206,19 @@ msgstr "يحمل..."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "خطأ في تثبيت \"1$\" : 2$"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "فشل تحميل $1"
+msgstr "فشل تحميل \"$1\""
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "فشل تحميل $1"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "التثبيت: نوع الملف غير مدعوم أو هو أرشيف تالف"
+msgstr "التثبيت: نوع الملف غير مدعوم أو أرشيف تالف"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Games"
@@ -283,7 +280,7 @@ msgstr "حِزم الإكساء"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "The package $1 was not found."
-msgstr ""
+msgstr "لم يتم العثور على الحزمة 1$."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
@@ -304,8 +301,9 @@ msgid "View more information in a web browser"
 msgstr "اعرض مزيدًا من المعلومات عبر المتصفح"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "يجب عليك تنزيل اللعبة قبل إضافة التعديلات"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -320,14 +318,12 @@ msgid "Failed to install $1 to $2"
 msgstr "فشل تثبيت $1 في $2"
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr "تثبيت تعديل: لا يمكن العصور على اسم مجلد مناسب لحزمة التعديلات $1"
+msgstr "تنزيل: لا يمكن العثور على اسم مجلد مناسب لحزمة التعديلات $1"
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "فشل إيجاد تعديل أو حزمة تعديلات صالحة"
+msgstr "فشل إيجاد تعديل, حزمة تعديلات أو لعبة صالحة"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 #, fuzzy
@@ -340,11 +336,11 @@ msgstr "فشل تثبيت $1 كحزمة إكساء"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(مفعل، به خطأ)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(غير محقق)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
@@ -626,7 +622,7 @@ msgstr "أكد كلمة المرور"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "انضمام 1$"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
@@ -635,7 +631,7 @@ msgstr "الاسم مفقود"
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Name"
-msgstr "الاسم"
+msgstr "اسم"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
@@ -652,7 +648,7 @@ msgstr "سجل"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr ""
+msgstr "رفض"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -660,16 +656,20 @@ msgid ""
 "\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
 "game."
 msgstr ""
+"لفترة طويلة، كان محرك Minetest مزودًا بلعبة افتراضية تسمى \"Minetest Game\". "
+"منذ Minetest 5.8.0، يتم شحن Minetest بدون لعبة افتراضية."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
 "If you want to continue playing in your Minetest Game worlds, you need to "
 "reinstall Minetest Game."
 msgstr ""
+"إذا كنت تريد الاستمرار في اللعب في عوالم Minetest Game، فأنت بحاجة إلى إعادة "
+"تثبيت Minetest Game."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Minetest Game is no longer installed by default"
-msgstr ""
+msgstr "لم تعد لعبة Minetest مثبتة بشكل افتراضي"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 #, fuzzy
@@ -693,7 +693,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
-msgstr ""
+msgstr "إصدار جديد ل 1$ متوفر"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid ""
@@ -702,6 +702,10 @@ msgid ""
 "Visit $3 to find out how to get the newest version and stay up to date with "
 "features and bugfixes."
 msgstr ""
+"الأصدار المثبت: 1$\n"
+"الأصدار الجديد: 2$\n"
+"زر 3$ لمعرفة كيفية الحصول على الإصدار الأحدث والبقاء على اطلاع بالميزات "
+"وإصلاحات الأخطاء."
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Later"
@@ -817,11 +821,11 @@ msgstr "مخفف"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
-msgstr ""
+msgstr "(استخدم لغة النظام)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Accessibility"
-msgstr ""
+msgstr "إمكانية الوصول"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
@@ -846,11 +850,11 @@ msgstr "التحكم"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "عام"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Movement"
-msgstr ""
+msgstr "حركة"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 #, fuzzy
@@ -859,7 +863,7 @@ msgstr "إستعِد الإفتراضي"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
-msgstr ""
+msgstr "إعادة تعيين الإعداد إلى الافتراضي (1$)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
@@ -867,7 +871,7 @@ msgstr "إبحث"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
-msgstr ""
+msgstr "أظهر الاعدادات المتقدمة"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
@@ -888,11 +892,11 @@ msgstr "المحتوى: تعديلات"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
-msgstr ""
+msgstr "(ستحتاج اللعبة إلى تمكين الظلال أيضًا)"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Custom"
-msgstr ""
+msgstr "مخصص"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Disabled"
@@ -942,7 +946,7 @@ msgstr "المطورون الرئيسيون"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr ""
+msgstr "الفريق الأساسي"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Irrlicht device:"
@@ -970,7 +974,7 @@ msgstr "المطورون الرئيسيون السابقون"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Share debug log"
-msgstr ""
+msgstr "مشاركة سجل التصحيح"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -1399,7 +1403,7 @@ msgstr "معلومات التنقيح مرئية"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
-msgstr ""
+msgstr "معلومات التصحيح ، الرسم البياني لملف التعريف ، والإطار السلكي مخفي"
 
 #: src/client/game.cpp
 #, fuzzy, c-format
@@ -1492,7 +1496,7 @@ msgstr "وضع القبات معطل"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr ""
+msgstr "تم تمكين وضع Noclip (ملاحظة: لا يوجد امتياز \"noclip\")"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
@@ -1567,7 +1571,7 @@ msgstr "تعذر الاتصال بـ %s لأن IPv6 معطلة"
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
-msgstr ""
+msgstr "غير قادر على الاستماع إلى %s لأن IPv6 معطل"
 
 #: src/client/game.cpp
 #, fuzzy
@@ -1580,8 +1584,9 @@ msgid "Unlimited viewing range enabled"
 msgstr "مدى الرؤية غير المحدود مفعل"
 
 #: src/client/game.cpp
+#, fuzzy
 msgid "Unlimited viewing range enabled, but forbidden by game or mod"
-msgstr ""
+msgstr "تم تمكين نطاق عرض غير محدود، ولكنه محظور بواسطة اللعبة أو التعديلة"
 
 #: src/client/game.cpp
 #, fuzzy, c-format
@@ -1589,9 +1594,11 @@ msgid "Viewing changed to %d (the minimum)"
 msgstr "مدى الرؤية في أدنى حد: %d"
 
 #: src/client/game.cpp
-#, c-format
+#, c-format, fuzzy
 msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
 msgstr ""
+"تم تغيير العرض إلى %d (الحد الأدنى)، ولكنه يقتصر على %d حسب اللعبة أو "
+"التعديلة"
 
 #: src/client/game.cpp
 #, c-format
@@ -1604,10 +1611,12 @@ msgid "Viewing range changed to %d (the maximum)"
 msgstr "غُيرَ مدى الرؤية الى %d"
 
 #: src/client/game.cpp
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Viewing range changed to %d (the maximum), but limited to %d by game or mod"
 msgstr ""
+"تم تغيير نطاق العرض إلى %d (الحد الأقصى)، ولكنه يقتصر على %d حسب اللعبة أو "
+"التعديلة"
 
 #: src/client/game.cpp
 #, fuzzy, c-format
@@ -1672,7 +1681,7 @@ msgstr "Backspace"
 #. ~ Usually paired with the Pause key
 #: src/client/keycode.cpp
 msgid "Break Key"
-msgstr ""
+msgstr "مفتاح الكسر"
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
@@ -1694,8 +1703,9 @@ msgid "Delete Key"
 msgstr "إحذف"
 
 #: src/client/keycode.cpp
+#, fuzzy
 msgid "Down Arrow"
-msgstr ""
+msgstr "السهم لأسفل"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1703,7 +1713,7 @@ msgstr "End"
 
 #: src/client/keycode.cpp
 msgid "Erase EOF"
-msgstr ""
+msgstr "مسح EOF"
 
 #: src/client/keycode.cpp
 msgid "Execute"
@@ -1801,8 +1811,9 @@ msgid "Numpad +"
 msgstr "Numpad +"
 
 #: src/client/keycode.cpp
+#, fuzzy
 msgid "Numpad -"
-msgstr ""
+msgstr "لوحة الأرقام -"
 
 #: src/client/keycode.cpp
 #, fuzzy
@@ -1908,7 +1919,7 @@ msgstr "Right Control"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
-msgstr ""
+msgstr "الزر الايمن"
 
 #: src/client/keycode.cpp
 #, fuzzy
@@ -1958,7 +1969,7 @@ msgstr "Snapshot"
 
 #: src/client/keycode.cpp
 msgid "Space"
-msgstr ""
+msgstr "مسافة"
 
 #: src/client/keycode.cpp
 #, fuzzy
@@ -1966,8 +1977,9 @@ msgid "Tab"
 msgstr "Tab"
 
 #: src/client/keycode.cpp
+#, fuzzy
 msgid "Up Arrow"
-msgstr ""
+msgstr "سهم للاعلى"
 
 #: src/client/keycode.cpp
 #, fuzzy
@@ -2006,18 +2018,23 @@ msgstr "الخريطة المصغرة في وضع الاكساء"
 #: src/content/mod_configuration.cpp
 #, c-format
 msgid "%s is missing:"
-msgstr ""
+msgstr "%s مفقود:"
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
 msgstr ""
+"قم بتثبيت التعديلات المطلوبة وتمكينها، أو قم بتعطيل التعديلات التي تسبب "
+"الأخطاء."
 
 #: src/content/mod_configuration.cpp
+#, fuzzy
 msgid ""
 "Note: this may be caused by a dependency cycle, in which case try updating "
 "the mods."
 msgstr ""
+"ملاحظة: قد يكون السبب في ذلك هو دورة التبعية، وفي هذه الحالة حاول تحديث "
+"التعديلات."
 
 #: src/content/mod_configuration.cpp
 #, fuzzy
@@ -2070,7 +2087,7 @@ msgstr "الأوامر"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Console"
-msgstr ""
+msgstr "وحدة التحكم"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. range"
@@ -2114,7 +2131,7 @@ msgstr "المفتاح مستخدم مسبقا"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings."
-msgstr ""
+msgstr "روابط المفاتيح."
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
@@ -2122,7 +2139,7 @@ msgstr "يسار"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
-msgstr ""
+msgstr "الأمر المحلي"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Mute"
@@ -2232,7 +2249,7 @@ msgstr "ar"
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Name is not registered. To create an account on this server, click 'Register'"
-msgstr ""
+msgstr "الاسم غير مسجل. لإنشاء حساب على هذا الخادم، انقر فوق \"تسجيل\""
 
 #: src/network/clientpackethandler.cpp
 #, fuzzy
@@ -2382,11 +2399,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
-msgstr ""
+msgstr "الحد المطلق للكتل في قائمة الانتظار في الظهور"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr "تسارع الطيران"
+msgstr "تسارع في الهواء"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
@@ -2410,17 +2427,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
-msgstr ""
+msgstr "يضيف جزيئات عند حفر العقدة."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
+"اضبط تكوين النقطة في البوصة على شاشتك (الغير X11/Android فقط) على سبيل "
+"المثال. لشاشات 4K."
 
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
-msgstr ""
+msgstr "اضبط كثافة العرض المكتشفة المستخدمة لقياس عناصر واجهة المستخدم."
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2431,6 +2450,12 @@ msgid ""
 "Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
 "to be sure) creates a solid floatland layer."
 msgstr ""
+"يضبط كثافة طبقة الأرض العائمة.\n"
+"زيادة القيمة لزيادة الكثافة. يمكن أن تكون إيجابية أو سلبية.\n"
+"القيمة = 0.0: 50% من الحجم عبارة عن أرض عائمة.\n"
+"القيمة = 2.0 (يمكن أن تكون أعلى اعتمادًا على \"mgv7_np_floatland\"،اختبار "
+"دائما\n"
+" لتكون متأكداً) ينشئ طبقة صلبة من الأراضي العائمة."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2458,7 +2483,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Always fly fast"
-msgstr ""
+msgstr "دائما طِرْ بسرعة"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
@@ -2470,7 +2495,7 @@ msgstr "تضخيم الوديان."
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
-msgstr ""
+msgstr "التصنيف متباين الخواص"
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
@@ -2533,7 +2558,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Audio"
-msgstr ""
+msgstr "الصوت"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
@@ -2541,7 +2566,7 @@ msgstr "قفز تلقائي فوق العوائق التي ارتفاعها كت
 
 #: src/settings_translation_file.cpp
 msgid "Automatically report to the serverlist."
-msgstr ""
+msgstr "الإبلاغ تلقائيا إلى قائمة الخوادم."
 
 #: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
@@ -2582,7 +2607,7 @@ msgstr "ترشيح خطي ثنائي"
 
 #: src/settings_translation_file.cpp
 msgid "Bind address"
-msgstr ""
+msgstr "ربط العنوان"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2704,6 +2729,8 @@ msgid ""
 "Center of light curve boost range.\n"
 "Where 0.0 is minimum light level, 1.0 is maximum light level."
 msgstr ""
+"مركز نطاق تعزيز منحنى الضوء.\n"
+"حيث 0.0 هو الحد الأدنى لمستوى الضوء، 1.0 هو الحد الأقصى لمستوى الضوء."
 
 #: src/settings_translation_file.cpp
 msgid "Chat command time message threshold"
@@ -2720,7 +2747,7 @@ msgstr "حجم خط المحادثة"
 
 #: src/settings_translation_file.cpp
 msgid "Chat log level"
-msgstr ""
+msgstr "مستوى سجل الدردشة"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2768,19 +2795,19 @@ msgstr "عميل وخادم"
 
 #: src/settings_translation_file.cpp
 msgid "Client modding"
-msgstr ""
+msgstr "تعديل العميل"
 
 #: src/settings_translation_file.cpp
 msgid "Client side modding restrictions"
-msgstr ""
+msgstr "قيود التعديل من جانب العميل"
 
 #: src/settings_translation_file.cpp
 msgid "Client-side Modding"
-msgstr ""
+msgstr "التعديل من جانب العميل"
 
 #: src/settings_translation_file.cpp
 msgid "Client-side node lookup range restriction"
-msgstr ""
+msgstr "تقييد نطاق البحث عن العقدة من جانب العميل"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2796,7 +2823,7 @@ msgstr "سحاب"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client-side effect."
-msgstr ""
+msgstr "الغيوم هي تأثير من جانب العميل."
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
@@ -2826,6 +2853,9 @@ msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
+"القائمة المفصولة بالفواصل من التعديلات المسموح لها بالوصول إلى واجهات برمجة "
+"تطبيقات HTTP، والذي\n"
+" يسمح لهم بتحميل وتنزيل البيانات من/إلى الإنترنت."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2875,7 +2905,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Console color"
-msgstr ""
+msgstr "لون وحدة التحكم"
 
 #: src/settings_translation_file.cpp
 msgid "Console height"
@@ -2883,15 +2913,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Content Repository"
-msgstr ""
+msgstr "مخزن المحتوى"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
-msgstr ""
+msgstr "قائمة المحتوى السوداء الخاصة بقاعدة بيانات ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
-msgstr ""
+msgstr "الحد الأقصى للتنزيلات المتزامنة لContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
@@ -2912,14 +2942,16 @@ msgid ""
 "Controls sinking speed in liquid when idling. Negative values will cause\n"
 "you to rise instead."
 msgstr ""
+"يتحكم في سرعة الغرق في السائل عند الخمول. سوف تسبب\n"
+"القيم السلبية لك أن ترتفع بدلا من ذلك."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
-msgstr ""
+msgstr "يتحكم في الانحدار/عمق منخفضات البحيرة."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
-msgstr ""
+msgstr "يتحكم في انحدار/ارتفاع التلال."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5107,9 +5139,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshots"
-msgstr "صوّر الشاشة"
+msgstr "لقطات الشاشة"
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
