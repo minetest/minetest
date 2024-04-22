@@ -133,6 +133,19 @@ pattern_lua_bracketed = re.compile(
 	r'\[\[(.*?)\]\]' # [[ ... ]] string delimiters
 	r'[\s,\)]', # Same as for pattern_lua_quoted
 	re.DOTALL)
+# Handles like pattern_lua_quoted, but for single parameter (without parantheses)
+# See https://www.lua.org/pil/5.html for informations about single argument call
+pattern_lua_quoted_single = re.compile(
+	r'(?:^|[\.=,{\(\s])' # Same as for pattern_lua_quoted
+	r'N?F?S\s*' # Same as for pattern_lua_quoted, but without open parentheses
+	r'(["\'])((?:\\\1|(?:(?!\1)).)*)(\1)', # Quoted string
+	re.DOTALL)
+# Same as pattern_lua_quoted_single, but for [[ ... ]] string delimiters
+pattern_lua_bracketed_single = re.compile(
+	r'(?:^|[\.=,{\(\s])' # Same as for pattern_lua_quoted
+	r'N?F?S\s*' # Same as for pattern_lua_quoted_single
+	r'\[\[(.*?)\]\]', # [[ ... ]] string delimiters
+	re.DOTALL)
 
 # Handles "concatenation" .. " of strings"
 pattern_concat = re.compile(r'["\'][\s]*\.\.[\s]*["\']', re.DOTALL)
@@ -278,6 +291,10 @@ def read_lua_file_strings(lua_file):
 		for s in pattern_lua_quoted.findall(text):
 			strings.append(s[1])
 		for s in pattern_lua_bracketed.findall(text):
+			strings.append(s)
+		for s in pattern_lua_quoted_single.findall(text):
+			strings.append(s[1])
+		for s in pattern_lua_bracketed_single.findall(text):
 			strings.append(s)
 
 		for s in strings:
