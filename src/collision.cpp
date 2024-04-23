@@ -36,51 +36,55 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #warning "-ffast-math is known to cause bugs in collision code, do not use!"
 #endif
 
+namespace {
+
 struct NearbyCollisionInfo {
 	// node
-	NearbyCollisionInfo(bool is_ul, int bouncy, const v3s16 &pos,
-			const aabb3f &box) :
-		is_unloaded(is_ul),
+	NearbyCollisionInfo(bool is_ul, int bouncy, v3s16 pos, const aabb3f &box) :
 		obj(nullptr),
-		bouncy(bouncy),
+		box(box),
 		position(pos),
-		box(box)
+		bouncy(bouncy),
+		is_unloaded(is_ul),
+		is_step_up(false)
 	{}
 
 	// object
-	NearbyCollisionInfo(ActiveObject *obj, int bouncy,
-			const aabb3f &box) :
-		is_unloaded(false),
+	NearbyCollisionInfo(ActiveObject *obj, int bouncy, const aabb3f &box) :
 		obj(obj),
+		box(box),
 		bouncy(bouncy),
-		box(box)
+		is_unloaded(false),
+		is_step_up(false)
 	{}
 
 	inline bool isObject() const { return obj != nullptr; }
 
-	bool is_unloaded;
-	bool is_step_up = false;
 	ActiveObject *obj;
-	int bouncy;
-	v3s16 position;
 	aabb3f box;
+	v3s16 position;
+	u8 bouncy;
+	// bitfield to save space
+	bool is_unloaded:1, is_step_up:1;
 };
 
 // Helper functions:
 // Truncate floating point numbers to specified number of decimal places
 // in order to move all the floating point error to one side of the correct value
-static inline f32 truncate(const f32 val, const f32 factor)
+inline f32 truncate(const f32 val, const f32 factor)
 {
 	return truncf(val * factor) / factor;
 }
 
-static inline v3f truncate(const v3f& vec, const f32 factor)
+inline v3f truncate(const v3f vec, const f32 factor)
 {
 	return v3f(
 		truncate(vec.X, factor),
 		truncate(vec.Y, factor),
 		truncate(vec.Z, factor)
 	);
+}
+
 }
 
 // Helper function:
@@ -270,11 +274,12 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	/*
 		Collect node boxes in movement range
 	*/
-	std::vector<NearbyCollisionInfo> cinfo;
-	{
-	//TimeTaker tt2("collisionMoveSimple collect boxes");
-	ScopeProfiler sp2(g_profiler, PROFILER_NAME("collision collect boxes"), SPT_AVG, PRECISION_MICRO);
 
+	// cached allocation
+	thread_local std::vector<NearbyCollisionInfo> cinfo;
+	cinfo.clear();
+
+	{
 	v3f minpos_f(
 		MYMIN(pos_f->X, newpos_f.X),
 		MYMIN(pos_f->Y, newpos_f.Y) + 0.01f * BS, // bias rounding, player often at +/-n.5
@@ -288,7 +293,10 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	v3s16 min = floatToInt(minpos_f + box_0.MinEdge, BS) - v3s16(1, 1, 1);
 	v3s16 max = floatToInt(maxpos_f + box_0.MaxEdge, BS) + v3s16(1, 1, 1);
 
+	const auto *nodedef = gamedef->getNodeDefManager();
 	bool any_position_valid = false;
+
+	thread_local std::vector<aabb3f> nodeboxes;
 
 	v3s16 p;
 	for (p.Z = min.Z; p.Z <= max.Z; p.Z++)
@@ -301,7 +309,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			// Object collides into walkable nodes
 
 			any_position_valid = true;
-			const NodeDefManager *nodedef = gamedef->getNodeDefManager();
 			const ContentFeatures &f = nodedef->get(n);
 
 			if (!f.walkable)
@@ -310,36 +317,10 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			// Negative bouncy may have a meaning, but we need +value here.
 			int n_bouncy_value = abs(itemgroup_get(f.groups, "bouncy"));
 
-			int neighbors = 0;
-			if (f.drawtype == NDT_NODEBOX &&
-				f.node_box.type == NODEBOX_CONNECTED) {
-				v3s16 p2 = p;
+			u8 neighbors = n.getNeighbors(p, map);
 
-				p2.Y++;
-				getNeighborConnectingFace(p2, nodedef, map, n, 1, &neighbors);
-
-				p2 = p;
-				p2.Y--;
-				getNeighborConnectingFace(p2, nodedef, map, n, 2, &neighbors);
-
-				p2 = p;
-				p2.Z--;
-				getNeighborConnectingFace(p2, nodedef, map, n, 4, &neighbors);
-
-				p2 = p;
-				p2.X--;
-				getNeighborConnectingFace(p2, nodedef, map, n, 8, &neighbors);
-
-				p2 = p;
-				p2.Z++;
-				getNeighborConnectingFace(p2, nodedef, map, n, 16, &neighbors);
-
-				p2 = p;
-				p2.X++;
-				getNeighborConnectingFace(p2, nodedef, map, n, 32, &neighbors);
-			}
-			std::vector<aabb3f> nodeboxes;
-			n.getCollisionBoxes(gamedef->ndef(), &nodeboxes, neighbors);
+			nodeboxes.clear();
+			n.getCollisionBoxes(nodedef, &nodeboxes, neighbors);
 
 			// Calculate float position only once
 			v3f posf = intToFloat(p, BS);
@@ -365,19 +346,28 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		return result;
 	}
 
-	} // tt2
+	}
 
-	if(collideWithObjects)
-	{
-		/* add object boxes to cinfo */
+	/*
+		Collect object boxes in movement range
+	*/
 
-		std::vector<ActiveObject*> objects;
+	auto process_object = [] (ActiveObject *object) {
+		if (object && object->collideWithObjects()) {
+			aabb3f box;
+			if (object->getCollisionBox(&box))
+				cinfo.emplace_back(object, 0, box);
+		}
+	};
+
+	if (collideWithObjects) {
+		// Calculate distance by speed, add own extent and 1.5m of tolerance
+		const f32 distance = speed_f->getLength() * dtime +
+			box_0.getExtent().getLength() + 1.5f * BS;
+
 #ifndef SERVER
 		ClientEnvironment *c_env = dynamic_cast<ClientEnvironment*>(env);
-		if (c_env != 0) {
-			// Calculate distance by speed, add own extent and 1.5m of tolerance
-			f32 distance = speed_f->getLength() * dtime +
-				box_0.getExtent().getLength() + 1.5f * BS;
+		if (c_env) {
 			std::vector<DistanceSortedActiveObject> clientobjects;
 			c_env->getActiveObjects(*pos_f, distance, clientobjects);
 
@@ -385,58 +375,40 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				// Do collide with everything but itself and the parent CAO
 				if (!self || (self != clientobject.obj &&
 						self != clientobject.obj->getParent())) {
-					objects.push_back((ActiveObject*) clientobject.obj);
+					process_object(clientobject.obj);
 				}
 			}
-		}
-		else
-#endif
-		{
-			if (s_env != NULL) {
-				// Calculate distance by speed, add own extent and 1.5m of tolerance
-				f32 distance = speed_f->getLength() * dtime +
-					box_0.getExtent().getLength() + 1.5f * BS;
 
-				// search for objects which are not us, or we are not its parent
-				// we directly use the callback to populate the result to prevent
-				// a useless result loop here
-				auto include_obj_cb = [self, &objects] (ServerActiveObject *obj) {
-					if (!obj->isGone() &&
-						(!self || (self != obj && self != obj->getParent()))) {
-						objects.push_back((ActiveObject *)obj);
-					}
-					return false;
-				};
-
-				std::vector<ServerActiveObject *> s_objects;
-				s_env->getObjectsInsideRadius(s_objects, *pos_f, distance, include_obj_cb);
-			}
-		}
-
-		for (std::vector<ActiveObject*>::const_iterator iter = objects.begin();
-				iter != objects.end(); ++iter) {
-			ActiveObject *object = *iter;
-
-			if (object && object->collideWithObjects()) {
-				aabb3f object_collisionbox;
-				if (object->getCollisionBox(&object_collisionbox))
-					cinfo.emplace_back(object, 0, object_collisionbox);
-			}
-		}
-#ifndef SERVER
-		if (self && c_env) {
+			// add collision with local player
 			LocalPlayer *lplayer = c_env->getLocalPlayer();
 			if (lplayer->getParent() == nullptr) {
 				aabb3f lplayer_collisionbox = lplayer->getCollisionbox();
 				v3f lplayer_pos = lplayer->getPosition();
 				lplayer_collisionbox.MinEdge += lplayer_pos;
 				lplayer_collisionbox.MaxEdge += lplayer_pos;
-				ActiveObject *obj = (ActiveObject*) lplayer->getCAO();
+				auto *obj = (ActiveObject*) lplayer->getCAO();
 				cinfo.emplace_back(obj, 0, lplayer_collisionbox);
 			}
 		}
+		else
 #endif
-	} //tt3
+		if (s_env) {
+			// search for objects which are not us, or we are not its parent.
+			// we directly process the object in this callback to avoid useless
+			// looping afterwards.
+			auto include_obj_cb = [self, &process_object] (ServerActiveObject *obj) {
+				if (!obj->isGone() &&
+					(!self || (self != obj && self != obj->getParent()))) {
+					process_object(obj);
+				}
+				return false;
+			};
+
+			// nothing is put into this vector
+			std::vector<ServerActiveObject*> s_objects;
+			s_env->getObjectsInsideRadius(s_objects, *pos_f, distance, include_obj_cb);
+		}
+	}
 
 	/*
 		Collision detection
@@ -572,7 +544,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 			if (is_collision) {
 				info.axis = nearest_collided;
-				result.collisions.push_back(info);
+				result.collisions.push_back(std::move(info));
 			}
 		}
 	}
