@@ -58,12 +58,13 @@ enum {
 	CUSTOM_RIDX_HTTP_API_LUA,
 	CUSTOM_RIDX_METATABLE_MAP,
 
-	// The following four functions are implemented in Lua because LuaJIT can
+	// The following functions are implemented in Lua because LuaJIT can
 	// trace them and optimize tables/string better than from the C API.
 	CUSTOM_RIDX_READ_VECTOR,
 	CUSTOM_RIDX_PUSH_VECTOR,
 	CUSTOM_RIDX_READ_NODE,
 	CUSTOM_RIDX_PUSH_NODE,
+	CUSTOM_RIDX_PUSH_MOVERESULT1,
 };
 
 

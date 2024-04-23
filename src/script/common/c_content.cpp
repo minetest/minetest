@@ -2480,6 +2480,27 @@ static const char *collision_axis_str[] = {
 
 void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
 {
+	// use faster Lua helper if possible
+	if (res.collisions.size() == 1 && res.collisions.front().type == COLLISION_NODE) {
+		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_MOVERESULT1);
+		const auto &c = res.collisions.front();
+		lua_pushboolean(L, res.touching_ground);
+		lua_pushboolean(L, res.collides);
+		lua_pushboolean(L, res.standing_on_object);
+		assert(c.axis != COLLISION_AXIS_NONE);
+		lua_pushinteger(L, static_cast<int>(c.axis));
+		lua_pushinteger(L, c.node_p.X);
+		lua_pushinteger(L, c.node_p.Y);
+		lua_pushinteger(L, c.node_p.Z);
+		for (v3f v : {c.old_speed / BS, c.new_speed / BS}) {
+			lua_pushnumber(L, v.X);
+			lua_pushnumber(L, v.Y);
+			lua_pushnumber(L, v.Z);
+		}
+		lua_call(L, 3 + 1 + 3 + 3 * 2, 1);
+		return;
+	}
+
 	lua_createtable(L, 0, 4);
 
 	setboolfield(L, -1, "touching_ground", res.touching_ground);
