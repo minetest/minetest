@@ -97,3 +97,25 @@ function core.encode_png(width, height, data, compression)
 
 	return o_encode_png(width, height, data, compression or 6)
 end
+
+-- Helper that pushes a collisionMoveResult structure
+if core.set_push_moveresult1 then
+	-- must match CollisionAxis in collision.h
+	local AXES = {"x", "y", "z"}
+	-- <=> script/common/c_content.cpp push_collision_move_result()
+	core.set_push_moveresult1(function(b0, b1, b2, axis, npx, npy, npz, v0x, v0y, v0z, v1x, v1y, v1z)
+		return {
+			touching_ground = b0,
+			collides = b1,
+			standing_on_object = b2,
+			collisions = {{
+				type = "node",
+				axis = AXES[axis],
+				node_pos = vector.new(npx, npy, npz),
+				old_velocity = vector.new(v0x, v0y, v0z),
+				new_velocity = vector.new(v1x, v1y, v1z),
+			}},
+		}
+	end)
+	core.set_push_moveresult1 = nil
+end
