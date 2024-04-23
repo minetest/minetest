@@ -17,6 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <array>
+
 #include "voxelalgorithms.h"
 #include "nodedef.h"
 #include "mapblock.h"
@@ -51,12 +53,12 @@ typedef v3s16 mapblock_v3;
 
 //! Contains information about a node whose light is about to change.
 struct ChangingLight {
+	//! Pointer to the node's block.
+	MapBlock *block = nullptr;
 	//! Relative position of the node in its map block.
 	relative_v3 rel_position;
 	//! Position of the node's block.
 	mapblock_v3 block_position;
-	//! Pointer to the node's block.
-	MapBlock *block = NULL;
 	/*!
 	 * Direction from the node that caused this node's changing
 	 * to this node.
@@ -67,9 +69,9 @@ struct ChangingLight {
 
 	ChangingLight(relative_v3 rel_pos, mapblock_v3 block_pos,
 		MapBlock *b, direction source_dir) :
+		block(b),
 		rel_position(rel_pos),
 		block_position(block_pos),
-		block(b),
 		source_direction(source_dir)
 	{}
 };
@@ -81,7 +83,7 @@ struct ChangingLight {
  */
 struct LightQueue {
 	//! For each light level there is a vector.
-	std::vector<ChangingLight> lights[LIGHT_SUN + 1];
+	std::array<std::vector<ChangingLight>, LIGHT_SUN + 1> lights;
 	//! Light of the brightest ChangingLight in the queue.
 	u8 max_light;
 
@@ -92,9 +94,15 @@ struct LightQueue {
 	LightQueue(size_t reserve)
 	{
 		max_light = LIGHT_SUN;
-		for (u8 i = 0; i <= LIGHT_SUN; i++) {
-			lights[i].reserve(reserve);
-		}
+		for (auto &l : lights)
+			l.reserve(reserve);
+	}
+
+	//! Clears a LightQueue.
+	void clear() {
+		max_light = LIGHT_SUN;
+		for (auto &l : lights)
+			l.clear();
 	}
 
 	/*!
@@ -456,7 +464,7 @@ bool is_sunlight_above(Map *map, v3s16 pos, const NodeDefManager *ndef)
 	return sunlight;
 }
 
-static const LightBank banks[] = { LIGHTBANK_DAY, LIGHTBANK_NIGHT };
+static constexpr LightBank banks[] = { LIGHTBANK_DAY, LIGHTBANK_NIGHT };
 
 void update_lighting_nodes(Map *map,
 	const std::vector<std::pair<v3s16, MapNode>> &oldnodes,
@@ -466,10 +474,14 @@ void update_lighting_nodes(Map *map,
 	// For node getter functions
 	bool is_valid_position;
 
+	// cached allocations
+	thread_local UnlightQueue disappearing_lights(1);
+	thread_local ReLightQueue light_sources(4);
+
 	// Process each light bank separately
 	for (LightBank bank : banks) {
-		UnlightQueue disappearing_lights(256);
-		ReLightQueue light_sources(256);
+		disappearing_lights.clear();
+		light_sources.clear();
 		// Nodes that are brighter than the brightest modified node was
 		// won't change, since they didn't get their light from a
 		// modified node.
@@ -634,14 +646,16 @@ void update_lighting_nodes(Map *map,
  * Borders of a map block in relative node coordinates.
  * Compatible with type 'direction'.
  */
-const VoxelArea block_borders[] = {
-	VoxelArea(v3s16(15, 0, 0), v3s16(15, 15, 15)), //X+
-	VoxelArea(v3s16(0, 15, 0), v3s16(15, 15, 15)), //Y+
-	VoxelArea(v3s16(0, 0, 15), v3s16(15, 15, 15)), //Z+
-	VoxelArea(v3s16(0, 0, 0), v3s16(15, 15, 0)),   //Z-
-	VoxelArea(v3s16(0, 0, 0), v3s16(15, 0, 15)),   //Y-
-	VoxelArea(v3s16(0, 0, 0), v3s16(0, 15, 15))    //X-
+#define B_1 (MAP_BLOCKSIZE - 1)
+const static VoxelArea block_borders[] = {
+	VoxelArea(v3s16(B_1, 0, 0), v3s16(B_1, B_1, B_1)), //X+
+	VoxelArea(v3s16(0, B_1, 0), v3s16(B_1, B_1, B_1)), //Y+
+	VoxelArea(v3s16(0, 0, B_1), v3s16(B_1, B_1, B_1)), //Z+
+	VoxelArea(v3s16(0, 0, 0), v3s16(B_1, B_1, 0)),   //Z-
+	VoxelArea(v3s16(0, 0, 0), v3s16(B_1, 0, B_1)),   //Y-
+	VoxelArea(v3s16(0, 0, 0), v3s16(0, B_1, B_1))    //X-
 };
+#undef B_1
 
 /*!
  * Returns true if:
@@ -679,11 +693,14 @@ void update_block_border_lighting(Map *map, MapBlock *block,
 	std::map<v3s16, MapBlock*> &modified_blocks)
 {
 	const NodeDefManager *ndef = map->getNodeDefManager();
+	// Since invalid light is not common, do not allocate
+	// memory if not needed.
+	UnlightQueue disappearing_lights(0);
+	ReLightQueue light_sources(0);
+
 	for (LightBank bank : banks) {
-		// Since invalid light is not common, do not allocate
-		// memory if not needed.
-		UnlightQueue disappearing_lights(0);
-		ReLightQueue light_sources(0);
+		disappearing_lights.clear();
+		light_sources.clear();
 		// Get incorrect lights
 		for (direction d = 0; d < 6; d++) {
 			// For each direction
