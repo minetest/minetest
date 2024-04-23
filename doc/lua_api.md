@@ -466,10 +466,10 @@ the higher resolution texture.
 
 Textures can be grouped together by enclosing them in `(` and `)`.
 
-Example: `cobble.png^(thing1.png^thing2.png)`
+Example: `default_cobble.png^(thing1.png^thing2.png)`
 
 A texture for `thing1.png^thing2.png` is created and the resulting
-texture is overlaid on top of `cobble.png`.
+texture is overlaid on top of `default_cobble.png`.
 
 ### Escaping
 
@@ -477,11 +477,11 @@ Modifiers that accept texture names (e.g. `[combine`) accept escaping to allow
 passing complex texture names as arguments. Escaping is done with backslash and
 is required for `^`, `:` and `\`.
 
-Example: `cobble.png^[lowpart:50:color.png\^[mask\:trans.png`
-Or as a Lua string: `"cobble.png^[lowpart:50:color.png\\^[mask\\:trans.png"`
+Example: `default_cobble.png^[lowpart:50:default_dirt.png\^[mask\:default_glass.png`
+Or as a Lua string: `"default_cobble.png^[lowpart:50:default_dirt.png\\^[mask\\:default_glass.png"`
 
-The lower 50 percent of `color.png^[mask:trans.png` are overlaid
-on top of `cobble.png`.
+The lower 50 percent of `default_dirt.png^[mask:default_glass.png` are overlaid
+on top of `default_cobble.png`.
 
 ### Advanced texture modifiers
 
@@ -555,7 +555,7 @@ Brightens the texture.
 
 Example:
 
-    tnt_tnt_side.png^[brighten
+    tnt_side.png^[brighten
 
 #### `[noalpha`
 
@@ -604,10 +604,10 @@ Create an inventory cube texture using the side textures.
 
 Example:
 
-    [inventorycube{grass.png{dirt.png&grass_side.png{dirt.png&grass_side.png
+    [inventorycube{default_grass.png{default_dirt.png&default_grass_side.png{default_dirt.png&default_grass_side.png
 
-Creates an inventorycube with `grass.png`, `dirt.png^grass_side.png` and
-`dirt.png^grass_side.png` textures
+Creates an inventorycube with `default_grass.png`, `default_dirt.png^default_grass_side.png` and
+`default_dirt.png^default_grass_side.png` textures
 
 #### `[fill:<w>x<h>:<x>,<y>:<color>`
 
