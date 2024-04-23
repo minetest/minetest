@@ -266,29 +266,29 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block,
 		content_t previous_c = CONTENT_IGNORE;
 		const std::vector<LoadingBlockModifierDef *> *lbm_list = nullptr;
 
-		for (pos.X = 0; pos.X < MAP_BLOCKSIZE; pos.X++)
-			for (pos.Y = 0; pos.Y < MAP_BLOCKSIZE; pos.Y++)
-				for (pos.Z = 0; pos.Z < MAP_BLOCKSIZE; pos.Z++) {
-					n = block->getNodeNoCheck(pos);
-					c = n.getContent();
+		for (pos.Z = 0; pos.Z < MAP_BLOCKSIZE; pos.Z++)
+		for (pos.Y = 0; pos.Y < MAP_BLOCKSIZE; pos.Y++)
+		for (pos.X = 0; pos.X < MAP_BLOCKSIZE; pos.X++) {
+			n = block->getNodeNoCheck(pos);
+			c = n.getContent();
 
-					// If content_t are not matching perform an LBM lookup
-					if (previous_c != c) {
-						lbm_list = it->second.lookup(c);
-						previous_c = c;
-					}
+			// If content_t are not matching perform an LBM lookup
+			if (previous_c != c) {
+				lbm_list = it->second.lookup(c);
+				previous_c = c;
+			}
 
-					if (!lbm_list)
-						continue;
-					for (auto lbmdef : *lbm_list) {
-						lbmdef->trigger(env, pos + pos_of_block, n, dtime_s);
-						if (block->isOrphan())
-							return;
-						n = block->getNodeNoCheck(pos);
-						if (n.getContent() != c)
-							break; // The node was changed and the LBMs no longer apply
-					}
-				}
+			if (!lbm_list)
+				continue;
+			for (auto lbmdef : *lbm_list) {
+				lbmdef->trigger(env, pos + pos_of_block, n, dtime_s);
+				if (block->isOrphan())
+					return;
+				n = block->getNodeNoCheck(pos);
+				if (n.getContent() != c)
+					break; // The node was changed and the LBMs no longer apply
+			}
+		}
 	}
 }
 
@@ -935,9 +935,9 @@ public:
 		bool want_contents_cached = block->contents.empty() && !block->do_not_cache_contents;
 
 		v3s16 p0;
-		for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
-		for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
 		for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
+		for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
+		for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
 		{
 			MapNode n = block->getNodeNoCheck(p0);
 			content_t c = n.getContent();

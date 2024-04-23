@@ -618,9 +618,8 @@ void update_lighting_nodes(Map *map,
 			modified_blocks);
 		// Initialize light values for light spreading.
 		for (u8 i = 0; i <= LIGHT_SUN; i++) {
-			const std::vector<ChangingLight> &lights = light_sources.lights[i];
-			for (std::vector<ChangingLight>::const_iterator it = lights.begin();
-					it < lights.end(); ++it) {
+			const auto &lights = light_sources.lights[i];
+			for (auto it = lights.begin(); it < lights.end(); ++it) {
 				MapNode n = it->block->getNodeNoCheck(it->rel_position);
 				n.setLight(bank, i, ndef->getLightingFlags(n));
 				it->block->setNodeNoCheck(it->rel_position, n);
@@ -737,9 +736,8 @@ void update_block_border_lighting(Map *map, MapBlock *block,
 			modified_blocks);
 		// Initialize light values for light spreading.
 		for (u8 i = 0; i <= LIGHT_SUN; i++) {
-			const std::vector<ChangingLight> &lights = light_sources.lights[i];
-			for (std::vector<ChangingLight>::const_iterator it = lights.begin();
-					it < lights.end(); ++it) {
+			const auto &lights = light_sources.lights[i];
+			for (auto it = lights.begin(); it < lights.end(); ++it) {
 				MapNode n = it->block->getNodeNoCheck(it->rel_position);
 				n.setLight(bank, i, ndef->getLightingFlags(n));
 				it->block->setNodeNoCheck(it->rel_position, n);
@@ -984,8 +982,8 @@ void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
 			// Skip not existing blocks
 			continue;
 		// For each node in the block:
-		for (relpos.X = 0; relpos.X < MAP_BLOCKSIZE; relpos.X++)
 		for (relpos.Z = 0; relpos.Z < MAP_BLOCKSIZE; relpos.Z++)
+		for (relpos.X = 0; relpos.X < MAP_BLOCKSIZE; relpos.X++)
 		for (relpos.Y = 0; relpos.Y < MAP_BLOCKSIZE; relpos.Y++) {
 			MapNode node = block->getNodeNoCheck(relpos.X, relpos.Y, relpos.Z);
 			ContentLightingFlags f = ndef->getLightingFlags(node);
@@ -1011,9 +1009,8 @@ void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
 		u8 maxlight = (b == 0) ? LIGHT_MAX : LIGHT_SUN;
 		// Initialize light values for light spreading.
 		for (u8 i = 0; i <= maxlight; i++) {
-			const std::vector<ChangingLight> &lights = relight[b].lights[i];
-			for (std::vector<ChangingLight>::const_iterator it = lights.begin();
-					it < lights.end(); ++it) {
+			const auto &lights = relight[b].lights[i];
+			for (auto it = lights.begin(); it < lights.end(); ++it) {
 				MapNode n = it->block->getNodeNoCheck(it->rel_position);
 				n.setLight(bank, i, ndef->getLightingFlags(n));
 				it->block->setNodeNoCheck(it->rel_position, n);
@@ -1085,8 +1082,8 @@ void blit_back_with_light(Map *map, MMVManip *vm,
 		// For each border of the block:
 		for (const VoxelArea &a : block_pad) {
 			// For each node of the border:
-			for (relpos.X = a.MinEdge.X; relpos.X <= a.MaxEdge.X; relpos.X++)
 			for (relpos.Z = a.MinEdge.Z; relpos.Z <= a.MaxEdge.Z; relpos.Z++)
+			for (relpos.X = a.MinEdge.X; relpos.X <= a.MaxEdge.X; relpos.X++)
 			for (relpos.Y = a.MinEdge.Y; relpos.Y <= a.MaxEdge.Y; relpos.Y++) {
 
 				// Get old and new node

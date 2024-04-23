@@ -291,9 +291,9 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	bool any_position_valid = false;
 
 	v3s16 p;
-	for (p.X = min.X; p.X <= max.X; p.X++)
+	for (p.Z = min.Z; p.Z <= max.Z; p.Z++)
 	for (p.Y = min.Y; p.Y <= max.Y; p.Y++)
-	for (p.Z = min.Z; p.Z <= max.Z; p.Z++) {
+	for (p.X = min.X; p.X <= max.X; p.X++) {
 		bool is_position_valid;
 		MapNode n = map->getNode(p, &is_position_valid);
 
