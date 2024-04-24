@@ -132,7 +132,7 @@ struct BoneOverride
 		return scale.vector.getInterpolated(scale.previous, progress)
 				* (scale.absolute ? v3f(1) : anim_scale);
 	}
- 
+
 	f32 dtime_passed = 0;
 
 	bool isIdentity() const
