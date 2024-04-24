@@ -758,8 +758,9 @@ void InventoryList::moveItemSomewhere(u32 i, InventoryList *dest, u32 count)
 
 	if (!leftover.empty()) {
 		// Add the remaining part back to the source item
-		ItemStack &source = getItem(i);
-		source.add(leftover.count); // do NOT use addItem to allow oversized stacks!
+		// do NOT use addItem to allow oversized stacks!
+		leftover.add(getItem(i).count);
+		changeItem(i, leftover);
 	}
 }
 
