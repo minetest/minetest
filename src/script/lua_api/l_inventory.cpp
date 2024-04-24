@@ -272,7 +272,7 @@ int InvRef::l_set_lists(lua_State *L)
 	lua_pushnil(L);
 	luaL_checktype(L, 2, LUA_TTABLE);
 	while (lua_next(L, 2)) {
-		const char *listname = lua_tostring(L, -2);
+		const char *listname = luaL_checkstring(L, -2);
 		read_inventory_list(L, -1, &tempInv, listname, server);
 		lua_pop(L, 1);
 	}
