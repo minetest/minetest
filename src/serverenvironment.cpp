@@ -1817,17 +1817,14 @@ void ServerEnvironment::getSelectedActiveObjects(
 	std::vector<PointedThing> &objects,
 	const std::optional<Pointabilities> &pointabilities)
 {
-	std::vector<ServerActiveObject *> objs;
-	getObjectsInsideRadius(objs, shootline_on_map.getMiddle(),
-		0.5 * shootline_on_map.getLength() + 5 * BS, nullptr);
 	const v3f line_vector = shootline_on_map.getVector();
 
-	for (auto obj : objs) {
+	auto process = [&] (ServerActiveObject *obj) -> bool {
 		if (obj->isGone())
-			continue;
+			return false;
 		aabb3f selection_box;
 		if (!obj->getSelectionBox(&selection_box))
-			continue;
+			return false;
 
 		v3f pos = obj->getBasePosition();
 		v3f rel_pos = shootline_on_map.start - pos;
@@ -1847,29 +1844,37 @@ void ServerEnvironment::getSelectedActiveObjects(
 				&current_intersection, &current_normal);
 			current_raw_normal = current_normal;
 		}
-		if (collision) {
-			PointabilityType pointable;
-			if (pointabilities) {
-				if (LuaEntitySAO* lsao = dynamic_cast<LuaEntitySAO*>(obj)) {
-					pointable = pointabilities->matchObject(lsao->getName(),
-							usao->getArmorGroups()).value_or(props->pointable);
-				} else if (PlayerSAO* psao = dynamic_cast<PlayerSAO*>(obj)) {
-					pointable = pointabilities->matchPlayer(psao->getArmorGroups()).value_or(
-							props->pointable);
-				} else {
-					pointable = props->pointable;
-				}
+		if (!collision)
+			return false;
+
+		PointabilityType pointable;
+		if (pointabilities) {
+			if (LuaEntitySAO* lsao = dynamic_cast<LuaEntitySAO*>(obj)) {
+				pointable = pointabilities->matchObject(lsao->getName(),
+						usao->getArmorGroups()).value_or(props->pointable);
+			} else if (PlayerSAO* psao = dynamic_cast<PlayerSAO*>(obj)) {
+				pointable = pointabilities->matchPlayer(psao->getArmorGroups()).value_or(
+						props->pointable);
 			} else {
 				pointable = props->pointable;
 			}
-			if (pointable != PointabilityType::POINTABLE_NOT) {
-				current_intersection += pos;
-				objects.emplace_back(
-					(s16) obj->getId(), current_intersection, current_normal, current_raw_normal,
-					(current_intersection - shootline_on_map.start).getLengthSQ(), pointable);
-			}
+		} else {
+			pointable = props->pointable;
 		}
-	}
+		if (pointable != PointabilityType::POINTABLE_NOT) {
+			current_intersection += pos;
+			f32 d_sq = (current_intersection - shootline_on_map.start).getLengthSQ();
+			objects.emplace_back(
+				(s16) obj->getId(), current_intersection, current_normal,
+				current_raw_normal, d_sq, pointable);
+		}
+		return false;
+	};
+
+	// Use "logic in callback" pattern to avoid useless vector filling
+	std::vector<ServerActiveObject*> tmp;
+	getObjectsInsideRadius(tmp, shootline_on_map.getMiddle(),
+		0.5 * shootline_on_map.getLength() + 5 * BS, process);
 }
 
 /*
