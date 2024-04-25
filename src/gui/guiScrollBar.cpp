@@ -207,10 +207,9 @@ void GUIScrollBar::draw()
 	IGUIElement::draw();
 }
 
-static inline s32 interpolate_scroll(s32 from, s32 to, f32 factor)
+static inline s32 interpolate_scroll(s32 from, s32 to, f32 amount)
 {
-	f32 amount = core::clamp(0.5f * factor, 0.001f, 1.0f);
-	s32 step = core::round32((to - from) * amount);
+	s32 step = core::round32((to - from) * core::clamp(amount, 0.001f, 1.0f));
 	if (step == 0)
 		return to;
 	return from + step;
@@ -221,8 +220,8 @@ void GUIScrollBar::interpolatePos()
 	if (target_pos.has_value()) {
 		// Adjust to match 60 FPS. This also means that interpolation is
 		// effectively disabled at <= 30 FPS.
-		f32 factor = last_delta_ms / 16.667f;
-		setPosRaw(interpolate_scroll(scroll_pos, *target_pos, factor));
+		f32 amount = 0.5f * (last_delta_ms / 16.667f);
+		setPosRaw(interpolate_scroll(scroll_pos, *target_pos, amount));
 		if (scroll_pos == target_pos)
 			target_pos = std::nullopt;
 
