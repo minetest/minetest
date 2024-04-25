@@ -34,9 +34,10 @@ public:
 		DEFAULT
 	};
 
-	virtual void draw();
-	virtual void updateAbsolutePosition();
-	virtual bool OnEvent(const SEvent &event);
+	virtual void draw() override;
+	virtual void updateAbsolutePosition() override;
+	virtual bool OnEvent(const SEvent &event) override;
+	virtual void OnPostRender(u32 time_ms) override;
 
 	s32 getMax() const { return max_pos; }
 	s32 getMin() const { return min_pos; }
@@ -90,4 +91,7 @@ private:
 	void setPosRaw(const s32 &pos);
 	void updatePos();
 	std::optional<s32> target_pos;
+	u32 last_time_ms = 0;
+	u32 last_delta_ms = 17; // assume 60 FPS
+	void interpolatePos();
 };

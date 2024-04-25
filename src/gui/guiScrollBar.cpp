@@ -12,6 +12,7 @@ the arrow buttons where there is insufficient space.
 
 #include "guiScrollBar.h"
 #include "guiButton.h"
+#include "porting.h"
 #include <IGUISkin.h>
 
 GUIScrollBar::GUIScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
@@ -185,29 +186,8 @@ bool GUIScrollBar::OnEvent(const SEvent &event)
 	return IGUIElement::OnEvent(event);
 }
 
-static inline s32 interpolate_scroll(s32 from, s32 to)
-{
-	s32 step = core::round32((to - from) * 0.5f);
-	if (step == 0)
-		return to;
-	return from + step;
-}
-
 void GUIScrollBar::draw()
 {
-	if (target_pos.has_value()) {
-		setPosRaw(interpolate_scroll(scroll_pos, *target_pos));
-		if (scroll_pos == target_pos)
-			target_pos = std::nullopt;
-
-		SEvent e;
-		e.EventType = EET_GUI_EVENT;
-		e.GUIEvent.Caller = this;
-		e.GUIEvent.Element = nullptr;
-		e.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
-		Parent->OnEvent(e);
-	}
-
 	if (!IsVisible)
 		return;
 
@@ -239,6 +219,41 @@ void GUIScrollBar::draw()
 		skin->draw3DButtonPaneStandard(this, slider_rect, &AbsoluteClippingRect);
 	}
 	IGUIElement::draw();
+}
+
+static inline s32 interpolate_scroll(s32 from, s32 to, f32 factor)
+{
+	f32 amount = core::clamp(0.5f * factor, 0.001f, 1.0f);
+	s32 step = core::round32((to - from) * amount);
+	if (step == 0)
+		return to;
+	return from + step;
+}
+
+void GUIScrollBar::interpolatePos()
+{
+	if (target_pos.has_value()) {
+		// Adjust to match 60 FPS. This also means that interpolation is
+		// effectively disabled at <= 30 FPS.
+		f32 factor = last_delta_ms / 16.667f;
+		setPosRaw(interpolate_scroll(scroll_pos, *target_pos, factor));
+		if (scroll_pos == target_pos)
+			target_pos = std::nullopt;
+
+		SEvent e;
+		e.EventType = EET_GUI_EVENT;
+		e.GUIEvent.Caller = this;
+		e.GUIEvent.Element = nullptr;
+		e.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
+		Parent->OnEvent(e);
+	}
+}
+
+void GUIScrollBar::OnPostRender(u32 time_ms)
+{
+	last_delta_ms = porting::getDeltaMs(last_time_ms, time_ms);
+	last_time_ms = time_ms;
+	interpolatePos();
 }
 
 void GUIScrollBar::updateAbsolutePosition()
@@ -303,10 +318,12 @@ void GUIScrollBar::setPos(const s32 &pos)
 void GUIScrollBar::setPosInterpolated(const s32 &pos)
 {
 	s32 clamped = core::s32_clamp(pos, min_pos, max_pos);
-	if (scroll_pos != clamped)
+	if (scroll_pos != clamped) {
 		target_pos = clamped;
-	else
+		interpolatePos();
+	} else {
 		target_pos = std::nullopt;
+	}
 }
 
 void GUIScrollBar::setSmallStep(const s32 &step)
