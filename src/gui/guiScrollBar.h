@@ -51,10 +51,12 @@ public:
 	void setSmallStep(const s32 &step);
 	void setLargeStep(const s32 &step);
 	//! Sets a position immediately, aborting any ongoing interpolation.
+	// setPos does not send EGET_SCROLL_BAR_CHANGED events for you.
 	void setPos(const s32 &pos);
 	//! Sets a target position for interpolation.
 	// If you want to do an interpolated addition, use
 	// setPosInterpolated(getTargetPos() + x).
+	// setPosInterpolated takes care of sending EGET_SCROLL_BAR_CHANGED events.
 	void setPosInterpolated(const s32 &pos);
 	void setPageSize(const s32 &size);
 	void setArrowsVisible(ArrowVisibility visible);

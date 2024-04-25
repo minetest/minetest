@@ -75,13 +75,6 @@ bool GUIScrollBar::OnEvent(const SEvent &event)
 					setPosInterpolated(getTargetPos() - small_step);
 				else if (event.GUIEvent.Caller == down_button)
 					setPosInterpolated(getTargetPos() + small_step);
-
-				SEvent e;
-				e.EventType = EET_GUI_EVENT;
-				e.GUIEvent.Caller = this;
-				e.GUIEvent.Element = nullptr;
-				e.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
-				Parent->OnEvent(e);
 				return true;
 			} else if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
 				if (event.GUIEvent.Caller == this)
@@ -96,13 +89,6 @@ bool GUIScrollBar::OnEvent(const SEvent &event)
 					s8 d = event.MouseInput.Wheel < 0 ? -1 : 1;
 					s8 h = is_horizontal ? 1 : -1;
 					setPosInterpolated(getTargetPos() + (d * small_step * h));
-
-					SEvent e;
-					e.EventType = EET_GUI_EVENT;
-					e.GUIEvent.Caller = this;
-					e.GUIEvent.Element = nullptr;
-					e.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
-					Parent->OnEvent(e);
 					return true;
 				}
 				break;
