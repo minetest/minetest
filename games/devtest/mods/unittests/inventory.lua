@@ -32,16 +32,16 @@ local function test_inventory()
 	assert(inv:get_width("test") == 0)
 	assert(inv:set_width("test", 3))
 	assert(not inv:set_width("test", -1))
-	
+
 	inv:set_stack("test", 1, "air")
 	inv:set_stack("test", 3, item_with_meta)
 	assert(not inv:is_empty("test"))
 	assert(compare_lists(inv:get_list("test"), test_list))
-	
+
 	assert(inv:add_item("test", "air") == ItemStack())
 	assert(inv:add_item("test", item_with_meta) == ItemStack())
 	assert(inv:get_stack("test", 1) == ItemStack("air 2"))
-	
+
 	assert(inv:room_for_item("test", "air 99"))
 	inv:set_stack("test", 2, "air 99")
 	assert(not inv:room_for_item("test", "air 99"))
@@ -50,14 +50,14 @@ local function test_inventory()
 	assert(inv:contains_item("test", "air"))
 	assert(not inv:contains_item("test", "air 99"))
 	assert(inv:contains_item("test", item_with_meta, true))
-	
+
 	-- Items should be removed in reverse and combine with first stack removed
 	assert(inv:remove_item("test", "air") == item_with_meta)
 	item_with_meta:set_count(2)
 	assert(inv:remove_item("test", "air 2") == item_with_meta)
 	assert(inv:remove_item("test", "air") == ItemStack("air"))
 	assert(inv:is_empty("test"))
-	
+
 	-- Failure of set_list(s) should not change inventory
 	local before = inv:get_list("test")
 	pcall(inv.set_lists, inv, {test = true})
