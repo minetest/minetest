@@ -774,10 +774,10 @@ expensive to compose with `[combine:`.
 
 > [!WARNING]
 > Avoid sending large images this way. This is not a replacement
-for asset files. Do not use it to do anything that you could instead achieve
-by just using a file. In particular consider `minetest.dynamic_add_media` and
-test whether using other texture modifiers could result in a shorter string
-than embedding a whole image, this may vary by use case.
+> for asset files. Do not use it to do anything that you could instead achieve
+> by just using a file. In particular consider `minetest.dynamic_add_media` and
+> test whether using other texture modifiers could result in a shorter string
+> than embedding a whole image, this may vary by use case.
 
 ## Hardware Coloring
 
@@ -2581,13 +2581,13 @@ background elements are drawn before all other elements.
 
 > [!WARNING]
 > Do _not_ use an element name starting with `key_`; those names are
-  reserved to pass key press events to formspec!
+> reserved to pass key press events to formspec!
 
 > [!WARNING]
 > Minetest allows you to add elements to every single formspec instance
-  using `player:set_formspec_prepend`, which may be the reason backgrounds are
-  appearing when you don't expect them to, or why things are styled differently
-  to normal. See [`no_prepend[]`] and [Styling Formspecs].
+> using `player:set_formspec_prepend`, which may be the reason backgrounds are
+> appearing when you don't expect them to, or why things are styled differently
+> to normal. See [`no_prepend[]`] and [Styling Formspecs].
 
 ## Examples
 
@@ -2753,8 +2753,8 @@ background elements are drawn before all other elements.
   `starting item index`.
 > [!NOTE]
 > With the new coordinate system, the spacing between inventory slots is 1/4 the
-  size of an inventory slot by default. Also see [Styling Formspecs] for changing the
-  size of slots and spacing.
+> size of an inventory slot by default. Also see [Styling Formspecs] for changing the
+> size of slots and spacing.
 
 ### `listring[<inventory location>;<list name>]`
 
@@ -2949,13 +2949,13 @@ background elements are drawn before all other elements.
   at the specified position.
 > [!NOTE]
 > If the new coordinate system is enabled, labels are positioned
-  from the center of the text, not the top.
+> from the center of the text, not the top.
 * The text is displayed directly without automatic line breaking,
   so label should not be used for big text chunks. Newlines can be
   used to make labels multiline.
 > [!NOTE]
 > With the new coordinate system, newlines are spaced with half a
-  coordinate. With the old system, newlines are spaced 2/5 of an inventory slot.
+> coordinate. With the old system, newlines are spaced 2/5 of an inventory slot.
 
 ### `hypertext[<X>,<Y>;<W>,<H>;<name>;<text>]`
 
@@ -2972,7 +2972,7 @@ background elements are drawn before all other elements.
 * `label` is the text on the label
 > [!NOTE]
 > If the new coordinate system is enabled, vertlabels are positioned
-  from the center of the text, not the left.
+> from the center of the text, not the left.
 
 ### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
@@ -3137,7 +3137,7 @@ background elements are drawn before all other elements.
 * `selected` (optional): `true`/`false`
 > [!NOTE]
 > If the new coordinate system is enabled, checkboxes are positioned from
-  the center of the checkbox, not the top.
+> the center of the checkbox, not the top.
 
 ### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
 
@@ -4428,7 +4428,7 @@ noise_threshold = 1.6
 
 > [!WARNING]
 > Use this ore type *very* sparingly since it is ~200x more computationally
-  expensive than any other ore.
+> expensive than any other ore.
 
 ### `stratum`
 
@@ -7510,9 +7510,9 @@ and [`PlayerMetaRef`].
 
 > [!NOTE]
 > If a metadata value is in the format `${k}`, an attempt to get the value
-will return the value associated with key `k`. There is a low recursion limit. This
-behavior is **deprecated** and will be removed in a future version. Usage of the
-`${k}` syntax in formspecs is not deprecated.
+> will return the value associated with key `k`. There is a low recursion limit. This
+> behavior is **deprecated** and will be removed in a future version. Usage of the
+> `${k}` syntax in formspecs is not deprecated.
 
 ### Methods
 
@@ -7674,7 +7674,7 @@ To change position or rotation call `set_attach` again with the new values.
 
 > [!NOTE]
 > Just like model dimensions, the relative position in `set_attach` must
-  be multiplied by 10 compared to world positions.
+> be multiplied by 10 compared to world positions.
 
 It is also possible to attach to a bone of the parent object. In that case the
 child will follow movement and rotation of that bone.

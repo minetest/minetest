@@ -115,8 +115,8 @@ registered callbacks.
 
 > [!NOTE]
 > Client mods currently can't provide textures, sounds, or models by
-  themselves. Any media referenced in function calls must already be loaded
-  (provided by mods that exist on the server).
+> themselves. Any media referenced in function calls must already be loaded
+> (provided by mods that exist on the server).
 
 
 
@@ -340,8 +340,8 @@ Call these functions only at load time!
     * Called before client shutdown
 > [!WARNING]
 > If the client terminates abnormally (i.e. crashes), the registered
-  callbacks **will likely not be run**. Data should be saved at
-  semi-frequent intervals as well as on server shutdown.
+> callbacks **will likely not be run**. Data should be saved at
+> semi-frequent intervals as well as on server shutdown.
 * `minetest.register_on_receiving_chat_message(function(message))`
     * Called always when a client receive a message
     * Return `true` to mark the message as handled, which means that it will not be shown to chat
