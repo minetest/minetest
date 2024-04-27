@@ -541,8 +541,8 @@ Server* ScriptApiBase::getServer()
 {
 	// Since the gamedef is the server it's still possible to retrieve it in
 	// e.g. the async environment, but this isn't meant to happen.
-	if (getType() != ScriptingType::Server)
-		return nullptr;
+	// TODO: still needs work
+	//assert(getType() == ScriptingType::Server);
 	return dynamic_cast<Server *>(m_gamedef);
 }
 
