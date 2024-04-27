@@ -1534,8 +1534,10 @@ void MapblockMeshGenerator::drawNodeboxNode()
 	bool param2_is_rotation =
 			cur_node.f->param_type_2 == CPT2_COLORED_FACEDIR ||
 			cur_node.f->param_type_2 == CPT2_COLORED_WALLMOUNTED ||
+			cur_node.f->param_type_2 == CPT2_COLORED_4DIR ||
 			cur_node.f->param_type_2 == CPT2_FACEDIR ||
-			cur_node.f->param_type_2 == CPT2_WALLMOUNTED;
+			cur_node.f->param_type_2 == CPT2_WALLMOUNTED ||
+			cur_node.f->param_type_2 == CPT2_4DIR;
 
 	bool param2_is_level =
 			cur_node.f->param_type_2 == CPT2_LEVELED;

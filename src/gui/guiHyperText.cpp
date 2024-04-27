@@ -293,8 +293,8 @@ void ParsedText::pushChar(wchar_t c)
 		else
 			return;
 	} else {
-		m_empty_paragraph = false;
 		enterElement(ELEMENT_TEXT);
+		m_empty_paragraph = false;
 	}
 	m_element->text += c;
 }

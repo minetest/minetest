@@ -90,6 +90,9 @@ typedef char GLchar;
 // to check if this header is in the current compile unit (different GL implementation used different "GLCommon" headers in Irrlicht
 #define IRR_COMPILE_GLES_COMMON
 
+// macro used with COGLES1Driver
+#define TEST_GL_ERROR(cls) (cls)->testGLError(__LINE__)
+
 namespace irr
 {
 namespace video

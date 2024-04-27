@@ -191,7 +191,7 @@ private:
 	scene::IMesh *m_cube;
 };
 
-ExtrusionMeshCache *g_extrusion_mesh_cache = NULL;
+static ExtrusionMeshCache *g_extrusion_mesh_cache = nullptr;
 
 
 WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool lighting):

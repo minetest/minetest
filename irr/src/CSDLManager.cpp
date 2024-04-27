@@ -7,7 +7,6 @@
 #if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
 
 #include "CIrrDeviceSDL.h"
-#include "COpenGLCommon.h"
 
 namespace irr
 {

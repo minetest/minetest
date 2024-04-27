@@ -4,12 +4,8 @@
 
 #pragma once
 
-#ifdef _WIN32
-#define IRRCALLCONV __stdcall
-#else
-#define IRRCALLCONV
-#endif
+// these are obsolete and never pre-defined
 
-#ifndef IRRLICHT_API
+#define IRRCALLCONV
+
 #define IRRLICHT_API
-#endif

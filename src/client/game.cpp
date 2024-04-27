@@ -1015,6 +1015,12 @@ Game::Game() :
 
 Game::~Game()
 {
+	delete client;
+	delete soundmaker;
+	sound_manager.reset();
+
+	delete server;
+
 	delete hud;
 	delete camera;
 	delete quicktune;
@@ -1132,9 +1138,11 @@ void Game::run()
 	FpsControl draw_times;
 	f32 dtime; // in seconds
 
-	/* Clear the profiler */
-	Profiler::GraphValues dummyvalues;
-	g_profiler->graphGet(dummyvalues);
+	// Clear the profiler
+	{
+		Profiler::GraphValues dummyvalues;
+		g_profiler->graphPop(dummyvalues);
+	}
 
 	draw_times.reset();
 
@@ -1265,11 +1273,14 @@ void Game::shutdown()
 	}
 
 	delete client;
+	client = nullptr;
 	delete soundmaker;
+	soundmaker = nullptr;
 	sound_manager.reset();
 
 	auto stop_thread = runInThread([=] {
 		delete server;
+		server = nullptr;
 	}, "ServerStop");
 
 	FpsControl fps_control;
@@ -1555,8 +1566,8 @@ bool Game::initGui()
 	gui_chat_console = new GUIChatConsole(guienv, guienv->getRootGUIElement(),
 			-1, chat_backend, client, &g_menumgr);
 
-	if (g_touchscreengui)
-		g_touchscreengui->init(texture_src);
+	if (g_settings->getBool("enable_touch"))
+		g_touchscreengui = new TouchScreenGUI(device, texture_src);
 
 	return true;
 }
@@ -1902,7 +1913,8 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
 			g_settings->getFloat("profiler_print_interval");
 	bool print_to_log = true;
 
-	if (profiler_print_interval == 0) {
+	// Update game UI anyway but don't log
+	if (profiler_print_interval <= 0) {
 		print_to_log = false;
 		profiler_print_interval = 3;
 	}
@@ -1917,12 +1929,12 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
 		g_profiler->clear();
 	}
 
-	// Update update graphs
+	// Update graphs
 	g_profiler->graphAdd("Time non-rendering [us]",
 		draw_times.busy_time - stats.drawtime);
-
 	g_profiler->graphAdd("Sleep [us]", draw_times.sleep_time);
-	g_profiler->graphAdd("FPS", 1.0f / dtime);
+
+	g_profiler->graphSet("FPS", 1.0f / dtime);
 }
 
 void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
@@ -2258,9 +2270,11 @@ void Game::openConsole(float scale, const wchar_t *line)
 	assert(scale > 0.0f && scale <= 1.0f);
 
 #ifdef __ANDROID__
-	porting::showTextInputDialog("", "", 2);
-	m_android_chat_open = true;
-#else
+	if (!porting::hasPhysicalKeyboardAndroid()) {
+		porting::showTextInputDialog("", "", 2);
+		m_android_chat_open = true;
+	} else {
+#endif
 	if (gui_chat_console->isOpenInhibited())
 		return;
 	gui_chat_console->openConsole(scale);
@@ -2268,6 +2282,8 @@ void Game::openConsole(float scale, const wchar_t *line)
 		gui_chat_console->setCloseOnEnter(true);
 		gui_chat_console->replaceAndAddToHistory(line);
 	}
+#ifdef __ANDROID__
+	} // else
 #endif
 }
 
@@ -4225,7 +4241,7 @@ void Game::updateClouds(float dtime)
 inline void Game::updateProfilerGraphs(ProfilerGraph *graph)
 {
 	Profiler::GraphValues values;
-	g_profiler->graphGet(values);
+	g_profiler->graphPop(values);
 	graph->put(values);
 }
 
@@ -4554,6 +4570,13 @@ void the_game(bool *kill,
 		error_message = std::string("ModError: ") + e.what() +
 				strgettext("\nCheck debug.txt for details.");
 		errorstream << error_message << std::endl;
+	} catch (con::PeerNotFoundException &e) {
+		error_message = gettext("Connection error (timed out?)");
+		errorstream << error_message << std::endl;
+	} catch (ShaderException &e) {
+		error_message = e.what();
+		errorstream << error_message << std::endl;
 	}
+
 	game.shutdown();
 }

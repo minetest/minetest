@@ -25,14 +25,20 @@ IImageWriter *createImageWriterPNG()
 // PNG function for error handling
 static void png_cpexcept_error(png_structp png_ptr, png_const_charp msg)
 {
-	os::Printer::log("PNG fatal error", msg, ELL_ERROR);
+	io::IWriteFile *file = reinterpret_cast<io::IWriteFile *>(png_get_error_ptr(png_ptr));
+	std::string logmsg = std::string("PNG fatal error for ")
+			+ file->getFileName().c_str() + ": " + msg;
+	os::Printer::log(logmsg.c_str(), ELL_ERROR);
 	longjmp(png_jmpbuf(png_ptr), 1);
 }
 
 // PNG function for warning handling
 static void png_cpexcept_warning(png_structp png_ptr, png_const_charp msg)
 {
-	os::Printer::log("PNG warning", msg, ELL_WARNING);
+	io::IWriteFile *file = reinterpret_cast<io::IWriteFile *>(png_get_error_ptr(png_ptr));
+	std::string logmsg = std::string("PNG warning for ")
+			+ file->getFileName().c_str() + ": " + msg;
+	os::Printer::log(logmsg.c_str(), ELL_WARNING);
 }
 
 // PNG function for file writing
@@ -66,7 +72,7 @@ bool CImageWriterPNG::writeImage(io::IWriteFile *file, IImage *image, u32 param)
 
 	// Allocate the png write struct
 	png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
-			NULL, (png_error_ptr)png_cpexcept_error, (png_error_ptr)png_cpexcept_warning);
+			file, (png_error_ptr)png_cpexcept_error, (png_error_ptr)png_cpexcept_warning);
 	if (!png_ptr) {
 		os::Printer::log("PNGWriter: Internal PNG create write struct failure", file->getFileName(), ELL_ERROR);
 		return false;

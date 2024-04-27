@@ -154,7 +154,7 @@ pattern_tr_filename = re.compile(r'\.tr$')
 pattern_bad_luastring = re.compile(
 	r'^@$|'	# single @, OR
 	r'[^@]@$|' # trailing unescaped @, OR
-	r'(?<!@)@(?=[^@1-9])' # an @ that is not escaped or part of a placeholder
+	r'(?<!@)@(?=[^@1-9n])' # an @ that is not escaped or part of a placeholder
 )
 
 # Attempt to read the mod's name from the mod.conf file or folder name. Returns None on failure

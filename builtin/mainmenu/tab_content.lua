@@ -225,7 +225,7 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 	end
 
 	if fields.btn_contentdb then
-		local dlg = create_store_dlg()
+		local dlg = create_contentdb_dlg()
 		dlg:set_parent(tabview)
 		tabview:hide()
 		dlg:show()
@@ -255,7 +255,7 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 
 	if fields.btn_mod_mgr_update then
 		local pkg = packages:get_list()[tabdata.selected_pkg]
-		local dlg = create_store_dlg(nil, pkgmgr.get_contentdb_id(pkg))
+		local dlg = create_contentdb_dlg(nil, pkgmgr.get_contentdb_id(pkg))
 		dlg:set_parent(tabview)
 		tabview:hide()
 		dlg:show()

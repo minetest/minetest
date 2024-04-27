@@ -78,6 +78,32 @@ minetest.register_node("testnodes:4dir_nodebox", {
 	groups = {dig_immediate=3},
 })
 
+minetest.register_node("testnodes:4dir_nodebox_stair", {
+	description = S("4dir Nodebox Stair Test Node").."\n"..
+		S("param2 = 4dir rotation (0..3)"),
+	tiles = {
+		"testnodes_1f.png",
+		"testnodes_2f.png",
+		"testnodes_3f.png",
+		"testnodes_4f.png",
+		"testnodes_5f.png",
+		"testnodes_6f.png",
+	},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "4dir",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.5, 0.5, 0, 0.5},
+			{-0.5, 0, 0, 0.5, 0.5, 0.5},
+		},
+	},
+
+	groups = { dig_immediate = 3 },
+})
+
+
 minetest.register_node("testnodes:wallmounted", {
 	description = S("Wallmounted Test Node").."\n"..
 		S("param2 = wallmounted rotation (0..7)"),

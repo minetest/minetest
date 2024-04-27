@@ -229,9 +229,8 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	params.Stencilbuffer = false;
 	params.Vsync = vsync;
 	params.EventReceiver = receiver;
-#ifdef __ANDROID__
-	params.PrivateData = porting::app_global;
-#endif
+	params.DriverDebug = g_settings->getBool("opengl_debug");
+
 	// there is no standardized path for these on desktop
 	std::string rel_path = std::string("client") + DIR_DELIM
 			+ "shaders" + DIR_DELIM + "Irrlicht";
@@ -254,8 +253,11 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 
 RenderingEngine::~RenderingEngine()
 {
+	sanity_check(s_singleton == this);
+
 	core.reset();
 	m_device->closeDevice();
+	m_device->drop();
 	s_singleton = nullptr;
 }
 
@@ -279,10 +281,7 @@ void RenderingEngine::removeMesh(const scene::IMesh* mesh)
 void RenderingEngine::cleanupMeshCache()
 {
 	auto mesh_cache = m_device->getSceneManager()->getMeshCache();
-	while (mesh_cache->getMeshCount() != 0) {
-		if (scene::IAnimatedMesh *mesh = mesh_cache->getMeshByIndex(0))
-			mesh_cache->removeMesh(mesh);
-	}
+	mesh_cache->clear();
 }
 
 bool RenderingEngine::setupTopLevelWindow()

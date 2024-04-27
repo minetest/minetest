@@ -799,7 +799,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 		video::IVideoDriver *vdrv = m_rendering_engine->get_video_driver();
 
 		io::IReadFile *rfile = irrfs->createMemoryReadFile(
-				data.c_str(), data.size(), "_tempreadfile");
+				data.c_str(), data.size(), filename.c_str());
 
 		FATAL_ERROR_IF(!rfile, "Could not create irrlicht memory file.");
 

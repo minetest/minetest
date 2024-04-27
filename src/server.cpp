@@ -1784,8 +1784,6 @@ void Server::SendHUDSetFlags(session_t peer_id, u32 flags, u32 mask)
 {
 	NetworkPacket pkt(TOCLIENT_HUD_SET_FLAGS, 4 + 4, peer_id);
 
-	flags &= ~(HUD_FLAG_HEALTHBAR_VISIBLE | HUD_FLAG_BREATHBAR_VISIBLE);
-
 	pkt << flags << mask;
 
 	Send(&pkt);
@@ -4098,10 +4096,9 @@ void dedicated_server_loop(Server &server, bool &kill)
 		/*
 			Profiler
 		*/
-		if (profiler_print_interval != 0) {
-			if(m_profiler_interval.step(steplen, profiler_print_interval))
-			{
-				infostream<<"Profiler:"<<std::endl;
+		if (profiler_print_interval > 0) {
+			if (m_profiler_interval.step(steplen, profiler_print_interval)) {
+				infostream << "Profiler:" << std::endl;
 				g_profiler->print(infostream);
 				g_profiler->clear();
 			}
@@ -4114,6 +4111,12 @@ void dedicated_server_loop(Server &server, bool &kill)
 		ServerList::sendAnnounce(ServerList::AA_DELETE,
 			server.m_bind_addr.getPort());
 #endif
+
+	if (profiler_print_interval > 0) {
+		infostream << "Profiler:" << std::endl;
+		g_profiler->print(infostream);
+		g_profiler->clear();
+	}
 }
 
 /*

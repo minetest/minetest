@@ -86,6 +86,9 @@ public:
 	/** \return True if window is fullscreen. */
 	bool isFullscreen() const override;
 
+	//! Checks if the window could possibly be visible.
+	bool isWindowVisible() const override;
+
 	//! Get the position of this window on screen
 	core::position2di getWindowPosition() override;
 
@@ -277,13 +280,13 @@ private:
 	void createDriver();
 
 	bool createWindow();
+	bool createWindowWithContext();
 
 	void createKeyMap();
 
 	void logAttributes();
 	SDL_GLContext Context;
 	SDL_Window *Window;
-	int SDL_Flags;
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 	core::array<SDL_Joystick *> Joysticks;
 #endif
@@ -319,6 +322,7 @@ private:
 	SDL_SysWMinfo Info;
 
 	s32 CurrentTouchCount;
+	bool IsInBackground;
 };
 
 } // end namespace irr

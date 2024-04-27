@@ -109,12 +109,6 @@ if(BUILD_CLIENT AND ENABLE_SOUND)
 	endif()
 endif()
 
-option(ENABLE_TOUCH "Enable touchscreen by default" FALSE)
-if(ENABLE_TOUCH)
-	message(STATUS "Touchscreen support enabled by default.")
-	add_definitions(-DENABLE_TOUCH)
-endif()
-
 if(BUILD_CLIENT)
 	find_package(Freetype REQUIRED)
 endif()
@@ -272,9 +266,14 @@ if(WIN32)
 	if(NOT VCPKG_APPLOCAL_DEPS)
 		set(ZLIB_DLL "" CACHE FILEPATH "Path to Zlib DLL for installation (optional)")
 		set(ZSTD_DLL "" CACHE FILEPATH "Path to Zstd DLL for installation (optional)")
-		if(ENABLE_SOUND)
-			set(OPENAL_DLL "" CACHE FILEPATH "Path to OpenAL32.dll for installation (optional)")
-			set(OGG_DLL "" CACHE FILEPATH "Path to libogg.dll for installation (optional)")
+		if(BUILD_CLIENT)
+			set(PNG_DLL "" CACHE FILEPATH "Path to libpng DLL for installation (optional)")
+			set(JPEG_DLL "" CACHE FILEPATH "Path to libjpeg DLL for installation (optional)")
+			set(SDL2_DLL "" CACHE FILEPATH "Path to SDL2 DLL for installation (optional)")
+		endif()
+		if(BUILD_CLIENT AND ENABLE_SOUND)
+			set(OPENAL_DLL "" CACHE FILEPATH "Path to OpenAL DLL for installation (optional)")
+			set(OGG_DLL "" CACHE FILEPATH "Path to Ogg DLL for installation (optional)")
 			set(VORBIS_DLL "" CACHE FILEPATH "Path to Vorbis DLLs for installation (optional)")
 		endif()
 		if(USE_GETTEXT)
@@ -307,10 +306,6 @@ else()
 	endif()
 
 	if (ANDROID)
-		include_directories(${ANDROID_NDK}/sources/android/native_app_glue)
-		add_library(native_app_glue OBJECT ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} native_app_glue)
-
 		set(PLATFORM_LIBS ${PLATFORM_LIBS} android log)
 	endif()
 endif()
@@ -320,11 +315,13 @@ endif()
 # Note that find_library does not reliably find it so we have to resort to this.
 # Also, passing -latomic is not always the same as adding atomic to the library list.
 include(CheckCSourceCompiles)
-set(CMAKE_REQUIRED_LIBRARIES "-latomic")
-check_c_source_compiles("int main(){}" HAVE_LINK_ATOMIC)
-set(CMAKE_REQUIRED_LIBRARIES "")
-if(HAVE_LINK_ATOMIC)
-	set(PLATFORM_LIBS ${PLATFORM_LIBS} "-latomic")
+if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+	set(CMAKE_REQUIRED_LIBRARIES "-latomic")
+	check_c_source_compiles("int main(){}" HAVE_LINK_ATOMIC)
+	set(CMAKE_REQUIRED_LIBRARIES "")
+	if(HAVE_LINK_ATOMIC)
+		set(PLATFORM_LIBS ${PLATFORM_LIBS} "-latomic")
+	endif()
 endif()
 
 include(CheckSymbolExists)
@@ -518,6 +515,9 @@ include_directories(SYSTEM
 	${GMP_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 	${LUA_BIT_INCLUDE_DIR}
+	# on Android, Minetest depends on SDL2 directly
+	# on other platforms, only IrrlichtMt depends on SDL2
+	"$<$<PLATFORM_ID:Android>:${SDL2_INCLUDE_DIRS}>"
 )
 
 if(USE_GETTEXT)
@@ -562,6 +562,9 @@ if(BUILD_CLIENT)
 		${LUA_BIT_LIBRARY}
 		${FREETYPE_LIBRARY}
 		${PLATFORM_LIBS}
+		# on Android, Minetest depends on SDL2 directly
+		# on other platforms, only IrrlichtMt depends on SDL2
+		"$<$<PLATFORM_ID:Android>:${SDL2_LIBRARIES}>"
 	)
 	if(NOT USE_LUAJIT)
 		set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -860,6 +863,20 @@ if(WIN32)
 				install(FILES ${VORBIS_DLL} DESTINATION ${BINDIR})
 			endif()
 		endif()
+		if(BUILD_CLIENT)
+			if(PNG_DLL)
+				install(FILES ${PNG_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(JPEG_DLL)
+				install(FILES ${JPEG_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(SDL2_DLL)
+				install(FILES ${SDL2_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(FREETYPE_DLL)
+				install(FILES ${FREETYPE_DLL} DESTINATION ${BINDIR})
+			endif()
+		endif()
 		if(CURL_DLL)
 			install(FILES ${CURL_DLL} DESTINATION ${BINDIR})
 		endif()
@@ -868,9 +885,6 @@ if(WIN32)
 		endif()
 		if(ZSTD_DLL)
 			install(FILES ${ZSTD_DLL} DESTINATION ${BINDIR})
-		endif()
-		if(BUILD_CLIENT AND FREETYPE_DLL)
-			install(FILES ${FREETYPE_DLL} DESTINATION ${BINDIR})
 		endif()
 		if(SQLITE3_DLL)
 			install(FILES ${SQLITE3_DLL} DESTINATION ${BINDIR})

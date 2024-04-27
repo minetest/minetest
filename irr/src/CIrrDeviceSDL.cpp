@@ -249,16 +249,34 @@ void CIrrDeviceSDL::resetReceiveTextInputEvents()
 //! constructor
 CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters &param) :
 		CIrrDeviceStub(param),
-		Window((SDL_Window *)param.WindowId), SDL_Flags(0),
+		Window((SDL_Window *)param.WindowId),
 		MouseX(0), MouseY(0), MouseXRel(0), MouseYRel(0), MouseButtonStates(0),
 		Width(param.WindowSize.Width), Height(param.WindowSize.Height),
-		Resizable(param.WindowResizable == 1 ? true : false), CurrentTouchCount(0)
+		Resizable(param.WindowResizable == 1 ? true : false), CurrentTouchCount(0),
+		IsInBackground(false)
 {
 #ifdef _DEBUG
 	setDebugName("CIrrDeviceSDL");
 #endif
 
 	if (++SDLDeviceInstances == 1) {
+#ifdef __ANDROID__
+		// Blocking on pause causes problems with multiplayer.
+		// See https://github.com/minetest/minetest/issues/10842.
+		SDL_SetHint(SDL_HINT_ANDROID_BLOCK_ON_PAUSE, "0");
+		SDL_SetHint(SDL_HINT_ANDROID_BLOCK_ON_PAUSE_PAUSEAUDIO, "0");
+
+		SDL_SetHint(SDL_HINT_ANDROID_TRAP_BACK_BUTTON, "1");
+
+		// Minetest does its own screen keyboard handling.
+		SDL_SetHint(SDL_HINT_ENABLE_SCREEN_KEYBOARD, "0");
+#endif
+
+		// Minetest has its own code to synthesize mouse events from touch events,
+		// so we prevent SDL from doing it.
+		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
+		SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
+
 		u32 flags = SDL_INIT_TIMER | SDL_INIT_EVENTS;
 		if (CreationParams.DriverType != video::EDT_NULL)
 			flags |= SDL_INIT_VIDEO;
@@ -272,11 +290,6 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters &param) :
 			os::Printer::log("SDL initialized", ELL_INFORMATION);
 		}
 	}
-
-	// Minetest has its own code to synthesize mouse events from touch events,
-	// so we prevent SDL from doing it.
-	SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
-	SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
 
 	// create keymap
 	createKeyMap();
@@ -369,6 +382,87 @@ void CIrrDeviceSDL::logAttributes()
 
 bool CIrrDeviceSDL::createWindow()
 {
+	if (Close)
+		return false;
+
+	if (createWindowWithContext())
+		return true;
+
+	if (CreationParams.DriverDebug) {
+		CreationParams.DriverDebug = false;
+		if (createWindowWithContext()) {
+			os::Printer::log("DriverDebug reduced due to lack of support!");
+			// Turn it back on because the GL driver can maybe still do something useful.
+			CreationParams.DriverDebug = true;
+			return true;
+		}
+	}
+
+	while (CreationParams.AntiAlias > 0) {
+		CreationParams.AntiAlias--;
+		if (createWindowWithContext()) {
+			os::Printer::log("AntiAlias reduced/disabled due to lack of support!");
+			return true;
+		}
+	}
+
+	if (CreationParams.WithAlphaChannel) {
+		CreationParams.WithAlphaChannel = false;
+		if (createWindowWithContext()) {
+			os::Printer::log("WithAlphaChannel disabled due to lack of support!");
+			return true;
+		}
+	}
+
+	if (CreationParams.Stencilbuffer) {
+		CreationParams.Stencilbuffer = false;
+		if (createWindowWithContext()) {
+			os::Printer::log("Stencilbuffer disabled due to lack of support!");
+			return true;
+		}
+	}
+
+	while (CreationParams.ZBufferBits > 16) {
+		CreationParams.ZBufferBits -= 8;
+		if (createWindowWithContext()) {
+			os::Printer::log("ZBufferBits reduced due to lack of support!");
+			return true;
+		}
+	}
+
+	while (CreationParams.Bits > 16) {
+		CreationParams.Bits -= 8;
+		if (createWindowWithContext()) {
+			os::Printer::log("Bits reduced due to lack of support!");
+			return true;
+		}
+	}
+
+	if (CreationParams.Stereobuffer) {
+		CreationParams.Stereobuffer = false;
+		if (createWindowWithContext()) {
+			os::Printer::log("Stereobuffer disabled due to lack of support!");
+			return true;
+		}
+	}
+
+	if (CreationParams.Doublebuffer) {
+		// Try single buffer
+		CreationParams.Doublebuffer = false;
+		if (createWindowWithContext()) {
+			os::Printer::log("Doublebuffer disabled due to lack of support!");
+			return true;
+		}
+	}
+
+	os::Printer::log("Could not create window and context!", ELL_ERROR);
+	return false;
+}
+
+bool CIrrDeviceSDL::createWindowWithContext()
+{
+	u32 SDL_Flags = 0;
+
 	if (CreationParams.Fullscreen) {
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 		SDL_Flags |= SDL_WINDOW_FULLSCREEN;
@@ -381,6 +475,8 @@ bool CIrrDeviceSDL::createWindow()
 	if (CreationParams.WindowMaximized)
 		SDL_Flags |= SDL_WINDOW_MAXIMIZED;
 	SDL_Flags |= SDL_WINDOW_OPENGL;
+
+	SDL_GL_ResetAttributes();
 
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 	if (Width != 0 || Height != 0)
@@ -421,9 +517,6 @@ bool CIrrDeviceSDL::createWindow()
 
 	return true;
 #else // !_IRR_EMSCRIPTEN_PLATFORM_
-	if (Close)
-		return false;
-
 	switch (CreationParams.DriverType) {
 	case video::EDT_OPENGL:
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
@@ -448,9 +541,9 @@ bool CIrrDeviceSDL::createWindow()
 	default:;
 	}
 
-#ifdef _DEBUG
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG | SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG);
-#endif
+	if (CreationParams.DriverDebug) {
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG | SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG);
+	}
 
 	if (CreationParams.Bits == 16) {
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
@@ -470,45 +563,32 @@ bool CIrrDeviceSDL::createWindow()
 	if (CreationParams.AntiAlias > 1) {
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, CreationParams.AntiAlias);
-	}
-	if (!Window)
-		Window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_Flags);
-	if (!Window) {
-		os::Printer::log("Could not create window...", SDL_GetError(), ELL_WARNING);
-	}
-	if (!Window && CreationParams.AntiAlias > 1) {
-		while (--CreationParams.AntiAlias > 1) {
-			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, CreationParams.AntiAlias);
-			Window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_Flags);
-			if (Window)
-				break;
-		}
-		if (!Window) {
-			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
-			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
-			Window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_Flags);
-			if (Window)
-				os::Printer::log("AntiAliasing disabled due to lack of support!", ELL_WARNING);
-		}
+	} else {
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 	}
 
-	if (!Window && CreationParams.Doublebuffer) {
-		// Try single buffer
-		if (CreationParams.DriverType == video::EDT_OPENGL)
-			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		Window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_Flags);
-	}
+	Window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_Flags);
 	if (!Window) {
-		os::Printer::log("Could not initialize display", SDL_GetError(), ELL_ERROR);
+		os::Printer::log("Could not create window", SDL_GetError(), ELL_WARNING);
 		return false;
 	}
 
 	Context = SDL_GL_CreateContext(Window);
 	if (!Context) {
-		os::Printer::log("Could not initialize context", SDL_GetError(), ELL_ERROR);
+		os::Printer::log("Could not create context", SDL_GetError(), ELL_WARNING);
 		SDL_DestroyWindow(Window);
+		Window = nullptr;
 		return false;
 	}
+
+	// Update Width and Height to match the actual window size.
+	// In fullscreen mode, the window size specified in SIrrlichtCreationParameters
+	// is ignored, so we cannot rely on it.
+	int w = 0, h = 0;
+	SDL_GetWindowSize(Window, &w, &h);
+	Width = w;
+	Height = h;
 
 	return true;
 #endif // !_IRR_EMSCRIPTEN_PLATFORM_
@@ -542,6 +622,19 @@ void CIrrDeviceSDL::createDriver()
 		os::Printer::log("Could not create video driver", ELL_ERROR);
 }
 
+static int wrap_PollEvent(SDL_Event *ev)
+{
+	u32 t0 = os::Timer::getRealTime();
+	int ret = SDL_PollEvent(ev);
+	u32 d = os::Timer::getRealTime() - t0;
+	if (d >= 5) {
+		auto msg = std::string("SDL_PollEvent took too long: ") + std::to_string(d) + "ms";
+		// 50ms delay => more than three missed frames (at 60fps)
+		os::Printer::log(msg.c_str(), d >= 50 ? ELL_WARNING : ELL_INFORMATION);
+	}
+	return ret;
+}
+
 //! runs the device. Returns false if device wants to be deleted
 bool CIrrDeviceSDL::run()
 {
@@ -550,7 +643,7 @@ bool CIrrDeviceSDL::run()
 	SEvent irrevent;
 	SDL_Event SDL_event;
 
-	while (!Close && SDL_PollEvent(&SDL_event)) {
+	while (!Close && wrap_PollEvent(&SDL_event)) {
 		// os::Printer::log("event: ", core::stringc((int)SDL_event.type).c_str(),   ELL_INFORMATION);	// just for debugging
 
 		switch (SDL_event.type) {
@@ -621,7 +714,17 @@ bool CIrrDeviceSDL::run()
 			}
 #endif
 
-			switch (SDL_event.button.button) {
+			auto button = SDL_event.button.button;
+#ifdef __ANDROID__
+			// Android likes to send the right mouse button as the back button.
+			// According to some web searches I did, this is probably
+			// vendor/device-specific.
+			// Since a working right mouse button is very important for
+			// Minetest, we have this little hack.
+			if (button == SDL_BUTTON_X2)
+				button = SDL_BUTTON_RIGHT;
+#endif
+			switch (button) {
 			case SDL_BUTTON_LEFT:
 				if (SDL_event.type == SDL_MOUSEBUTTONDOWN) {
 					irrevent.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
@@ -770,6 +873,20 @@ bool CIrrDeviceSDL::run()
 			}
 
 			postEventFromUser(irrevent);
+			break;
+
+		// Contrary to what the SDL documentation says, SDL_APP_WILLENTERBACKGROUND
+		// and SDL_APP_WILLENTERFOREGROUND are actually sent in onStop/onStart,
+		// not onPause/onResume, on recent Android versions. This can be verified
+		// by testing or by looking at the org.libsdl.app.SDLActivity Java code.
+		// -> This means we can use them to implement isWindowVisible().
+
+		case SDL_APP_WILLENTERBACKGROUND:
+			IsInBackground = true;
+			break;
+
+		case SDL_APP_WILLENTERFOREGROUND:
+			IsInBackground = false;
 			break;
 
 		default:
@@ -998,11 +1115,6 @@ void CIrrDeviceSDL::setResizable(bool resize)
 	return;
 #else  // !_IRR_EMSCRIPTEN_PLATFORM_
 	if (resize != Resizable) {
-		if (resize)
-			SDL_Flags |= SDL_WINDOW_RESIZABLE;
-		else
-			SDL_Flags &= ~SDL_WINDOW_RESIZABLE;
-
 		if (Window) {
 			SDL_SetWindowResizable(Window, (SDL_bool)resize);
 		}
@@ -1051,6 +1163,11 @@ bool CIrrDeviceSDL::isFullscreen() const
 
 	return CIrrDeviceStub::isFullscreen();
 #endif
+}
+
+bool CIrrDeviceSDL::isWindowVisible() const
+{
+	return !IsInBackground;
 }
 
 //! returns if window is active. if not, nothing need to be drawn
@@ -1110,6 +1227,8 @@ void CIrrDeviceSDL::createKeyMap()
 	KeyMap.reallocate(105);
 
 	// buttons missing
+
+	KeyMap.push_back(SKeyMap(SDLK_AC_BACK, KEY_CANCEL));
 
 	KeyMap.push_back(SKeyMap(SDLK_BACKSPACE, KEY_BACK));
 	KeyMap.push_back(SKeyMap(SDLK_TAB, KEY_TAB));

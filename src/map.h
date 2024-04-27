@@ -73,7 +73,7 @@ struct MapEditEvent
 		modified_blocks.push_back(getNodeBlockPos(pos));
 	}
 
-	void setModifiedBlocks(const std::map<v3s16, MapBlock *> blocks)
+	void setModifiedBlocks(const std::map<v3s16, MapBlock *>& blocks)
 	{
 		assert(modified_blocks.empty()); // only meant for initialization (once)
 		modified_blocks.reserve(blocks.size());

@@ -12,7 +12,7 @@
 #include "SMaterial.h"
 #include "fast_atof.h"
 
-#if defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
 #include <EGL/egl.h>
 #else
 #include <GLES/egl.h>
