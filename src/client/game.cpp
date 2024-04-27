@@ -1238,8 +1238,6 @@ void Game::shutdown()
 	if (g_touchscreengui)
 		g_touchscreengui->hide();
 
-	showOverlayMessage(N_("Shutting down..."), 0, 0, false);
-
 	if (clouds)
 		clouds->drop();
 
@@ -1286,11 +1284,23 @@ void Game::shutdown()
 	FpsControl fps_control;
 	fps_control.reset();
 
+	f32 timer = 0;
+	float percentage = 0;
 	while (stop_thread->isRunning()) {
 		m_rendering_engine->run();
 		f32 dtime;
 		fps_control.limit(device, &dtime);
-		showOverlayMessage(N_("Shutting down..."), dtime, 0, false);
+		timer += dtime;
+
+		if(timer >= 0.1) {
+			timer = 0;
+			percentage += 5;
+			if (percentage > 100) {
+				percentage = 0;
+			}
+		}
+		
+		m_rendering_engine->draw_load_screen(utf8_to_wide(std::string(N_("Shutting down…"))) , guienv, texture_src, dtime, percentage);
 	}
 
 	stop_thread->rethrow();
