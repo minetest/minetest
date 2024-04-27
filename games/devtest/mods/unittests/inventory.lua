@@ -64,6 +64,10 @@ local function test_inventory()
 	pcall(inv.set_list, inv, "test", true)
 	local after = inv:get_list("test")
 	assert(compare_lists(before, after))
+
+	local location = inv:get_location()
+	assert(minetest.remove_detached_inventory("test"))
+	assert(not minetest.get_inventory(location))
 end
 
 unittests.register("test_inventory", test_inventory)
