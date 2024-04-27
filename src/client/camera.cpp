@@ -97,38 +97,21 @@ void Camera::notifyFovChange()
 
 	PlayerFovSpec spec = player->getFov();
 
-	/*
-	 * Update m_old_fov_degrees first - it serves as the starting point of the
-	 * upcoming transition.
-	 *
-	 * If an FOV transition is already active, mark current FOV as the start of
-	 * the new transition. If not, set it to the previous transition's target FOV.
-	 */
-	if (m_fov_transition_active)
-		m_old_fov_degrees = m_curr_fov_degrees;
-	else
-		m_old_fov_degrees = m_server_sent_fov ? m_target_fov_degrees : m_cache_fov;
+	// Remember old FOV in case a transition is wanted
+	f32 m_old_fov_degrees = m_fov_transition_active
+		? m_curr_fov_degrees // FOV is overridden with transition
+		: m_server_sent_fov
+			? m_target_fov_degrees // FOV is overridden without transition
+			: m_cache_fov; // FOV is not overridden
 
-	/*
-	 * Update m_server_sent_fov next - it corresponds to the target FOV of the
-	 * upcoming transition.
-	 *
-	 * Set it to m_cache_fov, if server-sent FOV is 0. Otherwise check if
-	 * server-sent FOV is a multiplier, and multiply it with m_cache_fov instead
-	 * of overriding.
-	 */
-	if (spec.fov == 0.0f) {
-		m_server_sent_fov = false;
-		m_target_fov_degrees = m_cache_fov;
-	} else {
-		m_server_sent_fov = true;
-		m_target_fov_degrees = spec.is_multiplier ? m_cache_fov * spec.fov : spec.fov;
-	}
+	m_server_sent_fov = spec.fov > 0.0f;
+	m_target_fov_degrees = m_server_sent_fov
+		? spec.is_multiplier
+			? m_cache_fov * spec.fov // apply multiplier to client-set FOV
+			: spec.fov // absolute override
+		: m_cache_fov; // reset to client-set FOV
 
-	if (spec.transition_time > 0.0f)
-		m_fov_transition_active = true;
-
-	// If FOV smooth transition is active, initialize required variables
+	m_fov_transition_active = spec.transition_time > 0.0f;
 	if (m_fov_transition_active) {
 		m_transition_time = spec.transition_time;
 		m_fov_diff = m_target_fov_degrees - m_old_fov_degrees;
