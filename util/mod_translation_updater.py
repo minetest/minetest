@@ -285,16 +285,20 @@ def read_lua_file_strings(lua_file):
 	with open(lua_file, encoding='utf-8') as text_file:
 		text = text_file.read()
 
-		text = re.sub(pattern_concat, "", text)
-
 		strings = []
-		for s in pattern_lua_quoted.findall(text):
-			strings.append(s[1])
-		for s in pattern_lua_bracketed.findall(text):
-			strings.append(s)
+
 		for s in pattern_lua_quoted_single.findall(text):
 			strings.append(s[1])
 		for s in pattern_lua_bracketed_single.findall(text):
+			strings.append(s)
+
+		# Only concatenate strings after matching
+		# single parameter call (without parantheses)
+		text = re.sub(pattern_concat, "", text)
+
+		for s in pattern_lua_quoted.findall(text):
+			strings.append(s[1])
+		for s in pattern_lua_bracketed.findall(text):
 			strings.append(s)
 
 		for s in strings:
