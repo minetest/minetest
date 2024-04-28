@@ -332,16 +332,16 @@ u32 LuaEntitySAO::punch(v3f dir,
 		return 0;
 	}
 
-	FATAL_ERROR_IF(!puncher, "Punch action called without SAO");
-
 	s32 old_hp = getHP();
 	ItemStack selected_item, hand_item;
-	ItemStack tool_item = puncher->getWieldedItem(&selected_item, &hand_item);
+	ItemStack tool_item;
+	if (puncher)
+		tool_item = puncher->getWieldedItem(&selected_item, &hand_item);
 
 	PunchDamageResult result = getPunchDamage(
 			m_armor_groups,
 			toolcap,
-			&tool_item,
+			puncher ? &tool_item : nullptr,
 			time_from_last_punch,
 			initial_wear);
 
@@ -355,12 +355,16 @@ u32 LuaEntitySAO::punch(v3f dir,
 		}
 	}
 
-	actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
-			", hp=" << puncher->getHP() << ") punched " <<
-			getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
-			"), damage=" << (old_hp - (s32)getHP()) <<
-			(damage_handled ? " (handled by Lua)" : "") << std::endl;
-
+	if (puncher) {
+		actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
+				", hp=" << puncher->getHP() << ")";
+	} else {
+		actionstream << "(none)";
+	}
+	actionstream << " punched " <<
+		  getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
+		  "), damage=" << (old_hp - (s32)getHP()) <<
+		  (damage_handled ? " (handled by Lua)" : "") << std::endl;
 	// TODO: give Lua control over wear
 	return result.wear;
 }
