@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "mods.h"
+#include <optional>
 
 
 /**
@@ -90,8 +91,8 @@ public:
 	void checkConflictsAndDeps();
 
 private:
-	std::string m_first_mod;
-	std::string m_last_mod;
+	std::optional<std::string> m_first_mod;
+	std::optional<std::string> m_last_mod;
 
 	std::vector<ModSpec> m_sorted_mods;
 

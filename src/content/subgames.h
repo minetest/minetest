@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include <unordered_map>
 #include <vector>
+#include <optional>
 
 class Settings;
 
@@ -32,8 +33,8 @@ struct SubgameSpec
 	std::string title;
 	std::string author;
 	int release;
-	std::string first_mod;
-	std::string last_mod;
+	std::optional<std::string> first_mod;
+	std::optional<std::string> last_mod;
 	std::string path;
 	std::string gamemods_path;
 
@@ -52,11 +53,15 @@ struct SubgameSpec
 			const std::string &title = "",
 			const std::string &menuicon_path = "",
 			const std::string &author = "", int release = 0,
-			const std::string &first_mod = "", const std::string &last_mod = "") :
+			const std::optional<std::string> &first_mod = std::nullopt,
+			const std::optional<std::string> &last_mod = std::nullopt) :
 			id(id),
 			title(title), author(author), release(release),
-			first_mod(first_mod), last_mod(last_mod), path(path),
-			gamemods_path(gamemods_path), addon_mods_paths(addon_mods_paths),
+			first_mod(first_mod),
+			last_mod(last_mod),
+			path(path),
+			gamemods_path(gamemods_path),
+			addon_mods_paths(addon_mods_paths),
 			menuicon_path(menuicon_path)
 	{
 	}
