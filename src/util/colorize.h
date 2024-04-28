@@ -22,7 +22,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #define COLOR_CODE(color) "\x1b(c@" color ")"
 
-#ifdef USE_CURL
+#if USE_CURL
 
 /**
  * Colorize URL to highlight the hostname and any unsafe characters

@@ -17,7 +17,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "colorize.h"
 
-#ifdef USE_CURL
+#if USE_CURL
 
 #include <curl/urlapi.h>
 #include "log.h"

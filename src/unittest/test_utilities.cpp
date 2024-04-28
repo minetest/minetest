@@ -728,7 +728,7 @@ void TestUtilities::testIsBlockInSight()
 
 void TestUtilities::testColorizeURL()
 {
-#ifdef USE_CURL
+#if USE_CURL
 	#define RED COLOR_CODE("#faa")
 	#define GREY COLOR_CODE("#aaa")
 	#define WHITE COLOR_CODE("#fff")
