@@ -34,6 +34,7 @@ public:
 	void testMove(ServerActiveObject *obj, IGameDef *gamedef);
 	void testMoveFillStack(ServerActiveObject *obj, IGameDef *gamedef);
 	void testMoveSomewhere(ServerActiveObject *obj, IGameDef *gamedef);
+	void testMoveSomewherePartial(ServerActiveObject *obj, IGameDef *gamedef);
 	void testMoveUnallowed(ServerActiveObject *obj, IGameDef *gamedef);
 	void testMovePartial(ServerActiveObject *obj, IGameDef *gamedef);
 
@@ -71,6 +72,7 @@ void TestMoveAction::runTests(IGameDef *gamedef)
 	TEST(testMove, &obj, gamedef);
 	TEST(testMoveFillStack, &obj, gamedef);
 	TEST(testMoveSomewhere, &obj, gamedef);
+	TEST(testMoveSomewherePartial, &obj, gamedef);
 	TEST(testMoveUnallowed, &obj, gamedef);
 	TEST(testMovePartial, &obj, gamedef);
 
@@ -143,7 +145,29 @@ void TestMoveAction::testMoveSomewhere(ServerActiveObject *obj, IGameDef *gamede
 
 	UASSERT(inv.p2.getList("main")->getItem(0).getItemString() == "default:brick 10");
 	UASSERT(inv.p2.getList("main")->getItem(1).getItemString() == "default:stone 36");
+	// Partially moved
 	UASSERT(inv.p2.getList("main")->getItem(2).getItemString() == "default:stone 99");
+}
+
+void TestMoveAction::testMoveSomewherePartial(ServerActiveObject *obj, IGameDef *gamedef)
+{
+	// "Fail" because the destination list is full.
+	MockInventoryManager inv(gamedef);
+
+	InventoryList *src = inv.p1.addList("main", 3);
+	src->addItem(0, parse_itemstack("default:brick 10"));
+	src->changeItem(1, parse_itemstack("default:stone 111")); // oversized
+
+	InventoryList *dst = inv.p2.addList("main", 1);
+	dst->addItem(0, parse_itemstack("default:stone 98"));
+
+	// No free slots to fit
+	apply_action("MoveSomewhere 10 player:p1 main 0 player:p2 main", &inv, obj, gamedef);
+	UASSERT(inv.p1.getList("main")->getItem(0).getItemString() == "default:brick 10");
+
+	// Only 1 item fits
+	apply_action("MoveSomewhere 111 player:p1 main 1 player:p2 main", &inv, obj, gamedef);
+	UASSERT(inv.p1.getList("main")->getItem(1).getItemString() == "default:stone 110");
 }
 
 void TestMoveAction::testMoveUnallowed(ServerActiveObject *obj, IGameDef *gamedef)
