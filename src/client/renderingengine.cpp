@@ -308,7 +308,7 @@ bool RenderingEngine::setWindowIcon()
 */
 void RenderingEngine::draw_load_screen(const std::wstring &text,
 		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime,
-		int percent, bool sky)
+		int percent, bool sky, bool indefinite)
 {
 	v2u32 screensize = getWindowSize();
 
@@ -332,8 +332,20 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 		driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
 	}
 
+	int percent_min = 0;
+	int percent_max = percent;
+	if (indefinite) {
+		static float indef_pos = 0;
+		indef_pos += 5 * (dtime / 0.1);
+		if (indef_pos >= 120) {
+			indef_pos = 0;
+		}
+		percent_max = std::min((int) indef_pos, 100);
+		percent_min = std::max((int) indef_pos - 20, 0);
+	}
+
 	// draw progress bar
-	if ((percent >= 0) && (percent <= 100)) {
+	if ((percent_max >= 0) && (percent_max <= 100)) {
 		video::ITexture *progress_img = tsrc->getTexture("progress_bar.png");
 		video::ITexture *progress_img_bg =
 				tsrc->getTexture("progress_bar_bg.png");
@@ -364,11 +376,11 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 					0, 0, true);
 
 			draw2DImageFilterScaled(get_video_driver(), progress_img,
-					core::rect<s32>(img_pos.X, img_pos.Y,
-							img_pos.X + (percent * imgW) / 100,
+					core::rect<s32>(img_pos.X + (percent_min * imgW) / 100, img_pos.Y,
+							img_pos.X + (percent_max * imgW) / 100,
 							img_pos.Y + imgH),
-					core::rect<s32>(0, 0,
-							(percent * img_size.Width) / 100,
+					core::rect<s32>(percent_min, 0,
+							((percent_max - percent_min) * img_size.Width) / 100,
 							img_size.Height),
 					0, 0, true);
 		}

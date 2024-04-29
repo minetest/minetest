@@ -1284,18 +1284,12 @@ void Game::shutdown()
 	FpsControl fps_control;
 	fps_control.reset();
 
-	float percentage = 0;
 	while (stop_thread->isRunning()) {
 		m_rendering_engine->run();
 		f32 dtime;
 		fps_control.limit(device, &dtime);
-
-		percentage += 5 * (dtime / 0.1);
-		if (percentage >= 100) {
-			percentage = 0;
-		}
 		
-		m_rendering_engine->draw_load_screen(utf8_to_wide(std::string(N_("Shutting down…"))) , guienv, texture_src, dtime, percentage);
+		m_rendering_engine->draw_load_screen(utf8_to_wide(std::string(N_("Shutting down…"))) , guienv, texture_src, dtime, 0, true, true);
 	}
 
 	stop_thread->rethrow();
