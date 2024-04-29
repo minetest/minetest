@@ -1288,8 +1288,7 @@ void Game::shutdown()
 		m_rendering_engine->run();
 		f32 dtime;
 		fps_control.limit(device, &dtime);
-		
-		m_rendering_engine->draw_load_screen(utf8_to_wide(std::string(N_("Shutting down…"))) , guienv, texture_src, dtime, 0, true, true);
+		m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, dtime, 0, true, true);
 	}
 
 	stop_thread->rethrow();
