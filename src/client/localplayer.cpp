@@ -586,8 +586,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	// Whether superspeed mode is used or not
 	bool superspeed = false;
 
-	f32 speed_walk = movement_speed_walk * physics_override.speed_walk;
-	f32 speed_fast = movement_speed_fast * physics_override.speed_fast;
+	const f32 speed_walk = movement_speed_walk * physics_override.speed_walk;
+	const f32 speed_fast = movement_speed_fast * physics_override.speed_fast;
 
 	if (always_fly_fast && free_move && fast_move)
 		superspeed = true;
