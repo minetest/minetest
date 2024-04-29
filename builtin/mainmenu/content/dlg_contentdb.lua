@@ -23,6 +23,11 @@ if not core.get_http_api then
 	return
 end
 
+local color_backdrop = "#000c"
+local color_text_white = "#fff"
+local color_text_blue = "#22e0f6"
+local color_text_green = mt_color_green
+
 -- Filter
 local search_string = ""
 local cur_page = 1
@@ -356,6 +361,15 @@ local function get_formspec(dlgdata)
 	for i=start_idx, math.min(#contentdb.packages, start_idx+num_per_page-1) do
 		local package = contentdb.packages[i]
 
+		local textcolor = color_text_white
+		if package.path then
+			if package.installed_release < package.release then
+				textcolor = color_text_blue
+			else
+				textcolor = color_text_green
+			end
+        end
+
 		table.insert_all(formspec, {
 			"container[",
 			(cell_w + cell_spacing) * ((i - start_idx) % row_cells),
@@ -370,14 +384,11 @@ local function get_formspec(dlgdata)
 
 			--"style[title_", i, ";border=false]",
 			-- The 0.01 here fixes a single line of image pixels appearing below the box
-			"box[0,", cell_h - 0.8 + 0.01, ";", cell_w, ",0.8;#0009]",
+			"box[0,", cell_h - 0.5 + 0.01, ";", cell_w, ",0.5;", color_backdrop, "]",
 
-			"style_type[button;border=false;textcolor=", mt_color_green, "]",
-			"button[0.25,", cell_h - 0.8, ";", cell_w - 0.5, ",0.5;title_", i ,";",
-				core.formspec_escape(core.colorize(mt_color_green, package.title)), "]",
-			"style_type[button;font_size=*0.9;textcolor=#fff9]",
-			"button[0.25,", cell_h - 0.3, ";",  cell_w - 0.5, ",0.3;author_", i, ";",
-				core.formspec_escape(core.colorize("#fff9", package.author)), "]",
+			"style_type[button;font_size=*1.1;border=false]",
+			"button[0.25,", cell_h - 0.5, ";", cell_w - 0.5, ",0.5;title_", i ,";",
+				core.formspec_escape(core.colorize(textcolor, package.title)), "]",
 			"style_type[button;font_size=;border=;textcolor=]",
 		})
 
@@ -388,22 +399,26 @@ local function get_formspec(dlgdata)
 			})
 		end
 
+		table.insert_all(formspec, {
+			"container[", cell_w - 0.5,",", cell_h - 0.5, "]",
+		})
+
 		if package.downloading then
 			table.insert_all(formspec, {
-				"animated_image[", cell_w - 0.8, ",0;0.8,0.8;downloading;", defaulttexturedir, "cdb_downloading.png;3;400;;]",
+				"animated_image[0,0;0.5,0.5;downloading;", defaulttexturedir, "cdb_downloading.png;3;400;;]",
 			})
 		elseif package.queued then
 			table.insert_all(formspec, {
-				"image[", cell_w - 0.8, ",0;0.8,0.8;", defaulttexturedir, "cdb_queued.png]",
+				"image[0,0;0.5,0.5;", defaulttexturedir, "cdb_queued.png]",
 			})
 		elseif package.path then
 			if package.installed_release < package.release then
 				table.insert_all(formspec, {
-					"image[", cell_w - 0.8, ",0;0.8,0.8;", defaulttexturedir, "cdb_update.png]",
+					"image[0,0;0.5,0.5;", defaulttexturedir, "cdb_update.png]",
 				})
 			else
 				table.insert_all(formspec, {
-					"image[", cell_w - 0.6, ",0.2;0.4,0.4;", defaulttexturedir, "checkbox_64.png]",
+					"image[0.1,0.1;0.3,0.3;", defaulttexturedir, "checkbox_64.png]",
 				})
 			end
 		end
@@ -411,6 +426,7 @@ local function get_formspec(dlgdata)
 		local tooltip = package.short_description
 
 		table.insert_all(formspec, {
+			"container_end[]",
 			"tooltip[0,0;", cell_w, ",", cell_h, ";", core.formspec_escape(tooltip), "]",
 			"container_end[]",
 		})
