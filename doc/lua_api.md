@@ -8089,13 +8089,18 @@ child will follow movement and rotation of that bone.
 * `set_physics_override(override_table)`
     * Overrides the physics attributes of the player
     * `override_table` is a table with the following fields:
-        * `speed`: multiplier to default movement speed and acceleration values (default: `1`)
-        * `jump`: multiplier to default jump value (default: `1`)
-        * `gravity`: multiplier to default gravity value (default: `1`)
+        * `speed`: multiplier to *all* movement speed (`speed_*`) and
+                   acceleration (`acceleration_*`) values (default: `1`)
+        * `speed_walk`: multiplier to default walk speed value (default: `1`)
+            * Note: The actual walk speed is the product of `speed` and `speed_walk`
         * `speed_climb`: multiplier to default climb speed value (default: `1`)
             * Note: The actual climb speed is the product of `speed` and `speed_climb`
         * `speed_crouch`: multiplier to default sneak speed value (default: `1`)
             * Note: The actual sneak speed is the product of `speed` and `speed_crouch`
+        * `speed_fast`: multiplier to default speed value in Fast Mode (default: `1`)
+            * Note: The actual fast speed is the product of `speed` and `speed_fast`
+        * `jump`: multiplier to default jump value (default: `1`)
+        * `gravity`: multiplier to default gravity value (default: `1`)
         * `liquid_fluidity`: multiplier to liquid movement resistance value
           (for nodes with `liquid_move_physics`); the higher this value, the lower the
           resistance to movement. At `math.huge`, the resistance is zero and you can
@@ -8113,6 +8118,8 @@ child will follow movement and rotation of that bone.
         * `acceleration_air`: multiplier to acceleration
           when jumping or falling (default: `1`)
             * Note: The actual acceleration is the product of `speed` and `acceleration_air`
+        * `acceleration_fast`: multiplier to acceleration in Fast Mode (default: `1`)
+            * Note: The actual acceleration is the product of `speed` and `acceleration_fast`
         * `sneak`: whether player can sneak (default: `true`)
         * `sneak_glitch`: whether player can use the new move code replications
           of the old sneak side-effects: sneak ladders and 2 node sneak jump
