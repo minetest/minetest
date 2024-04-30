@@ -14,9 +14,21 @@ function core.handle_async(func, callback, ...)
 	local args = {n = select("#", ...), ...}
 	local mod_origin = core.get_last_run_mod()
 
-	local jobid = core.do_async_callback(func, args, mod_origin)
-	core.async_jobs[jobid] = callback
+	local job = core.do_async_callback(func, args, mod_origin)
+	core.async_jobs[job:get_id()] = callback
 
-	return true
+	return job
 end
 
+if core.async_job_methods then
+	function core.async_job_methods:cancel()
+		local id = self:get_id()
+		local cancelled = core.cancel_async_callback(id)
+		if cancelled then
+			core.async_jobs[id] = nil
+		end
+		return cancelled
+	end
+
+	core.async_job_methods = nil
+end
