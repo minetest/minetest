@@ -48,14 +48,14 @@ class MainMenuManager : public IMenuManager
 public:
 	virtual void createdMenu(gui::IGUIElement *menu)
 	{
-#ifndef NDEBUG
-		for (gui::IGUIElement *i : m_stack) {
-			assert(i != menu);
+		for (gui::IGUIElement *e : m_stack) {
+			if (e == menu)
+				return;
 		}
-#endif
 
 		if(!m_stack.empty())
 			m_stack.back()->setVisible(false);
+
 		m_stack.push_back(menu);
 		guienv->setFocus(m_stack.back());
 	}
