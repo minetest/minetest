@@ -5808,8 +5808,8 @@ Call these functions only at load time!
     * Return `true` to mark the command as handled, which means that the default
       handlers will be prevented.
 * `minetest.register_on_player_receive_fields(function(player, formname, fields))`
-    * Called when the server received input from `player` in a formspec with
-      the given `formname`. Specifically, this is called on any of the
+    * Called when the server received input from `player`.
+      Specifically, this is called on any of the
       following events:
           * a button was pressed,
           * Enter was pressed while the focus was on a text field
@@ -5820,6 +5820,9 @@ Call these functions only at load time!
           * an entry was double-clicked in a textlist or table,
           * a scrollbar was moved, or
           * the form was actively closed by the player.
+    * `formname` is the name passed to `minetest.show_formspec`.
+      Special case: The empty string refers to the player inventory
+      (the formspec set by the `set_inventory_formspec` player method).
     * Fields are sent for formspec elements which define a field. `fields`
       is a table containing each formspecs element value (as string), with
       the `name` parameter as index for each. The value depends on the
@@ -6418,7 +6421,8 @@ Formspec
 * `minetest.show_formspec(playername, formname, formspec)`
     * `playername`: name of player to show formspec
     * `formname`: name passed to `on_player_receive_fields` callbacks.
-      It should follow the `"modname:<whatever>"` naming convention
+      It should follow the `"modname:<whatever>"` naming convention.
+      `formname` must not be empty.
     * `formspec`: formspec to display
 * `minetest.close_formspec(playername, formname)`
     * `playername`: name of player to close formspec
@@ -9667,6 +9671,7 @@ Used by `minetest.register_node`.
 
     on_receive_fields = function(pos, formname, fields, sender),
     -- fields = {name1 = value1, name2 = value2, ...}
+    -- formname should be the empty string; you **must not** use formname.
     -- Called when an UI form (e.g. sign text input) returns data.
     -- See minetest.register_on_player_receive_fields for more info.
     -- default: nil
