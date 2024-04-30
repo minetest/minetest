@@ -421,7 +421,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 	AttrsList attrs;
 	while (c != L'>') {
 		std::string attr_name = "";
-		core::stringw attr_val = L"";
+		std::wstring attr_val = L"";
 
 		// Consume whitespace
 		while (c == ' ') {
@@ -453,7 +453,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 			return 0;
 
 		// Read optional quote
-		wchar_t quote_used;
+		wchar_t quote_used = 0;
 		if (c == L'"' || c == L'\'') {
 			quote_used = c;
 			c = text[++cursor];
@@ -482,7 +482,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 			c = text[++cursor];
 		}
 
-		attrs[attr_name] = stringw_to_utf8(attr_val);
+		attrs[attr_name] = wide_to_utf8(attr_val);
 	}
 
 	++cursor; // Last ">"
