@@ -160,12 +160,12 @@ bool GUIModalMenu::remapClickOutside(const SEvent &event)
 		// Return true since the event was handled, even if it wasn't handled by us.
 		return true;
 
-	if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
+	if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
 		m_last_click_outside = current;
 		return true;
 	}
 
-	if (event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP &&
+	if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP &&
 			current.isRelated(last)) {
 		SEvent translated{};
 		translated.EventType            = EET_KEY_INPUT_EVENT;
