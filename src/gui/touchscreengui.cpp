@@ -703,6 +703,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 				m_move_pos                 = touch_pos;
 				// DON'T reset m_tap_state here, otherwise many short taps
 				// will be ignored if you tap very fast.
+				m_had_move_id              = true;
 			}
 		}
 	}
@@ -821,13 +822,14 @@ void TouchScreenGUI::step(float dtime)
 	// Note that the shootline isn't used if touch_use_crosshair is enabled.
 	// Only updating when m_has_move_id means that the shootline will stay at
 	// it's last in-world position when the player doesn't need it.
-	if (!m_draw_crosshair && m_has_move_id) {
+	if (!m_draw_crosshair && (m_has_move_id || m_had_move_id)) {
 		v2s32 pointer_pos = getPointerPos();
 		m_shootline = m_device
 				->getSceneManager()
 				->getSceneCollisionManager()
 				->getRayFromScreenCoordinates(pointer_pos);
 	}
+	m_had_move_id = false;
 }
 
 void TouchScreenGUI::resetHotbarRects()
