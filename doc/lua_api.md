@@ -5124,6 +5124,7 @@ Collision info passed to `on_step` (`moveresult` argument):
             axis = string, -- "x", "y" or "z"
             node_pos = vector, -- if type is "node"
             object = ObjectRef, -- if type is "object"
+            new_pos = vector,
             old_velocity = vector,
             new_velocity = vector,
         },
