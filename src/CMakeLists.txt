@@ -27,10 +27,15 @@ mark_as_advanced(
 	CMAKE_CXX_FLAGS_SEMIDEBUG
 	CMAKE_C_FLAGS_SEMIDEBUG
 )
+set(SUPPORTED_BUILD_TYPES None Release Debug SemiDebug RelWithDebInfo MinSizeRel)
 set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
-	"Choose the type of build. Options are: None Debug SemiDebug RelWithDebInfo MinSizeRel."
+	"Choose the type of build. Options are: ${SUPPORTED_BUILD_TYPES}."
 	FORCE
 )
+if(NOT (CMAKE_BUILD_TYPE IN_LIST SUPPORTED_BUILD_TYPES))
+	message(WARNING
+			"Unknown CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}. Options are: ${SUPPORTED_BUILD_TYPES}.")
+endif()
 
 
 # Set some random things default to not being visible in the GUI
