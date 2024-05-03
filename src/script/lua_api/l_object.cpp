@@ -604,7 +604,7 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 		prop.absolute = lua_toboolean(L, -1);
 		lua_pop(L, 1);
 
-		lua_getfield(L, -1, "interpolate");
+		lua_getfield(L, -1, "interpolation");
 		if (lua_isnumber(L, -1))
 			prop.interp_timer = lua_tonumber(L, -1);
 		lua_pop(L, 1);
@@ -655,7 +655,7 @@ static void push_bone_override(lua_State *L, const BoneOverride &props)
 		push_v3f(L, vec);
 		lua_setfield(L, -2, "vec");
 		lua_pushnumber(L, prop.interp_timer);
-		lua_setfield(L, -2, "interpolate");
+		lua_setfield(L, -2, "interpolation");
 		lua_pushboolean(L, prop.absolute);
 		lua_setfield(L, -2, "absolute");
 		lua_setfield(L, -2, name);
