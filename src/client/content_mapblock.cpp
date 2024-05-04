@@ -713,7 +713,7 @@ void MapblockMeshGenerator::drawLiquidSides()
 			if (data->m_smooth_lighting)
 				cur_node.color = blendLightColor(pos);
 			pos += cur_node.origin;
-			vertices[j] = video::S3DVertex(pos.X, pos.Y, pos.Z, 0, 0, 0, cur_node.color, vertex.u, v);
+			vertices[j] = video::S3DVertex(pos.X, pos.Y, pos.Z, face.dir.X, face.dir.Y, face.dir.Z, cur_node.color, vertex.u, v);
 		};
 		collector->append(cur_liquid.tile, vertices, 4, quad_indices, 6);
 	}
@@ -775,6 +775,7 @@ void MapblockMeshGenerator::drawLiquidTop()
 		vertex.TCoords += tcoord_center;
 
 		vertex.TCoords += tcoord_translate;
+		vertex.Normal = v3f(dx, 1., dz).normalize();
 	}
 
 	std::swap(vertices[0].TCoords, vertices[2].TCoords);

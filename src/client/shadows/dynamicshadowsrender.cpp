@@ -187,6 +187,11 @@ void ShadowRenderer::setShadowIntensity(float shadow_intensity)
 		disable();
 }
 
+void ShadowRenderer::setShadowTint(video::SColor shadow_tint)
+{
+	m_shadow_tint = shadow_tint;
+}
+
 void ShadowRenderer::addNodeToShadowList(
 		scene::ISceneNode *node, E_SHADOW_MODE shadowMode)
 {

@@ -1,6 +1,7 @@
 uniform mat4 mWorld;
 // Color of the light emitted by the sun.
 uniform vec3 dayLight;
+uniform vec3 eyePosition;
 
 // The cameraOffset is the current center of the visible world.
 uniform highp vec3 cameraOffset;
@@ -43,6 +44,7 @@ centroid varying vec2 varTexCoord;
 
 varying float area_enable_parallax;
 
+varying vec3 viewVec;
 varying highp vec3 eyeVec;
 varying float nightRatio;
 // Color of the light emitted by the light sources.
@@ -231,6 +233,8 @@ void main(void)
 #else
 		vec4 shadow_pos = pos;
 #endif
+		viewVec = normalize(worldPosition + cameraOffset - eyePosition);
+
 		vec3 nNormal;
 		f_normal_length = length(vNormal);
 
@@ -259,16 +263,16 @@ void main(void)
 		shadow_position.z -= z_bias;
 		perspective_factor = pFactor;
 
-		if (f_timeofday < 0.2) {
+		if (f_timeofday < 0.21) {
 			adj_shadow_strength = f_shadow_strength * 0.5 *
-				(1.0 - mtsmoothstep(0.18, 0.2, f_timeofday));
-		} else if (f_timeofday >= 0.8) {
+				(1.0 - mtsmoothstep(0.18, 0.21, f_timeofday));
+		} else if (f_timeofday >= 0.79) {
 			adj_shadow_strength = f_shadow_strength * 0.5 *
-				mtsmoothstep(0.8, 0.83, f_timeofday);
+				mtsmoothstep(0.79, 0.82, f_timeofday);
 		} else {
 			adj_shadow_strength = f_shadow_strength *
-				mtsmoothstep(0.20, 0.25, f_timeofday) *
-				(1.0 - mtsmoothstep(0.7, 0.8, f_timeofday));
+				mtsmoothstep(0.21, 0.26, f_timeofday) *
+				(1.0 - mtsmoothstep(0.74, 0.79, f_timeofday));
 		}
 	}
 #endif
