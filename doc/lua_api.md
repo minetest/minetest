@@ -3538,7 +3538,7 @@ Tags can have attributes, in that case, attributes are in the opening tag in
 form of a key/value separated with equal signs.
 Attribute values should be quoted using either " or '.
 
-If you want to insert a literal greater-than sign or a backslash into the text,
+If you want to insert a literal greater-than, less-than, or a backslash into the text,
 you must escape it by preceding it with a backslash. In a quoted attribute value, you
 can insert a literal quote mark by preceding it with a backslash.
 
