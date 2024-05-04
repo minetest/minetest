@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Norwegian Bokmål (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-02-18 16:59+0000\n"
-"Last-Translator: Petter Reinholdtsen <pere-weblate@hungry.com>\n"
+"PO-Revision-Date: 2024-05-04 14:07+0000\n"
+"Last-Translator: XqcD445 <xhjckw2934.evolve678@passinbox.com>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "minetest/minetest/nb_NO/>\n"
 "Language: nb\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4\n"
+"X-Generator: Weblate 5.5.3\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -217,9 +217,9 @@ msgid "Failed to download $1"
 msgstr "Kunne ikke laste ned $1"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Installasjon: Ikke-støttet filtype eller ødelagt pakke"
+msgstr ""
+"Klarte ikke å ekstrakte \"$1\" (Ikke-støttet filtype eller ødelagt pakke)"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Games"
@@ -299,11 +299,11 @@ msgstr "Oppdatere Alle [$1]"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr "Se mer informasjon i nettleseren"
+msgstr "Se mer informasjon i en nettleser"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "You need to install a game before you can install a mod"
-msgstr "Du må installere ett spill før du kan installere en mod"
+msgstr "Du må installere ett spill før du kan installere en modifikasjon"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -311,20 +311,20 @@ msgstr "$1 (Aktivert)"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
-msgstr "$1 mods"
+msgstr "$1 modifikasjoner"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Failed to install $1 to $2"
 msgstr "Kunne ikke installere $1 til $2"
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr "Install Mod: Kan ikke finne passende mappenavn for modpack $1"
+msgstr ""
+"Installering: Kan ikke finne passende mappenavn for modifikasjonspakke $1"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Kan ikke finne en gyldig mod, modpakke eller spill"
+msgstr "Kan ikke finne en gyldig modifikasjon, modifikasjonspakke eller spill"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to install a $1 as a $2"
@@ -340,7 +340,7 @@ msgstr "(Aktivert, har feil)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(Ufornøyd)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
@@ -348,7 +348,7 @@ msgstr "Deaktivere alle"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "Deaktiver modpakke"
+msgstr "Deaktiver modifikasjonspakke"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -356,15 +356,15 @@ msgstr "Aktiver alle"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "Aktiver modpakke"
+msgstr "Aktiver modifikasjonspakke"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"Kunne ikke aktivere modden \"$1\" inneholder ugyldige tegn. Kun tegnene [a-"
-"z0-9_] er tillatt."
+"Feilet til å aktivere modifikasjonen \"$1\" siden det inneholder ugyldige "
+"tegn. Kun tegnene [a-z0-9_] er tillatt."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
@@ -372,7 +372,7 @@ msgstr "Finn Flere Mods"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr "Mod:"
+msgstr "Modifikasjon:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
@@ -380,16 +380,15 @@ msgstr "Ingen (valgfrie) pakker"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr "Mangler spillbeskrivelse."
+msgstr "Ingen spillbeskrivelse oppgitt."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "Krever ingen andre modder"
+msgstr "Krever ingen andre avhengigheter"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr "Ingen modpakke-beskrivelse tilgjengelig."
+msgstr "Ingen modifikasjonspakke-beskrivelse tilgjengelig."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
@@ -397,7 +396,7 @@ msgstr "Ingen valgfrie avhengigheter"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr "Valgfrie behov:"
+msgstr "Valgfrie avhengigheter:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
@@ -455,7 +454,7 @@ msgstr "Dekorasjoner"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
-msgstr "Utviklingstesten er tiltenkt utviklere."
+msgstr "Utviklingstesten er tiltenkt for utviklere."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -491,7 +490,7 @@ msgstr "Øker fuktigheten rundt elver"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr ""
+msgstr "Last et annet spill"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -499,23 +498,23 @@ msgstr "Innsjøer"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr "Lav fuktighet og høy varme fører til små eller tørre elver"
+msgstr "Lav fuktighet og høy varme fører til grunne eller tørre elver"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr "Mapgen"
+msgstr "Kartgenerasjon"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr "Mapgen-flagg"
+msgstr "Kartgenerasjon-flagg"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen-specific flags"
-msgstr "Mapgen-spesifikke flagg"
+msgstr "Kartgenerasjon-spesifikke flagg"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr "Fjell"
+msgstr "Fjeller"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
@@ -552,7 +551,7 @@ msgstr "Frø"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr "Glatt overgang mellom biotoper"
+msgstr "Jevn overgang mellom biotoper"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
@@ -580,7 +579,7 @@ msgstr "Temperert, Ørken, Jungel, Tundra, Taiga"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr "Terrengoverflate Erosjon"
+msgstr "Terrengoverflate erosjon"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
