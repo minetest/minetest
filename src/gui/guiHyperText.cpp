@@ -464,7 +464,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 		// Read attribute value
 		bool escape = false;
 		while (escape || (quote_used && c != quote_used) || (!quote_used && c != L'>' && c != L' ')) {
-			if (!escape && c == L'\\') {
+			if (quote_used && !escape && c == L'\\') {
 				escape = true;
 			} else {
 				escape = false;
