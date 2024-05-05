@@ -259,6 +259,9 @@ private:
 	u64 m_move_downtime = 0;
 	// m_move_pos stays valid even after m_move_id has been released.
 	v2s32 m_move_pos;
+	// This is needed so that we don't miss if m_has_move_id is true for less
+	// than one client step, i.e. press and release happen in the same step.
+	bool m_had_move_id = false;
 
 	bool m_has_joystick_id = false;
 	size_t m_joystick_id;
