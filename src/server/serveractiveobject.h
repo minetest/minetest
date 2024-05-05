@@ -73,11 +73,6 @@ public:
 	void markForRemoval();
 	void markForDeactivation();
 
-	// Create a certain type of ServerActiveObject
-	static ServerActiveObject* create(ActiveObjectType type,
-			ServerEnvironment *env, u16 id, v3f pos,
-			const std::string &data);
-
 	/*
 		Some simple getters/setters
 	*/
