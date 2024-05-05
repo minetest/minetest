@@ -728,16 +728,18 @@ void TestUtilities::testIsBlockInSight()
 
 void TestUtilities::testColorizeURL()
 {
-#if USE_CURL
+#ifdef HAVE_COLORIZE_URL
 	#define RED COLOR_CODE("#faa")
 	#define GREY COLOR_CODE("#aaa")
 	#define WHITE COLOR_CODE("#fff")
 
 	std::string result = colorize_url("http://example.com/");
-	UASSERT(result == (GREY "http://" WHITE "example.com" GREY "/"));
+	UASSERTEQ(auto, result, (GREY "http://" WHITE "example.com" GREY "/"));
 
 	result = colorize_url(u8"https://u:p@wikipedi\u0430.org:1234/heIIoll?a=b#c");
-	UASSERT(result ==
+	UASSERTEQ(auto, result,
 		(GREY "https://u:p@" WHITE "wikipedi" RED "%d0%b0" WHITE ".org" GREY ":1234/heIIoll?a=b#c"));
+#else
+	warningstream << "Test skipped." << std::endl;
 #endif
 }

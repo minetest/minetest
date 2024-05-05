@@ -17,7 +17,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "colorize.h"
 
-#if USE_CURL
+#ifdef HAVE_COLORIZE_URL
 
 #include <curl/urlapi.h>
 #include "log.h"
@@ -26,18 +26,13 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 std::string colorize_url(const std::string &url)
 {
-	// Forbid escape codes in URL
-	if (url.find('\x1b') != std::string::npos) {
-		throw std::runtime_error("Unable to open URL as it contains escape codes");
-	}
-
 	auto urlHandleRAII = std::unique_ptr<CURLU, decltype(&curl_url_cleanup)>(
 			curl_url(), curl_url_cleanup);
 	CURLU *urlHandle = urlHandleRAII.get();
 
 	auto rc = curl_url_set(urlHandle, CURLUPART_URL, url.c_str(), 0);
 	if (rc != CURLUE_OK) {
-		throw std::runtime_error("Unable to open URL as it is not valid");
+		throw std::runtime_error("URL is not valid");
 	}
 
 	auto url_get = [&] (CURLUPart what) -> std::string {
@@ -56,7 +51,11 @@ std::string colorize_url(const std::string &url)
 	auto path = url_get(CURLUPART_PATH);
 	auto query = url_get(CURLUPART_QUERY);
 	auto fragment = url_get(CURLUPART_FRAGMENT);
+#if LIBCURL_VERSION_NUM >= 0x074100
 	auto zoneid = url_get(CURLUPART_ZONEID);
+#else
+	std::string zoneid;
+#endif
 
 	std::ostringstream os;
 
@@ -75,9 +74,7 @@ std::string colorize_url(const std::string &url)
 	// Print hostname, escaping unsafe characters
 	os << white;
 	bool was_alphanum = true;
-	std::string host_s = host;
-	for (size_t i = 0; i < host_s.size(); i++) {
-		char c = host_s[i];
+	for (char c : host) {
 		bool is_alphanum = isalnum(c) || ispunct(c);
 		if (is_alphanum == was_alphanum) {
 			// skip
