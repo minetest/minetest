@@ -190,7 +190,7 @@ local function get_formspec(data)
 			hypertext = hypertext .. "\n\n" .. info.long_description.body
 
 			hypertext = hypertext:gsub("<img name=blank.png ",
-					"<img name=" .. core.hypertext_escape(defaulttexturedir) .. "blank.png ")
+					"<img name=\"" .. core.hypertext_escape(defaulttexturedir) .. "blank.png\" ")
 
 			table.insert_all(formspec, {
 				"hypertext[0.375,0;",
