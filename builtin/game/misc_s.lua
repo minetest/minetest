@@ -103,7 +103,7 @@ if core.set_push_moveresult1 then
 	-- must match CollisionAxis in collision.h
 	local AXES = {"x", "y", "z"}
 	-- <=> script/common/c_content.cpp push_collision_move_result()
-	core.set_push_moveresult1(function(b0, b1, b2, axis, npx, npy, npz, v0x, v0y, v0z, v1x, v1y, v1z)
+	core.set_push_moveresult1(function(b0, b1, b2, axis, npx, npy, npz, v0x, v0y, v0z, v1x, v1y, v1z, v2x, v2y, v2z)
 		return {
 			touching_ground = b0,
 			collides = b1,
@@ -112,8 +112,9 @@ if core.set_push_moveresult1 then
 				type = "node",
 				axis = AXES[axis],
 				node_pos = vector.new(npx, npy, npz),
-				old_velocity = vector.new(v0x, v0y, v0z),
-				new_velocity = vector.new(v1x, v1y, v1z),
+				new_pos = vector.new(v0x, v0y, v0z),
+				old_velocity = vector.new(v1x, v1y, v1z),
+				new_velocity = vector.new(v2x, v2y, v2z),
 			}},
 		}
 	end)

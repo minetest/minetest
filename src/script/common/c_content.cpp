@@ -2492,12 +2492,12 @@ void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
 		lua_pushinteger(L, c.node_p.X);
 		lua_pushinteger(L, c.node_p.Y);
 		lua_pushinteger(L, c.node_p.Z);
-		for (v3f v : {c.old_speed / BS, c.new_speed / BS}) {
+		for (v3f v : {c.new_pos / BS, c.old_speed / BS, c.new_speed / BS}) {
 			lua_pushnumber(L, v.X);
 			lua_pushnumber(L, v.Y);
 			lua_pushnumber(L, v.Z);
 		}
-		lua_call(L, 3 + 1 + 3 + 3 * 2, 1);
+		lua_call(L, 3 + 1 + 3 + 3 * 3, 1);
 		return;
 	}
 
@@ -2511,7 +2511,7 @@ void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
 	lua_createtable(L, res.collisions.size(), 0);
 	int i = 1;
 	for (const auto &c : res.collisions) {
-		lua_createtable(L, 0, 5);
+		lua_createtable(L, 0, 6);
 
 		lua_pushstring(L, collision_type_str[c.type]);
 		lua_setfield(L, -2, "type");
@@ -2527,6 +2527,9 @@ void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
 			push_objectRef(L, c.object->getId());
 			lua_setfield(L, -2, "object");
 		}
+
+		push_v3f(L, c.new_pos / BS);
+		lua_setfield(L, -2, "new_pos");
 
 		push_v3f(L, c.old_speed / BS);
 		lua_setfield(L, -2, "old_velocity");

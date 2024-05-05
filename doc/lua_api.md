@@ -5124,6 +5124,9 @@ Collision info passed to `on_step` (`moveresult` argument):
             axis = string, -- "x", "y" or "z"
             node_pos = vector, -- if type is "node"
             object = ObjectRef, -- if type is "object"
+            -- The position of the entity when the collision occurred.
+            -- Available since feature "moveresult_new_pos".
+            new_pos = vector,
             old_velocity = vector,
             new_velocity = vector,
         },
@@ -5437,6 +5440,8 @@ Utilities
       -- Allow passing an optional "actor" ObjectRef to the following functions:
       -- minetest.place_node, minetest.dig_node, minetest.punch_node (5.9.0)
       node_interaction_actor = true,
+      -- "new_pos" field in entity moveresult (5.9.0)
+      moveresult_new_pos = true,
   }
   ```
 
