@@ -659,10 +659,17 @@ bool CIrrDeviceSDL::run()
 
 			irrevent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 			irrevent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
-			MouseX = irrevent.MouseInput.X = SDL_event.motion.x;
-			MouseY = irrevent.MouseInput.Y = SDL_event.motion.y;
+
+			if (!SDL_GetRelativeMouseMode()) {
+				MouseX = irrevent.MouseInput.X = SDL_event.motion.x;
+				MouseY = irrevent.MouseInput.Y = SDL_event.motion.y;
+			} else {
+				MouseX = irrevent.MouseInput.X = MouseX + SDL_event.motion.xrel;
+				MouseY = irrevent.MouseInput.Y = MouseY + SDL_event.motion.yrel;
+			}
 			MouseXRel = SDL_event.motion.xrel;
 			MouseYRel = SDL_event.motion.yrel;
+
 			irrevent.MouseInput.ButtonStates = MouseButtonStates;
 			irrevent.MouseInput.Shift = (keymod & KMOD_SHIFT) != 0;
 			irrevent.MouseInput.Control = (keymod & KMOD_CTRL) != 0;
