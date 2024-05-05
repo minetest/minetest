@@ -510,7 +510,8 @@ void main(void)
 			shadow_int = max(shadow_int, 1 - clamp(cosLight, 0.0, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
 			shadow_color = mix(vec3(0.0), shadow_color, min(cosLight, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
 
-#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES)
+#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES || MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS)
+			// Prevents foliage from becoming insanely bright outside the shadow map.
 			shadow_uncorrected = mix(shadow_int, shadow_uncorrected, clamp(distance_rate * 4.0 - 3.0, 0.0, 1.0));
 #endif
 		}
@@ -527,6 +528,7 @@ void main(void)
 
 		vec3 reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.0);
 
+		// Water reflections
 #if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS))
 		vec3 wavePos = worldPosition * vec3(2.0, 0.0, 2.0);
 		float off = animationTimer * WATER_WAVE_SPEED * 10.0;
@@ -556,20 +558,15 @@ void main(void)
 #endif
 
 #if (defined(ENABLE_NODE_SPECULAR) && !defined(MATERIAL_WAVING_LIQUID))
-
-#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES)
-#define REFLECTION_INTENSITY 2.0
-#elif (defined(MATERIAL_WAVING_LIQUID))
-#define REFLECTION_INTENSITY 0.0
-#else
-#define REFLECTION_INTENSITY 1.0
-#endif
-		// Apply reflections to blocks.
+		// Apply specular to blocks.
 		if (dot(v_LightDirection, vNormal) < 0.0) {
+			float intensity = 5.0 * (1.0 - (base.r * varColor.r));
+			const float specular_exponent = 5.0;
+			const float fresnel_exponent =  4.0;
+
 			col.rgb += 
-				1.5 * dayLight * f_adj_shadow_strength * REFLECTION_INTENSITY * (1.0 - nightRatio) *
-				pow(max(dot(reflect_ray, viewVec), 0.0), 4.0) * pow(1.0 - abs(dot(viewVec, fNormal)), 5.0) * 
-				(1.0 - shadow_uncorrected) * (1.0 - base.r);
+				dayLight * (1.0 - nightRatio) * (1.0 - shadow_uncorrected) * f_adj_shadow_strength *
+				pow(max(dot(reflect_ray, viewVec), 0.0), fresnel_exponent) * pow(1.0 - abs(dot(viewVec, fNormal)), specular_exponent);
 		}
 #endif
 
