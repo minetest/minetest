@@ -3535,10 +3535,12 @@ Markup language used in `hypertext[]` elements uses tags that look like HTML tag
 The markup language is currently unstable and subject to change. Use with caution.
 Some tags can enclose text, they open with `<tagname>` and close with `</tagname>`.
 Tags can have attributes, in that case, attributes are in the opening tag in
-form of a key/value separated with equal signs. Attribute values should not be quoted.
+form of a key/value separated with equal signs.
+Attribute values should be quoted using either " or '.
 
-If you want to insert a literal greater-than sign or a backslash into the text,
-you must escape it by preceding it with a backslash.
+If you want to insert a literal greater-than, less-than, or a backslash into the text,
+you must escape it by preceding it with a backslash. In a quoted attribute value, you
+can insert a literal quote mark by preceding it with a backslash.
 
 These are the technically basic tags but see below for usual tags. Base tags are:
 
