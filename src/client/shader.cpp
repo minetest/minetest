@@ -694,8 +694,8 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		if (g_settings->getBool("enable_translucent_foliage"))
 			shaders_header << "#define ENABLE_TRANSLUCENT_FOLIAGE 1\n";
 
-		if (g_settings->getBool("enable_node_reflections"))
-			shaders_header << "#define ENABLE_NODE_REFLECTIONS 1\n";
+		if (g_settings->getBool("enable_node_specular"))
+			shaders_header << "#define ENABLE_NODE_SPECULAR 1\n";
 
 		s32 shadow_filter = g_settings->getS32("shadow_filters");
 		shaders_header << "#define SHADOW_FILTER " << shadow_filter << "\n";

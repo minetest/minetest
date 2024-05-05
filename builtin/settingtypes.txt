@@ -676,13 +676,13 @@ enable_volumetric_lighting (Volumetric lighting) bool false
 
 #   Simulate translucency when looking at foliage in the sunlight.
 #
-#   Requires: enable_shaders, enable_dynamic_shadows
+#   Requires: shaders, enable_dynamic_shadows
 enable_translucent_foliage (Translucent foliage) bool false
 
-#   Apply reflections to nodes.
+#   Apply specular to nodes.
 #
-#   Requires: enable_shaders, enable_dynamic_shadows
-enable_node_reflections (Node reflections) bool false
+#   Requires: shaders, enable_dynamic_shadows
+enable_node_specular (Node specular) bool false
 
 [*Audio]
 

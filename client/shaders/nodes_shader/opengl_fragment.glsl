@@ -144,7 +144,7 @@ float mtsmoothstep(in float edge0, in float edge1, in float x)
 
 float shadowCutoff(float x) {
 	#if defined(ENABLE_TRANSLUCENT_FOLIAGE) && MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES
-		return mtsmoothstep(0.0, 0.0005, x);
+		return mtsmoothstep(0.0, 0.002, x);
 	#else
 		return step(0.0, x);
 	#endif
@@ -555,7 +555,7 @@ void main(void)
 		col.rgb += water_reflect_color * f_adj_shadow_strength * brightness_factor;
 #endif
 
-#if (defined(ENABLE_NODE_REFLECTIONS) && !defined(MATERIAL_WAVING_LIQUID))
+#if (defined(ENABLE_NODE_SPECULAR) && !defined(MATERIAL_WAVING_LIQUID))
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES)
 #define REFLECTION_INTENSITY 2.0
