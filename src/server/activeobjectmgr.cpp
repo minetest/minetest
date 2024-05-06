@@ -34,6 +34,12 @@ ActiveObjectMgr::~ActiveObjectMgr()
 	}
 }
 
+void ActiveObjectMgr::clear()
+{
+	::ActiveObjectMgr<ServerActiveObject>::clear();
+	m_spatial_map.removeAll();
+}
+
 void ActiveObjectMgr::clearIf(const std::function<bool(ServerActiveObject *, u16)> &cb)
 {
 	for (auto &it : m_active_objects.iter()) {
@@ -41,6 +47,7 @@ void ActiveObjectMgr::clearIf(const std::function<bool(ServerActiveObject *, u16
 			continue;
 		if (cb(it.second.get(), it.first)) {
 			// Remove reference from m_active_objects
+			m_spatial_map.remove(it.first, it.second->getBasePosition());
 			m_active_objects.remove(it.first);
 		}
 	}
@@ -59,6 +66,11 @@ void ActiveObjectMgr::step(
 	}
 
 	g_profiler->avg("ActiveObjectMgr: SAO count [#]", count);
+}
+
+void ActiveObjectMgr::updateObjectPosition(u16 id, const v3f &last_position, const v3f &new_position)
+{
+	m_spatial_map.updatePosition(id, last_position, new_position);
 }
 
 bool ActiveObjectMgr::registerObject(std::unique_ptr<ServerActiveObject> obj)
@@ -92,6 +104,7 @@ bool ActiveObjectMgr::registerObject(std::unique_ptr<ServerActiveObject> obj)
 	}
 
 	auto obj_id = obj->getId();
+	m_spatial_map.insert(obj_id, obj->getBasePosition());
 	m_active_objects.put(obj_id, std::move(obj));
 
 	auto new_size = m_active_objects.size();
@@ -109,6 +122,13 @@ void ActiveObjectMgr::removeObject(u16 id)
 {
 	verbosestream << "Server::ActiveObjectMgr::removeObject(): "
 			<< "id=" << id << std::endl;
+
+	auto &obj = m_active_objects.get(id);
+	if(obj) {
+		m_spatial_map.remove(id, obj->getBasePosition());
+	} else {
+		m_spatial_map.remove(id);
+	}
 
 	// this will take the object out of the map and then destruct it
 	bool ok = m_active_objects.remove(id);
@@ -133,34 +153,42 @@ void ActiveObjectMgr::getObjectsInsideRadius(const v3f &pos, float radius,
 		std::function<bool(ServerActiveObject *obj)> include_obj_cb)
 {
 	float r2 = radius * radius;
-	for (auto &activeObject : m_active_objects.iter()) {
-		ServerActiveObject *obj = activeObject.second.get();
-		if (!obj)
-			continue;
+	aabb3f bounds(pos.X-radius, pos.Y-radius, pos.Z-radius, 
+			   pos.X+radius, pos.Y+radius, pos.Z+radius);
+
+	m_spatial_map.getRelevantObjectIds(bounds, [&](u16 id) {
+		auto obj = m_active_objects.get(id).get();
+		if (!obj) { // should never be hit
+			m_spatial_map.remove(id);
+			return;
+		}
 		const v3f &objectpos = obj->getBasePosition();
 		if (objectpos.getDistanceFromSQ(pos) > r2)
-			continue;
+			return;
 
 		if (!include_obj_cb || include_obj_cb(obj))
 			result.push_back(obj);
-	}
+	});
 }
 
 void ActiveObjectMgr::getObjectsInArea(const aabb3f &box,
 		std::vector<ServerActiveObject *> &result,
 		std::function<bool(ServerActiveObject *obj)> include_obj_cb)
 {
-	for (auto &activeObject : m_active_objects.iter()) {
-		ServerActiveObject *obj = activeObject.second.get();
-		if (!obj)
-			continue;
+	m_spatial_map.getRelevantObjectIds(box,[&](u16 id) {
+		auto obj = m_active_objects.get(id).get();
+		if (!obj) { // should never be hit
+			m_spatial_map.remove(id);
+			return;
+		}
+
 		const v3f &objectpos = obj->getBasePosition();
 		if (!box.isPointInside(objectpos))
-			continue;
+			return;
 
 		if (!include_obj_cb || include_obj_cb(obj))
 			result.push_back(obj);
-	}
+	});
 }
 
 void ActiveObjectMgr::getAddedActiveObjectsAroundPos(
@@ -177,24 +205,26 @@ void ActiveObjectMgr::getAddedActiveObjectsAroundPos(
 		- discard objects that are not observed by the player.
 		- add remaining objects to added_objects
 	*/
-	for (auto &ao_it : m_active_objects.iter()) {
-		u16 id = ao_it.first;
-
-		// Get object
-		ServerActiveObject *object = ao_it.second.get();
-		if (!object)
-			continue;
-
-		if (object->isGone())
-			continue;
-
-		f32 distance_f = object->getBasePosition().getDistanceFrom(player_pos);
-		if (object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+	f32 offset = radius > player_radius ? radius : player_radius;
+	aabb3f bounds(player_pos.X-offset, player_pos.Y-offset, player_pos.Z-offset, 
+			   player_pos.X+offset, player_pos.Y+offset, player_pos.Z+offset);
+	m_spatial_map.getRelevantObjectIds(bounds, [&](u16 id) {
+		auto obj = m_active_objects.get(id).get();
+		if (!obj) { // should never be hit
+			m_spatial_map.remove(id);
+			return;
+		}
+		if (obj->isGone()) {
+			return;
+		}
+		
+		f32 distance_f = obj->getBasePosition().getDistanceFrom(player_pos);
+		if (obj->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			// Discard if too far
 			if (distance_f > player_radius && player_radius != 0)
-				continue;
+				return;
 		} else if (distance_f > radius)
-			continue;
+			return;
 
 		if (!object->isEffectivelyObservedBy(player_name))
 			continue;
@@ -202,10 +232,11 @@ void ActiveObjectMgr::getAddedActiveObjectsAroundPos(
 		// Discard if already on current_objects
 		auto n = current_objects.find(id);
 		if (n != current_objects.end())
-			continue;
+			return;
+
 		// Add to added_objects
 		added_objects.push_back(id);
-	}
+	});
 }
 
 } // namespace server

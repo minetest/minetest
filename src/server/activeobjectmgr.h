@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include "../activeobjectmgr.h"
 #include "serveractiveobject.h"
+#include "spatial_map.h"
 
 namespace server
 {
@@ -35,8 +36,10 @@ public:
 	void clearIf(const std::function<bool(ServerActiveObject *, u16)> &cb);
 	void step(float dtime,
 			const std::function<void(ServerActiveObject *)> &f) override;
+	void clear();
 	bool registerObject(std::unique_ptr<ServerActiveObject> obj) override;
 	void removeObject(u16 id) override;
+	void updateObjectPosition(u16 id, const v3f &last_position, const v3f &new_position);
 
 	void invalidateActiveObjectObserverCaches();
 
@@ -51,5 +54,7 @@ public:
 			f32 radius, f32 player_radius,
 			const std::set<u16> &current_objects,
 			std::vector<u16> &added_objects);
+protected:
+	SpatialMap m_spatial_map;
 };
 } // namespace server

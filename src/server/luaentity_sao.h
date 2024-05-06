@@ -40,7 +40,7 @@ public:
 	ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_LUAENTITY; }
 	ActiveObjectType getSendType() const { return ACTIVEOBJECT_TYPE_GENERIC; }
 	virtual void addedToEnvironment(u32 dtime_s);
-	void step(float dtime, bool send_recommended);
+	void step(float dtime, bool send_recommended) override;
 	std::string getClientInitializationData(u16 protocol_version);
 
 	bool isStaticAllowed() const { return m_prop.static_save; }
