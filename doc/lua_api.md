@@ -8892,6 +8892,12 @@ Player properties need to be saved manually.
     show_on_minimap = false,
     -- Defaults to true for players, false for other entities.
     -- If set to true the entity will show as a marker on the minimap.
+
+    engine_mask = 7,
+    -- This can be used for enable/disable some part of engine.
+    -- 0x01 - Drowning (Only avaliable for players)
+    -- 0x02 - Breathing (Only avaliable for players)
+    -- 0x04 - Node damage
 }
 ```
 

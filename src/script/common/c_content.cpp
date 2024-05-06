@@ -464,6 +464,8 @@ void read_object_properties(lua_State *L, int index,
 
 	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
 
+	getintfield(L, -1, "engine_mask", prop->engine_mask);
+
 	// Remember to update object_property_keys above
 	// when adding a new property
 }
@@ -564,6 +566,8 @@ void push_object_properties(lua_State *L, const ObjectProperties *prop)
 	lua_pushboolean(L, prop->show_on_minimap);
 	lua_setfield(L, -2, "show_on_minimap");
 
+	lua_pushinteger(L, prop->engine_mask);
+	lua_setfield(L, -2, "engine_mask");
 	// Remember to update object_property_keys above
 	// when adding a new property
 }
