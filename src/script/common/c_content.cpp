@@ -294,6 +294,38 @@ const std::array<const char *, 33> object_property_keys = {
 	"show_on_minimap"
 };
 
+static bool read_engine_mask(lua_State *L, int index, u16 &engine_mask)
+{
+	if (lua_istable(L, index)) {
+		bool check;
+
+		engine_mask = 0;
+		getboolfield(L, -1, "drowning", check);
+		engine_mask |= check ? SAO_ENGINE_DROWNING : 0;
+		getboolfield(L, -1, "breathing", check);
+		engine_mask |= check ? SAO_ENGINE_BREATHING : 0;
+		getboolfield(L, -1, "node_hurt", check);
+		engine_mask |= check ? SAO_ENGINE_NODE_HURT : 0;
+	} else if (lua_isnumber(L, index)) {
+		engine_mask = lua_tonumber(L, index);
+	} else {
+		return false;
+	}
+
+	return true;
+}
+
+static void push_engine_mask(lua_State *L, u16 engine_mask)
+{
+	lua_createtable(L, 0, 3);
+	lua_pushboolean(L, (engine_mask & SAO_ENGINE_DROWNING) ? true : false);
+	lua_setfield(L, -2, "drowning");
+	lua_pushboolean(L, (engine_mask & SAO_ENGINE_BREATHING) ? true : false);
+	lua_setfield(L, -2, "breathing");
+	lua_pushboolean(L, (engine_mask & SAO_ENGINE_NODE_HURT) ? true : false);
+	lua_setfield(L, -2, "node_hurt");
+}
+
 /******************************************************************************/
 void read_object_properties(lua_State *L, int index,
 		ServerActiveObject *sao, ObjectProperties *prop, IItemDefManager *idef)
@@ -464,7 +496,9 @@ void read_object_properties(lua_State *L, int index,
 
 	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
 
-	getintfield(L, -1, "engine_mask", prop->engine_mask);
+	lua_getfield(L, -1, "engine_mask");
+	read_engine_mask(L, -1, prop->engine_mask);
+	lua_pop(L, 1);
 
 	// Remember to update object_property_keys above
 	// when adding a new property
@@ -566,7 +600,7 @@ void push_object_properties(lua_State *L, const ObjectProperties *prop)
 	lua_pushboolean(L, prop->show_on_minimap);
 	lua_setfield(L, -2, "show_on_minimap");
 
-	lua_pushinteger(L, prop->engine_mask);
+	push_engine_mask(L, prop->engine_mask);
 	lua_setfield(L, -2, "engine_mask");
 	// Remember to update object_property_keys above
 	// when adding a new property
