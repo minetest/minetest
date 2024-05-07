@@ -441,11 +441,12 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 			// Move player to the maximal height when falling or when
 			// the ledge is climbed on the next step.
 
-			v3f pos(position.X, position.Y + y_diff * dtime * 22.0f + BS * 0.01f, position.Z);
+			v3f check_pos = position;
+			check_pos.Y += y_diff * dtime * 22.0f + BS * 0.01f;
 			if (y_diff < BS * 0.6f || (physics_override.sneak_glitch
-					&& !collision_check_intersection(env, m_client, m_collisionbox, pos))) {
+					&& !collision_check_intersection(env, m_client, m_collisionbox, check_pos))) {
 				// Smoothen the movement (based on 'position.Y = bmax.Y')
-				position.Y = std::min(pos.Y, bmax.Y);
+				position.Y = std::min(check_pos.Y, bmax.Y);
 				m_speed.Y = 0.0f;
 			}
 		}

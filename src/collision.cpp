@@ -270,7 +270,7 @@ static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *game
 
 static void add_object_boxes(Environment *env,
 		const aabb3f &box_0, f32 dtime,
-		const v3f &pos_f, const v3f &speed_f, ActiveObject *self,
+		const v3f pos_f, const v3f speed_f, ActiveObject *self,
 		std::vector<NearbyCollisionInfo> &cinfo)
 {
 	auto process_object = [&] (ActiveObject *object) {
