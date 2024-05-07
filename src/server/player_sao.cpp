@@ -160,7 +160,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	bool not_immortal = !isImmortal();
 
 	if (not_immortal && m_drowning_interval.step(dtime, 2.0f)
-		&& (m_prop.engine_mask&SAO_ENGINE_DROWNING)) {
+			&& (m_prop.engine_mask & SAO_ENGINE_DROWNING)) {
 		// Get nose/mouth position, approximate with eye position
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNode(p);
@@ -179,7 +179,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	}
 
 	if (not_immortal && m_breathing_interval.step(dtime, 0.5f)
-		&& (m_prop.engine_mask&SAO_ENGINE_BREATHING)) {
+			&& (m_prop.engine_mask & SAO_ENGINE_BREATHING)) {
 		// Get nose/mouth position, approximate with eye position
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNode(p);
@@ -191,7 +191,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	}
 
 	if (not_immortal && m_node_hurt_interval.step(dtime, 1.0f)
-		&& (m_prop.engine_mask&SAO_ENGINE_NODE_HURT)) {
+			&& (m_prop.engine_mask & SAO_ENGINE_NODE_HURT)) {
 		u32 damage_per_second = 0;
 		std::string nodename;
 		v3s16 node_pos;

@@ -47,6 +47,9 @@ struct EnumString es_TileAnimationType[] =
 	{0, nullptr},
 };
 
+static void push_engine_mask(lua_State *L, u16 engine_mask);
+static bool read_engine_mask(lua_State *L, int index, u16 &engine_mask);
+
 /******************************************************************************/
 void read_item_definition(lua_State* L, int index,
 		const ItemDefinition &default_def, ItemDefinition &def)
@@ -258,7 +261,7 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 }
 
 /******************************************************************************/
-const std::array<const char *, 33> object_property_keys = {
+const std::array<const char *, 34> object_property_keys = {
 	"hp_max",
 	"breath_max",
 	"physical",
@@ -291,40 +294,9 @@ const std::array<const char *, 33> object_property_keys = {
 	"use_texture_alpha",
 	"shaded",
 	"damage_texture_modifier",
-	"show_on_minimap"
+	"show_on_minimap",
+	"engine_mask"
 };
-
-static bool read_engine_mask(lua_State *L, int index, u16 &engine_mask)
-{
-	if (lua_istable(L, index)) {
-		bool check;
-
-		engine_mask = 0;
-		getboolfield(L, -1, "drowning", check);
-		engine_mask |= check ? SAO_ENGINE_DROWNING : 0;
-		getboolfield(L, -1, "breathing", check);
-		engine_mask |= check ? SAO_ENGINE_BREATHING : 0;
-		getboolfield(L, -1, "node_hurt", check);
-		engine_mask |= check ? SAO_ENGINE_NODE_HURT : 0;
-	} else if (lua_isnumber(L, index)) {
-		engine_mask = lua_tonumber(L, index);
-	} else {
-		return false;
-	}
-
-	return true;
-}
-
-static void push_engine_mask(lua_State *L, u16 engine_mask)
-{
-	lua_createtable(L, 0, 3);
-	lua_pushboolean(L, (engine_mask & SAO_ENGINE_DROWNING) ? true : false);
-	lua_setfield(L, -2, "drowning");
-	lua_pushboolean(L, (engine_mask & SAO_ENGINE_BREATHING) ? true : false);
-	lua_setfield(L, -2, "breathing");
-	lua_pushboolean(L, (engine_mask & SAO_ENGINE_NODE_HURT) ? true : false);
-	lua_setfield(L, -2, "node_hurt");
-}
 
 /******************************************************************************/
 void read_object_properties(lua_State *L, int index,
@@ -602,8 +574,39 @@ void push_object_properties(lua_State *L, const ObjectProperties *prop)
 
 	push_engine_mask(L, prop->engine_mask);
 	lua_setfield(L, -2, "engine_mask");
+
 	// Remember to update object_property_keys above
 	// when adding a new property
+}
+
+static bool read_engine_mask(lua_State *L, int index, u16 &engine_mask)
+{
+	if (lua_istable(L, index)) {
+		bool check;
+
+		engine_mask = 0;
+		getboolfield(L, -1, "drowning", check);
+		engine_mask |= check ? SAO_ENGINE_DROWNING : 0;
+		getboolfield(L, -1, "breathing", check);
+		engine_mask |= check ? SAO_ENGINE_BREATHING : 0;
+		getboolfield(L, -1, "node_hurt", check);
+		engine_mask |= check ? SAO_ENGINE_NODE_HURT : 0;
+	} else {
+		return false;
+	}
+
+	return true;
+}
+
+static void push_engine_mask(lua_State *L, u16 engine_mask)
+{
+	lua_createtable(L, 0, 3);
+	lua_pushboolean(L, engine_mask & SAO_ENGINE_DROWNING);
+	lua_setfield(L, -2, "drowning");
+	lua_pushboolean(L, engine_mask & SAO_ENGINE_BREATHING);
+	lua_setfield(L, -2, "breathing");
+	lua_pushboolean(L, engine_mask & SAO_ENGINE_NODE_HURT);
+	lua_setfield(L, -2, "node_hurt");
 }
 
 /******************************************************************************/

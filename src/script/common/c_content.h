@@ -75,7 +75,7 @@ namespace treegen { struct TreeDef; }
 extern struct EnumString es_TileAnimationType[];
 
 
-extern const std::array<const char *, 33> object_property_keys;
+extern const std::array<const char *, 34> object_property_keys;
 
 void               read_content_features     (lua_State *L, ContentFeatures &f,
                                               int index);
