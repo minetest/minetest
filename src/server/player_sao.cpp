@@ -56,7 +56,8 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_prop.makes_footstep_sound = true;
 	m_prop.stepheight = PLAYER_DEFAULT_STEPHEIGHT * BS;
 	m_prop.show_on_minimap = true;
-	m_prop.engine_mask = SAO_ENGINE_DROWNING|SAO_ENGINE_BREATHING|SAO_ENGINE_NODE_HURT;
+	m_prop.engine_mask = SAO_ENGINE_DROWNING
+			| SAO_ENGINE_BREATHING | SAO_ENGINE_NODE_HURT;
 	m_hp = m_prop.hp_max;
 	m_breath = m_prop.breath_max;
 	// Disable zoom in survival mode using a value of 0
