@@ -29,7 +29,7 @@ For Fedora users:
 
 For openSUSE users:
 
-	sudo zypper install gcc cmake libjpeg8-devel libpng16-devel openal-soft-devel libcurl-devel sqlite3-devel luajit-devel libzstd-devel Mesa-libGL-devel libvorbis-devel freetype2-devel SDL2-devel
+	sudo zypper install gcc gcc-c++ cmake libjpeg8-devel libpng16-devel openal-soft-devel libcurl-devel sqlite3-devel luajit-devel libzstd-devel Mesa-libGL-devel libvorbis-devel freetype2-devel SDL2-devel
 
 For Arch users:
 
