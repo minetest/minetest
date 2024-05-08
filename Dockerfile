@@ -1,7 +1,7 @@
 ARG DOCKER_IMAGE=alpine:3.19
 FROM $DOCKER_IMAGE AS dev
 
-ENV SPATIALINDEX_VERSION master
+ENV SPATIALINDEX_VERSION main
 ENV LUAJIT_VERSION v2.1
 
 RUN apk add --no-cache git build-base cmake curl-dev zlib-dev zstd-dev \
