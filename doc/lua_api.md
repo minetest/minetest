@@ -8894,13 +8894,13 @@ Player properties need to be saved manually.
     -- If set to true the entity will show as a marker on the minimap.
 
     engine_mask = {
-    -- This can be used for enable/disable some part of engine.
+    -- This can be used to enable/disable some parts of the engine.
       drowning = true,
-      -- Drowning (Only avaliable for players)
+      -- Drowning (only available for players)
       breathing = true,
-      -- Breathing (Only avaliable for players)
+      -- Breathing (only available for players)
       node_hurt = true,
-      -- Node damage (Only avaliable for players)
+      -- Node damage (only available for players)
     },
 }
 ```
