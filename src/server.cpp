@@ -2545,9 +2545,7 @@ bool Server::addMediaFile(const std::string &filename,
 
 	// Read data
 	std::string filedata;
-	if (!fs::ReadFile(filepath, filedata)) {
-		errorstream << "Server::addMediaFile(): Failed to open \""
-					<< filename << "\" for reading" << std::endl;
+	if (!fs::ReadFile(filepath, filedata, true)) {
 		return false;
 	}
 
@@ -2715,9 +2713,7 @@ void Server::sendRequestedMedia(session_t peer_id,
 
 		// Read data
 		std::string data;
-		if (!fs::ReadFile(m.path, data)) {
-			errorstream << "Server::sendRequestedMedia(): Failed to read \""
-					<< name << "\"" << std::endl;
+		if (!fs::ReadFile(m.path, data, true)) {
 			continue;
 		}
 		file_size_bunch_total += data.size();
@@ -3618,7 +3614,7 @@ namespace {
 		auto filepath = fs::CreateTempFile();
 		if (filepath.empty())
 			return "";
-		std::ofstream os(filepath, std::ios::binary);
+		auto os = open_ofstream(filepath.c_str(), true);
 		if (!os.good())
 			return "";
 		os << content;
@@ -4200,7 +4196,7 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 	for (const auto &i : m_media) {
 		if (str_ends_with(i.first, suffix)) {
 			std::string data;
-			if (fs::ReadFile(i.second.path, data)) {
+			if (fs::ReadFile(i.second.path, data, true)) {
 				translations->loadTranslation(data);
 			}
 		}

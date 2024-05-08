@@ -620,10 +620,9 @@ bool GUIEngine::setTexture(texture_layer layer, const std::string &texturepath,
 bool GUIEngine::downloadFile(const std::string &url, const std::string &target)
 {
 #if USE_CURL
-	std::ofstream target_file(target.c_str(), std::ios::out | std::ios::binary);
-	if (!target_file.good()) {
+	auto target_file = open_ofstream(target.c_str(), true);
+	if (!target_file.good())
 		return false;
-	}
 
 	HTTPFetchRequest fetch_request;
 	HTTPFetchResult fetch_result;
