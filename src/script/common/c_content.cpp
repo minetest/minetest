@@ -48,7 +48,7 @@ struct EnumString es_TileAnimationType[] =
 };
 
 static void push_engine_mask(lua_State *L, u16 engine_mask);
-static bool read_engine_mask(lua_State *L, int index, u16 &engine_mask);
+static void read_engine_mask(lua_State *L, int index, u16 &engine_mask);
 
 /******************************************************************************/
 void read_item_definition(lua_State* L, int index,
@@ -579,7 +579,7 @@ void push_object_properties(lua_State *L, const ObjectProperties *prop)
 	// when adding a new property
 }
 
-static bool read_engine_mask(lua_State *L, int index, u16 &engine_mask)
+static void read_engine_mask(lua_State *L, int index, u16 &engine_mask)
 {
 	if (lua_istable(L, index)) {
 		bool check;
@@ -591,11 +591,7 @@ static bool read_engine_mask(lua_State *L, int index, u16 &engine_mask)
 		engine_mask |= check ? SAO_ENGINE_BREATHING : 0;
 		getboolfield(L, -1, "node_hurt", check);
 		engine_mask |= check ? SAO_ENGINE_NODE_HURT : 0;
-	} else {
-		return false;
 	}
-
-	return true;
 }
 
 static void push_engine_mask(lua_State *L, u16 engine_mask)
