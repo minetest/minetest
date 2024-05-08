@@ -293,6 +293,9 @@ void attachOrCreateConsole();
 #ifdef _WIN32
 // Quotes an argument for use in a CreateProcess() commandline (not cmd.exe!!)
 std::string QuoteArgv(const std::string &arg);
+
+// Convert an error code (e.g. from GetLastError()) into a string.
+std::string ConvertError(DWORD error_code);
 #endif
 
 int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...);

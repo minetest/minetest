@@ -38,13 +38,9 @@ void FileCache::createDir()
 
 bool FileCache::loadByPath(const std::string &path, std::ostream &os)
 {
-	std::ifstream fis(path.c_str(), std::ios_base::binary);
-
-	if(!fis.good()){
-		verbosestream<<"FileCache: File not found in cache: "
-				<<path<<std::endl;
+	auto fis = open_ifstream(path.c_str(), true);
+	if (!fis.good())
 		return false;
-	}
 
 	bool bad = false;
 	for(;;){
@@ -70,15 +66,10 @@ bool FileCache::loadByPath(const std::string &path, std::ostream &os)
 bool FileCache::updateByPath(const std::string &path, std::string_view data)
 {
 	createDir();
-	std::ofstream file(path.c_str(), std::ios_base::binary |
-			std::ios_base::trunc);
 
-	if(!file.good())
-	{
-		errorstream<<"FileCache: Can't write to file at "
-				<<path<<std::endl;
+	auto file = open_ofstream(path.c_str(), true);
+	if (!file.good())
 		return false;
-	}
 
 	file << data;
 	file.close();
@@ -101,8 +92,7 @@ bool FileCache::load(const std::string &name, std::ostream &os)
 bool FileCache::exists(const std::string &name)
 {
 	std::string path = m_dir + DIR_DELIM + name;
-	std::ifstream fis(path.c_str(), std::ios_base::binary);
-	return fis.good();
+	return fs::PathExists(path);
 }
 
 bool FileCache::updateCopyFile(const std::string &name, const std::string &src_path)

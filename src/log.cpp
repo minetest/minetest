@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "util/numeric.h"
 #include "log.h"
+#include "filesys.h"
 
 #ifdef __ANDROID__
 #include <android/log.h>
@@ -36,7 +37,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <iostream>
 #include <algorithm>
-#include <cerrno>
 #include <cstring>
 
 class LevelTarget : public LogTarget {
@@ -299,25 +299,24 @@ void FileLogOutput::setFile(const std::string &filename, s64 file_size_max)
 	bool is_too_large = false;
 	if (file_size_max > 0) {
 		std::ifstream ifile(filename, std::ios::binary | std::ios::ate);
-		is_too_large = ifile.tellg() > file_size_max;
-		ifile.close();
+		if (ifile.good())
+			is_too_large = ifile.tellg() > file_size_max;
 	}
-
 	if (is_too_large) {
 		std::string filename_secondary = filename + ".1";
 		actionstream << "The log file grew too big; it is moved to " <<
 			filename_secondary << std::endl;
-		remove(filename_secondary.c_str());
-		rename(filename.c_str(), filename_secondary.c_str());
+		fs::DeleteSingleFileOrEmptyDirectory(filename_secondary);
+		fs::Rename(filename, filename_secondary);
 	}
-	m_stream.open(filename, std::ios::app | std::ios::ate);
 
-	if (!m_stream.good())
-		throw FileNotGoodException("Failed to open log file " +
-			filename + ": " + strerror(errno));
+	// Intentionally not using open_ofstream() to keep the text mode
+	if (!fs::OpenStream(*m_stream.rdbuf(), filename.c_str(), std::ios::out | std::ios::app, true, false))
+		throw FileNotGoodException("Failed to open log file");
+
 	m_stream << "\n\n"
-		"-------------" << std::endl <<
-		"  Separator" << std::endl <<
+		"-------------\n" <<
+		"  Separator\n" <<
 		"-------------\n" << std::endl;
 }
 

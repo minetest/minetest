@@ -298,7 +298,7 @@ int LuaAreaStore::l_from_file(lua_State *L)
 	const char *filename = luaL_checkstring(L, 2);
 	CHECK_SECURE_PATH(L, filename, false);
 
-	std::ifstream is(filename, std::ios::binary);
+	auto is = open_ifstream(filename, true);
 	return deserialization_helper(L, o->as, is);
 }
 

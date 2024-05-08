@@ -41,6 +41,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #endif
 
+// Error from last OS call as string
+#ifdef _WIN32
+#define LAST_OS_ERROR() porting::ConvertError(GetLastError())
+#else
+#define LAST_OS_ERROR() strerror(errno)
+#endif
+
 namespace fs
 {
 
@@ -849,40 +856,44 @@ const char *GetFilenameFromPath(const char *path)
 
 bool safeWriteToFile(const std::string &path, std::string_view content)
 {
-	std::string tmp_file = path + ".~mt";
+	// Note: this is not safe if two MT processes try this at the same time (FIXME?)
+	const std::string tmp_file = path + ".~mt";
 
-	// Write to a tmp file
-	bool tmp_success = false;
+	// Write data to a temporary file
+	std::string write_error;
 
 #ifdef _WIN32
 	// We've observed behavior suggesting that the MSVC implementation of std::ofstream::flush doesn't
 	// actually flush, so we use win32 APIs.
-	HANDLE tmp_handle = CreateFile(
-		tmp_file.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (tmp_handle == INVALID_HANDLE_VALUE) {
+	HANDLE handle = CreateFile(tmp_file.c_str(), GENERIC_WRITE, 0, nullptr,
+		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	if (handle == INVALID_HANDLE_VALUE) {
+		errorstream << "Failed to open file: " << LAST_OS_ERROR() << std::endl;
 		return false;
 	}
 	DWORD bytes_written;
-	tmp_success = (WriteFile(tmp_handle, content.data(), content.size(), &bytes_written, nullptr) &&
-					FlushFileBuffers(tmp_handle));
-	CloseHandle(tmp_handle);
+	if (!WriteFile(handle, content.data(), content.size(), &bytes_written, nullptr))
+		write_error = LAST_OS_ERROR();
+	else if (!FlushFileBuffers(handle))
+		write_error = LAST_OS_ERROR();
+	CloseHandle(handle);
 #else
-	std::ofstream os(tmp_file.c_str(), std::ios::binary);
-	if (!os.good()) {
+	auto os = open_ofstream(tmp_file.c_str(), true);
+	if (!os.good())
 		return false;
-	}
-	os << content;
-	os.flush();
+	os << content << std::flush;
 	os.close();
-	tmp_success = !os.fail();
+	if (os.fail())
+		write_error = "iostream fail";
 #endif
 
-	if (!tmp_success) {
+	if (!write_error.empty()) {
+		errorstream << "Failed to write file: " << write_error << std::endl;
 		remove(tmp_file.c_str());
 		return false;
 	}
 
-	bool rename_success = false;
+	std::string rename_error;
 
 	// Move the finished temporary file over the real file
 #ifdef _WIN32
@@ -890,22 +901,25 @@ bool safeWriteToFile(const std::string &path, std::string_view content)
 	// to query the file. This can make the move file call below fail.
 	// We retry up to 5 times, with a 1ms sleep between, before we consider the whole operation failed
 	for (int attempt = 0; attempt < 5; attempt++) {
-		rename_success = MoveFileEx(tmp_file.c_str(), path.c_str(),
+		auto ok = MoveFileEx(tmp_file.c_str(), path.c_str(),
 				MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH);
-		if (rename_success)
+		if (ok) {
+			rename_error.clear();
 			break;
+		}
+		rename_error = LAST_OS_ERROR();
 		sleep_ms(1);
 	}
 #else
 	// On POSIX compliant systems rename() is specified to be able to swap the
 	// file in place of the destination file, making this a truly error-proof
 	// transaction.
-	rename_success = rename(tmp_file.c_str(), path.c_str()) == 0;
+	if (rename(tmp_file.c_str(), path.c_str()) != 0)
+		rename_error = LAST_OS_ERROR();
 #endif
-	if (!rename_success) {
-		warningstream << "Failed to write to file: " << path.c_str() << std::endl;
-		// Remove the temporary file because moving it over the target file
-		// failed.
+
+	if (!rename_error.empty()) {
+		errorstream << "Failed to overwrite \"" << path << "\": " << rename_error << std::endl;
 		remove(tmp_file.c_str());
 		return false;
 	}
@@ -949,7 +963,7 @@ bool extractZipFile(io::IFileSystem *fs, const char *filename, const std::string
 
 		irr_ptr<io::IReadFile> toread(opened_zip->createAndOpenFile(i));
 
-		std::ofstream os(fullpath.c_str(), std::ios::binary);
+		auto os = open_ofstream(fullpath.c_str(), true);
 		if (!os.good())
 			return false;
 
@@ -976,12 +990,11 @@ bool extractZipFile(io::IFileSystem *fs, const char *filename, const std::string
 }
 #endif
 
-bool ReadFile(const std::string &path, std::string &out)
+bool ReadFile(const std::string &path, std::string &out, bool log_error)
 {
-	std::ifstream is(path, std::ios::binary | std::ios::ate);
-	if (!is.good()) {
+	auto is = open_ifstream(path.c_str(), log_error, std::ios::ate);
+	if (!is.good())
 		return false;
-	}
 
 	auto size = is.tellg();
 	out.resize(size);
@@ -994,6 +1007,24 @@ bool ReadFile(const std::string &path, std::string &out)
 bool Rename(const std::string &from, const std::string &to)
 {
 	return rename(from.c_str(), to.c_str()) == 0;
+}
+
+bool OpenStream(std::filebuf &stream, const char *filename,
+	std::ios::openmode mode, bool log_error, bool log_warn)
+{
+	assert((mode & std::ios::in) || (mode & std::ios::out));
+	assert(!stream.is_open());
+	// C++ dropped the ball hard for file opening error handling, there's not even
+	// an implementation-defined mechanism for returning any kind of error code or message.
+	if (!stream.open(filename, mode)) {
+		if (log_warn || log_error) {
+			std::string msg = LAST_OS_ERROR();
+			(log_error ? errorstream : warningstream)
+				<< "Failed to open \"" << filename << "\": " << msg << std::endl;
+		}
+		return false;
+	}
+	return true;
 }
 
 } // namespace fs
