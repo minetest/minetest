@@ -1432,8 +1432,10 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 
 		if (success)
 			showOverlayMessage(N_("Creating server..."), dtime, 5);
-		else
-			showOverlayMessage(N_("Shutting down..."), dtime, 0, false);
+		else {
+			float loading_pos = 0;
+			m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, dtime, -1, true, &loading_pos);
+		}
 	}
 
 	start_thread->rethrow();
