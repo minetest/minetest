@@ -4740,6 +4740,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			list_selected->changeItem(m_selected_item->i, stack_from);
 		}
 
+		bool absorb_event = false;
+
 		// Possibly send inventory action to server
 		if (move_amount > 0) {
 			// Send IAction::Move
@@ -4882,6 +4884,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			a->from_i = m_selected_item->i;
 			m_invmgr->inventoryAction(a);
 
+			// Formspecs usually close when you click outside them, we absorb
+			// the event to prevent that. See GUIModalMenu::remapClickOutside.
+			absorb_event = true;
+
 		} else if (craft_amount > 0) {
 			assert(s.isValid());
 
@@ -4911,6 +4917,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			m_selected_dragging = false;
 		}
 		m_old_pointer = m_pointer;
+
+		if (absorb_event)
+			return true;
 	}
 
 	if (event.EventType == EET_GUI_EVENT) {
