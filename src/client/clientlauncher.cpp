@@ -140,6 +140,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	scene::ICameraSceneNode* camera;
 	camera = g_menucloudsmgr->addCameraSceneNode(NULL, v3f(0, 0, 0), v3f(0, 60, 100));
 	camera->setFarValue(10000);
+	g_menuclouds->getMaterial(0).FogEnable = false; // disable fog so far clouds are as bright as the others
 
 	/*
 		GUI stuff
