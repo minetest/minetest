@@ -1239,6 +1239,7 @@ void Game::shutdown()
 		g_touchscreengui->hide();
 
 	float loading_pos = 0;
+	driver->setFog(RenderingEngine::MENU_SKY_COLOR);
 	m_rendering_engine->run();
 	m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, -1, 0, true, &loading_pos);
 
