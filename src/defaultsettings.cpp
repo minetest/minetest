@@ -172,11 +172,10 @@ void set_default_settings()
 	settings->setDefault("keymap_toggle_block_bounds", "");
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
 	settings->setDefault("keymap_toggle_chat", "KEY_F2");
-#ifndef NDEBUG
 	settings->setDefault("keymap_toggle_fog", "KEY_F3");
+#ifndef NDEBUG
 	settings->setDefault("keymap_toggle_update_camera", "KEY_F4");
 #else
-	settings->setDefault("keymap_toggle_fog", "");
 	settings->setDefault("keymap_toggle_update_camera", "");
 #endif
 	settings->setDefault("keymap_toggle_debug", "KEY_F5");

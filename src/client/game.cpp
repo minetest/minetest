@@ -792,6 +792,14 @@ protected:
 	void showOverlayMessage(const char *msg, float dtime, int percent,
 			bool draw_clouds = true);
 
+	inline bool fogEnabled()
+	{
+		// Client setting only takes effect if fog distance unlimited or debug priv
+		if (sky->getFogDistance() < 0 || client->checkPrivilege("debug"))
+			return m_cache_enable_fog;
+		return true;
+	}
+
 	static void settingChangedCallback(const std::string &setting_name, void *data);
 	void readSettings();
 
@@ -2467,15 +2475,12 @@ void Game::toggleMinimap(bool shift_pressed)
 
 void Game::toggleFog()
 {
-	bool flag;
-	// do not modify setting if no privilege
-	if (!client->checkPrivilege("debug")) {
-		flag = true;
-	} else {
-		flag = !g_settings->getBool("enable_fog");
-		g_settings->setBool("enable_fog", flag);
-	}
-	if (flag)
+	bool flag = !g_settings->getBool("enable_fog");
+	g_settings->setBool("enable_fog", flag);
+	bool allowed = sky->getFogDistance() < 0 || client->checkPrivilege("debug");
+	if (!allowed)
+		m_game_ui->showTranslatedStatusText("Fog enabled by game or mod");
+	else if (flag)
 		m_game_ui->showTranslatedStatusText("Fog enabled");
 	else
 		m_game_ui->showTranslatedStatusText("Fog disabled");
@@ -4230,8 +4235,7 @@ void Game::updateClouds(float dtime)
 		camera_node_position.Y   = camera_node_position.Y + camera_offset.Y * BS;
 		camera_node_position.Z   = camera_node_position.Z + camera_offset.Z * BS;
 		this->clouds->update(camera_node_position, this->sky->getCloudColor());
-		bool enable_fog = this->m_cache_enable_fog || !client->checkPrivilege("debug");
-		if (this->clouds->isCameraInsideCloud() && enable_fog) {
+		if (this->clouds->isCameraInsideCloud() && this->fogEnabled()) {
 			// If camera is inside cloud and fog is enabled, use cloud's colors as sky colors.
 			video::SColor clouds_dark = this->clouds->getColor().getInterpolated(
 					video::SColor(255, 0, 0, 0), 0.9);
@@ -4291,7 +4295,7 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 	/*
 		Fog
 	*/
-	if (this->m_cache_enable_fog || !client->checkPrivilege("debug")) {
+	if (this->fogEnabled()) {
 		this->driver->setFog(
 				fog_color,
 				video::EFT_FOG_LINEAR,
