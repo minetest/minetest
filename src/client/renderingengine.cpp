@@ -308,7 +308,7 @@ bool RenderingEngine::setWindowIcon()
 */
 void RenderingEngine::draw_load_screen(const std::wstring &text,
 		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime,
-		int percent, bool sky)
+		int percent, bool sky, float* indef_pos)
 {
 	v2u32 screensize = getWindowSize();
 
@@ -335,10 +335,10 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 	int percent_min = 0;
 	int percent_max = percent;
 	if (percent == -1) {
-		thread_local float indef_pos = 0;
-		indef_pos = fmodf(indef_pos + (dtime * 50.0f), 140.0f);
-		percent_max = std::min((int) indef_pos, 100);
-		percent_min = std::max((int) indef_pos - 40, 0);
+		if (!indef_pos) { return; }
+		*indef_pos = fmodf(*indef_pos + (dtime * 50.0f), 140.0f);
+		percent_max = std::min((int) *indef_pos, 100);
+		percent_min = std::max((int) *indef_pos - 40, 0);
 	}
 	// draw progress bar
 	if ((percent_min >= 0) && (percent_max <= 100)) {

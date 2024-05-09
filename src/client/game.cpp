@@ -1238,11 +1238,12 @@ void Game::shutdown()
 	if (g_touchscreengui)
 		g_touchscreengui->hide();
 
+	float loading_pos = 0;
+	m_rendering_engine->run();
+	m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, -1, 0, true, &loading_pos);
+
 	if (clouds)
 		clouds->drop();
-	
-	m_rendering_engine->run();
-	m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, -1, 0, true);
 
 	if (gui_chat_console)
 		gui_chat_console->drop();
@@ -1273,7 +1274,7 @@ void Game::shutdown()
 			f32 dtime;
 			fps_control.limit(device, &dtime);
 			timer += dtime;
-			m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, dtime, -1, true);
+			m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, dtime, -1, true, &loading_pos);
 			if (timer >= 100) {
 				assert(texture_src != NULL);
 				assert(shader_src != NULL);
@@ -1299,7 +1300,7 @@ void Game::shutdown()
 		m_rendering_engine->run();
 		f32 dtime;
 		fps_control.limit(device, &dtime);
-		m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, dtime, -1, true);
+		m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, dtime, -1, true, &loading_pos);
 	}
 
 	stop_thread->rethrow();
