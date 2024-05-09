@@ -1240,13 +1240,8 @@ void Game::shutdown()
 
 	if (clouds)
 		clouds->drop();
-
-	FpsControl fps_control;
-	fps_control.reset();
-	f32 dtime;
 	m_rendering_engine->run();
-	fps_control.limit(device, &dtime);
-	m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, dtime, 0, true, true);
+	m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, -1, 0, true);
 
 	if (gui_chat_console)
 		gui_chat_console->drop();
@@ -1288,10 +1283,13 @@ void Game::shutdown()
 		server = nullptr;
 	}, "ServerStop");
 
+	FpsControl fps_control;
+	fps_control.reset();
 	while (stop_thread->isRunning()) {
+		f32 dtime;
 		m_rendering_engine->run();
 		fps_control.limit(device, &dtime);
-		m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, dtime, 0, true, true);
+		m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, dtime, -1, true);
 	}
 
 	stop_thread->rethrow();

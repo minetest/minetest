@@ -137,10 +137,10 @@ public:
 		return m_device->getGUIEnvironment();
 	}
 
-	// Note that percent is ignored in case indefinite is true
+	// Note that a pertance of -1 gets interpreted as indefinete loading
 	void draw_load_screen(const std::wstring &text,
 			gui::IGUIEnvironment *guienv, ITextureSource *tsrc,
-			float dtime = 0, int percent = 0, bool sky = true, bool indefinite = false);
+			float dtime = 0, int percent = 0, bool sky = true);
 
 	void draw_scene(video::SColor skycolor, bool show_hud,
 			bool draw_wield_tool, bool draw_crosshair);
