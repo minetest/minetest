@@ -1225,6 +1225,7 @@ void Game::run()
 	RenderingEngine::autosaveScreensizeAndCo(initial_screen_size, initial_window_maximized);
 }
 
+
 void Game::shutdown()
 {
 	auto formspec = m_game_ui->getFormspecGUI();
