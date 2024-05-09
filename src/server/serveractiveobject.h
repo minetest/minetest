@@ -45,6 +45,7 @@ Some planning
 */
 
 class ServerEnvironment;
+void ServerEnvironment_updatePos(ServerEnvironment *senv, const v3f &pos, u16 id);
 struct ItemStack;
 struct ToolCapabilities;
 struct ObjectProperties;
@@ -78,7 +79,7 @@ public:
 		Some simple getters/setters
 	*/
 	v3f getBasePosition() const { return m_base_position; }
-	void setBasePosition(v3f pos){ m_base_position = pos; }
+	void setBasePosition(v3f pos);
 	ServerEnvironment* getEnv(){ return m_env; }
 
 	/*
@@ -260,7 +261,6 @@ protected:
 	virtual void onMarkedForRemoval() {}
 
 	ServerEnvironment *m_env;
-	v3f m_base_position;
 	std::unordered_set<u32> m_attached_particle_spawners;
 
 	/*
@@ -288,4 +288,6 @@ protected:
 		Queue of messages to be sent to the client
 	*/
 	std::queue<ActiveObjectMessage> m_messages_out;
+private:
+	v3f m_base_position; // setBasePosition updates index and MUST be called
 };
