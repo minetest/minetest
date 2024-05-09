@@ -1240,6 +1240,7 @@ void Game::shutdown()
 
 	if (clouds)
 		clouds->drop();
+	
 	m_rendering_engine->run();
 	m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, -1, 0, true);
 
@@ -1285,9 +1286,10 @@ void Game::shutdown()
 
 	FpsControl fps_control;
 	fps_control.reset();
+
 	while (stop_thread->isRunning()) {
-		f32 dtime;
 		m_rendering_engine->run();
+		f32 dtime;
 		fps_control.limit(device, &dtime);
 		m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, dtime, -1, true);
 	}
