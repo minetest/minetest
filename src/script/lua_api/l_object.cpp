@@ -2528,6 +2528,13 @@ int ObjectRef::l_set_lighting(lua_State *L)
 	if (!lua_isnoneornil(L, 2)) {
 		luaL_checktype(L, 2, LUA_TTABLE);
 		lighting = player->getLighting();
+
+		lua_getfield(L, 2, "artificial_light");
+		if (!lua_isnil(L, -1)) {
+			read_color(L, -1, &lighting.artificial_light_color);
+		}
+		lua_pop(L, 1); // artificial_light
+
 		lua_getfield(L, 2, "shadows");
 		if (lua_istable(L, -1)) {
 			getfloatfield(L, -1, "intensity", lighting.shadow_intensity);
@@ -2571,6 +2578,8 @@ int ObjectRef::l_get_lighting(lua_State *L)
 	const Lighting &lighting = player->getLighting();
 
 	lua_newtable(L); // result
+	push_ARGB8(L, lighting.artificial_light_color);
+	lua_setfield(L, -2, "artificial_light");
 	lua_newtable(L); // "shadows"
 	lua_pushnumber(L, lighting.shadow_intensity);
 	lua_setfield(L, -2, "intensity");

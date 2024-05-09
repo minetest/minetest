@@ -224,6 +224,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add TOCLIENT_MOVE_PLAYER_REL
 		Move default minimap from client-side C++ to server-side builtin Lua
 		[scheduled bump for 5.9.0]
+		Add artificial light color packet
 */
 
 #define LATEST_PROTOCOL_VERSION 44

@@ -1895,6 +1895,8 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 
 	pkt << lighting.volumetric_light_strength;
 
+	pkt << lighting.artificial_light_color;
+
 	Send(&pkt);
 }
 

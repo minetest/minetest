@@ -33,7 +33,7 @@ centroid varying vec2 varTexCoord;
 varying highp vec3 eyeVec;
 varying float nightRatio;
 // Color of the light emitted by the light sources.
-const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
+uniform vec3 artificialLight;
 varying float vIDiff;
 const float e = 2.718281828459;
 const float BS = 10.0;
@@ -120,7 +120,7 @@ void main(void)
 	// The alpha gives the ratio of sunlight in the incoming light.
 	nightRatio = 1.0 - color.a;
 	color.rgb = color.rgb * (color.a * dayLight.rgb +
-		nightRatio * artificialLight.rgb) * 2.0;
+		nightRatio * 2.0 * artificialLight.rgb) * 2.0;
 	color.a = 1.0;
 
 	// Emphase blue a bit in darker places
