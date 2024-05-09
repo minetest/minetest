@@ -857,8 +857,10 @@ void TouchScreenGUI::setVisible(bool visible)
 	if (!visible) {
 		while (!m_pointer_pos.empty())
 			handleReleaseEvent(m_pointer_pos.begin()->first);
-		for (AutoHideButtonBar &bar : m_buttonbars)
+		for (AutoHideButtonBar &bar : m_buttonbars) {
+			bar.deactivate();
 			bar.hide();
+		}
 	} else {
 		for (AutoHideButtonBar &bar : m_buttonbars)
 			bar.show();
