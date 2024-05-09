@@ -8897,10 +8897,16 @@ Player properties need to be saved manually.
     -- This can be used to enable/disable some parts of the engine.
       drowning = true,
       -- Drowning (only available for players)
+      -- true/false - new value to be set
+      -- nil - no change of value
       breathing = true,
       -- Breathing (only available for players)
+      -- true/false - new value to be set
+      -- nil - no change of value
       node_hurt = true,
       -- Node damage (only available for players)
+      -- true/false - new value to be set
+      -- nil - no change of value
     },
 }
 ```

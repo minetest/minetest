@@ -582,15 +582,14 @@ void push_object_properties(lua_State *L, const ObjectProperties *prop)
 static void read_engine_mask(lua_State *L, int index, u16 &engine_mask)
 {
 	if (lua_istable(L, index)) {
-		bool check;
+		u16 old_mask = engine_mask;
 
+		#define UPDATE_MASK(field, mask) engine_mask |= \
+				getboolfield_default(L, -1, field, old_mask & mask) ? mask : 0;
 		engine_mask = 0;
-		getboolfield(L, -1, "drowning", check);
-		engine_mask |= check ? SAO_ENGINE_DROWNING : 0;
-		getboolfield(L, -1, "breathing", check);
-		engine_mask |= check ? SAO_ENGINE_BREATHING : 0;
-		getboolfield(L, -1, "node_hurt", check);
-		engine_mask |= check ? SAO_ENGINE_NODE_HURT : 0;
+		UPDATE_MASK("drowning", SAO_ENGINE_DROWNING)
+		UPDATE_MASK("breathing", SAO_ENGINE_BREATHING)
+		UPDATE_MASK("node_hurt", SAO_ENGINE_NODE_HURT)
 	}
 }
 
