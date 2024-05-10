@@ -25,6 +25,12 @@ on:
       - '.dockerignore'
       - '.github/workflows/docker_image.yml'
   workflow_dispatch:
+    inputs:
+      use_cache:
+        description: "Use build cache"
+        required: true
+        type: boolean
+        default: true
 
 env:
   REGISTRY: ghcr.io
@@ -80,7 +86,7 @@ jobs:
           load: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
+          cache-from: ${{ (inputs.use_cache || !startsWith(github.ref, 'refs/tags/')) && 'type=gha' || '' }}
           cache-to: type=gha,mode=max
 
       - name: Test Docker Image
