@@ -932,6 +932,8 @@ bool extractZipFile(io::IFileSystem *fs, const char *filename, const std::string
 	}
 
 	irr_ptr<io::IFileArchive> opened_zip(zip_loader->createArchive(filename, false, false));
+	if (!opened_zip)
+		return false;
 	const io::IFileList* files_in_zip = opened_zip->getFileList();
 
 	for (u32 i = 0; i < files_in_zip->getFileCount(); i++) {

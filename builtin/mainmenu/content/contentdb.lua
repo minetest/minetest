@@ -71,7 +71,9 @@ local function download_and_extract(param)
 	os.remove(filename)
 	if tempfolder == "" then
 		return {
-			msg = fgettext_ne("Failed to extract \"$1\" (unsupported file type or broken archive)", package.title),
+			msg = fgettext_ne("Failed to extract \"$1\" " ..
+					"(insufficient disk space, unsupported file type or broken archive)",
+					package.title),
 		}
 	end
 
