@@ -9,7 +9,7 @@ on:
   push:
     branches: [ "master" ]
     # Publish semver tags as releases.
-    tags: [ "*.*.*" ]
+    tags: [ "*" ]
   pull_request:
     # Build docker image on pull requests. (but do not publish)
     paths:
