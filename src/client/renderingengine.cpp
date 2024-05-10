@@ -308,7 +308,7 @@ bool RenderingEngine::setWindowIcon()
 */
 void RenderingEngine::draw_load_screen(const std::wstring &text,
 		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime,
-		int percent, bool sky, float* indef_pos)
+		int percent, bool sky, float *indef_pos)
 {
 	v2u32 screensize = getWindowSize();
 
@@ -323,6 +323,7 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 	auto *driver = get_video_driver();
 
 	if (sky) {
+		driver->setFog(RenderingEngine::MENU_SKY_COLOR);
 		driver->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
 		if (g_settings->getBool("menu_clouds")) {
 			g_menuclouds->step(dtime * 3);
@@ -334,8 +335,7 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 
 	int percent_min = 0;
 	int percent_max = percent;
-	if (percent == -1) {
-		if (!indef_pos) { return; }
+	if (indef_pos) {
 		*indef_pos = fmodf(*indef_pos + (dtime * 50.0f), 140.0f);
 		percent_max = std::min((int) *indef_pos, 100);
 		percent_min = std::max((int) *indef_pos - 40, 0);

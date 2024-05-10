@@ -790,7 +790,7 @@ protected:
 
 	// Misc
 	void showOverlayMessage(const char *msg, float dtime, int percent,
-			bool draw_clouds = true);
+			bool draw_clouds = true, float *indef_pos = nullptr);
 
 	static void settingChangedCallback(const std::string &setting_name, void *data);
 	void readSettings();
@@ -1238,10 +1238,7 @@ void Game::shutdown()
 	if (g_touchscreengui)
 		g_touchscreengui->hide();
 
-	float loading_pos = 0;
-	driver->setFog(RenderingEngine::MENU_SKY_COLOR);
-	m_rendering_engine->run();
-	m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, -1, 0, true, &loading_pos);
+	showOverlayMessage(N_("Shutting down..."), 0, 0, true);
 
 	if (clouds)
 		clouds->drop();
@@ -1265,20 +1262,24 @@ void Game::shutdown()
 	m_chat_log_buf.clear();
 
 	FpsControl fps_control;
-	fps_control.reset();
+	float indef_pos = 0;
 
 	if (client) {
 		client->Stop();
+
+		fps_control.reset();
 		f32 timer = 0;
+
 		while (!client->isShutdown()) {
 			m_rendering_engine->run();
 			f32 dtime;
 			fps_control.limit(device, &dtime);
+			showOverlayMessage(N_("Shutting down..."), dtime, 0, true, &indef_pos);
+
 			timer += dtime;
-			m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, dtime, -1, true, &loading_pos);
 			if (timer >= 100) {
-				assert(texture_src != NULL);
-				assert(shader_src != NULL);
+				assert(texture_src != nullptr);
+				assert(shader_src != nullptr);
 				texture_src->processQueue();
 				shader_src->processQueue();
 				timer = 0;
@@ -1297,11 +1298,13 @@ void Game::shutdown()
 		server = nullptr;
 	}, "ServerStop");
 
+	fps_control.reset();
+
 	while (stop_thread->isRunning()) {
 		m_rendering_engine->run();
 		f32 dtime;
 		fps_control.limit(device, &dtime);
-		m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, dtime, -1, true, &loading_pos);
+		showOverlayMessage(N_("Shutting down..."), dtime, 0, true, &indef_pos);
 	}
 
 	stop_thread->rethrow();
@@ -1424,6 +1427,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	FpsControl fps_control;
 	fps_control.reset();
 
+	float indef_pos = 0;
 	while (start_thread->isRunning()) {
 		if (!m_rendering_engine->run() || input->cancelPressed())
 			success = false;
@@ -1432,10 +1436,8 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 
 		if (success)
 			showOverlayMessage(N_("Creating server..."), dtime, 5);
-		else {
-			float loading_pos = 0;
-			m_rendering_engine->draw_load_screen(wstrgettext("Shutting down..."), guienv, texture_src, dtime, -1, true, &loading_pos);
-		}
+		else
+			showOverlayMessage(N_("Shutting down..."), dtime, 0, true, &indef_pos);
 	}
 
 	start_thread->rethrow();
@@ -4366,10 +4368,10 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
  Misc
  ****************************************************************************/
 
-void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_sky)
+void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_sky, float *indef_pos)
 {
 	m_rendering_engine->draw_load_screen(wstrgettext(msg), guienv, texture_src,
-			dtime, percent, draw_sky);
+			dtime, percent, draw_sky, indef_pos);
 }
 
 void Game::settingChangedCallback(const std::string &setting_name, void *data)
