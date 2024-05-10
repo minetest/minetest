@@ -1268,7 +1268,7 @@ void Game::shutdown()
 		client->Stop();
 
 		fps_control.reset();
-		f32 timer = 0;
+		f32 timer = 0.0f;
 
 		while (!client->isShutdown()) {
 			m_rendering_engine->run();
@@ -1277,12 +1277,12 @@ void Game::shutdown()
 			showOverlayMessage(N_("Shutting down..."), dtime, 0, &indef_pos);
 
 			timer += dtime;
-			if (timer >= 100) {
+			if (timer >= 0.1f) {
 				assert(texture_src != nullptr);
 				assert(shader_src != nullptr);
 				texture_src->processQueue();
 				shader_src->processQueue();
-				timer = 0;
+				timer = 0.0f;
 			}
 		}
 	}
@@ -1426,8 +1426,8 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 
 	FpsControl fps_control;
 	fps_control.reset();
-
 	float indef_pos = 0;
+
 	while (start_thread->isRunning()) {
 		if (!m_rendering_engine->run() || input->cancelPressed())
 			success = false;
