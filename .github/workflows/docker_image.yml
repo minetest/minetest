@@ -86,8 +86,9 @@ jobs:
           load: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: ${{ (inputs.use_cache && !startsWith(github.ref, 'refs/tags/')) && 'type=gha' || '' }}
+          cache-from: type=gha
           cache-to: type=gha,mode=max
+          no-cache: ${{ !inputs.use_cache || !startsWith(github.ref, 'refs/tags/') }}
 
       - name: Test Docker Image
         run: |
