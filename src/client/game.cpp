@@ -1261,29 +1261,14 @@ void Game::shutdown()
 	chat_backend->addMessage(L"", L"");
 	m_chat_log_buf.clear();
 
-	FpsControl fps_control;
-	float indef_pos = 0;
-
 	if (client) {
 		client->Stop();
-
-		fps_control.reset();
-		f32 timer = 0.0f;
-
 		while (!client->isShutdown()) {
-			m_rendering_engine->run();
-			f32 dtime;
-			fps_control.limit(device, &dtime);
-			showOverlayMessage(N_("Shutting down..."), dtime, 0, &indef_pos);
-
-			timer += dtime;
-			if (timer >= 0.1f) {
-				assert(texture_src != nullptr);
-				assert(shader_src != nullptr);
-				texture_src->processQueue();
-				shader_src->processQueue();
-				timer = 0.0f;
-			}
+			assert(texture_src != NULL);
+			assert(shader_src != NULL);
+			texture_src->processQueue();
+			shader_src->processQueue();
+			sleep_ms(100);
 		}
 	}
 
@@ -1298,7 +1283,9 @@ void Game::shutdown()
 		server = nullptr;
 	}, "ServerStop");
 
+	FpsControl fps_control;
 	fps_control.reset();
+	float indef_pos = 0;
 
 	while (stop_thread->isRunning()) {
 		m_rendering_engine->run();
