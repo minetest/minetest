@@ -21,5 +21,3 @@ cmake -B build \
 
 cmake --build build
 cmake --install build
-
-python -m pip install ./python -v

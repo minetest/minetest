@@ -6,10 +6,10 @@ package:
   version: ${{ env.get_default("GIT_DESCRIBE_TAG", env.get_default("GIT_FULL_HASH", "0.2")) }}
 
 source:
-  path: ../
+  path: ../../
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
@@ -45,21 +45,14 @@ requirements:
     - pkg-config
     - zlib
     - zstd
-    # python deps
-    - pip
-    - python <3.12
   run:
     # I think needed because their recipe doesn't specify run_exports.
     # Otherwise this should be inferred from presence in host.
     - luajit-openresty
-    # python deps
-    - gymnasium
-    - numpy =1.26
-    - pycapnp >=1.1.1 # need 4b75fe3b5ea97a80a0d349a42c143c989fe85d5e
 
 about:
   repository: https://github.com/Astera-org/minetest
-  summary: 'Minetest + gymnasium interface'
+  summary: 'Minetest with RPC interface'
 
 tests:
   # We should probably run minetest --run-unittests, but last time I tried
@@ -67,23 +60,11 @@ tests:
   - package_contents:
       bin:
         - minetest
-  - python:
-      imports:
-        - minetest
   - script:
     # Install the devtest game, which is needed for python test.
     - mkdir ${CONDA_PREFIX}/share/minetest/games
     - ln -s -t ${CONDA_PREFIX}/share/minetest/games ${PWD}/games/devtest
     - if [[ $(minetest --gameid list) != "devtest" ]]; then exit 1; fi
-    - cd python && pytest --timeout=60 -v .
     files:
       source:
         - games/devtest/
-        - python/tests/
-        - python/pyproject.toml
-    requirements:
-      run:
-        - pillow
-        - pytest
-        - pytest-timeout
-
