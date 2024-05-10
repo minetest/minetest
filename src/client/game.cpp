@@ -790,7 +790,7 @@ protected:
 
 	// Misc
 	void showOverlayMessage(const char *msg, float dtime, int percent,
-			bool draw_clouds = true, float *indef_pos = nullptr);
+			float *indef_pos = nullptr);
 
 	static void settingChangedCallback(const std::string &setting_name, void *data);
 	void readSettings();
@@ -1238,7 +1238,7 @@ void Game::shutdown()
 	if (g_touchscreengui)
 		g_touchscreengui->hide();
 
-	showOverlayMessage(N_("Shutting down..."), 0, 0, true);
+	showOverlayMessage(N_("Shutting down..."), 0, 0);
 
 	if (clouds)
 		clouds->drop();
@@ -1274,7 +1274,7 @@ void Game::shutdown()
 			m_rendering_engine->run();
 			f32 dtime;
 			fps_control.limit(device, &dtime);
-			showOverlayMessage(N_("Shutting down..."), dtime, 0, true, &indef_pos);
+			showOverlayMessage(N_("Shutting down..."), dtime, 0, &indef_pos);
 
 			timer += dtime;
 			if (timer >= 100) {
@@ -1304,7 +1304,7 @@ void Game::shutdown()
 		m_rendering_engine->run();
 		f32 dtime;
 		fps_control.limit(device, &dtime);
-		showOverlayMessage(N_("Shutting down..."), dtime, 0, true, &indef_pos);
+		showOverlayMessage(N_("Shutting down..."), dtime, 0, &indef_pos);
 	}
 
 	stop_thread->rethrow();
@@ -1437,7 +1437,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 		if (success)
 			showOverlayMessage(N_("Creating server..."), dtime, 5);
 		else
-			showOverlayMessage(N_("Shutting down..."), dtime, 0, true, &indef_pos);
+			showOverlayMessage(N_("Shutting down..."), dtime, 0, &indef_pos);
 	}
 
 	start_thread->rethrow();
@@ -4368,10 +4368,10 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
  Misc
  ****************************************************************************/
 
-void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_sky, float *indef_pos)
+void Game::showOverlayMessage(const char *msg, float dtime, int percent, float *indef_pos)
 {
 	m_rendering_engine->draw_load_screen(wstrgettext(msg), guienv, texture_src,
-			dtime, percent, draw_sky, indef_pos);
+			dtime, percent, indef_pos);
 }
 
 void Game::settingChangedCallback(const std::string &setting_name, void *data)
