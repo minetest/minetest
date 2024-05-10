@@ -229,8 +229,6 @@ void ModConfiguration::resolveDependencies()
 
 	// Step 1.5 (optional): shuffle unsatisfied mods so non declared depends get found by their devs
 	if (g_settings->getBool("random_mod_load_order")) {
-		//std::random_shuffle would be better here, but it has been removed in C++17
-		//see https://en.cppreference.com/w/cpp/algorithm/random_shuffle
 		MyRandGenerator rg;
 		std::shuffle(m_unsatisfied_mods.begin(),
 			m_unsatisfied_mods.end(),
