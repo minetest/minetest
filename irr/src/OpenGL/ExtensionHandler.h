@@ -138,7 +138,8 @@ public:
 
 	inline void irrGlDrawBuffer(GLenum mode)
 	{
-		GL.DrawBuffer(mode);
+		// GLES only has DrawBuffers, so use that
+		GL.DrawBuffers(1, &mode);
 	}
 
 	inline void irrGlDrawBuffers(GLsizei n, const GLenum *bufs)
