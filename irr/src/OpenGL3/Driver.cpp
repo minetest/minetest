@@ -36,7 +36,7 @@ void COpenGL3Driver::initFeatures()
 {
 	assert(Version.Spec == OpenGLSpec::Compat);
 	assert(isVersionAtLeast(3, 2));
-	initExtensionsNew();
+	initExtensions();
 
 	TextureFormats[ECF_A1R5G5B5] = {GL_RGB5_A1, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV}; // WARNING: may not be renderable
 	TextureFormats[ECF_R5G6B5] = {GL_RGB, GL_RGB, GL_UNSIGNED_SHORT_5_6_5};              // GL_RGB565 is an extension until 4.1

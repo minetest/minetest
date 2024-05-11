@@ -28,11 +28,13 @@ public:
 	COpenGL3ExtensionHandler() :
 			COGLESCoreExtensionHandler() {}
 
-	void initExtensionsOld();
-	void initExtensionsNew();
+	void initExtensions();
 
 	/// Checks whether a named extension is present
-	bool queryExtension(const std::string &name) const noexcept;
+	inline bool queryExtension(const std::string &name) const noexcept
+	{
+		return GL.IsExtensionPresent(name);
+	}
 
 	bool queryFeature(video::E_VIDEO_DRIVER_FEATURE feature) const
 	{
@@ -159,12 +161,6 @@ public:
 
 	bool AnisotropicFilterSupported = false;
 	bool BlendMinMaxSupported = false;
-
-private:
-	void addExtension(std::string &&name);
-	void extensionsLoaded();
-
-	std::unordered_set<std::string> Extensions;
 };
 
 }
