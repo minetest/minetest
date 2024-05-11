@@ -31,10 +31,7 @@ void COpenGLES2Driver::initFeatures()
 {
 	assert(Version.Spec == OpenGLSpec::ES);
 	assert(Version.Major >= 2);
-	if (Version.Major >= 3)
-		initExtensionsNew();
-	else
-		initExtensionsOld();
+	initExtensions();
 
 	static const GLenum BGRA8_EXT = 0x93A1;
 
