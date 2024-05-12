@@ -611,6 +611,23 @@ enable_auto_exposure (Enable Automatic Exposure) bool false
 #    Requires: shaders, enable_post_processing, enable_auto_exposure
 exposure_compensation (Exposure compensation) float 0.0 -1.0 1.0
 
+#   Set the gamma value.
+#   Higher values give lower contrast and vice versa. 
+#   Range: from 1.0 to 5.0
+#
+#   Requires: shaders, enable_post_processing, tone_mapping
+gamma (Gamma) float 1.6 1.0 5.0
+
+#   Apply color grading to make brighter colors warmer and darker colors cooler.
+#
+#   Requires: shaders, enable_post_processing
+enable_color_grading (Color grading) bool false
+
+#   Apply vignette effect to darken the edges of the screen.
+#
+#   Requires: shaders, enable_post_processing
+enable_vignette (Vignette) bool false
+
 #    Apply dithering to reduce color banding artifacts.
 #    Dithering significantly increases the size of losslessly-compressed
 #    screenshots and it works incorrectly if the display or operating system
@@ -662,6 +679,13 @@ bloom_radius (Bloom Radius) float 1 0.1 8
 #
 #    Requires: shaders, enable_post_processing, enable_bloom
 enable_volumetric_lighting (Volumetric lighting) bool false
+
+[**Other Effects]
+
+#   Apply bump maps to nodes based on their textures. It is recommended to use a tilted sun orbit to go with this (Sky Body Orbit Tilt).
+#
+#   Requires: shaders, enable_dynamic_shadows
+enable_bumpmaps (Bump maps) bool false
 
 [*Audio]
 

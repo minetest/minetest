@@ -688,6 +688,9 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		if (g_settings->getBool("shadow_poisson_filter"))
 			shaders_header << "#define POISSON_FILTER 1\n";
 
+		if (g_settings->getBool("enable_bumpmaps"))
+			shaders_header << "#define ENABLE_BUMPMAPS 1\n";
+
 		s32 shadow_filter = g_settings->getS32("shadow_filters");
 		shaders_header << "#define SHADOW_FILTER " << shadow_filter << "\n";
 
@@ -705,6 +708,12 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 
 	if (g_settings->getBool("enable_auto_exposure"))
 		shaders_header << "#define ENABLE_AUTO_EXPOSURE 1\n";
+
+	if (g_settings->getBool("enable_color_grading"))
+		shaders_header << "#define ENABLE_COLOR_GRADING 1\n";
+
+	if (g_settings->getBool("enable_vignette"))
+		shaders_header << "#define ENABLE_VIGNETTE 1\n";
 
 	if (g_settings->get("antialiasing") == "ssaa") {
 		shaders_header << "#define ENABLE_SSAA 1\n";

@@ -331,6 +331,9 @@ void set_default_settings()
 	settings->setDefault("enable_waving_plants", "false");
 	settings->setDefault("exposure_compensation", "0.0");
 	settings->setDefault("enable_auto_exposure", "false");
+	settings->setDefault("enable_color_grading", "false");
+	settings->setDefault("enable_vignette", "false");
+	settings->setDefault("gamma", "1.6");
 	settings->setDefault("debanding", "true");
 	settings->setDefault("antialiasing", "none");
 	settings->setDefault("enable_bloom", "false");
@@ -339,6 +342,7 @@ void set_default_settings()
 	settings->setDefault("bloom_intensity", "0.05");
 	settings->setDefault("bloom_radius", "1");
 	settings->setDefault("enable_volumetric_lighting", "false");
+	settings->setDefault("enable_bumpmaps", "false");
 
 	// Effects Shadows
 	settings->setDefault("enable_dynamic_shadows", "false");

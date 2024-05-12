@@ -20,6 +20,7 @@ uniform vec2 texelSize0;
 uniform ExposureParams exposureParams;
 uniform lowp float bloomIntensity;
 uniform lowp float saturation;
+uniform float gamma;
 
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
@@ -69,7 +70,6 @@ vec3 uncharted2Tonemap(vec3 x)
 vec4 applyToneMapping(vec4 color)
 {
 	color = vec4(pow(color.rgb, vec3(2.2)), color.a);
-	const float gamma = 1.6;
 	const float exposureBias = 5.5;
 	color.rgb = uncharted2Tonemap(exposureBias * color.rgb);
 	// Precalculated white_scale from
@@ -102,6 +102,11 @@ vec3 screen_space_dither(highp vec2 frag_coord) {
 }
 #endif
 
+float sFunction(float x, float a) {
+	x = 2.0 * x - 1.0;
+	return 0.5 * sign(x) * pow(abs(x), a) + 0.5;
+}
+
 void main(void)
 {
 	vec2 uv = varTexCoord.st;
@@ -131,8 +136,6 @@ void main(void)
 #ifdef ENABLE_BLOOM
 	color = applyBloom(color, uv);
 #endif
-
-
 	color.rgb = clamp(color.rgb, vec3(0.), vec3(1.));
 
 	// return to sRGB colorspace (approximate)
@@ -142,6 +145,15 @@ void main(void)
 	if (uv.x > 0.5 || uv.y > 0.5)
 #endif
 	{
+
+#ifdef ENABLE_VIGNETTE
+		color.rgb *= 0.8 * pow(1.0 - length(uv - vec2(0.5)) * 1.4, 0.9) + 0.3;
+#endif
+
+#ifdef ENABLE_COLOR_GRADING
+		color.rgb = pow(color.rgb * vec3(1.3, 1.0, 0.8), vec3(1.3, 1.0, 0.9));
+#endif
+
 #if ENABLE_TONE_MAPPING
 		color = applyToneMapping(color);
 #endif
