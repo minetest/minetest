@@ -1761,6 +1761,9 @@ deprecated_lua_api_handling (Deprecated Lua API handling) enum log none,log,erro
 #    Enable random user input (only used for testing).
 random_input (Random input) bool false
 
+#    Enable random mod loading (mainly used for testing).
+random_mod_load_order (Random mod load order) bool false
+
 #    Enable mod channels support.
 enable_mod_channels (Mod channels) bool false
 

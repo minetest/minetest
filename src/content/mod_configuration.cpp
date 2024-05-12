@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "gettext.h"
 #include "exceptions.h"
+#include "util/numeric.h"
 
 
 std::string ModConfiguration::getUnsatisfiedModsError() const
@@ -224,6 +225,15 @@ void ModConfiguration::resolveDependencies()
 	std::set<std::string> modnames;
 	for (const ModSpec &mod : m_unsatisfied_mods) {
 		modnames.insert(mod.name);
+	}
+
+	// Step 1.5 (optional): shuffle unsatisfied mods so non declared depends get found by their devs
+	if (g_settings->getBool("random_mod_load_order")) {
+		MyRandGenerator rg;
+		std::shuffle(m_unsatisfied_mods.begin(),
+			m_unsatisfied_mods.end(),
+			rg
+		);
 	}
 
 	// Step 2: get dependencies (including optional dependencies)
