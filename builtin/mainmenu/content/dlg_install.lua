@@ -15,7 +15,31 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+local function is_still_visible(dlg)
+	local this = ui.find_by_name("install_dialog")
+	return this == dlg and not dlg.hidden
+end
+
+
+local function get_loading_formspec()
+	local ENABLE_TOUCH = core.settings:get_bool("enable_touch")
+	local w = ENABLE_TOUCH and 14 or 7
+
+	local formspec = {
+		"formspec_version[3]",
+		"size[", w, ",9.05]",
+		ENABLE_TOUCH and "padding[0.01,0.01]" or "position[0.5,0.55]",
+		"label[3,4.525;", fgettext("Loading..."), "]",
+	}
+	return table.concat(formspec)
+end
+
+
 local function get_formspec(data)
+	if not data.has_hard_deps_ready then
+		return get_loading_formspec()
+	end
+
 	local selected_game, selected_game_idx = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
 	if not selected_game_idx then
 		selected_game_idx = 1
@@ -27,15 +51,35 @@ local function get_formspec(data)
 		game_list[i] = core.formspec_escape(game.title)
 	end
 
+	if not data.deps_ready[selected_game_idx] and
+			not data.deps_loading[selected_game_idx] then
+		data.deps_loading[selected_game_idx] = true
+
+		contentdb.resolve_dependencies(data.package, selected_game, function(deps)
+			if not is_still_visible(data.dlg) then
+				return
+			end
+			data.deps_ready[selected_game_idx] = deps
+			ui.update()
+		end)
+	end
+
+	-- The value of `data.deps_ready[selected_game_idx]` may have changed
+	-- since the last if statement since `contentdb.resolve_dependencies`
+	-- calls the callback immediately if the dependencies are already cached.
+	if not data.deps_ready[selected_game_idx] then
+		return get_loading_formspec()
+	end
+
 	local package = data.package
 	local will_install_deps = data.will_install_deps
 
 	local deps_to_install = 0
 	local deps_not_found = 0
 
-	data.dependencies = contentdb.resolve_dependencies(package, selected_game)
+	data.deps_chosen = data.deps_ready[selected_game_idx]
 	local formatted_deps = {}
-	for _, dep in pairs(data.dependencies) do
+	for _, dep in pairs(data.deps_chosen) do
 		formatted_deps[#formatted_deps + 1] = "#fff"
 		formatted_deps[#formatted_deps + 1] = core.formspec_escape(dep.name)
 		if dep.installed then
@@ -128,7 +172,7 @@ local function handle_submit(this, fields)
 		contentdb.queue_download(data.package, contentdb.REASON_NEW)
 
 		if data.will_install_deps then
-			for _, dep in pairs(data.dependencies) do
+			for _, dep in pairs(data.deps_chosen) do
 				if not dep.is_optional and not dep.installed and dep.package then
 					contentdb.queue_download(dep.package, contentdb.REASON_DEPENDENCY)
 				end
@@ -153,10 +197,50 @@ local function handle_submit(this, fields)
 end
 
 
+local function load_deps(dlg)
+	local package = dlg.data.package
+
+	contentdb.has_hard_deps(package, function(result)
+		if not is_still_visible(dlg) then
+			return
+		end
+
+		if result == nil then
+			local parent = dlg.parent
+			dlg:delete()
+			local dlg2 = messagebox("error_checking_deps",
+					fgettext("Error getting dependencies for package $1", package.url_part))
+			dlg2:set_parent(parent)
+			parent:hide()
+			dlg2:show()
+		elseif result == false then
+			contentdb.queue_download(package, package.path and contentdb.REASON_UPDATE or contentdb.REASON_NEW)
+			dlg:delete()
+		else
+			assert(result == true)
+			dlg.data.has_hard_deps_ready = true
+		end
+		ui.update()
+	end)
+end
+
+
 function create_install_dialog(package)
 	local dlg = dialog_create("install_dialog", get_formspec, handle_submit, nil)
-	dlg.data.dependencies = nil
+	dlg.data.deps_chosen = nil
 	dlg.data.package = package
 	dlg.data.will_install_deps = true
+
+	dlg.data.has_hard_deps_ready = false
+	dlg.data.deps_ready = {}
+	dlg.data.deps_loading = {}
+
+	dlg.load_deps = load_deps
+
+	-- `get_formspec` needs to access `dlg` to check whether it's still open.
+	-- It doesn't suffice to check that any "install_dialog" instance is open
+	-- via `ui.find_by_name`, it's necessary to check for this exact instance.
+	dlg.data.dlg = dlg
+
 	return dlg
 end
