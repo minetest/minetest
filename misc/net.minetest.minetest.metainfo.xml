@@ -132,9 +132,9 @@
     </keywords>
 
     <url type="homepage">https://www.minetest.net</url>
-    <url type="bugtracker">https://www.minetest.net/development/#reporting-issues</url>
+    <url type="bugtracker">https://www.minetest.net/get-involved/#reporting-issues</url>
     <url type="translate">https://dev.minetest.net/Translation</url>
-    <url type="donation">https://www.minetest.net/development/#donate</url>
+    <url type="donation">https://www.minetest.net/get-involved/#donate</url>
     <url type="faq">https://wiki.minetest.net/FAQ</url>
     <url type="help">https://wiki.minetest.net</url>
     <url type="vcs-browser">https://github.com/minetest/minetest</url>
