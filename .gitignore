@@ -118,6 +118,7 @@ compile_commands.json
 *.vcxproj*
 *.sln
 .vs/
+.flatpak-builder
 
 # Old irrlichtmt. Still ignored to make bisecting easier.
 lib/irrlichtmt
