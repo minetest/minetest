@@ -274,12 +274,11 @@ bool run_tests(const std::string &module_name)
 
 	auto testmod = findTestModule(module_name);
 	if (!testmod) {
-		infostream << "Did not find module, searching Catch tests: " << module_name << std::endl;
+		rawstream << "Did not find module, searching Catch tests: " << module_name << std::endl;
 		Catch::Session session;
-		const char *const conjured_args[]{"internal-not-used", module_name.c_str()};
-		session.applyCommandLine(2, conjured_args);
-		session.run();
-		return 1;
+		session.configData().testsOrTags.push_back(module_name);
+		auto catch_test_failures = session.run();
+		return catch_test_failures == 0;
 	}
 
 	g_logger.setLevelSilenced(LL_ERROR, true);
