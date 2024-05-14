@@ -511,7 +511,7 @@ void CSkinnedMesh::skinJoint(SJoint *joint, SJoint *parentJoint)
 			jointVertexPull.transformVect(thisVertexMove, weight.StaticPos);
 
 			if (AnimateNormals)
-				jointVertexPull.rotateVect(thisNormalMove, weight.StaticNormal);
+				jointVertexPull.rotateAndScaleVect(thisNormalMove = weight.StaticNormal);
 
 			if (!(*(weight.Moved))) {
 				*(weight.Moved) = true;
