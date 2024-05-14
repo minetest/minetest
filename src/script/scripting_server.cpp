@@ -46,6 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_settings.h"
 #include "lua_api/l_http.h"
 #include "lua_api/l_storage.h"
+#include "lua_api/l_ipc.h"
 
 extern "C" {
 #include <lualib.h>
@@ -121,6 +122,7 @@ void ServerScripting::initAsync()
 	asyncEngine.registerStateInitializer(ModApiCraft::InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiItem::InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiServer::InitializeAsync);
+	asyncEngine.registerStateInitializer(ModApiIPC::Initialize);
 	// not added: ModApiMapgen is a minefield for thread safety
 	// not added: ModApiHttp async api can't really work together with our jobs
 	// not added: ModApiStorage is probably not thread safe(?)
@@ -176,6 +178,7 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	ModApiHttp::Initialize(L, top);
 	ModApiStorage::Initialize(L, top);
 	ModApiChannels::Initialize(L, top);
+	ModApiIPC::Initialize(L, top);
 }
 
 void ServerScripting::InitializeAsync(lua_State *L, int top)
