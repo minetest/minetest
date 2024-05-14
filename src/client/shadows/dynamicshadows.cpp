@@ -42,7 +42,6 @@ static v3f quantizeDirection(v3f direction, float step)
 void DirectionalLight::createSplitMatrices(const Camera *cam)
 {
 	static const float COS_15_DEG = 0.965926f;
-	v3f newCenter;
 	v3f look = cam->getDirection().normalize();
 
 	// if current look direction is < 15 degrees away from the captured

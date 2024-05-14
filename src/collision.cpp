@@ -218,14 +218,6 @@ bool wouldCollideWithCeiling(
 	return false;
 }
 
-static inline void getNeighborConnectingFace(const v3s16 &p,
-	const NodeDefManager *nodedef, Map *map, MapNode n, int v, int *neighbors)
-{
-	MapNode n2 = map->getNode(p);
-	if (nodedef->nodeboxConnects(n, n2, v))
-		*neighbors |= v;
-}
-
 collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		f32 pos_max_d, const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
