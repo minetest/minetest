@@ -354,8 +354,7 @@ static void transformVertices(std::vector<video::S3DVertex> &vertices, const cor
 		// Apply scaling, rotation and rotation (in that order) to the position.
 		transform.transformVect(vertex.Pos);
 		// For the normal, we do not want to apply the translation.
-		// TODO note that this also applies scaling; the Irrlicht method is misnamed.
-		transform.rotateVect(vertex.Normal);
+		vertex.Normal = transform.rotateAndScaleVect(vertex.Normal);
 		// Renormalize (length might have been affected by scaling).
 		vertex.Normal.normalize();
 	}

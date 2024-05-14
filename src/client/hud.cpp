@@ -536,9 +536,9 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 					return; // Avoid zero divides
 
 				// Angle according to camera view
-				v3f fore(0.f, 0.f, 1.f);
 				scene::ICameraSceneNode *cam = client->getSceneManager()->getActiveCamera();
-				cam->getAbsoluteTransformation().rotateVect(fore);
+				v3f fore = cam->getAbsoluteTransformation()
+						.rotateAndScaleVect(v3f(0.f, 0.f, 1.f));
 				int angle = - fore.getHorizontalAngle().Y;
 
 				// Limit angle and ajust with given offset
