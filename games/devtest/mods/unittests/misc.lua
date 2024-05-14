@@ -254,3 +254,28 @@ local function test_gennotify_api()
 	assert(#custom == 0, "custom ids not empty")
 end
 unittests.register("test_gennotify_api", test_gennotify_api)
+
+-- <=> inside_mapgen_env.lua
+local function test_mapgen_env(cb)
+	-- emerge threads start delayed so this can take a second
+	local res = core.ipc_get("unittests:mg")
+	if res == nil then
+		return core.after(0, test_mapgen_env, cb)
+	end
+	-- handle error status
+	if res[1] then
+		cb()
+	else
+		cb(res[2])
+	end
+end
+unittests.register("test_mapgen_env", test_mapgen_env, {async=true})
+
+local function test_ipc_vector_preserve(cb)
+	-- the IPC also uses register_portable_metatable
+	core.ipc_set("unittests:v", vector.new(4, 0, 4))
+	local v = core.ipc_get("unittests:v")
+	assert(type(v) == "table")
+	assert(vector.check(v))
+end
+unittests.register("test_ipc_vector_preserve", test_ipc_vector_preserve)
