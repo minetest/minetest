@@ -46,6 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unordered_set>
 #include <optional>
 #include <string_view>
+#include <shared_mutex>
 
 class ChatEvent;
 struct ChatEventChat;
@@ -139,6 +140,17 @@ struct ClientInfo {
 	u16 prot_vers;
 	u8 major, minor, patch;
 	std::string vers_string, lang_code;
+};
+
+struct ModIPCStore {
+	/// RW lock for this entire structure
+	std::shared_mutex mutex;
+	/**
+	 * Map storing the data
+	 *
+	 * Note: Do not store `nil` data in this map, instead remove the whole key.
+	 */
+	std::unordered_map<std::string, std::unique_ptr<PackedValue>> map;
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
@@ -301,12 +313,14 @@ public:
 	NodeDefManager* getWritableNodeDefManager();
 	IWritableCraftDefManager* getWritableCraftDefManager();
 
+	// Not under envlock
 	virtual const std::vector<ModSpec> &getMods() const;
 	virtual const ModSpec* getModSpec(const std::string &modname) const;
 	virtual const SubgameSpec* getGameSpec() const { return &m_gamespec; }
 	static std::string getBuiltinLuaPath();
 	virtual std::string getWorldPath() const { return m_path_world; }
 	virtual std::string getModDataPath() const { return m_path_mod_data; }
+	virtual ModIPCStore *getModIPCStore() { return &m_ipcstore; }
 
 	inline bool isSingleplayer() const
 			{ return m_simple_singleplayer_mode; }
@@ -661,6 +675,8 @@ private:
 	IWritableCraftDefManager *m_craftdef;
 
 	std::unordered_map<std::string, Translations> server_translations;
+
+	ModIPCStore m_ipcstore;
 
 	/*
 		Threads

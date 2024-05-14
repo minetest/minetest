@@ -6741,6 +6741,7 @@ Functions:
 * Standalone helpers such as logging, filesystem, encoding,
   hashing or compression APIs
 * `minetest.register_async_metatable` (see above)
+* IPC
 
 Variables:
 * `minetest.settings`
@@ -6815,6 +6816,7 @@ Functions:
 * `minetest.get_node`, `set_node`, `find_node_near`, `find_nodes_in_area`,
   `spawn_tree` and similar
     * these only operate on the current chunk (if inside a callback)
+* IPC
 
 Variables:
 * `minetest.settings`
@@ -6890,6 +6892,31 @@ Server
     * Clients will attempt to fetch files added this way via remote media,
       this can make transfer of bigger files painless (if set up). Nevertheless
       it is advised not to use dynamic media for big media files.
+
+IPC
+---
+
+The engine provides a generalized mechanism to enable sharing data between the
+different Lua environments (main, mapgen and async).
+It is essentially is a shared in-memory key-value store.
+
+* `minetest.ipc_get(key)`:
+  * Read a value from the shared data area.
+  * `key`: string, should use the `"modname:thing"` convention to avoid conflicts.
+  * returns an arbitrary Lua value, or `nil` if this key does not exist
+* `minetest.ipc_set(key, value)`:
+  * Write a value to the shared data area.
+  * `key`: as above
+  * `value`: an arbitrary Lua value, cannot be or contain userdata.
+
+Interacting with the shared data will perform an operation comparable to
+(de)serialization on each access.
+For that reason modifying references will not have any effect, as in this example:
+```lua
+minetest.ipc_set("test:foo", {})
+minetest.ipc_get("test:foo").subkey = "value" -- WRONG!
+minetest.ipc_get("test:foo") -- returns an empty table
+```
 
 Bans
 ----
