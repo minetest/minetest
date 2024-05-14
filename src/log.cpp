@@ -253,7 +253,7 @@ const std::string Logger::getThreadName()
 
 void Logger::log(LogLevel lev, const std::string &text)
 {
-	if (m_silenced_levels[lev])
+	if (isLevelSilenced(lev))
 		return;
 
 	const std::string thread_name = getThreadName();
@@ -267,7 +267,7 @@ void Logger::log(LogLevel lev, const std::string &text)
 
 void Logger::logRaw(LogLevel lev, const std::string &text)
 {
-	if (m_silenced_levels[lev])
+	if (isLevelSilenced(lev))
 		return;
 
 	logToOutputsRaw(lev, text);

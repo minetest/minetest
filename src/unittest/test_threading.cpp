@@ -161,7 +161,7 @@ void TestThreading::testAtomicSemaphoreThread()
 
 
 
-static volatile bool g_tls_broken;
+static std::atomic<bool> g_tls_broken;
 
 class TLSTestThread : public Thread {
 public:
@@ -226,7 +226,7 @@ private:
 */
 void TestThreading::testTLS()
 {
-	static const int num_threads = 10;
+	constexpr int num_threads = 10;
 
 	for (int j = 0; j < num_threads; j++) {
 		g_tls_broken = false;

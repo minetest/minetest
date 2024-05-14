@@ -79,6 +79,10 @@ public:
 		return m_has_outputs[level].load(std::memory_order_relaxed);
 	}
 
+	bool isLevelSilenced(LogLevel level) {
+		return m_silenced_levels[level].load(std::memory_order_relaxed);
+	}
+
 	static LogColor color_mode;
 
 private:
@@ -91,11 +95,7 @@ private:
 
 	std::vector<ILogOutput *> m_outputs[LL_MAX];
 	std::atomic<bool> m_has_outputs[LL_MAX];
-
-	// Should implement atomic loads and stores (even though it's only
-	// written to when one thread has access currently).
-	// Works on all known architectures (x86, ARM, MIPS).
-	volatile bool m_silenced_levels[LL_MAX];
+	std::atomic<bool> m_silenced_levels[LL_MAX];
 	std::map<std::thread::id, std::string> m_thread_names;
 	mutable std::mutex m_mutex;
 };
