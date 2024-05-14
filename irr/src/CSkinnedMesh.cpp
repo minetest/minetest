@@ -222,6 +222,7 @@ void CSkinnedMesh::buildAllLocalAnimatedMatrices()
 
 			// IRR_TEST_BROKEN_QUATERNION_USE: TODO - switched to getMatrix_transposed instead of getMatrix for downward compatibility.
 			//								   Not tested so far if this was correct or wrong before quaternion fix!
+			// Note that using getMatrix_transposed inverts the rotation.
 			joint->Animatedrotation.getMatrix_transposed(joint->LocalAnimatedMatrix);
 
 			// --- joint->LocalAnimatedMatrix *= joint->Animatedrotation.getMatrix() ---
@@ -496,8 +497,8 @@ void CSkinnedMesh::skinJoint(SJoint *joint, SJoint *parentJoint)
 {
 	if (joint->Weights.size()) {
 		// Find this joints pull on vertices...
-		core::matrix4 jointVertexPull(core::matrix4::EM4CONST_NOTHING);
-		jointVertexPull.setbyproduct(joint->GlobalAnimatedMatrix, joint->GlobalInversedMatrix);
+		// Note: It is assumed that the global inversed matrix has been calculated at this point.
+		core::matrix4 jointVertexPull = joint->GlobalAnimatedMatrix * joint->GlobalInversedMatrix.value();
 
 		core::vector3df thisVertexMove, thisNormalMove;
 
@@ -510,8 +511,10 @@ void CSkinnedMesh::skinJoint(SJoint *joint, SJoint *parentJoint)
 			// Pull this vertex...
 			jointVertexPull.transformVect(thisVertexMove, weight.StaticPos);
 
-			if (AnimateNormals)
+			if (AnimateNormals) {
 				thisNormalMove = jointVertexPull.rotateAndScaleVect(weight.StaticNormal);
+				thisNormalMove.normalize(); // must renormalize after potentially scaling
+			}
 
 			if (!(*(weight.Moved))) {
 				*(weight.Moved) = true;
@@ -764,9 +767,9 @@ void CSkinnedMesh::calculateGlobalMatrices(SJoint *joint, SJoint *parentJoint)
 	joint->LocalAnimatedMatrix = joint->LocalMatrix;
 	joint->GlobalAnimatedMatrix = joint->GlobalMatrix;
 
-	if (joint->GlobalInversedMatrix.isIdentity()) { // might be pre calculated
+	if (!joint->GlobalInversedMatrix.has_value()) { // might be pre calculated
 		joint->GlobalInversedMatrix = joint->GlobalMatrix;
-		joint->GlobalInversedMatrix.makeInverse(); // slow
+		joint->GlobalInversedMatrix->makeInverse(); // slow
 	}
 
 	for (u32 j = 0; j < joint->Children.size(); ++j)

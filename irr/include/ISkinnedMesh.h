@@ -159,15 +159,17 @@ public:
 		core::array<SWeight> Weights;
 
 		//! Unnecessary for loaders, will be overwritten on finalize
-		core::matrix4 GlobalMatrix;
+		core::matrix4 GlobalMatrix; // loaders may still choose to set this (temporarily) to calculate absolute vertex data.
 		core::matrix4 GlobalAnimatedMatrix;
 		core::matrix4 LocalAnimatedMatrix;
+
+		//! These should be set by loaders.
 		core::vector3df Animatedposition;
 		core::vector3df Animatedscale;
 		core::quaternion Animatedrotation;
 
-		core::matrix4 GlobalInversedMatrix; // the x format pre-calculates this
-
+		// The .x and .gltf formats pre-calculate this
+		std::optional<core::matrix4> GlobalInversedMatrix;
 	private:
 		//! Internal members used by CSkinnedMesh
 		friend class CSkinnedMesh;

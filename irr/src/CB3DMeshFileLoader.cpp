@@ -390,6 +390,7 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *inJoint)
 		// Transform the Vertex position by nested node...
 		inJoint->GlobalMatrix.transformVect(Vertex.Pos);
 		Vertex.Normal = inJoint->GlobalMatrix.rotateAndScaleVect(Vertex.Normal);
+		Vertex.Normal.normalize(); // renormalize: normal might have been skewed by scaling
 
 		// Add it...
 		BaseVertices.push_back(Vertex);
