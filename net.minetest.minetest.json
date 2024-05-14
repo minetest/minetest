@@ -37,12 +37,13 @@
       "name": "minetest",
       "buildsystem": "cmake-ninja",
       "config-opts": [
+        "-DCMAKE_BUILD_TYPE=Release",
         "-DENABLE_CURSES=0",
         "-DENABLE_GETTEXT=1"
       ],
       "sources": [
         {
-          "type": "dir",
+          "type": "git",
           "path": "."
         }
       ]
