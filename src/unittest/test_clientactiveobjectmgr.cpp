@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <catch.hpp>
 
+#include <unordered_set>
 #include <utility>
 
 class TestClientActiveObject : public ClientActiveObject
@@ -85,13 +86,20 @@ TEST_CASE("test client active object manager")
 	client::ActiveObjectMgr caomgr;
 	auto tcao1 = register_default_test_object(caomgr);
 
-	SECTION("When we register a client object, "
-			"then it should be assigned a unique ID.")
+	SECTION("When we register many client objects, "
+			"then all the assigned IDs should be unique.")
 	{
-		for (int i = 0; i < UINT8_MAX; ++i) {
+		// This should be enough rounds to be pretty confident
+		// there are no duplicates.
+		u16 n = 255;
+		std::unordered_set<u16> ids;
+		ids.insert(tcao1->getId());
+		for (u16 i = 0; i < n; ++i) {
 			auto other_tcao = register_default_test_object(caomgr);
-			CHECK(other_tcao->getId() != tcao1->getId());
+			ids.insert(other_tcao->getId());
 		}
+		// n added objects & tcao1
+		CHECK(n + 1 == static_cast<u16>(ids.size()));
 	}
 
 	SECTION("two registered objects")
