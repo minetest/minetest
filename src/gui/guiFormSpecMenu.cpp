@@ -4785,7 +4785,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 
 			if (move_amount > 0) {
-				infostream << "Handing IAction::Move to manager" << std::endl;
+				infostream << "Handing IAction::Move to manager (move)" << std::endl;
 				IMoveAction *a = new IMoveAction();
 				a->count = move_amount;
 				a->from_inv = m_selected_item->inventoryloc;
@@ -4820,7 +4820,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			if (pickup_amount > 0) {
 				m_selected_amount += pickup_amount;
 
-				infostream << "Handing IAction::Move to manager" << std::endl;
+				infostream << "Handing IAction::Move to manager (pickup)" << std::endl;
 				IMoveAction *a = new IMoveAction();
 				a->count = pickup_amount;
 				a->from_inv = s.inventoryloc;
@@ -4855,7 +4855,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				if (shift_move_amount == 0)
 					break;
 
-				infostream << "Handing IAction::Move to manager" << std::endl;
+				infostream << "Handing IAction::Move to manager (shift-move)" << std::endl;
 				IMoveAction *a = new IMoveAction();
 				a->count = shift_move_amount;
 				a->from_inv = s.inventoryloc;
@@ -4879,7 +4879,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			assert(drop_amount > 0 && drop_amount <= m_selected_amount);
 			m_selected_amount -= drop_amount;
 
-			infostream << "Handing IAction::Drop to manager" << std::endl;
+			infostream << "Handing IAction::Drop to manager (drop)" << std::endl;
 			IDropAction *a = new IDropAction();
 			a->count = drop_amount;
 			a->from_inv = m_selected_item->inventoryloc;
