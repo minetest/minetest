@@ -35,7 +35,7 @@ jobs:
           major=$(grep -oP 'VERSION_MAJOR\s+\K\d+' CMakeLists.txt)
           minor=$(grep -oP 'VERSION_MINOR\s+\K\d+' CMakeLists.txt)
           patch=$(grep -oP 'VERSION_PATCH\s+\K\d+' CMakeLists.txt)
-          file_name="Minetest-$major.$minor.$patch$([[ "$add_commit" != "false" ]] && echo "-$(git rev-parse --short ${{ github.sha }})").flatpak"
+          file_name="Minetest-$major.$minor.$patch$([[ "$add_commit" != "false" ]] && echo "-$(echo ${{ github.sha }} | cut -c 1-7)").flatpak"
           echo "File name: $file_name"
           echo "FILE_NAME=$file_name" >> $GITHUB_ENV
         shell: bash
