@@ -51,7 +51,7 @@ jobs:
           upload-artifact: true
 
       - name: Generate artifact attestation
-        if: ${{ github.event_name != 'pull_request' }}
+        # if: ${{ github.event_name != 'pull_request' }}
         uses: actions/attest-build-provenance@v1
         with:
-          subject-path: minetest.flatpak
+          subject-path: ${{ env.FILE_NAME }}
