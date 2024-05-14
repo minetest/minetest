@@ -38,7 +38,7 @@ void FileCache::createDir()
 
 bool FileCache::loadByPath(const std::string &path, std::ostream &os)
 {
-	auto fis = open_ifstream(path.c_str(), true);
+	auto fis = open_ifstream(path.c_str(), false);
 	if (!fis.good())
 		return false;
 
