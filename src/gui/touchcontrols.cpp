@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "touchscreengui.h"
+#include "touchcontrols.h"
 
 #include "gettime.h"
 #include "irr_v2d.h"
@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <algorithm>
 
-TouchScreenGUI *g_touchscreengui;
+TouchControls *g_touchcontrols;
 
 static const char *button_image_names[] = {
 	"jump_btn.png",
@@ -266,14 +266,14 @@ static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 		code = keyname_to_keycode(resolved.c_str());
 	} catch (UnknownKeycode &e) {
 		code = KEY_UNKNOWN;
-		warningstream << "TouchScreenGUI: Unknown key '" << resolved
+		warningstream << "TouchControls: Unknown key '" << resolved
 			      << "' for '" << key << "', hiding button." << std::endl;
 	}
 	return code;
 }
 
 
-TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsrc):
+TouchControls::TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc):
 		m_device(device),
 		m_guienv(device->getGUIEnvironment()),
 		m_receiver(device->getEventReceiver()),
@@ -413,7 +413,7 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsr
 	}
 }
 
-void TouchScreenGUI::addButton(std::vector<button_info> &buttons, touch_gui_button_id id,
+void TouchControls::addButton(std::vector<button_info> &buttons, touch_gui_button_id id,
 		const std::string &image, const recti &rect, bool visible)
 {
 	IGUIImage *btn_gui_button = m_guienv->addImage(rect, nullptr, id);
@@ -426,7 +426,7 @@ void TouchScreenGUI::addButton(std::vector<button_info> &buttons, touch_gui_butt
 	btn.gui_button = grab_gui_element<IGUIImage>(btn_gui_button);
 }
 
-void TouchScreenGUI::addToggleButton(std::vector<button_info> &buttons, touch_gui_button_id id,
+void TouchControls::addToggleButton(std::vector<button_info> &buttons, touch_gui_button_id id,
 		const std::string &image_1, const std::string &image_2, const recti &rect, bool visible)
 {
 	addButton(buttons, id, image_1, rect, visible);
@@ -436,7 +436,7 @@ void TouchScreenGUI::addToggleButton(std::vector<button_info> &buttons, touch_gu
 	btn.toggle_textures[1] = image_2;
 }
 
-IGUIImage *TouchScreenGUI::makeButtonDirect(touch_gui_button_id id,
+IGUIImage *TouchControls::makeButtonDirect(touch_gui_button_id id,
 		const recti &rect, bool visible)
 {
 	IGUIImage *btn_gui_button = m_guienv->addImage(rect, nullptr, id);
@@ -447,7 +447,7 @@ IGUIImage *TouchScreenGUI::makeButtonDirect(touch_gui_button_id id,
 	return btn_gui_button;
 }
 
-bool TouchScreenGUI::isHotbarButton(const SEvent &event)
+bool TouchControls::isHotbarButton(const SEvent &event)
 {
 	const v2s32 touch_pos = v2s32(event.TouchInput.X, event.TouchInput.Y);
 	// check if hotbar item is pressed
@@ -462,14 +462,14 @@ bool TouchScreenGUI::isHotbarButton(const SEvent &event)
 	return false;
 }
 
-std::optional<u16> TouchScreenGUI::getHotbarSelection()
+std::optional<u16> TouchControls::getHotbarSelection()
 {
 	auto selection = m_hotbar_selection;
 	m_hotbar_selection = std::nullopt;
 	return selection;
 }
 
-void TouchScreenGUI::handleReleaseEvent(size_t pointer_id)
+void TouchControls::handleReleaseEvent(size_t pointer_id)
 {
 	// By the way: Android reuses pointer IDs, so m_pointer_pos[pointer_id]
 	// will be overwritten soon anyway.
@@ -516,15 +516,15 @@ void TouchScreenGUI::handleReleaseEvent(size_t pointer_id)
 		m_joystick_btn_bg->setVisible(false);
 		m_joystick_btn_center->setVisible(false);
 	} else {
-		infostream << "TouchScreenGUI::translateEvent released unknown button: "
+		infostream << "TouchControls::translateEvent released unknown button: "
 				<< pointer_id << std::endl;
 	}
 }
 
-void TouchScreenGUI::translateEvent(const SEvent &event)
+void TouchControls::translateEvent(const SEvent &event)
 {
 	if (!m_visible) {
-		infostream << "TouchScreenGUI::translateEvent got event but is not visible!"
+		infostream << "TouchControls::translateEvent got event but is not visible!"
 				<< std::endl;
 		return;
 	}
@@ -702,7 +702,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 	}
 }
 
-void TouchScreenGUI::applyJoystickStatus()
+void TouchControls::applyJoystickStatus()
 {
 	if (m_joystick_triggers_aux1) {
 		SEvent translated{};
@@ -718,7 +718,7 @@ void TouchScreenGUI::applyJoystickStatus()
 	}
 }
 
-void TouchScreenGUI::step(float dtime)
+void TouchControls::step(float dtime)
 {
 	if (m_overflow_open) {
 		buttons_step(m_overflow_buttons, dtime, m_device->getVideoDriver(), m_receiver, m_texturesource);
@@ -757,17 +757,17 @@ void TouchScreenGUI::step(float dtime)
 	m_had_move_id = false;
 }
 
-void TouchScreenGUI::resetHotbarRects()
+void TouchControls::resetHotbarRects()
 {
 	m_hotbar_rects.clear();
 }
 
-void TouchScreenGUI::registerHotbarRect(u16 index, const recti &rect)
+void TouchControls::registerHotbarRect(u16 index, const recti &rect)
 {
 	m_hotbar_rects[index] = rect;
 }
 
-void TouchScreenGUI::setVisible(bool visible)
+void TouchControls::setVisible(bool visible)
 {
 	if (m_visible == visible)
 		return;
@@ -781,14 +781,14 @@ void TouchScreenGUI::setVisible(bool visible)
 	updateVisibility();
 }
 
-void TouchScreenGUI::toggleOverflowMenu()
+void TouchControls::toggleOverflowMenu()
 {
 	releaseAll(); // must be done first
 	m_overflow_open = !m_overflow_open;
 	updateVisibility();
 }
 
-void TouchScreenGUI::updateVisibility()
+void TouchControls::updateVisibility()
 {
 	bool regular_visible = m_visible && !m_overflow_open;
 	for (auto &button : m_buttons)
@@ -804,7 +804,7 @@ void TouchScreenGUI::updateVisibility()
 		text->setVisible(overflow_visible);
 }
 
-void TouchScreenGUI::releaseAll()
+void TouchControls::releaseAll()
 {
 	while (!m_pointer_pos.empty())
 		handleReleaseEvent(m_pointer_pos.begin()->first);
@@ -821,17 +821,17 @@ void TouchScreenGUI::releaseAll()
 	}
 }
 
-void TouchScreenGUI::hide()
+void TouchControls::hide()
 {
 	setVisible(false);
 }
 
-void TouchScreenGUI::show()
+void TouchControls::show()
 {
 	setVisible(true);
 }
 
-v2s32 TouchScreenGUI::getPointerPos()
+v2s32 TouchControls::getPointerPos()
 {
 	if (m_draw_crosshair)
 		return v2s32(m_screensize.X / 2, m_screensize.Y / 2);
@@ -840,7 +840,7 @@ v2s32 TouchScreenGUI::getPointerPos()
 	return m_move_pos;
 }
 
-void TouchScreenGUI::emitMouseEvent(EMOUSE_INPUT_EVENT type)
+void TouchControls::emitMouseEvent(EMOUSE_INPUT_EVENT type)
 {
 	v2s32 pointer_pos = getPointerPos();
 
@@ -855,7 +855,7 @@ void TouchScreenGUI::emitMouseEvent(EMOUSE_INPUT_EVENT type)
 	m_receiver->OnEvent(event);
 }
 
-void TouchScreenGUI::applyContextControls(const TouchInteractionMode &mode)
+void TouchControls::applyContextControls(const TouchInteractionMode &mode)
 {
 	// Since the pointed thing has already been determined when this function
 	// is called, we cannot use this function to update the shootline.

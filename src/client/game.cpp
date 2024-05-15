@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content/subgames.h"
 #include "client/event_manager.h"
 #include "fontengine.h"
-#include "gui/touchscreengui.h"
+#include "gui/touchcontrols.h"
 #include "itemdef.h"
 #include "log.h"
 #include "filesys.h"
@@ -1245,8 +1245,8 @@ void Game::shutdown()
 	// Clear text when exiting.
 	m_game_ui->clearText();
 
-	if (g_touchscreengui)
-		g_touchscreengui->hide();
+	if (g_touchcontrols)
+		g_touchcontrols->hide();
 
 	// only if the shutdown progress bar isn't shown yet
 	if (m_shutdown_progress == 0.0f)
@@ -1510,8 +1510,8 @@ bool Game::createClient(const GameStartData &start_data)
 		client->getScript()->on_camera_ready(camera);
 	client->setCamera(camera);
 
-	if (g_touchscreengui) {
-		g_touchscreengui->setUseCrosshair(!isTouchCrosshairDisabled());
+	if (g_touchcontrols) {
+		g_touchcontrols->setUseCrosshair(!isTouchCrosshairDisabled());
 	}
 
 	/* Clouds
@@ -1579,7 +1579,7 @@ bool Game::initGui()
 			-1, chat_backend, client, &g_menumgr);
 
 	if (g_settings->getBool("enable_touch"))
-		g_touchscreengui = new TouchScreenGUI(device, texture_src);
+		g_touchcontrols = new TouchControls(device, texture_src);
 
 	return true;
 }
@@ -2027,15 +2027,15 @@ void Game::processUserInput(f32 dtime)
 			input->clear();
 		}
 
-		if (g_touchscreengui)
-			g_touchscreengui->hide();
+		if (g_touchcontrols)
+			g_touchcontrols->hide();
 
 	} else {
-		if (g_touchscreengui) {
-			/* on touchscreengui step may generate own input events which ain't
+		if (g_touchcontrols) {
+			/* on touchcontrols step may generate own input events which ain't
 			 * what we want in case we just did clear them */
-			g_touchscreengui->show();
-			g_touchscreengui->step(dtime);
+			g_touchcontrols->show();
+			g_touchcontrols->step(dtime);
 		}
 
 		m_game_focused = true;
@@ -2230,8 +2230,8 @@ void Game::processItemSelection(u16 *new_playeritem)
 		}
 	}
 
-	if (g_touchscreengui) {
-		std::optional<u16> selection = g_touchscreengui->getHotbarSelection();
+	if (g_touchcontrols) {
+		std::optional<u16> selection = g_touchcontrols->getHotbarSelection();
 		if (selection)
 			*new_playeritem = *selection;
 	}
@@ -2636,7 +2636,7 @@ void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 	this results in duplicated input. To avoid that, we don't enable relative
 	mouse mode if we're in touchscreen mode. */
 	if (cur_control)
-		cur_control->setRelativeMode(!g_touchscreengui && !isMenuActive());
+		cur_control->setRelativeMode(!g_touchcontrols && !isMenuActive());
 
 	if ((device->isWindowActive() && device->isWindowFocused()
 			&& !isMenuActive()) || input->isRandom()) {
@@ -2679,9 +2679,9 @@ f32 Game::getSensitivityScaleFactor() const
 
 void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 {
-	if (g_touchscreengui) {
-		cam->camera_yaw   += g_touchscreengui->getYawChange();
-		cam->camera_pitch += g_touchscreengui->getPitchChange();
+	if (g_touchcontrols) {
+		cam->camera_yaw   += g_touchcontrols->getYawChange();
+		cam->camera_pitch += g_touchcontrols->getPitchChange();
 	} else {
 		v2s32 center(driver->getScreenSize().Width / 2, driver->getScreenSize().Height / 2);
 		v2s32 dist = input->getMousePos() - center;
@@ -2746,7 +2746,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	 * touch then its meaning is inverted (i.e. holding aux1 means walk and
 	 * not fast)
 	 */
-	if (g_touchscreengui && m_touch_simulate_aux1) {
+	if (g_touchcontrols && m_touch_simulate_aux1) {
 		control.aux1 = control.aux1 ^ true;
 	}
 
@@ -3235,8 +3235,8 @@ void Game::updateCamera(f32 dtime)
 
 		camera->toggleCameraMode();
 
-		if (g_touchscreengui)
-			g_touchscreengui->setUseCrosshair(!isTouchCrosshairDisabled());
+		if (g_touchcontrols)
+			g_touchcontrols->setUseCrosshair(!isTouchCrosshairDisabled());
 
 		// Make the player visible depending on camera mode.
 		playercao->updateMeshCulling();
@@ -3337,8 +3337,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	}
 	shootline.end = shootline.start + camera_direction * BS * d;
 
-	if (g_touchscreengui && isTouchCrosshairDisabled()) {
-		shootline = g_touchscreengui->getShootline();
+	if (g_touchcontrols && isTouchCrosshairDisabled()) {
+		shootline = g_touchcontrols->getShootline();
 		// Scale shootline to the acual distance the player can reach
 		shootline.end = shootline.start +
 				shootline.getVector().normalize() * BS * d;
@@ -3355,9 +3355,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	if (pointed != runData.pointed_old)
 		infostream << "Pointing at " << pointed.dump() << std::endl;
 
-	if (g_touchscreengui) {
+	if (g_touchcontrols) {
 		auto mode = selected_def.touch_interaction.getMode(pointed.type);
-		g_touchscreengui->applyContextControls(mode);
+		g_touchcontrols->applyContextControls(mode);
 	}
 
 	// Note that updating the selection mesh every frame is not particularly efficient,
@@ -4348,7 +4348,7 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 			(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
 			(this->camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
 
-	if (g_touchscreengui && isTouchCrosshairDisabled())
+	if (g_touchcontrols && isTouchCrosshairDisabled())
 		draw_crosshair = false;
 
 	this->m_rendering_engine->draw_scene(sky_color, this->m_game_ui->m_flags.show_hud,
@@ -4459,7 +4459,7 @@ void Game::showPauseMenu()
 {
 	std::string control_text;
 
-	if (g_touchscreengui) {
+	if (g_touchcontrols) {
 		control_text = strgettext("Controls:\n"
 			"No menu open:\n"
 			"- slide finger: look around\n"

@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiInventoryList.h"
 #include "porting.h"
 #include "settings.h"
-#include "touchscreengui.h"
+#include "touchcontrols.h"
 
 PointerAction PointerAction::fromEvent(const SEvent &event) {
 	switch (event.EventType) {
@@ -111,8 +111,8 @@ void GUIModalMenu::quitMenu()
 	Environment->removeFocus(this);
 	m_menumgr->deletingMenu(this);
 	this->remove();
-	if (g_touchscreengui)
-		g_touchscreengui->show();
+	if (g_touchcontrols)
+		g_touchcontrols->show();
 }
 
 static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
