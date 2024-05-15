@@ -55,6 +55,7 @@ jobs:
       - name: CPack
         run: |
           cd build
+          cmake .. -DINSTALL_DEVTEST=FALSE
           cpack -G ZIP -B macos
 
       - uses: actions/upload-artifact@v4
