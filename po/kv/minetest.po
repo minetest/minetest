@@ -8,178 +8,181 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-05-27 12:33+0000\n"
+"Last-Translator: Mićadźoridź <otto.grotovel@gmail.com>\n"
+"Language-Team: Komi <https://hosted.weblate.org/projects/minetest/minetest/"
+"kv/>\n"
 "Language: kv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "Гижӧм команда: "
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr ""
+msgstr "Куш команда."
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr ""
+msgstr "Торксьӧм команда: "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr ""
+msgstr "Везйын ворсысьяслӧн лыддьӧг"
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Сервер тайӧ командасӧ кусӧдіс."
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr ""
+msgstr "Ворсысьяс везйын: "
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
-msgstr ""
+msgstr "Медшӧр менюӧ петны"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr ""
+msgstr "Чат лёдз чышкыны"
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "Чат лёдз ӧні тыртӧм."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr ""
+msgstr "Кулінныд"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "Ловзьыны"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
-msgstr ""
+msgstr "Восьса командаяс: "
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
-msgstr ""
+msgstr "Гиж «.help <cmd>» содтӧд юӧрла али «.help all» — тыр лыддьӧгла."
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
-msgstr ""
+msgstr "Восьса командаяс:"
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Командаыс сиптӧма: "
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <команда>]"
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "Командаяс йылысь юӧр босьтны"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "ОК"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
-msgstr ""
+msgstr "<сиптӧма>"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Сервер корис выльысь йитчыны:"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr ""
+msgstr "Выльысь йитчыны"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr ""
+msgstr "Медшӧр меню"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr ""
+msgstr "Lua скриптын торксьӧм лоис:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
-msgstr ""
+msgstr "Торксьӧм лоис:"
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Серверыс протоколлӧн $1-сянь $2-ӧдз версияын уджалӧ. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Серверыс корӧ $1 версия. "
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Ми сӧмын протоколлӧн $1-сянь $2-ӧдз версияын уджалам."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Ми сӧмын протоколлӧн $1 версияын уджалам."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "Протоколлӧн версияыс оз лӧсяв. "
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB оз уджав, Minetest cURL-тӧг кӧ компиляторӧн тэчӧма"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "Став содтӧдъяс"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Games"
-msgstr ""
+msgstr "Ворсӧмъяс"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Mods"
-msgstr ""
+msgstr "Модъяс"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr ""
+msgstr "Текстура чукӧр"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Failed to download \"$1\""
-msgstr ""
+msgstr "«$1» бӧсьтӧм эз артмы"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr ""
+msgstr "«$1» перйыны эз артмы (уджавтӧм файл сикас али жугалӧм топӧдӧм файл)"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "«$1» пуктӧмигӧн тӧрксьӧм лоис: $2"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr ""
+msgstr "$1 бӧсьтӧм эз артмы"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Already installed"
-msgstr ""
+msgstr "Нин пуктӧма"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$2-ысь $1"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Not found"
-msgstr ""
+msgstr "Абу аддзӧма"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
@@ -199,11 +202,12 @@ msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Install $1"
-msgstr ""
+msgstr "Пуктыны $1"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
 msgid "Base Game:"
-msgstr ""
+msgstr "Медшӧр ворсӧм:"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
@@ -216,7 +220,7 @@ msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Install"
-msgstr ""
+msgstr "Пуктыны"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
@@ -226,133 +230,135 @@ msgstr ""
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 #: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr ""
+msgstr "Дугӧдны"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "«$1» нин эм. Выльысь гижны?"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Выльысь гижны"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "Мод пуктытӧдз тіянлы колӧ ворсӧм пуктыны"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "The package $1 was not found."
-msgstr ""
+msgstr "$1 содтӧдыс абу аддзӧма."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr ""
+msgstr "Медшӧр менюӧ бӧр"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
-msgstr ""
+msgstr "Тэчсьӧм..."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "Содтӧдъяс босьтны эз артмы"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 бӧсьтчӧ,\n"
+"$2 виччысьӧ"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 downloading..."
-msgstr ""
+msgstr "$1 бӧсьтчӧ…"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "No updates"
-msgstr ""
+msgstr "Выльмӧдӧмъяс абуӧсь"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Выльмӧдны ставсӧ [$1]"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "No results"
-msgstr ""
+msgstr "Нинӧм абу аддзӧма"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Downloading..."
-msgstr ""
+msgstr "Босьтсьӧм..."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "Лёдзын"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
 msgid "Update"
-msgstr ""
+msgstr "Выльмӧдны"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall"
-msgstr ""
+msgstr "Бырӧдны"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Видзӧдны ӧтуввезын содтӧм юӧр"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
-msgstr ""
+msgstr "$1 (Ӧзтӧма)"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
-msgstr ""
+msgstr "Текстура чукӧр моз $1 пуктыны эз артмы"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr ""
+msgstr "$2-ӧ $1 пуктыны эз артмы"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr ""
+msgstr "Колана мод видзан куд, мод чукӧр али вӧрсӧм аддзыны эз артмы"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to install a $1 as a $2"
-msgstr ""
+msgstr "$2 моз $1 пуктыны эз артмы"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr ""
+msgstr "Пуктӧм: $1-лы шогмана ним аддзыны эз артмы"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
-msgstr ""
+msgstr "$1 мод"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "Енкӧла:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr ""
+msgstr "Мод чукӧр йывсыс юӧр видзӧдлыны оз позь."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr ""
+msgstr "Ворсӧм йывсьыс юӧр видзӧдлыны оз позь."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(Лёка)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Ӧзтӧма, торксьӧмъяс эмӧсь)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr ""
+msgstr "Мод:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
@@ -374,41 +380,43 @@ msgstr ""
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr ""
+msgstr "Видзны"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Унджык мод аддзыны"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr ""
+msgstr "Мод чукӧр кусӧдны"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr ""
+msgstr "Мод чукӧр ӧзтыны"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr ""
+msgstr "ӧзтӧма"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr ""
+msgstr "Ставсӧ кусӧдны"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr ""
+msgstr "Ставсӧ ӧзтыны"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
+"«$1» модасӧ ӧзтыны эз артмы, сыын позьтӧм пасъяс эмӧсь. Позьӧ гижны сӧмын "
+"татшӧм пасъясыс: [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
-msgstr ""
+msgstr "Рудӧгувъяс"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
@@ -416,23 +424,23 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
-msgstr ""
+msgstr "Юяс"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Саридз веркӧс судта юяс"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Керӧсъяс"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "Енэжвывса діяс (экспериментӧн)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "Енэжвывса діяс"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -452,7 +460,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
-msgstr ""
+msgstr "Юяслӧн васӧдлун"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
@@ -468,11 +476,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Мылькъяс"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Тыяс"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
@@ -480,19 +488,19 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Вӧчны фракталтӧм ин: саридзьяс да муувъяс"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Пуяс да тропик турунъяс"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Тшӧтшкӧсін"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Ызгысь шор"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
@@ -500,23 +508,23 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "Шӧр климат, Пустыня, Джунгли, Тундра, Парма"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Шӧр климат, Пустыня, Джунгли"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Шӧр климат, Пустыня"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caves"
-msgstr ""
+msgstr "Рудӧгъяс"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
-msgstr ""
+msgstr "Муувъяс"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
@@ -538,15 +546,16 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
-msgstr ""
+msgstr "Биомъяс"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "Биомъяс костын лайкыд вуджӧм"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
@@ -558,57 +567,57 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr ""
+msgstr "Енкӧлалӧн нимыс"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Seed"
-msgstr ""
+msgstr "Сид"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr ""
+msgstr "Мапген"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
-msgstr ""
+msgstr "Development Test артмӧдысьяслы вӧчӧма."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr ""
+msgstr "Мӧд вӧрсӧмсӧ пуктыны"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr ""
+msgstr "Вӧчны"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
-msgstr ""
+msgstr "Ворсӧмыс абу бӧрйӧма"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "«$1» нима енкӧла нин эм"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "Инаысь-ӧ кӧсъянныд «$1» бырӧдны?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 msgid "Delete"
-msgstr ""
+msgstr "Бырӧдны"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "pkgmgr: «$1» бырӧдны эз артмы"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr ""
+msgstr "pkgmgr: торксьӧм «$1» туйыс"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "«$1» енкӧла бырӧдны?"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
@@ -617,28 +626,28 @@ msgstr ""
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Name"
-msgstr ""
+msgstr "Ним"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Password"
-msgstr ""
+msgstr "Гусякыв"
 
 #: builtin/mainmenu/dlg_register.lua src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr ""
+msgstr "Гусякывтӧ вынсьӧд"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 msgid "Register"
-msgstr ""
+msgstr "Регистрация"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
-msgstr ""
+msgstr "Нимыс абу"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Passwords do not match"
-msgstr ""
+msgstr "Гусякывъясыс эз ӧтлаасьны"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Minetest Game is no longer installed by default"
@@ -663,11 +672,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Reinstall Minetest Game"
-msgstr ""
+msgstr "Minetest Game вылысь пуктыны"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr ""
+msgstr "Босьтны"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
@@ -677,47 +686,54 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Мод чукӧрлы выль ним сетны:"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
-msgstr ""
+msgstr "Выль $1 версия восьтӧма"
 
 #: builtin/mainmenu/dlg_version_info.lua
+#, fuzzy
 msgid ""
 "Installed version: $1\n"
 "New version: $2\n"
 "Visit $3 to find out how to get the newest version and stay up to date with "
 "features and bugfixes."
 msgstr ""
+"Пуктӧм версия: $1\n"
+"Выль версия: $2\n"
+"$3-ӧ пырӧй медвыль версия босьтӧмла да выль функцияяс да веськӧдӧмъяс йылысь "
+"тӧдмалӧмла."
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Visit website"
-msgstr ""
+msgstr "Сайтӧ пырны"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Later"
-msgstr ""
+msgstr "Бӧрынджык"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Never"
-msgstr ""
+msgstr "Некор"
 
 #: builtin/mainmenu/init.lua
 msgid "Settings"
-msgstr ""
+msgstr "Лӧсьӧданін"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Видлӧй восьса серверъяслысь лыддьӧгнысӧ выльмӧдны да видлӧй ӧтуввезкӧд "
+"йитчӧмсӧ."
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
-msgstr ""
+msgstr "Восьса серверъяслӧн лыддьӧг кусӧдӧма"
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Set"
-msgstr ""
+msgstr "Индыны"
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Browse"
@@ -725,45 +741,48 @@ msgstr ""
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Select directory"
-msgstr ""
+msgstr "Куд бӧрйыны"
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Select file"
-msgstr ""
+msgstr "Файл бӧрйыны"
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Edit"
-msgstr ""
+msgstr "Вежны"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Offset"
-msgstr ""
+msgstr "Вештӧм"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 #: src/settings_translation_file.cpp
 msgid "Scale"
-msgstr ""
+msgstr "Бердӧг"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#, fuzzy
 msgid "X spread"
-msgstr ""
+msgstr "X паськалӧм"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#, fuzzy
 msgid "Y spread"
-msgstr ""
+msgstr "Y паськалӧм"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "2D Noise"
-msgstr ""
+msgstr "2D шувгӧм"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Z spread"
-msgstr ""
+msgstr "Z паськалӧм"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Octaves"
-msgstr ""
+msgstr "Октавъяс"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Persistence"
@@ -778,7 +797,7 @@ msgstr ""
 #. for noise settings in the settings menu.
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "defaults"
-msgstr ""
+msgstr "подув ногӧн"
 
 #. ~ "eased" is a noise parameter flag.
 #. It is used to make the map smoother and
@@ -798,36 +817,37 @@ msgstr ""
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(Лӧсьӧдӧм йывсьыс юӧр абу)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
 msgid "Change Keys"
-msgstr ""
+msgstr "Личканъяс вежны"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Accessibility"
-msgstr ""
+msgstr "Восьсалун"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "Медшӧр"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
-msgstr ""
+msgstr "Чат"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "Controls"
-msgstr ""
+msgstr "Веськӧдлӧм"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
 msgid "Movement"
-msgstr ""
+msgstr "Вештӧм"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
-msgstr ""
+msgstr "(Системалӧн кывйыс)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
@@ -835,19 +855,19 @@ msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "Техника нимъяс петкӧдлыны"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
-msgstr ""
+msgstr "Унджык лӧсьӧдӧм петкӧдлыны"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr ""
+msgstr "Корсьны"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Clear"
-msgstr ""
+msgstr "Чышкыны"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
@@ -859,19 +879,19 @@ msgstr ""
 
 #: builtin/mainmenu/settings/settingtypes.lua
 msgid "Content: Games"
-msgstr ""
+msgstr "Содтӧдъяс: ворсӧмъяс"
 
 #: builtin/mainmenu/settings/settingtypes.lua
 msgid "Content: Mods"
-msgstr ""
+msgstr "Содтӧдъяс: модъяс"
 
 #: builtin/mainmenu/settings/settingtypes.lua
 msgid "Client Mods"
-msgstr ""
+msgstr "Клиентъяслӧн модъяс"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Disabled"
-msgstr ""
+msgstr "Кусӧдӧма"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Very Low"
@@ -900,7 +920,7 @@ msgstr ""
 #: builtin/mainmenu/settings/shadows_component.lua
 #: src/settings_translation_file.cpp
 msgid "Dynamic shadows"
-msgstr ""
+msgstr "Динамикаа вуджӧръяс"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
@@ -908,15 +928,17 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "Унджык"
 
 #: builtin/mainmenu/tab_about.lua
+#, fuzzy
 msgid "Core Developers"
-msgstr ""
+msgstr "Медшӧр артмӧдысь"
 
 #: builtin/mainmenu/tab_about.lua
+#, fuzzy
 msgid "Core Team"
-msgstr ""
+msgstr "Медшӧр котыр"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -947,10 +969,12 @@ msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Восьтӧ файл веськӧдланінын вӧдитчысьлӧн енкӧлаяс, ворсӧмъяс, модъяс\n"
+"да текстура чукӧр видзан кудсӧ."
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
-msgstr ""
+msgstr "Вӧдитчысьлысь мыччӧдсӧ видзан куд восьтыны"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -962,7 +986,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
-msgstr ""
+msgstr "Пуктӧм содтӧдъяс:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Update available?"
@@ -974,7 +998,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr ""
+msgstr "Выль ним сетны"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -986,27 +1010,27 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
-msgstr ""
+msgstr "Текстура чукӧрсӧ ӧзтыны"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
-msgstr ""
+msgstr "Содтӧдъяс"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content [$1]"
-msgstr ""
+msgstr "Содтӧдъяс [$1]"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "ContentDB-ысь вӧрсӧмъяс пуктыны"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "You have no games installed."
-msgstr ""
+msgstr "Тіянлӧн пуктӧм ворсӧмъяс абуӧсь."
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install a game"
-msgstr ""
+msgstr "Ворсӧм пуктыны"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Creative Mode"
@@ -1022,15 +1046,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select Mods"
-msgstr ""
+msgstr "Модъяс бӧрйӧм"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
-msgstr ""
+msgstr "Выль"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
-msgstr ""
+msgstr "Енкӧла бӧрйыны:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Game"
@@ -1054,31 +1078,31 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
-msgstr ""
+msgstr "Ворсны"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
-msgstr ""
+msgstr "Енкӧла абу бӧрйӧма/абу вӧчӧма!"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Start Game"
-msgstr ""
+msgstr "Ворсны кутны"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
-msgstr ""
+msgstr "Выльмӧдны"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
-msgstr ""
+msgstr "Инпас"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
-msgstr ""
+msgstr "Сервер йывсьыс юӧр"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "Пырны"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Remove favorite"
@@ -1094,20 +1118,21 @@ msgstr ""
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
+#, fuzzy
 msgid "Damage / PvP"
-msgstr ""
+msgstr "Воштӧм / PvP"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Favorites"
-msgstr ""
+msgstr "Бӧрйӧмъяс"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Public Servers"
-msgstr ""
+msgstr "Восьса серверъяс"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr ""
+msgstr "Ӧта-мӧдкӧд лӧсявтӧм серверъясыс"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
@@ -1123,11 +1148,11 @@ msgstr ""
 
 #: src/client/client.cpp
 msgid "Loading textures..."
-msgstr ""
+msgstr "Текстураяс тэчӧм..."
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
-msgstr ""
+msgstr "Шейдӧръяс тэчӧм..."
 
 #: src/client/client.cpp
 msgid "Initializing nodes..."
@@ -1139,11 +1164,11 @@ msgstr ""
 
 #: src/client/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "Дась!"
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
-msgstr ""
+msgstr "Медшӧр Меню"
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
@@ -1151,19 +1176,19 @@ msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr ""
+msgstr "Сетӧм гусякыла файлсӧ восьтны эз артмы: "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr ""
+msgstr "Ен могысь, ним бӧрйы!"
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "Ворсысьлӧн нимыс вывті кузь."
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "Енкӧла абу бӧрйӧма да инпас абу индӧма. Нинӧм вӧчны."
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -1171,28 +1196,28 @@ msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
-msgstr ""
+msgstr "Ворсӧмсӧ аддзыны/пуктыны эз артмы: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "Торксьӧм ворсан конфигурацияыс."
 
 #: src/client/game.cpp
 msgid "Shutting down..."
-msgstr ""
+msgstr "Помасьӧм..."
 
 #: src/client/game.cpp
 msgid "Creating server..."
-msgstr ""
+msgstr "Сервер вӧчӧм..."
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
-msgstr ""
+msgstr "IPv6 кусӧдӧма, сы вӧсна %s кывзыны эз артмы"
 
 #: src/client/game.cpp
 msgid "Creating client..."
-msgstr ""
+msgstr "Клиентӧс вӧчӧм..."
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
@@ -1248,15 +1273,15 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Media..."
-msgstr ""
+msgstr "Медия файлъяс..."
 
 #: src/client/game.cpp
 msgid "KiB/s"
-msgstr ""
+msgstr "КиБ/с"
 
 #: src/client/game.cpp
 msgid "MiB/s"
-msgstr ""
+msgstr "МиБ/с"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1272,7 +1297,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "Шы система кусӧдӧма"
 
 #: src/client/game.cpp
 #, c-format
@@ -1285,7 +1310,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "ok"
-msgstr ""
+msgstr "ок"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled"
@@ -1495,7 +1520,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr ""
+msgstr "Гусякывсӧ вежны"
 
 #: src/client/game.cpp
 msgid "Game paused"
@@ -1503,19 +1528,19 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Sound Volume"
-msgstr ""
+msgstr "Шы горалун"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Менюӧ петны"
 
 #: src/client/game.cpp
 msgid "Exit to OS"
-msgstr ""
+msgstr "Вӧрсӧмсьыс петны"
 
 #: src/client/game.cpp
 msgid "Game info:"
-msgstr ""
+msgstr "Ворсӧм йывсьыс юӧр:"
 
 #: src/client/game.cpp
 msgid "- Mode: "
@@ -1527,7 +1552,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "- Address: "
-msgstr ""
+msgstr "- Инпас: "
 
 #: src/client/game.cpp
 msgid "Hosting server"
@@ -1535,28 +1560,28 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "- Port: "
-msgstr ""
+msgstr "- Йитанін: "
 
 #: src/client/game.cpp
 msgid "On"
-msgstr ""
+msgstr "Ӧзтӧма"
 
 #: src/client/game.cpp
 msgid "Off"
-msgstr ""
+msgstr "Кусӧдӧма"
 
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
-msgstr ""
+msgstr "- РvP: "
 
 #: src/client/game.cpp
 msgid "- Public: "
-msgstr ""
+msgstr "- Восьса: "
 
 #: src/client/game.cpp
 msgid "- Server Name: "
-msgstr ""
+msgstr "- Серверлӧн нимыс: "
 
 #: src/client/game.cpp
 #, c-format
@@ -1604,90 +1629,90 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Left Button"
-msgstr ""
+msgstr "Шуйга личкантор"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
-msgstr ""
+msgstr "Веськыд личкантор"
 
 #. ~ Usually paired with the Pause key
 #: src/client/keycode.cpp
 msgid "Break Key"
-msgstr ""
+msgstr "Break"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
-msgstr ""
+msgstr "Шӧр личкантор"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
-msgstr ""
+msgstr "Медводдза X личкантор"
 
 #: src/client/keycode.cpp
 msgid "X Button 2"
-msgstr ""
+msgstr "Мӧд X личкантор"
 
 #: src/client/keycode.cpp
 msgid "Backspace"
-msgstr ""
+msgstr "Shift"
 
 #: src/client/keycode.cpp
 msgid "Tab"
-msgstr ""
+msgstr "Tab"
 
 #: src/client/keycode.cpp
 msgid "Clear Key"
-msgstr ""
+msgstr "Clear"
 
 #: src/client/keycode.cpp
 msgid "Return Key"
-msgstr ""
+msgstr "Enter"
 
 #: src/client/keycode.cpp
 msgid "Shift Key"
-msgstr ""
+msgstr "Shift"
 
 #: src/client/keycode.cpp
 msgid "Control Key"
-msgstr ""
+msgstr "Ctrl"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu Key"
-msgstr ""
+msgstr "Menu"
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
 msgid "Pause Key"
-msgstr ""
+msgstr "Pause"
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
-msgstr ""
+msgstr "Caps Lock"
 
 #: src/client/keycode.cpp
 msgid "Space"
-msgstr ""
+msgstr "Space"
 
 #: src/client/keycode.cpp
 msgid "Page Up"
-msgstr ""
+msgstr "Page Up"
 
 #: src/client/keycode.cpp
 msgid "Page Down"
-msgstr ""
+msgstr "Page Down"
 
 #: src/client/keycode.cpp
 msgid "End"
-msgstr ""
+msgstr "End"
 
 #: src/client/keycode.cpp
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: src/client/keycode.cpp
 msgid "Left Arrow"
-msgstr ""
+msgstr "Шуйгалань"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
@@ -1695,7 +1720,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Right Arrow"
-msgstr ""
+msgstr "Веськыдлань"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
@@ -1709,127 +1734,128 @@ msgstr ""
 #. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
-msgstr ""
+msgstr "Print Screen"
 
 #: src/client/keycode.cpp
+#, fuzzy
 msgid "Execute"
-msgstr ""
+msgstr "Лэдзны"
 
 #: src/client/keycode.cpp
 msgid "Snapshot"
-msgstr ""
+msgstr "Snapshot"
 
 #: src/client/keycode.cpp
 msgid "Insert"
-msgstr ""
+msgstr "Insert"
 
 #: src/client/keycode.cpp
 msgid "Delete Key"
-msgstr ""
+msgstr "Delete"
 
 #: src/client/keycode.cpp
 msgid "Help"
-msgstr ""
+msgstr "Help"
 
 #: src/client/keycode.cpp
 msgid "Left Windows"
-msgstr ""
+msgstr "Шуйга Win"
 
 #: src/client/keycode.cpp
 msgid "Right Windows"
-msgstr ""
+msgstr "Веськыд Win"
 
 #: src/client/keycode.cpp
 msgid "Numpad 0"
-msgstr ""
+msgstr "Numpad вывса 0"
 
 #: src/client/keycode.cpp
 msgid "Numpad 1"
-msgstr ""
+msgstr "Numpad вывса 1"
 
 #: src/client/keycode.cpp
 msgid "Numpad 2"
-msgstr ""
+msgstr "Numpad вывса 2"
 
 #: src/client/keycode.cpp
 msgid "Numpad 3"
-msgstr ""
+msgstr "Numpad вывса 3"
 
 #: src/client/keycode.cpp
 msgid "Numpad 4"
-msgstr ""
+msgstr "Numpad вывса 4"
 
 #: src/client/keycode.cpp
 msgid "Numpad 5"
-msgstr ""
+msgstr "Numpad вывса 5"
 
 #: src/client/keycode.cpp
 msgid "Numpad 6"
-msgstr ""
+msgstr "Numpad вывса 6"
 
 #: src/client/keycode.cpp
 msgid "Numpad 7"
-msgstr ""
+msgstr "Numpad вывса 7"
 
 #: src/client/keycode.cpp
 msgid "Numpad 8"
-msgstr ""
+msgstr "Numpad вывса 8"
 
 #: src/client/keycode.cpp
 msgid "Numpad 9"
-msgstr ""
+msgstr "Numpad вывса 9"
 
 #: src/client/keycode.cpp
 msgid "Numpad *"
-msgstr ""
+msgstr "Numpad вывса *"
 
 #: src/client/keycode.cpp
 msgid "Numpad +"
-msgstr ""
+msgstr "Numpad вывса +"
 
 #: src/client/keycode.cpp
 msgid "Numpad ."
-msgstr ""
+msgstr "Numpad вывса ."
 
 #: src/client/keycode.cpp
 msgid "Numpad -"
-msgstr ""
+msgstr "Numpad вывса -"
 
 #: src/client/keycode.cpp
 msgid "Numpad /"
-msgstr ""
+msgstr "Numpad вывса /"
 
 #: src/client/keycode.cpp
 msgid "Num Lock"
-msgstr ""
+msgstr "Num Lock"
 
 #: src/client/keycode.cpp
 msgid "Scroll Lock"
-msgstr ""
+msgstr "Scroll Lock"
 
 #: src/client/keycode.cpp
 msgid "Left Shift"
-msgstr ""
+msgstr "Шуйга Shift"
 
 #: src/client/keycode.cpp
 msgid "Right Shift"
-msgstr ""
+msgstr "Веськыд Shift"
 
 #: src/client/keycode.cpp
 msgid "Left Control"
-msgstr ""
+msgstr "Шуйга Ctrl"
 
 #: src/client/keycode.cpp
 msgid "Right Control"
-msgstr ""
+msgstr "Веськыд Ctrl"
 
 #: src/client/keycode.cpp
 msgid "Left Menu"
-msgstr ""
+msgstr "Шуйга Alt"
 
 #: src/client/keycode.cpp
 msgid "Right Menu"
-msgstr ""
+msgstr "Веськыд Alt"
 
 #: src/client/keycode.cpp
 msgid "IME Escape"
@@ -1853,11 +1879,11 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Apps"
-msgstr ""
+msgstr "Уджтасъяс"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
-msgstr ""
+msgstr "Узьны"
 
 #: src/client/keycode.cpp
 msgid "Erase EOF"
@@ -1865,11 +1891,11 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Play"
-msgstr ""
+msgstr "Ворсны"
 
 #: src/client/keycode.cpp
 msgid "Zoom Key"
-msgstr ""
+msgstr "Zoom"
 
 #: src/client/keycode.cpp
 msgid "OEM Clear"
@@ -1901,7 +1927,7 @@ msgstr ""
 #: src/content/mod_configuration.cpp
 #, c-format
 msgid "%s is missing:"
-msgstr ""
+msgstr "%s абу:"
 
 #: src/content/mod_configuration.cpp
 msgid ""
@@ -1932,15 +1958,16 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "\"Aux1\" = climb down"
-msgstr ""
+msgstr "«Aux1» = лэччӧм"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+#, fuzzy
 msgid "Automatic jumping"
-msgstr ""
+msgstr "Автоматика чеччалӧм"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Key already in use"
@@ -1948,15 +1975,15 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr ""
+msgstr "личканторсӧ личкӧй"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Forward"
-msgstr ""
+msgstr "Водзӧ"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
-msgstr ""
+msgstr "Бӧрӧ"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
@@ -1968,19 +1995,19 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Aux1"
-msgstr ""
+msgstr "Aux1"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Jump"
-msgstr ""
+msgstr "Чеччыштны"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Sneak"
-msgstr ""
+msgstr "Кыйксьӧдны"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
-msgstr ""
+msgstr "Чӧвтны"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inventory"
@@ -2040,11 +2067,12 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
-msgstr ""
+msgstr "Скриншот"
 
 #: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
 msgid "Range select"
-msgstr ""
+msgstr "Тыдалан шымыртӧм"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. range"
@@ -2056,19 +2084,20 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Console"
-msgstr ""
+msgstr "Консоль"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Command"
-msgstr ""
+msgstr "Команда"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
 msgid "Block bounds"
-msgstr ""
+msgstr "Блок доръяс"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
@@ -2084,28 +2113,28 @@ msgstr ""
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Old Password"
-msgstr ""
+msgstr "Важ гусякыв"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "New Password"
-msgstr ""
+msgstr "Выль гусякыв"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
-msgstr ""
+msgstr "Вежны"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "Гусякывъясыс эз ӧтлаасьны!"
 
 #: src/gui/guiVolumeChange.cpp
 #, c-format
 msgid "Sound Volume: %d%%"
-msgstr ""
+msgstr "Шы горалун: %d%%"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Exit"
-msgstr ""
+msgstr "Пӧдлавны"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Muted"
@@ -2125,7 +2154,7 @@ msgstr ""
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "kv"
 
 #: src/server.cpp
 #, c-format
@@ -2307,15 +2336,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Graphics and Audio"
-msgstr ""
+msgstr "Графика да шы"
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
-msgstr ""
+msgstr "Графика"
 
 #: src/settings_translation_file.cpp
 msgid "Screen"
-msgstr ""
+msgstr "Экран"
 
 #: src/settings_translation_file.cpp
 msgid "Screen width"
@@ -2414,8 +2443,9 @@ msgid "View distance in nodes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Undersampling"
-msgstr ""
+msgstr "Субдискретизация"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2428,11 +2458,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Graphics Effects"
-msgstr ""
+msgstr "Графика эффектъяс"
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
-msgstr ""
+msgstr "Сӧдзтӧм кизьӧрторъяс"
 
 #: src/settings_translation_file.cpp
 msgid "Makes all liquids opaque"
@@ -2452,7 +2482,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
-msgstr ""
+msgstr "Ӧтлаалӧм стеклӧяс"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
@@ -2488,7 +2518,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
@@ -2517,11 +2547,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
-msgstr ""
+msgstr "Лайкъялӧм"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Arm inertia"
-msgstr ""
+msgstr "Лайкъялӧм ки"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2551,7 +2582,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Camera"
-msgstr ""
+msgstr "Камера"
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
@@ -2588,11 +2619,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screenshots"
-msgstr ""
+msgstr "Скриншотъяс"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
-msgstr ""
+msgstr "Скриншота куд"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2602,15 +2633,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot format"
-msgstr ""
+msgstr "Скриншотлӧн ыджда"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
-msgstr ""
+msgstr "Скриншотлӧн ыджда."
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot quality"
-msgstr ""
+msgstr "Скриншотлӧн бурлун тшупӧд"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2659,7 +2690,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
-msgstr ""
+msgstr "Витанторлӧн рӧмыс"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2679,7 +2710,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
-msgstr ""
+msgstr "Ру"
 
 #: src/settings_translation_file.cpp
 msgid "Whether to fog out the end of the visible area."
@@ -2687,7 +2718,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
-msgstr ""
+msgstr "Рӧма ру"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2695,8 +2726,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Fog start"
-msgstr ""
+msgstr "Руалӧм суйӧр"
 
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
@@ -2704,7 +2736,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Clouds"
-msgstr ""
+msgstr "Кымӧръяс"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client-side effect."
@@ -2712,7 +2744,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
-msgstr ""
+msgstr "3D кымӧръяс"
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
@@ -2828,7 +2860,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr ""
+msgstr "Шейдӧръяс"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2844,7 +2876,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Waving leaves"
-msgstr ""
+msgstr "Лайкъялысь коръяс"
 
 #: src/settings_translation_file.cpp
 msgid "Set to true to enable waving leaves."
@@ -2852,7 +2884,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Waving plants"
-msgstr ""
+msgstr "Лайкъялысь быдмӧгъяс"
 
 #: src/settings_translation_file.cpp
 msgid "Set to true to enable waving plants."
@@ -2860,7 +2892,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Waving liquids"
-msgstr ""
+msgstr "Гыалысь кизьӧрторъяс"
 
 #: src/settings_translation_file.cpp
 msgid "Set to true to enable waving liquids (like water)."
@@ -2902,7 +2934,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shadow strength gamma"
-msgstr ""
+msgstr "Вуджӧрлӧн гаммаыс"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2942,8 +2974,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Poisson filtering"
-msgstr ""
+msgstr "Пуассонлӧн юклӧм"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2965,7 +2998,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Colored shadows"
-msgstr ""
+msgstr "Рӧма вуджӧръяс"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3048,7 +3081,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr ""
+msgstr "Югъялӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom"
@@ -3106,17 +3139,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Audio"
-msgstr ""
+msgstr "Шы"
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
-msgstr ""
+msgstr "Горалун"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Volume of all sounds.\n"
 "Requires the sound system to be enabled."
 msgstr ""
+"Шыяслӧн горалунныс.\n"
+"Шы система ӧзтыны колӧ."
 
 #: src/settings_translation_file.cpp
 msgid "Mute sound"
@@ -3131,12 +3166,13 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "User Interfaces"
-msgstr ""
+msgstr "Интерфейсъяс"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr ""
+msgstr "Кыв"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3146,7 +3182,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "GUI"
-msgstr ""
+msgstr "Графикаа интерфейс"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
@@ -3226,15 +3262,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
-msgstr ""
+msgstr "Менюын кымӧръяс"
 
 #: src/settings_translation_file.cpp
 msgid "Use a cloud animation for the main menu background."
-msgstr ""
+msgstr "Менюын шуньгысь кымӧръяс."
 
 #: src/settings_translation_file.cpp
 msgid "HUD"
-msgstr ""
+msgstr "Ворсан интерфейс"
 
 #: src/settings_translation_file.cpp
 msgid "HUD scaling"
@@ -3264,7 +3300,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Console height"
-msgstr ""
+msgstr "Консольлӧн сутдас"
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console height, between 0.1 (10%) and 1.0 (100%)."
@@ -3272,7 +3308,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Console color"
-msgstr ""
+msgstr "Консольлӧн рӧмыс"
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background color (R,G,B)."
@@ -3280,7 +3316,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Console alpha"
-msgstr ""
+msgstr "Консольлӧн сӧдзлуныс"
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
@@ -3298,7 +3334,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chat weblinks"
-msgstr ""
+msgstr "Чатын ыстӧгъяс"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3308,7 +3344,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Weblink color"
-msgstr ""
+msgstr "Ыстӧглӧн рӧмыс"
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
@@ -3316,7 +3352,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
-msgstr ""
+msgstr "Чатса шрифтлӧн ыдждаыс"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3330,7 +3366,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
-msgstr ""
+msgstr "ContentDB-лӧн инпасыс"
 
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
@@ -3364,11 +3400,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
-msgstr ""
+msgstr "Клиент да сервер"
 
 #: src/settings_translation_file.cpp
 msgid "Client"
-msgstr ""
+msgstr "Клиент"
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
@@ -3407,11 +3443,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server"
-msgstr ""
+msgstr "Сервер"
 
 #: src/settings_translation_file.cpp
 msgid "Admin name"
-msgstr ""
+msgstr "Веськӧдлысьлӧн нимыс"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3426,7 +3462,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server name"
-msgstr ""
+msgstr "Серверлӧн нимыс"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3445,7 +3481,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server address"
-msgstr ""
+msgstr "Серверлӧн доменыс"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -3453,7 +3489,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
-msgstr ""
+msgstr "Серверлӧн инпасыс"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
@@ -3544,7 +3580,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 server"
-msgstr ""
+msgstr "IPv6 сервер"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3559,15 +3595,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
-msgstr ""
+msgstr "Подув гусякыв"
 
 #: src/settings_translation_file.cpp
 msgid "New users need to input this password."
-msgstr ""
+msgstr "Выль пырысьяслы тайӧ гусякывсӧ колӧ гижны."
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
-msgstr ""
+msgstr "Кушӧн гусякывсӧ кольны оз позь"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3577,7 +3613,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
-msgstr ""
+msgstr "Подув инӧдъяс"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3587,7 +3623,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
-msgstr ""
+msgstr "Панас инӧдъяс"
 
 #: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
@@ -3595,7 +3631,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
-msgstr ""
+msgstr "Анти-чит кусӧдны"
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, disable cheat prevention in multiplayer."
@@ -3725,7 +3761,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
-msgstr ""
+msgstr "Физика"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
@@ -3859,7 +3895,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
-msgstr ""
+msgstr "Ва веркӧс"
 
 #: src/settings_translation_file.cpp
 msgid "Water surface level of the world."
@@ -3895,7 +3931,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Biome API"
-msgstr ""
+msgstr "Биомлӧн API'ыс"
 
 #: src/settings_translation_file.cpp
 msgid "Heat noise"
@@ -4042,7 +4078,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Noises"
-msgstr ""
+msgstr "Шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Filler depth noise"
@@ -4072,7 +4108,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cave1 noise"
-msgstr ""
+msgstr "Рудӧглӧн медводдза шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid "First of two 3D noises that together define tunnels."
@@ -4080,7 +4116,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cave2 noise"
-msgstr ""
+msgstr "Рудӧглӧн мӧд шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Second of two 3D noises that together define tunnels."
@@ -4088,7 +4124,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cavern noise"
-msgstr ""
+msgstr "Рудӧгувлӧн шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
@@ -4096,7 +4132,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Ground noise"
-msgstr ""
+msgstr "Мулӧн шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining terrain."
@@ -4104,7 +4140,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
-msgstr ""
+msgstr "Муувлӧн шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
@@ -4112,7 +4148,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V6"
-msgstr ""
+msgstr "V6 мапген"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V6 specific flags"
@@ -4178,7 +4214,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
-msgstr ""
+msgstr "Няйтлӧн шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Varies depth of biome surface nodes."
@@ -4194,11 +4230,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
-msgstr ""
+msgstr "Биомлӧн шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
-msgstr ""
+msgstr "Рудӧглӧн шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Variation of number of caves."
@@ -4206,7 +4242,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
-msgstr ""
+msgstr "Пулӧн шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Defines tree areas and tree density."
@@ -4214,7 +4250,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Apple trees noise"
-msgstr ""
+msgstr "Улмӧ пулӧн шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -4356,7 +4392,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mountain noise"
-msgstr ""
+msgstr "Керӧслӧн шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4374,7 +4410,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Floatland noise"
-msgstr ""
+msgstr "Енэжвывса ділӧн шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4510,7 +4546,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "River noise"
-msgstr ""
+msgstr "Юлӧн шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that locates the river valleys and channels."
@@ -4684,7 +4720,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Julia x"
-msgstr ""
+msgstr "Жулия x"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4696,7 +4732,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Julia y"
-msgstr ""
+msgstr "Жулия y"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4708,7 +4744,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Julia z"
-msgstr ""
+msgstr "Жулия z"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4720,7 +4756,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Julia w"
-msgstr ""
+msgstr "Жулия w"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4733,7 +4769,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
-msgstr ""
+msgstr "Саридз пыдӧслӧн шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of seabed."
@@ -4794,11 +4830,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr ""
+msgstr "Рудӧглӧн шувгӧмыс #1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr ""
+msgstr "Рудӧглӧн шувгӧмыс #2"
 
 #: src/settings_translation_file.cpp
 msgid "Filler depth"
@@ -4850,7 +4886,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client modding"
-msgstr ""
+msgstr "Артмӧдысьяслы"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4860,7 +4896,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Main menu script"
-msgstr ""
+msgstr "Медшӧр менюлӧн скриптыс"
 
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
@@ -4890,7 +4926,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "HTTP mods"
-msgstr ""
+msgstr "HTTP модъяс"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4899,8 +4935,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Debugging"
-msgstr ""
+msgstr "Ладвыв пуктӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
@@ -5029,7 +5066,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chat commands"
-msgstr ""
+msgstr "Чатлӧн командаяс"
 
 #: src/settings_translation_file.cpp
 msgid "Instrument chat commands on registration."
@@ -5057,7 +5094,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Profiler"
-msgstr ""
+msgstr "Профайлер"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5084,7 +5121,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
-msgstr ""
+msgstr "IPv6"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5114,7 +5151,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
-msgstr ""
+msgstr "Видеодрайвер"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5165,7 +5202,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mesh cache"
-msgstr ""
+msgstr "Мешлӧн кеш"
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
@@ -5273,7 +5310,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font"
-msgstr ""
+msgstr "Шрифт"
 
 #: src/settings_translation_file.cpp
 msgid "Font bold by default"
@@ -5304,7 +5341,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
-msgstr ""
+msgstr "Шрифтлӧн ыдждаыс"
 
 #: src/settings_translation_file.cpp
 msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
@@ -5394,7 +5431,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Lighting"
-msgstr ""
+msgstr "Югдӧдӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve low gradient"
@@ -5870,7 +5907,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL"
-msgstr ""
+msgstr "cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL interactive timeout"
@@ -5911,7 +5948,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
-msgstr ""
+msgstr "DPI (дюйм вылӧ чут лыд)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5951,7 +5988,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
-msgstr ""
+msgstr "Мусерпасъяс видзан куд"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6004,11 +6041,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads"
-msgstr ""
+msgstr "Ворсан контроллеръяс"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
-msgstr ""
+msgstr "Контроллерсӧ ӧзтыны"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks. Requires a restart to take effect"
@@ -6016,7 +6053,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Joystick ID"
-msgstr ""
+msgstr "Контроллерлӧн ID-ыс"
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
@@ -6024,11 +6061,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Joystick type"
-msgstr ""
+msgstr "Контроллер сикас"
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
-msgstr ""
+msgstr "Контроллер сикасыс"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick button repetition interval"
