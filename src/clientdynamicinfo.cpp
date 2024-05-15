@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "settings.h"
 #include "client/renderingengine.h"
-#include "gui/touchscreengui.h"
+#include "gui/touchcontrols.h"
 
 ClientDynamicInfo ClientDynamicInfo::getCurrent()
 {
@@ -33,7 +33,7 @@ ClientDynamicInfo ClientDynamicInfo::getCurrent()
     f32 hud_scaling = g_settings->getFloat("hud_scaling", 0.5f, 20.0f);
     f32 real_gui_scaling = gui_scaling * density;
     f32 real_hud_scaling = hud_scaling * density;
-    bool touch_controls = g_touchscreengui;
+    bool touch_controls = g_touchcontrols;
 
     return {
         screen_size, real_gui_scaling, real_hud_scaling,

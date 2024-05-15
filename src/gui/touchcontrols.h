@@ -183,10 +183,10 @@ private:
 	void updateVisibility();
 };
 
-class TouchScreenGUI
+class TouchControls
 {
 public:
-	TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsrc);
+	TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc);
 
 	void translateEvent(const SEvent &event);
 	void applyContextControls(const TouchInteractionMode &mode);
@@ -314,4 +314,4 @@ private:
 	u64 m_place_pressed_until = 0;
 };
 
-extern TouchScreenGUI *g_touchscreengui;
+extern TouchControls *g_touchcontrols;
