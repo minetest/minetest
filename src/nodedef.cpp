@@ -283,7 +283,20 @@ void TileDef::deSerialize(std::istream &is, NodeDrawType drawtype, u16 protocol_
 void TextureSettings::readSettings()
 {
 	connected_glass                = g_settings->getBool("connected_glass");
-	opaque_water                   = g_settings->getBool("opaque_water");
+
+	//Update from opaque_water to translucent_water
+	if (g_settings->exists("opaque_water")) {
+		std::string value = "true";
+		if (g_settings->getBool("opaque_water")) {
+			value = "false";
+		}
+		g_settings->getLayer(SL_DEFAULTS)->set("translucent_water", value);
+		translucent_water              = g_settings->getBool("translucent_water");
+	}
+	else {
+		translucent_water              = g_settings->getBool("translucent_water");
+	}
+	
 	bool smooth_lighting           = g_settings->getBool("smooth_lighting");
 	enable_mesh_cache              = g_settings->getBool("enable_mesh_cache");
 	enable_minimap                 = g_settings->getBool("enable_minimap");
@@ -683,7 +696,7 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 		if (is.eof())
 			throw SerializationError("");
 		post_effect_color_shaded = tmp;
-	} catch(SerializationError &e) {};
+	} catch (SerializationError &e) {};
 }
 
 #ifndef SERVER
@@ -825,14 +838,14 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		solidness = 0;
 		break;
 	case NDT_LIQUID:
-		if (tsettings.opaque_water)
+		if (!tsettings.translucent_water)
 			alpha = ALPHAMODE_OPAQUE;
 		solidness = 1;
 		is_liquid = true;
 		break;
 	case NDT_FLOWINGLIQUID:
 		solidness = 0;
-		if (tsettings.opaque_water)
+		if (!tsettings.translucent_water)
 			alpha = ALPHAMODE_OPAQUE;
 		is_liquid = true;
 		break;

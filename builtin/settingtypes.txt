@@ -265,8 +265,8 @@ undersampling (Undersampling) int 1 1 8
 
 [**Graphics Effects]
 
-#    Makes all liquids opaque
-opaque_water (Opaque liquids) bool false
+#    Makes water translucent
+translucent_water (Translucent water) bool true
 
 #    Leaves style:
 #    -   Fancy:  all faces visible
