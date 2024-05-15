@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "wieldmesh.h"
 #include "client/renderingengine.h"
 #include "client/minimap.h"
-#include "gui/touchscreengui.h"
+#include "gui/touchcontrols.h"
 #include "util/enriched_string.h"
 #include "irrlicht_changes/CGUITTFont.h"
 
@@ -308,8 +308,8 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 
 		drawItem(mainlist->getItem(i), item_rect, (i + 1) == selectitem);
 
-		if (is_hotbar && g_touchscreengui)
-			g_touchscreengui->registerHotbarRect(i, item_rect);
+		if (is_hotbar && g_touchcontrols)
+			g_touchcontrols->registerHotbarRect(i, item_rect);
 	}
 }
 
@@ -773,8 +773,8 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 
 void Hud::drawHotbar(u16 playeritem)
 {
-	if (g_touchscreengui)
-		g_touchscreengui->resetHotbarRects();
+	if (g_touchcontrols)
+		g_touchcontrols->resetHotbarRects();
 
 	InventoryList *mainlist = inventory->getList("main");
 	if (mainlist == NULL) {
