@@ -183,7 +183,6 @@ void GUITable::setTable(const TableOptions &options,
 	}
 
 	// Handle table options
-	video::SColor default_color(255, 255, 255, 255);
 	s32 opendepth = 0;
 	for (const Option &option : options) {
 		const std::string &name = option.name;

@@ -704,12 +704,6 @@ IRenderTarget *COpenGL3DriverBase::addRenderTarget()
 	return renderTarget;
 }
 
-// small helper function to create vertex buffer object adress offsets
-static inline u8 *buffer_offset(const long offset)
-{
-	return ((u8 *)0 + offset);
-}
-
 //! draws a vertex primitive list
 void COpenGL3DriverBase::drawVertexPrimitiveList(const void *vertices, u32 vertexCount,
 		const void *indexList, u32 primitiveCount,
