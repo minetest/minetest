@@ -104,7 +104,20 @@ void set_default_settings()
 	// Client
 	settings->setDefault("address", "");
 	settings->setDefault("enable_sound", "true");
+#if defined(__linux__) && !defined (__ANDROID__)
+	// On Linux+X11 (not Linux+Wayland or Linux+XWayland), I've encountered a bug
+	// where fake mouse events were generated from touch events if in relative
+	// mouse mode, resulting in the touchscreen controls being instantly disabled
+	// again and thus making them unusable.
+	// => We can't switch based on the last input method used.
+	// => Fall back to hardware detection.
+	settings->setDefault("touch_controls", bool_to_cstr(has_touch));
+#else
 	settings->setDefault("touch_controls", "auto");
+#endif
+	// Since GUI scaling shouldn't suddenly change during a session, we use
+	// hardware detection here instead of switching based on the last input
+	// method used.
 	settings->setDefault("touch_gui", bool_to_cstr(has_touch));
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("sound_volume_unfocused", "0.3");
