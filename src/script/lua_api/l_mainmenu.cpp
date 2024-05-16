@@ -729,7 +729,7 @@ int ModApiMainMenu::l_get_cache_path(lua_State *L)
 int ModApiMainMenu::l_get_temp_path(lua_State *L)
 {
 	if (lua_isnoneornil(L, 1) || !lua_toboolean(L, 1))
-		lua_pushstring(L, fs::TempPath().c_str());
+		lua_pushstring(L, fs::CreateTempDir().c_str());
 	else
 		lua_pushstring(L, fs::CreateTempFile().c_str());
 	return 1;
@@ -996,12 +996,7 @@ int ModApiMainMenu::l_get_active_driver(lua_State *L)
 
 int ModApiMainMenu::l_get_active_renderer(lua_State *L)
 {
-#if IRRLICHT_VERSION_MT_REVISION >= 15
 	lua_pushstring(L, RenderingEngine::get_video_driver()->getName());
-#else
-	auto tmp = wide_to_utf8(RenderingEngine::get_video_driver()->getName());
-	lua_pushstring(L, tmp.c_str());
-#endif
 	return 1;
 }
 
@@ -1086,44 +1081,6 @@ int ModApiMainMenu::l_do_async_callback(lua_State *L)
 }
 
 /******************************************************************************/
-// this is intentionally a global and not part of MainMenuScripting or such
-namespace {
-	std::unordered_map<std::string, std::string> once_values;
-	std::mutex once_mutex;
-}
-
-int ModApiMainMenu::l_set_once(lua_State *L)
-{
-	std::string key = readParam<std::string>(L, 1);
-	if (lua_isnil(L, 2))
-		return 0;
-	std::string value = readParam<std::string>(L, 2);
-
-	{
-		MutexAutoLock lock(once_mutex);
-		once_values[key] = value;
-	}
-
-	return 0;
-}
-
-int ModApiMainMenu::l_get_once(lua_State *L)
-{
-	std::string key = readParam<std::string>(L, 1);
-
-	{
-		MutexAutoLock lock(once_mutex);
-		auto it = once_values.find(key);
-		if (it == once_values.end())
-			lua_pushnil(L);
-		else
-			lua_pushstring(L, it->second.c_str());
-	}
-
-	return 1;
-}
-
-/******************************************************************************/
 void ModApiMainMenu::Initialize(lua_State *L, int top)
 {
 	API_FCT(update_formspec);
@@ -1175,8 +1132,6 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(open_dir);
 	API_FCT(share_file);
 	API_FCT(do_async_callback);
-	API_FCT(set_once);
-	API_FCT(get_once);
 }
 
 /******************************************************************************/

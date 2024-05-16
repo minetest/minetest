@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/hex.h"
 #include "common/c_content.h"
 #include <json/json.h>
-	
+
 
 void ToolGroupCap::toJson(Json::Value &object) const
 {
@@ -246,7 +246,7 @@ std::optional<WearBarParams> WearBarParams::deserializeJson(std::istream &is)
 		blend = static_cast<WearBarParams::BlendMode>(blendInt);
 	else
 		return std::nullopt;
-	
+
 	const Json::Value &color_stops_object = root["color_stops"];
 	std::map<f32, video::SColor> colorStops;
 	for (const std::string &key : color_stops_object.getMemberNames()) {
@@ -402,11 +402,11 @@ DigParams getDigParams(const ItemGroupList &groups,
 			continue;
 
 		const std::string &groupname = groupcap.first;
-		float time = 0;
 		int rating = itemgroup_get(groups, groupname);
-		bool time_exists = cap.getTime(rating, &time);
-		if (!time_exists)
+		const auto time_o = cap.getTime(rating);
+		if (!time_o.has_value())
 			continue;
+		float time = *time_o;
 
 		if (leveldiff > 1)
 			time /= leveldiff;
@@ -482,7 +482,7 @@ PunchDamageResult getPunchDamage(
 	{
 		HitParams hitparams = getHitParams(armor_groups, toolcap,
 				time_from_last_punch,
-				punchitem->wear);
+				punchitem ? punchitem->wear : 0);
 		result.did_punch = true;
 		result.wear = hitparams.wear;
 		result.damage = hitparams.hp;
@@ -491,10 +491,16 @@ PunchDamageResult getPunchDamage(
 	return result;
 }
 
-f32 getToolRange(const ItemDefinition &def_selected, const ItemDefinition &def_hand)
+f32 getToolRange(const ItemStack &wielded_item, const ItemStack &hand_item,
+		const IItemDefManager *itemdef_manager)
 {
-	float max_d = def_selected.range;
-	float max_d_hand = def_hand.range;
+	const std::string &wielded_meta_range = wielded_item.metadata.getString("range");
+	const std::string &hand_meta_range = hand_item.metadata.getString("range");
+
+	f32 max_d = wielded_meta_range.empty() ? wielded_item.getDefinition(itemdef_manager).range :
+			stof(wielded_meta_range);
+	f32 max_d_hand = hand_meta_range.empty() ? hand_item.getDefinition(itemdef_manager).range :
+			stof(hand_meta_range);
 
 	if (max_d < 0 && max_d_hand >= 0)
 		max_d = max_d_hand;

@@ -774,9 +774,9 @@ bool GUIEditBox::processMouse(const SEvent &event)
 		}
 	case EMIE_MOUSE_WHEEL:
 		if (m_vscrollbar && m_vscrollbar->isVisible()) {
-			s32 pos = m_vscrollbar->getPos();
+			s32 pos = m_vscrollbar->getTargetPos();
 			s32 step = m_vscrollbar->getSmallStep();
-			m_vscrollbar->setPos(pos - event.MouseInput.Wheel * step);
+			m_vscrollbar->setPosInterpolated(pos - event.MouseInput.Wheel * step);
 			return true;
 		}
 		break;

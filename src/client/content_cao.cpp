@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h" // CameraModes
 #include "collision.h"
 #include "content_cso.h"
+#include "clientobject.h"
 #include "environment.h"
 #include "itemdef.h"
 #include "localplayer.h"
@@ -218,14 +219,15 @@ private:
 };
 
 // Prototype
-TestCAO proto_TestCAO(NULL, NULL);
+static TestCAO proto_TestCAO(nullptr, nullptr);
 
 TestCAO::TestCAO(Client *client, ClientEnvironment *env):
 	ClientActiveObject(0, client, env),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0))
 {
-	ClientActiveObject::registerType(getType(), create);
+	if (!client)
+		ClientActiveObject::registerType(getType(), create);
 }
 
 std::unique_ptr<ClientActiveObject> TestCAO::create(Client *client, ClientEnvironment *env)
@@ -321,8 +323,6 @@ void TestCAO::processMessage(const std::string &data)
 /*
 	GenericCAO
 */
-
-#include "clientobject.h"
 
 GenericCAO::GenericCAO(Client *client, ClientEnvironment *env):
 		ClientActiveObject(0, client, env)
@@ -1804,6 +1804,7 @@ void GenericCAO::processMessage(const std::string &data)
 		bool sneak_glitch = !readU8(is);
 		bool new_move = !readU8(is);
 
+		// new overrides since 5.8.0
 		float override_speed_climb = readF32(is);
 		float override_speed_crouch = readF32(is);
 		float override_liquid_fluidity = readF32(is);
@@ -1811,7 +1812,6 @@ void GenericCAO::processMessage(const std::string &data)
 		float override_liquid_sink = readF32(is);
 		float override_acceleration_default = readF32(is);
 		float override_acceleration_air = readF32(is);
-		// fallback for new overrides (since 5.8.0)
 		if (is.eof()) {
 			override_speed_climb = 1.0f;
 			override_speed_crouch = 1.0f;
@@ -1820,6 +1820,16 @@ void GenericCAO::processMessage(const std::string &data)
 			override_liquid_sink = 1.0f;
 			override_acceleration_default = 1.0f;
 			override_acceleration_air = 1.0f;
+		}
+
+		// new overrides since 5.9.0
+		float override_speed_fast = readF32(is);
+		float override_acceleration_fast = readF32(is);
+		float override_speed_walk = readF32(is);
+		if (is.eof()) {
+			override_speed_fast = 1.0f;
+			override_acceleration_fast = 1.0f;
+			override_speed_walk = 1.0f;
 		}
 
 		if (m_is_local_player) {
@@ -1837,6 +1847,9 @@ void GenericCAO::processMessage(const std::string &data)
 			phys.liquid_sink = override_liquid_sink;
 			phys.acceleration_default = override_acceleration_default;
 			phys.acceleration_air = override_acceleration_air;
+			phys.speed_fast = override_speed_fast;
+			phys.acceleration_fast = override_acceleration_fast;
+			phys.speed_walk = override_speed_walk;
 		}
 	} else if (cmd == AO_CMD_SET_ANIMATION) {
 		// TODO: change frames send as v2s32 value
@@ -2082,4 +2095,4 @@ void GenericCAO::updateMeshCulling()
 }
 
 // Prototype
-GenericCAO proto_GenericCAO(NULL, NULL);
+static GenericCAO proto_GenericCAO(nullptr, nullptr);

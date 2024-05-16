@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/string.h"
 #include "util/base64.h"
+#include "util/colorize.h"
 
 class TestUtilities : public TestBase {
 public:
@@ -59,6 +60,7 @@ public:
 	void testBase64();
 	void testSanitizeDirName();
 	void testIsBlockInSight();
+	void testColorizeURL();
 };
 
 static TestUtilities g_test_instance;
@@ -92,6 +94,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testBase64);
 	TEST(testSanitizeDirName);
 	TEST(testIsBlockInSight);
+	TEST(testColorizeURL);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -180,9 +183,11 @@ void TestUtilities::testWrapDegrees_0_360_v3f()
 
 void TestUtilities::testLowercase()
 {
-	UASSERT(lowercase("Foo bAR") == "foo bar");
-	UASSERT(lowercase("eeeeeeaaaaaaaaaaaààààà") == "eeeeeeaaaaaaaaaaaààààà");
-	UASSERT(lowercase("MINETEST-powa") == "minetest-powa");
+	UASSERTEQ(auto, lowercase("Foo bAR"), "foo bar");
+	UASSERTEQ(auto, lowercase(u8"eeeeeeaaaaaaaaaaaààààà"), u8"eeeeeeaaaaaaaaaaaààààà");
+	// intentionally won't handle Unicode, regardless of locale
+	UASSERTEQ(auto, lowercase(u8"ÜÜ"), u8"ÜÜ");
+	UASSERTEQ(auto, lowercase("MINETEST-powa"), "minetest-powa");
 }
 
 
@@ -306,18 +311,28 @@ void TestUtilities::testAsciiPrintableHelper()
 
 void TestUtilities::testUTF8()
 {
-	UASSERT(utf8_to_wide("¤") == L"¤");
+	UASSERT(utf8_to_wide(u8"¤") == L"¤");
 
-	UASSERT(wide_to_utf8(L"¤") == "¤");
+	UASSERTEQ(std::string, wide_to_utf8(L"¤"), u8"¤");
 
 	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide("")), "");
 	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide("the shovel dug a crumbly node!")),
 		"the shovel dug a crumbly node!");
-	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide("-ä-")),
-		"-ä-");
-	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide("-\xF0\xA0\x80\x8B-")),
-		"-\xF0\xA0\x80\x8B-");
 
+	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide(u8"-ä-")),
+		u8"-ä-");
+	UASSERTEQ(std::string, wide_to_utf8(utf8_to_wide(u8"-\U0002000b-")),
+		u8"-\U0002000b-");
+	if constexpr (sizeof(wchar_t) == 4) {
+		const auto *literal = U"-\U0002000b-";
+		UASSERT(utf8_to_wide(u8"-\U0002000b-") == reinterpret_cast<const wchar_t*>(literal));
+	}
+
+	// try to check that the conversion function does not accidentally keep
+	// its internal state across invocations.
+	// \xC4\x81 is UTF-8 for \u0101
+	utf8_to_wide("\xC4");
+	UASSERT(utf8_to_wide("\x81") != L"\u0101");
 }
 
 void TestUtilities::testRemoveEscapes()
@@ -640,7 +655,7 @@ void TestUtilities::testSanitizeDirName()
 	UASSERTEQ(auto, sanitizeDirName(" a ", "~"), "_a_");
 	UASSERTEQ(auto, sanitizeDirName("COM1", "~"), "~COM1");
 	UASSERTEQ(auto, sanitizeDirName("COM1", ":"), "_COM1");
-	UASSERTEQ(auto, sanitizeDirName("cOm\u00B2", "~"), "~cOm\u00B2");
+	UASSERTEQ(auto, sanitizeDirName(u8"cOm\u00B2", "~"), u8"~cOm\u00B2");
 	UASSERTEQ(auto, sanitizeDirName("cOnIn$", "~"), "~cOnIn$");
 	UASSERTEQ(auto, sanitizeDirName(" cOnIn$ ", "~"), "_cOnIn$_");
 }
@@ -709,4 +724,22 @@ void TestUtilities::testIsBlockInSight()
 		// should still be considered visible
 		UASSERT(isBlockInSight({-1, 0, 0}, cam_pos, cam_dir, fov, range));
 	}
+}
+
+void TestUtilities::testColorizeURL()
+{
+#ifdef HAVE_COLORIZE_URL
+	#define RED COLOR_CODE("#faa")
+	#define GREY COLOR_CODE("#aaa")
+	#define WHITE COLOR_CODE("#fff")
+
+	std::string result = colorize_url("http://example.com/");
+	UASSERTEQ(auto, result, (GREY "http://" WHITE "example.com" GREY "/"));
+
+	result = colorize_url(u8"https://u:p@wikipedi\u0430.org:1234/heIIoll?a=b#c");
+	UASSERTEQ(auto, result,
+		(GREY "https://u:p@" WHITE "wikipedi" RED "%d0%b0" WHITE ".org" GREY ":1234/heIIoll?a=b#c"));
+#else
+	warningstream << "Test skipped." << std::endl;
+#endif
 }

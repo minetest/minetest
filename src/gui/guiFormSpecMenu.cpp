@@ -976,14 +976,18 @@ void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &elemen
 void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 		const std::string &type)
 {
+	int expected_parts = (type == "button_url" || type == "button_url_exit") ? 5 : 4;
 	std::vector<std::string> parts;
-	if (!precheckElement("button", element, 4, 4, parts))
+	if (!precheckElement("button", element, expected_parts, expected_parts, parts))
 		return;
 
 	std::vector<std::string> v_pos = split(parts[0],',');
 	std::vector<std::string> v_geom = split(parts[1],',');
 	std::string name = parts[2];
 	std::string label = parts[3];
+	std::string url;
+	if (type == "button_url" || type == "button_url_exit")
+		url = parts[4];
 
 	MY_CHECKPOS("button",0);
 	MY_CHECKGEOM("button",1);
@@ -1018,8 +1022,10 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 		258 + m_fields.size()
 	);
 	spec.ftype = f_Button;
-	if(type == "button_exit")
+	if (type == "button_exit" || type == "button_url_exit")
 		spec.is_exit = true;
+	if (type == "button_url" || type == "button_url_exit")
+		spec.url = url;
 
 	GUIButton *e = GUIButton::addButton(Environment, rect, m_tsrc,
 			data->current_parent, spec.fid, spec.flabel.c_str());
@@ -1771,12 +1777,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 	size_t str_pos = 0;
 
 	for (size_t i = 0; str_pos < str.size(); ++i) {
-		// Split per line
-		size_t str_nl = str.getString().find(L'\n', str_pos);
-		if (str_nl == std::wstring::npos)
-			str_nl = str.getString().size();
-		EnrichedString line = str.substr(str_pos, str_nl - str_pos);
-		str_pos += line.size() + 1;
+		EnrichedString line = str.getNextLine(&str_pos);
 
 		core::rect<s32> rect;
 
@@ -2897,7 +2898,7 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
-	if (type == "button" || type == "button_exit") {
+	if (type == "button" || type == "button_exit" || type == "button_url" || type == "button_url_exit") {
 		parseButton(data, description, type);
 		return;
 	}
@@ -4739,6 +4740,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			list_selected->changeItem(m_selected_item->i, stack_from);
 		}
 
+		bool absorb_event = false;
+
 		// Possibly send inventory action to server
 		if (move_amount > 0) {
 			// Send IAction::Move
@@ -4881,6 +4884,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			a->from_i = m_selected_item->i;
 			m_invmgr->inventoryAction(a);
 
+			// Formspecs usually close when you click outside them, we absorb
+			// the event to prevent that. See GUIModalMenu::remapClickOutside.
+			absorb_event = true;
+
 		} else if (craft_amount > 0) {
 			assert(s.isValid());
 
@@ -4910,6 +4917,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			m_selected_dragging = false;
 		}
 		m_old_pointer = m_pointer;
+
+		if (absorb_event)
+			return true;
 	}
 
 	if (event.EventType == EET_GUI_EVENT) {
@@ -4968,6 +4978,17 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						m_sound_manager->playSound(0, SoundSpec(s.sound, 1.0f));
 
 					s.send = true;
+
+					if (!s.url.empty()) {
+						if (m_client) {
+							// in game
+							g_gamecallback->showOpenURLDialog(s.url);
+						} else {
+							// main menu
+							porting::open_url(s.url);
+						}
+					}
+
 					if (s.is_exit) {
 						if (m_allowclose) {
 							acceptInput(quit_mode_accept);

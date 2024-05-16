@@ -170,16 +170,21 @@ int ObjectRef::l_punch(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
-	ObjectRef *puncher_ref = checkObject<ObjectRef>(L, 2);
+	ObjectRef *puncher_ref = lua_isnoneornil(L, 2) ? nullptr : checkObject<ObjectRef>(L, 2);
 	ServerActiveObject *sao = getobject(ref);
-	ServerActiveObject *puncher = getobject(puncher_ref);
-	if (sao == nullptr || puncher == nullptr)
+	ServerActiveObject *puncher = puncher_ref ? getobject(puncher_ref) : nullptr;
+	if (sao == nullptr)
 		return 0;
 
 	float time_from_last_punch = readParam<float>(L, 3, 1000000.0f);
 	ToolCapabilities toolcap = read_tool_capabilities(L, 4);
-	v3f dir = readParam<v3f>(L, 5, sao->getBasePosition() - puncher->getBasePosition());
-	dir.normalize();
+	v3f dir;
+	if (puncher) {
+		dir = readParam<v3f>(L, 5, sao->getBasePosition() - puncher->getBasePosition());
+		dir.normalize();
+	} else {
+		dir = readParam<v3f>(L, 5, v3f(0));
+	}
 
 	u32 wear = sao->punch(dir, &toolcap, puncher, time_from_last_punch);
 	lua_pushnumber(L, wear);
@@ -599,7 +604,7 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 		prop.absolute = lua_toboolean(L, -1);
 		lua_pop(L, 1);
 
-		lua_getfield(L, -1, "interpolate");
+		lua_getfield(L, -1, "interpolation");
 		if (lua_isnumber(L, -1))
 			prop.interp_timer = lua_tonumber(L, -1);
 		lua_pop(L, 1);
@@ -650,7 +655,7 @@ static void push_bone_override(lua_State *L, const BoneOverride &props)
 		push_v3f(L, vec);
 		lua_setfield(L, -2, "vec");
 		lua_pushnumber(L, prop.interp_timer);
-		lua_setfield(L, -2, "interpolate");
+		lua_setfield(L, -2, "interpolation");
 		lua_pushboolean(L, prop.absolute);
 		lua_setfield(L, -2, "absolute");
 		lua_setfield(L, -2, name);
@@ -1605,6 +1610,9 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 	getfloatfield(L, 2, "liquid_sink", phys.liquid_sink);
 	getfloatfield(L, 2, "acceleration_default", phys.acceleration_default);
 	getfloatfield(L, 2, "acceleration_air", phys.acceleration_air);
+	getfloatfield(L, 2, "speed_fast", phys.speed_fast);
+	getfloatfield(L, 2, "acceleration_fast", phys.acceleration_fast);
+	getfloatfield(L, 2, "speed_walk", phys.speed_walk);
 
 	if (phys != old)
 		playersao->m_physics_override_sent = false;
@@ -1648,6 +1656,12 @@ int ObjectRef::l_get_physics_override(lua_State *L)
 	lua_setfield(L, -2, "acceleration_default");
 	lua_pushnumber(L, phys.acceleration_air);
 	lua_setfield(L, -2, "acceleration_air");
+	lua_pushnumber(L, phys.speed_fast);
+	lua_setfield(L, -2, "speed_fast");
+	lua_pushnumber(L, phys.acceleration_fast);
+	lua_setfield(L, -2, "acceleration_fast");
+	lua_pushnumber(L, phys.speed_walk);
+	lua_setfield(L, -2, "speed_walk");
 	return 1;
 }
 

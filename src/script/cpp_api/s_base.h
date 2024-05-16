@@ -146,6 +146,7 @@ protected:
 	friend class ModApiBase;
 	friend class ModApiEnv;
 	friend class LuaVoxelManip;
+	friend class TestMoveAction; // needs getStack()
 
 	/*
 		Subtle edge case with coroutines: If for whatever reason you have a

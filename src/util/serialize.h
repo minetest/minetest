@@ -21,27 +21,38 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_bloated.h"
 #include "exceptions.h" // for SerializationError
-#include "debug.h" // for assert
 #include "ieee_float.h"
 
 #include "config.h"
-#if HAVE_ENDIAN_H
-	#ifdef _WIN32
-		#define __BYTE_ORDER 0
-		#define __LITTLE_ENDIAN 0
-		#define __BIG_ENDIAN 1
-	#elif defined(__MACH__) && defined(__APPLE__)
-		#include <machine/endian.h>
-	#elif defined(__FreeBSD__) || defined(__DragonFly__)
-		#include <sys/endian.h>
-	#else
-		#include <endian.h>
-	#endif
-#endif
 #include <cstring> // for memcpy
+#include <cassert>
 #include <iostream>
 #include <string>
 #include <string_view>
+
+/* make sure BYTE_ORDER macros are available */
+#ifdef _WIN32
+	#define BYTE_ORDER 1234
+#elif defined(__MACH__) && defined(__APPLE__)
+	#include <machine/endian.h>
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
+	#include <sys/endian.h>
+#elif HAVE_ENDIAN_H
+	#include <endian.h>
+#else
+	#error "Can't detect endian (missing header)"
+#endif
+#ifndef LITTLE_ENDIAN
+	#define LITTLE_ENDIAN 1234
+#endif
+#ifndef BIG_ENDIAN
+	#define BIG_ENDIAN 4321
+#endif
+#if !defined(BYTE_ORDER) && defined(_BYTE_ORDER)
+	#define BYTE_ORDER _BYTE_ORDER
+#elif !defined(BYTE_ORDER) && defined(__BYTE_ORDER)
+	#define BYTE_ORDER __BYTE_ORDER
+#endif
 
 #define FIXEDPOINT_FACTOR 1000.0f
 
@@ -280,7 +291,7 @@ inline v3f readV3F32(const u8 *data)
 
 inline void writeU8(u8 *data, u8 i)
 {
-	data[0] = (i >> 0) & 0xFF;
+	data[0] = i;
 }
 
 inline void writeS8(u8 *data, s8 i)

@@ -553,7 +553,8 @@ bool setSystemPaths()
 
 #endif
 
-void migrateCachePath()
+// Move cache folder from path_user to system cache location if possible.
+[[maybe_unused]] static void migrateCachePath()
 {
 	const std::string local_cache_path = path_user + DIR_DELIM + "cache";
 
@@ -571,6 +572,24 @@ void migrateCachePath()
 		errorstream << "Failed to migrate local cache path "
 			"to system path!" << std::endl;
 	}
+}
+
+// Create tag in cache folder according to <https://bford.info/cachedir/> spec
+static void createCacheDirTag()
+{
+	const auto path = path_cache + DIR_DELIM + "CACHEDIR.TAG";
+
+	if (fs::PathExists(path))
+		return;
+	fs::CreateAllDirs(path_cache);
+	auto ofs = open_ofstream(path.c_str(), false);
+	if (!ofs.good())
+		return;
+	ofs << "Signature: 8a477f597d28d172789f06886806bc55\n"
+		"# This file is a cache directory tag automatically created by "
+		PROJECT_NAME_C ".\n"
+		"# For information about cache directory tags, see: "
+		"https://bford.info/cachedir/\n";
 }
 
 void initializePaths()
@@ -651,6 +670,8 @@ void initializePaths()
 	infostream << "Detected share path: " << path_share << std::endl;
 	infostream << "Detected user path: " << path_user << std::endl;
 	infostream << "Detected cache path: " << path_cache << std::endl;
+
+	createCacheDirTag();
 
 #if USE_GETTEXT
 	bool found_localedir = false;
@@ -778,6 +799,21 @@ std::string QuoteArgv(const std::string &arg)
 	}
 	ret.push_back('"');
 	return ret;
+}
+
+std::string ConvertError(DWORD error_code)
+{
+	wchar_t buffer[320];
+
+	auto r = FormatMessageW(
+		FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		nullptr, error_code, 0, buffer, ARRLEN(buffer) - 1, nullptr);
+	if (!r)
+		return std::to_string(error_code);
+
+	if (!buffer[0]) // should not happen normally
+		return "?";
+	return wide_to_utf8(buffer);
 }
 #endif
 

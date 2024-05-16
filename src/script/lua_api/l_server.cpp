@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "remoteplayer.h"
 #include "log.h"
+#include "filesys.h"
 #include <algorithm>
 
 // request_shutdown()
@@ -425,6 +426,10 @@ int ModApiServer::l_show_formspec(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char *playername = luaL_checkstring(L, 1);
 	const char *formname = luaL_checkstring(L, 2);
+	if (*formname == '\0') {
+		log_deprecated(L, "Deprecated call to `minetest.show_formspec`:"
+				"`formname` must not be empty");
+	}
 	const char *formspec = luaL_checkstring(L, 3);
 
 	if(getServer(L)->showFormspec(playername,formspec,formname))
@@ -504,6 +509,24 @@ int ModApiServer::l_get_worldpath(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const Server *srv = getServer(L);
 	lua_pushstring(L, srv->getWorldPath().c_str());
+	return 1;
+}
+
+// get_mod_data_path()
+int ModApiServer::l_get_mod_data_path(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	std::string modname = ScriptApiBase::getCurrentModNameInsecure(L);
+	if (modname.empty())
+		return 0;
+
+	const Server *srv = getServer(L);
+	std::string path = srv->getModDataPath() + DIR_DELIM + modname;
+	if (!fs::CreateAllDirs(path))
+		throw LuaError("Failed to create dir");
+
+	lua_pushstring(L, path.c_str());
 	return 1;
 }
 
@@ -716,6 +739,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(get_server_status);
 	API_FCT(get_server_uptime);
 	API_FCT(get_server_max_lag);
+	API_FCT(get_mod_data_path);
 	API_FCT(get_worldpath);
 	API_FCT(is_singleplayer);
 

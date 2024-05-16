@@ -19,13 +19,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 
-#include "client/sound.h"
 #include "nodedef.h"
 #include "itemdef.h"
 #include "dummygamedef.h"
 #include "modchannels.h"
 #include "util/numeric.h"
 #include "porting.h"
+#include "debug.h"
 
 content_t t_CONTENT_STONE;
 content_t t_CONTENT_GRASS;
@@ -325,13 +325,8 @@ std::string TestBase::getTestTempDirectory()
 	if (!m_test_dir.empty())
 		return m_test_dir;
 
-	char buf[32];
-	porting::mt_snprintf(buf, sizeof(buf), "%08X", myrand());
-
-	m_test_dir = fs::TempPath() + DIR_DELIM "mttest_" + buf;
-	if (!fs::CreateDir(m_test_dir))
-		UASSERT(false);
-
+	m_test_dir = fs::CreateTempDir();
+	UASSERT(!m_test_dir.empty());
 	return m_test_dir;
 }
 
@@ -354,11 +349,14 @@ void TestBase::runTest(const char *name, std::function<void()> &&test)
 		rawstream << "    at " << e.file << ":" << e.line << std::endl;
 		rawstream << "[FAIL] ";
 		num_tests_failed++;
-	} catch (std::exception &e) {
+	}
+#if CATCH_UNHANDLED_EXCEPTIONS == 1
+	catch (std::exception &e) {
 		rawstream << "Caught unhandled exception: " << e.what() << std::endl;
 		rawstream << "[FAIL] ";
 		num_tests_failed++;
 	}
+#endif
 	num_tests_run++;
 	u64 tdiff = porting::getTimeMs() - t1;
 	rawstream << name << " - " << tdiff << "ms" << std::endl;

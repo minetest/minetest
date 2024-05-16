@@ -369,7 +369,14 @@ public:
 				return it->second;
 		}
 		auto it = m_values.find(key);
-		return it == m_values.end() ? null_value : it->second;
+		// This conditional block was converted from a ternary to ensure no
+		// temporary values are created in evaluating the return expression,
+		// which could cause a dangling reference.
+		if (it != m_values.end()) {
+			return it->second;
+		} else {
+			return null_value;
+		}
 	}
 
 	void put(const K &key, const V &value) {

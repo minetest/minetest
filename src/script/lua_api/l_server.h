@@ -39,6 +39,9 @@ private:
 	// get_worldpath()
 	static int l_get_worldpath(lua_State *L);
 
+	// get_mod_data_path()
+	static int l_get_mod_data_path(lua_State *L);
+
 	// is_singleplayer()
 	static int l_is_singleplayer(lua_State *L);
 

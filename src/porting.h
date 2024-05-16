@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h" // u64
 #include "debug.h"
 #include "constants.h"
-#include "gettime.h"
+#include "util/timetaker.h" // TimePrecision
 
 #ifdef _MSC_VER
 	#define SWPRINTF_CHARSTRING L"%S"
@@ -128,12 +128,6 @@ bool getCurrentExecPath(char *buf, size_t len);
 	Example: "stone.png" -> "../data/stone.png"
 */
 std::string getDataPath(const char *subpath);
-
-/*
-	Move cache folder from path_user to the
-	system cache location if possible.
-*/
-void migrateCachePath();
 
 /*
 	Initialize path_*.
@@ -299,6 +293,9 @@ void attachOrCreateConsole();
 #ifdef _WIN32
 // Quotes an argument for use in a CreateProcess() commandline (not cmd.exe!!)
 std::string QuoteArgv(const std::string &arg);
+
+// Convert an error code (e.g. from GetLastError()) into a string.
+std::string ConvertError(DWORD error_code);
 #endif
 
 int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...);

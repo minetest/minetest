@@ -485,12 +485,9 @@ bool Schematic::serializeToLua(std::ostream *os, bool use_comments,
 bool Schematic::loadSchematicFromFile(const std::string &filename,
 	const NodeDefManager *ndef, StringMap *replace_names)
 {
-	std::ifstream is(filename.c_str(), std::ios_base::binary);
-	if (!is.good()) {
-		errorstream << __FUNCTION__ << ": unable to open file '"
-			<< filename << "'" << std::endl;
+	auto is = open_ifstream(filename.c_str(), true);
+	if (!is.good())
 		return false;
-	}
 
 	if (!m_ndef)
 		m_ndef = ndef;

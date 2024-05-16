@@ -1,10 +1,7 @@
 uniform mat4 mWorld;
 uniform vec3 dayLight;
-uniform vec3 eyePosition;
 uniform float animationTimer;
-uniform vec4 emissiveColor;
-uniform vec3 cameraOffset;
-
+uniform lowp vec4 emissiveColor;
 
 varying vec3 vNormal;
 varying vec3 vPosition;
@@ -33,7 +30,7 @@ centroid varying vec2 varTexCoord;
 	varying float perspective_factor;
 #endif
 
-varying vec3 eyeVec;
+varying highp vec3 eyeVec;
 varying float nightRatio;
 // Color of the light emitted by the light sources.
 const vec3 artificialLight = vec3(1.04, 1.04, 1.04);

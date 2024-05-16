@@ -369,6 +369,8 @@ void GUIEngine::run()
 #endif
 	}
 
+	m_script->beforeClose();
+
 	RenderingEngine::autosaveScreensizeAndCo(initial_screen_size, initial_window_maximized);
 }
 
@@ -618,10 +620,9 @@ bool GUIEngine::setTexture(texture_layer layer, const std::string &texturepath,
 bool GUIEngine::downloadFile(const std::string &url, const std::string &target)
 {
 #if USE_CURL
-	std::ofstream target_file(target.c_str(), std::ios::out | std::ios::binary);
-	if (!target_file.good()) {
+	auto target_file = open_ofstream(target.c_str(), true);
+	if (!target_file.good())
 		return false;
-	}
 
 	HTTPFetchRequest fetch_request;
 	HTTPFetchResult fetch_result;
@@ -629,13 +630,15 @@ bool GUIEngine::downloadFile(const std::string &url, const std::string &target)
 	fetch_request.caller = HTTPFETCH_SYNC;
 	fetch_request.timeout = std::max(MIN_HTTPFETCH_TIMEOUT,
 		(long)g_settings->getS32("curl_file_download_timeout"));
-	httpfetch_sync(fetch_request, fetch_result);
+	bool completed = httpfetch_sync_interruptible(fetch_request, fetch_result);
 
-	if (!fetch_result.succeeded) {
+	if (!completed || !fetch_result.succeeded) {
 		target_file.close();
 		fs::DeleteSingleFileOrEmptyDirectory(target);
 		return false;
 	}
+	// TODO: directly stream the response data into the file instead of first
+	// storing the complete response in memory
 	target_file << fetch_result.data;
 
 	return true;

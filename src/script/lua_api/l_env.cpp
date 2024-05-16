@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_nodetimer.h"
 #include "lua_api/l_noise.h"
 #include "lua_api/l_vmanip.h"
+#include "lua_api/l_object.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "scripting_server.h"
@@ -416,7 +417,7 @@ int ModApiEnv::l_get_natural_light(lua_State *L)
 	return 1;
 }
 
-// place_node(pos, node)
+// place_node(pos, node, [placer])
 // pos = {x=num, y=num, z=num}
 int ModApiEnv::l_place_node(lua_State *L)
 {
@@ -436,6 +437,7 @@ int ModApiEnv::l_place_node(lua_State *L)
 		lua_pushboolean(L, false);
 		return 1;
 	}
+
 	// Create item to place
 	std::optional<ItemStack> item = ItemStack(ndef->get(n).name, 1, 0, idef);
 	// Make pointed position
@@ -443,13 +445,22 @@ int ModApiEnv::l_place_node(lua_State *L)
 	pointed.type = POINTEDTHING_NODE;
 	pointed.node_abovesurface = pos;
 	pointed.node_undersurface = pos + v3s16(0,-1,0);
-	// Place it with a NULL placer (appears in Lua as nil)
-	bool success = scriptIfaceItem->item_OnPlace(item, nullptr, pointed);
+
+	ServerActiveObject *placer = nullptr;
+
+	if (!lua_isnoneornil(L, 3)) {
+		ObjectRef *ref = checkObject<ObjectRef>(L, 3);
+		placer = ObjectRef::getobject(ref);
+	}
+
+	// Place it with a nullptr placer (appears in Lua as nil)
+	// or the given ObjectRef
+	bool success = scriptIfaceItem->item_OnPlace(item, placer, pointed);
 	lua_pushboolean(L, success);
 	return 1;
 }
 
-// dig_node(pos)
+// dig_node(pos, [digger])
 // pos = {x=num, y=num, z=num}
 int ModApiEnv::l_dig_node(lua_State *L)
 {
@@ -465,14 +476,23 @@ int ModApiEnv::l_dig_node(lua_State *L)
 		lua_pushboolean(L, false);
 		return 1;
 	}
-	// Dig it out with a NULL digger (appears in Lua as a
-	// non-functional ObjectRef)
-	bool success = scriptIfaceNode->node_on_dig(pos, n, NULL);
+
+	ServerActiveObject *digger = nullptr;
+
+	if (!lua_isnoneornil(L, 2)) {
+		ObjectRef *ref = checkObject<ObjectRef>(L, 2);
+		digger = ObjectRef::getobject(ref);
+	}
+
+	// Dig it out with a nullptr digger
+	// (appears in Lua as a non-functional ObjectRef)
+	// or the given ObjectRef
+	bool success = scriptIfaceNode->node_on_dig(pos, n, digger);
 	lua_pushboolean(L, success);
 	return 1;
 }
 
-// punch_node(pos)
+// punch_node(pos, [puncher])
 // pos = {x=num, y=num, z=num}
 int ModApiEnv::l_punch_node(lua_State *L)
 {
@@ -488,9 +508,19 @@ int ModApiEnv::l_punch_node(lua_State *L)
 		lua_pushboolean(L, false);
 		return 1;
 	}
-	// Punch it with a NULL puncher (appears in Lua as a non-functional
-	// ObjectRef)
-	bool success = scriptIfaceNode->node_on_punch(pos, n, NULL, PointedThing());
+
+	ServerActiveObject *puncher = nullptr;
+
+	if (!lua_isnoneornil(L, 2)) {
+		ObjectRef *ref = checkObject<ObjectRef>(L, 2);
+		puncher = ObjectRef::getobject(ref);
+	}
+
+	// Punch it with a nullptr puncher
+	// (appears in Lua as a non-functional ObjectRef)
+	// or the given ObjectRef
+	// TODO: custom PointedThing (requires a converter function)
+	bool success = scriptIfaceNode->node_on_punch(pos, n, puncher, PointedThing());
 	lua_pushboolean(L, success);
 	return 1;
 }
@@ -1331,45 +1361,6 @@ int ModApiEnv::l_find_path(lua_State *L)
 	return 0;
 }
 
-static bool read_tree_def(lua_State *L, int idx,
-	const NodeDefManager *ndef, treegen::TreeDef &tree_def)
-{
-	std::string trunk, leaves, fruit;
-	if (!lua_istable(L, idx))
-		return false;
-
-	getstringfield(L, idx, "axiom", tree_def.initial_axiom);
-	getstringfield(L, idx, "rules_a", tree_def.rules_a);
-	getstringfield(L, idx, "rules_b", tree_def.rules_b);
-	getstringfield(L, idx, "rules_c", tree_def.rules_c);
-	getstringfield(L, idx, "rules_d", tree_def.rules_d);
-	getstringfield(L, idx, "trunk", trunk);
-	tree_def.trunknode = ndef->getId(trunk);
-	getstringfield(L, idx, "leaves", leaves);
-	tree_def.leavesnode = ndef->getId(leaves);
-	tree_def.leaves2_chance = 0;
-	getstringfield(L, idx, "leaves2", leaves);
-	if (!leaves.empty()) {
-		tree_def.leaves2node = ndef->getId(leaves);
-		getintfield(L, idx, "leaves2_chance", tree_def.leaves2_chance);
-	}
-	getintfield(L, idx, "angle", tree_def.angle);
-	getintfield(L, idx, "iterations", tree_def.iterations);
-	if (!getintfield(L, idx, "random_level", tree_def.iterations_random_level))
-		tree_def.iterations_random_level = 0;
-	getstringfield(L, idx, "trunk_type", tree_def.trunk_type);
-	getboolfield(L, idx, "thin_branches", tree_def.thin_branches);
-	tree_def.fruit_chance = 0;
-	getstringfield(L, idx, "fruit", fruit);
-	if (!fruit.empty()) {
-		tree_def.fruitnode = ndef->getId(fruit);
-		getintfield(L, idx, "fruit_chance", tree_def.fruit_chance);
-	}
-	tree_def.explicit_seed = getintfield(L, idx, "seed", tree_def.seed);
-
-	return true;
-}
-
 // spawn_tree(pos, treedef)
 int ModApiEnv::l_spawn_tree(lua_State *L)
 {
@@ -1385,7 +1376,7 @@ int ModApiEnv::l_spawn_tree(lua_State *L)
 
 	ServerMap *map = &env->getServerMap();
 	treegen::error e;
-	if ((e = treegen::spawn_ltree (map, p0, ndef, tree_def)) != treegen::SUCCESS) {
+	if ((e = treegen::spawn_ltree (map, p0, tree_def)) != treegen::SUCCESS) {
 		if (e == treegen::UNBALANCED_BRACKETS) {
 			luaL_error(L, "spawn_tree(): closing ']' has no matching opening bracket");
 		} else {
@@ -1691,7 +1682,7 @@ int ModApiEnvVM::l_spawn_tree(lua_State *L)
 		return 0;
 
 	treegen::error e;
-	if ((e = treegen::make_ltree(*vm, p0, ndef, tree_def)) != treegen::SUCCESS) {
+	if ((e = treegen::make_ltree(*vm, p0, tree_def)) != treegen::SUCCESS) {
 		if (e == treegen::UNBALANCED_BRACKETS) {
 			throw LuaError("spawn_tree(): closing ']' has no matching opening bracket");
 		} else {

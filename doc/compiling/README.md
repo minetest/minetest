@@ -38,7 +38,6 @@ General options and their default values:
     INSTALL_DEVTEST=FALSE      - Whether the Development Test game should be installed alongside Minetest
     USE_GPROF=FALSE            - Enable profiling using GProf
     VERSION_EXTRA=             - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
-    ENABLE_TOUCH=FALSE         - Enable touchscreen support by default (requires support by IrrlichtMt)
 
 Library specific options:
 
@@ -55,8 +54,6 @@ Library specific options:
     GETTEXT_LIBRARY                 - Optional/platform-dependent with gettext; path to libintl.so/libintl.dll.a
     GETTEXT_MSGFMT                  - Only when building with gettext; path to msgfmt/msgfmt.exe
     ICONV_LIBRARY                   - Optional/platform-dependent; path to libiconv.so/libiconv.dylib
-    IRRLICHT_DLL                    - Only on Windows; path to IrrlichtMt.dll
-    IRRLICHT_INCLUDE_DIR            - Directory that contains IrrCompileConfig.h (usable for server build only)
     LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
     LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll.a
     LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll

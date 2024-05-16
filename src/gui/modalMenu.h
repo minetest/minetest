@@ -31,6 +31,14 @@ enum class PointerType {
 	Touch,
 };
 
+struct PointerAction {
+	v2s32 pos;
+	u64 time; // ms
+
+	static PointerAction fromEvent(const SEvent &event);
+	bool isRelated(PointerAction other);
+};
+
 class GUIModalMenu;
 
 class IMenuManager
@@ -94,14 +102,14 @@ protected:
 
 private:
 	IMenuManager *m_menumgr;
-	/* If true, remap a double-click (or double-tap) action to ESC. This is so
-	 * that, for example, Android users can double-tap to close a formspec.
-	*
-	 * This value can (currently) only be set by the class constructor
-	 * and the default value for the setting is true.
+	/* If true, remap a click outside the formspec to ESC. This is so that, for
+	 * example, touchscreen users can close formspecs.
+	 * The default for this setting is true. Currently, it's set to false for
+	 * the mainmenu to prevent Minetest from closing unexpectedly.
 	 */
-	bool m_remap_dbl_click;
-	bool remapDoubleClick(const SEvent &event);
+	bool m_remap_click_outside;
+	bool remapClickOutside(const SEvent &event);
+	PointerAction m_last_click_outside{};
 
 	// This might be necessary to expose to the implementation if it
 	// wants to launch other menus
@@ -111,13 +119,11 @@ private:
 
 	irr_ptr<gui::IGUIElement> m_touch_hovered;
 
+	// Converts touches into clicks.
 	bool simulateMouseEvent(ETOUCH_INPUT_EVENT touch_event, bool second_try=false);
 	void enter(gui::IGUIElement *element);
 	void leave();
 
 	// Used to detect double-taps and convert them into double-click events.
-	struct {
-		v2s32 pos;
-		s64 time;
-	} m_last_touch;
+	PointerAction m_last_touch{};
 };

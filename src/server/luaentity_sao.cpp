@@ -71,7 +71,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &d
 		break;
 	}
 	// create object
-	infostream << "LuaEntitySAO::create(name=\"" << name << "\" state is";
+	infostream << "LuaEntitySAO(name=\"" << name << "\" state is ";
 	if (state.empty())
 		infostream << "empty";
 	else
@@ -289,6 +289,8 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 
 void LuaEntitySAO::getStaticData(std::string *result) const
 {
+	assert(isStaticAllowed());
+
 	std::ostringstream os(std::ios::binary);
 	// version must be 1 to keep backwards-compatibility. See version2
 	writeU8(os, 1);
@@ -330,16 +332,16 @@ u32 LuaEntitySAO::punch(v3f dir,
 		return 0;
 	}
 
-	FATAL_ERROR_IF(!puncher, "Punch action called without SAO");
-
 	s32 old_hp = getHP();
 	ItemStack selected_item, hand_item;
-	ItemStack tool_item = puncher->getWieldedItem(&selected_item, &hand_item);
+	ItemStack tool_item;
+	if (puncher)
+		tool_item = puncher->getWieldedItem(&selected_item, &hand_item);
 
 	PunchDamageResult result = getPunchDamage(
 			m_armor_groups,
 			toolcap,
-			&tool_item,
+			puncher ? &tool_item : nullptr,
 			time_from_last_punch,
 			initial_wear);
 
@@ -353,12 +355,16 @@ u32 LuaEntitySAO::punch(v3f dir,
 		}
 	}
 
-	actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
-			", hp=" << puncher->getHP() << ") punched " <<
-			getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
-			"), damage=" << (old_hp - (s32)getHP()) <<
-			(damage_handled ? " (handled by Lua)" : "") << std::endl;
-
+	if (puncher) {
+		actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
+				", hp=" << puncher->getHP() << ")";
+	} else {
+		actionstream << "(none)";
+	}
+	actionstream << " punched " <<
+		  getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
+		  "), damage=" << (old_hp - (s32)getHP()) <<
+		  (damage_handled ? " (handled by Lua)" : "") << std::endl;
 	// TODO: give Lua control over wear
 	return result.wear;
 }

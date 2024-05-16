@@ -183,7 +183,6 @@ void GUITable::setTable(const TableOptions &options,
 	}
 
 	// Handle table options
-	video::SColor default_color(255, 255, 255, 255);
 	s32 opendepth = 0;
 	for (const Option &option : options) {
 		const std::string &name = option.name;
@@ -869,7 +868,7 @@ bool GUITable::OnEvent(const SEvent &event)
 		core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
 
 		if (event.MouseInput.Event == EMIE_MOUSE_WHEEL) {
-			m_scrollbar->setPos(m_scrollbar->getPos() +
+			m_scrollbar->setPosInterpolated(m_scrollbar->getTargetPos() +
 					(event.MouseInput.Wheel < 0 ? -3 : 3) *
 					- (s32) m_rowheight / 2);
 			return true;

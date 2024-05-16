@@ -262,8 +262,6 @@ bool ScriptApiEntity::luaentity_Punch(u16 id,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	assert(puncher);
-
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Get core.luaentities[id]
@@ -278,7 +276,10 @@ bool ScriptApiEntity::luaentity_Punch(u16 id,
 	}
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object);  // self
-	objectrefGetOrCreate(L, puncher);  // Clicker reference
+	if (puncher)
+		objectrefGetOrCreate(L, puncher);  // Puncher reference
+	else
+		lua_pushnil(L);
 	lua_pushnumber(L, time_from_last_punch);
 	push_tool_capabilities(L, *toolcap);
 	push_v3f(L, dir);

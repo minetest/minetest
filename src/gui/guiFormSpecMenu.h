@@ -137,6 +137,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		std::string fname;
 		std::wstring flabel;
 		std::wstring fdefault;
+		std::string url;
 		s32 fid;
 		bool send;
 		FormspecFieldType ftype;

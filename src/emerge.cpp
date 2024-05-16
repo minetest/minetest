@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/printing.h"
 #include "filesys.h"
 #include "log.h"
-#include "map.h"
+#include "servermap.h"
 #include "mapblock.h"
 #include "mapgen/mg_biome.h"
 #include "mapgen/mg_ore.h"
@@ -646,7 +646,7 @@ void *EmergeThread::run()
 	std::map<v3s16, MapBlock *> modified_blocks;
 
 	m_map    = &m_server->m_env->getServerMap();
-	m_emerge = m_server->m_emerge;
+	m_emerge = m_server->getEmergeManager();
 	m_mapgen = m_emerge->m_mapgens[id];
 	enable_mapgen_debug_info = m_emerge->enable_mapgen_debug_info;
 

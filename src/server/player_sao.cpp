@@ -336,6 +336,9 @@ std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const
 	writeF32(os, phys.liquid_sink);
 	writeF32(os, phys.acceleration_default);
 	writeF32(os, phys.acceleration_air);
+	writeF32(os, phys.speed_fast);
+	writeF32(os, phys.acceleration_fast);
+	writeF32(os, phys.speed_walk);
 	return os.str();
 }
 
@@ -462,11 +465,9 @@ u32 PlayerSAO::punch(v3f dir,
 	if (!toolcap)
 		return 0;
 
-	FATAL_ERROR_IF(!puncher, "Punch action called without SAO");
-
 	// No effect if PvP disabled or if immortal
 	if (isImmortal() || !g_settings->getBool("enable_pvp")) {
-		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		if (puncher && puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			// create message and add to list
 			sendPunchCommand();
 			return 0;
@@ -493,11 +494,16 @@ u32 PlayerSAO::punch(v3f dir,
 		}
 	}
 
-	actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
-		", hp=" << puncher->getHP() << ") punched " <<
-		getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
-		"), damage=" << (old_hp - (s32)getHP()) <<
-		(damage_handled ? " (handled by Lua)" : "") << std::endl;
+	if (puncher) {
+		actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
+				", hp=" << puncher->getHP() << ")";
+	} else {
+		actionstream << "(none)";
+	}
+	actionstream << " puched " <<
+			getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
+			"), damage=" << (old_hp - (s32)getHP()) <<
+			(damage_handled ? " (handled by Lua)" : "") << std::endl;
 
 	return hitparams.wear;
 }
@@ -649,14 +655,15 @@ bool PlayerSAO::checkMovementCheat()
 	float player_max_walk = 0; // horizontal movement
 	float player_max_jump = 0; // vertical upwards movement
 
-	float speed_walk   = m_player->movement_speed_walk;
-	float speed_fast   = m_player->movement_speed_fast;
+	float speed_walk = m_player->movement_speed_walk * m_player->physics_override.speed_walk;
+	float speed_fast = m_player->movement_speed_fast * m_player->physics_override.speed_fast;
 	float speed_crouch = m_player->movement_speed_crouch * m_player->physics_override.speed_crouch;
-	float speed_climb  = m_player->movement_speed_climb  * m_player->physics_override.speed_climb;
-	speed_walk   *= m_player->physics_override.speed;
-	speed_fast   *= m_player->physics_override.speed;
+	float speed_climb = m_player->movement_speed_climb * m_player->physics_override.speed_climb;
+
+	speed_walk *= m_player->physics_override.speed;
+	speed_fast *= m_player->physics_override.speed;
 	speed_crouch *= m_player->physics_override.speed;
-	speed_climb  *= m_player->physics_override.speed;
+	speed_climb *= m_player->physics_override.speed;
 
 	// Get permissible max. speed
 	if (m_privs.count("fast") != 0) {

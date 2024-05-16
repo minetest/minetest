@@ -129,9 +129,8 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 		if (state->m_objects_pointable) {
 			std::vector<PointedThing> found;
 			getSelectedActiveObjects(state->m_shootline, found, state->m_pointabilities);
-			for (const PointedThing &pointed : found) {
-				state->m_found.push(pointed);
-			}
+			for (auto &pointed : found)
+				state->m_found.push(std::move(pointed));
 		}
 		// Set search range
 		core::aabbox3d<s16> maximal_exceed = nodedef->getSelectionBoxIntUnion();
@@ -150,14 +149,10 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 	}
 
 	Map &map = getMap();
-	// If a node is found, this is the center of the
-	// first nodebox the shootline meets.
-	v3f found_boxcenter(0, 0, 0);
-	// The untested nodes are in this range.
-	core::aabbox3d<s16> new_nodes;
+	std::vector<aabb3f> boxes;
 	while (state->m_iterator.m_current_index <= lastIndex) {
 		// Test the nodes around the current node in search_range.
-		new_nodes = state->m_search_range;
+		core::aabbox3d<s16> new_nodes = state->m_search_range;
 		new_nodes.MinEdge += state->m_iterator.m_current_node_pos;
 		new_nodes.MaxEdge += state->m_iterator.m_current_node_pos;
 
@@ -185,9 +180,9 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 		}
 
 		// For each untested node
-		for (s16 x = new_nodes.MinEdge.X; x <= new_nodes.MaxEdge.X; x++)
+		for (s16 z = new_nodes.MinEdge.Z; z <= new_nodes.MaxEdge.Z; z++)
 		for (s16 y = new_nodes.MinEdge.Y; y <= new_nodes.MaxEdge.Y; y++)
-		for (s16 z = new_nodes.MinEdge.Z; z <= new_nodes.MaxEdge.Z; z++) {
+		for (s16 x = new_nodes.MinEdge.X; x <= new_nodes.MaxEdge.X; x++) {
 			MapNode n;
 			v3s16 np(x, y, z);
 			bool is_valid_position;
@@ -205,7 +200,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 
 			PointedThing result;
 
-			std::vector<aabb3f> boxes;
+			boxes.clear();
 			n.getSelectionBoxes(nodedef, &boxes,
 				n.getNeighbors(np, &map));
 
@@ -215,6 +210,9 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 			float min_distance_sq = 10000000;
 			// ID of the current box (loop counter)
 			u16 id = 0;
+			// If a node is found, this is the center of the
+			// first nodebox the shootline meets.
+			v3f found_boxcenter(0, 0, 0);
 
 			// Do calculations relative to the node center
 			// to translate the ray rather than the boxes
@@ -253,7 +251,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 			result.node_undersurface = np;
 			result.distanceSq = min_distance_sq;
 			// Set undersurface and abovesurface nodes
-			f32 d = 0.002 * BS;
+			const f32 d = 0.002 * BS;
 			v3f fake_intersection = result.intersection_point;
 			found_boxcenter += npf; // translate back to world coords
 			// Move intersection towards its source block.
@@ -276,8 +274,9 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 				fake_intersection, BS);
 			result.node_abovesurface = result.node_real_undersurface
 				+ floatToInt(result.intersection_normal, 1.0f);
+
 			// Push found PointedThing
-			state->m_found.push(result);
+			state->m_found.push(std::move(result));
 			// If this is nearer than the old nearest object,
 			// the search can be shorter
 			s16 newIndex = state->m_iterator.getIndex(
@@ -297,9 +296,8 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 	} else {
 		*result_p = state->m_found.top();
 		state->m_found.pop();
-		if (result_p->pointability == PointabilityType::POINTABLE_BLOCKING) {
+		if (result_p->pointability == PointabilityType::POINTABLE_BLOCKING)
 			result_p->type = POINTEDTHING_NOTHING;
-		}
 	}
 }
 

@@ -8,10 +8,11 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - 'util/ci/**'
-      - 'misc/irrlichtmt_tag.txt'
       - 'Dockerfile'
       - '.dockerignore'
       - '.github/workflows/linux.yml'
@@ -24,7 +25,6 @@ on:
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - 'util/ci/**'
-      - 'misc/irrlichtmt_tag.txt'
       - 'Dockerfile'
       - '.dockerignore'
       - '.github/workflows/linux.yml'
@@ -108,7 +108,7 @@ jobs:
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-14 gdb
+          install_linux_deps clang-14 lldb
 
       - name: Build
         run: |
@@ -151,13 +151,3 @@ jobs:
       - name: Test
         run: |
           ./bin/minetestserver --run-unittests
-
-  docker:
-    name: "Docker image"
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build docker image
-        run: |
-          docker build . -t minetest:latest
-          docker run --rm minetest:latest /usr/local/bin/minetestserver --version

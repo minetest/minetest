@@ -27,10 +27,15 @@ mark_as_advanced(
 	CMAKE_CXX_FLAGS_SEMIDEBUG
 	CMAKE_C_FLAGS_SEMIDEBUG
 )
+set(SUPPORTED_BUILD_TYPES None Release Debug SemiDebug RelWithDebInfo MinSizeRel)
 set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
-	"Choose the type of build. Options are: None Debug SemiDebug RelWithDebInfo MinSizeRel."
+	"Choose the type of build. Options are: ${SUPPORTED_BUILD_TYPES}."
 	FORCE
 )
+if(NOT (CMAKE_BUILD_TYPE IN_LIST SUPPORTED_BUILD_TYPES))
+	message(WARNING
+			"Unknown CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}. Options are: ${SUPPORTED_BUILD_TYPES}.")
+endif()
 
 
 # Set some random things default to not being visible in the GUI
@@ -107,12 +112,6 @@ if(BUILD_CLIENT AND ENABLE_SOUND)
 		message(FATAL_ERROR "Sound enabled, but cannot be used.\n"
 			"To continue, either fill in the required paths or disable sound. (-DENABLE_SOUND=0)")
 	endif()
-endif()
-
-option(ENABLE_TOUCH "Enable touchscreen by default" FALSE)
-if(ENABLE_TOUCH)
-	message(STATUS "Touchscreen support enabled by default.")
-	add_definitions(-DENABLE_TOUCH)
 endif()
 
 if(BUILD_CLIENT)
@@ -272,9 +271,14 @@ if(WIN32)
 	if(NOT VCPKG_APPLOCAL_DEPS)
 		set(ZLIB_DLL "" CACHE FILEPATH "Path to Zlib DLL for installation (optional)")
 		set(ZSTD_DLL "" CACHE FILEPATH "Path to Zstd DLL for installation (optional)")
-		if(ENABLE_SOUND)
-			set(OPENAL_DLL "" CACHE FILEPATH "Path to OpenAL32.dll for installation (optional)")
-			set(OGG_DLL "" CACHE FILEPATH "Path to libogg.dll for installation (optional)")
+		if(BUILD_CLIENT)
+			set(PNG_DLL "" CACHE FILEPATH "Path to libpng DLL for installation (optional)")
+			set(JPEG_DLL "" CACHE FILEPATH "Path to libjpeg DLL for installation (optional)")
+			set(SDL2_DLL "" CACHE FILEPATH "Path to SDL2 DLL for installation (optional)")
+		endif()
+		if(BUILD_CLIENT AND ENABLE_SOUND)
+			set(OPENAL_DLL "" CACHE FILEPATH "Path to OpenAL DLL for installation (optional)")
+			set(OGG_DLL "" CACHE FILEPATH "Path to Ogg DLL for installation (optional)")
 			set(VORBIS_DLL "" CACHE FILEPATH "Path to Vorbis DLLs for installation (optional)")
 		endif()
 		if(USE_GETTEXT)
@@ -307,10 +311,6 @@ else()
 	endif()
 
 	if (ANDROID)
-		include_directories(${ANDROID_NDK}/sources/android/native_app_glue)
-		add_library(native_app_glue OBJECT ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} native_app_glue)
-
 		set(PLATFORM_LIBS ${PLATFORM_LIBS} android log)
 	endif()
 endif()
@@ -320,11 +320,13 @@ endif()
 # Note that find_library does not reliably find it so we have to resort to this.
 # Also, passing -latomic is not always the same as adding atomic to the library list.
 include(CheckCSourceCompiles)
-set(CMAKE_REQUIRED_LIBRARIES "-latomic")
-check_c_source_compiles("int main(){}" HAVE_LINK_ATOMIC)
-set(CMAKE_REQUIRED_LIBRARIES "")
-if(HAVE_LINK_ATOMIC)
-	set(PLATFORM_LIBS ${PLATFORM_LIBS} "-latomic")
+if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+	set(CMAKE_REQUIRED_LIBRARIES "-latomic")
+	check_c_source_compiles("int main(){}" HAVE_LINK_ATOMIC)
+	set(CMAKE_REQUIRED_LIBRARIES "")
+	if(HAVE_LINK_ATOMIC)
+		set(PLATFORM_LIBS ${PLATFORM_LIBS} "-latomic")
+	endif()
 endif()
 
 include(CheckSymbolExists)
@@ -368,6 +370,7 @@ set(common_SRCS
 	${server_SRCS}
 	${content_SRCS}
 	chat.cpp
+	clientdynamicinfo.cpp
 	collision.cpp
 	content_mapnode.cpp
 	content_nodemeta.cpp
@@ -416,6 +419,7 @@ set(common_SRCS
 	serialization.cpp
 	server.cpp
 	serverenvironment.cpp
+	servermap.cpp
 	settings.cpp
 	staticobject.cpp
 	terminal_chat_console.cpp
@@ -516,6 +520,9 @@ include_directories(SYSTEM
 	${GMP_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 	${LUA_BIT_INCLUDE_DIR}
+	# on Android, Minetest depends on SDL2 directly
+	# on other platforms, only IrrlichtMt depends on SDL2
+	"$<$<PLATFORM_ID:Android>:${SDL2_INCLUDE_DIRS}>"
 )
 
 if(USE_GETTEXT)
@@ -560,6 +567,9 @@ if(BUILD_CLIENT)
 		${LUA_BIT_LIBRARY}
 		${FREETYPE_LIBRARY}
 		${PLATFORM_LIBS}
+		# on Android, Minetest depends on SDL2 directly
+		# on other platforms, only IrrlichtMt depends on SDL2
+		"$<$<PLATFORM_ID:Android>:${SDL2_LIBRARIES}>"
 	)
 	if(NOT USE_LUAJIT)
 		set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -696,11 +706,13 @@ include(CheckCSourceCompiles)
 
 set(CMAKE_REQUIRED_INCLUDES ${LUA_INCLUDE_DIR})
 if(USE_LUAJIT)
-	set(CMAKE_REQUIRED_LIBRARIES ${LUA_LIBRARY})
+	# libm usually required if statically linking
+	set(CMAKE_REQUIRED_LIBRARIES ${LUA_LIBRARY} m)
 	# LuaJIT provides exactly zero ways to determine how recent it is (the version
 	# is unchanged since 2017), however it happens that string buffers were added
 	# after the changes which we care about so that works as an indicator.
 	# (https://github.com/LuaJIT/LuaJIT/commit/4c6b669 March 2021)
+	# Note: This is no longer true as of August 2023, but we're keeping the old check.
 	unset(HAVE_RECENT_LJ CACHE)
 	check_symbol_exists(luaopen_string_buffer "lualib.h" HAVE_RECENT_LJ)
 	if(NOT HAVE_RECENT_LJ)
@@ -856,6 +868,20 @@ if(WIN32)
 				install(FILES ${VORBIS_DLL} DESTINATION ${BINDIR})
 			endif()
 		endif()
+		if(BUILD_CLIENT)
+			if(PNG_DLL)
+				install(FILES ${PNG_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(JPEG_DLL)
+				install(FILES ${JPEG_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(SDL2_DLL)
+				install(FILES ${SDL2_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(FREETYPE_DLL)
+				install(FILES ${FREETYPE_DLL} DESTINATION ${BINDIR})
+			endif()
+		endif()
 		if(CURL_DLL)
 			install(FILES ${CURL_DLL} DESTINATION ${BINDIR})
 		endif()
@@ -864,9 +890,6 @@ if(WIN32)
 		endif()
 		if(ZSTD_DLL)
 			install(FILES ${ZSTD_DLL} DESTINATION ${BINDIR})
-		endif()
-		if(BUILD_CLIENT AND FREETYPE_DLL)
-			install(FILES ${FREETYPE_DLL} DESTINATION ${BINDIR})
 		endif()
 		if(SQLITE3_DLL)
 			install(FILES ${SQLITE3_DLL} DESTINATION ${BINDIR})
@@ -880,10 +903,6 @@ if(WIN32)
 		if(BUILD_CLIENT AND USE_GETTEXT AND GETTEXT_DLL)
 			install(FILES ${GETTEXT_DLL} DESTINATION ${BINDIR})
 		endif()
-	endif()
-
-	if(BUILD_CLIENT AND IRRLICHT_DLL)
-		install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
 	endif()
 endif()
 

@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class EmergeThread;
 class NodeDefManager;
 class Settings;
-
+class MapSettingsManager;
 class BiomeManager;
 class OreManager;
 class DecorationManager;
@@ -70,7 +70,7 @@ enum EmergeAction {
 	EMERGE_GENERATED,
 };
 
-const static std::string emergeActionStrs[] = {
+constexpr const char *emergeActionStrs[] = {
 	"cancelled",
 	"errored",
 	"from_memory",

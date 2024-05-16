@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "gui/mainmenumanager.h"
 #include "clouds.h"
+#include "gui/touchscreengui.h"
 #include "server.h"
 #include "filesys.h"
 #include "gui/guiMainMenu.h"
@@ -46,11 +47,6 @@ gui::IGUIEnvironment *guienv = nullptr;
 gui::IGUIStaticText *guiroot = nullptr;
 MainMenuManager g_menumgr;
 
-bool isMenuActive()
-{
-	return g_menumgr.menuCount() != 0;
-}
-
 // Passed to menus to allow disconnecting and exiting
 MainGameCallback *g_gamecallback = nullptr;
 
@@ -73,12 +69,19 @@ ClientLauncher::~ClientLauncher()
 {
 	delete input;
 
-	delete receiver;
-
 	delete g_fontengine;
+	g_fontengine = nullptr;
 	delete g_gamecallback;
+	g_gamecallback = nullptr;
+
+	guiroot = nullptr;
+	guienv = nullptr;
+	assert(g_menumgr.menuCount() == 0);
 
 	delete m_rendering_engine;
+
+	// delete event receiver only after all Irrlicht stuff is gone
+	delete receiver;
 
 #if USE_SOUND
 	g_sound_manager_singleton.reset();
@@ -102,10 +105,8 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		g_sound_manager_singleton = createSoundManagerSingleton();
 #endif
 
-	if (!init_engine()) {
-		errorstream << "Could not initialize game engine." << std::endl;
+	if (!init_engine())
 		return false;
-	}
 
 	if (!m_rendering_engine->get_video_driver()) {
 		errorstream << "Could not initialize video driver." << std::endl;
@@ -128,7 +129,6 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	init_guienv(guienv);
 
 	g_fontengine = new FontEngine(guienv);
-	FATAL_ERROR_IF(!g_fontengine, "Font engine creation failed.");
 
 	// Create the menu clouds
 	// This is only global so it can be used by RenderingEngine::draw_load_screen().
@@ -163,11 +163,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	while (m_rendering_engine->run() && !*kill &&
 		!g_gamecallback->shutdown_requested) {
 		// Set the window caption
-#if IRRLICHT_VERSION_MT_REVISION >= 15
 		auto driver_name = m_rendering_engine->getVideoDriver()->getName();
-#else
-		auto driver_name = wide_to_utf8(m_rendering_engine->getVideoDriver()->getName());
-#endif
 		std::string caption = std::string(PROJECT_NAME_C) +
 			" " + g_version_hash +
 			" [" + gettext("Main Menu") + "]" +
@@ -176,8 +172,9 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		m_rendering_engine->get_raw_device()->
 			setWindowCaption(utf8_to_wide(caption).c_str());
 
-		try {	// This is used for catching disconnects
-
+#ifdef NDEBUG
+		try {
+#endif
 			m_rendering_engine->get_gui_env()->clear();
 
 			/*
@@ -209,11 +206,6 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			if (!m_rendering_engine->run() || *kill)
 				break;
 
-			if (g_settings->getBool("enable_touch")) {
-				receiver->m_touchscreengui = new TouchScreenGUI(m_rendering_engine->get_raw_device(), receiver);
-				g_touchscreengui = receiver->m_touchscreengui;
-			}
-
 			the_game(
 				kill,
 				input,
@@ -223,18 +215,8 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 				chat_backend,
 				&reconnect_requested
 			);
-		} //try
-		catch (con::PeerNotFoundException &e) {
-			error_message = gettext("Connection error (timed out?)");
-			errorstream << error_message << std::endl;
-		}
-		catch (ShaderException &e) {
-			error_message = e.what();
-			errorstream << error_message << std::endl;
-		}
-
 #ifdef NDEBUG
-		catch (std::exception &e) {
+		} catch (std::exception &e) {
 			error_message = "Some exception: ";
 			error_message.append(debug_describe_exc(e));
 			errorstream << error_message << std::endl;
@@ -246,7 +228,6 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		if (g_touchscreengui) {
 			delete g_touchscreengui;
 			g_touchscreengui = NULL;
-			receiver->m_touchscreengui = NULL;
 		}
 
 		/* Save the settings when leaving the game.
@@ -266,6 +247,13 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			break;
 		}
 	} // Menu-game loop
+
+	// If profiler was enabled print it one last time
+	if (g_settings->getFloat("profiler_print_interval") > 0) {
+		infostream << "Profiler:" << std::endl;
+		g_profiler->print(infostream);
+		g_profiler->clear();
+	}
 
 	assert(g_menucloudsmgr->getReferenceCount() == 1);
 	g_menucloudsmgr->drop();
@@ -303,8 +291,12 @@ void ClientLauncher::init_args(GameStartData &start_data, const Settings &cmd_ar
 bool ClientLauncher::init_engine()
 {
 	receiver = new MyEventReceiver();
-	m_rendering_engine = new RenderingEngine(receiver);
-	return m_rendering_engine->get_raw_device() != nullptr;
+	try {
+		m_rendering_engine = new RenderingEngine(receiver);
+	} catch (std::exception &e) {
+		errorstream << e.what() << std::endl;
+	}
+	return !!m_rendering_engine;
 }
 
 void ClientLauncher::init_input()

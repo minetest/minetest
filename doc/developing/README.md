@@ -16,6 +16,7 @@ Notable pages:
 
 - [Developing minetestserver with Docker](docker.md)
 - [Android tips & tricks](android.md)
+- [OS/library compatibility policy](os-compatibility.md)
 - [Miscellaneous](misc.md)
 
 ## IRC

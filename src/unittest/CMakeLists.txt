@@ -15,6 +15,7 @@ set (UNITTEST_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_irrptr.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_lua.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_map.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_mapblock.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_map_settings_manager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_mapnode.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_modchannels.cpp
@@ -26,6 +27,7 @@ set (UNITTEST_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_objdef.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_profiler.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_random.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_sao.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_schematic.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_serialization.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_serveractiveobjectmgr.cpp

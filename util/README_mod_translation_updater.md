@@ -174,6 +174,9 @@ files, associating them with the line that follows them. So for example:
     # are also supported
     Text as well=
 
+The script will also propagate comments from an existing `template.txt` to all `*.tr`
+files and write it above existing comments (if exist).
+
 There are also a couple of special comments that this script gives special treatment to.
 
 #### Source file comments

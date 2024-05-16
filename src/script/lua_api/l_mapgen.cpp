@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen/mg_schematic.h"
 #include "mapgen/mapgen_v5.h"
 #include "mapgen/mapgen_v7.h"
+#include "mapgen/treegen.h"
 #include "filesys.h"
 #include "settings.h"
 #include "log.h"
@@ -110,6 +111,7 @@ bool read_schematic_def(lua_State *L, int index,
 
 bool read_deco_simple(lua_State *L, DecoSimple *deco);
 bool read_deco_schematic(lua_State *L, SchematicManager *schemmgr, DecoSchematic *deco);
+bool read_deco_lsystem(lua_State *L, const NodeDefManager *ndef, DecoLSystem *deco);
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1050,14 +1052,15 @@ int ModApiMapgen::l_get_gen_notify(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	auto *emerge = getEmergeManager(L);
+
 	push_flags_string(L, flagdesc_gennotify, emerge->gen_notify_on,
 		emerge->gen_notify_on);
 
 	lua_createtable(L, emerge->gen_notify_on_deco_ids.size(), 0);
 	int i = 1;
 	for (u32 id : emerge->gen_notify_on_deco_ids) {
-		lua_pushnumber(L, id);
+		lua_pushinteger(L, id);
 		lua_rawseti(L, -2, i++);
 	}
 
@@ -1226,6 +1229,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 		success = read_deco_schematic(L, schemmgr, (DecoSchematic *)deco);
 		break;
 	case DECO_LSYSTEM:
+		success = read_deco_lsystem(L, ndef, (DecoLSystem *)deco);
 		break;
 	}
 
@@ -1306,6 +1310,17 @@ bool read_deco_schematic(lua_State *L, SchematicManager *schemmgr, DecoSchematic
 
 	deco->schematic = schem;
 	return schem != NULL;
+}
+
+bool read_deco_lsystem(lua_State *L, const NodeDefManager *ndef, DecoLSystem *deco)
+{
+	deco->tree_def = std::make_shared<treegen::TreeDef>();
+
+	lua_getfield(L, 1, "treedef");
+	bool has_def = read_tree_def(L, -1, ndef, *(deco->tree_def));
+	lua_pop(L, 1);
+
+	return has_def;
 }
 
 
@@ -2040,6 +2055,7 @@ void ModApiMapgen::InitializeEmerge(lua_State *L, int top)
 	API_FCT(get_mapgen_setting);
 	API_FCT(get_mapgen_setting_noiseparams);
 	API_FCT(get_noiseparams);
+	API_FCT(get_gen_notify);
 	API_FCT(get_decoration_id);
 	API_FCT(save_gen_notify);
 

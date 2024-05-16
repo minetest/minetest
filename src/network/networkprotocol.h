@@ -1098,7 +1098,7 @@ enum NetProtoCompressionMode {
 	NETPROTO_COMPRESSION_NONE = 0,
 };
 
-const static std::string accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
+constexpr const char *accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
 	"Invalid password",
 	"Your client sent something the server didn't expect.  Try reconnecting or updating your client.",
 	"The server is running in simple singleplayer mode.  You cannot connect.",

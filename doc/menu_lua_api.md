@@ -55,10 +55,6 @@ Functions
   * Android only. Shares file using the share popup
 * `core.get_version()` (possible in async calls)
   * returns current core version
-* `core.set_once(key, value)`:
-  * save a string value that persists even if menu is closed
-* `core.get_once(key)`:
-  * get a string value saved by above function, or `nil`
 
 
 
@@ -97,8 +93,8 @@ Filesystem
     registered in the core (possible in async calls)
 * `core.get_cache_path()` -> path of cache
 * `core.get_temp_path([param])` (possible in async calls)
-  * `param`=true: returns path to a temporary file
-    otherwise: returns path to the temporary folder
+  * `param`=true: returns path to a newly created temporary file
+  * otherwise: returns path to a newly created temporary folder
 
 
 HTTP Requests

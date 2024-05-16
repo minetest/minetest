@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h" // For FATAL_ERROR
 #include <SColor.h>
 #include <json/json.h>
+#include "mapgen/treegen.h"
 
 struct EnumString es_TileAnimationType[] =
 {
@@ -155,17 +156,24 @@ void read_item_definition(lua_State* L, int index,
 
 	getboolfield(L, index, "wallmounted_rotate_vertical", def.wallmounted_rotate_vertical);
 
+	TouchInteraction &inter = def.touch_interaction;
 	lua_getfield(L, index, "touch_interaction");
-	if (!lua_isnil(L, -1)) {
-		luaL_checktype(L, -1, LUA_TTABLE);
-
-		TouchInteraction &inter = def.touch_interaction;
+	if (lua_istable(L, -1)) {
 		inter.pointed_nothing = (TouchInteractionMode)getenumfield(L, -1, "pointed_nothing",
 				es_TouchInteractionMode, inter.pointed_nothing);
 		inter.pointed_node = (TouchInteractionMode)getenumfield(L, -1, "pointed_node",
 				es_TouchInteractionMode, inter.pointed_node);
 		inter.pointed_object = (TouchInteractionMode)getenumfield(L, -1, "pointed_object",
 				es_TouchInteractionMode, inter.pointed_object);
+	} else if (lua_isstring(L, -1)) {
+		int value;
+		if (string_to_enum(es_TouchInteractionMode, value, lua_tostring(L, -1))) {
+			inter.pointed_nothing = (TouchInteractionMode)value;
+			inter.pointed_node    = (TouchInteractionMode)value;
+			inter.pointed_object  = (TouchInteractionMode)value;
+		}
+	} else if (!lua_isnil(L, -1)) {
+		throw LuaError("invalid type for 'touch_interaction'");
 	}
 	lua_pop(L, 1);
 }
@@ -2006,6 +2014,51 @@ void push_noiseparams(lua_State *L, NoiseParams *np)
 	lua_setfield(L, -2, "spread");
 }
 
+bool read_tree_def(lua_State *L, int idx, const NodeDefManager *ndef,
+		treegen::TreeDef &tree_def)
+{
+	std::string trunk, leaves, fruit;
+	if (!lua_istable(L, idx))
+		return false;
+
+	getstringfield(L, idx, "axiom", tree_def.initial_axiom);
+	getstringfield(L, idx, "rules_a", tree_def.rules_a);
+	getstringfield(L, idx, "rules_b", tree_def.rules_b);
+	getstringfield(L, idx, "rules_c", tree_def.rules_c);
+	getstringfield(L, idx, "rules_d", tree_def.rules_d);
+	getstringfield(L, idx, "trunk", trunk);
+	tree_def.m_nodenames.push_back(trunk);
+	getstringfield(L, idx, "leaves", leaves);
+	tree_def.m_nodenames.push_back(leaves);
+	tree_def.leaves2_chance = 0;
+	getstringfield(L, idx, "leaves2", leaves);
+	if (!leaves.empty()) {
+		getintfield(L, idx, "leaves2_chance", tree_def.leaves2_chance);
+		if (tree_def.leaves2_chance)
+			tree_def.m_nodenames.push_back(leaves);
+	}
+	getintfield(L, idx, "angle", tree_def.angle);
+	getintfield(L, idx, "iterations", tree_def.iterations);
+	if (!getintfield(L, idx, "random_level", tree_def.iterations_random_level))
+		tree_def.iterations_random_level = 0;
+	getstringfield(L, idx, "trunk_type", tree_def.trunk_type);
+	getboolfield(L, idx, "thin_branches", tree_def.thin_branches);
+	tree_def.fruit_chance = 0;
+	getstringfield(L, idx, "fruit", fruit);
+	if (!fruit.empty()) {
+		getintfield(L, idx, "fruit_chance", tree_def.fruit_chance);
+		if (tree_def.fruit_chance)
+			tree_def.m_nodenames.push_back(fruit);
+	}
+	tree_def.explicit_seed = getintfield(L, idx, "seed", tree_def.seed);
+
+	// Resolves the node IDs for trunk, leaves, leaves2 and fruit at runtime,
+	// when tree_def.resolveNodeNames will be called.
+	ndef->pendNodeResolve(&tree_def);
+
+	return true;
+}
+
 /******************************************************************************/
 // Returns depth of json value tree
 static int push_json_value_getdepth(const Json::Value &value)
@@ -2427,6 +2480,27 @@ static const char *collision_axis_str[] = {
 
 void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
 {
+	// use faster Lua helper if possible
+	if (res.collisions.size() == 1 && res.collisions.front().type == COLLISION_NODE) {
+		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_MOVERESULT1);
+		const auto &c = res.collisions.front();
+		lua_pushboolean(L, res.touching_ground);
+		lua_pushboolean(L, res.collides);
+		lua_pushboolean(L, res.standing_on_object);
+		assert(c.axis != COLLISION_AXIS_NONE);
+		lua_pushinteger(L, static_cast<int>(c.axis));
+		lua_pushinteger(L, c.node_p.X);
+		lua_pushinteger(L, c.node_p.Y);
+		lua_pushinteger(L, c.node_p.Z);
+		for (v3f v : {c.new_pos / BS, c.old_speed / BS, c.new_speed / BS}) {
+			lua_pushnumber(L, v.X);
+			lua_pushnumber(L, v.Y);
+			lua_pushnumber(L, v.Z);
+		}
+		lua_call(L, 3 + 1 + 3 + 3 * 3, 1);
+		return;
+	}
+
 	lua_createtable(L, 0, 4);
 
 	setboolfield(L, -1, "touching_ground", res.touching_ground);
@@ -2437,7 +2511,7 @@ void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
 	lua_createtable(L, res.collisions.size(), 0);
 	int i = 1;
 	for (const auto &c : res.collisions) {
-		lua_createtable(L, 0, 5);
+		lua_createtable(L, 0, 6);
 
 		lua_pushstring(L, collision_type_str[c.type]);
 		lua_setfield(L, -2, "type");
@@ -2453,6 +2527,9 @@ void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
 			push_objectRef(L, c.object->getId());
 			lua_setfield(L, -2, "object");
 		}
+
+		push_v3f(L, c.new_pos / BS);
+		lua_setfield(L, -2, "new_pos");
 
 		push_v3f(L, c.old_speed / BS);
 		lua_setfield(L, -2, "old_velocity");

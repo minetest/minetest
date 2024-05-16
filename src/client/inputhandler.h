@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include "keycode.h"
 #include "renderingengine.h"
-#include "gui/touchscreengui.h"
 
 class InputHandler;
 
@@ -198,14 +197,7 @@ public:
 		keyWasReleased.clear();
 	}
 
-	MyEventReceiver()
-	{
-		m_touchscreengui = NULL;
-	}
-
 	JoystickController *joystick = nullptr;
-
-	TouchScreenGUI *m_touchscreengui;
 
 private:
 	s32 mouse_wheel = 0;
@@ -308,48 +300,9 @@ public:
 		return m_receiver->WasKeyReleased(keycache.key[k]) || joystick.wasKeyReleased(k);
 	}
 
-	virtual float getMovementSpeed()
-	{
-		bool f = m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]),
-			b = m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]),
-			l = m_receiver->IsKeyDown(keycache.key[KeyType::LEFT]),
-			r = m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]);
-		if (f || b || l || r)
-		{
-			// if contradictory keys pressed, stay still
-			if (f && b && l && r)
-				return 0.0f;
-			else if (f && b && !l && !r)
-				return 0.0f;
-			else if (!f && !b && l && r)
-				return 0.0f;
-			return 1.0f; // If there is a keyboard event, assume maximum speed
-		}
-		if (m_receiver->m_touchscreengui && m_receiver->m_touchscreengui->getMovementSpeed())
-			return m_receiver->m_touchscreengui->getMovementSpeed();
-		return joystick.getMovementSpeed();
-	}
+	virtual float getMovementSpeed();
 
-	virtual float getMovementDirection()
-	{
-		float x = 0, z = 0;
-
-		/* Check keyboard for input */
-		if (m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]))
-			z += 1;
-		if (m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]))
-			z -= 1;
-		if (m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]))
-			x += 1;
-		if (m_receiver->IsKeyDown(keycache.key[KeyType::LEFT]))
-			x -= 1;
-
-		if (x != 0 || z != 0) /* If there is a keyboard event, it takes priority */
-			return atan2(x, z);
-		else if (m_receiver->m_touchscreengui && m_receiver->m_touchscreengui->getMovementDirection())
-			return m_receiver->m_touchscreengui->getMovementDirection();
-		return joystick.getMovementDirection();
-	}
+	virtual float getMovementDirection();
 
 	virtual bool cancelPressed()
 	{

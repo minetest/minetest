@@ -1,8 +1,6 @@
 ARG DOCKER_IMAGE=alpine:3.19
 FROM $DOCKER_IMAGE AS dev
 
-ENV IRRLICHT_VERSION master
-ENV SPATIALINDEX_VERSION master
 ENV LUAJIT_VERSION v2.1
 
 RUN apk add --no-cache git build-base cmake curl-dev zlib-dev zstd-dev \
@@ -20,7 +18,7 @@ RUN git clone --recursive https://github.com/jupp0r/prometheus-cpp && \
 		cmake --build build && \
 		cmake --install build && \
 	cd /usr/src/ && \
-	git clone --recursive https://github.com/libspatialindex/libspatialindex -b ${SPATIALINDEX_VERSION} && \
+	git clone --recursive https://github.com/libspatialindex/libspatialindex && \
 		cd libspatialindex && \
 		cmake -B build \
 			-DCMAKE_INSTALL_PREFIX=/usr/local && \
@@ -30,9 +28,7 @@ RUN git clone --recursive https://github.com/jupp0r/prometheus-cpp && \
 	git clone --recursive https://luajit.org/git/luajit.git -b ${LUAJIT_VERSION} && \
 		cd luajit && \
 		make amalg && make install && \
-	cd /usr/src/ && \
-	git clone --depth=1 https://github.com/minetest/irrlicht -b ${IRRLICHT_VERSION} && \
-		cp -r irrlicht/include /usr/include/irrlichtmt
+	cd /usr/src/
 
 FROM dev as builder
 
@@ -48,6 +44,7 @@ COPY lib /usr/src/minetest/lib
 COPY misc /usr/src/minetest/misc
 COPY po /usr/src/minetest/po
 COPY src /usr/src/minetest/src
+COPY irr /usr/src/minetest/irr
 COPY textures /usr/src/minetest/textures
 
 WORKDIR /usr/src/minetest

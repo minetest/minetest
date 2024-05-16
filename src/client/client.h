@@ -36,8 +36,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/peerhandler.h"
 #include "gameparams.h"
 #include "clientdynamicinfo.h"
-#include <fstream>
 #include "util/numeric.h"
+
+#ifdef SERVER
+#error Do not include in server builds
+#endif
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
@@ -353,6 +356,7 @@ public:
 
 	float mediaReceiveProgress();
 
+	void drawLoadScreen(const std::wstring &text, float dtime, int percent);
 	void afterContentReceived();
 	void showUpdateProgressTexture(void *args, u32 progress, u32 max_progress);
 

@@ -73,11 +73,6 @@ public:
 	void markForRemoval();
 	void markForDeactivation();
 
-	// Create a certain type of ServerActiveObject
-	static ServerActiveObject* create(ActiveObjectType type,
-			ServerEnvironment *env, u16 id, v3f pos,
-			const std::string &data);
-
 	/*
 		Some simple getters/setters
 	*/
@@ -229,6 +224,10 @@ public:
 
 	/*
 		Whether the object's static data has been stored to a block
+
+		Note that `!isStaticAllowed() && m_static_exists` is a valid state
+		(though it usually doesn't persist long) and you need to be careful
+		about handling it.
 	*/
 	bool m_static_exists = false;
 	/*

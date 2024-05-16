@@ -141,6 +141,11 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 		return 0;
 	});
 	lua_setfield(m_luastack, -2, "set_push_node");
+	lua_pushcfunction(m_luastack, [](lua_State *L) -> int {
+		lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_MOVERESULT1);
+		return 0;
+	});
+	lua_setfield(m_luastack, -2, "set_push_moveresult1");
 	// Finally, put the table into the global environment:
 	lua_setglobal(m_luastack, "core");
 
@@ -195,28 +200,29 @@ void ScriptApiBase::clientOpenLibs(lua_State *L)
 }
 #endif
 
+#define CHECK(ridx, name) do { \
+	lua_rawgeti(L, LUA_REGISTRYINDEX, ridx); \
+	FATAL_ERROR_IF(lua_type(L, -1) != LUA_TFUNCTION, "missing " name); \
+	lua_pop(L, 1); \
+	} while (0)
+
 void ScriptApiBase::checkSetByBuiltin()
 {
 	lua_State *L = getStack();
 
 	if (m_gamedef) {
-		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_READ_VECTOR);
-		FATAL_ERROR_IF(lua_type(L, -1) != LUA_TFUNCTION, "missing read_vector");
-		lua_pop(L, 1);
+		CHECK(CUSTOM_RIDX_READ_VECTOR, "read_vector");
+		CHECK(CUSTOM_RIDX_PUSH_VECTOR, "push_vector");
+		CHECK(CUSTOM_RIDX_READ_NODE, "read_node");
+		CHECK(CUSTOM_RIDX_PUSH_NODE, "push_node");
+	}
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_VECTOR);
-		FATAL_ERROR_IF(lua_type(L, -1) != LUA_TFUNCTION, "missing push_vector");
-		lua_pop(L, 1);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_READ_NODE);
-		FATAL_ERROR_IF(lua_type(L, -1) != LUA_TFUNCTION, "missing read_node");
-		lua_pop(L, 1);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_NODE);
-		FATAL_ERROR_IF(lua_type(L, -1) != LUA_TFUNCTION, "missing push_node");
-		lua_pop(L, 1);
+	if (getType() == ScriptingType::Server) {
+		CHECK(CUSTOM_RIDX_PUSH_MOVERESULT1, "push_moveresult1");
 	}
 }
+
+#undef CHECK
 
 std::string ScriptApiBase::getCurrentModNameInsecure(lua_State *L)
 {

@@ -114,7 +114,11 @@ always_fly_fast (Always fly fast) bool true
 #    the place button.
 #
 #    Requires: keyboard_mouse
-repeat_place_time (Place repetition interval) float 0.25 0.16 2
+repeat_place_time (Place repetition interval) float 0.25 0.15 2.0
+
+#    The minimum time in seconds it takes between digging nodes when holding
+#    the dig button.
+repeat_dig_time (Dig repetition interval) float 0.15 0.15 2.0
 
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
@@ -149,19 +153,22 @@ invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
 [*Touchscreen]
 
 #    Enables touchscreen mode, allowing you to play the game with a touchscreen.
-#
-#    Requires: !android
 enable_touch (Enable touchscreen) bool true
-
-#    The length in pixels it takes for touchscreen interaction to start.
-#
-#    Requires: touchscreen_gui
-touchscreen_threshold (Touchscreen threshold) int 20 0 100
 
 #    Touchscreen sensitivity multiplier.
 #
 #    Requires: touchscreen_gui
 touchscreen_sensitivity (Touchscreen sensitivity) float 0.2 0.001 10.0
+
+#    The length in pixels after which a touch interaction is considered movement.
+#
+#    Requires: touchscreen_gui
+touchscreen_threshold (Movement threshold) int 20 0 100
+
+#    The delay in milliseconds after which a touch interaction is considered a long tap.
+#
+#    Requires: touchscreen_gui
+touch_long_tap_delay (Threshold for long taps) int 400 100 1000
 
 #    Use crosshair to select object instead of whole screen.
 #    If enabled, a crosshair will be shown and will be used for selecting object.
@@ -180,6 +187,19 @@ fixed_virtual_joystick (Fixed virtual joystick) bool false
 #
 #    Requires: touchscreen_gui
 virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool false
+
+#    The gesture for for punching players/entities.
+#    This can be overridden by games and mods.
+#
+#    * short_tap
+#      Easy to use and well-known from other games that shall not be named.
+#
+#    * long_tap
+#      Known from the classic Minetest mobile controls.
+#      Combat is more or less impossible.
+#
+#    Requires: touchscreen_gui
+touch_punch_gesture (Punch gesture) enum short_tap short_tap,long_tap
 
 
 [Graphics and Audio]
@@ -772,6 +792,7 @@ serverlist_url (Serverlist URL) string servers.minetest.net
 enable_split_login_register (Enable split login/register) bool true
 
 #    URL to JSON file which provides information about the newest Minetest release
+#    If this is empty the engine will never check for updates.
 update_information_url (Update information URL) string https://www.minetest.net/release_info.json
 
 [*Server]
@@ -1739,6 +1760,9 @@ deprecated_lua_api_handling (Deprecated Lua API handling) enum log none,log,erro
 #    Enable random user input (only used for testing).
 random_input (Random input) bool false
 
+#    Enable random mod loading (mainly used for testing).
+random_mod_load_order (Random mod load order) bool false
+
 #    Enable mod channels support.
 enable_mod_channels (Mod channels) bool false
 
@@ -1871,6 +1895,9 @@ texture_min_size (Base texture size) int 64 1 32768
 #    draw calls, benefiting especially high-end GPUs.
 #    Systems with a low-end GPU (or no GPU) would benefit from smaller values.
 client_mesh_chunk (Client Mesh Chunksize) int 1 1 16
+
+#    Enables debug and error-checking in the OpenGL driver.
+opengl_debug (OpenGL debug) bool false
 
 [**Sound]
 #    Comma-separated list of AL and ALC extensions that should not be used.
@@ -2287,20 +2314,6 @@ show_advanced (Show advanced settings) bool false
 #    Changing this setting requires a restart.
 enable_sound (Sound) bool true
 
-#    Unix timestamp (integer) of when the client last checked for an update
-#    Set this value to "disabled" to never check for updates.
-update_last_checked (Last update check) string
-
-#    Version number which was last seen during an update check.
-#
-#    Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch
-#    Ex: 5.5.0 is 005005000
-update_last_known (Last known version update) int 0
-
-#    If this is set to true, the user will never (again) be shown the
-#    "reinstall Minetest Game" notification.
-no_mtg_notification (Don't show "reinstall Minetest Game" notification) bool false
-
 #    Key for moving the player forward.
 keymap_forward (Forward key) key KEY_KEY_W
 
@@ -2498,9 +2511,9 @@ keymap_toggle_chat (Chat toggle key) key KEY_F2
 keymap_console (Large chat console key) key KEY_F10
 
 #    Key for toggling the display of fog.
-keymap_toggle_force_fog_off (Fog toggle key) key KEY_F3
+keymap_toggle_fog (Fog toggle key) key KEY_F3
 
-#    Key for toggling the camera update. Only used for development
+#    Key for toggling the camera update. Only usable with 'debug' privilege.
 keymap_toggle_update_camera (Camera update toggle key) key
 
 #    Key for toggling the display of debug info.
