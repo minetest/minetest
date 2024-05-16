@@ -236,6 +236,17 @@ bool run_tests()
 		num_total_tests_run += testmod->num_tests_run;
 	}
 
+	rawstream << "Catch test results: " << std::endl;
+	// Catch prints out the results of this invocation.
+	auto num_catch_tests_failed = Catch::Session().run();
+	// We count the all the Catch tests as one test for Minetest's own logging
+	// because we don't have a way to tell how many individual tests Catch ran.
+	num_total_tests_run = 1;
+	if (num_catch_tests_failed > 0) {
+		++num_modules_failed;
+		++num_total_tests_failed;
+	}
+
 	u64 tdiff = porting::getTimeMs() - t1;
 
 	g_logger.setLevelSilenced(LL_ERROR, false);
@@ -251,10 +262,7 @@ bool run_tests()
 		<< num_total_tests_run << " failed individual tests)." << std::endl
 		<< "    Testing took " << tdiff << "ms total." << std::endl
 		<< "++++++++++++++++++++++++++++++++++++++++"
-		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl
-	        << "Catch test results: " << std::endl;
-	auto catch_test_failures = Catch::Session().run();
-	num_modules_failed += catch_test_failures;
+		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl;
 
 	return num_modules_failed == 0;
 }
