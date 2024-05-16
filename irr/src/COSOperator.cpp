@@ -29,18 +29,6 @@
 
 #include "fast_atof.h"
 
-#if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
-static const bool sdl_supports_primary_selection = [] {
-#if SDL_VERSION_ATLEAST(2, 25, 0)
-	SDL_version linked_version;
-	SDL_GetVersion(&linked_version);
-	return (linked_version.major == 2 && linked_version.minor >= 25) || linked_version.major > 2;
-#else
-	return false;
-#endif
-}();
-#endif
-
 namespace irr
 {
 
@@ -131,8 +119,7 @@ void COSOperator::copyToPrimarySelection(const c8 *text) const
 
 #if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
 #if SDL_VERSION_ATLEAST(2, 25, 0)
-	if (sdl_supports_primary_selection)
-		SDL_SetPrimarySelectionText(text);
+	SDL_SetPrimarySelectionText(text);
 #endif
 
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
@@ -195,11 +182,9 @@ const c8 *COSOperator::getTextFromPrimarySelection() const
 {
 #if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
 #if SDL_VERSION_ATLEAST(2, 25, 0)
-	if (sdl_supports_primary_selection) {
-		SDL_free(PrimarySelectionText);
-		PrimarySelectionText = SDL_GetPrimarySelectionText();
-		return PrimarySelectionText;
-	}
+	SDL_free(PrimarySelectionText);
+	PrimarySelectionText = SDL_GetPrimarySelectionText();
+	return PrimarySelectionText;
 #endif
 	return 0;
 

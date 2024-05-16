@@ -192,10 +192,8 @@ void ServerScripting::InitializeAsync(lua_State *L, int top)
 	LuaVoxelManip::Register(L);
 	LuaSettings::Register(L);
 
-	// pull the globals data from the server
-	auto *server = dynamic_cast<Server*>(ModApiBase::getGameDef(L));
-	assert(server);
-	auto *data = server->m_lua_globals_data.get();
+	// globals data
+	auto *data = ModApiBase::getServer(L)->m_lua_globals_data.get();
 	assert(data);
 	script_unpack(L, data);
 	lua_setfield(L, top, "transferred_globals");

@@ -482,7 +482,7 @@ PunchDamageResult getPunchDamage(
 	{
 		HitParams hitparams = getHitParams(armor_groups, toolcap,
 				time_from_last_punch,
-				punchitem->wear);
+				punchitem ? punchitem->wear : 0);
 		result.did_punch = true;
 		result.wear = hitparams.wear;
 		result.damage = hitparams.hp;

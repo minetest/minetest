@@ -582,7 +582,7 @@ static void createCacheDirTag()
 	if (fs::PathExists(path))
 		return;
 	fs::CreateAllDirs(path_cache);
-	std::ofstream ofs(path, std::ios::out | std::ios::binary);
+	auto ofs = open_ofstream(path.c_str(), false);
 	if (!ofs.good())
 		return;
 	ofs << "Signature: 8a477f597d28d172789f06886806bc55\n"
@@ -799,6 +799,21 @@ std::string QuoteArgv(const std::string &arg)
 	}
 	ret.push_back('"');
 	return ret;
+}
+
+std::string ConvertError(DWORD error_code)
+{
+	wchar_t buffer[320];
+
+	auto r = FormatMessageW(
+		FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		nullptr, error_code, 0, buffer, ARRLEN(buffer) - 1, nullptr);
+	if (!r)
+		return std::to_string(error_code);
+
+	if (!buffer[0]) // should not happen normally
+		return "?";
+	return wide_to_utf8(buffer);
 }
 #endif
 

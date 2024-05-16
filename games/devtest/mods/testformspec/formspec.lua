@@ -69,9 +69,9 @@ local hypertext_basic = [[A hypertext element
 This is a normal text.
 
 <bigger><mono>style</mono> test</bigger>
-<style color=#FFFF00>Yellow text.</style> <style color=#FF0000>Red text.</style>
-<style size=24>Size 24.</style> <style size=16>Size 16</style>. <style size=12>Size 12.</style>
-<style font=normal>Normal font.</style> <style font=mono>Mono font.</style>
+<style color="#FFFF00">Yellow text.</style> <style color='#FF0000'>Red text.</style>
+<style size="24">Size 24.</style> <style size=16>Size 16</style>. <style size=12>Size 12.</style>
+<style font="normal">Normal font.</style> <style font=mono>Mono font.</style>
 
 <bigger>Tag test</bigger>
 <normal>normal</normal>
@@ -88,20 +88,20 @@ This is a normal text.
 
 <bigger>Custom tag test</bigger>
 <tag name=t_green color=green>
-<tag name=t_hover hovercolor=yellow>
-<tag name=t_size size=24>
-<tag name=t_mono font=mono>
-<tag name=t_multi color=green font=mono size=24>
+<tag name="t_hover" hovercolor=yellow>
+<tag name="t_size" size=24>
+<tag name="t_mono" font=mono>
+<tag name="t_multi" color=green font=mono size=24>
 <t_green>color=green</t_green>
-Action: <action name=color><t_green>color=green</t_green></action>
-Action: <action name=hovercolor><t_hover>hovercolor=yellow</t_hover></action>
-Action URL: <action name=open url=https://example.com/?a=b#c>open URL</action>
+Action: <action name="color"><t_green>color=green</t_green></action>
+Action: <action name="hovercolor"><t_hover>hovercolor=yellow</t_hover></action>
+Action URL: <action name="open" url="https://example.com/?a=b#c">open URL</action>
 <t_size>size=24</t_size>
 <t_mono>font=mono</t_mono>
 <t_multi>color=green font=mono size=24</t_multi>
 
 <bigger><mono>action</mono> test</bigger>
-<action name=action_test>action</action>
+<action name="action_test">action</action>
 
 <bigger><mono>img</mono> test</bigger>
 Normal:

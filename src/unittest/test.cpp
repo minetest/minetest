@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modchannels.h"
 #include "util/numeric.h"
 #include "porting.h"
+#include "debug.h"
 
 content_t t_CONTENT_STONE;
 content_t t_CONTENT_GRASS;
@@ -348,11 +349,14 @@ void TestBase::runTest(const char *name, std::function<void()> &&test)
 		rawstream << "    at " << e.file << ":" << e.line << std::endl;
 		rawstream << "[FAIL] ";
 		num_tests_failed++;
-	} catch (std::exception &e) {
+	}
+#if CATCH_UNHANDLED_EXCEPTIONS == 1
+	catch (std::exception &e) {
 		rawstream << "Caught unhandled exception: " << e.what() << std::endl;
 		rawstream << "[FAIL] ";
 		num_tests_failed++;
 	}
+#endif
 	num_tests_run++;
 	u64 tdiff = porting::getTimeMs() - t1;
 	rawstream << name << " - " << tdiff << "ms" << std::endl;

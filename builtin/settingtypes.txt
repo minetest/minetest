@@ -1760,6 +1760,9 @@ deprecated_lua_api_handling (Deprecated Lua API handling) enum log none,log,erro
 #    Enable random user input (only used for testing).
 random_input (Random input) bool false
 
+#    Enable random mod loading (mainly used for testing).
+random_mod_load_order (Random mod load order) bool false
+
 #    Enable mod channels support.
 enable_mod_channels (Mod channels) bool false
 
@@ -2508,9 +2511,9 @@ keymap_toggle_chat (Chat toggle key) key KEY_F2
 keymap_console (Large chat console key) key KEY_F10
 
 #    Key for toggling the display of fog.
-keymap_toggle_force_fog_off (Fog toggle key) key KEY_F3
+keymap_toggle_fog (Fog toggle key) key KEY_F3
 
-#    Key for toggling the camera update. Only used for development
+#    Key for toggling the camera update. Only usable with 'debug' privilege.
 keymap_toggle_update_camera (Camera update toggle key) key
 
 #    Key for toggling the display of debug info.

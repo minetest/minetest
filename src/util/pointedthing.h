@@ -37,6 +37,8 @@ struct PointedThing
 {
 	//! The type of the pointed object.
 	PointedThingType type = POINTEDTHING_NOTHING;
+	//! How the object or node can be pointed at.
+	PointabilityType pointability = PointabilityType::POINTABLE_NOT;
 	/*!
 	 * Only valid if type is POINTEDTHING_NODE.
 	 * The coordinates of the node which owns the
@@ -65,6 +67,11 @@ struct PointedThing
 	u16 object_id = 0;
 	/*!
 	 * Only valid if type isn't POINTEDTHING_NONE.
+	 * Indicates which selection box is selected, if there are more of them.
+	 */
+	u16 box_id = 0;
+	/*!
+	 * Only valid if type isn't POINTEDTHING_NONE.
 	 * First intersection point of the ray and the nodebox in irrlicht
 	 * coordinates.
 	 */
@@ -82,35 +89,48 @@ struct PointedThing
 	 */
 	v3f raw_intersection_normal;
 	/*!
-	 * Only valid if type isn't POINTEDTHING_NONE.
-	 * Indicates which selection box is selected, if there are more of them.
-	 */
-	u16 box_id = 0;
-	/*!
 	 * Square of the distance between the pointing
 	 * ray's start point and the intersection point in irrlicht coordinates.
 	 */
 	f32 distanceSq = 0;
-	/*!
-	 * How the object or node has been pointed at.
-	 */
-	PointabilityType pointability = PointabilityType::POINTABLE_NOT;
 
 	//! Constructor for POINTEDTHING_NOTHING
 	PointedThing() = default;
 	//! Constructor for POINTEDTHING_NODE
-	PointedThing(const v3s16 &under, const v3s16 &above,
-		const v3s16 &real_under, const v3f &point, const v3f &normal,
-		u16 box_id, f32 distSq, PointabilityType pointability);
+	inline PointedThing(const v3s16 under, const v3s16 above,
+		const v3s16 real_under, const v3f point, const v3f normal,
+		u16 box_id, f32 distSq, PointabilityType pointab) :
+		type(POINTEDTHING_NODE),
+		pointability(pointab),
+		node_undersurface(under),
+		node_abovesurface(above),
+		node_real_undersurface(real_under),
+		box_id(box_id),
+		intersection_point(point),
+		intersection_normal(normal),
+		distanceSq(distSq)
+	{}
 	//! Constructor for POINTEDTHING_OBJECT
-	PointedThing(u16 id, const v3f &point, const v3f &normal, const v3f &raw_normal, f32 distSq,
-		PointabilityType pointability);
+	inline PointedThing(u16 id, const v3f point, const v3f normal,
+		const v3f raw_normal, f32 distSq, PointabilityType pointab) :
+		type(POINTEDTHING_OBJECT),
+		pointability(pointab),
+		object_id(id),
+		intersection_point(point),
+		intersection_normal(normal),
+		raw_intersection_normal(raw_normal),
+		distanceSq(distSq)
+	{}
+
 	std::string dump() const;
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
+
 	/*!
 	 * This function ignores the intersection point and normal.
 	 */
 	bool operator==(const PointedThing &pt2) const;
-	bool operator!=(const PointedThing &pt2) const;
+	bool operator!=(const PointedThing &pt2) const {
+		return !(*this == pt2);
+	}
 };

@@ -25,19 +25,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include "modalMenu.h"
 #include "gettext.h"
+#include "gui/guiInventoryList.h"
 #include "porting.h"
 #include "settings.h"
 #include "touchscreengui.h"
 
+PointerAction PointerAction::fromEvent(const SEvent &event) {
+	switch (event.EventType) {
+	case EET_MOUSE_INPUT_EVENT:
+		return {v2s32(event.MouseInput.X, event.MouseInput.Y), porting::getTimeMs()};
+	case EET_TOUCH_INPUT_EVENT:
+		return {v2s32(event.TouchInput.X, event.TouchInput.Y), porting::getTimeMs()};
+	default:
+		FATAL_ERROR("SEvent given to PointerAction::fromEvent has wrong EventType");
+	}
+}
+
+bool PointerAction::isRelated(PointerAction previous) {
+	u64 time_delta = porting::getDeltaMs(previous.time, time);
+	v2s32 pos_delta = pos - previous.pos;
+	f32 distance_sq = (f32)pos_delta.X * pos_delta.X + (f32)pos_delta.Y * pos_delta.Y;
+
+	return time_delta < 400 && distance_sq < (30.0f * 30.0f);
+}
+
 GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
-	s32 id, IMenuManager *menumgr, bool remap_dbl_click) :
+	s32 id, IMenuManager *menumgr, bool remap_click_outside) :
 		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
 				core::rect<s32>(0, 0, 100, 100)),
 #ifdef __ANDROID__
 		m_jni_field_name(""),
 #endif
 		m_menumgr(menumgr),
-		m_remap_dbl_click(remap_dbl_click)
+		m_remap_click_outside(remap_click_outside)
 {
 	m_gui_scale = std::max(g_settings->getFloat("gui_scaling"), 0.5f);
 	const float screen_dpi_scale = RenderingEngine::getDisplayDensity();
@@ -50,9 +70,6 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 
 	setVisible(true);
 	m_menumgr->createdMenu(this);
-
-	m_last_touch.time = 0;
-	m_last_touch.pos = v2s32(0, 0);
 }
 
 GUIModalMenu::~GUIModalMenu()
@@ -115,42 +132,53 @@ static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
 	return false;
 }
 
-bool GUIModalMenu::remapDoubleClick(const SEvent &event)
+bool GUIModalMenu::remapClickOutside(const SEvent &event)
 {
-	/* The following code is for capturing double-clicks of the mouse button
-	 * and translating the double-click into an EET_KEY_INPUT_EVENT event
-	 * -- which closes the form -- under some circumstances.
-	 *
-	 * There have been many github issues reporting this as a bug even though it
-	 * was an intended feature.  For this reason, remapping the double-click as
-	 * an ESC must be explicitly set when creating this class via the
-	 * /p remap_dbl_click parameter of the constructor.
-	 */
-
-	if (!m_remap_dbl_click)
+	if (!m_remap_click_outside || event.EventType != EET_MOUSE_INPUT_EVENT ||
+			(event.MouseInput.Event != EMIE_LMOUSE_PRESSED_DOWN &&
+					event.MouseInput.Event != EMIE_LMOUSE_LEFT_UP))
 		return false;
 
-	if (event.EventType != EET_MOUSE_INPUT_EVENT ||
-			event.MouseInput.Event != EMIE_LMOUSE_DOUBLE_CLICK)
-		return false;
+	// The formspec must only be closed if both the EMIE_LMOUSE_PRESSED_DOWN and
+	// the EMIE_LMOUSE_LEFT_UP event haven't been absorbed by something else.
 
-	// Only exit if the double-click happened outside the menu.
+	PointerAction last = m_last_click_outside;
+	m_last_click_outside = {}; // always reset
+	PointerAction current = PointerAction::fromEvent(event);
+
 	gui::IGUIElement *hovered =
-			Environment->getRootGUIElement()->getElementFromPoint(m_pointer);
+			Environment->getRootGUIElement()->getElementFromPoint(current.pos);
 	if (isChild(hovered, this))
 		return false;
 
-	// Translate double-click to escape.
-	SEvent translated{};
-	translated.EventType            = EET_KEY_INPUT_EVENT;
-	translated.KeyInput.Key         = KEY_ESCAPE;
-	translated.KeyInput.Control     = false;
-	translated.KeyInput.Shift       = false;
-	translated.KeyInput.PressedDown = true;
-	translated.KeyInput.Char        = 0;
-	OnEvent(translated);
+	// Dropping items is also done by tapping outside the formspec. If an item
+	// is selected, make sure it is dropped without closing the formspec.
+	// We have to explicitly restrict this to GUIInventoryList because other
+	// GUI elements like text fields like to absorb events for no reason.
+	GUIInventoryList *focused = dynamic_cast<GUIInventoryList *>(Environment->getFocus());
+	if (focused && focused->OnEvent(event))
+		// Return true since the event was handled, even if it wasn't handled by us.
+		return true;
 
-	return true;
+	if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+		m_last_click_outside = current;
+		return true;
+	}
+
+	if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP &&
+			current.isRelated(last)) {
+		SEvent translated{};
+		translated.EventType            = EET_KEY_INPUT_EVENT;
+		translated.KeyInput.Key         = KEY_ESCAPE;
+		translated.KeyInput.Control     = false;
+		translated.KeyInput.Shift       = false;
+		translated.KeyInput.PressedDown = true;
+		translated.KeyInput.Char        = 0;
+		OnEvent(translated);
+		return true;
+	}
+
+	return false;
 }
 
 bool GUIModalMenu::simulateMouseEvent(ETOUCH_INPUT_EVENT touch_event, bool second_try)
@@ -319,20 +347,12 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 
 			// Detect double-taps and convert them into double-click events.
 			if (event.TouchInput.Event == ETIE_PRESSED_DOWN) {
-				u64 time_now = porting::getTimeMs();
-				u64 time_delta = porting::getDeltaMs(m_last_touch.time, time_now);
-
-				v2s32 pos_delta = m_pointer - m_last_touch.pos;
-				f32 distance_sq = (f32)pos_delta.X * pos_delta.X +
-						(f32)pos_delta.Y * pos_delta.Y;
-
-				if (time_delta < 400 && distance_sq < (30 * 30)) {
+				PointerAction current = PointerAction::fromEvent(event);
+				if (current.isRelated(m_last_touch)) {
 					// ETIE_COUNT is used for double-tap events.
 					simulateMouseEvent(ETIE_COUNT);
 				}
-
-				m_last_touch.time = time_now;
-				m_last_touch.pos = m_pointer;
+				m_last_touch = current;
 			}
 
 			return ret;
@@ -361,7 +381,7 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 			m_touch_hovered.reset();
 		}
 
-		if (remapDoubleClick(event))
+		if (remapClickOutside(event))
 			return true;
 	}
 

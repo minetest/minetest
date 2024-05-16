@@ -40,6 +40,7 @@ core.features = {
 	lsystem_decoration_type = true,
 	item_meta_range = true,
 	node_interaction_actor = true,
+	moveresult_new_pos = true,
 }
 
 function core.has_feature(arg)

@@ -3495,10 +3495,12 @@ Markup language used in `hypertext[]` elements uses tags that look like HTML tag
 The markup language is currently unstable and subject to change. Use with caution.
 Some tags can enclose text, they open with `<tagname>` and close with `</tagname>`.
 Tags can have attributes, in that case, attributes are in the opening tag in
-form of a key/value separated with equal signs. Attribute values should not be quoted.
+form of a key/value separated with equal signs.
+Attribute values should be quoted using either " or '.
 
-If you want to insert a literal greater-than sign or a backslash into the text,
-you must escape it by preceding it with a backslash.
+If you want to insert a literal greater-than, less-than, or a backslash into the text,
+you must escape it by preceding it with a backslash. In a quoted attribute value, you
+can insert a literal quote mark by preceding it with a backslash.
 
 These are the technically basic tags but see below for usual tags. Base tags are:
 
@@ -5049,6 +5051,9 @@ Collision info passed to `on_step` (`moveresult` argument):
             axis = string, -- "x", "y" or "z"
             node_pos = vector, -- if type is "node"
             object = ObjectRef, -- if type is "object"
+            -- The position of the entity when the collision occurred.
+            -- Available since feature "moveresult_new_pos".
+            new_pos = vector,
             old_velocity = vector,
             new_velocity = vector,
         },
@@ -5351,6 +5356,8 @@ Minetest includes the following settings to control behavior of privileges:
       -- Allow passing an optional "actor" ObjectRef to the following functions:
       -- minetest.place_node, minetest.dig_node, minetest.punch_node (5.9.0)
       node_interaction_actor = true,
+      -- "new_pos" field in entity moveresult (5.9.0)
+      moveresult_new_pos = true,
   }
   ```
 
@@ -5641,7 +5648,7 @@ Call these functions only at load time!
 * `minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
     * Called when a player is punched
     * `player`: ObjectRef - Player that was punched
-    * `hitter`: ObjectRef - Player that hit
+    * `hitter`: ObjectRef - Player that hit. Can be nil.
     * `time_from_last_punch`: Meant for disallowing spamming of clicks
       (can be nil).
     * `tool_capabilities`: Capability table of used item (can be nil)
@@ -5724,8 +5731,8 @@ Call these functions only at load time!
     * Return `true` to mark the command as handled, which means that the default
       handlers will be prevented.
 * `minetest.register_on_player_receive_fields(function(player, formname, fields))`
-    * Called when the server received input from `player` in a formspec with
-      the given `formname`. Specifically, this is called on any of the
+    * Called when the server received input from `player`.
+      Specifically, this is called on any of the
       following events:
           * a button was pressed,
           * Enter was pressed while the focus was on a text field
@@ -5736,6 +5743,9 @@ Call these functions only at load time!
           * an entry was double-clicked in a textlist or table,
           * a scrollbar was moved, or
           * the form was actively closed by the player.
+    * `formname` is the name passed to `minetest.show_formspec`.
+      Special case: The empty string refers to the player inventory
+      (the formspec set by the `set_inventory_formspec` player method).
     * Fields are sent for formspec elements which define a field. `fields`
       is a table containing each formspecs element value (as string), with
       the `name` parameter as index for each. The value depends on the
@@ -6329,7 +6339,8 @@ You can find mod channels communication scheme in `doc/mod_channels.png`.
 * `minetest.show_formspec(playername, formname, formspec)`
     * `playername`: name of player to show formspec
     * `formname`: name passed to `on_player_receive_fields` callbacks.
-      It should follow the `"modname:<whatever>"` naming convention
+      It should follow the `"modname:<whatever>"` naming convention.
+      `formname` must not be empty.
     * `formspec`: formspec to display
 * `minetest.close_formspec(playername, formname)`
     * `playername`: name of player to close formspec
@@ -7358,6 +7369,7 @@ An `InvRef` is a reference to an inventory.
     * returns `false` on error (e.g. invalid `listname` or `size`)
 * `get_width(listname)`: get width of a list
 * `set_width(listname, width)`: set width of list; currently used for crafting
+    * returns `false` on error (e.g. invalid `listname` or `width`)
 * `get_stack(listname, i)`: get a copy of stack index `i` in list
 * `set_stack(listname, i, stack)`: copy `stack` to index `i` in list
 * `get_list(listname)`: returns full list (list of `ItemStack`s)
@@ -7719,11 +7731,11 @@ child will follow movement and rotation of that bone.
     * no-op if object is attached
 * `punch(puncher, time_from_last_punch, tool_capabilities, dir)`
     * punches the object, triggering all consequences a normal punch would have
-    * `puncher`: another `ObjectRef` which punched the object
+    * `puncher`: another `ObjectRef` which punched the object or `nil`
     * `dir`: direction vector of punch
     * Other arguments: See `on_punch` for entities
-    * All arguments except `puncher` can be `nil`, in which case a default
-      value will be used
+    * Arguments `time_from_last_punch`, `tool_capabilities`, and `dir`
+      will be replaced with a default value when the caller sets them to `nil`.
 * `right_click(clicker)`:
     * simulates using the 'place/use' key on the object
     * triggers all consequences as if a real player had done this
@@ -7992,13 +8004,18 @@ child will follow movement and rotation of that bone.
 * `set_physics_override(override_table)`
     * Overrides the physics attributes of the player
     * `override_table` is a table with the following fields:
-        * `speed`: multiplier to default movement speed and acceleration values (default: `1`)
-        * `jump`: multiplier to default jump value (default: `1`)
-        * `gravity`: multiplier to default gravity value (default: `1`)
+        * `speed`: multiplier to *all* movement speed (`speed_*`) and
+                   acceleration (`acceleration_*`) values (default: `1`)
+        * `speed_walk`: multiplier to default walk speed value (default: `1`)
+            * Note: The actual walk speed is the product of `speed` and `speed_walk`
         * `speed_climb`: multiplier to default climb speed value (default: `1`)
             * The actual climb speed is the product of `speed` and `speed_climb`
         * `speed_crouch`: multiplier to default sneak speed value (default: `1`)
-            * The actual sneak speed is the product of `speed` and `speed_crouch`
+            * Note: The actual sneak speed is the product of `speed` and `speed_crouch`
+        * `speed_fast`: multiplier to default speed value in Fast Mode (default: `1`)
+            * Note: The actual fast speed is the product of `speed` and `speed_fast`
+        * `jump`: multiplier to default jump value (default: `1`)
+        * `gravity`: multiplier to default gravity value (default: `1`)
         * `liquid_fluidity`: multiplier to liquid movement resistance value
           (for nodes with `liquid_move_physics`); the higher this value, the lower the
           resistance to movement. At `math.huge`, the resistance is zero and you can
@@ -8014,7 +8031,9 @@ child will follow movement and rotation of that bone.
             * The actual acceleration is the product of `speed` and `acceleration_default`
         * `acceleration_air`: multiplier to acceleration
           when jumping or falling (default: `1`)
-            * The actual acceleration is the product of `speed` and `acceleration_air`
+            * Note: The actual acceleration is the product of `speed` and `acceleration_air`
+        * `acceleration_fast`: multiplier to acceleration in Fast Mode (default: `1`)
+            * Note: The actual acceleration is the product of `speed` and `acceleration_fast`
         * `sneak`: whether player can sneak (default: `true`)
         * `sneak_glitch`: whether player can use the new move code replications
           of the old sneak side-effects: sneak ladders and 2 node sneak jump
@@ -8139,17 +8158,16 @@ child will follow movement and rotation of that bone.
               `"default"` uses the classic Minetest sun and moon tinting.
               Will use tonemaps, if set to `"default"`. (default: `"default"`)
         * `fog`: A table with following optional fields:
-            * `fog_distance`: integer, set an upper bound the client's viewing_range (inluding range_all).
-              By default, fog_distance is controlled by the client's viewing_range, and this field is not set.
-              Any value >= 0 sets the desired upper bound for the client's viewing_range and disables range_all.
-              Any value < 0, resets the behavior to being client-controlled.
-              (default: -1)
+            * `fog_distance`: integer, set an upper bound for the client's viewing_range.
+               Any value >= 0 sets the desired upper bound for viewing_range,
+               disables range_all and prevents disabling fog (F3 key by default).
+               Any value < 0 resets the behavior to being client-controlled.
+               (default: -1)
             * `fog_start`: float, override the client's fog_start.
-              Fraction of the visible distance at which fog starts to be rendered.
-              By default, fog_start is controlled by the client's `fog_start` setting, and this field is not set.
-              Any value between [0.0, 0.99] set the fog_start as a fraction of the viewing_range.
-              Any value < 0, resets the behavior to being client-controlled.
-              (default: -1)
+               Fraction of the visible distance at which fog starts to be rendered.
+               Any value between [0.0, 0.99] set the fog_start as a fraction of the viewing_range.
+               Any value < 0, resets the behavior to being client-controlled.
+               (default: -1)
             * `fog_color`: ColorSpec, override the color of the fog.
               Unlike `base_color` above this will apply regardless of the skybox type.
               (default: `"#00000000"`, which means no override)
@@ -9546,6 +9564,7 @@ Used by `minetest.register_node`.
 
     on_receive_fields = function(pos, formname, fields, sender),
     -- fields = {name1 = value1, name2 = value2, ...}
+    -- formname should be the empty string; you **must not** use formname.
     -- Called when an UI form (e.g. sign text input) returns data.
     -- See minetest.register_on_player_receive_fields for more info.
     -- default: nil

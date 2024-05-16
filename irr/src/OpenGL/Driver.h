@@ -102,6 +102,8 @@ public:
 	// internally used
 	virtual void draw2DImage(const video::ITexture *texture, u32 layer, bool flip);
 
+	using CNullDriver::draw2DImage;
+
 	void draw2DImageBatch(const video::ITexture *texture,
 			const core::array<core::position2d<s32>> &positions,
 			const core::array<core::rect<s32>> &sourceRects,

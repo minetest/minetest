@@ -96,13 +96,9 @@ bool MapSettingsManager::setMapSettingNoiseParams(
 
 bool MapSettingsManager::loadMapMeta()
 {
-	std::ifstream is(m_map_meta_path.c_str(), std::ios_base::binary);
-
-	if (!is.good()) {
-		errorstream << "loadMapMeta: could not open "
-			<< m_map_meta_path << std::endl;
+	auto is = open_ifstream(m_map_meta_path.c_str(), true);
+	if (!is.good())
 		return false;
-	}
 
 	if (!m_map_settings->parseConfigLines(is)) {
 		errorstream << "loadMapMeta: Format error. '[end_of_params]' missing?" << std::endl;
