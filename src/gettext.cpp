@@ -151,10 +151,10 @@ static void MSVC_LocaleWorkaround(int argc, char* argv[])
 
 		errorstream
 			<< "*******************************************************" << '\n'
-			<< "CMD: " << app_name << '\n';
-			<< "Failed to restart with current locale: ";
-			<< porting::ConvertError(e) << '\n';
-			<< "Expect language to be broken!" << '\n';
+			<< "CMD: " << app_name << '\n'
+			<< "Failed to restart with current locale: "
+			<< porting::ConvertError(e) << '\n'
+			<< "Expect language to be broken!" << '\n'
 			<< "*******************************************************" << std::endl;
 	}
 }
