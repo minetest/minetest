@@ -5,6 +5,7 @@
   "runtime-version": "23.08",
   "sdk": "org.freedesktop.Sdk",
   "command": "minetest",
+  "rename-icon": "minetest",
   "finish-args": [
     "--socket=wayland",
     "--socket=fallback-x11",
