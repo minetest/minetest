@@ -1,3 +1,4 @@
+---
 name: docker_image
 
 # https://docs.github.com/en/actions/publishing-packages/publishing-docker-images
