@@ -15,7 +15,7 @@ zlib_version=1.3.1
 zstd_version=1.5.5
 libjpeg_version=3.0.1
 libpng_version=1.6.40
-sdl2_version=2.28.5
+sdl2_version=2.30.3
 
 download () {
 	local url=$1
