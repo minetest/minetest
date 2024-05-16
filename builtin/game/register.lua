@@ -418,7 +418,7 @@ function core.override_item(name, redefinition, del_fields)
 	for k, v in pairs(redefinition) do
 		rawset(item, k, v)
 	end
-	for _, field in ipairs(del_fields) do
+	for _, field in ipairs(del_fields or {}) do
 		rawset(item, field, nil)
 	end
 	register_item_raw(item)
