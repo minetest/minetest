@@ -1,0 +1,56 @@
+---
+$schema: "https://raw.githubusercontent.com/flatpak/flatpak-builder/main/data/flatpak-manifest.schema.json"
+app-id: net.minetest.minetest
+runtime: org.freedesktop.Platform
+runtime-version: "23.08"
+sdk: org.freedesktop.Sdk
+command: minetest
+rename-icon: minetest
+finish-args:
+  - "--socket=wayland"
+  - "--socket=fallback-x11"
+  - "--socket=pulseaudio"
+  - "--device=all"
+  - "--share=ipc"
+  - "--share=network"
+cleanup:
+  - "/include"
+  - "/lib/pkgconfig"
+  - "/share/aclocal"
+  - "/share/gtk-doc"
+  - "/share/man"
+  - "*.la"
+  - "*.a"
+
+modules:
+  - name: libluajit
+    no-autogen: true
+    make-args:
+      - PREFIX=/app
+    make-install-args:
+      - PREFIX=/app
+    cleanup:
+      - "/bin"
+    sources:
+      - type: git
+        url: https://github.com/LuaJIT/LuaJIT.git
+        commit: dad04f1754723e76ba9dcf9f401f3134a0cd3972
+
+  - name: minetest
+    buildsystem: cmake-ninja
+    config-opts:
+      - "-DENABLE_CURSES=0"
+      - "-DENABLE_GETTEXT=1"
+    cleanup:
+      - "/share/minetest/games/devtest"
+    post-install:
+      - mv $FLATPAK_DEST/bin/minetest $FLATPAK_DEST/bin/minetest.bin
+      - install -Dm755 minetest.sh $FLATPAK_DEST/bin/minetest
+    sources:
+      - type: dir
+        path: .
+
+      - type: script
+        dest-filename: minetest.sh
+        commands:
+          - 'MINETEST_USER_PATH=$HOME/.var/app/net.minetest.minetest/.minetest exec minetest.bin "$@"'

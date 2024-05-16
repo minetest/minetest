@@ -45,7 +45,7 @@ jobs:
         with:
           arch: x86_64
           bundle: ${{ env.FILE_NAME }}
-          manifest-path: net.minetest.minetest.json
+          manifest-path: net.minetest.minetest.yaml
           cache-key: flatpak-builder-${{ github.sha }}
           restore-cache: ${{ (github.event_name == 'workflow_dispatch' && inputs.use_cache) || !startsWith(github.ref, 'refs/tags/') }}
           upload-artifact: true
