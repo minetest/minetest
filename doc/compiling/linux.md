@@ -46,7 +46,7 @@ For Void users:
 ## Download
 
 You can install Git for easily keeping your copy up to date.
-If you don’t want Git, read below on how to get the source without Git.
+If you don't want Git, read below on how to get the source without Git.
 This is an example for installing Git on Debian/Ubuntu:
 
     sudo apt install git
@@ -57,11 +57,11 @@ For Fedora users:
 
 For Arch users:
 
-	sudo pacman -S git
+    sudo pacman -S git
 
 For Alpine users:
 
-	sudo apk add git
+    sudo apk add git
 
 For Void users:
 
@@ -89,10 +89,10 @@ Run it:
 
     ./bin/minetest
 
-- Use `cmake . -LH` to see all CMake options and their current state.
-- If you want to install it system-wide (or are making a distribution package),
+* Use `cmake . -LH` to see all CMake options and their current state.
+* If you want to install it system-wide (or are making a distribution package),
   you will want to use `-DRUN_IN_PLACE=FALSE`.
-- You can build a bare server by specifying `-DBUILD_SERVER=TRUE`.
-- You can disable the client build by specifying `-DBUILD_CLIENT=FALSE`.
-- You can select between Release and Debug build by `-DCMAKE_BUILD_TYPE=<Debug or Release>`.
-  - Debug build is slower, but gives much more useful output in a debugger.
+* You can build a bare server by specifying `-DBUILD_SERVER=TRUE`.
+* You can disable the client build by specifying `-DBUILD_CLIENT=FALSE`.
+* You can select between Release and Debug build by `-DCMAKE_BUILD_TYPE=<Debug or Release>`.
+    * Debug build is slower, but gives much more useful output in a debugger.

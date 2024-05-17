@@ -1,4 +1,4 @@
-# Developer documentation
+# Developer Documentation
 
 ## Wiki
 
@@ -6,18 +6,18 @@ Some important development docs are found in the wiki: https://dev.minetest.net/
 
 Notable pages:
 
-- [Releasing Minetest](https://dev.minetest.net/Releasing_Minetest)
-- [Engine translations](https://dev.minetest.net/Translation#Maintaining_engine_translations)
-- [Changelog](https://dev.minetest.net/Changelog)
-- [Organisation](https://dev.minetest.net/Organisation)
-- [Code style guidelines](https://dev.minetest.net/Code_style_guidelines)
+* [Releasing Minetest](https://dev.minetest.net/Releasing_Minetest)
+* [Engine translations](https://dev.minetest.net/Translation#Maintaining_engine_translations)
+* [Changelog](https://dev.minetest.net/Changelog)
+* [Organisation](https://dev.minetest.net/Organisation)
+* [Code style guidelines](https://dev.minetest.net/Code_style_guidelines)
 
-## In this folder
+## In This Folder
 
-- [Developing minetestserver with Docker](docker.md)
-- [Android tips & tricks](android.md)
-- [OS/library compatibility policy](os-compatibility.md)
-- [Miscellaneous](misc.md)
+* [Developing minetestserver with Docker](docker.md)
+* [Android Tips & Tricks](android.md)
+* [OS/library Compatability Policy](os-compatibility.md)
+* [Miscellaneous](misc.md)
 
 ## IRC
 

@@ -1,6 +1,6 @@
 # Minetest Direction Document
 
-## 1. Long-term Roadmap
+## 1. Long-Term Roadmap
 
 The long-term roadmaps, aims, and guiding philosophies are set out using the
 following documents:
@@ -10,7 +10,7 @@ following documents:
 * [celeron55's comment in "A clear mission statement for Minetest is missing"](https://github.com/minetest/minetest/issues/3476#issuecomment-167399287)
 * [Core developer to-do/wish lists](https://forum.minetest.net/viewforum.php?f=7)
 
-## 2. Medium-term Roadmap
+## 2. Medium-Term Roadmap
 
 These are the current medium-term goals for Minetest development, in no
 particular order.
@@ -25,22 +25,22 @@ approval within a month, issues can be used for preapproval.
 Bug fixes are exempt for this, and are always accepted and prioritized.
 See [CONTRIBUTING.md](../.github/CONTRIBUTING.md) for more info.
 
-### 2.1 Rendering/Graphics improvements
+### 2.1 Rendering/Graphics Improvements
 
 The priority is fixing the issues, performance, and general correctness.
 Once that is done, fancier features can be worked on, such as water shaders,
 shadows, and improved lighting.
 
-Examples include
-[transparency sorting](https://github.com/minetest/minetest/issues/95),
-[particle performance](https://github.com/minetest/minetest/issues/1414),
-[general view distance](https://github.com/minetest/minetest/issues/7222).
+Examples include:
+* [Transparency sorting](https://github.com/minetest/minetest/issues/95)
+* [Particle performance](https://github.com/minetest/minetest/issues/1414)
+* [General view distance](https://github.com/minetest/minetest/issues/7222)
 
 This includes work on maintaining
 [our Irrlicht fork](https://github.com/minetest/irrlicht), and switching to
 alternative libraries to replace Irrlicht functionality as needed
 
-### 2.2 Internal code refactoring
+### 2.2 Internal Code Refactoring
 
 To ensure sustainable development, Minetest's code needs to be
 [refactored and improved](https://github.com/minetest/minetest/pulls?q=is%3Aopen+sort%3Aupdated-desc+label%3A%22Code+quality%22+).
@@ -61,9 +61,10 @@ longer be bundled by default.
 The UI code is undergoing rapid changes, so it is especially important to make
 an issue for any large changes before spending lots of time.
 
-### 2.4 Object and entity improvements
+### 2.4 Object and Entity Improvements
 
 There are still a significant number of issues with objects.
 Collisions,
 [performance](https://github.com/minetest/minetest/issues/6453),
-API convenience, and discrepancies between players and entities.
+API convenience, and discrepancies between players and entities are some
+examples.

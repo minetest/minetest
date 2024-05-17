@@ -5,9 +5,11 @@ Test Tools is a mod for developers that adds a bunch of tools to directly manipu
 Here's the list of tools:
 
 ## Remover
+
 Removes nodes and non-player entities that you punch.
 
 ## Node Setter
+
 Replace a node with another one.
 
 First, punch a node you want to remember.
@@ -16,6 +18,7 @@ Then rightclick any other node to replace it with the node you remembered.
 If you rightclick while pointing nothing, you can manually enter the node and param2.
 
 ## Param2 Tool
+
 Change the value param2 of nodes.
 
 * Punch: Add 1 to param2
@@ -23,9 +26,11 @@ Change the value param2 of nodes.
 * Place: Subtract 1 from param2
 * Sneak+Place: Subtract 8 from param2
 
-Note: Use the debug screen (F5) to see the param2 of the pointed node.
+> [!NOTE]
+> Use the debug screen (F5) to see the param2 of the pointed node.
 
 ## Falling Node Tool
+
 Turns nodes into falling nodes.
 
 Usage:
@@ -34,6 +39,7 @@ Usage:
 * Place: Try to teleport up to 2 units upwards, then make it fall
 
 ## Node Meta Editor
+
 Edit and view metadata of nodes.
 
 Usage:
@@ -41,25 +47,28 @@ Usage:
 * Punch: Open node metadata editor
 
 ## Item Meta Editor
+
 Edit and view metadata of items.
 
 Usage:
 
 * Place/Punch: Opens item metadata editor of the item in the next
-               inventory slot from the wielded item
+  inventory slot from the wielded item
 
 ## Entity Rotator
+
 Changes the entity rotation (with `set_rotation`).
 
 Usage:
 
 * Punch entity: Rotate yaw
-* Punch entity while holding down “Sneak” key: Rotate pitch
-* Punch entity while holding down “Special” key (aka “Aux”): Rotate roll
+* Punch entity while holding down "Sneak" key: Rotate pitch
+* Punch entity while holding down "Special" key (aka "Aux"): Rotate roll
 
 Each usage rotates the entity by 22.5°.
 
 ## Entity Spawner
+
 Spawns entities.
 
 Usage:
@@ -68,6 +77,7 @@ Usage:
 * Place to place selected entity
 
 ## Object Property Editor
+
 Edits properties of objects.
 
 Usage:
@@ -76,9 +86,10 @@ Usage:
 * Punch air to edit properties of your own player object
 
 To edit a property, select it in the list, enter a new value (in Lua syntax)
-and hit “Submit”.
+and hit "Submit".
 
 ## Object Attacher
+
 Allows you to attach an object to another one.
 
 Basic usage:
@@ -97,6 +108,7 @@ Hint: To detach all objects nearby you (including on yourself), use the
 `/detach` server command.
 
 ## Object Mover
+
 Move an object by a given distance.
 
 Usage:
@@ -106,6 +118,7 @@ Usage:
 * Sneak+place: Decrease move distance
 
 ## Children Getter
+
 Shows list of objects that are attached to an object (aka "children") in chat.
 
 Usage:
@@ -113,6 +126,7 @@ Usage:
 * Punch air: Show your own children
 
 ## Entity Visual Scaler
+
 Change visual size of entities
 
 Usage:
@@ -121,6 +135,7 @@ Usage:
 * Sneak+punch entity to decrease visual size
 
 ## Branding Iron
+
 Give an object a temporary name.
 
 Usage:
@@ -132,6 +147,7 @@ Usage:
 Use `testtools.get_branded_object(name)` to get an ObjRef.
 
 ## Note Meta Privatizer
+
 Sets the 'formspec' and 'infotext' metadata fields of a node
 to private. This means that clients can no longer access these
 fields.
@@ -141,6 +157,7 @@ Usage:
 * Punch: Set metadata of pointed node to private
 
 ## Light Tool
+
 Show light level of node.
 
 Usage:
@@ -148,6 +165,7 @@ Usage:
 * Place: Show light info of the node that you touched
 
 ## Particle Spawner
+
 Spawn a random animated particle.
 
 Usage:

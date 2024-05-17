@@ -12,6 +12,8 @@ The block serialization version does not fully specify every aspect of this
 format; if compliance with this format is to be checked, it needs to be
 done by detecting if the files and data indeed follows it.
 
+
+
 # Files
 
 Everything is contained in a directory, the name of which is freeform, but
@@ -180,10 +182,13 @@ For `load_mod_<mod>`, the possible values are:
     redis_port = 6379          - (optional) Connection port
     redis_password = hunter2   - (optional) Server password
 
+
+
 # Player File Format
 
 Should be pretty self-explanatory.
-> **Note**: Position is in `nodes * 10`
+> [!NOTE]
+> Position is in `nodes * 10`
 
 Example content:
 
@@ -247,6 +252,8 @@ Example content:
     EndInventoryList
     EndInventory
 
+
+
 # Map File Format
 
 Minetest maps consist of `MapBlock`s, chunks of 16x16x16 nodes.
@@ -281,6 +288,7 @@ storing coordinates separately), but the format has been kept unchanged for
 that part.
 
 ## `map.sqlite`
+
 `map.sqlite` is a `SQLite3` database, containing a single table, called
 `blocks`. It looks like this:
 
@@ -329,14 +337,20 @@ The blob is the data that would have otherwise gone into the file.
 
 See below for description.
 
+
+
 # MapBlock Serialization Format
 
-> **Notes**:
->  * NOTE: Byte order is MSB first (big-endian).
->  * NOTE: Zlib data is in such a format that Python's `zlib` at least can
->          directly decompress.
->  * NOTE: Since version 29 zstd is used instead of zlib. In addition, the entire
->          block is first serialized and then compressed (except the version byte).
+> [!NOTE]
+> Byte order is MSB first (big-endian).
+
+> [!NOTE]
+> Zlib data is in such a format that Python's `zlib` at least can
+> directly decompress.
+
+> [!NOTE]
+> Since version 29 zstd is used instead of zlib. In addition, the entire
+> block is first serialized and then compressed (except the version byte).
 
 `u8` version
 * map format version number, see serialization.h for the latest number
@@ -390,11 +404,11 @@ Timestamp and node ID mappings were introduced in map format version 29.
 * `u32` timestamp
     * Timestamp when last saved, as seconds from starting the game.
     * `0xffffffff` = invalid/unknown timestamp, nothing should be done with the time
-                     difference when loaded
+      difference when loaded
 
 * `u8` `name_id_mapping_version`
     * Should be zero for map format version 29.
-  
+
 * `u16` `num_name_id_mappings`
     * foreach `num_name_id_mappings`:
         * `u16` `id`
@@ -410,7 +424,9 @@ Timestamp and node ID mappings were introduced in map format version 29.
 * Always 2
 
 ## Node Data
-> **Note**: Zlib-compressed before map format version 29
+
+> [!NOTE]
+> Zlib-compressed before map format version 29
 
 * If `content_width` is 1:
     * `u8[4096]`: `param0` fields
@@ -425,7 +441,9 @@ Timestamp and node ID mappings were introduced in map format version 29.
 * The location of a node in each of those arrays is `(z*16*16 + y*16 + x)`.
 
 ### Node Metadata List
-> **Note**: Zlib-compressed before map version format 29
+
+> [!NOTE]
+> Zlib-compressed before map version format 29
 * Before map format version 23:
     * `u16` version (=1)
     * `u16` count of metadata
@@ -437,7 +455,6 @@ Timestamp and node ID mappings were introduced in map format version 29.
 
 * Since map format version 23:
     * `u8` version
-        > **Note**: Type was `u16` before map format version 23
         * = 1 before map format version 28
         * = 2 since map format version 28
     * `u16` count of metadata
@@ -454,11 +471,11 @@ Timestamp and node ID mappings were introduced in map format version 29.
         * serialized inventory
 
 ## Node Timers
+
 * Map format version 23:
     * `u8` unused version (always 0)
 
 * Map format version 24:
-    > **Note**: Not released as stable
     * `u8` `nodetimer_version`
     * if `nodetimer_version` == 1:
         * `u16` `num_of_timers`
@@ -466,6 +483,8 @@ Timestamp and node ID mappings were introduced in map format version 29.
             * `u16` timer position (`(z*16*16 + y*16 + x)`)
             * `s32` timeout * 1000
             * `s32` elapsed * 1000
+> [!NOTE]
+> Not released as stable
 
 * Since map format version 25:
     * `u8` length of the data of a single timer (always 2+4+4=10)
@@ -503,6 +522,8 @@ Before map format version 29:
 
 End of File (EOF).
 
+
+
 # Format of Nodes
 
 A node is composed of the `u8` fields `param0`, `param1` and `param2`.
@@ -517,9 +538,13 @@ Since map format version 24:
 
 The purpose of `param1` and `param2` depend on the definition of the node.
 
+
+
 # Name-ID-Mapping
 
 The mapping maps node content IDs to node names.
+
+
 
 # Node Metadata Format (Before Map Format Version 23)
 
@@ -560,6 +585,8 @@ The node metadata is serialized depending on the `type_id` field.
 * `u8[len]` `owner`
 * serialized inventory
 
+
+
 # Static Objects
 
 Static objects are persistent freely moving objects in the world.
@@ -583,6 +610,8 @@ Since protocol version 37:
 * `s32` pitch * 1000
 * `s32` roll * 1000
 
+
+
 # Itemstring Format
 
 Examples:
@@ -597,6 +626,8 @@ Older formats:
 * `'ToolItem WPick 21323'`
 
 The wear value in tools is 0...65535.
+
+
 
 # Inventory Serialization Format
 

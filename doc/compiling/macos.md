@@ -2,12 +2,12 @@
 
 ## Requirements
 
-- [Homebrew](https://brew.sh/)
-- [Git](https://git-scm.com/downloads)
+* [Homebrew](https://brew.sh/)
+* [Git](https://git-scm.com/downloads)
 
 Install dependencies with homebrew:
 
-```
+```bash
 brew install cmake freetype gettext gmp hiredis jpeg-turbo jsoncpp leveldb libogg libpng libvorbis luajit zstd gettext
 ```
 
@@ -40,6 +40,6 @@ codesign --force --deep -s - macos/minetest.app
 
 ## Run
 
-```
+```bash
 open ./build/macos/minetest.app
 ```
