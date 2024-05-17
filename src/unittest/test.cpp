@@ -29,6 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "porting.h"
 
+#include <iostream>
+
 content_t t_CONTENT_STONE;
 content_t t_CONTENT_GRASS;
 content_t t_CONTENT_TORCH;
@@ -238,7 +240,11 @@ bool run_tests()
 
 	rawstream << "Catch test results: " << std::endl;
 	// Catch prints out the results of this invocation.
+	// Catch prints to stdout, whereas rawstream prints to
+	// stderr. We have to flush stdout manually to make sure
+	// they show up in the right order in the output.
 	auto num_catch_tests_failed = Catch::Session().run();
+	std::cout.flush();
 	// We count the all the Catch tests as one test for Minetest's own logging
 	// because we don't have a way to tell how many individual tests Catch ran.
 	num_total_tests_run = 1;
