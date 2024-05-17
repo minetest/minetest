@@ -110,7 +110,7 @@ if core.set_push_moveresult1 then
 			standing_on_object = b2,
 			collisions = {{
 				type = "node",
-				axis = AXES[axis],
+				axis = AXES[axis + 1],
 				node_pos = vector.new(npx, npy, npz),
 				new_pos = vector.new(v0x, v0y, v0z),
 				old_velocity = vector.new(v1x, v1y, v1z),
