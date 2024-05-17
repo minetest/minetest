@@ -247,7 +247,7 @@ bool run_tests()
 	std::cout.flush();
 	// We count the all the Catch tests as one test for Minetest's own logging
 	// because we don't have a way to tell how many individual tests Catch ran.
-	num_total_tests_run = 1;
+	++num_total_tests_run;
 	if (num_catch_tests_failed > 0) {
 		++num_modules_failed;
 		++num_total_tests_failed;
