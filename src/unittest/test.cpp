@@ -239,10 +239,11 @@ bool run_tests()
 	}
 
 	rawstream << "Catch test results: " << std::endl;
-	// Catch prints out the results of this invocation.
-	// Catch prints to stdout, whereas rawstream prints to
-	// stderr. We have to flush stdout manually to make sure
-	// they show up in the right order in the output.
+	// Catch prints out the results of this invocation
+	// to stdout, whereas rawstream prints to stderr.
+	// We must flush the streams so they are ordered
+	// correctly in the output.
+	std::cerr.flush();
 	auto num_catch_tests_failed = Catch::Session().run();
 	std::cout.flush();
 	// We count the all the Catch tests as one test for Minetest's own logging
