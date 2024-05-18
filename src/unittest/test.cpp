@@ -18,6 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #define CATCH_CONFIG_RUNNER
+// we want to have catch write to rawstream (stderr) instead of stdout
+#define CATCH_CONFIG_NOSTDOUT
 #include <catch.hpp>
 
 #include "test.h"
@@ -30,6 +32,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 
 #include <iostream>
+
+// make catch write everything to rawstream
+namespace Catch {
+    std::ostream& cout() {
+        return rawstream;
+    }
+    std::ostream& clog() {
+        return rawstream;
+    }
+    std::ostream& cerr() {
+        return rawstream;
+    }
+}
 
 content_t t_CONTENT_STONE;
 content_t t_CONTENT_GRASS;
@@ -239,13 +254,7 @@ bool run_tests()
 	}
 
 	rawstream << "Catch test results: " << std::endl;
-	// Catch prints out the results of this invocation
-	// to stdout, whereas rawstream prints to stderr.
-	// We must flush the streams so they are ordered
-	// correctly in the output.
-	std::cerr.flush();
 	auto num_catch_tests_failed = Catch::Session().run();
-	std::cout.flush();
 	// We count the all the Catch tests as one test for Minetest's own logging
 	// because we don't have a way to tell how many individual tests Catch ran.
 	++num_total_tests_run;
