@@ -8222,7 +8222,9 @@ child will follow movement and rotation of that bone.
             * `"plain"`: Uses 0 textures, `base_color` used as both fog and sky.
             (default: `"regular"`)
         * `textures`: A table containing up to six textures in the following
-            order: Y+ (top), Y- (bottom), X- (west), X+ (east), Z+ (north), Z- (south).
+            order: Y+ (top), Y- (bottom), X+ (east), X- (west), Z- (south), Z+ (north).
+            The top and bottom textures are aligned with the X+ (east) plane. Many top and bottom textures
+            (those which are front-aligned) will need to be rotated by -90 and 90 degrees, respectively.
         * `clouds`: Boolean for whether clouds appear. (default: `true`)
         * `sky_color`: A table used in `"regular"` type only, containing the
           following values (alpha is ignored):
