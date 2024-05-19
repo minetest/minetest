@@ -55,7 +55,7 @@ public:
 			for (auto &it : m_active_objects.iter()) {
 				if (!it.second)
 					continue;
-				m_active_objects.remove(it.first);
+				removeObject(it.first);
 			}
 		} while (!m_active_objects.empty());
 	}
