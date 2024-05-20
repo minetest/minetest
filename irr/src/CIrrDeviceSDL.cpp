@@ -19,7 +19,6 @@
 #include <cstdlib>
 #include "SIrrCreationParameters.h"
 #include <SDL_video.h>
-#include <iostream>
 
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 #include <emscripten.h>
