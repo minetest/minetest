@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include "SIrrCreationParameters.h"
 #include <SDL_video.h>
+#include <iostream>
 
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 #include <emscripten.h>
@@ -189,7 +190,7 @@ bool CIrrDeviceSDL::keyIsKnownSpecial(EKEY_CODE key)
 	}
 }
 
-int CIrrDeviceSDL::findCharToPassToIrrlicht(int assumedChar, EKEY_CODE key)
+int CIrrDeviceSDL::findCharToPassToIrrlicht(int assumedChar, EKEY_CODE key, bool isShiftPressed)
 {
 	// special cases that always return a char regardless of how the SDL keycode
 	// looks
@@ -218,8 +219,79 @@ int CIrrDeviceSDL::findCharToPassToIrrlicht(int assumedChar, EKEY_CODE key)
 	case KEY_NUMLOCK:
 		return 0;
 	default:
-		return assumedChar;
+		break;
 	}
+
+	int retChar = assumedChar;
+
+	if (isShiftPressed) {
+		switch (assumedChar) {
+		case '1':
+			retChar = '!';
+			break;
+		case '2':
+			retChar = '@';
+			break;
+		case '3':
+			retChar = '#';
+			break;
+		case '4':
+			retChar = '$';
+			break;
+		case '5':
+			retChar = '%';
+			break;
+		case '6':
+			retChar = '^';
+			break;
+		case '7':
+			retChar = '&';
+			break;
+		case '8':
+			retChar = '*';
+			break;
+		case '9':
+			retChar = '(';
+			break;
+		case '0':
+			retChar = ')';
+			break;
+		case '-':
+			retChar = '_';
+			break;
+		case '=':
+			retChar = '+';
+			break;
+		case '[':
+			retChar = '{';
+			break;
+		case ']':
+			retChar = '}';
+			break;
+		case '\\':
+			retChar = '|';
+			break;
+		case ';':
+			retChar = ':';
+			break;
+		case '\'':
+			retChar = '\"';
+			break;
+		case ',':
+			retChar = '<';
+			break;
+		case '.':
+			retChar = '>';
+			break;
+		case '/':
+			retChar = '?';
+			break;
+		default:
+			break;
+		}
+	}
+
+	return retChar;
 }
 
 void CIrrDeviceSDL::resetReceiveTextInputEvents()
@@ -808,7 +880,7 @@ bool CIrrDeviceSDL::run()
 			irrevent.KeyInput.PressedDown = (SDL_event.type == SDL_KEYDOWN);
 			irrevent.KeyInput.Shift = (SDL_event.key.keysym.mod & KMOD_SHIFT) != 0;
 			irrevent.KeyInput.Control = (SDL_event.key.keysym.mod & KMOD_CTRL) != 0;
-			irrevent.KeyInput.Char = findCharToPassToIrrlicht(mp.SDLKey, key);
+			irrevent.KeyInput.Char = findCharToPassToIrrlicht(mp.SDLKey, key, irrevent.KeyInput.Shift);
 			postEventFromUser(irrevent);
 		} break;
 
