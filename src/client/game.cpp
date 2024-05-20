@@ -959,6 +959,8 @@ private:
 #ifdef __ANDROID__
 	bool m_android_chat_open;
 #endif
+
+	float m_shutdown_progress = 0.0f;
 };
 
 Game::Game() :
@@ -1238,7 +1240,9 @@ void Game::shutdown()
 	if (g_touchscreengui)
 		g_touchscreengui->hide();
 
-	showOverlayMessage(N_("Shutting down..."), 0, 0);
+	// only if the shutdown progress bar isn't shown yet
+	if (m_shutdown_progress == 0.0f)
+		showOverlayMessage(N_("Shutting down..."), 0, 0);
 
 	if (clouds)
 		clouds->drop();
@@ -1285,13 +1289,12 @@ void Game::shutdown()
 
 	FpsControl fps_control;
 	fps_control.reset();
-	float indef_pos = 0;
 
 	while (stop_thread->isRunning()) {
 		m_rendering_engine->run();
 		f32 dtime;
 		fps_control.limit(device, &dtime);
-		showOverlayMessage(N_("Shutting down..."), dtime, 0, &indef_pos);
+		showOverlayMessage(N_("Shutting down..."), dtime, 0, &m_shutdown_progress);
 	}
 
 	stop_thread->rethrow();
@@ -1413,7 +1416,6 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 
 	FpsControl fps_control;
 	fps_control.reset();
-	float indef_pos = 0;
 
 	while (start_thread->isRunning()) {
 		if (!m_rendering_engine->run() || input->cancelPressed())
@@ -1424,7 +1426,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 		if (success)
 			showOverlayMessage(N_("Creating server..."), dtime, 5);
 		else
-			showOverlayMessage(N_("Shutting down..."), dtime, 0, &indef_pos);
+			showOverlayMessage(N_("Shutting down..."), dtime, 0, &m_shutdown_progress);
 	}
 
 	start_thread->rethrow();
