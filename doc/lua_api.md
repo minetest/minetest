@@ -5613,11 +5613,17 @@ Call these functions only at load time!
 * `minetest.register_node(name, node definition)`
 * `minetest.register_craftitem(name, item definition)`
 * `minetest.register_tool(name, item definition)`
-* `minetest.override_item(name, redefinition)`
+* `minetest.override_item(name, redefinition, del_fields)`
+    * `redefinition` is a table of fields `[name] = new_value`,
+      overwriting fields of or adding fields to the existing definition.
+    * `del_fields` is a list of field names to be set
+      to `nil` ("deleted from") the original definition.
     * Overrides fields of an item registered with register_node/tool/craftitem.
     * Note: Item must already be defined, (opt)depend on the mod defining it.
     * Example: `minetest.override_item("default:mese",
-      {light_source=minetest.LIGHT_MAX})`
+      {light_source=minetest.LIGHT_MAX}, {"sounds"})`:
+      Overwrites the `light_source` field,
+      removes the sounds from the definition of the mese block.
 * `minetest.unregister_item(name)`
     * Unregisters the item from the engine, and deletes the entry with key
       `name` from `minetest.registered_items` and from the associated item table
