@@ -81,7 +81,8 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	meshmanip(mm),
 	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE),
 	enable_mesh_cache(g_settings->getBool("enable_mesh_cache") &&
-			!data->m_smooth_lighting) // Mesh cache is not supported with smooth lighting
+			!data->m_smooth_lighting), // Mesh cache is not supported with smooth lighting
+	smooth_liquids(g_settings->getBool("enable_water_reflections"))
 {
 }
 
@@ -736,6 +737,19 @@ void MapblockMeshGenerator::drawLiquidTop()
 	for (int i = 0; i < 4; i++) {
 		int u = corner_resolve[i][0];
 		int w = corner_resolve[i][1];
+
+		if (smooth_liquids) {
+			int x = vertices[i].Pos.X > 0;
+			int z = vertices[i].Pos.Z > 0;
+
+			f32 dx = 0.5f * (cur_liquid.neighbors[z][x].level - cur_liquid.neighbors[z][x + 1].level +
+				cur_liquid.neighbors[z + 1][x].level - cur_liquid.neighbors[z + 1][x + 1].level);
+			f32 dz = 0.5f * (cur_liquid.neighbors[z][x].level - cur_liquid.neighbors[z + 1][x].level +
+				cur_liquid.neighbors[z][x + 1].level - cur_liquid.neighbors[z + 1][x + 1].level);
+
+			vertices[i].Normal = v3f(dx, 1., dz).normalize();
+		}
+
 		vertices[i].Pos.Y += cur_liquid.corner_levels[w][u] * BS;
 		if (data->m_smooth_lighting)
 			vertices[i].Color = blendLightColor(vertices[i].Pos);
@@ -775,7 +789,10 @@ void MapblockMeshGenerator::drawLiquidTop()
 		vertex.TCoords += tcoord_center;
 
 		vertex.TCoords += tcoord_translate;
-		vertex.Normal = v3f(dx, 1., dz).normalize();
+
+		if (!smooth_liquids) {
+			vertex.Normal = v3f(dx, 1., dz).normalize();
+		}
 	}
 
 	std::swap(vertices[0].TCoords, vertices[2].TCoords);
