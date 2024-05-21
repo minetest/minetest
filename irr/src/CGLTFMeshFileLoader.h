@@ -98,11 +98,6 @@ private:
 
 	class MeshExtractor {
 	public:
-
-		MeshExtractor(const tiniergltf::GlTF &model,
-				ISkinnedMesh *mesh) noexcept
-			: m_gltf_model(model), m_irr_model(mesh) {};
-
 		MeshExtractor(tiniergltf::GlTF &&model,
 				ISkinnedMesh *mesh) noexcept
 			: m_gltf_model(model), m_irr_model(mesh) {};
