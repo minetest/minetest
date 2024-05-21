@@ -30,24 +30,71 @@ public:
 	IAnimatedMesh* createMesh(io::IReadFile* file) override;
 
 private:
-	class BufferOffset
+	template <typename T>
+	static T rawget(const void *ptr);
+
+	template <class T>
+	class Accessor
 	{
+		struct BufferSource
+		{
+			const u8 *ptr;
+			std::size_t byteStride;
+		};
+		using Source = std::variant<BufferSource, std::vector<T>, std::tuple<>>;
+
 	public:
-		BufferOffset(const std::vector<unsigned char>& buf,
-				const std::size_t offset);
+		static Accessor sparseIndices(
+				const tiniergltf::GlTF &model,
+				const tiniergltf::AccessorSparseIndices &indices,
+				const std::size_t count);
+		static Accessor sparseValues(
+				const tiniergltf::GlTF &model,
+				const tiniergltf::AccessorSparseValues &values,
+				const std::size_t count,
+				const std::size_t defaultByteStride);
+		static Accessor base(
+				const tiniergltf::GlTF &model,
+				std::size_t accessorIdx);
+		static Accessor make(const tiniergltf::GlTF &model, std::size_t accessorIdx);
+		static constexpr tiniergltf::Accessor::Type getType();
+		static constexpr tiniergltf::Accessor::ComponentType getComponentType();
+		std::size_t getCount() const { return count; }
+		T get(std::size_t i) const;
 
-		BufferOffset(const BufferOffset& other,
-				const std::size_t fromOffset);
-
-		unsigned char at(const std::size_t fromOffset) const;
 	private:
-		const std::vector<unsigned char>& m_buf;
-		std::size_t m_offset;
+		Accessor(const u8 *ptr, std::size_t byteStride, std::size_t count) :
+				source(BufferSource{ptr, byteStride}), count(count) {}
+		Accessor(std::vector<T> vec, std::size_t count) :
+				source(vec), count(count) {}
+		Accessor(std::size_t count) :
+				source(std::make_tuple()), count(count) {}
+		// Directly from buffer, sparse, or default-initialized
+		const Source source;
+		const std::size_t count;
 	};
+
+	template <typename... Ts>
+	using AccessorVariant = std::variant<Accessor<Ts>...>;
+
+	template <std::size_t N, typename... Ts>
+	using ArrayAccessorVariant = std::variant<Accessor<std::array<Ts, N>>...>;
+
+	template <std::size_t N>
+	using NormalizedValuesAccessor = ArrayAccessorVariant<N, u8, u16, f32>;
+
+	template <std::size_t N>
+	static NormalizedValuesAccessor<N> createNormalizedValuesAccessor(
+			const tiniergltf::GlTF &model,
+			const std::size_t accessorIdx);
+
+	template <std::size_t N>
+	static std::array<f32, N> getNormalizedValues(
+			const NormalizedValuesAccessor<N> &accessor,
+			const std::size_t i);
 
 	class MeshExtractor {
 	public:
-		using vertex_t = video::S3DVertex;
 
 		MeshExtractor(const tiniergltf::GlTF &model,
 				ISkinnedMesh *mesh) noexcept
@@ -64,7 +111,7 @@ private:
 		std::optional<std::vector<u16>> getIndices(const std::size_t meshIdx,
 				const std::size_t primitiveIdx) const;
 
-		std::optional<std::vector<vertex_t>> getVertices(std::size_t meshIdx,
+		std::optional<std::vector<video::S3DVertex>> getVertices(std::size_t meshIdx,
 				const std::size_t primitiveIdx) const;
 
 		std::size_t getMeshCount() const;
@@ -77,34 +124,14 @@ private:
 		const tiniergltf::GlTF m_gltf_model;
 		ISkinnedMesh *m_irr_model;
 
-		template <typename T>
-		static T readPrimitive(const BufferOffset& readFrom);
-
-		static core::vector2df readVec2DF(
-				const BufferOffset& readFrom);
-
-		/* Read a vec3df from a buffer with transformations applied.
-		 *
-		 * Values are returned in Irrlicht coordinates.
-		 */
-		static core::vector3df readVec3DF(
-				const BufferOffset& readFrom,
-				const core::vector3df scale);
-
 		void copyPositions(const std::size_t accessorIdx,
-				std::vector<vertex_t>& vertices) const;
+				std::vector<video::S3DVertex>& vertices) const;
 
 		void copyNormals(const std::size_t accessorIdx,
-				std::vector<vertex_t>& vertices) const;
+				std::vector<video::S3DVertex>& vertices) const;
 
 		void copyTCoords(const std::size_t accessorIdx,
-				std::vector<vertex_t>& vertices) const;
-
-		std::size_t getElemCount(const std::size_t accessorIdx) const;
-
-		std::size_t getByteStride(const std::size_t accessorIdx) const;
-
-		BufferOffset getBuffer(const std::size_t accessorIdx) const;
+				std::vector<video::S3DVertex>& vertices) const;
 
 		std::optional<std::size_t> getIndicesAccessorIdx(const std::size_t meshIdx,
 				const std::size_t primitiveIdx) const;
