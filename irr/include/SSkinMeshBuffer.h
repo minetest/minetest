@@ -7,6 +7,8 @@
 #include "IMeshBuffer.h"
 #include "S3DVertex.h"
 
+#include <stdexcept>
+
 namespace irr
 {
 namespace scene
