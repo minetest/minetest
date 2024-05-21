@@ -3,12 +3,6 @@ add_executable(tests
 	"${PROJECT_SOURCE_DIR}/source/Irrlicht/CReadFile.cpp"
 )
 
-set_target_properties(tests PROPERTIES
-	CXX_STANDARD 11
-	CXX_STANDARD_REQUIRED YES
-	CXX_EXTENSIONS NO
-)
-
 target_compile_options(tests
 	PRIVATE
 		"$<$<CXX_COMPILER_ID:GNU>:-Wall>"
