@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "version.h"
 #include "defaultsettings.h"
-#include "migratesettings.hpp"
+#include "migratesettings.h"
 #include "gettext.h"
 #include "log.h"
 #include "util/quicktune.h"
