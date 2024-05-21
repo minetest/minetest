@@ -678,12 +678,12 @@ std::optional<tiniergltf::GlTF> CGLTFMeshFileLoader::tryParseGLTF(io::IReadFile*
 	// We probably don't need this, but add it just to be sure.
 	buf[size] = '\0';
 	Json::CharReaderBuilder builder;
-    const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+	const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
 	Json::Value json;
 	JSONCPP_STRING err;
-    if (!reader->parse(buf.get(), buf.get() + size, &json, &err)) {
-      return std::nullopt;
-    }
+	if (!reader->parse(buf.get(), buf.get() + size, &json, &err)) {
+		return std::nullopt;
+	}
 	try {
 		return tiniergltf::GlTF(json);
 	}  catch (const std::runtime_error &e) {
