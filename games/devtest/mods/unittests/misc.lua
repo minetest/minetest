@@ -254,3 +254,15 @@ local function test_gennotify_api()
 	assert(#custom == 0, "custom ids not empty")
 end
 unittests.register("test_gennotify_api", test_gennotify_api)
+
+unittests.register("test_item_registration", function()
+	local itemname = "unittests:test_override_item"
+	minetest.register_item(itemname, {description = "foo"})
+	assert(assert(minetest.registered_items[itemname]).description == "foo")
+	minetest.override_item(itemname, {description = "bar"})
+	assert(assert(minetest.registered_items[itemname]).description == "bar")
+	minetest.override_item(itemname, {}, {"description"})
+	assert(assert(minetest.registered_items[itemname]).description == nil)
+	minetest.unregister_item("unittests:test_override_item")
+	assert(minetest.registered_items["unittests:test_override_item"] == nil)
+end)
