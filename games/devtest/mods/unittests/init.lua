@@ -200,11 +200,15 @@ end
 if core.settings:get_bool("devtest_unittests_autostart", false) then
 	local test_results = nil
 	core.after(0, function()
+		-- CI adds a mod which sets `unittests.on_finished`
+		-- to write status information to the filesystem
+		local old_on_finished = unittests.on_finished
 		unittests.on_finished = function(ok)
 			for _, player in ipairs(minetest.get_connected_players()) do
 				send_results(player:get_player_name(), ok)
 			end
 			test_results = ok
+			old_on_finished(ok)
 		end
 		coroutine.wrap(unittests.run_all)()
 	end)
