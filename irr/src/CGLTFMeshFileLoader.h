@@ -104,8 +104,6 @@ private:
 
 		std::size_t getByteStride(const std::size_t accessorIdx) const;
 
-		bool isAccessorNormalized(const std::size_t accessorIdx) const;
-
 		BufferOffset getBuffer(const std::size_t accessorIdx) const;
 
 		std::optional<std::size_t> getIndicesAccessorIdx(const std::size_t meshIdx,
