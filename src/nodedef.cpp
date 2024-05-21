@@ -283,7 +283,7 @@ void TileDef::deSerialize(std::istream &is, NodeDrawType drawtype, u16 protocol_
 void TextureSettings::readSettings()
 {
 	connected_glass                = g_settings->getBool("connected_glass");
-	translucent_liquids              = g_settings->getBool("translucent_liquids");
+	translucent_liquids            = g_settings->getBool("translucent_liquids");
 	bool smooth_lighting           = g_settings->getBool("smooth_lighting");
 	enable_mesh_cache              = g_settings->getBool("enable_mesh_cache");
 	enable_minimap                 = g_settings->getBool("enable_minimap");
