@@ -275,8 +275,9 @@ std::optional<std::vector<u16>> CGLTFMeshFileLoader::MeshExtractor::getIndices(
 	
 	const auto& buf = getBuffer(accessorIdx.value());
 
-	std::vector<u16> indices{};
+	std::vector<u16> indices;
 	const auto count = getElemCount(accessorIdx.value());
+	indices.reserve(count);
 	for (std::size_t i = 0; i < count; ++i) {
 		std::size_t elemIdx = count - i - 1; // reverse index order
 		u16 index;
