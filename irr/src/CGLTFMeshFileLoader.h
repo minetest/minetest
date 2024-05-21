@@ -1,5 +1,4 @@
-#ifndef __C_GLTF_MESH_FILE_LOADER_INCLUDED__
-#define __C_GLTF_MESH_FILE_LOADER_INCLUDED__
+#pragma once
 
 #include "ISkinnedMesh.h"
 #include "IMeshLoader.h"
@@ -54,7 +53,7 @@ private:
 				ISkinnedMesh *mesh) noexcept
 			: m_gltf_model(model), m_irr_model(mesh) {};
 
-		MeshExtractor(const tiniergltf::GlTF &&model,
+		MeshExtractor(tiniergltf::GlTF &&model,
 				ISkinnedMesh *mesh) noexcept
 			: m_gltf_model(model), m_irr_model(mesh) {};
 
@@ -140,6 +139,4 @@ private:
 } // namespace scene
 
 } // namespace irr
-
-#endif // __C_GLTF_MESH_FILE_LOADER_INCLUDED__
 
