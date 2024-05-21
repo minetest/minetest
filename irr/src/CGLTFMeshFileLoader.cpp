@@ -729,7 +729,8 @@ std::optional<tiniergltf::GlTF> CGLTFMeshFileLoader::tryParseGLTF(io::IReadFile*
 {
 	auto size = file->getSize();
 	auto buf = std::make_unique<char[]>(size + 1);
-	file->read(buf.get(), size);
+	if (file->read(buf.get(), size) < size)
+		return std::nullopt;
 	// We probably don't need this, but add it just to be sure.
 	buf[size] = '\0';
 	Json::CharReaderBuilder builder;
