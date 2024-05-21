@@ -135,22 +135,6 @@ private:
 
 		void copyTCoords(const std::size_t accessorIdx,
 				std::vector<video::S3DVertex>& vertices) const;
-
-		std::optional<std::size_t> getIndicesAccessorIdx(const std::size_t meshIdx,
-				const std::size_t primitiveIdx) const;
-
-		std::optional<std::size_t> getPositionAccessorIdx(const std::size_t meshIdx,
-				const std::size_t primitiveIdx) const;
-
-		/* Get the accessor id of the normals of a primitive.
-		 */
-		std::optional<std::size_t> getNormalAccessorIdx(const std::size_t meshIdx,
-				const std::size_t primitiveIdx) const;
-
-		/* Get the accessor id for the tcoords of a primitive.
-		 */
-		std::optional<std::size_t> getTCoordAccessorIdx(const std::size_t meshIdx,
-				const std::size_t primitiveIdx) const;
 		
 		void loadMesh(
 			std::size_t meshIdx,

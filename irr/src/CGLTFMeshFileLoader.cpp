@@ -667,62 +667,6 @@ void CGLTFMeshFileLoader::MeshExtractor::copyTCoords(
 }
 
 /**
- * The index of the accessor that contains the vertex indices. 
- * When this is undefined, the primitive defines non-indexed geometry. 
- * When defined, the accessor MUST have SCALAR type and an unsigned integer component type.
- * Documentation: https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#_mesh_primitive_indices
- * Type: Integer
- * Required: NO
-*/
-std::optional<std::size_t> CGLTFMeshFileLoader::MeshExtractor::getIndicesAccessorIdx(
-		const std::size_t meshIdx,
-		const std::size_t primitiveIdx) const
-{
-	return m_gltf_model.meshes->at(meshIdx).primitives[primitiveIdx].indices;
-}
-
-/**
- * The index of the accessor that contains the POSITIONs.
- * Documentation: https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#meshes-overview
- * Type: VEC3 (Float)
-*/
-std::optional<std::size_t> CGLTFMeshFileLoader::MeshExtractor::getPositionAccessorIdx(
-		const std::size_t meshIdx,
-		const std::size_t primitiveIdx) const
-{
-	return m_gltf_model.meshes->at(meshIdx).primitives[primitiveIdx].attributes.position;
-}
-
-/**
- * The index of the accessor that contains the NORMALs.
- * Documentation: https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#meshes-overview
- * Type: VEC3 (Float)
- * ! Required: NO (Appears to not be, needs another pair of eyes to research.)
-*/
-std::optional<std::size_t> CGLTFMeshFileLoader::MeshExtractor::getNormalAccessorIdx(
-		const std::size_t meshIdx,
-		const std::size_t primitiveIdx) const
-{
-	return m_gltf_model.meshes->at(meshIdx).primitives[primitiveIdx].attributes.normal;
-}
-
-/**
- * The index of the accessor that contains the TEXCOORDs.
- * Documentation: https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#meshes-overview
- * Type: VEC3 (Float)
- * ! Required: YES (Appears so, needs another pair of eyes to research.)
-*/
-std::optional<std::size_t> CGLTFMeshFileLoader::MeshExtractor::getTCoordAccessorIdx(
-		const std::size_t meshIdx,
-		const std::size_t primitiveIdx) const
-{
-	const auto& texcoords = m_gltf_model.meshes->at(meshIdx).primitives[primitiveIdx].attributes.texcoord;
-	if (!texcoords.has_value())
-		return std::nullopt;
-	return texcoords->at(0);
-}
-
-/**
  * This is where the actual model's GLTF file is loaded and parsed by tiniergltf.
 */
 std::optional<tiniergltf::GlTF> CGLTFMeshFileLoader::tryParseGLTF(io::IReadFile* file)
