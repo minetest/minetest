@@ -24,6 +24,8 @@
 #include <variant>
 #include <vector>
 
+namespace irr {
+
 /* Notes on the coordinate system.
  *
  * glTF uses a right-handed coordinate system where +Z is the
@@ -35,33 +37,284 @@
  * of the vertex indices.
  */
 
-namespace irr {
+// Right-to-left handedness conversions
+
+template <typename T>
+static inline T convertHandedness(const T &t);
+
+template <>
+core::vector3df convertHandedness(const core::vector3df &p)
+{
+	return core::vector3df(p.X, p.Y, -p.Z);
+}
 
 namespace scene {
 
-CGLTFMeshFileLoader::BufferOffset::BufferOffset(
-		const std::vector<unsigned char>& buf,
-		const std::size_t offset)
-	: m_buf(buf)
-	, m_offset(offset)
+using CMFL = CGLTFMeshFileLoader;
+
+template <class T>
+CMFL::Accessor<T>
+CMFL::Accessor<T>::sparseIndices(const tiniergltf::GlTF &model,
+		const tiniergltf::AccessorSparseIndices &indices,
+		const std::size_t count)
 {
+	const auto &view = model.bufferViews->at(indices.bufferView);
+	const auto byteStride = view.byteStride.value_or(indices.elementSize());
+
+	const auto &buffer = model.buffers->at(view.buffer);
+	const auto source = buffer.data.data() + view.byteOffset + indices.byteOffset;
+
+	return CMFL::Accessor<T>(source, byteStride, count);
 }
 
-CGLTFMeshFileLoader::BufferOffset::BufferOffset(
-		const CGLTFMeshFileLoader::BufferOffset& other,
-		const std::size_t fromOffset)
-	: m_buf(other.m_buf)
-	, m_offset(other.m_offset + fromOffset)
+template <class T>
+CMFL::Accessor<T>
+CMFL::Accessor<T>::sparseValues(const tiniergltf::GlTF &model,
+		const tiniergltf::AccessorSparseValues &values,
+		const std::size_t count,
+		const std::size_t defaultByteStride)
 {
+	const auto &view = model.bufferViews->at(values.bufferView);
+	const auto byteStride = view.byteStride.value_or(defaultByteStride);
+
+	const auto &buffer = model.buffers->at(view.buffer);
+	const auto source = buffer.data.data() + view.byteOffset + values.byteOffset;
+
+	return CMFL::Accessor<T>(source, byteStride, count);
 }
 
-/**
- * Get a raw unsigned char (ubyte) from a buffer offset.
-*/
-unsigned char CGLTFMeshFileLoader::BufferOffset::at(
-		const std::size_t fromOffset) const
+template <class T>
+CMFL::Accessor<T>
+CMFL::Accessor<T>::base(const tiniergltf::GlTF &model, std::size_t accessorIdx)
 {
-	return m_buf.at(m_offset + fromOffset);
+	const auto &accessor = model.accessors->at(accessorIdx);
+
+	if (!accessor.bufferView.has_value()) {
+		return Accessor<T>(accessor.count);
+	}
+
+	const auto &view = model.bufferViews->at(accessor.bufferView.value());
+	const auto byteStride = view.byteStride.value_or(accessor.elementSize());
+
+	const auto &buffer = model.buffers->at(view.buffer);
+	const auto source = buffer.data.data() + view.byteOffset + accessor.byteOffset;
+
+	return Accessor<T>(source, byteStride, accessor.count);
+}
+
+template <class T>
+CMFL::Accessor<T>
+CMFL::Accessor<T>::make(const tiniergltf::GlTF &model, std::size_t accessorIdx)
+{
+	const auto &accessor = model.accessors->at(accessorIdx);
+	if (accessor.componentType != getComponentType() || accessor.type != getType())
+		throw std::runtime_error("invalid accessor");
+
+	const auto base = Accessor<T>::base(model, accessorIdx);
+
+	if (accessor.sparse.has_value()) {
+		std::vector<T> vec(accessor.count);
+		for (std::size_t i = 0; i < accessor.count; ++i) {
+			vec[i] = base.get(i);
+		}
+		const auto overriddenCount = accessor.sparse->count;
+		const auto indicesAccessor = ([&]() -> AccessorVariant<u8, u16, u32> {
+			switch (accessor.sparse->indices.componentType) {
+			case tiniergltf::AccessorSparseIndices::ComponentType::UNSIGNED_BYTE:
+				return Accessor<u8>::sparseIndices(model, accessor.sparse->indices, overriddenCount);
+			case tiniergltf::AccessorSparseIndices::ComponentType::UNSIGNED_SHORT:
+				return Accessor<u16>::sparseIndices(model, accessor.sparse->indices, overriddenCount);
+			case tiniergltf::AccessorSparseIndices::ComponentType::UNSIGNED_INT:
+				return Accessor<u32>::sparseIndices(model, accessor.sparse->indices, overriddenCount);
+			}
+			throw std::logic_error("invalid enum value");
+		})();
+
+		const auto valuesAccessor = Accessor<T>::sparseValues(model,
+				accessor.sparse->values, overriddenCount,
+				accessor.bufferView.has_value()
+						? model.bufferViews->at(*accessor.bufferView).byteStride.value_or(accessor.elementSize())
+						: accessor.elementSize());
+
+		for (std::size_t i = 0; i < overriddenCount; ++i) {
+			u32 index;
+			std::visit([&](auto &&acc) { index = acc.get(i); }, indicesAccessor);
+			if (index >= accessor.count)
+				throw std::runtime_error("index out of bounds");
+			vec[index] = valuesAccessor.get(i);
+		}
+		return Accessor<T>(vec, accessor.count);
+	}
+
+	return base;
+}
+
+#define ACCESSOR_TYPES(T, U, V)                                                         \
+	template <>                                                                         \
+	constexpr tiniergltf::Accessor::Type CMFL::Accessor<T>::getType()                   \
+	{                                                                                   \
+		return tiniergltf::Accessor::Type::U;                                           \
+	}                                                                                   \
+	template <>                                                                         \
+	constexpr tiniergltf::Accessor::ComponentType CMFL::Accessor<T>::getComponentType() \
+	{                                                                                   \
+		return tiniergltf::Accessor::ComponentType::V;                                  \
+	}
+
+#define VEC_ACCESSOR_TYPES(T, U, n)                                                                    \
+	template <>                                                                                        \
+	constexpr tiniergltf::Accessor::Type CMFL::Accessor<std::array<T, n>>::getType()                   \
+	{                                                                                                  \
+		return tiniergltf::Accessor::Type::VEC##n;                                                     \
+	}                                                                                                  \
+	template <>                                                                                        \
+	constexpr tiniergltf::Accessor::ComponentType CMFL::Accessor<std::array<T, n>>::getComponentType() \
+	{                                                                                                  \
+		return tiniergltf::Accessor::ComponentType::U;                                                 \
+	}                                                                                                  \
+	template <>                                                                                        \
+	std::array<T, n> CMFL::rawget(const void *ptr)                                                     \
+	{                                                                                                  \
+		const T *tptr = reinterpret_cast<const T *>(ptr);                                              \
+		std::array<T, n> res;                                                                          \
+		for (u8 i = 0; i < n; ++i)                                                                     \
+			res[i] = rawget<T>(tptr + i);                                                              \
+		return res;                                                                                    \
+	}
+
+#define ACCESSOR_PRIMITIVE(T, U) \
+	ACCESSOR_TYPES(T, SCALAR, U) \
+	VEC_ACCESSOR_TYPES(T, U, 2)  \
+	VEC_ACCESSOR_TYPES(T, U, 3)  \
+	VEC_ACCESSOR_TYPES(T, U, 4)
+
+ACCESSOR_PRIMITIVE(f32, FLOAT)
+ACCESSOR_PRIMITIVE(u8, UNSIGNED_BYTE)
+ACCESSOR_PRIMITIVE(u16, UNSIGNED_SHORT)
+ACCESSOR_PRIMITIVE(u32, UNSIGNED_INT)
+
+ACCESSOR_TYPES(core::vector3df, VEC3, FLOAT)
+
+template <class T>
+T CMFL::Accessor<T>::get(std::size_t i) const
+{
+	// Buffer-based accessor: Read directly from the buffer.
+	if (std::holds_alternative<BufferSource>(source)) {
+		const auto bufsrc = std::get<BufferSource>(source);
+		return rawget<T>(bufsrc.ptr + i * bufsrc.byteStride);
+	}
+	// Array-based accessor (used for sparse accessors): Read from array.
+	if (std::holds_alternative<std::vector<T>>(source)) {
+		return std::get<std::vector<T>>(source)[i];
+	}
+	// Default-initialized accessor.
+	// We differ slightly from glTF here in that
+	// we default-initialize quaternions and matrices properly,
+	// but this does not cause any discrepancies for valid glTF models.
+	std::get<std::tuple<>>(source);
+	return T();
+}
+
+// Note: clang and gcc should both optimize this out.
+static inline bool isBigEndian()
+{
+	const u16 x = 0xFF00;
+	return *(const u8 *)(&x);
+}
+
+template <typename T>
+T CMFL::rawget(const void *ptr)
+{
+	if (!isBigEndian())
+		return *reinterpret_cast<const T *>(ptr);
+	// glTF uses little endian.
+	// On big-endian systems, we have to swap the byte order.
+	// TODO test this on a big endian system
+	const u8 *bptr = reinterpret_cast<const u8 *>(ptr);
+	u8 bytes[sizeof(T)];
+	for (std::size_t i = 0; i < sizeof(T); ++i) {
+		bytes[sizeof(T) - i - 1] = bptr[i];
+	}
+	return *reinterpret_cast<const T *>(bytes);
+}
+
+// Note that these "more specialized templates" should win.
+
+template <>
+core::matrix4 CMFL::rawget(const void *ptr)
+{
+	const f32 *fptr = reinterpret_cast<const f32 *>(ptr);
+	f32 M[16];
+	for (u8 i = 0; i < 16; ++i) {
+		M[i] = rawget<f32>(fptr + i);
+	}
+	core::matrix4 mat;
+	mat.setM(M);
+	return mat;
+}
+
+template <>
+core::vector3df CMFL::rawget(const void *ptr)
+{
+	const f32 *fptr = reinterpret_cast<const f32 *>(ptr);
+	return core::vector3df(
+			rawget<f32>(fptr),
+			rawget<f32>(fptr + 1),
+			rawget<f32>(fptr + 2));
+}
+
+template <>
+core::quaternion CMFL::rawget(const void *ptr)
+{
+	const f32 *fptr = reinterpret_cast<const f32 *>(ptr);
+	return core::quaternion(
+			rawget<f32>(fptr),
+			rawget<f32>(fptr + 1),
+			rawget<f32>(fptr + 2),
+			rawget<f32>(fptr + 3));
+}
+
+template <std::size_t N>
+CMFL::NormalizedValuesAccessor<N>
+CMFL::createNormalizedValuesAccessor(
+		const tiniergltf::GlTF &model,
+		const std::size_t accessorIdx)
+{
+	const auto &acc = model.accessors->at(accessorIdx);
+	switch (acc.componentType) {
+	case tiniergltf::Accessor::ComponentType::UNSIGNED_BYTE:
+		return Accessor<std::array<u8, N>>::make(model, accessorIdx);
+	case tiniergltf::Accessor::ComponentType::UNSIGNED_SHORT:
+		return Accessor<std::array<u16, N>>::make(model, accessorIdx);
+	case tiniergltf::Accessor::ComponentType::FLOAT:
+		return Accessor<std::array<f32, N>>::make(model, accessorIdx);
+	default:
+		throw std::runtime_error("invalid component type");
+	}
+}
+
+template <std::size_t N>
+std::array<f32, N> CMFL::getNormalizedValues(
+		const NormalizedValuesAccessor<N> &accessor,
+		const std::size_t i)
+{
+	std::array<f32, N> values;
+	if (std::holds_alternative<Accessor<std::array<u8, N>>>(accessor)) {
+		const auto u8s = std::get<Accessor<std::array<u8, N>>>(accessor).get(i);
+		for (u8 i = 0; i < N; ++i)
+			values[i] = static_cast<f32>(u8s[i]) / std::numeric_limits<u8>::max();
+	} else if (std::holds_alternative<Accessor<std::array<u16, N>>>(accessor)) {
+		const auto u16s = std::get<Accessor<std::array<u16, N>>>(accessor).get(i);
+		for (u8 i = 0; i < N; ++i)
+			values[i] = static_cast<f32>(u16s[i]) / std::numeric_limits<u16>::max();
+	} else {
+		values = std::get<Accessor<std::array<f32, N>>>(accessor).get(i);
+		for (u8 i = 0; i < N; ++i) {
+			if (values[i] < 0 || values[i] > 1)
+				throw std::runtime_error("invalid normalized value");
+		}
+	}
+	return values;
 }
 
 CGLTFMeshFileLoader::CGLTFMeshFileLoader() noexcept
@@ -262,49 +515,52 @@ void CGLTFMeshFileLoader::MeshExtractor::loadNodes() const
 }
 
 /**
- * Extracts GLTF mesh indices into the irrlicht model.
-*/
-std::optional<std::vector<u16>> CGLTFMeshFileLoader::MeshExtractor::getIndices(
+ * Extracts GLTF mesh indices.
+ */
+std::optional<std::vector<u16>> CMFL::MeshExtractor::getIndices(
 		const std::size_t meshIdx,
 		const std::size_t primitiveIdx) const
 {
-	const auto accessorIdx = getIndicesAccessorIdx(meshIdx, primitiveIdx);
+	const auto accessorIdx = m_gltf_model.meshes->at(meshIdx).primitives.at(primitiveIdx).indices;
 	if (!accessorIdx.has_value())
 		return std::nullopt; // non-indexed geometry
-	const auto &accessor = m_gltf_model.accessors->at(accessorIdx.value());
-	
-	const auto& buf = getBuffer(accessorIdx.value());
+
+	const auto accessor = ([&]() -> AccessorVariant<u8, u16, u32> {
+		const auto &acc = m_gltf_model.accessors->at(*accessorIdx);
+		switch (acc.componentType) {
+		case tiniergltf::Accessor::ComponentType::UNSIGNED_BYTE:
+			return Accessor<u8>::make(m_gltf_model, *accessorIdx);
+		case tiniergltf::Accessor::ComponentType::UNSIGNED_SHORT:
+			return Accessor<u16>::make(m_gltf_model, *accessorIdx);
+		case tiniergltf::Accessor::ComponentType::UNSIGNED_INT:
+			return Accessor<u32>::make(m_gltf_model, *accessorIdx);
+		default:
+			throw std::runtime_error("invalid component type");
+		}
+	})();
+	const auto count = std::visit([](auto &&a) { return a.getCount(); }, accessor);
 
 	std::vector<u16> indices;
-	const auto count = getElemCount(accessorIdx.value());
-	indices.reserve(count);
 	for (std::size_t i = 0; i < count; ++i) {
+		// TODO (low-priority, maybe never) also reverse winding order based on determinant of global transform
+		// FIXME this hack also reverses triangle draw order
 		std::size_t elemIdx = count - i - 1; // reverse index order
 		u16 index;
 		// Note: glTF forbids the max value for each component type.
-		switch (accessor.componentType) {
-			case tiniergltf::Accessor::ComponentType::UNSIGNED_BYTE: {
-				index = readPrimitive<u8>(BufferOffset(buf, elemIdx * sizeof(u8)));
-				if (index == std::numeric_limits<u8>::max())
-					throw std::runtime_error("invalid index");
-				break;
-			}
-			case tiniergltf::Accessor::ComponentType::UNSIGNED_SHORT: {
-				index = readPrimitive<u16>(BufferOffset(buf, elemIdx * sizeof(u16)));
-				if (index == std::numeric_limits<u16>::max())
-					throw std::runtime_error("invalid index");
-				break;
-			}
-			case tiniergltf::Accessor::ComponentType::UNSIGNED_INT: {
-				u32 indexWide = readPrimitive<u32>(BufferOffset(buf, elemIdx * sizeof(u32)));
-				// Use >= here for consistency.
-				if (indexWide >= std::numeric_limits<u16>::max())
-					throw std::runtime_error("index too large (>= 65536)");
-				index = static_cast<u16>(indexWide);
-				break;
-			}
-			default:
-				throw std::runtime_error("invalid index component type");
+		if (std::holds_alternative<Accessor<u8>>(accessor)) {
+			index = std::get<Accessor<u8>>(accessor).get(elemIdx);
+			if (index == std::numeric_limits<u8>::max())
+				throw std::runtime_error("invalid index");
+		} else if (std::holds_alternative<Accessor<u16>>(accessor)) {
+			index = std::get<Accessor<u16>>(accessor).get(elemIdx);
+			if (index == std::numeric_limits<u16>::max())
+				throw std::runtime_error("invalid index");
+		} else if (std::holds_alternative<Accessor<u32>>(accessor)) {
+			u32 indexWide = std::get<Accessor<u32>>(accessor).get(elemIdx);
+			// Use >= here for consistency.
+			if (indexWide >= std::numeric_limits<u16>::max())
+				throw std::runtime_error("index too large (>= 65536)");
+			index = static_cast<u16>(indexWide);
 		}
 		indices.push_back(index);
 	}
@@ -314,32 +570,33 @@ std::optional<std::vector<u16>> CGLTFMeshFileLoader::MeshExtractor::getIndices(
 
 /**
  * Create a vector of video::S3DVertex (model data) from a mesh & primitive index.
-*/
-std::optional<std::vector<video::S3DVertex>> CGLTFMeshFileLoader::MeshExtractor::getVertices(
+ */
+std::optional<std::vector<video::S3DVertex>> CMFL::MeshExtractor::getVertices(
 		const std::size_t meshIdx,
 		const std::size_t primitiveIdx) const
 {
-	const auto positionAccessorIdx = getPositionAccessorIdx(
-			meshIdx, primitiveIdx);
+	const auto &attributes = m_gltf_model.meshes->at(meshIdx).primitives.at(primitiveIdx).attributes;
+	const auto positionAccessorIdx = attributes.position;
 	if (!positionAccessorIdx.has_value()) {
 		// "When positions are not specified, client implementations SHOULD skip primitive's rendering"
 		return std::nullopt;
 	}
 
-	std::vector<vertex_t> vertices{};
-	vertices.resize(getElemCount(*positionAccessorIdx));
+	std::vector<video::S3DVertex> vertices;
+	const auto vertexCount = m_gltf_model.accessors->at(*positionAccessorIdx).count;
+	vertices.resize(vertexCount);
 	copyPositions(*positionAccessorIdx, vertices);
 
-	const auto normalAccessorIdx = getNormalAccessorIdx(
-			meshIdx, primitiveIdx);
+	const auto normalAccessorIdx = attributes.normal;
 	if (normalAccessorIdx.has_value()) {
 		copyNormals(normalAccessorIdx.value(), vertices);
 	}
+	// TODO verify that the automatic normal recalculation done in Minetest indeed works correctly
 
-	const auto tCoordAccessorIdx = getTCoordAccessorIdx(
-			meshIdx, primitiveIdx);
-	if (tCoordAccessorIdx.has_value()) {
-		copyTCoords(tCoordAccessorIdx.value(), vertices);
+	const auto &texcoords = m_gltf_model.meshes->at(meshIdx).primitives[primitiveIdx].attributes.texcoord;
+	if (texcoords.has_value()) {
+		const auto tCoordAccessorIdx = texcoords->at(0);
+		copyTCoords(tCoordAccessorIdx, vertices);
 	}
 
 	return vertices;
@@ -363,69 +620,16 @@ std::size_t CGLTFMeshFileLoader::MeshExtractor::getPrimitiveCount(
 }
 
 /**
- * Templated buffer reader. Based on type width.
- * This is specifically used to build upon to read more complex data types.
- * It is also used raw to read arrays directly.
- * Basically we're using the width of the type to infer 
- * how big of a gap we have from the beginning of the buffer.
-*/
-template <typename T>
-T CGLTFMeshFileLoader::MeshExtractor::readPrimitive(
-		const BufferOffset& readFrom)
-{
-	unsigned char d[sizeof(T)]{};
-	for (std::size_t i = 0; i < sizeof(T); ++i) {
-		d[i] = readFrom.at(i);
-	}
-	T dest;
-	std::memcpy(&dest, d, sizeof(dest));
-	return dest;
-}
-
-/**
- * Read a vector2df from a buffer at an offset.
- * @return vec2 core::Vector2df
-*/
-core::vector2df CGLTFMeshFileLoader::MeshExtractor::readVec2DF(
-		const CGLTFMeshFileLoader::BufferOffset& readFrom)
-{
-	return core::vector2df(readPrimitive<float>(readFrom),
-		readPrimitive<float>(BufferOffset(readFrom, sizeof(float))));
-
-}
-
-/**
- * Read a vector3df from a buffer at an offset.
- * Also does right-to-left-handed coordinate system conversion (inverts Z axis).
- * @return vec3 core::Vector3df
-*/
-core::vector3df CGLTFMeshFileLoader::MeshExtractor::readVec3DF(
-		const BufferOffset& readFrom,
-		const core::vector3df scale = {1.0f,1.0f,1.0f})
-{
-	return core::vector3df(
-		readPrimitive<float>(readFrom),
-		readPrimitive<float>(BufferOffset(readFrom, sizeof(float))),
-		-readPrimitive<float>(BufferOffset(readFrom, 2 *
-		sizeof(float))));
-}
-
-/**
  * Streams vertex positions raw data into usable buffer via reference.
  * Buffer: ref Vector<video::S3DVertex>
 */
 void CGLTFMeshFileLoader::MeshExtractor::copyPositions(
 		const std::size_t accessorIdx,
-		std::vector<vertex_t>& vertices) const
+		std::vector<video::S3DVertex>& vertices) const
 {
-
-	const auto& buffer = getBuffer(accessorIdx);
-	const auto count = getElemCount(accessorIdx);
-	const auto byteStride = getByteStride(accessorIdx);
-
-	for (std::size_t i = 0; i < count; i++) {
-		const auto v = readVec3DF(BufferOffset(buffer, byteStride * i));
-		vertices[i].Pos = v;
+	const auto accessor = Accessor<core::vector3df>::make(m_gltf_model, accessorIdx);
+	for (std::size_t i = 0; i < accessor.getCount(); i++) {
+		vertices[i].Pos = convertHandedness(accessor.get(i));
 	}
 }
 
@@ -435,15 +639,11 @@ void CGLTFMeshFileLoader::MeshExtractor::copyPositions(
 */
 void CGLTFMeshFileLoader::MeshExtractor::copyNormals(
 		const std::size_t accessorIdx,
-		std::vector<vertex_t>& vertices) const
+		std::vector<video::S3DVertex>& vertices) const
 {
-	const auto& buffer = getBuffer(accessorIdx);
-	const auto count = getElemCount(accessorIdx);
-	
-	for (std::size_t i = 0; i < count; i++) {
-		const auto n = readVec3DF(BufferOffset(buffer,
-			3 * sizeof(float) * i));
-		vertices[i].Normal = n;
+	const auto accessor = Accessor<core::vector3df>::make(m_gltf_model, accessorIdx);
+	for (std::size_t i = 0; i < accessor.getCount(); ++i) {
+		vertices[i].Normal = convertHandedness(accessor.get(i));
 	}
 }
 
@@ -453,60 +653,14 @@ void CGLTFMeshFileLoader::MeshExtractor::copyNormals(
 */
 void CGLTFMeshFileLoader::MeshExtractor::copyTCoords(
 		const std::size_t accessorIdx,
-		std::vector<vertex_t>& vertices) const
+		std::vector<video::S3DVertex>& vertices) const
 {
-
-	const auto& buffer = getBuffer(accessorIdx);
-	const auto count = getElemCount(accessorIdx);
-
+	const auto accessor = createNormalizedValuesAccessor<2>(m_gltf_model, accessorIdx);
+	const auto count = std::visit([](auto &&a) { return a.getCount(); }, accessor);
 	for (std::size_t i = 0; i < count; ++i) {
-		const auto t = readVec2DF(BufferOffset(buffer,
-			2 * sizeof(float) * i));
-		vertices[i].TCoords = t;
+		const auto vals = getNormalizedValues(accessor, i);
+		vertices[i].TCoords = core::vector2df(vals[0], vals[1]);
 	}
-}
-
-/**
- * The number of elements referenced by this accessor, not to be confused with the number of bytes or number of components.
- * Documentation: https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#_accessor_count
- * Type: Integer
- * Required: YES
-*/
-std::size_t CGLTFMeshFileLoader::MeshExtractor::getElemCount(
-		const std::size_t accessorIdx) const
-{
-	return m_gltf_model.accessors->at(accessorIdx).count;
-}
-
-/**
- * The stride, in bytes, between vertex attributes.
- * When this is not defined, data is tightly packed.
- * When two or more accessors use the same buffer view, this field MUST be defined.
- * Documentation: https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#_bufferview_bytestride
- * Required: NO
-*/
-std::size_t CGLTFMeshFileLoader::MeshExtractor::getByteStride(
-		const std::size_t accessorIdx) const
-{
-	const auto& accessor = m_gltf_model.accessors->at(accessorIdx);
-	// FIXME this does not work with sparse / zero-initialized accessors
-	const auto& view = m_gltf_model.bufferViews->at(accessor.bufferView.value());
-	return view.byteStride.value_or(accessor.elementSize());
-}
-
-/**
- * Walk through the complex chain of the model to extract the required buffer.
- * Accessor -> BufferView -> Buffer
-*/
-CGLTFMeshFileLoader::BufferOffset CGLTFMeshFileLoader::MeshExtractor::getBuffer(
-		const std::size_t accessorIdx) const
-{
-	const auto& accessor = m_gltf_model.accessors->at(accessorIdx);
-	// FIXME this does not work with sparse / zero-initialized accessors
-	const auto& view = m_gltf_model.bufferViews->at(accessor.bufferView.value());
-	const auto& buffer = m_gltf_model.buffers->at(view.buffer);
-
-	return BufferOffset(buffer.data, view.byteOffset);
 }
 
 /**
