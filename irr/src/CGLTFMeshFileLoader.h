@@ -1,3 +1,6 @@
+// Minetest
+// SPDX-License-Identifier: LGPL-2.1-or-later
+
 #pragma once
 
 #include "ISkinnedMesh.h"
@@ -6,8 +9,6 @@
 #include "irrTypes.h"
 #include "path.h"
 #include "S3DVertex.h"
-#include "vector2d.h"
-#include "vector3d.h"
 
 #include <tiniergltf.hpp>
 
@@ -23,7 +24,7 @@ namespace scene
 class CGLTFMeshFileLoader : public IMeshLoader
 {
 public:
-	CGLTFMeshFileLoader() noexcept;
+	CGLTFMeshFileLoader() noexcept {};
 
 	bool isALoadableFileExtension(const io::path& filename) const override;
 
@@ -95,11 +96,6 @@ private:
 
 	class MeshExtractor {
 	public:
-
-		MeshExtractor(const tiniergltf::GlTF &model,
-				ISkinnedMesh *mesh) noexcept
-			: m_gltf_model(model), m_irr_model(mesh) {};
-
 		MeshExtractor(tiniergltf::GlTF &&model,
 				ISkinnedMesh *mesh) noexcept
 			: m_gltf_model(model), m_irr_model(mesh) {};
@@ -132,22 +128,6 @@ private:
 
 		void copyTCoords(const std::size_t accessorIdx,
 				std::vector<video::S3DVertex>& vertices) const;
-
-		std::optional<std::size_t> getIndicesAccessorIdx(const std::size_t meshIdx,
-				const std::size_t primitiveIdx) const;
-
-		std::optional<std::size_t> getPositionAccessorIdx(const std::size_t meshIdx,
-				const std::size_t primitiveIdx) const;
-
-		/* Get the accessor id of the normals of a primitive.
-		 */
-		std::optional<std::size_t> getNormalAccessorIdx(const std::size_t meshIdx,
-				const std::size_t primitiveIdx) const;
-
-		/* Get the accessor id for the tcoords of a primitive.
-		 */
-		std::optional<std::size_t> getTCoordAccessorIdx(const std::size_t meshIdx,
-				const std::size_t primitiveIdx) const;
 		
 		void loadMesh(
 			std::size_t meshIdx,
