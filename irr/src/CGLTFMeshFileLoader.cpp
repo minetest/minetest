@@ -31,7 +31,7 @@ namespace irr {
  * glTF uses a right-handed coordinate system where +Z is the
  * front-facing axis, and Irrlicht uses a left-handed coordinate
  * system where -Z is the front-facing axis.
- * We convert between them by reflecting the mesh across the X axis.
+ * We convert between them by mirroring the mesh across the X axis.
  * Doing this correctly requires negating the Z coordinate on
  * vertex positions and normals, and reversing the winding order
  * of the vertex indices.
