@@ -434,9 +434,8 @@ void SelfType::MeshExtractor::deferAddMesh(
 				indices = generateIndices(vertices->size());
 			}
 
-			auto *meshbuf = m_irr_model->addMeshBuffer();
-			meshbuf->append(vertices->data(), vertices->size(),
-					indices.data(), indices.size());
+			m_irr_model->addMeshBuffer(
+				SSkinMeshBuffer(std::move(*vertices), std::move(indices)));
 			const auto buffer_id = m_irr_model->getMeshBufferCount() - 1;
 
 			if (!skinIdx.has_value())
@@ -584,7 +583,7 @@ void SelfType::MeshExtractor::loadNode(
 	}
 }
 
-void SelfType::MeshExtractor::loadNodes() const
+void SelfType::MeshExtractor::loadNodes()
 {
 	m_loaded_nodes = std::vector<CSkinnedMesh::SJoint *>(m_gltf_model.nodes->size());
 
@@ -605,7 +604,7 @@ void SelfType::MeshExtractor::loadNodes() const
 	}
 }
 
-void CMFL::MeshExtractor::loadSkins()
+void SelfType::MeshExtractor::loadSkins()
 {
 	if (!m_gltf_model.skins.has_value())
 		return;
@@ -622,7 +621,7 @@ void CMFL::MeshExtractor::loadSkins()
 	}
 }
 
-void CMFL::MeshExtractor::loadAnimation(const std::size_t animIdx)
+void SelfType::MeshExtractor::loadAnimation(const std::size_t animIdx)
 {
 	const auto &anim = m_gltf_model.animations->at(animIdx);
 	for (const auto &channel : anim.channels) {
@@ -672,7 +671,7 @@ void CMFL::MeshExtractor::loadAnimation(const std::size_t animIdx)
 	}
 }
 
-void CMFL::MeshExtractor::load()
+void SelfType::MeshExtractor::load()
 {
 	loadNodes();
 	for (const auto &loadMesh : m_mesh_loaders) {
