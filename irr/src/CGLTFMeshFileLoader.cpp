@@ -495,20 +495,6 @@ std::size_t CGLTFMeshFileLoader::MeshExtractor::getByteStride(
 }
 
 /**
- * Specifies whether integer data values are normalized (true) to [0, 1] (for unsigned types) 
- * or to [-1, 1] (for signed types) when they are accessed. This property MUST NOT be set to
- * true for accessors with FLOAT or UNSIGNED_INT component type.
- * Documentation: https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#_accessor_normalized
- * Required: NO
-*/
-bool CGLTFMeshFileLoader::MeshExtractor::isAccessorNormalized(
-	const std::size_t accessorIdx) const
-{
-	const auto& accessor = m_gltf_model.accessors->at(accessorIdx);
-	return accessor.normalized;
-}
-
-/**
  * Walk through the complex chain of the model to extract the required buffer.
  * Accessor -> BufferView -> Buffer
 */
