@@ -790,7 +790,7 @@ protected:
 
 	// Misc
 	void showOverlayMessage(const char *msg, float dtime, int percent,
-			bool draw_clouds = true);
+			float *indef_pos = nullptr);
 
 	inline bool fogEnabled()
 	{
@@ -966,6 +966,8 @@ private:
 #ifdef __ANDROID__
 	bool m_android_chat_open;
 #endif
+
+	float m_shutdown_progress = 0.0f;
 };
 
 Game::Game() :
@@ -1245,7 +1247,9 @@ void Game::shutdown()
 	if (g_touchscreengui)
 		g_touchscreengui->hide();
 
-	showOverlayMessage(N_("Shutting down..."), 0, 0, false);
+	// only if the shutdown progress bar isn't shown yet
+	if (m_shutdown_progress == 0.0f)
+		showOverlayMessage(N_("Shutting down..."), 0, 0);
 
 	if (clouds)
 		clouds->drop();
@@ -1297,7 +1301,7 @@ void Game::shutdown()
 		m_rendering_engine->run();
 		f32 dtime;
 		fps_control.limit(device, &dtime);
-		showOverlayMessage(N_("Shutting down..."), dtime, 0, false);
+		showOverlayMessage(N_("Shutting down..."), dtime, 0, &m_shutdown_progress);
 	}
 
 	stop_thread->rethrow();
@@ -1429,7 +1433,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 		if (success)
 			showOverlayMessage(N_("Creating server..."), dtime, 5);
 		else
-			showOverlayMessage(N_("Shutting down..."), dtime, 0, false);
+			showOverlayMessage(N_("Shutting down..."), dtime, 0, &m_shutdown_progress);
 	}
 
 	start_thread->rethrow();
@@ -4366,10 +4370,10 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
  Misc
  ****************************************************************************/
 
-void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_sky)
+void Game::showOverlayMessage(const char *msg, float dtime, int percent, float *indef_pos)
 {
 	m_rendering_engine->draw_load_screen(wstrgettext(msg), guienv, texture_src,
-			dtime, percent, draw_sky);
+			dtime, percent, indef_pos);
 }
 
 void Game::settingChangedCallback(const std::string &setting_name, void *data)

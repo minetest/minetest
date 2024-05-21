@@ -455,7 +455,7 @@ public:
 	void PutReliableSendCommand(ConnectionCommandPtr &c,
 							unsigned int max_packet_size) override;
 
-	virtual const Address &getAddress() const {
+	virtual const Address &getAddress() const override {
 		return address;
 	}
 

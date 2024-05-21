@@ -9,7 +9,7 @@ on:
   push:
     branches: [ "master" ]
     # Publish semver tags as releases.
-    tags: [ "*.*.*" ]
+    tags: [ "*" ]
   pull_request:
     # Build docker image on pull requests. (but do not publish)
     paths:
@@ -25,6 +25,12 @@ on:
       - '.dockerignore'
       - '.github/workflows/docker_image.yml'
   workflow_dispatch:
+    inputs:
+      use_cache:
+        description: "Use build cache"
+        required: true
+        type: boolean
+        default: true
 
 env:
   REGISTRY: ghcr.io
@@ -82,6 +88,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          no-cache: ${{ (github.event_name == 'workflow_dispatch' && !inputs.use_cache) || startsWith(github.ref, 'refs/tags/') }}
 
       - name: Test Docker Image
         run: |
