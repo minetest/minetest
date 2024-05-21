@@ -3,7 +3,7 @@
 
 #include "settings.h"
 
-void migrate_settings(void)
+void migrate_settings()
 {
 	// Converts opaque_water to translucent_liquids
 	if (g_settings->existsLocal("opaque_water")) {
