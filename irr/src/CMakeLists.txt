@@ -342,6 +342,8 @@ add_library(IRROBJ OBJECT
 	CMeshCache.cpp
 )
 
+# Make sure IRROBJ gets the transitive include directories for
+# tiniergltf from IRRMESHOBJ.
 target_link_libraries(IRROBJ PRIVATE IRRMESHOBJ)
 
 set(IRRDRVROBJ
