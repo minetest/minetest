@@ -429,9 +429,8 @@ void CGLTFMeshFileLoader::MeshExtractor::loadMesh(
 			indices = generateIndices(vertices->size());
 		}
 
-		auto *meshbuf = m_irr_model->addMeshBuffer();
-		meshbuf->append(vertices->data(), vertices->size(),
-			indices.data(), indices.size());
+		m_irr_model->addMeshBuffer(
+				SSkinMeshBuffer(std::move(*vertices), std::move(indices)));
 	}
 }
 
@@ -686,7 +685,7 @@ std::optional<tiniergltf::GlTF> CGLTFMeshFileLoader::tryParseGLTF(io::IReadFile*
 	}
 	try {
 		return tiniergltf::GlTF(json);
-	}  catch (const std::runtime_error &e) {
+	} catch (const std::runtime_error &e) {
 		return std::nullopt;
 	} catch (const std::out_of_range &e) {
 		return std::nullopt;

@@ -6,6 +6,7 @@
 #include <optional>
 #include "CBoneSceneNode.h"
 #include "IAnimatedMeshSceneNode.h"
+#include "SSkinMeshBuffer.h"
 #include "os.h"
 
 namespace
@@ -1059,6 +1060,11 @@ scene::SSkinMeshBuffer *CSkinnedMesh::addMeshBuffer()
 	scene::SSkinMeshBuffer *buffer = new scene::SSkinMeshBuffer();
 	LocalBuffers.push_back(buffer);
 	return buffer;
+}
+
+void CSkinnedMesh::addMeshBuffer(SSkinMeshBuffer &&meshbuf)
+{
+	LocalBuffers.push_back(new SSkinMeshBuffer(std::move(meshbuf)));
 }
 
 CSkinnedMesh::SJoint *CSkinnedMesh::addJoint(SJoint *parent)
