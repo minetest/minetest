@@ -26,7 +26,7 @@ namespace scene
 class CGLTFMeshFileLoader : public IMeshLoader
 {
 public:
-	CGLTFMeshFileLoader() noexcept;
+	CGLTFMeshFileLoader() noexcept {};
 
 	bool isALoadableFileExtension(const io::path& filename) const override;
 

@@ -10,7 +10,6 @@
 #include "IReadFile.h"
 #include "matrix4.h"
 #include "path.h"
-#include "S3DVertex.h"
 #include "quaternion.h"
 #include "vector3d.h"
 
@@ -53,11 +52,11 @@ core::vector3df convertHandedness(const core::vector3df &p)
 
 namespace scene {
 
-using CMFL = CGLTFMeshFileLoader;
+using SelfType = CGLTFMeshFileLoader;
 
 template <class T>
-CMFL::Accessor<T>
-CMFL::Accessor<T>::sparseIndices(const tiniergltf::GlTF &model,
+SelfType::Accessor<T>
+SelfType::Accessor<T>::sparseIndices(const tiniergltf::GlTF &model,
 		const tiniergltf::AccessorSparseIndices &indices,
 		const std::size_t count)
 {
@@ -67,12 +66,12 @@ CMFL::Accessor<T>::sparseIndices(const tiniergltf::GlTF &model,
 	const auto &buffer = model.buffers->at(view.buffer);
 	const auto source = buffer.data.data() + view.byteOffset + indices.byteOffset;
 
-	return CMFL::Accessor<T>(source, byteStride, count);
+	return SelfType::Accessor<T>(source, byteStride, count);
 }
 
 template <class T>
-CMFL::Accessor<T>
-CMFL::Accessor<T>::sparseValues(const tiniergltf::GlTF &model,
+SelfType::Accessor<T>
+SelfType::Accessor<T>::sparseValues(const tiniergltf::GlTF &model,
 		const tiniergltf::AccessorSparseValues &values,
 		const std::size_t count,
 		const std::size_t defaultByteStride)
@@ -83,12 +82,12 @@ CMFL::Accessor<T>::sparseValues(const tiniergltf::GlTF &model,
 	const auto &buffer = model.buffers->at(view.buffer);
 	const auto source = buffer.data.data() + view.byteOffset + values.byteOffset;
 
-	return CMFL::Accessor<T>(source, byteStride, count);
+	return SelfType::Accessor<T>(source, byteStride, count);
 }
 
 template <class T>
-CMFL::Accessor<T>
-CMFL::Accessor<T>::base(const tiniergltf::GlTF &model, std::size_t accessorIdx)
+SelfType::Accessor<T>
+SelfType::Accessor<T>::base(const tiniergltf::GlTF &model, std::size_t accessorIdx)
 {
 	const auto &accessor = model.accessors->at(accessorIdx);
 
@@ -106,8 +105,8 @@ CMFL::Accessor<T>::base(const tiniergltf::GlTF &model, std::size_t accessorIdx)
 }
 
 template <class T>
-CMFL::Accessor<T>
-CMFL::Accessor<T>::make(const tiniergltf::GlTF &model, std::size_t accessorIdx)
+SelfType::Accessor<T>
+SelfType::Accessor<T>::make(const tiniergltf::GlTF &model, std::size_t accessorIdx)
 {
 	const auto &accessor = model.accessors->at(accessorIdx);
 	if (accessor.componentType != getComponentType() || accessor.type != getType())
@@ -152,37 +151,37 @@ CMFL::Accessor<T>::make(const tiniergltf::GlTF &model, std::size_t accessorIdx)
 	return base;
 }
 
-#define ACCESSOR_TYPES(T, U, V)                                                         \
-	template <>                                                                         \
-	constexpr tiniergltf::Accessor::Type CMFL::Accessor<T>::getType()                   \
-	{                                                                                   \
-		return tiniergltf::Accessor::Type::U;                                           \
-	}                                                                                   \
-	template <>                                                                         \
-	constexpr tiniergltf::Accessor::ComponentType CMFL::Accessor<T>::getComponentType() \
-	{                                                                                   \
-		return tiniergltf::Accessor::ComponentType::V;                                  \
+#define ACCESSOR_TYPES(T, U, V)                                                             \
+	template <>                                                                             \
+	constexpr tiniergltf::Accessor::Type SelfType::Accessor<T>::getType()                   \
+	{                                                                                       \
+		return tiniergltf::Accessor::Type::U;                                               \
+	}                                                                                       \
+	template <>                                                                             \
+	constexpr tiniergltf::Accessor::ComponentType SelfType::Accessor<T>::getComponentType() \
+	{                                                                                       \
+		return tiniergltf::Accessor::ComponentType::V;                                      \
 	}
 
-#define VEC_ACCESSOR_TYPES(T, U, n)                                                                    \
-	template <>                                                                                        \
-	constexpr tiniergltf::Accessor::Type CMFL::Accessor<std::array<T, n>>::getType()                   \
-	{                                                                                                  \
-		return tiniergltf::Accessor::Type::VEC##n;                                                     \
-	}                                                                                                  \
-	template <>                                                                                        \
-	constexpr tiniergltf::Accessor::ComponentType CMFL::Accessor<std::array<T, n>>::getComponentType() \
-	{                                                                                                  \
-		return tiniergltf::Accessor::ComponentType::U;                                                 \
-	}                                                                                                  \
-	template <>                                                                                        \
-	std::array<T, n> CMFL::rawget(const void *ptr)                                                     \
-	{                                                                                                  \
-		const T *tptr = reinterpret_cast<const T *>(ptr);                                              \
-		std::array<T, n> res;                                                                          \
-		for (u8 i = 0; i < n; ++i)                                                                     \
-			res[i] = rawget<T>(tptr + i);                                                              \
-		return res;                                                                                    \
+#define VEC_ACCESSOR_TYPES(T, U, n)                                                                        \
+	template <>                                                                                            \
+	constexpr tiniergltf::Accessor::Type SelfType::Accessor<std::array<T, n>>::getType()                   \
+	{                                                                                                      \
+		return tiniergltf::Accessor::Type::VEC##n;                                                         \
+	}                                                                                                      \
+	template <>                                                                                            \
+	constexpr tiniergltf::Accessor::ComponentType SelfType::Accessor<std::array<T, n>>::getComponentType() \
+	{                                                                                                      \
+		return tiniergltf::Accessor::ComponentType::U;                                                     \
+	}                                                                                                      \
+	template <>                                                                                            \
+	std::array<T, n> SelfType::rawget(const void *ptr)                                                     \
+	{                                                                                                      \
+		const T *tptr = reinterpret_cast<const T *>(ptr);                                                  \
+		std::array<T, n> res;                                                                              \
+		for (u8 i = 0; i < n; ++i)                                                                         \
+			res[i] = rawget<T>(tptr + i);                                                                  \
+		return res;                                                                                        \
 	}
 
 #define ACCESSOR_PRIMITIVE(T, U) \
@@ -199,7 +198,7 @@ ACCESSOR_PRIMITIVE(u32, UNSIGNED_INT)
 ACCESSOR_TYPES(core::vector3df, VEC3, FLOAT)
 
 template <class T>
-T CMFL::Accessor<T>::get(std::size_t i) const
+T SelfType::Accessor<T>::get(std::size_t i) const
 {
 	// Buffer-based accessor: Read directly from the buffer.
 	if (std::holds_alternative<BufferSource>(source)) {
@@ -226,7 +225,7 @@ static inline bool isBigEndian()
 }
 
 template <typename T>
-T CMFL::rawget(const void *ptr)
+T SelfType::rawget(const void *ptr)
 {
 	if (!isBigEndian())
 		return *reinterpret_cast<const T *>(ptr);
@@ -244,7 +243,7 @@ T CMFL::rawget(const void *ptr)
 // Note that these "more specialized templates" should win.
 
 template <>
-core::matrix4 CMFL::rawget(const void *ptr)
+core::matrix4 SelfType::rawget(const void *ptr)
 {
 	const f32 *fptr = reinterpret_cast<const f32 *>(ptr);
 	f32 M[16];
@@ -257,7 +256,7 @@ core::matrix4 CMFL::rawget(const void *ptr)
 }
 
 template <>
-core::vector3df CMFL::rawget(const void *ptr)
+core::vector3df SelfType::rawget(const void *ptr)
 {
 	const f32 *fptr = reinterpret_cast<const f32 *>(ptr);
 	return core::vector3df(
@@ -267,7 +266,7 @@ core::vector3df CMFL::rawget(const void *ptr)
 }
 
 template <>
-core::quaternion CMFL::rawget(const void *ptr)
+core::quaternion SelfType::rawget(const void *ptr)
 {
 	const f32 *fptr = reinterpret_cast<const f32 *>(ptr);
 	return core::quaternion(
@@ -278,8 +277,8 @@ core::quaternion CMFL::rawget(const void *ptr)
 }
 
 template <std::size_t N>
-CMFL::NormalizedValuesAccessor<N>
-CMFL::createNormalizedValuesAccessor(
+SelfType::NormalizedValuesAccessor<N>
+SelfType::createNormalizedValuesAccessor(
 		const tiniergltf::GlTF &model,
 		const std::size_t accessorIdx)
 {
@@ -297,7 +296,7 @@ CMFL::createNormalizedValuesAccessor(
 }
 
 template <std::size_t N>
-std::array<f32, N> CMFL::getNormalizedValues(
+std::array<f32, N> SelfType::getNormalizedValues(
 		const NormalizedValuesAccessor<N> &accessor,
 		const std::size_t i)
 {
@@ -320,14 +319,10 @@ std::array<f32, N> CMFL::getNormalizedValues(
 	return values;
 }
 
-CGLTFMeshFileLoader::CGLTFMeshFileLoader() noexcept
-{
-}
-
 /**
  * The most basic portion of the code base. This tells irllicht if this file has a .gltf extension.
 */
-bool CGLTFMeshFileLoader::isALoadableFileExtension(
+bool SelfType::isALoadableFileExtension(
 		const io::path& filename) const
 {
 	return core::hasFileExtension(filename, "gltf");
@@ -336,7 +331,7 @@ bool CGLTFMeshFileLoader::isALoadableFileExtension(
 /**
  * Entry point into loading a GLTF model.
 */
-IAnimatedMesh* CGLTFMeshFileLoader::createMesh(io::IReadFile* file)
+IAnimatedMesh* SelfType::createMesh(io::IReadFile* file)
 {
 	if (file->getSize() <= 0) {
 		return nullptr;
@@ -403,7 +398,7 @@ static std::vector<u16> generateIndices(const std::size_t nVerts)
  * Documentation: https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#meshes
  * If material is undefined, then a default material MUST be used.
 */
-void CGLTFMeshFileLoader::MeshExtractor::loadMesh(
+void SelfType::MeshExtractor::loadMesh(
 		const std::size_t meshIdx,
 		ISkinnedMesh::SJoint *parent) const
 {
@@ -475,7 +470,7 @@ static core::matrix4 loadTransform(std::optional<std::variant<tiniergltf::Node::
 	return rightToLeft * mat * leftToRight;
 }
 
-void CGLTFMeshFileLoader::MeshExtractor::loadNode(
+void SelfType::MeshExtractor::loadNode(
 		const std::size_t nodeIdx,
 		ISkinnedMesh::SJoint *parent) const
 {
@@ -497,7 +492,7 @@ void CGLTFMeshFileLoader::MeshExtractor::loadNode(
 	}
 }
 
-void CGLTFMeshFileLoader::MeshExtractor::loadNodes() const
+void SelfType::MeshExtractor::loadNodes() const
 {
 	std::vector<bool> isChild(m_gltf_model.nodes->size());
 	for (const auto &node : *m_gltf_model.nodes) {
@@ -519,7 +514,7 @@ void CGLTFMeshFileLoader::MeshExtractor::loadNodes() const
 /**
  * Extracts GLTF mesh indices.
  */
-std::optional<std::vector<u16>> CMFL::MeshExtractor::getIndices(
+std::optional<std::vector<u16>> SelfType::MeshExtractor::getIndices(
 		const std::size_t meshIdx,
 		const std::size_t primitiveIdx) const
 {
@@ -573,7 +568,7 @@ std::optional<std::vector<u16>> CMFL::MeshExtractor::getIndices(
 /**
  * Create a vector of video::S3DVertex (model data) from a mesh & primitive index.
  */
-std::optional<std::vector<video::S3DVertex>> CMFL::MeshExtractor::getVertices(
+std::optional<std::vector<video::S3DVertex>> SelfType::MeshExtractor::getVertices(
 		const std::size_t meshIdx,
 		const std::size_t primitiveIdx) const
 {
@@ -607,7 +602,7 @@ std::optional<std::vector<video::S3DVertex>> CMFL::MeshExtractor::getVertices(
 /**
  * Get the amount of meshes that a model contains.
 */
-std::size_t CGLTFMeshFileLoader::MeshExtractor::getMeshCount() const
+std::size_t SelfType::MeshExtractor::getMeshCount() const
 {
 	return m_gltf_model.meshes->size();
 }
@@ -615,7 +610,7 @@ std::size_t CGLTFMeshFileLoader::MeshExtractor::getMeshCount() const
 /**
  * Get the amount of primitives that a mesh in a model contains.
 */
-std::size_t CGLTFMeshFileLoader::MeshExtractor::getPrimitiveCount(
+std::size_t SelfType::MeshExtractor::getPrimitiveCount(
 		const std::size_t meshIdx) const
 {
 	return m_gltf_model.meshes->at(meshIdx).primitives.size();
@@ -625,7 +620,7 @@ std::size_t CGLTFMeshFileLoader::MeshExtractor::getPrimitiveCount(
  * Streams vertex positions raw data into usable buffer via reference.
  * Buffer: ref Vector<video::S3DVertex>
 */
-void CGLTFMeshFileLoader::MeshExtractor::copyPositions(
+void SelfType::MeshExtractor::copyPositions(
 		const std::size_t accessorIdx,
 		std::vector<video::S3DVertex>& vertices) const
 {
@@ -639,7 +634,7 @@ void CGLTFMeshFileLoader::MeshExtractor::copyPositions(
  * Streams normals raw data into usable buffer via reference.
  * Buffer: ref Vector<video::S3DVertex>
 */
-void CGLTFMeshFileLoader::MeshExtractor::copyNormals(
+void SelfType::MeshExtractor::copyNormals(
 		const std::size_t accessorIdx,
 		std::vector<video::S3DVertex>& vertices) const
 {
@@ -653,7 +648,7 @@ void CGLTFMeshFileLoader::MeshExtractor::copyNormals(
  * Streams texture coordinate raw data into usable buffer via reference.
  * Buffer: ref Vector<video::S3DVertex>
 */
-void CGLTFMeshFileLoader::MeshExtractor::copyTCoords(
+void SelfType::MeshExtractor::copyTCoords(
 		const std::size_t accessorIdx,
 		std::vector<video::S3DVertex>& vertices) const
 {
@@ -668,7 +663,7 @@ void CGLTFMeshFileLoader::MeshExtractor::copyTCoords(
 /**
  * This is where the actual model's GLTF file is loaded and parsed by tiniergltf.
 */
-std::optional<tiniergltf::GlTF> CGLTFMeshFileLoader::tryParseGLTF(io::IReadFile* file)
+std::optional<tiniergltf::GlTF> SelfType::tryParseGLTF(io::IReadFile* file)
 {
 	auto size = file->getSize();
 	auto buf = std::make_unique<char[]>(size + 1);
