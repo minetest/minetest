@@ -4625,11 +4625,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			if (!m_left_dragging)
 				break;
 
-			// Abort left-dragging
-			m_left_dragging = false;
-			m_client->inhibit_inventory_revert = false;
-			m_left_drag_stacks.clear();
-
 			// Both the selected item and the hovered item need to be checked
 			// because we don't know exactly when the double-click happened
 			ItemStack slct;
@@ -4658,6 +4653,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						}
 
 						if (amount > 0) {
+							if (m_left_dragging) {
+								// Abort left-dragging
+								m_left_dragging = false;
+								m_client->inhibit_inventory_revert = false;
+								m_left_drag_stacks.clear();
+							}
 							IMoveAction *a = new IMoveAction();
 							a->count = amount;
 							a->from_inv = s.inventoryloc;
