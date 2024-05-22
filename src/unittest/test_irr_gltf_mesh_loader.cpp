@@ -14,6 +14,7 @@
 // declarations.
 #include <catch.hpp>
 
+#include <cstring>
 #include <iostream>
 
 #define XSTR(s) STR(s)
@@ -75,8 +76,9 @@ TEST_CASE("minimal triangle") {
 
 	SECTION("vertex coordinates are correct") {
 		REQUIRE(sm.getMesh()->getMeshBuffer(0)->getVertexCount() == 3);
-		const auto* vertices = reinterpret_cast<irr::video::S3DVertex*>(
-			sm.getMesh()->getMeshBuffer(0)->getVertices());
+		irr::video::S3DVertex vertices[3];
+		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(0)->getVertices(),
+			3 * sizeof(irr::video::S3DVertex));
 		CHECK(vertices[0].Pos == irr::core::vector3df {0.0f, 0.0f, 0.0f});
 		CHECK(vertices[1].Pos == irr::core::vector3df {1.0f, 0.0f, 0.0f});
 		CHECK(vertices[2].Pos == irr::core::vector3df {0.0f, 1.0f, 0.0f});
@@ -84,8 +86,9 @@ TEST_CASE("minimal triangle") {
 
 	SECTION("vertex indices are correct") {
 		REQUIRE(sm.getMesh()->getMeshBuffer(0)->getIndexCount() == 3);
-		const auto* indices = reinterpret_cast<irr::u16*>(
-			sm.getMesh()->getMeshBuffer(0)->getIndices());
+		irr::u16 indices[3];
+		std::memcpy(indices, sm.getMesh()->getMeshBuffer(0)->getIndices(),
+			3 * sizeof(irr::u16));
 		CHECK(indices[0] == 2);
 		CHECK(indices[1] == 1);
 		CHECK(indices[2] == 0);
@@ -98,8 +101,9 @@ TEST_CASE("blender cube") {
 	REQUIRE(sm.getMesh()->getMeshBufferCount() == 1);
 	SECTION("vertex coordinates are correct") {
 		REQUIRE(sm.getMesh()->getMeshBuffer(0)->getVertexCount() == 24);
-		const auto* vertices = reinterpret_cast<irr::video::S3DVertex*>(
-			sm.getMesh()->getMeshBuffer(0)->getVertices());
+		irr::video::S3DVertex vertices[24];
+		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(0)->getVertices(),
+			24 * sizeof(irr::video::S3DVertex));
 		CHECK(vertices[0].Pos == irr::core::vector3df{-10.0f, -10.0f, -10.0f});
 		CHECK(vertices[3].Pos == irr::core::vector3df{-10.0f, 10.0f, -10.0f});
 		CHECK(vertices[6].Pos == irr::core::vector3df{-10.0f, -10.0f, 10.0f});
@@ -112,8 +116,9 @@ TEST_CASE("blender cube") {
 
 	SECTION("vertex indices are correct") {
 		REQUIRE(sm.getMesh()->getMeshBuffer(0)->getIndexCount() == 36);
-		const auto* indices = reinterpret_cast<irr::u16*>(
-			sm.getMesh()->getMeshBuffer(0)->getIndices());
+		irr::u16 indices[36];
+		std::memcpy(indices, sm.getMesh()->getMeshBuffer(0)->getIndices(),
+			36 * sizeof(irr::u16));
 		CHECK(indices[0] == 16);
 		CHECK(indices[1] == 5);
 		CHECK(indices[2] == 22);
@@ -122,8 +127,9 @@ TEST_CASE("blender cube") {
 
 	SECTION("vertex normals are correct") {
 		REQUIRE(sm.getMesh()->getMeshBuffer(0)->getVertexCount() == 24);
-		const auto* vertices = reinterpret_cast<irr::video::S3DVertex*>(
-			sm.getMesh()->getMeshBuffer(0)->getVertices());
+		irr::video::S3DVertex vertices[24];
+		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(0)->getVertices(),
+			24 * sizeof(irr::video::S3DVertex));
 		CHECK(vertices[0].Normal == irr::core::vector3df{-1.0f, 0.0f, 0.0f});
 		CHECK(vertices[1].Normal == irr::core::vector3df{0.0f, -1.0f, 0.0f});
 		CHECK(vertices[2].Normal == irr::core::vector3df{0.0f, 0.0f, -1.0f});
@@ -135,8 +141,9 @@ TEST_CASE("blender cube") {
 
 	SECTION("texture coords are correct") {
 		REQUIRE(sm.getMesh()->getMeshBuffer(0)->getVertexCount() == 24);
-		const auto* vertices = reinterpret_cast<irr::video::S3DVertex*>(
-			sm.getMesh()->getMeshBuffer(0)->getVertices());
+		irr::video::S3DVertex vertices[24];
+		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(0)->getVertices(),
+			24 * sizeof(irr::video::S3DVertex));
 		CHECK(vertices[0].TCoords == irr::core::vector2df{0.375f, 1.0f});
 		CHECK(vertices[1].TCoords == irr::core::vector2df{0.125f, 0.25f});
 		CHECK(vertices[2].TCoords == irr::core::vector2df{0.375f, 0.0f});
@@ -162,8 +169,9 @@ TEST_CASE("blender cube scaled") {
 	
 	SECTION("Scaling is correct") {
 		REQUIRE(sm.getMesh()->getMeshBuffer(0)->getVertexCount() == 24);
-		const auto* vertices = reinterpret_cast<irr::video::S3DVertex*>(
-			sm.getMesh()->getMeshBuffer(0)->getVertices());
+		irr::video::S3DVertex vertices[24];
+		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(0)->getVertices(),
+			24 * sizeof(irr::video::S3DVertex));
 
 		CHECK(vertices[0].Pos == irr::core::vector3df{-150.0f, -1.0f, -21.5f});
 		CHECK(vertices[3].Pos == irr::core::vector3df{-150.0f, 1.0f, -21.5f});
@@ -183,8 +191,9 @@ TEST_CASE("blender cube matrix transform") {
 	
 	SECTION("Transformation is correct") {
 		REQUIRE(sm.getMesh()->getMeshBuffer(0)->getVertexCount() == 24);
-		const auto* vertices = reinterpret_cast<irr::video::S3DVertex*>(
-			sm.getMesh()->getMeshBuffer(0)->getVertices());
+		irr::video::S3DVertex vertices[24];
+		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(0)->getVertices(),
+			24 * sizeof(irr::video::S3DVertex));
 		const auto checkVertex = [&](const std::size_t i, irr::core::vector3df vec) {
 			// The transform scales by (1, 2, 3) and translates by (4, 5, 6).
 			CHECK(vertices[i].Pos == vec * irr::core::vector3df{1, 2, 3}
@@ -209,8 +218,9 @@ TEST_CASE("snow man") {
 
 	SECTION("vertex coordinates are correct for all buffers") {
 		REQUIRE(sm.getMesh()->getMeshBuffer(0)->getVertexCount() == 24);
-		const auto* vertices = reinterpret_cast<irr::video::S3DVertex*>(
-			sm.getMesh()->getMeshBuffer(0)->getVertices());
+		irr::video::S3DVertex vertices[24];
+		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(0)->getVertices(),
+			24 * sizeof(irr::video::S3DVertex));
 		
 		CHECK(vertices[0].Pos == irr::core::vector3df{3.0f, 24.0f, -3.0f});
 		CHECK(vertices[3].Pos == irr::core::vector3df{3.0f, 18.0f, 3.0f});
@@ -221,8 +231,9 @@ TEST_CASE("snow man") {
 		CHECK(vertices[18].Pos == irr::core::vector3df{3.0f, 18.0f, -3.0f});
 		CHECK(vertices[21].Pos == irr::core::vector3df{3.0f, 18.0f, 3.0f});
 		
-		vertices = reinterpret_cast<irr::video::S3DVertex*>(
-			sm.getMesh()->getMeshBuffer(1)->getVertices());
+		REQUIRE(sm.getMesh()->getMeshBuffer(1)->getVertexCount() == 24);
+		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(1)->getVertices(),
+			24 * sizeof(irr::video::S3DVertex));
 		
 		CHECK(vertices[2].Pos == irr::core::vector3df{5.0f, 10.0f, 5.0f});
 		CHECK(vertices[3].Pos == irr::core::vector3df{5.0f, 0.0f, 5.0f});
@@ -233,8 +244,9 @@ TEST_CASE("snow man") {
 		CHECK(vertices[22].Pos == irr::core::vector3df{-5.0f, 10.0f, 5.0f});
 		CHECK(vertices[23].Pos == irr::core::vector3df{-5.0f, 0.0f, 5.0f});
 
-		vertices = reinterpret_cast<irr::video::S3DVertex*>(
-			sm.getMesh()->getMeshBuffer(2)->getVertices());
+		REQUIRE(sm.getMesh()->getMeshBuffer(2)->getVertexCount() == 24);
+		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(2)->getVertices(),
+			24 * sizeof(irr::video::S3DVertex));
 		
 		CHECK(vertices[1].Pos == irr::core::vector3df{4.0f, 10.0f, -4.0f});
 		CHECK(vertices[2].Pos == irr::core::vector3df{4.0f, 18.0f, 4.0f});
@@ -248,24 +260,25 @@ TEST_CASE("snow man") {
 
 	SECTION("vertex indices are correct for all buffers") {
 		REQUIRE(sm.getMesh()->getMeshBuffer(0)->getIndexCount() == 36);
-		const auto* indices = reinterpret_cast<irr::u16*>(
-			sm.getMesh()->getMeshBuffer(0)->getIndices());
+		irr::u16 indices[36];
+		std::memcpy(indices, sm.getMesh()->getMeshBuffer(0)->getIndices(),
+			36 * sizeof(irr::u16));
 		CHECK(indices[0] == 23);
 		CHECK(indices[1] == 21);
 		CHECK(indices[2] == 22);
 		CHECK(indices[35] == 2);
 
 		REQUIRE(sm.getMesh()->getMeshBuffer(1)->getIndexCount() == 36);
-		indices = reinterpret_cast<irr::u16*>(
-			sm.getMesh()->getMeshBuffer(1)->getIndices());
+		std::memcpy(indices, sm.getMesh()->getMeshBuffer(1)->getIndices(),
+			36 * sizeof(irr::u16));
 		CHECK(indices[10] == 16);
 		CHECK(indices[11] == 18);
 		CHECK(indices[15] == 13);
 		CHECK(indices[27] == 5);
 
-		REQUIRE(sm.getMesh()->getMeshBuffer(1)->getIndexCount() == 36);
-		indices = reinterpret_cast<irr::u16*>(
-			sm.getMesh()->getMeshBuffer(2)->getIndices());
+		REQUIRE(sm.getMesh()->getMeshBuffer(2)->getIndexCount() == 36);
+		std::memcpy(indices, sm.getMesh()->getMeshBuffer(2)->getIndices(),
+			36 * sizeof(irr::u16));
 		CHECK(indices[26] == 6);
 		CHECK(indices[27] == 5);
 		CHECK(indices[29] == 6);
@@ -275,8 +288,9 @@ TEST_CASE("snow man") {
 	
 	SECTION("vertex normals are correct for all buffers") {
 		REQUIRE(sm.getMesh()->getMeshBuffer(0)->getVertexCount() == 24);
-		const auto* vertices = reinterpret_cast<irr::video::S3DVertex*>(
-			sm.getMesh()->getMeshBuffer(0)->getVertices());
+		irr::video::S3DVertex vertices[24];
+		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(0)->getVertices(),
+			24 * sizeof(irr::video::S3DVertex));
 		CHECK(vertices[0].Normal == irr::core::vector3df{1.0f, 0.0f, -0.0f});
 		CHECK(vertices[1].Normal == irr::core::vector3df{1.0f, 0.0f, -0.0f});
 		CHECK(vertices[2].Normal == irr::core::vector3df{1.0f, 0.0f, -0.0f});
@@ -284,8 +298,9 @@ TEST_CASE("snow man") {
 		CHECK(vertices[6].Normal == irr::core::vector3df{-1.0f, 0.0f, -0.0f});
 		CHECK(vertices[23].Normal == irr::core::vector3df{0.0f, 0.0f, 1.0f});
 
-		vertices = reinterpret_cast<irr::video::S3DVertex*>(
-			sm.getMesh()->getMeshBuffer(1)->getVertices());
+		REQUIRE(sm.getMesh()->getMeshBuffer(1)->getVertexCount() == 24);
+		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(1)->getVertices(),
+			24 * sizeof(irr::video::S3DVertex));
 		
 		CHECK(vertices[0].Normal == irr::core::vector3df{1.0f, 0.0f, -0.0f});
 		CHECK(vertices[1].Normal == irr::core::vector3df{1.0f, 0.0f, -0.0f});
@@ -295,8 +310,9 @@ TEST_CASE("snow man") {
 		CHECK(vertices[22].Normal == irr::core::vector3df{0.0f, 0.0f, 1.0f});
 
 
-		vertices = reinterpret_cast<irr::video::S3DVertex*>(
-			sm.getMesh()->getMeshBuffer(2)->getVertices());
+		REQUIRE(sm.getMesh()->getMeshBuffer(2)->getVertexCount() == 24);
+		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(2)->getVertices(),
+			24 * sizeof(irr::video::S3DVertex));
 
 		CHECK(vertices[3].Normal == irr::core::vector3df{1.0f, 0.0f, -0.0f});
 		CHECK(vertices[4].Normal == irr::core::vector3df{-1.0f, 0.0f, -0.0f});
@@ -310,8 +326,9 @@ TEST_CASE("snow man") {
 	
 	SECTION("texture coords are correct for all buffers") {
 		REQUIRE(sm.getMesh()->getMeshBuffer(0)->getVertexCount() == 24);
-		const auto* vertices = reinterpret_cast<irr::video::S3DVertex*>(
-			sm.getMesh()->getMeshBuffer(0)->getVertices());
+		irr::video::S3DVertex vertices[24];
+		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(0)->getVertices(),
+			24 * sizeof(irr::video::S3DVertex));
 
 		CHECK(vertices[0].TCoords == irr::core::vector2df{0.583333, 0.791667});
 		CHECK(vertices[1].TCoords == irr::core::vector2df{0.583333, 0.666667});
@@ -320,8 +337,9 @@ TEST_CASE("snow man") {
 		CHECK(vertices[6].TCoords == irr::core::vector2df{0.5, 0.291667});
 		CHECK(vertices[19].TCoords == irr::core::vector2df{0.708333, 0.75});
 
-		vertices = reinterpret_cast<irr::video::S3DVertex*>(
-			sm.getMesh()->getMeshBuffer(1)->getVertices());
+		REQUIRE(sm.getMesh()->getMeshBuffer(1)->getVertexCount() == 24);
+		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(1)->getVertices(),
+			24 * sizeof(irr::video::S3DVertex));
 
 		CHECK(vertices[1].TCoords == irr::core::vector2df{0, 0.791667});
 		CHECK(vertices[4].TCoords == irr::core::vector2df{0.208333, 0.791667});
@@ -330,8 +348,9 @@ TEST_CASE("snow man") {
 		CHECK(vertices[12].TCoords == irr::core::vector2df{0.416667, 0.791667});
 		CHECK(vertices[15].TCoords == irr::core::vector2df{0.208333, 0.583333});
 
-		vertices = reinterpret_cast<irr::video::S3DVertex*>(
-			sm.getMesh()->getMeshBuffer(2)->getVertices());
+		REQUIRE(sm.getMesh()->getMeshBuffer(2)->getVertexCount() == 24);
+		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(2)->getVertices(),
+			24 * sizeof(irr::video::S3DVertex));
 
 		CHECK(vertices[10].TCoords == irr::core::vector2df{0.375, 0.416667});
 		CHECK(vertices[11].TCoords == irr::core::vector2df{0.375, 0.583333});
