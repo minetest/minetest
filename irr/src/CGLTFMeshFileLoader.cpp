@@ -218,16 +218,19 @@ T SelfType::Accessor<T>::get(std::size_t i) const
 }
 
 // Note: clang and gcc should both optimize this out.
-static inline bool isBigEndian()
+static inline bool is_big_endian()
 {
-	const u16 x = 0xFF00;
-	return *(const u8 *)(&x);
+#ifdef __BIG_ENDIAN__
+	return true;
+#else
+	return false;
+#endif
 }
 
 template <typename T>
 T SelfType::rawget(const void *ptr)
 {
-	if (!isBigEndian())
+	if (!is_big_endian())
 		return *reinterpret_cast<const T *>(ptr);
 	// glTF uses little endian.
 	// On big-endian systems, we have to swap the byte order.
