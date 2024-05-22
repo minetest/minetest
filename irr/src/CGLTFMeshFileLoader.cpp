@@ -12,6 +12,7 @@
 #include "path.h"
 #include "quaternion.h"
 #include "vector3d.h"
+#include "os.h"
 
 #include "tiniergltf.hpp"
 
@@ -163,24 +164,23 @@ SelfType::Accessor<T>::make(const tiniergltf::GlTF &model, std::size_t accessorI
 		return tiniergltf::Accessor::ComponentType::V;                                      \
 	}
 
-#define VEC_ACCESSOR_TYPES(T, U, n)                                                                        \
+#define VEC_ACCESSOR_TYPES(T, U, N)                                                                        \
 	template <>                                                                                            \
-	constexpr tiniergltf::Accessor::Type SelfType::Accessor<std::array<T, n>>::getType()                   \
+	constexpr tiniergltf::Accessor::Type SelfType::Accessor<std::array<T, N>>::getType()                   \
 	{                                                                                                      \
-		return tiniergltf::Accessor::Type::VEC##n;                                                         \
+		return tiniergltf::Accessor::Type::VEC##N;                                                         \
 	}                                                                                                      \
 	template <>                                                                                            \
-	constexpr tiniergltf::Accessor::ComponentType SelfType::Accessor<std::array<T, n>>::getComponentType() \
+	constexpr tiniergltf::Accessor::ComponentType SelfType::Accessor<std::array<T, N>>::getComponentType() \
 	{                                                                                                      \
 		return tiniergltf::Accessor::ComponentType::U;                                                     \
 	}                                                                                                      \
 	template <>                                                                                            \
-	std::array<T, n> SelfType::rawget(const void *ptr)                                                     \
+	std::array<T, N> SelfType::rawget(const u8 *ptr)                                                       \
 	{                                                                                                      \
-		const T *tptr = reinterpret_cast<const T *>(ptr);                                                  \
-		std::array<T, n> res;                                                                              \
-		for (u8 i = 0; i < n; ++i)                                                                         \
-			res[i] = rawget<T>(tptr + i);                                                                  \
+		std::array<T, N> res;                                                                              \
+		for (u8 i = 0; i < N; ++i)                                                                         \
+			res[i] = rawget<T>(ptr + sizeof(T) * i);                                                       \
 		return res;                                                                                        \
 	}
 
@@ -217,66 +217,47 @@ T SelfType::Accessor<T>::get(std::size_t i) const
 	return T();
 }
 
-// Note: clang and gcc should both optimize this out.
-static inline bool is_big_endian()
-{
-#ifdef __BIG_ENDIAN__
-	return true;
-#else
-	return false;
-#endif
-}
-
 template <typename T>
-T SelfType::rawget(const void *ptr)
+T SelfType::rawget(const u8 *ptr)
 {
-	if (!is_big_endian())
-		return *reinterpret_cast<const T *>(ptr);
-	// glTF uses little endian.
-	// On big-endian systems, we have to swap the byte order.
-	// TODO test this on a big endian system
-	const u8 *bptr = reinterpret_cast<const u8 *>(ptr);
-	u8 bytes[sizeof(T)];
-	for (std::size_t i = 0; i < sizeof(T); ++i) {
-		bytes[sizeof(T) - i - 1] = bptr[i];
-	}
-	return *reinterpret_cast<const T *>(bytes);
+	T dest;
+	std::memcpy(&dest, ptr, sizeof(dest));
+#ifdef __BIG_ENDIAN__
+	return os::Byteswap::byteswap(dest);
+#else
+	return dest;
+#endif
 }
 
 // Note that these "more specialized templates" should win.
 
 template <>
-core::matrix4 SelfType::rawget(const void *ptr)
+core::matrix4 SelfType::rawget(const u8 *ptr)
 {
-	const f32 *fptr = reinterpret_cast<const f32 *>(ptr);
-	f32 M[16];
-	for (u8 i = 0; i < 16; ++i) {
-		M[i] = rawget<f32>(fptr + i);
-	}
 	core::matrix4 mat;
-	mat.setM(M);
+	for (u8 i = 0; i < 16; ++i) {
+		mat[i] = rawget<f32>(ptr + i * sizeof(f32));
+	}
 	return mat;
 }
 
 template <>
-core::vector3df SelfType::rawget(const void *ptr)
+core::vector3df SelfType::rawget(const u8 *ptr)
 {
-	const f32 *fptr = reinterpret_cast<const f32 *>(ptr);
 	return core::vector3df(
-			rawget<f32>(fptr),
-			rawget<f32>(fptr + 1),
-			rawget<f32>(fptr + 2));
+			rawget<f32>(ptr),
+			rawget<f32>(ptr + sizeof(f32)),
+			rawget<f32>(ptr + 2 * sizeof(f32)));
 }
 
 template <>
-core::quaternion SelfType::rawget(const void *ptr)
+core::quaternion SelfType::rawget(const u8 *ptr)
 {
-	const f32 *fptr = reinterpret_cast<const f32 *>(ptr);
 	return core::quaternion(
-			rawget<f32>(fptr),
-			rawget<f32>(fptr + 1),
-			rawget<f32>(fptr + 2),
-			rawget<f32>(fptr + 3));
+			rawget<f32>(ptr),
+			rawget<f32>(ptr + sizeof(f32)),
+			rawget<f32>(ptr + 2 * sizeof(f32)),
+			rawget<f32>(ptr + 3 * sizeof(f32)));
 }
 
 template <std::size_t N>
