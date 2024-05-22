@@ -17,6 +17,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#define CATCH_CONFIG_RUNNER
+// we want to have catch write to rawstream (stderr) instead of stdout
+#define CATCH_CONFIG_NOSTDOUT
+#include <catch.hpp>
+
 #include "test.h"
 
 #include "nodedef.h"
@@ -26,6 +31,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "porting.h"
 #include "debug.h"
+
+#include <iostream>
+
+// make catch write everything to rawstream
+namespace Catch {
+    std::ostream& cout() {
+        return rawstream;
+    }
+    std::ostream& clog() {
+        return rawstream;
+    }
+    std::ostream& cerr() {
+        return rawstream;
+    }
+}
 
 content_t t_CONTENT_STONE;
 content_t t_CONTENT_GRASS;
@@ -234,6 +254,16 @@ bool run_tests()
 		num_total_tests_run += testmod->num_tests_run;
 	}
 
+	rawstream << "Catch test results: " << std::endl;
+	auto num_catch_tests_failed = Catch::Session().run();
+	// We count the all the Catch tests as one test for Minetest's own logging
+	// because we don't have a way to tell how many individual tests Catch ran.
+	++num_total_tests_run;
+	if (num_catch_tests_failed > 0) {
+		++num_modules_failed;
+		++num_total_tests_failed;
+	}
+
 	u64 tdiff = porting::getTimeMs() - t1;
 
 	g_logger.setLevelSilenced(LL_ERROR, false);
@@ -269,8 +299,11 @@ bool run_tests(const std::string &module_name)
 
 	auto testmod = findTestModule(module_name);
 	if (!testmod) {
-		errorstream << "Test module not found: " << module_name << std::endl;
-		return 1;
+		rawstream << "Did not find module, searching Catch tests: " << module_name << std::endl;
+		Catch::Session session;
+		session.configData().testsOrTags.push_back(module_name);
+		auto catch_test_failures = session.run();
+		return catch_test_failures == 0;
 	}
 
 	g_logger.setLevelSilenced(LL_ERROR, true);

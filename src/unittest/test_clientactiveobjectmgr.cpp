@@ -17,11 +17,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "client/activeobjectmgr.h"
-#include <algorithm>
 #include "test.h"
 
-#include "profiler.h"
+#include "client/activeobjectmgr.h"
+
+#include <catch.hpp>
+
+#include <unordered_set>
+#include <utility>
 
 class TestClientActiveObject : public ClientActiveObject
 {
@@ -58,9 +61,6 @@ public:
 
 	void runTests(IGameDef *gamedef);
 
-	void testFreeID();
-	void testRegisterObject();
-	void testRemoveObject();
 	void testGetActiveSelectableObjects();
 };
 
@@ -68,75 +68,74 @@ static TestClientActiveObjectMgr g_test_instance;
 
 void TestClientActiveObjectMgr::runTests(IGameDef *gamedef)
 {
-	TEST(testFreeID);
-	TEST(testRegisterObject)
-	TEST(testRemoveObject)
 	TEST(testGetActiveSelectableObjects)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void TestClientActiveObjectMgr::testFreeID()
+static TestClientActiveObject* register_default_test_object(
+		client::ActiveObjectMgr &caomgr) {
+	auto test_obj = std::make_unique<TestClientActiveObject>();
+	auto result = test_obj.get();
+	REQUIRE(caomgr.registerObject(std::move(test_obj)));
+	return result;
+}
+
+TEST_CASE("test client active object manager")
 {
 	client::ActiveObjectMgr caomgr;
-	std::vector<u16> aoids;
+	auto tcao1 = register_default_test_object(caomgr);
 
-	u16 aoid = caomgr.getFreeId();
-	// Ensure it's not the same id
-	UASSERT(caomgr.getFreeId() != aoid);
-
-	aoids.push_back(aoid);
-
-	// Register basic objects, ensure we never found
-	for (u8 i = 0; i < UINT8_MAX; i++) {
-		// Register an object
-		auto tcao_u = std::make_unique<TestClientActiveObject>();
-		auto tcao = tcao_u.get();
-		caomgr.registerObject(std::move(tcao_u));
-		aoids.push_back(tcao->getId());
-
-		// Ensure next id is not in registered list
-		UASSERT(std::find(aoids.begin(), aoids.end(), caomgr.getFreeId()) ==
-				aoids.end());
+	SECTION("When we register many client objects, "
+			"then all the assigned IDs should be unique.")
+	{
+		// This should be enough rounds to be pretty confident
+		// there are no duplicates.
+		u16 n = 255;
+		std::unordered_set<u16> ids;
+		ids.insert(tcao1->getId());
+		for (u16 i = 0; i < n; ++i) {
+			auto other_tcao = register_default_test_object(caomgr);
+			ids.insert(other_tcao->getId());
+		}
+		// n added objects & tcao1
+		CHECK(n + 1 == static_cast<u16>(ids.size()));
 	}
 
-	caomgr.clear();
-}
+	SECTION("two registered objects")
+	{
+		auto tcao2 = register_default_test_object(caomgr);
+		auto tcao2_id = tcao2->getId();
 
-void TestClientActiveObjectMgr::testRegisterObject()
-{
-	client::ActiveObjectMgr caomgr;
-	auto tcao_u = std::make_unique<TestClientActiveObject>();
-	auto tcao = tcao_u.get();
-	UASSERT(caomgr.registerObject(std::move(tcao_u)));
+		auto obj1 = caomgr.getActiveObject(tcao1->getId());
+		REQUIRE(obj1 != nullptr);
 
-	u16 id = tcao->getId();
+		auto obj2 = caomgr.getActiveObject(tcao2_id);
+		REQUIRE(obj2 != nullptr);
 
-	auto tcaoToCompare = caomgr.getActiveObject(id);
-	UASSERT(tcaoToCompare->getId() == id);
-	UASSERT(tcaoToCompare == tcao);
+		SECTION("When we query an object by its ID, "
+				"then we should get back an object with that ID.")
+		{
+			CHECK(obj1->getId() == tcao1->getId());
+			CHECK(obj2->getId() == tcao2->getId());
+		}
 
-	tcao_u = std::make_unique<TestClientActiveObject>();
-	tcao = tcao_u.get();
-	UASSERT(caomgr.registerObject(std::move(tcao_u)));
-	UASSERT(caomgr.getActiveObject(tcao->getId()) == tcao);
-	UASSERT(caomgr.getActiveObject(tcao->getId()) != tcaoToCompare);
+		SECTION("When we register and query for an object, "
+				"its memory location should not have changed.")
+		{
+			CHECK(obj1 == tcao1);
+			CHECK(obj2 == tcao2);
+		}
+	}
 
-	caomgr.clear();
-}
-
-void TestClientActiveObjectMgr::testRemoveObject()
-{
-	client::ActiveObjectMgr caomgr;
-	auto tcao_u = std::make_unique<TestClientActiveObject>();
-	auto tcao = tcao_u.get();
-	UASSERT(caomgr.registerObject(std::move(tcao_u)));
-
-	u16 id = tcao->getId();
-	UASSERT(caomgr.getActiveObject(id) != nullptr)
-
-	caomgr.removeObject(tcao->getId());
-	UASSERT(caomgr.getActiveObject(id) == nullptr)
+	SECTION("Given an object has been removed, "
+			"when we query for it, "
+			"then we should get nullptr.")
+	{
+		auto id = tcao1->getId();
+		caomgr.removeObject(tcao1->getId()); // may invalidate tcao1
+		CHECK(caomgr.getActiveObject(id) == nullptr);
+	}
 
 	caomgr.clear();
 }
