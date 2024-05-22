@@ -49,7 +49,9 @@ set (UNITTEST_CLIENT_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_content_mapblock.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_eventmanager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_gameui.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_irr_gltf_mesh_loader.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_mesh_compare.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_keycode.cpp
 	PARENT_SCOPE)
 
+set (UNITTEST_ASSETS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/assets" PARENT_SCOPE)

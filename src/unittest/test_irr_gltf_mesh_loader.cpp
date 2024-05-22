@@ -1,6 +1,10 @@
 // Minetest
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
+#ifndef UNITTEST_ASSETS_DIRECTORY
+#error "The required definition for UNITTEST_ASSETS_DIRECTORY is missing."
+#endif
+
 #include "CReadFile.h"
 #include "vector3d.h"
 
@@ -8,10 +12,12 @@
 
 // Catch needs to be included after Irrlicht so that it sees operator<<
 // declarations.
-#define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 
 #include <iostream>
+
+#define XSTR(s) STR(s)
+#define STR(s) #s
 
 using namespace std;
 
@@ -52,16 +58,16 @@ private:
 };
 
 TEST_CASE("load empty gltf file") {
-	ScopedMesh sm("source/Irrlicht/tests/assets/empty.gltf");
+	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "/empty.gltf");
 	CHECK(sm.getMesh() == nullptr);
 }
 
 TEST_CASE("minimal triangle") {
 	auto path = GENERATE(
-			"source/Irrlicht/tests/assets/minimal_triangle.gltf",
-			"source/Irrlicht/tests/assets/triangle_with_vertex_stride.gltf",
+			XSTR(UNITTEST_ASSETS_DIRECTORY) "/minimal_triangle.gltf",
+			XSTR(UNITTEST_ASSETS_DIRECTORY) "/triangle_with_vertex_stride.gltf",
 			// Test non-indexed geometry.
-			"source/Irrlicht/tests/assets/triangle_without_indices.gltf");
+			XSTR(UNITTEST_ASSETS_DIRECTORY) "/triangle_without_indices.gltf");
 	INFO(path);
 	ScopedMesh sm(path);
 	REQUIRE(sm.getMesh() != nullptr);
@@ -87,7 +93,7 @@ TEST_CASE("minimal triangle") {
 }
 
 TEST_CASE("blender cube") {
-	ScopedMesh sm("source/Irrlicht/tests/assets/blender_cube.gltf");
+	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "/blender_cube.gltf");
 	REQUIRE(sm.getMesh() != nullptr);
 	REQUIRE(sm.getMesh()->getMeshBufferCount() == 1);
 	SECTION("vertex coordinates are correct") {
@@ -145,12 +151,12 @@ TEST_CASE("mesh loader returns nullptr when given null file pointer") {
 }
 
 TEST_CASE("invalid JSON returns nullptr") {
-	ScopedMesh sm("source/Irrlicht/tests/assets/json_missing_brace.gltf");
+	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "json_missing_brace.gltf");
 	CHECK(sm.getMesh() == nullptr);
 }
 
 TEST_CASE("blender cube scaled") {
-	ScopedMesh sm("source/Irrlicht/tests/assets/blender_cube_scaled.gltf");
+	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "blender_cube_scaled.gltf");
 	REQUIRE(sm.getMesh() != nullptr);
 	REQUIRE(sm.getMesh()->getMeshBufferCount() == 1);
 	
@@ -171,7 +177,7 @@ TEST_CASE("blender cube scaled") {
 }
 
 TEST_CASE("blender cube matrix transform") {
-	ScopedMesh sm("source/Irrlicht/tests/assets/blender_cube_matrix_transform.gltf");
+	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "blender_cube_matrix_transform.gltf");
 	REQUIRE(sm.getMesh() != nullptr);
 	REQUIRE(sm.getMesh()->getMeshBufferCount() == 1);
 	
@@ -197,7 +203,7 @@ TEST_CASE("blender cube matrix transform") {
 }
 
 TEST_CASE("snow man") {
-	ScopedMesh sm("source/Irrlicht/tests/assets/snow_man.gltf");
+	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "snow_man.gltf");
 	REQUIRE(sm.getMesh() != nullptr);
 	REQUIRE(sm.getMesh()->getMeshBufferCount() == 3);
 
