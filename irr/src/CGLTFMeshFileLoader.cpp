@@ -435,7 +435,7 @@ void SelfType::MeshExtractor::deferAddMesh(
 			}
 
 			m_irr_model->addMeshBuffer(
-				SSkinMeshBuffer(std::move(*vertices), std::move(indices)));
+					new SSkinMeshBuffer(std::move(*vertices), std::move(indices)));
 			const auto buffer_id = m_irr_model->getMeshBufferCount() - 1;
 
 			if (!skinIdx.has_value())
@@ -490,10 +490,7 @@ void SelfType::MeshExtractor::deferAddMesh(
 				}
 			}
 		}
-
-		m_irr_model->addMeshBuffer(
-				new SSkinMeshBuffer(std::move(*vertices), std::move(indices)));
-	}
+	});
 }
 
 // Base transformation between left & right handed coordinate systems.
