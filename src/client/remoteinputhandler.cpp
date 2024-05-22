@@ -147,17 +147,9 @@ void RemoteInputHandler::step(float dtime) {
     }
   }
 
-  // Calculate the reward as the difference between the current score and the previous score
-  float reward = score - m_prev_score;
-  //
-  if (m_prev_score == -1) {
-    reward = 0.0f;
-  }
-  m_prev_score = score; // Update the previous score
-
   // copying the image into the capnp message is slow, so we do it in a separate thread
-  std::thread([this, image, reward]() {
-    fill_observation(image, reward);
+  std::thread([this, image, score]() {
+    fill_observation(image, score);
   }).detach();
 };
 
