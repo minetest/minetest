@@ -21,7 +21,6 @@ KEY_TO_KEYTYPE = {
     "LEFT SHIFT": "sneak",
     "J": "dig",
     "K": "place",
-    "C": "cameraMode",
 }
 ARROW_KEYS_TO_MOUSE_DIRECTION = {
     "UP": (0, -20),
