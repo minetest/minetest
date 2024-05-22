@@ -58,16 +58,16 @@ private:
 };
 
 TEST_CASE("load empty gltf file") {
-	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "/empty.gltf");
+	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "empty.gltf");
 	CHECK(sm.getMesh() == nullptr);
 }
 
 TEST_CASE("minimal triangle") {
 	auto path = GENERATE(
-			XSTR(UNITTEST_ASSETS_DIRECTORY) "/minimal_triangle.gltf",
-			XSTR(UNITTEST_ASSETS_DIRECTORY) "/triangle_with_vertex_stride.gltf",
+			XSTR(UNITTEST_ASSETS_DIRECTORY) "minimal_triangle.gltf",
+			XSTR(UNITTEST_ASSETS_DIRECTORY) "triangle_with_vertex_stride.gltf",
 			// Test non-indexed geometry.
-			XSTR(UNITTEST_ASSETS_DIRECTORY) "/triangle_without_indices.gltf");
+			XSTR(UNITTEST_ASSETS_DIRECTORY) "triangle_without_indices.gltf");
 	INFO(path);
 	ScopedMesh sm(path);
 	REQUIRE(sm.getMesh() != nullptr);
@@ -93,7 +93,7 @@ TEST_CASE("minimal triangle") {
 }
 
 TEST_CASE("blender cube") {
-	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "/blender_cube.gltf");
+	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "blender_cube.gltf");
 	REQUIRE(sm.getMesh() != nullptr);
 	REQUIRE(sm.getMesh()->getMeshBufferCount() == 1);
 	SECTION("vertex coordinates are correct") {
