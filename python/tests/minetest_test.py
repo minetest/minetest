@@ -11,7 +11,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from minetest.minetest_env import INVERSE_KEY_MAP
+from minetest.minetest_env import INVERSE_KEY_MAP, DifferenceReward
 
 
 @pytest.fixture
@@ -73,6 +73,7 @@ def test_minetest_basic(world_dir, caplog):
         headless=True,
         verbose_logging=True,
     )
+    env = DifferenceReward(env)
     env.reset()
 
     # Context manager to make sure close() is called even if test fails.
@@ -93,7 +94,7 @@ def test_minetest_basic(world_dir, caplog):
             # TODO: I've seen the system get into a mode where the output is always 480, 640, 3
             # Seems like something to do with OpenGL driver initialization.
             expected_shape = (111, 223, 3)
-            expected_reward = 1
+            expected_reward = 0 if i == 0 else 1
             # clunky `if`` and then assert to make sure we get a screenshot if the test fails.
             if (obs.shape != expected_shape) or (reward != expected_reward):
                 screenshot_path = os.path.join(

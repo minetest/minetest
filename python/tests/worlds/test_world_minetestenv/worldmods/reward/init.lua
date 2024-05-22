@@ -3,7 +3,7 @@ playerReturnsHUD = {}
 
 minetest.register_on_joinplayer(function(player)
 	local meta = player:get_meta()
-	meta:set_int("score", 1)
+	meta:set_int("score", 0)
 	meta:set_int("return", 0)
 
 	local player_name = player:get_player_name()
@@ -35,7 +35,8 @@ minetest.register_globalstep(function(dtime)
 	for _, player in ipairs(players) do
 		local name = player:get_player_name()
 		local meta = player:get_meta()
-		meta:set_int("score", 1)
+		local prev_score = meta:get_int("score")
+		meta:set_int("score", prev_score + 1)
 		meta:set_int("return", meta:get_int("return") + meta:get_int("score"))
 		player:hud_change(playerReturnsHUD[name], "text", "Return: " .. meta:get("return"))
 		player:hud_change(playerScoresHUD[name], "text", "Score: " .. meta:get("score"))
