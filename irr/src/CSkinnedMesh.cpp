@@ -1062,9 +1062,9 @@ scene::SSkinMeshBuffer *CSkinnedMesh::addMeshBuffer()
 	return buffer;
 }
 
-void CSkinnedMesh::addMeshBuffer(SSkinMeshBuffer &&meshbuf)
+void CSkinnedMesh::addMeshBuffer(SSkinMeshBuffer *meshbuf)
 {
-	LocalBuffers.push_back(new SSkinMeshBuffer(std::move(meshbuf)));
+	LocalBuffers.push_back(meshbuf);
 }
 
 CSkinnedMesh::SJoint *CSkinnedMesh::addJoint(SJoint *parent)

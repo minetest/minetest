@@ -428,7 +428,7 @@ void SelfType::MeshExtractor::loadMesh(
 		}
 
 		m_irr_model->addMeshBuffer(
-				SSkinMeshBuffer(std::move(*vertices), std::move(indices)));
+				new SSkinMeshBuffer(std::move(*vertices), std::move(indices)));
 	}
 }
 

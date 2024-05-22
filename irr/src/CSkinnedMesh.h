@@ -130,7 +130,7 @@ public:
 	SSkinMeshBuffer *addMeshBuffer() override;
 
 	//! Adds a new meshbuffer to the mesh, access it as last one
-	void addMeshBuffer(SSkinMeshBuffer &&meshbuf) override;
+	void addMeshBuffer(SSkinMeshBuffer *meshbuf) override;
 
 	//! Adds a new joint to the mesh, access it as last one
 	SJoint *addJoint(SJoint *parent = 0) override;
