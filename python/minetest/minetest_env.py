@@ -55,6 +55,41 @@ def _is_loading(obs) -> bool:
     )
 
 
+class Xvfb:
+    def __init__(self, display_size, logger):
+        if not shutil.which("Xvfb"):
+            raise RuntimeError(
+                "Xvfb is required for headless mode. "
+                "Please install it: sudo apt install xvfb",
+            )
+        for _ in range(100):
+            i = np.random.randint(0, 1000)
+            if not os.path.exists(f"/tmp/.X{i}-lock"):
+                self.lock_path = f"/tmp/.X{i}-lock"
+                self.x_display = f":{i}"
+                break
+        if not self.x_display:
+            raise RuntimeError("Failed to find an available X display")
+        self.xvfb_process = subprocess.Popen(
+            (
+                "Xvfb",
+                self.x_display,
+                "-screen",
+                "0",
+                f"{display_size[0]}x{display_size[1]}x24",
+            )
+        )
+        logger.debug(
+            f"Started Xvfb with PID {self.xvfb_process.pid} on {self.x_display}"
+        )
+        logger.debug("sleeping to wait for xvfb to start.")
+        time.sleep(1)
+
+    def close(self):
+        self.xvfb_process.kill()
+        os.remove(self.lock_path)
+
+
 class MinetestEnv(gym.Env):
     metadata = {"render_modes": ["rgb_array", "human"]}
 
@@ -76,6 +111,7 @@ class MinetestEnv(gym.Env):
         verbose_logging: bool = False,
         log_to_stderr: bool = False,
     ):
+        self._prev_score = None
         if config_dict is None:
             config_dict = {}
         self.unique_env_id = str(uuid.uuid4())
@@ -153,8 +189,7 @@ class MinetestEnv(gym.Env):
 
         self.capnp_client = None
         self.minetest_process: Optional[subprocess.Popen] = None
-        self.xvfb_process: Optional[subprocess.Popen] = None
-        self.x_display: Optional[str] = None
+        self.xvfb: Optional[Xvfb] = None
 
         # Env objects
         self.last_obs = None
@@ -425,13 +460,16 @@ class MinetestEnv(gym.Env):
         if self.minetest_process and self.minetest_process.poll() is not None:
             return self.last_obs, 0.0, True, False, {}
 
-        next_obs, rew, done = deserialize_obs(step_response)
+        next_obs, score, done = deserialize_obs(step_response)
         self.last_obs = next_obs
 
         if self.render_mode == "human":
             self._display_pygame()
 
-        return next_obs, rew, done, False, {}
+        reward = 0 if self._prev_score is None else score - self._prev_score
+        self._prev_score = score
+
+        return next_obs, reward, done, False, {}
 
     def render(self):
         if self.render_mode == "human":
@@ -444,8 +482,8 @@ class MinetestEnv(gym.Env):
             self.socket.close()
         if self.minetest_process:
             self.minetest_process.kill()
-        if self.xvfb_process:
-            self.xvfb_process.kill()
+        if self.xvfb:
+            self.xvfb.close()
         if self.reset_world:
             self._delete_world()
 
@@ -455,35 +493,6 @@ class MinetestEnv(gym.Env):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def _start_xvfb(self):
-        if self.xvfb_process:
-            return
-        if not shutil.which("Xvfb"):
-            raise RuntimeError(
-                "Xvfb is required for headless mode. "
-                "Please install it: sudo apt install xvfb",
-            )
-        for i in range(100):
-            if not os.path.exists(f"/tmp/.X{i}-lock"):
-                self.x_display = f":{i}"
-                break
-        if not self.x_display:
-            raise RuntimeError("Failed to find an available X display")
-        self.xvfb_process = subprocess.Popen(
-            (
-                "Xvfb",
-                self.x_display,
-                "-screen",
-                "0",
-                f"{self.display_size[0]}x{self.display_size[1]}x24",
-            )
-        )
-        self._logger.debug(
-            f"Started Xvfb with PID {self.xvfb_process.pid} on {self.x_display}"
-        )
-        self._logger.debug("sleeping to wait for xvfb to start.")
-        time.sleep(1)
-
     def _start_minetest_client(
         self,
         log_path: str,
@@ -492,7 +501,7 @@ class MinetestEnv(gym.Env):
         if ":" not in remote_input_addr:
             remote_input_addr = f"unix:{remote_input_addr}"
         if self.headless:
-            self._start_xvfb()
+            self.xvfb = Xvfb(self.display_size, self._logger)
         cmd = [
             self.executable,
             "--go",  # skip menu
@@ -522,8 +531,8 @@ class MinetestEnv(gym.Env):
             # disable vsync
             client_env["__GL_SYNC_TO_VBLANK"] = "0"
             client_env["vblank_mode"] = "0"
-            if self.x_display:
-                client_env["DISPLAY"] = self.x_display
+            if self.xvfb:
+                client_env["DISPLAY"] = self.xvfb.x_display
             out.write(
                 f"Starting client with command: {' '.join(str(x) for x in cmd)}\n"
             )
@@ -587,13 +596,3 @@ def write_config_file(file_path, config):
     with open(file_path, "w") as f:
         for key, value in config.items():
             f.write(f"{key} = {value}\n")
-
-class DifferenceReward(gym.RewardWrapper):
-    def __init__(self, env):
-        gym.RewardWrapper.__init__(self, env)
-        self._prev_reward = None
-
-    def reward(self, reward):
-        reward_diff = 0 if self._prev_reward is None else reward - self._prev_reward
-        self._prev_reward = reward
-        return reward_diff

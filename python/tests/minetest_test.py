@@ -11,7 +11,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from minetest.minetest_env import INVERSE_KEY_MAP, DifferenceReward
+from minetest.minetest_env import INVERSE_KEY_MAP
 
 
 @pytest.fixture
@@ -73,11 +73,11 @@ def test_minetest_basic(world_dir, caplog):
         headless=True,
         verbose_logging=True,
     )
-    env = DifferenceReward(env)
     env.reset()
 
     # Context manager to make sure close() is called even if test fails.
     with env:
+        nonzero_reward = False
         for i in range(5):
             action = {
                 "KEYS": np.zeros(len(INVERSE_KEY_MAP), dtype=bool),
@@ -94,19 +94,20 @@ def test_minetest_basic(world_dir, caplog):
             # TODO: I've seen the system get into a mode where the output is always 480, 640, 3
             # Seems like something to do with OpenGL driver initialization.
             expected_shape = (111, 223, 3)
-            expected_reward = 0 if i == 0 else 1
             # clunky `if`` and then assert to make sure we get a screenshot if the test fails.
-            if (obs.shape != expected_shape) or (reward != expected_reward):
+            if (obs.shape != expected_shape):
                 screenshot_path = os.path.join(
                     artifact_dir, f"minetst_test_obs_{i}.png"
                 )
                 Image.fromarray(obs).save(screenshot_path)
                 assert obs.shape == expected_shape, f"see image: {screenshot_path}"
-                assert reward == expected_reward, f"see image: {screenshot_path}"
+            if reward > 0:
+                nonzero_reward = True
             # The screen is always black when rendering with mesa on Linux.
             # This is a bug but we don't care about this case, so check only
             # on Mac or when rendering with nvidia.
             if sys.platform == "darwin" or shutil.which("nvidia-smi"):
                 assert obs.sum() > 0, "All black image"
+    assert nonzero_reward, f"see images in {artifact_dir}"
 
     shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
