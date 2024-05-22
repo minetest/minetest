@@ -667,7 +667,7 @@ std::optional<tiniergltf::GlTF> SelfType::tryParseGLTF(io::IReadFile* file)
 {
 	auto size = file->getSize();
 	auto buf = std::make_unique<char[]>(size + 1);
-	if (file->read(buf.get(), size) < size)
+	if (file->read(buf.get(), size) != size)
 		return std::nullopt;
 	// We probably don't need this, but add it just to be sure.
 	buf[size] = '\0';
