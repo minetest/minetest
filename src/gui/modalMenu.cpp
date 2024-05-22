@@ -398,3 +398,15 @@ porting::AndroidDialogState GUIModalMenu::getAndroidUIInputState()
 	return porting::getInputDialogState();
 }
 #endif
+
+GUIModalMenu::scaling_info GUIModalMenu::getScalingInfo(v2u32 base_size, v2u32 screensize)
+{
+	scaling_info info{m_gui_scale, base_size};
+	if (info.getSize().X > screensize.X) {
+		info.scale = (f32)screensize.X / (f32)base_size.X;
+	}
+	if (info.getSize().Y > screensize.Y) {
+		info.scale = (f32)screensize.Y / (f32)base_size.Y;
+	}
+	return info;
+}

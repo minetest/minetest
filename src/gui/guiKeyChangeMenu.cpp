@@ -107,16 +107,17 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	removeAllChildren();
 	key_used_text = nullptr;
 
-	const float s = m_gui_scale;
+	scaling_info info = getScalingInfo(v2u32(835, 430), screensize);
+	const float s = info.scale;
+	const v2u32 size = info.getSize();
 	DesiredRect = core::rect<s32>(
-		screensize.X / 2 - 835 * s / 2,
-		screensize.Y / 2 - 430 * s / 2,
-		screensize.X / 2 + 835 * s / 2,
-		screensize.Y / 2 + 430 * s / 2
+		screensize.X / 2 - size.X / 2,
+		screensize.Y / 2 - size.Y / 2,
+		screensize.X / 2 + size.X / 2,
+		screensize.Y / 2 + size.Y / 2
 	);
 	recalculateAbsolutePosition(false);
 
-	v2s32 size = DesiredRect.getSize();
 	v2s32 topleft(0, 0);
 
 	{

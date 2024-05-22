@@ -66,16 +66,17 @@ void GUIOpenURLMenu::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
-	const float s = m_gui_scale;
+	scaling_info info = getScalingInfo(v2u32(580, 250), screensize);
+	const float s = info.scale;
+	const v2u32 size = info.getSize();
 	DesiredRect = core::rect<s32>(
-		screensize.X / 2 - 580 * s / 2,
-		screensize.Y / 2 - 250 * s / 2,
-		screensize.X / 2 + 580 * s / 2,
-		screensize.Y / 2 + 250 * s / 2
+		screensize.X / 2 - size.X / 2,
+		screensize.Y / 2 - size.Y / 2,
+		screensize.X / 2 + size.X / 2,
+		screensize.Y / 2 + size.Y / 2
 	);
 	recalculateAbsolutePosition(false);
 
-	v2s32 size = DesiredRect.getSize();
 	v2s32 topleft_client(40 * s, 0);
 
 	/*

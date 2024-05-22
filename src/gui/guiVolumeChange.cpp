@@ -54,16 +54,17 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
-	const float s = m_gui_scale;
+	scaling_info info = getScalingInfo(v2u32(380, 200), screensize);
+	const float s = info.scale;
+	const v2u32 size = info.getSize();
 	DesiredRect = core::rect<s32>(
-		screensize.X / 2 - 380 * s / 2,
-		screensize.Y / 2 - 200 * s / 2,
-		screensize.X / 2 + 380 * s / 2,
-		screensize.Y / 2 + 200 * s / 2
+		screensize.X / 2 - size.X / 2,
+		screensize.Y / 2 - size.Y / 2,
+		screensize.X / 2 + size.X / 2,
+		screensize.Y / 2 + size.Y / 2
 	);
 	recalculateAbsolutePosition(false);
 
-	v2s32 size = DesiredRect.getSize();
 	int volume = (int)(g_settings->getFloat("sound_volume") * 100);
 
 	/*
