@@ -8,8 +8,6 @@
 #include "S3DVertex.h"
 #include "irrArray.h"
 
-#include <stdexcept>
-
 namespace irr
 {
 namespace scene
