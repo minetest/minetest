@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "version.h"
 #include "defaultsettings.h"
+#include "migratesettings.h"
 #include "gettext.h"
 #include "log.h"
 #include "util/quicktune.h"
@@ -686,6 +687,8 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 
 	if (!read_config_file(cmd_args))
 		return false;
+
+	migrate_settings();
 
 	init_log_streams(cmd_args);
 
