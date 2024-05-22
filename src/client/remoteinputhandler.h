@@ -163,4 +163,6 @@ private:
   float m_movement_direction;
 
   bool m_is_first_loop = true;
+
+  float m_prev_score = -1;
 };

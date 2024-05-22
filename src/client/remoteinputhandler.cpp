@@ -129,23 +129,31 @@ void RemoteInputHandler::step(float dtime) {
   irr::video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
   irr::video::IImage *image = driver->createScreenShot(video::ECF_R8G8B8);
 
-  // parse reward from hud
+  // parse score from hud
   // during game startup, the hud is not yet initialized, so there'll be no
-  // reward for the first 1-2 steps
-  float reward{};
+  // score for the first 1-2 steps
+  float score{};
   for (u32 i = 0; i < m_player->maxHudId(); ++i) {
     auto hud_element = m_player->getHud(i);
-    if (hud_element->name == "reward") {
-      // parse 'Reward: <reward>' from hud
-      constexpr char kRewardHUDPrefix[] = "Reward: ";
-      std::string_view reward_string = hud_element->text;
-      reward_string.remove_prefix(std::size(kRewardHUDPrefix) - 1); // -1 for null terminator
+    if (hud_element->name == "score") {
+      // parse 'Score: <score>' from hud
+      constexpr char kScoreHUDPrefix[] = "Score: ";
+      std::string_view score_string = hud_element->text;
+      score_string.remove_prefix(std::size(kScoreHUDPrefix) - 1); // -1 for null terminator
       // I'd rather use std::from_chars, but it's not available in libc++ yet.
-      std::stringstream ss{std::string(reward_string)};
-      ss >> reward;
+      std::stringstream ss{std::string(score_string)};
+      ss >> score;
       break;
     }
   }
+
+  // Calculate the reward as the difference between the current score and the previous score
+  float reward = score - m_prev_score;
+  //
+  if (m_prev_score == -1) {
+    reward = 0.0f;
+  }
+  m_prev_score = score; // Update the previous score
 
   // copying the image into the capnp message is slow, so we do it in a separate thread
   std::thread([this, image, reward]() {
