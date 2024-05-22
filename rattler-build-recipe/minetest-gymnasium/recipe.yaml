@@ -3,7 +3,7 @@
 context: {}
 package:
   name: minetest-gymnasium
-  version: ${{ env.get_default("GIT_DESCRIBE_TAG", env.get_default("GIT_FULL_HASH", "0.3")) }}
+  version: ${{ env.get_default("GIT_DESCRIBE_TAG", env.get_default("GIT_FULL_HASH", "0.4")) }}
 
 source:
   path: ../../
@@ -20,7 +20,7 @@ requirements:
     - python
     - setuptools
   run:
-    - minetest
+    - minetest =0.3
     # python deps
     - gymnasium
     - numpy =1.26
