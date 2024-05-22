@@ -3,7 +3,7 @@
 context: {}
 package:
   name: minetest
-  version: ${{ env.get_default("GIT_DESCRIBE_TAG", env.get_default("GIT_FULL_HASH", "0.2")) }}
+  version: ${{ env.get_default("GIT_DESCRIBE_TAG", env.get_default("GIT_FULL_HASH", "0.3")) }}
 
 source:
   path: ../../
