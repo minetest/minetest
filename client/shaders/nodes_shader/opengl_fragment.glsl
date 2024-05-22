@@ -57,7 +57,7 @@ varying float nightRatio;
 varying vec3 viewVec;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
-#if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS))
+#if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS) && ENABLE_WAVING_WATER)
 vec4 perm(vec4 x)
 {
 	return mod(((x * 34.0) + 1.0) * x, 289.0);
@@ -506,7 +506,7 @@ void main(void)
 		vec3 reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.0);
 
 		// Water reflections
-#if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS))
+#if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS) && ENABLE_WAVING_WATER)
 		vec3 wavePos = worldPosition * vec3(2.0, 0.0, 2.0);
 		float off = animationTimer * WATER_WAVE_SPEED * 10.0;
 		wavePos.x /= WATER_WAVE_LENGTH * 3.0;

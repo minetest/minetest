@@ -132,7 +132,7 @@ private:
 	std::vector<NodeToApply> m_shadow_node_array;
 
 	float m_shadow_strength;
-	video::SColor m_shadow_tint{ 255, 0, 38, 128 };
+	video::SColor m_shadow_tint{ 255, 0, 0, 0 };
 	float m_shadow_strength_gamma;
 	float m_shadow_map_max_distance;
 	float m_shadow_map_texture_size;
