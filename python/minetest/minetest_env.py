@@ -587,3 +587,13 @@ def write_config_file(file_path, config):
     with open(file_path, "w") as f:
         for key, value in config.items():
             f.write(f"{key} = {value}\n")
+
+class DifferenceReward(gym.RewardWrapper):
+    def __init__(self, env):
+        gym.RewardWrapper.__init__(self, env)
+        self._prev_reward = None
+
+    def reward(self, reward):
+        reward_diff = 0 if self._prev_reward is None else reward - self._prev_reward
+        self._prev_reward = reward
+        return reward_diff
