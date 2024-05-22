@@ -32,7 +32,7 @@ public:
 
 private:
 	template <typename T>
-	static T rawget(const void *ptr);
+	static T rawget(const u8 *ptr);
 
 	template <class T>
 	class Accessor
