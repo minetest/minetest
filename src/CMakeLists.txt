@@ -718,7 +718,7 @@ if(BUILD_SERVER)
 		)
 	endif()
 	if(BUILD_UNITTESTS)
-		target_compile_definitions(${PROJECT_NAME} PRIVATE
+		target_compile_definitions(${PROJECT_NAME}server PRIVATE
 			UNITTEST_ASSETS_DIRECTORY=${UNITTEST_ASSETS_DIRECTORY}
 		)
 	endif()
