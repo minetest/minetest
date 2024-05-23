@@ -22,8 +22,11 @@ local function do_tests()
 	assert(core.registered_items["unittests:description_test"].on_place == true)
 end
 
--- this is checked from the main env
-core.ipc_set("unittests:mg", { pcall(do_tests) })
+-- first thread to get here runs the tests
+if core.ipc_cas("unittests:mg_once", nil, true) then
+	-- this is checked from the main env
+	core.ipc_set("unittests:mg", { pcall(do_tests) })
+end
 
 core.register_on_generated(function(vm, pos1, pos2, blockseed)
 	local n = tonumber(core.get_mapgen_setting("chunksize")) * 16 - 1
