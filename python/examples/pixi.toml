@@ -1,0 +1,17 @@
+#:schema https://raw.githubusercontent.com/prefix-dev/pixi/main/schema/schema.json
+[project]
+name = "examples"
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[dependencies]
+moviepy = "*"
+jupyter = "*"
+pycapnp = ">=1.1.1"
+
+[host-dependencies]
+python = ">=3.10,<3.11"
+
+[pypi-dependencies]
+# This relies on pyproject.toml to determine how to build / install the package
+minetest = { path = "../", editable = true }

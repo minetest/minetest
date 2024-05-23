@@ -129,3 +129,5 @@ client/mod_storage.sqlite
 
 # rattler-build
 output/
+
+.pixi
