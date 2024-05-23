@@ -7066,6 +7066,18 @@ minetest.ipc_get("test:foo").subkey = "value" -- WRONG!
 minetest.ipc_get("test:foo") -- returns an empty table
 ```
 
+**Advanced**:
+
+* `minetest.ipc_cas(key, old_value, new_value)`:
+  * Write a value to the shared data area, but only if the previous value
+    equals what was given.
+    This operation is called Compare-and-Swap and can be used to implement
+    synchronization between threads.
+  * `key`: as above
+  * `old_value`: value compared to using `==` (`nil` compares equal for non-existing keys)
+  * `new_value`: value that will be set
+  * returns: true on success, false otherwise
+
 Bans
 ----
 

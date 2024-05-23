@@ -9,6 +9,7 @@ class ModApiIPC : public ModApiBase {
 private:
 	static int l_ipc_get(lua_State *L);
 	static int l_ipc_set(lua_State *L);
+	static int l_ipc_cas(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);

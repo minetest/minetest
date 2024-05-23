@@ -10,6 +10,17 @@
 typedef std::shared_lock<std::shared_mutex> SharedReadLock;
 typedef std::unique_lock<std::shared_mutex> SharedWriteLock;
 
+static inline auto read_pv(lua_State *L, int idx)
+{
+	std::unique_ptr<PackedValue> ret;
+	if (!lua_isnil(L, idx)) {
+		ret.reset(script_pack(L, idx));
+		if (ret->contains_userdata)
+			throw LuaError("Userdata not allowed");
+	}
+	return ret;
+}
+
 int ModApiIPC::l_ipc_get(lua_State *L)
 {
 	auto *store = getGameDef(L)->getModIPCStore();
@@ -34,12 +45,7 @@ int ModApiIPC::l_ipc_set(lua_State *L)
 	auto key = readParam<std::string>(L, 1);
 
 	luaL_checkany(L, 2);
-	std::unique_ptr<PackedValue> pv;
-	if (!lua_isnil(L, 2)) {
-		pv.reset(script_pack(L, 2));
-		if (pv->contains_userdata)
-			throw LuaError("Userdata not allowed");
-	}
+	auto pv = read_pv(L, 2);
 
 	{
 		SharedWriteLock autolock(store->mutex);
@@ -49,6 +55,42 @@ int ModApiIPC::l_ipc_set(lua_State *L)
 			store->map.erase(key); // delete the map value for nil
 	}
 	return 0;
+}
+
+int ModApiIPC::l_ipc_cas(lua_State *L)
+{
+	auto *store = getGameDef(L)->getModIPCStore();
+
+	auto key = readParam<std::string>(L, 1);
+
+	luaL_checkany(L, 2);
+	const int idx_old = 2;
+
+	luaL_checkany(L, 3);
+	auto pv_new = read_pv(L, 3);
+
+	bool ok = false;
+	{
+		SharedWriteLock autolock(store->mutex);
+		// unpack and compare old value
+		auto it = store->map.find(key);
+		if (it == store->map.end()) {
+			ok = lua_isnil(L, idx_old);
+		} else {
+			script_unpack(L, it->second.get());
+			ok = lua_equal(L, idx_old, -1);
+			lua_pop(L, 1);
+		}
+		// put new value
+		if (ok) {
+			if (pv_new)
+				store->map[key] = std::move(pv_new);
+			else
+				store->map.erase(key);
+		}
+	}
+	lua_pushboolean(L, ok);
+	return 1;
 }
 
 /*
@@ -65,4 +107,5 @@ void ModApiIPC::Initialize(lua_State *L, int top)
 
 	API_FCT(ipc_get);
 	API_FCT(ipc_set);
+	API_FCT(ipc_cas);
 }
