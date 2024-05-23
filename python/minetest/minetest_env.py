@@ -296,6 +296,7 @@ class MinetestEnv(gym.Env):
 
         if self.minetest_process:
             self.minetest_process.kill()
+            self.minetest_process.communicate(timeout=15)
 
         self.minetest_process = self._start_minetest_client(
             log_path,
