@@ -181,7 +181,7 @@ class MinetestEnv(gym.Env):
                 sys.platform == "linux"
             ), "abstract sockets require linux. you can set server_addr = host:port to use TCP"
             self.socket_addr = os.path.join(
-                self.artifact_dir, f"minetest_{self.unique_env_id}.sock"
+                self.artifact_dir, f"minetest_{self.unique_env_id}_0.sock"
             )
         self.socket = None
 
@@ -392,6 +392,12 @@ class MinetestEnv(gym.Env):
     def seed(self, seed: Optional[int] = None):
         self._np_random = np.random.RandomState(seed or 0)
 
+    def _increment_socket_addr(self):
+        self._logger.debug("incrementing socket")
+        addr, ext = self.socket_addr.rsplit("_", 1)
+        num = int(ext.split(".")[0])
+        self.socket_addr = f"{addr}_{num+1}.sock"
+
     def reset(
         self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None
     ):
@@ -400,6 +406,7 @@ class MinetestEnv(gym.Env):
             self._delete_world()
             if self.reseed_on_reset:
                 self.world_seed = self._np_random.randint(np.iinfo(np.int64).max)
+        self._increment_socket_addr()
         self._reset_minetest()
         self._reset_capnp()
 
