@@ -425,6 +425,7 @@ set(common_SRCS
 	terminal_chat_console.cpp
 	texture_override.cpp
 	tileanimation.cpp
+	test_runner.cpp
 	tool.cpp
 	translation.cpp
 	version.cpp

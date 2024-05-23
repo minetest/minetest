@@ -17,13 +17,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "cmake_config.h"
+
+#if BUILD_UNITTESTS || BUILD_BENCHMARKS
 // This must be set in only one place
 #define CATCH_CONFIG_RUNNER
 // we want to have catch write to rawstream (stderr) instead of stdout
 #define CATCH_CONFIG_NOSTDOUT
 #include <catch.hpp>
+#endif
 
-#include "test.h"
+#if BUILD_UNITTESTS
+
+#include "unittest/test.h"
 
 #include "nodedef.h"
 #include "itemdef.h"
@@ -725,4 +731,24 @@ struct TestMapSector: public TestBase
 
 	}
 };
+#endif
+
+#endif
+
+#if BUILD_BENCHMARKS
+
+#include "benchmark/benchmark.h"
+
+#include "benchmark/benchmark_setup.h"
+
+bool run_benchmarks(const char *arg)
+{
+	const char *const argv[] = {
+		"MinetestBenchmark", arg, nullptr
+	};
+	const int argc = arg ? 2 : 1;
+	int errCount = Catch::Session().run(argc, argv);
+	return errCount == 0;
+}
+
 #endif

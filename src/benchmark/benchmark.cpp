@@ -18,13 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "benchmark/benchmark.h"
-#include "cmake_config.h"
 
-// This must be set in just this file. If building both unittests and
-// benchmarks, it will be set in unittests.
-#if !BUILD_UNITTESTS
-#define CATCH_CONFIG_RUNNER
-#endif
 #include "benchmark_setup.h"
 
 bool run_benchmarks(const char *arg)
