@@ -157,8 +157,10 @@ local function get_formspec(tabview, name, tabdata)
 	-- Point the player to ContentDB when no games are found
 	if #pkgmgr.games == 0 then
 		return table.concat({
-			"style[label_button;border=false]",
-			"button[2.75,1.5;10,1;label_button;", fgettext("You have no games installed."), "]",
+			"textarea[2.75,1.5;10,3;;;",
+				fgettext("Minetest is a game-creation platform that allows you to play many different games."), " ",
+				fgettext("Minetest doesn't come with a game by default."), " ",
+				fgettext("You need to install a game before you can create a world."), "]",
 			"button[5.25,3.5;5,1.2;game_open_cdb;", fgettext("Install a game"), "]"})
 	end
 
