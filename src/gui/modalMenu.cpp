@@ -399,14 +399,16 @@ porting::AndroidDialogState GUIModalMenu::getAndroidUIInputState()
 }
 #endif
 
-GUIModalMenu::scaling_info GUIModalMenu::getScalingInfo(v2u32 base_size, v2u32 screensize)
+GUIModalMenu::ScalingInfo GUIModalMenu::getScalingInfo(v2u32 screensize, v2u32 base_size)
 {
-	scaling_info info{m_gui_scale, base_size};
-	if (info.getSize().X > screensize.X) {
-		info.scale = (f32)screensize.X / (f32)base_size.X;
-	}
-	if (info.getSize().Y > screensize.Y) {
-		info.scale = (f32)screensize.Y / (f32)base_size.Y;
-	}
-	return info;
+	f32 scale = m_gui_scale;
+	scale = std::min(scale, (f32)screensize.X / (f32)base_size.X);
+	scale = std::min(scale, (f32)screensize.Y / (f32)base_size.Y);
+	s32 w = base_size.X * scale, h = base_size.Y * scale;
+	return {scale, core::rect<s32>(
+		screensize.X / 2 - w / 2,
+		screensize.Y / 2 - h / 2,
+		screensize.X / 2 + w / 2,
+		screensize.Y / 2 + h / 2
+	)};
 }

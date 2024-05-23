@@ -94,12 +94,11 @@ protected:
 	std::string m_jni_field_name;
 #endif
 
-	struct scaling_info {
+	struct ScalingInfo {
 		f32 scale;
-		v2u32 base_size;
-		v2u32 getSize() { return v2u32(base_size.X * scale, base_size.Y * scale); }
+		core::rect<s32> rect;
 	};
-	scaling_info getScalingInfo(v2u32 base_size, v2u32 screensize);
+	ScalingInfo getScalingInfo(v2u32 screensize, v2u32 base_size);
 
 	// This is set to true if the menu is currently processing a second-touch event.
 	bool m_second_touch = false;
