@@ -529,13 +529,6 @@ class MinetestEnv(gym.Env):
             client_env = os.environ.copy()
             # Avoids error in logs about missing XDG_RUNTIME_DIR
             client_env["XDG_RUNTIME_DIR"] = self.artifact_dir
-            # enable GPU usage
-            if shutil.which("nvidia-smi"):
-                self._logger.debug("Enabling Nvidia GPU usage")
-                client_env["__GLX_VENDOR_LIBRARY_NAME"] = "nvidia"
-                # I think needed for machines with both non-NVidia
-                # and Nvidia GPUs.
-                client_env["__NV_PRIME_RENDER_OFFLOAD"] = "1"
             # disable vsync
             client_env["__GL_SYNC_TO_VBLANK"] = "0"
             client_env["vblank_mode"] = "0"
