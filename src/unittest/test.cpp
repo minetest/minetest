@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+// This must be set in only one place
 #define CATCH_CONFIG_RUNNER
 // we want to have catch write to rawstream (stderr) instead of stdout
 #define CATCH_CONFIG_NOSTDOUT
