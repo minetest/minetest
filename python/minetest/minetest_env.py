@@ -54,42 +54,6 @@ def _is_loading(obs) -> bool:
         (obs == color).all(axis=2).mean() > 0.5 for color in _still_loading_colors
     )
 
-
-class Xvfb:
-    def __init__(self, display_size, logger):
-        if not shutil.which("Xvfb"):
-            raise RuntimeError(
-                "Xvfb is required for headless mode. "
-                "Please install it: sudo apt install xvfb",
-            )
-        for _ in range(100):
-            i = np.random.randint(0, 1000)
-            if not os.path.exists(f"/tmp/.X{i}-lock"):
-                self.lock_path = f"/tmp/.X{i}-lock"
-                self.x_display = f":{i}"
-                break
-        if not self.x_display:
-            raise RuntimeError("Failed to find an available X display")
-        self.xvfb_process = subprocess.Popen(
-            (
-                "Xvfb",
-                self.x_display,
-                "-screen",
-                "0",
-                f"{display_size[0]}x{display_size[1]}x24",
-            )
-        )
-        logger.debug(
-            f"Started Xvfb with PID {self.xvfb_process.pid} on {self.x_display}"
-        )
-        logger.debug("sleeping to wait for xvfb to start.")
-        time.sleep(1)
-
-    def close(self):
-        self.xvfb_process.kill()
-        os.remove(self.lock_path)
-
-
 class MinetestEnv(gym.Env):
     metadata = {"render_modes": ["rgb_array", "human"]}
 
@@ -121,7 +85,9 @@ class MinetestEnv(gym.Env):
         self.fov_x = self.fov_y * self.display_size.width / self.display_size.height
         self.render_mode = render_mode
         if headless and sys.platform != "linux":
-            raise ValueError("headless mode only supported on linux")
+            raise ValueError("headless mode only supported on linux. "
+                             "Note this may work with the latest upstream minetest which should support "
+                             "building with SDL2 on MacOS. You can try it if you care.")
 
         self.headless = headless
         self.game_dir = game_dir
@@ -189,7 +155,6 @@ class MinetestEnv(gym.Env):
 
         self.capnp_client = None
         self.minetest_process: Optional[subprocess.Popen] = None
-        self.xvfb: Optional[Xvfb] = None
 
         # Env objects
         self.last_obs = None
@@ -490,8 +455,6 @@ class MinetestEnv(gym.Env):
             self.socket.close()
         if self.minetest_process:
             self.minetest_process.kill()
-        if self.xvfb:
-            self.xvfb.close()
         if self.reset_world:
             self._delete_world()
 
@@ -508,8 +471,6 @@ class MinetestEnv(gym.Env):
         remote_input_addr = self.socket_addr
         if ":" not in remote_input_addr:
             remote_input_addr = f"unix:{remote_input_addr}"
-        if self.headless:
-            self.xvfb = Xvfb(self.display_size, self._logger)
         cmd = [
             self.executable,
             "--go",  # skip menu
@@ -523,17 +484,20 @@ class MinetestEnv(gym.Env):
         if self.world_dir is not None:
             cmd.extend(["--world", self.world_dir])
 
+        client_env = os.environ.copy()
+        # Avoids error in logs about missing XDG_RUNTIME_DIR
+        client_env["XDG_RUNTIME_DIR"] = self.artifact_dir
+        # disable vsync
+        client_env["__GL_SYNC_TO_VBLANK"] = "0"
+        client_env["vblank_mode"] = "0"
+
+        if self.headless:
+            # https://github.com/carla-simulator/carla/issues/225
+            client_env["SDL_VIDEODRIVER"] = "offscreen"
+
         stdout_file = log_path.format("client_stdout")
         stderr_file = log_path.format("client_stderr")
         with open(stdout_file, "w") as out, open(stderr_file, "w") as err:
-            client_env = os.environ.copy()
-            # Avoids error in logs about missing XDG_RUNTIME_DIR
-            client_env["XDG_RUNTIME_DIR"] = self.artifact_dir
-            # disable vsync
-            client_env["__GL_SYNC_TO_VBLANK"] = "0"
-            client_env["vblank_mode"] = "0"
-            if self.xvfb:
-                client_env["DISPLAY"] = self.xvfb.x_display
             out.write(
                 f"Starting client with command: {' '.join(str(x) for x in cmd)}\n"
             )

@@ -4,9 +4,15 @@
 
 Usage:
 
+One-time, install rattler-build:
+```sh
+pixi global install rattler-build
+```
+
+Then to rebuild, edit the recipe to bumb the verison and then:
 ```sh
 rattler-build build --package-format=conda --recipe-dir=./rattler-build-recipe -c conda-forge -c ./output
-ls -lh output/linux-64
+ls -lh output/{noarch,linux-64}
 ```
 
 Then you need to upload the .conda files to

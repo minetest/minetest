@@ -29,6 +29,7 @@ cmake -B build -S . \
 	-DENABLE_SOUND=FALSE \
 	-DENABLE_GETTEXT=TRUE \
 	-GNinja \
+	-DUSE_SDL2=ON \
 	-DCMAKE_CXX_FLAGS="-fuse-ld=mold" \
 	-DCMAKE_BUILD_TYPE=Debug \
 	-DCMAKE_EXPORT_COMPILE_COMMANDS=1 && \

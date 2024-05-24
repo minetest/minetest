@@ -3,13 +3,13 @@
 context: {}
 package:
   name: minetest
-  version: ${{ env.get_default("GIT_DESCRIBE_TAG", env.get_default("GIT_FULL_HASH", "0.3")) }}
+  version: ${{ env.get_default("GIT_DESCRIBE_TAG", env.get_default("GIT_FULL_HASH", "0.4")) }}
 
 source:
   path: ../../
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
@@ -43,6 +43,7 @@ requirements:
     - luajit-openresty
     - ncurses
     - pkg-config
+    - sdl2
     - zlib
     - zstd
   run:
