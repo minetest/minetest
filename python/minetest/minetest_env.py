@@ -181,7 +181,7 @@ class MinetestEnv(gym.Env):
                 sys.platform == "linux"
             ), "abstract sockets require linux. you can set server_addr = host:port to use TCP"
             self.socket_addr = os.path.join(
-                self.artifact_dir, f"minetest_{self.unique_env_id}.sock"
+                self.artifact_dir, f"minetest_{self.unique_env_id}_0.sock"
             )
         self.socket = None
 
@@ -296,6 +296,7 @@ class MinetestEnv(gym.Env):
 
         if self.minetest_process:
             self.minetest_process.kill()
+            self.minetest_process.communicate(timeout=15)
 
         self.minetest_process = self._start_minetest_client(
             log_path,
@@ -391,6 +392,12 @@ class MinetestEnv(gym.Env):
     def seed(self, seed: Optional[int] = None):
         self._np_random = np.random.RandomState(seed or 0)
 
+    def _increment_socket_addr(self):
+        self._logger.debug("incrementing socket")
+        addr, ext = self.socket_addr.rsplit("_", 1)
+        num = int(ext.split(".")[0])
+        self.socket_addr = f"{addr}_{num+1}.sock"
+
     def reset(
         self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None
     ):
@@ -399,6 +406,7 @@ class MinetestEnv(gym.Env):
             self._delete_world()
             if self.reseed_on_reset:
                 self.world_seed = self._np_random.randint(np.iinfo(np.int64).max)
+        self._increment_socket_addr()
         self._reset_minetest()
         self._reset_capnp()
 
@@ -521,13 +529,6 @@ class MinetestEnv(gym.Env):
             client_env = os.environ.copy()
             # Avoids error in logs about missing XDG_RUNTIME_DIR
             client_env["XDG_RUNTIME_DIR"] = self.artifact_dir
-            # enable GPU usage
-            if shutil.which("nvidia-smi"):
-                self._logger.debug("Enabling Nvidia GPU usage")
-                client_env["__GLX_VENDOR_LIBRARY_NAME"] = "nvidia"
-                # I think needed for machines with both non-NVidia
-                # and Nvidia GPUs.
-                client_env["__NV_PRIME_RENDER_OFFLOAD"] = "1"
             # disable vsync
             client_env["__GL_SYNC_TO_VBLANK"] = "0"
             client_env["vblank_mode"] = "0"

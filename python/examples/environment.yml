@@ -1,9 +1,0 @@
-name: minetest-python-example
-channels:
-  - https://repo.prefix.dev/obelisk-public
-  - conda-forge
-  - nodefaults
-dependencies:
-  - minetest-gymnasium
-  - moviepy
-  - jupyter
