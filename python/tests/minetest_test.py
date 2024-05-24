@@ -73,10 +73,10 @@ def test_minetest_basic(world_dir, caplog):
         headless=True,
         verbose_logging=True,
     )
-    env.reset()
 
     # Context manager to make sure close() is called even if test fails.
     with env:
+        env.reset()
         nonzero_reward = False
         for i in range(5):
             action = {
