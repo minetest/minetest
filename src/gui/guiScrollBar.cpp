@@ -274,10 +274,10 @@ void GUIScrollBar::setPosRaw(const s32 &pos)
 	s32 thumb_min = 0;
 
 	if (is_horizontal) {
-		thumb_min = RelativeRect.getHeight();
+		thumb_min = std::min(RelativeRect.getHeight(), RelativeRect.getWidth() / 2);
 		thumb_area = RelativeRect.getWidth() - border_size * 2;
 	} else {
-		thumb_min = RelativeRect.getWidth();
+		thumb_min = std::min(RelativeRect.getWidth(), RelativeRect.getHeight() / 2);
 		thumb_area = RelativeRect.getHeight() - border_size * 2;
 	}
 
