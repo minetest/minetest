@@ -94,6 +94,12 @@ protected:
 	std::string m_jni_field_name;
 #endif
 
+	struct ScalingInfo {
+		f32 scale;
+		core::rect<s32> rect;
+	};
+	ScalingInfo getScalingInfo(v2u32 screensize, v2u32 base_size);
+
 	// This is set to true if the menu is currently processing a second-touch event.
 	bool m_second_touch = false;
 	// This is set to true if the menu is currently processing a mouse event
