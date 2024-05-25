@@ -167,7 +167,7 @@ public:
 	inline void setLightingComplete(LightBank bank, u8 direction,
 		bool is_complete)
 	{
-		assert(direction >= 0 && direction <= 5);
+		assert(direction <= 5);
 		if (bank == LIGHTBANK_NIGHT) {
 			direction += 6;
 		}
@@ -182,7 +182,7 @@ public:
 
 	inline bool isLightingComplete(LightBank bank, u8 direction)
 	{
-		assert(direction >= 0 && direction <= 5);
+		assert(direction <= 5);
 		if (bank == LIGHTBANK_NIGHT) {
 			direction += 6;
 		}

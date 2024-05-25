@@ -278,7 +278,7 @@ if(NOT USE_LUAJIT)
 	add_subdirectory(lib/bitop)
 endif()
 
-if(BUILD_BENCHMARKS)
+if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
 	add_subdirectory(lib/catch2)
 endif()
 

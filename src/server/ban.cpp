@@ -48,9 +48,8 @@ void BanManager::load()
 {
 	MutexAutoLock lock(m_mutex);
 	infostream<<"BanManager: loading from "<<m_banfilepath<<std::endl;
-	std::ifstream is(m_banfilepath.c_str(), std::ios::binary);
+	auto is = open_ifstream(m_banfilepath.c_str(), false);
 	if (!is.good()) {
-		infostream<<"BanManager: failed loading from "<<m_banfilepath<<std::endl;
 		throw SerializationError("BanManager::load(): Couldn't open file");
 	}
 

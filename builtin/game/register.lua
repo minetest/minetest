@@ -404,7 +404,7 @@ core.register_item(":", {
 })
 
 
-function core.override_item(name, redefinition)
+function core.override_item(name, redefinition, del_fields)
 	if redefinition.name ~= nil then
 		error("Attempt to redefine name of "..name.." to "..dump(redefinition.name), 2)
 	end
@@ -417,6 +417,9 @@ function core.override_item(name, redefinition)
 	end
 	for k, v in pairs(redefinition) do
 		rawset(item, k, v)
+	end
+	for _, field in ipairs(del_fields or {}) do
+		rawset(item, field, nil)
 	end
 	register_item_raw(item)
 end

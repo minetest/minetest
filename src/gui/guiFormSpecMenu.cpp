@@ -4625,11 +4625,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			if (!m_left_dragging)
 				break;
 
-			// Abort left-dragging
-			m_left_dragging = false;
-			m_client->inhibit_inventory_revert = false;
-			m_left_drag_stacks.clear();
-
 			// Both the selected item and the hovered item need to be checked
 			// because we don't know exactly when the double-click happened
 			ItemStack slct;
@@ -4658,6 +4653,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						}
 
 						if (amount > 0) {
+							if (m_left_dragging) {
+								// Abort left-dragging
+								m_left_dragging = false;
+								m_client->inhibit_inventory_revert = false;
+								m_left_drag_stacks.clear();
+							}
 							IMoveAction *a = new IMoveAction();
 							a->count = amount;
 							a->from_inv = s.inventoryloc;
@@ -4739,6 +4740,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			// Save the adjusted source stack
 			list_selected->changeItem(m_selected_item->i, stack_from);
 		}
+
+		bool absorb_event = false;
 
 		// Possibly send inventory action to server
 		if (move_amount > 0) {
@@ -4882,6 +4885,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			a->from_i = m_selected_item->i;
 			m_invmgr->inventoryAction(a);
 
+			// Formspecs usually close when you click outside them, we absorb
+			// the event to prevent that. See GUIModalMenu::remapClickOutside.
+			absorb_event = true;
+
 		} else if (craft_amount > 0) {
 			assert(s.isValid());
 
@@ -4911,6 +4918,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			m_selected_dragging = false;
 		}
 		m_old_pointer = m_pointer;
+
+		if (absorb_event)
+			return true;
 	}
 
 	if (event.EventType == EET_GUI_EVENT) {

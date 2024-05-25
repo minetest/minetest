@@ -147,18 +147,15 @@ static void MSVC_LocaleWorkaround(int argc, char* argv[])
 		exit(0);
 		// NOTREACHED
 	} else {
-		char buffer[1024];
+		auto e = GetLastError();
 
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(),
-			MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), buffer,
-			sizeof(buffer) - 1, NULL);
-
-		errorstream << "*******************************************************" << std::endl;
-		errorstream << "CMD: " << app_name << std::endl;
-		errorstream << "Failed to restart with current locale: " << std::endl;
-		errorstream << buffer;
-		errorstream << "Expect language to be broken!" << std::endl;
-		errorstream << "*******************************************************" << std::endl;
+		errorstream
+			<< "*******************************************************" << '\n'
+			<< "CMD: " << app_name << '\n'
+			<< "Failed to restart with current locale: "
+			<< porting::ConvertError(e) << '\n'
+			<< "Expect language to be broken!" << '\n'
+			<< "*******************************************************" << std::endl;
 	}
 }
 

@@ -278,9 +278,7 @@ void Client::scanModSubfolder(const std::string &mod_name, const std::string &mo
 				<< "\" as \"" << vfs_path << "\"." << std::endl;
 
 		std::string contents;
-		if (!fs::ReadFile(real_path, contents)) {
-			errorstream << "Client::scanModSubfolder(): Can't read file \""
-					<< real_path << "\"." << std::endl;
+		if (!fs::ReadFile(real_path, contents, true)) {
 			continue;
 		}
 
@@ -1945,8 +1943,7 @@ void Client::makeScreenshot()
 
 	while (serial < SCREENSHOT_MAX_SERIAL_TRIES) {
 		filename = filename_base + (serial > 0 ? ("_" + itos(serial)) : "") + filename_ext;
-		std::ifstream tmp(filename.c_str());
-		if (!tmp.good())
+		if (!fs::PathExists(filename))
 			break;	// File did not apparently exist, we'll go with it
 		serial++;
 	}

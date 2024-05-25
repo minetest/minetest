@@ -715,7 +715,8 @@ std::string ShadowRenderer::readShaderFile(const std::string &path)
 	prefix.append("#line 0\n");
 
 	std::string content;
-	fs::ReadFile(path, content);
+	if (!fs::ReadFile(path, content, true))
+		return "";
 
 	return prefix + content;
 }

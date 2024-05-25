@@ -49,6 +49,7 @@ struct CollisionInfo
 	CollisionAxis axis = COLLISION_AXIS_NONE;
 	v3s16 node_p = v3s16(-32768,-32768,-32768); // COLLISION_NODE
 	ActiveObject *object = nullptr; // COLLISION_OBJECT
+	v3f new_pos;
 	v3f old_speed;
 	v3f new_speed;
 	int plane = -1;
@@ -70,7 +71,12 @@ collisionMoveResult collisionMoveSimple(Environment *env,IGameDef *gamedef,
 		f32 stepheight, f32 dtime,
 		v3f *pos_f, v3f *speed_f,
 		v3f accel_f, ActiveObject *self=NULL,
-		bool collideWithObjects=true);
+		bool collide_with_objects=true);
+
+// check if box is in collision on actual position
+bool collision_check_intersection(Environment *env, IGameDef *gamedef,
+		const aabb3f &box_0, const v3f &pos_f, ActiveObject *self = nullptr,
+		bool collide_with_objects = true);
 
 // Helper function:
 // Checks for collision of a moving aabbox with a static aabbox

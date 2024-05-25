@@ -283,7 +283,7 @@ void set_default_settings()
 	settings->setDefault("soft_clouds", "false");
 	settings->setDefault("cloud_radius", "12");
 	settings->setDefault("menu_clouds", "true");
-	settings->setDefault("opaque_water", "false");
+	settings->setDefault("translucent_liquids", "true");
 	settings->setDefault("console_height", "0.6");
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
@@ -422,6 +422,11 @@ void set_default_settings()
 	// Server
 	settings->setDefault("disable_escape_sequences", "false");
 	settings->setDefault("strip_color_codes", "false");
+#ifndef NDEBUG
+	settings->setDefault("random_mod_load_order", "true");
+#else
+	settings->setDefault("random_mod_load_order", "false");
+#endif
 #if USE_PROMETHEUS
 	settings->setDefault("prometheus_listener_address", "127.0.0.1:30000");
 #endif

@@ -392,11 +392,8 @@ bool Settings::updateConfigFile(const char *filename)
 	if (!was_modified)
 		return true;
 
-	if (!fs::safeWriteToFile(filename, os.str())) {
-		errorstream << "Error writing configuration file: \""
-			<< filename << "\"" << std::endl;
+	if (!fs::safeWriteToFile(filename, os.str()))
 		return false;
-	}
 
 	return true;
 }
