@@ -9,7 +9,7 @@ source:
   path: ../../
 
 build:
-  number: 0
+  number: 1
   script: python -m pip install ./python -v
   noarch: python
 
