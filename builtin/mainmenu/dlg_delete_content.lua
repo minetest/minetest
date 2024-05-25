@@ -37,11 +37,7 @@ local function delete_content_buttonhandler(this, fields)
 				gamedata.errormessage = fgettext_ne("pkgmgr: failed to delete \"$1\"", this.data.content.path)
 			end
 
-			if this.data.content.type == "game" then
-				pkgmgr.update_gamelist()
-			else
-				pkgmgr.refresh_globals()
-			end
+			pkgmgr.reload_by_type(this.data.content.type)
 		else
 			gamedata.errormessage = fgettext_ne("pkgmgr: invalid path \"$1\"", this.data.content.path)
 		end

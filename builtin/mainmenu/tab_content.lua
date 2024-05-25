@@ -29,12 +29,7 @@ end
 local packages_raw, packages
 
 local function update_packages()
-	if not pkgmgr.global_mods then
-		pkgmgr.refresh_globals()
-	end
-	if not pkgmgr.games then
-		pkgmgr.update_gamelist()
-	end
+	pkgmgr.load_all()
 
 	packages_raw = {}
 	table.insert_all(packages_raw, pkgmgr.games)
