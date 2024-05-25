@@ -118,6 +118,7 @@ private:
 	// Child scene node with the current wield mesh
 	scene::IMeshSceneNode *m_meshnode = nullptr;
 	video::E_MATERIAL_TYPE m_material_type;
+	f32 m_material_type_param = 0.0f;
 
 	// True if SMaterial::Lighting should be enabled.
 	bool m_lighting;

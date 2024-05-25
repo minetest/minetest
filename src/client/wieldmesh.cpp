@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "wieldmesh.h"
+#include "SMaterial.h"
 #include "settings.h"
 #include "shader.h"
 #include "inventory.h"
@@ -196,7 +197,7 @@ static ExtrusionMeshCache *g_extrusion_mesh_cache = nullptr;
 
 WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool lighting):
 	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
-	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF),
+	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL),
 	m_lighting(lighting)
 {
 	m_enable_shaders = g_settings->getBool("enable_shaders");
@@ -295,7 +296,8 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		material.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		material.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		material.MaterialType = m_material_type;
-		material.MaterialTypeParam = 0.5f;
+		material.MaterialTypeParam = m_material_type_param;
+		material.ZWriteEnable = video::EZW_ON;
 		material.BackfaceCulling = true;
 		// Enable bi/trilinear filtering only for high resolution textures
 		bool bilinear_filter = dim.Width > 32 && m_bilinear_filter;
@@ -361,6 +363,19 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 	return mesh;
 }
 
+static MaterialType getTileMaterial(AlphaMode alpha) {
+	switch (alpha) {
+		case ALPHAMODE_OPAQUE:
+			return TILE_MATERIAL_OPAQUE;
+		case ALPHAMODE_CLIP:
+			return TILE_MATERIAL_BASIC;
+		case ALPHAMODE_BLEND:
+			return TILE_MATERIAL_ALPHA;
+		default:
+			assert(false);
+	}
+}
+
 void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool check_wield_image)
 {
 	ITextureSource *tsrc = client->getTextureSource();
@@ -374,8 +389,12 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 	scene::SMesh *mesh = nullptr;
 
 	if (m_enable_shaders) {
-		u32 shader_id = shdrsrc->getShader("object_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
+		const auto tile_mat = def.type == ITEM_NODE ? getTileMaterial(f.alpha) : TILE_MATERIAL_ALPHA;
+		u32 shader_id = shdrsrc->getShader("object_shader",
+				tile_mat, def.type == ITEM_NODE ? f.drawtype : NDT_MESH);
 		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
+		// For translucent items, render everything with alpha > 0
+		m_material_type_param = tile_mat == TILE_MATERIAL_ALPHA ? 0.0f : 0.5f;
 	}
 
 	// Color-related
@@ -463,7 +482,8 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		for (u32 i = 0; i < material_count; ++i) {
 			video::SMaterial &material = m_meshnode->getMaterial(i);
 			material.MaterialType = m_material_type;
-			material.MaterialTypeParam = 0.5f;
+			material.MaterialTypeParam = m_material_type_param;
+			material.ZWriteEnable = video::EZW_ON;
 			material.BackfaceCulling = cull_backface;
 			material.forEachTexture([this] (auto &tex) {
 				setMaterialFilters(tex, m_bilinear_filter, m_trilinear_filter,
@@ -665,7 +685,8 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-			material.MaterialTypeParam = 0.5f;
+			material.MaterialTypeParam = 0.0f;  // render everything with alpha > 0
+			material.ZWriteEnable = video::EZW_ON;
 			material.forEachTexture([] (auto &tex) {
 				tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 				tex.MagFilter = video::ETMAGF_NEAREST;
@@ -726,7 +747,8 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 		material.BackfaceCulling = true;
 		material.Lighting = false;
 		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-		material.MaterialTypeParam = 0.5f;
+		material.MaterialTypeParam = 0.0f; // render everything with alpha > 0
+		material.ZWriteEnable = video::EZW_ON;
 	}
 	scaleMesh(mesh, v3f(2.0, 2.0, 2.0));
 
