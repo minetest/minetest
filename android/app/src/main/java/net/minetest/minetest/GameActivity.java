@@ -206,7 +206,7 @@ public class GameActivity extends SDLActivity {
 		try {
 			startActivity(browserIntent);
 		} catch (ActivityNotFoundException e) {
-			runOnUiThread(() -> Toast.makeText(this, "No web browser found", Toast.LENGTH_SHORT).show());
+			runOnUiThread(() -> Toast.makeText(this, R.string.no_web_browser, Toast.LENGTH_SHORT).show());
 		}
 	}
 
