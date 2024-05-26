@@ -231,15 +231,13 @@ void ModConfiguration::resolveDependencies()
 		if (mod.name == m_first_mod) {
 			first_mod_spec = mod;
 		} else if (mod.name == m_last_mod) {
-			// only non optional depends have to be check for last mod
-			mod.unsatisfied_depends = mod.depends;
 			last_mod_spec = mod;
 		} else {
 			modnames.insert(mod.name);
 		}
 	}
 
-	// Step 1.5 (optional): shuffle unsatisfied mods so non declared depends get found by their devs
+	// Optionally shuffle unsatisfied mods so non declared depends get found by their devs
 	if (g_settings->getBool("random_mod_load_order")) {
 		MyRandGenerator rg;
 		std::shuffle(m_unsatisfied_mods.begin(),
@@ -254,17 +252,31 @@ void ModConfiguration::resolveDependencies()
 	if (!m_last_mod.empty() && !last_mod_spec.has_value())
 		throw ModError("The mod specified as last by the game was not found.");
 
+	// Check and add first mod
+	if (first_mod_spec.has_value()) {
+		// Dependencies are not allowed for first mod
+		if (!first_mod_spec->depends.empty() || !first_mod_spec->optdepends.empty())
+			throw ModError("Mod specified by first_mod cannot have dependencies");
+
+		m_sorted_mods.push_back(*first_mod_spec);
+	}
+
 	// Get dependencies (including optional dependencies)
 	// of each mod, split mods into satisfied and unsatisfied
 	std::vector<ModSpec> satisfied;
 	std::list<ModSpec> unsatisfied;
 	for (ModSpec mod : m_unsatisfied_mods) {
+		if (mod.name == m_first_mod || mod.name == m_last_mod)
+			continue; // skip, handled separately
+
 		mod.unsatisfied_depends = mod.depends;
 		// check which optional dependencies actually exist
 		for (const std::string &optdep : mod.optdepends) {
 			if (modnames.count(optdep) != 0)
 				mod.unsatisfied_depends.insert(optdep);
 		}
+		mod.unsatisfied_depends.erase(m_first_mod); // first is already satisfied
+
 		if (last_mod_spec.has_value() && mod.unsatisfied_depends.count(last_mod_spec->name) != 0) {
 			throw ModError("Impossible to depend on the mod specified by last_mod");
 		}
@@ -276,13 +288,10 @@ void ModConfiguration::resolveDependencies()
 		}
 	}
 
-	// Check and add first mod
-	if (first_mod_spec.has_value()) {
-		// dependencies are not allowed for first mod
-		if (!first_mod_spec->depends.empty() || !first_mod_spec->optdepends.empty())
-			throw ModError("Mod specified by first_mod cannot have dependencies");
-
-		satisfied.push_back(*first_mod_spec);
+	// All dependencies of the last mod are initially unsatisfied
+	if (last_mod_spec.has_value()) {
+		last_mod_spec->unsatisfied_depends = last_mod_spec->depends;
+		last_mod_spec->unsatisfied_depends.erase(m_first_mod);
 	}
 
 	// Mods without unmet dependencies can be appended to
@@ -310,9 +319,9 @@ void ModConfiguration::resolveDependencies()
 
 	// Check and add last mod
 	if (last_mod_spec.has_value()) {
-		if (!last_mod_spec->unsatisfied_depends.empty())
-			throw ModError("Mod selected as last by the game has an unsatisfied dependency.");
-
-		m_sorted_mods.push_back(*last_mod_spec);
+		if (last_mod_spec->unsatisfied_depends.empty())
+			m_sorted_mods.push_back(*last_mod_spec);
+		else
+			m_unsatisfied_mods.push_back(*last_mod_spec);
 	}
 }
