@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "exceptions.h"
 #include "util/numeric.h"
-
+#include <optional>
 
 std::string ModConfiguration::getUnsatisfiedModsError() const
 {
@@ -266,7 +266,7 @@ void ModConfiguration::resolveDependencies()
 				mod.unsatisfied_depends.insert(optdep);
 		}
 		if (last_mod_spec.has_value() && mod.unsatisfied_depends.count(last_mod_spec->name) != 0) {
-			throw ModError("It is not allowed to have mod selected as last by the game in dependencies.");
+			throw ModError("Impossible to depend on the mod specified by last_mod");
 		}
 		// if a mod has no depends it is initially satisfied
 		if (mod.unsatisfied_depends.empty()) {
@@ -280,7 +280,7 @@ void ModConfiguration::resolveDependencies()
 	if (first_mod_spec.has_value()) {
 		// dependencies are not allowed for first mod
 		if (!first_mod_spec->depends.empty() || !first_mod_spec->optdepends.empty())
-			throw ModError("Mod selected as first by the game is not allowed to have dependencies.");
+			throw ModError("Mod specified by first_mod cannot have dependencies");
 
 		satisfied.push_back(*first_mod_spec);
 	}
