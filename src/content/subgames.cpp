@@ -170,19 +170,13 @@ SubgameSpec findSubgame(const std::string &id)
 	if (conf.exists("release"))
 		game_release = conf.getS32("release");
 
-	std::optional<std::string> first_mod;
-	if (conf.exists("first_mod")) {
+	std::string first_mod;
+	if (conf.exists("first_mod"))
 		first_mod = conf.get("first_mod");
-		if (first_mod->empty())
-			first_mod = std::nullopt;
-	}
 
-	std::optional<std::string> last_mod;
-	if (conf.exists("last_mod")) {
+	std::string last_mod;
+	if (conf.exists("last_mod"))
 		last_mod = conf.get("last_mod");
-		if (last_mod->empty())
-			last_mod = std::nullopt;
-	}
 
 	std::string menuicon_path;
 #ifndef SERVER

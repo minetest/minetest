@@ -33,8 +33,8 @@ struct SubgameSpec
 	std::string title;
 	std::string author;
 	int release;
-	std::optional<std::string> first_mod;
-	std::optional<std::string> last_mod;
+	std::string first_mod; // "" <=> no mod
+	std::string last_mod; // "" <=> no mod
 	std::string path;
 	std::string gamemods_path;
 
@@ -53,8 +53,8 @@ struct SubgameSpec
 			const std::string &title = "",
 			const std::string &menuicon_path = "",
 			const std::string &author = "", int release = 0,
-			const std::optional<std::string> &first_mod = std::nullopt,
-			const std::optional<std::string> &last_mod = std::nullopt) :
+			const std::string &first_mod = "",
+			const std::string &last_mod = "") :
 			id(id),
 			title(title), author(author), release(release),
 			first_mod(first_mod),

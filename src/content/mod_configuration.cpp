@@ -228,9 +228,9 @@ void ModConfiguration::resolveDependencies()
 	std::set<std::string> modnames;
 	std::optional<ModSpec> first_mod_spec, last_mod_spec;
 	for (ModSpec &mod : m_unsatisfied_mods) {
-		if (m_first_mod.has_value() && mod.name == *m_first_mod) {
+		if (mod.name == m_first_mod) {
 			first_mod_spec = mod;
-		} else if (m_last_mod.has_value() && mod.name == *m_last_mod) {
+		} else if (mod.name == m_last_mod) {
 			// only non optional depends have to be check for last mod
 			mod.unsatisfied_depends = mod.depends;
 			last_mod_spec = mod;
@@ -249,9 +249,9 @@ void ModConfiguration::resolveDependencies()
 	}
 
 	// Check for presence of first and last mod
-	if (m_first_mod.has_value() && !first_mod_spec.has_value())
+	if (!m_first_mod.empty() && !first_mod_spec.has_value())
 		throw ModError("The mod specified as first by the game was not found.");
-	if (m_last_mod.has_value() && !last_mod_spec.has_value())
+	if (!m_last_mod.empty() && !last_mod_spec.has_value())
 		throw ModError("The mod specified as last by the game was not found.");
 
 	// Get dependencies (including optional dependencies)
