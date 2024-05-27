@@ -166,7 +166,7 @@ local function get_formspec(tabview, name, tabdata)
 
 		local button_y = H * 2/3 - 0.6
 		return table.concat({
-			"hypertext[0.375,0.375;", W - 2*0.375, ",", button_y, ";ht;", core.formspec_escape(hypertext), "]",
+			"hypertext[0.375,0;", W - 2*0.375, ",", button_y, ";ht;", core.formspec_escape(hypertext), "]",
 			"button[5.25,", button_y, ";5,1.2;game_open_cdb;", fgettext("Install a game"), "]"})
 	end
 
