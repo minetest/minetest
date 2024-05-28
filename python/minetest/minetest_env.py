@@ -38,7 +38,7 @@ KEY_MAP = [
 
 INVERSE_KEY_MAP = {name: idx for idx, name in enumerate(KEY_MAP)}
 
-DisplaySize = namedtuple("DisplaySize", ["width", "height"])
+DisplaySize = namedtuple("DisplaySize", ["height", "width"])
 
 _still_loading_colors = (
     np.array([59, 59, 59], dtype=np.uint8),
@@ -53,6 +53,7 @@ def _is_loading(obs) -> bool:
     return any(
         (obs == color).all(axis=2).mean() > 0.5 for color in _still_loading_colors
     )
+
 
 class MinetestEnv(gym.Env):
     metadata = {"render_modes": ["rgb_array", "human"]}
@@ -74,6 +75,7 @@ class MinetestEnv(gym.Env):
         headless: bool = True,
         verbose_logging: bool = False,
         log_to_stderr: bool = False,
+        additional_observation_spaces: Optional[Dict[str, gym.Space]] = None,
     ):
         self._prev_score = None
         if config_dict is None:
@@ -85,9 +87,11 @@ class MinetestEnv(gym.Env):
         self.fov_x = self.fov_y * self.display_size.width / self.display_size.height
         self.render_mode = render_mode
         if headless and sys.platform != "linux":
-            raise ValueError("headless mode only supported on linux. "
-                             "Note this may work with the latest upstream minetest which should support "
-                             "building with SDL2 on MacOS. You can try it if you care.")
+            raise ValueError(
+                "headless mode only supported on linux. "
+                "Note this may work with the latest upstream minetest which should support "
+                "building with SDL2 on MacOS. You can try it if you care."
+            )
 
         self.headless = headless
         self.game_dir = game_dir
@@ -100,7 +104,7 @@ class MinetestEnv(gym.Env):
             self._start_pygame()
 
         # Define action and observation space
-        self._configure_spaces()
+        self._configure_spaces(additional_observation_spaces)
 
         # Define Minetest paths
         self._set_artifact_dirs(
@@ -174,7 +178,7 @@ class MinetestEnv(gym.Env):
         self.config_dict = config_dict
         self._write_config()
 
-    def _configure_spaces(self):
+    def _configure_spaces(self, additional_observation_spaces):
         # Define action and observation space
         self.max_mouse_move_x = self.display_size[0] // 2
         self.max_mouse_move_y = self.display_size[1] // 2
@@ -189,12 +193,23 @@ class MinetestEnv(gym.Env):
                 ),
             },
         )
-        self.observation_space = gym.spaces.Box(
-            0,
-            255,
-            shape=(self.display_size[1], self.display_size[0], 3),
-            dtype=np.uint8,
-        )
+        obs_d = {
+            "IMAGE": gym.spaces.Box(
+                0,
+                255,
+                shape=(self.display_size.height, self.display_size.width, 3),
+                dtype=np.uint8,
+            ),
+        }
+        if additional_observation_spaces:
+            assert isinstance(additional_observation_spaces, dict)
+            for key, space in additional_observation_spaces.items():
+                assert isinstance(key, str)
+                assert isinstance(space, gym.spaces.Box)
+                assert space.shape is None or space.shape == (1,)
+                obs_d[key] = space
+
+        self.observation_space = gym.spaces.Dict(obs_d)
 
     def _set_artifact_dirs(self, artifact_dir, world_dir, config_path):
         if artifact_dir is None:
@@ -297,8 +312,8 @@ class MinetestEnv(gym.Env):
             enable_client_modding=True,
             csm_restriction_flags=0,
             enable_mod_channels=True,
-            screen_w=self.display_size[0],
-            screen_h=self.display_size[1],
+            screen_w=self.display_size.width,
+            screen_h=self.display_size.height,
             fov=self.fov_y,
             game_dir=self.game_dir,
             # Adapt HUD size to display size, based on (1024, 600) default
@@ -347,7 +362,7 @@ class MinetestEnv(gym.Env):
 
     def _display_pygame(self):
         # for some reason pydata expects the transposed image
-        img_data = self.last_obs.transpose((1, 0, 2))
+        img_data = self.last_obs["IMAGE"].transpose((1, 0, 2))
 
         # Convert the numpy array to a Pygame Surface and display it
         img = pygame.surfarray.make_surface(img_data)
@@ -389,18 +404,18 @@ class MinetestEnv(gym.Env):
             if not attempt:
                 time.sleep(1)
                 # Check for crash triggered by first action
-                if self.minetest_process.poll() is not None:
+                if self.minetest_process and (self.minetest_process.poll() is not None):
                     raise RuntimeError(
                         "Minetest terminated during handshake! Return code: "
                         f"{self.minetest_process.returncode}, logs in {self.log_dir}",
                     )
-
+            serialized_obs = step_promise.wait()
             (
                 obs,
                 _,
                 _,
-            ) = deserialize_obs(step_promise.wait())
-            if _is_loading(obs):
+            ) = deserialize_obs(serialized_obs, self.observation_space)
+            if _is_loading(obs["IMAGE"]):
                 valid_obs_seen = 0
                 self._logger.debug(
                     f"Still loading... {attempt}/{valid_obs_max_attempts}"
@@ -408,7 +423,7 @@ class MinetestEnv(gym.Env):
                 continue
             valid_obs_seen += 1
             if valid_obs_seen >= min_num_valid_obs:
-                self._logger.debug(f"Received first obs: {obs.shape}")
+                self._logger.debug(f"Received first obs: {obs['IMAGE'].shape}")
                 self.last_obs = obs
                 return obs, {}
         raise RuntimeError(
@@ -433,7 +448,7 @@ class MinetestEnv(gym.Env):
         if self.minetest_process and self.minetest_process.poll() is not None:
             return self.last_obs, 0.0, True, False, {}
 
-        next_obs, score, done = deserialize_obs(step_response)
+        next_obs, score, done = deserialize_obs(step_response, self.observation_space)
         self.last_obs = next_obs
 
         if self.render_mode == "human":
@@ -510,16 +525,25 @@ class MinetestEnv(gym.Env):
         return minetest_process
 
 
-def deserialize_obs(step_response):
-    # Convert the response to a numpy array
+def deserialize_obs(
+    step_response, observation_space: gym.spaces.Dict
+) -> Tuple[Dict[str, Any], float, bool]:
     img = step_response.observation.image
     img_data = np.frombuffer(img.data, dtype=np.uint8).reshape(
         (img.height, img.width, 3)
     )
-    # Reshape the numpy array to the correct dimensions
+    obs = {
+        "IMAGE": img_data,
+    }
+    for aux_item in step_response.observation.aux.entries:
+        assert aux_item.key in observation_space.spaces, (
+            f"Unknown observation space: {aux_item.key}. "
+            "Please set additional_observation_spaces when constructing."
+        )
+        obs[aux_item.key] = np.array([aux_item.value], dtype=np.float32)
     reward = step_response.observation.reward
     done = step_response.observation.done
-    return img_data, reward, done
+    return obs, reward, done
 
 
 def serialize_action(action: Dict[str, Any], action_msg):

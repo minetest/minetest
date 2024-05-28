@@ -74,7 +74,8 @@ RemoteInputHandler::RemoteInputHandler(const std::string &endpoint,
   m_chan.m_action_cv.wait(lock, [this] { return m_chan.m_did_init; });
 };
 
-void RemoteInputHandler::fill_observation(irr::video::IImage *image, float reward) {
+void RemoteInputHandler::fill_observation(
+    irr::video::IImage *image, float reward, std::map<std::string, float> aux) {
   std::unique_lock<std::mutex> lock(m_chan.m_obs_mutex);
   m_chan.m_obs_cv.wait(lock, [this] { return !m_chan.m_has_obs; });
 
@@ -84,6 +85,15 @@ void RemoteInputHandler::fill_observation(irr::video::IImage *image, float rewar
   m_chan.m_image_builder.setData(
       capnp::Data::Reader(reinterpret_cast<const uint8_t *>(image->getData()),
                           image->getImageDataSizeInBytes()));
+
+  auto entries = m_chan.m_aux_map_builder.initEntries(aux.size());
+  size_t i = 0;
+  for (auto [key, value] : aux) {
+    auto aux_elem = entries[i];
+    i++;
+    aux_elem.setKey(key);
+    aux_elem.setValue(value);
+  }
   m_chan.m_has_obs = true;
   m_chan.m_obs_cv.notify_one();
   image->drop();
@@ -133,23 +143,30 @@ void RemoteInputHandler::step(float dtime) {
   // during game startup, the hud is not yet initialized, so there'll be no
   // score for the first 1-2 steps
   float score{};
+  std::map<std::string, float> aux{};
   for (u32 i = 0; i < m_player->maxHudId(); ++i) {
     auto hud_element = m_player->getHud(i);
+    std::string_view elem_text = hud_element->text;
+    // find the index of the first :
+    const auto colon_pos = elem_text.find(':');
+    if (colon_pos == std::string_view::npos) {
+      continue;
+    }
+    elem_text.remove_prefix(colon_pos + 1); // +1 for space
+    // I'd rather use std::from_chars, but it's not available in libc++ yet.
+    std::stringstream ss{std::string(elem_text)};
     if (hud_element->name == "score") {
-      // parse 'Score: <score>' from hud
-      constexpr char kScoreHUDPrefix[] = "Score: ";
-      std::string_view score_string = hud_element->text;
-      score_string.remove_prefix(std::size(kScoreHUDPrefix) - 1); // -1 for null terminator
-      // I'd rather use std::from_chars, but it's not available in libc++ yet.
-      std::stringstream ss{std::string(score_string)};
       ss >> score;
-      break;
+    } else {
+      float value;
+      ss >> value;
+      aux[hud_element->name] = value;
     }
   }
 
   // copying the image into the capnp message is slow, so we do it in a separate thread
-  std::thread([this, image, score]() {
-    fill_observation(image, score);
+  std::thread([this, image, score, aux]() {
+    fill_observation(image, score, aux);
   }).detach();
 };
 

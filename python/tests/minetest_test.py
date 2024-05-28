@@ -62,22 +62,27 @@ def test_minetest_basic(world_dir, caplog):
         # mac doesn't support abstract unix sockets, so use TCP
         server_addr = f"localhost:{get_free_port()}"
     artifact_dir = tempfile.mkdtemp()
+    display_size = (223, 111)
     env = gym.make(
         "minetest-v0",
         executable=minetest_executable,
         artifact_dir=artifact_dir,
         server_addr=server_addr,
         render_mode="rgb_array",
-        display_size=(223, 111),
+        display_size=display_size,
         world_dir=world_dir,
         headless=True,
         verbose_logging=True,
+        additional_observation_spaces={
+            "return": gym.spaces.Box(low=-(2**20), high=2**20, shape=(1,))
+        },
     )
 
     # Context manager to make sure close() is called even if test fails.
     with env:
-        env.reset()
+        initial_obs, info = env.reset()
         nonzero_reward = False
+        expected_shape = display_size + (3,)
         for i in range(5):
             action = {
                 "KEYS": np.zeros(len(INVERSE_KEY_MAP), dtype=bool),
@@ -91,23 +96,25 @@ def test_minetest_basic(world_dir, caplog):
 
             obs, reward, terminated, truncated, info = env.step(action)
             assert not terminated and not truncated
+            assert "return" in obs
+            assert "IMAGE" in obs
             # TODO: I've seen the system get into a mode where the output is always 480, 640, 3
             # Seems like something to do with OpenGL driver initialization.
-            expected_shape = (111, 223, 3)
             # clunky `if`` and then assert to make sure we get a screenshot if the test fails.
-            if (obs.shape != expected_shape):
+            img_data = obs["IMAGE"]
+            if img_data.shape != expected_shape:
                 screenshot_path = os.path.join(
                     artifact_dir, f"minetst_test_obs_{i}.png"
                 )
-                Image.fromarray(obs).save(screenshot_path)
-                assert obs.shape == expected_shape, f"see image: {screenshot_path}"
+                Image.fromarray(img_data).save(screenshot_path)
+                assert img_data.shape == expected_shape, f"see image: {screenshot_path}"
             if reward > 0:
                 nonzero_reward = True
             # The screen is always black when rendering with mesa on Linux.
             # This is a bug but we don't care about this case, so check only
             # on Mac or when rendering with nvidia.
             if sys.platform == "darwin" or shutil.which("nvidia-smi"):
-                assert obs.sum() > 0, "All black image"
+                assert img_data.sum() > 0, "All black image"
     assert nonzero_reward, f"see images in {artifact_dir}"
 
     shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.

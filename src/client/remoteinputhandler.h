@@ -4,6 +4,7 @@
 #include "remoteclient.capnp.h"
 
 #include <condition_variable>
+#include <map>
 #include <mutex>
 #include <string>
 
@@ -21,13 +22,19 @@ struct Channel {
   ::capnp::MallocMessageBuilder m_obs_msg_builder;
   Observation::Builder m_obs_builder; // GUARDED_BY(m_obs_mutex)
   Image::Builder m_image_builder; // GUARDED_BY(m_obs_mutex)
+  AuxMap::Builder m_aux_map_builder; // GUARDED_BY(m_obs_mutex)
   Action::Reader *m_action; // GUARDED_BY(m_action_mutex)
   bool m_has_obs{}; // GUARDED_BY(m_obs_mutex)
   bool m_did_init{}; // GUARDED_BY(m_action_mutex)
 
-  Channel() : m_obs_builder{m_obs_msg_builder.initRoot<Observation>()}, m_image_builder{nullptr}, m_action{} {
+  Channel() : m_obs_builder{m_obs_msg_builder.initRoot<Observation>()},
+              m_image_builder{nullptr},
+              m_aux_map_builder{nullptr},
+              m_action{nullptr} {
     m_obs_builder.initImage();
     m_image_builder = m_obs_builder.getImage();
+    m_obs_builder.initAux();
+    m_aux_map_builder = m_obs_builder.getAux();
   }
 };
 
@@ -132,7 +139,7 @@ public:
   }
 
 private:
-  void fill_observation(irr::video::IImage *image, float reward);
+  void fill_observation(irr::video::IImage *image, float reward, std::map<std::string, float> aux);
 
   RenderingEngine *m_rendering_engine;
 
