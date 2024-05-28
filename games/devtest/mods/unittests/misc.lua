@@ -279,3 +279,16 @@ local function test_ipc_vector_preserve(cb)
 	assert(vector.check(v))
 end
 unittests.register("test_ipc_vector_preserve", test_ipc_vector_preserve)
+
+local function test_ipc_poll(cb)
+	core.ipc_set("unittests:flag", nil)
+	assert(core.ipc_poll("unittests:flag", 1) == false)
+
+	-- Note that unless the async result callback - which has to wait for the
+	-- next server step - the IPC is instant
+	core.handle_async(function()
+		core.ipc_set("unittests:flag", true)
+	end, function() end)
+	assert(core.ipc_poll("unittests:flag", 1000) == true, "Wait failed (or slow machine?)")
+end
+unittests.register("test_ipc_poll", test_ipc_poll)

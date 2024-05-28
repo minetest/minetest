@@ -47,6 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <optional>
 #include <string_view>
 #include <shared_mutex>
+#include <condition_variable>
 
 class ChatEvent;
 struct ChatEventChat;
@@ -145,12 +146,16 @@ struct ClientInfo {
 struct ModIPCStore {
 	/// RW lock for this entire structure
 	std::shared_mutex mutex;
+	/// Signalled on any changes to the map contents
+	std::condition_variable_any condvar;
 	/**
 	 * Map storing the data
 	 *
 	 * Note: Do not store `nil` data in this map, instead remove the whole key.
 	 */
 	std::unordered_map<std::string, std::unique_ptr<PackedValue>> map;
+
+	inline void signal() { condvar.notify_all(); }
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
