@@ -930,9 +930,9 @@ void TrackFreedMemory(size_t amount)
 {
 	constexpr auto MO = std::memory_order_relaxed;
 	size_t sum = memory_freed.fetch_add(amount, MO);
-	if (sum > MEMORY_TRIM_THRESHOLD) {
+	if (sum >= MEMORY_TRIM_THRESHOLD) {
 		// Synchronize call
-		if (memory_freed.exchange(0, MO) <= MEMORY_TRIM_THRESHOLD)
+		if (memory_freed.exchange(0, MO) < MEMORY_TRIM_THRESHOLD)
 			return;
 		// Leave some headroom for future allocations
 		malloc_trim(1 * 1024 * 1024);
