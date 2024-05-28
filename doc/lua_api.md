@@ -7077,6 +7077,15 @@ minetest.ipc_get("test:foo") -- returns an empty table
   * `old_value`: value compared to using `==` (`nil` compares equal for non-existing keys)
   * `new_value`: value that will be set
   * returns: true on success, false otherwise
+* `minetest.ipc_poll(key, timeout)`:
+  * Do a blocking wait until a value (other than `nil`) is present at the key.
+  * **IMPORTANT**: You usually don't need this function. Use this as a last resort
+    if nothing else can satisfy your use case! None of the Lua environments the
+    engine has are safe to block for extended periods, especially on the main
+    thread any delays directly translate to lag felt by players.
+  * `key`: as above
+  * `timeout`: maximum wait time, in milliseconds (positive values only)
+  * returns: true on success, false on timeout
 
 Bans
 ----
