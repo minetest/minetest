@@ -6,6 +6,7 @@
 #include "common/c_packer.h"
 #include "server.h"
 #include "debug.h"
+#include <chrono>
 
 typedef std::shared_lock<std::shared_mutex> SharedReadLock;
 typedef std::unique_lock<std::shared_mutex> SharedWriteLock;
@@ -54,6 +55,7 @@ int ModApiIPC::l_ipc_set(lua_State *L)
 		else
 			store->map.erase(key); // delete the map value for nil
 	}
+	store->signal();
 	return 0;
 }
 
@@ -89,7 +91,34 @@ int ModApiIPC::l_ipc_cas(lua_State *L)
 				store->map.erase(key);
 		}
 	}
+
+	if (ok)
+		store->signal();
 	lua_pushboolean(L, ok);
+	return 1;
+}
+
+int ModApiIPC::l_ipc_poll(lua_State *L)
+{
+	auto *store = getGameDef(L)->getModIPCStore();
+
+	auto key = readParam<std::string>(L, 1);
+
+	auto timeout = std::chrono::milliseconds(
+		std::max<int>(0, luaL_checkinteger(L, 2))
+	);
+
+	bool ret;
+	{
+		SharedReadLock autolock(store->mutex);
+
+		// wait until value exists or timeout
+		ret = store->condvar.wait_for(autolock, timeout, [&] () -> bool {
+			return store->map.count(key) != 0;
+		});
+	}
+
+	lua_pushboolean(L, ret);
 	return 1;
 }
 
@@ -108,4 +137,5 @@ void ModApiIPC::Initialize(lua_State *L, int top)
 	API_FCT(ipc_get);
 	API_FCT(ipc_set);
 	API_FCT(ipc_cas);
+	API_FCT(ipc_poll);
 }
