@@ -23,7 +23,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-12 # TODO: switch to macos-latest once pycapnp on conda-forge supports arm64
     steps:
       - uses: actions/checkout@v3
 
