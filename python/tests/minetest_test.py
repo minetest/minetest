@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
+from minetest import minetest_env
 from minetest.minetest_env import INVERSE_KEY_MAP
 
 
@@ -104,7 +105,7 @@ def test_minetest_basic(world_dir, caplog):
             img_data = obs["IMAGE"]
             if img_data.shape != expected_shape:
                 screenshot_path = os.path.join(
-                    artifact_dir, f"minetst_test_obs_{i}.png"
+                    artifact_dir, f"minetest_test_obs_{i}.png"
                 )
                 Image.fromarray(img_data).save(screenshot_path)
                 assert img_data.shape == expected_shape, f"see image: {screenshot_path}"
@@ -118,3 +119,8 @@ def test_minetest_basic(world_dir, caplog):
     assert nonzero_reward, f"see images in {artifact_dir}"
 
     shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
+
+
+def test_keymap_valid():
+    for key in INVERSE_KEY_MAP:
+        assert key in minetest_env.remoteclient_capnp.KeyPressType.Key.schema.enumerants

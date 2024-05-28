@@ -55,6 +55,14 @@ def _is_loading(obs) -> bool:
     )
 
 
+_TOGGLE_HUD_KEY = remoteclient_capnp.KeyPressType.Key.schema.enumerants["toggleHud"]
+_TOGGLE_HUD_ACTION = {
+    "KEYS": np.zeros(_TOGGLE_HUD_KEY + 1, dtype=bool),
+    "MOUSE": [0, 0],
+}
+_TOGGLE_HUD_ACTION["KEYS"][_TOGGLE_HUD_KEY] = True
+
+
 class MinetestEnv(gym.Env):
     metadata = {"render_modes": ["rgb_array", "human"]}
 
@@ -424,13 +432,18 @@ class MinetestEnv(gym.Env):
             valid_obs_seen += 1
             if valid_obs_seen >= min_num_valid_obs:
                 self._logger.debug(f"Received first obs: {obs['IMAGE'].shape}")
+                self._logger.debug("Disabling HUD")
+                obs, _, _, _, _ = self.step(
+                    _TOGGLE_HUD_ACTION,
+                    _key_map={_TOGGLE_HUD_KEY: "toggleHud"},
+                )
                 self.last_obs = obs
                 return obs, {}
         raise RuntimeError(
             f"Failed to get a valid observation after {valid_obs_max_attempts} attempts"
         )
 
-    def step(self, action: Dict[str, Any]):
+    def step(self, action: Dict[str, Any], _key_map=KEY_MAP):
         if self.minetest_process and self.minetest_process.poll() is not None:
             raise RuntimeError(
                 "Minetest terminated! Return code: "
@@ -441,7 +454,7 @@ class MinetestEnv(gym.Env):
         if isinstance(action["MOUSE"], np.ndarray):
             action["MOUSE"] = action["MOUSE"].tolist()
         step_request = self.capnp_client.step_request()
-        serialize_action(action, step_request.action)
+        serialize_action(action, step_request.action, key_map=_key_map)
         step_response = step_request.send().wait()
 
         # TODO more robust check for whether a server/client is alive while receiving observations
@@ -546,7 +559,7 @@ def deserialize_obs(
     return obs, reward, done
 
 
-def serialize_action(action: Dict[str, Any], action_msg):
+def serialize_action(action: Dict[str, Any], action_msg, key_map=KEY_MAP):
     action_msg.mouseDx = action["MOUSE"][0]
     action_msg.mouseDy = action["MOUSE"][1]
 
@@ -554,7 +567,7 @@ def serialize_action(action: Dict[str, Any], action_msg):
     setIdx = 0
     for idx, pressed in enumerate(action["KEYS"]):
         if pressed:
-            keyEvents[setIdx] = KEY_MAP[idx]
+            keyEvents[setIdx] = key_map[idx]
             setIdx += 1
 
 
