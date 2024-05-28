@@ -928,11 +928,14 @@ constexpr size_t MEMORY_TRIM_THRESHOLD = 128 * 1024 * 1024;
 
 void TrackFreedMemory(size_t amount)
 {
-	size_t sum = memory_freed.fetch_add(amount, std::memory_order_relaxed);
+	constexpr auto MO = std::memory_order_relaxed;
+	size_t sum = memory_freed.fetch_add(amount, MO);
 	if (sum > MEMORY_TRIM_THRESHOLD) {
+		// Synchronize call
+		if (memory_freed.exchange(0, MO) <= MEMORY_TRIM_THRESHOLD)
+			return;
 		// Leave some headroom for future allocations
 		malloc_trim(1 * 1024 * 1024);
-		memory_freed.store(0);
 	}
 }
 
