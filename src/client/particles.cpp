@@ -1008,7 +1008,6 @@ video::SMaterial ParticleManager::getMaterialForParticle(const ClientParticleTex
 			video::EMFN_MODULATE_1X,
 			video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
 	material.BlendOperation = blendop;
-	assert(texture.ref);
 	material.setTexture(0, texture.ref);
 
 	return material;
