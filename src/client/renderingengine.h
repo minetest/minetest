@@ -169,7 +169,6 @@ public:
 
 private:
 	static void settingChangedCallback(const std::string &name, void *data);
-	void applyFullscreenSetting();
 	v2u32 _getWindowSize() const;
 
 	std::unique_ptr<RenderingCore> core;

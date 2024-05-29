@@ -251,6 +251,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	skin->drop();
 
 	g_settings->registerChangedCallback("fullscreen", settingChangedCallback, this);
+	g_settings->registerChangedCallback("window_maximized", settingChangedCallback, this);
 }
 
 RenderingEngine::~RenderingEngine()
@@ -258,20 +259,35 @@ RenderingEngine::~RenderingEngine()
 	sanity_check(s_singleton == this);
 
 	g_settings->deregisterChangedCallback("fullscreen", settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("window_maximized", settingChangedCallback, this);
+
 	core.reset();
 	m_device->closeDevice();
 	m_device->drop();
 	s_singleton = nullptr;
 }
 
-void RenderingEngine::settingChangedCallback(const std::string &name, void *data)
+static void applyWindowMaximized(IrrlichtDevice *device, bool maximized)
 {
-	static_cast<RenderingEngine*>(data)->applyFullscreenSetting();
+	if (maximized && !device->isWindowMaximized())
+		device->maximizeWindow();
+	else if (!maximized && device->isWindowMaximized())
+		device->restoreWindow();
 }
 
-void RenderingEngine::applyFullscreenSetting()
+void RenderingEngine::settingChangedCallback(const std::string &name, void *data)
 {
-	m_device->setFullscreen(g_settings->getBool("fullscreen"));
+	IrrlichtDevice *device = static_cast<RenderingEngine*>(data)->m_device;
+	if (name == "fullscreen") {
+		device->setFullscreen(g_settings->getBool("fullscreen"));
+		// When leaving fullscreen, apply window_maximized again. In theory,
+		// setFullscreen can fail, so check via isFullscreen.
+		if (!device->isFullscreen())
+			applyWindowMaximized(device, g_settings->getBool("window_maximized"));
+	} else if (name == "window_maximized") {
+		if (!device->isFullscreen())
+			applyWindowMaximized(device, g_settings->getBool("window_maximized"));
+	}
 }
 
 v2u32 RenderingEngine::_getWindowSize() const
