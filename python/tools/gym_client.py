@@ -59,7 +59,7 @@ def get_action_from_key_cache(key_cache, mouse):
         keys[INVERSE_KEY_MAP[KEY_TO_KEYTYPE[key]]] = True
 
     mouse = np.array([mouse.dx, mouse.dy])
-    return {"KEYS": keys, "MOUSE": mouse}
+    return {"keys": keys, "mouse": mouse}
 
 
 def game_loop():

@@ -158,7 +158,7 @@ void RemoteInputHandler::step(float dtime) {
     if (hud_element->name == "score") {
       ss >> score;
     } else {
-      float value;
+      float value{};
       ss >> value;
       aux[hud_element->name] = value;
     }

@@ -86,23 +86,23 @@ def test_minetest_basic(world_dir, caplog):
         expected_shape = display_size + (3,)
         for i in range(5):
             action = {
-                "KEYS": np.zeros(len(INVERSE_KEY_MAP), dtype=bool),
-                "MOUSE": np.array([0.0, 0.0]),
+                "keys": np.zeros(len(INVERSE_KEY_MAP), dtype=bool),
+                "mouse": np.array([0.0, 0.0]),
             }
 
             if i == 3:
-                action["KEYS"][INVERSE_KEY_MAP["forward"]] = True
-                action["KEYS"][INVERSE_KEY_MAP["left"]] = True
-                action["MOUSE"] = np.array([0.0, 1.0])
+                action["keys"][INVERSE_KEY_MAP["forward"]] = True
+                action["keys"][INVERSE_KEY_MAP["left"]] = True
+                action["mouse"] = np.array([0.0, 1.0])
 
             obs, reward, terminated, truncated, info = env.step(action)
             assert not terminated and not truncated
             assert "return" in obs
-            assert "IMAGE" in obs
+            assert "image" in obs
             # TODO: I've seen the system get into a mode where the output is always 480, 640, 3
             # Seems like something to do with OpenGL driver initialization.
             # clunky `if`` and then assert to make sure we get a screenshot if the test fails.
-            img_data = obs["IMAGE"]
+            img_data = obs["image"]
             if img_data.shape != expected_shape:
                 screenshot_path = os.path.join(
                     artifact_dir, f"minetest_test_obs_{i}.png"

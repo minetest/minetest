@@ -57,10 +57,10 @@ def _is_loading(obs) -> bool:
 
 _TOGGLE_HUD_KEY = remoteclient_capnp.KeyPressType.Key.schema.enumerants["toggleHud"]
 _TOGGLE_HUD_ACTION = {
-    "KEYS": np.zeros(_TOGGLE_HUD_KEY + 1, dtype=bool),
-    "MOUSE": [0, 0],
+    "keys": np.zeros(_TOGGLE_HUD_KEY + 1, dtype=bool),
+    "mouse": [0, 0],
 }
-_TOGGLE_HUD_ACTION["KEYS"][_TOGGLE_HUD_KEY] = True
+_TOGGLE_HUD_ACTION["keys"][_TOGGLE_HUD_KEY] = True
 
 
 class MinetestEnv(gym.Env):
@@ -192,8 +192,8 @@ class MinetestEnv(gym.Env):
         self.max_mouse_move_y = self.display_size[1] // 2
         self.action_space = gym.spaces.Dict(
             {
-                "KEYS": gym.spaces.MultiBinary(len(KEY_MAP)),
-                "MOUSE": gym.spaces.Box(
+                "keys": gym.spaces.MultiBinary(len(KEY_MAP)),
+                "mouse": gym.spaces.Box(
                     low=np.array([-self.max_mouse_move_x, -self.max_mouse_move_y]),
                     high=np.array([self.max_mouse_move_x, self.max_mouse_move_y]),
                     shape=(2,),
@@ -202,7 +202,7 @@ class MinetestEnv(gym.Env):
             },
         )
         obs_d = {
-            "IMAGE": gym.spaces.Box(
+            "image": gym.spaces.Box(
                 0,
                 255,
                 shape=(self.display_size.height, self.display_size.width, 3),
@@ -370,7 +370,7 @@ class MinetestEnv(gym.Env):
 
     def _display_pygame(self):
         # for some reason pydata expects the transposed image
-        img_data = self.last_obs["IMAGE"].transpose((1, 0, 2))
+        img_data = self.last_obs["image"].transpose((1, 0, 2))
 
         # Convert the numpy array to a Pygame Surface and display it
         img = pygame.surfarray.make_surface(img_data)
@@ -423,7 +423,7 @@ class MinetestEnv(gym.Env):
                 _,
                 _,
             ) = deserialize_obs(serialized_obs, self.observation_space)
-            if _is_loading(obs["IMAGE"]):
+            if _is_loading(obs["image"]):
                 valid_obs_seen = 0
                 self._logger.debug(
                     f"Still loading... {attempt}/{valid_obs_max_attempts}"
@@ -431,7 +431,7 @@ class MinetestEnv(gym.Env):
                 continue
             valid_obs_seen += 1
             if valid_obs_seen >= min_num_valid_obs:
-                self._logger.debug(f"Received first obs: {obs['IMAGE'].shape}")
+                self._logger.debug(f"Received first obs: {obs['image'].shape}")
                 self._logger.debug("Disabling HUD")
                 obs, _, _, _, _ = self.step(
                     _TOGGLE_HUD_ACTION,
@@ -451,8 +451,8 @@ class MinetestEnv(gym.Env):
             )
 
         # Send action
-        if isinstance(action["MOUSE"], np.ndarray):
-            action["MOUSE"] = action["MOUSE"].tolist()
+        if isinstance(action["mouse"], np.ndarray):
+            action["mouse"] = action["mouse"].tolist()
         step_request = self.capnp_client.step_request()
         serialize_action(action, step_request.action, key_map=_key_map)
         step_response = step_request.send().wait()
@@ -546,7 +546,7 @@ def deserialize_obs(
         (img.height, img.width, 3)
     )
     obs = {
-        "IMAGE": img_data,
+        "image": img_data,
     }
     for aux_item in step_response.observation.aux.entries:
         assert aux_item.key in observation_space.spaces, (
@@ -554,18 +554,21 @@ def deserialize_obs(
             "Please set additional_observation_spaces when constructing."
         )
         obs[aux_item.key] = np.array([aux_item.value], dtype=np.float32)
+    for key in observation_space.spaces:
+        if key not in obs:
+            obs[key] = np.zeros((1,), dtype=np.float32)
     reward = step_response.observation.reward
     done = step_response.observation.done
     return obs, reward, done
 
 
 def serialize_action(action: Dict[str, Any], action_msg, key_map=KEY_MAP):
-    action_msg.mouseDx = action["MOUSE"][0]
-    action_msg.mouseDy = action["MOUSE"][1]
+    action_msg.mouseDx = action["mouse"][0]
+    action_msg.mouseDy = action["mouse"][1]
 
-    keyEvents = action_msg.init("keyEvents", action["KEYS"].sum())
+    keyEvents = action_msg.init("keyEvents", action["keys"].sum())
     setIdx = 0
-    for idx, pressed in enumerate(action["KEYS"]):
+    for idx, pressed in enumerate(action["keys"]):
         if pressed:
             keyEvents[setIdx] = key_map[idx]
             setIdx += 1
