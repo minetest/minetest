@@ -179,6 +179,10 @@ public:
 	/** \return True if window is fullscreen. */
 	virtual bool isFullscreen() const = 0;
 
+	//! Enables or disables fullscreen mode.
+	// Only works on SDL.
+	virtual void setFullscreen(bool fullscreen) {};
+
 	//! Checks if the window could possibly be visible.
 	/** If this returns false, you should not do any rendering. */
 	virtual bool isWindowVisible() const { return true; };

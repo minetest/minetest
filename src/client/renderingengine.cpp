@@ -249,16 +249,29 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 			gui::EGST_WINDOWS_METALLIC, driver);
 	m_device->getGUIEnvironment()->setSkin(skin);
 	skin->drop();
+
+	g_settings->registerChangedCallback("fullscreen", settingChangedCallback, this);
 }
 
 RenderingEngine::~RenderingEngine()
 {
 	sanity_check(s_singleton == this);
 
+	g_settings->deregisterChangedCallback("fullscreen", settingChangedCallback, this);
 	core.reset();
 	m_device->closeDevice();
 	m_device->drop();
 	s_singleton = nullptr;
+}
+
+void RenderingEngine::settingChangedCallback(const std::string &name, void *data)
+{
+	static_cast<RenderingEngine*>(data)->applyFullscreenSetting();
+}
+
+void RenderingEngine::applyFullscreenSetting()
+{
+	m_device->setFullscreen(g_settings->getBool("fullscreen"));
 }
 
 v2u32 RenderingEngine::_getWindowSize() const

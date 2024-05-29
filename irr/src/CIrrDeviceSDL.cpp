@@ -463,13 +463,7 @@ bool CIrrDeviceSDL::createWindowWithContext()
 {
 	u32 SDL_Flags = 0;
 
-	if (CreationParams.Fullscreen) {
-#ifdef _IRR_EMSCRIPTEN_PLATFORM_
-		SDL_Flags |= SDL_WINDOW_FULLSCREEN;
-#else
-		SDL_Flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-#endif
-	}
+	SDL_Flags |= getFullscreenFlag(CreationParams.Fullscreen);
 	if (Resizable)
 		SDL_Flags |= SDL_WINDOW_RESIZABLE;
 	if (CreationParams.WindowMaximized)
@@ -1157,12 +1151,30 @@ bool CIrrDeviceSDL::isWindowMaximized() const
 
 bool CIrrDeviceSDL::isFullscreen() const
 {
-#ifdef _IRR_EMSCRIPTEN_PLATFORM_
-	return SDL_GetWindowFlags(0) == SDL_WINDOW_FULLSCREEN;
-#else
+	if (!Window)
+		return false;
+	u32 flags = SDL_GetWindowFlags(Window);
+	return (flags & SDL_WINDOW_FULLSCREEN) != 0 ||
+			(flags & SDL_WINDOW_FULLSCREEN_DESKTOP) != 0;
+}
 
-	return CIrrDeviceStub::isFullscreen();
+u32 CIrrDeviceSDL::getFullscreenFlag(bool fullscreen)
+{
+	if (!fullscreen)
+		return 0;
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+	return SDL_WINDOW_FULLSCREEN;
+#else
+	return SDL_WINDOW_FULLSCREEN_DESKTOP;
 #endif
+}
+
+void CIrrDeviceSDL::setFullscreen(bool fullscreen)
+{
+	// The SDL wiki says that this may trigger SDL_RENDER_TARGETS_RESET, but
+	// looking at the SDL source, this only happens with D3D, so it's not
+	// relevant to us.
+	SDL_SetWindowFullscreen(Window, getFullscreenFlag(fullscreen));
 }
 
 bool CIrrDeviceSDL::isWindowVisible() const
