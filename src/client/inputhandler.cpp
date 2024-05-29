@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "settings.h"
 #include "util/numeric.h"
 #include "inputhandler.h"
 #include "gui/mainmenumanager.h"
@@ -111,6 +112,17 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 		g_logger.log(irr_loglev_conv[event.LogEvent.Level],
 				std::string("Irrlicht: ") + event.LogEvent.Text);
 		return true;
+	}
+
+	if (event.EventType == EET_KEY_INPUT_EVENT) {
+		const KeyPress keyCode(event.KeyInput);
+		if (keyCode == getKeySetting("keymap_fullscreen")) {
+			static bool is_down = false; // used to ignore key repeats
+			if (event.KeyInput.PressedDown && !is_down) {
+				g_settings->setBool("fullscreen", !g_settings->getBool("fullscreen"));
+			}
+			is_down = event.KeyInput.PressedDown;
+		}
 	}
 
 	// Let the menu handle events, if one is active.

@@ -2399,6 +2399,9 @@ keymap_minimap (Minimap key) key KEY_KEY_V
 #    Key for taking screenshots.
 keymap_screenshot (Screenshot) key KEY_F12
 
+#    Key for toggling fullscreen mode.
+keymap_fullscreen (Fullscreen key) key KEY_F11
+
 #    Key for dropping the currently selected item.
 keymap_drop (Drop item key) key KEY_KEY_Q
 
