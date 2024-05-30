@@ -119,7 +119,8 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 		if (keyCode == getKeySetting("keymap_fullscreen")) {
 			static bool is_down = false; // used to ignore key repeats
 			if (event.KeyInput.PressedDown && !is_down) {
-				g_settings->setBool("fullscreen", !g_settings->getBool("fullscreen"));
+				bool fullscreen = RenderingEngine::get_raw_device()->isFullscreen();
+				g_settings->setBool("fullscreen", !fullscreen);
 			}
 			is_down = event.KeyInput.PressedDown;
 		}
