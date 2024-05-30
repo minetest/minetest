@@ -94,7 +94,7 @@ class MinetestEnv(gym.Env):
         self.fov_y = fov
         self.fov_x = self.fov_y * self.display_size.width / self.display_size.height
         self.render_mode = render_mode
-        if headless and sys.platform != "linux":
+        if (not server_addr) and headless and sys.platform != "linux":
             raise ValueError(
                 "headless mode only supported on linux. "
                 "Note this may work with the latest upstream minetest which should support "
@@ -154,6 +154,10 @@ class MinetestEnv(gym.Env):
         if server_addr:
             # Force IPv4 and don't rely on DNS.
             self.socket_addr = server_addr.replace("localhost", "127.0.0.1")
+            if ":" in self.socket_addr:
+                addr_parts = self.socket_addr.split(":")
+                assert len(addr_parts) == 2, server_addr
+                self.socket_addr = (addr_parts[0], int(addr_parts[1]))
         else:
             assert (
                 sys.platform == "linux"
@@ -249,7 +253,7 @@ class MinetestEnv(gym.Env):
         if self.socket:
             self.socket.close()
             self.socket = None
-        if ":" in self.socket_addr:
+        if isinstance(self.socket_addr, tuple):
             my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         else:
             my_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -381,6 +385,8 @@ class MinetestEnv(gym.Env):
         self._np_random = np.random.RandomState(seed or 0)
 
     def _increment_socket_addr(self):
+        if not isinstance(self.socket_addr, str):
+            return
         self._logger.debug("incrementing socket")
         addr, ext = self.socket_addr.rsplit("_", 1)
         num = int(ext.split(".")[0])

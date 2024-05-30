@@ -24,7 +24,7 @@ requirements:
     # python deps
     - gymnasium
     - numpy =1.26
-    - pycapnp >=1.1.1 # need 4b75fe3b5ea97a80a0d349a42c143c989fe85d5e
+    - pycapnp >=1.1.1,<2 # need 4b75fe3b5ea97a80a0d349a42c143c989fe85d5e
 
 about:
   repository: https://github.com/Astera-org/minetest

@@ -37,7 +37,7 @@ dependencies:
   - pip
   - pip:
     - -e python
-  - pycapnp
+  - pycapnp>=1.1.1,<2
   - pygame
   - pytest # test only
   - pytest-repeat # test only
