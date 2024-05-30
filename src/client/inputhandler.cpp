@@ -123,6 +123,7 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 				g_settings->setBool("fullscreen", !fullscreen);
 			}
 			is_down = event.KeyInput.PressedDown;
+			return true;
 		}
 	}
 
