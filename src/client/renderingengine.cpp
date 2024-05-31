@@ -280,10 +280,9 @@ void RenderingEngine::settingChangedCallback(const std::string &name, void *data
 	IrrlichtDevice *device = static_cast<RenderingEngine*>(data)->m_device;
 	if (name == "fullscreen") {
 		bool fullscreen = g_settings->getBool("fullscreen");
-		device->setFullscreen(fullscreen);
-		// When leaving fullscreen, apply window_maximized again. In theory,
-		// setFullscreen can fail, so check via isFullscreen.
-		if (!fullscreen && !device->isFullscreen())
+		bool success = device->setFullscreen(fullscreen);
+		// When leaving fullscreen, apply window_maximized again.
+		if (!fullscreen && success)
 			applyWindowMaximized(device, g_settings->getBool("window_maximized"));
 	} else if (name == "window_maximized") {
 		if (!device->isFullscreen())

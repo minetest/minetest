@@ -87,7 +87,8 @@ public:
 	bool isFullscreen() const override;
 
 	//! Enables or disables fullscreen mode.
-	void setFullscreen(bool fullscreen) override;
+	/** \return True on success. */
+	bool setFullscreen(bool fullscreen) override;
 
 	//! Checks if the window could possibly be visible.
 	bool isWindowVisible() const override;
