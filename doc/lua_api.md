@@ -1600,10 +1600,11 @@ A box of a regular node would look like:
 {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
 ```
 
-To avoid collision issues, keep each value within the range of +/- 1.45.
-This also applies to leveled nodeboxes, where the final height shall not
-exceed this soft limit.
-
+To avoid collision issues, keep each value within the range of +/- 1.45
+for collision boxes. This also applies to leveled collision boxes, where
+the final height shall not exceed this soft limit.
+The same restrictions apply to selection boxes, with one exception:
+Their maximum allowed height is +16.5.
 
 
 Map terminology and coordinates

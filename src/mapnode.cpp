@@ -205,9 +205,7 @@ void buildFixedNodeBox(const MapNode &n, const NodeBox &nodebox, const NodeDefMa
 			} else {
 				box.MaxEdge.Y = (-0.5f + height / 16.0f) * BS;
 			}
-			if (box.MaxEdge.Y > SAFE_SELECTION_BOX_LIMIT * BS) {
-				box.MaxEdge.Y = SAFE_SELECTION_BOX_LIMIT * BS;
-			}
+			box.MaxEdge.Y = std::min(box.MaxEdge.Y, SAFE_SELECTION_BOX_LIMIT * BS);
 			break;
 		}
 		default: {
