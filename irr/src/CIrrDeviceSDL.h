@@ -303,7 +303,7 @@ private:
 
 	bool Resizable;
 
-	u32 getFullscreenFlag(bool fullscreen);
+	static u32 getFullscreenFlag(bool fullscreen);
 
 	core::rect<s32> lastElemPos;
 

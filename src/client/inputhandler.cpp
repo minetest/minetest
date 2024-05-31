@@ -114,6 +114,7 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 		return true;
 	}
 
+	// This is separate from other keyboard handling so that it also works in menus.
 	if (event.EventType == EET_KEY_INPUT_EVENT) {
 		const KeyPress keyCode(event.KeyInput);
 		if (keyCode == getKeySetting("keymap_fullscreen")) {
