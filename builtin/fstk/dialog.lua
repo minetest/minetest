@@ -78,6 +78,8 @@ function dialog_create(name,get_formspec,buttonhandler,eventhandler)
 	return self
 end
 
+-- "message" must already be formspec-escaped, e.g. via fgettext or
+-- core.formspec_escape.
 function messagebox(name, message)
 	return dialog_create(name,
 			function()

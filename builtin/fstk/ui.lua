@@ -51,6 +51,8 @@ function ui.find_by_name(name)
 end
 
 --------------------------------------------------------------------------------
+-- "title" and "message" must already be formspec-escaped, e.g. via fgettext or
+-- core.formspec_escape.
 function ui.get_message_formspec(title, message, btn_id)
 	return table.concat({
 		"size[14,8]",
@@ -88,6 +90,9 @@ function ui.update()
 		}
 		ui.overridden = true
 	elseif gamedata ~= nil and gamedata.errormessage ~= nil then
+		-- Note to API users:
+		-- "gamedata.errormessage" must not be formspec-escaped yet.
+		-- For translations, fgettext_ne should be used.
 		local error_message = core.formspec_escape(gamedata.errormessage)
 
 		local error_title
