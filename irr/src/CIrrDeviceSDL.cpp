@@ -1171,6 +1171,8 @@ u32 CIrrDeviceSDL::getFullscreenFlag(bool fullscreen)
 
 bool CIrrDeviceSDL::setFullscreen(bool fullscreen)
 {
+	if (!Window)
+		return false;
 	// The SDL wiki says that this may trigger SDL_RENDER_TARGETS_RESET, but
 	// looking at the SDL source, this only happens with D3D, so it's not
 	// relevant to us.
