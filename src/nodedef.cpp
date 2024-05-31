@@ -158,6 +158,9 @@ void NodeBox::deSerialize(std::istream &is)
 					type == NODEBOX_LEVELED_PLANTLIKE ||
 					type == NODEBOX_LEVELED_PLANTLIKE_ROOTED) {
 				u16 leveled_fixed_count = readU16(is);
+				if (is.eof()) {
+					leveled_fixed_count = 0;
+				}
 				while(leveled_fixed_count--)
 				{
 					aabb3f box;
@@ -1251,8 +1254,7 @@ void rawUnionFixed(const ContentFeatures &features,
 	boxVectorUnion(to_add, &half_processed);
 	// Set leveled boxes to maximal
 	if (nbt == NODEBOX_LEVELED) {
-		// -0.5 + 127/64
-		half_processed.MaxEdge.Y = 1.484375f * BS;
+		half_processed.MaxEdge.Y = (-0.5 + 127/64) * BS;
 	} else if (nbt == NODEBOX_LEVELED_PLANTLIKE ||
 			nbt == NODEBOX_LEVELED_PLANTLIKE_ROOTED) {
 		half_processed.MaxEdge.Y = SAFE_SELECTION_BOX_LIMIT * BS;
@@ -1260,19 +1262,14 @@ void rawUnionFixed(const ContentFeatures &features,
 	if (features.param_type_2 == CPT2_FACEDIR ||
 			features.param_type_2 == CPT2_COLORED_FACEDIR) {
 		// Get maximal coordinate
-		f32 coords[] = {
+		f32 max = std::max({
 			fabsf(half_processed.MinEdge.X),
 			fabsf(half_processed.MinEdge.Y),
 			fabsf(half_processed.MinEdge.Z),
 			fabsf(half_processed.MaxEdge.X),
 			fabsf(half_processed.MaxEdge.Y),
-			fabsf(half_processed.MaxEdge.Z) };
-		f32 max = 0;
-		for (float coord : coords) {
-			if (max < coord) {
-				max = coord;
-			}
-		}
+			fabsf(half_processed.MaxEdge.Z)
+		});
 		// Add the union of all possible rotated boxes
 		box_union->addInternalPoint(-max, -max, -max);
 		box_union->addInternalPoint(+max, +max, +max);
