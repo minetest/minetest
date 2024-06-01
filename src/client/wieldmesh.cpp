@@ -18,9 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "wieldmesh.h"
+#include "EMaterialTypes.h"
 #include "SMaterial.h"
 #include "settings.h"
-#include "shader.h"
 #include "inventory.h"
 #include "client.h"
 #include "itemdef.h"
@@ -249,7 +249,23 @@ void WieldMeshSceneNode::setCube(const ContentFeatures &f,
 	scene::IMesh *cubemesh = g_extrusion_mesh_cache->createCube();
 	scene::SMesh *copy = cloneMesh(cubemesh);
 	cubemesh->drop();
-	postProcessNodeMesh(copy, f, false, true, &m_material_type, &m_colors, true);
+	postProcessNodeMesh(copy, f, false, &m_colors, true);
+
+	// Customize materials
+	for (u32 i = 0; i < cubemesh->getMeshBufferCount(); ++i) {
+		const TileSpec *tile = &(f.tiles[i]);
+		scene::IMeshBuffer *buf = cubemesh->getMeshBuffer(i);
+		for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
+			const TileLayer *layer = &tile->layers[layernum];
+			if (layer->texture_id == 0)
+				continue;
+			video::SMaterial &material = buf->getMaterial();
+			layer->applyMaterialOptions(material);
+			material.MaterialType = m_material_type;
+			material.MaterialTypeParam = m_material_type_param;
+		}
+	}
+	
 	changeToMesh(copy);
 	copy->drop();
 	m_meshnode->setScale(wield_scale * WIELD_SCALE_FACTOR);
@@ -357,30 +373,15 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 			buf->append(&p.vertices[0], p.vertices.size(),
 					&p.indices[0], p.indices.size());
 			buf->drop();
-			colors->push_back(
-				ItemPartColor(p.layer.has_color, p.layer.color));
+			colors->emplace_back(p.layer.has_color, p.layer.color);
 		}
 	return mesh;
-}
-
-static MaterialType getTileMaterial(AlphaMode alpha) {
-	switch (alpha) {
-		case ALPHAMODE_OPAQUE:
-			return TILE_MATERIAL_OPAQUE;
-		case ALPHAMODE_CLIP:
-			return TILE_MATERIAL_BASIC;
-		case ALPHAMODE_BLEND:
-			return TILE_MATERIAL_ALPHA;
-		default:
-			assert(false);
-	}
 }
 
 void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool check_wield_image)
 {
 	ITextureSource *tsrc = client->getTextureSource();
 	IItemDefManager *idef = client->getItemDefManager();
-	IShaderSource *shdrsrc = client->getShaderSource();
 	const NodeDefManager *ndef = client->getNodeDefManager();
 	const ItemDefinition &def = item.getDefinition(idef);
 	const ContentFeatures &f = ndef->get(def.name);
@@ -388,14 +389,9 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 
 	scene::SMesh *mesh = nullptr;
 
-	if (m_enable_shaders) {
-		const auto tile_mat = def.type == ITEM_NODE ? getTileMaterial(f.alpha) : TILE_MATERIAL_ALPHA;
-		u32 shader_id = shdrsrc->getShader("object_shader",
-				tile_mat, def.type == ITEM_NODE ? f.drawtype : NDT_MESH);
-		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
-		// For translucent items, render everything with alpha > 0
-		m_material_type_param = tile_mat == TILE_MATERIAL_ALPHA ? 0.0f : 0.5f;
-	}
+	const auto material_type = def.type == ITEM_NODE
+			? f.getMaterialType() : TILE_MATERIAL_ALPHA;
+	MaterialType_to_irr(material_type, m_material_type, m_material_type_param);
 
 	// Color-related
 	m_colors.clear();
@@ -644,8 +640,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			} else
 				scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
 			// add overlays
-			postProcessNodeMesh(mesh, f, false, false, nullptr,
-				&result->buffer_colors, true);
+			postProcessNodeMesh(mesh, f, false, &result->buffer_colors, true);
 			if (f.drawtype == NDT_ALLFACES)
 				scaleMesh(mesh, v3f(f.visual_scale));
 			break;
@@ -684,8 +679,9 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 		for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
 			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 			video::SMaterial &material = buf->getMaterial();
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-			material.MaterialTypeParam = 0.0f;  // render everything with alpha > 0
+			const auto material_type = def.type == ITEM_NODE
+					? f.getMaterialType() : TILE_MATERIAL_ALPHA;
+			MaterialType_to_irr(material_type, material);
 			material.ZWriteEnable = video::EZW_ON;
 			material.forEachTexture([] (auto &tex) {
 				tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
@@ -756,8 +752,7 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 }
 
 void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
-	bool use_shaders, bool set_material, const video::E_MATERIAL_TYPE *mattype,
-	std::vector<ItemPartColor> *colors, bool apply_scale)
+	bool use_shaders, std::vector<ItemPartColor> *colors, bool apply_scale)
 {
 	const u32 mc = mesh->getMeshBufferCount();
 	// Allocate colors for existing buffers
@@ -783,11 +778,6 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 			}
 
 			video::SMaterial &material = buf->getMaterial();
-			if (set_material)
-				layer->applyMaterialOptions(material);
-			if (mattype) {
-				material.MaterialType = *mattype;
-			}
 			if (layer->animation_frame_count > 1) {
 				const FrameSpec &animation_frame = (*layer->frames)[0];
 				material.setTexture(0, animation_frame.texture);

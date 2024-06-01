@@ -1146,23 +1146,6 @@ void drawItemStack(
 			}
 
 			video::SMaterial &material = buf->getMaterial();
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-			material.MaterialTypeParam = 0.0f; // render everything with alpha > 0
-			if (def.type == ITEM_NODE) {
-				switch (client->ndef()->get(def.name).alpha) {
-					case ALPHAMODE_OPAQUE:
-						material.MaterialType = video::EMT_SOLID;
-						break;
-					case ALPHAMODE_CLIP:
-						material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-						material.MaterialTypeParam = 0.5f;
-						break;
-					case ALPHAMODE_BLEND:
-						break;
-					default:
-						assert(false);
-				}
-			}
 			material.Lighting = false;
 			driver->setMaterial(material);
 			driver->drawMeshBuffer(buf);

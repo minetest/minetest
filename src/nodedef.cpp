@@ -784,6 +784,80 @@ bool isWorldAligned(AlignStyle style, WorldAlignMode mode, NodeDrawType drawtype
 	return false;
 }
 
+void ContentFeatures::updateAlpha(bool translucent_liquids) {
+	if ((drawtype == NDT_LIQUID || drawtype == NDT_FLOWINGLIQUID) &&
+			!translucent_liquids)
+		alpha = ALPHAMODE_OPAQUE;
+}
+
+MaterialType ContentFeatures::getMaterialType() const
+{
+	MaterialType material_type;
+	switch (alpha) {
+	case ALPHAMODE_OPAQUE:
+		material_type = TILE_MATERIAL_OPAQUE;
+		break;
+	case ALPHAMODE_CLIP:
+		material_type = TILE_MATERIAL_BASIC;
+		break;
+	case ALPHAMODE_BLEND:
+	default:
+		material_type = TILE_MATERIAL_ALPHA;
+		break;
+	}
+	switch (drawtype) {
+	case NDT_LIQUID:
+	case NDT_FLOWINGLIQUID:
+		switch (alpha) {
+		case ALPHAMODE_OPAQUE:
+			return (waving == 3)
+				? TILE_MATERIAL_WAVING_LIQUID_OPAQUE
+				: TILE_MATERIAL_LIQUID_OPAQUE;
+		case ALPHAMODE_CLIP:
+			return (waving == 3)
+				? TILE_MATERIAL_WAVING_LIQUID_BASIC
+				: TILE_MATERIAL_LIQUID_TRANSPARENT;
+		case ALPHAMODE_BLEND:
+		default:
+			return (waving == 3)
+				? TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT
+				: TILE_MATERIAL_LIQUID_TRANSPARENT;
+		}
+		break;
+	case NDT_ALLFACES_OPTIONAL:
+		if (waving >= 1)
+			return TILE_MATERIAL_WAVING_LEAVES;
+		break;
+	case NDT_PLANTLIKE:
+		if (waving >= 1)
+			return TILE_MATERIAL_WAVING_PLANTS;
+		break;
+	case NDT_MESH:
+	case NDT_NODEBOX:
+		switch (waving) {
+		case 1:
+			return TILE_MATERIAL_WAVING_PLANTS;
+		case 2:
+			return TILE_MATERIAL_WAVING_LEAVES;
+		case 3:
+			switch (alpha) {
+			case ALPHAMODE_OPAQUE:
+				return TILE_MATERIAL_WAVING_LIQUID_OPAQUE;
+			case ALPHAMODE_CLIP:
+				return TILE_MATERIAL_WAVING_LIQUID_BASIC;
+			case ALPHAMODE_BLEND:
+				return TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT;
+			default:
+				assert(false);
+			}
+			break;
+		}
+		break;
+	default: break;
+	}
+	return material_type;
+}
+
 void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
 	scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings)
 {
@@ -810,11 +884,8 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		tdef_spec[j] = tiledef_special[j];
 	}
 
-	bool is_liquid = false;
-
-	MaterialType material_type = alpha == ALPHAMODE_OPAQUE ?
-		TILE_MATERIAL_OPAQUE : (alpha == ALPHAMODE_CLIP ? TILE_MATERIAL_BASIC :
-		TILE_MATERIAL_ALPHA);
+	updateAlpha(tsettings.translucent_liquids);
+	MaterialType material_type = getMaterialType();
 
 	switch (drawtype) {
 	default:
@@ -825,16 +896,10 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		solidness = 0;
 		break;
 	case NDT_LIQUID:
-		if (!tsettings.translucent_liquids)
-			alpha = ALPHAMODE_OPAQUE;
 		solidness = 1;
-		is_liquid = true;
 		break;
 	case NDT_FLOWINGLIQUID:
 		solidness = 0;
-		if (!tsettings.translucent_liquids)
-			alpha = ALPHAMODE_OPAQUE;
-		is_liquid = true;
 		break;
 	case NDT_GLASSLIKE:
 		solidness = 0;
@@ -879,13 +944,9 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			for (TileDef &td : tdef)
 				td.name += std::string("^[noalpha");
 		}
-		if (waving >= 1)
-			material_type = TILE_MATERIAL_WAVING_LEAVES;
 		break;
 	case NDT_PLANTLIKE:
 		solidness = 0;
-		if (waving >= 1)
-			material_type = TILE_MATERIAL_WAVING_PLANTS;
 		break;
 	case NDT_FIRELIKE:
 		solidness = 0;
@@ -893,15 +954,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	case NDT_MESH:
 	case NDT_NODEBOX:
 		solidness = 0;
-		if (waving == 1) {
-			material_type = TILE_MATERIAL_WAVING_PLANTS;
-		} else if (waving == 2) {
-			material_type = TILE_MATERIAL_WAVING_LEAVES;
-		} else if (waving == 3) {
-			material_type = alpha == ALPHAMODE_OPAQUE ?
-				TILE_MATERIAL_WAVING_LIQUID_OPAQUE : (alpha == ALPHAMODE_CLIP ?
-				TILE_MATERIAL_WAVING_LIQUID_BASIC : TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT);
-		}
 		break;
 	case NDT_TORCHLIKE:
 	case NDT_SIGNLIKE:
@@ -912,17 +964,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	case NDT_PLANTLIKE_ROOTED:
 		solidness = 2;
 		break;
-	}
-
-	if (is_liquid) {
-		if (waving == 3) {
-			material_type = alpha == ALPHAMODE_OPAQUE ?
-				TILE_MATERIAL_WAVING_LIQUID_OPAQUE : (alpha == ALPHAMODE_CLIP ?
-				TILE_MATERIAL_WAVING_LIQUID_BASIC : TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT);
-		} else {
-			material_type = alpha == ALPHAMODE_OPAQUE ? TILE_MATERIAL_LIQUID_OPAQUE :
-				TILE_MATERIAL_LIQUID_TRANSPARENT;
-		}
 	}
 
 	u32 tile_shader = shdsrc->getShader("nodes_shader", material_type, drawtype);
