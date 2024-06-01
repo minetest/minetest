@@ -32,6 +32,8 @@ struct SubgameSpec
 	std::string title;
 	std::string author;
 	int release;
+	std::string first_mod; // "" <=> no mod
+	std::string last_mod; // "" <=> no mod
 	std::string path;
 	std::string gamemods_path;
 
@@ -49,10 +51,16 @@ struct SubgameSpec
 			const std::unordered_map<std::string, std::string> &addon_mods_paths = {},
 			const std::string &title = "",
 			const std::string &menuicon_path = "",
-			const std::string &author = "", int release = 0) :
+			const std::string &author = "", int release = 0,
+			const std::string &first_mod = "",
+			const std::string &last_mod = "") :
 			id(id),
-			title(title), author(author), release(release), path(path),
-			gamemods_path(gamemods_path), addon_mods_paths(addon_mods_paths),
+			title(title), author(author), release(release),
+			first_mod(first_mod),
+			last_mod(last_mod),
+			path(path),
+			gamemods_path(gamemods_path),
+			addon_mods_paths(addon_mods_paths),
 			menuicon_path(menuicon_path)
 	{
 	}

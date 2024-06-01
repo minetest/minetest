@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "exceptions.h"
 #include "util/numeric.h"
-
+#include <optional>
 
 std::string ModConfiguration::getUnsatisfiedModsError() const
 {
@@ -116,6 +116,9 @@ void ModConfiguration::addGameMods(const SubgameSpec &gamespec)
 	std::string game_virtual_path;
 	game_virtual_path.append("games/").append(gamespec.id).append("/mods");
 	addModsInPath(gamespec.gamemods_path, game_virtual_path);
+
+	m_first_mod = gamespec.first_mod;
+	m_last_mod = gamespec.last_mod;
 }
 
 void ModConfiguration::addModsFromConfig(
@@ -221,13 +224,20 @@ void ModConfiguration::checkConflictsAndDeps()
 
 void ModConfiguration::resolveDependencies()
 {
-	// Step 1: Compile a list of the mod names we're working with
+	// Compile a list of the mod names we're working with
 	std::set<std::string> modnames;
-	for (const ModSpec &mod : m_unsatisfied_mods) {
-		modnames.insert(mod.name);
+	std::optional<ModSpec> first_mod_spec, last_mod_spec;
+	for (ModSpec &mod : m_unsatisfied_mods) {
+		if (mod.name == m_first_mod) {
+			first_mod_spec = mod;
+		} else if (mod.name == m_last_mod) {
+			last_mod_spec = mod;
+		} else {
+			modnames.insert(mod.name);
+		}
 	}
 
-	// Step 1.5 (optional): shuffle unsatisfied mods so non declared depends get found by their devs
+	// Optionally shuffle unsatisfied mods so non declared depends get found by their devs
 	if (g_settings->getBool("random_mod_load_order")) {
 		MyRandGenerator rg;
 		std::shuffle(m_unsatisfied_mods.begin(),
@@ -236,25 +246,55 @@ void ModConfiguration::resolveDependencies()
 		);
 	}
 
-	// Step 2: get dependencies (including optional dependencies)
+	// Check for presence of first and last mod
+	if (!m_first_mod.empty() && !first_mod_spec.has_value())
+		throw ModError("The mod specified as first by the game was not found.");
+	if (!m_last_mod.empty() && !last_mod_spec.has_value())
+		throw ModError("The mod specified as last by the game was not found.");
+
+	// Check and add first mod
+	if (first_mod_spec.has_value()) {
+		// Dependencies are not allowed for first mod
+		if (!first_mod_spec->depends.empty() || !first_mod_spec->optdepends.empty())
+			throw ModError("Mod specified by first_mod cannot have dependencies");
+
+		m_sorted_mods.push_back(*first_mod_spec);
+	}
+
+	// Get dependencies (including optional dependencies)
 	// of each mod, split mods into satisfied and unsatisfied
 	std::vector<ModSpec> satisfied;
 	std::list<ModSpec> unsatisfied;
 	for (ModSpec mod : m_unsatisfied_mods) {
+		if (mod.name == m_first_mod || mod.name == m_last_mod)
+			continue; // skip, handled separately
+
 		mod.unsatisfied_depends = mod.depends;
 		// check which optional dependencies actually exist
 		for (const std::string &optdep : mod.optdepends) {
 			if (modnames.count(optdep) != 0)
 				mod.unsatisfied_depends.insert(optdep);
 		}
+		mod.unsatisfied_depends.erase(m_first_mod); // first is already satisfied
+
+		if (last_mod_spec.has_value() && mod.unsatisfied_depends.count(last_mod_spec->name) != 0) {
+			throw ModError("Impossible to depend on the mod specified by last_mod");
+		}
 		// if a mod has no depends it is initially satisfied
-		if (mod.unsatisfied_depends.empty())
+		if (mod.unsatisfied_depends.empty()) {
 			satisfied.push_back(mod);
-		else
+		} else {
 			unsatisfied.push_back(mod);
+		}
 	}
 
-	// Step 3: mods without unmet dependencies can be appended to
+	// All dependencies of the last mod are initially unsatisfied
+	if (last_mod_spec.has_value()) {
+		last_mod_spec->unsatisfied_depends = last_mod_spec->depends;
+		last_mod_spec->unsatisfied_depends.erase(m_first_mod);
+	}
+
+	// Mods without unmet dependencies can be appended to
 	// the sorted list.
 	while (!satisfied.empty()) {
 		ModSpec mod = satisfied.back();
@@ -270,8 +310,18 @@ void ModConfiguration::resolveDependencies()
 				++it;
 			}
 		}
+		if (last_mod_spec.has_value())
+			last_mod_spec->unsatisfied_depends.erase(mod.name);
 	}
 
-	// Step 4: write back list of unsatisfied mods
+	// Write back list of unsatisfied mods
 	m_unsatisfied_mods.assign(unsatisfied.begin(), unsatisfied.end());
+
+	// Check and add last mod
+	if (last_mod_spec.has_value()) {
+		if (last_mod_spec->unsatisfied_depends.empty())
+			m_sorted_mods.push_back(*last_mod_spec);
+		else
+			m_unsatisfied_mods.push_back(*last_mod_spec);
+	}
 }
