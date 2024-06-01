@@ -1082,6 +1082,7 @@ void NodeDefManager::clear()
 		f.name                = "air";
 		f.drawtype            = NDT_AIRLIKE;
 		f.param_type          = CPT_LIGHT;
+		f.alpha               = ALPHAMODE_CLIP;
 		f.light_propagates    = true;
 		f.sunlight_propagates = true;
 		f.walkable            = false;
