@@ -78,15 +78,12 @@ function dialog_create(name,get_formspec,buttonhandler,eventhandler)
 	return self
 end
 
+-- "message" must already be formspec-escaped, e.g. via fgettext or
+-- core.formspec_escape.
 function messagebox(name, message)
 	return dialog_create(name,
 			function()
-				return ([[
-					formspec_version[3]
-					size[8,3]
-					textarea[0.375,0.375;7.25,1.2;;;%s]
-					button[3,1.825;2,0.8;ok;%s]
-				]]):format(message, fgettext("OK"))
+				return ui.get_message_formspec("", message, "ok")
 			end,
 			function(this, fields)
 				if fields.ok then
