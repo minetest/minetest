@@ -331,19 +331,15 @@ struct SEvent
 
 		//! A bitmap of button states. You can use isButtonPressed() to determine
 		//! if a button is pressed or not.
-		//! Currently only valid if the event was EMIE_MOUSE_MOVED or EMIE_MOUSE_WHEEL
 		u32 ButtonStates;
 
 		//! Is the left button pressed down?
-		//! Currently only valid if the event was EMIE_MOUSE_MOVED or EMIE_MOUSE_WHEEL
 		bool isLeftPressed() const { return 0 != (ButtonStates & EMBSM_LEFT); }
 
 		//! Is the right button pressed down?
-		//! Currently only valid if the event was EMIE_MOUSE_MOVED or EMIE_MOUSE_WHEEL
 		bool isRightPressed() const { return 0 != (ButtonStates & EMBSM_RIGHT); }
 
 		//! Is the middle button pressed down?
-		//! Currently only valid if the event was EMIE_MOUSE_MOVED or EMIE_MOUSE_WHEEL
 		bool isMiddlePressed() const { return 0 != (ButtonStates & EMBSM_MIDDLE); }
 
 		//! Type of mouse event
