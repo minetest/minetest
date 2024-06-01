@@ -157,7 +157,7 @@ minetest.register_node("basenodes:water_flowing", {
 		"Drowning damage: 1",
 	drawtype = "flowingliquid",
 	waving = 3,
-	tiles = {"default_water_flowing.png"},
+	tiles = {"default_water_flowing.png"..WATER_ALPHA},
 	special_tiles = {
 		{name = "default_water_flowing.png"..WATER_ALPHA,
 			backface_culling = false},
