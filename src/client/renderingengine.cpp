@@ -207,7 +207,12 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 #else
 	u16 screen_w = std::max<u16>(g_settings->getU16("screen_w"), 1);
 	u16 screen_h = std::max<u16>(g_settings->getU16("screen_h"), 1);
-	bool window_maximized = g_settings->getBool("window_maximized");
+	// If I…
+	// 1. … set fullscreen = true and window_maximized = true on startup
+	// 2. … set fullscreen = false later
+	// on Linux with SDL, everything breaks.
+	// => Don't do it.
+	bool window_maximized = !fullscreen && g_settings->getBool("window_maximized");
 #endif
 
 	// bpp, fsaa, vsync

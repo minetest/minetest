@@ -321,7 +321,8 @@ void GUIEngine::run()
 			g_settings->getU16("screen_w"),
 			g_settings->getU16("screen_h")
 		);
-	const bool initial_window_maximized = g_settings->getBool("window_maximized");
+	const bool initial_window_maximized = !g_settings->getBool("fullscreen") &&
+			g_settings->getBool("window_maximized");
 
 	FpsControl fps_control;
 	f32 dtime = 0.0f;

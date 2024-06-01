@@ -1164,7 +1164,8 @@ void Game::run()
 			g_settings->getU16("screen_w"),
 			g_settings->getU16("screen_h")
 		);
-	const bool initial_window_maximized = g_settings->getBool("window_maximized");
+	const bool initial_window_maximized = !g_settings->getBool("fullscreen") &&
+			g_settings->getBool("window_maximized");
 
 	while (m_rendering_engine->run()
 			&& !(*kill || g_gamecallback->shutdown_requested
