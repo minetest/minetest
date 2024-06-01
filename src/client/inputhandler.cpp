@@ -118,12 +118,11 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 	if (event.EventType == EET_KEY_INPUT_EVENT) {
 		const KeyPress keyCode(event.KeyInput);
 		if (keyCode == getKeySetting("keymap_fullscreen")) {
-			static bool is_down = false; // used to ignore key repeats
-			if (event.KeyInput.PressedDown && !is_down) {
+			if (event.KeyInput.PressedDown && !fullscreen_is_down) {
 				bool fullscreen = RenderingEngine::get_raw_device()->isFullscreen();
 				g_settings->setBool("fullscreen", !fullscreen);
 			}
-			is_down = event.KeyInput.PressedDown;
+			fullscreen_is_down = event.KeyInput.PressedDown;
 			return true;
 		}
 	}
