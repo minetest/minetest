@@ -1254,7 +1254,7 @@ void rawUnionFixed(const ContentFeatures &features,
 	boxVectorUnion(to_add, &half_processed);
 	// Set leveled boxes to maximal
 	if (nbt == NODEBOX_LEVELED) {
-		half_processed.MaxEdge.Y = (-0.5 + 127/64) * BS;
+		half_processed.MaxEdge.Y = (-0.5f + 127.0f/64.0f) * BS;
 	} else if (nbt == NODEBOX_LEVELED_PLANTLIKE ||
 			nbt == NODEBOX_LEVELED_PLANTLIKE_ROOTED) {
 		half_processed.MaxEdge.Y = SAFE_SELECTION_BOX_LIMIT * BS;
