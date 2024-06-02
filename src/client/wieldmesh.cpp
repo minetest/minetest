@@ -486,6 +486,13 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 	const auto material_type = def.type == ITEM_NODE
 			? f.getMaterialType() : TILE_MATERIAL_ALPHA;
 	MaterialType_to_irr(material_type, m_material_type, m_material_type_param);
+	if (m_enable_shaders) {
+		IShaderSource *shdrsrc = client->getShaderSource();
+		u32 shader_id = shdrsrc->getShader("object_shader",
+				material_type, def.type == ITEM_NODE ? f.drawtype : NDT_MESH);
+		// Note: The shader may give us a different material back.
+		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
+	}
 
 	// Color-related
 	m_colors.clear();
