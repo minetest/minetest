@@ -49,7 +49,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * \param colors returns the colors of the mesh buffers in the mesh.
  */
 static void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
-	bool use_shaders, std::vector<ItemPartColor> *colors, bool apply_scale)
+	std::vector<ItemPartColor> *colors, bool apply_scale)
 {
 	const u32 mc = mesh->getMeshBufferCount();
 	// Allocate colors for existing buffers
@@ -80,16 +80,6 @@ static void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 				material.setTexture(0, animation_frame.texture);
 			} else {
 				material.setTexture(0, layer->texture);
-			}
-			if (use_shaders) {
-				if (layer->normal_texture) {
-					if (layer->animation_frame_count > 1) {
-						const FrameSpec &animation_frame = (*layer->frames)[0];
-						material.setTexture(1, animation_frame.normal_texture);
-					} else
-						material.setTexture(1, layer->normal_texture);
-				}
-				material.setTexture(2, layer->flags_texture);
 			}
 
 			if (apply_scale && tile->world_aligned) {
@@ -353,7 +343,7 @@ void WieldMeshSceneNode::setCube(const ContentFeatures &f,
 	scene::IMesh *cubemesh = g_extrusion_mesh_cache->createCube();
 	scene::SMesh *copy = cloneMesh(cubemesh);
 	cubemesh->drop();
-	postProcessNodeMesh(copy, f, false, &m_colors, true);
+	postProcessNodeMesh(copy, f, &m_colors, true);
 
 	// Customize materials
 	for (u32 i = 0; i < cubemesh->getMeshBufferCount(); ++i) {
@@ -744,7 +734,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			} else
 				scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
 			// add overlays
-			postProcessNodeMesh(mesh, f, false, &result->buffer_colors, true);
+			postProcessNodeMesh(mesh, f, &result->buffer_colors, true);
 			if (f.drawtype == NDT_ALLFACES)
 				scaleMesh(mesh, v3f(f.visual_scale));
 			break;
