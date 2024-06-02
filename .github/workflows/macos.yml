@@ -19,6 +19,9 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
+      - 'irr/**.mm' # Objective-C(++)
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - '.github/workflows/macos.yml'
