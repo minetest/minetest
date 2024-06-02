@@ -2427,9 +2427,6 @@ void Game::toggleBlockBounds()
 		case Hud::BLOCK_BOUNDS_NEAR:
 			m_game_ui->showTranslatedStatusText("Block bounds shown for nearby blocks");
 			break;
-		case Hud::BLOCK_BOUNDS_MAX:
-			m_game_ui->showTranslatedStatusText("Block bounds shown for all blocks");
-			break;
 		default:
 			break;
 	}
