@@ -237,7 +237,7 @@ private:
 	s32 m_button_size;
 	double m_touchscreen_threshold;
 	u16 m_long_tap_delay;
-	bool m_visible = true; // is the whole touch screen gui visible
+	bool m_visible = true;
 
 	std::unordered_map<u16, recti> m_hotbar_rects;
 	std::optional<u16> m_hotbar_selection = std::nullopt;

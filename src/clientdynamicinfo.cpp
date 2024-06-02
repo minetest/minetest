@@ -44,7 +44,7 @@ ClientDynamicInfo ClientDynamicInfo::getCurrent()
 
 v2f32 ClientDynamicInfo::calculateMaxFSSize(v2u32 render_target_size, f32 gui_scaling)
 {
-    f32 factor = (g_settings->getBool("enable_touch") ? 10 : 15) / gui_scaling;
+    f32 factor = (g_settings->getBool("touch_gui") ? 10 : 15) / gui_scaling;
     f32 ratio = (f32)render_target_size.X / (f32)render_target_size.Y;
     if (ratio < 1)
         return { factor, factor / ratio };
