@@ -483,7 +483,9 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		IShaderSource *shdrsrc = client->getShaderSource();
 		u32 shader_id = shdrsrc->getShader("object_shader",
 				material_type, def.type == ITEM_NODE ? f.drawtype : NDT_MESH);
-		// Note: The shader may give us a different material back.
+		// The shader gives a material ID (different from our material type) back.
+		// Strictly speaking, "m_material type" is a misnomer,
+		// since either a material type or ID is stored.
 		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
 	}
 
