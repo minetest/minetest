@@ -19,7 +19,7 @@
 
 local BASE_SPACING = 0.1
 local function get_scroll_btn_width()
-	return core.settings:get_bool("enable_touch") and 0.8 or 0.5
+	return core.settings:get_bool("touch_gui") and 0.8 or 0.5
 end
 
 local function buttonbar_formspec(self)

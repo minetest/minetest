@@ -315,7 +315,7 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 		data->invsize.Y = MYMAX(0, stof(parts[1]));
 
 		lockSize(false);
-		if (!g_settings->getBool("enable_touch") && parts.size() == 3) {
+		if (!g_settings->getBool("touch_gui") && parts.size() == 3) {
 			if (parts[2] == "true") {
 				lockSize(true,v2u32(800,600));
 			}
@@ -3166,7 +3166,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			s32 min_screen_dim = std::min(padded_screensize.X, padded_screensize.Y);
 
 			double prefer_imgsize;
-			if (g_settings->getBool("enable_touch")) {
+			if (g_settings->getBool("touch_gui")) {
 				// The preferred imgsize should be larger to accommodate the
 				// smaller screensize.
 				prefer_imgsize = min_screen_dim / 10 * gui_scaling;
