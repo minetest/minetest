@@ -272,26 +272,19 @@ RenderingEngine::~RenderingEngine()
 	s_singleton = nullptr;
 }
 
-static void applyWindowMaximized(IrrlichtDevice *device, bool maximized)
-{
-	if (maximized && !device->isWindowMaximized())
-		device->maximizeWindow();
-	else if (!maximized && device->isWindowMaximized())
-		device->restoreWindow();
-}
-
 void RenderingEngine::settingChangedCallback(const std::string &name, void *data)
 {
 	IrrlichtDevice *device = static_cast<RenderingEngine*>(data)->m_device;
 	if (name == "fullscreen") {
-		bool fullscreen = g_settings->getBool("fullscreen");
-		bool success = device->setFullscreen(fullscreen);
-		// When leaving fullscreen, apply window_maximized again.
-		if (!fullscreen && success)
-			applyWindowMaximized(device, g_settings->getBool("window_maximized"));
+		device->setFullscreen(g_settings->getBool("fullscreen"));
+
 	} else if (name == "window_maximized") {
-		if (!device->isFullscreen())
-			applyWindowMaximized(device, g_settings->getBool("window_maximized"));
+		if (!device->isFullscreen()) {
+			if (g_settings->getBool("window_maximized"))
+				device->maximizeWindow();
+			else
+				device->restoreWindow();
+		}
 	}
 }
 
