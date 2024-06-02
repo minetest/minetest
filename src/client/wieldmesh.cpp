@@ -49,7 +49,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * \param colors returns the colors of the mesh buffers in the mesh.
  */
 static void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
-	std::vector<ItemPartColor> *colors, bool apply_scale)
+	std::vector<ItemPartColor> *colors)
 {
 	const u32 mc = mesh->getMeshBufferCount();
 	// Allocate colors for existing buffers
@@ -82,7 +82,7 @@ static void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 				material.setTexture(0, layer->texture);
 			}
 
-			if (apply_scale && tile->world_aligned) {
+			if (tile->world_aligned) {
 				u32 n = buf->getVertexCount();
 				for (u32 k = 0; k != n; ++k)
 					buf->getTCoords(k) /= layer->scale;
@@ -279,7 +279,7 @@ static scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 			tex.MagFilter = video::ETMAGF_NEAREST;
 		});
 		material.BackfaceCulling = true;
-		material.Lighting = true; // false;
+		material.Lighting = false;
 		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		material.MaterialTypeParam = 0.0f; // render everything with alpha > 0
 		material.ZWriteEnable = video::EZW_ON;
@@ -343,7 +343,7 @@ void WieldMeshSceneNode::setCube(const ContentFeatures &f,
 	scene::IMesh *cubemesh = g_extrusion_mesh_cache->createCube();
 	scene::SMesh *copy = cloneMesh(cubemesh);
 	cubemesh->drop();
-	postProcessNodeMesh(copy, f, &m_colors, true);
+	postProcessNodeMesh(copy, f, &m_colors);
 
 	// Customize materials
 	for (u32 i = 0; i < cubemesh->getMeshBufferCount(); ++i) {
@@ -734,7 +734,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			} else
 				scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
 			// add overlays
-			postProcessNodeMesh(mesh, f, &result->buffer_colors, true);
+			postProcessNodeMesh(mesh, f, &result->buffer_colors);
 			if (f.drawtype == NDT_ALLFACES)
 				scaleMesh(mesh, v3f(f.visual_scale));
 			break;
@@ -782,7 +782,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 				tex.MagFilter = video::ETMAGF_NEAREST;
 			});
 			material.BackfaceCulling = cull_backface;
-			material.Lighting = false;
+			material.Lighting = false; // no lighting in the inventory
 		}
 
 		rotateMeshXZby(mesh, -45);
