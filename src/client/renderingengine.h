@@ -168,6 +168,7 @@ public:
 			const bool initial_window_maximized);
 
 private:
+	static void settingChangedCallback(const std::string &name, void *data);
 	v2u32 _getWindowSize() const;
 
 	std::unique_ptr<RenderingCore> core;

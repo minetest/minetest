@@ -193,6 +193,8 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 
 	m_script = std::make_unique<MainMenuScripting>(this);
 
+	g_settings->registerChangedCallback("fullscreen", fullscreenChangedCallback, this);
+
 	try {
 		m_script->setMainMenuData(&m_data->script_data);
 		m_data->script_data.errormessage.clear();
@@ -319,7 +321,8 @@ void GUIEngine::run()
 			g_settings->getU16("screen_w"),
 			g_settings->getU16("screen_h")
 		);
-	const bool initial_window_maximized = g_settings->getBool("window_maximized");
+	const bool initial_window_maximized = !g_settings->getBool("fullscreen") &&
+			g_settings->getBool("window_maximized");
 
 	FpsControl fps_control;
 	f32 dtime = 0.0f;
@@ -377,6 +380,8 @@ void GUIEngine::run()
 /******************************************************************************/
 GUIEngine::~GUIEngine()
 {
+	g_settings->deregisterChangedCallback("fullscreen", fullscreenChangedCallback, this);
+
 	// deinitialize script first. gc destructors might depend on other stuff
 	infostream << "GUIEngine: Deinitializing scripting" << std::endl;
 	m_script.reset();
@@ -665,4 +670,10 @@ void GUIEngine::updateTopLeftTextSize()
 	m_irr_toplefttext->remove();
 	m_irr_toplefttext = gui::StaticText::add(m_rendering_engine->get_gui_env(),
 			m_toplefttext, rect, false, true, 0, -1);
+}
+
+/******************************************************************************/
+void GUIEngine::fullscreenChangedCallback(const std::string &name, void *data)
+{
+	static_cast<GUIEngine*>(data)->getScriptIface()->handleMainMenuEvent("FullscreenChange");
 }
