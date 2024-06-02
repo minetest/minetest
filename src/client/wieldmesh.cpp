@@ -347,15 +347,11 @@ void WieldMeshSceneNode::setCube(const ContentFeatures &f,
 
 	// Customize materials
 	for (u32 i = 0; i < cubemesh->getMeshBufferCount(); ++i) {
-		const TileSpec *tile = &(f.tiles[i]);
+		// It suffices to look at the first layer;
+		// a special overlay layer needs to be consistent with it -
+		// otherwise we would be overwriting the material options of the fist layer
 		scene::IMeshBuffer *buf = cubemesh->getMeshBuffer(i);
-		for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
-			const TileLayer *layer = &tile->layers[layernum];
-			if (layer->texture_id == 0)
-				continue;
-			video::SMaterial &material = buf->getMaterial();
-			layer->applyMaterialOptions(material);
-		}
+		f.tiles[i].layers[0].applyMaterialOptions(buf->getMaterial());
 	}
 	
 	changeToMesh(copy);
@@ -779,9 +775,8 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			video::SMaterial &material = buf->getMaterial();
 			// Note: This overwrites material types / type params
 			// of plantlike extrusion meshes for alpha blending consistency.
-			const auto material_type = def.type == ITEM_NODE
-					? f.getMaterialType() : TILE_MATERIAL_ALPHA;
-			MaterialType_to_irr(material_type, material);
+			// It suffices to look at the first layer; overlays need to be consistent.
+			f.tiles[i].layers[0].applyMaterialOptions(material);
 			material.ZWriteEnable = video::EZW_ON;
 			material.forEachTexture([] (auto &tex) {
 				tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
