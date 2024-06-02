@@ -355,8 +355,6 @@ void WieldMeshSceneNode::setCube(const ContentFeatures &f,
 				continue;
 			video::SMaterial &material = buf->getMaterial();
 			layer->applyMaterialOptions(material);
-			material.MaterialType = m_material_type;
-			material.MaterialTypeParam = m_material_type_param;
 		}
 	}
 	
@@ -462,7 +460,6 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 			}
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 			buf->Material.setTexture(0, p.layer.texture);
-			p.layer.applyMaterialOptions(buf->Material);
 			mesh->addMeshBuffer(buf);
 			buf->append(&p.vertices[0], p.vertices.size(),
 					&p.indices[0], p.indices.size());
@@ -780,6 +777,8 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 		for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
 			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 			video::SMaterial &material = buf->getMaterial();
+			// Note: This overwrites material types / type params
+			// of plantlike extrusion meshes for alpha blending consistency.
 			const auto material_type = def.type == ITEM_NODE
 					? f.getMaterialType() : TILE_MATERIAL_ALPHA;
 			MaterialType_to_irr(material_type, material);
