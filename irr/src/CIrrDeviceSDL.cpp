@@ -883,6 +883,14 @@ bool CIrrDeviceSDL::run()
 			IsInBackground = false;
 			break;
 
+		case SDL_RENDER_TARGETS_RESET:
+			os::Printer::log("Received SDL_RENDER_TARGETS_RESET. Rendering is probably broken.", ELL_ERROR);
+			break;
+
+		case SDL_RENDER_DEVICE_RESET:
+			os::Printer::log("Received SDL_RENDER_DEVICE_RESET. Rendering is probably broken.", ELL_ERROR);
+			break;
+
 		default:
 			break;
 		} // end switch
