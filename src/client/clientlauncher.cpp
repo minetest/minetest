@@ -69,6 +69,7 @@ static void dump_start_data(const GameStartData &data)
 ClientLauncher::~ClientLauncher()
 {
 	delete input;
+	g_settings->deregisterChangedCallback("dpi_change_notifier", setting_changed_callback, this);
 	g_settings->deregisterChangedCallback("gui_scaling", setting_changed_callback, this);
 
 	delete g_fontengine;
@@ -129,6 +130,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 	guienv = m_rendering_engine->get_gui_env();
 	config_guienv();
+	g_settings->registerChangedCallback("dpi_change_notifier", setting_changed_callback, this);
 	g_settings->registerChangedCallback("gui_scaling", setting_changed_callback, this);
 
 	g_fontengine = new FontEngine(guienv);

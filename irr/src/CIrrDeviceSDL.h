@@ -158,7 +158,8 @@ public:
 		//! Sets the new position of the cursor.
 		void setPosition(s32 x, s32 y) override
 		{
-			SDL_WarpMouseInWindow(Device->Window, x, y);
+			SDL_WarpMouseInWindow(Device->Window,
+					x / Device->ScaleX, y / Device->ScaleY);
 
 			if (SDL_GetRelativeMouseMode()) {
 				// There won't be an event for this warp (details on libsdl-org/SDL/issues/6034)
@@ -300,6 +301,8 @@ private:
 	u32 MouseButtonStates;
 
 	u32 Width, Height;
+	f32 ScaleX = 1.0f, ScaleY = 1.0f;
+	void updateSizeAndScale();
 
 	bool Resizable;
 

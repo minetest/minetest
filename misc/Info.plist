@@ -15,6 +15,6 @@
 	<key>CFBundleIdentifier</key>
 	<string>net.minetest.minetest</string>
 	<key>NSHighResolutionCapable</key>
-	<false/>
+	<true/>
 </dict>
 </plist>
