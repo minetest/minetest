@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "util/numeric.h"
 #include <optional>
+#include <algorithm>
 
 std::string ModConfiguration::getUnsatisfiedModsError() const
 {
