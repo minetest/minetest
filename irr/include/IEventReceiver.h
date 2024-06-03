@@ -331,7 +331,6 @@ struct SEvent
 
 		//! A bitmap of button states. You can use isButtonPressed() to determine
 		//! if a button is pressed or not.
-		//! Currently only valid if the event was EMIE_MOUSE_MOVED
 		u32 ButtonStates;
 
 		//! Is the left button pressed down?

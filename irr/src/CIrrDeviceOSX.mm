@@ -852,6 +852,7 @@ bool CIrrDeviceMacOSX::run()
 				ievent.MouseInput.Wheel *= 10.0f;
 			else
 				ievent.MouseInput.Wheel *= 5.0f;
+			ievent.MouseInput.ButtonStates = MouseButtonStates;
 			postMouseEvent(event, ievent);
 			break;
 
@@ -1048,6 +1049,7 @@ void CIrrDeviceMacOSX::storeMouseLocation()
 			ievent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
 			ievent.MouseInput.X = x;
 			ievent.MouseInput.Y = y;
+			ievent.MouseInput.ButtonStates = MouseButtonStates;
 			postEventFromUser(ievent);
 		}
 	}

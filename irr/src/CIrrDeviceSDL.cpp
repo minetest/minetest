@@ -667,6 +667,7 @@ bool CIrrDeviceSDL::run()
 #else
 			irrevent.MouseInput.Wheel = SDL_event.wheel.y;
 #endif
+			irrevent.MouseInput.ButtonStates = MouseButtonStates;
 			irrevent.MouseInput.Shift = (keymod & KMOD_SHIFT) != 0;
 			irrevent.MouseInput.Control = (keymod & KMOD_CTRL) != 0;
 			irrevent.MouseInput.X = MouseX;
