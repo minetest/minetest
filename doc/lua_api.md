@@ -8223,8 +8223,10 @@ child will follow movement and rotation of that bone.
             (default: `"regular"`)
         * `textures`: A table containing up to six textures in the following
             order: Y+ (top), Y- (bottom), X+ (east), X- (west), Z- (south), Z+ (north).
-            The top and bottom textures are aligned with the X+ (east) plane. Many top and bottom textures
-            (those which are front-aligned) will need to be rotated by -90 and 90 degrees, respectively.
+            The top and bottom textures are oriented in-line with the east (X+) face (the top edge of the
+            bottom texture and the bottom edge of the top texture touch the east face).
+            Some top and bottom textures expect to be aligned with the north face and will need to be rotated
+            by -90 and 90 degrees, respectively, to fit the eastward orientation.
         * `clouds`: Boolean for whether clouds appear. (default: `true`)
         * `sky_color`: A table used in `"regular"` type only, containing the
           following values (alpha is ignored):
