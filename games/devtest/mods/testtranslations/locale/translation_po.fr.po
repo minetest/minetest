@@ -7,3 +7,6 @@ msgid "@1: .po singular"
 msgid_plural "@1: .po plural"
 msgstr[0] "@1: .po 0 and 1 (French singular)"
 msgstr[1] "@1: .po >1 (French plural)"
+
+msgid "Testing .po without context: untranslated"
+msgstr "Testing .po without context: translated"
