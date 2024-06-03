@@ -4173,9 +4173,8 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 	// [] will create an entry
 	auto *translations = &server_translations[lang_code];
 
-	std::string suffix = "." + lang_code + ".tr";
 	for (const auto &i : m_media) {
-		if (str_ends_with(i.first, suffix)) {
+		if (Translations::getFileLanguage(i.first) == lang_code) {
 			std::string data;
 			if (fs::ReadFile(i.second.path, data, true)) {
 				translations->loadTranslation(i.first, data);

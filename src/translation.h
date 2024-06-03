@@ -38,6 +38,10 @@ public:
 			const std::wstring &textdomain, const std::wstring &s) const;
 	const std::wstring &getPluralTranslation(const std::wstring &textdomain,
 			const std::wstring &s, unsigned long int number) const;
+	static const std::string_view getFileLanguage(const std::string &filename);
+	static inline bool isTranslationFile(const std::string &filename) {
+		return getFileLanguage(filename) != "";
+	}
 
 private:
 	std::unordered_map<std::wstring, std::wstring> m_translations;

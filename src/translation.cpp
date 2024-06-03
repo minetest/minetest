@@ -31,6 +31,17 @@ static Translations client_translations;
 Translations *g_client_translations = &client_translations;
 #endif
 
+const std::string_view Translations::getFileLanguage(const std::string &filename)
+{
+	const char *translate_ext[] = {
+		".tr", ".po", ".mo", NULL
+	};
+	auto basename = removeStringEnd(filename, translate_ext);
+	auto pos = basename.rfind('.');
+	if (pos == basename.npos)
+		return "";
+	return basename.substr(pos+1);
+}
 
 void Translations::clear()
 {
@@ -415,7 +426,7 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 		std::size_t pos = wline.find(' ');
 		if (pos == std::wstring::npos || wline.length() < pos+3 || wline[pos+1] != L'"' || wline[wline.length() - 1] != L'"') {
 			errorstream << "Unable to parse po file line: " << line << std::endl;
-			continue;			
+			continue;
 		}
 		std::wstring prefix = wline.substr(0, pos);
 		std::wstring s = unescapeC(wline.substr(pos+2, wline.length()-pos-3));
@@ -520,7 +531,7 @@ void Translations::loadMoTranslation(const std::string &basefilename, const std:
 		u32 original_off = readVarEndian(is_be, cdata + original_offset + 8 * i + 4);
 		u32 translated_len = readVarEndian(is_be, cdata + translated_offset + 8 * i);
 		u32 translated_off = readVarEndian(is_be, cdata + translated_offset + 8 * i + 4);
-		
+
 		if (length < original_off + original_len || length < translated_off + translated_len) {
 			errorstream << "Ignoring translation out of mo file" << std::endl;
 			continue;
@@ -531,7 +542,7 @@ void Translations::loadMoTranslation(const std::string &basefilename, const std:
 
 		loadMoEntry(wbasefilename, original, translated);
 	}
-	
+
 	return;
 }
 
