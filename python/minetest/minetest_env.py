@@ -482,7 +482,11 @@ class MinetestEnv(gym.Env):
         if self.render_mode == "human":
             # rendering happens during step, as per gymnasium API
             return None
-        return self.last_obs
+        if self.render_mode == "rgb_array":
+            if self.last_obs is None:
+                return None
+            return self.last_obs["image"]
+        raise ValueError(f"unsupported render mode {self.render_mode}")
 
     def close(self):
         if self.socket:
