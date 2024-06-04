@@ -390,6 +390,8 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 	std::map<std::wstring, std::wstring> last_entry;
 	std::wstring last_key;
 	std::wstring wbasefilename = utf8_to_wide(basefilename);
+	bool skip = false;
+	bool skip_last = false;
 
 	while (is.good()) {
 		std::getline(is, line);
@@ -397,8 +399,18 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 		if (line.length () > 0 && line[line.length() - 1] == '\r')
 			line.resize(line.length() - 1);
 
-		if (line.empty() || line[0] == '#')
+		if (line.empty() || line[0] == '#') {
+			if (line.size() > 3 && line[1] == ',') {
+				// Skip fuzzy entries
+				if ((line + ' ').find(" fuzzy ") != line.npos) {
+					if (last_entry.empty())
+						skip_last = true;
+					else
+						skip = true;
+				}
+			}
 			continue;
+		}
 
 		std::wstring wline = utf8_to_wide(line);
 		// Defend against some possibly malformed utf8 string, which
@@ -433,12 +445,18 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 
 		if (prefix == L"msgctxt" || (prefix == L"msgid" && last_entry.find(L"msgid") != last_entry.end())) {
 			if (last_entry.find(L"msgid") != last_entry.end()) {
-				loadPoEntry(wbasefilename, last_entry);
+				if (!skip_last)
+					loadPoEntry(wbasefilename, last_entry);
 				last_entry.clear();
+				skip_last = skip;
 			} else if (!last_entry.empty()) {
 				errorstream << "Unable to parse po file: previous entry has no \"msgid\" field but is not empty" << std::endl;
 				last_entry.clear();
+				skip_last = skip;
 			}
+		} else {
+			// prevent malpositioned fuzzy flag from influencing the following entry
+			skip = false;
 		}
 		if (last_entry.find(prefix) != last_entry.end()) {
 			errorstream << "Unable to parse po file: Key \"" << wide_to_utf8(prefix) << "\" was already present in previous entry" << std::endl;
@@ -449,7 +467,8 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 	}
 
 	if (last_entry.find(L"msgid") != last_entry.end()) {
-		loadPoEntry(wbasefilename, last_entry);
+		if (!skip_last)
+			loadPoEntry(wbasefilename, last_entry);
 	} else if (!last_entry.empty()) {
 		errorstream << "Unable to parse po file: Last entry has no \"msgid\" field" << std::endl;
 	}

@@ -8,5 +8,10 @@ msgid_plural "@1: .po plural"
 msgstr[0] "@1: .po 0 and 1 (French singular)"
 msgstr[1] "@1: .po >1 (French plural)"
 
+#, foo bar fuzzy
+msgctxt "testtranslations"
+msgid "Testing fuzzy .po entry: untranslated (expected)"
+msgstr "Testing fuzzy .po entry: translated (wrong)"
+
 msgid "Testing .po without context: untranslated"
 msgstr "Testing .po without context: translated"
