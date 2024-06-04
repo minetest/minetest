@@ -14,6 +14,7 @@ minetest.register_chatcommand("testtranslations", {
 		send_compare(name, S("Testing .tr files: untranslated"))
 		send_compare(name, S("Testing .po files: untranslated"))
 		send_compare(name, S("Testing .mo files: untranslated"))
+		send_compare(name, S("Testing fuzzy .po entry: untranslated (expected)"))
 		send_compare(name, core.translate("translation_po", "Testing .po without context: untranslated"))
 		send_compare(name, core.translate("translation_mo", "Testing .mo without context: untranslated"))
 		for i = 0,4 do
