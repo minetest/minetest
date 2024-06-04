@@ -213,7 +213,7 @@ local function fill_async()
 	for _ = 1, capacity do
 		core.handle_async(function()
 			local t = core.get_us_time()
-			while core.get_us_time() < t + 10000 do
+			while core.get_us_time() < t + 100000 do
 			end
 		end, function() end)
 	end

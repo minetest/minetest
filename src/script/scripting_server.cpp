@@ -122,7 +122,6 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	InvRef::Register(L);
 	ItemStackMetaRef::Register(L);
 	LuaAreaStore::Register(L);
-	LuaAsyncJob::Register(L);
 	LuaItemStack::Register(L);
 	LuaPerlinNoise::Register(L);
 	LuaPerlinNoiseMap::Register(L);

@@ -20,35 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
-#include "util/basic_macros.h"
-
-class LuaAsyncJob : public ModApiBase
-{
-private:
-	const int id;
-
-	LuaAsyncJob(const int id): id(id) {}
-
-	static const luaL_Reg methods[];
-
-	// garbage collector
-	static int gc_object(lua_State *L);
-
-	// get_id(self) -> id
-	static int l_get_id(lua_State *L);
-
-	// cancel(self) -> boolean: implemented in Lua
-
-public:
-	DISABLE_CLASS_COPY(LuaAsyncJob)
-
-	int get_id() const { return id; }
-
-	static int create(lua_State *L, const int id);
-
-	static void Register(lua_State *L);
-	static const char className[];
-};
 
 class ModApiAsync : public ModApiBase
 {
