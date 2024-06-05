@@ -50,7 +50,7 @@
 	#include <mini-gmp.h>
 #endif
 
-#include <sha256/sha256.h>
+#include "my_sha256.h"
 
 #include "srp.h"
 //#define CSRP_USE_SHA1

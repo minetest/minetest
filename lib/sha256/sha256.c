@@ -56,7 +56,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "sha256/sha256.h"
+#include "my_sha256.h"
 
 #if defined(_MSC_VER) && !defined(__clang__) && !defined(__attribute__)
 #define __attribute__(a)

@@ -42,7 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "util/hex.h"
 #include "util/sha1.h"
-#include <sha256/sha256.h>
+#include "my_sha256.h"
 #include "util/png.h"
 #include <cstdio>
 
