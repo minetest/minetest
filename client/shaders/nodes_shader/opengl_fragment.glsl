@@ -1,8 +1,5 @@
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT)
 #define MATERIAL_WAVING_LIQUID 1
-#define MATERIAL_LIQUID 1
-#elif (MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE)
-#define MATERIAL_LIQUID 1
 #endif
 
 uniform sampler2D baseTexture;
@@ -521,7 +518,7 @@ void main(void)
 		float brightness_factor = 1.0 - adjusted_night_ratio;
 
 		// A little trig hack. We go from the dot product of viewVec and normal to the dot product of viewVec and tangent to apply a fresnel effect.
-		fresnel_factor = clamp(pow(1.0 - fresnel_factor * fresnel_factor, 8.0), 0.0, 1.0);
+		fresnel_factor = clamp(pow(1.0 - fresnel_factor * fresnel_factor, 8.0), 0.0, 1.0) * 0.8 + 0.2;
 		col.rgb *= 0.5;
 		vec3 reflection_color = mix(vec3(max(fogColor.r, max(fogColor.g, fogColor.b))), fogColor.rgb, f_shadow_strength);
 

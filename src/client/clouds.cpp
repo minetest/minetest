@@ -151,12 +151,12 @@ void Clouds::updateMesh()
 	}
 	video::SColorf shadow = m_params.color_shadow;
 
-	c_side_1_f.r *= shadow.r * 0.33f + 0.66f;
-	c_side_1_f.g *= shadow.g * 0.33f + 0.66f;
-	c_side_1_f.b *= shadow.b * 0.33f + 0.66f;
-	c_side_2_f.r *= shadow.r * 0.66f + 0.33f;
-	c_side_2_f.g *= shadow.g * 0.66f + 0.33f;
-	c_side_2_f.b *= shadow.b * 0.66f + 0.33f;
+	c_side_1_f.r *= shadow.r * 0.25f + 0.75f;
+	c_side_1_f.g *= shadow.g * 0.25f + 0.75f;
+	c_side_1_f.b *= shadow.b * 0.25f + 0.75f;
+	c_side_2_f.r *= shadow.r * 0.5f + 0.5f;
+	c_side_2_f.g *= shadow.g * 0.5f + 0.5f;
+	c_side_2_f.b *= shadow.b * 0.5f + 0.5f;
 	c_bottom_f.r *= shadow.r;
 	c_bottom_f.g *= shadow.g;
 	c_bottom_f.b *= shadow.b;
@@ -256,8 +256,7 @@ void Clouds::updateMesh()
 					}
 					v[2].Color = c_bottom;
 					v[3].Color = c_bottom;
-				}
-				else {
+				} else {
 					for (video::S3DVertex& vertex : v) {
 						vertex.Color = c_side_1;
 						vertex.Normal.set(0, 0, -1);
@@ -304,8 +303,7 @@ void Clouds::updateMesh()
 					}
 					v[2].Color = c_bottom;
 					v[3].Color = c_bottom;
-				}
-				else {
+				} else {
 					for (video::S3DVertex& vertex : v) {
 						vertex.Color = c_side_1;
 						vertex.Normal.set(0, 0, -1);
@@ -328,8 +326,7 @@ void Clouds::updateMesh()
 					}
 					v[2].Color = c_bottom;
 					v[3].Color = c_bottom;
-				}
-				else {
+				} else {
 					for (video::S3DVertex& vertex : v) {
 						vertex.Color = c_side_2;
 						vertex.Normal.set(-1, 0, 0);

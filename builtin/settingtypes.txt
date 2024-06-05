@@ -679,7 +679,7 @@ enable_volumetric_lighting (Volumetric lighting) bool false
 #   Requires: shaders, enable_dynamic_shadows
 enable_translucent_foliage (Translucent foliage) bool false
 
-#   Apply specular to nodes.
+#   Apply specular shading to nodes.
 #
 #   Requires: shaders, enable_dynamic_shadows
 enable_node_specular (Node specular) bool false

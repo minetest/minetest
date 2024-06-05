@@ -103,7 +103,11 @@ public:
 
 	void setColorShadow(video::SColor color_shadow)
 	{
+		if (m_params.color_shadow == color_shadow)
+			return;
 		m_params.color_shadow = color_shadow;
+		updateBox();
+		invalidateMesh();
 	}
 
 	void setHeight(float height)

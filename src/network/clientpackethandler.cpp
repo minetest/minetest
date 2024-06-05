@@ -1470,7 +1470,7 @@ void Client::handleCommand_CloudParams(NetworkPacket* pkt)
 	f32 density;
 	video::SColor color_bright;
 	video::SColor color_ambient;
-	video::SColor color_shadow;
+	video::SColor color_shadow = video::SColor(255, 204, 204, 204);
 	f32 height;
 	f32 thickness;
 	v2f speed;
