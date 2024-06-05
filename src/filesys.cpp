@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstring>
 #include <cerrno>
 #include <fstream>
+#include <atomic>
 #include "log.h"
 #include "config.h"
 #include "porting.h"
@@ -854,10 +855,12 @@ const char *GetFilenameFromPath(const char *path)
 	return filename ? filename + 1 : path;
 }
 
+// Note: this is not safe if two MT processes try this at the same time (FIXME?)
 bool safeWriteToFile(const std::string &path, std::string_view content)
 {
-	// Note: this is not safe if two MT processes try this at the same time (FIXME?)
-	const std::string tmp_file = path + ".~mt";
+	// Prevent two threads from writing to the same temporary file
+	static std::atomic<u16> g_file_counter;
+	const std::string tmp_file = path + ".~mt" + itos(g_file_counter.fetch_add(1));
 
 	// Write data to a temporary file
 	std::string write_error;
