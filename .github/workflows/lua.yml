@@ -3,6 +3,8 @@ name: lua_lint
 # Lint on lua changes on builtin or if workflow changed
 on:
   push:
+    branches:
+      - master
     paths:
       - 'builtin/**.lua'
       - 'games/devtest/**.lua'

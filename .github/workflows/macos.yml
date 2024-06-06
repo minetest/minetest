@@ -3,6 +3,8 @@ name: macos
 # build on c/cpp changes or workflow changes
 on:
   push:
+    branches:
+      - master
     paths:
       - 'lib/**.[ch]'
       - 'lib/**.cpp'

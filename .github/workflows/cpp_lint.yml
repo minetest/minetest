@@ -3,6 +3,8 @@ name: cpp_lint
 # lint on c/cpp changes or workflow changes
 on:
   push:
+    branches:
+      - master
     paths:
       - 'lib/**.[ch]'
       - 'lib/**.cpp'
