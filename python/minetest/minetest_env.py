@@ -1,3 +1,5 @@
+import asyncio
+import contextlib
 import datetime
 import logging
 import os
@@ -189,6 +191,8 @@ class MinetestEnv(gym.Env):
         # Write minetest.conf
         self.config_dict = config_dict
         self._write_config()
+        self._event_loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
+        self._kj_loop: contextlib.AbstractAsyncContextManager = None
 
     def _configure_spaces(self, additional_observation_spaces):
         # Define action and observation space
@@ -249,7 +253,7 @@ class MinetestEnv(gym.Env):
         os.makedirs(self.log_dir, exist_ok=True)
         os.makedirs(self.media_cache_dir, exist_ok=True)
 
-    def _reset_capnp(self):
+    async def _reset_capnp(self):
         if self.socket:
             self.socket.close()
             self.socket = None
@@ -270,8 +274,17 @@ class MinetestEnv(gym.Env):
                 f"Failed to connect to minetest server at {self.socket_addr} after "
                 f"{max_attempts} attempts. See logs in {self.log_dir}."
             )
+        # NOTE: This is not how this function is meant to be used. They expect
+        # all of the code that uses a connection to be in the same async function,
+        # and that function wrapped in capnp.run().
+        # We instead manage the kj_loop ourselves because
+        # we don't want to force the caller to wrap all use of this class
+        # in a single function.
+        self._kj_loop = capnp.kj_loop()
+        await self._kj_loop.__aenter__()
+        connection = await capnp.AsyncIoStream.create_connection(sock=self.socket)
         self.capnp_client = (
-            capnp.TwoPartyClient(self.socket)
+            capnp.TwoPartyClient(connection)
             .bootstrap()
             .cast_as(remoteclient_capnp.Minetest)
         )
@@ -392,7 +405,7 @@ class MinetestEnv(gym.Env):
         num = int(ext.split(".")[0])
         self.socket_addr = f"{addr}_{num+1}.sock"
 
-    def reset(
+    async def _async_reset(
         self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None
     ):
         self.seed(seed=seed)
@@ -402,10 +415,10 @@ class MinetestEnv(gym.Env):
                 self.world_seed = self._np_random.randint(np.iinfo(np.int64).max)
         self._increment_socket_addr()
         self._reset_minetest()
-        self._reset_capnp()
+        await self._reset_capnp()
 
         self._logger.debug("capnp_client.init()...")
-        self.capnp_client.init().wait()
+        await self.capnp_client.init()
         empty_request = {}
         # Annoyingly sometimes minetest returns observations but has not finished loading.
         valid_obs_max_attempts = 100
@@ -423,12 +436,11 @@ class MinetestEnv(gym.Env):
                         "Minetest terminated during handshake! Return code: "
                         f"{self.minetest_process.returncode}, logs in {self.log_dir}",
                     )
-            serialized_obs = step_promise.wait()
             (
                 obs,
                 _,
                 _,
-            ) = deserialize_obs(serialized_obs, self.observation_space)
+            ) = deserialize_obs(await step_promise, self.observation_space)
             if _is_loading(obs["image"]):
                 valid_obs_seen = 0
                 self._logger.debug(
@@ -439,7 +451,7 @@ class MinetestEnv(gym.Env):
             if valid_obs_seen >= min_num_valid_obs:
                 self._logger.debug(f"Received first obs: {obs['image'].shape}")
                 self._logger.debug("Disabling HUD")
-                obs, _, _, _, _ = self.step(
+                obs, _, _, _, _ = await self._async_step(
                     _TOGGLE_HUD_ACTION,
                     _key_map={_TOGGLE_HUD_KEY: "toggleHud"},
                 )
@@ -449,7 +461,17 @@ class MinetestEnv(gym.Env):
             f"Failed to get a valid observation after {valid_obs_max_attempts} attempts"
         )
 
-    def step(self, action: Dict[str, Any], _key_map=KEY_MAP):
+    def reset(
+        self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None
+    ):
+        self._event_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self._event_loop)
+        result = self._event_loop.run_until_complete(
+            self._async_reset(seed=seed, options=options)
+        )
+        return result
+
+    async def _async_step(self, action: Dict[str, Any], _key_map=KEY_MAP):
         if self.minetest_process and self.minetest_process.poll() is not None:
             raise RuntimeError(
                 "Minetest terminated! Return code: "
@@ -461,13 +483,15 @@ class MinetestEnv(gym.Env):
             action["mouse"] = action["mouse"].tolist()
         step_request = self.capnp_client.step_request()
         serialize_action(action, step_request.action, key_map=_key_map)
-        step_response = step_request.send().wait()
+        step_response = step_request.send()
 
         # TODO more robust check for whether a server/client is alive while receiving observations
         if self.minetest_process and self.minetest_process.poll() is not None:
             return self.last_obs, 0.0, True, False, {}
 
-        next_obs, score, done = deserialize_obs(step_response, self.observation_space)
+        next_obs, score, done = deserialize_obs(
+            await step_response, self.observation_space
+        )
         self.last_obs = next_obs
 
         if self.render_mode == "human":
@@ -477,6 +501,11 @@ class MinetestEnv(gym.Env):
         self._prev_score = score
 
         return next_obs, reward, done, False, {}
+
+    def step(self, action: Dict[str, Any], _key_map=KEY_MAP):
+        return self._event_loop.run_until_complete(
+            self._async_step(action, _key_map=_key_map)
+        )
 
     def render(self):
         if self.render_mode == "human":
@@ -488,13 +517,18 @@ class MinetestEnv(gym.Env):
             return self.last_obs["image"]
         raise ValueError(f"unsupported render mode {self.render_mode}")
 
-    def close(self):
+    async def _async_close(self):
         if self.socket:
             self.socket.close()
         if self.minetest_process:
             self.minetest_process.kill()
         if self.reset_world:
             self._delete_world()
+        if self._kj_loop:
+            await self._kj_loop.__aexit__(None, None, None)
+
+    def close(self):
+        return self._event_loop.run_until_complete(self._async_close())
 
     def __enter__(self):
         return self

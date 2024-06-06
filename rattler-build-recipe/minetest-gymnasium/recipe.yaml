@@ -3,7 +3,7 @@
 context: {}
 package:
   name: minetest-gymnasium
-  version: ${{ env.get_default("GIT_DESCRIBE_TAG", env.get_default("GIT_FULL_HASH", "0.7")) }}
+  version: "0.8"
 
 source:
   path: ../../
@@ -20,11 +20,11 @@ requirements:
     - python
     - setuptools
   run:
-    - minetest =0.6
+    - minetest =0.7
     # python deps
     - gymnasium
     - numpy =1.26
-    - pycapnp >=1.1.1,<2 # need 4b75fe3b5ea97a80a0d349a42c143c989fe85d5e
+    - pycapnp >=2,<3
 
 about:
   repository: https://github.com/Astera-org/minetest

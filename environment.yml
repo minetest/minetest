@@ -15,16 +15,13 @@ dependencies:
   - gettext
   - gmp
   - jsoncpp
-  - libcurl
+  - libcurl >=8.2.1,<9
   - libjpeg-turbo
   - libpng
   - libsqlite
   - luajit-openresty
+  - mold
   - ncurses
-  # TODO: move mold from
-  # Dockerfile / apt-get to here once
-  # https://github.com/conda-forge/capnproto-feedstock/pull/32
-  # (currently mold requires OpenSSL 3 and capnproto requires 1)
   - ninja
   - pkg-config
   - sdl2
@@ -37,10 +34,10 @@ dependencies:
   - pip
   - pip:
     - -e python
-  - pycapnp>=1.1.1,<2
+  - pycapnp >=2,<3
   - pygame
   - pytest # test only
   - pytest-repeat # test only
-  - python=3.11
+  - python =3.11
   # others
   - pre-commit

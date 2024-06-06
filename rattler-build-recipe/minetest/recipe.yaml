@@ -3,7 +3,7 @@
 context: {}
 package:
   name: minetest
-  version: ${{ env.get_default("GIT_DESCRIBE_TAG", env.get_default("GIT_FULL_HASH", "0.6")) }}
+  version: "0.7"
 
 source:
   path: ../../
@@ -26,7 +26,7 @@ requirements:
         - ${{ cdt("mesa-libgl-devel") }}
   host:
     # minetest deps
-    - capnproto =0.10.2 # pycapnp currently requires this. https://github.com/conda-forge/pycapnp-feedstock/pull/33
+    - capnproto >=1.0.2,<2
     - freetype
     - gmp
     - jsoncpp
