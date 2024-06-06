@@ -41,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/socket.h"
 #include "mapblock.h"
 #if USE_CURSES
+	#include "terminal_chat_console_silent.h"
 	#include "terminal_chat_console.h"
 #endif
 #ifndef SERVER
@@ -374,6 +375,8 @@ static void set_allowed_options(OptionList *allowed_options)
 		_("Migrate from current mod storage backend to another (Only works when using minetestserver or with --server)"))));
 	allowed_options->insert(std::make_pair("terminal", ValueSpec(VALUETYPE_FLAG,
 			_("Feature an interactive terminal (Only works when using minetestserver or with --server)"))));
+	allowed_options->insert(std::make_pair("terminal-silent", ValueSpec(VALUETYPE_FLAG,
+			_("Feature an interactive terminal running as a normal one with silently allowed inputs. (Only works when using minetestserver or with --server)"))));
 	allowed_options->insert(std::make_pair("recompress", ValueSpec(VALUETYPE_FLAG,
 			_("Recompress the blocks of the given map database."))));
 #ifndef SERVER
@@ -1089,7 +1092,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		return false;
 	}
 
-	if (cmd_args.exists("terminal")) {
+	if (cmd_args.exists("terminal") || cmd_args.exists("terminal-silent")) {
 #if USE_CURSES
 		bool name_ok = true;
 		std::string admin_nick = g_settings->get("name");
@@ -1115,34 +1118,54 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		ChatInterface iface;
 		bool &kill = *porting::signal_handler_killstatus();
 
+		const bool silent = cmd_args.exists("terminal-silent");
+
 		try {
 			// Create server
 			Server server(game_params.world_path, game_params.game_spec,
 					false, bind_addr, true, &iface);
 
-			g_term_console.setup(&iface, &kill, admin_nick);
-
-			g_term_console.start();
+			if (silent) {
+				g_term_console_silent.setup(&iface, &kill, admin_nick);
+				g_term_console_silent.start();
+			} else {
+				g_term_console.setup(&iface, &kill, admin_nick);
+				g_term_console.start();
+			}
 
 			server.start();
 			// Run server
 			dedicated_server_loop(server, kill);
 		} catch (const ModError &e) {
-			g_term_console.stopAndWaitforThread();
+			if (silent) {
+				g_term_console_silent.stopAndWaitforThread();
+			} else {
+				g_term_console.stopAndWaitforThread();
+			}
 			errorstream << "ModError: " << e.what() << std::endl;
 			return false;
 		} catch (const ServerError &e) {
-			g_term_console.stopAndWaitforThread();
+			if (silent) {
+				g_term_console_silent.stopAndWaitforThread();
+			} else {
+				g_term_console.stopAndWaitforThread();
+			}
 			errorstream << "ServerError: " << e.what() << std::endl;
 			return false;
 		}
-
 		// Tell the console to stop, and wait for it to finish,
 		// only then leave context and free iface
-		g_term_console.stop();
-		g_term_console.wait();
+		if (silent) {
+			g_term_console_silent.stop();
+			g_term_console_silent.wait();
 
-		g_term_console.clearKillStatus();
+			g_term_console_silent.clearKillStatus();
+		} else {
+			g_term_console.stop();
+			g_term_console.wait();
+
+			g_term_console.clearKillStatus();
+		}
 	} else {
 #else
 		errorstream << "Cmd arg --terminal passed, but "
