@@ -924,12 +924,25 @@ static bool auto_select_world(GameParams *game_params)
 	std::string world_path;
 
 	if (!game_params->game_spec.id.empty()) {
+		infostream << "Game specified but world was not. Creating new world" << std::endl;
+
 		std::time_t t = std::time(nullptr);
 		char date_chars[100];
 		std::strftime(date_chars, sizeof(date_chars), "%F-%H-%M-%S", std::localtime(&t));
 		std::string world_name = game_params->game_spec.id + "-" + date_chars;
+		// avoid colissions when starting multiple servers in the same second
+		// probability of colission is 1/16^5 ~= 1 in a million
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<> dis(0, 0xF);
+		char rand_buf[5];
+		for (int i = 0; i < 5; ++i) {
+			int random_num = dis(gen);
+			rand_buf[i] = "0123456789ABCDEF"[random_num];
+		}
+		world_name += "-" + std::string(rand_buf);
 		world_path = porting::path_user + DIR_DELIM + "worlds" + DIR_DELIM + world_name;
-		infostream << "Game specified but world was not. Creating new world" << std::endl;
+
 		try {
 			world_path = loadGameConfAndInitWorld(
 				world_path,	world_name,
