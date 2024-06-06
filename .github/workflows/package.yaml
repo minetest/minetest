@@ -1,0 +1,39 @@
+---
+name: package
+on: # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - master
+    paths:
+      - 'rattler-build-recipe/**/recipe.yaml'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+jobs:
+  rattler-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: write rattler credentials
+        # Can be removed once https://github.com/prefix-dev/rattler-build-action/issues/4
+        run: |
+          RATTLER_AUTH_FILE=${{ runner.temp }}/credentials.json
+          echo '{"repo.prefix.dev":{"BearerToken":"${{ secrets.PREFIX_DEV_API_KEY }}"}}' > "${RATTLER_AUTH_FILE}"
+          echo "RATTLER_AUTH_FILE=$RATTLER_AUTH_FILE" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+      - name: build minetest
+        uses: prefix-dev/rattler-build-action@v0.2.9
+        with:
+          recipe-path: ./rattler-build-recipe/minetest/recipe.yaml
+          build-args: --channel=conda-forge
+      - name: build minetest-gymnasium
+        uses: prefix-dev/rattler-build-action@v0.2.9
+        with:
+          recipe-path: ./rattler-build-recipe/minetest-gymnasium/recipe.yaml
+          build-args: --channel=./output --channel=conda-forge
+      - name: upload
+        run: |
+          for pkg in $(find ./output -type f \( -name "*.conda" \) ); do
+            echo "Uploading ${pkg}"
+            rattler-build upload prefix -c obelisk "${pkg}"
+          done
+        env:
+          PREFIX_API_KEY: ${{ secrets.PREFIX_DEV_API_KEY }}
