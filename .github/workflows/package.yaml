@@ -12,6 +12,11 @@ jobs:
   rattler-build:
     runs-on: ubuntu-latest
     steps:
+      # Needed to run the tests
+      - name: install libgl
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-dev
       - name: write rattler credentials
         # Can be removed once https://github.com/prefix-dev/rattler-build-action/issues/4
         run: |
@@ -19,6 +24,8 @@ jobs:
           echo '{"repo.prefix.dev":{"BearerToken":"${{ secrets.PREFIX_DEV_API_KEY }}"}}' > "${RATTLER_AUTH_FILE}"
           echo "RATTLER_AUTH_FILE=$RATTLER_AUTH_FILE" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: build minetest
         uses: prefix-dev/rattler-build-action@v0.2.9
         with:
@@ -28,7 +35,8 @@ jobs:
         uses: prefix-dev/rattler-build-action@v0.2.9
         with:
           recipe-path: ./rattler-build-recipe/minetest-gymnasium/recipe.yaml
-          build-args: --channel=./output --channel=conda-forge
+          build-args: --channel=conda-forge
+          upload-artifact: false # don't upload to GitHub
       - name: upload
         run: |
           for pkg in $(find ./output -type f \( -name "*.conda" \) ); do

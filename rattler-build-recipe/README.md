@@ -2,20 +2,22 @@
 
 [rattler-build](https://prefix-dev.github.io/rattler-build/latest/) recipes.
 
-Usage:
+If you change the recipe.yaml in master, a
+[GitHub workflow](../.github/workflows/package.yaml) should rebuild and upload the packages.
+
+Note you should bump the version number or build number whenever you want a new version
+released, otherwise the upload will fail because that version already exists.
+
+## Local usage
 
 One-time, install rattler-build:
 ```sh
 pixi global install rattler-build
 ```
 
-Then to rebuild, edit the recipe to bumb the verison and then:
+Then to rebuild:
 ```sh
-rattler-build build --package-format=conda --recipe-dir=./rattler-build-recipe -c conda-forge -c ./output
+rattler-build build --recipe-dir=./rattler-build-recipe -c conda-forge
 ls -lh output/{noarch,linux-64}
 ```
 
-Then you need to upload the .conda files to
-https://prefix.dev/channels/obelisk-public and / or
-https://prefix.dev/channels/obelisk. We should be able to automate that, but for now
-just `scp` the files to your laptop and upload them using the web UI.
