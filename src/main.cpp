@@ -17,7 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <cstdint>
 #include <ctime>
+#include <limits>
 #include "irrlichttypes.h" // must be included before anything irrlicht, see comment in the file
 #include "irrlicht.h" // createDevice
 #include "irrlichttypes_extrabloated.h"
@@ -694,8 +696,19 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 	init_log_streams(cmd_args);
 
 	// Initialize random seed
-	srand(time(0));
-	mysrand(time(0));
+	// A bit of an abuse of the fixed_map_seed setting, but basically when using
+	// this for RL training, using the current time is not good because starting
+	// multiple processes in parallel will end up with the same seed.
+	const std::string& fixed_map_seed = g_settings->get("fixed_map_seed");
+	if (!fixed_map_seed.empty()) {
+		std::int64_t seed_i64 = std::atoll(fixed_map_seed.c_str());
+		unsigned int seed = seed_i64 & std::numeric_limits<unsigned int>::max();
+		srand(seed);
+		mysrand(seed);
+	} else {
+		srand(time(0));
+		mysrand(time(0));
+	}
 
 	// Initialize HTTP fetcher
 	httpfetch_init(g_settings->getS32("curl_parallel_limit"));

@@ -9,7 +9,7 @@ source:
   path: ../../
 
 build:
-  number: 2
+  number: 3
   script: python -m pip install ./python -v
   noarch: python
 
@@ -20,7 +20,7 @@ requirements:
     - python
     - setuptools
   run:
-    - minetest =0.8
+    - minetest =0.9
     # python deps
     - gymnasium
     - numpy =1.26
