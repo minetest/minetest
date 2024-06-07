@@ -19,9 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "benchmark/benchmark.h"
 
-// This must be set in just this file
-#define CATCH_CONFIG_RUNNER
-#include "benchmark_setup.h"
+#define CATCH_CONFIG_ENABLE_BENCHMARKING
+#include "catch.h"
 
 bool run_benchmarks(const char *arg)
 {
