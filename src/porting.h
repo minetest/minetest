@@ -290,6 +290,17 @@ void osSpecificInit();
 // This attaches to the parents process console, or creates a new one if it doesnt exist.
 void attachOrCreateConsole();
 
+/**
+ * Call this after freeing bigger blocks of memory. Used on some platforms to
+ * properly give memory back to the OS.
+ * @param amount Number of bytes freed
+*/
+#if HAVE_MALLOC_TRIM
+void TrackFreedMemory(size_t amount);
+#else
+inline void TrackFreedMemory(size_t amount) { (void)amount; }
+#endif
+
 #ifdef _WIN32
 // Quotes an argument for use in a CreateProcess() commandline (not cmd.exe!!)
 std::string QuoteArgv(const std::string &arg);
@@ -298,6 +309,7 @@ std::string QuoteArgv(const std::string &arg);
 std::string ConvertError(DWORD error_code);
 #endif
 
+// snprintf wrapper
 int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...);
 
 /**

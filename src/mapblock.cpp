@@ -85,6 +85,7 @@ MapBlock::~MapBlock()
 #endif
 
 	delete[] data;
+	porting::TrackFreedMemory(sizeof(MapNode) * nodecount);
 }
 
 bool MapBlock::onObjectsActivation()

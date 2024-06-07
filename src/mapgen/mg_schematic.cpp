@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <fstream>
-#include <typeinfo>
 #include "mg_schematic.h"
 #include "server.h"
 #include "mapgen.h"
@@ -32,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "filesys.h"
 #include "voxelalgorithms.h"
+#include "porting.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -80,6 +80,8 @@ Schematic::~Schematic()
 {
 	delete []schemdata;
 	delete []slice_probs;
+	u32 nodecount = size.X * size.Y * size.Z;
+	porting::TrackFreedMemory(nodecount * sizeof(MapNode));
 }
 
 ObjDef *Schematic::clone() const

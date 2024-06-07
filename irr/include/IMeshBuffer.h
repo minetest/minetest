@@ -176,6 +176,32 @@ public:
 		}
 		return 0;
 	}
+
+	//! Calculate size of vertices and indices in memory
+	virtual size_t getSize() const
+	{
+		size_t ret = 0;
+		switch (getVertexType()) {
+			case video::EVT_STANDARD:
+				ret += sizeof(video::S3DVertex) * getVertexCount();
+				break;
+			case video::EVT_2TCOORDS:
+				ret += sizeof(video::S3DVertex2TCoords) * getVertexCount();
+				break;
+			case video::EVT_TANGENTS:
+				ret += sizeof(video::S3DVertexTangents) * getVertexCount();
+				break;
+		}
+		switch (getIndexType()) {
+			case video::EIT_16BIT:
+				ret += sizeof(u16) * getIndexCount();
+				break;
+			case video::EIT_32BIT:
+				ret += sizeof(u32) * getIndexCount();
+				break;
+		}
+		return ret;
+	}
 };
 
 } // end namespace scene
