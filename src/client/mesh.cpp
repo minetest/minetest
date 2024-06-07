@@ -397,8 +397,8 @@ scene::SMesh* cloneMesh(scene::IMesh *src_mesh)
 		scene::IMeshBuffer *temp_buf = cloneMeshBuffer(
 			src_mesh->getMeshBuffer(j));
 		dst_mesh->addMeshBuffer(temp_buf);
+		dst_mesh->setTextureSlot(j, src_mesh->getTextureSlot(j));
 		temp_buf->drop();
-
 	}
 	return dst_mesh;
 }

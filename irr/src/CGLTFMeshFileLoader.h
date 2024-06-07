@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "ISkinnedMesh.h"
+#include "CSkinnedMesh.h"
 #include "IMeshLoader.h"
 #include "IReadFile.h"
 #include "irrTypes.h"
@@ -32,14 +32,14 @@ public:
 
 private:
 	template <typename T>
-	static T rawget(const u8 *ptr);
+	static T rawget(const char *ptr);
 
 	template <class T>
 	class Accessor
 	{
 		struct BufferSource
 		{
-			const u8 *ptr;
+			const char *ptr;
 			std::size_t byteStride;
 		};
 		using Source = std::variant<BufferSource, std::vector<T>, std::tuple<>>;
@@ -64,7 +64,7 @@ private:
 		T get(std::size_t i) const;
 
 	private:
-		Accessor(const u8 *ptr, std::size_t byteStride, std::size_t count) :
+		Accessor(const char *ptr, std::size_t byteStride, std::size_t count) :
 				source(BufferSource{ptr, byteStride}), count(count) {}
 		Accessor(std::vector<T> vec, std::size_t count) :
 				source(vec), count(count) {}
@@ -97,18 +97,18 @@ private:
 	class MeshExtractor {
 	public:
 		MeshExtractor(tiniergltf::GlTF &&model,
-				ISkinnedMesh *mesh) noexcept
+				CSkinnedMesh *mesh) noexcept
 			: m_gltf_model(model), m_irr_model(mesh) {};
 
 		/* Gets indices for the given mesh/primitive.
 		 *
 		 * Values are return in Irrlicht winding order.
 		 */
-		std::optional<std::vector<u16>> getIndices(const std::size_t meshIdx,
-				const std::size_t primitiveIdx) const;
+		std::optional<std::vector<u16>> getIndices(
+				const tiniergltf::MeshPrimitive &primitive) const;
 
-		std::optional<std::vector<video::S3DVertex>> getVertices(std::size_t meshIdx,
-				const std::size_t primitiveIdx) const;
+		std::optional<std::vector<video::S3DVertex>> getVertices(
+				const tiniergltf::MeshPrimitive &primitive) const;
 
 		std::size_t getMeshCount() const;
 
@@ -118,7 +118,7 @@ private:
 
 	private:
 		const tiniergltf::GlTF m_gltf_model;
-		ISkinnedMesh *m_irr_model;
+		CSkinnedMesh *m_irr_model;
 
 		void copyPositions(const std::size_t accessorIdx,
 				std::vector<video::S3DVertex>& vertices) const;
@@ -128,7 +128,7 @@ private:
 
 		void copyTCoords(const std::size_t accessorIdx,
 				std::vector<video::S3DVertex>& vertices) const;
-		
+
 		void loadMesh(
 			std::size_t meshIdx,
 			ISkinnedMesh::SJoint *parentJoint) const;

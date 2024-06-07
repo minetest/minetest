@@ -176,10 +176,10 @@ SelfType::Accessor<T>::make(const tiniergltf::GlTF &model, std::size_t accessorI
 		return tiniergltf::Accessor::ComponentType::U;                                                     \
 	}                                                                                                      \
 	template <>                                                                                            \
-	std::array<T, N> SelfType::rawget(const u8 *ptr)                                                       \
+	std::array<T, N> SelfType::rawget(const char *ptr)                                                       \
 	{                                                                                                      \
 		std::array<T, N> res;                                                                              \
-		for (u8 i = 0; i < N; ++i)                                                                         \
+		for (int i = 0; i < N; ++i)                                                                         \
 			res[i] = rawget<T>(ptr + sizeof(T) * i);                                                       \
 		return res;                                                                                        \
 	}
@@ -218,7 +218,7 @@ T SelfType::Accessor<T>::get(std::size_t i) const
 }
 
 template <typename T>
-T SelfType::rawget(const u8 *ptr)
+T SelfType::rawget(const char *ptr)
 {
 	T dest;
 	std::memcpy(&dest, ptr, sizeof(dest));
@@ -232,7 +232,7 @@ T SelfType::rawget(const u8 *ptr)
 // Note that these "more specialized templates" should win.
 
 template <>
-core::matrix4 SelfType::rawget(const u8 *ptr)
+core::matrix4 SelfType::rawget(const char *ptr)
 {
 	core::matrix4 mat;
 	for (u8 i = 0; i < 16; ++i) {
@@ -242,7 +242,7 @@ core::matrix4 SelfType::rawget(const u8 *ptr)
 }
 
 template <>
-core::vector3df SelfType::rawget(const u8 *ptr)
+core::vector3df SelfType::rawget(const char *ptr)
 {
 	return core::vector3df(
 			rawget<f32>(ptr),
@@ -251,7 +251,7 @@ core::vector3df SelfType::rawget(const u8 *ptr)
 }
 
 template <>
-core::quaternion SelfType::rawget(const u8 *ptr)
+core::quaternion SelfType::rawget(const char *ptr)
 {
 	return core::quaternion(
 			rawget<f32>(ptr),
@@ -330,17 +330,21 @@ IAnimatedMesh* SelfType::createMesh(io::IReadFile* file)
 			&& model->accessors.has_value()
 			&& model->meshes.has_value()
 			&& model->nodes.has_value())) {
+		os::Printer::log("glTF loader", "missing required fields", ELL_ERROR);
 		return nullptr;
 	}
 
-	ISkinnedMesh *mesh = new CSkinnedMesh();
+	auto *mesh = new CSkinnedMesh();
 	MeshExtractor parser(std::move(model.value()), mesh);
 	try {
 		parser.loadNodes();
 	} catch (std::runtime_error &e) {
+		os::Printer::log("glTF loader", e.what(), ELL_ERROR);
 		mesh->drop();
 		return nullptr;
 	}
+	if (model->images.has_value())
+		os::Printer::log("glTF loader", "embedded images are not supported", ELL_WARNING);
 	return mesh;
 }
 
@@ -386,8 +390,9 @@ void SelfType::MeshExtractor::loadMesh(
 		const std::size_t meshIdx,
 		ISkinnedMesh::SJoint *parent) const
 {
-	for (std::size_t j = 0; j < getPrimitiveCount(meshIdx); ++j) {
-		auto vertices = getVertices(meshIdx, j);
+	for (std::size_t pi = 0; pi < getPrimitiveCount(meshIdx); ++pi) {
+		const auto &primitive = m_gltf_model.meshes->at(meshIdx).primitives.at(pi);
+		auto vertices = getVertices(primitive);
 		if (!vertices.has_value())
 			continue; // "When positions are not specified, client implementations SHOULD skip primitive’s rendering"
 
@@ -397,8 +402,8 @@ void SelfType::MeshExtractor::loadMesh(
 
 		// Apply the global transform along the parent chain.
 		transformVertices(*vertices, parent->GlobalMatrix);
-		
-		auto maybeIndices = getIndices(meshIdx, j);
+
+		auto maybeIndices = getIndices(primitive);
 		std::vector<u16> indices;
 		if (maybeIndices.has_value()) {
 			indices = std::move(*maybeIndices);
@@ -410,6 +415,17 @@ void SelfType::MeshExtractor::loadMesh(
 
 		m_irr_model->addMeshBuffer(
 				new SSkinMeshBuffer(std::move(*vertices), std::move(indices)));
+
+		if (primitive.material.has_value()) {
+			const auto &material = m_gltf_model.materials->at(*primitive.material);
+			if (material.pbrMetallicRoughness.has_value()) {
+				const auto &texture = material.pbrMetallicRoughness->baseColorTexture;
+				if (texture.has_value()) {
+					const auto meshbufNr = m_irr_model->getMeshBufferCount() - 1;
+					m_irr_model->setTextureSlot(meshbufNr, static_cast<u32>(texture->index));
+				}
+			}
+		}
 	}
 }
 
@@ -499,10 +515,9 @@ void SelfType::MeshExtractor::loadNodes() const
  * Extracts GLTF mesh indices.
  */
 std::optional<std::vector<u16>> SelfType::MeshExtractor::getIndices(
-		const std::size_t meshIdx,
-		const std::size_t primitiveIdx) const
+		const tiniergltf::MeshPrimitive &primitive) const
 {
-	const auto accessorIdx = m_gltf_model.meshes->at(meshIdx).primitives.at(primitiveIdx).indices;
+	const auto accessorIdx = primitive.indices;
 	if (!accessorIdx.has_value())
 		return std::nullopt; // non-indexed geometry
 
@@ -553,10 +568,9 @@ std::optional<std::vector<u16>> SelfType::MeshExtractor::getIndices(
  * Create a vector of video::S3DVertex (model data) from a mesh & primitive index.
  */
 std::optional<std::vector<video::S3DVertex>> SelfType::MeshExtractor::getVertices(
-		const std::size_t meshIdx,
-		const std::size_t primitiveIdx) const
+		const tiniergltf::MeshPrimitive &primitive) const
 {
-	const auto &attributes = m_gltf_model.meshes->at(meshIdx).primitives.at(primitiveIdx).attributes;
+	const auto &attributes = primitive.attributes;
 	const auto positionAccessorIdx = attributes.position;
 	if (!positionAccessorIdx.has_value()) {
 		// "When positions are not specified, client implementations SHOULD skip primitive's rendering"
@@ -574,7 +588,7 @@ std::optional<std::vector<video::S3DVertex>> SelfType::MeshExtractor::getVertice
 	}
 	// TODO verify that the automatic normal recalculation done in Minetest indeed works correctly
 
-	const auto &texcoords = m_gltf_model.meshes->at(meshIdx).primitives[primitiveIdx].attributes.texcoord;
+	const auto &texcoords = attributes.texcoord;
 	if (texcoords.has_value()) {
 		const auto tCoordAccessorIdx = texcoords->at(0);
 		copyTCoords(tCoordAccessorIdx, vertices);
@@ -650,8 +664,10 @@ void SelfType::MeshExtractor::copyTCoords(
 std::optional<tiniergltf::GlTF> SelfType::tryParseGLTF(io::IReadFile* file)
 {
 	auto size = file->getSize();
-	auto buf = std::make_unique<char[]>(size + 1);
-	if (file->read(buf.get(), size) != size)
+	if (size < 0) // this can happen if `ftell` fails
+		return std::nullopt;
+	std::unique_ptr<char[]> buf(new char[size + 1]);
+	if (file->read(buf.get(), size) != static_cast<std::size_t>(size))
 		return std::nullopt;
 	// We probably don't need this, but add it just to be sure.
 	buf[size] = '\0';
@@ -665,8 +681,10 @@ std::optional<tiniergltf::GlTF> SelfType::tryParseGLTF(io::IReadFile* file)
 	try {
 		return tiniergltf::GlTF(json);
 	} catch (const std::runtime_error &e) {
+		os::Printer::log("glTF loader", e.what(), ELL_ERROR);
 		return std::nullopt;
 	} catch (const std::out_of_range &e) {
+		os::Printer::log("glTF loader", e.what(), ELL_ERROR);
 		return std::nullopt;
 	}
 }

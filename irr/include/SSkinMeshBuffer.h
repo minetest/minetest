@@ -25,7 +25,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	{}
 
 	//! Constructor for standard vertices
-	SSkinMeshBuffer(core::array<video::S3DVertex> &&vertices, core::array<u16> &&indices) :
+	SSkinMeshBuffer(std::vector<video::S3DVertex> &&vertices, std::vector<u16> &&indices) :
 			SSkinMeshBuffer()
 	{
 		Vertices_Standard = vertices;

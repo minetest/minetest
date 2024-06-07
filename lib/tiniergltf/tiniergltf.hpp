@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <unordered_map>
 #include <unordered_set>
-#include "base64.h"
+#include "util/base64.h"
 
 namespace tiniergltf {
 
@@ -104,13 +104,15 @@ std::array<U, n> asArr(const Json::Value &o) {
 struct AccessorSparseIndices {
 	std::size_t bufferView;
 	std::size_t byteOffset;
+	// as defined in the glTF specification
 	enum class ComponentType {
 		UNSIGNED_BYTE,
 		UNSIGNED_SHORT,
 		UNSIGNED_INT,
 	};
-	static std::size_t componentSize(ComponentType type) {
-		switch (type) {
+	ComponentType componentType;
+	std::size_t componentSize() const {
+		switch (componentType) {
 		case ComponentType::UNSIGNED_BYTE:
 			return 1;
 		case ComponentType::UNSIGNED_SHORT:
@@ -120,9 +122,8 @@ struct AccessorSparseIndices {
 		}
 		throw std::logic_error("invalid component type");
 	}
-	ComponentType componentType;
 	std::size_t elementSize() const {
-		return componentSize(componentType);
+		return componentSize();
 	}
 	AccessorSparseIndices(const Json::Value &o)
 		: bufferView(as<std::size_t>(o["bufferView"]))
@@ -139,7 +140,7 @@ struct AccessorSparseIndices {
 				{5123, ComponentType::UNSIGNED_SHORT},
 				{5125, ComponentType::UNSIGNED_INT},
 			};
-			auto v = o["componentType"]; check(v.isUInt64());
+			const auto &v = o["componentType"]; check(v.isUInt64());
 			componentType = map.at(v.asUInt64());
 		}
 	}
@@ -180,6 +181,7 @@ template<> AccessorSparse as(const Json::Value &o) { return o; }
 struct Accessor {
 	std::optional<std::size_t> bufferView;
 	std::size_t byteOffset;
+	// as defined in the glTF specification
 	enum class ComponentType {
 		BYTE,
 		UNSIGNED_BYTE,
@@ -258,7 +260,7 @@ struct Accessor {
 				{5125, ComponentType::UNSIGNED_INT},
 				{5126, ComponentType::FLOAT},
 			};
-			auto v = o["componentType"]; check(v.isUInt64());
+			const auto &v = o["componentType"]; check(v.isUInt64());
 			componentType = map.at(v.asUInt64());
 		}
 		if (o.isMember("byteOffset")) {
@@ -286,7 +288,7 @@ struct Accessor {
 				{"VEC3", Type::VEC3},
 				{"VEC4", Type::VEC4},
 			};
-			auto v = o["type"]; check(v.isString());
+			const auto &v = o["type"]; check(v.isString());
 			type = map.at(v.asString());
 		}
 		if (o.isMember("max")) {
@@ -323,7 +325,7 @@ struct AnimationChannelTarget {
 				{"translation", Path::TRANSLATION},
 				{"weights", Path::WEIGHTS},
 			};
-			auto v = o["path"]; check(v.isString());
+			const auto &v = o["path"]; check(v.isString());
 			path = map.at(v.asString());
 		}
 	}
@@ -363,7 +365,7 @@ struct AnimationSampler {
 				{"LINEAR", Interpolation::LINEAR},
 				{"STEP", Interpolation::STEP},
 			};
-			auto v = o["interpolation"]; check(v.isString());
+			const auto &v = o["interpolation"]; check(v.isString());
 			interpolation = map.at(v.asString());
 		}
 	}
@@ -446,7 +448,7 @@ struct BufferView {
 				{34962, Target::ARRAY_BUFFER},
 				{34963, Target::ELEMENT_ARRAY_BUFFER},
 			};
-			auto v = o["target"]; check(v.isUInt64());
+			const auto &v = o["target"]; check(v.isUInt64());
 			target = map.at(v.asUInt64());
 		}
 	}
@@ -456,9 +458,9 @@ template<> BufferView as(const Json::Value &o) { return o; }
 struct Buffer {
 	std::size_t byteLength;
 	std::optional<std::string> name;
-	std::vector<unsigned char> data;
+	std::string data;
 	Buffer(const Json::Value &o,
-			const std::function<std::vector<unsigned char>(const std::string &uri)> &resolveURI)
+			const std::function<std::string(const std::string &uri)> &resolveURI)
 		: byteLength(as<std::size_t>(o["byteLength"]))
 	{
 		check(o.isObject());
@@ -556,7 +558,7 @@ struct Camera {
 				{"orthographic", Type::ORTHOGRAPHIC},
 				{"perspective", Type::PERSPECTIVE},
 			};
-			auto v = o["type"]; check(v.isString());
+			const auto &v = o["type"]; check(v.isString());
 			type = map.at(v.asString());
 		}
 	}
@@ -583,7 +585,7 @@ struct Image {
 				{"image/jpeg", MimeType::IMAGE_JPEG},
 				{"image/png", MimeType::IMAGE_PNG},
 			};
-			auto v = o["mimeType"]; check(v.isString());
+			const auto &v = o["mimeType"]; check(v.isString());
 			mimeType = map.at(v.asString());
 		}
 		if (o.isMember("name")) {
@@ -725,7 +727,7 @@ struct Material {
 				{"MASK", AlphaMode::MASK},
 				{"OPAQUE", AlphaMode::OPAQUE},
 			};
-			auto v = o["alphaMode"]; check(v.isString());
+			const auto &v = o["alphaMode"]; check(v.isString());
 			alphaMode = map.at(v.asString());
 		}
 		if (o.isMember("doubleSided")) {
@@ -733,7 +735,7 @@ struct Material {
 		}
 		if (o.isMember("emissiveFactor")) {
 			emissiveFactor = asArr<double, 3>(o["emissiveFactor"]);
-			for (auto v: emissiveFactor) {
+			for (const auto &v: emissiveFactor) {
 				check(v >= 0);
 				check(v <= 1);
 			}
@@ -849,7 +851,7 @@ struct MeshPrimitive {
 				{5, Mode::TRIANGLE_STRIP},
 				{6, Mode::TRIANGLE_FAN},
 			};
-			auto v = o["mode"]; check(v.isUInt64());
+			const auto &v = o["mode"]; check(v.isUInt64());
 			mode = map.at(v.asUInt64());
 		}
 		if (o.isMember("targets")) {
@@ -931,7 +933,7 @@ struct Node {
 			if (o.isMember("scale")) {
 				trs.scale = asArr<double, 3>(o["scale"]);
 			}
-			transform = std::move(trs);
+			transform = trs;
 		}
 		if (o.isMember("mesh")) {
 			mesh = as<std::size_t>(o["mesh"]);
@@ -989,7 +991,7 @@ struct Sampler {
 				{9728, MagFilter::NEAREST},
 				{9729, MagFilter::LINEAR},
 			};
-			auto v = o["magFilter"]; check(v.isUInt64());
+			const auto &v = o["magFilter"]; check(v.isUInt64());
 			magFilter = map.at(v.asUInt64());
 		}
 		if (o.isMember("minFilter")) {
@@ -1001,7 +1003,7 @@ struct Sampler {
 				{9986, MinFilter::NEAREST_MIPMAP_LINEAR},
 				{9987, MinFilter::LINEAR_MIPMAP_LINEAR},
 			};
-			auto v = o["minFilter"]; check(v.isUInt64());
+			const auto &v = o["minFilter"]; check(v.isUInt64());
 			minFilter = map.at(v.asUInt64());
 		}
 		if (o.isMember("name")) {
@@ -1013,7 +1015,7 @@ struct Sampler {
 				{33071, WrapS::CLAMP_TO_EDGE},
 				{33648, WrapS::MIRRORED_REPEAT},
 			};
-			auto v = o["wrapS"]; check(v.isUInt64());
+			const auto &v = o["wrapS"]; check(v.isUInt64());
 			wrapS = map.at(v.asUInt64());
 		}
 		if (o.isMember("wrapT")) {
@@ -1022,7 +1024,7 @@ struct Sampler {
 				{33071, WrapT::CLAMP_TO_EDGE},
 				{33648, WrapT::MIRRORED_REPEAT},
 			};
-			auto v = o["wrapT"]; check(v.isUInt64());
+			const auto &v = o["wrapT"]; check(v.isUInt64());
 			wrapT = map.at(v.asUInt64());
 		}
 	}
@@ -1109,12 +1111,12 @@ struct GlTF {
 	std::optional<std::vector<Scene>> scenes;
 	std::optional<std::vector<Skin>> skins;
 	std::optional<std::vector<Texture>> textures;
-	static std::vector<unsigned char> uriError(const std::string &uri) {
+	static std::string uriError(const std::string &uri) {
 		// only base64 data URI support by default
 		throw std::runtime_error("unsupported URI: " + uri);
 	}
 	GlTF(const Json::Value &o,
-			const std::function<std::vector<unsigned char>(const std::string &uri)> &resolveURI = uriError)
+			const std::function<std::string(const std::string &uri)> &resolveURI = uriError)
 		: asset(as<Asset>(o["asset"]))
 	{
 		check(o.isObject());
@@ -1136,7 +1138,7 @@ struct GlTF {
 			std::vector<Buffer> bufs;
 			bufs.reserve(b.size());
 			for (Json::ArrayIndex i = 0; i < b.size(); ++i) {
-				bufs.push_back(Buffer(b[i], resolveURI));
+				bufs.emplace_back(b[i], resolveURI);
 			}
 			check(bufs.size() >= 1);
 			buffers = std::move(bufs);
@@ -1237,36 +1239,24 @@ struct GlTF {
 			check(view.byteOffset <= buf.byteLength - view.byteLength);
 		});
 
+		const auto checkAccessor = [&](const auto &accessor,
+				std::size_t bufferView, std::size_t byteOffset, std::size_t count) {
+			const BufferView &view = bufferViews->at(bufferView);
+			if (view.byteStride.has_value())
+				check(*view.byteStride % accessor.componentSize() == 0);
+			check(byteOffset < view.byteLength);
+			// Use division to avoid overflows.
+			const auto effective_byte_stride = view.byteStride.value_or(accessor.elementSize());
+			check(count <= (view.byteLength - byteOffset) / effective_byte_stride);
+		};
 		checkForall(accessors, [&](const Accessor &accessor) {
-			checkIndex(bufferViews, accessor.bufferView);
-			if (accessor.bufferView.has_value()) {
-				const BufferView &view = bufferViews->at(accessor.bufferView.value());
-				if (view.byteStride.has_value())
-					check(view.byteStride.value() % accessor.componentSize() == 0);
-				check(accessor.byteOffset < view.byteLength);
-				// Use division to avoid overflows.
-				// TODO this should be (but written in such a way that overflows are avoided):
-				// `accessor.byteOffset + EFFECTIVE_BYTE_STRIDE * (accessor.count - 1) + SIZE_OF_COMPONENT * NUMBER_OF_COMPONENTS`
-				check(accessor.count <= view.byteLength / view.byteStride.value_or(accessor.elementSize()));
-			}
+			if (accessor.bufferView.has_value())
+				checkAccessor(accessor, *accessor.bufferView, accessor.byteOffset, accessor.count);
 			if (accessor.sparse.has_value()) {
-				// Again be careful because of possible integer overflows.
-				{
-					const auto &indices = accessor.sparse->indices;
-					checkIndex(bufferViews, indices.bufferView);
-					const BufferView &view = bufferViews->at(indices.bufferView);
-					check(indices.byteOffset < view.byteLength);
-					// TODO take byte stride into account
-					check(accessor.sparse->count <= (view.byteLength - indices.byteOffset) / indices.elementSize());
-				}
-				{
-					const auto &values = accessor.sparse->values;
-					checkIndex(bufferViews, values.bufferView);
-					const BufferView &view = bufferViews->at(values.bufferView);
-					check(values.byteOffset < view.byteLength);
-					// TODO take byte stride into account
-					check(accessor.sparse->count <= (view.byteLength - values.byteOffset) / accessor.elementSize());
-				}
+				const auto &indices = accessor.sparse->indices;
+				checkAccessor(indices, indices.bufferView, indices.byteOffset, accessor.sparse->count);
+				const auto &values = accessor.sparse->values;
+				checkAccessor(accessor, values.bufferView, values.byteOffset, accessor.sparse->count);
 			}
 		});
 
