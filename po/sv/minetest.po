@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Swedish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-10-22 17:19+0000\n"
+"PO-Revision-Date: 2024-06-08 08:09+0000\n"
 "Last-Translator: ROllerozxa <rollerozxa@voxelmanip.se>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
 "minetest/sv/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.1\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -345,7 +345,7 @@ msgstr "(Ej nöjd)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr "Avaktivera alla"
+msgstr "Inaktivera allt"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
@@ -2069,7 +2069,7 @@ msgstr "Öka volym"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inventory"
-msgstr "Förråd"
+msgstr "Lagring"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Jump"
@@ -3711,9 +3711,8 @@ msgid "Fullscreen mode."
 msgstr "Fullskärmsläge."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "GUI"
-msgstr "GUIs"
+msgstr "GUI"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
@@ -4232,7 +4231,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr ""
+msgstr "Språk"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
