@@ -27,25 +27,13 @@ def world_dir():
         yield temp_world_dir
 
 
-# take a lucky guess at a free port
-# this works by having the OS return a free port, then immediately closing the socket
-# not guaranteed to be free, but should be good enough for our purposes
-def get_free_port():
-    s = socket.socket()
-    s.bind(("", 0))
-    port = s.getsockname()[1]
-    s.close()
-    return port
-
-
-def test_minetest_basic(world_dir, caplog):
-    caplog.set_level(logging.DEBUG)
-    minetest_executable = shutil.which("minetest")
-    is_mac = sys.platform == "darwin"
-    if not minetest_executable:
+@pytest.fixture
+def minetest_executable():
+    executable = shutil.which("minetest")
+    if not executable:
         repo_root = Path(__file__).parent.parent.parent
-        if is_mac:
-            minetest_executable = (
+        if sys.platform == "darwin":
+            executable = (
                 repo_root
                 / "build"
                 / "macos"
@@ -55,13 +43,28 @@ def test_minetest_basic(world_dir, caplog):
                 / "minetest"
             )
         else:
-            minetest_executable = repo_root / "bin" / "minetest"
-        assert minetest_executable.exists()
+            executable = repo_root / "bin" / "minetest"
+        assert executable.exists()
+    return executable
 
-    server_addr = None
-    if is_mac:
+
+@pytest.fixture
+def server_addr():
+    if sys.platform == "darwin":
+        # take a lucky guess at a free port
+        # Have the OS return a free port, then immediately close the socket.
+        # Not guaranteed to be free, but should be good enough
+        s = socket.socket()
+        s.bind(("", 0))
+        port = s.getsockname()[1]
+        s.close()
         # mac doesn't support abstract unix sockets, so use TCP
-        server_addr = f"localhost:{get_free_port()}"
+        return f"localhost:{port}"
+    return None
+
+
+def test_minetest_basic(world_dir, minetest_executable, server_addr, caplog):
+    caplog.set_level(logging.DEBUG)
     artifact_dir = tempfile.mkdtemp()
     display_size = (223, 111)
     env = gym.make(
@@ -82,6 +85,8 @@ def test_minetest_basic(world_dir, caplog):
     # Context manager to make sure close() is called even if test fails.
     with env:
         initial_obs, info = env.reset()
+        # should not be set when we specify world_dir and don't set world_seed.
+        assert not contains_key(env.unwrapped.config_path, "fixed_map_seed")
         nonzero_reward = False
         expected_shape = display_size + (3,)
         for i in range(5):
@@ -119,6 +124,43 @@ def test_minetest_basic(world_dir, caplog):
     assert nonzero_reward, f"see images in {artifact_dir}"
 
     shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
+
+
+def test_minetest_game_dir(minetest_executable, server_addr, caplog):
+    caplog.set_level(logging.DEBUG)
+    repo_root = Path(__file__).parent.parent.parent
+    devetest_game_dir = repo_root / "games" / "devtest"
+    assert devetest_game_dir.exists()
+    artifact_dir = tempfile.mkdtemp()
+    env = gym.make(
+        "minetest-v0",
+        executable=minetest_executable,
+        artifact_dir=artifact_dir,
+        server_addr=server_addr,
+        render_mode="rgb_array",
+        world_dir=None,
+        game_dir=devetest_game_dir,
+        headless=True,
+        verbose_logging=True,
+        additional_observation_spaces={
+            "return": gym.spaces.Box(low=-(2**20), high=2**20, shape=(1,))
+        },
+    )
+
+    # Context manager to make sure close() is called even if test fails.
+    with env:
+        initial_obs, info = env.reset()
+        # should be set when we specify game_dir and not world_dir
+        assert contains_key(env.unwrapped.config_path, "fixed_map_seed")
+    shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
+
+
+def contains_key(config_path: os.PathLike, key: str):
+    with open(config_path) as f:
+        for line in f:
+            if line.startswith(key):
+                return True
+    return False
 
 
 def test_keymap_valid():

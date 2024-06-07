@@ -190,7 +190,6 @@ class MinetestEnv(gym.Env):
 
         # Write minetest.conf
         self.config_dict = config_dict
-        self._write_config()
         self._event_loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
         self._kj_loop: contextlib.AbstractAsyncContextManager = None
 
@@ -303,6 +302,7 @@ class MinetestEnv(gym.Env):
             self.minetest_process.kill()
             self.minetest_process.communicate(timeout=15)
 
+        self._write_config()
         self.minetest_process = self._start_minetest_client(
             log_path,
         )
