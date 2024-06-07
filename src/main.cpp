@@ -696,19 +696,10 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 	init_log_streams(cmd_args);
 
 	// Initialize random seed
-	// A bit of an abuse of the fixed_map_seed setting, but basically when using
-	// this for RL training, using the current time is not good because starting
-	// multiple processes in parallel will end up with the same seed.
-	const std::string& fixed_map_seed = g_settings->get("fixed_map_seed");
-	if (!fixed_map_seed.empty()) {
-		std::int64_t seed_i64 = std::atoll(fixed_map_seed.c_str());
-		unsigned int seed = seed_i64 & std::numeric_limits<unsigned int>::max();
-		srand(seed);
-		mysrand(seed);
-	} else {
-		srand(time(0));
-		mysrand(time(0));
-	}
+	std::random_device rd;
+	std::uniform_int_distribution<unsigned int> dis{};
+	srand(dis(rd));
+	mysrand(dis(rd));
 
 	// Initialize HTTP fetcher
 	httpfetch_init(g_settings->getS32("curl_parallel_limit"));
@@ -946,11 +937,10 @@ static bool auto_select_world(GameParams *game_params)
 		// avoid colissions when starting multiple servers in the same second
 		// probability of colission is 1/16^5 ~= 1 in a million
 		std::random_device rd;
-		std::mt19937 gen(rd());
 		std::uniform_int_distribution<> dis(0, 0xF);
 		char rand_buf[5];
 		for (int i = 0; i < 5; ++i) {
-			int random_num = dis(gen);
+			int random_num = dis(rd);
 			rand_buf[i] = "0123456789ABCDEF"[random_num];
 		}
 		world_name += "-" + std::string(rand_buf);
