@@ -650,8 +650,10 @@ void SelfType::MeshExtractor::copyTCoords(
 std::optional<tiniergltf::GlTF> SelfType::tryParseGLTF(io::IReadFile* file)
 {
 	auto size = file->getSize();
+	if (size < 0) // this can happen if `ftell` fails
+		return std::nullopt;
 	auto buf = std::make_unique<char[]>(size + 1);
-	if (file->read(buf.get(), size) != size)
+	if (file->read(buf.get(), size) != static_cast<std::size_t>(size))
 		return std::nullopt;
 	// We probably don't need this, but add it just to be sure.
 	buf[size] = '\0';
