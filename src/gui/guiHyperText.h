@@ -235,4 +235,6 @@ protected:
 
 	ParsedText::Element *getElementAt(s32 X, s32 Y);
 	void checkHover(s32 X, s32 Y);
+
+	bool m_drawer_ready = false;
 };

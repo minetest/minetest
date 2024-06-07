@@ -1121,7 +1121,7 @@ void GUIHyperText::setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES> 
 
 	ParsedText &text = m_drawer.getText();
 	text.background_middle = style.getRect(StyleSpec::BGIMG_MIDDLE, core::rect<s32>());
-	text.border = style.getBool(StyleSpec::BORDER, false);
+	text.border = style.getBool(StyleSpec::BORDER, true);
 	setNotClipped(style.getBool(StyleSpec::NOCLIP, true));
 
 	if (text.background_type != text.BackgroundType::BACKGROUND_COLOR) {
@@ -1236,8 +1236,11 @@ void GUIHyperText::draw()
 		m_vscrollbar->setPos(0);
 		m_vscrollbar->setVisible(false);
 	}
-	m_drawer.draw(AbsoluteClippingRect,
-			m_display_text_rect.UpperLeftCorner + m_text_scrollpos);
+	if (m_drawer_ready)
+		m_drawer.draw(AbsoluteClippingRect,
+				m_display_text_rect.UpperLeftCorner + m_text_scrollpos);
+	else
+		m_drawer_ready = true;
 
 	// draw children
 	IGUIElement::draw();
