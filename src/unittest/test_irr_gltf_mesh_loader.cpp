@@ -15,7 +15,6 @@
 #include <catch.hpp>
 
 #include <cstring>
-#include <iostream>
 
 #define XSTR(s) STR(s)
 #define STR(s) #s
@@ -331,33 +330,33 @@ TEST_CASE("snow man") {
 			24 * sizeof(irr::video::S3DVertex));
 
 		INFO("coords should be " << vertices[0].TCoords.X << ' ' << vertices[0].TCoords.Y);
-		CHECK(vertices[0].TCoords == irr::core::vector2df{0.583333f, 0.791667f});
-		CHECK(vertices[1].TCoords == irr::core::vector2df{0.583333f, 0.666667f});
-		CHECK(vertices[2].TCoords == irr::core::vector2df{0.708333f, 0.791667f});
-		CHECK(vertices[5].TCoords == irr::core::vector2df{0.375f, 0.416667f});
-		CHECK(vertices[6].TCoords == irr::core::vector2df{0.5f, 0.291667f});
-		CHECK(vertices[19].TCoords == irr::core::vector2df{0.708333f, 0.75f});
+		CHECK(vertices[0].TCoords == irr::core::vector2df{0.583333313f, 0.791666686f});
+		CHECK(vertices[1].TCoords == irr::core::vector2df{0.583333313f, 0.666666686f});
+		CHECK(vertices[2].TCoords == irr::core::vector2df{0.708333313f, 0.791666686f});
+		CHECK(vertices[5].TCoords == irr::core::vector2df{0.375f, 0.416666657f});
+		CHECK(vertices[6].TCoords == irr::core::vector2df{0.5f, 0.291666657f});
+		CHECK(vertices[19].TCoords == irr::core::vector2df{0.708333313f, 0.75f});
 
 		REQUIRE(sm.getMesh()->getMeshBuffer(1)->getVertexCount() == 24);
 		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(1)->getVertices(),
 			24 * sizeof(irr::video::S3DVertex));
 
-		CHECK(vertices[1].TCoords == irr::core::vector2df{0.0f, 0.791667f});
-		CHECK(vertices[4].TCoords == irr::core::vector2df{0.208333f, 0.791667f});
-		CHECK(vertices[5].TCoords == irr::core::vector2df{0.0f, 0.791667f});
-		CHECK(vertices[6].TCoords == irr::core::vector2df{0.208333f, 0.583333f});
-		CHECK(vertices[12].TCoords == irr::core::vector2df{0.416667f, 0.791667f});
-		CHECK(vertices[15].TCoords == irr::core::vector2df{0.208333f, 0.583333f});
+		CHECK(vertices[1].TCoords == irr::core::vector2df{0.0f, 0.791666686f});
+		CHECK(vertices[4].TCoords == irr::core::vector2df{0.208333328f, 0.791666686f});
+		CHECK(vertices[5].TCoords == irr::core::vector2df{0.0f, 0.791666686f});
+		CHECK(vertices[6].TCoords == irr::core::vector2df{0.208333328f, 0.583333313f});
+		CHECK(vertices[12].TCoords == irr::core::vector2df{0.416666657f, 0.791666686f});
+		CHECK(vertices[15].TCoords == irr::core::vector2df{0.208333328f, 0.583333313f});
 
 		REQUIRE(sm.getMesh()->getMeshBuffer(2)->getVertexCount() == 24);
 		std::memcpy(vertices, sm.getMesh()->getMeshBuffer(2)->getVertices(),
 			24 * sizeof(irr::video::S3DVertex));
 
-		CHECK(vertices[10].TCoords == irr::core::vector2df{0.375f, 0.416667f});
-		CHECK(vertices[11].TCoords == irr::core::vector2df{0.375f, 0.583333f});
-		CHECK(vertices[12].TCoords == irr::core::vector2df{0.708333f, 0.625f});
-		CHECK(vertices[17].TCoords == irr::core::vector2df{0.541667f, 0.458333f});
-		CHECK(vertices[20].TCoords == irr::core::vector2df{0.208333f, 0.416667f});
-		CHECK(vertices[22].TCoords == irr::core::vector2df{0.375f, 0.416667f});
+		CHECK(vertices[10].TCoords == irr::core::vector2df{0.375f, 0.416666657f});
+		CHECK(vertices[11].TCoords == irr::core::vector2df{0.375f, 0.583333313f});
+		CHECK(vertices[12].TCoords == irr::core::vector2df{0.708333313f, 0.625f});
+		CHECK(vertices[17].TCoords == irr::core::vector2df{0.541666687f, 0.458333343f});
+		CHECK(vertices[20].TCoords == irr::core::vector2df{0.208333328f, 0.416666657f});
+		CHECK(vertices[22].TCoords == irr::core::vector2df{0.375f, 0.416666657f});
 	}
 }
