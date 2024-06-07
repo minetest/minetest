@@ -272,6 +272,19 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters &param) :
 		SDL_SetHint(SDL_HINT_ENABLE_SCREEN_KEYBOARD, "0");
 #endif
 
+		// Minetest has its own signal handler
+		SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
+
+		// Disabling the compositor is not a good idea in windowed mode.
+		// See https://github.com/minetest/minetest/issues/14596
+		SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
+
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+		// These are not interesting for our use
+		SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
+		SDL_SetHint(SDL_HINT_TV_REMOTE_AS_JOYSTICK, "0");
+#endif
+
 		// Minetest has its own code to synthesize mouse events from touch events,
 		// so we prevent SDL from doing it.
 		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
