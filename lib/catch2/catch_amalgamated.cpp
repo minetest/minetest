@@ -8952,7 +8952,7 @@ class Duration {
     Unit m_units;
 
 public:
-    explicit Duration(double inNanoseconds, Unit units = Unit::Auto)
+    explicit Duration(double inNanoseconds, Unit units = Unit::Microseconds)
         : m_inNanoseconds(inNanoseconds),
         m_units(units) {
         if (m_units == Unit::Auto) {
@@ -9002,7 +9002,7 @@ public:
 
     }
     friend auto operator << (std::ostream& os, Duration const& duration) -> std::ostream& {
-        return os << duration.value() << ' ' << duration.unitsAsString();
+        return os << std::fixed << duration.value() << ' ' << duration.unitsAsString();
     }
 };
 } // end anon namespace

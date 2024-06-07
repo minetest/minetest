@@ -474,6 +474,10 @@ if(BUILD_BENCHMARKS)
 	set(common_SRCS ${common_SRCS} ${BENCHMARK_SRCS})
 endif()
 
+if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
+	set(common_SRCS ${common_SRCS} catch.cpp)
+endif()
+
 # This gives us the icon and file version information
 if(WIN32)
 	set(WINRESOURCE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../misc/winresource.rc")
