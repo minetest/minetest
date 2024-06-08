@@ -290,6 +290,18 @@ in one of its parents, the parent's file is used.
 Although it is discouraged, a mod can overwrite a media file of any mod that it
 depends on by supplying a file with an equal name.
 
+Of the model file formats, only a subset is supported:
+
+Simple textured meshes (with multiple textures), optionally with normals.
+The .x and .b3d formats additionally support skeletal animation.
+
+Do not rely on glTF features not being supported; they may be supported in the future.
+The backwards compatibility guarantee does not extend to ignoring unsupported features.
+
+For example, if your model used an emissive material,
+you should expect that a future version of Minetest may respect this,
+and thus cause your model to render differently there.
+
 Naming conventions
 ------------------
 
