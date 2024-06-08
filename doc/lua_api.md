@@ -5796,6 +5796,7 @@ Call these functions only at load time!
     * `last_login`: The timestamp of the previous login, or nil if player is new
 * `minetest.register_on_leaveplayer(function(ObjectRef, timed_out))`
     * Called when a player leaves the game
+    * Does not get executed for connected players on shutdown.
     * `timed_out`: True for timeout, false for other reasons.
 * `minetest.register_on_authplayer(function(name, ip, is_success))`
     * Called when a client attempts to log into an account.
