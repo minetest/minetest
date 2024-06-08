@@ -1237,36 +1237,24 @@ struct GlTF {
 			check(view.byteOffset <= buf.byteLength - view.byteLength);
 		});
 
+		const auto checkAccessor = [&](const Accessor &accessor,
+				std::size_t bufferView, std::size_t byteOffset, std::size_t count) {
+			const BufferView &view = bufferViews->at(bufferView);
+			if (view.byteStride.has_value())
+				check(*view.byteStride % accessor.componentSize() == 0);
+			check(byteOffset < view.byteLength);
+			// Use division to avoid overflows.
+			const auto effective_byte_stride = view.byteStride.value_or(accessor.elementSize());
+			check(count <= (view.byteLength - byteOffset) / effective_byte_stride);
+		};
 		checkForall(accessors, [&](const Accessor &accessor) {
-			checkIndex(bufferViews, accessor.bufferView);
-			if (accessor.bufferView.has_value()) {
-				const BufferView &view = bufferViews->at(accessor.bufferView.value());
-				if (view.byteStride.has_value())
-					check(view.byteStride.value() % accessor.componentSize() == 0);
-				check(accessor.byteOffset < view.byteLength);
-				// Use division to avoid overflows.
-				// TODO this should be (but written in such a way that overflows are avoided):
-				// `accessor.byteOffset + EFFECTIVE_BYTE_STRIDE * (accessor.count - 1) + SIZE_OF_COMPONENT * NUMBER_OF_COMPONENTS`
-				check(accessor.count <= view.byteLength / view.byteStride.value_or(accessor.elementSize()));
-			}
+			if (accessor.bufferView.has_value())
+				checkAccessor(accessor, *accessor.bufferView, accessor.byteOffset, accessor.count);
 			if (accessor.sparse.has_value()) {
-				// Again be careful because of possible integer overflows.
-				{
-					const auto &indices = accessor.sparse->indices;
-					checkIndex(bufferViews, indices.bufferView);
-					const BufferView &view = bufferViews->at(indices.bufferView);
-					check(indices.byteOffset < view.byteLength);
-					// TODO take byte stride into account
-					check(accessor.sparse->count <= (view.byteLength - indices.byteOffset) / indices.elementSize());
-				}
-				{
-					const auto &values = accessor.sparse->values;
-					checkIndex(bufferViews, values.bufferView);
-					const BufferView &view = bufferViews->at(values.bufferView);
-					check(values.byteOffset < view.byteLength);
-					// TODO take byte stride into account
-					check(accessor.sparse->count <= (view.byteLength - values.byteOffset) / accessor.elementSize());
-				}
+				const auto indices = accessor.sparse->indices;
+				checkAccessor(accessor, indices.bufferView, indices.byteOffset, accessor.sparse->count);
+				const auto values = accessor.sparse->values;
+				checkAccessor(accessor, values.bufferView, values.byteOffset, accessor.sparse->count);
 			}
 		});
 
