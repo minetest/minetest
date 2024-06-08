@@ -60,12 +60,14 @@ private:
 using v3f = irr::core::vector3df;
 using v2f = irr::core::vector2df;
 
-TEST_CASE("load empty gltf file") {
+TEST_CASE("gltf") {
+
+SECTION("load empty gltf file") {
 	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "empty.gltf");
 	CHECK(sm.getMesh() == nullptr);
 }
 
-TEST_CASE("minimal triangle") {
+SECTION("minimal triangle") {
 	auto path = GENERATE(
 			XSTR(UNITTEST_ASSETS_DIRECTORY) "minimal_triangle.gltf",
 			XSTR(UNITTEST_ASSETS_DIRECTORY) "triangle_with_vertex_stride.gltf",
@@ -95,7 +97,7 @@ TEST_CASE("minimal triangle") {
 	}
 }
 
-TEST_CASE("blender cube") {
+SECTION("blender cube") {
 	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "blender_cube.gltf");
 	REQUIRE(sm.getMesh() != nullptr);
 	REQUIRE(sm.getMesh()->getMeshBufferCount() == 1);
@@ -148,17 +150,17 @@ TEST_CASE("blender cube") {
 	}
 }
 
-TEST_CASE("mesh loader returns nullptr when given null file pointer") {
+SECTION("mesh loader returns nullptr when given null file pointer") {
 	ScopedMesh sm(nullptr);
 	CHECK(sm.getMesh() == nullptr);
 }
 
-TEST_CASE("invalid JSON returns nullptr") {
+SECTION("invalid JSON returns nullptr") {
 	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "json_missing_brace.gltf");
 	CHECK(sm.getMesh() == nullptr);
 }
 
-TEST_CASE("blender cube scaled") {
+SECTION("blender cube scaled") {
 	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "blender_cube_scaled.gltf");
 	REQUIRE(sm.getMesh() != nullptr);
 	REQUIRE(sm.getMesh()->getMeshBufferCount() == 1);
@@ -179,7 +181,7 @@ TEST_CASE("blender cube scaled") {
 	}
 }
 
-TEST_CASE("blender cube matrix transform") {
+SECTION("blender cube matrix transform") {
 	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "blender_cube_matrix_transform.gltf");
 	REQUIRE(sm.getMesh() != nullptr);
 	REQUIRE(sm.getMesh()->getMeshBufferCount() == 1);
@@ -205,7 +207,7 @@ TEST_CASE("blender cube matrix transform") {
 	}
 }
 
-TEST_CASE("snow man") {
+SECTION("snow man") {
 	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "snow_man.gltf");
 	REQUIRE(sm.getMesh() != nullptr);
 	REQUIRE(sm.getMesh()->getMeshBufferCount() == 3);
@@ -356,4 +358,6 @@ TEST_CASE("snow man") {
 			CHECK(vertices[22].TCoords == v2f{0.375f, 0.416666657f});
 		}
 	}
+}
+
 }
