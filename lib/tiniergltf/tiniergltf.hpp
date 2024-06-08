@@ -139,7 +139,7 @@ struct AccessorSparseIndices {
 				{5123, ComponentType::UNSIGNED_SHORT},
 				{5125, ComponentType::UNSIGNED_INT},
 			};
-			auto v = o["componentType"]; check(v.isUInt64());
+			const auto &v = o["componentType"]; check(v.isUInt64());
 			componentType = map.at(v.asUInt64());
 		}
 	}
@@ -258,7 +258,7 @@ struct Accessor {
 				{5125, ComponentType::UNSIGNED_INT},
 				{5126, ComponentType::FLOAT},
 			};
-			auto v = o["componentType"]; check(v.isUInt64());
+			const auto &v = o["componentType"]; check(v.isUInt64());
 			componentType = map.at(v.asUInt64());
 		}
 		if (o.isMember("byteOffset")) {
@@ -286,7 +286,7 @@ struct Accessor {
 				{"VEC3", Type::VEC3},
 				{"VEC4", Type::VEC4},
 			};
-			auto v = o["type"]; check(v.isString());
+			const auto &v = o["type"]; check(v.isString());
 			type = map.at(v.asString());
 		}
 		if (o.isMember("max")) {
@@ -323,7 +323,7 @@ struct AnimationChannelTarget {
 				{"translation", Path::TRANSLATION},
 				{"weights", Path::WEIGHTS},
 			};
-			auto v = o["path"]; check(v.isString());
+			const auto &v = o["path"]; check(v.isString());
 			path = map.at(v.asString());
 		}
 	}
@@ -363,7 +363,7 @@ struct AnimationSampler {
 				{"LINEAR", Interpolation::LINEAR},
 				{"STEP", Interpolation::STEP},
 			};
-			auto v = o["interpolation"]; check(v.isString());
+			const auto &v = o["interpolation"]; check(v.isString());
 			interpolation = map.at(v.asString());
 		}
 	}
@@ -446,7 +446,7 @@ struct BufferView {
 				{34962, Target::ARRAY_BUFFER},
 				{34963, Target::ELEMENT_ARRAY_BUFFER},
 			};
-			auto v = o["target"]; check(v.isUInt64());
+			const auto &v = o["target"]; check(v.isUInt64());
 			target = map.at(v.asUInt64());
 		}
 	}
@@ -556,7 +556,7 @@ struct Camera {
 				{"orthographic", Type::ORTHOGRAPHIC},
 				{"perspective", Type::PERSPECTIVE},
 			};
-			auto v = o["type"]; check(v.isString());
+			const auto &v = o["type"]; check(v.isString());
 			type = map.at(v.asString());
 		}
 	}
@@ -583,7 +583,7 @@ struct Image {
 				{"image/jpeg", MimeType::IMAGE_JPEG},
 				{"image/png", MimeType::IMAGE_PNG},
 			};
-			auto v = o["mimeType"]; check(v.isString());
+			const auto &v = o["mimeType"]; check(v.isString());
 			mimeType = map.at(v.asString());
 		}
 		if (o.isMember("name")) {
@@ -725,7 +725,7 @@ struct Material {
 				{"MASK", AlphaMode::MASK},
 				{"OPAQUE", AlphaMode::OPAQUE},
 			};
-			auto v = o["alphaMode"]; check(v.isString());
+			const auto &v = o["alphaMode"]; check(v.isString());
 			alphaMode = map.at(v.asString());
 		}
 		if (o.isMember("doubleSided")) {
@@ -733,7 +733,7 @@ struct Material {
 		}
 		if (o.isMember("emissiveFactor")) {
 			emissiveFactor = asArr<double, 3>(o["emissiveFactor"]);
-			for (auto v: emissiveFactor) {
+			for (const auto &v: emissiveFactor) {
 				check(v >= 0);
 				check(v <= 1);
 			}
@@ -849,7 +849,7 @@ struct MeshPrimitive {
 				{5, Mode::TRIANGLE_STRIP},
 				{6, Mode::TRIANGLE_FAN},
 			};
-			auto v = o["mode"]; check(v.isUInt64());
+			const auto &v = o["mode"]; check(v.isUInt64());
 			mode = map.at(v.asUInt64());
 		}
 		if (o.isMember("targets")) {
@@ -931,7 +931,7 @@ struct Node {
 			if (o.isMember("scale")) {
 				trs.scale = asArr<double, 3>(o["scale"]);
 			}
-			transform = std::move(trs);
+			transform = trs;
 		}
 		if (o.isMember("mesh")) {
 			mesh = as<std::size_t>(o["mesh"]);
@@ -989,7 +989,7 @@ struct Sampler {
 				{9728, MagFilter::NEAREST},
 				{9729, MagFilter::LINEAR},
 			};
-			auto v = o["magFilter"]; check(v.isUInt64());
+			const auto &v = o["magFilter"]; check(v.isUInt64());
 			magFilter = map.at(v.asUInt64());
 		}
 		if (o.isMember("minFilter")) {
@@ -1001,7 +1001,7 @@ struct Sampler {
 				{9986, MinFilter::NEAREST_MIPMAP_LINEAR},
 				{9987, MinFilter::LINEAR_MIPMAP_LINEAR},
 			};
-			auto v = o["minFilter"]; check(v.isUInt64());
+			const auto &v = o["minFilter"]; check(v.isUInt64());
 			minFilter = map.at(v.asUInt64());
 		}
 		if (o.isMember("name")) {
@@ -1013,7 +1013,7 @@ struct Sampler {
 				{33071, WrapS::CLAMP_TO_EDGE},
 				{33648, WrapS::MIRRORED_REPEAT},
 			};
-			auto v = o["wrapS"]; check(v.isUInt64());
+			const auto &v = o["wrapS"]; check(v.isUInt64());
 			wrapS = map.at(v.asUInt64());
 		}
 		if (o.isMember("wrapT")) {
@@ -1022,7 +1022,7 @@ struct Sampler {
 				{33071, WrapT::CLAMP_TO_EDGE},
 				{33648, WrapT::MIRRORED_REPEAT},
 			};
-			auto v = o["wrapT"]; check(v.isUInt64());
+			const auto &v = o["wrapT"]; check(v.isUInt64());
 			wrapT = map.at(v.asUInt64());
 		}
 	}
@@ -1136,7 +1136,7 @@ struct GlTF {
 			std::vector<Buffer> bufs;
 			bufs.reserve(b.size());
 			for (Json::ArrayIndex i = 0; i < b.size(); ++i) {
-				bufs.push_back(Buffer(b[i], resolveURI));
+				bufs.emplace_back(b[i], resolveURI);
 			}
 			check(bufs.size() >= 1);
 			buffers = std::move(bufs);
