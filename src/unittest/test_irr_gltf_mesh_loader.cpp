@@ -1,9 +1,8 @@
 // Minetest
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-#ifndef UNITTEST_ASSETS_DIRECTORY
-#error "The required definition for UNITTEST_ASSETS_DIRECTORY is missing."
-#endif
+#include "content/subgames.h"
+#include "filesys.h"
 
 #include "CReadFile.h"
 #include "vector3d.h"
@@ -16,27 +15,22 @@
 
 #include <cstring>
 
-#define XSTR(s) STR(s)
-#define STR(s) #s
-
 using namespace std;
 
 class ScopedMesh
 {
 public:
-	ScopedMesh(irr::io::IReadFile* file)
+	ScopedMesh(irr::io::IReadFile *file)
 		: m_device { irr::createDevice(irr::video::EDT_NULL) }
-		, m_mesh { nullptr }
 	{
-		auto* smgr = m_device->getSceneManager();
+		auto *smgr = m_device->getSceneManager();
 		m_mesh = smgr->getMesh(file);
 	}
 
 	ScopedMesh(const irr::io::path& filepath)
 		: m_device { irr::createDevice(irr::video::EDT_NULL) }
-		, m_mesh { nullptr }
 	{
-		auto* smgr = m_device->getSceneManager();
+		auto *smgr = m_device->getSceneManager();
 		irr::io::CReadFile f = irr::io::CReadFile(filepath);
 		m_mesh = smgr->getMesh(&f);
 	}
@@ -44,17 +38,16 @@ public:
 	~ScopedMesh()
 	{
 		m_device->drop();
-		m_mesh = nullptr;
 	}
 
-	const irr::scene::IAnimatedMesh* getMesh() const
+	const irr::scene::IAnimatedMesh *getMesh() const
 	{
 		return m_mesh;
 	}
 
 private:
-	irr::IrrlichtDevice* m_device;
-	irr::scene::IAnimatedMesh* m_mesh;
+	irr::IrrlichtDevice *m_device;
+	irr::scene::IAnimatedMesh *m_mesh = nullptr;
 };
 
 using v3f = irr::core::vector3df;
@@ -62,17 +55,38 @@ using v2f = irr::core::vector2df;
 
 TEST_CASE("gltf") {
 
-SECTION("load empty gltf file") {
-	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "empty.gltf");
-	CHECK(sm.getMesh() == nullptr);
+const auto gamespec = findSubgame("devtest");
+
+REQUIRE(gamespec.isValid());
+// TODO use SKIP() when Catch2 is upgraded to v3
+
+const static auto model_path = gamespec.gamemods_path + DIR_DELIM + "gltf" + DIR_DELIM + "models" + DIR_DELIM;
+
+SECTION("error cases") {
+	const static auto invalid_model_path = gamespec.gamemods_path + DIR_DELIM + "gltf" + DIR_DELIM + "invalid" + DIR_DELIM;
+
+	SECTION("empty gltf file") {
+		ScopedMesh sm(model_path + "empty.gltf");
+		CHECK(sm.getMesh() == nullptr);
+	}
+
+	SECTION("null file pointer") {
+		ScopedMesh sm(nullptr);
+		CHECK(sm.getMesh() == nullptr);
+	}
+
+	SECTION("invalid JSON") {
+		ScopedMesh sm(model_path + "json_missing_brace.gltf");
+		CHECK(sm.getMesh() == nullptr);
+	}
 }
 
 SECTION("minimal triangle") {
 	auto path = GENERATE(
-			XSTR(UNITTEST_ASSETS_DIRECTORY) "minimal_triangle.gltf",
-			XSTR(UNITTEST_ASSETS_DIRECTORY) "triangle_with_vertex_stride.gltf",
+			model_path + "minimal_triangle.gltf",
+			model_path + "triangle_with_vertex_stride.gltf",
 			// Test non-indexed geometry.
-			XSTR(UNITTEST_ASSETS_DIRECTORY) "triangle_without_indices.gltf");
+			model_path + "triangle_without_indices.gltf");
 	INFO(path);
 	ScopedMesh sm(path);
 	REQUIRE(sm.getMesh() != nullptr);
@@ -98,7 +112,7 @@ SECTION("minimal triangle") {
 }
 
 SECTION("blender cube") {
-	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "blender_cube.gltf");
+	ScopedMesh sm(model_path + "blender_cube.gltf");
 	REQUIRE(sm.getMesh() != nullptr);
 	REQUIRE(sm.getMesh()->getMeshBufferCount() == 1);
 	SECTION("vertex coordinates are correct") {
@@ -150,18 +164,8 @@ SECTION("blender cube") {
 	}
 }
 
-SECTION("mesh loader returns nullptr when given null file pointer") {
-	ScopedMesh sm(nullptr);
-	CHECK(sm.getMesh() == nullptr);
-}
-
-SECTION("invalid JSON returns nullptr") {
-	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "json_missing_brace.gltf");
-	CHECK(sm.getMesh() == nullptr);
-}
-
 SECTION("blender cube scaled") {
-	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "blender_cube_scaled.gltf");
+	ScopedMesh sm(model_path + "blender_cube_scaled.gltf");
 	REQUIRE(sm.getMesh() != nullptr);
 	REQUIRE(sm.getMesh()->getMeshBufferCount() == 1);
 	
@@ -182,7 +186,7 @@ SECTION("blender cube scaled") {
 }
 
 SECTION("blender cube matrix transform") {
-	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "blender_cube_matrix_transform.gltf");
+	ScopedMesh sm(model_path + "blender_cube_matrix_transform.gltf");
 	REQUIRE(sm.getMesh() != nullptr);
 	REQUIRE(sm.getMesh()->getMeshBufferCount() == 1);
 	
@@ -208,7 +212,7 @@ SECTION("blender cube matrix transform") {
 }
 
 SECTION("snow man") {
-	ScopedMesh sm(XSTR(UNITTEST_ASSETS_DIRECTORY) "snow_man.gltf");
+	ScopedMesh sm(model_path + "snow_man.gltf");
 	REQUIRE(sm.getMesh() != nullptr);
 	REQUIRE(sm.getMesh()->getMeshBufferCount() == 3);
 

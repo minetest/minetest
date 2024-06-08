@@ -645,11 +645,6 @@ if(BUILD_CLIENT)
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME} ${SPATIAL_LIBRARY})
 	endif()
-	if(BUILD_UNITTESTS)
-		target_compile_definitions(${PROJECT_NAME} PRIVATE
-			UNITTEST_ASSETS_DIRECTORY=${UNITTEST_ASSETS_DIRECTORY}
-		)
-	endif()
 	if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
 		target_link_libraries(${PROJECT_NAME} Catch2::Catch2)
 	endif()
@@ -715,11 +710,6 @@ if(BUILD_SERVER)
 		target_link_libraries(
 			${PROJECT_NAME}server
 			${CURL_LIBRARY}
-		)
-	endif()
-	if(BUILD_UNITTESTS)
-		target_compile_definitions(${PROJECT_NAME}server PRIVATE
-			UNITTEST_ASSETS_DIRECTORY=${UNITTEST_ASSETS_DIRECTORY}
 		)
 	endif()
 	if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
