@@ -62,13 +62,6 @@ local function reset()
 	setfenv(loadfile("builtin/common/misc_helpers.lua"), env)()
 	setfenv(loadfile("builtin/mainmenu/content/pkgmgr.lua"), env)()
 
-	function env.pkgmgr.reload_games()
-		table.insert(calls, { "reload_games" })
-	end
-	function env.pkgmgr.reload_global_mods()
-		table.insert(calls, { "reload_global_mods" })
-	end
-
 	function env.assert_calls(list)
 		assert.are.same(list, calls)
 	end
