@@ -28,10 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include "util/pointabilities.h"
 
-#define SAO_ENGINE_DROWNING 0x1
-#define SAO_ENGINE_BREATHING 0x2
-#define SAO_ENGINE_NODE_HURT 0x4
-
 struct ObjectProperties
 {
 	/* member variables ordered roughly by size */
@@ -76,7 +72,6 @@ struct ObjectProperties
 	bool use_texture_alpha = false;
 	bool shaded = true;
 	bool show_on_minimap = false;
-	u16 engine_mask = 0;
 
 	ObjectProperties();
 

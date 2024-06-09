@@ -47,9 +47,6 @@ struct EnumString es_TileAnimationType[] =
 	{0, nullptr},
 };
 
-static void push_engine_mask(lua_State *L, u16 engine_mask);
-static void read_engine_mask(lua_State *L, int index, u16 &engine_mask);
-
 /******************************************************************************/
 void read_item_definition(lua_State* L, int index,
 		const ItemDefinition &default_def, ItemDefinition &def)
@@ -261,7 +258,7 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 }
 
 /******************************************************************************/
-const std::array<const char *, 34> object_property_keys = {
+const std::array<const char *, 33> object_property_keys = {
 	"hp_max",
 	"breath_max",
 	"physical",
@@ -295,7 +292,6 @@ const std::array<const char *, 34> object_property_keys = {
 	"shaded",
 	"damage_texture_modifier",
 	"show_on_minimap",
-	"engine_mask"
 };
 
 /******************************************************************************/
@@ -468,10 +464,6 @@ void read_object_properties(lua_State *L, int index,
 
 	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
 
-	lua_getfield(L, -1, "engine_mask");
-	read_engine_mask(L, -1, prop->engine_mask);
-	lua_pop(L, 1);
-
 	// Remember to update object_property_keys above
 	// when adding a new property
 }
@@ -572,36 +564,8 @@ void push_object_properties(lua_State *L, const ObjectProperties *prop)
 	lua_pushboolean(L, prop->show_on_minimap);
 	lua_setfield(L, -2, "show_on_minimap");
 
-	push_engine_mask(L, prop->engine_mask);
-	lua_setfield(L, -2, "engine_mask");
-
 	// Remember to update object_property_keys above
 	// when adding a new property
-}
-
-static void read_engine_mask(lua_State *L, int index, u16 &engine_mask)
-{
-	if (lua_istable(L, index)) {
-		u16 old_mask = engine_mask;
-
-		#define UPDATE_MASK(field, mask) engine_mask |= \
-				getboolfield_default(L, -1, field, old_mask & mask) ? mask : 0;
-		engine_mask = 0;
-		UPDATE_MASK("drowning", SAO_ENGINE_DROWNING)
-		UPDATE_MASK("breathing", SAO_ENGINE_BREATHING)
-		UPDATE_MASK("node_hurt", SAO_ENGINE_NODE_HURT)
-	}
-}
-
-static void push_engine_mask(lua_State *L, u16 engine_mask)
-{
-	lua_createtable(L, 0, 3);
-	lua_pushboolean(L, engine_mask & SAO_ENGINE_DROWNING);
-	lua_setfield(L, -2, "drowning");
-	lua_pushboolean(L, engine_mask & SAO_ENGINE_BREATHING);
-	lua_setfield(L, -2, "breathing");
-	lua_pushboolean(L, engine_mask & SAO_ENGINE_NODE_HURT);
-	lua_setfield(L, -2, "node_hurt");
 }
 
 /******************************************************************************/

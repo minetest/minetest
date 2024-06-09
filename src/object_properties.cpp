@@ -82,7 +82,6 @@ std::string ObjectProperties::dump() const
 	os << ", damage_texture_modifier=" << damage_texture_modifier;
 	os << ", shaded=" << shaded;
 	os << ", show_on_minimap=" << show_on_minimap;
-	os << ", engine_mask=0x" << std::hex << engine_mask;
 	return os.str();
 }
 
