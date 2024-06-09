@@ -202,6 +202,7 @@ local function handle_doubleclick(pkg)
 			core.settings:set("texture_path", pkg.path)
 		end
 		packages = nil
+		pkgmgr.reload_texture_packs()
 
 		mm_game_theme.init()
 		mm_game_theme.set_engine()
@@ -266,6 +267,7 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 
 		core.settings:set("texture_path", txp_path)
 		packages = nil
+		pkgmgr.reload_texture_packs()
 
 		mm_game_theme.init()
 		mm_game_theme.set_engine()
