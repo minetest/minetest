@@ -3324,22 +3324,26 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 		d = 0;
 		break;
 	}
-	shootline.end = shootline.start + camera_direction * BS * d;
 
-	if (g_touchscreengui && isTouchCrosshairDisabled()) {
-		shootline = g_touchscreengui->getShootline();
-		// Scale shootline to the acual distance the player can reach
-		shootline.end = shootline.start +
-				shootline.getVector().normalize() * BS * d;
-		shootline.start += intToFloat(camera_offset, BS);
-		shootline.end += intToFloat(camera_offset, BS);
+	PointedThing pointed;
+	if (client->checkPrivilege("interact")) {
+		shootline.end = shootline.start + camera_direction * BS * d;
+
+		if (g_touchscreengui && isTouchCrosshairDisabled()) {
+			shootline = g_touchscreengui->getShootline();
+			// Scale shootline to the acual distance the player can reach
+			shootline.end = shootline.start +
+					shootline.getVector().normalize() * BS * d;
+			shootline.start += intToFloat(camera_offset, BS);
+			shootline.end += intToFloat(camera_offset, BS);
+		}
+
+		pointed = updatePointedThing(shootline,
+				selected_def.liquids_pointable,
+				selected_def.pointabilities,
+				!runData.btn_down_for_dig,
+				camera_offset);
 	}
-
-	PointedThing pointed = updatePointedThing(shootline,
-			selected_def.liquids_pointable,
-			selected_def.pointabilities,
-			!runData.btn_down_for_dig,
-			camera_offset);
 
 	if (pointed != runData.pointed_old)
 		infostream << "Pointing at " << pointed.dump() << std::endl;
@@ -3567,8 +3571,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 	ClientMap &map = client->getEnv().getClientMap();
 
 	if (runData.nodig_delay_timer <= 0.0 && isKeyDown(KeyType::DIG)
-			&& !runData.digging_blocked
-			&& client->checkPrivilege("interact")) {
+			&& !runData.digging_blocked) {
 		handleDigging(pointed, nodepos, selected_item, hand_item, dtime);
 	}
 
@@ -3587,8 +3590,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 	}
 
 	if ((wasKeyPressed(KeyType::PLACE) ||
-			runData.repeat_place_timer >= m_repeat_place_time) &&
-			client->checkPrivilege("interact")) {
+			runData.repeat_place_timer >= m_repeat_place_time)) {
 		runData.repeat_place_timer = 0;
 		infostream << "Place button pressed while looking at ground" << std::endl;
 
