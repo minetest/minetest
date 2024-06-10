@@ -920,22 +920,34 @@ double perf_freq = get_perf_freq();
  *
  * As a workaround we track freed memory coarsely and call malloc_trim() once a
  * certain amount is reached.
+ *
+ * In situations with high "throughput" of allocated/freed memory this can cause
+ * jitter (in particular on the client), so we additionally restrict this to only
+ * happen once a minute.
  */
 
 static std::atomic<size_t> memory_freed;
 
-constexpr size_t MEMORY_TRIM_THRESHOLD = 128 * 1024 * 1024;
+static u64 next_trim_time;
+
+constexpr size_t MEMORY_TRIM_THRESHOLD = 256 * 1024 * 1024;
+
+constexpr u64 MEMORY_TRIM_INTERVAL = 60;
 
 void TrackFreedMemory(size_t amount)
 {
 	constexpr auto MO = std::memory_order_relaxed;
 	memory_freed.fetch_add(amount, MO);
 	if (memory_freed.load(MO) >= MEMORY_TRIM_THRESHOLD) {
+		const u64 now = porting::getTimeS();
+		if (now < next_trim_time)
+			return;
 		// Synchronize call
-		if (memory_freed.exchange(0, MO) < MEMORY_TRIM_THRESHOLD)
+		if (memory_freed.exchange(0) < MEMORY_TRIM_THRESHOLD)
 			return;
 		// Leave some headroom for future allocations
-		malloc_trim(1 * 1024 * 1024);
+		malloc_trim(4 * 1024 * 1024);
+		next_trim_time = now + MEMORY_TRIM_INTERVAL;
 	}
 }
 
