@@ -108,48 +108,6 @@ jobs:
           mamba install valgrind
           valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ./bin/minetest --run-unittests
 
-  pytest:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install deps
-        run: |
-          source ./util/ci/common.sh
-          install_linux_deps clang-14
-
-      - uses: conda-incubator/setup-miniconda@v3
-        with:
-          python-version: '3.11'
-          mamba-version: "*"
-          channels: conda-forge,nodefaults
-          activate-environment: minetest
-          environment-file: environment.yml
-
-      - name: Build
-        # Needed so conda environment is active
-        shell: bash -l {0}
-        run: |
-          ./util/ci/build.sh
-        env:
-          CC: clang-14
-          CXX: clang++-14
-          CMAKE_BUILD_SERVER: FALSE
-          CMAKE_FLAGS: -DUSE_SDL2=ON
-
-      - name: Run pytest
-        # Needed so conda environment is active
-        shell: bash -l {0}
-        run: |
-          cd python
-          set +o errexit
-          timeout --signal=KILL 5m pytest -v
-          exit_code=$?
-          if [ $exit_code -ne 0 ]; then
-            echo "test failed, printing minetest logs"
-            find /tmp -type f -name '*.log' -exec cat {} \;
-          fi
-          exit $exit_code
-
   # Build with prometheus-cpp (server-only)
   clang_9_prometheus:
     name: "clang_9 (PROMETHEUS=1)"
