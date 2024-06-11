@@ -5,6 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "debugpy",
+            "request": "launch",
+            "name": "minetest_test.py",
+            "module": "pytest",
+            "justMyCode": false,
+            "args": [
+                "-sv",
+                "-o log_cli=true",
+                "${workspaceFolder}/python/tests/minetest_test.py",
+            ]
+        },
+        {
             "type": "lldb",
             "request": "launch",
             "name": "Debug for handshaker.py",

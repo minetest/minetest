@@ -63,6 +63,41 @@ def server_addr():
     return None
 
 
+def contains_key(config_path: os.PathLike, key: str):
+    with open(config_path) as f:
+        for line in f:
+            if line.startswith(key):
+                return True
+    return False
+
+
+def test_double_reset(world_dir, minetest_executable, server_addr, caplog):
+    caplog.set_level(logging.DEBUG)
+    artifact_dir = tempfile.mkdtemp()
+    display_size = (223, 111)
+    env = gym.make(
+        "minetest-v0",
+        executable=minetest_executable,
+        artifact_dir=artifact_dir,
+        server_addr=server_addr,
+        render_mode="rgb_array",
+        display_size=display_size,
+        world_dir=world_dir,
+        headless=True,
+        verbose_logging=True,
+        additional_observation_spaces={
+            "return": gym.spaces.Box(low=-(2**20), high=2**20, shape=(1,))
+        },
+    )
+
+    # Context manager to make sure close() is called even if test fails.
+    with env:
+        initial_obs, info = env.reset()
+        initial_obs, info = env.reset()
+
+    shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
+
+
 def test_minetest_basic(world_dir, minetest_executable, server_addr, caplog):
     caplog.set_level(logging.DEBUG)
     artifact_dir = tempfile.mkdtemp()
@@ -101,7 +136,8 @@ def test_minetest_basic(world_dir, minetest_executable, server_addr, caplog):
                 action["mouse"] = np.array([0.0, 1.0])
 
             obs, reward, terminated, truncated, info = env.step(action)
-            assert not terminated and not truncated
+            assert not terminated
+            assert not truncated
             assert "return" in obs
             assert "image" in obs
             # TODO: I've seen the system get into a mode where the output is always 480, 640, 3
@@ -121,6 +157,7 @@ def test_minetest_basic(world_dir, minetest_executable, server_addr, caplog):
             # on Mac or when rendering with nvidia.
             if sys.platform == "darwin" or shutil.which("nvidia-smi"):
                 assert img_data.sum() > 0, "All black image"
+
     assert nonzero_reward, f"see images in {artifact_dir}"
 
     shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
@@ -155,14 +192,56 @@ def test_minetest_game_dir(minetest_executable, server_addr, caplog):
     shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
 
 
-def contains_key(config_path: os.PathLike, key: str):
-    with open(config_path) as f:
-        for line in f:
-            if line.startswith(key):
-                return True
-    return False
-
-
 def test_keymap_valid():
     for key in INVERSE_KEY_MAP:
         assert key in minetest_env.remoteclient_capnp.KeyPressType.Key.schema.enumerants
+
+
+def test_async_vector_env(world_dir, minetest_executable, server_addr, caplog):
+    caplog.set_level(logging.DEBUG)
+    artifact_dir = tempfile.mkdtemp()
+    num_envs = 2
+    max_episode_steps = 3
+    envs = [
+        lambda: gym.make(
+            "minetest-v0",
+            max_episode_steps=max_episode_steps,
+            executable=minetest_executable,
+            artifact_dir=artifact_dir,
+            server_addr=server_addr,
+            render_mode="rgb_array",
+            world_dir=world_dir,
+            headless=True,
+            verbose_logging=True,
+            additional_observation_spaces={
+                "return": gym.spaces.Box(low=-(2**20), high=2**20, shape=(1,))
+            },
+        )
+        for _ in range(num_envs)
+    ]
+    with gym.vector.AsyncVectorEnv(envs) as env:
+        initial_obs, info = env.reset()
+        assert len(initial_obs["image"]) == num_envs
+        assert len(initial_obs["return"]) == num_envs
+        for i in range(5):
+            action = {
+                "keys": np.zeros((num_envs, len(INVERSE_KEY_MAP)), dtype=bool),
+                "mouse": np.zeros((num_envs, 2)),
+            }
+            if i == 3:
+                action["keys"][:, INVERSE_KEY_MAP["forward"]] = True
+                action["keys"][:, INVERSE_KEY_MAP["left"]] = True
+                action["mouse"] = np.tile(np.array([0.0, 1.0]), (num_envs, 1))
+            obs, reward, terminated, truncated, info = env.step(action)
+            assert len(obs["image"]) == num_envs
+            assert len(obs["return"]) == num_envs
+            assert len(reward) == num_envs
+            assert len(terminated) == num_envs
+            assert len(truncated) == num_envs
+            assert not terminated.any()
+            if i == max_episode_steps - 1:
+                assert truncated.all()
+            else:
+                assert not truncated.any()
+
+        shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
