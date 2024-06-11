@@ -1267,7 +1267,8 @@ void CIrrDeviceSDL::createKeyMap()
 
 	// buttons missing
 
-	KeyMap.push_back(SKeyMap(SDLK_AC_BACK, KEY_CANCEL));
+	// Android back button = ESC
+	KeyMap.push_back(SKeyMap(SDLK_AC_BACK, KEY_ESCAPE));
 
 	KeyMap.push_back(SKeyMap(SDLK_BACKSPACE, KEY_BACK));
 	KeyMap.push_back(SKeyMap(SDLK_TAB, KEY_TAB));

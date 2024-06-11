@@ -160,9 +160,7 @@ void GUIOpenURLMenu::drawMenu()
 bool GUIOpenURLMenu::OnEvent(const SEvent &event)
 {
 	if (event.EventType == EET_KEY_INPUT_EVENT) {
-		if ((event.KeyInput.Key == KEY_ESCAPE ||
-				event.KeyInput.Key == KEY_CANCEL) &&
-				event.KeyInput.PressedDown) {
+		if (event.KeyInput.Key == KEY_ESCAPE && event.KeyInput.PressedDown) {
 			quitMenu();
 			return true;
 		}

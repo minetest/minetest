@@ -94,7 +94,6 @@ void KeyCache::populate()
 			handler->listenForKey(k);
 		}
 		handler->listenForKey(EscapeKey);
-		handler->listenForKey(CancelKey);
 	}
 }
 

@@ -309,7 +309,7 @@ public:
 
 	virtual bool cancelPressed()
 	{
-		return wasKeyDown(KeyType::ESC) || m_receiver->WasKeyDown(CancelKey);
+		return wasKeyDown(KeyType::ESC);
 	}
 
 	virtual void clearWasKeyPressed()
