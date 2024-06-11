@@ -207,7 +207,12 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 #else
 	u16 screen_w = std::max<u16>(g_settings->getU16("screen_w"), 1);
 	u16 screen_h = std::max<u16>(g_settings->getU16("screen_h"), 1);
-	bool window_maximized = g_settings->getBool("window_maximized");
+	// If I…
+	// 1. … set fullscreen = true and window_maximized = true on startup
+	// 2. … set fullscreen = false later
+	// on Linux with SDL, everything breaks.
+	// => Don't do it.
+	bool window_maximized = !fullscreen && g_settings->getBool("window_maximized");
 #endif
 
 	// bpp, fsaa, vsync
@@ -249,16 +254,38 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 			gui::EGST_WINDOWS_METALLIC, driver);
 	m_device->getGUIEnvironment()->setSkin(skin);
 	skin->drop();
+
+	g_settings->registerChangedCallback("fullscreen", settingChangedCallback, this);
+	g_settings->registerChangedCallback("window_maximized", settingChangedCallback, this);
 }
 
 RenderingEngine::~RenderingEngine()
 {
 	sanity_check(s_singleton == this);
 
+	g_settings->deregisterChangedCallback("fullscreen", settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("window_maximized", settingChangedCallback, this);
+
 	core.reset();
 	m_device->closeDevice();
 	m_device->drop();
 	s_singleton = nullptr;
+}
+
+void RenderingEngine::settingChangedCallback(const std::string &name, void *data)
+{
+	IrrlichtDevice *device = static_cast<RenderingEngine*>(data)->m_device;
+	if (name == "fullscreen") {
+		device->setFullscreen(g_settings->getBool("fullscreen"));
+
+	} else if (name == "window_maximized") {
+		if (!device->isFullscreen()) {
+			if (g_settings->getBool("window_maximized"))
+				device->maximizeWindow();
+			else
+				device->restoreWindow();
+		}
+	}
 }
 
 v2u32 RenderingEngine::_getWindowSize() const

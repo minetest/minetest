@@ -66,35 +66,45 @@ local function get_formspec(data)
 		message_bg = mt_color_orange
 	end
 
+	local ENABLE_TOUCH = core.settings:get_bool("enable_touch")
+
+	local w = ENABLE_TOUCH and 14 or 7
+	local padded_w = w - 2*0.375
+	local dropdown_w = ENABLE_TOUCH and 10.2 or 4.25
+	local button_w = (padded_w - 0.25) / 3
+	local button_pad = button_w / 2
+
 	local formspec = {
 		"formspec_version[3]",
-		"size[7,7.85]",
+		"size[", w, ",9.05]",
+		ENABLE_TOUCH and "padding[0.01,0.01]" or "position[0.5,0.55]",
 		"style[title;border=false]",
-		"box[0,0;7,0.5;#3333]",
-		"button[0,0;7,0.5;title;", fgettext("Install $1", package.title) , "]",
+		"box[0,0;", w, ",0.8;#3333]",
+		"button[0,0;", w, ",0.8;title;", fgettext("Install $1", package.title) , "]",
 
-		"container[0.375,0.70]",
+		"container[0.375,1]",
 
-		"label[0,0.25;", fgettext("Base Game:"), "]",
-		"dropdown[2,0;4.25,0.5;selected_game;", table.concat(game_list, ","), ";", selected_game_idx, "]",
+		"label[0,0.4;", fgettext("Base Game:"), "]",
+		"dropdown[", padded_w - dropdown_w, ",0;", dropdown_w, ",0.8;selected_game;",
+				table.concat(game_list, ","), ";", selected_game_idx, "]",
 
-		"label[0,0.8;", fgettext("Dependencies:"), "]",
+		"label[0,1.1;", fgettext("Dependencies:"), "]",
 
 		"tablecolumns[color;text;color;text]",
-		"table[0,1.1;6.25,3;packages;", table.concat(formatted_deps, ","), "]",
+		"table[0,1.4;", padded_w, ",3;packages;", table.concat(formatted_deps, ","), "]",
 
 		"container_end[]",
 
-		"checkbox[0.375,5.1;will_install_deps;",
+		"checkbox[0.375,5.7;will_install_deps;",
 		fgettext("Install missing dependencies"), ";",
 		will_install_deps and "true" or "false", "]",
 
-		"box[0,5.4;7,1.2;", message_bg, "]",
-		"textarea[0.375,5.5;6.25,1;;;", message, "]",
+		"box[0,6;", w, ",1.8;", message_bg, "]",
+		"textarea[0.375,6.1;", padded_w, ",1.6;;;", message, "]",
 
-		"container[1.375,6.85]",
-		"button[0,0;2,0.8;install_all;", fgettext("Install"), "]",
-		"button[2.25,0;2,0.8;cancel;", fgettext("Cancel"), "]",
+		"container[", 0.375 + button_pad, ",8.05]",
+		"button[0,0;", button_w, ",0.8;install_all;", fgettext("Install"), "]",
+		"button[", 0.25 + button_w, ",0;", button_w, ",0.8;cancel;", fgettext("Cancel"), "]",
 		"container_end[]",
 	}
 

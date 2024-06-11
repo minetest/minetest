@@ -1,5 +1,8 @@
 ## Editors and development environments
 *~
+.cmake
+CMakeUserPresets.json
+Testing/*
 *.swp
 *.bak*
 *.orig
@@ -26,7 +29,8 @@ gtags.files
 # Codelite
 *.project
 # Visual Studio Code & plugins
-.vscode/
+.vscode/*
+!.vscode/extensions.json
 build/.cmake/
 # Fleet
 .fleet
@@ -107,7 +111,10 @@ src/cmake_config_githash.h
 *.iml
 test_config.h
 cmake-build-debug/
+cmake-build-minsizerel/
 cmake-build-release/
+cmake-build-relwithdebinfo/
+cmake-build-default/
 cmake_config.h
 cmake_config_githash.h
 CMakeDoxy*

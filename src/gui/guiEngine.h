@@ -296,4 +296,6 @@ private:
 	bool        m_clouds_enabled = true;
 	/** data used to draw clouds */
 	clouddata   m_cloud;
+
+	static void fullscreenChangedCallback(const std::string &name, void *data);
 };

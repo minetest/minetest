@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "util/directiontables.h"
 #include "util/timetaker.h"
+#include "porting.h"
 #include <cstring>  // memcpy, memset
 
 /*
@@ -40,12 +41,15 @@ VoxelManipulator::~VoxelManipulator()
 
 void VoxelManipulator::clear()
 {
-	// Reset area to volume=0
-	m_area = VoxelArea();
+	// Reset area to empty volume
+	VoxelArea old;
+	std::swap(m_area, old);
 	delete[] m_data;
 	m_data = nullptr;
 	delete[] m_flags;
 	m_flags = nullptr;
+
+	porting::TrackFreedMemory((sizeof(*m_data) + sizeof(*m_flags)) * old.getVolume());
 }
 
 void VoxelManipulator::print(std::ostream &o, const NodeDefManager *ndef,

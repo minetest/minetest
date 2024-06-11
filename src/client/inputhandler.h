@@ -220,6 +220,9 @@ private:
 	// often changing keys, and keysListenedFor is expected
 	// to change seldomly but contain lots of keys.
 	KeyList keysListenedFor;
+
+	// Intentionally not reset by clearInput/releaseAllKeys.
+	bool fullscreen_is_down = false;
 };
 
 class InputHandler

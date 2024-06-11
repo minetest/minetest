@@ -376,6 +376,13 @@ u32 ChatBuffer::formatChatLine(const ChatLine &line, u32 cols,
 					tempchar = linestring[in_pos+frag_length];
 				}
 
+				// Remove tailing punctuation characters
+				static const std::wstring tailing_chars = L",.";
+				tempchar = linestring[in_pos+frag_length - 1];
+				if (tailing_chars.find(tempchar) != std::wstring::npos) {
+					frag_length--;
+				}
+
 				space_pos = frag_length - 1;
 				// This frag may need to be force-split. That's ok, urls aren't "words"
 				if (frag_length >= remaining_in_output) {

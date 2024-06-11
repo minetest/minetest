@@ -913,7 +913,7 @@ enum Hud::BlockBoundsMode Hud::toggleBlockBounds()
 {
 	m_block_bounds_mode = static_cast<BlockBoundsMode>(m_block_bounds_mode + 1);
 
-	if (m_block_bounds_mode >= BLOCK_BOUNDS_MAX) {
+	if (m_block_bounds_mode > BLOCK_BOUNDS_NEAR) {
 		m_block_bounds_mode = BLOCK_BOUNDS_OFF;
 	}
 	return m_block_bounds_mode;

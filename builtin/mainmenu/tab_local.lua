@@ -156,10 +156,18 @@ local function get_formspec(tabview, name, tabdata)
 
 	-- Point the player to ContentDB when no games are found
 	if #pkgmgr.games == 0 then
+		local W = tabview.width
+		local H = tabview.height
+
+		local hypertext = "<global valign=middle halign=center size=18>" ..
+				fgettext_ne("Minetest is a game-creation platform that allows you to play many different games.") .. "\n" ..
+				fgettext_ne("Minetest doesn't come with a game by default.") .. " " ..
+				fgettext_ne("You need to install a game before you can create a world.")
+
+		local button_y = H * 2/3 - 0.6
 		return table.concat({
-			"style[label_button;border=false]",
-			"button[2.75,1.5;10,1;label_button;", fgettext("You have no games installed."), "]",
-			"button[5.25,3.5;5,1.2;game_open_cdb;", fgettext("Install a game"), "]"})
+			"hypertext[0.375,0;", W - 2*0.375, ",", button_y, ";ht;", core.formspec_escape(hypertext), "]",
+			"button[5.25,", button_y, ";5,1.2;game_open_cdb;", fgettext("Install a game"), "]"})
 	end
 
 	local retval = ""

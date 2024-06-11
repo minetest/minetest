@@ -1078,7 +1078,7 @@ bool UDPPeer::processReliableSendCommand(
 	bool have_sequence_number = false;
 	bool have_initial_sequence_number = false;
 	std::queue<BufferedPacketPtr> toadd;
-	volatile u16 initial_sequence_number = 0;
+	u16 initial_sequence_number = 0;
 
 	for (SharedBuffer<u8> &original : originals) {
 		u16 seqnum = chan.getOutgoingSequenceNumber(have_sequence_number);
@@ -1118,7 +1118,7 @@ bool UDPPeer::processReliableSendCommand(
 		return true;
 	}
 
-	volatile u16 packets_available = toadd.size();
+	u16 packets_available = toadd.size();
 	/* we didn't get a single sequence number no need to fill queue */
 	if (!have_initial_sequence_number) {
 		LOG(derr_con << m_connection->getDesc() << "Ran out of sequence numbers!" << std::endl);

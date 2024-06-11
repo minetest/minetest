@@ -63,7 +63,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <FindDirectory.h>
 #endif
 
-#include "config.h"
+#if HAVE_MALLOC_TRIM
+	// glibc-only pretty much
+	#include <malloc.h>
+#endif
+
 #include "debug.h"
 #include "filesys.h"
 #include "log.h"
@@ -72,6 +76,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstdarg>
 #include <cstdio>
 #include <signal.h>
+#include <atomic>
 
 #if !defined(SERVER) && defined(_WIN32)
 // On Windows export some driver-specific variables to encourage Minetest to be
@@ -900,6 +905,39 @@ inline double get_perf_freq()
 }
 
 double perf_freq = get_perf_freq();
+
+#endif
+
+#if HAVE_MALLOC_TRIM
+
+/*
+ * On Linux/glibc we found that after deallocating bigger chunks of data (esp. MapBlocks)
+ * the memory would not be given back to the OS and would stay at peak usage.
+ * This appears to be a combination of unfortunate allocation order/fragmentation
+ * and the fact that glibc does not call madvise(MADV_DONTNEED) on its own.
+ * Some other allocators were also affected, jemalloc and musl libc were not.
+ * read more: <https://forum.minetest.net/viewtopic.php?t=30509>
+ *
+ * As a workaround we track freed memory coarsely and call malloc_trim() once a
+ * certain amount is reached.
+ */
+
+static std::atomic<size_t> memory_freed;
+
+constexpr size_t MEMORY_TRIM_THRESHOLD = 128 * 1024 * 1024;
+
+void TrackFreedMemory(size_t amount)
+{
+	constexpr auto MO = std::memory_order_relaxed;
+	memory_freed.fetch_add(amount, MO);
+	if (memory_freed.load(MO) >= MEMORY_TRIM_THRESHOLD) {
+		// Synchronize call
+		if (memory_freed.exchange(0, MO) < MEMORY_TRIM_THRESHOLD)
+			return;
+		// Leave some headroom for future allocations
+		malloc_trim(1 * 1024 * 1024);
+	}
+}
 
 #endif
 

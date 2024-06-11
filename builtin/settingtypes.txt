@@ -2421,6 +2421,9 @@ keymap_minimap (Minimap key) key KEY_KEY_V
 #    Key for taking screenshots.
 keymap_screenshot (Screenshot) key KEY_F12
 
+#    Key for toggling fullscreen mode.
+keymap_fullscreen (Fullscreen key) key KEY_F11
+
 #    Key for dropping the currently selected item.
 keymap_drop (Drop item key) key KEY_KEY_Q
 
@@ -2543,6 +2546,9 @@ keymap_toggle_debug (Debug info toggle key) key KEY_F5
 
 #    Key for toggling the display of the profiler. Used for development.
 keymap_toggle_profiler (Profiler toggle key) key KEY_F6
+
+#    Key for toggling the display of mapblock boundaries.
+keymap_toggle_block_bounds (Block bounds toggle key) key
 
 #    Key for switching between first- and third-person camera.
 keymap_camera_mode (Toggle camera mode key) key KEY_KEY_C

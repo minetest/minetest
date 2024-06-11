@@ -427,7 +427,11 @@ static void print_version(std::ostream &os)
 	os << PROJECT_NAME_C " " << g_version_hash
 		<< " (" << porting::getPlatformName() << ")" << std::endl;
 #if USE_LUAJIT
-	os << "Using " << LUAJIT_VERSION << std::endl;
+	os << "Using " << LUAJIT_VERSION
+#ifdef OPENRESTY_LUAJIT
+	<< " (OpenResty)"
+#endif
+	<< std::endl;
 #else
 	os << "Using " << LUA_RELEASE << std::endl;
 #endif

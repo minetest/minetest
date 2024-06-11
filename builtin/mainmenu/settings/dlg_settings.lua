@@ -723,6 +723,11 @@ local function eventhandler(event)
 		mm_game_theme.set_engine(true)
 		return true
 	end
+	if event == "FullscreenChange" then
+		-- Refresh the formspec to keep the fullscreen checkbox up to date.
+		ui.update()
+		return true
+	end
 
 	return false
 end

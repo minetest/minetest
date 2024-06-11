@@ -1,7 +1,7 @@
 // Minetest
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-#include "benchmark_setup.h"
+#include "catch.h"
 #include "server/activeobjectmgr.h"
 #include "util/numeric.h"
 

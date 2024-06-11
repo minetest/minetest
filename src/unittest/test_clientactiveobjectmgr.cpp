@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "client/activeobjectmgr.h"
 
-#include <catch.hpp>
+#include "catch.h"
 
 #include <unordered_set>
 #include <utility>

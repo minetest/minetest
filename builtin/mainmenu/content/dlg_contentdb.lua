@@ -117,7 +117,7 @@ local function resolve_auto_install_spec()
 	end
 
 	if not resolved then
-		gamedata.errormessage = fgettext("The package $1 was not found.", auto_install_spec)
+		gamedata.errormessage = fgettext_ne("The package $1 was not found.", auto_install_spec)
 		ui.update()
 
 		auto_install_spec = nil
