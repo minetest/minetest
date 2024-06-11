@@ -47,8 +47,7 @@ void ActiveObjectMgr::clearIf(const std::function<bool(ServerActiveObject *, u16
 			continue;
 		if (cb(it.second.get(), it.first)) {
 			// Remove reference from m_active_objects
-			m_spatial_map.remove(it.first, it.second->getBasePosition());
-			m_active_objects.remove(it.first);
+			removeObject(it.first);
 		}
 	}
 }
@@ -95,10 +94,10 @@ bool ActiveObjectMgr::registerObject(std::unique_ptr<ServerActiveObject> obj)
 		return false;
 	}
 
-	if (objectpos_over_limit(obj->getBasePosition())) {
-		v3f p = obj->getBasePosition();
+	const v3f pos = obj->getBasePosition();
+	if (objectpos_over_limit(pos)) {
 		warningstream << "Server::ActiveObjectMgr::addActiveObjectRaw(): "
-				<< "object position (" << p.X << "," << p.Y << "," << p.Z
+				<< "object position (" << pos.X << "," << pos.Y << "," << pos.Z
 				<< ") outside maximum range" << std::endl;
 		return false;
 	}
