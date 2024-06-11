@@ -801,7 +801,15 @@ protected:
 
 	// Misc
 	void showOverlayMessage(const char *msg, float dtime, int percent,
-			bool draw_clouds = true);
+			float *indef_pos = nullptr);
+
+	inline bool fogEnabled()
+	{
+		// Client setting only takes effect if fog distance unlimited or debug priv
+		if (sky->getFogDistance() < 0 || client->checkPrivilege("debug"))
+			return m_cache_enable_fog;
+		return true;
+	}
 
 	static void settingChangedCallback(const std::string &setting_name, void *data);
 	void readSettings();
@@ -969,6 +977,8 @@ private:
 #ifdef __ANDROID__
 	bool m_android_chat_open;
 #endif
+
+	float m_shutdown_progress = 0.0f;
 };
 
 Game::Game() :
@@ -1165,7 +1175,8 @@ void Game::run()
 			g_settings->getU16("screen_w"),
 			g_settings->getU16("screen_h")
 		);
-	const bool initial_window_maximized = g_settings->getBool("window_maximized");
+	const bool initial_window_maximized = !g_settings->getBool("fullscreen") &&
+			g_settings->getBool("window_maximized");
 
 	while (m_rendering_engine->run()
 			&& !(*kill || g_gamecallback->shutdown_requested
@@ -1248,7 +1259,9 @@ void Game::shutdown()
 	if (g_touchscreengui)
 		g_touchscreengui->hide();
 
-	showOverlayMessage(N_("Shutting down..."), 0, 0, false);
+	// only if the shutdown progress bar isn't shown yet
+	if (m_shutdown_progress == 0.0f)
+		showOverlayMessage(N_("Shutting down..."), 0, 0);
 
 	if (clouds)
 		clouds->drop();
@@ -1300,7 +1313,7 @@ void Game::shutdown()
 		m_rendering_engine->run();
 		f32 dtime;
 		fps_control.limit(device, &dtime);
-		showOverlayMessage(N_("Shutting down..."), dtime, 0, false);
+		showOverlayMessage(N_("Shutting down..."), dtime, 0, &m_shutdown_progress);
 	}
 
 	stop_thread->rethrow();
@@ -1432,7 +1445,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 		if (success)
 			showOverlayMessage(N_("Creating server..."), dtime, 5);
 		else
-			showOverlayMessage(N_("Shutting down..."), dtime, 0, false);
+			showOverlayMessage(N_("Shutting down..."), dtime, 0, &m_shutdown_progress);
 	}
 
 	start_thread->rethrow();
@@ -2426,9 +2439,6 @@ void Game::toggleBlockBounds()
 		case Hud::BLOCK_BOUNDS_NEAR:
 			m_game_ui->showTranslatedStatusText("Block bounds shown for nearby blocks");
 			break;
-		case Hud::BLOCK_BOUNDS_MAX:
-			m_game_ui->showTranslatedStatusText("Block bounds shown for all blocks");
-			break;
 		default:
 			break;
 	}
@@ -2479,15 +2489,12 @@ void Game::toggleMinimap(bool shift_pressed)
 
 void Game::toggleFog()
 {
-	bool flag;
-	// do not modify setting if no privilege
-	if (!client->checkPrivilege("debug")) {
-		flag = true;
-	} else {
-		flag = !g_settings->getBool("enable_fog");
-		g_settings->setBool("enable_fog", flag);
-	}
-	if (flag)
+	bool flag = !g_settings->getBool("enable_fog");
+	g_settings->setBool("enable_fog", flag);
+	bool allowed = sky->getFogDistance() < 0 || client->checkPrivilege("debug");
+	if (!allowed)
+		m_game_ui->showTranslatedStatusText("Fog enabled by game or mod");
+	else if (flag)
 		m_game_ui->showTranslatedStatusText("Fog enabled");
 	else
 		m_game_ui->showTranslatedStatusText("Fog disabled");
@@ -4242,8 +4249,7 @@ void Game::updateClouds(float dtime)
 		camera_node_position.Y   = camera_node_position.Y + camera_offset.Y * BS;
 		camera_node_position.Z   = camera_node_position.Z + camera_offset.Z * BS;
 		this->clouds->update(camera_node_position, this->sky->getCloudColor());
-		bool enable_fog = this->m_cache_enable_fog || !client->checkPrivilege("debug");
-		if (this->clouds->isCameraInsideCloud() && enable_fog) {
+		if (this->clouds->isCameraInsideCloud() && this->fogEnabled()) {
 			// If camera is inside cloud and fog is enabled, use cloud's colors as sky colors.
 			video::SColor clouds_dark = this->clouds->getColor().getInterpolated(
 					video::SColor(255, 0, 0, 0), 0.9);
@@ -4303,7 +4309,7 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 	/*
 		Fog
 	*/
-	if (this->m_cache_enable_fog || !client->checkPrivilege("debug")) {
+	if (this->fogEnabled()) {
 		this->driver->setFog(
 				fog_color,
 				video::EFT_FOG_LINEAR,
@@ -4374,10 +4380,10 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
  Misc
  ****************************************************************************/
 
-void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_sky)
+void Game::showOverlayMessage(const char *msg, float dtime, int percent, float *indef_pos)
 {
 	m_rendering_engine->draw_load_screen(wstrgettext(msg), guienv, texture_src,
-			dtime, percent, draw_sky);
+			dtime, percent, indef_pos);
 }
 
 void Game::settingChangedCallback(const std::string &setting_name, void *data)

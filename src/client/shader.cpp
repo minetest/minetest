@@ -160,10 +160,10 @@ public:
 private:
 	StringMap m_programs;
 
-	std::string readFile(const std::string &path)
+	inline std::string readFile(const std::string &path)
 	{
 		std::string ret;
-		if (!fs::ReadFile(path, ret))
+		if (!fs::ReadFile(path, ret, true))
 			ret.clear();
 		return ret;
 	}

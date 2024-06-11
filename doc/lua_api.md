@@ -63,6 +63,8 @@ The game directory can contain the following files:
     * `name`: (Deprecated) same as title.
     * `description`: Short description to be shown in the content tab.
       See [Translating content meta](#translating-content-meta).
+    * `first_mod`: Use this to specify the mod that must be loaded before any other mod.
+    * `last_mod`: Use this to specify the mod that must be loaded after all other mods
     * `allowed_mapgens = <comma-separated mapgens>`
       e.g. `allowed_mapgens = v5,v6,flat`
       Mapgens not in this list are removed from the list of mapgens for the
@@ -5444,6 +5446,8 @@ Utilities
       node_interaction_actor = true,
       -- "new_pos" field in entity moveresult (5.9.0)
       moveresult_new_pos = true,
+      -- Allow removing definition fields in `minetest.override_item`
+      override_item_remove_fields = true,
   }
   ```
 
@@ -5613,11 +5617,17 @@ Call these functions only at load time!
 * `minetest.register_node(name, node definition)`
 * `minetest.register_craftitem(name, item definition)`
 * `minetest.register_tool(name, item definition)`
-* `minetest.override_item(name, redefinition)`
+* `minetest.override_item(name, redefinition, del_fields)`
+    * `redefinition` is a table of fields `[name] = new_value`,
+      overwriting fields of or adding fields to the existing definition.
+    * `del_fields` is a list of field names to be set
+      to `nil` ("deleted from") the original definition.
     * Overrides fields of an item registered with register_node/tool/craftitem.
     * Note: Item must already be defined, (opt)depend on the mod defining it.
     * Example: `minetest.override_item("default:mese",
-      {light_source=minetest.LIGHT_MAX})`
+      {light_source=minetest.LIGHT_MAX}, {"sounds"})`:
+      Overwrites the `light_source` field,
+      removes the sounds from the definition of the mese block.
 * `minetest.unregister_item(name)`
     * Unregisters the item from the engine, and deletes the entry with key
       `name` from `minetest.registered_items` and from the associated item table
@@ -5786,6 +5796,7 @@ Call these functions only at load time!
     * `last_login`: The timestamp of the previous login, or nil if player is new
 * `minetest.register_on_leaveplayer(function(ObjectRef, timed_out))`
     * Called when a player leaves the game
+    * Does not get executed for connected players on shutdown.
     * `timed_out`: True for timeout, false for other reasons.
 * `minetest.register_on_authplayer(function(name, ip, is_success))`
     * Called when a client attempts to log into an account.
@@ -8222,7 +8233,11 @@ child will follow movement and rotation of that bone.
             * `"plain"`: Uses 0 textures, `base_color` used as both fog and sky.
             (default: `"regular"`)
         * `textures`: A table containing up to six textures in the following
-            order: Y+ (top), Y- (bottom), X- (west), X+ (east), Z+ (north), Z- (south).
+            order: Y+ (top), Y- (bottom), X+ (east), X- (west), Z- (south), Z+ (north).
+            The top and bottom textures are oriented in-line with the east (X+) face (the top edge of the
+            bottom texture and the bottom edge of the top texture touch the east face).
+            Some top and bottom textures expect to be aligned with the north face and will need to be rotated
+            by -90 and 90 degrees, respectively, to fit the eastward orientation.
         * `clouds`: Boolean for whether clouds appear. (default: `true`)
         * `sky_color`: A table used in `"regular"` type only, containing the
           following values (alpha is ignored):
@@ -8257,14 +8272,13 @@ child will follow movement and rotation of that bone.
                 `"default"` uses the classic Minetest sun and moon tinting.
                 Will use tonemaps, if set to `"default"`. (default: `"default"`)
         * `fog`: A table with following optional fields:
-            * `fog_distance`: integer, set an upper bound the client's viewing_range (inluding range_all).
-               By default, fog_distance is controlled by the client's viewing_range, and this field is not set.
-               Any value >= 0 sets the desired upper bound for the client's viewing_range and disables range_all.
-               Any value < 0, resets the behavior to being client-controlled.
+            * `fog_distance`: integer, set an upper bound for the client's viewing_range.
+               Any value >= 0 sets the desired upper bound for viewing_range,
+               disables range_all and prevents disabling fog (F3 key by default).
+               Any value < 0 resets the behavior to being client-controlled.
                (default: -1)
             * `fog_start`: float, override the client's fog_start.
                Fraction of the visible distance at which fog starts to be rendered.
-               By default, fog_start is controlled by the client's `fog_start` setting, and this field is not set.
                Any value between [0.0, 0.99] set the fog_start as a fraction of the viewing_range.
                Any value < 0, resets the behavior to being client-controlled.
                (default: -1)

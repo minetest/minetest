@@ -329,32 +329,6 @@ void final_color_blend(video::SColor *result,
 	Mesh generation helpers
 */
 
-// This table is moved outside getNodeVertexDirs to avoid the compiler using
-// a mutex to initialize this table at runtime right in the hot path.
-// For details search the internet for "cxa_guard_acquire".
-static const v3s16 vertex_dirs_table[] = {
-	// ( 1, 0, 0)
-	v3s16( 1,-1, 1), v3s16( 1,-1,-1),
-	v3s16( 1, 1,-1), v3s16( 1, 1, 1),
-	// ( 0, 1, 0)
-	v3s16( 1, 1,-1), v3s16(-1, 1,-1),
-	v3s16(-1, 1, 1), v3s16( 1, 1, 1),
-	// ( 0, 0, 1)
-	v3s16(-1,-1, 1), v3s16( 1,-1, 1),
-	v3s16( 1, 1, 1), v3s16(-1, 1, 1),
-	// invalid
-	v3s16(), v3s16(), v3s16(), v3s16(),
-	// ( 0, 0,-1)
-	v3s16( 1,-1,-1), v3s16(-1,-1,-1),
-	v3s16(-1, 1,-1), v3s16( 1, 1,-1),
-	// ( 0,-1, 0)
-	v3s16( 1,-1, 1), v3s16(-1,-1, 1),
-	v3s16(-1,-1,-1), v3s16( 1,-1,-1),
-	// (-1, 0, 0)
-	v3s16(-1,-1,-1), v3s16(-1,-1, 1),
-	v3s16(-1, 1, 1), v3s16(-1, 1,-1)
-};
-
 /*
 	Gets nth node tile (0 <= n <= 5).
 */
@@ -826,11 +800,16 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 
 MapBlockMesh::~MapBlockMesh()
 {
+	size_t sz = 0;
 	for (scene::IMesh *m : m_mesh) {
+		for (u32 i = 0; i < m->getMeshBufferCount(); i++)
+			sz += m->getMeshBuffer(i)->getSize();
 		m->drop();
 	}
 	for (MinimapMapblock *block : m_minimap_mapblocks)
 		delete block;
+
+	porting::TrackFreedMemory(sz);
 }
 
 bool MapBlockMesh::animate(bool faraway, float time, int crack,
@@ -1006,7 +985,6 @@ video::SColor encode_light(u16 light, u8 emissive_light)
 u8 get_solid_sides(MeshMakeData *data)
 {
 	std::unordered_map<v3s16, u8> results;
-	v3s16 ofs;
 	v3s16 blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 	const NodeDefManager *ndef = data->nodedef;
 

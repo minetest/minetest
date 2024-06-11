@@ -19,6 +19,9 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
+      - 'irr/**.mm' # Objective-C(++)
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - '.github/workflows/macos.yml'
@@ -55,6 +58,7 @@ jobs:
       - name: CPack
         run: |
           cd build
+          cmake .. -DINSTALL_DEVTEST=FALSE
           cpack -G ZIP -B macos
 
       - uses: actions/upload-artifact@v4

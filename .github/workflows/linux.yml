@@ -22,6 +22,8 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - 'util/ci/**'
@@ -55,21 +57,21 @@ jobs:
           ./bin/minetest --run-unittests
 
   # Current gcc version
-  gcc_12:
-    runs-on: ubuntu-22.04
+  gcc_14:
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps g++-12 libluajit-5.1-dev
+          install_linux_deps g++-14 libluajit-5.1-dev
 
       - name: Build
         run: |
           ./util/ci/build.sh
         env:
-          CC: gcc-12
-          CXX: g++-12
+          CC: gcc-14
+          CXX: g++-14
 
       - name: Test
         run: |
@@ -101,21 +103,21 @@ jobs:
           ./bin/minetest --run-unittests
 
   # Current clang version
-  clang_14:
-    runs-on: ubuntu-22.04
+  clang_18:
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-14 lldb
+          install_linux_deps clang-18 lldb
 
       - name: Build
         run: |
           ./util/ci/build.sh
         env:
-          CC: clang-14
-          CXX: clang++-14
+          CC: clang-18
+          CXX: clang++-18
 
       - name: Test
         run: |
@@ -126,27 +128,26 @@ jobs:
           ./util/test_multiplayer.sh
 
   # Build with prometheus-cpp (server-only)
-  clang_9_prometheus:
-    name: "clang_9 (PROMETHEUS=1)"
-    runs-on: ubuntu-20.04
+  clang_11_prometheus:
+    name: "clang_11 (PROMETHEUS=1)"
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-9
+          install_linux_deps clang-11
 
       - name: Build prometheus-cpp
-        run: |
-          ./util/ci/build_prometheus_cpp.sh
+        run: ./util/ci/build_prometheus_cpp.sh
 
       - name: Build
         run: |
           ./util/ci/build.sh
         env:
-          CC: clang-9
-          CXX: clang++-9
-          CMAKE_FLAGS: "-DENABLE_PROMETHEUS=1 -DBUILD_CLIENT=0"
+          CC: clang-11
+          CXX: clang++-11
+          CMAKE_FLAGS: "-DENABLE_PROMETHEUS=1 -DBUILD_CLIENT=0 -DENABLE_CURSES=0"
 
       - name: Test
         run: |

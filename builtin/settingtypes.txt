@@ -265,8 +265,8 @@ undersampling (Undersampling) int 1 1 8
 
 [**Graphics Effects]
 
-#    Makes all liquids opaque
-opaque_water (Opaque liquids) bool false
+#    Allows liquids to be translucent.
+translucent_liquids (Translucent liquids) bool true
 
 #    Leaves style:
 #    -   Fancy:  all faces visible
@@ -381,8 +381,7 @@ crosshair_alpha (Crosshair alpha) int 255 0 255
 
 [**Fog]
 
-#    Whether to fog out the end of the visible area. This option only works
-#    with the 'debug' privilege.
+#    Whether to fog out the end of the visible area.
 enable_fog (Fog) bool true
 
 #    Make fog and sky colors depend on daytime (dawn/sunset) and view direction.
@@ -1785,6 +1784,9 @@ deprecated_lua_api_handling (Deprecated Lua API handling) enum log none,log,erro
 #    Enable random user input (only used for testing).
 random_input (Random input) bool false
 
+#    Enable random mod loading (mainly used for testing).
+random_mod_load_order (Random mod load order) bool false
+
 #    Enable mod channels support.
 enable_mod_channels (Mod channels) bool false
 
@@ -2421,6 +2423,9 @@ keymap_minimap (Minimap key) key KEY_KEY_V
 #    Key for taking screenshots.
 keymap_screenshot (Screenshot) key KEY_F12
 
+#    Key for toggling fullscreen mode.
+keymap_fullscreen (Fullscreen key) key KEY_F11
+
 #    Key for dropping the currently selected item.
 keymap_drop (Drop item key) key KEY_KEY_Q
 
@@ -2532,7 +2537,7 @@ keymap_toggle_chat (Chat toggle key) key KEY_F2
 #    Key for toggling the display of the large chat console.
 keymap_console (Large chat console key) key KEY_F10
 
-#    Key for toggling the display of fog. Only usable with 'debug' privilege.
+#    Key for toggling the display of fog.
 keymap_toggle_fog (Fog toggle key) key KEY_F3
 
 #    Key for toggling the camera update. Only usable with 'debug' privilege.
@@ -2543,6 +2548,9 @@ keymap_toggle_debug (Debug info toggle key) key KEY_F5
 
 #    Key for toggling the display of the profiler. Used for development.
 keymap_toggle_profiler (Profiler toggle key) key KEY_F6
+
+#    Key for toggling the display of mapblock boundaries.
+keymap_toggle_block_bounds (Block bounds toggle key) key
 
 #    Key for switching between first- and third-person camera.
 keymap_camera_mode (Toggle camera mode key) key KEY_KEY_C

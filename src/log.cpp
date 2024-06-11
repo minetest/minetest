@@ -28,15 +28,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "util/numeric.h"
 #include "log.h"
+#include "filesys.h"
 
 #ifdef __ANDROID__
 #include <android/log.h>
 #endif
 
+#if !defined(_WIN32)
+#include <unistd.h> // isatty
+#endif
+
 #include <sstream>
 #include <iostream>
 #include <algorithm>
-#include <cerrno>
 #include <cstring>
 
 class LevelTarget : public LogTarget {
@@ -104,21 +108,19 @@ thread_local LogStream dout_con(trace_target);
 
 static unsigned int g_level_to_android[] = {
 	ANDROID_LOG_INFO,     // LL_NONE
-	//ANDROID_LOG_FATAL,
 	ANDROID_LOG_ERROR,    // LL_ERROR
 	ANDROID_LOG_WARN,     // LL_WARNING
-	ANDROID_LOG_WARN,     // LL_ACTION
-	//ANDROID_LOG_INFO,
+	ANDROID_LOG_INFO,     // LL_ACTION
 	ANDROID_LOG_DEBUG,    // LL_INFO
 	ANDROID_LOG_VERBOSE,  // LL_VERBOSE
 	ANDROID_LOG_VERBOSE,  // LL_TRACE
 };
 
-void AndroidLogOutput::logRaw(LogLevel lev, const std::string &line) {
+void AndroidLogOutput::logRaw(LogLevel lev, const std::string &line)
+{
 	static_assert(ARRLEN(g_level_to_android) == LL_MAX,
 		"mismatch between android and internal loglevels");
-	__android_log_print(g_level_to_android[lev],
-		PROJECT_NAME_C, "%s", line.c_str());
+	__android_log_write(g_level_to_android[lev], PROJECT_NAME_C, line.c_str());
 }
 #endif
 
@@ -156,9 +158,7 @@ void Logger::addOutput(ILogOutput *out)
 
 void Logger::addOutput(ILogOutput *out, LogLevel lev)
 {
-	MutexAutoLock lock(m_mutex);
-	m_outputs[lev].push_back(out);
-	m_has_outputs[lev] = true;
+	addOutputMasked(out, LOGLEVEL_TO_MASKLEVEL(lev));
 }
 
 void Logger::addOutputMasked(ILogOutput *out, LogLevelMask mask)
@@ -187,9 +187,7 @@ LogLevelMask Logger::removeOutput(ILogOutput *out)
 	MutexAutoLock lock(m_mutex);
 	LogLevelMask ret_mask = 0;
 	for (size_t i = 0; i < LL_MAX; i++) {
-		std::vector<ILogOutput *>::iterator it;
-
-		it = std::find(m_outputs[i].begin(), m_outputs[i].end(), out);
+		auto it = std::find(m_outputs[i].begin(), m_outputs[i].end(), out);
 		if (it != m_outputs[i].end()) {
 			ret_mask |= LOGLEVEL_TO_MASKLEVEL(i);
 			m_outputs[i].erase(it);
@@ -218,9 +216,9 @@ void Logger::deregisterThread()
 	m_thread_names.erase(id);
 }
 
-const std::string Logger::getLevelLabel(LogLevel lev)
+const char *Logger::getLevelLabel(LogLevel lev)
 {
-	static const std::string names[] = {
+	static const char *names[] = {
 		"",
 		"ERROR",
 		"WARNING",
@@ -229,45 +227,50 @@ const std::string Logger::getLevelLabel(LogLevel lev)
 		"VERBOSE",
 		"TRACE",
 	};
-	assert(lev < LL_MAX && lev >= 0);
 	static_assert(ARRLEN(names) == LL_MAX,
 		"mismatch between loglevel names and enum");
+	assert(lev < LL_MAX && lev >= 0);
 	return names[lev];
 }
 
 LogColor Logger::color_mode = LOG_COLOR_AUTO;
 
-const std::string Logger::getThreadName()
+const std::string &Logger::getThreadName()
 {
-	std::map<std::thread::id, std::string>::const_iterator it;
-
 	std::thread::id id = std::this_thread::get_id();
-	it = m_thread_names.find(id);
+
+	auto it = m_thread_names.find(id);
 	if (it != m_thread_names.end())
 		return it->second;
 
-	std::ostringstream os;
-	os << "#0x" << std::hex << id;
-	return os.str();
+	thread_local std::string fallback_name;
+	if (fallback_name.empty()) {
+		std::ostringstream os;
+		os << "#0x" << std::hex << id;
+		fallback_name = os.str();
+	}
+	return fallback_name;
 }
 
 void Logger::log(LogLevel lev, const std::string &text)
 {
-	if (m_silenced_levels[lev])
+	if (isLevelSilenced(lev))
 		return;
 
-	const std::string thread_name = getThreadName();
-	const std::string label = getLevelLabel(lev);
+	const std::string &thread_name = getThreadName();
+	const char *label = getLevelLabel(lev);
 	const std::string timestamp = getTimestamp();
-	std::ostringstream os(std::ios_base::binary);
-	os << timestamp << ": " << label << "[" << thread_name << "]: " << text;
 
-	logToOutputs(lev, os.str(), timestamp, thread_name, text);
+	std::string line = timestamp;
+	line.append(": ").append(label).append("[").append(thread_name)
+		.append("]: ").append(text);
+
+	logToOutputs(lev, line, timestamp, thread_name, text);
 }
 
 void Logger::logRaw(LogLevel lev, const std::string &text)
 {
-	if (m_silenced_levels[lev])
+	if (isLevelSilenced(lev))
 		return;
 
 	logToOutputsRaw(lev, text);
@@ -299,26 +302,36 @@ void FileLogOutput::setFile(const std::string &filename, s64 file_size_max)
 	bool is_too_large = false;
 	if (file_size_max > 0) {
 		std::ifstream ifile(filename, std::ios::binary | std::ios::ate);
-		is_too_large = ifile.tellg() > file_size_max;
-		ifile.close();
+		if (ifile.good())
+			is_too_large = ifile.tellg() > file_size_max;
 	}
-
 	if (is_too_large) {
 		std::string filename_secondary = filename + ".1";
 		actionstream << "The log file grew too big; it is moved to " <<
 			filename_secondary << std::endl;
-		remove(filename_secondary.c_str());
-		rename(filename.c_str(), filename_secondary.c_str());
+		fs::DeleteSingleFileOrEmptyDirectory(filename_secondary);
+		fs::Rename(filename, filename_secondary);
 	}
-	m_stream.open(filename, std::ios::app | std::ios::ate);
 
-	if (!m_stream.good())
-		throw FileNotGoodException("Failed to open log file " +
-			filename + ": " + strerror(errno));
+	// Intentionally not using open_ofstream() to keep the text mode
+	if (!fs::OpenStream(*m_stream.rdbuf(), filename.c_str(), std::ios::out | std::ios::app, true, false))
+		throw FileNotGoodException("Failed to open log file");
+
 	m_stream << "\n\n"
-		"-------------" << std::endl <<
-		"  Separator" << std::endl <<
+		"-------------\n" <<
+		"  Separator\n" <<
 		"-------------\n" << std::endl;
+}
+
+StreamLogOutput::StreamLogOutput(std::ostream &stream) :
+	m_stream(stream)
+{
+#if !defined(_WIN32)
+	if (&stream == &std::cout)
+		is_tty = isatty(STDOUT_FILENO);
+	else if (&stream == &std::cerr)
+		is_tty = isatty(STDERR_FILENO);
+#endif
 }
 
 void StreamLogOutput::logRaw(LogLevel lev, const std::string &line)

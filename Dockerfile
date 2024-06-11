@@ -1,7 +1,6 @@
 ARG DOCKER_IMAGE=alpine:3.19
 FROM $DOCKER_IMAGE AS dev
 
-ENV SPATIALINDEX_VERSION master
 ENV LUAJIT_VERSION v2.1
 
 RUN apk add --no-cache git build-base cmake curl-dev zlib-dev zstd-dev \
@@ -19,7 +18,7 @@ RUN git clone --recursive https://github.com/jupp0r/prometheus-cpp && \
 		cmake --build build && \
 		cmake --install build && \
 	cd /usr/src/ && \
-	git clone --recursive https://github.com/libspatialindex/libspatialindex -b ${SPATIALINDEX_VERSION} && \
+	git clone --recursive https://github.com/libspatialindex/libspatialindex && \
 		cd libspatialindex && \
 		cmake -B build \
 			-DCMAKE_INSTALL_PREFIX=/usr/local && \

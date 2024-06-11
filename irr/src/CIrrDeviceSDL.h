@@ -86,6 +86,10 @@ public:
 	/** \return True if window is fullscreen. */
 	bool isFullscreen() const override;
 
+	//! Enables or disables fullscreen mode.
+	/** \return True on success. */
+	bool setFullscreen(bool fullscreen) override;
+
 	//! Checks if the window could possibly be visible.
 	bool isWindowVisible() const override;
 
@@ -298,6 +302,8 @@ private:
 	u32 Width, Height;
 
 	bool Resizable;
+
+	static u32 getFullscreenFlag(bool fullscreen);
 
 	core::rect<s32> lastElemPos;
 

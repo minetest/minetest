@@ -118,21 +118,47 @@ def main():
 			else:
 				update_folder(os.path.abspath("./"))
 
-# Group 2 will be the string, groups 1 and 3 will be the delimiters (" or ')
+# Compile pattern for matching lua function call
+def compile_func_call_pattern(argument_pattern):
+	return re.compile(
+		# Look for beginning of file or anything that isn't a function identifier
+		r'(?:^|[\.=,{\(\s])' +
+		# Matches S, FS, NS, or NFS function call
+		r'N?F?S\s*' +
+		# The pattern to match argument
+		argument_pattern,
+		re.DOTALL)
+
+# Add parentheses around a pattern
+def parenthesize_pattern(pattern):
+	return (
+		# Start of argument: open parentheses and space (optional)
+		r'\(\s*' +
+		# The pattern to be parenthesized
+		pattern +
+		# End of argument or function call: space, comma, or close parentheses
+		r'[\s,\)]')
+
+# Quoted string
+# Group 2 will be the string, group 1 and group 3 will be the delimiters (" or ')
 # See https://stackoverflow.com/questions/46967465/regex-match-text-in-either-single-or-double-quote
-pattern_lua_quoted = re.compile(
-	r'(?:^|[\.=,{\(\s])' # Look for beginning of file or anything that isn't a function identifier
-	r'N?F?S\s*\(\s*' # Matches S, FS, NS or NFS function call
-	r'(["\'])((?:\\\1|(?:(?!\1)).)*)(\1)' # Quoted string
-	r'[\s,\)]', # End of call or argument
-	re.DOTALL)
+pattern_lua_quoted_string = r'(["\'])((?:\\\1|(?:(?!\1)).)*)(\1)'
+
+# Double square bracket string (multiline)
+pattern_lua_square_bracket_string = r'\[\[(.*?)\]\]'
+
+# Handles the " ... " or ' ... ' string delimiters
+pattern_lua_quoted = compile_func_call_pattern(parenthesize_pattern(pattern_lua_quoted_string))
+
 # Handles the [[ ... ]] string delimiters
-pattern_lua_bracketed = re.compile(
-	r'(?:^|[\.=,{\(\s])' # Same as for pattern_lua_quoted
-	r'N?F?S\s*\(\s*' # Same as for pattern_lua_quoted
-	r'\[\[(.*?)\]\]' # [[ ... ]] string delimiters
-	r'[\s,\)]', # Same as for pattern_lua_quoted
-	re.DOTALL)
+pattern_lua_bracketed = compile_func_call_pattern(parenthesize_pattern(pattern_lua_square_bracket_string))
+
+# Handles like pattern_lua_quoted, but for single parameter (without parentheses)
+# See https://www.lua.org/pil/5.html for informations about single argument call
+pattern_lua_quoted_single = compile_func_call_pattern(pattern_lua_quoted_string)
+
+# Same as pattern_lua_quoted_single, but for [[ ... ]] string delimiters
+pattern_lua_bracketed_single = compile_func_call_pattern(pattern_lua_square_bracket_string)
 
 # Handles "concatenation" .. " of strings"
 pattern_concat = re.compile(r'["\'][\s]*\.\.[\s]*["\']', re.DOTALL)
@@ -281,9 +307,17 @@ def read_lua_file_strings(lua_file):
 	with open(lua_file, encoding='utf-8') as text_file:
 		text = text_file.read()
 
+		strings = []
+
+		for s in pattern_lua_quoted_single.findall(text):
+			strings.append(s[1])
+		for s in pattern_lua_bracketed_single.findall(text):
+			strings.append(s)
+
+		# Only concatenate strings after matching
+		# single parameter call (without parantheses)
 		text = re.sub(pattern_concat, "", text)
 
-		strings = []
 		for s in pattern_lua_quoted.findall(text):
 			strings.append(s[1])
 		for s in pattern_lua_bracketed.findall(text):

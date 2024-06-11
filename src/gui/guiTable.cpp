@@ -60,7 +60,7 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 		m_rowheight = MYMAX(m_rowheight, 1);
 	}
 
-	const s32 s = skin->getSize(gui::EGDS_SCROLLBAR_SIZE) * 1.5f;
+	const s32 s = skin->getSize(gui::EGDS_SCROLLBAR_SIZE);
 	m_scrollbar = new GUIScrollBar(Environment, this, -1,
 			core::rect<s32>(RelativeRect.getWidth() - s,
 					0,
@@ -183,7 +183,6 @@ void GUITable::setTable(const TableOptions &options,
 	}
 
 	// Handle table options
-	video::SColor default_color(255, 255, 255, 255);
 	s32 opendepth = 0;
 	for (const Option &option : options) {
 		const std::string &name = option.name;

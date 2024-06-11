@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "version.h"
 #include "defaultsettings.h"
+#include "migratesettings.h"
 #include "gettext.h"
 #include "log.h"
 #include "util/quicktune.h"
@@ -426,7 +427,11 @@ static void print_version(std::ostream &os)
 	os << PROJECT_NAME_C " " << g_version_hash
 		<< " (" << porting::getPlatformName() << ")" << std::endl;
 #if USE_LUAJIT
-	os << "Using " << LUAJIT_VERSION << std::endl;
+	os << "Using " << LUAJIT_VERSION
+#ifdef OPENRESTY_LUAJIT
+	<< " (OpenResty)"
+#endif
+	<< std::endl;
 #else
 	os << "Using " << LUA_RELEASE << std::endl;
 #endif
@@ -686,6 +691,8 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 
 	if (!read_config_file(cmd_args))
 		return false;
+
+	migrate_settings();
 
 	init_log_streams(cmd_args);
 
