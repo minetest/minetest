@@ -527,7 +527,7 @@ void main(void)
 		vec3 water_reflect_color = 12.0 * dayLight * fresnel_factor * mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0)) * max(1.0 - shadow_uncorrected, 0.0);
 
 		// This line exists to prevent ridiculously bright reflection colors.
-		water_reflect_color /= clamp(max(water_reflect_color.r, max(water_reflect_color.g, water_reflect_color.b)) * 0.5, 1.0, 400.0);
+		water_reflect_color /= clamp(max(water_reflect_color.r, max(water_reflect_color.g, water_reflect_color.b)) * 0.375, 1.0, 400.0);
 		col.rgb += water_reflect_color * f_adj_shadow_strength * brightness_factor;
 #endif
 
