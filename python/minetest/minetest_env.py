@@ -461,15 +461,23 @@ class MinetestEnv(gym.Env):
             f"Failed to get a valid observation after {valid_obs_max_attempts} attempts"
         )
 
+    def _run_on_event_loop(self, coro):
+        # catch KjException and raise as a different type since cannot be pickled,
+        # which leads to horribly misleading error messages when using AsyncVectorEnv
+        try:
+            return self._event_loop.run_until_complete(coro)
+        except capnp.lib.capnp.KjException as e:
+            raise RuntimeError(
+                f"minetest capnp error: {e}",
+            ).with_traceback(sys.exception().__traceback__) from None
+
     def reset(
         self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None
     ):
+        self.close()  # ensure processes, event loops are cleaned up.
         self._event_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._event_loop)
-        result = self._event_loop.run_until_complete(
-            self._async_reset(seed=seed, options=options)
-        )
-        return result
+        return self._run_on_event_loop(self._async_reset(seed=seed, options=options))
 
     async def _async_step(self, action: Dict[str, Any], _key_map=KEY_MAP):
         if self.minetest_process and self.minetest_process.poll() is not None:
@@ -503,9 +511,7 @@ class MinetestEnv(gym.Env):
         return next_obs, reward, done, False, {}
 
     def step(self, action: Dict[str, Any], _key_map=KEY_MAP):
-        return self._event_loop.run_until_complete(
-            self._async_step(action, _key_map=_key_map)
-        )
+        return self._run_on_event_loop(self._async_step(action, _key_map=_key_map))
 
     def render(self):
         if self.render_mode == "human":
@@ -528,7 +534,7 @@ class MinetestEnv(gym.Env):
             await self._kj_loop.__aexit__(None, None, None)
 
     def close(self):
-        return self._event_loop.run_until_complete(self._async_close())
+        return self._run_on_event_loop(self._async_close())
 
     def __enter__(self):
         return self
