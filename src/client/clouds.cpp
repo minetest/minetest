@@ -396,6 +396,13 @@ void Clouds::render()
 			fog_pixelfog, fog_rangefog);
 }
 
+void Clouds::renderVolumetrics() {
+	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+	v2u32 ss = driver->getScreenSize();
+	core::rect<s32> rect(0, 0, ss.X, ss.Y);
+	driver->draw2DRectangle(video::SColor(255, 255, 255, 255), rect);
+}
+
 void Clouds::step(float dtime)
 {
 	m_origin = m_origin + dtime * BS * m_params.speed;

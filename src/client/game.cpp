@@ -1516,6 +1516,7 @@ bool Game::createClient(const GameStartData &start_data)
 	 */
 	if (m_cache_enable_clouds)
 		clouds = new Clouds(smgr, shader_src, -1, rand());
+	client->setClouds(clouds);
 
 	/* Skybox
 	 */

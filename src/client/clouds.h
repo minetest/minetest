@@ -52,6 +52,8 @@ public:
 
 	virtual void render();
 
+	void renderVolumetrics();
+
 	virtual const aabb3f &getBoundingBox() const
 	{
 		return m_box;
@@ -144,6 +146,8 @@ private:
 	}
 
 	bool gridFilled(int x, int y) const;
+
+	video::SMaterial m_volume_material;
 
 	video::SMaterial m_material;
 	irr_ptr<scene::SMeshBuffer> m_meshbuffer;
