@@ -2,7 +2,7 @@ local function register_entity(name, textures)
 	minetest.register_entity("gltf:" .. name, {
 		initial_properties = {
 			visual = "mesh",
-			mesh = name .. ".gltf",
+			mesh = "gltf_" .. name .. ".gltf",
 			textures = textures,
 		},
 	})
@@ -18,5 +18,5 @@ do
 	register_entity("blender_cube_scaled", cube_textures)
 	register_entity("blender_cube_matrix_transform", cube_textures)
 end
-register_entity("snow_man", {"snow_man.png"})
-register_entity("spider", {"spider.png"})
+register_entity("snow_man", {"gltf_snow_man.png"})
+register_entity("spider", {"gltf_spider.png"})

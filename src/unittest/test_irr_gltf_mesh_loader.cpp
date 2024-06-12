@@ -28,7 +28,8 @@ const auto loadMesh = [&smgr](const irr::io::path& filepath) {
 	return smgr.getMesh(&file);
 };
 
-const static auto model_path = gamespec.gamemods_path + DIR_DELIM + "gltf" + DIR_DELIM + "models" + DIR_DELIM;
+const static auto model_stem = gamespec.gamemods_path +
+		DIR_DELIM + "gltf" + DIR_DELIM + "models" + DIR_DELIM + "gltf_";
 
 SECTION("error cases") {
 	const static auto invalid_model_path = gamespec.gamemods_path + DIR_DELIM + "gltf" + DIR_DELIM + "invalid" + DIR_DELIM;
@@ -54,10 +55,10 @@ SECTION("error cases") {
 
 SECTION("minimal triangle") {
 	const auto path = GENERATE(
-			model_path + "minimal_triangle.gltf",
-			model_path + "triangle_with_vertex_stride.gltf",
+			model_stem + "minimal_triangle.gltf",
+			model_stem + "triangle_with_vertex_stride.gltf",
 			// Test non-indexed geometry.
-			model_path + "triangle_without_indices.gltf");
+			model_stem + "triangle_without_indices.gltf");
 	INFO(path);
 	const auto mesh = loadMesh(path);
 	REQUIRE(mesh != nullptr);
@@ -83,7 +84,7 @@ SECTION("minimal triangle") {
 }
 
 SECTION("blender cube") {
-	const auto mesh = loadMesh(model_path + "blender_cube.gltf");
+	const auto mesh = loadMesh(model_stem + "blender_cube.gltf");
 	REQUIRE(mesh != nullptr);
 	REQUIRE(mesh->getMeshBufferCount() == 1);
 	SECTION("vertex coordinates are correct") {
@@ -136,7 +137,7 @@ SECTION("blender cube") {
 }
 
 SECTION("blender cube scaled") {
-	const auto mesh = loadMesh(model_path + "blender_cube_scaled.gltf");
+	const auto mesh = loadMesh(model_stem + "blender_cube_scaled.gltf");
 	REQUIRE(mesh != nullptr);
 	REQUIRE(mesh->getMeshBufferCount() == 1);
 	
@@ -157,7 +158,7 @@ SECTION("blender cube scaled") {
 }
 
 SECTION("blender cube matrix transform") {
-	const auto mesh = loadMesh(model_path + "blender_cube_matrix_transform.gltf");
+	const auto mesh = loadMesh(model_stem + "blender_cube_matrix_transform.gltf");
 	REQUIRE(mesh != nullptr);
 	REQUIRE(mesh->getMeshBufferCount() == 1);
 	
@@ -183,7 +184,7 @@ SECTION("blender cube matrix transform") {
 }
 
 SECTION("snow man") {
-	const auto mesh = loadMesh(model_path + "snow_man.gltf");
+	const auto mesh = loadMesh(model_stem + "snow_man.gltf");
 	REQUIRE(mesh != nullptr);
 	REQUIRE(mesh->getMeshBufferCount() == 3);
 
@@ -338,7 +339,7 @@ SECTION("snow man") {
 // https://github.com/KhronosGroup/glTF-Sample-Models/tree/main/2.0/SimpleSparseAccessor
 SECTION("simple sparse accessor")
 {
-	const auto mesh = loadMesh(model_path + "simple_sparse_accessor.gltf");
+	const auto mesh = loadMesh(model_stem + "simple_sparse_accessor.gltf");
 	REQUIRE(mesh != nullptr);
 	const auto *vertices = reinterpret_cast<irr::video::S3DVertex *>(
 			mesh->getMeshBuffer(0)->getVertices());

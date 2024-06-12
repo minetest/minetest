@@ -1,11 +1,11 @@
 glTF test model (and corresponding texture) licenses:
 
-* Spider (`spider.gltf`, `spider.png`):
+* Spider (`gltf_spider.gltf`, `gltf_spider.png`):
   * By [archfan7411](https://github.com/archfan7411)
   * Licensed under CC0, public domain "wherever public domain carries fewer rights or legal protections"
-* Snow Man (`snow_man.gltf`, `snow_man.png`):
+* Snow Man (`gltf_snow_man.gltf`, `gltf_snow_man.png`):
   * By [jordan4ibanez](https://github.com/jordan4ibanez)
   * Licensed under CC0
-* Minimal triangle, triangle without indices (`minimal_triangle.gltf`, `triangle_without_indices.gltf`)
+* Minimal triangle, triangle without indices (`gltf_minimal_triangle.gltf`, `gltf_triangle_without_indices.gltf`)
   * From [the glTF sample model collection](https://github.com/KhronosGroup/glTF-Sample-Models)
   * Licensed under CC0 / public domain
