@@ -370,7 +370,7 @@ SECTION("simple sparse accessor")
 SECTION("simple skin")
 {
 	using CSkinnedMesh = irr::scene::CSkinnedMesh;
-	const auto mesh = loadMesh(model_path + "simple_skin.gltf");
+	const auto mesh = loadMesh(model_stem + "simple_skin.gltf");
 	REQUIRE(mesh != nullptr);
 	auto csm = dynamic_cast<const CSkinnedMesh*>(mesh);
 	const auto joints = csm->getAllJoints();
