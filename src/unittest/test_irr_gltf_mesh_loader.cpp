@@ -44,6 +44,12 @@ SECTION("error cases") {
 	SECTION("invalid JSON") {
 		CHECK(loadMesh(invalid_model_path + "json_missing_brace.gltf") == nullptr);
 	}
+
+	// This is an example of something that should be validated by tiniergltf.
+	SECTION("invalid bufferview bounds")
+	{
+		CHECK(loadMesh(invalid_model_path + "invalid_bufferview_bounds.gltf") == nullptr);
+	}
 }
 
 SECTION("minimal triangle") {
@@ -327,6 +333,35 @@ SECTION("snow man") {
 			CHECK(vertices[22].TCoords == v2f{0.375f, 0.416666657f});
 		}
 	}
+}
+
+// https://github.com/KhronosGroup/glTF-Sample-Models/tree/main/2.0/SimpleSparseAccessor
+SECTION("simple sparse accessor")
+{
+	const auto mesh = loadMesh(model_path + "simple_sparse_accessor.gltf");
+	REQUIRE(mesh != nullptr);
+	const auto *vertices = reinterpret_cast<irr::video::S3DVertex *>(
+			mesh->getMeshBuffer(0)->getVertices());
+	const std::array<v3f, 14> expectedPositions = {
+			// Lower
+			v3f(0, 0, 0),
+			v3f(1, 0, 0),
+			v3f(2, 0, 0),
+			v3f(3, 0, 0),
+			v3f(4, 0, 0),
+			v3f(5, 0, 0),
+			v3f(6, 0, 0),
+			// Upper
+			v3f(0, 1, 0),
+			v3f(1, 2, 0), // overridden
+			v3f(2, 1, 0),
+			v3f(3, 3, 0), // overridden
+			v3f(4, 1, 0),
+			v3f(5, 4, 0), // overridden
+			v3f(6, 1, 0),
+	};
+	for (std::size_t i = 0; i < expectedPositions.size(); ++i)
+		CHECK(vertices[i].Pos == expectedPositions[i]);
 }
 
 }
