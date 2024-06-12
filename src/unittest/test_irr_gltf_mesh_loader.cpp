@@ -6,16 +6,11 @@
 #include "filesys.h"
 
 #include "CReadFile.h"
-#include "log.h"
 #include "vector3d.h"
 
 #include <irrlicht.h>
 
-// Catch needs to be included after Irrlicht so that it sees operator<<
-// declarations.
-#include <catch.hpp>
-
-#include <cstring>
+#include "catch.h"
 
 using v3f = irr::core::vector3df;
 using v2f = irr::core::vector2df;
@@ -24,10 +19,8 @@ TEST_CASE("gltf") {
 
 const auto gamespec = findSubgame("devtest");
 
-// HACK use SKIP() when Catch2 is upgraded to v3
-if (!gamespec.isValid()) {
-	warningstream << "skipping gltf tests because devtest could not be found" << std::endl;
-} else {
+if (!gamespec.isValid())
+	SKIP();
 
 irr::scene::CSceneManager smgr(nullptr, nullptr, nullptr);
 const auto loadMesh = [&smgr](const irr::io::path& filepath) {
@@ -334,8 +327,6 @@ SECTION("snow man") {
 			CHECK(vertices[22].TCoords == v2f{0.375f, 0.416666657f});
 		}
 	}
-}
-
 }
 
 }
