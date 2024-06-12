@@ -109,8 +109,9 @@ struct AccessorSparseIndices {
 		UNSIGNED_SHORT,
 		UNSIGNED_INT,
 	};
-	static std::size_t componentSize(ComponentType type) {
-		switch (type) {
+	ComponentType componentType;
+	std::size_t componentSize() const {
+		switch (componentType) {
 		case ComponentType::UNSIGNED_BYTE:
 			return 1;
 		case ComponentType::UNSIGNED_SHORT:
@@ -120,9 +121,8 @@ struct AccessorSparseIndices {
 		}
 		throw std::logic_error("invalid component type");
 	}
-	ComponentType componentType;
 	std::size_t elementSize() const {
-		return componentSize(componentType);
+		return componentSize();
 	}
 	AccessorSparseIndices(const Json::Value &o)
 		: bufferView(as<std::size_t>(o["bufferView"]))
@@ -1237,7 +1237,7 @@ struct GlTF {
 			check(view.byteOffset <= buf.byteLength - view.byteLength);
 		});
 
-		const auto checkAccessor = [&](const Accessor &accessor,
+		const auto checkAccessor = [&](const auto &accessor,
 				std::size_t bufferView, std::size_t byteOffset, std::size_t count) {
 			const BufferView &view = bufferViews->at(bufferView);
 			if (view.byteStride.has_value())
@@ -1251,9 +1251,9 @@ struct GlTF {
 			if (accessor.bufferView.has_value())
 				checkAccessor(accessor, *accessor.bufferView, accessor.byteOffset, accessor.count);
 			if (accessor.sparse.has_value()) {
-				const auto indices = accessor.sparse->indices;
-				checkAccessor(accessor, indices.bufferView, indices.byteOffset, accessor.sparse->count);
-				const auto values = accessor.sparse->values;
+				const auto &indices = accessor.sparse->indices;
+				checkAccessor(indices, indices.bufferView, indices.byteOffset, accessor.sparse->count);
+				const auto &values = accessor.sparse->values;
 				checkAccessor(accessor, values.bufferView, values.byteOffset, accessor.sparse->count);
 			}
 		});
