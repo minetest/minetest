@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/thread.h"
 #include "imagefilters.h"
 #include "guiscalingfilter.h"
+#include "mipmap_generation.h"
 #include "renderingengine.h"
 #include "texturepaths.h"
 #include "imagesource.h"
@@ -179,6 +180,7 @@ private:
 
 	// Cached from settings for making textures from meshes
 	bool mesh_filter_needed;
+	bool m_setting_mip_map_sharp;
 };
 
 IWritableTextureSource *createTextureSource()
@@ -197,11 +199,13 @@ TextureSource::TextureSource()
 	// Cache some settings
 	// Note: Since this is only done once, the game must be restarted
 	// for these settings to take effect.
+	std::string setting_mip_map = g_settings->get("mip_map");
 	mesh_filter_needed =
-			g_settings->getBool("mip_map") ||
+			setting_mip_map != "off" ||
 			g_settings->getBool("trilinear_filter") ||
 			g_settings->getBool("bilinear_filter") ||
 			g_settings->getBool("anisotropic_filter");
+	m_setting_mip_map_sharp = setting_mip_map == "sharp";
 }
 
 TextureSource::~TextureSource()
@@ -303,6 +307,8 @@ u32 TextureSource::generateTexture(const std::string &name)
 
 	if (img) {
 		img = Align2Npot2(img, driver);
+		if (m_setting_mip_map_sharp)
+			generate_custom_mipmaps(*img);
 		// Create texture from resulting image
 		tex = driver->addTexture(name.c_str(), img);
 		guiScalingCache(io::path(name.c_str()), driver, img);
@@ -490,6 +496,8 @@ void TextureSource::rebuildTexture(video::IVideoDriver *driver, TextureInfo &ti)
 	// Create texture from resulting image
 	video::ITexture *t = nullptr;
 	if (img) {
+		if (m_setting_mip_map_sharp)
+			generate_custom_mipmaps(*img);
 		t = driver->addTexture(ti.name.c_str(), img);
 		guiScalingCache(io::path(ti.name.c_str()), driver, img);
 		img->drop();
