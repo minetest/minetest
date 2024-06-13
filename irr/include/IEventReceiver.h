@@ -7,7 +7,6 @@
 #include "ILogger.h"
 #include "Keycodes.h"
 #include "irrString.h"
-#include <cstring>
 
 namespace irr
 {
@@ -298,12 +297,6 @@ enum EGUI_EVENT_TYPE
 //! SEvents hold information about an event. See irr::IEventReceiver for details on event handling.
 struct SEvent
 {
-	SEvent()
-	{
-		// TODO
-		memset(this, 0, sizeof(*this));
-	}
-
 	//! Any kind of GUI event.
 	struct SGUIEvent
 	{

@@ -788,6 +788,7 @@ bool CIrrDeviceMacOSX::run()
 
 		case NSLeftMouseDown:
 			ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+			ievent.MouseInput.Simulated = false;
 			ievent.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
 			MouseButtonStates |= irr::EMBSM_LEFT;
 			ievent.MouseInput.ButtonStates = MouseButtonStates;
@@ -796,6 +797,7 @@ bool CIrrDeviceMacOSX::run()
 
 		case NSLeftMouseUp:
 			ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+			ievent.MouseInput.Simulated = false;
 			MouseButtonStates &= !irr::EMBSM_LEFT;
 			ievent.MouseInput.ButtonStates = MouseButtonStates;
 			ievent.MouseInput.Event = irr::EMIE_LMOUSE_LEFT_UP;
@@ -804,6 +806,7 @@ bool CIrrDeviceMacOSX::run()
 
 		case NSOtherMouseDown:
 			ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+			ievent.MouseInput.Simulated = false;
 			ievent.MouseInput.Event = irr::EMIE_MMOUSE_PRESSED_DOWN;
 			MouseButtonStates |= irr::EMBSM_MIDDLE;
 			ievent.MouseInput.ButtonStates = MouseButtonStates;
@@ -812,6 +815,7 @@ bool CIrrDeviceMacOSX::run()
 
 		case NSOtherMouseUp:
 			ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+			ievent.MouseInput.Simulated = false;
 			MouseButtonStates &= !irr::EMBSM_MIDDLE;
 			ievent.MouseInput.ButtonStates = MouseButtonStates;
 			ievent.MouseInput.Event = irr::EMIE_MMOUSE_LEFT_UP;
@@ -823,6 +827,7 @@ bool CIrrDeviceMacOSX::run()
 		case NSRightMouseDragged:
 		case NSOtherMouseDragged:
 			ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+			ievent.MouseInput.Simulated = false;
 			ievent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
 			ievent.MouseInput.ButtonStates = MouseButtonStates;
 			postMouseEvent(event, ievent);
@@ -830,6 +835,7 @@ bool CIrrDeviceMacOSX::run()
 
 		case NSRightMouseDown:
 			ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+			ievent.MouseInput.Simulated = false;
 			ievent.MouseInput.Event = irr::EMIE_RMOUSE_PRESSED_DOWN;
 			MouseButtonStates |= irr::EMBSM_RIGHT;
 			ievent.MouseInput.ButtonStates = MouseButtonStates;
@@ -838,6 +844,7 @@ bool CIrrDeviceMacOSX::run()
 
 		case NSRightMouseUp:
 			ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+			ievent.MouseInput.Simulated = false;
 			ievent.MouseInput.Event = irr::EMIE_RMOUSE_LEFT_UP;
 			MouseButtonStates &= !irr::EMBSM_RIGHT;
 			ievent.MouseInput.ButtonStates = MouseButtonStates;
@@ -846,6 +853,7 @@ bool CIrrDeviceMacOSX::run()
 
 		case NSScrollWheel:
 			ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+			ievent.MouseInput.Simulated = false;
 			ievent.MouseInput.Event = irr::EMIE_MOUSE_WHEEL;
 			ievent.MouseInput.Wheel = [(NSEvent *)event deltaY];
 			if (ievent.MouseInput.Wheel < 1.0f)
@@ -1046,6 +1054,7 @@ void CIrrDeviceMacOSX::storeMouseLocation()
 		if (curr.X != x || curr.Y != y) {
 			irr::SEvent ievent;
 			ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+			ievent.MouseInput.Simulated = false;
 			ievent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
 			ievent.MouseInput.X = x;
 			ievent.MouseInput.Y = y;
