@@ -474,7 +474,7 @@ class MinetestEnv(gym.Env):
         except capnp.lib.capnp.KjException as e:
             raise RuntimeError(
                 f"minetest capnp error: {e}",
-            ).with_traceback(sys.exception().__traceback__) from None
+            ).with_traceback(e.__traceback__) from None
 
     def reset(
         self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None
