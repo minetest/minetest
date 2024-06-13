@@ -461,11 +461,16 @@ class MinetestEnv(gym.Env):
             f"Failed to get a valid observation after {valid_obs_max_attempts} attempts"
         )
 
-    def _run_on_event_loop(self, coro):
+    def _run_on_event_loop(self, coro, timeout=10):
         # catch KjException and raise as a different type since cannot be pickled,
         # which leads to horribly misleading error messages when using AsyncVectorEnv
         try:
-            return self._event_loop.run_until_complete(coro)
+            return self._event_loop.run_until_complete(
+                asyncio.wait_for(coro, timeout=timeout)
+            )
+        except asyncio.TimeoutError:
+            self.close()
+            raise
         except capnp.lib.capnp.KjException as e:
             raise RuntimeError(
                 f"minetest capnp error: {e}",

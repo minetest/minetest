@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 import shutil
@@ -13,6 +14,11 @@ from PIL import Image
 
 from minetest import minetest_env
 from minetest.minetest_env import INVERSE_KEY_MAP
+
+
+@pytest.fixture
+def artifact_dir():
+    return tempfile.mkdtemp()
 
 
 @pytest.fixture
@@ -63,17 +69,8 @@ def server_addr():
     return None
 
 
-def contains_key(config_path: os.PathLike, key: str):
-    with open(config_path) as f:
-        for line in f:
-            if line.startswith(key):
-                return True
-    return False
-
-
-def test_double_reset(world_dir, minetest_executable, server_addr, caplog):
-    caplog.set_level(logging.DEBUG)
-    artifact_dir = tempfile.mkdtemp()
+@pytest.fixture
+def env(artifact_dir, world_dir, minetest_executable, server_addr):
     display_size = (223, 111)
     env = gym.make(
         "minetest-v0",
@@ -89,18 +86,32 @@ def test_double_reset(world_dir, minetest_executable, server_addr, caplog):
             "return": gym.spaces.Box(low=-(2**20), high=2**20, shape=(1,))
         },
     )
+    yield env
+    env.close()
+
+
+def contains_key(config_path: os.PathLike, key: str):
+    with open(config_path) as f:
+        for line in f:
+            if line.startswith(key):
+                return True
+    return False
+
+
+def test_double_reset(env, artifact_dir, caplog):
+    caplog.set_level(logging.DEBUG)
 
     # Context manager to make sure close() is called even if test fails.
-    with env:
-        initial_obs, info = env.reset()
-        initial_obs, info = env.reset()
+    initial_obs, info = env.reset()
+    initial_obs, info = env.reset()
 
     shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
 
 
-def test_minetest_basic(world_dir, minetest_executable, server_addr, caplog):
+def test_minetest_basic(
+    artifact_dir, world_dir, minetest_executable, server_addr, caplog
+):
     caplog.set_level(logging.DEBUG)
-    artifact_dir = tempfile.mkdtemp()
     display_size = (223, 111)
     env = gym.make(
         "minetest-v0",
@@ -163,12 +174,11 @@ def test_minetest_basic(world_dir, minetest_executable, server_addr, caplog):
     shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
 
 
-def test_minetest_game_dir(minetest_executable, server_addr, caplog):
+def test_minetest_game_dir(artifact_dir, minetest_executable, server_addr, caplog):
     caplog.set_level(logging.DEBUG)
     repo_root = Path(__file__).parent.parent.parent
     devetest_game_dir = repo_root / "games" / "devtest"
     assert devetest_game_dir.exists()
-    artifact_dir = tempfile.mkdtemp()
     env = gym.make(
         "minetest-v0",
         executable=minetest_executable,
@@ -197,9 +207,10 @@ def test_keymap_valid():
         assert key in minetest_env.remoteclient_capnp.KeyPressType.Key.schema.enumerants
 
 
-def test_async_vector_env(world_dir, minetest_executable, server_addr, caplog):
+def test_async_vector_env(
+    artifact_dir, world_dir, minetest_executable, server_addr, caplog
+):
     caplog.set_level(logging.DEBUG)
-    artifact_dir = tempfile.mkdtemp()
     num_envs = 2
     max_episode_steps = 3
     envs = [
@@ -245,3 +256,9 @@ def test_async_vector_env(world_dir, minetest_executable, server_addr, caplog):
                 assert not truncated.any()
 
         shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
+
+
+def test_run_on_event_loop_timeout(env):
+    env = env.unwrapped
+    with pytest.raises(asyncio.TimeoutError):
+        env._run_on_event_loop(asyncio.sleep(1), timeout=0.1)
