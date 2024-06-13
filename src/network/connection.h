@@ -19,13 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes.h"
 #include "peerhandler.h"
 #include "socket.h"
 #include "constants.h"
 #include "util/pointer.h"
 #include "util/container.h"
-#include "util/thread.h"
+#include "porting.h"
 #include "util/numeric.h"
 #include "networkprotocol.h"
 #include <iostream>
@@ -707,7 +706,7 @@ public:
 	/* Interface */
 	ConnectionEventPtr waitEvent(u32 timeout_ms);
 
-	void putCommand(ConnectionCommandPtr c);
+	void putCommand(const ConnectionCommandPtr& c);
 
 	void SetTimeoutMs(u32 timeout) { m_bc_receive_timeout = timeout; }
 	void Serve(Address bind_addr);
@@ -725,6 +724,7 @@ public:
 	u32 GetProtocolID() const { return m_protocol_id; };
 	const std::string getDesc();
 	void DisconnectPeer(session_t peer_id);
+	u16 port() const;
 
 protected:
 	PeerHelper getPeerNoEx(session_t peer_id);
@@ -748,7 +748,7 @@ protected:
 	// Command queue: user -> SendThread
 	MutexedQueue<ConnectionCommandPtr> m_command_queue;
 
-	void putEvent(ConnectionEventPtr e);
+	void putEvent(const ConnectionEventPtr& e);
 
 	void TriggerSend();
 

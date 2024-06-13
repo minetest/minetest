@@ -396,6 +396,8 @@ public:
 	static u16 getProtocolVersionMin();
 	static u16 getProtocolVersionMax();
 
+	u16 port() const;
+
 	// Lua files registered for init of async env, pair of modname + path
 	std::vector<std::pair<std::string, std::string>> m_async_init_files;
 
@@ -571,6 +573,7 @@ private:
 	/*
 		Variables
 	*/
+	u16 m_port;
 	// World directory
 	std::string m_path_world;
 	// Subgame specification

@@ -17,21 +17,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <iomanip>
 #include <cerrno>
 #include <algorithm>
 #include <cmath>
 #include "connection.h"
-#include "serialization.h"
 #include "log.h"
 #include "porting.h"
 #include "network/connectionthreads.h"
 #include "network/networkpacket.h"
 #include "network/peerhandler.h"
 #include "util/serialize.h"
-#include "util/numeric.h"
 #include "util/string.h"
-#include "settings.h"
 #include "profiler.h"
 
 namespace con
@@ -1291,7 +1287,7 @@ Connection::~Connection()
 
 /* Internal stuff */
 
-void Connection::putEvent(ConnectionEventPtr e)
+void Connection::putEvent(const ConnectionEventPtr& e)
 {
 	assert(e->type != CONNEVENT_NONE); // Pre-condition
 	m_event_queue.push_back(e);
@@ -1378,7 +1374,7 @@ ConnectionEventPtr Connection::waitEvent(u32 timeout_ms)
 	}
 }
 
-void Connection::putCommand(ConnectionCommandPtr c)
+void Connection::putCommand(const ConnectionCommandPtr& c)
 {
 	if (!m_shutting_down) {
 		m_command_queue.push_back(c);
@@ -1388,7 +1384,8 @@ void Connection::putCommand(ConnectionCommandPtr c)
 
 void Connection::Serve(Address bind_addr)
 {
-	putCommand(ConnectionCommand::serve(bind_addr));
+	// This needs to be executed syncronously so callers can access the port number.
+	m_sendThread->serve(bind_addr);
 }
 
 void Connection::Connect(Address address)
@@ -1606,6 +1603,17 @@ const std::string Connection::getDesc()
 void Connection::DisconnectPeer(session_t peer_id)
 {
 	putCommand(ConnectionCommand::disconnect_peer(peer_id));
+}
+
+u16 Connection::port() const {
+	// Get the local address and port
+    sockaddr_in localAddr;
+    socklen_t addrLen = sizeof(localAddr);
+    if (getsockname(m_udpSocket.GetHandle(), (struct sockaddr*)&localAddr, &addrLen) < 0) {
+        std::cerr << "Error getting socket name" << std::endl;
+        return 0;
+    }
+	return ntohs(localAddr.sin_port);
 }
 
 void Connection::sendAck(session_t peer_id, u8 channelnum, u16 seqnum)

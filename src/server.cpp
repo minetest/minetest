@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/mutex_auto_lock.h"
 #include "constants.h"
 #include "voxel.h"
-#include "config.h"
 #include "version.h"
 #include "filesys.h"
 #include "mapblock.h"
@@ -45,7 +44,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "mapgen/mapgen.h"
 #include "mapgen/mg_biome.h"
-#include "content_mapnode.h"
 #include "content_nodemeta.h"
 #include "content/mods.h"
 #include "modchannels.h"
@@ -544,6 +542,7 @@ void Server::start()
 	// Initialize connection
 	m_con->SetTimeoutMs(30);
 	m_con->Serve(m_bind_addr);
+	m_port = m_con->port();
 
 	// Start thread
 	m_thread->start();
@@ -1264,7 +1263,7 @@ void Server::peerAdded(con::Peer *peer)
 	verbosestream<<"Server::peerAdded(): peer->id="
 			<<peer->id<<std::endl;
 
-	m_peer_change_queue.push(con::PeerChange(con::PEER_ADDED, peer->id, false));
+	m_peer_change_queue.emplace(con::PEER_ADDED, peer->id, false);
 }
 
 void Server::deletingPeer(con::Peer *peer, bool timeout)
@@ -1273,7 +1272,7 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 			<<peer->id<<", timeout="<<timeout<<std::endl;
 
 	m_clients.event(peer->id, CSE_Disconnect);
-	m_peer_change_queue.push(con::PeerChange(con::PEER_REMOVED, peer->id, timeout));
+	m_peer_change_queue.emplace(con::PEER_REMOVED, peer->id, timeout);
 }
 
 bool Server::getClientConInfo(session_t peer_id, con::rtt_stat_type type, float* retval)
@@ -3695,7 +3694,7 @@ bool Server::rollbackRevertActions(const std::list<RollbackAction> &actions,
 	// Fail if no actions to handle
 	if (actions.empty()) {
 		assert(log);
-		log->push_back("Nothing to do.");
+		log->emplace_back("Nothing to do.");
 		return false;
 	}
 
@@ -4210,4 +4209,8 @@ u16 Server::getProtocolVersionMax()
 	return g_settings->getBool("strict_protocol_version_checking")
 		? LATEST_PROTOCOL_VERSION
 		: SERVER_PROTOCOL_VERSION_MAX;
+}
+
+u16 Server::port() const {
+	return m_port;
 }
