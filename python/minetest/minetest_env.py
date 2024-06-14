@@ -405,6 +405,10 @@ class MinetestEnv(gym.Env):
         num = int(ext.split(".")[0])
         self.socket_addr = f"{addr}_{num+1}.sock"
 
+    def _poll_minetest_process(self):
+        # a function so we can override it in the unit test
+        return self.minetest_process.poll()
+
     async def _async_reset(
         self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None
     ):
@@ -431,7 +435,9 @@ class MinetestEnv(gym.Env):
             if not attempt:
                 time.sleep(1)
                 # Check for crash triggered by first action
-                if self.minetest_process and (self.minetest_process.poll() is not None):
+                if self.minetest_process and (
+                    self._poll_minetest_process() is not None
+                ):
                     raise RuntimeError(
                         "Minetest terminated during handshake! Return code: "
                         f"{self.minetest_process.returncode}, logs in {self.log_dir}",
@@ -449,8 +455,9 @@ class MinetestEnv(gym.Env):
                 continue
             valid_obs_seen += 1
             if valid_obs_seen >= min_num_valid_obs:
-                self._logger.debug(f"Received first obs: {obs['image'].shape}")
-                self._logger.debug("Disabling HUD")
+                self._logger.debug(
+                    f"Received first obs: {obs['image'].shape}, Disabling HUD"
+                )
                 obs, _, _, _, _ = await self._async_step(
                     _TOGGLE_HUD_ACTION,
                     _key_map={_TOGGLE_HUD_KEY: "toggleHud"},
@@ -462,15 +469,20 @@ class MinetestEnv(gym.Env):
         )
 
     def _run_on_event_loop(self, coro, timeout=10):
+        try:
+            try:
+                return self._event_loop.run_until_complete(
+                    asyncio.wait_for(coro, timeout=timeout)
+                )
+            except:
+                # Ensure we close. If clients don't do it, bad stuff happens:
+                # - minetest process leaks
+                # - the kj loop  stays associated with this thread, making
+                #   it impossible to create another MinetestEnv in this thread
+                self.close()
+                raise
         # catch KjException and raise as a different type since cannot be pickled,
         # which leads to horribly misleading error messages when using AsyncVectorEnv
-        try:
-            return self._event_loop.run_until_complete(
-                asyncio.wait_for(coro, timeout=timeout)
-            )
-        except asyncio.TimeoutError:
-            self.close()
-            raise
         except capnp.lib.capnp.KjException as e:
             raise RuntimeError(
                 f"minetest capnp error: {e}",

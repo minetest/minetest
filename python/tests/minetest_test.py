@@ -5,6 +5,7 @@ import shutil
 import socket
 import sys
 import tempfile
+import unittest.mock
 from pathlib import Path
 
 import gymnasium as gym
@@ -77,10 +78,8 @@ def env(artifact_dir, world_dir, minetest_executable, server_addr):
         executable=minetest_executable,
         artifact_dir=artifact_dir,
         server_addr=server_addr,
-        render_mode="rgb_array",
         display_size=display_size,
         world_dir=world_dir,
-        headless=True,
         verbose_logging=True,
         additional_observation_spaces={
             "return": gym.spaces.Box(low=-(2**20), high=2**20, shape=(1,))
@@ -96,6 +95,35 @@ def contains_key(config_path: os.PathLike, key: str):
             if line.startswith(key):
                 return True
     return False
+
+
+def test_new_env_after_exception(
+    artifact_dir, world_dir, minetest_executable, server_addr, caplog
+):
+    caplog.set_level(logging.DEBUG)
+
+    def make_env():
+        return gym.make(
+            "minetest-v0",
+            executable=minetest_executable,
+            artifact_dir=artifact_dir,
+            server_addr=server_addr,
+            world_dir=world_dir,
+            verbose_logging=True,
+            additional_observation_spaces={
+                "return": gym.spaces.Box(low=-(2**20), high=2**20, shape=(1,))
+            },
+        )
+
+    env = make_env()
+    with unittest.mock.patch.object(
+        env.unwrapped, "_poll_minetest_process", return_value=1
+    ), pytest.raises(RuntimeError):
+        initial_obs, info = env.reset()
+    with make_env() as env:
+        initial_obs, info = env.reset()
+
+    shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
 
 
 def test_double_reset(env, artifact_dir, caplog):
@@ -118,10 +146,8 @@ def test_minetest_basic(
         executable=minetest_executable,
         artifact_dir=artifact_dir,
         server_addr=server_addr,
-        render_mode="rgb_array",
         display_size=display_size,
         world_dir=world_dir,
-        headless=True,
         verbose_logging=True,
         additional_observation_spaces={
             "return": gym.spaces.Box(low=-(2**20), high=2**20, shape=(1,))
@@ -184,10 +210,8 @@ def test_minetest_game_dir(artifact_dir, minetest_executable, server_addr, caplo
         executable=minetest_executable,
         artifact_dir=artifact_dir,
         server_addr=server_addr,
-        render_mode="rgb_array",
         world_dir=None,
         game_dir=devetest_game_dir,
-        headless=True,
         verbose_logging=True,
         additional_observation_spaces={
             "return": gym.spaces.Box(low=-(2**20), high=2**20, shape=(1,))
@@ -220,9 +244,7 @@ def test_async_vector_env(
             executable=minetest_executable,
             artifact_dir=artifact_dir,
             server_addr=server_addr,
-            render_mode="rgb_array",
             world_dir=world_dir,
-            headless=True,
             verbose_logging=True,
             additional_observation_spaces={
                 "return": gym.spaces.Box(low=-(2**20), high=2**20, shape=(1,))
