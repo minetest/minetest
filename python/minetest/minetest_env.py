@@ -1,9 +1,12 @@
 import asyncio
 import contextlib
+import ctypes
+import ctypes.util
 import datetime
 import logging
 import os
 import shutil
+import signal
 import socket
 import subprocess
 import sys
@@ -63,6 +66,22 @@ _TOGGLE_HUD_ACTION = {
     "mouse": [0, 0],
 }
 _TOGGLE_HUD_ACTION["keys"][_TOGGLE_HUD_KEY] = True
+
+
+def _set_process_death_signal():
+    """When the parent thread exits, kill the child process.
+
+    Only works on Linux.
+    """
+    libc_path = ctypes.util.find_library("c")
+    if not libc_path:
+        return
+    libc = ctypes.CDLL(libc_path, use_errno=True)
+    if not hasattr(libc, "prctl"):
+        return
+    # https://github.com/torvalds/linux/blob/0cac73eb3875f6ecb6105e533218dba1868d04c9/include/uapi/linux/prctl.h#L9
+    PR_SET_PDEATHSIG = 1
+    libc.prctl(PR_SET_PDEATHSIG, signal.SIGKILL)
 
 
 class MinetestEnv(gym.Env):
@@ -615,7 +634,11 @@ class MinetestEnv(gym.Env):
             )
             out.write(f"minetest environment: {process_env}\n")
             minetest_process = subprocess.Popen(
-                cmd, stdout=out, stderr=err, env=process_env
+                cmd,
+                stdout=out,
+                stderr=err,
+                env=process_env,
+                preexec_fn=_set_process_death_signal,
             )
             out.write(f"minetest started with pid {minetest_process.pid}\n")
         self._logger.debug(f"minetest started with pid {minetest_process.pid}")
