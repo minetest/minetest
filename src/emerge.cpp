@@ -662,6 +662,8 @@ void *EmergeThread::run()
 		EmergeAction action;
 		MapBlock *block = nullptr;
 
+		porting::TriggerMemoryTrim();
+
 		if (!popBlockEmerge(&pos, &bedata)) {
 			m_queue_event.wait();
 			continue;
