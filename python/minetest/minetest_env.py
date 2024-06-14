@@ -173,6 +173,7 @@ class MinetestEnv(gym.Env):
 
         self.capnp_client = None
         self.minetest_process: Optional[subprocess.Popen] = None
+        self._minetest_stderr_path: Optional[os.PathLike] = None
 
         # Env objects
         self.last_obs = None
@@ -303,7 +304,7 @@ class MinetestEnv(gym.Env):
             self.minetest_process.communicate(timeout=15)
 
         self._write_config()
-        self.minetest_process = self._start_minetest_client(
+        self.minetest_process = self._start_minetest(
             log_path,
         )
 
@@ -409,6 +410,18 @@ class MinetestEnv(gym.Env):
         # a function so we can override it in the unit test
         return self.minetest_process.poll()
 
+    def _log_minetest_stderr_tail(self):
+        # log the last 2k bytes of stderr
+        if not self._minetest_stderr_path:
+            return
+        with open(self._minetest_stderr_path) as f:
+            f.seek(0, os.SEEK_END)
+            end = f.tell()
+            f.seek(max(0, end - 2048), os.SEEK_SET)
+            self._logger.error("Minetest stderr tail:")
+            for line in f:
+                self._logger.error(line.strip())
+
     async def _async_reset(
         self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None
     ):
@@ -438,6 +451,7 @@ class MinetestEnv(gym.Env):
                 if self.minetest_process and (
                     self._poll_minetest_process() is not None
                 ):
+                    self._log_minetest_stderr_tail()
                     raise RuntimeError(
                         "Minetest terminated during handshake! Return code: "
                         f"{self.minetest_process.returncode}, logs in {self.log_dir}",
@@ -479,7 +493,8 @@ class MinetestEnv(gym.Env):
                 # - minetest process leaks
                 # - the kj loop  stays associated with this thread, making
                 #   it impossible to create another MinetestEnv in this thread
-                self.close()
+                if coro.__qualname__ != "MinetestEnv._async_close":
+                    self._event_loop.run_until_complete(self._async_close())
                 raise
         # catch KjException and raise as a different type since cannot be pickled,
         # which leads to horribly misleading error messages when using AsyncVectorEnv
@@ -510,7 +525,7 @@ class MinetestEnv(gym.Env):
         serialize_action(action, step_request.action, key_map=_key_map)
         step_response = step_request.send()
 
-        # TODO more robust check for whether a server/client is alive while receiving observations
+        # TODO more robust check for whether minetest is alive while receiving observations
         if self.minetest_process and self.minetest_process.poll() is not None:
             return self.last_obs, 0.0, True, False, {}
 
@@ -559,7 +574,7 @@ class MinetestEnv(gym.Env):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def _start_minetest_client(
+    def _start_minetest(
         self,
         log_path: str,
     ):
@@ -579,29 +594,31 @@ class MinetestEnv(gym.Env):
         if self.world_dir is not None:
             cmd.extend(["--world", self.world_dir])
 
-        client_env = os.environ.copy()
+        process_env = os.environ.copy()
         # Avoids error in logs about missing XDG_RUNTIME_DIR
-        client_env["XDG_RUNTIME_DIR"] = self.artifact_dir
+        process_env["XDG_RUNTIME_DIR"] = self.artifact_dir
         # disable vsync
-        client_env["__GL_SYNC_TO_VBLANK"] = "0"
-        client_env["vblank_mode"] = "0"
+        process_env["__GL_SYNC_TO_VBLANK"] = "0"
+        process_env["vblank_mode"] = "0"
 
         if self.headless:
             # https://github.com/carla-simulator/carla/issues/225
-            client_env["SDL_VIDEODRIVER"] = "offscreen"
+            process_env["SDL_VIDEODRIVER"] = "offscreen"
 
-        stdout_file = log_path.format("client_stdout")
-        stderr_file = log_path.format("client_stderr")
-        with open(stdout_file, "w") as out, open(stderr_file, "w") as err:
+        stdout_file = log_path.format("minetest_stdout")
+        self._minetest_stderr_path = log_path.format("minetest_stderr")
+        with open(stdout_file, "w") as out, open(
+            self._minetest_stderr_path, "w"
+        ) as err:
             out.write(
-                f"Starting client with command: {' '.join(str(x) for x in cmd)}\n"
+                f"Starting minetest with command: {' '.join(str(x) for x in cmd)}\n"
             )
-            out.write(f"Client environment: {client_env}\n")
+            out.write(f"minetest environment: {process_env}\n")
             minetest_process = subprocess.Popen(
-                cmd, stdout=out, stderr=err, env=client_env
+                cmd, stdout=out, stderr=err, env=process_env
             )
-            out.write(f"Client started with pid {minetest_process.pid}\n")
-        self._logger.debug(f"Client started with pid {minetest_process.pid}")
+            out.write(f"minetest started with pid {minetest_process.pid}\n")
+        self._logger.debug(f"minetest started with pid {minetest_process.pid}")
         return minetest_process
 
 
