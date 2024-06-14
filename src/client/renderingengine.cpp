@@ -489,11 +489,14 @@ void RenderingEngine::autosaveScreensizeAndCo(
 	// we do not want to save the thing. This allows users to also manually change
 	// the settings.
 
+	// Don't save the fullscreen size, we want the windowed size.
+	bool fullscreen = RenderingEngine::get_raw_device()->isFullscreen();
 	// Screen size
 	const irr::core::dimension2d<u32> current_screen_size =
 		RenderingEngine::get_video_driver()->getScreenSize();
 	// Don't replace good value with (0, 0)
-	if (current_screen_size != irr::core::dimension2d<u32>(0, 0) &&
+	if (!fullscreen &&
+			current_screen_size != irr::core::dimension2d<u32>(0, 0) &&
 			current_screen_size != initial_screen_size) {
 		g_settings->setU16("screen_w", current_screen_size.Width);
 		g_settings->setU16("screen_h", current_screen_size.Height);
