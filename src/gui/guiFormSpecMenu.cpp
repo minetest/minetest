@@ -4186,7 +4186,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 		// Allows the user to disable debug mode regardless of privilege
 		if ((event.KeyInput.PressedDown && kp == getKeySetting("keymap_toggle_debug")) &&
-				(m_show_debug || (m_client != NULL && m_client->checkPrivilege("debug")))) {
+				(m_client != NULL && m_client->checkPrivilege("debug"))) {
 			m_show_debug = !m_show_debug;
 		}
 

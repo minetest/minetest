@@ -1914,6 +1914,10 @@ void Game::updateDebugState()
 	if (!has_debug) {
 		draw_control->show_wireframe = false;
 		m_flags.disable_camera_update = false;
+		auto formspec = m_game_ui->getFormspecGUI();
+		if (formspec) {
+			formspec->setDebugView(false);
+		}
 	}
 
 	// noclip
