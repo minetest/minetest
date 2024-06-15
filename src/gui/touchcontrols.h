@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "itemdef.h"
 #include "client/game.h"
+#include "util/basic_macros.h"
 
 using namespace irr;
 using namespace irr::core;
@@ -183,10 +184,12 @@ private:
 	void updateVisibility();
 };
 
-class TouchScreenGUI
+class TouchControls
 {
 public:
-	TouchScreenGUI(IrrlichtDevice *device, ISimpleTextureSource *tsrc);
+	TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc);
+	~TouchControls();
+	DISABLE_CLASS_COPY(TouchControls);
 
 	void translateEvent(const SEvent &event);
 	void applyContextControls(const TouchInteractionMode &mode);
@@ -220,7 +223,6 @@ public:
 	void step(float dtime);
 	inline void setUseCrosshair(bool use_crosshair) { m_draw_crosshair = use_crosshair; }
 
-	void setVisible(bool visible);
 	void hide();
 	void show();
 
@@ -237,7 +239,8 @@ private:
 	s32 m_button_size;
 	double m_touchscreen_threshold;
 	u16 m_long_tap_delay;
-	bool m_visible = true; // is the whole touch screen gui visible
+	bool m_visible = true;
+	void setVisible(bool visible);
 
 	std::unordered_map<u16, recti> m_hotbar_rects;
 	std::optional<u16> m_hotbar_selection = std::nullopt;
@@ -295,6 +298,9 @@ private:
 	// apply joystick status
 	void applyJoystickStatus();
 
+	// release all buttons etc.
+	void releaseAll();
+
 	// map to store the IDs and original positions of currently pressed pointers
 	std::unordered_map<size_t, v2s32> m_pointer_downpos;
 	// map to store the IDs and positions of currently pressed pointers
@@ -314,4 +320,4 @@ private:
 	u64 m_place_pressed_until = 0;
 };
 
-extern TouchScreenGUI *g_touchscreengui;
+extern TouchControls *g_touchcontrols;

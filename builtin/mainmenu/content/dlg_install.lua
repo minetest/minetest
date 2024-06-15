@@ -66,7 +66,7 @@ local function get_formspec(data)
 		message_bg = mt_color_orange
 	end
 
-	local ENABLE_TOUCH = core.settings:get_bool("enable_touch")
+	local ENABLE_TOUCH = core.settings:get_bool("touch_gui")
 
 	local w = ENABLE_TOUCH and 14 or 7
 	local padded_w = w - 2*0.375

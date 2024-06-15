@@ -61,7 +61,7 @@
 #
 #    # This is a comment
 #    #
-#    # Requires: shaders, enable_dynamic_shadows, !touchscreen_gui
+#    # Requires: shaders, enable_dynamic_shadows, !enable_waving_leaves
 #    name (Readable name) type type_args
 #
 # A requirement can be the name of a boolean setting or an engine-defined value.
@@ -72,7 +72,7 @@
 #     * shaders_support (a video driver that supports shaders, may not be enabled)
 #     * shaders (both enable_shaders and shaders_support)
 #     * desktop / android
-#     * touchscreen_gui / keyboard_mouse
+#     * touchscreen / keyboard_mouse
 #     * opengl / gles
 # * You can negate any requirement by prepending with !
 #
@@ -152,40 +152,42 @@ invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
 
 [*Touchscreen]
 
-#    Enables touchscreen mode, allowing you to play the game with a touchscreen.
-enable_touch (Enable touchscreen) bool true
+#    Enables the touchscreen controls, allowing you to play the game with a touchscreen.
+#    "auto" means that the touchscreen controls will be enabled and disabled
+#    automatically depending on the last used input method.
+touch_controls (Enable touchscreen controls) enum auto auto,true,false
 
 #    Touchscreen sensitivity multiplier.
 #
-#    Requires: touchscreen_gui
+#    Requires: touchscreen
 touchscreen_sensitivity (Touchscreen sensitivity) float 0.2 0.001 10.0
 
 #    The length in pixels after which a touch interaction is considered movement.
 #
-#    Requires: touchscreen_gui
+#    Requires: touchscreen
 touchscreen_threshold (Movement threshold) int 20 0 100
 
 #    The delay in milliseconds after which a touch interaction is considered a long tap.
 #
-#    Requires: touchscreen_gui
+#    Requires: touchscreen
 touch_long_tap_delay (Threshold for long taps) int 400 100 1000
 
 #    Use crosshair to select object instead of whole screen.
 #    If enabled, a crosshair will be shown and will be used for selecting object.
 #
-#    Requires: touchscreen_gui
+#    Requires: touchscreen
 touch_use_crosshair (Use crosshair for touch screen) bool false
 
 #    Fixes the position of virtual joystick.
 #    If disabled, virtual joystick will center to first-touch's position.
 #
-#    Requires: touchscreen_gui
+#    Requires: touchscreen
 fixed_virtual_joystick (Fixed virtual joystick) bool false
 
 #    Use virtual joystick to trigger "Aux1" button.
 #    If enabled, virtual joystick will also tap "Aux1" button when out of main circle.
 #
-#    Requires: touchscreen_gui
+#    Requires: touchscreen
 virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool false
 
 #    The gesture for for punching players/entities.
@@ -198,7 +200,7 @@ virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool fals
 #      Known from the classic Minetest mobile controls.
 #      Combat is more or less impossible.
 #
-#    Requires: touchscreen_gui
+#    Requires: touchscreen
 touch_punch_gesture (Punch gesture) enum short_tap short_tap,long_tap
 
 
@@ -684,6 +686,10 @@ mute_sound (Mute sound) bool false
 language (Language) enum   ,be,bg,ca,cs,da,de,el,en,eo,es,et,eu,fi,fr,gd,gl,hu,id,it,ja,jbo,kk,ko,lt,lv,ms,nb,nl,nn,pl,pt,pt_BR,ro,ru,sk,sl,sr_Cyrl,sr_Latn,sv,sw,tr,uk,vi,zh_CN,zh_TW
 
 [**GUI]
+
+#    When enabled, the GUI is optimized to be more usable on touchscreens.
+#    Whether this is enabled by default depends on your hardware form-factor.
+touch_gui (Optimize GUI for touchscreens) bool false
 
 #    Scale GUI by a user specified value.
 #    Use a nearest-neighbor-anti-alias filter to scale the GUI.

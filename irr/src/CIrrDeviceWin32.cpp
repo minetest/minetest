@@ -563,6 +563,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 
 		event.EventType = irr::EET_MOUSE_INPUT_EVENT;
+		event.MouseInput.Simulated = false;
 		event.MouseInput.Event = (irr::EMOUSE_INPUT_EVENT)m->irrMessage;
 		event.MouseInput.X = (short)LOWORD(lParam);
 		event.MouseInput.Y = (short)HIWORD(lParam);
