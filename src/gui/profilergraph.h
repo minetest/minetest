@@ -30,11 +30,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ProfilerGraph
 {
 private:
+	// One-frame slice of graph values.
 	struct Piece
 	{
 		Piece(Profiler::GraphValues v) : values(std::move(v)) {}
 		Profiler::GraphValues values;
 	};
+	// Data for drawing a one graph. Updates every frame.
 	struct Meta
 	{
 		float min;
@@ -54,6 +56,8 @@ public:
 
 	ProfilerGraph() = default;
 
+	// Adds graph values to the end of graph (rendered at right side) and
+	// removes the oldest ones (beyond the `m_log_max_size`).
 	void put(const Profiler::GraphValues &values);
 
 	void draw(s32 x_left, s32 y_bottom, video::IVideoDriver *driver,
