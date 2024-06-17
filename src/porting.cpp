@@ -920,22 +920,29 @@ double perf_freq = get_perf_freq();
  *
  * As a workaround we track freed memory coarsely and call malloc_trim() once a
  * certain amount is reached.
+ *
+ * Because trimming can take more than 10ms and would cause jitter if done
+ * uncontrolled we have a separate function, which is called from background threads.
  */
 
 static std::atomic<size_t> memory_freed;
 
-constexpr size_t MEMORY_TRIM_THRESHOLD = 128 * 1024 * 1024;
+constexpr size_t MEMORY_TRIM_THRESHOLD = 256 * 1024 * 1024;
 
 void TrackFreedMemory(size_t amount)
 {
+	memory_freed.fetch_add(amount, std::memory_order_relaxed);
+}
+
+void TriggerMemoryTrim()
+{
 	constexpr auto MO = std::memory_order_relaxed;
-	memory_freed.fetch_add(amount, MO);
 	if (memory_freed.load(MO) >= MEMORY_TRIM_THRESHOLD) {
 		// Synchronize call
 		if (memory_freed.exchange(0, MO) < MEMORY_TRIM_THRESHOLD)
 			return;
 		// Leave some headroom for future allocations
-		malloc_trim(1 * 1024 * 1024);
+		malloc_trim(8 * 1024 * 1024);
 	}
 }
 
