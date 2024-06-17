@@ -223,6 +223,11 @@ public:
 		m_allowclose = value;
 	}
 
+	void setDebugView(bool value)
+	{
+		m_show_debug = value;
+	}
+
 	void lockSize(bool lock,v2u32 basescreensize=v2u32(0,0))
 	{
 		m_lock = lock;
