@@ -208,9 +208,78 @@ minetest.register_chatcommand("zoomfov", {
 	end,
 })
 
+local hud_inventory_defs = {
+	{
+		type = "inventory",
+		position = {x=0.2, y=0.5},
+		direction = 0,
+		text = "main",
+		number = 4,
+		item = 2,
+	},
+	{
+		type = "inventory",
+		position = {x=0.2, y=0.5},
+		direction = 2,
+		text = "main",
+		number = 4,
+		item = 2,
+	},
+	{
+		type = "inventory",
+		position = {x=0.7, y=0.5},
+		direction = 1,
+		text = "main",
+		number = 4,
+		item = 2,
+	},
+	{
+		type = "inventory",
+		position = {x=0.7, y=0.5},
+		direction = 3,
+		text = "main",
+		number = 4,
+		item = 2,
+	},
+}
+
+local player_hud_inventories= {}
+minetest.register_chatcommand("hudinventories", {
+	description = "Shows some test Lua HUD elements of type inventory. (add: Adds elements (default). remove: Removes elements)",
+	params = "[ add | remove ]",
+	func = function(name, params)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "No player."
+		end
+
+		local id_table = player_hud_inventories[name]
+		if not id_table then
+			id_table = {}
+			player_hud_inventories[name] = id_table
+		end
+
+		if params == "remove" then
+			for _, id in ipairs(id_table) do
+				player:hud_remove(id)
+			end
+			return true, "HUD Inventories removed."
+		end
+
+		-- params == "add" or default
+		for _, def in ipairs(hud_inventory_defs) do
+			table.insert(id_table, player:hud_add(def))
+		end
+		return true, #hud_inventory_defs .." HUD Inventories added."
+	end
+})
+
+
 minetest.register_on_leaveplayer(function(player)
-	player_font_huds[player:get_player_name()] = nil
-	player_waypoints[player:get_player_name()] = nil
+	local playername = player:get_player_name()
+	player_font_huds[playername] = nil
+	player_waypoints[playername] = nil
+	player_hud_inventories[playername] = nil
 end)
 
 minetest.register_chatcommand("hudprint", {
