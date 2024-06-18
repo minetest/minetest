@@ -197,7 +197,8 @@ enum class ParticleTextureFlags : u8 {
  * decltype everywhere */
 using FlagT = std::underlying_type_t<ParticleTextureFlags>;
 
-void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver, bool newPropertiesOnly) const
+void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver,
+		bool newPropertiesOnly, bool skipAnimation) const
 {
 	/* newPropertiesOnly is used to de/serialize parameters of the legacy texture
 	 * field, which are encoded separately from the texspec string */
@@ -213,14 +214,19 @@ void ServerParticleTexture::serialize(std::ostream &os, u16 protocol_ver, bool n
 	if (!newPropertiesOnly)
 		os << serializeString32(string);
 
-	if (animated)
+	if (!skipAnimation && animated)
 		animation.serialize(os, protocol_ver);
 }
 
-void ServerParticleTexture::deSerialize(std::istream &is, u16 protocol_ver, bool newPropertiesOnly)
+void ServerParticleTexture::deSerialize(std::istream &is, u16 protocol_ver,
+		bool newPropertiesOnly, bool skipAnimation)
 {
 	FlagT flags = 0;
 	deSerializeParameterValue(is, flags);
+	// new texture properties were missing in ParticleParameters::serialize
+	// before Minetest 5.9.0
+	if (is.eof())
+		return;
 
 	animated = !!(flags & FlagT(ParticleTextureFlags::animated));
 	blendmode = BlendMode((flags & FlagT(ParticleTextureFlags::blend)) >> 1);
@@ -230,7 +236,7 @@ void ServerParticleTexture::deSerialize(std::istream &is, u16 protocol_ver, bool
 	if (!newPropertiesOnly)
 		string = deSerializeString32(is);
 
-	if (animated)
+	if (!skipAnimation && animated)
 		animation.deSerialize(is, protocol_ver);
 }
 
@@ -254,6 +260,7 @@ void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 	writeV3F32(os, drag);
 	jitter.serialize(os);
 	bounce.serialize(os);
+	texture.serialize(os, protocol_ver, true, true);
 }
 
 template <typename T, T (reader)(std::istream& is)>
@@ -291,4 +298,5 @@ void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
 		return;
 	jitter.deSerialize(is);
 	bounce.deSerialize(is);
+	texture.deSerialize(is, protocol_ver, true, true);
 }
