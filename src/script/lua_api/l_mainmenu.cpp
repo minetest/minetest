@@ -352,6 +352,8 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_content_info(lua_State *L)
 {
+	using namespace content;
+	
 	std::string path = luaL_checkstring(L, 1);
 
 	ContentSpec spec;

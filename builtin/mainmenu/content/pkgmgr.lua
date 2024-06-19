@@ -101,7 +101,6 @@ local function load_texture_packs(txtpath, retval)
 end
 
 --modmanager implementation
-pkgmgr = {}
 
 --- Scans a directory recursively for mods and adds them to `listing`
 -- @param path         Absolute directory path to scan recursively
@@ -215,41 +214,6 @@ function pkgmgr.get_all()
 	end
 
 	return result
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.get_folder_type(path)
-	local testfile = io.open(path .. DIR_DELIM .. "init.lua","r")
-	if testfile ~= nil then
-		testfile:close()
-		return { type = "mod", path = path }
-	end
-
-	testfile = io.open(path .. DIR_DELIM .. "modpack.conf","r")
-	if testfile ~= nil then
-		testfile:close()
-		return { type = "modpack", path = path }
-	end
-
-	testfile = io.open(path .. DIR_DELIM .. "modpack.txt","r")
-	if testfile ~= nil then
-		testfile:close()
-		return { type = "modpack", path = path }
-	end
-
-	testfile = io.open(path .. DIR_DELIM .. "game.conf","r")
-	if testfile ~= nil then
-		testfile:close()
-		return { type = "game", path = path }
-	end
-
-	testfile = io.open(path .. DIR_DELIM .. "texture_pack.conf","r")
-	if testfile ~= nil then
-		testfile:close()
-		return { type = "txp", path = path }
-	end
-
-	return nil
 end
 
 -------------------------------------------------------------------------------

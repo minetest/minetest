@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2018 rubenwardy <rw@rubenwardy.com>
+Copyright (C) 2024 Hyland B. (swagtoy) <me@swag.toys>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -18,47 +18,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #pragma once
-#include "config.h"
-#include "convert_json.h"
-#include "irrlichttypes.h"
 
+#include "l_base.h"
 
-
-namespace content {
-
-enum class ContentType
+class ModApiPkgMgr : public ModApiBase
 {
-	UNKNOWN,
-	MOD,
-	MODPACK,
-	GAME,
-	TXP
+private:
+	static int l_get_folder_type(lua_State *L);
+public:
+	static void Initialize(lua_State *L);
+	static void InitializeAsync(lua_State *L, int top);
 };
-
-
-
-struct ContentSpec
-{
-	std::string type;
-	std::string author;
-	u32 release = 0;
-
-	/// Technical name / Id
-	std::string name;
-
-	/// Human-readable title
-	std::string title;
-
-	/// Short description
-	std::string desc;
-	std::string path;
-	std::string textdomain;
-};
-
-std::string contentTypeToString(ContentType &t);
-
-
-ContentType getContentType(const std::string &path);
-void parseContentInfo(ContentSpec &spec);
-
-} // namespace content

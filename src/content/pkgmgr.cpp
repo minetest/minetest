@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2018 rubenwardy <rw@rubenwardy.com>
+Copyright (C) 2024 Hyland B. (swagtoy) <me@swag.toys>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,48 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#pragma once
-#include "config.h"
-#include "convert_json.h"
-#include "irrlichttypes.h"
+#include "../filesys.h"
+#include "pkgmgr.h"
 
-
-
-namespace content {
-
-enum class ContentType
-{
-	UNKNOWN,
-	MOD,
-	MODPACK,
-	GAME,
-	TXP
-};
-
-
-
-struct ContentSpec
-{
-	std::string type;
-	std::string author;
-	u32 release = 0;
-
-	/// Technical name / Id
-	std::string name;
-
-	/// Human-readable title
-	std::string title;
-
-	/// Short description
-	std::string desc;
-	std::string path;
-	std::string textdomain;
-};
-
-std::string contentTypeToString(ContentType &t);
-
-
-ContentType getContentType(const std::string &path);
-void parseContentInfo(ContentSpec &spec);
-
-} // namespace content
+using namespace content;
