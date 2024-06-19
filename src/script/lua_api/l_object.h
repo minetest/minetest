@@ -399,4 +399,10 @@ private:
 
 	// respawn(self)
 	static int l_respawn(lua_State *L);
+
+	// set_flags(self, flags)
+	static int l_set_flags(lua_State *L);
+	
+	// get_flags(self)
+	static int l_get_flags(lua_State *L);
 };

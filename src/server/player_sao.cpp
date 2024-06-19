@@ -56,8 +56,6 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_prop.makes_footstep_sound = true;
 	m_prop.stepheight = PLAYER_DEFAULT_STEPHEIGHT * BS;
 	m_prop.show_on_minimap = true;
-	m_prop.engine_mask = SAO_ENGINE_DROWNING
-			| SAO_ENGINE_BREATHING | SAO_ENGINE_NODE_HURT;
 	m_hp = m_prop.hp_max;
 	m_breath = m_prop.breath_max;
 	// Disable zoom in survival mode using a value of 0
@@ -160,8 +158,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 {
 	bool not_immortal = !isImmortal();
 
-	if (not_immortal && m_drowning_interval.step(dtime, 2.0f)
-			&& (m_prop.engine_mask & SAO_ENGINE_DROWNING)) {
+	if (not_immortal && m_flags.drowning
+			&& m_drowning_interval.step(dtime, 2.0f)) {
 		// Get nose/mouth position, approximate with eye position
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNode(p);
@@ -179,8 +177,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if (not_immortal && m_breathing_interval.step(dtime, 0.5f)
-			&& (m_prop.engine_mask & SAO_ENGINE_BREATHING)) {
+	if (not_immortal && m_flags.breathing
+			&& m_breathing_interval.step(dtime, 0.5f)) {
 		// Get nose/mouth position, approximate with eye position
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNode(p);
@@ -191,8 +189,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			setBreath(m_breath + 1);
 	}
 
-	if (not_immortal && m_node_hurt_interval.step(dtime, 1.0f)
-			&& (m_prop.engine_mask & SAO_ENGINE_NODE_HURT)) {
+	if (not_immortal && m_flags.node_damage
+			&& m_node_hurt_interval.step(dtime, 1.0f)) {
 		u32 damage_per_second = 0;
 		std::string nodename;
 		v3s16 node_pos;
