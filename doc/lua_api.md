@@ -10275,6 +10275,12 @@ See [Decoration types]. Used by `minetest.register_decoration`.
 
 ```lua
 {
+    name = "my_decoration",
+    -- Used by `minetest.get_decoration_id` to return the `deco_id`s to be
+    -- used as parameter to `minetest.set_gen_notify`.
+    -- If not specified, the value is set to the object handle returned by
+    -- `minetest.register_decoration`.
+
     deco_type = "simple",
     -- Type. "simple", "schematic" or "lsystem" supported
 
