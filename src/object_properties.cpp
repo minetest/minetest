@@ -172,7 +172,6 @@ void ObjectProperties::serialize(std::ostream &os) const
 		writeARGB8(os, nametag_bgcolor.value());
 
 	writeU8(os, rotate_selectionbox);
-
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
 }
