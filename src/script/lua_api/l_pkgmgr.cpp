@@ -27,9 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "l_internal.h"
 #include "l_pkgmgr.h"
 
+using namespace content;
+
 int ModApiPkgMgr::l_get_folder_type(lua_State* L)
 {
-	using namespace content;
 	
 	const std::string path = luaL_checkstring(L, 1);
 	
@@ -48,12 +49,19 @@ int ModApiPkgMgr::l_get_folder_type(lua_State* L)
 	return 1;
 }
 
+int ModApiPkgMgr::l_is_valid_modname(lua_State *L)
+{
+	lua_pushboolean(L, PkgMgr::isValidModname(luaL_checkstring(L, 1)));
+	return 1;
+}
+
 void ModApiPkgMgr::Initialize(lua_State* L)
 {
 	lua_getglobal(L, "pkgmgr");
 	int top = lua_gettop(L);
 	
 	API_FCT(get_folder_type);
+	API_FCT(is_valid_modname);
 }
 
 

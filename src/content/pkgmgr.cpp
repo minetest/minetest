@@ -17,7 +17,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <regex>
 #include "../filesys.h"
 #include "pkgmgr.h"
 
 using namespace content;
+
+bool content::PkgMgr::isValidModname(const std::string& str)
+{
+	std::smatch m;
+	return ! std::regex_match(str, m, std::regex{"[^a-z0-9_]"});
+}

@@ -22,8 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "convert_json.h"
 #include "irrlichttypes.h"
 
-
-
 namespace content {
 
 enum class ContentType

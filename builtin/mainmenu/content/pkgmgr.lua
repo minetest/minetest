@@ -241,11 +241,6 @@ function pkgmgr.get_base_folder(temppath)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.is_valid_modname(modpath)
-	return modpath:match("[^a-z0-9_]") == nil
-end
-
---------------------------------------------------------------------------------
 --- @param render_list filterlist
 --- @param use_technical_names boolean to show technical names instead of human-readable titles
 --- @param with_icon table or nil, from virtual path to icon object

@@ -25,6 +25,7 @@ class ModApiPkgMgr : public ModApiBase
 {
 private:
 	static int l_get_folder_type(lua_State *L);
+	static int l_is_valid_modname(lua_State *L);
 public:
 	static void Initialize(lua_State *L);
 	static void InitializeAsync(lua_State *L, int top);

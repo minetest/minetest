@@ -30,6 +30,8 @@ class PkgMgr
 public:
 	PkgMgr() = default;
 	~PkgMgr() = default;
+	
+	static bool isValidModname(const std::string& str);
 };
 
 }
