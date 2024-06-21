@@ -131,7 +131,7 @@ local function test_entity_attach(player, pos)
 end
 unittests.register("test_entity_attach", test_entity_attach, {player=true, map=true})
 
-core.register_entity("unittests:raycastable", {
+core.register_entity("unittests:dummy", {
 	initial_properties = {
 		hp_max = 1,
 		visual = "upright_sprite",
@@ -141,8 +141,8 @@ core.register_entity("unittests:raycastable", {
 })
 
 local function test_entity_raycast(_, pos)
-	local obj1 = core.add_entity(pos, "unittests:raycastable")
-	local obj2 = core.add_entity(pos:offset(1, 0, 0), "unittests:raycastable")
+	local obj1 = core.add_entity(pos, "unittests:dummy")
+	local obj2 = core.add_entity(pos:offset(1, 0, 0), "unittests:dummy")
 	local raycast = core.raycast(pos:offset(-1, 0, 0), pos:offset(2, 0, 0), true, false)
 	for pt in raycast do
 		if pt.type == "object" then
@@ -154,3 +154,25 @@ local function test_entity_raycast(_, pos)
 	assert(obj1 == nil)
 end
 unittests.register("test_entity_raycast", test_entity_raycast, {map=true})
+
+local function test_object_iterator(pos, iterator)
+	local obj1 = core.add_entity(pos, "unittests:dummy")
+	local obj2 = core.add_entity(pos, "unittests:dummy")
+	-- As soon as we find one of the objects, we invalidate the other.
+	for obj in iterator do
+		assert(obj:is_valid())
+		if obj == obj1 then
+			obj2:remove()
+		elseif obj == obj2 then
+			obj1:remove()
+		end
+	end
+end
+
+unittests.register("test_objects_inside_radius", function(_, pos)
+	test_object_iterator(pos, minetest.objects_inside_radius(pos, 1))
+end, {map=true})
+
+unittests.register("test_objects_in_area", function(_, pos)
+	test_object_iterator(pos, minetest.objects_in_area(pos:offset(-1, -1, -1), pos:offset(1, 1, 1)))
+end, {map=true})

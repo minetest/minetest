@@ -6123,12 +6123,18 @@ Environment access
     * Items can be added also to unloaded and non-generated blocks.
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
     * Returns nothing in case of error (player offline, doesn't exist, ...).
-* `minetest.get_objects_inside_radius(pos, radius)`
-    * returns a list of ObjectRefs.
+* `minetest.get_objects_inside_radius(center, radius)`
+    * returns a list of ObjectRefs
     * `radius`: using a Euclidean metric
-* `minetest.get_objects_in_area(pos1, pos2)`
-    * returns a list of ObjectRefs.
-    * `pos1` and `pos2` are the min and max positions of the area to search.
+	* deprecated, use `objects_inside_radius` instead to get only valid objects
+* `minetest.objects_inside_radius(center, radius)`
+	* returns an iterator of valid objects
+	* example: `for obj in minetest.objects_inside_radius(center, radius) do obj:punch(...) end`
+* `minetest.get_objects_in_area(min_pos, max_pos)`
+    * returns a list of ObjectRefs
+    * `min_pos` and `max_pos` are the min and max positions of the area to search.
+* `minetest.objects_inside_area(min_pos, max_pos)`
+	* returns an iterator of valid objects
 * `minetest.set_timeofday(val)`: set time of day
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
 * `minetest.get_timeofday()`: get time of day
