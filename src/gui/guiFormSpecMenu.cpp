@@ -4184,8 +4184,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			m_client->makeScreenshot();
 		}
 
-		if (event.KeyInput.PressedDown && kp == getKeySetting("keymap_toggle_debug"))
-			m_show_debug = !m_show_debug;
+		if (event.KeyInput.PressedDown && kp == getKeySetting("keymap_toggle_debug")) {
+			if (!m_client || m_client->checkPrivilege("debug"))
+				m_show_debug = !m_show_debug;
+		}
 
 		if (event.KeyInput.PressedDown &&
 			(event.KeyInput.Key==KEY_RETURN ||

@@ -205,6 +205,9 @@ enum EAPPLICATION_EVENT_TYPE
 	//! The application received a memory warning.
 	EAET_MEMORY_WARNING,
 
+	//! The display density changed (only works on SDL).
+	EAET_DPI_CHANGED,
+
 	//! No real event, but to get number of event types.
 	EAET_COUNT
 };

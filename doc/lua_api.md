@@ -5720,6 +5720,8 @@ Call these functions only at load time!
       aliases handled.
 * `minetest.register_on_shutdown(function())`
     * Called before server shutdown
+    * Players that were kicked by the shutdown procedure are still fully accessible
+     in `minetest.get_connected_players()`.
     * **Warning**: If the server terminates abnormally (i.e. crashes), the
       registered callbacks **will likely not be run**. Data should be saved at
       semi-frequent intervals as well as on server shutdown.
