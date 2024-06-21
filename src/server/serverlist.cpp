@@ -28,9 +28,45 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "convert_json.h"
 #include "httpfetch.h"
 #include "server.h"
+#include "network/lan.h"
+#include "json/json.h"
 
 namespace ServerList
 {
+
+/*
+Special thanks to proller <proler@gmail.com> for
+letting us use the methods lan_get() and lan_fresh()
+as well as the lan_adv class.
+*/
+
+static std::string ask_str;
+
+lan_adv lan_adv_client;
+
+void lan_get() {
+	if (!g_settings->getBool("serverlist_lan"))
+		return;
+	lan_adv_client.ask();
+}
+
+/*
+	if (ask_str.empty()) {
+		Json::Value j;
+		j["cmd"] = "ask";
+		j["proto_min"] = Server::getProtocolVersionMin();
+		j["proto_max"] = Server::getProtocolVersionMax();
+		ask_str = fastWriteJson(j);
+			
+	};
+	lan_adv_client.send_string(ask_str);
+*/
+
+bool lan_fresh() {
+	auto result = lan_adv_client.fresh.load();
+	lan_adv_client.fresh = false;
+	return result;
+}
 #if USE_CURL
 void sendAnnounce(AnnounceAction action,
 		const u16 port,

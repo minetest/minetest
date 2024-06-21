@@ -417,6 +417,7 @@ set(common_SRCS
 	light.cpp
 	lighting.cpp
 	log.cpp
+	#log_types.cpp
 	main.cpp
 	map.cpp
 	map_settings_manager.cpp
