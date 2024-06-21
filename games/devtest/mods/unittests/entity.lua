@@ -71,13 +71,13 @@ local function test_entity_lifecycle(_, pos)
 
 	-- with binary in staticdata
 	local obj = core.add_entity(pos, "unittests:callbacks", "abc\000def")
+	assert(obj:is_valid())
 	check_log({"on_activate(7)"})
 
 	obj:set_hp(0)
 	check_log({"on_death(nil)", "on_deactivate(true)"})
 
-	-- objectref must be invalid now
-	assert(obj:get_velocity() == nil)
+	assert(not obj:is_valid())
 end
 unittests.register("test_entity_lifecycle", test_entity_lifecycle, {map=true})
 

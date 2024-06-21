@@ -7815,6 +7815,10 @@ child will follow movement and rotation of that bone.
 
 ### Methods
 
+* `is_valid()`: returns whether the object is valid.
+   Objects may be invalidated either through explicit removal,
+   or implicitly between server steps by the engine.
+   **The below methods should only be called for valid objects.**
 * `get_pos()`: returns position as vector `{x=num, y=num, z=num}`
 * `set_pos(pos)`:
     * Sets the position of the object.
