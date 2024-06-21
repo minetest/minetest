@@ -94,6 +94,17 @@ static const VertexType vtTangents = {
 		},
 };
 
+static const VertexType vt2Colors = {
+		sizeof(S3DVertex2Colors),
+		{
+				{EVA_POSITION, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2Colors, Pos)},
+				{EVA_NORMAL, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2Colors, Normal)},
+				{EVA_COLOR, 4, GL_UNSIGNED_BYTE, VertexAttribute::Mode::Normalized, offsetof(S3DVertex2Colors, Color)},
+				{EVA_TCOORD0, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2Colors, TCoords)},
+				{EVA_COLOR2, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2Colors, Color2)},
+		},
+};
+
 #pragma GCC diagnostic pop
 
 static const VertexType &getVertexTypeDescription(E_VERTEX_TYPE type)
@@ -105,6 +116,8 @@ static const VertexType &getVertexTypeDescription(E_VERTEX_TYPE type)
 		return vt2TCoords;
 	case EVT_TANGENTS:
 		return vtTangents;
+	case EVT_2COLORS:
+		return vt2Colors;
 	default:
 		assert(false);
 	}

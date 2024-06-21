@@ -421,14 +421,11 @@ void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *dat
 static void applyTileColor(PreMeshBuffer &pmb)
 {
 	video::SColor tc = pmb.layer.color;
-	if (tc == video::SColor(0xFFFFFFFF))
-		return;
-	for (video::S3DVertex &vertex : pmb.vertices) {
-		video::SColor *c = &vertex.Color;
-		c->set(c->getAlpha(),
-			c->getRed() * tc.getRed() / 255,
-			c->getGreen() * tc.getGreen() / 255,
-			c->getBlue() * tc.getBlue() / 255);
+
+	for (video::S3DVertex2Colors &vertex : pmb.vertices) {
+		vertex.Color2.X = tc.getRed() / 255.0f;
+		vertex.Color2.Y = tc.getGreen() / 255.0f;
+		vertex.Color2.Z = tc.getBlue() / 255.0f;
 	}
 }
 
@@ -759,7 +756,7 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 				p.layer.applyMaterialOptions(material);
 			}
 
-			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
+			scene::SMeshBuffer2Colors *buf = new scene::SMeshBuffer2Colors();
 			buf->Material = material;
 			if (p.layer.isTransparent()) {
 				buf->append(&p.vertices[0], p.vertices.size(), nullptr, 0);
@@ -778,6 +775,12 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 				buf->append(&p.vertices[0], p.vertices.size(),
 					&p.indices[0], p.indices.size());
 			}
+
+			/*for (u32 i = 0; i < buf->getVertexCount(); i++) {
+				const video::S3DVertex2Colors *vertices = static_cast<const video::S3DVertex2Colors *>(buf->getVertices());
+				const video::SColor &c = vertices[i].Color2;
+				infostream << "vertex i = " << i << " | r: " << c.getRed() << ", g: " << c.getGreen() << ", b: " << c.getBlue() << std::endl;
+			}*/
 			mesh->addMeshBuffer(buf);
 			buf->drop();
 		}
@@ -882,7 +885,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 			mesh->setDirty(scene::EBT_VERTEX); // force reload to VBO
 			scene::IMeshBuffer *buf = mesh->
 				getMeshBuffer(daynight_diff.first.second);
-			video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
+			video::S3DVertex2Colors *vertices = (video::S3DVertex2Colors *)buf->getVertices();
 			for (const auto &j : daynight_diff.second)
 				final_color_blend(&(vertices[j.first].Color), j.second,
 						day_color);
@@ -908,7 +911,7 @@ void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
 	// arrange index sequences into partial buffers
 	m_transparent_buffers.clear();
 
-	scene::SMeshBuffer *current_buffer = nullptr;
+	scene::SMeshBuffer2Colors *current_buffer = nullptr;
 	std::vector<u16> current_strain;
 	for (auto i : triangle_refs) {
 		const auto &t = m_transparent_triangles[i];
@@ -932,7 +935,7 @@ void MapBlockMesh::consolidateTransparentBuffers()
 {
 	m_transparent_buffers.clear();
 
-	scene::SMeshBuffer *current_buffer = nullptr;
+	scene::SMeshBuffer2Colors *current_buffer = nullptr;
 	std::vector<u16> current_strain;
 
 	// use the fact that m_transparent_triangles is already arranged by buffer

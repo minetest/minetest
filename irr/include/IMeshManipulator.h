@@ -152,6 +152,10 @@ protected:
 				video::S3DVertexTangents *verts = (video::S3DVertexTangents *)buffer->getVertices();
 				func(verts[i]);
 			} break;
+			case video::EVT_2COLORS: {
+				video::S3DVertex2Colors *verts = (video::S3DVertex2Colors *)buffer->getVertices();
+				func(verts[i]);
+			} break;
 			}
 			if (boundingBoxUpdate) {
 				if (0 == i)

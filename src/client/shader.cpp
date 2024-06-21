@@ -584,9 +584,14 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			attribute lowp vec4 inVertexColor;
 			attribute mediump vec4 inTexCoord0;
 			attribute mediump vec3 inVertexNormal;
-			attribute mediump vec4 inVertexTangent;
 			attribute mediump vec4 inVertexBinormal;
 		)";
+
+		if (name == "nodes_shader")
+			vertex_header += "attribute mediump vec3 inVertexColor2;\n";
+		else
+			vertex_header += "attribute mediump vec4 inVertexTangent;\n";
+
 		fragment_header = R"(
 			precision mediump float;
 		)";
@@ -606,11 +611,17 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			#define inVertexColor gl_Color
 			#define inTexCoord0 gl_MultiTexCoord0
 			#define inVertexNormal gl_Normal
-			#define inVertexTangent gl_MultiTexCoord1
-			#define inVertexBinormal gl_MultiTexCoord2
 		)";
+
+		if (name == "nodes_shader")
+			vertex_header += "#define inVertexColor2 gl_MultiTexCoord1\n";
+		else
+			vertex_header += "#define inVertexTangent gl_MultiTexCoord1\n";
+
+		vertex_header += "#define inVertexBinormal gl_MultiTexCoord2\n";
 	}
 
+	infostream << "vertex_header: " << vertex_header << std::endl;
 	// map legacy semantic texture names to texture identifiers
 	fragment_header += R"(
 		#define baseTexture texture0

@@ -38,6 +38,8 @@ void applyFacesShading(video::SColor &color, const v3f &normal);
 */
 scene::IAnimatedMesh* createCubeMesh(v3f scale);
 
+scene::IAnimatedMesh* createCubeMesh2Colors(v3f scale);
+
 /*
 	Multiplies each vertex coordinate by the specified scaling factors
 	(componentwise vector multiplication).
@@ -53,11 +55,16 @@ void translateMesh(scene::IMesh *mesh, v3f vec);
  * Sets a constant color for all vertices in the mesh buffer.
  */
 void setMeshBufferColor(scene::IMeshBuffer *buf, const video::SColor &color);
+void setMeshBuffer2Colors(scene::IMeshBuffer *buf,
+	const video::SColor &color, const core::vector3df &color2=core::vector3df(1.0f));
 
 /*
 	Set a constant color for all vertices in the mesh
 */
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color);
+
+//void setMesh2ColorsColor(scene::IMesh *mesh, const video::SColor &color,
+//	const video::SColor &hw_color=video::SColor(0xFFFFFFFF));
 
 
 /*
@@ -75,18 +82,8 @@ void setAnimatedMeshColor(scene::IAnimatedMeshSceneNode *node, const video::SCol
  * Overwrites the color of a mesh buffer.
  * The color is darkened based on the normal vector of the vertices.
  */
-void colorizeMeshBuffer(scene::IMeshBuffer *buf, const video::SColor *buffercolor);
-
-/*
-	Set the color of all vertices in the mesh.
-	For each vertex, determine the largest absolute entry in
-	the normal vector, and choose one of colorX, colorY or
-	colorZ accordingly.
-*/
-void setMeshColorByNormalXYZ(scene::IMesh *mesh,
-		const video::SColor &colorX,
-		const video::SColor &colorY,
-		const video::SColor &colorZ);
+void colorizeMeshBuffer2Colors(scene::IMeshBuffer *buf,
+	const video::SColor &color, const core::vector3df &color2=core::vector3df(1.0f));
 
 void setMeshColorByNormal(scene::IMesh *mesh, const v3f &normal,
 		const video::SColor &color);
@@ -135,9 +132,11 @@ void recalculateBoundingBox(scene::IMesh *src_mesh);
  */
 bool checkMeshNormals(scene::IMesh *mesh);
 
+scene::SMesh *convertMeshTo2Colors(scene::IMesh *mesh);
+
 /*
 	Set the MinFilter, MagFilter and AnisotropicFilter properties of a texture
 	layer according to the three relevant boolean values found in the Minetest
 	settings.
-*/ 
+*/
 void setMaterialFilters(video::SMaterialLayer &tex, bool bilinear, bool trilinear, bool anisotropic);

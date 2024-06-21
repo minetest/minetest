@@ -27,7 +27,13 @@ enum E_VERTEX_TYPE
 	/** Usually used for tangent space normal mapping.
 		Usually tangent and binormal get send to shaders as texture coordinate sets 1 and 2.
 	*/
-	EVT_TANGENTS
+	EVT_TANGENTS,
+
+	//! Vertex with two colors, video::S3DVertex2Colors.
+	/** Used only for the MapblockMeshes buffers in order to separate
+		the light color from the hardware one.
+	*/
+	EVT_2COLORS
 };
 
 //! Array holding the built in vertex type names
@@ -35,6 +41,7 @@ const char *const sBuiltInVertexTypeNames[] = {
 		"standard",
 		"2tcoords",
 		"tangents",
+		"2colors",
 		0,
 	};
 
@@ -272,6 +279,59 @@ struct S3DVertexTangents : public S3DVertex
 	}
 };
 
+//! Vertex with two colors, video::S3DVertex2Colors.
+/** Used only for the MapblockMeshes buffers in order to separate
+	the light color from the hardware one.
+*/
+struct S3DVertex2Colors : public S3DVertex
+{
+	//! default constructor
+	S3DVertex2Colors() :
+			S3DVertex() {}
+
+	//! constructor
+	constexpr S3DVertex2Colors(f32 x, f32 y, f32 z, f32 nx = 0.0f, f32 ny = 0.0f, f32 nz = 0.0f,
+			SColor c = 0xFFFFFFFF, f32 tu = 0.0f, f32 tv = 0.0f, f32 c2r = 1.0f, f32 c2g = 1.0f, f32 c2b = 1.0f) :
+			S3DVertex(x, y, z, nx, ny, nz, c, tu, tv),
+			Color2(c2r, c2g, c2b) {}
+
+	//! constructor
+	constexpr S3DVertex2Colors(const core::vector3df &pos,
+			const core::vector3df &normal, SColor c,
+			const core::vector2df &tcoords, const core::vector3df &c2 = core::vector3df(1.0f)) :
+			S3DVertex(pos, normal, c, tcoords), Color2(c2) {}
+
+	//! constructor from S3DVertex
+	constexpr S3DVertex2Colors(const S3DVertex &o) :
+			S3DVertex(o) {}
+
+	//! Second (normalized) RGB color for the hardware ones
+	core::vector3df Color2;
+
+	constexpr bool operator==(const S3DVertex2Colors &other) const
+	{
+		return ((static_cast<S3DVertex>(*this) == static_cast<const S3DVertex &>(other)) &&
+				(Color2 == other.Color2));
+	}
+
+	constexpr bool operator!=(const S3DVertex2Colors &other) const
+	{
+		return ((static_cast<S3DVertex>(*this) != static_cast<const S3DVertex &>(other)) ||
+				(Color2 != other.Color2));
+	}
+
+	constexpr bool operator<(const S3DVertex2Colors &other) const
+	{
+		return ((static_cast<S3DVertex>(*this) < other) ||
+				((static_cast<S3DVertex>(*this) == static_cast<const S3DVertex &>(other)) && (Color2 < other.Color2)));
+	}
+
+	static E_VERTEX_TYPE getType()
+	{
+		return EVT_2COLORS;
+	}
+};
+
 inline u32 getVertexPitchFromType(E_VERTEX_TYPE vertexType)
 {
 	switch (vertexType) {
@@ -279,6 +339,8 @@ inline u32 getVertexPitchFromType(E_VERTEX_TYPE vertexType)
 		return sizeof(video::S3DVertex2TCoords);
 	case video::EVT_TANGENTS:
 		return sizeof(video::S3DVertexTangents);
+	case video::EVT_2COLORS:
+		return sizeof(video::S3DVertex2Colors);
 	default:
 		return sizeof(video::S3DVertex);
 	}

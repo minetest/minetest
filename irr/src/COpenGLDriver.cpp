@@ -307,6 +307,14 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 				po[i].Color.toOpenGLColor((u8 *)&(pb[i].Color));
 			}
 		} break;
+		case EVT_2COLORS: {
+			S3DVertex2Colors *pb = reinterpret_cast<S3DVertex2Colors *>(buffer.pointer());
+			const S3DVertex2Colors *po = static_cast<const S3DVertex2Colors *>(vertices);
+			for (u32 i = 0; i < vertexCount; i++) {
+				po[i].Color.toOpenGLColor((u8 *)&(pb[i].Color));
+				//po[i].Color2.toOpenGLColor((u8 *)&(pb[i].Color2));
+			}
+		} break;
 		default: {
 			return false;
 		}
@@ -666,6 +674,34 @@ void COpenGLDriver::drawVertexPrimitiveList(const void *vertices, u32 vertexCoun
 	if (vertices && !FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 		getColorBuffer(vertices, vertexCount, vType);
 
+	/*if (vertices) {
+		Color2Buffer.set_used(vertexCount);
+		const S3DVertex2Colors *p = static_cast<const S3DVertex2Colors *>(vertices);
+		for (u32 i = 0; i < vertexCount; i++) {
+			//core::array<u8> color2_arr(4);
+			//color2_arr.set_used(4);
+			//p->Color2.toOpenGLColor(&color2_arr[0]);
+
+			Color2Buffer[i] = (int)(p->Color2.color);
+			/*int r = reinterpret_cast<int>(p->Color2);
+			r <<= 24;
+			Color2Buffer[i] |= r;
+
+			int g = reinterpret_cast<int>(p->Color2);
+			g <<= 16;
+			Color2Buffer[i] |= g;
+
+			int b = reinterpret_cast<int>(p->Color2);
+			b <<= 8;
+			Color2Buffer[i] |= b;
+
+			int a = reinterpret_cast<int>(p->Color2);
+			Color2Buffer[i] |= a;
+
+			++p;
+		}
+	}*/
+
 	// draw everything
 	setRenderStates3DMode();
 
@@ -692,6 +728,9 @@ void COpenGLDriver::drawVertexPrimitiveList(const void *vertices, u32 vertexCoun
 				break;
 			case EVT_TANGENTS:
 				glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents *>(vertices))[0].Color);
+				break;
+			case EVT_2COLORS:
+				glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Color);
 				break;
 			}
 		} else {
@@ -772,6 +811,33 @@ void COpenGLDriver::drawVertexPrimitiveList(const void *vertices, u32 vertexCoun
 				glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(48));
 		}
 		break;
+	case EVT_2COLORS:
+		if (vertices) {
+			glNormalPointer(GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Normal);
+			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].TCoords);
+			glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Pos);
+		} else {
+			glNormalPointer(GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(12));
+			glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex2Colors), buffer_offset(24));
+			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(28));
+			glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(0));
+		}
+
+		if (Feature.MaxTextureUnits > 0) {
+			CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 1);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			if (vertices) {
+			//(1)	glTexCoordPointer(4, GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Color2);
+				glTexCoordPointer(3, GL_FLOAT,  sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Color2);
+				//else {
+				//	_IRR_DEBUG_BREAK_IF(Color2Buffer.size() == 0);
+				//	glTexCoordPointer(colorSize, GL_FLOAT, 0, &Color2Buffer[0]);
+				//}
+			}
+			else
+				glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(36));
+		}
+		break;
 	}
 
 	renderArray(indexList, primitiveCount, pType, iType);
@@ -813,6 +879,13 @@ void COpenGLDriver::getColorBuffer(const void *vertices, u32 vertexCount, E_VERT
 	} break;
 	case EVT_TANGENTS: {
 		const S3DVertexTangents *p = static_cast<const S3DVertexTangents *>(vertices);
+		for (i = 0; i < vertexCount; i += 4) {
+			p->Color.toOpenGLColor(&ColorBuffer[i]);
+			++p;
+		}
+	} break;
+	case EVT_2COLORS: {
+		const S3DVertex2Colors *p = static_cast<const S3DVertex2Colors *>(vertices);
 		for (i = 0; i < vertexCount; i += 4) {
 			p->Color.toOpenGLColor(&ColorBuffer[i]);
 			++p;
@@ -966,6 +1039,9 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void *vertices, u32 vertexCo
 			case EVT_TANGENTS:
 				glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents *>(vertices))[0].Color);
 				break;
+			case EVT_2COLORS:
+				glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Color);
+				break;
 			}
 		} else {
 			// avoid passing broken pointer to OpenGL
@@ -1021,6 +1097,17 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void *vertices, u32 vertexCo
 			glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertexTangents), buffer_offset(24));
 			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(28));
 			glVertexPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(0));
+		}
+
+		break;
+	case EVT_2COLORS:
+		if (vertices) {
+			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].TCoords);
+			glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Pos);
+		} else {
+			glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex2Colors), buffer_offset(24));
+			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(28));
+			glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(0));
 		}
 
 		break;

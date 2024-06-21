@@ -39,6 +39,7 @@ namespace video
 struct S3DVertex;
 struct S3DVertex2TCoords;
 struct S3DVertexTangents;
+struct S3DVertex2Colors;
 class IImageLoader;
 class IImageWriter;
 class IMaterialRenderer;
@@ -605,6 +606,12 @@ public:
 		drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLES, EIT_16BIT);
 	}
 
+	void drawIndexedTriangleList(const S3DVertex2Colors *vertices,
+			u32 vertexCount, const u16 *indexList, u32 triangleCount)
+	{
+		drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2COLORS, scene::EPT_TRIANGLES, EIT_16BIT);
+	}
+
 	//! Draws an indexed triangle fan.
 	/** Note that there may be at maximum 65536 vertices, because
 	the index list is an array of 16 bit values each with a maximum
@@ -648,6 +655,12 @@ public:
 			u32 vertexCount, const u16 *indexList, u32 triangleCount)
 	{
 		drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
+	}
+
+	void drawIndexedTriangleFan(const S3DVertex2Colors *vertices,
+			u32 vertexCount, const u16 *indexList, u32 triangleCount)
+	{
+		drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2COLORS, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
 	}
 
 	//! Draws a 3d line.
