@@ -147,6 +147,7 @@ local function test_entity_raycast(_, pos)
 	for pt in raycast do
 		if pt.type == "object" then
 			assert(pt.ref == obj1)
+			obj1:remove()
 			obj2:remove()
 			obj1 = nil -- object should be hit exactly one
 		end
@@ -155,24 +156,31 @@ local function test_entity_raycast(_, pos)
 end
 unittests.register("test_entity_raycast", test_entity_raycast, {map=true})
 
-local function test_object_iterator(pos, iterator)
+local function test_object_iterator(pos, make_iterator)
 	local obj1 = core.add_entity(pos, "unittests:dummy")
 	local obj2 = core.add_entity(pos, "unittests:dummy")
-	-- As soon as we find one of the objects, we invalidate the other.
-	for obj in iterator do
+	assert(obj1 and obj2)
+	local found = false
+	-- As soon as we find one of the objects, we remove both, invalidating the other.
+	for obj in make_iterator() do
 		assert(obj:is_valid())
-		if obj == obj1 then
-			obj2:remove()
-		elseif obj == obj2 then
+		if obj == obj1 or obj == obj2 then
 			obj1:remove()
+			obj2:remove()
+			found = true
 		end
 	end
+	assert(found)
 end
 
 unittests.register("test_objects_inside_radius", function(_, pos)
-	test_object_iterator(pos, minetest.objects_inside_radius(pos, 1))
+	test_object_iterator(pos, function()
+		return core.objects_inside_radius(pos, 1)
+	end)
 end, {map=true})
 
 unittests.register("test_objects_in_area", function(_, pos)
-	test_object_iterator(pos, minetest.objects_in_area(pos:offset(-1, -1, -1), pos:offset(1, 1, 1)))
+	test_object_iterator(pos, function()
+		return core.objects_in_area(pos:offset(-1, -1, -1), pos:offset(1, 1, 1))
+	end)
 end, {map=true})
