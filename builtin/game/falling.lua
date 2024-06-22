@@ -318,7 +318,7 @@ core.register_entity(":__builtin:falling_node", {
 		local nd = core.registered_nodes[n2.name]
 
 		-- Convert self into ordinary drop if specially secured nodes were affected
-		if core.get_item_group(n2.name, "nostomp") ~= 0 then
+		if core.get_item_group(n2.name, "destroy_falling_node") ~= 0 then
 			local drops = core.get_node_drops(self.node, "")
 			for _, dropped_item in pairs(drops) do
 				core.add_item(np, dropped_item)
