@@ -2202,6 +2202,8 @@ to games.
      * See also: `leveldiff` in [Tool Capabilities]
 * `slippery`: Players and items will slide on the node.
   Slipperiness rises steadily with `slippery` value, starting at 1.
+* `destroy_falling_node`: If a falling node wants to create a node inside of this node,
+  destroy the falling node instead of displacing the existing node.
 
 
 ### Tool-only groups
