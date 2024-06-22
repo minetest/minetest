@@ -683,3 +683,33 @@ end
 register_pointable_test_node("pointable", "Pointable Node", true)
 register_pointable_test_node("not_pointable", "Not Pointable Node", false)
 register_pointable_test_node("blocking_pointable", "Blocking Pointable Node", "blocking")
+
+-- destroy_falling_node
+
+minetest.register_node("testnodes:destroy_falling_node_0", {
+	description = S("\"destroy_falling_node\" = 0 Node"),
+
+	drawtype = "glasslike_framed",
+	tiles = {"testnodes_destroy_falling_node_0.png"},
+	use_texture_alpha = "blend",
+	paramtype = "light",
+	sunlight_propagates = true,
+
+	walkable = false,
+	is_ground_content = false,
+	groups = {dig_immediate=3,destroy_falling_node=0},
+})
+
+minetest.register_node("testnodes:destroy_falling_node_1", {
+	description = S("\"destroy_falling_node\" = 1 Node"),
+
+	drawtype = "glasslike_framed",
+	tiles = {"testnodes_destroy_falling_node_1.png"},
+	use_texture_alpha = "blend",
+	paramtype = "light",
+	sunlight_propagates = true,
+
+	walkable = false,
+	is_ground_content = false,
+	groups = {dig_immediate=3,destroy_falling_node=1},
+})
