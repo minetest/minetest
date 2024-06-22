@@ -5714,7 +5714,8 @@ Global callback registration functions
 Call these functions only at load time!
 
 * `minetest.register_globalstep(function(dtime))`
-    * Called every server step, usually interval of 0.1s
+    * Called every server step, usually interval of 0.1s.
+	* `dtime` is the time since last execution in seconds.
 * `minetest.register_on_mods_loaded(function())`
     * Called after mods have finished loading and before the media is cached or the
       aliases handled.
