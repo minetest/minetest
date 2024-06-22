@@ -6129,7 +6129,7 @@ Environment access
     * **Warning**: Any kind of interaction with the environment or other APIs
       can cause later objects in the list to become invalid while you're iterating it.
       (e.g. punching an entity removes its children)
-      It is recommend to use `minetest.objects_inside_radius` instead, which
+      It is recommended to use `minetest.objects_inside_radius` instead, which
       transparently takes care of this possibility.
 * `minetest.objects_inside_radius(center, radius)`
     * returns an iterator of valid objects
@@ -6137,9 +6137,8 @@ Environment access
 * `minetest.get_objects_in_area(min_pos, max_pos)`
     * returns a list of ObjectRefs
     * `min_pos` and `max_pos` are the min and max positions of the area to search
-    * **Warning**: If you modify objects (f.e. punch them),
-      this may cause later objects in the list (f.e. children) to become invalid.
-      Use `minetest.objects_in_area` instead to iterate only valid objects
+    * **Warning**: The same warning as for `minetest.get_objects_inside_radius` applies.
+      Use `minetest.objects_in_area` instead to iterate only valid objects.
 * `minetest.objects_in_area(min_pos, max_pos)`
 	* returns an iterator of valid objects
 * `minetest.set_timeofday(val)`: set time of day
