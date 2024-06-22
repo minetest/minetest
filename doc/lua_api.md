@@ -6126,9 +6126,11 @@ Environment access
 * `minetest.get_objects_inside_radius(center, radius)`
     * returns a list of ObjectRefs
     * `radius`: using a Euclidean metric
-    * **Warning**: If you modify objects (f.e. punch them),
-      this may cause later objects in the list (f.e. children) to become invalid.
-      Use `minetest.objects_inside_radius` instead to iterate only valid objects
+    * **Warning**: Any kind of interaction with the environment or other APIs
+      can cause later objects in the list to become invalid while you're iterating it.
+      (e.g. punching an entity removes its children)
+      It is recommend to use `minetest.objects_inside_radius` instead, which
+      transparently takes care of this possibility.
 * `minetest.objects_inside_radius(center, radius)`
     * returns an iterator of valid objects
     * example: `for obj in minetest.objects_inside_radius(center, radius) do obj:punch(...) end`

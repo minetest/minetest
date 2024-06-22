@@ -71,7 +71,7 @@ local function test_entity_lifecycle(_, pos)
 
 	-- with binary in staticdata
 	local obj = core.add_entity(pos, "unittests:callbacks", "abc\000def")
-	assert(obj:is_valid())
+	assert(obj and obj:is_valid())
 	check_log({"on_activate(7)"})
 
 	obj:set_hp(0)
