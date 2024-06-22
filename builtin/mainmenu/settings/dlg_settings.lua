@@ -224,6 +224,7 @@ local function load()
 	}
 end
 
+
 -- See if setting matches keywords
 local function get_setting_match_weight(entry, query_keywords)
 	local setting_score = 0

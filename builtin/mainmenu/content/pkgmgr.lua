@@ -203,14 +203,6 @@ function pkgmgr.reload_texture_packs()
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.get_texture_packs()
-	if not pkgmgr.texture_packs then
-		pkgmgr.reload_texture_packs()
-	end
-	return pkgmgr.texture_packs
-end
-
---------------------------------------------------------------------------------
 function pkgmgr.get_all()
 	pkgmgr.load_all()
 
@@ -222,7 +214,7 @@ function pkgmgr.get_all()
 	for _, game in pairs(pkgmgr.games) do
 		result[#result + 1] = game
 	end
-	for _, txp in pairs(pkgmgr.get_texture_packs()) do
+	for _, txp in pairs(pkgmgr.texture_packs) do
 		result[#result + 1] = txp
 	end
 

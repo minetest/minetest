@@ -447,7 +447,7 @@ function contentdb.update_paths()
 	end
 
 	local txp_hash = {}
-	for _, txp in pairs(pkgmgr.get_texture_packs()) do
+	for _, txp in pairs(pkgmgr.texture_packs) do
 		local cdb_id = pkgmgr.get_contentdb_id(txp)
 		if cdb_id then
 			txp_hash[contentdb.aliases[cdb_id] or cdb_id] = txp

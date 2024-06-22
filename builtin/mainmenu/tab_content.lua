@@ -33,7 +33,7 @@ local function update_packages()
 
 	packages_raw = {}
 	table.insert_all(packages_raw, pkgmgr.games)
-	table.insert_all(packages_raw, pkgmgr.get_texture_packs())
+	table.insert_all(packages_raw, pkgmgr.texture_packs)
 	table.insert_all(packages_raw, pkgmgr.global_mods:get_list())
 
 	local function get_data()
