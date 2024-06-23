@@ -5,7 +5,6 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "guiSkin.h"
-#include "client/renderingengine.h"
 
 #include "IGUIFont.h"
 #include "IGUISpriteBank.h"
@@ -178,13 +177,6 @@ GUISkin::~GUISkin()
 
 	if (SpriteBank)
 		SpriteBank->drop();
-}
-
-
-//! returns display density scaling factor
-float GUISkin::getScale() const
-{
-	return RenderingEngine::getDisplayDensity();
 }
 
 

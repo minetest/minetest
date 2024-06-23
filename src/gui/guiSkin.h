@@ -28,7 +28,10 @@ namespace gui
 		virtual ~GUISkin();
 
 		//! returns display density scaling factor
-		virtual float getScale() const;
+		virtual float getScale() const { return Scale; }
+
+		//! sets display density scaling factor
+		virtual void setScale(float scale) { Scale = scale; }
 
 		//! returns default color
 		virtual video::SColor getColor(EGUI_DEFAULT_COLOR color) const;
@@ -295,6 +298,7 @@ namespace gui
 
 	private:
 
+		float Scale = 1.0f;
 		video::SColor Colors[EGDC_COUNT];
 		s32 Sizes[EGDS_COUNT];
 		u32 Icons[EGDI_COUNT];
