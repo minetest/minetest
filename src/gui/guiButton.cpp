@@ -89,12 +89,11 @@ void GUIButton::setSpriteBank(IGUISpriteBank* sprites)
 	SpriteBank = sprites;
 }
 
-void GUIButton::setSprite(EGUI_BUTTON_STATE state, s32 index, video::SColor color, bool loop, bool scale)
+void GUIButton::setSprite(EGUI_BUTTON_STATE state, s32 index, video::SColor color, bool loop)
 {
 	ButtonSprites[(u32)state].Index	= index;
 	ButtonSprites[(u32)state].Color	= color;
 	ButtonSprites[(u32)state].Loop	= loop;
-	ButtonSprites[(u32)state].Scale = scale;
 }
 
 //! Get the sprite-index for the given state or -1 when no sprite is set
@@ -113,12 +112,6 @@ video::SColor GUIButton::getSpriteColor(EGUI_BUTTON_STATE state) const
 bool GUIButton::getSpriteLoop(EGUI_BUTTON_STATE state) const
 {
 	return ButtonSprites[(u32)state].Loop;
-}
-
-//! Returns if the sprite in the given state is scaled
-bool GUIButton::getSpriteScale(EGUI_BUTTON_STATE state) const
-{
-	return ButtonSprites[(u32)state].Scale;
 }
 
 //! called if an event happened.
@@ -357,19 +350,9 @@ void GUIButton::drawSprite(EGUI_BUTTON_STATE state, u32 startTime, const core::p
 
 	if (ButtonSprites[stateIdx].Index != -1)
 	{
-		if ( ButtonSprites[stateIdx].Scale )
-		{
-			const video::SColor colors[] = {ButtonSprites[stateIdx].Color,ButtonSprites[stateIdx].Color,ButtonSprites[stateIdx].Color,ButtonSprites[stateIdx].Color};
-			SpriteBank->draw2DSprite(ButtonSprites[stateIdx].Index, AbsoluteRect.UpperLeftCorner,
-					&AbsoluteClippingRect, colors[0], // FIXME: remove [0]
-					porting::getTimeMs()-startTime, ButtonSprites[stateIdx].Loop);
-		}
-		else
-		{
-			SpriteBank->draw2DSprite(ButtonSprites[stateIdx].Index, center,
+		SpriteBank->draw2DSprite(ButtonSprites[stateIdx].Index, center,
 				&AbsoluteClippingRect, ButtonSprites[stateIdx].Color, startTime, porting::getTimeMs(),
 				ButtonSprites[stateIdx].Loop, true);
-		}
 	}
 }
 

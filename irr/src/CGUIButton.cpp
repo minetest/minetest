@@ -75,12 +75,11 @@ void CGUIButton::setSpriteBank(IGUISpriteBank *sprites)
 	SpriteBank = sprites;
 }
 
-void CGUIButton::setSprite(EGUI_BUTTON_STATE state, s32 index, video::SColor color, bool loop, bool scale)
+void CGUIButton::setSprite(EGUI_BUTTON_STATE state, s32 index, video::SColor color, bool loop)
 {
 	ButtonSprites[(u32)state].Index = index;
 	ButtonSprites[(u32)state].Color = color;
 	ButtonSprites[(u32)state].Loop = loop;
-	ButtonSprites[(u32)state].Scale = scale;
 }
 
 //! Get the sprite-index for the given state or -1 when no sprite is set
@@ -99,12 +98,6 @@ video::SColor CGUIButton::getSpriteColor(EGUI_BUTTON_STATE state) const
 bool CGUIButton::getSpriteLoop(EGUI_BUTTON_STATE state) const
 {
 	return ButtonSprites[(u32)state].Loop;
-}
-
-//! Returns if the sprite in the given state is scaled
-bool CGUIButton::getSpriteScale(EGUI_BUTTON_STATE state) const
-{
-	return ButtonSprites[(u32)state].Scale;
 }
 
 //! called if an event happened.
@@ -296,16 +289,9 @@ void CGUIButton::drawSprite(EGUI_BUTTON_STATE state, u32 startTime, const core::
 	u32 stateIdx = (u32)state;
 
 	if (ButtonSprites[stateIdx].Index != -1) {
-		if (ButtonSprites[stateIdx].Scale) {
-			const video::SColor colors[] = {ButtonSprites[stateIdx].Color, ButtonSprites[stateIdx].Color, ButtonSprites[stateIdx].Color, ButtonSprites[stateIdx].Color};
-			SpriteBank->draw2DSprite(ButtonSprites[stateIdx].Index, AbsoluteRect,
-					&AbsoluteClippingRect, colors,
-					os::Timer::getTime() - startTime, ButtonSprites[stateIdx].Loop);
-		} else {
-			SpriteBank->draw2DSprite(ButtonSprites[stateIdx].Index, center,
-					&AbsoluteClippingRect, ButtonSprites[stateIdx].Color, startTime, os::Timer::getTime(),
-					ButtonSprites[stateIdx].Loop, true);
-		}
+		SpriteBank->draw2DSprite(ButtonSprites[stateIdx].Index, center,
+				&AbsoluteClippingRect, ButtonSprites[stateIdx].Color, startTime, os::Timer::getTime(),
+				ButtonSprites[stateIdx].Loop, true);
 	}
 }
 
