@@ -27,6 +27,9 @@ namespace gui
 		//! destructor
 		virtual ~GUISkin();
 
+		//! returns display density scaling factor
+		virtual float getScale() const;
+
 		//! returns default color
 		virtual video::SColor getColor(EGUI_DEFAULT_COLOR color) const;
 

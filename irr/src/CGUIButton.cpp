@@ -287,11 +287,25 @@ void CGUIButton::draw()
 void CGUIButton::drawSprite(EGUI_BUTTON_STATE state, u32 startTime, const core::position2di &center)
 {
 	u32 stateIdx = (u32)state;
+	s32 spriteIdx = ButtonSprites[stateIdx].Index;
 
-	if (ButtonSprites[stateIdx].Index != -1) {
-		SpriteBank->draw2DSprite(ButtonSprites[stateIdx].Index, center,
-				&AbsoluteClippingRect, ButtonSprites[stateIdx].Color, startTime, os::Timer::getTime(),
-				ButtonSprites[stateIdx].Loop, true);
+	if (spriteIdx != -1) {
+		u32 rectIdx = SpriteBank->getSprites()[spriteIdx].Frames[0].rectNumber;
+		core::rect<s32> srcRect = SpriteBank->getPositions()[rectIdx];
+
+		IGUISkin *skin = Environment->getSkin();
+		s32 scale = std::max(std::floor(skin->getScale()), 1.0f);
+		core::rect<s32> rect(center, srcRect.getSize() * scale);
+		rect -= rect.getSize() / 2;
+
+		const video::SColor colors[] = {
+			ButtonSprites[stateIdx].Color,
+			ButtonSprites[stateIdx].Color,
+			ButtonSprites[stateIdx].Color,
+			ButtonSprites[stateIdx].Color,
+		};
+		SpriteBank->draw2DSprite(spriteIdx, rect, &AbsoluteClippingRect, colors,
+				os::Timer::getTime() - startTime, ButtonSprites[stateIdx].Loop);
 	}
 }
 

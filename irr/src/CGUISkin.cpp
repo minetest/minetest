@@ -173,6 +173,12 @@ CGUISkin::~CGUISkin()
 		SpriteBank->drop();
 }
 
+//! returns display density scaling factor
+float CGUISkin::getScale() const
+{
+	return 1.0f;
+}
+
 //! returns default color
 video::SColor CGUISkin::getColor(EGUI_DEFAULT_COLOR color) const
 {

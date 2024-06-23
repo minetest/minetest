@@ -24,6 +24,9 @@ public:
 	//! destructor
 	virtual ~CGUISkin();
 
+	//! returns display density scaling factor
+	virtual float getScale() const override;
+
 	//! returns default color
 	video::SColor getColor(EGUI_DEFAULT_COLOR color) const override;
 
