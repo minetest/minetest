@@ -382,7 +382,7 @@ void GUITable::setTable(const TableOptions &options,
 					f32 max_image_scale = (f32)m_rowheight / (f32)image->getOriginalSize().Height;
 					// Scale with display density and make sure it fits into the row
 					row->image_scale = std::min(density, max_image_scale);
-					// When upscaling, only allow integer multiples
+					// When upscaling, fractional factors would cause artifacts
 					if (row->image_scale > 1.0f)
 						row->image_scale = std::floor(row->image_scale);
 					row->content_width = image->getOriginalSize().Width * row->image_scale;

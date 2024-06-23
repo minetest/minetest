@@ -74,6 +74,10 @@ local words = {
 	"minima", "quasi", "facere", "nihil", "ea", "nemo", "rem", "non", "eos",
 	"laudantium", "eveniet", "veritatis",
 }
+
+local reseed = math.random(2^31-1)
+math.randomseed(1337)
+
 local table_content = {}
 for i = 1, 100 do
 	table.insert(table_content, words[math.random(#words)])
@@ -84,6 +88,8 @@ for i = 1, 100 do
 	table.insert(table_content, math.random(0, 7))
 	table.insert(table_content, words[math.random(#words)])
 end
+
+math.randomseed(reseed)
 
 local table_fs = table.concat({
 	"tablecolumns[text,align=left;text,align=right;text,align=center;",
