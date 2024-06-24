@@ -101,6 +101,7 @@ static int db_getinfo (lua_State *L) {
   int arg;
   lua_State *L1 = getthread(L, &arg);
   const char *options = luaL_optstring(L, arg+2, "flnSu");
+  luaL_argcheck(L, options[0] != '>', arg + 2, "invalid option '>'");
   if (lua_isnumber(L, arg+1)) {
     if (!lua_getstack(L1, (int)lua_tointeger(L, arg+1), &ar)) {
       lua_pushnil(L);  /* level out of range */
