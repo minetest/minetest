@@ -29,16 +29,11 @@ end
 local packages_raw, packages
 
 local function update_packages()
-	if not pkgmgr.global_mods then
-		pkgmgr.refresh_globals()
-	end
-	if not pkgmgr.games then
-		pkgmgr.update_gamelist()
-	end
+	pkgmgr.load_all()
 
 	packages_raw = {}
 	table.insert_all(packages_raw, pkgmgr.games)
-	table.insert_all(packages_raw, pkgmgr.get_texture_packs())
+	table.insert_all(packages_raw, pkgmgr.texture_packs)
 	table.insert_all(packages_raw, pkgmgr.global_mods:get_list())
 
 	local function get_data()
@@ -207,6 +202,7 @@ local function handle_doubleclick(pkg)
 			core.settings:set("texture_path", pkg.path)
 		end
 		packages = nil
+		pkgmgr.reload_texture_packs()
 
 		mm_game_theme.init()
 		mm_game_theme.set_engine()
@@ -271,6 +267,7 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 
 		core.settings:set("texture_path", txp_path)
 		packages = nil
+		pkgmgr.reload_texture_packs()
 
 		mm_game_theme.init()
 		mm_game_theme.set_engine()
