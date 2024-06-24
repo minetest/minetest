@@ -240,12 +240,15 @@ function math.factorial(x)
 	return v
 end
 
-
 function math.round(x)
-	if x >= 0 then
-		return math.floor(x + 0.5)
+	if x < 0 then
+		local int = math.ceil(x)
+		local frac = x - int
+		return int - ((frac <= -0.5) and 1 or 0)
 	end
-	return math.ceil(x - 0.5)
+	local int = math.floor(x)
+	local frac = x - int
+	return int + ((frac >= 0.5) and 1 or 0)
 end
 
 local formspec_escapes = {
