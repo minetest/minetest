@@ -4346,6 +4346,8 @@ the previous octave.
 This may need to be tuned when altering `lacunarity`; when doing so consider
 that a common medium value is 1 / lacunarity.
 
+Instead of `persistence`, the key `persist` may be used to the same effect.
+
 ### `lacunarity`
 
 Each additional octave has a 'wavelength' that is the 'wavelength' of the
