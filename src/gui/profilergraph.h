@@ -26,17 +26,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IVideoDriver.h>
 #include "profiler.h"
 
-/* Profiler display */
+
+/** \brief Draws graph every frame using data given by Profiler.
+
+	It displays only entries that recorded for profiler graph (via Profiler::graphAdd,
+	ScopeProfilerType::SPT_GRAPH_ADD and other) and Profiler itself doesn't show them.
+
+	Each profiling entry described with upper graph value, entry name and lower graph
+	value on its right. Graph is displayed as \e line if it is relative (lower value
+	is not 0) and \e filled if it is absolute.
+*/
 class ProfilerGraph
 {
 private:
-	// One-frame slice of graph values.
+	/// One-frame slice of graph values.
 	struct Piece
 	{
 		Piece(Profiler::GraphValues v) : values(std::move(v)) {}
 		Profiler::GraphValues values;
 	};
-	// Data for drawing a one graph. Updates every frame.
+	/// Data for drawing one graph. Updates every frame.
 	struct Meta
 	{
 		float min;
@@ -56,8 +65,8 @@ public:
 
 	ProfilerGraph() = default;
 
-	// Adds graph values to the end of graph (rendered at right side) and
-	// removes the oldest ones (beyond the `m_log_max_size`).
+	/// Adds graph values to the end of graph (rendered at right side) and
+	/// removes the oldest ones (beyond the `m_log_max_size`).
 	void put(const Profiler::GraphValues &values);
 
 	void draw(s32 x_left, s32 y_bottom, video::IVideoDriver *driver,
