@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIFont.h>
 #include "client/renderingengine.h"
 #include "debug.h"
+#include "irrlicht_changes/CGUITTFont.h"
 #include "log.h"
 #include "client/texturesource.h"
 #include "gettime.h"
@@ -238,7 +239,17 @@ void GUITable::setTable(const TableOptions &options,
 	};
 	TempRow *rows = new TempRow[rowcount];
 
-	f32 density = RenderingEngine::getDisplayDensity();
+	CGUITTFont *ttfont = dynamic_cast<CGUITTFont *>(m_font);
+	f32 desired_image_scale = 1.0f;
+	if (ttfont) {
+		// This gives us the effective font size, which is chosen taking display
+		// density and gui_scaling into account.
+		// Since row height scales with font size, this gives better results than
+		// just using display density and gui_scaling when a non-standard font
+		// size is used (e.g. Android default of 14).
+		desired_image_scale = std::max(1.0f, ttfont->getFontSize() / 16.0f);
+	}
+
 	// Get em width. Pedantically speaking, the width of "M" is not
 	// necessarily the same as the em width, but whatever, close enough.
 	s32 em = 6;
@@ -381,7 +392,7 @@ void GUITable::setTable(const TableOptions &options,
 				if (image) {
 					f32 max_image_scale = (f32)m_rowheight / (f32)image->getOriginalSize().Height;
 					// Scale with display density and make sure it fits into the row
-					row->image_scale = std::min(density, max_image_scale);
+					row->image_scale = std::min(desired_image_scale, max_image_scale);
 					// When upscaling, fractional factors would cause artifacts
 					if (row->image_scale > 1.0f)
 						row->image_scale = std::floor(row->image_scale);
