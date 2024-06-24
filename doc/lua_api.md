@@ -2352,8 +2352,11 @@ for this group, and unable to dig the rating `1`, which is the toughest.
 Unless there is a matching group that enables digging otherwise.
 
 If the result digging time is 0, a delay of 0.15 seconds is added between
-digging nodes; If the player releases LMB after digging, this delay is set to 0,
+digging nodes. If the player releases LMB after digging, this delay is set to 0,
 i.e. players can more quickly click the nodes away instead of holding LMB.
+
+This extra delay is not applied in case of a digging time between 0 and 0.15,
+so a digging time of 0.01 is actually faster than a digging time of 0.
 
 ### Damage groups
 

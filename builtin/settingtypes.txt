@@ -114,11 +114,11 @@ always_fly_fast (Always fly fast) bool true
 #    the place button.
 #
 #    Requires: keyboard_mouse
-repeat_place_time (Place repetition interval) float 0.25 0.15 2.0
+repeat_place_time (Place repetition interval) float 0.25 0.16 2.0
 
 #    The minimum time in seconds it takes between digging nodes when holding
 #    the dig button.
-repeat_dig_time (Dig repetition interval) float 0.15 0.15 2.0
+repeat_dig_time (Minimum dig repetition interval) float 0.0 0.0 2.0
 
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
