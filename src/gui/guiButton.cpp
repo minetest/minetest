@@ -348,25 +348,25 @@ void GUIButton::drawSprite(EGUI_BUTTON_STATE state, u32 startTime, const core::p
 {
 	u32 stateIdx = (u32)state;
 	s32 spriteIdx = ButtonSprites[stateIdx].Index;
+	if (spriteIdx == -1)
+		return;
 
-	if (spriteIdx != -1) {
-		u32 rectIdx = SpriteBank->getSprites()[spriteIdx].Frames[0].rectNumber;
-		core::rect<s32> srcRect = SpriteBank->getPositions()[rectIdx];
+	u32 rectIdx = SpriteBank->getSprites()[spriteIdx].Frames[0].rectNumber;
+	core::rect<s32> srcRect = SpriteBank->getPositions()[rectIdx];
 
-		IGUISkin *skin = Environment->getSkin();
-		s32 scale = std::max(std::floor(skin->getScale()), 1.0f);
-		core::rect<s32> rect(center, srcRect.getSize() * scale);
-		rect -= rect.getSize() / 2;
+	IGUISkin *skin = Environment->getSkin();
+	s32 scale = std::max(std::floor(skin->getScale()), 1.0f);
+	core::rect<s32> rect(center, srcRect.getSize() * scale);
+	rect -= rect.getSize() / 2;
 
-		const video::SColor colors[] = {
-			ButtonSprites[stateIdx].Color,
-			ButtonSprites[stateIdx].Color,
-			ButtonSprites[stateIdx].Color,
-			ButtonSprites[stateIdx].Color,
-		};
-		SpriteBank->draw2DSprite(spriteIdx, rect, &AbsoluteClippingRect, colors,
-				porting::getTimeMs() - startTime, ButtonSprites[stateIdx].Loop);
-	}
+	const video::SColor colors[] = {
+		ButtonSprites[stateIdx].Color,
+		ButtonSprites[stateIdx].Color,
+		ButtonSprites[stateIdx].Color,
+		ButtonSprites[stateIdx].Color,
+	};
+	SpriteBank->draw2DSprite(spriteIdx, rect, &AbsoluteClippingRect, colors,
+			porting::getTimeMs() - startTime, ButtonSprites[stateIdx].Loop);
 }
 
 EGUI_BUTTON_IMAGE_STATE GUIButton::getImageState(bool pressed) const
