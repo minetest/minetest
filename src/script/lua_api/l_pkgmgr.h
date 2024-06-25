@@ -24,8 +24,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ModApiPkgMgr : public ModApiBase
 {
 private:
+	// pkgmgr.get_folder_type(path: str)
 	static int l_get_folder_type(lua_State *L);
+	
+	// pkgmgr.is_valid_modname(modname: str)
 	static int l_is_valid_modname(lua_State *L);
+	
+	// pkgmgr.get_contentdb_id(content: str)
+	static int l_get_contentdb_id(lua_State *L);
 public:
 	static void Initialize(lua_State *L);
 	static void InitializeAsync(lua_State *L, int top);

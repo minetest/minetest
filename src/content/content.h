@@ -34,15 +34,16 @@ enum class ContentType
 };
 
 
-
 struct ContentSpec
 {
+	// TODO Maybe use ContentType here
 	std::string type;
 	std::string author;
 	u32 release = 0;
 
 	/// Technical name / Id
 	std::string name;
+	std::string id;
 
 	/// Human-readable title
 	std::string title;
@@ -53,7 +54,7 @@ struct ContentSpec
 	std::string textdomain;
 };
 
-std::string contentTypeToString(ContentType &t);
+std::string content_type_to_string(ContentType &t);
 
 
 ContentType getContentType(const std::string &path);

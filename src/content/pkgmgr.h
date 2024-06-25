@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../httpfetch.h"
 
 namespace content {
-
+ 
 class PkgMgr
 {
 public:
@@ -32,6 +32,7 @@ public:
 	~PkgMgr() = default;
 	
 	static bool isValidModname(const std::string& str);
+	static std::string getContentdbId(const ContentSpec& content);
 };
 
 }

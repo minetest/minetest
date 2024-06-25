@@ -46,7 +46,7 @@ ContentType content::getContentType(const std::string &path)
 
 
 
-std::string content::contentTypeToString(ContentType &t)
+std::string content::content_type_to_string(ContentType &t)
 {
 	switch (t)
 	{

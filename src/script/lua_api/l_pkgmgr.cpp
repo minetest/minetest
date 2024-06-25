@@ -31,7 +31,6 @@ using namespace content;
 
 int ModApiPkgMgr::l_get_folder_type(lua_State* L)
 {
-	
 	const std::string path = luaL_checkstring(L, 1);
 	
 	ContentType type = getContentType(path);
@@ -41,7 +40,7 @@ int ModApiPkgMgr::l_get_folder_type(lua_State* L)
 	if (type != ContentType::UNKNOWN)
 	{
 		lua_newtable(L);
-		setstringfield(L, -1, "type", contentTypeToString(type).c_str());
+		setstringfield(L, -1, "type", content_type_to_string(type).c_str());
 		setstringfield(L, -1, "path", path.c_str());
 	}
 	else
@@ -55,6 +54,27 @@ int ModApiPkgMgr::l_is_valid_modname(lua_State *L)
 	return 1;
 }
 
+int ModApiPkgMgr::l_get_contentdb_id(lua_State *L)
+{
+	luaL_checktype(L, 1, LUA_TTABLE);
+	
+	ContentSpec spec;
+	spec.type = getstringfield_default(L, 1, "type", "");
+	spec.author = getstringfield_default(L, 1, "author", "");
+	spec.release = getintfield_default(L, 1, "release", 0);
+	spec.id = getstringfield_default(L, 1, "id", "");
+	spec.name = getstringfield_default(L, 1, "name", "");
+	
+	std::string res = PkgMgr::getContentdbId(spec);
+	
+	if (!res.empty())
+		lua_pushstring(L, res.c_str());
+	else
+		lua_pushnil(L);
+		
+	return 1;
+}
+
 void ModApiPkgMgr::Initialize(lua_State* L)
 {
 	lua_getglobal(L, "pkgmgr");
@@ -62,6 +82,7 @@ void ModApiPkgMgr::Initialize(lua_State* L)
 	
 	API_FCT(get_folder_type);
 	API_FCT(is_valid_modname);
+	API_FCT(get_contentdb_id);
 }
 
 
