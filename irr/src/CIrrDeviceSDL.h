@@ -273,10 +273,10 @@ private:
 
 #endif
 	// Check if a key is a known special character with no side effects on text boxes.
-	static bool keyIsKnownSpecial(EKEY_CODE key);
+	static bool keyIsKnownSpecial(EKEY_CODE irrlichtKey);
 
 	// Return the Char that should be sent to Irrlicht for the given key (either the one passed in or 0).
-	static int findCharToPassToIrrlicht(int assumedChar, EKEY_CODE key);
+	static int findCharToPassToIrrlicht(uint32_t sdlKey, EKEY_CODE irrlichtKey, bool numlock);
 
 	// Check if a text box is in focus. Enable or disable SDL_TEXTINPUT events only if in focus.
 	void resetReceiveTextInputEvents();
