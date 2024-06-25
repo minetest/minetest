@@ -314,7 +314,8 @@ Minetest namespace reference
 Call these functions only at load time!
 
 * `minetest.register_globalstep(function(dtime))`
-    * Called every client environment step, usually interval of 0.1s
+    * Called every client environment step
+	* `dtime` is the time since last execution in seconds.
 * `minetest.register_on_mods_loaded(function())`
     * Called just after mods have finished loading.
 * `minetest.register_on_shutdown(function())`

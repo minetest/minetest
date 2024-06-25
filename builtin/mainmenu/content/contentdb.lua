@@ -133,6 +133,8 @@ local function start_install(package, reason)
 					conf:set("release",    package.release)
 					conf:write()
 				end
+
+				pkgmgr.reload_by_type(package.type)
 			end
 		end
 
@@ -146,7 +148,6 @@ local function start_install(package, reason)
 
 			start_install(next.package, next.reason)
 		end
-
 		ui.update()
 	end
 
@@ -427,8 +428,9 @@ end
 
 
 function contentdb.update_paths()
+	pkgmgr.load_all()
+
 	local mod_hash = {}
-	pkgmgr.refresh_globals()
 	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
 		local cdb_id = pkgmgr.get_contentdb_id(mod)
 		if cdb_id then
@@ -437,7 +439,6 @@ function contentdb.update_paths()
 	end
 
 	local game_hash = {}
-	pkgmgr.update_gamelist()
 	for _, game in pairs(pkgmgr.games) do
 		local cdb_id = pkgmgr.get_contentdb_id(game)
 		if cdb_id then
@@ -446,7 +447,7 @@ function contentdb.update_paths()
 	end
 
 	local txp_hash = {}
-	for _, txp in pairs(pkgmgr.get_texture_packs()) do
+	for _, txp in pairs(pkgmgr.texture_packs) do
 		local cdb_id = pkgmgr.get_contentdb_id(txp)
 		if cdb_id then
 			txp_hash[contentdb.aliases[cdb_id] or cdb_id] = txp
