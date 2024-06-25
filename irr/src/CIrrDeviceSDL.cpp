@@ -199,9 +199,9 @@ int CIrrDeviceSDL::findCharToPassToIrrlicht(uint32_t sdlKey, EKEY_CODE irrlichtK
 		return (int)irrlichtKey;
 
 	// This is necessary for keys on the numpad because they don't use the same
-	// keycodes (which correspond to chars) as their non-numpad versions, but
-	// have their own SDL keycodes and their own Irrlicht keycodes (which don't
-	// correspond to chars).
+	// keycodes as their non-numpad versions (whose keycodes correspond to chars),
+	// but have their own SDL keycodes and their own Irrlicht keycodes (which
+	// don't correspond to chars).
 	case KEY_MULTIPLY:
 		return '*';
 	case KEY_ADD:
