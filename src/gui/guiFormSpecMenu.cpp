@@ -3800,7 +3800,7 @@ void GUIFormSpecMenu::showTooltip(const std::wstring &text,
 void GUIFormSpecMenu::updateSelectedItem()
 {
 	// Don't update when dragging an item
-	if (m_selected_item && (m_selected_dragging || m_left_dragging))
+	if (m_selected_item && (m_left_dragging && (m_left_drag_stacks.size() > 1)))
 		return;
 
 	verifySelectedItem();

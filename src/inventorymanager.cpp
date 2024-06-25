@@ -460,8 +460,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		if (from_inv.type == InventoryLocation::PLAYER)
 			list_from->setModified();
 
-		if (to_inv.type == InventoryLocation::PLAYER)
-			list_to->setModified();
+		list_to->setModified();
 
 		infostream<<"IMoveAction::apply(): move was completely disallowed:"
 				<<" move_count="<<old_move_count
