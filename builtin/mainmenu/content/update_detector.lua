@@ -72,9 +72,6 @@ end
 
 
 local function has_packages_from_cdb()
-	pkgmgr.refresh_globals()
-	pkgmgr.update_gamelist()
-
 	for _, content in pairs(pkgmgr.get_all()) do
 		if pkgmgr.get_contentdb_id(content) then
 			return true
@@ -126,9 +123,6 @@ function update_detector.get_all()
 		fetch()
 		return {}
 	end
-
-	pkgmgr.refresh_globals()
-	pkgmgr.update_gamelist()
 
 	local ret = {}
 	local all_content = pkgmgr.get_all()
