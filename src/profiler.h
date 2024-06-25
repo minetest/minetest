@@ -55,7 +55,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /**	\brief Collects values (time intervals, counts and other) in named entries.
 
-	Can be used to get sum, average or maximum of recoeded values for each entry. Gives
+	Can be used to get sum, average or maximum of recorded values for each entry. Gives
 	result in text form via print().
 
 	Can collect values for #ProfilerGraph and give them via graphPop().
@@ -181,9 +181,9 @@ private:
 	};
 
 	std::mutex m_mutex;
-	/// All the profiler entries, stored untill `clear()` call.
+	/// All the profiler entries, stored until `clear()` call.
 	std::map<std::string, DataPair> m_data;
-	/// Values for profiler graph collected untill next frame draw. Value history
+	/// Values for profiler graph collected until next frame draw. Value history
 	/// is stored in `ProfilerGraph`.
 	std::map<std::string, float> m_graphvalues;
 	u64 m_start_time;
@@ -197,7 +197,7 @@ private:
 
 	- cycle for profiler menu (GameUI::updateProfiler()) is managed in
 	Game::updateProfilers() and lasts for \c profiler_print_interval seconds (user
-	setting) or for 3 seconds if setting is setted to 0;
+	setting) or for 3 seconds if setting is set to 0;
 
 	- cycle for ProfilerGraph is managed in Game::updateProfilerGraphs() and lasts
 	for one frame;
@@ -211,7 +211,7 @@ enum ScopeProfilerType : u8
 	SPT_ADD = 1,
 	/// Record time with Profiler::avg() (to get average of recorded values) at scope end.
 	SPT_AVG,
-	/// Record time with Profiler::graphAdd() (to get get sum of recorded values on
+	/// Record time with Profiler::graphAdd() (to get sum of recorded values on
 	/// ProfilerGraph) at scope end.
 	SPT_GRAPH_ADD,
 	/// Record time with Profiler::max() (to get maximum of recorded values) at scope end.
@@ -227,7 +227,7 @@ enum ScopeProfilerType : u8
 class ScopeProfiler
 {
 public:
-	/**	\brief Begins measurement untill scope end.Result will be recorded to
+	/**	\brief Begins measurement until scope end.Result will be recorded to
 		\p name
 		profiling entry in \p profiler (profiling entries are created/deleted automatically).
 	*/
