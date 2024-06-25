@@ -246,6 +246,7 @@ int CIrrDeviceSDL::findCharToPassToIrrlicht(uint32_t sdlKey, EKEY_CODE irrlichtK
 
 	// SDL in-place ORs values with no character representation with 1<<30
 	// https://wiki.libsdl.org/SDL2/SDLKeycodeLookup
+	// This also affects the numpad keys btw.
 	if (sdlKey & (1 << 30))
 		return 0;
 
