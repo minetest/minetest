@@ -31,10 +31,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 /**	\defgroup Profiling Profiling tools
-	\brief In-engine tools to profile CPU time or everything else that is recorded
-	in by special functions.
+	\brief Embedded tools to profile CPU time or anything else that is recorded
+	by certain functions.
 
-	Usage example with global profiler (#g_profiler), that is available in any file
+	An example with global profiler (#g_profiler), that is available in any file
 	with profiler.h included:
 	\code{.c++}
 	void functionToProfie(int count) {
@@ -193,18 +193,14 @@ private:
 /**	\brief Global profiler. User can view its data via in-game profiler menu,
 	graph or "/profiler" command.
 
-	It collects data for
-	- itself, in Game::updateProfilers(); result is given in text form by print()
-	(user can view it via in-game profiler menu or "/profiler" command);
+	Profiling cycles are managed in Game class:
 
-	- profiler graph, in Game::updateProfilerGraphs(); result is displayed by
-	ProfilerGraph.
+	- cycle for profiler menu (GameUI::updateProfiler()) is managed in
+	Game::updateProfilers() and lasts for \c profiler_print_interval seconds (user
+	setting) or for 3 seconds if setting is setted to 0;
 
-	Cycle for profiler graph data lasts for one frame. Cycle for all other data lasts
-	for \c profiler_print_interval seconds (user setting) or for 3 seconds if setting
-	is setted to 0, and managed in Game::updateProfilers().
-
-	All corresponding data is cleared at cycle end.
+	- cycle for ProfilerGraph is managed in Game::updateProfilerGraphs() and lasts
+	for one frame;
 */
 extern Profiler* g_profiler;
 
@@ -231,19 +227,21 @@ enum ScopeProfilerType : u8
 class ScopeProfiler
 {
 public:
-	///	\brief Begins record untill scope end. Result will be added to \p name profiling
-	///	entry in \p profiler (profiling entries are created/deleted automatically).
+	/**	\brief Begins measurement untill scope end.Result will be recorded to
+		\p name
+		profiling entry in \p profiler (profiling entries are created/deleted automatically).
+	*/
 	ScopeProfiler(Profiler *profiler, const std::string &name,
 			ScopeProfilerType type = SPT_ADD,
 			TimePrecision precision = PRECISION_MILLI);
 
-	/// Ends record and logs result in profiler.
+	/// Ends measurement and record result in profiler.
 	~ScopeProfiler();
 
 private:
-	Profiler *m_profiler = nullptr;
-	std::string m_name;
-	u64 m_time1;  /// Record start time
+	Profiler *m_profiler = nullptr;	/// Profiler to record in
+	std::string m_name;				/// Name of profiler entry to record in
+	u64 m_time1;					/// Record start time
 	ScopeProfilerType m_type;
 	TimePrecision m_precision;
 };
