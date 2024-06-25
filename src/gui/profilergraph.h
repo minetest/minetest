@@ -29,12 +29,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /** \brief Draws graph every frame using data given by Profiler.
 
-	It displays only entries that recorded for profiler graph (via Profiler::graphAdd,
+	It displays only entries that are recorded for profiler graph (via Profiler::graphAdd,
 	ScopeProfilerType::SPT_GRAPH_ADD and other) and Profiler itself doesn't show them.
 
-	Each profiling entry described with upper graph value, entry name and lower graph
+	Each profiling entry described with upper bound value, entry name and lower bound
 	value on its right. Graph is displayed as \e line if it is relative (lower value
 	is not 0) and \e filled if it is absolute.
+
+	\ingroup Profiling
 */
 class ProfilerGraph
 {
