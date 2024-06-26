@@ -363,6 +363,11 @@ minetest.register_node("testnodes:plantlike_leveled", {
 	tiles = {
 		{ name = "testnodes_plantlike_leveled.png", tileable_vertical = true },
 	},
+	-- also test the 'leveled_plantlike' nodebox
+	selection_box = {
+		type = "leveled_plantlike",
+		fixed = { -0.4, -0.5, -0.4, 0.4, 0.4, 0.4 },
+	},
 
 
 	-- We set a default param2 here only for convenience, to make the "plant" visible after placement
@@ -441,6 +446,14 @@ minetest.register_node("testnodes:plantlike_rooted_leveled", {
 	},
 	special_tiles = {
 		{ name = "testnodes_plantlike_rooted_leveled.png", tileable_vertical = true },
+	},
+	-- also test the 'leveled_plantlike_rooted' nodebox
+	selection_box = {
+		type = "leveled_plantlike_rooted",
+		-- variable box for plant
+		fixed = { -0.4, 0.5, -0.4, 0.4, 0.5, 0.4 },
+		-- fixed box for the base cube
+		leveled_fixed = { -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 },
 	},
 
 
