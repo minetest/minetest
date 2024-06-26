@@ -98,25 +98,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PLAYER_MAX_BREATH_DEFAULT 10
 
 
-// DEFAULT_PHYSICS value of a player
-#define PLAYER_SPEED_DEFAULT 1
-#define PLAYER_JUMP_DEFAULT 1
-#define PLAYER_GRAVITY_DEFAULT 1
+// DEFAULT_PHYSICS constants of a player
+#define PLAYER_SPEED_DEFAULT                    1
+#define PLAYER_JUMP_DEFAULT                     1
+#define PLAYER_GRAVITY_DEFAULT                  1
 
-#define PLAYER_SNEAK_DEFAULT true
-#define PLAYER_SNEAK_GLITCH_DEFAULT false
-#define PLAYER_NEW_MOVE_DEFAULT true
+#define PLAYER_SNEAK_DEFAULT                    true
+#define PLAYER_SNEAK_GLITCH_DEFAULT             false
+#define PLAYER_NEW_MOVE_DEFAULT                 true
 
-#define PLAYER_SPEED_CLIMB_DEFAULT 1
-#define PLAYER_SPEED_CROUCH_DEFAULT 1
-#define PLAYER_LIQUID_FLUIDITY_DEFAULT 1
-#define PLAYER_LIQUID_FLUIDITY_SMOOTH_DEFAULT 1
-#define PLAYER_LIQUID_SINK_DEFAULT 1
-#define PLAYER_ACCELERATION_DEFAULT 1
-#define PLAYER_ACCELERATION_AIR_DEFAULT 1
-#define PLAYER_SPEED_FAST_DEFAULT 1
-#define PLAYER_ACCELERATION_FAST_DEFAULT 1
-#define PLAYER_SPEED_WALK_DEFAULT 1
+#define PLAYER_SPEED_CLIMB_DEFAULT              1
+#define PLAYER_SPEED_CROUCH_DEFAULT             1
+#define PLAYER_LIQUID_FLUIDITY_DEFAULT          1
+#define PLAYER_LIQUID_FLUIDITY_SMOOTH_DEFAULT   1
+#define PLAYER_LIQUID_SINK_DEFAULT              1
+#define PLAYER_ACCELERATION_DEFAULT             1
+#define PLAYER_ACCELERATION_AIR_DEFAULT         1
+#define PLAYER_SPEED_FAST_DEFAULT               1
+#define PLAYER_ACCELERATION_FAST_DEFAULT        1
+#define PLAYER_SPEED_WALK_DEFAULT               1
 
 
 // Number of different files to try to save a player to if the first fails
