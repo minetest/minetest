@@ -352,6 +352,7 @@ void ClientLauncher::config_guienv()
 
 	float density = rangelim(g_settings->getFloat("gui_scaling"), 0.5f, 20) *
 		RenderingEngine::getDisplayDensity();
+	skin->setScale(density);
 	skin->setSize(gui::EGDS_CHECK_BOX_WIDTH, (s32)(17.0f * density));
 	skin->setSize(gui::EGDS_SCROLLBAR_SIZE, (s32)(21.0f * density));
 	skin->setSize(gui::EGDS_WINDOW_BUTTON_WIDTH, (s32)(15.0f * density));
