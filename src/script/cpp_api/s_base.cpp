@@ -82,6 +82,7 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 
 	m_luastack = luaL_newstate();
 	FATAL_ERROR_IF(!m_luastack, "luaL_newstate() failed");
+	
 
 	lua_atpanic(m_luastack, &luaPanic);
 

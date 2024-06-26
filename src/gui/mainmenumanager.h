@@ -136,6 +136,11 @@ public:
 	{
 		keyconfig_requested = true;
 	}
+	
+	void gameConfig()
+	{
+		gameconfig_requested = true;
+	}
 
 	void signalKeyConfigChange() override
 	{
@@ -153,6 +158,7 @@ public:
 	bool keyconfig_requested = false;
 	bool shutdown_requested = false;
 	bool keyconfig_changed = false;
+	bool gameconfig_requested = false;
 	std::string show_open_url_dialog = "";
 };
 

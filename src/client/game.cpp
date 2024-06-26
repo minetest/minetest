@@ -49,6 +49,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiChatConsole.h"
 #include "gui/guiFormSpecMenu.h"
 #include "gui/guiKeyChangeMenu.h"
+#include "gui/guiSettingsMenu.h"
 #include "gui/guiPasswordChange.h"
 #include "gui/guiOpenURL.h"
 #include "gui/guiVolumeChange.h"
@@ -79,7 +80,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 #include "clientdynamicinfo.h"
 #include <IAnimatedMeshSceneNode.h>
-
 #if USE_SOUND
 	#include "client/sound/sound_openal.h"
 #endif
@@ -157,6 +157,11 @@ struct LocalFormspecHandler : public TextDest
 
 			if (fields.find("btn_key_config") != fields.end()) {
 				g_gamecallback->keyConfig();
+				return;
+			}
+			
+			if (fields.find("btn_config") != fields.end()) {
+				g_gamecallback->gameConfig();
 				return;
 			}
 
@@ -611,7 +616,7 @@ public:
 	}
 };
 
-#define SIZE_TAG "size[11,5.5,true]" // Fixed size (ignored in touchscreen mode)
+#define SIZE_TAG "size[11,6.2,true]" // Fixed size (ignored in touchscreen mode)
 
 /****************************************************************************
  ****************************************************************************/
@@ -1871,6 +1876,24 @@ inline bool Game::handleCallbacks()
 		(new GUIKeyChangeMenu(guienv, guiroot, -1,
 				      &g_menumgr, texture_src))->drop();
 		g_gamecallback->keyconfig_requested = false;
+	}
+	
+	if (g_gamecallback->gameconfig_requested) {
+		(new GUISettingsMenu(guienv, guiroot, -1,
+				      &g_menumgr, texture_src, input, m_rendering_engine,
+				      client, sound_manager.get()))->drop();
+		g_gamecallback->gameconfig_requested = false;
+					  	
+		// FormspecFormSource *fs_src = new FormspecFormSource(os.str());
+		// LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
+
+		// auto *&formspec = m_game_ui->getFormspecGUI();
+		// GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
+		// 		&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(),
+		// 		sound_manager.get());
+		// formspec->setFocus("btn_continue");
+		// // game will be paused in next step, if in singleplayer (see m_is_paused)
+		// formspec->doPause = true;
 	}
 
 	if (!g_gamecallback->show_open_url_dialog.empty()) {
@@ -4488,6 +4511,8 @@ void Game::showPauseMenu()
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
 		<< strgettext("Controls")  << "]";
 #endif
+	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_config;"
+		<< strgettext("Settings")  << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
 		<< strgettext("Exit to Menu") << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
