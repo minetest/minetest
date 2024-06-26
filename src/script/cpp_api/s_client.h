@@ -59,6 +59,8 @@ public:
 	bool on_item_use(const ItemStack &item, const PointedThing &pointed);
 
 	bool on_inventory_open(Inventory *inventory);
+	
+	void show_pause_menu();
 
 	void setEnv(ClientEnvironment *env);
 };

@@ -34,6 +34,7 @@ public:
 	virtual void disconnect() = 0;
 	virtual void changePassword() = 0;
 	virtual void changeVolume() = 0;
+	virtual void unpause() = 0;
 	virtual void showOpenURLDialog(const std::string &url) = 0;
 	virtual void signalKeyConfigChange() = 0;
 };
@@ -146,12 +147,18 @@ public:
 	{
 		show_open_url_dialog = url;
 	}
+	
+	void unpause() override
+	{
+		unpause_requested = true;
+	}
 
 	bool disconnect_requested = false;
 	bool changepassword_requested = false;
 	bool changevolume_requested = false;
 	bool keyconfig_requested = false;
 	bool shutdown_requested = false;
+	bool unpause_requested = false;
 	bool keyconfig_changed = false;
 	std::string show_open_url_dialog = "";
 };

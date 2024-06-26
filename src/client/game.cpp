@@ -155,17 +155,17 @@ struct LocalFormspecHandler : public TextDest
 				return;
 			}
 
-			if (fields.find("btn_key_config") != fields.end()) {
+			else if (fields.find("btn_key_config") != fields.end()) {
 				g_gamecallback->keyConfig();
 				return;
 			}
 
-			if (fields.find("btn_exit_menu") != fields.end()) {
+			else if (fields.find("btn_exit_menu") != fields.end()) {
 				g_gamecallback->disconnect();
 				return;
 			}
 
-			if (fields.find("btn_exit_os") != fields.end()) {
+			else if (fields.find("btn_exit_os") != fields.end()) {
 				g_gamecallback->exitToOS();
 #ifndef __ANDROID__
 				RenderingEngine::get_raw_device()->closeDevice();
@@ -173,8 +173,13 @@ struct LocalFormspecHandler : public TextDest
 				return;
 			}
 
-			if (fields.find("btn_change_password") != fields.end()) {
+			else if (fields.find("btn_change_password") != fields.end()) {
 				g_gamecallback->changePassword();
+				return;
+			}
+			
+			else {
+				g_gamecallback->unpause();
 				return;
 			}
 
@@ -1188,7 +1193,7 @@ void Game::run()
 				client->sendUpdateClientInfo(current_dynamic_info);
 			}
 		}
-
+		
 		// Prepare render data for next iteration
 
 		updateStats(&stats, draw_times, dtime);
@@ -1871,6 +1876,11 @@ inline bool Game::handleCallbacks()
 		(new GUIKeyChangeMenu(guienv, guiroot, -1,
 				      &g_menumgr, texture_src))->drop();
 		g_gamecallback->keyconfig_requested = false;
+	}
+	
+	if (g_gamecallback->unpause_requested) {
+		m_is_paused = false;
+		g_gamecallback->unpause_requested = false;
 	}
 
 	if (!g_gamecallback->show_open_url_dialog.empty()) {
@@ -2751,7 +2761,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 void Game::updatePauseState()
 {
 	bool was_paused = this->m_is_paused;
-	this->m_is_paused = this->simple_singleplayer_mode && g_menumgr.pausesGame();
+	//this->m_is_paused = this->simple_singleplayer_mode && g_menumgr.pausesGame();
 
 	if (!was_paused && this->m_is_paused) {
 		this->pauseAnimation();
@@ -4446,6 +4456,13 @@ void Game::showDeathFormspec()
 #define GET_KEY_NAME(KEY) gettext(getKeySetting(#KEY).name())
 void Game::showPauseMenu()
 {
+	if (client->modsLoaded())
+	{
+		client->getScript()->show_pause_menu();
+		m_is_paused = true;
+	}
+	return;
+	
 	std::string control_text;
 
 	if (g_touchscreengui) {
@@ -4472,7 +4489,7 @@ void Game::showPauseMenu()
 		<< strgettext("Continue") << "]";
 
 	if (!simple_singleplayer_mode) {
-		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
+		os << "button_exit[4," << (ypos++) << ";3,.5;btn_change_password;"
 			<< strgettext("Change Password") << "]";
 	} else {
 		os << "field[4.95,0;5,1.5;;" << strgettext("Game paused") << ";]";
