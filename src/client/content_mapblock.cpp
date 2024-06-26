@@ -83,6 +83,7 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	enable_mesh_cache(g_settings->getBool("enable_mesh_cache") &&
 			!data->m_smooth_lighting) // Mesh cache is not supported with smooth lighting
 {
+	cam_f = &nodedef->get(data->m_cameranode);
 }
 
 void MapblockMeshGenerator::useTile(int index, u8 set_flags, u8 reset_flags, bool special)
@@ -425,6 +426,7 @@ void MapblockMeshGenerator::drawSolidNode()
 		MapNode neighbor = data->m_vmanip.getNodeNoEx(p2);
 		content_t n2 = neighbor.getContent();
 		bool backface_culling = cur_node.f->drawtype == NDT_NORMAL;
+		bool is_hideable = false;
 		if (n2 == n1)
 			continue;
 		if (n2 == CONTENT_IGNORE)
@@ -436,6 +438,9 @@ void MapblockMeshGenerator::drawSolidNode()
 			if (cur_node.f->drawtype == NDT_LIQUID) {
 				if (cur_node.f->sameLiquidRender(f2))
 					continue;
+				if (f2.drawtype == NDT_GLASSLIKE) {
+					is_hideable = true;
+				}
 				backface_culling = f2.solidness || f2.visual_solidness;
 			}
 		}
@@ -446,6 +451,11 @@ void MapblockMeshGenerator::drawSolidNode()
 				layer.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
 			layer.material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
 			layer.material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
+			if (is_hideable) {
+				layer.material_flags |= MATERIAL_FLAG_HIDDABLE;
+				layer.liquid_source_id = cur_node.f->liquid_alternative_source_id;
+				layer.liquid_flowing_id = cur_node.f->liquid_alternative_flowing_id;
+			}
 		}
 		if (!data->m_smooth_lighting) {
 			lights[face] = getFaceLight(cur_node.n, neighbor, nodedef);

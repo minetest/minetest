@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapblock_mesh.h"
 #include "client.h"
+#include "camera.h"
 #include "mapblock.h"
 #include "map.h"
 #include "noise.h"
@@ -39,11 +40,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	MeshMakeData
 */
 
-MeshMakeData::MeshMakeData(const NodeDefManager *ndef, u16 side_length, bool use_shaders):
+MeshMakeData::MeshMakeData(Client *client, u16 side_length, bool use_shaders):
+	side_length(side_length),
+	nodedef(client->getNodeDefManager()),
+	m_use_shaders(use_shaders)
+{
+  v3s16 pos = floatToInt(client->getCamera()->getPosition(), BS);
+  m_cameranode = client->getEnv().getMap().getNode(pos);
+}
+MeshMakeData::MeshMakeData(const NodeDefManager *ndef, MapNode &cameranode, u16 side_length, bool use_shaders):
 	side_length(side_length),
 	nodedef(ndef),
+	m_cameranode(cameranode),
 	m_use_shaders(use_shaders)
-{}
+{
+}
 
 void MeshMakeData::fillBlockDataBegin(const v3s16 &blockpos)
 {
@@ -617,6 +628,7 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	m_last_crack(-1),
 	m_last_daynight_ratio((u32) -1)
 {
+	m_texture_blank = m_tsrc->getTextureForMesh("blank.png", &m_texture_blank_id);
 	for (auto &m : m_mesh)
 		m = new scene::SMesh();
 	m_enable_shaders = data->m_use_shaders;
@@ -711,6 +723,16 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 				}
 				// Replace tile texture with the first animation frame
 				p.layer.texture = (*p.layer.frames)[0].texture;
+			}
+
+			// - Texture hideable
+			if (p.layer.material_flags & MATERIAL_FLAG_HIDDABLE) {
+				// Add to MapBlockMesh to hideable
+				auto &info = m_hideable_info[{layer, i}];
+				info.hidden = false;
+				info.liquid_source_id = p.layer.liquid_source_id;
+				info.liquid_flowing_id = p.layer.liquid_flowing_id;
+				info.tile = p.layer;
 			}
 
 			if (!m_enable_shaders) {
@@ -891,6 +913,28 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 	}
 
 	return true;
+}
+
+void MapBlockMesh::updateHideable(content_t liquid_source_id, content_t liquid_flowing_id)
+{
+	// Texture animation
+	for (auto &it : m_hideable_info) {
+		const TileLayer &tile = it.second.tile;
+
+		scene::IMeshBuffer *buf = m_mesh[it.first.first]->getMeshBuffer(it.first.second);
+
+		bool hide = (it.second.liquid_source_id == liquid_source_id) &&
+				(it.second.liquid_flowing_id == liquid_flowing_id);
+		if (it.second.hidden != hide) {
+			buf->getMaterial().setTexture(0, hide ? m_texture_blank : tile.texture);
+			if (m_enable_shaders) {
+				if (tile.normal_texture)
+					buf->getMaterial().setTexture(1, hide ? m_texture_blank : tile.normal_texture);
+				buf->getMaterial().setTexture(2, hide ? m_texture_blank : tile.flags_texture);
+			}
+			it.second.hidden = hide;
+		}
+	}
 }
 
 void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)

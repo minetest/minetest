@@ -617,6 +617,7 @@ void Client::step(float dtime)
 					else {
 						// Replace with the new mesh
 						block->mesh = r.mesh;
+						getEnv().getClientMap().updateMesh(block->mesh);
 						if (r.urgent)
 							force_update_shadows = true;
 					}

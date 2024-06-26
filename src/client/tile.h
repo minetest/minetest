@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ITexture.h>
 #include <vector>
 #include <SMaterial.h>
+#include "mapnode.h"
 
 enum MaterialType{
 	TILE_MATERIAL_BASIC,
@@ -51,6 +52,7 @@ enum MaterialType{
 //#define MATERIAL_FLAG_HIGHLIGHTED 0x10
 #define MATERIAL_FLAG_TILEABLE_HORIZONTAL 0x20
 #define MATERIAL_FLAG_TILEABLE_VERTICAL 0x40
+#define MATERIAL_FLAG_HIDDABLE 0x80
 
 /*
 	This fully defines the looks of a tile.
@@ -121,6 +123,9 @@ struct TileLayer
 
 	u32 texture_id = 0;
 
+	content_t liquid_source_id;
+	content_t liquid_flowing_id;
+
 	u16 animation_frame_length_ms = 0;
 	u16 animation_frame_count = 1;
 
@@ -167,4 +172,7 @@ struct TileSpec
 	u8 emissive_light = 0;
 	//! The first is base texture, the second is overlay.
 	TileLayer layers[MAX_TILE_LAYERS];
+	//Specify liquid for hide
+	content_t liquid_source_id = CONTENT_IGNORE;
+	content_t liquid_flowing_id = CONTENT_IGNORE;
 };
