@@ -196,7 +196,7 @@ static ExtrusionMeshCache *g_extrusion_mesh_cache = nullptr;
 
 WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool lighting):
 	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
-	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF),
+	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF_2COLORS),
 	m_lighting(lighting)
 {
 	m_enable_shaders = g_settings->getBool("enable_shaders");
@@ -666,7 +666,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 		for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
 			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 			video::SMaterial &material = buf->getMaterial();
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_2COLORS;
 			material.MaterialTypeParam = 0.5f;
 			material.forEachTexture([] (auto &tex) {
 				tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
@@ -727,7 +727,7 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 		});
 		material.BackfaceCulling = true;
 		material.Lighting = false;
-		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_2COLORS;
 		material.MaterialTypeParam = 0.5f;
 	}
 	scaleMesh(mesh, v3f(2.0, 2.0, 2.0));

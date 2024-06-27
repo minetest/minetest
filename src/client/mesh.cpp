@@ -135,7 +135,7 @@ scene::IAnimatedMesh* createCubeMesh2Colors(v3f scale)
 		buf->append(&vertices[0] + 4 * i, 4, indices, 6);
 		// Set default material
 		buf->getMaterial().Lighting = false;
-		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF_2COLORS;
 		buf->getMaterial().forEachTexture([] (auto &tex) {
 			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 			tex.MagFilter = video::ETMAGF_NEAREST;

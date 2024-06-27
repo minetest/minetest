@@ -37,6 +37,7 @@ COpenGL3MaterialRenderer::COpenGL3MaterialRenderer(COpenGL3DriverBase *driver,
 	switch (baseMaterial) {
 	case EMT_TRANSPARENT_VERTEX_ALPHA:
 	case EMT_TRANSPARENT_ALPHA_CHANNEL:
+	case EMT_TRANSPARENT_ALPHA_CHANNEL_2COLORS:
 		Alpha = true;
 		break;
 	case EMT_ONETEXTURE_BLEND:
@@ -61,6 +62,7 @@ COpenGL3MaterialRenderer::COpenGL3MaterialRenderer(COpenGL3DriverBase *driver,
 	switch (baseMaterial) {
 	case EMT_TRANSPARENT_VERTEX_ALPHA:
 	case EMT_TRANSPARENT_ALPHA_CHANNEL:
+	case EMT_TRANSPARENT_ALPHA_CHANNEL_2COLORS:
 		Alpha = true;
 		break;
 	case EMT_ONETEXTURE_BLEND:

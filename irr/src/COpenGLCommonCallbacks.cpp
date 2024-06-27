@@ -3,7 +3,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
-#include "FixedPipelineRenderer.h"
+#include "COpenGLCommonCallbacks.h"
 
 #include "IVideoDriver.h"
 
@@ -14,7 +14,7 @@ namespace video
 
 // Base callback
 
-COpenGL3MaterialBaseCB::COpenGL3MaterialBaseCB() :
+COpenGLMaterialBaseCB::COpenGLMaterialBaseCB() :
 		FirstUpdateBase(true), WVPMatrixID(-1), WVMatrixID(-1), NMatrixID(-1),
 		FogEnableID(-1), FogTypeID(-1), FogColorID(-1), FogStartID(-1),
 		FogEndID(-1), FogDensityID(-1), ThicknessID(-1), LightEnable(false), MaterialAmbient(SColorf(0.f, 0.f, 0.f)), MaterialDiffuse(SColorf(0.f, 0.f, 0.f)), MaterialEmissive(SColorf(0.f, 0.f, 0.f)), MaterialSpecular(SColorf(0.f, 0.f, 0.f)),
@@ -22,7 +22,7 @@ COpenGL3MaterialBaseCB::COpenGL3MaterialBaseCB() :
 {
 }
 
-void COpenGL3MaterialBaseCB::OnSetMaterial(const SMaterial &material)
+void COpenGLMaterialBaseCB::OnSetMaterial(const SMaterial &material)
 {
 	LightEnable = material.Lighting;
 	MaterialAmbient = SColorf(material.AmbientColor);
@@ -36,7 +36,7 @@ void COpenGL3MaterialBaseCB::OnSetMaterial(const SMaterial &material)
 	Thickness = (material.Thickness > 0.f) ? material.Thickness : 1.f;
 }
 
-void COpenGL3MaterialBaseCB::OnSetConstants(IMaterialRendererServices *services, s32 userData)
+void COpenGLMaterialBaseCB::OnSetConstants(IMaterialRendererServices *services, s32 userData)
 {
 	IVideoDriver *driver = services->getVideoDriver();
 
@@ -94,22 +94,22 @@ void COpenGL3MaterialBaseCB::OnSetConstants(IMaterialRendererServices *services,
 
 // EMT_SOLID + EMT_TRANSPARENT_ALPHA_CHANNEL + EMT_TRANSPARENT_VERTEX_ALPHA
 
-COpenGL3MaterialSolidCB::COpenGL3MaterialSolidCB() :
+COpenGLMaterialSolidCB::COpenGLMaterialSolidCB() :
 		FirstUpdate(true), TMatrix0ID(-1), AlphaRefID(-1), TextureUsage0ID(-1), TextureUnit0ID(-1), AlphaRef(0.5f), TextureUsage0(0), TextureUnit0(0)
 {
 }
 
-void COpenGL3MaterialSolidCB::OnSetMaterial(const SMaterial &material)
+void COpenGLMaterialSolidCB::OnSetMaterial(const SMaterial &material)
 {
-	COpenGL3MaterialBaseCB::OnSetMaterial(material);
+	COpenGLMaterialBaseCB::OnSetMaterial(material);
 
 	AlphaRef = material.MaterialTypeParam;
 	TextureUsage0 = (material.TextureLayers[0].Texture) ? 1 : 0;
 }
 
-void COpenGL3MaterialSolidCB::OnSetConstants(IMaterialRendererServices *services, s32 userData)
+void COpenGLMaterialSolidCB::OnSetConstants(IMaterialRendererServices *services, s32 userData)
 {
-	COpenGL3MaterialBaseCB::OnSetConstants(services, userData);
+	COpenGLMaterialBaseCB::OnSetConstants(services, userData);
 
 	IVideoDriver *driver = services->getVideoDriver();
 
@@ -132,14 +132,14 @@ void COpenGL3MaterialSolidCB::OnSetConstants(IMaterialRendererServices *services
 
 // EMT_ONETEXTURE_BLEND
 
-COpenGL3MaterialOneTextureBlendCB::COpenGL3MaterialOneTextureBlendCB() :
+COpenGLMaterialOneTextureBlendCB::COpenGLMaterialOneTextureBlendCB() :
 		FirstUpdate(true), TMatrix0ID(-1), BlendTypeID(-1), TextureUsage0ID(-1), TextureUnit0ID(-1), BlendType(0), TextureUsage0(0), TextureUnit0(0)
 {
 }
 
-void COpenGL3MaterialOneTextureBlendCB::OnSetMaterial(const SMaterial &material)
+void COpenGLMaterialOneTextureBlendCB::OnSetMaterial(const SMaterial &material)
 {
-	COpenGL3MaterialBaseCB::OnSetMaterial(material);
+	COpenGLMaterialBaseCB::OnSetMaterial(material);
 
 	BlendType = 0;
 
@@ -159,9 +159,9 @@ void COpenGL3MaterialOneTextureBlendCB::OnSetMaterial(const SMaterial &material)
 	TextureUsage0 = (material.TextureLayers[0].Texture) ? 1 : 0;
 }
 
-void COpenGL3MaterialOneTextureBlendCB::OnSetConstants(IMaterialRendererServices *services, s32 userData)
+void COpenGLMaterialOneTextureBlendCB::OnSetConstants(IMaterialRendererServices *services, s32 userData)
 {
-	COpenGL3MaterialBaseCB::OnSetConstants(services, userData);
+	COpenGLMaterialBaseCB::OnSetConstants(services, userData);
 
 	IVideoDriver *driver = services->getVideoDriver();
 

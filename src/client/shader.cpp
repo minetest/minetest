@@ -530,20 +530,22 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	case TILE_MATERIAL_OPAQUE:
 	case TILE_MATERIAL_LIQUID_OPAQUE:
 	case TILE_MATERIAL_WAVING_LIQUID_OPAQUE:
-		shaderinfo.base_material = video::EMT_SOLID;
+		shaderinfo.base_material = name == "nodes_shader" ? video::EMT_SOLID_2COLORS : video::EMT_SOLID;
 		break;
 	case TILE_MATERIAL_ALPHA:
 	case TILE_MATERIAL_PLAIN_ALPHA:
 	case TILE_MATERIAL_LIQUID_TRANSPARENT:
 	case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
-		shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+		shaderinfo.base_material = name == "nodes_shader" ? video::EMT_TRANSPARENT_ALPHA_CHANNEL_2COLORS :
+			video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		break;
 	case TILE_MATERIAL_BASIC:
 	case TILE_MATERIAL_PLAIN:
 	case TILE_MATERIAL_WAVING_LEAVES:
 	case TILE_MATERIAL_WAVING_PLANTS:
 	case TILE_MATERIAL_WAVING_LIQUID_BASIC:
-		shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		shaderinfo.base_material = name == "nodes_shader" ? video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF_2COLORS :
+			video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		break;
 	}
 	shaderinfo.material = shaderinfo.base_material;
@@ -635,9 +637,13 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	if (strstr(renderer, "GC7000"))
 		use_discard = true;
 	if (use_discard) {
-		if (shaderinfo.base_material == video::EMT_TRANSPARENT_ALPHA_CHANNEL)
+		if (shaderinfo.base_material == video::EMT_TRANSPARENT_ALPHA_CHANNEL ||
+			shaderinfo.base_material == video::EMT_TRANSPARENT_ALPHA_CHANNEL_2COLORS
+		)
 			shaders_header << "#define USE_DISCARD 1\n";
-		else if (shaderinfo.base_material == video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
+		else if (shaderinfo.base_material == video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF ||
+			shaderinfo.base_material == video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF_2COLORS
+		)
 			shaders_header << "#define USE_DISCARD_REF 1\n";
 	}
 

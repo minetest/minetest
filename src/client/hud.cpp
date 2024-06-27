@@ -1145,7 +1145,7 @@ void drawItemStack(
 			}
 
 			video::SMaterial &material = buf->getMaterial();
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF_2COLORS;
 			material.Lighting = false;
 			driver->setMaterial(material);
 			driver->drawMeshBuffer(buf);

@@ -57,12 +57,14 @@ COpenGLSLMaterialRenderer::COpenGLSLMaterialRenderer(video::COpenGLDriver *drive
 	switch (baseMaterial) {
 	case EMT_TRANSPARENT_VERTEX_ALPHA:
 	case EMT_TRANSPARENT_ALPHA_CHANNEL:
+	case EMT_TRANSPARENT_ALPHA_CHANNEL_2COLORS:
 		Alpha = true;
 		break;
 	case EMT_ONETEXTURE_BLEND:
 		Blending = true;
 		break;
 	case EMT_TRANSPARENT_ALPHA_CHANNEL_REF:
+	case EMT_TRANSPARENT_ALPHA_CHANNEL_REF_2COLORS:
 		AlphaTest = true;
 		break;
 	default:
