@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-04-27 21:16+0000\n"
-"Last-Translator: Unacceptium <unacceptium@proton.me>\n"
+"PO-Revision-Date: 2024-06-28 05:09+0000\n"
+"Last-Translator: Kisbenedek Márton <martonkisbenedek@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5.1\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -28,7 +28,7 @@ msgstr "Kilépés a főmenübe"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr "Ismeretlen parancs: "
+msgstr "Érvénytelen parancs: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
@@ -155,7 +155,7 @@ msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 downloading..."
-msgstr "$1 Letöltése…"
+msgstr "$1 letöltése…"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
@@ -235,7 +235,7 @@ msgstr "$1 telepítése"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Install missing dependencies"
-msgstr "hiányzó függőségek telepitése"
+msgstr "Hiányzó függőségek telepítése"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
@@ -269,11 +269,11 @@ msgstr "Felülírás"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr "Az alapjáték ellenörzése szükséges ."
+msgstr "Kérlek ellenőrizd, hogy az alapjáték megfelelő-e."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Queued"
-msgstr "Sorbaállítva"
+msgstr "Sorba állítva"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Texture packs"
@@ -281,7 +281,7 @@ msgstr "Textúracsomagok"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "The package $1 was not found."
-msgstr "A $1 csomag nem található."
+msgstr "A(z) $1 csomag nem található."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
@@ -303,7 +303,7 @@ msgstr "További információ megtekintése böngészőben"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "You need to install a game before you can install a mod"
-msgstr "Először a játékot kell telepítened, hogy tudj modokat telepíteni"
+msgstr "Először egy játékot kell telepítened ahhoz, hogy modokat telepíthess"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -319,7 +319,7 @@ msgstr "$1 telepítése meghiúsult ide: $2"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr "Telepítés: nem található megfelelő mappanév ehhez: $1"
+msgstr "Telepítés: nem található megfelelő mappanév $1 számára"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to find a valid mod, modpack, or game"
@@ -327,11 +327,11 @@ msgstr "Nem található érvényes mod, modcsomag vagy játék"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to install a $1 as a $2"
-msgstr "Nem lehet telepíteni $1 et $2 ként"
+msgstr "$1 nem telepíthető $2 ként"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
-msgstr "$1 textúracsomag telepítése meghiúsult"
+msgstr "Egy $1 telepítése textúracsomagként meghiúsult"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
@@ -347,7 +347,7 @@ msgstr "Összes letiltása"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "Modcsomag letiltása"
+msgstr "Mod csomag letiltása"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -355,7 +355,7 @@ msgstr "Összes engedélyezése"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "Modcsomag engedélyezése"
+msgstr "Mod csomag engedélyezése"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -387,7 +387,7 @@ msgstr "Nincsenek kötelező függőségek"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr "Nincs elérhető modcsomag-leírás."
+msgstr "Nincs elérhető mod csomag leírás."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
@@ -425,7 +425,7 @@ msgstr "Hőmérséklet-csökkenés a magassággal"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Altitude dry"
-msgstr "Páratartalomcsökkenés a magassággal"
+msgstr "Páratartalom csökkenés a magassággal"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
@@ -503,15 +503,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr "Pályagenerálás"
+msgstr "Térképgenerálás"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr "Pályagenerátor jelzői"
+msgstr "Térképgenerátor jelzői"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen-specific flags"
-msgstr "Pályagenerátor saját jelzői"
+msgstr "Térképgenerátor saját jelzői"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
