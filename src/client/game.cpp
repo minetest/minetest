@@ -1888,7 +1888,10 @@ inline bool Game::handleCallbacks()
 	}
 	
 	if (g_gamecallback->show_settings_requested) {
-		
+		if (client->modsLoaded())
+		{
+			client->getScript()->show_settings();
+		}
 		g_gamecallback->show_settings_requested = false;
 	}
 

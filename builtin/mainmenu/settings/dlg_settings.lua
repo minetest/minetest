@@ -99,13 +99,16 @@ local function load_settingtypes()
 end
 
 
-local function load()
+function load(read_all, parse_mods)
+	read_all = read_all == nil and false or read_all
+	parse_mods = parse_mods == nil and true or parse_mods
+	
 	if loaded then
 		return
 	end
 	loaded = true
 
-	full_settings = settingtypes.parse_config_file(false, true)
+	full_settings = settingtypes.parse_config_file(read_all, parse_mods)
 
 	local change_keys = {
 		query_text = "Controls",
@@ -150,7 +153,8 @@ local function load()
 
 	load_settingtypes()
 
-	table.insert(page_by_id.controls_keyboard_and_mouse.content, 1, change_keys)
+	if page_by_id.controls_keyboard_and_mouse then
+		table.insert(page_by_id.controls_keyboard_and_mouse.content, 1, change_keys)
 	do
 		local content = page_by_id.graphics_and_audio_shaders.content
 		local idx = table.indexof(content, "enable_dynamic_shadows")
@@ -222,6 +226,8 @@ local function load()
 		zh_CN = "中文 (简体) [zh_CN]",
 		zh_TW = "正體中文 (繁體) [zh_TW]",
 	}
+		end
+
 end
 
 
@@ -746,6 +752,10 @@ function create_settings_dlg()
 	local dlg = dialog_create("dlg_settings", get_formspec, buttonhandler, eventhandler)
 
 	dlg.data.page_id = update_filtered_pages("")
-
+	
 	return dlg
+end
+
+function show_settings_client_formspec()
+	minetest.show_formspec("dlg_settings", get_formspec({}))
 end

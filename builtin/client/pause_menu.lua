@@ -88,7 +88,26 @@ Menu/inventory open:
 end
 
 function core.show_pause_menu(is_singleplayer, is_touchscreen, address)
-	minetest.log(dump(core))
-	
 	minetest.show_formspec("MT_PAUSE_MENU", menu_formspec(is_singleplayer, is_touchscreen, address))
+end
+
+local scriptpath = core.get_builtin_path()
+local path = scriptpath.."mainmenu"..DIR_DELIM.."settings"
+
+function core.get_mainmenu_path()
+	return scriptpath.."mainmenu"
+end
+
+defaulttexturedir = ""
+dofile(path .. DIR_DELIM .. "settingtypes.lua")
+dofile(path .. DIR_DELIM .. "dlg_change_mapgen_flags.lua")
+dofile(path .. DIR_DELIM .. "dlg_settings.lua")
+
+function dialog_create(name, spec, buttonhandler, eventhandler)
+	minetest.show_formspec(name, spec({}))
+end
+
+function core.show_settings()
+	load(true, false)
+	show_settings_client_formspec()
 end

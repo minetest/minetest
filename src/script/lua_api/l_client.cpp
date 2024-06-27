@@ -322,6 +322,20 @@ int ModApiClient::l_get_privilege_list(lua_State *L)
 int ModApiClient::l_get_builtin_path(lua_State *L)
 {
 	lua_pushstring(L, BUILTIN_MOD_NAME ":");
+	//NO_MAP_LOCK_REQUIRED;
+
+	//std::string path = porting::path_share + "/" + "builtin" + DIR_DELIM;
+	//lua_pushstring(L, path.c_str());
+	return 1;
+}
+
+#include "filesys.h"
+int ModApiClient::l_get_true_builtin_path(lua_State* L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	std::string path = porting::path_share + DIR_DELIM + "builtin" + DIR_DELIM;
+	lua_pushstring(L, path.c_str());
 	return 1;
 }
 
@@ -358,6 +372,7 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_node_def);
 	API_FCT(get_privilege_list);
 	API_FCT(get_builtin_path);
+	API_FCT(get_true_builtin_path);
 	API_FCT(get_language);
 	API_FCT(get_csm_restrictions);
 }
