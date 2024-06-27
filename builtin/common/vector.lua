@@ -377,17 +377,11 @@ end
 
 function vector.random_direction()
 	-- Generate a random direction of unit length, via rejection sampling
-	local x = math.random(-1,1)
-    local y = math.random(-1,1)
-	local z = math.random(-1,1)
-    local l2 = x*x + y*y + z*z -- squared length
-	-- expected less than two attempts on average
-    while (l2 > 1 or l2 == 0) do -- rejected, retry
-		x = math.random(-1,1)
-        y = math.random(-1,1)
-        z = math.random(-1,1)
+	local x, y, z, l2
+	repeat -- expected less than two attempts on average (volume sphere vs. cube)
+		x, y, z = math.random() * 2 - 1, math.random() * 2 - 1, math.random() * 2 - 1
         l2 = x*x + y*y + z*z
-    end
+	until l2 <= 1 and l2 >= 1e-6
 	-- normalize
 	local l = math.sqrt(l2)
 	return fast_new(x/l, y/l, z/l)
