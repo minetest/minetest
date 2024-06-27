@@ -60,7 +60,7 @@ public:
 
 	bool on_inventory_open(Inventory *inventory);
 	
-	void show_pause_menu();
+	void show_pause_menu(bool is_singleplayer, bool is_touchscreen, const std::string& server_address);
 
 	void setEnv(ClientEnvironment *env);
 };
