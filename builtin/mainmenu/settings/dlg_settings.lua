@@ -23,13 +23,13 @@ local shadows_component =  dofile(core.get_mainmenu_path() .. DIR_DELIM ..
 		"settings" .. DIR_DELIM .. "shadows_component.lua")
 
 local loaded = false
-local full_settings
+ full_settings = {}
 local info_icon_path = core.formspec_escape(defaulttexturedir .. "settings_info.png")
 local reset_icon_path = core.formspec_escape(defaulttexturedir .. "settings_reset.png")
-local all_pages = {}
-local page_by_id = {}
-local filtered_pages = all_pages
-local filtered_page_by_id = page_by_id
+ all_pages = {}
+ page_by_id = {}
+ filtered_pages = all_pages
+ filtered_page_by_id = page_by_id
 
 
 local function get_setting_info(name)
@@ -288,7 +288,7 @@ local function filter_page_content(page, query_keywords)
 end
 
 
-local function update_filtered_pages(query)
+function update_filtered_pages(query)
 	filtered_pages = {}
 	filtered_page_by_id = {}
 
@@ -638,6 +638,8 @@ function buttonhandler(this, fields)
 	dialogdata.leftscroll = core.explode_scrollbar_event(fields.leftscroll).value or dialogdata.leftscroll
 	dialogdata.rightscroll = core.explode_scrollbar_event(fields.rightscroll).value or dialogdata.rightscroll
 	dialogdata.query = fields.search_query
+	
+	minetest.log(dump(fields))
 
 	if fields.back then
 		this:delete()
@@ -709,6 +711,7 @@ function buttonhandler(this, fields)
 		end
 	end
 
+	if dialogdata.components then
 	for i, comp in ipairs(dialogdata.components) do
 		if comp.on_submit and comp:on_submit(fields, this) then
 			write_settings_early()
@@ -725,6 +728,7 @@ function buttonhandler(this, fields)
 			dialogdata.components = nil
 			return true
 		end
+	end
 	end
 
 	return false

@@ -100,13 +100,15 @@ core.register_on_formspec_input(function(formname, fields)
 		core.key_config() -- Don't want this
 	elseif fields.btn_change_password then
 		core.change_password()
+	elseif fields.btn_settings then
+		core.show_settings()
 	elseif fields.btn_exit_menu then
 		core.disconnect()
 	elseif fields.btn_exit_os then
 		core.exit_to_os()
 	end
 	
-	minetest.log(dump(fields))
+	return
 end)
 
 local scriptpath = core.get_builtin_path()
@@ -125,19 +127,134 @@ function dialog_create(name, spec, buttonhandler, eventhandler)
 	minetest.show_formspec(name, spec({}))
 end
 
-load(true, false)
 
-local data = {data = {}}
+local settings_data = {}
+settings_data.data = {
+	leftscroll = 0,
+	query = "",
+	rightscroll = 0,
+	components = {},
+	page_id = "accessibility"
+}
+
 core.register_on_formspec_input(function(formname, fields)
-	local this = data
-	--buttonhandler(this, fields)
+	if formname ~= "builtin:MT_PAUSE_MENU_SETTINGS" then return true end
+	--local this = data
+	--buttonhandler(settings_data, fields)
+	local dialogdata = settings_data.data
+	dialogdata.leftscroll = core.explode_scrollbar_event(fields.leftscroll).value or dialogdata.leftscroll
+	dialogdata.rightscroll = core.explode_scrollbar_event(fields.rightscroll).value or dialogdata.rightscroll
+	dialogdata.query = fields.search_query
+	local update = false
+
+	if fields.back then
+		this:delete()
+		return true
+	end
+
+	if fields.show_technical_names ~= nil then
+		local value = core.is_yes(fields.show_technical_names)
+		core.settings:set_bool("show_technical_names", value)
+		write_settings_early()
+		update = true
+		--return true
+	end
+
+	if fields.show_advanced ~= nil then
+		local value = core.is_yes(fields.show_advanced)
+		core.settings:set_bool("show_advanced", value)
+		write_settings_early()
+		core.show_settings()
+		update = true
+	end
+
+	-- enable_touch is a checkbox in a setting component. We handle this
+	-- setting differently so we can hide/show pages using the next if-statement
+	if fields.enable_touch ~= nil then
+		local value = core.is_yes(fields.enable_touch)
+		core.settings:set_bool("enable_touch", value)
+		write_settings_early()
+		core.show_settings()
+		update = true
+	end
+
+	if fields.show_advanced ~= nil or fields.enable_touch ~= nil then
+		local suggested_page_id = update_filtered_pages(dialogdata.query)
+
+		dialogdata.components = nil
+
+		if not filtered_page_by_id[dialogdata.page_id] then
+			dialogdata.leftscroll = 0
+			dialogdata.rightscroll = 0
+
+			dialogdata.page_id = suggested_page_id
+		end
+
+		return true
+	end
+
+	if fields.search or fields.key_enter_field == "search_query" then
+		dialogdata.components = nil
+		dialogdata.leftscroll = 0
+		dialogdata.rightscroll = 0
+
+		dialogdata.page_id = update_filtered_pages(dialogdata.query)
+
+		return true
+	end
+	if fields.search_clear then
+		dialogdata.query = ""
+		dialogdata.components = nil
+		dialogdata.leftscroll = 0
+		dialogdata.rightscroll = 0
+
+		dialogdata.page_id = update_filtered_pages("")
+		return true
+	end
+
+	for _, page in ipairs(all_pages) do
+		if fields["page_" .. page.id] then
+			dialogdata.page_id = page.id
+			dialogdata.components = nil
+			dialogdata.rightscroll = 0
+			core.show_settings()
+			return true
+		end
+	end
+
+	if dialogdata.components then
+	for i, comp in ipairs(dialogdata.components) do
+		if comp.on_submit and comp:on_submit(fields, this) then
+			write_settings_early()
+			core.show_settings()
+
+			-- Clear components so they regenerate
+			--dialogdata.components = nil
+			return true
+		end
+		if comp.setting and fields["reset_" .. i] then
+			core.settings:remove(comp.setting.name)
+			write_settings_early()
+			core.show_settings()
+
+			-- Clear components so they regenerate
+			--dialogdata.components = nil
+			return true
+		end
+	end
+	end
+	
+	if update then
+		core.show_settings()
+	end
+	
+	return false
 end)
 
+load(true, false)
+--settings_data.data.page_id = update_filtered_pages("")
 
-function core.show_settings(page_id)
-	if not page_id then
-		show_settings_client_formspec("MT_PAUSE_MENU_SETTINGS", {})
-	else
-		show_settings_client_formspec("MT_PAUSE_MENU_SETTINGS", {page_id = page_id})
-	end
+function core.show_settings()
+	show_settings_client_formspec("builtin:MT_PAUSE_MENU_SETTINGS", settings_data.data)
+	core.unpause()
 end
