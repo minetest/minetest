@@ -200,7 +200,7 @@ public:
 	\param loop: True if the animation should loop, false if not
 	\param scale: True if the sprite should scale to button size, false if not	*/
 	virtual void setSprite(EGUI_BUTTON_STATE state, s32 index,
-			video::SColor color = video::SColor(255, 255, 255, 255), bool loop = false, bool scale = false) = 0;
+			video::SColor color = video::SColor(255, 255, 255, 255), bool loop = false) = 0;
 
 	//! Get the sprite-index for the given state or -1 when no sprite is set
 	virtual s32 getSpriteIndex(EGUI_BUTTON_STATE state) const = 0;
@@ -210,9 +210,6 @@ public:
 
 	//! Returns if the sprite in the given state does loop
 	virtual bool getSpriteLoop(EGUI_BUTTON_STATE state) const = 0;
-
-	//! Returns if the sprite in the given state is scaled
-	virtual bool getSpriteScale(EGUI_BUTTON_STATE state) const = 0;
 
 	//! Sets if the button should behave like a push button.
 	/** Which means it can be in two states: Normal or Pressed. With a click on the button,

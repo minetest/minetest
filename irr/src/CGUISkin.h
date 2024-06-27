@@ -24,6 +24,12 @@ public:
 	//! destructor
 	virtual ~CGUISkin();
 
+	//! returns display density scaling factor
+	virtual float getScale() const override { return Scale; }
+
+	//! sets display density scaling factor
+	virtual void setScale(float scale) override { Scale = scale; }
+
 	//! returns default color
 	video::SColor getColor(EGUI_DEFAULT_COLOR color) const override;
 
@@ -210,6 +216,7 @@ public:
 	EGUI_SKIN_TYPE getType() const override;
 
 private:
+	float Scale = 1.0f;
 	video::SColor Colors[EGDC_COUNT];
 	s32 Sizes[EGDS_COUNT];
 	u32 Icons[EGDI_COUNT];
