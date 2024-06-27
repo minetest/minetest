@@ -3799,10 +3799,6 @@ void GUIFormSpecMenu::showTooltip(const std::wstring &text,
 
 void GUIFormSpecMenu::updateSelectedItem()
 {
-	// Don't update when dragging an item
-	if (m_selected_item && (m_left_dragging && (m_left_drag_stacks.size() > 1)))
-		return;
-
 	verifySelectedItem();
 
 	// If craftresult is not empty and nothing else is selected,
@@ -4474,7 +4470,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					m_client->inhibit_inventory_revert = true;
 					m_left_drag_stack = list_selected->getItem(m_selected_item->i);
 					m_left_drag_amount = m_selected_amount;
-					m_left_drag_stacks.emplace_back(s, list_s->getItem(s.i));
+					m_left_drag_stacks.emplace_back(s, list_s->getItem(s.i).count);
 					move_amount = 0;
 
 				} else if (identical) {
@@ -4535,7 +4531,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						Inventory *inv_to = m_invmgr->getInventory(ds.first.inventoryloc);
 						InventoryList *list_to = inv_to->getList(ds.first.listname);
 						ItemStack stack_to = list_to->getItem(ds.first.i);
-						u16 amount = stack_to.count - ds.second.count;
+						u16 amount = stack_to.count - ds.second;
 
 						IMoveAction *a = new IMoveAction();
 						a->count = amount;
@@ -4597,7 +4593,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						}
 					}
 					if (!found) {
-						m_left_drag_stacks.emplace_back(s, list_s->getItem(s.i));
+						m_left_drag_stacks.emplace_back(s, list_s->getItem(s.i).count);
 					}
 
 				} else if (m_selected_dragging && matching && !identical) {
@@ -4726,7 +4722,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 				} else {
 					// Reset the stack to its original state
-					list_to->changeItem(ds.first.i, ds.second);
+					ItemStack orig_stack = list_to->getItem(ds.first.i);
+					orig_stack.count = ds.second;
+					list_to->changeItem(ds.first.i, orig_stack);
 
 					// Add the new split to the stack
 					ItemStack add_stack = stack_from;
