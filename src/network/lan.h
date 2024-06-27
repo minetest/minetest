@@ -22,11 +22,11 @@ along with Freeminer.  If not, see <http://www.gnu.org/licenses/>.
 #include <json/value.h>
 #include <string>
 #include <atomic>
-#include "threading/thread_vector.h"
+#include "threading/thread.h"
 #include "threading/concurrent_map.h"
 
 
-class lan_adv : public thread_vector
+class lan_adv : public Thread
 {
 public:
 	void *run();

@@ -50,18 +50,6 @@ void lan_get() {
 	lan_adv_client.ask();
 }
 
-/*
-	if (ask_str.empty()) {
-		Json::Value j;
-		j["cmd"] = "ask";
-		j["proto_min"] = Server::getProtocolVersionMin();
-		j["proto_max"] = Server::getProtocolVersionMax();
-		ask_str = fastWriteJson(j);
-			
-	};
-	lan_adv_client.send_string(ask_str);
-*/
-
 bool lan_fresh() {
 	auto result = lan_adv_client.fresh.load();
 	lan_adv_client.fresh = false;

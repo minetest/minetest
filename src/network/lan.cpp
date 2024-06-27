@@ -31,7 +31,7 @@ along with Freeminer.  If not, see <http://www.gnu.org/licenses/>.
 #include "debug.h"
 #include "json/json.h"
 #include "porting.h"
-#include "threading/thread_vector.h"
+#include "threading/thread.h"
 #include "threading/concurrent_map.h"
 #include "network/address.h"
 
@@ -71,13 +71,13 @@ typedef int socket_t;
 const static unsigned short int adv_port = 29998;
 static std::string ask_str;
 
-lan_adv::lan_adv() : thread_vector("lan_adv")
+lan_adv::lan_adv() : Thread("lan_adv")
 {
 }
 
 void lan_adv::ask()
 {
-	reanimate();
+	if (!isRunning()) start();
 
 	if (ask_str.empty()) {
 		Json::Value j;
@@ -169,14 +169,15 @@ void lan_adv::send_string(const std::string &str)
 void lan_adv::serve(unsigned short port)
 {
 	server_port = port;
-	restart();
+	if (isRunning()) stop();
+	start(); 
 }
 
 void *lan_adv::run()
 {
 	BEGIN_DEBUG_EXCEPTION_HANDLER;
 
-	reg("LanAdv" + (server_port ? std::string("Server") : std::string("Client")));
+	setName("LanAdv" + (server_port ? std::string("Server") : std::string("Client")));
 
 	UDPSocket socket_recv(true);
 	int set_option_off = 0, set_option_on = 1;
