@@ -61,7 +61,7 @@ public:
 	bool on_inventory_open(Inventory *inventory);
 	
 	void show_pause_menu(bool is_singleplayer, bool is_touchscreen, const std::string& server_address);
-	void show_settings();
+	void show_settings(const std::string& page = "");
 
 	void setEnv(ClientEnvironment *env);
 };

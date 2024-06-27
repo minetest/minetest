@@ -310,7 +310,7 @@ void ScriptApiClient::show_pause_menu(bool is_singleplayer, bool is_touchscreen,
 	lua_pop(L, 1);
 }
 
-void ScriptApiClient::show_settings()
+void ScriptApiClient::show_settings(const std::string& page)
 {
 	SCRIPTAPI_PRECHECKHEADER
 	
@@ -319,7 +319,14 @@ void ScriptApiClient::show_settings()
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "show_settings");
 	
-	PCALL_RES(lua_pcall(L, 0, 0, error_handler));
+	if (page != "")
+	{
+		lua_pushstring(L, page.c_str());
+	}
+	else
+		lua_pushnil(L);
+	
+	PCALL_RES(lua_pcall(L, 1, 0, error_handler));
 	lua_pop(L, 1);
 }
 

@@ -107,7 +107,12 @@ function dialog_create(name, spec, buttonhandler, eventhandler)
 	minetest.show_formspec(name, spec({}))
 end
 
-function core.show_settings()
-	load(true, false)
-	show_settings_client_formspec("MT_PAUSE_MENU_SETTINGS")
+load(true, false)
+
+function core.show_settings(page_id)
+	if not page_id then
+		show_settings_client_formspec("MT_PAUSE_MENU_SETTINGS", {})
+	else
+		show_settings_client_formspec("MT_PAUSE_MENU_SETTINGS", {page_id = page_id})
+	end
 end

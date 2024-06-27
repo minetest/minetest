@@ -198,8 +198,14 @@ struct LocalFormspecHandler : public TextDest
 				if (g_settings->existsLocal(i.first) && g_settings->get(i.first) != i.second)
 				{
 					g_settings->set(i.first, i.second);
-					//std::cout << "Setting " << i.first << " set!" << std::endl;
 				}
+				if (i.first.rfind("page_", 0) == 0)
+				{
+					m_client->getScript()->show_settings(i.first.substr(5));
+					std::cout << "Found ..." << m_client << std::endl;
+				}
+				//std::cout << "Setting " << i.first << " set!" << std::endl;
+
 			}
 			return;
 		}

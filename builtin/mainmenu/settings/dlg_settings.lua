@@ -756,6 +756,6 @@ function create_settings_dlg()
 	return dlg
 end
 
-function show_settings_client_formspec(name)
-	minetest.show_formspec(name or "dlg_settings", get_formspec({}))
+function show_settings_client_formspec(name, data)
+	minetest.show_formspec(name or "dlg_settings", get_formspec(data))
 end
