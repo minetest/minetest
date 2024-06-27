@@ -109,5 +109,5 @@ end
 
 function core.show_settings()
 	load(true, false)
-	show_settings_client_formspec()
+	show_settings_client_formspec("MT_PAUSE_MENU_SETTINGS")
 end

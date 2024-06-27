@@ -189,6 +189,20 @@ struct LocalFormspecHandler : public TextDest
 
 			return;
 		}
+		
+		if (m_formname == "MT_PAUSE_MENU_SETTINGS")
+		{
+			// Loop through settings
+			for (auto i : fields)
+			{
+				if (g_settings->existsLocal(i.first) && g_settings->get(i.first) != i.second)
+				{
+					g_settings->set(i.first, i.second);
+					//std::cout << "Setting " << i.first << " set!" << std::endl;
+				}
+			}
+			return;
+		}
 
 		if (m_formname == "MT_DEATH_SCREEN") {
 			assert(m_client != nullptr);
@@ -1880,6 +1894,7 @@ inline bool Game::handleCallbacks()
 		(new GUIKeyChangeMenu(guienv, guiroot, -1,
 				      &g_menumgr, texture_src))->drop();
 		g_gamecallback->keyconfig_requested = false;
+		m_is_paused = false;
 	}
 	
 	if (g_gamecallback->unpause_requested) {
@@ -1891,6 +1906,7 @@ inline bool Game::handleCallbacks()
 		if (client->modsLoaded())
 		{
 			client->getScript()->show_settings();
+			m_is_paused = false;
 		}
 		g_gamecallback->show_settings_requested = false;
 	}
