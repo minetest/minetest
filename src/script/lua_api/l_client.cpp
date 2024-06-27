@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "client/clientevent.h"
 #include "client/sound.h"
+#include "client/renderingengine.h"
 #include "client/clientenvironment.h"
 #include "common/c_content.h"
 #include "common/c_converter.h"
@@ -175,6 +176,29 @@ int ModApiClient::l_disconnect(lua_State *L)
 
 	g_gamecallback->disconnect();
 	lua_pushboolean(L, true);
+	return 1;
+}
+
+// unpause()
+int ModApiClient::l_unpause(lua_State *L)
+{
+	g_gamecallback->unpause();
+	//lua_pushboolean(L, true);
+	return 1;
+}
+
+int ModApiClient::l_exit_to_os(lua_State *L)
+{
+	g_gamecallback->exitToOS();
+#ifndef __ANDROID__
+	RenderingEngine::get_raw_device()->closeDevice();
+#endif
+	return 1;
+}
+
+int ModApiClient::l_key_config(lua_State *L)
+{
+	g_gamecallback->keyConfig();
 	return 1;
 }
 
@@ -366,6 +390,9 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(gettext);
 	API_FCT(get_node_or_nil);
 	API_FCT(disconnect);
+	API_FCT(unpause);
+	API_FCT(exit_to_os);
+	API_FCT(key_config);
 	API_FCT(get_meta);
 	API_FCT(get_server_info);
 	API_FCT(get_item_def);

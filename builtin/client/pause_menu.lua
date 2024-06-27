@@ -88,8 +88,26 @@ Menu/inventory open:
 end
 
 function core.show_pause_menu(is_singleplayer, is_touchscreen, address)
-	minetest.show_formspec("MT_PAUSE_MENU", menu_formspec(is_singleplayer, is_touchscreen, address))
+	minetest.show_formspec("builtin:MT_PAUSE_MENU", menu_formspec(is_singleplayer, is_touchscreen, address))
 end
+
+core.register_on_formspec_input(function(formname, fields)
+	if formname ~= "builtin:MT_PAUSE_MENU" then return end
+	
+	if fields.btn_continue then
+		core.unpause()
+	elseif fields.btn_key_config then
+		core.key_config() -- Don't want this
+	elseif fields.btn_change_password then
+		core.change_password()
+	elseif fields.btn_exit_menu then
+		core.disconnect()
+	elseif fields.btn_exit_os then
+		core.exit_to_os()
+	end
+	
+	minetest.log(dump(fields))
+end)
 
 local scriptpath = core.get_builtin_path()
 local path = scriptpath.."mainmenu"..DIR_DELIM.."settings"
@@ -108,6 +126,13 @@ function dialog_create(name, spec, buttonhandler, eventhandler)
 end
 
 load(true, false)
+
+local data = {data = {}}
+core.register_on_formspec_input(function(formname, fields)
+	local this = data
+	--buttonhandler(this, fields)
+end)
+
 
 function core.show_settings(page_id)
 	if not page_id then

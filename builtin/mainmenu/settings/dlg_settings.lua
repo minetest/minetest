@@ -633,7 +633,7 @@ function write_settings_early()
 end
 
 
-local function buttonhandler(this, fields)
+function buttonhandler(this, fields)
 	local dialogdata = this.data
 	dialogdata.leftscroll = core.explode_scrollbar_event(fields.leftscroll).value or dialogdata.leftscroll
 	dialogdata.rightscroll = core.explode_scrollbar_event(fields.rightscroll).value or dialogdata.rightscroll

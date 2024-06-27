@@ -149,48 +149,7 @@ struct LocalFormspecHandler : public TextDest
 
 	void gotText(const StringMap &fields)
 	{
-		if (m_formname == "MT_PAUSE_MENU") {
-			if (fields.find("btn_sound") != fields.end()) {
-				g_gamecallback->changeVolume();
-				return;
-			}
-
-			else if (fields.find("btn_key_config") != fields.end()) {
-				g_gamecallback->keyConfig();
-				return;
-			}
-			
-			else if (fields.find("btn_settings") != fields.end()) {
-				g_gamecallback->showSettings();
-			}
-
-			else if (fields.find("btn_exit_menu") != fields.end()) {
-				g_gamecallback->disconnect();
-				return;
-			}
-
-			else if (fields.find("btn_exit_os") != fields.end()) {
-				g_gamecallback->exitToOS();
-#ifndef __ANDROID__
-				RenderingEngine::get_raw_device()->closeDevice();
-#endif
-				return;
-			}
-
-			else if (fields.find("btn_change_password") != fields.end()) {
-				g_gamecallback->changePassword();
-				return;
-			}
-			
-			else {
-				g_gamecallback->unpause();
-				return;
-			}
-
-			return;
-		}
-		
-		if (m_formname == "MT_PAUSE_MENU_SETTINGS")
+		if (m_formname == "MT_PAUSE_MENU_SETTINGS" && false)
 		{
 			// Loop through settings
 			for (auto i : fields)
@@ -201,7 +160,7 @@ struct LocalFormspecHandler : public TextDest
 				}
 				if (i.first.rfind("page_", 0) == 0)
 				{
-					m_client->getScript()->show_settings(i.first.substr(5));
+					//m_client->getScript()->show_settings(i.first.substr(5));
 				}
 				//std::cout << "Setting " << i.first << " set!" << std::endl;
 

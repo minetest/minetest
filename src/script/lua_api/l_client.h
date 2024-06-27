@@ -50,6 +50,15 @@ private:
 
 	// show_formspec(name, formspec)
 	static int l_show_formspec(lua_State *L);
+	
+	// unpause()
+	static int l_unpause(lua_State *L);
+	
+	// exit_to_os()
+	static int l_exit_to_os(lua_State *L);
+	
+	// key_config()
+	static int l_key_config(lua_State *L);
 
 	// send_respawn()
 	static int l_send_respawn(lua_State *L);
