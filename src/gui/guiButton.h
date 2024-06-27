@@ -92,7 +92,7 @@ public:
 	*/
 	virtual void setSprite(gui::EGUI_BUTTON_STATE state, s32 index,
 						   video::SColor color=video::SColor(255,255,255,255),
-						   bool loop=false, bool scale=false) override;
+						   bool loop=false) override;
 
 	//! Get the sprite-index for the given state or -1 when no sprite is set
 	virtual s32 getSpriteIndex(gui::EGUI_BUTTON_STATE state) const override;
@@ -102,9 +102,6 @@ public:
 
 	//! Returns if the sprite in the given state does loop
 	virtual bool getSpriteLoop(gui::EGUI_BUTTON_STATE state) const override;
-
-	//! Returns if the sprite in the given state is scaled
-	virtual bool getSpriteScale(gui::EGUI_BUTTON_STATE state) const override;
 
 	//! Sets if the button should behave like a push button. Which means it
 	//! can be in two states: Normal or Pressed. With a click on the button,
@@ -230,13 +227,12 @@ private:
 	{
 		bool operator==(const ButtonSprite &other) const
 		{
-			return Index == other.Index && Color == other.Color && Loop == other.Loop && Scale == other.Scale;
+			return Index == other.Index && Color == other.Color && Loop == other.Loop;
 		}
 
 		s32 Index = -1;
 		video::SColor Color;
 		bool Loop = false;
-		bool Scale = false;
 	};
 
 	ButtonSprite ButtonSprites[gui::EGBS_COUNT];
