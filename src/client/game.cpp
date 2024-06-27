@@ -202,7 +202,6 @@ struct LocalFormspecHandler : public TextDest
 				if (i.first.rfind("page_", 0) == 0)
 				{
 					m_client->getScript()->show_settings(i.first.substr(5));
-					std::cout << "Found ..." << m_client << std::endl;
 				}
 				//std::cout << "Setting " << i.first << " set!" << std::endl;
 
@@ -1040,6 +1039,8 @@ Game::Game() :
 	g_settings->registerChangedCallback("invert_hotbar_mouse_wheel",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("pause_on_lost_focus",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("fov",
 		&settingChangedCallback, this);
 
 	readSettings();
@@ -4441,13 +4442,17 @@ void Game::readSettings()
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");
+	
 
 	m_cache_cam_smoothing = 0;
 	if (g_settings->getBool("cinematic"))
 		m_cache_cam_smoothing = 1 - g_settings->getFloat("cinematic_camera_smoothing");
 	else
 		m_cache_cam_smoothing = 1 - g_settings->getFloat("camera_smoothing");
-
+	
+	if (camera)	
+		camera->m_cache_fov = g_settings->getFloat("fov");
+	
 	m_cache_cam_smoothing = rangelim(m_cache_cam_smoothing, 0.01f, 1.0f);
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
 
