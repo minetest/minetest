@@ -78,7 +78,7 @@ void debug_set_exception_handler();
 	These should be put into every thread
 */
 
-#if CATCH_UNHANDLED_EXCEPTIONS == 0
+#if CATCH_UNHANDLED_EXCEPTIONS == 1
 	#define BEGIN_DEBUG_EXCEPTION_HANDLER try {
 	#define END_DEBUG_EXCEPTION_HANDLER                        \
 		} catch (std::exception &e) {                          \
