@@ -1,3 +1,6 @@
+msgid ""
+msgstr "Plural-Forms: nplurals=2; plural=n>1;"
+
 msgctxt "testtranslations"
 msgid "Testing .po files: untranslated"
 msgstr "Testing .po files: translated"
