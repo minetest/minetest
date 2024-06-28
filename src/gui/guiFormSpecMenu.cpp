@@ -4098,6 +4098,8 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 			skin->setFont(m_font);
 			bool retval = hovered->OnEvent(event);
 			skin->setFont(old_font);
+			// This is expected to be set to BET_OTHER with mouse UP event
+			m_held_mouse_button = BET_OTHER;
 			return retval;
 		}
 	}
