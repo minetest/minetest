@@ -428,7 +428,7 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 						if (last_entry.find(L"msgstr") == last_entry.end()) {
 							errorstream << "Header entry has no \"msgstr\" field" << std::endl;
 						} else if (plural) {
-							errorstream << "Attempt to redefined header" << std::endl;
+							errorstream << "Attempt to override existing po header entry" << std::endl;
 						} else {
 							for (auto &line: str_split(last_entry[L"msgstr"], L'\n')) {
 								if (str_starts_with(line, L"Plural-Forms:"))
@@ -466,7 +466,7 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 	}
 }
 
-void Translations::loadMoEntry(const std::wstring &basefilename, const std::string &original, const std::string &translated) {
+void Translations::loadMoEntry(const std::wstring &basefilename, const GettextPluralForm::Ptr &plural_form, const std::string &original, const std::string &translated) {
 	std::wstring textdomain = L"";
 	size_t found;
 	std::string noriginal = original;
@@ -481,8 +481,8 @@ void Translations::loadMoEntry(const std::wstring &basefilename, const std::stri
 	found = noriginal.find('\0');
 	if (found != std::string::npos) {
 		std::vector<std::wstring> translations = str_split(utf8_to_wide(translated), L'\0');
-		addPluralTranslation(textdomain, nullptr, utf8_to_wide(noriginal.substr(0, found)), translations);
-		addPluralTranslation(textdomain, nullptr, utf8_to_wide(noriginal.substr(found + 1)), translations);
+		addPluralTranslation(textdomain, plural_form, utf8_to_wide(noriginal.substr(0, found)), translations);
+		addPluralTranslation(textdomain, plural_form, utf8_to_wide(noriginal.substr(found + 1)), translations);
 	} else {
 		addTranslation(textdomain, utf8_to_wide(noriginal), utf8_to_wide(translated));
 	}
@@ -505,6 +505,7 @@ void Translations::loadMoTranslation(const std::string &basefilename, const std:
 	size_t length = data.length();
 	const char* cdata = data.c_str();
 	std::wstring wbasefilename = utf8_to_wide(basefilename);
+	GettextPluralForm::Ptr plural_form;
 
 	if (length < 20) {
 		errorstream << "Ignoring too short mo file" << std::endl;
@@ -551,7 +552,18 @@ void Translations::loadMoTranslation(const std::string &basefilename, const std:
 		const std::string original(cdata + original_off, original_len);
 		const std::string translated(cdata + translated_off, translated_len);
 
-		loadMoEntry(wbasefilename, original, translated);
+		if (original.empty()) {
+			if (plural_form) {
+				errorstream << "Attempt to override existing mo header entry" << std::endl;
+			} else {
+				for (auto &line: str_split(translated, '\n')) {
+					if (str_starts_with(line, "Plural-Forms:"))
+						plural_form = GettextPluralForm::parse_header_line(utf8_to_wide(line));
+				}
+			}
+		} else {
+			loadMoEntry(wbasefilename, plural_form, original, translated);
+		}
 	}
 
 	return;

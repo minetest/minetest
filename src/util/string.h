@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <iomanip>
 #include <cctype>
+#include <cwctype>
 #include <unordered_map>
 
 class Translations;

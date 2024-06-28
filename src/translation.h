@@ -56,7 +56,7 @@ private:
 			std::vector<std::wstring> &translated);
 	std::wstring unescapeC(const std::wstring &str);
 	void loadPoEntry(const std::wstring &basefilename, const GettextPluralForm::Ptr &plural_form, const std::map<std::wstring, std::wstring> &entry);
-	void loadMoEntry(const std::wstring &basefilename, const std::string &orignal, const std::string &translated);
+	void loadMoEntry(const std::wstring &basefilename, const GettextPluralForm::Ptr &plural_form, const std::string &orignal, const std::string &translated);
 	void loadTrTranslation(const std::string &data);
 	void loadPoTranslation(const std::string &basefilename, const std::string &data);
 	void loadMoTranslation(const std::string &basefilename, const std::string &data);
