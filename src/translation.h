@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "gettext_plural_form.h"
 #include <unordered_map>
 #include <map>
 #include <string>
@@ -45,16 +46,17 @@ public:
 
 private:
 	std::unordered_map<std::wstring, std::wstring> m_translations;
-	std::unordered_map<std::wstring, std::vector<std::wstring>> m_plural_translations;
+	std::unordered_map<std::wstring, std::pair<GettextPluralForm::Ptr, std::vector<std::wstring>>> m_plural_translations;
 
 	void addTranslation(const std::wstring &textdomain, const std::wstring &original,
 			const std::wstring &translated);
 	void addPluralTranslation(const std::wstring &textdomain,
+			const GettextPluralForm::Ptr &plural,
 			const std::wstring &original,
 			std::vector<std::wstring> &translated);
 	std::wstring unescapeC(const std::wstring &str);
-	void loadPoEntry(const std::wstring &basefilename, const std::map<std::wstring, std::wstring> &entry);
-	void loadMoEntry(const std::wstring &basefilename, const std::string &orignal, const std::string &translated);
+	void loadPoEntry(const std::wstring &basefilename, const GettextPluralForm::Ptr &plural_form, const std::map<std::wstring, std::wstring> &entry);
+	void loadMoEntry(const std::wstring &basefilename, const GettextPluralForm::Ptr &plural_form, const std::string &orignal, const std::string &translated);
 	void loadTrTranslation(const std::string &data);
 	void loadPoTranslation(const std::string &basefilename, const std::string &data);
 	void loadMoTranslation(const std::string &basefilename, const std::string &data);
