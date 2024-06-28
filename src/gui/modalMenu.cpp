@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiInventoryList.h"
 #include "porting.h"
 #include "settings.h"
-#include "touchscreengui.h"
+#include "touchcontrols.h"
 
 PointerAction PointerAction::fromEvent(const SEvent &event) {
 	switch (event.EventType) {
@@ -62,7 +62,7 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 	m_gui_scale = std::max(g_settings->getFloat("gui_scaling"), 0.5f);
 	const float screen_dpi_scale = RenderingEngine::getDisplayDensity();
 
-	if (g_settings->getBool("enable_touch")) {
+	if (g_settings->getBool("touch_gui")) {
 		m_gui_scale *= 1.1f - 0.3f * screen_dpi_scale + 0.2f * screen_dpi_scale * screen_dpi_scale;
 	} else {
 		m_gui_scale *= screen_dpi_scale;
@@ -117,8 +117,8 @@ void GUIModalMenu::quitMenu()
 	Environment->removeFocus(this);
 	m_menumgr->deletingMenu(this);
 	this->remove();
-	if (g_touchscreengui)
-		g_touchscreengui->show();
+	if (g_touchcontrols)
+		g_touchcontrols->show();
 }
 
 static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
