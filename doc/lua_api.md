@@ -1101,7 +1101,7 @@ Table used to specify how a sound is played:
 
     -- Available since feature `sound_params_start_time`.
 
-    resend_time = 0.0,
+    resend_time = 600.0,
     -- Approximate playback duration (from `start_time` to end) in seconds.
     -- This is needed to re-send sounds to new players in hearing distance.
     -- Unused for looped sounds.
