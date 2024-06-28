@@ -486,13 +486,14 @@ function settings.get_formspec()
 	local fs = {
 		"formspec_version[6]",
 		"size[", tostring(tabsize.width), ",", tostring(tabsize.height + extra_h), "]",
-		core.settings:get_bool("enable_touch") and "padding[0.01,0.01]" or "",
+		"no_prepend[]",
 		"bgcolor[#0000]",
+		core.settings:get_bool("enable_touch") and "padding[0.01,0.01]" or "",
 
 		-- HACK: this is needed to allow resubmitting the same formspec
 		formspec_show_hack and " " or "",
 
-		"box[0,0;", tostring(tabsize.width), ",", tostring(tabsize.height), ";#0000008C]",
+		"box[0,0;", tostring(tabsize.width), ",", tostring(tabsize.height), ";#000000A3]",
 
 		settings.is_dlg and ("button[0,%f;%f,0.8;back;%s]"):format(
 				tabsize.height + 0.2, back_w, fgettext("Back")) or "",
