@@ -19,7 +19,7 @@ along with Freeminer.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <json/value.h>
+#include "json/json.h"
 #include <string>
 #include <atomic>
 #include "threading/thread.h"
