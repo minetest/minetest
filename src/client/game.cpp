@@ -2540,7 +2540,6 @@ void Game::toggleDebug()
 	} else if (!m_game_ui->m_flags.show_profiler_graph && !draw_control->show_wireframe) {
 		if (has_basic_debug)
 			m_game_ui->m_flags.show_basic_debug = true;
-		reloadGraphics();
 		m_game_ui->m_flags.show_profiler_graph = true;
 		m_game_ui->showTranslatedStatusText("Profiler graph shown");
 	} else if (!draw_control->show_wireframe && client->checkPrivilege("debug")) {
@@ -2549,6 +2548,7 @@ void Game::toggleDebug()
 		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = true;
 		m_game_ui->showTranslatedStatusText("Wireframe shown");
+		reloadGraphics();
 	} else {
 		m_game_ui->m_flags.show_minimal_debug = false;
 		m_game_ui->m_flags.show_basic_debug = false;
