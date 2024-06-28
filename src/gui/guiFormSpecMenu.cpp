@@ -342,7 +342,7 @@ void GUIFormSpecMenu::parseContainer(parserData* data, const std::string &elemen
 	errorstream<< "Invalid container start element (" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseContainerEnd(parserData* data)
+void GUIFormSpecMenu::parseContainerEnd(parserData* data, const std::string &)
 {
 	if (container_stack.empty()) {
 		errorstream<< "Invalid container end element, no matching container start element"  << std::endl;
@@ -419,7 +419,7 @@ void GUIFormSpecMenu::parseScrollContainer(parserData *data, const std::string &
 	pos_offset.Y = 0.0f;
 }
 
-void GUIFormSpecMenu::parseScrollContainerEnd(parserData *data)
+void GUIFormSpecMenu::parseScrollContainerEnd(parserData *data, const std::string &)
 {
 	if (data->current_parent == this || data->current_parent->getParent() == this ||
 			container_stack.empty()) {
@@ -639,6 +639,11 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 	e->grab();
 	m_checkboxes.emplace_back(spec, e);
 	m_fields.push_back(spec);
+}
+
+void GUIFormSpecMenu::parseRealCoordinates(parserData* data, const std::string &element)
+{
+	data->real_coordinates = is_yes(element);
 }
 
 void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &element)
@@ -973,10 +978,9 @@ void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &elemen
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
-		const std::string &type)
+void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element)
 {
-	int expected_parts = (type == "button_url" || type == "button_url_exit") ? 5 : 4;
+	int expected_parts = (data->type == "button_url" || data->type == "button_url_exit") ? 5 : 4;
 	std::vector<std::string> parts;
 	if (!precheckElement("button", element, expected_parts, expected_parts, parts))
 		return;
@@ -986,7 +990,7 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 	std::string name = parts[2];
 	std::string label = parts[3];
 	std::string url;
-	if (type == "button_url" || type == "button_url_exit")
+	if (data->type == "button_url" || data->type == "button_url_exit")
 		url = parts[4];
 
 	MY_CHECKPOS("button",0);
@@ -1022,15 +1026,15 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 		258 + m_fields.size()
 	);
 	spec.ftype = f_Button;
-	if (type == "button_exit" || type == "button_url_exit")
+	if (data->type == "button_exit" || data->type == "button_url_exit")
 		spec.is_exit = true;
-	if (type == "button_url" || type == "button_url_exit")
+	if (data->type == "button_url" || data->type == "button_url_exit")
 		spec.url = url;
 
 	GUIButton *e = GUIButton::addButton(Environment, rect, m_tsrc,
 			data->current_parent, spec.fid, spec.flabel.c_str());
 
-	auto style = getStyleForElement(type, name, (type != "button") ? "button" : "");
+	auto style = getStyleForElement(data->type, name, (data->type != "button") ? "button" : "");
 
 	spec.sound = style[StyleSpec::STATE_DEFAULT].get(StyleSpec::Property::SOUND, "");
 
@@ -1690,11 +1694,10 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseField(parserData* data, const std::string &element,
-		const std::string &type)
+void GUIFormSpecMenu::parseField(parserData* data, const std::string &element)
 {
 	std::vector<std::string> parts;
-	if (!precheckElement(type, element, 3, 5, parts))
+	if (!precheckElement(data->type, element, 3, 5, parts))
 		return;
 
 	if (parts.size() == 3 || parts.size() == 4) {
@@ -1703,7 +1706,7 @@ void GUIFormSpecMenu::parseField(parserData* data, const std::string &element,
 	}
 
 	// Else: >= 5 arguments in "parts"
-	parseTextArea(data, parts, type);
+	parseTextArea(data, parts, data->type);
 }
 
 void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &element)
@@ -1926,8 +1929,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 	m_clickthrough_elements.push_back(e);
 }
 
-void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &element,
-		const std::string &type)
+void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &element)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("image_button", element, 5, 8, parts))
@@ -1984,7 +1986,8 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 		258 + m_fields.size()
 	);
 	spec.ftype = f_Button;
-	if (type == "image_button_exit")
+
+	if (data->type == "image_button_exit")
 		spec.is_exit = true;
 
 	GUIButtonImage *e = GUIButtonImage::addButton(Environment, rect, m_tsrc,
@@ -2584,14 +2587,21 @@ void GUIFormSpecMenu::parsePadding(parserData *data, const std::string &element)
 			<< "'" << std::endl;
 }
 
-bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, bool style_type)
+void GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element)
 {
+	if (data->type != "style" && data->type != "style_type") {
+		errorstream << "Invalid style element type: '" << data->type << "'" << std::endl;
+		return;
+	}
+
+	bool style_type = (data->type == "style_type");
+
 	std::vector<std::string> parts = split(element, ';');
 
 	if (parts.size() < 2) {
 		errorstream << "Invalid style element (" << parts.size() << "): '" << element
 					<< "'" << std::endl;
-		return false;
+		return;
 	}
 
 	StyleSpec spec;
@@ -2602,7 +2612,7 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 		if (equal_pos == std::string::npos) {
 			errorstream << "Invalid style element (Property missing value): '" << element
 						<< "'" << std::endl;
-			return false;
+			return;
 		}
 
 		std::string propname = trim(parts[i].substr(0, equal_pos));
@@ -2717,10 +2727,10 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 		}
 	}
 
-	return true;
+	return;
 }
 
-void GUIFormSpecMenu::parseSetFocus(const std::string &element)
+void GUIFormSpecMenu::parseSetFocus(parserData*, const std::string &element)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("set_focus", element, 1, 2, parts))
@@ -2846,6 +2856,55 @@ void GUIFormSpecMenu::removeAll()
 		scroll_container_it.second->drop();
 }
 
+const std::unordered_map<std::string, std::function<void(GUIFormSpecMenu*, GUIFormSpecMenu::parserData *data,
+	const std::string &description)>> GUIFormSpecMenu::element_parsers = {
+		{"container",              &GUIFormSpecMenu::parseContainer},
+		{"container_end",          &GUIFormSpecMenu::parseContainerEnd},
+		{"list",                   &GUIFormSpecMenu::parseList},
+		{"listring",               &GUIFormSpecMenu::parseListRing},
+		{"checkbox",               &GUIFormSpecMenu::parseCheckbox},
+		{"image",                  &GUIFormSpecMenu::parseImage},
+		{"animated_image",         &GUIFormSpecMenu::parseAnimatedImage},
+		{"item_image",             &GUIFormSpecMenu::parseItemImage},
+		{"button",                 &GUIFormSpecMenu::parseButton},
+		{"button_exit",            &GUIFormSpecMenu::parseButton},
+		{"button_url",             &GUIFormSpecMenu::parseButton},
+		{"button_url_exit",        &GUIFormSpecMenu::parseButton},
+		{"background",             &GUIFormSpecMenu::parseBackground},
+		{"background9",            &GUIFormSpecMenu::parseBackground},
+		{"tableoptions",           &GUIFormSpecMenu::parseTableOptions},
+		{"tablecolumns",           &GUIFormSpecMenu::parseTableColumns},
+		{"table",                  &GUIFormSpecMenu::parseTable},
+		{"textlist",               &GUIFormSpecMenu::parseTextList},
+		{"dropdown",               &GUIFormSpecMenu::parseDropDown},
+		{"field_enter_after_edit", &GUIFormSpecMenu::parseFieldEnterAfterEdit},
+		{"field_close_on_enter",   &GUIFormSpecMenu::parseFieldCloseOnEnter},
+		{"pwdfield",               &GUIFormSpecMenu::parsePwdField},
+		{"field",                  &GUIFormSpecMenu::parseField},
+		{"textarea",               &GUIFormSpecMenu::parseField},
+		{"hypertext",              &GUIFormSpecMenu::parseHyperText},
+		{"label",                  &GUIFormSpecMenu::parseLabel},
+		{"vertlabel",              &GUIFormSpecMenu::parseVertLabel},
+		{"item_image_button",      &GUIFormSpecMenu::parseItemImageButton},
+		{"image_button",           &GUIFormSpecMenu::parseImageButton},
+		{"image_button_exit",      &GUIFormSpecMenu::parseImageButton},
+		{"tabheader",              &GUIFormSpecMenu::parseTabHeader},
+		{"box",                    &GUIFormSpecMenu::parseBox},
+		{"bgcolor",                &GUIFormSpecMenu::parseBackgroundColor},
+		{"listcolors",             &GUIFormSpecMenu::parseListColors},
+		{"tooltip",                &GUIFormSpecMenu::parseTooltip},
+		{"scrollbar",              &GUIFormSpecMenu::parseScrollBar},
+		{"real_coordinates",       &GUIFormSpecMenu::parseRealCoordinates},
+		{"style",                  &GUIFormSpecMenu::parseStyle},
+		{"style_type",             &GUIFormSpecMenu::parseStyle},
+		{"scrollbaroptions",       &GUIFormSpecMenu::parseScrollBarOptions},
+		{"scroll_container",       &GUIFormSpecMenu::parseScrollContainer},
+		{"scroll_container_end",   &GUIFormSpecMenu::parseScrollContainerEnd},
+		{"set_focus",              &GUIFormSpecMenu::parseSetFocus},
+		{"model",                  &GUIFormSpecMenu::parseModel},
+};
+
+
 void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 {
 	//some prechecks
@@ -2862,195 +2921,15 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 	std::string type = trim(element.substr(0, pos));
 	std::string description = element.substr(pos+1);
 
-	if (type == "container") {
-		parseContainer(data, description);
+	// They remain here due to bool flags, for now
+	data->type = type;
+
+	auto it = element_parsers.find(type);
+	if (it != element_parsers.end()) {
+		it->second(this, data, description);
 		return;
 	}
 
-	if (type == "container_end") {
-		parseContainerEnd(data);
-		return;
-	}
-
-	if (type == "list") {
-		parseList(data, description);
-		return;
-	}
-
-	if (type == "listring") {
-		parseListRing(data, description);
-		return;
-	}
-
-	if (type == "checkbox") {
-		parseCheckbox(data, description);
-		return;
-	}
-
-	if (type == "image") {
-		parseImage(data, description);
-		return;
-	}
-
-	if (type == "animated_image") {
-		parseAnimatedImage(data, description);
-		return;
-	}
-
-	if (type == "item_image") {
-		parseItemImage(data, description);
-		return;
-	}
-
-	if (type == "button" || type == "button_exit" || type == "button_url" || type == "button_url_exit") {
-		parseButton(data, description, type);
-		return;
-	}
-
-	if (type == "background" || type == "background9") {
-		parseBackground(data, description);
-		return;
-	}
-
-	if (type == "tableoptions"){
-		parseTableOptions(data,description);
-		return;
-	}
-
-	if (type == "tablecolumns"){
-		parseTableColumns(data,description);
-		return;
-	}
-
-	if (type == "table"){
-		parseTable(data,description);
-		return;
-	}
-
-	if (type == "textlist"){
-		parseTextList(data,description);
-		return;
-	}
-
-	if (type == "dropdown"){
-		parseDropDown(data,description);
-		return;
-	}
-
-	if (type == "field_enter_after_edit") {
-		parseFieldEnterAfterEdit(data, description);
-		return;
-	}
-
-	if (type == "field_close_on_enter") {
-		parseFieldCloseOnEnter(data, description);
-		return;
-	}
-
-	if (type == "pwdfield") {
-		parsePwdField(data,description);
-		return;
-	}
-
-	if ((type == "field") || (type == "textarea")){
-		parseField(data,description,type);
-		return;
-	}
-
-	if (type == "hypertext") {
-		parseHyperText(data,description);
-		return;
-	}
-
-	if (type == "label") {
-		parseLabel(data,description);
-		return;
-	}
-
-	if (type == "vertlabel") {
-		parseVertLabel(data,description);
-		return;
-	}
-
-	if (type == "item_image_button") {
-		parseItemImageButton(data,description);
-		return;
-	}
-
-	if ((type == "image_button") || (type == "image_button_exit")) {
-		parseImageButton(data,description,type);
-		return;
-	}
-
-	if (type == "tabheader") {
-		parseTabHeader(data,description);
-		return;
-	}
-
-	if (type == "box") {
-		parseBox(data,description);
-		return;
-	}
-
-	if (type == "bgcolor") {
-		parseBackgroundColor(data,description);
-		return;
-	}
-
-	if (type == "listcolors") {
-		parseListColors(data,description);
-		return;
-	}
-
-	if (type == "tooltip") {
-		parseTooltip(data,description);
-		return;
-	}
-
-	if (type == "scrollbar") {
-		parseScrollBar(data, description);
-		return;
-	}
-
-	if (type == "real_coordinates") {
-		data->real_coordinates = is_yes(description);
-		return;
-	}
-
-	if (type == "style") {
-		parseStyle(data, description, false);
-		return;
-	}
-
-	if (type == "style_type") {
-		parseStyle(data, description, true);
-		return;
-	}
-
-	if (type == "scrollbaroptions") {
-		parseScrollBarOptions(data, description);
-		return;
-	}
-
-	if (type == "scroll_container") {
-		parseScrollContainer(data, description);
-		return;
-	}
-
-	if (type == "scroll_container_end") {
-		parseScrollContainerEnd(data);
-		return;
-	}
-
-	if (type == "set_focus") {
-		parseSetFocus(description);
-		return;
-	}
-
-	if (type == "model") {
-		parseModel(data, description);
-		return;
-	}
 
 	// Ignore others
 	infostream << "Unknown DrawSpec: type=" << type << ", data=\"" << description << "\""
