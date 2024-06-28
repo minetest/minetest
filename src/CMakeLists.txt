@@ -408,6 +408,7 @@ set(common_SRCS
 	face_position_cache.cpp
 	filesys.cpp
 	gettext.cpp
+	gettext_plural_form.cpp
 	httpfetch.cpp
 	hud.cpp
 	inventory.cpp

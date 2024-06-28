@@ -63,45 +63,15 @@ const std::wstring &Translations::getPluralTranslation(
 		const std::wstring &textdomain, const std::wstring &s, unsigned long int number) const
 {
 	std::wstring key = textdomain + L"|"; key.append(s);
-
-	/*~ DO NOT TRANSLATE THIS LITERALLY!
-	This is a special string which needs to be translated to the translation plural identifier.
-
-	If you edit the po file directly, you should see the following:
-
-		msgid "0"
-		msgid_plural "1"
-		msgstr[0] ...
-		...
-		msgstr[n] ...
-
-	You then need to translate msgstr[i] to the string containing the integer i, like this:
-
-		msgstr[0] "0"
-
-
-	If you edit the po file using weblate or another po file editor, the translations should normally
-	be 0, 1, ... in this order. In case of doubt, the translations for each case should match the value
-	returned by the formula for Plural-Forms. */
-	std::string ns = ngettext("0", "1", number);
-	unsigned int n = 0;
-	static bool warned = false;
-	if (ns.length() == 1 && '0' <= ns[0] && ns[0] <= '9') {
-		n = ns[0] - '0';
-	} else if (!warned) {
-		warned = true;
-		errorstream << "Translations: plurals are not translated correctly in the current language; got \""
-		            << ns << "\" instead of the integer selecting which plural to use" << std::endl;
+	auto it = m_plural_translations.find(key);
+	if (it != m_plural_translations.end()) {
+		auto n = (*(it->second.first))(number);
+		const std::vector<std::wstring> &v = it->second.second;
+		if (n < v.size()) {
+			return v[n];
+		}
 	}
-
-  auto it = m_plural_translations.find(key);
-  if (it != m_plural_translations.end()) {
-	  const std::vector<std::wstring> &v = it->second;
-	  if (n < v.size()) {
-		  return v[n];
-	  }
-  }
-  return s;
+	return s;
 }
 
 
@@ -115,10 +85,17 @@ void Translations::addTranslation(
 }
 
 void Translations::addPluralTranslation(
-		const std::wstring &textdomain, const std::wstring &original, std::vector<std::wstring> &translated)
+		const std::wstring &textdomain, const GettextPluralForm::Ptr &plural, const std::wstring &original, std::vector<std::wstring> &translated)
 {
+	static bool warned = false;
+	if (!plural) {
+		warned = true;
+		if (!warned)
+			errorstream << "Translations: plural translation entry defined without Plural-Forms" << std::endl;
+		return;
+	}
 	std::wstring key = textdomain + L"|"; key.append(original);
-	m_plural_translations.emplace(std::move(key), std::move(translated));
+	m_plural_translations.emplace(std::move(key), std::pair(plural, translated));
 }
 
 
@@ -348,7 +325,7 @@ std::wstring Translations::unescapeC(const std::wstring &str) {
 	return result;
 }
 
-void Translations::loadPoEntry(const std::wstring &basefilename, const std::map<std::wstring, std::wstring> &entry) {
+void Translations::loadPoEntry(const std::wstring &basefilename, const GettextPluralForm::Ptr &plural_form, const std::map<std::wstring, std::wstring> &entry) {
 	// Process an entry from a PO file and add it to the translation table
 	// Assumes that entry[L"msgid"] is always defined
 	std::wstring textdomain;
@@ -379,8 +356,8 @@ void Translations::loadPoEntry(const std::wstring &basefilename, const std::map<
 			errorstream << "Could not load translation: entry for msgid\"" << wide_to_utf8(original) << "\" does not contain a msgstr[0] field" << std::endl;
 			return;
 		}
-		addPluralTranslation(textdomain, original, translations);
-		addPluralTranslation(textdomain, plural->second, translations);
+		addPluralTranslation(textdomain, plural_form, original, translations);
+		addPluralTranslation(textdomain, plural_form, plural->second, translations);
 	}
 }
 
@@ -390,6 +367,7 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 	std::map<std::wstring, std::wstring> last_entry;
 	std::wstring last_key;
 	std::wstring wbasefilename = utf8_to_wide(basefilename);
+	GettextPluralForm::Ptr plural;
 	bool skip = false;
 	bool skip_last = false;
 
@@ -445,8 +423,22 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 
 		if (prefix == L"msgctxt" || (prefix == L"msgid" && last_entry.find(L"msgid") != last_entry.end())) {
 			if (last_entry.find(L"msgid") != last_entry.end()) {
-				if (!skip_last)
-					loadPoEntry(wbasefilename, last_entry);
+				if (!skip_last) {
+					if (last_entry[L"msgid"].empty()) {
+						if (last_entry.find(L"msgstr") == last_entry.end()) {
+							errorstream << "Header entry has no \"msgstr\" field" << std::endl;
+						} else if (plural) {
+							errorstream << "Attempt to override existing po header entry" << std::endl;
+						} else {
+							for (auto &line: str_split(last_entry[L"msgstr"], L'\n')) {
+								if (str_starts_with(line, L"Plural-Forms:"))
+									plural = GettextPluralForm::parseHeaderLine(line);
+							}
+						}
+					} else {
+						loadPoEntry(wbasefilename, plural, last_entry);
+					}
+				}
 				last_entry.clear();
 				skip_last = skip;
 			} else if (!last_entry.empty()) {
@@ -467,14 +459,14 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 	}
 
 	if (last_entry.find(L"msgid") != last_entry.end()) {
-		if (!skip_last)
-			loadPoEntry(wbasefilename, last_entry);
+		if (!skip_last && !last_entry[L"msgid"].empty())
+			loadPoEntry(wbasefilename, plural, last_entry);
 	} else if (!last_entry.empty()) {
 		errorstream << "Unable to parse po file: Last entry has no \"msgid\" field" << std::endl;
 	}
 }
 
-void Translations::loadMoEntry(const std::wstring &basefilename, const std::string &original, const std::string &translated) {
+void Translations::loadMoEntry(const std::wstring &basefilename, const GettextPluralForm::Ptr &plural_form, const std::string &original, const std::string &translated) {
 	std::wstring textdomain = L"";
 	size_t found;
 	std::string noriginal = original;
@@ -489,8 +481,8 @@ void Translations::loadMoEntry(const std::wstring &basefilename, const std::stri
 	found = noriginal.find('\0');
 	if (found != std::string::npos) {
 		std::vector<std::wstring> translations = str_split(utf8_to_wide(translated), L'\0');
-		addPluralTranslation(textdomain, utf8_to_wide(noriginal.substr(0, found)), translations);
-		addPluralTranslation(textdomain, utf8_to_wide(noriginal.substr(found + 1)), translations);
+		addPluralTranslation(textdomain, plural_form, utf8_to_wide(noriginal.substr(0, found)), translations);
+		addPluralTranslation(textdomain, plural_form, utf8_to_wide(noriginal.substr(found + 1)), translations);
 	} else {
 		addTranslation(textdomain, utf8_to_wide(noriginal), utf8_to_wide(translated));
 	}
@@ -513,6 +505,7 @@ void Translations::loadMoTranslation(const std::string &basefilename, const std:
 	size_t length = data.length();
 	const char* cdata = data.c_str();
 	std::wstring wbasefilename = utf8_to_wide(basefilename);
+	GettextPluralForm::Ptr plural_form;
 
 	if (length < 20) {
 		errorstream << "Ignoring too short mo file" << std::endl;
@@ -559,7 +552,18 @@ void Translations::loadMoTranslation(const std::string &basefilename, const std:
 		const std::string original(cdata + original_off, original_len);
 		const std::string translated(cdata + translated_off, translated_len);
 
-		loadMoEntry(wbasefilename, original, translated);
+		if (original.empty()) {
+			if (plural_form) {
+				errorstream << "Attempt to override existing mo header entry" << std::endl;
+			} else {
+				for (auto &line: str_split(translated, '\n')) {
+					if (str_starts_with(line, "Plural-Forms:"))
+						plural_form = GettextPluralForm::parseHeaderLine(utf8_to_wide(line));
+				}
+			}
+		} else {
+			loadMoEntry(wbasefilename, plural_form, original, translated);
+		}
 	}
 
 	return;
