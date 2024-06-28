@@ -57,6 +57,9 @@ private:
 	// exit_to_os()
 	static int l_exit_to_os(lua_State *L);
 	
+	// reload_graphics()
+	static int l_reload_graphics(lua_State *L);
+	
 	// key_config()
 	static int l_key_config(lua_State *L);
 

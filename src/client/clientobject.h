@@ -62,6 +62,7 @@ public:
 	virtual void updateAttachments() {};
 
 	virtual bool doShowSelectionBox() { return true; }
+	virtual void updateSceneShadows() {}
 
 	// Step object in time
 	virtual void step(float dtime, ClientEnvironment *env) {}

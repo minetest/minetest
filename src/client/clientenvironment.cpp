@@ -273,6 +273,9 @@ void ClientEnvironment::step(float dtime)
 	auto cb_state = [this, dtime, update_lighting, day_night_ratio] (ClientActiveObject *cao) {
 		// Step object
 		cao->step(dtime, this);
+		
+		if (m_update_shadows)
+			cao->updateSceneShadows();
 
 		if (update_lighting)
 			cao->updateLight(day_night_ratio);
@@ -296,6 +299,9 @@ void ClientEnvironment::step(float dtime)
 			++i;
 		}
 	}
+	
+	if (m_update_shadows)
+		m_update_shadows = false;
 }
 
 void ClientEnvironment::addSimpleObject(ClientSimpleObject *simple)

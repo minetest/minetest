@@ -739,6 +739,7 @@ protected:
 	void updateCameraOrientation(CameraOrientation *cam, float dtime);
 	void updatePlayerControl(const CameraOrientation &cam);
 	void updatePauseState();
+	void reloadGraphics();
 	void step(f32 dtime);
 	void processClientEvents(CameraOrientation *cam);
 	void updateCamera(f32 dtime);
@@ -1126,6 +1127,12 @@ bool Game::startup(bool *kill,
 	return true;
 }
 
+inline void Game::reloadGraphics()
+{
+	m_rendering_engine->initialize(client, hud);
+	client->getEnv().requestUpdateShadows();
+
+}
 
 void Game::run()
 {
@@ -1802,6 +1809,8 @@ bool Game::getServerContent(bool *aborted)
 }
 
 
+
+
 /****************************************************************************/
 /****************************************************************************
  Run
@@ -1865,7 +1874,13 @@ inline bool Game::handleCallbacks()
 	
 	if (g_gamecallback->unpause_requested) {
 		m_is_paused = false;
+		m_rendering_engine->initialize(client, hud);
 		g_gamecallback->unpause_requested = false;
+	}
+	
+	if (g_gamecallback->reload_graphics_requested) {
+		reloadGraphics();
+		g_gamecallback->reload_graphics_requested = false;
 	}
 	
 	if (g_gamecallback->show_settings_requested) {
@@ -1911,7 +1926,9 @@ void Game::updateDebugState()
 			m_game_ui->m_flags.show_basic_debug = false;
 	} else if (m_game_ui->m_flags.show_minimal_debug) {
 		if (has_basic_debug)
+		{
 			m_game_ui->m_flags.show_basic_debug = true;
+		}
 	}
 	if (!has_basic_debug)
 		hud->disableBlockBounds();
@@ -2523,6 +2540,7 @@ void Game::toggleDebug()
 	} else if (!m_game_ui->m_flags.show_profiler_graph && !draw_control->show_wireframe) {
 		if (has_basic_debug)
 			m_game_ui->m_flags.show_basic_debug = true;
+		reloadGraphics();
 		m_game_ui->m_flags.show_profiler_graph = true;
 		m_game_ui->showTranslatedStatusText("Profiler graph shown");
 	} else if (!draw_control->show_wireframe && client->checkPrivilege("debug")) {

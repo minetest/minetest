@@ -218,6 +218,7 @@ core.register_on_formspec_input(function(formname, fields)
 			dialogdata.components = nil
 			dialogdata.rightscroll = 0
 			core.show_settings()
+			core.reload_graphics()
 			return true
 		end
 	end

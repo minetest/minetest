@@ -196,6 +196,12 @@ int ModApiClient::l_exit_to_os(lua_State *L)
 	return 1;
 }
 
+int ModApiClient::l_reload_graphics(lua_State *L)
+{
+	g_gamecallback->reloadGraphics();
+	return 1;
+}
+
 int ModApiClient::l_key_config(lua_State *L)
 {
 	g_gamecallback->keyConfig();
@@ -392,6 +398,7 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(disconnect);
 	API_FCT(unpause);
 	API_FCT(exit_to_os);
+	API_FCT(reload_graphics);
 	API_FCT(key_config);
 	API_FCT(get_meta);
 	API_FCT(get_server_info);
