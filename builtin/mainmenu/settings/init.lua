@@ -16,10 +16,11 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 local path = core.get_mainmenu_path() .. DIR_DELIM .. "settings"
+local settingspath = core.get_builtin_path().."settings"
 
-dofile(path .. DIR_DELIM .. "settingtypes.lua")
-dofile(path .. DIR_DELIM .. "dlg_change_mapgen_flags.lua")
+
 dofile(path .. DIR_DELIM .. "dlg_settings.lua")
+dofile(settingspath .. DIR_DELIM .. "gui_change_mapgen_flags.lua")
 
 -- Uncomment to generate 'minetest.conf.example' and 'settings_translation_file.cpp'.
 -- For RUN_IN_PLACE the generated files may appear in the 'bin' folder.

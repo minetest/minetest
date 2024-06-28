@@ -123,7 +123,7 @@ function settings.load(read_all, parse_mods)
 			return ("button[0,0;%f,0.8;btn_change_keys;%s]"):format(btn_w, fgettext("Controls")), 0.8
 		end,
 		on_submit = function(self, fields)
-			if fields.btn_change_keys then
+			if fields.btn_change_keys and settings.is_dlg then
 				core.show_keys_menu()
 			end
 		end,
@@ -494,8 +494,8 @@ function settings.get_formspec()
 
 		"box[0,0;", tostring(tabsize.width), ",", tostring(tabsize.height), ";#0000008C]",
 
-		("button[0,%f;%f,0.8;back;%s]"):format(
-				tabsize.height + 0.2, back_w, fgettext("Back")),
+		settings.is_dlg and ("button[0,%f;%f,0.8;back;%s]"):format(
+				tabsize.height + 0.2, back_w, fgettext("Back")) or "",
 
 		("box[%f,%f;%f,0.8;#0000008C]"):format(
 			back_w + 0.2, tabsize.height + 0.2, checkbox_w),
@@ -637,11 +637,11 @@ end
 
 
 function settings.buttonhandler(this, fields)
-	this.leftscroll = core.explode_scrollbar_event(fields.leftscroll).value or this.leftscroll
-	this.rightscroll = core.explode_scrollbar_event(fields.rightscroll).value or this.rightscroll
-	this.query = fields.search_query
+	settings.leftscroll = core.explode_scrollbar_event(fields.leftscroll).value or settings.leftscroll
+	settings.rightscroll = core.explode_scrollbar_event(fields.rightscroll).value or settings.rightscroll
+	settings.query = fields.search_query
 	
-	if fields.back and this.is_dlg then
+	if fields.back then
 		this:delete()
 		return true
 	end
@@ -650,7 +650,7 @@ function settings.buttonhandler(this, fields)
 		local value = core.is_yes(fields.show_technical_names)
 		core.settings:set_bool("show_technical_names", value)
 		write_settings_early()
-		this.refresh_page = true
+		settings.refresh_page = true
 		return true
 	end
 
@@ -658,73 +658,73 @@ function settings.buttonhandler(this, fields)
 		local value = core.is_yes(fields.show_advanced)
 		core.settings:set_bool("show_advanced", value)
 		write_settings_early()
-		this.refresh_page = true
+		settings.refresh_page = true
 	end
 
-	-- enable_touch is a checkbox in a setting component. We handle this
+	-- enable_touch is a checkbox in a setting component. We handle settings
 	-- setting differently so we can hide/show pages using the next if-statement
 	if fields.enable_touch ~= nil then
 		local value = core.is_yes(fields.enable_touch)
 		core.settings:set_bool("enable_touch", value)
 		write_settings_early()
-		this.refresh_page = true
+		settings.refresh_page = true
 	end
 
 	if fields.show_advanced ~= nil or fields.enable_touch ~= nil then
-		local suggested_page_id = settings.update_filtered_pages(this.query)
+		local suggested_page_id = settings.update_filtered_pages(settings.query)
 
-		this.components = nil
+		settings.components = nil
 
-		if not settings.filtered_pages_by_id[this.page_id] then
-			this.leftscroll = 0
-			this.rightscroll = 0
+		if not settings.filtered_pages_by_id[settings.page_id] then
+			settings.leftscroll = 0
+			settings.rightscroll = 0
 
-			this.page_id = suggested_page_id
-			this.refresh_page = true
+			settings.page_id = suggested_page_id
+			settings.refresh_page = true
 		end
 
 		return true
 	end
 
 	if fields.search or fields.key_enter_field == "search_query" then
-		this.components = nil
-		this.leftscroll = 0
-		this.rightscroll = 0
+		settings.components = nil
+		settings.leftscroll = 0
+		settings.rightscroll = 0
 
-		this.page_id = settings.update_filtered_pages(this.query)
-		this.refresh_page = true
+		settings.page_id = settings.update_filtered_pages(settings.query)
+		settings.refresh_page = true
 
 		return true
 	end
 	if fields.search_clear then
-		this.query = ""
-		this.components = nil
-		this.leftscroll = 0
-		this.rightscroll = 0
+		settings.query = ""
+		settings.components = nil
+		settings.leftscroll = 0
+		settings.rightscroll = 0
 
-		this.page_id = settings.update_filtered_pages("")
-		this.refresh_page = true
+		settings.page_id = settings.update_filtered_pages("")
+		settings.refresh_page = true
 		return true
 	end
 
 	for _, page in ipairs(settings.all_pages) do
 		if fields["page_" .. page.id] then
-			this.page_id = page.id
-			this.components = nil
-			this.rightscroll = 0
-			this.refresh_page = true
+			settings.page_id = page.id
+			settings.components = nil
+			settings.rightscroll = 0
+			settings.refresh_page = true
 			return true
 		end
 	end
 
-	if this.components then
-		for i, comp in ipairs(this.components) do
-			if comp.on_submit and comp:on_submit(fields, this) then
+	if settings.components then
+		for i, comp in ipairs(settings.components) do
+			if comp.on_submit and comp:on_submit(fields, settings) then
 				write_settings_early()
 
 				-- Clear components so they regenerate
-				this.components = nil
-				this.refresh_page = true
+				settings.components = nil
+				settings.refresh_page = true
 				return true
 			end
 			if comp.setting and fields["reset_" .. i] then
@@ -732,8 +732,8 @@ function settings.buttonhandler(this, fields)
 				write_settings_early()
 
 				-- Clear components so they regenerate
-				this.components = nil
-				this.refresh_page = true
+				settings.components = nil
+				settings.refresh_page = true
 				return true
 			end
 		end

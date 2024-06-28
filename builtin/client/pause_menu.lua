@@ -1,5 +1,17 @@
 local SIZE_TAG = "size[11,5.5,true]"
 
+local settingspath = core.get_builtin_path().."settings"
+
+function core.get_mainmenu_path()
+	return settingspath
+end
+
+defaulttexturedir = ""
+dofile(settingspath .. DIR_DELIM .. "settingtypes.lua")
+dofile(settingspath .. DIR_DELIM .. "gui_change_mapgen_flags.lua")
+dofile(settingspath .. DIR_DELIM .. "gui_settings.lua")
+
+
 local function avoid_noid()
 	return "label[1,1;Avoid the Noid!]"
 end
@@ -111,30 +123,16 @@ core.register_on_formspec_input(function(formname, fields)
 	return
 end)
 
-local settingspath = core.get_builtin_path().."settings"
-
-function core.get_mainmenu_path()
-	return settingspath
+-- Override a dlg function to just exit
+function settings.delete()
+	core.unpause()
 end
-
-defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
-	DIR_DELIM .. "pack" .. DIR_DELIM
-dofile(settingspath .. DIR_DELIM .. "settingtypes.lua")
-dofile(settingspath .. DIR_DELIM .. "gui_change_mapgen_flags.lua")
-dofile(settingspath .. DIR_DELIM .. "gui_settings.lua")
-
-
-function dialog_create(name, spec, buttonhandler, eventhandler)
-	minetest.show_formspec(name, spec({}))
-end
-
 
 core.register_on_formspec_input(function(formname, fields)
 	if formname ~= "builtin:MT_PAUSE_MENU_SETTINGS" then return true end
 	
 	settings:buttonhandler(fields)
 	if settings.refresh_page then
-		--minetest.show_formspec("", "")
 		core.show_settings()
 		core.reload_graphics()
 		settings.refresh_page = false
