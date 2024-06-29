@@ -1320,7 +1320,7 @@ void warn_if_field_exists(lua_State *L, int table, const char *name,
 {
 	lua_getfield(L, table, name);
 	if (!lua_isnil(L, -1)) {
-		warningstream << "Field \"" << name << "\" on " << nodename << ": "
+		warningstream << "Field \"" << name << "\" on " << name << ": "
 				<< message << std::endl;
 		infostream << script_get_backtrace(L) << std::endl;
 	}
