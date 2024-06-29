@@ -4168,8 +4168,8 @@ msgstr[1] "Du spielst seit @1 Minuten."
 ```
 
 and CoolGuy has set a German locale, they will see `Hallo CoolGuy, wie geht es
-dir heute?` when they join, and the `/playtime` command shows them `Du spielst
-seit 1 Minute.` or (for example) `Du spielst seit 4 Minuten.`
+dir heute?` when they join, and the `/playtime` command will show them `Du
+spielst seit 1 Minute.` or (for example) `Du spielst seit 4 Minuten.`
 
 Creating and updating translation files
 ---------------------------------------
@@ -4178,9 +4178,10 @@ As an alternative to writing translation files by hand (as shown in the above
 example), it is also possible to generate translation files based on the source
 code.
 
-It is recommended to first generate a translation template that translators can
-work on. After creating the `locale` directory, a translation template for the
-above example using the following command:
+It is recommended to first generate a translation template. The translation
+template includes translatable strings that translators can directly work on.
+After creating the `locale` directory, a translation template for the above
+example using the following command:
 ```sh
 xgettext -L lua -kS -kNS:1,2 -d hello -o locale/hello.pot *.lua
 ```
