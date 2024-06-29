@@ -120,6 +120,7 @@ void                push_aabb3f_vector  (lua_State *L, const std::vector<aabb3f>
 
 void                warn_if_field_exists(lua_State *L, int table,
                                          const char *fieldname,
+                                         const std::string &name,
                                          const std::string &message);
 
 size_t write_array_slice_float(lua_State *L, int table_index, float *data,
