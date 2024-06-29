@@ -160,7 +160,7 @@ static ParserResult parse_negation(const std::wstring_view &str)
 		return ParserResult(nullptr, str);
 	if (str[0] != '!')
 		return parse_parenthesized(str);
-	auto result = parse_parenthesized(trim(str.substr(1)));
+	auto result = parse_negation(trim(str.substr(1)));
 	if (result.first)
 		result.first = GettextPluralForm::Ptr(new UnaryOperation<std::logical_not>(result.first));
 	return result;
