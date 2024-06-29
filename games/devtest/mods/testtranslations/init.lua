@@ -1,7 +1,8 @@
 local S, NS = minetest.get_translator("testtranslations")
 
 local function send_compare(name, text)
-	core.chat_send_player(name, ("%s | %s"):format(text, core.get_translated_string("fr", text)))
+	core.chat_send_player(name, ("%s | %s | %s"):format(
+			core.get_translated_string("", text), text, core.get_translated_string("fr", text)))
 end
 
 minetest.register_chatcommand("testtranslations", {
@@ -10,7 +11,7 @@ minetest.register_chatcommand("testtranslations", {
 	privs = {},
 	func = function(name, param)
 		core.chat_send_player(name, "Please ensure your locale is set to \"fr\"")
-		core.chat_send_player(name, "Client-side translation | Server-side translation (fr)")
+		core.chat_send_player(name, "Untranslated | Client-side translation | Server-side translation (fr)")
 		send_compare(name, S("Testing .tr files: untranslated"))
 		send_compare(name, S("Testing .po files: untranslated"))
 		send_compare(name, S("Testing .mo files: untranslated"))
