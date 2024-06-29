@@ -1316,12 +1316,15 @@ void pushnode(lua_State *L, const MapNode &n)
 
 /******************************************************************************/
 void warn_if_field_exists(lua_State *L, int table, const char *fieldname,
-		const std::string &name, const std::string &message)
+		const std::string_view name, const std::string_view message)
 {
 	lua_getfield(L, table, fieldname);
 	if (!lua_isnil(L, -1)) {
-		warningstream << "Field \"" << fieldname << "\" on " << name << ": "
-				<< message << std::endl;
+		warningstream << "Field \"" << fieldname << "\"";
+		if (!name.empty()) {
+			warningstream << " on " << name;
+		}
+		warningstream << ": " << message << std::endl;
 		infostream << script_get_backtrace(L) << std::endl;
 	}
 	lua_pop(L, 1);
