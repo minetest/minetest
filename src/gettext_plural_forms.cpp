@@ -205,18 +205,14 @@ static ParserResult parse_disjunction(const std::wstring_view &str)
 static ParserResult parse_ternary(const std::wstring_view &str)
 {
 	auto pres = parse_disjunction(str);
-	if (pres.second.empty()) // no ? :
+	if (pres.second.empty() || pres.second[0] != '?') // no ? :
 		return pres;
-	auto rest = trim(pres.second);
-	if (rest[0] != '?')
-		return ParserResult(nullptr, rest);
 	auto cond = pres.first;
-	pres = parse_ternary(trim(rest.substr(1)));
-	rest = trim(pres.second);
-	if (rest.empty() || rest[0] == ':')
-		return ParserResult(nullptr, rest);
+	pres = parse_ternary(trim(pres.second.substr(1)));
+	if (pres.second.empty() || pres.second[0] != ':')
+		return ParserResult(nullptr, pres.second);
 	auto val = pres.first;
-	pres = parse_ternary(trim(rest.substr(1)));
+	pres = parse_ternary(trim(pres.second.substr(1)));
 	return ParserResult(new TernaryOperation(cond, val, pres.first), pres.second);
 }
 
