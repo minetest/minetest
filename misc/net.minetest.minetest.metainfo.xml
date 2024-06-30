@@ -150,7 +150,7 @@
 
     <translation type="gettext">minetest</translation>
 
-    <update_contact>sfan5@live.de</update_contact>
+    <update_contact>celeron55@gmail.com</update_contact>
 
     <releases>
         <release date="2023-12-04" version="5.8.0"/>
