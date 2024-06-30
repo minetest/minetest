@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "gettext_plural_forms.h"
+#include "gettext_plural_form.h"
 #include "util/string.h"
 
 // TODO: merge this with UnaryOperation using stsd::identity (C++20)?
@@ -228,7 +228,7 @@ GettextPluralForm::Ptr GettextPluralForm::parse(const std::wstring_view &str) {
 	return result.first;
 }
 
-GettextPluralForm::Ptr GettextPluralForm::parse_header_line(const std::wstring_view &str) {
+GettextPluralForm::Ptr GettextPluralForm::parseHeaderLine(const std::wstring_view &str) {
 	if (!str_starts_with(str, L"Plural-Forms: nplurals=") || !str_ends_with(str, L";"))
 		return nullptr;
 	auto pos = str.find(L"plural=");

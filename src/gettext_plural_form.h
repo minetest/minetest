@@ -32,5 +32,5 @@ public:
 	virtual ~GettextPluralForm() {};
 
 	static GettextPluralForm::Ptr parse(const std::wstring_view &str);
-	static GettextPluralForm::Ptr parse_header_line(const std::wstring_view &str);
+	static GettextPluralForm::Ptr parseHeaderLine(const std::wstring_view &str);
 };

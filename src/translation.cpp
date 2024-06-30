@@ -432,7 +432,7 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 						} else {
 							for (auto &line: str_split(last_entry[L"msgstr"], L'\n')) {
 								if (str_starts_with(line, L"Plural-Forms:"))
-									plural = GettextPluralForm::parse_header_line(line);
+									plural = GettextPluralForm::parseHeaderLine(line);
 							}
 						}
 					} else {
@@ -558,7 +558,7 @@ void Translations::loadMoTranslation(const std::string &basefilename, const std:
 			} else {
 				for (auto &line: str_split(translated, '\n')) {
 					if (str_starts_with(line, "Plural-Forms:"))
-						plural_form = GettextPluralForm::parse_header_line(utf8_to_wide(line));
+						plural_form = GettextPluralForm::parseHeaderLine(utf8_to_wide(line));
 				}
 			}
 		} else {

@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "gettext_plural_forms.h"
+#include "gettext_plural_form.h"
 #include <unordered_map>
 #include <map>
 #include <string>
