@@ -3,13 +3,13 @@
     <id>net.minetest.minetest</id>
 
     <name>Minetest</name>
-    <summary>Multiplayer infinite-world block sandbox game</summary>
-    <summary xml:lang="de">Mehrspieler-Sandkastenspiel mit unendlichen Blockwelten</summary>
-    <summary xml:lang="es">Juego sandbox multijugador con mundos infinitos</summary>
-    <summary xml:lang="fr">Jeu multijoueur bac à sable avec des mondes infinis</summary>
-    <summary xml:lang="ja">マルチプレイに対応した、無限の世界のブロック型サンドボックスゲームです</summary>
-    <summary xml:lang="ru">Игра-песочница с безграничным миром, состоящим из блоков</summary>
-    <summary xml:lang="tr">Tek-Çok oyuncuyla küplerden sonsuz dünyalar inşa et</summary>
+    <summary>Multiplayer infinite-world block sandbox game platform</summary>
+    <summary xml:lang="de">Mehrspieler-Sandkasten-Spielplattform für unendliche Welten</summary>
+    <summary xml:lang="es">Plataforma de juegos multijugador de bloques de mundo infinito</summary>
+    <summary xml:lang="fr">Plateforme de jeu multijoueur bac à sable avec des mondes infinis</summary>
+    <summary xml:lang="ja">マルチプレイヤー・インフィニット・ワールド・ブロックサンドボックス・ゲーム・プラットフォーム</summary>
+    <summary xml:lang="ru">Многопользовательская игровая платформа для песочницы с бесконечным миром</summary>
+    <summary xml:lang="tr">Çok oyunculu sonsuz dünya blok sandbox oyun platformu</summary>
 
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>LGPL-2.1+ and CC-BY-SA-3.0 and MIT and Apache-2.0</project_license>
@@ -38,13 +38,13 @@
 
     <description>
         <p>
-            Minetest is an infinite-world block sandbox game and game engine.
+            Minetest is an infinite-world block sandbox game platform.
         </p>
         <p xml:lang="de">
-            Minetest ist ein Sandkastenspiel und eine Spielengine mit unendlichen Welten.
+            Minetest ist eine unendliche Blocksandkasten-Spielplattform.
         </p>
         <p xml:lang="fr">
-            Minetest est un jeu et un moteur de jeu de type bac à sable avec un monde infini.
+            Minetest est une plateforme de jeu de type bac à sable avec un monde infini.
         </p>
         <p>
             Players can create and destroy various types of blocks in a
