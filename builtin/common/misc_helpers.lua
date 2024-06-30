@@ -594,12 +594,14 @@ function core.strip_colors(str)
 	return (str:gsub(ESCAPE_CHAR .. "%([bc]@[^)]+%)", ""))
 end
 
-function core.translate(textdomain, str, ...)
+local function translate(textdomain, str, num, ...)
 	local start_seq
-	if textdomain == "" then
+	if textdomain == "" and num == "" then
 		start_seq = ESCAPE_CHAR .. "T"
-	else
+	elseif num == "" then
 		start_seq = ESCAPE_CHAR .. "(T@" .. textdomain .. ")"
+	else
+		start_seq = ESCAPE_CHAR .. "(T@" .. textdomain .. "@" .. num .. ")"
 	end
 	local arg = {n=select('#', ...), ...}
 	local end_seq = ESCAPE_CHAR .. "E"
@@ -630,8 +632,31 @@ function core.translate(textdomain, str, ...)
 	return start_seq .. translated .. end_seq
 end
 
+function core.translate(textdomain, str, ...)
+	return translate(textdomain, str, "", ...)
+end
+
+function core.translate_n(textdomain, str, str_plural, n, ...)
+	assert (type(n) == "number")
+	assert (n >= 0)
+	assert (math.floor(n) == n)
+
+	-- Truncate n if too large
+	local max = 1000000
+	if n >= 2 * max then
+		n = n % max + max
+	end
+	if n == 1 then
+		return translate(textdomain, str, "1", ...)
+	else
+		return translate(textdomain, str_plural, tostring(n), ...)
+	end
+end
+
 function core.get_translator(textdomain)
-	return function(str, ...) return core.translate(textdomain or "", str, ...) end
+	return
+		(function(str, ...) return core.translate(textdomain or "", str, ...) end),
+		(function(str, str_plural, n, ...) return core.translate_n(textdomain or "", str, str_plural, n, ...) end)
 end
 
 --------------------------------------------------------------------------------

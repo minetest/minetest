@@ -118,7 +118,7 @@ local function get_formspec(tabview, name, tabdata)
 
 		local title_and_name
 		if selected_pkg.type == "game" then
-			title_and_name = selected_pkg.name
+			title_and_name = selected_pkg.title or selected_pkg.name
 		else
 			title_and_name = (selected_pkg.title or selected_pkg.name) .. "\n" ..
 				core.colorize("#BFBFBF", selected_pkg.name)
