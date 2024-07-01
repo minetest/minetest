@@ -727,6 +727,7 @@ protected:
 	void processItemSelection(u16 *new_playeritem);
 
 	void dropSelectedItem(bool single_item = false);
+	void swapOffhand();
 	void openInventory();
 	void openConsole(float scale, const wchar_t *line=NULL);
 	void toggleFreeMove();
@@ -775,9 +776,10 @@ protected:
 			const core::line3d<f32> &shootline, bool liquids_pointable,
 			const std::optional<Pointabilities> &pointabilities,
 			bool look_for_object, const v3s16 &camera_offset);
-	void handlePointingAtNothing(const ItemStack &playerItem);
+	void handlePointingAtNothing(HandIndex used_hand);
 	void handlePointingAtNode(const PointedThing &pointed,
-			const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime);
+			const ItemStack &selected_item, const ItemStack &hand_item,
+			HandIndex used_hand, f32 dtime);
 	void handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
 			const v3f &player_position, bool show_debug);
 	void handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
@@ -1857,19 +1859,19 @@ inline bool Game::handleCallbacks()
 
 	if (g_gamecallback->changepassword_requested) {
 		(new GUIPasswordChange(guienv, guiroot, -1,
-				       &g_menumgr, client, texture_src))->drop();
+					   &g_menumgr, client, texture_src))->drop();
 		g_gamecallback->changepassword_requested = false;
 	}
 
 	if (g_gamecallback->changevolume_requested) {
 		(new GUIVolumeChange(guienv, guiroot, -1,
-				     &g_menumgr, texture_src))->drop();
+					 &g_menumgr, texture_src))->drop();
 		g_gamecallback->changevolume_requested = false;
 	}
 
 	if (g_gamecallback->keyconfig_requested) {
 		(new GUIKeyChangeMenu(guienv, guiroot, -1,
-				      &g_menumgr, texture_src))->drop();
+					  &g_menumgr, texture_src))->drop();
 		g_gamecallback->keyconfig_requested = false;
 	}
 
@@ -2066,6 +2068,8 @@ void Game::processKeyInput()
 {
 	if (wasKeyDown(KeyType::DROP)) {
 		dropSelectedItem(isKeyDown(KeyType::SNEAK));
+	} else if (wasKeyDown(KeyType::SWAP_OFFHAND)) {
+		swapOffhand();
 	} else if (wasKeyDown(KeyType::AUTOFORWARD)) {
 		toggleAutoforward();
 	} else if (wasKeyDown(KeyType::BACKWARD)) {
@@ -2241,6 +2245,29 @@ void Game::dropSelectedItem(bool single_item)
 	a->from_inv.setCurrentPlayer();
 	a->from_list = "main";
 	a->from_i = client->getEnv().getLocalPlayer()->getWieldIndex();
+	client->inventoryAction(a);
+}
+
+
+void Game::swapOffhand()
+{
+	IMoveAction *a = new IMoveAction();
+	a->count = 0;
+	a->from_inv.setCurrentPlayer();
+	a->from_list = "main";
+	a->from_i = client->getEnv().getLocalPlayer()->getWieldIndex();
+	a->to_inv.setCurrentPlayer();
+	a->to_list = "offhand";
+	a->to_i = 0;
+
+	ItemStack selected;
+	client->getEnv().getLocalPlayer()->getWieldedItem(&selected, nullptr);
+
+	if (selected.name == "") {
+		std::swap(a->from_list, a->to_list);
+		std::swap(a->from_i, a->to_i);
+	}
+
 	client->inventoryAction(a);
 }
 
@@ -3305,7 +3332,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 		Calculate what block is the crosshair pointing to
 	*/
 
-	ItemStack selected_item, hand_item;
+	ItemStack selected_item, hand_item, offhand_item, place_item;
 	const ItemStack &tool_item = player->getWieldedItem(&selected_item, &hand_item);
 
 	const ItemDefinition &selected_def = selected_item.getDefinition(itemdef_manager);
@@ -3410,12 +3437,14 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	else
 		runData.repeat_place_timer = 0;
 
+	HandIndex cur_used_hand = player->getCurrentUsedHand(itemdef_manager, pointed);
+
 	if (selected_def.usable && isKeyDown(KeyType::DIG)) {
 		if (wasKeyPressed(KeyType::DIG) && (!client->modsLoaded() ||
 				!client->getScript()->on_item_use(selected_item, pointed)))
 			client->interact(INTERACT_USE, pointed);
 	} else if (pointed.type == POINTEDTHING_NODE) {
-		handlePointingAtNode(pointed, selected_item, hand_item, dtime);
+		handlePointingAtNode(pointed, selected_item, hand_item, cur_used_hand, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		v3f player_position  = player->getPosition();
 		bool basic_debug_allowed = client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_BASIC_DEBUG);
@@ -3428,13 +3457,13 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 		if (wasKeyPressed(KeyType::DIG) && client->modsLoaded())
 			client->getScript()->on_item_use(selected_item, pointed);
 	} else if (wasKeyPressed(KeyType::PLACE)) {
-		handlePointingAtNothing(selected_item);
+		handlePointingAtNothing(cur_used_hand);
 	}
 
 	runData.pointed_old = pointed;
 
 	if (runData.punching || wasKeyPressed(KeyType::DIG))
-		camera->setDigging(0); // dig animation
+		camera->setDigging(0, MAINHAND); // dig animation
 
 	input->clearWasKeyPressed();
 	input->clearWasKeyReleased();
@@ -3549,7 +3578,7 @@ PointedThing Game::updatePointedThing(
 }
 
 
-void Game::handlePointingAtNothing(const ItemStack &playerItem)
+void Game::handlePointingAtNothing(HandIndex used_hand)
 {
 	infostream << "Attempted to place item while pointing at nothing" << std::endl;
 	PointedThing fauxPointed;
@@ -3559,7 +3588,8 @@ void Game::handlePointingAtNothing(const ItemStack &playerItem)
 
 
 void Game::handlePointingAtNode(const PointedThing &pointed,
-	const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime)
+	const ItemStack &selected_item, const ItemStack &hand_item,
+	HandIndex used_hand, f32 dtime)
 {
 	v3s16 nodepos = pointed.node_undersurface;
 	v3s16 neighborpos = pointed.node_abovesurface;
@@ -3593,11 +3623,14 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 	if ((wasKeyPressed(KeyType::PLACE) ||
 			runData.repeat_place_timer >= m_repeat_place_time) &&
 			client->checkPrivilege("interact")) {
+		LocalPlayer *player = client->getEnv().getLocalPlayer();
+		player->current_used_hand = used_hand;
+
 		runData.repeat_place_timer = 0;
 		infostream << "Place button pressed while looking at ground" << std::endl;
 
 		// Placing animation (always shown for feedback)
-		camera->setDigging(1);
+		camera->setDigging(1, used_hand);
 
 		soundmaker->m_player_rightpunch_sound = SoundSpec();
 
@@ -3605,12 +3638,22 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		// make that happen
 		// And also set the sound and send the interact
 		// But first check for meta formspec and rightclickable
-		auto &def = selected_item.getDefinition(itemdef_manager);
-		bool placed = nodePlacement(def, selected_item, nodepos, neighborpos,
+		ItemStack place_item;
+
+		if (used_hand == MAINHAND)
+			player->getWieldedItem(&place_item, nullptr);
+		else
+			player->getOffhandWieldedItem(&place_item);
+
+		auto &def = place_item.getDefinition(itemdef_manager);
+		bool placed = nodePlacement(def, place_item, nodepos, neighborpos,
 			pointed, meta);
 
 		if (placed && client->modsLoaded())
 			client->getScript()->on_placenode(pointed, def);
+
+		// Resets the hand index after 'on_place' callback run.
+		player->current_used_hand = MAINHAND;
 	}
 }
 
@@ -4034,7 +4077,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		client->setCrack(-1, nodepos);
 	}
 
-	camera->setDigging(0);  // Dig animation
+	camera->setDigging(0, MAINHAND);  // Dig animation
 }
 
 void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
@@ -4081,7 +4124,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		direct_brightness = client->getEnv().getClientMap()
 				.getBackgroundBrightness(MYMIN(runData.fog_range * 1.2, 60 * BS),
 					daynight_ratio, (int)(old_brightness * 255.5), &sunlight_seen)
-				    / 255.0;
+					/ 255.0;
 	}
 
 	float time_of_day_smooth = runData.time_of_day_smooth;
@@ -4152,9 +4195,11 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 
 	if (client->updateWieldedItem()) {
 		// Update wielded tool
-		ItemStack selected_item, hand_item;
+		ItemStack selected_item, hand_item, offhand_item;
 		ItemStack &tool_item = player->getWieldedItem(&selected_item, &hand_item);
-		camera->wield(tool_item);
+		camera->wield(tool_item, MAINHAND);
+		player->getOffhandWieldedItem(&offhand_item);
+		camera->wield(offhand_item, OFFHAND);
 	}
 
 	/*

@@ -318,6 +318,9 @@ view_bobbing_amount (View bobbing factor) float 1.0 0.0 7.9
 #    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
 fall_bobbing_amount (Fall bobbing factor) float 0.03 0.0 100.0
 
+#    Draw main hand on left side of screen, offhand on right side.
+swap_hands (Swap hands) bool false
+
 [**Camera]
 
 #    Field of view in degrees.
@@ -2401,6 +2404,9 @@ keymap_fullscreen (Fullscreen key) key KEY_F11
 
 #    Key for dropping the currently selected item.
 keymap_drop (Drop item key) key KEY_KEY_Q
+
+#    Key for swapping items between main hand and offhand.
+keymap_swap_offhand (Swap hand items) key KEY_KEY_F
 
 #    Key to use view zoom when possible.
 keymap_zoom (View zoom key) key KEY_KEY_Z

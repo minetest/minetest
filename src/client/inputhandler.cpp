@@ -45,6 +45,7 @@ void KeyCache::populate()
 	key[KeyType::AUTOFORWARD] = getKeySetting("keymap_autoforward");
 
 	key[KeyType::DROP] = getKeySetting("keymap_drop");
+	key[KeyType::SWAP_OFFHAND] = getKeySetting("keymap_swap_offhand");
 	key[KeyType::INVENTORY] = getKeySetting("keymap_inventory");
 	key[KeyType::CHAT] = getKeySetting("keymap_chat");
 	key[KeyType::CMD] = getKeySetting("keymap_cmd");

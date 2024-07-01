@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "network/networkprotocol.h"
 #include "util/basic_macros.h"
+#include "util/pointedthing.h"
 #include <list>
 #include <mutex>
 #include <functional>
@@ -33,6 +34,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PLAYERNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
 #define PLAYERNAME_ALLOWED_CHARS_USER_EXPL "'a' to 'z', 'A' to 'Z', '0' to '9', '-', '_'"
+
+enum HandIndex { MAINHAND = 0, OFFHAND = 1 };
 
 struct PlayerFovSpec
 {
@@ -222,6 +225,14 @@ public:
 
 	// Returns non-empty `selected` ItemStack. `hand` is a fallback, if specified
 	ItemStack &getWieldedItem(ItemStack *selected, ItemStack *hand) const;
+
+	// item currently in secondary hand is returned in `offhand`
+	// item to use for place / secondary_use (either main or offhand) is (optionally) returned in `place`
+	// return value: whether to use main or offhand for placing
+	void getOffhandWieldedItem(ItemStack *offhand) const;
+
+	HandIndex getCurrentUsedHand(IItemDefManager *idef, const PointedThing &pointed) const;
+
 	void setWieldIndex(u16 index);
 	u16 getWieldIndex() const { return m_wield_index; }
 
@@ -246,6 +257,8 @@ public:
 
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;
+
+	HandIndex current_used_hand { MAINHAND };
 
 protected:
 	char m_name[PLAYERNAME_SIZE];

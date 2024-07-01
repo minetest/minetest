@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <array>
 #include <list>
 #include <optional>
+#include "player.h"
 
 class LocalPlayer;
 struct MapDrawControl;
@@ -70,6 +71,48 @@ struct Nametag
 			// Light background for dark text
 			return video::SColor(50, 255, 255, 255);
 	}
+};
+
+class WieldNode
+{
+public:
+	WieldNode(HandIndex index, Client *client, scene::ISceneManager *mgr);
+	int getDirection();
+	void step(f32 dtime);
+	void addArmInertia(f32 player_yaw, v3f camera_direction);
+	void update(video::SColor player_light_color, f32 view_bobbing_anim, f32 tool_reload_ratio);
+	void setDigging(s32 button);
+	void wield(const ItemStack &item);
+
+private:
+	HandIndex m_index;
+	int m_direction;
+
+	Client *m_client;
+	WieldMeshSceneNode *m_meshnode = nullptr;
+
+	// Digging animation frame (0 <= m_digging_anim < 1)
+	f32 m_digging_anim = 0.0f;
+
+	// If -1, no digging animation
+	// If 0, left-click digging animation
+	// If 1, right-click digging animation
+	s32 m_digging_button = -1;
+
+	// Animation when changing wielded item
+	f32 m_change_timer = 0.125f;
+	ItemStack m_item_next;
+	bool m_item_old = false;
+
+	// Last known light color of the player
+	video::SColor m_player_light_color;
+
+	// Arm inertia
+	v2f m_offset = v2f(55.0f, -35.0f);
+	v2f m_arm_dir;
+	v2f m_cam_vel;
+	v2f m_cam_vel_old;
+	v2f m_last_cam_pos;
 };
 
 enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
@@ -166,11 +209,11 @@ public:
 	void updateViewingRange();
 
 	// Start digging animation
-	// Pass 0 for left click, 1 for right click
-	void setDigging(s32 button);
+	// button: Pass 0 for left click, 1 for right click
+	void setDigging(s32 button, HandIndex hand);
 
 	// Replace the wielded item mesh
-	void wield(const ItemStack &item);
+	void wield(const ItemStack &item, HandIndex hand);
 
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
@@ -219,8 +262,9 @@ private:
 	scene::ISceneNode *m_headnode = nullptr;
 	scene::ICameraSceneNode *m_cameranode = nullptr;
 
+	WieldNode *m_wieldnodes[2];
+
 	scene::ISceneManager *m_wieldmgr = nullptr;
-	WieldMeshSceneNode *m_wieldnode = nullptr;
 
 	// draw control
 	MapDrawControl& m_draw_control;
@@ -247,12 +291,6 @@ private:
 	bool m_fov_transition_active = false;
 	f32 m_fov_diff, m_transition_time;
 
-	v2f m_wieldmesh_offset = v2f(55.0f, -35.0f);
-	v2f m_arm_dir;
-	v2f m_cam_vel;
-	v2f m_cam_vel_old;
-	v2f m_last_cam_pos;
-
 	// Field of view and aspect ratio stuff
 	f32 m_aspect = 1.0f;
 	f32 m_fov_x = 1.0f;
@@ -268,17 +306,6 @@ private:
 	f32 m_view_bobbing_speed = 0.0f;
 	// Fall view bobbing
 	f32 m_view_bobbing_fall = 0.0f;
-
-	// Digging animation frame (0 <= m_digging_anim < 1)
-	f32 m_digging_anim = 0.0f;
-	// If -1, no digging animation
-	// If 0, left-click digging animation
-	// If 1, right-click digging animation
-	s32 m_digging_button = -1;
-
-	// Animation when changing wielded item
-	f32 m_wield_change_timer = 0.125f;
-	ItemStack m_wield_item_next;
 
 	CameraMode m_camera_mode = CAMERA_MODE_FIRST;
 
