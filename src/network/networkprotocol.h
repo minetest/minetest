@@ -502,7 +502,17 @@ enum ToClientCommand : u16
 
 	TOCLIENT_SPAWN_PARTICLE = 0x46,
 	/*
-		-- struct range<T> { T min, T max, f32 bias };
+		using range<T> = RangedParameter<T> {
+			T min, max
+			f32 bias
+		}
+		using tween<T> = TweenedParameter<T> {
+			u8 style
+			u16 reps
+			f32 beginning
+			T start, end
+		}
+
 		v3f pos
 		v3f velocity
 		v3f acceleration
