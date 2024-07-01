@@ -348,6 +348,11 @@ public:
 		return m_ao_manager.getObjectsInArea(box, objects, include_obj_cb);
 	}
 
+	void updateObjectPosition(u16 id, const v3f &last_position, const v3f &new_position)
+	{
+		m_ao_manager.updateObjectPosition(id, last_position, new_position);
+	}
+
 	// Clear objects, loading and going through every MapBlock
 	void clearObjects(ClearObjectsMode mode);
 
