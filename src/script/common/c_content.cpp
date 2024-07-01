@@ -760,7 +760,7 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 
 	f.setDefaultAlphaMode();
 
-	warn_if_field_exists(L, index, "alpha",
+	warn_if_field_exists(L, index, "alpha", "node " + f.name,
 		"Obsolete, only limited compatibility provided; "
 		"replaced by \"use_texture_alpha\"");
 	if (getintfield_default(L, index, "alpha", 255) != 255)
@@ -768,7 +768,7 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 
 	lua_getfield(L, index, "use_texture_alpha");
 	if (lua_isboolean(L, -1)) {
-		warn_if_field_exists(L, index, "use_texture_alpha",
+		warn_if_field_exists(L, index, "use_texture_alpha", "node " + f.name,
 			"Boolean values are deprecated; use the new choices");
 		if (lua_toboolean(L, -1))
 			f.alpha = (f.drawtype == NDT_NORMAL) ? ALPHAMODE_CLIP : ALPHAMODE_BLEND;
@@ -1315,13 +1315,16 @@ void pushnode(lua_State *L, const MapNode &n)
 }
 
 /******************************************************************************/
-void warn_if_field_exists(lua_State *L, int table,
-		const char *name, const std::string &message)
+void warn_if_field_exists(lua_State *L, int table, const char *fieldname,
+		std::string_view name, std::string_view message)
 {
-	lua_getfield(L, table, name);
+	lua_getfield(L, table, fieldname);
 	if (!lua_isnil(L, -1)) {
-		warningstream << "Field \"" << name << "\": "
-				<< message << std::endl;
+		warningstream << "Field \"" << fieldname << "\"";
+		if (!name.empty()) {
+			warningstream << " on " << name;
+		}
+		warningstream << ": " << message << std::endl;
 		infostream << script_get_backtrace(L) << std::endl;
 	}
 	lua_pop(L, 1);
