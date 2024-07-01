@@ -300,7 +300,7 @@ bool GUIFormSpecMenu::precheckElement(const std::string &name, const std::string
 	return false;
 }
 
-void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element, const std::string &)
 {
 	// Note: do not use precheckElement due to "," separator.
 	std::vector<std::string> parts = split(element,',');
@@ -326,7 +326,7 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 	errorstream<< "Invalid size element (" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseContainer(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseContainer(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts = split(element, ',');
 
@@ -342,7 +342,7 @@ void GUIFormSpecMenu::parseContainer(parserData* data, const std::string &elemen
 	errorstream<< "Invalid container start element (" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseContainerEnd(parserData* data)
+void GUIFormSpecMenu::parseContainerEnd(parserData* data, const std::string &, const std::string &)
 {
 	if (container_stack.empty()) {
 		errorstream<< "Invalid container end element, no matching container start element"  << std::endl;
@@ -352,7 +352,7 @@ void GUIFormSpecMenu::parseContainerEnd(parserData* data)
 	}
 }
 
-void GUIFormSpecMenu::parseScrollContainer(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseScrollContainer(parserData *data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("scroll_container start", element, 4, 5, parts))
@@ -419,7 +419,7 @@ void GUIFormSpecMenu::parseScrollContainer(parserData *data, const std::string &
 	pos_offset.Y = 0.0f;
 }
 
-void GUIFormSpecMenu::parseScrollContainerEnd(parserData *data)
+void GUIFormSpecMenu::parseScrollContainerEnd(parserData *data, const std::string &, const std::string &)
 {
 	if (data->current_parent == this || data->current_parent->getParent() == this ||
 			container_stack.empty()) {
@@ -443,7 +443,7 @@ void GUIFormSpecMenu::parseScrollContainerEnd(parserData *data)
 	container_stack.pop();
 }
 
-void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseList(parserData *data, const std::string &element, const std::string &)
 {
 	MY_CHECKCLIENT("list");
 
@@ -531,7 +531,7 @@ void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseListRing(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseListRing(parserData *data, const std::string &element, const std::string &)
 {
 	MY_CHECKCLIENT("listring");
 
@@ -566,7 +566,7 @@ void GUIFormSpecMenu::parseListRing(parserData *data, const std::string &element
 		<< m_inventorylists.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("checkbox", element, 3, 4, parts))
@@ -641,7 +641,12 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseRealCoordinates(parserData* data, const std::string &element, const std::string &description)
+{
+	data->real_coordinates = is_yes(description);
+}
+
+void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("scrollbar", element, 5, 5, parts))
@@ -714,7 +719,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts = split(element, ';');
 
@@ -767,7 +772,7 @@ void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string 
 	}
 }
 
-void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("image", element, 2, 4, parts))
@@ -859,7 +864,7 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("animated_image", element, 6, 8, parts))
@@ -925,7 +930,7 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("item_image", element, 3, 3, parts))
@@ -1072,7 +1077,7 @@ bool GUIFormSpecMenu::parseMiddleRect(const std::string &value, core::rect<s32> 
 	return true;
 }
 
-void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("background", element, 3, 5, parts))
@@ -1147,7 +1152,7 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 	e->drop();
 }
 
-void GUIFormSpecMenu::parseTableOptions(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseTableOptions(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -1159,7 +1164,7 @@ void GUIFormSpecMenu::parseTableOptions(parserData* data, const std::string &ele
 	}
 }
 
-void GUIFormSpecMenu::parseTableColumns(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseTableColumns(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -1179,7 +1184,7 @@ void GUIFormSpecMenu::parseTableColumns(parserData* data, const std::string &ele
 	}
 }
 
-void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("table", element, 4, 5, parts))
@@ -1249,7 +1254,7 @@ void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("textlist", element, 4, 6, parts))
@@ -1323,7 +1328,7 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("dropdown", element, 5, 6, parts))
@@ -1404,7 +1409,7 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 	}
 }
 
-void GUIFormSpecMenu::parseFieldEnterAfterEdit(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseFieldEnterAfterEdit(parserData *data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("field_enter_after_edit", element, 2, 2, parts))
@@ -1413,7 +1418,7 @@ void GUIFormSpecMenu::parseFieldEnterAfterEdit(parserData *data, const std::stri
 	field_enter_after_edit[parts[0]] = is_yes(parts[1]);
 }
 
-void GUIFormSpecMenu::parseFieldCloseOnEnter(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseFieldCloseOnEnter(parserData *data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("field_close_on_enter", element, 2, 2, parts))
@@ -1422,7 +1427,7 @@ void GUIFormSpecMenu::parseFieldCloseOnEnter(parserData *data, const std::string
 	field_close_on_enter[parts[0]] = is_yes(parts[1]);
 }
 
-void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("pwdfield", element, 4, 4, parts))
@@ -1702,7 +1707,7 @@ void GUIFormSpecMenu::parseField(parserData* data, const std::string &element,
 	parseTextArea(data, parts, type);
 }
 
-void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("hypertext", element, 4, 4, parts))
@@ -1755,7 +1760,7 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("label", element, 2, 2, parts))
@@ -1844,7 +1849,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 	}
 }
 
-void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("vertlabel", element, 2, 2, parts))
@@ -2012,7 +2017,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("tabheader", element, 4, 7, parts))
@@ -2127,7 +2132,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 	m_tabheader_upper_edge = MYMIN(m_tabheader_upper_edge, rect.UpperLeftCorner.Y);
 }
 
-void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &element, const std::string &)
 {
 	MY_CHECKCLIENT("item_image_button");
 
@@ -2202,7 +2207,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 	m_fields.push_back(spec_btn);
 }
 
-void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("box", element, 3, 3, parts))
@@ -2261,7 +2266,7 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("bgcolor", element, 1, 3, parts))
@@ -2298,7 +2303,7 @@ void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &
 		parseColorString(parts[2], m_fullscreen_bgcolor, false);
 }
 
-void GUIFormSpecMenu::parseListColors(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseListColors(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	// Legacy Note: If clients older than 5.5.0-dev are supplied with additional arguments,
@@ -2340,7 +2345,7 @@ void GUIFormSpecMenu::parseListColors(parserData* data, const std::string &eleme
 	}
 }
 
-void GUIFormSpecMenu::parseTooltip(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseTooltip(parserData* data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("tooltip", element, 2, 5, parts))
@@ -2437,7 +2442,7 @@ bool GUIFormSpecMenu::parseVersionDirect(const std::string &data)
 	return false;
 }
 
-bool GUIFormSpecMenu::parseSizeDirect(parserData* data, const std::string &element)
+bool GUIFormSpecMenu::parseSizeDirect(parserData* data, const std::string &element, const std::string &)
 {
 	if (element.empty())
 		return false;
@@ -2456,12 +2461,12 @@ bool GUIFormSpecMenu::parseSizeDirect(parserData* data, const std::string &eleme
 	if (type == "invsize")
 		warningstream << "Deprecated formspec element \"invsize\" is used" << std::endl;
 
-	parseSize(data, description);
+	parseSize(data, description, "");
 
 	return true;
 }
 
-bool GUIFormSpecMenu::parsePositionDirect(parserData *data, const std::string &element)
+bool GUIFormSpecMenu::parsePositionDirect(parserData *data, const std::string &element, const std::string &)
 {
 	if (element.empty())
 		return false;
@@ -2477,12 +2482,12 @@ bool GUIFormSpecMenu::parsePositionDirect(parserData *data, const std::string &e
 	if (type != "position")
 		return false;
 
-	parsePosition(data, description);
+	parsePosition(data, description, "");
 
 	return true;
 }
 
-void GUIFormSpecMenu::parsePosition(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parsePosition(parserData *data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts = split(element, ';');
 
@@ -2500,7 +2505,7 @@ void GUIFormSpecMenu::parsePosition(parserData *data, const std::string &element
 	errorstream << "Invalid position element (" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
-bool GUIFormSpecMenu::parseAnchorDirect(parserData *data, const std::string &element)
+bool GUIFormSpecMenu::parseAnchorDirect(parserData *data, const std::string &element, const std::string &)
 {
 	if (element.empty())
 		return false;
@@ -2516,12 +2521,12 @@ bool GUIFormSpecMenu::parseAnchorDirect(parserData *data, const std::string &ele
 	if (type != "anchor")
 		return false;
 
-	parseAnchor(data, description);
+	parseAnchor(data, description, "");
 
 	return true;
 }
 
-void GUIFormSpecMenu::parseAnchor(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseAnchor(parserData *data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts = split(element, ';');
 
@@ -2540,7 +2545,7 @@ void GUIFormSpecMenu::parseAnchor(parserData *data, const std::string &element)
 			<< "'" << std::endl;
 }
 
-bool GUIFormSpecMenu::parsePaddingDirect(parserData *data, const std::string &element)
+bool GUIFormSpecMenu::parsePaddingDirect(parserData *data, const std::string &element, const std::string &)
 {
 	if (element.empty())
 		return false;
@@ -2556,12 +2561,12 @@ bool GUIFormSpecMenu::parsePaddingDirect(parserData *data, const std::string &el
 	if (type != "padding")
 		return false;
 
-	parsePadding(data, description);
+	parsePadding(data, description, "");
 
 	return true;
 }
 
-void GUIFormSpecMenu::parsePadding(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parsePadding(parserData *data, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts = split(element, ';');
 
@@ -2716,7 +2721,7 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 	return true;
 }
 
-void GUIFormSpecMenu::parseSetFocus(const std::string &element)
+void GUIFormSpecMenu::parseSetFocus(parserData*, const std::string &element, const std::string &)
 {
 	std::vector<std::string> parts;
 	if (!precheckElement("set_focus", element, 1, 2, parts))
@@ -2730,7 +2735,7 @@ void GUIFormSpecMenu::parseSetFocus(const std::string &element)
 		setFocus(parts[0]);
 }
 
-void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element, const std::string &)
 {
 	MY_CHECKCLIENT("model");
 
@@ -2842,6 +2847,55 @@ void GUIFormSpecMenu::removeAll()
 		scroll_container_it.second->drop();
 }
 
+const std::unordered_map<std::string, void (GUIFormSpecMenu::*)(GUIFormSpecMenu::parserData *data,
+	const std::string &description, const std::string &type)> GUIFormSpecMenu::element_parsers = {
+		{"container",              &GUIFormSpecMenu::parseContainer},
+		{"container_end",          &GUIFormSpecMenu::parseContainerEnd},
+		{"list",                   &GUIFormSpecMenu::parseList},
+		{"listring",               &GUIFormSpecMenu::parseListRing},
+		{"checkbox",               &GUIFormSpecMenu::parseCheckbox},
+		{"image",                  &GUIFormSpecMenu::parseImage},
+		{"animated_image",         &GUIFormSpecMenu::parseAnimatedImage},
+		{"item_image",             &GUIFormSpecMenu::parseItemImage},
+		{"button",                 &GUIFormSpecMenu::parseButton},
+		{"button_exit",            &GUIFormSpecMenu::parseButton},
+		{"button_url",             &GUIFormSpecMenu::parseButton},
+		{"button_url_exit",        &GUIFormSpecMenu::parseButton},
+		{"background",             &GUIFormSpecMenu::parseBackground},
+		{"background9",            &GUIFormSpecMenu::parseBackground},
+		{"tableoptions",           &GUIFormSpecMenu::parseTableOptions},
+		{"tablecolumns",           &GUIFormSpecMenu::parseTableColumns},
+		{"table",                  &GUIFormSpecMenu::parseTable},
+		{"textlist",               &GUIFormSpecMenu::parseTextList},
+		{"dropdown",               &GUIFormSpecMenu::parseDropDown},
+		{"field_enter_after_edit", &GUIFormSpecMenu::parseFieldEnterAfterEdit},
+		{"field_close_on_enter",   &GUIFormSpecMenu::parseFieldCloseOnEnter},
+		{"pwdfield",               &GUIFormSpecMenu::parsePwdField},
+		{"field",                  &GUIFormSpecMenu::parseField},
+		{"textarea",               &GUIFormSpecMenu::parseField},
+		{"hypertext",              &GUIFormSpecMenu::parseHyperText},
+		{"label",                  &GUIFormSpecMenu::parseLabel},
+		{"vertlabel",              &GUIFormSpecMenu::parseVertLabel},
+		{"item_image_button",      &GUIFormSpecMenu::parseItemImageButton},
+		{"image_button",           &GUIFormSpecMenu::parseImageButton},
+		{"image_button_exit",      &GUIFormSpecMenu::parseImageButton},
+		{"tabheader",              &GUIFormSpecMenu::parseTabHeader},
+		{"box",                    &GUIFormSpecMenu::parseBox},
+		{"bgcolor",                &GUIFormSpecMenu::parseBackgroundColor},
+		{"listcolors",             &GUIFormSpecMenu::parseListColors},
+		{"tooltip",                &GUIFormSpecMenu::parseTooltip},
+		{"scrollbar",              &GUIFormSpecMenu::parseScrollBar},
+		{"real_coordinates",       &GUIFormSpecMenu::parseRealCoordinates},
+		// {"style",               &GUIFormSpecMenu::parseStyle},
+		// {"style_type",          &GUIFormSpecMenu::parseStyle},
+		{"scrollbaroptions",       &GUIFormSpecMenu::parseScrollBarOptions},
+		{"scroll_container",       &GUIFormSpecMenu::parseScrollContainer},
+		{"scroll_container_end",   &GUIFormSpecMenu::parseScrollContainerEnd},
+		{"set_focus",              &GUIFormSpecMenu::parseSetFocus},
+		{"model",                  &GUIFormSpecMenu::parseModel},
+};
+
+
 void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 {
 	//some prechecks
@@ -2858,161 +2912,13 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 	std::string type = trim(element.substr(0, pos));
 	std::string description = element.substr(pos+1);
 
-	if (type == "container") {
-		parseContainer(data, description);
+	auto it = element_parsers.find(type);
+	if (it != element_parsers.end()) {
+		(this->*(it->second))(data, description, type);
 		return;
 	}
 
-	if (type == "container_end") {
-		parseContainerEnd(data);
-		return;
-	}
-
-	if (type == "list") {
-		parseList(data, description);
-		return;
-	}
-
-	if (type == "listring") {
-		parseListRing(data, description);
-		return;
-	}
-
-	if (type == "checkbox") {
-		parseCheckbox(data, description);
-		return;
-	}
-
-	if (type == "image") {
-		parseImage(data, description);
-		return;
-	}
-
-	if (type == "animated_image") {
-		parseAnimatedImage(data, description);
-		return;
-	}
-
-	if (type == "item_image") {
-		parseItemImage(data, description);
-		return;
-	}
-
-	if (type == "button" || type == "button_exit" || type == "button_url" || type == "button_url_exit") {
-		parseButton(data, description, type);
-		return;
-	}
-
-	if (type == "background" || type == "background9") {
-		parseBackground(data, description);
-		return;
-	}
-
-	if (type == "tableoptions"){
-		parseTableOptions(data,description);
-		return;
-	}
-
-	if (type == "tablecolumns"){
-		parseTableColumns(data,description);
-		return;
-	}
-
-	if (type == "table"){
-		parseTable(data,description);
-		return;
-	}
-
-	if (type == "textlist"){
-		parseTextList(data,description);
-		return;
-	}
-
-	if (type == "dropdown"){
-		parseDropDown(data,description);
-		return;
-	}
-
-	if (type == "field_enter_after_edit") {
-		parseFieldEnterAfterEdit(data, description);
-		return;
-	}
-
-	if (type == "field_close_on_enter") {
-		parseFieldCloseOnEnter(data, description);
-		return;
-	}
-
-	if (type == "pwdfield") {
-		parsePwdField(data,description);
-		return;
-	}
-
-	if ((type == "field") || (type == "textarea")){
-		parseField(data,description,type);
-		return;
-	}
-
-	if (type == "hypertext") {
-		parseHyperText(data,description);
-		return;
-	}
-
-	if (type == "label") {
-		parseLabel(data,description);
-		return;
-	}
-
-	if (type == "vertlabel") {
-		parseVertLabel(data,description);
-		return;
-	}
-
-	if (type == "item_image_button") {
-		parseItemImageButton(data,description);
-		return;
-	}
-
-	if ((type == "image_button") || (type == "image_button_exit")) {
-		parseImageButton(data,description,type);
-		return;
-	}
-
-	if (type == "tabheader") {
-		parseTabHeader(data,description);
-		return;
-	}
-
-	if (type == "box") {
-		parseBox(data,description);
-		return;
-	}
-
-	if (type == "bgcolor") {
-		parseBackgroundColor(data,description);
-		return;
-	}
-
-	if (type == "listcolors") {
-		parseListColors(data,description);
-		return;
-	}
-
-	if (type == "tooltip") {
-		parseTooltip(data,description);
-		return;
-	}
-
-	if (type == "scrollbar") {
-		parseScrollBar(data, description);
-		return;
-	}
-
-	if (type == "real_coordinates") {
-		data->real_coordinates = is_yes(description);
-		return;
-	}
-
+	// They remain here due to bool flags, for now
 	if (type == "style") {
 		parseStyle(data, description, false);
 		return;
@@ -3020,31 +2926,6 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 
 	if (type == "style_type") {
 		parseStyle(data, description, true);
-		return;
-	}
-
-	if (type == "scrollbaroptions") {
-		parseScrollBarOptions(data, description);
-		return;
-	}
-
-	if (type == "scroll_container") {
-		parseScrollContainer(data, description);
-		return;
-	}
-
-	if (type == "scroll_container_end") {
-		parseScrollContainerEnd(data);
-		return;
-	}
-
-	if (type == "set_focus") {
-		parseSetFocus(description);
-		return;
-	}
-
-	if (type == "model") {
-		parseModel(data, description);
 		return;
 	}
 
@@ -3171,28 +3052,28 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	/* we need size first in order to calculate image scale */
 	mydata.explicit_size = false;
 	for (; i< elements.size(); i++) {
-		if (!parseSizeDirect(&mydata, elements[i])) {
+		if (!parseSizeDirect(&mydata, elements[i], "")) {
 			break;
 		}
 	}
 
 	/* "position" element is always after "size" element if it used */
 	for (; i< elements.size(); i++) {
-		if (!parsePositionDirect(&mydata, elements[i])) {
+		if (!parsePositionDirect(&mydata, elements[i], "")) {
 			break;
 		}
 	}
 
 	/* "anchor" element is always after "position" (or  "size" element) if it used */
 	for (; i< elements.size(); i++) {
-		if (!parseAnchorDirect(&mydata, elements[i])) {
+		if (!parseAnchorDirect(&mydata, elements[i], "")) {
 			break;
 		}
 	}
 
 	/* "padding" element is always after "anchor" and previous if it is used */
 	for (; i < elements.size(); i++) {
-		if (!parsePaddingDirect(&mydata, elements[i])) {
+		if (!parsePaddingDirect(&mydata, elements[i], "")) {
 			break;
 		}
 	}

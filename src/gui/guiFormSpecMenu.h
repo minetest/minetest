@@ -425,6 +425,9 @@ private:
 		std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
 	};
 
+	static const std::unordered_map<std::string,
+		void (GUIFormSpecMenu::*)(GUIFormSpecMenu::parserData *data, const std::string &description, const std::string &type)> element_parsers;
+
 	struct fs_key_pending {
 		bool key_up;
 		bool key_down;
@@ -440,58 +443,59 @@ private:
 
 	void parseElement(parserData* data, const std::string &element);
 
-	void parseSize(parserData* data, const std::string &element);
-	void parseContainer(parserData* data, const std::string &element);
-	void parseContainerEnd(parserData* data);
-	void parseScrollContainer(parserData *data, const std::string &element);
-	void parseScrollContainerEnd(parserData *data);
-	void parseList(parserData* data, const std::string &element);
-	void parseListRing(parserData* data, const std::string &element);
-	void parseCheckbox(parserData* data, const std::string &element);
-	void parseImage(parserData* data, const std::string &element);
-	void parseAnimatedImage(parserData *data, const std::string &element);
-	void parseItemImage(parserData* data, const std::string &element);
+	void parseSize(parserData* data, const std::string &element, const std::string &);
+	void parseContainer(parserData* data, const std::string &element, const std::string &);
+	void parseContainerEnd(parserData* data, const std::string &element, const std::string &);
+	void parseScrollContainer(parserData *data, const std::string &element, const std::string &);
+	void parseScrollContainerEnd(parserData *data, const std::string &element, const std::string &);
+	void parseList(parserData* data, const std::string &element, const std::string &);
+	void parseListRing(parserData* data, const std::string &element, const std::string &);
+	void parseCheckbox(parserData* data, const std::string &element, const std::string &);
+	void parseImage(parserData* data, const std::string &element, const std::string &);
+	void parseAnimatedImage(parserData *data, const std::string &element, const std::string &);
+	void parseItemImage(parserData* data, const std::string &element, const std::string &);
 	void parseButton(parserData* data, const std::string &element,
 			const std::string &typ);
-	void parseBackground(parserData* data, const std::string &element);
-	void parseTableOptions(parserData* data, const std::string &element);
-	void parseTableColumns(parserData* data, const std::string &element);
-	void parseTable(parserData* data, const std::string &element);
-	void parseTextList(parserData* data, const std::string &element);
-	void parseDropDown(parserData* data, const std::string &element);
-	void parseFieldEnterAfterEdit(parserData *data, const std::string &element);
-	void parseFieldCloseOnEnter(parserData *data, const std::string &element);
-	void parsePwdField(parserData* data, const std::string &element);
+	void parseBackground(parserData* data, const std::string &element, const std::string &);
+	void parseTableOptions(parserData* data, const std::string &element, const std::string &);
+	void parseTableColumns(parserData* data, const std::string &element, const std::string &);
+	void parseTable(parserData* data, const std::string &element, const std::string &);
+	void parseTextList(parserData* data, const std::string &element, const std::string &);
+	void parseDropDown(parserData* data, const std::string &element, const std::string &);
+	void parseFieldEnterAfterEdit(parserData *data, const std::string &element, const std::string &);
+	void parseFieldCloseOnEnter(parserData *data, const std::string &element, const std::string &);
+	void parsePwdField(parserData* data, const std::string &element, const std::string &);
 	void parseField(parserData* data, const std::string &element, const std::string &type);
 	void createTextField(parserData *data, FieldSpec &spec,
 		core::rect<s32> &rect, bool is_multiline);
 	void parseSimpleField(parserData* data,std::vector<std::string> &parts);
 	void parseTextArea(parserData* data,std::vector<std::string>& parts,
 			const std::string &type);
-	void parseHyperText(parserData *data, const std::string &element);
-	void parseLabel(parserData* data, const std::string &element);
-	void parseVertLabel(parserData* data, const std::string &element);
+	void parseHyperText(parserData *data, const std::string &element, const std::string &);
+	void parseLabel(parserData* data, const std::string &element, const std::string &);
+	void parseVertLabel(parserData* data, const std::string &element, const std::string &);
 	void parseImageButton(parserData* data, const std::string &element,
 			const std::string &type);
-	void parseItemImageButton(parserData* data, const std::string &element);
-	void parseTabHeader(parserData* data, const std::string &element);
-	void parseBox(parserData* data, const std::string &element);
-	void parseBackgroundColor(parserData* data, const std::string &element);
-	void parseListColors(parserData* data, const std::string &element);
-	void parseTooltip(parserData* data, const std::string &element);
+	void parseItemImageButton(parserData* data, const std::string &element, const std::string &);
+	void parseTabHeader(parserData* data, const std::string &element, const std::string &);
+	void parseBox(parserData* data, const std::string &element, const std::string &);
+	void parseBackgroundColor(parserData* data, const std::string &element, const std::string &);
+	void parseListColors(parserData* data, const std::string &element, const std::string &);
+	void parseTooltip(parserData* data, const std::string &element, const std::string &);
 	bool parseVersionDirect(const std::string &data);
-	bool parseSizeDirect(parserData* data, const std::string &element);
-	void parseScrollBar(parserData* data, const std::string &element);
-	void parseScrollBarOptions(parserData *data, const std::string &element);
-	bool parsePositionDirect(parserData *data, const std::string &element);
-	void parsePosition(parserData *data, const std::string &element);
-	bool parseAnchorDirect(parserData *data, const std::string &element);
-	void parseAnchor(parserData *data, const std::string &element);
-	bool parsePaddingDirect(parserData *data, const std::string &element);
-	void parsePadding(parserData *data, const std::string &element);
+	bool parseSizeDirect(parserData* data, const std::string &element, const std::string &);
+	void parseRealCoordinates(parserData* data, const std::string &element, const std::string &);
+	void parseScrollBar(parserData* data, const std::string &element, const std::string &);
+	void parseScrollBarOptions(parserData *data, const std::string &element, const std::string &);
+	bool parsePositionDirect(parserData *data, const std::string &element, const std::string &);
+	void parsePosition(parserData *data, const std::string &element, const std::string &);
+	bool parseAnchorDirect(parserData *data, const std::string &element, const std::string &);
+	void parseAnchor(parserData *data, const std::string &element, const std::string &);
+	bool parsePaddingDirect(parserData *data, const std::string &element, const std::string &);
+	void parsePadding(parserData *data, const std::string &element, const std::string &);
 	bool parseStyle(parserData *data, const std::string &element, bool style_type);
-	void parseSetFocus(const std::string &element);
-	void parseModel(parserData *data, const std::string &element);
+	void parseSetFocus(parserData *, const std::string &element, const std::string &);
+	void parseModel(parserData *data, const std::string &element, const std::string &);
 
 	bool parseMiddleRect(const std::string &value, core::rect<s32> *parsed_rect);
 
