@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIFont.h>
 #include "client/renderingengine.h"
 #include "debug.h"
+#include "irrlicht_changes/CGUITTFont.h"
 #include "log.h"
 #include "client/texturesource.h"
 #include "gettime.h"
@@ -227,6 +228,8 @@ void GUITable::setTable(const TableOptions &options,
 		s32 content_index;
 		// Next cell: Width in pixels
 		s32 content_width;
+		// Next cell: Image scale (only for "image" column type)
+		f32 image_scale;
 		// Vector of completed cells in this row
 		std::vector<Cell> cells;
 		// Stores colors and how long they last (maximum column index)
@@ -235,6 +238,17 @@ void GUITable::setTable(const TableOptions &options,
 		TempRow(): x(0), indent(0), content_index(0), content_width(0) {}
 	};
 	TempRow *rows = new TempRow[rowcount];
+
+	CGUITTFont *ttfont = dynamic_cast<CGUITTFont *>(m_font);
+	f32 desired_image_scale = 1.0f;
+	if (ttfont) {
+		// This gives us the effective font size, which is chosen taking display
+		// density and gui_scaling into account.
+		// Since row height scales with font size, this gives better results than
+		// just using display density and gui_scaling when a non-standard font
+		// size is used (e.g. Android default of 14).
+		desired_image_scale = std::max(1.0f, ttfont->getFontSize() / 16.0f);
+	}
 
 	// Get em width. Pedantically speaking, the width of "M" is not
 	// necessarily the same as the em width, but whatever, close enough.
@@ -373,8 +387,18 @@ void GUITable::setTable(const TableOptions &options,
 				if (row->content_index >= 0)
 					image = m_images[row->content_index];
 
+				row->image_scale = 1.0f;
+				row->content_width = 0;
+				if (image) {
+					f32 max_image_scale = (f32)m_rowheight / (f32)image->getOriginalSize().Height;
+					// Scale with display density and make sure it fits into the row
+					row->image_scale = std::min(desired_image_scale, max_image_scale);
+					// When upscaling, fractional factors would cause artifacts
+					if (row->image_scale > 1.0f)
+						row->image_scale = std::floor(row->image_scale);
+					row->content_width = image->getOriginalSize().Width * row->image_scale;
+				}
 				// Get content width and update xmax
-				row->content_width = image ? image->getOriginalSize().Width : 0;
 				row->content_width = MYMAX(row->content_width, width);
 				s32 row_xmax = row->x + padding + row->content_width;
 				xmax = MYMAX(xmax, row_xmax);
@@ -384,6 +408,7 @@ void GUITable::setTable(const TableOptions &options,
 				newcell.xmin = rows[i].x + padding;
 				alignContent(&newcell, xmax, rows[i].content_width, align);
 				newcell.content_index = rows[i].content_index;
+				newcell.image_scale = rows[i].image_scale;
 				rows[i].cells.push_back(newcell);
 				rows[i].x = newcell.xmax;
 			}
@@ -740,23 +765,23 @@ void GUITable::drawCell(const Cell *cell, video::SColor color,
 		video::ITexture *image = m_images[cell->content_index];
 
 		if (image) {
-			core::position2d<s32> dest_pos =
-					row_rect.UpperLeftCorner;
-			dest_pos.X += cell->xpos;
 			core::rect<s32> source_rect(
 					core::position2d<s32>(0, 0),
 					image->getOriginalSize());
-			s32 imgh = source_rect.LowerRightCorner.Y;
+			core::rect<s32> dest_rect(
+					0, 0,
+					image->getOriginalSize().Width * cell->image_scale,
+					image->getOriginalSize().Height * cell->image_scale);
+			dest_rect += row_rect.UpperLeftCorner + v2s32(cell->xpos, 0);
+
+			s32 imgh = dest_rect.getHeight();
 			s32 rowh = row_rect.getHeight();
+			// Center vertically if needed
 			if (imgh < rowh)
-				dest_pos.Y += (rowh - imgh) / 2;
-			else
-				source_rect.LowerRightCorner.Y = rowh;
+				dest_rect += v2s32(0, (rowh - imgh) / 2);
 
-			video::SColor color(255, 255, 255, 255);
-
-			driver->draw2DImage(image, dest_pos, source_rect,
-					&client_clip, color, true);
+			driver->draw2DImage(image, dest_rect, source_rect,
+					&client_clip, nullptr, true);
 		}
 	}
 }
