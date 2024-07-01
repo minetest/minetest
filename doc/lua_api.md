@@ -6730,6 +6730,7 @@ This allows you easy interoperability for delegating work to jobs.
 ### List of APIs available in an async environment
 
 Classes:
+
 * `AreaStore`
 * `ItemStack`
 * `PerlinNoise`
@@ -6743,17 +6744,20 @@ Classes:
 * `Settings`
 
 Class instances that can be transferred between environments:
+
 * `ItemStack`
 * `PerlinNoise`
 * `PerlinNoiseMap`
 * `VoxelManip`
 
 Functions:
+
 * Standalone helpers such as logging, filesystem, encoding,
   hashing or compression APIs
 * `minetest.register_async_metatable` (see above)
 
 Variables:
+
 * `minetest.settings`
 * `minetest.registered_items`, `registered_nodes`, `registered_tools`,
   `registered_craftitems` and `registered_aliases`
@@ -6805,6 +6809,7 @@ does not have a global step or timer.
 ### List of APIs available in the mapgen env
 
 Classes:
+
 * `AreaStore`
 * `ItemStack`
 * `PerlinNoise`
@@ -6818,6 +6823,7 @@ Classes:
 * `Settings`
 
 Functions:
+
 * Standalone helpers such as logging, filesystem, encoding,
   hashing or compression APIs
 * `minetest.get_biome_id`, `get_biome_name`, `get_heat`, `get_humidity`,
@@ -6828,6 +6834,7 @@ Functions:
     * these only operate on the current chunk (if inside a callback)
 
 Variables:
+
 * `minetest.settings`
 * `minetest.registered_items`, `registered_nodes`, `registered_tools`,
   `registered_craftitems` and `registered_aliases`
