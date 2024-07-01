@@ -6710,6 +6710,7 @@ This allows you easy interoperability for delegating work to jobs.
     * When `func` returns the callback is called (in the normal environment)
       with all of the return values as arguments.
     * Optional: Variable number of arguments that are passed to `func`
+    * Returns an `AsyncJob` async job.
 * `minetest.register_async_dofile(path)`:
     * Register a path to a Lua file to be imported when an async environment
       is initialized. You can use this to preload code which you can then call
@@ -6725,7 +6726,6 @@ This allows you easy interoperability for delegating work to jobs.
       same name.
     * You must register the metatable in both the main environment
       and the async environment for this mechanism to work.
-
 
 ### List of APIs available in an async environment
 
@@ -7474,6 +7474,14 @@ use the provided load and write functions for this.
   Returns success and, optionally, an error message.
 * `from_file(filename)`: Experimental. Like `from_string()`, but reads the data
   from a file.
+
+`AsyncJob`
+----------
+An `AsyncJob` is a reference to a job to be run in an async environment.
+
+### Methods
+* `cancel()`: try to cancel the job
+    * Returns whether the job was cancelled.
 
 `InvRef`
 --------
