@@ -6,6 +6,8 @@ uniform vec3 dayLight;
 uniform highp vec3 cameraOffset;
 uniform float animationTimer;
 
+uniform vec3 ambientLight;
+
 varying vec3 vNormal;
 varying vec3 vPosition;
 // World position in the visible world (i.e. relative to the cameraOffset.)
@@ -219,6 +221,8 @@ void main(void)
 	float brightness = (color.r + color.g + color.b) / 3.0;
 	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
 		0.07 * brightness);
+
+	color.rgb += ambientLight;
 
 	varColor = clamp(color, 0.0, 1.0);
 

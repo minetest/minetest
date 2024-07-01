@@ -2534,6 +2534,13 @@ int ObjectRef::l_set_lighting(lua_State *L)
 		}
 		lua_pop(L, 1); // shadows
 
+		lua_getfield(L, 2, "ambient_light");
+		if (!lua_isnil(L, -1)) {
+			read_color(L, -1, &lighting.ambient_light);
+			lighting.ambient_light.setAlpha(255); // alpha should always be 255
+		}
+		lua_pop(L, 1); // ambient light
+
 		getfloatfield(L, -1, "saturation", lighting.saturation);
 
 		lua_getfield(L, 2, "exposure");
@@ -2553,7 +2560,7 @@ int ObjectRef::l_set_lighting(lua_State *L)
 			lighting.volumetric_light_strength = rangelim(lighting.volumetric_light_strength, 0.0f, 1.0f);
 		}
 		lua_pop(L, 1); // volumetric_light
-}
+	}
 
 	getServer(L)->setLighting(player, lighting);
 	return 0;
@@ -2575,6 +2582,16 @@ int ObjectRef::l_get_lighting(lua_State *L)
 	lua_pushnumber(L, lighting.shadow_intensity);
 	lua_setfield(L, -2, "intensity");
 	lua_setfield(L, -2, "shadows");
+	lua_newtable(L); // "ambient_light"
+	lua_pushnumber(L, lighting.ambient_light.getRed());
+	lua_setfield(L, -2, "r");
+	lua_pushnumber(L, lighting.ambient_light.getGreen());
+	lua_setfield(L, -2, "g");
+	lua_pushnumber(L, lighting.ambient_light.getBlue());
+	lua_setfield(L, -2, "b");
+	lua_pushnumber(L, 255);
+	lua_setfield(L, -2, "a");
+	lua_setfield(L, -2, "ambient_light");
 	lua_pushnumber(L, lighting.saturation);
 	lua_setfield(L, -2, "saturation");
 	lua_newtable(L); // "exposure"

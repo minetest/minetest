@@ -48,6 +48,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/shader.h"
 #include "client/minimap.h"
 #include <quaternion.h>
+#include "light_colors.h"
 
 class Settings;
 struct ToolCapabilities;
