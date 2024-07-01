@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include "../activeobjectmgr.h"
 #include "serveractiveobject.h"
+#include "util/k_d_tree.h"
 
 namespace server
 {
@@ -38,6 +39,8 @@ public:
 	bool registerObject(std::unique_ptr<ServerActiveObject> obj) override;
 	void removeObject(u16 id) override;
 
+	void updatePos(const v3f &pos, u16 id);
+
 	void getObjectsInsideRadius(const v3f &pos, float radius,
 			std::vector<ServerActiveObject *> &result,
 			std::function<bool(ServerActiveObject *obj)> include_obj_cb);
@@ -48,5 +51,7 @@ public:
 	void getAddedActiveObjectsAroundPos(v3f player_pos, f32 radius,
 			f32 player_radius, const std::set<u16> &current_objects,
 			std::vector<u16> &added_objects);
+private:
+	DynamicKdTrees<3, f32, u16> m_spatial_index;
 };
 } // namespace server
