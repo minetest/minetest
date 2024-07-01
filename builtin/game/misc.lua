@@ -272,3 +272,29 @@ function core.get_globals_to_transfer()
 	}
 	return all
 end
+
+do
+	local function valid_object_iterator(objects)
+		local i = 0
+		local function next_valid_object()
+			i = i + 1
+			local obj = objects[i]
+			if obj == nil then
+				return
+			end
+			if obj:is_valid() then
+				return obj
+			end
+			return next_valid_object()
+		end
+		return next_valid_object
+	end
+
+	function core.objects_inside_radius(center, radius)
+		return valid_object_iterator(core.get_objects_inside_radius(center, radius))
+	end
+
+	function core.objects_in_area(min_pos, max_pos)
+		return valid_object_iterator(core.get_objects_in_area(min_pos, max_pos))
+	end
+end

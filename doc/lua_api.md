@@ -6133,12 +6133,24 @@ Environment access
     * Items can be added also to unloaded and non-generated blocks.
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
     * Returns nothing in case of error (player offline, doesn't exist, ...).
-* `minetest.get_objects_inside_radius(pos, radius)`
-    * returns a list of ObjectRefs.
+* `minetest.get_objects_inside_radius(center, radius)`
+    * returns a list of ObjectRefs
     * `radius`: using a Euclidean metric
-* `minetest.get_objects_in_area(pos1, pos2)`
-    * returns a list of ObjectRefs.
-    * `pos1` and `pos2` are the min and max positions of the area to search.
+    * **Warning**: Any kind of interaction with the environment or other APIs
+      can cause later objects in the list to become invalid while you're iterating it.
+      (e.g. punching an entity removes its children)
+      It is recommended to use `minetest.objects_inside_radius` instead, which
+      transparently takes care of this possibility.
+* `minetest.objects_inside_radius(center, radius)`
+    * returns an iterator of valid objects
+    * example: `for obj in minetest.objects_inside_radius(center, radius) do obj:punch(...) end`
+* `minetest.get_objects_in_area(min_pos, max_pos)`
+    * returns a list of ObjectRefs
+    * `min_pos` and `max_pos` are the min and max positions of the area to search
+    * **Warning**: The same warning as for `minetest.get_objects_inside_radius` applies.
+      Use `minetest.objects_in_area` instead to iterate only valid objects.
+* `minetest.objects_in_area(min_pos, max_pos)`
+	* returns an iterator of valid objects
 * `minetest.set_timeofday(val)`: set time of day
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
 * `minetest.get_timeofday()`: get time of day
@@ -7807,12 +7819,17 @@ When you receive an `ObjectRef` as a callback argument or from another API
 function, it is possible to store the reference somewhere and keep it around.
 It will keep functioning until the object is unloaded or removed.
 
-However, doing this is **NOT** recommended as there is (intentionally) no method
-to test if a previously acquired `ObjectRef` is still valid.
-Instead, `ObjectRefs` should be "let go" of as soon as control is returned from
-Lua back to the engine.
+However, doing this is **NOT** recommended - `ObjectRefs` should be "let go"
+of as soon as control is returned from Lua back to the engine.
+
 Doing so is much less error-prone and you will never need to wonder if the
 object you are working with still exists.
+
+If this is not feasible, you can test whether an `ObjectRef` is still valid
+via `object:is_valid()`.
+
+Getters may be called for invalid objects and will return nothing then.
+All other methods should not be called on invalid objects.
 
 ### Attachments
 
@@ -7832,6 +7849,8 @@ child will follow movement and rotation of that bone.
 
 ### Methods
 
+* `is_valid()`: returns whether the object is valid.
+   * See "Advice on handling `ObjectRefs`" above.
 * `get_pos()`: returns position as vector `{x=num, y=num, z=num}`
 * `set_pos(pos)`:
     * Sets the position of the object.
