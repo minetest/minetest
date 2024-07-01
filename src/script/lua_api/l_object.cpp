@@ -1550,6 +1550,13 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	lua_setfield(L, -2, "dig");
 	lua_pushboolean(L, control.place);
 	lua_setfield(L, -2, "place");
+
+	v2f movement = control.getMovement();
+	lua_pushnumber(L, movement.X);
+	lua_setfield(L, -2, "movement_x");
+	lua_pushnumber(L, movement.Y);
+	lua_setfield(L, -2, "movement_y");
+
 	// Legacy fields to ensure mod compatibility
 	lua_pushboolean(L, control.dig);
 	lua_setfield(L, -2, "LMB");

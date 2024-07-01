@@ -902,6 +902,8 @@ enum ToServerCommand : u16
 		[2+12+12+4+4+4] u8 fov*80
 		[2+12+12+4+4+4+1] u8 ceil(wanted_range / MAP_BLOCKSIZE)
 		[2+12+12+4+4+4+1+1] u8 camera_inverted (bool)
+		[2+12+12+4+4+4+1+1+1] f32 movement_speed
+		[2+12+12+4+4+4+1+1+1+4] f32 movement_direction
 
 	*/
 

@@ -222,21 +222,6 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
  */
 float RealInputHandler::getMovementSpeed()
 {
-	bool f = m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]),
-		b = m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]),
-		l = m_receiver->IsKeyDown(keycache.key[KeyType::LEFT]),
-		r = m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]);
-	if (f || b || l || r)
-	{
-		// if contradictory keys pressed, stay still
-		if (f && b && l && r)
-			return 0.0f;
-		else if (f && b && !l && !r)
-			return 0.0f;
-		else if (!f && !b && l && r)
-			return 0.0f;
-		return 1.0f; // If there is a keyboard event, assume maximum speed
-	}
 	if (g_touchscreengui && g_touchscreengui->getMovementSpeed())
 		return g_touchscreengui->getMovementSpeed();
 	return joystick.getMovementSpeed();
@@ -244,23 +229,9 @@ float RealInputHandler::getMovementSpeed()
 
 float RealInputHandler::getMovementDirection()
 {
-	float x = 0, z = 0;
-
-	/* Check keyboard for input */
-	if (m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]))
-		z += 1;
-	if (m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]))
-		z -= 1;
-	if (m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]))
-		x += 1;
-	if (m_receiver->IsKeyDown(keycache.key[KeyType::LEFT]))
-		x -= 1;
-
-	if (x != 0 || z != 0) /* If there is a keyboard event, it takes priority */
-		return std::atan2(x, z);
 	// `getMovementDirection() == 0` means forward, so we cannot use
 	// `getMovementDirection()` as a condition.
-	else if (g_touchscreengui && g_touchscreengui->getMovementSpeed())
+	if (g_touchscreengui && g_touchscreengui->getMovementSpeed())
 		return g_touchscreengui->getMovementDirection();
 	return joystick.getMovementDirection();
 }
