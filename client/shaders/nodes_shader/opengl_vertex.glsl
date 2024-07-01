@@ -1,6 +1,7 @@
 uniform mat4 mWorld;
 // Color of the light emitted by the sun.
 uniform vec3 dayLight;
+uniform vec3 eyePosition;
 
 // The cameraOffset is the current center of the visible world.
 uniform highp vec3 cameraOffset;
@@ -43,6 +44,7 @@ centroid varying vec2 varTexCoord;
 
 varying float area_enable_parallax;
 
+varying vec3 viewVec;
 varying highp vec3 eyeVec;
 varying float nightRatio;
 // Color of the light emitted by the light sources.
@@ -231,6 +233,8 @@ void main(void)
 #else
 		vec4 shadow_pos = pos;
 #endif
+		viewVec = normalize(worldPosition + cameraOffset - eyePosition);
+
 		vec3 nNormal;
 		f_normal_length = length(vNormal);
 
@@ -256,7 +260,9 @@ void main(void)
 		z_bias *= pFactor * pFactor / f_textureresolution / f_shadowfar;
 
 		shadow_position = applyPerspectiveDistortion(m_ShadowViewProj * mWorld * (shadow_pos + vec4(normalOffsetScale * nNormal, 0.0))).xyz;
+#if !defined(ENABLE_TRANSLUCENT_FOLIAGE) || MATERIAL_TYPE != TILE_MATERIAL_WAVING_LEAVES
 		shadow_position.z -= z_bias;
+#endif
 		perspective_factor = pFactor;
 
 		if (f_timeofday < 0.2) {

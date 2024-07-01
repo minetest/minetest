@@ -136,6 +136,7 @@ struct ClientEvent
 			f32 density;
 			u32 color_bright;
 			u32 color_ambient;
+			u32 color_shadow;
 			f32 height;
 			f32 thickness;
 			f32 speed_x;
