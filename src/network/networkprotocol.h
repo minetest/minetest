@@ -665,9 +665,8 @@ enum ToClientCommand : u16
 			u32 len
 			u8[len] texture
 
-			if flags.animated {
+			if (flags.animated)
 				TileAnimation animation
-			}
 		}
 
 	*/
