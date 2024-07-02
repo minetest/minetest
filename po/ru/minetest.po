@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-07-01 16:25+0000\n"
-"Last-Translator: BlackImpostor <SkyBuilderOFFICAL@yandex.ru>\n"
+"PO-Revision-Date: 2024-07-03 05:33+0000\n"
+"Last-Translator: lotigara <lotigara@yandex.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -172,7 +172,7 @@ msgstr "Все дополнения"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Already installed"
-msgstr "Уже скачанно"
+msgstr "Уже установленно"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Back to Main Menu"
@@ -228,7 +228,7 @@ msgstr "Игры"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Install"
-msgstr "Скачать"
+msgstr "Установить"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Install $1"
@@ -6678,7 +6678,7 @@ msgstr ""
 "интерполяцией для сохранения четкости пикселей. Это устанавливает "
 "минимальный размер текстуры\n"
 "для увеличенных текстур; большие значения выглядят чётче, но требуют больше\n"
-"памяти. Рекомендуются степени числа 2. Эта настройки применяется только "
+"памяти. Рекомендуются степени числа 2. Эта настройки применяется ТОЛЬКО "
 "если\n"
 "билинейный/трилинейный/анизотропный фильтр включен.\n"
 "Это также используется для автомасштабирования как основной размер для\n"
@@ -6766,7 +6766,7 @@ msgid ""
 "World directory (everything in the world is stored here).\n"
 "Not needed if starting from the main menu."
 msgstr ""
-"Папка мира (всё в мире хранится в ней).\n"
+"Директория с миром (всё в мире хранится в ней).\n"
 "Не требуется при запуске из главного меню."
 
 #: src/settings_translation_file.cpp
@@ -6850,15 +6850,15 @@ msgstr "Y-уровень морского дна."
 
 #: src/settings_translation_file.cpp
 msgid "cURL"
-msgstr "Ссылка"
+msgstr "cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
-msgstr "Таймаут загрузки файла с помощью cURL"
+msgstr "Таймаут загрузки файла cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL interactive timeout"
-msgstr "Таймаут взаимодействия с cURL"
+msgstr "Таймаут взаимодействия cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
