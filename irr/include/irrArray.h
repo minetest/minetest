@@ -45,6 +45,9 @@ public:
 	{
 	}
 
+	//! Move constructor
+	array(std::vector<T> &&data) : m_data(data), is_sorted(false) {}
+
 	//! Reallocates the array, make it bigger or smaller.
 	/** \param new_size New size of array.
 	\param canShrink Specifies whether the array is reallocated even if
