@@ -604,6 +604,17 @@ void GenericCAO::removeFromScene(bool permanent)
 		m_client->getMinimap()->removeMarker(&m_marker);
 }
 
+void GenericCAO::updateSceneShadows()
+{
+	if (scene::ISceneNode *node = getSceneNode()) {
+		if (m_matrixnode)
+			node->setParent(m_matrixnode);
+
+		if (auto shadow = RenderingEngine::get_shadow_renderer())
+			shadow->addNodeToShadowList(node);
+	}
+}
+
 void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 {
 	m_smgr = smgr;
@@ -832,6 +843,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	/* don't update while punch texture modifier is active */
 	if (m_reset_textures_timer < 0)
 		updateTextures(m_current_texture_modifier);
+
+
 
 	if (scene::ISceneNode *node = getSceneNode()) {
 		if (m_matrixnode)

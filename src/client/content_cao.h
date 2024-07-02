@@ -249,6 +249,7 @@ public:
 	}
 
 	void updateLight(u32 day_night_ratio) override;
+	void updateSceneShadows() override;
 
 	void setNodeLight(const video::SColor &light);
 

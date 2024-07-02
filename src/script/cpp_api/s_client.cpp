@@ -290,6 +290,39 @@ bool ScriptApiClient::on_inventory_open(Inventory *inventory)
 	return readParam<bool>(L, -1);
 }
 
+void ScriptApiClient::show_pause_menu(bool is_singleplayer, bool is_touchscreen, const std::string& server_address)
+{
+	SCRIPTAPI_PRECHECKHEADER
+	
+	int error_handler = PUSH_ERROR_HANDLER(L);
+	
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "show_pause_menu");
+	
+	lua_pushboolean(L, is_singleplayer);
+	lua_pushboolean(L, is_touchscreen);
+	if (!server_address.empty())
+		lua_pushstring(L, server_address.c_str());
+	else
+		lua_pushnil(L);
+	
+	PCALL_RES(lua_pcall(L, 3, 0, error_handler));
+	lua_pop(L, 1);
+}
+
+void ScriptApiClient::show_settings()
+{
+	SCRIPTAPI_PRECHECKHEADER
+	
+	int error_handler = PUSH_ERROR_HANDLER(L);
+	
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "show_settings");
+	
+	PCALL_RES(lua_pcall(L, 0, 0, error_handler));
+	lua_pop(L, 1);
+}
+
 void ScriptApiClient::setEnv(ClientEnvironment *env)
 {
 	ScriptApiBase::setEnv(env);

@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "client/clientevent.h"
 #include "client/sound.h"
+#include "client/renderingengine.h"
 #include "client/clientenvironment.h"
 #include "common/c_content.h"
 #include "common/c_converter.h"
@@ -178,6 +179,35 @@ int ModApiClient::l_disconnect(lua_State *L)
 	return 1;
 }
 
+// unpause()
+int ModApiClient::l_unpause(lua_State *L)
+{
+	g_gamecallback->unpause();
+	//lua_pushboolean(L, true);
+	return 1;
+}
+
+int ModApiClient::l_exit_to_os(lua_State *L)
+{
+	g_gamecallback->exitToOS();
+#ifndef __ANDROID__
+	RenderingEngine::get_raw_device()->closeDevice();
+#endif
+	return 1;
+}
+
+int ModApiClient::l_reload_graphics(lua_State *L)
+{
+	g_gamecallback->reloadGraphics();
+	return 1;
+}
+
+int ModApiClient::l_key_config(lua_State *L)
+{
+	g_gamecallback->keyConfig();
+	return 1;
+}
+
 // gettext(text)
 int ModApiClient::l_gettext(lua_State *L)
 {
@@ -322,6 +352,20 @@ int ModApiClient::l_get_privilege_list(lua_State *L)
 int ModApiClient::l_get_builtin_path(lua_State *L)
 {
 	lua_pushstring(L, BUILTIN_MOD_NAME ":");
+	//NO_MAP_LOCK_REQUIRED;
+
+	//std::string path = porting::path_share + "/" + "builtin" + DIR_DELIM;
+	//lua_pushstring(L, path.c_str());
+	return 1;
+}
+
+#include "filesys.h"
+int ModApiClient::l_get_true_builtin_path(lua_State* L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	std::string path = porting::path_share + DIR_DELIM + "builtin" + DIR_DELIM;
+	lua_pushstring(L, path.c_str());
 	return 1;
 }
 
@@ -352,12 +396,17 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(gettext);
 	API_FCT(get_node_or_nil);
 	API_FCT(disconnect);
+	API_FCT(unpause);
+	API_FCT(exit_to_os);
+	API_FCT(reload_graphics);
+	API_FCT(key_config);
 	API_FCT(get_meta);
 	API_FCT(get_server_info);
 	API_FCT(get_item_def);
 	API_FCT(get_node_def);
 	API_FCT(get_privilege_list);
 	API_FCT(get_builtin_path);
+	API_FCT(get_true_builtin_path);
 	API_FCT(get_language);
 	API_FCT(get_csm_restrictions);
 }

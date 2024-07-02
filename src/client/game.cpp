@@ -149,35 +149,22 @@ struct LocalFormspecHandler : public TextDest
 
 	void gotText(const StringMap &fields)
 	{
-		if (m_formname == "MT_PAUSE_MENU") {
-			if (fields.find("btn_sound") != fields.end()) {
-				g_gamecallback->changeVolume();
-				return;
-			}
+		if (m_formname == "MT_PAUSE_MENU_SETTINGS" && false)
+		{
+			// Loop through settings
+			for (auto i : fields)
+			{
+				if (g_settings->existsLocal(i.first) && g_settings->get(i.first) != i.second)
+				{
+					g_settings->set(i.first, i.second);
+				}
+				if (i.first.rfind("page_", 0) == 0)
+				{
+					//m_client->getScript()->show_settings(i.first.substr(5));
+				}
+				//std::cout << "Setting " << i.first << " set!" << std::endl;
 
-			if (fields.find("btn_key_config") != fields.end()) {
-				g_gamecallback->keyConfig();
-				return;
 			}
-
-			if (fields.find("btn_exit_menu") != fields.end()) {
-				g_gamecallback->disconnect();
-				return;
-			}
-
-			if (fields.find("btn_exit_os") != fields.end()) {
-				g_gamecallback->exitToOS();
-#ifndef __ANDROID__
-				RenderingEngine::get_raw_device()->closeDevice();
-#endif
-				return;
-			}
-
-			if (fields.find("btn_change_password") != fields.end()) {
-				g_gamecallback->changePassword();
-				return;
-			}
-
 			return;
 		}
 
@@ -752,6 +739,7 @@ protected:
 	void updateCameraOrientation(CameraOrientation *cam, float dtime);
 	void updatePlayerControl(const CameraOrientation &cam);
 	void updatePauseState();
+	void reloadGraphics();
 	void step(f32 dtime);
 	void processClientEvents(CameraOrientation *cam);
 	void updateCamera(f32 dtime);
@@ -1012,6 +1000,8 @@ Game::Game() :
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("pause_on_lost_focus",
 		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("fov",
+		&settingChangedCallback, this);
 
 	readSettings();
 }
@@ -1137,6 +1127,12 @@ bool Game::startup(bool *kill,
 	return true;
 }
 
+inline void Game::reloadGraphics()
+{
+	m_rendering_engine->initialize(client, hud);
+	client->getEnv().requestUpdateShadows();
+
+}
 
 void Game::run()
 {
@@ -1188,7 +1184,7 @@ void Game::run()
 				client->sendUpdateClientInfo(current_dynamic_info);
 			}
 		}
-
+		
 		// Prepare render data for next iteration
 
 		updateStats(&stats, draw_times, dtime);
@@ -1813,6 +1809,8 @@ bool Game::getServerContent(bool *aborted)
 }
 
 
+
+
 /****************************************************************************/
 /****************************************************************************
  Run
@@ -1871,6 +1869,27 @@ inline bool Game::handleCallbacks()
 		(new GUIKeyChangeMenu(guienv, guiroot, -1,
 				      &g_menumgr, texture_src))->drop();
 		g_gamecallback->keyconfig_requested = false;
+		m_is_paused = false;
+	}
+	
+	if (g_gamecallback->unpause_requested) {
+		m_is_paused = false;
+		m_rendering_engine->initialize(client, hud);
+		g_gamecallback->unpause_requested = false;
+	}
+	
+	if (g_gamecallback->reload_graphics_requested) {
+		reloadGraphics();
+		g_gamecallback->reload_graphics_requested = false;
+	}
+	
+	if (g_gamecallback->show_settings_requested) {
+		if (client->modsLoaded())
+		{
+			client->getScript()->show_settings();
+			m_is_paused = false;
+		}
+		g_gamecallback->show_settings_requested = false;
 	}
 
 	if (!g_gamecallback->show_open_url_dialog.empty()) {
@@ -1907,7 +1926,9 @@ void Game::updateDebugState()
 			m_game_ui->m_flags.show_basic_debug = false;
 	} else if (m_game_ui->m_flags.show_minimal_debug) {
 		if (has_basic_debug)
+		{
 			m_game_ui->m_flags.show_basic_debug = true;
+		}
 	}
 	if (!has_basic_debug)
 		hud->disableBlockBounds();
@@ -2527,6 +2548,7 @@ void Game::toggleDebug()
 		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = true;
 		m_game_ui->showTranslatedStatusText("Wireframe shown");
+		reloadGraphics();
 	} else {
 		m_game_ui->m_flags.show_minimal_debug = false;
 		m_game_ui->m_flags.show_basic_debug = false;
@@ -2751,7 +2773,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 void Game::updatePauseState()
 {
 	bool was_paused = this->m_is_paused;
-	this->m_is_paused = this->simple_singleplayer_mode && g_menumgr.pausesGame();
+	//this->m_is_paused = this->simple_singleplayer_mode && g_menumgr.pausesGame();
 
 	if (!was_paused && this->m_is_paused) {
 		this->pauseAnimation();
@@ -4401,13 +4423,17 @@ void Game::readSettings()
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");
+	
 
 	m_cache_cam_smoothing = 0;
 	if (g_settings->getBool("cinematic"))
 		m_cache_cam_smoothing = 1 - g_settings->getFloat("cinematic_camera_smoothing");
 	else
 		m_cache_cam_smoothing = 1 - g_settings->getFloat("camera_smoothing");
-
+	
+	if (camera)	
+		camera->m_cache_fov = g_settings->getFloat("fov");
+	
 	m_cache_cam_smoothing = rangelim(m_cache_cam_smoothing, 0.01f, 1.0f);
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
 
@@ -4450,106 +4476,13 @@ void Game::showDeathFormspec()
 #define GET_KEY_NAME(KEY) gettext(getKeySetting(#KEY).name())
 void Game::showPauseMenu()
 {
-	std::string control_text;
-
-	if (g_touchscreengui) {
-		control_text = strgettext("Controls:\n"
-			"No menu open:\n"
-			"- slide finger: look around\n"
-			"- tap: place/punch/use (default)\n"
-			"- long tap: dig/use (default)\n"
-			"Menu/inventory open:\n"
-			"- double tap (outside):\n"
-			" --> close\n"
-			"- touch stack, touch slot:\n"
-			" --> move stack\n"
-			"- touch&drag, tap 2nd finger\n"
-			" --> place single item to slot\n"
-			);
+	if (client->modsLoaded())
+	{
+		client->getScript()->show_pause_menu(simple_singleplayer_mode,
+		                                     g_touchscreengui,
+		                                     client->getAddressName());
+		m_is_paused = true;
 	}
-
-	float ypos = simple_singleplayer_mode ? 0.7f : 0.1f;
-	std::ostringstream os;
-
-	os << "formspec_version[1]" << SIZE_TAG
-		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_continue;"
-		<< strgettext("Continue") << "]";
-
-	if (!simple_singleplayer_mode) {
-		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
-			<< strgettext("Change Password") << "]";
-	} else {
-		os << "field[4.95,0;5,1.5;;" << strgettext("Game paused") << ";]";
-	}
-
-#ifndef __ANDROID__
-#if USE_SOUND
-	if (g_settings->getBool("enable_sound")) {
-		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
-			<< strgettext("Sound Volume") << "]";
-	}
-#endif
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
-		<< strgettext("Controls")  << "]";
-#endif
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
-		<< strgettext("Exit to Menu") << "]";
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
-		<< strgettext("Exit to OS")   << "]";
-	if (!control_text.empty()) {
-	os		<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]";
-	}
-	os		<< "textarea[0.4,0.25;3.9,6.25;;" << PROJECT_NAME_C " " VERSION_STRING "\n"
-		<< "\n"
-		<<  strgettext("Game info:") << "\n";
-	const std::string &address = client->getAddressName();
-	os << strgettext("- Mode: ");
-	if (!simple_singleplayer_mode) {
-		if (address.empty())
-			os << strgettext("Hosting server");
-		else
-			os << strgettext("Remote server");
-	} else {
-		os << strgettext("Singleplayer");
-	}
-	os << "\n";
-	if (simple_singleplayer_mode || address.empty()) {
-		static const std::string on = strgettext("On");
-		static const std::string off = strgettext("Off");
-		// Note: Status of enable_damage and creative_mode settings is intentionally
-		// NOT shown here because the game might roll its own damage system and/or do
-		// a per-player Creative Mode, in which case writing it here would mislead.
-		bool damage = g_settings->getBool("enable_damage");
-		const std::string &announced = g_settings->getBool("server_announce") ? on : off;
-		if (!simple_singleplayer_mode) {
-			if (damage) {
-				const std::string &pvp = g_settings->getBool("enable_pvp") ? on : off;
-				//~ PvP = Player versus Player
-				os << strgettext("- PvP: ") << pvp << "\n";
-			}
-			os << strgettext("- Public: ") << announced << "\n";
-			std::string server_name = g_settings->get("server_name");
-			str_formspec_escape(server_name);
-			if (announced == on && !server_name.empty())
-				os << strgettext("- Server Name: ") << server_name;
-
-		}
-	}
-	os << ";]";
-
-	/* Create menu */
-	/* Note: FormspecFormSource and LocalFormspecHandler  *
-	 * are deleted by guiFormSpecMenu                     */
-	FormspecFormSource *fs_src = new FormspecFormSource(os.str());
-	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
-
-	auto *&formspec = m_game_ui->getFormspecGUI();
-	GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
-			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(),
-			sound_manager.get());
-	formspec->setFocus("btn_continue");
-	// game will be paused in next step, if in singleplayer (see m_is_paused)
-	formspec->doPause = true;
 }
 
 /****************************************************************************/

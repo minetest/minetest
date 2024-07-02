@@ -396,10 +396,10 @@ function settingtypes.parse_config_file(read_all, parse_mods)
 	local settings = {}
 
 	do
-		local builtin_path = core.get_builtin_path() .. FILENAME
+		local builtin_path = (core.get_true_builtin_path and core.get_true_builtin_path() or core.get_builtin_path()) .. FILENAME
 		local file = io.open(builtin_path, "r")
 		if not file then
-			core.log("error", "Can't load " .. FILENAME)
+			core.log("error", "Can't load " .. builtin_path)
 			return settings
 		end
 

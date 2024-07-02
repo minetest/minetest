@@ -50,6 +50,18 @@ private:
 
 	// show_formspec(name, formspec)
 	static int l_show_formspec(lua_State *L);
+	
+	// unpause()
+	static int l_unpause(lua_State *L);
+	
+	// exit_to_os()
+	static int l_exit_to_os(lua_State *L);
+	
+	// reload_graphics()
+	static int l_reload_graphics(lua_State *L);
+	
+	// key_config()
+	static int l_key_config(lua_State *L);
 
 	// send_respawn()
 	static int l_send_respawn(lua_State *L);
@@ -86,6 +98,9 @@ private:
 
 	// get_builtin_path()
 	static int l_get_builtin_path(lua_State *L);
+	
+	// get_true_builtin_path()
+	static int l_get_true_builtin_path(lua_State *L);
 
 	// get_csm_restrictions()
 	static int l_get_csm_restrictions(lua_State *L);

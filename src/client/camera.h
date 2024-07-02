@@ -228,7 +228,9 @@ private:
 	Client *m_client;
 
 	// Default Client FOV (as defined by the "fov" setting)
+public: // TODO make a setter
 	f32 m_cache_fov;
+private:
 
 	// Absolute camera position
 	v3f m_camera_position;

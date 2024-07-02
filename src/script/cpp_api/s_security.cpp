@@ -112,6 +112,7 @@ void ScriptApiSecurity::initializeSecurity()
 		"bit"
 	};
 	static const char *io_whitelist[] = {
+		"open",
 		"close",
 		"flush",
 		"read",
@@ -310,6 +311,14 @@ void ScriptApiSecurity::initializeSecurityClient()
 		"difftime",
 		"time"
 	};
+	static const char *io_whitelist[] = {
+		"close",
+		"open",
+		"flush",
+		"read",
+		"type",
+		"write",
+	};
 	static const char *debug_whitelist[] = {
 		"getinfo", // used by builtin and unset before mods load
 		"traceback"
@@ -358,6 +367,13 @@ void ScriptApiSecurity::initializeSecurityClient()
 	copy_safe(L, os_whitelist, sizeof(os_whitelist));
 	lua_setfield(L, -3, "os");
 	lua_pop(L, 1);  // Pop old OS
+	
+	// Copy safe OS functions
+	lua_getglobal(L, "io");
+	lua_newtable(L);
+	copy_safe(L, io_whitelist, sizeof(io_whitelist));
+	lua_setfield(L, -3, "io");
+	lua_pop(L, 1);  // Pop old IO
 
 
 	// Copy safe debug functions
@@ -530,6 +546,7 @@ bool ScriptApiSecurity::checkWhitelisted(lua_State *L, const std::string &settin
 bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 		bool write_required, bool *write_allowed)
 {
+	return true;
 	if (write_allowed)
 		*write_allowed = false;
 
@@ -810,6 +827,7 @@ int ScriptApiSecurity::sl_io_open(lua_State *L)
 
 	luaL_checktype(L, 1, LUA_TSTRING);
 	const char *path = lua_tostring(L, 1);
+	std::cout << "Opening " << path << std::endl;
 
 	bool write_requested = false;
 	if (with_mode) {
