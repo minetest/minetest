@@ -97,18 +97,30 @@ function vector.floor(v)
 end
 
 function vector.round(v)
+	return vector.apply(v, math.round)
+end
+
+function vector.ceil(v)
+	return vector.apply(v, math.ceil)
+end
+
+function vector.sign(v, tolerance)
+	return vector.apply(v, math.sign, tolerance)
+end
+
+function vector.apply(v, func, ...)
 	return fast_new(
-		math.round(v.x),
-		math.round(v.y),
-		math.round(v.z)
+		func(v.x, ...),
+		func(v.y, ...),
+		func(v.z, ...)
 	)
 end
 
-function vector.apply(v, func)
+function vector.create(func, ...)
 	return fast_new(
-		func(v.x),
-		func(v.y),
-		func(v.z)
+		func(...),
+		func(...),
+		func(...)
 	)
 end
 

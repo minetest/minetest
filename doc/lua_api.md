@@ -3853,12 +3853,21 @@ vectors are written like this: `(x, y, z)`:
     * If `v` has zero length, returns `(0, 0, 0)`.
 * `vector.floor(v)`:
     * Returns a vector, each dimension rounded down.
+* `vector.ceil(v)`:
+    * Returns a vector, each dimension rounded up.
 * `vector.round(v)`:
     * Returns a vector, each dimension rounded to nearest integer.
     * At a multiple of 0.5, rounds away from zero.
-* `vector.apply(v, func)`:
+* `vector.sign(v, tolerance)`:
+    * Returns a vector where `math.sign` was called for each component.
+    * See [Helper functions] for details.
+* `vector.apply(v, func, ...)`:
     * Returns a vector where the function `func` has been applied to each
       component.
+    * `...` are optional arguments passed to `func`.
+* `vector.create(func, ...)`:
+    * Creates a vector where each component was created by `func`
+    * `...` are optional arguments passed to `func`
 * `vector.combine(v, w, func)`:
 	* Returns a vector where the function `func` has combined both components of `v` and `w`
 	  for each component
