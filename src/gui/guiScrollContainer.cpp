@@ -67,6 +67,32 @@ void GUIScrollContainer::draw()
 	}
 }
 
+void GUIScrollContainer::calculateAutoScrollFactor()
+{
+	if (!m_scrollbar || !m_auto_scrollfactor)
+		return;
+
+	core::rect<s32> size;
+	for (gui::IGUIElement *e : Children) {
+		core::rect<s32> abs_rect = e->getRelativePosition();
+		size.addInternalPoint(abs_rect.UpperLeftCorner);
+		size.addInternalPoint(abs_rect.LowerRightCorner);
+	}
+
+	// Cannot use RelativeRect because it is moved upwards as we scroll down
+	size.LowerRightCorner.X -= AbsoluteClippingRect.getWidth();
+	size.LowerRightCorner.Y -= AbsoluteClippingRect.getHeight();
+
+	f32 new_factor = 0;
+	if (m_orientation == VERTICAL)
+		new_factor = -size.getHeight();
+	else if (m_orientation == HORIZONTAL)
+		new_factor = -size.getWidth();
+
+	// This factor is always <= 0, or we would be scrolling in opposite direction
+	m_scrollfactor = std::min<f32>(new_factor / m_scrollbar->getMax(), 0.0f);
+}
+
 void GUIScrollContainer::updateScrolling()
 {
 	s32 pos = m_scrollbar->getPos();

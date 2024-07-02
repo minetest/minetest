@@ -34,6 +34,15 @@ public:
 
 	virtual void draw() override;
 
+	inline void setAutoScrollFactor(bool enable)
+	{
+		m_auto_scrollfactor = enable;
+	}
+
+	/// Calculates the scroll factor based on the scrollbar limits
+	/// Call once after the scrollbar has been added and stylized.
+	void calculateAutoScrollFactor();
+
 	inline void onScrollEvent(gui::IGUIElement *caller)
 	{
 		if (caller == m_scrollbar)
@@ -57,6 +66,7 @@ private:
 	GUIScrollBar *m_scrollbar;
 	OrientationEnum m_orientation;
 	f32 m_scrollfactor;
+	bool m_auto_scrollfactor = false;
 
 	void updateScrolling();
 };

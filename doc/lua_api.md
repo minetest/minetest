@@ -2688,6 +2688,7 @@ Version History
 * Formspec version 7 (5.8.0):
   * style[]: Add focused state for buttons
   * Add field_enter_after_edit[] (experimental)
+* Formspec version 8 (5.9.0)
 
 Elements
 --------
@@ -2779,7 +2780,10 @@ Elements
     `scrollbar name` times `scroll factor` along the orientation `orientation` and
   * be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
 * `orientation`: possible values are `vertical` and `horizontal`.
-* `scroll factor`: optional, defaults to `0.1`.
+* `scroll factor`: (optional), multiplicator for the associated scrollbar scroll position.
+  * Defaults to `0.1`.
+  * `auto` will calculate the multiplicator based on the contents
+     * Requires formspec version >= 8.
 * Nesting is possible.
 * Some elements might work a little different if they are in a scroll_container.
 * Note: If you want the scroll_container to actually work, you also need to add a
