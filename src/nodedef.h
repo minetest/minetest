@@ -531,6 +531,8 @@ struct ContentFeatures
 	}
 
 #ifndef SERVER
+	void updateAlpha(bool translucent_liquids);
+	MaterialType getMaterialType() const;
 	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
 		scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings);
 #endif

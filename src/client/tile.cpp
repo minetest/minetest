@@ -18,31 +18,54 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "tile.h"
+#include "EMaterialTypes.h"
+#include "SMaterial.h"
 
-// Sets everything else except the texture in the material
-void TileLayer::applyMaterialOptions(video::SMaterial &material) const
+void MaterialType_to_irr(MaterialType material_type,
+		video::E_MATERIAL_TYPE &irr_mat_type, f32 &irr_mat_param)
 {
 	switch (material_type) {
 	case TILE_MATERIAL_OPAQUE:
 	case TILE_MATERIAL_LIQUID_OPAQUE:
 	case TILE_MATERIAL_WAVING_LIQUID_OPAQUE:
-		material.MaterialType = video::EMT_SOLID;
+		irr_mat_type = video::EMT_SOLID;
+		irr_mat_param = 0.0f;
+		break;
+	case TILE_MATERIAL_ALPHA:
+	case TILE_MATERIAL_PLAIN_ALPHA:
+	case TILE_MATERIAL_LIQUID_TRANSPARENT:
+	case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
+	default:
+		irr_mat_type = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+		irr_mat_param = 0.0f;
 		break;
 	case TILE_MATERIAL_BASIC:
+	case TILE_MATERIAL_PLAIN:
 	case TILE_MATERIAL_WAVING_LEAVES:
 	case TILE_MATERIAL_WAVING_PLANTS:
 	case TILE_MATERIAL_WAVING_LIQUID_BASIC:
-		material.MaterialTypeParam = 0.5;
-		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-		break;
-	case TILE_MATERIAL_ALPHA:
-	case TILE_MATERIAL_LIQUID_TRANSPARENT:
-	case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
-		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-		break;
-	default:
+		irr_mat_type = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		irr_mat_param = 0.5f;
 		break;
 	}
+}
+
+video::E_MATERIAL_TYPE MaterialType_to_irr(MaterialType material_type) {
+	video::E_MATERIAL_TYPE res;
+	f32 unused;
+	MaterialType_to_irr(material_type, res, unused);
+	return res;
+}
+
+void MaterialType_to_irr(MaterialType material_type, video::SMaterial &material) {
+	MaterialType_to_irr(material_type,
+			material.MaterialType, material.MaterialTypeParam);
+}
+
+// Sets everything else except the texture in the material
+void TileLayer::applyMaterialOptions(video::SMaterial &material) const
+{
+	MaterialType_to_irr(static_cast<MaterialType>(material_type), material);
 	material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
 	if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
 		material.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
