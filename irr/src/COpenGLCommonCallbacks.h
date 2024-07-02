@@ -13,10 +13,10 @@ namespace irr
 namespace video
 {
 
-class COpenGL3MaterialBaseCB : public IShaderConstantSetCallBack
+class COpenGLMaterialBaseCB : public IShaderConstantSetCallBack
 {
 public:
-	COpenGL3MaterialBaseCB();
+	COpenGLMaterialBaseCB();
 
 	virtual void OnSetMaterial(const SMaterial &material);
 	virtual void OnSetConstants(IMaterialRendererServices *services, s32 userData);
@@ -55,10 +55,10 @@ protected:
 	f32 Thickness;
 };
 
-class COpenGL3MaterialSolidCB : public COpenGL3MaterialBaseCB
+class COpenGLMaterialSolidCB : public COpenGLMaterialBaseCB
 {
 public:
-	COpenGL3MaterialSolidCB();
+	COpenGLMaterialSolidCB();
 
 	virtual void OnSetMaterial(const SMaterial &material);
 	virtual void OnSetConstants(IMaterialRendererServices *services, s32 userData);
@@ -76,10 +76,10 @@ protected:
 	s32 TextureUnit0;
 };
 
-class COpenGL3MaterialOneTextureBlendCB : public COpenGL3MaterialBaseCB
+class COpenGLMaterialOneTextureBlendCB : public COpenGLMaterialBaseCB
 {
 public:
-	COpenGL3MaterialOneTextureBlendCB();
+	COpenGLMaterialOneTextureBlendCB();
 
 	virtual void OnSetMaterial(const SMaterial &material);
 	virtual void OnSetConstants(IMaterialRendererServices *services, s32 userData);

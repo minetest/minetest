@@ -26,19 +26,19 @@ void TileLayer::applyMaterialOptions(video::SMaterial &material) const
 	case TILE_MATERIAL_OPAQUE:
 	case TILE_MATERIAL_LIQUID_OPAQUE:
 	case TILE_MATERIAL_WAVING_LIQUID_OPAQUE:
-		material.MaterialType = video::EMT_SOLID;
+		material.MaterialType = video::EMT_SOLID_2COLORS;
 		break;
 	case TILE_MATERIAL_BASIC:
 	case TILE_MATERIAL_WAVING_LEAVES:
 	case TILE_MATERIAL_WAVING_PLANTS:
 	case TILE_MATERIAL_WAVING_LIQUID_BASIC:
 		material.MaterialTypeParam = 0.5;
-		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF_2COLORS;
 		break;
 	case TILE_MATERIAL_ALPHA:
 	case TILE_MATERIAL_LIQUID_TRANSPARENT:
 	case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
-		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_2COLORS;
 		break;
 	default:
 		break;

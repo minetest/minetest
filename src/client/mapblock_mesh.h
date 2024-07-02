@@ -74,7 +74,7 @@ struct MeshMakeData
 class MeshTriangle
 {
 public:
-	scene::SMeshBuffer *buffer;
+	scene::SMeshBuffer2Colors *buffer;
 	u16 p1, p2, p3;
 	v3f centroid;
 	float areaSQ;
@@ -152,7 +152,7 @@ private:
 class PartialMeshBuffer
 {
 public:
-	PartialMeshBuffer(scene::SMeshBuffer *buffer, std::vector<u16> &&vertex_indexes) :
+	PartialMeshBuffer(scene::SMeshBuffer2Colors *buffer, std::vector<u16> &&vertex_indexes) :
 			m_buffer(buffer), m_vertex_indexes(std::move(vertex_indexes))
 	{}
 
@@ -162,7 +162,7 @@ public:
 	void beforeDraw() const;
 	void afterDraw() const;
 private:
-	scene::SMeshBuffer *m_buffer;
+	scene::SMeshBuffer2Colors *m_buffer;
 	mutable std::vector<u16> m_vertex_indexes;
 };
 

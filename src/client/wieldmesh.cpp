@@ -45,23 +45,23 @@ static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 {
 	const f32 r = 0.5;
 
-	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+	scene::IMeshBuffer *buf = new scene::SMeshBuffer2Colors();
 	video::SColor c(255,255,255,255);
 	v3f scale(1.0, 1.0, 0.1);
 
 	// Front and back
 	{
-		video::S3DVertex vertices[8] = {
+		video::S3DVertex2Colors vertices[8] = {
 			// z-
-			video::S3DVertex(-r,+r,-r, 0,0,-1, c, 0,0),
-			video::S3DVertex(+r,+r,-r, 0,0,-1, c, 1,0),
-			video::S3DVertex(+r,-r,-r, 0,0,-1, c, 1,1),
-			video::S3DVertex(-r,-r,-r, 0,0,-1, c, 0,1),
+			video::S3DVertex2Colors(-r,+r,-r, 0,0,-1, c, 0,0),
+			video::S3DVertex2Colors(+r,+r,-r, 0,0,-1, c, 1,0),
+			video::S3DVertex2Colors(+r,-r,-r, 0,0,-1, c, 1,1),
+			video::S3DVertex2Colors(-r,-r,-r, 0,0,-1, c, 0,1),
 			// z+
-			video::S3DVertex(-r,+r,+r, 0,0,+1, c, 0,0),
-			video::S3DVertex(-r,-r,+r, 0,0,+1, c, 0,1),
-			video::S3DVertex(+r,-r,+r, 0,0,+1, c, 1,1),
-			video::S3DVertex(+r,+r,+r, 0,0,+1, c, 1,0),
+			video::S3DVertex2Colors(-r,+r,+r, 0,0,+1, c, 0,0),
+			video::S3DVertex2Colors(-r,-r,+r, 0,0,+1, c, 0,1),
+			video::S3DVertex2Colors(+r,-r,+r, 0,0,+1, c, 1,1),
+			video::S3DVertex2Colors(+r,+r,+r, 0,0,+1, c, 1,0),
 		};
 		u16 indices[12] = {0,1,2,2,3,0,4,5,6,6,7,4};
 		buf->append(vertices, 8, indices, 12);
@@ -76,17 +76,17 @@ static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 		f32 x1 = pixelpos_x + pixelsize_x;
 		f32 tex0 = (i + 0.1) * pixelsize_x;
 		f32 tex1 = (i + 0.9) * pixelsize_x;
-		video::S3DVertex vertices[8] = {
+		video::S3DVertex2Colors vertices[8] = {
 			// x-
-			video::S3DVertex(x0,-r,-r, -1,0,0, c, tex0,1),
-			video::S3DVertex(x0,-r,+r, -1,0,0, c, tex1,1),
-			video::S3DVertex(x0,+r,+r, -1,0,0, c, tex1,0),
-			video::S3DVertex(x0,+r,-r, -1,0,0, c, tex0,0),
+			video::S3DVertex2Colors(x0,-r,-r, -1,0,0, c, tex0,1),
+			video::S3DVertex2Colors(x0,-r,+r, -1,0,0, c, tex1,1),
+			video::S3DVertex2Colors(x0,+r,+r, -1,0,0, c, tex1,0),
+			video::S3DVertex2Colors(x0,+r,-r, -1,0,0, c, tex0,0),
 			// x+
-			video::S3DVertex(x1,-r,-r, +1,0,0, c, tex0,1),
-			video::S3DVertex(x1,+r,-r, +1,0,0, c, tex0,0),
-			video::S3DVertex(x1,+r,+r, +1,0,0, c, tex1,0),
-			video::S3DVertex(x1,-r,+r, +1,0,0, c, tex1,1),
+			video::S3DVertex2Colors(x1,-r,-r, +1,0,0, c, tex0,1),
+			video::S3DVertex2Colors(x1,+r,-r, +1,0,0, c, tex0,0),
+			video::S3DVertex2Colors(x1,+r,+r, +1,0,0, c, tex1,0),
+			video::S3DVertex2Colors(x1,-r,+r, +1,0,0, c, tex1,1),
 		};
 		u16 indices[12] = {0,1,2,2,3,0,4,5,6,6,7,4};
 		buf->append(vertices, 8, indices, 12);
@@ -97,17 +97,17 @@ static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 		f32 y1 = -pixelpos_y;
 		f32 tex0 = (i + 0.1) * pixelsize_y;
 		f32 tex1 = (i + 0.9) * pixelsize_y;
-		video::S3DVertex vertices[8] = {
+		video::S3DVertex2Colors vertices[8] = {
 			// y-
-			video::S3DVertex(-r,y0,-r, 0,-1,0, c, 0,tex0),
-			video::S3DVertex(+r,y0,-r, 0,-1,0, c, 1,tex0),
-			video::S3DVertex(+r,y0,+r, 0,-1,0, c, 1,tex1),
-			video::S3DVertex(-r,y0,+r, 0,-1,0, c, 0,tex1),
+			video::S3DVertex2Colors(-r,y0,-r, 0,-1,0, c, 0,tex0),
+			video::S3DVertex2Colors(+r,y0,-r, 0,-1,0, c, 1,tex0),
+			video::S3DVertex2Colors(+r,y0,+r, 0,-1,0, c, 1,tex1),
+			video::S3DVertex2Colors(-r,y0,+r, 0,-1,0, c, 0,tex1),
 			// y+
-			video::S3DVertex(-r,y1,-r, 0,+1,0, c, 0,tex0),
-			video::S3DVertex(-r,y1,+r, 0,+1,0, c, 0,tex1),
-			video::S3DVertex(+r,y1,+r, 0,+1,0, c, 1,tex1),
-			video::S3DVertex(+r,y1,-r, 0,+1,0, c, 1,tex0),
+			video::S3DVertex2Colors(-r,y1,-r, 0,+1,0, c, 0,tex0),
+			video::S3DVertex2Colors(-r,y1,+r, 0,+1,0, c, 0,tex1),
+			video::S3DVertex2Colors(+r,y1,+r, 0,+1,0, c, 1,tex1),
+			video::S3DVertex2Colors(+r,y1,-r, 0,+1,0, c, 1,tex0),
 		};
 		u16 indices[12] = {0,1,2,2,3,0,4,5,6,6,7,4};
 		buf->append(vertices, 8, indices, 12);
@@ -144,7 +144,7 @@ public:
 			m_extrusion_meshes[resolution] =
 				createExtrusionMesh(resolution, resolution);
 		}
-		m_cube = createCubeMesh(v3f(1.0, 1.0, 1.0));
+		m_cube = createCubeMesh2Colors(v3f(1.0, 1.0, 1.0));
 	}
 	// Destructor
 	virtual ~ExtrusionMeshCache()
@@ -196,7 +196,7 @@ static ExtrusionMeshCache *g_extrusion_mesh_cache = nullptr;
 
 WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool lighting):
 	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
-	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF),
+	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF_2COLORS),
 	m_lighting(lighting)
 {
 	m_enable_shaders = g_settings->getBool("enable_shaders");
@@ -345,15 +345,15 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 				p.layer.texture = frame.texture;
 				p.layer.normal_texture = frame.normal_texture;
 			}
-			for (video::S3DVertex &v : p.vertices) {
+			for (video::S3DVertex2Colors &v : p.vertices)
 				v.Color.setAlpha(255);
-			}
-			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
+
+			scene::SMeshBuffer2Colors *buf = new scene::SMeshBuffer2Colors();
 			buf->Material.setTexture(0, p.layer.texture);
 			p.layer.applyMaterialOptions(buf->Material);
-			mesh->addMeshBuffer(buf);
 			buf->append(&p.vertices[0], p.vertices.size(),
 					&p.indices[0], p.indices.size());
+			mesh->addMeshBuffer(buf);
 			buf->drop();
 			colors->push_back(
 				ItemPartColor(p.layer.has_color, p.layer.color));
@@ -374,7 +374,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 	scene::SMesh *mesh = nullptr;
 
 	if (m_enable_shaders) {
-		u32 shader_id = shdrsrc->getShader("object_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
+		u32 shader_id = shdrsrc->getShader("nodes_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
 		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
 	}
 
@@ -505,33 +505,35 @@ void WieldMeshSceneNode::setColor(video::SColor c)
 	if (!mesh)
 		return;
 
-	u8 red = c.getRed();
-	u8 green = c.getGreen();
-	u8 blue = c.getBlue();
-
 	const u32 mc = mesh->getMeshBufferCount();
 	if (mc > m_colors.size())
 		m_colors.resize(mc);
 	for (u32 j = 0; j < mc; j++) {
-		video::SColor bc(m_base_color);
-		m_colors[j].applyOverride(bc);
+		video::SColor hwcolor(m_base_color);
+		m_colors[j].applyOverride(hwcolor);
+
+		hwcolor.setRed(hwcolor.getRed() / 255);
+		hwcolor.setGreen(hwcolor.getGreen() / 255);
+		hwcolor.setBlue(hwcolor.getBlue() / 255);
+
 		video::SColor buffercolor(255,
-			bc.getRed() * red / 255,
-			bc.getGreen() * green / 255,
-			bc.getBlue() * blue / 255);
+			hwcolor.getRed() * c.getRed(),
+			hwcolor.getGreen() * c.getGreen(),
+			hwcolor.getBlue() * c.getBlue());
+
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 
 		if (m_colors[j].needColorize(buffercolor)) {
 			buf->setDirty(scene::EBT_VERTEX);
 			if (m_enable_shaders)
-				setMeshBufferColor(buf, buffercolor);
+				setMeshBuffer2Colors(buf, c, v3f(hwcolor.getRed(), hwcolor.getGreen(), hwcolor.getBlue()));
 			else
-				colorizeMeshBuffer(buf, &buffercolor);
+				colorizeMeshBuffer2Colors(buf, c, v3f(hwcolor.getRed(), hwcolor.getGreen(), hwcolor.getBlue()));
 		}
 	}
 }
 
-void WieldMeshSceneNode::setNodeLightColor(video::SColor color)
+/*void WieldMeshSceneNode::setNodeLightColor(video::SColor color)
 {
 	if (!m_meshnode)
 		return;
@@ -544,7 +546,7 @@ void WieldMeshSceneNode::setNodeLightColor(video::SColor color)
 	} else {
 		setColor(color);
 	}
-}
+}*/
 
 void WieldMeshSceneNode::render()
 {
@@ -664,7 +666,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 		for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
 			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 			video::SMaterial &material = buf->getMaterial();
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_2COLORS;
 			material.MaterialTypeParam = 0.5f;
 			material.forEachTexture([] (auto &tex) {
 				tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
@@ -725,7 +727,7 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 		});
 		material.BackfaceCulling = true;
 		material.Lighting = false;
-		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_2COLORS;
 		material.MaterialTypeParam = 0.5f;
 	}
 	scaleMesh(mesh, v3f(2.0, 2.0, 2.0));

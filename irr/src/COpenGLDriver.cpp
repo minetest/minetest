@@ -20,6 +20,8 @@
 
 #include "mt_opengl.h"
 
+#include "COpenGLCommonCallbacks.h"
+
 namespace irr
 {
 namespace video
@@ -188,11 +190,268 @@ bool COpenGLDriver::genericDriverInit()
 
 void COpenGLDriver::createMaterialRenderers()
 {
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_SOLID(this));
+	// Create callbacks.
+
+	COpenGLMaterialSolidCB *SolidCB = new COpenGLMaterialSolidCB();
+	COpenGLMaterialSolidCB *TransparentAlphaChannelCB = new COpenGLMaterialSolidCB();
+	COpenGLMaterialSolidCB *TransparentAlphaChannelRefCB = new COpenGLMaterialSolidCB();
+	COpenGLMaterialSolidCB *TransparentVertexAlphaCB = new COpenGLMaterialSolidCB();
+	COpenGLMaterialOneTextureBlendCB *OneTextureBlendCB = new COpenGLMaterialOneTextureBlendCB();
+
+	std::string shaders_header = R"(
+		#version 120
+		#define lowp
+		#define mediump
+		#define highp
+	)";
+
+	std::string vs_attributes = R"(
+		/* Attributes */
+		#define uWVMatrix gl_ModelViewMatrix
+		#define uWVPMatrix gl_ModelViewProjectionMatrix
+		#define uTMatrix0 (gl_TextureMatrix[0])
+
+		#define inVertexPosition gl_Vertex
+		#define inVertexColor gl_Color
+		#define inTexCoord0 gl_MultiTexCoord0
+		#define inVertexNormal gl_Normal
+	)";
+
+	std::string vs_uniforms = R"(
+		/* Uniforms */
+
+		uniform float uThickness;
+	)";
+
+	std::string varyings = R"(
+		/* Varyings */
+
+		varying vec2 vTextureCoord0;
+		varying vec4 vVertexColor;
+		varying float vFogCoord;
+	)";
+
+	std::string fs_uniforms = R"(
+		/* Uniforms */
+
+		uniform int uTextureUsage0;
+		uniform sampler2D uTextureUnit0;
+		uniform int uFogEnable;
+		uniform int uFogType;
+		uniform vec4 uFogColor;
+		uniform float uFogStart;
+		uniform float uFogEnd;
+		uniform float uFogDensity;
+	)";
+
+	std::string vs_main1 = R"(
+		void main()
+		{
+			gl_Position = uWVPMatrix * vec4(inVertexPosition, 1.0);
+			gl_PointSize = uThickness;
+
+			vec4 TextureCoord0 = vec4(inTexCoord0.x, inTexCoord0.y, 1.0, 1.0);
+			vTextureCoord0 = vec4(uTMatrix0 * TextureCoord0).xy;
+
+			vVertexColor = inVertexColor.bgra;
+	)";
+
+	std::string vs_main2 = R"(
+			vec3 Position = (uWVMatrix * vec4(inVertexPosition, 1.0)).xyz;
+
+			vFogCoord = length(Position);
+		}
+	)";
+
+	std::string fog = R"(
+		float computeFog()
+		{
+			const float LOG2 = 1.442695;
+			float FogFactor = 0.0;
+
+			if (uFogType == 0) // Exp
+			{
+				FogFactor = exp2(-uFogDensity * vFogCoord * LOG2);
+			}
+			else if (uFogType == 1) // Linear
+			{
+				float Scale = 1.0 / (uFogEnd - uFogStart);
+				FogFactor = (uFogEnd - vFogCoord) * Scale;
+			}
+			else if (uFogType == 2) // Exp2
+			{
+				FogFactor = exp2(-uFogDensity * uFogDensity * vFogCoord * vFogCoord * LOG2);
+			}
+
+			FogFactor = clamp(FogFactor, 0.0, 1.0);
+
+			return FogFactor;
+		}
+	)";
+
+	std::string fs_main1 = R"(
+		void main()
+		{
+			vec4 Color = vVertexColor;
+	)";
+
+	std::string fs_solid = R"(
+			if (bool(uTextureUsage0))
+				Color *= texture2D(uTextureUnit0, vTextureCoord0);
+	)";
+
+	std::string fs_trans = R"(
+			if (bool(uTextureUsage0))
+			{
+				Color *= texture2D(uTextureUnit0, vTextureCoord0);
+
+				// TODO: uAlphaRef should rather control sharpness of alpha, don't know how to do that right now and this works in most cases.
+				if (Color.a < uAlphaRef)
+					discard;
+			}
+	)";
+
+	std::string fs_trans_ref = R"(
+			if (bool(uTextureUsage0))
+				Color *= texture2D(uTextureUnit0, vTextureCoord0);
+
+			if (Color.a < uAlphaRef)
+				discard;
+	)";
+
+	std::string fs_main2 = R"(
+			if (bool(uFogEnable))
+			{
+				float FogFactor = computeFog();
+				vec4 FogColor = uFogColor;
+				FogColor.a = 1.0;
+				Color = mix(FogColor, Color, FogFactor);
+			}
+
+			gl_FragColor = Color;
+		}
+	)";
+
+	std::string fs_ontexblend = R"(
+		void main()
+		{
+			vec4 Color0 = vVertexColor;
+			vec4 Color1 = vec4(1.0, 1.0, 1.0, 1.0);
+
+			if (bool(uTextureUsage0))
+				Color1 = texture2D(uTextureUnit0, vTextureCoord0);
+
+			vec4 FinalColor = Color0 * Color1;
+
+			if (uBlendType == 1)
+			{
+				FinalColor.w = Color0.w;
+			}
+			else if (uBlendType == 2)
+			{
+				FinalColor.w = Color1.w;
+			}
+
+			if (bool(uFogEnable))
+			{
+				float FogFactor = computeFog();
+				vec4 FogColor = uFogColor;
+				FogColor.a = 1.0;
+				FinalColor = mix(FogColor, FinalColor, FogFactor);
+			}
+
+			gl_FragColor = FinalColor;
+		}
+	)";
+
+	std::string vs_shader = shaders_header +
+		vs_attributes + vs_uniforms + varyings +
+		vs_main1 + vs_main2;
+
+	// EMT_SOLID
+	std::string solid_shader = shaders_header +
+		"precision mediump float;\n" + fs_uniforms + varyings +
+		fog + fs_main1 + fs_solid + fs_main2;
+
+	addHighLevelShaderMaterial(vs_shader.c_str(), "main", EVST_VS_2_0, solid_shader.c_str(), "main", EPST_PS_2_0, "", "main",
+			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, SolidCB, EMT_SOLID, 0);
+
+	// EMT_TRANSPARENT_ALPHA_CHANNEL
+	std::string trans_shader = shaders_header +
+		"precision mediump float;\n" + fs_uniforms + "uniform float uAlphaRef;\n" +
+		varyings + fog + fs_main1 + fs_trans + fs_main2;
+
+	addHighLevelShaderMaterial(vs_shader.c_str(), "main", EVST_VS_2_0, trans_shader.c_str(), "main", EPST_PS_2_0, "", "main",
+			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelCB, EMT_TRANSPARENT_ALPHA_CHANNEL, 0);
+
+	// EMT_TRANSPARENT_ALPHA_CHANNEL_REF
+	std::string trans_ref_shader = shaders_header +
+		"precision mediump float;\n" + fs_uniforms + "uniform float uAlphaRef;\n" +
+		varyings + fog + fs_main1 + fs_trans_ref + fs_main2;
+
+	addHighLevelShaderMaterial(vs_shader.c_str(), "main", EVST_VS_2_0, trans_ref_shader.c_str(), "main", EPST_PS_2_0, "", "main",
+			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelRefCB, EMT_SOLID, 0);
+
+	// EMT_TRANSPARENT_VERTEX_ALPHA
+	addHighLevelShaderMaterial(vs_shader.c_str(), "main", EVST_VS_2_0, solid_shader.c_str(), "main", EPST_PS_2_0, "", "main",
+			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentVertexAlphaCB, EMT_TRANSPARENT_ALPHA_CHANNEL, 0);
+
+	// EMT_ONETEXTURE_BLEND
+	std::string ontexalpha_shader = shaders_header +
+		"precision mediump float;\n" + fs_uniforms + "uniform int uBlendType;\n" +
+		varyings + fog + fs_ontexblend;
+
+
+	addHighLevelShaderMaterial(vs_shader.c_str(), "main", EVST_VS_2_0, ontexalpha_shader.c_str(), "main", EPST_PS_2_0, "", "main",
+			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, OneTextureBlendCB, EMT_ONETEXTURE_BLEND, 0);
+
+	varyings += "varying vec3 vVertexColor2;\n";
+	std::string vs_2c_shader = shaders_header +
+		vs_attributes + "attribute vec3 inVertexColor2;\n" + vs_uniforms + varyings +
+		vs_main1 + "vVertexColor2 = inVertexColor2;\n" + vs_main2;
+
+	fs_main1 += "Color.rgb *= vVertexColor2;\n";
+	// EMT_SOLID_2COLORS
+	std::string solid_2c_shader = shaders_header +
+		"precision mediump float;\n" + fs_uniforms + varyings +
+		fog + fs_main1 + fs_solid + fs_main2;
+
+	addHighLevelShaderMaterial(vs_2c_shader.c_str(), "main", EVST_VS_2_0, solid_2c_shader.c_str(), "main", EPST_PS_2_0, "", "main",
+			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, SolidCB, EMT_SOLID_2COLORS, 0);
+
+	// EMT_TRANSPARENT_ALPHA_CHANNEL_2COLORS
+	std::string trans_2c_shader = shaders_header +
+		"precision mediump float;\n" + fs_uniforms + "uniform float uAlphaRef;\n" +
+		varyings + fog + fs_main1 + fs_trans + fs_main2;
+
+	addHighLevelShaderMaterial(vs_2c_shader.c_str(), "main", EVST_VS_2_0, trans_2c_shader.c_str(), "main", EPST_PS_2_0, "", "main",
+			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelCB, EMT_TRANSPARENT_ALPHA_CHANNEL_2COLORS, 0);
+
+	// EMT_TRANSPARENT_ALPHA_CHANNEL_REF_2COLORS
+	std::string trans_ref_2c_shader = shaders_header +
+		"precision mediump float;\n" + fs_uniforms + "uniform float uAlphaRef;\n" +
+		varyings + fog + fs_main1 + fs_trans_ref + fs_main2;
+
+	addHighLevelShaderMaterial(vs_2c_shader.c_str(), "main", EVST_VS_2_0, trans_ref_2c_shader.c_str(), "main", EPST_PS_2_0, "", "main",
+			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelRefCB, EMT_TRANSPARENT_ALPHA_CHANNEL_REF_2COLORS, 0);
+
+	// Drop callbacks.
+
+	SolidCB->drop();
+	TransparentAlphaChannelCB->drop();
+	TransparentAlphaChannelRefCB->drop();
+	TransparentVertexAlphaCB->drop();
+	OneTextureBlendCB->drop();
+
+	// Create built-in materials.
+	// The addition order must be the same as in the E_MATERIAL_TYPE enumeration. Thus the
+
+
+	/*addAndDropMaterialRenderer(new COpenGLMaterialRenderer_SOLID(this));
 	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL(this));
 	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL_REF(this));
 	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_VERTEX_ALPHA(this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_ONETEXTURE_BLEND(this));
+	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_ONETEXTURE_BLEND(this));*/
 }
 
 bool COpenGLDriver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil, const SExposedVideoData &videoData, core::rect<s32> *sourceRect)
@@ -305,6 +564,14 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 			const S3DVertexTangents *po = static_cast<const S3DVertexTangents *>(vertices);
 			for (u32 i = 0; i < vertexCount; i++) {
 				po[i].Color.toOpenGLColor((u8 *)&(pb[i].Color));
+			}
+		} break;
+		case EVT_2COLORS: {
+			S3DVertex2Colors *pb = reinterpret_cast<S3DVertex2Colors *>(buffer.pointer());
+			const S3DVertex2Colors *po = static_cast<const S3DVertex2Colors *>(vertices);
+			for (u32 i = 0; i < vertexCount; i++) {
+				po[i].Color.toOpenGLColor((u8 *)&(pb[i].Color));
+				//po[i].Color2.toOpenGLColor((u8 *)&(pb[i].Color2));
 			}
 		} break;
 		default: {
@@ -666,6 +933,34 @@ void COpenGLDriver::drawVertexPrimitiveList(const void *vertices, u32 vertexCoun
 	if (vertices && !FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 		getColorBuffer(vertices, vertexCount, vType);
 
+	/*if (vertices) {
+		Color2Buffer.set_used(vertexCount);
+		const S3DVertex2Colors *p = static_cast<const S3DVertex2Colors *>(vertices);
+		for (u32 i = 0; i < vertexCount; i++) {
+			//core::array<u8> color2_arr(4);
+			//color2_arr.set_used(4);
+			//p->Color2.toOpenGLColor(&color2_arr[0]);
+
+			Color2Buffer[i] = (int)(p->Color2.color);
+			/*int r = reinterpret_cast<int>(p->Color2);
+			r <<= 24;
+			Color2Buffer[i] |= r;
+
+			int g = reinterpret_cast<int>(p->Color2);
+			g <<= 16;
+			Color2Buffer[i] |= g;
+
+			int b = reinterpret_cast<int>(p->Color2);
+			b <<= 8;
+			Color2Buffer[i] |= b;
+
+			int a = reinterpret_cast<int>(p->Color2);
+			Color2Buffer[i] |= a;
+
+			++p;
+		}
+	}*/
+
 	// draw everything
 	setRenderStates3DMode();
 
@@ -692,6 +987,9 @@ void COpenGLDriver::drawVertexPrimitiveList(const void *vertices, u32 vertexCoun
 				break;
 			case EVT_TANGENTS:
 				glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents *>(vertices))[0].Color);
+				break;
+			case EVT_2COLORS:
+				glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Color);
 				break;
 			}
 		} else {
@@ -772,6 +1070,33 @@ void COpenGLDriver::drawVertexPrimitiveList(const void *vertices, u32 vertexCoun
 				glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(48));
 		}
 		break;
+	case EVT_2COLORS:
+		if (vertices) {
+			glNormalPointer(GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Normal);
+			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].TCoords);
+			glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Pos);
+		} else {
+			glNormalPointer(GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(12));
+			glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex2Colors), buffer_offset(24));
+			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(28));
+			glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(0));
+		}
+
+		if (Feature.MaxTextureUnits > 0) {
+			CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 1);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			if (vertices) {
+			//(1)	glTexCoordPointer(4, GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Color2);
+				glTexCoordPointer(3, GL_FLOAT,  sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Color2);
+				//else {
+				//	_IRR_DEBUG_BREAK_IF(Color2Buffer.size() == 0);
+				//	glTexCoordPointer(colorSize, GL_FLOAT, 0, &Color2Buffer[0]);
+				//}
+			}
+			else
+				glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(36));
+		}
+		break;
 	}
 
 	renderArray(indexList, primitiveCount, pType, iType);
@@ -813,6 +1138,13 @@ void COpenGLDriver::getColorBuffer(const void *vertices, u32 vertexCount, E_VERT
 	} break;
 	case EVT_TANGENTS: {
 		const S3DVertexTangents *p = static_cast<const S3DVertexTangents *>(vertices);
+		for (i = 0; i < vertexCount; i += 4) {
+			p->Color.toOpenGLColor(&ColorBuffer[i]);
+			++p;
+		}
+	} break;
+	case EVT_2COLORS: {
+		const S3DVertex2Colors *p = static_cast<const S3DVertex2Colors *>(vertices);
 		for (i = 0; i < vertexCount; i += 4) {
 			p->Color.toOpenGLColor(&ColorBuffer[i]);
 			++p;
@@ -966,6 +1298,9 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void *vertices, u32 vertexCo
 			case EVT_TANGENTS:
 				glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents *>(vertices))[0].Color);
 				break;
+			case EVT_2COLORS:
+				glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Color);
+				break;
 			}
 		} else {
 			// avoid passing broken pointer to OpenGL
@@ -1021,6 +1356,17 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void *vertices, u32 vertexCo
 			glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertexTangents), buffer_offset(24));
 			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(28));
 			glVertexPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(0));
+		}
+
+		break;
+	case EVT_2COLORS:
+		if (vertices) {
+			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].TCoords);
+			glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Pos);
+		} else {
+			glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex2Colors), buffer_offset(24));
+			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(28));
+			glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(0));
 		}
 
 		break;

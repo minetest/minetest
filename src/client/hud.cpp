@@ -1139,13 +1139,13 @@ void drawItemStack(
 			if (p.needColorize(c)) {
 				buf->setDirty(scene::EBT_VERTEX);
 				if (imesh->needs_shading)
-					colorizeMeshBuffer(buf, &c);
+					colorizeMeshBuffer2Colors(buf, c);
 				else
-					setMeshBufferColor(buf, c);
+					setMeshBuffer2Colors(buf, c);
 			}
 
 			video::SMaterial &material = buf->getMaterial();
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF_2COLORS;
 			material.Lighting = false;
 			driver->setMaterial(material);
 			driver->drawMeshBuffer(buf);

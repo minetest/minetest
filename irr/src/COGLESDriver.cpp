@@ -252,6 +252,13 @@ bool COGLES1Driver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 			po[i].Color.toOpenGLColor((u8 *)&(pb[i].Color.color));
 		}
 	} break;
+	case EVT_2COLORS: {
+		S3DVertex2Colors *pb = reinterpret_cast<S3DVertex2Colors *>(buffer.pointer());
+		const S3DVertex2Colors *po = static_cast<const S3DVertex2Colors *>(vertices);
+		for (u32 i = 0; i < vertexCount; i++) {
+			po[i].Color.toOpenGLColor((u8 *)&(pb[i].Color.color));
+		}
+	} break;
 	default: {
 		return false;
 	}
@@ -519,6 +526,14 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void *vertices, u32 vertex
 				++p;
 			}
 		} break;
+		case EVT_2COLORS: {
+			Color2Buffer.set_used(vertexCount);
+			const S3DVertex2Colors *p = static_cast<const S3DVertex2Colors *>(vertices);
+			for (i = 0; i < vertexCount; i += 4) {
+				p->Color.toOpenGLColor(&ColorBuffer[i]);
+				++p;
+			}
+		} break;
 		}
 	}
 
@@ -610,6 +625,28 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void *vertices, u32 vertex
 				glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents *>(vertices))[0].Binormal);
 			else
 				glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(48));
+		}
+		break;
+	case EVT_2COLORS:
+		if (vertices) {
+			if (threed)
+				glNormalPointer(GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Normal);
+			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].TCoords);
+			glVertexPointer((threed ? 3 : 2), GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertex2Colors *>(vertices))[0].Pos);
+		} else {
+			glNormalPointer(GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(12));
+			glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertex2Colors), buffer_offset(24));
+			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(28));
+			glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(0));
+		}
+
+		if (Feature.MaxTextureUnits > 0) {
+			glClientActiveTexture(GL_TEXTURE0 + 1);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			if (vertices)
+				glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertex2Colors), &(static_cast<const S3DVertexTangents *>(vertices))[0].Color2);
+			else
+				glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertex2Colors), buffer_offset(36));
 		}
 		break;
 	}

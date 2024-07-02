@@ -973,7 +973,9 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	if (drawtype == NDT_MESH && !mesh.empty()) {
 		// Meshnode drawtype
 		// Read the mesh and apply scale
-		mesh_ptr[0] = client->getMesh(mesh);
+		scene::IMesh *loaded_mesh = client->getMesh(mesh);
+		mesh_ptr[0] = convertMeshTo2Colors(loaded_mesh);
+		loaded_mesh->drop();
 		if (mesh_ptr[0]){
 			v3f scale = v3f(1.0, 1.0, 1.0) * BS * visual_scale;
 			scaleMesh(mesh_ptr[0], scale);

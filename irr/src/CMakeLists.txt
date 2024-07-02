@@ -356,6 +356,7 @@ if(ENABLE_OPENGL)
 		COpenGLCacheHandler.cpp
 		COpenGLDriver.cpp
 		COpenGLSLMaterialRenderer.cpp
+		COpenGLCommonCallbacks.cpp
 		COpenGLExtensionHandler.cpp
 	)
 endif()
@@ -375,7 +376,7 @@ if(ENABLE_OPENGL3 OR ENABLE_GLES2)
 		${IRRDRVROBJ}
 		OpenGL/Driver.cpp
 		OpenGL/ExtensionHandler.cpp
-		OpenGL/FixedPipelineRenderer.cpp
+		COpenGLCommonCallbacks.cpp
 		OpenGL/MaterialRenderer.cpp
 		OpenGL/Renderer2D.cpp
 	)

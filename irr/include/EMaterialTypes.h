@@ -53,6 +53,10 @@ enum E_MATERIAL_TYPE
 	pack_textureBlendFunc (for 2D) or pack_textureBlendFuncSeparate (for 3D). */
 	EMT_ONETEXTURE_BLEND,
 
+	EMT_SOLID_2COLORS,
+	EMT_TRANSPARENT_ALPHA_CHANNEL_2COLORS,
+	EMT_TRANSPARENT_ALPHA_CHANNEL_REF_2COLORS,
+
 	//! This value is not used. It only forces this enumeration to compile to 32 bit.
 	EMT_FORCE_32BIT = 0x7fffffff
 };

@@ -191,6 +191,9 @@ public:
 			case video::EVT_TANGENTS:
 				ret += sizeof(video::S3DVertexTangents) * getVertexCount();
 				break;
+			case video::EVT_2COLORS:
+				ret += sizeof(video::S3DVertex2Colors) * getVertexCount();
+				break;
 		}
 		switch (getIndexType()) {
 			case video::EIT_16BIT:

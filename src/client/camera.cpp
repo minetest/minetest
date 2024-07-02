@@ -139,7 +139,7 @@ void Camera::step(f32 dtime)
 
 	if (m_wield_change_timer >= 0 && was_under_zero) {
 		m_wieldnode->setItem(m_wield_item_next, m_client);
-		m_wieldnode->setNodeLightColor(m_player_light_color);
+		m_wieldnode->setColor(m_player_light_color);
 	}
 
 	if (m_view_bobbing_state != 0)
@@ -552,7 +552,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	m_wieldnode->setRotation(wield_rotation);
 
 	m_player_light_color = player->light_color;
-	m_wieldnode->setNodeLightColor(m_player_light_color);
+	m_wieldnode->setColor(m_player_light_color);
 
 	// Set render distance
 	updateViewingRange();

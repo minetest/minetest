@@ -14,7 +14,7 @@
 #include "COpenGLCoreCacheHandler.h"
 
 #include "MaterialRenderer.h"
-#include "FixedPipelineRenderer.h"
+#include "COpenGLCommonCallbacks.h"
 #include "Renderer2D.h"
 
 #include "EVertexAttributes.h"
@@ -94,6 +94,17 @@ static const VertexType vtTangents = {
 		},
 };
 
+static const VertexType vt2Colors = {
+		sizeof(S3DVertex2Colors),
+		{
+				{EVA_POSITION, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2Colors, Pos)},
+				{EVA_NORMAL, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2Colors, Normal)},
+				{EVA_COLOR, 4, GL_UNSIGNED_BYTE, VertexAttribute::Mode::Normalized, offsetof(S3DVertex2Colors, Color)},
+				{EVA_TCOORD0, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2Colors, TCoords)},
+				{EVA_COLOR2, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2Colors, Color2)},
+		},
+};
+
 #pragma GCC diagnostic pop
 
 static const VertexType &getVertexTypeDescription(E_VERTEX_TYPE type)
@@ -105,6 +116,8 @@ static const VertexType &getVertexTypeDescription(E_VERTEX_TYPE type)
 		return vt2TCoords;
 	case EVT_TANGENTS:
 		return vtTangents;
+	case EVT_2COLORS:
+		return vt2Colors;
 	default:
 		assert(false);
 	}
@@ -378,41 +391,246 @@ void COpenGL3DriverBase::createMaterialRenderers()
 {
 	// Create callbacks.
 
-	COpenGL3MaterialSolidCB *SolidCB = new COpenGL3MaterialSolidCB();
-	COpenGL3MaterialSolidCB *TransparentAlphaChannelCB = new COpenGL3MaterialSolidCB();
-	COpenGL3MaterialSolidCB *TransparentAlphaChannelRefCB = new COpenGL3MaterialSolidCB();
-	COpenGL3MaterialSolidCB *TransparentVertexAlphaCB = new COpenGL3MaterialSolidCB();
-	COpenGL3MaterialOneTextureBlendCB *OneTextureBlendCB = new COpenGL3MaterialOneTextureBlendCB();
+	COpenGLMaterialSolidCB *SolidCB = new COpenGLMaterialSolidCB();
+	COpenGLMaterialSolidCB *TransparentAlphaChannelCB = new COpenGLMaterialSolidCB();
+	COpenGLMaterialSolidCB *TransparentAlphaChannelRefCB = new COpenGLMaterialSolidCB();
+	COpenGLMaterialSolidCB *TransparentVertexAlphaCB = new COpenGLMaterialSolidCB();
+	COpenGLMaterialOneTextureBlendCB *OneTextureBlendCB = new COpenGLMaterialOneTextureBlendCB();
 
 	// Create built-in materials.
 	// The addition order must be the same as in the E_MATERIAL_TYPE enumeration. Thus the
 
-	const core::stringc VertexShader = OGLES2ShaderPath + "Solid.vsh";
+	std::string shaders_header = "#version 100\n";
+
+	std::string vs_attributes = R"(
+		/* Attributes */
+		attribute vec3 inVertexPosition;
+		attribute vec3 inVertexNormal;
+		attribute vec4 inVertexColor;
+		attribute vec2 inTexCoord0;
+	)";
+
+	std::string vs_uniforms = R"(
+		/* Uniforms */
+
+		uniform mat4 uWVPMatrix;
+		uniform mat4 uWVMatrix;
+		uniform mat4 uTMatrix0;
+
+		uniform float uThickness;
+	)";
+
+	std::string varyings = R"(
+		/* Varyings */
+
+		varying vec2 vTextureCoord0;
+		varying vec4 vVertexColor;
+		varying float vFogCoord;
+	)";
+
+	std::string fs_uniforms = R"(
+		/* Uniforms */
+
+		uniform int uTextureUsage0;
+		uniform sampler2D uTextureUnit0;
+		uniform int uFogEnable;
+		uniform int uFogType;
+		uniform vec4 uFogColor;
+		uniform float uFogStart;
+		uniform float uFogEnd;
+		uniform float uFogDensity;
+	)";
+
+	std::string vs_main1 = R"(
+		void main()
+		{
+			gl_Position = uWVPMatrix * vec4(inVertexPosition, 1.0);
+			gl_PointSize = uThickness;
+
+			vec4 TextureCoord0 = vec4(inTexCoord0.x, inTexCoord0.y, 1.0, 1.0);
+			vTextureCoord0 = vec4(uTMatrix0 * TextureCoord0).xy;
+
+			vVertexColor = inVertexColor.bgra;
+	)";
+
+	std::string vs_main2 = R"(
+			vec3 Position = (uWVMatrix * vec4(inVertexPosition, 1.0)).xyz;
+
+			vFogCoord = length(Position);
+		}
+	)";
+
+	std::string fog = R"(
+		float computeFog()
+		{
+			const float LOG2 = 1.442695;
+			float FogFactor = 0.0;
+
+			if (uFogType == 0) // Exp
+			{
+				FogFactor = exp2(-uFogDensity * vFogCoord * LOG2);
+			}
+			else if (uFogType == 1) // Linear
+			{
+				float Scale = 1.0 / (uFogEnd - uFogStart);
+				FogFactor = (uFogEnd - vFogCoord) * Scale;
+			}
+			else if (uFogType == 2) // Exp2
+			{
+				FogFactor = exp2(-uFogDensity * uFogDensity * vFogCoord * vFogCoord * LOG2);
+			}
+
+			FogFactor = clamp(FogFactor, 0.0, 1.0);
+
+			return FogFactor;
+		}
+	)";
+
+	std::string fs_main1 = R"(
+		void main()
+		{
+			vec4 Color = vVertexColor;
+	)";
+
+	std::string fs_solid = R"(
+			if (bool(uTextureUsage0))
+				Color *= texture2D(uTextureUnit0, vTextureCoord0);
+	)";
+
+	std::string fs_trans = R"(
+			if (bool(uTextureUsage0))
+			{
+				Color *= texture2D(uTextureUnit0, vTextureCoord0);
+
+				// TODO: uAlphaRef should rather control sharpness of alpha, don't know how to do that right now and this works in most cases.
+				if (Color.a < uAlphaRef)
+					discard;
+			}
+	)";
+
+	std::string fs_trans_ref = R"(
+			if (bool(uTextureUsage0))
+				Color *= texture2D(uTextureUnit0, vTextureCoord0);
+
+			if (Color.a < uAlphaRef)
+				discard;
+	)";
+
+	std::string fs_main2 = R"(
+			if (bool(uFogEnable))
+			{
+				float FogFactor = computeFog();
+				vec4 FogColor = uFogColor;
+				FogColor.a = 1.0;
+				Color = mix(FogColor, Color, FogFactor);
+			}
+
+			gl_FragColor = Color;
+		}
+	)";
+
+	std::string fs_ontexblend = R"(
+		void main()
+		{
+			vec4 Color0 = vVertexColor;
+			vec4 Color1 = vec4(1.0, 1.0, 1.0, 1.0);
+
+			if (bool(uTextureUsage0))
+				Color1 = texture2D(uTextureUnit0, vTextureCoord0);
+
+			vec4 FinalColor = Color0 * Color1;
+
+			if (uBlendType == 1)
+			{
+				FinalColor.w = Color0.w;
+			}
+			else if (uBlendType == 2)
+			{
+				FinalColor.w = Color1.w;
+			}
+
+			if (bool(uFogEnable))
+			{
+				float FogFactor = computeFog();
+				vec4 FogColor = uFogColor;
+				FogColor.a = 1.0;
+				FinalColor = mix(FogColor, FinalColor, FogFactor);
+			}
+
+			gl_FragColor = FinalColor;
+		}
+	)";
+
+	std::string vs_shader = shaders_header +
+		vs_attributes + vs_uniforms + varyings +
+		vs_main1 + vs_main2;
 
 	// EMT_SOLID
-	core::stringc FragmentShader = OGLES2ShaderPath + "Solid.fsh";
-	addHighLevelShaderMaterialFromFiles(VertexShader, "main", EVST_VS_2_0, FragmentShader, "main", EPST_PS_2_0, "", "main",
+	std::string solid_shader = shaders_header +
+		"precision mediump float;\n" + fs_uniforms + varyings +
+		fog + fs_main1 + fs_solid + fs_main2;
+
+	addHighLevelShaderMaterial(vs_shader.c_str(), "main", EVST_VS_2_0, solid_shader.c_str(), "main", EPST_PS_2_0, "", "main",
 			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, SolidCB, EMT_SOLID, 0);
 
 	// EMT_TRANSPARENT_ALPHA_CHANNEL
-	FragmentShader = OGLES2ShaderPath + "TransparentAlphaChannel.fsh";
-	addHighLevelShaderMaterialFromFiles(VertexShader, "main", EVST_VS_2_0, FragmentShader, "main", EPST_PS_2_0, "", "main",
+	std::string trans_shader = shaders_header +
+		"precision mediump float;\n" + fs_uniforms + "uniform float uAlphaRef;\n" +
+		varyings + fog + fs_main1 + fs_trans + fs_main2;
+
+	addHighLevelShaderMaterial(vs_shader.c_str(), "main", EVST_VS_2_0, trans_shader.c_str(), "main", EPST_PS_2_0, "", "main",
 			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelCB, EMT_TRANSPARENT_ALPHA_CHANNEL, 0);
 
 	// EMT_TRANSPARENT_ALPHA_CHANNEL_REF
-	FragmentShader = OGLES2ShaderPath + "TransparentAlphaChannelRef.fsh";
-	addHighLevelShaderMaterialFromFiles(VertexShader, "main", EVST_VS_2_0, FragmentShader, "main", EPST_PS_2_0, "", "main",
+	std::string trans_ref_shader = shaders_header +
+		"precision mediump float;\n" + fs_uniforms + "uniform float uAlphaRef;\n" +
+		varyings + fog + fs_main1 + fs_trans_ref + fs_main2;
+
+	addHighLevelShaderMaterial(vs_shader.c_str(), "main", EVST_VS_2_0, trans_ref_shader.c_str(), "main", EPST_PS_2_0, "", "main",
 			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelRefCB, EMT_SOLID, 0);
 
 	// EMT_TRANSPARENT_VERTEX_ALPHA
-	FragmentShader = OGLES2ShaderPath + "TransparentVertexAlpha.fsh";
-	addHighLevelShaderMaterialFromFiles(VertexShader, "main", EVST_VS_2_0, FragmentShader, "main", EPST_PS_2_0, "", "main",
+	addHighLevelShaderMaterial(vs_shader.c_str(), "main", EVST_VS_2_0, solid_shader.c_str(), "main", EPST_PS_2_0, "", "main",
 			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentVertexAlphaCB, EMT_TRANSPARENT_ALPHA_CHANNEL, 0);
 
 	// EMT_ONETEXTURE_BLEND
-	FragmentShader = OGLES2ShaderPath + "OneTextureBlend.fsh";
-	addHighLevelShaderMaterialFromFiles(VertexShader, "main", EVST_VS_2_0, FragmentShader, "main", EPST_PS_2_0, "", "main",
+	std::string ontexalpha_shader = shaders_header +
+		"precision mediump float;\n" + fs_uniforms + "uniform int uBlendType;\n" +
+		varyings + fog + fs_ontexblend;
+
+
+	addHighLevelShaderMaterial(vs_shader.c_str(), "main", EVST_VS_2_0, ontexalpha_shader.c_str(), "main", EPST_PS_2_0, "", "main",
 			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, OneTextureBlendCB, EMT_ONETEXTURE_BLEND, 0);
+
+	varyings += "varying vec3 vVertexColor2;\n";
+	std::string vs_2c_shader = shaders_header +
+		vs_attributes + "attribute vec3 inVertexColor2;\n" + vs_uniforms + varyings +
+		vs_main1 + "vVertexColor2 = inVertexColor2;\n" + vs_main2;
+
+	fs_main1 += "Color.rgb *= vVertexColor2;\n";
+	// EMT_SOLID_2COLORS
+	std::string solid_2c_shader = shaders_header +
+		"precision mediump float;\n" + fs_uniforms + varyings +
+		fog + fs_main1 + fs_solid + fs_main2;
+
+	addHighLevelShaderMaterial(vs_2c_shader.c_str(), "main", EVST_VS_2_0, solid_2c_shader.c_str(), "main", EPST_PS_2_0, "", "main",
+			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, SolidCB, EMT_SOLID_2COLORS, 0);
+
+	// EMT_TRANSPARENT_ALPHA_CHANNEL_2COLORS
+	std::string trans_2c_shader = shaders_header +
+		"precision mediump float;\n" + fs_uniforms + "uniform float uAlphaRef;\n" +
+		varyings + fog + fs_main1 + fs_trans + fs_main2;
+
+	addHighLevelShaderMaterial(vs_2c_shader.c_str(), "main", EVST_VS_2_0, trans_2c_shader.c_str(), "main", EPST_PS_2_0, "", "main",
+			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelCB, EMT_TRANSPARENT_ALPHA_CHANNEL_2COLORS, 0);
+
+	// EMT_TRANSPARENT_ALPHA_CHANNEL_REF_2COLORS
+	std::string trans_ref_2c_shader = shaders_header +
+		"precision mediump float;\n" + fs_uniforms + "uniform float uAlphaRef;\n" +
+		varyings + fog + fs_main1 + fs_trans_ref + fs_main2;
+
+	addHighLevelShaderMaterial(vs_2c_shader.c_str(), "main", EVST_VS_2_0, trans_ref_2c_shader.c_str(), "main", EPST_PS_2_0, "", "main",
+			EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0, TransparentAlphaChannelRefCB, EMT_TRANSPARENT_ALPHA_CHANNEL_REF_2COLORS, 0);
 
 	// Drop callbacks.
 

@@ -270,5 +270,7 @@ typedef CMeshBuffer<video::S3DVertex> SMeshBuffer;
 typedef CMeshBuffer<video::S3DVertex2TCoords> SMeshBufferLightMap;
 //! Meshbuffer with vertices having tangents stored, e.g. for normal mapping
 typedef CMeshBuffer<video::S3DVertexTangents> SMeshBufferTangents;
+//! Meshbuffer with two colors per vertex
+typedef CMeshBuffer<video::S3DVertex2Colors> SMeshBuffer2Colors;
 } // end namespace scene
 } // end namespace irr

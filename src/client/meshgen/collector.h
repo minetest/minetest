@@ -29,7 +29,7 @@ struct PreMeshBuffer
 {
 	TileLayer layer;
 	std::vector<u16> indices;
-	std::vector<video::S3DVertex> vertices;
+	std::vector<video::S3DVertex2Colors> vertices;
 
 	PreMeshBuffer() = default;
 	explicit PreMeshBuffer(const TileLayer &layer) : layer(layer) {}
@@ -48,20 +48,20 @@ struct MeshCollector
 	MeshCollector(const v3f center_pos, v3f offset = v3f()) : m_center_pos(center_pos), offset(offset) {}
 
 	void append(const TileSpec &material,
-			const video::S3DVertex *vertices, u32 numVertices,
+			const video::S3DVertex2Colors *vertices, u32 numVertices,
 			const u16 *indices, u32 numIndices);
 	void append(const TileSpec &material,
-			const video::S3DVertex *vertices, u32 numVertices,
+			const video::S3DVertex2Colors *vertices, u32 numVertices,
 			const u16 *indices, u32 numIndices,
 			v3f pos, video::SColor c, u8 light_source);
 
 private:
 	void append(const TileLayer &material,
-			const video::S3DVertex *vertices, u32 numVertices,
+			const video::S3DVertex2Colors *vertices, u32 numVertices,
 			const u16 *indices, u32 numIndices,
 			u8 layernum, bool use_scale = false);
 	void append(const TileLayer &material,
-			const video::S3DVertex *vertices, u32 numVertices,
+			const video::S3DVertex2Colors *vertices, u32 numVertices,
 			const u16 *indices, u32 numIndices,
 			v3f pos, video::SColor c, u8 light_source,
 			u8 layernum, bool use_scale = false);
