@@ -3850,12 +3850,20 @@ vectors are written like this: `(x, y, z)`:
     * If `v` has zero length, returns `(0, 0, 0)`.
 * `vector.floor(v)`:
     * Returns a vector, each dimension rounded down.
+* `vector.ceil(v)`:
+    * Returns a vector, each dimension rounded up.
 * `vector.round(v)`:
     * Returns a vector, each dimension rounded to nearest integer.
     * At a multiple of 0.5, rounds away from zero.
-* `vector.apply(v, func)`:
+* `vector.sign(v, tolerance)`:
+    * Returns a vector where `math.sign` was called for each component.
+    * See [Helper functions] for details.
+* `vector.abs(v)`:
+    * Returns a vector with absolute values for each component.
+* `vector.apply(v, func, ...)`:
     * Returns a vector where the function `func` has been applied to each
       component.
+    * `...` are optional arguments passed to `func`.
 * `vector.combine(v, w, func)`:
     * Returns a vector where the function `func` has combined both components of `v` and `w`
       for each component
@@ -3879,6 +3887,10 @@ vectors are written like this: `(x, y, z)`:
     * Returns a boolean value indicating if `pos` is inside area formed by `min` and `max`.
     * `min` and `max` are inclusive.
     * If `min` is bigger than `max` on some axis, function always returns false.
+    * You can use `vector.sort` if you have two vectors and don't know which are the minimum and the maximum.
+* `vector.random_in_area(min, max)`:
+    * Returns a random integer position in area formed by `min` and `max`
+    * `min` and `max` are inclusive.
     * You can use `vector.sort` if you have two vectors and don't know which are the minimum and the maximum.
 
 For the following functions `x` can be either a vector or a number:
