@@ -1224,25 +1224,34 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 	if (!horizontal_collision)
 		return;
 
-	bool vertical_collision = false; // change after implement
-	//todo: must be only one block ahead to trigger autojumping, in other words there must not be a vertical collision
-	v3f jump_dir = initial_speed; // jump direction means the mostly right horizontal direction and also 1 block above player position
-	if (jump_dir.X>jump_dir.Z){
-		jump_dir.Z=0;
-		jump_dir.X=jump_dir.Y=1;
+	bool spamming_jump = false; // change after implement
+	
+	//todo1: must be only one block ahead to trigger autojumping, in other words there must not be a vertical collision
+	//done: converted to check if there's a block in main dir. if not, quit it.
+	//todo2: spam jumping gone but have some rare case showing insensitivity with normal autojump detection, and need to fix that.
+	v3s16 main_movement_dir; // main movement direction if jumped on a block
+	
+	if (initial_speed.X*initial_speed.X > initial_speed.Z*initial_speed.Z) //might be a little faster than get abs value and compare
+	{
+		main_movement_dir.Z = 0;
+		main_movement_dir.Y = 1;
+		main_movement_dir.X = numericSign(initial_speed.X);
 	}
-	else{
-		jump_dir.X=0;
-		jump_dir.Z=jump_dir.Y=1;
+	if (initial_speed.X*initial_speed.X < initial_speed.Z*initial_speed.Z)
+	{
+		main_movement_dir.X = 0;
+		main_movement_dir.Y = 1;
+		main_movement_dir.Z = numericSign(initial_speed.Z);
 	}
-	//only need 1 block ahead of the mostly right horizontal direction and 1 block above player position
-	v3s16 block_ahead_position = floatToInt(m_position, BS) + floatToInt(jump_dir, BS);
+
+	//only need 1 block ahead of the mostly right horizontal direction 
+	v3s16 block_ahead_position = getStandingNodePos() + main_movement_dir;
 	MapNode block_ahead = env->getMap().getNode(block_ahead_position);
 	const NodeDefManager *ndef_temp = env->getGameDef()->ndef();
 	const ContentFeatures &f_temp = ndef_temp->get(block_ahead);
-	if (f_temp.walkable)
-		vertical_collision = true;
-	if (vertical_collision)
+	if (!f_temp.walkable)//there's no meaning to jump when falls to original height, especially when meaningless jumps can last for some seconds.
+		spamming_jump = true;
+	if (spamming_jump)
 		return;
 
 
