@@ -848,10 +848,10 @@ void Sky::updateStars()
 		v3f p1 = v3f(d, 1, -d);
 		v3f p2 = v3f(d, 1, d);
 		v3f p3 = v3f(-d, 1, d);
-		a.rotateVect(p);
-		a.rotateVect(p1);
-		a.rotateVect(p2);
-		a.rotateVect(p3);
+		a.rotateAndScaleVect(p);
+		a.rotateAndScaleVect(p1);
+		a.rotateAndScaleVect(p2);
+		a.rotateAndScaleVect(p3);
 		m_stars->Vertices.push_back(video::S3DVertex(p, {}, fallback_color, {}));
 		m_stars->Vertices.push_back(video::S3DVertex(p1, {}, fallback_color, {}));
 		m_stars->Vertices.push_back(video::S3DVertex(p2, {}, fallback_color, {}));

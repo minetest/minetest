@@ -137,7 +137,7 @@ void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool fo
 	v3s16 cam_offset = cam->getOffset();
 	if (cam_offset != shadow_frustum.camera_offset) {
 		v3f rotated_offset;
-		shadow_frustum.ViewMat.rotateVect(rotated_offset, intToFloat(cam_offset - shadow_frustum.camera_offset, BS));
+		shadow_frustum.ViewMat.rotateAndScaleVect(rotated_offset = intToFloat(cam_offset - shadow_frustum.camera_offset, BS));
 		shadow_frustum.ViewMat.setTranslation(shadow_frustum.ViewMat.getTranslation() + rotated_offset);
 		shadow_frustum.player += intToFloat(shadow_frustum.camera_offset - cam->getOffset(), BS);
 		shadow_frustum.camera_offset = cam_offset;
