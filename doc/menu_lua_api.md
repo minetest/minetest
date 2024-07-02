@@ -48,7 +48,10 @@ Functions
   * returns the maximum supported network protocol version
 * `core.open_url(url)`
   * opens the URL in a web browser, returns false on failure.
-  * Must begin with http:// or https://
+  * `url` must begin with http:// or https://
+* `core.open_url_dialog(url)`
+  * shows a dialog to allow the user to choose whether to open a URL.
+  * `url` must begin with http:// or https://
 * `core.open_dir(path)`
   * opens the path in the system file browser/explorer, returns false on failure.
   * Must be an existing directory.
