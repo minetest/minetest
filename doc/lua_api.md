@@ -3248,7 +3248,7 @@ Elements
 * Types: `text`, `image`, `color`, `indent`, `tree`
     * `text`:   show cell contents as text
     * `image`:  cell contents are an image index, use column options to define
-                images.
+                images. images are scaled down to fit the row height if necessary.
     * `color`:  cell contents are a ColorString and define color of following
                 cell.
     * `indent`: cell contents are a number and define indentation of following
@@ -3269,7 +3269,7 @@ Elements
         * `0=<value>` sets image for image index 0
         * `1=<value>` sets image for image index 1
         * `2=<value>` sets image for image index 2
-        * and so on; defined indices need not be contiguous empty or
+        * and so on; defined indices need not be contiguous. empty or
           non-numeric cells are treated as `0`.
     * `color` column options:
         * `span=<value>`: number of following columns to affect
