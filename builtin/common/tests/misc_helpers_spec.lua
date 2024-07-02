@@ -1,4 +1,5 @@
 _G.core = {}
+dofile("builtin/common/math.lua")
 dofile("builtin/common/vector.lua")
 dofile("builtin/common/misc_helpers.lua")
 
