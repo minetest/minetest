@@ -26,10 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 
 struct table_key {
-	const char *Name;
+	std::string Name;
 	irr::EKEY_CODE Key;
 	wchar_t Char; // L'\0' means no character assigned
-	const char *LangName; // NULL means it doesn't have a human description
+	std::string LangName;
 };
 
 #define DEFINEKEY1(x, lang) /* Irrlicht key without character */ \
@@ -141,7 +141,7 @@ static std::vector<table_key> table = {
 	DEFINEKEY1(KEY_ADD, N_("Numpad +"))
 	DEFINEKEY1(KEY_SEPARATOR, N_("Numpad ."))
 	DEFINEKEY1(KEY_SUBTRACT, N_("Numpad -"))
-	DEFINEKEY1(KEY_DECIMAL, NULL)
+	DEFINEKEY1(KEY_DECIMAL, N_("Numpad decimal"))
 	DEFINEKEY1(KEY_DIVIDE, N_("Numpad /"))
 	DEFINEKEY4(1)
 	DEFINEKEY4(2)
@@ -242,7 +242,7 @@ static std::vector<table_key> table = {
 static const table_key &lookup_keyname(const char *name)
 {
 	for (const auto &table_key : table) {
-		if (strcmp(table_key.Name, name) == 0)
+		if (table_key.Name == name)
 			return table_key;
 	}
 
@@ -269,8 +269,7 @@ static const table_key &lookup_keychar(wchar_t Char)
 	}
 
 	// If the character doesn't have an entry, just make a new one
-	std::string tmp = wide_to_utf8(std::wstring(1, Char));
-	char *str = strdup(tmp.c_str());
+	std::string str = wide_to_utf8(std::wstring(1, Char));
 	table_key &key = table.emplace_back(table_key {
 		str, irr::KEY_KEY_CODES_COUNT, Char, str,
 	});
@@ -327,21 +326,21 @@ KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character)
 	};
 }
 
-const char *KeyPress::sym() const
+const std::string &KeyPress::sym() const
 {
-	return m_name.c_str();
+	return m_name;
 }
 
-const char *KeyPress::name() const
+std::string KeyPress::name() const
 {
 	if (m_name.empty())
 		return "";
-	const char *ret;
+	std::string ret;
 	if (valid_kcode(Key))
 		ret = lookup_keykey(Key).LangName;
 	else
 		ret = lookup_keychar(Char).LangName;
-	return ret ? ret : "<Unnamed key>";
+	return ret.empty() ? "<Unnamed key>" : ret;
 }
 
 const KeyPress EscapeKey("KEY_ESCAPE");

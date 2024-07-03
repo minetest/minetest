@@ -28,8 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class UnknownKeycode : public BaseException
 {
 public:
-	UnknownKeycode(const char *s) :
-		BaseException(s) {};
+	UnknownKeycode(const std::string &s): BaseException(s) {}
 };
 
 /* A key press, consisting of either an Irrlicht keycode
@@ -49,8 +48,8 @@ public:
 		return (Char > 0 && Char == o.Char) || (valid_kcode(Key) && Key == o.Key);
 	}
 
-	const char *sym() const;
-	const char *name() const;
+	const std::string &sym() const;
+	std::string name() const;
 
 protected:
 	static bool valid_kcode(irr::EKEY_CODE k)

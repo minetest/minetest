@@ -46,7 +46,7 @@ void TestKeycode::runTests(IGameDef *gamedef)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define UASSERTEQ_STR(one, two) UASSERT(strcmp(one, two) == 0)
+#define UASSERTEQ_STR(one, two) UASSERTEQ(const std::string &, one, two)
 
 void TestKeycode::testCreateFromString()
 {
@@ -55,31 +55,31 @@ void TestKeycode::testCreateFromString()
 	// Character key, from char
 	k = KeyPress("R");
 	UASSERTEQ_STR(k.sym(), "KEY_KEY_R");
-	UASSERTCMP(int, >, strlen(k.name()), 0); // should have human description
+	UASSERTCMP(int, >, k.name().length(), 0); // should have human description
 
 	// Character key, from identifier
 	k = KeyPress("KEY_KEY_B");
 	UASSERTEQ_STR(k.sym(), "KEY_KEY_B");
-	UASSERTCMP(int, >, strlen(k.name()), 0);
+	UASSERTCMP(int, >, k.name().length(), 0);
 
 	// Non-Character key, from identifier
 	k = KeyPress("KEY_UP");
 	UASSERTEQ_STR(k.sym(), "KEY_UP");
-	UASSERTCMP(int, >, strlen(k.name()), 0);
+	UASSERTCMP(int, >, k.name().length(), 0);
 
 	k = KeyPress("KEY_F6");
 	UASSERTEQ_STR(k.sym(), "KEY_F6");
-	UASSERTCMP(int, >, strlen(k.name()), 0);
+	UASSERTCMP(int, >, k.name().length(), 0);
 
 	// Irrlicht-unknown key, from char
 	k = KeyPress("/");
 	UASSERTEQ_STR(k.sym(), "/");
-	UASSERTCMP(int, >, strlen(k.name()), 0);
+	UASSERTCMP(int, >, k.name().length(), 0);
 
 	// Character key, not in the lookup table in keycode.cpp
 	k = KeyPress("ä");
 	UASSERTEQ_STR(k.sym(), "ä");
-	UASSERTCMP(int, >, strlen(k.name()), 0);
+	UASSERTCMP(int, >, k.name().length(), 0);
 }
 
 void TestKeycode::testCreateFromSKeyInput()
