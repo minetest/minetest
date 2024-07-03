@@ -379,7 +379,7 @@ void Clouds::updateMesh()
 
 				// Apply smooth alpha based on distance from center
 				float distance_from_center = std::sqrt(xi * xi + zi * zi);
-				float max_distance = m_cloud_radius_i * 0.8f;
+				float max_distance = m_cloud_radius_i * 1.1f;
 				float alpha = std::max(0.0f, 1.0f - distance_from_center / max_distance);
 				for (auto &vertex : v) {
 					vertex.Color.setAlpha(static_cast<u32>(alpha * 255));
