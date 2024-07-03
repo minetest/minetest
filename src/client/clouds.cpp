@@ -145,11 +145,11 @@ float PerlinNoise2D(float x, float y) {
 	float v = fade(y);
 
 	int A = permutation[X] + Y;
-	int AA = permutation[A];
-	int AB = permutation[A + 1];
+	int AA = permutation[A] & 255;
+	int AB = permutation[A + 1] & 255;
 	int B = permutation[X + 1] + Y;
-	int BA = permutation[B];
-	int BB = permutation[B + 1];
+	int BA = permutation[B] & 255;
+	int BB = permutation[B + 1] & 255;
 
 	// Calculate noise contributions from each corner
 	float gradAA = grad(permutation[AA], x, y);
@@ -162,7 +162,6 @@ float PerlinNoise2D(float x, float y) {
 	float x2 = lerp(u, gradBA, gradBB);
 	return lerp(v, x1, x2);
 }
-
 
 void Clouds::updateMesh()
 {
