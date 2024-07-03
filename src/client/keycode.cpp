@@ -45,7 +45,7 @@ struct table_key {
 
 #define N_(text) text
 
-static const struct table_key table[] = {
+static std::vector<table_key> table = {
 	// Keys that can be reliably mapped between Char and Key
 	DEFINEKEY3(0)
 	DEFINEKEY3(1)
@@ -268,9 +268,13 @@ static const table_key &lookup_keychar(wchar_t Char)
 			return table_key;
 	}
 
-	std::ostringstream os;
-	os << "<Char " << hex_encode((char*) &Char, sizeof(wchar_t)) << ">";
-	throw UnknownKeycode(os.str().c_str());
+	// If the character doesn't have an entry, just make a new one
+	std::string tmp = wide_to_utf8(std::wstring(1, Char));
+	char *str = strdup(tmp.c_str());
+	table_key &key = table.emplace_back(table_key {
+		str, irr::KEY_KEY_CODES_COUNT, Char, str,
+	});
+	return key;
 }
 
 KeyPress::KeyPress(const char *name)
@@ -282,17 +286,7 @@ KeyPress::KeyPress(const char *name)
 		return;
 	}
 
-	if (strlen(name) <= 4) {
-		// Lookup by resulting character
-		int chars_read = mbtowc(&Char, name, 1);
-		FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
-		try {
-			auto &k = lookup_keychar(Char);
-			m_name = k.Name;
-			Key = k.Key;
-			return;
-		} catch (UnknownKeycode &e) {};
-	} else {
+	if (strlen(name) > 4) {
 		// Lookup by name
 		m_name = name;
 		try {
@@ -303,13 +297,16 @@ KeyPress::KeyPress(const char *name)
 		} catch (UnknownKeycode &e) {};
 	}
 
-	// It's not a known key, complain and try to do something
-	Key = irr::KEY_KEY_CODES_COUNT;
-	int chars_read = mbtowc(&Char, name, 1);
-	FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
-	m_name = "";
-	warningstream << "KeyPress: Unknown key '" << name
-		<< "', falling back to first char." << std::endl;
+	// Lookup by resulting character
+	std::wstring wstr = utf8_to_wide(name);
+	sanity_check(!wstr.empty());
+	if (wstr.length() > 1)
+		warningstream << "KeyPress: '" << name << "' is not a known key, but it also isn't a single char. "
+				<< "Only considering the first char." << std::endl;
+	Char = wstr[0];
+	auto &k = lookup_keychar(Char);
+	m_name = k.Name;
+	Key = k.Key;
 }
 
 KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character)

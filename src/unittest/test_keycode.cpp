@@ -75,6 +75,11 @@ void TestKeycode::testCreateFromString()
 	k = KeyPress("/");
 	UASSERTEQ_STR(k.sym(), "/");
 	UASSERTCMP(int, >, strlen(k.name()), 0);
+
+	// Character key, not in the lookup table in keycode.cpp
+	k = KeyPress("ä");
+	UASSERTEQ_STR(k.sym(), "ä");
+	UASSERTCMP(int, >, strlen(k.name()), 0);
 }
 
 void TestKeycode::testCreateFromSKeyInput()
@@ -99,6 +104,12 @@ void TestKeycode::testCreateFromSKeyInput()
 	in.Char = L'?';
 	k = KeyPress(in);
 	UASSERTEQ_STR(k.sym(), "?");
+
+	// Character key, not in the lookup table in keycode.cpp
+	in.Key = irr::KEY_KEY_CODES_COUNT;
+	in.Char = L'ä';
+	k = KeyPress(in);
+	UASSERTEQ_STR(k.sym(), "ä");
 
 	// prefer_character mode
 	in.Key = irr::KEY_COMMA;
