@@ -93,29 +93,35 @@ void Clouds::OnRegisterSceneNode()
 }
 
 // Permutation table
-static const int permutation[] = {151,160,137,91,90,15,
-	131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
-	190, 6, 148, 247, 120, 234, 75, 0, 26, 197, 62, 94, 252, 219, 203, 117, 35, 11,
-	32, 57, 177, 33, 88, 237, 149, 56, 87, 174, 20, 125, 136, 171, 168, 68, 175, 74,
-	165, 71, 134, 139, 48, 27, 166, 77, 146, 158, 231, 83, 111, 229, 122, 60, 211,
-	133, 230, 220, 105, 92, 41, 55, 46, 245, 40, 244, 102, 143, 54, 65, 25, 63, 161,
-	1, 216, 80, 73, 209, 76, 132, 187, 208, 89, 18, 169, 200, 196, 135, 130, 116,
-	188, 159, 86, 164, 100, 109, 198, 173, 186, 3, 64, 52, 217, 226, 250, 124, 123,
-	5, 202, 38, 147, 118, 126, 255, 82, 85, 212, 207, 206, 59, 227, 47, 16, 58, 17,
- 	182, 189, 28, 42, 223, 183, 170, 213, 119, 248, 152, 2, 44, 154, 163, 70, 221,
-	153, 101, 155, 167, 43, 172, 9, 129, 22, 39, 253, 19, 98, 108,  // Repeat permutation table
-	119, 248, 152, 2, 44, 154, 163, 70, 221, 153, 101, 155, 167, 43, 172, 9, 129, 22, 39, 253, 19, 98, 108 };
+static const int permutation[] = {
+	151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
+	190, 6, 148, 247, 120, 234, 75, 0, 26, 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33, 88,
+	237, 149, 56, 87, 174, 20, 125, 136, 171, 168, 68, 175, 74, 165, 71, 134, 139, 48, 27, 166, 77, 146,
+	158, 231, 83, 111, 229, 122, 60, 211, 133, 230, 220, 105, 92, 41, 55, 46, 245, 40, 244, 102, 143, 54,
+	65, 25, 63, 161, 1, 216, 80, 73, 209, 76, 132, 187, 208, 89, 18, 169, 200, 196, 135, 130, 116, 188, 159,
+	86, 164, 100, 109, 198, 173, 186, 3, 64, 52, 217, 226, 250, 124, 123, 5, 202, 38, 147, 118, 126, 255, 82,
+	85, 212, 207, 206, 59, 227, 47, 16, 58, 17, 182, 189, 28, 42, 223, 183, 170, 213, 119, 248, 152, 2, 44,
+	154, 163, 70, 221, 153, 101, 155, 167, 43, 172, 9, 129, 22, 39, 253, 19, 98, 108, 151,160,137,91,90,15,
+	131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,190, 6, 148, 247, 120, 234,
+	75, 0, 26, 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33, 88, 237, 149, 56, 87, 174, 20, 125,
+	136, 171, 168, 68, 175, 74, 165, 71, 134, 139, 48, 27, 166, 77, 146, 158, 231, 83, 111, 229, 122, 60, 211,
+	133, 230, 220, 105, 92, 41, 55, 46, 245, 40, 244, 102, 143, 54, 65, 25, 63, 161, 1, 216, 80, 73, 209, 76,
+	132, 187, 208, 89, 18, 169, 200, 196, 135, 130, 116, 188, 159, 86, 164, 100, 109, 198, 173, 186, 3, 64, 52,
+	217, 226, 250, 124, 123, 5, 202, 38, 147, 118, 126, 255, 82, 85, 212, 207, 206, 59, 227, 47, 16, 58, 17,
+	182, 189, 28, 42, 223, 183, 170, 213, 119, 248, 152, 2, 44, 154, 163, 70, 221, 153, 101, 155, 167, 43,
+	172, 9, 129, 22, 39, 253, 19, 98, 108
+};
 
 // Fade function for smooth interpolation
 inline float fade(float t) {
-	return t * t * t * (t * (t * 6 - 40) + 10);
+	return t * t * t * (t * (t * 6 - 15) + 10);
 }
 
 // Gradient function to compute dot product of gradient vectors and distance vectors
 inline float grad(int hash, float x, float y) {
 	int h = hash & 15;
-	float u = h < 8 ? x : y,
-		v = h < 4 ? y : h == 12 || h == 14 ? x : 0;
+	float u = h < 8 ? x : y;
+	float v = h < 4 ? y : (h == 12 || h == 14 ? x : 0);
 	return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
 }
 
@@ -126,7 +132,7 @@ inline float lerp(float t, float a, float b) {
 
 // Perlin noise function
 float PerlinNoise2D(float x, float y) {
-	//  Determine grid cell coordinates
+	// Determine grid cell coordinates
 	int X = (int)std::floor(x) & 255;
 	int Y = (int)std::floor(y) & 255;
 
@@ -156,6 +162,7 @@ float PerlinNoise2D(float x, float y) {
 	float x2 = lerp(u, gradBA, gradBB);
 	return lerp(v, x1, x2);
 }
+
 
 void Clouds::updateMesh()
 {
@@ -381,10 +388,8 @@ void Clouds::updateMesh()
 
 				v3f pos(p0.X, m_params.height * BS, p0.Y);
 				for (video::S3DVertex &vertex : v) {
-				//	vertex.Pos += pos;
-				//	mb->Vertices.push_back(vertex);
-					vertex.Color = c_bottom;
-					vertex.Normal.set(0,-1,0);
+					vertex.Pos += pos;
+					mb->Vertices.push_back(vertex);
 				}
 			}
 		}
@@ -394,8 +399,8 @@ void Clouds::updateMesh()
 
 	const u32 quad_count = mb->getVertexCount() / 4;
 	const u32 index_count = quad_count * 6;
-
 	// Rewrite index array as needed
+	
 	if (mb->getIndexCount() > index_count) {
 		mb->Indices.set_used(index_count);
 		mb->setDirty(scene::EBT_INDEX);
@@ -407,7 +412,7 @@ void Clouds::updateMesh()
 			mb->Indices.push_back(4 * k + 1);
 			mb->Indices.push_back(4 * k + 2);
 			mb->Indices.push_back(4 * k + 2);
- 			mb->Indices.push_back(4 * k + 3);
+			mb->Indices.push_back(4 * k + 3);
 			mb->Indices.push_back(4 * k + 0);
 		}
 		mb->setDirty(scene::EBT_INDEX);
