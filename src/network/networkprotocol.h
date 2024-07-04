@@ -540,9 +540,9 @@ enum ToClientCommand : u16
 		range<f32> bounce
 
 		texture {
-			u8 flags
+			u8 flags (ParticleTextureFlags)
 			-- bit 0: animated
-			-- next bits: blend mode
+			-- next bits: blend mode (BlendMode)
 			tween<f32> alpha
 			tween<v2f> scale
 		}
@@ -614,9 +614,9 @@ enum ToClientCommand : u16
 		}
 
 		texture {
-			u8 flags
+			u8 flags (ParticleTextureFlags)
 			-- bit 0: animated
-			-- next bits: blend mode
+			-- next bits: blend mode (BlendMode)
 			tween<f32> alpha
 			tween<v2f> scale
 
@@ -656,9 +656,9 @@ enum ToClientCommand : u16
 
 		u16 texpool_size
 		texpool_size.times {
-			u8 flags
+			u8 flags (ParticleTextureFlags)
 			-- bit 0: animated
-			-- next bits: blend mode
+			-- next bits: blend mode (BlendMode)
 			tween<f32> alpha
 			tween<v2f> scale
 
