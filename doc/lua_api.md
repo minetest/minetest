@@ -3846,6 +3846,9 @@ vectors are written like this: `(x, y, z)`:
     * If `p1` and `p2` are identical, returns `(0, 0, 0)`.
 * `vector.distance(p1, p2)`:
     * Returns zero or a positive number, the distance between `p1` and `p2`.
+* `vector.sq_distance(p1, p2)`:
+    * Returns zero or a positive number, the squared distance between `p1` and `p2`.
+      This is slightly faster than the full distance computation.
 * `vector.length(v)`:
     * Returns zero or a positive number, the length of vector `v`.
 * `vector.normalize(v)`:
