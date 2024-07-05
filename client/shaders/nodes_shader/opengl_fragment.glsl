@@ -535,12 +535,12 @@ void main(void)
 #if (defined(ENABLE_NODE_SPECULAR) && !defined(MATERIAL_WAVING_LIQUID))
 		// Apply specular to blocks.
 		if (dot(v_LightDirection, vNormal) < 0.0) {
-			float intensity = 5.0 * (1.0 - (base.r * varColor.r));
+			float intensity = 2.0 * (1.0 - (base.r * varColor.r));
 			const float specular_exponent = 5.0;
 			const float fresnel_exponent =  4.0;
 
 			col.rgb += 
-				dayLight * (1.0 - nightRatio) * (1.0 - shadow_uncorrected) * f_adj_shadow_strength *
+				intensity * dayLight * (1.0 - nightRatio) * (1.0 - shadow_uncorrected) * f_adj_shadow_strength *
 				pow(max(dot(reflect_ray, viewVec), 0.0), fresnel_exponent) * pow(1.0 - abs(dot(viewVec, fNormal)), specular_exponent);
 		}
 #endif
