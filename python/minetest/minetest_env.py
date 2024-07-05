@@ -600,14 +600,20 @@ class MinetestEnv(gym.Env):
         remote_input_addr = self.socket_addr
         if ":" not in remote_input_addr:
             remote_input_addr = f"unix:{remote_input_addr}"
-        cmd = [
-            self.executable,
-            "--go",  # skip menu
-            "--config",
-            self.config_path,
-            "--remote-input",
-            remote_input_addr,
-        ]
+        cmd = []
+        # vglrun is the only way we've gotten accelerated OpenGL in containers.
+        if self.headless and shutil.which("vglrun"):
+            cmd.append("vglrun")
+        cmd.extend(
+            [
+                self.executable,
+                "--go",  # skip menu
+                "--config",
+                self.config_path,
+                "--remote-input",
+                remote_input_addr,
+            ]
+        )
         if self.verbose_logging:
             cmd.append("--verbose")
         if self.world_dir is not None:
