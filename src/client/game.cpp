@@ -383,9 +383,18 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 		m_animation_timer_delta_pixel{"animationTimerDelta"};
 	CachedPixelShaderSetting<float, 3> m_artificial_light{ "artificialLight" };
 	CachedPixelShaderSetting<float, 3> m_day_light{"dayLight"};
+	CachedPixelShaderSetting<float, 3> m_eye_position_pixel{ "eyePosition" };
+	CachedVertexShaderSetting<float, 3> m_eye_position_vertex{ "eyePosition" };
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
 	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel{"cameraOffset"};
 	CachedVertexShaderSetting<float, 3> m_camera_offset_vertex{"cameraOffset"};
+	CachedPixelShaderSetting<float, 3> m_camera_position_pixel{"cameraPosition"};
+	CachedVertexShaderSetting<float, 16> m_camera_projinv_vertex{"mCameraProjInv"};
+	CachedPixelShaderSetting<float, 16> m_camera_projinv_pixel{"mCameraProjInv"};
+	CachedVertexShaderSetting<float, 16> m_camera_view_vertex{"mCameraView"};
+	CachedPixelShaderSetting<float, 16> m_camera_view_pixel{"mCameraView"};
+	CachedPixelShaderSetting<float> m_camera_near_pixel{"cameraNear"};
+	CachedPixelShaderSetting<float> m_camera_far_pixel{"cameraFar"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture0{"texture0"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture1{"texture1"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture2{"texture2"};
@@ -408,6 +417,9 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	float m_bloom_strength;
 	CachedPixelShaderSetting<float> m_bloom_radius_pixel{"bloomRadius"};
 	float m_bloom_radius;
+	CachedPixelShaderSetting<float> m_cloud_height_pixel{"cloudHeight"};
+	CachedPixelShaderSetting<float> m_cloud_thickness_pixel{"cloudThickness"};
+	CachedPixelShaderSetting<float> m_cloud_density_pixel{"cloudDensity"};
 	CachedPixelShaderSetting<float> m_saturation_pixel{"saturation"};
 	float m_gamma;
 	CachedPixelShaderSetting<float> m_gamma_pixel{"gamma"};
@@ -489,6 +501,10 @@ public:
 		m_animation_timer_delta_vertex.set(&animation_timer_delta_f, services);
 		m_animation_timer_delta_pixel.set(&animation_timer_delta_f, services);
 
+		v3f epos = m_client->getEnv().getLocalPlayer()->getEyePosition();
+		m_eye_position_pixel.set(epos, services);
+		m_eye_position_vertex.set(epos, services);
+
 		if (m_client->getMinimap()) {
 			v3f minimap_yaw = m_client->getMinimap()->getYawVec();
 			m_minimap_yaw.set(minimap_yaw, services);
@@ -497,6 +513,24 @@ public:
 		v3f offset = intToFloat(m_client->getCamera()->getOffset(), BS);
 		m_camera_offset_pixel.set(offset, services);
 		m_camera_offset_vertex.set(offset, services);
+
+		v3f camera_position = m_client->getCamera()->getPosition();
+		m_camera_position_pixel.set(camera_position, services);
+
+		core::matrix4 camera_proj = m_client->getCamera()->getCameraNode()->getProjectionMatrix();
+		core::matrix4 camera_projinv;
+		camera_proj.getInverse(camera_projinv);
+		m_camera_projinv_vertex.set(camera_projinv, services);
+		m_camera_projinv_pixel.set(camera_projinv, services);
+
+		core::matrix4 camera_view = m_client->getCamera()->getCameraNode()->getViewMatrix();
+		m_camera_view_vertex.set(camera_view, services);
+		m_camera_view_pixel.set(camera_view, services);
+
+		float camera_near = m_client->getCamera()->getCameraNode()->getNearValue();
+		m_camera_near_pixel.set(&camera_near, services);
+		float camera_far = m_client->getCamera()->getCameraNode()->getFarValue();
+		m_camera_far_pixel.set(&camera_far, services);
 
 		SamplerLayer_t tex_id;
 		tex_id = 0;
@@ -536,6 +570,17 @@ public:
 		m_saturation_pixel.set(&saturation, services);
 		video::SColorf artificial_light = lighting.artificial_light_color;
 		m_artificial_light.set(artificial_light, services);
+
+		// TODO: settings
+		Clouds* clouds = m_client->getClouds();
+		if (m_client->getClouds()) {
+			float cloud_height = clouds->getHeight() * 10.0f;
+			m_cloud_height_pixel.set(&cloud_height, services);
+			float cloud_thickness = clouds->getThickness() * 10.0f;
+			m_cloud_thickness_pixel.set(&cloud_thickness, services);
+			float cloud_density = clouds->getDensity();
+			m_cloud_density_pixel.set(&cloud_density, services);
+		}
 
 		if (m_volumetric_light_enabled) {
 			// Map directional light to screen space

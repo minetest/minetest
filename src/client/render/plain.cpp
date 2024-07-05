@@ -66,11 +66,6 @@ void DrawHUD::run(PipelineContext &context)
 		context.client->getCamera()->drawNametags();
 	}
 	context.device->getGUIEnvironment()->drawAll();
-
-	// TODO: proper settings
-	if (true && context.client->getClouds()) {
-		context.client->getClouds()->renderVolumetrics();
-	}
 }
 
 

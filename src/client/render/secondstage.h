@@ -49,6 +49,9 @@ public:
 	 * @param value true to enable the bilinear filter, false to disable
 	 */
 	void setBilinearFilter(u8 index, bool value);
+
+	void setWrapRepeat(u8 index, bool value);
+
 private:
 	u32 shader_id;
 	std::vector<u8> texture_map;

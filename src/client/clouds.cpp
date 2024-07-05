@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include <cmath>
 
-
 // Menu clouds are created later
 class Clouds;
 Clouds *g_menuclouds = NULL;
@@ -344,6 +343,7 @@ void Clouds::updateMesh()
 
 void Clouds::render()
 {
+#if 0
 	if (m_params.density <= 0.0f)
 		return; // no need to do anything
 
@@ -394,13 +394,7 @@ void Clouds::render()
 	// Restore fog settings
 	driver->setFog(fog_color, fog_type, fog_start, fog_end, fog_density,
 			fog_pixelfog, fog_rangefog);
-}
-
-void Clouds::renderVolumetrics() {
-	video::IVideoDriver* driver = SceneManager->getVideoDriver();
-	v2u32 ss = driver->getScreenSize();
-	core::rect<s32> rect(0, 0, ss.X, ss.Y);
-	driver->draw2DRectangle(video::SColor(255, 255, 255, 255), rect);
+#endif
 }
 
 void Clouds::step(float dtime)

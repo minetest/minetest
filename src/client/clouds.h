@@ -52,8 +52,6 @@ public:
 
 	virtual void render();
 
-	void renderVolumetrics();
-
 	virtual const aabb3f &getBoundingBox() const
 	{
 		return m_box;
@@ -93,6 +91,10 @@ public:
 		invalidateMesh();
 	}
 
+	float getDensity() const {
+		return m_params.density;
+	}
+
 	void setColorBright(video::SColor color_bright)
 	{
 		m_params.color_bright = color_bright;
@@ -112,6 +114,10 @@ public:
 		invalidateMesh();
 	}
 
+	float getHeight() const {
+		return m_params.height;
+	}
+
 	void setSpeed(v2f speed)
 	{
 		m_params.speed = speed;
@@ -124,6 +130,10 @@ public:
 		m_params.thickness = thickness;
 		updateBox();
 		invalidateMesh();
+	}
+
+	float getThickness() const {
+		return m_params.thickness;
 	}
 
 	bool isCameraInsideCloud() const { return m_camera_inside_cloud; }
@@ -147,7 +157,7 @@ private:
 
 	bool gridFilled(int x, int y) const;
 
-	video::SMaterial m_volume_material;
+	video::ITexture *m_density_texture = nullptr;
 
 	video::SMaterial m_material;
 	irr_ptr<scene::SMeshBuffer> m_meshbuffer;

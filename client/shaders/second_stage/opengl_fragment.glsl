@@ -163,7 +163,7 @@ void main(void)
 		// Filter out blue pixels, because the color grading tends to wash them out.
 		float blue_factor = clamp((color.b - max(color.r, color.g)) / max(0.01, min(color.r, color.g)), 0.0, 1.0);
 
-		color.rgb = mix(color.rgb, pow(color.rgb * slope, power), pow(1. - blue_factor, 4.));
+		color.rgb = mix(color.rgb, pow(color.rgb * slope, power), 1.);
 #endif
 		color.rgb = applySaturation(color.rgb, saturation);
 	}
