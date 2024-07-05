@@ -66,8 +66,12 @@ void sendAnnounce(AnnounceAction action,
 		server["clients"]      = (int) clients_names.size();
 		server["clients_max"]  = g_settings->getU16("max_users");
 		server["clients_list"] = Json::Value(Json::arrayValue);
-		for (const std::string &clients_name : clients_names) {
-			server["clients_list"].append(clients_name);
+		for (std::size_t i = 0; i < clients_names.size(); i++) {
+			if (g_settings->getBool("server_anon_name")) {
+				server["clients_list"].append("anon" + std::to_string(i));
+			} else {
+				server["clients_list"].append(clients_names[i]);
+			}
 		}
 		if (!gameid.empty())
 			server["gameid"] = gameid;
