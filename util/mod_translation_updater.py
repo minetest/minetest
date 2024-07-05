@@ -458,7 +458,7 @@ def generate_template(folder, mod_name):
 				dOut[s] = sources
 
 	if len(dOut) == 0:
-		return None
+		return (None, None)
 
 	# Convert source file set to list, sort it and add comment symbols.
 	# Needed because a set is unsorted and might result in unpredictable.

@@ -2352,8 +2352,11 @@ for this group, and unable to dig the rating `1`, which is the toughest.
 Unless there is a matching group that enables digging otherwise.
 
 If the result digging time is 0, a delay of 0.15 seconds is added between
-digging nodes; If the player releases LMB after digging, this delay is set to 0,
+digging nodes. If the player releases LMB after digging, this delay is set to 0,
 i.e. players can more quickly click the nodes away instead of holding LMB.
+
+This extra delay is not applied in case of a digging time between 0 and 0.15,
+so a digging time of 0.01 is actually faster than a digging time of 0.
 
 ### Damage groups
 
@@ -3245,7 +3248,7 @@ Elements
 * Types: `text`, `image`, `color`, `indent`, `tree`
     * `text`:   show cell contents as text
     * `image`:  cell contents are an image index, use column options to define
-                images.
+                images. images are scaled down to fit the row height if necessary.
     * `color`:  cell contents are a ColorString and define color of following
                 cell.
     * `indent`: cell contents are a number and define indentation of following
@@ -3266,7 +3269,7 @@ Elements
         * `0=<value>` sets image for image index 0
         * `1=<value>` sets image for image index 1
         * `2=<value>` sets image for image index 2
-        * and so on; defined indices need not be contiguous empty or
+        * and so on; defined indices need not be contiguous. empty or
           non-numeric cells are treated as `0`.
     * `color` column options:
         * `span=<value>`: number of following columns to affect
@@ -6130,12 +6133,24 @@ Environment access
     * Items can be added also to unloaded and non-generated blocks.
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
     * Returns nothing in case of error (player offline, doesn't exist, ...).
-* `minetest.get_objects_inside_radius(pos, radius)`
-    * returns a list of ObjectRefs.
+* `minetest.get_objects_inside_radius(center, radius)`
+    * returns a list of ObjectRefs
     * `radius`: using a Euclidean metric
-* `minetest.get_objects_in_area(pos1, pos2)`
-    * returns a list of ObjectRefs.
-    * `pos1` and `pos2` are the min and max positions of the area to search.
+    * **Warning**: Any kind of interaction with the environment or other APIs
+      can cause later objects in the list to become invalid while you're iterating it.
+      (e.g. punching an entity removes its children)
+      It is recommended to use `minetest.objects_inside_radius` instead, which
+      transparently takes care of this possibility.
+* `minetest.objects_inside_radius(center, radius)`
+    * returns an iterator of valid objects
+    * example: `for obj in minetest.objects_inside_radius(center, radius) do obj:punch(...) end`
+* `minetest.get_objects_in_area(min_pos, max_pos)`
+    * returns a list of ObjectRefs
+    * `min_pos` and `max_pos` are the min and max positions of the area to search
+    * **Warning**: The same warning as for `minetest.get_objects_inside_radius` applies.
+      Use `minetest.objects_in_area` instead to iterate only valid objects.
+* `minetest.objects_in_area(min_pos, max_pos)`
+	* returns an iterator of valid objects
 * `minetest.set_timeofday(val)`: set time of day
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
 * `minetest.get_timeofday()`: get time of day
@@ -6727,6 +6742,7 @@ This allows you easy interoperability for delegating work to jobs.
 ### List of APIs available in an async environment
 
 Classes:
+
 * `AreaStore`
 * `ItemStack`
 * `PerlinNoise`
@@ -6740,17 +6756,20 @@ Classes:
 * `Settings`
 
 Class instances that can be transferred between environments:
+
 * `ItemStack`
 * `PerlinNoise`
 * `PerlinNoiseMap`
 * `VoxelManip`
 
 Functions:
+
 * Standalone helpers such as logging, filesystem, encoding,
   hashing or compression APIs
 * `minetest.register_async_metatable` (see above)
 
 Variables:
+
 * `minetest.settings`
 * `minetest.registered_items`, `registered_nodes`, `registered_tools`,
   `registered_craftitems` and `registered_aliases`
@@ -6802,6 +6821,7 @@ does not have a global step or timer.
 ### List of APIs available in the mapgen env
 
 Classes:
+
 * `AreaStore`
 * `ItemStack`
 * `PerlinNoise`
@@ -6815,6 +6835,7 @@ Classes:
 * `Settings`
 
 Functions:
+
 * Standalone helpers such as logging, filesystem, encoding,
   hashing or compression APIs
 * `minetest.get_biome_id`, `get_biome_name`, `get_heat`, `get_humidity`,
@@ -6825,6 +6846,7 @@ Functions:
     * these only operate on the current chunk (if inside a callback)
 
 Variables:
+
 * `minetest.settings`
 * `minetest.registered_items`, `registered_nodes`, `registered_tools`,
   `registered_craftitems` and `registered_aliases`
@@ -7797,12 +7819,17 @@ When you receive an `ObjectRef` as a callback argument or from another API
 function, it is possible to store the reference somewhere and keep it around.
 It will keep functioning until the object is unloaded or removed.
 
-However, doing this is **NOT** recommended as there is (intentionally) no method
-to test if a previously acquired `ObjectRef` is still valid.
-Instead, `ObjectRefs` should be "let go" of as soon as control is returned from
-Lua back to the engine.
+However, doing this is **NOT** recommended - `ObjectRefs` should be "let go"
+of as soon as control is returned from Lua back to the engine.
+
 Doing so is much less error-prone and you will never need to wonder if the
 object you are working with still exists.
+
+If this is not feasible, you can test whether an `ObjectRef` is still valid
+via `object:is_valid()`.
+
+Getters may be called for invalid objects and will return nothing then.
+All other methods should not be called on invalid objects.
 
 ### Attachments
 
@@ -7822,6 +7849,8 @@ child will follow movement and rotation of that bone.
 
 ### Methods
 
+* `is_valid()`: returns whether the object is valid.
+   * See "Advice on handling `ObjectRefs`" above.
 * `get_pos()`: returns position as vector `{x=num, y=num, z=num}`
 * `set_pos(pos)`:
     * Sets the position of the object.
@@ -10654,7 +10683,10 @@ Used by `minetest.add_particle`.
     texture = "image.png",
     -- The texture of the particle
     -- v5.6.0 and later: also supports the table format described in the
-    -- following section
+    -- following section, but due to a bug this did not take effect
+    -- (beyond the texture name).
+    -- v5.9.0 and later: fixes the bug.
+    -- Note: "texture.animation" is ignored here. Use "animation" below instead.
 
     playername = "singleplayer",
     -- Optional, if specified spawns particle only on the player's client

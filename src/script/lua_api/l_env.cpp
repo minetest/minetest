@@ -155,6 +155,7 @@ void LuaLBM::trigger(ServerEnvironment *env, v3s16 p,
 int LuaRaycast::l_next(lua_State *L)
 {
 	GET_PLAIN_ENV_PTR;
+	ServerEnvironment *senv = dynamic_cast<ServerEnvironment*>(env);
 
 	bool csm = false;
 #ifndef SERVER
@@ -163,7 +164,17 @@ int LuaRaycast::l_next(lua_State *L)
 
 	LuaRaycast *o = checkObject<LuaRaycast>(L, 1);
 	PointedThing pointed;
-	env->continueRaycast(&o->state, &pointed);
+	for (;;) {
+		env->continueRaycast(&o->state, &pointed);
+		if (pointed.type != POINTEDTHING_OBJECT)
+			break;
+		if (!senv)
+			break;
+		const auto *obj = senv->getActiveObject(pointed.object_id);
+		if (obj && !obj->isGone())
+			break;
+		// skip gone object
+	}
 	if (pointed.type == POINTEDTHING_NOTHING)
 		lua_pushnil(L);
 	else

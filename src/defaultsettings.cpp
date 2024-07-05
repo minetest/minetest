@@ -359,7 +359,7 @@ void set_default_settings()
 	settings->setDefault("invert_hotbar_mouse_wheel", "false");
 	settings->setDefault("mouse_sensitivity", "0.2");
 	settings->setDefault("repeat_place_time", "0.25");
-	settings->setDefault("repeat_dig_time", "0.15");
+	settings->setDefault("repeat_dig_time", "0.0");
 	settings->setDefault("safe_dig_and_place", "false");
 	settings->setDefault("random_input", "false");
 	settings->setDefault("aux1_descends", "false");

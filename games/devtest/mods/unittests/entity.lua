@@ -71,13 +71,13 @@ local function test_entity_lifecycle(_, pos)
 
 	-- with binary in staticdata
 	local obj = core.add_entity(pos, "unittests:callbacks", "abc\000def")
+	assert(obj and obj:is_valid())
 	check_log({"on_activate(7)"})
 
 	obj:set_hp(0)
 	check_log({"on_death(nil)", "on_deactivate(true)"})
 
-	-- objectref must be invalid now
-	assert(obj:get_velocity() == nil)
+	assert(not obj:is_valid())
 end
 unittests.register("test_entity_lifecycle", test_entity_lifecycle, {map=true})
 
@@ -130,3 +130,57 @@ local function test_entity_attach(player, pos)
 	obj:remove()
 end
 unittests.register("test_entity_attach", test_entity_attach, {player=true, map=true})
+
+core.register_entity("unittests:dummy", {
+	initial_properties = {
+		hp_max = 1,
+		visual = "upright_sprite",
+		textures = { "no_texture.png" },
+		static_save = false,
+	},
+})
+
+local function test_entity_raycast(_, pos)
+	local obj1 = core.add_entity(pos, "unittests:dummy")
+	local obj2 = core.add_entity(pos:offset(1, 0, 0), "unittests:dummy")
+	local raycast = core.raycast(pos:offset(-1, 0, 0), pos:offset(2, 0, 0), true, false)
+	for pt in raycast do
+		if pt.type == "object" then
+			assert(pt.ref == obj1)
+			obj1:remove()
+			obj2:remove()
+			obj1 = nil -- object should be hit exactly one
+		end
+	end
+	assert(obj1 == nil)
+end
+unittests.register("test_entity_raycast", test_entity_raycast, {map=true})
+
+local function test_object_iterator(pos, make_iterator)
+	local obj1 = core.add_entity(pos, "unittests:dummy")
+	local obj2 = core.add_entity(pos, "unittests:dummy")
+	assert(obj1 and obj2)
+	local found = false
+	-- As soon as we find one of the objects, we remove both, invalidating the other.
+	for obj in make_iterator() do
+		assert(obj:is_valid())
+		if obj == obj1 or obj == obj2 then
+			obj1:remove()
+			obj2:remove()
+			found = true
+		end
+	end
+	assert(found)
+end
+
+unittests.register("test_objects_inside_radius", function(_, pos)
+	test_object_iterator(pos, function()
+		return core.objects_inside_radius(pos, 1)
+	end)
+end, {map=true})
+
+unittests.register("test_objects_in_area", function(_, pos)
+	test_object_iterator(pos, function()
+		return core.objects_in_area(pos:offset(-1, -1, -1), pos:offset(1, 1, 1))
+	end)
+end, {map=true})

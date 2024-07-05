@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_object.h"
 #include <cmath>
+#include <lua.h>
 #include "lua_api/l_internal.h"
 #include "lua_api/l_inventory.h"
 #include "lua_api/l_item.h"
@@ -104,6 +105,13 @@ int ObjectRef::l_remove(lua_State *L)
 	verbosestream << "ObjectRef::l_remove(): id=" << sao->getId() << std::endl;
 	sao->markForRemoval();
 	return 0;
+}
+
+// is_valid(self)
+int ObjectRef::l_is_valid(lua_State *L)
+{
+	lua_pushboolean(L, getobject(checkObject<ObjectRef>(L, 1)) != nullptr);
+	return 1;
 }
 
 // get_pos(self)
@@ -2646,6 +2654,7 @@ const char ObjectRef::className[] = "ObjectRef";
 luaL_Reg ObjectRef::methods[] = {
 	// ServerActiveObject
 	luamethod(ObjectRef, remove),
+	luamethod(ObjectRef, is_valid),
 	luamethod_aliased(ObjectRef, get_pos, getpos),
 	luamethod_aliased(ObjectRef, set_pos, setpos),
 	luamethod(ObjectRef, add_pos),
