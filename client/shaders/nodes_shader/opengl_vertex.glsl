@@ -1,7 +1,6 @@
 uniform mat4 mWorld;
 // Color of the light emitted by the sun.
 uniform vec3 dayLight;
-uniform vec3 eyePosition;
 
 // The cameraOffset is the current center of the visible world.
 uniform highp vec3 cameraOffset;
@@ -44,7 +43,6 @@ centroid varying vec2 varTexCoord;
 
 varying float area_enable_parallax;
 
-varying vec3 viewVec;
 varying highp vec3 eyeVec;
 varying float nightRatio;
 // Color of the light emitted by the light sources.
@@ -233,8 +231,6 @@ void main(void)
 #else
 		vec4 shadow_pos = pos;
 #endif
-		viewVec = normalize(worldPosition + cameraOffset - eyePosition);
-
 		vec3 nNormal;
 		f_normal_length = length(vNormal);
 

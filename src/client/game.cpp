@@ -382,11 +382,11 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float>
 		m_animation_timer_delta_pixel{"animationTimerDelta"};
 	CachedPixelShaderSetting<float, 3> m_day_light{"dayLight"};
-	CachedPixelShaderSetting<float, 3> m_eye_position_pixel{ "eyePosition" };
-	CachedVertexShaderSetting<float, 3> m_eye_position_vertex{ "eyePosition" };
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
 	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel{"cameraOffset"};
 	CachedVertexShaderSetting<float, 3> m_camera_offset_vertex{"cameraOffset"};
+	CachedPixelShaderSetting<float, 3> m_camera_position_pixel{ "cameraPosition" };
+	CachedVertexShaderSetting<float, 3> m_camera_position_vertex{ "cameraPosition" };
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture0{"texture0"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture1{"texture1"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture2{"texture2"};
@@ -484,10 +484,6 @@ public:
 		m_animation_timer_delta_vertex.set(&animation_timer_delta_f, services);
 		m_animation_timer_delta_pixel.set(&animation_timer_delta_f, services);
 
-		v3f epos = m_client->getEnv().getLocalPlayer()->getEyePosition();
-		m_eye_position_pixel.set(epos, services);
-		m_eye_position_vertex.set(epos, services);
-
 		if (m_client->getMinimap()) {
 			v3f minimap_yaw = m_client->getMinimap()->getYawVec();
 			m_minimap_yaw.set(minimap_yaw, services);
@@ -496,6 +492,10 @@ public:
 		v3f offset = intToFloat(m_client->getCamera()->getOffset(), BS);
 		m_camera_offset_pixel.set(offset, services);
 		m_camera_offset_vertex.set(offset, services);
+
+		v3f camera_position = m_client->getCamera()->getPosition();
+		m_camera_position_pixel.set(camera_position, services);
+		m_camera_position_pixel.set(camera_position, services);
 
 		SamplerLayer_t tex_id;
 		tex_id = 0;

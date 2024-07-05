@@ -11,6 +11,7 @@ uniform float fogShadingParameter;
 
 // The cameraOffset is the current center of the visible world.
 uniform highp vec3 cameraOffset;
+uniform vec3 cameraPosition;
 uniform float animationTimer;
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	// shadow texture
@@ -50,8 +51,6 @@ centroid varying vec2 varTexCoord;
 #endif
 varying highp vec3 eyeVec;
 varying float nightRatio;
-
-varying vec3 viewVec;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 #if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS) && ENABLE_WAVING_WATER)
@@ -501,6 +500,8 @@ void main(void)
 
 
 		vec3 reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.0);
+
+		vec3 viewVec = normalize(worldPosition + cameraOffset - cameraPosition);
 
 		// Water reflections
 #if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS) && ENABLE_WAVING_WATER)

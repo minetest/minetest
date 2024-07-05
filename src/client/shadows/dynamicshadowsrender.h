@@ -93,7 +93,7 @@ public:
 	bool is_active() const { return m_shadows_enabled && shadowMapTextureFinal != nullptr; }
 	void setTimeOfDay(float isDay) { m_time_day = isDay; };
 	void setShadowIntensity(float shadow_intensity);
-	void setShadowTint(video::SColor shadow_intensity);
+	void setShadowTint(video::SColor shadow_tint) { m_shadow_tint = shadow_tint; }
 
 	s32 getShadowSamples() const { return m_shadow_samples; }
 	float getShadowStrength() const { return m_shadows_enabled ? m_shadow_strength : 0.0f; }
