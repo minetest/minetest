@@ -10,6 +10,14 @@
 #include "ILogger.h"
 #include "ITimer.h"
 
+#if defined(__GNUC__)
+#define UNREACHABLE __builtin_unreachable();
+#elif defined(_MSC_VER)
+#define UNREACHABLE __assume(false);
+#else
+#define UNREACHABLE std::abort();
+#endif
+
 namespace irr
 {
 

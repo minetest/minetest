@@ -107,12 +107,7 @@ static const VertexType &getVertexTypeDescription(E_VERTEX_TYPE type)
 		return vtTangents;
 	default:
 		assert(false);
-		std::abort();
-#ifdef __GNUC__
-		__builtin_unreachable();
-#elif defined(_MSC_VER)
-		__assume(false);
-#endif	
+		UNREACHABLE;
 	}
 }
 
