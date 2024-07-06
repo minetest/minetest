@@ -68,11 +68,32 @@ typedef int socklen_t;
 typedef int socket_t;
 #endif
 
+const char* adv_multicast_addr = "224.1.1.1";
 const static unsigned short int adv_port = 29998;
 static std::string ask_str;
 
+bool use_ipv6 = true;
+
 lan_adv::lan_adv() : Thread("lan_adv")
 {
+}
+
+lan_adv::~lan_adv() 
+{
+	if (!stopRequested()) {
+		stop();
+		warningstream << "Thread Had to be forced to stop correctly." << std::endl;
+	} 
+
+	if (stopRequested()) warningstream << "Lan Adv Thread is stopping." << std::endl;
+
+	if (server_port) {
+		Json::Value answer_json;
+		answer_json["port"] = server_port;
+		answer_json["cmd"] = "shutdown";
+		send_string(fastWriteJson(answer_json));
+		warningstream << "Server shut down message sent." << std::endl;
+	}
 }
 
 void lan_adv::ask()
@@ -94,18 +115,33 @@ void lan_adv::send_string(const std::string &str)
 		sockaddr_in addr = {};
 		addr.sin_family = AF_INET;
 		addr.sin_port = htons(adv_port);
-		addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
 		UDPSocket socket_send(false);
-		int set_option_on = 1;
-		setsockopt(socket_send.GetHandle(), SOL_SOCKET, SO_BROADCAST,
-				(const char *)&set_option_on, sizeof(set_option_on));
+
+		// Full discloser, the use of inet_proto and the mreq stucture 
+		// were suggested by ai.
+
+		inet_pton(AF_INET, adv_multicast_addr, &(addr.sin_addr));
+
+		struct ip_mreq mreq;
+
+		mreq.imr_multiaddr.s_addr = inet_addr(adv_multicast_addr);
+		mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+		
+
+		setsockopt(socket_send.GetHandle(), IPPROTO_IP, IP_ADD_MEMBERSHIP,
+				(const char *)&mreq, sizeof(mreq));
+
+		//int set_option_on = 2;
+		//setsockopt(socket_send.GetHandle(), SOL_SOCKET, IP_MULTICAST_TTL,
+		//		(const char *)&set_option_on, sizeof(set_option_on));
+
 		socket_send.Send(Address(addr), str.c_str(), str.size());
 	} catch (const std::exception &e) {
 		verbosestream << "udp broadcast send4 fail " << e.what() << "\n";
 	}
 
 	std::vector<uint32_t> scopes;
-// todo: windows and android
+	// todo: windows and android
 
 #if HAVE_IFADDRS
 	struct ifaddrs *ifaddr = nullptr, *ifa = nullptr;
@@ -118,7 +154,7 @@ void lan_adv::send_string(const std::string &str)
 				continue;
 
 			auto sa = *((struct sockaddr_in6 *)ifa->ifa_addr);
-			if (sa.sin6_scope_id)
+		if (sa.sin6_scope_id)
 				scopes.push_back(sa.sin6_scope_id);
 
 			/*errorstream<<"in=" << ifa->ifa_name << " a="<<Address(*((struct sockaddr_in6*)ifa->ifa_addr)).serializeString()<<" ba=" << ifa->ifa_broadaddr <<" sc=" << sa.sin6_scope_id <<" fl=" <<  ifa->ifa_flags
@@ -147,8 +183,8 @@ void lan_adv::send_string(const std::string &str)
 				addr.sin6_port = htons(adv_port);
 				UDPSocket socket_send(true);
 				int set_option_on = 1;
-				setsockopt(socket_send.GetHandle(), SOL_SOCKET, SO_BROADCAST,
-						(const char *)&set_option_on, sizeof(set_option_on));
+				//setsockopt(socket_send.GetHandle(), SOL_SOCKET, IPV6_MULTICAST_HOPS,
+				//		(const char *)&set_option_on, sizeof(set_option_on));
 				auto use_scopes = scopes;
 				if (addr.sin6_scope_id) {
 					use_scopes.clear();
@@ -169,7 +205,7 @@ void lan_adv::send_string(const std::string &str)
 void lan_adv::serve(unsigned short port)
 {
 	server_port = port;
-	if (isRunning()) stop();
+	stop();
 	start(); 
 }
 
@@ -187,8 +223,13 @@ void *lan_adv::run()
 	setsockopt(socket_recv.GetHandle(), SOL_SOCKET, SO_REUSEPORT,
 			(const char *)&set_option_on, sizeof(set_option_on));
 #endif
-	setsockopt(socket_recv.GetHandle(), SOL_SOCKET, SO_BROADCAST,
-			(const char *)&set_option_on, sizeof(set_option_on));
+	struct ip_mreq mreq;
+
+	mreq.imr_multiaddr.s_addr = inet_addr(adv_multicast_addr);
+	mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+
+	setsockopt(socket_recv.GetHandle(), IPPROTO_IP, IP_ADD_MEMBERSHIP,
+			(const char *)&mreq, sizeof(mreq));
 	setsockopt(socket_recv.GetHandle(), IPPROTO_IPV6, IPV6_V6ONLY,
 			(const char *)&set_option_off, sizeof(set_option_off));
 	socket_recv.setTimeoutMs(200);
@@ -254,11 +295,11 @@ void *lan_adv::run()
 
 				server["clients"] = clients_num.load();
 				answer_str = fastWriteJson(server);
-
 				limiter[addr_str] = now + 3000;
-				UDPSocket socket_send(true);
-				addr.setPort(adv_port);
-				socket_send.Send(addr, answer_str.c_str(), answer_str.size());
+				send_string(answer_str);
+				//UDPSocket socket_send(true);
+				//addr.setPort(adv_port);
+				//socket_send.Send(addr, answer_str.c_str(), answer_str.size());
 			}
 		} else {
 			if (p["cmd"] == "ask") {
@@ -282,13 +323,6 @@ void *lan_adv::run()
 			//errorstream<<" current list: ";for (auto & i : collected) {errorstream<< i.first <<" ; ";}errorstream<<std::endl;
 		}
 		END_DEBUG_EXCEPTION_HANDLER;
-	}
-
-	if (server_port) {
-		Json::Value answer_json;
-		answer_json["port"] = server_port;
-		answer_json["cmd"] = "shutdown";
-		send_string(fastWriteJson(answer_json));
 	}
 
 	END_DEBUG_EXCEPTION_HANDLER;

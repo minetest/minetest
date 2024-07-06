@@ -17,32 +17,31 @@
 
 local function get_sorted_servers()
 	local servers = {
+		lan = {},
 		fav = {},
 		public = {},
 		incompatible = {}
 	}
 
+	local merged_serverlist = table.copy(serverlistmgr.servers)
+
 	--Special thanks to proller <proller@gmail.com> for letting use use the get_lan_servers function.
 	if minetest.settings:get_bool("serverlist_lan") then
 		if core.get_lan_servers then
-			servers.lan = core.get_lan_servers();
-
-			for _, server in ipairs(servers.lan) do
+			local lan = core.get_lan_servers()
+			for _, server in ipairs(lan) do
 				server.is_compatible = is_server_protocol_compat(server.proto_min, server.proto_max)
+				server.is_local = true
+				table.insert(merged_serverlist, server)
 			end
 		else
 			print("core.get_lan_servers isn't defined.")
-			servers.lan = {}
 		end
-	else
-		servers.lan = {}
 	end
-
-	print(dump(servers.lan))
 
 	local favs = serverlistmgr.get_favorites()
 	local taken_favs = {}
-	local result = menudata.search_result or serverlistmgr.servers
+	local result = menudata.search_result or merged_serverlist
 	for _, server in ipairs(result) do
 		server.is_favorite = false
 		for index, fav in ipairs(favs) do
@@ -56,7 +55,11 @@ local function get_sorted_servers()
 		if server.is_favorite then
 			table.insert(servers.fav, server)
 		elseif server.is_compatible then
-			table.insert(servers.public, server)
+			if server.is_local then
+				table.insert(servers.lan, server)
+			else
+				table.insert(servers.public, server)
+			end
 		else
 			table.insert(servers.incompatible, server)
 		end
@@ -388,6 +391,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				server.port == gamedata.port then
 
 			serverlistmgr.add_favorite(server)
+
+			print("Adding this server to favorites: \n"..dump(server))
 
 			gamedata.servername        = server.name
 			gamedata.serverdescription = server.description

@@ -32,6 +32,7 @@ public:
 	void *run();
 
 	lan_adv();
+	~lan_adv();
 	void ask();
 	void send_string(const std::string &str);
 
