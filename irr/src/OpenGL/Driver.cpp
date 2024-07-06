@@ -108,6 +108,7 @@ static const VertexType &getVertexTypeDescription(E_VERTEX_TYPE type)
 	default:
 		assert(false);
 		std::abort();
+		__builtin_unreachable();
 	}
 }
 
