@@ -201,6 +201,17 @@ void UnitSAO::getAttachment(object_t *parent_id, std::string *bone, v3f *positio
 	*force_visible = m_force_visible;
 }
 
+void UnitSAO::clearAnyAttachments()
+{
+	// This is called before this SAO is marked for removal/deletion and unlinks
+	// any parent or child relationships.
+	// This is done at this point and not in ~UnitSAO() so attachments to
+	// "phantom objects" don't stay around while we're waiting to be actually deleted.
+	// (which can take several server steps)
+	clearParentAttachment();
+	clearChildAttachments();
+}
+
 void UnitSAO::clearChildAttachments()
 {
 	// Cannot use for-loop here: setAttachment() modifies 'm_attachment_child_ids'!
@@ -208,8 +219,8 @@ void UnitSAO::clearChildAttachments()
 		const auto child_id = *m_attachment_child_ids.begin();
 
 		// Child can be NULL if it was deleted earlier
-		if (ServerActiveObject *child = m_env->getActiveObject(child_id))
-			child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0), false);
+		if (auto *child = m_env->getActiveObject(child_id))
+			child->clearParentAttachment();
 	}
 }
 

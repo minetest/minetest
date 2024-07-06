@@ -100,9 +100,6 @@ int ObjectRef::l_remove(lua_State *L)
 	if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 		return 0;
 
-	sao->clearChildAttachments();
-	sao->clearParentAttachment();
-
 	verbosestream << "ObjectRef::l_remove(): id=" << sao->getId() << std::endl;
 	sao->markForRemoval();
 	return 0;

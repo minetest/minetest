@@ -125,6 +125,16 @@ protected:
 
 	object_t m_attachment_parent_id = 0;
 
+	void clearAnyAttachments();
+	virtual void onMarkedForDeactivation() {
+		ServerActiveObject::onMarkedForDeactivation();
+		clearAnyAttachments();
+	}
+	virtual void onMarkedForRemoval() {
+		ServerActiveObject::onMarkedForRemoval();
+		clearAnyAttachments();
+	}
+
 private:
 	void onAttach(ServerActiveObject *parent);
 	void onDetach(ServerActiveObject *parent);
