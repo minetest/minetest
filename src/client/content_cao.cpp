@@ -525,19 +525,9 @@ void GenericCAO::clearChildAttachments()
 	while (!m_attachment_child_ids.empty()) {
 		const auto child_id = *m_attachment_child_ids.begin();
 
-		if (ClientActiveObject *child = m_env->getActiveObject(child_id))
-			child->setAttachment(0, "", v3f(), v3f(), false);
-
-		removeAttachmentChild(child_id);
+		if (auto *child = m_env->getActiveObject(child_id))
+			child->clearParentAttachment();
 	}
-}
-
-void GenericCAO::clearParentAttachment()
-{
-	if (m_attachment_parent_id)
-		setAttachment(0, "", m_attachment_position, m_attachment_rotation, false);
-	else
-		setAttachment(0, "", v3f(), v3f(), false);
 }
 
 void GenericCAO::addAttachmentChild(object_t child_id)

@@ -199,8 +199,13 @@ public:
 			v3f rotation, bool force_visible) {}
 	virtual void getAttachment(object_t *parent_id, std::string *bone, v3f *position,
 			v3f *rotation, bool *force_visible) const {}
+	// Detach all children
 	virtual void clearChildAttachments() {}
-	virtual void clearParentAttachment() {}
+	// Detach from parent
+	virtual void clearParentAttachment()
+	{
+		setAttachment(0, "", v3f(), v3f(), false);
+	}
 
 	// To be be called from setAttachment() and descendants, but not manually!
 	virtual void addAttachmentChild(object_t child_id) {}

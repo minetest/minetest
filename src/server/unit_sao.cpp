@@ -224,11 +224,6 @@ void UnitSAO::clearChildAttachments()
 	}
 }
 
-void UnitSAO::clearParentAttachment()
-{
-	setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0), false);
-}
-
 void UnitSAO::addAttachmentChild(object_t child_id)
 {
 	m_attachment_child_ids.insert(child_id);

@@ -82,10 +82,9 @@ public:
 			v3f rotation, bool force_visible);
 	void getAttachment(object_t *parent_id, std::string *bone, v3f *position,
 			v3f *rotation, bool *force_visible) const;
-	void clearChildAttachments();
-	void clearParentAttachment();
-	void addAttachmentChild(object_t child_id);
-	void removeAttachmentChild(object_t child_id);
+	void clearChildAttachments() override;
+	void addAttachmentChild(object_t child_id) override;
+	void removeAttachmentChild(object_t child_id) override;
 	const std::unordered_set<object_t> &getAttachmentChildIds() const {
 		return m_attachment_child_ids;
 	}

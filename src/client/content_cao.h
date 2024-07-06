@@ -231,7 +231,6 @@ public:
 	void getAttachment(object_t *parent_id, std::string *bone, v3f *position,
 			v3f *rotation, bool *force_visible) const override;
 	void clearChildAttachments() override;
-	void clearParentAttachment() override;
 	void addAttachmentChild(object_t child_id) override;
 	void removeAttachmentChild(object_t child_id) override;
 	ClientActiveObject *getParent() const override;
