@@ -10,11 +10,16 @@
 #include "ILogger.h"
 #include "ITimer.h"
 
-#if (defined(__GNUC__) || defined(__clang__)) && __has_builtin(__builtin_unreachable)
+
+#if defined(__has_builtin)
+#if __has_builtin(__builtin_unreachable)
 #define UNREACHABLE __builtin_unreachable();
+#endif
 #elif defined(_MSC_VER)
 #define UNREACHABLE __assume(false);
-#else
+#endif
+
+#ifndef UNREACHABLE
 #define UNREACHABLE std::abort();
 #endif
 
