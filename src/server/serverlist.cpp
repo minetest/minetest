@@ -67,7 +67,7 @@ void sendAnnounce(AnnounceAction action,
 		server["clients_max"]  = g_settings->getU16("max_users");
 		server["clients_list"] = Json::Value(Json::arrayValue);
 		for (std::size_t i = 0; i < clients_names.size(); i++) {
-			if (g_settings->getBool("server_anon_name")) {
+			if (g_settings->getBool("server_announce_anonymize_names")) {
 				server["clients_list"].append("anon" + std::to_string(i + 1));
 			} else {
 				server["clients_list"].append(clients_names[i]);
