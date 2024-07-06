@@ -133,6 +133,8 @@ void UnitSAO::sendOutdatedData()
 void UnitSAO::setAttachment(const object_t new_parent, const std::string &bone, v3f position,
 		v3f rotation, bool force_visible)
 {
+	const auto call_count = ++m_attachment_call_counter;
+
 	// Do checks to avoid circular references
 	{
 		auto *obj = new_parent ? m_env->getActiveObject(new_parent) : nullptr;
@@ -154,7 +156,11 @@ void UnitSAO::setAttachment(const object_t new_parent, const std::string &bone, 
 	}
 
 	// Detach first
+	// Note: make sure to apply data changes before running callbacks.
 	const auto old_parent = m_attachment_parent_id;
+	m_attachment_parent_id = 0;
+	m_attachment_sent = false;
+
 	if (old_parent && old_parent != new_parent) {
 		auto *parent = m_env->getActiveObject(old_parent);
 		if (parent) {
@@ -166,8 +172,12 @@ void UnitSAO::setAttachment(const object_t new_parent, const std::string &bone, 
 		}
 	}
 
-	m_attachment_parent_id = 0;
-	m_attachment_sent = false;
+	if (m_attachment_call_counter != call_count) {
+		verbosestream << "UnitSAO::setAttachment() id=" << m_id <<
+			" nested call detected (onDetach)." << std::endl;
+		// Don't touch anything after the other call has completed.
+		return;
+	}
 
 	if (isGone())
 		return;
@@ -188,6 +198,11 @@ void UnitSAO::setAttachment(const object_t new_parent, const std::string &bone, 
 				" tried to attach to nonexistent parent. This is a bug." << std::endl;
 			m_attachment_parent_id = 0; // detach
 		}
+	}
+
+	if (m_attachment_call_counter != call_count) {
+		verbosestream << "UnitSAO::setAttachment() id=" << m_id <<
+			" nested call detected (onAttach)." << std::endl;
 	}
 }
 
@@ -238,18 +253,20 @@ void UnitSAO::onAttach(ServerActiveObject *parent)
 {
 	assert(parent);
 
-	if (parent->isGone())
-		return; // Do not try to notify soon gone parent
-
-	if (parent->getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
-		m_env->getScriptIface()->luaentity_on_attach_child(parent->getId(), this);
-
 	parent->addAttachmentChild(m_id);
+
+	// Do not try to notify soon gone parent
+	if (!parent->isGone()) {
+		if (parent->getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
+			m_env->getScriptIface()->luaentity_on_attach_child(parent->getId(), this);
+	}
 }
 
 void UnitSAO::onDetach(ServerActiveObject *parent)
 {
 	assert(parent);
+
+	parent->removeAttachmentChild(m_id);
 
 	if (getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
 		m_env->getScriptIface()->luaentity_on_detach(m_id, parent);
@@ -260,8 +277,6 @@ void UnitSAO::onDetach(ServerActiveObject *parent)
 
 	if (parent->getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
 		m_env->getScriptIface()->luaentity_on_detach_child(parent->getId(), this);
-
-	parent->removeAttachmentChild(m_id);
 }
 
 ObjectProperties *UnitSAO::accessObjectProperties()

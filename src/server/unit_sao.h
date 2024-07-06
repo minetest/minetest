@@ -140,6 +140,10 @@ private:
 
 	std::string generatePunchCommand(u16 result_hp) const;
 
+	// Used to detect nested calls to setAttachments(), which can happen due to
+	// Lua callbacks
+	u8 m_attachment_call_counter = 0;
+
 	// Armor groups
 	bool m_armor_groups_sent = false;
 
