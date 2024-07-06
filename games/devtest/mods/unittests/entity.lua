@@ -40,12 +40,36 @@ core.register_entity("unittests:callbacks", {
 	end,
 	on_attach_child = function(self, child)
 		insert_log("on_attach_child(%s)", objref_str(self, child))
+		assert(child:get_attach() == self.object)
+		local ok = false
+		for _, obj in ipairs(self.object:get_children()) do
+			if obj == child then
+				ok = true
+			end
+		end
+		assert(ok, "Child not found in get_children")
 	end,
 	on_detach_child = function(self, child)
 		insert_log("on_detach_child(%s)", objref_str(self, child))
+		assert(child:get_attach() == nil)
+		local ok = true
+		for _, obj in ipairs(self.object:get_children()) do
+			if obj == child then
+				ok = false
+			end
+		end
+		assert(ok, "Former child found in get_children")
 	end,
 	on_detach = function(self, parent)
 		insert_log("on_detach(%s)", objref_str(self, parent))
+		assert(self.object:get_attach() == nil)
+		local ok = true
+		for _, obj in ipairs(parent:get_children()) do
+			if obj == self.object then
+				ok = false
+			end
+		end
+		assert(ok, "Former child found in get_children")
 	end,
 	get_staticdata = function(self)
 		assert(false)
@@ -118,18 +142,24 @@ local function test_entity_attach(player, pos)
 	-- attach player to entity
 	player:set_attach(obj)
 	check_log({"on_attach_child(player)"})
+	assert(player:get_attach() == obj)
 	player:set_detach()
 	check_log({"on_detach_child(player)"})
+	assert(player:get_attach() == nil)
 
 	-- attach entity to player
 	obj:set_attach(player)
 	check_log({})
+	assert(obj:get_attach() == player)
 	obj:set_detach()
 	check_log({"on_detach(player)"})
+	assert(obj:get_attach() == nil)
 
 	obj:remove()
 end
 unittests.register("test_entity_attach", test_entity_attach, {player=true, map=true})
+
+---------
 
 core.register_entity("unittests:dummy", {
 	initial_properties = {
