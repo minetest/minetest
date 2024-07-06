@@ -130,7 +130,7 @@ void UnitSAO::sendOutdatedData()
 	}
 }
 
-void UnitSAO::setAttachment(int parent_id, const std::string &bone, v3f position,
+void UnitSAO::setAttachment(object_t parent_id, const std::string &bone, v3f position,
 		v3f rotation, bool force_visible)
 {
 	auto *obj = parent_id ? m_env->getActiveObject(parent_id) : nullptr;
@@ -173,7 +173,7 @@ void UnitSAO::setAttachment(int parent_id, const std::string &bone, v3f position
 		onAttach(parent_id);
 }
 
-void UnitSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
+void UnitSAO::getAttachment(object_t *parent_id, std::string *bone, v3f *position,
 		v3f *rotation, bool *force_visible) const
 {
 	*parent_id = m_attachment_parent_id;
@@ -187,7 +187,7 @@ void UnitSAO::clearChildAttachments()
 {
 	// Cannot use for-loop here: setAttachment() modifies 'm_attachment_child_ids'!
 	while (!m_attachment_child_ids.empty()) {
-		int child_id = *m_attachment_child_ids.begin();
+		const auto child_id = *m_attachment_child_ids.begin();
 
 		// Child can be NULL if it was deleted earlier
 		if (ServerActiveObject *child = m_env->getActiveObject(child_id))
@@ -211,22 +211,17 @@ void UnitSAO::clearParentAttachment()
 		parent->removeAttachmentChild(m_id);
 }
 
-void UnitSAO::addAttachmentChild(int child_id)
+void UnitSAO::addAttachmentChild(object_t child_id)
 {
 	m_attachment_child_ids.insert(child_id);
 }
 
-void UnitSAO::removeAttachmentChild(int child_id)
+void UnitSAO::removeAttachmentChild(object_t child_id)
 {
 	m_attachment_child_ids.erase(child_id);
 }
 
-const std::unordered_set<int> &UnitSAO::getAttachmentChildIds() const
-{
-	return m_attachment_child_ids;
-}
-
-void UnitSAO::onAttach(int parent_id)
+void UnitSAO::onAttach(object_t parent_id)
 {
 	if (!parent_id)
 		return;
@@ -242,7 +237,7 @@ void UnitSAO::onAttach(int parent_id)
 	}
 }
 
-void UnitSAO::onDetach(int parent_id)
+void UnitSAO::onDetach(object_t parent_id)
 {
 	if (!parent_id)
 		return;

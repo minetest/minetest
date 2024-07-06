@@ -78,15 +78,17 @@ public:
 	// Attachments
 	ServerActiveObject *getParent() const;
 	inline bool isAttached() const { return getParent(); }
-	void setAttachment(int parent_id, const std::string &bone, v3f position,
+	void setAttachment(object_t parent_id, const std::string &bone, v3f position,
 			v3f rotation, bool force_visible);
-	void getAttachment(int *parent_id, std::string *bone, v3f *position,
+	void getAttachment(object_t *parent_id, std::string *bone, v3f *position,
 			v3f *rotation, bool *force_visible) const;
 	void clearChildAttachments();
 	void clearParentAttachment();
-	void addAttachmentChild(int child_id);
-	void removeAttachmentChild(int child_id);
-	const std::unordered_set<int> &getAttachmentChildIds() const;
+	void addAttachmentChild(object_t child_id);
+	void removeAttachmentChild(object_t child_id);
+	const std::unordered_set<object_t> &getAttachmentChildIds() const {
+		return m_attachment_child_ids;
+	}
 
 	// Object properties
 	ObjectProperties *accessObjectProperties();
@@ -121,11 +123,11 @@ protected:
 	// Stores position and rotation for each bone name
 	std::unordered_map<std::string, BoneOverride> m_bone_override;
 
-	int m_attachment_parent_id = 0;
+	object_t m_attachment_parent_id = 0;
 
 private:
-	void onAttach(int parent_id);
-	void onDetach(int parent_id);
+	void onAttach(object_t parent_id);
+	void onDetach(object_t parent_id);
 
 	std::string generatePunchCommand(u16 result_hp) const;
 
@@ -144,7 +146,7 @@ private:
 	bool m_bone_override_sent = false;
 
 	// Attachments
-	std::unordered_set<int> m_attachment_child_ids;
+	std::unordered_set<object_t> m_attachment_child_ids;
 	std::string m_attachment_bone = "";
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
