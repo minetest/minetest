@@ -725,17 +725,10 @@ int ObjectRef::l_set_attach(lua_State *L)
 	if (sao == parent)
 		throw LuaError("ObjectRef::set_attach: attaching object to itself is not allowed.");
 
-	object_t parent_id;
 	std::string bone;
 	v3f position;
 	v3f rotation;
 	bool force_visible;
-
-	sao->getAttachment(&parent_id, &bone, &position, &rotation, &force_visible);
-	if (parent_id) {
-		ServerActiveObject *old_parent = env->getActiveObject(parent_id);
-		old_parent->removeAttachmentChild(sao->getId());
-	}
 
 	bone          = readParam<std::string>(L, 3, "");
 	position      = readParam<v3f>(L, 4, v3f(0, 0, 0));
@@ -743,7 +736,6 @@ int ObjectRef::l_set_attach(lua_State *L)
 	force_visible = readParam<bool>(L, 6, false);
 
 	sao->setAttachment(parent->getId(), bone, position, rotation, force_visible);
-	parent->addAttachmentChild(sao->getId());
 	return 0;
 }
 

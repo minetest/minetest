@@ -201,6 +201,8 @@ public:
 			v3f *rotation, bool *force_visible) const {}
 	virtual void clearChildAttachments() {}
 	virtual void clearParentAttachment() {}
+
+	// To be be called from setAttachment() and descendants, but not manually!
 	virtual void addAttachmentChild(object_t child_id) {}
 	virtual void removeAttachmentChild(object_t child_id) {}
 

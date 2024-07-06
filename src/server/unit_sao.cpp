@@ -130,47 +130,65 @@ void UnitSAO::sendOutdatedData()
 	}
 }
 
-void UnitSAO::setAttachment(object_t parent_id, const std::string &bone, v3f position,
+void UnitSAO::setAttachment(const object_t new_parent, const std::string &bone, v3f position,
 		v3f rotation, bool force_visible)
 {
-	auto *obj = parent_id ? m_env->getActiveObject(parent_id) : nullptr;
-	if (obj) {
-		// Do checks to avoid circular references
-		// The chain of wanted parent must not refer or contain "this"
-		for (obj = obj->getParent(); obj; obj = obj->getParent()) {
-			if (obj == this) {
-				warningstream << "Mod bug: Attempted to attach object " << m_id << " to parent "
-					<< parent_id << " but former is an (in)direct parent of latter." << std::endl;
-				return;
+	// Do checks to avoid circular references
+	{
+		auto *obj = new_parent ? m_env->getActiveObject(new_parent) : nullptr;
+		bool problem = false;
+		if (obj) {
+			// The chain of wanted parent must not refer or contain "this"
+			for (obj = obj->getParent(); obj; obj = obj->getParent()) {
+				if (obj == this) {
+					problem = true;
+					break;
+				}
 			}
+		}
+		if (problem) {
+			warningstream << "Mod bug: Attempted to attach object " << m_id << " to parent "
+				<< new_parent << " but former is an (in)direct parent of latter." << std::endl;
+			return;
 		}
 	}
 
-	// Attachments need to be handled on both the server and client.
-	// If we just attach on the server, we can only copy the position of the parent.
-	// Attachments are still sent to clients at an interval so players might see them
-	// lagging, plus we can't read and attach to skeletal bones. If we just attach on
-	// the client, the server still sees the child at its original location. This
-	// breaks some things so we also give the server the most accurate representation
-	// even if players only see the client changes.
+	// Detach first
+	const auto old_parent = m_attachment_parent_id;
+	if (old_parent && old_parent != new_parent) {
+		auto *parent = m_env->getActiveObject(old_parent);
+		if (parent) {
+			onDetach(parent);
+		} else {
+			warningstream << "UnitSAO::setAttachment() id=" << m_id <<
+				" is attached to nonexistent parent. This is a bug." << std::endl;
+			// we can pretend it never happened
+		}
+	}
 
-	int old_parent = m_attachment_parent_id;
-	m_attachment_parent_id = parent_id;
+	m_attachment_parent_id = 0;
+	m_attachment_sent = false;
 
-	// The detach callbacks might call to setAttachment() again.
-	// Ensure the attachment params are applied after this callback is run.
-	if (parent_id != old_parent)
-		onDetach(old_parent);
+	if (isGone())
+		return;
 
-	m_attachment_parent_id = parent_id;
+	// Now attach to new parent
+	m_attachment_parent_id = new_parent;
 	m_attachment_bone = bone;
 	m_attachment_position = position;
 	m_attachment_rotation = rotation;
 	m_force_visible = force_visible;
-	m_attachment_sent = false;
 
-	if (parent_id != old_parent)
-		onAttach(parent_id);
+	if (new_parent && old_parent != new_parent) {
+		auto *parent = m_env->getActiveObject(new_parent);
+		if (parent) {
+			onAttach(parent);
+		} else {
+			warningstream << "UnitSAO::setAttachment() id=" << m_id <<
+				" tried to attach to nonexistent parent. This is a bug." << std::endl;
+			m_attachment_parent_id = 0; // detach
+		}
+	}
 }
 
 void UnitSAO::getAttachment(object_t *parent_id, std::string *bone, v3f *position,
@@ -192,23 +210,12 @@ void UnitSAO::clearChildAttachments()
 		// Child can be NULL if it was deleted earlier
 		if (ServerActiveObject *child = m_env->getActiveObject(child_id))
 			child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0), false);
-
-		removeAttachmentChild(child_id);
 	}
 }
 
 void UnitSAO::clearParentAttachment()
 {
-	ServerActiveObject *parent = nullptr;
-	if (m_attachment_parent_id) {
-		parent = m_env->getActiveObject(m_attachment_parent_id);
-		setAttachment(0, "", m_attachment_position, m_attachment_rotation, false);
-	} else {
-		setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0), false);
-	}
-	// Do it
-	if (parent)
-		parent->removeAttachmentChild(m_id);
+	setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0), false);
 }
 
 void UnitSAO::addAttachmentChild(object_t child_id)
@@ -221,36 +228,34 @@ void UnitSAO::removeAttachmentChild(object_t child_id)
 	m_attachment_child_ids.erase(child_id);
 }
 
-void UnitSAO::onAttach(object_t parent_id)
+void UnitSAO::onAttach(ServerActiveObject *parent)
 {
-	if (!parent_id)
-		return;
+	assert(parent);
 
-	ServerActiveObject *parent = m_env->getActiveObject(parent_id);
-
-	if (!parent || parent->isGone())
-		return; // Do not try to notify soon gone parent
-
-	if (parent->getType() == ACTIVEOBJECT_TYPE_LUAENTITY) {
-		// Call parent's on_attach field
-		m_env->getScriptIface()->luaentity_on_attach_child(parent_id, this);
-	}
-}
-
-void UnitSAO::onDetach(object_t parent_id)
-{
-	if (!parent_id)
-		return;
-
-	ServerActiveObject *parent = m_env->getActiveObject(parent_id);
-	if (getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
-		m_env->getScriptIface()->luaentity_on_detach(m_id, parent);
-
-	if (!parent || parent->isGone())
+	if (parent->isGone())
 		return; // Do not try to notify soon gone parent
 
 	if (parent->getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
-		m_env->getScriptIface()->luaentity_on_detach_child(parent_id, this);
+		m_env->getScriptIface()->luaentity_on_attach_child(parent->getId(), this);
+
+	parent->addAttachmentChild(m_id);
+}
+
+void UnitSAO::onDetach(ServerActiveObject *parent)
+{
+	assert(parent);
+
+	if (getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
+		m_env->getScriptIface()->luaentity_on_detach(m_id, parent);
+
+	// callback could affect the parent
+	if (parent->isGone())
+		return;
+
+	if (parent->getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
+		m_env->getScriptIface()->luaentity_on_detach_child(parent->getId(), this);
+
+	parent->removeAttachmentChild(m_id);
 }
 
 ObjectProperties *UnitSAO::accessObjectProperties()

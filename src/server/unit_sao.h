@@ -77,7 +77,7 @@ public:
 
 	// Attachments
 	ServerActiveObject *getParent() const;
-	inline bool isAttached() const { return getParent(); }
+	inline bool isAttached() const { return m_attachment_parent_id != 0; }
 	void setAttachment(object_t parent_id, const std::string &bone, v3f position,
 			v3f rotation, bool force_visible);
 	void getAttachment(object_t *parent_id, std::string *bone, v3f *position,
@@ -126,8 +126,8 @@ protected:
 	object_t m_attachment_parent_id = 0;
 
 private:
-	void onAttach(object_t parent_id);
-	void onDetach(object_t parent_id);
+	void onAttach(ServerActiveObject *parent);
+	void onDetach(ServerActiveObject *parent);
 
 	std::string generatePunchCommand(u16 result_hp) const;
 
