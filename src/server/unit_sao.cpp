@@ -138,6 +138,10 @@ void UnitSAO::setAttachment(const object_t new_parent, const std::string &bone, 
 	// Do checks to avoid circular references
 	{
 		auto *obj = new_parent ? m_env->getActiveObject(new_parent) : nullptr;
+		if (obj == this) {
+			assert(false);
+			return;
+		}
 		bool problem = false;
 		if (obj) {
 			// The chain of wanted parent must not refer or contain "this"
