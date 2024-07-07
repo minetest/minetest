@@ -13,14 +13,14 @@
 
 #if defined(__has_builtin)
 #if __has_builtin(__builtin_unreachable)
-#define UNREACHABLE __builtin_unreachable();
+#define UNREACHABLE() __builtin_unreachable();
 #endif
 #elif defined(_MSC_VER)
-#define UNREACHABLE __assume(false);
+#define UNREACHABLE() __assume(false);
 #endif
 
 #ifndef UNREACHABLE
-#define UNREACHABLE std::abort();
+void UNREACHABLE() [[noreturn]] {}
 #endif
 
 namespace irr
