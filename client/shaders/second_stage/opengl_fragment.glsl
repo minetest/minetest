@@ -86,7 +86,7 @@ vec3 applySaturation(vec3 color, float factor)
 	// Calculate the perceived luminosity from the RGB color.
 	// See also: https://www.w3.org/WAI/GL/wiki/Relative_luminance
 	float brightness = dot(color, vec3(0.2125, 0.7154, 0.0721));
-	return mix(vec3(brightness), color, factor);
+	return max(vec3(0.), mix(vec3(brightness), color, factor));
 }
 
 #ifdef ENABLE_DITHERING
@@ -118,6 +118,10 @@ void main(void)
 
 	// translate to linear colorspace (approximate)
 	color.rgb = pow(color.rgb, vec3(2.2));
+	
+#if ENABLE_TONE_MAPPING
+	color.rgb = applySaturation(color.rgb, 1.25);
+#endif	
 
 #ifdef ENABLE_BLOOM_DEBUG
 	if (uv.x > 0.5 || uv.y > 0.5)

@@ -64,7 +64,7 @@ void main(void)
 	//    => Lmax = 1.2 * 2^3 * luminance / 2^EC = 9.6 * luminance / 2^EC
 	// 3. exposure = 1 / Lmax
 	//    => exposure = 2^EC / (9.6 * luminance)
-	float wantedExposure = exposureParams.exposureCorrection - log(luminance)/0.693147180559945 - 3.263034405833794;
+	float wantedExposure = exposureParams.exposureCorrection + clamp(-log(luminance)/0.693147180559945 - 3.263034405833794, -10.0, 10.0);
 
 	if (wantedExposure < previousExposure)
 		wantedExposure = mix(wantedExposure, previousExposure, exp(-animationTimerDelta * exposureParams.speedDarkBright)); // dark -> bright

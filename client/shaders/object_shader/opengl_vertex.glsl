@@ -6,7 +6,8 @@ uniform lowp vec4 emissiveColor;
 varying vec3 vNormal;
 varying vec3 vPosition;
 varying vec3 worldPosition;
-varying lowp vec4 varColor;
+varying lowp vec3 artificialColor;
+varying lowp vec3 naturalColor;
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
 #else
@@ -24,10 +25,10 @@ centroid varying vec2 varTexCoord;
 	uniform vec4 CameraPos;
 
 	varying float cosLight;
-	varying float adj_shadow_strength;
 	varying float f_normal_length;
 	varying vec3 shadow_position;
 	varying float perspective_factor;
+	varying lowp vec3 directNaturalLight;
 #endif
 
 varying highp vec3 eyeVec;
@@ -76,8 +77,50 @@ float mtsmoothstep(in float edge0, in float edge1, in float x)
 	float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
 	return t * t * (3.0 - 2.0 * t);
 }
+
+vec3 getDirectLightScatteringAtGround(vec3 dayLight, vec3 v_LightDirection)
+{
+	// Based on talk at 2002 Game Developers Conference by Naty Hoffman and Arcot J. Preetham
+	const float beta_r0 = 1e-5; // Rayleigh scattering beta
+
+	// These factors are calculated based on expected value of scattering factor of 1e-5
+	// for Nitrogen at 532nm (green), 2e25 molecules/m3 in atmosphere
+	const vec3 beta_r0_l = vec3(3.3362176e-01, 8.75378289198826e-01, 1.95342379700656) * beta_r0; // wavelength-dependent scattering
+
+	const float atmosphere_height = 15000.; // height of the atmosphere in meters
+	// sun/moon light at the ground level, after going through the atmosphere
+	return exp(-beta_r0_l * atmosphere_height / (1e-5 - dot(v_LightDirection, vec3(0., 1., 0.))));
+}
+
+// calculates light intensity from a sun-like or moon-like sky body
+float getLightIntensity(vec3 direction)
+{
+	const float distance_to_size_ratio = 107.143; // ~= 150million km / 1.4 million km
+
+	return clamp(distance_to_size_ratio * dot(vec3(0., 1., 0.), -v_LightDirection), 0., 1.);
+}
+
 #endif
 
+vec3 getArtificialLightTint(float intensity)
+{
+	float temperature = 4250. + 3250. * (0.0 + 1.0 * pow(intensity, 1.0));
+	// Aproximation of RGB values for specific color temperature in range of 2500K to 7500K
+	// Based on the table at https://andi-siess.de/rgb-to-color-temperature/
+	vec3 color = min(temperature * vec3(0., 9.11765e-05, 1.77451e-04) + vec3(1., 0.403431, -0.161275),
+			temperature * vec3(-7.84314e-05, -6.27451e-05, 7.84314e-06) + vec3(1.50980, 1.40392, 0.941176));
+	// color /= dot(color, vec3(0.213, 0.715, 0.072));
+	return color;
+}
+
+vec3 getNaturalLightTint(float brightness)
+{
+	// Emphase blue a bit in darker places
+	// See C++ implementation in mapblock_mesh.cpp final_color_blend()
+	float b = max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
+		0.07 * brightness);
+	return vec3(0.0, 0.0, b);
+}
 
 float directional_ambient(vec3 normal)
 {
@@ -119,26 +162,27 @@ void main(void)
 
 	// The alpha gives the ratio of sunlight in the incoming light.
 	nightRatio = 1.0 - color.a;
-	color.rgb = color.rgb * (color.a * dayLight.rgb +
-		nightRatio * artificialLight.rgb) * 2.0;
-	color.a = 1.0;
 
-	// Emphase blue a bit in darker places
-	// See C++ implementation in mapblock_mesh.cpp final_color_blend()
-	float brightness = (color.r + color.g + color.b) / 3.0;
-	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
-		0.07 * brightness);
+	// turns out that nightRatio falls off much faster than
+	// actual brightness of artificial light in relation to natual light.
+	// Power ratio was measured on torches in MTG (brightness = 14).
+	float adjusted_night_ratio = pow(max(0.0, nightRatio), 0.6);
 
-	varColor = clamp(color, 0.0, 1.0);
+	artificialColor = color.rgb * adjusted_night_ratio * 2.0;
+	artificialColor *= getArtificialLightTint(dot(artificialColor, vec3(0.33)));
+
+	naturalColor = color.rgb * (1.0 - adjusted_night_ratio) * 2.0;
+	naturalColor += getNaturalLightTint(dot(naturalColor, vec3(0.33)));
 
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
+	directNaturalLight = getDirectLightScatteringAtGround(vec3(1.0), v_LightDirection) * getLightIntensity(v_LightDirection);
 	if (f_shadow_strength > 0.0) {
 		vec3 nNormal = normalize(vNormal);
 		f_normal_length = length(vNormal);
 
 		/* normalOffsetScale is in world coordinates (1/10th of a meter)
-		   z_bias is in light space coordinates */
+		z_bias is in light space coordinates */
 		float normalOffsetScale, z_bias;
 		float pFactor = getPerspectiveFactor(getRelativePosition(m_ShadowViewProj * mWorld * inVertexPosition));
 		if (f_normal_length > 0.0) {
@@ -162,17 +206,6 @@ void main(void)
 		shadow_position.z -= z_bias;
 		perspective_factor = pFactor;
 
-		if (f_timeofday < 0.2) {
-			adj_shadow_strength = f_shadow_strength * 0.5 *
-				(1.0 - mtsmoothstep(0.18, 0.2, f_timeofday));
-		} else if (f_timeofday >= 0.8) {
-			adj_shadow_strength = f_shadow_strength * 0.5 *
-				mtsmoothstep(0.8, 0.83, f_timeofday);
-		} else {
-			adj_shadow_strength = f_shadow_strength *
-				mtsmoothstep(0.20, 0.25, f_timeofday) *
-				(1.0 - mtsmoothstep(0.7, 0.8, f_timeofday));
-		}
 	}
 #endif
 }
