@@ -11,17 +11,17 @@
 #include "ITimer.h"
 
 #if __cplusplus >= 202302L
-#define UNREACHABLE() std::unreachable();
+#define CODE_UNREACHABLE() std::unreachable();
 #elif defined(__has_builtin)
 #if __has_builtin(__builtin_unreachable)
-#define UNREACHABLE() __builtin_unreachable();
+#define CODE_UNREACHABLE() __builtin_unreachable();
 #endif
 #elif defined(_MSC_VER)
-#define UNREACHABLE() __assume(false);
+#define CODE_UNREACHABLE() __assume(false);
 #endif
 
 #ifndef UNREACHABLE
-void UNREACHABLE() [[noreturn]] {}
+void CODE_UNREACHABLE() [[noreturn]] {}
 #endif
 
 namespace irr

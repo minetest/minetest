@@ -107,7 +107,7 @@ static const VertexType &getVertexTypeDescription(E_VERTEX_TYPE type)
 		return vtTangents;
 	default:
 		assert(false);
-		UNREACHABLE();
+		CODE_UNREACHABLE();
 	}
 }
 
