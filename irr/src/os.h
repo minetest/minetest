@@ -10,6 +10,7 @@
 #include "ILogger.h"
 #include "ITimer.h"
 
+// CODE_UNREACHABLE(): Invokes undefined behavior for unreachable code optimization
 #if __cplusplus >= 202302L
 #define CODE_UNREACHABLE() std::unreachable();
 #elif defined(__has_builtin)
@@ -20,8 +21,8 @@
 #define CODE_UNREACHABLE() __assume(false);
 #endif
 
-#ifndef UNREACHABLE
-void CODE_UNREACHABLE() [[noreturn]] {}
+#ifndef CODE_UNREACHABLE
+void CODE_UNREACHABLE [[noreturn]] ();
 #endif
 
 namespace irr
