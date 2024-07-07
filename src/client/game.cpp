@@ -416,15 +416,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float> m_bloom_radius_pixel{"bloomRadius"};
 	float m_bloom_radius;
 	CachedPixelShaderSetting<float> m_saturation_pixel{"saturation"};
-<<<<<<< HEAD
-=======
-	/*CachedPixelShaderSetting<float, 3> m_sun_position_pixel{"sunPositionScreen"};
-	CachedPixelShaderSetting<float> m_sun_brightness_pixel{"sunBrightness"};
-	CachedPixelShaderSetting<float, 3> m_moon_position_pixel{"moonPositionScreen"};
-	CachedPixelShaderSetting<float> m_moon_brightness_pixel{"moonBrightness"};*/
 	CachedPixelShaderSetting<float> m_emission_pixel{"emission"};
 	float emission;
->>>>>>> 3b61206a2 (add water reflections)
 	bool m_volumetric_light_enabled;
 	CachedPixelShaderSetting<float, 3>
 		m_sun_position_pixel{"sunPositionScreen"};
@@ -507,10 +500,8 @@ public:
 		v3f offset = intToFloat(m_client->getCamera()->getOffset(), BS);
 		m_camera_offset_pixel.set(offset, services);
 		m_camera_offset_vertex.set(offset, services);
-<<<<<<< HEAD
-=======
 		
-				v3f camera_position_vector = m_client->getCamera()->getPosition();
+		v3f camera_position_vector = m_client->getCamera()->getPosition();
 		float camera_position[3] = {
 				camera_position_vector.X,
 				camera_position_vector.Y,
@@ -531,7 +522,6 @@ public:
 		core::matrix4 camera_viewprojinv;
 		camera_viewproj.getInverse(camera_viewprojinv);
 		m_camera_viewprojinv_pixel.set(camera_viewprojinv.pointer(), services);
->>>>>>> 3b61206a2 (add water reflections)
 
 		SamplerLayer_t tex_id;
 		tex_id = 0;
@@ -567,10 +557,7 @@ public:
 		const auto &lighting = m_client->getEnv().getLocalPlayer()->getLighting();
 		float saturation = lighting.saturation;
 		m_saturation_pixel.set(&saturation, services);
-<<<<<<< HEAD
-=======
-		
-		
+			
 		// Map directional light to screen space
 		auto camera_node = m_client->getCamera()->getCameraNode();
 		core::matrix4 transform = camera_node->getProjectionMatrix();
@@ -618,7 +605,6 @@ public:
 			m_moon_brightness_pixel.set(&moon_brightness, services);
 		}
 		m_emission_pixel.set(&emission, services);
->>>>>>> 3b61206a2 (add water reflections)
 
 		if (m_volumetric_light_enabled) {
 			// Map directional light to screen space
@@ -674,10 +660,7 @@ public:
 		} else {
 			m_texel_size0 = v2f();
 		}
-<<<<<<< HEAD
-=======
 		emission = material.Shininess;
->>>>>>> 3b61206a2 (add water reflections)
 	}
 };
 
