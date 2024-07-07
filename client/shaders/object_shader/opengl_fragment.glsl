@@ -1,7 +1,6 @@
 uniform sampler2D baseTexture;
 
 uniform vec3 dayLight;
-uniform vec4 skyBgColor;
 uniform lowp vec4 fogColor;
 uniform float fogDistance;
 uniform float fogShadingParameter;
@@ -459,7 +458,7 @@ void main(void)
 	// Note: clarity = (1 - fogginess)
 	float clarity = clamp(fogShadingParameter
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
-	color = mix(skyBgColor.rgb, color, clarity);
+	color = mix(fogColor.rgb, color, clarity);
 
 	gl_FragData[0] = vec4(color, base.a);
 }

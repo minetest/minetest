@@ -1,7 +1,6 @@
 uniform sampler2D baseTexture;
 
 uniform vec3 dayLight;
-uniform vec4 skyBgColor;
 uniform lowp vec4 fogColor;
 uniform float fogDistance;
 uniform float fogShadingParameter;
@@ -448,7 +447,7 @@ void main(void)
 	}
 #endif
 		color.rgb *= artificialColor + naturalLight * dayLight;
-
+		
 	// Due to a bug in some (older ?) graphics stacks (possibly in the glsl compiler ?),
 	// the fog will only be rendered correctly if the last operation before the
 	// clamp() is an addition. Else, the clamp() seems to be ignored.
@@ -458,11 +457,12 @@ void main(void)
 	// As additions usually come for free following a multiplication, the new formula
 	// should be more efficient as well.
 	// Note: clarity = (1 - fogginess)
+		
 	float clarity = clamp(fogShadingParameter
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
-		color = mix(skyBgColor.rgb, color, clarity);
+	color = mix(fogColor.rgb, color, clarity);
 
-		gl_FragData[0] = vec4(color, base.a);
+	gl_FragData[0] = vec4(color, base.a);
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE)
 	// FIXME: Give waving things actual normals.
