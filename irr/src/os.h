@@ -10,8 +10,9 @@
 #include "ILogger.h"
 #include "ITimer.h"
 
-
-#if defined(__has_builtin)
+#if __cplusplus >= 202302L
+#define UNREACHABLE() std::unreachable();
+#elif defined(__has_builtin)
 #if __has_builtin(__builtin_unreachable)
 #define UNREACHABLE() __builtin_unreachable();
 #endif
