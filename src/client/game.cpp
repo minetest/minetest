@@ -385,14 +385,11 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
 	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel{"cameraOffset"};
 	CachedVertexShaderSetting<float, 3> m_camera_offset_vertex{"cameraOffset"};
-<<<<<<< HEAD
-=======
 	CachedPixelShaderSetting<float, 3> m_camera_position_pixel{"cameraPosition"};
 	CachedPixelShaderSetting<float, 16> m_camera_view_pixel{"mCameraView"};
 	CachedPixelShaderSetting<float, 16> m_camera_viewinv_pixel{"mCameraViewInv"};
 	CachedPixelShaderSetting<float, 16> m_camera_viewproj_pixel{"mCameraViewProj"};
 	CachedPixelShaderSetting<float, 16> m_camera_viewprojinv_pixel{"mCameraViewProjInv"};
->>>>>>> 3b61206a2 (add water reflections)
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture0{"texture0"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture1{"texture1"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture2{"texture2"};
