@@ -11,7 +11,7 @@
 #include "ITimer.h"
 
 // CODE_UNREACHABLE(): Invokes undefined behavior for unreachable code optimization
-#if __cplusplus >= 202302L
+#if defined(__cpp_lib_unreachable)
 #define CODE_UNREACHABLE() std::unreachable();
 #elif defined(__has_builtin)
 #if __has_builtin(__builtin_unreachable)
