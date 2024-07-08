@@ -18,7 +18,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "translation.h"
+#include "filesys.h"
+#include "content/subgames.h"
 #include "catch.h"
+
+#define TEXTDOMAIN_PO L"translation_po"
+#define TEST_PO_NAME "translation_po.de.po"
 
 TEST_CASE("test translations")
 {
@@ -29,5 +34,25 @@ TEST_CASE("test translations")
 		CHECK((*form)(0) == 0);
 		CHECK((*form)(1) == 0);
 		CHECK((*form)(2) == 1);
+	}
+
+	SECTION("PO file parser")
+	{
+		Translations translations;
+		auto gamespec = findSubgame("devtest");
+		CHECK(gamespec.isValid());
+		auto popath = gamespec.gamemods_path + (DIR_DELIM "testtranslations" DIR_DELIM "locale" DIR_DELIM TEST_PO_NAME);
+		std::string content;
+		CHECK(fs::ReadFile(popath, content));
+		translations.loadTranslation(TEST_PO_NAME, content);
+
+		CHECK(translations.size() == 3);
+		CHECK(translations.getTranslation(TEXTDOMAIN_PO, L"foo") == L"bar");
+		CHECK(translations.getTranslation(TEXTDOMAIN_PO, L"Untranslated") == L"Untranslated");
+		CHECK(translations.getTranslation(TEXTDOMAIN_PO, L"Fuzzy") == L"Fuzzy");
+		CHECK(translations.getTranslation(TEXTDOMAIN_PO, L"Multi\\line\nstring") == L"Multi\\\"li\\ne\nresult");
+		CHECK(translations.getTranslation(TEXTDOMAIN_PO, L"Wrong order") == L"Wrong order");
+		CHECK(translations.getPluralTranslation(TEXTDOMAIN_PO, L"Plural form", 1) == L"Singular result");
+		CHECK(translations.getPluralTranslation(TEXTDOMAIN_PO, L"Singular form", 0) == L"Plural result");
 	}
 }

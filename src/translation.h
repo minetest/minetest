@@ -43,6 +43,8 @@ public:
 	static inline bool isTranslationFile(const std::string &filename) {
 		return getFileLanguage(filename) != "";
 	}
+	// for testing
+	inline size_t size() { return m_translations.size() + m_plural_translations.size()/2; }
 
 private:
 	std::unordered_map<std::wstring, std::wstring> m_translations;
