@@ -4601,8 +4601,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					}
 
 				} else if (m_selected_dragging && matching && !identical) {
-					// Pickup items of the same type while dragging
-					pickup_amount = s_count;
+					if (m_selected_item->inventoryloc == s.inventoryloc &&
+							m_selected_item->listname == s.listname) {
+						// Pickup items of the same inventory list and item type while dragging
+						pickup_amount = s_count;
+					}
 				}
 
 			} else if (m_held_mouse_button == BET_LEFT) {
