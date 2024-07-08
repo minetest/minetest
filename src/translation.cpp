@@ -361,6 +361,67 @@ void Translations::loadPoEntry(const std::wstring &basefilename, const GettextPl
 	}
 }
 
+bool Translations::inEscape(const std::wstring &line, size_t pos) {
+	if (pos == std::wstring::npos || pos == 0)
+		return false;
+	pos--;
+	size_t count = 0;
+	for (; line[pos] == L'\\'; pos--) {
+		count++;
+		if (pos == 0)
+			break;
+	}
+	return count % 2 == 1;
+}
+
+std::optional<std::pair<std::wstring, std::wstring>> Translations::parsePoLine(const std::string &line) {
+	if (line.empty())
+		return std::nullopt;
+	if (line[0] == '#')
+		return std::pair(L"#", utf8_to_wide(line.substr(1)));
+
+	std::wstring wline = utf8_to_wide(line);
+	// Defend against some possibly malformed utf8 string, which
+	// is empty after converting to wide string
+	if (wline.empty())
+		return std::nullopt;
+
+	std::size_t pos = wline.find(L'"');
+	std::wstring s;
+	if (pos == std::wstring::npos) {
+		errorstream << "Unable to parse po file line: " << line << std::endl;
+		return std::nullopt;
+	}
+	auto prefix = trim(wline.substr(0, pos));
+	auto begin = pos;
+	while (pos < wline.size()) {
+		begin = wline.find(L'"', pos);
+		if (begin == std::wstring::npos) {
+			if (trim(wline.substr(pos)).empty()) {
+				break;
+			} else {
+				errorstream << "Excessive content at the end of po file line: " << line << std::endl;
+				return std::nullopt;
+			}
+		}
+		if (!trim(wline.substr(pos, begin-pos)).empty()) {
+			errorstream << "Excessive content within string concatenation in po file line: " << line << std::endl;
+			return std::nullopt;
+		}
+		auto end = wline.find(L'"', begin+1);
+		while (inEscape(wline, end)) {
+			end = wline.find(L'"', end+1);
+		}
+		if (end == std::wstring::npos) {
+			errorstream << "String extends beyond po file line: " << line << std::endl;
+			return std::nullopt;
+		}
+		s.append(unescapeC(wline.substr(begin+1, end-begin-1)));
+		pos = end+1;
+	}
+	return std::pair(prefix, s);
+}
+
 void Translations::loadPoTranslation(const std::string &basefilename, const std::string &data) {
 	std::istringstream is(data);
 	std::string line;
@@ -377,49 +438,33 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 		if (line.length () > 0 && line[line.length() - 1] == '\r')
 			line.resize(line.length() - 1);
 
-		if (line.empty() || line[0] == '#') {
-			if (line.size() > 3 && line[1] == ',') {
-				// Skip fuzzy entries
-				if ((line + ' ').find(" fuzzy ") != line.npos) {
-					if (last_entry.empty())
-						skip_last = true;
-					else
-						skip = true;
-				}
+		auto parsed = parsePoLine(line);
+		if (!parsed)
+			continue;
+		auto prefix = parsed->first;
+		auto s = parsed->second;
+
+		if (prefix == L"#" && s[0] == L',') {
+			// Skip fuzzy entries
+			if ((s + L' ').find(L" fuzzy ") != line.npos) {
+				if (last_entry.empty())
+					skip_last = true;
+				else
+					skip = true;
 			}
 			continue;
 		}
 
-		std::wstring wline = utf8_to_wide(line);
-		// Defend against some possibly malformed utf8 string, which
-		// is empty after converting to wide string
-		if (wline.empty())
-			continue;
-
-		if (wline[0] == L'"') {
+		if (prefix.empty()) {
 			// Continuation of previous line
-			if (wline.length() < 2 || wline[wline.length()-1] != L'"') {
-				errorstream << "Unable to parse po file line: " << line << std::endl;
-				continue;
-			}
-
 			if (last_key == L"") {
 				errorstream << "Unable to parse po file: continuation of non-existant previous line" << std::endl;
 				continue;
 			}
 
-			std::wstring s = unescapeC(wline.substr(1, wline.length() - 2));
 			last_entry[last_key].append(s);
 			continue;
 		}
-
-		std::size_t pos = wline.find(' ');
-		if (pos == std::wstring::npos || wline.length() < pos+3 || wline[pos+1] != L'"' || wline[wline.length() - 1] != L'"') {
-			errorstream << "Unable to parse po file line: " << line << std::endl;
-			continue;
-		}
-		std::wstring prefix = wline.substr(0, pos);
-		std::wstring s = unescapeC(wline.substr(pos+2, wline.length()-pos-3));
 
 		if (prefix == L"msgctxt" || (prefix == L"msgid" && last_entry.find(L"msgid") != last_entry.end())) {
 			if (last_entry.find(L"msgid") != last_entry.end()) {

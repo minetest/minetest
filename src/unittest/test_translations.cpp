@@ -46,7 +46,7 @@ TEST_CASE("test translations")
 		CHECK(fs::ReadFile(popath, content));
 		translations.loadTranslation(TEST_PO_NAME, content);
 
-		CHECK(translations.size() == 3);
+		CHECK(translations.size() == 4);
 		CHECK(translations.getTranslation(TEXTDOMAIN_PO, L"foo") == L"bar");
 		CHECK(translations.getTranslation(TEXTDOMAIN_PO, L"Untranslated") == L"Untranslated");
 		CHECK(translations.getTranslation(TEXTDOMAIN_PO, L"Fuzzy") == L"Fuzzy");
@@ -54,5 +54,6 @@ TEST_CASE("test translations")
 		CHECK(translations.getTranslation(TEXTDOMAIN_PO, L"Wrong order") == L"Wrong order");
 		CHECK(translations.getPluralTranslation(TEXTDOMAIN_PO, L"Plural form", 1) == L"Singular result");
 		CHECK(translations.getPluralTranslation(TEXTDOMAIN_PO, L"Singular form", 0) == L"Plural result");
+		CHECK(translations.getTranslation(L"context", L"With context") == L"Has context");
 	}
 }
