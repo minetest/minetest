@@ -392,8 +392,6 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 			serverlistmgr.add_favorite(server)
 
-			print("Adding this server to favorites: \n"..dump(server))
-
 			gamedata.servername        = server.name
 			gamedata.serverdescription = server.description
 

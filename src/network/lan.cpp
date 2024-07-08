@@ -78,24 +78,6 @@ lan_adv::lan_adv() : Thread("lan_adv")
 {
 }
 
-lan_adv::~lan_adv() 
-{
-	if (!stopRequested()) {
-		stop();
-		warningstream << "Thread Had to be forced to stop correctly." << std::endl;
-	} 
-
-	if (stopRequested()) warningstream << "Lan Adv Thread is stopping." << std::endl;
-
-	if (server_port) {
-		Json::Value answer_json;
-		answer_json["port"] = server_port;
-		answer_json["cmd"] = "shutdown";
-		send_string(fastWriteJson(answer_json));
-		warningstream << "Server shut down message sent." << std::endl;
-	}
-}
-
 void lan_adv::ask()
 {
 	if (!isRunning()) start();
@@ -111,6 +93,69 @@ void lan_adv::ask()
 
 void lan_adv::send_string(const std::string &str)
 {
+	if (g_settings->getBool("enable_ipv6")) {
+		std::vector<uint32_t> scopes;
+		// todo: windows and android
+
+#if HAVE_IFADDRS
+		struct ifaddrs *ifaddr = nullptr, *ifa = nullptr;
+		if (getifaddrs(&ifaddr) < 0) {
+		} else {
+			for (ifa = ifaddr; ifa; ifa = ifa->ifa_next) {
+				if (!ifa->ifa_addr)
+					continue;
+				if (ifa->ifa_addr->sa_family != AF_INET6)
+					continue;
+
+				auto sa = *((struct sockaddr_in6 *)ifa->ifa_addr);
+			if (sa.sin6_scope_id)
+					scopes.push_back(sa.sin6_scope_id);
+
+				/*errorstream<<"in=" << ifa->ifa_name << " a="<<Address(*((struct sockaddr_in6*)ifa->ifa_addr)).serializeString()<<" ba=" << ifa->ifa_broadaddr <<" sc=" << sa.sin6_scope_id <<" fl=" <<  ifa->ifa_flags
+				//<< " bn=" << Address(*((struct sockaddr_in6*)ifa->ifa_broadaddr)).serializeString()
+				<<"\n"; */
+			}
+		}
+		freeifaddrs(ifaddr);
+#endif
+
+		if (scopes.empty())
+			scopes.push_back(0);
+
+		struct addrinfo hints
+		{
+		};
+
+		hints.ai_family = AF_INET6;
+		hints.ai_socktype = SOCK_DGRAM;
+		hints.ai_flags = AI_V4MAPPED | AI_ADDRCONFIG;
+		struct addrinfo *result = nullptr;
+		if (!getaddrinfo("ff02::1", nullptr, &hints, &result)) {
+			for (auto info = result; info; info = info->ai_next) {
+				try {
+					sockaddr_in6 addr = *((struct sockaddr_in6 *)info->ai_addr);
+					addr.sin6_port = htons(adv_port);
+					UDPSocket socket_send(true);
+					int set_option_on = 1;
+					//setsockopt(socket_send.GetHandle(), SOL_SOCKET, IPV6_MULTICAST_HOPS,
+					//		(const char *)&set_option_on, sizeof(set_option_on));
+					auto use_scopes = scopes;
+					if (addr.sin6_scope_id) {
+						use_scopes.clear();
+						use_scopes.push_back(addr.sin6_scope_id);
+					}
+					for (auto &scope : use_scopes) {
+						addr.sin6_scope_id = scope;
+						socket_send.Send(Address(addr), str.c_str(), str.size());
+					}
+				} catch (const std::exception &e) {
+					verbosestream << "udp broadcast send over ipv6 fail " << e.what() << "\n";
+				}
+			}
+			freeaddrinfo(result);
+		}
+	}
+
 	try {
 		sockaddr_in addr = {};
 		addr.sin_family = AF_INET;
@@ -137,68 +182,7 @@ void lan_adv::send_string(const std::string &str)
 
 		socket_send.Send(Address(addr), str.c_str(), str.size());
 	} catch (const std::exception &e) {
-		verbosestream << "udp broadcast send4 fail " << e.what() << "\n";
-	}
-
-	std::vector<uint32_t> scopes;
-	// todo: windows and android
-
-#if HAVE_IFADDRS
-	struct ifaddrs *ifaddr = nullptr, *ifa = nullptr;
-	if (getifaddrs(&ifaddr) < 0) {
-	} else {
-		for (ifa = ifaddr; ifa; ifa = ifa->ifa_next) {
-			if (!ifa->ifa_addr)
-				continue;
-			if (ifa->ifa_addr->sa_family != AF_INET6)
-				continue;
-
-			auto sa = *((struct sockaddr_in6 *)ifa->ifa_addr);
-		if (sa.sin6_scope_id)
-				scopes.push_back(sa.sin6_scope_id);
-
-			/*errorstream<<"in=" << ifa->ifa_name << " a="<<Address(*((struct sockaddr_in6*)ifa->ifa_addr)).serializeString()<<" ba=" << ifa->ifa_broadaddr <<" sc=" << sa.sin6_scope_id <<" fl=" <<  ifa->ifa_flags
-			//<< " bn=" << Address(*((struct sockaddr_in6*)ifa->ifa_broadaddr)).serializeString()
-			<<"\n"; */
-		}
-	}
-	freeifaddrs(ifaddr);
-#endif
-
-	if (scopes.empty())
-		scopes.push_back(0);
-
-	struct addrinfo hints
-	{
-	};
-
-	hints.ai_family = AF_INET6;
-	hints.ai_socktype = SOCK_DGRAM;
-	hints.ai_flags = AI_V4MAPPED | AI_ADDRCONFIG;
-	struct addrinfo *result = nullptr;
-	if (!getaddrinfo("ff02::1", nullptr, &hints, &result)) {
-		for (auto info = result; info; info = info->ai_next) {
-			try {
-				sockaddr_in6 addr = *((struct sockaddr_in6 *)info->ai_addr);
-				addr.sin6_port = htons(adv_port);
-				UDPSocket socket_send(true);
-				int set_option_on = 1;
-				//setsockopt(socket_send.GetHandle(), SOL_SOCKET, IPV6_MULTICAST_HOPS,
-				//		(const char *)&set_option_on, sizeof(set_option_on));
-				auto use_scopes = scopes;
-				if (addr.sin6_scope_id) {
-					use_scopes.clear();
-					use_scopes.push_back(addr.sin6_scope_id);
-				}
-				for (auto &scope : use_scopes) {
-					addr.sin6_scope_id = scope;
-					socket_send.Send(Address(addr), str.c_str(), str.size());
-				}
-			} catch (const std::exception &e) {
-				verbosestream << "udp broadcast send6 fail " << e.what() << "\n";
-			}
-		}
-		freeaddrinfo(result);
+		verbosestream << "udp broadcast send over ipv4 fail " << e.what() << "\n";
 	}
 }
 
@@ -213,9 +197,9 @@ void *lan_adv::run()
 {
 	BEGIN_DEBUG_EXCEPTION_HANDLER;
 
-	setName("LanAdv" + (server_port ? std::string("Server") : std::string("Client")));
+	setName("lan_adv " + (server_port ? std::string("server") : std::string("client")));
+	UDPSocket socket_recv(g_settings->getBool("enable_ipv6"));
 
-	UDPSocket socket_recv(true);
 	int set_option_off = 0, set_option_on = 1;
 	setsockopt(socket_recv.GetHandle(), SOL_SOCKET, SO_REUSEADDR,
 			(const char *)&set_option_on, sizeof(set_option_on));
@@ -233,16 +217,27 @@ void *lan_adv::run()
 	setsockopt(socket_recv.GetHandle(), IPPROTO_IPV6, IPV6_V6ONLY,
 			(const char *)&set_option_off, sizeof(set_option_off));
 	socket_recv.setTimeoutMs(200);
-	try {
-		socket_recv.Bind(Address(in6addr_any, adv_port));
-	} catch (const std::exception &e) {
-		warningstream << m_name << ": cant bind ipv6 address [" << e.what()
-					  << "], trying ipv4. " << std::endl;
+
+	if (g_settings->getBool("enable_ipv6")) {
+		try {
+			socket_recv.Bind(Address(in6addr_any, adv_port));
+		} catch (const std::exception &e) {
+			warningstream << m_name << ": cant bind ipv6 address [" << e.what()
+						<< "], trying ipv4. " << std::endl;
+			try {
+				socket_recv.Bind(Address((u32)INADDR_ANY, adv_port));
+			} catch (const std::exception &e) {
+				warningstream << m_name << ": cant bind ipv4 too [" << e.what() << "]"
+							<< std::endl;
+				return nullptr;
+			}
+		}
+	} else {
 		try {
 			socket_recv.Bind(Address((u32)INADDR_ANY, adv_port));
 		} catch (const std::exception &e) {
-			warningstream << m_name << ": cant bind ipv4 too [" << e.what() << "]"
-						  << std::endl;
+			warningstream << m_name << ": cant bind ipv4 [" << e.what() << "]"
+						<< std::endl;
 			return nullptr;
 		}
 	}
@@ -273,7 +268,7 @@ void *lan_adv::run()
 		send_string(fastWriteJson(server));
 	}
 
-	while (!stopRequested()) {
+	while (isRunning() && !stopRequested()) {
 		BEGIN_DEBUG_EXCEPTION_HANDLER;
 		Address addr;
 		int rlen = socket_recv.Receive(addr, buffer, packet_maxsize);
@@ -323,6 +318,13 @@ void *lan_adv::run()
 			//errorstream<<" current list: ";for (auto & i : collected) {errorstream<< i.first <<" ; ";}errorstream<<std::endl;
 		}
 		END_DEBUG_EXCEPTION_HANDLER;
+	}
+
+	if (server_port) {
+		Json::Value answer_json;
+		answer_json["port"] = server_port;
+		answer_json["cmd"] = "shutdown";
+		send_string(fastWriteJson(answer_json));
 	}
 
 	END_DEBUG_EXCEPTION_HANDLER;
