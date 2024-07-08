@@ -22,7 +22,7 @@
 #endif
 
 #ifndef CODE_UNREACHABLE
-void CODE_UNREACHABLE [[noreturn]] () { std::abort(); };
+#define CODE_UNREACHABLE() std::abort()
 #endif
 
 namespace irr
