@@ -502,22 +502,50 @@ enum ToClientCommand : u16
 
 	TOCLIENT_SPAWN_PARTICLE = 0x46,
 	/*
-		-- struct range<T> { T min, T max, f32 bias };
+		using range<T> = RangedParameter<T> {
+			T min, max
+			f32 bias
+		}
+		using tween<T> = TweenedParameter<T> {
+			u8 style
+			u16 reps
+			f32 beginning
+			T start, end
+		}
+
 		v3f pos
 		v3f velocity
 		v3f acceleration
 		f32 expirationtime
 		f32 size
 		u8 bool collisiondetection
+
 		u32 len
 		u8[len] texture
+
 		u8 bool vertical
-		u8 collision_removal
+		u8 bool collision_removal
+
 		TileAnimation animation
+
 		u8 glow
-		u8 object_collision
+		u8 bool object_collision
+
+		u16 node_param0
+		u8 node_param2
+		u8 node_tile
+
 		v3f drag
-		range<v3f> bounce
+		range<v3f> jitter
+		range<f32> bounce
+
+		texture {
+			u8 flags (ParticleTextureFlags)
+			-- bit 0: animated
+			-- next bits: blend mode (BlendMode)
+			tween<f32> alpha
+			tween<v2f> scale
+		}
 	*/
 
 	TOCLIENT_ADD_PARTICLESPAWNER = 0x47,
@@ -536,7 +564,7 @@ enum ToClientCommand : u16
 		u16 amount
 		f32 spawntime
 		if PROTOCOL_VERSION >= 42 {
-			tween<T> pos, vel, acc, exptime, size
+			tween<range<T>> pos, vel, acc, exptime, size
 		} else {
 			v3f minpos
 			v3f maxpos
@@ -550,14 +578,23 @@ enum ToClientCommand : u16
 			f32 maxsize
 		}
 		u8 bool collisiondetection
+
 		u32 len
 		u8[len] texture
+
+		u32 spawner_id
 		u8 bool vertical
-		u8 collision_removal
-		u32 id
+		u8 bool collision_removal
+		u32 attached_id
+
 		TileAnimation animation
+
 		u8 glow
-		u8 object_collision
+		u8 bool object_collision
+
+		u16 node_param0
+		u8 node_param2
+		u8 node_tile
 
 		if PROTOCOL_VERSION < 42 {
 			f32 pos_start_bias
@@ -572,6 +609,19 @@ enum ToClientCommand : u16
 			--     f32 pos_end_bias
 			range<v3f> vel_end
 			range<v3f> acc_end
+			range<f32> exptime_end
+			range<f32> size_end
+		}
+
+		texture {
+			u8 flags (ParticleTextureFlags)
+			-- bit 0: animated
+			-- next bits: blend mode (BlendMode)
+			tween<f32> alpha
+			tween<v2f> scale
+
+			if (flags.animated)
+				TileAnimation animation
 		}
 
 		tween<range<v3f>> drag
@@ -597,24 +647,26 @@ enum ToClientCommand : u16
 			u8                spawner_flags
 			    bit 1: attractor_kill (particles dies on contact)
 			if attraction_mode > point {
-				tween<v3f> attractor_angle
-				u16        attractor_origin_attachment_object_id
+				tween<v3f> attractor_direction
+				u16        attractor_direction_attachment_object_id
 			}
 		}
 
 		tween<range<v3f>> radius
-		tween<range<v3f>> drag
 
-		u16 texpool_sz
-		texpool_sz.times {
-			u8 flags
+		u16 texpool_size
+		texpool_size.times {
+			u8 flags (ParticleTextureFlags)
 			-- bit 0: animated
-			-- other bits free & ignored as of proto v40
+			-- next bits: blend mode (BlendMode)
 			tween<f32> alpha
 			tween<v2f> scale
-			if flags.animated {
+
+			u32 len
+			u8[len] texture
+
+			if (flags.animated)
 				TileAnimation animation
-			}
 		}
 
 	*/
