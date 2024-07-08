@@ -1,0 +1,26 @@
+# This file is used by the C++ unittest for testing the parser
+msgid ""
+msgstr "Plural-Forms: nplurals=2; plural=n!=1;"
+
+msgid "foo"
+msgstr "bar"
+
+msgid "Untranslated"
+msgstr ""
+
+#, fuzzy
+msgid "Fuzzy entry"
+msgstr "Wrong"
+
+msgid "Multi\\"
+"line\n"
+"string"
+msgstr "Multi\\\"li\\ne\nresult"
+
+msgstr "Lost string"
+msgid "Wrong order"
+
+msgid "Singular form"
+msgid_plural "Plural form"
+msgstr[0] "Singular result"
+msgstr[1] "Plural result"
