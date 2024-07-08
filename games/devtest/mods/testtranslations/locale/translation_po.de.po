@@ -1,9 +1,11 @@
 # This file is used by the C++ unittest for testing the parser
 msgid ""
-msgstr "Plural-Forms: nplurals=2; plural=n!=1;"
+msgstr "\n\n\n"
+"Plural-Forms: nplurals=2; plural=n!=1;"
+"\n\n\n"
 
-msgid "foo"
-msgstr "bar"
+msgid  "foo"
+  msgstr "bar"  
 
 msgid "Untranslated"
 msgstr ""
@@ -12,15 +14,19 @@ msgstr ""
 msgid "Fuzzy entry"
 msgstr "Wrong"
 
-msgid "Multi\\"
-"line\n"
+msgid "Multi\\""line\n"
 "string"
-msgstr "Multi\\\"li\\ne\nresult"
+msgstr "Multi\\\""  "li\\ne\nresult"
 
 msgstr "Lost string"
 msgid "Wrong order"
+msgid "Something" in "between"
 
 msgid "Singular form"
 msgid_plural "Plural form"
 msgstr[0] "Singular result"
 msgstr[1] "Plural result"
+
+msgctxt "context"
+msgid "With context"
+msgstr "Has context"
