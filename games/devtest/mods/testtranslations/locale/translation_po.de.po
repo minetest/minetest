@@ -18,9 +18,10 @@ msgid "Multi\\""line\n"
 "string"
 msgstr "Multi\\\""  "li\\ne\nresult"
 
+msgctxt "Something" in "between"
+msgctxt "String does not end
 msgstr "Lost string"
 msgid "Wrong order"
-msgid "Something" in "between"
 
 msgid "Singular form"
 msgid_plural "Plural form"
