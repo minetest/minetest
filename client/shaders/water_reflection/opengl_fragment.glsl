@@ -28,8 +28,32 @@ varying mediump vec2 varTexCoord;
 centroid varying vec2 varTexCoord;
 #endif
 
-float fastNoise(vec3 uvd) {
-	return fract(sin(dot(uvd, vec3(12.9898, 78.233, 45.164))) * 43758.5453);
+vec4 perm(vec4 x)
+{
+	return mod(((x * 34.0) + 1.0) * x, 289.0);
+}
+
+float fastNoise(vec3 p)
+{
+	vec3 a = floor(p);
+	vec3 d = p - a;
+	d = d * d * (3.0 - 2.0 * d);
+
+	vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
+	vec4 k1 = perm(b.xyxy);
+	vec4 k2 = perm(k1.xyxy + b.zzww);
+
+	vec4 c = k2 + a.zzzz;
+	vec4 k3 = perm(c);
+	vec4 k4 = perm(c + 1.0);
+
+	vec4 o1 = fract(k3 * (1.0 / 41.0));
+	vec4 o2 = fract(k4 * (1.0 / 41.0));
+
+	vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
+	vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
+
+	return o4.y * d.y + o4.x * (1.0 - d.y);
 }
 
 vec2 projectPos(vec3 pos) {
@@ -43,7 +67,7 @@ vec3 worldPos(vec2 pos) {
 }
 
 const float _MaxDistance = 100000.0;
-const float _Step = 100; // Increased step size slightly
+const float _Step = 100; 
 const float _Thickness = 0.05;
 
 vec4 raycast(vec3 position, vec3 direction, float limit, vec4 fallback) {
@@ -78,10 +102,10 @@ vec4 raycast(vec3 position, vec3 direction, float limit, vec4 fallback) {
 		}
 
 		ray_length += stp;
-		stp *= 2.05; // Reduced step increment rate to increase sample density
+		stp *= 2.05; 
 	}
 
-	if (total_weight > 0.0) {
+	if (total_weight > -2.0) {
 		reflect_color /= total_weight;
 	} else {
 		reflect_color = fallback;
@@ -94,10 +118,10 @@ const float _WindSpeed = 100.0;
 const vec3 _WindDir = normalize(vec3(1.0, 1.0, 1.0));
 
 const float _WaveWidth = 16.0;
-const float _WaveHeight = 0.0;
+const float _WaveHeight = 0.02;
 
 const float _RippleWidth = 8.0;
-const float _RippleHeight = 0.0;
+const float _RippleHeight = 0.02;
 
 const float _ReflectFactor = 0.5;
 
