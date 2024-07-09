@@ -12,6 +12,7 @@
 
 // CODE_UNREACHABLE(): Invokes undefined behavior for unreachable code optimization
 #if defined(__cpp_lib_unreachable)
+#include <utility>
 #define CODE_UNREACHABLE() std::unreachable()
 #elif defined(__has_builtin)
 #if __has_builtin(__builtin_unreachable)
@@ -22,7 +23,7 @@
 #endif
 
 #ifndef CODE_UNREACHABLE
-#define CODE_UNREACHABLE() std::abort()
+#define CODE_UNREACHABLE()
 #endif
 
 namespace irr
