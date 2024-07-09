@@ -135,7 +135,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	const bool enable_ssaa = antialiasing == "ssaa";
 	const bool enable_fxaa = antialiasing == "fxaa";
 	const bool enable_volumetric_light = g_settings->getBool("enable_volumetric_lighting") && enable_bloom;
-	const bool enable_liquid_reflections = true;
+	const bool enable_liquid_reflections = g_settings->getBool("enable_liquid_reflections");
 
 	if (enable_ssaa) {
 		u16 ssaa_scale = MYMAX(2, g_settings->getU16("fsaa"));
