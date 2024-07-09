@@ -187,6 +187,30 @@ float snoise(vec3 p)
 
 	return o4.y * d.y + o4.x * (1.0 - d.y);
 }
+float water_level(vec3 p)
+{
+vec3 a = floor(p);
+vec3 d = p - a;
+d = d * d * (3.0 - 2.0 * d);
+
+vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
+vec4 k1 = perm(b.xyxy);
+vec4 k2 = perm(k1.xyxy + b.zzww);
+
+vec4 c = k2 + a.zzzz;
+vec4 k3 = perm(c);
+vec4 k4 = perm(c + 1.0);
+
+vec4 o1 = fract(k3 * (1.0 / 41.0));
+vec4 o2 = fract(k4 * (1.0 / 41.0));
+
+vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
+vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
+
+// Always return a constant value to make the surface flat
+return 0.05;
+
+}
 
 #endif
 
@@ -209,10 +233,14 @@ void main(void)
 
 	vec4 pos = inVertexPosition;
 // OpenGL < 4.3 does not support continued preprocessor lines
-#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC) && ENABLE_WAVING_WATER
+#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC) && ENABLE_WAVING_WATER// &&  !ENABLE_WATER_REFLECTIONS
 	// Generate waves with Perlin-type noise.
 	// The constants are calibrated such that they roughly
 	// correspond to the old sine waves.
+	#if ENABLE_LIQUID_REFLECTIONS
+	vec3 wavePos = (mWorld * pos).xyz + cameraOffset;
+	pos.y += (water_level(wavePos) - 1.0) * WATER_WAVE_HEIGHT * 2.0;
+	#else
 	vec3 wavePos = (mWorld * pos).xyz + cameraOffset;
 	// The waves are slightly compressed along the z-axis to get
 	// wave-fronts along the x-axis.
@@ -220,6 +248,8 @@ void main(void)
 	wavePos.z /= WATER_WAVE_LENGTH * 2.0;
 	wavePos.z += animationTimer * WATER_WAVE_SPEED * 10.0;
 	pos.y += (snoise(wavePos) - 1.0) * WATER_WAVE_HEIGHT * 5.0;
+	#endif
+
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES
 	pos.x += disp_x;
 	pos.y += disp_z * 0.1;
@@ -227,7 +257,26 @@ void main(void)
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS
 	if (varTexCoord.y < 0.05) {
 		pos.x += disp_x;
-		pos.z += disp_z;
+		pos.z += disp_z;vec3 a = floor(p);
+vec3 d = p - a;
+d = d * d * (3.0 - 2.0 * d);
+
+vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
+vec4 k1 = perm(b.xyxy);
+vec4 k2 = perm(k1.xyxy + b.zzww);
+
+vec4 c = k2 + a.zzzz;
+vec4 k3 = perm(c);
+vec4 k4 = perm(c + 1.0);
+
+vec4 o1 = fract(k3 * (1.0 / 41.0));
+vec4 o2 = fract(k4 * (1.0 / 41.0));
+
+vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
+vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
+
+float noiseValue = o4.y * d.y + o4.x * (1.0 - d.y);
+return noiseValue * 0.5;
 	}
 #endif
 	worldPosition = (mWorld * pos).xyz;
