@@ -4601,6 +4601,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					}
 
 				} else if (m_selected_dragging && matching && !identical) {
+					// Special case: move the current selected stack to "s".
 					pickup_amount = m_selected_amount;
 				}
 
@@ -4818,10 +4819,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				// Check how many items can be moved
 				pickup_amount = stack_from.count = MYMIN(pickup_amount, stack_from.count);
 				ItemStack leftover = stack_to.addItem(stack_from, m_client->idef());
-				if (move_to_s)
-					pickup_amount = stack_from.count;
-				else
+				if (!move_to_s)
 					pickup_amount -= leftover.count;
+				// else: the selected stack is moved
 			} else {
 				pickup_amount = 0;
 			}
