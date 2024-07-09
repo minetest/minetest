@@ -31,7 +31,7 @@ local cache_file_path = core.get_cache_path() .. DIR_DELIM .. "cdb" .. DIR_DELIM
 local has_fetched = false
 local latest_releases
 do
-	if check_cache_age("cdb_updates_last_checked", 3 * 3600) then
+	if check_cache_age("cdb_updates_last_checked", 24 * 3600) then
 		local f = io.open(cache_file_path, "r")
 		local data = ""
 		if f then
