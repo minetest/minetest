@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Lojban (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-03-16 00:23+0000\n"
-"Last-Translator: Indigo Ray <indigoray98@gmail.com>\n"
+"PO-Revision-Date: 2024-07-10 01:09+0000\n"
+"Last-Translator: Qimar <jbobaukensylitru@gmail.com>\n"
 "Language-Team: Lojban <https://hosted.weblate.org/projects/minetest/minetest/"
 "jbo/>\n"
 "Language: jbo\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -45,7 +45,7 @@ msgstr "lo'i kelci cu se cmima "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "le bartu casnu liste ca ku kunti"
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
@@ -69,11 +69,11 @@ msgstr "lo'i cumki te minde cu se cmima "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "le minde na ka'e se pilno "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "cpedu lo sidju be fi tu'a lo se minde"
 
 #: builtin/common/chatcommands.lua
 msgid ""
