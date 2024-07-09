@@ -23,7 +23,7 @@
 #endif
 
 #ifndef CODE_UNREACHABLE
-#define CODE_UNREACHABLE()
+#define CODE_UNREACHABLE() (void)0
 #endif
 
 namespace irr
