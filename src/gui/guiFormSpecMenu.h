@@ -514,6 +514,9 @@ private:
 
 	// used by getAbsoluteRect
 	s32 m_tabheader_upper_edge = 0;
+
+	// Determines the size (in pixels) of formspec coordinate units.
+	double calcImgsize(const parserData &data);
 };
 
 class FormspecFormSource: public IFormSource
