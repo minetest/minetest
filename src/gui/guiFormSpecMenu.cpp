@@ -4505,17 +4505,17 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			m_held_mouse_button = BET_OTHER;
 
 			if (m_selected_dragging && m_selected_item) {
-				if (identical && m_selected_allow_deselect) {
-					// Release the selected stack after combining into the current stack
-					m_selected_amount = 0;
-					m_selected_allow_deselect = false;
-				} else if (s.isValid() && !identical && (empty || matching)) {
+				if (s.isValid() && !identical && (empty || matching)) {
 					// Dragged to different slot: move all selected
 					move_amount = m_selected_amount;
 
 				} else if (!getAbsoluteClippingRect().isPointInside(m_pointer)) {
 					// Dragged outside of window: drop all selected
 					drop_amount = m_selected_amount;
+				} else if (m_selected_allow_deselect) {
+					// Release the selected stack after combining into the current stack
+					m_selected_amount = 0;
+					m_selected_allow_deselect = false;
 				}
 			}
 
@@ -4780,7 +4780,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 			// Source stack goes fully into destination stack
 			else if (leftover.empty()) {
-				m_selected_amount -= move_amount;
+				if (move_amount == stack_from.count)
+					m_selected_amount = 0; // assume that everything was moved
+				else
+					m_selected_amount -= move_amount;
 			}
 			// Source stack goes partly into destination stack
 			else {
@@ -4830,15 +4833,17 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 
 			if (pickup_amount > 0) {
+				m_selected_amount += pickup_amount;
+
 				infostream << "Handing IAction::Move to manager" << std::endl;
 				IMoveAction *a = new IMoveAction();
 				a->count = pickup_amount;
-				a->to_inv = s.inventoryloc;
-				a->to_list = s.listname;
-				a->to_i = s.i;
-				a->from_inv = m_selected_item->inventoryloc;
-				a->from_list = m_selected_item->listname;
-				a->from_i = m_selected_item->i;
+				a->from_inv = s.inventoryloc;
+				a->from_list = s.listname;
+				a->from_i = s.i;
+				a->to_inv = m_selected_item->inventoryloc;
+				a->to_list = m_selected_item->listname;
+				a->to_i = m_selected_item->i;
 				m_invmgr->inventoryAction(a);
 			}
 		} else if (shift_move_amount > 0) {
