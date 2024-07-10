@@ -426,6 +426,7 @@ void ContentFeatures::reset()
 	move_resistance = 0;
 	liquid_move_physics = false;
 	post_effect_color_shaded = false;
+	climb_factor = 1.0;
 }
 
 void ContentFeatures::setAlphaFromLegacy(u8 legacy_alpha)
@@ -553,6 +554,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, move_resistance);
 	writeU8(os, liquid_move_physics);
 	writeU8(os, post_effect_color_shaded);
+	writeF32(os, climb_factor);
 }
 
 void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
@@ -683,7 +685,12 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 		if (is.eof())
 			throw SerializationError("");
 		post_effect_color_shaded = tmp;
-	} catch (SerializationError &e) {};
+
+		f32 ftmp = readF32(is);
+		if (is.eof())
+			throw SerializationError("");
+		climb_factor = ftmp;
+	} catch(SerializationError &e) {};
 }
 
 #ifndef SERVER
