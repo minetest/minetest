@@ -105,10 +105,16 @@ local function buttonbar_buttonhandler(self, fields)
 	if fields[self.btn_prev_name] and self.cur_page > 1 then
 		self.cur_page = self.cur_page - 1
 		return true
+	elseif fields[self.btn_prev_name] and self.cur_page == 1 then
+		self.cur_page = self.num_pages
+		return true
 	end
 
 	if fields[self.btn_next_name] and self.cur_page < self.num_pages then
 		self.cur_page = self.cur_page + 1
+		return true
+	elseif fields[self.btn_next_name] and self.cur_page == self.num_pages then
+		self.cur_page = 1
 		return true
 	end
 
