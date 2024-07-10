@@ -2257,7 +2257,9 @@ void read_hud_element(lua_State *L, HudElement *elem)
 		if (has_type && deprecated_type_string != type_string) {
 			log_deprecated(L, "Ambiguous HUD element fields \"type\" and \"hud_elem_type\", "
 					"\"type\" will be used.", 1, true);
-		} else {
+		} else if (!has_type) {
+			// Transistion phase: allow mods to specify both for simplicity
+			// TODO: change L-2 to "} else {" in version 5.12 or 6.0
 			has_type = true;
 			type_string = deprecated_type_string;
 			log_deprecated(L, "Deprecated \"hud_elem_type\" field, use \"type\" instead.",
