@@ -5028,16 +5028,19 @@ double GUIFormSpecMenu::calcImgsize(const parserData &data)
 	const double gui_scaling = g_settings->getFloat("gui_scaling", 0.5f, 42.0f);
 	const double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
 
-	if (m_lock) {
-		// In fixed-size mode, inventory image size
-		// is 0.53 inch multiplied by the gui_scaling
-		// config parameter.  This magic size is chosen
-		// to make the main menu (15.5 inventory images
-		// wide, including border) just fit into the
-		// default window (800 pixels wide) at 96 DPI
-		// and default scaling (1.00).
-		return 0.5555 * screen_dpi * gui_scaling;
-	}
+
+	// In fixed-size mode, inventory image size
+	// is 0.53 inch multiplied by the gui_scaling
+	// config parameter.  This magic size is chosen
+	// to make the main menu (15.5 inventory images
+	// wide, including border) just fit into the
+	// default window (800 pixels wide) at 96 DPI
+	// and default scaling (1.00).
+	double fixed_imgsize = 0.5555 * screen_dpi * gui_scaling;
+
+	// Fixed-size mode
+	if (m_lock)
+		return fixed_imgsize;
 
 	// Variables for the maximum imgsize that can fit in the screen.
 	double fitx_imgsize;
@@ -5072,6 +5075,11 @@ double GUIFormSpecMenu::calcImgsize(const parserData &data)
 		// Desktop computers have more space, so try to fit 15 coordinates.
 		prefer_imgsize = min_screen_dim / 15 * gui_scaling;
 	}
+	// Use the available space more effectively on small windows/screens.
+	// Scaling menus down in proportion to the window size doesn't always make
+	// sense.
+	prefer_imgsize = std::max(prefer_imgsize, fixed_imgsize);
+
 	// Try to use the preferred imgsize, but if that's bigger than the maximum
 	// size, use the maximum size.
 	return std::min(prefer_imgsize, std::min(fitx_imgsize, fity_imgsize));
