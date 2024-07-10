@@ -4505,7 +4505,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			m_held_mouse_button = BET_OTHER;
 
 			if (m_selected_dragging && m_selected_item) {
-				if (s.isValid() && !identical && (empty || matching)) {
+				if (identical && m_selected_allow_deselect) {
+					// Release the selected stack after combining into the current stack
+					m_selected_amount = 0;
+					m_selected_allow_deselect = false;
+				} else if (s.isValid() && !identical && (empty || matching)) {
 					// Dragged to different slot: move all selected
 					move_amount = m_selected_amount;
 
@@ -4601,8 +4605,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					}
 
 				} else if (m_selected_dragging && matching && !identical) {
-					// Special case: move the current selected stack to "s".
-					pickup_amount = m_selected_amount;
+					// When dragging (keep LMB down), the selected stack is moved to `s`.
+					move_amount = m_selected_amount;
 				}
 
 			} else if (m_held_mouse_button == BET_LEFT) {
@@ -4796,6 +4800,14 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				a->to_i = s.i;
 				m_invmgr->inventoryAction(a);
 			}
+
+			if (m_selected_dragging) {
+				// Assume that the ItemStack movement was successful. To keep dragging
+				// `m_selected_item`, we need to re-select the combined ItemStack.
+				*m_selected_item = s;
+				m_selected_amount = stack_to.count;
+				m_selected_allow_deselect = true;
+			}
 		} else if (pickup_amount > 0) {
 			// Send IAction::Move
 
@@ -4803,15 +4815,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			assert(s.isValid());
 			assert(list_selected && list_s);
 
-			// When picking up items by click+drag, we want the item stacks to pile up at
-			// the destination slot because putting back could be disallowed by Lua.
-			// When picking up additional items using the mouse wheel, the selected stack
-			// must remain at its origin.
-			const bool move_to_s = m_selected_dragging;
 			ItemStack stack_from = list_s->getItem(s.i);
 			ItemStack stack_to = list_selected->getItem(m_selected_item->i);
-			if (move_to_s)
-				std::swap(stack_from, stack_to);
 
 			// Only move if the items are exactly the same,
 			// we shouldn't attempt to pickup different items
@@ -4819,9 +4824,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				// Check how many items can be moved
 				pickup_amount = stack_from.count = MYMIN(pickup_amount, stack_from.count);
 				ItemStack leftover = stack_to.addItem(stack_from, m_client->idef());
-				if (!move_to_s)
-					pickup_amount -= leftover.count;
-				// else: the selected stack is moved
+				pickup_amount -= leftover.count;
 			} else {
 				pickup_amount = 0;
 			}
@@ -4830,29 +4833,13 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				infostream << "Handing IAction::Move to manager" << std::endl;
 				IMoveAction *a = new IMoveAction();
 				a->count = pickup_amount;
-				const GUIInventoryList::ItemSpec
-					*spec_from = &s,
-					*spec_to = m_selected_item;
-
-				if (move_to_s)
-					std::swap(spec_from, spec_to);
-
-				a->to_inv = spec_to->inventoryloc;
-				a->to_list = spec_to->listname;
-				a->to_i = spec_to->i;
-				a->from_inv = spec_from->inventoryloc;
-				a->from_list = spec_from->listname;
-				a->from_i = spec_from->i;
+				a->to_inv = s.inventoryloc;
+				a->to_list = s.listname;
+				a->to_i = s.i;
+				a->from_inv = m_selected_item->inventoryloc;
+				a->from_list = m_selected_item->listname;
+				a->from_i = m_selected_item->i;
 				m_invmgr->inventoryAction(a);
-
-				if (move_to_s)
-					m_selected_amount = stack_to.count;
-				else
-					m_selected_amount += pickup_amount;
-				//printf("move @%d tot=%d pu=%d\n", m_selected_item->i, m_selected_amount, pickup_amount);
-
-				if (move_to_s)
-					*m_selected_item = s;
 			}
 		} else if (shift_move_amount > 0) {
 			// Try to shift-move the item
