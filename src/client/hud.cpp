@@ -283,20 +283,20 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 
 	// Draw items
 	core::rect<s32> imgrect(0, 0, m_hotbar_imagesize, m_hotbar_imagesize);
-	const s32 list_size = mainlist ? mainlist->getSize() : 0;
-	for (s32 i = inv_offset; i < itemcount && i < list_size; i++) {
+	const s32 list_max = std::min(itemcount, (s32) (mainlist ? mainlist->getSize() : 0 ));
+	for (s32 i = inv_offset; i < list_max; i++) {
 		s32 fullimglen = m_hotbar_imagesize + m_padding * 2;
 
 		v2s32 steppos;
 		switch (direction) {
 		case HUD_DIR_RIGHT_LEFT:
-			steppos = v2s32(-(m_padding + (i - inv_offset) * fullimglen), m_padding);
+			steppos = v2s32(m_padding + (list_max - 1 - i - inv_offset) * fullimglen, m_padding);
 			break;
 		case HUD_DIR_TOP_BOTTOM:
 			steppos = v2s32(m_padding, m_padding + (i - inv_offset) * fullimglen);
 			break;
 		case HUD_DIR_BOTTOM_TOP:
-			steppos = v2s32(m_padding, -(m_padding + (i - inv_offset) * fullimglen));
+			steppos = v2s32(m_padding, m_padding + (list_max - 1 - i - inv_offset) * fullimglen);
 			break;
 		default:
 			steppos = v2s32(m_padding + (i - inv_offset) * fullimglen, m_padding);
