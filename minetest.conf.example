@@ -50,6 +50,11 @@
 #    type: float min: 0.16 max: 2
 # repeat_place_time = 0.25
 
+#    The minimum time in seconds it takes between digging nodes when holding
+#    the dig button.
+#    type: float min: 0 max: 2
+# repeat_dig_time = 0.0
+
 #    Automatically jump up single-node obstacles.
 #    type: bool
 # autojump = false
@@ -80,13 +85,21 @@
 
 ## Touchscreen
 
-#    The length in pixels it takes for touchscreen interaction to start.
-#    type: int min: 0 max: 100
-# touchscreen_threshold = 20
+#    Enables touchscreen mode, allowing you to play the game with a touchscreen.
+#    type: bool
+# enable_touch = true
 
 #    Touchscreen sensitivity multiplier.
 #    type: float min: 0.001 max: 10
 # touchscreen_sensitivity = 0.2
+
+#    The length in pixels after which a touch interaction is considered movement.
+#    type: int min: 0 max: 100
+# touchscreen_threshold = 20
+
+#    The delay in milliseconds after which a touch interaction is considered a long tap.
+#    type: int min: 100 max: 1000
+# touch_long_tap_delay = 400
 
 #    Use crosshair to select object instead of whole screen.
 #    If enabled, a crosshair will be shown and will be used for selecting object.
@@ -102,6 +115,18 @@
 #    If enabled, virtual joystick will also tap "Aux1" button when out of main circle.
 #    type: bool
 # virtual_joystick_triggers_aux1 = false
+
+#    The gesture for for punching players/entities.
+#    This can be overridden by games and mods.
+#
+#    * short_tap
+#    Easy to use and well-known from other games that shall not be named.
+#
+#    * long_tap
+#    Known from the classic Minetest mobile controls.
+#    Combat is more or less impossible.
+#    type: enum values: short_tap, long_tap
+# touch_punch_gesture = short_tap
 
 #
 # Graphics and Audio
@@ -167,9 +192,9 @@
 
 ### Graphics Effects
 
-#    Makes all liquids opaque
+#    Allows liquids to be translucent.
 #    type: bool
-# opaque_water = false
+# translucent_liquids = true
 
 #    Leaves style:
 #    -   Fancy:  all faces visible
@@ -348,7 +373,8 @@
 #
 #    * None - No antialiasing (default)
 #
-#    * FSAA - Hardware-provided full-screen antialiasing (incompatible with shaders)
+#    * FSAA - Hardware-provided full-screen antialiasing
+#    (incompatible with Post Processing and Undersampling)
 #    A.K.A multi-sample antialiasing (MSAA)
 #    Smoothens out block edges but does not affect the insides of textures.
 #    A restart is required to change this option.
@@ -389,7 +415,6 @@
 
 #    Shaders allow advanced visual effects and may increase performance on some video
 #    cards.
-#    This only works with the OpenGL video backend.
 #    type: bool
 # enable_shaders = true
 
@@ -488,6 +513,10 @@
 
 ### Post Processing
 
+#    Enables the post processing pipeline.
+#    type: bool
+# enable_post_processing = true
+
 #    Enables Hable's 'Uncharted 2' filmic tone mapping.
 #    Simulates the tone curve of photographic film and how this approximates the
 #    appearance of high dynamic range images. Mid-range contrast is slightly
@@ -507,6 +536,16 @@
 #    Range: from -1 to 1.0
 #    type: float min: -1 max: 1
 # exposure_compensation = 0.0
+
+#    Apply dithering to reduce color banding artifacts.
+#    Dithering significantly increases the size of losslessly-compressed
+#    screenshots and it works incorrectly if the display or operating system
+#    performs additional dithering or if the color channels are not quantized
+#    to 8 bits.
+#    With OpenGL ES, dithering only works if the shader supports high
+#    floating-point precision and it may have a higher performance impact.
+#    type: bool
+# debanding = true
 
 ### Bloom
 
@@ -539,12 +578,20 @@
 #    type: float min: 0.1 max: 8
 # bloom_radius = 1
 
+#    Set to true to enable volumetric lighting effect (a.k.a. "Godrays").
+#    type: bool
+# enable_volumetric_lighting = false
+
 ## Audio
 
 #    Volume of all sounds.
 #    Requires the sound system to be enabled.
 #    type: float min: 0 max: 1
 # sound_volume = 0.8
+
+#    Volume multiplier when the window is unfocused.
+#    type: float min: 0 max: 1
+# sound_volume_unfocused = 0.3
 
 #    Whether to mute sounds. You can unmute sounds at any time, unless the
 #    sound system is disabled (enable_sound=false).
@@ -555,7 +602,7 @@
 
 ## User Interfaces
 
-#    Set the language. Leave empty to use the system language.
+#    Set the language. By default, the system language is used.
 #    A restart is required after changing this.
 #    type: enum values: , be, bg, ca, cs, da, de, el, en, eo, es, et, eu, fi, fr, gd, gl, hu, id, it, ja, jbo, kk, ko, lt, lv, ms, nb, nl, nn, pl, pt, pt_BR, ro, ru, sk, sl, sr_Cyrl, sr_Latn, sv, sw, tr, uk, vi, zh_CN, zh_TW
 # language =
@@ -694,6 +741,7 @@
 # enable_split_login_register = true
 
 #    URL to JSON file which provides information about the newest Minetest release
+#    If this is empty the engine will never check for updates.
 #    type: string
 # update_information_url = https://www.minetest.net/release_info.json
 
@@ -763,8 +811,8 @@
 #    Define the oldest clients allowed to connect.
 #    Older clients are compatible in the sense that they will not crash when connecting
 #    to new servers, but they may not support all new features that you are expecting.
-#    This allows more fine-grained control than strict_protocol_version_checking.
-#    Minetest may still enforce its own internal minimum, and enabling
+#    This allows for more fine-grained control than strict_protocol_version_checking.
+#    Minetest still enforces its own internal minimum, and enabling
 #    strict_protocol_version_checking will effectively override this.
 #    type: int min: 1 max: 65535
 # protocol_version_min = 1
@@ -1186,8 +1234,9 @@
 #    The 'snowbiomes' flag enables the new 5 biome system.
 #    When the 'snowbiomes' flag is enabled jungles are automatically enabled and
 #    the 'jungles' flag is ignored.
-#    type: flags possible values: jungles, biomeblend, mudflow, snowbiomes, flat, trees, nojungles, nobiomeblend, nomudflow, nosnowbiomes, noflat, notrees
-# mgv6_spflags = jungles,biomeblend,mudflow,snowbiomes,noflat,trees
+#    The 'temples' flag disables generation of desert temples. Normal dungeons will appear instead.
+#    type: flags possible values: jungles, biomeblend, mudflow, snowbiomes, flat, trees, temples, nojungles, nobiomeblend, nomudflow, nosnowbiomes, noflat, notrees, notemples
+# mgv6_spflags = jungles,biomeblend,mudflow,snowbiomes,noflat,trees,temples
 
 #    Deserts occur when np_biome exceeds this value.
 #    When the 'snowbiomes' flag is enabled, this is ignored.
@@ -2591,6 +2640,10 @@
 #    type: bool
 # random_input = false
 
+#    Enable random mod loading (mainly used for testing).
+#    type: bool
+# random_mod_load_order = false
+
 #    Enable mod channels support.
 #    type: bool
 # enable_mod_channels = false
@@ -2673,19 +2726,14 @@
 #    The rendering back-end.
 #    Note: A restart is required after changing this!
 #    OpenGL is the default for desktop, and OGLES2 for Android.
-#    Shaders are supported by OpenGL and OGLES2 (experimental).
-#    type: enum values: , opengl, ogles1, ogles2
+#    Shaders are supported by everything but OGLES1.
+#    type: enum values: , opengl, opengl3, ogles1, ogles2
 # video_driver =
 
 #    Distance in nodes at which transparency depth sorting is enabled
 #    Use this to limit the performance impact of transparency depth sorting
 #    type: int min: 0 max: 128
 # transparency_sorting_distance = 16
-
-#    Enable vertex buffer objects.
-#    This should greatly improve graphics performance.
-#    type: bool
-# enable_vbo = true
 
 #    Radius of cloud area stated in number of 64 node cloud squares.
 #    Values larger than 26 will start to produce sharp cutoffs at cloud area corners.
@@ -2709,12 +2757,6 @@
 #    Value of 0 (default) will let Minetest autodetect the number of available threads.
 #    type: int min: 0 max: 8
 # mesh_generation_threads = 0
-
-#    Size of the MapBlock cache of the mesh generator. Increasing this will
-#    increase the cache hit %, reducing the data being copied from the main
-#    thread, thus reducing jitter.
-#    type: int min: 0 max: 1000
-# meshgen_block_cache_size = 20
 
 #    True = 256
 #    False = 128
@@ -2758,6 +2800,17 @@
 #    Systems with a low-end GPU (or no GPU) would benefit from smaller values.
 #    type: int min: 1 max: 16
 # client_mesh_chunk = 1
+
+#    Enables debug and error-checking in the OpenGL driver.
+#    type: bool
+# opengl_debug = false
+
+### Sound
+
+#    Comma-separated list of AL and ALC extensions that should not be used.
+#    Useful for testing. See al_extensions.[h,cpp] for details.
+#    type: string
+# sound_extensions_blacklist =
 
 ### Font
 
@@ -2937,9 +2990,10 @@
 
 ### Server/Env Performance
 
-#    Length of a server tick and the interval at which objects are generally updated over
-#    network, stated in seconds.
-#    type: float min: 0
+#    Length of a server tick (the interval at which everything is generally updated),
+#    stated in seconds.
+#    Does not apply to sessions hosted from the client menu.
+#    type: float min: 0 max: 1
 # dedicated_server_step = 0.09
 
 #    Whether players are shown to clients without any range limit.
@@ -3027,12 +3081,11 @@
 #    At this distance the server will aggressively optimize which blocks are sent to
 #    clients.
 #    Small values potentially improve performance a lot, at the expense of visible
-#    rendering glitches (some blocks will not be rendered under water and in caves,
-#    as well as sometimes on land).
+#    rendering glitches (some blocks might not be rendered correctly in caves).
 #    Setting this to a value greater than max_block_send_distance disables this
 #    optimization.
-#    Stated in mapblocks (16 nodes).
-#    type: int min: 2 max: 32767
+#    Stated in MapBlocks (16 nodes).
+#    type: int min: 2 max: 2047
 # block_send_optimize_distance = 4
 
 #    If enabled, the server will perform map block occlusion culling based on
@@ -3041,6 +3094,14 @@
 #    invisible blocks, so that the utility of noclip mode is reduced.
 #    type: bool
 # server_side_occlusion_culling = true
+
+#    At this distance the server will perform a simpler and cheaper occlusion check.
+#    Smaller values potentially improve performance, at the expense of temporarily visible
+#    rendering glitches (missing blocks).
+#    This is especially useful for very large viewing range (upwards of 500).
+#    Stated in MapBlocks (16 nodes).
+#    type: int min: 2 max: 2047
+# block_cull_optimize_distance = 25
 
 ### Mapgen
 
@@ -3103,10 +3164,6 @@
 # curl_file_download_timeout = 300000
 
 ### Miscellaneous
-
-#    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
-#    type: int min: 1
-# screen_dpi = 72
 
 #    Adjust the detected display density, used for scaling UI elements.
 #    type: float min: 0.5 max: 5
@@ -3261,23 +3318,6 @@
 #    type: bool
 # enable_sound = true
 
-#    Unix timestamp (integer) of when the client last checked for an update
-#    Set this value to "disabled" to never check for updates.
-#    type: string
-# update_last_checked =
-
-#    Version number which was last seen during an update check.
-#
-#    Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch
-#    Ex: 5.5.0 is 005005000
-#    type: int
-# update_last_known = 0
-
-#    If this is set to true, the user will never (again) be shown the
-#    "reinstall Minetest Game" notification.
-#    type: bool
-# no_mtg_notification = false
-
 #    Key for moving the player forward.
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
@@ -3416,6 +3456,11 @@
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_screenshot = KEY_F12
+
+#    Key for toggling fullscreen mode.
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
+#    type: key
+# keymap_fullscreen = KEY_F11
 
 #    Key for dropping the currently selected item.
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
@@ -3605,9 +3650,9 @@
 #    Key for toggling the display of fog.
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
-# keymap_toggle_force_fog_off = KEY_F3
+# keymap_toggle_fog = KEY_F3
 
-#    Key for toggling the camera update. Only used for development
+#    Key for toggling the camera update. Only usable with 'debug' privilege.
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_toggle_update_camera =
@@ -3621,6 +3666,11 @@
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_toggle_profiler = KEY_F6
+
+#    Key for toggling the display of mapblock boundaries.
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
+#    type: key
+# keymap_toggle_block_bounds =
 
 #    Key for switching between first- and third-person camera.
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
@@ -3636,3 +3686,4 @@
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_decrease_viewing_range_min = -
+
