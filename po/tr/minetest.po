@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Turkish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 18:48+0100\n"
+"POT-Creation-Date: 2024-07-11 20:16+0800\n"
 "PO-Revision-Date: 2023-05-22 21:48+0000\n"
 "Last-Translator: Furkan Baytekin <furkanbaytekin@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
@@ -71,7 +71,8 @@ msgid "Command not available: "
 msgstr "Komut kullanılamıyor: "
 
 #: builtin/common/chatcommands.lua
-msgid "Get help for commands"
+#, fuzzy
+msgid "Get help for commands (-t: output in chat)"
 msgstr "Komutlar için yardım alın"
 
 #: builtin/common/chatcommands.lua
@@ -82,12 +83,9 @@ msgstr ""
 "help all' kullanın."
 
 #: builtin/common/chatcommands.lua
-msgid "[all | <cmd>]"
+#, fuzzy
+msgid "[all | <cmd>] [-t]"
 msgstr "[all | <komut>]"
-
-#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
-msgid "OK"
-msgstr "Tamam"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -104,6 +102,10 @@ msgstr "Bir hata oluştu:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Ana menü"
+
+#: builtin/fstk/ui.lua
+msgid "OK"
+msgstr "Tamam"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -133,19 +135,26 @@ msgstr "Yalnızca $1 protokol sürümü desteklenmektedir."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Yalnızca $1 ve $2 arası protokol sürümleri desteklenmektedir."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "\"$1\" zaten var.Değiştirilsin mi?"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Error installing \"$1\": $2"
+msgstr "\"$1\" yüklenirken hata oluştu: $2"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "$ 1 ve $ 2 destek dosyaları yüklenecek."
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download \"$1\""
+msgstr "\"$1\" indirilemedi"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr "$1 'e $2"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download $1"
+msgstr "$1 indirilemedi"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/contentdb.lua
+#, fuzzy
+msgid ""
+"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
+"broken archive)"
+msgstr "\"$1\" ayıklanamadı (desteklenmeyen dosya türü veya bozuk arşiv)"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -153,156 +162,157 @@ msgstr ""
 "$1 indiriliyor,\n"
 "$2 sırada"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "$1 downloading..."
 msgstr "$1 indiriliyor..."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "$1 için destek dosyaları bulanamadı."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "$1 indirilecek, ve $2 destek dosyaları atlanacak."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All packages"
 msgstr "Tüm paketler"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "Zaten kuruldu"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Back to Main Menu"
 msgstr "Ana Menüye Dön"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "Minetest cURL olmadan derlendiğinde ContentDB kullanılamaz"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Downloading..."
+msgstr "İndiriliyor..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Error getting dependencies for package"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Games"
+msgstr "Oyunlar"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "Kur"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Yükleniyor..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Mods"
+msgstr "Modlar"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No packages could be retrieved"
+msgstr "Paket alınamadı"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "Sonuç yok"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No updates"
+msgstr "Güncelleme yok"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Queued"
+msgstr "Sıraya alındı"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Texture packs"
+msgstr "Doku paketleri"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "The package $1 was not found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Kaldır"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Güncelleme"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Update All [$1]"
+msgstr "Hepsini güncelle [$1]"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "View more information in a web browser"
+msgstr "Tarayıcı'da daha fazla bilgi edinin"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "$ 1 ve $ 2 destek dosyaları yüklenecek."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 by $2"
+msgstr "$1 'e $2"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 required dependencies could not be found."
+msgstr "$1 için destek dosyaları bulanamadı."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "$1 indirilecek, ve $2 destek dosyaları atlanacak."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Already installed"
+msgstr "Zaten kuruldu"
+
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Base Game:"
 msgstr "Yerel oyun:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_overwrite.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
+#: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "İptal"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "Minetest cURL olmadan derlendiğinde ContentDB kullanılamaz"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Gereklilikler:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "İndiriliyor..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr "\"$1\" yüklenirken hata oluştu: $2"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download \"$1\""
-msgstr "\"$1\" indirilemedi"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "$1 indirilemedi"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "\"$1\" ayıklanamadı (desteklenmeyen dosya türü veya bozuk arşiv)"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Games"
-msgstr "Oyunlar"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Install"
-msgstr "Kur"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install $1"
 msgstr "$1 kur"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install missing dependencies"
 msgstr "Eksik bağımlılıkları kur"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Yükleniyor..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Mods"
-msgstr "Modlar"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "Paket alınamadı"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "Sonuç yok"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No updates"
-msgstr "Güncelleme yok"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Not found"
 msgstr "Bulunamadı"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "Üzerine yaz"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Please check that the base game is correct."
 msgstr "Lütfen asıl oyunun doğru olup olmadığını gözden geçirin."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Queued"
-msgstr "Sıraya alındı"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "\"$1\" zaten var.Değiştirilsin mi?"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "Doku paketleri"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "The package $1 was not found."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "Kaldır"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "Güncelleme"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "Hepsini güncelle [$1]"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "Tarayıcı'da daha fazla bilgi edinin"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "Overwrite"
+msgstr "Üzerine yaz"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -454,8 +464,18 @@ msgid "Decorations"
 msgstr "Dekorasyonlar"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Desert temples"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
 msgstr "Geliştirme Testi, geliştiriciler içindir."
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Different dungeon variant generated in desert biomes (only if dungeons "
+"enabled)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -833,10 +853,6 @@ msgstr ""
 msgid "Back"
 msgstr "Geri"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "Tuşları değiştir"
-
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -846,7 +862,8 @@ msgstr "Sohbet"
 msgid "Clear"
 msgstr "Temizle"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Kontroller"
 
@@ -1062,6 +1079,16 @@ msgid "Install games from ContentDB"
 msgstr "ContentDB'den oyunlar yükle"
 
 #: builtin/mainmenu/tab_local.lua
+msgid "Minetest doesn't come with a game by default."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
+msgid ""
+"Minetest is a game-creation platform that allows you to play many different "
+"games."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "Yeni"
 
@@ -1094,8 +1121,8 @@ msgid "Start Game"
 msgstr "Oyun Başlat"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You have no games installed."
-msgstr "Kurulu oyununuz yok."
+msgid "You need to install a game before you can create a world."
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1177,16 +1204,8 @@ msgid "Rebuilding shaders..."
 msgstr "Gölgelemeler yeniden oluşturuluyor..."
 
 #: src/client/clientlauncher.cpp
-msgid "Connection error (timed out?)"
-msgstr "Bağlantı hatası (zaman aşımı?)"
-
-#: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "Oyun bulunamadı veya yüklenemedi: "
-
-#: src/client/clientlauncher.cpp
-msgid "Invalid gamespec."
-msgstr "Geçersiz oyun özellikleri."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1212,7 +1231,11 @@ msgstr "Sağlanan parola dosyası açılamadı: "
 msgid "Provided world path doesn't exist: "
 msgstr "Belirtilen dünya konumu yok: "
 
-#: src/client/game.cpp src/server.cpp
+#: src/client/clientmedia.cpp src/client/game.cpp
+msgid "Media..."
+msgstr "Medya..."
+
+#: src/client/game.cpp src/client/shader.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1221,16 +1244,8 @@ msgstr ""
 "Hata ayrıntıları için debug.txt dosyasına bakın."
 
 #: src/client/game.cpp
-msgid "- Address: "
-msgstr "- Adres: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Kip: "
-
-#: src/client/game.cpp
-msgid "- Port: "
-msgstr "- Port: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1265,10 +1280,6 @@ msgstr "Kendiliğinden ileri etkin"
 #: src/client/game.cpp
 msgid "Block bounds hidden"
 msgstr "Blok sınırları gizli"
-
-#: src/client/game.cpp
-msgid "Block bounds shown for all blocks"
-msgstr "Blok sınırları tüm bloklar için gösteriliyor"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
@@ -1316,6 +1327,10 @@ msgid "Connecting to server..."
 msgstr "Sunucuya bağlanılıyor..."
 
 #: src/client/game.cpp
+msgid "Connection error (timed out?)"
+msgstr "Bağlantı hatası (zaman aşımı?)"
+
+#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "Bilinmeyen bir nedenle bağlantı başarısız oldu"
 
@@ -1324,46 +1339,13 @@ msgid "Continue"
 msgstr "Devam et"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
-msgid ""
-"Controls:\n"
-"- %s: move forwards\n"
-"- %s: move backwards\n"
-"- %s: move left\n"
-"- %s: move right\n"
-"- %s: jump/climb up\n"
-"- %s: dig/punch/use\n"
-"- %s: place/use\n"
-"- %s: sneak/climb down\n"
-"- %s: drop item\n"
-"- %s: inventory\n"
-"- Mouse: turn/look\n"
-"- Mouse wheel: select item\n"
-"- %s: chat\n"
-msgstr ""
-"Kontroller:\n"
-"- %s: ileri hareket\n"
-"- %s: geri hareket\n"
-"- %s: sola hareket\n"
-"- %s: sağa hareket\n"
-"- %s: zıpla/tırman\n"
-"- %s: kaz/vur\n"
-"- %s: yerleştir/kullan\n"
-"- %s: sız/aşağı in\n"
-"- %s: ögeyi at\n"
-"- %s: envanter\n"
-"- Fare: dön/bak\n"
-"- Fare tekerleği: öge seç\n"
-"- %s: sohbet\n"
-
-#: src/client/game.cpp
 #, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/use\n"
-"- long tap: dig/punch/use\n"
+"- tap: place/punch/use (default)\n"
+"- long tap: dig/use (default)\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1456,6 +1438,11 @@ msgid "Fog enabled"
 msgstr "Sis etkin"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Fog enabled by game or mod"
+msgstr "Yakınlaştırma şu anda oyun veya mod tarafından devre dışı"
+
+#: src/client/game.cpp
 msgid "Game info:"
 msgstr "Oyun Bilgisi:"
 
@@ -1474,10 +1461,6 @@ msgstr "Öge tanımları..."
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "KiB/s"
-
-#: src/client/game.cpp
-msgid "Media..."
-msgstr "Medya..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1635,10 +1618,6 @@ msgstr "Telkafes gösteriliyor"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "Yakınlaştırma şu anda oyun veya mod tarafından devre dışı"
-
-#: src/client/game.cpp
-msgid "ok"
-msgstr "tamam"
 
 #: src/client/gameui.cpp
 #, fuzzy
@@ -1974,6 +1953,15 @@ msgstr "Yüzey kipinde mini harita, Yakınlaştırma x%d"
 msgid "Minimap in texture mode"
 msgstr "Doku kipinde mini harita"
 
+#: src/client/shader.cpp
+#, fuzzy, c-format
+msgid "Failed to compile the \"%s\" shader."
+msgstr "Web sayfası açılamadı"
+
+#: src/client/shader.cpp
+msgid "Shaders are enabled but GLSL is not supported by the driver."
+msgstr ""
+
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2164,6 +2152,19 @@ msgstr "Yakınlaştır"
 msgid "press key"
 msgstr "tuşa bas"
 
+#: src/gui/guiOpenURL.cpp
+msgid "Open"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+msgid "Open URL?"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+#, fuzzy
+msgid "Unable to open URL"
+msgstr "Web sayfası açılamadı"
+
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "Değiştir"
@@ -2197,6 +2198,7 @@ msgstr "Ses Seviyesi: %%%d"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
+#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "tr"
 
@@ -2209,6 +2211,64 @@ msgstr ""
 #, fuzzy
 msgid "Name is taken. Please choose another name"
 msgstr "Lütfen bir ad seçin!"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Another client is connected with this name.  If your client closed "
+"unexpectedly, try again in a minute."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Empty passwords are disallowed.  Set a password and try again."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Internal server error"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Invalid password"
+msgstr "Eski Parola"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Player name contains disallowed characters"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Player name not allowed"
+msgstr "Kullanıcı adı çok uzun."
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Server shutting down"
+msgstr "Kapatılıyor..."
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"The server has experienced an internal error.  You will now be disconnected."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "The server is running in simple singleplayer mode.  You cannot connect."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Too many users"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Your client sent something the server didn't expect.  Try reconnecting or "
+"updating your client."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Your client's version is not supported.\n"
+"Please contact the server administrator."
+msgstr ""
 
 #: src/server.cpp
 #, fuzzy, c-format
@@ -5899,7 +5959,7 @@ msgstr "Yumuşak aydınlatma"
 #, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Change Keys."
+"cinematic mode by using the key set in Controls."
 msgstr "Sinematik kipte kamera dönüşünü yumuşatır. 0 devre dışı bırakır."
 
 #: src/settings_translation_file.cpp
@@ -6902,11 +6962,17 @@ msgstr "cURL etkileşimli zaman aşımı"
 msgid "cURL parallel limit"
 msgstr "cURL paralel sınırı"
 
+#~ msgid "- Address: "
+#~ msgstr "- Adres: "
+
 #~ msgid "- Creative Mode: "
 #~ msgstr "- Yaratıcı Kip: "
 
 #~ msgid "- Damage: "
 #~ msgstr "- Hasar: "
+
+#~ msgid "- Port: "
+#~ msgstr "- Port: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -6987,6 +7053,9 @@ msgstr "cURL paralel sınırı"
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "Tam ekran kipinde piksel başına bit (renk derinliği)."
 
+#~ msgid "Block bounds shown for all blocks"
+#~ msgstr "Blok sınırları tüm bloklar için gösteriliyor"
+
 #~ msgid "Bump Mapping"
 #~ msgstr "Tümsek Eşleme"
 
@@ -7011,6 +7080,9 @@ msgstr "cURL paralel sınırı"
 
 #~ msgid "Center of light curve mid-boost."
 #~ msgstr "Işık eğrisi orta-artırmanın merkezi."
+
+#~ msgid "Change Keys"
+#~ msgstr "Tuşları değiştir"
 
 #, fuzzy
 #~ msgid "Change keys"
@@ -7084,6 +7156,38 @@ msgstr "cURL paralel sınırı"
 #~ msgstr ""
 #~ "Tünellerin genişliğini denetler, daha küçük bir değer daha geniş tüneller "
 #~ "yaratır."
+
+#, fuzzy, c-format
+#~ msgid ""
+#~ "Controls:\n"
+#~ "- %s: move forwards\n"
+#~ "- %s: move backwards\n"
+#~ "- %s: move left\n"
+#~ "- %s: move right\n"
+#~ "- %s: jump/climb up\n"
+#~ "- %s: dig/punch/use\n"
+#~ "- %s: place/use\n"
+#~ "- %s: sneak/climb down\n"
+#~ "- %s: drop item\n"
+#~ "- %s: inventory\n"
+#~ "- Mouse: turn/look\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- %s: chat\n"
+#~ msgstr ""
+#~ "Kontroller:\n"
+#~ "- %s: ileri hareket\n"
+#~ "- %s: geri hareket\n"
+#~ "- %s: sola hareket\n"
+#~ "- %s: sağa hareket\n"
+#~ "- %s: zıpla/tırman\n"
+#~ "- %s: kaz/vur\n"
+#~ "- %s: yerleştir/kullan\n"
+#~ "- %s: sız/aşağı in\n"
+#~ "- %s: ögeyi at\n"
+#~ "- %s: envanter\n"
+#~ "- Fare: dön/bak\n"
+#~ "- Fare tekerleği: öge seç\n"
+#~ "- %s: sohbet\n"
 
 #~ msgid "Creative"
 #~ msgstr "Yaratıcı"
@@ -7497,6 +7601,9 @@ msgstr "cURL paralel sınırı"
 
 #~ msgid "Instrumentation"
 #~ msgstr "Belgeleme"
+
+#~ msgid "Invalid gamespec."
+#~ msgstr "Geçersiz oyun özellikleri."
 
 #~ msgid "Inventory key"
 #~ msgstr "Envanter tuşu"
@@ -8632,8 +8739,14 @@ msgstr "cURL paralel sınırı"
 #~ msgid "You died."
 #~ msgstr "Öldün."
 
+#~ msgid "You have no games installed."
+#~ msgstr "Kurulu oyununuz yok."
+
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"
+
+#~ msgid "ok"
+#~ msgstr "tamam"

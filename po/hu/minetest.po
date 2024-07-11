@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 18:48+0100\n"
+"POT-Creation-Date: 2024-07-11 20:16+0800\n"
 "PO-Revision-Date: 2023-11-29 21:30+0000\n"
 "Last-Translator: nyommer <jishnu.ifeoluwa@fullangle.org>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
@@ -71,7 +71,8 @@ msgid "Command not available: "
 msgstr "A parancs nem elérhető: "
 
 #: builtin/common/chatcommands.lua
-msgid "Get help for commands"
+#, fuzzy
+msgid "Get help for commands (-t: output in chat)"
 msgstr "Segítség kérése a parancsokhoz"
 
 #: builtin/common/chatcommands.lua
@@ -82,12 +83,9 @@ msgstr ""
 "kilistázásához a '.help all' parancsot."
 
 #: builtin/common/chatcommands.lua
-msgid "[all | <cmd>]"
+#, fuzzy
+msgid "[all | <cmd>] [-t]"
 msgstr "[all | <cmd>]"
-
-#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
-msgid "OK"
-msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -104,6 +102,10 @@ msgstr "Hiba történt:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Főmenü"
+
+#: builtin/fstk/ui.lua
+msgid "OK"
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -133,19 +135,27 @@ msgstr "Csak $1 protokollverziót támogatjuk."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "$1 és $2 közötti protokollverziókat támogatjuk."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "\"$1\" már létezik. Szeretné felülírni?"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Error installing \"$1\": $2"
+msgstr "Hiba \"$1\" telepítése közben: $2"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "$1 és $2 függőségek telepítve lesznek."
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download \"$1\""
+msgstr "$1 letöltése nem sikerült"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr "$1 az $2-ből"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download $1"
+msgstr "$1 letöltése nem sikerült"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/contentdb.lua
+#, fuzzy
+msgid ""
+"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
+"broken archive)"
+msgstr ""
+"$1 kibontása sikertelen (nem támogatott fájltípus vagy sérült archívum)"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -153,157 +163,157 @@ msgstr ""
 "$1 letöltése,\n"
 "$2 sorba állítva"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "$1 downloading..."
 msgstr "$1 Letöltése…"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "Ehhez szükséges függőségek nem találhatók: $1."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "$1 telepítve lesz, és $2 függőségek ki lesznek hagyva."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All packages"
 msgstr "Minden csomag"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "Már telepítve"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Back to Main Menu"
 msgstr "Vissza a főmenübe"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "A ContentDB nem elérhető, ha a Minetest cURL nélkül lett lefordítva"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Downloading..."
+msgstr "Letöltés…"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Error getting dependencies for package"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Games"
+msgstr "Játékok"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "Telepítés"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Betöltés…"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Mods"
+msgstr "Modifikációk \"Modok\""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No packages could be retrieved"
+msgstr "A csomagok nem nyerhetők vissza"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "Nincs találat"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No updates"
+msgstr "Nincsenek frissítések"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Queued"
+msgstr "Sorbaállítva"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Texture packs"
+msgstr "Textúracsomagok"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "The package $1 was not found."
+msgstr "A $1 csomag nem található."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Eltávolítás"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Frissítés"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Update All [$1]"
+msgstr "Összes frissítése [$1]"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "View more information in a web browser"
+msgstr "További információ megtekintése böngészőben"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "You need to install a game before you can install a mod"
+msgstr "Először a játékot kell telepítened, hogy tudj modokat telepíteni"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "$1 és $2 függőségek telepítve lesznek."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 by $2"
+msgstr "$1 az $2-ből"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 required dependencies could not be found."
+msgstr "Ehhez szükséges függőségek nem találhatók: $1."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "$1 telepítve lesz, és $2 függőségek ki lesznek hagyva."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Already installed"
+msgstr "Már telepítve"
+
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Base Game:"
 msgstr "Alapjáték:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_overwrite.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
+#: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "Mégse"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "A ContentDB nem elérhető, ha a Minetest cURL nélkül lett lefordítva"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Függőségek:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "Letöltés…"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr "Hiba \"$1\" telepítése közben: $2"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download \"$1\""
-msgstr "$1 letöltése nem sikerült"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "$1 letöltése nem sikerült"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr ""
-"$1 kibontása sikertelen (nem támogatott fájltípus vagy sérült archívum)"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Games"
-msgstr "Játékok"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Install"
-msgstr "Telepítés"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install $1"
 msgstr "$1 telepítése"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install missing dependencies"
 msgstr "hiányzó függőségek telepitése"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Betöltés…"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Mods"
-msgstr "Modifikációk \"Modok\""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "A csomagok nem nyerhetők vissza"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "Nincs találat"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No updates"
-msgstr "Nincsenek frissítések"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Not found"
 msgstr "Nem található"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "Felülírás"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Please check that the base game is correct."
 msgstr "Az alapjáték ellenörzése szükséges ."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Queued"
-msgstr "Sorbaállítva"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "\"$1\" már létezik. Szeretné felülírni?"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "Textúracsomagok"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "The package $1 was not found."
-msgstr "A $1 csomag nem található."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "Eltávolítás"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "Frissítés"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "Összes frissítése [$1]"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "További információ megtekintése böngészőben"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr "Először a játékot kell telepítened, hogy tudj modokat telepíteni"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "Overwrite"
+msgstr "Felülírás"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -452,8 +462,18 @@ msgid "Decorations"
 msgstr "Dekorációk"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Desert temples"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
 msgstr "A Development Test fejlesztők számára készült."
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Different dungeon variant generated in desert biomes (only if dungeons "
+"enabled)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -834,10 +854,6 @@ msgstr "Megközelíthetőség"
 msgid "Back"
 msgstr "Vissza"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "Gombok megváltoztatása"
-
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -847,7 +863,8 @@ msgstr "Csevegés"
 msgid "Clear"
 msgstr "Törlés"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Irányítás"
 
@@ -1054,6 +1071,17 @@ msgid "Install games from ContentDB"
 msgstr "Játékok telepítése ContentDB-ről"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Minetest doesn't come with a game by default."
+msgstr "A Minetest Game már nem települ alapból"
+
+#: builtin/mainmenu/tab_local.lua
+msgid ""
+"Minetest is a game-creation platform that allows you to play many different "
+"games."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "Új"
 
@@ -1086,8 +1114,9 @@ msgid "Start Game"
 msgstr "Indítás"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You have no games installed."
-msgstr "Nincsenek játékok telepítve."
+#, fuzzy
+msgid "You need to install a game before you can create a world."
+msgstr "Először a játékot kell telepítened, hogy tudj modokat telepíteni"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1167,16 +1196,8 @@ msgid "Rebuilding shaders..."
 msgstr "Árnyalók újraépítése…"
 
 #: src/client/clientlauncher.cpp
-msgid "Connection error (timed out?)"
-msgstr "Kapcsolódási hiba (időtúllépés?)"
-
-#: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "Nem található vagy nem betölthető a játék: "
-
-#: src/client/clientlauncher.cpp
-msgid "Invalid gamespec."
-msgstr "Érvénytelen játékmeghatározás."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1202,7 +1223,11 @@ msgstr "A megadott jelszófájlt nem sikerült megnyitni: "
 msgid "Provided world path doesn't exist: "
 msgstr "A megadott útvonalon nem létezik világ: "
 
-#: src/client/game.cpp src/server.cpp
+#: src/client/clientmedia.cpp src/client/game.cpp
+msgid "Media..."
+msgstr "Tartalom..."
+
+#: src/client/game.cpp src/client/shader.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1211,16 +1236,8 @@ msgstr ""
 "A részletekért tekintsd meg a debug.txt fájlt."
 
 #: src/client/game.cpp
-msgid "- Address: "
-msgstr "- Cím: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Mód: "
-
-#: src/client/game.cpp
-msgid "- Port: "
-msgstr "- Port: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1255,10 +1272,6 @@ msgstr "Önjárás engedélyezve"
 #: src/client/game.cpp
 msgid "Block bounds hidden"
 msgstr "Blokkhatárok elrejtve"
-
-#: src/client/game.cpp
-msgid "Block bounds shown for all blocks"
-msgstr "Blokkhatárok mutatása minden blokk esetén"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
@@ -1306,6 +1319,10 @@ msgid "Connecting to server..."
 msgstr "Kapcsolódás szerverhez..."
 
 #: src/client/game.cpp
+msgid "Connection error (timed out?)"
+msgstr "Kapcsolódási hiba (időtúllépés?)"
+
+#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "Kapcsolat megszakadt ismeretlen okból"
 
@@ -1314,45 +1331,13 @@ msgid "Continue"
 msgstr "Folytatás"
 
 #: src/client/game.cpp
-#, c-format
-msgid ""
-"Controls:\n"
-"- %s: move forwards\n"
-"- %s: move backwards\n"
-"- %s: move left\n"
-"- %s: move right\n"
-"- %s: jump/climb up\n"
-"- %s: dig/punch/use\n"
-"- %s: place/use\n"
-"- %s: sneak/climb down\n"
-"- %s: drop item\n"
-"- %s: inventory\n"
-"- Mouse: turn/look\n"
-"- Mouse wheel: select item\n"
-"- %s: chat\n"
-msgstr ""
-"Irányítás:\n"
-"- %s: mozgás előre\n"
-"- %s: mozgás hátra\n"
-"- %s: mozgás balra\n"
-"- %s: mozgás jobbra\n"
-"- %s: ugrás/mászás\n"
-"- %s: ásás/ütés/használat\n"
-"- %s: letevés/használat\n"
-"- %s: lopakodás/lefelé mászás\n"
-"- %s: tárgy eldobása\n"
-"- %s: leltár\n"
-"- Egér: forgás/nézelődés\n"
-"- Egérgörgő: tárgy kiválasztása\n"
-"- %s: csevegés\n"
-
-#: src/client/game.cpp
+#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/use\n"
-"- long tap: dig/punch/use\n"
+"- tap: place/punch/use (default)\n"
+"- long tap: dig/use (default)\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1445,6 +1430,11 @@ msgid "Fog enabled"
 msgstr "köd engedélyezve"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Fog enabled by game or mod"
+msgstr "Nagyítás letiltva (szerver, vagy mod által)"
+
+#: src/client/game.cpp
 msgid "Game info:"
 msgstr "Játékinformációk:"
 
@@ -1463,10 +1453,6 @@ msgstr "Tárgyak meghatározása…"
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "KiB/s"
-
-#: src/client/game.cpp
-msgid "Media..."
-msgstr "Tartalom..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1628,10 +1614,6 @@ msgstr "Drótváz megjelenítése"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "Nagyítás letiltva (szerver, vagy mod által)"
-
-#: src/client/game.cpp
-msgid "ok"
-msgstr "ok"
 
 #: src/client/gameui.cpp
 msgid "Chat currently disabled by game or mod"
@@ -1953,6 +1935,15 @@ msgstr "Kistérkép terület módban x%d"
 msgid "Minimap in texture mode"
 msgstr "Kistérkép textúra módban"
 
+#: src/client/shader.cpp
+#, fuzzy, c-format
+msgid "Failed to compile the \"%s\" shader."
+msgstr "Weblap megnyitása nem sikerült"
+
+#: src/client/shader.cpp
+msgid "Shaders are enabled but GLSL is not supported by the driver."
+msgstr ""
+
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2146,6 +2137,19 @@ msgstr "Nagyítás"
 msgid "press key"
 msgstr "Nyomj meg egy gombot"
 
+#: src/gui/guiOpenURL.cpp
+msgid "Open"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+msgid "Open URL?"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+#, fuzzy
+msgid "Unable to open URL"
+msgstr "Weblap megnyitása nem sikerült"
+
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "Megváltoztatás"
@@ -2179,6 +2183,7 @@ msgstr "Hangerő: %d%%"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
+#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "hu"
 
@@ -2191,6 +2196,64 @@ msgstr ""
 #: src/network/clientpackethandler.cpp
 msgid "Name is taken. Please choose another name"
 msgstr "A név már használt! Válassz egy másik nevet"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Another client is connected with this name.  If your client closed "
+"unexpectedly, try again in a minute."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Empty passwords are disallowed.  Set a password and try again."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Internal server error"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Invalid password"
+msgstr "Régi jelszó"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Player name contains disallowed characters"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Player name not allowed"
+msgstr "A játékosnév túl hosszú."
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Server shutting down"
+msgstr "Leállítás…"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"The server has experienced an internal error.  You will now be disconnected."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "The server is running in simple singleplayer mode.  You cannot connect."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Too many users"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Your client sent something the server didn't expect.  Try reconnecting or "
+"updating your client."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Your client's version is not supported.\n"
+"Please contact the server administrator."
+msgstr ""
 
 #: src/server.cpp
 #, c-format
@@ -5919,7 +5982,7 @@ msgstr "Lágy megvilágítás"
 #, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Change Keys."
+"cinematic mode by using the key set in Controls."
 msgstr "A kameraforgást lágyítja operatőr módban. 0 a letiltáshoz."
 
 #: src/settings_translation_file.cpp
@@ -6936,11 +6999,17 @@ msgstr "cURL párhuzamossági korlát"
 #~ msgid "(game support required)"
 #~ msgstr "(játéktámogatás szükséges)"
 
+#~ msgid "- Address: "
+#~ msgstr "- Cím: "
+
 #~ msgid "- Creative Mode: "
 #~ msgstr "- Kreatív mód: "
 
 #~ msgid "- Damage: "
 #~ msgstr "- Sérülés: "
+
+#~ msgid "- Port: "
+#~ msgstr "- Port: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -7031,6 +7100,9 @@ msgstr "cURL párhuzamossági korlát"
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "Bit/pixel (vagyis színmélység) teljes képernyős módban."
 
+#~ msgid "Block bounds shown for all blocks"
+#~ msgstr "Blokkhatárok mutatása minden blokk esetén"
+
 #~ msgid "Bump Mapping"
 #~ msgstr "Bump mapping"
 
@@ -7052,6 +7124,9 @@ msgstr "cURL párhuzamossági korlát"
 
 #~ msgid "Camera update toggle key"
 #~ msgstr "Kamera frissítés váltása gomb"
+
+#~ msgid "Change Keys"
+#~ msgstr "Gombok megváltoztatása"
 
 #, fuzzy
 #~ msgid "Change keys"
@@ -7128,6 +7203,38 @@ msgstr "cURL párhuzamossági korlát"
 #~ msgstr ""
 #~ "A járatok szélességét határozza meg, alacsonyabb érték szélesebb "
 #~ "járatokat hoz létre."
+
+#, c-format
+#~ msgid ""
+#~ "Controls:\n"
+#~ "- %s: move forwards\n"
+#~ "- %s: move backwards\n"
+#~ "- %s: move left\n"
+#~ "- %s: move right\n"
+#~ "- %s: jump/climb up\n"
+#~ "- %s: dig/punch/use\n"
+#~ "- %s: place/use\n"
+#~ "- %s: sneak/climb down\n"
+#~ "- %s: drop item\n"
+#~ "- %s: inventory\n"
+#~ "- Mouse: turn/look\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- %s: chat\n"
+#~ msgstr ""
+#~ "Irányítás:\n"
+#~ "- %s: mozgás előre\n"
+#~ "- %s: mozgás hátra\n"
+#~ "- %s: mozgás balra\n"
+#~ "- %s: mozgás jobbra\n"
+#~ "- %s: ugrás/mászás\n"
+#~ "- %s: ásás/ütés/használat\n"
+#~ "- %s: letevés/használat\n"
+#~ "- %s: lopakodás/lefelé mászás\n"
+#~ "- %s: tárgy eldobása\n"
+#~ "- %s: leltár\n"
+#~ "- Egér: forgás/nézelődés\n"
+#~ "- Egérgörgő: tárgy kiválasztása\n"
+#~ "- %s: csevegés\n"
 
 #~ msgid "Creative"
 #~ msgstr "Kreatív"
@@ -7515,6 +7622,9 @@ msgstr "cURL párhuzamossági korlát"
 
 #~ msgid "Instrumentation"
 #~ msgstr "Behangolás"
+
+#~ msgid "Invalid gamespec."
+#~ msgstr "Érvénytelen játékmeghatározás."
 
 #~ msgid "Inventory key"
 #~ msgstr "Felszerelés gomb"
@@ -8584,8 +8694,14 @@ msgstr "cURL párhuzamossági korlát"
 #~ msgid "You died."
 #~ msgstr "Meghaltál."
 
+#~ msgid "You have no games installed."
+#~ msgstr "Nincsenek játékok telepítve."
+
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"
+
+#~ msgid "ok"
+#~ msgstr "ok"

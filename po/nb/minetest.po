@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Norwegian Bokmål (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 18:48+0100\n"
+"POT-Creation-Date: 2024-07-11 20:16+0800\n"
 "PO-Revision-Date: 2023-10-22 17:18+0000\n"
 "Last-Translator: ROllerozxa <rollerozxa@voxelmanip.se>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
@@ -71,7 +71,8 @@ msgid "Command not available: "
 msgstr "Ikke tilgjengelig kommando: "
 
 #: builtin/common/chatcommands.lua
-msgid "Get help for commands"
+#, fuzzy
+msgid "Get help for commands (-t: output in chat)"
 msgstr "Få hjelp med kommandoer"
 
 #: builtin/common/chatcommands.lua
@@ -82,12 +83,9 @@ msgstr ""
 "liste opp alt."
 
 #: builtin/common/chatcommands.lua
-msgid "[all | <cmd>]"
+#, fuzzy
+msgid "[all | <cmd>] [-t]"
 msgstr "[all | <kommando>]"
-
-#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
-msgid "OK"
-msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -104,6 +102,10 @@ msgstr "Det oppstod en feil:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Hovedmeny"
+
+#: builtin/fstk/ui.lua
+msgid "OK"
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -133,19 +135,26 @@ msgstr "Vi støtter kun protokollversjon $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Vi støtter protokollversjoner mellom versjon $1 og $2."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "«$1» eksisterer allerede. Ønsker du å skrive over den?"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "$1 og $2 pakker blir installert."
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download \"$1\""
+msgstr "Kunne ikke laste ned \"$1\""
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr "$1 av $2"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download $1"
+msgstr "Kunne ikke laste ned $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/contentdb.lua
+#, fuzzy
+msgid ""
+"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
+"broken archive)"
+msgstr "Installasjon: Ikke-støttet filtype eller ødelagt pakke"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -153,157 +162,157 @@ msgstr ""
 "$1 laster ned,\n"
 "$2 i kø"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "$1 downloading..."
 msgstr "$1 laster ned..."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "$1 påkrevd pakke manglet."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "$1 blir installert, and $2 pakker blir hoppet over."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All packages"
 msgstr "Alle pakker"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "Allerede installert"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Back to Main Menu"
 msgstr "Tilbake til hovedmeny"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "ContentDB er ikke tilgjengelig når Minetest kompileres uten cURL"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Downloading..."
+msgstr "Laster ned..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Error getting dependencies for package"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Games"
+msgstr "Spill"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "Installere"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Laster inn..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Mods"
+msgstr "Modder"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No packages could be retrieved"
+msgstr "Kunne ikke hente pakker"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "Ingen resultater"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No updates"
+msgstr "Ingen oppdateringer"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Queued"
+msgstr "Satt i kø"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Texture packs"
+msgstr "Teksturpakker"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "The package $1 was not found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Avinstallere"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Oppdatere"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Update All [$1]"
+msgstr "Oppdatere Alle [$1]"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "View more information in a web browser"
+msgstr "Se mer informasjon i nettleseren"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "$1 og $2 pakker blir installert."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 by $2"
+msgstr "$1 av $2"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 required dependencies could not be found."
+msgstr "$1 påkrevd pakke manglet."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "$1 blir installert, and $2 pakker blir hoppet over."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Already installed"
+msgstr "Allerede installert"
+
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Base Game:"
 msgstr "Grunnspill:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_overwrite.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
+#: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "Avbryt"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB er ikke tilgjengelig når Minetest kompileres uten cURL"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Pakker:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "Laster ned..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download \"$1\""
-msgstr "Kunne ikke laste ned \"$1\""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "Kunne ikke laste ned $1"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Installasjon: Ikke-støttet filtype eller ødelagt pakke"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Games"
-msgstr "Spill"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Install"
-msgstr "Installere"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install $1"
 msgstr "Installere $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install missing dependencies"
 msgstr "Installasjon mangler pakker"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Laster inn..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Mods"
-msgstr "Modder"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "Kunne ikke hente pakker"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "Ingen resultater"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No updates"
-msgstr "Ingen oppdateringer"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Not found"
 msgstr "Ikke funnet"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "Overskriv"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Please check that the base game is correct."
 msgstr "Vennligst sjekk at grunnspillet er riktig."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Queued"
-msgstr "Satt i kø"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "«$1» eksisterer allerede. Ønsker du å skrive over den?"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "Teksturpakker"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "The package $1 was not found."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "Avinstallere"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "Oppdatere"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "Oppdatere Alle [$1]"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "Se mer informasjon i nettleseren"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "Overwrite"
+msgstr "Overskriv"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -454,8 +463,18 @@ msgid "Decorations"
 msgstr "Dekorasjoner"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Desert temples"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
 msgstr "Utviklingstesten er tiltenkt utviklere."
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Different dungeon variant generated in desert biomes (only if dungeons "
+"enabled)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -825,10 +844,6 @@ msgstr ""
 msgid "Back"
 msgstr "Tilbake"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "Endre taster"
-
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -838,7 +853,8 @@ msgstr "Chatte"
 msgid "Clear"
 msgstr "Tøm"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Kontroller"
 
@@ -1050,6 +1066,16 @@ msgid "Install games from ContentDB"
 msgstr "Installer spill fra ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
+msgid "Minetest doesn't come with a game by default."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
+msgid ""
+"Minetest is a game-creation platform that allows you to play many different "
+"games."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "Ny"
 
@@ -1082,8 +1108,8 @@ msgid "Start Game"
 msgstr "Start spill"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You have no games installed."
-msgstr "Du har ingen spill installert."
+msgid "You need to install a game before you can create a world."
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1163,16 +1189,8 @@ msgid "Rebuilding shaders..."
 msgstr "Gjenoppbygger shaders..."
 
 #: src/client/clientlauncher.cpp
-msgid "Connection error (timed out?)"
-msgstr "Tilkoblingsfeil (tidsavbrudd?)"
-
-#: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "Kunne ikke finne eller laste inn spillet: "
-
-#: src/client/clientlauncher.cpp
-msgid "Invalid gamespec."
-msgstr "Ugyldig spillspesifikasjon."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1198,7 +1216,11 @@ msgstr "Den oppgitte passordfilen kunne ikke åpnes: "
 msgid "Provided world path doesn't exist: "
 msgstr "Angitt sti til verdenen finnes ikke: "
 
-#: src/client/game.cpp src/server.cpp
+#: src/client/clientmedia.cpp src/client/game.cpp
+msgid "Media..."
+msgstr "Media…"
+
+#: src/client/game.cpp src/client/shader.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1207,16 +1229,8 @@ msgstr ""
 "Sjekk debug.txt for detaljer."
 
 #: src/client/game.cpp
-msgid "- Address: "
-msgstr "- Adresse: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Modus: "
-
-#: src/client/game.cpp
-msgid "- Port: "
-msgstr "- Port: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1251,10 +1265,6 @@ msgstr "Automatisk forover slått på"
 #: src/client/game.cpp
 msgid "Block bounds hidden"
 msgstr "Block bounds gjemt"
-
-#: src/client/game.cpp
-msgid "Block bounds shown for all blocks"
-msgstr "Block bounds vist for alle blokker"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
@@ -1301,6 +1311,10 @@ msgid "Connecting to server..."
 msgstr "Kobler til tjener…"
 
 #: src/client/game.cpp
+msgid "Connection error (timed out?)"
+msgstr "Tilkoblingsfeil (tidsavbrudd?)"
+
+#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "Tilkoblingen mislyktes av ukjent årsak"
 
@@ -1309,46 +1323,13 @@ msgid "Continue"
 msgstr "Fortsett"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
-msgid ""
-"Controls:\n"
-"- %s: move forwards\n"
-"- %s: move backwards\n"
-"- %s: move left\n"
-"- %s: move right\n"
-"- %s: jump/climb up\n"
-"- %s: dig/punch/use\n"
-"- %s: place/use\n"
-"- %s: sneak/climb down\n"
-"- %s: drop item\n"
-"- %s: inventory\n"
-"- Mouse: turn/look\n"
-"- Mouse wheel: select item\n"
-"- %s: chat\n"
-msgstr ""
-"Kontroller:\n"
-"- %s: flytt forover\n"
-"- %s: flytt bakover\n"
-"- %s: flytt mot venstre\n"
-"- %s: flytt mot høyre\n"
-"- %s: hopp/klatre oppover\n"
-"- %s: grav/slå\n"
-"- %s: plasser/bruk\n"
-"- %s: snik/klatre nedover\n"
-"- %s: slipp ting\n"
-"- %s: inventar\n"
-"- Mus: snu/se\n"
-"- Musehjul: velg ting\n"
-"- %s: chat\n"
-
-#: src/client/game.cpp
 #, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/use\n"
-"- long tap: dig/punch/use\n"
+"- tap: place/punch/use (default)\n"
+"- long tap: dig/use (default)\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1441,6 +1422,11 @@ msgid "Fog enabled"
 msgstr "Tåke aktivert"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Fog enabled by game or mod"
+msgstr "Zoom er for øyeblikket deaktivert av spill eller mod"
+
+#: src/client/game.cpp
 msgid "Game info:"
 msgstr "Spillinfo:"
 
@@ -1459,10 +1445,6 @@ msgstr "Gjenstandsdefinisjoner…"
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "KiB/s"
-
-#: src/client/game.cpp
-msgid "Media..."
-msgstr "Media…"
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1618,10 +1600,6 @@ msgstr "Kantlinjer vises"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "Zoom er for øyeblikket deaktivert av spill eller mod"
-
-#: src/client/game.cpp
-msgid "ok"
-msgstr "ok"
 
 #: src/client/gameui.cpp
 #, fuzzy
@@ -1957,6 +1935,15 @@ msgstr ""
 msgid "Minimap in texture mode"
 msgstr ""
 
+#: src/client/shader.cpp
+#, fuzzy, c-format
+msgid "Failed to compile the \"%s\" shader."
+msgstr "Klarte ikke laste ned $1"
+
+#: src/client/shader.cpp
+msgid "Shaders are enabled but GLSL is not supported by the driver."
+msgstr ""
+
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2149,6 +2136,19 @@ msgstr "Forstørrelse"
 msgid "press key"
 msgstr "trykk tast"
 
+#: src/gui/guiOpenURL.cpp
+msgid "Open"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+msgid "Open URL?"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+#, fuzzy
+msgid "Unable to open URL"
+msgstr "Klarte ikke laste ned $1"
+
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "Endre"
@@ -2182,6 +2182,7 @@ msgstr "Lydstyrke: %d%%"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
+#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "nb"
 
@@ -2194,6 +2195,64 @@ msgstr ""
 #, fuzzy
 msgid "Name is taken. Please choose another name"
 msgstr "Vennligst velg et navn!"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Another client is connected with this name.  If your client closed "
+"unexpectedly, try again in a minute."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Empty passwords are disallowed.  Set a password and try again."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Internal server error"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Invalid password"
+msgstr "Gammelt passord"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Player name contains disallowed characters"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Player name not allowed"
+msgstr "Spillernavn for langt."
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Server shutting down"
+msgstr "Slår av..."
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"The server has experienced an internal error.  You will now be disconnected."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "The server is running in simple singleplayer mode.  You cannot connect."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Too many users"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Your client sent something the server didn't expect.  Try reconnecting or "
+"updating your client."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Your client's version is not supported.\n"
+"Please contact the server administrator."
+msgstr ""
 
 #: src/server.cpp
 #, c-format
@@ -5517,7 +5576,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Change Keys."
+"cinematic mode by using the key set in Controls."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6361,11 +6420,17 @@ msgstr "cURL-tidsgrense"
 msgid "cURL parallel limit"
 msgstr "Maksimal parallellisering i cURL"
 
+#~ msgid "- Address: "
+#~ msgstr "- Adresse: "
+
 #~ msgid "- Creative Mode: "
 #~ msgstr "- Kreativ modus: "
 
 #~ msgid "- Damage: "
 #~ msgstr "- Skade: "
+
+#~ msgid "- Port: "
+#~ msgstr "- Port: "
 
 #~ msgid "2x"
 #~ msgstr "2x"
@@ -6428,6 +6493,9 @@ msgstr "Maksimal parallellisering i cURL"
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "Biter per piksel (dvs. fargedybde) i fullskjermsmodus."
 
+#~ msgid "Block bounds shown for all blocks"
+#~ msgstr "Block bounds vist for alle blokker"
+
 #~ msgid "Bump Mapping"
 #~ msgstr "Teksturtilføyning"
 
@@ -6448,6 +6516,9 @@ msgstr "Maksimal parallellisering i cURL"
 
 #~ msgid "Camera update toggle key"
 #~ msgstr "Av/på-tast for visningsoppdatning"
+
+#~ msgid "Change Keys"
+#~ msgstr "Endre taster"
 
 #~ msgid "Change keys"
 #~ msgstr "Endre taster"
@@ -6510,6 +6581,38 @@ msgstr "Maksimal parallellisering i cURL"
 
 #~ msgid "Controls sinking speed in liquid."
 #~ msgstr "Bestemmer synkehastigheten i væsker."
+
+#, fuzzy, c-format
+#~ msgid ""
+#~ "Controls:\n"
+#~ "- %s: move forwards\n"
+#~ "- %s: move backwards\n"
+#~ "- %s: move left\n"
+#~ "- %s: move right\n"
+#~ "- %s: jump/climb up\n"
+#~ "- %s: dig/punch/use\n"
+#~ "- %s: place/use\n"
+#~ "- %s: sneak/climb down\n"
+#~ "- %s: drop item\n"
+#~ "- %s: inventory\n"
+#~ "- Mouse: turn/look\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- %s: chat\n"
+#~ msgstr ""
+#~ "Kontroller:\n"
+#~ "- %s: flytt forover\n"
+#~ "- %s: flytt bakover\n"
+#~ "- %s: flytt mot venstre\n"
+#~ "- %s: flytt mot høyre\n"
+#~ "- %s: hopp/klatre oppover\n"
+#~ "- %s: grav/slå\n"
+#~ "- %s: plasser/bruk\n"
+#~ "- %s: snik/klatre nedover\n"
+#~ "- %s: slipp ting\n"
+#~ "- %s: inventar\n"
+#~ "- Mus: snu/se\n"
+#~ "- Musehjul: velg ting\n"
+#~ "- %s: chat\n"
 
 #~ msgid "Creative"
 #~ msgstr "Kreativ"
@@ -6747,6 +6850,9 @@ msgstr "Maksimal parallellisering i cURL"
 
 #~ msgid "Instrumentation"
 #~ msgstr "Instrumentering"
+
+#~ msgid "Invalid gamespec."
+#~ msgstr "Ugyldig spillspesifikasjon."
 
 #~ msgid "Inventory key"
 #~ msgstr "Tast for beholdning"
@@ -7476,8 +7582,14 @@ msgstr "Maksimal parallellisering i cURL"
 #~ msgid "You died."
 #~ msgstr "Du døde."
 
+#~ msgid "You have no games installed."
+#~ msgstr "Du har ingen spill installert."
+
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"
+
+#~ msgid "ok"
+#~ msgstr "ok"

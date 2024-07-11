@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Vietnamese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 18:48+0100\n"
+"POT-Creation-Date: 2024-07-11 20:16+0800\n"
 "PO-Revision-Date: 2022-08-26 10:18+0000\n"
 "Last-Translator: Văn Chí <chiv8331@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/minetest/"
@@ -71,7 +71,8 @@ msgid "Command not available: "
 msgstr "Lệnh không có sẵn: "
 
 #: builtin/common/chatcommands.lua
-msgid "Get help for commands"
+#, fuzzy
+msgid "Get help for commands (-t: output in chat)"
 msgstr "Trợ giúp về lệnh"
 
 #: builtin/common/chatcommands.lua
@@ -82,12 +83,9 @@ msgstr ""
 "help all' để xem danh sách về những câu lệnh có sẵn."
 
 #: builtin/common/chatcommands.lua
-msgid "[all | <cmd>]"
+#, fuzzy
+msgid "[all | <cmd>] [-t]"
 msgstr "[all | <câu lệnh>]"
-
-#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
-msgid "OK"
-msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -104,6 +102,10 @@ msgstr "Đã xảy ra lỗi:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Màn hình chính"
+
+#: builtin/fstk/ui.lua
+msgid "OK"
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -133,19 +135,27 @@ msgstr "Chúng tôi chỉ hỗ trợ phiên bản giao thức $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Chúng tôi hỗ trợ các phiên bản giao thức giữa phiên bản $1 đến $2."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "\"$1\" đã tồn tại. Bạn có muốn ghi đè nó không?"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "Phần phụ thuộc $1 và $2 sẽ được cài đặt."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 by $2"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Error installing \"$1\": $2"
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/contentdb.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "Đã xảy ra lỗi khi tải xuống $1"
+
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download $1"
+msgstr "Đã xảy ra lỗi khi tải xuống $1"
+
+#: builtin/mainmenu/content/contentdb.lua
+#, fuzzy
+msgid ""
+"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
+"broken archive)"
+msgstr "Cài đặt: Loại tệp không được hỗ trợ hoặc tệp lưu trữ bị hỏng"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -153,159 +163,158 @@ msgstr ""
 "$1 đang tải xuống,\n"
 "$2 đã thêm vào hàng chờ"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "$1 downloading..."
 msgstr "Đang tải xuống $1..."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "Không tìm thấy phần phụ thuộc cần cho $1."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "$1 sẽ được cài đặt, phần phụ thuộc $2 sẽ bị bỏ qua."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All packages"
 msgstr "Tất cả các gói"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "Đã được cài đặt"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Back to Main Menu"
 msgstr "Trở về màn hình chính"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "ContentDB không có sẵn khi Minetest được biên dịch mà không có cURL"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Downloading..."
+msgstr "Đang tải xuống..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Error getting dependencies for package"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Games"
+msgstr "Trò chơi"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "Cài đặt"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Đang tải..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#, fuzzy
+msgid "Mods"
+msgstr "Sửa đổi"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No packages could be retrieved"
+msgstr "Không nhận được gói nào"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "Không có kết quả"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No updates"
+msgstr "Không có cập nhật mới"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Queued"
+msgstr "Đã thêm vào hàng chờ"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Texture packs"
+msgstr "Gói kết cấu"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "The package $1 was not found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Gỡ cài đặt"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Cập nhật"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Update All [$1]"
+msgstr "Cập nhật tất cả [$1]"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "View more information in a web browser"
+msgstr "Xem thêm thông tin trên trình duyệt web của bạn"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "Phần phụ thuộc $1 và $2 sẽ được cài đặt."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 by $2"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 required dependencies could not be found."
+msgstr "Không tìm thấy phần phụ thuộc cần cho $1."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "$1 sẽ được cài đặt, phần phụ thuộc $2 sẽ bị bỏ qua."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Already installed"
+msgstr "Đã được cài đặt"
+
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Base Game:"
 msgstr "Trò chơi cơ bản:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_overwrite.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
+#: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "Hủy"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB không có sẵn khi Minetest được biên dịch mà không có cURL"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Phụ thuộc:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "Đang tải xuống..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
-msgid "Failed to download \"$1\""
-msgstr "Đã xảy ra lỗi khi tải xuống $1"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "Đã xảy ra lỗi khi tải xuống $1"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Cài đặt: Loại tệp không được hỗ trợ hoặc tệp lưu trữ bị hỏng"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Games"
-msgstr "Trò chơi"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Install"
-msgstr "Cài đặt"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install $1"
 msgstr "Cài đặt $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install missing dependencies"
 msgstr "Cài đặt phần phụ thuộc bị thiếu"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Đang tải..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
-msgid "Mods"
-msgstr "Sửa đổi"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "Không nhận được gói nào"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "Không có kết quả"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No updates"
-msgstr "Không có cập nhật mới"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Not found"
 msgstr "Không tìm thấy"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "Ghi đè"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Please check that the base game is correct."
 msgstr "Vui lòng kiểm tra xem trò chơi này có đúng không."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Queued"
-msgstr "Đã thêm vào hàng chờ"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "\"$1\" đã tồn tại. Bạn có muốn ghi đè nó không?"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "Gói kết cấu"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "The package $1 was not found."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "Gỡ cài đặt"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "Cập nhật"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "Cập nhật tất cả [$1]"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "Xem thêm thông tin trên trình duyệt web của bạn"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "Overwrite"
+msgstr "Ghi đè"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -457,9 +466,19 @@ msgid "Decorations"
 msgstr "Vật trang trí"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Desert temples"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
 msgid "Development Test is meant for developers."
 msgstr "Cảnh báo: Kiểm tra Phát triển chỉ dành cho các nhà phát triển."
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Different dungeon variant generated in desert biomes (only if dungeons "
+"enabled)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -838,10 +857,6 @@ msgstr ""
 msgid "Back"
 msgstr "Lùi xuống"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "Thay đổi khóa"
-
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -851,7 +866,8 @@ msgstr "Trò chuyện"
 msgid "Clear"
 msgstr "Xóa"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Điều khiển"
 
@@ -1063,6 +1079,16 @@ msgid "Install games from ContentDB"
 msgstr "Cài đặt trò chơi từ ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
+msgid "Minetest doesn't come with a game by default."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
+msgid ""
+"Minetest is a game-creation platform that allows you to play many different "
+"games."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "Mới"
 
@@ -1095,8 +1121,8 @@ msgid "Start Game"
 msgstr "Bắt đầu trò chơi"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You have no games installed."
-msgstr "Bạn chưa cài đặt trò chơi nào."
+msgid "You need to install a game before you can create a world."
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1178,17 +1204,8 @@ msgid "Rebuilding shaders..."
 msgstr "Đang xây dựng lại trình đổ bóng..."
 
 #: src/client/clientlauncher.cpp
-msgid "Connection error (timed out?)"
-msgstr "Lỗi kết nối (hết thời gian chờ?)"
-
-#: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "Không tìm thấy hoặc tải trò chơi: "
-
-#: src/client/clientlauncher.cpp
-#, fuzzy
-msgid "Invalid gamespec."
-msgstr "Gamespec không hợp lệ."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1216,7 +1233,11 @@ msgstr "Không mở được tệp mật khẩu được cung cấp: "
 msgid "Provided world path doesn't exist: "
 msgstr "Đường dẫn thế giới được cung cấp không tồn tại: "
 
-#: src/client/game.cpp src/server.cpp
+#: src/client/clientmedia.cpp src/client/game.cpp
+msgid "Media..."
+msgstr ""
+
+#: src/client/game.cpp src/client/shader.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1225,16 +1246,8 @@ msgstr ""
 "Hãy kiểm tra debug.txt để có thông tin chi tiết."
 
 #: src/client/game.cpp
-msgid "- Address: "
-msgstr "- Địa chỉ: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Chế độ: "
-
-#: src/client/game.cpp
-msgid "- Port: "
-msgstr "- Cổng: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1269,10 +1282,6 @@ msgstr "Tự động chuyển tiếp đã bật"
 #: src/client/game.cpp
 msgid "Block bounds hidden"
 msgstr "Các ranh giới khối đã ẩn"
-
-#: src/client/game.cpp
-msgid "Block bounds shown for all blocks"
-msgstr "Đã hiển thị ranh giới cho tất cả các khối"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
@@ -1321,6 +1330,10 @@ msgid "Connecting to server..."
 msgstr "Đang kết nối tới máy chủ..."
 
 #: src/client/game.cpp
+msgid "Connection error (timed out?)"
+msgstr "Lỗi kết nối (hết thời gian chờ?)"
+
+#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "Kết nối không thành công vì lý do không xác định"
 
@@ -1329,46 +1342,13 @@ msgid "Continue"
 msgstr "Tiếp tục"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
-msgid ""
-"Controls:\n"
-"- %s: move forwards\n"
-"- %s: move backwards\n"
-"- %s: move left\n"
-"- %s: move right\n"
-"- %s: jump/climb up\n"
-"- %s: dig/punch/use\n"
-"- %s: place/use\n"
-"- %s: sneak/climb down\n"
-"- %s: drop item\n"
-"- %s: inventory\n"
-"- Mouse: turn/look\n"
-"- Mouse wheel: select item\n"
-"- %s: chat\n"
-msgstr ""
-"Điền khiển:\n"
-"- %s: tiến lên\n"
-"- %s: lùi xuống\n"
-"- %s: sang trái\n"
-"- %s: sang phải\n"
-"- %s: nhảy / leo lên\n"
-"- %s: đào / đấm\n"
-"- %s: đặt khối / sử dụng\n"
-"- %s: đi rón rén / leo xuống\n"
-"- %s: thả vật phẩm\n"
-"- %s: túi đồ\n"
-"- Di chuột: xoay / nhìn\n"
-"- Lăn chuột: chọn vật phẩm\n"
-"- %s: trò chuyện\n"
-
-#: src/client/game.cpp
 #, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/use\n"
-"- long tap: dig/punch/use\n"
+"- tap: place/punch/use (default)\n"
+"- long tap: dig/use (default)\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1461,6 +1441,11 @@ msgid "Fog enabled"
 msgstr "Sương mù đã bật"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Fog enabled by game or mod"
+msgstr "Thu phóng đã bị vô hiệu bởi trò chơi hoặc mod"
+
+#: src/client/game.cpp
 msgid "Game info:"
 msgstr "Thông tin trò chơi:"
 
@@ -1479,10 +1464,6 @@ msgstr "Định nghĩa vật phẩm..."
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "KiB/s"
-
-#: src/client/game.cpp
-msgid "Media..."
-msgstr ""
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1640,10 +1621,6 @@ msgstr "Hiện khung dây"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "Thu phóng đã bị vô hiệu bởi trò chơi hoặc mod"
-
-#: src/client/game.cpp
-msgid "ok"
-msgstr "OK"
 
 #: src/client/gameui.cpp
 #, fuzzy
@@ -1978,6 +1955,15 @@ msgstr "Minimap ở chế độ mặt nền, mức thu phóng %dx"
 msgid "Minimap in texture mode"
 msgstr "Minimap ở chế độ kết cấu"
 
+#: src/client/shader.cpp
+#, fuzzy, c-format
+msgid "Failed to compile the \"%s\" shader."
+msgstr "Đã xảy ra lỗi khi mở trang web"
+
+#: src/client/shader.cpp
+msgid "Shaders are enabled but GLSL is not supported by the driver."
+msgstr ""
+
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2168,6 +2154,19 @@ msgstr "Thu phóng"
 msgid "press key"
 msgstr "bấm phím"
 
+#: src/gui/guiOpenURL.cpp
+msgid "Open"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+msgid "Open URL?"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+#, fuzzy
+msgid "Unable to open URL"
+msgstr "Đã xảy ra lỗi khi mở trang web"
+
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "Thay đổi"
@@ -2201,6 +2200,7 @@ msgstr "Âm lượng: %d%%"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
+#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "vi"
 
@@ -2214,6 +2214,64 @@ msgstr ""
 #: src/network/clientpackethandler.cpp
 msgid "Name is taken. Please choose another name"
 msgstr "Tên đã được sử dụng. Vui lòng chọn một tên khác"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Another client is connected with this name.  If your client closed "
+"unexpectedly, try again in a minute."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Empty passwords are disallowed.  Set a password and try again."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Internal server error"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Invalid password"
+msgstr "Mật khẩu cũ"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Player name contains disallowed characters"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Player name not allowed"
+msgstr "Tên người chơi quá dài."
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Server shutting down"
+msgstr "Đang thoát..."
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"The server has experienced an internal error.  You will now be disconnected."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "The server is running in simple singleplayer mode.  You cannot connect."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Too many users"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Your client sent something the server didn't expect.  Try reconnecting or "
+"updating your client."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Your client's version is not supported.\n"
+"Please contact the server administrator."
+msgstr ""
 
 #: src/server.cpp
 #, fuzzy, c-format
@@ -5400,7 +5458,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Change Keys."
+"cinematic mode by using the key set in Controls."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6211,11 +6269,17 @@ msgstr "Hết thời gian tương tác với cURL"
 msgid "cURL parallel limit"
 msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
 
+#~ msgid "- Address: "
+#~ msgstr "- Địa chỉ: "
+
 #~ msgid "- Creative Mode: "
 #~ msgstr "- Chế độ sáng tạo: "
 
 #~ msgid "- Damage: "
 #~ msgstr "- Tổn hại: "
+
+#~ msgid "- Port: "
+#~ msgstr "- Cổng: "
 
 #~ msgid "2x"
 #~ msgstr "2x"
@@ -6253,8 +6317,14 @@ msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
 #~ msgid "Bilinear Filter"
 #~ msgstr "Bộ lọc song tuyến"
 
+#~ msgid "Block bounds shown for all blocks"
+#~ msgstr "Đã hiển thị ranh giới cho tất cả các khối"
+
 #~ msgid "Camera update toggle key"
 #~ msgstr "Nút chuyển đổi cập nhật máy ảnh"
+
+#~ msgid "Change Keys"
+#~ msgstr "Thay đổi khóa"
 
 #, fuzzy
 #~ msgid "Change keys"
@@ -6283,6 +6353,38 @@ msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
 
 #~ msgid "Connected Glass"
 #~ msgstr "Kính kết nối với nhau"
+
+#, fuzzy, c-format
+#~ msgid ""
+#~ "Controls:\n"
+#~ "- %s: move forwards\n"
+#~ "- %s: move backwards\n"
+#~ "- %s: move left\n"
+#~ "- %s: move right\n"
+#~ "- %s: jump/climb up\n"
+#~ "- %s: dig/punch/use\n"
+#~ "- %s: place/use\n"
+#~ "- %s: sneak/climb down\n"
+#~ "- %s: drop item\n"
+#~ "- %s: inventory\n"
+#~ "- Mouse: turn/look\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- %s: chat\n"
+#~ msgstr ""
+#~ "Điền khiển:\n"
+#~ "- %s: tiến lên\n"
+#~ "- %s: lùi xuống\n"
+#~ "- %s: sang trái\n"
+#~ "- %s: sang phải\n"
+#~ "- %s: nhảy / leo lên\n"
+#~ "- %s: đào / đấm\n"
+#~ "- %s: đặt khối / sử dụng\n"
+#~ "- %s: đi rón rén / leo xuống\n"
+#~ "- %s: thả vật phẩm\n"
+#~ "- %s: túi đồ\n"
+#~ "- Di chuột: xoay / nhìn\n"
+#~ "- Lăn chuột: chọn vật phẩm\n"
+#~ "- %s: trò chuyện\n"
 
 #~ msgid "Creative"
 #~ msgstr "Sáng tạo"
@@ -6377,6 +6479,10 @@ msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
 
 #~ msgid "Install Mod: Unable to find real mod name for: $1"
 #~ msgstr "Cài đặt mod: Không thể tìm thấy tên mod thật cho: $1"
+
+#, fuzzy
+#~ msgid "Invalid gamespec."
+#~ msgstr "Gamespec không hợp lệ."
 
 #~ msgid "Mipmap"
 #~ msgstr "Mipmap"
@@ -6487,5 +6593,11 @@ msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
 #~ msgid "You died."
 #~ msgstr "Bạn đã chết"
 
+#~ msgid "You have no games installed."
+#~ msgstr "Bạn chưa cài đặt trò chơi nào."
+
 #~ msgid "Z"
 #~ msgstr "Z"
+
+#~ msgid "ok"
+#~ msgstr "OK"

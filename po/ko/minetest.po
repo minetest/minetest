@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Korean (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 18:48+0100\n"
+"POT-Creation-Date: 2024-07-11 20:16+0800\n"
 "PO-Revision-Date: 2022-05-08 00:22+0000\n"
 "Last-Translator: Han So Ri <2_0_2_0_@naver.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -74,7 +74,7 @@ msgid "Command not available: "
 msgstr ""
 
 #: builtin/common/chatcommands.lua
-msgid "Get help for commands"
+msgid "Get help for commands (-t: output in chat)"
 msgstr ""
 
 #: builtin/common/chatcommands.lua
@@ -83,12 +83,8 @@ msgid ""
 msgstr ""
 
 #: builtin/common/chatcommands.lua
-msgid "[all | <cmd>]"
+msgid "[all | <cmd>] [-t]"
 msgstr ""
-
-#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
-msgid "OK"
-msgstr "확인"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -105,6 +101,10 @@ msgstr "오류가 발생했습니다:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "메인 메뉴"
+
+#: builtin/fstk/ui.lua
+msgid "OK"
+msgstr "확인"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -134,181 +134,188 @@ msgstr "프로토콜 버전 $1만 제공합니다."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "프로토콜 버전 $1와(과) $2 사이의 버전을 제공합니다."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Error installing \"$1\": $2"
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+#: builtin/mainmenu/content/contentdb.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "$1을 다운로드하는 데에 실패했습니다"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr ""
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download $1"
+msgstr "$1을 다운로드하는 데에 실패했습니다"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/contentdb.lua
+#, fuzzy
+msgid ""
+"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
+"broken archive)"
+msgstr ""
+"모드 설치: \"$1\"는(은) 지원 되지 않는 파일 형식 이거나 손상된 압축 파일입니"
+"다"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 #, fuzzy
 msgid "$1 downloading..."
 msgstr "다운 받는 중..."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All packages"
 msgstr "모든 패키지"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "이미 설치됨"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Back to Main Menu"
 msgstr "주 메뉴로 돌아가기"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "cURL 없이 Minetest를 컴파일한 경우 ContentDB를 사용할 수 없습니다"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Downloading..."
+msgstr "다운 받는 중..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Error getting dependencies for package"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Games"
+msgstr "게임"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "설치"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "불러오는 중..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Mods"
+msgstr "모드"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No packages could be retrieved"
+msgstr "검색할 수 있는 패키지가 없습니다"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "결과 없음"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No updates"
+msgstr "업데이트 없음"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Queued"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Texture packs"
+msgstr "텍스처 팩"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "The package $1 was not found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "제거"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "업데이트"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Update All [$1]"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "View more information in a web browser"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 by $2"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 required dependencies could not be found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Already installed"
+msgstr "이미 설치됨"
+
+#: builtin/mainmenu/content/dlg_install.lua
 #, fuzzy
 msgid "Base Game:"
 msgstr "호스트 게임"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_overwrite.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
+#: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "취소"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "cURL 없이 Minetest를 컴파일한 경우 ContentDB를 사용할 수 없습니다"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "의존:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "다운 받는 중..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
-msgid "Failed to download \"$1\""
-msgstr "$1을 다운로드하는 데에 실패했습니다"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "$1을 다운로드하는 데에 실패했습니다"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr ""
-"모드 설치: \"$1\"는(은) 지원 되지 않는 파일 형식 이거나 손상된 압축 파일입니"
-"다"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Games"
-msgstr "게임"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Install"
-msgstr "설치"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 #, fuzzy
 msgid "Install $1"
 msgstr "설치"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 #, fuzzy
 msgid "Install missing dependencies"
 msgstr "종속성 선택:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "불러오는 중..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Mods"
-msgstr "모드"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "검색할 수 있는 패키지가 없습니다"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "결과 없음"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No updates"
-msgstr "업데이트 없음"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Not found"
 msgstr "찾을 수 없음"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Please check that the base game is correct."
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Queued"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "텍스처 팩"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "The package $1 was not found."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "제거"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "업데이트"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "Overwrite"
 msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
@@ -461,9 +468,19 @@ msgid "Decorations"
 msgstr "장식"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Desert temples"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
 msgid "Development Test is meant for developers."
 msgstr "경고: Development Test는 개발자를 위한 모드입니다."
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Different dungeon variant generated in desert biomes (only if dungeons "
+"enabled)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -837,10 +854,6 @@ msgstr ""
 msgid "Back"
 msgstr "뒤로"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "키 변경"
-
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -850,7 +863,8 @@ msgstr "채팅"
 msgid "Clear"
 msgstr "지우기"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "컨트롤"
 
@@ -1067,6 +1081,16 @@ msgid "Install games from ContentDB"
 msgstr "ContentDB에서 게임 설치"
 
 #: builtin/mainmenu/tab_local.lua
+msgid "Minetest doesn't come with a game by default."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
+msgid ""
+"Minetest is a game-creation platform that allows you to play many different "
+"games."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "새로 만들기"
 
@@ -1100,8 +1124,8 @@ msgid "Start Game"
 msgstr "게임 시작"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You have no games installed."
-msgstr "게임이 설치되어 있지 않습니다."
+msgid "You need to install a game before you can create a world."
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 #, fuzzy
@@ -1188,17 +1212,9 @@ msgid "Rebuilding shaders..."
 msgstr "쉐이더 개축중..."
 
 #: src/client/clientlauncher.cpp
-msgid "Connection error (timed out?)"
-msgstr "연결 오류 (시간초과)"
-
-#: src/client/clientlauncher.cpp
 #, fuzzy
 msgid "Could not find or load game: "
 msgstr "게임을 찾지 못했거나 로딩할 수 없습니다\""
-
-#: src/client/clientlauncher.cpp
-msgid "Invalid gamespec."
-msgstr "인식할 수 없는 게임 사양입니다."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1224,7 +1240,11 @@ msgstr "패스워드 파일을 여는데 실패했습니다: "
 msgid "Provided world path doesn't exist: "
 msgstr "월드 경로가 존재하지 않습니다: "
 
-#: src/client/game.cpp src/server.cpp
+#: src/client/clientmedia.cpp src/client/game.cpp
+msgid "Media..."
+msgstr "미디어..."
+
+#: src/client/game.cpp src/client/shader.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1233,16 +1253,8 @@ msgstr ""
 "자세한 내용은 debug.txt을 확인 합니다."
 
 #: src/client/game.cpp
-msgid "- Address: "
-msgstr "- 주소: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- 모드: "
-
-#: src/client/game.cpp
-msgid "- Port: "
-msgstr "- 포트: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1277,10 +1289,6 @@ msgstr "자동 전진 활성화"
 
 #: src/client/game.cpp
 msgid "Block bounds hidden"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Block bounds shown for all blocks"
 msgstr ""
 
 #: src/client/game.cpp
@@ -1330,6 +1338,10 @@ msgid "Connecting to server..."
 msgstr "서버 연결중..."
 
 #: src/client/game.cpp
+msgid "Connection error (timed out?)"
+msgstr "연결 오류 (시간초과)"
+
+#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr ""
 
@@ -1338,46 +1350,13 @@ msgid "Continue"
 msgstr "계속"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
-msgid ""
-"Controls:\n"
-"- %s: move forwards\n"
-"- %s: move backwards\n"
-"- %s: move left\n"
-"- %s: move right\n"
-"- %s: jump/climb up\n"
-"- %s: dig/punch/use\n"
-"- %s: place/use\n"
-"- %s: sneak/climb down\n"
-"- %s: drop item\n"
-"- %s: inventory\n"
-"- Mouse: turn/look\n"
-"- Mouse wheel: select item\n"
-"- %s: chat\n"
-msgstr ""
-"조작:\n"
-"-%s: 앞으로 이동\n"
-"-%s:뒤로 이동\n"
-"-%s:왼쪽으로 이동\n"
-"-%s:오른쪽으로 이동\n"
-"-%s: 점프/오르기\n"
-"-%s:조용히 걷기/내려가기\n"
-"-%s:아이템 버리기\n"
-"-%s:인벤토리\n"
-"-마우스: 돌기/보기\n"
-"-마우스 왼쪽 클릭: 땅파기/펀치\n"
-"-마우스 오른쪽 클릭: 두기/사용하기\n"
-"-마우스 휠:아이템 선택\n"
-"-%s: 채팅\n"
-
-#: src/client/game.cpp
 #, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/use\n"
-"- long tap: dig/punch/use\n"
+"- tap: place/punch/use (default)\n"
+"- long tap: dig/use (default)\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1470,6 +1449,11 @@ msgid "Fog enabled"
 msgstr "안개 활성화"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Fog enabled by game or mod"
+msgstr "게임 또는 모드에 의해 현재 확대 비활성화"
+
+#: src/client/game.cpp
 msgid "Game info:"
 msgstr "게임 정보:"
 
@@ -1488,10 +1472,6 @@ msgstr "아이템 정의중..."
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "KiB/s"
-
-#: src/client/game.cpp
-msgid "Media..."
-msgstr "미디어..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1650,10 +1630,6 @@ msgstr "선 표면 보이기"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "게임 또는 모드에 의해 현재 확대 비활성화"
-
-#: src/client/game.cpp
-msgid "ok"
-msgstr "확인"
 
 #: src/client/gameui.cpp
 #, fuzzy
@@ -1990,6 +1966,15 @@ msgstr "표면 모드의 미니맵, 1배 확대"
 msgid "Minimap in texture mode"
 msgstr "최소 텍스처 크기"
 
+#: src/client/shader.cpp
+#, fuzzy, c-format
+msgid "Failed to compile the \"%s\" shader."
+msgstr "$1을 다운로드하는 데에 실패했습니다"
+
+#: src/client/shader.cpp
+msgid "Shaders are enabled but GLSL is not supported by the driver."
+msgstr ""
+
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2182,6 +2167,19 @@ msgstr "확대/축소"
 msgid "press key"
 msgstr "키를 누르세요"
 
+#: src/gui/guiOpenURL.cpp
+msgid "Open"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+msgid "Open URL?"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+#, fuzzy
+msgid "Unable to open URL"
+msgstr "$1을 다운로드하는 데에 실패했습니다"
+
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "변경"
@@ -2215,6 +2213,7 @@ msgstr "볼륨 조절: "
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
+#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "ko"
 
@@ -2227,6 +2226,64 @@ msgstr ""
 #, fuzzy
 msgid "Name is taken. Please choose another name"
 msgstr "이름을 선택하세요!"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Another client is connected with this name.  If your client closed "
+"unexpectedly, try again in a minute."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Empty passwords are disallowed.  Set a password and try again."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Internal server error"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Invalid password"
+msgstr "현재 비밀번호"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Player name contains disallowed characters"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Player name not allowed"
+msgstr "이름이 너무 깁니다."
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Server shutting down"
+msgstr "서버가 닫혔습니다..."
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"The server has experienced an internal error.  You will now be disconnected."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "The server is running in simple singleplayer mode.  You cannot connect."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Too many users"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Your client sent something the server didn't expect.  Try reconnecting or "
+"updating your client."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Your client's version is not supported.\n"
+"Please contact the server administrator."
+msgstr ""
 
 #: src/server.cpp
 #, fuzzy, c-format
@@ -5577,7 +5634,7 @@ msgstr "부드러운 조명효과"
 #, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Change Keys."
+"cinematic mode by using the key set in Controls."
 msgstr ""
 "시네마틱 모드에서 카메라의 회전을 매끄럽게 만듭니다. 사용 하지 않으려면 0을 "
 "입력하세요."
@@ -6430,11 +6487,17 @@ msgstr ""
 msgid "cURL parallel limit"
 msgstr ""
 
+#~ msgid "- Address: "
+#~ msgstr "- 주소: "
+
 #~ msgid "- Creative Mode: "
 #~ msgstr "- 크리에이티브 모드: "
 
 #~ msgid "- Damage: "
 #~ msgstr "- 데미지: "
+
+#~ msgid "- Port: "
+#~ msgstr "- 포트: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -6523,6 +6586,9 @@ msgstr ""
 #~ msgid "Camera update toggle key"
 #~ msgstr "카메라 업데이트 토글 키"
 
+#~ msgid "Change Keys"
+#~ msgstr "키 변경"
+
 #, fuzzy
 #~ msgid "Change keys"
 #~ msgstr "키 변경"
@@ -6585,6 +6651,38 @@ msgstr ""
 
 #~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 #~ msgstr "터널 너비를 조절, 작은 수치는 넓은 터널을 만듭니다."
+
+#, fuzzy, c-format
+#~ msgid ""
+#~ "Controls:\n"
+#~ "- %s: move forwards\n"
+#~ "- %s: move backwards\n"
+#~ "- %s: move left\n"
+#~ "- %s: move right\n"
+#~ "- %s: jump/climb up\n"
+#~ "- %s: dig/punch/use\n"
+#~ "- %s: place/use\n"
+#~ "- %s: sneak/climb down\n"
+#~ "- %s: drop item\n"
+#~ "- %s: inventory\n"
+#~ "- Mouse: turn/look\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- %s: chat\n"
+#~ msgstr ""
+#~ "조작:\n"
+#~ "-%s: 앞으로 이동\n"
+#~ "-%s:뒤로 이동\n"
+#~ "-%s:왼쪽으로 이동\n"
+#~ "-%s:오른쪽으로 이동\n"
+#~ "-%s: 점프/오르기\n"
+#~ "-%s:조용히 걷기/내려가기\n"
+#~ "-%s:아이템 버리기\n"
+#~ "-%s:인벤토리\n"
+#~ "-마우스: 돌기/보기\n"
+#~ "-마우스 왼쪽 클릭: 땅파기/펀치\n"
+#~ "-마우스 오른쪽 클릭: 두기/사용하기\n"
+#~ "-마우스 휠:아이템 선택\n"
+#~ "-%s: 채팅\n"
 
 #~ msgid "Creative"
 #~ msgstr "창의적인"
@@ -6796,6 +6894,9 @@ msgstr ""
 
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "모드 설치: 파일: \"$1\""
+
+#~ msgid "Invalid gamespec."
+#~ msgstr "인식할 수 없는 게임 사양입니다."
 
 #~ msgid "Inventory key"
 #~ msgstr "인벤토리 키"
@@ -7821,8 +7922,14 @@ msgstr ""
 #~ msgid "You died."
 #~ msgstr "사망했습니다"
 
+#~ msgid "You have no games installed."
+#~ msgstr "게임이 설치되어 있지 않습니다."
+
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "yes"
+
+#~ msgid "ok"
+#~ msgstr "확인"

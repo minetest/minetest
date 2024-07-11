@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 18:48+0100\n"
+"POT-Creation-Date: 2024-07-11 20:16+0800\n"
 "PO-Revision-Date: 2023-08-17 10:48+0000\n"
 "Last-Translator: Yic95 <0Luke.Luke0@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -71,7 +71,8 @@ msgid "Command not available: "
 msgstr "指令無法使用: "
 
 #: builtin/common/chatcommands.lua
-msgid "Get help for commands"
+#, fuzzy
+msgid "Get help for commands (-t: output in chat)"
 msgstr "取得指令的說明"
 
 #: builtin/common/chatcommands.lua
@@ -80,12 +81,9 @@ msgid ""
 msgstr "使用「.help <cmd>」來取得更多資訊，或使用「.help all」來列出所有指令。"
 
 #: builtin/common/chatcommands.lua
-msgid "[all | <cmd>]"
+#, fuzzy
+msgid "[all | <cmd>] [-t]"
 msgstr "[all | <cmd>]"
-
-#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
-msgid "OK"
-msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -102,6 +100,10 @@ msgstr "發生錯誤："
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "主選單"
+
+#: builtin/fstk/ui.lua
+msgid "OK"
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -131,19 +133,27 @@ msgstr "我們只支援協定版本 $1。"
 msgid "We support protocol versions between version $1 and $2."
 msgstr "我們支援協定版本 $1 到 $2。"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "“$1”已經存在。您要覆蓋它嗎？"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "$1 和他的 $2 個依賴將會被安裝。"
+#: builtin/mainmenu/content/contentdb.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "無法下載 $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr "$1 作者： $2"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download $1"
+msgstr "無法下載 $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/contentdb.lua
+#, fuzzy
+msgid ""
+"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
+"broken archive)"
+msgstr "安裝：檔案類型不支援，或是封存檔損壞"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -151,158 +161,157 @@ msgstr ""
 "$1 個正在下載，\n"
 "$2 個正在等待"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "$1 downloading..."
 msgstr "正在下載 $1..."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "找不到 $1 所需的依賴項。"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "將安裝 $1，並且將跳過他的 $2 個依賴項。"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All packages"
 msgstr "所有套件"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "已安裝"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Back to Main Menu"
 msgstr "返回主選單"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "在沒有 cURL 的情況下編譯 Minetest 時，ContentDB 不可用"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Downloading..."
+msgstr "正在下載..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Error getting dependencies for package"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Games"
+msgstr "遊戲"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "安裝"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "正在載入..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Mods"
+msgstr "Mods"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No packages could be retrieved"
+msgstr "無法取得套件"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "無結果"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No updates"
+msgstr "無更新"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Queued"
+msgstr "已排程"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Texture packs"
+msgstr "材質包"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "The package $1 was not found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "解除安裝"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "更新"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Update All [$1]"
+msgstr "全部更新 [$1]"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "View more information in a web browser"
+msgstr "在網絡瀏覽器中查看更多信息"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "$1 和他的 $2 個依賴將會被安裝。"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 by $2"
+msgstr "$1 作者： $2"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 required dependencies could not be found."
+msgstr "找不到 $1 所需的依賴項。"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "將安裝 $1，並且將跳過他的 $2 個依賴項。"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Already installed"
+msgstr "已安裝"
+
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Base Game:"
 msgstr "主遊戲:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_overwrite.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
+#: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "取消"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "在沒有 cURL 的情況下編譯 Minetest 時，ContentDB 不可用"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "相依元件："
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "正在下載..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
-msgid "Failed to download \"$1\""
-msgstr "無法下載 $1"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "無法下載 $1"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "安裝：檔案類型不支援，或是封存檔損壞"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Games"
-msgstr "遊戲"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Install"
-msgstr "安裝"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install $1"
 msgstr "安裝 $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install missing dependencies"
 msgstr "安裝缺少的依賴"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "正在載入..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Mods"
-msgstr "Mods"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "無法取得套件"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "無結果"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No updates"
-msgstr "無更新"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Not found"
 msgstr "找不到"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "覆蓋"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Please check that the base game is correct."
 msgstr "請檢查基礎遊戲是否正確。"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Queued"
-msgstr "已排程"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "“$1”已經存在。您要覆蓋它嗎？"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "材質包"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "The package $1 was not found."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "解除安裝"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "更新"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "全部更新 [$1]"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "在網絡瀏覽器中查看更多信息"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "Overwrite"
+msgstr "覆蓋"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -455,9 +464,19 @@ msgid "Decorations"
 msgstr "裝飾物"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Desert temples"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
 msgid "Development Test is meant for developers."
 msgstr "警告：Development Test 僅供開發者使用。"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Different dungeon variant generated in desert biomes (only if dungeons "
+"enabled)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -830,10 +849,6 @@ msgstr ""
 msgid "Back"
 msgstr "返回"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "變更按鍵"
-
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -843,7 +858,8 @@ msgstr "聊天"
 msgid "Clear"
 msgstr "清除"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "控制"
 
@@ -1059,6 +1075,16 @@ msgid "Install games from ContentDB"
 msgstr "從 ContentDB 安裝遊戲"
 
 #: builtin/mainmenu/tab_local.lua
+msgid "Minetest doesn't come with a game by default."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
+msgid ""
+"Minetest is a game-creation platform that allows you to play many different "
+"games."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "新增"
 
@@ -1091,8 +1117,8 @@ msgid "Start Game"
 msgstr "開始遊戲"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You have no games installed."
-msgstr "您未安裝任何遊戲。"
+msgid "You need to install a game before you can create a world."
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1174,16 +1200,8 @@ msgid "Rebuilding shaders..."
 msgstr "正在重新組建著色器..."
 
 #: src/client/clientlauncher.cpp
-msgid "Connection error (timed out?)"
-msgstr "連線錯誤（逾時？）"
-
-#: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "找不到或無法載入遊戲: "
-
-#: src/client/clientlauncher.cpp
-msgid "Invalid gamespec."
-msgstr "遊戲規格無效。"
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1209,7 +1227,11 @@ msgstr "無法開啟提供的密碼檔案： "
 msgid "Provided world path doesn't exist: "
 msgstr "提供的世界路徑不存在： "
 
-#: src/client/game.cpp src/server.cpp
+#: src/client/clientmedia.cpp src/client/game.cpp
+msgid "Media..."
+msgstr "媒體..."
+
+#: src/client/game.cpp src/client/shader.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1218,16 +1240,8 @@ msgstr ""
 "檢視 debug.txt 以取得更多資訊。"
 
 #: src/client/game.cpp
-msgid "- Address: "
-msgstr "- 地址： "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- 模式： "
-
-#: src/client/game.cpp
-msgid "- Port: "
-msgstr "- 連線埠： "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1262,10 +1276,6 @@ msgstr "已啟用自動前進"
 #: src/client/game.cpp
 msgid "Block bounds hidden"
 msgstr "區塊邊界隱藏"
-
-#: src/client/game.cpp
-msgid "Block bounds shown for all blocks"
-msgstr "區塊邊界顯示所有區塊"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
@@ -1313,6 +1323,10 @@ msgid "Connecting to server..."
 msgstr "正在連線至伺服器..."
 
 #: src/client/game.cpp
+msgid "Connection error (timed out?)"
+msgstr "連線錯誤（逾時？）"
+
+#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "連線失敗，原因不明"
 
@@ -1321,46 +1335,13 @@ msgid "Continue"
 msgstr "繼續"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
-msgid ""
-"Controls:\n"
-"- %s: move forwards\n"
-"- %s: move backwards\n"
-"- %s: move left\n"
-"- %s: move right\n"
-"- %s: jump/climb up\n"
-"- %s: dig/punch/use\n"
-"- %s: place/use\n"
-"- %s: sneak/climb down\n"
-"- %s: drop item\n"
-"- %s: inventory\n"
-"- Mouse: turn/look\n"
-"- Mouse wheel: select item\n"
-"- %s: chat\n"
-msgstr ""
-"控制：\n"
-"- %s：向前移動\n"
-"- %s：向後移動\n"
-"- %s：向左移動\n"
-"- %s：向右移動\n"
-"- %s：跳躍／向上攀爬\n"
-"- %s：挖／打\n"
-"- %s：放置／使用\n"
-"- %s：潛行／向下攀爬\n"
-"- %s：丟棄物品\n"
-"- %s：物品欄\n"
-"- 滑鼠：旋轉／觀看\n"
-"- 滑鼠滾輪：選取物品\n"
-"- %s：聊天\n"
-
-#: src/client/game.cpp
 #, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/use\n"
-"- long tap: dig/punch/use\n"
+"- tap: place/punch/use (default)\n"
+"- long tap: dig/use (default)\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1453,6 +1434,11 @@ msgid "Fog enabled"
 msgstr "已啟用霧氣"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Fog enabled by game or mod"
+msgstr "遠近調整目前已被遊戲或模組停用"
+
+#: src/client/game.cpp
 msgid "Game info:"
 msgstr "遊戲資訊："
 
@@ -1471,10 +1457,6 @@ msgstr "定義物品..."
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "KiB/秒"
-
-#: src/client/game.cpp
-msgid "Media..."
-msgstr "媒體..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1632,10 +1614,6 @@ msgstr "已顯示線框"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "遠近調整目前已被遊戲或模組停用"
-
-#: src/client/game.cpp
-msgid "ok"
-msgstr "確定"
 
 #: src/client/gameui.cpp
 #, fuzzy
@@ -1971,6 +1949,15 @@ msgstr "表面模式的迷你地圖，放大 %d 倍"
 msgid "Minimap in texture mode"
 msgstr "材質模式的迷你地圖"
 
+#: src/client/shader.cpp
+#, fuzzy, c-format
+msgid "Failed to compile the \"%s\" shader."
+msgstr "無法開啟網頁"
+
+#: src/client/shader.cpp
+msgid "Shaders are enabled but GLSL is not supported by the driver."
+msgstr ""
+
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2161,6 +2148,19 @@ msgstr "遠近調整"
 msgid "press key"
 msgstr "按下按鍵"
 
+#: src/gui/guiOpenURL.cpp
+msgid "Open"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+msgid "Open URL?"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+#, fuzzy
+msgid "Unable to open URL"
+msgstr "無法開啟網頁"
+
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "變更"
@@ -2194,6 +2194,7 @@ msgstr "音量：%d%%"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
+#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "zh_TW"
 
@@ -2206,6 +2207,70 @@ msgstr ""
 #, fuzzy
 msgid "Name is taken. Please choose another name"
 msgstr "請選擇名稱！"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Another client is connected with this name.  If your client closed "
+"unexpectedly, try again in a minute."
+msgstr "另一個客戶端正以相同的用戶名連結此伺服器。如果您的客戶端曾意外關閉，請幾分鐘後再試。"
+
+#: src/network/networkprotocol_translation_file.cpp
+# The source string uses passive voice, omitting the actor (the server).
+# However, having passive-ish thing here would be weird for Chinese,
+# so "此伺服器" (the server) is added.
+# Alternative translation: "空密碼已被禁止。……", "禁止使用空密碼。……"
+msgid "Empty passwords are disallowed.  Set a password and try again."
+msgstr "此伺服器不允許空密碼。請設定密碼，然後再試一次。"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Internal server error"
+msgstr "伺服器內部錯誤"
+
+#: src/network/networkprotocol_translation_file.cpp
+# Alternative translation: "無效的密碼"
+msgid "Invalid password"
+msgstr "密碼錯誤"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Player name contains disallowed characters"
+msgstr "玩家名字包含禁止使用的字元"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Player name not allowed"
+msgstr "不允許使用此玩家名稱"
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Server shutting down"
+msgstr "服務器正在關閉"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"The server has experienced an internal error.  You will now be disconnected."
+msgstr "此伺服器發生了內部錯誤。您將被斷開連線。"
+
+#: src/network/networkprotocol_translation_file.cpp
+# Alternative translation: "此服務器正運行單人遊戲模式。您無法連接。"
+msgid "The server is running in simple singleplayer mode.  You cannot connect."
+msgstr "此服務器正運行單人遊戲。您無法連接。"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Too many users"
+msgstr "太多玩家"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Your client sent something the server didn't expect.  Try reconnecting or "
+"updating your client."
+msgstr "您的客戶端發送了伺服器無法識別的資料。請嘗試重新連線或更新客戶端。"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Your client's version is not supported.\n"
+"Please contact the server administrator."
+msgstr ""
+"您的客戶端版本不被伺服器支援。\n"
+"請聯繫伺服器管理員。"
 
 #: src/server.cpp
 #, fuzzy, c-format
@@ -5708,7 +5773,7 @@ msgstr "平滑光"
 #, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Change Keys."
+"cinematic mode by using the key set in Controls."
 msgstr "在電影模式中讓攝影機旋轉變流暢。設為 0 以停用。"
 
 #: src/settings_translation_file.cpp
@@ -6623,11 +6688,17 @@ msgstr "cURL 並行限制"
 #~ msgid "(game support required)"
 #~ msgstr "(需遊戲支援)"
 
+#~ msgid "- Address: "
+#~ msgstr "- 地址： "
+
 #~ msgid "- Creative Mode: "
 #~ msgstr "- 創造模式： "
 
 #~ msgid "- Damage: "
 #~ msgstr "- 傷害： "
+
+#~ msgid "- Port: "
+#~ msgstr "- 連線埠： "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -6702,6 +6773,9 @@ msgstr "cURL 並行限制"
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "全螢幕模式中的位元／像素（又稱色彩深度）。"
 
+#~ msgid "Block bounds shown for all blocks"
+#~ msgstr "區塊邊界顯示所有區塊"
+
 #~ msgid "Bump Mapping"
 #~ msgstr "映射貼圖"
 
@@ -6710,6 +6784,9 @@ msgstr "cURL 並行限制"
 
 #~ msgid "Camera update toggle key"
 #~ msgstr "攝影機切換更新按鍵"
+
+#~ msgid "Change Keys"
+#~ msgstr "變更按鍵"
 
 #, fuzzy
 #~ msgid "Change keys"
@@ -6768,6 +6845,38 @@ msgstr "cURL 並行限制"
 
 #~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 #~ msgstr "控制隧道的寬度，較小的值會創造出較寬的隧道。"
+
+#, fuzzy, c-format
+#~ msgid ""
+#~ "Controls:\n"
+#~ "- %s: move forwards\n"
+#~ "- %s: move backwards\n"
+#~ "- %s: move left\n"
+#~ "- %s: move right\n"
+#~ "- %s: jump/climb up\n"
+#~ "- %s: dig/punch/use\n"
+#~ "- %s: place/use\n"
+#~ "- %s: sneak/climb down\n"
+#~ "- %s: drop item\n"
+#~ "- %s: inventory\n"
+#~ "- Mouse: turn/look\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- %s: chat\n"
+#~ msgstr ""
+#~ "控制：\n"
+#~ "- %s：向前移動\n"
+#~ "- %s：向後移動\n"
+#~ "- %s：向左移動\n"
+#~ "- %s：向右移動\n"
+#~ "- %s：跳躍／向上攀爬\n"
+#~ "- %s：挖／打\n"
+#~ "- %s：放置／使用\n"
+#~ "- %s：潛行／向下攀爬\n"
+#~ "- %s：丟棄物品\n"
+#~ "- %s：物品欄\n"
+#~ "- 滑鼠：旋轉／觀看\n"
+#~ "- 滑鼠滾輪：選取物品\n"
+#~ "- %s：聊天\n"
 
 #~ msgid "Creative"
 #~ msgstr "創造"
@@ -7140,6 +7249,9 @@ msgstr "cURL 並行限制"
 
 #~ msgid "Instrumentation"
 #~ msgstr "儀表"
+
+#~ msgid "Invalid gamespec."
+#~ msgstr "遊戲規格無效。"
 
 #~ msgid "Inventory key"
 #~ msgstr "物品欄按鍵"
@@ -8219,8 +8331,14 @@ msgstr "cURL 並行限制"
 #~ msgid "You died."
 #~ msgstr "您已死亡"
 
+#~ msgid "You have no games installed."
+#~ msgstr "您未安裝任何遊戲。"
+
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "yes"
+
+#~ msgid "ok"
+#~ msgstr "確定"

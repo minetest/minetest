@@ -216,17 +216,17 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 			denyCode == SERVER_ACCESSDENIED_CRASH) {
 		*pkt >> m_access_denied_reason;
 		if (m_access_denied_reason.empty())
-			m_access_denied_reason = accessDeniedStrings[denyCode];
+			m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
 		u8 reconnect;
 		*pkt >> reconnect;
 		m_access_denied_reconnect = reconnect & 1;
 	} else if (denyCode == SERVER_ACCESSDENIED_CUSTOM_STRING) {
 		*pkt >> m_access_denied_reason;
 	} else if (denyCode == SERVER_ACCESSDENIED_TOO_MANY_USERS) {
-		m_access_denied_reason = accessDeniedStrings[denyCode];
+		m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
 		m_access_denied_reconnect = true;
 	} else if (denyCode < SERVER_ACCESSDENIED_MAX) {
-		m_access_denied_reason = accessDeniedStrings[denyCode];
+		m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
 	} else {
 		// Allow us to add new error messages to the
 		// protocol without raising the protocol version, if we want to.

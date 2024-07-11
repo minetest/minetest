@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 18:48+0100\n"
+"POT-Creation-Date: 2024-07-11 20:16+0800\n"
 "PO-Revision-Date: 2023-11-22 00:17+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
@@ -71,7 +71,8 @@ msgid "Command not available: "
 msgstr "コマンドは使用できません： "
 
 #: builtin/common/chatcommands.lua
-msgid "Get help for commands"
+#, fuzzy
+msgid "Get help for commands (-t: output in chat)"
 msgstr "コマンドのヘルプを表示する"
 
 #: builtin/common/chatcommands.lua
@@ -82,12 +83,9 @@ msgstr ""
 "べてを一覧表示します。"
 
 #: builtin/common/chatcommands.lua
-msgid "[all | <cmd>]"
+#, fuzzy
+msgid "[all | <cmd>] [-t]"
 msgstr "[all | <cmd>]"
-
-#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
-msgid "OK"
-msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -104,6 +102,10 @@ msgstr "エラーが発生しました:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "メインメニュー"
+
+#: builtin/fstk/ui.lua
+msgid "OK"
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -133,19 +135,27 @@ msgstr "プロトコルはバージョン$1のみをサポートしています�
 msgid "We support protocol versions between version $1 and $2."
 msgstr "バージョン$1から$2までのプロトコルをサポートしています。"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "「$1」はすでに存在します。上書きしますか？"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Error installing \"$1\": $2"
+msgstr "「$1」をインストール中にエラー: $2"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "$1 と依存MOD $2 がインストールされます。"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download \"$1\""
+msgstr "「$1」のダウンロードに失敗"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr "$1 by $2"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download $1"
+msgstr "$1のダウンロードに失敗"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/contentdb.lua
+#, fuzzy
+msgid ""
+"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
+"broken archive)"
+msgstr ""
+"「$1」の展開に失敗 (サポートされていないファイル形式または壊れたアーカイブ)"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -153,157 +163,157 @@ msgstr ""
 "$1 ダウンロード中、\n"
 "$2 ダウンロード待機中"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "$1 downloading..."
 msgstr "$1 ダウンロード中..."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "$1 つの必要な依存MODが見つかりませんでした。"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "$1 がインストールされ、依存MOD $2 はスキップされます。"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All packages"
 msgstr "すべて"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "インストール済み"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Back to Main Menu"
 msgstr "メインメニューへ"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "MinetestがcURLなしでコンパイルされた場合、コンテンツDBは使用できません"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Downloading..."
+msgstr "ダウンロード中..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Error getting dependencies for package"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Games"
+msgstr "ゲーム"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "入手"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "読み込み中..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Mods"
+msgstr "MOD"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No packages could be retrieved"
+msgstr "パッケージを取得できませんでした"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "見つかりませんでした"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No updates"
+msgstr "更新なし"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Queued"
+msgstr "待機中"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Texture packs"
+msgstr "テクスチャパック"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "The package $1 was not found."
+msgstr "パッケージ $1 が見つかりませんでした。"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "削除"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "更新"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Update All [$1]"
+msgstr "すべて更新 [$1]"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "View more information in a web browser"
+msgstr "Webブラウザで詳細を見る"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "You need to install a game before you can install a mod"
+msgstr "MODをインストールする前に、ゲームをインストールする必要があります"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "$1 と依存MOD $2 がインストールされます。"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 by $2"
+msgstr "$1 by $2"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 required dependencies could not be found."
+msgstr "$1 つの必要な依存MODが見つかりませんでした。"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "$1 がインストールされ、依存MOD $2 はスキップされます。"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Already installed"
+msgstr "インストール済み"
+
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Base Game:"
 msgstr "基盤ゲーム："
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_overwrite.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
+#: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "MinetestがcURLなしでコンパイルされた場合、コンテンツDBは使用できません"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "依存MOD:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "ダウンロード中..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr "「$1」をインストール中にエラー: $2"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download \"$1\""
-msgstr "「$1」のダウンロードに失敗"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "$1のダウンロードに失敗"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr ""
-"「$1」の展開に失敗 (サポートされていないファイル形式または壊れたアーカイブ)"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Games"
-msgstr "ゲーム"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Install"
-msgstr "入手"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install $1"
 msgstr "$1 のインストール"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install missing dependencies"
 msgstr "不足依存MODインストール"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "読み込み中..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Mods"
-msgstr "MOD"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "パッケージを取得できませんでした"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "見つかりませんでした"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No updates"
-msgstr "更新なし"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Not found"
 msgstr "見つかりません"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "上書き"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Please check that the base game is correct."
 msgstr "基盤となるゲームが正しいかどうか確認してください。"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Queued"
-msgstr "待機中"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "「$1」はすでに存在します。上書きしますか？"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "テクスチャパック"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "The package $1 was not found."
-msgstr "パッケージ $1 が見つかりませんでした。"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "削除"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "更新"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "すべて更新 [$1]"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "Webブラウザで詳細を見る"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr "MODをインストールする前に、ゲームをインストールする必要があります"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "Overwrite"
+msgstr "上書き"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -452,8 +462,18 @@ msgid "Decorations"
 msgstr "デコレーション"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Desert temples"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
 msgstr "Development Testは開発者用です。"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Different dungeon variant generated in desert biomes (only if dungeons "
+"enabled)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -828,10 +848,6 @@ msgstr "アクセシビリティ"
 msgid "Back"
 msgstr "戻る"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "キー変更"
-
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -841,7 +857,8 @@ msgstr "チャット"
 msgid "Clear"
 msgstr "Clear"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "操作"
 
@@ -1047,6 +1064,17 @@ msgid "Install games from ContentDB"
 msgstr "コンテンツDBからゲームをインストール"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Minetest doesn't come with a game by default."
+msgstr "Minetest Game は初期状態ではインストールされていない"
+
+#: builtin/mainmenu/tab_local.lua
+msgid ""
+"Minetest is a game-creation platform that allows you to play many different "
+"games."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "新規作成"
 
@@ -1079,8 +1107,9 @@ msgid "Start Game"
 msgstr "ゲームスタート"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You have no games installed."
-msgstr "ゲームがインストールされていません。"
+#, fuzzy
+msgid "You need to install a game before you can create a world."
+msgstr "MODをインストールする前に、ゲームをインストールする必要があります"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1160,16 +1189,8 @@ msgid "Rebuilding shaders..."
 msgstr "シェーダーを再構築中..."
 
 #: src/client/clientlauncher.cpp
-msgid "Connection error (timed out?)"
-msgstr "接続エラー (タイムアウト？)"
-
-#: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "ゲームが見つからないか読み込めません: "
-
-#: src/client/clientlauncher.cpp
-msgid "Invalid gamespec."
-msgstr "無効なゲーム情報です。"
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1195,7 +1216,11 @@ msgstr "パスワードファイルを開けませんでした: "
 msgid "Provided world path doesn't exist: "
 msgstr "ワールドが存在しません: "
 
-#: src/client/game.cpp src/server.cpp
+#: src/client/clientmedia.cpp src/client/game.cpp
+msgid "Media..."
+msgstr "メディアを受信中..."
+
+#: src/client/game.cpp src/client/shader.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1204,16 +1229,8 @@ msgstr ""
 "詳細はdebug.txtを確認してください。"
 
 #: src/client/game.cpp
-msgid "- Address: "
-msgstr "- アドレス: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- モード: "
-
-#: src/client/game.cpp
-msgid "- Port: "
-msgstr "- ポート: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1248,10 +1265,6 @@ msgstr "自動前進 有効"
 #: src/client/game.cpp
 msgid "Block bounds hidden"
 msgstr "ブロック境界線を非表示"
-
-#: src/client/game.cpp
-msgid "Block bounds shown for all blocks"
-msgstr "すべてのブロックにブロック境界線を表示"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
@@ -1298,6 +1311,10 @@ msgid "Connecting to server..."
 msgstr "サーバーに接続中..."
 
 #: src/client/game.cpp
+msgid "Connection error (timed out?)"
+msgstr "接続エラー (タイムアウト？)"
+
+#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "未知の理由で接続に失敗しました"
 
@@ -1306,45 +1323,13 @@ msgid "Continue"
 msgstr "再開"
 
 #: src/client/game.cpp
-#, c-format
-msgid ""
-"Controls:\n"
-"- %s: move forwards\n"
-"- %s: move backwards\n"
-"- %s: move left\n"
-"- %s: move right\n"
-"- %s: jump/climb up\n"
-"- %s: dig/punch/use\n"
-"- %s: place/use\n"
-"- %s: sneak/climb down\n"
-"- %s: drop item\n"
-"- %s: inventory\n"
-"- Mouse: turn/look\n"
-"- Mouse wheel: select item\n"
-"- %s: chat\n"
-msgstr ""
-"操作方法:\n"
-"- %s: 前進\n"
-"- %s: 後退\n"
-"- %s: 左移動\n"
-"- %s: 右移動\n"
-"- %s: ジャンプ/登る\n"
-"- %s: 掘る/パンチ/使う\n"
-"- %s: 置く/使う\n"
-"- %s: スニーク/降りる\n"
-"- %s: アイテムを落とす\n"
-"- %s: インベントリ\n"
-"- マウス: 振り向く/見る\n"
-"- マウスホイール: アイテム選択\n"
-"- %s: チャット\n"
-
-#: src/client/game.cpp
+#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/use\n"
-"- long tap: dig/punch/use\n"
+"- tap: place/punch/use (default)\n"
+"- long tap: dig/use (default)\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1437,6 +1422,11 @@ msgid "Fog enabled"
 msgstr "霧 有効"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Fog enabled by game or mod"
+msgstr "ズームはゲームやMODによって無効化されている"
+
+#: src/client/game.cpp
 msgid "Game info:"
 msgstr "ゲーム情報:"
 
@@ -1455,10 +1445,6 @@ msgstr "アイテムを定義中..."
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "KiB/秒"
-
-#: src/client/game.cpp
-msgid "Media..."
-msgstr "メディアを受信中..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1614,10 +1600,6 @@ msgstr "ワイヤーフレーム 表示"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "ズームはゲームやMODによって無効化されている"
-
-#: src/client/game.cpp
-msgid "ok"
-msgstr "決定"
 
 #: src/client/gameui.cpp
 msgid "Chat currently disabled by game or mod"
@@ -1939,6 +1921,15 @@ msgstr "ミニマップ 表面モード、ズーム x%d"
 msgid "Minimap in texture mode"
 msgstr "ミニマップ テクスチャモード"
 
+#: src/client/shader.cpp
+#, fuzzy, c-format
+msgid "Failed to compile the \"%s\" shader."
+msgstr "ウェブページを開けませんでした"
+
+#: src/client/shader.cpp
+msgid "Shaders are enabled but GLSL is not supported by the driver."
+msgstr ""
+
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2132,6 +2123,19 @@ msgstr "ズーム"
 msgid "press key"
 msgstr "キー入力待ち"
 
+#: src/gui/guiOpenURL.cpp
+msgid "Open"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+msgid "Open URL?"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+#, fuzzy
+msgid "Unable to open URL"
+msgstr "ウェブページを開けませんでした"
+
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "変更"
@@ -2165,6 +2169,7 @@ msgstr "音量: %d%%"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
+#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "ja"
 
@@ -2178,6 +2183,64 @@ msgstr ""
 #: src/network/clientpackethandler.cpp
 msgid "Name is taken. Please choose another name"
 msgstr "名前は使われています。他の名前に変えてください"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Another client is connected with this name.  If your client closed "
+"unexpectedly, try again in a minute."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Empty passwords are disallowed.  Set a password and try again."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Internal server error"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Invalid password"
+msgstr "古いパスワード"
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Player name contains disallowed characters"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Player name not allowed"
+msgstr "プレイヤー名が長過ぎます。"
+
+#: src/network/networkprotocol_translation_file.cpp
+#, fuzzy
+msgid "Server shutting down"
+msgstr "終了中..."
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"The server has experienced an internal error.  You will now be disconnected."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "The server is running in simple singleplayer mode.  You cannot connect."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid "Too many users"
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Your client sent something the server didn't expect.  Try reconnecting or "
+"updating your client."
+msgstr ""
+
+#: src/network/networkprotocol_translation_file.cpp
+msgid ""
+"Your client's version is not supported.\n"
+"Please contact the server administrator."
+msgstr ""
 
 #: src/server.cpp
 #, c-format
@@ -5810,9 +5873,10 @@ msgid "Smooth lighting"
 msgstr "滑らかな照明"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Change Keys."
+"cinematic mode by using the key set in Controls."
 msgstr ""
 "映画風モードでのカメラの旋回を滑らかにします。無効にするには 0。キー変更で設"
 "定されたキーを使用して映画風モードに切替えます。"
@@ -6794,11 +6858,17 @@ msgstr "cURL並行処理制限"
 #~ msgid "(game support required)"
 #~ msgstr "(ゲームサポート必須)"
 
+#~ msgid "- Address: "
+#~ msgstr "- アドレス: "
+
 #~ msgid "- Creative Mode: "
 #~ msgstr "- クリエイティブモード: "
 
 #~ msgid "- Damage: "
 #~ msgstr "- ダメージ: "
+
+#~ msgid "- Port: "
+#~ msgstr "- ポート: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -6905,6 +6975,9 @@ msgstr "cURL並行処理制限"
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "フルスクリーンモードでのビット数(色深度)。"
 
+#~ msgid "Block bounds shown for all blocks"
+#~ msgstr "すべてのブロックにブロック境界線を表示"
+
 #~ msgid "Bump Mapping"
 #~ msgstr "バンプマッピング"
 
@@ -6928,6 +7001,9 @@ msgstr "cURL並行処理制限"
 
 #~ msgid "Center of light curve mid-boost."
 #~ msgstr "光度曲線ミッドブーストの中心。"
+
+#~ msgid "Change Keys"
+#~ msgstr "キー変更"
 
 #~ msgid "Change keys"
 #~ msgstr "キー変更"
@@ -7001,6 +7077,38 @@ msgstr "cURL並行処理制限"
 
 #~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 #~ msgstr "トンネルの幅を制御、小さい方の値ほど広いトンネルを生成します。"
+
+#, c-format
+#~ msgid ""
+#~ "Controls:\n"
+#~ "- %s: move forwards\n"
+#~ "- %s: move backwards\n"
+#~ "- %s: move left\n"
+#~ "- %s: move right\n"
+#~ "- %s: jump/climb up\n"
+#~ "- %s: dig/punch/use\n"
+#~ "- %s: place/use\n"
+#~ "- %s: sneak/climb down\n"
+#~ "- %s: drop item\n"
+#~ "- %s: inventory\n"
+#~ "- Mouse: turn/look\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- %s: chat\n"
+#~ msgstr ""
+#~ "操作方法:\n"
+#~ "- %s: 前進\n"
+#~ "- %s: 後退\n"
+#~ "- %s: 左移動\n"
+#~ "- %s: 右移動\n"
+#~ "- %s: ジャンプ/登る\n"
+#~ "- %s: 掘る/パンチ/使う\n"
+#~ "- %s: 置く/使う\n"
+#~ "- %s: スニーク/降りる\n"
+#~ "- %s: アイテムを落とす\n"
+#~ "- %s: インベントリ\n"
+#~ "- マウス: 振り向く/見る\n"
+#~ "- マウスホイール: アイテム選択\n"
+#~ "- %s: チャット\n"
 
 #~ msgid "Creative"
 #~ msgstr "クリエイティブ"
@@ -7418,6 +7526,9 @@ msgstr "cURL並行処理制限"
 
 #~ msgid "Instrumentation"
 #~ msgstr "計測器"
+
+#~ msgid "Invalid gamespec."
+#~ msgstr "無効なゲーム情報です。"
 
 #~ msgid "Inventory key"
 #~ msgstr "インベントリキー"
@@ -8577,8 +8688,14 @@ msgstr "cURL並行処理制限"
 #~ msgid "You died."
 #~ msgstr "あなたは死にました。"
 
+#~ msgid "You have no games installed."
+#~ msgstr "ゲームがインストールされていません。"
+
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "yes"
+
+#~ msgid "ok"
+#~ msgstr "決定"
