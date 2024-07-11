@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 18:48+0100\n"
+"POT-Creation-Date: 2024-07-11 15:14+0200\n"
 "PO-Revision-Date: 2024-01-14 12:31+0000\n"
 "Last-Translator: reimu105 <peter112548@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -71,7 +71,8 @@ msgid "Command not available: "
 msgstr "指令無法使用: "
 
 #: builtin/common/chatcommands.lua
-msgid "Get help for commands"
+#, fuzzy
+msgid "Get help for commands (-t: output in chat)"
 msgstr "取得指令的說明"
 
 #: builtin/common/chatcommands.lua
@@ -80,12 +81,9 @@ msgid ""
 msgstr "使用「.help <cmd>」來取得更多資訊，或使用「.help all」來列出所有指令。"
 
 #: builtin/common/chatcommands.lua
-msgid "[all | <cmd>]"
+#, fuzzy
+msgid "[all | <cmd>] [-t]"
 msgstr "[all | <命令>]"
-
-#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
-msgid "OK"
-msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -102,6 +100,10 @@ msgstr "發生錯誤："
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "主選單"
+
+#: builtin/fstk/ui.lua
+msgid "OK"
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -131,19 +133,26 @@ msgstr "我們只支援協定版本 $1。"
 msgid "We support protocol versions between version $1 and $2."
 msgstr "我們支援協定版本 $1 到 $2。"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "“$1”已經存在。您要覆蓋它嗎？"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Error installing \"$1\": $2"
+msgstr "在安裝 \"$1\": $2 時發生錯誤"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "$1 和他的 $2 個依賴將會被安裝。"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download \"$1\""
+msgstr "無法下載 \"$1\""
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr "$1 作者： $2"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download $1"
+msgstr "無法下載 $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/contentdb.lua
+#, fuzzy
+msgid ""
+"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
+"broken archive)"
+msgstr "無法提取“$1”（不支援的文件類型或損壞的存檔）"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -151,156 +160,157 @@ msgstr ""
 "$1 個正在下載，\n"
 "$2 個正在等待"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "$1 downloading..."
 msgstr "正在下載 $1..."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "找不到 $1 所需的依賴項。"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "將安裝 $1，並且將跳過他的 $2 個依賴項。"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All packages"
 msgstr "所有套件"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "已安裝"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Back to Main Menu"
 msgstr "返回主選單"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "在沒有 cURL 的情況下編譯 Minetest 時，ContentDB 不可用"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Downloading..."
+msgstr "正在下載..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Error getting dependencies for package"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Games"
+msgstr "遊戲"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "安裝"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "正在載入..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Mods"
+msgstr "模組"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No packages could be retrieved"
+msgstr "無法取得套件"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "無結果"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No updates"
+msgstr "無更新"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Queued"
+msgstr "已排程"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Texture packs"
+msgstr "材質包"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "The package $1 was not found."
+msgstr "未找到 $1的包裹。"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "解除安裝"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "更新"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Update All [$1]"
+msgstr "全部更新 [$1]"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "View more information in a web browser"
+msgstr "在網絡瀏覽器中查看更多信息"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "You need to install a game before you can install a mod"
+msgstr "您需要先安裝遊戲才能安裝模組"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "$1 和他的 $2 個依賴將會被安裝。"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 by $2"
+msgstr "$1 作者： $2"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 required dependencies could not be found."
+msgstr "找不到 $1 所需的依賴項。"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "將安裝 $1，並且將跳過他的 $2 個依賴項。"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Already installed"
+msgstr "已安裝"
+
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Base Game:"
 msgstr "主遊戲:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_overwrite.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
+#: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "取消"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "在沒有 cURL 的情況下編譯 Minetest 時，ContentDB 不可用"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "相依元件："
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "正在下載..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr "在安裝 \"$1\": $2 時發生錯誤"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download \"$1\""
-msgstr "無法下載 \"$1\""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "無法下載 $1"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "無法提取“$1”（不支援的文件類型或損壞的存檔）"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Games"
-msgstr "遊戲"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Install"
-msgstr "安裝"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install $1"
 msgstr "安裝 $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install missing dependencies"
 msgstr "安裝缺少的依賴"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "正在載入..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Mods"
-msgstr "模組"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "無法取得套件"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "無結果"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No updates"
-msgstr "無更新"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Not found"
 msgstr "找不到"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "覆蓋"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Please check that the base game is correct."
 msgstr "請檢查基礎遊戲是否正確。"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Queued"
-msgstr "已排程"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "“$1”已經存在。您要覆蓋它嗎？"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "材質包"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "The package $1 was not found."
-msgstr "未找到 $1的包裹。"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "解除安裝"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "更新"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "全部更新 [$1]"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "在網絡瀏覽器中查看更多信息"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr "您需要先安裝遊戲才能安裝模組"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "Overwrite"
+msgstr "覆蓋"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -447,8 +457,18 @@ msgid "Decorations"
 msgstr "裝飾物"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Desert temples"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
 msgstr "開發測試是針對開發人員的。"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Different dungeon variant generated in desert biomes (only if dungeons "
+"enabled)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -657,7 +677,8 @@ msgstr ""
 msgid ""
 "If you want to continue playing in your Minetest Game worlds, you need to "
 "reinstall Minetest Game."
-msgstr "如果您想繼續在 Minetest Game 世界中玩遊戲，您需要重新安裝 Minetest Game。"
+msgstr ""
+"如果您想繼續在 Minetest Game 世界中玩遊戲，您需要重新安裝 Minetest Game。"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Minetest Game is no longer installed by default"
@@ -817,10 +838,6 @@ msgstr "無障礙"
 msgid "Back"
 msgstr "返回"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "變更按鍵"
-
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -830,7 +847,8 @@ msgstr "聊天"
 msgid "Clear"
 msgstr "清除"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "控制"
 
@@ -1036,6 +1054,17 @@ msgid "Install games from ContentDB"
 msgstr "從 ContentDB 安裝遊戲"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Minetest doesn't come with a game by default."
+msgstr "預設不再安裝 Minetest 遊戲"
+
+#: builtin/mainmenu/tab_local.lua
+msgid ""
+"Minetest is a game-creation platform that allows you to play many different "
+"games."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "新增"
 
@@ -1068,8 +1097,9 @@ msgid "Start Game"
 msgstr "開始遊戲"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You have no games installed."
-msgstr "您未安裝任何遊戲。"
+#, fuzzy
+msgid "You need to install a game before you can create a world."
+msgstr "您需要先安裝遊戲才能安裝模組"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1149,16 +1179,8 @@ msgid "Rebuilding shaders..."
 msgstr "正在重新組建著色器..."
 
 #: src/client/clientlauncher.cpp
-msgid "Connection error (timed out?)"
-msgstr "連線錯誤（逾時？）"
-
-#: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "找不到或無法載入遊戲: "
-
-#: src/client/clientlauncher.cpp
-msgid "Invalid gamespec."
-msgstr "遊戲規格無效。"
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1184,7 +1206,11 @@ msgstr "無法開啟提供的密碼檔案： "
 msgid "Provided world path doesn't exist: "
 msgstr "提供的世界路徑不存在： "
 
-#: src/client/game.cpp src/server.cpp
+#: src/client/clientmedia.cpp src/client/game.cpp
+msgid "Media..."
+msgstr "媒體..."
+
+#: src/client/game.cpp src/client/shader.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1193,16 +1219,8 @@ msgstr ""
 "檢視 debug.txt 以取得更多資訊。"
 
 #: src/client/game.cpp
-msgid "- Address: "
-msgstr "- 地址： "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- 模式： "
-
-#: src/client/game.cpp
-msgid "- Port: "
-msgstr "- 連線埠： "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1237,10 +1255,6 @@ msgstr "已啟用自動前進"
 #: src/client/game.cpp
 msgid "Block bounds hidden"
 msgstr "區塊邊界隱藏"
-
-#: src/client/game.cpp
-msgid "Block bounds shown for all blocks"
-msgstr "區塊邊界顯示所有區塊"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
@@ -1287,6 +1301,10 @@ msgid "Connecting to server..."
 msgstr "正在連線至伺服器..."
 
 #: src/client/game.cpp
+msgid "Connection error (timed out?)"
+msgstr "連線錯誤（逾時？）"
+
+#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "連線失敗，原因不明"
 
@@ -1295,45 +1313,13 @@ msgid "Continue"
 msgstr "繼續"
 
 #: src/client/game.cpp
-#, c-format
-msgid ""
-"Controls:\n"
-"- %s: move forwards\n"
-"- %s: move backwards\n"
-"- %s: move left\n"
-"- %s: move right\n"
-"- %s: jump/climb up\n"
-"- %s: dig/punch/use\n"
-"- %s: place/use\n"
-"- %s: sneak/climb down\n"
-"- %s: drop item\n"
-"- %s: inventory\n"
-"- Mouse: turn/look\n"
-"- Mouse wheel: select item\n"
-"- %s: chat\n"
-msgstr ""
-"控制：\n"
-"- %s：向前移動\n"
-"- %s：向後移動\n"
-"- %s：向左移動\n"
-"- %s：向右移動\n"
-"- %s：跳躍／向上攀爬\n"
-"- %s：挖／打\n"
-"- %s：放置／使用\n"
-"- %s：潛行／向下攀爬\n"
-"- %s：丟棄物品\n"
-"- %s：物品欄\n"
-"- 滑鼠：旋轉／觀看\n"
-"- 滑鼠滾輪：選取物品\n"
-"- %s：聊天\n"
-
-#: src/client/game.cpp
+#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/use\n"
-"- long tap: dig/punch/use\n"
+"- tap: place/punch/use (default)\n"
+"- long tap: dig/use (default)\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1426,6 +1412,11 @@ msgid "Fog enabled"
 msgstr "已啟用霧氣"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Fog enabled by game or mod"
+msgstr "遠近調整目前已被遊戲或模組停用"
+
+#: src/client/game.cpp
 msgid "Game info:"
 msgstr "遊戲資訊:"
 
@@ -1444,10 +1435,6 @@ msgstr "定義物品..."
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "KiB/秒"
-
-#: src/client/game.cpp
-msgid "Media..."
-msgstr "媒體..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1603,10 +1590,6 @@ msgstr "已顯示線框"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "遠近調整目前已被遊戲或模組停用"
-
-#: src/client/game.cpp
-msgid "ok"
-msgstr "確定"
 
 #: src/client/gameui.cpp
 msgid "Chat currently disabled by game or mod"
@@ -1938,6 +1921,15 @@ msgstr "表面模式的迷你地圖，放大 %d 倍"
 msgid "Minimap in texture mode"
 msgstr "材質模式的迷你地圖"
 
+#: src/client/shader.cpp
+#, fuzzy, c-format
+msgid "Failed to compile the \"%s\" shader."
+msgstr "無法開啟網頁"
+
+#: src/client/shader.cpp
+msgid "Shaders are enabled but GLSL is not supported by the driver."
+msgstr ""
+
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2127,6 +2119,19 @@ msgstr "遠近調整"
 msgid "press key"
 msgstr "按下按鍵"
 
+#: src/gui/guiOpenURL.cpp
+msgid "Open"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+msgid "Open URL?"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+#, fuzzy
+msgid "Unable to open URL"
+msgstr "無法開啟網頁"
+
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "變更"
@@ -2160,6 +2165,7 @@ msgstr "音量：%d%%"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
+#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "zh_TW"
 
@@ -2378,12 +2384,6 @@ msgid "Adds particles when digging a node."
 msgstr "當挖掘節點時加入一些粒子。"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
-"screens."
-msgstr "調整您螢幕的 DPI 設定（並不只有 X11/Android）例如 4K 螢幕。"
-
-#: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr "調整偵測到的顯示密度，用來縮放 UI 元件。"
 
@@ -2410,6 +2410,10 @@ msgstr "將物品名稱加至末尾"
 #: src/settings_translation_file.cpp
 msgid "Advanced"
 msgstr "進階"
+
+#: src/settings_translation_file.cpp
+msgid "Allows liquids to be translucent."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2471,6 +2475,17 @@ msgid "Apple trees noise"
 msgstr "蘋果樹雜訊"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Apply dithering to reduce color banding artifacts.\n"
+"Dithering significantly increases the size of losslessly-compressed\n"
+"screenshots and it works incorrectly if the display or operating system\n"
+"performs additional dithering or if the color channels are not quantized\n"
+"to 8 bits.\n"
+"With OpenGL ES, dithering only works if the shader supports high\n"
+"floating-point precision and it may have a higher performance impact."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Arm inertia"
 msgstr "慣性手臂"
 
@@ -2487,18 +2502,37 @@ msgid "Ask to reconnect after crash"
 msgstr "詢問是否在當機後重新連線"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "At this distance the server will aggressively optimize which blocks are sent "
 "to\n"
 "clients.\n"
 "Small values potentially improve performance a lot, at the expense of "
 "visible\n"
-"rendering glitches (some blocks will not be rendered under water and in "
-"caves,\n"
-"as well as sometimes on land).\n"
+"rendering glitches (some blocks might not be rendered correctly in caves).\n"
 "Setting this to a value greater than max_block_send_distance disables this\n"
 "optimization.\n"
-"Stated in mapblocks (16 nodes)."
+"Stated in MapBlocks (16 nodes)."
+msgstr ""
+"在這個距離上，伺服器將積極優化發送到哪些區塊\n"
+"客戶。\n"
+"小值可能會大大提高效能，但會犧牲可見的效能\n"
+"渲染故障（某些方塊不會在水下和洞穴中渲染，\n"
+"以及有時在陸地上）。\n"
+"將其設為大於 max_block_send_distance 的值會停用此功能\n"
+"最佳化.\n"
+"以地圖塊（16 個節點）表示。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"At this distance the server will perform a simpler and cheaper occlusion "
+"check.\n"
+"Smaller values potentially improve performance, at the expense of "
+"temporarily visible\n"
+"rendering glitches (missing blocks).\n"
+"This is especially useful for very large viewing range (upwards of 500).\n"
+"Stated in MapBlocks (16 nodes)."
 msgstr ""
 "在這個距離上，伺服器將積極優化發送到哪些區塊\n"
 "客戶。\n"
@@ -2570,6 +2604,11 @@ msgstr "生物雜訊"
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
 msgstr "生物雜訊"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Block cull optimize distance"
+msgstr "區塊傳送最佳化距離"
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
@@ -2789,6 +2828,12 @@ msgstr "彩色陰影"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Comma-separated list of AL and ALC extensions that should not be used.\n"
+"Useful for testing. See al_extensions.[h,cpp] for details."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Comma-separated list of flags to hide in the content repository.\n"
 "\"nonfree\" can be used to hide packages which do not qualify as 'free "
 "software',\n"
@@ -2949,10 +2994,6 @@ msgstr ""
 "還控制物件的十字線顏色"
 
 #: src/settings_translation_file.cpp
-msgid "DPI"
-msgstr "DPI"
-
-#: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
 msgstr "除錯紀錄檔案大小閾值"
 
@@ -3005,6 +3046,23 @@ msgstr ""
 "定義陰影過濾品質。\n"
 "這透過應用 PCF 或泊松盤來模擬軟陰影效果\n"
 "但也使用更多的資源。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Define the oldest clients allowed to connect.\n"
+"Older clients are compatible in the sense that they will not crash when "
+"connecting\n"
+"to new servers, but they may not support all new features that you are "
+"expecting.\n"
+"This allows for more fine-grained control than "
+"strict_protocol_version_checking.\n"
+"Minetest still enforces its own internal minimum, and enabling\n"
+"strict_protocol_version_checking will effectively override this."
+msgstr ""
+"啟用以讓舊的用戶端無法連線。\n"
+"較舊的用戶端在這個意義上相容，它們不會在連線至\n"
+"新伺服器時當掉，但它們可能會不支援一些您預期會有的新功能。"
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -3204,6 +3262,11 @@ msgid "Enable Bloom Debug"
 msgstr "啟用泛光調試"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Debanding"
+msgstr "啟用傷害"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enable IPv6 support (for both client and server).\n"
 "Required for IPv6 connections to work at all."
@@ -3227,6 +3290,11 @@ msgid ""
 msgstr ""
 "啟用泊松盤（Poisson disk）濾鏡。\n"
 "使用泊松盤演算法來產生“軟陰影”。 不啟用的話就會使用 PCF 濾鏡。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Post Processing"
+msgstr "後製處理"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
@@ -3277,6 +3345,11 @@ msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr "啟用滑鼠滾輪（滾動）以在熱欄中選擇項目。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable random mod loading (mainly used for testing)."
+msgstr "啟用隨機使用者輸入（僅供測試使用）。"
+
+#: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
 msgstr "啟用隨機使用者輸入（僅供測試使用）。"
 
@@ -3305,6 +3378,11 @@ msgstr ""
 "新伺服器時當掉，但它們可能會不支援一些您預期會有的新功能。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable touchscreen"
+msgstr "海灘雜訊閾值"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enable usage of remote media server (if provided by server).\n"
 "Remote servers offer a significantly faster way to download media (e.g. "
@@ -3314,14 +3392,6 @@ msgstr ""
 "啟用遠端媒體伺服器的使用（若由伺服器提供的話）。\n"
 "當連線到伺服器時，遠端伺服器提供了一個\n"
 "顯著較快的下載媒體（如材質）的方式。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable vertex buffer objects.\n"
-"This should greatly improve graphics performance."
-msgstr ""
-"啟用頂點緩衝區物件。\n"
-"這應該會大大提高圖形性能。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3360,6 +3430,19 @@ msgstr "啟用物品欄物品動畫。"
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
 msgstr "啟用面旋轉方向的網格快取。"
+
+#: src/settings_translation_file.cpp
+msgid "Enables debug and error-checking in the OpenGL driver."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enables the post processing pipeline."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enables touchscreen mode, allowing you to play the game with a touchscreen."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4263,10 +4346,12 @@ msgstr ""
 "-   不透明：停用透明度"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Length of a server tick and the interval at which objects are generally "
-"updated over\n"
-"network, stated in seconds."
+"Length of a server tick (the interval at which everything is generally "
+"updated),\n"
+"stated in seconds.\n"
+"Does not apply to sessions hosted from the client menu."
 msgstr ""
 "伺服器週期的長度和物件更新的時間間隔\n"
 "網絡，以秒為單位。"
@@ -4438,10 +4523,6 @@ msgid ""
 msgstr "讓霧與天空的顏色取決於時間（黎明／日落）與觀看方向。"
 
 #: src/settings_translation_file.cpp
-msgid "Makes all liquids opaque"
-msgstr "讓所有的液體不透明"
-
-#: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
 msgstr "磁碟儲存的映射壓縮級別"
 
@@ -4496,11 +4577,14 @@ msgid "Map generation attributes specific to Mapgen v5."
 msgstr "Mapgen v5 特有的地圖生成屬性。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
-"the 'jungles' flag is ignored."
+"the 'jungles' flag is ignored.\n"
+"The 'temples' flag disables generation of desert temples. Normal dungeons "
+"will appear instead."
 msgstr ""
 "Mapgen v6 特有的地圖生成屬性。\n"
 "「雪生物群落」標誌啟用新的 5 個生物群落系統。\n"
@@ -4543,11 +4627,6 @@ msgstr "地圖區塊網格生成延遲"
 #, fuzzy
 msgid "Mapblock mesh generation threads"
 msgstr "地圖區塊網格生成延遲"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Mapblock mesh generator's MapBlock cache size in MB"
-msgstr "地圖區塊網格生成器的地圖區塊快取大小 MB"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
@@ -4822,6 +4901,11 @@ msgid "Minimap scan height"
 msgstr "迷你地圖掃描高度"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Minimum dig repetition interval"
+msgstr "放置重複間隔"
+
+#: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of large caves per mapchunk."
 msgstr "每個地圖區塊的大型洞穴隨機數量的最小限制。"
 
@@ -4893,6 +4977,11 @@ msgstr "滑鼠靈敏度"
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
 msgstr "滑鼠靈敏度倍數。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Movement threshold"
+msgstr "洞穴閾值"
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
@@ -5033,10 +5122,6 @@ msgid "Occlusion Culling"
 msgstr "伺服器端遮擋剔除"
 
 #: src/settings_translation_file.cpp
-msgid "Opaque liquids"
-msgstr "不透明液體"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Opaqueness (alpha) of the shadow behind the default font, between 0 and 255."
 msgstr "預設字體後面的陰影的不透明度 (alpha)，介於 0 到 255 之間。"
@@ -5049,6 +5134,11 @@ msgid ""
 msgstr ""
 "當視窗失去焦點時開啟暫停選單。 如果表單規格是則不暫停\n"
 "打開。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "OpenGL debug"
+msgstr "Mapgen 除錯"
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
@@ -5179,6 +5269,15 @@ msgid "Proportion of large caves that contain liquid."
 msgstr "含有液體的大型洞穴的比例。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Protocol version minimum"
+msgstr "協定版本不符合。 "
+
+#: src/settings_translation_file.cpp
+msgid "Punch gesture"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
@@ -5194,6 +5293,10 @@ msgstr "提升地形以讓山谷在河流周圍。"
 #: src/settings_translation_file.cpp
 msgid "Random input"
 msgstr "隨機輸入"
+
+#: src/settings_translation_file.cpp
+msgid "Random mod load order"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -5403,13 +5506,14 @@ msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
 msgstr "請見 https://www.sqlite.org/pragma.html#pragma_synchronous"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Select the antialiasing method to apply.\n"
 "\n"
 "* None - No antialiasing (default)\n"
 "\n"
-"* FSAA - Hardware-provided full-screen antialiasing (incompatible with "
-"shaders)\n"
+"* FSAA - Hardware-provided full-screen antialiasing\n"
+"(incompatible with Post Processing and Undersampling)\n"
 "A.K.A multi-sample antialiasing (MSAA)\n"
 "Smoothens out block edges but does not affect the insides of textures.\n"
 "A restart is required to change this option.\n"
@@ -5568,8 +5672,9 @@ msgstr ""
 "範圍：從-1到1.0"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Set the language. Leave empty to use the system language.\n"
+"Set the language. By default, the system language is used.\n"
 "A restart is required after changing this."
 msgstr ""
 "設定語言。留空以使用系統語言。\n"
@@ -5611,6 +5716,10 @@ msgid ""
 msgstr ""
 "設定為 true 以啟用光暈效果。\n"
 "明亮的顏色會滲透到鄰近的物體上。"
+
+#: src/settings_translation_file.cpp
+msgid "Set to true to enable volumetric lighting effect (a.k.a. \"Godrays\")."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Set to true to enable waving leaves."
@@ -5655,11 +5764,11 @@ msgid "Shaders"
 msgstr "著色器"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Shaders allow advanced visual effects and may increase performance on some "
 "video\n"
-"cards.\n"
-"This only works with the OpenGL video backend."
+"cards."
 msgstr ""
 "著色器可實現高級視覺效果，並可能提高某些影片的效能\n"
 "牌。\n"
@@ -5746,16 +5855,6 @@ msgstr ""
 "受到推崇的。"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Size of the MapBlock cache of the mesh generator. Increasing this will\n"
-"increase the cache hit %, reducing the data being copied from the main\n"
-"thread, thus reducing jitter."
-msgstr ""
-"網格生成器的地圖區塊快取大小。增加這個將會\n"
-"增加快取命中率，減少從主執行緒複製資料，從\n"
-"而減少抖動。"
-
-#: src/settings_translation_file.cpp
 msgid "Sky Body Orbit Tilt"
 msgstr "天體軌道傾斜"
 
@@ -5788,10 +5887,12 @@ msgid "Smooth lighting"
 msgstr "平滑光"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Change Keys."
-msgstr "在電影模式下平滑相機的旋轉，0 表示停用。 使用“更改鍵”中設定的鍵進入電影模式。"
+"cinematic mode by using the key set in Controls."
+msgstr ""
+"在電影模式下平滑相機的旋轉，0 表示停用。 使用“更改鍵”中設定的鍵進入電影模式。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5810,6 +5911,15 @@ msgstr "潛行速度，以方塊每秒為單位。"
 #: src/settings_translation_file.cpp
 msgid "Soft shadow radius"
 msgstr "軟陰影半徑"
+
+#: src/settings_translation_file.cpp
+msgid "Sound"
+msgstr "聲音"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Sound Extensions Blacklist"
+msgstr "ContentDB 旗標黑名單列表"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6012,15 +6122,36 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"The delay in milliseconds after which a touch interaction is considered a "
+"long tap."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "The file path relative to your world path in which profiles will be saved to."
 msgstr "設定檔將儲存於相對於您的全域路徑的檔案路徑。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The gesture for for punching players/entities.\n"
+"This can be overridden by games and mods.\n"
+"\n"
+"* short_tap\n"
+"Easy to use and well-known from other games that shall not be named.\n"
+"\n"
+"* long_tap\n"
+"Known from the classic Minetest mobile controls.\n"
+"Combat is more or less impossible."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
 msgstr "要使用的搖桿的識別碼"
 
 #: src/settings_translation_file.cpp
-msgid "The length in pixels it takes for touchscreen interaction to start."
+#, fuzzy
+msgid ""
+"The length in pixels after which a touch interaction is considered movement."
 msgstr "觸控螢幕互動開始所需的長度（以像素為單位）。"
 
 #: src/settings_translation_file.cpp
@@ -6034,6 +6165,15 @@ msgstr ""
 "4.0 = 波高為兩個節點。\n"
 "0.0 = 波浪根本不移動。\n"
 "預設值為 1.0（1/2 節點）。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"The minimum time in seconds it takes between digging nodes when holding\n"
+"the dig button."
+msgstr ""
+"按住時重複放置節點之間所花費的時間（以秒為單位）\n"
+"地點按鈕。"
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -6064,11 +6204,12 @@ msgstr ""
 "這應該與 active_object_send_range_blocks 一起配置。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
 "OpenGL is the default for desktop, and OGLES2 for Android.\n"
-"Shaders are supported by OpenGL and OGLES2 (experimental)."
+"Shaders are supported by everything but OGLES1."
 msgstr ""
 "渲染後端。\n"
 "注意：修改後需要重啟！\n"
@@ -6148,6 +6289,10 @@ msgid "Third of 4 2D noises that together define hill/mountain range height."
 msgstr "四之三 一同定義山丘範圍高度的 2D 雜訊。"
 
 #: src/settings_translation_file.cpp
+msgid "Threshold for long taps"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
@@ -6202,13 +6347,13 @@ msgid "Touchscreen sensitivity multiplier."
 msgstr "滑鼠靈敏度倍數。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Touchscreen threshold"
-msgstr "海灘雜訊閾值"
-
-#: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
 msgstr "性能的權衡"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Translucent liquids"
+msgstr "不透明液體"
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
@@ -6254,8 +6399,11 @@ msgstr ""
 "僅當出現效能問題時才應變更此設定。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"URL to JSON file which provides information about the newest Minetest release"
+"URL to JSON file which provides information about the newest Minetest "
+"release\n"
+"If this is empty the engine will never check for updates."
 msgstr "JSON 檔案的 URL，提供有關最新 Minetest 版本的信息"
 
 #: src/settings_translation_file.cpp
@@ -6374,10 +6522,6 @@ msgid "User Interfaces"
 msgstr "使用者介面"
 
 #: src/settings_translation_file.cpp
-msgid "VBO"
-msgstr "VBO"
-
-#: src/settings_translation_file.cpp
 msgid "VSync"
 msgstr "垂直同步"
 
@@ -6469,12 +6613,26 @@ msgid "Volume"
 msgstr "音量"
 
 #: src/settings_translation_file.cpp
+msgid "Volume multiplier when the window is unfocused."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Volume of all sounds.\n"
 "Requires the sound system to be enabled."
 msgstr ""
 "所有聲音的音量。\n"
 "需要啟用音響系統。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Volume when unfocused"
+msgstr "遊戲暫停時最高 FPS"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Volumetric lighting"
+msgstr "平滑光"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6769,11 +6927,17 @@ msgstr "cURL 並行限制"
 #~ msgid "(game support required)"
 #~ msgstr "(需遊戲支援)"
 
+#~ msgid "- Address: "
+#~ msgstr "- 地址： "
+
 #~ msgid "- Creative Mode: "
 #~ msgstr "- 創造模式： "
 
 #~ msgid "- Damage: "
 #~ msgstr "- 傷害： "
+
+#~ msgid "- Port: "
+#~ msgstr "- 連線埠： "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -6808,6 +6972,11 @@ msgstr "cURL 並行限制"
 #~ "要連線到的地址。\n"
 #~ "把這個留空以啟動本機伺服器。\n"
 #~ "注意在主選單中的地址欄會覆寫這個設定。"
+
+#~ msgid ""
+#~ "Adjust dpi configuration to your screen (non X11/Android only) e.g. for "
+#~ "4k screens."
+#~ msgstr "調整您螢幕的 DPI 設定（並不只有 X11/Android）例如 4K 螢幕。"
 
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
@@ -6848,6 +7017,9 @@ msgstr "cURL 並行限制"
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "全螢幕模式中的位元／像素（又稱色彩深度）。"
 
+#~ msgid "Block bounds shown for all blocks"
+#~ msgstr "區塊邊界顯示所有區塊"
+
 #~ msgid "Bump Mapping"
 #~ msgstr "映射貼圖"
 
@@ -6856,6 +7028,9 @@ msgstr "cURL 並行限制"
 
 #~ msgid "Camera update toggle key"
 #~ msgstr "攝影機切換更新按鍵"
+
+#~ msgid "Change Keys"
+#~ msgstr "變更按鍵"
 
 #, fuzzy
 #~ msgid "Change keys"
@@ -6915,6 +7090,38 @@ msgstr "cURL 並行限制"
 #~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 #~ msgstr "控制隧道的寬度，較小的值會創造出較寬的隧道。"
 
+#, c-format
+#~ msgid ""
+#~ "Controls:\n"
+#~ "- %s: move forwards\n"
+#~ "- %s: move backwards\n"
+#~ "- %s: move left\n"
+#~ "- %s: move right\n"
+#~ "- %s: jump/climb up\n"
+#~ "- %s: dig/punch/use\n"
+#~ "- %s: place/use\n"
+#~ "- %s: sneak/climb down\n"
+#~ "- %s: drop item\n"
+#~ "- %s: inventory\n"
+#~ "- Mouse: turn/look\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- %s: chat\n"
+#~ msgstr ""
+#~ "控制：\n"
+#~ "- %s：向前移動\n"
+#~ "- %s：向後移動\n"
+#~ "- %s：向左移動\n"
+#~ "- %s：向右移動\n"
+#~ "- %s：跳躍／向上攀爬\n"
+#~ "- %s：挖／打\n"
+#~ "- %s：放置／使用\n"
+#~ "- %s：潛行／向下攀爬\n"
+#~ "- %s：丟棄物品\n"
+#~ "- %s：物品欄\n"
+#~ "- 滑鼠：旋轉／觀看\n"
+#~ "- 滑鼠滾輪：選取物品\n"
+#~ "- %s：聊天\n"
+
 #~ msgid "Creative"
 #~ msgstr "創造"
 
@@ -6923,6 +7130,9 @@ msgstr "cURL 並行限制"
 
 #~ msgid "Crosshair color (R,G,B)."
 #~ msgstr "十字色彩 (R,G,B)。"
+
+#~ msgid "DPI"
+#~ msgstr "DPI"
 
 #~ msgid "Damage"
 #~ msgstr "傷害"
@@ -7009,6 +7219,13 @@ msgstr "cURL 並行限制"
 
 #~ msgid "Enable register confirmation"
 #~ msgstr "啟用註冊確認"
+
+#~ msgid ""
+#~ "Enable vertex buffer objects.\n"
+#~ "This should greatly improve graphics performance."
+#~ msgstr ""
+#~ "啟用頂點緩衝區物件。\n"
+#~ "這應該會大大提高圖形性能。"
 
 #~ msgid "Enabled"
 #~ msgstr "已啟用"
@@ -7286,6 +7503,9 @@ msgstr "cURL 並行限制"
 
 #~ msgid "Instrumentation"
 #~ msgstr "儀表"
+
+#~ msgid "Invalid gamespec."
+#~ msgstr "遊戲規格無效。"
 
 #~ msgid "Inventory key"
 #~ msgstr "物品欄按鍵"
@@ -7979,6 +8199,13 @@ msgstr "cURL 並行限制"
 #~ msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
 #~ msgstr "讓 DirectX 與 LuaJIT 一同運作。若其造成麻煩則請停用。"
 
+#~ msgid "Makes all liquids opaque"
+#~ msgstr "讓所有的液體不透明"
+
+#, fuzzy
+#~ msgid "Mapblock mesh generator's MapBlock cache size in MB"
+#~ msgstr "地圖區塊網格生成器的地圖區塊快取大小 MB"
+
 #~ msgid "Menus"
 #~ msgstr "選單"
 
@@ -8192,14 +8419,20 @@ msgstr "cURL 並行限制"
 #~ msgid "Simple Leaves"
 #~ msgstr "簡易葉子"
 
+#~ msgid ""
+#~ "Size of the MapBlock cache of the mesh generator. Increasing this will\n"
+#~ "increase the cache hit %, reducing the data being copied from the main\n"
+#~ "thread, thus reducing jitter."
+#~ msgstr ""
+#~ "網格生成器的地圖區塊快取大小。增加這個將會\n"
+#~ "增加快取命中率，減少從主執行緒複製資料，從\n"
+#~ "而減少抖動。"
+
 #~ msgid "Smooth Lighting"
 #~ msgstr "平滑光線"
 
 #~ msgid "Smooths rotation of camera. 0 to disable."
 #~ msgstr "讓旋轉攝影機時較流暢。設為 0 以停用。"
-
-#~ msgid "Sound"
-#~ msgstr "聲音"
 
 #~ msgid "Special"
 #~ msgstr "特殊"
@@ -8258,6 +8491,10 @@ msgstr "cURL 並行限制"
 #~ msgid "Touch threshold (px):"
 #~ msgstr "觸控閾值：（像素）"
 
+#, fuzzy
+#~ msgid "Touchscreen threshold"
+#~ msgstr "海灘雜訊閾值"
+
 #~ msgid "Trilinear Filter"
 #~ msgstr "三線性過濾器"
 
@@ -8281,6 +8518,9 @@ msgstr "cURL 並行限制"
 #, fuzzy
 #~ msgid "Use bilinear filtering when scaling textures down."
 #~ msgstr "當縮放材質時使用雙線性過濾。"
+
+#~ msgid "VBO"
+#~ msgstr "VBO"
 
 #~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr "在平整浮地地形的山丘高度與湖泊深度變化。"
@@ -8365,8 +8605,14 @@ msgstr "cURL 並行限制"
 #~ msgid "You died."
 #~ msgstr "您已死亡"
 
+#~ msgid "You have no games installed."
+#~ msgstr "您未安裝任何遊戲。"
+
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "yes"
+
+#~ msgid "ok"
+#~ msgstr "確定"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 18:48+0100\n"
+"POT-Creation-Date: 2024-07-11 15:14+0200\n"
 "PO-Revision-Date: 2024-05-21 09:01+0000\n"
 "Last-Translator: Jamil Mohamad Alhussein <jamilmohamadalhoseen@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -72,7 +72,8 @@ msgid "Command not available: "
 msgstr "الأمر غير متاح: "
 
 #: builtin/common/chatcommands.lua
-msgid "Get help for commands"
+#, fuzzy
+msgid "Get help for commands (-t: output in chat)"
 msgstr "احصل على تعليمات الأوامر"
 
 #: builtin/common/chatcommands.lua
@@ -82,12 +83,9 @@ msgstr ""
 "استخدم '.help <cmd>' للحصول على مزيد من المعلومات أو '.help all' لعرض كل شيء."
 
 #: builtin/common/chatcommands.lua
-msgid "[all | <cmd>]"
+#, fuzzy
+msgid "[all | <cmd>] [-t]"
 msgstr "[all | <cmd>]"
-
-#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
-msgid "OK"
-msgstr "موافق"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -104,6 +102,10 @@ msgstr "حدث خطأ:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "القائمة الرئيسية"
+
+#: builtin/fstk/ui.lua
+msgid "OK"
+msgstr "موافق"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -133,19 +135,26 @@ msgstr "نحن ندعم نسخة الميفاق $1فقط."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "نحن ندعم نسخ الميفاق ما بين $1 و $2."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "\"$1\" موجود مسبقًا. هل تريد الكتابة عليه؟"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Error installing \"$1\": $2"
+msgstr "خطأ في تثبيت \"1$\" : 2$"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "الاعتماديتان \"$1\" و $2 ستثبتان."
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download \"$1\""
+msgstr "فشل تحميل \"$1\""
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr "$1 بواسطة $2"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download $1"
+msgstr "فشل تحميل $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/contentdb.lua
+#, fuzzy
+msgid ""
+"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
+"broken archive)"
+msgstr "التثبيت: نوع الملف غير مدعوم أو أرشيف تالف"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -153,157 +162,158 @@ msgstr ""
 "يُنزل $1،\n"
 "$2 في الطابور"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "$1 downloading..."
 msgstr "ينزل $1..."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "يحتاج $1 لكن لم يُعثر عليها."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "$1 سيُثبت، واعتماديات $1 ستُتجاهل."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All packages"
 msgstr "كل الحزم"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "مثبت مسبقا"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Back to Main Menu"
 msgstr "عُد للقائمة الرئيسة"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "لا يمكن استخدام ContentDB عند بناء Minetest بدون cURL"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Downloading..."
+msgstr "يحمل..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Error getting dependencies for package"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Games"
+msgstr "الألعاب"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "ثبت"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "يحمل..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Mods"
+msgstr "التعديلات"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No packages could be retrieved"
+msgstr "تعذر استيراد الحزم"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "بدون نتائج"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No updates"
+msgstr "لا توجد تحديثات"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Queued"
+msgstr "في الطابور"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Texture packs"
+msgstr "حِزم الإكساء"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "The package $1 was not found."
+msgstr "لم يتم العثور على الحزمة 1$."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "أزل"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "حدِث"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Update All [$1]"
+msgstr "حدِّث الكل [$1]"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "View more information in a web browser"
+msgstr "اعرض مزيدًا من المعلومات عبر المتصفح"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#, fuzzy
+msgid "You need to install a game before you can install a mod"
+msgstr "يجب عليك تنزيل اللعبة قبل إضافة التعديلات"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "الاعتماديتان \"$1\" و $2 ستثبتان."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 by $2"
+msgstr "$1 بواسطة $2"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 required dependencies could not be found."
+msgstr "يحتاج $1 لكن لم يُعثر عليها."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "$1 سيُثبت، واعتماديات $1 ستُتجاهل."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Already installed"
+msgstr "مثبت مسبقا"
+
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Base Game:"
 msgstr "اللعبة القاعدية :"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_overwrite.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
+#: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "ألغِ"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "لا يمكن استخدام ContentDB عند بناء Minetest بدون cURL"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "الإعتماديات:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "يحمل..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr "خطأ في تثبيت \"1$\" : 2$"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download \"$1\""
-msgstr "فشل تحميل \"$1\""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "فشل تحميل $1"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "التثبيت: نوع الملف غير مدعوم أو أرشيف تالف"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Games"
-msgstr "الألعاب"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Install"
-msgstr "ثبت"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install $1"
 msgstr "ثبت $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install missing dependencies"
 msgstr "ثبت الإعتماديات المفقودة"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "يحمل..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Mods"
-msgstr "التعديلات"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "تعذر استيراد الحزم"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "بدون نتائج"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No updates"
-msgstr "لا توجد تحديثات"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Not found"
 msgstr "لم يُعثر عليه"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "اكتب عليه"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Please check that the base game is correct."
 msgstr "تحقق من صحة اللعبة القاعدية."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Queued"
-msgstr "في الطابور"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "\"$1\" موجود مسبقًا. هل تريد الكتابة عليه؟"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "حِزم الإكساء"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "The package $1 was not found."
-msgstr "لم يتم العثور على الحزمة 1$."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "أزل"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "حدِث"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "حدِّث الكل [$1]"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "اعرض مزيدًا من المعلومات عبر المتصفح"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
-msgid "You need to install a game before you can install a mod"
-msgstr "يجب عليك تنزيل اللعبة قبل إضافة التعديلات"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "Overwrite"
+msgstr "اكتب عليه"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -453,8 +463,18 @@ msgid "Decorations"
 msgstr "تزيينات"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Desert temples"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
 msgstr "\"Development Test\" مُوَجّه للمطورين."
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Different dungeon variant generated in desert biomes (only if dungeons "
+"enabled)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -831,10 +851,6 @@ msgstr "إمكانية الوصول"
 msgid "Back"
 msgstr "عُد"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "غيِر المفاتيح"
-
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -844,7 +860,8 @@ msgstr "دردشة"
 msgid "Clear"
 msgstr "امسح"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "التحكم"
 
@@ -1057,6 +1074,17 @@ msgid "Install games from ContentDB"
 msgstr "ثبت العابا من ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Minetest doesn't come with a game by default."
+msgstr "لم تعد لعبة Minetest مثبتة بشكل افتراضي"
+
+#: builtin/mainmenu/tab_local.lua
+msgid ""
+"Minetest is a game-creation platform that allows you to play many different "
+"games."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "جديد"
 
@@ -1089,8 +1117,9 @@ msgid "Start Game"
 msgstr "ابدأ اللعبة"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You have no games installed."
-msgstr "ليس لديك لعبة مثبتت."
+#, fuzzy
+msgid "You need to install a game before you can create a world."
+msgstr "يجب عليك تنزيل اللعبة قبل إضافة التعديلات"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1171,16 +1200,8 @@ msgid "Rebuilding shaders..."
 msgstr "يعيد بناء المظلِلات..."
 
 #: src/client/clientlauncher.cpp
-msgid "Connection error (timed out?)"
-msgstr "خطأ في الاتصال (انتهاء المهلة؟)"
-
-#: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "تعذر العثور على اللعبة أو تحميلها "
-
-#: src/client/clientlauncher.cpp
-msgid "Invalid gamespec."
-msgstr "مواصفات اللعبة غير صالحة."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1206,7 +1227,11 @@ msgstr "فشل فتح ملف كلمة المرور المدخل: "
 msgid "Provided world path doesn't exist: "
 msgstr "مسار العالم المدخل غير موجود: "
 
-#: src/client/game.cpp src/server.cpp
+#: src/client/clientmedia.cpp src/client/game.cpp
+msgid "Media..."
+msgstr "وسائط…"
+
+#: src/client/game.cpp src/client/shader.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1215,16 +1240,8 @@ msgstr ""
 "راجع debug.txt لمزيد من التفاصيل."
 
 #: src/client/game.cpp
-msgid "- Address: "
-msgstr "- العنوان: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- النمط: "
-
-#: src/client/game.cpp
-msgid "- Port: "
-msgstr "- المنفذ: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1260,10 +1277,6 @@ msgstr "المشي التلقائي ممكن"
 #: src/client/game.cpp
 msgid "Block bounds hidden"
 msgstr "حدود الكتل مخفية"
-
-#: src/client/game.cpp
-msgid "Block bounds shown for all blocks"
-msgstr "حدود كل الكتل ظاهرة"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
@@ -1311,6 +1324,10 @@ msgid "Connecting to server..."
 msgstr "يتصل بالخادوم…"
 
 #: src/client/game.cpp
+msgid "Connection error (timed out?)"
+msgstr "خطأ في الاتصال (انتهاء المهلة؟)"
+
+#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "فشل الاتصال لسبب مجهول"
 
@@ -1319,46 +1336,13 @@ msgid "Continue"
 msgstr "تابع"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
-msgid ""
-"Controls:\n"
-"- %s: move forwards\n"
-"- %s: move backwards\n"
-"- %s: move left\n"
-"- %s: move right\n"
-"- %s: jump/climb up\n"
-"- %s: dig/punch/use\n"
-"- %s: place/use\n"
-"- %s: sneak/climb down\n"
-"- %s: drop item\n"
-"- %s: inventory\n"
-"- Mouse: turn/look\n"
-"- Mouse wheel: select item\n"
-"- %s: chat\n"
-msgstr ""
-"أزرار التحكم:\n"
-"- %s: سر للأمام\n"
-"- %s: سر للخلف\n"
-"- %s: سر يسارا\n"
-"- %s: سر يمينا\n"
-"- %s: اقفز/تسلق\n"
-"- %s: احفر/الكم\n"
-"- %s: ضع/استخدم\n"
-"- %s: ازحف/انزل\n"
-"- %s: ارمي عنصر\n"
-"- %s: افتح المخزن\n"
-"- تحريك الفأرة: دوران\n"
-"- عجلة الفأرة: غيير العنصر\n"
-"- -%s: دردشة\n"
-
-#: src/client/game.cpp
 #, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/use\n"
-"- long tap: dig/punch/use\n"
+"- tap: place/punch/use (default)\n"
+"- long tap: dig/use (default)\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1451,6 +1435,11 @@ msgid "Fog enabled"
 msgstr "الضباب مفعل"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Fog enabled by game or mod"
+msgstr "التكبير معطل من قبل لعبة أو تعديل"
+
+#: src/client/game.cpp
 msgid "Game info:"
 msgstr "معلومات اللعبة:"
 
@@ -1469,10 +1458,6 @@ msgstr "تعريف العنصر…"
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "كب\\ثا"
-
-#: src/client/game.cpp
-msgid "Media..."
-msgstr "وسائط…"
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1594,7 +1579,7 @@ msgid "Viewing changed to %d (the minimum)"
 msgstr "مدى الرؤية في أدنى حد: %d"
 
 #: src/client/game.cpp
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
 msgstr ""
 "تم تغيير العرض إلى %d (الحد الأدنى)، ولكنه يقتصر على %d حسب اللعبة أو "
@@ -1611,7 +1596,7 @@ msgid "Viewing range changed to %d (the maximum)"
 msgstr "غُيرَ مدى الرؤية الى %d"
 
 #: src/client/game.cpp
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Viewing range changed to %d (the maximum), but limited to %d by game or mod"
 msgstr ""
@@ -1635,10 +1620,6 @@ msgstr "تم إظهار الإطار السلكي"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "التكبير معطل من قبل لعبة أو تعديل"
-
-#: src/client/game.cpp
-msgid "ok"
-msgstr "موافق"
 
 #: src/client/gameui.cpp
 #, fuzzy
@@ -2014,6 +1995,15 @@ msgstr "الخريطة المصغرة في وضع الأسطح، تكبير x%d"
 msgid "Minimap in texture mode"
 msgstr "الخريطة المصغرة في وضع الاكساء"
 
+#: src/client/shader.cpp
+#, fuzzy, c-format
+msgid "Failed to compile the \"%s\" shader."
+msgstr "فشل فتح صفحة الويب"
+
+#: src/client/shader.cpp
+msgid "Shaders are enabled but GLSL is not supported by the driver."
+msgstr ""
+
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2210,6 +2200,19 @@ msgstr "كبِر"
 msgid "press key"
 msgstr "اضغط على زر"
 
+#: src/gui/guiOpenURL.cpp
+msgid "Open"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+msgid "Open URL?"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+#, fuzzy
+msgid "Unable to open URL"
+msgstr "فشل فتح صفحة الويب"
+
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "غيِّر"
@@ -2243,6 +2246,7 @@ msgstr "حجم الصوت: %d%%"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
+#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "ar"
 
@@ -2430,14 +2434,6 @@ msgid "Adds particles when digging a node."
 msgstr "يضيف جزيئات عند حفر العقدة."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
-"screens."
-msgstr ""
-"اضبط تكوين النقطة في البوصة على شاشتك (الغير X11/Android فقط) على سبيل "
-"المثال. لشاشات 4K."
-
-#: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr "اضبط كثافة العرض المكتشفة المستخدمة لقياس عناصر واجهة المستخدم."
 
@@ -2465,6 +2461,10 @@ msgstr "ضمّن اسم العنصر"
 #: src/settings_translation_file.cpp
 msgid "Advanced"
 msgstr "متقدم"
+
+#: src/settings_translation_file.cpp
+msgid "Allows liquids to be translucent."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2528,6 +2528,17 @@ msgid "Apple trees noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Apply dithering to reduce color banding artifacts.\n"
+"Dithering significantly increases the size of losslessly-compressed\n"
+"screenshots and it works incorrectly if the display or operating system\n"
+"performs additional dithering or if the color channels are not quantized\n"
+"to 8 bits.\n"
+"With OpenGL ES, dithering only works if the shader supports high\n"
+"floating-point precision and it may have a higher performance impact."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Arm inertia"
 msgstr ""
 
@@ -2548,12 +2559,21 @@ msgid ""
 "clients.\n"
 "Small values potentially improve performance a lot, at the expense of "
 "visible\n"
-"rendering glitches (some blocks will not be rendered under water and in "
-"caves,\n"
-"as well as sometimes on land).\n"
+"rendering glitches (some blocks might not be rendered correctly in caves).\n"
 "Setting this to a value greater than max_block_send_distance disables this\n"
 "optimization.\n"
-"Stated in mapblocks (16 nodes)."
+"Stated in MapBlocks (16 nodes)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"At this distance the server will perform a simpler and cheaper occlusion "
+"check.\n"
+"Smaller values potentially improve performance, at the expense of "
+"temporarily visible\n"
+"rendering glitches (missing blocks).\n"
+"This is especially useful for very large viewing range (upwards of 500).\n"
+"Stated in MapBlocks (16 nodes)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2616,6 +2636,10 @@ msgstr "مواطن بيئية"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Block cull optimize distance"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2839,6 +2863,12 @@ msgstr "ظلال ملونة"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Comma-separated list of AL and ALC extensions that should not be used.\n"
+"Useful for testing. See al_extensions.[h,cpp] for details."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Comma-separated list of flags to hide in the content repository.\n"
 "\"nonfree\" can be used to hide packages which do not qualify as 'free "
 "software',\n"
@@ -2985,10 +3015,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "DPI"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
 msgstr ""
 
@@ -3035,6 +3061,19 @@ msgid ""
 "Define shadow filtering quality.\n"
 "This simulates the soft shadows effect by applying a PCF or Poisson disk\n"
 "but also uses more resources."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Define the oldest clients allowed to connect.\n"
+"Older clients are compatible in the sense that they will not crash when "
+"connecting\n"
+"to new servers, but they may not support all new features that you are "
+"expecting.\n"
+"This allows for more fine-grained control than "
+"strict_protocol_version_checking.\n"
+"Minetest still enforces its own internal minimum, and enabling\n"
+"strict_protocol_version_checking will effectively override this."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3225,6 +3264,11 @@ msgid "Enable Bloom Debug"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Debanding"
+msgstr "مكن الضرر"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enable IPv6 support (for both client and server).\n"
 "Required for IPv6 connections to work at all."
@@ -3241,6 +3285,10 @@ msgid ""
 "Enable Poisson disk filtering.\n"
 "On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable Post Processing"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3286,6 +3334,10 @@ msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Enable random mod loading (mainly used for testing)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
 msgstr ""
 
@@ -3309,17 +3361,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Enable touchscreen"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enable usage of remote media server (if provided by server).\n"
 "Remote servers offer a significantly faster way to download media (e.g. "
 "textures)\n"
 "when connecting to the server."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable vertex buffer objects.\n"
-"This should greatly improve graphics performance."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3349,6 +3399,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enables debug and error-checking in the OpenGL driver."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enables the post processing pipeline."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enables touchscreen mode, allowing you to play the game with a touchscreen."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4175,9 +4238,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Length of a server tick and the interval at which objects are generally "
-"updated over\n"
-"network, stated in seconds."
+"Length of a server tick (the interval at which everything is generally "
+"updated),\n"
+"stated in seconds.\n"
+"Does not apply to sessions hosted from the client menu."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4325,10 +4389,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Makes all liquids opaque"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
 msgstr ""
 
@@ -4376,7 +4436,9 @@ msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
-"the 'jungles' flag is ignored."
+"the 'jungles' flag is ignored.\n"
+"The 'temples' flag disables generation of desert temples. Normal dungeons "
+"will appear instead."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4409,10 +4471,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generation threads"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mapblock mesh generator's MapBlock cache size in MB"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4658,6 +4716,10 @@ msgid "Minimap scan height"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Minimum dig repetition interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of large caves per mapchunk."
 msgstr ""
 
@@ -4724,6 +4786,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Movement threshold"
+msgstr "حساسية اللمس (بكسل):"
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
@@ -4836,10 +4903,6 @@ msgid "Occlusion Culling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Opaque liquids"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Opaqueness (alpha) of the shadow behind the default font, between 0 and 255."
 msgstr ""
@@ -4849,6 +4912,10 @@ msgid ""
 "Open the pause menu when the window's focus is lost. Does not pause if a "
 "formspec is\n"
 "open."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "OpenGL debug"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4961,6 +5028,15 @@ msgid "Proportion of large caves that contain liquid."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Protocol version minimum"
+msgstr "لا تتطابق نسخ الميفاق. "
+
+#: src/settings_translation_file.cpp
+msgid "Punch gesture"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
@@ -4973,6 +5049,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Random mod load order"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5164,8 +5244,8 @@ msgid ""
 "\n"
 "* None - No antialiasing (default)\n"
 "\n"
-"* FSAA - Hardware-provided full-screen antialiasing (incompatible with "
-"shaders)\n"
+"* FSAA - Hardware-provided full-screen antialiasing\n"
+"(incompatible with Post Processing and Undersampling)\n"
 "A.K.A multi-sample antialiasing (MSAA)\n"
 "Smoothens out block edges but does not affect the insides of textures.\n"
 "A restart is required to change this option.\n"
@@ -5287,7 +5367,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the language. Leave empty to use the system language.\n"
+"Set the language. By default, the system language is used.\n"
 "A restart is required after changing this."
 msgstr ""
 
@@ -5318,6 +5398,10 @@ msgstr ""
 msgid ""
 "Set to true to enable bloom effect.\n"
 "Bright colors will bleed over the neighboring objects."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Set to true to enable volumetric lighting effect (a.k.a. \"Godrays\")."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5359,8 +5443,7 @@ msgstr "مُظللات"
 msgid ""
 "Shaders allow advanced visual effects and may increase performance on some "
 "video\n"
-"cards.\n"
-"This only works with the OpenGL video backend."
+"cards."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5432,13 +5515,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Size of the MapBlock cache of the mesh generator. Increasing this will\n"
-"increase the cache hit %, reducing the data being copied from the main\n"
-"thread, thus reducing jitter."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Sky Body Orbit Tilt"
 msgstr ""
 
@@ -5473,7 +5549,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Change Keys."
+"cinematic mode by using the key set in Controls."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5493,6 +5569,16 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Soft shadow radius"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Sound"
+msgstr "الصوت مكتوم"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Sound Extensions Blacklist"
+msgstr "قائمة المحتوى السوداء الخاصة بقاعدة بيانات ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5652,7 +5738,26 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"The delay in milliseconds after which a touch interaction is considered a "
+"long tap."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "The file path relative to your world path in which profiles will be saved to."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The gesture for for punching players/entities.\n"
+"This can be overridden by games and mods.\n"
+"\n"
+"* short_tap\n"
+"Easy to use and well-known from other games that shall not be named.\n"
+"\n"
+"* long_tap\n"
+"Known from the classic Minetest mobile controls.\n"
+"Combat is more or less impossible."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5660,7 +5765,8 @@ msgid "The identifier of the joystick to use"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "The length in pixels it takes for touchscreen interaction to start."
+msgid ""
+"The length in pixels after which a touch interaction is considered movement."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5669,6 +5775,12 @@ msgid ""
 "4.0 = Wave height is two nodes.\n"
 "0.0 = Wave doesn't move at all.\n"
 "Default is 1.0 (1/2 node)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The minimum time in seconds it takes between digging nodes when holding\n"
+"the dig button."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5697,7 +5809,7 @@ msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
 "OpenGL is the default for desktop, and OGLES2 for Android.\n"
-"Shaders are supported by OpenGL and OGLES2 (experimental)."
+"Shaders are supported by everything but OGLES1."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5755,6 +5867,10 @@ msgid "Third of 4 2D noises that together define hill/mountain range height."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Threshold for long taps"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
@@ -5801,12 +5917,11 @@ msgid "Touchscreen sensitivity multiplier."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Touchscreen threshold"
-msgstr "حساسية اللمس (بكسل):"
+msgid "Tradeoffs for performance"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Tradeoffs for performance"
+msgid "Translucent liquids"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5844,7 +5959,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"URL to JSON file which provides information about the newest Minetest release"
+"URL to JSON file which provides information about the newest Minetest "
+"release\n"
+"If this is empty the engine will never check for updates."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5943,10 +6060,6 @@ msgid "User Interfaces"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "VBO"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "VSync"
 msgstr ""
 
@@ -6033,10 +6146,23 @@ msgid "Volume"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Volume multiplier when the window is unfocused."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Volume of all sounds.\n"
 "Requires the sound system to be enabled."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Volume when unfocused"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Volumetric lighting"
+msgstr "إبراز العقد"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6274,11 +6400,17 @@ msgstr ""
 msgid "cURL parallel limit"
 msgstr ""
 
+#~ msgid "- Address: "
+#~ msgstr "- العنوان: "
+
 #~ msgid "- Creative Mode: "
 #~ msgstr "- النمط الإبداعي: "
 
 #~ msgid "- Damage: "
 #~ msgstr "- التضرر: "
+
+#~ msgid "- Port: "
+#~ msgstr "- المنفذ: "
 
 #~ msgid "2x"
 #~ msgstr "2x"
@@ -6308,6 +6440,13 @@ msgstr ""
 #~ "أدرك أن هذه القيمة ستُتجاوز إذا كان حقل العنوان في القائمة الرئيسية يحوي "
 #~ "عنوانًا."
 
+#~ msgid ""
+#~ "Adjust dpi configuration to your screen (non X11/Android only) e.g. for "
+#~ "4k screens."
+#~ msgstr ""
+#~ "اضبط تكوين النقطة في البوصة على شاشتك (الغير X11/Android فقط) على سبيل "
+#~ "المثال. لشاشات 4K."
+
 #~ msgid "All Settings"
 #~ msgstr "كل الإعدادات"
 
@@ -6329,8 +6468,14 @@ msgstr ""
 #~ msgid "Bilinear Filter"
 #~ msgstr "مرشح خطي ثنائي"
 
+#~ msgid "Block bounds shown for all blocks"
+#~ msgstr "حدود كل الكتل ظاهرة"
+
 #~ msgid "Bump Mapping"
 #~ msgstr "خريطة النتوءات"
+
+#~ msgid "Change Keys"
+#~ msgstr "غيِر المفاتيح"
 
 #, fuzzy
 #~ msgid "Change keys"
@@ -6356,6 +6501,38 @@ msgstr ""
 
 #~ msgid "Connected Glass"
 #~ msgstr "زجاج متصل"
+
+#, fuzzy, c-format
+#~ msgid ""
+#~ "Controls:\n"
+#~ "- %s: move forwards\n"
+#~ "- %s: move backwards\n"
+#~ "- %s: move left\n"
+#~ "- %s: move right\n"
+#~ "- %s: jump/climb up\n"
+#~ "- %s: dig/punch/use\n"
+#~ "- %s: place/use\n"
+#~ "- %s: sneak/climb down\n"
+#~ "- %s: drop item\n"
+#~ "- %s: inventory\n"
+#~ "- Mouse: turn/look\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- %s: chat\n"
+#~ msgstr ""
+#~ "أزرار التحكم:\n"
+#~ "- %s: سر للأمام\n"
+#~ "- %s: سر للخلف\n"
+#~ "- %s: سر يسارا\n"
+#~ "- %s: سر يمينا\n"
+#~ "- %s: اقفز/تسلق\n"
+#~ "- %s: احفر/الكم\n"
+#~ "- %s: ضع/استخدم\n"
+#~ "- %s: ازحف/انزل\n"
+#~ "- %s: ارمي عنصر\n"
+#~ "- %s: افتح المخزن\n"
+#~ "- تحريك الفأرة: دوران\n"
+#~ "- عجلة الفأرة: غيير العنصر\n"
+#~ "- -%s: دردشة\n"
 
 #~ msgid "Creative"
 #~ msgstr "إبداعي"
@@ -6539,6 +6716,9 @@ msgstr ""
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "ثبت: الملف: \"$1\""
 
+#~ msgid "Invalid gamespec."
+#~ msgstr "مواصفات اللعبة غير صالحة."
+
 #~ msgid "Main"
 #~ msgstr "الرئيسية"
 
@@ -6571,9 +6751,6 @@ msgstr ""
 
 #~ msgid "No Mipmap"
 #~ msgstr "بدون خريطة MIP"
-
-#~ msgid "Node Highlighting"
-#~ msgstr "إبراز العقد"
 
 #~ msgid "Node Outlining"
 #~ msgstr "اقتضاب العقد"
@@ -6695,8 +6872,14 @@ msgstr ""
 #~ msgid "You died."
 #~ msgstr "مِت"
 
+#~ msgid "You have no games installed."
+#~ msgstr "ليس لديك لعبة مثبتت."
+
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "yes"
+
+#~ msgid "ok"
+#~ msgstr "موافق"
