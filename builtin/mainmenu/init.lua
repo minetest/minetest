@@ -23,6 +23,11 @@ mt_color_dark_green = "#25C191"
 mt_color_orange  = "#FF8800"
 mt_color_red = "#FF3300"
 
+TABHEADER_H = 0.85
+GAMEBAR_H = 1.25
+GAMEBAR_OFFSET_DESKTOP = 0.375
+GAMEBAR_OFFSET_TOUCH = 0.15
+
 local menupath = core.get_mainmenu_path()
 local basepath = core.get_builtin_path()
 defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..

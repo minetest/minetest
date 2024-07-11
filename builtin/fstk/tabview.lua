@@ -72,8 +72,8 @@ local function get_formspec(self)
 	local tsize = { width = orig_tsize.width, height = orig_tsize.height }
 	if ENABLE_TOUCH then
 		tsize.height = tsize.height
-			+ 0.15 + 1.25 -- gamebar included in formspec size
-			+ 0.85 -- tabheader included in formspec size
+			+ TABHEADER_H -- tabheader included in formspec size
+			+ GAMEBAR_OFFSET_TOUCH + GAMEBAR_H -- gamebar included in formspec size
 	end
 
 	if self.parent == nil and not prepend then
@@ -92,7 +92,7 @@ local function get_formspec(self)
 
 	local end_button_size = 0.75
 
-	local tab_header_size = { width = tsize.width, height = 0.85 }
+	local tab_header_size = { width = tsize.width, height = TABHEADER_H }
 	if self.end_button then
 		tab_header_size.width = tab_header_size.width - end_button_size - 0.1
 	end
@@ -100,8 +100,8 @@ local function get_formspec(self)
 	local formspec = (prepend or "")
 	if ENABLE_TOUCH then
 		formspec = formspec ..
-			("bgcolor[;neither]container[0,0.85]box[0,0;%f,%f;#0000008C]"):format(
-				orig_tsize.width, orig_tsize.height)
+			("bgcolor[;neither]container[0,%f]box[0,0;%f,%f;#0000008C]"):format(
+				TABHEADER_H, orig_tsize.width, orig_tsize.height)
 	end
 	formspec = formspec .. self:tab_header(tab_header_size) .. content
 
