@@ -65,7 +65,7 @@ void sendAnnounce(AnnounceAction action,
 		server["game_time"]    = game_time;
 		server["clients"]      = (int) clients_names.size();
 		server["clients_max"]  = g_settings->getU16("max_users");
-		if (!g_settings->getBool("server_announce_anonymize_names")) {
+		if (g_settings->getBool("server_announce_send_players")) {
 			server["clients_list"] = Json::Value(Json::arrayValue);
 			for (const std::string &clients_name : clients_names)
 				server["clients_list"].append(clients_name);
