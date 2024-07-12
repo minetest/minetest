@@ -4605,7 +4605,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					}
 
 				} else if (m_selected_dragging && matching && !identical) {
-					// When dragging (keep LMB down), the selected stack is moved to `s`.
+					// Pickup items of the same type while dragging
+					// The selected stack shall be moved to `s`.
 					move_amount = m_selected_amount;
 				}
 
@@ -4761,7 +4762,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			ItemStack stack_to = list_s->getItem(s.i);
 
 			// Check how many items can be moved
-			move_amount = stack_from.count = MYMIN(move_amount, stack_from.count);
+			// Note: `move_amount` should not be range-limited because it is uncertain whether
+			// `stack_from.count` was reverted by the server in the meantime. Thus, attempt
+			// to move the amount that is assumed to be there and let the server correct it
+			// by a later inventory update.
+			stack_from.count = MYMIN(move_amount, stack_from.count);
 			ItemStack leftover = stack_to.addItem(stack_from, m_client->idef());
 
 			// If source stack cannot be added to destination stack at all,
@@ -4780,10 +4785,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 			// Source stack goes fully into destination stack
 			else if (leftover.empty()) {
-				if (move_amount == stack_from.count)
-					m_selected_amount = 0; // assume that everything was moved
-				else
-					m_selected_amount -= move_amount;
+				m_selected_amount -= move_amount;
 			}
 			// Source stack goes partly into destination stack
 			else {
