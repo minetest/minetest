@@ -32,9 +32,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <hiredis.h>
 #include <cassert>
 
-#if VERSION_MAJOR > 5 || VERSION_MINOR > 9
-#define DEPRECATION_PERIOD_OVER
-#endif
+/*
+ * Redis is not a good fit for Minetest and only still supported for legacy as
+ * well as advanced use case reasons, see:
+ * <https://github.com/minetest/minetest/issues/14822>
+ *
+ * Do NOT extend this backend with any new functionality.
+ */
 
 Database_Redis::Database_Redis(Settings &conf)
 {
@@ -70,13 +74,8 @@ Database_Redis::Database_Redis(Settings &conf)
 		freeReplyObject(reply);
 	}
 
-	warningstream << "/!\\ You are using the deprecated redis backend. "
-#ifdef DEPRECATION_PERIOD_OVER
-		<< "This backend is only still supported for migrations. /!\\\n"
-#else
-		<< "This backend will become read-only in the next release. /!\\\n"
-#endif
-		<< "Please migrate to SQLite3 or PostgreSQL instead." << std::endl;
+	dstream << "Note: When storing data in Redis you need to ensure that eviction"
+		" is disabled, or you risk DATA LOSS." << std::endl;
 }
 
 Database_Redis::~Database_Redis()
@@ -86,16 +85,12 @@ Database_Redis::~Database_Redis()
 
 void Database_Redis::beginSave()
 {
-#ifdef DEPRECATION_PERIOD_OVER
-	throw DatabaseException("Redis backend is read-only, see deprecation notice.");
-#else
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "MULTI"));
 	if (!reply) {
 		throw DatabaseException(std::string(
 			"Redis command 'MULTI' failed: ") + ctx->errstr);
 	}
 	freeReplyObject(reply);
-#endif
 }
 
 void Database_Redis::endSave()
