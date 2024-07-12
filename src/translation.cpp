@@ -68,6 +68,8 @@ const std::wstring &Translations::getPluralTranslation(
 		auto n = (*(it->second.first))(number);
 		const std::vector<std::wstring> &v = it->second.second;
 		if (n < v.size()) {
+			if (v[n].empty())
+				return s;
 			return v[n];
 		}
 	}
@@ -92,6 +94,9 @@ void Translations::addPluralTranslation(
 		warned = true;
 		if (!warned)
 			errorstream << "Translations: plural translation entry defined without Plural-Forms" << std::endl;
+		return;
+	} else if (translated.size() != plural->size()) {
+		errorstream << "Translations: incorrect number of plural translations (expected " << plural->size() << ", got " << translated.size() << ")" << std::endl;
 		return;
 	}
 	std::wstring key = textdomain + L"|"; key.append(original);
@@ -352,10 +357,6 @@ void Translations::loadPoEntry(const std::wstring &basefilename, const GettextPl
 			if (translated == entry.end()) break;
 			translations.push_back(translated->second);
 		}
-		if (translations.size() == 0) {
-			errorstream << "Could not load translation: entry for msgid\"" << wide_to_utf8(original) << "\" does not contain a msgstr[0] field" << std::endl;
-			return;
-		}
 		addPluralTranslation(textdomain, plural_form, original, translations);
 		addPluralTranslation(textdomain, plural_form, plural->second, translations);
 	}
@@ -476,8 +477,12 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 							errorstream << "Attempt to override existing po header entry" << std::endl;
 						} else {
 							for (auto &line: str_split(last_entry[L"msgstr"], L'\n')) {
-								if (str_starts_with(line, L"Plural-Forms:"))
+								if (str_starts_with(line, L"Plural-Forms:")) {
 									plural = GettextPluralForm::parseHeaderLine(line);
+									if (!(plural && *plural)) {
+										errorstream << "Invalid Plural-Forms line: " << wide_to_utf8(line) << std::endl;
+									}
+								}
 							}
 						}
 					} else {
@@ -578,7 +583,7 @@ void Translations::loadMoTranslation(const std::string &basefilename, const std:
 	u32 original_offset = readVarEndian(is_be, cdata + 12);
 	u32 translated_offset = readVarEndian(is_be, cdata + 16);
 
-	if (length < original_offset + 8 * nstring || length < translated_offset + 8 * nstring) {
+	if (length < original_offset + 8 * (u64)nstring || length < translated_offset + 8 * (u64)nstring) {
 		errorstream << "Ignoring truncated mo file" << std::endl;
 		return;
 	}
@@ -589,8 +594,13 @@ void Translations::loadMoTranslation(const std::string &basefilename, const std:
 		u32 translated_len = readVarEndian(is_be, cdata + translated_offset + 8 * i);
 		u32 translated_off = readVarEndian(is_be, cdata + translated_offset + 8 * i + 4);
 
-		if (length < original_off + original_len || length < translated_off + translated_len) {
+		if (length < original_off + (u64)original_len || length < translated_off + (u64)translated_len) {
 			errorstream << "Ignoring translation out of mo file" << std::endl;
+			continue;
+		}
+
+		if (cdata[original_off+original_len] != '\0' || cdata[translated_off+translated_len] != '\0') {
+			errorstream << "String in mo entry does not have a trailing NUL" << std::endl;
 			continue;
 		}
 
@@ -602,8 +612,12 @@ void Translations::loadMoTranslation(const std::string &basefilename, const std:
 				errorstream << "Attempt to override existing mo header entry" << std::endl;
 			} else {
 				for (auto &line: str_split(translated, '\n')) {
-					if (str_starts_with(line, "Plural-Forms:"))
+					if (str_starts_with(line, "Plural-Forms:")) {
 						plural_form = GettextPluralForm::parseHeaderLine(utf8_to_wide(line));
+						if (!(plural_form && *plural_form)) {
+							errorstream << "Invalid Plural-Forms line: " << line << std::endl;
+						}
+					}
 				}
 			}
 		} else {
