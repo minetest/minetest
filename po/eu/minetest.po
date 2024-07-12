@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-11 20:16+0800\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2022-04-29 20:12+0000\n"
 "Last-Translator: JonAnder Oier <jonanderetaoier@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -72,8 +72,7 @@ msgid "Command not available: "
 msgstr "Komandoa ez dago eskuragarri: "
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
-msgid "Get help for commands (-t: output in chat)"
+msgid "Get help for commands"
 msgstr "Eskuratu laguntza komandoetarako"
 
 #: builtin/common/chatcommands.lua
@@ -84,9 +83,12 @@ msgstr ""
 "zerrendatzeko."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
-msgid "[all | <cmd>] [-t]"
+msgid "[all | <cmd>]"
 msgstr "[guztia | <cmd>]"
+
+#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
+msgid "OK"
+msgstr "Ados"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -103,10 +105,6 @@ msgstr "Errore bat gertatu da:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Menu nagusia"
-
-#: builtin/fstk/ui.lua
-msgid "OK"
-msgstr "Ados"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -136,27 +134,19 @@ msgstr "$1 bertsioa soilik onartzen dugu."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "$1 eta $2 arteko protokolo bertsioak onartzen ditugu."
 
-#: builtin/mainmenu/content/contentdb.lua
-msgid "Error installing \"$1\": $2"
-msgstr ""
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "\"$1\" existitzen da. Gainidatzi egin nahi al duzu?"
 
-#: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
-msgid "Failed to download \"$1\""
-msgstr "Huts egin du $1 deskargatzean"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "$1 et $2 mendekotasunak instalatuko dira."
 
-#: builtin/mainmenu/content/contentdb.lua
-msgid "Failed to download $1"
-msgstr "Huts egin du $1 deskargatzean"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr "$1 bider $2"
 
-#: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
-msgid ""
-"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
-"broken archive)"
-msgstr "Instalazioa: Fitxategi ez bateragarria edo fitxategi hautsia"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -164,158 +154,159 @@ msgstr ""
 "$1 deskargatzen,\n"
 "$2 ilaran"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 downloading..."
 msgstr "$1 deskargatzen..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "All packages"
-msgstr "Pakete guztiak"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Back to Main Menu"
-msgstr "Itzuli menu nagusira"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB ez dago erabilgarri Minetest cURL gabe konpilatzean"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Downloading..."
-msgstr "Deskargatzen..."
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Error getting dependencies for package"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Games"
-msgstr "Jolasak"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "Install"
-msgstr "Instalatu"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Kargatzen..."
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Mods"
-msgstr "Mod-ak"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "No packages could be retrieved"
-msgstr "Ezin izan da paketerik eskuratu"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "Emaitzarik ez"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "No updates"
-msgstr "Eguneraketarik ez"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Queued"
-msgstr "Ilaran"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Texture packs"
-msgstr "testura paketeak"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "The package $1 was not found."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "Desinstalatu"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "Eguneratu"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Update All [$1]"
-msgstr "Guztia eguneratu [$1]"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "View more information in a web browser"
-msgstr "Ikusi informazio gehiago web nabigatzailean"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "$1 et $2 mendekotasunak instalatuko dira."
-
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "$1 by $2"
-msgstr "$1 bider $2"
-
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
 msgstr "$1-ek behar dituen mendekotasunak ezin dira aurkitu."
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
 msgstr ""
 "$1 instalatua izango da, eta $2-ren mendekotasunak baztertu egingo dira."
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "All packages"
+msgstr "Pakete guztiak"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Already installed"
 msgstr "Instalaturik jada"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Back to Main Menu"
+msgstr "Itzuli menu nagusira"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Base Game:"
 msgstr "Oinarri jokoa:"
 
-#: builtin/mainmenu/content/dlg_install.lua
-#: builtin/mainmenu/content/dlg_overwrite.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
-#: src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "Utzi"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "ContentDB ez dago erabilgarri Minetest cURL gabe konpilatzean"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Mendekotasunak:"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Downloading..."
+msgstr "Deskargatzen..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "Huts egin du $1 deskargatzean"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to download $1"
+msgstr "Huts egin du $1 deskargatzean"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr "Instalazioa: Fitxategi ez bateragarria edo fitxategi hautsia"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Games"
+msgstr "Jolasak"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install"
+msgstr "Instalatu"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Install $1"
 msgstr "$1 Instalatu"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Install missing dependencies"
 msgstr "Falta diren mendekotasunak instalatu"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Kargatzen..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Mods"
+msgstr "Mod-ak"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr "Ezin izan da paketerik eskuratu"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "Emaitzarik ez"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No updates"
+msgstr "Eguneraketarik ez"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Not found"
 msgstr "Ez da aurkitu"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr "Gainidatzi"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
 msgstr "Mesedez, egiaztatu oinarri jokoa zuzena dela."
 
-#: builtin/mainmenu/content/dlg_overwrite.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "\"$1\" existitzen da. Gainidatzi egin nahi al duzu?"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Queued"
+msgstr "Ilaran"
 
-#: builtin/mainmenu/content/dlg_overwrite.lua
-msgid "Overwrite"
-msgstr "Gainidatzi"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Texture packs"
+msgstr "testura paketeak"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "The package $1 was not found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Desinstalatu"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Eguneratu"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Update All [$1]"
+msgstr "Guztia eguneratu [$1]"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "View more information in a web browser"
+msgstr "Ikusi informazio gehiago web nabigatzailean"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -468,19 +459,9 @@ msgid "Decorations"
 msgstr "Apaingarriak"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Desert temples"
-msgstr ""
-
-#: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
 msgid "Development Test is meant for developers."
 msgstr "Abisua: Garapen Testa garatzaileentzat da."
-
-#: builtin/mainmenu/dlg_create_world.lua
-msgid ""
-"Different dungeon variant generated in desert biomes (only if dungeons "
-"enabled)"
-msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -856,6 +837,10 @@ msgstr ""
 msgid "Back"
 msgstr "Atzera"
 
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+msgid "Change Keys"
+msgstr "Aldatu teklak"
+
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -865,8 +850,7 @@ msgstr "Txata"
 msgid "Clear"
 msgstr "Garbi"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-#: src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "Controls"
 msgstr ""
 
@@ -1081,16 +1065,6 @@ msgid "Install games from ContentDB"
 msgstr "Instalatu ContentDB-ko jolasak"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Minetest doesn't come with a game by default."
-msgstr ""
-
-#: builtin/mainmenu/tab_local.lua
-msgid ""
-"Minetest is a game-creation platform that allows you to play many different "
-"games."
-msgstr ""
-
-#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "Berria"
 
@@ -1123,8 +1097,8 @@ msgid "Start Game"
 msgstr "Hasi partida"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You need to install a game before you can create a world."
-msgstr ""
+msgid "You have no games installed."
+msgstr "Ez duzu jolasik instalatuta."
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1207,8 +1181,16 @@ msgid "Rebuilding shaders..."
 msgstr "Itzalgailuak berreraikitzen..."
 
 #: src/client/clientlauncher.cpp
+msgid "Connection error (timed out?)"
+msgstr "Konexio-errorea (denbora agortua?)"
+
+#: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "Ezin izan da jokoa aurkitu edo kargatu: "
+
+#: src/client/clientlauncher.cpp
+msgid "Invalid gamespec."
+msgstr "Jokoaren espezifikazioa ez da baliozkoa."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1234,19 +1216,23 @@ msgstr "Ezin izan da ireki emandako pasahitzaren fitxategia: "
 msgid "Provided world path doesn't exist: "
 msgstr "Zehaztutako munduaren ibilbidea ez da existitzen: "
 
-#: src/client/clientmedia.cpp src/client/game.cpp
-msgid "Media..."
-msgstr "Multimedia..."
-
-#: src/client/game.cpp src/client/shader.cpp src/server.cpp
+#: src/client/game.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
 
 #: src/client/game.cpp
+msgid "- Address: "
+msgstr "- Helbidea: "
+
+#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Modua: "
+
+#: src/client/game.cpp
+msgid "- Port: "
+msgstr "- Ataka: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1281,6 +1267,10 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Block bounds hidden"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Block bounds shown for all blocks"
 msgstr ""
 
 #: src/client/game.cpp
@@ -1328,10 +1318,6 @@ msgid "Connecting to server..."
 msgstr "Zerbitzarira konektatzen..."
 
 #: src/client/game.cpp
-msgid "Connection error (timed out?)"
-msgstr "Konexio-errorea (denbora agortua?)"
-
-#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "Konexioak huts egin du arrazoi ezezagun batengatik"
 
@@ -1340,12 +1326,31 @@ msgid "Continue"
 msgstr "Jarraitu"
 
 #: src/client/game.cpp
+#, c-format
+msgid ""
+"Controls:\n"
+"- %s: move forwards\n"
+"- %s: move backwards\n"
+"- %s: move left\n"
+"- %s: move right\n"
+"- %s: jump/climb up\n"
+"- %s: dig/punch/use\n"
+"- %s: place/use\n"
+"- %s: sneak/climb down\n"
+"- %s: drop item\n"
+"- %s: inventory\n"
+"- Mouse: turn/look\n"
+"- Mouse wheel: select item\n"
+"- %s: chat\n"
+msgstr ""
+
+#: src/client/game.cpp
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/punch/use (default)\n"
-"- long tap: dig/use (default)\n"
+"- tap: place/use\n"
+"- long tap: dig/punch/use\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1426,10 +1431,6 @@ msgid "Fog enabled"
 msgstr "Lainoa gaituta"
 
 #: src/client/game.cpp
-msgid "Fog enabled by game or mod"
-msgstr ""
-
-#: src/client/game.cpp
 msgid "Game info:"
 msgstr "Jokoari buruzko informazioa:"
 
@@ -1448,6 +1449,10 @@ msgstr "Itemen definizioak..."
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr ""
+
+#: src/client/game.cpp
+msgid "Media..."
+msgstr "Multimedia..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1605,6 +1610,10 @@ msgstr ""
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr ""
+
+#: src/client/game.cpp
+msgid "ok"
+msgstr "Ados"
 
 #: src/client/gameui.cpp
 msgid "Chat currently disabled by game or mod"
@@ -1939,15 +1948,6 @@ msgstr ""
 msgid "Minimap in texture mode"
 msgstr ""
 
-#: src/client/shader.cpp
-#, fuzzy, c-format
-msgid "Failed to compile the \"%s\" shader."
-msgstr "Huts egin du $1 deskargatzean"
-
-#: src/client/shader.cpp
-msgid "Shaders are enabled but GLSL is not supported by the driver."
-msgstr ""
-
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2139,19 +2139,6 @@ msgstr "Zoom"
 msgid "press key"
 msgstr "sakatu tekla"
 
-#: src/gui/guiOpenURL.cpp
-msgid "Open"
-msgstr ""
-
-#: src/gui/guiOpenURL.cpp
-msgid "Open URL?"
-msgstr ""
-
-#: src/gui/guiOpenURL.cpp
-#, fuzzy
-msgid "Unable to open URL"
-msgstr "Huts egin du $1 deskargatzean"
-
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "Aldatu"
@@ -2185,7 +2172,6 @@ msgstr ""
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
-#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "eu"
 
@@ -2198,64 +2184,6 @@ msgstr ""
 #, fuzzy
 msgid "Name is taken. Please choose another name"
 msgstr "Mesedez, aukeratu izen bat!"
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Another client is connected with this name.  If your client closed "
-"unexpectedly, try again in a minute."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Empty passwords are disallowed.  Set a password and try again."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Internal server error"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Invalid password"
-msgstr "Berretsi pasahitza"
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Player name contains disallowed characters"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Player name not allowed"
-msgstr "Jokalariaren izena luzeegia da."
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Server shutting down"
-msgstr "Itzaltzen..."
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"The server has experienced an internal error.  You will now be disconnected."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "The server is running in simple singleplayer mode.  You cannot connect."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Too many users"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Your client sent something the server didn't expect.  Try reconnecting or "
-"updating your client."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Your client's version is not supported.\n"
-"Please contact the server administrator."
-msgstr ""
 
 #: src/server.cpp
 #, fuzzy, c-format
@@ -5428,7 +5356,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Controls."
+"cinematic mode by using the key set in Change Keys."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6237,17 +6165,11 @@ msgstr "cURL-en denbora muga"
 msgid "cURL parallel limit"
 msgstr ""
 
-#~ msgid "- Address: "
-#~ msgstr "- Helbidea: "
-
 #~ msgid "- Creative Mode: "
 #~ msgstr "- Sormen modua: "
 
 #~ msgid "- Damage: "
 #~ msgstr "- Kaltea: "
-
-#~ msgid "- Port: "
-#~ msgstr "- Ataka: "
 
 #~ msgid "2x"
 #~ msgstr "2x"
@@ -6282,9 +6204,6 @@ msgstr ""
 
 #~ msgid "Camera update toggle key"
 #~ msgstr "Kameraren eguneraketa txandakatzeko tekla"
-
-#~ msgid "Change Keys"
-#~ msgstr "Aldatu teklak"
 
 #, fuzzy
 #~ msgid "Change keys"
@@ -6380,9 +6299,6 @@ msgstr ""
 
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "Instalakuntza: fitxategia: \"$1\""
-
-#~ msgid "Invalid gamespec."
-#~ msgstr "Jokoaren espezifikazioa ez da baliozkoa."
 
 #~ msgid "Inventory key"
 #~ msgstr "Inbentarioa tekla"
@@ -6604,14 +6520,8 @@ msgstr ""
 #~ msgid "You died."
 #~ msgstr "Hil zara"
 
-#~ msgid "You have no games installed."
-#~ msgstr "Ez duzu jolasik instalatuta."
-
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"
-
-#~ msgid "ok"
-#~ msgstr "Ados"

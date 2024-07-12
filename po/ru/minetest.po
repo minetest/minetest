@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-11 20:16+0800\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2023-11-12 13:14+0000\n"
 "Last-Translator: Nanashi Mumei <nanashi.mumei@users.noreply.hosted.weblate."
 "org>\n"
@@ -73,8 +73,7 @@ msgid "Command not available: "
 msgstr "Команда недоступна: "
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
-msgid "Get help for commands (-t: output in chat)"
+msgid "Get help for commands"
 msgstr "Получить справку по командам"
 
 #: builtin/common/chatcommands.lua
@@ -85,9 +84,12 @@ msgstr ""
 "help all» для вывода всего списка."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
-msgid "[all | <cmd>] [-t]"
+msgid "[all | <cmd>]"
 msgstr "[all | <команда>]"
+
+#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
+msgid "OK"
+msgstr "ОК"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -104,10 +106,6 @@ msgstr "Произошла ошибка:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Главное меню"
-
-#: builtin/fstk/ui.lua
-msgid "OK"
-msgstr "ОК"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -137,27 +135,19 @@ msgstr "Мы поддерживаем только протокол версии
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Мы поддерживаем только протоколы версий с $1 по $2."
 
-#: builtin/mainmenu/content/contentdb.lua
-msgid "Error installing \"$1\": $2"
-msgstr "Ошибка установки «$1»: $2"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "«$1» уже существует. Перезаписать?"
 
-#: builtin/mainmenu/content/contentdb.lua
-msgid "Failed to download \"$1\""
-msgstr "Не удалось загрузить «$1»"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "Зависимости $1 и $2 будут установлены."
 
-#: builtin/mainmenu/content/contentdb.lua
-msgid "Failed to download $1"
-msgstr "Не удалось загрузить $1"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr "$1 из $2"
 
-#: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
-msgid ""
-"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
-"broken archive)"
-msgstr ""
-"Не удалось извлечь «$1» (неподдерживаемый тип файла или повреждённый архив)"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -165,157 +155,157 @@ msgstr ""
 "$1 скачивается,\n"
 "$2 в очереди"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 downloading..."
 msgstr "$1 скачивается…"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "All packages"
-msgstr "Все дополнения"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Back to Main Menu"
-msgstr "Назад в главное меню"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB недоступен, когда Minetest скомпилирован без cURL"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Downloading..."
-msgstr "Загрузка…"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Error getting dependencies for package"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Games"
-msgstr "Игры"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "Install"
-msgstr "Установить"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Загрузка…"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Mods"
-msgstr "Моды"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "No packages could be retrieved"
-msgstr "Дополнения не могут быть получены"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "Нет результатов"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "No updates"
-msgstr "Нет обновлений"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Queued"
-msgstr "В очереди"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Texture packs"
-msgstr "Наборы текстур"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "The package $1 was not found."
-msgstr "Дополнение $1 не найдено."
-
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "Удалить"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "Обновить"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Update All [$1]"
-msgstr "Обновить всё [$1]"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "View more information in a web browser"
-msgstr "Посетить страницу в сети"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "You need to install a game before you can install a mod"
-msgstr "Вам нужно установить игру, прежде чем вы сможете установить мод"
-
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "Зависимости $1 и $2 будут установлены."
-
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "$1 by $2"
-msgstr "$1 из $2"
-
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
 msgstr "Не удалось найти требуемые зависимости $1."
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
 msgstr "Будет установлен $1, а зависимости $2 будут пропущены."
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "All packages"
+msgstr "Все дополнения"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Already installed"
 msgstr "Уже установлено"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Back to Main Menu"
+msgstr "Назад в главное меню"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Base Game:"
 msgstr "Основная игра:"
 
-#: builtin/mainmenu/content/dlg_install.lua
-#: builtin/mainmenu/content/dlg_overwrite.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
-#: src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "Отмена"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "ContentDB недоступен, когда Minetest скомпилирован без cURL"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Зависимости:"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Downloading..."
+msgstr "Загрузка…"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr "Ошибка установки «$1»: $2"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to download \"$1\""
+msgstr "Не удалось загрузить «$1»"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to download $1"
+msgstr "Не удалось загрузить $1"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr ""
+"Не удалось извлечь «$1» (неподдерживаемый тип файла или повреждённый архив)"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Games"
+msgstr "Игры"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install"
+msgstr "Установить"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Install $1"
 msgstr "Установить $1"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Install missing dependencies"
 msgstr "Установить недостающие зависимости"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Загрузка…"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Mods"
+msgstr "Моды"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr "Дополнения не могут быть получены"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "Нет результатов"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No updates"
+msgstr "Нет обновлений"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Not found"
 msgstr "Не найдено"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr "Перезаписать"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
 msgstr "Убедитесь что основная игра корректна."
 
-#: builtin/mainmenu/content/dlg_overwrite.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "«$1» уже существует. Перезаписать?"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Queued"
+msgstr "В очереди"
 
-#: builtin/mainmenu/content/dlg_overwrite.lua
-msgid "Overwrite"
-msgstr "Перезаписать"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Texture packs"
+msgstr "Наборы текстур"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "The package $1 was not found."
+msgstr "Дополнение $1 не найдено."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Удалить"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Обновить"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Update All [$1]"
+msgstr "Обновить всё [$1]"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "View more information in a web browser"
+msgstr "Посетить страницу в сети"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
+msgstr "Вам нужно установить игру, прежде чем вы сможете установить мод"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -464,18 +454,8 @@ msgid "Decorations"
 msgstr "Декорации"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Desert temples"
-msgstr ""
-
-#: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
 msgstr "Development Test предназначен для разработчиков."
-
-#: builtin/mainmenu/dlg_create_world.lua
-msgid ""
-"Different dungeon variant generated in desert biomes (only if dungeons "
-"enabled)"
-msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -854,6 +834,10 @@ msgstr "Доступность"
 msgid "Back"
 msgstr "Назад"
 
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+msgid "Change Keys"
+msgstr "Изменить управление"
+
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -863,8 +847,7 @@ msgstr "Чат"
 msgid "Clear"
 msgstr "Очистить"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-#: src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Управление"
 
@@ -1070,17 +1053,6 @@ msgid "Install games from ContentDB"
 msgstr "Установить игры из ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
-msgid "Minetest doesn't come with a game by default."
-msgstr "Minetest Game больше не установлен по умолчанию"
-
-#: builtin/mainmenu/tab_local.lua
-msgid ""
-"Minetest is a game-creation platform that allows you to play many different "
-"games."
-msgstr ""
-
-#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "Новый"
 
@@ -1113,9 +1085,8 @@ msgid "Start Game"
 msgstr "Начать игру"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
-msgid "You need to install a game before you can create a world."
-msgstr "Вам нужно установить игру, прежде чем вы сможете установить мод"
+msgid "You have no games installed."
+msgstr "У вас не установлено ни одной игры."
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1195,8 +1166,16 @@ msgid "Rebuilding shaders..."
 msgstr "Сборка шейдеров…"
 
 #: src/client/clientlauncher.cpp
+msgid "Connection error (timed out?)"
+msgstr "Ошибка соединения (время вышло?)"
+
+#: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "Не удалось найти или загрузить игру: "
+
+#: src/client/clientlauncher.cpp
+msgid "Invalid gamespec."
+msgstr "Неправильная конфигурация игры."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1222,11 +1201,7 @@ msgstr "Не удалось открыть указанный файл с пар
 msgid "Provided world path doesn't exist: "
 msgstr "По этому пути мира нет: "
 
-#: src/client/clientmedia.cpp src/client/game.cpp
-msgid "Media..."
-msgstr "Медиафайлы…"
-
-#: src/client/game.cpp src/client/shader.cpp src/server.cpp
+#: src/client/game.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1235,8 +1210,16 @@ msgstr ""
 "Подробности в debug.txt."
 
 #: src/client/game.cpp
+msgid "- Address: "
+msgstr "- Адрес: "
+
+#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Режим: "
+
+#: src/client/game.cpp
+msgid "- Port: "
+msgstr "- Порт: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1271,6 +1254,10 @@ msgstr "Автобег включён"
 #: src/client/game.cpp
 msgid "Block bounds hidden"
 msgstr "Границы мапблока скрыты"
+
+#: src/client/game.cpp
+msgid "Block bounds shown for all blocks"
+msgstr "Границы показаны для всех мапблоков"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
@@ -1317,10 +1304,6 @@ msgid "Connecting to server..."
 msgstr "Подключение к серверу…"
 
 #: src/client/game.cpp
-msgid "Connection error (timed out?)"
-msgstr "Ошибка соединения (время вышло?)"
-
-#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "Сбой соединения по неизвестной причине"
 
@@ -1329,13 +1312,45 @@ msgid "Continue"
 msgstr "Продолжить"
 
 #: src/client/game.cpp
-#, fuzzy
+#, c-format
+msgid ""
+"Controls:\n"
+"- %s: move forwards\n"
+"- %s: move backwards\n"
+"- %s: move left\n"
+"- %s: move right\n"
+"- %s: jump/climb up\n"
+"- %s: dig/punch/use\n"
+"- %s: place/use\n"
+"- %s: sneak/climb down\n"
+"- %s: drop item\n"
+"- %s: inventory\n"
+"- Mouse: turn/look\n"
+"- Mouse wheel: select item\n"
+"- %s: chat\n"
+msgstr ""
+"Управление:\n"
+"- %s: вперёд\n"
+"- %s: назад\n"
+"- %s: влево\n"
+"- %s: вправо\n"
+"- %s: прыжок/подъём\n"
+"- %s: копать/удар/применить\n"
+"- %s: разместить/применить\n"
+"- %s: красться/спуск\n"
+"- %s: бросить предмет\n"
+"- %s: инвентарь\n"
+"- Мышь: поворот/обзор\n"
+"- Колесо мыши: выбор предмета\n"
+"- %s: чат\n"
+
+#: src/client/game.cpp
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/punch/use (default)\n"
-"- long tap: dig/use (default)\n"
+"- tap: place/use\n"
+"- long tap: dig/punch/use\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1428,11 +1443,6 @@ msgid "Fog enabled"
 msgstr "Туман включён"
 
 #: src/client/game.cpp
-#, fuzzy
-msgid "Fog enabled by game or mod"
-msgstr "Приближение на данный момент отключено игрой или модом"
-
-#: src/client/game.cpp
 msgid "Game info:"
 msgstr "Сведения об игре:"
 
@@ -1451,6 +1461,10 @@ msgstr "Описания предметов…"
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "КиБ/с"
+
+#: src/client/game.cpp
+msgid "Media..."
+msgstr "Медиафайлы…"
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1608,6 +1622,10 @@ msgstr "Отображение каркаса включено"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "Приближение на данный момент отключено игрой или модом"
+
+#: src/client/game.cpp
+msgid "ok"
+msgstr "ок"
 
 #: src/client/gameui.cpp
 msgid "Chat currently disabled by game or mod"
@@ -1929,15 +1947,6 @@ msgstr "Миникарта в ландшафтном режиме, увелич�
 msgid "Minimap in texture mode"
 msgstr "Миникарта в текстурном режиме"
 
-#: src/client/shader.cpp
-#, fuzzy, c-format
-msgid "Failed to compile the \"%s\" shader."
-msgstr "Не удалось открыть страницу"
-
-#: src/client/shader.cpp
-msgid "Shaders are enabled but GLSL is not supported by the driver."
-msgstr ""
-
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2130,19 +2139,6 @@ msgstr "Приближение"
 msgid "press key"
 msgstr "нажмите клавишу"
 
-#: src/gui/guiOpenURL.cpp
-msgid "Open"
-msgstr ""
-
-#: src/gui/guiOpenURL.cpp
-msgid "Open URL?"
-msgstr ""
-
-#: src/gui/guiOpenURL.cpp
-#, fuzzy
-msgid "Unable to open URL"
-msgstr "Не удалось открыть страницу"
-
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "Изменить"
@@ -2176,7 +2172,6 @@ msgstr "Громкость звука: %d%%"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
-#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "ru"
 
@@ -2190,64 +2185,6 @@ msgstr ""
 #: src/network/clientpackethandler.cpp
 msgid "Name is taken. Please choose another name"
 msgstr "Имя занято. Пожалуйста, выберите другое имя"
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Another client is connected with this name.  If your client closed "
-"unexpectedly, try again in a minute."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Empty passwords are disallowed.  Set a password and try again."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Internal server error"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Invalid password"
-msgstr "Старый пароль"
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Player name contains disallowed characters"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Player name not allowed"
-msgstr "Имя игрока слишком длинное."
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Server shutting down"
-msgstr "Завершение…"
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"The server has experienced an internal error.  You will now be disconnected."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "The server is running in simple singleplayer mode.  You cannot connect."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Too many users"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Your client sent something the server didn't expect.  Try reconnecting or "
-"updating your client."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Your client's version is not supported.\n"
-"Please contact the server administrator."
-msgstr ""
 
 #: src/server.cpp
 #, c-format
@@ -5916,10 +5853,9 @@ msgid "Smooth lighting"
 msgstr "Мягкое освещение"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Controls."
+"cinematic mode by using the key set in Change Keys."
 msgstr ""
 "Плавное вращение камеры в кинематографичном режиме, 0 для отключения. "
 "Включите кинематографичный режим клавишей, определённой в настройках "
@@ -6046,8 +5982,8 @@ msgstr ""
 "островов.\n"
 "Вода по умолчанию отключена и будет размещена только в том случае, если это "
 "значение\n"
-"будет установлено выше «mgv7_floatland_ymax» - «mgv7_floatland_taper» "
-"(начало\n"
+"будет установлено выше «mgv7_floatland_ymax» - "
+"«mgv7_floatland_taper» (начало\n"
 "верхнего сужения).\n"
 "*** ПРЕДУПРЕЖДЕНИЕ, ВЕРОЯТНАЯ ОПАСНОСТЬ ДЛЯ МИРОВ И РАБОТЫ СЕРВЕРА ***:\n"
 "При включении размещения воды парящих островов должны быть сконфигурированы "
@@ -6933,17 +6869,11 @@ msgstr "Лимит одновременных соединений cURL"
 #~ msgid "(game support required)"
 #~ msgstr "(требуется поддержка игры)"
 
-#~ msgid "- Address: "
-#~ msgstr "- Адрес: "
-
 #~ msgid "- Creative Mode: "
 #~ msgstr "- Режим творчества: "
 
 #~ msgid "- Damage: "
 #~ msgstr "- Урон: "
-
-#~ msgid "- Port: "
-#~ msgstr "- Порт: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -7052,9 +6982,6 @@ msgstr "Лимит одновременных соединений cURL"
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "Бит на пиксель (глубина цвета) в полноэкранном режиме."
 
-#~ msgid "Block bounds shown for all blocks"
-#~ msgstr "Границы показаны для всех мапблоков"
-
 #~ msgid "Bump Mapping"
 #~ msgstr "Бампмаппинг"
 
@@ -7079,9 +7006,6 @@ msgstr "Лимит одновременных соединений cURL"
 
 #~ msgid "Center of light curve mid-boost."
 #~ msgstr "Центр среднего подъёма кривой света."
-
-#~ msgid "Change Keys"
-#~ msgstr "Изменить управление"
 
 #~ msgid "Change keys"
 #~ msgstr "Изменить управление"
@@ -7157,38 +7081,6 @@ msgstr "Лимит одновременных соединений cURL"
 #~ msgstr ""
 #~ "Контролирует ширину тоннелей. Меньшие значения создают более широкие "
 #~ "тоннели."
-
-#, c-format
-#~ msgid ""
-#~ "Controls:\n"
-#~ "- %s: move forwards\n"
-#~ "- %s: move backwards\n"
-#~ "- %s: move left\n"
-#~ "- %s: move right\n"
-#~ "- %s: jump/climb up\n"
-#~ "- %s: dig/punch/use\n"
-#~ "- %s: place/use\n"
-#~ "- %s: sneak/climb down\n"
-#~ "- %s: drop item\n"
-#~ "- %s: inventory\n"
-#~ "- Mouse: turn/look\n"
-#~ "- Mouse wheel: select item\n"
-#~ "- %s: chat\n"
-#~ msgstr ""
-#~ "Управление:\n"
-#~ "- %s: вперёд\n"
-#~ "- %s: назад\n"
-#~ "- %s: влево\n"
-#~ "- %s: вправо\n"
-#~ "- %s: прыжок/подъём\n"
-#~ "- %s: копать/удар/применить\n"
-#~ "- %s: разместить/применить\n"
-#~ "- %s: красться/спуск\n"
-#~ "- %s: бросить предмет\n"
-#~ "- %s: инвентарь\n"
-#~ "- Мышь: поворот/обзор\n"
-#~ "- Колесо мыши: выбор предмета\n"
-#~ "- %s: чат\n"
 
 #~ msgid "Creative"
 #~ msgstr "Творческий"
@@ -7611,9 +7503,6 @@ msgstr "Лимит одновременных соединений cURL"
 
 #~ msgid "Instrumentation"
 #~ msgstr "Замеры"
-
-#~ msgid "Invalid gamespec."
-#~ msgstr "Неправильная конфигурация игры."
 
 #~ msgid "Inventory key"
 #~ msgstr "Кнопка открытия инвентаря"
@@ -8779,14 +8668,8 @@ msgstr "Лимит одновременных соединений cURL"
 #~ msgid "You died."
 #~ msgstr "Ты умер."
 
-#~ msgid "You have no games installed."
-#~ msgstr "У вас не установлено ни одной игры."
-
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"
-
-#~ msgid "ok"
-#~ msgstr "ок"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Czech (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-11 20:16+0800\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2023-06-19 10:48+0000\n"
 "Last-Translator: Robinson <simekm@yahoo.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -71,8 +71,7 @@ msgid "Command not available: "
 msgstr "Příkaz není k dispozici: "
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
-msgid "Get help for commands (-t: output in chat)"
+msgid "Get help for commands"
 msgstr "Získat nápovědu pro příkazy"
 
 #: builtin/common/chatcommands.lua
@@ -83,9 +82,12 @@ msgstr ""
 "pro celý výpis."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
-msgid "[all | <cmd>] [-t]"
+msgid "[all | <cmd>]"
 msgstr "[all | <příkaz>]"
+
+#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
+msgid "OK"
+msgstr "Dobře"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -102,10 +104,6 @@ msgstr "Nastala chyba:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Hlavní nabídka"
-
-#: builtin/fstk/ui.lua
-msgid "OK"
-msgstr "Dobře"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -135,28 +133,19 @@ msgstr "Podporujeme pouze protokol verze $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Podporujeme verze protokolů mezi $1 a $2."
 
-#: builtin/mainmenu/content/contentdb.lua
-msgid "Error installing \"$1\": $2"
-msgstr "Chyba při instalování $1\": $2"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "\"$1\" již existuje. Chcete jej přepsat?"
 
-#: builtin/mainmenu/content/contentdb.lua
-msgid "Failed to download \"$1\""
-msgstr "Selhalo stažení „$1“"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "Nainstaluje se $1 a $2 závislostí."
 
-#: builtin/mainmenu/content/contentdb.lua
-msgid "Failed to download $1"
-msgstr "Selhalo stažení $1"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr "$1 od $2"
 
-#: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
-msgid ""
-"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
-"broken archive)"
-msgstr ""
-"Nepodařilo se rozbalit „$1“ (nepodporovaný typ souboru, nebo poškozený "
-"archiv)"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -164,158 +153,159 @@ msgstr ""
 "$1 se stahuje,\n"
 "$2 čeká ve frontě"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 downloading..."
 msgstr "$1 se stahuje..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "All packages"
-msgstr "Všechny balíčky"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Back to Main Menu"
-msgstr "Zpět do hlavní nabídky"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
-"ContentDB není přístupná pokud byl Minetest kompilován bez použití cURL"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Downloading..."
-msgstr "Stahuji..."
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Error getting dependencies for package"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Games"
-msgstr "Hry"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "Install"
-msgstr "Instalovat"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Načítaní..."
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Mods"
-msgstr "Mody"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "No packages could be retrieved"
-msgstr "Nelze načíst žádný balíček"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "Žádné výsledky"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "No updates"
-msgstr "Žádné aktualizace"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Queued"
-msgstr "Ve frontě"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Texture packs"
-msgstr "Balíčky textur"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "The package $1 was not found."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "Odinstalovat"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "Aktualizovat"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Update All [$1]"
-msgstr "Aktualizovat vše [$1]"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "View more information in a web browser"
-msgstr "Zobrazit více informací v prohlížeči"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "Nainstaluje se $1 a $2 závislostí."
-
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "$1 by $2"
-msgstr "$1 od $2"
-
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
 msgstr "$1 nutných závislostí nebylo nalezeno."
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
 msgstr "$1 závislostí bude nainstalováno a $2 bude vynecháno."
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "All packages"
+msgstr "Všechny balíčky"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Already installed"
 msgstr "Již nainstalováno"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Back to Main Menu"
+msgstr "Zpět do hlavní nabídky"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Base Game:"
 msgstr "Základní hra:"
 
-#: builtin/mainmenu/content/dlg_install.lua
-#: builtin/mainmenu/content/dlg_overwrite.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
-#: src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "Zrušit"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr ""
+"ContentDB není přístupná pokud byl Minetest kompilován bez použití cURL"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Závislosti:"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Downloading..."
+msgstr "Stahuji..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr "Chyba při instalování $1\": $2"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to download \"$1\""
+msgstr "Selhalo stažení „$1“"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to download $1"
+msgstr "Selhalo stažení $1"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr ""
+"Nepodařilo se rozbalit „$1“ (nepodporovaný typ souboru, nebo poškozený "
+"archiv)"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Games"
+msgstr "Hry"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install"
+msgstr "Instalovat"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Install $1"
 msgstr "Instalovat $1"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Install missing dependencies"
 msgstr "Instalovat chybějící závislosti"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Načítaní..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Mods"
+msgstr "Mody"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr "Nelze načíst žádný balíček"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "Žádné výsledky"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No updates"
+msgstr "Žádné aktualizace"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Not found"
 msgstr "Nenalezeno"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr "Přepsat"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
 msgstr "Ověř prosím, zda je základní hra v pořádku."
 
-#: builtin/mainmenu/content/dlg_overwrite.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "\"$1\" již existuje. Chcete jej přepsat?"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Queued"
+msgstr "Ve frontě"
 
-#: builtin/mainmenu/content/dlg_overwrite.lua
-msgid "Overwrite"
-msgstr "Přepsat"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Texture packs"
+msgstr "Balíčky textur"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "The package $1 was not found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Odinstalovat"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Aktualizovat"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Update All [$1]"
+msgstr "Aktualizovat vše [$1]"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "View more information in a web browser"
+msgstr "Zobrazit více informací v prohlížeči"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -464,18 +454,8 @@ msgid "Decorations"
 msgstr "Dekorace"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Desert temples"
-msgstr ""
-
-#: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
 msgstr "Development Test je určen pro vývojáře."
-
-#: builtin/mainmenu/dlg_create_world.lua
-msgid ""
-"Different dungeon variant generated in desert biomes (only if dungeons "
-"enabled)"
-msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -851,6 +831,10 @@ msgstr ""
 msgid "Back"
 msgstr "Zpět"
 
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+msgid "Change Keys"
+msgstr "Změnit klávesy"
+
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -860,8 +844,7 @@ msgstr "Chat"
 msgid "Clear"
 msgstr "Vyčistit"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-#: src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Ovládání"
 
@@ -1072,16 +1055,6 @@ msgid "Install games from ContentDB"
 msgstr "Instalovat hry z ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Minetest doesn't come with a game by default."
-msgstr ""
-
-#: builtin/mainmenu/tab_local.lua
-msgid ""
-"Minetest is a game-creation platform that allows you to play many different "
-"games."
-msgstr ""
-
-#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "Nový"
 
@@ -1114,8 +1087,8 @@ msgid "Start Game"
 msgstr "Spuštění hry"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You need to install a game before you can create a world."
-msgstr ""
+msgid "You have no games installed."
+msgstr "Nemáte nainstalované žádné hry."
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1195,8 +1168,16 @@ msgid "Rebuilding shaders..."
 msgstr "Sestavuji shadery..."
 
 #: src/client/clientlauncher.cpp
+msgid "Connection error (timed out?)"
+msgstr "Chyba spojení (vypršel čas?)"
+
+#: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "Hru nebylo možné najít nebo načíst: "
+
+#: src/client/clientlauncher.cpp
+msgid "Invalid gamespec."
+msgstr "Neplatná specifikace hry."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1223,11 +1204,7 @@ msgstr "Soubor s heslem nebylo možné otevřít: "
 msgid "Provided world path doesn't exist: "
 msgstr "Uvedená cesta ke světu neexistuje: "
 
-#: src/client/clientmedia.cpp src/client/game.cpp
-msgid "Media..."
-msgstr "Média..."
-
-#: src/client/game.cpp src/client/shader.cpp src/server.cpp
+#: src/client/game.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1236,8 +1213,16 @@ msgstr ""
 "Detaily naleznete v souboru debug.txt."
 
 #: src/client/game.cpp
+msgid "- Address: "
+msgstr "- Adresa: "
+
+#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Mód: "
+
+#: src/client/game.cpp
+msgid "- Port: "
+msgstr "- Port: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1272,6 +1257,10 @@ msgstr "Automatický posun vpřed povolen"
 #: src/client/game.cpp
 msgid "Block bounds hidden"
 msgstr "Ohraničení bloku skryto"
+
+#: src/client/game.cpp
+msgid "Block bounds shown for all blocks"
+msgstr "Zobrazit hranice bloku u všech bloků"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
@@ -1319,10 +1308,6 @@ msgid "Connecting to server..."
 msgstr "Připojuji se k serveru..."
 
 #: src/client/game.cpp
-msgid "Connection error (timed out?)"
-msgstr "Chyba spojení (vypršel čas?)"
-
-#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "Spojení selhalo z neznámého důvodu"
 
@@ -1331,13 +1316,46 @@ msgid "Continue"
 msgstr "Pokračovat"
 
 #: src/client/game.cpp
+#, fuzzy, c-format
+msgid ""
+"Controls:\n"
+"- %s: move forwards\n"
+"- %s: move backwards\n"
+"- %s: move left\n"
+"- %s: move right\n"
+"- %s: jump/climb up\n"
+"- %s: dig/punch/use\n"
+"- %s: place/use\n"
+"- %s: sneak/climb down\n"
+"- %s: drop item\n"
+"- %s: inventory\n"
+"- Mouse: turn/look\n"
+"- Mouse wheel: select item\n"
+"- %s: chat\n"
+msgstr ""
+"Ovládání:\n"
+"- %s: pohyb dopředu\n"
+"- %s: pohyb dozadu\n"
+"- %s: pohyb doleva\n"
+"- %s: pohyb doprava\n"
+"- %s: skok/výstup\n"
+"- %s: těžit/uhodit\n"
+"- %s: umístit/použít\n"
+"- %s: plížení/sestup\n"
+"- %s: zahození předmětu\n"
+"- %s: inventář\n"
+"- Myš: otáčení/rozhlížení\n"
+"- Kolečko myši: výběr předmětu\n"
+"- %s: chat\n"
+
+#: src/client/game.cpp
 #, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/punch/use (default)\n"
-"- long tap: dig/use (default)\n"
+"- tap: place/use\n"
+"- long tap: dig/punch/use\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1430,11 +1448,6 @@ msgid "Fog enabled"
 msgstr "Mlha je povolena"
 
 #: src/client/game.cpp
-#, fuzzy
-msgid "Fog enabled by game or mod"
-msgstr "Přiblížení je aktuálně zakázáno"
-
-#: src/client/game.cpp
 msgid "Game info:"
 msgstr "Informace o hře:"
 
@@ -1453,6 +1466,10 @@ msgstr "Definice věcí..."
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "KiB/s"
+
+#: src/client/game.cpp
+msgid "Media..."
+msgstr "Média..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1610,6 +1627,10 @@ msgstr "Obrysy zobrazeny"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "Přiblížení je aktuálně zakázáno"
+
+#: src/client/game.cpp
+msgid "ok"
+msgstr "OK"
 
 #: src/client/gameui.cpp
 msgid "Chat currently disabled by game or mod"
@@ -1944,15 +1965,6 @@ msgstr "Minimapa v režimu Povrch, Přiblížení x%d"
 msgid "Minimap in texture mode"
 msgstr "Minimapa v režimu Textura"
 
-#: src/client/shader.cpp
-#, fuzzy, c-format
-msgid "Failed to compile the \"%s\" shader."
-msgstr "Nepodařilo se otevřít webovou stránku"
-
-#: src/client/shader.cpp
-msgid "Shaders are enabled but GLSL is not supported by the driver."
-msgstr ""
-
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2145,19 +2157,6 @@ msgstr "Přiblížení"
 msgid "press key"
 msgstr "stiskni klávesu"
 
-#: src/gui/guiOpenURL.cpp
-msgid "Open"
-msgstr ""
-
-#: src/gui/guiOpenURL.cpp
-msgid "Open URL?"
-msgstr ""
-
-#: src/gui/guiOpenURL.cpp
-#, fuzzy
-msgid "Unable to open URL"
-msgstr "Nepodařilo se otevřít webovou stránku"
-
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "Změnit"
@@ -2191,7 +2190,6 @@ msgstr "Hlasitost: %d%%"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
-#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "cs"
 
@@ -2205,64 +2203,6 @@ msgstr ""
 #: src/network/clientpackethandler.cpp
 msgid "Name is taken. Please choose another name"
 msgstr "Jméno je obsazeno. Zvolte prosím jiné jméno"
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Another client is connected with this name.  If your client closed "
-"unexpectedly, try again in a minute."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Empty passwords are disallowed.  Set a password and try again."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Internal server error"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Invalid password"
-msgstr "Staré heslo"
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Player name contains disallowed characters"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Player name not allowed"
-msgstr "Jméno hráče je příliš dlouhé."
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Server shutting down"
-msgstr "Vypínání..."
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"The server has experienced an internal error.  You will now be disconnected."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "The server is running in simple singleplayer mode.  You cannot connect."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Too many users"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Your client sent something the server didn't expect.  Try reconnecting or "
-"updating your client."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Your client's version is not supported.\n"
-"Please contact the server administrator."
-msgstr ""
 
 #: src/server.cpp
 #, fuzzy, c-format
@@ -5946,7 +5886,7 @@ msgstr "Plynulé osvětlení"
 #, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Controls."
+"cinematic mode by using the key set in Change Keys."
 msgstr "Zklidňuje otáčení kamery ve filmovém režimu. 0 pro deaktivaci."
 
 #: src/settings_translation_file.cpp
@@ -6949,17 +6889,11 @@ msgstr "cURL limit paralelních stahování"
 #~ msgid "(game support required)"
 #~ msgstr "(Vyžadována podpora hry)"
 
-#~ msgid "- Address: "
-#~ msgstr "- Adresa: "
-
 #~ msgid "- Creative Mode: "
 #~ msgstr "- Kreativní mód: "
 
 #~ msgid "- Damage: "
 #~ msgstr "- Zranění: "
-
-#~ msgid "- Port: "
-#~ msgstr "- Port: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -7050,9 +6984,6 @@ msgstr "cURL limit paralelních stahování"
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "Bitová hloubka (bity na pixel) v celoobrazovkovém režimu."
 
-#~ msgid "Block bounds shown for all blocks"
-#~ msgstr "Zobrazit hranice bloku u všech bloků"
-
 #~ msgid "Bump Mapping"
 #~ msgstr "Bump mapping"
 
@@ -7073,9 +7004,6 @@ msgstr "cURL limit paralelních stahování"
 
 #~ msgid "Camera update toggle key"
 #~ msgstr "Klávesa pro přepínání aktualizace pohledu"
-
-#~ msgid "Change Keys"
-#~ msgstr "Změnit klávesy"
 
 #, fuzzy
 #~ msgid "Change keys"
@@ -7134,38 +7062,6 @@ msgstr "cURL limit paralelních stahování"
 
 #~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 #~ msgstr "Ovládá šířku tunelů, menší hodnota vytváří širší tunely."
-
-#, fuzzy, c-format
-#~ msgid ""
-#~ "Controls:\n"
-#~ "- %s: move forwards\n"
-#~ "- %s: move backwards\n"
-#~ "- %s: move left\n"
-#~ "- %s: move right\n"
-#~ "- %s: jump/climb up\n"
-#~ "- %s: dig/punch/use\n"
-#~ "- %s: place/use\n"
-#~ "- %s: sneak/climb down\n"
-#~ "- %s: drop item\n"
-#~ "- %s: inventory\n"
-#~ "- Mouse: turn/look\n"
-#~ "- Mouse wheel: select item\n"
-#~ "- %s: chat\n"
-#~ msgstr ""
-#~ "Ovládání:\n"
-#~ "- %s: pohyb dopředu\n"
-#~ "- %s: pohyb dozadu\n"
-#~ "- %s: pohyb doleva\n"
-#~ "- %s: pohyb doprava\n"
-#~ "- %s: skok/výstup\n"
-#~ "- %s: těžit/uhodit\n"
-#~ "- %s: umístit/použít\n"
-#~ "- %s: plížení/sestup\n"
-#~ "- %s: zahození předmětu\n"
-#~ "- %s: inventář\n"
-#~ "- Myš: otáčení/rozhlížení\n"
-#~ "- Kolečko myši: výběr předmětu\n"
-#~ "- %s: chat\n"
 
 #~ msgid "Creative"
 #~ msgstr "Kreativní"
@@ -7559,9 +7455,6 @@ msgstr "cURL limit paralelních stahování"
 
 #~ msgid "Instrumentation"
 #~ msgstr "Instrumentace"
-
-#~ msgid "Invalid gamespec."
-#~ msgstr "Neplatná specifikace hry."
 
 #~ msgid "Inventory key"
 #~ msgstr "Klávesa inventáře"
@@ -8457,14 +8350,8 @@ msgstr "cURL limit paralelních stahování"
 #~ msgid "You died."
 #~ msgstr "Zemřel jsi."
 
-#~ msgid "You have no games installed."
-#~ msgstr "Nemáte nainstalované žádné hry."
-
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"
-
-#~ msgid "ok"
-#~ msgstr "OK"

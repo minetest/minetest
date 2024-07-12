@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-11 20:16+0800\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2022-07-14 11:16+0000\n"
 "Last-Translator: Cow Boy <cowboylv@tutanota.com>\n"
 "Language-Team: Latvian <https://hosted.weblate.org/projects/minetest/"
@@ -78,7 +78,7 @@ msgid "Command not available: "
 msgstr ""
 
 #: builtin/common/chatcommands.lua
-msgid "Get help for commands (-t: output in chat)"
+msgid "Get help for commands"
 msgstr ""
 
 #: builtin/common/chatcommands.lua
@@ -87,7 +87,11 @@ msgid ""
 msgstr ""
 
 #: builtin/common/chatcommands.lua
-msgid "[all | <cmd>] [-t]"
+msgid "[all | <cmd>]"
+msgstr ""
+
+#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
+msgid "OK"
 msgstr ""
 
 #: builtin/fstk/ui.lua
@@ -105,10 +109,6 @@ msgstr "Radās kļūme:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Galvenā izvēlne"
-
-#: builtin/fstk/ui.lua
-msgid "OK"
-msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -138,190 +138,183 @@ msgstr "Mēs atbalstam tikai protokola versiju $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Mēs atbalstam protokola versijas starp $1 un $2."
 
-#: builtin/mainmenu/content/contentdb.lua
-msgid "Error installing \"$1\": $2"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
 msgstr ""
 
-#: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
-msgid "Failed to download \"$1\""
-msgstr "Neizdevās lejuplādēt $1"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr ""
 
-#: builtin/mainmenu/content/contentdb.lua
-msgid "Failed to download $1"
-msgstr "Neizdevās lejuplādēt $1"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr ""
 
-#: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
-msgid ""
-"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
-"broken archive)"
-msgstr "Instalācija: Neatbalstīts faila tips “$1” vai arī sabojāts arhīvs"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #, fuzzy
 msgid "$1 downloading..."
 msgstr "Ielāde..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "All packages"
-msgstr "Visi papildinājumi"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Back to Main Menu"
-msgstr "Atpakaļ uz Galveno Izvēlni"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
-msgid "Downloading..."
-msgstr "Ielāde..."
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Error getting dependencies for package"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Games"
-msgstr "Spēles"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "Install"
-msgstr "Instalēt"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Ielāde..."
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Mods"
-msgstr "Modi"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "No packages could be retrieved"
-msgstr "Nevarēja iegūt papildinājumus"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "Nav rezultātu"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
-msgid "No updates"
-msgstr "Atjaunot"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Queued"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Texture packs"
-msgstr "Tekstūru komplekti"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "The package $1 was not found."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "Atinstalēt"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-#, fuzzy
-msgid "Update"
-msgstr "Atjaunināt"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Update All [$1]"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "View more information in a web browser"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "$1 by $2"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "All packages"
+msgstr "Visi papildinājumi"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #, fuzzy
 msgid "Already installed"
 msgstr "Šis taustiņš jau tiek izmantots"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Back to Main Menu"
+msgstr "Atpakaļ uz Galveno Izvēlni"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #, fuzzy
 msgid "Base Game:"
 msgstr "Spēlēt (kā serveris)"
 
-#: builtin/mainmenu/content/dlg_install.lua
-#: builtin/mainmenu/content/dlg_overwrite.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
-#: src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "Atcelt"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Atkarības:"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Downloading..."
+msgstr "Ielāde..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "Neizdevās lejuplādēt $1"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to download $1"
+msgstr "Neizdevās lejuplādēt $1"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr "Instalācija: Neatbalstīts faila tips “$1” vai arī sabojāts arhīvs"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Games"
+msgstr "Spēles"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install"
+msgstr "Instalēt"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #, fuzzy
 msgid "Install $1"
 msgstr "Instalēt"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #, fuzzy
 msgid "Install missing dependencies"
 msgstr "Neobligātās atkarības:"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Ielāde..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Mods"
+msgstr "Modi"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr "Nevarēja iegūt papildinājumus"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "Nav rezultātu"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "No updates"
+msgstr "Atjaunot"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Not found"
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_overwrite.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Queued"
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_overwrite.lua
-msgid "Overwrite"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Texture packs"
+msgstr "Tekstūru komplekti"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "The package $1 was not found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Atinstalēt"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Update"
+msgstr "Atjaunināt"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Update All [$1]"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "View more information in a web browser"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
 msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
@@ -477,20 +470,10 @@ msgid "Decorations"
 msgstr "Dekorācijas"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Desert temples"
-msgstr ""
-
-#: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
 msgid "Development Test is meant for developers."
 msgstr ""
 "Uzmanību: “Minimal development test” ir domāts priekš spēles izstrādātājiem."
-
-#: builtin/mainmenu/dlg_create_world.lua
-msgid ""
-"Different dungeon variant generated in desert biomes (only if dungeons "
-"enabled)"
-msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -863,6 +846,10 @@ msgstr ""
 msgid "Back"
 msgstr "Atpakaļ"
 
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+msgid "Change Keys"
+msgstr "Nomainīt kontroles"
+
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -872,8 +859,7 @@ msgstr "Čats"
 msgid "Clear"
 msgstr "Notīrīt"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-#: src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Vadība"
 
@@ -1087,16 +1073,6 @@ msgid "Install games from ContentDB"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Minetest doesn't come with a game by default."
-msgstr ""
-
-#: builtin/mainmenu/tab_local.lua
-msgid ""
-"Minetest is a game-creation platform that allows you to play many different "
-"games."
-msgstr ""
-
-#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "Jauns"
 
@@ -1130,8 +1106,8 @@ msgid "Start Game"
 msgstr "Sākt spēli"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You need to install a game before you can create a world."
-msgstr ""
+msgid "You have no games installed."
+msgstr "Jums nav instalēta neviena spēle."
 
 #: builtin/mainmenu/tab_online.lua
 #, fuzzy
@@ -1218,9 +1194,17 @@ msgid "Rebuilding shaders..."
 msgstr "Pārbūvē šeiderus..."
 
 #: src/client/clientlauncher.cpp
+msgid "Connection error (timed out?)"
+msgstr "Savienojuma kļūme (noildze?)"
+
+#: src/client/clientlauncher.cpp
 #, fuzzy
 msgid "Could not find or load game: "
 msgstr "Nevarēja atrast vai ielādēt spēli \""
+
+#: src/client/clientlauncher.cpp
+msgid "Invalid gamespec."
+msgstr "Nederīga spēles specifikācija."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1246,11 +1230,7 @@ msgstr "Neizdevās atvērt iestatīto paroļu failu: "
 msgid "Provided world path doesn't exist: "
 msgstr "Sniegtā pasaules atrašanās vieta neeksistē: "
 
-#: src/client/clientmedia.cpp src/client/game.cpp
-msgid "Media..."
-msgstr "Mēdiji..."
-
-#: src/client/game.cpp src/client/shader.cpp src/server.cpp
+#: src/client/game.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1259,8 +1239,16 @@ msgstr ""
 "Vairāk informācijas failā debug.txt."
 
 #: src/client/game.cpp
+msgid "- Address: "
+msgstr "- Adrese: "
+
+#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Režīms: "
+
+#: src/client/game.cpp
+msgid "- Port: "
+msgstr "- Ports: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1295,6 +1283,10 @@ msgstr "Automātiskā pārvietošanās ieslēgta"
 
 #: src/client/game.cpp
 msgid "Block bounds hidden"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Block bounds shown for all blocks"
 msgstr ""
 
 #: src/client/game.cpp
@@ -1343,10 +1335,6 @@ msgid "Connecting to server..."
 msgstr "Savienojas ar serveri..."
 
 #: src/client/game.cpp
-msgid "Connection error (timed out?)"
-msgstr "Savienojuma kļūme (noildze?)"
-
-#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr ""
 
@@ -1355,13 +1343,46 @@ msgid "Continue"
 msgstr "Turpināt"
 
 #: src/client/game.cpp
+#, fuzzy, c-format
+msgid ""
+"Controls:\n"
+"- %s: move forwards\n"
+"- %s: move backwards\n"
+"- %s: move left\n"
+"- %s: move right\n"
+"- %s: jump/climb up\n"
+"- %s: dig/punch/use\n"
+"- %s: place/use\n"
+"- %s: sneak/climb down\n"
+"- %s: drop item\n"
+"- %s: inventory\n"
+"- Mouse: turn/look\n"
+"- Mouse wheel: select item\n"
+"- %s: chat\n"
+msgstr ""
+"Kontroles:\n"
+"- %s: uz priekšu\n"
+"- %s: uz atpakaļu\n"
+"- %s: pa kreisi\n"
+"- %s: pa labi\n"
+"- %s: lekt/kāpt\n"
+"- %s: lavīties/nolaisties\n"
+"- %s: nomest priekšmetu\n"
+"- %s: inventārs\n"
+"- Pele: griezties/skatīties\n"
+"- Peles kreisā poga: rakt/sist\n"
+"- Peles labā poga: likt/izmantot\n"
+"- Peles rullītis: izvēlēties priekšmetu\n"
+"- %s: čats\n"
+
+#: src/client/game.cpp
 #, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/punch/use (default)\n"
-"- long tap: dig/use (default)\n"
+"- tap: place/use\n"
+"- long tap: dig/punch/use\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1455,11 +1476,6 @@ msgid "Fog enabled"
 msgstr "Migla iespējota"
 
 #: src/client/game.cpp
-#, fuzzy
-msgid "Fog enabled by game or mod"
-msgstr "Tuvināšana šobrīd atspējota vai nu spēlei, vai modam"
-
-#: src/client/game.cpp
 msgid "Game info:"
 msgstr "Spēles informācija:"
 
@@ -1478,6 +1494,10 @@ msgstr "Priekšmetu apraksti..."
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "KiB/s"
+
+#: src/client/game.cpp
+msgid "Media..."
+msgstr "Mēdiji..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1636,6 +1656,10 @@ msgstr "Karkasattēlojums iespējots"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "Tuvināšana šobrīd atspējota vai nu spēlei, vai modam"
+
+#: src/client/game.cpp
+msgid "ok"
+msgstr "ok"
 
 #: src/client/gameui.cpp
 #, fuzzy
@@ -1971,15 +1995,6 @@ msgstr "Minikarte virsmas režīmā, palielinājums x1"
 msgid "Minimap in texture mode"
 msgstr "Minikarte virsmas režīmā, palielinājums x1"
 
-#: src/client/shader.cpp
-#, fuzzy, c-format
-msgid "Failed to compile the \"%s\" shader."
-msgstr "Neizdevās lejuplādēt $1"
-
-#: src/client/shader.cpp
-msgid "Shaders are enabled but GLSL is not supported by the driver."
-msgstr ""
-
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2172,19 +2187,6 @@ msgstr "Zoom"
 msgid "press key"
 msgstr "nospiediet pogu"
 
-#: src/gui/guiOpenURL.cpp
-msgid "Open"
-msgstr ""
-
-#: src/gui/guiOpenURL.cpp
-msgid "Open URL?"
-msgstr ""
-
-#: src/gui/guiOpenURL.cpp
-#, fuzzy
-msgid "Unable to open URL"
-msgstr "Neizdevās lejuplādēt $1"
-
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "Nomainīt"
@@ -2218,7 +2220,6 @@ msgstr "Skaņas skaļums: "
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
-#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "lv"
 
@@ -2231,64 +2232,6 @@ msgstr ""
 #, fuzzy
 msgid "Name is taken. Please choose another name"
 msgstr "Lūdzu, izvēlieties vārdu!"
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Another client is connected with this name.  If your client closed "
-"unexpectedly, try again in a minute."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Empty passwords are disallowed.  Set a password and try again."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Internal server error"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Invalid password"
-msgstr "Vecā parole"
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Player name contains disallowed characters"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Player name not allowed"
-msgstr "Spēlētāja vārds ir pārāk garš."
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Server shutting down"
-msgstr "Beidz darbu..."
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"The server has experienced an internal error.  You will now be disconnected."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "The server is running in simple singleplayer mode.  You cannot connect."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Too many users"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Your client sent something the server didn't expect.  Try reconnecting or "
-"updating your client."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Your client's version is not supported.\n"
-"Please contact the server administrator."
-msgstr ""
 
 #: src/server.cpp
 #, fuzzy, c-format
@@ -5444,7 +5387,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Controls."
+"cinematic mode by using the key set in Change Keys."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6245,17 +6188,11 @@ msgstr ""
 msgid "cURL parallel limit"
 msgstr ""
 
-#~ msgid "- Address: "
-#~ msgstr "- Adrese: "
-
 #~ msgid "- Creative Mode: "
 #~ msgstr "- Radošais režīms: "
 
 #~ msgid "- Damage: "
 #~ msgstr "- Bojājumi: "
-
-#~ msgid "- Port: "
-#~ msgstr "- Ports: "
 
 #~ msgid "2x"
 #~ msgstr "2x"
@@ -6292,9 +6229,6 @@ msgstr ""
 #~ msgid "Bump Mapping"
 #~ msgstr "“Bump Mapping”"
 
-#~ msgid "Change Keys"
-#~ msgstr "Nomainīt kontroles"
-
 #, fuzzy
 #~ msgid "Change keys"
 #~ msgstr "Nomainīt kontroles"
@@ -6310,38 +6244,6 @@ msgstr ""
 
 #~ msgid "Connected Glass"
 #~ msgstr "Savienots stikls"
-
-#, fuzzy, c-format
-#~ msgid ""
-#~ "Controls:\n"
-#~ "- %s: move forwards\n"
-#~ "- %s: move backwards\n"
-#~ "- %s: move left\n"
-#~ "- %s: move right\n"
-#~ "- %s: jump/climb up\n"
-#~ "- %s: dig/punch/use\n"
-#~ "- %s: place/use\n"
-#~ "- %s: sneak/climb down\n"
-#~ "- %s: drop item\n"
-#~ "- %s: inventory\n"
-#~ "- Mouse: turn/look\n"
-#~ "- Mouse wheel: select item\n"
-#~ "- %s: chat\n"
-#~ msgstr ""
-#~ "Kontroles:\n"
-#~ "- %s: uz priekšu\n"
-#~ "- %s: uz atpakaļu\n"
-#~ "- %s: pa kreisi\n"
-#~ "- %s: pa labi\n"
-#~ "- %s: lekt/kāpt\n"
-#~ "- %s: lavīties/nolaisties\n"
-#~ "- %s: nomest priekšmetu\n"
-#~ "- %s: inventārs\n"
-#~ "- Pele: griezties/skatīties\n"
-#~ "- Peles kreisā poga: rakt/sist\n"
-#~ "- Peles labā poga: likt/izmantot\n"
-#~ "- Peles rullītis: izvēlēties priekšmetu\n"
-#~ "- %s: čats\n"
 
 #~ msgid "Credits"
 #~ msgstr "Pateicības"
@@ -6409,9 +6311,6 @@ msgstr ""
 
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "Instalācija: fails: “$1”"
-
-#~ msgid "Invalid gamespec."
-#~ msgstr "Nederīga spēles specifikācija."
 
 #~ msgid ""
 #~ "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -6592,14 +6491,8 @@ msgstr ""
 #~ msgid "You died."
 #~ msgstr "Jūs nomirāt"
 
-#~ msgid "You have no games installed."
-#~ msgstr "Jums nav instalēta neviena spēle."
-
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"
-
-#~ msgid "ok"
-#~ msgstr "ok"

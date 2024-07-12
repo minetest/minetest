@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swahili (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-11 20:16+0800\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Swahili <https://hosted.weblate.org/projects/minetest/"
@@ -78,7 +78,7 @@ msgid "Command not available: "
 msgstr ""
 
 #: builtin/common/chatcommands.lua
-msgid "Get help for commands (-t: output in chat)"
+msgid "Get help for commands"
 msgstr ""
 
 #: builtin/common/chatcommands.lua
@@ -87,7 +87,11 @@ msgid ""
 msgstr ""
 
 #: builtin/common/chatcommands.lua
-msgid "[all | <cmd>] [-t]"
+msgid "[all | <cmd>]"
+msgstr ""
+
+#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
+msgid "OK"
 msgstr ""
 
 #: builtin/fstk/ui.lua
@@ -107,10 +111,6 @@ msgstr "Kosa limetokea:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Menyu kuu"
-
-#: builtin/fstk/ui.lua
-msgid "OK"
-msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -140,194 +140,187 @@ msgstr "Sisi tu mkono itifaki toleo la $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Tunaunga mkono matoleo ya itifaki kati ya toleo la $1 na $2."
 
-#: builtin/mainmenu/content/contentdb.lua
-msgid "Error installing \"$1\": $2"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
 msgstr ""
 
-#: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
-msgid "Failed to download \"$1\""
-msgstr "Imeshindwa kusakinisha $1 hadi $2"
-
-#: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
-msgid "Failed to download $1"
-msgstr "Imeshindwa kusakinisha $1 hadi $2"
-
-#: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
-msgid ""
-"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
-"broken archive)"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
 msgstr ""
-"\n"
-"Sakinisha Moduli: filetype visivyotegemezwa \"$1\" au nyaraka kuvunjwa"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #, fuzzy
 msgid "$1 downloading..."
 msgstr "Inapakia..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "All packages"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
-msgid "Back to Main Menu"
-msgstr "Menyu kuu"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
-msgid "Downloading..."
-msgstr "Inapakia..."
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Error getting dependencies for package"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Games"
-msgstr "Michezo"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "Install"
-msgstr "Sakinisha"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Inapakia..."
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Mods"
-msgstr "Mods"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "No packages could be retrieved"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "No updates"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Queued"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
-msgid "Texture packs"
-msgstr "Texturepacks"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "The package $1 was not found."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-#, fuzzy
-msgid "Uninstall"
-msgstr "Sakinisha"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Update All [$1]"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "View more information in a web browser"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "$1 by $2"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "All packages"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #, fuzzy
 msgid "Already installed"
 msgstr "Muhimu tayari katika matumizi"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Back to Main Menu"
+msgstr "Menyu kuu"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #, fuzzy
 msgid "Base Game:"
 msgstr "Ficha mchezo"
 
-#: builtin/mainmenu/content/dlg_install.lua
-#: builtin/mainmenu/content/dlg_overwrite.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
-#: src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "Katisha"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Mategemezi:"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Downloading..."
+msgstr "Inapakia..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "Imeshindwa kusakinisha $1 hadi $2"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download $1"
+msgstr "Imeshindwa kusakinisha $1 hadi $2"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr ""
+"\n"
+"Sakinisha Moduli: filetype visivyotegemezwa \"$1\" au nyaraka kuvunjwa"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Games"
+msgstr "Michezo"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install"
+msgstr "Sakinisha"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #, fuzzy
 msgid "Install $1"
 msgstr "Sakinisha"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #, fuzzy
 msgid "Install missing dependencies"
 msgstr "Inaanzilisha fundo"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Inapakia..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Mods"
+msgstr "Mods"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No updates"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Not found"
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_overwrite.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Queued"
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_overwrite.lua
-msgid "Overwrite"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Texture packs"
+msgstr "Texturepacks"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "The package $1 was not found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Uninstall"
+msgstr "Sakinisha"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Update All [$1]"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "View more information in a web browser"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
 msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
@@ -497,19 +490,9 @@ msgid "Decorations"
 msgstr "Instrumentation"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Desert temples"
-msgstr ""
-
-#: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
 msgid "Development Test is meant for developers."
 msgstr "Tahadhari: Mtihani wa maendeleo ndogo ni maana kwa watengenezaji."
-
-#: builtin/mainmenu/dlg_create_world.lua
-msgid ""
-"Different dungeon variant generated in desert biomes (only if dungeons "
-"enabled)"
-msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -894,6 +877,10 @@ msgstr ""
 msgid "Back"
 msgstr "Nyuma"
 
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+msgid "Change Keys"
+msgstr "Badilisha funguo"
+
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -903,8 +890,7 @@ msgstr "Kuzungumza"
 msgid "Clear"
 msgstr "Wazi"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-#: src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Vidhibiti"
 
@@ -1127,16 +1113,6 @@ msgid "Install games from ContentDB"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Minetest doesn't come with a game by default."
-msgstr ""
-
-#: builtin/mainmenu/tab_local.lua
-msgid ""
-"Minetest is a game-creation platform that allows you to play many different "
-"games."
-msgstr ""
-
-#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "Mpya"
 
@@ -1172,8 +1148,9 @@ msgid "Start Game"
 msgstr "Ficha mchezo"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You need to install a game before you can create a world."
-msgstr ""
+#, fuzzy
+msgid "You have no games installed."
+msgstr "Una subgames hakuna imewekwa."
 
 #: builtin/mainmenu/tab_online.lua
 #, fuzzy
@@ -1261,9 +1238,17 @@ msgid "Rebuilding shaders..."
 msgstr "Kuijenga upya shaders..."
 
 #: src/client/clientlauncher.cpp
+msgid "Connection error (timed out?)"
+msgstr "Kosa la muunganisho (wakati muafaka?)"
+
+#: src/client/clientlauncher.cpp
 #, fuzzy
 msgid "Could not find or load game: "
 msgstr "Haikuweza kupata wala kupakia mchezo\""
+
+#: src/client/clientlauncher.cpp
+msgid "Invalid gamespec."
+msgstr "Gamespec batili."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1290,11 +1275,7 @@ msgstr ""
 msgid "Provided world path doesn't exist: "
 msgstr "Njia ya dunia iliyotolewa haipo:"
 
-#: src/client/clientmedia.cpp src/client/game.cpp
-msgid "Media..."
-msgstr "Vyombo vya habari..."
-
-#: src/client/game.cpp src/client/shader.cpp src/server.cpp
+#: src/client/game.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1303,8 +1284,18 @@ msgstr ""
 "Angalia debug.txt kwa maelezo."
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "- Address: "
+msgstr "Kumfunga anwani"
+
+#: src/client/game.cpp
 msgid "- Mode: "
 msgstr ""
+
+#: src/client/game.cpp
+#, fuzzy
+msgid "- Port: "
+msgstr "Bandari"
 
 #: src/client/game.cpp
 #, fuzzy
@@ -1343,6 +1334,10 @@ msgstr "Ufunguo wa mbele"
 
 #: src/client/game.cpp
 msgid "Block bounds hidden"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Block bounds shown for all blocks"
 msgstr ""
 
 #: src/client/game.cpp
@@ -1395,10 +1390,6 @@ msgid "Connecting to server..."
 msgstr "Inaunganisha seva..."
 
 #: src/client/game.cpp
-msgid "Connection error (timed out?)"
-msgstr "Kosa la muunganisho (wakati muafaka?)"
-
-#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr ""
 
@@ -1407,13 +1398,43 @@ msgid "Continue"
 msgstr "Kuendelea"
 
 #: src/client/game.cpp
+#, fuzzy, c-format
+msgid ""
+"Controls:\n"
+"- %s: move forwards\n"
+"- %s: move backwards\n"
+"- %s: move left\n"
+"- %s: move right\n"
+"- %s: jump/climb up\n"
+"- %s: dig/punch/use\n"
+"- %s: place/use\n"
+"- %s: sneak/climb down\n"
+"- %s: drop item\n"
+"- %s: inventory\n"
+"- Mouse: turn/look\n"
+"- Mouse wheel: select item\n"
+"- %s: chat\n"
+msgstr ""
+"Vidhibiti vya chaguo-msingi:\n"
+"-WASD: hoja\n"
+"- nafasi: kuruka/kupanda\n"
+"- Hamisha:taarifa/kwenda chini\n"
+"- q: tone kipengee\n"
+"- nikasema hesabu\n"
+"- kipanya: kugeuka/kuangalia\n"
+"- kipanya kushoto: kuchimba/punch\n"
+"- kipanya kulia: mahali/matumizi\n"
+"- kipanya gurudumu: Teua kipengee\n"
+"- T: mazungumzo\n"
+
+#: src/client/game.cpp
 #, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/punch/use (default)\n"
-"- long tap: dig/use (default)\n"
+"- tap: place/use\n"
+"- long tap: dig/punch/use\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1511,10 +1532,6 @@ msgid "Fog enabled"
 msgstr "kuwezeshwa"
 
 #: src/client/game.cpp
-msgid "Fog enabled by game or mod"
-msgstr ""
-
-#: src/client/game.cpp
 msgid "Game info:"
 msgstr ""
 
@@ -1535,6 +1552,10 @@ msgstr "Fasili ya kipengele..."
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "Kibu/s"
+
+#: src/client/game.cpp
+msgid "Media..."
+msgstr "Vyombo vya habari..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1696,6 +1717,10 @@ msgstr ""
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr ""
+
+#: src/client/game.cpp
+msgid "ok"
+msgstr "Sawa kabisa"
 
 #: src/client/gameui.cpp
 msgid "Chat currently disabled by game or mod"
@@ -2041,15 +2066,6 @@ msgstr ""
 msgid "Minimap in texture mode"
 msgstr "Unamu wa kima cha chini cha ukubwa wa Vichujio"
 
-#: src/client/shader.cpp
-#, fuzzy, c-format
-msgid "Failed to compile the \"%s\" shader."
-msgstr "Imeshindwa kusakinisha $1 hadi $2"
-
-#: src/client/shader.cpp
-msgid "Shaders are enabled but GLSL is not supported by the driver."
-msgstr ""
-
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2254,19 +2270,6 @@ msgstr "Kuza"
 msgid "press key"
 msgstr "Bonyeza Kibonye"
 
-#: src/gui/guiOpenURL.cpp
-msgid "Open"
-msgstr ""
-
-#: src/gui/guiOpenURL.cpp
-msgid "Open URL?"
-msgstr ""
-
-#: src/gui/guiOpenURL.cpp
-#, fuzzy
-msgid "Unable to open URL"
-msgstr "Imeshindwa kusakinisha $1 hadi $2"
-
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "Mabadiliko"
@@ -2301,7 +2304,6 @@ msgstr "Kiwango sauti:"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
-#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "sw"
 
@@ -2312,64 +2314,6 @@ msgstr ""
 
 #: src/network/clientpackethandler.cpp
 msgid "Name is taken. Please choose another name"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Another client is connected with this name.  If your client closed "
-"unexpectedly, try again in a minute."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Empty passwords are disallowed.  Set a password and try again."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Internal server error"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Invalid password"
-msgstr "Nywila ya zamani"
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Player name contains disallowed characters"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Player name not allowed"
-msgstr "Mchezaji jina refu."
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Server shutting down"
-msgstr "Inazima..."
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"The server has experienced an internal error.  You will now be disconnected."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "The server is running in simple singleplayer mode.  You cannot connect."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Too many users"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Your client sent something the server didn't expect.  Try reconnecting or "
-"updating your client."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Your client's version is not supported.\n"
-"Please contact the server administrator."
 msgstr ""
 
 #: src/server.cpp
@@ -5918,7 +5862,7 @@ msgstr "Taa laini"
 #, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Controls."
+"cinematic mode by using the key set in Change Keys."
 msgstr "Smooths mzunguko wa kamera katika hali-tumizi cinematic. 0 kulemaza."
 
 #: src/settings_translation_file.cpp
@@ -6831,20 +6775,12 @@ msgid "cURL parallel limit"
 msgstr "cURL kikomo sambamba"
 
 #, fuzzy
-#~ msgid "- Address: "
-#~ msgstr "Kumfunga anwani"
-
-#, fuzzy
 #~ msgid "- Creative Mode: "
 #~ msgstr "Hali ya ubunifu"
 
 #, fuzzy
 #~ msgid "- Damage: "
 #~ msgstr "Uharibifu"
-
-#, fuzzy
-#~ msgid "- Port: "
-#~ msgstr "Bandari"
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -6927,9 +6863,6 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Camera update toggle key"
 #~ msgstr "Kibonye guro Usasishaji wa kamera"
 
-#~ msgid "Change Keys"
-#~ msgstr "Badilisha funguo"
-
 #, fuzzy
 #~ msgid "Change keys"
 #~ msgstr "Badilisha funguo"
@@ -6970,35 +6903,6 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 #~ msgstr ""
 #~ "Vidhibiti vya upana wa vichuguu, thamani ndogo huunda vichuguu pana."
-
-#, fuzzy, c-format
-#~ msgid ""
-#~ "Controls:\n"
-#~ "- %s: move forwards\n"
-#~ "- %s: move backwards\n"
-#~ "- %s: move left\n"
-#~ "- %s: move right\n"
-#~ "- %s: jump/climb up\n"
-#~ "- %s: dig/punch/use\n"
-#~ "- %s: place/use\n"
-#~ "- %s: sneak/climb down\n"
-#~ "- %s: drop item\n"
-#~ "- %s: inventory\n"
-#~ "- Mouse: turn/look\n"
-#~ "- Mouse wheel: select item\n"
-#~ "- %s: chat\n"
-#~ msgstr ""
-#~ "Vidhibiti vya chaguo-msingi:\n"
-#~ "-WASD: hoja\n"
-#~ "- nafasi: kuruka/kupanda\n"
-#~ "- Hamisha:taarifa/kwenda chini\n"
-#~ "- q: tone kipengee\n"
-#~ "- nikasema hesabu\n"
-#~ "- kipanya: kugeuka/kuangalia\n"
-#~ "- kipanya kushoto: kuchimba/punch\n"
-#~ "- kipanya kulia: mahali/matumizi\n"
-#~ "- kipanya gurudumu: Teua kipengee\n"
-#~ "- T: mazungumzo\n"
 
 #, fuzzy
 #~ msgid "Creative"
@@ -7259,9 +7163,6 @@ msgstr "cURL kikomo sambamba"
 
 #~ msgid "Instrumentation"
 #~ msgstr "Instrumentation"
-
-#~ msgid "Invalid gamespec."
-#~ msgstr "Gamespec batili."
 
 #~ msgid "Inventory key"
 #~ msgstr "Ufunguo wa hesabu"
@@ -8341,12 +8242,5 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "You died."
 #~ msgstr "Umekufa."
 
-#, fuzzy
-#~ msgid "You have no games installed."
-#~ msgstr "Una subgames hakuna imewekwa."
-
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"
-
-#~ msgid "ok"
-#~ msgstr "Sawa kabisa"

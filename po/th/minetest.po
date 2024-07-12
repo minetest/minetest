@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Thai (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-11 20:16+0800\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2022-03-18 01:05+0000\n"
 "Last-Translator: Thomas Wiegand <weblate.org@wiegand.info>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -71,8 +71,7 @@ msgid "Command not available: "
 msgstr "ไม่มีคำสั่ง: "
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
-msgid "Get help for commands (-t: output in chat)"
+msgid "Get help for commands"
 msgstr "รับความช่วยเหลือสำหรับการพิมพ์คำสั่ง"
 
 #: builtin/common/chatcommands.lua
@@ -82,9 +81,12 @@ msgstr ""
 "ใช้ '.help <cmd>' เพื่อรับข้อมูลเพิ่มเติม หรือใช้ '.help all' เพื่อแสดงรายการคำสั่งทั้งหมด"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
-msgid "[all | <cmd>] [-t]"
+msgid "[all | <cmd>]"
 msgstr "[ทั้งหมด | <cmd>]"
+
+#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
+msgid "OK"
+msgstr "ตกลง"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -101,10 +103,6 @@ msgstr "เกิดข้อผิดพลาดขึ้น:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "เมนูหลัก"
-
-#: builtin/fstk/ui.lua
-msgid "OK"
-msgstr "ตกลง"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -134,27 +132,19 @@ msgstr "เราสนับสนุนโพรโทคอลเวอร์
 msgid "We support protocol versions between version $1 and $2."
 msgstr "เราสนับสนุนโพรโทคอลระหว่างเวอร์ชัน $1 และ $2"
 
-#: builtin/mainmenu/content/contentdb.lua
-msgid "Error installing \"$1\": $2"
-msgstr ""
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "มี \"$1\" อยู่แล้ว คุณต้องการเขียนทับหรือไม่ ?"
 
-#: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
-msgid "Failed to download \"$1\""
-msgstr "ไม่สามารถดาวน์โหลด $1"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "การอ้างอิง $1 และ $2 จะถูกติดตั้ง."
 
-#: builtin/mainmenu/content/contentdb.lua
-msgid "Failed to download $1"
-msgstr "ไม่สามารถดาวน์โหลด $1"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr "$1 โดย $2"
 
-#: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
-msgid ""
-"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
-"broken archive)"
-msgstr "ติดตั้ง: ประเภทไฟล์ที่ไม่รองรับหรือไฟล์เก็บถาวรที่ใช้งานไม่ได้"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -162,157 +152,158 @@ msgstr ""
 "$1 กำลังดาวน์โหลด,\n"
 "$2 เข้าคิว"
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 downloading..."
 msgstr "$1 โหลด ..."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "All packages"
-msgstr "แพคเกจทั้งหมด"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Back to Main Menu"
-msgstr "กลับไปยังเมนูหลัก"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB ไม่พร้อมใช้งานเมื่อรวบรวม Minetest โดยไม่มี cURL"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Downloading..."
-msgstr "โหลด ..."
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Error getting dependencies for package"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Games"
-msgstr "เกม"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "Install"
-msgstr "ติดตั้ง"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "กำลังโหลด..."
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Mods"
-msgstr "ม็อด"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "No packages could be retrieved"
-msgstr "ไม่สามารถเรียกแพคเกจได้"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "ไม่มีผลลัพธ์"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "No updates"
-msgstr "ไม่มีการปรับปรุง"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Queued"
-msgstr "เข้าคิว"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Texture packs"
-msgstr "เทกซ์เจอร์แพ็ค"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "The package $1 was not found."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "ถอนการติดตั้ง"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "อัปเดต"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Update All [$1]"
-msgstr "อัปเดต All [$1]"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "View more information in a web browser"
-msgstr "ดูข้อมูลเพิ่มเติมในเว็บเบราว์เซอร์"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "การอ้างอิง $1 และ $2 จะถูกติดตั้ง."
-
-#: builtin/mainmenu/content/dlg_install.lua
-msgid "$1 by $2"
-msgstr "$1 โดย $2"
-
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
 msgstr "$1 ไม่พบการพึ่งพาที่จำเป็น."
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
 msgstr "$1 จะถูกติดตั้ง และการขึ้นต่อกัน $2 จะถูกข้ามไป."
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "All packages"
+msgstr "แพคเกจทั้งหมด"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Already installed"
 msgstr "ติดตั้งแล้ว"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Back to Main Menu"
+msgstr "กลับไปยังเมนูหลัก"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Base Game:"
 msgstr "เกมพื้นฐาน:"
 
-#: builtin/mainmenu/content/dlg_install.lua
-#: builtin/mainmenu/content/dlg_overwrite.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
-#: src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "ยกเลิก"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "ContentDB ไม่พร้อมใช้งานเมื่อรวบรวม Minetest โดยไม่มี cURL"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "ไฟล์อ้างอิง:"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Downloading..."
+msgstr "โหลด ..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "ไม่สามารถดาวน์โหลด $1"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to download $1"
+msgstr "ไม่สามารถดาวน์โหลด $1"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr "ติดตั้ง: ประเภทไฟล์ที่ไม่รองรับหรือไฟล์เก็บถาวรที่ใช้งานไม่ได้"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Games"
+msgstr "เกม"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install"
+msgstr "ติดตั้ง"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Install $1"
 msgstr "ติดตั้ง $1"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Install missing dependencies"
 msgstr "ไฟล์อ้างอิงที่เลือกใช้ได้"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "กำลังโหลด..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Mods"
+msgstr "ม็อด"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr "ไม่สามารถเรียกแพคเกจได้"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "ไม่มีผลลัพธ์"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No updates"
+msgstr "ไม่มีการปรับปรุง"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Not found"
 msgstr "ไม่พบ"
 
-#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr "เขียนทับ"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
 msgstr "โปรดตรวจสอบว่าเกมหลักถูกต้อง."
 
-#: builtin/mainmenu/content/dlg_overwrite.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "มี \"$1\" อยู่แล้ว คุณต้องการเขียนทับหรือไม่ ?"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Queued"
+msgstr "เข้าคิว"
 
-#: builtin/mainmenu/content/dlg_overwrite.lua
-msgid "Overwrite"
-msgstr "เขียนทับ"
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Texture packs"
+msgstr "เทกซ์เจอร์แพ็ค"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "The package $1 was not found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "ถอนการติดตั้ง"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "อัปเดต"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Update All [$1]"
+msgstr "อัปเดต All [$1]"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "View more information in a web browser"
+msgstr "ดูข้อมูลเพิ่มเติมในเว็บเบราว์เซอร์"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -464,19 +455,9 @@ msgid "Decorations"
 msgstr "ของตกแต่ง"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Desert temples"
-msgstr ""
-
-#: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
 msgid "Development Test is meant for developers."
 msgstr "คำเตือน: การทดสอบพัฒนาน้อยที่สุดมีความหมายสำหรับนักพัฒนา."
-
-#: builtin/mainmenu/dlg_create_world.lua
-msgid ""
-"Different dungeon variant generated in desert biomes (only if dungeons "
-"enabled)"
-msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -845,6 +826,10 @@ msgstr ""
 msgid "Back"
 msgstr "หลัง"
 
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+msgid "Change Keys"
+msgstr "เปลี่ยนคีย์"
+
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -854,8 +839,7 @@ msgstr "แช"
 msgid "Clear"
 msgstr "ล้าง"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-#: src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "ควบคุม"
 
@@ -1072,16 +1056,6 @@ msgid "Install games from ContentDB"
 msgstr "ติดตั้งเกมจาก ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Minetest doesn't come with a game by default."
-msgstr ""
-
-#: builtin/mainmenu/tab_local.lua
-msgid ""
-"Minetest is a game-creation platform that allows you to play many different "
-"games."
-msgstr ""
-
-#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "ใหม่"
 
@@ -1114,8 +1088,8 @@ msgid "Start Game"
 msgstr "เริ่มเกม"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You need to install a game before you can create a world."
-msgstr ""
+msgid "You have no games installed."
+msgstr "คุณไม่มีเกมที่ติดตั้ง"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1197,8 +1171,16 @@ msgid "Rebuilding shaders..."
 msgstr "บูรณะ shaders..."
 
 #: src/client/clientlauncher.cpp
+msgid "Connection error (timed out?)"
+msgstr "ข้อผิดพลาดการเชื่อมต่อ (หมดเวลา?)"
+
+#: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "ไม่พบหรือโหลดเกม: "
+
+#: src/client/clientlauncher.cpp
+msgid "Invalid gamespec."
+msgstr "ข้อมูลจำเพาะเกี่ยวกับเกม ไม่ถูกต้อง."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1224,11 +1206,7 @@ msgstr "รหัสผ่านให้ไฟล์ไม่สามารถ
 msgid "Provided world path doesn't exist: "
 msgstr "โลกมีเส้นไม่มี: "
 
-#: src/client/clientmedia.cpp src/client/game.cpp
-msgid "Media..."
-msgstr "สื่อ..."
-
-#: src/client/game.cpp src/client/shader.cpp src/server.cpp
+#: src/client/game.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1237,8 +1215,16 @@ msgstr ""
 "ตรวจสอบรายละเอียด debug.txt."
 
 #: src/client/game.cpp
+msgid "- Address: "
+msgstr "-ที่อยู่: "
+
+#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "-โหมด: "
+
+#: src/client/game.cpp
+msgid "- Port: "
+msgstr "-พอร์ต: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1273,6 +1259,10 @@ msgstr "เปิดใช้งานการส่งต่ออัตโน
 #: src/client/game.cpp
 msgid "Block bounds hidden"
 msgstr "บล็อกขอบเขตที่ซ่อนอยู่"
+
+#: src/client/game.cpp
+msgid "Block bounds shown for all blocks"
+msgstr "แสดงขอบเขตบล็อกสำหรับบล็อกทั้งหมด"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
@@ -1320,10 +1310,6 @@ msgid "Connecting to server..."
 msgstr "เชื่อมต่อกับเซิร์ฟเวอร์"
 
 #: src/client/game.cpp
-msgid "Connection error (timed out?)"
-msgstr "ข้อผิดพลาดการเชื่อมต่อ (หมดเวลา?)"
-
-#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "การเชื่อมต่อล้มเหลวโดยไม่ทราบสาเหตุ"
 
@@ -1332,13 +1318,46 @@ msgid "Continue"
 msgstr "ต่อ"
 
 #: src/client/game.cpp
+#, fuzzy, c-format
+msgid ""
+"Controls:\n"
+"- %s: move forwards\n"
+"- %s: move backwards\n"
+"- %s: move left\n"
+"- %s: move right\n"
+"- %s: jump/climb up\n"
+"- %s: dig/punch/use\n"
+"- %s: place/use\n"
+"- %s: sneak/climb down\n"
+"- %s: drop item\n"
+"- %s: inventory\n"
+"- Mouse: turn/look\n"
+"- Mouse wheel: select item\n"
+"- %s: chat\n"
+msgstr ""
+"การควบคุม:\n"
+"- %s: เคลื่อนที่ไปข้างหน้า\n"
+"- %s: เคลื่อนที่ไปข้างหลัง\n"
+"- %s: เคลื่อนที่ไปทางซ้าย\n"
+"- %s: เคลื่อนที่ไปทางขวา\n"
+"- %s: กระโดด/ปีนขึ้น\n"
+"- %s: ขุด/ชก\n"
+"- %s: วาง/ใช้\n"
+"- %s: ช่องเก็บของ\n"
+"- %s: เมาส์: หัน/มอง\n"
+"- %s: เมาส์ซ้าย: ขุด/ชก\n"
+"- เมาส์ขวา: วาง/ใช้\n"
+"- ลูกกลิ้งเมาส์: เลือกไอเทม\n"
+"- %s: เปิดช่องแชท\n"
+
+#: src/client/game.cpp
 #, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/punch/use (default)\n"
-"- long tap: dig/use (default)\n"
+"- tap: place/use\n"
+"- long tap: dig/punch/use\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1431,11 +1450,6 @@ msgid "Fog enabled"
 msgstr "หมอกเปิดใช้งาน"
 
 #: src/client/game.cpp
-#, fuzzy
-msgid "Fog enabled by game or mod"
-msgstr "ซูมถูกปิดใช้งานในปัจจุบันโดยเกมหรือตัวดัดแปลง"
-
-#: src/client/game.cpp
 msgid "Game info:"
 msgstr "ข้อมูลเกม:"
 
@@ -1454,6 +1468,10 @@ msgstr "ข้อกำหนดของสินค้า..."
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "KiB/s"
+
+#: src/client/game.cpp
+msgid "Media..."
+msgstr "สื่อ..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1611,6 +1629,10 @@ msgstr "แสดงโครงลวด"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "ซูมถูกปิดใช้งานในปัจจุบันโดยเกมหรือตัวดัดแปลง"
+
+#: src/client/game.cpp
+msgid "ok"
+msgstr "ตกลง"
 
 #: src/client/gameui.cpp
 #, fuzzy
@@ -1946,15 +1968,6 @@ msgstr "แผนที่ย่อในโหมด surface, ซูม x%d"
 msgid "Minimap in texture mode"
 msgstr "แผนที่ย่อในโหมดพื้นผิว"
 
-#: src/client/shader.cpp
-#, fuzzy, c-format
-msgid "Failed to compile the \"%s\" shader."
-msgstr "ไม่สามารถเปิดหน้าเว็บ"
-
-#: src/client/shader.cpp
-msgid "Shaders are enabled but GLSL is not supported by the driver."
-msgstr ""
-
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2145,19 +2158,6 @@ msgstr "ซูม"
 msgid "press key"
 msgstr "กดปุ่ม"
 
-#: src/gui/guiOpenURL.cpp
-msgid "Open"
-msgstr ""
-
-#: src/gui/guiOpenURL.cpp
-msgid "Open URL?"
-msgstr ""
-
-#: src/gui/guiOpenURL.cpp
-#, fuzzy
-msgid "Unable to open URL"
-msgstr "ไม่สามารถเปิดหน้าเว็บ"
-
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "เปลี่ยน"
@@ -2191,7 +2191,6 @@ msgstr "ระดับเสียง: %d%%"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
-#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "th"
 
@@ -2204,64 +2203,6 @@ msgstr ""
 #, fuzzy
 msgid "Name is taken. Please choose another name"
 msgstr "กรุณาเลือกชื่อ!"
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Another client is connected with this name.  If your client closed "
-"unexpectedly, try again in a minute."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Empty passwords are disallowed.  Set a password and try again."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Internal server error"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Invalid password"
-msgstr "รหัสผ่านเก่า"
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Player name contains disallowed characters"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Player name not allowed"
-msgstr "ชื่อเล่นนานเกินไป."
-
-#: src/network/networkprotocol_translation_file.cpp
-#, fuzzy
-msgid "Server shutting down"
-msgstr "ปิด..."
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"The server has experienced an internal error.  You will now be disconnected."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "The server is running in simple singleplayer mode.  You cannot connect."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid "Too many users"
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Your client sent something the server didn't expect.  Try reconnecting or "
-"updating your client."
-msgstr ""
-
-#: src/network/networkprotocol_translation_file.cpp
-msgid ""
-"Your client's version is not supported.\n"
-"Please contact the server administrator."
-msgstr ""
 
 #: src/server.cpp
 #, fuzzy, c-format
@@ -5873,7 +5814,7 @@ msgstr "แสงที่ราบรื่น"
 #, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Controls."
+"cinematic mode by using the key set in Change Keys."
 msgstr "มากการหมุนของกล้องในโหมดโรงภาพยนตร์ 0 เพื่อปิดใช้งาน."
 
 #: src/settings_translation_file.cpp
@@ -6836,17 +6777,11 @@ msgstr "cURL หมดเวลาโต้ตอบ"
 msgid "cURL parallel limit"
 msgstr "cURL ขีด จำกัด ขนาน"
 
-#~ msgid "- Address: "
-#~ msgstr "-ที่อยู่: "
-
 #~ msgid "- Creative Mode: "
 #~ msgstr "-โหมดสร้างสรรค์: "
 
 #~ msgid "- Damage: "
 #~ msgstr "-ความเสียหาย: "
-
-#~ msgid "- Port: "
-#~ msgstr "-พอร์ต: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -6921,9 +6856,6 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "บิตต่อพิกเซล (ความลึกของสี aka) ในโหมดเต็มหน้าจอ."
 
-#~ msgid "Block bounds shown for all blocks"
-#~ msgstr "แสดงขอบเขตบล็อกสำหรับบล็อกทั้งหมด"
-
 #~ msgid "Bump Mapping"
 #~ msgstr "การแม็ป ชน"
 
@@ -6947,9 +6879,6 @@ msgstr "cURL ขีด จำกัด ขนาน"
 
 #~ msgid "Center of light curve mid-boost."
 #~ msgstr "กึ่งกลางของเส้นโค้งแสง - กลางเพิ่ม"
-
-#~ msgid "Change Keys"
-#~ msgstr "เปลี่ยนคีย์"
 
 #, fuzzy
 #~ msgid "Change keys"
@@ -6997,38 +6926,6 @@ msgstr "cURL ขีด จำกัด ขนาน"
 
 #~ msgid "Controls sinking speed in liquid."
 #~ msgstr "ควบคุมความเร็วการจมในของเหลว."
-
-#, fuzzy, c-format
-#~ msgid ""
-#~ "Controls:\n"
-#~ "- %s: move forwards\n"
-#~ "- %s: move backwards\n"
-#~ "- %s: move left\n"
-#~ "- %s: move right\n"
-#~ "- %s: jump/climb up\n"
-#~ "- %s: dig/punch/use\n"
-#~ "- %s: place/use\n"
-#~ "- %s: sneak/climb down\n"
-#~ "- %s: drop item\n"
-#~ "- %s: inventory\n"
-#~ "- Mouse: turn/look\n"
-#~ "- Mouse wheel: select item\n"
-#~ "- %s: chat\n"
-#~ msgstr ""
-#~ "การควบคุม:\n"
-#~ "- %s: เคลื่อนที่ไปข้างหน้า\n"
-#~ "- %s: เคลื่อนที่ไปข้างหลัง\n"
-#~ "- %s: เคลื่อนที่ไปทางซ้าย\n"
-#~ "- %s: เคลื่อนที่ไปทางขวา\n"
-#~ "- %s: กระโดด/ปีนขึ้น\n"
-#~ "- %s: ขุด/ชก\n"
-#~ "- %s: วาง/ใช้\n"
-#~ "- %s: ช่องเก็บของ\n"
-#~ "- %s: เมาส์: หัน/มอง\n"
-#~ "- %s: เมาส์ซ้าย: ขุด/ชก\n"
-#~ "- เมาส์ขวา: วาง/ใช้\n"
-#~ "- ลูกกลิ้งเมาส์: เลือกไอเทม\n"
-#~ "- %s: เปิดช่องแชท\n"
 
 #~ msgid "Creative"
 #~ msgstr "ความคิดสร้างสรรค์"
@@ -7396,9 +7293,6 @@ msgstr "cURL ขีด จำกัด ขนาน"
 
 #~ msgid "Instrumentation"
 #~ msgstr "เครื่องมือวัด"
-
-#~ msgid "Invalid gamespec."
-#~ msgstr "ข้อมูลจำเพาะเกี่ยวกับเกม ไม่ถูกต้อง."
 
 #~ msgid "Inventory key"
 #~ msgstr "รหัสสินค้าคงคลัง"
@@ -8467,14 +8361,8 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "You died."
 #~ msgstr "คุณตายแล้ว"
 
-#~ msgid "You have no games installed."
-#~ msgstr "คุณไม่มีเกมที่ติดตั้ง"
-
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "yes"
-
-#~ msgid "ok"
-#~ msgstr "ตกลง"
