@@ -36,6 +36,7 @@ Contributions are welcome! Here's how you can help:
     - Follow the [C/C++](http://dev.minetest.net/Code_style_guidelines) and
       [Lua](http://dev.minetest.net/Lua_code_style_guidelines) code style guidelines.
     - Check your code works as expected and document any changes to the Lua API.
+    - Do not run `updatepo.sh` even if your code adds new translatable strings. Running the script manually results in conflicting changes.
 
 4. Commit & [push](https://help.github.com/articles/pushing-to-a-remote/) your changes to a new branch (not `master`, one change per branch)
     - Commit messages should:
