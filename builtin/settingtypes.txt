@@ -819,8 +819,8 @@ server_url (Server URL) string https://minetest.net
 #    Automatically report to the serverlist.
 server_announce (Announce server) bool false
 
-#    Hide player names from the serverlist by not sending them.
-server_announce_anonymize_names (Hide player names on the serverlist) bool false
+#    Send player names onto the serverlist.
+server_announce_send_players (Send player names to the server list) bool true
 
 #    Announce to this serverlist.
 serverlist_url (Serverlist URL) string servers.minetest.net
