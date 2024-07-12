@@ -27,10 +27,15 @@ class GettextPluralForm {
 public:
 	using NumT = unsigned long;
 	using Ptr = std::shared_ptr<GettextPluralForm>;
+	size_t size() const { return nplurals; };
 	virtual NumT operator()(const NumT) const = 0;
-	virtual operator bool() const { return true; }
+	virtual operator bool() const { return size() > 0; }
 	virtual ~GettextPluralForm() {};
 
-	static GettextPluralForm::Ptr parse(const std::wstring_view &str);
+	static GettextPluralForm::Ptr parse(const size_t nplurals, const std::wstring_view &str);
 	static GettextPluralForm::Ptr parseHeaderLine(const std::wstring_view &str);
+protected:
+	GettextPluralForm(size_t nplurals): nplurals(nplurals) {};
+private:
+	const size_t nplurals;
 };

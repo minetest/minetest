@@ -28,6 +28,15 @@ msgid_plural "Plural form"
 msgstr[0] "Singular result"
 msgstr[1] "Plural result"
 
+msgid "Not enough value"
+msgid_plural "Not enough values"
+msgstr[0] "Result"
+
+msgid "Partial translation"
+msgid_plural "Partial translations"
+msgstr[0] "Partially translated"
+msgstr[1] ""
+
 msgctxt "context"
 msgid "With context"
 msgstr "Has context"
