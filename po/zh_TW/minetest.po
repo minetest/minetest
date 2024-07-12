@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-08-17 10:48+0000\n"
-"Last-Translator: Yic95 <0Luke.Luke0@gmail.com>\n"
+"PO-Revision-Date: 2024-07-12 00:33+0000\n"
+"Last-Translator: 1F616EMO <root@1f616emo.xyz>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -6616,13 +6616,13 @@ msgstr "cURL 檔案下載逾時"
 msgid "cURL interactive timeout"
 msgstr "cURL 逾時"
 
-#: src/network/networkprotocol_translation_file.cpp
+#: src/network/networkprotocol.h
 msgid ""
 "Another client is connected with this name.  If your client closed "
 "unexpectedly, try again in a minute."
 msgstr "另一個客戶端正以相同的用戶名連結此伺服器。如果您的客戶端曾意外關閉，請幾分鐘後再試。"
 
-#: src/network/networkprotocol_translation_file.cpp
+#: src/network/networkprotocol.h
 # The source string uses passive voice, omitting the actor (the server).
 # However, having passive-ish thing here would be weird for Chinese,
 # so "此伺服器" (the server) is added.
@@ -6630,49 +6630,49 @@ msgstr "另一個客戶端正以相同的用戶名連結此伺服器。如果您
 msgid "Empty passwords are disallowed.  Set a password and try again."
 msgstr "此伺服器不允許空密碼。請設定密碼，然後再試一次。"
 
-#: src/network/networkprotocol_translation_file.cpp
+#: src/network/networkprotocol.h
 msgid "Internal server error"
 msgstr "伺服器內部錯誤"
 
-#: src/network/networkprotocol_translation_file.cpp
+#: src/network/networkprotocol.h
 # Alternative translation: "無效的密碼"
 msgid "Invalid password"
 msgstr "密碼錯誤"
 
-#: src/network/networkprotocol_translation_file.cpp
+#: src/network/networkprotocol.h
 msgid "Player name contains disallowed characters"
 msgstr "玩家名字包含禁止使用的字元"
 
-#: src/network/networkprotocol_translation_file.cpp
+#: src/network/networkprotocol.h
 msgid "Player name not allowed"
 msgstr "不允許使用此玩家名稱"
 
-#: src/network/networkprotocol_translation_file.cpp
+#: src/network/networkprotocol.h
 #, fuzzy
 msgid "Server shutting down"
 msgstr "服務器正在關閉"
 
-#: src/network/networkprotocol_translation_file.cpp
+#: src/network/networkprotocol.h
 msgid ""
 "The server has experienced an internal error.  You will now be disconnected."
 msgstr "此伺服器發生了內部錯誤。您將被斷開連線。"
 
-#: src/network/networkprotocol_translation_file.cpp
+#: src/network/networkprotocol.h
 # Alternative translation: "此服務器正運行單人遊戲模式。您無法連接。"
 msgid "The server is running in simple singleplayer mode.  You cannot connect."
 msgstr "此服務器正運行單人遊戲。您無法連接。"
 
-#: src/network/networkprotocol_translation_file.cpp
+#: src/network/networkprotocol.h
 msgid "Too many users"
 msgstr "太多玩家"
 
-#: src/network/networkprotocol_translation_file.cpp
+#: src/network/networkprotocol.h
 msgid ""
 "Your client sent something the server didn't expect.  Try reconnecting or "
 "updating your client."
 msgstr "您的客戶端發送了伺服器無法識別的資料。請嘗試重新連線或更新客戶端。"
 
-#: src/network/networkprotocol_translation_file.cpp
+#: src/network/networkprotocol.h
 msgid ""
 "Your client's version is not supported.\n"
 "Please contact the server administrator."
