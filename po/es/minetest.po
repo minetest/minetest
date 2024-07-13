@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
 "PO-Revision-Date: 2024-07-14 21:23+0000\n"
-"Last-Translator: Jorge Rodríguez <mr.jrodriguez05@gmail.com>\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -71,9 +71,8 @@ msgid "Command not available: "
 msgstr "Comando no disponible: "
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Get help for commands (-t: output in chat)"
-msgstr "Obtener ayuda para los comandos"
+msgstr "Obtener ayuda para los comandos (-t: salida en el chat)"
 
 #: builtin/common/chatcommands.lua
 msgid ""
@@ -83,9 +82,8 @@ msgstr ""
 "todo."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "[all | <cmd>] [-t]"
-msgstr "[todo | <cmd>]"
+msgstr "[all | <cmd>] [-t]"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -148,12 +146,12 @@ msgid "Failed to download $1"
 msgstr "Fallo al descargar $1"
 
 #: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
 msgid ""
 "Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
 "broken archive)"
 msgstr ""
-"Fallo al extraer \"$1\" (Formato de archivo no soportado o archivo corrupto)"
+"No se pudo extraer \"$1\" (espacio en disco insuficiente, tipo de archivo no "
+"compatible o archivo dañado)"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
