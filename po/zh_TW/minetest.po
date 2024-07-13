@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-01-14 12:31+0000\n"
-"Last-Translator: reimu105 <peter112548@gmail.com>\n"
+"PO-Revision-Date: 2024-07-13 21:31+0000\n"
+"Last-Translator: Yic95 <0Luke.Luke0@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -5252,26 +5252,24 @@ msgid "Prometheus listener address"
 msgstr "Prometheus 監聽器位址"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Prometheus listener address.\n"
 "If Minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
 "enable metrics listener for Prometheus on that address.\n"
 "Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
-"Prometheus 监听器地址。\n"
-"如果Minetest在编译时启用了ENABLE_PROMETHEUS选项，\n"
-"在该地址上为 Prometheus 启用指标侦听器。\n"
-"可以从 http://127.0.0.1:30000/metrics 获取指标"
+"Prometheus 監聽器地址。\n"
+"如果Minetest在編輯時啓用了ENABLE_PROMETHEUS選項，\n"
+"在該地址上為 Prometheus 啓用指標偵聽器。\n"
+"可以從 http://127.0.0.1:30000/metrics 獲取指標"
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
 msgstr "含有液體的大型洞穴的比例。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Protocol version minimum"
-msgstr "協定版本不符合。 "
+msgstr "協定版本不符合"
 
 #: src/settings_translation_file.cpp
 msgid "Punch gesture"
@@ -5296,7 +5294,7 @@ msgstr "隨機輸入"
 
 #: src/settings_translation_file.cpp
 msgid "Random mod load order"
-msgstr ""
+msgstr "依隨機順序載入 mod"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
