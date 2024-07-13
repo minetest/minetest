@@ -188,7 +188,7 @@ fixed_virtual_joystick (Fixed virtual joystick) bool false
 #    Requires: touchscreen_gui
 virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool false
 
-#    The gesture for for punching players/entities.
+#    The gesture for punching players/entities.
 #    This can be overridden by games and mods.
 #
 #    * short_tap
@@ -791,7 +791,7 @@ serverlist_url (Serverlist URL) string servers.minetest.net
 #    If disabled, new accounts will be registered automatically when logging in.
 enable_split_login_register (Enable split login/register) bool true
 
-#    URL to JSON file which provides information about the newest Minetest release
+#    URL to JSON file which provides information about the newest Minetest release.
 #    If this is empty the engine will never check for updates.
 update_information_url (Update information URL) string https://www.minetest.net/release_info.json
 
