@@ -102,7 +102,7 @@ local function buttonbar_formspec(self)
 end
 
 local function buttonbar_buttonhandler(self, fields)
-	if fields[self.btn_prev_name] then 
+	if fields[self.btn_prev_name] then
 		if self.cur_page > 1 then
 			self.cur_page = self.cur_page - 1
 			return true
@@ -112,7 +112,7 @@ local function buttonbar_buttonhandler(self, fields)
 		end
 	end
 
-	if fields[self.btn_next_name] then 
+	if fields[self.btn_next_name] then
 		if self.cur_page < self.num_pages then
 			self.cur_page = self.cur_page + 1
 			return true
