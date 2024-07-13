@@ -48,6 +48,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 #include <memory>
 
+const char *accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
+	gettext("Invalid password"),
+	gettext("Your client sent something the server didn't expect.  Try reconnecting or updating your client."),
+	gettext("The server is running in simple singleplayer mode.  You cannot connect."),
+	gettext("Your client's version is not supported.\nPlease contact the server administrator."),
+	gettext("Player name contains disallowed characters"),
+	gettext("Player name not allowed"),
+	gettext("Too many users"),
+	gettext("Empty passwords are disallowed.  Set a password and try again."),
+	gettext("Another client is connected with this name.  If your client closed unexpectedly, try again in a minute."),
+	gettext("Internal server error"),
+	"",
+	gettext("Server shutting down"),
+	gettext("The server has experienced an internal error.  You will now be disconnected.")
+};
+
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
 {
 	infostream << "Got deprecated command "
@@ -216,17 +232,17 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 			denyCode == SERVER_ACCESSDENIED_CRASH) {
 		*pkt >> m_access_denied_reason;
 		if (m_access_denied_reason.empty())
-			m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
+			m_access_denied_reason = accessDeniedStrings[denyCode];
 		u8 reconnect;
 		*pkt >> reconnect;
 		m_access_denied_reconnect = reconnect & 1;
 	} else if (denyCode == SERVER_ACCESSDENIED_CUSTOM_STRING) {
 		*pkt >> m_access_denied_reason;
 	} else if (denyCode == SERVER_ACCESSDENIED_TOO_MANY_USERS) {
-		m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
+		m_access_denied_reason = accessDeniedStrings[denyCode];
 		m_access_denied_reconnect = true;
 	} else if (denyCode < SERVER_ACCESSDENIED_MAX) {
-		m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
+		m_access_denied_reason = accessDeniedStrings[denyCode];
 	} else {
 		// Allow us to add new error messages to the
 		// protocol without raising the protocol version, if we want to.

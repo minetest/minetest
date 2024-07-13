@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "util/string.h"
-#include "gettext.h"
 
 /*
 	changes by PROTOCOL_VERSION:
@@ -1149,22 +1148,6 @@ enum AccessDeniedCode : u8 {
 
 enum NetProtoCompressionMode {
 	NETPROTO_COMPRESSION_NONE = 0,
-};
-
-constexpr const char *accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
-	N_("Invalid password"),
-	N_("Your client sent something the server didn't expect.  Try reconnecting or updating your client."),
-	N_("The server is running in simple singleplayer mode.  You cannot connect."),
-	N_("Your client's version is not supported.\nPlease contact the server administrator."),
-	N_("Player name contains disallowed characters"),
-	N_("Player name not allowed"),
-	N_("Too many users"),
-	N_("Empty passwords are disallowed.  Set a password and try again."),
-	N_("Another client is connected with this name.  If your client closed unexpectedly, try again in a minute."),
-	N_("Internal server error"),
-	"",
-	N_("Server shutting down"),
-	N_("The server has experienced an internal error.  You will now be disconnected.")
 };
 
 enum PlayerListModifer : u8
