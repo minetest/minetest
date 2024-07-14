@@ -527,6 +527,8 @@ void GenericCAO::clearChildAttachments()
 
 		if (auto *child = m_env->getActiveObject(child_id))
 			child->clearParentAttachment();
+		else
+			removeAttachmentChild(child_id);
 	}
 }
 
