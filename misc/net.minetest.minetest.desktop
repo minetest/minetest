@@ -2,12 +2,8 @@
 Name=Minetest
 GenericName=Minetest
 Comment=Block-based multiplayer game platform
-Comment[de]=Blockbasierte Multiplayer-Spielplattform
-Comment[es]=Plataforma de juegos multijugador basada en bloques
+Comment[de]=Blockbasierte Mehrspieler-Spieleplattform
 Comment[fr]=Plate-forme de jeu multijoueurs à base de blocs
-Comment[ja]=ブロックベースのマルチプレイヤーゲームプラットフォーム
-Comment[ru]=Многопользовательская игровая платформа на основе блоков
-Comment[tr]=Blok tabanlı çok oyunculu oyun platformu
 Exec=minetest
 Icon=minetest
 Terminal=false
