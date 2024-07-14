@@ -135,6 +135,22 @@ void UnitSAO::setAttachment(const object_t new_parent, const std::string &bone, 
 {
 	const auto call_count = ++m_attachment_call_counter;
 
+	const auto check_nesting = [&] (const char *descr) -> bool {
+		if (m_attachment_call_counter == call_count)
+			return false;
+		auto d = wrappedDifference(m_attachment_call_counter, call_count,
+			std::numeric_limits<decltype(call_count)>::max());
+		if (d > 30) {
+			errorstream << "UnitSAO::setAttachment() id=" << m_id <<
+				" infinite callback loop detected." << std::endl;
+			throw ServerError("loop in UnitSAO::setAttachment");
+		}
+		assert(d > 0);
+		verbosestream << "UnitSAO::setAttachment() id=" << m_id <<
+			" nested call detected (" << descr << ")." << std::endl;
+		return true;
+	};
+
 	// Do checks to avoid circular references
 	{
 		auto *obj = new_parent ? m_env->getActiveObject(new_parent) : nullptr;
@@ -176,9 +192,7 @@ void UnitSAO::setAttachment(const object_t new_parent, const std::string &bone, 
 		}
 	}
 
-	if (m_attachment_call_counter != call_count) {
-		verbosestream << "UnitSAO::setAttachment() id=" << m_id <<
-			" nested call detected (onDetach)." << std::endl;
+	if (check_nesting("onDetach")) {
 		// Don't touch anything after the other call has completed.
 		return;
 	}
@@ -204,10 +218,7 @@ void UnitSAO::setAttachment(const object_t new_parent, const std::string &bone, 
 		}
 	}
 
-	if (m_attachment_call_counter != call_count) {
-		verbosestream << "UnitSAO::setAttachment() id=" << m_id <<
-			" nested call detected (onAttach)." << std::endl;
-	}
+	check_nesting("onAttach");
 }
 
 void UnitSAO::getAttachment(object_t *parent_id, std::string *bone, v3f *position,
@@ -237,9 +248,12 @@ void UnitSAO::clearChildAttachments()
 	while (!m_attachment_child_ids.empty()) {
 		const auto child_id = *m_attachment_child_ids.begin();
 
-		// Child can be NULL if it was deleted earlier
-		if (auto *child = m_env->getActiveObject(child_id))
+		if (auto *child = m_env->getActiveObject(child_id)) {
 			child->clearParentAttachment();
+		} else {
+			// should not happen but we need to handle it to prevent an infinite loop
+			removeAttachmentChild(child_id);
+		}
 	}
 }
 
