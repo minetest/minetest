@@ -4,12 +4,8 @@
 
     <name>Minetest</name>
     <summary>Block-based multiplayer game platform</summary>
-    <summary xml:lang="de">Blockbasierte Multiplayer-Spielplattform</summary>
-    <summary xml:lang="es">Plataforma de juegos multijugador basada en bloques</summary>
+    <summary xml:lang="de">Blockbasierte Mehrspieler-Spieleplattform</summary>
     <summary xml:lang="fr">Plate-forme de jeu multijoueurs à base de blocs</summary>
-    <summary xml:lang="ja">ブロックベースのマルチプレイヤーゲームプラットフォーム</summary>
-    <summary xml:lang="ru">Многопользовательская игровая платформа на основе блоков</summary>
-    <summary xml:lang="tr">Blok tabanlı çok oyunculu oyun platformu</summary>
 
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>LGPL-2.1+ AND CC-BY-SA-3.0 AND MIT AND Apache-2.0</project_license>
