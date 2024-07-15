@@ -146,6 +146,57 @@ local function parse_range_str(player_name, str)
 end
 
 --
+-- Confirmation API
+--
+
+local waiting_confirm = {}
+
+function core.chat_confirm(name, func)
+	if waiting_confirm[name] then
+		-- Drop the previously waiting function
+		waiting_confirm[name]("override")
+	end
+
+	waiting_confirm[name] = func
+end
+
+core.register_chatcommand("confirm", {
+	description = S("Confirm a postponed action"),
+	func = function(name)
+		local func = waiting_confirm[name]
+		if not func then
+			return false, S("There is nothing to confirm.")
+		end
+
+		waiting_confirm[name] = nil
+		return func("yes")
+	end,
+})
+
+core.register_chatcommand("cancel", {
+	description = S("Cancel a postponed action"),
+	func = function(name)
+		local func = waiting_confirm[name]
+		if not func then
+			return false, S("There is nothing to confirm.")
+		end
+
+		waiting_confirm[name] = nil
+		return func("no")
+	end,
+})
+
+core.register_on_leaveplayer(function(player)
+	local name = player:get_player_name()
+	local func = waiting_confirm[name]
+	waiting_confirm[name] = nil
+
+	if func then
+		func("left")
+	end
+end)
+
+--
 -- Chat commands
 --
 core.register_chatcommand("me", {
@@ -1248,16 +1299,25 @@ core.register_chatcommand("clearobjects", {
 			return false, S("Invalid usage, see /help clearobjects.")
 		end
 
-		core.log("action", name .. " clears objects ("
+		core.chat_confirm(name, function(reason)
+			if reason == "yes" then
+				core.log("action", name .. " clears objects ("
 				.. options.mode .. " mode).")
-		if options.mode == "full" then
-			core.chat_send_all(S("Clearing all objects. This may take a long time. "
-				.. "You may experience a timeout. (by @1)", name))
-		end
-		core.clear_objects(options)
-		core.log("action", "Object clearing done.")
-		core.chat_send_all("*** "..S("Cleared all objects."))
-		return true
+				if options.mode == "full" then
+					core.chat_send_all(S("Clearing all objects. This may take a long time. "
+						.. "You may experience a timeout. (by @1)", name))
+				end
+				core.clear_objects(options)
+				core.log("action", "Object clearing done.")
+				core.chat_send_all("*** "..S("Cleared all objects."))
+			elseif reason == "no" then -- Only when reason == "no" we can send messages
+				return true, S("Operation canceled.")
+			end
+			return true
+		end)
+
+		return true, S("Type /confirm to confirm clearing all objects, " ..
+			"or /cancel to cancel the operation.")
 	end,
 })
 

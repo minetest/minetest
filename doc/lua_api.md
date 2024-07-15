@@ -6045,6 +6045,14 @@ Chat
     * Takes player name and message, and returns the formatted string to be sent to players.
     * Can be redefined by mods if required, for things like colored names or messages.
     * **Only** the first occurrence of each placeholder will be replaced.
+* `minetest.chat_confirm(name, function(reason) end)`: Ask the player to confirm their action via chat command
+    * `name`: Name of the player
+    * `reason`: One of the following:
+        * `"yes"`: The user confirmed the action via the `/confirm` command.
+        * `"no"`: The user canceled the action via the `/cancel` command.
+        * `"override"`: The action got overridden because another `minetest.chat_confirm` call was done on the same player.
+        * `"left"`: The action gets canceled because the user left the game.
+        * If `reason` is either `"yes"` or `"no"`, the first returned value indicates success, and the second gets sent back to the player.
 
 Environment access
 ------------------
