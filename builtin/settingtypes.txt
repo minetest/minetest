@@ -2030,6 +2030,9 @@ chat_message_format (Chat message format) string <@name> @message
 #    seconds, add the time information to the chat command message
 chatcommand_msg_time_threshold (Chat command time message threshold) float 0.1 0.0
 
+#    Seconds to wait before timing out an action waiting confirmation.
+chat_confirm_timeout (Time out of commands asking for confirmation) float 60.0 0.1
+
 #    A message to be displayed to all clients when the server shuts down.
 kick_msg_shutdown (Shutdown message) string Server shutting down.
 
