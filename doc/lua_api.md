@@ -6053,6 +6053,7 @@ Chat
         * `"override"`: The action got overridden because another `minetest.chat_confirm` call was done on the same player.
         * `"left"`: The action gets canceled because the user left the game.
         * If `reason` is either `"yes"` or `"no"`, the first returned value indicates success, and the second gets sent back to the player.
+    * **Warning**: Check for player privileges again in the callback! Player privilege may be changed while waiting for confirmation.
 
 Environment access
 ------------------

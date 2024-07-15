@@ -1300,6 +1300,14 @@ core.register_chatcommand("clearobjects", {
 		end
 
 		core.chat_confirm(name, function(reason)
+			-- Check for privilege again
+			local has_privs, missing_privs = core.check_player_privs(name, { server = true })
+			if not has_privs then
+				return false, S("You don't have permission to run this command "
+					.. "(missing privileges: @1).",
+					table.concat(missing_privs, ", "))
+			end
+
 			if reason == "yes" then
 				core.log("action", name .. " clears objects ("
 				.. options.mode .. " mode).")
@@ -1310,10 +1318,8 @@ core.register_chatcommand("clearobjects", {
 				core.clear_objects(options)
 				core.log("action", "Object clearing done.")
 				core.chat_send_all("*** "..S("Cleared all objects."))
-			elseif reason == "no" then -- Only when reason == "no" we can send messages
-				return true, S("Operation canceled.")
 			end
-			return true
+			return true, S("Operation canceled.")
 		end)
 
 		return true, S("Type /confirm to confirm clearing all objects, " ..
