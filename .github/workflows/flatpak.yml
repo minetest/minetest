@@ -1,0 +1,57 @@
+---
+name: flatpak
+
+on:
+  push:
+    branches: [ "master" ]
+    tags: [ "*" ]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      use_cache:
+        description: "Use build cache"
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  id-token: write
+  contents: read
+  attestations: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:freedesktop-23.08
+      options: --privileged
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Determine output file name
+        run: |
+          add_commit=${{ !startsWith(github.ref, 'refs/tags/') }}
+          major=$(grep -oP 'VERSION_MAJOR\s+\K\d+' CMakeLists.txt)
+          minor=$(grep -oP 'VERSION_MINOR\s+\K\d+' CMakeLists.txt)
+          patch=$(grep -oP 'VERSION_PATCH\s+\K\d+' CMakeLists.txt)
+          file_name="Minetest-$major.$minor.$patch$([[ "$add_commit" != "false" ]] && echo "-$(echo ${{ github.sha }} | cut -c 1-7)").flatpak"
+          echo "File name: $file_name"
+          echo "FILE_NAME=$file_name" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Build Flatpak
+        uses: flatpak/flatpak-github-actions/flatpak-builder@master
+        with:
+          arch: x86_64
+          bundle: ${{ env.FILE_NAME }}
+          manifest-path: net.minetest.minetest.yaml
+          cache-key: flatpak-builder-${{ github.sha }}
+          restore-cache: ${{ (github.event_name == 'workflow_dispatch' && inputs.use_cache) || !startsWith(github.ref, 'refs/tags/') }}
+          upload-artifact: true
+
+      - name: Generate artifact attestation
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: ${{ env.FILE_NAME }}
