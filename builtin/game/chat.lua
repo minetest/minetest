@@ -176,7 +176,7 @@ function core.chat_confirm(name, func, timeout)
 	waiting_confirm[name] = func
 
 	local final_timeout = tonumber(core.settings:get("chat_confirm_timeout"))
-	if not timeout or timeout <= 0 then
+	if not final_timeout or final_timeout <= 0 then
 		final_timeout = timeout or 60
 	end
 	timeout_jobs[name] = core.after(final_timeout, chat_confirm_timeout, name)
