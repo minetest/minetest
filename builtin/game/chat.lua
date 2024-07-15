@@ -167,7 +167,7 @@ local function chat_confirm_timeout(name)
 	chat_confirm_run(name, "timeout")
 end
 
-function core.chat_confirm(name, func)
+function core.chat_confirm(name, func, timeout)
 	if waiting_confirm[name] then
 		-- Drop the previously waiting function
 		chat_confirm_run(name, "override")
@@ -175,11 +175,11 @@ function core.chat_confirm(name, func)
 
 	waiting_confirm[name] = func
 
-	local timeout = tonumber(core.settings:get("chat_confirm_timeout"))
+	local final_timeout = tonumber(core.settings:get("chat_confirm_timeout"))
 	if not timeout or timeout <= 0 then
-		timeout = 60
+		final_timeout = timeout or 60
 	end
-	timeout_jobs[name] = core.after(timeout, chat_confirm_timeout, name)
+	timeout_jobs[name] = core.after(final_timeout, chat_confirm_timeout, name)
 end
 
 core.register_chatcommand("confirm", {
