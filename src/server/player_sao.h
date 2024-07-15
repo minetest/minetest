@@ -253,6 +253,8 @@ struct PlayerHPChangeReason
 	// For NODE_DAMAGE
 	std::string node;
 	v3s16 node_pos;
+	// For acquisition of raw hp change
+	bool raw = false;
 
 	inline bool hasLuaReference() const { return lua_reference >= 0; }
 
