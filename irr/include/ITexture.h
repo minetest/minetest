@@ -224,6 +224,9 @@ public:
 	needs mipmap regeneration. */
 	virtual void regenerateMipMapLevels(void *data = 0, u32 layer = 0) = 0;
 
+	//! Draws the content pixels of the tile texture onto this texture.
+	virtual void drawToSubImage(int x, int y, int width, int height, ITexture *texture) = 0;
+
 	//! Get original size of the texture.
 	/** The texture is usually scaled, if it was created with an unoptimal
 	size. For example if the size was not a power of two. This method

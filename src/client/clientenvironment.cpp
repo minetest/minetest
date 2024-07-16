@@ -295,6 +295,16 @@ void ClientEnvironment::step(float dtime)
 			++i;
 		}
 	}
+
+	/*
+	 * Draw new animations frames in the atlas
+	 */
+	TextureAtlas *atlas = m_client->getNodeDefManager()->getAtlas();
+
+	if (atlas) {
+		atlas->updateCrackAnimations(m_client->getCrackLevel());
+		atlas->updateAnimations(m_client->getAnimationTime());
+	}
 }
 
 void ClientEnvironment::addSimpleObject(ClientSimpleObject *simple)

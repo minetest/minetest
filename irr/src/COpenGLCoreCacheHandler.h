@@ -67,11 +67,15 @@ class COpenGLCoreCacheHandler
 
 				const TOpenGLTexture *prevTexture = Texture[index];
 
+				//core::stringc info = "set() is called for index = ";
+				//info += index;
+				//os::Printer::log(info.c_str(), ELL_INFORMATION);
 				if (texture != prevTexture) {
 					if (esa == EST_ACTIVE_ON_CHANGE)
 						CacheHandler.setActiveTexture(GL_TEXTURE0 + index);
 
 					if (texture) {
+						//os::Printer::log("set() the texture is changed", 	ELL_INFORMATION);
 						type = texture->getDriverType();
 
 						if (type == DriverType) {

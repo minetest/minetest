@@ -36,6 +36,9 @@ class Client;
 #include "texture_override.h" // TextureOverride
 #include "tileanimation.h"
 #include "util/pointabilities.h"
+#ifndef SERVER
+#include "client/texture_atlas.h"
+#endif
 
 class IItemDefManager;
 class ITextureSource;
@@ -532,7 +535,8 @@ struct ContentFeatures
 
 #ifndef SERVER
 	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
-		scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings);
+		scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings,
+		std::vector<TileLayer *> &tile_layers);
 #endif
 
 private:
@@ -754,6 +758,14 @@ public:
 	 */
 	void resolveCrossrefs();
 
+	/*!
+	 * Gets access to the atlas
+	 */
+	TextureAtlas *getAtlas() const
+	{
+		return m_diffuse_atlas;
+	}
+
 private:
 	/*!
 	 * Resets the manager to its initial state.
@@ -844,6 +856,13 @@ private:
 	 * Fast cache of content lighting flags.
 	 */
 	ContentLightingFlags m_content_lighting_flag_cache[CONTENT_MAX + 1L];
+
+#ifndef SERVER
+	/*!
+	 * Atlas object saving unique color textures from all tile layers.
+	 */
+	mutable TextureAtlas *m_diffuse_atlas = nullptr;
+#endif
 };
 
 NodeDefManager *createNodeDefManager();

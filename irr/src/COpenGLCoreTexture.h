@@ -421,6 +421,70 @@ public:
 		Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
 	}
 
+	void drawToSubImage(int x, int y, int width, int height, ITexture *texture) override
+	{
+		if (TextureType != GL_TEXTURE_2D || !texture)
+			return;
+
+		ECOLOR_FORMAT format = texture->getColorFormat();
+		GLint internal_format = 0;
+		GLenum pixel_format = 0;
+		GLenum pixeltype = 0;
+
+		if (!Driver->getColorFormatParameters(format, internal_format, pixel_format, pixeltype, &Converter)) {
+			os::Printer::log("COpenGLCoreTexture: Color format is not supported", ColorFormatNames[format < ECF_UNKNOWN ? format : ECF_UNKNOWN], ELL_ERROR);
+			return;
+		}
+
+		void *data = texture->lock(ETLM_READ_ONLY);
+
+		const ITexture *prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
+
+		Driver->getCacheHandler()->getTextureCache().set(0, this);
+
+		if (HasMipMaps && !LegacyAutoGenerateMipMaps) {
+			int level = 0;
+			int cur_width = width;
+			int cur_height = height;
+			int cur_x = x;
+			int cur_y = y;
+
+			while (cur_width != 1 || cur_height != 1) {
+				if(!IImage::isCompressedFormat(format))
+					GL.TexSubImage2D(GL_TEXTURE_2D, level, cur_x, cur_y, cur_width, cur_height, pixel_format, pixeltype, data);
+				else {
+					u32 dataSize = IImage::getDataSizeFromFormat(format, cur_width, cur_height);
+
+					Driver->irrGlCompressedTexSubImage2D(GL_TEXTURE_2D, level, cur_x, cur_y, cur_width, cur_height, pixel_format, dataSize, data);
+				}
+
+				TEST_GL_ERROR(Driver);
+
+				level++;
+
+				cur_x >>= level;
+				cur_y >>= level;
+				cur_width >>= level;
+				cur_height >>= level;
+			}
+		}
+		else {
+			if (!IImage::isCompressedFormat(format))
+				GL.TexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, pixel_format, pixeltype, data);
+			else {
+				u32 dataSize = IImage::getDataSizeFromFormat(format, width, height);
+
+				Driver->irrGlCompressedTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, pixel_format, dataSize, data);
+			}
+
+			TEST_GL_ERROR(Driver);
+		}
+
+		texture->unlock();
+
+		Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
+	}
+
 	GLenum getOpenGLTextureType() const
 	{
 		return TextureType;

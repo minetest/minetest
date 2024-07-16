@@ -334,8 +334,15 @@ void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *
 		1 - tx2, 1 - ty2, 1 - tx1, 1 - ty1, // back
 		    tx1, 1 - ty2,     tx2, 1 - ty1, // front
 	};
-	for (int i = 0; i != 24; ++i)
-		coords[i] = txc[i];
+	for (int i = 0; i != 24; i+=4) {
+		coords[i] = 0.0f;
+		coords[i+1] = 0.0f;
+		coords[i+2] = 1.0f;
+		coords[i+3] = 1.0f;
+		/*coords[i] = txc[i] < 0.0f || txc[i] > 1.0f ? txc[i] - std::floor(txc[i]) : txc[i];
+		coords[i+1] = txc[i+1] < 0.0f || txc[i+1] > 1.0f ? txc[i+1] - std::floor(txc[i+1]) : txc[i+1];
+		coords[i+2] = txc[i+2] - std::floor(txc[i+2]);*/
+	}
 }
 
 static inline int lightDiff(LightPair a, LightPair b)

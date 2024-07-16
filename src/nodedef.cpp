@@ -778,7 +778,8 @@ bool isWorldAligned(AlignStyle style, WorldAlignMode mode, NodeDrawType drawtype
 }
 
 void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
-	scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings)
+	scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings,
+	std::vector<TileLayer *> &tile_layers)
 {
 	// minimap pixel color - the average color of a texture
 	if (tsettings.enable_minimap && !tiledef[0].name.empty())
@@ -935,10 +936,14 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		fillTileAttribs(tsrc, &tiles[j].layers[0], tiles[j], tdef[j],
 				color, material_type, tile_shader,
 				tdef[j].backface_culling, tsettings);
-		if (!tdef_overlay[j].name.empty())
+		tile_layers.push_back(&tiles[j].layers[0]);
+
+		if (!tdef_overlay[j].name.empty()) {
 			fillTileAttribs(tsrc, &tiles[j].layers[1], tiles[j], tdef_overlay[j],
 					color, overlay_material, overlay_shader,
 					tdef[j].backface_culling, tsettings);
+			tile_layers.push_back(&tiles[j].layers[1]);
+		}
 	}
 
 	MaterialType special_material = material_type;
@@ -951,10 +956,12 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	u32 special_shader = shdsrc->getShader("nodes_shader", special_material, drawtype);
 
 	// Special tiles (fill in f->special_tiles[])
-	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++)
+	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++) {
 		fillTileAttribs(tsrc, &special_tiles[j].layers[0], special_tiles[j], tdef_spec[j],
 				color, special_material, special_shader,
 				tdef_spec[j].backface_culling, tsettings);
+		tile_layers.push_back(&special_tiles[j].layers[0]);
+	}
 
 	if (param_type_2 == CPT2_COLOR ||
 			param_type_2 == CPT2_COLORED_FACEDIR ||
@@ -1033,6 +1040,9 @@ NodeDefManager::~NodeDefManager()
 				j->drop();
 		}
 	}
+
+	if (m_diffuse_atlas)
+		delete m_diffuse_atlas;
 #endif
 }
 
@@ -1493,11 +1503,17 @@ void NodeDefManager::updateTextures(IGameDef *gamedef, void *progress_callback_a
 
 	u32 size = m_content_features.size();
 
+	// Collect all tile layers from each node
+	std::vector<TileLayer *> tile_layers;
 	for (u32 i = 0; i < size; i++) {
 		ContentFeatures *f = &(m_content_features[i]);
-		f->updateTextures(tsrc, shdsrc, meshmanip, client, tsettings);
+		f->updateTextures(tsrc, shdsrc, meshmanip, client, tsettings, tile_layers);
 		client->showUpdateProgressTexture(progress_callback_args, i, size);
 	}
+
+	if (!tile_layers.empty())
+		m_diffuse_atlas = new TextureAtlas(client->getSceneManager()->getVideoDriver(), tsrc,
+			tile_layers);//, data->m_blockpos);
 #endif
 }
 
