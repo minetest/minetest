@@ -1288,7 +1288,7 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 			oss.str("");
 			oss.clear();
 			writeU8(oss, serialize_as_ver);
-			mb.serialize(oss, serialize_as_ver, true, -1);
+			mb.serialize(oss, serialize_as_ver, 0, -1);
 		}
 
 		db->saveBlock(*it, oss.str());

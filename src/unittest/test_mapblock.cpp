@@ -75,7 +75,7 @@ void TestMapBlock::testSaveLoad(IGameDef *gamedef, const u8 version)
 		}
 
 		// Serialize
-		block.serialize(ss, version, true, -1);
+		block.serialize(ss, version, 0, -1);
 	}
 
 	{
@@ -108,7 +108,7 @@ void TestMapBlock::testSave29(IGameDef *gamedef)
 			block.getData()[i] = MapNode(CONTENT_AIR);
 		block.setNode({0, 0, 0}, MapNode(t_CONTENT_STONE));
 
-		block.serialize(ss, 29, true, -1);
+		block.serialize(ss, 29, 0, -1);
 	}
 
 	// Pick it apart a bit:

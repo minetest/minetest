@@ -2411,7 +2411,7 @@ void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 	// Serialize the block in the right format
 	if (!sptr) {
 		std::ostringstream os(std::ios_base::binary);
-		block->serialize(os, ver, false, net_compression_level);
+		block->serialize(os, ver, net_proto_version, net_compression_level);
 		block->serializeNetworkSpecific(os);
 		s = os.str();
 		sptr = &s;

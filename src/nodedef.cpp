@@ -467,8 +467,18 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 			writeS16(os, group.second);
 		}
 	}
+
 	writeU8(os, param_type);
-	writeU8(os, param_type_2);
+
+	// Try to compact with older clients
+	if (param_type_2 == CPT2_4DIR && protocol_version < 42) {
+		// 4dir was added in 5.7.0
+		// Older clients can use facedir if we send only the 2 RHS bits
+		writeU8(os, CPT2_FACEDIR);
+	} else {
+		writeU8(os, param_type_2);
+	}
+	
 
 	// visual
 	writeU8(os, drawtype);

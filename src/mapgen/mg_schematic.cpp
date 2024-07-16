@@ -387,7 +387,7 @@ bool Schematic::serializeToMts(std::ostream *os) const
 
 	// compressed bulk node data
 	auto buf = MapNode::serializeBulk(MTSCHEM_MAPNODE_SER_FMT_VER,
-		schemdata, size.X * size.Y * size.Z, 2, 2);
+		schemdata, size.X * size.Y * size.Z, 2, 2, 0, nullptr);
 	compress(buf, ss, MTSCHEM_MAPNODE_SER_FMT_VER);
 
 	return true;

@@ -623,7 +623,7 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db, int compression_leve
 	*/
 	std::ostringstream o(std::ios_base::binary);
 	o.write((char*) &version, 1);
-	block->serialize(o, version, true, compression_level);
+	block->serialize(o, version, 0, compression_level);
 
 	// FIXME: zero copy possible in c++20 or with custom rdbuf
 	bool ret = db->saveBlock(p3d, o.str());

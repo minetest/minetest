@@ -320,7 +320,7 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 	}
 }
 
-void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int compression_level)
+void MapBlock::serialize(std::ostream &os_compressed, u8 version, u16 protocol_version, int compression_level)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
@@ -355,6 +355,7 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	Buffer<u8> buf;
 	const u8 content_width = 2;
 	const u8 params_width = 2;
+	const bool disk = (protocol_version == 0);
  	if(disk)
 	{
 		MapNode *tmp_nodes = new MapNode[nodecount];
@@ -362,7 +363,7 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 		getBlockNodeIdMapping(&nimap, tmp_nodes, m_gamedef->ndef());
 
 		buf = MapNode::serializeBulk(version, tmp_nodes, nodecount,
-				content_width, params_width);
+				content_width, params_width, 0, nullptr);
 		delete[] tmp_nodes;
 
 		// write timestamp and node/id mapping first
@@ -375,7 +376,7 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	else
 	{
 		buf = MapNode::serializeBulk(version, data, nodecount,
-				content_width, params_width);
+				content_width, params_width, protocol_version, m_gamedef->ndef());
 	}
 
 	writeU8(os, content_width);

@@ -692,7 +692,8 @@ void MapNode::deSerialize(u8 *source, u8 version)
 
 Buffer<u8> MapNode::serializeBulk(int version,
 		const MapNode *nodes, u32 nodecount,
-		u8 content_width, u8 params_width)
+		u8 content_width, u8 params_width, u16 protocol_version,
+		const NodeDefManager *nodemgr)
 {
 	if (!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
@@ -710,14 +711,19 @@ Buffer<u8> MapNode::serializeBulk(int version,
 
 	// Writing to the buffer linearly is faster
 	u8 *p = &databuf[0];
-	for (u32 i = 0; i < nodecount; i++, p += 2)
+	for (u32 i = 0; i < nodecount; i++, p += 2) {
 		writeU16(p, nodes[i].param0);
+	}
 
 	for (u32 i = 0; i < nodecount; i++, p++)
 		writeU8(p, nodes[i].param1);
 
 	for (u32 i = 0; i < nodecount; i++, p++)
-		writeU8(p, nodes[i].param2);
+		if (protocol_version != 0 && protocol_version < 42 && nodemgr->get(nodes[i].param0).param_type_2 == CPT2_4DIR) {
+			writeU8(p, nodes[i].param2 & 0x03);
+		} else {
+			writeU8(p, nodes[i].param2);
+		}
 
 	return databuf;
 }
