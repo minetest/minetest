@@ -457,7 +457,8 @@ i.e. without gamma-correction.
 Textures can be overlaid by putting a `^` between them.
 
 Warning: If the lower and upper pixels are both semi-transparent, this operation
-does *not* do alpha blending, and it is *not* associative.
+does *not* do alpha blending, and it is *not* associative. Otherwise it does
+alpha blending in srgb color space.
 
 Example:
 
