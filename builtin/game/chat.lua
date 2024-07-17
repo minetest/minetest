@@ -1234,32 +1234,66 @@ core.register_chatcommand("kick", {
 	end,
 })
 
+local clearobject_confirms = {}
+
 core.register_chatcommand("clearobjects", {
-	params = S("[full | quick]"),
+	params = S("[full | quick | confirm | cancel]"),
 	description = S("Clear all objects in world"),
 	privs = {server=true},
 	func = function(name, param)
-		local options = {}
-		if param == "" or param == "quick" then
-			options.mode = "quick"
-		elseif param == "full" then
-			options.mode = "full"
+		if param == "" or param == "quick" or param == "full" then
+			local options = {
+				mode = param == "" and "quick" or param
+			}
+			if clearobject_confirms[name] then
+				clearobject_confirms[name][1]:cancel()
+			end
+			clearobject_confirms[name] = {
+				core.after(60, function()
+					clearobject_confirms[name][1]:cancel()
+					clearobject_confirms[name] = nil
+				end),
+				options
+			}
+			return true, S("Type /clearobjects confirm to execute the action, or /clearobjects cancel to stop.")
+		elseif param == "confirm" or param == "cancel" then
+			local data = clearobject_confirms[name]
+			if not data then
+				return false, S("There are no pending /clearobjects actions.")
+			end
+
+			data[1]:cancel()
+			clearobject_confirms[name] = nil
+			if param == "cancel" then
+				return true, S("Operation canceled.")
+			end
+
+			-- Main clear objects logic
+			local options = data[2]
+			core.log("action", name .. " clears objects ("
+				.. options.mode .. " mode).")
+			if options.mode == "full" then
+				core.chat_send_all(S("Clearing all objects. This may take a long time. "
+					.. "You may experience a timeout. (by @1)", name))
+			end
+			core.clear_objects(options)
+			core.log("action", "Object clearing done.")
+			core.chat_send_all("*** " .. S("Cleared all objects."))
+			return true
 		else
 			return false, S("Invalid usage, see /help clearobjects.")
 		end
-
-		core.log("action", name .. " clears objects ("
-				.. options.mode .. " mode).")
-		if options.mode == "full" then
-			core.chat_send_all(S("Clearing all objects. This may take a long time. "
-				.. "You may experience a timeout. (by @1)", name))
-		end
-		core.clear_objects(options)
-		core.log("action", "Object clearing done.")
-		core.chat_send_all("*** "..S("Cleared all objects."))
-		return true
 	end,
 })
+
+core.register_on_leaveplayer(function(player)
+	local name = player:get_player_name()
+	local data = clearobject_confirms[name]
+	if data then
+		data[1]:cancel()
+		clearobject_confirms[name] = nil
+	end
+end)
 
 core.register_chatcommand("msg", {
 	params = S("<name> <message>"),
