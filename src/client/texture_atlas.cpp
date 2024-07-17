@@ -121,6 +121,12 @@ TextureAtlas::TextureAtlas(video::IVideoDriver *vdrv, ITextureSource *src, std::
 	for (auto &info : m_tiles_infos)
 		if (info.tex)
 			m_atlas_texture->drawToSubImage(info.x, info.y, info.width, info.height, info.tex);
+
+	if (m_driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS)) {
+		// Each tile in both sides of the atlas must have not less 2 pixels in a mip
+		u32 min_pixels_count = m_tiles_infos.size()*4;
+		m_atlas_texture->regenerateMipMapLevels(0, 0, min_pixels_count);
+	}
 }
 
 u32 TextureAtlas::getClosestPowerOfTwo(f32 num)
@@ -194,6 +200,8 @@ void TextureAtlas::updateAnimations(f32 time)
 	if (m_tiles_infos.empty())
 		return;
 
+	bool has_animated_tiles = false;
+
 	for (auto &tile : m_tiles_infos) {
 		if (tile.anim.frame_count == 0)
 			continue;
@@ -206,47 +214,53 @@ void TextureAtlas::updateAnimations(f32 time)
 
 		tile.anim.cur_frame = new_frame;
 
-		if (tile.anim.frames.at(new_frame))
+		if (tile.anim.frames.at(new_frame)) {
+			has_animated_tiles = true;
 			m_atlas_texture->drawToSubImage(tile.x, tile.y, tile.width, tile.height, tile.anim.frames[new_frame]);
+		}
+	}
+
+	if (m_driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS) && has_animated_tiles) {
+		// Each tile in both sides of the atlas must have not less 2 pixels in a mip
+		u32 min_pixels_count = m_tiles_infos.size()*4;
+		m_atlas_texture->regenerateMipMapLevels(0, 0, min_pixels_count);
 	}
 }
 
 void TextureAtlas::updateCrackAnimations(int new_crack)
 {
-	//infostream << "updateCrackAnimations() start" << std::endl;
 	// No any cracked mapblocks
 	if (m_crack_tiles.empty()) {
 		m_last_crack = -1;
 		return;
 	}
-	//infostream << "updateCrackAnimations() 1" << std::endl;
+
 	// New crack is old yet
 	if (new_crack == m_last_crack)
 		return;
-	//infostream << "updateCrackAnimations() 2" << std::endl;
+
 	m_last_crack = new_crack;
 
 	core::dimension2du atlas_size = m_atlas_texture->getSize();
 
+	bool has_crack_tiles = false;
+
 	for (const auto &p : m_crack_tiles) {
-		//infostream << "updateCrackAnimations() loop" << std::endl;
 		std::string s = p.second + itos(new_crack);
 		u32 new_texture_id = 0;
 		video::ITexture *new_texture =
 			m_tsrc->getTextureForMesh(s, &new_texture_id);
 
 		TileInfo &tile = m_tiles_infos.at(p.first);
-		if (new_texture)
+		if (new_texture) {
+			has_crack_tiles = true;
 			m_atlas_texture->drawToSubImage(tile.x + atlas_size.Width/2, tile.y, tile.width, tile.height, new_texture);
-			// If the current material is also animated, update animation info
-			/*auto anim_it = m_animation_info.find(crack_material.first);
-			if (anim_it != m_animation_info.end()) {
-				TileLayer &tile = anim_it->second.tile;
-				tile.texture = new_texture;
-				tile.texture_id = new_texture_id;
-				// force animation update
-				anim_it->second.frame = -1;
-			}
-		}*/
+		}
+	}
+
+	if (m_driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS) && has_crack_tiles) {
+		// Each tile in both sides of the atlas must have not less 2 pixels in a mip
+		u32 min_pixels_count = m_tiles_infos.size()*8;
+		m_atlas_texture->regenerateMipMapLevels(0, 0, min_pixels_count);
 	}
 }

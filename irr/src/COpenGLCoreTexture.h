@@ -384,9 +384,9 @@ public:
 		LockLayer = 0;
 	}
 
-	void regenerateMipMapLevels(void *data = 0, u32 layer = 0) override
+	void regenerateMipMapLevels(void *data = 0, u32 layer = 0, int end_size = 1) override
 	{
-		if (!HasMipMaps || LegacyAutoGenerateMipMaps || (Size.Width <= 1 && Size.Height <= 1))
+		if (!HasMipMaps || LegacyAutoGenerateMipMaps || (Size.Width * Size.Height <= end_size))
 			return;
 
 		const COpenGLCoreTexture *prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
@@ -400,11 +400,11 @@ public:
 			u32 level = 0;
 
 			do {
-				if (width > 1)
-					width >>= 1;
+				width >>= 1;
+				height >>= 1;
 
-				if (height > 1)
-					height >>= 1;
+				if (width * height < end_size)
+					break;
 
 				dataSize = IImage::getDataSizeFromFormat(ColorFormat, width, height);
 				++level;
@@ -412,7 +412,7 @@ public:
 				uploadTexture(true, layer, level, tmpData);
 
 				tmpData += dataSize;
-			} while (width != 1 || height != 1);
+			} while (true);
 		} else {
 			Driver->irrGlGenerateMipmap(TextureType);
 			TEST_GL_ERROR(Driver);
@@ -442,7 +442,7 @@ public:
 
 		Driver->getCacheHandler()->getTextureCache().set(0, this);
 
-		if (HasMipMaps && !LegacyAutoGenerateMipMaps) {
+		/*if (HasMipMaps && !LegacyAutoGenerateMipMaps) {
 			int level = 0;
 			int cur_width = width;
 			int cur_height = height;
@@ -468,7 +468,7 @@ public:
 				cur_height >>= level;
 			}
 		}
-		else {
+		else {*/
 			if (!IImage::isCompressedFormat(format))
 				GL.TexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, pixel_format, pixeltype, data);
 			else {
@@ -478,7 +478,7 @@ public:
 			}
 
 			TEST_GL_ERROR(Driver);
-		}
+		//}
 
 		texture->unlock();
 
