@@ -28,8 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class UnknownKeycode : public BaseException
 {
 public:
-	UnknownKeycode(const char *s) :
-		BaseException(s) {};
+	UnknownKeycode(const std::string_view &s):
+		BaseException(std::string(s)) {}
 };
 
 /* A key press, consisting of either an Irrlicht keycode
@@ -40,19 +40,33 @@ class KeyPress
 public:
 	KeyPress() = default;
 
-	KeyPress(const char *name);
+	KeyPress(const std::string_view &name);
+
+	KeyPress(const char *name): KeyPress(std::string_view(name)) {};
 
 	KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character = false);
 
 	bool operator==(const KeyPress &o) const
 	{
+		return basic_equals(o) && shift == o.shift && control == o.control;
+	}
+
+	bool basic_equals(const KeyPress &o) const
+	{
 		return (Char > 0 && Char == o.Char) || (valid_kcode(Key) && Key == o.Key);
 	}
+
+	int matches(const KeyPress &p) const;
 
 	const char *sym() const;
 	const char *name() const;
 
+	bool shift = false;
+	bool control = false;
+
 protected:
+	std::string_view parseModifiers(const std::string_view &);
+
 	static bool valid_kcode(irr::EKEY_CODE k)
 	{
 		return k > 0 && k < irr::KEY_KEY_CODES_COUNT;

@@ -239,10 +239,10 @@ static const struct table_key table[] = {
 #undef N_
 
 
-static const table_key &lookup_keyname(const char *name)
+static const table_key &lookup_keyname(const std::string_view &name)
 {
 	for (const auto &table_key : table) {
-		if (strcmp(table_key.Name, name) == 0)
+		if (table_key.Name == name)
 			return table_key;
 	}
 
@@ -273,19 +273,30 @@ static const table_key &lookup_keychar(wchar_t Char)
 	throw UnknownKeycode(os.str().c_str());
 }
 
-KeyPress::KeyPress(const char *name)
+std::string_view KeyPress::parseModifiers(const std::string_view &name)
 {
-	if (strlen(name) == 0) {
+	if (str_starts_with(name, "KEY_CONTROL-")) {
+		control = true;
+		return parseModifiers(name.substr(12));
+	} else if (str_starts_with(name, "KEY_SHIFT-")) {
+		shift = true;
+		return parseModifiers(name.substr(10));
+	}
+	return name;
+}
+
+KeyPress::KeyPress(const std::string_view &name)
+{
+	auto keyname = parseModifiers(name);
+	auto wkeyname = utf8_to_wide(keyname);
+	if (wkeyname.empty()) {
 		Key = irr::KEY_KEY_CODES_COUNT;
 		Char = L'\0';
 		m_name = "";
 		return;
-	}
-
-	if (strlen(name) <= 4) {
+	} else if (wkeyname.size() == 1) {
 		// Lookup by resulting character
-		int chars_read = mbtowc(&Char, name, 1);
-		FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
+		Char = wkeyname[0];
 		try {
 			auto &k = lookup_keychar(Char);
 			m_name = k.Name;
@@ -294,9 +305,9 @@ KeyPress::KeyPress(const char *name)
 		} catch (UnknownKeycode &e) {};
 	} else {
 		// Lookup by name
-		m_name = name;
+		m_name = keyname;
 		try {
-			auto &k = lookup_keyname(name);
+			auto &k = lookup_keyname(keyname);
 			Key = k.Key;
 			Char = k.Char;
 			return;
@@ -305,10 +316,9 @@ KeyPress::KeyPress(const char *name)
 
 	// It's not a known key, complain and try to do something
 	Key = irr::KEY_KEY_CODES_COUNT;
-	int chars_read = mbtowc(&Char, name, 1);
-	FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
+	Char = wkeyname[0];
 	m_name = "";
-	warningstream << "KeyPress: Unknown key '" << name
+	warningstream << "KeyPress: Unknown key '" << keyname
 		<< "', falling back to first char." << std::endl;
 }
 
@@ -345,6 +355,19 @@ const char *KeyPress::name() const
 	else
 		ret = lookup_keychar(Char).LangName;
 	return ret ? ret : "<Unnamed key>";
+}
+
+int KeyPress::matches(const KeyPress &p) const {
+	if (!basic_equals(p))
+		return 0;
+	if ((p.shift && !shift) || (p.control && !control))
+		return 0;
+	int score = 1;
+	if (p.shift == shift)
+		score++;
+	if (p.control == control)
+		score++;
+	return score;
 }
 
 const KeyPress EscapeKey("KEY_ESCAPE");
