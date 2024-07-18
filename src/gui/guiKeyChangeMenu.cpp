@@ -284,7 +284,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 
 		// Display Key already in use message
 		bool key_in_use = false;
-		if (kp.sym().empty()) {
+		if (!kp.sym().empty()) {
 			for (key_setting *ks : key_settings) {
 				if (ks != active_key && ks->key == kp) {
 					key_in_use = true;
