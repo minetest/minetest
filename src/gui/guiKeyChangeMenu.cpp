@@ -142,7 +142,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, 100 * s, 30 * s);
 			rect += topleft + v2s32(offset.X + 150 * s, offset.Y - 5 * s);
 			k->button = GUIButton::addButton(Environment, rect, m_tsrc, this, k->id,
-					wstrgettext(k->key.name()).c_str());
+					utf8_to_wide(k->key.name()).c_str());
 		}
 		if ((i + 1) % KMaxButtonPerColumns == 0) {
 			offset.X += 260 * s;
@@ -256,7 +256,7 @@ bool GUIKeyChangeMenu::acceptInput()
 bool GUIKeyChangeMenu::resetMenu()
 {
 	if (active_key) {
-		active_key->button->setText(wstrgettext(active_key->key.name()).c_str());
+		active_key->button->setText(utf8_to_wide(active_key->key.name()).c_str());
 		active_key = nullptr;
 		return false;
 	}
@@ -284,7 +284,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 
 		// Display Key already in use message
 		bool key_in_use = false;
-		if (strcmp(kp.sym(), "") != 0) {
+		if (kp.sym().empty()) {
 			for (key_setting *ks : key_settings) {
 				if (ks != active_key && ks->key == kp) {
 					key_in_use = true;
@@ -307,7 +307,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		// But go on
 		{
 			active_key->key = kp;
-			active_key->button->setText(wstrgettext(kp.name()).c_str());
+			active_key->button->setText(utf8_to_wide(kp.name()).c_str());
 
 			// Allow characters made with shift
 			if (shift_went_down){

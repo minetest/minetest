@@ -58,8 +58,8 @@ public:
 
 	int matches(const KeyPress &p) const;
 
-	const char *sym() const;
-	const char *name() const;
+	const std::string sym() const;
+	const std::string name() const;
 
 	bool shift = false;
 	bool control = false;

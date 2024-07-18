@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "gettext.h"
 #include "keycode.h"
 #include "settings.h"
 #include "log.h"
@@ -42,8 +43,6 @@ struct table_key {
 	{ "KEY_F" TOSTRING(ch), irr::KEY_F ## ch, L'\0', "F" TOSTRING(ch) },
 #define DEFINEKEY5(ch) /* key without Irrlicht keycode */ \
 	{ ch, irr::KEY_KEY_CODES_COUNT, (wchar_t) *ch, ch },
-
-#define N_(text) text
 
 static const struct table_key table[] = {
 	// Keys that can be reliably mapped between Char and Key
@@ -340,21 +339,34 @@ KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character)
 	};
 }
 
-const char *KeyPress::sym() const
+const std::string KeyPress::sym() const
 {
-	return m_name.c_str();
+	std::string sym = m_name;
+	if (shift)
+		sym = "KEY_SHIFT-" + sym;
+	if (control)
+		sym = "KEY_CONTROL-" + sym;
+	return sym;
 }
 
-const char *KeyPress::name() const
+const std::string KeyPress::name() const
 {
 	if (m_name.empty())
 		return "";
-	const char *ret;
+	std::string ret;
 	if (valid_kcode(Key))
 		ret = lookup_keykey(Key).LangName;
 	else
 		ret = lookup_keychar(Char).LangName;
-	return ret ? ret : "<Unnamed key>";
+	if (ret.empty())
+		ret = gettext("<Unnamed key>");
+	else
+		ret = strgettext(ret);
+	if (shift)
+		ret = fmtgettext("Shift-%s", ret.c_str());
+	if (control)
+		ret = fmtgettext("Control-%s", ret.c_str());
+	return ret;
 }
 
 int KeyPress::matches(const KeyPress &p) const {
