@@ -72,6 +72,9 @@ std::string ObjectProperties::dump() const
 	else
 		os << ", nametag_bgcolor=null ";
 
+	os << ", nametag_font=" << nametag_font;
+	os << ", nametag_bold=" << nametag_bold;
+	os << ", nametag_italic=" << nametag_italic;
 	os << ", selectionbox=" << selectionbox.MinEdge << "," << selectionbox.MaxEdge;
 	os << ", rotate_selectionbox=" << rotate_selectionbox;
 	os << ", pointable=" << Pointabilities::toStringPointabilityType(pointable);
@@ -172,6 +175,9 @@ void ObjectProperties::serialize(std::ostream &os) const
 		writeARGB8(os, nametag_bgcolor.value());
 
 	writeU8(os, rotate_selectionbox);
+	writeU8(os, nametag_font);
+	writeU8(os, nametag_bold);
+	writeU8(os, nametag_italic);
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
 }
@@ -244,5 +250,15 @@ void ObjectProperties::deSerialize(std::istream &is)
 		if (is.eof())
 			return;
 		rotate_selectionbox = tmp;
+
+		tmp = readU8(is);
+		u8 tmp2 = readU8(is);
+		u8 tmp3 = readU8(is);
+		if (is.eof())
+			return;
+		nametag_font = tmp;
+		nametag_bold = tmp2;
+		nametag_italic = tmp3;
+
 	} catch (SerializationError &e) {}
 }

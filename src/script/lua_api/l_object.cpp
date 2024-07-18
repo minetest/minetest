@@ -892,6 +892,17 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 
 	prop->nametag = getstringfield_default(L, 2, "text", prop->nametag);
 
+	std::string font_mode;
+	if (getstringfield(L, 2, "font", font_mode)) {
+		if (font_mode == "mono") {
+			prop->nametag_font = 1;
+		} else {
+			prop->nametag_font = 0; // for font_mode == "normal" or else
+		}
+	}
+	prop->nametag_bold = getboolfield_default(L, 2, "bold", prop->nametag_bold);
+	prop->nametag_italic = getboolfield_default(L, 2, "italic", prop->nametag_italic);
+
 	prop->validate();
 	sao->notifyObjectPropertiesModified();
 	return 0;
@@ -926,7 +937,19 @@ int ObjectRef::l_get_nametag_attributes(lua_State *L)
 	lua_pushstring(L, prop->nametag.c_str());
 	lua_setfield(L, -2, "text");
 
+	if(prop->nametag_font == 1) {
+		lua_pushstring(L, "mono");
+	} else if (prop->nametag_font == 0) {
+		lua_pushstring(L, "normal");
+	} else {
+		lua_pushstring(L, "unknown");
+	}
+	lua_setfield(L, -2, "font");
 
+	lua_pushboolean(L, prop->nametag_bold);
+	lua_setfield(L, -2, "bold");
+	lua_pushboolean(L, prop->nametag_italic);
+	lua_setfield(L, -2, "italic");
 
 	return 1;
 }

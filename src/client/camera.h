@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "util/numeric.h"
 #include "client/localplayer.h"
+#include "fontengine.h"
 #include <ICameraSceneNode.h>
 #include <ISceneNode.h>
 #include <plane3d.h>
@@ -43,17 +44,20 @@ struct Nametag
 	video::SColor textcolor;
 	std::optional<video::SColor> bgcolor;
 	v3f pos;
+	FontSpec font_spec;
 
 	Nametag(scene::ISceneNode *a_parent_node,
 			const std::string &text,
 			const video::SColor &textcolor,
 			const std::optional<video::SColor> &bgcolor,
-			const v3f &pos):
+			const v3f &pos,
+			const FontSpec &font_spec):
 		parent_node(a_parent_node),
 		text(text),
 		textcolor(textcolor),
 		bgcolor(bgcolor),
-		pos(pos)
+		pos(pos),
+		font_spec(font_spec)
 	{
 	}
 
@@ -69,6 +73,10 @@ struct Nametag
 		else
 			// Light background for dark text
 			return video::SColor(50, 255, 255, 255);
+	}
+
+	gui::IGUIFont *getFont() const {
+		return g_fontengine->getFont(font_spec);
 	}
 };
 
@@ -201,7 +209,8 @@ public:
 
 	Nametag *addNametag(scene::ISceneNode *parent_node,
 		const std::string &text, video::SColor textcolor,
-		std::optional<video::SColor> bgcolor, const v3f &pos);
+		std::optional<video::SColor> bgcolor, const v3f &pos,
+		const FontSpec &font_spec);
 
 	void removeNametag(Nametag *nametag);
 

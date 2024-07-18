@@ -1009,13 +1009,17 @@ void GenericCAO::updateNametag()
 		// Add nametag
 		m_nametag = m_client->getCamera()->addNametag(node,
 			m_prop.nametag, m_prop.nametag_color,
-			m_prop.nametag_bgcolor, pos);
+			m_prop.nametag_bgcolor, pos,
+			FontSpec(FONT_SIZE_UNSPECIFIED, (FontMode) m_prop.nametag_font,
+					m_prop.nametag_bold, m_prop.nametag_italic));
 	} else {
 		// Update nametag
 		m_nametag->text = m_prop.nametag;
 		m_nametag->textcolor = m_prop.nametag_color;
 		m_nametag->bgcolor = m_prop.nametag_bgcolor;
 		m_nametag->pos = pos;
+		m_nametag->font_spec = FontSpec(FONT_SIZE_UNSPECIFIED, (FontMode) m_prop.nametag_font,
+					m_prop.nametag_bold, m_prop.nametag_italic);
 	}
 }
 
