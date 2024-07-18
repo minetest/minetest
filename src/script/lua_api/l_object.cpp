@@ -228,6 +228,7 @@ int ObjectRef::l_set_hp(lua_State *L)
 	PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);
 
 	reason.from_mod = true;
+	reason.raw = false;
 	if (lua_istable(L, 3)) {
 		lua_pushvalue(L, 3);
 
