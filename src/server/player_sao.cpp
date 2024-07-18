@@ -517,26 +517,9 @@ void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool fr
 {
 	if (!reason.raw || m_hp == 0)
 		target_hp = rangelim(target_hp, 0, U16_MAX);
+	else
+		target_hp = rangelim(target_hp, target_hp, U16_MAX);
 	// Provide raw hp change instead if needed
-
-	/* -- DELETE BEFORE MERGE--
-	// target_hp = (s32)playersao->getHP() - (s32)damage
-	// so basically it's the raw changed hp, not hp_change.
-	// thus this phrase limits target hp to 0.
-	// so todo 1: reveal the actual hp change(c++).
-	// todo 2: modify arg list to get actual hp change(lua).
-	// done:making bool raw = false in playersao.h,struct PlayerHPChangeReason.
-	// only when raw = true will actual hp change pass to func in registered_on_player_hpchange
-	// and by default raw = false. so this won't work if not declared to be true, making it
-	// compatible with old mods, don't affact their functionalities.
-	// Also, if m_hp == 0 when enter this method, it means player has already dead.
-	// this is because when one call complete, m_hp will update to the hp which applied change.
-	// and if m_hp == 0, player will die once. one call end, doesn't mean there can't be other calls.
-	// vanilla original behavior is, when negative change applies, target_hp will be limited to 0
-	// which is also m_hp's value when player is already dead, thus lead to equation and stops
-	// the call, stops the unwanted behavior of player dying twice from happening.
-	// this equation above in `if` makes this happen.
-		-- DELETE BEFORE MERGE-- */
 
 	if (target_hp == m_hp)
 		return; // Nothing to do
@@ -546,7 +529,6 @@ void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool fr
 
 	s32 hp = (s32)m_hp + hp_change;
 	hp = rangelim(hp, 0, U16_MAX);
-	// actually does limits hp to non-negative value already
 
 	if (hp > m_prop.hp_max)
 		hp = m_prop.hp_max;

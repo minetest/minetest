@@ -5786,6 +5786,7 @@ Call these functions only at load time!
             * `respawn`
         * Any of the above types may have additional fields from mods.
         * `reason.from` will be `mod` or `engine`.
+        * `reason.raw` will be `original` or `limited`, indicates if the change of HP is limited by player's current HP value.
     * `modifier`: when true, the function should return the actual `hp_change`.
        Note: modifiers only get a temporary `hp_change` that can be modified by later modifiers.
        Modifiers can return true as a second argument to stop the execution of further functions.

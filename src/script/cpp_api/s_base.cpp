@@ -529,6 +529,8 @@ void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeR
 
 	lua_pushstring(L, reason.from_mod ? "mod" : "engine");
 	lua_setfield(L, -2, "from");
+	lua_pushstring(L, reason.raw ? "original" : "limited");
+	lua_setfield(L, -2, "raw");
 
 	if (reason.object) {
 		objectrefGetOrCreate(L, reason.object);
