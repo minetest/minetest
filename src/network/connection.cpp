@@ -1121,7 +1121,7 @@ bool UDPPeer::processReliableSendCommand(
 	u16 packets_available = toadd.size();
 	/* we didn't get a single sequence number no need to fill queue */
 	if (!have_initial_sequence_number) {
-		LOG(derr_con << m_connection->getDesc() << "Ran out of sequence numbers! (peer id: " << c_ptr->peer_id << ")" << std::endl);
+		verbosestream << m_connection->getDesc() << "Ran out of sequence numbers! (peer id: " << c_ptr->peer_id << ")" << std::endl;
 		return false;
 	}
 
