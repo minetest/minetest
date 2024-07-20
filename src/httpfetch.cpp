@@ -40,10 +40,17 @@ static std::unordered_map<u64, std::queue<HTTPFetchResult>>
 	g_httpfetch_results;
 static PcgRandom g_callerid_randomness;
 
+static std::string default_user_agent()
+{
+	std::string ret(PROJECT_NAME_C "/");
+	ret.append(g_version_string).append(" (").append(porting::get_sysinfo()).append(")");
+	return ret;
+}
+
 HTTPFetchRequest::HTTPFetchRequest() :
 	timeout(g_settings->getS32("curl_timeout")),
 	connect_timeout(10 * 1000),
-	useragent(std::string(PROJECT_NAME_C "/") + g_version_hash + " (" + porting::get_sysinfo() + ")")
+	useragent(default_user_agent())
 {
 	timeout = std::max(timeout, MIN_HTTPFETCH_TIMEOUT_INTERACTIVE);
 }
