@@ -1199,9 +1199,9 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 			if (channel->outgoing_reliables_sent.size() == 0)
 				m_connection->TriggerSend();
 		} catch (NotFoundException &e) {
-			LOG(derr_con << m_connection->getDesc()
+			verbosestream << m_connection->getDesc()
 				<< "WARNING: ACKed packet not in outgoing queue"
-				<< " seqnum=" << seqnum << std::endl);
+				<< ", peer_id=" << peer->id << ", seqnum=" << seqnum << std::endl;
 			channel->UpdatePacketTooLateCounter();
 		}
 

@@ -2668,7 +2668,8 @@ void Server::sendRequestedMedia(session_t peer_id,
 	assert(client);
 
 	infostream << "Server::sendRequestedMedia(): Sending "
-		<< tosend.size() << " files to " << client->getName() << std::endl;
+		<< tosend.size() << " files to " << client->getName()
+		<< ", peer_id=" << peer_id << std::endl;
 
 	/* Read files and prepare bunches */
 
@@ -2691,7 +2692,8 @@ void Server::sendRequestedMedia(session_t peer_id,
 
 		if (it == m_media.end()) {
 			errorstream<<"Server::sendRequestedMedia(): Client asked for "
-					<<"unknown file \""<<(name)<<"\""<<std::endl;
+					<< "unknown file \"" << name << "\""
+					<< ", peer_id=" << peer_id <<std::endl;
 			continue;
 		}
 		const auto &m = it->second;
@@ -2700,8 +2702,9 @@ void Server::sendRequestedMedia(session_t peer_id,
 		// have duplicate filenames. So we can't check it.
 		if (!m.no_announce) {
 			if (!client->markMediaSent(name)) {
-				infostream << "Server::sendRequestedMedia(): Client asked has "
-					"requested \"" << name << "\" before, not sending it again."
+				infostream << "Server::sendRequestedMedia(): Client peer_id="
+					<< peer_id << " asked has requested \"" << name
+					<< "\" before, not sending it again."
 					<< std::endl;
 				continue;
 			}
@@ -2754,7 +2757,9 @@ void Server::sendRequestedMedia(session_t peer_id,
 		verbosestream << "Server::sendRequestedMedia(): bunch "
 				<< i << "/" << num_bunches
 				<< " files=" << bunch_size
-				<< " size="  << pkt.getSize() << std::endl;
+				<< " size="  << pkt.getSize()
+				<< " peer_id=" << peer_id
+				<< std::endl;
 		Send(&pkt);
 	}
 }
