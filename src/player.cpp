@@ -88,6 +88,12 @@ void Player::setWieldIndex(u16 index)
 	m_wield_index = MYMIN(index, mlist ? mlist->getSize() : 0);
 }
 
+u16 Player::getWieldIndex()
+{
+	const InventoryList *mlist = inventory.getList("main");
+	return MYMIN(m_wield_index, mlist ? mlist->getSize() : 0);
+}
+
 ItemStack &Player::getWieldedItem(ItemStack *selected, ItemStack *hand) const
 {
 	assert(selected);

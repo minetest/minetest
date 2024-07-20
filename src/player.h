@@ -223,7 +223,7 @@ public:
 	// Returns non-empty `selected` ItemStack. `hand` is a fallback, if specified
 	ItemStack &getWieldedItem(ItemStack *selected, ItemStack *hand) const;
 	void setWieldIndex(u16 index);
-	u16 getWieldIndex() const { return m_wield_index; }
+	u16 getWieldIndex();
 
 	bool setFov(const PlayerFovSpec &spec)
 	{
