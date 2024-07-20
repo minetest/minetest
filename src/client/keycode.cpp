@@ -332,7 +332,10 @@ KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character):
 {
 	switch (in.Key) {
 		case irr::KEY_SHIFT: case irr::KEY_LSHIFT: case irr::KEY_RSHIFT:
+			shift = true;
+			return;
 		case irr::KEY_CONTROL: case irr::KEY_LCONTROL: case irr::KEY_RCONTROL:
+			control = true;
 			return;
 		default:
 			break;

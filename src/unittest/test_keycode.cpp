@@ -94,14 +94,12 @@ void TestKeycode::testCreateFromSKeyInput()
 	UASSERT(k.sym() == "KEY_KEY_3");
 
 	// Non-Character key
-	in.Shift = true;
 	in.Key = irr::KEY_RSHIFT;
 	in.Char = L'\0';
 	k = KeyPress(in);
 	UASSERT(k.sym() == "KEY_SHIFT");
 
 	// Irrlicht-unknown key
-	in.Shift = false;
 	in.Key = irr::KEY_KEY_CODES_COUNT;
 	in.Char = L'?';
 	k = KeyPress(in);
