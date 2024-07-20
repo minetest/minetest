@@ -2192,9 +2192,10 @@ void Game::processItemSelection(u16 *new_playeritem)
 	 */
 	Inventory *inventory = &player->inventory;
 	InventoryList *mainlist = inventory->getList("main");
-	s32 mainlist_size = (mainlist == nullptr) ? PLAYER_INVENTORY_SIZE : mainlist->getSize();
+	if (mainlist == nullptr)
+		return;
 	*new_playeritem = player->getWieldIndex();
-	u16 max_item = MYMIN(mainlist_size - 1,
+	u16 max_item = MYMIN((s32) mainlist->getSize() - 1,
 		    player->hud_hotbar_itemcount - 1);
 
 	s32 wheel = input->getMouseWheel();
