@@ -280,6 +280,12 @@ std::string_view KeyPress::parseModifiers(const std::string_view &name)
 	} else if (str_starts_with(name, "KEY_SHIFT-")) {
 		shift = true;
 		return parseModifiers(name.substr(10));
+	} else if (name == "KEY_CONTROL" || name == "KEY_LCONTROL" || name == "KEY_RCONTROL") {
+		control = true;
+		return "";
+	} else if (name == "KEY_SHIFT" || name == "KEY_LSHIFT" || name == "KEY_RSHIFT") {
+		shift = true;
+		return "";
 	}
 	return name;
 }
@@ -321,8 +327,17 @@ KeyPress::KeyPress(const std::string_view &name)
 		<< "', falling back to first char." << std::endl;
 }
 
-KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character)
+KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character):
+	shift(in.Shift), control(in.Control)
 {
+	switch (in.Key) {
+		case irr::KEY_SHIFT: case irr::KEY_LSHIFT: case irr::KEY_RSHIFT:
+		case irr::KEY_CONTROL: case irr::KEY_LCONTROL: case irr::KEY_RCONTROL:
+			return;
+		default:
+			break;
+	}
+
 	if (prefer_character)
 		Key = irr::KEY_KEY_CODES_COUNT;
 	else
@@ -343,9 +358,9 @@ const std::string KeyPress::sym() const
 {
 	std::string sym = m_name;
 	if (shift)
-		sym = "KEY_SHIFT-" + sym;
+		sym = sym.empty() ? "KEY_SHIFT" : "KEY_SHIFT-" + sym;
 	if (control)
-		sym = "KEY_CONTROL-" + sym;
+		sym = sym.empty() ? "KEY_CONTROL" : "KEY_CONTROL-" + sym;
 	return sym;
 }
 
@@ -358,23 +373,23 @@ const std::string KeyPress::name() const
 		ret = lookup_keykey(Key).LangName;
 	else
 		ret = lookup_keychar(Char).LangName;
-	if (ret.empty())
-		ret = gettext("<Unnamed key>");
-	else
+	if (!ret.empty())
 		ret = strgettext(ret);
 	if (shift)
-		ret = fmtgettext("Shift-%s", ret.c_str());
+		ret = ret.empty() ? gettext("Shift Key") : fmtgettext("Shift-%s", ret.c_str());
 	if (control)
-		ret = fmtgettext("Control-%s", ret.c_str());
+		ret = ret.empty() ? gettext("Control Key") : fmtgettext("Control-%s", ret.c_str());
+	if (ret.empty())
+		ret = gettext("<Unnamed key>");
 	return ret;
 }
 
 int KeyPress::matches(const KeyPress &p) const {
-	if (!basic_equals(p))
+	if (!basic_equals(p) && p.Key != irr::KEY_KEY_CODES_COUNT)
 		return 0;
 	if ((p.shift && !shift) || (p.control && !control))
 		return 0;
-	int score = 1;
+	int score = basic_equals(p);
 	if (p.shift == shift)
 		score++;
 	if (p.control == control)

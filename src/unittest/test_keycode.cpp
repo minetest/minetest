@@ -85,6 +85,7 @@ void TestKeycode::testCreateFromSKeyInput()
 {
 	KeyPress k;
 	irr::SEvent::SKeyInput in;
+	in.Control = in.Shift = false;
 
 	// Character key
 	in.Key = irr::KEY_KEY_3;
@@ -93,12 +94,14 @@ void TestKeycode::testCreateFromSKeyInput()
 	UASSERT(k.sym() == "KEY_KEY_3");
 
 	// Non-Character key
+	in.Shift = true;
 	in.Key = irr::KEY_RSHIFT;
 	in.Char = L'\0';
 	k = KeyPress(in);
-	UASSERT(k.sym() == "KEY_RSHIFT");
+	UASSERT(k.sym() == "KEY_SHIFT");
 
 	// Irrlicht-unknown key
+	in.Shift = false;
 	in.Key = irr::KEY_KEY_CODES_COUNT;
 	in.Char = L'?';
 	k = KeyPress(in);
@@ -120,15 +123,20 @@ void TestKeycode::testCompare()
 	// Test modifiers
 	UASSERT(KeyPress("KEY_CONTROL-KEY_SHIFT-5") == KeyPress("KEY_SHIFT-KEY_CONTROL-KEY_KEY_5"));
 	UASSERT(KeyPress("KEY_SHIFT--") == KeyPress("KEY_SHIFT-KEY_MINUS"));
+	UASSERT(KeyPress("KEY_CONTROL-KEY_LSHIFT") == KeyPress("KEY_SHIFT-KEY_RCONTROL"));
+	UASSERT(KeyPress("KEY_RSHIFT") == KeyPress("KEY_SHIFT-"));
 
 	// Test matching
 	UASSERT(!KeyPress("5").matches(KeyPress("KEY_CONTROL-5")));
+	UASSERT(!KeyPress("5").matches(KeyPress("KEY_CONTROL")));
+	UASSERT(KeyPress("KEY_SHIFT-5").matches(KeyPress("KEY_SHIFT")));
 	UASSERT(KeyPress("KEY_SHIFT-5").matches(KeyPress("5")));
 	UASSERT(KeyPress("KEY_SHIFT-5").matches(KeyPress("KEY_SHIFT-5")) > KeyPress("KEY_SHIFT-5").matches("5"));
 
 	// Matching char suffices
 	// note: This is a real-world example, Irrlicht maps XK_equal to irr::KEY_PLUS on Linux
 	irr::SEvent::SKeyInput in;
+	in.Shift = in.Control = false;
 	in.Key = irr::KEY_PLUS;
 	in.Char = L'=';
 	UASSERT(KeyPress("=") == KeyPress(in));
@@ -136,6 +144,7 @@ void TestKeycode::testCompare()
 	// Matching keycode suffices
 	irr::SEvent::SKeyInput in2;
 	in.Key = in2.Key = irr::KEY_OEM_CLEAR;
+	in2.Shift = in2.Control = false;
 	in.Char = L'\0';
 	in2.Char = L';';
 	UASSERT(KeyPress(in) == KeyPress(in2));

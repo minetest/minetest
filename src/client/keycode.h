@@ -53,7 +53,8 @@ public:
 
 	bool basic_equals(const KeyPress &o) const
 	{
-		return (Char > 0 && Char == o.Char) || (valid_kcode(Key) && Key == o.Key);
+		return (Char > 0 && Char == o.Char) || (valid_kcode(Key) && Key == o.Key)
+			|| (Char == o.Char && Key == o.Key);
 	}
 
 	int matches(const KeyPress &p) const;
