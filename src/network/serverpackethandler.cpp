@@ -861,6 +861,18 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 		return;
 	}
 
+	Inventory *inventory = &player->inventory;
+	InventoryList *mainlist = inventory->getList("main");
+	u32 mainlist_size = (mainlist == nullptr) ? PLAYER_INVENTORY_SIZE : mainlist->getSize();
+	if (item > mainlist_size) {
+		actionstream << "Player: " << player->getName()
+			<< " tried to access item=" << item
+			<< " out of main list size="
+			<< mainlist_size
+			<< "; ignoring." << std::endl;
+		return;
+	}
+
 	playersao->getPlayer()->setWieldIndex(item);
 }
 
