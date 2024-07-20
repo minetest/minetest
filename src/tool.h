@@ -83,6 +83,9 @@ struct ToolCapabilities
 	void deSerialize(std::istream &is);
 	void serializeJson(std::ostream &os) const;
 	void deserializeJson(std::istream &is);
+private:
+	void deserializeJsonGroupcaps(Json::Value &object);
+	void deserializeJsonDamageGroups(Json::Value &object);
 };
 
 struct WearBarParams
