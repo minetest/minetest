@@ -369,12 +369,12 @@ const std::string KeyPress::sym() const
 
 const std::string KeyPress::name() const
 {
-	if (m_name.empty())
+	if (m_name.empty() && !has_modifier())
 		return "";
 	std::string ret;
 	if (valid_kcode(Key))
 		ret = lookup_keykey(Key).LangName;
-	else
+	else if (Char != L'\0')
 		ret = lookup_keychar(Char).LangName;
 	if (!ret.empty())
 		ret = strgettext(ret);

@@ -57,6 +57,16 @@ public:
 			|| (Char == o.Char && Key == o.Key);
 	}
 
+	bool has_modifier() const
+	{
+		return shift || control;
+	}
+
+	bool valid_base() const
+	{
+		return valid_kcode(Key) || Char > 0;
+	}
+
 	int matches(const KeyPress &p) const;
 
 	const std::string sym() const;

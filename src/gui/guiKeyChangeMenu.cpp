@@ -264,23 +264,19 @@ bool GUIKeyChangeMenu::resetMenu()
 }
 bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 {
-	if (event.EventType == EET_KEY_INPUT_EVENT && active_key
-			&& event.KeyInput.PressedDown) {
+	if (event.EventType == EET_KEY_INPUT_EVENT && active_key) {
+		if (!event.KeyInput.PressedDown) {
+			active_key = nullptr;
+			return true;
+		}
 
-		bool prefer_character = shift_down;
+		bool prefer_character = false;
 		KeyPress kp(event.KeyInput, prefer_character);
 
 		if (event.KeyInput.Key == irr::KEY_DELETE)
 			kp = KeyPress(""); // To erase key settings
 		else if (event.KeyInput.Key == irr::KEY_ESCAPE)
 			kp = active_key->key; // Cancel
-
-		bool shift_went_down = false;
-		if(!shift_down &&
-				(event.KeyInput.Key == irr::KEY_SHIFT ||
-				event.KeyInput.Key == irr::KEY_LSHIFT ||
-				event.KeyInput.Key == irr::KEY_RSHIFT))
-			shift_went_down = true;
 
 		// Display Key already in use message
 		bool key_in_use = false;
@@ -309,13 +305,6 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 			active_key->key = kp;
 			active_key->button->setText(utf8_to_wide(kp.name()).c_str());
 
-			// Allow characters made with shift
-			if (shift_went_down){
-				shift_down = true;
-				return false;
-			}
-
-			active_key = nullptr;
 			return true;
 		}
 	} else if (event.EventType == EET_KEY_INPUT_EVENT && !active_key
@@ -356,7 +345,6 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					}
 					FATAL_ERROR_IF(!active_key, "Key setting not found");
 
-					shift_down = false;
 					active_key->button->setText(wstrgettext("press key").c_str());
 					break;
 			}
