@@ -8227,7 +8227,7 @@ child will follow movement and rotation of that bone.
     * `count`: number of items, must be between `1` and `32`
     * If `count` exceeds the `"main"` list size, the list size will be used instead.
 * `hud_get_hotbar_itemcount()`: returns number of visible items
-    * This value is not clamped by the `"main"` list size.
+    * This value is also clamped by the `"main"` list size.
 * `hud_set_hotbar_image(texturename)`
     * sets background image for hotbar
 * `hud_get_hotbar_image()`: returns texturename
