@@ -184,26 +184,22 @@ void ToolCapabilities::deserializeJson(std::istream &is)
 	deserializeJsonDamageGroups(root["damage_groups"]);
 }
 
-void ToolCapabilities::deserializeJsonGroupcaps(Json::Value &object) {
-	Json::ValueIterator iter;
-	ToolGroupCap value;
-
-	if (!object.isObject())
+void ToolCapabilities::deserializeJsonGroupcaps(Json::Value &json) {
+	if (!json.isObject())
 		return;
 
-	for (iter = object.begin(); iter != object.end(); ++iter) {
+	for (Json::ValueIterator iter = json.begin(); iter != json.end(); ++iter) {
+		ToolGroupCap value;
 		value.fromJson(*iter);
 		groupcaps[iter.key().asString()] = value;
 	}
 }
 
-void ToolCapabilities::deserializeJsonDamageGroups(Json::Value &object) {
-	Json::ValueIterator iter;
-
-	if (!object.isObject())
+void ToolCapabilities::deserializeJsonDamageGroups(Json::Value &json) {
+	if (!json.isObject())
 		return;
 
-	for (iter = object.begin(); iter != object.end(); ++iter) {
+	for (Json::ValueIterator iter = json.begin(); iter != json.end(); ++iter) {
 		Json::Value &value = *iter;
 		if (value.isInt())
 			damageGroups[iter.key().asString()] = value.asInt();
