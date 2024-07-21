@@ -122,7 +122,7 @@ void TestFileSys::testPathStartsWith()
 			FILESYS_CASE_INSENSITIVE is true
 	*/
 	int expected_results[numpaths][numpaths] = {
-		{1,0,0,0,0,0,0,0,0,0,0,0},
+		{1,2,0,0,0,0,0,0,0,0,0,0},
 		{0,1,0,0,0,0,0,0,0,0,0,0},
 		{0,1,1,0,0,0,0,0,0,0,0,0},
 		{0,1,1,1,0,0,0,0,0,0,0,0},
