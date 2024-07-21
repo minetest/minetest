@@ -4,33 +4,40 @@
 local expect = nil
 minetest.register_on_player_hpchange(function(player, hp, reason)
 	if expect == nil then
-		return
+		return hp
 	end
 
 	for key, value in pairs(reason) do
 		assert(expect[key] == value)
 	end
-	for key, value in pairs(expect) do
-		assert(reason[key] == value)
-	end
+    for key, value in pairs(expect) do
+        assert(reason[key] == value)
+    end
 
-	expect = nil
-end)
+    expect = nil
+	
+    if hp == -19 then
+        return -100
+    end
+	return hp
+	
+end, true)
 
 local function run_hpchangereason_tests(player)
 	local old_hp = player:get_hp()
 
 	player:set_hp(20)
-	expect = { type = "set_hp", from = "mod" }
+	expect = { type = "set_hp", from = "mod", raw = "limited" }
 	player:set_hp(3)
 	assert(expect == nil)
 
-	expect = { a = 234, type = "set_hp", from = "mod" }
+	expect = { a = 234, type = "set_hp", from = "mod", raw = "limited" }
 	player:set_hp(7, { a= 234 })
 	assert(expect == nil)
 
-	expect = { df = 3458973454, type = "fall", from = "mod" }
-	player:set_hp(10, { type = "fall", df = 3458973454 })
+	player:set_hp(20)
+	expect = { df = 3458973454, type = "fall", from = "mod", raw = "original" }
+	player:set_hp(1, { type = "fall", df = 3458973454, raw = "original" })
 	assert(expect == nil)
 
 	player:set_hp(old_hp)
