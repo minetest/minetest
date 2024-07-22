@@ -138,13 +138,6 @@ void UnitSAO::setAttachment(const object_t new_parent, const std::string &bone, 
 	const auto check_nesting = [&] (const char *descr) -> bool {
 		if (m_attachment_call_counter == call_count)
 			return false;
-		auto d = wrappedDifference(m_attachment_call_counter, call_count, (u8)U8_MAX);
-		if (d > 30) {
-			errorstream << "UnitSAO::setAttachment() id=" << m_id <<
-				" infinite callback loop detected." << std::endl;
-			throw ServerError("loop in UnitSAO::setAttachment");
-		}
-		assert(d > 0);
 		verbosestream << "UnitSAO::setAttachment() id=" << m_id <<
 			" nested call detected (" << descr << ")." << std::endl;
 		return true;
