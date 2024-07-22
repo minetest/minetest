@@ -136,6 +136,8 @@ void UnitSAO::setAttachment(const object_t new_parent, const std::string &bone, 
 	const auto call_count = ++m_attachment_call_counter;
 
 	const auto check_nesting = [&] (const char *descr) -> bool {
+		// The counter is never decremented, so if it differs that means
+		// a nested call to setAttachment() has happened.
 		if (m_attachment_call_counter == call_count)
 			return false;
 		verbosestream << "UnitSAO::setAttachment() id=" << m_id <<
