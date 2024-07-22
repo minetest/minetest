@@ -764,6 +764,10 @@ chat_font_size (Chat font size) int 0 0 72
 #    The URL for the content repository
 contentdb_url (ContentDB URL) string https://content.minetest.net
 
+#    If enabled and you have ContentDB packages installed, Minetest may contact ContentDB to
+#    check for package updates when opening the mainmenu.
+contentdb_enable_updates_indicator (Enable updates available indicator on content tab) bool true
+
 #    Comma-separated list of flags to hide in the content repository.
 #    "nonfree" can be used to hide packages which do not qualify as 'free software',
 #    as defined by the Free Software Foundation.

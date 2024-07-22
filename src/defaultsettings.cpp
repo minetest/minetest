@@ -402,6 +402,7 @@ void set_default_settings()
 
 	// ContentDB
 	settings->setDefault("contentdb_url", "https://content.minetest.net");
+	settings->setDefault("contentdb_enable_updates_indicator", "true");
 	settings->setDefault("contentdb_max_concurrent_downloads", "3");
 
 #ifdef __ANDROID__
