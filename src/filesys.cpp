@@ -697,8 +697,8 @@ bool MoveDir(const std::string &source, const std::string &target)
 
 bool PathStartsWith(const std::string &path, const std::string &prefix)
 {
-	if (prefix.size() == 0)
-		return path.size() == 0;
+	if (prefix.empty())
+		return path.empty();
 	size_t pathsize = path.size();
 	size_t pathpos = 0;
 	size_t prefixsize = prefix.size();
