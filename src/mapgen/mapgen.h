@@ -167,6 +167,7 @@ private:
 */
 class Mapgen {
 public:
+	// Seed used for noises (truncated from the map seed)
 	s32 seed = 0;
 	int water_level = 0;
 	int mapgen_limit = 0;
@@ -180,6 +181,7 @@ public:
 	EmergeParams *m_emerge = nullptr;
 	const NodeDefManager *ndef = nullptr;
 
+	// Chunk-specific seed used to place ores and decorations
 	u32 blockseed;
 	s16 *heightmap = nullptr;
 	biome_t *biomemap = nullptr;

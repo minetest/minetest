@@ -1,196 +1,188 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the minetest package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: Catalan (Minetest)\n"
+"Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2023-11-20 05:12+0000\n"
-"Last-Translator: Spurnita <joaquim.puig@upc.edu>\n"
-"Language-Team: Catalan <https://hosted.weblate.org/projects/minetest/"
-"minetest/ca/>\n"
-"Language: ca\n"
+"PO-Revision-Date: 2024-06-09 15:09+0000\n"
+"Last-Translator: SergioFLS <sergioflsgd@hotmail.com>\n"
+"Language-Team: Toki Pona <https://hosted.weblate.org/projects/minetest/"
+"minetest/tok/>\n"
+"Language: tok\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.2\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr "Netejar la cua de sortida del xat"
+msgstr "o weka e linja toki"
 
 #: builtin/client/chatcommands.lua
+#, fuzzy
 msgid "Empty command."
-msgstr "Ordre buida"
+msgstr "toki lawa sina li weka."
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
-msgstr "Sortir al menú"
+msgstr "o tawa"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr "Comanda invàlida: "
+msgstr "ni li toki lawa ala: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr "Comanda executada "
+msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr "Llistar els jugadors online"
+msgstr "o lukin e jan mute lon"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr "Jugadors en línia: "
+msgstr "jan mute lon "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr "La cua de sortida del xat està buida."
+msgstr "tenpo ni la linja toki li weka."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr "Aquesta ordre està deshabilitada pel servidor"
+msgstr "ilo lawa li lawa e ni: toki lawa ni li ken ala."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr "Reaparèixer"
+msgstr "o kama sin"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr "Has mort"
+msgstr "sina moli"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
-msgstr "Comandes disponibles:"
+msgstr ""
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
-msgstr "Comandes disponibles: "
+msgstr "toki lawa mute ni li lon: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr "Comanda no disponible: "
+msgstr ""
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Get help for commands (-t: output in chat)"
-msgstr "Obteniu ajuda per a les comandes"
+msgstr ""
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
-"Useu '.help <cmd>' per obtenir més informació, o bé '.help all' per llistar-"
-"ho tot."
+"sina sona ala e toki lawa la o sitelen e ni: '.help <cmd>'. anu la sina wile "
+"sona e toki lawa ale la o sitelen e ni: '.help all'."
 
 #: builtin/common/chatcommands.lua
 #, fuzzy
 msgid "[all | <cmd>] [-t]"
-msgstr "[tot | <cmd>]"
+msgstr "[all | <toki lawa>]"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
-msgstr "<cap disponible>"
+msgstr "<lon ala>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr "S'ha produït un error en un script Lua:"
+msgstr ""
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
-msgstr "S'ha produït un error:"
+msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr "Menú principal"
+msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "OK"
-msgstr "D'acord"
+msgstr "pona"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr "Torneu a connectar"
+msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "El servidor ha sol·licitat una reconnexió:"
+msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr "Desajust de la versió del protocol. "
+msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr "El servidor fa complir la versió $1 del protocol. "
+msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
 msgstr ""
-"El servidor es compatible amb les versions de protocol entre $ 1 i $ 2 . "
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr "Nosaltres sols suportem la versió $1 del protocol."
+msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr "Nosaltres suportem versions del protocol entre la versió $1 i la $2."
+msgstr ""
 
 #: builtin/mainmenu/content/contentdb.lua
 msgid "Error installing \"$1\": $2"
-msgstr "Error instal·lant \"$1\": $2"
+msgstr ""
 
 #: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "Error al instal·lar $1 en $2"
+msgstr ""
 
 #: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
 msgid "Failed to download $1"
-msgstr "Error al instal·lar $1 en $2"
+msgstr ""
 
 #: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
 msgid ""
 "Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
 "broken archive)"
 msgstr ""
-"\n"
-"Instal·lar mod: Format de arxiu \"$1\" no suportat o arxiu corrupte"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
-"$1 descarregant,\n"
-"$2 en cua"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Carregant ..."
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "All packages"
-msgstr "Tots els paquets"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "Back to Main Menu"
-msgstr "Menú principal"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB no és disponible quan Minetest s'ha compilat sense cURL"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "Downloading..."
-msgstr "Carregant ..."
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Error getting dependencies for package"
@@ -198,99 +190,90 @@ msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Games"
-msgstr "Jocs"
+msgstr "musi"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "Install"
-msgstr "Instal·lar"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
-msgstr "Carregant ..."
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Mods"
-msgstr "Mods"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "No packages could be retrieved"
-msgstr "No s'ha pogut obtenir cap paquet"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "No results"
-msgstr "Cap resultat"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Cap actualització"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Queued"
-msgstr "En cua"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "Texture packs"
-msgstr "Textures"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "The package $1 was not found."
-msgstr "El paquet $1/$2 no s'ha trobat."
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Uninstall"
-msgstr "Instal·lar"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Update"
-msgstr "Actualitza"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Update All [$1]"
-msgstr "Actualització Tot [$1]"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "View more information in a web browser"
-msgstr "Veure més informació en un navegador web"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "You need to install a game before you can install a mod"
-msgstr "Heu d'instal·lar un joc abans d'instal·lar un mod"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr "Les dependències $1 i $2 s'instal·laran ."
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_install.lua
-#, fuzzy
 msgid "$1 by $2"
-msgstr "$1 per $2"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "$1 required dependencies could not be found."
-msgstr "$1 dependències requerides no s'han pogut trobar."
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_install.lua
-#, fuzzy
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "s'instal·laran $1, i es saltaran $2 dependències."
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_install.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "La tecla s'està utilitzant"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_install.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Ocultar Joc"
+msgstr "musi lawa:"
 
 #: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/content/dlg_overwrite.lua
@@ -302,215 +285,188 @@ msgstr "Ocultar Joc"
 #: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
 #: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr "Cancel·lar"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr "Dependències:"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_install.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Instal·lar"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_install.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Dependències opcionals:"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "Not found"
-msgstr "No s'ha trobat"
+msgstr "ala lon"
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "Please check that the base game is correct."
-msgstr "Si us plau, comproveu que el joc base és correcte."
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_overwrite.lua
-#, fuzzy
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "\"$1\" ja existeix. Vols sobreescriure-la?"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_overwrite.lua
 msgid "Overwrite"
-msgstr "Sobreescriure"
+msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "$1 (Enabled)"
-msgstr "Activat"
+msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "$1 mods"
-msgstr "Mode 3D"
+msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr "Error al instal·lar $1 en $2"
+msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
 msgstr ""
-"Instal·lar mod: Impossible de trobar el nom de la carpeta adequat per al "
-"paquet de mods $1"
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
 msgstr ""
-"Instal·lar mod: Impossible de trobar el nom de la carpeta adequat per al "
-"paquet de mods $1"
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "Error al instal·lar $1 en $2"
+msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a texture pack"
-msgstr "Error al instal·lar $1 en $2"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr "(Habilitat, té algún error)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr "(No satisfet)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr "Desactivar tot"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable modpack"
-msgstr "Desactiva el modpack"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr "Activar tot"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "Activar modpack"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"Error a l'habilitar el mod \"$1\" perquè conté caràcters no permesos. Només "
-"estan permesos els caràcters [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr "Trobeu Més Mods"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr "Mod:"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr "No hi ha dependències (opcionals)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr "Cap descripció del joc disponible."
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "Sense dependències."
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No modpack description provided."
-msgstr "Cap descripció del mod disponible"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No optional dependencies"
-msgstr "Dependències opcionals:"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr "Dependències opcionals:"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr "Guardar"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr "Món:"
+msgstr "ma:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr "Activat"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "Ja existeix un món anomenat \"$1\""
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr "Terreny addicional"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Altitude chill"
-msgstr "Fred d'altitud"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Altitude dry"
-msgstr "Fred d'altitud"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
-msgstr "Barrejar biomes"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
-msgstr "Biomes"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caverns"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr "Crear"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "Informació del mod:"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Desert temples"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Development Test is meant for developers."
 msgstr ""
-"Advertència: El joc \"Minimal development test\" esta dissenyat per a "
-"desenvolupadors."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
@@ -519,209 +475,198 @@ msgid ""
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Dungeons"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr "Terreny pla"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr "Flotant masses de terra al cel"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr "Floatlands (experimental)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr "Generar terrenys no fractals: Oceans i subterranis"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr "muntanas"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
-msgstr "Rius humits"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr "aumenta la humitat al voltant dels rius"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr "Instal·lar un altre joc"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr "Llacs"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr "Baixa humitat i alta calor provoca rius poc profunds o secs"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr "Generador de mapes"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr "Banderes Mapgen"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr "Generador de mapes"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr "Muntanyes"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr "Flux de fang"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr "Xarxa de túnels i coves"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "No game selected"
-msgstr "Seleccionar distancia"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr "Redueix la calor amb l'altitud"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr "Redueix la humitat amb l'altitud"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Rivers"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr "Rius a nivell del mar"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Seed"
-msgstr "Llavor"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr "Transició suau entre els biomes"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
-"Estructures que apareixen en el terreny (sense efecte sobre els arbres i "
-"l’herba de la selva creats per la v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr "Estructures que apareixen en el terreny, típicament arbres i plantes"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Temperate, Desert"
-msgstr "Temperat, Desert"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr "Temperat, Desert, Jungla"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr "Temperat, Desert, Jungla, Tundra, Taigà"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr "Erosió superficial del terreny"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr "Arbres i herba de jungla"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
-msgstr "Variar la profunditat del riu"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr "Grans cavernes del fons subterrani"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr "Nom del món"
+msgstr ""
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "Realment desitja esborrar \"$1\"?"
+msgstr ""
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 msgid "Delete"
-msgstr "Esborrar"
+msgstr ""
 
 #: builtin/mainmenu/dlg_delete_content.lua
-#, fuzzy
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr "Modmgr: Error al esborrar \"$1\""
+msgstr ""
 
 #: builtin/mainmenu/dlg_delete_content.lua
-#, fuzzy
 msgid "pkgmgr: invalid path \"$1\""
-msgstr "Modmgr: Ruta del mod \"$1\" invàlida"
+msgstr ""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr "Eliminar el món \"$1\"?"
+msgstr ""
 
 #: builtin/mainmenu/dlg_register.lua src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr "Confirma contrasenya"
+msgstr ""
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr "Uneix-te a $1"
+msgstr ""
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
-msgstr "Manca el nom"
+msgstr ""
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Name"
-msgstr "Nom"
+msgstr ""
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Password"
-msgstr "Nova contrasenya"
+msgstr ""
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Passwords do not match"
-msgstr "Les contrasenyes no coincideixen!"
+msgstr ""
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 msgid "Register"
-msgstr "Registre"
+msgstr ""
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr "Descarta"
+msgstr ""
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -746,11 +691,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr "Acceptar"
+msgstr ""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "Reanomenar el paquet de mods:"
+msgstr ""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
@@ -784,7 +729,7 @@ msgstr ""
 
 #: builtin/mainmenu/init.lua
 msgid "Settings"
-msgstr "Configuració"
+msgstr ""
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
@@ -793,40 +738,34 @@ msgstr ""
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
-"Intenta tornar a habilitar la llista de servidors públics i comprovi la seva "
-"connexió a Internet ."
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Browse"
-msgstr "Navegar"
+msgstr ""
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Edit"
-msgstr "Editar"
+msgstr ""
 
 #: builtin/mainmenu/settings/components.lua
-#, fuzzy
 msgid "Select directory"
-msgstr "Selecciona el fitxer del mod:"
+msgstr ""
 
 #: builtin/mainmenu/settings/components.lua
-#, fuzzy
 msgid "Select file"
-msgstr "Selecciona el fitxer del mod:"
+msgstr ""
 
 #: builtin/mainmenu/settings/components.lua
-#, fuzzy
 msgid "Set"
-msgstr "Seleccionar"
+msgstr ""
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "(No description of setting given)"
-msgstr "(Cap descripció d'ajustament donada)"
+msgstr ""
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#, fuzzy
 msgid "2D Noise"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Lacunarity"
@@ -874,9 +813,8 @@ msgstr ""
 #. It describes the default processing options
 #. for noise settings in the settings menu.
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#, fuzzy
 msgid "defaults"
-msgstr "Joc per defecte"
+msgstr ""
 
 #. ~ "eased" is a noise parameter flag.
 #. It is used to make the map smoother and
@@ -896,35 +834,33 @@ msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
-msgstr "Enrere"
+msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
-msgstr "Xat"
+msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Clear"
-msgstr "Netejar"
+msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
 #: src/settings_translation_file.cpp
 msgid "Controls"
-msgstr "Controls"
+msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "General"
 msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Movement"
-msgstr "Moviment ràpid"
+msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Reset setting to default"
-msgstr "Restablir per defecte"
+msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
@@ -932,7 +868,7 @@ msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr "Buscar"
+msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
@@ -940,22 +876,19 @@ msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
-msgstr "Mostrar els noms tècnics"
+msgstr ""
 
 #: builtin/mainmenu/settings/settingtypes.lua
-#, fuzzy
 msgid "Client Mods"
-msgstr "Seleccionar un món:"
+msgstr ""
 
 #: builtin/mainmenu/settings/settingtypes.lua
-#, fuzzy
 msgid "Content: Games"
-msgstr "Continuar"
+msgstr ""
 
 #: builtin/mainmenu/settings/settingtypes.lua
-#, fuzzy
 msgid "Content: Mods"
-msgstr "Continuar"
+msgstr ""
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
@@ -967,7 +900,7 @@ msgstr ""
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Disabled"
-msgstr "Desactivat"
+msgstr ""
 
 #: builtin/mainmenu/settings/shadows_component.lua
 #: src/settings_translation_file.cpp
@@ -1000,16 +933,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
-msgstr "Col·laboradors Actius"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Active renderer:"
-msgstr "Rang d'enviament de l'objecte actiu"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
-msgstr "Desenvolupadors del nucli"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
@@ -1020,9 +952,8 @@ msgid "Irrlicht device:"
 msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "Selecciona el fitxer del mod:"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid ""
@@ -1032,11 +963,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
-msgstr "Antics Col·laboradors"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Core Developers"
-msgstr "Antics Desenvolupadors del nucli"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Share debug log"
@@ -1051,78 +982,68 @@ msgid "Browse online content [$1]"
 msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content"
-msgstr "Continuar"
+msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content [$1]"
-msgstr "Continuar"
+msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Disable Texture Pack"
-msgstr "Selecciona un paquet de textures:"
+msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Installed Packages:"
-msgstr "Mods Instal·lats:"
+msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr "Sense dependències."
+msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "No package description available"
-msgstr "Cap descripció del mod disponible"
+msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr "Reanomenar"
+msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Update available?"
-msgstr "<cap disponible>"
+msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Use Texture Pack"
-msgstr "Textures"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
-msgstr "Anunciar servidor"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
-msgstr "Adreça BIND"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Creative Mode"
-msgstr "Mode Creatiu"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
-msgstr "Permetre Danys"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Host Game"
-msgstr "Ocultar Joc"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Host Server"
-msgstr "Servidor"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Install a game"
-msgstr "Instal·lar"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
@@ -1140,71 +1061,64 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
-msgstr "Nou"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
-msgstr "No s'ha creat ningun món o no s'ha seleccionat!"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
-msgstr "Jugar Joc"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
 msgid "Port"
-msgstr "Port"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Seleccionar un món:"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
-msgstr "Seleccionar un món:"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Server Port"
-msgstr "Port del Servidor"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Start Game"
-msgstr "Ocultar Joc"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "You need to install a game before you can create a world."
-msgstr "Heu d'instal·lar un joc abans d'instal·lar un mod"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Address"
-msgstr "Adreça BIND"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
-msgstr "Mode creatiu"
+msgstr ""
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Damage / PvP"
-msgstr "Dany"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Favorites"
-msgstr "Preferit"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
 msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Join Game"
-msgstr "Ocultar Joc"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
@@ -1212,72 +1126,67 @@ msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
-msgstr "Ping"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Public Servers"
-msgstr "Anunciar servidor"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
 msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Remove favorite"
-msgstr "Esborra preferit"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Server Description"
-msgstr "Port del Servidor"
+msgstr ""
 
 #: src/client/client.cpp
-#, fuzzy
 msgid "Connection aborted (protocol error?)."
-msgstr "Error de connexió (¿temps esgotat?)"
+msgstr ""
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
-msgstr "Temps d'espera de la connexió esgotat."
+msgstr ""
 
 #: src/client/client.cpp
 msgid "Done!"
-msgstr "Completat!"
+msgstr ""
 
 #: src/client/client.cpp
 msgid "Initializing nodes"
-msgstr "Inicialitzant nodes"
+msgstr ""
 
 #: src/client/client.cpp
 msgid "Initializing nodes..."
-msgstr "Inicialitzant nodes ..."
+msgstr ""
 
 #: src/client/client.cpp
 msgid "Loading textures..."
-msgstr "Carregant textures ..."
+msgstr ""
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
-msgstr "Reconstruint ombreig ..."
+msgstr ""
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Could not find or load game: "
-msgstr "No es pot trobar o carregar el joc \""
+msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
-msgstr "Menú principal"
+msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "Cap món seleccionat i cap adreça facilitada. Res a fer."
+msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr "Nom del jugador massa llarg."
+msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -1289,28 +1198,25 @@ msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
-msgstr "La ruta del món especificat no existeix: "
+msgstr ""
 
 #: src/client/clientmedia.cpp src/client/game.cpp
 msgid "Media..."
-msgstr "Media ..."
+msgstr ""
 
 #: src/client/game.cpp src/client/shader.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
-"\n"
-"Comprovi debug.txt per a detalls."
 
 #: src/client/game.cpp
 msgid "- Mode: "
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Public: "
-msgstr "Públic"
+msgstr ""
 
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
@@ -1322,9 +1228,8 @@ msgid "- Server Name: "
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "A serialization error occurred:"
-msgstr "Ha ocorregut un error:"
+msgstr ""
 
 #: src/client/game.cpp
 #, c-format
@@ -1332,14 +1237,12 @@ msgid "Access denied. Reason: %s"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward disabled"
-msgstr "Tecla Avançar"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward enabled"
-msgstr "Tecla Avançar"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Block bounds hidden"
@@ -1354,14 +1257,12 @@ msgid "Block bounds shown for nearby blocks"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Camera update disabled"
-msgstr "Tecla alternativa per a l'actualització de la càmera"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Camera update enabled"
-msgstr "Tecla alternativa per a l'actualització de la càmera"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Can't show block bounds (disabled by game or mod)"
@@ -1369,22 +1270,19 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr "Canviar contrasenya"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Cinematic mode disabled"
-msgstr "Tecla mode cinematogràfic"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Cinematic mode enabled"
-msgstr "Tecla mode cinematogràfic"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Client disconnected"
-msgstr "Client"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1392,11 +1290,11 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
-msgstr "Connectant al servidor ..."
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Connection error (timed out?)"
-msgstr "Error de connexió (¿temps esgotat?)"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
@@ -1404,10 +1302,9 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Continue"
-msgstr "Continuar"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
@@ -1422,18 +1319,6 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
-"Controls predeterminats:\n"
-"Amb el menú ocult:\n"
-"- Toc simple: botó activar\n"
-"- Toc doble: posar / utilitzar\n"
-"- Lliscar dit: mirar al voltant\n"
-"Amb el menú / inventari visible:\n"
-"- Toc doble (fora):\n"
-"  -> tancar\n"
-"- Toc a la pila d'objectes:\n"
-"  -> moure la pila\n"
-"- Toc i arrossegar, toc amb 2 dits:\n"
-"  -> col·locar només un objecte\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1442,46 +1327,44 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Creating client..."
-msgstr "Creant client ..."
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Creating server..."
-msgstr "Creant servidor ..."
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Debug info shown"
-msgstr "Tecla alternativa per a la informació de la depuració"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating client: %s"
-msgstr "Creant client ..."
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
-msgstr "Eixir al menú"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Exit to OS"
-msgstr "Eixir al S.O"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Fast mode disabled"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fast mode enabled"
-msgstr "Dany activat"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
@@ -1492,23 +1375,20 @@ msgid "Fly mode disabled"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode enabled"
-msgstr "Dany activat"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog disabled"
-msgstr "Desactivat"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog enabled"
-msgstr "Activat"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Fog enabled by game or mod"
@@ -1519,44 +1399,40 @@ msgid "Game info:"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Game paused"
-msgstr "Jocs"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Hosting server"
-msgstr "Creant servidor ..."
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Item definitions..."
-msgstr "Definicions d'objectes ..."
+msgstr ""
 
 #: src/client/game.cpp
 msgid "KiB/s"
-msgstr "KiB/s"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "MiB/s"
-msgstr "MiB/s"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Multiplayer"
-msgstr "Un jugador"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Noclip mode enabled"
-msgstr "Dany activat"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
@@ -1564,7 +1440,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Node definitions..."
-msgstr "Definicions dels nodes ..."
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Off"
@@ -1587,30 +1463,28 @@ msgid "Profiler graph shown"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Remote server"
-msgstr "Anunciar servidor"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Resolving address..."
-msgstr "Resolent adreça ..."
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Shutting down..."
-msgstr "Tancant ..."
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Singleplayer"
-msgstr "Un jugador"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Sound Volume"
-msgstr "Volum del so"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound muted"
-msgstr "Volum del so"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
@@ -1621,9 +1495,8 @@ msgid "Sound system is not supported on this build"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound unmuted"
-msgstr "Volum del so"
+msgstr ""
 
 #: src/client/game.cpp
 #, c-format
@@ -1701,9 +1574,8 @@ msgid "Chat currently disabled by game or mod"
 msgstr ""
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat hidden"
-msgstr "Tecla del xat"
+msgstr ""
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
@@ -1728,37 +1600,32 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Apps"
-msgstr "Aplicacions"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Backspace"
-msgstr "Enrere"
+msgstr ""
 
 #. ~ Usually paired with the Pause key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Break Key"
-msgstr "Tecla sigil"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
 msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Clear Key"
-msgstr "Netejar"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Control Key"
-msgstr "Control"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Delete Key"
-msgstr "Esborrar"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
@@ -1766,162 +1633,152 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "End"
-msgstr "Fi"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Erase EOF"
-msgstr "Esborrar OEF"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Execute"
-msgstr "Executar"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Help"
-msgstr "Ajuda"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Home"
-msgstr "Inici"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "IME Accept"
-msgstr "Acceptar"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "IME Convert"
-msgstr "Convertir"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "IME Escape"
-msgstr "Esc"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "IME Mode Change"
-msgstr "Canvi de mode"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "IME Nonconvert"
-msgstr "No convertir"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Insert"
-msgstr "Introduir"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Arrow"
-msgstr "Control esq"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Left Button"
-msgstr "Botó esquerre"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Left Control"
-msgstr "Control esq"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Left Menu"
-msgstr "Menú esq"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Left Shift"
-msgstr "Shift esq"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Left Windows"
-msgstr "Windows esquerre"
+msgstr ""
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Menu Key"
-msgstr "Menú"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
-msgstr "Botó del mig"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Num Lock"
-msgstr "Bloq Num"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad *"
-msgstr "Teclat Num. *"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad +"
-msgstr "Teclat Num. +"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad -"
-msgstr "Teclat Num. -"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad ."
-msgstr "Teclat Num. *"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad /"
-msgstr "Teclat Num. /"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 0"
-msgstr "Teclat Num. 0"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 1"
-msgstr "Teclat Num. 1"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 2"
-msgstr "Teclat Num. 2"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 3"
-msgstr "Teclat Num. 3"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 4"
-msgstr "Teclat Num. 4"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 5"
-msgstr "Teclat Num. 5"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 6"
-msgstr "Teclat Num. 6"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 7"
-msgstr "Teclat Num. 7"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 8"
-msgstr "Teclat Num. 8"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 9"
-msgstr "Teclat Num. 9"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "OEM Clear"
-msgstr "Netejar OEM"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Down"
-msgstr "Avall"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Page Up"
@@ -1929,78 +1786,74 @@ msgstr ""
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Pause Key"
-msgstr "Pausa"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Play"
-msgstr "Jugar"
+msgstr ""
 
 #. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
-msgstr "Imprimir"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Return Key"
-msgstr "Tornar"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Arrow"
-msgstr "Control dta"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Right Button"
-msgstr "Botó dret"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Right Control"
-msgstr "Control dta"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Right Menu"
-msgstr "Menú dta"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Right Shift"
-msgstr "Shift Dta"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Right Windows"
-msgstr "Windows dret"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Scroll Lock"
-msgstr "Bloq Despl"
+msgstr ""
 
 #. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
-msgstr "Seleccionar"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Shift Key"
-msgstr "Shift"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Sleep"
-msgstr "Dormir"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Snapshot"
-msgstr "Captura de pantalla"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Space"
-msgstr "Espai"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Tab"
-msgstr "Tabulador"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
@@ -2008,16 +1861,15 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
-msgstr "X Botó 1"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "X Button 2"
-msgstr "X Botó 2"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Zoom Key"
-msgstr "Zoom"
+msgstr ""
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
@@ -2038,9 +1890,9 @@ msgid "Minimap in texture mode"
 msgstr ""
 
 #: src/client/shader.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to compile the \"%s\" shader."
-msgstr "Error al instal·lar $1 en $2"
+msgstr ""
 
 #: src/client/shader.cpp
 msgid "Shaders are enabled but GLSL is not supported by the driver."
@@ -2064,14 +1916,12 @@ msgid ""
 msgstr ""
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Sense dependències."
+msgstr ""
 
 #: src/gui/guiChatConsole.cpp
-#, fuzzy
 msgid "Failed to open webpage"
-msgstr "Error al instal·lar $1 en $2"
+msgstr ""
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
@@ -2079,17 +1929,15 @@ msgstr ""
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
-msgstr "Continuar"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "\"Aux1\" = climb down"
-msgstr "\"Utilitzar\" = Descendir"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Autoforward"
-msgstr "Avant"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Automatic jumping"
@@ -2101,24 +1949,23 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
-msgstr "Arrere"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Block bounds"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Change camera"
-msgstr "Configurar controls"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Command"
-msgstr "Comandament"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Console"
-msgstr "Consola"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. range"
@@ -2130,36 +1977,35 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Dos tocs \"botar\" per volar"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
-msgstr "Amollar"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Forward"
-msgstr "Avant"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. range"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Inc. volume"
-msgstr "Volum del so"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inventory"
-msgstr "Inventari"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Jump"
-msgstr "Botar"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Key already in use"
-msgstr "La tecla s'està utilitzant"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings."
@@ -2167,21 +2013,19 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
-msgstr "Esquerra"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Local command"
-msgstr "Comands de xat"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Mute"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Next item"
-msgstr "Següent"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Prev. item"
@@ -2189,11 +2033,11 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Range select"
-msgstr "Seleccionar distancia"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Right"
-msgstr "Dreta"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
@@ -2201,52 +2045,47 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Sneak"
-msgstr "Discreció"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle HUD"
-msgstr "Activar volar"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle chat log"
-msgstr "Activar ràpid"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr "Activar ràpid"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr "Activar volar"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle fog"
-msgstr "Activar volar"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle minimap"
-msgstr "Activar noclip"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr "Activar noclip"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle pitchmove"
-msgstr "Activar ràpid"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Zoom"
-msgstr "Zoom"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr "Premsa una tecla"
+msgstr ""
 
 #: src/gui/guiOpenURL.cpp
 msgid "Open"
@@ -2257,39 +2096,37 @@ msgid "Open URL?"
 msgstr ""
 
 #: src/gui/guiOpenURL.cpp
-#, fuzzy
 msgid "Unable to open URL"
-msgstr "Error al instal·lar $1 en $2"
+msgstr ""
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
-msgstr "Canviar"
+msgstr ""
 
 #: src/gui/guiPasswordChange.cpp
 msgid "New Password"
-msgstr "Nova contrasenya"
+msgstr ""
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Old Password"
-msgstr "Contrasenya vella"
+msgstr ""
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr "Les contrasenyes no coincideixen!"
+msgstr ""
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Exit"
-msgstr "Tancar"
+msgstr ""
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy
 msgid "Muted"
-msgstr "Utilitza la tecla"
+msgstr ""
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
-msgstr "Volum de so: "
+msgstr ""
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
@@ -2297,7 +2134,7 @@ msgstr "Volum de so: "
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 #: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
-msgstr "ca"
+msgstr ""
 
 #: src/network/clientpackethandler.cpp
 msgid ""
@@ -2309,12 +2146,11 @@ msgid "Name is taken. Please choose another name"
 msgstr ""
 
 #: src/server.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "%s while shutting down: "
-msgstr "Tancant ..."
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "(X,Y,Z) offset of fractal from world center in units of 'scale'.\n"
 "Can be used to move a desired point to (0, 0) to create a\n"
@@ -2325,12 +2161,6 @@ msgid ""
 "situations.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
-"(X, Y, Z) compensar de fractal del món centre en unitats d \"escala\".\n"
-"Solia passar un adequat respawn de terra baixa a prop de (0, 0).\n"
-"L'omissió és adequat per als conjunts de mandelbrot, que necessita ser "
-"editats per julia estableix.\n"
-"Gamma aproximadament -2 a 2. Multiplicar per el \"escala\" per a òfset de "
-"nodes."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2377,11 +2207,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
-msgstr "Núvols 3D"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr "Mode 3D"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D mode parallax strength"
@@ -2422,7 +2252,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2434,32 +2263,20 @@ msgid ""
 "-    crossview: Cross-eyed 3d\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
-"Suport 3D.\n"
-"Currently supported:\n"
-"-    none: no 3d output.\n"
-"-    anaglyph: cyan/magenta color 3d.\n"
-"-    interlaced: odd/even line based polarisation screen support.\n"
-"-    topbottom: split screen top/bottom.\n"
-"-    sidebyside: split screen side by side.\n"
-"-    pageflip: quadbuffer based 3d."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
-"Elegeix una llavor per al nou mapa, deixa buit per a una llavor a l'atzar.\n"
-"Serà anul·lat si es crea un nou món al menú principal."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
 msgstr ""
-"Un missatge que es mostrarà a tots els clients quan el servidor s'estavella."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
 msgstr ""
-"Un missatge que es mostrarà a tots els clients quan el servidor s'apaga."
 
 #: src/settings_translation_file.cpp
 msgid "ABM interval"
@@ -2470,35 +2287,32 @@ msgid "ABM time budget"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Absolute limit of queued blocks to emerge"
-msgstr "Límit absolut de cues emergents"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr "Acceleració en l'aire"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active Block Modifiers"
-msgstr "Rang del bloc actiu"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active block management interval"
-msgstr "Rang del bloc actiu"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr "Rang del bloc actiu"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr "Rang d'enviament de l'objecte actiu"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
@@ -2519,13 +2333,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Admin name"
-msgstr "Nom del món"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
-msgstr "Avançat"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Allows liquids to be translucent."
@@ -2541,41 +2354,36 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Always fly fast"
-msgstr "Sempre volar y ràpid"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
-msgstr "Gamma d'oclusió d'ambient"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Amplifies the valleys."
-msgstr "Amplifica les valls"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
-msgstr "Filtrat anisotròpic"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr "Anunciar servidor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Announce to this serverlist."
-msgstr "Anunciar servidor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Anti-aliasing scale"
-msgstr "Suavitzat (Antialiasing):"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Antialiasing method"
-msgstr "Suavitzat (Antialiasing):"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2612,7 +2420,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
-msgstr "Preguntar per tornar a connectar després d'una caiguda"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2647,37 +2455,32 @@ msgid "Automatically jump up single-node obstacles."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Automatically report to the serverlist."
-msgstr "Automàticament informar a la llista del servidor."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Aux1 key for climbing/descending"
-msgstr "Utilitzar la tecla \"utilitzar\" per escalar/descendir"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base terrain height."
-msgstr "Alçada del terreny base"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base texture size"
-msgstr "Textures"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Basic privileges"
-msgstr "Privilegis per defecte"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Beach noise"
@@ -2689,11 +2492,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
-msgstr "Filtre bilineal"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bind address"
-msgstr "Adreça BIND"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Biome API"
@@ -2720,9 +2523,8 @@ msgid "Bloom Intensity"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bloom Radius"
-msgstr "Radi del núvol"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Strength Factor"
@@ -2750,61 +2552,55 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
-msgstr "Construir dins el jugador"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Camera"
-msgstr "Configurar controls"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
-msgstr "Suavitzat de la càmera"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr "Suavitzat de la càmera en mode cinematogràfic"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave noise"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr "Soroll de cova #2"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
-msgstr "Amplada de les coves"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave1 noise"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave2 noise"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cavern limit"
-msgstr "Amplada de les coves"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cavern noise"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cavern taper"
@@ -2815,9 +2611,8 @@ msgid "Cavern threshold"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cavern upper limit"
-msgstr "Amplada de les coves"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2830,28 +2625,24 @@ msgid "Chat command time message threshold"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat commands"
-msgstr "Comands de xat"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat font size"
-msgstr "Mida del chunk"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat log level"
-msgstr "Nivell de registre de depuració"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat message format"
-msgstr "Missatge d'error"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chat message kick threshold"
@@ -2867,7 +2658,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
-msgstr "Mida del chunk"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2877,7 +2668,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client"
-msgstr "Client"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client Mesh Chunksize"
@@ -2885,57 +2676,51 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
-msgstr "Client i Servidor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client modding"
-msgstr "Client"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client side modding restrictions"
-msgstr "Client"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client-side Modding"
-msgstr "Client"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client-side node lookup range restriction"
-msgstr "Client"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
-msgstr "Velocitat d'escalada"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cloud radius"
-msgstr "Radi del núvol"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Clouds"
-msgstr "Núvols"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds are a client-side effect."
-msgstr "Els núvols són un efecte de costat del client."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
-msgstr "Núvols en el menú"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
-msgstr "Boira de color"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Colored shadows"
-msgstr "Boira de color"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2959,19 +2744,12 @@ msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
-"Llista de mods separada per comes que tenen permís per accedir a les APIs "
-"HTTP,\n"
-"les quals els permeten pujar/descarregar informació de/cap a internet."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
-"Llista de mods de fiar separada per comes que tenen permís per accedir a "
-"funcions\n"
-"insegures fins i tot quan \"mod security\" està activat (via "
-"request_insecure_environment ())."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2991,29 +2769,27 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
-msgstr "Connectar vidre"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Connect to external media server"
-msgstr "Connectar a servidor de mitjans externs"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr "Connecta vidre si el node ho admet."
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console alpha"
-msgstr "Consola Alpha"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Console color"
-msgstr "Color de la consola"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console height"
-msgstr "Tecla de la consola"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Content Repository"
@@ -3028,20 +2804,15 @@ msgid "ContentDB Max Concurrent Downloads"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "ContentDB URL"
-msgstr "Continuar"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Controls length of day/night cycle.\n"
 "Examples:\n"
 "72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays unchanged."
 msgstr ""
-"Controla la duració del cicle dia/nit.\n"
-"Exemples: 72 = 20min, 360 = 4min, 1 = 24hora, 0 = dia/nit/el que sigui es "
-"queda inalterat."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3051,11 +2822,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
-msgstr "Controla el pendent o la profunditat de les depressions de llac."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
-msgstr "Controla la pendent i alçada dels turons."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3066,11 +2837,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
-msgstr "Missatge d'error"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
-msgstr "Punt de mira Alpha"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3080,7 +2851,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
-msgstr "Color del punt de mira"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3089,13 +2860,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Debug log file size threshold"
-msgstr "Nivell de registre de depuració"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
-msgstr "Nivell de registre de depuració"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Debugging"
@@ -3103,11 +2873,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
-msgstr "Pas de servidor dedicat"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
-msgstr "Acceleració per defecte"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3117,20 +2887,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
-msgstr "Contrasenya per defecte"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
-msgstr "Privilegis per defecte"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default report format"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default stack size"
-msgstr "Joc per defecte"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3232,7 +3001,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
-msgstr "Retràs per enviar blocs després de col•locarlos"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
@@ -3243,13 +3012,12 @@ msgid "Deprecated Lua API handling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Depth below which you'll find giant caverns."
-msgstr "Profunditat davall la qual trobaràs grans coves."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
-msgstr "Profunditat davall la qual trobaràs grans coves."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3272,14 +3040,12 @@ msgid "Desynchronize block animation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Developer Options"
-msgstr "Informació del mod:"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Digging particles"
-msgstr "Partícules"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
@@ -3305,11 +3071,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
-msgstr "Polsar dues vegades \"botar\" per volar"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
-msgstr "Polsar dues vegades \"botar\" per alternar el mode de vol."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
@@ -3324,27 +3090,24 @@ msgid "Dungeon minimum Y"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dungeon noise"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable Automatic Exposure"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Bloom"
-msgstr "Activar tot"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom Debug"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Debanding"
-msgstr "Permetre Danys"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3412,13 +3175,12 @@ msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable random mod loading (mainly used for testing)."
-msgstr "Habilitar l'entrada aleatòria d'usuari (només utilitzat per testing)."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
-msgstr "Habilitar l'entrada aleatòria d'usuari (només utilitzat per testing)."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3440,9 +3202,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable touchscreen"
-msgstr "Llindar tàctil (px)"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3582,9 +3343,8 @@ msgid "Filmic tone mapping"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Filtering and Antialiasing"
-msgstr "Suavitzat (Antialiasing):"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "First of 4 2D noises that together define hill/mountain range height."
@@ -3621,9 +3381,8 @@ msgid "Floatland minimum Y"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland noise"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Floatland taper exponent"
@@ -3782,9 +3541,8 @@ msgid "GUI scaling filter txr2img"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Gamepads"
-msgstr "Jocs"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -3830,14 +3588,12 @@ msgid "Ground level"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ground noise"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HTTP mods"
-msgstr "Mods HTTP"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "HUD"
@@ -3869,18 +3625,16 @@ msgid "Heat blend noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Heat noise"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Height noise"
-msgstr "Windows dret"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
@@ -3895,24 +3649,20 @@ msgid "Hill threshold"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness1 noise"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness2 noise"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness3 noise"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness4 noise"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
@@ -4142,7 +3892,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr "Invertir ratolí"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse wheel (scroll) direction for item selection in hotbar."
@@ -4150,7 +3900,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
-msgstr "Invertir moviment vertical del ratolí."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Italic font path"
@@ -4181,18 +3931,16 @@ msgid "Joystick ID"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick button repetition interval"
-msgstr "Interval de repetició del click dret"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Joystick dead zone"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick frustum sensitivity"
-msgstr "Sensibilitat del ratolí"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Joystick type"
@@ -4269,7 +4017,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr ""
+msgstr "toki"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
@@ -4308,9 +4056,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Length of liquid waves."
-msgstr "Moviment de les Fulles"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4365,9 +4112,8 @@ msgid "Light curve low gradient"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Lighting"
-msgstr "Il·luminació suau"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4425,9 +4171,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Loading Block Modifiers"
-msgstr "Rang del bloc actiu"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4441,9 +4186,8 @@ msgid "Lower Y limit of dungeons."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Lower Y limit of floatlands."
-msgstr "Límit absolut de cues emergents"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Main menu script"
@@ -4544,69 +4288,60 @@ msgid "Mapblock unload timeout"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Carpathian"
-msgstr "Generador de mapes plans"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Carpathian specific flags"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Flat"
-msgstr "Generador de mapes plans"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Flat specific flags"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Fractal"
-msgstr "Generador de mapes plans"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Fractal specific flags"
-msgstr "Generador de mapes"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V5"
-msgstr "Generador de mapes"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5 specific flags"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V6"
-msgstr "Generador de mapes"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V6 specific flags"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V7"
-msgstr "Generador de mapes"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V7 specific flags"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Valleys"
-msgstr "Generador de mapes"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Valleys specific flags"
-msgstr "Generador de mapes"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen debug"
@@ -4740,9 +4475,8 @@ msgid "Maximum simultaneous block sends per client"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum size of the outgoing chat queue"
-msgstr "Netejar la cua de sortida del xat"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4791,9 +4525,8 @@ msgid "Minimap scan height"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Minimum dig repetition interval"
-msgstr "Interval de repetició del click dret"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of large caves per mapchunk."
@@ -4857,16 +4590,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr "Sensibilitat del ratolí"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
-msgstr "Multiplicador de sensibilitat del ratolí."
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Movement threshold"
-msgstr "Llindar tàctil (px)"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
@@ -4917,9 +4649,8 @@ msgid "New users need to input this password."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Node and Entity Highlighting"
-msgstr "Node ressaltat"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
@@ -5045,18 +4776,16 @@ msgid "Physics"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Place repetition interval"
-msgstr "Interval de repetició del click dret"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Poisson filtering"
-msgstr "Filtre bilineal"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Post Processing"
@@ -5105,9 +4834,8 @@ msgid "Proportion of large caves that contain liquid."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Protocol version minimum"
-msgstr "Desajust de la versió del protocol. "
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Punch gesture"
@@ -5126,7 +4854,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
-msgstr "Entrada aleatòria"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Random mod load order"
@@ -5137,14 +4865,12 @@ msgid "Recent Chat Messages"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Regular font path"
-msgstr "Seleccioneu la ruta"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Remember screen size"
-msgstr "Desar automàticament mesures de la pantalla"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
@@ -5161,9 +4887,8 @@ msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Report path"
-msgstr "Seleccioneu la ruta"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5208,9 +4933,8 @@ msgid "River depth"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River noise"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "River size"
@@ -5267,9 +4991,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screen"
-msgstr "Pantalla:"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
@@ -5299,14 +5022,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshots"
-msgstr "Pantalla:"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Seabed noise"
-msgstr "Soroll de cova #1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Second of 4 2D noises that together define hill/mountain range height."
@@ -5355,7 +5076,6 @@ msgid "Selection box width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Selects one of 18 fractal types.\n"
 "1 = 4D \"Roundy\" Mandelbrot set.\n"
@@ -5377,39 +5097,18 @@ msgid ""
 "17 = 4D \"Mandelbulb\" Mandelbrot set.\n"
 "18 = 4D \"Mandelbulb\" Julia set."
 msgstr ""
-"Selecció de 18 fractals de 9 fórmules.\n"
-"1 = 4D \"Roundy\" mandelbrot set.\n"
-"2 = 4D \"Roundy\" julia set.\n"
-"3 = 4D \"Squarry\" mandelbrot set.\n"
-"4 = 4D \"Squarry\" julia set.\n"
-"5 = 4D \"Mandy Cousin\" mandelbrot set.\n"
-"6 = 4D \"Mandy Cousin\" julia set.\n"
-"7 = 4D \"Variation\" mandelbrot set.\n"
-"8 = 4D \"Variation\" julia set.\n"
-"9 = 3D \"Mandelbrot/Mandelbar\" mandelbrot set.\n"
-"10 = 3D \"Mandelbrot/Mandelbar\" julia set.\n"
-"11 = 3D \"Christmas Tree\" mandelbrot set.\n"
-"12 = 3D \"Christmas Tree\" julia set.\n"
-"13 = 3D \"Mandelbulb\" mandelbrot set.\n"
-"14 = 3D \"Mandelbulb\" julia set.\n"
-"15 = 3D \"Cosine Mandelbulb\" mandelbrot set.\n"
-"16 = 3D \"Cosine Mandelbulb\" julia set.\n"
-"17 = 4D \"Mandelbulb\" mandelbrot set.\n"
-"18 = 4D \"Mandelbulb\" julia set."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server"
-msgstr "Servidor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server Gameplay"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server Security"
-msgstr "Port del Servidor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
@@ -5436,9 +5135,8 @@ msgid "Server-side occlusion culling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server/Env Performance"
-msgstr "Port del Servidor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist URL"
@@ -5533,13 +5231,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Shader path"
-msgstr "Ombres"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr "Ombres"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5648,39 +5345,32 @@ msgid "Smooth lighting"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
 "cinematic mode by using the key set in Controls."
 msgstr ""
-"Suavitza la rotació de la càmera en mode cinematogràfic. 0 per deshabilitar."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Smooths rotation of camera, also called look or mouse smoothing. 0 to "
 "disable."
 msgstr ""
-"Suavitza la rotació de la càmera en mode cinematogràfic. 0 per deshabilitar."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sneaking speed"
-msgstr "Velocitat d'escalada"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Soft shadow radius"
-msgstr "Radi del núvol"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sound"
-msgstr "Volum del so"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sound Extensions Blacklist"
@@ -5782,9 +5472,8 @@ msgid "Terrain base noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Terrain height"
-msgstr "Alçada del terreny base"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Terrain higher noise"
@@ -5885,13 +5574,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The minimum time in seconds it takes between digging nodes when holding\n"
 "the dig button."
 msgstr ""
-"El temps en segons que es pren entre la repetició de clicks drets quan "
-"s'està mantenint el botó dret del ratolí."
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -5950,22 +5636,16 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
-"El temps en segons que es pren entre la repetició de clicks drets quan "
-"s'està mantenint el botó dret del ratolí."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
 msgstr ""
-"El temps en segons que es pren entre la repetició de clicks drets quan "
-"s'està mantenint el botó dret del ratolí."
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -6021,28 +5701,24 @@ msgid "Tooltip delay"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen"
-msgstr "Llindar tàctil (px)"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen sensitivity"
-msgstr "Sensibilitat del ratolí"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen sensitivity multiplier."
-msgstr "Multiplicador de sensibilitat del ratolí."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Translucent liquids"
-msgstr "Moviment de les Fulles"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
@@ -6118,9 +5794,8 @@ msgid "Upper Y limit of dungeons."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Upper Y limit of floatlands."
-msgstr "Límit absolut de cues emergents"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
@@ -6229,9 +5904,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Varies steepness of cliffs."
-msgstr "Controla la pendent i alçada dels turons."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
@@ -6282,9 +5956,8 @@ msgid "Volume when unfocused"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric lighting"
-msgstr "Node ressaltat"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6324,24 +5997,20 @@ msgid "Waving leaves"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids"
-msgstr "Moviment de les Fulles"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wave height"
-msgstr "Onatge"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wave speed"
-msgstr "Moviment de les Fulles"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wavelength"
-msgstr "Onatge"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Waving plants"
@@ -6445,13 +6114,10 @@ msgid ""
 "World directory (everything in the world is stored here).\n"
 "Not needed if starting from the main menu."
 msgstr ""
-"Directori del món (totes les seves dades es guarden aquí).\n"
-"No necessari si s'inicia des de el menú principal."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "World start time"
-msgstr "Nom del món"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6478,9 +6144,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Y of upper limit of large caves."
-msgstr "Límit absolut de cues emergents"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
@@ -6529,1037 +6194,3 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
 msgstr ""
-
-#, fuzzy
-#~ msgid "- Address: "
-#~ msgstr "Adreça BIND"
-
-#, fuzzy
-#~ msgid "- Creative Mode: "
-#~ msgstr "Mode Creatiu"
-
-#, fuzzy
-#~ msgid "- Damage: "
-#~ msgstr "Dany"
-
-#, fuzzy
-#~ msgid "- Port: "
-#~ msgstr "Port"
-
-#~ msgid ""
-#~ "0 = parallax occlusion with slope information (faster).\n"
-#~ "1 = relief mapping (slower, more accurate)."
-#~ msgstr ""
-#~ "0 = oclusió de la paral.laxi amb informació d'inclinació (més ràpid).\n"
-#~ "1 = mapa de relleu (més lent, més precís)."
-
-#~ msgid "2x"
-#~ msgstr "2x"
-
-#~ msgid "3D Clouds"
-#~ msgstr "Núvols 3D"
-
-#~ msgid "4x"
-#~ msgstr "4x"
-
-#~ msgid "8x"
-#~ msgstr "8x"
-
-#~ msgid "< Back to Settings page"
-#~ msgstr "< Torna a la pàgina de configuració"
-
-#~ msgid "Address / Port"
-#~ msgstr "Adreça / Port"
-
-#~ msgid ""
-#~ "Address to connect to.\n"
-#~ "Leave this blank to start a local server.\n"
-#~ "Note that the address field in the main menu overrides this setting."
-#~ msgstr ""
-#~ "Adreça a connectar-se.\n"
-#~ "Deixar aquest espai en buit per començar un servidor local.\n"
-#~ "Tingueu en compte que el camp d'adreça en el menú principal invalida "
-#~ "aquest paràmetre."
-
-#~ msgid ""
-#~ "Adjust dpi configuration to your screen (non X11/Android only) e.g. for "
-#~ "4k screens."
-#~ msgstr ""
-#~ "Ajustar la configuració de punts per polsada (dpi) a la teva pantalla (no "
-#~ "X11/Sols Android) Ex. per a pantalles amb 4K."
-
-#, fuzzy
-#~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
-#~ msgstr ""
-#~ "Ajusta la codificació gamma per les taules de llum. Els nombrés nés "
-#~ "petits n'augmentaràn la brillantor.\n"
-#~ "Aquesta configuració només afecta al client, el servidor l'ignora."
-
-#, fuzzy
-#~ msgid "All Settings"
-#~ msgstr "Configuració"
-
-#~ msgid "Are you sure to reset your singleplayer world?"
-#~ msgstr "Esteu segur que voleu reiniciar el seu món d'un sol jugador?"
-
-#, fuzzy
-#~ msgid "Automatic forward key"
-#~ msgstr "Tecla Avançar"
-
-#, fuzzy
-#~ msgid "Autosave Screen Size"
-#~ msgstr "Desar automàticament mesures de la pantalla"
-
-#, fuzzy
-#~ msgid "Aux1 key"
-#~ msgstr "Tecla botar"
-
-#~ msgid "Backward key"
-#~ msgstr "Tecla de retrocés"
-
-#~ msgid "Basic"
-#~ msgstr "Bàsic"
-
-#~ msgid "Bilinear Filter"
-#~ msgstr "Filtre Bilineal"
-
-#~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
-#~ msgstr ""
-#~ "Bits per píxel (profunditat de color) en el mode de pantalla completa."
-
-#~ msgid "Bump Mapping"
-#~ msgstr "Mapat de relleu"
-
-#~ msgid "Bumpmapping"
-#~ msgstr "Mapat de relleu"
-
-#~ msgid "Camera update toggle key"
-#~ msgstr "Tecla alternativa per a l'actualització de la càmera"
-
-#~ msgid "Change Keys"
-#~ msgstr "Configurar Controls"
-
-#, fuzzy
-#~ msgid "Change keys"
-#~ msgstr "Configurar Controls"
-
-#~ msgid "Chat key"
-#~ msgstr "Tecla del xat"
-
-#~ msgid "Chat toggle key"
-#~ msgstr "Tecla alternativa per al xat"
-
-#~ msgid "Cinematic mode"
-#~ msgstr "Mode cinematogràfic"
-
-#~ msgid "Cinematic mode key"
-#~ msgstr "Tecla mode cinematogràfic"
-
-#~ msgid "Clean transparent textures"
-#~ msgstr "Netejar textures transparents"
-
-#~ msgid "Command key"
-#~ msgstr "Tecla comandament"
-
-#~ msgid "Config mods"
-#~ msgstr "Configurar mods"
-
-#~ msgid "Configure"
-#~ msgstr "Configurar"
-
-#~ msgid "Connect"
-#~ msgstr "Connectar"
-
-#~ msgid "Connected Glass"
-#~ msgstr "Vidres connectats"
-
-#~ msgid "Continuous forward"
-#~ msgstr "Avanç continu"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Controla l'amplada dels túnels, un valor més petit crea túnels més amples."
-
-#, fuzzy, c-format
-#~ msgid ""
-#~ "Controls:\n"
-#~ "- %s: move forwards\n"
-#~ "- %s: move backwards\n"
-#~ "- %s: move left\n"
-#~ "- %s: move right\n"
-#~ "- %s: jump/climb up\n"
-#~ "- %s: dig/punch/use\n"
-#~ "- %s: place/use\n"
-#~ "- %s: sneak/climb down\n"
-#~ "- %s: drop item\n"
-#~ "- %s: inventory\n"
-#~ "- Mouse: turn/look\n"
-#~ "- Mouse wheel: select item\n"
-#~ "- %s: chat\n"
-#~ msgstr ""
-#~ "Controls predeterminats:\n"
-#~ "- WASD: moure\n"
-#~ "- Espai: botar / pujar\n"
-#~ "- Maj .: puntetes / baixar\n"
-#~ "- Q: deixar anar objecte\n"
-#~ "- I: inventari\n"
-#~ "- Ratolí: girar / mirar\n"
-#~ "- Ratolí esq .: excavar / colpejar\n"
-#~ "- Ratolí dre .: col·locar / utilitzar\n"
-#~ "- Roda ratolí: triar objecte\n"
-#~ "- T: xat\n"
-
-#, fuzzy
-#~ msgid "Creative"
-#~ msgstr "Crear"
-
-#~ msgid "Credits"
-#~ msgstr "Crèdits"
-
-#~ msgid "Crosshair color (R,G,B)."
-#~ msgstr "Color del punt de mira (R, G, B)."
-
-#~ msgid "DPI"
-#~ msgstr "DPI (punts per polsada)"
-
-#~ msgid "Damage"
-#~ msgstr "Dany"
-
-#~ msgid "Damage enabled"
-#~ msgstr "Dany activat"
-
-#~ msgid "Debug info toggle key"
-#~ msgstr "Tecla alternativa per a la informació de la depuració"
-
-#~ msgid "Default game"
-#~ msgstr "Joc per defecte"
-
-#~ msgid ""
-#~ "Default game when creating a new world.\n"
-#~ "This will be overridden when creating a world from the main menu."
-#~ msgstr ""
-#~ "Joc per defecte en crear un nou món.\n"
-#~ "Aço será invalid quan es cree un món des del menú principal."
-
-#~ msgid ""
-#~ "Default timeout for cURL, stated in milliseconds.\n"
-#~ "Only has an effect if compiled with cURL."
-#~ msgstr ""
-#~ "Temporització per defecte per a cURL, manifestat en mil·lisegons.\n"
-#~ "Només té un efecte si és compilat amb cURL."
-
-#, fuzzy
-#~ msgid "Dig key"
-#~ msgstr "Tecla dreta"
-
-#, fuzzy
-#~ msgid "Download a game, such as Minetest Game, from minetest.net"
-#~ msgstr ""
-#~ "Descarrega un subjoc, com per exemple minetest_game, des de minetest.net"
-
-#~ msgid "Download one from minetest.net"
-#~ msgstr "Descarrega'n alguns des de minetest.net"
-
-#, fuzzy
-#~ msgid "Downloading and installing $1, please wait..."
-#~ msgstr "Descarregant $1, si us plau esperi ..."
-
-#~ msgid "Enable VBO"
-#~ msgstr "Activar VBO"
-
-#~ msgid "Enabled"
-#~ msgstr "Activat"
-
-#~ msgid "Enter "
-#~ msgstr "Introdueix "
-
-#~ msgid "Fancy Leaves"
-#~ msgstr "Fulles Boniques"
-
-#, fuzzy
-#~ msgid ""
-#~ "Fast movement (via the \"Aux1\" key).\n"
-#~ "This requires the \"fast\" privilege on the server."
-#~ msgstr ""
-#~ "Moviment ràpid (via utilitzar clau).\n"
-#~ "Això requereix el \"privilegi\" ràpid en el servidor."
-
-#~ msgid "Forward key"
-#~ msgstr "Tecla Avançar"
-
-#~ msgid "Game"
-#~ msgstr "Joc"
-
-#, fuzzy
-#~ msgid "Generate Normal Maps"
-#~ msgstr "Generar Mapes Normals"
-
-#, fuzzy
-#~ msgid "Hide: Temporary Settings"
-#~ msgstr "Configuració"
-
-#, fuzzy
-#~ msgid "Inc. volume key"
-#~ msgstr "Tecla de la consola"
-
-#, fuzzy
-#~ msgid "Information:"
-#~ msgstr "Informació del mod:"
-
-#, fuzzy
-#~ msgid "Install Mod: Unable to find real mod name for: $1"
-#~ msgstr "Instal·lar mod: Impossible trobar el nom real del mod per a: $1"
-
-#, fuzzy
-#~ msgid "Install: file: \"$1\""
-#~ msgstr "Instal·lar mod: Arxiu: \"$1\""
-
-#~ msgid "Invalid gamespec."
-#~ msgstr "El Joc especificat no és vàlid."
-
-#~ msgid "Inventory key"
-#~ msgstr "Tecla Inventari"
-
-#~ msgid "Jump key"
-#~ msgstr "Tecla botar"
-
-#~ msgid ""
-#~ "Key for decreasing the viewing range.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per disminuir el rang de visió.\n"
-#~ "Mira\n"
-#~ "http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for decreasing the volume.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per disminuir el rang de visió.\n"
-#~ "Mira\n"
-#~ "http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for digging.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per botar.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Key for increasing the viewing range.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per incrementar el rang de visió.\n"
-#~ "Mira\n"
-#~ "http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for increasing the volume.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per incrementar el rang de visió.\n"
-#~ "Mira\n"
-#~ "http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Key for jumping.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per botar.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for moving the player backward.\n"
-#~ "Will also disable autoforward, when active.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per moure el jugador cap arrere.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Key for moving the player forward.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per moure avant al jugador.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Key for moving the player left.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per moure el jugador cap a l'esquerra.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Key for moving the player right.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per moure el jugador cap a la dreta.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for muting the game.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per botar.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for opening the chat window to type local commands.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Key for opening the inventory.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for placing.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per botar.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 11th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 12th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 13th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 14th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 15th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 16th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 17th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 18th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 19th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 20th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 21st hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 22nd hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 23rd hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 24th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 25th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 26th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 27th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 28th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 29th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 30th hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 31st hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the 32nd hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the eighth hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the fifth hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the first hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the fourth hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the next item in the hotbar.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the ninth hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the previous item in the hotbar.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the second hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the seventh hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the sixth hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the tenth hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for selecting the third hotbar slot.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per obrir el inventari.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for toggling autoforward.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per botar.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for toggling pitch move mode.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per botar.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for toggling the camera update. Only used for development\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per moure el jugador cap a l'esquerra.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for toggling the display of chat.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per moure el jugador cap a la dreta.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for toggling the display of fog.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per moure el jugador cap a l'esquerra.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key for toggling the display of the large chat console.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per moure el jugador cap a la dreta.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#, fuzzy
-#~ msgid ""
-#~ "Key to use view zoom when possible.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Tecla per botar.\n"
-#~ "Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-#~ msgstr ""
-#~ "Combinacions de tecles. (Si aquest menú espatlla, esborrar coses de "
-#~ "minetest.conf)"
-
-#, fuzzy
-#~ msgid "Large chat console key"
-#~ msgstr "Tecla de la consola"
-
-#~ msgid "Left key"
-#~ msgstr "Tecla esquerra"
-
-#~ msgid "Main"
-#~ msgstr "Principal"
-
-#, fuzzy
-#~ msgid "Main menu style"
-#~ msgstr "Menú principal"
-
-#~ msgid "Mipmap"
-#~ msgstr "Mipmap"
-
-#~ msgid "Mipmap + Aniso. Filter"
-#~ msgstr "Mipmap + Aniso. Filtre"
-
-#, fuzzy
-#~ msgid "Mute key"
-#~ msgstr "Utilitza la tecla"
-
-#~ msgid "Name / Password"
-#~ msgstr "Nom / Contrasenya"
-
-#~ msgid "Name/Password"
-#~ msgstr "Nom/Contrasenya"
-
-#~ msgid "No"
-#~ msgstr "No"
-
-#~ msgid "No Filter"
-#~ msgstr "Sense Filtre"
-
-#~ msgid "No Mipmap"
-#~ msgstr "Sense MipMap"
-
-#~ msgid "Node Outlining"
-#~ msgstr "Nodes ressaltats"
-
-#~ msgid "None"
-#~ msgstr "Ningun"
-
-#~ msgid "Ok"
-#~ msgstr "D'acord"
-
-#~ msgid "Opaque Leaves"
-#~ msgstr "Fulles opaques"
-
-#~ msgid "Opaque Water"
-#~ msgstr "Aigua opaca"
-
-#~ msgid "Parallax Occlusion"
-#~ msgstr "Oclusió de paral·laxi"
-
-#, fuzzy
-#~ msgid "Parallax occlusion scale"
-#~ msgstr "Oclusió de paral·laxi"
-
-#~ msgid "Particles"
-#~ msgstr "Partícules"
-
-#, fuzzy
-#~ msgid "Pitch move key"
-#~ msgstr "Tecla mode cinematogràfic"
-
-#, fuzzy
-#~ msgid "Place key"
-#~ msgstr "Tecla mode cinematogràfic"
-
-#~ msgid "Please enter a valid integer."
-#~ msgstr "Si us plau, introduïu un enter vàlid."
-
-#~ msgid "Please enter a valid number."
-#~ msgstr "Si us plau, introduïu un nombre vàlid."
-
-#~ msgid "PvP enabled"
-#~ msgstr "PvP activat"
-
-#, fuzzy
-#~ msgid "Reset singleplayer world"
-#~ msgstr "Reiniciar el mon individual"
-
-#~ msgid "Right key"
-#~ msgstr "Tecla dreta"
-
-#~ msgid "Screen:"
-#~ msgstr "Pantalla:"
-
-#, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "Selecciona el fitxer del mod:"
-
-#~ msgid "Simple Leaves"
-#~ msgstr "Fulles senzilles"
-
-#~ msgid "Smooth Lighting"
-#~ msgstr "Il·luminació suau"
-
-#~ msgid "Smooths rotation of camera. 0 to disable."
-#~ msgstr "Suavitza la rotació de la càmera. 0 per deshabilitar."
-
-#, fuzzy
-#~ msgid "Special key"
-#~ msgstr "Tecla sigil"
-
-#~ msgid "Start Singleplayer"
-#~ msgstr "Començar Un Jugador"
-
-#~ msgid "Texturing:"
-#~ msgstr "Texturització:"
-
-#~ msgid "The value must be at least $1."
-#~ msgstr "El valor ha de ser major que $1."
-
-#~ msgid "The value must not be larger than $1."
-#~ msgstr "El valor ha de ser menor que $1."
-
-#, fuzzy
-#~ msgid ""
-#~ "This can be bound to a key to toggle camera smoothing when looking "
-#~ "around.\n"
-#~ "Useful for recording videos"
-#~ msgstr ""
-#~ "Suavitzat de càmara durant el seu moviment.\n"
-#~ "Útil per a la gravació de vídeos."
-
-#~ msgid "To enable shaders the OpenGL driver needs to be used."
-#~ msgstr "Per habilitar les ombres el controlador OpenGL ha ser utilitzat."
-
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Activar Cinematogràfic"
-
-#, fuzzy
-#~ msgid "Touch threshold (px):"
-#~ msgstr "Llindar tàctil (px)"
-
-#~ msgid "Trilinear Filter"
-#~ msgstr "Filtratge Trilineal"
-
-#, fuzzy
-#~ msgid "Unable to install a game as a $1"
-#~ msgstr "Error al instal·lar $1 en $2"
-
-#, fuzzy
-#~ msgid "Unable to install a modpack as a $1"
-#~ msgstr "Error al instal·lar $1 en $2"
-
-#, fuzzy
-#~ msgid "Uninstall Package"
-#~ msgstr "Desinstal·lar el mod seleccionat"
-
-#~ msgid "Up"
-#~ msgstr "Amunt"
-
-#~ msgid "Waving Leaves"
-#~ msgstr "Moviment de les Fulles"
-
-#, fuzzy
-#~ msgid "Waving Liquids"
-#~ msgstr "Moviment de les Fulles"
-
-#~ msgid "Waving Plants"
-#~ msgstr "Moviment de Plantes"
-
-#~ msgid "Yes"
-#~ msgstr "Sí"
-
-#, fuzzy
-#~ msgid "You died."
-#~ msgstr "Has mort."
-
-#, fuzzy
-#~ msgid "You have no games installed."
-#~ msgstr "No tens subjocs instal·lats."
-
-#~ msgid "needs_fallback_font"
-#~ msgstr "no"
-
-#~ msgid "ok"
-#~ msgstr "Acceptar"

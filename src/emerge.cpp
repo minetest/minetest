@@ -692,7 +692,7 @@ void *EmergeThread::run()
 					"EmergeThread: Lua on_generated", SPT_AVG);
 
 				try {
-					m_script->on_generated(&bmdata);
+					m_script->on_generated(&bmdata, m_mapgen->blockseed);
 				} catch (const LuaError &e) {
 					m_server->setAsyncFatalError(e);
 					error = true;

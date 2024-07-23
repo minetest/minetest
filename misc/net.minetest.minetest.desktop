@@ -1,13 +1,9 @@
 [Desktop Entry]
 Name=Minetest
 GenericName=Minetest
-Comment=Multiplayer infinite-world block sandbox
-Comment[de]=Mehrspieler-Sandkastenspiel mit unendlichen Blockwelten
-Comment[es]=Juego sandbox multijugador con mundos infinitos
-Comment[fr]=Jeu multijoueurs de type bac à sable avec des mondes infinis
-Comment[ja]=マルチプレイに対応した、無限の世界のブロック型サンドボックスゲームです
-Comment[ru]=Игра-песочница с безграничным миром, состоящим из блоков
-Comment[tr]=Tek-Çok oyuncuyla küplerden sonsuz dünyalar inşa et
+Comment=Block-based multiplayer game platform
+Comment[de]=Blockbasierte Mehrspieler-Spieleplattform
+Comment[fr]=Plate-forme de jeu multijoueurs à base de blocs
 Exec=minetest
 Icon=minetest
 Terminal=false

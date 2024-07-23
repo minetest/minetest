@@ -4,6 +4,7 @@ Minetest Lua Modding API Reference
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
 * (Unofficial) Minetest Modding Book by rubenwardy: <https://rubenwardy.com/minetest_modding_book/>
+* Modding tools: <https://github.com/minetest/modtools>
 
 Introduction
 ------------
@@ -455,6 +456,10 @@ i.e. without gamma-correction.
 ### Texture overlaying
 
 Textures can be overlaid by putting a `^` between them.
+
+Warning: If the lower and upper pixels are both semi-transparent, this operation
+does *not* do alpha blending, and it is *not* associative. Otherwise it does
+alpha blending in srgb color space.
 
 Example:
 
@@ -4084,9 +4089,9 @@ Translations
 Texts can be translated client-side with the help of `minetest.translate` and
 translation files.
 
-Consider using the script `util/mod_translation_updater.py` in the Minetest
-repository to generate and update translation files automatically from the Lua
-sources. See `util/README_mod_translation_updater.md` for an explanation.
+Consider using the script `mod_translation_updater.py` in the Minetest
+[modtools](https://github.com/minetest/modtools) repository to generate and
+update translation files automatically from the Lua sources.
 
 Translating a string
 --------------------

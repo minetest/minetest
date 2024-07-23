@@ -2,10 +2,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Malay (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-12-02 05:17+0000\n"
-"Last-Translator: Nisa Syazwani <nisasyazwani@users.noreply.hosted.weblate."
-"org>\n"
+"POT-Creation-Date: 2024-07-11 15:14+0200\n"
+"PO-Revision-Date: 2023-12-04 21:13+0000\n"
+"Last-Translator: \"Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
+"Yasuyoshi\" <translation@mnh48.moe>\n"
 "Language-Team: Malay <https://hosted.weblate.org/projects/minetest/minetest/"
 "ms/>\n"
 "Language: ms\n"
@@ -72,7 +72,8 @@ msgid "Command not available: "
 msgstr "Perintah tidak tersedia: "
 
 #: builtin/common/chatcommands.lua
-msgid "Get help for commands"
+#, fuzzy
+msgid "Get help for commands (-t: output in chat)"
 msgstr "Dapatkan bantuan untuk perintah"
 
 #: builtin/common/chatcommands.lua
@@ -83,12 +84,9 @@ msgstr ""
 "untuk senaraikan kesemuanya."
 
 #: builtin/common/chatcommands.lua
-msgid "[all | <cmd>]"
+#, fuzzy
+msgid "[all | <cmd>] [-t]"
 msgstr "[all | <perintah>]"
-
-#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
-msgid "OK"
-msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -105,6 +103,10 @@ msgstr "Telah berlakunya ralat:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Menu utama"
+
+#: builtin/fstk/ui.lua
+msgid "OK"
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -134,19 +136,27 @@ msgstr "Kami hanya menyokong protokol versi $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Kami menyokong protokol versi $1 hingga $2."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "\"$1\" sudah wujud. Adakah anda ingin tulis gantinya?"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Error installing \"$1\": $2"
+msgstr "Ralat ketika memasang \"$1\": $2"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "Kebergantungan $1 dan $2 akan dipasangkan."
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download \"$1\""
+msgstr "Gagal untuk memuat turun \"$1\""
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr "$1 oleh $2"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download $1"
+msgstr "Gagal memuat turun $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/contentdb.lua
+#, fuzzy
+msgid ""
+"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
+"broken archive)"
+msgstr ""
+"Gagal untuk menyari \"$1\" (jenis fail tidak disokong atau arkib rosak)"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -154,157 +164,157 @@ msgstr ""
 "$1 sedang muat turun,\n"
 "$2 menunggu giliran"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "$1 downloading..."
 msgstr "$1 dimuat turun..."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "$1 memerlukan kebergantungan yang tidak dijumpai."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "$1 akan dipasangkan, dan $2 kebergantungan akan dilangkau."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All packages"
 msgstr "Semua pakej"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "Sudah dipasang"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Back to Main Menu"
 msgstr "Kembali ke Menu Utama"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "ContentDB tidak tersedia apabila Minetest dikompil tanpa cURL"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Downloading..."
+msgstr "Memuat turun..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Error getting dependencies for package"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Games"
+msgstr "Permainan"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "Pasang"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Memuatkan..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Mods"
+msgstr "Mods"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No packages could be retrieved"
+msgstr "Tiada pakej yang boleh diambil"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "Tiada hasil"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No updates"
+msgstr "Tiada kemas kini"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Queued"
+msgstr "Menunggu giliran"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Texture packs"
+msgstr "Pek tekstur"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "The package $1 was not found."
+msgstr "Pakej $1 tidak dijumpai."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Nyahpasang"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Kemas kini"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Update All [$1]"
+msgstr "Kemas Kini Semua [$1]"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "View more information in a web browser"
+msgstr "Lihat maklumat lanjut dalam pelayar sesawang"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "You need to install a game before you can install a mod"
+msgstr "Anda perlu pasang permainan sebelum anda boleh pasang mods"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "Kebergantungan $1 dan $2 akan dipasangkan."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 by $2"
+msgstr "$1 oleh $2"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 required dependencies could not be found."
+msgstr "$1 memerlukan kebergantungan yang tidak dijumpai."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "$1 akan dipasangkan, dan $2 kebergantungan akan dilangkau."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Already installed"
+msgstr "Sudah dipasang"
+
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Base Game:"
 msgstr "Permainan Asas:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_overwrite.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
+#: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "Batal"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB tidak tersedia apabila Minetest dikompil tanpa cURL"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Kebergantungan:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "Memuat turun..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr "Ralat ketika memasang \"$1\": $2"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download \"$1\""
-msgstr "Gagal untuk memuat turun \"$1\""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "Gagal memuat turun $1"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr ""
-"Gagal untuk menyari \"$1\" (jenis fail tidak disokong atau arkib rosak)"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Games"
-msgstr "Permainan"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Install"
-msgstr "Pasang"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install $1"
 msgstr "Pasang $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install missing dependencies"
 msgstr "Pasang kebergantungan yang hilang"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Memuatkan..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Mods"
-msgstr "Mods"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "Tiada pakej yang boleh diambil"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "Tiada hasil"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No updates"
-msgstr "Tiada kemas kini"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Not found"
 msgstr "Tidak dijumpai"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "Tulis ganti"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Please check that the base game is correct."
 msgstr "Sila periksa dan pastikan permainan asas itu betul."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Queued"
-msgstr "Menunggu giliran"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "\"$1\" sudah wujud. Adakah anda ingin tulis gantinya?"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "Pek tekstur"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "The package $1 was not found."
-msgstr "Pakej $1 tidak dijumpai."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "Nyahpasang"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "Kemas kini"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "Kemas Kini Semua [$1]"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "Lihat maklumat lanjut dalam pelayar sesawang"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr "Anda perlu pasang permainan sebelum anda boleh pasang mods"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "Overwrite"
+msgstr "Tulis ganti"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -453,8 +463,18 @@ msgid "Decorations"
 msgstr "Hiasan"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Desert temples"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
 msgstr "Development Test hanyalah untuk kegunaan pembangun."
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Different dungeon variant generated in desert biomes (only if dungeons "
+"enabled)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -833,10 +853,6 @@ msgstr "Ketercapaian"
 msgid "Back"
 msgstr "Kembali"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "Tukar Kekunci"
-
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -846,7 +862,8 @@ msgstr "Sembang"
 msgid "Clear"
 msgstr "Padam"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Kawalan"
 
@@ -1052,6 +1069,17 @@ msgid "Install games from ContentDB"
 msgstr "Pasangkan permainan daripada ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Minetest doesn't come with a game by default."
+msgstr "Minetest Game sudah tidak dipasang secara lalainya"
+
+#: builtin/mainmenu/tab_local.lua
+msgid ""
+"Minetest is a game-creation platform that allows you to play many different "
+"games."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "Buat Baru"
 
@@ -1084,8 +1112,9 @@ msgid "Start Game"
 msgstr "Mulakan Permainan"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You have no games installed."
-msgstr "Anda tidak memasang sebarang permainan."
+#, fuzzy
+msgid "You need to install a game before you can create a world."
+msgstr "Anda perlu pasang permainan sebelum anda boleh pasang mods"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1165,16 +1194,8 @@ msgid "Rebuilding shaders..."
 msgstr "Sedang membina semula pembayang..."
 
 #: src/client/clientlauncher.cpp
-msgid "Connection error (timed out?)"
-msgstr "Ralat dalam penyambungan (tamat tempoh?)"
-
-#: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "Tidak jumpa atau tidak boleh muatkan permainan: "
-
-#: src/client/clientlauncher.cpp
-msgid "Invalid gamespec."
-msgstr "Spesifikasi permainan tidak sah."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1201,7 +1222,11 @@ msgstr "Fail kata laluan yang disediakan gagal dibuka: "
 msgid "Provided world path doesn't exist: "
 msgstr "Laluan dunia diberi tidak wujud: "
 
-#: src/client/game.cpp src/server.cpp
+#: src/client/clientmedia.cpp src/client/game.cpp
+msgid "Media..."
+msgstr "Sedang memuatkan media..."
+
+#: src/client/game.cpp src/client/shader.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1210,16 +1235,8 @@ msgstr ""
 "Periksa fail debug.txt untuk maklumat lanjut."
 
 #: src/client/game.cpp
-msgid "- Address: "
-msgstr "- Alamat: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Mod: "
-
-#: src/client/game.cpp
-msgid "- Port: "
-msgstr "- Port: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1254,10 +1271,6 @@ msgstr "Pergerakan automatik dibolehkan"
 #: src/client/game.cpp
 msgid "Block bounds hidden"
 msgstr "Batas blok disembunyikan"
-
-#: src/client/game.cpp
-msgid "Block bounds shown for all blocks"
-msgstr "Batas blok ditunjukkan untuk semua blok"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
@@ -1304,6 +1317,10 @@ msgid "Connecting to server..."
 msgstr "Sedang menyambung kepada pelayan..."
 
 #: src/client/game.cpp
+msgid "Connection error (timed out?)"
+msgstr "Ralat dalam penyambungan (tamat tempoh?)"
+
+#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "Sambungan gagal untuk sebab yang tidak diketahui"
 
@@ -1312,45 +1329,13 @@ msgid "Continue"
 msgstr "Teruskan"
 
 #: src/client/game.cpp
-#, c-format
-msgid ""
-"Controls:\n"
-"- %s: move forwards\n"
-"- %s: move backwards\n"
-"- %s: move left\n"
-"- %s: move right\n"
-"- %s: jump/climb up\n"
-"- %s: dig/punch/use\n"
-"- %s: place/use\n"
-"- %s: sneak/climb down\n"
-"- %s: drop item\n"
-"- %s: inventory\n"
-"- Mouse: turn/look\n"
-"- Mouse wheel: select item\n"
-"- %s: chat\n"
-msgstr ""
-"Kawalan:\n"
-"- %s: bergerak ke depan\n"
-"- %s: bergerak ke belakang\n"
-"- %s: bergerak ke kiri\n"
-"- %s: bergerak ke kanan\n"
-"- %s: lompat/naik atas\n"
-"- %s: gali/ketuk/guna\n"
-"- %s: letak/guna\n"
-"- %s: selinap/turun bawah\n"
-"- %s: jatuhkan item\n"
-"- %s: inventori\n"
-"- Tetikus: pusing/lihat sekeliling\n"
-"- Roda tetikus: pilih item\n"
-"- %s: sembang\n"
-
-#: src/client/game.cpp
+#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/use\n"
-"- long tap: dig/punch/use\n"
+"- tap: place/punch/use (default)\n"
+"- long tap: dig/use (default)\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1445,6 +1430,11 @@ msgid "Fog enabled"
 msgstr "Kabut dibolehkan"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Fog enabled by game or mod"
+msgstr "Zum dilumpuhkan oleh permainan atau mods ketika ini"
+
+#: src/client/game.cpp
 msgid "Game info:"
 msgstr "Maklumat permainan:"
 
@@ -1463,10 +1453,6 @@ msgstr "Sedang mentakrifkan item..."
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "KiB/s"
-
-#: src/client/game.cpp
-msgid "Media..."
-msgstr "Sedang memuatkan media..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1628,10 +1614,6 @@ msgstr "Rangka dawai ditunjukkan"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "Zum dilumpuhkan oleh permainan atau mods ketika ini"
-
-#: src/client/game.cpp
-msgid "ok"
-msgstr "ok"
 
 #: src/client/gameui.cpp
 msgid "Chat currently disabled by game or mod"
@@ -1953,6 +1935,15 @@ msgstr "Peta mini dalam mod permukaan, Zum x%d"
 msgid "Minimap in texture mode"
 msgstr "Peta mini dalam mod tekstur"
 
+#: src/client/shader.cpp
+#, fuzzy, c-format
+msgid "Failed to compile the \"%s\" shader."
+msgstr "Gagal buka laman sesawang"
+
+#: src/client/shader.cpp
+msgid "Shaders are enabled but GLSL is not supported by the driver."
+msgstr ""
+
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -2146,6 +2137,19 @@ msgstr "Zum"
 msgid "press key"
 msgstr "tekan kekunci"
 
+#: src/gui/guiOpenURL.cpp
+msgid "Open"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+msgid "Open URL?"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+#, fuzzy
+msgid "Unable to open URL"
+msgstr "Gagal buka laman sesawang"
+
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "Tukar"
@@ -2179,6 +2183,7 @@ msgstr "Kekuatan Bunyi: %d%%"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
+#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "ms"
 
@@ -2400,14 +2405,6 @@ msgid "Adds particles when digging a node."
 msgstr "Menambah partikel apabila menggali nod."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
-"screens."
-msgstr ""
-"Laraskan konfigurasi DPI ke skrin anda (bukan X11/Android sahaja) cth. untuk "
-"skrin 4K."
-
-#: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
 "Laraskan ketumpatan paparan yang dikesan, digunakan untuk menyesuaikan "
@@ -2437,6 +2434,10 @@ msgstr "Nama pentadbir"
 #: src/settings_translation_file.cpp
 msgid "Advanced"
 msgstr "Lanjutan"
+
+#: src/settings_translation_file.cpp
+msgid "Allows liquids to be translucent."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2497,6 +2498,17 @@ msgid "Apple trees noise"
 msgstr "Hingar pokok epal"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Apply dithering to reduce color banding artifacts.\n"
+"Dithering significantly increases the size of losslessly-compressed\n"
+"screenshots and it works incorrectly if the display or operating system\n"
+"performs additional dithering or if the color channels are not quantized\n"
+"to 8 bits.\n"
+"With OpenGL ES, dithering only works if the shader supports high\n"
+"floating-point precision and it may have a higher performance impact."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Arm inertia"
 msgstr "Inersia lengan"
 
@@ -2513,18 +2525,39 @@ msgid "Ask to reconnect after crash"
 msgstr "Minta sambung semula selepas keruntuhan"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "At this distance the server will aggressively optimize which blocks are sent "
 "to\n"
 "clients.\n"
 "Small values potentially improve performance a lot, at the expense of "
 "visible\n"
-"rendering glitches (some blocks will not be rendered under water and in "
-"caves,\n"
-"as well as sometimes on land).\n"
+"rendering glitches (some blocks might not be rendered correctly in caves).\n"
 "Setting this to a value greater than max_block_send_distance disables this\n"
 "optimization.\n"
-"Stated in mapblocks (16 nodes)."
+"Stated in MapBlocks (16 nodes)."
+msgstr ""
+"Pada jarak ini, pelayan akan mengoptimumkan secara agresif blok yang mana\n"
+"akan dihantar kepada klien.\n"
+"Nilai lebih kecil berkemungkinan boleh meningkatkan prestasi dengan banyak,\n"
+"dengan mengorbankan glic kemas gabung tampak (sesetengah blok tidak akan\n"
+"dikemas gabung di bawah air dan dalam gua, kekadang turut berlaku atas "
+"daratan).\n"
+"Menetapkan nilai ini lebih besar daripada nilai max_block_send_distance "
+"akan\n"
+"melumpuhkan pengoptimuman ini.\n"
+"Nyatakan dalam unit blokpeta (16 nod)."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"At this distance the server will perform a simpler and cheaper occlusion "
+"check.\n"
+"Smaller values potentially improve performance, at the expense of "
+"temporarily visible\n"
+"rendering glitches (missing blocks).\n"
+"This is especially useful for very large viewing range (upwards of 500).\n"
+"Stated in MapBlocks (16 nodes)."
 msgstr ""
 "Pada jarak ini, pelayan akan mengoptimumkan secara agresif blok yang mana\n"
 "akan dihantar kepada klien.\n"
@@ -2596,6 +2629,11 @@ msgstr "API Biom"
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
 msgstr "Hingar biom"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Block cull optimize distance"
+msgstr "Jarak optimum penghantaran blok"
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
@@ -2815,6 +2853,12 @@ msgstr "Bayang berwarna"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Comma-separated list of AL and ALC extensions that should not be used.\n"
+"Useful for testing. See al_extensions.[h,cpp] for details."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Comma-separated list of flags to hide in the content repository.\n"
 "\"nonfree\" can be used to hide packages which do not qualify as 'free "
 "software',\n"
@@ -2981,10 +3025,6 @@ msgstr ""
 "Juga mengawal warna rerambut silang objek"
 
 #: src/settings_translation_file.cpp
-msgid "DPI"
-msgstr "DPI"
-
-#: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
 msgstr "Nilai ambang saiz fail log nyahpepijat"
 
@@ -3037,6 +3077,25 @@ msgstr ""
 "Mentakrifkan kualiti penapisan bayang.\n"
 "Tetapan ini menyelakukan kesan bayang lembut dengan menerapkan\n"
 "PCF atau cakera Poisson tetapi turut menggunakan lebih banyak sumber."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Define the oldest clients allowed to connect.\n"
+"Older clients are compatible in the sense that they will not crash when "
+"connecting\n"
+"to new servers, but they may not support all new features that you are "
+"expecting.\n"
+"This allows for more fine-grained control than "
+"strict_protocol_version_checking.\n"
+"Minetest still enforces its own internal minimum, and enabling\n"
+"strict_protocol_version_checking will effectively override this."
+msgstr ""
+"Bolehkan tetapan untuk melarang klien lama daripada menyambung.\n"
+"Klien lama masih sesuai digunakan jika mereka tidak runtuh (crash) apabila "
+"cuba untuk menyambung ke pelayan baharu,\n"
+"tetapi mereka mungkin tidak mampu menyokong semua sifat baharu yang anda "
+"sangkakan."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -3244,6 +3303,11 @@ msgid "Enable Bloom Debug"
 msgstr "Membolehkan Nyahpepijat Seri"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Debanding"
+msgstr "Boleh Cedera"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enable IPv6 support (for both client and server).\n"
 "Required for IPv6 connections to work at all."
@@ -3268,6 +3332,11 @@ msgstr ""
 "Membolehkan penapisan cakera Poisson.\n"
 "Jika dibenarkan, gunakan cakera Poisson untuk membuat \"bayang lembut\". "
 "Jika tidak, gunakan penapisan PCF."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Post Processing"
+msgstr "Pascapemprosesan"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
@@ -3319,6 +3388,11 @@ msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr "Membolehkan roda tetikus (tatal) untuk pemilihan item dalam hotbar."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable random mod loading (mainly used for testing)."
+msgstr "Membolehkan input pengguna secara rawak (hanya untuk percubaan)."
+
+#: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
 msgstr "Membolehkan input pengguna secara rawak (hanya untuk percubaan)."
 
@@ -3349,6 +3423,11 @@ msgstr ""
 "sangkakan."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable touchscreen"
+msgstr "Skrin Sentuh"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enable usage of remote media server (if provided by server).\n"
 "Remote servers offer a significantly faster way to download media (e.g. "
@@ -3360,14 +3439,6 @@ msgstr ""
 "Pelayan jarak jauh menawarkan cara lebih cepat untuk muat turun media (cth. "
 "tekstur)\n"
 "apabila menyambung ke pelayan permainan."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable vertex buffer objects.\n"
-"This should greatly improve graphics performance."
-msgstr ""
-"Membolehkan objek penimbal bucu.\n"
-"Ini patut meningkatkan prestasi grafik dengan banyak."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3406,6 +3477,19 @@ msgstr "Membolehkan animasi item dalam inventori."
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
 msgstr "Membolehkan pengagregatan jejaring yang diputar di paksi Y (facedir)."
+
+#: src/settings_translation_file.cpp
+msgid "Enables debug and error-checking in the OpenGL driver."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enables the post processing pipeline."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enables touchscreen mode, allowing you to play the game with a touchscreen."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4353,10 +4437,12 @@ msgstr ""
 "-   Legap: melumpuhkan lut sinar"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Length of a server tick and the interval at which objects are generally "
-"updated over\n"
-"network, stated in seconds."
+"Length of a server tick (the interval at which everything is generally "
+"updated),\n"
+"stated in seconds.\n"
+"Does not apply to sessions hosted from the client menu."
 msgstr ""
 "Panjang setiap detik pelayan dan selang masa ketika mana objek-objek "
 "selalunya\n"
@@ -4536,10 +4622,6 @@ msgstr ""
 "terbenam) dan arah pandang."
 
 #: src/settings_translation_file.cpp
-msgid "Makes all liquids opaque"
-msgstr "Buatkan semua cecair menjadi legap"
-
-#: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
 msgstr "Tahap Pemampatan Peta untuk Simpanan Cakera"
 
@@ -4594,11 +4676,14 @@ msgid "Map generation attributes specific to Mapgen v5."
 msgstr "Atribut penjanaan peta khusus untuk janapeta v5."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
-"the 'jungles' flag is ignored."
+"the 'jungles' flag is ignored.\n"
+"The 'temples' flag disables generation of desert temples. Normal dungeons "
+"will appear instead."
 msgstr ""
 "Atribut penjanaan peta khusus untuk Janapeta v6.\n"
 "Bendera 'snowbiomes' membolehkan sistem 5 biom baharu.\n"
@@ -4640,10 +4725,6 @@ msgstr "Lengah masa penjanaan jejaring blok peta"
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generation threads"
 msgstr "Bebenang penjanaan jejaring BlokPeta"
-
-#: src/settings_translation_file.cpp
-msgid "Mapblock mesh generator's MapBlock cache size in MB"
-msgstr "Saiz cache BlokPeta untuk penjana jejaring blokpeta dalam unit MB"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
@@ -4916,6 +4997,11 @@ msgid "Minimap scan height"
 msgstr "Ketinggian imbasan peta mini"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Minimum dig repetition interval"
+msgstr "Selang pengulangan perbuatan letak"
+
+#: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of large caves per mapchunk."
 msgstr "Had minimum jumlah rawak gua besar per ketulan peta."
 
@@ -4982,6 +5068,11 @@ msgstr "Kepekaan tetikus"
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
 msgstr "Pendarab kepekaan tetikus."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Movement threshold"
+msgstr "Nilai ambang gua"
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
@@ -5128,10 +5219,6 @@ msgid "Occlusion Culling"
 msgstr "Penakaian Oklusi"
 
 #: src/settings_translation_file.cpp
-msgid "Opaque liquids"
-msgstr "Cecair legap"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Opaqueness (alpha) of the shadow behind the default font, between 0 and 255."
 msgstr "Kelegapan (alfa) bayang belakang fon lalai, nilai antara 0 dan 255."
@@ -5144,6 +5231,11 @@ msgid ""
 msgstr ""
 "Buka menu jeda apabila fokus tetingkap hilang.\n"
 "Tidak jeda jika formspec dibuka."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "OpenGL debug"
+msgstr "Nyahpepijat janapeta"
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
@@ -5281,6 +5373,15 @@ msgid "Proportion of large caves that contain liquid."
 msgstr "Perkadaran gua besar yang mengandungi cecair."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Protocol version minimum"
+msgstr "Versi protokol tidak serasi. "
+
+#: src/settings_translation_file.cpp
+msgid "Punch gesture"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
@@ -5297,6 +5398,10 @@ msgstr "Menaikkan rupa bumi untuk membuat lembah di sekitar sungai."
 #: src/settings_translation_file.cpp
 msgid "Random input"
 msgstr "Input rawak"
+
+#: src/settings_translation_file.cpp
+msgid "Random mod load order"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -5511,13 +5616,14 @@ msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
 msgstr "Lihat http://www.sqlite.org/pragma.html#pragma_synchronous"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Select the antialiasing method to apply.\n"
 "\n"
 "* None - No antialiasing (default)\n"
 "\n"
-"* FSAA - Hardware-provided full-screen antialiasing (incompatible with "
-"shaders)\n"
+"* FSAA - Hardware-provided full-screen antialiasing\n"
+"(incompatible with Post Processing and Undersampling)\n"
 "A.K.A multi-sample antialiasing (MSAA)\n"
 "Smoothens out block edges but does not affect the insides of textures.\n"
 "A restart is required to change this option.\n"
@@ -5679,8 +5785,9 @@ msgstr ""
 "Julat: dari -1 ke 1.0"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Set the language. Leave empty to use the system language.\n"
+"Set the language. By default, the system language is used.\n"
 "A restart is required after changing this."
 msgstr ""
 "Menetapkan bahasa. Biarkan kosong untuk menggunakan bahasa sistem.\n"
@@ -5728,6 +5835,10 @@ msgstr ""
 "Warna yang terang akan menyantak ke objek di sekitarnya."
 
 #: src/settings_translation_file.cpp
+msgid "Set to true to enable volumetric lighting effect (a.k.a. \"Godrays\")."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Set to true to enable waving leaves."
 msgstr "Tetapkan kepada \"true\" untuk membolehkan daun bergoyang."
 
@@ -5772,11 +5883,11 @@ msgid "Shaders"
 msgstr "Pembayang"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Shaders allow advanced visual effects and may increase performance on some "
 "video\n"
-"cards.\n"
-"This only works with the OpenGL video backend."
+"cards."
 msgstr ""
 "Pembayang membolehkan kesan visual lanjutan dan boleh meningkatkan prestasi\n"
 "untuk sesetengah kad video.\n"
@@ -5867,16 +5978,6 @@ msgstr ""
 "untuk kegunaan istimewa, lebih baik biarkannya tidak berubah."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Size of the MapBlock cache of the mesh generator. Increasing this will\n"
-"increase the cache hit %, reducing the data being copied from the main\n"
-"thread, thus reducing jitter."
-msgstr ""
-"Saiz cache blokpeta untuk penjana jejaring. Menaikkan nilai ini akan\n"
-"meningkatkan jumlah % hit cache, mengurangkan data yang perlu disalin\n"
-"daripada jalur utama, lalu mengurangkan ketaran."
-
-#: src/settings_translation_file.cpp
 msgid "Sky Body Orbit Tilt"
 msgstr "Kecondongan Orbit Badan Angkasa"
 
@@ -5910,9 +6011,10 @@ msgid "Smooth lighting"
 msgstr "Pencahayaan lembut"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Change Keys."
+"cinematic mode by using the key set in Controls."
 msgstr ""
 "Melembutkan pemutaran kamera ketika dalam mod sinematik, nilai 0 untuk "
 "melumpuhkannya. Masuk mod sinematik menggunakan kekunci yang ditetapkan "
@@ -5937,6 +6039,15 @@ msgstr "Kelajuan menyelinap, dalam unit nod per saat."
 #: src/settings_translation_file.cpp
 msgid "Soft shadow radius"
 msgstr "Jejari bayang lembut"
+
+#: src/settings_translation_file.cpp
+msgid "Sound"
+msgstr "Bunyi"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Sound Extensions Blacklist"
+msgstr "Senarai Hitam Bendera ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6150,17 +6261,38 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"The delay in milliseconds after which a touch interaction is considered a "
+"long tap."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "The file path relative to your world path in which profiles will be saved to."
 msgstr ""
 "Laluan fail yang relatif kepada laluan dunia anda di mana profil akan "
 "disimpankan."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"The gesture for for punching players/entities.\n"
+"This can be overridden by games and mods.\n"
+"\n"
+"* short_tap\n"
+"Easy to use and well-known from other games that shall not be named.\n"
+"\n"
+"* long_tap\n"
+"Known from the classic Minetest mobile controls.\n"
+"Combat is more or less impossible."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
 msgstr "Pengenal pasti kayu bedik yang digunakan"
 
 #: src/settings_translation_file.cpp
-msgid "The length in pixels it takes for touchscreen interaction to start."
+#, fuzzy
+msgid ""
+"The length in pixels after which a touch interaction is considered movement."
 msgstr ""
 "Panjang dalam piksel yang diperlukan untuk interaksi skrin sentuh dimulakan."
 
@@ -6175,6 +6307,15 @@ msgstr ""
 "4.0 = Tinggi gelora ialah dua nod.\n"
 "0.0 = Gelora tidak bergerak langsung.\n"
 "Nilai lalainya 1.0 (1/2 nod)."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"The minimum time in seconds it takes between digging nodes when holding\n"
+"the dig button."
+msgstr ""
+"Jumlah masa dalam saat diambil untuk meletakan nod yang berulang apabila\n"
+"pemain menekan butang letak tanpa melepaskannya."
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -6207,11 +6348,12 @@ msgstr ""
 "Nilai ini patut ditetapkan bersama nilai active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
 "OpenGL is the default for desktop, and OGLES2 for Android.\n"
-"Shaders are supported by OpenGL and OGLES2 (experimental)."
+"Shaders are supported by everything but OGLES1."
 msgstr ""
 "Bahagian belakang pengemas gabung.\n"
 "Nota: Mula semula diperlukan selepas mengubah tetapan ini!\n"
@@ -6295,6 +6437,10 @@ msgstr ""
 "Hingar 2D ketiga daripada empat yang mentakrifkan ketinggian bukit/gunung."
 
 #: src/settings_translation_file.cpp
+msgid "Threshold for long taps"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
@@ -6351,12 +6497,13 @@ msgid "Touchscreen sensitivity multiplier."
 msgstr "Pendarab kepekaan skrin sentuh."
 
 #: src/settings_translation_file.cpp
-msgid "Touchscreen threshold"
-msgstr "Nilai ambang skrin sentuh"
-
-#: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
 msgstr "Keseimbangan untuk prestasi"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Translucent liquids"
+msgstr "Cecair legap"
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
@@ -6403,8 +6550,11 @@ msgstr ""
 "Tetapan ini hanya patut diubah jika anda mempunyai masalah prestasi."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"URL to JSON file which provides information about the newest Minetest release"
+"URL to JSON file which provides information about the newest Minetest "
+"release\n"
+"If this is empty the engine will never check for updates."
 msgstr ""
 "URL kepada fail JSON yang menyediakan maklumat mengenai terbitan Minetest "
 "terbaru"
@@ -6467,9 +6617,8 @@ msgstr ""
 "Gunakan penapisan anisotropik apabila melihat tekstur dari suatu sudut."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use bilinear filtering when scaling textures."
-msgstr "Gunakan penapisan trilinear apabila menyesuaikan tekstur."
+msgstr "Gunakan penapisan bilinear apabila menyesuaikan tekstur."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6485,13 +6634,12 @@ msgstr ""
 "memilih objek."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
-"Gunakan pemetaan mip untuk menyesuaiturunkan tekstur. Boleh meningkatkan\n"
+"Gunakan pemetaan mip apabila menyesuaikan tekstur. Boleh meningkatkan\n"
 "sedikit prestasi, terutamanya apabila menggunakan pek tekstur leraian "
 "tinggi.\n"
 "Penyesuaiturunan secara tepat-gama tidak disokong."
@@ -6507,13 +6655,12 @@ msgstr ""
 "untuk jejaring klien dengan saiz lebih kecil daripada blok peta 4x4x4."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
-"Gunakan penapisan trilinear apabila menyesuaiturunkan tekstur.\n"
+"Gunakan penapisan trilinear apabila menyesuaikan tekstur.\n"
 "Sekiranya kedua-dua penapisan bilinear dan trilinear dibolehkan,\n"
 "maka penapisan trilinear yang akan diterapkan."
 
@@ -6530,10 +6677,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "User Interfaces"
 msgstr "Antara Muka Pengguna"
-
-#: src/settings_translation_file.cpp
-msgid "VBO"
-msgstr "VBO"
 
 #: src/settings_translation_file.cpp
 msgid "VSync"
@@ -6629,12 +6772,26 @@ msgid "Volume"
 msgstr "Kekuatan bunyi"
 
 #: src/settings_translation_file.cpp
+msgid "Volume multiplier when the window is unfocused."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Volume of all sounds.\n"
 "Requires the sound system to be enabled."
 msgstr ""
 "Kekuatan semua bunyi.\n"
 "Memerlukan sistem bunyi dibolehkan."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Volume when unfocused"
+msgstr "Bingkai per saat (FPS) apabila permainan hilang fokus atau dijedakan"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Volumetric lighting"
+msgstr "Pencahayaan lembut"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6943,11 +7100,17 @@ msgstr "Had cURL selari"
 #~ msgid "(game support required)"
 #~ msgstr "(sokongan permainan diperlukan)"
 
+#~ msgid "- Address: "
+#~ msgstr "- Alamat: "
+
 #~ msgid "- Creative Mode: "
 #~ msgstr "- Mod Kreatif: "
 
 #~ msgid "- Damage: "
 #~ msgstr "- Boleh cedera: "
+
+#~ msgid "- Port: "
+#~ msgstr "- Port: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -6986,6 +7149,13 @@ msgstr "Had cURL selari"
 #~ "Biar kosong untuk memulakan pelayan tempatan.\n"
 #~ "Ambil perhatian bahawa medan alamat dalam menu utama mengatasi tetapan "
 #~ "ini."
+
+#~ msgid ""
+#~ "Adjust dpi configuration to your screen (non X11/Android only) e.g. for "
+#~ "4k screens."
+#~ msgstr ""
+#~ "Laraskan konfigurasi DPI ke skrin anda (bukan X11/Android sahaja) cth. "
+#~ "untuk skrin 4K."
 
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
@@ -7058,6 +7228,9 @@ msgstr "Had cURL selari"
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "Bit per piksel (atau kedalaman warna) dalam mod skrin penuh."
 
+#~ msgid "Block bounds shown for all blocks"
+#~ msgstr "Batas blok ditunjukkan untuk semua blok"
+
 #~ msgid "Bump Mapping"
 #~ msgstr "Pemetaan Bertompok"
 
@@ -7082,6 +7255,9 @@ msgstr "Had cURL selari"
 
 #~ msgid "Center of light curve mid-boost."
 #~ msgstr "Titik tengah tolakan-tengah lengkung cahaya."
+
+#~ msgid "Change Keys"
+#~ msgstr "Tukar Kekunci"
 
 #~ msgid "Change keys"
 #~ msgstr "Tukar kekunci"
@@ -7159,6 +7335,38 @@ msgstr "Had cURL selari"
 #~ msgstr ""
 #~ "Mengawal lebar terowong, nilai lebih kecil mencipta terowong lebih lebar."
 
+#, c-format
+#~ msgid ""
+#~ "Controls:\n"
+#~ "- %s: move forwards\n"
+#~ "- %s: move backwards\n"
+#~ "- %s: move left\n"
+#~ "- %s: move right\n"
+#~ "- %s: jump/climb up\n"
+#~ "- %s: dig/punch/use\n"
+#~ "- %s: place/use\n"
+#~ "- %s: sneak/climb down\n"
+#~ "- %s: drop item\n"
+#~ "- %s: inventory\n"
+#~ "- Mouse: turn/look\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- %s: chat\n"
+#~ msgstr ""
+#~ "Kawalan:\n"
+#~ "- %s: bergerak ke depan\n"
+#~ "- %s: bergerak ke belakang\n"
+#~ "- %s: bergerak ke kiri\n"
+#~ "- %s: bergerak ke kanan\n"
+#~ "- %s: lompat/naik atas\n"
+#~ "- %s: gali/ketuk/guna\n"
+#~ "- %s: letak/guna\n"
+#~ "- %s: selinap/turun bawah\n"
+#~ "- %s: jatuhkan item\n"
+#~ "- %s: inventori\n"
+#~ "- Tetikus: pusing/lihat sekeliling\n"
+#~ "- Roda tetikus: pilih item\n"
+#~ "- %s: sembang\n"
+
 #~ msgid "Creative"
 #~ msgstr "Kreatif"
 
@@ -7167,6 +7375,9 @@ msgstr "Had cURL selari"
 
 #~ msgid "Crosshair color (R,G,B)."
 #~ msgstr "Warna bagi kursor rerambut silang (R,G,B)."
+
+#~ msgid "DPI"
+#~ msgstr "DPI"
 
 #~ msgid "Damage"
 #~ msgstr "Boleh cedera"
@@ -7264,6 +7475,13 @@ msgstr "Had cURL selari"
 
 #~ msgid "Enable register confirmation"
 #~ msgstr "Bolehkan pengesahan pendaftaran"
+
+#~ msgid ""
+#~ "Enable vertex buffer objects.\n"
+#~ "This should greatly improve graphics performance."
+#~ msgstr ""
+#~ "Membolehkan objek penimbal bucu.\n"
+#~ "Ini patut meningkatkan prestasi grafik dengan banyak."
 
 #~ msgid "Enabled"
 #~ msgstr "Dibolehkan"
@@ -7579,6 +7797,9 @@ msgstr "Had cURL selari"
 
 #~ msgid "Instrumentation"
 #~ msgstr "Instrumentasi"
+
+#~ msgid "Invalid gamespec."
+#~ msgstr "Spesifikasi permainan tidak sah."
 
 #~ msgid "Inventory key"
 #~ msgstr "Kekunci inventori"
@@ -8277,6 +8498,12 @@ msgstr "Had cURL selari"
 #~ "Membuatkan DirectX bekerja dengan LuaJIT. Lumpuhkan tetapan jika "
 #~ "bermasalah."
 
+#~ msgid "Makes all liquids opaque"
+#~ msgstr "Buatkan semua cecair menjadi legap"
+
+#~ msgid "Mapblock mesh generator's MapBlock cache size in MB"
+#~ msgstr "Saiz cache BlokPeta untuk penjana jejaring blokpeta dalam unit MB"
+
 #~ msgid "Menus"
 #~ msgstr "Menu"
 
@@ -8518,14 +8745,20 @@ msgstr "Had cURL selari"
 #~ msgid "Simple Leaves"
 #~ msgstr "Daun Ringkas"
 
+#~ msgid ""
+#~ "Size of the MapBlock cache of the mesh generator. Increasing this will\n"
+#~ "increase the cache hit %, reducing the data being copied from the main\n"
+#~ "thread, thus reducing jitter."
+#~ msgstr ""
+#~ "Saiz cache blokpeta untuk penjana jejaring. Menaikkan nilai ini akan\n"
+#~ "meningkatkan jumlah % hit cache, mengurangkan data yang perlu disalin\n"
+#~ "daripada jalur utama, lalu mengurangkan ketaran."
+
 #~ msgid "Smooth Lighting"
 #~ msgstr "Pencahayaan Lembut"
 
 #~ msgid "Smooths rotation of camera. 0 to disable."
 #~ msgstr "Melembutkan pemutaran kamera. Set sebagai 0 untuk melumpuhkannya."
-
-#~ msgid "Sound"
-#~ msgstr "Bunyi"
 
 #~ msgid "Special"
 #~ msgstr "Istimewa"
@@ -8590,6 +8823,9 @@ msgstr "Had cURL selari"
 #~ msgid "Touch threshold (px):"
 #~ msgstr "Nilai ambang sentuhan (px):"
 
+#~ msgid "Touchscreen threshold"
+#~ msgstr "Nilai ambang skrin sentuh"
+
 #~ msgid "Trilinear Filter"
 #~ msgstr "Penapisan Trilinear"
 
@@ -8642,6 +8878,9 @@ msgstr "Had cURL selari"
 #~ "dilumpuhkan.\n"
 #~ "Jika ditetapkan ke 0, MSAA akan dilumpuhkan.\n"
 #~ "Anda perlu mulakan semula selepas mengubah pilihan ini."
+
+#~ msgid "VBO"
+#~ msgstr "VBO"
 
 #~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr ""
@@ -8747,8 +8986,14 @@ msgstr "Had cURL selari"
 #~ msgid "You died."
 #~ msgstr "Anda telah meninggal."
 
+#~ msgid "You have no games installed."
+#~ msgstr "Anda tidak memasang sebarang permainan."
+
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"
+
+#~ msgid "ok"
+#~ msgstr "ok"

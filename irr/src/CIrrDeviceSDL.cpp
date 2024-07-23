@@ -339,6 +339,10 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters &param) :
 		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
 		SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
 
+#if defined(SDL_HINT_APP_NAME)
+		SDL_SetHint(SDL_HINT_APP_NAME, "Minetest");
+#endif
+
 		u32 flags = SDL_INIT_TIMER | SDL_INIT_EVENTS;
 		if (CreationParams.DriverType != video::EDT_NULL)
 			flags |= SDL_INIT_VIDEO;
@@ -705,6 +709,7 @@ bool CIrrDeviceSDL::run()
 
 	while (!Close && wrap_PollEvent(&SDL_event)) {
 		// os::Printer::log("event: ", core::stringc((int)SDL_event.type).c_str(),   ELL_INFORMATION);	// just for debugging
+		memset(&irrevent, 0, sizeof(irrevent));
 
 		switch (SDL_event.type) {
 		case SDL_MOUSEMOTION: {
