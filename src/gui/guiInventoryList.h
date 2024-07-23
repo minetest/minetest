@@ -142,6 +142,9 @@ private:
 	// the index of the hovered item; -1 if no item is hovered
 	s32 m_hovered_i;
 
+	// judge if tooltip consistency should continue
+	static bool is_last_mouse_event_outside_item_slot;
+
 	// we do not want to write a warning on every draw
 	bool m_already_warned;
 };

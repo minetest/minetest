@@ -21,6 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiFormSpecMenu.h"
 #include "client/hud.h"
 #include "client/client.h"
+#include "ICursorControl.h"
+#include "client/renderingengine.h"
+
+bool GUIInventoryList::is_last_mouse_event_outside_item_slot = true;
 
 GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env,
 	gui::IGUIElement *parent,
@@ -89,6 +93,13 @@ void GUIInventoryList::draw()
 	v2s32 base_pos = AbsoluteRect.UpperLeftCorner;
 
 	const s32 list_size = (s32)ilist->getSize();
+
+	// regenerate value of m_hovered only when mouse haven't move outside item slot.
+	if (m_hovered_i == -1 && is_last_mouse_event_outside_item_slot == false)
+	{
+		ICursorControl *cursor_control = RenderingEngine::get_raw_device()->getCursorControl();
+		m_hovered_i = getItemIndexAtPos(v2s32(cursor_control->getPosition()));
+	}
 
 	for (s32 i = 0; i < m_geom.X * m_geom.Y; i++) {
 		s32 item_i = i + m_start_item_i;
@@ -181,7 +192,11 @@ bool GUIInventoryList::OnEvent(const SEvent &event)
 	m_hovered_i = getItemIndexAtPos(v2s32(event.MouseInput.X, event.MouseInput.Y));
 
 	if (m_hovered_i != -1)
+	{
+		is_last_mouse_event_outside_item_slot = false;
 		return IGUIElement::OnEvent(event);
+	}
+	is_last_mouse_event_outside_item_slot = true;
 
 	// no item slot at pos of mouse event => allow clicking through
 	// find the element that would be hovered if this inventorylist was invisible
