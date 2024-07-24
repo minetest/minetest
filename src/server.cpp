@@ -2702,7 +2702,6 @@ void Server::sendRequestedMedia(session_t peer_id,
 			if (!client->markMediaSent(name)) {
 				infostream << "Server::sendRequestedMedia(): Client asked has "
 					"requested \"" << name << "\" before, not sending it again."
-					<< "\" before, not sending it again."
 					<< std::endl;
 				continue;
 			}
