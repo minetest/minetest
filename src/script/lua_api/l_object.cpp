@@ -1852,11 +1852,7 @@ int ObjectRef::l_hud_get_hotbar_itemcount(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	Inventory *inventory = &player->inventory;
-	InventoryList *mainlist = inventory->getList("main");
-
-	lua_pushinteger(L, (mainlist == nullptr) ? 0 :
-		MYMIN(player->getHotbarItemcount(), (s32) mainlist->getSize()));
+	lua_pushinteger(L, player->getMaxHotbarItemcount());
 	return 1;
 }
 

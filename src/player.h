@@ -247,6 +247,9 @@ public:
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;
 
+	// Get proper max HUD itemcount
+	u16 getMaxHotbarItemcount();
+
 protected:
 	char m_name[PLAYERNAME_SIZE];
 	v3f m_speed; // velocity; in BS-space
