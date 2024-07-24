@@ -1,0 +1,62 @@
+#:schema https://raw.githubusercontent.com/prefix-dev/pixi/main/schema/schema.json
+
+[project]
+name = "minetest"
+version = "0.1.0"
+description = "Minetst + Gymnasium"
+authors = ["Obelisk team <obelisk@astera.org>"]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64"]
+
+[tasks]
+
+[dependencies]
+# NOTE: I was not able to get the build to work
+# using conda-provided compilers. Doing so led
+# to strange behavior with CMake's library resolution where it
+# would refuse to use system-provided OpenGL headers when
+# compiling Irrlicht no matter how hard I tried.
+# And unfortunately there is no OpenGL implementation in conda.
+capnproto = "*"
+cmake = "*"
+gettext = "*"
+gmp = "*"
+jsoncpp = "*"
+libcurl = ">=8.2.1,<9"
+libjpeg-turbo = "*"
+libpng = "*"
+libsqlite = "*"
+luajit-openresty = "*"
+mold = "*"
+ncurses = "*"
+ninja = "*"
+pkg-config = "*"
+sdl2 = "*"
+zlib = "*"
+zstd = "*"
+freetype = ">=2.12.1,<2.13"
+
+[feature.gym.dependencies]
+gymnasium = "*"
+numpy = "*"
+pycapnp = ">=2,<3"
+pygame = "*"
+
+[feature.gym.pypi-dependencies]
+minetest-gymnasium = { path = "./python", editable = true }
+
+[feature.gym.host-dependencies]
+python = ">=3.11,<3.12"
+
+[feature.gym-test.dependencies]
+pillow = "*"
+pytest = "*"
+pytest-repeat = "*"
+
+[feature.valgrind.target.linux-64.dependencies]
+valgrind = "*"
+
+[environments]
+gym = ["gym"]
+gym-test = ["gym", "gym-test"]
+valgrind = ["valgrind"]

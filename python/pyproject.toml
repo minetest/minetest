@@ -1,5 +1,5 @@
 [project]
-name = "minetest"
+name = "minetest-gymnasium"
 version = "0.5.0"
 description = "A Gymnasium environment for minetest"
 dependencies = ["gymnasium", "numpy", "pycapnp"]

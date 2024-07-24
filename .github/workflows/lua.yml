@@ -21,24 +21,21 @@ jobs:
     name: "Compile and run multiplayer tests"
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Install deps
       run: |
         source ./util/ci/common.sh
         install_linux_deps clang-14 gdb
 
-    - uses: conda-incubator/setup-miniconda@v3
+    - uses: prefix-dev/setup-pixi@v0.8.1
       with:
-        python-version: '3.11'
-        mamba-version: "*"
-        channels: conda-forge,nodefaults
-        activate-environment: minetest
-        environment-file: environment.yml
+        manifest-path: pixi.toml
+        cache: true
+        cache-write: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
 
     - name: Build
-      shell: bash -l {0}
       run: |
-        ./util/ci/build.sh
+        pixi run ./util/ci/build.sh
       env:
         CC: clang-14
         CXX: clang++-14
@@ -54,7 +51,7 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: leafo/gh-actions-lua@v9
       with:
         luaVersion: "5.1.5"

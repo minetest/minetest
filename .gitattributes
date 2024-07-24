@@ -1,2 +1,5 @@
 *.cpp diff=cpp
 *.h diff=cpp
+# GitHub syntax highlighting
+pixi.lock linguist-language=YAML generated=true
+

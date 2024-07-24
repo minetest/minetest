@@ -41,6 +41,19 @@
         {
             "type": "lldb",
             "request": "launch",
+            "name": "devtest mac",
+            "program": "${workspaceFolder}/build/macos/minetest.app/Contents/MacOS/minetest",
+            "args": [
+                "--go",
+                "--gameid",
+                "devtest",
+                "--verbose"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "Debug multiplayer client",
             "program": "${workspaceFolder}/bin/minetest",
             // taken from test_multiplayer.sh.

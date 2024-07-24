@@ -938,12 +938,13 @@ static bool auto_select_world(GameParams *game_params)
 		// probability of colission is 1/16^5 ~= 1 in a million
 		std::random_device rd;
 		std::uniform_int_distribution<> dis(0, 0xF);
-		char rand_buf[5];
-		for (int i = 0; i < 5; ++i) {
+		constexpr size_t num_rand_chars = 5;
+		char rand_buf[num_rand_chars];
+		for (size_t i = 0; i < num_rand_chars; ++i) {
 			int random_num = dis(rd);
 			rand_buf[i] = "0123456789ABCDEF"[random_num];
 		}
-		world_name += "-" + std::string(rand_buf);
+		world_name += "-" + std::string(rand_buf, num_rand_chars);
 		world_path = porting::path_user + DIR_DELIM + "worlds" + DIR_DELIM + world_name;
 
 		try {

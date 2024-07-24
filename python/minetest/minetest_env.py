@@ -396,8 +396,7 @@ class MinetestEnv(gym.Env):
     def _start_pygame(self):
         if pygame is None:
             raise ImportError(
-                "pygame is required for rendering in human mode. "
-                "Please install it: mamba install -c conda-forge pygame",
+                "pygame is required for rendering in human mode. Please install it.",
             )
         pygame.init()
         self.screen = pygame.display.set_mode(

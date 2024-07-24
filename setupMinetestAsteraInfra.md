@@ -1,12 +1,9 @@
 # Setup
 
-This should work on a standard infra machine. Last tested on `quick-weevil`.
-
-Requires conda to be installed.
+Install [pixi](https://pixi.sh/latest/).
 
 ```bash
-set -euox pipefail
-
+# Once per computer:
 # To match the toolchain that rattler-build uses,
 # set up GCC-13:
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
@@ -17,11 +14,10 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 60 --slave /
 
 git clone git@github.com:Astera-org/minetest.git
 cd minetest
-
-# activate conda environment
-mamba env create && conda activate minetest
-
 git submodule update --init --recursive
+
+# activate pixi environment
+pixi shell -e gym-test
 
 cmake -B build -S . \
 	-DCMAKE_FIND_FRAMEWORK=LAST \

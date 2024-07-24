@@ -1,19 +1,9 @@
 # Compiling on MacOS
 
-Note: the conda environment.yml file currently doesn't work on arm64,
-and that's what's tested on the CI (which uses x86-64).
-So these instructions should work aren't tested.
-
 ## Requirements
 
-- [Homebrew](https://brew.sh/)
 - [Git](https://git-scm.com/downloads)
-
-Install dependencies with homebrew:
-
-```
-brew install cmake capnp freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd gettext sdl2 zeromq zmqpp ninja
-```
+- [Pixi](https://pixi.sh/)
 
 ## Download
 
@@ -27,12 +17,10 @@ git submodule update --init --recursive
 
 ## Build
 
-Note the `-DICONV_LIBRARY` should only be set if a conda environment is active
-(even an empty conda environment seems to have libiconv which conflicts with system iconv).
-
 ```bash
+pixi shell
 cmake -B build -S . \
-    -DCMAKE_FIND_FRAMEWORK=LAST \
+    -DCMAKE_FIND_FRAMEWORK=FIRST \
     -DCMAKE_INSTALL_PREFIX=$(pwd)/build/macos/ \
     -GNinja \
     -DRUN_IN_PLACE=FALSE  \
@@ -40,7 +28,10 @@ cmake -B build -S . \
     -DINSTALL_DEVTEST=TRUE \
     -DINSTALL_MINETEST_GAME=TRUE \
     -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations" \
-    -DICONV_LIBRARY="${CONDA_PREFIX}/lib/libiconv.dylib"
+    -DFREETYPE_LIBRARY="${CONDA_PREFIX}/lib/libfreetype.dylib" \
+    -DICONV_LIBRARY="${CONDA_PREFIX}/lib/libiconv.dylib" \
+    -DCMAKE_INSTALL_RPATH="${CONDA_PREFIX}/lib" \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 cmake --build build
 cmake --install build
 
