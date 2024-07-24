@@ -2190,9 +2190,8 @@ void Game::processItemSelection(u16 *new_playeritem)
 
 	/* Item selection using mouse wheel
 	 */
-	Inventory *inventory = &player->inventory;
-	InventoryList *mainlist = inventory->getList("main");
-	if (mainlist == nullptr)
+	InventoryList *mainlist = player->inventory.getList("main");
+	if (!mainlist)
 		return;
 	*new_playeritem = player->getWieldIndex();
 	u16 max_item = MYMIN((s32) mainlist->getSize() - 1,
