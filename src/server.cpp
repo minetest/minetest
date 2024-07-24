@@ -2693,7 +2693,7 @@ void Server::sendRequestedMedia(session_t peer_id,
 		if (it == m_media.end()) {
 			errorstream<<"Server::sendRequestedMedia(): Client asked for "
 					<< "unknown file \"" << name << "\""
-					<< ", peer_id=" << peer_id <<std::endl;
+					<< ", peer_id=" << peer_id << std::endl;
 			continue;
 		}
 		const auto &m = it->second;
@@ -2703,7 +2703,7 @@ void Server::sendRequestedMedia(session_t peer_id,
 		if (!m.no_announce) {
 			if (!client->markMediaSent(name)) {
 				infostream << "Server::sendRequestedMedia(): Client peer_id="
-					<< peer_id << " asked has requested \"" << name
+					<< peer_id << " has requested \"" << name
 					<< "\" before, not sending it again."
 					<< std::endl;
 				continue;
