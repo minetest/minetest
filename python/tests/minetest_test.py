@@ -2,7 +2,6 @@ import asyncio
 import logging
 import os
 import shutil
-import socket
 import sys
 import tempfile
 import unittest.mock
@@ -56,28 +55,13 @@ def minetest_executable():
 
 
 @pytest.fixture
-def server_addr():
-    if sys.platform == "darwin":
-        # take a lucky guess at a free port
-        # Have the OS return a free port, then immediately close the socket.
-        # Not guaranteed to be free, but should be good enough
-        s = socket.socket()
-        s.bind(("", 0))
-        port = s.getsockname()[1]
-        s.close()
-        # mac doesn't support abstract unix sockets, so use TCP
-        return f"localhost:{port}"
-    return None
-
-
-@pytest.fixture
-def env(artifact_dir, world_dir, minetest_executable, server_addr):
+def env(artifact_dir, world_dir, minetest_executable):
     display_size = (223, 111)
     env = gym.make(
         "minetest-v0",
         executable=minetest_executable,
         artifact_dir=artifact_dir,
-        server_addr=server_addr,
+        headless=sys.platform == "linux",
         display_size=display_size,
         world_dir=world_dir,
         verbose_logging=True,
@@ -97,9 +81,7 @@ def contains_key(config_path: os.PathLike, key: str):
     return False
 
 
-def test_new_env_after_exception(
-    artifact_dir, world_dir, minetest_executable, server_addr, caplog
-):
+def test_new_env_after_exception(artifact_dir, world_dir, minetest_executable, caplog):
     caplog.set_level(logging.DEBUG)
 
     def make_env():
@@ -107,7 +89,7 @@ def test_new_env_after_exception(
             "minetest-v0",
             executable=minetest_executable,
             artifact_dir=artifact_dir,
-            server_addr=server_addr,
+            headless=sys.platform == "linux",
             world_dir=world_dir,
             verbose_logging=True,
             additional_observation_spaces={
@@ -136,16 +118,14 @@ def test_double_reset(env, artifact_dir, caplog):
     shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
 
 
-def test_minetest_basic(
-    artifact_dir, world_dir, minetest_executable, server_addr, caplog
-):
+def test_minetest_basic(artifact_dir, world_dir, minetest_executable, caplog):
     caplog.set_level(logging.DEBUG)
     display_size = (223, 111)
     env = gym.make(
         "minetest-v0",
+        headless=sys.platform == "linux",
         executable=minetest_executable,
         artifact_dir=artifact_dir,
-        server_addr=server_addr,
         display_size=display_size,
         world_dir=world_dir,
         verbose_logging=True,
@@ -200,7 +180,7 @@ def test_minetest_basic(
     shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
 
 
-def test_minetest_game_dir(artifact_dir, minetest_executable, server_addr, caplog):
+def test_minetest_game_dir(artifact_dir, minetest_executable, caplog):
     caplog.set_level(logging.DEBUG)
     repo_root = Path(__file__).parent.parent.parent
     devetest_game_dir = repo_root / "games" / "devtest"
@@ -209,7 +189,7 @@ def test_minetest_game_dir(artifact_dir, minetest_executable, server_addr, caplo
         "minetest-v0",
         executable=minetest_executable,
         artifact_dir=artifact_dir,
-        server_addr=server_addr,
+        headless=sys.platform == "linux",
         world_dir=None,
         game_dir=devetest_game_dir,
         verbose_logging=True,
@@ -231,19 +211,23 @@ def test_keymap_valid():
         assert key in minetest_env.remoteclient_capnp.KeyPressType.Key.schema.enumerants
 
 
-def test_async_vector_env(
-    artifact_dir, world_dir, minetest_executable, server_addr, caplog
-):
+def test_async_vector_env(artifact_dir, world_dir, minetest_executable, caplog):
     caplog.set_level(logging.DEBUG)
     num_envs = 2
     max_episode_steps = 3
+    async_env_context = None
+    headless = True
+    if sys.platform == "darwin":
+        # https://github.com/Farama-Foundation/Gymnasium/issues/222
+        async_env_context = "fork"
+        headless = False
     envs = [
         lambda: gym.make(
             "minetest-v0",
             max_episode_steps=max_episode_steps,
+            headless=headless,
             executable=minetest_executable,
             artifact_dir=artifact_dir,
-            server_addr=server_addr,
             world_dir=world_dir,
             verbose_logging=True,
             additional_observation_spaces={
@@ -252,7 +236,7 @@ def test_async_vector_env(
         )
         for _ in range(num_envs)
     ]
-    with gym.vector.AsyncVectorEnv(envs) as env:
+    with gym.vector.AsyncVectorEnv(envs, context=async_env_context) as env:
         initial_obs, info = env.reset()
         assert len(initial_obs["image"]) == num_envs
         assert len(initial_obs["return"]) == num_envs

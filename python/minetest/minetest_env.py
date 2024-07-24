@@ -20,6 +20,9 @@ import capnp
 import gymnasium as gym
 import numpy as np
 
+# np.bool8 is removed in newer numpy but some deps still use it.
+np.bool8 = np.bool_
+
 try:
     import pygame
 except ImportError:
@@ -82,6 +85,14 @@ def _set_process_death_signal():
     # https://github.com/torvalds/linux/blob/0cac73eb3875f6ecb6105e533218dba1868d04c9/include/uapi/linux/prctl.h#L9
     PR_SET_PDEATHSIG = 1
     libc.prctl(PR_SET_PDEATHSIG, signal.SIGKILL)
+
+
+def _free_port():
+    # Have the OS return a free port, then immediately close the socket.
+    # Not guaranteed to be free, but should be good enough
+    with socket.socket() as s:
+        s.bind(("", 0))
+        return s.getsockname()[1]
 
 
 class MinetestEnv(gym.Env):
@@ -180,12 +191,15 @@ class MinetestEnv(gym.Env):
                 assert len(addr_parts) == 2, server_addr
                 self.socket_addr = (addr_parts[0], int(addr_parts[1]))
         else:
-            assert (
-                sys.platform == "linux"
-            ), "abstract sockets require linux. you can set server_addr = host:port to use TCP"
-            self.socket_addr = os.path.join(
-                self.artifact_dir, f"minetest_{self.unique_env_id}_0.sock"
-            )
+            if sys.platform == "linux":
+                self.socket_addr = os.path.join(
+                    self.artifact_dir, f"minetest_{self.unique_env_id}_0.sock"
+                )
+            elif sys.platform == "darwin":
+                # mac doesn't support abstract unix sockets, so use TCP
+                self.socket_addr = ("127.0.0.1", _free_port())
+            else:
+                raise ValueError(f"unsupported platform {sys.platform}. ")
         self.socket = None
 
         self.verbose_logging = verbose_logging
@@ -276,12 +290,12 @@ class MinetestEnv(gym.Env):
         if self.socket:
             self.socket.close()
             self.socket = None
-        if isinstance(self.socket_addr, tuple):
-            my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        else:
-            my_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         max_attempts = 100
         for _ in range(max_attempts):
+            if isinstance(self.socket_addr, tuple):
+                my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            else:
+                my_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             try:
                 my_socket.connect(self.socket_addr)
                 self.socket = my_socket
@@ -528,7 +542,9 @@ class MinetestEnv(gym.Env):
         self.close()  # ensure processes, event loops are cleaned up.
         self._event_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._event_loop)
-        return self._run_on_event_loop(self._async_reset(seed=seed, options=options))
+        return self._run_on_event_loop(
+            self._async_reset(seed=seed, options=options), timeout=60
+        )
 
     async def _async_step(self, action: Dict[str, Any], _key_map=KEY_MAP):
         if self.minetest_process and self.minetest_process.poll() is not None:
@@ -598,7 +614,9 @@ class MinetestEnv(gym.Env):
         log_path: str,
     ):
         remote_input_addr = self.socket_addr
-        if ":" not in remote_input_addr:
+        if isinstance(remote_input_addr, tuple):
+            remote_input_addr = f"{remote_input_addr[0]}:{remote_input_addr[1]}"
+        elif ":" not in remote_input_addr:
             remote_input_addr = f"unix:{remote_input_addr}"
         cmd = []
         # vglrun is the only way we've gotten accelerated OpenGL in containers.
@@ -625,6 +643,7 @@ class MinetestEnv(gym.Env):
         # disable vsync
         process_env["__GL_SYNC_TO_VBLANK"] = "0"
         process_env["vblank_mode"] = "0"
+        process_env["MINETEST_USER_PATH"] = self.artifact_dir
 
         if self.headless:
             # https://github.com/carla-simulator/carla/issues/225
