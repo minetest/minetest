@@ -94,6 +94,8 @@ void KeyCache::populate()
 			handler->listenForKey(k);
 		}
 		handler->listenForKey(EscapeKey);
+		handler->listenForKey(KeyPress("KEY_SHIFT", false));
+		handler->listenForKey(KeyPress("KEY_CONTROL", false));
 	}
 }
 
@@ -150,8 +152,9 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 
 	// Remember whether each key is down or up
 	if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
-		const KeyPress keyCode(event.KeyInput);
+		const KeyPress keyCode(event.KeyInput, false, false);
 		if (keysListenedFor[keyCode]) {
+			tracestream << (event.KeyInput.PressedDown?"Key pressed: ":"Key released: ") << keyCode.sym() << " (base: " << keyCode.base().sym() << ")" << std::endl;
 			if (event.KeyInput.PressedDown) {
 				if (!IsKeyDown(keyCode))
 					keyWasPressed.set(keyCode);

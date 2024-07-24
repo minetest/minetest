@@ -272,27 +272,30 @@ static const table_key &lookup_keychar(wchar_t Char)
 	throw UnknownKeycode(os.str().c_str());
 }
 
-std::string_view KeyPress::parseModifiers(const std::string_view &name)
+std::string_view KeyPress::parseModifiers(const std::string_view &name, bool merge_modifiers)
 {
 	if (str_starts_with(name, "KEY_CONTROL-")) {
 		control = true;
-		return parseModifiers(name.substr(12));
+		return parseModifiers(name.substr(12), merge_modifiers);
 	} else if (str_starts_with(name, "KEY_SHIFT-")) {
 		shift = true;
-		return parseModifiers(name.substr(10));
-	} else if (name == "KEY_CONTROL" || name == "KEY_LCONTROL" || name == "KEY_RCONTROL") {
-		control = true;
-		return "";
-	} else if (name == "KEY_SHIFT" || name == "KEY_LSHIFT" || name == "KEY_RSHIFT") {
-		shift = true;
-		return "";
+		return parseModifiers(name.substr(10), merge_modifiers);
+	}
+	if (merge_modifiers) {
+		if (is_control_base(name)) {
+			control = true;
+			return "";
+		} else if (is_shift_base(name)) {
+			shift = true;
+			return "";
+		}
 	}
 	return name;
 }
 
-KeyPress::KeyPress(const std::string_view &name)
+KeyPress::KeyPress(const std::string_view &name, bool merge_modifiers)
 {
-	auto keyname = parseModifiers(name);
+	auto keyname = parseModifiers(name, merge_modifiers);
 	auto wkeyname = utf8_to_wide(keyname);
 	if (wkeyname.empty()) {
 		Key = irr::KEY_KEY_CODES_COUNT;
@@ -327,18 +330,20 @@ KeyPress::KeyPress(const std::string_view &name)
 		<< "', falling back to first char." << std::endl;
 }
 
-KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character):
+KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character, bool merge_modifiers):
 	shift(in.Shift), control(in.Control)
 {
-	switch (in.Key) {
-		case irr::KEY_SHIFT: case irr::KEY_LSHIFT: case irr::KEY_RSHIFT:
-			shift = true;
-			return;
-		case irr::KEY_CONTROL: case irr::KEY_LCONTROL: case irr::KEY_RCONTROL:
-			control = true;
-			return;
-		default:
-			break;
+	if (merge_modifiers) {
+		switch (in.Key) {
+			case irr::KEY_SHIFT: case irr::KEY_LSHIFT: case irr::KEY_RSHIFT:
+				shift = true;
+				return;
+			case irr::KEY_CONTROL: case irr::KEY_LCONTROL: case irr::KEY_RCONTROL:
+				control = true;
+				return;
+			default:
+				break;
+		}
 	}
 
 	if (prefer_character)

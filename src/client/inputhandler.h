@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "joystick_controller.h"
 #include <list>
+#include <unordered_set>
 #include "keycode.h"
 #include "renderingengine.h"
 
@@ -62,6 +63,7 @@ class KeyList : private std::list<KeyPress>
 	typedef std::list<KeyPress> super;
 	typedef super::iterator iterator;
 	typedef super::const_iterator const_iterator;
+	using ModifierSet = std::unordered_set<std::string>;
 
 	virtual const_iterator find(const KeyPress &key) const
 	{
@@ -93,41 +95,94 @@ class KeyList : private std::list<KeyPress>
 		return e;
 	}
 
+	static void toggleModifier(ModifierSet &set, const KeyPress &base)
+	{
+		auto sym = base.sym();
+		if (set.find(sym) != set.end())
+			set.erase(sym);
+		else
+			set.emplace(sym);
+	}
+
+	ModifierSet shift;
+	ModifierSet control;
+
 public:
-	void clear() { super::clear(); }
+	void clear() {
+		super::clear();
+		shift.clear();
+		control.clear();
+	}
 
 	void set(const KeyPress &key)
 	{
-		if (find(key) == end())
-			push_back(key);
+		KeyPress base = key.base();
+		if (base.is_shift_base())
+			shift.emplace(base.sym());
+		else if (base.is_control_base())
+			control.emplace(base.sym());
+		else if (find(base) == end())
+			push_back(std::move(base));
 	}
 
 	void unset(const KeyPress &key)
 	{
-		iterator p(find(key));
-
-		if (p != end())
-			erase(p);
+		KeyPress base = key.base();
+		if (base.is_shift_base())
+			shift.erase(base.sym());
+		else if (base.is_control_base())
+			control.erase(base.sym());
+		else {
+			iterator p(find(base));
+			if (p != end())
+				erase(p);
+		}
 	}
 
 	void toggle(const KeyPress &key)
 	{
-		iterator p(this->find(key));
-
-		if (p != end())
-			erase(p);
-		else
-			push_back(key);
+		KeyPress base = key.base();
+		if (base.is_shift_base())
+			toggleModifier(shift, base);
+		else if (base.is_control_base())
+			toggleModifier(control, base);
+		else {
+			iterator p(this->find(key));
+			if (p != end())
+				erase(p);
+			else
+				push_back(key);
+		}
 	}
 
-	void append(const KeyList &other)
+	void append(KeyList &other)
 	{
 		for (const KeyPress &key : other) {
 			set(key);
 		}
+		shift.merge(other.shift);
+		control.merge(other.control);
 	}
 
-	bool operator[](const KeyPress &key) const { return find(key) != end(); }
+	bool operator[](const KeyPress &key) const
+	{
+		auto base = key.base();
+		if (key.is_shift_base()) {
+			if (shift.empty())
+				return false;
+		} else if (key.is_control_base()) {
+			if (control.empty())
+				return false;
+		} else if (base.valid_base() && find(base) == end())
+			return false;
+		if (!(key.valid_base() || key.has_modifier()))
+			return false;
+		if (key.shift && shift.empty())
+			return false;
+		if (key.control && control.empty())
+			return false;
+		return true;
+	}
 };
 
 class MyEventReceiver : public IEventReceiver

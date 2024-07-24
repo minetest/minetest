@@ -40,11 +40,11 @@ class KeyPress
 public:
 	KeyPress() = default;
 
-	KeyPress(const std::string_view &name);
+	KeyPress(const std::string_view &name, bool merge_modifiers = true);
 
-	KeyPress(const char *name): KeyPress(std::string_view(name)) {};
+	KeyPress(const char *name, bool merge_modifiers = true): KeyPress(std::string_view(name), merge_modifiers) {};
 
-	KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character = false);
+	KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character = false, bool merge_modifiers = true);
 
 	bool operator==(const KeyPress &o) const
 	{
@@ -67,6 +67,31 @@ public:
 		return valid_kcode(Key) || Char > 0;
 	}
 
+	KeyPress base() const
+	{
+		KeyPress kp = *this;
+		kp.control = kp.shift = false;
+		return kp;
+	}
+
+	bool is_shift_base() const
+	{
+		return is_shift_base(m_name);
+	}
+
+	static bool is_shift_base(const std::string_view &name) {
+		return (name == "KEY_LSHIFT" || name == "KEY_RSHIFT" || name == "KEY_SHIFT");
+	}
+
+	bool is_control_base() const
+	{
+		return is_control_base(m_name);
+	}
+
+	static bool is_control_base(const std::string_view &name) {
+		return (name == "KEY_LCONTROL" || name == "KEY_RCONTROL" || name == "KEY_CONTROL");
+	}
+
 	int matches(const KeyPress &p) const;
 
 	const std::string sym() const;
@@ -76,7 +101,7 @@ public:
 	bool control = false;
 
 protected:
-	std::string_view parseModifiers(const std::string_view &);
+	std::string_view parseModifiers(const std::string_view &str, bool merge_modifiers);
 
 	static bool valid_kcode(irr::EKEY_CODE k)
 	{
