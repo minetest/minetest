@@ -94,7 +94,7 @@ u16 Player::getWieldIndex()
 	return MYMIN(m_wield_index, mlist ? mlist->getSize() : 0);
 }
 
-getMaxHotbarItemcountItemStack &Player::getWieldedItem(ItemStack *selected, ItemStack *hand) const
+ItemStack &Player::getWieldedItem(ItemStack *selected, ItemStack *hand) const
 {
 	assert(selected);
 
