@@ -360,7 +360,6 @@ class MinetestEnv(gym.Env):
             screen_w=self.display_size.width,
             screen_h=self.display_size.height,
             fov=self.fov_y,
-            game_dir=self.game_dir,
             # Adapt HUD size to display size, based on (1024, 600) default
             hud_scaling=self.display_size[0] / 1024,
             # Attempt to improve performance. Impact unclear.
@@ -380,6 +379,8 @@ class MinetestEnv(gym.Env):
             emergequeue_limit_diskonly=1000000,
             emergequeue_limit_generate=1000000,
         )
+        if self.game_dir:
+            config["game_dir"] = self.game_dir
         # Some games we carea bout currently use insecure lua features.
         config["secure.enable_security"] = False
 
