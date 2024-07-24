@@ -90,6 +90,7 @@ unittests.register("test_player_add_pos", run_player_add_pos_tests, {player=true
 local function run_player_hotbar_clamp_tests(player)
 	local inv = player:get_inventory()
 	local old_inv_size = inv:get_size("main")
+	local old_inv_list = inv:get_list("main") -- Avoid accidentally removing item
 	local old_bar_size = player:hud_get_hotbar_itemcount()
 
 	inv:set_size("main", 5)
@@ -101,6 +102,7 @@ local function run_player_hotbar_clamp_tests(player)
 	assert(player:hud_get_hotbar_itemcount() == 5)
 
 	inv:set_size("main", old_inv_size)
+	inv:set_list("main", old_inv_list)
 	player:hud_set_hotbar_itemcount(old_bar_size)
 end
 unittests.register("test_player_hotbar_clamp", run_player_hotbar_clamp_tests, {player=true})
