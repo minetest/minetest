@@ -497,6 +497,7 @@ void CSkinnedMesh::skinJoint(SJoint *joint, SJoint *parentJoint)
 {
 	if (joint->Weights.size()) {
 		// Find this joints pull on vertices...
+		// Note: It is assumed that the global inversed matrix has been calculated at this point.
 		core::matrix4 jointVertexPull = joint->GlobalAnimatedMatrix * joint->GlobalInversedMatrix.value();
 
 		core::vector3df thisVertexMove, thisNormalMove;
@@ -757,7 +758,7 @@ void CSkinnedMesh::calculateGlobalMatrices(SJoint *joint, SJoint *parentJoint)
 	joint->LocalAnimatedMatrix = joint->LocalMatrix;
 	joint->GlobalAnimatedMatrix = joint->GlobalMatrix;
 
-	if (joint->GlobalInversedMatrix.has_value()) { // might be pre calculated
+	if (!joint->GlobalInversedMatrix.has_value()) { // might be pre calculated
 		joint->GlobalInversedMatrix = joint->GlobalMatrix;
 		joint->GlobalInversedMatrix->makeInverse(); // slow
 	}
