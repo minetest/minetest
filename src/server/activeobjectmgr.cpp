@@ -195,7 +195,7 @@ void ActiveObjectMgr::getAddedActiveObjectsAroundPos(
 		} else if (distance_f > radius)
 			continue;
 
-		if (!object->isEffectivelyObservedBy(player_name))
+		if (!object->isSentTo(player_name))
 			continue;
 
 		// Discard if already on current_objects

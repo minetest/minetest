@@ -28,21 +28,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h" // BS
 #include "log.h"
 
-using SAO = ServerActiveObject;
-
-SAO::ServerActiveObject(ServerEnvironment *env, v3f pos):
+ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
 	ActiveObject(0),
 	m_env(env),
 	m_base_position(pos)
 {
 }
 
-float SAO::getMinimumSavedMovement()
+float ServerActiveObject::getMinimumSavedMovement()
 {
 	return 2.0*BS;
 }
 
-ItemStack SAO::getWieldedItem(ItemStack *selected, ItemStack *hand) const
+ItemStack ServerActiveObject::getWieldedItem(ItemStack *selected, ItemStack *hand) const
 {
 	*selected = ItemStack();
 	if (hand)
@@ -51,12 +49,12 @@ ItemStack SAO::getWieldedItem(ItemStack *selected, ItemStack *hand) const
 	return ItemStack();
 }
 
-bool SAO::setWieldedItem(const ItemStack &item)
+bool ServerActiveObject::setWieldedItem(const ItemStack &item)
 {
 	return false;
 }
 
-std::string SAO::generateUpdateInfantCommand(u16 infant_id, u16 protocol_version)
+std::string ServerActiveObject::generateUpdateInfantCommand(u16 infant_id, u16 protocol_version)
 {
 	std::ostringstream os(std::ios::binary);
 	// command
@@ -73,7 +71,7 @@ std::string SAO::generateUpdateInfantCommand(u16 infant_id, u16 protocol_version
 	return os.str();
 }
 
-void SAO::dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &queue)
+void ServerActiveObject::dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &queue)
 {
 	while (!m_messages_out.empty()) {
 		queue.push(std::move(m_messages_out.front()));
@@ -81,7 +79,7 @@ void SAO::dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &queue)
 	}
 }
 
-void SAO::markForRemoval()
+void ServerActiveObject::markForRemoval()
 {
 	if (!m_pending_removal) {
 		onMarkedForRemoval();
@@ -89,7 +87,7 @@ void SAO::markForRemoval()
 	}
 }
 
-void SAO::markForDeactivation()
+void ServerActiveObject::markForDeactivation()
 {
 	if (!m_pending_deactivation) {
 		onMarkedForDeactivation();
@@ -97,17 +95,19 @@ void SAO::markForDeactivation()
 	}
 }
 
-InventoryLocation SAO::getInventoryLocation() const
+InventoryLocation ServerActiveObject::getInventoryLocation() const
 {
 	return InventoryLocation();
 }
 
-void SAO::invalidateEffectiveObservers()
+void ServerActiveObject::invalidateEffectiveObservers()
 {
 	m_effective_observers.reset();
 }
 
-const SAO::Observers &SAO::getEffectiveObservers()
+using Observers = ServerActiveObject::Observers;
+
+const Observers &ServerActiveObject::getEffectiveObservers()
 {
 	if (m_effective_observers) // cached
 		return *m_effective_observers;
@@ -130,7 +130,7 @@ const SAO::Observers &SAO::getEffectiveObservers()
 	return *m_effective_observers;
 }
 
-const SAO::Observers &SAO::recalculateEffectiveObservers()
+const Observers& ServerActiveObject::recalculateEffectiveObservers()
 {
 	// Invalidate final observers for this object and all of its parents.
 	for (auto obj = this; obj != nullptr; obj = obj->getParent())
@@ -139,7 +139,7 @@ const SAO::Observers &SAO::recalculateEffectiveObservers()
 	return getEffectiveObservers();
 }
 
-bool SAO::isEffectivelyObservedBy(const std::string &player_name)
+bool ServerActiveObject::isSentTo(const std::string &player_name)
 {
 	auto effective_observers = getEffectiveObservers();
 	return !effective_observers || effective_observers->count(player_name) > 0;

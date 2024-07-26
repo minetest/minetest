@@ -874,7 +874,7 @@ int ObjectRef::l_set_observers(lua_State *L)
 			throw LuaError("Players need to observe themselves");
 	}
 
-	sao->m_observers = observer_names;
+	sao->m_observers = std::move(observer_names);
 	return 0;
 }
 

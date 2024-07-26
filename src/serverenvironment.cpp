@@ -1779,11 +1779,11 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 		}
 
 		f32 distance_f = object->getBasePosition().getDistanceFrom(playersao->getBasePosition());
-		bool inRange = object->getType() == ACTIVEOBJECT_TYPE_PLAYER
+		bool in_range = object->getType() == ACTIVEOBJECT_TYPE_PLAYER
 			? distance_f <= player_radius_f || player_radius_f == 0
 			: distance_f <= radius_f;
 
-		if (!inRange || !object->isEffectivelyObservedBy(player_name))
+		if (!in_range || !object->isSentTo(player_name))
 			removed_objects.emplace_back(false, id); // out of range or not observed anymore
 	}
 }

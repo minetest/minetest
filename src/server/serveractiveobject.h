@@ -256,7 +256,7 @@ public:
 	const Observers &recalculateEffectiveObservers();
 	// Check whether an object is finally observed by a player.
 	// Requires the cached final observers to be up to date.
-	bool isEffectivelyObservedBy(const std::string &player_name);
+	bool isSentTo(const std::string &player_name);
 
 protected:
 	// Cached intersection of m_observers of this object and all its parents.
