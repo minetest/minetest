@@ -89,10 +89,12 @@ for a=1,#alphas do
 end
 
 minetest.register_node("testnodes:alpha_compositing", {
-	description = S("Alpha Compositing Test Node") .. "\n" ..
+	description = S("Texture Overlay Test Node") .. "\n" ..
 		S("A regular grid should be visible where each cell contains two " ..
-		"texels with the same colour.") .. "\n" ..
-		S("Alpha compositing is gamma-incorrect for backwards compatibility."),
+		"texels with the same color.") .. "\n" ..
+		S("Texture overlay is gamma-incorrect, " ..
+		"and in general it does not do alpha compositing, " ..
+		"both for backwards compatibility."),
 	drawtype = "glasslike",
 	paramtype = "light",
 	tiles = {"testnodes_alpha_compositing_bottom.png^"  ..
