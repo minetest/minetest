@@ -7926,7 +7926,7 @@ child will follow movement and rotation of that bone.
       The object is sent to all players as governed by server settings. This is the default.
     * `observers` is a "set" of player names: `{[player name] = true, [other player name] = true, ...}`
         * Since this is a set, the values need to be `true`.
-    * If players are managed, they always need to have themselves as observers.
+    * Players are automatically added to their own observer sets.
     * Attachments: The "final observers" are the intersection of all observer sets
       of all ancestors of an object and the object itself.
       The intersection of an unmanaged observer set with a managed one is the managed one,

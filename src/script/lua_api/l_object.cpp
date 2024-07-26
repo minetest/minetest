@@ -870,8 +870,7 @@ int ObjectRef::l_set_observers(lua_State *L)
 
 	RemotePlayer *player = getplayer(ref);
 	if (player != nullptr) {
-		if (observer_names.find(player->getName()) == observer_names.end())
-			throw LuaError("Players need to observe themselves");
+		observer_names.insert(player->getName());
 	}
 
 	sao->m_observers = std::move(observer_names);
