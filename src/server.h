@@ -737,6 +737,8 @@ private:
 	MetricCounterPtr m_packet_recv_counter;
 	MetricCounterPtr m_packet_recv_processed_counter;
 	MetricCounterPtr m_map_edit_event_counter;
+
+	const bool m_step_wait_for_all_clients;
 };
 
 /*

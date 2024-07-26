@@ -699,6 +699,11 @@
 
 ## Server
 
+#    Whether the server should wait for input from all clients before
+#    stepping the game. Useful for gymnasium interface.
+#    type: bool
+# server_step_wait_for_all_clients = false
+
 #    Name of the player.
 #    When running a server, clients connecting with this name are admins.
 #    When starting from the main menu, this is overridden.
