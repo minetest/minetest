@@ -862,8 +862,8 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 	}
 
 	Inventory *inventory = &player->inventory;
-	InventoryList *mainlist = inventory->getList("main");
-	u32 mainlist_size = (mainlist == nullptr) ? 0 : mainlist->getSize();
+	auto *mainlist = player->inventory.getList("main");
+	u32 mainlist_size = mainlist ? mainlist->getSize() : 0;
 	if (item > mainlist_size) {
 		actionstream << "Player: " << player->getName()
 			<< " tried to access item=" << item
