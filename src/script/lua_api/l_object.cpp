@@ -878,14 +878,14 @@ int ObjectRef::l_set_observers(lua_State *L)
 }
 
 template<typename F>
-static int get_observers(lua_State *L, F get_observers)
+static int get_observers(lua_State *L, F observer_getter)
 {
 	ObjectRef *ref = ObjectRef::checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = ObjectRef::getobject(ref);
 	if (sao == nullptr)
 		throw LuaError("invalid ObjectRef");
 
-	const auto observers = get_observers(sao);
+	const auto observers = observer_getter(sao);
 	if (!observers) {
 		lua_pushnil(L);
 		return 1;
