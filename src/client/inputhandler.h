@@ -108,6 +108,15 @@ class KeyList : private std::list<KeyPress>
 	ModifierSet control;
 
 public:
+	KeyList() = default;
+
+	// Used for unittests
+	KeyList(std::initializer_list<KeyPress> init): super(init.size())
+	{
+		for (const auto &key: init)
+			set(key);
+	}
+
 	void clear() {
 		super::clear();
 		shift.clear();
