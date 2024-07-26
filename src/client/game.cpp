@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "game.h"
 
-#include <iomanip>
+#include <cstddef>
 #include <cmath>
 #include "client/renderingengine.h"
 #include "camera.h"
@@ -34,14 +34,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/sound.h"
 #include "clientmap.h"
 #include "clouds.h"
-#include "config.h"
 #include "content_cao.h"
 #include "content/subgames.h"
 #include "client/event_manager.h"
 #include "fontengine.h"
 #include "itemdef.h"
 #include "log.h"
-#include "filesys.h"
 #include "gameparams.h"
 #include "gettext.h"
 #include "gui/guiChatConsole.h"
@@ -51,7 +49,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiVolumeChange.h"
 #include "gui/mainmenumanager.h"
 #include "gui/profilergraph.h"
-#include "mapblock.h"
 #include "minimap.h"
 #include "nodedef.h"         // Needed for determining pointing to nodes
 #include "nodemetadata.h"
@@ -68,7 +65,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
 #include "util/quicktune_shortcutter.h"
-#include "irrlicht_changes/static_text.h"
 #include "irr_ptr.h"
 #include "version.h"
 #include "script/scripting_client.h"
@@ -781,7 +777,7 @@ public:
 	bool startup(bool *kill,
 			InputHandler *input,
 			RenderingEngine *rendering_engine,
-			const GameStartData &game_params,
+			GameStartData game_params,
 			std::string &error_message,
 			bool *reconnect,
 			ChatBackend *chat_backend);
@@ -793,9 +789,9 @@ protected:
 
 	// Basic initialisation
 	bool init(const std::string &map_dir, const std::string &address,
-			u16 port, const SubgameSpec &gamespec);
+			u16 &port, const SubgameSpec &gamespec);
 	bool initSound();
-	bool createSingleplayerServer(const std::string &map_dir,
+	Server* createSingleplayerServer(const std::string &map_dir,
 			const SubgameSpec &gamespec, u16 port);
 
 	// Client creation
@@ -1176,7 +1172,7 @@ Game::~Game()
 bool Game::startup(bool *kill,
 		InputHandler *input,
 		RenderingEngine *rendering_engine,
-		const GameStartData &start_data,
+		GameStartData start_data,
 		std::string &error_message,
 		bool *reconnect,
 		ChatBackend *chat_backend)
@@ -1387,7 +1383,7 @@ void Game::shutdown()
 bool Game::init(
 		const std::string &map_dir,
 		const std::string &address,
-		u16 port,
+		u16 &port,
 		const SubgameSpec &gamespec)
 {
 	texture_src = createTextureSource();
@@ -1409,10 +1405,19 @@ bool Game::init(
 	if (!initSound())
 		return false;
 
-	// Create a server if not connecting to an existing one
+	// Create a server if not connecting to an existing one.
+	// In singleplayer mode we just pass in port 0
+	// and let the operating system select an available port
+	// So we need to retrieve the port the server selected
 	if (address.empty()) {
-		if (!createSingleplayerServer(map_dir, gamespec, port))
+		Server *server = createSingleplayerServer(map_dir, gamespec, port);
+		if (!server)
 			return false;
+		port = server->port();
+		if (!port) {
+			errorstream << "Failed to get server port" << std::endl;
+			return false;
+		}
 	}
 
 	return true;
@@ -1446,7 +1451,7 @@ bool Game::initSound()
 	return true;
 }
 
-bool Game::createSingleplayerServer(const std::string &map_dir,
+Server* Game::createSingleplayerServer(const std::string &map_dir,
 		const SubgameSpec &gamespec, u16 port)
 {
 	showOverlayMessage(N_("Creating server..."), 0, 5);
@@ -1475,14 +1480,14 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 		*error_message = fmtgettext("Unable to listen on %s because IPv6 is disabled",
 			bind_addr.serializeString().c_str());
 		errorstream << *error_message << std::endl;
-		return false;
+		return nullptr;
 	}
 
 	server = new Server(map_dir, gamespec, simple_singleplayer_mode, bind_addr,
 			false, nullptr, error_message);
 	server->start();
 
-	return true;
+	return server;
 }
 
 bool Game::createClient(const GameStartData &start_data)
@@ -2820,7 +2825,7 @@ static void pauseNodeAnimation(PausedNodesList &paused, scene::ISceneNode *node)
 	float speed = animated_node->getAnimationSpeed();
 	if (!speed)
 		return;
-	paused.push_back({grab(animated_node), speed});
+	paused.emplace_back(grab(animated_node), speed);
 	animated_node->setAnimationSpeed(0.0f);
 }
 
@@ -3496,7 +3501,7 @@ PointedThing Game::updatePointedThing(
 		if (show_entity_selectionbox && runData.selected_object->doShowSelectionBox() &&
 				runData.selected_object->getSelectionBox(&selection_box)) {
 			v3f pos = runData.selected_object->getPosition();
-			selectionboxes->push_back(aabb3f(selection_box));
+			selectionboxes->emplace_back(selection_box);
 			hud->setSelectionPos(pos, camera_offset);
 			GenericCAO* gcao = dynamic_cast<GenericCAO*>(runData.selected_object);
 			if (gcao != nullptr && gcao->getProperties().rotate_selectionbox)

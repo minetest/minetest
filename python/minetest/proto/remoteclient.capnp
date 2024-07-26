@@ -106,11 +106,20 @@ struct Image {
   data @2 :Data;
 }
 
+struct AuxMap {
+  entries @0 :List(Entry);
+  struct Entry {
+    key @0 :Text;
+    value @1 :Float32;
+  }
+}
+
 struct Observation {
   image @0 :Image;
   # TODO: make this optional so that the agent can tell if the game is done loading.
   reward @1 :Float32;
   done @2 :Bool;
+  aux @3 :AuxMap;
 }
 
 interface Minetest {

@@ -21,7 +21,6 @@ KEY_TO_KEYTYPE = {
     "LEFT SHIFT": "sneak",
     "J": "dig",
     "K": "place",
-    "C": "cameraMode",
 }
 ARROW_KEYS_TO_MOUSE_DIRECTION = {
     "UP": (0, -20),
@@ -60,7 +59,7 @@ def get_action_from_key_cache(key_cache, mouse):
         keys[INVERSE_KEY_MAP[KEY_TO_KEYTYPE[key]]] = True
 
     mouse = np.array([mouse.dx, mouse.dy])
-    return {"KEYS": keys, "MOUSE": mouse}
+    return {"keys": keys, "mouse": mouse}
 
 
 def game_loop():
@@ -89,7 +88,7 @@ def signal_handler(sig, frame):
 
 arg_parser = argparse.ArgumentParser()
 arg_parser.add_argument(
-    "--host_port",
+    "--server_addr",
     type=str,
     default=None,
     help=(
@@ -108,12 +107,12 @@ if __name__ == "__main__":
     gym_make_args = {
         "id": "minetest-v0",
         "render_mode": "human",
-        "display_size": (1024, 768),
+        "display_size": (512, 512),
     }
-    if arg_parser.parse_args().host_port:
-        host, port = arg_parser.parse_args().host_port.split(":")
-        gym_make_args["zmq_host"] = host
-        gym_make_args["zmq_port"] = int(port)
+    args = arg_parser.parse_args()
+    if args.server_addr:
+        gym_make_args["server_addr"] = args.server_addr
+        gym_make_args["executable"] = None
     else:
         original_world_dir = (
             Path(__file__).parent / "tests" / "worlds" / "test_world_minetestenv"
@@ -135,11 +134,10 @@ if __name__ == "__main__":
                 / "MacOS"
                 / "minetest"
             )
-        gym_make_args["minetest_executable"] = minetest_executable
+        gym_make_args["executable"] = minetest_executable
         gym_make_args["headless"] = False
 
-    env = gym.make(**gym_make_args)
-    env.reset()
-    game_loop()
-    env.close()
+    with gym.make(**gym_make_args) as env:
+        env.reset()
+        game_loop()
     pygame.quit()

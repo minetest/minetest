@@ -106,8 +106,17 @@ struct Image {
   data @2 :Data;
 }
 
+struct AuxMap {
+  entries @0 :List(Entry);
+  struct Entry {
+    key @0 :Text;
+    value @1 :Float32;
+  }
+}
+
 struct Observation {
   image @0 :Image;
   reward @1 :Float32;
   done @2 :Bool;
+  aux @3 :AuxMap;
 }

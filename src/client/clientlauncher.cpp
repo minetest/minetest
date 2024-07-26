@@ -21,15 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/remoteinputhandler.h"
 #include "gui/mainmenumanager.h"
 #include "clouds.h"
-#include "server.h"
 #include "filesys.h"
 #include "gui/guiMainMenu.h"
 #include "game.h"
 #include "player.h"
 #include "chat.h"
 #include "gettext.h"
-#include "profiler.h"
-#include "serverlist.h"
+#include "util/timetaker.h"
 #include "gui/guiEngine.h"
 #include "fontengine.h"
 #include "clientlauncher.h"
@@ -487,7 +485,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	if (start_data.isSinglePlayer()) {
 		start_data.name = "singleplayer";
 		start_data.password = "";
-		start_data.socket_port = myrand_range(49152, 65535);
+		start_data.socket_port = 0;  // Select an available port
 	} else {
 		g_settings->set("name", start_data.name);
 	}

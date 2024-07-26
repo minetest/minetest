@@ -3,7 +3,7 @@
 context: {}
 package:
   name: minetest-gymnasium
-  version: ${{ env.get_default("GIT_DESCRIBE_TAG", env.get_default("GIT_FULL_HASH", "0.2")) }}
+  version: "0.16"
 
 source:
   path: ../../
@@ -20,11 +20,11 @@ requirements:
     - python
     - setuptools
   run:
-    - minetest
+    - minetest =0.11
     # python deps
     - gymnasium
     - numpy =1.26
-    - pycapnp >=1.1.1 # need 4b75fe3b5ea97a80a0d349a42c143c989fe85d5e
+    - pycapnp >=2,<3
 
 about:
   repository: https://github.com/Astera-org/minetest
@@ -39,7 +39,7 @@ tests:
     - mkdir ${CONDA_PREFIX}/share/minetest/games
     - ln -s -t ${CONDA_PREFIX}/share/minetest/games ${PWD}/games/devtest
     - if [[ $(minetest --gameid list) != "devtest" ]]; then exit 1; fi
-    - cd python && pytest --timeout=60 -v .
+    - cd python && pytest --timeout=60 -v . || (cat /tmp/*/log/*stderr* && exit 1)
     files:
       source:
         - games/devtest/

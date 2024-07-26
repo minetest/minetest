@@ -17,6 +17,7 @@ cmake -B build \
 	-DBUILD_SERVER=FALSE \
 	-DENABLE_GETTEXT=TRUE \
     -DENABLE_SOUND=FALSE \
+    -DUSE_SDL2=ON \
     -DBUILD_UNITTESTS=FALSE
 
 cmake --build build

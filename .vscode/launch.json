@@ -5,6 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "debugpy",
+            "request": "launch",
+            "name": "minetest_test.py",
+            "module": "pytest",
+            "justMyCode": false,
+            "args": [
+                "-sv",
+                "-o log_cli=true",
+                "${workspaceFolder}/python/tests/minetest_test.py",
+            ]
+        },
+        {
             "type": "lldb",
             "request": "launch",
             "name": "Debug for handshaker.py",
@@ -20,6 +32,19 @@
                 "--go",
                 "--remote-input",
                 "127.0.0.1:54321",
+                "--gameid",
+                "devtest",
+                "--verbose"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "devtest mac",
+            "program": "${workspaceFolder}/build/macos/minetest.app/Contents/MacOS/minetest",
+            "args": [
+                "--go",
                 "--gameid",
                 "devtest",
                 "--verbose"

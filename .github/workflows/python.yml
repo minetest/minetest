@@ -1,0 +1,74 @@
+name: python
+
+# build on c/cpp, python or workflow changes
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/ci/**'
+      - 'misc/irrlichtmt_tag.txt'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - '.github/workflows/python.yml'
+      - 'python/**'
+  pull_request:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/ci/**'
+      - 'misc/irrlichtmt_tag.txt'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - '.github/workflows/linux.yml'
+      - 'python/**'
+
+env:
+  MINETEST_POSTGRESQL_CONNECT_STRING: 'host=localhost user=minetest password=minetest dbname=minetest'
+
+jobs:
+  pytest:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install deps
+        run: |
+          source ./util/ci/common.sh
+          install_linux_deps clang-14
+
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          manifest-path: pixi.toml
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
+
+      - name: Build
+        run: |
+          pixi run ./util/ci/build.sh
+        env:
+          CC: clang-14
+          CXX: clang++-14
+          CMAKE_BUILD_SERVER: FALSE
+          CMAKE_FLAGS: -DUSE_SDL2=ON
+
+      - name: Run pytest
+        run: |
+          cd python
+          set +o errexit
+          timeout --signal=KILL 5m pixi run -e gym-test pytest -v
+          exit_code=$?
+          if [ $exit_code -ne 0 ]; then
+            echo "test failed, printing minetest logs"
+            find /tmp -type f -name '*.log' -exec cat {} \;
+          fi
+          exit $exit_code

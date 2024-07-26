@@ -3,13 +3,13 @@
 context: {}
 package:
   name: minetest
-  version: ${{ env.get_default("GIT_DESCRIBE_TAG", env.get_default("GIT_FULL_HASH", "0.2")) }}
+  version: "0.11"
 
 source:
   path: ../../
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
@@ -23,15 +23,10 @@ requirements:
     # so we'd ask the user to install them system-wide anyways.
     - if: linux
       then:
-        - ${{ cdt("libx11-devel") }}
-        - ${{ cdt("libxext-devel") }}
-        - ${{ cdt("libxfixes-devel") }}
-        - ${{ cdt("libxi-devel") }}
         - ${{ cdt("mesa-libgl-devel") }}
-        - ${{ cdt("xorg-x11-proto-devel") }}
   host:
     # minetest deps
-    - capnproto =0.10.2 # pycapnp currently requires this. https://github.com/conda-forge/pycapnp-feedstock/pull/33
+    - capnproto >=1.0.2,<2
     - freetype
     - gmp
     - jsoncpp
@@ -43,6 +38,7 @@ requirements:
     - luajit-openresty
     - ncurses
     - pkg-config
+    - sdl2
     - zlib
     - zstd
   run:

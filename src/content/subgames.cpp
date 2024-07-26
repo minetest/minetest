@@ -75,26 +75,32 @@ SubgameSpec findSubgame(const std::string &id)
 	if (id.empty())
 		return SubgameSpec();
 
-	// Get games install locations
-	Strfnd search_paths(getSubgamePathEnv());
 
-	// Get all possible paths fo game
+	// Get all possible paths for game
 	std::vector<std::string> find_paths;
-	while (!search_paths.at_end()) {
-		std::string path = search_paths.next(PATH_DELIM);
-		path.append(DIR_DELIM).append(id);
-		find_paths.emplace_back(path);
-		path.append("_game");
-		find_paths.emplace_back(path);
-	}
+	static constexpr const char* game_dir_setting_key = "game_dir";
 
-	std::string game_base = DIR_DELIM;
-	game_base = game_base.append("games").append(DIR_DELIM).append(id);
-	std::string game_suffixed = game_base + "_game";
-	find_paths.emplace_back(porting::path_user + game_suffixed);
-	find_paths.emplace_back(porting::path_user + game_base);
-	find_paths.emplace_back(porting::path_share + game_suffixed);
-	find_paths.emplace_back(porting::path_share + game_base);
+	if (g_settings->exists(game_dir_setting_key)) {
+		find_paths.emplace_back(g_settings->get(game_dir_setting_key));
+	} else {
+		// Get games install locations
+		Strfnd search_paths(getSubgamePathEnv());
+		while (!search_paths.at_end()) {
+			std::string path = search_paths.next(PATH_DELIM);
+			path.append(DIR_DELIM).append(id);
+			find_paths.emplace_back(path);
+			path.append("_game");
+			find_paths.emplace_back(path);
+		}
+
+		std::string game_base = DIR_DELIM;
+		game_base = game_base.append("games").append(DIR_DELIM).append(id);
+		std::string game_suffixed = game_base + "_game";
+		find_paths.emplace_back(porting::path_user + game_suffixed);
+		find_paths.emplace_back(porting::path_user + game_base);
+		find_paths.emplace_back(porting::path_share + game_suffixed);
+		find_paths.emplace_back(porting::path_share + game_base);
+	}
 
 	// Find game directory
 	std::string game_path;

@@ -1,8 +1,7 @@
 # Python examples
 
 ```sh
-mamba env create
-mamba activate minetest-python-example
+pixi install
 ```
 
 Then open the Jupyter notebook and run it.

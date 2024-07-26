@@ -1,54 +1,47 @@
 import os
+import socket
 from pathlib import Path
 
 import capnp
 import numpy as np
-import zmq
 from PIL import Image
 
 """
 For debugging, it's useful to do something like this:
-- lldb -- bin/minetest --go --worldname test_world_minetestenv --config artifacts/2dd22d78-8c03-445e-83ad-8fff429569d4.conf --remote-input 127.0.01:54321
+- lldb -- bin/minetest --go --worldname test_world_minetestenv --config artifacts/2dd22d78-8c03-445e-83ad-8fff429569d4.conf --remote-input 127.0.0.1:54321
 - Then run python tools/handshaker.py
 """
 
-
-def deserialize_obs(received_obs: str):
-    with remoteclient_capnp.Observation.from_bytes(received_obs) as obs_msg:
-        img = obs_msg.image
-        img_data = np.frombuffer(img.data, dtype=np.uint8).reshape(
-            (img.height, img.width, 3)
-        )
-        reward = obs_msg.reward
-        done = obs_msg.done
-    return img_data, reward, done
-
-
 remoteclient_capnp = capnp.load(
-    os.path.join(
-        Path(__file__).parent.parent.parent, "src/network/proto/remoteclient.capnp"
-    )
+    os.path.join(Path(__file__).parent.parent, "minetest/proto/remoteclient.capnp")
 )
-context = zmq.Context()
-socket = context.socket(zmq.REQ)
-socket.connect("tcp://localhost:54321")
+my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+my_socket.connect(("127.0.0.1", 54321))
+print("connected")
+capnp_client = (
+    capnp.TwoPartyClient(my_socket).bootstrap().cast_as(remoteclient_capnp.Minetest)
+)
+print("capnp_client.init()")
+capnp_client.init().wait()
+print("init() done")
 
 i = 0
 inp = ""
 while inp != "stop":
-    pb_action = remoteclient_capnp.Action.new_message()
-    socket.send(pb_action.to_bytes())
-
-    byte_obs = socket.recv()
-    (
-        obs,
-        _,
-        _,
-    ) = deserialize_obs(byte_obs)
-
-    if obs.size > 0:
-        image = Image.fromarray(obs)
-        image.save(f"observation_{i}.png")
+    step_request = capnp_client.step_request()
+    step_response = step_request.send().wait()
+    print(type(step_response))
+    img_data = np.frombuffer(
+        step_response.observation.image.data, dtype=np.uint8
+    ).reshape(
+        (
+            step_response.observation.image.height,
+            step_response.observation.image.width,
+            3,
+        )
+    )
+    if img_data.size > 0:
+        Image.fromarray(img_data).save(f"observation_{i}.png")
 
     i += 1
     inp = input("Stop with 'stop':")

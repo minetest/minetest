@@ -17,7 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <cstdint>
 #include <ctime>
+#include <limits>
 #include "irrlichttypes.h" // must be included before anything irrlicht, see comment in the file
 #include "irrlicht.h" // createDevice
 #include "irrlichttypes_extrabloated.h"
@@ -694,8 +696,10 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 	init_log_streams(cmd_args);
 
 	// Initialize random seed
-	srand(time(0));
-	mysrand(time(0));
+	std::random_device rd;
+	std::uniform_int_distribution<unsigned int> dis{};
+	srand(dis(rd));
+	mysrand(dis(rd));
 
 	// Initialize HTTP fetcher
 	httpfetch_init(g_settings->getS32("curl_parallel_limit"));
@@ -924,12 +928,25 @@ static bool auto_select_world(GameParams *game_params)
 	std::string world_path;
 
 	if (!game_params->game_spec.id.empty()) {
+		infostream << "Game specified but world was not. Creating new world" << std::endl;
+
 		std::time_t t = std::time(nullptr);
 		char date_chars[100];
 		std::strftime(date_chars, sizeof(date_chars), "%F-%H-%M-%S", std::localtime(&t));
 		std::string world_name = game_params->game_spec.id + "-" + date_chars;
+		// avoid colissions when starting multiple servers in the same second
+		// probability of colission is 1/16^5 ~= 1 in a million
+		std::random_device rd;
+		std::uniform_int_distribution<> dis(0, 0xF);
+		constexpr size_t num_rand_chars = 5;
+		char rand_buf[num_rand_chars];
+		for (size_t i = 0; i < num_rand_chars; ++i) {
+			int random_num = dis(rd);
+			rand_buf[i] = "0123456789ABCDEF"[random_num];
+		}
+		world_name += "-" + std::string(rand_buf, num_rand_chars);
 		world_path = porting::path_user + DIR_DELIM + "worlds" + DIR_DELIM + world_name;
-		infostream << "Game specified but world was not. Creating new world" << std::endl;
+
 		try {
 			world_path = loadGameConfAndInitWorld(
 				world_path,	world_name,
