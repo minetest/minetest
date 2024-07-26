@@ -121,6 +121,7 @@ const SAO::Observers &SAO::getEffectiveObservers()
 	if (!m_observers) // we are unmanaged
 		return *(m_effective_observers = parent_observers);
 	// Set intersection between parent_observers and m_observers
+	// Avoid .clear() to free the allocated memory.
 	m_effective_observers = std::unordered_set<std::string>();
 	for (const auto &observer_name : *m_observers) {
 		if (parent_observers->count(observer_name) > 0)

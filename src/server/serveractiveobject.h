@@ -249,7 +249,8 @@ public:
 	// Invalidate final observer cache. This needs to be done whenever
 	// the observers of this object or any of its ancestors may have changed.
 	void invalidateEffectiveObservers();
-	// Get from cache (or compute) final observers.
+	/// Cache `m_effective_observers` with the names of all observers,
+	/// also indirect observers (object attachment chain).
 	const Observers &getEffectiveObservers();
 	// Force a recalculation of final observers (including all parents).
 	const Observers &recalculateEffectiveObservers();

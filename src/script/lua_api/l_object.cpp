@@ -862,9 +862,9 @@ int ObjectRef::l_set_observers(lua_State *L)
 			throw LuaError("Observer name is too long");
 		if (!string_allowed(name, PLAYERNAME_ALLOWED_CHARS))
 			throw LuaError("Observer name contains invalid characters");
-		observer_names.insert(std::move(name));
 		if (!lua_toboolean(L, -1)) // falsy value?
 			throw LuaError("Values in the `observers` table need to be true");
+		observer_names.insert(std::move(name));
 		lua_pop(L, 1); // pop value, keep key
 	}
 

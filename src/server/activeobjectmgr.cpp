@@ -120,8 +120,8 @@ void ActiveObjectMgr::removeObject(u16 id)
 
 void ActiveObjectMgr::invalidateActiveObjectObserverCaches()
 {
-	for (auto &activeObject : m_active_objects.iter()) {
-		ServerActiveObject *obj = activeObject.second.get();
+	for (auto &active_object : m_active_objects.iter()) {
+		ServerActiveObject *obj = active_object.second.get();
 		if (!obj)
 			continue;
 		obj->invalidateEffectiveObservers();
