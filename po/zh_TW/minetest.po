@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-07-13 21:31+0000\n"
-"Last-Translator: Yic95 <0Luke.Luke0@gmail.com>\n"
+"PO-Revision-Date: 2024-07-27 04:09+0000\n"
+"Last-Translator: reimu105 <peter112548@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -1054,9 +1054,8 @@ msgid "Install games from ContentDB"
 msgstr "從 ContentDB 安裝遊戲"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Minetest doesn't come with a game by default."
-msgstr "預設不再安裝 Minetest 遊戲"
+msgstr "預設不再安裝 Minetest 遊戲。"
 
 #: builtin/mainmenu/tab_local.lua
 msgid ""
@@ -1097,9 +1096,8 @@ msgid "Start Game"
 msgstr "開始遊戲"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "You need to install a game before you can create a world."
-msgstr "您需要先安裝遊戲才能安裝模組"
+msgstr "您需要先安裝遊戲才能安裝模組。"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -3048,7 +3046,6 @@ msgstr ""
 "但也使用更多的資源。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Define the oldest clients allowed to connect.\n"
 "Older clients are compatible in the sense that they will not crash when "
@@ -3060,9 +3057,12 @@ msgid ""
 "Minetest still enforces its own internal minimum, and enabling\n"
 "strict_protocol_version_checking will effectively override this."
 msgstr ""
-"啟用以讓舊的用戶端無法連線。\n"
-"較舊的用戶端在這個意義上相容，它們不會在連線至\n"
-"新伺服器時當掉，但它們可能會不支援一些您預期會有的新功能。"
+"定義允許連線的最早的客戶端。\n"
+"較舊的客戶端是相容的，因為它們在連接時不會崩潰\n"
+"到新伺服器，但它們可能不支援您期望的所有新功能。\n"
+"這允許比 strict_protocol_version_checking 更細粒度的控制。\n"
+"Minetest 仍然強制執行其自己的內部最低限度，並啟用\n"
+"strict_protocol_version_checking 將有效地覆蓋這一點。"
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
