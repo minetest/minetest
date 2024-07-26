@@ -188,7 +188,7 @@ fixed_virtual_joystick (Fixed virtual joystick) bool false
 #    Requires: touchscreen_gui
 virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool false
 
-#    The gesture for for punching players/entities.
+#    The gesture for punching players/entities.
 #    This can be overridden by games and mods.
 #
 #    * short_tap
@@ -764,6 +764,10 @@ chat_font_size (Chat font size) int 0 0 72
 #    The URL for the content repository
 contentdb_url (ContentDB URL) string https://content.minetest.net
 
+#    If enabled and you have ContentDB packages installed, Minetest may contact ContentDB to
+#    check for package updates when opening the mainmenu.
+contentdb_enable_updates_indicator (Enable updates available indicator on content tab) bool true
+
 #    Comma-separated list of flags to hide in the content repository.
 #    "nonfree" can be used to hide packages which do not qualify as 'free software',
 #    as defined by the Free Software Foundation.
@@ -791,7 +795,7 @@ serverlist_url (Serverlist URL) string servers.minetest.net
 #    If disabled, new accounts will be registered automatically when logging in.
 enable_split_login_register (Enable split login/register) bool true
 
-#    URL to JSON file which provides information about the newest Minetest release
+#    URL to JSON file which provides information about the newest Minetest release.
 #    If this is empty the engine will never check for updates.
 update_information_url (Update information URL) string https://www.minetest.net/release_info.json
 

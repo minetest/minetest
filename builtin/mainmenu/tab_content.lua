@@ -280,7 +280,7 @@ end
 return {
 	name = "content",
 	caption = function()
-		local update_count = update_detector.get_count()
+		local update_count = core.settings:get_bool("contentdb_enable_updates_indicator") and update_detector.get_count() or 0
 		if update_count == 0 then
 			return fgettext("Content")
 		else
