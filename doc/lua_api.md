@@ -7925,12 +7925,12 @@ child will follow movement and rotation of that bone.
     * If `observers` is `nil`, the object's observers are "unmanaged":
       The object is sent to all players as governed by server settings. This is the default.
     * `observers` is a "set" of player names: `{[player name] = true, [other player name] = true, ...}`
-        * Since this is a set, the values need to be `true`.
+        * A set is a table where the keys are the elements of the set (in this case, player names)
+          and the values are all `true`.
     * Players are automatically added to their own observer sets.
-    * Attachments: The "final observers" are the intersection of all observer sets
-      of all ancestors of an object and the object itself.
-      The intersection of an unmanaged observer set with a managed one is the managed one,
-      the intersection of two unmanaged observer sets is unmanaged.
+    * Attachments: The *effective observers* of an object are made up of
+      all players who can observe the object *and* are also effective observers
+      of its parent object (if there is one).
     * Object activation and deactivation are unaffected by observability.
 * `get_observers()`:
     * throws an error if the object is invalid

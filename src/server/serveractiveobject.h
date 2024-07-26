@@ -246,16 +246,15 @@ public:
 	using Observers = std::optional<std::unordered_set<std::string>>;
 	Observers m_observers;
 
-	// Invalidate final observer cache. This needs to be done whenever
-	// the observers of this object or any of its ancestors may have changed.
+	/// Invalidate final observer cache. This needs to be done whenever
+	/// the observers of this object or any of its ancestors may have changed.
 	void invalidateEffectiveObservers();
 	/// Cache `m_effective_observers` with the names of all observers,
 	/// also indirect observers (object attachment chain).
 	const Observers &getEffectiveObservers();
-	// Force a recalculation of final observers (including all parents).
+	/// Force a recalculation of final observers (including all parents).
 	const Observers &recalculateEffectiveObservers();
-	// Check whether an object is finally observed by a player.
-	// Requires the cached final observers to be up to date.
+	/// Whether the object is sent to `player_name`
 	bool isSentTo(const std::string &player_name);
 
 protected:
