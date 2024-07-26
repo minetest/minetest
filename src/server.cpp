@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <queue>
 #include <algorithm>
+#include <set>
+#include "irrTypes.h"
 #include "network/connection.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
@@ -263,7 +265,8 @@ Server::Server(
 	m_clients(m_con),
 	m_admin_chat(iface),
 	m_shutdown_errmsg(shutdown_errmsg),
-	m_modchannel_mgr(new ModChannelMgr())
+	m_modchannel_mgr(new ModChannelMgr()),
+	m_step_wait_for_all_clients(g_settings->getBool("server_step_wait_for_all_clients"))
 {
 	if (m_path_world.empty())
 		throw ServerError("Supplied empty world path");
@@ -1048,6 +1051,12 @@ void Server::Receive(float timeout)
 
 	NetworkPacket pkt;
 	session_t peer_id;
+	std::set<session_t> wait_for_client_ids;
+	if (m_step_wait_for_all_clients) {
+		const auto active_client_ids = m_clients.getClientIDs(CS_Active);
+		wait_for_client_ids = std::set<session_t>(active_client_ids.begin(), active_client_ids.end());
+	}
+
 	for (;;) {
 		pkt.clear();
 		peer_id = 0;
@@ -1057,11 +1066,14 @@ void Server::Receive(float timeout)
 				// No incoming data.
 				// Already break if there's 1ms left, as ReceiveTimeoutMs is too coarse
 				// and a faster server-step is better than busy waiting.
-				if (remaining_time_us() < 1000.0f)
+				if (wait_for_client_ids.empty() && remaining_time_us() < 1000.0f) {
 					break;
+				}
+				continue;
 			}
 
 			peer_id = pkt.getPeerId();
+			wait_for_client_ids.erase(peer_id);
 			m_packet_recv_counter->increment();
 			ProcessData(&pkt);
 			m_packet_recv_processed_counter->increment();

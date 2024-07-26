@@ -376,6 +376,8 @@ class MinetestEnv(gym.Env):
             fov=self.fov_y,
             # Adapt HUD size to display size, based on (1024, 600) default
             hud_scaling=self.display_size[0] / 1024,
+            # Ensure server doesn't advance if client hasn't called step().
+            server_step_wait_for_all_clients=True,
             # Attempt to improve performance. Impact unclear.
             server_map_save_interval=1000000,
             profiler_print_interval=0,

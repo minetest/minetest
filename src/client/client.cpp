@@ -129,7 +129,10 @@ Client::Client(
 	m_media_downloader(new ClientMediaDownloader()),
 	m_state(LC_Created),
 	m_game_ui(game_ui),
-	m_modchannel_mgr(new ModChannelMgr())
+	m_modchannel_mgr(new ModChannelMgr()),
+	// If the server is going to block on us, we need to make sure we always send something,
+	// even if we haven't moved.
+	m_always_send_player_pos(g_settings->getBool("server_step_wait_for_all_clients"))
 {
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
@@ -1414,7 +1417,7 @@ void Client::sendPlayerPos()
 	u32 keyPressed = player->control.getKeysPressed();
 	bool camera_inverted = m_camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT;
 
-	if (
+	if (    !m_always_send_player_pos                             &&
 			player->last_position        == player->getPosition() &&
 			player->last_speed           == player->getSpeed()    &&
 			player->last_pitch           == player->getPitch()    &&
