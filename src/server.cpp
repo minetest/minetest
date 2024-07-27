@@ -2066,8 +2066,8 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 			obj->m_known_by_count--;
 	}
 
-	// Note: Do yet NOT stop or remove object-attached sounds for objects goes out of range
-	// (client side). Such sounds would need to be re-sent when coming into range.
+	// Note: Do yet NOT stop or remove object-attached sounds where the object goes out
+	// of range (client side). Such sounds would need to be re-sent when coming into range.
 	// Currently, the client will initiate m_playing_sounds clean ups indirectly by
 	// "Server::handleCommand_RemovedSounds".
 
