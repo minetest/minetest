@@ -189,7 +189,7 @@ bool CIrrDeviceSDL::keyIsKnownSpecial(EKEY_CODE irrlichtKey)
 	}
 }
 
-int CIrrDeviceSDL::findCharToPassToIrrlicht(uint32_t sdlKey, EKEY_CODE irrlichtKey, bool numlock)
+int CIrrDeviceSDL::findCharToPassToIrrlicht(const SDL_Keysym &SDL_keysym, EKEY_CODE irrlichtKey)
 {
 	switch (irrlichtKey) {
 	// special cases that always return a char regardless of how the SDL keycode
@@ -214,8 +214,8 @@ int CIrrDeviceSDL::findCharToPassToIrrlicht(uint32_t sdlKey, EKEY_CODE irrlichtK
 	default:
 		break;
 	}
-
-	if (numlock) {
+	bool numlock_pressed = ((SDL_keysym.mod & KMOD_NUM) != 0);
+	if (numlock_pressed) {
 		// Number keys on the numpad are also affected, but we only want them
 		// to produce number chars when numlock is enabled.
 		switch (irrlichtKey) {
@@ -247,7 +247,7 @@ int CIrrDeviceSDL::findCharToPassToIrrlicht(uint32_t sdlKey, EKEY_CODE irrlichtK
 	// SDL in-place ORs values with no character representation with 1<<30
 	// https://wiki.libsdl.org/SDL2/SDLKeycodeLookup
 	// This also affects the numpad keys btw.
-	if (sdlKey & (1 << 30))
+	if (SDL_keysym.sym & (1 << 30))
 		return 0;
 
 	switch (irrlichtKey) {
@@ -262,7 +262,7 @@ int CIrrDeviceSDL::findCharToPassToIrrlicht(uint32_t sdlKey, EKEY_CODE irrlichtK
 	case KEY_NUMLOCK:
 		return 0;
 	default:
-		return sdlKey;
+		return SDL_keysym.sym;
 	}
 }
 
@@ -877,8 +877,7 @@ bool CIrrDeviceSDL::run()
 			irrevent.KeyInput.PressedDown = (SDL_event.type == SDL_KEYDOWN);
 			irrevent.KeyInput.Shift = (SDL_event.key.keysym.mod & KMOD_SHIFT) != 0;
 			irrevent.KeyInput.Control = (SDL_event.key.keysym.mod & KMOD_CTRL) != 0;
-			irrevent.KeyInput.Char = findCharToPassToIrrlicht(mp.SDLKey, key,
-					(SDL_event.key.keysym.mod & KMOD_NUM) != 0);
+			irrevent.KeyInput.Char = findCharToPassToIrrlicht(SDL_event.key.keysym, key);
 			postEventFromUser(irrevent);
 		} break;
 
