@@ -7932,6 +7932,8 @@ child will follow movement and rotation of that bone.
       all players who can observe the object *and* are also effective observers
       of its parent object (if there is one).
     * Object activation and deactivation are unaffected by observability.
+    * Attached sounds do not work correctly and thus should not be used
+      on objects with managed observers yet.
 * `get_observers()`:
     * throws an error if the object is invalid
     * returns `nil` if the observers are unmanaged
