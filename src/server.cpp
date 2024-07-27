@@ -2066,6 +2066,11 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 			obj->m_known_by_count--;
 	}
 
+	// Note: Do yet NOT stop or remove object-attached sounds for objects goes out of range
+	// (client side). Such sounds would need to be re-sent when coming into range.
+	// Currently, the client will initiate m_playing_sounds clean ups indirectly by
+	// "Server::handleCommand_RemovedSounds".
+
 	// Added objects
 	pkt << static_cast<u16>(added_objects.size());
 
@@ -2246,41 +2251,6 @@ void Server::fadeSound(s32 handle, float step, float gain)
 	// Remove sound reference
 	if (gain <= 0 || psound.clients.empty())
 		m_playing_sounds.erase(it);
-}
-
-// FIXME: Yet unused because removing sounds from objects that go out of range
-// (client side) would need to be played back again when coming into range again.
-// Currently, the client will initiate m_playing_sounds clean ups indirectly by
-// "Server::handleCommand_RemovedSounds".
-void Server::stopAttachedSounds(session_t peer_id,
-	const std::vector<u16> &object_ids)
-{
-	assert(peer_id != PEER_ID_INEXISTENT);
-	assert(!object_ids.empty());
-
-	auto cb = [&] (const s32 id, ServerPlayingSound &sound) -> bool {
-		if (!CONTAINS(object_ids, sound.object))
-			return false;
-
-		auto clients_it = sound.clients.find(peer_id);
-		if (clients_it == sound.clients.end())
-			return false;
-
-		NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
-		pkt << id;
-		Send(peer_id, &pkt);
-
-		sound.clients.erase(clients_it);
-		// delete if client list empty
-		return sound.clients.empty();
-	};
-
-	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); ) {
-		if (cb(it->first, it->second))
-			it = m_playing_sounds.erase(it);
-		else
-			++it;
-	}
 }
 
 void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,
