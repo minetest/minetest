@@ -2054,18 +2054,9 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 	// Removed objects
 	pkt << static_cast<u16>(removed_objects.size());
 
-	std::vector<u16> sounds_to_stop;
-
 	for (auto &it : removed_objects) {
 		const auto [gone, id] = it;
 		ServerActiveObject *obj = m_env->getActiveObject(id);
-
-		// Stop sounds if objects go out of range.
-		// This fixes https://github.com/minetest/minetest/issues/8094.
-		// We may not remove sounds if an entity was removed on the server.
-		// See https://github.com/minetest/minetest/issues/14422.
-		if (!gone) // just out of range for client, not gone on server?
-			sounds_to_stop.push_back(id);
 
 		pkt << id;
 
@@ -2074,9 +2065,6 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 		if (obj && obj->m_known_by_count > 0)
 			obj->m_known_by_count--;
 	}
-
-	if (!sounds_to_stop.empty())
-		stopAttachedSounds(client->peer_id, sounds_to_stop);
 
 	// Added objects
 	pkt << static_cast<u16>(added_objects.size());
@@ -2260,6 +2248,10 @@ void Server::fadeSound(s32 handle, float step, float gain)
 		m_playing_sounds.erase(it);
 }
 
+// FIXME: Yet unused because removing sounds from objects that go out of range
+// (client side) would need to be played back again when coming into range again.
+// Currently, the client will initiate m_playing_sounds clean ups indirectly by
+// "Server::handleCommand_RemovedSounds".
 void Server::stopAttachedSounds(session_t peer_id,
 	const std::vector<u16> &object_ids)
 {

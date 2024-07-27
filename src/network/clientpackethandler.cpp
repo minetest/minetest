@@ -471,6 +471,8 @@ void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
 		for (u16 i = 0; i < removed_count; i++) {
 			*pkt >> id;
 			m_env.removeActiveObject(id);
+			// Sounds MUST NOT be removed here as they might have started
+			// to play started immediately before the entity was removed.
 		}
 
 		// Read added objects
