@@ -50,6 +50,10 @@ public:
 	{
 		return basic_equals(o) && shift == o.shift && control == o.control;
 	}
+	bool operator!=(const KeyPress &o) const
+	{
+		return !operator==(o);
+	}
 
 	bool basic_equals(const KeyPress &o) const
 	{
@@ -90,6 +94,11 @@ public:
 
 	static bool is_control_base(const std::string_view &name) {
 		return (name == "KEY_LCONTROL" || name == "KEY_RCONTROL" || name == "KEY_CONTROL");
+	}
+
+	bool empty() const
+	{
+		return !(valid_base() || has_modifier());
 	}
 
 	int matches(const KeyPress &p) const;

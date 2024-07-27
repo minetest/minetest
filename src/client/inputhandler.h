@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "joystick_controller.h"
+#include <functional>
 #include <list>
 #include <unordered_set>
 #include "keycode.h"
@@ -55,7 +56,18 @@ struct KeyCache
 	void populate_nonchanging();
 
 	KeyPress key[KeyType::INTERNAL_ENUM_COUNT];
+	std::array<std::list<KeyPress>, KeyType::INTERNAL_ENUM_COUNT> avoidModifiers;
 	InputHandler *handler;
+
+	bool matches(const GameKeyType k, const std::function<bool(KeyPress)> &matcher)
+	{
+		if (!matcher(key[k]))
+			return false;
+		for (const auto &other: avoidModifiers[k])
+			if (matcher(other))
+				return false;
+		return true;
+	}
 };
 
 class KeyList : private std::list<KeyPress>
@@ -203,10 +215,10 @@ public:
 	bool IsKeyDown(const KeyPress &keyCode) const { return keyIsDown[keyCode]; }
 
 	// Checks whether a key was down and resets the state
-	bool WasKeyDown(const KeyPress &keyCode)
+	bool WasKeyDown(const KeyPress &keyCode, const bool reset = true)
 	{
 		bool b = keyWasDown[keyCode];
-		if (b)
+		if (reset && b)
 			keyWasDown.unset(keyCode);
 		return b;
 	}
@@ -352,19 +364,21 @@ public:
 
 	virtual bool isKeyDown(GameKeyType k)
 	{
-		return m_receiver->IsKeyDown(keycache.key[k]) || joystick.isKeyDown(k);
+		return keycache.matches(k, [=](const auto &key) { return m_receiver->IsKeyDown(key); }) || joystick.isKeyDown(k);
 	}
 	virtual bool wasKeyDown(GameKeyType k)
 	{
-		return m_receiver->WasKeyDown(keycache.key[k]) || joystick.wasKeyDown(k);
+		bool result = keycache.matches(k, [=](const auto &key) { return m_receiver->WasKeyDown(key, false); }) || joystick.wasKeyDown(k);
+		m_receiver->WasKeyDown(keycache.key[k]); // reset WasKeyDown state
+		return result;
 	}
 	virtual bool wasKeyPressed(GameKeyType k)
 	{
-		return m_receiver->WasKeyPressed(keycache.key[k]) || joystick.wasKeyPressed(k);
+		return keycache.matches(k, [=](const auto &key) { return m_receiver->WasKeyPressed(key); }) || joystick.wasKeyPressed(k);
 	}
 	virtual bool wasKeyReleased(GameKeyType k)
 	{
-		return m_receiver->WasKeyReleased(keycache.key[k]) || joystick.wasKeyReleased(k);
+		return keycache.matches(k, [=](const auto &key) { return m_receiver->WasKeyReleased(key); }) || joystick.wasKeyReleased(k);
 	}
 
 	virtual float getMovementSpeed();
