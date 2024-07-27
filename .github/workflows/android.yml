@@ -30,13 +30,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    env:
+      JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64/
     steps:
     - uses: actions/checkout@v4
     - name: Install deps
       run: |
         sudo apt-get update
         sudo apt-get install -y --no-install-recommends gettext openjdk-17-jdk-headless
-        export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
     - name: Build AAB with Gradle
       # We build an AAB as well for uploading to the the Play Store.
       run: cd android; ./gradlew bundlerelease
