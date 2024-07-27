@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
 		IntentFilter filter = new IntentFilter(ACTION_UPDATE);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			registerReceiver(myReceiver, filter, RECEIVER_EXPORTED);
+			registerReceiver(myReceiver, filter, RECEIVER_NOT_EXPORTED);
 		} else {
 			registerReceiver(myReceiver, filter);
 		}
