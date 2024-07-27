@@ -363,8 +363,13 @@ void GUIFormSpecMenu::parseScrollContainer(parserData *data, const std::string &
 	std::string scrollbar_name = parts[2];
 	std::string orientation = parts[3];
 	f32 scroll_factor = 0.1f;
-	if (parts.size() >= 5 && !parts[4].empty())
-		scroll_factor = stof(parts[4]);
+	bool auto_scroll_factor = false;
+	if (parts.size() >= 5 && !parts[4].empty()) {
+		if (parts[4] == "auto")
+			auto_scroll_factor = true;
+		else
+			scroll_factor = stof(parts[4]);
+	}
 
 	MY_CHECKPOS("scroll_container", 0);
 	MY_CHECKGEOM("scroll_container", 1);
@@ -404,6 +409,7 @@ void GUIFormSpecMenu::parseScrollContainer(parserData *data, const std::string &
 
 	GUIScrollContainer *mover = new GUIScrollContainer(Environment,
 			clipper, spec_mover.fid, rect_mover, orientation, scroll_factor);
+	mover->setAutoScrollFactor(auto_scroll_factor);
 
 	data->current_parent = mover;
 
@@ -3405,6 +3411,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		for (const std::pair<FieldSpec, GUIScrollBar *> &b : m_scrollbars) {
 			if (c.first == b.first.fname) {
 				c.second->setScrollBar(b.second);
+				c.second->calculateAutoScrollFactor();
 				break;
 			}
 		}
