@@ -83,7 +83,8 @@ public:
 		return is_shift_base(m_name);
 	}
 
-	static bool is_shift_base(const std::string_view &name) {
+	static bool is_shift_base(const std::string_view &name)
+	{
 		return (name == "KEY_LSHIFT" || name == "KEY_RSHIFT" || name == "KEY_SHIFT");
 	}
 
@@ -92,7 +93,8 @@ public:
 		return is_control_base(m_name);
 	}
 
-	static bool is_control_base(const std::string_view &name) {
+	static bool is_control_base(const std::string_view &name)
+	{
 		return (name == "KEY_LCONTROL" || name == "KEY_RCONTROL" || name == "KEY_CONTROL");
 	}
 
