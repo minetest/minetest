@@ -879,6 +879,12 @@ bool CIrrDeviceSDL::run()
 			irrevent.KeyInput.Control = (SDL_event.key.keysym.mod & KMOD_CTRL) != 0;
 			irrevent.KeyInput.Char = findCharToPassToIrrlicht(mp.SDLKey, key,
 					(SDL_event.key.keysym.mod & KMOD_NUM) != 0);
+
+			// This is a GIANT HACK to fix the most common case of
+			// https://github.com/minetest/minetest/issues/14545 for the 5.9.0 release.
+			if (irrevent.KeyInput.Key == KEY_KEY_7 && irrevent.KeyInput.Shift)
+				irrevent.KeyInput.Char = L'/';
+
 			postEventFromUser(irrevent);
 		} break;
 
