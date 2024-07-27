@@ -1101,6 +1101,7 @@ int ModApiMainMenu::l_get_lan_servers(lua_State *L)
 	int top = lua_gettop(L);
 	unsigned int index = 1;
 
+	std::shared_lock lock(ServerList::lan_adv_client.mutex);
 	for (const auto &server : ServerList::lan_adv_client.collected) {
 		lua_pushnumber(L, index);
 

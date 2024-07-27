@@ -20,10 +20,11 @@ along with Freeminer.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include "json/json.h"
+#include <map>
+#include <shared_mutex>
 #include <string>
 #include <atomic>
 #include "threading/thread.h"
-#include "threading/concurrent_map.h"
 
 
 class lan_adv : public Thread
@@ -37,7 +38,9 @@ public:
 
 	void serve(unsigned short port);
 
-	concurrent_map<std::string, Json::Value> collected;
+	std::map<std::string, Json::Value> collected;
+	std::shared_mutex mutex;
+
 	std::atomic_bool fresh;
 	std::atomic_int clients_num;
 
