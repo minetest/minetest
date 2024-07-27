@@ -8409,7 +8409,8 @@ child will follow movement and rotation of that bone.
           ColorSpec (alpha ignored, default `#000000`)
         * `height`: cloud height, i.e. y of cloud base (default per conf,
           usually `120`)
-        * `thickness`: cloud thickness in nodes (default `16`)
+        * `thickness`: cloud thickness in nodes (default `16`).
+          if set to zero the clouds are rendered flat.
         * `speed`: 2D cloud speed + direction in nodes per second
           (default `{x=0, z=-2}`).
 * `get_clouds()`: returns a table with the current cloud parameters as in
