@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "joystick_controller.h"
+#include <array>
 #include <functional>
 #include <list>
 #include <unordered_set>
