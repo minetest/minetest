@@ -370,7 +370,8 @@ public:
 	virtual bool wasKeyDown(GameKeyType k)
 	{
 		bool result = keycache.matches(k, [=](const auto &key) { return m_receiver->WasKeyDown(key, false); }) || joystick.wasKeyDown(k);
-		m_receiver->WasKeyDown(keycache.key[k]); // reset WasKeyDown state
+		if (result) // reset WasKeyDown state
+			m_receiver->WasKeyDown(keycache.key[k]);
 		return result;
 	}
 	virtual bool wasKeyPressed(GameKeyType k)
