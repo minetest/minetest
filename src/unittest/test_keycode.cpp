@@ -130,6 +130,8 @@ void TestKeycode::testCompare()
 	UASSERT(KeyPress("KEY_SHIFT-5").matches(KeyPress("KEY_SHIFT")));
 	UASSERT(KeyPress("KEY_SHIFT-5").matches(KeyPress("5")));
 	UASSERT(KeyPress("KEY_SHIFT-5").matches(KeyPress("KEY_SHIFT-5")) > KeyPress("KEY_SHIFT-5").matches("5"));
+	UASSERT(!KeyPress("5").matches(KeyPress("$")));
+	UASSERT(!KeyPress("5").matches(KeyPress("KEY_F10")));
 
 	// Matching char suffices
 	// note: This is a real-world example, Irrlicht maps XK_equal to irr::KEY_PLUS on Linux

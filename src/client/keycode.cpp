@@ -393,7 +393,7 @@ const std::string KeyPress::name() const
 }
 
 int KeyPress::matches(const KeyPress &p) const {
-	if (!basic_equals(p) && p.Key != irr::KEY_KEY_CODES_COUNT)
+	if (!basic_equals(p) && p.valid_base())
 		return 0;
 	if ((p.shift && !shift) || (p.control && !control))
 		return 0;
