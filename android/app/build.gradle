@@ -11,6 +11,10 @@ android {
 		versionCode project.versionCode
 	}
 
+	buildFeatures {
+		buildConfig true
+	}
+
 	// load properties
 	Properties props = new Properties()
 	def propfile = file('../local.properties')
@@ -48,6 +52,7 @@ android {
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
+	namespace 'net.minetest.minetest'
 }
 
 task prepareAssets() {

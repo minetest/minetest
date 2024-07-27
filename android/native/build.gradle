@@ -39,6 +39,7 @@ android {
 			}
 		}
 	}
+	namespace 'net.minetest'
 }
 
 // get precompiled deps
