@@ -8,6 +8,7 @@ function core.register_portable_metatable(name, mt)
 	known_metatables[name] = mt
 	known_metatables[mt] = name
 end
+core.register_async_metatable = core.register_portable_metatable
 core.known_metatables = known_metatables
 
 core.register_portable_metatable("__builtin:vector", vector.metatable)
