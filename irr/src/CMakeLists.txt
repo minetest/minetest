@@ -432,6 +432,7 @@ add_library(IRROTHEROBJ OBJECT
 	COSOperator.cpp
 	Irrlicht.cpp
 	os.cpp
+	scancode.cpp
 )
 
 if(ENABLE_OPENGL3)

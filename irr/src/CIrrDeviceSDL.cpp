@@ -11,6 +11,7 @@
 #include "IImageLoader.h"
 #include "IFileSystem.h"
 #include "os.h"
+#include "scancode.h"
 #include "CTimer.h"
 #include "irrString.h"
 #include "Keycodes.h"
@@ -77,6 +78,7 @@ static IVideoDriver *createWebGL1Driver(const SIrrlichtCreationParameters &param
 
 namespace irr
 {
+
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 EM_BOOL CIrrDeviceSDL::MouseUpDownCallback(int eventType, const EmscriptenMouseEvent *event, void *userData)
 {
@@ -189,7 +191,7 @@ bool CIrrDeviceSDL::keyIsKnownSpecial(EKEY_CODE irrlichtKey)
 	}
 }
 
-int CIrrDeviceSDL::findCharToPassToIrrlicht(const SDL_Keysym &SDL_keysym, EKEY_CODE irrlichtKey)
+wchar_t CIrrDeviceSDL::findCharToPassToIrrlicht(const SDL_Keysym &SDL_keysym, EKEY_CODE irrlichtKey)
 {
 	switch (irrlichtKey) {
 	// special cases that always return a char regardless of how the SDL keycode
@@ -262,9 +264,10 @@ int CIrrDeviceSDL::findCharToPassToIrrlicht(const SDL_Keysym &SDL_keysym, EKEY_C
 	case KEY_NUMLOCK:
 		return 0;
 	default:
-		return SDL_keysym.sym;
+		return get_modified_char_from_scancode(SDL_keysym.scancode);
 	}
 }
+
 
 void CIrrDeviceSDL::resetReceiveTextInputEvents()
 {
