@@ -1106,6 +1106,11 @@ Table used to specify how a sound is played:
 
     -- Available since feature `sound_params_start_time`.
 
+    resend_time = 600.0,
+    -- Approximate playback duration (from `start_time` to end) in seconds.
+    -- This is needed to re-send sounds to new players in hearing distance.
+    -- Unused for looped sounds.
+
     loop = false,
     -- If true, sound is played in a loop.
 
@@ -1141,10 +1146,10 @@ Table used to specify how a sound is played:
     -- Can't be used together with `to_player`.
 
     max_hear_distance = 32,
-    -- Only play for players that are at most this far away when the sound
-    -- starts playing.
+    -- Only play for players that are at most this far away.
     -- Needs `pos` or `object` to be set.
     -- `32` is the default.
+    -- See `sounds_updating`.
 }
 ```
 
@@ -5460,6 +5465,9 @@ Utilities
       moveresult_new_pos = true,
       -- Allow removing definition fields in `minetest.override_item`
       override_item_remove_fields = true,
+      -- Sounds can be send to players which comes to hear distance.
+      -- Field `resend_time` added to sound parameters. (5.9.0)
+      sounds_updating = true,
   }
   ```
 
@@ -6672,6 +6680,8 @@ Sounds
 ------
 
 * `minetest.sound_play(spec, parameters, [ephemeral])`: returns a handle
+    * Returned handle is positive number if function sucessufully
+      create sound and `ephernal` if `false`.
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
     * `ephemeral` is a boolean (default: false)
