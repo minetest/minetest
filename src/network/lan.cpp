@@ -30,9 +30,10 @@ along with Freeminer.  If not, see <http://www.gnu.org/licenses/>.
 #include "server/serverlist.h"
 #include "debug.h"
 #include "json/json.h"
+#include <mutex>
+#include <shared_mutex>
 #include "porting.h"
 #include "threading/thread.h"
-#include "threading/concurrent_map.h"
 #include "network/address.h"
 
 //copypaste from ../socket.cpp
@@ -303,6 +304,7 @@ void *lan_adv::run()
 			if (p["port"].isInt()) {
 				p["address"] = addr_str;
 				auto key = addr_str + ":" + p["port"].asString();
+				std::unique_lock lock(mutex);
 				if (p["cmd"].asString() == "shutdown") {
 					//infostream << "server shutdown " << key << "\n";
 					collected.erase(key);
