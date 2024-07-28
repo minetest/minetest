@@ -7583,9 +7583,12 @@ an itemstring, a table or `nil`.
 * `set_wear(wear)`: returns boolean indicating whether item was cleared
     * `wear`: number, unsigned 16 bit integer
 * `get_meta()`: returns ItemStackMetaRef. See section for more details
-* `get_metadata()`: (DEPRECATED) Returns metadata (a string attached to an item
-  stack).
-* `set_metadata(metadata)`: (DEPRECATED) Returns true.
+* `get_metadata()`: **Deprecated.** Returns metadata (a string attached to an item stack).
+    * If you need to access this to maintain backwards compatibility,
+      use `stack:get_meta():get_string("")` instead.
+* `set_metadata(metadata)`: **Deprecated.** Returns true.
+    * If you need to set this to maintain backwards compatibility,
+      use `stack:get_meta():set_string("", metadata)` instead.
 * `get_description()`: returns the description shown in inventory list tooltips.
     * The engine uses this when showing item descriptions in tooltips.
     * Fields for finding the description, in order:
