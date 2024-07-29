@@ -165,7 +165,7 @@ void Player::clearHud()
 u16 Player::getMaxHotbarItemcount()
 {
 	InventoryList *mainlist = inventory.getList("main");
-	return mainlist ? std::min((s32) mainlist->getSize(), hud_hotbar_itemcount) : 0;
+	return mainlist ? std::min(mainlist->getSize(), (u16) hud_hotbar_itemcount) : 0;
 }
 
 #ifndef SERVER
