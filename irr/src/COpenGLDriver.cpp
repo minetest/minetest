@@ -3018,7 +3018,7 @@ IImage *COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 	if (newImage)
 		pixels = static_cast<u8 *>(newImage->getData());
 	if (pixels) {
-		glReadBuffer(GL_FRONT);
+		glReadBuffer(Params.Doublebuffer ? GL_BACK : GL_FRONT);
 		glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, fmt, type, pixels);
 		testGLError(__LINE__);
 		glReadBuffer(GL_BACK);
