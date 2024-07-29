@@ -247,7 +247,7 @@ public:
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;
 
-	// Get proper max HUD itemcount
+	// Get actual usable number of hotbar items (clamped to size of "main" list)
 	u16 getMaxHotbarItemcount();
 
 protected:
