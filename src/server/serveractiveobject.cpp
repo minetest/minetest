@@ -139,7 +139,7 @@ const Observers& ServerActiveObject::recalculateEffectiveObservers()
 	return getEffectiveObservers();
 }
 
-bool ServerActiveObject::isSentTo(const std::string &player_name)
+bool ServerActiveObject::isEffectivelyObservedBy(const std::string &player_name)
 {
 	auto effective_observers = getEffectiveObservers();
 	return !effective_observers || effective_observers->count(player_name) > 0;

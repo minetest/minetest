@@ -255,7 +255,7 @@ public:
 	/// Force a recalculation of final observers (including all parents).
 	const Observers &recalculateEffectiveObservers();
 	/// Whether the object is sent to `player_name`
-	bool isSentTo(const std::string &player_name);
+	bool isEffectivelyObservedBy(const std::string &player_name);
 
 protected:
 	// Cached intersection of m_observers of this object and all its parents.

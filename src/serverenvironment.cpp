@@ -1783,7 +1783,7 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 			? distance_f <= player_radius_f || player_radius_f == 0
 			: distance_f <= radius_f;
 
-		if (!in_range || !object->isSentTo(player_name))
+		if (!in_range || !object->isEffectivelyObservedBy(player_name))
 			removed_objects.emplace_back(false, id); // out of range or not observed anymore
 	}
 }
