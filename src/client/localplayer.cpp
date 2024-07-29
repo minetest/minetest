@@ -1,4 +1,4 @@
-/*
+﻿/*
 Minetest
 Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
@@ -1223,6 +1223,42 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 	// must be running against something to trigger autojumping
 	if (!horizontal_collision)
 		return;
+
+	{
+		bool spamming_jump = false; // change after implement
+	
+		//todo1: must be only one block ahead to trigger autojumping, in other words there must not be a vertical collision
+		//done: converted to check if there's a block in main dir. if not, quit it.
+		//todo2: spam jumping gone but have some rare case showing insensitivity with normal autojump detection, and need to fix that.
+		//issue: if it's possible to get user input directly, the determination of spamming jump will be more precise
+		//and also resolves insensitivity when player run against 1 block with 0 speed in that dir. need someone's hand to deal with this
+		v3s16 main_movement_dir; // main movement direction if jumped on a block
+		
+		if (initial_speed.X*initial_speed.X > initial_speed.Z*initial_speed.Z) //might be a little faster than get abs value and compare
+		{
+			main_movement_dir.Z = 0;
+			main_movement_dir.Y = 1;
+			main_movement_dir.X = numericSign(initial_speed.X);
+		}
+		if (initial_speed.X*initial_speed.X < initial_speed.Z*initial_speed.Z)
+		{
+			main_movement_dir.X = 0;
+			main_movement_dir.Y = 1;
+			main_movement_dir.Z = numericSign(initial_speed.Z);
+		}
+
+		//only need 1 block ahead of the mostly right horizontal direction 
+		v3s16 block_ahead_position = getStandingNodePos() + main_movement_dir;
+		MapNode block_ahead = env->getMap().getNode(block_ahead_position);
+		const NodeDefManager *ndef_temp = env->getGameDef()->ndef();
+		const ContentFeatures &f_temp = ndef_temp->get(block_ahead);
+		if (!f_temp.walkable)//there's no meaning to jump when falls to original height
+			spamming_jump = true;
+		if (spamming_jump)
+			return;
+	}// code above contains some variables that may cause a little performance overhead. 
+	//so a code block is used to release those occupied RAM in time.
+
 
 	// check for nodes above
 	v3f headpos_min = m_position + m_collisionbox.MinEdge * 0.99f;
