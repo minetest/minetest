@@ -11,7 +11,7 @@ end
 core.known_metatables = known_metatables
 
 function core.register_async_metatable(...)
-	core.log("deprecated", "minetest.register_async_metatable is deprecated" ..
+	core.log("deprecated", "minetest.register_async_metatable is deprecated. " ..
 			"Use minetest.register_portable_metatable instead.")
 	return core.register_portable_metatable(...)
 end
