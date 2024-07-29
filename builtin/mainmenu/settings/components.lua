@@ -344,18 +344,16 @@ function make.flags(setting)
 			local y = 0.55
 
 			for _, possible in ipairs(setting.possible) do
-				if possible:sub(1, 2) ~= "no" then
-					if x >= avail_w then
-						x = 0
-						y = y + 0.5
-					end
-
-					local is_checked = checkboxes[possible]
-					fs[#fs + 1] = ("checkbox[%f,%f;%s;%s;%s]"):format(
-						x, y, setting.name .. "_" .. possible,
-						core.formspec_escape(possible), tostring(is_checked))
-					x = x + column_width
+				if x >= avail_w then
+					x = 0
+					y = y + 0.5
 				end
+
+				local is_checked = checkboxes[possible]
+				fs[#fs + 1] = ("checkbox[%f,%f;%s;%s;%s]"):format(
+					x, y, setting.name .. "_" .. possible,
+					core.formspec_escape(possible), tostring(is_checked))
+				x = x + column_width
 			end
 
 			return table.concat(fs, ""), y + 0.25
