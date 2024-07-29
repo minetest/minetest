@@ -852,23 +852,11 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 
 	*pkt >> item;
 
-	if (item >= player->getHotbarItemcount()) {
+	if (item >= player->getMaxHotbarItemcount()) {
 		actionstream << "Player: " << player->getName()
 			<< " tried to access item=" << item
 			<< " out of hotbar_itemcount="
-			<< player->getHotbarItemcount()
-			<< "; ignoring." << std::endl;
-		return;
-	}
-
-	Inventory *inventory = &player->inventory;
-	auto *mainlist = player->inventory.getList("main");
-	u32 mainlist_size = mainlist ? mainlist->getSize() : 0;
-	if (item > mainlist_size) {
-		actionstream << "Player: " << player->getName()
-			<< " tried to access item=" << item
-			<< " out of main list size="
-			<< mainlist_size
+			<< player->getMaxHotbarItemcount()
 			<< "; ignoring." << std::endl;
 		return;
 	}
@@ -995,11 +983,11 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 	// Update wielded item
 
-	if (item_i >= player->getHotbarItemcount()) {
+	if (item_i >= player->getMaxHotbarItemcount()) {
 		actionstream << "Player: " << player->getName()
 			<< " tried to access item=" << item_i
 			<< " out of hotbar_itemcount="
-			<< player->getHotbarItemcount()
+			<< player->getMaxHotbarItemcount()
 			<< "; ignoring." << std::endl;
 		return;
 	}
