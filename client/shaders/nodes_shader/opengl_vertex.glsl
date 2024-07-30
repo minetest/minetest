@@ -177,7 +177,7 @@ void main(void)
 	wavePos.x /= WATER_WAVE_LENGTH * 3.0;
 	wavePos.z /= WATER_WAVE_LENGTH * 2.0;
 	wavePos.z += animationTimer * WATER_WAVE_SPEED * 10.0;
-	pos.y += (snoise(wavePos) - 1.0) * WATER_WAVE_HEIGHT * 5.0;
+	pos.y += -(snoise(wavePos) - 1.0) * WATER_WAVE_HEIGHT * 5.0;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES
 	pos.x += disp_x;
 	pos.y += disp_z * 0.1;
