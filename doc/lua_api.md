@@ -4035,7 +4035,7 @@ Helper functions
 * `table.indexof(list, val)`: returns the smallest numerical index containing
       the value `val` in the table `list`. Non-numerical indices are ignored.
       If `val` could not be found, `-1` is returned. `list` must not have
-      negative indices.
+      negative indices, and must not have holes.
 * `table.insert_all(table, other_table)`:
     * Appends all values in `other_table` to `table` - uses `#table + 1` to
       find new indices.
