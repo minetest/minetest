@@ -169,8 +169,8 @@ describe("table", function()
 	end)
 
 	it("keyof()", function()
-		assert.equal("a", table.indexof({a = "foo", b = "bar"}, "foo"))
-		assert.equal(nil, table.indexof({a = "foo", b = "bar"}, "baz"))
+		assert.equal("a", table.keyof({a = "foo", b = "bar"}, "foo"))
+		assert.equal(nil, table.keyof({a = "foo", b = "bar"}, "baz"))
 	end)
 end)
 
