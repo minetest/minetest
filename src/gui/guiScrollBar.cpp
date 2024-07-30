@@ -13,6 +13,7 @@ the arrow buttons where there is insufficient space.
 #include "guiScrollBar.h"
 #include "guiButton.h"
 #include "porting.h"
+#include "settings.h"
 #include <IGUISkin.h>
 
 GUIScrollBar::GUIScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
@@ -101,19 +102,9 @@ bool GUIScrollBar::OnEvent(const SEvent &event)
 					tray_clicked = !dragged_by_slider;
 					if (tray_clicked) {
 						const s32 new_pos = getPosFromMousePos(p);
-						const s32 old_pos = scroll_pos;
-						setPos(new_pos);
+						setPosAndSend(new_pos);
 						// drag in the middle
 						drag_offset = thumb_size / 2;
-						// report the scroll event
-						if (scroll_pos != old_pos && Parent) {
-							SEvent e;
-							e.EventType = EET_GUI_EVENT;
-							e.GUIEvent.Caller = this;
-							e.GUIEvent.Element = nullptr;
-							e.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
-							Parent->OnEvent(e);
-						}
 					}
 					Environment->setFocus(this);
 					return true;
@@ -147,18 +138,8 @@ bool GUIScrollBar::OnEvent(const SEvent &event)
 				}
 
 				const s32 new_pos = getPosFromMousePos(p);
-				const s32 old_pos = scroll_pos;
+				setPosAndSend(new_pos);
 
-				setPos(new_pos);
-
-				if (scroll_pos != old_pos && Parent) {
-					SEvent e;
-					e.EventType = EET_GUI_EVENT;
-					e.GUIEvent.Caller = this;
-					e.GUIEvent.Element = nullptr;
-					e.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
-					Parent->OnEvent(e);
-				}
 				return is_inside;
 			}
 			default:
@@ -300,8 +281,27 @@ void GUIScrollBar::setPos(const s32 &pos)
 	target_pos = std::nullopt;
 }
 
+void GUIScrollBar::setPosAndSend(const s32 &pos)
+{
+	const s32 old_pos = scroll_pos;
+	setPos(pos);
+	if (scroll_pos != old_pos && Parent) {
+		SEvent e;
+		e.EventType = EET_GUI_EVENT;
+		e.GUIEvent.Caller = this;
+		e.GUIEvent.Element = nullptr;
+		e.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
+		Parent->OnEvent(e);
+	}
+}
+
 void GUIScrollBar::setPosInterpolated(const s32 &pos)
 {
+	if (!g_settings->getBool("smooth_scrolling")) {
+		setPosAndSend(pos);
+		return;
+	}
+
 	s32 clamped = core::s32_clamp(pos, min_pos, max_pos);
 	if (scroll_pos != clamped) {
 		target_pos = clamped;

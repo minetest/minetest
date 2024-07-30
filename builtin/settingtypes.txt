@@ -694,6 +694,9 @@ language (Language) enum   ,be,bg,ca,cs,da,de,el,en,eo,es,et,eu,fi,fr,gd,gl,hu,i
 #    edge pixels when images are scaled by non-integer sizes.
 gui_scaling (GUI scaling) float 1.0 0.5 20
 
+#    Enables smooth scrolling.
+smooth_scrolling (Smooth scrolling) bool true
+
 #    Enables animation of inventory items.
 inventory_items_animations (Inventory items animations) bool false
 
