@@ -218,13 +218,19 @@ local function search_server_list(input)
 				found = found + count * 4
 			end
 
-			if server.description then
-				local desc = server.description:lower()
-				local _, count = desc:gsub(keyword, keyword)
-				found = found + count * 2
+            if server.description then
+                local desc = server.description:lower()
+                local _, count = desc:gsub(keyword, keyword)
+                found = found + count * 2
+            end
+        end
+		-- Make search precise for exactly matched server
+        -- Or at least more exactly matched server should be rated higher at the match scoring 
+        local _, count = server.name:lower():gsub(input:lower(), input:lower())
+        if found > 0 then
+			if count > 0 then
+				found = 99
 			end
-		end
-		if found > 0 then
 			local points = (#serverlistmgr.servers - i) / 5 + found
 			server.points = points
 			table.insert(search_result, server)
