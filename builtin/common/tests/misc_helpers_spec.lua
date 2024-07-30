@@ -167,6 +167,11 @@ describe("table", function()
 		assert.equal(1, table.indexof({"foo", "bar"}, "foo"))
 		assert.equal(-1, table.indexof({"foo", "bar"}, "baz"))
 	end)
+
+	it("keyof()", function()
+		assert.equal("a", table.indexof({a = "foo", b = "bar"}, "foo"))
+		assert.equal(nil, table.indexof({a = "foo", b = "bar"}, "baz"))
+	end)
 end)
 
 describe("formspec_escape", function()
