@@ -2,29 +2,22 @@
 
 local S = minetest.get_translator("testnodes")
 
--- Complex mesh
-minetest.register_node("testnodes:performance_mesh_clip", {
-	description = S("Performance Test Node") .. "\n" .. S("Marble with 'clip' transparency"),
-	drawtype = "mesh",
-	mesh = "testnodes_marble_glass.obj",
-	tiles = {"testnodes_marble_glass.png"},
-	paramtype = "light",
-	use_texture_alpha = "clip",
+for use_texture_alpha, description in pairs({
+	opaque = S("Marble with 'opaque' transparency"),
+	clip = S("Marble with 'clip' transparency"),
+	blend = S("Marble with 'blend' transparency"),
+}) do
+	minetest.register_node("testnodes:performance_mesh_" .. use_texture_alpha, {
+		description = S("Performance Test Node") .. "\n" .. description,
+		drawtype = "mesh",
+		mesh = "testnodes_marble_glass.obj",
+		tiles = {"testnodes_marble_glass.png"},
+		paramtype = "light",
+		use_texture_alpha = use_texture_alpha,
 
-	groups = {dig_immediate=3},
-})
-
--- Complex mesh, alpha blending
-minetest.register_node("testnodes:performance_mesh_blend", {
-	description = S("Performance Test Node") .. "\n" .. S("Marble with 'blend' transparency"),
-	drawtype = "mesh",
-	mesh = "testnodes_marble_glass.obj",
-	tiles = {"testnodes_marble_glass.png"},
-	paramtype = "light",
-	use_texture_alpha = "blend",
-
-	groups = {dig_immediate=3},
-})
+		groups = {dig_immediate=3},
+	})
+end
 
 -- Overlay
 minetest.register_node("testnodes:performance_overlay_clip", {

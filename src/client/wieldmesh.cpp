@@ -18,8 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "wieldmesh.h"
+#include "EMaterialTypes.h"
+#include "SMaterial.h"
 #include "settings.h"
-#include "shader.h"
 #include "inventory.h"
 #include "client.h"
 #include "itemdef.h"
@@ -29,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include "client/meshgen/collector.h"
 #include "client/tile.h"
-#include "log.h"
 #include "util/numeric.h"
 #include <map>
 #include <IMeshManipulator.h>
@@ -40,6 +40,56 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define MIN_EXTRUSION_MESH_RESOLUTION 16
 #define MAX_EXTRUSION_MESH_RESOLUTION 512
+
+/*!
+ * Applies overlays, textures and optionally materials to the given mesh and
+ * extracts tile colors for colorization.
+ * \param mattype overrides the buffer's material type, but can also
+ * be NULL to leave the original material.
+ * \param colors returns the colors of the mesh buffers in the mesh.
+ */
+static void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
+	std::vector<ItemPartColor> *colors)
+{
+	const u32 mc = mesh->getMeshBufferCount();
+	// Allocate colors for existing buffers
+	colors->clear();
+	colors->resize(mc);
+
+	for (u32 i = 0; i < mc; ++i) {
+		const TileSpec *tile = &(f.tiles[i]);
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+		for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
+			const TileLayer *layer = &tile->layers[layernum];
+			if (layer->texture_id == 0)
+				continue;
+			if (layernum != 0) {
+				scene::IMeshBuffer *copy = cloneMeshBuffer(buf);
+				copy->getMaterial() = buf->getMaterial();
+				mesh->addMeshBuffer(copy);
+				copy->drop();
+				buf = copy;
+				colors->emplace_back(layer->has_color, layer->color);
+			} else {
+				(*colors)[i] = ItemPartColor(layer->has_color, layer->color);
+			}
+
+			video::SMaterial &material = buf->getMaterial();
+			if (layer->animation_frame_count > 1) {
+				const FrameSpec &animation_frame = (*layer->frames)[0];
+				material.setTexture(0, animation_frame.texture);
+			} else {
+				material.setTexture(0, layer->texture);
+			}
+
+			if (tile->world_aligned) {
+				u32 n = buf->getVertexCount();
+				for (u32 k = 0; k != n; ++k)
+					buf->getTCoords(k) /= layer->scale;
+			}
+		}
+	}
+}
 
 static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 {
@@ -193,10 +243,55 @@ private:
 
 static ExtrusionMeshCache *g_extrusion_mesh_cache = nullptr;
 
+static scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
+	const std::string &imagename, const std::string &overlay_name)
+{
+	// check textures
+	video::ITexture *texture = tsrc->getTextureForMesh(imagename);
+	if (!texture) {
+		return NULL;
+	}
+	video::ITexture *overlay_texture =
+		(overlay_name.empty()) ? NULL : tsrc->getTexture(overlay_name);
+
+	// get mesh
+	core::dimension2d<u32> dim = texture->getSize();
+	scene::IMesh *original = g_extrusion_mesh_cache->create(dim);
+	scene::SMesh *mesh = cloneMesh(original);
+	original->drop();
+
+	//set texture
+	mesh->getMeshBuffer(0)->getMaterial().setTexture(0,
+		tsrc->getTexture(imagename));
+	if (overlay_texture) {
+		scene::IMeshBuffer *copy = cloneMeshBuffer(mesh->getMeshBuffer(0));
+		copy->getMaterial().setTexture(0, overlay_texture);
+		mesh->addMeshBuffer(copy);
+		copy->drop();
+	}
+	// Customize materials
+	for (u32 layer = 0; layer < mesh->getMeshBufferCount(); layer++) {
+		video::SMaterial &material = mesh->getMeshBuffer(layer)->getMaterial();
+		material.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+		material.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+		material.forEachTexture([] (auto &tex) {
+			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+			tex.MagFilter = video::ETMAGF_NEAREST;
+		});
+		material.BackfaceCulling = true;
+		material.Lighting = false;
+		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+		material.MaterialTypeParam = 0.0f; // render everything with alpha > 0
+		material.ZWriteEnable = video::EZW_ON;
+	}
+	scaleMesh(mesh, v3f(2.0, 2.0, 2.0));
+
+	return mesh;
+}
 
 WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool lighting):
 	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
-	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF),
+	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL),
 	m_lighting(lighting)
 {
 	m_enable_shaders = g_settings->getBool("enable_shaders");
@@ -248,7 +343,17 @@ void WieldMeshSceneNode::setCube(const ContentFeatures &f,
 	scene::IMesh *cubemesh = g_extrusion_mesh_cache->createCube();
 	scene::SMesh *copy = cloneMesh(cubemesh);
 	cubemesh->drop();
-	postProcessNodeMesh(copy, f, false, true, &m_material_type, &m_colors, true);
+	postProcessNodeMesh(copy, f, &m_colors);
+
+	// Customize materials
+	for (u32 i = 0; i < cubemesh->getMeshBufferCount(); ++i) {
+		// It suffices to look at the first layer;
+		// a special overlay layer needs to be consistent with it -
+		// otherwise we would be overwriting the material options of the fist layer
+		scene::IMeshBuffer *buf = cubemesh->getMeshBuffer(i);
+		f.tiles[i].layers[0].applyMaterialOptions(buf->getMaterial());
+	}
+	
 	changeToMesh(copy);
 	copy->drop();
 	m_meshnode->setScale(wield_scale * WIELD_SCALE_FACTOR);
@@ -295,7 +400,8 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		material.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		material.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		material.MaterialType = m_material_type;
-		material.MaterialTypeParam = 0.5f;
+		material.MaterialTypeParam = m_material_type_param;
+		material.ZWriteEnable = video::EZW_ON;
 		material.BackfaceCulling = true;
 		// Enable bi/trilinear filtering only for high resolution textures
 		bool bilinear_filter = dim.Width > 32 && m_bilinear_filter;
@@ -350,13 +456,11 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 			}
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 			buf->Material.setTexture(0, p.layer.texture);
-			p.layer.applyMaterialOptions(buf->Material);
 			mesh->addMeshBuffer(buf);
 			buf->append(&p.vertices[0], p.vertices.size(),
 					&p.indices[0], p.indices.size());
 			buf->drop();
-			colors->push_back(
-				ItemPartColor(p.layer.has_color, p.layer.color));
+			colors->emplace_back(p.layer.has_color, p.layer.color);
 		}
 	return mesh;
 }
@@ -365,7 +469,6 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 {
 	ITextureSource *tsrc = client->getTextureSource();
 	IItemDefManager *idef = client->getItemDefManager();
-	IShaderSource *shdrsrc = client->getShaderSource();
 	const NodeDefManager *ndef = client->getNodeDefManager();
 	const ItemDefinition &def = item.getDefinition(idef);
 	const ContentFeatures &f = ndef->get(def.name);
@@ -373,8 +476,16 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 
 	scene::SMesh *mesh = nullptr;
 
+	const auto material_type = def.type == ITEM_NODE
+			? f.getMaterialType() : TILE_MATERIAL_ALPHA;
+	MaterialType_to_irr(material_type, m_material_type, m_material_type_param);
 	if (m_enable_shaders) {
-		u32 shader_id = shdrsrc->getShader("object_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
+		IShaderSource *shdrsrc = client->getShaderSource();
+		u32 shader_id = shdrsrc->getShader("object_shader",
+				material_type, def.type == ITEM_NODE ? f.drawtype : NDT_MESH);
+		// The shader gives a material ID (different from our material type) back.
+		// Strictly speaking, "m_material type" is a misnomer,
+		// since either a material type or ID is stored.
 		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
 	}
 
@@ -463,7 +574,8 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		for (u32 i = 0; i < material_count; ++i) {
 			video::SMaterial &material = m_meshnode->getMaterial(i);
 			material.MaterialType = m_material_type;
-			material.MaterialTypeParam = 0.5f;
+			material.MaterialTypeParam = m_material_type_param;
+			material.ZWriteEnable = video::EZW_ON;
 			material.BackfaceCulling = cull_backface;
 			material.forEachTexture([this] (auto &tex) {
 				setMaterialFilters(tex, m_bilinear_filter, m_trilinear_filter,
@@ -624,8 +736,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			} else
 				scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
 			// add overlays
-			postProcessNodeMesh(mesh, f, false, false, nullptr,
-				&result->buffer_colors, true);
+			postProcessNodeMesh(mesh, f, &result->buffer_colors);
 			if (f.drawtype == NDT_ALLFACES)
 				scaleMesh(mesh, v3f(f.visual_scale));
 			break;
@@ -664,14 +775,17 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 		for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
 			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 			video::SMaterial &material = buf->getMaterial();
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-			material.MaterialTypeParam = 0.5f;
+			// Note: This overwrites material types / type params
+			// of plantlike extrusion meshes for alpha blending consistency.
+			// It suffices to look at the first layer; overlays need to be consistent.
+			f.tiles[i].layers[0].applyMaterialOptions(material);
+			material.ZWriteEnable = video::EZW_ON;
 			material.forEachTexture([] (auto &tex) {
 				tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 				tex.MagFilter = video::ETMAGF_NEAREST;
 			});
 			material.BackfaceCulling = cull_backface;
-			material.Lighting = false;
+			material.Lighting = false; // no lighting in the inventory
 		}
 
 		rotateMeshXZby(mesh, -45);
@@ -684,110 +798,4 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 		mesh->setHardwareMappingHint(scene::EHM_STATIC, scene::EBT_INDEX);
 	}
 	result->mesh = mesh;
-}
-
-
-
-scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
-	const std::string &imagename, const std::string &overlay_name)
-{
-	// check textures
-	video::ITexture *texture = tsrc->getTextureForMesh(imagename);
-	if (!texture) {
-		return NULL;
-	}
-	video::ITexture *overlay_texture =
-		(overlay_name.empty()) ? NULL : tsrc->getTexture(overlay_name);
-
-	// get mesh
-	core::dimension2d<u32> dim = texture->getSize();
-	scene::IMesh *original = g_extrusion_mesh_cache->create(dim);
-	scene::SMesh *mesh = cloneMesh(original);
-	original->drop();
-
-	//set texture
-	mesh->getMeshBuffer(0)->getMaterial().setTexture(0,
-		tsrc->getTexture(imagename));
-	if (overlay_texture) {
-		scene::IMeshBuffer *copy = cloneMeshBuffer(mesh->getMeshBuffer(0));
-		copy->getMaterial().setTexture(0, overlay_texture);
-		mesh->addMeshBuffer(copy);
-		copy->drop();
-	}
-	// Customize materials
-	for (u32 layer = 0; layer < mesh->getMeshBufferCount(); layer++) {
-		video::SMaterial &material = mesh->getMeshBuffer(layer)->getMaterial();
-		material.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-		material.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-		material.forEachTexture([] (auto &tex) {
-			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
-			tex.MagFilter = video::ETMAGF_NEAREST;
-		});
-		material.BackfaceCulling = true;
-		material.Lighting = false;
-		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-		material.MaterialTypeParam = 0.5f;
-	}
-	scaleMesh(mesh, v3f(2.0, 2.0, 2.0));
-
-	return mesh;
-}
-
-void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
-	bool use_shaders, bool set_material, const video::E_MATERIAL_TYPE *mattype,
-	std::vector<ItemPartColor> *colors, bool apply_scale)
-{
-	const u32 mc = mesh->getMeshBufferCount();
-	// Allocate colors for existing buffers
-	colors->clear();
-	colors->resize(mc);
-
-	for (u32 i = 0; i < mc; ++i) {
-		const TileSpec *tile = &(f.tiles[i]);
-		scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
-		for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
-			const TileLayer *layer = &tile->layers[layernum];
-			if (layer->texture_id == 0)
-				continue;
-			if (layernum != 0) {
-				scene::IMeshBuffer *copy = cloneMeshBuffer(buf);
-				copy->getMaterial() = buf->getMaterial();
-				mesh->addMeshBuffer(copy);
-				copy->drop();
-				buf = copy;
-				colors->emplace_back(layer->has_color, layer->color);
-			} else {
-				(*colors)[i] = ItemPartColor(layer->has_color, layer->color);
-			}
-
-			video::SMaterial &material = buf->getMaterial();
-			if (set_material)
-				layer->applyMaterialOptions(material);
-			if (mattype) {
-				material.MaterialType = *mattype;
-			}
-			if (layer->animation_frame_count > 1) {
-				const FrameSpec &animation_frame = (*layer->frames)[0];
-				material.setTexture(0, animation_frame.texture);
-			} else {
-				material.setTexture(0, layer->texture);
-			}
-			if (use_shaders) {
-				if (layer->normal_texture) {
-					if (layer->animation_frame_count > 1) {
-						const FrameSpec &animation_frame = (*layer->frames)[0];
-						material.setTexture(1, animation_frame.normal_texture);
-					} else
-						material.setTexture(1, layer->normal_texture);
-				}
-				material.setTexture(2, layer->flags_texture);
-			}
-
-			if (apply_scale && tile->world_aligned) {
-				u32 n = buf->getVertexCount();
-				for (u32 k = 0; k != n; ++k)
-					buf->getTCoords(k) /= layer->scale;
-			}
-		}
-	}
 }

@@ -105,3 +105,9 @@ minetest.register_craftitem("testitems:telescope_stick", {
 		return itemstack
 	end,
 })
+
+minetest.register_craftitem("testitems:translucent_item", {
+	description = S("Translucent item (translucent inventory & wield image)"),
+	inventory_image = "testitems_translucent.png",
+	wield_image = "testitems_translucent.png",
+})

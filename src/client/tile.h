@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "EMaterialTypes.h"
 #include "irrlichttypes.h"
 #include <ITexture.h>
 #include <vector>
@@ -38,6 +39,11 @@ enum MaterialType{
 	TILE_MATERIAL_PLAIN,
 	TILE_MATERIAL_PLAIN_ALPHA
 };
+
+void MaterialType_to_irr(MaterialType material_type,
+		video::E_MATERIAL_TYPE &irr_mat_type, f32 &irr_mat_param);
+video::E_MATERIAL_TYPE MaterialType_to_irr(MaterialType material_type);
+void MaterialType_to_irr(MaterialType material_type, video::SMaterial &mat);
 
 // Material flags
 // Should backface culling be enabled?
