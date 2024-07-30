@@ -153,6 +153,8 @@ invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
 [*Touchscreen]
 
 #    Enables touchscreen mode, allowing you to play the game with a touchscreen.
+#
+#    Requires: !android
 enable_touch (Enable touchscreen) bool true
 
 #    Touchscreen sensitivity multiplier.
