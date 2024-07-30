@@ -206,8 +206,8 @@ function table.indexof(list, val)
 end
 
 --------------------------------------------------------------------------------
-function table.keyof(list, val)
-	for k, v in pairs(list) do
+function table.keyof(tb, val)
+	for k, v in pairs(tb) do
 		if v == val then
 			return k
 		end
