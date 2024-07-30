@@ -156,14 +156,14 @@ Show server status=Mostrar status do servidor
 This command was disabled by a mod or game.=Este comando foi desativado por um mod ou jogo.
 [<0..23>:<0..59> | <0..24000>]=[<0..23>:<0..59> | <0..24000>]
 Show or set time of day=Mostrar ou definir hora do dia
-Current time is @1:@2.A hora atual é @1:@2.
+Current time is @1:@2.=A hora atual é @1:@2.
 You don't have permission to run this command (missing privilege: @1).=Você não tem permissão para executar este comando (privilégio faltando: @1).
 Invalid time (must be between 0 and 24000).=Hora inválida (deve estar entre 0 e 24000).
 Time of day changed.=Hora do dia alterada.
 Invalid hour (must be between 0 and 23 inclusive).=Hora inválida (deve estar entre 0 e 23 inclusivo).
 Invalid minute (must be between 0 and 59 inclusive).=Minuto inválido (deve estar entre 0 e 59 inclusivo).
 Show day count since world creation=Mostrar contagem de dias desde a criação do mundo
-Current day is @1.O dia atual é @1.
+Current day is @1.=O dia atual é @1.
 [<delay_in_seconds> | -1] [-r] [<message>]=[<atraso_em_segundos> | -1] [-r] [<mensagem>]
 Shutdown server (-1 cancels a delayed shutdown, -r allows players to reconnect)=Desligar servidor (-1 cancela o desligamento adiado, -r permite que os jogadores se reconectem)
 Server shutting down (operator request).=Servidor desligando (solicitação do operador).
@@ -192,8 +192,9 @@ Send a direct message to a player=Enviar uma mensagem direta a um jogador
 Invalid usage, see /help msg.=Uso inválido, veja /help msg.
 The player @1 is not online.=O jogador @1 não está online.
 DM from @1: @2=DM de @1: @2
-Message sent.Mensagem enviada.
-Get the last login time of a player or yourself=@1's last login time was @2.=O último login de @1 foi às @2.
+Message sent.=Mensagem enviada.
+Get the last login time of a player or yourself=Pegue o último horário de login de um jogador ou de você mesmo
+@1's last login time was @2.=O último login de @1 foi às @2.
 @1's last login time is unknown.=O último login de @1 é desconhecido.
 Clear the inventory of yourself or another player=Limpar o inventário de você mesmo ou de outro jogador
 You don't have permission to clear another player's inventory (missing privilege: @1).=Você não tem permissão para limpar o inventário de outro jogador (privilégio faltando: @1).
