@@ -377,8 +377,10 @@ function core.item_drop(itemstack, dropper, pos)
 			obj:set_velocity(dir)
 			obj:get_luaentity().dropped_by = dropper:get_player_name()
 
-			core.log("action", dropper:get_player_name() .. " dropped " ..
-				item:to_string() .. " at " .. core.pos_to_string(p, 1))
+			core.log("action", string.format("%s dropped %s %i at %s",
+				dropper_is_player and dropper:get_player_name() or "A mod",
+				item:get_name(), item:get_count(),
+				core.pos_to_string(p, 1)))
 		end
 		return itemstack
 	end
