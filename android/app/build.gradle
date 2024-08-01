@@ -1,15 +1,18 @@
 apply plugin: 'com.android.application'
 
 android {
-	compileSdkVersion 33
-	buildToolsVersion '33.0.2'
 	ndkVersion "$ndk_version"
 	defaultConfig {
 		applicationId 'net.minetest.minetest'
 		minSdkVersion 21
-		targetSdkVersion 33
+		compileSdk 34
+		targetSdkVersion 34
 		versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 		versionCode project.versionCode
+	}
+
+	buildFeatures {
+		buildConfig true
 	}
 
 	// load properties
@@ -49,6 +52,7 @@ android {
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
+	namespace 'net.minetest.minetest'
 }
 
 task prepareAssets() {
