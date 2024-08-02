@@ -5926,6 +5926,12 @@ Call these functions only at load time!
     * Parameters are the same as in the `on_pickup` callback.
     * Return an itemstack to cancel the default item pick-up response (i.e.: adding
       the item into inventory).
+* `minetest.register_on_item_drop(function(itemstack, dropper, pos))`
+    * Called by `minetest.item_drop` before an item is dropped.
+    * Function is added to `minetest.registered_on_item_drops`.
+    * Oldest functions are called first.
+    * Parameters are the same as in the `on_drop` callback.
+    * Return an itemstack to cancel the default item drop response.
 * `minetest.register_on_priv_grant(function(name, granter, priv))`
     * Called when `granter` grants the priv `priv` to `name`.
     * Note that the callback will be called twice if it's done by a player,
