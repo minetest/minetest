@@ -7927,10 +7927,11 @@ child will follow movement and rotation of that bone.
     * `observers` is a "set" of player names: `{[player name] = true, [other player name] = true, ...}`
         * A set is a table where the keys are the elements of the set (in this case, player names)
           and the values are all `true`.
-    * Players are automatically added to their own observer sets.
     * Attachments: The *effective observers* of an object are made up of
       all players who can observe the object *and* are also effective observers
       of its parent object (if there is one).
+	* Players are automatically added to their own observer sets.
+	  Players **must** effectively observe themselves.
     * Object activation and deactivation are unaffected by observability.
     * Attached sounds do not work correctly and thus should not be used
       on objects with managed observers yet.

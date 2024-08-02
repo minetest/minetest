@@ -1731,6 +1731,9 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 	if (player_radius_f < 0.0f)
 		player_radius_f = 0.0f;
 
+	if (!playersao->isEffectivelyObservedBy(playersao->getPlayer()->getName()))
+		throw ModError("Player does not observe itself");
+
 	m_ao_manager.getAddedActiveObjectsAroundPos(
 		playersao->getBasePosition(), playersao->getPlayer()->getName(),
 		radius_f, player_radius_f,
@@ -1753,6 +1756,9 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 		player_radius_f = 0;
 
 	const std::string &player_name = playersao->getPlayer()->getName();
+
+	if (!playersao->isEffectivelyObservedBy(player_name))
+		throw ModError("Player does not observe itself");
 
 	/*
 		Go through current_objects; object is removed if:

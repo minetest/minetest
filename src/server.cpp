@@ -116,6 +116,8 @@ void *ServerThread::run()
 		m_server->setAsyncFatalError(e.what());
 	} catch (LuaError &e) {
 		m_server->setAsyncFatalError(e);
+	} catch (ModError &e) {
+		m_server->setAsyncFatalError(e.what());
 	}
 
 	float dtime = 0.0f;
@@ -142,6 +144,8 @@ void *ServerThread::run()
 			m_server->setAsyncFatalError(e.what());
 		} catch (LuaError &e) {
 			m_server->setAsyncFatalError(e);
+		} catch (ModError &e) {
+			m_server->setAsyncFatalError(e.what());
 		}
 
 		dtime = 1e-6f * (porting::getTimeUs() - t0);
