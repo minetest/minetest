@@ -210,27 +210,66 @@ local function search_server_list(input)
 	for i = 1, #serverlistmgr.servers do
 		local server = serverlistmgr.servers[i]
 		local found = 0
-		for k = 1, #keywords do
-			local keyword = keywords[k]
-			if server.name then
-				local sername = server.name:lower()
-				local _, count = sername:gsub(keyword, keyword)
-				found = found + count * 4
-			end
-
-            if server.description then
-                local desc = server.description:lower()
-                local _, count = desc:gsub(keyword, keyword)
-                found = found + count * 2
-            end
-        end
+		local sername_keywords = {}
+		local sername_keywords_matchtimes = {}
+		local server_desc_keywords = {}
+		local server_desc_keywords_matchtimes = {}
 		-- Make search precise for exactly matched server
-        -- Or at least more exactly matched server should be rated higher at the match scoring 
-        local _, count = server.name:lower():gsub(input:lower(), input:lower())
-        if found > 0 then
-			if count > 0 then
-				found = 99
+		-- Or at least more exactly matched server should be rated higher at the match scoring
+		if server.name then
+			for word in server.name:gmatch("%S+") do
+				word = word:gsub("(%W)", "%%%1"):lower()
+				table.insert(sername_keywords, word)
+				if sername_keywords_matchtimes[word] == nil then
+					sername_keywords_matchtimes[word] = 1
+				else
+					sername_keywords_matchtimes[word] = sername_keywords_matchtimes[word] + 1
+				end
 			end
+		end
+		if server.description then
+			for word in server.description:gmatch("%S+") do
+				word = word:gsub("(%W)", "%%%1"):lower()
+				table.insert(server_desc_keywords, word)
+				if server_desc_keywords_matchtimes[word] == nil then
+					server_desc_keywords_matchtimes[word] = 1
+				else
+					server_desc_keywords_matchtimes[word] = server_desc_keywords_matchtimes[word] + 1
+				end
+			end
+		end
+		for k = 1, #keywords do
+			local keyword
+			local sername_keyword
+			local desc_keyword
+			if keywords[k] ~= nil then
+				keyword = keywords[k]:lower()
+			else
+				goto continue
+			end
+			if sername_keywords[k] ~= nil then
+				sername_keyword = sername_keywords[k]
+			end
+			if server_desc_keywords[k] ~= nil then
+				desc_keyword = server_desc_keywords[k]
+			end
+			if keyword == sername_keyword then
+				found = found + 20
+			end
+			if keyword == desc_keyword then
+				found = found + 10
+			end
+			-- should bemuch faster with large server numbers and long server name or long desc, long search input
+			-- with a little more space occupied by a new table
+			if sername_keywords_matchtimes[keyword] ~= nil then
+				found = found + sername_keywords_matchtimes[keyword] * 5
+			end
+			if server_desc_keywords_matchtimes[keyword] ~= nil then
+				found = found + server_desc_keywords_matchtimes[keyword] * 1
+			end
+			::continue::
+		end
+        if found > 0 then
 			local points = (#serverlistmgr.servers - i) / 5 + found
 			server.points = points
 			table.insert(search_result, server)
