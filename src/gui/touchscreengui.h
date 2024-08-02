@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "IGUIStaticText.h"
 #include "irrlichttypes.h"
 #include <IEventReceiver.h>
 #include <IGUIImage.h>
@@ -74,8 +75,7 @@ enum touch_gui_button_id
 	sneak_id,
 	zoom_id,
 	aux1_id,
-	settings_starter_id,
-	rare_controls_starter_id,
+	overflow_id,
 
 	// usually in the "settings bar"
 	fly_id,
@@ -99,24 +99,15 @@ enum touch_gui_button_id
 	joystick_center_id,
 };
 
-enum autohide_button_bar_dir
-{
-	AHBB_Dir_Top_Bottom,
-	AHBB_Dir_Bottom_Top,
-	AHBB_Dir_Left_Right,
-	AHBB_Dir_Right_Left
-};
 
 #define BUTTON_REPEAT_DELAY 0.5f
 #define BUTTON_REPEAT_INTERVAL 0.333f
-#define BUTTONBAR_HIDE_DELAY 3.0f
-#define SETTINGS_BAR_Y_OFFSET 5
-#define RARE_CONTROLS_BAR_Y_OFFSET 5
 
 // Our simulated clicks last some milliseconds so that server-side mods have a
 // chance to detect them via l_get_player_control.
 // If you tap faster than this value, the simulated clicks are of course shorter.
 #define SIMULATED_CLICK_DURATION_MS 50
+
 
 struct button_info
 {
@@ -136,52 +127,6 @@ struct button_info
 			IEventReceiver *receiver, ISimpleTextureSource *tsrc);
 };
 
-class AutoHideButtonBar
-{
-public:
-	AutoHideButtonBar(IrrlichtDevice *device, ISimpleTextureSource *tsrc,
-			touch_gui_button_id starter_id, const std::string &starter_image,
-			recti starter_rect, autohide_button_bar_dir dir);
-
-	void addButton(touch_gui_button_id id, const std::string &image);
-	void addToggleButton(touch_gui_button_id id,
-			const std::string &image_1, const std::string &image_2);
-
-	bool handlePress(size_t pointer_id, IGUIElement *element);
-	bool handleRelease(size_t pointer_id);
-
-	void step(float dtime);
-
-	void activate();
-	void deactivate();
-	bool isActive() { return m_active; }
-
-	void show();
-	void hide();
-
-	bool operator==(const AutoHideButtonBar &other)
-			{ return m_starter.get() == other.m_starter.get(); }
-	bool operator!=(const AutoHideButtonBar &other)
-			{ return m_starter.get() != other.m_starter.get(); }
-
-private:
-	irr::video::IVideoDriver *m_driver = nullptr;
-	IGUIEnvironment *m_guienv = nullptr;
-	IEventReceiver *m_receiver = nullptr;
-	ISimpleTextureSource *m_texturesource = nullptr;
-	std::shared_ptr<IGUIImage> m_starter;
-	std::vector<button_info> m_buttons;
-
-	v2s32 m_upper_left;
-	v2s32 m_lower_right;
-
-	bool m_active = false;
-	bool m_visible = true;
-	float m_timeout = 0.0f;
-	autohide_button_bar_dir m_dir = AHBB_Dir_Right_Left;
-
-	void updateVisibility();
-};
 
 class TouchScreenGUI
 {
@@ -262,6 +207,7 @@ private:
 	// This is needed so that we don't miss if m_has_move_id is true for less
 	// than one client step, i.e. press and release happen in the same step.
 	bool m_had_move_id = false;
+	bool m_move_prevent_short_tap = false;
 
 	bool m_has_joystick_id = false;
 	size_t m_joystick_id;
@@ -277,13 +223,28 @@ private:
 	std::shared_ptr<IGUIImage> m_joystick_btn_center;
 
 	std::vector<button_info> m_buttons;
+	std::shared_ptr<IGUIImage> m_overflow_btn;
+
+	bool m_overflow_open = false;
+	std::shared_ptr<IGUIStaticText> m_overflow_bg;
+	std::vector<button_info> m_overflow_buttons;
+	std::vector<std::shared_ptr<IGUIStaticText>> m_overflow_button_titles;
+	std::vector<recti> m_overflow_button_rects;
+
+	void toggleOverflowMenu();
+	void updateVisibility();
+	void releaseAll();
 
 	// initialize a button
-	void addButton(touch_gui_button_id id, const std::string &image,
-			const recti &rect);
+	void addButton(std::vector<button_info> &buttons,
+			touch_gui_button_id id, const std::string &image,
+			const recti &rect, bool visible=true);
+	void addToggleButton(std::vector<button_info> &buttons,
+			touch_gui_button_id id,
+			const std::string &image_1, const std::string &image_2,
+			const recti &rect, bool visible=true);
 
-	// initialize a joystick button
-	IGUIImage *makeJoystickButton(touch_gui_button_id id,
+	IGUIImage *makeButtonDirect(touch_gui_button_id id,
 			const recti &rect, bool visible);
 
 	// handle pressing hotbar items
@@ -299,8 +260,6 @@ private:
 	std::unordered_map<size_t, v2s32> m_pointer_downpos;
 	// map to store the IDs and positions of currently pressed pointers
 	std::unordered_map<size_t, v2s32> m_pointer_pos;
-
-	std::vector<AutoHideButtonBar> m_buttonbars;
 
 	v2s32 getPointerPos();
 	void emitMouseEvent(EMOUSE_INPUT_EVENT type);
