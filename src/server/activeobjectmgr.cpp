@@ -173,7 +173,8 @@ void ActiveObjectMgr::getAddedActiveObjectsAroundPos(
 		Go through the object list,
 		- discard removed/deactivated objects,
 		- discard objects that are too far away,
-		- discard objects that are found in current_objects.
+		- discard objects that are found in current_objects,
+		- discard objects that are not observed by the player.
 		- add remaining objects to added_objects
 	*/
 	for (auto &ao_it : m_active_objects.iter()) {
