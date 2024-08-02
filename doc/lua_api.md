@@ -5442,7 +5442,7 @@ Utilities
       node_interaction_actor = true,
       -- "new_pos" field in entity moveresult (5.9.0)
       moveresult_new_pos = true,
-      -- Allow removing definition fields in `minetest.override_item`
+      -- Allow removing definition fields in `minetest.override_item` (5.9.0)
       override_item_remove_fields = true,
   }
   ```
