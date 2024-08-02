@@ -45,7 +45,7 @@ void ScriptApiMapgen::on_shutdown()
 	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
 }
 
-void ScriptApiMapgen::on_generated(BlockMakeData *bmdata)
+void ScriptApiMapgen::on_generated(BlockMakeData *bmdata, u32 seed)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -66,7 +66,7 @@ void ScriptApiMapgen::on_generated(BlockMakeData *bmdata)
 	lua_pushvalue(L, vmanip);
 	push_v3s16(L, minp);
 	push_v3s16(L, maxp);
-	lua_pushnumber(L, bmdata->seed);
+	lua_pushnumber(L, seed);
 	runCallbacks(4, RUN_CALLBACKS_MODE_FIRST);
 	lua_pop(L, 1); // return val
 

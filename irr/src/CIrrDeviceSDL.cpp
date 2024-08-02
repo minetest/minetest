@@ -339,6 +339,10 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters &param) :
 		SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
 		SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
 
+#if defined(SDL_HINT_APP_NAME)
+		SDL_SetHint(SDL_HINT_APP_NAME, "Minetest");
+#endif
+
 		u32 flags = SDL_INIT_TIMER | SDL_INIT_EVENTS;
 		if (CreationParams.DriverType != video::EDT_NULL)
 			flags |= SDL_INIT_VIDEO;
@@ -643,8 +647,9 @@ bool CIrrDeviceSDL::createWindowWithContext()
 	if (ScaleX != 1.0f || ScaleY != 1.0f) {
 		// The given window size is in pixels, not in screen coordinates.
 		// We can only do the conversion now since we didn't know the scale before.
-		SDL_SetWindowSize(Window, CreationParams.WindowSize.Width / ScaleX,
-				CreationParams.WindowSize.Height / ScaleY);
+		SDL_SetWindowSize(Window,
+				static_cast<int>(CreationParams.WindowSize.Width / ScaleX),
+				static_cast<int>(CreationParams.WindowSize.Height / ScaleY));
 		// Re-center, otherwise large, non-maximized windows go offscreen.
 		SDL_SetWindowPosition(Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 		updateSizeAndScale();
@@ -705,6 +710,7 @@ bool CIrrDeviceSDL::run()
 
 	while (!Close && wrap_PollEvent(&SDL_event)) {
 		// os::Printer::log("event: ", core::stringc((int)SDL_event.type).c_str(),   ELL_INFORMATION);	// just for debugging
+		memset(&irrevent, 0, sizeof(irrevent));
 
 		switch (SDL_event.type) {
 		case SDL_MOUSEMOTION: {
@@ -712,10 +718,12 @@ bool CIrrDeviceSDL::run()
 
 			irrevent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 			irrevent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
-			MouseX = irrevent.MouseInput.X = SDL_event.motion.x * ScaleX;
-			MouseY = irrevent.MouseInput.Y = SDL_event.motion.y * ScaleY;
-			MouseXRel = SDL_event.motion.xrel * ScaleX;
-			MouseYRel = SDL_event.motion.yrel * ScaleY;
+			MouseX = irrevent.MouseInput.X =
+				static_cast<s32>(SDL_event.motion.x * ScaleX);
+			MouseY = irrevent.MouseInput.Y =
+				static_cast<s32>(SDL_event.motion.y * ScaleY);
+			MouseXRel = static_cast<s32>(SDL_event.motion.xrel * ScaleX);
+			MouseYRel = static_cast<s32>(SDL_event.motion.yrel * ScaleY);
 			irrevent.MouseInput.ButtonStates = MouseButtonStates;
 			irrevent.MouseInput.Shift = (keymod & KMOD_SHIFT) != 0;
 			irrevent.MouseInput.Control = (keymod & KMOD_CTRL) != 0;
@@ -747,8 +755,8 @@ bool CIrrDeviceSDL::run()
 			SDL_Keymod keymod = SDL_GetModState();
 
 			irrevent.EventType = irr::EET_MOUSE_INPUT_EVENT;
-			irrevent.MouseInput.X = SDL_event.button.x * ScaleX;
-			irrevent.MouseInput.Y = SDL_event.button.y * ScaleY;
+			irrevent.MouseInput.X = static_cast<s32>(SDL_event.button.x * ScaleX);
+			irrevent.MouseInput.Y = static_cast<s32>(SDL_event.button.y * ScaleY);
 			irrevent.MouseInput.Shift = (keymod & KMOD_SHIFT) != 0;
 			irrevent.MouseInput.Control = (keymod & KMOD_CTRL) != 0;
 
@@ -913,8 +921,8 @@ bool CIrrDeviceSDL::run()
 			irrevent.EventType = EET_TOUCH_INPUT_EVENT;
 			irrevent.TouchInput.Event = ETIE_PRESSED_DOWN;
 			irrevent.TouchInput.ID = SDL_event.tfinger.fingerId;
-			irrevent.TouchInput.X = SDL_event.tfinger.x * Width;
-			irrevent.TouchInput.Y = SDL_event.tfinger.y * Height;
+			irrevent.TouchInput.X = static_cast<s32>(SDL_event.tfinger.x * Width);
+			irrevent.TouchInput.Y = static_cast<s32>(SDL_event.tfinger.y * Height);
 			CurrentTouchCount++;
 			irrevent.TouchInput.touchedCount = CurrentTouchCount;
 
@@ -925,8 +933,8 @@ bool CIrrDeviceSDL::run()
 			irrevent.EventType = EET_TOUCH_INPUT_EVENT;
 			irrevent.TouchInput.Event = ETIE_MOVED;
 			irrevent.TouchInput.ID = SDL_event.tfinger.fingerId;
-			irrevent.TouchInput.X = SDL_event.tfinger.x * Width;
-			irrevent.TouchInput.Y = SDL_event.tfinger.y * Height;
+			irrevent.TouchInput.X = static_cast<s32>(SDL_event.tfinger.x * Width);
+			irrevent.TouchInput.Y = static_cast<s32>(SDL_event.tfinger.y * Height);
 			irrevent.TouchInput.touchedCount = CurrentTouchCount;
 
 			postEventFromUser(irrevent);
@@ -936,8 +944,8 @@ bool CIrrDeviceSDL::run()
 			irrevent.EventType = EET_TOUCH_INPUT_EVENT;
 			irrevent.TouchInput.Event = ETIE_LEFT_UP;
 			irrevent.TouchInput.ID = SDL_event.tfinger.fingerId;
-			irrevent.TouchInput.X = SDL_event.tfinger.x * Width;
-			irrevent.TouchInput.Y = SDL_event.tfinger.y * Height;
+			irrevent.TouchInput.X = static_cast<s32>(SDL_event.tfinger.x * Width);
+			irrevent.TouchInput.Y = static_cast<s32>(SDL_event.tfinger.y * Height);
 			// To match Android behavior, still count the pointer that was
 			// just released.
 			irrevent.TouchInput.touchedCount = CurrentTouchCount;

@@ -420,12 +420,11 @@ void blit_pixel(video::SColor src_col, video::SColor &dst_col)
 		return;
 	}
 	// A semi-transparent pixel is on top of a
-	// semi-transparent pixel -> general alpha compositing
-	u16 a_new_255 = src_a * 255 + (255 - src_a) * dst_a;
-	dst.r = (dst.r * (255 - src_a) * dst_a + src.r * src_a * 255) / a_new_255;
-	dst.g = (dst.g * (255 - src_a) * dst_a + src.g * src_a * 255) / a_new_255;
-	dst.b = (dst.b * (255 - src_a) * dst_a + src.b * src_a * 255) / a_new_255;
-	dst_a = (a_new_255 + 127) / 255;
+	// semi-transparent pixel -> weird overlaying
+	dst.r = (dst.r * (255 - src_a) + src.r * src_a) / 255;
+	dst.g = (dst.g * (255 - src_a) + src.g * src_a) / 255;
+	dst.b = (dst.b * (255 - src_a) + src.b * src_a) / 255;
+	dst_a = dst_a + (255 - dst_a) * src_a * src_a / (255 * 255);
 	dst_col.set(dst_a, dst.r, dst.g, dst.b);
 }
 

@@ -138,7 +138,7 @@ void initializePaths();
 	Return system information
 	e.g. "Linux/3.12.7 x86_64"
 */
-std::string get_sysinfo();
+const std::string &get_sysinfo();
 
 
 // Monotonic timer

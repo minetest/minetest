@@ -4,6 +4,7 @@ Minetest Lua Modding API Reference
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
 * (Unofficial) Minetest Modding Book by rubenwardy: <https://rubenwardy.com/minetest_modding_book/>
+* Modding tools: <https://github.com/minetest/modtools>
 
 Introduction
 ------------
@@ -455,6 +456,10 @@ i.e. without gamma-correction.
 ### Texture overlaying
 
 Textures can be overlaid by putting a `^` between them.
+
+Warning: If the lower and upper pixels are both semi-transparent, this operation
+does *not* do alpha blending, and it is *not* associative. Otherwise it does
+alpha blending in srgb color space.
 
 Example:
 
@@ -1098,7 +1103,6 @@ Table used to specify how a sound is played:
     -- its end in `-start_time` seconds.
     -- It is unspecified what happens if `loop` is false and `start_time` is
     -- smaller than minus the sound's length.
-
     -- Available since feature `sound_params_start_time`.
 
     loop = false,
@@ -1111,21 +1115,6 @@ Table used to specify how a sound is played:
     object = <an ObjectRef>,
     -- Attach the sound to an object.
     -- Can't be used together with `pos`.
-
-    -- For backward compatibility, sounds continue playing at the last location
-    -- of the object if an object is removed (for example if an entity dies).
-    -- It is not recommended to rely on this.
-    -- For death sounds, prefer playing a positional sound instead.
-
-    -- If you want to stop a sound when an entity dies or is deactivated,
-    -- store the handle and call `minetest.sound_stop` in `on_die` / `on_deactivate`.
-
-    -- Ephemeral sounds are entirely unaffected by the object being removed
-    -- or leaving the active object range.
-
-    -- Non-ephemeral sounds stop playing on clients if objects leave
-    -- the active object range; they should start playing again if objects
-    --- come back into range (but due to a known bug, they don't yet).
 
     to_player = name,
     -- Only play for this player.
@@ -4084,9 +4073,9 @@ Translations
 Texts can be translated client-side with the help of `minetest.translate` and
 translation files.
 
-Consider using the script `util/mod_translation_updater.py` in the Minetest
-repository to generate and update translation files automatically from the Lua
-sources. See `util/README_mod_translation_updater.md` for an explanation.
+Consider using the script `mod_translation_updater.py` in the Minetest
+[modtools](https://github.com/minetest/modtools) repository to generate and
+update translation files automatically from the Lua sources.
 
 Translating a string
 --------------------
@@ -6727,7 +6716,7 @@ This allows you easy interoperability for delegating work to jobs.
     * Register a path to a Lua file to be imported when an async environment
       is initialized. You can use this to preload code which you can then call
       later using `minetest.handle_async()`.
-* `minetest.register_async_metatable(name, mt)`:
+* `minetest.register_portable_metatable(name, mt)`:
     * Register a metatable that should be preserved when data is transferred
     between the main thread and the async environment.
     * `name` is a string that identifies the metatable. It is recommended to
@@ -6767,7 +6756,7 @@ Functions:
 
 * Standalone helpers such as logging, filesystem, encoding,
   hashing or compression APIs
-* `minetest.register_async_metatable` (see above)
+* `minetest.register_portable_metatable` (see above)
 
 Variables:
 
@@ -7579,9 +7568,12 @@ an itemstring, a table or `nil`.
 * `set_wear(wear)`: returns boolean indicating whether item was cleared
     * `wear`: number, unsigned 16 bit integer
 * `get_meta()`: returns ItemStackMetaRef. See section for more details
-* `get_metadata()`: (DEPRECATED) Returns metadata (a string attached to an item
-  stack).
-* `set_metadata(metadata)`: (DEPRECATED) Returns true.
+* `get_metadata()`: **Deprecated.** Returns metadata (a string attached to an item stack).
+    * If you need to access this to maintain backwards compatibility,
+      use `stack:get_meta():get_string("")` instead.
+* `set_metadata(metadata)`: **Deprecated.** Returns true.
+    * If you need to set this to maintain backwards compatibility,
+      use `stack:get_meta():set_string("", metadata)` instead.
 * `get_description()`: returns the description shown in inventory list tooltips.
     * The engine uses this when showing item descriptions in tooltips.
     * Fields for finding the description, in order:
