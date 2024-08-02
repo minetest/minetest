@@ -236,19 +236,16 @@ int ObjectRef::l_set_hp(lua_State *L)
 
 		lua_getfield(L, -1, "raw");
 		if (lua_isstring(L, -1) && readParam<std::string>(L, -1) == "original")
-		{
 			reason.raw = true;
-			infostream << "Read raw, original" << std::endl;
-		}
 		else if (lua_isstring(L, -1) && readParam<std::string>(L, -1) == "limited")
-		{
 			reason.raw = false;
-			infostream << "Read raw, limited" << std::endl;
-		}
 		else if (lua_isstring(L, -1))
+		{
 			errorstream << "Read a string for raw, but not a valid value!" << std::endl;
+			reason.raw = false;
+		}
 		else
-			errorstream << "Index error for raw!" << std::endl;
+			reason.raw = false;
 		lua_pop(L, 1);
 
 		lua_getfield(L, -1, "type");
