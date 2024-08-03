@@ -4,7 +4,7 @@
 
 static std::wstring_view find_tr_language(const std::wstring_view &code)
 {
-	// Strip encoding (".UTF-8") if they are present as we currently don't use them
+	// Strip encoding (".UTF-8") information if it is present as it is not relevant
 	auto pos = code.find('.');
 	if (pos != code.npos)
 		return code.substr(0, pos);
@@ -16,6 +16,7 @@ struct ParserCache {
 	using string = std::wstring;
 	using string_view = std::wstring_view;
 	std::unordered_set<string_view> manual;
+	std::vector<string_view> manual_list;
 	std::unordered_map<string_view, string_view> prev;
 	std::unordered_map<string_view, string_view> next;
 
@@ -34,6 +35,7 @@ struct ParserCache {
 
 		if (is_manual) {
 			manual.emplace(str);
+			manual_list.push_back(str);
 			next.erase(prev[str]);
 			prev.erase(str);
 		}
@@ -53,6 +55,13 @@ struct ParserCache {
 		if (next.find(str) != next.end())
 			add_to_list(list, next[str]);
 	}
+	std::vector<string> to_list()
+	{
+		std::vector<string> new_list;
+		for (const auto &lang: manual_list)
+			add_to_list(new_list, lang);
+		return new_list;
+	}
 };
 
 std::vector<std::wstring> parse_language_list(const std::vector<std::wstring> &languages)
@@ -60,8 +69,5 @@ std::vector<std::wstring> parse_language_list(const std::vector<std::wstring> &l
 	ParserCache state;
 	for (const auto &lang: languages)
 		state.queue(find_tr_language(lang), true);
-	std::vector<std::wstring> newlist;
-	for (const auto &lang: languages)
-		state.add_to_list(newlist, lang);
-	return newlist;
+	return state.to_list();
 }
