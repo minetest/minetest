@@ -4,21 +4,28 @@
 #include <vector>
 
 template<typename T>
-inline std::vector<std::basic_string<T>> parse_language_list(const std::basic_string<T> &list)
+inline std::vector<std::basic_string<T>> split_language_list(const std::basic_string<T> &list)
 {
 	return str_split(list, T(':'));
 }
 
-inline std::string language_list_to_string(const std::vector<std::string> &list)
+template<typename T>
+inline std::basic_string<T> language_list_to_string(const std::vector<std::basic_string<T>> &list)
 {
-	return str_join(list, ":");
+	constexpr T delimiter(':');
+	return str_join(list, std::basic_string_view<T>(&delimiter, 1));
 }
 
-std::vector<std::string> get_tr_language(const std::vector<std::string> &lang);
+std::vector<std::wstring> parse_language_list(const std::vector<std::wstring> &lang);
+
+inline std::vector<std::wstring> parse_language_list(const std::wstring &lang)
+{
+	return parse_language_list(split_language_list(lang));
+}
 
 inline const std::string get_tr_language(const std::string &lang)
 {
-	return language_list_to_string(get_tr_language(parse_language_list(lang)));
+	return wide_to_utf8(language_list_to_string(parse_language_list(utf8_to_wide(lang))));
 }
 
 template<typename T>

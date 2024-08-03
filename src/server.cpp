@@ -2575,14 +2575,14 @@ void Server::fillMediaCache()
 
 void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_code)
 {
-	auto lang_list = parse_language_list(lang_code);
+	auto lang_list = parse_language_list(utf8_to_wide(lang_code));
 
 	auto include = [&] (const std::string &name, const MediaInfo &info) -> bool {
 		if (info.no_announce)
 			return false;
 		if (str_ends_with(name, ".tr")) {
-			for (auto lang: lang_list) {
-				std::string suffix = "." + lang + ".tr";
+			for (const auto &lang: lang_list) {
+				std::string suffix = "." + wide_to_utf8(lang) + ".tr";
 				if (str_ends_with(name, suffix))
 					return true;
 			}

@@ -13,6 +13,7 @@ set (UNITTEST_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_filesys.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_inventory.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_irrptr.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_langcode.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_lua.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_map.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_mapblock.cpp
