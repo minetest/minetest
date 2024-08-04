@@ -580,7 +580,7 @@ function make.language_list(setting)
 				if core.is_yes(fields[setting.name]) then
 					value = ""
 				else
-					value = core.get_language()
+					value = core.get_language_configuration()
 					if value == "" then
 						value = "en"
 					end

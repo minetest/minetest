@@ -934,7 +934,15 @@ int ModApiMainMenu::l_get_video_drivers(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_language(lua_State *L)
 {
-	std::string lang = get_current_locale();
+	const std::string &lang = get_current_locale();
+	lua_pushstring(L, lang.c_str());
+	return 1;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_get_language_configuration(lua_State *L)
+{
+	const std::string &lang = get_configured_locale();
 	lua_pushstring(L, lang.c_str());
 	return 1;
 }
@@ -1115,6 +1123,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(show_path_select_dialog);
 	API_FCT(download_file);
 	API_FCT(get_language);
+	API_FCT(get_language_configuration);
 	API_FCT(gettext);
 	API_FCT(get_video_drivers);
 	API_FCT(get_window_info);

@@ -47,6 +47,7 @@ void init_gettext(const char *path, const std::string &configured_language,
 	int argc, char *argv[]);
 
 const std::string &get_current_locale();
+const std::string &get_configured_locale();
 
 inline std::string strgettext(const char *str)
 {
