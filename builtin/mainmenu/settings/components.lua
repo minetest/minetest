@@ -489,10 +489,26 @@ for k in pairs(core.language_names) do
 end
 table.sort(language_options)
 
+local function get_language_description(lang)
+	if not lang or lang == "" then
+		return
+	end
+	local code = lang
+	local count
+	while not core.language_names[lang] do
+		lang, count = string.gsub(lang, "(.+)[_@].-$", "%1")
+		if count == 0 then
+			break
+		end
+	end
+	if core.language_names[lang] then
+		return ("%s [%s]"):format(core.language_names[lang], code)
+	end
+end
+
 local language_dropdown = {}
 for idx, langcode in ipairs(language_options) do
-	language_dropdown[idx] = core.formspec_escape(("%s [%s]"):format(
-			core.language_names[langcode], langcode))
+	language_dropdown[idx] = core.formspec_escape(get_language_description(langcode))
 	language_options[langcode] = idx
 end
 language_dropdown = table.concat(language_dropdown, ",")
@@ -530,8 +546,12 @@ function make.language_list(setting)
 				local selid = language_options[lang]
 				local dropdown_entries = language_dropdown
 				if not selid then
-					dropdown_entries = dropdown_entries .. "," ..
-							fgettext("Other language: $1", lang)
+					local label = fgettext("Other language: $1", lang)
+					local altdesc = get_language_description(lang)
+					if altdesc then
+						label = fgettext("Other variant: $1", altdesc)
+					end
+					dropdown_entries = dropdown_entries .. "," .. label
 					selid = #language_options+1
 				end
 				table.insert(fs, ("dropdown[0,%f;%f,0.8;sel_%d_%s;%s;%d;true]"):format(
