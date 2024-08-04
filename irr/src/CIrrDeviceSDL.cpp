@@ -882,7 +882,8 @@ bool CIrrDeviceSDL::run()
 
 			// This is a GIANT HACK to fix the most common case of
 			// https://github.com/minetest/minetest/issues/14545 for the 5.9.0 release.
-			if (irrevent.KeyInput.Key == KEY_KEY_7 && irrevent.KeyInput.Shift)
+			if (irrevent.KeyInput.Key == KEY_KEY_7 && irrevent.KeyInput.Shift &&
+					SDL_GetScancodeFromKey(SDLK_SLASH) == SDL_SCANCODE_UNKNOWN)
 				irrevent.KeyInput.Char = L'/';
 
 			postEventFromUser(irrevent);
