@@ -291,7 +291,7 @@ const std::array<const char *, 33> object_property_keys = {
 	"use_texture_alpha",
 	"shaded",
 	"damage_texture_modifier",
-	"show_on_minimap"
+	"show_on_minimap",
 };
 
 /******************************************************************************/
