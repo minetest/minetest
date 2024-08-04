@@ -7716,7 +7716,7 @@ metadata_table = {
     -- metadata fields (key/value store)
     fields = {
         infotext = "Container",
-        anoter_key = "Another Value",
+        another_key = "Another Value",
     },
 
     -- inventory data (for nodes)
