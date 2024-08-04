@@ -587,6 +587,16 @@ function make.language_list(setting)
 						height, dropdown_width, #selection_list+1, setting.name, dropdown_entries, selid))
 				height = height+0.9
 			end
+			if setting.name == "language" then
+				local langlist = {}
+				for lang in string.gmatch(core.get_language(), "[^:]+") do
+					table.insert(langlist, get_language_description(lang) or lang)
+				end
+				-- FIXME: How to generate "translated" lists?
+				table.insert(fs, ("label[%f,%f;%s]"):format(0.1, height+0.3,
+						fgettext("Effective language setting: $1", table.concat(langlist, ", "))))
+				height = height+0.5
+			end
 
 			return table.concat(fs), height
 		end,
