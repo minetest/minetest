@@ -1594,7 +1594,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	{
 		// Check if we are working with local player inventory
 		LocalPlayer *player = m_env.getLocalPlayer();
-		if (!player || strcmp(player->getName(), loc.name.c_str()) != 0)
+		if (!player || player->getName() != loc.name)
 			return NULL;
 		return &player->inventory;
 	}

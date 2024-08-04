@@ -163,6 +163,15 @@ private:
 	// get_properties(self)
 	static int l_get_properties(lua_State *L);
 
+	// set_observers(self, observers)
+	static int l_set_observers(lua_State *L);
+
+	// get_observers(self)
+	static int l_get_observers(lua_State *L);
+
+	// get_effective_observers(self)
+	static int l_get_effective_observers(lua_State *L);
+
 	// is_player(self)
 	static int l_is_player(lua_State *L);
 

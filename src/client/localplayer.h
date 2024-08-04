@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "settings.h"
 #include "lighting.h"
+#include <string>
 
 class Client;
 class Environment;
@@ -63,7 +64,8 @@ private:
 class LocalPlayer : public Player
 {
 public:
-	LocalPlayer(Client *client, const char *name);
+
+	LocalPlayer(Client *client, const std::string &name);
 	virtual ~LocalPlayer();
 
 	// Initialize hp to 0, so that no hearts will be shown if server
