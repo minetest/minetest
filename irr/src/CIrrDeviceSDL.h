@@ -277,7 +277,7 @@ private:
 	static bool keyIsKnownSpecial(EKEY_CODE irrlichtKey);
 
 	// Return the Char that should be sent to Irrlicht for the given key (either the one passed in or 0).
-	static int findCharToPassToIrrlicht(uint32_t sdlKey, EKEY_CODE irrlichtKey, bool numlock);
+	static wchar_t findCharToPassToIrrlicht(const SDL_Keysym &SDL_keysym, EKEY_CODE irrlichtKey);
 
 	// Check if a text box is in focus. Enable or disable SDL_TEXTINPUT events only if in focus.
 	void resetReceiveTextInputEvents();
