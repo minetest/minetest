@@ -28,7 +28,7 @@ inline std::vector<std::basic_string<T>> split_language_list(const std::basic_st
 	for (auto &i: list)
 		i = find_tr_language(i);
 	auto newend = std::remove(list.begin(), list.end(), std::basic_string<T>());
-	return std::vector(list.begin(), newend);
+	return std::vector<std::basic_string<T>>(list.begin(), newend);
 }
 
 template<typename T>
