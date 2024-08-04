@@ -63,4 +63,5 @@ void TileLayer::applyMaterialOptionsWithShaders(video::SMaterial &material) cons
 		material.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		material.TextureLayers[1].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 	}
+	material.Shininess = emission;
 }

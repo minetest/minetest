@@ -934,6 +934,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		overlay_material = TILE_MATERIAL_LIQUID_TRANSPARENT;
 
 	u32 overlay_shader = shdsrc->getShader("nodes_shader", overlay_material, drawtype);
+	const f32 EMISSION = 1.5f;
 
 	// Tiles (fill in f->tiles[])
 	for (u16 j = 0; j < 6; j++) {
@@ -942,6 +943,8 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		fillTileAttribs(tsrc, &tiles[j].layers[0], tiles[j], tdef[j],
 				color, material_type, tile_shader,
 				tdef[j].backface_culling, tsettings);
+				tiles[j].layers[0].emission = 1.0f + EMISSION * light_source / LIGHT_MAX;
+				tiles[j].layers[1].emission = 1.0f + EMISSION * light_source / LIGHT_MAX;
 		if (!tdef_overlay[j].name.empty())
 			fillTileAttribs(tsrc, &tiles[j].layers[1], tiles[j], tdef_overlay[j],
 					color, overlay_material, overlay_shader,
@@ -958,10 +961,13 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	u32 special_shader = shdsrc->getShader("nodes_shader", special_material, drawtype);
 
 	// Special tiles (fill in f->special_tiles[])
-	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++)
+		for (u16 j = 0; j < CF_SPECIAL_COUNT; j++) {
+		special_tiles[j].layers[0].emission = 1.0f + EMISSION * light_source / LIGHT_MAX;
+		special_tiles[j].layers[1].emission = 1.0f + EMISSION * light_source / LIGHT_MAX;
 		fillTileAttribs(tsrc, &special_tiles[j].layers[0], special_tiles[j], tdef_spec[j],
 				color, special_material, special_shader,
 				tdef_spec[j].backface_culling, tsettings);
+		}
 
 	if (param_type_2 == CPT2_COLOR ||
 			param_type_2 == CPT2_COLORED_FACEDIR ||

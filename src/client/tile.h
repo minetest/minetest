@@ -130,6 +130,8 @@ struct TileLayer
 		MATERIAL_FLAG_BACKFACE_CULLING |
 		MATERIAL_FLAG_TILEABLE_HORIZONTAL|
 		MATERIAL_FLAG_TILEABLE_VERTICAL;
+		
+	f32 emission = 1.0f;
 
 	//! If true, the tile has its own color.
 	bool has_color = false;

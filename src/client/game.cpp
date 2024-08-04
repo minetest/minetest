@@ -385,6 +385,11 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
 	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel{"cameraOffset"};
 	CachedVertexShaderSetting<float, 3> m_camera_offset_vertex{"cameraOffset"};
+	CachedPixelShaderSetting<float, 3> m_camera_position_pixel{"cameraPosition"};
+	CachedPixelShaderSetting<float, 16> m_camera_view_pixel{"mCameraView"};
+	CachedPixelShaderSetting<float, 16> m_camera_viewinv_pixel{"mCameraViewInv"};
+	CachedPixelShaderSetting<float, 16> m_camera_viewproj_pixel{"mCameraViewProj"};
+	CachedPixelShaderSetting<float, 16> m_camera_viewprojinv_pixel{"mCameraViewProjInv"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture0{"texture0"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture1{"texture1"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture2{"texture2"};
@@ -408,6 +413,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float> m_bloom_radius_pixel{"bloomRadius"};
 	float m_bloom_radius;
 	CachedPixelShaderSetting<float> m_saturation_pixel{"saturation"};
+	CachedPixelShaderSetting<float> m_emission_pixel{"emission"};
+	float emission;
 	bool m_volumetric_light_enabled;
 	CachedPixelShaderSetting<float, 3>
 		m_sun_position_pixel{"sunPositionScreen"};
@@ -490,6 +497,28 @@ public:
 		v3f offset = intToFloat(m_client->getCamera()->getOffset(), BS);
 		m_camera_offset_pixel.set(offset, services);
 		m_camera_offset_vertex.set(offset, services);
+		
+		v3f camera_position_vector = m_client->getCamera()->getPosition();
+		float camera_position[3] = {
+				camera_position_vector.X,
+				camera_position_vector.Y,
+				camera_position_vector.Z
+		};
+		m_camera_position_pixel.set(camera_position, services);
+
+        core::matrix4 camera_view = m_client->getCamera()->getCameraNode()->getViewMatrix();
+        m_camera_view_pixel.set(camera_view.pointer(), services);
+
+        core::matrix4 camera_viewinv;
+		camera_view.getInverse(camera_viewinv);
+        m_camera_viewinv_pixel.set(camera_viewinv.pointer(), services);
+
+        core::matrix4 camera_viewproj = m_client->getCamera()->getCameraNode()->getProjectionMatrix();
+		m_camera_viewproj_pixel.set(camera_viewproj.pointer(), services);
+
+		core::matrix4 camera_viewprojinv;
+		camera_viewproj.getInverse(camera_viewprojinv);
+		m_camera_viewprojinv_pixel.set(camera_viewprojinv.pointer(), services);
 
 		SamplerLayer_t tex_id;
 		tex_id = 0;
@@ -525,6 +554,54 @@ public:
 		const auto &lighting = m_client->getEnv().getLocalPlayer()->getLighting();
 		float saturation = lighting.saturation;
 		m_saturation_pixel.set(&saturation, services);
+			
+		// Map directional light to screen space
+		auto camera_node = m_client->getCamera()->getCameraNode();
+		core::matrix4 transform = camera_node->getProjectionMatrix();
+		transform *= camera_node->getViewMatrix();
+
+        m_client->getCamera()->getPosition();
+
+		if (m_sky->getSunVisible()) {
+			v3f sun_position = camera_node->getAbsolutePosition() + 
+					10000. * m_sky->getSunDirection();
+			transform.transformVect(sun_position);
+			sun_position.normalize();
+
+			float sun_position_array[3] = { sun_position.X, sun_position.Y, sun_position.Z};
+			m_sun_position_pixel.set(sun_position_array, services);
+
+			float sun_brightness = rangelim(107.143f * m_sky->getSunDirection().dotProduct(v3f(0.f, 1.f, 0.f)), 0.f, 1.f);
+			m_sun_brightness_pixel.set(&sun_brightness, services);
+		}
+		else {
+			float sun_position_array[3] = { 0.f, 0.f, -1.f };
+			m_sun_position_pixel.set(sun_position_array, services);
+
+			float sun_brightness = 0.f;
+			m_sun_brightness_pixel.set(&sun_brightness, services);
+		}
+
+		if (m_sky->getMoonVisible()) {
+			v3f moon_position = camera_node->getAbsolutePosition() + 
+					10000. * m_sky->getMoonDirection();
+			transform.transformVect(moon_position);
+			moon_position.normalize();
+
+			float moon_position_array[3] = { moon_position.X, moon_position.Y, moon_position.Z};
+			m_moon_position_pixel.set(moon_position_array, services);
+
+			float moon_brightness = rangelim(107.143f * m_sky->getMoonDirection().dotProduct(v3f(0.f, 1.f, 0.f)), 0.f, 1.f);
+			m_moon_brightness_pixel.set(&moon_brightness, services);
+		}
+		else {
+			float moon_position_array[3] = { 0.f, 0.f, -1.f };
+			m_moon_position_pixel.set(moon_position_array, services);
+
+			float moon_brightness = 0.f;
+			m_moon_brightness_pixel.set(&moon_brightness, services);
+		}
+		m_emission_pixel.set(&emission, services);
 
 		if (m_volumetric_light_enabled) {
 			// Map directional light to screen space
@@ -580,6 +657,7 @@ public:
 		} else {
 			m_texel_size0 = v2f();
 		}
+		emission = material.Shininess;
 	}
 };
 

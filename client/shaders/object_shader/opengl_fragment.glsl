@@ -21,11 +21,11 @@ uniform float animationTimer;
 	uniform float xyPerspectiveBias0;
 	uniform float xyPerspectiveBias1;
 
-	varying float adj_shadow_strength;
 	varying float cosLight;
 	varying float f_normal_length;
 	varying vec3 shadow_position;
 	varying float perspective_factor;
+	varying lowp vec3 directNaturalLight;
 #endif
 
 
@@ -37,7 +37,8 @@ varying vec3 vPosition;
 // cameraOffset + worldPosition (for large coordinates the limits of float
 // precision must be considered).
 varying vec3 worldPosition;
-varying lowp vec4 varColor;
+varying lowp vec3 artificialColor;
+varying lowp vec3 naturalColor;
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
 #else
@@ -358,6 +359,12 @@ float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 #endif
 #endif
 
+const vec3 luminanceFactors = vec3(0.213, 0.715, 0.072);
+
+vec3 normalizeColor(vec3 color)
+{
+	return color / dot(color, luminanceFactors);
+}
 
 void main(void)
 {
@@ -378,8 +385,9 @@ void main(void)
 #endif
 
 	color = base.rgb;
-	vec4 col = vec4(color.rgb * varColor.rgb, 1.0);
-	col.rgb *= vIDiff;
+	color.rgb *= vIDiff;
+
+	vec3 naturalLight = naturalColor;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	if (f_shadow_strength > 0.0) {
@@ -390,7 +398,7 @@ void main(void)
 		float distance_rate = (1.0 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 10.0));
 		if (max(abs(posLightSpace.x - 0.5), abs(posLightSpace.y - 0.5)) > 0.5)
 			distance_rate = 0.0;
-		float f_adj_shadow_strength = max(adj_shadow_strength - mtsmoothstep(0.9, 1.1, posLightSpace.z),0.0);
+		float f_adj_shadow_strength = max(f_shadow_strength - mtsmoothstep(0.9, 1.1, posLightSpace.z),0.0);
 
 		if (distance_rate > 1e-7) {
 
@@ -426,17 +434,19 @@ void main(void)
 			shadow_color = mix(vec3(0.0), shadow_color, min(cosLight, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
 		}
 
-		shadow_int *= f_adj_shadow_strength;
+		float lightSourceStrength = f_adj_shadow_strength;
+		float ambientLightStrength = max(0., 1. - lightSourceStrength);
 
-		// calculate fragment color from components:
-		col.rgb =
-				adjusted_night_ratio * col.rgb + // artificial light
-				(1.0 - adjusted_night_ratio) * ( // natural light
-						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color)) +  // filtered texture color
-						dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
+		// apply shadow to natural light
+		naturalLight *=
+				ambientLightStrength + // natural ambient light
+				directNaturalLight * max(vec3(1.0 - shadow_int), shadow_color.rgb) * lightSourceStrength; // shaded sunlight/moonlight
+
+
 	}
 #endif
 
+	color.rgb *= artificialColor + naturalLight * dayLight;
 	// Due to a bug in some (older ?) graphics stacks (possibly in the glsl compiler ?),
 	// the fog will only be rendered correctly if the last operation before the
 	// clamp() is an addition. Else, the clamp() seems to be ignored.
@@ -448,8 +458,7 @@ void main(void)
 	// Note: clarity = (1 - fogginess)
 	float clarity = clamp(fogShadingParameter
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
-	col = mix(fogColor, col, clarity);
-	col = vec4(col.rgb, base.a);
+	color = mix(fogColor.rgb, color, clarity);
 
-	gl_FragData[0] = col;
+	gl_FragData[0] = vec4(color, base.a);
 }
