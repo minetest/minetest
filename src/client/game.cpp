@@ -1123,6 +1123,7 @@ bool Game::startup(bool *kill,
 	m_touch_use_crosshair = g_settings->getBool("touch_use_crosshair");
 
 	g_client_translations->clear();
+	g_client_translations->setPreferredLanguages(get_current_locale());
 
 	// address can change if simple_singleplayer_mode
 	if (!init(start_data.world_spec.path, start_data.address,

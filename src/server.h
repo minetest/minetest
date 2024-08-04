@@ -658,6 +658,7 @@ private:
 	IWritableCraftDefManager *m_craftdef;
 
 	std::unordered_map<std::string, Translations> server_translations;
+	Translations base_server_translations;
 
 	/*
 		Threads

@@ -59,6 +59,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/base64.h"
 #include "util/sha1.h"
 #include "util/hex.h"
+#include "util/langcode.h"
 #include "database/database.h"
 #include "chatmessage.h"
 #include "chat_interface.h"
@@ -2574,14 +2575,19 @@ void Server::fillMediaCache()
 
 void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_code)
 {
-	std::string lang_suffix = ".";
-	lang_suffix.append(lang_code).append(".tr");
+	auto lang_list = parse_language_list(utf8_to_wide(lang_code));
 
 	auto include = [&] (const std::string &name, const MediaInfo &info) -> bool {
 		if (info.no_announce)
 			return false;
-		if (str_ends_with(name, ".tr") && !str_ends_with(name, lang_suffix))
+		if (str_ends_with(name, ".tr")) {
+			for (const auto &lang: lang_list) {
+				std::string suffix = "." + wide_to_utf8(lang) + ".tr";
+				if (str_ends_with(name, suffix))
+					return true;
+			}
 			return false;
+		}
 		return true;
 	};
 
@@ -4148,14 +4154,22 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 		return &it->second; // Already loaded
 
 	// [] will create an entry
+	server_translations[lang_code] = base_server_translations;
 	auto *translations = &server_translations[lang_code];
+	translations->setPreferredLanguages(lang_code);
 
-	std::string suffix = "." + lang_code + ".tr";
-	for (const auto &i : m_media) {
-		if (str_ends_with(i.first, suffix)) {
-			std::string data;
-			if (fs::ReadFile(i.second.path, data, true)) {
-				translations->loadTranslation(data);
+	if (wide_to_utf8(translations->getPreferredPrimaryLanguage()) != lang_code) {
+		// Load translation file for each language listed in lang_code
+		for (const auto &language: translations->getPreferredLanguages())
+			getTranslationLanguage(wide_to_utf8(language));
+	} else {
+		std::string suffix = "." + lang_code + ".tr";
+		for (const auto &i : m_media) {
+			if (str_ends_with(i.first, suffix)) {
+				std::string data;
+				if (fs::ReadFile(i.second.path, data, true)) {
+					translations->loadTranslation(data);
+				}
 			}
 		}
 	}

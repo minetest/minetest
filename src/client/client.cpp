@@ -856,7 +856,14 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 			return false;
 		TRACESTREAM(<< "Client: Loading translation: "
 				<< "\"" << filename << "\"" << std::endl);
-		g_client_translations->loadTranslation(data);
+		auto langpos = name.rfind('.');
+		if (langpos == name.npos) {
+			verbosestream << "Client: Cannot determine language for translation file \""
+				<< filename << "\"" << std::endl;
+			return false;
+		}
+		std::string lang = name.substr(langpos+1);
+		g_client_translations->loadTranslation(lang, data);
 		return true;
 	}
 

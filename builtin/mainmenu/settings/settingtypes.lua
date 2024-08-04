@@ -366,6 +366,28 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 		return
 	end
 
+	if setting_type == "language_list" then
+		local default = remaining_line
+
+		local setting = {
+			name = name,
+			readable_name = readable_name,
+			type = "language_list",
+			default = default,
+			requires = requires,
+			comment = comment,
+		}
+
+		if default == "" then
+			setting.default_description = function()
+				return fgettext("Use system language")
+			end
+		end
+
+		table.insert(settings, setting)
+		return
+	end
+
 	return "Invalid setting type \"" .. setting_type .. "\""
 end
 

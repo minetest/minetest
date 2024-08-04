@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.ActivityNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -237,27 +238,41 @@ public class GameActivity extends SDLActivity {
 	}
 
 	public String getLanguage() {
-		String langCode = Locale.getDefault().getLanguage();
+		LocaleList locales = LocaleList.getAdjustedDefault();
+		StringBuilder listString = new StringBuilder();
+		for (int i = 0; i < locales.size(); i++) {
+			Locale lang = locales.get(i);
+			String langCode = lang.getLanguage();
 
-		// getLanguage() still uses old language codes to preserve compatibility.
-		// List of code changes in ISO 639-2:
-		// https://www.loc.gov/standards/iso639-2/php/code_changes.php
-		switch (langCode) {
-			case "in":
-				langCode = "id"; // Indonesian
-				break;
-			case "iw":
-				langCode = "he"; // Hebrew
-				break;
-			case "ji":
-				langCode = "yi"; // Yiddish
-				break;
-			case "jw":
-				langCode = "jv"; // Javanese
-				break;
+			// getLanguage() still uses old language codes to preserve compatibility.
+			// List of code changes in ISO 639-2:
+			// https://www.loc.gov/standards/iso639-2/php/code_changes.php
+			switch (langCode) {
+				case "in":
+					langCode = "id"; // Indonesian
+					break;
+				case "iw":
+					langCode = "he"; // Hebrew
+					break;
+				case "ji":
+					langCode = "yi"; // Yiddish
+					break;
+				case "jw":
+					langCode = "jv"; // Javanese
+					break;
+			}
+			if (i > 0) {
+				listString.append(':');
+			}
+			listString.append(langCode);
+
+			String countryCode = lang.getCountry();
+			if (!countryCode.isEmpty()) {
+				listString.append('_');
+				listString.append(countryCode);
+			}
 		}
-
-		return langCode;
+		return listString.toString();
 	}
 
 	public boolean hasPhysicalKeyboard() {

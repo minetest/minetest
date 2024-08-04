@@ -418,5 +418,236 @@ end
 make.noise_params_2d = make_noise_params
 make.noise_params_3d = make_noise_params
 
+-- These must not be translated, as they need to show in the local
+-- language no matter the user's current language.
+-- This list must be kept in sync with src/unsupported_language_list.txt.
+core.language_names = {
+	--ar: blacklisted
+	be = "Беларуская",
+	bg = "Български",
+	ca = "Català",
+	cs = "Česky",
+	cy = "Cymraeg",
+	da = "Dansk",
+	de = "Deutsch",
+	el = "Ελληνικά",
+	en = "English",
+	eo = "Esperanto",
+	es = "Español",
+	et = "Eesti",
+	eu = "Euskara",
+	fi = "Suomi",
+	fil = "Wikang Filipino",
+	fr = "Français",
+	gd = "Gàidhlig",
+	gl = "Galego",
+	--he: blacklisted
+	--hi: blacklisted
+	hu = "Magyar",
+	id = "Bahasa Indonesia",
+	it = "Italiano",
+	ja = "日本語",
+	jbo = "Lojban",
+	kk = "Қазақша",
+	--kn: blacklisted
+	ko = "한국어",
+	ky = "Kırgızca / Кыргызча",
+	lt = "Lietuvių",
+	lv = "Latviešu",
+	mn = "Монгол",
+	mr = "मराठी",
+	ms = "Bahasa Melayu",
+	--ms_Arab: blacklisted
+	nb = "Norsk Bokmål",
+	nl = "Nederlands",
+	nn = "Norsk Nynorsk",
+	oc = "Occitan",
+	pl = "Polski",
+	pt = "Português",
+	pt_BR = "Português do Brasil",
+	ro = "Română",
+	ru = "Русский",
+	sk = "Slovenčina",
+	sl = "Slovenščina",
+	sr_Cyrl = "Српски",
+	sr_Latn = "Srpski (Latinica)",
+	sv = "Svenska",
+	sw = "Kiswahili",
+	--th: blacklisted
+	tr = "Türkçe",
+	tt = "Tatarça",
+	uk = "Українська",
+	vi = "Tiếng Việt",
+	yue = "粵語",
+	zh_CN = "中文 (简体)",
+	zh_TW = "正體中文 (繁體)",
+}
+
+local language_options = {}
+for k in pairs(core.language_names) do
+	table.insert(language_options, k)
+end
+table.sort(language_options)
+
+local function get_language_description(lang)
+	if not lang or lang == "" then
+		return
+	end
+	local code = lang
+	local count
+	while not core.language_names[lang] do
+		lang, count = string.gsub(lang, "(.+)[_@].-$", "%1")
+		if count == 0 then
+			break
+		end
+	end
+	if core.language_names[lang] then
+		return ("%s [%s]"):format(core.language_names[lang], code)
+	end
+end
+
+local language_dropdown = {}
+for idx, langcode in ipairs(language_options) do
+	language_dropdown[idx] = core.formspec_escape(get_language_description(langcode))
+	language_options[langcode] = idx
+end
+language_dropdown = table.concat(language_dropdown, ",")
+
+function make.language_list(setting)
+	local selection_list = {}
+	return {
+		info_text = setting.comment,
+		setting = setting,
+		get_formspec = function(self, avail_w)
+			local fs = {}
+			local height = 0.8
+			selection_list = string.split(core.settings:get(setting.name) or setting.default, ":")
+			self.resettable = core.settings:has(setting.name)
+
+			table.insert(fs, ("label[0,0.1;%s]"):format(get_label(setting)))
+			-- TODO: Change the label to "Use system language: $1" when #14379 is merged
+			table.insert(fs, ("checkbox[0,0.55;%s;%s;%s]"):format(
+					setting.name, fgettext("Use system language"), tostring(#selection_list == 0)))
+
+			-- Note that the "Remove" button is added implicitly and only when the move buttons are present.
+			-- If the selection list includes only one language, removing it implies using the system language.
+			local move_columns = 2 -- Move up|Move down
+			if #selection_list == 1 then
+				move_columns = 0
+			elseif #selection_list == 2 then
+				move_columns = 1 -- Move (i.e. swap order with the other entry)
+			end
+			local dropdown_width = avail_w
+			if move_columns > 0 then
+				dropdown_width = avail_w - 0.9*(move_columns+1)
+			end
+
+			for idx, lang in ipairs(selection_list) do
+				local selid = language_options[lang]
+				local dropdown_entries = language_dropdown
+				if not selid then
+					local label = fgettext("Other language: $1", lang)
+					local altdesc = get_language_description(lang)
+					if altdesc then
+						label = fgettext("Other variant: $1", altdesc)
+					end
+					dropdown_entries = dropdown_entries .. "," .. label
+					selid = #language_options+1
+				end
+				table.insert(fs, ("dropdown[0,%f;%f,0.8;sel_%d_%s;%s;%d;true]"):format(
+						height, dropdown_width, idx, setting.name, dropdown_entries, selid))
+				if move_columns > 0 then
+					table.insert(fs, ("image_button[%f,%f;0.8,0.8;%s;rem_%d_%s;]"):format(
+							avail_w-0.8, height,
+							core.formspec_escape(defaulttexturedir .. "clear.png"), idx, setting.name))
+					local move_button_x = avail_w-0.8-0.9*move_columns
+					local move_button_width = 0.8
+					if move_columns == 2 and (idx == 1 or idx == #selection_list) then
+						move_button_width = 1.7
+					end
+					if idx < #selection_list then
+						table.insert(fs, ("image_button[%f,%f;%f,0.8;%s;mdn_%d_%s;]"):format(
+								move_button_x, height, move_button_width,
+								core.formspec_escape(defaulttexturedir .. "down_icon.png"), idx, setting.name))
+						move_button_x = move_button_x + 0.9
+					end
+					if idx > 1 then
+						table.insert(fs, ("image_button[%f,%f;%f,0.8;%s;mup_%d_%s;]"):format(
+								move_button_x, height, move_button_width,
+								core.formspec_escape(defaulttexturedir .. "up_icon.png"), idx, setting.name))
+					end
+				end
+				height = height+0.9
+			end
+			if #selection_list > 0 then
+				local dropdown_entries = language_dropdown .. "," ..
+						fgettext("Select language to add to list")
+				local selid = #language_options+1
+				table.insert(fs, ("dropdown[0,%f;%f,0.8;sel_%d_%s;%s;%d;true]"):format(
+						height, dropdown_width, #selection_list+1, setting.name, dropdown_entries, selid))
+				height = height+0.9
+			end
+			if setting.name == "language" then
+				local langlist = {}
+				for lang in string.gmatch(core.get_language(), "[^:]+") do
+					table.insert(langlist, get_language_description(lang) or lang)
+				end
+				-- FIXME: How to generate "translated" lists?
+				table.insert(fs, ("label[%f,%f;%s]"):format(0.1, height+0.3,
+						fgettext("Effective language setting: $1", table.concat(langlist, ", "))))
+				height = height+0.5
+			end
+
+			return table.concat(fs), height
+		end,
+		on_submit = function(self, fields)
+			local old_value = core.settings:get(setting.name) or setting.default
+			local value
+			local function update_value_from_selection()
+				value = table.concat(selection_list, ":")
+			end
+			if fields[setting.name] then
+				if core.is_yes(fields[setting.name]) then
+					value = ""
+				else
+					value = core.get_language_configuration()
+					if value == "" then
+						value = "en"
+					end
+				end
+			end
+			for k = 1, #selection_list do
+				local basekey = ("_%d_%s"):format(k, setting.name)
+				if fields["rem" .. basekey] then
+					table.remove(selection_list, k)
+					update_value_from_selection()
+					break
+				elseif fields["mdn" .. basekey] and k < #selection_list then
+					selection_list[k], selection_list[k+1] = selection_list[k+1], selection_list[k]
+					update_value_from_selection()
+					break
+				elseif fields["mup" .. basekey] and k > 1 then
+					selection_list[k], selection_list[k-1] = selection_list[k-1], selection_list[k]
+					update_value_from_selection()
+					break
+				end
+			end
+			if value == nil then
+				for k = 1, #selection_list+1 do
+					local selection = language_options[tonumber(fields[("sel_%d_%s"):format(k, setting.name)])]
+					if selection then
+						selection_list[k] = selection
+					end
+				end
+				update_value_from_selection()
+			end
+			if value == nil or value == old_value then
+				return false
+			end
+			core.settings:set(setting.name, value)
+			return true
+		end,
+	}
+end
 
 return make

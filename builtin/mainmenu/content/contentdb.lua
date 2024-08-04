@@ -392,7 +392,8 @@ local function fetch_pkgs(params)
 	local languages
 	local current_language = core.get_language()
 	if current_language ~= "" then
-		languages = { current_language, "en;q=0.8" }
+		languages = current_language:split(":")
+		table.insert(languages, "en;q=0.8")
 	else
 		languages = { "en" }
 	end
