@@ -163,6 +163,7 @@ static void MSVC_LocaleWorkaround(int argc, char* argv[])
 #endif
 
 static std::string current_locale;
+static std::string configured_locale;
 
 /******************************************************************************/
 void init_gettext(const char *path, const std::string &configured_language,
@@ -239,15 +240,16 @@ void init_gettext(const char *path, const std::string &configured_language,
 	// Update locale information locally regardless of whether gettext
 	// is available.
 	if (!configured_language.empty()) {
-		current_locale = get_tr_language(configured_language);
-	} else if (current_locale.empty()) {
+		configured_locale = language_list_to_string(split_language_list(configured_language));
+	} else if (configured_locale.empty()) {
 		// Set locale if this was not previously set
 		char *lang = getenv("LANGUAGE");
 		if (!(lang && *lang))
 			lang = getenv("LANG");
 		if (lang && *lang)
-			current_locale = get_tr_language(lang);
+			configured_locale = language_list_to_string(split_language_list(std::string(lang)));
 	}
+	current_locale = get_tr_language(configured_locale);
 
 	/* no matter what locale is used we need number format to be "C" */
 	/* to ensure formspec parameters are evaluated correctly!        */
@@ -260,4 +262,9 @@ void init_gettext(const char *path, const std::string &configured_language,
 const std::string &get_current_locale()
 {
 	return current_locale;
+}
+
+const std::string &get_configured_locale()
+{
+	return configured_locale;
 }

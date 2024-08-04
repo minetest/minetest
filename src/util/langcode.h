@@ -1,12 +1,34 @@
 #pragma once
 
 #include "util/string.h"
+#include <algorithm>
 #include <vector>
 
 template<typename T>
-inline std::vector<std::basic_string<T>> split_language_list(const std::basic_string<T> &list)
+static std::basic_string_view<T> find_tr_language(const std::basic_string_view<T> &code)
 {
-	return str_split(list, T(':'));
+	// Strip encoding (".UTF-8") information if it is present as it is not relevant
+	auto pos = code.find(T('.'));
+	if (pos != code.npos)
+		return code.substr(0, pos);
+
+	return code;
+}
+
+template<typename T>
+static std::basic_string_view<T> find_tr_language(const std::basic_string<T> &code)
+{
+	return find_tr_language(std::basic_string_view<T>(code));
+}
+
+template<typename T>
+inline std::vector<std::basic_string<T>> split_language_list(const std::basic_string<T> &str)
+{
+	auto list = str_split(str, T(':'));
+	for (auto &i: list)
+		i = find_tr_language(i);
+	auto newend = std::remove(list.begin(), list.end(), std::basic_string<T>());
+	return std::vector(list.begin(), newend);
 }
 
 template<typename T>

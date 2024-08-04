@@ -2,16 +2,6 @@
 #include <unordered_set>
 #include <unordered_map>
 
-static std::wstring_view find_tr_language(const std::wstring_view &code)
-{
-	// Strip encoding (".UTF-8") information if it is present as it is not relevant
-	auto pos = code.find('.');
-	if (pos != code.npos)
-		return code.substr(0, pos);
-
-	return code;
-}
-
 struct ParserCache {
 	using string = std::wstring;
 	using string_view = std::wstring_view;
