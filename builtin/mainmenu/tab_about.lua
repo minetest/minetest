@@ -30,6 +30,7 @@ local core_developers = {
 	"Desour/DS",
 	"srifqi",
 	"Gregor Parzefall (grorp)",
+	"Lars Müller (luatic)",
 }
 
 -- currently only https://github.com/orgs/minetest/teams/triagers/members
@@ -43,19 +44,24 @@ local core_team = {
 -- For updating active/previous contributors, see the script in ./util/gather_git_credits.py
 
 local active_contributors = {
-	"Wuzzy [Features, translations, documentation]",
-	"numzero [Optimizations, work on OpenGL driver]",
-	"ROllerozxa [Bugfixes, Mainmenu]",
-	"Lars Müller [Bugfixes]",
-	"AFCMS [Documentation]",
-	"savilli [Bugfixes]",
-	"fluxionary [Bugfixes]",
-	"Bradley Pierce (Thresher) [Documentation]",
-	"Stvk imension [Android]",
-	"JosiahWI [Code cleanups]",
-	"OgelGames [UI, Bugfixes]",
-	"ndren [Bugfixes]",
-	"Abdou-31 [Documentation]",
+	"cx384",
+	"numzero",
+	"AFCMS",
+	"sfence",
+	"Wuzzy",
+	"ROllerozxa",
+	"JosiahWI",
+	"OgelGames",
+	"David Heidelberg",
+	"1F616EMO",
+	"HybridDog",
+	"Bradley Pierce (Thresher)",
+	"savilli",
+	"Stvk imension",
+	"y5nw",
+	"chmodsayshello",
+	"jordan4ibanez",
+	"superfloh247",
 }
 
 local previous_core_developers = {
