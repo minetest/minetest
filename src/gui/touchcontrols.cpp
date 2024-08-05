@@ -218,10 +218,10 @@ TouchControls::TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc)
 	m_long_tap_delay = g_settings->getU16("touch_long_tap_delay");
 	m_fixed_joystick = g_settings->getBool("fixed_virtual_joystick");
 	m_joystick_triggers_aux1 = g_settings->getBool("virtual_joystick_triggers_aux1");
-	m_screensize = m_device->getVideoDriver()->getScreenSize();
 
+	m_screensize = m_device->getVideoDriver()->getScreenSize();
 	m_button_size = ButtonLayout::getButtonSize(m_screensize);
-	applyLayout(ButtonLayout::loadFromSettings(m_screensize));
+	applyLayout(ButtonLayout::loadFromSettings());
 }
 
 void TouchControls::applyLayout(const ButtonLayout &layout)
@@ -266,7 +266,7 @@ void TouchControls::applyLayout(const ButtonLayout &layout)
 		if (id == aux1_id && m_joystick_triggers_aux1)
 			continue;
 
-		recti rect = ButtonLayout::getRect(id, meta, m_texturesource);
+		recti rect = m_layout.getRect(id, m_screensize, m_button_size, m_texturesource);
 		if (id == toggle_chat_id)
 			// Chat is shown by default, so chat_hide_btn.png is shown first.
 			addToggleButton(m_buttons, id, "chat_hide_btn.png",
@@ -308,6 +308,10 @@ void TouchControls::applyLayout(const ButtonLayout &layout)
 	m_status_text = grab_gui_element<IGUIStaticText>(
 			m_guienv->addStaticText(L"", recti(), false, false));
 	m_status_text->setVisible(false);
+
+	// applyLayout can be called at any time, also e.g. while the overflow menu
+	// is open, so this is necessary to restore correct visibility.
+	updateVisibility();
 }
 
 TouchControls::~TouchControls()
@@ -609,6 +613,15 @@ void TouchControls::applyJoystickStatus()
 
 void TouchControls::step(float dtime)
 {
+	v2u32 screensize = m_device->getVideoDriver()->getScreenSize();
+	s32 button_size = ButtonLayout::getButtonSize(screensize);
+
+	if (m_screensize != screensize || m_button_size != button_size) {
+		m_screensize = screensize;
+		m_button_size = button_size;
+		applyLayout(m_layout);
+	}
+
 	// simulate keyboard repeats
 	buttons_step(m_buttons, dtime, m_device->getVideoDriver(), m_receiver, m_texturesource);
 	buttons_step(m_overflow_buttons, dtime, m_device->getVideoDriver(), m_receiver, m_texturesource);

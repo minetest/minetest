@@ -39,8 +39,7 @@ GUITouchscreenLayout::GUITouchscreenLayout(gui::IGUIEnvironment* env,
 	if (g_touchcontrols)
 		m_layout = g_touchcontrols->getLayout();
 	else
-		m_layout = ButtonLayout::loadFromSettings(
-				Environment->getVideoDriver()->getScreenSize());
+		m_layout = ButtonLayout::loadFromSettings();
 
 	m_gui_help_text = grab_gui_element<IGUIStaticText>(Environment->addStaticText(
 			L"", core::recti(), false, false, this, -1));
@@ -66,6 +65,14 @@ void GUITouchscreenLayout::regenerateGui(v2u32 screensize)
 {
 	DesiredRect = core::recti(0, 0, screensize.X, screensize.Y);
 	recalculateAbsolutePosition(false);
+
+	s32 button_size = ButtonLayout::getButtonSize(screensize);
+	if (m_last_screensize != screensize || m_button_size != button_size) {
+		m_last_screensize = screensize;
+		m_button_size = button_size;
+		// Prevent interpolation when the layout scales.
+		clearGUIImages();
+	}
 
 	// Discard invalid selection. May happen when...
 	// 1. a button is removed.
@@ -96,7 +103,7 @@ void GUITouchscreenLayout::regenerateGUIImagesRegular(v2u32 screensize)
 	clearGUIImages();
 
 	for (const auto &[btn, meta] : m_layout.layout) {
-		core::recti rect = ButtonLayout::getRect(btn, meta, m_tsrc);
+		core::recti rect = m_layout.getRect(btn, screensize, m_button_size, m_tsrc);
 		std::shared_ptr<IGUIImage> img;
 
 		if (old_gui_images.count(btn) > 0) {
@@ -127,7 +134,10 @@ void GUITouchscreenLayout::regenerateGUIImagesAddMode(v2u32 screensize)
 		img->setScaleImage(true);
 		m_gui_images[btn] = img;
 
-		m_add_layout.layout[btn] = ButtonMeta{pos, (u32)rect.getHeight()};
+		ButtonMeta meta;
+		meta.setPos(pos, screensize, m_button_size);
+		meta.scale = 1.0f;
+		m_add_layout.layout[btn] = meta;
 
 		IGUIStaticText *text = Environment->addStaticText(L"", core::recti(),
 				false, false,this, -1);
@@ -263,19 +273,20 @@ void GUITouchscreenLayout::drawMenu()
 void GUITouchscreenLayout::updateDragState(v2u32 screensize, v2s32 mouse_movement)
 {
 	ButtonMeta &meta = m_layout.layout.at(m_selected_btn);
-	meta.pos += mouse_movement;
+	meta.setPos(meta.getPos(screensize, m_button_size) + mouse_movement,
+			screensize, m_button_size);
 
-	core::recti rect = ButtonLayout::getRect(m_selected_btn, meta, m_tsrc);
+	core::recti rect = m_layout.getRect(m_selected_btn, screensize, m_button_size, m_tsrc);
 	rect.constrainTo(core::recti(v2s32(0, 0), core::dimension2du(screensize)));
-	meta.pos = rect.getCenter();
+	meta.setPos(rect.getCenter(), screensize, m_button_size);
 
-	rect = ButtonLayout::getRect(m_selected_btn, meta, m_tsrc);
+	rect = m_layout.getRect(m_selected_btn, screensize, m_button_size, m_tsrc);
 
 	m_error_rects.clear();
 	for (const auto &[other_btn, other_meta] : m_layout.layout) {
 		if (other_btn == m_selected_btn)
 			continue;
-		core::recti other_rect = ButtonLayout::getRect(other_btn, other_meta, m_tsrc);
+		core::recti other_rect = m_layout.getRect(other_btn, screensize, m_button_size, m_tsrc);
 		if (other_rect.isRectCollided(rect))
 			m_error_rects.push_back(other_rect);
 	}
@@ -371,7 +382,7 @@ bool GUITouchscreenLayout::OnEvent(const SEvent& event)
 			}
 
 			if (event.GUIEvent.Caller == m_gui_reset_btn.get()) {
-				m_layout = ButtonLayout::getDefault(screensize);
+				m_layout = ButtonLayout::getDefault();
 				regenerateGui(screensize);
 				return true;
 			}

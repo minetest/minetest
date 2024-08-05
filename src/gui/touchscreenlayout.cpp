@@ -107,6 +107,24 @@ const char *button_image_names[] = {
 	"joystick_center.png",
 };
 
+v2s32 ButtonMeta::getPos(v2u32 screensize, s32 button_size) const
+{
+	return v2s32((anchor.X * screensize.X) + (offset.X * button_size),
+			(anchor.Y * screensize.Y) + (offset.Y * button_size));
+}
+
+void ButtonMeta::setPos(v2s32 pos, v2u32 screensize, s32 button_size)
+{
+	v2s32 center(screensize.X / 2, screensize.Y / 2);
+	anchor.X = pos.X < center.X ? 0.0f : 1.0f;
+	anchor.Y = pos.Y < center.Y ? 0.0f : 1.0f;
+
+	offset.X = (pos.X - (anchor.X * screensize.X)) / button_size;
+	offset.Y = (pos.Y - (anchor.Y * screensize.Y)) / button_size;
+
+	assert(getPos(screensize, button_size) == pos);
+}
+
 bool ButtonLayout::isButtonAllowed(touch_gui_button_id id)
 {
 	return id != joystick_off_id && id != joystick_bg_id && id != joystick_center_id &&
@@ -125,35 +143,38 @@ s32 ButtonLayout::getButtonSize(v2u32 screensize)
 					g_settings->getFloat("hud_scaling"));
 }
 
-ButtonLayout ButtonLayout::getDefault(v2u32 screensize)
+ButtonLayout ButtonLayout::getDefault()
 {
-	u32 button_size = getButtonSize(screensize);
-
 	return {{
 		{jump_id, {
-			v2s32(screensize.X - 1.0f * button_size, screensize.Y - 0.5f * button_size),
-			button_size,
+			v2f(1.0f, 1.0f),
+			v2f(-1.0f, -0.5f),
+			1.0f,
 		}},
 		{sneak_id, {
-			v2s32(screensize.X - 2.5f * button_size, screensize.Y - 0.5f * button_size),
-			button_size,
+			v2f(1.0f, 1.0f),
+			v2f(-2.5f, -0.5f),
+			1.0f,
 		}},
 		{zoom_id, {
-			v2s32(screensize.X - 0.75f * button_size, screensize.Y - 3.5f * button_size),
-			button_size,
+			v2f(1.0f, 1.0f),
+			v2f(-0.75f, -3.5f),
+			1.0f,
 		}},
 		{aux1_id, {
-			v2s32(screensize.X - 0.75f * button_size, screensize.Y - 2.0f * button_size),
-			button_size,
+			v2f(1.0f, 1.0f),
+			v2f(-0.75f, -2.0f),
+			1.0f,
 		}},
 		{overflow_id, {
-			v2s32(screensize.X - 0.75f * button_size, screensize.Y - 5.0f * button_size),
-			button_size,
+			v2f(1.0f, 1.0f),
+			v2f(-0.75f, -5.0f),
+			1.0f,
 		}},
 	}};
 }
 
-ButtonLayout ButtonLayout::loadFromSettings(v2u32 screensize)
+ButtonLayout ButtonLayout::loadFromSettings()
 {
 	bool restored = false;
 	ButtonLayout layout;
@@ -170,7 +191,7 @@ ButtonLayout ButtonLayout::loadFromSettings(v2u32 screensize)
 	}
 
 	if (!restored)
-		return ButtonLayout::getDefault(screensize);
+		return ButtonLayout::getDefault();
 
 	return layout;
 }
@@ -198,11 +219,17 @@ void ButtonLayout::clearTextureCache()
 	texture_cache.clear();
 }
 
-core::recti ButtonLayout::getRect(touch_gui_button_id btn, const ButtonMeta &meta, ISimpleTextureSource *tsrc)
+core::recti ButtonLayout::getRect(touch_gui_button_id btn,
+		v2u32 screensize, s32 button_size, ISimpleTextureSource *tsrc)
 {
+	const ButtonMeta &meta = layout.at(btn);
+	v2s32 pos = meta.getPos(screensize, button_size);
+	f32 height = button_size * meta.scale;
+
 	v2u32 orig_size = getTexture(btn, tsrc)->getOriginalSize();
-	v2s32 size((f32)orig_size.X / (f32)orig_size.Y * meta.height, meta.height);
-	return core::recti(meta.pos - size / 2, core::dimension2di(size));
+	v2s32 size((f32)orig_size.X / (f32)orig_size.Y * height, height);
+
+	return core::recti(pos - size / 2, core::dimension2di(size));
 }
 
 std::vector<touch_gui_button_id> ButtonLayout::getMissingButtons()
@@ -219,14 +246,17 @@ std::vector<touch_gui_button_id> ButtonLayout::getMissingButtons()
 void ButtonLayout::serializeJson(std::ostream &os) const
 {
 	Json::Value root = Json::objectValue;
+	root["layout"] = Json::objectValue;
 
 	for (const auto &[id, meta] : layout) {
 		Json::Value button = Json::objectValue;
-		button["x"] = meta.pos.X;
-		button["y"] = meta.pos.Y;
-		button["height"] = meta.height;
+		button["anchor_x"] = meta.anchor.X;
+		button["anchor_y"] = meta.anchor.Y;
+		button["offset_x"] = meta.offset.X;
+		button["offset_y"] = meta.offset.Y;
+		button["scale"] = meta.scale;
 
-		root[button_names[id]] = button;
+		root["layout"][button_names[id]] = button;
 	}
 
 	fastWriteJson(root, os);
@@ -243,28 +273,40 @@ static touch_gui_button_id button_name_to_id(const std::string &name)
 
 void ButtonLayout::deserializeJson(std::istream &is)
 {
+	layout.clear();
+
 	Json::Value root;
 	is >> root;
 
-	layout.clear();
+	if (!root["layout"].isObject())
+		throw Json::RuntimeError("invalid type for layout");
 
+	Json::Value &obj = root["layout"];
 	Json::ValueIterator iter;
-	for (iter = root.begin(); iter != root.end(); iter++) {
+	for (iter = obj.begin(); iter != obj.end(); iter++) {
 		touch_gui_button_id id = button_name_to_id(iter.name());
 		if (!isButtonAllowed(id))
-			continue;
+			throw Json::RuntimeError("invalid button name");
 
 		Json::Value &value = *iter;
 		if (!value.isObject())
-			continue;
+			throw Json::RuntimeError("invalid type for button metadata");
 
 		ButtonMeta meta;
 
-		if (!value["x"].isInt() || !value["y"].isInt() || !value["height"].isInt())
-			continue;
-		meta.pos.X = value["x"].asInt();
-		meta.pos.Y = value["y"].asInt();
-		meta.height = value["height"].asInt();
+		if (!value["anchor_x"].isNumeric() || !value["anchor_y"].isNumeric())
+			throw Json::RuntimeError("invalid type for anchor_x or anchor_y in button metadata");
+		meta.anchor.X = value["anchor_x"].asFloat();
+		meta.anchor.Y = value["anchor_y"].asFloat();
+
+		if (!value["offset_x"].isNumeric() || !value["offset_y"].isNumeric())
+			throw Json::RuntimeError("invalid type for offset_x or offset_y in button metadata");
+		meta.offset.X = value["offset_x"].asFloat();
+		meta.offset.Y = value["offset_y"].asFloat();
+
+		if (!value["scale"].isNumeric())
+			throw Json::RuntimeError("invalid type for scale in button metadata");
+		meta.scale = value["scale"].asFloat();
 
 		layout.emplace(id, meta);
 	}
@@ -286,18 +328,20 @@ void layout_button_grid(v2u32 screensize, ISimpleTextureSource *tsrc,
 			cols++;
 	}
 
-	u32 btn_height = ButtonLayout::getButtonSize(screensize);
+	s32 button_size = ButtonLayout::getButtonSize(screensize);
 	v2s32 spacing(screensize.X / (cols + 1), screensize.Y / (rows + 1));
 	v2s32 pos(spacing);
 
 	for (touch_gui_button_id btn : buttons) {
-		core::recti rect = ButtonLayout::getRect(
-				btn, ButtonMeta{pos, btn_height}, tsrc);
+		v2u32 orig_size = ButtonLayout::getTexture(btn, tsrc)->getOriginalSize();
+		v2s32 size((f32)orig_size.X / (f32)orig_size.Y * button_size, button_size);
+
+		core::recti rect(pos - size / 2, core::dimension2di(size));
 
 		if (rect.LowerRightCorner.X > (s32)screensize.X) {
 			pos.X = spacing.X;
 			pos.Y += spacing.Y;
-			rect = ButtonLayout::getRect(btn, ButtonMeta{pos, btn_height}, tsrc);
+			rect = core::recti(pos - size / 2, core::dimension2di(size));
 		}
 
 		callback(btn, pos, rect);

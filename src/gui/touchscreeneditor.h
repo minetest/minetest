@@ -49,6 +49,8 @@ private:
 	ISimpleTextureSource *m_tsrc;
 
 	ButtonLayout m_layout;
+	v2u32 m_last_screensize;
+	s32 m_button_size;
 
 	std::unordered_map<touch_gui_button_id, std::shared_ptr<gui::IGUIImage>> m_gui_images;
 	// unused if m_add_mode == true

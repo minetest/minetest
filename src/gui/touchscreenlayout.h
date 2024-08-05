@@ -63,23 +63,36 @@ extern const char *button_titles[];
 extern const char *button_image_names[];
 
 struct ButtonMeta {
-	// pos refers to the center of the button
-	v2s32 pos;
-	u32 height;
+	// anchor is a position specified as a percentage of the screensize
+	// in the range [0,1].
+	v2f anchor;
+	// offset is multiplied by the global button size before it is applied.
+	// Together, anchor and offset define the position of the button's center.
+	v2f offset;
+
+	// scale is a multiplier for the button size.
+	f32 scale;
+
+	// Returns the button's effective center position in pixels.
+	v2s32 getPos(v2u32 screensize, s32 button_size) const;
+	// Sets the button's effective center position in pixels.
+	void setPos(v2s32 pos, v2u32 screensize, s32 button_size);
 };
 
 struct ButtonLayout {
-	std::unordered_map<touch_gui_button_id, ButtonMeta> layout;
-
 	static bool isButtonAllowed(touch_gui_button_id id);
 	static bool isButtonRequired(touch_gui_button_id id);
 	static s32 getButtonSize(v2u32 screensize);
-    static ButtonLayout getDefault(v2u32 screensize);
-	static ButtonLayout loadFromSettings(v2u32 screensize);
+	static ButtonLayout getDefault();
+	static ButtonLayout loadFromSettings();
 
-    static video::ITexture *getTexture(touch_gui_button_id btn, ISimpleTextureSource *tsrc);
+	static video::ITexture *getTexture(touch_gui_button_id btn, ISimpleTextureSource *tsrc);
 	static void clearTextureCache();
-	static core::recti getRect(touch_gui_button_id btn, const ButtonMeta &meta, ISimpleTextureSource *tsrc);
+
+	std::unordered_map<touch_gui_button_id, ButtonMeta> layout;
+
+	core::recti getRect(touch_gui_button_id btn,
+			v2u32 screensize, s32 button_size, ISimpleTextureSource *tsrc);
 
 	std::vector<touch_gui_button_id> getMissingButtons();
 
@@ -92,7 +105,7 @@ private:
 
 void layout_button_grid(v2u32 screensize, ISimpleTextureSource *tsrc,
 		const std::vector<touch_gui_button_id> &buttons,
-		// pos refers to the center of the button
+		// pos refers to the center of the button.
 		const std::function<void(touch_gui_button_id btn, v2s32 pos, core::recti rect)> &callback);
 
 void make_button_grid_title(gui::IGUIStaticText *text,
