@@ -83,6 +83,16 @@ void read_item_definition(lua_State* L, int index,
 	def.usable = lua_isfunction(L, -1);
 	lua_pop(L, 1);
 
+	lua_pushstring(L, "on_place");
+	lua_rawget(L, index);
+	def.has_on_place = lua_isfunction(L, -1);
+	lua_pop(L, 1);
+
+	lua_pushstring(L, "on_secondary_use");
+	lua_rawget(L, index);
+	def.has_on_secondary_use = lua_isfunction(L, -1);
+	lua_pop(L, 1);
+
 	getboolfield(L, index, "liquids_pointable", def.liquids_pointable);
 
 	lua_getfield(L, index, "pointabilities");

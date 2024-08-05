@@ -147,6 +147,7 @@ void set_default_settings()
 	settings->setDefault("keymap_dig", "KEY_LBUTTON");
 	settings->setDefault("keymap_place", "KEY_RBUTTON");
 	settings->setDefault("keymap_drop", "KEY_KEY_Q");
+	settings->setDefault("keymap_swap_offhand", "KEY_KEY_F");
 	settings->setDefault("keymap_zoom", "KEY_KEY_Z");
 	settings->setDefault("keymap_inventory", "KEY_KEY_I");
 	settings->setDefault("keymap_aux1", "KEY_KEY_E");
@@ -280,6 +281,7 @@ void set_default_settings()
 	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("view_bobbing_amount", "1.0");
 	settings->setDefault("fall_bobbing_amount", "0.03");
+	settings->setDefault("swap_hands", "false");
 	settings->setDefault("enable_3d_clouds", "true");
 	settings->setDefault("cloud_radius", "12");
 	settings->setDefault("menu_clouds", "true");

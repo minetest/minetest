@@ -142,6 +142,8 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	node_placement_prediction = def.node_placement_prediction;
 	place_param2 = def.place_param2;
 	wallmounted_rotate_vertical = def.wallmounted_rotate_vertical;
+	has_on_place = def.has_on_place;
+	has_on_secondary_use = def.has_on_secondary_use;
 	sound_place = def.sound_place;
 	sound_place_failed = def.sound_place_failed;
 	sound_use = def.sound_use;
@@ -195,6 +197,8 @@ void ItemDefinition::reset()
 	node_placement_prediction.clear();
 	place_param2.reset();
 	wallmounted_rotate_vertical = false;
+	has_on_place = false;
+	has_on_secondary_use = false;
 	touch_interaction = TouchInteraction();
 }
 
@@ -251,6 +255,9 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 
 	sound_use.serializeSimple(os, protocol_version);
 	sound_use_air.serializeSimple(os, protocol_version);
+
+	writeU8(os, has_on_place);
+	writeU8(os, has_on_secondary_use);
 
 	os << (u8)place_param2.has_value(); // protocol_version >= 43
 	if (place_param2)
@@ -339,6 +346,9 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 
 		sound_use.deSerializeSimple(is, protocol_version);
 		sound_use_air.deSerializeSimple(is, protocol_version);
+
+		has_on_place = readU8(is);
+		has_on_secondary_use = readU8(is);
 
 		if (is.eof())
 			throw SerializationError("");
