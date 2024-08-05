@@ -3659,9 +3659,6 @@ Player Inventory lists
     * Is not created automatically, use `InvRef:set_size`
     * Is only used to enhance the empty hand's tool capabilities
 
-Custom lists can be added via `minetest.set_size("name", size)`. Setting `size`
-to `0` deletes a list
-
 ItemStack transaction order
 ---------------------------
 
