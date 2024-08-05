@@ -7405,6 +7405,7 @@ For historical reasons, the use of an -s suffix in these names is inconsistent.
 * `minetest.registered_craft_predicts`
 * `minetest.registered_on_item_eats`
 * `minetest.registered_on_item_pickups`
+* `minetest.registered_on_item_drops`
 * `minetest.registered_on_punchplayers`
 * `minetest.registered_on_authplayers`
 * `minetest.registered_on_player_inventory_actions`
