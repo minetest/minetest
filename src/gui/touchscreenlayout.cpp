@@ -99,7 +99,8 @@ const char *button_image_names[] = {
 	"camera_btn.png",
 	"rangeview_btn.png",
 	"minimap_btn.png",
-	"chat_hide_btn.png", // FIXME
+	// toggle button: switches between "chat_hide_btn.png" and "chat_show_btn.png"
+	"chat_hide_btn.png",
 
 	"joystick_off.png",
 	"joystick_bg.png",

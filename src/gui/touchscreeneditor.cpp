@@ -67,6 +67,13 @@ void GUITouchscreenLayout::regenerateGui(v2u32 screensize)
 	DesiredRect = core::recti(0, 0, screensize.X, screensize.Y);
 	recalculateAbsolutePosition(false);
 
+	// Discard invalid selection. May happen when...
+	// 1. a button is removed.
+	// 2. adding a button fails and it disappears from the layout again.
+	if (m_selected_btn != touch_gui_button_id_END &&
+			m_layout.layout.count(m_selected_btn) == 0)
+		m_selected_btn = touch_gui_button_id_END;
+
 	if (m_add_mode)
 		regenerateGUIImagesAddMode(screensize);
 	else
@@ -118,9 +125,7 @@ void GUITouchscreenLayout::regenerateGUIImagesAddMode(v2u32 screensize)
 		auto img = grab_gui_element<IGUIImage>(Environment->addImage(rect, this, -1));
 		img->setImage(ButtonLayout::getTexture(btn, m_tsrc));
 		img->setScaleImage(true);
-
 		m_gui_images[btn] = img;
-		m_gui_images_target_pos[btn] = rect.UpperLeftCorner;
 
 		m_add_layout.layout[btn] = ButtonMeta{pos, (u32)rect.getHeight()};
 
@@ -181,13 +186,6 @@ static void layout_menu_row(v2u32 screensize,
 
 void GUITouchscreenLayout::regenerateMenu(v2u32 screensize)
 {
-	// Discard invalid selection. May happen when...
-	// 1. a button is removed.
-	// 2. adding a button fails and it disappears from the layout again.
-	if (m_selected_btn != touch_gui_button_id_END &&
-			m_layout.layout.count(m_selected_btn) == 0)
-		m_selected_btn = touch_gui_button_id_END;
-
 	bool have_selection = m_selected_btn != touch_gui_button_id_END;
 
 	if (m_add_mode)
