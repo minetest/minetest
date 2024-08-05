@@ -1488,7 +1488,7 @@ Look for examples in `games/devtest` or `games/minetest_game`.
     * For supported model formats see Irrlicht engine documentation.
 * `plantlike_rooted`
     * Enables underwater `plantlike` without air bubbles around the nodes.
-    * Consists of a base cube at the co-ordinates of the node plus a
+    * Consists of a base cube at the coordinates of the node plus a
       `plantlike` extension above
     * If `paramtype2="leveled", the `plantlike` extension has a height
       of `param2 / 16` nodes, otherwise it's the height of 1 node
@@ -3062,7 +3062,7 @@ Elements
 ### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]`
 
 * Scrollable item list showing arbitrary text elements
-* `name` fieldname sent to server on doubleclick value is current selected
+* `name` fieldname sent to server on double-click value is current selected
   element.
 * `listelements` can be prepended by #color in hexadecimal format RRGGBB
   (only).
@@ -3071,7 +3071,7 @@ Elements
 ### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]`
 
 * Scrollable itemlist showing arbitrary text elements
-* `name` fieldname sent to server on doubleclick value is current selected
+* `name` fieldname sent to server on double-click value is current selected
   element.
 * `listelements` can be prepended by #RRGGBB (only) in hexadecimal format
     * if you want a listelement to start with "#" write "##"
@@ -3208,7 +3208,7 @@ Elements
 
 * Show scrollable table using options defined by the previous `tableoptions[]`
 * Displays cells as defined by the previous `tablecolumns[]`
-* `name`: fieldname sent to server on row select or doubleclick
+* `name`: fieldname sent to server on row select or double-click
 * `cell 1`...`cell n`: cell contents given in row-major order
 * `selected idx`: index of row to be selected within table (first row = `1`)
 * See also `minetest.explode_table_event`
@@ -4239,7 +4239,7 @@ Perlin noise
 ============
 
 Perlin noise creates a continuously-varying value depending on the input values.
-Usually in Minetest the input values are either 2D or 3D co-ordinates in nodes.
+Usually in Minetest the input values are either 2D or 3D coordinates in nodes.
 The result is used during map generation to create the terrain shape, vary heat
 and humidity to distribute biomes, vary the density of decorations or vary the
 structure of ores.
@@ -4502,7 +4502,7 @@ computationally expensive than any other ore.
 Creates a single undulating ore stratum that is continuous across mapchunk
 borders and horizontally spans the world.
 
-The 2D perlin noise described by `noise_params` defines the Y co-ordinate of
+The 2D perlin noise described by `noise_params` defines the Y coordinate of
 the stratum midpoint. The 2D perlin noise described by `np_stratum_thickness`
 defines the stratum's vertical thickness (in units of nodes). Due to being
 continuous across mapchunk borders the stratum's vertical thickness is
@@ -5435,7 +5435,7 @@ Utilities
       dynamic_add_media_filepath = true,
        -- L-system decoration type (5.9.0)
       lsystem_decoration_type = true,
-      -- Overrideable pointing range using the itemstack meta key `"range"` (5.9.0)
+      -- Overridable pointing range using the itemstack meta key `"range"` (5.9.0)
       item_meta_range = true,
       -- Allow passing an optional "actor" ObjectRef to the following functions:
       -- minetest.place_node, minetest.dig_node, minetest.punch_node (5.9.0)
@@ -5737,7 +5737,7 @@ Call these functions only at load time!
 * `minetest.register_on_generated(function(minp, maxp, blockseed))`
     * Called after generating a piece of world between `minp` and `maxp`.
     * **Avoid using this** whenever possible. As with other callbacks this blocks
-      the main thread and introduces noticable latency.
+      the main thread and introduces noticeable latency.
       Consider [Mapgen environment] for an alternative.
 * `minetest.register_on_newplayer(function(ObjectRef))`
     * Called when a new player enters the world for the first time
@@ -6401,11 +6401,11 @@ Environment access
     * spread these updates to neighbors and can cause a cascade
       of nodes to fall.
 * `minetest.get_spawn_level(x, z)`
-    * Returns a player spawn y co-ordinate for the provided (x, z)
-      co-ordinates, or `nil` for an unsuitable spawn point.
+    * Returns a player spawn y coordinate for the provided (x, z)
+      coordinates, or `nil` for an unsuitable spawn point.
     * For most mapgens a 'suitable spawn point' is one with y between
       `water_level` and `water_level + 16`, and in mgv7 well away from rivers,
-      so `nil` will be returned for many (x, z) co-ordinates.
+      so `nil` will be returned for many (x, z) coordinates.
     * The spawn level returned is for a player spawn in unmodified terrain.
     * The spawn level is intentionally above terrain level to cope with
       full-node biome 'dust' nodes.
@@ -6885,7 +6885,7 @@ Server
                        all players (optional)
         * `ephemeral`: boolean that marks the media as ephemeral,
                        it will not be cached on the client (optional, default false)
-        * Exactly one of the paramters marked [*] must be specified.
+        * Exactly one of the parameters marked [*] must be specified.
     * `callback`: function with arguments `name`, which is a player name
     * Pushes the specified media file to client(s). (details below)
       The file must be a supported image, sound or model format.
@@ -7716,7 +7716,7 @@ metadata_table = {
     -- metadata fields (key/value store)
     fields = {
         infotext = "Container",
-        anoter_key = "Another Value",
+        another_key = "Another Value",
     },
 
     -- inventory data (for nodes)
@@ -8016,7 +8016,7 @@ child will follow movement and rotation of that bone.
     * `rot` is a vector (radians). X is pitch (elevation), Y is yaw (heading)
       and Z is roll (bank).
     * Does not reset rotation incurred through `automatic_rotate`.
-      Remove & readd your objects to force a certain rotation.
+      Remove & re-add your objects to force a certain rotation.
 * `get_rotation()`: returns the rotation, a vector (radians)
 * `set_yaw(yaw)`: sets the yaw in radians (heading).
 * `get_yaw()`: returns number in radians
@@ -10345,7 +10345,7 @@ See [Decoration types]. Used by `minetest.register_decoration`.
     y_min = -31000,
     y_max = 31000,
     -- Lower and upper limits for decoration (inclusive).
-    -- These parameters refer to the Y co-ordinate of the 'place_on' node.
+    -- These parameters refer to the Y coordinate of the 'place_on' node.
 
     spawn_by = "default:water",
     -- Node (or list of nodes) that the decoration only spawns next to.
