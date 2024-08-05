@@ -145,6 +145,11 @@ private:
 
 	bool gridFilled(int x, int y) const;
 
+	// Are the clouds 3D?
+	inline bool is3D() const {
+		return m_enable_3d && m_params.thickness >= 0.01f;
+	}
+
 	video::SMaterial m_material;
 	irr_ptr<scene::SMeshBuffer> m_meshbuffer;
 	// Value of m_origin at the time the mesh was last updated
