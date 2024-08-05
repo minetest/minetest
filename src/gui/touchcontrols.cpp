@@ -7,6 +7,7 @@
 #include "touchcontrols.h"
 
 #include "gettime.h"
+#include "gui/touchscreenlayout.h"
 #include "irr_v2d.h"
 #include "log.h"
 #include "porting.h"
@@ -15,7 +16,6 @@
 #include "client/keycode.h"
 #include "client/renderingengine.h"
 #include "util/numeric.h"
-#include "gettext.h"
 #include "irr_gui_ptr.h"
 #include "IGUIStaticText.h"
 #include "IGUIFont.h"
@@ -26,59 +26,6 @@
 #include <algorithm>
 
 TouchControls *g_touchcontrols;
-
-static const char *button_image_names[] = {
-	"jump_btn.png",
-	"down.png",
-	"zoom.png",
-	"aux1_btn.png",
-	"overflow_btn.png",
-
-	"fly_btn.png",
-	"noclip_btn.png",
-	"fast_btn.png",
-	"debug_btn.png",
-	"camera_btn.png",
-	"rangeview_btn.png",
-	"minimap_btn.png",
-	"",
-
-	"chat_btn.png",
-	"inventory_btn.png",
-	"drop_btn.png",
-	"exit_btn.png",
-
-	"joystick_off.png",
-	"joystick_bg.png",
-	"joystick_center.png",
-};
-
-// compare with GUIKeyChangeMenu::init_keys
-static const char *button_titles[] = {
-	N_("Jump"),
-	N_("Sneak"),
-	N_("Zoom"),
-	N_("Aux1"),
-	N_("Overflow menu"),
-
-	N_("Toggle fly"),
-	N_("Toggle noclip"),
-	N_("Toggle fast"),
-	N_("Toggle debug"),
-	N_("Change camera"),
-	N_("Range select"),
-	N_("Toggle minimap"),
-	N_("Toggle chat log"),
-
-	N_("Chat"),
-	N_("Inventory"),
-	N_("Drop"),
-	N_("Exit"),
-
-	N_("Joystick"),
-	N_("Joystick"),
-	N_("Joystick"),
-};
 
 static void load_button_texture(IGUIImage *gui_button, const std::string &path,
 		const recti &button_rect, ISimpleTextureSource *tsrc, video::IVideoDriver *driver)
@@ -195,6 +142,8 @@ static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 	// ESC isn't part of the keymap.
 	if (id == exit_id)
 		return KEY_ESCAPE;
+	if (id == overflow_id)
+		return KEY_UNKNOWN;
 
 	std::string key = "";
 	switch (id) {
@@ -270,9 +219,21 @@ TouchControls::TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc)
 	m_fixed_joystick = g_settings->getBool("fixed_virtual_joystick");
 	m_joystick_triggers_aux1 = g_settings->getBool("virtual_joystick_triggers_aux1");
 	m_screensize = m_device->getVideoDriver()->getScreenSize();
-	m_button_size = MYMIN(m_screensize.Y / 4.5f,
-			RenderingEngine::getDisplayDensity() * 65.0f *
-					g_settings->getFloat("hud_scaling"));
+
+	m_button_size = ButtonLayout::getButtonSize(m_screensize);
+	applyLayout(ButtonLayout::loadFromSettings(m_screensize));
+}
+
+void TouchControls::applyLayout(const ButtonLayout &layout)
+{
+	m_layout = layout;
+
+	m_buttons.clear();
+	m_overflow_btn = nullptr;
+	m_overflow_bg = nullptr;
+	m_overflow_buttons.clear();
+	m_overflow_button_titles.clear();
+	m_overflow_button_rects.clear();
 
 	// Initialize joystick display "button".
 	// Joystick is placed on the bottom left of screen.
@@ -299,47 +260,23 @@ TouchControls::TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc)
 	m_joystick_btn_center = grab_gui_element<IGUIImage>(makeButtonDirect(joystick_center_id,
 			recti(0, 0, m_button_size, m_button_size), false));
 
-	// init jump button
-	addButton(m_buttons, jump_id, button_image_names[jump_id],
-			recti(m_screensize.X - 1.75f * m_button_size,
-					m_screensize.Y - m_button_size,
-					m_screensize.X - 0.25f * m_button_size,
-					m_screensize.Y));
+	for (const auto &[id, meta] : m_layout.layout) {
+		if (!ButtonLayout::isButtonAllowed(id))
+			continue;
+		if (id == aux1_id && m_joystick_triggers_aux1)
+			continue;
 
-	// init sneak button
-	addButton(m_buttons, sneak_id, button_image_names[sneak_id],
-			recti(m_screensize.X - 3.25f * m_button_size,
-					m_screensize.Y - m_button_size,
-					m_screensize.X - 1.75f * m_button_size,
-					m_screensize.Y));
-
-	// init zoom button
-	addButton(m_buttons, zoom_id, button_image_names[zoom_id],
-			recti(m_screensize.X - 1.25f * m_button_size,
-					m_screensize.Y - 4 * m_button_size,
-					m_screensize.X - 0.25f * m_button_size,
-					m_screensize.Y - 3 * m_button_size));
-
-	// init aux1 button
-	if (!m_joystick_triggers_aux1)
-		addButton(m_buttons, aux1_id, button_image_names[aux1_id],
-				recti(m_screensize.X - 1.25f * m_button_size,
-						m_screensize.Y - 2.5f * m_button_size,
-						m_screensize.X - 0.25f * m_button_size,
-						m_screensize.Y - 1.5f * m_button_size));
-
-	// init overflow button
-	m_overflow_btn = grab_gui_element<IGUIImage>(makeButtonDirect(overflow_id,
-				recti(m_screensize.X - 1.25f * m_button_size,
-						m_screensize.Y - 5.5f * m_button_size,
-						m_screensize.X - 0.25f * m_button_size,
-						m_screensize.Y - 4.5f * m_button_size), true));
-
-	const static touch_gui_button_id overflow_buttons[] {
-		chat_id, inventory_id, drop_id, exit_id,
-		fly_id, noclip_id, fast_id, debug_id, camera_id, range_id, minimap_id,
-		toggle_chat_id,
-	};
+		recti rect = ButtonLayout::getRect(id, meta, m_texturesource);
+		if (id == toggle_chat_id)
+			// Chat is shown by default, so chat_hide_btn.png is shown first.
+			addToggleButton(m_buttons, id, "chat_hide_btn.png",
+					"chat_show_btn.png", rect, true);
+		else if (id == overflow_id)
+			m_overflow_btn = grab_gui_element<IGUIImage>(
+					makeButtonDirect(id, rect, true));
+		else
+			addButton(m_buttons, id, button_image_names[id], rect, true);
+	}
 
 	IGUIStaticText *background = m_guienv->addStaticText(L"",
 			recti(v2s32(0, 0), dimension2du(m_screensize)));
@@ -347,31 +284,9 @@ TouchControls::TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc)
 	background->setVisible(false);
 	m_overflow_bg = grab_gui_element<IGUIStaticText>(background);
 
-	s32 cols = 4;
-	s32 rows = 3;
-	f32 screen_aspect = (f32)m_screensize.X / (f32)m_screensize.Y;
-	while ((s32)ARRLEN(overflow_buttons) > cols * rows) {
-		f32 aspect = (f32)cols / (f32)rows;
-		if (aspect > screen_aspect)
-			rows++;
-		else
-			cols++;
-	}
-
-	v2s32 size(m_button_size, m_button_size);
-	v2s32 spacing(m_screensize.X / (cols + 1), m_screensize.Y / (rows + 1));
-	v2s32 pos(spacing);
-
-	for (auto id : overflow_buttons) {
+	layout_button_grid(m_screensize, m_texturesource, m_layout.getMissingButtons(), [&] (touch_gui_button_id id, v2s32 pos, recti rect) {
 		if (id_to_keycode(id) == KEY_UNKNOWN)
-			continue;
-
-		recti rect(pos - size / 2, dimension2du(size.X, size.Y));
-		if (rect.LowerRightCorner.X > (s32)m_screensize.X) {
-			pos.X = spacing.X;
-			pos.Y += spacing.Y;
-			rect = recti(pos - size / 2, dimension2du(size.X, size.Y));
-		}
+			return;
 
 		if (id == toggle_chat_id)
 			// Chat is shown by default, so chat_hide_btn.png is shown first.
@@ -380,23 +295,15 @@ TouchControls::TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc)
 		else
 			addButton(m_overflow_buttons, id, button_image_names[id], rect, false);
 
-		std::wstring str = wstrgettext(button_titles[id]);
-		IGUIStaticText *text = m_guienv->addStaticText(str.c_str(), recti());
-		IGUIFont *font = text->getActiveFont();
-		dimension2du dim = font->getDimension(str.c_str());
-		dim = dimension2du(dim.Width * 1.25f, dim.Height * 1.25f); // avoid clipping
-		text->setRelativePosition(recti(pos.X - dim.Width / 2, pos.Y + size.Y / 2,
-				pos.X + dim.Width / 2, pos.Y + size.Y / 2 + dim.Height));
-		text->setTextAlignment(EGUIA_CENTER, EGUIA_UPPERLEFT);
+		IGUIStaticText *text = m_guienv->addStaticText(L"", recti());
+		make_button_grid_title(text, id, pos, rect);
 		text->setVisible(false);
 		m_overflow_button_titles.push_back(grab_gui_element<IGUIStaticText>(text));
 
 		rect.addInternalPoint(text->getRelativePosition().UpperLeftCorner);
 		rect.addInternalPoint(text->getRelativePosition().LowerRightCorner);
 		m_overflow_button_rects.push_back(rect);
-
-		pos.X += spacing.X;
-	}
+	});
 
 	m_status_text = grab_gui_element<IGUIStaticText>(
 			m_guienv->addStaticText(L"", recti(), false, false));
