@@ -3658,6 +3658,9 @@ Player Inventory lists
 * `hand`: list containing an override for the empty hand
     * Is not created automatically, use `InvRef:set_size`
     * Is only used to enhance the empty hand's tool capabilities
+ 
+Custom lists can be added and deleted with `InvRef:set_size(name, size)` like
+any other inventory.
 
 ItemStack transaction order
 ---------------------------
