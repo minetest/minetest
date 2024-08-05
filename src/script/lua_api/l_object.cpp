@@ -228,8 +228,25 @@ int ObjectRef::l_set_hp(lua_State *L)
 	PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);
 
 	reason.from_mod = true;
+	
+	
+
 	if (lua_istable(L, 3)) {
 		lua_pushvalue(L, 3);
+
+		lua_getfield(L, -1, "raw");
+		if (lua_isstring(L, -1) && readParam<std::string>(L, -1) == "original")
+			reason.raw = true;
+		else if (lua_isstring(L, -1) && readParam<std::string>(L, -1) == "limited")
+			reason.raw = false;
+		else if (lua_isstring(L, -1))
+		{
+			errorstream << "Read a string for raw, but not a valid value!" << std::endl;
+			reason.raw = false;
+		}
+		else
+			reason.raw = false;
+		lua_pop(L, 1);
 
 		lua_getfield(L, -1, "type");
 		if (lua_isstring(L, -1) &&
