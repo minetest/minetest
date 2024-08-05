@@ -16,6 +16,7 @@
 #include "client/renderingengine.h"
 #include "util/numeric.h"
 #include "gettext.h"
+#include "irr_gui_ptr.h"
 #include "IGUIStaticText.h"
 #include "IGUIFont.h"
 #include <IrrlichtDevice.h>
