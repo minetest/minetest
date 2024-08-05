@@ -6,7 +6,7 @@ from collections import defaultdict
 codefiles = r"(\.[ch](pp)?|\.lua|\.md|\.cmake|\.java|\.gradle|Makefile|CMakeLists\.txt)$"
 
 # two minor versions back, for "Active Contributors"
-REVS_ACTIVE = "5.6.0..HEAD"
+REVS_ACTIVE = "5.7.0..HEAD"
 # all time, for "Previous Contributors"
 REVS_PREVIOUS = "HEAD"
 
@@ -46,7 +46,8 @@ def load(revs):
 	p.wait()
 
 	# Some authors duplicate? Don't add manual workarounds here, edit the .mailmap!
-	for author in ("updatepo.sh <script@mt>", "Weblate <42@minetest.ru>"):
+	for author in ("updatepo.sh <script@mt>", "Weblate <42@minetest.ru>",
+		"import <script@mt>", "minetest <minetest@minetest.net>"):
 		points.pop(author, None)
 	return points
 
