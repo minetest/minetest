@@ -28,6 +28,54 @@ function core.get_pointed_thing_position(pointed_thing, above)
 	end
 end
 
+-- Map each facedir to the result of applying
+-- right-hand rotation around y+ or z+ vector,
+-- further axes are precomputed on startup
+local rotated_facedir_map = {
+	["y+"] = {
+		[0] = 3, 0, 1, 2,
+		19, 16, 17, 18,
+		15, 12, 13, 14,
+		7, 4, 5, 6,
+		11, 8, 9, 10,
+		21, 22, 23, 20
+	},
+	["z+"] = {
+		[0] = 12, 13, 14, 15,
+		7, 4, 5, 6,
+		9, 10, 11, 8,
+		20, 21, 22, 23,
+		0, 1, 2, 3,
+		16, 17, 18, 19,
+	},
+}
+
+function core.rotate_facedir(rotation, vector_name, facedir)
+    if rotation == 0 then return facedir or 0 end
+    return core.rotate_facedir(rotation - 1, vector_name, rotated_facedir_map[vector_name][facedir or 0])
+end
+
+-- Define rotations around the four remaining axes
+local rotate_remaining = {
+	["x+"] = function (r, x)
+		return core.rotate_facedir(3, "y+", core.rotate_facedir(r, "z+", core.rotate_facedir(1, "y+", x))) end,
+	["x-"] = function (r, x)
+		return core.rotate_facedir(1, "y+", core.rotate_facedir(r, "z+", core.rotate_facedir(3, "y+", x))) end,
+	["y-"] = function (r, x)
+		return core.rotate_facedir(4 - r, "y+", x) end,
+	["z-"] = function (r, x)
+		return core.rotate_facedir(4 - r, "z+", x) end,
+}
+
+-- Precompute remaining axes
+for axis, rotate in pairs(rotate_remaining) do
+    local rotated_facedirs = {}
+    for x=0,23 do
+        rotated_facedirs[x] = rotate(1, x)
+    end
+    rotated_facedir_map[axis] = rotated_facedirs
+end
+
 local function has_all_groups(tbl, required_groups)
 	if type(required_groups) == "string" then
 		return (tbl[required_groups] or 0) ~= 0
