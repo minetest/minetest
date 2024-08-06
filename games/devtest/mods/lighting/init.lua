@@ -14,6 +14,14 @@ local lighting_sections = {
 			{n = "speed_bright_dark", d = "Dark scene adaptation speed", min = -10, max = 10, type="log2"},
 			{n = "center_weight_power", d = "Power factor for center-weighting", min = 0.1, max = 10},
 		}
+	},
+	{
+		n = "ambient_light", d = "Ambient Light",
+		entries = {
+			{n = "r", d = "Red", min = 0, max = 255},
+			{n = "g", d = "Green", min = 0, max = 255},
+			{n = "b", d = "Blue", min = 0, max = 255}
+		}
 	}
 }
 
@@ -61,7 +69,7 @@ minetest.register_chatcommand("set_lighting", {
 
 		local form = {
 			"formspec_version[2]",
-			"size[15,30]",
+			"size[15,32]",
 			"position[0.99,0.15]",
 			"anchor[1,0]",
 			"padding[0.05,0.1]",

@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <cmath>
 #include "client/texturesource.h"
+#include "light_colors.h"
 
 /*
 	MeshMakeData
@@ -281,49 +282,6 @@ u16 getSmoothLightTransparent(const v3s16 &p, const v3s16 &corner, MeshMakeData 
 	return getSmoothLightCombined(p, dirs, data);
 }
 
-void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio){
-	f32 rg = daynight_ratio / 1000.0f - 0.04f;
-	f32 b = (0.98f * daynight_ratio) / 1000.0f + 0.078f;
-	sunlight->r = rg;
-	sunlight->g = rg;
-	sunlight->b = b;
-}
-
-void final_color_blend(video::SColor *result,
-		u16 light, u32 daynight_ratio)
-{
-	video::SColorf dayLight;
-	get_sunlight_color(&dayLight, daynight_ratio);
-	final_color_blend(result,
-		encode_light(light, 0), dayLight);
-}
-
-void final_color_blend(video::SColor *result,
-		const video::SColor &data, const video::SColorf &dayLight)
-{
-	static const video::SColorf artificialColor(1.04f, 1.04f, 1.04f);
-
-	video::SColorf c(data);
-	f32 n = 1 - c.a;
-
-	f32 r = c.r * (c.a * dayLight.r + n * artificialColor.r) * 2.0f;
-	f32 g = c.g * (c.a * dayLight.g + n * artificialColor.g) * 2.0f;
-	f32 b = c.b * (c.a * dayLight.b + n * artificialColor.b) * 2.0f;
-
-	// Emphase blue a bit in darker places
-	// Each entry of this array represents a range of 8 blue levels
-	static const u8 emphase_blue_when_dark[32] = {
-		1, 4, 6, 6, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	};
-
-	b += emphase_blue_when_dark[irr::core::clamp((s32) ((r + g + b) / 3 * 255),
-		0, 255) / 8] / 255.0f;
-
-	result->setRed(core::clamp((s32) (r * 255.0f), 0, 255));
-	result->setGreen(core::clamp((s32) (g * 255.0f), 0, 255));
-	result->setBlue(core::clamp((s32) (b * 255.0f), 0, 255));
-}
 
 /*
 	Mesh generation helpers
@@ -813,7 +771,7 @@ MapBlockMesh::~MapBlockMesh()
 }
 
 bool MapBlockMesh::animate(bool faraway, float time, int crack,
-	u32 daynight_ratio)
+		u32 daynight_ratio)
 {
 	if (!m_has_animation) {
 		m_animation_force_timer = 100000;
@@ -885,7 +843,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 			video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
 			for (const auto &j : daynight_diff.second)
 				final_color_blend(&(vertices[j.first].Color), j.second,
-						day_color);
+								day_color);
 		}
 		m_last_daynight_ratio = daynight_ratio;
 	}
@@ -952,34 +910,6 @@ void MapBlockMesh::consolidateTransparentBuffers()
 	if (!current_strain.empty()) {
 		this->m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
 	}
-}
-
-video::SColor encode_light(u16 light, u8 emissive_light)
-{
-	// Get components
-	u32 day = (light & 0xff);
-	u32 night = (light >> 8);
-	// Add emissive light
-	night += emissive_light * 2.5f;
-	if (night > 255)
-		night = 255;
-	// Since we don't know if the day light is sunlight or
-	// artificial light, assume it is artificial when the night
-	// light bank is also lit.
-	if (day < night)
-		day = 0;
-	else
-		day = day - night;
-	u32 sum = day + night;
-	// Ratio of sunlight:
-	u32 r;
-	if (sum > 0)
-		r = day * 255 / sum;
-	else
-		r = 0;
-	// Average light:
-	float b = (day + night) / 2;
-	return video::SColor(r, b, b, b);
 }
 
 u8 get_solid_sides(MeshMakeData *data)
