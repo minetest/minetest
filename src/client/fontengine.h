@@ -50,6 +50,11 @@ struct FontSpec {
 		return (mode << 2) | (static_cast<u8>(bold) << 1) | static_cast<u8>(italic);
 	}
 
+	bool operator==(const FontSpec& other) const {
+		return size == other.size && mode == other.mode &&
+				bold == other.bold && italic == other.italic;
+	}
+
 	unsigned int size;
 	FontMode mode;
 	bool bold;

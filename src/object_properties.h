@@ -48,6 +48,9 @@ struct ObjectProperties
 	v3f visual_size = v3f(1, 1, 1);
 	video::SColor nametag_color = video::SColor(255, 255, 255, 255);
 	std::optional<video::SColor> nametag_bgcolor;
+	u8 nametag_font = 0;
+	bool nametag_bold = false;
+	bool nametag_italic = false;
 	v2s16 spritediv = v2s16(1, 1);
 	v2s16 initial_sprite_basepos;
 	f32 stepheight = 0.0f;
@@ -82,8 +85,8 @@ private:
 		// Make sure to add new members to this list!
 		return std::tie(
 		textures, colors, collisionbox, selectionbox, visual, mesh, damage_texture_modifier,
-		nametag, infotext, wield_item, visual_size, nametag_color, nametag_bgcolor,
-		spritediv, initial_sprite_basepos, stepheight, automatic_rotate,
+		nametag, infotext, wield_item, visual_size, nametag_color, nametag_bgcolor, nametag_font,
+		nametag_bold, nametag_italic, spritediv, initial_sprite_basepos, stepheight, automatic_rotate,
 		automatic_face_movement_dir_offset, automatic_face_movement_max_rotation_per_sec,
 		eye_height, zoom_fov, hp_max, breath_max, glow, pointable, physical,
 		collideWithObjects, rotate_selectionbox, is_visible, makes_footstep_sound,

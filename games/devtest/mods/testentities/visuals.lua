@@ -106,6 +106,9 @@ minetest.register_entity("testentities:nametag", {
 			local data = minetest.deserialize(staticdata)
 			self.color = data.color
 			self.bgcolor = data.bgcolor
+			self.font = data.font
+			self.bold = data.bold
+			self.italic = data.italic
 		else
 			self.color = {
 				r = math.random(0, 255),
@@ -121,6 +124,10 @@ minetest.register_entity("testentities:nametag", {
 					a = math.random(0, 255),
 				}
 			end
+
+			self.font = math.random() < 0.5 and "normal" or "mono"
+			self.bold = math.random() < 0.5
+			self.italic = math.random() < 0.5
 		end
 
 		assert(self.color)
@@ -128,7 +135,29 @@ minetest.register_entity("testentities:nametag", {
 			nametag = tostring(math.random(1000, 10000)),
 			nametag_color = self.color,
 			nametag_bgcolor = self.bgcolor,
+			nametag_font = self.font,
+			nametag_bold = self.bold,
+			nametag_italic = self.italic,
 		})
+	end,
+
+	on_punch = function(self, puncher)
+		local prop = self.object:get_properties()
+		-- flip attributes
+		local rotator = prop.nametag_color.r%3
+		if rotator == 0 then
+			self.object:set_nametag_attributes({
+				font = prop.nametag_font == "normal" and "mono" or "normal",
+			})
+		elseif rotator == 1 then
+			self.object:set_nametag_attributes({
+				bold = not prop.nametag_bold,
+			})
+		elseif rotator == 2 then
+			self.object:set_nametag_attributes({
+				italic = not prop.nametag_italic,
+			})
+		end
 	end,
 
 	get_staticdata = function(self)

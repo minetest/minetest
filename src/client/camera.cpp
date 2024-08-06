@@ -644,7 +644,6 @@ void Camera::drawNametags()
 	core::matrix4 trans = m_cameranode->getProjectionMatrix();
 	trans *= m_cameranode->getViewMatrix();
 
-	gui::IGUIFont *font = g_fontengine->getFont();
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	v2u32 screensize = driver->getScreenSize();
 
@@ -655,6 +654,8 @@ void Camera::drawNametags()
 		f32 transformed_pos[4] = { pos.X, pos.Y, pos.Z, 1.0f };
 		trans.multiplyWith1x4Matrix(transformed_pos);
 		if (transformed_pos[3] > 0) {
+			gui::IGUIFont *font = nametag->getFont();
+
 			std::wstring nametag_colorless =
 				unescape_translate(utf8_to_wide(nametag->text));
 			core::dimension2d<u32> textsize = font->getDimension(
@@ -683,9 +684,10 @@ void Camera::drawNametags()
 
 Nametag *Camera::addNametag(scene::ISceneNode *parent_node,
 		const std::string &text, video::SColor textcolor,
-		std::optional<video::SColor> bgcolor, const v3f &pos)
+		std::optional<video::SColor> bgcolor, const v3f &pos,
+		const FontSpec &font_spec)
 {
-	Nametag *nametag = new Nametag(parent_node, text, textcolor, bgcolor, pos);
+	Nametag *nametag = new Nametag(parent_node, text, textcolor, bgcolor, pos, font_spec);
 	m_nametags.push_back(nametag);
 	return nametag;
 }

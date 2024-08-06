@@ -5444,6 +5444,8 @@ Utilities
       moveresult_new_pos = true,
       -- Allow removing definition fields in `minetest.override_item` (5.9.0)
       override_item_remove_fields = true,
+      -- Nametags can be bold, italic and have a monospace font
+      nametag_formatted_text = true,
   }
   ```
 
@@ -7981,6 +7983,9 @@ child will follow movement and rotation of that bone.
           text = "",
           color = {a=0..255, r=0..255, g=0..255, b=0..255},
           bgcolor = {a=0..255, r=0..255, g=0..255, b=0..255},
+          font = "normal",
+          bold = true,
+          italic = false,
       }
       ```
 * `set_nametag_attributes(attributes)`
@@ -7995,6 +8000,12 @@ child will follow movement and rotation of that bone.
           -- ^ Sets background color of nametag
           -- `false` will cause the background to be set automatically based on user settings
           -- Default: false
+          font = "normal",
+          -- ^ Can be `"normal"` for the default font and `"mono"` for the monospaced font
+          bold = true,
+          -- ^ If true the text is bold
+          italic = false,
+          -- ^ If true the text is italic
       }
       ```
 
@@ -8873,6 +8884,17 @@ Player properties need to be saved manually.
     -- Sets background color of nametag
     -- `false` will cause the background to be set automatically based on user settings.
     -- Default: false
+
+    nametag_font = "mono",
+    -- Sets the font of the nametag
+    -- can be `"normal"` for the default font
+    -- or `"mono"` for the monospaced font.
+
+    nametag_bold = false,
+    -- If true the nametag text is bold.
+
+    nametag_italic = false,
+    -- If true the nametag text is italic.
 
     infotext = "",
     -- Same as infotext for nodes. Empty by default

@@ -449,6 +449,18 @@ void read_object_properties(lua_State *L, int index,
 	}
 	lua_pop(L, 1);
 
+
+	std::string font_mode;
+	if (getstringfield(L, -1, "nametag_font", font_mode)) {
+		if (font_mode == "mono") {
+			prop->nametag_font = 1;
+		} else {
+			prop->nametag_font = 0; // for font_mode == "normal" or else
+		}
+	}
+	getboolfield(L, -1, "nametag_bold", prop->nametag_bold);
+	getboolfield(L, -1, "nametag_italic", prop->nametag_italic);
+
 	getstringfield(L, -1, "infotext", prop->infotext);
 	getboolfield(L, -1, "static_save", prop->static_save);
 
@@ -547,6 +559,18 @@ void push_object_properties(lua_State *L, const ObjectProperties *prop)
 		lua_pushboolean(L, false);
 		lua_setfield(L, -2, "nametag_bgcolor");
 	}
+	if(prop->nametag_font == 1) {
+		lua_pushstring(L, "mono");
+	} else if (prop->nametag_font == 0) {
+		lua_pushstring(L, "normal");
+	} else {
+		lua_pushstring(L, "unknown");
+	}
+	lua_setfield(L, -2, "nametag_font");
+	lua_pushboolean(L, prop->nametag_bold);
+	lua_setfield(L, -2, "nametag_bold");
+	lua_pushboolean(L, prop->nametag_italic);
+	lua_setfield(L, -2, "nametag_italic");
 	lua_pushlstring(L, prop->infotext.c_str(), prop->infotext.size());
 	lua_setfield(L, -2, "infotext");
 	lua_pushboolean(L, prop->static_save);
