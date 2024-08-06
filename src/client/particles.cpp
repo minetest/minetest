@@ -357,8 +357,8 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 
 	if (attached_absolute_pos_rot_matrix) {
 		// Apply attachment rotation
-		attached_absolute_pos_rot_matrix->rotateVect(pp.vel);
-		attached_absolute_pos_rot_matrix->rotateVect(pp.acc);
+		attached_absolute_pos_rot_matrix->rotateAndScaleVect(pp.vel);
+		attached_absolute_pos_rot_matrix->rotateAndScaleVect(pp.acc);
 	}
 
 	if (attractor_obj)
@@ -366,7 +366,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	if (attractor_direction_obj) {
 		auto *attractor_absolute_pos_rot_matrix = attractor_direction_obj->getAbsolutePosRotMatrix();
 		if (attractor_absolute_pos_rot_matrix)
-			attractor_absolute_pos_rot_matrix->rotateVect(attractor_direction);
+			attractor_absolute_pos_rot_matrix->rotateAndScaleVect(attractor_direction);
 	}
 
 	pp.expirationtime = r_exp.pickWithin();

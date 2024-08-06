@@ -24,7 +24,7 @@ namespace core
 {
 
 //! 4x4 matrix. Mostly used as transformation matrix for 3d calculations.
-/** The matrix is a D3D style matrix, row major with translations in the 4th row. */
+/** The matrix is stored in column major order, with translations in the 4th row. */
 template <class T>
 class CMatrix4
 {
@@ -242,17 +242,11 @@ public:
 	//! Translate a vector by the inverse of the translation part of this matrix.
 	void inverseTranslateVect(vector3df &vect) const;
 
-	//! Rotate a vector by the inverse of the rotation part of this matrix.
-	void inverseRotateVect(vector3df &vect) const;
+	//! Scale a vector, then rotate by the inverse of the rotation part of this matrix.
+	void scaleThenInvRotVect(vector3df &vect) const;
 
-	//! Rotate a vector by the rotation part of this matrix.
-	void rotateVect(vector3df &vect) const;
-
-	//! An alternate transform vector method, writing into a second vector
-	void rotateVect(core::vector3df &out, const core::vector3df &in) const;
-
-	//! An alternate transform vector method, writing into an array of 3 floats
-	void rotateVect(T *out, const core::vector3df &in) const;
+	//! Rotate and scale a vector. Applies both rotation & scale part of the matrix.
+	void rotateAndScaleVect(vector3df &vect) const;
 
 	//! Transforms the vector by this matrix
 	/** This operation is performed as if the vector was 4d with the 4th component =1 */
@@ -1154,7 +1148,7 @@ inline bool CMatrix4<T>::isIdentity_integer_base() const
 }
 
 template <class T>
-inline void CMatrix4<T>::rotateVect(vector3df &vect) const
+inline void CMatrix4<T>::rotateAndScaleVect(vector3df &vect) const
 {
 	vector3d<T> tmp(static_cast<T>(vect.X), static_cast<T>(vect.Y), static_cast<T>(vect.Z));
 	vect.X = static_cast<f32>(tmp.X * M[0] + tmp.Y * M[4] + tmp.Z * M[8]);
@@ -1162,26 +1156,8 @@ inline void CMatrix4<T>::rotateVect(vector3df &vect) const
 	vect.Z = static_cast<f32>(tmp.X * M[2] + tmp.Y * M[6] + tmp.Z * M[10]);
 }
 
-//! An alternate transform vector method, writing into a second vector
 template <class T>
-inline void CMatrix4<T>::rotateVect(core::vector3df &out, const core::vector3df &in) const
-{
-	out.X = in.X * M[0] + in.Y * M[4] + in.Z * M[8];
-	out.Y = in.X * M[1] + in.Y * M[5] + in.Z * M[9];
-	out.Z = in.X * M[2] + in.Y * M[6] + in.Z * M[10];
-}
-
-//! An alternate transform vector method, writing into an array of 3 floats
-template <class T>
-inline void CMatrix4<T>::rotateVect(T *out, const core::vector3df &in) const
-{
-	out[0] = in.X * M[0] + in.Y * M[4] + in.Z * M[8];
-	out[1] = in.X * M[1] + in.Y * M[5] + in.Z * M[9];
-	out[2] = in.X * M[2] + in.Y * M[6] + in.Z * M[10];
-}
-
-template <class T>
-inline void CMatrix4<T>::inverseRotateVect(vector3df &vect) const
+inline void CMatrix4<T>::scaleThenInvRotVect(vector3df &vect) const
 {
 	vector3d<T> tmp(static_cast<T>(vect.X), static_cast<T>(vect.Y), static_cast<T>(vect.Z));
 	vect.X = static_cast<f32>(tmp.X * M[0] + tmp.Y * M[1] + tmp.Z * M[2]);
@@ -1248,7 +1224,7 @@ inline void CMatrix4<T>::transformPlane(core::plane3d<f32> &plane) const
 	// Transform the normal by the transposed inverse of the matrix
 	CMatrix4<T> transposedInverse(*this, EM4CONST_INVERSE_TRANSPOSED);
 	vector3df normal = plane.Normal;
-	transposedInverse.rotateVect(normal);
+	transposedInverse.rotateAndScaleVect(normal);
 	plane.setPlane(member, normal.normalize());
 }
 

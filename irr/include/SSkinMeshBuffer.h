@@ -6,6 +6,7 @@
 
 #include "IMeshBuffer.h"
 #include "S3DVertex.h"
+#include "irrArray.h"
 
 namespace irr
 {
@@ -22,10 +23,14 @@ struct SSkinMeshBuffer : public IMeshBuffer
 			MappingHint_Vertex(EHM_NEVER), MappingHint_Index(EHM_NEVER),
 			HWBuffer(NULL),
 			BoundingBoxNeedsRecalculated(true)
+	{}
+
+	//! Constructor for standard vertices
+	SSkinMeshBuffer(core::array<video::S3DVertex> &&vertices, core::array<u16> &&indices) :
+			SSkinMeshBuffer()
 	{
-#ifdef _DEBUG
-		setDebugName("SSkinMeshBuffer");
-#endif
+		Vertices_Standard = vertices;
+		Indices = indices;
 	}
 
 	//! Get Material of this buffer.
@@ -301,7 +306,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	}
 
 	//! append the vertices and indices to the current buffer
-	void append(const void *const vertices, u32 numVertices, const u16 *const indices, u32 numIndices) override {}
+	void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices) override {}
 
 	//! get the current hardware mapping hint for vertex buffers
 	E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const override

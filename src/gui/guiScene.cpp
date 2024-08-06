@@ -226,7 +226,7 @@ void GUIScene::setCameraRotation(v3f rot)
 	mat.setRotationDegrees(rot);
 
 	m_cam_pos = v3f(0.f, 0.f, m_cam_distance);
-	mat.rotateVect(m_cam_pos);
+	mat.rotateAndScaleVect(m_cam_pos);
 
 	m_cam_pos += m_target_pos;
 	m_cam->setPosition(m_cam_pos);
