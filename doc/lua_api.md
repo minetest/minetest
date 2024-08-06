@@ -9075,7 +9075,7 @@ Used by `minetest.register_abm`.
 
     without_neighbors = {"default:lava_source", "default:lava_flowing"},
     -- Only apply `action` to nodes that have no one of these neighbors.
-    -- If left out or empty, any no neighbor will prevent ABM call.
+    -- If left out or empty, it has no effect.
     -- `group:groupname` can also be used here.
 
     interval = 10.0,
