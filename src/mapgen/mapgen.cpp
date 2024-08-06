@@ -44,11 +44,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen_carpathian.h"
 #include "mapgen_flat.h"
 #include "mapgen_fractal.h"
+#include "mapgen_singlenode.h"
+#include "mapgen_trailgen.h"
 #include "mapgen_v5.h"
 #include "mapgen_v6.h"
 #include "mapgen_v7.h"
 #include "mapgen_valleys.h"
-#include "mapgen_singlenode.h"
 #include "cavegen.h"
 #include "dungeongen.h"
 
@@ -93,6 +94,7 @@ static MapgenDesc g_reg_mapgens[] = {
 	{"v7",         true},
 	{"valleys",    true},
 	{"carpathian", true},
+	{"trailgen",   true},
 	{"v5",         true},
 	{"flat",       true},
 	{"fractal",    true},
@@ -175,6 +177,8 @@ Mapgen *Mapgen::createMapgen(MapgenType mgtype, MapgenParams *params,
 		return new MapgenFractal((MapgenFractalParams *)params, emerge);
 	case MAPGEN_SINGLENODE:
 		return new MapgenSinglenode((MapgenSinglenodeParams *)params, emerge);
+	case MAPGEN_TRAILGEN:
+		return new MapgenTrailgen((MapgenTrailgenParams *)params, emerge);
 	case MAPGEN_V5:
 		return new MapgenV5((MapgenV5Params *)params, emerge);
 	case MAPGEN_V6:
@@ -200,6 +204,8 @@ MapgenParams *Mapgen::createMapgenParams(MapgenType mgtype)
 		return new MapgenFractalParams;
 	case MAPGEN_SINGLENODE:
 		return new MapgenSinglenodeParams;
+	case MAPGEN_TRAILGEN:
+		return new MapgenTrailgenParams;
 	case MAPGEN_V5:
 		return new MapgenV5Params;
 	case MAPGEN_V6:
