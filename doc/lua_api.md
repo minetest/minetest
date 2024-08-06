@@ -5444,6 +5444,8 @@ Utilities
       moveresult_new_pos = true,
       -- Allow removing definition fields in `minetest.override_item` (5.9.0)
       override_item_remove_fields = true,
+      -- ABM supports field without_neighbors
+      abm_without_neighbors = true,
   }
   ```
 
@@ -8949,6 +8951,11 @@ Used by `minetest.register_abm`.
     -- Only apply `action` to nodes that have one of, or any
     -- combination of, these neighbors.
     -- If left out or empty, any neighbor will do.
+    -- `group:groupname` can also be used here.
+    
+    without_neighbors = {"default:lava_source", "default:lava_flowing"},
+    -- Only apply `action` to nodes that have no one of these neighbors.
+    -- If left out or empty, it has no effect.
     -- `group:groupname` can also be used here.
 
     interval = 10.0,

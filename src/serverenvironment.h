@@ -63,6 +63,9 @@ public:
 	// Set of required neighbors (trigger doesn't happen if none are found)
 	// Empty = do not check neighbors
 	virtual const std::vector<std::string> &getRequiredNeighbors() const = 0;
+	// Set of without neighbors (trigger doesn't happen if any are found)
+	// Empty = do not check neighbors
+	virtual const std::vector<std::string> &getWithoutNeighbors() const = 0;
 	// Trigger interval in seconds
 	virtual float getTriggerInterval() = 0;
 	// Random chance of (1 / return value), 0 is disallowed
