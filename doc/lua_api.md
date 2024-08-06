@@ -6030,10 +6030,17 @@ Chat
     * `name`: Name of the player
 * `minetest.format_chat_message(name, message)`
     * Used by the server to format a chat message, based on the setting `chat_message_format`.
-      Refer to the documentation of the setting for a list of valid placeholders.
+      By Default @name, @message and @timestamp are valid placeholders, but more can be defined
+	  by mods using `minetest.register_placeholder`
     * Takes player name and message, and returns the formatted string to be sent to players.
-    * Can be redefined by mods if required, for things like colored names or messages.
     * **Only** the first occurrence of each placeholder will be replaced.
+* `minetest.register_placeholder(name, func)`
+	* Registers a placeholder for `minetest.format_chat_message`
+	* `func` is a function that takes player's name and message as an argument.
+	The function should return a replacement for that placeholder
+* `minetest.unregister_placeholder(name, func)`
+	* Unregisters a placeholder for `minetest.format_chat_message`
+
 
 Environment access
 ------------------
@@ -7385,6 +7392,7 @@ For historical reasons, the use of an -s suffix in these names is inconsistent.
 * `minetest.registered_on_cheats`
 * `minetest.registered_on_crafts`
 * `minetest.registered_craft_predicts`
+* `minetest.registered_placeholders`
 * `minetest.registered_on_item_eats`
 * `minetest.registered_on_item_pickups`
 * `minetest.registered_on_punchplayers`
