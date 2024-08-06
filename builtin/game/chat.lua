@@ -27,10 +27,6 @@ function core.unregister_placeholder(name)
 	core.registered_placeholders[name] = nil
 end
 
-core.register_placeholder("message", function(name, message)
-	return message
-end)
-
 core.register_placeholder("name", function(name, message)
 	return name
 end)
@@ -45,6 +41,11 @@ function core.format_chat_message(name, message)
 	for placeholder, placeholder_callback in pairs(core.registered_placeholders) do
 		str = safe_gsub(str, "@" .. placeholder, placeholder_callback(name, message))
 	end
+
+	-- replacing the @message placeholder last
+	-- to prevent potential abuse from users that
+	-- put unused placeholders in their message
+	str = safe_gsub(str, "@message", message)
 
 	return str
 end
