@@ -17,6 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <algorithm>
+
 #include "chatmessage.h"
 #include "server.h"
 #include "log.h"
@@ -1346,20 +1348,37 @@ void Server::handleCommand_RemovedSounds(NetworkPacket* pkt)
 	}
 }
 
+static void sanitize_field(std::string &s)
+{
+	// truncate on NULL
+	auto pos = s.find('\0');
+	if (pos != std::string::npos)
+		s.erase(pos);
+
+	// remove control characters except tab/feed
+	s.erase(std::remove_if(s.begin(), s.end(), [] (unsigned char c) {
+		return c < 9 || (c >= 13 && c < 32);
+	}), s.end());
+}
+
 static bool pkt_read_formspec_fields(NetworkPacket *pkt, StringMap &fields)
 {
 	u16 field_count;
 	*pkt >> field_count;
 
-	u64 length = 0;
+	size_t length = 0;
 	for (u16 k = 0; k < field_count; k++) {
-		std::string fieldname;
+		std::string fieldname, fieldvalue;
 		*pkt >> fieldname;
-		fields[fieldname] = pkt->readLongString();
+		fieldvalue = pkt->readLongString();
+		sanitize_field(fieldname);
+		sanitize_field(fieldvalue);
 
-		length += fieldname.size();
-		length += fields[fieldname].size();
+		length += fieldname.size() + fieldvalue.size();
+
+		fields[std::move(fieldname)] = std::move(fieldvalue);
 	}
+
 	// 640K ought to be enough for anyone
 	return length < 640 * 1024;
 }
