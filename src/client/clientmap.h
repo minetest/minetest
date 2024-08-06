@@ -114,6 +114,7 @@ public:
 
 	void onSettingChanged(const std::string &name);
 
+	bool setNodeMetadata(v3s16 p, NodeMetadata *meta) override;
 protected:
 	// use drop() instead
 	virtual ~ClientMap();
