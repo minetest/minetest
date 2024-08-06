@@ -149,27 +149,22 @@ ButtonLayout ButtonLayout::getDefault()
 		{jump_id, {
 			v2f(1.0f, 1.0f),
 			v2f(-1.0f, -0.5f),
-			1.0f,
 		}},
 		{sneak_id, {
 			v2f(1.0f, 1.0f),
 			v2f(-2.5f, -0.5f),
-			1.0f,
 		}},
 		{zoom_id, {
 			v2f(1.0f, 1.0f),
 			v2f(-0.75f, -3.5f),
-			1.0f,
 		}},
 		{aux1_id, {
 			v2f(1.0f, 1.0f),
 			v2f(-0.75f, -2.0f),
-			1.0f,
 		}},
 		{overflow_id, {
 			v2f(1.0f, 1.0f),
 			v2f(-0.75f, -5.0f),
-			1.0f,
 		}},
 	}};
 }
@@ -224,10 +219,9 @@ core::recti ButtonLayout::getRect(touch_gui_button_id btn,
 {
 	const ButtonMeta &meta = layout.at(btn);
 	v2s32 pos = meta.getPos(screensize, button_size);
-	f32 height = button_size * meta.scale;
 
 	v2u32 orig_size = getTexture(btn, tsrc)->getOriginalSize();
-	v2s32 size((f32)orig_size.X / (f32)orig_size.Y * height, height);
+	v2s32 size((f32)orig_size.X / (f32)orig_size.Y * button_size, button_size);
 
 	return core::recti(pos - size / 2, core::dimension2di(size));
 }
@@ -254,7 +248,6 @@ void ButtonLayout::serializeJson(std::ostream &os) const
 		button["anchor_y"] = meta.anchor.Y;
 		button["offset_x"] = meta.offset.X;
 		button["offset_y"] = meta.offset.Y;
-		button["scale"] = meta.scale;
 
 		root["layout"][button_names[id]] = button;
 	}
@@ -303,10 +296,6 @@ void ButtonLayout::deserializeJson(std::istream &is)
 			throw Json::RuntimeError("invalid type for offset_x or offset_y in button metadata");
 		meta.offset.X = value["offset_x"].asFloat();
 		meta.offset.Y = value["offset_y"].asFloat();
-
-		if (!value["scale"].isNumeric())
-			throw Json::RuntimeError("invalid type for scale in button metadata");
-		meta.scale = value["scale"].asFloat();
 
 		layout.emplace(id, meta);
 	}

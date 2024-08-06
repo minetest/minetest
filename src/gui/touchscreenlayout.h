@@ -70,9 +70,6 @@ struct ButtonMeta {
 	// Together, anchor and offset define the position of the button's center.
 	v2f offset;
 
-	// scale is a multiplier for the button size.
-	f32 scale;
-
 	// Returns the button's effective center position in pixels.
 	v2s32 getPos(v2u32 screensize, s32 button_size) const;
 	// Sets the button's effective center position in pixels.

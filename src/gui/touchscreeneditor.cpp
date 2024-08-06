@@ -136,7 +136,6 @@ void GUITouchscreenLayout::regenerateGUIImagesAddMode(v2u32 screensize)
 
 		ButtonMeta meta;
 		meta.setPos(pos, screensize, m_button_size);
-		meta.scale = 1.0f;
 		m_add_layout.layout[btn] = meta;
 
 		IGUIStaticText *text = Environment->addStaticText(L"", core::recti(),
