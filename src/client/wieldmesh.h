@@ -94,7 +94,7 @@ public:
 	WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id = -1, bool lighting = false);
 	virtual ~WieldMeshSceneNode();
 
-	void setCube(const ContentFeatures &f, v3f wield_scale);
+	void setCube(const ContentFeatures &f, u16 variant, v3f wield_scale);
 	void setExtruded(const std::string &imagename, const std::string &overlay_image,
 			v3f wield_scale, ITextureSource *tsrc, u8 num_frames);
 	void setItem(const ItemStack &item, Client *client,
@@ -157,6 +157,6 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename
  * be NULL to leave the original material.
  * \param colors returns the colors of the mesh buffers in the mesh.
  */
-void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f, bool use_shaders,
-		bool set_material, const video::E_MATERIAL_TYPE *mattype,
+void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f, u16 variant,
+		bool use_shaders, bool set_material, const video::E_MATERIAL_TYPE *mattype,
 		std::vector<ItemPartColor> *colors, bool apply_scale = false);

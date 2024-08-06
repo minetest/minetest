@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 #include "log.h"
 #include "util/numeric.h"
+#include "util/string.h"
 #include <map>
 #include <IMeshManipulator.h>
 #include "client/renderingengine.h"
@@ -242,13 +243,13 @@ WieldMeshSceneNode::~WieldMeshSceneNode()
 		g_extrusion_mesh_cache = nullptr;
 }
 
-void WieldMeshSceneNode::setCube(const ContentFeatures &f,
+void WieldMeshSceneNode::setCube(const ContentFeatures &f, u16 variant,
 			v3f wield_scale)
 {
 	scene::IMesh *cubemesh = g_extrusion_mesh_cache->createCube();
 	scene::SMesh *copy = cloneMesh(cubemesh);
 	cubemesh->drop();
-	postProcessNodeMesh(copy, f, false, true, &m_material_type, &m_colors, true);
+	postProcessNodeMesh(copy, f, variant, false, true, &m_material_type, &m_colors, true);
 	changeToMesh(copy);
 	copy->drop();
 	m_meshnode->setScale(wield_scale * WIELD_SCALE_FACTOR);
@@ -312,7 +313,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	}
 }
 
-static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
+static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n, u16 variant,
 	std::vector<ItemPartColor> *colors, const ContentFeatures &f)
 {
 	MeshMakeData mesh_make_data(client->ndef(), 1, false);
@@ -334,6 +335,8 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 	} else if (f.drawtype == NDT_SIGNLIKE || f.drawtype == NDT_TORCHLIKE) {
 		n.setParam2(1);
 	}
+	if (f.variant_count > 1)
+		n.setParam2(f.param2_variant.set(n.getParam2(), variant));
 	gen.renderSingle(n.getContent(), n.getParam2());
 
 	colors->clear();
@@ -370,6 +373,8 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 	const ItemDefinition &def = item.getDefinition(idef);
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);
+	u16 variant = f.variant_count > 1 ?
+			mystoi(item.metadata.getString("variant"), 0, f.variant_count - 1) : 0;
 
 	scene::SMesh *mesh = nullptr;
 
@@ -418,30 +423,30 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			v3f wscale = wield_scale;
 			if (f.drawtype == NDT_FLOWINGLIQUID)
 				wscale.Z *= 0.1f;
-			setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
-				tsrc->getTextureName(f.tiles[0].layers[1].texture_id),
+			setExtruded(tsrc->getTextureName(f.tiles[variant][0].layers[0].texture_id),
+				tsrc->getTextureName(f.tiles[variant][0].layers[1].texture_id),
 				wscale, tsrc,
-				f.tiles[0].layers[0].animation_frame_count);
+				f.tiles[variant][0].layers[0].animation_frame_count);
 			// Add color
-			const TileLayer &l0 = f.tiles[0].layers[0];
+			const TileLayer &l0 = f.tiles[variant][0].layers[0];
 			m_colors.emplace_back(l0.has_color, l0.color);
-			const TileLayer &l1 = f.tiles[0].layers[1];
+			const TileLayer &l1 = f.tiles[variant][0].layers[1];
 			m_colors.emplace_back(l1.has_color, l1.color);
 			break;
 		}
 		case NDT_PLANTLIKE_ROOTED: {
-			setExtruded(tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id),
+			setExtruded(tsrc->getTextureName(f.special_tiles[variant][0].layers[0].texture_id),
 				"", wield_scale, tsrc,
-				f.special_tiles[0].layers[0].animation_frame_count);
+				f.special_tiles[variant][0].layers[0].animation_frame_count);
 			// Add color
-			const TileLayer &l0 = f.special_tiles[0].layers[0];
+			const TileLayer &l0 = f.special_tiles[variant][0].layers[0];
 			m_colors.emplace_back(l0.has_color, l0.color);
 			break;
 		}
 		case NDT_NORMAL:
 		case NDT_ALLFACES:
 		case NDT_LIQUID:
-			setCube(f, wield_scale);
+			setCube(f, variant, wield_scale);
 			break;
 		default: {
 			// Render non-trivial drawtypes like the actual node
@@ -449,7 +454,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			if (def.place_param2)
 				n.setParam2(*def.place_param2);
 
-			mesh = createSpecialNodeMesh(client, n, &m_colors, f);
+			mesh = createSpecialNodeMesh(client, n, variant, &m_colors, f);
 			changeToMesh(mesh);
 			mesh->drop();
 			m_meshnode->setScale(
@@ -585,6 +590,8 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	const ItemDefinition &def = item.getDefinition(idef);
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);
+	u16 variant = f.variant_count > 1 ?
+			mystoi(item.metadata.getString("variant"), 0, f.variant_count - 1) : 0;
 
 	FATAL_ERROR_IF(!g_extrusion_mesh_cache, "Extrusion mesh cache is not yet initialized");
 
@@ -624,7 +631,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			} else
 				scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
 			// add overlays
-			postProcessNodeMesh(mesh, f, false, false, nullptr,
+			postProcessNodeMesh(mesh, f, variant, false, false, nullptr,
 				&result->buffer_colors, true);
 			if (f.drawtype == NDT_ALLFACES)
 				scaleMesh(mesh, v3f(f.visual_scale));
@@ -632,20 +639,20 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 		}
 		case NDT_PLANTLIKE: {
 			mesh = getExtrudedMesh(tsrc,
-				tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
-				tsrc->getTextureName(f.tiles[0].layers[1].texture_id));
+				tsrc->getTextureName(f.tiles[variant][0].layers[0].texture_id),
+				tsrc->getTextureName(f.tiles[variant][0].layers[1].texture_id));
 			// Add color
-			const TileLayer &l0 = f.tiles[0].layers[0];
+			const TileLayer &l0 = f.tiles[variant][0].layers[0];
 			result->buffer_colors.emplace_back(l0.has_color, l0.color);
-			const TileLayer &l1 = f.tiles[0].layers[1];
+			const TileLayer &l1 = f.tiles[variant][0].layers[1];
 			result->buffer_colors.emplace_back(l1.has_color, l1.color);
 			break;
 		}
 		case NDT_PLANTLIKE_ROOTED: {
 			mesh = getExtrudedMesh(tsrc,
-				tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id), "");
+				tsrc->getTextureName(f.special_tiles[variant][0].layers[0].texture_id), "");
 			// Add color
-			const TileLayer &l0 = f.special_tiles[0].layers[0];
+			const TileLayer &l0 = f.special_tiles[variant][0].layers[0];
 			result->buffer_colors.emplace_back(l0.has_color, l0.color);
 			break;
 		}
@@ -655,7 +662,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			if (def.place_param2)
 				n.setParam2(*def.place_param2);
 
-			mesh = createSpecialNodeMesh(client, n, &result->buffer_colors, f);
+			mesh = createSpecialNodeMesh(client, n, variant, &result->buffer_colors, f);
 			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
 			break;
 		}
@@ -733,7 +740,7 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 	return mesh;
 }
 
-void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
+void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f, u16 variant,
 	bool use_shaders, bool set_material, const video::E_MATERIAL_TYPE *mattype,
 	std::vector<ItemPartColor> *colors, bool apply_scale)
 {
@@ -743,7 +750,7 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 	colors->resize(mc);
 
 	for (u32 i = 0; i < mc; ++i) {
-		const TileSpec *tile = &(f.tiles[i]);
+		const TileSpec *tile = &(f.tiles[variant][i]);
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 		for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
 			const TileLayer *layer = &tile->layers[layernum];

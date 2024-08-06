@@ -89,6 +89,12 @@ void               push_palette              (lua_State *L,
 
 TileDef            read_tiledef              (lua_State *L, int index,
                                               u8 drawtype, bool special);
+void               read_tiledefs             (lua_State *L, int index,
+                                              u8 drawtype, bool special,
+                                              std::array<TileDef, 6> &tiledefs);
+void               read_default_tiledefs     (lua_State *L, int index,
+                                              u8 drawtype, bool special,
+                                              std::vector<std::array<TileDef, 6> > &tiledefs);
 
 void               read_simplesoundspec      (lua_State *L, int index,
                                               SoundSpec &spec);

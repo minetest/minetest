@@ -156,14 +156,18 @@ public:
 	virtual bool isKnown(const std::string &name) const=0;
 #ifndef SERVER
 	// Get item inventory texture
-	virtual video::ITexture* getInventoryTexture(const ItemStack &item, Client *client) const=0;
-
+	// variant must be valid
+	virtual video::ITexture* getInventoryTexture(const ItemStack &item, u16 variant,
+			Client *client) const=0;
 	/**
 	 * Get wield mesh
 	 *
+	 * variant must be valid
+	 *
 	 * Returns nullptr if there is an inventory image
 	 */
-	virtual ItemMesh* getWieldMesh(const ItemStack &item, Client *client) const = 0;
+	virtual ItemMesh* getWieldMesh(const ItemStack &item, u16 variant,
+		Client *client) const=0;
 	// Get item palette
 	virtual Palette* getPalette(const ItemStack &item, Client *client) const = 0;
 	// Returns the base color of an item stack: the color of all
