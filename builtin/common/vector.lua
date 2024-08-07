@@ -120,11 +120,15 @@ function vector.combine(a, b, func)
 	)
 end
 
-function vector.distance(a, b)
+function vector.sq_distance(a, b)
 	local x = a.x - b.x
 	local y = a.y - b.y
 	local z = a.z - b.z
-	return math.sqrt(x * x + y * y + z * z)
+	return x * x + y * y + z * z;
+end
+
+function vector.distance(a, b)
+	return math.sqrt(vector.squared_distance(a, b))
 end
 
 function vector.direction(pos1, pos2)
