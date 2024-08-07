@@ -147,7 +147,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	}
 
 	// If attached, check that our parent is still there. If it isn't, detach.
-	if (m_attachment_parent_id && !isAttached()) {
+	if (m_attachment_parent_id && !getParent()) {
 		// This is handled when objects are removed from the map
 		warningstream << "LuaEntitySAO::step() " << m_init_name << " at " << m_last_sent_position << ", id=" << m_id <<
 			" is attached to nonexistent parent. This is a bug." << std::endl;
@@ -415,8 +415,6 @@ void LuaEntitySAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 	sendPunchCommand();
 
 	if (m_hp == 0 && !isGone()) {
-		clearParentAttachment();
-		clearChildAttachments();
 		if (m_registered) {
 			ServerActiveObject *killer = nullptr;
 			if (reason.type == PlayerHPChangeReason::PLAYER_PUNCH)

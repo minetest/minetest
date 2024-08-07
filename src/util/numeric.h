@@ -439,6 +439,17 @@ inline u32 npot2(u32 orig) {
 	return orig + 1;
 }
 
+// Distance between two values in a wrapped (circular) system
+template<typename T>
+inline unsigned wrappedDifference(T a, T b, const T maximum)
+{
+	if (a > b)
+		std::swap(a, b);
+	// now b >= a
+	unsigned s = b - a, l = static_cast<unsigned>(maximum - b) + a + 1;
+	return std::min(s, l);
+}
+
 // Gradual steps towards the target value in a wrapped (circular) system
 // using the shorter of both ways
 template<typename T>

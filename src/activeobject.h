@@ -152,17 +152,19 @@ typedef std::unordered_map<std::string, BoneOverride> BoneOverrideMap;
 class ActiveObject
 {
 public:
-	ActiveObject(u16 id):
+	typedef u16 object_t;
+
+	ActiveObject(object_t id):
 		m_id(id)
 	{
 	}
 
-	u16 getId() const
+	object_t getId() const
 	{
 		return m_id;
 	}
 
-	void setId(u16 id)
+	void setId(object_t id)
 	{
 		m_id = id;
 	}
@@ -193,14 +195,22 @@ public:
 	virtual bool collideWithObjects() const = 0;
 
 
-	virtual void setAttachment(int parent_id, const std::string &bone, v3f position,
+	virtual void setAttachment(object_t parent_id, const std::string &bone, v3f position,
 			v3f rotation, bool force_visible) {}
-	virtual void getAttachment(int *parent_id, std::string *bone, v3f *position,
+	virtual void getAttachment(object_t *parent_id, std::string *bone, v3f *position,
 			v3f *rotation, bool *force_visible) const {}
+	// Detach all children
 	virtual void clearChildAttachments() {}
-	virtual void clearParentAttachment() {}
-	virtual void addAttachmentChild(int child_id) {}
-	virtual void removeAttachmentChild(int child_id) {}
+	// Detach from parent
+	virtual void clearParentAttachment()
+	{
+		setAttachment(0, "", v3f(), v3f(), false);
+	}
+
+	// To be be called from setAttachment() and descendants, but not manually!
+	virtual void addAttachmentChild(object_t child_id) {}
+	virtual void removeAttachmentChild(object_t child_id) {}
+
 protected:
-	u16 m_id; // 0 is invalid, "no id"
+	object_t m_id; // 0 is invalid, "no id"
 };

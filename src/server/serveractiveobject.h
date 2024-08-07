@@ -171,8 +171,8 @@ public:
 	{ BoneOverride props; return props; }
 	virtual const BoneOverrideMap &getBoneOverrides() const
 	{ static BoneOverrideMap rv; return rv; }
-	virtual const std::unordered_set<int> &getAttachmentChildIds() const
-	{ static std::unordered_set<int> rv; return rv; }
+	virtual const std::unordered_set<object_t> &getAttachmentChildIds() const
+	{ static std::unordered_set<object_t> rv; return rv; }
 	virtual ServerActiveObject *getParent() const { return nullptr; }
 	virtual ObjectProperties *accessObjectProperties()
 	{ return NULL; }
@@ -240,8 +240,8 @@ protected:
 	virtual void onMarkedForDeactivation() {}
 	virtual void onMarkedForRemoval() {}
 
-	virtual void onAttach(int parent_id) {}
-	virtual void onDetach(int parent_id) {}
+	virtual void onAttach(object_t parent_id) {}
+	virtual void onDetach(object_t parent_id) {}
 
 	ServerEnvironment *m_env;
 	v3f m_base_position;

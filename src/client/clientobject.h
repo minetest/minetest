@@ -57,8 +57,8 @@ public:
 	virtual bool isLocalPlayer() const { return false; }
 
 	virtual ClientActiveObject *getParent() const { return nullptr; };
-	virtual const std::unordered_set<int> &getAttachmentChildIds() const
-	{ static std::unordered_set<int> rv; return rv; }
+	virtual const std::unordered_set<object_t> &getAttachmentChildIds() const
+	{ static std::unordered_set<object_t> rv; return rv; }
 	virtual void updateAttachments() {};
 
 	virtual bool doShowSelectionBox() { return true; }

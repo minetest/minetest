@@ -81,8 +81,14 @@ public:
 
 protected:
 	void dispatchScriptDeactivate(bool removal);
-	virtual void onMarkedForDeactivation() { dispatchScriptDeactivate(false); }
-	virtual void onMarkedForRemoval() { dispatchScriptDeactivate(true); }
+	virtual void onMarkedForDeactivation() {
+		UnitSAO::onMarkedForDeactivation();
+		dispatchScriptDeactivate(false);
+	}
+	virtual void onMarkedForRemoval() {
+		UnitSAO::onMarkedForRemoval();
+		dispatchScriptDeactivate(true);
+	}
 
 private:
 	std::string getPropertyPacket();
