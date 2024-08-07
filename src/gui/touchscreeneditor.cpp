@@ -128,7 +128,8 @@ void GUITouchscreenLayout::regenerateGUIImagesAddMode(v2u32 screensize)
 
 	auto missing_buttons = m_layout.getMissingButtons();
 
-	layout_button_grid(screensize, m_tsrc, missing_buttons, [&] (touch_gui_button_id btn, v2s32 pos, core::recti rect) {
+	layout_button_grid(screensize, m_tsrc, missing_buttons,
+			[&] (touch_gui_button_id btn, v2s32 pos, core::recti rect) {
 		auto img = grab_gui_element<IGUIImage>(Environment->addImage(rect, this, -1));
 		img->setImage(ButtonLayout::getTexture(btn, m_tsrc));
 		img->setScaleImage(true);

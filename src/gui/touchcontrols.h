@@ -185,6 +185,7 @@ private:
 	void releaseAll();
 
 	// initialize a button
+	bool mayAddButton(touch_gui_button_id id);
 	void addButton(std::vector<button_info> &buttons,
 			touch_gui_button_id id, const std::string &image,
 			const recti &rect, bool visible);
