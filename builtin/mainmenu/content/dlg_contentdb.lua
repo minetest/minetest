@@ -23,11 +23,6 @@ if not core.get_http_api then
 	return
 end
 
-local color_backdrop = "#000c"
-local color_text_white = "#fff"
-local color_text_blue = "#22e0f6"
-local color_text_green = mt_color_green
-
 -- Filter
 local search_string = ""
 local cur_page = 1
@@ -175,15 +170,15 @@ local function load()
 end
 
 
-local function get_info_formspec(size, safezone_left, text)
+local function get_info_formspec(size, padding, text)
 	return table.concat({
 		"formspec_version[6]",
 		"size[", size.x, ",", size.y, "]",
 		"padding[-0.01,-0.01]",
 
-		"label[", safezone_left + 3.625, ",4.35;", text, "]",
-		"container[0,", size.y - 0.8 - 0.375, "]",
-		"button[", safezone_left, ",0;4,0.8;back;", fgettext("Back"), "]",
+		"label[", padding.x + 3.625, ",4.35;", text, "]",
+		"container[", padding.x, ",", size.y - 0.8 - padding.y, "]",
+		"button[0,0;4,0.8;back;", fgettext("Back"), "]",
 		"container_end[]",
 	})
 end
@@ -192,13 +187,12 @@ end
 -- Determines how to fit `num_per_page` into `size` space
 local function fit_cells(num_per_page, size)
 	local cell_spacing = 0.5
-	local desired_size = 4.5
-	local row_cells = math.min(5, math.floor(size.x / desired_size))
+	local row_cells = 1
 	local cell_w, cell_h
 	-- Fit cells into the available height
 	while true do
 		cell_w = (size.x - (row_cells-1)*cell_spacing) / row_cells
-		cell_h = cell_w * 2 / 3
+		cell_h = cell_w / 4
 
 		local required_height = math.ceil(num_per_page / row_cells) * (cell_h + cell_spacing) - cell_spacing
 		-- Add 0.1 to be more lenient
@@ -213,17 +207,38 @@ local function fit_cells(num_per_page, size)
 end
 
 
+local function calculate_num_per_page()
+	local window = core.get_window_info()
+	local size = { x = window.max_formspec_size.x, y = window.max_formspec_size.y }
+
+	size.x = size.x - 2
+	size.y = size.y - 3
+
+	local coordToPx = window.size.x / window.max_formspec_size.x / window.real_gui_scaling
+
+	local num_per_page = 12
+	while num_per_page > 2 do
+		local _, _, cell_w, _ = fit_cells(num_per_page, size)
+		if cell_w * coordToPx > 350 then
+			break
+		end
+
+		num_per_page = num_per_page - 1
+	end
+	return num_per_page
+end
+
+
 local function get_formspec(dlgdata)
-	local window_padding_x = 1
-	local window_padding_y = window_padding_x * 0.62
+	local window_padding = { x = PLATFORM == "Android" and 1 or 0.5, y = PLATFORM == "Android" and 1 or 0.5 }
 	local window = core.get_window_info()
 	local size = { x = window.max_formspec_size.x, y = window.max_formspec_size.y }
 
 	if contentdb.loading then
-		return get_info_formspec(size, window_padding_x, fgettext("Loading..."))
+		return get_info_formspec(size, window_padding, fgettext("Loading..."))
 	end
 	if contentdb.load_error then
-		return get_info_formspec(size, window_padding_x, fgettext("No packages could be retrieved"))
+		return get_info_formspec(size, window_padding, fgettext("No packages could be retrieved"))
 	end
 	assert(contentdb.load_ok)
 
@@ -235,8 +250,8 @@ local function get_formspec(dlgdata)
 		cur_page = 1
 	end
 
-	local W = size.x - window_padding_x * 2
-	local H = size.y - window_padding_y * 2
+	local W = size.x - window_padding.x * 2
+	local H = size.y - window_padding.y * 2
 
 	local category_x = 0
 	local number_category_buttons = 4
@@ -259,7 +274,7 @@ local function get_formspec(dlgdata)
 		"size[", size.x, ",", size.y, "]",
 		"padding[-0.01,-0.01]",
 
-		"container[", window_padding_x, ",", window_padding_y, "]",
+		"container[", window_padding.x, ",", window_padding.y, "]",
 
 		-- Top-left: categories
 		make_category_button("type_all", fgettext("All"), selected_type == nil),
@@ -346,19 +361,11 @@ local function get_formspec(dlgdata)
 		x = W,
 		y = H - 1.425 - 0.25 - 0.8
 	})
+	local img_w = cell_h * 3 / 2
 
 	local start_idx = (cur_page - 1) * num_per_page + 1
 	for i=start_idx, math.min(#contentdb.packages, start_idx+num_per_page-1) do
 		local package = contentdb.packages[i]
-
-		local textcolor = color_text_white
-		if package.path then
-			if package.installed_release < package.release then
-				textcolor = color_text_blue
-			else
-				textcolor = color_text_green
-			end
-        end
 
 		table.insert_all(formspec, {
 			"container[",
@@ -367,19 +374,24 @@ local function get_formspec(dlgdata)
 			(cell_h + cell_spacing) * math.floor((i - start_idx) / row_cells),
 			"]",
 
+			"box[0,0;", cell_w, ",", cell_h, ";#ffffff11]",
+
 			-- image,
-			"image_button[0,0;", cell_w, ",", cell_h, ";",
-				core.formspec_escape(get_screenshot(package, package.thumbnail, 2)),
-			";view_", i, ";;;false]",
+			"image[0,0;", img_w, ",", cell_h, ";",
+				core.formspec_escape(get_screenshot(package, package.thumbnail, 2)), "]",
 
-			--"style[title_", i, ";border=false]",
-			-- The 0.01 here fixes a single line of image pixels appearing below the box
-			"box[0,", cell_h - 0.75 + 0.01, ";", cell_w, ",0.75;", color_backdrop, "]",
+			"label[", img_w + 0.25 + 0.05, ",0.5;",
+				core.formspec_escape(
+					core.colorize(mt_color_green, package.title) ..
+							core.colorize("#BFBFBF", " by " .. package.author)), "]",
 
-			"style_type[button;font_size=*1.1;border=false]",
-			"button[0.25,", cell_h - 0.75, ";", cell_w - 0.5, ",0.75;title_", i ,";",
-				core.formspec_escape(core.colorize(textcolor, package.title)), "]",
-			"style_type[button;font_size=;border=;textcolor=]",
+			"textarea[", img_w + 0.25, ",0.75;", cell_w - img_w - 0.25, ",", cell_h - 0.75, ";;;",
+				core.formspec_escape(package.short_description), "]",
+
+			"style[view_", i, ";border=false]",
+			"style[view_", i, ":hovered;bgimg=", core.formspec_escape(defaulttexturedir .. "button_hover_semitrans.png"), "]",
+			"style[view_", i, ":pressed;bgimg=", core.formspec_escape(defaulttexturedir .. "button_press_semitrans.png"), "]",
+			"button[0,0;", cell_w, ",", cell_h, ";view_", i, ";]",
 		})
 
 		if package.featured then
@@ -390,7 +402,7 @@ local function get_formspec(dlgdata)
 		end
 
 		table.insert_all(formspec, {
-			"container[", cell_w - 0.625,",", cell_h - 0.625, "]",
+			"container[", cell_w - 0.625,",", 0.25, "]",
 		})
 
 		if package.downloading then
@@ -413,11 +425,8 @@ local function get_formspec(dlgdata)
 			end
 		end
 
-		local tooltip = package.short_description
-
 		table.insert_all(formspec, {
 			"container_end[]",
-			"tooltip[0,0;", cell_w, ",", cell_h, ";", core.formspec_escape(tooltip), "]",
 			"container_end[]",
 		})
 	end
@@ -554,6 +563,6 @@ function create_contentdb_dlg(type, install_spec)
 			get_formspec,
 			handle_submit,
 			handle_events)
-	dlg.data.num_per_page = core.settings:get_bool("enable_touch") and 8 or 15
+	dlg.data.num_per_page = calculate_num_per_page()
 	return dlg
 end
