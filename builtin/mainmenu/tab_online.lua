@@ -186,6 +186,64 @@ end
 
 --------------------------------------------------------------------------------
 
+local function searchByAND(keywords, sername_keywords, server_desc_keywords)
+	local outerIndex = 1
+	local found_in_sername_max = 0
+	local found_in_sername_loc = nil
+	local found_in_server_desc_max = 0
+	local found_in_server_desc_loc = nil
+	local blur_ratio = 0
+	local valid_distance_percent = 0.5
+	while outerIndex <= #sername_keywords do
+		local found_index = 1
+		while found_index <= #keywords and outerIndex + found_index - 1 <= #sername_keywords do
+			local sername_keyword = sername_keywords[outerIndex + found_index - 1]:lower()
+			local keyword = keywords[found_index]:lower()
+			if sername_keyword == keyword then
+				found_index = found_index + 1
+			elseif string.find(sername_keyword, keyword) and #keyword / #sername_keyword > valid_distance_percent then
+				found_index = found_index + 1
+				blur_ratio = blur_ratio + 1 - #keyword / #sername_keyword
+			else
+				break
+			end
+		end
+		if found_in_sername_max < found_index - 1 then
+			found_in_sername_max = found_index - 1 - blur_ratio
+			found_in_sername_loc = outerIndex
+		end
+		outerIndex = outerIndex + found_index
+	end
+	outerIndex = 1
+	while outerIndex <= #server_desc_keywords do
+		local found_index = 1
+		while found_index <= #keywords and outerIndex + found_index - 1 <= #server_desc_keywords do
+			local desc_keyword = server_desc_keywords[outerIndex + found_index - 1]:lower()
+			local keyword = keywords[found_index]:lower()
+			if desc_keyword == keyword then
+				found_index = found_index + 1
+			else
+				break
+			end
+		end
+		if found_in_server_desc_max < found_index - 1 then
+			found_in_server_desc_max = found_index - 1
+			found_in_server_desc_loc = outerIndex
+		end
+		outerIndex = outerIndex + found_index
+	end
+	if found_in_sername_loc ~= nil then
+		found_in_sername_loc = found_in_sername_loc / #sername_keywords
+	end
+	if found_in_server_desc_loc ~= nil then
+		found_in_server_desc_loc = found_in_server_desc_loc / #server_desc_keywords
+	end
+	return found_in_sername_max, found_in_server_desc_max, found_in_sername_loc, found_in_server_desc_loc
+end
+
+
+
+
 local function search_server_list(input)
 	menudata.search_result = nil
 	if #serverlistmgr.servers < 2 then
@@ -204,25 +262,56 @@ local function search_server_list(input)
 	end
 
 	menudata.search_result = {}
-
 	-- Search the serverlist
 	local search_result = {}
 	for i = 1, #serverlistmgr.servers do
 		local server = serverlistmgr.servers[i]
 		local found = 0
+		local sername_keywords = {}
+		local sername_keywords_matchtimes = {}
+		local server_desc_keywords = {}
+		local server_desc_keywords_matchtimes = {}
+		local found_in_sername_max = 0
+		local found_in_sername_loc = nil
+		local found_in_server_desc_max = 0
+		local found_in_server_desc_loc = nil
+		if server.name then
+			for word in server.name:gmatch("%S+") do
+				word = word:gsub("(%W)", "%%%1"):lower()
+				table.insert(sername_keywords, word)
+				if sername_keywords_matchtimes[word] == nil then
+					sername_keywords_matchtimes[word] = 1
+				else
+					sername_keywords_matchtimes[word] = sername_keywords_matchtimes[word] + 1
+				end
+			end
+		end
+		if server.description then
+			for word in server.description:gmatch("%S+") do
+				word = word:gsub("(%W)", "%%%1"):lower()
+				table.insert(server_desc_keywords, word)
+				if server_desc_keywords_matchtimes[word] == nil then
+					server_desc_keywords_matchtimes[word] = 1
+				else
+					server_desc_keywords_matchtimes[word] = server_desc_keywords_matchtimes[word] + 1
+				end
+			end
+		end
+		found_in_sername_max, found_in_server_desc_max, found_in_sername_loc, found_in_server_desc_loc = searchByAND(
+			keywords, sername_keywords, server_desc_keywords)
+		--assert(found_in_server_desc_max == 0, "assertion failed!"..tostring(found_in_sername_max).." "..tostring(found_in_sername_max).." "..tostring(found_in_sername_loc).." "..tostring(found_in_server_desc_loc))
+		found = found + found_in_sername_max * 100 + found_in_server_desc_max * 5
+		if found_in_sername_loc then
+			found = found + (1 - found_in_sername_loc) * 100
+		end
+		if found_in_server_desc_loc then
+			found = found + (1 - found_in_server_desc_loc) * 50
+		end
 		for k = 1, #keywords do
-			local keyword = keywords[k]
-			if server.name then
-				local sername = server.name:lower()
-				local _, count = sername:gsub(keyword, keyword)
-				found = found + count * 4
-			end
-
-			if server.description then
-				local desc = server.description:lower()
-				local _, count = desc:gsub(keyword, keyword)
-				found = found + count * 2
-			end
+			local keyword
+			keyword = keywords[k]:lower()
+			found = found + sername_keywords_matchtimes[keyword]
+			found = found + server_desc_keywords_matchtimes[keyword] / 5
 		end
 		if found > 0 then
 			local points = (#serverlistmgr.servers - i) / 5 + found
