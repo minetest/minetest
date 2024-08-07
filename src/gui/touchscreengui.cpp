@@ -823,17 +823,11 @@ void TouchScreenGUI::releaseAll()
 
 void TouchScreenGUI::hide()
 {
-	if (!m_visible)
-		return;
-
 	setVisible(false);
 }
 
 void TouchScreenGUI::show()
 {
-	if (m_visible) 
-		return;
-
 	setVisible(true);
 }
 
