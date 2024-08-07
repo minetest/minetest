@@ -17,28 +17,28 @@ end
 -- Chat message formatter
 --
 
-core.registered_placeholders = {}
+core.registered_chat_format_placeholders = {}
 
-function core.register_placeholder(name, func)
-	core.registered_placeholders[name] = func
+function core.register_chat_format_placeholder(name, func)
+	core.registered_chat_format_placeholders[name] = func
 end
 
-function core.unregister_placeholder(name)
-	core.registered_placeholders[name] = nil
+function core.unregister_chat_format_placeholder(name)
+	core.registered_chat_format_placeholders[name] = nil
 end
 
-core.register_placeholder("name", function(name, message)
+core.register_chat_format_placeholder("name", function(name, message)
 	return name
 end)
 
-core.register_placeholder("timestamp", function(name, message)
+core.register_chat_format_placeholder("timestamp", function(name, message)
 	return os.date("%H:%M:%S", os.time())
 end)
 
 function core.format_chat_message(name, message)
 	local str = minetest.settings:get("chat_message_format")
 
-	for placeholder, placeholder_callback in pairs(core.registered_placeholders) do
+	for placeholder, placeholder_callback in pairs(core.registered_chat_format_placeholders) do
 		str = safe_gsub(str, "@" .. placeholder, placeholder_callback(name, message))
 	end
 
