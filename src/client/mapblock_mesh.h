@@ -49,9 +49,11 @@ struct MeshMakeData
 	u16 side_length;
 
 	const NodeDefManager *nodedef;
+	MapNode m_cameranode;
 	bool m_use_shaders;
 
-	MeshMakeData(const NodeDefManager *ndef, u16 side_length, bool use_shaders);
+	MeshMakeData(Client *client, u16 side_length, bool use_shaders);
+	MeshMakeData(const NodeDefManager *ndef, MapNode &cameranode, u16 side_length, bool use_shaders);
 
 	/*
 		Copy block data manually (to allow optimizations by the caller)
@@ -192,6 +194,8 @@ public:
 	// Returns true if anything has been changed.
 	bool animate(bool faraway, float time, int crack, u32 daynight_ratio);
 
+	void updateHideable(content_t liquid_source_id, content_t liquid_flowing_id);
+
 	scene::IMesh *getMesh()
 	{
 		return m_mesh[0];
@@ -242,11 +246,19 @@ private:
 		int frame_offset;
 		TileLayer tile;
 	};
+	struct HideableInfo {
+		bool hidden;
+		content_t liquid_source_id;
+		content_t liquid_flowing_id;
+		TileLayer tile;
+	};
 
 	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
 	std::vector<MinimapMapblock*> m_minimap_mapblocks;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
+	video::ITexture *m_texture_blank;
+	u32 m_texture_blank_id;
 
 	f32 m_bounding_radius;
 	v3f m_bounding_sphere_center;
@@ -267,6 +279,10 @@ private:
 	// Maps mesh and mesh buffer indices to TileSpecs
 	// Keys are pairs of (mesh index, buffer index in the mesh)
 	std::map<std::pair<u8, u32>, AnimationInfo> m_animation_info;
+
+	// Hideable info: hideable textures
+	// Used for better rendering under liquids
+	std::map<std::pair<u8, u32>, HideableInfo> m_hideable_info;
 
 	// Animation info: day/night transitions
 	// Last daynight_ratio value passed to animate()
