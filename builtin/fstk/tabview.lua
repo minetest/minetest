@@ -66,10 +66,24 @@ local function get_formspec(self)
 
 	local content, prepend = tab.get_formspec(self, tab.name, tab.tabdata, tab.tabsize)
 
-	local tsize = tab.tabsize or { width = self.width, height = self.height }
+	local ENABLE_TOUCH = core.settings:get_bool("enable_touch")
+
+	local orig_tsize = tab.tabsize or { width = self.width, height = self.height }
+	local tsize = { width = orig_tsize.width, height = orig_tsize.height }
+	if ENABLE_TOUCH then
+		tsize.height = tsize.height
+			+ TABHEADER_H -- tabheader included in formspec size
+			+ GAMEBAR_OFFSET_TOUCH + GAMEBAR_H -- gamebar included in formspec size
+	end
+
 	if self.parent == nil and not prepend then
 		prepend = string.format("size[%f,%f,%s]", tsize.width, tsize.height,
 				dump(self.fixed_size))
+
+		if ENABLE_TOUCH then
+			-- move formspec down to leave some space for the header image
+			prepend = prepend .. "position[0.5,0.99]anchor[0.5,1]"
+		end
 
 		if tab.formspec_version then
 			prepend = ("formspec_version[%d]"):format(tab.formspec_version) .. prepend
@@ -78,12 +92,18 @@ local function get_formspec(self)
 
 	local end_button_size = 0.75
 
-	local tab_header_size = { width = tsize.width, height = 0.85 }
+	local tab_header_size = { width = tsize.width, height = TABHEADER_H }
 	if self.end_button then
 		tab_header_size.width = tab_header_size.width - end_button_size - 0.1
 	end
 
-	local formspec = (prepend or "") .. self:tab_header(tab_header_size) .. content
+	local formspec = (prepend or "")
+	if ENABLE_TOUCH then
+		formspec = formspec ..
+			("bgcolor[;neither]container[0,%f]box[0,0;%f,%f;#0000008C]"):format(
+				TABHEADER_H, orig_tsize.width, orig_tsize.height)
+	end
+	formspec = formspec .. self:tab_header(tab_header_size) .. content
 
 	if self.end_button then
 		formspec = formspec ..
@@ -96,6 +116,10 @@ local function get_formspec(self)
 						end_button_size,
 						core.formspec_escape(self.end_button.icon),
 						self.end_button.name)
+	end
+
+	if ENABLE_TOUCH then
+		formspec = formspec .. "container_end[]"
 	end
 
 	return formspec
