@@ -319,6 +319,11 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 	}
 #endif
 
+	// If the second touch arrives here again, that means nobody handled it.
+	// Abort to avoid infinite recursion.
+	if (m_second_touch)
+		return true;
+
 	// Convert touch events into mouse events.
 	if (event.EventType == EET_TOUCH_INPUT_EVENT) {
 		irr_ptr<GUIModalMenu> holder;

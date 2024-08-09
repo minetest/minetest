@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 package net.minetest.minetest;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -83,13 +84,18 @@ public class MainActivity extends AppCompatActivity {
 		}
 	};
 
+	@SuppressLint("UnspecifiedRegisterReceiverFlag")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
 		IntentFilter filter = new IntentFilter(ACTION_UPDATE);
-		registerReceiver(myReceiver, filter);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			registerReceiver(myReceiver, filter, RECEIVER_NOT_EXPORTED);
+		} else {
+			registerReceiver(myReceiver, filter);
+		}
 
 		mProgressBar = findViewById(R.id.progressBar);
 		mTextView = findViewById(R.id.textView);
