@@ -123,6 +123,22 @@ local function load()
 		end,
 	}
 
+	local touchscreen_layout = {
+		query_text = "Touchscreen layout",
+		requires = {
+			touchscreen_gui = true,
+		},
+		get_formspec = function(self, avail_w)
+			local btn_w = math.min(avail_w, 6)
+			return ("button[0,0;%f,0.8;btn_touch_layout;%s]"):format(btn_w, fgettext("Touchscreen layout")), 0.8
+		end,
+		on_submit = function(self, fields)
+			if fields.btn_touch_layout then
+				core.show_touchscreen_layout()
+			end
+		end,
+	}
+
 	add_page({
 		id = "accessibility",
 		title = fgettext_ne("Accessibility"),
@@ -151,6 +167,8 @@ local function load()
 	load_settingtypes()
 
 	table.insert(page_by_id.controls_keyboard_and_mouse.content, 1, change_keys)
+	-- insert after "enable_touch"
+	table.insert(page_by_id.controls_touchscreen.content, 2, touchscreen_layout)
 	do
 		local content = page_by_id.graphics_and_audio_shaders.content
 		local idx = table.indexof(content, "enable_dynamic_shadows")
