@@ -17,26 +17,35 @@ end
 -- Chat message formatter
 --
 
--- Implemented in Lua to allow redefinition
+core.registered_chat_format_placeholders = {}
+
+function core.register_chat_format_placeholder(name, func)
+	core.registered_chat_format_placeholders[name] = func
+end
+
+function core.unregister_chat_format_placeholder(name)
+	core.registered_chat_format_placeholders[name] = nil
+end
+
+core.register_chat_format_placeholder("name", function(name, message)
+	return name
+end)
+
+core.register_chat_format_placeholder("timestamp", function(name, message)
+	return os.date("%H:%M:%S", os.time())
+end)
+
 function core.format_chat_message(name, message)
-	local error_str = "Invalid chat message format - missing %s"
-	local str = core.settings:get("chat_message_format")
-	local replaced
+	local str = minetest.settings:get("chat_message_format")
 
-	-- Name
-	str, replaced = safe_gsub(str, "@name", name)
-	if not replaced then
-		error(error_str:format("@name"), 2)
+	for placeholder, placeholder_callback in pairs(core.registered_chat_format_placeholders) do
+		str = safe_gsub(str, "@" .. placeholder, placeholder_callback(name, message))
 	end
 
-	-- Timestamp
-	str = safe_gsub(str, "@timestamp", os.date("%H:%M:%S", os.time()))
-
-	-- Insert the message into the string only after finishing all other processing
-	str, replaced = safe_gsub(str, "@message", message)
-	if not replaced then
-		error(error_str:format("@message"), 2)
-	end
+	-- replacing the @message placeholder last
+	-- to prevent potential abuse from users that
+	-- put unused placeholders in their message
+	str = safe_gsub(str, "@message", message)
 
 	return str
 end
