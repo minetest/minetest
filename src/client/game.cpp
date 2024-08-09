@@ -1446,7 +1446,7 @@ void Game::copyServerClientCache()
 {
 	// It would be possible to let the client directly read the media files
 	// from where the server knows they are. But aside from being more complicated
-	// it would also *not* fill the media cache and cause slower joining of 
+	// it would also *not* fill the media cache and cause slower joining of
 	// remote servers.
 	// (Imagine that you launch a game once locally and then connect to a server.)
 
@@ -4394,7 +4394,7 @@ void Game::readSettings()
 	m_cache_enable_joysticks             = g_settings->getBool("enable_joysticks");
 	m_cache_enable_particles             = g_settings->getBool("enable_particles");
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
-	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f);
+	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity", 0.000000001f, 1000000.0f);
 	m_cache_joystick_frustum_sensitivity = std::max(g_settings->getFloat("joystick_frustum_sensitivity"), 0.001f);
 	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.16f, 2.0f);
 	m_repeat_dig_time                    = g_settings->getFloat("repeat_dig_time", 0.0f, 2.0f);
@@ -4409,7 +4409,6 @@ void Game::readSettings()
 		m_cache_cam_smoothing = 1 - g_settings->getFloat("camera_smoothing");
 
 	m_cache_cam_smoothing = rangelim(m_cache_cam_smoothing, 0.01f, 1.0f);
-	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
 
 	m_invert_mouse = g_settings->getBool("invert_mouse");
 	m_enable_hotbar_mouse_wheel = g_settings->getBool("enable_hotbar_mouse_wheel");
