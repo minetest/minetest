@@ -101,7 +101,6 @@ local function load_texture_packs(txtpath, retval)
 end
 
 --modmanager implementation
-pkgmgr = {}
 
 --- Scans a directory recursively for mods and adds them to `listing`
 -- @param path         Absolute directory path to scan recursively
@@ -221,41 +220,6 @@ function pkgmgr.get_all()
 	return result
 end
 
---------------------------------------------------------------------------------
-function pkgmgr.get_folder_type(path)
-	local testfile = io.open(path .. DIR_DELIM .. "init.lua","r")
-	if testfile ~= nil then
-		testfile:close()
-		return { type = "mod", path = path }
-	end
-
-	testfile = io.open(path .. DIR_DELIM .. "modpack.conf","r")
-	if testfile ~= nil then
-		testfile:close()
-		return { type = "modpack", path = path }
-	end
-
-	testfile = io.open(path .. DIR_DELIM .. "modpack.txt","r")
-	if testfile ~= nil then
-		testfile:close()
-		return { type = "modpack", path = path }
-	end
-
-	testfile = io.open(path .. DIR_DELIM .. "game.conf","r")
-	if testfile ~= nil then
-		testfile:close()
-		return { type = "game", path = path }
-	end
-
-	testfile = io.open(path .. DIR_DELIM .. "texture_pack.conf","r")
-	if testfile ~= nil then
-		testfile:close()
-		return { type = "txp", path = path }
-	end
-
-	return nil
-end
-
 -------------------------------------------------------------------------------
 function pkgmgr.get_base_folder(temppath)
 	if temppath == nil then
@@ -278,11 +242,6 @@ function pkgmgr.get_base_folder(temppath)
 	end
 
 	return nil
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.is_valid_modname(modpath)
-	return modpath:match("[^a-z0-9_]") == nil
 end
 
 --------------------------------------------------------------------------------
@@ -827,30 +786,6 @@ function pkgmgr.update_translations(list)
 				core.translate(info.textdomain, info.description))
 		end
 	end
-end
-
---------------------------------------------------------------------------------
--- Returns the ContentDB ID for an installed piece of content.
-function pkgmgr.get_contentdb_id(content)
-	-- core.get_games() will return "" instead of nil if there is no "author" field.
-	if content.author and content.author ~= "" and content.release > 0 then
-		if content.type == "game" then
-			return content.author:lower() .. "/" .. content.id
-		end
-		return content.author:lower() .. "/" .. content.name
-	end
-
-	-- Until Minetest 5.8.0, Minetest Game was bundled with Minetest.
-	-- Unfortunately, the bundled MTG was not versioned (missing "release"
-	-- field in game.conf).
-	-- Therefore, we consider any installation of MTG that is not versioned,
-	-- has not been cloned from Git, and is not system-wide to be updatable.
-	if content.type == "game" and content.id == "minetest" and content.release == 0 and
-			not core.is_dir(content.path .. "/.git") and core.may_modify_path(content.path) then
-		return "minetest/minetest"
-	end
-
-	return nil
 end
 
 --------------------------------------------------------------------------------

@@ -234,6 +234,8 @@ std::string findLocaleFileInMods(const std::string &path, const std::string &fil
 Translations *GUIEngine::getContentTranslations(const std::string &path,
 		const std::string &domain, const std::string &lang_code)
 {
+	using namespace content;
+
 	if (domain.empty() || lang_code.empty())
 		return nullptr;
 
