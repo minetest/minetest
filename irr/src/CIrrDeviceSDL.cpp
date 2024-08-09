@@ -343,6 +343,12 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters &param) :
 		SDL_SetHint(SDL_HINT_APP_NAME, "Minetest");
 #endif
 
+		// Set IME hints
+		SDL_SetHint(SDL_HINT_IME_INTERNAL_EDITING, "1");
+#if defined(SDL_HINT_IME_SHOW_UI)
+		SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
+#endif
+
 		u32 flags = SDL_INIT_TIMER | SDL_INIT_EVENTS;
 		if (CreationParams.DriverType != video::EDT_NULL)
 			flags |= SDL_INIT_VIDEO;
