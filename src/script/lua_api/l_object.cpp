@@ -2548,7 +2548,7 @@ int ObjectRef::l_set_lighting(lua_State *L)
 		if (lua_istable(L, -1)) {
 			lighting.exposure.luminance_min       = getfloatfield_default(L, -1, "luminance_min",       lighting.exposure.luminance_min);
 			lighting.exposure.luminance_max       = getfloatfield_default(L, -1, "luminance_max",       lighting.exposure.luminance_max);
-			lighting.exposure.exposure_correction = getfloatfield_default(L, -1, "exposure_correction",      lighting.exposure.exposure_correction);
+			lighting.exposure.exposure_correction = getfloatfield_default(L, -1, "exposure_correction", lighting.exposure.exposure_correction);
 			lighting.exposure.speed_dark_bright   = getfloatfield_default(L, -1, "speed_dark_bright",   lighting.exposure.speed_dark_bright);
 			lighting.exposure.speed_bright_dark   = getfloatfield_default(L, -1, "speed_bright_dark",   lighting.exposure.speed_bright_dark);
 			lighting.exposure.center_weight_power = getfloatfield_default(L, -1, "center_weight_power", lighting.exposure.center_weight_power);
@@ -2561,7 +2561,26 @@ int ObjectRef::l_set_lighting(lua_State *L)
 			lighting.volumetric_light_strength = rangelim(lighting.volumetric_light_strength, 0.0f, 1.0f);
 		}
 		lua_pop(L, 1); // volumetric_light
-}
+
+		lua_getfield(L, 2, "light_intensity");
+		if (lua_istable(L, -1)) {
+			lua_getfield(L, 3, "color_offset");
+			if (lua_istable(L, -1)) {
+				lighting.lightIntensity.colorOffset_rgb.X = getfloatfield_default(L, -1, "r", lighting.lightIntensity.colorOffset_rgb.X);
+				lighting.lightIntensity.colorOffset_rgb.Y = getfloatfield_default(L, -1, "g", lighting.lightIntensity.colorOffset_rgb.Y);
+				lighting.lightIntensity.colorOffset_rgb.Z = getfloatfield_default(L, -1, "b", lighting.lightIntensity.colorOffset_rgb.Z);
+			}
+			lua_pop(L, 1); // color_offset
+			lua_getfield(L, 3, "color_ratio_coef");
+			if (lua_istable(L, -1)) {
+				lighting.lightIntensity.colorRatioCoef_rgb.X = getfloatfield_default(L, -1, "r", lighting.lightIntensity.colorRatioCoef_rgb.X);
+				lighting.lightIntensity.colorRatioCoef_rgb.Y = getfloatfield_default(L, -1, "g", lighting.lightIntensity.colorRatioCoef_rgb.Y);
+				lighting.lightIntensity.colorRatioCoef_rgb.Z = getfloatfield_default(L, -1, "b", lighting.lightIntensity.colorRatioCoef_rgb.Z);
+			}
+			lua_pop(L, 1); // color_ratio_coef
+		}
+		lua_pop(L, 1); // light_intensity
+	}
 
 	getServer(L)->setLighting(player, lighting);
 	return 0;
@@ -2603,6 +2622,24 @@ int ObjectRef::l_get_lighting(lua_State *L)
 	lua_pushnumber(L, lighting.volumetric_light_strength);
 	lua_setfield(L, -2, "strength");
 	lua_setfield(L, -2, "volumetric_light");
+	lua_newtable(L); // "light_intensity"
+	lua_newtable(L); // "color_offset"
+	lua_pushnumber(L, lighting.lightIntensity.colorOffset_rgb.X);
+	lua_setfield(L, -2, "r");
+	lua_pushnumber(L, lighting.lightIntensity.colorOffset_rgb.Y);
+	lua_setfield(L, -2, "g");
+	lua_pushnumber(L, lighting.lightIntensity.colorOffset_rgb.Z);
+	lua_setfield(L, -2, "b");
+	lua_setfield(L, -2, "color_offset");
+	lua_newtable(L); // "color_ratio_coef"
+	lua_pushnumber(L, lighting.lightIntensity.colorRatioCoef_rgb.X);
+	lua_setfield(L, -2, "r");
+	lua_pushnumber(L, lighting.lightIntensity.colorRatioCoef_rgb.Y);
+	lua_setfield(L, -2, "g");
+	lua_pushnumber(L, lighting.lightIntensity.colorRatioCoef_rgb.Z);
+	lua_setfield(L, -2, "b");
+	lua_setfield(L, -2, "color_ratio_coef");
+	lua_setfield(L, -2, "light_intensity");
 	return 1;
 }
 

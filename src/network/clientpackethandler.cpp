@@ -1817,4 +1817,12 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 	}
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.volumetric_light_strength;
+	if (pkt->getRemainingBytes() >= 24) {
+		*pkt >> lighting.lightIntensity.colorOffset_rgb.X
+				>> lighting.lightIntensity.colorOffset_rgb.Y
+				>> lighting.lightIntensity.colorOffset_rgb.Z
+				>> lighting.lightIntensity.colorRatioCoef_rgb.X
+				>> lighting.lightIntensity.colorRatioCoef_rgb.Y
+				>> lighting.lightIntensity.colorRatioCoef_rgb.Z;
+	}
 }

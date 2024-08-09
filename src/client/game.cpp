@@ -469,8 +469,9 @@ public:
 	void onSetConstants(video::IMaterialRendererServices *services) override
 	{
 		u32 daynight_ratio = (float)m_client->getEnv().getDayNightRatio();
+		const auto &lighting = m_client->getEnv().getLocalPlayer()->getLighting();
 		video::SColorf sunlight;
-		get_sunlight_color(&sunlight, daynight_ratio);
+		get_sunlight_color(&sunlight, daynight_ratio, lighting.lightIntensity);
 		m_day_light.set(sunlight, services);
 
 		u32 animation_timer = m_client->getEnv().getFrameTime() % 1000000;
@@ -504,7 +505,7 @@ public:
 		m_texel_size0_vertex.set(m_texel_size0, services);
 		m_texel_size0_pixel.set(m_texel_size0, services);
 
-		const AutoExposure &exposure_params = m_client->getEnv().getLocalPlayer()->getLighting().exposure;
+		const AutoExposure &exposure_params = lighting.exposure;
 		std::array<float, 7> exposure_buffer = {
 			std::pow(2.0f, exposure_params.luminance_min),
 			std::pow(2.0f, exposure_params.luminance_max),
@@ -522,7 +523,6 @@ public:
 			m_bloom_strength_pixel.set(&m_bloom_strength, services);
 		}
 
-		const auto &lighting = m_client->getEnv().getLocalPlayer()->getLighting();
 		float saturation = lighting.saturation;
 		m_saturation_pixel.set(&saturation, services);
 
@@ -3529,8 +3529,9 @@ PointedThing Game::updatePointedThing(
 		}
 
 		u32 daynight_ratio = client->getEnv().getDayNightRatio();
+		const Lighting &lighting = client->getEnv().getLocalPlayer()->getLighting();
 		video::SColor c;
-		final_color_blend(&c, light_level, daynight_ratio);
+		final_color_blend(&c, light_level, daynight_ratio, lighting.lightIntensity);
 
 		// Modify final color a bit with time
 		u32 timer = client->getEnv().getFrameTime() % 5000;

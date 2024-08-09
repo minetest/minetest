@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "irr_v3d.h"
 
 /**
  * Parameters for automatic exposure compensation
@@ -46,11 +47,33 @@ struct AutoExposure
 	AutoExposure();
 };
 
+/**
+ * Parameters for set color and intensity of night and day light.
+ *
+ * Light color is calculated in function get_sunlight_color.
+ * Variable daynight_ration can be from 0 to 1000.
+ *
+ * sunlight->r = colorOffset_rgb.X+colorRatioCoef_rgb.X*daynight_ratio;
+ * sunlight->g = colorOffset_rgb.Y+colorRatioCoef_rgb.Y*daynight_ratio;
+ * sunlight->b = colorOffset_rgb.Z+colorRatioCoef_rgb.Z*daynight_ratio;
+ *
+ */
+struct LightIntensity
+{
+	/// @brief Sunlight color offset
+	v3f colorOffset_rgb;
+	/// @brief Sunlight color dayratio effect
+	v3f colorRatioCoef_rgb;
+	
+	LightIntensity();
+};
+
 /** Describes ambient light settings for a player
  */
 struct Lighting
 {
 	AutoExposure exposure;
+	LightIntensity lightIntensity;
 	float shadow_intensity {0.0f};
 	float saturation {1.0f};
 	float volumetric_light_strength {0.0f};

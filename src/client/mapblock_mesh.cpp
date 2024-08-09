@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/directiontables.h"
 #include "client/meshgen/collector.h"
 #include "client/renderingengine.h"
+#include "client/localplayer.h"
 #include <array>
 #include <algorithm>
 #include <cmath>
@@ -281,19 +282,17 @@ u16 getSmoothLightTransparent(const v3s16 &p, const v3s16 &corner, MeshMakeData 
 	return getSmoothLightCombined(p, dirs, data);
 }
 
-void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio){
-	f32 rg = daynight_ratio / 1000.0f - 0.04f;
-	f32 b = (0.98f * daynight_ratio) / 1000.0f + 0.078f;
-	sunlight->r = rg;
-	sunlight->g = rg;
-	sunlight->b = b;
+void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio, const LightIntensity &lightIntensity){
+	sunlight->r = lightIntensity.colorOffset_rgb.X+lightIntensity.colorRatioCoef_rgb.X*daynight_ratio;
+	sunlight->g = lightIntensity.colorOffset_rgb.Y+lightIntensity.colorRatioCoef_rgb.Y*daynight_ratio;
+	sunlight->b = lightIntensity.colorOffset_rgb.Z+lightIntensity.colorRatioCoef_rgb.Z*daynight_ratio;
 }
 
 void final_color_blend(video::SColor *result,
-		u16 light, u32 daynight_ratio)
+		u16 light, u32 daynight_ratio, const LightIntensity &lightIntensity)
 {
 	video::SColorf dayLight;
-	get_sunlight_color(&dayLight, daynight_ratio);
+	get_sunlight_color(&dayLight, daynight_ratio, lightIntensity);
 	final_color_blend(result,
 		encode_light(light, 0), dayLight);
 }
@@ -716,8 +715,9 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 			if (!m_enable_shaders) {
 				// Extract colors for day-night animation
 				// Dummy sunlight to handle non-sunlit areas
+				const LightIntensity &lightIntensity = client->getEnv().getLocalPlayer()->getLighting().lightIntensity;
 				video::SColorf sunlight;
-				get_sunlight_color(&sunlight, 0);
+				get_sunlight_color(&sunlight, 0, lightIntensity);
 
 				std::map<u32, video::SColor> colors;
 				const u32 vertex_count = p.vertices.size();
@@ -813,7 +813,7 @@ MapBlockMesh::~MapBlockMesh()
 }
 
 bool MapBlockMesh::animate(bool faraway, float time, int crack,
-	u32 daynight_ratio)
+	u32 daynight_ratio, const LightIntensity &lightIntensity)
 {
 	if (!m_has_animation) {
 		m_animation_force_timer = 100000;
@@ -875,7 +875,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 	// Day-night transition
 	if (!m_enable_shaders && (daynight_ratio != m_last_daynight_ratio)) {
 		video::SColorf day_color;
-		get_sunlight_color(&day_color, daynight_ratio);
+		get_sunlight_color(&day_color, daynight_ratio, lightIntensity);
 
 		for (auto &daynight_diff : m_daynight_diffs) {
 			auto *mesh = m_mesh[daynight_diff.first.first];
