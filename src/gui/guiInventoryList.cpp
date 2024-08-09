@@ -51,7 +51,6 @@ GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env,
 	m_font(font),
 	m_already_warned(false)
 {
-	// FIX ME
 	ICursorControl *cursor_control = RenderingEngine::get_raw_device()->getCursorControl();
 	m_hovered_i = getItemIndexAtPos(v2s32(cursor_control->getPosition()));
 }
@@ -220,6 +219,7 @@ s32 GUIInventoryList::getItemIndexAtPos(v2s32 p) const
 	Inventory *inv = m_invmgr->getInventory(m_inventoryloc);
 	if (!inv)
 		return -1;
+	// todo : delete this and related code, move judgement to other callers
 	InventoryList *ilist = inv->getList(m_listname);
 	if (!ilist)
 		return -1;
