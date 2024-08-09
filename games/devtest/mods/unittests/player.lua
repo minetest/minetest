@@ -84,3 +84,16 @@ local function run_player_add_pos_tests(player)
 end
 unittests.register("test_player_add_pos", run_player_add_pos_tests, {player=true})
 
+--
+-- Player defaults physics
+--
+minetest.DEFAULT_PHYSICS.speed = 2 -- Slightly change
+local function run_player_default_physics_tests(player)
+	local player_overrides = player:get_physics_override()
+	assert(player_overrides.speed == 2)
+	-- Revert everything
+	minetest.DEFAULT_PHYSICS.speed = 1
+	player_overrides.speed = 1
+	player:set_physics_override(player_overrides)
+end
+unittests.register("test_player_default_physics", run_player_default_physics_tests, {player=true})
