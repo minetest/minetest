@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "network/lan.h"
 #include "irr_v3d.h"
 #include "map.h"
 #include "hud.h"
@@ -667,6 +668,9 @@ private:
 
 	// The server mainly operates in this thread
 	ServerThread *m_thread = nullptr;
+
+	// For local server discovery.
+	lan_adv lan_adv_server;
 
 	/*
 	 	Client interface
