@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiFormSpecMenu.h"
 #include "client/hud.h"
 #include "client/client.h"
+#include "client/renderingengine.h"
+#include "ICursorControl.h"
 
 GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env,
 	gui::IGUIElement *parent,
@@ -47,9 +49,10 @@ GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env,
 	m_fs_menu(fs_menu),
 	m_options(options),
 	m_font(font),
-	m_hovered_i(-1),
 	m_already_warned(false)
 {
+	ICursorControl *cursor_control = RenderingEngine::get_raw_device()->getCursorControl();
+	m_hovered_i = getItemIndexAtPos(v2s32(cursor_control->getPosition()));
 }
 
 void GUIInventoryList::draw()
@@ -216,6 +219,7 @@ s32 GUIInventoryList::getItemIndexAtPos(v2s32 p) const
 	Inventory *inv = m_invmgr->getInventory(m_inventoryloc);
 	if (!inv)
 		return -1;
+	// todo : delete this and related code, move judgement to other callers
 	InventoryList *ilist = inv->getList(m_listname);
 	if (!ilist)
 		return -1;
