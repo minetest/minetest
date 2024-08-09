@@ -1,7 +1,7 @@
 # When enabling SDL2 by default on macOS, don't forget to change
 # "NSHighResolutionCapable" to true in "Info.plist".
 if(NOT APPLE)
-	set(DEFAULT_SDL2 ON)
+	set(DEFAULT_SDL2 OFF)
 endif()
 
 option(USE_SDL2 "Use the SDL2 backend" ${DEFAULT_SDL2})
