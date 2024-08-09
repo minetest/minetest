@@ -20,7 +20,7 @@ read_globals = {
 	"PerlinNoise", "PerlinNoiseMap",
 
 	string = {fields = {"split", "trim"}},
-	table  = {fields = {"copy", "getn", "indexof", "insert_all"}},
+	table  = {fields = {"copy", "getn", "indexof", "keyof", "insert_all"}},
 	math   = {fields = {"hypot", "round"}},
 }
 
