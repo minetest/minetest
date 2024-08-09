@@ -223,6 +223,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		AO_CMD_SET_BONE_POSITION extended
 		Add TOCLIENT_MOVE_PLAYER_REL
 		Move default minimap from client-side C++ to server-side builtin Lua
+		Add shadow tint to Lighting packets
+		Add shadow color to CloudParam packets
 		[scheduled bump for 5.9.0]
 */
 

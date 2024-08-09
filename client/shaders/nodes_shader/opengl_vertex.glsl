@@ -256,7 +256,9 @@ void main(void)
 		z_bias *= pFactor * pFactor / f_textureresolution / f_shadowfar;
 
 		shadow_position = applyPerspectiveDistortion(m_ShadowViewProj * mWorld * (shadow_pos + vec4(normalOffsetScale * nNormal, 0.0))).xyz;
+#if !defined(ENABLE_TRANSLUCENT_FOLIAGE) || MATERIAL_TYPE != TILE_MATERIAL_WAVING_LEAVES
 		shadow_position.z -= z_bias;
+#endif
 		perspective_factor = pFactor;
 
 		if (f_timeofday < 0.2) {
