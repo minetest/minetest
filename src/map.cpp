@@ -285,6 +285,21 @@ struct TimeOrderedMapBlock {
 	};
 };
 
+struct DistanceOrderedMapBlock {
+	MapSector *sect;
+	MapBlock *block;
+
+	DistanceOrderedMapBlock(MapSector *sect, MapBlock *block) :
+		sect(sect),
+		block(block)
+	{}
+
+	bool operator<(const DistanceOrderedMapBlock &b) const
+	{
+		return block->getPosRelative().getLengthSQ() < b.block->getPosRelative().getLengthSQ();
+	};
+};
+
 /*
 	Updates usage timers
 */
@@ -351,6 +366,7 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 		}
 	} else {
 		std::priority_queue<TimeOrderedMapBlock> mapblock_queue;
+		std::priority_queue<DistanceOrderedMapBlock> mapblock_queue_d;
 		for (auto &sector_it : m_sectors) {
 			MapSector *sector = sector_it.second;
 
@@ -361,12 +377,17 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 				block->incrementUsageTimer(dtime);
 				mapblock_queue.push(TimeOrderedMapBlock(sector, block));
 			}
+
+			for (MapBlock *block : blocks) {
+				mapblock_queue_d.push(DistanceOrderedMapBlock(sector, block));
+			}
 		}
 		block_count_all = mapblock_queue.size();
+		const float radiusSQ = g_settings->getFloat("viewing_range") * g_settings->getFloat("viewing_range");
 
 		// Delete old blocks, and blocks over the limit from the memory
-		while (!mapblock_queue.empty() && ((s32)mapblock_queue.size() > max_loaded_blocks
-				|| mapblock_queue.top().block->getUsageTimer() > unload_timeout)) {
+		while (!mapblock_queue.empty() && ((s32)mapblock_queue.size() > max_loaded_blocks || mapblock_queue.top().block->getUsageTimer() > unload_timeout && mapblock_queue.top().block->getPosRelative().getLengthSQ() > radiusSQ))
+		{
 			TimeOrderedMapBlock b = mapblock_queue.top();
 			mapblock_queue.pop();
 
