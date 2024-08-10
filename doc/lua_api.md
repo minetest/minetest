@@ -8898,7 +8898,10 @@ Player properties need to be saved manually.
 Entity definition
 -----------------
 
-Used by `minetest.register_entity`.
+Used by `minetest.register_entity`.  
+The entity definition table becomes a metatable of a newly created per-entity
+table, meaning its subtables (e.g. `initial_properties`) will be shared between
+all instances of an entity
 
 ```lua
 {
@@ -8910,10 +8913,6 @@ Used by `minetest.register_entity`.
     -- A table of object properties, see the `Object properties` section.
     -- The properties in this table are applied to the object
     -- once when it is spawned.
-	-- Contrary to custom fields down below, initial_properties is a table
-	-- shared between all the instances of an entity. Changing any of its
-	-- fields on one instance will alter any other present and future instance
-	-- as well
 
     -- Refer to the "Registered entities" section for explanations
     on_activate = function(self, staticdata, dtime_s) end,
