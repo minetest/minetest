@@ -53,7 +53,10 @@ void RemoteTexture::load(const std::string &url)
 	if (url == requested_url)
 		return;
 
-	cache_path = porting::path_cache + DIR_DELIM + base64_encode(url) +
+	std::string cache_dir = porting::path_cache + DIR_DELIM + "remote_images";
+	fs::CreateAllDirs(cache_dir);
+
+	cache_path = cache_dir + DIR_DELIM + base64_encode(url) +
 			GetExtensionFromURL(url);
 	if (fs::IsFile(cache_path)) {
 		errorstream << "Loading " << url << " from cache: " << cache_path << std::endl;
