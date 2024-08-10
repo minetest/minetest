@@ -1,0 +1,70 @@
+name: macos_intel
+
+# build on c/cpp changes or workflow changes
+on:
+  push:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
+      - 'irr/**.mm' # Objective-C(++)
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - '.github/workflows/macos_intel.yml'
+  pull_request:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
+      - 'irr/**.mm' # Objective-C(++)
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - '.github/workflows/macos_intel.yml'
+
+jobs:
+  build:
+    # use macOS 13 since it's the last one that still runs on x86
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install deps
+        run: |
+          source ./util/ci/common.sh
+          install_macos_deps
+
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake .. \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
+            -DCMAKE_FIND_FRAMEWORK=LAST \
+            -DCMAKE_INSTALL_PREFIX=../build/macos/ \
+            -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE \
+            -DINSTALL_DEVTEST=TRUE
+          cmake --build . -j$(sysctl -n hw.logicalcpu)
+          make install
+
+      - name: Test
+        run: |
+          ./build/macos/minetest.app/Contents/MacOS/minetest --run-unittests
+
+      # Zipping the built .app preserves permissions on the contained files,
+      #   which the GitHub artifact pipeline would otherwise strip away.
+      - name: CPack
+        run: |
+          cd build
+          rm -rf macos
+          cmake .. -DINSTALL_DEVTEST=FALSE
+          cpack -G ZIP -B macos
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: minetest-macos_intel
+          path: ./build/macos/*.zip

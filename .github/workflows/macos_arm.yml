@@ -1,4 +1,4 @@
-name: macos
+name: macos_arm
 
 # build on c/cpp changes or workflow changes
 on:
@@ -13,7 +13,7 @@ on:
       - 'irr/**.mm' # Objective-C(++)
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
-      - '.github/workflows/macos.yml'
+      - '.github/workflows/macos_arm.yml'
   pull_request:
     paths:
       - 'lib/**.[ch]'
@@ -25,12 +25,11 @@ on:
       - 'irr/**.mm' # Objective-C(++)
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
-      - '.github/workflows/macos.yml'
+      - '.github/workflows/macos_arm.yml'
 
 jobs:
   build:
-    # use macOS 13 since it's the last one that still runs on x86
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
       - name: Install deps
@@ -48,7 +47,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=../build/macos/ \
             -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE \
             -DINSTALL_DEVTEST=TRUE
-          cmake --build . -j$(sysctl -n hw.logicalcpu)
+          make -j$(sysctl -n hw.logicalcpu)
           make install
 
       - name: Test
@@ -66,5 +65,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: minetest-macos
+          name: minetest-macos_arm
           path: ./build/macos/*.zip
