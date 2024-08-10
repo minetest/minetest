@@ -8910,6 +8910,10 @@ Used by `minetest.register_entity`.
     -- A table of object properties, see the `Object properties` section.
     -- The properties in this table are applied to the object
     -- once when it is spawned.
+	-- Contrary to custom fields down below, initial_properties is a table
+	-- shared between all the instances of the entity. Changing any of its
+	-- fields on one instance will alter any other present and future instance
+	-- as well
 
     -- Refer to the "Registered entities" section for explanations
     on_activate = function(self, staticdata, dtime_s) end,
