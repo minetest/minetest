@@ -970,7 +970,7 @@ int ModApiEnvBase::findNodesInArea(lua_State *L, const NodeDefManager *ndef,
 		});
 
 		// last filter table is at top of stack
-		s32 i = filter.size();
+		u32 i = filter.size();
 		while (i --> 0) {
 			if (idx[i] == 0) {
 				// No such node found -> drop the empty table
