@@ -838,6 +838,7 @@ bool CIrrDeviceSDL::run()
 			irrevent.KeyInput.Control = (SDL_event.key.keysym.mod & KMOD_CTRL) != 0;
 			irrevent.KeyInput.Char = findCharToPassToIrrlicht(mp.SDLKey, key,
 					(SDL_event.key.keysym.mod & KMOD_NUM) != 0);
+			irrevent.KeyInput.SystemKeyCode = SDL_event.key.keysym.scancode;
 			postEventFromUser(irrevent);
 		} break;
 

@@ -13,39 +13,26 @@
 class UnknownKeycode : public BaseException
 {
 public:
-	UnknownKeycode(const char *s) :
+	UnknownKeycode(const std::string &s) :
 		BaseException(s) {};
 };
 
-/* A key press, consisting of either an Irrlicht keycode
-   or an actual char */
-
+/* A key press, consisting of a scancode or a keycode */
 class KeyPress
 {
 public:
-	KeyPress() = default;
+	KeyPress() {};
 
-	KeyPress(const char *name);
+	KeyPress(const std::string_view &name);
 
-	KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character = false);
+	KeyPress(const irr::SEvent::SKeyInput &in) :
+		scancode(in.SystemKeyCode) {};
 
-	bool operator==(const KeyPress &o) const
-	{
-		return (Char > 0 && Char == o.Char) || (valid_kcode(Key) && Key == o.Key);
-	}
+	std::string sym() const;
+	std::string name() const;
 
-	const char *sym() const;
-	const char *name() const;
-
-protected:
-	static bool valid_kcode(irr::EKEY_CODE k)
-	{
-		return k > 0 && k < irr::KEY_KEY_CODES_COUNT;
-	}
-
-	irr::EKEY_CODE Key = irr::KEY_KEY_CODES_COUNT;
-	wchar_t Char = L'\0';
-	std::string m_name = "";
+private:
+	u32 scancode = 0;
 };
 
 // Global defines for convenience
