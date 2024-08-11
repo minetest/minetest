@@ -1188,7 +1188,9 @@ void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 	std::vector<std::string> v_pos = split(parts[0],',');
 	std::vector<std::string> v_geom = split(parts[1],',');
 	std::string name = parts[2];
-	std::vector<std::string> items = split(parts[3],',');
+	std::vector<std::string> items;
+	if (!parts[3].empty())
+		items = split(parts[3],',');
 	std::string str_initial_selection;
 
 	if (parts.size() >= 5)
@@ -1258,7 +1260,9 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 	std::vector<std::string> v_pos = split(parts[0],',');
 	std::vector<std::string> v_geom = split(parts[1],',');
 	std::string name = parts[2];
-	std::vector<std::string> items = split(parts[3],',');
+	std::vector<std::string> items;
+	if (!parts[3].empty())
+		items = split(parts[3],',');
 	std::string str_initial_selection;
 	std::string str_transparent = "false";
 
