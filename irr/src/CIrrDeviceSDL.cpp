@@ -220,6 +220,31 @@ int CIrrDeviceSDL::findCharToPassToIrrlicht(uint32_t sdlKey, EKEY_CODE irrlichtK
 	}
 }
 
+u32 CIrrDeviceSDL::getScancodeFromKey(const KeyCode &key) const
+{
+	u32 keynum = 0;
+	if (key.index() == 0) {
+		auto keycode = std::get<EKEY_CODE>(key);
+		for (const auto &entry: KeyMap) {
+			if (entry.second == keycode) {
+				keynum = entry.first;
+				break;
+			}
+		}
+	} else {
+		keynum = std::get<wchar_t>(key);
+	}
+	return SDL_GetScancodeFromKey(keynum);
+}
+
+KeyCode CIrrDeviceSDL::getKeyFromScancode(const u32 scancode) const
+{
+	auto keycode = SDL_GetKeyFromScancode((SDL_Scancode)scancode);
+	const auto &keyentry = KeyMap.find(keycode);
+	auto irrcode = keyentry != KeyMap.end() ? keyentry->second : KEY_UNKNOWN;
+	return KeyCode(irrcode, keycode);
+}
+
 void CIrrDeviceSDL::resetReceiveTextInputEvents()
 {
 	gui::IGUIElement *elem = GUIEnvironment->getFocus();
@@ -823,6 +848,21 @@ bool CIrrDeviceSDL::run()
 		case SDL_KEYDOWN:
 		case SDL_KEYUP: {
 			auto keysym = SDL_event.key.keysym.sym;
+			auto scancode = SDL_event.key.keysym.scancode;
+
+			// Treat AC_BACK as the Escape key
+			if (scancode == SDL_SCANCODE_AC_BACK || scancode == SDL_SCANCODE_ESCAPE)
+			{
+				if (SDL_event.type == SDL_KEYDOWN)
+					escapeKeys.insert(scancode);
+				else
+					escapeKeys.erase(scancode);
+				if (SDL_event.type == SDL_KEYUP && !escapeKeys.empty())
+					break; // avoid sending KEYUP twice if AC_BACK and ESCAPE are both released
+				scancode = SDL_SCANCODE_ESCAPE;
+				keysym = SDLK_ESCAPE;
+			}
+
 			const auto &entry = KeyMap.find(keysym);
 			auto key = entry == KeyMap.end() ? KEY_UNKNOWN : entry->second;
 
@@ -840,6 +880,8 @@ bool CIrrDeviceSDL::run()
 			irrevent.KeyInput.Control = (SDL_event.key.keysym.mod & KMOD_CTRL) != 0;
 			irrevent.KeyInput.Char = findCharToPassToIrrlicht(keysym, key,
 					(SDL_event.key.keysym.mod & KMOD_NUM) != 0);
+			irrevent.KeyInput.SystemKeyCode = scancode;
+
 			postEventFromUser(irrevent);
 		} break;
 
@@ -1314,9 +1356,6 @@ void CIrrDeviceSDL::createKeyMap()
 	// I find a better version.
 
 	// buttons missing
-
-	// Android back button = ESC
-	KeyMap.emplace(SDLK_AC_BACK, KEY_ESCAPE);
 
 	KeyMap.emplace(SDLK_BACKSPACE, KEY_BACK);
 	KeyMap.emplace(SDLK_TAB, KEY_TAB);

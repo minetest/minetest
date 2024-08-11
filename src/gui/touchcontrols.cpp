@@ -198,13 +198,7 @@ static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 	}
 	assert(!key.empty());
 	std::string resolved = g_settings->get("keymap_" + key);
-	try {
-		code = keyname_to_keycode(resolved.c_str());
-	} catch (UnknownKeycode &e) {
-		code = KEY_UNKNOWN;
-		warningstream << "TouchControls: Unknown key '" << resolved
-			      << "' for '" << key << "', hiding button." << std::endl;
-	}
+	code = keyname_to_keycode(resolved.c_str());
 	return code;
 }
 
