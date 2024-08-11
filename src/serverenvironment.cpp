@@ -257,38 +257,71 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block,
 	FATAL_ERROR_IF(!m_query_mode,
 		"attempted to query on non fully set up LBMManager");
 
-	const v3s16 pos_of_block = block->getPosRelative();
-	v3s16 pos;
-	MapNode n;
-	content_t c;
-	auto it = getLBMsIntroducedAfter(stamp);
+	// Collect a list of all LBMs and associated positions
+	struct LBMToRun {
+		std::unordered_set<v3s16> p; // node positions
+		std::unordered_set<LoadingBlockModifierDef*> l;
+	};
+	std::unordered_map<content_t, LBMToRun> to_run;
+
 	// Note: the iteration count of this outer loop is typically very low, so it's ok.
-	for (; it != m_lbm_lookup.end(); ++it) {
-		// Cache previous lookup result since it has a high performance penalty.
+	for (auto it = getLBMsIntroducedAfter(stamp); it != m_lbm_lookup.end(); ++it) {
+		v3s16 pos;
+		content_t c;
+
+		// Cache previous lookups since it has a high performance penalty.
 		content_t previous_c = CONTENT_IGNORE;
 		const LBMContentMapping::lbm_vector *lbm_list = nullptr;
+		LBMToRun *batch = nullptr;
 
 		for (pos.Z = 0; pos.Z < MAP_BLOCKSIZE; pos.Z++)
 		for (pos.Y = 0; pos.Y < MAP_BLOCKSIZE; pos.Y++)
 		for (pos.X = 0; pos.X < MAP_BLOCKSIZE; pos.X++) {
-			n = block->getNodeNoCheck(pos);
-			c = n.getContent();
+			c = block->getNodeNoCheck(pos).getContent();
 
+			bool c_changed = false;
 			if (previous_c != c) {
+				c_changed = true;
 				lbm_list = it->second.lookup(c);
+				batch = &to_run[c];
 				previous_c = c;
 			}
 
 			if (!lbm_list)
 				continue;
-			for (auto lbmdef : *lbm_list) {
-				lbmdef->trigger(env, pos + pos_of_block, n, dtime_s);
-				if (block->isOrphan())
-					return;
-				n = block->getNodeNoCheck(pos);
-				if (n.getContent() != c)
-					break; // The node was changed and the LBMs no longer apply
+			batch->p.insert(pos);
+			if (c_changed) {
+				batch->l.insert(lbm_list->begin(), lbm_list->end());
+			} else {
+				// we were here before so the list must be filled
+				assert(!batch->l.empty());
 			}
+		}
+	}
+
+	// Actually run them
+	bool first = true;
+	for (auto &[c, batch] : to_run) {
+		for (auto &lbm_def : batch.l) {
+			if (!first) {
+				// The fun part: since any LBM call can change the nodes inside of he
+				// block, we have to recheck the positions to see if the wanted node
+				// is still there.
+				// Note that we don't rescan the whole block, we don't want to include new changes.
+				for (auto it2 = batch.p.begin(); it2 != batch.p.end(); ) {
+					if (block->getNodeNoCheck(*it2).getContent() != c)
+						it2 = batch.p.erase(it2);
+					else
+						++it2;
+				}
+			}
+			first = false;
+
+			if (batch.p.empty())
+				break;
+			lbm_def->trigger(env, block, batch.p, dtime_s);
+			if (block->isOrphan())
+				return;
 		}
 	}
 }

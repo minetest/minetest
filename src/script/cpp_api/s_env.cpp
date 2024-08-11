@@ -111,10 +111,11 @@ public:
 		this->name = name;
 	}
 
-	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n, float dtime_s)
+	virtual void trigger(ServerEnvironment *env, MapBlock *block,
+		const std::unordered_set<v3s16> &positions, float dtime_s)
 	{
 		auto *script = env->getScriptIface();
-		script->triggerLBM(m_id, p, n, dtime_s);
+		script->triggerLBM(m_id, block, positions, dtime_s);
 	}
 };
 
@@ -291,10 +292,6 @@ void ScriptApiEnv::readLBMs()
 		bool run_at_every_load = getboolfield_default(L, current_lbm,
 			"run_at_every_load", false);
 
-		lua_getfield(L, current_lbm, "action");
-		luaL_checktype(L, current_lbm + 1, LUA_TFUNCTION);
-		lua_pop(L, 1);
-
 		LuaLBM *lbm = new LuaLBM(id, trigger_contents, name,
 			run_at_every_load);
 
@@ -462,34 +459,29 @@ void ScriptApiEnv::triggerABM(int id, v3s16 p, MapNode n,
 	lua_pop(L, 1); // Pop error handler
 }
 
-void ScriptApiEnv::triggerLBM(int id, v3s16 p,
-	const MapNode n, const float dtime_s)
+void ScriptApiEnv::triggerLBM(int id, MapBlock *block,
+		const std::unordered_set<v3s16> &positions, float dtime_s)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	// Get registered_lbms
+	const v3s16 pos_of_block = block->getPosRelative();
+
+	// Get core.run_lbm
 	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_lbms");
-	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_getfield(L, -1, "run_lbm");
+	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_remove(L, -2); // Remove core
 
-	// Get registered_lbms[m_id]
+	// Call it
 	lua_pushinteger(L, id);
-	lua_gettable(L, -2);
-	FATAL_ERROR_IF(lua_isnil(L, -1), "Entry with given id not found in registered_lbms table");
-	lua_remove(L, -2); // Remove registered_lbms
-
-	setOriginFromTable(-1);
-
-	// Call action
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_getfield(L, -1, "action");
-	luaL_checktype(L, -1, LUA_TFUNCTION);
-	lua_remove(L, -2); // Remove registered_lbms[m_id]
-	push_v3s16(L, p);
-	pushnode(L, n);
+	lua_createtable(L, positions.size(), 0);
+	int i = 1;
+	for (auto &p : positions) {
+		push_v3s16(L, pos_of_block + p);
+		lua_rawseti(L, -2, i++);
+	}
 	lua_pushnumber(L, dtime_s);
 
 	int result = lua_pcall(L, 3, 0, error_handler);
