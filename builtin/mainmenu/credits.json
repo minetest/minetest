@@ -1,4 +1,5 @@
 {
+	"#": "For updating active/previous contributors, see the script in ./util/gather_git_credits.py",
 	"core_developers": [
 		"Perttu Ahola (celeron55) <celeron55@gmail.com> [Project founder]",
 		"sfan5 <sfan5@live.de>",
