@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-06-09 15:09+0000\n"
-"Last-Translator: SergioFLS <sergioflsgd@hotmail.com>\n"
+"PO-Revision-Date: 2024-08-12 16:09+0000\n"
+"Last-Translator: rubenwardy <rw@rubenwardy.com>\n"
 "Language-Team: Toki Pona <https://hosted.weblate.org/projects/minetest/"
 "minetest/tok/>\n"
 "Language: tok\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -2134,7 +2134,7 @@ msgstr ""
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 #: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "tok"
 
 #: src/network/clientpackethandler.cpp
 msgid ""
