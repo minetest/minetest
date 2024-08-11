@@ -342,6 +342,26 @@ public:
 	{
 		return video::isDriverSupported(driver);
 	}
+
+	// This is a trivial (near-identity) mapping for converting between scancodes and keycodes for devices that do
+	// not implement this.
+
+	//! Get the scancode of the corresponding keycode.
+	virtual u32 getScancodeFromKey(const KeyCode &key) const
+	{
+		return key.index() == 0 ? std::get<EKEY_CODE>(key) : KEY_KEY_CODES_COUNT + std::get<wchar_t>(key);
+	}
+
+	//! Get the keycode of the corresponding scancode.
+	virtual KeyCode getKeyFromScancode(const u32 scancode) const
+	{
+		KeyCode key;
+		if (scancode < KEY_KEY_CODES_COUNT)
+			key.emplace<EKEY_CODE>((EKEY_CODE)scancode);
+		else
+			key.emplace<wchar_t>(scancode - KEY_KEY_CODES_COUNT);
+		return key;
+	}
 };
 
 } // end namespace irr
