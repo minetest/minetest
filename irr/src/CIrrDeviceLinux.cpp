@@ -45,9 +45,12 @@
 #include <X11/Xcursor/Xcursor.h>
 #endif
 
+#if defined(_IRR_COMPILE_WITH_X11_) || defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+#include <unistd.h>
+#endif
+
 #if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 #include <fcntl.h>
-#include <unistd.h>
 
 #ifdef __FreeBSD__
 #include <sys/joystick.h>
