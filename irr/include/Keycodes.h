@@ -190,6 +190,12 @@ public:
 
 	KeyCode(EKEY_CODE code, wchar_t ch)
 	{
+		emplace(code, ch);
+	}
+
+	using super::emplace;
+	void emplace(EKEY_CODE code, wchar_t ch)
+	{
 		if (isValid(code))
 			emplace<EKEY_CODE>(code);
 		else

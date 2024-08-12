@@ -9,6 +9,7 @@
 #include <Keycodes.h>
 #include <IEventReceiver.h>
 #include <string>
+#include <unordered_map>
 
 class UnknownKeycode : public BaseException
 {
@@ -31,17 +32,29 @@ public:
 	std::string sym() const;
 	std::string name() const;
 
+	bool operator==(const KeyPress &o) const {
+		return scancode == o.scancode;
+	}
+
+	operator bool() const {
+		return scancode != 0;
+	}
+
+	static const KeyPress &getSpecialKey(const std::string &name);
+
 private:
 	u32 scancode = 0;
+
+	static std::unordered_map<std::string, KeyPress> specialKeyCache;
 };
 
 // Global defines for convenience
-
-extern const KeyPress EscapeKey;
-
-extern const KeyPress LMBKey;
-extern const KeyPress MMBKey; // Middle Mouse Button
-extern const KeyPress RMBKey;
+// This implementation defers creation of the objects to make sure that the
+// IrrlichtDevice is initialized.
+#define EscapeKey KeyPress::getSpecialKey("KEY_ESCAPE")
+#define LMBKey KeyPress::getSpecialKey("KEY_LBUTTON")
+#define MMBKey KeyPress::getSpecialKey("KEY_MBUTTON") // Middle Mouse Button
+#define RMBKey KeyPress::getSpecialKey("KEY_RBUTTON")
 
 // Key configuration getter
 const KeyPress &getKeySetting(const char *settingname);
