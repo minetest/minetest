@@ -3658,6 +3658,9 @@ Player Inventory lists
 * `hand`: list containing an override for the empty hand
     * Is not created automatically, use `InvRef:set_size`
     * Is only used to enhance the empty hand's tool capabilities
+ 
+Custom lists can be added and deleted with `InvRef:set_size(name, size)` like
+any other inventory.
 
 ItemStack transaction order
 ---------------------------
@@ -7493,6 +7496,8 @@ An `InvRef` is a reference to an inventory.
 * `is_empty(listname)`: return `true` if list is empty
 * `get_size(listname)`: get size of a list
 * `set_size(listname, size)`: set size of a list
+    * If `listname` is not known, a new list will be created
+    * Setting `size` to 0 deletes a list
     * returns `false` on error (e.g. invalid `listname` or `size`)
 * `get_width(listname)`: get width of a list
 * `set_width(listname, width)`: set width of list; currently used for crafting
