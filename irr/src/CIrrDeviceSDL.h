@@ -322,24 +322,7 @@ private:
 
 	core::rect<s32> lastElemPos;
 
-	struct SKeyMap
-	{
-		SKeyMap() {}
-		SKeyMap(s32 x11, s32 win32) :
-				SDLKey(x11), Win32Key(win32)
-		{
-		}
-
-		s32 SDLKey;
-		s32 Win32Key;
-
-		bool operator<(const SKeyMap &o) const
-		{
-			return SDLKey < o.SDLKey;
-		}
-	};
-
-	core::array<SKeyMap> KeyMap;
+	std::unordered_map<SDL_Keycode, EKEY_CODE> KeyMap;
 
 	s32 CurrentTouchCount;
 	bool IsInBackground;
