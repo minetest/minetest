@@ -5100,12 +5100,15 @@ Callbacks:
       to the object (not necessarily an actual rightclick)
     * `clicker`: an `ObjectRef` (may or may not be a player)
 * `on_attach_child(self, child)`
-    * `child`: an `ObjectRef` of the child that attaches
+    * Called after another object is attached to this object.
+    * `child`: an `ObjectRef` of the child
 * `on_detach_child(self, child)`
-    * `child`: an `ObjectRef` of the child that detaches
+    * Called after another object has detached from this object.
+    * `child`: an `ObjectRef` of the child
 * `on_detach(self, parent)`
-    * `parent`: an `ObjectRef` (can be `nil`) from where it got detached
-    * This happens before the parent object is removed from the world
+    * Called after detaching from another object.
+    * `parent`: an `ObjectRef` from where it got detached
+    * Note: this is also called before removal from the world.
 * `get_staticdata(self)`
     * Should return a string that will be passed to `on_activate` when the
       object is instantiated the next time.
