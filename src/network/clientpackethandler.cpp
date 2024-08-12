@@ -51,7 +51,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 const char *accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
 	N_("Invalid password"),
 	N_("Your client sent something the server didn't expect.  Try reconnecting or updating your client."),
-	N_("The server is running in simple singleplayer mode.  You cannot connect."),
+	N_("The server is running in singleplayer mode.  You cannot connect."),
 	N_("Your client's version is not supported.\nPlease contact the server administrator."),
 	N_("Player name contains disallowed characters"),
 	N_("Player name not allowed"),
