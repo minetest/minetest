@@ -1842,7 +1842,7 @@ int ObjectRef::l_hud_get_hotbar_itemcount(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	lua_pushinteger(L, player->getHotbarItemcount());
+	lua_pushinteger(L, player->getMaxHotbarItemcount());
 	return 1;
 }
 

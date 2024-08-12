@@ -783,7 +783,7 @@ void Hud::drawHotbar(u16 playeritem)
 
 	v2s32 centerlowerpos(m_displaycenter.X, m_screensize.Y);
 
-	s32 hotbar_itemcount = player->hud_hotbar_itemcount;
+	s32 hotbar_itemcount = player->getMaxHotbarItemcount();
 	s32 width = hotbar_itemcount * (m_hotbar_imagesize + m_padding * 2);
 	v2s32 pos = centerlowerpos - v2s32(width / 2, m_hotbar_imagesize + m_padding * 3);
 
