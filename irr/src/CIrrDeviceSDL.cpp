@@ -220,6 +220,31 @@ int CIrrDeviceSDL::findCharToPassToIrrlicht(uint32_t sdlKey, EKEY_CODE irrlichtK
 	}
 }
 
+u32 CIrrDeviceSDL::getScancodeFromKey(const KeyCode &key) const
+{
+	u32 keynum = 0;
+	if (key.index() == 0) {
+		auto keycode = std::get<EKEY_CODE>(key);
+		for (const auto &entry: KeyMap) {
+			if (entry.second == keycode) {
+				keynum = entry.first;
+				break;
+			}
+		}
+	} else {
+		keynum = std::get<wchar_t>(key);
+	}
+	return SDL_GetScancodeFromKey(keynum);
+}
+
+KeyCode CIrrDeviceSDL::getKeyFromScancode(const u32 scancode) const
+{
+	auto keycode = SDL_GetKeyFromScancode((SDL_Scancode)scancode);
+	const auto &keyentry = KeyMap.find(keycode);
+	auto irrcode = keyentry != KeyMap.end() ? keyentry->second : KEY_KEY_CODES_COUNT;
+	return KeyCode(irrcode, keycode);
+}
+
 void CIrrDeviceSDL::resetReceiveTextInputEvents()
 {
 	gui::IGUIElement *elem = GUIEnvironment->getFocus();
