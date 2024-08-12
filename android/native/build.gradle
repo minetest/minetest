@@ -8,7 +8,7 @@ android {
 		compileSdk 34
 		targetSdkVersion 34
 		externalNativeBuild {
-            cmake {
+			cmake {
 				arguments "-DANDROID_STL=c++_shared",
 					"-DENABLE_CURL=1", "-DENABLE_SOUND=1",
 					"-DENABLE_GETTEXT=1",
