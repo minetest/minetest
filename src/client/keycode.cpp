@@ -270,8 +270,9 @@ static const table_key &lookup_keychar(wchar_t Char)
 	throw UnknownKeycode(os.str());
 }
 
-static const table_key &lookup_keypress(const KeyPress &key)
+static const table_key &lookup_scancode(const u32 scancode)
 {
+	auto key = RenderingEngine::get_raw_device()->getKeyFromScancode(scancode);
 	return key.index() == 0 ? lookup_keykey(std::get<irr::EKEY_CODE>(key)) : lookup_keychar(std::get<wchar_t>(key));
 }
 
@@ -279,33 +280,39 @@ KeyPress::KeyPress(const std::string_view &name)
 {
 	auto wname = utf8_to_wide(name);
 	table_key key;
+	KeyCode keycode;
 	try { // Lookup by name
 		key = lookup_keyname(name);
+		keycode.emplace(key.Key, key.Char);
 	} catch (UnknownKeycode &e) {
 		try {
 			key = lookup_keychar(wname[0]);
+			keycode.emplace(key.Key, key.Char);
 		} catch (UnknownKeycode &e) {
-			emplace<wchar_t>(wname[0]);
+			keycode.emplace<wchar_t>(wname[0]);
 		}
 	};
-	emplace(key.Key, key.Char);
+	scancode = RenderingEngine::get_raw_device()->getScancodeFromKey(keycode);
 }
 
 std::string KeyPress::sym() const
 {
-	return lookup_keypress(*this).Name;
+	return lookup_scancode(scancode).Name;
 }
 
 std::string KeyPress::name() const
 {
-	return lookup_keypress(*this).LangName;
+	return lookup_scancode(scancode).LangName;
 }
 
-const KeyPress EscapeKey("KEY_ESCAPE");
-
-const KeyPress LMBKey("KEY_LBUTTON");
-const KeyPress MMBKey("KEY_MBUTTON");
-const KeyPress RMBKey("KEY_RBUTTON");
+std::unordered_map<std::string, KeyPress> KeyPress::specialKeyCache;
+const KeyPress &KeyPress::getSpecialKey(const std::string &name)
+{
+	auto &key = specialKeyCache[name];
+	if (!key)
+		key = KeyPress(name);
+	return key;
+}
 
 /*
 	Key config
