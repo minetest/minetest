@@ -7097,6 +7097,8 @@ Misc.
 * `minetest.is_player(obj)`: boolean, whether `obj` is a player
 * `minetest.player_exists(name)`: boolean, whether player exists
   (regardless of online status)
+* `minetest.is_valid_player_name(name)`: boolean, whether the given name
+  could be used as a player name (regardless of whether said player exists).
 * `minetest.hud_replace_builtin(name, hud_definition)`
     * Replaces definition of a builtin hud element
     * `name`: `"breath"`, `"health"` or `"minimap"`
@@ -7989,9 +7991,9 @@ child will follow movement and rotation of that bone.
 * `set_observers(observers)`: sets observers (players this object is sent to)
     * If `observers` is `nil`, the object's observers are "unmanaged":
       The object is sent to all players as governed by server settings. This is the default.
-    * `observers` is a "set" of player names: `{[player name] = true, [other player name] = true, ...}`
-        * A set is a table where the keys are the elements of the set (in this case, player names)
-          and the values are all `true`.
+    * `observers` is a "set" of player names: `{name1 = true, name2 = true, ...}`
+        * A set is a table where the keys are the elements of the set
+          (in this case, *valid* player names) and the values are all `true`.
     * Attachments: The *effective observers* of an object are made up of
       all players who can observe the object *and* are also effective observers
       of its parent object (if there is one).
