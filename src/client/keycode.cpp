@@ -10,6 +10,7 @@
 #include "util/hex.h"
 #include "util/string.h"
 #include "util/basic_macros.h"
+#include <vector>
 
 struct table_key {
 	std::string Name;
@@ -31,7 +32,7 @@ struct table_key {
 
 #define N_(text) text
 
-static const struct table_key table[] = {
+static std::vector<table_key> table = {
 	// Keys that can be reliably mapped between Char and Key
 	DEFINEKEY3(0)
 	DEFINEKEY3(1)
@@ -222,10 +223,27 @@ static const struct table_key table[] = {
 	DEFINEKEY5("_")
 };
 
-static const table_key invalid_key = {"", irr::KEY_KEY_CODES_COUNT, L'\0', ""};
+static const table_key invalid_key = {"", irr::KEY_UNKNOWN, L'\0', ""};
 
 #undef N_
 
+
+static const table_key &lookup_keychar(wchar_t Char)
+{
+	if (Char == L'\0')
+		return invalid_key;
+
+	for (const auto &table_key : table) {
+		if (table_key.Char == Char)
+			return table_key;
+	}
+
+	std::ostringstream os;
+	os << "<Char " << hex_encode((char*) &Char, sizeof(wchar_t)) << ">";
+	auto newsym = wide_to_utf8(std::wstring_view(&Char, 1));
+	table_key new_key = {newsym, irr::KEY_KEY_CODES_COUNT, Char, newsym};
+	return table.emplace_back(std::move(new_key));
+}
 
 static const table_key &lookup_keyname(const std::string_view &name)
 {
@@ -237,7 +255,10 @@ static const table_key &lookup_keyname(const std::string_view &name)
 			return table_key;
 	}
 
-	throw UnknownKeycode(std::string(name));
+	auto wname = utf8_to_wide(name);
+	if (wname.empty())
+		return invalid_key;
+	return lookup_keychar(wname[0]);
 }
 
 static const table_key &lookup_keykey(irr::EKEY_CODE key)
@@ -252,22 +273,7 @@ static const table_key &lookup_keykey(irr::EKEY_CODE key)
 
 	std::ostringstream os;
 	os << "<Keycode " << (int) key << ">";
-	throw UnknownKeycode(os.str());
-}
-
-static const table_key &lookup_keychar(wchar_t Char)
-{
-	if (Char == L'\0')
-		return invalid_key;
-
-	for (const auto &table_key : table) {
-		if (table_key.Char == Char)
-			return table_key;
-	}
-
-	std::ostringstream os;
-	os << "<Char " << hex_encode((char*) &Char, sizeof(wchar_t)) << ">";
-	throw UnknownKeycode(os.str());
+	return invalid_key;
 }
 
 static const table_key &lookup_scancode(const u32 scancode)
@@ -278,20 +284,8 @@ static const table_key &lookup_scancode(const u32 scancode)
 
 KeyPress::KeyPress(const std::string_view &name)
 {
-	auto wname = utf8_to_wide(name);
-	table_key key;
-	KeyCode keycode;
-	try { // Lookup by name
-		key = lookup_keyname(name);
-		keycode.emplace(key.Key, key.Char);
-	} catch (UnknownKeycode &e) {
-		try {
-			key = lookup_keychar(wname[0]);
-			keycode.emplace(key.Key, key.Char);
-		} catch (UnknownKeycode &e) {
-			keycode.emplace<wchar_t>(wname[0]);
-		}
-	};
+	const auto &key = lookup_keyname(name);
+	KeyCode keycode(key.Key, key.Char);
 	scancode = RenderingEngine::get_raw_device()->getScancodeFromKey(keycode);
 }
 
