@@ -284,6 +284,8 @@ static const table_key &lookup_scancode(const u32 scancode)
 
 KeyPress::KeyPress(const std::string_view &name)
 {
+	if (loadFromScancode(name))
+		return;
 	const auto &key = lookup_keyname(name);
 	KeyCode keycode(key.Key, key.Char);
 	scancode = RenderingEngine::get_raw_device()->getScancodeFromKey(keycode);
@@ -291,12 +293,27 @@ KeyPress::KeyPress(const std::string_view &name)
 
 std::string KeyPress::sym() const
 {
-	return lookup_scancode(scancode).Name;
+	const auto &name = lookup_scancode(scancode).Name;
+	if (!name.empty() || scancode == 0)
+		return name;
+	return formatScancode();
 }
 
 std::string KeyPress::name() const
 {
-	return lookup_scancode(scancode).LangName;
+	const auto &name = lookup_scancode(scancode).LangName;
+	auto table_key = lookup_scancode(scancode);
+	if (!name.empty() || scancode == 0)
+		return name;
+	return formatScancode();
+}
+
+bool KeyPress::loadFromScancode(const std::string_view &name)
+{
+	if (name.size() < 2 || name[0] != '<')
+		return false;
+	scancode = strtoul(name.data()+1, NULL, 10);
+	return scancode != 0;
 }
 
 std::unordered_map<std::string, KeyPress> KeyPress::specialKeyCache;
