@@ -35,6 +35,13 @@ public:
 	static const KeyPress &getSpecialKey(const std::string &name);
 
 private:
+	bool loadFromScancode(const std::string_view &name);
+
+	inline std::string formatScancode() const
+	{
+		return "<" + std::to_string(scancode) + ">";
+	}
+
 	u32 scancode = 0;
 
 	static std::unordered_map<std::string, KeyPress> specialKeyCache;
