@@ -844,6 +844,7 @@ bool CIrrDeviceSDL::run()
 		case SDL_KEYDOWN:
 		case SDL_KEYUP: {
 			auto keysym = SDL_event.key.keysym.sym;
+			auto scancode = SDL_event.key.keysym.scancode;
 			const auto &entry = KeyMap.find(keysym);
 
 			EKEY_CODE key;
@@ -866,7 +867,22 @@ bool CIrrDeviceSDL::run()
 			irrevent.KeyInput.Control = (SDL_event.key.keysym.mod & KMOD_CTRL) != 0;
 			irrevent.KeyInput.Char = findCharToPassToIrrlicht(keysym, key,
 					(SDL_event.key.keysym.mod & KMOD_NUM) != 0);
-			irrevent.KeyInput.SystemKeyCode = SDL_event.key.keysym.scancode;
+			irrevent.KeyInput.SystemKeyCode = scancode;
+
+			// Treat AC_BACK as the Escape key
+			if (scancode == SDL_SCANCODE_AC_BACK || scancode == SDL_SCANCODE_ESCAPE)
+			{
+				if (SDL_event.type == SDL_KEYDOWN)
+					escapeKeys.insert(scancode);
+				else
+					escapeKeys.erase(scancode);
+				if (SDL_event.type == SDL_KEYUP && !escapeKeys.empty())
+					break; // avoid sending KEYUP twice if AC_BACK and ESCAPE are both released
+				irrevent.KeyInput.Key = irr::KEY_ESCAPE;
+				irrevent.KeyInput.Char = L'\x1b';
+				irrevent.KeyInput.SystemKeyCode = SDL_SCANCODE_ESCAPE;
+			}
+
 			postEventFromUser(irrevent);
 		} break;
 
@@ -1332,9 +1348,6 @@ void CIrrDeviceSDL::createKeyMap()
 	// I find a better version.
 
 	// buttons missing
-
-	// Android back button = ESC
-	KeyMap.emplace(SDLK_AC_BACK, KEY_ESCAPE);
 
 	KeyMap.emplace(SDLK_BACKSPACE, KEY_BACK);
 	KeyMap.emplace(SDLK_TAB, KEY_TAB);
