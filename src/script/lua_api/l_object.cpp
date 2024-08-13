@@ -859,12 +859,8 @@ int ObjectRef::l_set_observers(lua_State *L)
 	lua_pushnil(L);
 	while (lua_next(L, 2) != 0) {
 		std::string name = readParam<std::string>(L, -2);
-		if (name.empty())
-			throw LuaError("Observer name is empty");
-		if (name.size() > PLAYERNAME_SIZE)
-			throw LuaError("Observer name is too long");
-		if (!string_allowed(name, PLAYERNAME_ALLOWED_CHARS))
-			throw LuaError("Observer name contains invalid characters");
+		if (!is_valid_player_name(name))
+			throw LuaError("Observer name is not a valid player name");
 		if (!lua_toboolean(L, -1)) // falsy value?
 			throw LuaError("Values in the `observers` table need to be true");
 		observer_names.insert(std::move(name));

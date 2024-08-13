@@ -1095,13 +1095,9 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 
 	if (cmd_args.exists("terminal")) {
 #if USE_CURSES
-		bool name_ok = true;
 		std::string admin_nick = g_settings->get("name");
 
-		name_ok = name_ok && !admin_nick.empty();
-		name_ok = name_ok && string_allowed(admin_nick, PLAYERNAME_ALLOWED_CHARS);
-
-		if (!name_ok) {
+		if (!is_valid_player_name(admin_nick)) {
 			if (admin_nick.empty()) {
 				errorstream << "No name given for admin. "
 					<< "Please check your minetest.conf that it "
@@ -1110,7 +1106,8 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 			} else {
 				errorstream << "Name for admin '"
 					<< admin_nick << "' is not valid. "
-					<< "Please check that it only contains allowed characters. "
+					<< "Please check that it only contains allowed characters "
+					<< "and that it is at most 20 characters long. "
 					<< "Valid characters are: " << PLAYERNAME_ALLOWED_CHARS_USER_EXPL
 					<< std::endl;
 			}
