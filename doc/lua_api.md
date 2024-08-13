@@ -4025,6 +4025,10 @@ Helper functions
       the value `val` in the table `list`. Non-numerical indices are ignored.
       If `val` could not be found, `-1` is returned. `list` must not have
       negative indices.
+* `table.keyof(table, val)`: returns the key containing
+      the value `val` in the table `table`. If multiple keys contain `val`,
+      it is unspecified which key will be returned.
+      If `val` could not be found, `nil` is returned.
 * `table.insert_all(table, other_table)`:
     * Appends all values in `other_table` to `table` - uses `#table + 1` to
       find new indices.
