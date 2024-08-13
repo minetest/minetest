@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-07-20 23:09+0000\n"
+"PO-Revision-Date: 2024-08-14 04:09+0000\n"
 "Last-Translator: ninjum <ninhum@gmx.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/minetest/"
 "minetest/gl/>\n"
@@ -201,7 +201,7 @@ msgstr "Cargando..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Mods"
-msgstr "Mods"
+msgstr "Modificacións"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "No packages could be retrieved"
@@ -319,7 +319,7 @@ msgstr "$1 (Activado)"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
-msgstr "$1 mods"
+msgstr "$1 modificacións"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -331,7 +331,9 @@ msgstr "Instalación: Non se puido atopar un nome de carpeta adecuado para $1"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Non se puido atopar un mod, paquete de mods ou xogo válido"
+msgstr ""
+"Non se puido atopar unha modificación, paquete de modificacións ou xogo "
+"válido"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to install a $1 as a $2"
@@ -355,7 +357,7 @@ msgstr "Desactivar todo"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "Desactivar paq. de mods"
+msgstr "Desactivar paq. de modificación"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -363,7 +365,7 @@ msgstr "Activar todo"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "Activar paq. de mods"
+msgstr "Activar paq. de modificacións"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -375,7 +377,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr "Buscar máis mods"
+msgstr "Buscar máis modificacións"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -395,7 +397,7 @@ msgstr "Sen dependencias importantes"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr "Non se forneceu a descripción do paquete de mods."
+msgstr "Non se forneceu a descripción do paquete de modificacións."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
@@ -704,15 +706,15 @@ msgstr "Aceptar"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "Renomear paquete de mods:"
+msgstr "Renomear paquete de modificacións:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
-"Este paquete de mods ten un nome explícito no seu modpack.conf que non "
-"permitirá cambios de nome aquí."
+"Este paquete de modificacións ten un nome explícito no seu modpack.conf que "
+"non permitirá cambios de nome aquí."
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
@@ -897,7 +899,7 @@ msgstr "Mostrar nomes técnicos"
 
 #: builtin/mainmenu/settings/settingtypes.lua
 msgid "Client Mods"
-msgstr "Mods de cliente"
+msgstr "Modificacións de cliente"
 
 #: builtin/mainmenu/settings/settingtypes.lua
 msgid "Content: Games"
@@ -905,7 +907,7 @@ msgstr "Contido: Xogos"
 
 #: builtin/mainmenu/settings/settingtypes.lua
 msgid "Content: Mods"
-msgstr "Contido: Mods"
+msgstr "Contido: modificacións"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
@@ -977,7 +979,8 @@ msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
-"Abre o directorio que contén mundos, xogos, mods fornecidos polo usuario\n"
+"Abre o directorio que contén mundos, xogos, modificacións fornecidos polo "
+"usuario\n"
 "e paquetes de textura nun xestor de ficheiros ou explorador."
 
 #: builtin/mainmenu/tab_about.lua
@@ -1098,7 +1101,7 @@ msgstr "Porto"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select Mods"
-msgstr "Seleccionar mods"
+msgstr "Seleccionar modificacións"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -1354,7 +1357,7 @@ msgstr ""
 "- pila táctil, rañura táctil:\n"
 " --> mover pila\n"
 "- toca e arrastra, toca co segundo dedo\n"
-" --> coloca un único elemento na rañura\n"
+" --> coloca un único obxecto na rañura\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1949,7 +1952,8 @@ msgstr "%s falta:"
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
 msgstr ""
-"Instala e habilita os mods necesarios, ou desactiva os mods que causan erros."
+"Instala e habilita as modificacións necesarias, ou desactiva as "
+"modificacións que causan erros."
 
 #: src/content/mod_configuration.cpp
 msgid ""
@@ -1957,11 +1961,11 @@ msgid ""
 "the mods."
 msgstr ""
 "Nota: isto pode ser causado por un ciclo de dependencia, nese caso, proba "
-"actualizar os mods."
+"actualizar as modificacións."
 
 #: src/content/mod_configuration.cpp
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Algúns mods teñen dependencias non satisfeitas:"
+msgstr "Algunhas modificacións teñen dependencias non satisfeitas:"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2488,11 +2492,11 @@ msgstr "Método de suavizado (antialiasing)"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
-msgstr "Añadir nome de obxeto"
+msgstr "Engadir nome de obxecto"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name to tooltip."
-msgstr "Añadir nome do obxecto á descripción."
+msgstr "engadir nome do obxecto á descripción."
 
 #: src/settings_translation_file.cpp
 msgid "Apple trees noise"
@@ -2886,7 +2890,8 @@ msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
-"Lista separada por comas de mods que poden acceder ás API de HTTP, que\n"
+"Lista separada por comas de modificacións que poden acceder ás API de HTTP, "
+"que\n"
 "permiten cargar e descargar datos a/desde Internet."
 
 #: src/settings_translation_file.cpp
@@ -2894,9 +2899,9 @@ msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
-"Lista separada por comas de mods de confianza que poden acceder funcións "
-"inseguras\n"
-"incluso cando a seguridade mod está activada (cía "
+"Lista separada por comas de modificacións de confianza que poden acceder "
+"funcións inseguras\n"
+"incluso cando a seguridade modificacións está activada (cía "
 "request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
@@ -3329,7 +3334,7 @@ msgid ""
 "Enable Lua modding support on client.\n"
 "This support is experimental and API can change."
 msgstr ""
-"Activar a axuda de mods de Lua no cliente.\n"
+"Activar a axuda de modificacións de Lua no cliente.\n"
 "Isto é experimental e a API pode cambiar."
 
 #: src/settings_translation_file.cpp
@@ -3386,21 +3391,23 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
-msgstr "Activar axuda para as canles de mods."
+msgstr "Activar axuda para as canles de modificacións."
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
-msgstr "Activar seguridade dos mods"
+msgstr "Activar seguridade das modificacións"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
-"Activar a roda do rato (scroll) para a selección de elementos na barra de "
+"Activar a roda do rato (scroll) para a selección de obxectos na barra de "
 "acceso rápido."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random mod loading (mainly used for testing)."
-msgstr "Habilitar a carga aleatoria de mods (principalmente usado para probas)."
+msgstr ""
+"Habilitar a carga aleatoria de modificacións (principalmente usado para "
+"probas)."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3479,7 +3486,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
-msgstr "Activa a animación de obxetos no inventario."
+msgstr "Activa a animación de obxectos no inventario."
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
@@ -3892,11 +3899,11 @@ msgstr "Ruído do chán"
 
 #: src/settings_translation_file.cpp
 msgid "HTTP mods"
-msgstr "Mods HTTP"
+msgstr "Modificacións HTTP"
 
 #: src/settings_translation_file.cpp
 msgid "HUD"
-msgstr "HUD"
+msgstr "HUD Pantalla de Información"
 
 #: src/settings_translation_file.cpp
 msgid "HUD scaling"
@@ -4268,7 +4275,7 @@ msgstr "Inverter rato"
 #: src/settings_translation_file.cpp
 msgid "Invert mouse wheel (scroll) direction for item selection in hotbar."
 msgstr ""
-"Inverter a dirección da roda do rato (scroll) para a selección de elementos "
+"Inverter a dirección da roda do rato (scroll) para a selección de obxectos "
 "na barra de acceso rápido."
 
 #: src/settings_translation_file.cpp
@@ -4555,7 +4562,8 @@ msgstr ""
 "- Recuperación de medios se o servidor usa a configuración \"remote_media\"."
 "\n"
 "- Descarga da lista de servidores e anuncio do servidor.\n"
-"- Descargas realizadas polo menú principal (por exemplo, xestor de mods).\n"
+"- Descargas realizadas polo menú principal (por exemplo, xestor de "
+"modificacións).\n"
 "Só ten efecto cando se compila con cURL."
 
 #: src/settings_translation_file.cpp
@@ -4598,7 +4606,7 @@ msgid ""
 msgstr ""
 "Carga a análise do mundo para recoller datos.\n"
 "Ofrece un comando /profiler para acceder ao perfil compilado.\n"
-"É útil para desenvolvedores de mods e operadores de servidores."
+"É útil para desenvolvedores de modificacións e operadores de servidores."
 
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
@@ -5035,7 +5043,7 @@ msgstr "Miscelánea"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Profiler"
-msgstr "Perfilador de mods"
+msgstr "Perfilador de modificacións"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Security"
@@ -5343,7 +5351,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
-"Evita que os mods fagan cousas perigosas como executar comandos de shell."
+"Evita que as modificacións fagan cousas perigosas como executar comandos de "
+"shell."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5409,7 +5418,7 @@ msgstr "Entrada aleatoria"
 
 #: src/settings_translation_file.cpp
 msgid "Random mod load order"
-msgstr "Orde de carga aleatoria de mods"
+msgstr "Orde de carga aleatoria de modificacións"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -5459,7 +5468,8 @@ msgstr ""
 "Restrinxe o acceso de algunhas funcións do cliente en servidores.\n"
 "Combine isto de abaixo para restrinxir recursos aos clientes ou coloque 0\n"
 "para que non haxa restriccións:\n"
-"LOAD_CLIENT_MODS: 1 (desactiva a carga de mods no cliente)\n"
+"LOAD_CLIENT_MODIFICACIÓNS: 1 (desactiva a carga de modificacións no cliente)"
+"\n"
 "CHAT_MESSAGES: 2 (desactiva a chamada \"send_chat_message\" no cliente)\n"
 "READ_ITEMDEFS: 4 (desactiva a chamada \"get_item_def\" no cliente)\n"
 "READ_NODEDEFS: 8 (desactiva a chamada \"get_node_def\" no cliente)\n"
@@ -6069,8 +6079,8 @@ msgid ""
 msgstr ""
 "Especifica a cantidade por defecto na que se agrupan os nós, obxectos e "
 "ferramentas.\n"
-"Ten en conta que algúns xogos ou mods poden especificar unha cantidade na "
-"que agrupar algúns (ou todos) os obxectos."
+"Ten en conta que algúns xogos ou modificacións poden especificar unha "
+"cantidade na que agrupar algúns (ou todos) os obxectos."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6403,7 +6413,7 @@ msgstr ""
 "capacidade\n"
 "de procesamento ata que se intente diminuír o seu tamaño eliminando a cola "
 "antiga de\n"
-"elementos. Un valor de 0 desactiva isto."
+"obxectos. Un valor de 0 desactiva isto."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6540,7 +6550,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
-msgstr "Mods seguros"
+msgstr "Modificacións de confianza"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6919,7 +6929,7 @@ msgid ""
 "Mods may still set a background."
 msgstr ""
 "Indica se os fondos das etiquetas de nome deberían mostrarse por defecto.\n"
-"Os mods aínda poden establecer un fondo."
+"As modificacións aínda poden establecer un fondo."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
