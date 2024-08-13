@@ -3823,6 +3823,13 @@ The following functions provide escape sequences:
     * Removes background colors added by `get_background_escape_sequence`.
 * `core.strip_colors(str)`
     * Removes all color escape sequences.
+* `minetest.get_font_escape_sequence(font_modifier)`
+    * Can currently only be used for nametags.
+    * `font_modifier` can be "mono", "unmono", "bold", "unbold", "italic" or "unitalic"
+    * The escape sequence modifies the font of the subsequent string.
+    * You can concatenate them, to for example get bold italic text.
+* `minetest.strip_font(str)`
+    * Removes all font escape sequences.
 
 
 
@@ -5666,6 +5673,8 @@ Utilities
       biome_weights = true,
       -- Particles can specify a "clip" blend mode (5.11.0)
       particle_blend_clip = true,
+      -- Nametags support color escaped sequences and new font escape sequences. (5.10.0)
+      nametag_font_escape_sequences = true,
   }
   ```
 
@@ -9274,6 +9283,8 @@ Player properties need to be saved manually.
 
     nametag_color = <ColorSpec>,
     -- Sets text color of nametag
+    -- If the text contains color escape sequences, only the part before the first
+    -- color escape sequences will have the `nametag_color`.
 
     nametag_bgcolor = <ColorSpec>,
     -- Sets background color of nametag
