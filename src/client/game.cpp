@@ -790,7 +790,7 @@ protected:
 
 	// Misc
 	void showOverlayMessage(const char *msg, float dtime, int percent,
-			bool draw_clouds = true);
+			float *indef_pos = nullptr);
 
 	inline bool fogEnabled()
 	{
@@ -966,6 +966,8 @@ private:
 #ifdef __ANDROID__
 	bool m_android_chat_open;
 #endif
+
+	float m_shutdown_progress = 0.0f;
 };
 
 Game::Game() :
@@ -1162,7 +1164,8 @@ void Game::run()
 			g_settings->getU16("screen_w"),
 			g_settings->getU16("screen_h")
 		);
-	const bool initial_window_maximized = g_settings->getBool("window_maximized");
+	const bool initial_window_maximized = !g_settings->getBool("fullscreen") &&
+			g_settings->getBool("window_maximized");
 
 	while (m_rendering_engine->run()
 			&& !(*kill || g_gamecallback->shutdown_requested
@@ -1245,7 +1248,9 @@ void Game::shutdown()
 	if (g_touchscreengui)
 		g_touchscreengui->hide();
 
-	showOverlayMessage(N_("Shutting down..."), 0, 0, false);
+	// only if the shutdown progress bar isn't shown yet
+	if (m_shutdown_progress == 0.0f)
+		showOverlayMessage(N_("Shutting down..."), 0, 0);
 
 	if (clouds)
 		clouds->drop();
@@ -1297,7 +1302,7 @@ void Game::shutdown()
 		m_rendering_engine->run();
 		f32 dtime;
 		fps_control.limit(device, &dtime);
-		showOverlayMessage(N_("Shutting down..."), dtime, 0, false);
+		showOverlayMessage(N_("Shutting down..."), dtime, 0, &m_shutdown_progress);
 	}
 
 	stop_thread->rethrow();
@@ -1429,7 +1434,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 		if (success)
 			showOverlayMessage(N_("Creating server..."), dtime, 5);
 		else
-			showOverlayMessage(N_("Shutting down..."), dtime, 0, false);
+			showOverlayMessage(N_("Shutting down..."), dtime, 0, &m_shutdown_progress);
 	}
 
 	start_thread->rethrow();
@@ -1909,6 +1914,10 @@ void Game::updateDebugState()
 	if (!has_debug) {
 		draw_control->show_wireframe = false;
 		m_flags.disable_camera_update = false;
+		auto formspec = m_game_ui->getFormspecGUI();
+		if (formspec) {
+			formspec->setDebugView(false);
+		}
 	}
 
 	// noclip
@@ -2179,12 +2188,14 @@ void Game::processItemSelection(u16 *new_playeritem)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
+	*new_playeritem = player->getWieldIndex();
+	u16 max_item = player->getMaxHotbarItemcount();
+	if (max_item == 0)
+		return;
+	max_item -= 1;
+
 	/* Item selection using mouse wheel
 	 */
-	*new_playeritem = player->getWieldIndex();
-	u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE - 1,
-		    player->hud_hotbar_itemcount - 1);
-
 	s32 wheel = input->getMouseWheel();
 	if (!m_enable_hotbar_mouse_wheel)
 		wheel = 0;
@@ -2421,9 +2432,6 @@ void Game::toggleBlockBounds()
 			break;
 		case Hud::BLOCK_BOUNDS_NEAR:
 			m_game_ui->showTranslatedStatusText("Block bounds shown for nearby blocks");
-			break;
-		case Hud::BLOCK_BOUNDS_MAX:
-			m_game_ui->showTranslatedStatusText("Block bounds shown for all blocks");
 			break;
 		default:
 			break;
@@ -3981,8 +3989,12 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.nodig_delay_timer =
 				runData.dig_time_complete / (float)crack_animation_length;
 
-		// Don't add a corresponding delay to very time consuming nodes.
-		runData.nodig_delay_timer = std::min(runData.nodig_delay_timer, 0.3f);
+		// We don't want a corresponding delay to very time consuming nodes
+		// and nodes without digging time (e.g. torches) get a fixed delay.
+		if (runData.nodig_delay_timer > 0.3f)
+			runData.nodig_delay_timer = 0.3f;
+		else if (runData.dig_instantly)
+			runData.nodig_delay_timer = 0.15f;
 
 		// Ensure that the delay between breaking nodes
 		// (dig_time_complete + nodig_delay_timer) is at least the
@@ -4366,10 +4378,10 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
  Misc
  ****************************************************************************/
 
-void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_sky)
+void Game::showOverlayMessage(const char *msg, float dtime, int percent, float *indef_pos)
 {
 	m_rendering_engine->draw_load_screen(wstrgettext(msg), guienv, texture_src,
-			dtime, percent, draw_sky);
+			dtime, percent, indef_pos);
 }
 
 void Game::settingChangedCallback(const std::string &setting_name, void *data)
@@ -4386,8 +4398,8 @@ void Game::readSettings()
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
 	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f);
 	m_cache_joystick_frustum_sensitivity = std::max(g_settings->getFloat("joystick_frustum_sensitivity"), 0.001f);
-	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.15f, 2.0f);
-	m_repeat_dig_time                    = g_settings->getFloat("repeat_dig_time", 0.15f, 2.0f);
+	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.16f, 2.0f);
+	m_repeat_dig_time                    = g_settings->getFloat("repeat_dig_time", 0.0f, 2.0f);
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");

@@ -800,11 +800,16 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 
 MapBlockMesh::~MapBlockMesh()
 {
+	size_t sz = 0;
 	for (scene::IMesh *m : m_mesh) {
+		for (u32 i = 0; i < m->getMeshBufferCount(); i++)
+			sz += m->getMeshBuffer(i)->getSize();
 		m->drop();
 	}
 	for (MinimapMapblock *block : m_minimap_mapblocks)
 		delete block;
+
+	porting::TrackFreedMemory(sz);
 }
 
 bool MapBlockMesh::animate(bool faraway, float time, int crack,

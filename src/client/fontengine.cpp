@@ -59,7 +59,7 @@ FontEngine::FontEngine(gui::IGUIEnvironment* env) :
 		"mono_font_path", "mono_font_path_bold", "mono_font_path_italic",
 		"mono_font_path_bold_italic",
 		"fallback_font_path",
-		"screen_dpi", "gui_scaling",
+		"dpi_change_notifier", "gui_scaling",
 	};
 
 	for (auto name : settings)

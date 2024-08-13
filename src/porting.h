@@ -138,7 +138,7 @@ void initializePaths();
 	Return system information
 	e.g. "Linux/3.12.7 x86_64"
 */
-std::string get_sysinfo();
+const std::string &get_sysinfo();
 
 
 // Monotonic timer
@@ -290,6 +290,24 @@ void osSpecificInit();
 // This attaches to the parents process console, or creates a new one if it doesnt exist.
 void attachOrCreateConsole();
 
+#if HAVE_MALLOC_TRIM
+/**
+ * Call this after freeing bigger blocks of memory. Used on some platforms to
+ * properly give memory back to the OS.
+ * @param amount Number of bytes freed
+*/
+void TrackFreedMemory(size_t amount);
+
+/**
+ * Call this regularly from background threads. This performs the actual trimming
+ * and is potentially slow.
+ */
+void TriggerMemoryTrim();
+#else
+static inline void TrackFreedMemory(size_t amount) { (void)amount; }
+static inline void TriggerMemoryTrim() { (void)0; }
+#endif
+
 #ifdef _WIN32
 // Quotes an argument for use in a CreateProcess() commandline (not cmd.exe!!)
 std::string QuoteArgv(const std::string &arg);
@@ -298,6 +316,7 @@ std::string QuoteArgv(const std::string &arg);
 std::string ConvertError(DWORD error_code);
 #endif
 
+// snprintf wrapper
 int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...);
 
 /**

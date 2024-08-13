@@ -149,8 +149,7 @@ by texture packs. All existing fallback textures can be found in the directory
 * `rangeview_btn.png`
 
 * `debug_btn.png`
-* `gear_icon.png`
-* `rare_controls.png`
+* `overflow_btn.png`
 * `exit_btn.png`
 
 ## Texture Overrides

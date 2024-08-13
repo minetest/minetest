@@ -114,11 +114,11 @@ always_fly_fast (Always fly fast) bool true
 #    the place button.
 #
 #    Requires: keyboard_mouse
-repeat_place_time (Place repetition interval) float 0.25 0.15 2.0
+repeat_place_time (Place repetition interval) float 0.25 0.16 2.0
 
 #    The minimum time in seconds it takes between digging nodes when holding
 #    the dig button.
-repeat_dig_time (Dig repetition interval) float 0.15 0.15 2.0
+repeat_dig_time (Minimum dig repetition interval) float 0.0 0.0 2.0
 
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
@@ -153,6 +153,8 @@ invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
 [*Touchscreen]
 
 #    Enables touchscreen mode, allowing you to play the game with a touchscreen.
+#
+#    Requires: !android
 enable_touch (Enable touchscreen) bool true
 
 #    Touchscreen sensitivity multiplier.
@@ -188,7 +190,7 @@ fixed_virtual_joystick (Fixed virtual joystick) bool false
 #    Requires: touchscreen_gui
 virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool false
 
-#    The gesture for for punching players/entities.
+#    The gesture for punching players/entities.
 #    This can be overridden by games and mods.
 #
 #    * short_tap
@@ -265,8 +267,8 @@ undersampling (Undersampling) int 1 1 8
 
 [**Graphics Effects]
 
-#    Makes all liquids opaque
-opaque_water (Opaque liquids) bool false
+#    Allows liquids to be translucent.
+translucent_liquids (Translucent liquids) bool true
 
 #    Leaves style:
 #    -   Fancy:  all faces visible
@@ -764,6 +766,10 @@ chat_font_size (Chat font size) int 0 0 72
 #    The URL for the content repository
 contentdb_url (ContentDB URL) string https://content.minetest.net
 
+#    If enabled and you have ContentDB packages installed, Minetest may contact ContentDB to
+#    check for package updates when opening the mainmenu.
+contentdb_enable_updates_indicator (Enable updates available indicator on content tab) bool true
+
 #    Comma-separated list of flags to hide in the content repository.
 #    "nonfree" can be used to hide packages which do not qualify as 'free software',
 #    as defined by the Free Software Foundation.
@@ -791,7 +797,7 @@ serverlist_url (Serverlist URL) string servers.minetest.net
 #    If disabled, new accounts will be registered automatically when logging in.
 enable_split_login_register (Enable split login/register) bool true
 
-#    URL to JSON file which provides information about the newest Minetest release
+#    URL to JSON file which provides information about the newest Minetest release.
 #    If this is empty the engine will never check for updates.
 update_information_url (Update information URL) string https://www.minetest.net/release_info.json
 
@@ -818,6 +824,9 @@ server_url (Server URL) string https://minetest.net
 
 #    Automatically report to the serverlist.
 server_announce (Announce server) bool false
+
+#    Send names of online players to the serverlist. If disabled only the player count is revealed.
+server_announce_send_players (Send player names to the server list) bool true
 
 #    Announce to this serverlist.
 serverlist_url (Serverlist URL) string servers.minetest.net
@@ -2187,9 +2196,6 @@ curl_file_download_timeout (cURL file download timeout) int 300000 5000 21474836
 
 [**Miscellaneous]
 
-#    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
-screen_dpi (DPI) int 72 1
-
 #    Adjust the detected display density, used for scaling UI elements.
 display_density_factor (Display Density Scaling Factor) float 1 0.5 5.0
 
@@ -2399,6 +2405,9 @@ keymap_minimap (Minimap key) key KEY_KEY_V
 #    Key for taking screenshots.
 keymap_screenshot (Screenshot) key KEY_F12
 
+#    Key for toggling fullscreen mode.
+keymap_fullscreen (Fullscreen key) key KEY_F11
+
 #    Key for dropping the currently selected item.
 keymap_drop (Drop item key) key KEY_KEY_Q
 
@@ -2521,6 +2530,9 @@ keymap_toggle_debug (Debug info toggle key) key KEY_F5
 
 #    Key for toggling the display of the profiler. Used for development.
 keymap_toggle_profiler (Profiler toggle key) key KEY_F6
+
+#    Key for toggling the display of mapblock boundaries.
+keymap_toggle_block_bounds (Block bounds toggle key) key
 
 #    Key for switching between first- and third-person camera.
 keymap_camera_mode (Toggle camera mode key) key KEY_KEY_C

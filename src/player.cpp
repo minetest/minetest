@@ -88,6 +88,11 @@ void Player::setWieldIndex(u16 index)
 	m_wield_index = MYMIN(index, mlist ? mlist->getSize() : 0);
 }
 
+u16 Player::getWieldIndex()
+{
+	return std::min(m_wield_index, getMaxHotbarItemcount());
+}
+
 ItemStack &Player::getWieldedItem(ItemStack *selected, ItemStack *hand) const
 {
 	assert(selected);
@@ -155,6 +160,12 @@ void Player::clearHud()
 		delete hud.back();
 		hud.pop_back();
 	}
+}
+
+u16 Player::getMaxHotbarItemcount()
+{
+	InventoryList *mainlist = inventory.getList("main");
+	return mainlist ? std::min(mainlist->getSize(), (u32) hud_hotbar_itemcount) : 0;
 }
 
 #ifndef SERVER

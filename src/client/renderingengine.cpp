@@ -207,7 +207,12 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 #else
 	u16 screen_w = std::max<u16>(g_settings->getU16("screen_w"), 1);
 	u16 screen_h = std::max<u16>(g_settings->getU16("screen_h"), 1);
-	bool window_maximized = g_settings->getBool("window_maximized");
+	// If I…
+	// 1. … set fullscreen = true and window_maximized = true on startup
+	// 2. … set fullscreen = false later
+	// on Linux with SDL, everything breaks.
+	// => Don't do it.
+	bool window_maximized = !fullscreen && g_settings->getBool("window_maximized");
 #endif
 
 	// bpp, fsaa, vsync
@@ -249,16 +254,38 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 			gui::EGST_WINDOWS_METALLIC, driver);
 	m_device->getGUIEnvironment()->setSkin(skin);
 	skin->drop();
+
+	g_settings->registerChangedCallback("fullscreen", settingChangedCallback, this);
+	g_settings->registerChangedCallback("window_maximized", settingChangedCallback, this);
 }
 
 RenderingEngine::~RenderingEngine()
 {
 	sanity_check(s_singleton == this);
 
+	g_settings->deregisterChangedCallback("fullscreen", settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("window_maximized", settingChangedCallback, this);
+
 	core.reset();
 	m_device->closeDevice();
 	m_device->drop();
 	s_singleton = nullptr;
+}
+
+void RenderingEngine::settingChangedCallback(const std::string &name, void *data)
+{
+	IrrlichtDevice *device = static_cast<RenderingEngine*>(data)->m_device;
+	if (name == "fullscreen") {
+		device->setFullscreen(g_settings->getBool("fullscreen"));
+
+	} else if (name == "window_maximized") {
+		if (!device->isFullscreen()) {
+			if (g_settings->getBool("window_maximized"))
+				device->maximizeWindow();
+			else
+				device->restoreWindow();
+		}
+	}
 }
 
 v2u32 RenderingEngine::_getWindowSize() const
@@ -308,7 +335,7 @@ bool RenderingEngine::setWindowIcon()
 */
 void RenderingEngine::draw_load_screen(const std::wstring &text,
 		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime,
-		int percent, bool sky)
+		int percent, float *indef_pos)
 {
 	v2u32 screensize = getWindowSize();
 
@@ -322,18 +349,22 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 
 	auto *driver = get_video_driver();
 
-	if (sky) {
-		driver->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
-		if (g_settings->getBool("menu_clouds")) {
-			g_menuclouds->step(dtime * 3);
-			g_menucloudsmgr->drawAll();
-		}
-	} else {
-		driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
+	driver->setFog(RenderingEngine::MENU_SKY_COLOR);
+	driver->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
+	if (g_settings->getBool("menu_clouds")) {
+		g_menuclouds->step(dtime * 3);
+		g_menucloudsmgr->drawAll();
 	}
 
+	int percent_min = 0;
+	int percent_max = percent;
+	if (indef_pos) {
+		*indef_pos = fmodf(*indef_pos + (dtime * 50.0f), 140.0f);
+		percent_max = std::min((int) *indef_pos, 100);
+		percent_min = std::max((int) *indef_pos - 40, 0);
+	}
 	// draw progress bar
-	if ((percent >= 0) && (percent <= 100)) {
+	if ((percent_min >= 0) && (percent_max <= 100)) {
 		video::ITexture *progress_img = tsrc->getTexture("progress_bar.png");
 		video::ITexture *progress_img_bg =
 				tsrc->getTexture("progress_bar_bg.png");
@@ -364,11 +395,11 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 					0, 0, true);
 
 			draw2DImageFilterScaled(get_video_driver(), progress_img,
-					core::rect<s32>(img_pos.X, img_pos.Y,
-							img_pos.X + (percent * imgW) / 100,
+					core::rect<s32>(img_pos.X + (percent_min * imgW) / 100, img_pos.Y,
+							img_pos.X + (percent_max * imgW) / 100,
 							img_pos.Y + imgH),
-					core::rect<s32>(0, 0,
-							(percent * img_size.Width) / 100,
+					core::rect<s32>(percent_min * img_size.Width / 100, 0,
+							percent_max * img_size.Width / 100,
 							img_size.Height),
 					0, 0, true);
 		}
@@ -431,18 +462,14 @@ const VideoDriverInfo &RenderingEngine::getVideoDriverInfo(irr::video::E_DRIVER_
 
 float RenderingEngine::getDisplayDensity()
 {
+	float user_factor = g_settings->getFloat("display_density_factor", 0.5f, 5.0f);
 #ifndef __ANDROID__
-	static float cached_display_density = [&] {
-		float dpi = get_raw_device()->getDisplayDensity();
-		// fall back to manually specified dpi
-		if (dpi == 0.0f)
-			dpi = g_settings->getFloat("screen_dpi");
-		return dpi / 96.0f;
-	}();
-	return std::max(cached_display_density * g_settings->getFloat("display_density_factor"), 0.5f);
-
+	float dpi = get_raw_device()->getDisplayDensity();
+	if (dpi == 0.0f)
+		dpi = 96.0f;
+	return std::max(dpi / 96.0f * user_factor, 0.5f);
 #else // __ANDROID__
-	return porting::getDisplayDensity();
+	return porting::getDisplayDensity() * user_factor;
 #endif // __ANDROID__
 }
 
@@ -458,11 +485,14 @@ void RenderingEngine::autosaveScreensizeAndCo(
 	// we do not want to save the thing. This allows users to also manually change
 	// the settings.
 
+	// Don't save the fullscreen size, we want the windowed size.
+	bool fullscreen = RenderingEngine::get_raw_device()->isFullscreen();
 	// Screen size
 	const irr::core::dimension2d<u32> current_screen_size =
 		RenderingEngine::get_video_driver()->getScreenSize();
 	// Don't replace good value with (0, 0)
-	if (current_screen_size != irr::core::dimension2d<u32>(0, 0) &&
+	if (!fullscreen &&
+			current_screen_size != irr::core::dimension2d<u32>(0, 0) &&
 			current_screen_size != initial_screen_size) {
 		g_settings->setU16("screen_w", current_screen_size.Width);
 		g_settings->setU16("screen_h", current_screen_size.Height);

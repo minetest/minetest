@@ -23,6 +23,7 @@ package net.minetest.minetest;
 import org.libsdl.app.SDLActivity;
 
 import android.content.Intent;
+import android.content.ActivityNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -33,6 +34,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.content.res.Configuration;
 
 import androidx.annotation.Keep;
@@ -201,7 +203,11 @@ public class GameActivity extends SDLActivity {
 
 	public void openURI(String uri) {
 		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-		startActivity(browserIntent);
+		try {
+			startActivity(browserIntent);
+		} catch (ActivityNotFoundException e) {
+			runOnUiThread(() -> Toast.makeText(this, R.string.no_web_browser, Toast.LENGTH_SHORT).show());
+		}
 	}
 
 	public String getUserDataPath() {

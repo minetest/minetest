@@ -181,14 +181,6 @@ fractal = nil
 frac_emb = nil
 checker = nil
 
-do
-	-- we used to write the textures to our mod folder. in order to avoid
-	-- duplication errors delete them if they still exist.
-	local path = core.get_modpath(core.get_current_modname()) .. "/textures/"
-	os.remove(path .. "testnodes_generated_mb.png")
-	os.remove(path .. "testnodes_generated_ck.png")
-end
-
 local textures_path = core.get_worldpath() .. "/"
 core.safe_file_write(
 	textures_path .. "testnodes1.png",

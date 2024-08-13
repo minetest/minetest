@@ -17,7 +17,7 @@ jobs:
   # Note that the integration tests are also run in build.yml, but only when C++ code is changed.
   integration_tests:
     name: "Compile and run multiplayer tests"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
     - name: Install deps
@@ -39,7 +39,7 @@ jobs:
 
   luacheck:
     name: "Builtin Luacheck and Unit Tests"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
 
@@ -50,11 +50,7 @@ jobs:
     - uses: leafo/gh-actions-luarocks@v4.3.0
 
     - name: Install LuaJIT
-      run: |
-        cd $HOME
-        git clone https://github.com/LuaJIT/LuaJIT/
-        cd LuaJIT
-        make -j$(nproc)
+      run: ./util/ci/build_luajit.sh
 
     - name: Install luarocks tools
       run: |

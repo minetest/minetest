@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkexceptions.h"
 #include <IGUISpriteBank.h>
 #include <ICameraSceneNode.h>
+#include <unordered_map>
 
 #if USE_SOUND
 	#include "sound/sound_openal.h"
@@ -68,6 +69,8 @@ static void dump_start_data(const GameStartData &data)
 ClientLauncher::~ClientLauncher()
 {
 	delete input;
+	g_settings->deregisterChangedCallback("dpi_change_notifier", setting_changed_callback, this);
+	g_settings->deregisterChangedCallback("gui_scaling", setting_changed_callback, this);
 
 	delete g_fontengine;
 	g_fontengine = nullptr;
@@ -126,7 +129,9 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
 	guienv = m_rendering_engine->get_gui_env();
-	init_guienv(guienv);
+	config_guienv();
+	g_settings->registerChangedCallback("dpi_change_notifier", setting_changed_callback, this);
+	g_settings->registerChangedCallback("gui_scaling", setting_changed_callback, this);
 
 	g_fontengine = new FontEngine(guienv);
 
@@ -326,7 +331,12 @@ void ClientLauncher::init_input()
 	}
 }
 
-void ClientLauncher::init_guienv(gui::IGUIEnvironment *guienv)
+void ClientLauncher::setting_changed_callback(const std::string &name, void *data)
+{
+	static_cast<ClientLauncher*>(data)->config_guienv();
+}
+
+void ClientLauncher::config_guienv()
 {
 	gui::IGUISkin *skin = guienv->getSkin();
 
@@ -342,26 +352,39 @@ void ClientLauncher::init_guienv(gui::IGUIEnvironment *guienv)
 
 	float density = rangelim(g_settings->getFloat("gui_scaling"), 0.5f, 20) *
 		RenderingEngine::getDisplayDensity();
+	skin->setScale(density);
 	skin->setSize(gui::EGDS_CHECK_BOX_WIDTH, (s32)(17.0f * density));
-	skin->setSize(gui::EGDS_SCROLLBAR_SIZE, (s32)(14.0f * density));
+	skin->setSize(gui::EGDS_SCROLLBAR_SIZE, (s32)(21.0f * density));
 	skin->setSize(gui::EGDS_WINDOW_BUTTON_WIDTH, (s32)(15.0f * density));
+
+	static u32 orig_sprite_id = skin->getIcon(gui::EGDI_CHECK_BOX_CHECKED);
+	static std::unordered_map<std::string, u32> sprite_ids;
+
 	if (density > 1.5f) {
-		std::string sprite_path = porting::path_share + "/textures/base/pack/";
-		if (density > 3.5f)
-			sprite_path.append("checkbox_64.png");
-		else if (density > 2.0f)
-			sprite_path.append("checkbox_32.png");
-		else
-			sprite_path.append("checkbox_16.png");
 		// Texture dimensions should be a power of 2
-		gui::IGUISpriteBank *sprites = skin->getSpriteBank();
-		video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
-		video::ITexture *sprite_texture = driver->getTexture(sprite_path.c_str());
-		if (sprite_texture) {
-			s32 sprite_id = sprites->addTextureAsSprite(sprite_texture);
-			if (sprite_id != -1)
-				skin->setIcon(gui::EGDI_CHECK_BOX_CHECKED, sprite_id);
+		std::string path = porting::path_share + "/textures/base/pack/";
+		if (density > 3.5f)
+			path.append("checkbox_64.png");
+		else if (density > 2.0f)
+			path.append("checkbox_32.png");
+		else
+			path.append("checkbox_16.png");
+
+		auto cached_id = sprite_ids.find(path);
+		if (cached_id != sprite_ids.end()) {
+			skin->setIcon(gui::EGDI_CHECK_BOX_CHECKED, cached_id->second);
+		} else {
+			gui::IGUISpriteBank *sprites = skin->getSpriteBank();
+			video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
+			video::ITexture *texture = driver->getTexture(path.c_str());
+			s32 id = sprites->addTextureAsSprite(texture);
+			if (id != -1) {
+				skin->setIcon(gui::EGDI_CHECK_BOX_CHECKED, id);
+				sprite_ids.emplace(path, id);
+			}
 		}
+	} else {
+		skin->setIcon(gui::EGDI_CHECK_BOX_CHECKED, orig_sprite_id);
 	}
 }
 

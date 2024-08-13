@@ -1,3 +1,5 @@
+# When enabling SDL2 by default on macOS, don't forget to change
+# "NSHighResolutionCapable" to true in "Info.plist".
 if(NOT APPLE)
 	set(DEFAULT_SDL2 ON)
 endif()
@@ -31,7 +33,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang|AppleClang)$")
 elseif(MSVC)
 	string(APPEND CMAKE_CXX_STANDARD_LIBRARIES " msvcrt.lib") # ???? fuck off
 
-	add_compile_options(/GR- /Zl)
+	add_compile_options(/Zl)
 
 	# Enable SSE for floating point math on 32-bit x86 by default
 	# reasoning see minetest issue #11810 and https://gcc.gnu.org/wiki/FloatingPointMath

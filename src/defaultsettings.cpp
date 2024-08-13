@@ -182,6 +182,7 @@ void set_default_settings()
 	settings->setDefault("keymap_toggle_profiler", "KEY_F6");
 	settings->setDefault("keymap_camera_mode", "KEY_KEY_C");
 	settings->setDefault("keymap_screenshot", "KEY_F12");
+	settings->setDefault("keymap_fullscreen", "KEY_F11");
 	settings->setDefault("keymap_increase_viewing_range_min", "+");
 	settings->setDefault("keymap_decrease_viewing_range_min", "-");
 	settings->setDefault("keymap_slot1", "KEY_KEY_1");
@@ -282,7 +283,7 @@ void set_default_settings()
 	settings->setDefault("enable_3d_clouds", "true");
 	settings->setDefault("cloud_radius", "12");
 	settings->setDefault("menu_clouds", "true");
-	settings->setDefault("opaque_water", "false");
+	settings->setDefault("translucent_liquids", "true");
 	settings->setDefault("console_height", "0.6");
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
@@ -358,7 +359,7 @@ void set_default_settings()
 	settings->setDefault("invert_hotbar_mouse_wheel", "false");
 	settings->setDefault("mouse_sensitivity", "0.2");
 	settings->setDefault("repeat_place_time", "0.25");
-	settings->setDefault("repeat_dig_time", "0.15");
+	settings->setDefault("repeat_dig_time", "0.0");
 	settings->setDefault("safe_dig_and_place", "false");
 	settings->setDefault("random_input", "false");
 	settings->setDefault("aux1_descends", "false");
@@ -401,6 +402,7 @@ void set_default_settings()
 
 	// ContentDB
 	settings->setDefault("contentdb_url", "https://content.minetest.net");
+	settings->setDefault("contentdb_enable_updates_indicator", "true");
 	settings->setDefault("contentdb_max_concurrent_downloads", "3");
 
 #ifdef __ANDROID__
@@ -533,13 +535,14 @@ void set_default_settings()
 	settings->setDefault("server_address", "");
 	settings->setDefault("server_name", "");
 	settings->setDefault("server_description", "");
+	settings->setDefault("server_announce_send_players", "true");
 
 	settings->setDefault("enable_console", "false");
-	settings->setDefault("screen_dpi", "72");
 	settings->setDefault("display_density_factor", "1");
+	settings->setDefault("dpi_change_notifier", "0");
 
-	// Altered settings for macOS
-#if defined(__MACH__) && defined(__APPLE__)
+	// Altered settings for CIrrDeviceOSX
+#if !USE_SDL2 && defined(__MACH__) && defined(__APPLE__)
 	settings->setDefault("keymap_sneak", "KEY_SHIFT");
 #endif
 

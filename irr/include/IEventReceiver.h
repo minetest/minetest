@@ -205,6 +205,9 @@ enum EAPPLICATION_EVENT_TYPE
 	//! The application received a memory warning.
 	EAET_MEMORY_WARNING,
 
+	//! The display density changed (only works on SDL).
+	EAET_DPI_CHANGED,
+
 	//! No real event, but to get number of event types.
 	EAET_COUNT
 };
@@ -331,7 +334,6 @@ struct SEvent
 
 		//! A bitmap of button states. You can use isButtonPressed() to determine
 		//! if a button is pressed or not.
-		//! Currently only valid if the event was EMIE_MOUSE_MOVED
 		u32 ButtonStates;
 
 		//! Is the left button pressed down?

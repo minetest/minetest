@@ -17,6 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "catch.h"
+
 #include "test.h"
 
 #include "nodedef.h"
@@ -26,6 +28,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "porting.h"
 #include "debug.h"
+
+#include <iostream>
+
+#include "catch.h"
 
 content_t t_CONTENT_STONE;
 content_t t_CONTENT_GRASS;
@@ -234,6 +240,21 @@ bool run_tests()
 		num_total_tests_run += testmod->num_tests_run;
 	}
 
+	rawstream << "Catch test results: " << std::endl;
+	Catch::Session session{};
+	auto config = session.configData();
+	config.skipBenchmarks = true;
+	config.allowZeroTests = true;
+	session.useConfigData(config);
+	auto exit_code = session.run();
+	// We count all the Catch tests as one test for Minetest's own logging
+	// because we don't have a way to tell how many individual tests Catch ran.
+	++num_total_tests_run;
+	if (exit_code != 0) {
+		++num_modules_failed;
+		++num_total_tests_failed;
+	}
+
 	u64 tdiff = porting::getTimeMs() - t1;
 
 	g_logger.setLevelSilenced(LL_ERROR, false);
@@ -269,8 +290,11 @@ bool run_tests(const std::string &module_name)
 
 	auto testmod = findTestModule(module_name);
 	if (!testmod) {
-		errorstream << "Test module not found: " << module_name << std::endl;
-		return 1;
+		rawstream << "Did not find module, searching Catch tests: " << module_name << std::endl;
+		Catch::Session session;
+		session.configData().testsOrTags.push_back(module_name);
+		auto catch_test_failures = session.run();
+		return catch_test_failures == 0;
 	}
 
 	g_logger.setLevelSilenced(LL_ERROR, true);

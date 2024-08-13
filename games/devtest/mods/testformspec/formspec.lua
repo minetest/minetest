@@ -64,6 +64,41 @@ local inv_style_fs = [[
 	list[current_player;main;.5,7;8,4]
 ]]
 
+-- Some textures from textures/base/pack and Devtest, with many different sizes
+-- and aspect ratios.
+local image_column = "image,0=logo.png,1=rare_controls.png,2=checkbox_16.png," ..
+		"3=checkbox_32.png,4=checkbox_64.png,5=default_lava.png," ..
+		"6=progress_bar.png,7=progress_bar_bg.png"
+local words = {
+	"esciunt", "repudiandae", "repellat", "voluptatem", "autem", "vitae", "et",
+	"minima", "quasi", "facere", "nihil", "ea", "nemo", "rem", "non", "eos",
+	"laudantium", "eveniet", "veritatis",
+}
+
+local reseed = math.random(2^31-1)
+math.randomseed(1337)
+
+local table_content = {}
+for i = 1, 100 do
+	table.insert(table_content, words[math.random(#words)])
+	table.insert(table_content, words[math.random(#words)])
+	table.insert(table_content, words[math.random(#words)])
+	table.insert(table_content, math.random(0, 7))
+	table.insert(table_content, math.random(0, 7))
+	table.insert(table_content, math.random(0, 7))
+	table.insert(table_content, words[math.random(#words)])
+end
+
+math.randomseed(reseed)
+
+local table_fs = table.concat({
+	"tablecolumns[text,align=left;text,align=right;text,align=center;",
+			image_column, ",align=left;",
+			image_column, ",align=right;",
+			image_column, ",align=center;text,align=right]",
+	"table[0,0;17,12;the_table;", table.concat(table_content, ","), ";1]"
+})
+
 local hypertext_basic = [[A hypertext element
 <bigger>Normal test</bigger>
 This is a normal text.
@@ -350,6 +385,10 @@ local pages = {
 		"label[11,0.5;Noclip]" ..
 		"container[11.5,1]" .. clip_fs:gsub("%%c", "true") .. "container_end[]",
 
+	-- Table
+		"size[18,13]real_coordinates[true]" ..
+		"container[0.5,0.5]" .. table_fs.. "container_end[]",
+
 	-- Hypertext
 		"size[12,13]real_coordinates[true]" ..
 		"container[0.5,0.5]" .. hypertext_fs .. "container_end[]",
@@ -477,7 +516,7 @@ local function show_test_formspec(pname)
 		page = page()
 	end
 
-	local fs = page .. "tabheader[0,0;11,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Invs,Window,Anim,Model,ScrollC,Sound,Background,Unsized;" .. page_id .. ";false;false]"
+	local fs = page .. "tabheader[0,0;11,0.65;maintabs;Real Coord,Styles,Noclip,Table,Hypertext,Tabs,Invs,Window,Anim,Model,ScrollC,Sound,Background,Unsized;" .. page_id .. ";false;false]"
 
 	minetest.show_formspec(pname, "testformspec:formspec", fs)
 end

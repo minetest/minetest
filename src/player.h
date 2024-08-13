@@ -223,7 +223,7 @@ public:
 	// Returns non-empty `selected` ItemStack. `hand` is a fallback, if specified
 	ItemStack &getWieldedItem(ItemStack *selected, ItemStack *hand) const;
 	void setWieldIndex(u16 index);
-	u16 getWieldIndex() const { return m_wield_index; }
+	u16 getWieldIndex();
 
 	bool setFov(const PlayerFovSpec &spec)
 	{
@@ -246,6 +246,9 @@ public:
 
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;
+
+	// Get actual usable number of hotbar items (clamped to size of "main" list)
+	u16 getMaxHotbarItemcount();
 
 protected:
 	char m_name[PLAYERNAME_SIZE];

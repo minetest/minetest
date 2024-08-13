@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_object.h"
 #include <cmath>
+#include <lua.h>
 #include "lua_api/l_internal.h"
 #include "lua_api/l_inventory.h"
 #include "lua_api/l_item.h"
@@ -36,10 +37,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/serverinventorymgr.h"
 #include "server/unit_sao.h"
 
+using object_t = ServerActiveObject::object_t;
+
 /*
 	ObjectRef
 */
-
 
 ServerActiveObject* ObjectRef::getobject(ObjectRef *ref)
 {
@@ -98,12 +100,16 @@ int ObjectRef::l_remove(lua_State *L)
 	if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 		return 0;
 
-	sao->clearChildAttachments();
-	sao->clearParentAttachment();
-
 	verbosestream << "ObjectRef::l_remove(): id=" << sao->getId() << std::endl;
 	sao->markForRemoval();
 	return 0;
+}
+
+// is_valid(self)
+int ObjectRef::l_is_valid(lua_State *L)
+{
+	lua_pushboolean(L, getobject(checkObject<ObjectRef>(L, 1)) != nullptr);
+	return 1;
 }
 
 // get_pos(self)
@@ -716,17 +722,10 @@ int ObjectRef::l_set_attach(lua_State *L)
 	if (sao == parent)
 		throw LuaError("ObjectRef::set_attach: attaching object to itself is not allowed.");
 
-	int parent_id;
 	std::string bone;
 	v3f position;
 	v3f rotation;
 	bool force_visible;
-
-	sao->getAttachment(&parent_id, &bone, &position, &rotation, &force_visible);
-	if (parent_id) {
-		ServerActiveObject *old_parent = env->getActiveObject(parent_id);
-		old_parent->removeAttachmentChild(sao->getId());
-	}
 
 	bone          = readParam<std::string>(L, 3, "");
 	position      = readParam<v3f>(L, 4, v3f(0, 0, 0));
@@ -734,7 +733,6 @@ int ObjectRef::l_set_attach(lua_State *L)
 	force_visible = readParam<bool>(L, 6, false);
 
 	sao->setAttachment(parent->getId(), bone, position, rotation, force_visible);
-	parent->addAttachmentChild(sao->getId());
 	return 0;
 }
 
@@ -747,7 +745,7 @@ int ObjectRef::l_get_attach(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	int parent_id;
+	object_t parent_id;
 	std::string bone;
 	v3f position;
 	v3f rotation;
@@ -775,11 +773,11 @@ int ObjectRef::l_get_children(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	const std::unordered_set<int> child_ids = sao->getAttachmentChildIds();
+	const auto &child_ids = sao->getAttachmentChildIds();
 	int i = 0;
 
 	lua_createtable(L, child_ids.size(), 0);
-	for (const int id : child_ids) {
+	for (const object_t id : child_ids) {
 		ServerActiveObject *child = env->getActiveObject(id);
 		getScriptApiBase(L)->objectrefGetOrCreate(L, child);
 		lua_rawseti(L, -2, ++i);
@@ -1844,7 +1842,7 @@ int ObjectRef::l_hud_get_hotbar_itemcount(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	lua_pushinteger(L, player->getHotbarItemcount());
+	lua_pushinteger(L, player->getMaxHotbarItemcount());
 	return 1;
 }
 
@@ -2646,6 +2644,7 @@ const char ObjectRef::className[] = "ObjectRef";
 luaL_Reg ObjectRef::methods[] = {
 	// ServerActiveObject
 	luamethod(ObjectRef, remove),
+	luamethod(ObjectRef, is_valid),
 	luamethod_aliased(ObjectRef, get_pos, getpos),
 	luamethod_aliased(ObjectRef, set_pos, setpos),
 	luamethod(ObjectRef, add_pos),

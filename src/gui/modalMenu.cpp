@@ -59,14 +59,8 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 		m_menumgr(menumgr),
 		m_remap_click_outside(remap_click_outside)
 {
-	m_gui_scale = std::max(g_settings->getFloat("gui_scaling"), 0.5f);
-	const float screen_dpi_scale = RenderingEngine::getDisplayDensity();
-
-	if (g_settings->getBool("enable_touch")) {
-		m_gui_scale *= 1.1f - 0.3f * screen_dpi_scale + 0.2f * screen_dpi_scale * screen_dpi_scale;
-	} else {
-		m_gui_scale *= screen_dpi_scale;
-	}
+	m_gui_scale = g_settings->getFloat("gui_scaling", 0.5f, 20.0f) *
+			RenderingEngine::getDisplayDensity();
 
 	setVisible(true);
 	m_menumgr->createdMenu(this);
@@ -325,6 +319,11 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 	}
 #endif
 
+	// If the second touch arrives here again, that means nobody handled it.
+	// Abort to avoid infinite recursion.
+	if (m_second_touch)
+		return true;
+
 	// Convert touch events into mouse events.
 	if (event.EventType == EET_TOUCH_INPUT_EVENT) {
 		irr_ptr<GUIModalMenu> holder;
@@ -398,3 +397,17 @@ porting::AndroidDialogState GUIModalMenu::getAndroidUIInputState()
 	return porting::getInputDialogState();
 }
 #endif
+
+GUIModalMenu::ScalingInfo GUIModalMenu::getScalingInfo(v2u32 screensize, v2u32 base_size)
+{
+	f32 scale = m_gui_scale;
+	scale = std::min(scale, (f32)screensize.X / (f32)base_size.X);
+	scale = std::min(scale, (f32)screensize.Y / (f32)base_size.Y);
+	s32 w = base_size.X * scale, h = base_size.Y * scale;
+	return {scale, core::rect<s32>(
+		screensize.X / 2 - w / 2,
+		screensize.Y / 2 - h / 2,
+		screensize.X / 2 + w / 2,
+		screensize.Y / 2 + h / 2
+	)};
+}

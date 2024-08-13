@@ -374,6 +374,12 @@ const c8 *const GUISkinFontNames[EGDF_COUNT + 1] = {
 class IGUISkin : virtual public IReferenceCounted
 {
 public:
+	//! returns display density scaling factor
+	virtual float getScale() const = 0;
+
+	//! sets display density scaling factor
+	virtual void setScale(float scale) = 0;
+
 	//! returns default color
 	virtual video::SColor getColor(EGUI_DEFAULT_COLOR color) const = 0;
 

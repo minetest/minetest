@@ -86,6 +86,10 @@ public:
 	/** \return True if window is fullscreen. */
 	bool isFullscreen() const override;
 
+	//! Enables or disables fullscreen mode.
+	/** \return True on success. */
+	bool setFullscreen(bool fullscreen) override;
+
 	//! Checks if the window could possibly be visible.
 	bool isWindowVisible() const override;
 
@@ -154,7 +158,9 @@ public:
 		//! Sets the new position of the cursor.
 		void setPosition(s32 x, s32 y) override
 		{
-			SDL_WarpMouseInWindow(Device->Window, x, y);
+			SDL_WarpMouseInWindow(Device->Window,
+					static_cast<int>(x / Device->ScaleX),
+					static_cast<int>(y / Device->ScaleY));
 
 			if (SDL_GetRelativeMouseMode()) {
 				// There won't be an event for this warp (details on libsdl-org/SDL/issues/6034)
@@ -187,7 +193,7 @@ public:
 		virtual void setRelativeMode(bool relative) _IRR_OVERRIDE_
 		{
 			// Only change it when necessary, as it flushes mouse motion when enabled
-			if (relative != SDL_GetRelativeMouseMode()) {
+			if (relative != static_cast<bool>(SDL_GetRelativeMouseMode())) {
 				if (relative)
 					SDL_SetRelativeMouseMode(SDL_TRUE);
 				else
@@ -268,10 +274,10 @@ private:
 
 #endif
 	// Check if a key is a known special character with no side effects on text boxes.
-	static bool keyIsKnownSpecial(EKEY_CODE key);
+	static bool keyIsKnownSpecial(EKEY_CODE irrlichtKey);
 
 	// Return the Char that should be sent to Irrlicht for the given key (either the one passed in or 0).
-	static int findCharToPassToIrrlicht(int assumedChar, EKEY_CODE key);
+	static int findCharToPassToIrrlicht(uint32_t sdlKey, EKEY_CODE irrlichtKey, bool numlock);
 
 	// Check if a text box is in focus. Enable or disable SDL_TEXTINPUT events only if in focus.
 	void resetReceiveTextInputEvents();
@@ -296,8 +302,12 @@ private:
 	u32 MouseButtonStates;
 
 	u32 Width, Height;
+	f32 ScaleX = 1.0f, ScaleY = 1.0f;
+	void updateSizeAndScale();
 
 	bool Resizable;
+
+	static u32 getFullscreenFlag(bool fullscreen);
 
 	core::rect<s32> lastElemPos;
 

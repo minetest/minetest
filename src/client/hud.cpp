@@ -60,6 +60,7 @@ Hud::Hud(Client *client, LocalPlayer *player,
 	this->inventory   = inventory;
 
 	readScalingSetting();
+	g_settings->registerChangedCallback("dpi_change_notifier", setting_changed_callback, this);
 	g_settings->registerChangedCallback("hud_scaling", setting_changed_callback, this);
 
 	for (auto &hbar_color : hbar_colors)
@@ -153,6 +154,7 @@ void Hud::readScalingSetting()
 
 Hud::~Hud()
 {
+	g_settings->deregisterChangedCallback("dpi_change_notifier", setting_changed_callback, this);
 	g_settings->deregisterChangedCallback("hud_scaling", setting_changed_callback, this);
 
 	if (m_selection_mesh)
@@ -781,7 +783,7 @@ void Hud::drawHotbar(u16 playeritem)
 
 	v2s32 centerlowerpos(m_displaycenter.X, m_screensize.Y);
 
-	s32 hotbar_itemcount = player->hud_hotbar_itemcount;
+	s32 hotbar_itemcount = player->getMaxHotbarItemcount();
 	s32 width = hotbar_itemcount * (m_hotbar_imagesize + m_padding * 2);
 	v2s32 pos = centerlowerpos - v2s32(width / 2, m_hotbar_imagesize + m_padding * 3);
 
@@ -913,7 +915,7 @@ enum Hud::BlockBoundsMode Hud::toggleBlockBounds()
 {
 	m_block_bounds_mode = static_cast<BlockBoundsMode>(m_block_bounds_mode + 1);
 
-	if (m_block_bounds_mode >= BLOCK_BOUNDS_MAX) {
+	if (m_block_bounds_mode > BLOCK_BOUNDS_NEAR) {
 		m_block_bounds_mode = BLOCK_BOUNDS_OFF;
 	}
 	return m_block_bounds_mode;

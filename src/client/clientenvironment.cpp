@@ -368,7 +368,7 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 void ClientEnvironment::removeActiveObject(u16 id)
 {
 	// Get current attachment childs to detach them visually
-	std::unordered_set<int> attachment_childs;
+	std::unordered_set<ClientActiveObject::object_t> attachment_childs;
 	if (auto *obj = getActiveObject(id))
 		attachment_childs = obj->getAttachmentChildIds();
 

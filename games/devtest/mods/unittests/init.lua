@@ -160,7 +160,7 @@ function unittests.run_all()
 	-- Print stats
 	assert(#unittests.list == counters.total)
 	print(string.rep("+", 80))
-	print(string.format("Unit Test Results: %s",
+	print(string.format("Devtest Unit Test Results: %s",
 	counters.total == counters.passed and "PASSED" or "FAILED"))
 	print(string.format("    %d / %d failed tests.",
 	counters.total - counters.passed, counters.total))
@@ -185,12 +185,39 @@ dofile(modpath .. "/content_ids.lua")
 dofile(modpath .. "/metadata.lua")
 dofile(modpath .. "/raycast.lua")
 dofile(modpath .. "/inventory.lua")
+dofile(modpath .. "/load_time.lua")
+dofile(modpath .. "/on_shutdown.lua")
 
 --------------
 
+local function send_results(name, ok)
+	core.chat_send_player(name,
+		minetest.colorize(ok and "green" or "red",
+			(ok and "All devtest unit tests passed." or
+				"There were devtest unit test failures.") ..
+				" Check the console for detailed output."))
+end
+
 if core.settings:get_bool("devtest_unittests_autostart", false) then
+	local test_results = nil
 	core.after(0, function()
+		-- CI adds a mod which sets `unittests.on_finished`
+		-- to write status information to the filesystem
+		local old_on_finished = unittests.on_finished
+		unittests.on_finished = function(ok)
+			for _, player in ipairs(minetest.get_connected_players()) do
+				send_results(player:get_player_name(), ok)
+			end
+			test_results = ok
+			old_on_finished(ok)
+		end
 		coroutine.wrap(unittests.run_all)()
+	end)
+	minetest.register_on_joinplayer(function(player)
+		if test_results == nil then
+			return -- tests haven't completed yet
+		end
+		send_results(player:get_player_name(), test_results)
 	end)
 else
 	core.register_chatcommand("unittests", {
@@ -198,9 +225,7 @@ else
 		description = "Runs devtest unittests (may modify player or map state)",
 		func = function(name, param)
 			unittests.on_finished = function(ok)
-				core.chat_send_player(name,
-					(ok and "All tests passed." or "There were test failures.") ..
-					" Check the console for detailed output.")
+				send_results(name, ok)
 			end
 			coroutine.wrap(unittests.run_all)()
 			return true, ""

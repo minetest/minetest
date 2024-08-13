@@ -32,6 +32,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <hiredis.h>
 #include <cassert>
 
+/*
+ * Redis is not a good fit for Minetest and only still supported for legacy as
+ * well as advanced use case reasons, see:
+ * <https://github.com/minetest/minetest/issues/14822>
+ *
+ * Do NOT extend this backend with any new functionality.
+ */
 
 Database_Redis::Database_Redis(Settings &conf)
 {
@@ -66,6 +73,9 @@ Database_Redis::Database_Redis(Settings &conf)
 		}
 		freeReplyObject(reply);
 	}
+
+	dstream << "Note: When storing data in Redis you need to ensure that eviction"
+		" is disabled, or you risk DATA LOSS." << std::endl;
 }
 
 Database_Redis::~Database_Redis()
@@ -73,7 +83,8 @@ Database_Redis::~Database_Redis()
 	redisFree(ctx);
 }
 
-void Database_Redis::beginSave() {
+void Database_Redis::beginSave()
+{
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "MULTI"));
 	if (!reply) {
 		throw DatabaseException(std::string(
@@ -82,7 +93,8 @@ void Database_Redis::beginSave() {
 	freeReplyObject(reply);
 }
 
-void Database_Redis::endSave() {
+void Database_Redis::endSave()
+{
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "EXEC"));
 	if (!reply) {
 		throw DatabaseException(std::string(

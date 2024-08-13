@@ -1,4 +1,4 @@
-# Minetest Lua Mainmenu API Reference 5.8.0
+# Minetest Lua Mainmenu API Reference 5.10.0
 
 ## Introduction
 
@@ -12,7 +12,8 @@ Description of formspec language to show your menu is in `lua_api.md`
 * `core.button_handler(fields)`: called when a button is pressed.
     * `fields` = `{name1 = value1, name2 = value2, ...}`
 * `core.event_handler(event)`
-    * `event`: `"MenuQuit"`, `"KeyEnter"`, `"ExitButton"` or `"EditBoxEnter"`
+    * `event`: `"MenuQuit"`, `"KeyEnter"`, `"ExitButton"`, `"EditBoxEnter"`, or
+      `"FullscreenChange"`
 
 
 

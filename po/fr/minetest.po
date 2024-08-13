@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-11-12 15:37+0000\n"
+"POT-Creation-Date: 2024-07-11 15:14+0200\n"
+"PO-Revision-Date: 2024-07-14 21:24+0000\n"
 "Last-Translator: waxtatect <piero@live.ie>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
@@ -12,11 +12,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr "Effacer la file de sortie de message du tchat"
+msgstr "Effacer la file de messages du tchat"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
@@ -44,7 +44,7 @@ msgstr "Joueurs en ligne : "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr "La file de sortie de message du tchat est maintenant vide."
+msgstr "La file de messages du tchat est maintenant vide."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
@@ -71,8 +71,8 @@ msgid "Command not available: "
 msgstr "Commande non disponible : "
 
 #: builtin/common/chatcommands.lua
-msgid "Get help for commands"
-msgstr "Obtenir de l'aide pour les commandes"
+msgid "Get help for commands (-t: output in chat)"
+msgstr "Obtenir de l'aide pour les commandes (-t : afficher dans le tchat)"
 
 #: builtin/common/chatcommands.lua
 msgid ""
@@ -82,12 +82,8 @@ msgstr ""
 "pour tout lister."
 
 #: builtin/common/chatcommands.lua
-msgid "[all | <cmd>]"
-msgstr "[all | <cmd>]"
-
-#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
-msgid "OK"
-msgstr "OK"
+msgid "[all | <cmd>] [-t]"
+msgstr "[all | <cmd>] [-t]"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -106,12 +102,16 @@ msgid "Main menu"
 msgstr "Menu principal"
 
 #: builtin/fstk/ui.lua
+msgid "OK"
+msgstr "OK"
+
+#: builtin/fstk/ui.lua
 msgid "Reconnect"
 msgstr "Se reconnecter"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "Le serveur souhaite rétablir une connexion :"
+msgstr "Le serveur a demandé une reconnexion :"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -134,19 +134,27 @@ msgid "We support protocol versions between version $1 and $2."
 msgstr ""
 "Nous prenons en charge seulement les versions du protocole entre $1 et $2."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "« $1 » existe déjà. Voulez-vous l'écraser ?"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Error installing \"$1\": $2"
+msgstr "Erreur d'installation de « $1 » : $2"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "« $1 » et $2 dépendances seront installées."
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download \"$1\""
+msgstr "Échec du téléchargement de « $1 »"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr "« $1 » de $2"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download $1"
+msgstr "Échec du téléchargement de $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/contentdb.lua
+msgid ""
+"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
+"broken archive)"
+msgstr ""
+"Échec de l'extraction de « $1 » (espace disque insuffisant, type de fichier "
+"non pris en charge ou archive endommagée)"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -154,158 +162,157 @@ msgstr ""
 "$1 en téléchargement,\n"
 "$2 mis en attente"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "$1 downloading..."
 msgstr "Téléchargement de $1…"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "$1 dépendances nécessaires n'ont pas pu être trouvées."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "« $1 » sera installé, et $2 dépendances seront ignorées."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All packages"
 msgstr "Tous les paquets"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "Déjà installé"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Back to Main Menu"
 msgstr "Retour au menu principal"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "ContentDB n'est pas disponible quand Minetest est compilé sans cURL"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Downloading..."
+msgstr "Téléchargement…"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Error getting dependencies for package"
+msgstr "Erreur d'obtention des dépendances pour le paquet"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Games"
+msgstr "Jeux"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "Installer"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Chargement…"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Mods"
+msgstr "Mods"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No packages could be retrieved"
+msgstr "Aucun paquet n'a pu être récupéré"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "Pas de résultat"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No updates"
+msgstr "Aucune mise à jour"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Queued"
+msgstr "En attente"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Texture packs"
+msgstr "Packs de textures"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "The package $1 was not found."
+msgstr "Le paquet « $1 » n'a pas été trouvé."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Désinstaller"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Mettre à jour"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Update All [$1]"
+msgstr "Tout mettre à jour [$1]"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "View more information in a web browser"
+msgstr "Voir plus d'informations dans le navigateur web"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "You need to install a game before you can install a mod"
+msgstr "Vous devez installer un jeu avant d'installer un mod"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "« $1 » et $2 dépendances seront installées."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 by $2"
+msgstr "« $1 » de $2"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 required dependencies could not be found."
+msgstr "$1 dépendances nécessaires n'ont pas pu être trouvées."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "« $1 » sera installé, et $2 dépendances seront ignorées."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Already installed"
+msgstr "Déjà installé"
+
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Base Game:"
 msgstr "Jeu de base :"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_overwrite.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
+#: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "Annuler"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB n'est pas disponible quand Minetest est compilé sans cURL"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Dépend de :"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "Téléchargement…"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr "Erreur d'installation de « $1 » : $2"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download \"$1\""
-msgstr "Échec du téléchargement de « $1 »"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "Échec du téléchargement de $1"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr ""
-"Échec de l'extraction de « $1 » (type de fichier non pris en charge ou "
-"archive endommagée)"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Games"
-msgstr "Jeux"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Install"
-msgstr "Installer"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install $1"
 msgstr "Installer $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install missing dependencies"
 msgstr "Installer les dépendances manquantes"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Chargement…"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Mods"
-msgstr "Mods"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "Aucun paquet n'a pu être récupéré"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "Pas de résultat"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No updates"
-msgstr "Aucune mise à jour"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Not found"
 msgstr "Non trouvé"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "Écraser"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Please check that the base game is correct."
 msgstr "Veuillez vérifier que le jeu de base est correct."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Queued"
-msgstr "En attente"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "« $1 » existe déjà. Voulez-vous l'écraser ?"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "Packs de textures"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "The package $1 was not found."
-msgstr "Le paquet « $1 » n'a pas été trouvé."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "Désinstaller"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "Mettre à jour"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "Tout mettre à jour [$1]"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "Voir plus d'informations dans un navigateur web"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr "Vous devez installer un jeu avant d'installer un mod"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "Overwrite"
+msgstr "Écraser"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -326,7 +333,7 @@ msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Impossible de trouver un mod, un modpack ou un jeu valide"
+msgstr "Impossible de trouver un mod, un pack de mods ou un jeu valide"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to install a $1 as a $2"
@@ -421,7 +428,7 @@ msgstr "Le monde « $1 » existe déjà"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr "Terrain supplémentaire"
+msgstr "Terrains supplémentaires"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -433,7 +440,7 @@ msgstr "Faible humidité en altitude"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
-msgstr "Mélange de biomes"
+msgstr "Transition des biomes"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
@@ -456,8 +463,20 @@ msgid "Decorations"
 msgstr "Décorations"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Desert temples"
+msgstr "Temples du désert"
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
 msgstr "« Development Test » est destiné aux développeurs."
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Different dungeon variant generated in desert biomes (only if dungeons "
+"enabled)"
+msgstr ""
+"Variante de donjon différente générée dans les biomes désertiques (seulement "
+"si les donjons sont activés)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -502,7 +521,8 @@ msgstr "Lacs"
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
 msgstr ""
-"Humidité basse et chaleur élevée rendent les rivières peu profondes ou sèches"
+"Humidité faible et chaleur élevée rendent les rivières peu profondes ou "
+"sèches"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -510,11 +530,11 @@ msgstr "Générateur de terrain"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr "Drapeaux de génération de terrain"
+msgstr "Options de génération de terrain"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen-specific flags"
-msgstr "Drapeaux spécifiques au générateur de terrain"
+msgstr "Options spécifiques au générateur de terrain"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
@@ -597,7 +617,7 @@ msgstr "Varier la profondeur des rivières"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr "Très grandes cavernes profondes souterraines"
+msgstr "Très grandes cavernes loin sous la surface"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -682,7 +702,7 @@ msgstr "Minetest Game n'est plus installé par défaut"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Reinstall Minetest Game"
-msgstr "Reinstaller Minetest Game"
+msgstr "Réinstaller Minetest Game"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -839,10 +859,6 @@ msgstr "Accessibilité"
 msgid "Back"
 msgstr "Retour"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "Changer les touches"
-
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
 msgid "Chat"
@@ -852,7 +868,8 @@ msgstr "Tchat"
 msgid "Clear"
 msgstr "Effacer"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Contrôles"
 
@@ -1020,7 +1037,7 @@ msgstr "Renommer"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Update available?"
-msgstr "Mise à jour disponible ?"
+msgstr "Mise à jour disponible ?"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1059,6 +1076,18 @@ msgid "Install games from ContentDB"
 msgstr "Installer des jeux à partir de ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
+msgid "Minetest doesn't come with a game by default."
+msgstr "Minetest est livré sans jeu par défaut."
+
+#: builtin/mainmenu/tab_local.lua
+msgid ""
+"Minetest is a game-creation platform that allows you to play many different "
+"games."
+msgstr ""
+"Minetest est une plateforme de création avec laquelle découvrir de nombreux "
+"jeux différents."
+
+#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "Nouveau"
 
@@ -1091,8 +1120,8 @@ msgid "Start Game"
 msgstr "Démarrer"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You have no games installed."
-msgstr "Vous n'avez pas de jeu installé."
+msgid "You need to install a game before you can create a world."
+msgstr "Vous devez en installer un pour créer un nouveau monde."
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1169,19 +1198,11 @@ msgstr "Chargement des textures…"
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
-msgstr "Reconstruction des shaders…"
-
-#: src/client/clientlauncher.cpp
-msgid "Connection error (timed out?)"
-msgstr "Erreur de connexion (perte de connexion ?)"
+msgstr "Reconstruction des nuanceurs…"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "Impossible de trouver ou charger le jeu : "
-
-#: src/client/clientlauncher.cpp
-msgid "Invalid gamespec."
-msgstr "Jeu spécifié invalide."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1207,7 +1228,11 @@ msgstr "Le fichier de mot de passe fourni n'a pas pu être ouvert : "
 msgid "Provided world path doesn't exist: "
 msgstr "Le chemin du monde spécifié n'existe pas : "
 
-#: src/client/game.cpp src/server.cpp
+#: src/client/clientmedia.cpp src/client/game.cpp
+msgid "Media..."
+msgstr "Média…"
+
+#: src/client/game.cpp src/client/shader.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1216,16 +1241,8 @@ msgstr ""
 "Voir « debug.txt » pour plus d'informations."
 
 #: src/client/game.cpp
-msgid "- Address: "
-msgstr "– Adresse : "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "– Mode : "
-
-#: src/client/game.cpp
-msgid "- Port: "
-msgstr "– Port : "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1247,7 +1264,7 @@ msgstr "Une erreur de sérialisation est survenue :"
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr "Accès refusé. Raison : %s"
+msgstr "Accès refusé. Raison : %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1260,10 +1277,6 @@ msgstr "Marche automatique activée"
 #: src/client/game.cpp
 msgid "Block bounds hidden"
 msgstr "Limites des blocs cachées"
-
-#: src/client/game.cpp
-msgid "Block bounds shown for all blocks"
-msgstr "Limites des blocs affichées pour tous les blocs"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
@@ -1311,6 +1324,10 @@ msgid "Connecting to server..."
 msgstr "Connexion au serveur…"
 
 #: src/client/game.cpp
+msgid "Connection error (timed out?)"
+msgstr "Erreur de connexion (délai expiré ?)"
+
+#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "La connexion a échoué pour une raison inconnue"
 
@@ -1319,45 +1336,12 @@ msgid "Continue"
 msgstr "Continuer"
 
 #: src/client/game.cpp
-#, c-format
-msgid ""
-"Controls:\n"
-"- %s: move forwards\n"
-"- %s: move backwards\n"
-"- %s: move left\n"
-"- %s: move right\n"
-"- %s: jump/climb up\n"
-"- %s: dig/punch/use\n"
-"- %s: place/use\n"
-"- %s: sneak/climb down\n"
-"- %s: drop item\n"
-"- %s: inventory\n"
-"- Mouse: turn/look\n"
-"- Mouse wheel: select item\n"
-"- %s: chat\n"
-msgstr ""
-"Contrôles :\n"
-"– %s : avancer\n"
-"– %s : reculer\n"
-"– %s : à gauche\n"
-"– %s : à droite\n"
-"– %s : sauter/grimper\n"
-"– %s : creuser/taper/utiliser\n"
-"– %s : placer/utiliser\n"
-"– %s : marcher lentement/descendre\n"
-"– %s : lâcher un objet\n"
-"– %s : inventaire\n"
-"– Souris : tourner/regarder\n"
-"– Molette souris : sélectionner un objet\n"
-"– %s : tchat\n"
-
-#: src/client/game.cpp
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/use\n"
-"- long tap: dig/punch/use\n"
+"- tap: place/punch/use (default)\n"
+"- long tap: dig/use (default)\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1366,15 +1350,15 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
-"Contrôles :\n"
-"Sans menu ouvert :\n"
-"– glissement du doigt : regarder autour\n"
-"– appui : placer/utiliser\n"
-"– appui long : creuser/taper/utiliser\n"
-"Menu/Inventaire ouvert :\n"
-"– double-appui (en dehors) : fermer\n"
-"– appui sur objets dans l'inventaire : déplacer\n"
-"– appui, glissement et appui : pose d'un seul objet par emplacement\n"
+"Contrôles :\n"
+"Sans menu ouvert :\n"
+"– glissement du doigt : regarder autour\n"
+"– appui : placer/frapper/utiliser (par défaut)\n"
+"– appui long : creuser/utiliser (par défaut)\n"
+"Menu/Inventaire ouvert :\n"
+"– double-appui (en dehors) : fermer\n"
+"– appui sur objets dans l'inventaire : déplacer\n"
+"– appui, glissement et appui : pose d'un seul objet par emplacement\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1447,6 +1431,10 @@ msgid "Fog enabled"
 msgstr "Brouillard activé"
 
 #: src/client/game.cpp
+msgid "Fog enabled by game or mod"
+msgstr "Brouillard actuellement activé par un jeu ou un mod"
+
+#: src/client/game.cpp
 msgid "Game info:"
 msgstr "Infos de jeu :"
 
@@ -1465,10 +1453,6 @@ msgstr "Définitions des objets…"
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "Kio/s"
-
-#: src/client/game.cpp
-msgid "Media..."
-msgstr "Média…"
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1630,10 +1614,6 @@ msgstr "Fils de fer affichés"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "Zoom actuellement désactivé par un jeu ou un mod"
-
-#: src/client/game.cpp
-msgid "ok"
-msgstr "ok"
 
 #: src/client/gameui.cpp
 msgid "Chat currently disabled by game or mod"
@@ -1955,6 +1935,16 @@ msgstr "Mini-carte en mode surface, zoom ×%d"
 msgid "Minimap in texture mode"
 msgstr "Mini-carte en mode texture"
 
+#: src/client/shader.cpp
+#, c-format
+msgid "Failed to compile the \"%s\" shader."
+msgstr "Échec de la compilation du nuanceur « %s »."
+
+#: src/client/shader.cpp
+msgid "Shaders are enabled but GLSL is not supported by the driver."
+msgstr ""
+"Les nuanceurs sont activés mais GLSL n'est pas pris en charge par le pilote."
+
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
@@ -1982,7 +1972,7 @@ msgstr "Certains mods ont des dépendances insatisfaites :"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
-msgstr "Échec de l'ouverture de la page Web"
+msgstr "Échec de l'ouverture de la page web"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
@@ -2148,6 +2138,18 @@ msgstr "Zoom"
 msgid "press key"
 msgstr "Appuyer sur une touche"
 
+#: src/gui/guiOpenURL.cpp
+msgid "Open"
+msgstr "Ouvrir"
+
+#: src/gui/guiOpenURL.cpp
+msgid "Open URL?"
+msgstr "Ouvrir l'URL ?"
+
+#: src/gui/guiOpenURL.cpp
+msgid "Unable to open URL"
+msgstr "Impossible d'ouvrir l'URL"
+
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "Changer"
@@ -2181,6 +2183,7 @@ msgstr "Volume du son : %d %%"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
+#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "fr"
 
@@ -2341,15 +2344,15 @@ msgid ""
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "Prise en charge de la 3D.\n"
-"Actuellement disponible :\n"
-"– aucun : pas de sortie 3D.\n"
-"– anaglyphe : 3D en couleur cyan/magenta.\n"
-"– entrelacé : prise en charge de l'écran avec polarisation basée sur les "
+"Actuellement disponible :\n"
+"– aucun : pas de sortie 3D.\n"
+"– anaglyphe : 3D en couleur cyan/magenta.\n"
+"– entrelacé : prise en charge de l'écran avec polarisation basée sur les "
 "lignes paires/impaires.\n"
-"– haut-bas : partage haut et bas de l'écran.\n"
-"– côte-à-côte : partage côte à côte de l'écran.\n"
-"– vision croisée : vision croisée 3D.\n"
-"Noter que le mode entrelacé nécessite que les shaders soient activés."
+"– haut-bas : partage haut et bas de l'écran.\n"
+"– côte-à-côte : partage côte à côte de l'écran.\n"
+"– vision croisée : vision croisée 3D.\n"
+"Noter que le mode entrelacé nécessite que les nuanceurs soient activés."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2394,7 +2397,7 @@ msgstr "Modificateurs de Blocs Actifs"
 
 #: src/settings_translation_file.cpp
 msgid "Active block management interval"
-msgstr "intervalle de gestion des blocs actifs"
+msgstr "Intervalle de gestion des blocs actifs"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
@@ -2407,14 +2410,6 @@ msgstr "Portée des objets actifs envoyés"
 #: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
 msgstr "Ajoute des particules lorsqu'un bloc est creusé."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
-"screens."
-msgstr ""
-"Ajuste la configuration des PPP à votre écran (non X11 / Android seulement), "
-"par exemple pour les écrans 4k."
 
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
@@ -2445,6 +2440,10 @@ msgstr "Nom de l’administrateur"
 #: src/settings_translation_file.cpp
 msgid "Advanced"
 msgstr "Avancé"
+
+#: src/settings_translation_file.cpp
+msgid "Allows liquids to be translucent."
+msgstr "Permet aux liquides d'être translucides."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2506,6 +2505,26 @@ msgid "Apple trees noise"
 msgstr "Bruit appliqué aux pommiers"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Apply dithering to reduce color banding artifacts.\n"
+"Dithering significantly increases the size of losslessly-compressed\n"
+"screenshots and it works incorrectly if the display or operating system\n"
+"performs additional dithering or if the color channels are not quantized\n"
+"to 8 bits.\n"
+"With OpenGL ES, dithering only works if the shader supports high\n"
+"floating-point precision and it may have a higher performance impact."
+msgstr ""
+"Appliquer le tramage pour réduire les artefacts de bandes de couleur.\n"
+"Le tramage augmente significativement la taille des captures d'écran "
+"compressées sans perte.\n"
+"Ne fonctionne pas correctement si l'affichage ou le système d'exploitation "
+"effectue un tramage supplémentaire ou si les canaux de couleur ne sont pas "
+"quantifiés à 8 bits.\n"
+"Avec OpenGL ES, le tramage fonctionne seulement si les nuanceurs prennent en "
+"charge une précision élevée en virgule flottante et cela peut avoir un "
+"impact plus important sur les performances."
+
+#: src/settings_translation_file.cpp
 msgid "Arm inertia"
 msgstr "Inertie du bras"
 
@@ -2528,21 +2547,37 @@ msgid ""
 "clients.\n"
 "Small values potentially improve performance a lot, at the expense of "
 "visible\n"
-"rendering glitches (some blocks will not be rendered under water and in "
-"caves,\n"
-"as well as sometimes on land).\n"
+"rendering glitches (some blocks might not be rendered correctly in caves).\n"
 "Setting this to a value greater than max_block_send_distance disables this\n"
 "optimization.\n"
-"Stated in mapblocks (16 nodes)."
+"Stated in MapBlocks (16 nodes)."
 msgstr ""
-"À cette distance le serveur agressivement optimise quels blocs sont envoyés "
-"aux clients.\n"
+"À cette distance le serveur optimise agressivement les blocs envoyés aux "
+"clients.\n"
 "Des valeurs faibles peuvent augmenter fortement la performance du serveur, "
-"mais peut provoquer l'apparition de problèmes de rendu visibles (certains "
-"blocs ne sont pas affichés sous l'eau ou dans les cavernes, ou parfois sur "
-"terre).\n"
+"mais peut provoquer l'apparition de problèmes de rendu (certains blocs "
+"peuvent ne pas être rendus correctement dans les grottes).\n"
 "Une valeur supérieure à « max_block_send_distance » désactive cette "
 "optimisation.\n"
+"Établie en blocs de carte (16 nœuds)."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"At this distance the server will perform a simpler and cheaper occlusion "
+"check.\n"
+"Smaller values potentially improve performance, at the expense of "
+"temporarily visible\n"
+"rendering glitches (missing blocks).\n"
+"This is especially useful for very large viewing range (upwards of 500).\n"
+"Stated in MapBlocks (16 nodes)."
+msgstr ""
+"À cette distance le serveur effectue une vérification d'occlusion plus "
+"simple et moins coûteuse.\n"
+"Des valeurs plus faibles peuvent augmenter la performance du serveur, mais "
+"peut provoquer l'apparition de problèmes de rendu (certains blocs ne sont "
+"pas visibles).\n"
+"Ceci est particulièrement utile pour les très grandes distances de vue (plus "
+"de 500).\n"
 "Établie en blocs de carte (16 nœuds)."
 
 #: src/settings_translation_file.cpp
@@ -2604,6 +2639,10 @@ msgstr "API des biomes"
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
 msgstr "Bruit des biomes"
+
+#: src/settings_translation_file.cpp
+msgid "Block cull optimize distance"
+msgstr "Distance d'optimisation de sélection des blocs"
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
@@ -2808,7 +2847,7 @@ msgstr "Nuages"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client-side effect."
-msgstr "Les nuages ont un effet sur le client exclusivement."
+msgstr "Activer les nuages côté client."
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
@@ -2824,6 +2863,15 @@ msgstr "Ombres colorées"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Comma-separated list of AL and ALC extensions that should not be used.\n"
+"Useful for testing. See al_extensions.[h,cpp] for details."
+msgstr ""
+"Liste séparée par des virgules des extensions AL et ALC qui ne doivent pas "
+"être utilisées.\n"
+"Utile pour les tests. Voir « al_extensions.[h, cpp] » pour plus de détails."
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Comma-separated list of flags to hide in the content repository.\n"
 "\"nonfree\" can be used to hide packages which do not qualify as 'free "
 "software',\n"
@@ -2832,13 +2880,13 @@ msgid ""
 "These flags are independent from Minetest versions,\n"
 "so see a full list at https://content.minetest.net/help/content_flags/"
 msgstr ""
-"Liste des drapeaux séparés par des virgules des paquets à cacher du dépôt "
-"des contenus.\n"
+"Liste séparés par des virgules des étiquettes des paquets à cacher du dépôt "
+"de contenus.\n"
 "« nonfree » peut être utilisé pour cacher les paquets non libres, comme "
 "défini par la « Free Software Foundation ».\n"
 "Vous pouvez aussi spécifier des classifications de contenu.\n"
-"Ces drapeaux sont indépendants des versions de Minetest, consulter la liste "
-"complète à l'adresse https://content.minetest.net/help/content_flags/."
+"Ces étiquettes sont indépendants des versions de Minetest, consulter la "
+"liste complète à l'adresse https://content.minetest.net/help/content_flags/."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2913,7 +2961,7 @@ msgstr "Dépôt de contenu"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
-msgstr "Drapeaux de la liste noire de ContentDB"
+msgstr "Étiquettes de la liste noire de ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Max Concurrent Downloads"
@@ -2939,8 +2987,8 @@ msgid ""
 "Controls sinking speed in liquid when idling. Negative values will cause\n"
 "you to rise instead."
 msgstr ""
-"Contrôle la vitesse d'immersion dans un liquide lorsque inactif. Des valeurs "
-"négatives font remonter."
+"Contrôle la vitesse d'enfoncement sans mouvement dans un liquide. Les "
+"valeurs négatives entraînent la montée."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -2987,11 +3035,7 @@ msgid ""
 "Also controls the object crosshair color"
 msgstr ""
 "Couleur du réticule (R,V,B).\n"
-"Contrôle également la couleur du réticule de l'objet."
-
-#: src/settings_translation_file.cpp
-msgid "DPI"
-msgstr "PPP"
+"Ceci s'applique également à la couleur du réticule de l'objet."
 
 #: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
@@ -3046,6 +3090,27 @@ msgstr ""
 "Définit la qualité du filtrage des ombres. Cela simule l'effet d'ombres "
 "douces en appliquant un disque PCF ou Poisson mais utilise également plus de "
 "ressources."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Define the oldest clients allowed to connect.\n"
+"Older clients are compatible in the sense that they will not crash when "
+"connecting\n"
+"to new servers, but they may not support all new features that you are "
+"expecting.\n"
+"This allows for more fine-grained control than "
+"strict_protocol_version_checking.\n"
+"Minetest still enforces its own internal minimum, and enabling\n"
+"strict_protocol_version_checking will effectively override this."
+msgstr ""
+"Définit les clients les plus anciens autorisés à se connecter.\n"
+"Les anciens clients sont compatibles dans le sens où ils ne s'interrompent "
+"pas lors de la connexion aux serveurs récents,\n"
+"mais ils peuvent ne pas prendre en charge certaines fonctionnalités.\n"
+"Cela permet un contrôle plus précis que « strict_protocol_version_checking »."
+"\n"
+"Minetest applique toujours son propre minimum interne, activer « "
+"strict_protocol_version_checking » le remplace."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -3137,9 +3202,9 @@ msgid ""
 "Delay between mesh updates on the client in ms. Increasing this will slow\n"
 "down the rate of mesh updates, thus reducing jitter on slower clients."
 msgstr ""
-"Délai entre les mises à jour du maillage sur le client en ms.\n"
+"Délai entre les mises à jour du maillage du client en ms.\n"
 "Augmenter ceci ralentit le taux de mise à jour et réduit donc les "
-"tremblements sur les client lents."
+"tremblements sur les clients lents."
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
@@ -3179,8 +3244,8 @@ msgid ""
 "When the 'snowbiomes' flag is enabled, this is ignored."
 msgstr ""
 "Des déserts apparaissent lorsque « np_biome » dépasse cette valeur.\n"
-"Quand le drapeau « snowbiomes » est activé (avec le nouveau système de "
-"biomes), ce paramètre est ignoré."
+"Quand l'option « snowbiomes » est activée (avec le nouveau système de biomes)"
+", ce paramètre est ignoré."
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
@@ -3257,6 +3322,10 @@ msgid "Enable Bloom Debug"
 msgstr "Activer le débogage du flou lumineux"
 
 #: src/settings_translation_file.cpp
+msgid "Enable Debanding"
+msgstr "Activer le tramage"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enable IPv6 support (for both client and server).\n"
 "Required for IPv6 connections to work at all."
@@ -3269,7 +3338,7 @@ msgid ""
 "Enable Lua modding support on client.\n"
 "This support is experimental and API can change."
 msgstr ""
-"Active la prise en charge des mods Lua sur le client.\n"
+"Active la prise en charge des mods Lua du client.\n"
 "Cette option est expérimentale et l'API peut changer."
 
 #: src/settings_translation_file.cpp
@@ -3281,6 +3350,10 @@ msgstr ""
 "Active le filtrage par disque de Poisson.\n"
 "Si activé, utilise le disque de Poisson pour créer des « ombres douces ». "
 "Sinon, utilise le filtrage PCF."
+
+#: src/settings_translation_file.cpp
+msgid "Enable Post Processing"
+msgstr "Activer le post-traitement"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
@@ -3318,7 +3391,7 @@ msgstr "Activer les manettes"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks. Requires a restart to take effect"
-msgstr "Activer les manettes. Nécessite un redémarrage pour prendre effet."
+msgstr "Active les manettes. Nécessite un redémarrage pour prendre effet."
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
@@ -3335,9 +3408,14 @@ msgstr ""
 "de la barre d'inventaire."
 
 #: src/settings_translation_file.cpp
-msgid "Enable random user input (only used for testing)."
+msgid "Enable random mod loading (mainly used for testing)."
 msgstr ""
-"Active l'entrée aléatoire du joueur (seulement utilisé pour des tests)."
+"Active le chargement aléatoire des mods (principalement utilisé pour les "
+"tests)."
+
+#: src/settings_translation_file.cpp
+msgid "Enable random user input (only used for testing)."
+msgstr "Active l'entrée aléatoire du joueur (seulement utilisé pour les tests)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3365,6 +3443,10 @@ msgstr ""
 "mais ils peuvent ne pas prendre en charge certaines fonctionnalités."
 
 #: src/settings_translation_file.cpp
+msgid "Enable touchscreen"
+msgstr "Activer l'écran tactile"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enable usage of remote media server (if provided by server).\n"
 "Remote servers offer a significantly faster way to download media (e.g. "
@@ -3375,14 +3457,6 @@ msgstr ""
 "Les serveurs de média distants offrent un moyen significativement plus "
 "rapide de télécharger des données média (ex. : textures) lors de la "
 "connexion au serveur."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable vertex buffer objects.\n"
-"This should greatly improve graphics performance."
-msgstr ""
-"Active les « vertex buffer objects ».\n"
-"Cela devrait grandement augmenter les performances graphiques."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3425,14 +3499,26 @@ msgid "Enables caching of facedir rotated meshes."
 msgstr "Active la mise en cache des mailles orientés « facedir »."
 
 #: src/settings_translation_file.cpp
+msgid "Enables debug and error-checking in the OpenGL driver."
+msgstr "Active le débogage et la vérification des erreurs du pilote OpenGL."
+
+#: src/settings_translation_file.cpp
+msgid "Enables the post processing pipeline."
+msgstr "Active les opérations de post-traitement."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enables touchscreen mode, allowing you to play the game with a touchscreen."
+msgstr "Active le mode écran tactile."
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
 msgstr ""
-"Active les compromis qui réduisent la charge du CPU ou améliorent les "
+"Active les compromis pour réduire la charge du CPU où améliorer les "
 "performances de rendu.\n"
-"Au détriment de problèmes visuels mineurs qui n'ont pas d'impact sur la "
-"jouabilité."
+"Au détriment de problèmes visuels mineurs sans impact sur la jouabilité."
 
 #: src/settings_translation_file.cpp
 msgid "Engine Profiler"
@@ -3470,11 +3556,11 @@ msgstr "Compensation de l'exposition"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
-msgstr "FPS"
+msgstr "IPS"
 
 #: src/settings_translation_file.cpp
 msgid "FPS when unfocused or paused"
-msgstr "FPS lorsqu’il n’est pas sélectionné ou mis en pause"
+msgstr "IPS fenêtre non sélectionnée ou jeu mis en pause"
 
 #: src/settings_translation_file.cpp
 msgid "Factor noise"
@@ -3523,7 +3609,7 @@ msgstr "Bruit de profondeur de remplissage"
 
 #: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
-msgstr "Mappage de tons filmique"
+msgstr "Activer le mappage de tons filmique"
 
 #: src/settings_translation_file.cpp
 msgid "Filtering and Antialiasing"
@@ -3578,7 +3664,7 @@ msgstr "Exposant de l'effilement des terrains flottants"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland tapering distance"
-msgstr "Hauteur de la base des terrains flottants"
+msgstr "Distance d'effilage des terrains flottantes"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland water level"
@@ -3772,10 +3858,10 @@ msgid ""
 "and jungle grass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "Attributs de génération de terrain globaux.\n"
-"Dans le générateur de terrain v6, le drapeau « décorations » contrôle toutes "
+"Dans le générateur de terrain v6, l'option « décorations » contrôle toutes "
 "les décorations sauf les arbres et les herbes de la jungle.\n"
-"Dans tous les autres générateurs de terrains, ce drapeau contrôle toutes les "
-"décorations."
+"Dans tous les autres générateurs de terrains, cette option contrôle toutes "
+"les décorations."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3858,7 +3944,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Heat blend noise"
-msgstr "Bruit de mélange de chaleur"
+msgstr "Bruit de transition de chaleur"
 
 #: src/settings_translation_file.cpp
 msgid "Heat noise"
@@ -3945,8 +4031,9 @@ msgid ""
 "How fast liquid waves will move. Higher = faster.\n"
 "If negative, liquid waves will move backwards."
 msgstr ""
-"Vitesse de déplacement des ondes de liquides. Plus élevée = plus rapide.\n"
-"Si elle est négative, les ondes de liquides se déplacent en arrière."
+"Vitesse de déplacement des ondulations des liquides. Plus élevée = plus "
+"rapide.\n"
+"Si elle est négative, les ondulations des liquides se déplacent en arrière."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3964,7 +4051,7 @@ msgid ""
 "Decrease this to increase liquid resistance to movement."
 msgstr ""
 "Ralentissement lors du déplacement dans un liquide.\n"
-"Réduire ceci pour augmenter la résistance liquide au mouvement."
+"Réduire ceci pour augmenter la résistance au mouvement."
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers."
@@ -3972,7 +4059,7 @@ msgstr "Largeur des rivières."
 
 #: src/settings_translation_file.cpp
 msgid "Humidity blend noise"
-msgstr "Bruit de mélange de l'humidité"
+msgstr "Bruit de transition de l'humidité"
 
 #: src/settings_translation_file.cpp
 msgid "Humidity noise"
@@ -3995,8 +4082,8 @@ msgid ""
 "If FPS would go higher than this, limit it by sleeping\n"
 "to not waste CPU power for no benefit."
 msgstr ""
-"Si les FPS (nombre d'images par seconde) sont supérieurs à cette valeur.\n"
-"Limite les FPS en les mettant en sommeil pour ne pas gaspiller la puissance "
+"Si le nombre d'images par seconde est supérieur à cette valeur.\n"
+"Limite les IPS en les mettant en sommeil pour ne pas gaspiller la puissance "
 "du CPU sans aucun bénéfice."
 
 #: src/settings_translation_file.cpp
@@ -4031,8 +4118,8 @@ msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
 msgstr ""
-"Si activé, les actions sont enregistrés pour une restauration éventuelle.\n"
-"Cette option est seulement activé quand le serveur démarre."
+"Si activé, les actions sont enregistrées pour une restauration éventuelle.\n"
+"Cette option est lue seulement au démarrage du serveur."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, disable cheat prevention in multiplayer."
@@ -4377,16 +4464,18 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Length of a server tick and the interval at which objects are generally "
-"updated over\n"
-"network, stated in seconds."
+"Length of a server tick (the interval at which everything is generally "
+"updated),\n"
+"stated in seconds.\n"
+"Does not apply to sessions hosted from the client menu."
 msgstr ""
-"Durée d'intervalle serveur et intervalle auquel les objets sont généralement "
-"mis à jour sur le réseau, établie en secondes."
+"Durée d'intervalle serveur (intervalle auquel tout est généralement mis à "
+"jour), établie en secondes.\n"
+"Ne s'applique pas aux sessions hébergées à partir du menu client."
 
 #: src/settings_translation_file.cpp
 msgid "Length of liquid waves."
-msgstr "Longueur des ondes de liquides."
+msgstr "Longueur de l'ondulation des liquides."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4492,7 +4581,7 @@ msgstr "Régularité de la fluidité des liquides"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid loop max"
-msgstr "Itérations maximales pendant la transformation des liquides"
+msgstr "Itérations maximales de transformation des liquides"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid queue purge time"
@@ -4500,7 +4589,7 @@ msgstr "Délai de nettoyage d'une file de liquide"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid sinking"
-msgstr "Écoulement du liquide"
+msgstr "Enfoncement dans un liquide"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update interval in seconds."
@@ -4558,10 +4647,6 @@ msgstr ""
 "(aube/crépuscule) et la direction du regard."
 
 #: src/settings_translation_file.cpp
-msgid "Makes all liquids opaque"
-msgstr "Rend toutes les liquides opaques."
-
-#: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
 msgstr "Niveau de compression des cartes pour le stockage sur disque"
 
@@ -4606,11 +4691,11 @@ msgid ""
 "'altitude_dry': Reduces humidity with altitude."
 msgstr ""
 "Attributs spécifiques au générateur de terrain vallées.\n"
-"« altitude_chill » : réduit la chaleur avec l’altitude.\n"
-"« humid_rivers » : augmente l’humidité autour des rivières.\n"
-"« vary_river_dept » : si activé, une humidité basse et une chaleur élevée "
+"« altitude_chill » : réduit la chaleur avec l’altitude.\n"
+"« humid_rivers » : augmente l’humidité autour des rivières.\n"
+"« vary_river_dept » : si activé, une humidité faible et une chaleur élevée "
 "rendent les rivières moins profondes et parfois sèches.\n"
-"« altitude_dry » : réduit l’humidité avec l’altitude."
+"« altitude_dry » : réduit l’humidité avec l’altitude."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation attributes specific to Mapgen v5."
@@ -4621,12 +4706,16 @@ msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
-"the 'jungles' flag is ignored."
+"the 'jungles' flag is ignored.\n"
+"The 'temples' flag disables generation of desert temples. Normal dungeons "
+"will appear instead."
 msgstr ""
 "Attributs spécifiques au générateur de terrain v6.\n"
-"Le drapeau « snowbiomes » active le nouveau système à 5 biomes.\n"
-"Lorsque le drapeau « snowbiomes » est activé, les jungles sont "
-"automatiquement activées et le drapeau « jungles » est ignoré."
+"L'option « snowbiomes » active le nouveau système à 5 biomes.\n"
+"Lorsque l'option « snowbiomes » est activée, les jungles sont "
+"automatiquement activées et l'option « jungles » est ignorée.\n"
+"L'option « temples » désactive la génération de temples dans le désert. Des "
+"donjons normaux sont ajoutés à la place."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4636,10 +4725,10 @@ msgid ""
 "'caverns': Giant caves deep underground."
 msgstr ""
 "Attributs spécifiques au générateur de terrain v7.\n"
-"« montagnes » : montagnes.\n"
-"« crêtes » : rivières.\n"
-"« terrains flottants » : vaste terrain flottant dans l'atmosphère.\n"
-"« cavernes » : cavernes immenses souterraines profondes."
+"« montagnes » : montagnes.\n"
+"« crêtes » : rivières.\n"
+"« terrains flottants » : masses de terrains flottants dans l'atmosphère.\n"
+"« cavernes » : cavernes immenses loin sous la surface."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -4666,10 +4755,6 @@ msgid "Mapblock mesh generation threads"
 msgstr "Fils de génération du maillage de blocs de carte"
 
 #: src/settings_translation_file.cpp
-msgid "Mapblock mesh generator's MapBlock cache size in MB"
-msgstr "Taille du cache de blocs de carte en Mo du générateur de maillage"
-
-#: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
 msgstr "Délai d'interruption du déchargement de blocs de carte"
 
@@ -4679,7 +4764,7 @@ msgstr "Générateur de terrain carpatien"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Carpathian specific flags"
-msgstr "Drapeaux spécifiques au générateur de terrain carpatien"
+msgstr "Options spécifiques au générateur de terrain carpatien"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Flat"
@@ -4687,7 +4772,7 @@ msgstr "Générateur de terrain plat"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Flat specific flags"
-msgstr "Drapeaux spécifiques au générateur de terrain plat"
+msgstr "Options spécifiques au générateur de terrain plat"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Fractal"
@@ -4695,7 +4780,7 @@ msgstr "Générateur de terrain fractal"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Fractal specific flags"
-msgstr "Drapeaux spécifiques au générateur de terrain fractal"
+msgstr "Options spécifiques au générateur de terrain fractal"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5"
@@ -4703,7 +4788,7 @@ msgstr "Générateur de terrain v5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5 specific flags"
-msgstr "Drapeaux spécifiques au générateur de terrain v5"
+msgstr "Options spécifiques au générateur de terrain v5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V6"
@@ -4711,7 +4796,7 @@ msgstr "Générateur de terrain v6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V6 specific flags"
-msgstr "Drapeaux spécifiques au générateur de terrain v6"
+msgstr "Options spécifiques au générateur de terrain v6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V7"
@@ -4719,7 +4804,7 @@ msgstr "Générateur de terrain v7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V7 specific flags"
-msgstr "Drapeaux spécifiques au générateur de terrain v7"
+msgstr "Options spécifiques au générateur de terrain v7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Valleys"
@@ -4727,7 +4812,7 @@ msgstr "Générateur de terrain vallées"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Valleys specific flags"
-msgstr "Drapeaux spécifiques au générateur de terrain vallées"
+msgstr "Options spécifiques au générateur de terrain vallées"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen debug"
@@ -4759,13 +4844,13 @@ msgstr "Paquets maximaux par itération"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
-msgstr "FPS maximum"
+msgstr "IPS maximum"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when the window is not focused, or when the game is paused."
 msgstr ""
-"FPS maximum lorsque la fenêtre n'est pas sélectionnée, ou lorsque le jeu est "
-"en pause."
+"Nombre d'images par seconde maximum lorsque la fenêtre n'est pas "
+"sélectionnée, ou lorsque le jeu est en pause."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum distance to render shadows."
@@ -4794,8 +4879,8 @@ msgid ""
 "Maximum liquid resistance. Controls deceleration when entering liquid at\n"
 "high speed."
 msgstr ""
-"Résistance maximale aux liquides. Contrôle la décélération lorsqu'un joueur "
-"entre dans un liquide à haute vitesse."
+"Résistance maximale aux liquides. Contrôle la décélération lors de l'entrée "
+"dans un liquide à haute vitesse."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4837,7 +4922,7 @@ msgid ""
 "be queued.\n"
 "This should be lower than curl_parallel_limit."
 msgstr ""
-"Nombre maximal de téléchargements simultanés. Les téléchargements dépassant "
+"Nombre maximal de téléchargements simultanés. Les téléchargements au-delà de "
 "cette limite sont mis en file d'attente.\n"
 "Ce nombre doit être inférieur à la limite de « curl_parallel_limit »."
 
@@ -4855,9 +4940,10 @@ msgid ""
 "try reducing it, but don't reduce it to a number below double of targeted\n"
 "client number."
 msgstr ""
-"Nombre maximal de paquets envoyés par étape d'envoi. Si vous avez une "
-"connexion lente, essayer de réduire cette valeur, mais ne pas réduire cette "
-"valeur en-dessous du double du nombre de clients maximum sur le serveur."
+"Nombre maximal de paquets envoyés par étape d'envoi.\n"
+"Si vous avez une connexion lente, essayer de réduire cette valeur.\n"
+"Ne pas réduire cette valeur en-dessous du double du nombre de clients "
+"maximum sur le serveur."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can be connected simultaneously."
@@ -4946,6 +5032,10 @@ msgid "Minimap scan height"
 msgstr "Hauteur de balayage de la mini-carte"
 
 #: src/settings_translation_file.cpp
+msgid "Minimum dig repetition interval"
+msgstr "Intervalle de répétition minimale du minage"
+
+#: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of large caves per mapchunk."
 msgstr ""
 "Limite minimale du nombre aléatoire de grandes grottes par tranche de carte."
@@ -5014,6 +5104,10 @@ msgstr "Sensibilité de la souris"
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
 msgstr "Facteur de sensibilité de la souris."
+
+#: src/settings_translation_file.cpp
+msgid "Movement threshold"
+msgstr "Sensibilité tactile"
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
@@ -5131,7 +5225,7 @@ msgid ""
 "This is a trade-off between SQLite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
-"Nombre de blocs supplémentaires qui peuvent être chargés par « /"
+"Nombre de blocs de carte supplémentaires qui peuvent être chargés par « /"
 "clearobjects » à la fois.\n"
 "C'est un compromis entre la surcharge de transaction SQLite et la "
 "consommation mémoire\n"
@@ -5160,10 +5254,6 @@ msgid "Occlusion Culling"
 msgstr "Détermination des blocs invisibles"
 
 #: src/settings_translation_file.cpp
-msgid "Opaque liquids"
-msgstr "Liquides opaques"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Opaqueness (alpha) of the shadow behind the default font, between 0 and 255."
 msgstr ""
@@ -5177,6 +5267,10 @@ msgid ""
 msgstr ""
 "Ouvre le menu pause lorsque la sélection de la fenêtre est perdue. Ne met "
 "pas en pause si un formspec est ouvert."
+
+#: src/settings_translation_file.cpp
+msgid "OpenGL debug"
+msgstr "Débogage OpenGL"
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
@@ -5205,8 +5299,8 @@ msgid ""
 "Path to shader directory. If no path is defined, default location will be "
 "used."
 msgstr ""
-"Répertoire des shaders. Si le chemin n'est pas défini, le chemin par défaut "
-"est utilisé."
+"Répertoire des nuanceurs. Si le chemin n'est pas défini, le chemin par "
+"défaut est utilisé."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5316,6 +5410,14 @@ msgid "Proportion of large caves that contain liquid."
 msgstr "Proportion de grandes grottes qui contiennent du liquide."
 
 #: src/settings_translation_file.cpp
+msgid "Protocol version minimum"
+msgstr "Version du protocole minimale"
+
+#: src/settings_translation_file.cpp
+msgid "Punch gesture"
+msgstr "Gestes tactiles"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
@@ -5332,6 +5434,10 @@ msgstr "Élève le terrain pour former des vallées autour des rivières."
 #: src/settings_translation_file.cpp
 msgid "Random input"
 msgstr "Entrée aléatoire"
+
+#: src/settings_translation_file.cpp
+msgid "Random mod load order"
+msgstr "Ordre de chargement aléatoire des mods"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -5383,8 +5489,8 @@ msgstr ""
 "Combiner les « byteflags » ci dessous pour restreindre les fonctionnalités "
 "client, ou mettre 0 pour laisser sans restriction :\n"
 "LOAD_CLIENT_MODS : 1 (désactive le chargement des mods client)\n"
-"CHAT_MESSAGES : 2 (désactive l'appel « send_chat_message côté » client)\n"
-"READ_ITEMDEFS : 4 (désactive l'appel « get_item_def côté » client)\n"
+"CHAT_MESSAGES : 2 (désactive l'appel « send_chat_message » côté client)\n"
+"READ_ITEMDEFS : 4 (désactive l'appel « get_item_def » côté client)\n"
 "READ_NODEDEFS : 8 (désactive l'appel « get_node_def » côté client)\n"
 "LOOKUP_NODES_LIMIT : 16 (limite l'appel « get_node » côté client à "
 "« csm_restriction_noderange »)\n"
@@ -5520,8 +5626,8 @@ msgid ""
 "1 means worst quality; 100 means best quality.\n"
 "Use 0 for default quality."
 msgstr ""
-"Qualité des captures d'écran. Utilisé uniquement pour le format JPEG.\n"
-"1 signifie mauvaise qualité ; 100 signifie la meilleure qualité.\n"
+"Qualité des captures d'écran. Utilisé seulement pour le format JPEG.\n"
+"1 signifie mauvaise qualité ; 100 signifie la meilleure qualité.\n"
 "Utiliser 0 pour la qualité par défaut."
 
 #: src/settings_translation_file.cpp
@@ -5552,8 +5658,8 @@ msgid ""
 "\n"
 "* None - No antialiasing (default)\n"
 "\n"
-"* FSAA - Hardware-provided full-screen antialiasing (incompatible with "
-"shaders)\n"
+"* FSAA - Hardware-provided full-screen antialiasing\n"
+"(incompatible with Post Processing and Undersampling)\n"
 "A.K.A multi-sample antialiasing (MSAA)\n"
 "Smoothens out block edges but does not affect the insides of textures.\n"
 "A restart is required to change this option.\n"
@@ -5571,16 +5677,17 @@ msgstr ""
 "\n"
 "* Aucun – Pas d'anticrénelage (par défaut)\n"
 "\n"
-"* FSAA – Anticrénelage de la scène complète (incompatible avec les shaders)\n"
+"* FSAA – Anticrénelage de la scène complète (incompatible avec « Post-"
+"traitement » et « Sous-échantillonnage »)\n"
 "Alias anticrénelage multi-échantillon (MSAA), lisse les bords des blocs mais "
 "n'affecte pas l'intérieur des textures.\n"
 "Un redémarrage est nécessaire pour modifier cette option.\n"
 "\n"
-"* FXAA – Anticrénelage approximatif rapide (nécessite des shaders)\n"
+"* FXAA – Anticrénelage approximatif rapide (nécessite des nuanceurs)\n"
 "Applique un filtre de post-traitement pour détecter et lisser les bords à "
 "contraste élevé, fournit un équilibre entre vitesse et qualité d'image.\n"
 "\n"
-"* SSAA – Anticrénelage par super-échantillonnage (nécessite des shaders)\n"
+"* SSAA – Anticrénelage par super-échantillonnage (nécessite des nuanceurs)\n"
 "Rendu d'une image haute résolution de la scène, puis réduit l'échelle pour "
 "diminuer le crénelage. C'est la méthode la plus lente et la plus précise."
 
@@ -5713,10 +5820,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the language. Leave empty to use the system language.\n"
+"Set the language. By default, the system language is used.\n"
 "A restart is required after changing this."
 msgstr ""
-"Définit la langue. Laisser vide pour utiliser la langue du système.\n"
+"Définit la langue. Par défaut, la langue du système est utilisée.\n"
 "Un redémarrage est nécessaire après cette modification."
 
 #: src/settings_translation_file.cpp
@@ -5761,6 +5868,10 @@ msgstr ""
 "Les couleurs vives débordent sur les objets voisins."
 
 #: src/settings_translation_file.cpp
+msgid "Set to true to enable volumetric lighting effect (a.k.a. \"Godrays\")."
+msgstr "Active l'éclairage volumétrique (parfois appelé « rayons de Dieu »)."
+
+#: src/settings_translation_file.cpp
 msgid "Set to true to enable waving leaves."
 msgstr "Active l'ondulation des feuilles."
 
@@ -5770,7 +5881,7 @@ msgstr "Active l'ondulation des liquides (comme l'eau)."
 
 #: src/settings_translation_file.cpp
 msgid "Set to true to enable waving plants."
-msgstr "Active l'ondulation des végétaux."
+msgstr "Active l'ondulation des plantes."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5797,7 +5908,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shader path"
-msgstr "Chemin des shaders"
+msgstr "Chemin des nuanceurs"
 
 #: src/settings_translation_file.cpp
 msgid "Shaders"
@@ -5807,12 +5918,10 @@ msgstr "Nuanceurs"
 msgid ""
 "Shaders allow advanced visual effects and may increase performance on some "
 "video\n"
-"cards.\n"
-"This only works with the OpenGL video backend."
+"cards."
 msgstr ""
-"Les nuanceurs (« shaders ») permettent des effets visuels avancés et peuvent "
-"améliorer les performances de certaines cartes graphiques.\n"
-"Fonctionne seulement avec OpenGL."
+"Les nuanceurs permettent des effets visuels avancés et peuvent améliorer les "
+"performances de certaines cartes graphiques."
 
 #: src/settings_translation_file.cpp
 msgid "Shadow filter quality"
@@ -5901,22 +6010,12 @@ msgstr ""
 "conseillé de la laisser inchangée."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Size of the MapBlock cache of the mesh generator. Increasing this will\n"
-"increase the cache hit %, reducing the data being copied from the main\n"
-"thread, thus reducing jitter."
-msgstr ""
-"Taille du cache de blocs de carte du générateur de maillage. Augmenter ceci "
-"augmente le % d'interception du cache et réduit la copie de données dans le "
-"fil principal, réduisant les tremblements."
-
-#: src/settings_translation_file.cpp
 msgid "Sky Body Orbit Tilt"
 msgstr "Inclinaison de l'orbite du corps du ciel"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
-msgstr "Largeur de part"
+msgstr "Tranche w"
 
 #: src/settings_translation_file.cpp
 msgid "Slope and fill work together to modify the heights."
@@ -5950,11 +6049,10 @@ msgstr "Lissage de l'éclairage"
 #: src/settings_translation_file.cpp
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Change Keys."
+"cinematic mode by using the key set in Controls."
 msgstr ""
 "Lisse la rotation de la caméra en mode cinématique, 0 pour désactiver.\n"
-"Entrer le mode cinématique en utilisant la touche définie dans « Changer les "
-"touches »."
+"Entrer le mode cinématique en utilisant la touche définie dans « Contrôles »."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5977,14 +6075,22 @@ msgid "Soft shadow radius"
 msgstr "Rayon de l'ombre douce"
 
 #: src/settings_translation_file.cpp
+msgid "Sound"
+msgstr "Audio"
+
+#: src/settings_translation_file.cpp
+msgid "Sound Extensions Blacklist"
+msgstr "Extensions de la liste noire audio"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Specifies URL from which client fetches media instead of using UDP.\n"
 "$filename should be accessible from $remote_media$filename via cURL\n"
 "(obviously, remote_media should end with a slash).\n"
 "Files that are not present will be fetched the usual way."
 msgstr ""
-"Spécifie l'URL à laquelle les clients obtiennent les fichiers média au lieu "
-"d'utiliser le port UDP.\n"
+"URL à laquelle les clients obtiennent les fichiers média au lieu d'utiliser "
+"le port UDP.\n"
 "« $filename » doit être accessible depuis « $remote_media$filename » via "
 "cURL (évidemment, « remote_media » doit se terminer par une barre oblique).\n"
 "Les fichiers qui ne sont pas présents sont récupérés de la manière "
@@ -6041,7 +6147,7 @@ msgstr "Bruit d'étalement des plateaux montagneux"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of 3D mode parallax."
-msgstr "Intensité de parallaxe en mode 3D."
+msgstr "Intensité parallaxe en mode 3D."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6172,7 +6278,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
-msgstr "L'URL du dépôt de contenu."
+msgstr "URL du dépôt de contenu."
 
 #: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
@@ -6188,20 +6294,51 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"The delay in milliseconds after which a touch interaction is considered a "
+"long tap."
+msgstr ""
+"Délai en millisecondes après lequel une interaction tactile est considérée "
+"comme un appui long."
+
+#: src/settings_translation_file.cpp
+msgid ""
 "The file path relative to your world path in which profiles will be saved to."
 msgstr ""
 "Chemin d'accès au fichier relatif au monde dans lequel les profils sont "
 "sauvegardés."
 
 #: src/settings_translation_file.cpp
-msgid "The identifier of the joystick to use"
-msgstr "L'identifiant de la manette à utiliser."
+msgid ""
+"The gesture for for punching players/entities.\n"
+"This can be overridden by games and mods.\n"
+"\n"
+"* short_tap\n"
+"Easy to use and well-known from other games that shall not be named.\n"
+"\n"
+"* long_tap\n"
+"Known from the classic Minetest mobile controls.\n"
+"Combat is more or less impossible."
+msgstr ""
+"Geste pour frapper les joueurs/entités.\n"
+"Il peut être remplacé par les jeux et les mods.\n"
+"\n"
+"* appui bref\n"
+"Facile à utiliser et bien connu dans d'autres jeux.\n"
+"\n"
+"* appui long\n"
+"Connu des contrôles classiques de Minetest mobile.\n"
+"Le combat est plus ou moins impossible."
 
 #: src/settings_translation_file.cpp
-msgid "The length in pixels it takes for touchscreen interaction to start."
+msgid "The identifier of the joystick to use"
+msgstr "Identifiant de la manette à utiliser."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The length in pixels after which a touch interaction is considered movement."
 msgstr ""
-"Longueur en pixels nécessaire pour que l'interaction avec l'écran tactile "
-"commence."
+"Longueur en pixels après laquelle une interaction tactile est considérée "
+"comme un mouvement."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6210,14 +6347,22 @@ msgid ""
 "0.0 = Wave doesn't move at all.\n"
 "Default is 1.0 (1/2 node)."
 msgstr ""
-"Hauteur maximale de la surface des liquides ondulants.\n"
+"Hauteur maximale de la surface d'ondulation des liquides.\n"
 "4,0 – la hauteur des vagues est de deux blocs.\n"
 "0,0 – la vague ne bouge pas du tout.\n"
 "Par défaut est de 1,0 (1/2 bloc)."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"The minimum time in seconds it takes between digging nodes when holding\n"
+"the dig button."
+msgstr ""
+"Durée minimale en secondes entre le minage de blocs lors du maintien du "
+"bouton ceuser."
+
+#: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
-msgstr "L'interface réseau que le serveur écoute."
+msgstr "Interface réseau d'écoute du serveur."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6250,13 +6395,13 @@ msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
 "OpenGL is the default for desktop, and OGLES2 for Android.\n"
-"Shaders are supported by OpenGL and OGLES2 (experimental)."
+"Shaders are supported by everything but OGLES1."
 msgstr ""
 "Le moteur de rendu.\n"
-"Remarque : un redémarrage est nécessaire après cette modification !\n"
+"Remarque : un redémarrage est nécessaire après cette modification !\n"
 "OpenGL est la valeur par défaut pour les ordinateurs de bureau et OGLES2 "
 "pour Android.\n"
-"Les shaders sont pris en charge par OpenGL et OGLES2 (expérimental)."
+"Les nuanceurs sont pris en charge par tout sauf OGLES1."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6274,8 +6419,8 @@ msgid ""
 "set to the nearest valid value."
 msgstr ""
 "Intensité (obscurité) de l'ombrage des blocs avec l'occlusion ambiante.\n"
-"Les valeurs plus basses sont plus sombres, les valeurs plus hautes sont plus "
-"claires.\n"
+"Les valeurs plus faibles sont plus sombres, les valeurs plus hautes sont "
+"plus claires.\n"
 "Une plage valide de valeurs pour ceci se situe entre 0,25 et 4,0.\n"
 "Si la valeur est en dehors de cette plage alors elle est définie à la plus "
 "proche des valeurs valides."
@@ -6337,6 +6482,10 @@ msgstr ""
 "et des montagnes."
 
 #: src/settings_translation_file.cpp
+msgid "Threshold for long taps"
+msgstr "Sensibilité pour les appuis longs"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
@@ -6393,12 +6542,12 @@ msgid "Touchscreen sensitivity multiplier."
 msgstr "Facteur de sensibilité de l'écran tactile."
 
 #: src/settings_translation_file.cpp
-msgid "Touchscreen threshold"
-msgstr "Sensibilité de l'écran tactile"
-
-#: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
 msgstr "Compromis pour la performance"
+
+#: src/settings_translation_file.cpp
+msgid "Translucent liquids"
+msgstr "Liquides translucides"
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
@@ -6448,10 +6597,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"URL to JSON file which provides information about the newest Minetest release"
+"URL to JSON file which provides information about the newest Minetest "
+"release\n"
+"If this is empty the engine will never check for updates."
 msgstr ""
 "URL du fichier JSON qui fournit des informations sur la nouvelle version de "
-"Minetest"
+"Minetest.\n"
+"Si ce champ est vide, le moteur ne vérifie pas les mises à jour."
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
@@ -6503,40 +6655,39 @@ msgstr "Activer les nuages 3D au lieu des nuages 2D (plats)."
 
 #: src/settings_translation_file.cpp
 msgid "Use a cloud animation for the main menu background."
-msgstr ""
-"Utiliser une animation de nuages pour l'arrière-plan du menu principal."
+msgstr "Utiliser l'animation des nuages pour l'arrière-plan du menu principal."
 
 #: src/settings_translation_file.cpp
 msgid "Use anisotropic filtering when looking at textures from an angle."
 msgstr ""
-"Utilise le filtrage anisotrope lorsque l'on regarde les textures sous un "
+"Utiliser le filtrage anisotrope lorsque l'on regarde les textures sous un "
 "certain angle."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use bilinear filtering when scaling textures."
-msgstr "Utilisation du filtrage trilinéaire."
+msgstr ""
+"Utiliser le filtrage bilinéaire lors de la mise à l'échelle des textures."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
-msgstr "Utiliser le réticule pour l'écran tactile"
+msgstr "Utiliser le réticule"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Use crosshair to select object instead of whole screen.\n"
 "If enabled, a crosshair will be shown and will be used for selecting object."
 msgstr ""
-"Utiliser le réticule pour la sélection d'objets au lieu de l'écran entier.\n"
+"Utiliser le réticule pour la sélection d'objets au lieu de l'ensemble de "
+"l'écran.\n"
 "Si activé, un réticule est affiché et utilisé pour la sélection d'objets."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
-"Utilise le mip-mapping lors de la réduction d'échelle des textures.\n"
+"Utiliser le mip-mapping lors de la mise à l'échelle des textures.\n"
 "Peut améliorer légèrement les performances, surtout lors de l'utilisation "
 "d'un pack de textures haute résolution.\n"
 "La réduction d'échelle avec correction gamma n'est pas prise en charge."
@@ -6547,23 +6698,21 @@ msgid ""
 "This flag enables use of raytraced occlusion culling test for\n"
 "client mesh sizes smaller than 4x4x4 map blocks."
 msgstr ""
-"Utiliser l'élimination des blocs invisibles par Ray Tracing dans le nouvel "
+"Utiliser l'élimination des blocs invisibles par Ray Tracing avec le nouvel "
 "algorithme.\n"
-"Ce drapeau active l'utilisation du test d'élimination des blocs invisibles "
+"Cette option active l'utilisation du test d'élimination des blocs invisibles "
 "par Ray Tracing,\n"
-"pour les maillages clients de taille inférieure à 4×4×4 blocs de carte."
+"pour les maillages clients de taille inférieure à 4 × 4 × 4 blocs de carte."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
-"Utilisation du filtrage trilinéaire lors de la réduction d'échelle des "
-"textures.\n"
-"Si le filtrage bilinéaire et le filtrage trilinéaire sont activés, le "
-"filtrage trilinéaire est appliqué."
+"Utiliser le filtrage trilinéaire lors de la mise à l'échelle des textures.\n"
+"Si le filtrage bilinéaire et le filtrage trilinéaire sont tous deux activés, "
+"le filtrage trilinéaire est appliqué."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6571,17 +6720,13 @@ msgid ""
 "If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
 "circle."
 msgstr ""
-"Utilise la manette virtuelle pour déclencher le bouton « Aux1 ».\n"
+"Utiliser la manette virtuelle pour déclencher le bouton « Aux1 ».\n"
 "Si activé, la manette virtuelle appuie également sur le bouton « Aux1 » "
 "lorsqu'en dehors du cercle principal."
 
 #: src/settings_translation_file.cpp
 msgid "User Interfaces"
 msgstr "Interfaces utilisateur"
-
-#: src/settings_translation_file.cpp
-msgid "VBO"
-msgstr "VBO"
 
 #: src/settings_translation_file.cpp
 msgid "VSync"
@@ -6633,8 +6778,8 @@ msgid ""
 "Defines the 'persistence' value for terrain_base and terrain_alt noises."
 msgstr ""
 "Variation de la rugosité du terrain.\n"
-"Définit la valeur de « persistance » pour les bruits terrain_base et "
-"terrain_alt."
+"Définit la valeur de « persistance » pour les bruits « terrain_base » et « "
+"terrain_alt »."
 
 #: src/settings_translation_file.cpp
 msgid "Varies steepness of cliffs."
@@ -6677,12 +6822,24 @@ msgid "Volume"
 msgstr "Volume du son"
 
 #: src/settings_translation_file.cpp
+msgid "Volume multiplier when the window is unfocused."
+msgstr "Facteur du volume fenêtre non sélectionnée."
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Volume of all sounds.\n"
 "Requires the sound system to be enabled."
 msgstr ""
 "Volume de tous les sons.\n"
 "Nécessite le son système pour être activé."
+
+#: src/settings_translation_file.cpp
+msgid "Volume when unfocused"
+msgstr "Volume fenêtre non sélectionnée"
+
+#: src/settings_translation_file.cpp
+msgid "Volumetric lighting"
+msgstr "Éclairage volumétrique"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6692,8 +6849,8 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Coordonnée W de la couche 3D de la forme 4D.\n"
-"Détermine la tranche 3D de la forme 4D qui est générée.\n"
+"Coordonnée W de la tranche 3D générée d'une fractale 4D.\n"
+"Détermine la tranche 3D de la forme 4D générée.\n"
 "Transforme la forme de la fractale.\n"
 "N'a aucun effet sur les fractales 3D.\n"
 "La plage est d'environ -2 à 2."
@@ -6725,27 +6882,27 @@ msgstr "Environnement mouvant"
 
 #: src/settings_translation_file.cpp
 msgid "Waving leaves"
-msgstr "Feuilles ondulantes"
+msgstr "Ondulation des feuilles"
 
 #: src/settings_translation_file.cpp
 msgid "Waving liquids"
-msgstr "Liquides ondulants"
+msgstr "Ondulation des liquides"
 
 #: src/settings_translation_file.cpp
 msgid "Waving liquids wave height"
-msgstr "Hauteur des vagues des liquides ondulants"
+msgstr "Hauteur des vagues de l'ondulation des liquides"
 
 #: src/settings_translation_file.cpp
 msgid "Waving liquids wave speed"
-msgstr "Vitesse de déplacement des liquides ondulants"
+msgstr "Vitesse de déplacement de l'ondulation des liquides"
 
 #: src/settings_translation_file.cpp
 msgid "Waving liquids wavelength"
-msgstr "Longueur d'onde des liquides ondulants"
+msgstr "Longueur d'onde de l'ondulation des liquides"
 
 #: src/settings_translation_file.cpp
 msgid "Waving plants"
-msgstr "Plantes ondulantes"
+msgstr "Ondulation des plantes"
 
 #: src/settings_translation_file.cpp
 msgid "Weblink color"
@@ -6787,12 +6944,12 @@ msgid ""
 msgstr ""
 "En utilisant le filtrage bilinéaire/trilinéaire/anisotrope, les textures de "
 "basse résolution peuvent être floues.\n"
-"Elles seront donc automatiquement agrandies avec l'interpolation du plus "
-"proche voisin pour préserver des pixels nets.\n"
-"Ceci détermine la taille de la texture minimale pour les textures "
-"agrandies ; les valeurs plus hautes rendent plus détaillées, mais "
-"nécessitent plus de mémoire. Les puissances de 2 sont recommandées.\n"
-"Ce paramètre est appliqué uniquement si le filtrage bilinéaire/trilinéaire/"
+"Elles sont donc agrandies avec l'interpolation au plus proche voisin pour "
+"préserver des pixels nets.\n"
+"Ceci détermine la taille minimale pour les textures agrandies ;\n"
+"les valeurs plus élevées ont un rendu plus net, mais nécessitent plus de "
+"mémoire. Les puissances de 2 sont recommandées.\n"
+"Ce paramètre est appliqué seulement si le filtrage bilinéaire/trilinéaire/"
 "anisotrope est activé.\n"
 "Ceci est également utilisé comme taille de texture de nœud de base pour "
 "l'agrandissement automatique des textures alignées sur le monde."
@@ -6829,8 +6986,7 @@ msgid ""
 "Set this to true if your server is set up to restart automatically."
 msgstr ""
 "S’il faut demander aux clients de se reconnecter après un crash (Lua).\n"
-"Définir sur « Activé » si le serveur est paramétré pour redémarrer "
-"automatiquement."
+"Activer si le serveur est paramétré pour redémarrer automatiquement."
 
 #: src/settings_translation_file.cpp
 msgid "Whether to fog out the end of the visible area."
@@ -6853,7 +7009,7 @@ msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
 msgstr ""
 "Détermine la visibilité des informations de débogage du client (même effet "
-"que taper F5)."
+"que d'appuyer sur F5)."
 
 #: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."
@@ -6874,15 +7030,16 @@ msgid ""
 "Contains the same information as the file debug.txt (default name)."
 msgstr ""
 "Systèmes Windows seulement : démarrer Minetest avec la fenêtre de ligne de "
-"commande en arrière-plan. Contient les mêmes informations que le fichier "
-"« debug.txt » (nom par défaut)."
+"commande en arrière-plan.\n"
+"Contient les mêmes informations que le fichier « debug.txt » (nom par "
+"défaut)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "World directory (everything in the world is stored here).\n"
 "Not needed if starting from the main menu."
 msgstr ""
-"Chemin du monde (tout ce qui relatif au monde est enregistré ici).\n"
+"Chemin du monde (tout ce qui existe dans le monde est enregistré ici).\n"
 "Inutile si démarré depuis le menu."
 
 #: src/settings_translation_file.cpp
@@ -6930,7 +7087,7 @@ msgstr "Limite haute Y des grandes grottes."
 #: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
 msgstr ""
-"Distance Y jusqu'à laquelle les cavernes s'étendent à leur taille maximale."
+"Distance Y sur laquelle les cavernes s'étendent à leur taille maximale."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6939,8 +7096,9 @@ msgid ""
 "For a solid floatland layer, this controls the height of hills/mountains.\n"
 "Must be less than or equal to half the distance between the Y limits."
 msgstr ""
-"Hauteur-Y à laquelle les terrains flottants commencent à rétrécir.\n"
-"L'effilage commence à cette distance de la limite en Y.\n"
+"Distance Y sur laquelle les terrains flottants passent d'une densité "
+"maximale à une densité nulle.\n"
+"L'effilage commence à cette distance, depuis la limite en Y.\n"
 "Pour une couche solide de terrain flottant, ceci contrôle la hauteur des "
 "collines et des montagnes.\n"
 "Doit être inférieure ou égale à la moitié de la distance entre les limites Y."
@@ -6984,11 +7142,17 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "(game support required)"
 #~ msgstr "(support du jeu requis)"
 
+#~ msgid "- Address: "
+#~ msgstr "– Adresse : "
+
 #~ msgid "- Creative Mode: "
 #~ msgstr "– Mode créatif : "
 
 #~ msgid "- Damage: "
 #~ msgstr "– Dégâts : "
+
+#~ msgid "- Port: "
+#~ msgstr "– Port : "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -7027,6 +7191,13 @@ msgstr "Limite parallèle de cURL"
 #~ "Laisser vide pour démarrer un serveur local.\n"
 #~ "Noter que le champ de l'adresse dans le menu principal remplace ce "
 #~ "paramètre."
+
+#~ msgid ""
+#~ "Adjust dpi configuration to your screen (non X11/Android only) e.g. for "
+#~ "4k screens."
+#~ msgstr ""
+#~ "Ajuste la configuration des PPP à votre écran (non X11/Android "
+#~ "seulement), par exemple pour les écrans 4k."
 
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
@@ -7098,6 +7269,9 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "Bits par pixel (profondeur de couleur) en mode plein-écran."
 
+#~ msgid "Block bounds shown for all blocks"
+#~ msgstr "Limites des blocs affichées pour tous les blocs"
+
 #~ msgid "Bump Mapping"
 #~ msgstr "Placage de relief"
 
@@ -7122,6 +7296,9 @@ msgstr "Limite parallèle de cURL"
 
 #~ msgid "Center of light curve mid-boost."
 #~ msgstr "Milieu de la courbe de lumière mi-boost."
+
+#~ msgid "Change Keys"
+#~ msgstr "Changer les touches"
 
 #~ msgid "Change keys"
 #~ msgstr "Changer les touches"
@@ -7200,6 +7377,38 @@ msgstr "Limite parallèle de cURL"
 #~ "Contrôle la largeur des tunnels, une valeur plus petite crée des tunnels "
 #~ "plus larges."
 
+#, c-format
+#~ msgid ""
+#~ "Controls:\n"
+#~ "- %s: move forwards\n"
+#~ "- %s: move backwards\n"
+#~ "- %s: move left\n"
+#~ "- %s: move right\n"
+#~ "- %s: jump/climb up\n"
+#~ "- %s: dig/punch/use\n"
+#~ "- %s: place/use\n"
+#~ "- %s: sneak/climb down\n"
+#~ "- %s: drop item\n"
+#~ "- %s: inventory\n"
+#~ "- Mouse: turn/look\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- %s: chat\n"
+#~ msgstr ""
+#~ "Contrôles :\n"
+#~ "– %s : avancer\n"
+#~ "– %s : reculer\n"
+#~ "– %s : à gauche\n"
+#~ "– %s : à droite\n"
+#~ "– %s : sauter/grimper\n"
+#~ "– %s : creuser/frapper/utiliser\n"
+#~ "– %s : placer/utiliser\n"
+#~ "– %s : marcher lentement/descendre\n"
+#~ "– %s : lâcher un objet\n"
+#~ "– %s : inventaire\n"
+#~ "– Souris : tourner/regarder\n"
+#~ "– Molette souris : sélectionner un objet\n"
+#~ "– %s : tchat\n"
+
 #~ msgid "Creative"
 #~ msgstr "Créatif"
 
@@ -7208,6 +7417,9 @@ msgstr "Limite parallèle de cURL"
 
 #~ msgid "Crosshair color (R,G,B)."
 #~ msgstr "Couleur du réticule (R,G,B)."
+
+#~ msgid "DPI"
+#~ msgstr "PPP"
 
 #~ msgid "Damage"
 #~ msgstr "Dégâts"
@@ -7296,6 +7508,13 @@ msgstr "Limite parallèle de cURL"
 
 #~ msgid "Enable register confirmation"
 #~ msgstr "Activer la confirmation d'enregistrement"
+
+#~ msgid ""
+#~ "Enable vertex buffer objects.\n"
+#~ "This should greatly improve graphics performance."
+#~ msgstr ""
+#~ "Active les « vertex buffer objects ».\n"
+#~ "Cela devrait grandement augmenter les performances graphiques."
 
 #~ msgid "Enabled"
 #~ msgstr "Activé"
@@ -7611,6 +7830,9 @@ msgstr "Limite parallèle de cURL"
 
 #~ msgid "Instrumentation"
 #~ msgstr "Instrumentalisation"
+
+#~ msgid "Invalid gamespec."
+#~ msgstr "Jeu spécifié invalide."
 
 #~ msgid "Inventory key"
 #~ msgstr "Touche inventaire"
@@ -8308,6 +8530,12 @@ msgstr "Limite parallèle de cURL"
 #~ "Rendre DirectX compatible avec LuaJIT. Désactiver si cela cause des "
 #~ "problèmes."
 
+#~ msgid "Makes all liquids opaque"
+#~ msgstr "Rend tous les liquides opaques."
+
+#~ msgid "Mapblock mesh generator's MapBlock cache size in MB"
+#~ msgstr "Taille du cache de blocs de carte en Mo du générateur de maillage"
+
 #~ msgid "Menus"
 #~ msgstr "Menus"
 
@@ -8552,14 +8780,20 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "Simple Leaves"
 #~ msgstr "Feuilles simples"
 
+#~ msgid ""
+#~ "Size of the MapBlock cache of the mesh generator. Increasing this will\n"
+#~ "increase the cache hit %, reducing the data being copied from the main\n"
+#~ "thread, thus reducing jitter."
+#~ msgstr ""
+#~ "Taille du cache de blocs de carte du générateur de maillage.\n"
+#~ "Augmenter ceci augmente le % d'interception du cache et réduit la copie "
+#~ "de données dans le fil principal, réduisant les tremblements."
+
 #~ msgid "Smooth Lighting"
 #~ msgstr "Lissage de l'éclairage"
 
 #~ msgid "Smooths rotation of camera. 0 to disable."
 #~ msgstr "Lisse la rotation de la caméra. 0 pour désactiver."
-
-#~ msgid "Sound"
-#~ msgstr "Audio"
 
 #~ msgid "Special"
 #~ msgstr "Spécial"
@@ -8626,6 +8860,9 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "Touch threshold (px):"
 #~ msgstr "Sensibilité tactile (px) :"
 
+#~ msgid "Touchscreen threshold"
+#~ msgstr "Sensibilité de l'écran tactile"
+
 #~ msgid "Trilinear Filter"
 #~ msgstr "Filtrage trilinéaire"
 
@@ -8679,6 +8916,9 @@ msgstr "Limite parallèle de cURL"
 #~ "sont désactivés.\n"
 #~ "Si définie à 0, MSAA est désactivé.\n"
 #~ "Un redémarrage est nécessaire après la modification de cette option."
+
+#~ msgid "VBO"
+#~ msgstr "VBO"
 
 #~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr ""
@@ -8787,8 +9027,14 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "You died."
 #~ msgstr "Vous êtes mort."
 
+#~ msgid "You have no games installed."
+#~ msgstr "Vous n'avez pas de jeu installé."
+
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"
+
+#~ msgid "ok"
+#~ msgstr "ok"
