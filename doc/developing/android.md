@@ -1,4 +1,4 @@
-# Android tips & tricks
+# Android Tips & Tricks
 
 ## Sign the Android APK from CI
 
@@ -21,7 +21,7 @@ After that installing it will work:
 adb install -r -d ./app-arm64-v8a-release-unsigned.apk
 ```
 
-## How to get debug output from Minetest on Android
+## How to Get Debug Output from Minetest on Android
 
 In case debug.txt isn't enough (e.g. when debugging a crash), you can get debug
 output using logcat:
@@ -48,7 +48,7 @@ A segmentation fault for example looks like this:
 
 If you want get rid of previous output you can do that with `adb logcat -c`.
 
-## I edited builtin, shaders, ... but nothing changed. Help!
+## "I Edited builtin, shaders, ... But Nothing Changed. Help!"
 
 You're probably hitting two problems:
 * the build system only generates assets once
