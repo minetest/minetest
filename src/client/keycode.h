@@ -4,19 +4,11 @@
 
 #pragma once
 
-#include "exceptions.h"
 #include "irrlichttypes.h"
 #include <Keycodes.h>
 #include <IEventReceiver.h>
 #include <string>
 #include <unordered_map>
-
-class UnknownKeycode : public BaseException
-{
-public:
-	UnknownKeycode(const std::string &s) :
-		BaseException(s) {};
-};
 
 /* A key press, consisting of a scancode or a keycode */
 class KeyPress
