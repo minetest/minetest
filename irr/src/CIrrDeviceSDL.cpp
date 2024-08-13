@@ -242,7 +242,8 @@ KeyCode CIrrDeviceSDL::getKeyFromScancode(const u32 scancode) const
 	auto keycode = SDL_GetKeyFromScancode((SDL_Scancode)scancode);
 	const auto &keyentry = KeyMap.find(keycode);
 	auto irrcode = keyentry != KeyMap.end() ? keyentry->second : KEY_UNKNOWN;
-	return KeyCode(irrcode, keycode);
+	auto keychar = findCharToPassToIrrlicht(keycode, irrcode, false);
+	return KeyCode(irrcode, keychar);
 }
 
 void CIrrDeviceSDL::resetReceiveTextInputEvents()
