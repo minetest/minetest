@@ -94,6 +94,17 @@ public:
 		is_sorted = false;
 	}
 
+	//! Adds multiple elements to the end of the array.
+	/**
+	\param first: Iterator to first element to be added.
+	\param last: Past-the-end iterator for elements to be added. */
+	template <typename InputIt>
+	void insertEnd(InputIt &&first, InputIt &&last)
+	{
+		m_data.insert(m_data.end(), std::forward(first), std::forward(last));
+		is_sorted = false;
+	}
+
 	//! Insert item into array at specified position.
 	/**
 	\param element: Element to be inserted

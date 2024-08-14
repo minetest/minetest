@@ -169,19 +169,30 @@ public:
 		if (vertices == getVertices())
 			return;
 
-		const u32 vertexCount = getVertexCount();
-		u32 i;
+		//~ // Only reallocate if there are enough new vertices. Otherwise append()
+		//~ // will be slow when called in a loop.
+		//~ const u32 newVertexCount = getVertexCount() + numVertices;
+		//~ if (newVertexCount > Vertices.allocated_size() * 3 / 2)
+			//~ Vertices.reallocate(newVertexCount);
 
-		Vertices.reallocate(vertexCount + numVertices);
-		for (i = 0; i < numVertices; ++i) {
-			Vertices.push_back(static_cast<const T *>(vertices)[i]);
+		Vertices.insertEnd(static_cast<const T *>(vertices),
+				static_cast<const T *>(vertices) + numVertices);
+
+		for (u32 i = 0; i < numVertices; ++i) {
+			//~ Vertices.push_back(static_cast<const T *>(vertices)[i]);
 			BoundingBox.addInternalPoint(static_cast<const T *>(vertices)[i].Pos);
 		}
 
-		Indices.reallocate(getIndexCount() + numIndices);
-		for (i = 0; i < numIndices; ++i) {
-			Indices.push_back(indices[i] + vertexCount);
-		}
+		Indices.insertEnd(static_cast<const T *>(indices),
+				static_cast<const T *>(indices) + numIndices);
+
+		//~ const u32 newIndexCount = getIndexCount() + numIndices;
+		//~ if (newIndexCount > Indices.allocated_size() * 3 / 2)
+			//~ Indices.reallocate(newIndexCount);
+
+		//~ for (u32 i = 0; i < numIndices; ++i) {
+			//~ Indices.push_back(indices[i] + vertexCount);
+		//~ }
 	}
 
 	//! get the current hardware mapping hint
