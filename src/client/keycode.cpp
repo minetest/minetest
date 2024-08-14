@@ -312,6 +312,16 @@ std::string KeyPress::name() const
 	return formatScancode();
 }
 
+irr::EKEY_CODE KeyPress::getKeycode() const
+{
+	return lookup_scancode(scancode).Key;
+}
+
+wchar_t KeyPress::getKeychar() const
+{
+	return lookup_scancode(scancode).Char;
+}
+
 bool KeyPress::loadFromScancode(const std::string_view &name)
 {
 	if (name.size() < 2 || name[0] != '<')
@@ -337,7 +347,7 @@ const KeyPress &KeyPress::getSpecialKey(const std::string &name)
 // A simple cache for quicker lookup
 static std::unordered_map<std::string, KeyPress> g_key_setting_cache;
 
-const KeyPress &getKeySetting(const char *settingname)
+const KeyPress &getKeySetting(const std::string &settingname)
 {
 	auto n = g_key_setting_cache.find(settingname);
 	if (n != g_key_setting_cache.end())
@@ -351,9 +361,4 @@ const KeyPress &getKeySetting(const char *settingname)
 void clearKeyCache()
 {
 	g_key_setting_cache.clear();
-}
-
-irr::EKEY_CODE keyname_to_keycode(const char *name)
-{
-	return lookup_keyname(name).Key;
 }
