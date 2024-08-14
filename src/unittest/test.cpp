@@ -232,6 +232,10 @@ bool run_tests()
 	u32 num_total_tests_failed = 0;
 	u32 num_total_tests_run    = 0;
 	std::vector<TestBase *> &testmods = TestManager::getTestModules();
+	std::sort(testmods.begin(), testmods.end(),
+		[](TestBase* a, TestBase* b) { return strcmp(a->getName(), b->getName()) < 0; }
+	);
+
 	for (auto *testmod: testmods) {
 		if (!testmod->testModule(&gamedef))
 			num_modules_failed++;
