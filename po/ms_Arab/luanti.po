@@ -3,9 +3,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2023-11-12 13:14+0000\n"
-"Last-Translator: \"Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
-"Yasuyoshi\" <translation@mnh48.moe>\n"
+"PO-Revision-Date: 2024-08-15 19:09+0000\n"
+"Last-Translator: bgo-eiu <huyaqoob+toolforge@gmail.com>\n"
 "Language-Team: Malay (Jawi) <https://hosted.weblate.org/projects/minetest/"
 "minetest/ms_Arab/>\n"
 "Language: ms_Arab\n"
@@ -13,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.7\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -2666,7 +2665,7 @@ msgstr "بينا دالم ڤماٴين"
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
-msgstr ""
+msgstr "تربينا دالم"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3773,7 +3772,7 @@ msgstr "ݢرافيک"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
-msgstr ""
+msgstr "ݢراۏيتي"
 
 #: src/settings_translation_file.cpp
 msgid "Ground level"
@@ -4243,7 +4242,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr ""
+msgstr "بهاس"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
@@ -4922,7 +4921,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Noises"
-msgstr ""
+msgstr "هيڠار"
 
 #: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
@@ -5104,7 +5103,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Profiler"
-msgstr ""
+msgstr "ڤمبوكه"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
