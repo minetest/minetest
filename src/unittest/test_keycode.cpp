@@ -25,12 +25,11 @@ static TestKeycode g_test_instance;
 
 void TestKeycode::runTests(IGameDef *gamedef)
 {
-	// TODO: How do we test this without an IrrlichtDevice?
-#if 0
+	// TODO: Complement the test when we fully switch to SDL.
+	// Old test cases are kept for completeness.
 	TEST(testCreateFromString);
 	TEST(testCreateFromSKeyInput);
 	TEST(testCompare);
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -42,10 +41,16 @@ void TestKeycode::testCreateFromString()
 {
 	KeyPress k;
 
-	k = KeyPress("");
-	UASSERTEQ_STR(k.sym(), "");
-	UASSERTEQ_STR(k.name(), "");
+	k = KeyPress();
+	UASSERTEQ_STR(k.sym(true), "");
 
+	k = KeyPress("<0>");
+	UASSERTEQ_STR(k.sym(true), "");
+
+	k = KeyPress("<20>");
+	UASSERTEQ_STR(k.sym(true), "<20>");
+
+	/*
 	// Character key, from char
 	k = KeyPress("R");
 	UASSERTEQ_STR(k.sym(), "KEY_KEY_R");
@@ -69,6 +74,7 @@ void TestKeycode::testCreateFromString()
 	k = KeyPress("/");
 	UASSERTEQ_STR(k.sym(), "/");
 	UASSERT_HAS_NAME(k);
+	*/
 }
 
 template<typename ...Args>
@@ -82,6 +88,11 @@ void TestKeycode::testCreateFromSKeyInput()
 	KeyPress k;
 	irr::SEvent::SKeyInput in;
 
+	in.SystemKeyCode = 20;
+	k = KeyPress(in);
+	UASSERTEQ_STR(k.sym(true), "<20>");
+
+	/*
 	// Character key
 	in.SystemKeyCode = toScancode(irr::KEY_KEY_3, L'3');
 	k = KeyPress(in);
@@ -99,13 +110,19 @@ void TestKeycode::testCreateFromSKeyInput()
 	k = KeyPress(in);
 	UASSERTEQ_STR(k.sym(), "?");
 	UASSERT_HAS_NAME(k);
+	*/
 }
 
 void TestKeycode::testCompare()
 {
 	// "Empty" key
-	UASSERT(KeyPress() == KeyPress(""));
+	UASSERT(KeyPress() == KeyPress("<0>"));
 
+	irr::SEvent::SKeyInput in;
+	in.SystemKeyCode = 20;
+	UASSERT(KeyPress(in) == KeyPress("<20>"));
+
+	/*
 	// Basic comparison
 	UASSERT(KeyPress("5") == KeyPress("KEY_KEY_5"));
 	UASSERT(!(KeyPress("5") == KeyPress("KEY_NUMPAD5")));
@@ -114,15 +131,14 @@ void TestKeycode::testCompare()
 	// note: This is a real-world example, Irrlicht maps XK_equal to irr::KEY_PLUS on Linux
 	// TODO: Is this still relevant for scancodes?
 	irr::SEvent::SKeyInput in;
-	/*
 	in.Key = irr::KEY_PLUS;
 	in.Char = L'=';
 	UASSERT(KeyPress("=") == KeyPress(in));
-	*/
 
 	// Matching keycode suffices
 	irr::SEvent::SKeyInput in2;
 	in.SystemKeyCode = toScancode(irr::KEY_OEM_CLEAR, L'\0');
 	in2.SystemKeyCode = toScancode(irr::KEY_OEM_CLEAR, L';');
 	UASSERT(KeyPress(in) == KeyPress(in2));
+	*/
 }
