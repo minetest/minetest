@@ -291,10 +291,14 @@ KeyPress::KeyPress(const std::string_view &name)
 	scancode = RenderingEngine::get_raw_device()->getScancodeFromKey(keycode);
 }
 
-std::string KeyPress::sym() const
+std::string KeyPress::sym(const bool force_scancode) const
 {
+	if (scancode == 0)
+		return "";
+	if (force_scancode)
+		return formatScancode();
 	const auto &name = lookup_scancode(scancode).Name;
-	if (!name.empty() || scancode == 0)
+	if (!name.empty())
 		return name;
 	return formatScancode();
 }
