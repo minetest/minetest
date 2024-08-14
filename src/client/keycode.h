@@ -24,6 +24,17 @@ public:
 	std::string sym(const bool force_scancode = false) const;
 	std::string name() const;
 
+	irr::EKEY_CODE getKeycode() const;
+	wchar_t getKeychar() const;
+
+	irr::SEvent toKeyEvent(bool pressedDown = false) const
+	{
+		irr::SEvent event;
+		event.EventType = EET_KEY_INPUT_EVENT;
+		event.KeyInput = {getKeychar(), getKeycode(), scancode, pressedDown, false, false};
+		return event;
+	}
+
 	bool operator==(const KeyPress &o) const {
 		return scancode == o.scancode;
 	}
@@ -56,9 +67,7 @@ private:
 #define RMBKey KeyPress::getSpecialKey("KEY_RBUTTON")
 
 // Key configuration getter
-const KeyPress &getKeySetting(const char *settingname);
+const KeyPress &getKeySetting(const std::string &settingname);
 
 // Clear fast lookup cache
 void clearKeyCache();
-
-irr::EKEY_CODE keyname_to_keycode(const char *name);
