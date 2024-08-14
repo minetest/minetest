@@ -21,7 +21,7 @@ public:
 	KeyPress(const irr::SEvent::SKeyInput &in) :
 		scancode(in.SystemKeyCode) {};
 
-	std::string sym() const;
+	std::string sym(const bool force_scancode = false) const;
 	std::string name() const;
 
 	bool operator==(const KeyPress &o) const {
