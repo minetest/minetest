@@ -170,16 +170,21 @@ public:
 			return;
 
 		const u32 vertexCount = getVertexCount();
-		u32 i;
 
-		Vertices.reallocate(vertexCount + numVertices);
-		for (i = 0; i < numVertices; ++i) {
+		// Only reallocate if there are enough new vertices. Otherwise append()
+		// will be slow when called in a loop.
+		if (vertexCount + numVertices > Vertices.allocated_size() * 3 / 2)
+			Vertices.reallocate(vertexCount + numVertices);
+
+		for (u32 i = 0; i < numVertices; ++i) {
 			Vertices.push_back(static_cast<const T *>(vertices)[i]);
 			BoundingBox.addInternalPoint(static_cast<const T *>(vertices)[i].Pos);
 		}
 
-		Indices.reallocate(getIndexCount() + numIndices);
-		for (i = 0; i < numIndices; ++i) {
+		if (getIndexCount() + numIndices > Indices.allocated_size() * 3 / 2)
+			Indices.reallocate(getIndexCount() + numIndices);
+
+		for (u32 i = 0; i < numIndices; ++i) {
 			Indices.push_back(indices[i] + vertexCount);
 		}
 	}
