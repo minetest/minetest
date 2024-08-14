@@ -316,8 +316,9 @@ bool KeyPress::loadFromScancode(const std::string_view &name)
 {
 	if (name.size() < 2 || name[0] != '<')
 		return false;
-	scancode = strtoul(name.data()+1, NULL, 10);
-	return scancode != 0;
+	char *p;
+	scancode = strtoul(name.data()+1, &p, 10);
+	return p > name.data()+1;
 }
 
 std::unordered_map<std::string, KeyPress> KeyPress::specialKeyCache;
