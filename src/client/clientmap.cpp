@@ -364,7 +364,10 @@ void ClientMap::updateDrawList()
 				if (!m_control.range_all &&
 					mesh_sphere_center.getDistanceFrom(m_camera_position) >
 						m_control.wanted_range * BS + mesh_sphere_radius)
-					continue; // Out of range, skip.
+				{
+					block->setIsBeingDrawn(false);
+					continue;
+				} // Out of range, skip.
 
 				// Keep the block alive as long as it is in range.
 				block->resetUsageTimer();
@@ -377,6 +380,7 @@ void ClientMap::updateDrawList()
 				if (is_frustum_culled(mesh_sphere_center,
 						mesh_sphere_radius + frustum_cull_extra_radius)) {
 					blocks_frustum_culled++;
+					block->setIsBeingDrawn(false);
 					continue;
 				}
 
@@ -385,6 +389,7 @@ void ClientMap::updateDrawList()
 						mesh &&
 						isMeshOccluded(block, mesh_grid.cell_size, cam_pos_nodes)) {
 					blocks_occlusion_culled++;
+					block->setIsBeingDrawn(false);
 					continue;
 				}
 
@@ -400,6 +405,8 @@ void ClientMap::updateDrawList()
 					// without mesh chunking we can add the block to the drawlist
 					block->refGrab();
 					m_drawlist.emplace(block->getPos(), block);
+					block->setIsBeingDrawn(true);
+					block->setIsRecentlyDrawn(true);
 				}
 			}
 		}
@@ -467,7 +474,10 @@ void ClientMap::updateDrawList()
 			if (!m_control.range_all &&
 				mesh_sphere_center.getDistanceFrom(intToFloat(cam_pos_nodes, BS)) >
 					m_control.wanted_range * BS + mesh_sphere_radius)
-				continue; // Out of range, skip.
+				{
+					block->setIsBeingDrawn(false);
+					continue;
+				} // Out of range, skip.
 
 			// Frustum culling
 			// Only do coarse culling here, to account for fast camera movement.
@@ -476,6 +486,7 @@ void ClientMap::updateDrawList()
 			if (is_frustum_culled(mesh_sphere_center,
 					mesh_sphere_radius + frustum_cull_extra_radius)) {
 				blocks_frustum_culled++;
+				block->setIsBeingDrawn(false);
 				continue;
 			}
 
@@ -491,6 +502,7 @@ void ClientMap::updateDrawList()
 					block && mesh &&
 					visible_outer_sides != 0x07 && isMeshOccluded(block, mesh_grid.cell_size, cam_pos_nodes)) {
 				blocks_occlusion_culled++;
+				block->setIsBeingDrawn(false);
 				continue;
 			}
 
@@ -508,6 +520,8 @@ void ClientMap::updateDrawList()
 				// without mesh chunking we can add the block to the drawlist
 				block->refGrab();
 				m_drawlist.emplace(block_coord, block);
+				block->setIsBeingDrawn(true);
+				block->setIsRecentlyDrawn(true);
 			}
 
 			// Decide which sides to traverse next or to block away
@@ -620,6 +634,8 @@ void ClientMap::updateDrawList()
 		if (block) {
 			block->refGrab();
 			m_drawlist.emplace(pos, block);
+			block->setIsBeingDrawn(true);
+			block->setIsRecentlyDrawn(true);
 		}
 	}
 
