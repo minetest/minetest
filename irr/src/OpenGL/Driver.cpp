@@ -913,7 +913,8 @@ void COpenGL3DriverBase::draw2DImageBatch(const video::ITexture *texture,
 	const irr::u32 drawCount = core::min_<u32>(positions.size(), sourceRects.size());
 	assert(6 * drawCount <= QuadIndexCount); // FIXME split the batch? or let it crash?
 
-	core::array<S3DVertex> vtx(drawCount * 4);
+	std::vector<S3DVertex> vtx;
+	vtx.reserve(drawCount * 4);
 
 	for (u32 i = 0; i < drawCount; i++) {
 		core::position2d<s32> targetPos = positions[i];
@@ -951,7 +952,7 @@ void COpenGL3DriverBase::draw2DImageBatch(const video::ITexture *texture,
 	}
 
 	GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, QuadIndexBuffer);
-	drawElements(GL_TRIANGLES, vt2DImage, vtx.const_pointer(), vtx.size(), 0, 6 * drawCount);
+	drawElements(GL_TRIANGLES, vt2DImage, vtx.data(), vtx.size(), 0, 6 * drawCount);
 	GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	if (clipRect)
