@@ -2,6 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
+#include <algorithm>
+
 #include "CSceneManager.h"
 #include "IVideoDriver.h"
 #include "IFileSystem.h"
@@ -95,9 +97,8 @@ CSceneManager::~CSceneManager()
 	if (CollisionManager)
 		CollisionManager->drop();
 
-	u32 i;
-	for (i = 0; i < MeshLoaderList.size(); ++i)
-		MeshLoaderList[i]->drop();
+	for (auto *loader : MeshLoaderList)
+		loader->drop();
 
 	if (ActiveCamera)
 		ActiveCamera->drop();
@@ -140,12 +141,11 @@ IAnimatedMesh *CSceneManager::getUncachedMesh(io::IReadFile *file, const io::pat
 	IAnimatedMesh *msh = 0;
 
 	// iterate the list in reverse order so user-added loaders can override the built-in ones
-	s32 count = MeshLoaderList.size();
-	for (s32 i = count - 1; i >= 0; --i) {
-		if (MeshLoaderList[i]->isALoadableFileExtension(filename)) {
+	for (auto it = MeshLoaderList.rbegin(); it != MeshLoaderList.rend(); it++) {
+		if ((*it)->isALoadableFileExtension(filename)) {
 			// reset file to avoid side effects of previous calls to createMesh
 			file->seek(0);
-			msh = MeshLoaderList[i]->createMesh(file);
+			msh = (*it)->createMesh(file);
 			if (msh) {
 				MeshCache->addMesh(cachename, msh);
 				msh->drop();
@@ -388,14 +388,8 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode *node, E_SCENE_NODE_RENDE
 	switch (pass) {
 		// take camera if it is not already registered
 	case ESNRP_CAMERA: {
-		taken = 1;
-		for (u32 i = 0; i != CameraList.size(); ++i) {
-			if (CameraList[i] == node) {
-				taken = 0;
-				break;
-			}
-		}
-		if (taken) {
+		if (std::find(CameraList.begin(), CameraList.end(), node) == CameraList.end()) {
+			taken = 1;
 			CameraList.push_back(node);
 		}
 	} break;
@@ -509,10 +503,10 @@ void CSceneManager::drawAll()
 		CurrentRenderPass = ESNRP_CAMERA;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
-		for (i = 0; i < CameraList.size(); ++i)
-			CameraList[i]->render();
+		for (auto *node : CameraList)
+			node->render();
 
-		CameraList.set_used(0);
+		CameraList.clear();
 	}
 
 	// render skyboxes
@@ -520,10 +514,10 @@ void CSceneManager::drawAll()
 		CurrentRenderPass = ESNRP_SKY_BOX;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
-		for (i = 0; i < SkyBoxList.size(); ++i)
-			SkyBoxList[i]->render();
+		for (auto *node : SkyBoxList)
+			node->render();
 
-		SkyBoxList.set_used(0);
+		SkyBoxList.clear();
 	}
 
 	// render default objects
@@ -569,10 +563,10 @@ void CSceneManager::drawAll()
 		CurrentRenderPass = ESNRP_GUI;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
-		for (i = 0; i < GuiNodeList.size(); ++i)
-			GuiNodeList[i]->render();
+		for (auto *node : GuiNodeList)
+			node->render();
 
-		GuiNodeList.set_used(0);
+		GuiNodeList.clear();
 	}
 	clearDeletionList();
 
@@ -592,7 +586,7 @@ void CSceneManager::addExternalMeshLoader(IMeshLoader *externalLoader)
 //! Returns the number of mesh loaders supported by Irrlicht at this time
 u32 CSceneManager::getMeshLoaderCount() const
 {
-	return MeshLoaderList.size();
+	return static_cast<u32>(MeshLoaderList.size());
 }
 
 //! Retrieve the given mesh loader
@@ -629,12 +623,9 @@ void CSceneManager::addToDeletionQueue(ISceneNode *node)
 //! clears the deletion list
 void CSceneManager::clearDeletionList()
 {
-	if (DeletionList.empty())
-		return;
-
-	for (u32 i = 0; i < DeletionList.size(); ++i) {
-		DeletionList[i]->remove();
-		DeletionList[i]->drop();
+	for (auto *node : DeletionList) {
+		node->remove();
+		node->drop();
 	}
 
 	DeletionList.clear();
