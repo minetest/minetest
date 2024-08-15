@@ -1413,17 +1413,12 @@ void Server::SendBreath(session_t peer_id, u16 breath)
 }
 
 void Server::SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason, bool reconnect)
+		std::string_view custom_reason, bool reconnect)
 {
 	assert(reason < SERVER_ACCESSDENIED_MAX);
 
 	NetworkPacket pkt(TOCLIENT_ACCESS_DENIED, 1, peer_id);
-	pkt << (u8)reason;
-	if (reason == SERVER_ACCESSDENIED_CUSTOM_STRING)
-		pkt << custom_reason;
-	else if (reason == SERVER_ACCESSDENIED_SHUTDOWN ||
-			reason == SERVER_ACCESSDENIED_CRASH)
-		pkt << custom_reason << (u8)reconnect;
+	pkt << (u8)reason << custom_reason << (u8)reconnect;
 	Send(&pkt);
 }
 
