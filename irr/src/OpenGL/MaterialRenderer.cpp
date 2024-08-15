@@ -262,35 +262,30 @@ bool COpenGL3MaterialRenderer::linkProgram()
 
 		// seems that some implementations use an extra null terminator.
 		++maxlen;
-		c8 *buf = new c8[maxlen];
+		std::vector<c8> buf(maxlen);
 
 		UniformInfo.clear();
-		UniformInfo.reallocate(num);
+		UniformInfo.reserve(num);
 
 		for (GLint i = 0; i < num; ++i) {
 			SUniformInfo ui;
-			memset(buf, 0, maxlen);
+			memset(buf.data(), 0, buf.size());
 
 			GLint size;
-			GL.GetActiveUniform(Program, i, maxlen, 0, &size, &ui.type, reinterpret_cast<GLchar *>(buf));
-
-			core::stringc name = "";
+			GL.GetActiveUniform(Program, i, maxlen, 0, &size, &ui.type, reinterpret_cast<GLchar *>(buf.data()));
 
 			// array support, workaround for some bugged drivers.
 			for (s32 i = 0; i < maxlen; ++i) {
 				if (buf[i] == '[' || buf[i] == '\0')
 					break;
 
-				name += buf[i];
+				ui.name += buf[i];
 			}
 
-			ui.name = name;
-			ui.location = GL.GetUniformLocation(Program, buf);
+			ui.location = GL.GetUniformLocation(Program, buf.data());
 
-			UniformInfo.push_back(ui);
+			UniformInfo.push_back(std::move(ui));
 		}
-
-		delete[] buf;
 	}
 
 	return true;
