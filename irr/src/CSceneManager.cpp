@@ -405,13 +405,13 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode *node, E_SCENE_NODE_RENDE
 		break;
 	case ESNRP_TRANSPARENT:
 		if (!isCulled(node)) {
-			TransparentNodeList.push_back(TransparentNodeEntry(node, camWorldPos));
+			TransparentNodeList.emplace_back(node, camWorldPos);
 			taken = 1;
 		}
 		break;
 	case ESNRP_TRANSPARENT_EFFECT:
 		if (!isCulled(node)) {
-			TransparentEffectNodeList.push_back(TransparentNodeEntry(node, camWorldPos));
+			TransparentEffectNodeList.emplace_back(node, camWorldPos);
 			taken = 1;
 		}
 		break;
@@ -423,8 +423,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode *node, E_SCENE_NODE_RENDE
 			for (u32 i = 0; i < count; ++i) {
 				if (Driver->needsTransparentRenderPass(node->getMaterial(i))) {
 					// register as transparent node
-					TransparentNodeEntry e(node, camWorldPos);
-					TransparentNodeList.push_back(e);
+					TransparentNodeList.emplace_back(node, camWorldPos);
 					taken = 1;
 					break;
 				}
@@ -525,12 +524,12 @@ void CSceneManager::drawAll()
 		CurrentRenderPass = ESNRP_SOLID;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
-		SolidNodeList.sort(); // sort by textures
+		std::sort(SolidNodeList.begin(), SolidNodeList.end());
 
-		for (i = 0; i < SolidNodeList.size(); ++i)
-			SolidNodeList[i].Node->render();
+		for (auto &it : SolidNodeList)
+			it.Node->render();
 
-		SolidNodeList.set_used(0);
+		SolidNodeList.clear();
 	}
 
 	// render transparent objects.
@@ -538,11 +537,12 @@ void CSceneManager::drawAll()
 		CurrentRenderPass = ESNRP_TRANSPARENT;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
-		TransparentNodeList.sort(); // sort by distance from camera
-		for (i = 0; i < TransparentNodeList.size(); ++i)
-			TransparentNodeList[i].Node->render();
+		std::sort(TransparentNodeList.begin(), TransparentNodeList.end());
 
-		TransparentNodeList.set_used(0);
+		for (auto &it : TransparentNodeList)
+			it.Node->render();
+
+		TransparentNodeList.clear();
 	}
 
 	// render transparent effect objects.
@@ -550,12 +550,12 @@ void CSceneManager::drawAll()
 		CurrentRenderPass = ESNRP_TRANSPARENT_EFFECT;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
-		TransparentEffectNodeList.sort(); // sort by distance from camera
+		std::sort(TransparentEffectNodeList.begin(), TransparentEffectNodeList.end());
 
-		for (i = 0; i < TransparentEffectNodeList.size(); ++i)
-			TransparentEffectNodeList[i].Node->render();
+		for (auto &it : TransparentEffectNodeList)
+			it.Node->render();
 
-		TransparentEffectNodeList.set_used(0);
+		TransparentEffectNodeList.clear();
 	}
 
 	// render custom gui nodes

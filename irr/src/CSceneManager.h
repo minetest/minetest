@@ -279,9 +279,9 @@ private:
 	//! render pass lists
 	std::vector<ISceneNode *> CameraList;
 	std::vector<ISceneNode *> SkyBoxList;
-	core::array<DefaultNodeEntry> SolidNodeList;
-	core::array<TransparentNodeEntry> TransparentNodeList;
-	core::array<TransparentNodeEntry> TransparentEffectNodeList;
+	std::vector<DefaultNodeEntry> SolidNodeList;
+	std::vector<TransparentNodeEntry> TransparentNodeList;
+	std::vector<TransparentNodeEntry> TransparentEffectNodeList;
 	std::vector<ISceneNode *> GuiNodeList;
 
 	std::vector<IMeshLoader *> MeshLoaderList;
