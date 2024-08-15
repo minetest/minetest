@@ -184,15 +184,15 @@ void Clouds::updateMesh()
 		const u32 index_count = quad_count * 6;
 
 		// reserve memory
-		mb->Vertices.reallocate(vertex_count);
-		mb->Indices.reallocate(index_count);
+		mb->Vertices.reserve(vertex_count);
+		mb->Indices.reserve(index_count);
 	}
 
 #define GETINDEX(x, z, radius) (((z)+(radius))*(radius)*2 + (x)+(radius))
 #define INAREA(x, z, radius) \
 	((x) >= -(radius) && (x) < (radius) && (z) >= -(radius) && (z) < (radius))
 
-	mb->Vertices.set_used(0);
+	mb->Vertices.clear();
 	for (s16 zi0= -m_cloud_radius_i; zi0 < m_cloud_radius_i; zi0++)
 	for (s16 xi0= -m_cloud_radius_i; xi0 < m_cloud_radius_i; xi0++)
 	{
@@ -322,7 +322,7 @@ void Clouds::updateMesh()
 	const u32 index_count = quad_count * 6;
 	// rewrite index array as needed
 	if (mb->getIndexCount() > index_count) {
-		mb->Indices.set_used(index_count);
+		mb->Indices.resize(index_count);
 		mb->setDirty(scene::EBT_INDEX);
 	} else if (mb->getIndexCount() < index_count) {
 		const u32 start = mb->getIndexCount() / 6;
