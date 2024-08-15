@@ -950,6 +950,52 @@ std::string sanitizeDirName(std::string_view str, std::string_view optional_pref
 	return wide_to_utf8(safe_name);
 }
 
+std::string sanitize_untrusted(std::string_view str, bool keep_escapes)
+{
+	// truncate on NULL
+	std::string s{str.substr(0, str.find('\0'))};
+
+	// remove control characters except tab, feed and escape
+	s.erase(std::remove_if(s.begin(), s.end(), [] (unsigned char c) {
+		return c < 9 || (c >= 13 && c < 27) || (c >= 28 && c < 32);
+	}), s.end());
+
+	if (!keep_escapes) {
+		s.erase(std::remove(s.begin(), s.end(), '\x1b'), s.end());
+		return s;
+	}
+	// Note: Minetest escapes generally just look like \x1b# or \x1b(###)
+	// where # is a single character and ### any number of characters.
+	// Here we additionally assume that the first character in the sequence
+	// is [A-Za-z], to enable us to filter foreign types of escapes that might
+	// be unsafe e.g. ANSI escapes in a terminal.
+	const auto &check = [] (char c) -> bool {
+		return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+	};
+	size_t i = s.find('\x1b');
+	while (i < s.length()) {
+		if (s[i] == '\x1b') {
+			if (i+1 < s.length()) {
+				if (s[i+1] == '(') {
+					if (i+2 < s.length() && check(s[i+2])) {
+						// valid long-form escape sequence
+					} else {
+						s.erase(i, 1);
+						continue;
+					}
+				} else if (!check(s[i+1])) {
+					s.erase(i, 1);
+					continue;
+				}
+			} else {
+				s.erase(i, 1);
+				continue;
+			}
+		}
+		i++;
+	}
+	return s;
+}
 
 void safe_print_string(std::ostream &os, std::string_view str)
 {

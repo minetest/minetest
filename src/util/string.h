@@ -762,6 +762,16 @@ inline irr::core::stringw utf8_to_stringw(std::string_view input)
 std::string sanitizeDirName(std::string_view str, std::string_view optional_prefix);
 
 /**
+ * Sanitize an untrusted string (e.g. from the network). This will get strip
+ * control characters and (optionally) any MT-style escape sequences too.
+ * Note that they won't be removed cleanly but rather just broken, unlike with
+ * unescape_enriched.
+ * Line breaks and UTF-8 is permitted.
+ */
+[[nodiscard]]
+std::string sanitize_untrusted(std::string_view str, bool keep_escapes = true);
+
+/**
  * Prints a sanitized version of a string without control characters.
  * '\t' and '\n' are allowed, as are UTF-8 control characters (e.g. RTL).
  * ASCII control characters are replaced with their hex encoding in angle

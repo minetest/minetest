@@ -1351,15 +1351,22 @@ static bool pkt_read_formspec_fields(NetworkPacket *pkt, StringMap &fields)
 	u16 field_count;
 	*pkt >> field_count;
 
-	u64 length = 0;
+	size_t length = 0;
 	for (u16 k = 0; k < field_count; k++) {
-		std::string fieldname;
+		std::string fieldname, fieldvalue;
 		*pkt >> fieldname;
-		fields[fieldname] = pkt->readLongString();
+		fieldvalue = pkt->readLongString();
 
-		length += fieldname.size();
-		length += fields[fieldname].size();
+		fieldname = sanitize_untrusted(fieldname, false);
+		// We'd love to strip escapes here but some formspec elements reflect data
+		// from the server (e.g. dropdown), which can contain translations.
+		fieldvalue = sanitize_untrusted(fieldvalue);
+
+		length += fieldname.size() + fieldvalue.size();
+
+		fields[std::move(fieldname)] = std::move(fieldvalue);
 	}
+
 	// 640K ought to be enough for anyone
 	return length < 640 * 1024;
 }
