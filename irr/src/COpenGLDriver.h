@@ -335,7 +335,7 @@ private:
 
 	ITexture *createDeviceDependentTexture(const io::path &name, IImage *image) override;
 
-	ITexture *createDeviceDependentTextureCubemap(const io::path &name, const core::array<IImage *> &image) override;
+	ITexture *createDeviceDependentTextureCubemap(const io::path &name, const std::vector<IImage *> &image) override;
 
 	//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
 	inline void getGLMatrix(GLfloat gl_matrix[16], const core::matrix4 &m);

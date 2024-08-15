@@ -552,14 +552,14 @@ protected:
 
 	virtual ITexture *createDeviceDependentTexture(const io::path &name, IImage *image);
 
-	virtual ITexture *createDeviceDependentTextureCubemap(const io::path &name, const core::array<IImage *> &image);
+	virtual ITexture *createDeviceDependentTextureCubemap(const io::path &name, const std::vector<IImage*> &image);
 
 	//! checks triangle count and print warning if wrong
 	bool checkPrimitiveCount(u32 prmcnt) const;
 
 	bool checkImage(IImage *image) const;
 
-	bool checkImage(const core::array<IImage *> &image) const;
+	bool checkImage(const std::vector<IImage*> &image) const;
 
 	// adds a material renderer and drops it afterwards. To be used for internal creation
 	s32 addAndDropMaterialRenderer(IMaterialRenderer *m);

@@ -265,7 +265,7 @@ protected:
 
 	ITexture *createDeviceDependentTexture(const io::path &name, IImage *image) override;
 
-	ITexture *createDeviceDependentTextureCubemap(const io::path &name, const core::array<IImage *> &image) override;
+	ITexture *createDeviceDependentTextureCubemap(const io::path &name, const std::vector<IImage*> &image) override;
 
 	//! Map Irrlicht wrap mode to OpenGL enum
 	GLint getTextureWrapMode(u8 clamp) const;

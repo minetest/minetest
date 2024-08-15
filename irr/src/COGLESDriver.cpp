@@ -1137,15 +1137,14 @@ inline void COGLES1Driver::getGLTextureMatrix(GLfloat *o, const core::matrix4 &m
 
 ITexture *COGLES1Driver::createDeviceDependentTexture(const io::path &name, IImage *image)
 {
-	core::array<IImage *> imageArray(1);
-	imageArray.push_back(image);
+	std::vector<IImage*> tmp = { image };
 
-	COGLES1Texture *texture = new COGLES1Texture(name, imageArray, ETT_2D, this);
+	COGLES1Texture *texture = new COGLES1Texture(name, tmp, ETT_2D, this);
 
 	return texture;
 }
 
-ITexture *COGLES1Driver::createDeviceDependentTextureCubemap(const io::path &name, const core::array<IImage *> &image)
+ITexture *COGLES1Driver::createDeviceDependentTextureCubemap(const io::path &name, const std::vector<IImage *> &image)
 {
 	COGLES1Texture *texture = new COGLES1Texture(name, image, ETT_CUBEMAP, this);
 

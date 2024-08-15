@@ -1102,15 +1102,14 @@ void COpenGL3DriverBase::endDraw(const VertexType &vertexType)
 
 ITexture *COpenGL3DriverBase::createDeviceDependentTexture(const io::path &name, IImage *image)
 {
-	core::array<IImage *> imageArray(1);
-	imageArray.push_back(image);
+	std::vector<IImage*> tmp = { image };
 
-	COpenGL3Texture *texture = new COpenGL3Texture(name, imageArray, ETT_2D, this);
+	COpenGL3Texture *texture = new COpenGL3Texture(name, tmp, ETT_2D, this);
 
 	return texture;
 }
 
-ITexture *COpenGL3DriverBase::createDeviceDependentTextureCubemap(const io::path &name, const core::array<IImage *> &image)
+ITexture *COpenGL3DriverBase::createDeviceDependentTextureCubemap(const io::path &name, const std::vector<IImage*> &image)
 {
 	COpenGL3Texture *texture = new COpenGL3Texture(name, image, ETT_CUBEMAP, this);
 

@@ -1587,15 +1587,14 @@ inline void COpenGLDriver::getGLTextureMatrix(GLfloat *o, const core::matrix4 &m
 
 ITexture *COpenGLDriver::createDeviceDependentTexture(const io::path &name, IImage *image)
 {
-	core::array<IImage *> imageArray(1);
-	imageArray.push_back(image);
+	std::vector tmp = { image };
 
-	COpenGLTexture *texture = new COpenGLTexture(name, imageArray, ETT_2D, this);
+	COpenGLTexture *texture = new COpenGLTexture(name, tmp, ETT_2D, this);
 
 	return texture;
 }
 
-ITexture *COpenGLDriver::createDeviceDependentTextureCubemap(const io::path &name, const core::array<IImage *> &image)
+ITexture *COpenGLDriver::createDeviceDependentTextureCubemap(const io::path &name, const std::vector<IImage *> &image)
 {
 	COpenGLTexture *texture = new COpenGLTexture(name, image, ETT_CUBEMAP, this);
 
