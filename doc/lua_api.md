@@ -8972,7 +8972,7 @@ Used by `minetest.register_abm`.
     -- Operation interval in seconds
 
     chance = 50,
-    -- Chance of triggering `action` per-node per-interval is 1.0 / chance
+    -- Probabilitiy of triggering `action` per-node per-interval is 1.0 / chance (integers only)
 
     min_y = -32768,
     max_y = 32767,
