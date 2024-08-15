@@ -8900,8 +8900,8 @@ Entity definition
 
 Used by `minetest.register_entity`.  
 The entity definition table becomes a metatable of a newly created per-entity
-table, meaning its subtables (e.g. `initial_properties`) will be shared between
-all instances of an entity
+luaentity table, meaning its fields (e.g. `initial_properties`) will be shared
+between all instances of an entity.
 
 ```lua
 {
