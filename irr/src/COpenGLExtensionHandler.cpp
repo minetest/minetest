@@ -20,7 +20,7 @@ bool COpenGLExtensionHandler::needsDSAFramebufferHack = true;
 
 COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		StencilBuffer(false), TextureCompressionExtension(false), MaxLights(1),
-		MaxAnisotropy(1), MaxUserClipPlanes(0), MaxAuxBuffers(0), MaxIndices(65535),
+		MaxAnisotropy(1), MaxAuxBuffers(0), MaxIndices(65535),
 		MaxTextureSize(1), MaxGeometryVerticesOut(0),
 		MaxTextureLODBias(0.f), Version(0), ShaderLanguageVersion(0),
 		OcclusionQuerySupport(false), IsAtiRadeonX(false), pGlActiveTexture(0), pGlActiveTextureARB(0), pGlClientActiveTextureARB(0),
@@ -428,8 +428,6 @@ void COpenGLExtensionHandler::initExtensions(video::IContextManager *cmgr, bool 
 	if (FeatureAvailable[IRR_EXT_texture_lod_bias])
 		glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &MaxTextureLODBias);
 #endif
-	glGetIntegerv(GL_MAX_CLIP_PLANES, &num);
-	MaxUserClipPlanes = static_cast<u8>(num);
 	glGetIntegerv(GL_AUX_BUFFERS, &num);
 	MaxAuxBuffers = static_cast<u8>(num);
 #ifdef GL_ARB_draw_buffers

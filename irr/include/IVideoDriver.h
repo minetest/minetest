@@ -182,7 +182,6 @@ public:
 	MaxSupportedTextures (int) The maximum number of simultaneous textures supported by the fixed function pipeline of the (hw) driver. The actual supported number of textures supported by the engine can be lower.
 	MaxLights (int) Number of hardware lights supported in the fixed function pipeline of the driver, typically 6-8. Use light manager or deferred shading for more.
 	MaxAnisotropy (int) Number of anisotropy levels supported for filtering. At least 1, max is typically at 16 or 32.
-	MaxUserClipPlanes (int) Number of additional clip planes, which can be set by the user via dedicated driver methods.
 	MaxAuxBuffers (int) Special render buffers, which are currently not really usable inside Irrlicht. Only supported by OpenGL
 	MaxMultipleRenderTargets (int) Number of render targets which can be bound simultaneously. Rendering to MRTs is done via shaders.
 	MaxIndices (int) Number of indices which can be used in one render call (i.e. one mesh buffer).
@@ -1108,26 +1107,6 @@ public:
 	\param filename Name of the texture.
 	\return Pointer to loaded texture, or 0 if not found. */
 	virtual video::ITexture *findTexture(const io::path &filename) = 0;
-
-	//! Set or unset a clipping plane.
-	/** There are at least 6 clipping planes available for the user
-	to set at will.
-	\param index The plane index. Must be between 0 and
-	MaxUserClipPlanes.
-	\param plane The plane itself.
-	\param enable If true, enable the clipping plane else disable
-	it.
-	\return True if the clipping plane is usable. */
-	virtual bool setClipPlane(u32 index, const core::plane3df &plane, bool enable = false) = 0;
-
-	//! Enable or disable a clipping plane.
-	/** There are at least 6 clipping planes available for the user
-	to set at will.
-	\param index The plane index. Must be between 0 and
-	MaxUserClipPlanes.
-	\param enable If true, enable the clipping plane else disable
-	it. */
-	virtual void enableClipPlane(u32 index, bool enable) = 0;
 
 	//! Set the minimum number of vertices for which a hw buffer will be created
 	/** \param count Number of vertices to set as minimum. */

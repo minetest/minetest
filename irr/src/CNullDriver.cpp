@@ -64,7 +64,6 @@ CNullDriver::CNullDriver(io::IFileSystem *io, const core::dimension2d<u32> &scre
 	DriverAttributes->addInt("MaxTextures", MATERIAL_MAX_TEXTURES);
 	DriverAttributes->addInt("MaxSupportedTextures", MATERIAL_MAX_TEXTURES);
 	DriverAttributes->addInt("MaxAnisotropy", 1);
-	//	DriverAttributes->addInt("MaxUserClipPlanes", 0);
 	//	DriverAttributes->addInt("MaxAuxBuffers", 0);
 	DriverAttributes->addInt("MaxMultipleRenderTargets", 1);
 	DriverAttributes->addInt("MaxIndices", -1);
@@ -1697,22 +1696,6 @@ IVideoDriver *createNullDriver(io::IFileSystem *io, const core::dimension2d<u32>
 	}
 
 	return nullDriver;
-}
-
-//! Set/unset a clipping plane.
-//! There are at least 6 clipping planes available for the user to set at will.
-//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-//! \param plane: The plane itself.
-//! \param enable: If true, enable the clipping plane else disable it.
-bool CNullDriver::setClipPlane(u32 index, const core::plane3df &plane, bool enable)
-{
-	return false;
-}
-
-//! Enable/disable a clipping plane.
-void CNullDriver::enableClipPlane(u32 index, bool enable)
-{
-	// not necessary
 }
 
 void CNullDriver::setMinHardwareBufferVertexCount(u32 count)

@@ -494,19 +494,6 @@ public:
 	//! looks if the image is already loaded
 	video::ITexture *findTexture(const io::path &filename) override;
 
-	//! Set/unset a clipping plane.
-	//! There are at least 6 clipping planes available for the user to set at will.
-	//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-	//! \param plane: The plane itself.
-	//! \param enable: If true, enable the clipping plane else disable it.
-	bool setClipPlane(u32 index, const core::plane3df &plane, bool enable = false) override;
-
-	//! Enable/disable a clipping plane.
-	//! There are at least 6 clipping planes available for the user to set at will.
-	//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-	//! \param enable: If true, enable the clipping plane else disable it.
-	void enableClipPlane(u32 index, bool enable) override;
-
 	//! Returns the graphics card vendor name.
 	core::stringc getVendorInfo() override { return "Not available on this driver."; }
 

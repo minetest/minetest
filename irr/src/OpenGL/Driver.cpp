@@ -257,7 +257,6 @@ bool COpenGL3DriverBase::genericDriverInit(const core::dimension2d<u32> &screenS
 	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Feature.MaxTextureUnits);
 	//		DriverAttributes->setAttribute("MaxLights", MaxLights);
 	DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
-	//		DriverAttributes->setAttribute("MaxUserClipPlanes", MaxUserClipPlanes);
 	//		DriverAttributes->setAttribute("MaxAuxBuffers", MaxAuxBuffers);
 	//		DriverAttributes->setAttribute("MaxMultipleRenderTargets", MaxMultipleRenderTargets);
 	DriverAttributes->setAttribute("MaxIndices", (s32)MaxIndices);
@@ -267,8 +266,6 @@ bool COpenGL3DriverBase::genericDriverInit(const core::dimension2d<u32> &screenS
 	DriverAttributes->setAttribute("AntiAlias", AntiAlias);
 
 	GL.PixelStorei(GL_PACK_ALIGNMENT, 1);
-
-	UserClipPlane.reallocate(0);
 
 	for (s32 i = 0; i < ETS_COUNT; ++i)
 		setTransform(static_cast<E_TRANSFORMATION_STATE>(i), core::IdentityMatrix);
@@ -1874,40 +1871,6 @@ void COpenGL3DriverBase::removeTexture(ITexture *texture)
 {
 	CacheHandler->getTextureCache().remove(texture);
 	CNullDriver::removeTexture(texture);
-}
-
-//! Set/unset a clipping plane.
-bool COpenGL3DriverBase::setClipPlane(u32 index, const core::plane3df &plane, bool enable)
-{
-	if (index >= UserClipPlane.size())
-		UserClipPlane.push_back(SUserClipPlane());
-
-	UserClipPlane[index].Plane = plane;
-	UserClipPlane[index].Enabled = enable;
-	return true;
-}
-
-//! Enable/disable a clipping plane.
-void COpenGL3DriverBase::enableClipPlane(u32 index, bool enable)
-{
-	UserClipPlane[index].Enabled = enable;
-}
-
-//! Get the ClipPlane Count
-u32 COpenGL3DriverBase::getClipPlaneCount() const
-{
-	return UserClipPlane.size();
-}
-
-const core::plane3df &COpenGL3DriverBase::getClipPlane(irr::u32 index) const
-{
-	if (index < UserClipPlane.size())
-		return UserClipPlane[index].Plane;
-	else {
-		_IRR_DEBUG_BREAK_IF(true) // invalid index
-		static const core::plane3df dummy;
-		return dummy;
-	}
 }
 
 core::dimension2du COpenGL3DriverBase::getMaxTextureSize() const

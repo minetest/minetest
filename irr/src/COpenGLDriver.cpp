@@ -122,7 +122,6 @@ bool COpenGLDriver::genericDriverInit()
 	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Feature.MaxTextureUnits);
 	DriverAttributes->setAttribute("MaxLights", MaxLights);
 	DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
-	DriverAttributes->setAttribute("MaxUserClipPlanes", MaxUserClipPlanes);
 	DriverAttributes->setAttribute("MaxAuxBuffers", MaxAuxBuffers);
 	DriverAttributes->setAttribute("MaxMultipleRenderTargets", (s32)Feature.MultipleRenderTarget);
 	DriverAttributes->setAttribute("MaxIndices", (s32)MaxIndices);
@@ -134,10 +133,6 @@ bool COpenGLDriver::genericDriverInit()
 	DriverAttributes->setAttribute("AntiAlias", AntiAlias);
 
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
-
-	UserClipPlanes.reallocate(MaxUserClipPlanes);
-	for (i = 0; i < MaxUserClipPlanes; ++i)
-		UserClipPlanes.push_back(SUserClipPlane());
 
 	for (i = 0; i < ETS_COUNT; ++i)
 		setTransform(static_cast<E_TRANSFORMATION_STATE>(i), core::IdentityMatrix);
@@ -243,11 +238,6 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 
 		// first load the viewing transformation for user clip planes
 		glLoadMatrixf((Matrices[ETS_VIEW]).pointer());
-
-		// we have to update the clip planes to the latest view matrix
-		for (u32 i = 0; i < MaxUserClipPlanes; ++i)
-			if (UserClipPlanes[i].Enabled)
-				uploadClipPlane(i);
 
 		// now the real model-view matrix
 		glMultMatrixf(Matrices[ETS_WORLD].pointer());
@@ -3060,44 +3050,6 @@ IImage *COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 		}
 	}
 	return newImage;
-}
-
-//! Set/unset a clipping plane.
-bool COpenGLDriver::setClipPlane(u32 index, const core::plane3df &plane, bool enable)
-{
-	if (index >= MaxUserClipPlanes)
-		return false;
-
-	UserClipPlanes[index].Plane = plane;
-	enableClipPlane(index, enable);
-	return true;
-}
-
-void COpenGLDriver::uploadClipPlane(u32 index)
-{
-	// opengl needs an array of doubles for the plane equation
-	GLdouble clip_plane[4];
-	clip_plane[0] = UserClipPlanes[index].Plane.Normal.X;
-	clip_plane[1] = UserClipPlanes[index].Plane.Normal.Y;
-	clip_plane[2] = UserClipPlanes[index].Plane.Normal.Z;
-	clip_plane[3] = UserClipPlanes[index].Plane.D;
-	glClipPlane(GL_CLIP_PLANE0 + index, clip_plane);
-}
-
-//! Enable/disable a clipping plane.
-void COpenGLDriver::enableClipPlane(u32 index, bool enable)
-{
-	if (index >= MaxUserClipPlanes)
-		return;
-	if (enable) {
-		if (!UserClipPlanes[index].Enabled) {
-			uploadClipPlane(index);
-			glEnable(GL_CLIP_PLANE0 + index);
-		}
-	} else
-		glDisable(GL_CLIP_PLANE0 + index);
-
-	UserClipPlanes[index].Enabled = enable;
 }
 
 core::dimension2du COpenGLDriver::getMaxTextureSize() const

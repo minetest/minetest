@@ -215,12 +215,6 @@ public:
 	//! checks if an OpenGL error has happened and prints it (+ some internal code which is usually the line number)
 	bool testGLError(int code = 0);
 
-	//! Set/unset a clipping plane.
-	bool setClipPlane(u32 index, const core::plane3df &plane, bool enable = false) override;
-
-	//! Enable/disable a clipping plane.
-	void enableClipPlane(u32 index, bool enable) override;
-
 	//! Returns the graphics card vendor name.
 	core::stringc getVendorInfo() override
 	{
@@ -250,8 +244,6 @@ public:
 	COGLES1CacheHandler *getCacheHandler() const;
 
 private:
-	void uploadClipPlane(u32 index);
-
 	//! inits the opengl-es driver
 	bool genericDriverInit(const core::dimension2d<u32> &screenSize, bool stencilBuffer);
 
@@ -306,8 +298,6 @@ private:
 	u8 AntiAlias;
 
 	SMaterial Material, LastMaterial;
-	core::array<core::plane3df> UserClipPlane;
-	std::vector<bool> UserClipPlaneEnabled;
 
 	core::stringc VendorName;
 
