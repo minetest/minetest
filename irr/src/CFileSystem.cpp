@@ -58,10 +58,8 @@ CFileSystem::CFileSystem()
 //! destructor
 CFileSystem::~CFileSystem()
 {
-	u32 i;
-
-	for (i = 0; i < ArchiveLoader.size(); ++i) {
-		ArchiveLoader[i]->drop();
+	for (auto *it : ArchiveLoader) {
+		it->drop();
 	}
 }
 

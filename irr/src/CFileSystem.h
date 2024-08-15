@@ -4,8 +4,8 @@
 
 #pragma once
 
+#include <vector>
 #include "IFileSystem.h"
-#include "irrArray.h"
 
 namespace irr
 {
@@ -95,7 +95,7 @@ private:
 	//! WorkingDirectory for Native and Virtual filesystems
 	io::path WorkingDirectory[2];
 	//! currently attached ArchiveLoaders
-	core::array<IArchiveLoader *> ArchiveLoader;
+	std::vector<IArchiveLoader *> ArchiveLoader;
 };
 
 } // end namespace irr
