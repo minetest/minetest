@@ -3658,7 +3658,7 @@ Player Inventory lists
 * `hand`: list containing an override for the empty hand
     * Is not created automatically, use `InvRef:set_size`
     * Is only used to enhance the empty hand's tool capabilities
- 
+
 Custom lists can be added and deleted with `InvRef:set_size(name, size)` like
 any other inventory.
 
@@ -3854,8 +3854,8 @@ vectors are written like this: `(x, y, z)`:
     * Returns a vector where the function `func` has been applied to each
       component.
 * `vector.combine(v, w, func)`:
-	* Returns a vector where the function `func` has combined both components of `v` and `w`
-	  for each component
+    * Returns a vector where the function `func` has combined both components of `v` and `w`
+      for each component
 * `vector.equals(v1, v2)`:
     * Returns a boolean, `true` if the vectors are identical.
 * `vector.sort(v1, v2)`:
@@ -3873,10 +3873,10 @@ vectors are written like this: `(x, y, z)`:
       by a `vector.*` function.
     * Returns `false` for anything else, including tables like `{x=3,y=1,z=4}`.
 * `vector.in_area(pos, min, max)`:
-	* Returns a boolean value indicating if `pos` is inside area formed by `min` and `max`.
-	* `min` and `max` are inclusive.
-	* If `min` is bigger than `max` on some axis, function always returns false.
-	* You can use `vector.sort` if you have two vectors and don't know which are the minimum and the maximum.
+    * Returns a boolean value indicating if `pos` is inside area formed by `min` and `max`.
+    * `min` and `max` are inclusive.
+    * If `min` is bigger than `max` on some axis, function always returns false.
+    * You can use `vector.sort` if you have two vectors and don't know which are the minimum and the maximum.
 
 For the following functions `x` can be either a vector or a number:
 
@@ -5076,12 +5076,12 @@ Callbacks:
       used for updating the entity state.
 * `on_deactivate(self, removal)`
     * Called when the object is about to get removed or unloaded.
-	* `removal`: boolean indicating whether the object is about to get removed.
-	  Calling `object:remove()` on an active object will call this with `removal=true`.
-	  The mapblock the entity resides in being unloaded will call this with `removal=false`.
-	* Note that this won't be called if the object hasn't been activated in the first place.
-	  In particular, `minetest.clear_objects({mode = "full"})` won't call this,
-	  whereas `minetest.clear_objects({mode = "quick"})` might call this.
+    * `removal`: boolean indicating whether the object is about to get removed.
+      Calling `object:remove()` on an active object will call this with `removal=true`.
+      The mapblock the entity resides in being unloaded will call this with `removal=false`.
+    * Note that this won't be called if the object hasn't been activated in the first place.
+      In particular, `minetest.clear_objects({mode = "full"})` won't call this,
+      whereas `minetest.clear_objects({mode = "quick"})` might call this.
 * `on_step(self, dtime, moveresult)`
     * Called on every server tick, after movement and collision processing.
     * `dtime`: elapsed time since last call
@@ -5723,7 +5723,7 @@ Call these functions only at load time!
 
 * `minetest.register_globalstep(function(dtime))`
     * Called every server step, usually interval of 0.1s.
-	* `dtime` is the time since last execution in seconds.
+    * `dtime` is the time since last execution in seconds.
 * `minetest.register_on_mods_loaded(function())`
     * Called after mods have finished loading and before the media is cached or the
       aliases handled.
@@ -6151,7 +6151,7 @@ Environment access
     * **Warning**: The same warning as for `minetest.get_objects_inside_radius` applies.
       Use `minetest.objects_in_area` instead to iterate only valid objects.
 * `minetest.objects_in_area(min_pos, max_pos)`
-	* returns an iterator of valid objects
+    * returns an iterator of valid objects
 * `minetest.set_timeofday(val)`: set time of day
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
 * `minetest.get_timeofday()`: get time of day
@@ -7961,13 +7961,13 @@ child will follow movement and rotation of that bone.
     object.
 * `set_detach()`: Detaches object. No-op if object was not attached.
 * `set_bone_position([bone, position, rotation])`
-	* Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
-	* **Note:** Rotation is in degrees, not radians.
-	* **Deprecated:** Use `set_bone_override` instead.
+    * Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
+    * **Note:** Rotation is in degrees, not radians.
+    * **Deprecated:** Use `set_bone_override` instead.
 * `get_bone_position(bone)`: returns the previously set position and rotation of the bone
-	* Shorthand for `get_bone_override(bone).position.vec, get_bone_override(bone).rotation.vec:apply(math.deg)`.
-	* **Note:** Returned rotation is in degrees, not radians.
-	* **Deprecated:** Use `get_bone_override` instead.
+    * Shorthand for `get_bone_override(bone).position.vec, get_bone_override(bone).rotation.vec:apply(math.deg)`.
+    * **Note:** Returned rotation is in degrees, not radians.
+    * **Deprecated:** Use `get_bone_override` instead.
 * `set_bone_override(bone, override)`
     * `bone`: string
     * `override`: `{ position = property, rotation = property, scale = property }` or `nil`
@@ -7984,7 +7984,7 @@ child will follow movement and rotation of that bone.
     * Compatibility note: Clients prior to 5.9.0 only support absolute position and rotation.
       All values are treated as absolute and are set immediately (no interpolation).
 * `get_bone_override(bone)`: returns `override` in the above format
-	* **Note:** Unlike `get_bone_position`, the returned rotation is in radians, not degrees.
+    * **Note:** Unlike `get_bone_position`, the returned rotation is in radians, not degrees.
 * `get_bone_overrides()`: returns all bone overrides as table `{[bonename] = override, ...}`
 * `set_properties(object property table)`
 * `get_properties()`: returns a table of all object properties
@@ -8081,8 +8081,8 @@ child will follow movement and rotation of that bone.
         * Fifth column:  subject viewed from above
         * Sixth column:  subject viewed from below
 * `get_luaentity()`:
-	* Returns the object's associated luaentity table, if there is one
-	* Otherwise returns `nil` (e.g. for players)
+    * Returns the object's associated luaentity table, if there is one
+    * Otherwise returns `nil` (e.g. for players)
 * `get_entity_name()`:
     * **Deprecated**: Will be removed in a future version,
       use `:get_luaentity().name` instead.
