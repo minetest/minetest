@@ -315,7 +315,7 @@ Call these functions only at load time!
 
 * `minetest.register_globalstep(function(dtime))`
     * Called every client environment step
-	* `dtime` is the time since last execution in seconds.
+    * `dtime` is the time since last execution in seconds.
 * `minetest.register_on_mods_loaded(function())`
     * Called just after mods have finished loading.
 * `minetest.register_on_shutdown(function())`
@@ -586,9 +586,9 @@ Call these functions only at load time!
 * `minetest.camera`
     * Reference to the camera object. See [`Camera`](#camera) class reference for methods.
 * `minetest.show_formspec(formname, formspec)` : returns true on success
-	* Shows a formspec to the player
+    * Shows a formspec to the player
 * `minetest.display_chat_message(message)` returns true on success
-	* Shows a chat message to the current player.
+    * Shows a chat message to the current player.
 
 Setting-related
 ---------------
@@ -866,9 +866,9 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 -----------------
 ### Definitions
 * `minetest.get_node_def(nodename)`
-	* Returns [node definition](#node-definition) table of `nodename`
+    * Returns [node definition](#node-definition) table of `nodename`
 * `minetest.get_item_def(itemstring)`
-	* Returns item definition table of `itemstring`
+    * Returns item definition table of `itemstring`
 
 #### Node Definition
 
@@ -971,10 +971,10 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 
 ```lua
 {
-	address = "minetest.example.org", -- The domain name/IP address of a remote server or "" for a local server.
-	ip = "203.0.113.156",             -- The IP address of the server.
-	port = 30000,                     -- The port the client is connected to.
-	protocol_version = 30             -- Will not be accurate at start up as the client might not be connected to the server yet, in that case it will be 0.
+    address = "minetest.example.org", -- The domain name/IP address of a remote server or "" for a local server.
+    ip = "203.0.113.156",             -- The IP address of the server.
+    port = 30000,                     -- The port the client is connected to.
+    protocol_version = 30             -- Will not be accurate at start up as the client might not be connected to the server yet, in that case it will be 0.
 }
 ```
 

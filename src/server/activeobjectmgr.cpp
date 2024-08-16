@@ -91,7 +91,7 @@ bool ActiveObjectMgr::registerObject(std::unique_ptr<ServerActiveObject> obj)
 		return false;
 	}
 
-	auto obj_id = obj->getId(); 
+	auto obj_id = obj->getId();
 	m_active_objects.put(obj_id, std::move(obj));
 
 	auto new_size = m_active_objects.size();
