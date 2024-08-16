@@ -920,7 +920,7 @@ bool CNullDriver::checkImage(const std::vector<IImage*> &image) const
 	ECOLOR_FORMAT lastFormat = image[0]->getColorFormat();
 	auto lastSize = image[0]->getDimension();
 
-	for (size_t i = 1; i < image.size(); ++i) {
+	for (size_t i = 0; i < image.size(); ++i) {
 		ECOLOR_FORMAT format = image[i]->getColorFormat();
 		auto size = image[i]->getDimension();
 

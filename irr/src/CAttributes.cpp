@@ -32,21 +32,13 @@ void CAttributes::clear()
 	Attributes.clear();
 }
 
-IAttribute *CAttributes::getAttributeP(const c8 *attributeName) const
-{
-	auto it = Attributes.find(attributeName);
-	if (it == Attributes.end())
-		return nullptr;
-	return const_cast<IAttribute*>(it->second); // who cares
-}
-
 //! Sets a attribute as boolean value
 void CAttributes::setAttribute(const c8 *attributeName, bool value)
 {
-	IAttribute *att = getAttributeP(attributeName);
-	if (att)
-		att->setBool(value);
-	else {
+	auto it = Attributes.find(attributeName);
+	if (it != Attributes.end()) {
+		it->second->setBool(value);
+	} else {
 		Attributes[attributeName] = new CBoolAttribute(attributeName, value);
 	}
 }
@@ -57,9 +49,9 @@ void CAttributes::setAttribute(const c8 *attributeName, bool value)
 //! or 0 if attribute is not set.
 bool CAttributes::getAttributeAsBool(const c8 *attributeName, bool defaultNotFound) const
 {
-	const IAttribute *att = getAttributeP(attributeName);
-	if (att)
-		return att->getBool();
+	auto it = Attributes.find(attributeName);
+	if (it != Attributes.end())
+		return it->second->getBool();
 	else
 		return defaultNotFound;
 }
@@ -67,10 +59,10 @@ bool CAttributes::getAttributeAsBool(const c8 *attributeName, bool defaultNotFou
 //! Sets a attribute as integer value
 void CAttributes::setAttribute(const c8 *attributeName, s32 value)
 {
-	IAttribute *att = getAttributeP(attributeName);
-	if (att)
-		att->setInt(value);
-	else {
+	auto it = Attributes.find(attributeName);
+	if (it != Attributes.end()) {
+		it->second->setInt(value);
+	} else {
 		Attributes[attributeName] = new CIntAttribute(attributeName, value);
 	}
 }
@@ -81,9 +73,9 @@ void CAttributes::setAttribute(const c8 *attributeName, s32 value)
 //! or 0 if attribute is not set.
 s32 CAttributes::getAttributeAsInt(const c8 *attributeName, irr::s32 defaultNotFound) const
 {
-	const IAttribute *att = getAttributeP(attributeName);
-	if (att)
-		return att->getInt();
+	auto it = Attributes.find(attributeName);
+	if (it != Attributes.end())
+		return it->second->getInt();
 	else
 		return defaultNotFound;
 }
@@ -91,11 +83,12 @@ s32 CAttributes::getAttributeAsInt(const c8 *attributeName, irr::s32 defaultNotF
 //! Sets a attribute as float value
 void CAttributes::setAttribute(const c8 *attributeName, f32 value)
 {
-	IAttribute *att = getAttributeP(attributeName);
-	if (att)
-		att->setFloat(value);
-	else
+	auto it = Attributes.find(attributeName);
+	if (it != Attributes.end()) {
+		it->second->setFloat(value);
+	} else {
 		Attributes[attributeName] = new CFloatAttribute(attributeName, value);
+	}
 }
 
 //! Gets a attribute as integer value
@@ -104,11 +97,11 @@ void CAttributes::setAttribute(const c8 *attributeName, f32 value)
 //! or 0 if attribute is not set.
 f32 CAttributes::getAttributeAsFloat(const c8 *attributeName, irr::f32 defaultNotFound) const
 {
-	const IAttribute *att = getAttributeP(attributeName);
-	if (att)
-		return att->getFloat();
-
-	return defaultNotFound;
+	auto it = Attributes.find(attributeName);
+	if (it != Attributes.end())
+		return it->second->getFloat();
+	else
+		return defaultNotFound;
 }
 
 //! Returns the type of an attribute
@@ -116,9 +109,9 @@ E_ATTRIBUTE_TYPE CAttributes::getAttributeType(const c8 *attributeName) const
 {
 	E_ATTRIBUTE_TYPE ret = EAT_UNKNOWN;
 
-	const IAttribute *att = getAttributeP(attributeName);
-	if (att)
-		ret = att->getType();
+	auto it = Attributes.find(attributeName);
+	if (it != Attributes.end())
+		ret = it->second->getType();
 
 	return ret;
 }
@@ -126,7 +119,7 @@ E_ATTRIBUTE_TYPE CAttributes::getAttributeType(const c8 *attributeName) const
 //! Returns if an attribute with a name exists
 bool CAttributes::existsAttribute(const c8 *attributeName) const
 {
-	return !!getAttributeP(attributeName);
+	return Attributes.find(attributeName) != Attributes.end();
 }
 
 } // end namespace io

@@ -96,8 +96,6 @@ protected:
 	// specify a comparator so we can directly look up in the map with const c8*
 	// (works since C++14)
 	std::map<string, IAttribute*, std::less<>> Attributes;
-
-	IAttribute *getAttributeP(const c8 *attributeName) const;
 };
 
 } // end namespace io
