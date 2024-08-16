@@ -180,7 +180,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	void convertTo2TCoords()
 	{
 		if (VertexType == video::EVT_STANDARD) {
-			for (auto &Vertex_Standard : Vertices_Standard) {
+			for (const auto &Vertex_Standard : Vertices_Standard) {
 				video::S3DVertex2TCoords Vertex;
 				Vertex.Color = Vertex_Standard.Color;
 				Vertex.Pos = Vertex_Standard.Pos;
@@ -197,7 +197,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	void convertToTangents()
 	{
 		if (VertexType == video::EVT_STANDARD) {
-			for (auto &Vertex_Standard : Vertices_Standard) {
+			for (const auto &Vertex_Standard : Vertices_Standard) {
 				video::S3DVertexTangents Vertex;
 				Vertex.Color = Vertex_Standard.Color;
 				Vertex.Pos = Vertex_Standard.Pos;
@@ -208,7 +208,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 			Vertices_Standard.clear();
 			VertexType = video::EVT_TANGENTS;
 		} else if (VertexType == video::EVT_2TCOORDS) {
-			for (auto &Vertex_2TCoords : Vertices_2TCoords) {
+			for (const auto &Vertex_2TCoords : Vertices_2TCoords) {
 				video::S3DVertexTangents Vertex;
 				Vertex.Color = Vertex_2TCoords.Color;
 				Vertex.Pos = Vertex_2TCoords.Pos;

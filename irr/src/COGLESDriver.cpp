@@ -1137,7 +1137,7 @@ inline void COGLES1Driver::getGLTextureMatrix(GLfloat *o, const core::matrix4 &m
 
 ITexture *COGLES1Driver::createDeviceDependentTexture(const io::path &name, IImage *image)
 {
-	std::vector<IImage*> tmp = { image };
+	std::vector<IImage*> tmp { image };
 
 	COGLES1Texture *texture = new COGLES1Texture(name, tmp, ETT_2D, this);
 

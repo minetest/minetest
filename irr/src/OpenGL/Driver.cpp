@@ -1102,7 +1102,7 @@ void COpenGL3DriverBase::endDraw(const VertexType &vertexType)
 
 ITexture *COpenGL3DriverBase::createDeviceDependentTexture(const io::path &name, IImage *image)
 {
-	std::vector<IImage*> tmp = { image };
+	std::vector<IImage*> tmp { image };
 
 	COpenGL3Texture *texture = new COpenGL3Texture(name, tmp, ETT_2D, this);
 
