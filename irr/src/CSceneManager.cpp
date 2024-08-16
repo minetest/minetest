@@ -399,7 +399,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode *node, E_SCENE_NODE_RENDE
 		break;
 	case ESNRP_SOLID:
 		if (!isCulled(node)) {
-			SolidNodeList.push_back(node);
+			SolidNodeList.emplace_back(node);
 			taken = 1;
 		}
 		break;
@@ -431,7 +431,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode *node, E_SCENE_NODE_RENDE
 
 			// not transparent, register as solid
 			if (!taken) {
-				SolidNodeList.push_back(node);
+				SolidNodeList.emplace_back(node);
 				taken = 1;
 			}
 		}

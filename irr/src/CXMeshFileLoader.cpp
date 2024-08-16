@@ -291,7 +291,7 @@ bool CXMeshFileLoader::load(io::IReadFile *file)
 
 					if (mesh->TCoords2.size()) {
 						verticesLinkIndex[i] = buffer->Vertices_2TCoords.size();
-						buffer->Vertices_2TCoords.push_back(mesh->Vertices[i]);
+						buffer->Vertices_2TCoords.emplace_back(mesh->Vertices[i]);
 						// We have a problem with correct tcoord2 handling here
 						// crash fixed for now by checking the values
 						buffer->Vertices_2TCoords.back().TCoords2 = (i < mesh->TCoords2.size()) ? mesh->TCoords2[i] : mesh->Vertices[i].TCoords;

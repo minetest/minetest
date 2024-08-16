@@ -937,18 +937,18 @@ void COpenGL3DriverBase::draw2DImageBatch(const video::ITexture *texture,
 		f32 down = 2.f - (f32)poss.LowerRightCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
 		f32 top = 2.f - (f32)poss.UpperLeftCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
 
-		vtx.push_back(S3DVertex(left, top, 0.0f,
+		vtx.emplace_back(left, top, 0.0f,
 				0.0f, 0.0f, 0.0f, color,
-				tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y));
-		vtx.push_back(S3DVertex(right, top, 0.0f,
+				tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
+		vtx.emplace_back(right, top, 0.0f,
 				0.0f, 0.0f, 0.0f, color,
-				tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y));
-		vtx.push_back(S3DVertex(right, down, 0.0f,
+				tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
+		vtx.emplace_back(right, down, 0.0f,
 				0.0f, 0.0f, 0.0f, color,
-				tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y));
-		vtx.push_back(S3DVertex(left, down, 0.0f,
+				tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
+		vtx.emplace_back(left, down, 0.0f,
 				0.0f, 0.0f, 0.0f, color,
-				tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y));
+				tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
 	}
 
 	GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, QuadIndexBuffer);
