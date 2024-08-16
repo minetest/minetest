@@ -978,12 +978,14 @@ std::string sanitize_untrusted(std::string_view str, bool keep_escapes)
 			if (i+1 < s.length()) {
 				if (s[i+1] == '(') {
 					if (i+2 < s.length() && check(s[i+2])) {
-						// valid long-form escape sequence
+						// valid long-form escape
 					} else {
 						s.erase(i, 1);
 						continue;
 					}
-				} else if (!check(s[i+1])) {
+				} else if (check(s[i+1])) {
+					// valid short-form escape
+				} else {
 					s.erase(i, 1);
 					continue;
 				}
