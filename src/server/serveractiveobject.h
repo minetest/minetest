@@ -259,9 +259,6 @@ protected:
 	virtual void onMarkedForDeactivation() {}
 	virtual void onMarkedForRemoval() {}
 
-	virtual void onAttach(object_t parent_id) {}
-	virtual void onDetach(object_t parent_id) {}
-
 	ServerEnvironment *m_env;
 	v3f m_base_position;
 	std::unordered_set<u32> m_attached_particle_spawners;
