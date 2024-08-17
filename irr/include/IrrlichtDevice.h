@@ -349,7 +349,13 @@ public:
 	//! Get the scancode of the corresponding keycode.
 	virtual u32 getScancodeFromKey(const KeyCode &key) const
 	{
-		return key.index() == 0 ? std::get<EKEY_CODE>(key) : KEY_KEY_CODES_COUNT + std::get<wchar_t>(key);
+		if (key.index() == 0) {
+			const auto keycode = std::get<EKEY_CODE>(key);
+			// treat KEY_UNKNOWN and KEY_KEY_CODES_COUNT as the same and return 0.
+			return KeyCode::isValid(keycode) ? keycode : 0;
+		}
+		const auto keychar = std::get<wchar_t>(key);
+		return keychar == 0 ? 0 : KEY_KEY_CODES_COUNT + keychar;
 	}
 
 	//! Get the keycode of the corresponding scancode.
@@ -361,6 +367,15 @@ public:
 		else
 			key.emplace<wchar_t>(scancode - KEY_KEY_CODES_COUNT);
 		return key;
+	}
+
+protected:
+
+	// TODO: This is just some boilerplate for non-SDL devices. Remove this once we fully switch to SDL.
+	void fillScancode(SEvent &irrevent)
+	{
+		auto &keyinput = irrevent.KeyInput;
+		keyinput.SystemKeyCode = getScancodeFromKey(KeyCode(keyinput.Key, keyinput.Char));
 	}
 };
 
