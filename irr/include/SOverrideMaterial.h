@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <vector>
 #include "SMaterial.h"
 
 namespace irr
@@ -57,7 +58,7 @@ struct SOverrideMaterial
 	};
 
 	//! To overwrite SMaterial::MaterialType
-	core::array<SMaterialTypeReplacement> MaterialTypes;
+	std::vector<SMaterialTypeReplacement> MaterialTypes;
 
 	//! Default constructor
 	SOverrideMaterial() :
@@ -83,9 +84,8 @@ struct SOverrideMaterial
 	void apply(SMaterial &material)
 	{
 		if (Enabled) {
-			for (u32 i = 0; i < MaterialTypes.size(); ++i) {
-				const SMaterialTypeReplacement &mtr = MaterialTypes[i];
-				if (mtr.Original < 0 || (s32)mtr.Original == material.MaterialType)
+			for (const auto &mtr : MaterialTypes) {
+				if (mtr.Original < 0 || mtr.Original == (s32)material.MaterialType)
 					material.MaterialType = (E_MATERIAL_TYPE)mtr.Replacement;
 			}
 			for (u32 f = 0; f < 32; ++f) {

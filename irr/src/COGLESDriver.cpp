@@ -103,14 +103,6 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32> &screenSize, 
 
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
-	UserClipPlane.reallocate(MaxUserClipPlanes);
-	UserClipPlaneEnabled.resize(MaxUserClipPlanes);
-
-	for (s32 i = 0; i < MaxUserClipPlanes; ++i) {
-		UserClipPlane.push_back(core::plane3df());
-		UserClipPlaneEnabled[i] = false;
-	}
-
 	for (s32 i = 0; i < ETS_COUNT; ++i)
 		setTransform(static_cast<E_TRANSFORMATION_STATE>(i), core::IdentityMatrix);
 
@@ -195,10 +187,6 @@ void COGLES1Driver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 		// OGLES1 only has a model matrix, view and world is not existent. so lets fake these two.
 		glMatrixMode(GL_MODELVIEW);
 		glLoadMatrixf((Matrices[ETS_VIEW] * Matrices[ETS_WORLD]).pointer());
-		// we have to update the clip planes to the latest view matrix
-		for (u32 i = 0; i < MaxUserClipPlanes; ++i)
-			if (UserClipPlaneEnabled[i])
-				uploadClipPlane(i);
 	} break;
 	case ETS_PROJECTION: {
 		GLfloat glmat[16];
@@ -1149,15 +1137,14 @@ inline void COGLES1Driver::getGLTextureMatrix(GLfloat *o, const core::matrix4 &m
 
 ITexture *COGLES1Driver::createDeviceDependentTexture(const io::path &name, IImage *image)
 {
-	core::array<IImage *> imageArray(1);
-	imageArray.push_back(image);
+	std::vector<IImage*> tmp { image };
 
-	COGLES1Texture *texture = new COGLES1Texture(name, imageArray, ETT_2D, this);
+	COGLES1Texture *texture = new COGLES1Texture(name, tmp, ETT_2D, this);
 
 	return texture;
 }
 
-ITexture *COGLES1Driver::createDeviceDependentTextureCubemap(const io::path &name, const core::array<IImage *> &image)
+ITexture *COGLES1Driver::createDeviceDependentTextureCubemap(const io::path &name, const std::vector<IImage *> &image)
 {
 	COGLES1Texture *texture = new COGLES1Texture(name, image, ETT_CUBEMAP, this);
 
@@ -2156,44 +2143,6 @@ void COGLES1Driver::removeTexture(ITexture *texture)
 {
 	CacheHandler->getTextureCache().remove(texture);
 	CNullDriver::removeTexture(texture);
-}
-
-//! Set/unset a clipping plane.
-bool COGLES1Driver::setClipPlane(u32 index, const core::plane3df &plane, bool enable)
-{
-	if (index >= MaxUserClipPlanes)
-		return false;
-
-	UserClipPlane[index] = plane;
-	enableClipPlane(index, enable);
-	return true;
-}
-
-void COGLES1Driver::uploadClipPlane(u32 index)
-{
-	// opengl needs an array of doubles for the plane equation
-	float clip_plane[4];
-	clip_plane[0] = UserClipPlane[index].Normal.X;
-	clip_plane[1] = UserClipPlane[index].Normal.Y;
-	clip_plane[2] = UserClipPlane[index].Normal.Z;
-	clip_plane[3] = UserClipPlane[index].D;
-	glClipPlanef(GL_CLIP_PLANE0 + index, clip_plane);
-}
-
-//! Enable/disable a clipping plane.
-void COGLES1Driver::enableClipPlane(u32 index, bool enable)
-{
-	if (index >= MaxUserClipPlanes)
-		return;
-	if (enable) {
-		if (!UserClipPlaneEnabled[index]) {
-			uploadClipPlane(index);
-			glEnable(GL_CLIP_PLANE0 + index);
-		}
-	} else
-		glDisable(GL_CLIP_PLANE0 + index);
-
-	UserClipPlaneEnabled[index] = enable;
 }
 
 core::dimension2du COGLES1Driver::getMaxTextureSize() const

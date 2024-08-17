@@ -171,7 +171,6 @@ public:
 	}
 
 protected:
-	u8 MaxUserClipPlanes;
 	u8 MaxLights;
 
 	PFNGLBLENDEQUATIONOESPROC pGlBlendEquationOES;

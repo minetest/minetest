@@ -277,15 +277,15 @@ private:
 	ISceneCollisionManager *CollisionManager;
 
 	//! render pass lists
-	core::array<ISceneNode *> CameraList;
-	core::array<ISceneNode *> SkyBoxList;
-	core::array<DefaultNodeEntry> SolidNodeList;
-	core::array<TransparentNodeEntry> TransparentNodeList;
-	core::array<TransparentNodeEntry> TransparentEffectNodeList;
-	core::array<ISceneNode *> GuiNodeList;
+	std::vector<ISceneNode *> CameraList;
+	std::vector<ISceneNode *> SkyBoxList;
+	std::vector<DefaultNodeEntry> SolidNodeList;
+	std::vector<TransparentNodeEntry> TransparentNodeList;
+	std::vector<TransparentNodeEntry> TransparentEffectNodeList;
+	std::vector<ISceneNode *> GuiNodeList;
 
-	core::array<IMeshLoader *> MeshLoaderList;
-	core::array<ISceneNode *> DeletionList;
+	std::vector<IMeshLoader *> MeshLoaderList;
+	std::vector<ISceneNode *> DeletionList;
 
 	//! current active camera
 	ICameraSceneNode *ActiveCamera;
