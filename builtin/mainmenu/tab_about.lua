@@ -15,96 +15,6 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
--- https://github.com/orgs/minetest/teams/engine/members
-
-local core_developers = {
-	"Perttu Ahola (celeron55) <celeron55@gmail.com> [Project founder]",
-	"sfan5 <sfan5@live.de>",
-	"ShadowNinja <shadowninja@minetest.net>",
-	"Nathanaëlle Courant (Nore/Ekdohibs) <nore@mesecons.net>",
-	"Loic Blot (nerzhul/nrz) <loic.blot@unix-experience.fr>",
-	"Andrew Ward (rubenwardy) <rw@rubenwardy.com>",
-	"Krock/SmallJoker <mk939@ymail.com>",
-	"Lars Hofhansl <larsh@apache.org>",
-	"v-rob <robinsonvincent89@gmail.com>",
-	"Desour/DS",
-	"srifqi",
-	"Gregor Parzefall (grorp)",
-	"Lars Müller (luatic)",
-}
-
--- currently only https://github.com/orgs/minetest/teams/triagers/members
-
-local core_team = {
-	"Zughy [Issue triager]",
-	"wsor [Issue triager]",
-	"Hugo Locurcio (Calinou) [Issue triager]",
-}
-
--- For updating active/previous contributors, see the script in ./util/gather_git_credits.py
-
-local active_contributors = {
-	"cx384",
-	"numzero",
-	"AFCMS",
-	"sfence",
-	"Wuzzy",
-	"ROllerozxa",
-	"JosiahWI",
-	"OgelGames",
-	"David Heidelberg",
-	"1F616EMO",
-	"HybridDog",
-	"Bradley Pierce (Thresher)",
-	"savilli",
-	"Stvk imension",
-	"y5nw",
-	"chmodsayshello",
-	"jordan4ibanez",
-	"superfloh247",
-}
-
-local previous_core_developers = {
-	"BlockMen",
-	"Maciej Kasatkin (RealBadAngel) [RIP]",
-	"Lisa Milne (darkrose) <lisa@ltmnet.com>",
-	"proller",
-	"Ilya Zhuravlev (xyz) <xyz@minetest.net>",
-	"PilzAdam <pilzadam@minetest.net>",
-	"est31 <MTest31@outlook.com>",
-	"kahrl <kahrl@gmx.net>",
-	"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>",
-	"sapier",
-	"Zeno",
-	"Auke Kok (sofar) <sofar@foo-projects.org>",
-	"Aaron Suen <warr1024@gmail.com>",
-	"paramat",
-	"Pierre-Yves Rollo <dev@pyrollo.com>",
-	"hecks",
-	"Jude Melton-Houghton (TurkeyMcMac) [RIP]",
-	"Hugues Ross <hugues.ross@gmail.com>",
-	"Dmitry Kostenko (x2048) <codeforsmile@gmail.com>",
-}
-
-local previous_contributors = {
-	"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net> [Minetest logo]",
-	"red-001 <red-001@outlook.ie>",
-	"Giuseppe Bilotta",
-	"HybridDog",
-	"ClobberXD",
-	"Dániel Juhász (juhdanad) <juhdanad@gmail.com>",
-	"MirceaKitsune <mirceakitsune@gmail.com>",
-	"Jean-Patrick Guerrero (kilbith)",
-	"MoNTE48",
-	"Constantin Wenger (SpeedProg)",
-	"Ciaran Gultnieks (CiaranG)",
-	"Paul Ouellette (pauloue)",
-	"stujones11",
-	"Rogier <rogier777@gmail.com>",
-	"Gregory Currie (gregorycu)",
-	"JacobF",
-	"Jeija <jeija@mesecons.net>",
-}
 
 local function prepare_credits(dest, source)
 	local string = table.concat(source, "\n") .. "\n"
@@ -120,6 +30,13 @@ local function prepare_credits(dest, source)
 	table.insert(dest, string)
 end
 
+local function get_credits()
+	local f = assert(io.open(core.get_mainmenu_path() .. "/credits.json"))
+	local json = core.parse_json(f:read("*all"))
+	f:close()
+	return json
+end
+
 return {
 	name = "about",
 	caption = fgettext("About"),
@@ -133,30 +50,32 @@ return {
 			"<tag name=gray color=#aaa>",
 		}
 
+		local credits = get_credits()
+
 		table.insert_all(hypertext, {
 			"<heading>", fgettext_ne("Core Developers"), "</heading>\n",
 		})
-		prepare_credits(hypertext, core_developers)
+		prepare_credits(hypertext, credits.core_developers)
 		table.insert_all(hypertext, {
 			"\n",
 			"<heading>", fgettext_ne("Core Team"), "</heading>\n",
 		})
-		prepare_credits(hypertext, core_team)
+		prepare_credits(hypertext, credits.core_team)
 		table.insert_all(hypertext, {
 			"\n",
 			"<heading>", fgettext_ne("Active Contributors"), "</heading>\n",
 		})
-		prepare_credits(hypertext, active_contributors)
+		prepare_credits(hypertext, credits.contributors)
 		table.insert_all(hypertext, {
 			"\n",
 			"<heading>", fgettext_ne("Previous Core Developers"), "</heading>\n",
 		})
-		prepare_credits(hypertext, previous_core_developers)
+		prepare_credits(hypertext, credits.previous_core_developers)
 		table.insert_all(hypertext, {
 			"\n",
 			"<heading>", fgettext_ne("Previous Contributors"), "</heading>\n",
 		})
-		prepare_credits(hypertext, previous_contributors)
+		prepare_credits(hypertext, credits.previous_contributors)
 
 		hypertext = table.concat(hypertext):sub(1, -2)
 
