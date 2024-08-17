@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-08-10 06:09+0000\n"
+"PO-Revision-Date: 2024-08-20 10:09+0000\n"
 "Last-Translator: hugoalh <hugoalh@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hant/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.7\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -144,11 +144,10 @@ msgid "Failed to download $1"
 msgstr "無法下載 $1"
 
 #: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
 msgid ""
 "Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
 "broken archive)"
-msgstr "無法提取“$1”（不支援的文件類型或損壞的存檔）"
+msgstr "無法提取「$1」（磁碟空間不足、不支援的檔案類型或存檔損壞）"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
@@ -316,7 +315,7 @@ msgstr "$1（已啟用）"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
-msgstr "$1 個 Mod"
+msgstr "$1 個模組"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -348,11 +347,11 @@ msgstr "(未啓用)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr "全部停用"
+msgstr "停用全部"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "停用 Mod 包"
+msgstr "停用模組包"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -360,13 +359,13 @@ msgstr "全部啟用"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "啟用 Mod 包"
+msgstr "啟用模組包"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
-msgstr "無法啟用 Mod「$1」，因為其包含了不允許的字元。只能有 [a-z0-9_] 字元。"
+msgstr "無法啟用模組「$1」，因為其包含了不允許的字元。僅允許使用字元 [a-z0-9_]。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
@@ -390,7 +389,7 @@ msgstr "沒有強制相依元件"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr "未提供 Mod 包描述。"
+msgstr "未提供模組包說明。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
@@ -698,7 +697,7 @@ msgstr "重新命名 Mod 包："
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
-msgstr "這個 Mod 包有在其 modpack.conf 提供明確的名稱，會覆蓋此處的重新命名。"
+msgstr "此模組包有在其 modpack.conf 提供明確的名稱，會覆蓋此處的任何重新命名。"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
@@ -960,8 +959,8 @@ msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
-"在文件管理器/文件瀏覽器中打開包含\n"
-"用戶提供的世界、遊戲、mod、材質包的目錄。"
+"在檔案總管／檔案瀏覽器中開啟包含使用者提供的\n"
+"世界、遊戲、模組和材質包的目錄。"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
@@ -1108,7 +1107,7 @@ msgstr "創造模式"
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
 msgid "Damage / PvP"
-msgstr "傷害 / PvP"
+msgstr "傷害／PvP"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Favorites"
@@ -1278,11 +1277,11 @@ msgstr "變更密碼"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
-msgstr "已停用電影模式"
+msgstr "電影模式已停用"
 
 #: src/client/game.cpp
 msgid "Cinematic mode enabled"
-msgstr "已啟用電影模式"
+msgstr "電影模式已啟用"
 
 #: src/client/game.cpp
 msgid "Client disconnected"
@@ -1309,7 +1308,6 @@ msgid "Continue"
 msgstr "繼續"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
@@ -1324,18 +1322,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
-"預設控制：\n"
-"無可見選單：\n"
-"- 輕擊一次：啟動按鈕\n"
-"- 輕擊兩次：放置／使用\n"
-"- 滑動手指：轉動視角\n"
-"檢視選單／物品欄：\n"
-"- 輕擊兩次（外面）：\n"
-" -->關閉\n"
-"- 碰觸堆疊，碰觸槽：\n"
+"控制：\n"
+"沒有開啟的選單：\n"
+"- 滑動手指：環顧四周\n"
+"- 點擊：放置／打擊／使用（預設）\n"
+"- 長按：挖掘／使用（預設）\n"
+"開啟的選單／物品欄：\n"
+"- 點擊兩次（外面）：\n"
+" --> 關閉\n"
+"- 碰觸堆疊，碰觸欄位：\n"
 " --> 移動堆疊\n"
-"- 碰觸並拖曳，以第二隻手指輕擊\n"
-" --> 放置單一物品到槽中\n"
+"- 碰觸並拖曳，以第二隻手指點擊\n"
+" --> 放置單一物品至欄位\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1377,27 +1375,27 @@ msgstr "離開，回到作業系統"
 
 #: src/client/game.cpp
 msgid "Fast mode disabled"
-msgstr "已停用快速模式"
+msgstr "快速模式已停用"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled"
-msgstr "已啟用快速模式"
+msgstr "快速模式已啟用"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
-msgstr "已啟用快速模式（註：沒有「fast」權限）"
+msgstr "快速模式已啟用（註：沒有「fast」權限）"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
-msgstr "已停用飛行模式"
+msgstr "飛行模式已停用"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled"
-msgstr "已啟用飛行模式"
+msgstr "飛行模式已啟用"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr "已啟用飛行模式（註：沒有「fly」權限）"
+msgstr "飛行模式已啟用（註：沒有「fly」權限）"
 
 #: src/client/game.cpp
 msgid "Fog disabled"
@@ -1445,15 +1443,15 @@ msgstr "多人遊戲"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
-msgstr "已停用穿牆模式"
+msgstr "穿牆模式已停用"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled"
-msgstr "已啟用穿牆模式"
+msgstr "穿牆模式已啟用"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr "已啟用穿牆模式（註：沒有「noclip」權限）"
+msgstr "穿牆模式已啟用（註：沒有「noclip」權限）"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
@@ -1469,11 +1467,11 @@ msgstr "開啟"
 
 #: src/client/game.cpp
 msgid "Pitch move mode disabled"
-msgstr "已停止沿視角移動"
+msgstr "俯仰移動模式已停用"
 
 #: src/client/game.cpp
 msgid "Pitch move mode enabled"
-msgstr "已開始沿視角移動"
+msgstr "俯仰移動模式已啟用"
 
 #: src/client/game.cpp
 msgid "Profiler graph shown"
@@ -1540,7 +1538,7 @@ msgstr "已啟用無限視野"
 
 #: src/client/game.cpp
 msgid "Unlimited viewing range enabled, but forbidden by game or mod"
-msgstr "啟用無限觀看範圍，但被遊戲或模組禁止"
+msgstr "無限觀看範圍已啟用，但被遊戲或模組禁止"
 
 #: src/client/game.cpp
 #, c-format
@@ -1588,7 +1586,7 @@ msgstr "遠近調整目前已被遊戲或模組停用"
 
 #: src/client/gameui.cpp
 msgid "Chat currently disabled by game or mod"
-msgstr "目前聊天已被遊戲或模組停用"
+msgstr "聊天目前已被遊戲或模組停用"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -1795,14 +1793,12 @@ msgid "OEM Clear"
 msgstr "OEM 清除"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Down"
-msgstr "Page down"
+msgstr "Page Down"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Up"
-msgstr "Page up"
+msgstr "Page Up"
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
@@ -1824,9 +1820,8 @@ msgid "Return Key"
 msgstr "Return"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Arrow"
-msgstr "右 Control"
+msgstr "右箭頭"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1930,17 +1925,17 @@ msgstr "%s 模组丟失："
 #: src/content/mod_configuration.cpp
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
-msgstr "安裝並啟用所需的 mod，或停用導致錯誤的 mod。"
+msgstr "安裝並啟用所需要的模組，或停用導致錯誤的模組。"
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Note: this may be caused by a dependency cycle, in which case try updating "
 "the mods."
-msgstr "注意：這可能是由依賴循環引起的，在這種情況下請嘗試更新 mod。"
+msgstr "注意：這可能是由依賴循環引起的，在這種情況下請嘗試更新模組。"
 
 #: src/content/mod_configuration.cpp
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "有些mod有未滿足的依賴:"
+msgstr "有些模組有未被滿足的相依元件："
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2253,7 +2248,7 @@ msgstr "3D 模式"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode parallax strength"
-msgstr "3D模式視差強度"
+msgstr "3D 模式視差強度"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
@@ -2815,6 +2810,8 @@ msgid ""
 "Comma-separated list of AL and ALC extensions that should not be used.\n"
 "Useful for testing. See al_extensions.[h,cpp] for details."
 msgstr ""
+"不應該使用以逗號分隔的 AL 和 ALC 擴充功能清單。\n"
+"對於測試很有用。有關詳細資訊，請參閱 al_extensions.[h,cpp]。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3330,9 +3327,8 @@ msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr "啟用滑鼠滾輪（滾動）以在熱欄中選擇項目。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable random mod loading (mainly used for testing)."
-msgstr "啟用隨機使用者輸入（僅供測試使用）。"
+msgstr "啟用隨機模組載入（主要用於測試）。"
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3417,11 +3413,11 @@ msgstr "啟用面旋轉方向的網格快取。"
 
 #: src/settings_translation_file.cpp
 msgid "Enables debug and error-checking in the OpenGL driver."
-msgstr ""
+msgstr "啟用在 OpenGL 驅動程式中偵錯和錯誤檢查。"
 
 #: src/settings_translation_file.cpp
 msgid "Enables the post processing pipeline."
-msgstr ""
+msgstr "啟用後處理管道。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3809,17 +3805,16 @@ msgid "HUD scaling"
 msgstr "圖形使用者介面縮放"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
 "-    log: mimic and log backtrace of deprecated call (default).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
-"處理已棄用的 Lua API 呼叫：\n"
-"-    舊式：（嘗試）模仿舊的行為（release 模式預設值）。\n"
-"-    紀錄：模仿並記錄已棄用呼叫的反向追蹤（debug 模式預設值）\n"
-"-    錯誤：在使用到棄用的呼叫時中止（建議 mod 開發者使用）。"
+"處理已棄用的 Lua API 調用：\n"
+"-    無：不記錄已棄用的調用\n"
+"-    記錄：模仿並記錄已棄用調用的回溯（預設）。\n"
+"-    錯誤：中止使用已棄用的調用（建議模組開發人員使用）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4330,15 +4325,15 @@ msgstr ""
 "-   不透明：停用透明度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Length of a server tick (the interval at which everything is generally "
 "updated),\n"
 "stated in seconds.\n"
 "Does not apply to sessions hosted from the client menu."
 msgstr ""
-"伺服器週期的長度和物件更新的時間間隔\n"
-"網絡，以秒為單位。"
+"伺服器週期的長度（通常會更新所有內容的時間間隔），\n"
+"以秒為單位。\n"
+"不適用於從用戶端選單託管的工作階段。"
 
 #: src/settings_translation_file.cpp
 msgid "Length of liquid waves."
@@ -4608,9 +4603,8 @@ msgid "Mapblock mesh generation delay"
 msgstr "地圖區塊網格生成延遲"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapblock mesh generation threads"
-msgstr "地圖區塊網格生成延遲"
+msgstr "地圖區塊網格生成執行緒數"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
@@ -4645,29 +4639,27 @@ msgstr "Mapgen flat 特別旗標"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5"
-msgstr "地圖產生器 v5"
+msgstr "Mapgen V5"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V5 specific flags"
-msgstr "Mapgen v5 特別旗標"
+msgstr "Mapgen V5 特別旗標"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V6"
-msgstr "地圖產生器 v6"
+msgstr "Mapgen V6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V6 specific flags"
-msgstr "地圖產生器 v6 標籤"
+msgstr "Mapgen V6 特別旗標"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V7"
-msgstr "地圖產生器 v7"
+msgstr "Mapgen V7"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V7 specific flags"
-msgstr "Mapgen v7 特別旗標"
+msgstr "Mapgen V7 特別旗標"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Valleys"
@@ -4801,9 +4793,8 @@ msgstr ""
 "用戶端數。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum number of players that can be connected simultaneously."
-msgstr "最大可同時連線的玩家數。"
+msgstr "可同時連線的最大玩家數量。"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of recent chat messages to show"
@@ -4830,9 +4821,8 @@ msgid "Maximum simultaneous block sends per client"
 msgstr "每個用戶端最大同時傳送區塊數"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum size of the outgoing chat queue"
-msgstr "清除聊天佇列"
+msgstr "傳出聊天佇列的最大大小"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4843,11 +4833,10 @@ msgstr ""
 "0 禁用佇列，-1 使隊列大小不受限制。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum time a file download (e.g. a mod download) may take, stated in "
 "milliseconds."
-msgstr "檔案下載（例如下載 mod）可花費的最大時間，以毫秒計。"
+msgstr "檔案下載（例如模組下載）可能需要的最長時間，以毫秒為單位。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4884,9 +4873,8 @@ msgid "Minimap scan height"
 msgstr "迷你地圖掃描高度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Minimum dig repetition interval"
-msgstr "放置重複間隔"
+msgstr "最小挖掘重複間隔"
 
 #: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of large caves per mapchunk."
@@ -4930,7 +4918,6 @@ msgid "Monospace font size"
 msgstr "等寬字型大小"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Monospace font size divisible by"
 msgstr "等寬字型大小"
 
@@ -5023,9 +5010,8 @@ msgid "New users need to input this password."
 msgstr "新使用這需要輸入這個密碼。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Node and Entity Highlighting"
-msgstr "突顯方塊"
+msgstr "方塊和實體突出顯示"
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
@@ -5251,7 +5237,7 @@ msgstr "協定版本不符合"
 
 #: src/settings_translation_file.cpp
 msgid "Punch gesture"
-msgstr ""
+msgstr "打一拳手勢"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5692,7 +5678,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Set to true to enable volumetric lighting effect (a.k.a. \"Godrays\")."
-msgstr ""
+msgstr "設定為 true 以啟用體積光照效果（又稱「Godrays」）。"
 
 #: src/settings_translation_file.cpp
 msgid "Set to true to enable waving leaves."
@@ -6095,7 +6081,7 @@ msgstr ""
 msgid ""
 "The delay in milliseconds after which a touch interaction is considered a "
 "long tap."
-msgstr ""
+msgstr "觸控互動被視為長按之前的延遲（以毫秒為單位）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6261,7 +6247,7 @@ msgstr "四之三 一同定義山丘範圍高度的 2D 雜訊。"
 
 #: src/settings_translation_file.cpp
 msgid "Threshold for long taps"
-msgstr ""
+msgstr "長按閾值"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6365,12 +6351,13 @@ msgstr ""
 "僅當出現效能問題時才應變更此設定。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "URL to JSON file which provides information about the newest Minetest "
 "release\n"
 "If this is empty the engine will never check for updates."
-msgstr "JSON 檔案的 URL，提供有關最新 Minetest 版本的信息"
+msgstr ""
+"JSON 檔案的網址，提供有關最新 Minetest 版本的資訊\n"
+"如果這是空的，引擎將永遠不會檢查更新。"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
@@ -6580,7 +6567,7 @@ msgstr "音量"
 
 #: src/settings_translation_file.cpp
 msgid "Volume multiplier when the window is unfocused."
-msgstr ""
+msgstr "當視窗未聚焦時的音量倍增。"
 
 #: src/settings_translation_file.cpp
 msgid ""
