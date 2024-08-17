@@ -1150,22 +1150,6 @@ enum NetProtoCompressionMode {
 	NETPROTO_COMPRESSION_NONE = 0,
 };
 
-constexpr const char *accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
-	"Invalid password",
-	"Your client sent something the server didn't expect.  Try reconnecting or updating your client.",
-	"The server is running in simple singleplayer mode.  You cannot connect.",
-	"Your client's version is not supported.\nPlease contact the server administrator.",
-	"Player name contains disallowed characters",
-	"Player name not allowed",
-	"Too many users",
-	"Empty passwords are disallowed.  Set a password and try again.",
-	"Another client is connected with this name.  If your client closed unexpectedly, try again in a minute.",
-	"Internal server error",
-	"",
-	"Server shutting down",
-	"The server has experienced an internal error.  You will now be disconnected."
-};
-
 enum PlayerListModifer : u8
 {
 	PLAYER_LIST_INIT,
