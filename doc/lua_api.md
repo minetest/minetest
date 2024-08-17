@@ -24,8 +24,49 @@ functionality in the engine and API, and to document it here.
 Programming in Lua
 ------------------
 
+Minetest uses Lua 5.1 for modding.
+
 If you have any difficulty in understanding this, please read
 [Programming in Lua](http://www.lua.org/pil/).
+(The online version was written for 5.0, but is for the most part applicable to 5.1.)
+
+For Lua 5.1 language details, refer to the [manual](https://www.lua.org/manual/5.1/).
+
+Lua is a very flexible language,
+so this document uses a few additional terms
+to describe the conventions of using Lua in Minetest.
+
+#### Data Structures
+
+Lua's primary "all-in-one" data structuring mechanism is the table.
+
+A *list* is a table with consecutive integer keys starting at `1`.
+For example `{1, 2, 3}` and `{[3] = 3, [1] = 1, [2] = 2}` are lists.
+Note that unless otherwise stated, a list can not have "*holes*":
+`nil` values followed by non-`nil` values.
+For example `{nil, 2}` and `{1, [3] = 3}` are not valid lists.
+
+A *set* is a table where the keys are the elements of the set.
+The values should be `true` per convention.
+For example `{spam = true, ham = true}` is a set.
+`{spam = true, ham = false}` is not a set.
+
+It is important to be precise about the structure of tables.
+One frequent mistake for example is to supply a list of textures as
+`{name = "mymod_mytexture.png", backface_culling = false}`
+rather than `{ { name = "mymod_mytexture.png", backface_culling = false } }`.
+
+The former will probably be treated like an empty list,
+while the latter will correctly be treated as a list
+containing a single texture.
+
+#### "Classes"
+
+Lua does not have classes. Instead, Lua uses metatables.
+Minetest implements its own form(s) of classes using metatables.
+
+A *method* is a function operating on objects of a class.
+Methods are usually called as `obj:method(...)`.
 
 Startup
 -------
