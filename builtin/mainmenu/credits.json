@@ -1,5 +1,5 @@
 {
-	"#": "For updating active/previous contributors, see the script in ./util/gather_git_credits.py",
+	"#": "https://github.com/orgs/minetest/teams/engine/members",
 	"core_developers": [
 		"Perttu Ahola (celeron55) <celeron55@gmail.com> [Project founder]",
 		"sfan5 <sfan5@live.de>",
@@ -36,11 +36,13 @@
 		"Hugues Ross <hugues.ross@gmail.com>",
 		"Dmitry Kostenko (x2048) <codeforsmile@gmail.com>"
 	],
+	"#": "Currently only https://github.com/orgs/minetest/teams/triagers/members",
 	"core_team": [
 		"Zughy [Issue triager]",
 		"wsor [Issue triager]",
 		"Hugo Locurcio (Calinou) [Issue triager]"
 	],
+	"#": "For updating active/previous contributors, see the script in ./util/gather_git_credits.py",
 	"contributors": [
 		"cx384",
 		"numzero",
