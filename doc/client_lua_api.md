@@ -1,4 +1,4 @@
-Minetest Lua Client Modding API Reference 5.9.0
+Minetest Lua Client Modding API Reference 5.10.0
 ================================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
@@ -898,7 +898,7 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
         "node1",
         "node2"
     },
-    post_effect_color = Color,      -- Color overlayed on the screen when the player is in the node
+    post_effect_color = Color,      -- Color overlaid on the screen when the player is in the node
     leveled = number,               -- Max level for node
     sunlight_propogates = bool,     -- Whether light passes through the block
     light_source = number,          -- Light emitted by the block

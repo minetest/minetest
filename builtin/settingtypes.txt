@@ -153,6 +153,8 @@ invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
 [*Touchscreen]
 
 #    Enables touchscreen mode, allowing you to play the game with a touchscreen.
+#
+#    Requires: !android
 enable_touch (Enable touchscreen) bool true
 
 #    Touchscreen sensitivity multiplier.
@@ -692,6 +694,9 @@ language (Language) enum   ,be,bg,ca,cs,da,de,el,en,eo,es,et,eu,fi,fr,gd,gl,hu,i
 #    edge pixels when images are scaled by non-integer sizes.
 gui_scaling (GUI scaling) float 1.0 0.5 20
 
+#    Enables smooth scrolling.
+smooth_scrolling (Smooth scrolling) bool true
+
 #    Enables animation of inventory items.
 inventory_items_animations (Inventory items animations) bool false
 
@@ -822,6 +827,9 @@ server_url (Server URL) string https://minetest.net
 
 #    Automatically report to the serverlist.
 server_announce (Announce server) bool false
+
+#    Send names of online players to the serverlist. If disabled only the player count is revealed.
+server_announce_send_players (Send player names to the server list) bool tru
 
 #    Make local servers visible to local clients.
 serverlist_lan (Show local servers) bool true

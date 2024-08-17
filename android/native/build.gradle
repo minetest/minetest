@@ -2,12 +2,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'de.undercouch.download'
 
 android {
-	compileSdkVersion 33
-	buildToolsVersion '33.0.2'
 	ndkVersion "$ndk_version"
 	defaultConfig {
 		minSdkVersion 21
-		targetSdkVersion 33
+		compileSdk 34
+		targetSdkVersion 34
 		externalNativeBuild {
             cmake {
 				arguments "-DANDROID_STL=c++_shared",
@@ -40,6 +39,7 @@ android {
 			}
 		}
 	}
+	namespace 'net.minetest'
 }
 
 // get precompiled deps

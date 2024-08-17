@@ -1103,7 +1103,6 @@ Table used to specify how a sound is played:
     -- its end in `-start_time` seconds.
     -- It is unspecified what happens if `loop` is false and `start_time` is
     -- smaller than minus the sound's length.
-
     -- Available since feature `sound_params_start_time`.
 
     loop = false,
@@ -1116,21 +1115,6 @@ Table used to specify how a sound is played:
     object = <an ObjectRef>,
     -- Attach the sound to an object.
     -- Can't be used together with `pos`.
-
-    -- For backward compatibility, sounds continue playing at the last location
-    -- of the object if an object is removed (for example if an entity dies).
-    -- It is not recommended to rely on this.
-    -- For death sounds, prefer playing a positional sound instead.
-
-    -- If you want to stop a sound when an entity dies or is deactivated,
-    -- store the handle and call `minetest.sound_stop` in `on_die` / `on_deactivate`.
-
-    -- Ephemeral sounds are entirely unaffected by the object being removed
-    -- or leaving the active object range.
-
-    -- Non-ephemeral sounds stop playing on clients if objects leave
-    -- the active object range; they should start playing again if objects
-    --- come back into range (but due to a known bug, they don't yet).
 
     to_player = name,
     -- Only play for this player.
@@ -1504,7 +1488,7 @@ Look for examples in `games/devtest` or `games/minetest_game`.
     * For supported model formats see Irrlicht engine documentation.
 * `plantlike_rooted`
     * Enables underwater `plantlike` without air bubbles around the nodes.
-    * Consists of a base cube at the co-ordinates of the node plus a
+    * Consists of a base cube at the coordinates of the node plus a
       `plantlike` extension above
     * If `paramtype2="leveled", the `plantlike` extension has a height
       of `param2 / 16` nodes, otherwise it's the height of 1 node
@@ -3078,7 +3062,7 @@ Elements
 ### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]`
 
 * Scrollable item list showing arbitrary text elements
-* `name` fieldname sent to server on doubleclick value is current selected
+* `name` fieldname sent to server on double-click value is current selected
   element.
 * `listelements` can be prepended by #color in hexadecimal format RRGGBB
   (only).
@@ -3087,7 +3071,7 @@ Elements
 ### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]`
 
 * Scrollable itemlist showing arbitrary text elements
-* `name` fieldname sent to server on doubleclick value is current selected
+* `name` fieldname sent to server on double-click value is current selected
   element.
 * `listelements` can be prepended by #RRGGBB (only) in hexadecimal format
     * if you want a listelement to start with "#" write "##"
@@ -3224,7 +3208,7 @@ Elements
 
 * Show scrollable table using options defined by the previous `tableoptions[]`
 * Displays cells as defined by the previous `tablecolumns[]`
-* `name`: fieldname sent to server on row select or doubleclick
+* `name`: fieldname sent to server on row select or double-click
 * `cell 1`...`cell n`: cell contents given in row-major order
 * `selected idx`: index of row to be selected within table (first row = `1`)
 * See also `minetest.explode_table_event`
@@ -3674,6 +3658,9 @@ Player Inventory lists
 * `hand`: list containing an override for the empty hand
     * Is not created automatically, use `InvRef:set_size`
     * Is only used to enhance the empty hand's tool capabilities
+ 
+Custom lists can be added and deleted with `InvRef:set_size(name, size)` like
+any other inventory.
 
 ItemStack transaction order
 ---------------------------
@@ -3833,6 +3820,8 @@ vectors are written like this: `(x, y, z)`:
       `vector.new(v)` does the same as `vector.copy(v)`
 * `vector.zero()`:
     * Returns a new vector `(0, 0, 0)`.
+* `vector.random_direction()`:
+    * Returns a new vector of length 1, pointing into a direction chosen uniformly at random.
 * `vector.copy(v)`:
     * Returns a copy of the vector `v`.
 * `vector.from_string(s[, init])`:
@@ -4036,6 +4025,10 @@ Helper functions
       the value `val` in the table `list`. Non-numerical indices are ignored.
       If `val` could not be found, `-1` is returned. `list` must not have
       negative indices.
+* `table.keyof(table, val)`: returns the key containing
+      the value `val` in the table `table`. If multiple keys contain `val`,
+      it is unspecified which key will be returned.
+      If `val` could not be found, `nil` is returned.
 * `table.insert_all(table, other_table)`:
     * Appends all values in `other_table` to `table` - uses `#table + 1` to
       find new indices.
@@ -4255,7 +4248,7 @@ Perlin noise
 ============
 
 Perlin noise creates a continuously-varying value depending on the input values.
-Usually in Minetest the input values are either 2D or 3D co-ordinates in nodes.
+Usually in Minetest the input values are either 2D or 3D coordinates in nodes.
 The result is used during map generation to create the terrain shape, vary heat
 and humidity to distribute biomes, vary the density of decorations or vary the
 structure of ores.
@@ -4518,7 +4511,7 @@ computationally expensive than any other ore.
 Creates a single undulating ore stratum that is continuous across mapchunk
 borders and horizontally spans the world.
 
-The 2D perlin noise described by `noise_params` defines the Y co-ordinate of
+The 2D perlin noise described by `noise_params` defines the Y coordinate of
 the stratum midpoint. The 2D perlin noise described by `np_stratum_thickness`
 defines the stratum's vertical thickness (in units of nodes). Due to being
 continuous across mapchunk borders the stratum's vertical thickness is
@@ -5113,12 +5106,15 @@ Callbacks:
       to the object (not necessarily an actual rightclick)
     * `clicker`: an `ObjectRef` (may or may not be a player)
 * `on_attach_child(self, child)`
-    * `child`: an `ObjectRef` of the child that attaches
+    * Called after another object is attached to this object.
+    * `child`: an `ObjectRef` of the child
 * `on_detach_child(self, child)`
-    * `child`: an `ObjectRef` of the child that detaches
+    * Called after another object has detached from this object.
+    * `child`: an `ObjectRef` of the child
 * `on_detach(self, parent)`
-    * `parent`: an `ObjectRef` (can be `nil`) from where it got detached
-    * This happens before the parent object is removed from the world
+    * Called after detaching from another object.
+    * `parent`: an `ObjectRef` from where it got detached
+    * Note: this is also called before removal from the world.
 * `get_staticdata(self)`
     * Should return a string that will be passed to `on_activate` when the
       object is instantiated the next time.
@@ -5451,14 +5447,14 @@ Utilities
       dynamic_add_media_filepath = true,
        -- L-system decoration type (5.9.0)
       lsystem_decoration_type = true,
-      -- Overrideable pointing range using the itemstack meta key `"range"` (5.9.0)
+      -- Overridable pointing range using the itemstack meta key `"range"` (5.9.0)
       item_meta_range = true,
       -- Allow passing an optional "actor" ObjectRef to the following functions:
       -- minetest.place_node, minetest.dig_node, minetest.punch_node (5.9.0)
       node_interaction_actor = true,
       -- "new_pos" field in entity moveresult (5.9.0)
       moveresult_new_pos = true,
-      -- Allow removing definition fields in `minetest.override_item`
+      -- Allow removing definition fields in `minetest.override_item` (5.9.0)
       override_item_remove_fields = true,
   }
   ```
@@ -5753,7 +5749,7 @@ Call these functions only at load time!
 * `minetest.register_on_generated(function(minp, maxp, blockseed))`
     * Called after generating a piece of world between `minp` and `maxp`.
     * **Avoid using this** whenever possible. As with other callbacks this blocks
-      the main thread and introduces noticable latency.
+      the main thread and introduces noticeable latency.
       Consider [Mapgen environment] for an alternative.
 * `minetest.register_on_newplayer(function(ObjectRef))`
     * Called when a new player enters the world for the first time
@@ -6417,11 +6413,11 @@ Environment access
     * spread these updates to neighbors and can cause a cascade
       of nodes to fall.
 * `minetest.get_spawn_level(x, z)`
-    * Returns a player spawn y co-ordinate for the provided (x, z)
-      co-ordinates, or `nil` for an unsuitable spawn point.
+    * Returns a player spawn y coordinate for the provided (x, z)
+      coordinates, or `nil` for an unsuitable spawn point.
     * For most mapgens a 'suitable spawn point' is one with y between
       `water_level` and `water_level + 16`, and in mgv7 well away from rivers,
-      so `nil` will be returned for many (x, z) co-ordinates.
+      so `nil` will be returned for many (x, z) coordinates.
     * The spawn level returned is for a player spawn in unmodified terrain.
     * The spawn level is intentionally above terrain level to cope with
       full-node biome 'dust' nodes.
@@ -6731,7 +6727,7 @@ This allows you easy interoperability for delegating work to jobs.
     * Register a path to a Lua file to be imported when an async environment
       is initialized. You can use this to preload code which you can then call
       later using `minetest.handle_async()`.
-* `minetest.register_async_metatable(name, mt)`:
+* `minetest.register_portable_metatable(name, mt)`:
     * Register a metatable that should be preserved when data is transferred
     between the main thread and the async environment.
     * `name` is a string that identifies the metatable. It is recommended to
@@ -6771,7 +6767,7 @@ Functions:
 
 * Standalone helpers such as logging, filesystem, encoding,
   hashing or compression APIs
-* `minetest.register_async_metatable` (see above)
+* `minetest.register_portable_metatable` (see above)
 
 Variables:
 
@@ -6901,7 +6897,7 @@ Server
                        all players (optional)
         * `ephemeral`: boolean that marks the media as ephemeral,
                        it will not be cached on the client (optional, default false)
-        * Exactly one of the paramters marked [*] must be specified.
+        * Exactly one of the parameters marked [*] must be specified.
     * `callback`: function with arguments `name`, which is a player name
     * Pushes the specified media file to client(s). (details below)
       The file must be a supported image, sound or model format.
@@ -7101,6 +7097,8 @@ Misc.
 * `minetest.is_player(obj)`: boolean, whether `obj` is a player
 * `minetest.player_exists(name)`: boolean, whether player exists
   (regardless of online status)
+* `minetest.is_valid_player_name(name)`: boolean, whether the given name
+  could be used as a player name (regardless of whether said player exists).
 * `minetest.hud_replace_builtin(name, hud_definition)`
     * Replaces definition of a builtin hud element
     * `name`: `"breath"`, `"health"` or `"minimap"`
@@ -7509,6 +7507,8 @@ An `InvRef` is a reference to an inventory.
 * `is_empty(listname)`: return `true` if list is empty
 * `get_size(listname)`: get size of a list
 * `set_size(listname, size)`: set size of a list
+    * If `listname` is not known, a new list will be created
+    * Setting `size` to 0 deletes a list
     * returns `false` on error (e.g. invalid `listname` or `size`)
 * `get_width(listname)`: get width of a list
 * `set_width(listname, width)`: set width of list; currently used for crafting
@@ -7732,7 +7732,7 @@ metadata_table = {
     -- metadata fields (key/value store)
     fields = {
         infotext = "Container",
-        anoter_key = "Another Value",
+        another_key = "Another Value",
     },
 
     -- inventory data (for nodes)
@@ -7988,6 +7988,29 @@ child will follow movement and rotation of that bone.
 * `get_bone_overrides()`: returns all bone overrides as table `{[bonename] = override, ...}`
 * `set_properties(object property table)`
 * `get_properties()`: returns a table of all object properties
+* `set_observers(observers)`: sets observers (players this object is sent to)
+    * If `observers` is `nil`, the object's observers are "unmanaged":
+      The object is sent to all players as governed by server settings. This is the default.
+    * `observers` is a "set" of player names: `{name1 = true, name2 = true, ...}`
+        * A set is a table where the keys are the elements of the set
+          (in this case, *valid* player names) and the values are all `true`.
+    * Attachments: The *effective observers* of an object are made up of
+      all players who can observe the object *and* are also effective observers
+      of its parent object (if there is one).
+    * Players are automatically added to their own observer sets.
+      Players **must** effectively observe themselves.
+    * Object activation and deactivation are unaffected by observability.
+    * Attached sounds do not work correctly and thus should not be used
+      on objects with managed observers yet.
+* `get_observers()`:
+    * throws an error if the object is invalid
+    * returns `nil` if the observers are unmanaged
+    * returns a table with all observer names as keys and `true` values (a "set") otherwise
+* `get_effective_observers()`:
+    * Like `get_observers()`, but returns the "effective" observers, taking into account attachments
+    * Time complexity: O(nm)
+        * n: number of observers of the involved entities
+        * m: number of ancestors along the attachment chain
 * `is_player()`: returns true for players, false otherwise
 * `get_nametag_attributes()`
     * returns a table with the attributes of the nametag of an object
@@ -8032,7 +8055,7 @@ child will follow movement and rotation of that bone.
     * `rot` is a vector (radians). X is pitch (elevation), Y is yaw (heading)
       and Z is roll (bank).
     * Does not reset rotation incurred through `automatic_rotate`.
-      Remove & readd your objects to force a certain rotation.
+      Remove & re-add your objects to force a certain rotation.
 * `get_rotation()`: returns the rotation, a vector (radians)
 * `set_yaw(yaw)`: sets the yaw in radians (heading).
 * `get_yaw()`: returns number in radians
@@ -8233,7 +8256,9 @@ child will follow movement and rotation of that bone.
     * See `hud_set_flags` for a list of flags that can be toggled.
 * `hud_set_hotbar_itemcount(count)`: sets number of items in builtin hotbar
     * `count`: number of items, must be between `1` and `32`
+    * If `count` exceeds the `"main"` list size, the list size will be used instead.
 * `hud_get_hotbar_itemcount()`: returns number of visible items
+    * This value is also clamped by the `"main"` list size.
 * `hud_set_hotbar_image(texturename)`
     * sets background image for hotbar
 * `hud_get_hotbar_image()`: returns texturename
@@ -8412,7 +8437,8 @@ child will follow movement and rotation of that bone.
           ColorSpec (alpha ignored, default `#000000`)
         * `height`: cloud height, i.e. y of cloud base (default per conf,
           usually `120`)
-        * `thickness`: cloud thickness in nodes (default `16`)
+        * `thickness`: cloud thickness in nodes (default `16`).
+          if set to zero the clouds are rendered flat.
         * `speed`: 2D cloud speed + direction in nodes per second
           (default `{x=0, z=-2}`).
 * `get_clouds()`: returns a table with the current cloud parameters as in
@@ -8914,7 +8940,10 @@ Player properties need to be saved manually.
 Entity definition
 -----------------
 
-Used by `minetest.register_entity`.
+Used by `minetest.register_entity`.  
+The entity definition table becomes a metatable of a newly created per-entity
+luaentity table, meaning its fields (e.g. `initial_properties`) will be shared
+between all instances of an entity.
 
 ```lua
 {
@@ -8971,7 +9000,7 @@ Used by `minetest.register_abm`.
     -- Operation interval in seconds
 
     chance = 50,
-    -- Chance of triggering `action` per-node per-interval is 1.0 / chance
+    -- Probability of triggering `action` per-node per-interval is 1.0 / chance (integers only)
 
     min_y = -32768,
     max_y = 32767,
@@ -10361,7 +10390,7 @@ See [Decoration types]. Used by `minetest.register_decoration`.
     y_min = -31000,
     y_max = 31000,
     -- Lower and upper limits for decoration (inclusive).
-    -- These parameters refer to the Y co-ordinate of the 'place_on' node.
+    -- These parameters refer to the Y coordinate of the 'place_on' node.
 
     spawn_by = "default:water",
     -- Node (or list of nodes) that the decoration only spawns next to.

@@ -206,6 +206,16 @@ function table.indexof(list, val)
 end
 
 --------------------------------------------------------------------------------
+function table.keyof(tb, val)
+	for k, v in pairs(tb) do
+		if v == val then
+			return k
+		end
+	end
+	return nil
+end
+
+--------------------------------------------------------------------------------
 function string:trim()
 	return self:match("^%s*(.-)%s*$")
 end

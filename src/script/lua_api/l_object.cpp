@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "log.h"
+#include "player.h"
+#include "server/serveractiveobject.h"
 #include "tool.h"
 #include "remoteplayer.h"
 #include "server.h"
@@ -36,11 +38,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/player_sao.h"
 #include "server/serverinventorymgr.h"
 #include "server/unit_sao.h"
+#include "util/string.h"
+
+using object_t = ServerActiveObject::object_t;
 
 /*
 	ObjectRef
 */
-
 
 ServerActiveObject* ObjectRef::getobject(ObjectRef *ref)
 {
@@ -98,9 +102,6 @@ int ObjectRef::l_remove(lua_State *L)
 		return 0;
 	if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 		return 0;
-
-	sao->clearChildAttachments();
-	sao->clearParentAttachment();
 
 	verbosestream << "ObjectRef::l_remove(): id=" << sao->getId() << std::endl;
 	sao->markForRemoval();
@@ -724,17 +725,10 @@ int ObjectRef::l_set_attach(lua_State *L)
 	if (sao == parent)
 		throw LuaError("ObjectRef::set_attach: attaching object to itself is not allowed.");
 
-	int parent_id;
 	std::string bone;
 	v3f position;
 	v3f rotation;
 	bool force_visible;
-
-	sao->getAttachment(&parent_id, &bone, &position, &rotation, &force_visible);
-	if (parent_id) {
-		ServerActiveObject *old_parent = env->getActiveObject(parent_id);
-		old_parent->removeAttachmentChild(sao->getId());
-	}
 
 	bone          = readParam<std::string>(L, 3, "");
 	position      = readParam<v3f>(L, 4, v3f(0, 0, 0));
@@ -742,7 +736,6 @@ int ObjectRef::l_set_attach(lua_State *L)
 	force_visible = readParam<bool>(L, 6, false);
 
 	sao->setAttachment(parent->getId(), bone, position, rotation, force_visible);
-	parent->addAttachmentChild(sao->getId());
 	return 0;
 }
 
@@ -755,7 +748,7 @@ int ObjectRef::l_get_attach(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	int parent_id;
+	object_t parent_id;
 	std::string bone;
 	v3f position;
 	v3f rotation;
@@ -783,11 +776,11 @@ int ObjectRef::l_get_children(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	const std::unordered_set<int> child_ids = sao->getAttachmentChildIds();
+	const auto &child_ids = sao->getAttachmentChildIds();
 	int i = 0;
 
 	lua_createtable(L, child_ids.size(), 0);
-	for (const int id : child_ids) {
+	for (const object_t id : child_ids) {
 		ServerActiveObject *child = env->getActiveObject(id);
 		getScriptApiBase(L)->objectrefGetOrCreate(L, child);
 		lua_rawseti(L, -2, ++i);
@@ -845,6 +838,81 @@ int ObjectRef::l_get_properties(lua_State *L)
 
 	push_object_properties(L, prop);
 	return 1;
+}
+
+// set_observers(self, observers)
+int ObjectRef::l_set_observers(lua_State *L)
+{
+	GET_ENV_PTR;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	ServerActiveObject *sao = getobject(ref);
+	if (sao == nullptr)
+		throw LuaError("Invalid ObjectRef");
+
+	// Reset object to "unmanaged" (sent to everyone)?
+	if (lua_isnoneornil(L, 2)) {
+		sao->m_observers.reset();
+		return 0;
+	}
+
+	std::unordered_set<std::string> observer_names;
+	lua_pushnil(L);
+	while (lua_next(L, 2) != 0) {
+		std::string name = readParam<std::string>(L, -2);
+		if (!is_valid_player_name(name))
+			throw LuaError("Observer name is not a valid player name");
+		if (!lua_toboolean(L, -1)) // falsy value?
+			throw LuaError("Values in the `observers` table need to be true");
+		observer_names.insert(std::move(name));
+		lua_pop(L, 1); // pop value, keep key
+	}
+
+	RemotePlayer *player = getplayer(ref);
+	if (player != nullptr) {
+		observer_names.insert(player->getName());
+	}
+
+	sao->m_observers = std::move(observer_names);
+	return 0;
+}
+
+template<typename F>
+static int get_observers(lua_State *L, F observer_getter)
+{
+	ObjectRef *ref = ObjectRef::checkObject<ObjectRef>(L, 1);
+	ServerActiveObject *sao = ObjectRef::getobject(ref);
+	if (sao == nullptr)
+		throw LuaError("invalid ObjectRef");
+
+	const auto observers = observer_getter(sao);
+	if (!observers) {
+		lua_pushnil(L);
+		return 1;
+	}
+	// Push set of observers {[name] = true}
+	lua_createtable(L, 0, observers->size());
+	for (auto &name : *observers) {
+		lua_pushboolean(L, true);
+		lua_setfield(L, -2, name.c_str());
+	}
+	return 1;
+}
+
+// get_observers(self)
+int ObjectRef::l_get_observers(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	return get_observers(L, [](auto sao) { return sao->m_observers; });
+}
+
+// get_effective_observers(self)
+int ObjectRef::l_get_effective_observers(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	return get_observers(L, [](auto sao) {
+		// The cache may be outdated, so we always have to recalculate.
+		return sao->recalculateEffectiveObservers();
+	});
 }
 
 // is_player(self)
@@ -1176,7 +1244,7 @@ int ObjectRef::l_get_player_name(lua_State *L)
 		return 1;
 	}
 
-	lua_pushstring(L, player->getName());
+	lua_pushstring(L, player->getName().c_str());
 	return 1;
 }
 
@@ -1852,7 +1920,7 @@ int ObjectRef::l_hud_get_hotbar_itemcount(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	lua_pushinteger(L, player->getHotbarItemcount());
+	lua_pushinteger(L, player->getMaxHotbarItemcount());
 	return 1;
 }
 
@@ -2686,6 +2754,9 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_properties),
 	luamethod(ObjectRef, set_nametag_attributes),
 	luamethod(ObjectRef, get_nametag_attributes),
+	luamethod(ObjectRef, set_observers),
+	luamethod(ObjectRef, get_observers),
+	luamethod(ObjectRef, get_effective_observers),
 
 	luamethod_aliased(ObjectRef, set_velocity, setvelocity),
 	luamethod_aliased(ObjectRef, add_velocity, add_player_velocity),

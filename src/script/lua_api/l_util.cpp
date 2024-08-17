@@ -44,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/sha1.h"
 #include "my_sha256.h"
 #include "util/png.h"
+#include "player.h"
 #include <cstdio>
 
 // only available in zstd 1.3.5+
@@ -674,6 +675,16 @@ int ModApiUtil::l_urlencode(lua_State *L)
 	return 1;
 }
 
+// is_valid_player_name(name)
+int ModApiUtil::l_is_valid_player_name(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	auto s = readParam<std::string_view>(L, 1);
+	lua_pushboolean(L, is_valid_player_name(s));
+	return 1;
+}
+
 void ModApiUtil::Initialize(lua_State *L, int top)
 {
 	API_FCT(log);
@@ -722,6 +733,7 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(set_last_run_mod);
 
 	API_FCT(urlencode);
+	API_FCT(is_valid_player_name);
 
 	LuaSettings::create(L, g_settings, g_settings_path);
 	lua_setfield(L, top, "settings");

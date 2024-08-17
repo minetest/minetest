@@ -75,7 +75,7 @@ void PlayerSettings::settingsChangedCallback(const std::string &name, void *data
 	LocalPlayer
 */
 
-LocalPlayer::LocalPlayer(Client *client, const char *name):
+LocalPlayer::LocalPlayer(Client *client, const std::string &name):
 	Player(name, client->idef()),
 	m_client(client)
 {
