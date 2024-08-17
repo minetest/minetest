@@ -3182,17 +3182,28 @@ std::string Server::getStatusString()
 	os << " | clients: ";
 	if (m_env) {
 		std::vector<session_t> clients = m_clients.getClientIDs();
+
+		// Create vector to store player names
+		std::vector<std::string> playerNames;
+
 		for (session_t client_id : clients) {
 			RemotePlayer *player = m_env->getPlayer(client_id);
+			// Get name of player and push into playerNames
+			if (player) {
+				playerNames.push_back(player->getName());
+			}
+		}
 
-			// Get name of player
-			const std::string name = player ? player->getName() : "<unknown>";
+		// Sort player names alphabetically
+		std::sort(playerNames.begin(), playerNames.end());
 
-			// Add name to information string
-			if (!first)
+		// Concatenate sorted names to the output string
+		for (const std::string& name : playerNames) {
+			if (!first) {
 				os << ", ";
-			else
+			} else {
 				first = false;
+			}
 			os << name;
 		}
 	}
