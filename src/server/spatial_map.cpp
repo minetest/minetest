@@ -24,17 +24,15 @@ namespace server
 {
 
 // all inserted entires go into the uncached vector
-void SpatialMap::insert(u16 id, const v3f &pos, bool postIteration)
+void SpatialMap::insert(u16 id, const v3f &pos)
 {
 	if (m_iterators_stopping_insertion_and_deletion) {
-		m_pending_inserts.insert(SpatialKey(pos, id));
+		m_pending_operations.emplace_back(pos, id, true);
 		return;
 	}
 
 	SpatialKey key(pos);
-	if (postIteration)
-		key = SpatialKey(pos.X, pos.Y, pos.Z, true);
-	m_cached.insert({key, id});
+	m_cached.insert({ key, id });
 }
 
 // Invalidates upon position update
@@ -52,16 +50,14 @@ void SpatialMap::updatePosition(u16 id, const v3f &oldPos, const v3f &newPos)
 	insert(id, newPos); // reinsert
 }
 
-void SpatialMap::remove(u16 id, const v3f &pos, bool postIteration)
+void SpatialMap::remove(u16 id, const v3f &pos)
 {
 	if (m_iterators_stopping_insertion_and_deletion) {
-		m_pending_deletes.insert(SpatialKey(pos, id));
+		m_pending_operations.emplace_back(pos, id, false);
 		return;
 	}
 
 	SpatialKey key(pos);
-	if (postIteration)
-		key = SpatialKey(pos.X, pos.Y, pos.Z, true);
 	if(m_cached.find(key) != m_cached.end()) {
 		auto range = m_cached.equal_range(key);
 		for (auto it = range.first; it != range.second; ++it) {
@@ -72,13 +68,13 @@ void SpatialMap::remove(u16 id, const v3f &pos, bool postIteration)
 		}
 	}
 
-	remove(id); // should never be hit
+	remove(id); // can be expensive, try not to hit this
 }
 
 void SpatialMap::remove(u16 id)
 {
 	if(m_iterators_stopping_insertion_and_deletion) {
-		m_pending_deletes.insert(SpatialKey(v3f(), id));
+		m_pending_operations.emplace_back(v3f(), id, false);
 		return;
 	}
 
@@ -99,6 +95,8 @@ void SpatialMap::removeAll()
 	}
 }
 
+// Note the use of a lambda callback instead of a vector of IDs to operate upon.
+// In performance testing, the lambda allocation was faster than building and working with a vector
 void SpatialMap::getRelevantObjectIds(const aabb3f &box, const std::function<void(u16 id)> &callback)
 {
 	if (m_cached.empty()) return;
@@ -116,7 +114,7 @@ void SpatialMap::getRelevantObjectIds(const aabb3f &box, const std::function<voi
 
 	v3s16 min(low(box.MinEdge.X), low(box.MinEdge.Y), low(box.MinEdge.Z)),
 		max(high(box.MaxEdge.X), high(box.MaxEdge.Y), high(box.MaxEdge.Z));
-		
+
 	// We should only iterate using this spatial map when there are at least 1 objects per mapblocks to check.
 	// Otherwise, might as well just iterate.
 
@@ -126,7 +124,7 @@ void SpatialMap::getRelevantObjectIds(const aabb3f &box, const std::function<voi
 		for (s16 x = min.X; x < max.X;x++) {
 			for (s16 y = min.Y; y < max.Y;y++) {
 				for (s16 z = min.Z; z < max.Z;z++) {
-					SpatialKey key(x,y,z, false);
+					SpatialKey key(x,y,z, false); // false == pass through the values without shrink
 					if (m_cached.find(key) != m_cached.end()) {
 						m_iterators_stopping_insertion_and_deletion++;
 						auto range = m_cached.equal_range(key);
@@ -153,20 +151,19 @@ void SpatialMap::handleInsertsAndDeletes()
 {
 	if (m_iterators_stopping_insertion_and_deletion)
 		return;
-	
+
 	if(!m_remove_all) {
-		for (auto key : m_pending_deletes) {
-			remove(key.padding_or_optional_id, v3f(key.x, key.y, key.z), true);
-		}
-		for (auto key : m_pending_inserts) {
-			insert(key.padding_or_optional_id, v3f(key.x, key.y, key.z), true);
+		for (auto &op : m_pending_operations) {
+			if (op.insert)
+				insert(op.id, op.pos);
+			else
+				remove(op.id, op.pos);
 		}
 	} else {
 		m_cached.clear();
 		m_remove_all = false;
 	}
-	m_pending_inserts.clear();
-	m_pending_deletes.clear();
+	m_pending_operations.clear();
 }
 
 } // namespace server

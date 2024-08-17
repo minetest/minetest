@@ -189,7 +189,7 @@ public:
 		return { X, Y, Z };
 	}
 
-	vector3d<T> min(const T min_component) const {
+	vector3d<T> component_clip_below(const T min_component) const {
 		return vector3d<T>(
 			std::min(X, min_component),
 			std::min(Y, min_component),
@@ -197,7 +197,7 @@ public:
 		);
 	}
 
-	vector3d<T> max(const T max_component) const {
+	vector3d<T> component_clip_above(const T max_component) const {
 		return vector3d<T>(
 			std::max(X, max_component),
 			std::max(Y, max_component),

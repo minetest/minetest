@@ -103,7 +103,7 @@ bool ActiveObjectMgr::registerObject(std::unique_ptr<ServerActiveObject> obj)
 	}
 
 	auto obj_id = obj->getId();
-	m_spatial_map.insert(obj_id, obj->getBasePosition());
+	m_spatial_map.insert(obj_id, pos);
 	m_active_objects.put(obj_id, std::move(obj));
 
 	auto new_size = m_active_objects.size();
@@ -123,7 +123,7 @@ void ActiveObjectMgr::removeObject(u16 id)
 			<< "id=" << id << std::endl;
 
 	auto &obj = m_active_objects.get(id);
-	if(obj) {
+	if (obj) {
 		m_spatial_map.remove(id, obj->getBasePosition());
 	} else {
 		m_spatial_map.remove(id);
@@ -152,7 +152,7 @@ void ActiveObjectMgr::getObjectsInsideRadius(const v3f &pos, float radius,
 		std::function<bool(ServerActiveObject *obj)> include_obj_cb)
 {
 	float r2 = radius * radius;
-	aabb3f bounds(pos.X-radius, pos.Y-radius, pos.Z-radius, 
+	aabb3f bounds(pos.X-radius, pos.Y-radius, pos.Z-radius,
 			   pos.X+radius, pos.Y+radius, pos.Z+radius);
 
 	m_spatial_map.getRelevantObjectIds(bounds, [&](u16 id) {
@@ -204,9 +204,9 @@ void ActiveObjectMgr::getAddedActiveObjectsAroundPos(
 		- discard objects that are not observed by the player.
 		- add remaining objects to added_objects
 	*/
-	f32 offset = radius > player_radius ? radius : player_radius;
-	aabb3f bounds(player_pos.X-offset, player_pos.Y-offset, player_pos.Z-offset, 
-			   player_pos.X+offset, player_pos.Y+offset, player_pos.Z+offset);
+	f32 upper_bound_radius  = std::max(radius, player_radius);
+	aabb3f bounds(player_pos.X-upper_bound_radius, player_pos.Y-upper_bound_radius, player_pos.Z-upper_bound_radius,
+			   player_pos.X+upper_bound_radius, player_pos.Y+upper_bound_radius, player_pos.Z+upper_bound_radius);
 	m_spatial_map.getRelevantObjectIds(bounds, [&](u16 id) {
 		auto obj = m_active_objects.get(id).get();
 		if (!obj) { // should never be hit
@@ -216,7 +216,7 @@ void ActiveObjectMgr::getAddedActiveObjectsAroundPos(
 		if (obj->isGone()) {
 			return;
 		}
-		
+
 		f32 distance_f = obj->getBasePosition().getDistanceFrom(player_pos);
 		if (obj->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			// Discard if too far
@@ -225,8 +225,8 @@ void ActiveObjectMgr::getAddedActiveObjectsAroundPos(
 		} else if (distance_f > radius)
 			return;
 
-		if (!object->isEffectivelyObservedBy(player_name))
-			continue;
+		if (!obj->isEffectivelyObservedBy(player_name))
+			return;
 
 		// Discard if already on current_objects
 		auto n = current_objects.find(id);

@@ -30,38 +30,35 @@ namespace server
 class SpatialMap
 {
 public:
-	void insert(u16 id, const v3f &pos, bool postIteration = false);
-	void remove(u16 id, const v3f &pos, bool postIteration = false);
+	void insert(u16 id, const v3f &pos);
+	void remove(u16 id, const v3f &pos);
 	void remove(u16 id);
 	void removeAll();
 	void updatePosition(u16 id, const v3f &oldPos, const v3f &newPos);
 	void getRelevantObjectIds(const aabb3f &box, const std::function<void(u16 id)> &callback);
-	void handleInsertsAndDeletes();
 
 protected:
-	struct SpatialKey {
-		u16 padding_or_optional_id{0};
-		s16 x;
-		s16 y;
-		s16 z;
+	void handleInsertsAndDeletes();
 
-		SpatialKey(s16 _x, s16 _y, s16 _z, bool _shrink = true) {
-			if(_shrink) {
+	struct SpatialKey {
+		u16 padding{0};
+		s16 x, y, z;
+
+		// In Node Coordinates, shrink = false: for getRelevantObjectIds() iteration
+		SpatialKey(s16 _x, s16 _y, s16 _z, bool shrink = true) {
+			if (shrink) {
 				x = _x >> 4;
 				y = _y >> 4;
 				z = _z >> 4;
-			} else {
+			}
+			else {
 				x = _x;
 				y = _y;
 				z = _z;
 			}
 		}
+		// In Entity coordinates
 		SpatialKey(const v3f &_pos) : SpatialKey(_pos.X / BS, _pos.Y / BS, _pos.Z / BS){}
-		// The following use case is for storing pending insertions and deletions while iterating
-		// using the extra 16 bit padding makes keeping track of them super efficient for hashing.
-		SpatialKey(const v3f &_pos, const u16 id) : SpatialKey(_pos.X / BS, _pos.Y / BS, _pos.Z / BS, false){
-			padding_or_optional_id = id;
-		}
 
 		bool operator==(const SpatialKey &other) const {
 			return (x == other.x && y == other.y && z == other.z);
@@ -69,14 +66,27 @@ protected:
 	};
 
 	struct SpatialKeyHash {
-		auto operator()(const SpatialKey &key) const -> size_t {
-			return std::hash<size_t>()(*reinterpret_cast<const size_t*>(&key));
+		auto operator()(const SpatialKey& key) const -> u64 {
+			return std::hash<u64>()(*reinterpret_cast<const u64*>(&key));
+		}
+	};
+
+	// Used for storing Inserts and Deletes while iterating
+	struct PendingOperation {
+		v3f pos;
+		u16 id;
+		bool insert;
+
+		// Truncate, but keep in entity coords, that conversion is handled in SpatialKey
+		PendingOperation(const v3f& _pos, u16 _id, bool is_being_inserted) {
+			pos = _pos;
+			id = _id;
+			insert = is_being_inserted; // false = removed
 		}
 	};
 
 	std::unordered_multimap<SpatialKey, u16, SpatialKeyHash> m_cached;
-	std::unordered_set<SpatialKey, SpatialKeyHash> m_pending_inserts;
-	std::unordered_set<SpatialKey, SpatialKeyHash> m_pending_deletes;
+	std::vector<PendingOperation> m_pending_operations;
 	bool m_remove_all{false};
 	u64 m_iterators_stopping_insertion_and_deletion{0};
 };

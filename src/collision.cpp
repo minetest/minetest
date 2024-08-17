@@ -281,14 +281,14 @@ static void add_object_boxes(Environment *env,
 		}
 	};
 
-	const f32 tolerance = 1.5f * BS; // TODO increase tolerance
+	constexpr f32 tolerance = 1.5f * BS;
 
 #ifndef SERVER
 	ClientEnvironment *c_env = dynamic_cast<ClientEnvironment*>(env);
 	if (c_env) {
-		// Calculate distance by speed, add own extent and 1.5m of tolerance
+		// Calculate distance by speed, add own extent and tolerance
 		const f32 distance = speed_f.getLength() * dtime +
-			box_0.getExtent().getLength() + 1.5f * BS;
+			box_0.getExtent().getLength() + tolerance;
 
 		std::vector<DistanceSortedActiveObject> clientobjects;
 		c_env->getActiveObjects(pos_f, distance, clientobjects);
@@ -330,8 +330,8 @@ static void add_object_boxes(Environment *env,
 
 			// Calculate distance by speed, add own extent and tolerance
 			const v3f movement = speed_f * dtime;
-			const v3f min = pos_f + box_0.MinEdge - v3f(tolerance) + movement.min(0);
-			const v3f max = pos_f + box_0.MaxEdge + v3f(tolerance) + movement.max(0);
+			const v3f min = pos_f + box_0.MinEdge - v3f(tolerance) + movement.component_clip_below(0);
+			const v3f max = pos_f + box_0.MaxEdge + v3f(tolerance) + movement.component_clip_above(0);
 
 			// nothing is put into this vector
 			std::vector<ServerActiveObject*> s_objects;
