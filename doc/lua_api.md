@@ -8940,7 +8940,7 @@ Player properties need to be saved manually.
 Entity definition
 -----------------
 
-Used by `minetest.register_entity`.  
+Used by `minetest.register_entity`.
 The entity definition table becomes a metatable of a newly created per-entity
 luaentity table, meaning its fields (e.g. `initial_properties`) will be shared
 between all instances of an entity.
