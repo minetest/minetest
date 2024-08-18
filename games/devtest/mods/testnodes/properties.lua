@@ -220,7 +220,11 @@ minetest.register_node("testnodes:climbable_fast", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	is_ground_content = false,
-	tiles = {"testnodes_climbable_top.png^[colorize:#FFFFFF:140","testnodes_climbable_top.png^[colorize:#FFFFFF:140","testnodes_climbable_side.png^[colorize:#FFFFFF:140"},
+	tiles = {
+		"testnodes_climbable_top.png^[colorize:#FFFFFF:140",
+		"testnodes_climbable_top.png^[colorize:#FFFFFF:140",
+		"testnodes_climbable_side.png^[colorize:#FFFFFF:140"
+	},
 	use_texture_alpha = "clip",
 	drawtype = "nodebox",
 	node_box = climbable_nodebox,
@@ -237,7 +241,11 @@ minetest.register_node("testnodes:climbable_slow", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	is_ground_content = false,
-	tiles = {"testnodes_climbable_top.png^[colorize:#000000:140","testnodes_climbable_top.png^[colorize:#000000:140","testnodes_climbable_side.png^[colorize:#000000:140"},
+	tiles = {
+		"testnodes_climbable_top.png^[colorize:#000000:140",
+		"testnodes_climbable_top.png^[colorize:#000000:140",
+		"testnodes_climbable_side.png^[colorize:#000000:140"
+	},
 	use_texture_alpha = "clip",
 	drawtype = "nodebox",
 	node_box = climbable_nodebox,
@@ -254,7 +262,11 @@ core.register_node("testnodes:climbable_nojump", {
 	groups = {disable_jump=1, dig_immediate=3},
 	drawtype = "nodebox",
 	node_box = climbable_nodebox,
-	tiles = {"testnodes_climbable_nojump_top.png","testnodes_climbable_nojump_top.png","testnodes_climbable_nojump_side.png"},
+	tiles = {
+		"testnodes_climbable_nojump_top.png",
+		"testnodes_climbable_nojump_top.png",
+		"testnodes_climbable_nojump_side.png"
+	},
 	use_texture_alpha = "clip",
 	paramtype = "light",
 	sunlight_propagates = true,
@@ -270,7 +282,11 @@ core.register_node("testnodes:climbable_nodescend", {
 	groups = {disable_descend=1, dig_immediate=3},
 	drawtype = "nodebox",
 	node_box = climbable_nodebox,
-	tiles = {"testnodes_climbable_nodescend_top.png","testnodes_climbable_nodescend_top.png","testnodes_climbable_nodescend_side.png"},
+	tiles = {
+		"testnodes_climbable_nodescend_top.png",
+		"testnodes_climbable_nodescend_top.png",
+		"testnodes_climbable_nodescend_side.png"
+	},
 	use_texture_alpha = "clip",
 	paramtype = "light",
 	sunlight_propagates = true,
@@ -285,7 +301,11 @@ core.register_node("testnodes:climbable_nodescend_nojump", {
 	groups = {disable_jump=1, disable_descend=1, dig_immediate=3},
 	drawtype = "nodebox",
 	node_box = climbable_nodebox,
-	tiles = {"testnodes_climbable_noclimb_top.png","testnodes_climbable_noclimb_top.png","testnodes_climbable_noclimb_side.png"},
+	tiles = {
+		"testnodes_climbable_noclimb_top.png",
+		"testnodes_climbable_noclimb_top.png",
+		"testnodes_climbable_noclimb_side.png"
+	},
 	use_texture_alpha = "clip",
 	paramtype = "light",
 	sunlight_propagates = true,
