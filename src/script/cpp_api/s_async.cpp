@@ -97,6 +97,7 @@ u32 AsyncEngine::queueAsyncJob(LuaJobInfo &&job)
 	MutexAutoLock autolock(jobQueueMutex);
 	u32 jobId = jobIdCounter++;
 
+	assert(!job.function.empty());
 	job.id = jobId;
 	jobQueue.push_back(std::move(job));
 
