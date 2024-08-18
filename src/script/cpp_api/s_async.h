@@ -26,8 +26,12 @@ class AsyncEngine;
 struct LuaJobInfo
 {
 	LuaJobInfo() = default;
-	LuaJobInfo(std::string &&func, std::string &&params, const std::string &mod_origin = "");
-	LuaJobInfo(std::string &&func, PackedValue *params, const std::string &mod_origin = "");
+	LuaJobInfo(std::string &&func, std::string &&params, const std::string &mod_origin = "") :
+		function(func), params(params), mod_origin(mod_origin) {}
+	LuaJobInfo(std::string &&func, PackedValue *params, const std::string &mod_origin = "") :
+		function(func), mod_origin(mod_origin) {
+		params_ext.reset(params);
+	}
 
 	// Function to be called in async environment (from string.dump)
 	std::string function;
