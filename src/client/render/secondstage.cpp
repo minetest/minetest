@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "noise.h"
 
+// TODO: Probably this could still be improved, having a step for this seems silly
 class NoiseStep : public RenderStep {
 public:
 	NoiseStep(TextureBuffer* buffer, u8 id, u32 size) :

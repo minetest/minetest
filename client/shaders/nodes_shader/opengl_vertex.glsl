@@ -45,6 +45,7 @@ varying float area_enable_parallax;
 
 varying highp vec3 eyeVec;
 varying float nightRatio;
+varying vec3 sunTint;
 // Color of the light emitted by the light sources.
 uniform vec3 artificialLight;
 const float e = 2.718281828459;
@@ -145,8 +146,19 @@ float snoise(vec3 p)
 
 #endif
 
+vec3 getDirectLightScatteringAtGround(vec3 v_LightDirection)
+{
+	// Based on talk at 2002 Game Developers Conference by Naty Hoffman and Arcot J. Preetham
+	const float beta_r0 = 1e-5; // Rayleigh scattering beta
 
+	// These factors are calculated based on expected value of scattering factor of 1e-5
+	// for Nitrogen at 532nm (green), 2e25 molecules/m3 in atmosphere
+	const vec3 beta_r0_l = vec3(3.3362176e-01, 8.75378289198826e-01, 1.95342379700656) * beta_r0; // wavelength-dependent scattering
 
+	const float atmosphere_height = 15000.; // height of the atmosphere in meters
+	// sun/moon light at the ground level, after going through the atmosphere
+	return exp(-beta_r0_l * atmosphere_height / (1e-5 - dot(v_LightDirection, vec3(0., 1., 0.))));
+}
 
 void main(void)
 {
@@ -259,6 +271,7 @@ void main(void)
 		shadow_position.z -= z_bias;
 		perspective_factor = pFactor;
 
+		sunTint = vec3(1.0);
 		if (f_timeofday < 0.21) {
 			adj_shadow_strength = f_shadow_strength * 0.5 *
 				(1.0 - mtsmoothstep(0.18, 0.21, f_timeofday));
@@ -269,6 +282,7 @@ void main(void)
 			adj_shadow_strength = f_shadow_strength *
 				mtsmoothstep(0.21, 0.26, f_timeofday) *
 				(1.0 - mtsmoothstep(0.743, 0.793, f_timeofday));
+			sunTint = mix(vec3(1.0), getDirectLightScatteringAtGround(v_LightDirection), min(1.0, 4.0 * adj_shadow_strength));
 		}
 	}
 #endif

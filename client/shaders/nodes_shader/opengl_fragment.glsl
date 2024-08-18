@@ -8,6 +8,8 @@
 uniform sampler2D baseTexture;
 uniform vec2 texelSize0;
 
+varying vec3 sunTint;
+
 uniform vec3 dayLight;
 uniform lowp vec4 fogColor;
 uniform float fogDistance;
@@ -485,7 +487,7 @@ void main(void)
 		// calculate fragment color from components:
 		col.rgb =
 				adjusted_night_ratio * col.rgb + // artificial light
-				(1.0 - adjusted_night_ratio) * ( // natural light
+				sunTint * (1.0 - adjusted_night_ratio) * ( // natural light
 						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color)) +  // filtered texture color
 						dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
 	}

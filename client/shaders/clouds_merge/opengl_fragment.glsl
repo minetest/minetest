@@ -48,6 +48,9 @@ vec4 sampleClouds(vec2 uv) {
 }
 
 vec4 getClouds(vec2 uv) {
+#if (VOLUMETRICS_UNDERSAMPLING <= 1)
+		return sampleClouds(uv);
+#else
 	return
 		sampleClouds(uv - texelSize0 * vec2(-1.0, -1.0)) / 9.0 +
 		sampleClouds(uv - texelSize0 * vec2( 0.0, -1.0)) / 9.0 +
@@ -58,6 +61,7 @@ vec4 getClouds(vec2 uv) {
 		sampleClouds(uv - texelSize0 * vec2(-1.0,  1.0)) / 9.0 +
 		sampleClouds(uv - texelSize0 * vec2( 0.0,  1.0)) / 9.0 +
 		sampleClouds(uv - texelSize0 * vec2( 1.0,  1.0)) / 9.0;
+#endif
 }
 
 void main(void)

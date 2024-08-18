@@ -137,10 +137,15 @@ void main(void)
 	float bottomPlaneIntersect = clamp((cloudHeight - cameraPosition.y) / viewVec.y, 0., 4. * fogDistance);
 	float topPlaneIntersect = clamp((cloudHeight + cloudThickness - cameraPosition.y) / viewVec.y, 0., 4. * fogDistance);
 
+#if (VOLUMETRICS_UNDERSAMPLING <= 1)
+	bottomPlaneIntersect = min(depth, bottomPlaneIntersect);
+	topPlaneIntersect = min(depth, topPlaneIntersect);
+#else
 	if ((bottomPlaneIntersect > depth + 5.0) != (topPlaneIntersect > depth + 5.0)) {
 		bottomPlaneIntersect = min(depth, bottomPlaneIntersect);
 		topPlaneIntersect = min(depth, topPlaneIntersect);
 	}
+#endif
 
 	float startDepth = min(bottomPlaneIntersect, topPlaneIntersect);
 	float endDepth = max(bottomPlaneIntersect, topPlaneIntersect);

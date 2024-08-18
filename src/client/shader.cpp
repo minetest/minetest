@@ -728,6 +728,10 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		shaders_header << "#define VOLUMETRIC_LIGHT 1\n";
 	}
 
+	if (g_settings->getBool("enable_volumetric_clouds")) {
+		shaders_header << "#define VOLUMETRICS_UNDERSAMPLING " << g_settings->getU32("volumetrics_undersampling") << '\n';
+	}
+
 	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics
 
 	std::string common_header = shaders_header.str();
