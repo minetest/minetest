@@ -9853,8 +9853,8 @@ Used by `core.register_node`.
     -- The speed at which a climbable node can be climbed is multiplied
     -- with this number. Must not be negative. No effect if node isn't
     -- climbable.
-    -- Note: To set the base climbing speed in your game,
-    -- change the setting "movement_speed_climb".
+    -- Note: The base climbing speed is controlled by the setting
+    -- `movement_speed_climb`.
 
     buildable_to = false,  -- If true, placed nodes can replace this node
 
