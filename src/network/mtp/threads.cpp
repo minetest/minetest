@@ -59,14 +59,24 @@ static inline u8 readChannel(const u8 *packetdata)
 /* Connection Threads                                                         */
 /******************************************************************************/
 
+#define MPPI_SETTING "max_packets_per_iteration"
+
 ConnectionSendThread::ConnectionSendThread(unsigned int max_packet_size,
 	float timeout) :
 	Thread("ConnectionSend"),
 	m_max_packet_size(max_packet_size),
 	m_timeout(timeout),
-	m_max_data_packets_per_iteration(g_settings->getU16("max_packets_per_iteration"))
+	m_max_data_packets_per_iteration(g_settings->getU16(MPPI_SETTING))
 {
-	SANITY_CHECK(m_max_data_packets_per_iteration > 1);
+	auto &mppi = m_max_data_packets_per_iteration;
+	mppi = MYMAX(mppi, 1);
+
+	const auto mppi_default = Settings::getLayer(SL_DEFAULTS)->getU16(MPPI_SETTING);
+	if (mppi < mppi_default) {
+		warningstream << "You are running the network code with a non-default "
+			"configuration (" MPPI_SETTING "=" << mppi << "). "
+			"This is not recommended in production." << std::endl;
+	}
 }
 
 void *ConnectionSendThread::run()
@@ -769,7 +779,7 @@ void ConnectionSendThread::sendPackets(float dtime, u32 peer_packet_quota)
 		}
 	}
 
-	if (peer_packet_quota > 0) {
+	if (peer_packet_quota > 0 && !stopRequested()) {
 		for (session_t peerId : peerIds) {
 			PeerHelper peer = m_connection->getPeerNoEx(peerId);
 			if (!peer)
