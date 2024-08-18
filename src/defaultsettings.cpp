@@ -77,13 +77,6 @@ static bool detect_touch()
 	}
 
 	return false;
-#elif defined(_WIN32)
-	// 0x01 The device has an integrated touch digitizer
-	// 0x80 The device is ready to receive digitizer input.
-	if ((GetSystemMetrics(SM_DIGITIZER) & 0x81) == 0x81)
-		return true;
-
-	return false;
 #else
 	// we don't know, return default
 	return false;
