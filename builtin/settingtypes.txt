@@ -2024,9 +2024,8 @@ max_simultaneous_block_sends_per_client (Maximum simultaneous block sends per cl
 #    This determines how long they are slowed down after placing or removing a node.
 full_block_send_enable_min_time_from_building (Delay in sending blocks after building) float 2.0 0.0
 
-#    Maximum number of packets sent per send step, if you have a slow connection
-#    try reducing it, but don't reduce it to a number below double of targeted
-#    client number.
+#    Maximum number of packets sent per send step in the low-level networking code.
+#    You generally don't need to change this, however busy servers may benefit from a higher number.
 max_packets_per_iteration (Max. packets per iteration) int 1024 1 65535
 
 #    Compression level to use when sending mapblocks to the client.
