@@ -208,6 +208,7 @@ local function test_vector_preserve(cb)
 end
 unittests.register("test_async_vector", test_vector_preserve, {async=true})
 
+-- FIXME: this code is racy and can be improved once Lua IPC is supported
 local function fill_async()
 	local capacity = core.get_async_threading_capacity()
 	for _ = 1, capacity do
