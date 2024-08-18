@@ -610,14 +610,15 @@ enable_auto_exposure (Enable Automatic Exposure) bool false
 #    Requires: shaders, enable_post_processing, enable_auto_exposure
 exposure_compensation (Exposure compensation) float 0.0 -1.0 1.0
 
-#   Set the gamma value.
+#   Set the post processing gamma value.
 #   Higher values give lower contrast and vice versa. 
 #   Range: from 1.0 to 5.0
+#   Default: 1.6
 #
 #   Requires: shaders, enable_post_processing, tone_mapping
 gamma (Gamma) float 1.6 1.0 5.0
 
-#   Apply color grading to make brighter colors warmer and darker colors cooler.
+#   Apply ASL CDL color grading to make brighter colors warmer and darker colors cooler.
 #
 #   Requires: shaders, enable_post_processing
 enable_color_grading (Color grading) bool false
@@ -674,10 +675,28 @@ bloom_strength_factor (Bloom Strength Factor) float 1.0 0.1 10.0
 #    Requires: shaders, enable_post_processing, enable_bloom
 bloom_radius (Bloom Radius) float 1 0.1 8
 
+[**Volumetric Effects]
+
 #    Set to true to enable volumetric lighting effect (a.k.a. "Godrays").
 #
 #    Requires: shaders, enable_post_processing, enable_bloom
-enable_volumetric_lighting (Volumetric lighting) bool false
+enable_volumetric_lighting (Volumetric Lighting) bool false
+
+#   Set to true to render clouds as scatter volumes.
+#
+#   Requires: shaders, enable_post_processing, enable_clouds
+enable_volumetric_clouds (Volumetric Clouds) bool false
+
+#   Higher values reduce visual quality and may introduce artifacts, but improve performance of volumetric cloud/aurora effects.
+#   Range: from 1 to 4, default: 2
+#
+#   Requires: shaders, enable_post_processing
+volumetrics_undersampling (Volumetric Undersampling) int 2 1 4
+
+#   Set to true to render volumetric auroras ("Northern Lights").
+#
+#   Requires: shaders, enable_post_processing
+enable_volumetric_auroras (Volumetric Auroras) bool false
 
 [**Other Effects]
 

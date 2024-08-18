@@ -24,64 +24,114 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/shader.h"
 #include "client/tile.h"
 #include "settings.h"
+#include "noise.h"
 
 class NoiseStep : public RenderStep {
 public:
-	NoiseStep(u32 shader_id, u8 texture_id) :
-		shader_id(shader_id), texture_id(texture_id)
+	NoiseStep(TextureBuffer* buffer, u8 id, u32 size) :
+		buffer(buffer), id(id), size(size)
 	{
-		material.UseMipMaps = false;
-		material.ZBuffer = true;
-		material.ZWriteEnable = video::EZW_ON;
 	}
 
-	void setRenderSource(RenderSource* _source) override {
-		source = _source;
+	void setRenderSource(RenderSource* _source) override {}
+
+	void setRenderTarget(RenderTarget* _target) override {}
+
+	void reset(PipelineContext& context) override {}
+
+	void run(PipelineContext& context) override
+	{
+		if (!needs_run) return;
+
+		needs_run = false;
+
+		video::IImage* noise_image = context.device->getVideoDriver()->createImage(video::ECF_A8R8G8B8, core::dimension2du(256, 256));
+		PseudoRandom random;
+		for (u32 i = 0; i < size * size; ++i) {
+			noise_image->setPixel(i % size, i / size, video::SColor(0, random.next() % 256, 0, 0));
+		}
+		buffer->setTextureImage(id, noise_image);
+		noise_image->drop();
 	}
 
-	void setRenderTarget(RenderTarget* _target) override {
+private:
+	u32 size;
+	u8 id;
+	TextureBuffer* buffer = nullptr;
+	bool needs_run = true;
+};
+
+class CloudDensityStep : public RenderStep {
+public:
+	CloudDensityStep(TextureBuffer* buffer, u8 id, Clouds* clouds) :
+		buffer(buffer), id(id), clouds(clouds)
+	{
+	}
+
+	void setRenderSource(RenderSource* _source) override {}
+
+	void setRenderTarget(RenderTarget* _target) override {}
+
+	void reset(PipelineContext& context) override {}
+
+	void run(PipelineContext& context) override
+	{
+		u16 cloud_radius = g_settings->getU16("cloud_radius");
+		if (cloud_radius < 1) cloud_radius = 1;
+
+		video::IImage* image = context.device->getVideoDriver()->createImage(video::ECF_A8R8G8B8, core::dimension2du(8 * cloud_radius, 8 * cloud_radius));
+
+		for (int x = 0; x < 2 * cloud_radius; ++x) {
+			for (int y = 0; y < 2 * cloud_radius; ++y) {
+				bool isFilled = clouds->getGrid(x, y);
+
+				for (int i = 0; i < 16; ++i) {
+					int xp = x * 4 + i % 4;
+					int yp = y * 4 + i / 4;
+
+					image->setPixel(xp, yp, video::SColor(255, isFilled * 255, 0, 0));
+				}
+			}
+		}
+
+		buffer->setTextureImage(id, image);
+
+		image->drop();
+	}
+
+private:
+	Clouds* clouds = nullptr;
+	u8 id = 0;
+	TextureBuffer* buffer = nullptr;
+};
+
+class CloudDepthStep : public RenderStep {
+public:
+	CloudDepthStep(Clouds* clouds) :
+		clouds(clouds)
+	{
+	}
+
+	void setRenderSource(RenderSource* _source) override {}
+
+	void setRenderTarget(RenderTarget* _target) override
+	{
 		target = _target;
 	}
 
 	void reset(PipelineContext& context) override {}
 
-	void run(PipelineContext& context) override {
-		video::ITexture* texture = source->getTexture(texture_id);
-		if (texture != last_texture) {
-			last_texture = texture;
+	void run(PipelineContext& context) override
+	{
+		if (target)
+			target->activate(context);
 
-			if (target)
-				target->activate(context);
-
-			// attach the shader
-			material.MaterialType = context.client->getShaderSource()->getShaderInfo(shader_id).material;
-
-			auto driver = context.device->getVideoDriver();
-
-			static const video::SColor color = video::SColor(0, 0, 0, 255);
-			static const video::S3DVertex vertices[4] = {
-					video::S3DVertex(1.0, -1.0, 0.0, 0.0, 0.0, -1.0,
-							color, 1.0, 0.0),
-					video::S3DVertex(-1.0, -1.0, 0.0, 0.0, 0.0, -1.0,
-							color, 0.0, 0.0),
-					video::S3DVertex(-1.0, 1.0, 0.0, 0.0, 0.0, -1.0,
-							color, 0.0, 1.0),
-					video::S3DVertex(1.0, 1.0, 0.0, 0.0, 0.0, -1.0,
-							color, 1.0, 1.0),
-			};
-			static const u16 indices[6] = { 0, 1, 2, 2, 3, 0 };
-			driver->setMaterial(material);
-			driver->drawVertexPrimitiveList(&vertices, 4, &indices, 2);
-		}
+		clouds->renderDepth();
 	}
 
 private:
-	u32 shader_id;
-	u8 texture_id;
-	video::SMaterial material;
-	video::ITexture* last_texture = nullptr;
-	RenderSource* source{ nullptr };
-	RenderTarget* target{ nullptr };
+	Clouds* clouds = nullptr;
+	RenderTarget* target = nullptr;
 };
 
 PostProcessingStep::PostProcessingStep(u32 _shader_id, const std::vector<u8> &_texture_map) :
@@ -160,6 +210,11 @@ void PostProcessingStep::setWrapRepeat(u8 index, bool value) {
 	material.TextureLayers[index].TextureWrapV = value ? video::ETC_REPEAT : video::ETC_CLAMP_TO_EDGE;
 }
 
+void PostProcessingStep::disableDepthTest() {
+	material.ZBuffer = video::ECFN_DISABLED;
+	material.ZWriteEnable = video::EZW_OFF;
+}
+
 RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale, Client *client)
 {
 	auto buffer = pipeline->createOwned<TextureBuffer>();
@@ -201,8 +256,8 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	const bool enable_ssaa = antialiasing == "ssaa";
 	const bool enable_fxaa = antialiasing == "fxaa";
 	const bool enable_volumetric_light = g_settings->getBool("enable_volumetric_lighting") && enable_bloom;
-	const bool enable_volumetric_clouds = true;
-	// TODO: Add clouds setting
+	// TODO: Proper constraints
+	const bool enable_volumetric_clouds = g_settings->getBool("enable_volumetric_clouds") && client->getClouds();
 
 	if (enable_ssaa) {
 		u16 ssaa_scale = MYMAX(2, g_settings->getU16("fsaa"));
@@ -226,22 +281,21 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	// post-processing stage
 
 	u8 source = TEXTURE_COLOR;
+
+	u8 final_color_source = TEXTURE_COLOR;
 	
 	if (enable_volumetric_clouds) {
+		const u16 cloud_radius = g_settings->getU16("cloud_radius");
+
 		buffer->setTexture(TEXTURE_NOISE, core::dimension2du(256, 256), "noise", color_format);
+		pipeline->addStep<NoiseStep>(buffer, TEXTURE_NOISE, 256);
 
-		shader_id = client->getShaderSource()->getShader("noise_shader", TILE_MATERIAL_PLAIN, NDT_MESH);
-		RenderStep *noise_step = pipeline->addStep<NoiseStep>(shader_id, TEXTURE_NOISE);
-		noise_step->setRenderSource(buffer);
-		noise_step->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_NOISE));
+		buffer->setTexture(TEXTURE_NOISE_COARSE, core::dimension2du(cloud_radius * 8, cloud_radius * 8), "noise_coarse", color_format);
+		pipeline->addStep<CloudDensityStep>(buffer, TEXTURE_NOISE_COARSE, client->getClouds());
 
-		buffer->setTexture(TEXTURE_NOISE_COARSE, core::dimension2du(256, 256), "noise", color_format);
+		u32 undersampling = core::clamp(g_settings->getU32("volumetrics_undersampling"), (u32)1, (u32)4);
 
-		shader_id = client->getShaderSource()->getShader("coarse_noise_shader", TILE_MATERIAL_PLAIN, NDT_MESH);
-		noise_step = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8>());
-		noise_step->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_NOISE_COARSE));
-
-		buffer->setTexture(TEXTURE_CLOUDS_1, scale * 0.25f, "clouds_1", color_format, /*clear:*/ true);
+		buffer->setTexture(TEXTURE_CLOUDS_1, scale / (float)undersampling, "clouds_1", color_format, /*clear:*/ true);
 		buffer->setTexture(TEXTURE_CLOUDS_2, scale, "clouds_2", color_format);
 		buffer->setTexture(TEXTURE_CLOUD_DENSITY, scale, "cloud_density", color_format);
 
@@ -253,16 +307,24 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 		volumetric_clouds->setBilinearFilter(2, true);
 		volumetric_clouds->setWrapRepeat(1, true);
 		volumetric_clouds->setWrapRepeat(2, true);
+		volumetric_clouds->disableDepthTest();
 
 		source = TEXTURE_CLOUDS_1;
 
 		shader_id = client->getShaderSource()->getShader("clouds_merge", TILE_MATERIAL_PLAIN, NDT_MESH);
-		PostProcessingStep* blend_clouds = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_CLOUDS_1, TEXTURE_COLOR });
+		PostProcessingStep* blend_clouds = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_CLOUDS_1, TEXTURE_COLOR, TEXTURE_DEPTH });
 		blend_clouds->setRenderSource(buffer);
 		blend_clouds->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_CLOUDS_2));
 		blend_clouds->setBilinearFilter(0, true);
+		blend_clouds->disableDepthTest();
+
+		CloudDepthStep* cloud_depth = pipeline->addStep<CloudDepthStep>(client->getClouds());
+		TextureBufferOutput* cloud_depth_output = pipeline->createOwned<TextureBufferOutput>(buffer, std::vector<u8>{ TEXTURE_COLOR }, TEXTURE_DEPTH);
+		cloud_depth_output->disableClearing();
+		cloud_depth->setRenderTarget(cloud_depth_output);
 
 		source = TEXTURE_CLOUDS_2;
+		final_color_source = TEXTURE_CLOUDS_2;
 	}
 
 	// common downsampling step for bloom or autoexposure
@@ -281,7 +343,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 
 			// get bright spots
 			u32 shader_id = client->getShaderSource()->getShader("extract_bloom", TILE_MATERIAL_PLAIN, NDT_MESH);
-			auto extract_bloom = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { source, TEXTURE_EXPOSURE_1 });
+			RenderStep* extract_bloom = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { source, TEXTURE_EXPOSURE_1 });
 			extract_bloom->setRenderSource(buffer);
 			extract_bloom->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_BLOOM));
 			source = TEXTURE_BLOOM;
@@ -332,14 +394,14 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	}
 
 	// FXAA
-	u8 final_stage_source = TEXTURE_CLOUDS_2;
+	u8 final_stage_source = final_color_source;
 
 	if (enable_fxaa) {
 		final_stage_source = TEXTURE_FXAA;
 
 		buffer->setTexture(TEXTURE_FXAA, scale, "fxaa", color_format);
 		shader_id = client->getShaderSource()->getShader("fxaa", TILE_MATERIAL_PLAIN);
-		PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR });
+		PostProcessingStep* effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8> { final_color_source });
 		pipeline->addStep(effect);
 		effect->setBilinearFilter(0, true);
 		effect->setRenderSource(buffer);
@@ -348,7 +410,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 
 	// final merge
 	shader_id = client->getShaderSource()->getShader("second_stage", TILE_MATERIAL_PLAIN, NDT_MESH);
-	PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8> { final_stage_source, TEXTURE_SCALE_UP, TEXTURE_EXPOSURE_2 });
+	PostProcessingStep* effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8> { final_stage_source, TEXTURE_SCALE_UP, TEXTURE_EXPOSURE_2 });
 	pipeline->addStep(effect);
 	if (enable_ssaa)
 		effect->setBilinearFilter(0, true);

@@ -45,7 +45,7 @@ Clouds::Clouds(scene::ISceneManager* mgr, IShaderSource *ssrc,
 		s32 id,
 		u32 seed
 ):
-	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
+	scene::ISceneNode(g_settings->getBool("enable_volumetric_clouds") ? nullptr : mgr->getRootSceneNode(), mgr, id),
 	m_seed(seed)
 {
 	m_enable_shaders = g_settings->getBool("enable_shaders");
@@ -106,6 +106,14 @@ void Clouds::updateMesh()
 		std::floor(center_of_drawing_in_noise_f.Y / cloud_size)
 	);
 
+	// The world position of the integer center point of drawing in the noise
+	v2f world_center_of_drawing_in_noise_f = v2f(
+		center_of_drawing_in_noise_i.X * cloud_size,
+		center_of_drawing_in_noise_i.Y * cloud_size
+	) + m_origin;
+
+	m_noise_position = world_center_of_drawing_in_noise_f - ((float)m_cloud_radius_i + 0.5f) * cloud_size;
+
 	// Only update mesh if it has moved enough, this saves lots of GPU buffer uploads.
 	constexpr float max_d = 5 * BS;
 
@@ -127,12 +135,6 @@ void Clouds::updateMesh()
 	m_mesh_valid = true;
 
 	const u32 num_faces_to_draw = m_enable_3d ? 6 : 1;
-
-	// The world position of the integer center point of drawing in the noise
-	v2f world_center_of_drawing_in_noise_f = v2f(
-		center_of_drawing_in_noise_i.X * cloud_size,
-		center_of_drawing_in_noise_i.Y * cloud_size
-	) + m_origin;
 
 	// Colors with primitive shading
 
@@ -160,7 +162,7 @@ void Clouds::updateMesh()
 
 	// Read noise
 
-	std::vector<bool> grid(m_cloud_radius_i * 2 * m_cloud_radius_i * 2);
+	m_grid.resize(m_cloud_radius_i * 2 * m_cloud_radius_i * 2);
 
 	for(s16 zi = -m_cloud_radius_i; zi < m_cloud_radius_i; zi++) {
 		u32 si = (zi + m_cloud_radius_i) * m_cloud_radius_i * 2 + m_cloud_radius_i;
@@ -168,7 +170,7 @@ void Clouds::updateMesh()
 		for (s16 xi = -m_cloud_radius_i; xi < m_cloud_radius_i; xi++) {
 			u32 i = si + xi;
 
-			grid[i] = gridFilled(
+			m_grid[i] = gridFilled(
 				xi + center_of_drawing_in_noise_i.X,
 				zi + center_of_drawing_in_noise_i.Y
 			);
@@ -205,7 +207,7 @@ void Clouds::updateMesh()
 
 		u32 i = GETINDEX(xi, zi, m_cloud_radius_i);
 
-		if (!grid[i])
+		if (!m_grid[i])
 			continue;
 
 		v2f p0 = v2f(xi,zi)*cloud_size + world_center_of_drawing_in_noise_f;
@@ -238,7 +240,7 @@ void Clouds::updateMesh()
 			case 1: // back
 				if (INAREA(xi, zi - 1, m_cloud_radius_i)) {
 					u32 j = GETINDEX(xi, zi - 1, m_cloud_radius_i);
-					if(grid[j])
+					if(m_grid[j])
 						continue;
 				}
 				for (video::S3DVertex &vertex : v) {
@@ -253,7 +255,7 @@ void Clouds::updateMesh()
 			case 2: //right
 				if (INAREA(xi + 1, zi, m_cloud_radius_i)) {
 					u32 j = GETINDEX(xi+1, zi, m_cloud_radius_i);
-					if(grid[j])
+					if(m_grid[j])
 						continue;
 				}
 				for (video::S3DVertex &vertex : v) {
@@ -268,7 +270,7 @@ void Clouds::updateMesh()
 			case 3: // front
 				if (INAREA(xi, zi + 1, m_cloud_radius_i)) {
 					u32 j = GETINDEX(xi, zi + 1, m_cloud_radius_i);
-					if(grid[j])
+					if(m_grid[j])
 						continue;
 				}
 				for (video::S3DVertex &vertex : v) {
@@ -283,7 +285,7 @@ void Clouds::updateMesh()
 			case 4: // left
 				if (INAREA(xi-1, zi, m_cloud_radius_i)) {
 					u32 j = GETINDEX(xi-1, zi, m_cloud_radius_i);
-					if(grid[j])
+					if(m_grid[j])
 						continue;
 				}
 				for (video::S3DVertex &vertex : v) {
@@ -343,7 +345,6 @@ void Clouds::updateMesh()
 
 void Clouds::render()
 {
-#if 0
 	if (m_params.density <= 0.0f)
 		return; // no need to do anything
 
@@ -389,12 +390,38 @@ void Clouds::render()
 				cloud_full_radius*1.2, fog_density, fog_pixelfog, fog_rangefog);
 	}
 
+//#if 0
 	driver->drawMeshBuffer(m_meshbuffer.get());
-
+//#endif
 	// Restore fog settings
 	driver->setFog(fog_color, fog_type, fog_start, fog_end, fog_density,
 			fog_pixelfog, fog_rangefog);
-#endif
+}
+
+void Clouds::renderDepth() {
+	if (m_params.density <= 0.0f)
+		return; // no need to do anything
+
+	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+
+	updateMesh();
+
+	// Update position
+	{
+		v2f off_origin = m_origin - m_mesh_origin;
+		v3f rel(off_origin.X, 0, off_origin.Y);
+		rel -= intToFloat(m_camera_offset, BS);
+		setPosition(rel);
+		updateAbsolutePosition();
+	}
+
+	video::SMaterial material = m_material;
+	material.MaterialType = video::EMT_SOLID;
+	material.ZWriteEnable = video::EZW_ON;
+
+	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+	driver->setMaterial(material);
+	driver->drawMeshBuffer(m_meshbuffer.get());
 }
 
 void Clouds::step(float dtime)

@@ -52,6 +52,10 @@ public:
 
 	void setWrapRepeat(u8 index, bool value);
 
+	void setColor(video::SColor color);
+
+	void disableDepthTest();
+
 private:
 	u32 shader_id;
 	std::vector<u8> texture_map;

@@ -383,11 +383,10 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 		m_animation_timer_delta_pixel{"animationTimerDelta"};
 	CachedPixelShaderSetting<float, 3> m_artificial_light{ "artificialLight" };
 	CachedPixelShaderSetting<float, 3> m_day_light{"dayLight"};
-	CachedPixelShaderSetting<float, 3> m_eye_position_pixel{ "eyePosition" };
-	CachedVertexShaderSetting<float, 3> m_eye_position_vertex{ "eyePosition" };
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
-	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel{"cameraOffset"};
 	CachedVertexShaderSetting<float, 3> m_camera_offset_vertex{"cameraOffset"};
+	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel{ "cameraOffset" };
+	CachedVertexShaderSetting<float, 3> m_camera_position_vertex{"cameraPosition"};
 	CachedPixelShaderSetting<float, 3> m_camera_position_pixel{"cameraPosition"};
 	CachedVertexShaderSetting<float, 16> m_camera_projinv_vertex{"mCameraProjInv"};
 	CachedPixelShaderSetting<float, 16> m_camera_projinv_pixel{"mCameraProjInv"};
@@ -420,6 +419,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float> m_cloud_height_pixel{"cloudHeight"};
 	CachedPixelShaderSetting<float> m_cloud_thickness_pixel{"cloudThickness"};
 	CachedPixelShaderSetting<float> m_cloud_density_pixel{"cloudDensity"};
+	CachedPixelShaderSetting<float, 2> m_cloud_offset_pixel{"cloudOffset"};
+	CachedPixelShaderSetting<float> m_cloud_radius_pixel{"cloudRadius"};
 	CachedPixelShaderSetting<float> m_saturation_pixel{"saturation"};
 	float m_gamma;
 	CachedPixelShaderSetting<float> m_gamma_pixel{"gamma"};
@@ -432,6 +433,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float> m_moon_brightness_pixel{"moonBrightness"};
 	CachedPixelShaderSetting<float>
 		m_volumetric_light_strength_pixel{"volumetricLightStrength"};
+	CachedPixelShaderSetting<float, 3>
+		m_volumetric_cloud_color{"cloudColor"};
 
 	static constexpr std::array<const char*, 5> SETTING_CALLBACKS = {
 		"exposure_compensation",
@@ -501,20 +504,17 @@ public:
 		m_animation_timer_delta_vertex.set(&animation_timer_delta_f, services);
 		m_animation_timer_delta_pixel.set(&animation_timer_delta_f, services);
 
-		v3f epos = m_client->getEnv().getLocalPlayer()->getEyePosition();
-		m_eye_position_pixel.set(epos, services);
-		m_eye_position_vertex.set(epos, services);
-
 		if (m_client->getMinimap()) {
 			v3f minimap_yaw = m_client->getMinimap()->getYawVec();
 			m_minimap_yaw.set(minimap_yaw, services);
 		}
 
 		v3f offset = intToFloat(m_client->getCamera()->getOffset(), BS);
-		m_camera_offset_pixel.set(offset, services);
 		m_camera_offset_vertex.set(offset, services);
+		m_camera_offset_pixel.set(offset, services);
 
 		v3f camera_position = m_client->getCamera()->getPosition();
+		m_camera_position_vertex.set(camera_position, services);
 		m_camera_position_pixel.set(camera_position, services);
 
 		core::matrix4 camera_proj = m_client->getCamera()->getCameraNode()->getProjectionMatrix();
@@ -573,13 +573,19 @@ public:
 
 		// TODO: settings
 		Clouds* clouds = m_client->getClouds();
-		if (m_client->getClouds()) {
+		if (clouds && g_settings->getBool("enable_volumetric_clouds")) {
 			float cloud_height = clouds->getHeight() * 10.0f;
 			m_cloud_height_pixel.set(&cloud_height, services);
 			float cloud_thickness = clouds->getThickness() * 10.0f;
 			m_cloud_thickness_pixel.set(&cloud_thickness, services);
 			float cloud_density = clouds->getDensity();
 			m_cloud_density_pixel.set(&cloud_density, services);
+			v2f cloud_offset = clouds->getCloudOffset();
+			m_cloud_offset_pixel.set(cloud_offset, services);
+			float cloud_radius = g_settings->getU16("cloud_radius");
+			m_cloud_radius_pixel.set(&cloud_radius, services);
+			video::SColor cloud_color = clouds->getColor();
+			m_volumetric_cloud_color.set(cloud_color, services);
 		}
 
 		if (m_volumetric_light_enabled) {
@@ -4294,7 +4300,7 @@ void Game::updateClouds(float dtime)
 		camera_node_position.Y   = camera_node_position.Y + camera_offset.Y * BS;
 		camera_node_position.Z   = camera_node_position.Z + camera_offset.Z * BS;
 		this->clouds->update(camera_node_position, this->sky->getCloudColor());
-		if (this->clouds->isCameraInsideCloud() && this->fogEnabled()) {
+		if (this->clouds->isCameraInsideCloud() && this->fogEnabled() && !g_settings->getBool("enable_volumetric_clouds")) {
 			// If camera is inside cloud and fog is enabled, use cloud's colors as sky colors.
 			video::SColor clouds_dark = this->clouds->getColor().getInterpolated(
 					video::SColor(255, 0, 0, 0), 0.9);

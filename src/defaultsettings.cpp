@@ -342,6 +342,7 @@ void set_default_settings()
 	settings->setDefault("bloom_intensity", "0.05");
 	settings->setDefault("bloom_radius", "1");
 	settings->setDefault("enable_volumetric_lighting", "false");
+	settings->setDefault("enable_volumetric_clouds", "false");
 	settings->setDefault("enable_bumpmaps", "false");
 
 	// Effects Shadows
