@@ -7856,13 +7856,13 @@ child will follow movement and rotation of that bone.
     object.
 * `set_detach()`: Detaches object. No-op if object was not attached.
 * `set_bone_position([bone, position, rotation])`
-	* Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
-	* **Note:** Rotation is in degrees, not radians.
-	* **Deprecated:** Use `set_bone_override` instead.
+  * Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
+  * **Note:** Rotation is in degrees, not radians.
+  * **Deprecated:** Use `set_bone_override` instead.
 * `get_bone_position(bone)`: returns the previously set position and rotation of the bone
-	* Shorthand for `get_bone_override(bone).position.vec, get_bone_override(bone).rotation.vec:apply(math.deg)`.
-	* **Note:** Returned rotation is in degrees, not radians.
-	* **Deprecated:** Use `get_bone_override` instead.
+  * Shorthand for `get_bone_override(bone).position.vec, get_bone_override(bone).rotation.vec:apply(math.deg)`.
+  * **Note:** Returned rotation is in degrees, not radians.
+  * **Deprecated:** Use `get_bone_override` instead.
 * `set_bone_override(bone, override)`
     * `bone`: string
     * `override`: `{position = property, rotation = property, scale = property}` or `nil`
@@ -7880,7 +7880,7 @@ child will follow movement and rotation of that bone.
 > Compatibility note: Clients prior to 5.9.0 only support absolute position and rotation.
 > All values are treated as absolute and are set immediately (no interpolation).
 * `get_bone_override(bone)`: returns `override` in the above format
-	* **Note:** Unlike `get_bone_position`, the returned rotation is in radians, not degrees.
+  * **Note:** Unlike `get_bone_position`, the returned rotation is in radians, not degrees.
 * `get_bone_overrides()`: returns all bone overrides as table `{[bonename] = override, ...}`
 * `set_properties(object property table)`
 * `get_properties()`: returns a table of all object properties
