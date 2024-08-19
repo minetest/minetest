@@ -438,20 +438,14 @@ void Client::step(float dtime)
 		}
 	}
 
-	// UGLY hack to fix 2 second startup delay caused by non existent
-	// server client startup synchronization in local server or singleplayer mode
-	static bool initial_step = true;
-	if (initial_step) {
-		initial_step = false;
-	}
-	else if(m_state == LC_Created) {
+	if (m_state == LC_Created) {
 		float &counter = m_connection_reinit_timer;
 		counter -= dtime;
-		if(counter <= 0.0) {
-			counter = 2.0;
+		if (counter <= 0) {
+			counter = 1.5f;
 
 			LocalPlayer *myplayer = m_env.getLocalPlayer();
-			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
+			FATAL_ERROR_IF(!myplayer, "Local player not found in environment");
 
 			sendInit(myplayer->getName());
 		}
