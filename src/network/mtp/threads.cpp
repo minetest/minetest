@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "connectionthreads.h"
+#include "network/mtp/threads.h"
 #include "log.h"
 #include "profiler.h"
 #include "settings.h"

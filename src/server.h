@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "content/subgames.h"
 #include "network/peerhandler.h"
-#include "network/address.h"
+#include "network/connection.h"
 #include "util/numeric.h"
 #include "util/thread.h"
 #include "util/basic_macros.h"
@@ -359,8 +359,8 @@ public:
 	void RespawnPlayer(session_t peer_id);
 
 	/* con::PeerHandler implementation. */
-	void peerAdded(con::Peer *peer);
-	void deletingPeer(con::Peer *peer, bool timeout);
+	void peerAdded(con::IPeer *peer);
+	void deletingPeer(con::IPeer *peer, bool timeout);
 
 	void DenySudoAccess(session_t peer_id);
 	void DenyAccess(session_t peer_id, AccessDeniedCode reason,
@@ -637,7 +637,7 @@ private:
 	ServerEnvironment *m_env = nullptr;
 
 	// server connection
-	std::shared_ptr<con::Connection> m_con;
+	std::shared_ptr<con::IConnection> m_con;
 
 	// Ban checking
 	BanManager *m_banmanager = nullptr;

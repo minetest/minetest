@@ -19,11 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-/********************************************/
-/* may only be included from in src/network */
-/********************************************/
+#include "network/mtp/impl.h"
 
-#include "connection.h"
+// Constant that differentiates the protocol from random data and other protocols
+#define PROTOCOL_ID 0x4f457403
 
 #define MAX_UDP_PEERS 65535
 
@@ -160,6 +159,32 @@ inline float CALC_DTIME(u64 lasttime, u64 curtime)
 	float value = (curtime - lasttime) / 1000.0f;
 	return MYMAX(MYMIN(value, 0.1f), 0.0f);
 }
+
+/* Exceptions */
+
+class NotFoundException : public BaseException
+{
+public:
+	NotFoundException(const char *s) : BaseException(s) {}
+};
+
+class ProcessedSilentlyException : public BaseException
+{
+public:
+	ProcessedSilentlyException(const char *s) : BaseException(s) {}
+};
+
+class ProcessedQueued : public BaseException
+{
+public:
+	ProcessedQueued(const char *s) : BaseException(s) {}
+};
+
+class IncomingDataCorruption : public BaseException
+{
+public:
+	IncomingDataCorruption(const char *s) : BaseException(s) {}
+};
 
 
 /*

@@ -237,9 +237,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CLIENT_PROTOCOL_VERSION_MIN 37
 #define CLIENT_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
-// Constant that differentiates the protocol from random data and other protocols
-#define PROTOCOL_ID 0x4f457403
-
 #define PASSWORD_SIZE 28    // Maximum password length. Allows for
                             // base64-encoded SHA-1 (27+\0).
 
