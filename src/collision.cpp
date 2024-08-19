@@ -273,7 +273,7 @@ static void add_object_boxes(Environment *env,
 		const v3f pos_f, const v3f speed_f, ActiveObject *self,
 		std::vector<NearbyCollisionInfo> &cinfo)
 {
-	auto process_object = [&] (ActiveObject *object) {
+	auto process_object = [&cinfo] (ActiveObject *object) {
 		if (object && object->collideWithObjects()) {
 			aabb3f box;
 			if (object->getCollisionBox(&box))
@@ -301,12 +301,12 @@ static void add_object_boxes(Environment *env,
 
 		// add collision with local player
 		LocalPlayer *lplayer = c_env->getLocalPlayer();
-		if (lplayer->getParent() == nullptr) {
+		auto *obj = (ActiveObject*) lplayer->getCAO();
+		if (self != obj && !lplayer->getParent()) {
 			aabb3f lplayer_collisionbox = lplayer->getCollisionbox();
 			v3f lplayer_pos = lplayer->getPosition();
 			lplayer_collisionbox.MinEdge += lplayer_pos;
 			lplayer_collisionbox.MaxEdge += lplayer_pos;
-			auto *obj = (ActiveObject*) lplayer->getCAO();
 			cinfo.emplace_back(obj, 0, lplayer_collisionbox);
 		}
 	}
@@ -623,8 +623,10 @@ bool collision_check_intersection(Environment *env, IGameDef *gamedef,
 		Collision detection
 	*/
 	aabb3f checkbox = box_0;
-	checkbox.MinEdge += pos_f;
-	checkbox.MaxEdge += pos_f;
+	// aabbox3d::intersectsWithBox(box) returns true when the faces are touching perfectly.
+	// However, we do not want want a true-ish return value in that case. Add some tolerance.
+	checkbox.MinEdge += pos_f + (0.1f * BS);
+	checkbox.MaxEdge += pos_f - (0.1f * BS);
 
 	/*
 		Go through every node and object box
