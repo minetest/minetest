@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <cmath>
 #include "content_mapblock.h"
+#include "catch_amalgamated.hpp"
+#include "util/basic_macros.h"
 #include "util/numeric.h"
 #include "util/directiontables.h"
 #include "mapblock_mesh.h"
@@ -1674,7 +1676,9 @@ void MapblockMeshGenerator::drawMeshNode()
 
 	int mesh_buffer_count = mesh->getMeshBufferCount();
 	for (int j = 0; j < mesh_buffer_count; j++) {
-		useTile(mesh->getTextureSlot(j));
+		// Only up to 6 tiles are supported
+		const auto tile =  mesh->getTextureSlot(j);
+		useTile(MYMIN(tile, 5));
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
 		int vertex_count = buf->getVertexCount();
