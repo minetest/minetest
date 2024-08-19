@@ -37,19 +37,25 @@ ClientDynamicInfo ClientDynamicInfo::getCurrent()
 
     return {
         screen_size, real_gui_scaling, real_hud_scaling,
-        ClientDynamicInfo::calculateMaxFSSize(screen_size, gui_scaling),
+        ClientDynamicInfo::calculateMaxFSSize(screen_size, density, gui_scaling),
         touch_controls
     };
 }
 
-v2f32 ClientDynamicInfo::calculateMaxFSSize(v2u32 render_target_size, f32 gui_scaling)
+v2f32 ClientDynamicInfo::calculateMaxFSSize(v2u32 render_target_size, f32 density, f32 gui_scaling)
 {
-    f32 factor = (g_settings->getBool("touch_gui") ? 10 : 15) / gui_scaling;
-    f32 ratio = (f32)render_target_size.X / (f32)render_target_size.Y;
-    if (ratio < 1)
-        return { factor, factor / ratio };
-    else
-        return { factor * ratio, factor };
+	// must stay in sync with GUIFormSpecMenu::calculateImgsize
+
+    const double screen_dpi = density * 96;
+	double fixed_imgsize = 0.5555 * screen_dpi * gui_scaling;
+
+    // assume padding[0,0] since max_formspec_size is used for fullscreen formspecs
+	s32 min_screen_dim = std::min(render_target_size.X, render_target_size.Y);
+	double prefer_imgsize = min_screen_dim / 15 * gui_scaling;
+	prefer_imgsize = std::max(prefer_imgsize, fixed_imgsize);
+
+    return v2f32(render_target_size.X / prefer_imgsize,
+            render_target_size.Y / prefer_imgsize);
 }
 
 #endif

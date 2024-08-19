@@ -6,13 +6,14 @@ local function show_fullscreen_fs(name)
 
 	print(dump(window))
 
-	local size = { x = window.max_formspec_size.x * 1.1, y = window.max_formspec_size.y * 1.1 }
+	local size = { x = window.max_formspec_size.x, y = window.max_formspec_size.y }
 	local touch_text = window.touch_controls and "Touch controls enabled" or
 			"Touch controls disabled"
 	local fs = {
 		"formspec_version[4]",
 		("size[%f,%f]"):format(size.x, size.y),
-		"padding[-0.01,-0.01]",
+		"padding[0,0]",
+		"bgcolor[;true]",
 		("button[%f,%f;1,1;%s;%s]"):format(0, 0, "tl", "TL"),
 		("button[%f,%f;1,1;%s;%s]"):format(size.x - 1, 0, "tr", "TR"),
 		("button[%f,%f;1,1;%s;%s]"):format(size.x - 1, size.y - 1, "br", "BR"),

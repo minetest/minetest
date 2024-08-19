@@ -3133,7 +3133,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			offset = v2s32(0,0);
 		}
 
-		double use_imgsize = calcImgsize(mydata);
+		double use_imgsize = calculateImgsize(mydata);
 
 		// Everything else is scaled in proportion to the
 		// inventory image size.  The inventory slot spacing
@@ -5023,8 +5023,10 @@ std::array<StyleSpec, StyleSpec::NUM_STATES> GUIFormSpecMenu::getStyleForElement
 }
 
 
-double GUIFormSpecMenu::calcImgsize(const parserData &data)
+double GUIFormSpecMenu::calculateImgsize(const parserData &data)
 {
+	// must stay in sync with ClientDynamicInfo::calculateMaxFSSize
+
 	const double gui_scaling = g_settings->getFloat("gui_scaling", 0.5f, 42.0f);
 	const double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
 
