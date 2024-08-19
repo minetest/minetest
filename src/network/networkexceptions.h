@@ -26,11 +26,6 @@ namespace con
 /*
 	Exceptions
 */
-class NotFoundException : public BaseException
-{
-public:
-	NotFoundException(const char *s) : BaseException(s) {}
-};
 
 class PeerNotFoundException : public BaseException
 {
@@ -62,23 +57,6 @@ public:
 	NoIncomingDataException(const char *s) : BaseException(s) {}
 };
 
-class ProcessedSilentlyException : public BaseException
-{
-public:
-	ProcessedSilentlyException(const char *s) : BaseException(s) {}
-};
-
-class ProcessedQueued : public BaseException
-{
-public:
-	ProcessedQueued(const char *s) : BaseException(s) {}
-};
-
-class IncomingDataCorruption : public BaseException
-{
-public:
-	IncomingDataCorruption(const char *s) : BaseException(s) {}
-};
 }
 
 class SocketException : public BaseException

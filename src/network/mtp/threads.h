@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <cassert>
 #include "threading/thread.h"
-#include "connection_internal.h"
+#include "network/mtp/internal.h"
 
 namespace con
 {

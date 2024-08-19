@@ -23,7 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "settings.h"
 #include "util/serialize.h"
-#include "network/connection_internal.h"
+#include "network/peerhandler.h"
+#include "network/mtp/internal.h"
 #include "network/networkpacket.h"
 #include "network/socket.h"
 
@@ -59,7 +60,7 @@ struct Handler : public con::PeerHandler
 {
 	Handler(const char *a_name) : name(a_name) {}
 
-	void peerAdded(con::Peer *peer)
+	void peerAdded(con::IPeer *peer)
 	{
 		infostream << "Handler(" << name << ")::peerAdded(): "
 			"id=" << peer->id << std::endl;
@@ -67,7 +68,7 @@ struct Handler : public con::PeerHandler
 		count++;
 	}
 
-	void deletingPeer(con::Peer *peer, bool timeout)
+	void deletingPeer(con::IPeer *peer, bool timeout)
 	{
 		infostream << "Handler(" << name << ")::deletingPeer(): "
 			"id=" << peer->id << ", timeout=" << timeout << std::endl;
@@ -165,8 +166,6 @@ void TestConnection::testConnectSendReceive()
 		NOTE: This mostly tests the legacy interface.
 	*/
 
-	u32 proto_id = 0xad26846a;
-
 	Handler hand_server("server");
 	Handler hand_client("client");
 
@@ -187,11 +186,11 @@ void TestConnection::testConnectSendReceive()
 	}
 
 	infostream << "** Creating server Connection" << std::endl;
-	con::Connection server(proto_id, 512, 5.0, false, &hand_server);
+	con::Connection server(512, 5.0f, false, &hand_server);
 	server.Serve(address);
 
 	infostream << "** Creating client Connection" << std::endl;
-	con::Connection client(proto_id, 512, 5.0, false, &hand_client);
+	con::Connection client(512, 5.0f, false, &hand_client);
 
 	UASSERT(hand_server.count == 0);
 	UASSERT(hand_client.count == 0);

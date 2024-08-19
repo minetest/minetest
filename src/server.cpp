@@ -258,11 +258,7 @@ Server::Server(
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
 	m_dedicated(dedicated),
 	m_async_fatal_error(""),
-	m_con(std::make_shared<con::Connection>(PROTOCOL_ID,
-			512,
-			CONNECTION_TIMEOUT,
-			m_bind_addr.isIPv6(),
-			this)),
+	m_con(con::createMTP(CONNECTION_TIMEOUT, m_bind_addr.isIPv6(), this)),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
@@ -1258,7 +1254,7 @@ void Server::onMapEditEvent(const MapEditEvent &event)
 	m_unsent_map_edit_queue.push(new MapEditEvent(event));
 }
 
-void Server::peerAdded(con::Peer *peer)
+void Server::peerAdded(con::IPeer *peer)
 {
 	verbosestream<<"Server::peerAdded(): peer->id="
 			<<peer->id<<std::endl;
@@ -1266,7 +1262,7 @@ void Server::peerAdded(con::Peer *peer)
 	m_peer_change_queue.push(con::PeerChange(con::PEER_ADDED, peer->id, false));
 }
 
-void Server::deletingPeer(con::Peer *peer, bool timeout)
+void Server::deletingPeer(con::IPeer *peer, bool timeout)
 {
 	verbosestream<<"Server::deletingPeer(): peer->id="
 			<<peer->id<<", timeout="<<timeout<<std::endl;
