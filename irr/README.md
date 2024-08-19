@@ -25,7 +25,7 @@ Aside from standard search options (`ZLIB_INCLUDE_DIR`, `ZLIB_LIBRARY`, ...) the
 * `USE_SDL2` (default: platform-dependent, usually `ON`) - Use SDL2 instead of older native device code
 
 However, IrrlichtMt cannot be built or installed separately.
-	
+
 Platforms
 ---------
 

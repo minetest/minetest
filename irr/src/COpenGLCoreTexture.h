@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "irrArray.h"
+#include <vector>
 #include "SMaterialLayer.h"
 #include "ITexture.h"
 #include "EDriverFeatures.h"
@@ -43,19 +43,19 @@ public:
 		bool IsCached;
 	};
 
-	COpenGLCoreTexture(const io::path &name, const core::array<IImage *> &images, E_TEXTURE_TYPE type, TOpenGLDriver *driver) :
+	COpenGLCoreTexture(const io::path &name, const std::vector<IImage *> &srcImages, E_TEXTURE_TYPE type, TOpenGLDriver *driver) :
 			ITexture(name, type), Driver(driver), TextureType(GL_TEXTURE_2D),
 			TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), Converter(0), LockReadOnly(false), LockImage(0), LockLayer(0),
 			KeepImage(false), MipLevelStored(0), LegacyAutoGenerateMipMaps(false)
 	{
-		_IRR_DEBUG_BREAK_IF(images.size() == 0)
+		_IRR_DEBUG_BREAK_IF(srcImages.empty())
 
 		DriverType = Driver->getDriverType();
 		TextureType = TextureTypeIrrToGL(Type);
 		HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 		KeepImage = Driver->getTextureCreationFlag(ETCF_ALLOW_MEMORY_COPY);
 
-		getImageValues(images[0]);
+		getImageValues(srcImages[0]);
 		if (!InternalFormat)
 			return;
 
@@ -71,22 +71,22 @@ public:
 		os::Printer::log(lbuf, ELL_DEBUG);
 #endif
 
-		const core::array<IImage *> *tmpImages = &images;
+		const auto *tmpImages = &srcImages;
 
 		if (KeepImage || OriginalSize != Size || OriginalColorFormat != ColorFormat) {
-			Images.set_used(images.size());
+			Images.resize(srcImages.size());
 
-			for (u32 i = 0; i < images.size(); ++i) {
+			for (size_t i = 0; i < srcImages.size(); ++i) {
 				Images[i] = Driver->createImage(ColorFormat, Size);
 
-				if (images[i]->getDimension() == Size)
-					images[i]->copyTo(Images[i]);
+				if (srcImages[i]->getDimension() == Size)
+					srcImages[i]->copyTo(Images[i]);
 				else
-					images[i]->copyToScaling(Images[i]);
+					srcImages[i]->copyToScaling(Images[i]);
 
-				if (images[i]->getMipMapsData()) {
+				if (srcImages[i]->getMipMapsData()) {
 					if (OriginalSize == Size && OriginalColorFormat == ColorFormat) {
-						Images[i]->setMipMapsData(images[i]->getMipMapsData(), false);
+						Images[i]->setMipMapsData(srcImages[i]->getMipMapsData(), false);
 					} else {
 						// TODO: handle at least mipmap with changing color format
 						os::Printer::log("COpenGLCoreTexture: Can't handle format changes for mipmap data. Mipmap data dropped", ELL_WARNING);
@@ -118,19 +118,19 @@ public:
 
 		TEST_GL_ERROR(Driver);
 
-		for (u32 i = 0; i < (*tmpImages).size(); ++i)
+		for (size_t i = 0; i < tmpImages->size(); ++i)
 			uploadTexture(true, i, 0, (*tmpImages)[i]->getData());
 
 		if (HasMipMaps && !LegacyAutoGenerateMipMaps) {
 			// Create mipmaps (either from image mipmaps or generate them)
-			for (u32 i = 0; i < (*tmpImages).size(); ++i) {
+			for (size_t i = 0; i < tmpImages->size(); ++i) {
 				void *mipmapsData = (*tmpImages)[i]->getMipMapsData();
 				regenerateMipMapLevels(mipmapsData, i);
 			}
 		}
 
 		if (!KeepImage) {
-			for (u32 i = 0; i < Images.size(); ++i)
+			for (size_t i = 0; i < Images.size(); ++i)
 				Images[i]->drop();
 
 			Images.clear();
@@ -227,8 +227,8 @@ public:
 		if (LockImage)
 			LockImage->drop();
 
-		for (u32 i = 0; i < Images.size(); ++i)
-			Images[i]->drop();
+		for (auto *image : Images)
+			image->drop();
 	}
 
 	void *lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 mipmapLevel = 0, u32 layer = 0, E_TEXTURE_LOCK_FLAGS lockFlags = ETLF_FLIP_Y_UP_RTT) override
@@ -621,7 +621,7 @@ protected:
 	u32 LockLayer;
 
 	bool KeepImage;
-	core::array<IImage *> Images;
+	std::vector<IImage*> Images;
 
 	u8 MipLevelStored;
 	bool LegacyAutoGenerateMipMaps;

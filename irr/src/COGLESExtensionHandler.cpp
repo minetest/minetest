@@ -25,7 +25,7 @@ namespace video
 
 COGLES1ExtensionHandler::COGLES1ExtensionHandler() :
 		COGLESCoreExtensionHandler(),
-		MaxUserClipPlanes(0), MaxLights(0), pGlBlendEquationOES(0), pGlBlendFuncSeparateOES(0),
+		MaxLights(0), pGlBlendEquationOES(0), pGlBlendFuncSeparateOES(0),
 		pGlBindFramebufferOES(0), pGlDeleteFramebuffersOES(0),
 		pGlGenFramebuffersOES(0), pGlCheckFramebufferStatusOES(0),
 		pGlFramebufferTexture2DOES(0), pGlGenerateMipmapOES(0)
@@ -44,11 +44,6 @@ void COGLES1ExtensionHandler::initExtensions()
 	getGLExtensions();
 
 	GLint val = 0;
-
-	if (Version > 100 || FeatureAvailable[IRR_GL_IMG_user_clip_plane]) {
-		glGetIntegerv(GL_MAX_CLIP_PLANES, &val);
-		MaxUserClipPlanes = static_cast<u8>(val);
-	}
 
 	glGetIntegerv(GL_MAX_LIGHTS, &val);
 	MaxLights = static_cast<u8>(val);

@@ -132,48 +132,30 @@ SMesh *CMeshManipulator::createMeshCopy(scene::IMesh *mesh) const
 		case video::EVT_STANDARD: {
 			SMeshBuffer *buffer = new SMeshBuffer();
 			buffer->Material = mb->getMaterial();
-			const u32 vcount = mb->getVertexCount();
-			buffer->Vertices.reallocate(vcount);
-			video::S3DVertex *vertices = (video::S3DVertex *)mb->getVertices();
-			for (u32 i = 0; i < vcount; ++i)
-				buffer->Vertices.push_back(vertices[i]);
-			const u32 icount = mb->getIndexCount();
-			buffer->Indices.reallocate(icount);
-			const u16 *indices = mb->getIndices();
-			for (u32 i = 0; i < icount; ++i)
-				buffer->Indices.push_back(indices[i]);
+			auto *vt = static_cast<const video::S3DVertex*>(mb->getVertices());
+			buffer->Vertices.insert(buffer->Vertices.end(), vt, vt + mb->getVertexCount());
+			auto *indices = mb->getIndices();
+			buffer->Indices.insert(buffer->Indices.end(), indices, indices + mb->getIndexCount());
 			clone->addMeshBuffer(buffer);
 			buffer->drop();
 		} break;
 		case video::EVT_2TCOORDS: {
 			SMeshBufferLightMap *buffer = new SMeshBufferLightMap();
 			buffer->Material = mb->getMaterial();
-			const u32 vcount = mb->getVertexCount();
-			buffer->Vertices.reallocate(vcount);
-			video::S3DVertex2TCoords *vertices = (video::S3DVertex2TCoords *)mb->getVertices();
-			for (u32 i = 0; i < vcount; ++i)
-				buffer->Vertices.push_back(vertices[i]);
-			const u32 icount = mb->getIndexCount();
-			buffer->Indices.reallocate(icount);
-			const u16 *indices = mb->getIndices();
-			for (u32 i = 0; i < icount; ++i)
-				buffer->Indices.push_back(indices[i]);
+			auto *vt = static_cast<const video::S3DVertex2TCoords*>(mb->getVertices());
+			buffer->Vertices.insert(buffer->Vertices.end(), vt, vt + mb->getVertexCount());
+			auto *indices = mb->getIndices();
+			buffer->Indices.insert(buffer->Indices.end(), indices, indices + mb->getIndexCount());
 			clone->addMeshBuffer(buffer);
 			buffer->drop();
 		} break;
 		case video::EVT_TANGENTS: {
 			SMeshBufferTangents *buffer = new SMeshBufferTangents();
 			buffer->Material = mb->getMaterial();
-			const u32 vcount = mb->getVertexCount();
-			buffer->Vertices.reallocate(vcount);
-			video::S3DVertexTangents *vertices = (video::S3DVertexTangents *)mb->getVertices();
-			for (u32 i = 0; i < vcount; ++i)
-				buffer->Vertices.push_back(vertices[i]);
-			const u32 icount = mb->getIndexCount();
-			buffer->Indices.reallocate(icount);
-			const u16 *indices = mb->getIndices();
-			for (u32 i = 0; i < icount; ++i)
-				buffer->Indices.push_back(indices[i]);
+			auto *vt = static_cast<const video::S3DVertexTangents*>(mb->getVertices());
+			buffer->Vertices.insert(buffer->Vertices.end(), vt, vt + mb->getVertexCount());
+			auto *indices = mb->getIndices();
+			buffer->Indices.insert(buffer->Indices.end(), indices, indices + mb->getIndexCount());
 			clone->addMeshBuffer(buffer);
 			buffer->drop();
 		} break;

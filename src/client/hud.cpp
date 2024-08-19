@@ -119,27 +119,28 @@ Hud::Hud(Client *client, LocalPlayer *player,
 	}
 
 	// Prepare mesh for compass drawing
-	m_rotation_mesh_buffer.Vertices.set_used(4);
-	m_rotation_mesh_buffer.Indices.set_used(6);
+	auto &b = m_rotation_mesh_buffer;
+	b.Vertices.resize(4);
+	b.Indices.resize(6);
 
 	video::SColor white(255, 255, 255, 255);
 	v3f normal(0.f, 0.f, 1.f);
 
-	m_rotation_mesh_buffer.Vertices[0] = video::S3DVertex(v3f(-1.f, -1.f, 0.f), normal, white, v2f(0.f, 1.f));
-	m_rotation_mesh_buffer.Vertices[1] = video::S3DVertex(v3f(-1.f,  1.f, 0.f), normal, white, v2f(0.f, 0.f));
-	m_rotation_mesh_buffer.Vertices[2] = video::S3DVertex(v3f( 1.f,  1.f, 0.f), normal, white, v2f(1.f, 0.f));
-	m_rotation_mesh_buffer.Vertices[3] = video::S3DVertex(v3f( 1.f, -1.f, 0.f), normal, white, v2f(1.f, 1.f));
+	b.Vertices[0] = video::S3DVertex(v3f(-1.f, -1.f, 0.f), normal, white, v2f(0.f, 1.f));
+	b.Vertices[1] = video::S3DVertex(v3f(-1.f,  1.f, 0.f), normal, white, v2f(0.f, 0.f));
+	b.Vertices[2] = video::S3DVertex(v3f( 1.f,  1.f, 0.f), normal, white, v2f(1.f, 0.f));
+	b.Vertices[3] = video::S3DVertex(v3f( 1.f, -1.f, 0.f), normal, white, v2f(1.f, 1.f));
 
-	m_rotation_mesh_buffer.Indices[0] = 0;
-	m_rotation_mesh_buffer.Indices[1] = 1;
-	m_rotation_mesh_buffer.Indices[2] = 2;
-	m_rotation_mesh_buffer.Indices[3] = 2;
-	m_rotation_mesh_buffer.Indices[4] = 3;
-	m_rotation_mesh_buffer.Indices[5] = 0;
+	b.Indices[0] = 0;
+	b.Indices[1] = 1;
+	b.Indices[2] = 2;
+	b.Indices[3] = 2;
+	b.Indices[4] = 3;
+	b.Indices[5] = 0;
 
-	m_rotation_mesh_buffer.getMaterial().Lighting = false;
-	m_rotation_mesh_buffer.getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-	m_rotation_mesh_buffer.setHardwareMappingHint(scene::EHM_STATIC);
+	b.getMaterial().Lighting = false;
+	b.getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	b.setHardwareMappingHint(scene::EHM_STATIC);
 }
 
 void Hud::readScalingSetting()

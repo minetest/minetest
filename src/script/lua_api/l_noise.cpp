@@ -542,9 +542,9 @@ int LuaPcgRandom::l_set_state(lua_State *L)
 	u64 state[2];
 	s_state_0 >> std::hex >> state[0];
 	s_state_1 >> std::hex >> state[1];
-	
+
 	o->m_rnd.setState(state);
-	
+
 	return 0;
 }
 

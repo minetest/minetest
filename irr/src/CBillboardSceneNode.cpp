@@ -26,8 +26,8 @@ CBillboardSceneNode::CBillboardSceneNode(ISceneNode *parent, ISceneManager *mgr,
 
 	setSize(size);
 
-	Buffer->Vertices.set_used(4);
-	Buffer->Indices.set_used(6);
+	Buffer->Vertices.resize(4);
+	Buffer->Indices.resize(6);
 
 	Buffer->Indices[0] = 0;
 	Buffer->Indices[1] = 2;
@@ -114,7 +114,7 @@ void CBillboardSceneNode::updateMesh(const irr::scene::ICameraSceneNode *camera)
 
 	view *= -1.0f;
 
-	core::array<video::S3DVertex> &vertices = Buffer->Vertices;
+	auto *vertices = Buffer->Vertices.data();
 
 	for (s32 i = 0; i < 4; ++i)
 		vertices[i].Normal = view;

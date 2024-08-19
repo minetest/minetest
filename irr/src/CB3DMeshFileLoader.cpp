@@ -433,7 +433,7 @@ bool CB3DMeshFileLoader::readChunkTRIS(scene::SSkinMeshBuffer *meshBuffer, u32 m
 	}
 
 	const s32 memoryNeeded = B3dStack.getLast().length / sizeof(s32);
-	meshBuffer->Indices.reallocate(memoryNeeded + meshBuffer->Indices.size() + 1);
+	meshBuffer->Indices.reserve(memoryNeeded + meshBuffer->Indices.size() + 1);
 
 	while ((B3dStack.getLast().startposition + B3dStack.getLast().length) > B3DFile->getPos()) // this chunk repeats
 	{

@@ -30,10 +30,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"  // strlcpy
 
 
-Player::Player(const char *name, IItemDefManager *idef):
+bool is_valid_player_name(std::string_view name) {
+	return !name.empty() && name.size() <= PLAYERNAME_SIZE && string_allowed(name, PLAYERNAME_ALLOWED_CHARS);
+}
+
+Player::Player(const std::string &name, IItemDefManager *idef):
 	inventory(idef)
 {
-	strlcpy(m_name, name, PLAYERNAME_SIZE);
+	m_name = name;
 
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);

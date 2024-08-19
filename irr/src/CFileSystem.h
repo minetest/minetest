@@ -4,8 +4,8 @@
 
 #pragma once
 
+#include <vector>
 #include "IFileSystem.h"
-#include "irrArray.h"
 
 namespace irr
 {
@@ -41,25 +41,6 @@ public:
 	//! Opens a file for write access.
 	IWriteFile *createAndWriteFile(const io::path &filename, bool append = false) override;
 
-	//! Adds an archive to the file system.
-	virtual bool addFileArchive(const io::path &filename,
-			bool ignoreCase = true, bool ignorePaths = true,
-			E_FILE_ARCHIVE_TYPE archiveType = EFAT_UNKNOWN,
-			const core::stringc &password = "",
-			IFileArchive **retArchive = 0) override;
-
-	//! Adds an archive to the file system.
-	virtual bool addFileArchive(IReadFile *file, bool ignoreCase = true,
-			bool ignorePaths = true,
-			E_FILE_ARCHIVE_TYPE archiveType = EFAT_UNKNOWN,
-			const core::stringc &password = "",
-			IFileArchive **retArchive = 0) override;
-
-	//! Adds an archive to the file system.
-	bool addFileArchive(IFileArchive *archive) override;
-
-	//! move the hirarchy of the filesystem. moves sourceIndex relative up or down
-	bool moveFileArchive(u32 sourceIndex, s32 relative) override;
 
 	//! Adds an external archive loader to the engine.
 	void addArchiveLoader(IArchiveLoader *loader) override;
@@ -69,21 +50,6 @@ public:
 
 	//! Gets the archive loader by index.
 	IArchiveLoader *getArchiveLoader(u32 index) const override;
-
-	//! gets the file archive count
-	u32 getFileArchiveCount() const override;
-
-	//! gets an archive
-	IFileArchive *getFileArchive(u32 index) override;
-
-	//! removes an archive from the file system.
-	bool removeFileArchive(u32 index) override;
-
-	//! removes an archive from the file system.
-	bool removeFileArchive(const io::path &filename) override;
-
-	//! Removes an archive from the file system.
-	bool removeFileArchive(const IFileArchive *archive) override;
 
 	//! Returns the string of the current working directory
 	const io::path &getWorkingDirectory() override;
@@ -129,9 +95,7 @@ private:
 	//! WorkingDirectory for Native and Virtual filesystems
 	io::path WorkingDirectory[2];
 	//! currently attached ArchiveLoaders
-	core::array<IArchiveLoader *> ArchiveLoader;
-	//! currently attached Archives
-	core::array<IFileArchive *> FileArchives;
+	std::vector<IArchiveLoader *> ArchiveLoader;
 };
 
 } // end namespace irr

@@ -1019,8 +1019,6 @@ public:
 	u8 MaxLights;
 	//! Maximal Anisotropy
 	u8 MaxAnisotropy;
-	//! Number of user clipplanes
-	u8 MaxUserClipPlanes;
 	//! Number of auxiliary buffers
 	u8 MaxAuxBuffers;
 	//! Optimal number of indices per meshbuffer

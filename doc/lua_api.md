@@ -2816,14 +2816,14 @@ background elements are drawn before all other elements.
     * Requires formspec version >= 6.
     * See `background9[]` documentation for more information.
 
-### `model[<X>,<Y>;<W>,<H>;<name>;<mesh>;<textures>;<rotation X,Y>;<continuous>;<mouse control>;<frame loop range>;<animation speed>]`
+### `model[<X>,<Y>;<W>,<H>;<name>;<mesh>;<textures>;<rotation>;<continuous>;<mouse control>;<frame loop range>;<animation speed>]`
 
 * Show a mesh model.
 * `name`: Element name that can be used for styling
 * `mesh`: The mesh model to use.
 * `textures`: The mesh textures to use according to the mesh materials.
   Texture names must be separated by commas.
-* `rotation {X,Y}` (Optional): Initial rotation of the camera.
+* `rotation` (Optional): Initial rotation of the camera, format `x,y`.
   The axes are euler angles in degrees.
 * `continuous` (Optional): Whether the rotation is continuous. Default `false`.
 * `mouse control` (Optional): Whether the model can be controlled with the mouse. Default `true`.
@@ -3776,6 +3776,8 @@ vectors are written like this: `(x, y, z)`:
       `vector.new(v)` does the same as `vector.copy(v)`
 * `vector.zero()`:
     * Returns a new vector `(0, 0, 0)`.
+* `vector.random_direction()`:
+    * Returns a new vector of length 1, pointing into a direction chosen uniformly at random.
 * `vector.copy(v)`:
     * Returns a copy of the vector `v`.
 * `vector.from_string(s[, init])`:
@@ -3976,6 +3978,10 @@ For example:
       the value `val` in the table `list`. Non-numerical indices are ignored.
       If `val` could not be found, `-1` is returned. `list` must not have
       negative indices.
+* `table.keyof(table, val)`: returns the key containing
+      the value `val` in the table `table`. If multiple keys contain `val`,
+      it is unspecified which key will be returned.
+      If `val` could not be found, `nil` is returned.
 * `table.insert_all(table, other_table)`:
     * Appends all values in `other_table` to `table` - uses `#table + 1` to
       find new indices.
@@ -5631,7 +5637,7 @@ Call these functions only at load time!
 
 * `minetest.register_globalstep(function(dtime))`
     * Called every server step, usually interval of 0.1s.
-	* `dtime` is the time since last execution in seconds.
+    * `dtime` is the time since last execution in seconds.
 * `minetest.register_on_mods_loaded(function())`
     * Called after mods have finished loading and before the media is cached or the
       aliases handled.
@@ -6059,7 +6065,7 @@ handler.
     * **Warning**: The same warning as for `minetest.get_objects_inside_radius` applies.
       Use `minetest.objects_in_area` instead to iterate only valid objects.
 * `minetest.objects_in_area(min_pos, max_pos)`
-	* returns an iterator of valid objects
+    * returns an iterator of valid objects
 * `minetest.set_timeofday(val)`: set time of day
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
 * `minetest.get_timeofday()`: get time of day
@@ -6993,6 +6999,8 @@ You can use the gennotify mechanism to transfer this information.
 * `minetest.is_player(obj)`: boolean, whether `obj` is a player
 * `minetest.player_exists(name)`: boolean, whether player exists
   (regardless of online status)
+* `minetest.is_valid_player_name(name)`: boolean, whether the given name
+  could be used as a player name (regardless of whether said player exists).
 * `minetest.hud_replace_builtin(name, hud_definition)`
     * Replaces definition of a builtin hud element
     * `name`: `"breath"`, `"health"` or `"minimap"`
@@ -7848,19 +7856,13 @@ child will follow movement and rotation of that bone.
     object.
 * `set_detach()`: Detaches object. No-op if object was not attached.
 * `set_bone_position([bone, position, rotation])`
-    * Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
-> [!WARNING]
-> **Deprecated**, use `set_bone_override` instead.
-
-> [!NOTE]
-> Rotation is in degrees, not radians.
+	* Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
+	* **Note:** Rotation is in degrees, not radians.
+	* **Deprecated:** Use `set_bone_override` instead.
 * `get_bone_position(bone)`: returns the previously set position and rotation of the bone
-    * Shorthand for `get_bone_override(bone).position.vec, get_bone_override(bone).rotation.vec:apply(math.deg)`.
-> [!WARNING]
-> **Deprecated**, use `get_bone_override` instead.
-
-> [!NOTE]
-> Returned rotation is in degrees, not radians.
+	* Shorthand for `get_bone_override(bone).position.vec, get_bone_override(bone).rotation.vec:apply(math.deg)`.
+	* **Note:** Returned rotation is in degrees, not radians.
+	* **Deprecated:** Use `get_bone_override` instead.
 * `set_bone_override(bone, override)`
     * `bone`: string
     * `override`: `{position = property, rotation = property, scale = property}` or `nil`
@@ -7878,11 +7880,33 @@ child will follow movement and rotation of that bone.
 > Compatibility note: Clients prior to 5.9.0 only support absolute position and rotation.
 > All values are treated as absolute and are set immediately (no interpolation).
 * `get_bone_override(bone)`: returns `override` in the above format
-> [!NOTE]
-> Unlike `get_bone_position`, the returned rotation is in radians, not degrees.
+	* **Note:** Unlike `get_bone_position`, the returned rotation is in radians, not degrees.
 * `get_bone_overrides()`: returns all bone overrides as table `{[bonename] = override, ...}`
 * `set_properties(object property table)`
 * `get_properties()`: returns a table of all object properties
+* `set_observers(observers)`: sets observers (players this object is sent to)
+    * If `observers` is `nil`, the object's observers are "unmanaged":
+      The object is sent to all players as governed by server settings. This is the default.
+    * `observers` is a "set" of player names: `{name1 = true, name2 = true, ...}`
+        * A set is a table where the keys are the elements of the set
+          (in this case, *valid* player names) and the values are all `true`.
+    * Attachments: The *effective observers* of an object are made up of
+      all players who can observe the object *and* are also effective observers
+      of its parent object (if there is one).
+    * Players are automatically added to their own observer sets.
+      Players **must** effectively observe themselves.
+    * Object activation and deactivation are unaffected by observability.
+    * Attached sounds do not work correctly and thus should not be used
+      on objects with managed observers yet.
+* `get_observers()`:
+    * throws an error if the object is invalid
+    * returns `nil` if the observers are unmanaged
+    * returns a table with all observer names as keys and `true` values (a "set") otherwise
+* `get_effective_observers()`:
+    * Like `get_observers()`, but returns the "effective" observers, taking into account attachments
+    * Time complexity: O(nm)
+        * n: number of observers of the involved entities
+        * m: number of ancestors along the attachment chain
 * `is_player()`: returns true for players, false otherwise
 * `get_nametag_attributes()`
     * returns a table with the attributes of the nametag of an object
@@ -7953,8 +7977,8 @@ child will follow movement and rotation of that bone.
         * Fifth column:  subject viewed from above
         * Sixth column:  subject viewed from below
 * `get_luaentity()`:
-	* Returns the object's associated luaentity table, if there is one
-	* Otherwise returns `nil` (e.g. for players)
+    * Returns the object's associated luaentity table, if there is one
+    * Otherwise returns `nil` (e.g. for players)
 * `get_entity_name()`:
   * **Deprecated**: Will be removed in a future version,
     use `:get_luaentity().name` instead.
@@ -8801,6 +8825,9 @@ Player properties need to be saved manually.
 ## Entity Definition
 
 Used by `minetest.register_entity`.
+The entity definition table becomes a metatable of a newly created per-entity
+luaentity table, meaning its fields (e.g. `initial_properties`) will be shared
+between all instances of an entity.
 
 ```lua
 {
@@ -8855,7 +8882,7 @@ Used by `minetest.register_abm`.
     -- Operation interval in seconds
 
     chance = 50,
-    -- Chance of triggering `action` per-node per-interval is 1.0 / chance
+    -- Probability of triggering `action` per-node per-interval is 1.0 / chance (integers only)
 
     min_y = -32768,
     max_y = 32767,

@@ -615,7 +615,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 
 	// If something goes wrong, this player is to blame
 	RollbackScopeActor rollback_scope(m_rollback,
-			std::string("player:")+player->getName());
+			"player:" + player->getName());
 
 	/*
 		Note: Always set inventory not sent, to repair cases
@@ -1069,7 +1069,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		If something goes wrong, this player is to blame
 	*/
 	RollbackScopeActor rollback_scope(m_rollback,
-			std::string("player:")+player->getName());
+			"player:" + player->getName());
 
 	switch (action) {
 	// Start digging or punch object
@@ -1400,7 +1400,7 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 
 	// If something goes wrong, this player is to blame
 	RollbackScopeActor rollback_scope(m_rollback,
-			std::string("player:")+player->getName());
+			"player:" + player->getName());
 
 	// Check the target node for rollback data; leave others unnoticed
 	RollbackNode rn_old(&m_env->getMap(), p, this);

@@ -494,19 +494,6 @@ public:
 	//! looks if the image is already loaded
 	video::ITexture *findTexture(const io::path &filename) override;
 
-	//! Set/unset a clipping plane.
-	//! There are at least 6 clipping planes available for the user to set at will.
-	//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-	//! \param plane: The plane itself.
-	//! \param enable: If true, enable the clipping plane else disable it.
-	bool setClipPlane(u32 index, const core::plane3df &plane, bool enable = false) override;
-
-	//! Enable/disable a clipping plane.
-	//! There are at least 6 clipping planes available for the user to set at will.
-	//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-	//! \param enable: If true, enable the clipping plane else disable it.
-	void enableClipPlane(u32 index, bool enable) override;
-
 	//! Returns the graphics card vendor name.
 	core::stringc getVendorInfo() override { return "Not available on this driver."; }
 
@@ -565,14 +552,14 @@ protected:
 
 	virtual ITexture *createDeviceDependentTexture(const io::path &name, IImage *image);
 
-	virtual ITexture *createDeviceDependentTextureCubemap(const io::path &name, const core::array<IImage *> &image);
+	virtual ITexture *createDeviceDependentTextureCubemap(const io::path &name, const std::vector<IImage*> &image);
 
 	//! checks triangle count and print warning if wrong
 	bool checkPrimitiveCount(u32 prmcnt) const;
 
 	bool checkImage(IImage *image) const;
 
-	bool checkImage(const core::array<IImage *> &image) const;
+	bool checkImage(const std::vector<IImage*> &image) const;
 
 	// adds a material renderer and drops it afterwards. To be used for internal creation
 	s32 addAndDropMaterialRenderer(IMaterialRenderer *m);
