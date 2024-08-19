@@ -950,6 +950,19 @@ std::string sanitizeDirName(std::string_view str, std::string_view optional_pref
 	return wide_to_utf8(safe_name);
 }
 
+template <class F>
+void remove_indexed(std::string &s, F pred)
+{
+	size_t j = 0;
+	for (size_t i = 0; i < s.length();) {
+		if (pred(s, i++))
+			j++;
+		if (i != j)
+			s[j] = s[i];
+	}
+	s.resize(j);
+}
+
 std::string sanitize_untrusted(std::string_view str, bool keep_escapes)
 {
 	// truncate on NULL
@@ -972,7 +985,7 @@ std::string sanitize_untrusted(std::string_view str, bool keep_escapes)
 	const auto &check = [] (char c) {
 		return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
 	};
-	const auto &valid_at = [&check] (const std::string &s, size_t i) {
+	remove_indexed(s, [&check] (const std::string &s, size_t i) {
 		if (s[i] != '\x1b')
 			return true;
 		if (i+1 >= s.length())
@@ -981,15 +994,7 @@ std::string sanitize_untrusted(std::string_view str, bool keep_escapes)
 			return i+2 < s.length() && check(s[i+2]); // long-form escape
 		else
 			return check(s[i+1]); // short-form escape
-	};
-	size_t j = 0;
-	for (size_t i = 0; i < s.length();) {
-		if (valid_at(s, i++))
-			j++;
-		if (i != j)
-			s[j] = s[i];
-	}
-	s.resize(j);
+	});
 	return s;
 }
 
