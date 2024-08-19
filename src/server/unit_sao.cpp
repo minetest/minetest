@@ -55,6 +55,7 @@ const ItemGroupList &UnitSAO::getArmorGroups() const
 void UnitSAO::setAnimation(
 		v2f frame_range, float frame_speed, float frame_blend, bool frame_loop)
 {
+	// Note: Always resend (even if parameters are unchanged) to restart animations.
 	m_animation_range = frame_range;
 	m_animation_speed = frame_speed;
 	m_animation_blend = frame_blend;
