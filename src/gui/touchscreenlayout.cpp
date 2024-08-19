@@ -133,8 +133,6 @@ void ButtonMeta::setPos(v2s32 pos, v2u32 screensize, s32 button_size)
 
 	offset.X = (pos.X - (anchor.X * screensize.X)) / button_size;
 	offset.Y = (pos.Y - (anchor.Y * screensize.Y)) / button_size;
-
-	assert(getPos(screensize, button_size) == pos);
 }
 
 bool ButtonLayout::isButtonAllowed(touch_gui_button_id id)

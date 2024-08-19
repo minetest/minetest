@@ -272,12 +272,11 @@ void GUITouchscreenLayout::drawMenu()
 
 void GUITouchscreenLayout::updateDragState(v2u32 screensize, v2s32 mouse_movement)
 {
-	ButtonMeta &meta = m_layout.layout.at(m_selected_btn);
-	meta.setPos(meta.getPos(screensize, m_button_size) + mouse_movement,
-			screensize, m_button_size);
-
 	core::recti rect = m_layout.getRect(m_selected_btn, screensize, m_button_size, m_tsrc);
+	rect += mouse_movement;
 	rect.constrainTo(core::recti(v2s32(0, 0), core::dimension2du(screensize)));
+
+	ButtonMeta &meta = m_layout.layout.at(m_selected_btn);
 	meta.setPos(rect.getCenter(), screensize, m_button_size);
 
 	rect = m_layout.getRect(m_selected_btn, screensize, m_button_size, m_tsrc);
