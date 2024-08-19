@@ -1218,7 +1218,7 @@ void Game::run()
 			dtime = 0.0f;
 
 		step(dtime);
-
+//fork
 		processClientEvents(&cam_view_target);
 		updateDebugState();
 		updateCamera(dtime);
@@ -2902,6 +2902,8 @@ void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation 
 		if (formspec && (event->show_formspec.formname->empty()
 				|| *(event->show_formspec.formname) == m_game_ui->getFormspecName())) {
 			formspec->quitMenu();
+			if (client->getHP()<=0)
+				showDeathFormspec();
 		}
 	} else {
 		FormspecFormSource *fs_src =
@@ -4425,7 +4427,7 @@ void Game::readSettings()
  Shutdown / cleanup
  ****************************************************************************/
 /****************************************************************************/
-
+//fork
 void Game::showDeathFormspec()
 {
 	static std::string formspec_str =
