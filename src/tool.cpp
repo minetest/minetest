@@ -184,7 +184,8 @@ void ToolCapabilities::deserializeJson(std::istream &is)
 	deserializeJsonDamageGroups(root["damage_groups"]);
 }
 
-void ToolCapabilities::deserializeJsonGroupcaps(Json::Value &json) {
+void ToolCapabilities::deserializeJsonGroupcaps(Json::Value &json)
+{
 	if (!json.isObject())
 		return;
 
@@ -195,7 +196,8 @@ void ToolCapabilities::deserializeJsonGroupcaps(Json::Value &json) {
 	}
 }
 
-void ToolCapabilities::deserializeJsonDamageGroups(Json::Value &json) {
+void ToolCapabilities::deserializeJsonDamageGroups(Json::Value &json)
+{
 	if (!json.isObject())
 		return;
 
