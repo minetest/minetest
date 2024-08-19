@@ -5028,7 +5028,6 @@ double GUIFormSpecMenu::calcImgsize(const parserData &data)
 	const double gui_scaling = g_settings->getFloat("gui_scaling", 0.5f, 42.0f);
 	const double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
 
-
 	// In fixed-size mode, inventory image size
 	// is 0.53 inch multiplied by the gui_scaling
 	// config parameter.  This magic size is chosen
@@ -5066,18 +5065,9 @@ double GUIFormSpecMenu::calcImgsize(const parserData &data)
 
 	s32 min_screen_dim = std::min(padded_screensize.X, padded_screensize.Y);
 
-	double prefer_imgsize;
-	if (g_settings->getBool("enable_touch")) {
-		// The preferred imgsize should be larger to accommodate the
-		// smaller screensize.
-		prefer_imgsize = min_screen_dim / 10 * gui_scaling;
-	} else {
-		// Desktop computers have more space, so try to fit 15 coordinates.
-		prefer_imgsize = min_screen_dim / 15 * gui_scaling;
-	}
+	double prefer_imgsize = min_screen_dim / 15 * gui_scaling;
 	// Use the available space more effectively on small windows/screens.
-	// Scaling menus down in proportion to the window size doesn't always make
-	// sense.
+	// This is especially important for mobile platforms.
 	prefer_imgsize = std::max(prefer_imgsize, fixed_imgsize);
 
 	// Try to use the preferred imgsize, but if that's bigger than the maximum
