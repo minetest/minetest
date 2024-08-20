@@ -451,7 +451,8 @@ int ModApiMainMenu::l_check_mod_configuration(lua_State *L)
 		spec.path = modpath;
 		spec.virtual_path = virtual_path;
 		if (!parseModContents(spec)) {
-			throw LuaError("Not a mod!");
+			warningstream << "Mod \"" << spec.name
+				<< "\" has no \"init.lua\" or \"modpack.conf\"" << std::endl;
 		}
 	}
 
