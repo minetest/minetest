@@ -3183,10 +3183,8 @@ std::string Server::getStatusString()
 	if (m_env) {
 		std::vector<std::string> player_names = m_clients.getPlayerNames();
 
-		// Sort player names alphabetically
 		std::sort(player_names.begin(), player_names.end());
 
-		// Concatenate sorted names to the output string
 		for (const std::string& name : player_names) {
 			if (!first)
 				os << ", ";
