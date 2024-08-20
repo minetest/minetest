@@ -413,7 +413,7 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 				b = mapblock_queue_d_rest.top();
 				mapblock_queue_d_rest.pop();
 			}
-			else
+			else if (!mapblock_queue_d_recently_drawn.empty())
 			{
 				b = mapblock_queue_d_recently_drawn.top();
 				mapblock_queue_d_recently_drawn.pop();
@@ -487,6 +487,18 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 			}
 			mapblock_queue = q;
 		}
+		else
+		{
+			// without overflow, these two queues are useless.
+			while (!mapblock_queue_d_rest.empty())
+			{
+				mapblock_queue_d_rest.pop();
+			}
+			while (!mapblock_queue_d_recently_drawn.empty())
+			{
+				mapblock_queue_d_recently_drawn.pop();
+			}
+		}
 
 		// Delete old blocks from the memory
 		while (mapblock_queue.top().block->getUsageTimer() > unload_timeout)
@@ -548,9 +560,9 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 		infostream<<", "<<block_count_all<<" blocks in memory, " << locked_blocks << " locked";
 		infostream<<"."<<std::endl;
 		infostream << recently_drawn_blocks_dropped << " recently drown blocks unloaded by distance." << std::endl
-				   << recently_drawn_blocks_skipped << "skipped." << std::endl
-				   << possibly_culled_blocks_dropped << "possibly culled blocks unloaded by distance." << std::endl
-				   << possibly_culled_blocks_skipped << "skipped." << std::endl;
+				   << recently_drawn_blocks_skipped << " skipped." << std::endl
+				   << possibly_culled_blocks_dropped << " possibly culled blocks unloaded by distance." << std::endl
+				   << possibly_culled_blocks_skipped << " skipped." << std::endl;
 		if (saved_blocks_count != 0)
 		{
 			PrintInfo(infostream); // ServerMap/ClientMap:
