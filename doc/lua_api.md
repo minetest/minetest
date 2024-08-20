@@ -6451,7 +6451,8 @@ Formspec
     * `playername`: name of player to show formspec
     * `formname`: name passed to `on_player_receive_fields` callbacks.
       It should follow the `"modname:<whatever>"` naming convention.
-      `formname` must not be empty.
+    * `formname` must not be empty, unless you want to reshow
+      the inventory formspec without updating it for future opens.
     * `formspec`: formspec to display
 * `minetest.close_formspec(playername, formname)`
     * `playername`: name of player to close formspec
