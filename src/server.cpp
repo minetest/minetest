@@ -3181,7 +3181,6 @@ std::string Server::getStatusString()
 	bool first = true;
 	os << " | clients: ";
 	if (m_env) {
-		// Get the list of player names
 		std::vector<std::string> player_names = m_clients.getPlayerNames();
 
 		// Sort player names alphabetically
