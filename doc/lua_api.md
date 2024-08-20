@@ -6057,13 +6057,29 @@ Authentication
       engine as returned as part of a `get_auth()` call on the auth handler.
     * Only use this function for making it possible to log in via password from
       external protocols such as IRC, other uses are frowned upon.
-* `minetest.get_password_hash(name, raw_password)`
+* `minetest.get_password_hash(name, password)`
     * Convert a name-password pair to a password hash that Minetest can use.
-    * The returned value alone is not a good basis for password checks based
-      on comparing the password hash in the database with the password hash
-      from the function, with an externally provided password, as the hash
-      in the db might use the new SRP verifier format.
-    * For this purpose, use `minetest.check_password_entry` instead.
+    * Player name *cannot* be empty, and both arguments *must* be strings.
+    * Control codes are not allowed in either argument, and will result in a Lua error if included.
+    * The returned value may not be the same for multiple invocations with the same name and password.
+    * The returned value therefore *cannot* be used for password checks based.
+      on a direct string comparison, use `minetest.check_password_entry` instead.
+    * If you used this function as a hash you can replace it with `minetest.sha1`:
+    ```lua
+        -- Lua equivalent of the legacy minetest.get_password_hash algorithm
+        local function legacy_get_password_hash(name, password)
+            if password == "" then
+                return ""
+            end
+            -- convert to strings
+            name = tostring(name)
+            password = tostring(password)
+            -- remove anything after the first null character
+            name = name:match("^[^\x00]+")
+            password = password:match("^[^\x00]+")
+            return minetest.sha1(tostring(name)..tostring(password))
+        end
+    ```
 * `minetest.get_player_ip(name)`: returns an IP address string for the player
   `name`.
     * The player needs to be online for this to be successful.

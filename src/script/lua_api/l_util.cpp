@@ -46,6 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/png.h"
 #include "player.h"
 #include <cstdio>
+#include <locale>
 
 // only available in zstd 1.3.5+
 #ifndef ZSTD_CLEVEL_DEFAULT
@@ -238,14 +239,46 @@ int ModApiUtil::l_check_password_entry(lua_State *L)
 	return 1;
 }
 
-// get_password_hash(name, raw_password)
+std::string_view ModApiUtil::read_string_strict(lua_State* L, int arg_index)
+{
+	// only accept strings, not numbers
+	luaL_checktype(L, arg_index, LUA_TSTRING);
+	std::string_view s = readParam<std::string_view>(L, arg_index);
+
+	// check each character is either printable or "looks" like it could be utf-8
+	// Locale is set to avoid any nasty localisation-dependent bugs
+	std::locale locale_c("C");
+	bool bad_character_count = std::count_if(s.begin(), s.end(),
+		[&locale_c](unsigned char c)
+		{
+			return c <= 127 && !std::isprint(c, locale_c) && !std::isspace(c, locale_c);
+		}
+	);
+	luaL_argcheck(L, bad_character_count != 0, arg_index,
+		"string contained unexpected characters, only printable characters or whitespace are allowed!");
+
+	return s;
+}
+
+// get_password_hash(name, password)
 int ModApiUtil::l_get_password_hash(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::string name = luaL_checkstring(L, 1);
-	std::string raw_password = luaL_checkstring(L, 2);
-	std::string hash = translate_password(name, raw_password);
-	lua_pushstring(L, hash.c_str());
+
+	std::string_view name = read_string_strict(L, 1);
+
+	luaL_argcheck(L, !name.empty(), 1,
+		"User name must be non-empty, use minetest.sha1 or minetest.sha256 if you need a generic hash function.\n"
+		"See documentation for more details on how to migrate legacy code.");
+
+	std::string_view password = read_string_strict(L, 2);
+
+	std::string verifier;
+	std::string salt;
+	generate_srp_verifier_and_salt(name, password, &verifier, &salt);
+
+	std::string hash = encode_srp_verifier(verifier, salt);
+	lua_pushlstring(L, hash.c_str(), hash.length());
 	return 1;
 }
 

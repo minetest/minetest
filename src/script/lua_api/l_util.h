@@ -137,6 +137,9 @@ private:
 	// is_valid_player_name(name)
 	static int l_is_valid_player_name(lua_State *L);
 
+	// get a printable string with strong type checking
+	static std::string_view read_string_strict(lua_State* L, int arg_index);
+
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeAsync(lua_State *L, int top);
