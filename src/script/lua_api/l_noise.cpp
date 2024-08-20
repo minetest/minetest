@@ -641,10 +641,9 @@ int LuaSecureRandom::create_object(lua_State *L)
 {
 	LuaSecureRandom *o = new LuaSecureRandom();
 
-	// Fail and return nil if we can't securely fill the buffer
 	if (!o->fillRandBuf()) {
 		delete o;
-		return 0;
+		throw LuaError("SecureRandom: Failed to find secure random device on system");
 	}
 
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;

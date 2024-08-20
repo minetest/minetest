@@ -8669,7 +8669,7 @@ In multiplayer mode, the error may be arbitrarily large.
 
 Interface for the operating system's crypto-secure PRNG.
 
-It can be created via `SecureRandom()`.  The constructor returns nil if a
+It can be created via `SecureRandom()`.  The constructor throws an error if a
 secure random device cannot be found on the system.
 
 ### Methods
