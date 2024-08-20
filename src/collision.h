@@ -73,7 +73,9 @@ collisionMoveResult collisionMoveSimple(Environment *env,IGameDef *gamedef,
 		v3f accel_f, ActiveObject *self=NULL,
 		bool collide_with_objects=true);
 
-// check if box is in collision on actual position
+/// @param self (optional) ActiveObject to ignore in the calculation.
+/// @returns `true` when `box_0` truely intersects with a node or object.
+///          Touching faces are not counted as intersection.
 bool collision_check_intersection(Environment *env, IGameDef *gamedef,
 		const aabb3f &box_0, const v3f &pos_f, ActiveObject *self = nullptr,
 		bool collide_with_objects = true);
