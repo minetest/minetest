@@ -266,6 +266,11 @@ std::string ScriptApiBase::getCurrentModName(lua_State *L)
 void ScriptApiBase::loadMod(const std::string &script_path,
 		const std::string &mod_name)
 {
+	if (!fs::IsFile(script_path)) {
+		errorstream << "Mod error: Failed to load mod \"" << mod_name
+			<< "\" as script \"" << script_path << "\" does not exist" << std::endl;
+		return;
+	}
 	ModNameStorer mod_name_storer(getStack(), mod_name);
 
 	loadScript(script_path);
