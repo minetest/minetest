@@ -1526,9 +1526,8 @@ void GenericCAO::updateAnimation()
 	if (!m_animated_meshnode)
 		return;
 
-	if (m_animated_meshnode->getStartFrame() != m_animation_range.X ||
-		m_animated_meshnode->getEndFrame() != m_animation_range.Y)
-			m_animated_meshnode->setFrameLoop(m_animation_range.X, m_animation_range.Y);
+	// Note: This sets the current frame as well, (re)starting the animation.
+	m_animated_meshnode->setFrameLoop(m_animation_range.X, m_animation_range.Y);
 	if (m_animated_meshnode->getAnimationSpeed() != m_animation_speed)
 		m_animated_meshnode->setAnimationSpeed(m_animation_speed);
 	m_animated_meshnode->setTransitionTime(m_animation_blend);
