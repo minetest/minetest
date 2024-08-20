@@ -65,6 +65,8 @@ protected:
 		}
 	};
 
+	static_assert(sizeof(SpatialKey) == sizeof(u64), "SpatialKey must align with 8 bytes, i.e. uint64_t");
+
 	struct SpatialKeyHash {
 		auto operator()(const SpatialKey& key) const -> u64 {
 			return std::hash<u64>()(*reinterpret_cast<const u64*>(&key));
