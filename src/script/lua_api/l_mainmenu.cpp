@@ -450,10 +450,7 @@ int ModApiMainMenu::l_check_mod_configuration(lua_State *L)
 		spec.name = fs::GetFilenameFromPath(modpath.c_str());
 		spec.path = modpath;
 		spec.virtual_path = virtual_path;
-		if (!parseModContents(spec)) {
-			warningstream << "Mod \"" << spec.name
-				<< "\" has no \"init.lua\" or \"modpack.conf\"" << std::endl;
-		}
+		spec.valid = parseModContents(spec);
 	}
 
 	modmgr.addMods(modSpecs);
