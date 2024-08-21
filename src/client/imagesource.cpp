@@ -1525,7 +1525,7 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 			CHECK_BASEIMG();
 
 			// Apply the "clean transparent" filter, if needed
-			if (m_setting_mipmap || m_setting_bilinear_filter ||
+			if (m_setting_mip_map_enabled || m_setting_bilinear_filter ||
 				m_setting_trilinear_filter || m_setting_anisotropic_filter)
 				imageCleanTransparent(baseimg, 127);
 

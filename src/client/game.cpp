@@ -1108,7 +1108,8 @@ bool Game::startup(bool *kill,
 	driver = device->getVideoDriver();
 	smgr = m_rendering_engine->get_scene_manager();
 
-	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, g_settings->getBool("mip_map"));
+	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS,
+		g_settings->get("mip_map") != "off");
 
 	smgr->getParameters()->setAttribute(scene::OBJ_LOADER_IGNORE_MATERIAL_FILES, true);
 
