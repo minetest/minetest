@@ -302,7 +302,7 @@ static void add_object_boxes(Environment *env,
 		// add collision with local player
 		LocalPlayer *lplayer = c_env->getLocalPlayer();
 		auto *obj = (ClientActiveObject*) lplayer->getCAO();
-		if (self != obj && self != obj->getParent()) {
+		if (!self || (self != obj && self != obj->getParent())) {
 			aabb3f lplayer_collisionbox = lplayer->getCollisionbox();
 			v3f lplayer_pos = lplayer->getPosition();
 			lplayer_collisionbox.MinEdge += lplayer_pos;
