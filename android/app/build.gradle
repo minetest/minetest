@@ -8,7 +8,7 @@ android {
 		compileSdk 34
 		targetSdkVersion 34
 		versionName "${versionMajor}.${versionMinor}.${versionPatch}"
-		versionCode project.versionCode
+		versionCode versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild
 	}
 
 	buildFeatures {
@@ -114,18 +114,6 @@ prepareAssets.dependsOn ':native:getDeps'
 
 clean {
 	delete new File("src/main/assets", "Minetest.zip")
-}
-
-// Map for the version code that gives each ABI a value.
-import com.android.build.OutputFile
-
-def abiCodes = ['armeabi-v7a': 0, 'arm64-v8a': 1]
-android.applicationVariants.all { variant ->
-	variant.outputs.each {
-		output ->
-			def abiName = output.getFilter(OutputFile.ABI)
-			output.versionCodeOverride = abiCodes.get(abiName, 0) + variant.versionCode
-	}
 }
 
 dependencies {
