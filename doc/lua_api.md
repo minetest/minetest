@@ -2626,7 +2626,7 @@ background elements are drawn before all other elements.
 reserved to pass key press events to formspec!
 
 **WARNING**: names and values of elements cannot contain binary data such as ASCII
-control characters. Escape sequences used by the engine are an exception to this.
+control characters. For values, escape sequences used by the engine are an exception to this.
 
 **WARNING**: Minetest allows you to add elements to every single formspec instance
 using `player:set_formspec_prepend()`, which may be the reason backgrounds are
