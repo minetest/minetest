@@ -42,12 +42,8 @@ static void cloud_3d_setting_changed(const std::string &settingname, void *data)
 	((Clouds *)data)->readSettings();
 }
 
-Clouds::Clouds(scene::ISceneManager* mgr, IShaderSource *ssrc,
-		s32 id,
-		u32 seed
-):
-	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
-	m_seed(seed)
+Clouds::Clouds(scene::ISceneManager* mgr, IShaderSource *ssrc, s32 id, u32 seed)
+    : scene::ISceneNode(mgr->getRootSceneNode(), mgr, id), m_seed(seed)
 {
 	m_enable_shaders = g_settings->getBool("enable_shaders");
 	// menu clouds use shader-less clouds for simplicity (ssrc == NULL)
@@ -92,75 +88,15 @@ void Clouds::OnRegisterSceneNode()
 	ISceneNode::OnRegisterSceneNode();
 }
 
-// Permutation table
-static const int permutation[] = {
-	151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
-	190, 6, 148, 247, 120, 234, 75, 0, 26, 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33, 88,
-	237, 149, 56, 87, 174, 20, 125, 136, 171, 168, 68, 175, 74, 165, 71, 134, 139, 48, 27, 166, 77, 146,
-	158, 231, 83, 111, 229, 122, 60, 211, 133, 230, 220, 105, 92, 41, 55, 46, 245, 40, 244, 102, 143, 54,
-	65, 25, 63, 161, 1, 216, 80, 73, 209, 76, 132, 187, 208, 89, 18, 169, 200, 196, 135, 130, 116, 188, 159,
-	86, 164, 100, 109, 198, 173, 186, 3, 64, 52, 217, 226, 250, 124, 123, 5, 202, 38, 147, 118, 126, 255, 82,
-	85, 212, 207, 206, 59, 227, 47, 16, 58, 17, 182, 189, 28, 42, 223, 183, 170, 213, 119, 248, 152, 2, 44,
-	154, 163, 70, 221, 153, 101, 155, 167, 43, 172, 9, 129, 22, 39, 253, 19, 98, 108, 151,160,137,91,90,15,
-	131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,190, 6, 148, 247, 120, 234,
-	75, 0, 26, 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33, 88, 237, 149, 56, 87, 174, 20, 125,
-	136, 171, 168, 68, 175, 74, 165, 71, 134, 139, 48, 27, 166, 77, 146, 158, 231, 83, 111, 229, 122, 60, 211,
-	133, 230, 220, 105, 92, 41, 55, 46, 245, 40, 244, 102, 143, 54, 65, 25, 63, 161, 1, 216, 80, 73, 209, 76,
-	132, 187, 208, 89, 18, 169, 200, 196, 135, 130, 116, 188, 159, 86, 164, 100, 109, 198, 173, 186, 3, 64, 52,
-	217, 226, 250, 124, 123, 5, 202, 38, 147, 118, 126, 255, 82, 85, 212, 207, 206, 59, 227, 47, 16, 58, 17,
-	182, 189, 28, 42, 223, 183, 170, 213, 119, 248, 152, 2, 44, 154, 163, 70, 221, 153, 101, 155, 167, 43,
-	172, 9, 129, 22, 39, 253, 19, 98, 108
-};
-
-// Fade function for smooth interpolation
-inline float fade(float t) {
-	return t * t * t * (t * (t * 6 - 15) + 10);
+float cloudNoise(float x, float y, u32 seed) {
+    // Uses the seed to generate a pseudo-random number
+    float noise = std::sin(x * 12.9898f + y * 78.233f + seed) * 43758.5453f;
+    return noise - std::floor(noise);
 }
 
-// Gradient function to compute dot product of gradient vectors and distance vectors
-inline float grad(int hash, float x, float y) {
-	int h = hash & 15;
-	float u = h < 8 ? x : y;
-	float v = h < 4 ? y : (h == 12 || h == 14 ? x : 0);
-	return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
-}
-
-// Linear interpolation function
-inline float lerp(float t, float a, float b) {
-	return a + t * (b - a);
-}
-
-// Perlin noise function
 float PerlinNoise2D(float x, float y) {
-	// Determine grid cell coordinates
-	int X = (int)std::floor(x) & 255;
-	int Y = (int)std::floor(y) & 255;
-
-	// Relative coordinates of point in grid cell
-	x -= std::floor(x);
-	y -= std::floor(y);
-
-	// Compute fade curves for x and y
-	float u = fade(x);
-	float v = fade(y);
-
-	int A = permutation[X] + Y;
-	int AA = permutation[A] & 255;
-	int AB = permutation[A + 1] & 255;
-	int B = permutation[X + 1] + Y;
-	int BA = permutation[B] & 255;
-	int BB = permutation[B + 1] & 255;
-
-	// Calculate noise contributions from each corner
-	float gradAA = grad(permutation[AA], x, y);
-	float gradAB = grad(permutation[AB], x - 1, y);
-	float gradBA = grad(permutation[BA], x, y - 1);
-	float gradBB = grad(permutation[BB], x - 1, y - 1);
-
-	// Interpolate the results
-	float x1 = lerp(u, gradAA, gradAB);
-	float x2 = lerp(u, gradBA, gradBB);
-	return lerp(v, x1, x2);
+    float cloud_seed = 19576;
+    return cloudNoise(x, y, cloud_seed);
 }
 
 void Clouds::updateMesh()
@@ -198,7 +134,7 @@ void Clouds::updateMesh()
 	m_last_noise_center = center_of_drawing_in_noise_i;
 	m_mesh_valid = true;
 
-	const u32 num_faces_to_draw = is3D() ? 6 : 1;
+	const u32 num_faces_to_draw = m_enable_3d ? 6 : 1;
 
 	// The world position of the integer center point of drawing in the noise
 	v2f world_center_of_drawing_in_noise_f = v2f(
@@ -261,8 +197,9 @@ void Clouds::updateMesh()
 	((x) >= -(radius) && (x) < (radius) && (z) >= -(radius) && (z) < (radius))
 
 	mb->Vertices.clear();
-	for (s16 zi0 = -m_cloud_radius_i; zi0 < m_cloud_radius_i; zi0++) {
-		for (s16 xi0 = -m_cloud_radius_i; xi0 < m_cloud_radius_i; xi0++) {
+	for (s16 zi0 = -m_cloud_radius_i; zi0 < m_cloud_radius_i; zi0++)
+	for (s16 xi0 = -m_cloud_radius_i; xi0 < m_cloud_radius_i; xi0++) 
+	{
  			s16 zi = zi0;
 			s16 xi = xi0;
  			// Draw from back to front for proper transparency
@@ -287,7 +224,7 @@ void Clouds::updateMesh()
 
 			const f32 rx = cloud_size / 2.0f;
 			// if clouds are flat, the top layer should be at the given height
-			const f32 ry = m_enable_3d ? m_params.thickness * BS : 0.0f;
+			const f32 ry = is3D() ? m_params.thickness * BS : 0.0f;
 			const f32 rz = cloud_size / 2;
 
 			// Apply Perlin noise for height variation
@@ -380,9 +317,9 @@ void Clouds::updateMesh()
 				// Apply smooth alpha based on distance from center
 				float distance_from_center = std::sqrt(xi * xi + zi * zi);
 				float max_distance = m_cloud_radius_i * 1.1f;
-				float alpha = std::max(0.0f, 1.0f - distance_from_center / max_distance);
+				float alpha = std::max(0.0f, 1.0f - distance_from_center / max_distance) * 255;
 				for (auto &vertex : v) {
-					vertex.Color.setAlpha(static_cast<u32>(alpha * 255));
+					vertex.Color.setAlpha(static_cast<u32>(alpha));
 				}
 
 				v3f pos(p0.X, m_params.height * BS, p0.Y);
@@ -392,14 +329,14 @@ void Clouds::updateMesh()
 				}
 			}
 		}
-	}
+	//}
 
 	mb->setDirty(scene::EBT_VERTEX);
 
 	const u32 quad_count = mb->getVertexCount() / 4;
 	const u32 index_count = quad_count * 6;
 	// Rewrite index array as needed
-
+	
 	if (mb->getIndexCount() > index_count) {
 		mb->Indices.resize(index_count);
 		mb->setDirty(scene::EBT_INDEX);
@@ -511,7 +448,7 @@ void Clouds::readSettings()
 	// chosen to avoid exactly that.
 	// refer to vertex_count in updateMesh()
 	m_enable_3d = g_settings->getBool("enable_3d_clouds");
-	const u16 maximum = m_enable_3d ? 62 : 25;
+	const u16 maximum = is3D() ? 62 : 25;
 	m_cloud_radius_i = rangelim(g_settings->getU16("cloud_radius"), 1, maximum);
 
 	invalidateMesh();
