@@ -134,7 +134,7 @@ void Clouds::updateMesh()
 	m_last_noise_center = center_of_drawing_in_noise_i;
 	m_mesh_valid = true;
 
-	const u32 num_faces_to_draw = m_enable_3d ? 6 : 1;
+	const u32 num_faces_to_draw = is3D() ? 6 : 1;
 
 	// The world position of the integer center point of drawing in the noise
 	v2f world_center_of_drawing_in_noise_f = v2f(
