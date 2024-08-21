@@ -198,7 +198,7 @@ void Clouds::updateMesh()
 	m_last_noise_center = center_of_drawing_in_noise_i;
 	m_mesh_valid = true;
 
-	const u32 num_faces_to_draw = m_enable_3d ? 6 : 1;
+	const u32 num_faces_to_draw = is3D() ? 6 : 1;
 
 	// The world position of the integer center point of drawing in the noise
 	v2f world_center_of_drawing_in_noise_f = v2f(
@@ -442,7 +442,7 @@ void Clouds::render()
 		updateAbsolutePosition();
 	}
 
-	m_material.BackfaceCulling = m_enable_3d;
+	m_material.BackfaceCulling = is3D();
 	if (m_enable_shaders)
 		m_material.EmissiveColor = m_color.toSColor();
 
@@ -492,7 +492,7 @@ void Clouds::update(const v3f &camera_p, const video::SColorf &color_diffuse)
 	// is the camera inside the cloud mesh?
 	m_camera_pos = camera_p;
 	m_camera_inside_cloud = false; // default
-	if (m_enable_3d) {
+	if (is3D()) {
 		float camera_height = camera_p.Y - BS * m_camera_offset.Y;
 		if (camera_height >= m_box.MinEdge.Y &&
 				camera_height <= m_box.MaxEdge.Y) {
