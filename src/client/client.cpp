@@ -438,6 +438,8 @@ void Client::step(float dtime)
 		}
 	}
 
+	// The issue that made this workaround necessary was fixed in August 2024, but
+	// it's not like we can remove this code - ever.
 	if (m_state == LC_Created) {
 		float &counter = m_connection_reinit_timer;
 		counter -= dtime;

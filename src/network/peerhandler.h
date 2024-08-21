@@ -30,8 +30,9 @@ class PeerHandler
 {
 public:
 	PeerHandler() = default;
-
 	virtual ~PeerHandler() = default;
+
+	// Note: all functions are called from within a Receive() call on the same thread.
 
 	/*
 		This is called after the Peer has been inserted into the
@@ -46,22 +47,4 @@ public:
 	virtual void deletingPeer(IPeer *peer, bool timeout) = 0;
 };
 
-enum PeerChangeType : u8
-{
-	PEER_ADDED,
-	PEER_REMOVED
-};
-
-struct PeerChange
-{
-	PeerChange(PeerChangeType t, session_t _peer_id, bool _timeout) :
-			type(t), peer_id(_peer_id), timeout(_timeout)
-	{
-	}
-	PeerChange() = delete;
-
-	PeerChangeType type;
-	session_t peer_id;
-	bool timeout;
-};
 }
