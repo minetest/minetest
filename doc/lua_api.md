@@ -2625,6 +2625,9 @@ background elements are drawn before all other elements.
 **WARNING**: do _not_ use an element name starting with `key_`; those names are
 reserved to pass key press events to formspec!
 
+**WARNING**: names and values of elements cannot contain binary data such as ASCII
+control characters. For values, escape sequences used by the engine are an exception to this.
+
 **WARNING**: Minetest allows you to add elements to every single formspec instance
 using `player:set_formspec_prepend()`, which may be the reason backgrounds are
 appearing when you don't expect them to, or why things are styled differently
