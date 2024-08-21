@@ -182,7 +182,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	if (!g_menucloudsmgr)
 		g_menucloudsmgr = m_rendering_engine->get_scene_manager()->createNewSceneManager();
 	if (!g_menuclouds)
-		g_menuclouds = new Clouds(g_menucloudsmgr, -1, rand());
+		g_menuclouds = new Clouds(g_menucloudsmgr, -1, 2/*JED rand()*/);
 	g_menuclouds->setHeight(100.0f);
 	g_menuclouds->update(v3f(0, 0, 0), video::SColor(255, 240, 240, 255));
 	scene::ICameraSceneNode* camera;

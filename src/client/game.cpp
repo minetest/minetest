@@ -1542,7 +1542,7 @@ bool Game::createClient(const GameStartData &start_data)
 	/* Clouds
 	 */
 	if (m_cache_enable_clouds)
-		clouds = new Clouds(smgr, -1, time(0));
+		clouds = new Clouds(smgr, -1, 2 /*JED time(0)*/);
 
 	/* Skybox
 	 */
