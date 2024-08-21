@@ -198,7 +198,7 @@ void Clouds::updateMesh()
 
 	mb->Vertices.clear();
 	for (s16 zi0 = -m_cloud_radius_i; zi0 < m_cloud_radius_i; zi0++)
-	for (s16 xi0 = -m_cloud_radius_i; xi0 < m_cloud_radius_i; xi0++) 
+	for (s16 xi0 = -m_cloud_radius_i; xi0 < m_cloud_radius_i; xi0++)
 	{
  			s16 zi = zi0;
 			s16 xi = xi0;
@@ -329,14 +329,13 @@ void Clouds::updateMesh()
 				}
 			}
 		}
-	//}
 
 	mb->setDirty(scene::EBT_VERTEX);
 
 	const u32 quad_count = mb->getVertexCount() / 4;
 	const u32 index_count = quad_count * 6;
 	// Rewrite index array as needed
-	
+
 	if (mb->getIndexCount() > index_count) {
 		mb->Indices.resize(index_count);
 		mb->setDirty(scene::EBT_INDEX);
