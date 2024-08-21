@@ -8495,6 +8495,14 @@ child will follow movement and rotation of that bone.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
 * `respawn()`: Respawns the player using the same mechanism as the death screen,
   including calling `on_respawnplayer` callbacks.
+* `get_flags()`: returns a table of player flags (the following boolean fields):
+  * `breathing`: Whether breathing (regaining air) is enabled, default `true`.
+  * `drowning`: Whether drowning (losing air) is enabled, default `true`.
+  * `node_damage`: Whether the player takes damage from nodes, default `true`.
+* `set_flags(flags)`: sets flags
+  * takes a table in the same format as returned by `get_flags`
+  * absent fields are left unchanged
+
 
 `PcgRandom`
 -----------
