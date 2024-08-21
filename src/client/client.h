@@ -613,4 +613,6 @@ private:
 
 	// The number of blocks the client will combine for mesh generation.
 	MeshGrid m_mesh_grid;
+
+	const bool m_always_send_player_pos = false;
 };
