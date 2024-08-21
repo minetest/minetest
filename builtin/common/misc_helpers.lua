@@ -702,6 +702,7 @@ function core.privs_to_string(privs, delim)
 			list[#list + 1] = priv
 		end
 	end
+	table.sort(list)
 	return table.concat(list, delim)
 end
 

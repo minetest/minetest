@@ -3181,14 +3181,11 @@ std::string Server::getStatusString()
 	bool first = true;
 	os << " | clients: ";
 	if (m_env) {
-		std::vector<session_t> clients = m_clients.getClientIDs();
-		for (session_t client_id : clients) {
-			RemotePlayer *player = m_env->getPlayer(client_id);
+		std::vector<std::string> player_names = m_clients.getPlayerNames();
 
-			// Get name of player
-			const std::string name = player ? player->getName() : "<unknown>";
+		std::sort(player_names.begin(), player_names.end());
 
-			// Add name to information string
+		for (const std::string& name : player_names) {
 			if (!first)
 				os << ", ";
 			else
