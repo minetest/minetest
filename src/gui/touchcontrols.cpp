@@ -412,6 +412,10 @@ TouchControls::TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc)
 
 		pos.X += spacing.X;
 	}
+
+	m_status_text = grab_gui_element<IGUIStaticText>(
+			m_guienv->addStaticText(L"", recti(), false, false));
+	m_status_text->setVisible(false);
 }
 
 void TouchControls::addButton(std::vector<button_info> &buttons, touch_gui_button_id id,
