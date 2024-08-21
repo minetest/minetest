@@ -399,7 +399,7 @@ void Clouds::updateMesh()
 	const u32 quad_count = mb->getVertexCount() / 4;
 	const u32 index_count = quad_count * 6;
 	// Rewrite index array as needed
-	
+
 	if (mb->getIndexCount() > index_count) {
 		mb->Indices.resize(index_count);
 		mb->setDirty(scene::EBT_INDEX);
