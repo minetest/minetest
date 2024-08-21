@@ -98,8 +98,14 @@ local function check_mod_configuration(world_path, all_mods)
 
 	-- Build the table of errors
 	local with_error = {}
+	for _, mod in ipairs(config_status.satisfied_mods) do
+		if not mod.valid then
+			local error = { type = "error", reason = "invalid" }
+			with_error[mod.virtual_path] = error
+		end
+	end
 	for _, mod in ipairs(config_status.unsatisfied_mods) do
-		local error = { type = "warning" }
+		local error = { type = "warning", reason = "unsatisfied_depends" }
 		with_error[mod.virtual_path] = error
 
 		for _, depname in ipairs(mod.unsatisfied_depends) do
@@ -168,6 +174,24 @@ local function get_formspec(data)
 		local hard_deps_str = table.concat(hard_deps, ",")
 		local soft_deps_str = table.concat(soft_deps, ",")
 
+		local error_messages = ""
+
+		local error = with_error[mod.virtual_path]
+		if error and
+			error.type == "error" and
+			-- do not handle this error by message because is is handled by
+			-- dependency list
+			error.reason ~= "unsatisfied_depends"
+			then
+				error_messages = error_messages ..
+				fgettext(minetest.colorize(mt_color_red, "Errors:") .. "\n")
+				if error.reason == "invalid" then
+					error_messages = error_messages .. fgettext(
+					"Mod is incomplete because it has no \"init.lua\" file. " ..
+					"Dependencies are not visible because of this.")
+				end
+		end
+
 		retval = retval ..
 			"label[0,0.7;" .. fgettext("Mod:") .. "]" ..
 			"label[0.75,0.7;" .. mod.name .. "]"
@@ -176,7 +200,8 @@ local function get_formspec(data)
 			if soft_deps_str == "" then
 				retval = retval ..
 					"label[0,1.25;" ..
-					fgettext("No (optional) dependencies") .. "]"
+					fgettext("No (optional) dependencies") .. "]" ..
+					"textarea[0.25,1.75;5.75,7.2;;" .. error_messages .. ";]"
 			else
 				retval = retval ..
 					"label[0,1.25;" .. fgettext("No hard dependencies") ..
@@ -184,7 +209,8 @@ local function get_formspec(data)
 					"label[0,1.75;" .. fgettext("Optional dependencies:") ..
 					"]" ..
 					"textlist[0,2.25;5,4;world_config_optdepends;" ..
-					soft_deps_str .. ";0]"
+					soft_deps_str .. ";0]" ..
+					"textarea[0.25,6.5;3.45,1.75;;" .. error_messages .. ";]"
 			end
 		else
 			if soft_deps_str == "" then
@@ -192,7 +218,8 @@ local function get_formspec(data)
 					"label[0,1.25;" .. fgettext("Dependencies:") .. "]" ..
 					"textlist[0,1.75;5,4;world_config_depends;" ..
 					hard_deps_str .. ";0]" ..
-					"label[0,6;" .. fgettext("No optional dependencies") .. "]"
+					"label[0,6;" .. fgettext("No optional dependencies") .. "]" ..
+					"textarea[0.25,6.5;3.45,1.75;;" .. error_messages .. ";]"
 			else
 				retval = retval ..
 					"label[0,1.25;" .. fgettext("Dependencies:") .. "]" ..
@@ -201,7 +228,8 @@ local function get_formspec(data)
 					"label[0,3.9;" .. fgettext("Optional dependencies:") ..
 					"]" ..
 					"textlist[0,4.375;5,1.8;world_config_optdepends;" ..
-					soft_deps_str .. ";0]"
+					soft_deps_str .. ";0]" ..
+					"textarea[0.25,6.5;3.45,1.75;;" .. error_messages .. ";]"
 			end
 		end
 	end
