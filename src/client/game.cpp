@@ -1230,6 +1230,14 @@ void Game::run()
 		if (m_does_lost_focus_pause_game && !device->isWindowFocused() && !isMenuActive()) {
 			showPauseMenu();
 		}
+		auto *&formspec = m_game_ui->getFormspecGUI();
+		if (!server->isRespawned() && formspec == nullptr)
+		{
+			if (client->modsLoaded())
+				client->getScript()->on_death();
+			else
+				showDeathFormspec();
+		}
 	}
 
 	RenderingEngine::autosaveScreensizeAndCo(initial_screen_size, initial_window_maximized);
@@ -2902,8 +2910,6 @@ void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation 
 		if (formspec && (event->show_formspec.formname->empty()
 				|| *(event->show_formspec.formname) == m_game_ui->getFormspecName())) {
 			formspec->quitMenu();
-			if (client->getHP()<=0)
-				showDeathFormspec();
 		}
 	} else {
 		FormspecFormSource *fs_src =

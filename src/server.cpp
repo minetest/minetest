@@ -2829,6 +2829,7 @@ void Server::HandlePlayerDeath(PlayerSAO *playersao, const PlayerHPChangeReason 
 
 	// Trigger scripted stuff
 	m_script->on_dieplayer(playersao, reason);
+	m_respawned = false;
 
 	SendDeathscreen(playersao->getPeerID(), false, v3f(0,0,0));
 }
@@ -2846,6 +2847,7 @@ void Server::RespawnPlayer(session_t peer_id)
 	playersao->setHP(prop->hp_max,
 			PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
 	playersao->setBreath(prop->breath_max);
+	m_respawned = true;
 
 	bool repositioned = m_script->on_respawnplayer(playersao);
 	if (!repositioned) {

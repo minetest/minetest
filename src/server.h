@@ -398,6 +398,8 @@ public:
 	// Send block to specific player only
 	bool SendBlock(session_t peer_id, const v3s16 &blockpos);
 
+	inline bool isRespawned() { return m_respawned; }
+
 	// Get or load translations for a language
 	Translations *getTranslationLanguage(const std::string &lang_code);
 
@@ -658,6 +660,8 @@ private:
 	IWritableCraftDefManager *m_craftdef;
 
 	std::unordered_map<std::string, Translations> server_translations;
+
+	bool m_respawned = true;
 
 	/*
 		Threads
