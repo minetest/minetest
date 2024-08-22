@@ -3,7 +3,7 @@
 context: {}
 package:
   name: minetest-gymnasium
-  version: "0.18"
+  version: "0.19"
 
 source:
   path: ../../

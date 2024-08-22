@@ -348,7 +348,7 @@ GUIEngine::~GUIEngine()
 /******************************************************************************/
 void GUIEngine::cloudInit()
 {
-	m_cloud.clouds = make_irr<Clouds>(m_smgr, -1, 2 /*JED rand()*/);
+	m_cloud.clouds = make_irr<Clouds>(m_smgr, -1, rand());
 	m_cloud.clouds->setHeight(100.0f);
 	m_cloud.clouds->update(v3f(0, 0, 0), video::SColor(255,240,240,255));
 

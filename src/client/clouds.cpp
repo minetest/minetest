@@ -45,7 +45,7 @@ Clouds::Clouds(scene::ISceneManager* mgr,
 		u32 seed
 ):
 	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
-	m_seed(seed)
+	m_seed(2) // JED seed)
 {
 	m_material.Lighting = false;
 	m_material.BackfaceCulling = true;
