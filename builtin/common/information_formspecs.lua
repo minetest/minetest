@@ -69,7 +69,7 @@ local function build_chatcommands_formspec(name, sel, copy)
 				description = cmds[2].description
 				if copy then
 					local msg = S("Command: @1 @2",
-						core.colorize("#0FF", "/" .. cmds[1]), cmds[2].params)
+						core.colorize("#0FF", (INIT == "client" and "." or "/") .. cmds[1]), cmds[2].params)
 					if INIT == "client" then
 						core.display_chat_message(msg)
 					else
