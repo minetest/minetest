@@ -8896,6 +8896,7 @@ Player properties need to be saved manually.
     -- If positive number, object will climb upwards when it moves
     -- horizontally against a `walkable` node, if the height difference
     -- is within `stepheight`.
+    -- Values bigger than twice the collisionbox Y won't work.
 
     automatic_face_movement_dir = 0.0,
     -- Automatically set yaw to movement direction, offset in degrees.
