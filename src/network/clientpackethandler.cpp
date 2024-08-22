@@ -228,10 +228,9 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 	u8 denyCode;
 	*pkt >> denyCode;
 
-	if (pkt->getRemainingBytes() <= 0)
-		return;
+	if (pkt->getRemainingBytes() > 0)
+		*pkt >> m_access_denied_reason;
 
-	*pkt >> m_access_denied_reason;
 	if (m_access_denied_reason.empty()) {
 		if (denyCode >= SERVER_ACCESSDENIED_MAX) {
 			m_access_denied_reason = "Unknown";
