@@ -209,7 +209,6 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 	// to be processed even if the serialization format has
 	// not been agreed yet, the same as TOCLIENT_INIT.
 	m_access_denied = true;
-	m_access_denied_reason = "Unknown";
 
 	if (pkt->getCommand() != TOCLIENT_ACCESS_DENIED) {
 		// Legacy code from 0.4.12 and older but is still used
@@ -232,10 +231,10 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 		*pkt >> m_access_denied_reason;
 
 	if (m_access_denied_reason.empty()) {
-		if (denyCode >= SERVER_ACCESSDENIED_MAX) {
-			m_access_denied_reason = "Unknown";
-		} else if (denyCode != SERVER_ACCESSDENIED_CUSTOM_STRING) {
+		if (denyCode != SERVER_ACCESSDENIED_CUSTOM_STRING) {
 			m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
+		} else if (denyCode >= SERVER_ACCESSDENIED_MAX) {
+			m_access_denied_reason = "Unknown";
 		}
 	}
 
