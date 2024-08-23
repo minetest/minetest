@@ -183,7 +183,7 @@ local function get_formspec(data)
 			error.reason ~= "unsatisfied_depends"
 		then
 			error_message = error_message ..
-			fgettext(minetest.colorize(mt_color_red, "Errors:") .. "\n")
+			minetest.colorize(mt_color_red, fgettext("Errors:")) .. "\n"
 			if error.reason == "invalid" then
 				error_message = error_message .. fgettext(
 				"Mod is incomplete because it has no \"init.lua\" file. " ..
