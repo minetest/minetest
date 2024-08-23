@@ -648,10 +648,12 @@ bool PlayerSAO::checkMovementCheat()
 {
 	if (m_is_singleplayer ||
 			isAttached() ||
-			g_settings->getBool("disable_anticheat")) {
+			!g_settings->getBool("anticheat_movement")) {
 		m_last_good_position = m_base_position;
 		return false;
 	}
+
+	float anticheat_movement_tolerance = g_settings->getFloat("anticheat_movement_tolerance");
 
 	bool cheated = false;
 	/*
@@ -700,6 +702,8 @@ bool PlayerSAO::checkMovementCheat()
 	}
 
 	player_max_walk = MYMAX(player_max_walk, override_max_H);
+
+	player_max_walk *= anticheat_movement_tolerance;
 
 	player_max_jump = m_player->movement_speed_jump * m_player->physics_override.jump;
 	// FIXME: Bouncy nodes cause practically unbound increase in Y speed,
