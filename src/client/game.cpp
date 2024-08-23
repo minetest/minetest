@@ -3825,12 +3825,22 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 
 		// Don't place node when player would be inside new node
 		// NOTE: This is to be eventually implemented by a mod as client-side Lua
+		//-- Collision check --
+		/// check for the precise position of player
+		/// neighborpos is the pos for predicted node, right?
+		/// Do not allow placing node around player, when it can collide with player collision box. not just check for the pos of node.
+		bool isFullNodeCollided = false;
+		v3f position = player->getPosition();
+		aabb3f collisionbox = player->getCollisionbox();
+		v3s16 colpos_min = floatToInt(position + collisionbox.MinEdge * 0.99f,BS);
+		v3s16 colpos_max = floatToInt(position + collisionbox.MaxEdge * 0.99f,BS);
+		if (neighborpos.Z <= colpos_max.Z && neighborpos.Z >= colpos_min.Z && neighborpos.X <= colpos_max.X && neighborpos.X >= colpos_min.X && neighborpos.Y <= colpos_max.Y && neighborpos.Y >= colpos_min.Y)
+			isFullNodeCollided = true;
+
 		if (!predicted_f.walkable ||
 				g_settings->getBool("enable_build_where_you_stand") ||
 				(client->checkPrivilege("noclip") && g_settings->getBool("noclip")) ||
-				(predicted_f.walkable &&
-					neighborpos != player->getStandingNodePos() + v3s16(0, 1, 0) &&
-					neighborpos != player->getStandingNodePos() + v3s16(0, 2, 0))) {
+				(predicted_f.walkable && !isFullNodeCollided)) {
 			// This triggers the required mesh update too
 			client->addNode(p, predicted_node);
 			// Report to server
