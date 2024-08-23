@@ -1512,8 +1512,8 @@ void NodeDefManager::updateTextures(IGameDef *gamedef, void *progress_callback_a
 	}
 
 	if (!tile_layers.empty())
-		m_diffuse_atlas = new TextureAtlas(client->getSceneManager()->getVideoDriver(), tsrc,
-			tile_layers);//, data->m_blockpos);
+		m_diffuse_atlas = new TextureAtlas(client->getSceneManager()->getVideoDriver(),
+			tsrc, tile_layers);
 #endif
 }
 

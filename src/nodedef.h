@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "client/tile.h"
 #include <IMeshManipulator.h>
+#include "client/texture_atlas.h"
 class Client;
 #endif
 #include "itemgroup.h"
@@ -36,9 +37,6 @@ class Client;
 #include "texture_override.h" // TextureOverride
 #include "tileanimation.h"
 #include "util/pointabilities.h"
-#ifndef SERVER
-#include "client/texture_atlas.h"
-#endif
 
 class IItemDefManager;
 class ITextureSource;
@@ -758,13 +756,15 @@ public:
 	 */
 	void resolveCrossrefs();
 
+#ifndef SERVER
 	/*!
-	 * Gets access to the atlas
+	 * Provides access to the atlas
 	 */
 	TextureAtlas *getAtlas() const
 	{
 		return m_diffuse_atlas;
 	}
+#endif
 
 private:
 	/*!
@@ -859,7 +859,7 @@ private:
 
 #ifndef SERVER
 	/*!
-	 * Atlas object saving unique color textures from all tile layers.
+	 * Atlas object saving the tiles textures pixel data in the single texture.
 	 */
 	mutable TextureAtlas *m_diffuse_atlas = nullptr;
 #endif

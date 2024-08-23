@@ -384,7 +384,7 @@ public:
 		LockLayer = 0;
 	}
 
-	void regenerateMipMapLevels(void *data = 0, u32 layer = 0, int end_size = 1) override
+	void regenerateMipMapLevels(void *data = 0, u32 layer = 0, u32 end_size = 1) override
 	{
 		if (!HasMipMaps || LegacyAutoGenerateMipMaps || (Size.Width * Size.Height <= end_size))
 			return;
@@ -423,6 +423,7 @@ public:
 
 	void drawToSubImage(int x, int y, int width, int height, ITexture *texture) override
 	{
+		// This method works only for 2D textures currently
 		if (TextureType != GL_TEXTURE_2D || !texture)
 			return;
 
@@ -442,43 +443,15 @@ public:
 
 		Driver->getCacheHandler()->getTextureCache().set(0, this);
 
-		/*if (HasMipMaps && !LegacyAutoGenerateMipMaps) {
-			int level = 0;
-			int cur_width = width;
-			int cur_height = height;
-			int cur_x = x;
-			int cur_y = y;
+		if (!IImage::isCompressedFormat(format))
+			GL.TexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, pixel_format, pixeltype, data);
+		else {
+			u32 dataSize = IImage::getDataSizeFromFormat(format, width, height);
 
-			while (cur_width != 1 || cur_height != 1) {
-				if(!IImage::isCompressedFormat(format))
-					GL.TexSubImage2D(GL_TEXTURE_2D, level, cur_x, cur_y, cur_width, cur_height, pixel_format, pixeltype, data);
-				else {
-					u32 dataSize = IImage::getDataSizeFromFormat(format, cur_width, cur_height);
-
-					Driver->irrGlCompressedTexSubImage2D(GL_TEXTURE_2D, level, cur_x, cur_y, cur_width, cur_height, pixel_format, dataSize, data);
-				}
-
-				TEST_GL_ERROR(Driver);
-
-				level++;
-
-				cur_x >>= level;
-				cur_y >>= level;
-				cur_width >>= level;
-				cur_height >>= level;
-			}
+			Driver->irrGlCompressedTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, pixel_format, dataSize, data);
 		}
-		else {*/
-			if (!IImage::isCompressedFormat(format))
-				GL.TexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, pixel_format, pixeltype, data);
-			else {
-				u32 dataSize = IImage::getDataSizeFromFormat(format, width, height);
 
-				Driver->irrGlCompressedTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, pixel_format, dataSize, data);
-			}
-
-			TEST_GL_ERROR(Driver);
-		//}
+		TEST_GL_ERROR(Driver);
 
 		texture->unlock();
 

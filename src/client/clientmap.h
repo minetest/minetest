@@ -150,21 +150,19 @@ private:
 
 
 	// reference to a mesh buffer used when rendering the map.
-	struct DrawDescriptor {
-		v3s16 m_pos;
+	struct DrawBuffer {
 		union {
 			scene::IMeshBuffer *m_buffer;
 			const PartialMeshBuffer *m_partial_buffer;
 		};
-		bool m_reuse_material:1;
 		bool m_use_partial_buffer:1;
 
-		DrawDescriptor(v3s16 pos, scene::IMeshBuffer *buffer, bool reuse_material) :
-			m_pos(pos), m_buffer(buffer), m_reuse_material(reuse_material), m_use_partial_buffer(false)
+		DrawBuffer(scene::IMeshBuffer *buffer) :
+			m_buffer(buffer), m_use_partial_buffer(false)
 		{}
 
-		DrawDescriptor(v3s16 pos, const PartialMeshBuffer *buffer) :
-			m_pos(pos), m_partial_buffer(buffer), m_reuse_material(false), m_use_partial_buffer(true)
+		DrawBuffer(const PartialMeshBuffer *buffer) :
+			m_partial_buffer(buffer), m_use_partial_buffer(true)
 		{}
 
 		video::SMaterial &getMaterial();
@@ -191,8 +189,6 @@ private:
 	std::vector<MapBlock*> m_keeplist;
 	std::map<v3s16, MapBlock*> m_drawlist_shadow;
 	bool m_needs_update_drawlist;
-
-	std::vector<DrawDescriptor> m_batched_buffers;
 
 	std::set<v2s16> m_last_drawn_sectors;
 

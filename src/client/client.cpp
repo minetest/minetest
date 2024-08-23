@@ -602,9 +602,12 @@ void Client::step(float dtime)
 						do_mapper_update = false;
 
 					bool is_empty = true;
-					for (int l = 0; l < MAX_TILE_LAYERS; l++)
-						if (r.mesh->getMesh(l)->getMeshBufferCount() != 0)
-							is_empty = false;
+
+                    MapblockMeshCollector *mesh = r.mesh->getMesh();
+
+                    for (auto &layer : mesh->layers)
+                        if (!layer.second.empty())
+                            is_empty = false;
 
 					if (is_empty)
 						delete r.mesh;

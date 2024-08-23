@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_ptr.h"
 #include "util/numeric.h"
 #include "client/tile.h"
+#include "client/meshgen/collector.h"
 #include "voxel.h"
 #include <array>
 #include <map>
@@ -69,34 +70,6 @@ struct MeshMakeData
 		Enable or disable smooth lighting
 	*/
 	void setSmoothLighting(bool smooth_lighting);
-};
-
-// represents a triangle as indexes into the vertex buffer in SMeshBuffer
-class MeshTriangle
-{
-public:
-	scene::SMeshBuffer *buffer;
-	u16 p1, p2, p3;
-	v3f centroid;
-	float areaSQ;
-
-	void updateAttributes()
-	{
-		v3f v1 = buffer->getPosition(p1);
-		v3f v2 = buffer->getPosition(p2);
-		v3f v3 = buffer->getPosition(p3);
-
-		centroid = (v1 + v2 + v3) / 3;
-		areaSQ = (v2-v1).crossProduct(v3-v1).getLengthSQ() / 4;
-	}
-
-	v3f getNormal() const {
-		v3f v1 = buffer->getPosition(p1);
-		v3f v2 = buffer->getPosition(p2);
-		v3f v3 = buffer->getPosition(p3);
-
-		return (v2-v1).crossProduct(v3-v1);
-	}
 };
 
 /**
@@ -165,6 +138,9 @@ private:
 	irr_ptr<scene::SIndexBuffer> m_indices;
 };
 
+
+class MapblockMeshCollector;
+
 /*
 	Holds a mesh for a mapblock.
 
@@ -183,22 +159,14 @@ public:
 	MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offset);
 	~MapBlockMesh();
 
-	// Main animation function, parameters:
-	//   faraway: whether the block is far away from the camera (~50 nodes)
-	//   time: the global animation time, 0 .. 60 (repeats every minute)
+	// Update the light in vertices, parameters:
 	//   daynight_ratio: 0 .. 1000
-	//   crack: -1 .. CRACK_ANIMATION_LENGTH-1 (-1 for off)
 	// Returns true if anything has been changed.
-	bool animate(bool faraway, float time, int crack, u32 daynight_ratio);
+	bool updateLighting(u32 daynight_ratio);
 
-	scene::IMesh *getMesh()
+	MapblockMeshCollector *getMesh()
 	{
-		return m_mesh[0].get();
-	}
-
-	scene::IMesh *getMesh(u8 layer)
-	{
-		return m_mesh[layer].get();
+        return m_mesh;
 	}
 
 	std::vector<MinimapMapblock*> moveMinimapMapblocks()
@@ -208,15 +176,15 @@ public:
 		return minimap_mapblocks;
 	}
 
-	bool isAnimationForced() const
+	bool isUpdateLightForced() const
 	{
-		return m_animation_force_timer == 0;
+		return m_update_light_force_timer == 0;
 	}
 
-	void decreaseAnimationForceTimer()
+	void decreaseUpdateLightForceTimer()
 	{
-		if(m_animation_force_timer > 0)
-			m_animation_force_timer--;
+		if(m_update_light_force_timer > 0)
+			m_update_light_force_timer--;
 	}
 
 	/// Radius of the bounding-sphere, in BS-space.
@@ -236,13 +204,8 @@ public:
 	}
 
 private:
-	struct AnimationInfo {
-		int frame; // last animation frame
-		int frame_offset;
-		TileLayer tile;
-	};
 
-	irr_ptr<scene::IMesh> m_mesh[MAX_TILE_LAYERS];
+    MapblockMeshCollector *m_mesh;
 	std::vector<MinimapMapblock*> m_minimap_mapblocks;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
@@ -252,31 +215,12 @@ private:
 
 	bool m_enable_shaders;
 
-	// Must animate() be called before rendering?
-	bool m_has_animation;
-	int m_animation_force_timer;
-
-	// Animation info: cracks
-	// Last crack value passed to animate()
-	int m_last_crack;
-	// Maps mesh and mesh buffer (i.e. material) indices to base texture names
-	//std::map<std::pair<u8, u32>, std::string> m_crack_materials;
-
-	// Animation info: texture animation
-	// Maps mesh and mesh buffer indices to TileSpecs
-	// Keys are pairs of (mesh index, buffer index in the mesh)
-	//std::map<std::pair<u8, u32>, AnimationInfo> m_animation_info;
+	int m_update_light_force_timer;
 
 	// Animation info: day/night transitions
-	// Last daynight_ratio value passed to animate()
+	// Last daynight_ratio value passed to updateLighting()
 	u32 m_last_daynight_ratio;
-	// For each mesh and mesh buffer, stores pre-baked colors
-	// of sunlit vertices
-	// Keys are pairs of (mesh index, buffer index in the mesh)
-	std::map<std::pair<u8, u32>, std::map<u32, video::SColor > > m_daynight_diffs;
 
-	// list of all semitransparent triangles in the mapblock
-	std::vector<MeshTriangle> m_transparent_triangles;
 	// Binary Space Partitioning tree for the block
 	MapBlockBspTree m_bsp_tree;
 	// Ordered list of references to parts of transparent buffers to draw

@@ -109,7 +109,7 @@ struct TileLayer
 		return false;
 	}
 
-	// Links the layers with one of the unique tile info structure in the atlas
+	// Index of the corresponding TileInfo in the atlas
 	u32 atlas_tile_info_index = 0;
 
 	// Ordered for size, please do not reorder

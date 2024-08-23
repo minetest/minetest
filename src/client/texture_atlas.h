@@ -19,19 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include <map>
 #include <vector>
+#include <mutex>
 #include "client/tile.h"
 #include "client/texturesource.h"
-
-/*struct UVPair {
-	v2f uv1;
-	v2f uv2;
-
-	UVPair() = default;
-
-	UVPair(v2f _uv1, v2f _uv2)
-	: uv1(_uv1), uv2(_uv2)
-	{}
-};*/
+#include "threading/mutex_auto_lock.h"
 
 struct AnimationInfo {
 	int frame_length_ms = 0;
@@ -52,36 +43,12 @@ struct TileInfo {
 
 	AnimationInfo anim;
 
-	//std::string crack_modifier;
-	//video::ITexture *crack_tex;
-
 	TileInfo() = default;
 
 	TileInfo(int _x, int _y, int _width, int _height)
 		: x(_x), y(_y), width(_width), height(_height)
 	{}
-
-	//bool operator==(const TileInfo &other_info);
 };
-
-/*struct TextureAnimation {
-	int frame_length_ms = 0;
-	int frame_count = 0;
-	std::vector<video::ITexture*> frames;
-	bool operator==(const TextureAnimation &other_anim)
-	{
-		if (frame_count != other_anim.frame_count ||
-			frame_length_ms != other_anim.frame_length_ms)
-			return false;
-		bool same = true;
-		for (u32 i = 0; i < frame_count; i++)
-			if (frames[i] != other_anim.frames[i]) {
-				same = false;
-				break;
-			}
-		return same;
-	}
-};*/
 
 class TextureAtlas {
 	video::IVideoDriver *m_driver;
@@ -95,11 +62,10 @@ class TextureAtlas {
 	// for the corresponding tile
 	std::map<u32, std::string> m_crack_tiles;
 
+	std::mutex m_crack_tiles_mutex;
+
 	// Number of last crack
 	int m_last_crack = -1;
-
-	// Position of last mapblock that was cracked
-	v3s16 m_crack_anim_last_block_pos;
 
 public:
 	TextureAtlas(video::IVideoDriver *vdrv, ITextureSource *src, std::vector<TileLayer*> &layers);
@@ -130,22 +96,9 @@ public:
 
 	void insertCrackTile(u32 i, std::string s)
 	{
+		MutexAutoLock crack_tiles_lock(m_crack_tiles_mutex);
+
 		m_crack_tiles.insert({i, s});
-	}
-
-	void clearCrackTiles()
-	{
-		m_crack_tiles.clear();
-	}
-
-	void setCrackAnimLastBlockPos(v3s16 block_pos)
-	{
-		m_crack_anim_last_block_pos = block_pos;
-	}
-
-	v3s16 getCrackAnimLastBlockPos() const
-	{
-		return m_crack_anim_last_block_pos;
 	}
 
 	void packTextures(int side);

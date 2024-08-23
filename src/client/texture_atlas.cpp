@@ -16,28 +16,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "client/texture_atlas.h"
 #include "settings.h"
-#include "noise.h"
 #include "log.h"
 
 
-/*bool TileInfo::operator==(const TileInfo &other_info)
-{
-	if (tex != other_info.tex)
-		return false;
-
-	if (anim.frame_count != other_info.anim.frame_count ||
-		anim.frame_length_ms != other_info.anim.frame_length_ms)
-		return false;
-
-	for (int i = 0; i < anim.frame_count; i++)
-		if (anim.frames[i] != other_info.anim.frames[i])
-			return false;
-
-	return true;
-}*/
-
-
-TextureAtlas::TextureAtlas(video::IVideoDriver *vdrv, ITextureSource *src, std::vector<TileLayer*> &layers)//, v3s16 blockpos)
+TextureAtlas::TextureAtlas(video::IVideoDriver *vdrv, ITextureSource *src, std::vector<TileLayer*> &layers)
 {
 	m_driver = vdrv;
 
@@ -45,13 +27,12 @@ TextureAtlas::TextureAtlas(video::IVideoDriver *vdrv, ITextureSource *src, std::
 
 	u32 atlas_size = 0;
 
-	// Tile layers are only unique
+	// Tile layers with unique ITextures
 	std::vector<TileLayer *> unique_layers;
 
-	// Create tile infos for unique tile layers
-	for (auto &layer : layers) {
-		// If the given layer was already transformed to the TileInfo,
-		// save the index at this tile info
+	for (auto layer : layers) {
+		// If for the layer the TileInfo was already created,
+		// just save the index at this TileInfo and omit the iteration
 		bool is_layer_collected = false;
 		for (u32 i = 0; i < unique_layers.size(); i++)
 			if (unique_layers[i]->texture == layer->texture) {
@@ -62,20 +43,6 @@ TextureAtlas::TextureAtlas(video::IVideoDriver *vdrv, ITextureSource *src, std::
 
 		if (is_layer_collected)
 			continue;
-		/*if (layer->material_flags & MATERIAL_FLAG_CRACK) {
-			std::ostringstream os(std::ios::binary);
-			os << m_tsrc->getTextureName(layer->texture_id) << "^[crack";
-			if (layer->material_flags & MATERIAL_FLAG_CRACK_OVERLAY)
-				os << "o";
-			u8 tiles = layer->scale;
-			if (tiles > 1)
-				os << ":" << (u32)tiles;
-			os << ":" << (u32)layer->animation_frame_count << ":";
-			tile_info.crack_modifier = os.str();
-			tile_info.crack_texture = m_tsrc->getTextureForMesh(
-					os.str() + "0",
-					&layer->texture_id);
-		}*/
 
 		TileInfo tile_info;
 
@@ -153,7 +120,7 @@ void TextureAtlas::packTextures(int side)
 		});
 	std::vector<TileInfo> areas;
 
-	areas.push_back(TileInfo(0, 0, side, side));
+	areas.emplace_back(0, 0, side, side);
 
 	u32 counter = 0;
 	for (auto &info : sorted_infos) {
@@ -173,10 +140,10 @@ void TextureAtlas::packTextures(int side)
 				areas.erase(areas.begin()+i);
 
 				if (dw > 0)
-					areas.push_back(TileInfo(area.x + info->width, area.y, dw, info->height));
+					areas.emplace_back(area.x + info->width, area.y, dw, info->height);
 
 				if (dh > 0)
-					areas.push_back(TileInfo(area.x, area.y + info->height, area.width, dh));
+					areas.emplace_back(area.x, area.y + info->height, area.width, dh);
 
 				std::sort(areas.begin(), areas.end(),
 					[] (TileInfo area1, TileInfo area2)
@@ -190,7 +157,6 @@ void TextureAtlas::packTextures(int side)
 		if (!packed)
 			return;
 
-		//infostream << "pack() info id = " << counter << ", x = " << info->x << ", y = " << info->y << ", width = " << info->width << ", height: " << info->height << std::endl;
 		counter++;
 	}
 }
@@ -229,14 +195,17 @@ void TextureAtlas::updateAnimations(f32 time)
 
 void TextureAtlas::updateCrackAnimations(int new_crack)
 {
-	// No any cracked mapblocks
-	if (m_crack_tiles.empty()) {
+	MutexAutoLock crack_tiles_lock(m_crack_tiles_mutex);
+
+	if (new_crack == -1) {
+		// No crack animation currently
+        m_crack_tiles.clear();
 		m_last_crack = -1;
 		return;
 	}
 
-	// New crack is old yet
 	if (new_crack == m_last_crack)
+		// New crack is old yet
 		return;
 
 	m_last_crack = new_crack;
@@ -245,13 +214,13 @@ void TextureAtlas::updateCrackAnimations(int new_crack)
 
 	bool has_crack_tiles = false;
 
-	for (const auto &p : m_crack_tiles) {
-		std::string s = p.second + itos(new_crack);
+	for (const auto &crack_tile : m_crack_tiles) {
+		std::string s = crack_tile.second + itos(new_crack);
 		u32 new_texture_id = 0;
 		video::ITexture *new_texture =
 			m_tsrc->getTextureForMesh(s, &new_texture_id);
 
-		TileInfo &tile = m_tiles_infos.at(p.first);
+		TileInfo &tile = m_tiles_infos.at(crack_tile.first);
 		if (new_texture) {
 			has_crack_tiles = true;
 			m_atlas_texture->drawToSubImage(tile.x + atlas_size.Width/2, tile.y, tile.width, tile.height, new_texture);
