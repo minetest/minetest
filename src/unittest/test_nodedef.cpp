@@ -34,9 +34,8 @@ TEST_CASE("Given a node definition, "
 {
 	ContentFeatures f;
 	f.name = "default:stone";
-	for (TileDef &tiledef : f.tiledef) {
+	for (TileDef &tiledef : f.tiledef)
 		tiledef.name = "default_stone.png";
-	}
 
 	std::ostringstream os(std::ios::binary);
 	f.serialize(os, LATEST_PROTOCOL_VERSION);
