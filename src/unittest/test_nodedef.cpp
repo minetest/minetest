@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 TEST_CASE("Given a node definition, "
 		"when we serialize and then deserealize it, "
-		"the deserialized one should be equal to the original.",
+		"then the deserialized one should be equal to the original.",
 		"[nodedef]")
 {
 	ContentFeatures f;
