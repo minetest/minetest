@@ -735,6 +735,12 @@ hud_scaling (HUD scaling) float 1.0 0.5 20
 #    Mods may still set a background.
 show_nametag_backgrounds (Show name tag backgrounds by default) bool true
 
+#    Whether to show the client debug info (has the same effect as hitting F5).
+show_debug (Show debug info) bool false
+
+#    Radius to use when the block bounds HUD feature is set to near blocks.
+show_block_bounds_radius_near (Block bounds HUD radius) int 4 0 1000
+
 [**Chat]
 
 #    Maximum number of recent chat messages to show
@@ -2008,9 +2014,6 @@ client_unload_unused_data_timeout (Mapblock unload timeout) float 600.0 0.0
 #    Maximum number of mapblocks for client to be kept in memory.
 #    Set to -1 for unlimited amount.
 client_mapblock_limit (Mapblock limit) int 7500 -1 2147483647
-
-#    Whether to show the client debug info (has the same effect as hitting F5).
-show_debug (Show debug info) bool false
 
 #    Maximum number of blocks that are simultaneously sent per client.
 #    The maximum total count is calculated dynamically:

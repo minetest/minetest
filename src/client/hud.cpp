@@ -97,6 +97,8 @@ Hud::Hud(Client *client, LocalPlayer *player,
 		m_mode = HIGHLIGHT_BOX;
 	}
 
+	// Initialize m_selection_material
+
 	m_selection_material.Lighting = false;
 
 	if (g_settings->getBool("enable_shaders")) {
@@ -117,6 +119,18 @@ Hud::Hud(Client *client, LocalPlayer *player,
 	} else {
 		m_selection_material.MaterialType = video::EMT_SOLID;
 	}
+
+	// Initialize m_block_bounds_material
+	m_block_bounds_material.Lighting = false;
+	if (g_settings->getBool("enable_shaders")) {
+		IShaderSource *shdrsrc = client->getShaderSource();
+		auto shader_id = shdrsrc->getShader("default_shader", TILE_MATERIAL_ALPHA);
+		m_block_bounds_material.MaterialType = shdrsrc->getShaderInfo(shader_id).material;
+	} else {
+		m_block_bounds_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	}
+	m_block_bounds_material.Thickness =
+			rangelim(g_settings->getS16("selectionbox_width"), 1, 5);
 
 	// Prepare mesh for compass drawing
 	auto &b = m_rotation_mesh_buffer;
@@ -934,33 +948,57 @@ void Hud::drawBlockBounds()
 	}
 
 	video::SMaterial old_material = driver->getMaterial2D();
-	driver->setMaterial(m_selection_material);
+	driver->setMaterial(m_block_bounds_material);
+
+	u16 mesh_chunk_size = std::max<u16>(1, g_settings->getU16("client_mesh_chunk"));
 
 	v3s16 pos = player->getStandingNodePos();
-
-	v3s16 blockPos(
+	v3s16 block_pos(
 		floorf((float) pos.X / MAP_BLOCKSIZE),
 		floorf((float) pos.Y / MAP_BLOCKSIZE),
 		floorf((float) pos.Z / MAP_BLOCKSIZE)
 	);
 
-	v3f offset = intToFloat(client->getCamera()->getOffset(), BS);
+	v3f cam_offset = intToFloat(client->getCamera()->getOffset(), BS);
 
-	s8 radius = m_block_bounds_mode == BLOCK_BOUNDS_NEAR ? 2 : 0;
+	v3f half_node = v3f(BS, BS, BS) / 2.0f;
+	v3f base_corner = intToFloat(block_pos * MAP_BLOCKSIZE, BS) - cam_offset - half_node;
 
-	v3f halfNode = v3f(BS, BS, BS) / 2.0f;
+	s16 radius = m_block_bounds_mode == BLOCK_BOUNDS_NEAR ?
+			rangelim(g_settings->getU16("show_block_bounds_radius_near"), 0, 1000) : 0;
 
-	for (s8 x = -radius; x <= radius; x++)
-	for (s8 y = -radius; y <= radius; y++)
-	for (s8 z = -radius; z <= radius; z++) {
-		v3s16 blockOffset(x, y, z);
+	for (s16 x = -radius; x <= radius + 1; x++)
+	for (s16 y = -radius; y <= radius + 1; y++) {
+		// Red for mesh chunk edges, yellow for other block edges.
+		auto choose_color = [&](s16 x_base, s16 y_base) {
+			// See also MeshGrid::isMeshPos().
+			// If the block is mesh pos, it means it's at the (-,-,-) corner of
+			// the mesh. And we're drawing a (-,-) edge of this block. Hence,
+			// it is an edge of the mesh grid.
+			return (x + x_base) % mesh_chunk_size == 0
+					&& (y + y_base) % mesh_chunk_size == 0 ?
+				video::SColor(255, 255, 0, 0) :
+				video::SColor(255, 255, 255, 0);
+		};
 
-		aabb3f box(
-			intToFloat((blockPos + blockOffset) * MAP_BLOCKSIZE, BS) - offset - halfNode,
-			intToFloat(((blockPos + blockOffset) * MAP_BLOCKSIZE) + (MAP_BLOCKSIZE - 1), BS) - offset + halfNode
+		v3f pmin = v3f(x, y,    -radius) * MAP_BLOCKSIZE * BS;
+		v3f pmax = v3f(x, y, 1 + radius) * MAP_BLOCKSIZE * BS;
+
+		driver->draw3DLine(
+			base_corner + v3f(pmin.X, pmin.Y, pmin.Z),
+			base_corner + v3f(pmax.X, pmax.Y, pmax.Z),
+			choose_color(block_pos.X, block_pos.Y)
 		);
-
-		driver->draw3DBox(box, video::SColor(255, 255, 0, 0));
+		driver->draw3DLine(
+			base_corner + v3f(pmin.X, pmin.Z, pmin.Y),
+			base_corner + v3f(pmax.X, pmax.Z, pmax.Y),
+			choose_color(block_pos.X, block_pos.Z)
+		);
+		driver->draw3DLine(
+			base_corner + v3f(pmin.Z, pmin.X, pmin.Y),
+			base_corner + v3f(pmax.Z, pmax.X, pmax.Y),
+			choose_color(block_pos.Y, block_pos.Z)
+		);
 	}
 
 	driver->setMaterial(old_material);
