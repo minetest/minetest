@@ -767,15 +767,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		if (is_frustum_culled(mesh_sphere_center, mesh_sphere_radius))
 			continue;
 
-		v3f block_pos_r = intToFloat(block->getPosRelative() + MAP_BLOCKSIZE / 2, BS);
-
-		float d = camera_position.getDistanceFrom(block_pos_r);
-		d = MYMAX(0,d - BLOCK_MAX_RADIUS);
-
 		// Mesh animation
 		if (pass == scene::ESNRP_SOLID) {
-			// Pretty random but this should work somewhat nicely
-			bool faraway = d >= BS * 50;
+			// 50 nodes is pretty arbitrary but it should work somewhat nicely
+			float distance_sq = camera_position.getDistanceFromSQ(mesh_sphere_center);
+			bool faraway = distance_sq >= std::pow(BS * 50 + mesh_sphere_radius, 2.0f);
+
 			if (block_mesh->isAnimationForced() || !faraway ||
 					mesh_animate_count < (m_control.range_all ? 200 : 50)) {
 
@@ -1305,27 +1302,29 @@ void ClientMap::updateTransparentMeshBuffers()
 	ScopeProfiler sp(g_profiler, "CM::updateTransparentMeshBuffers", SPT_AVG);
 	u32 sorted_blocks = 0;
 	u32 unsorted_blocks = 0;
-	f32 sorting_distance_sq = std::pow(m_cache_transparency_sorting_distance * BS, 2.0f);
+	f32 sorting_distance = m_cache_transparency_sorting_distance * BS;
 
 
 	// Update the order of transparent mesh buffers in each mesh
 	for (auto it = m_drawlist.begin(); it != m_drawlist.end(); it++) {
-		MapBlock* block = it->second;
-		if (!block->mesh)
+		MapBlock *block = it->second;
+		MapBlockMesh *blockmesh = block->mesh;
+		if (!blockmesh)
 			continue;
 
 		if (m_needs_update_transparent_meshes ||
-				block->mesh->getTransparentBuffers().size() == 0) {
+				blockmesh->getTransparentBuffers().size() == 0) {
 
-			v3s16 block_pos = block->getPos();
-			v3f block_pos_f = intToFloat(block_pos * MAP_BLOCKSIZE + MAP_BLOCKSIZE / 2, BS);
-			f32 distance = m_camera_position.getDistanceFromSQ(block_pos_f);
-			if (distance <= sorting_distance_sq) {
-				block->mesh->updateTransparentBuffers(m_camera_position, block_pos);
+			v3f mesh_sphere_center = intToFloat(block->getPosRelative(), BS)
+					+ blockmesh->getBoundingSphereCenter();
+			f32 mesh_sphere_radius = blockmesh->getBoundingRadius();
+			f32 distance_sq = m_camera_position.getDistanceFromSQ(mesh_sphere_center);
+
+			if (distance_sq <= std::pow(sorting_distance + mesh_sphere_radius, 2.0f)) {
+				blockmesh->updateTransparentBuffers(m_camera_position, block->getPos());
 				++sorted_blocks;
-			}
-			else {
-				block->mesh->consolidateTransparentBuffers();
+			} else {
+				blockmesh->consolidateTransparentBuffers();
 				++unsorted_blocks;
 			}
 		}
