@@ -195,18 +195,19 @@ void TextureAtlas::updateAnimations(f32 time)
 
 void TextureAtlas::updateCrackAnimations(int new_crack)
 {
-	MutexAutoLock crack_tiles_lock(m_crack_tiles_mutex);
-
-	if (new_crack == -1) {
-		// No crack animation currently
-        m_crack_tiles.clear();
-		m_last_crack = -1;
-		return;
-	}
-
 	if (new_crack == m_last_crack)
 		// New crack is old yet
 		return;
+
+	MutexAutoLock crack_tiles_lock(m_crack_tiles_mutex);
+
+	if (new_crack == -1) {
+		// Animation has finished
+		m_crack_tiles.clear();
+		m_last_crack = -1;
+
+		return;
+	}
 
 	m_last_crack = new_crack;
 

@@ -113,31 +113,6 @@ private:
 	s32 root = -1; // index of the root node
 };
 
-/*
- * PartialMeshBuffer
- *
- * Attach alternate `Indices` to an existing mesh buffer, to make it possible to use different
- * indices with the same vertex buffer.
- */
-class PartialMeshBuffer
-{
-public:
-	PartialMeshBuffer(scene::SMeshBuffer *buffer, std::vector<u16> &&vertex_indices) :
-			m_buffer(buffer), m_indices(make_irr<scene::SIndexBuffer>())
-	{
-		m_indices->Data = std::move(vertex_indices);
-		m_indices->setHardwareMappingHint(scene::EHM_STATIC);
-	}
-
-	auto *getBuffer() const { return m_buffer; }
-
-	void draw(video::IVideoDriver *driver) const;
-
-private:
-	scene::SMeshBuffer *m_buffer;
-	irr_ptr<scene::SIndexBuffer> m_indices;
-};
-
 
 class MapblockMeshCollector;
 
@@ -166,7 +141,7 @@ public:
 
 	MapblockMeshCollector *getMesh()
 	{
-        return m_mesh;
+        	return m_mesh;
 	}
 
 	std::vector<MinimapMapblock*> moveMinimapMapblocks()
@@ -193,19 +168,21 @@ public:
 	/// Center of the bounding-sphere, in BS-space, relative to block pos.
 	v3f getBoundingSphereCenter() const { return m_bounding_sphere_center; }
 
+	void addPartialBuffer(scene::SMeshBuffer *current_buffer, std::vector<u16> &current_strain);
+
 	/// update transparent buffers to render towards the camera
 	void updateTransparentBuffers(v3f camera_pos, v3s16 block_pos);
 	void consolidateTransparentBuffers();
 
 	/// get the list of transparent buffers
-	const std::vector<PartialMeshBuffer> &getTransparentBuffers() const
+	/*const std::vector<PartialMeshBuffer> &getTransparentBuffers() const
 	{
 		return this->m_transparent_buffers;
-	}
+	}*/
 
 private:
 
-    MapblockMeshCollector *m_mesh;
+    	MapblockMeshCollector *m_mesh;
 	std::vector<MinimapMapblock*> m_minimap_mapblocks;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
@@ -224,7 +201,7 @@ private:
 	// Binary Space Partitioning tree for the block
 	MapBlockBspTree m_bsp_tree;
 	// Ordered list of references to parts of transparent buffers to draw
-	std::vector<PartialMeshBuffer> m_transparent_buffers;
+	//std::vector<PartialMeshBuffer> m_transparent_buffers;
 	// Is m_transparent_buffers currently in consolidated form?
 	bool m_transparent_buffers_consolidated = false;
 };

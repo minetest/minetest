@@ -23,11 +23,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <cmath>
 #include <stdexcept>
+#include <algorithm>
 #include "log.h"
 #include "client/mesh.h"
 #include "client/shader.h"
 #include "util/timetaker.h"
 #include "log.h"
+
+/*
+	PartialMeshBuffer
+*/
+
+void PartialMeshBuffer::beforeDraw() const
+{
+	// Patch the indexes in the mesh buffer before draw
+	m_buffer->Indices = std::move(m_vertex_indexes);
+	m_buffer->setDirty(scene::EBT_INDEX);
+}
+
+void PartialMeshBuffer::afterDraw() const
+{
+	// Take the data back
+	m_vertex_indexes = m_buffer->Indices.steal();
+}
 
 MapblockMeshCollector::MapblockMeshCollector(Client *_client, v3f _center_pos,
         v3f _offset, v3f _translation)
@@ -148,7 +166,8 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
 
         // Modify the vertices
         for (u32 i = 0; i < numVertices; i++) {
-            video::S3DVertex vertex(vertices[i]);
+			new_vertices.emplace_back();
+			video::S3DVertex &vertex = new_vertices.back();
 
             vertex.Pos += pos + offset + translation;
             vertex.TCoords *= scale;
@@ -180,7 +199,6 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
 
             vertex.Color = c;
 
-            new_vertices.push_back(vertex);
             bounding_radius_sq = std::max(bounding_radius_sq,
                     (vertex.Pos - center_pos).getLengthSQ());
         }

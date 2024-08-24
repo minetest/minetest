@@ -588,18 +588,6 @@ void MapBlockBspTree::traverse(s32 node, v3f viewpoint, std::vector<s32> &output
 }
 
 
-
-/*
-	PartialMeshBuffer
-*/
-
-void PartialMeshBuffer::draw(video::IVideoDriver *driver) const
-{
-	const auto pType = m_buffer->getPrimitiveType();
-	driver->drawBuffers(m_buffer->getVertexBuffer(), m_indices.get(),
-		m_indices->getPrimitiveCount(pType), pType);
-}
-
 /*
 	MapBlockMesh
 */
@@ -638,7 +626,7 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	v3f translation = intToFloat(mesh_grid.getMeshPos(data->m_blockpos) * MAP_BLOCKSIZE, BS);
 
 	m_mesh = new MapblockMeshCollector(client, m_bounding_sphere_center,
-	        offset, translation);
+		offset, translation);
 	/*
 		Add special graphics:
 		- torches
@@ -700,11 +688,32 @@ bool MapBlockMesh::updateLighting(u32 daynight_ratio)
 					final_color_blend(&(vertices[vert].Color), vertices[vert].Color,
 						day_color);
 			}
-		}
+		}		
 		m_last_daynight_ratio = daynight_ratio;
 	}
 
 	return true;
+}
+
+void MapBlockMesh::addPartialBuffer(scene::SMeshBuffer *current_buffer, std::vector<u16> &current_strain)
+{
+	video::SMaterial &mat = current_buffer->Material;
+
+	// Batching following one another buffers with the same material
+	if (m_mesh->transparent_layers.empty()) {
+		std::vector<PartialMeshBuffer> pbuffers;
+		m_mesh->transparent_layers.emplace_back(mat, pbuffers);
+	}
+
+	std::pair<video::SMaterial, std::vector<PartialMeshBuffer>> &last_layer = m_mesh->transparent_layers.back();
+
+	if (last_layer.first != mat) {
+		std::vector<PartialMeshBuffer> pbuffers;
+		m_mesh->transparent_layers.emplace_back(mat, pbuffers);
+		last_layer = m_mesh->transparent_layers.back();
+	}
+
+	last_layer.second.emplace_back(current_buffer, std::move(current_strain));
 }
 
 void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
@@ -721,15 +730,16 @@ void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
 
 	// arrange index sequences into partial buffers
 	m_transparent_buffers_consolidated = false;
-	m_transparent_buffers.clear();
+	m_mesh->transparent_layers.clear();
 
 	scene::SMeshBuffer *current_buffer = nullptr;
 	std::vector<u16> current_strain;
+
 	for (auto i : triangle_refs) {
 		const auto &t = m_mesh->transparent_triangles[i];
 		if (current_buffer != t.buffer) {
 			if (current_buffer) {
-				m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
+				addPartialBuffer(current_buffer, current_strain);
 				current_strain.clear();
 			}
 			current_buffer = t.buffer;
@@ -740,14 +750,14 @@ void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
 	}
 
 	if (!current_strain.empty())
-		m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
+		addPartialBuffer(current_buffer, current_strain);
 }
 
 void MapBlockMesh::consolidateTransparentBuffers()
 {
 	if (m_transparent_buffers_consolidated)
 		return;
-	m_transparent_buffers.clear();
+	m_mesh->transparent_layers.clear();
 
 	scene::SMeshBuffer *current_buffer = nullptr;
 	std::vector<u16> current_strain;
@@ -756,7 +766,7 @@ void MapBlockMesh::consolidateTransparentBuffers()
 	for (const auto &t : m_mesh->transparent_triangles) {
 		if (current_buffer != t.buffer) {
 			if (current_buffer != nullptr) {
-				this->m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
+				addPartialBuffer(current_buffer, current_strain);
 				current_strain.clear();
 			}
 			current_buffer = t.buffer;
@@ -766,9 +776,8 @@ void MapBlockMesh::consolidateTransparentBuffers()
 		current_strain.push_back(t.p3);
 	}
 
-	if (!current_strain.empty()) {
-		this->m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
-	}
+	if (!current_strain.empty())
+		addPartialBuffer(current_buffer, current_strain);
 
 	m_transparent_buffers_consolidated = true;
 }
