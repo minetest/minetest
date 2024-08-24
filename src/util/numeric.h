@@ -179,7 +179,9 @@ struct MeshGrid {
 	/// @brief Returns true if p is an origin of a cell in the grid.
 	bool isMeshPos(v3s16 &p) const
 	{
-		return ((p.X + p.Y + p.Z) % cell_size) == 0;
+		return p.X % cell_size == 0
+				&& p.Y % cell_size == 0
+				&& p.Z % cell_size == 0;
 	}
 
 	/// @brief Returns index of the given offset in a grid cell
