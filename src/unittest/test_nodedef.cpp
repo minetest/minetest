@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 TEST_CASE("Given a node definition, "
-		"when we serialize and then deserealize it, "
+		"when we serialize and then deserialize it, "
 		"then the deserialized one should be equal to the original.",
 		"[nodedef]")
 {
