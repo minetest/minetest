@@ -262,6 +262,8 @@ void decompressZstd(std::istream &is, std::ostream &os)
 			is.read(input_buffer, bufsize);
 			input.size = is.gcount();
 			input.pos = 0;
+			if (input.size == 0)
+				throw SerializationError("decompressZstd: data ended too early");
 		}
 
 		ret = ZSTD_decompressStream(stream.get(), &output, &input);
