@@ -154,3 +154,36 @@ minetest.register_chatcommand("bench_bulk_get_node", {
 		return true, msg
 	end,
 })
+
+minetest.register_chatcommand("bench_bulk_swap_node", {
+	params = "",
+	description = "Benchmark: Bulk-swap 99×99×99 stone nodes",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "No player."
+		end
+		local pos_list = get_positions_cube(player:get_pos())
+
+		minetest.chat_send_player(name, "Benchmarking minetest.bulk_swap_node. Warming up ...")
+
+		-- warm up because first execution otherwise becomes
+		-- significantly slower
+		minetest.bulk_swap_node(pos_list, {name = "mapgen_stone"})
+
+		minetest.chat_send_player(name, "Warming up finished, now benchmarking ...")
+
+		local start_time = minetest.get_us_time()
+		for i=1,#pos_list do
+			minetest.swap_node(pos_list[i], {name = "mapgen_stone"})
+		end
+		local middle_time = minetest.get_us_time()
+		minetest.bulk_swap_node(pos_list, {name = "mapgen_stone"})
+		local end_time = minetest.get_us_time()
+		local msg = string.format("Benchmark results: minetest.swap_node loop: %.2f ms; minetest.bulk_swap_node: %.2f ms",
+			((middle_time - start_time)) / 1000,
+			((end_time - middle_time)) / 1000
+		)
+		return true, msg
+	end,
+})
