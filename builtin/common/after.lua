@@ -107,6 +107,7 @@ end
 local function remove_first_jobs()
 	local removed_expiry = heap_pop(expiries)
 	local removed = job_map[removed_expiry]
+	removed.elapsed_time = removed_expiry
 	job_map[removed_expiry] = nil
 	return removed
 end
@@ -116,6 +117,12 @@ local time_next = math.huge
 
 core.register_globalstep(function(dtime)
 	time = time + dtime
+
+	for _, job in pairs(job_map) do
+		if job.elapsed_time then
+			job.elapsed_time = job.elapsed_time + dtime
+		end
+	end
 
 	if time < time_next then
 		return
@@ -151,6 +158,7 @@ local function dummy_func() end
 function job_metatable.__index:cancel()
 	self.func = dummy_func
 	self.args = {n = 0}
+	self.elapsed_time = nil
 end
 
 function core.after(after, func, ...)
@@ -160,10 +168,14 @@ function core.after(after, func, ...)
 	local new_job = {
 		mod_origin = core.get_last_run_mod(),
 		func = func,
+		elapsed_time = time,
 		args = {
 			n = select("#", ...),
 			...
 		},
+		get_elapsed_time = function(self)
+			return self.elapsed_time
+		end
 	}
 
 	local expiry = time + after
