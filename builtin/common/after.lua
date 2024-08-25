@@ -168,7 +168,7 @@ function core.after(after, func, ...)
 	local new_job = {
 		mod_origin = core.get_last_run_mod(),
 		func = func,
-		elapsed_time = time,
+		elapsed_time = 0,
 		args = {
 			n = select("#", ...),
 			...
