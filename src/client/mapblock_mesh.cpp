@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <cmath>
 #include "client/texturesource.h"
+#include <IMaterialRenderer.h>
 
 /*
 	MeshMakeData
@@ -640,6 +641,39 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 		client->getSceneManager()->getMeshManipulator()).generate();
 	}
 
+	for (auto &layer : m_mesh->buffers) {
+		m_mesh->layers.emplace_back(layer.first, std::vector<scene::SMeshBuffer *>());
+		for (auto &part : layer.second) {
+			scene::SMeshBuffer *new_buffer = new scene::SMeshBuffer();
+			new_buffer->setHardwareMappingHint(scene::EHM_STATIC);
+			new_buffer->Material = layer.first;
+
+			video::IMaterialRenderer* rnd =
+					RenderingEngine::get_video_driver()->getMaterialRenderer(layer.first.MaterialType);
+			bool transparent = (rnd && rnd->isTransparent());
+
+			if (!transparent)
+				new_buffer->append(part.vertices.data(), part.vertices.size(),
+					part.indices.data(), part.indices.size());
+			else {
+				new_buffer->append(part.vertices.data(),
+					part.vertices.size(), nullptr, 0);
+
+				MeshTriangle t;
+				t.buffer = new_buffer;
+				m_mesh->transparent_triangles.reserve(part.indices.size() / 3);
+				for (u32 i = 0; i < part.indices.size(); i += 3) {
+					t.p1 = part.indices[i];
+					t.p2 = part.indices[i + 1];
+					t.p3 = part.indices[i + 2];
+					t.updateAttributes();
+					m_mesh->transparent_triangles.push_back(t);
+				}
+			}
+
+			m_mesh->layers.back().second.push_back(new_buffer);
+		}
+	}
 
 	m_bounding_radius = std::sqrt(m_mesh->bounding_radius_sq);
 
@@ -649,11 +683,14 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 MapBlockMesh::~MapBlockMesh()
 {
 	size_t sz = 0;
-	for (auto &layer : m_mesh->layers)
-		for (auto buffer : layer.second)
-			sz += buffer->getSize();
 
-	delete m_mesh;
+	if (m_mesh) {
+		for (auto &layer : m_mesh->layers)
+			for (auto buffer : layer.second)
+				sz += buffer->getSize();
+
+		delete m_mesh;
+	}
 
 	for (MinimapMapblock *block : m_minimap_mapblocks)
 		delete block;
@@ -688,7 +725,7 @@ bool MapBlockMesh::updateLighting(u32 daynight_ratio)
 					final_color_blend(&(vertices[vert].Color), vertices[vert].Color,
 						day_color);
 			}
-		}		
+		}
 		m_last_daynight_ratio = daynight_ratio;
 	}
 

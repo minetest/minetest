@@ -101,11 +101,18 @@ private:
 	mutable std::vector<u16> m_vertex_indexes;
 };
 
+struct MeshPart
+{
+	std::vector<video::S3DVertex> vertices;
+	std::vector<u16> indices;
+};
+
 class MapblockMeshCollector final : public MeshCollector
 {
 	Client *client;
 
 public:
+	std::vector<std::pair<video::SMaterial, std::vector<MeshPart>>> buffers;
 	std::vector<std::pair<video::SMaterial, std::vector<scene::SMeshBuffer *>>> layers;
 	std::vector<std::pair<video::SMaterial, std::vector<PartialMeshBuffer>>> transparent_layers;
     std::map<u32, std::map<u32, std::vector<u32>>> layer_to_buf_v_map;

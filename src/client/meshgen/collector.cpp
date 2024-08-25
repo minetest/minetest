@@ -119,34 +119,35 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
         //infostream << "Add tile mesh 1.1 time: " << add_tile_mesh_time.getTimerTime() << "us" << std::endl;
 
         // Find already existent prelayer with such material, otherwise create it
-        auto layer_it = std::find_if(layers.begin(), layers.end(),
-            [&material] (std::pair<video::SMaterial, std::vector<scene::SMeshBuffer *>> &layer)
+        auto layer_it = std::find_if(buffers.begin(), buffers.end(),
+            [&material] (std::pair<video::SMaterial, std::vector<MeshPart>> &layer)
             {
                 return layer.first == material;
             });
 
-        u32 layer_d = (u32)(std::distance(layers.begin(), layer_it));
-        if (layer_it == layers.end()) {
-            layers.emplace_back(material, std::vector<scene::SMeshBuffer *>());
-            layer_it = std::prev(layers.end());
+        u32 layer_d = (u32)(std::distance(buffers.begin(), layer_it));
+        if (layer_it == buffers.end()) {
+            buffers.emplace_back(material, std::vector<MeshPart>());
+            layer_it = std::prev(buffers.end());
 
-            layer_d = (u32)(std::distance(layers.begin(), layer_it));
+            layer_d = (u32)(std::distance(buffers.begin(), layer_it));
             layer_to_buf_v_map[layer_d] = std::map<u32, std::vector<u32>>();
         }
 
         auto buffer_it = std::find_if(layer_it->second.begin(), layer_it->second.end(),
-			[&numVertices] (scene::SMeshBuffer *buffer)
+			[&numVertices] (MeshPart &part)
 			{
-				return buffer->getVertexCount() + numVertices <= U16_MAX;
+				return part.vertices.size() + numVertices <= U16_MAX;
 			});
 
-        u32 buffer_d = (u32)(std::distance(layer_it->second.begin(), buffer_it));
+		u32 buffer_d = (u32)(std::distance(layer_it->second.begin(), buffer_it));
 
 		if (buffer_it == layer_it->second.end()) {
-			scene::SMeshBuffer *new_buffer = new scene::SMeshBuffer();
-			new_buffer->setHardwareMappingHint(scene::EHM_STATIC);
-			new_buffer->Material = material;
-			layer_it->second.push_back(new_buffer);
+
+			//scene::SMeshBuffer *new_buffer = new scene::SMeshBuffer();
+			//new_buffer->setHardwareMappingHint(scene::EHM_STATIC);
+			//new_buffer->Material = material;
+			layer_it->second.push_back(MeshPart());
 			buffer_it = std::prev(layer_it->second.end());
 
             buffer_d = (u32)(std::distance(layer_it->second.begin(), buffer_it));
@@ -154,20 +155,24 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
 		}
         //infostream << "Add tile mesh 1.2 time: " << add_tile_mesh_time.getTimerTime() << "us" << std::endl;
 
-        scene::SMeshBuffer *target_buffer = (*buffer_it);
+        MeshPart &target_part = (*buffer_it);
 
-        u32 vertex_count = target_buffer->getVertexCount();
+        u32 vertex_count = target_part.vertices.size();
 
         const TileInfo &tile_info = atlas->getTileInfo(layer.atlas_tile_info_index);
         video::SColor tc = layer.color;
 
-		std::vector<video::S3DVertex> new_vertices;
-		std::vector<u16> new_indices;
+		//std::vector<video::S3DVertex> new_vertices;
+		//std::vector<u16> new_indices;
+
+		//infostream << "Current vertex count: " << vertex_count << std::endl;
+
+		//new_vertices.clear();
+		//new_indices.clear();
 
         // Modify the vertices
         for (u32 i = 0; i < numVertices; i++) {
-			new_vertices.emplace_back();
-			video::S3DVertex &vertex = new_vertices.back();
+			video::S3DVertex vertex(vertices[i]);
 
             vertex.Pos += pos + offset + translation;
             vertex.TCoords *= scale;
@@ -199,11 +204,18 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
 
             vertex.Color = c;
 
+			//infostream << "vertex.Pos: " << vertex.Pos.X << ", " << vertex.Pos.Y << ", " << vertex.Pos.Z << ", vertex.Normal: " << vertex.Normal.X << ", "<< vertex.Normal.Y << ", "
+			//<< vertex.Normal.Z << ", vertex.Color: " << vertex.Color.getRed() << ", " << vertex.Color.getGreen() << ", " << vertex.Color.getBlue() << ", " << vertex.Color.getAlpha()
+			//<< ", vertex.TCoords: " << vertex.TCoords.X << ", " << vertex.TCoords.X << std::endl;
+
+
+			target_part.vertices.push_back(std::move(vertex));
+
             bounding_radius_sq = std::max(bounding_radius_sq,
                     (vertex.Pos - center_pos).getLengthSQ());
         }
 
-        if (layer.isTransparent()) {
+        /*if (layer.isTransparent()) {
 			target_buffer->append(new_vertices.data(),
 				new_vertices.size(), nullptr, 0);
 
@@ -217,15 +229,17 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
 				t.updateAttributes();
 				transparent_triangles.push_back(t);
 			}
-		}
-		else {
+		}*/
+		//else {
 			// infostream << "Add tile mesh 2 time: " << add_tile_mesh_time.getTimerTime() << "us" << std::endl;
-			for (u32 i = 0; i < numIndices; i++)
-				new_indices.push_back(vertex_count + indices[i]);
+			for (u32 i = 0; i < numIndices; i++) {
+				target_part.indices.push_back(vertex_count + indices[i]);
+				//infostream << "vertex_count: " << vertex_count << ", Index i-th: " << indices[i] << std::endl;
+			}
 
-			target_buffer->append(new_vertices.data(), new_vertices.size(),
-				new_indices.data(), new_indices.size());
-		}
+			//target_buffer->append(new_vertices.data(), new_vertices.size(),
+			//	new_indices.data(), new_indices.size());
+		//}
 
 		//infostream << "Add tile mesh 3 time: " << add_tile_mesh_time.getTimerTime() << "us" << std::endl;
     }

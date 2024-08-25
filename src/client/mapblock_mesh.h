@@ -182,7 +182,7 @@ public:
 
 private:
 
-    	MapblockMeshCollector *m_mesh;
+	MapblockMeshCollector *m_mesh = nullptr;
 	std::vector<MinimapMapblock*> m_minimap_mapblocks;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;

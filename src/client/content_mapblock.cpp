@@ -1729,7 +1729,7 @@ void MapblockMeshGenerator::drawMeshNode()
 			// Instead, let the collector process colors, etc.
 			collector->addTileMesh(cur_node.tile, vertices, vertex_count,
 				buf->getIndices(), buf->getIndexCount(), cur_node.origin,
-				cur_node.color, cur_node.f->light_source);
+				cur_node.color, cur_node.f->light_source, true);
 		}
 	}
 	if (private_mesh)

@@ -774,8 +774,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	/*
 		This is called two times per frame, reset on the non-transparent one
 	*/
-	if (pass == scene::ESNRP_SOLID)
-		m_last_drawn_sectors.clear();
+	//if (pass == scene::ESNRP_SOLID)
+	//	m_last_drawn_sectors.clear();
 
 	/*
 		Get animation parameters
