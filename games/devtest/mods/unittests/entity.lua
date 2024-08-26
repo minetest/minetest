@@ -184,3 +184,23 @@ unittests.register("test_objects_in_area", function(_, pos)
 		return core.objects_in_area(pos:offset(-1, -1, -1), pos:offset(1, 1, 1))
 	end)
 end, {map=true})
+
+-- Tests that bone rotation euler angles are preserved (see #14992)
+local function test_get_bone_rot(_, pos)
+	local obj = core.add_entity(pos, "unittests:dummy")
+	for _ = 1, 100 do
+		local function assert_similar(euler_angles)
+			local _, rot = obj:get_bone_position("bonename")
+			assert(euler_angles:distance(rot) < 1e-3)
+			local override = obj:get_bone_override("bonename")
+			assert(euler_angles:distance(override.rotation.vec:apply(math.deg)) < 1e-3)
+		end
+		local deg = 1e3 * vector.new(math.random(), math.random(), math.random())
+		obj:set_bone_position("bonename", vector.zero(), deg)
+		assert_similar(deg)
+		local rad = 3 * math.pi * vector.new(math.random(), math.random(), math.random())
+		obj:set_bone_override("bonename", {rotation = {vec = rad}})
+		assert_similar(rad:apply(math.deg))
+	end
+end
+unittests.register("test_get_bone_rot", test_get_bone_rot, {map=true})
