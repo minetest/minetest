@@ -273,7 +273,7 @@ static void add_object_boxes(Environment *env,
 		const v3f pos_f, const v3f speed_f, ActiveObject *self,
 		std::vector<NearbyCollisionInfo> &cinfo)
 {
-	auto process_object = [&] (ActiveObject *object) {
+	auto process_object = [&cinfo] (ActiveObject *object) {
 		if (object && object->collideWithObjects()) {
 			aabb3f box;
 			if (object->getCollisionBox(&box))
@@ -292,7 +292,7 @@ static void add_object_boxes(Environment *env,
 		c_env->getActiveObjects(pos_f, distance, clientobjects);
 
 		for (auto &clientobject : clientobjects) {
-			// Do collide with everything but itself and the parent CAO
+			// Do collide with everything but itself and children
 			if (!self || (self != clientobject.obj &&
 					self != clientobject.obj->getParent())) {
 				process_object(clientobject.obj);
@@ -301,12 +301,12 @@ static void add_object_boxes(Environment *env,
 
 		// add collision with local player
 		LocalPlayer *lplayer = c_env->getLocalPlayer();
-		if (lplayer->getParent() == nullptr) {
+		auto *obj = (ClientActiveObject*) lplayer->getCAO();
+		if (!self || (self != obj && self != obj->getParent())) {
 			aabb3f lplayer_collisionbox = lplayer->getCollisionbox();
 			v3f lplayer_pos = lplayer->getPosition();
 			lplayer_collisionbox.MinEdge += lplayer_pos;
 			lplayer_collisionbox.MaxEdge += lplayer_pos;
-			auto *obj = (ActiveObject*) lplayer->getCAO();
 			cinfo.emplace_back(obj, 0, lplayer_collisionbox);
 		}
 	}
@@ -315,7 +315,7 @@ static void add_object_boxes(Environment *env,
 	{
 		ServerEnvironment *s_env = dynamic_cast<ServerEnvironment*>(env);
 		if (s_env) {
-			// search for objects which are not us, or we are not its parent.
+			// search for objects which are not us and not our children.
 			// we directly process the object in this callback to avoid useless
 			// looping afterwards.
 			auto include_obj_cb = [self, &process_object] (ServerActiveObject *obj) {
@@ -623,8 +623,10 @@ bool collision_check_intersection(Environment *env, IGameDef *gamedef,
 		Collision detection
 	*/
 	aabb3f checkbox = box_0;
-	checkbox.MinEdge += pos_f;
-	checkbox.MaxEdge += pos_f;
+	// aabbox3d::intersectsWithBox(box) returns true when the faces are touching perfectly.
+	// However, we do not want want a true-ish return value in that case. Add some tolerance.
+	checkbox.MinEdge += pos_f + (0.1f * BS);
+	checkbox.MaxEdge += pos_f - (0.1f * BS);
 
 	/*
 		Go through every node and object box
