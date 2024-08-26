@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <cmath>
 #include "content_mapblock.h"
-#include "catch_amalgamated.hpp"
 #include "util/basic_macros.h"
 #include "util/numeric.h"
 #include "util/directiontables.h"
