@@ -2854,7 +2854,7 @@ void Server::DenySudoAccess(session_t peer_id)
 
 
 void Server::DenyAccess(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason, bool reconnect)
+		std::string_view custom_reason, bool reconnect)
 {
 	SendAccessDenied(peer_id, reason, custom_reason, reconnect);
 	m_clients.event(peer_id, CSE_SetDenied);

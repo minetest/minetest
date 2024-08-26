@@ -231,10 +231,10 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 		*pkt >> m_access_denied_reason;
 
 	if (m_access_denied_reason.empty()) {
-		if (denyCode != SERVER_ACCESSDENIED_CUSTOM_STRING) {
+		if (denyCode >= SERVER_ACCESSDENIED_MAX) {
+			m_access_denied_reason = gettext("Unknown disconnect reason.");
+		} else if (denyCode != SERVER_ACCESSDENIED_CUSTOM_STRING) {
 			m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
-		} else if (denyCode >= SERVER_ACCESSDENIED_MAX) {
-			m_access_denied_reason = "Unknown";
 		}
 	}
 

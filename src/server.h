@@ -364,7 +364,7 @@ public:
 
 	void DenySudoAccess(session_t peer_id);
 	void DenyAccess(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason = "", bool reconnect = false);
+		std::string_view custom_reason = "", bool reconnect = false);
 	void kickAllPlayers(AccessDeniedCode reason,
 		const std::string &str_reason, bool reconnect);
 	void acceptAuth(session_t peer_id, bool forSudoMode);
