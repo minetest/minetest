@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/mesh.h"
 #include "client/shader.h"
 #include "util/timetaker.h"
+#include "nodedef.h"
 #include "log.h"
 
 /*
@@ -44,7 +45,7 @@ void PartialMeshBuffer::beforeDraw() const
 void PartialMeshBuffer::afterDraw() const
 {
 	// Take the data back
-	m_vertex_indexes = m_buffer->Indices.steal();
+	m_vertex_indexes = std::move(m_buffer->Indices);
 }
 
 MapblockMeshCollector::MapblockMeshCollector(Client *_client, v3f _center_pos,
@@ -62,11 +63,9 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
     const u16 *indices, u32 numIndices, v3f pos,
     video::SColor clr, u8 light_source, bool own_color)
 {
-	//TimeTaker add_tile_mesh_time("Add tile mesh", nullptr, PRECISION_MICRO);
-
     core::dimension2du atlas_size = atlas->getTextureSize();
 
-	//infostream << "Add tile mesh 1 time: " << add_tile_mesh_time.getTimerTime() << "us" << std::endl;
+	bool isMesh = tile.draw_type == NDT_MESH;
 
     for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
         const TileLayer &layer = tile.layers[layernum];
@@ -81,7 +80,7 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
         video::SMaterial material;
 		material.Lighting = false;
 		material.FogEnable = true;
-		material.setTexture(0, atlas->getTexture());
+		material.setTexture(0, isMesh ? layer.texture : atlas->getTexture());
 		material.forEachTexture([] (auto &tex) {
 			setMaterialFilters(tex,
 				g_settings->getBool("bilinear_filter"),
@@ -111,27 +110,24 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
                 os << ":" << (u32)tiles;
             os << ":" << (u32)layer.animation_frame_count << ":";
 
-            atlas->insertCrackTile(layer.atlas_tile_info_index, os.str());
+			if (!isMesh) {
+				atlas->insertCrackTile(layer.atlas_tile_info_index, os.str());
 
-            // Shift each UV by the half-width of the atlas to locate it in the separate right side
-            tile_pos_shift = atlas_size.Width / 2;
+				// Shift each UV by the half-width of the atlas to locate it in the separate right side
+				tile_pos_shift = atlas_size.Width / 2;
+			}
         }
-        //infostream << "Add tile mesh 1.1 time: " << add_tile_mesh_time.getTimerTime() << "us" << std::endl;
 
         // Find already existent prelayer with such material, otherwise create it
-        auto layer_it = std::find_if(buffers.begin(), buffers.end(),
-            [&material] (std::pair<video::SMaterial, std::vector<MeshPart>> &layer)
+        auto layer_it = std::find_if(layers.begin(), layers.end(),
+            [&material] (std::pair<video::SMaterial, std::list<MeshPart>> &layer)
             {
                 return layer.first == material;
             });
 
-        u32 layer_d = (u32)(std::distance(buffers.begin(), layer_it));
-        if (layer_it == buffers.end()) {
-            buffers.emplace_back(material, std::vector<MeshPart>());
-            layer_it = std::prev(buffers.end());
-
-            layer_d = (u32)(std::distance(buffers.begin(), layer_it));
-            layer_to_buf_v_map[layer_d] = std::map<u32, std::vector<u32>>();
+        if (layer_it == layers.end()) {
+            layers.emplace_back(material, std::list<MeshPart>());
+            layer_it = std::prev(layers.end());
         }
 
         auto buffer_it = std::find_if(layer_it->second.begin(), layer_it->second.end(),
@@ -140,35 +136,16 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
 				return part.vertices.size() + numVertices <= U16_MAX;
 			});
 
-		u32 buffer_d = (u32)(std::distance(layer_it->second.begin(), buffer_it));
-
-		if (buffer_it == layer_it->second.end()) {
-
-			//scene::SMeshBuffer *new_buffer = new scene::SMeshBuffer();
-			//new_buffer->setHardwareMappingHint(scene::EHM_STATIC);
-			//new_buffer->Material = material;
-			layer_it->second.push_back(MeshPart());
+        if (buffer_it == layer_it->second.end()) {
+			layer_it->second.emplace_back();
 			buffer_it = std::prev(layer_it->second.end());
-
-            buffer_d = (u32)(std::distance(layer_it->second.begin(), buffer_it));
-            layer_to_buf_v_map[layer_d][buffer_d] = std::vector<u32>();
 		}
-        //infostream << "Add tile mesh 1.2 time: " << add_tile_mesh_time.getTimerTime() << "us" << std::endl;
 
-        MeshPart &target_part = (*buffer_it);
-
-        u32 vertex_count = target_part.vertices.size();
+		MeshPart &part = (*buffer_it);
+        u32 vertex_count = part.vertices.size();
 
         const TileInfo &tile_info = atlas->getTileInfo(layer.atlas_tile_info_index);
         video::SColor tc = layer.color;
-
-		//std::vector<video::S3DVertex> new_vertices;
-		//std::vector<u16> new_indices;
-
-		//infostream << "Current vertex count: " << vertex_count << std::endl;
-
-		//new_vertices.clear();
-		//new_indices.clear();
 
         // Modify the vertices
         for (u32 i = 0; i < numVertices; i++) {
@@ -177,12 +154,14 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
             vertex.Pos += pos + offset + translation;
             vertex.TCoords *= scale;
 
-            // Re-calculate UV for linking to the necessary TileInfo pixels in the atlas
-            int rel_x = core::round32(vertex.TCoords.X * tile_info.width);
-            int rel_y = core::round32(vertex.TCoords.Y * tile_info.height);
+			if (!isMesh) {
+				// Re-calculate UV for linking to the necessary TileInfo pixels in the atlas
+				int rel_x = core::round32(vertex.TCoords.X * tile_info.width);
+				int rel_y = core::round32(vertex.TCoords.Y * tile_info.height);
 
-            vertex.TCoords.X = f32(tile_info.x + rel_x + tile_pos_shift) / atlas_size.Width;
-            vertex.TCoords.Y = f32(tile_info.y + rel_y) / atlas_size.Height;
+				vertex.TCoords.X = f32(tile_info.x + rel_x + tile_pos_shift) / atlas_size.Width;
+				vertex.TCoords.Y = f32(tile_info.y + rel_y) / atlas_size.Height;
+			}
 
 			// Apply face shading
 			video::SColor c = vertex.Color;
@@ -198,52 +177,20 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
                 c.setBlue(c.getBlue() * tc.getBlue() / 255);
             }
 
-            if (!g_settings->getBool("enable_shaders") && c.getAlpha() != 0) {
-                layer_to_buf_v_map[layer_d][buffer_d].push_back(vertex_count + i);
-            }
-
             vertex.Color = c;
 
-			//infostream << "vertex.Pos: " << vertex.Pos.X << ", " << vertex.Pos.Y << ", " << vertex.Pos.Z << ", vertex.Normal: " << vertex.Normal.X << ", "<< vertex.Normal.Y << ", "
-			//<< vertex.Normal.Z << ", vertex.Color: " << vertex.Color.getRed() << ", " << vertex.Color.getGreen() << ", " << vertex.Color.getBlue() << ", " << vertex.Color.getAlpha()
-			//<< ", vertex.TCoords: " << vertex.TCoords.X << ", " << vertex.TCoords.X << std::endl;
-
-
-			target_part.vertices.push_back(std::move(vertex));
+			if (!g_settings->getBool("enable_shaders") && c.getAlpha() != 0)
+				part.opaque_verts_refs.push_back(part.vertices.size());
 
             bounding_radius_sq = std::max(bounding_radius_sq,
                     (vertex.Pos - center_pos).getLengthSQ());
+
+			part.vertices.push_back(std::move(vertex));
         }
 
-        /*if (layer.isTransparent()) {
-			target_buffer->append(new_vertices.data(),
-				new_vertices.size(), nullptr, 0);
-
-			MeshTriangle t;
-			t.buffer = target_buffer;
-			transparent_triangles.reserve(numIndices / 3);
-			for (u32 i = 0; i < numIndices; i += 3) {
-				t.p1 = vertex_count + indices[i];
-				t.p2 = vertex_count + indices[i + 1];
-				t.p3 = vertex_count + indices[i + 2];
-				t.updateAttributes();
-				transparent_triangles.push_back(t);
-			}
-		}*/
-		//else {
-			// infostream << "Add tile mesh 2 time: " << add_tile_mesh_time.getTimerTime() << "us" << std::endl;
-			for (u32 i = 0; i < numIndices; i++) {
-				target_part.indices.push_back(vertex_count + indices[i]);
-				//infostream << "vertex_count: " << vertex_count << ", Index i-th: " << indices[i] << std::endl;
-			}
-
-			//target_buffer->append(new_vertices.data(), new_vertices.size(),
-			//	new_indices.data(), new_indices.size());
-		//}
-
-		//infostream << "Add tile mesh 3 time: " << add_tile_mesh_time.getTimerTime() << "us" << std::endl;
+		for (u32 i = 0; i < numIndices; i++)
+			part.indices.push_back(vertex_count + indices[i]);
     }
-    //add_tile_mesh_time.stop(true);
 }
 
 void WieldMeshCollector::addTileMesh(const TileSpec &tile,
@@ -251,7 +198,6 @@ void WieldMeshCollector::addTileMesh(const TileSpec &tile,
 	const u16 *indices, u32 numIndices, v3f pos,
 	video::SColor clr, u8 light_source, bool own_color)
 {
-	//TimeTaker add_tile_mesh_time("Add tile mesh", nullptr, PRECISION_MICRO);
 	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
 		const TileLayer &layer = tile.layers[layernum];
 		if (layer.texture_id == 0)
@@ -283,7 +229,6 @@ void WieldMeshCollector::addTileMesh(const TileSpec &tile,
 		for (u32 i = 0; i < numIndices; i++)
 			p.indices.push_back(indices[i] + vertex_count);
 	}
-	//add_tile_mesh_time.stop(false);
 }
 
 WieldPreMeshBuffer &WieldMeshCollector::findBuffer(

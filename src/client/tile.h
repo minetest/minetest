@@ -166,4 +166,6 @@ struct TileSpec
 	u8 emissive_light = 0;
 	//! The first is base texture, the second is overlay.
 	TileLayer layers[MAX_TILE_LAYERS];
+	//! Draw type of the tile
+	u8 draw_type;
 };

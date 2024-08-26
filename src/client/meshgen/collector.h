@@ -105,6 +105,10 @@ struct MeshPart
 {
 	std::vector<video::S3DVertex> vertices;
 	std::vector<u16> indices;
+
+	std::vector<u16> opaque_verts_refs;
+
+	scene::SMeshBuffer *buffer;
 };
 
 class MapblockMeshCollector final : public MeshCollector
@@ -112,10 +116,9 @@ class MapblockMeshCollector final : public MeshCollector
 	Client *client;
 
 public:
-	std::vector<std::pair<video::SMaterial, std::vector<MeshPart>>> buffers;
-	std::vector<std::pair<video::SMaterial, std::vector<scene::SMeshBuffer *>>> layers;
-	std::vector<std::pair<video::SMaterial, std::vector<PartialMeshBuffer>>> transparent_layers;
-    std::map<u32, std::map<u32, std::vector<u32>>> layer_to_buf_v_map;
+	std::list<std::pair<video::SMaterial, std::list<MeshPart>>> layers;
+	std::list<std::pair<video::SMaterial, std::list<PartialMeshBuffer>>> transparent_layers;
+
 	v3f translation;
 
 	std::vector<MeshTriangle> transparent_triangles;
@@ -130,8 +133,8 @@ public:
     ~MapblockMeshCollector()
     {
         for (auto &layer : layers)
-            for (auto buffer : layer.second)
-                buffer->drop();
+            for (auto &part : layer.second)
+                part.buffer->drop();
     }
 
     void addTileMesh(const TileSpec &tile,

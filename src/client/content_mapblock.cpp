@@ -320,29 +320,49 @@ video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos,
 
 void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *coords)
 {
-	f32 tx1 = (box.MinEdge.X / BS) + 0.5;
-	f32 ty1 = (box.MinEdge.Y / BS) + 0.5;
-	f32 tz1 = (box.MinEdge.Z / BS) + 0.5;
-	f32 tx2 = (box.MaxEdge.X / BS) + 0.5;
-	f32 ty2 = (box.MaxEdge.Y / BS) + 0.5;
-	f32 tz2 = (box.MaxEdge.Z / BS) + 0.5;
-	f32 txc[24] = {
-		    tx1, 1 - tz2,     tx2, 1 - tz1, // up
-		    tx1,     tz1,     tx2,     tz2, // down
-		    tz1, 1 - ty2,     tz2, 1 - ty1, // right
-		1 - tz2, 1 - ty2, 1 - tz1, 1 - ty1, // left
-		1 - tx2, 1 - ty2, 1 - tx1, 1 - ty1, // back
-		    tx1, 1 - ty2,     tx2, 1 - ty1, // front
+	v3f box_min_f(
+		(box.MinEdge.X / BS) + 0.5,
+		(box.MinEdge.Y / BS) + 0.5,
+		(box.MinEdge.Z / BS) + 0.5
+	);
+	v3f box_max_f(
+		(box.MaxEdge.X / BS) + 0.5,
+		(box.MaxEdge.Y / BS) + 0.5,
+		(box.MaxEdge.Z / BS) + 0.5
+	);
+
+	auto clamp_min_coord = [] (f32 min_c)
+	{
+		return min_c - std::floor(min_c);
 	};
-	for (int i = 0; i != 24; i+=4) {
-		coords[i] = 0.0f;
-		coords[i+1] = 0.0f;
-		coords[i+2] = 1.0f;
-		coords[i+3] = 1.0f;
-		/*coords[i] = txc[i] < 0.0f || txc[i] > 1.0f ? txc[i] - std::floor(txc[i]) : txc[i];
-		coords[i+1] = txc[i+1] < 0.0f || txc[i+1] > 1.0f ? txc[i+1] - std::floor(txc[i+1]) : txc[i+1];
-		coords[i+2] = txc[i+2] - std::floor(txc[i+2]);*/
-	}
+
+	auto clamp_max_coord = [] (f32 max_c)
+	{
+		return max_c - std::ceil(max_c - 1);
+	};
+
+	v3f tc1(
+		clamp_min_coord(box_min_f.X),
+		clamp_min_coord(box_min_f.Y),
+		clamp_min_coord(box_min_f.Z)
+	);
+	v3f tc2 (
+		clamp_max_coord(box_max_f.X),
+		clamp_max_coord(box_max_f.Y),
+		clamp_max_coord(box_max_f.Z)
+	);
+
+	f32 txc[24] = {
+		    tc1.X, 1 - tc2.Z,     tc2.X, 1 - tc1.Z, // up
+		    tc1.X,     tc1.Z,     tc2.X,     tc2.Z, // down
+		    tc1.Z, 1 - tc2.Y,     tc2.Z, 1 - tc1.Y, // right
+		1 - tc2.Z, 1 - tc2.Y, 1 - tc1.Z, 1 - tc1.Y, // left
+		1 - tc2.X, 1 - tc2.Y, 1 - tc1.X, 1 - tc1.Y, // back
+		    tc1.X, 1 - tc2.Y,     tc2.X, 1 - tc1.Y, // front
+	};
+
+	for (int i = 0; i != 24; i++)
+		coords[i] = txc[i];
 }
 
 static inline int lightDiff(LightPair a, LightPair b)

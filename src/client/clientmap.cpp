@@ -36,49 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <queue>
 
-namespace {
-	// A helper struct
-	/*struct
-	{
-		struct MaterialHash
-		{
-			size_t operator()(const video::SMaterial &m) const noexcept
-			{
-				// Only hash first texture. Simple and fast.
-				return std::hash<video::ITexture *>{}(m.TextureLayers[0].Texture);
-			}
-		};
-
-		using MeshBufListMap = std::unordered_map<
-				video::SMaterial,
-				std::vector<std::pair<v3s16, scene::IMeshBuffer *>>,
-				MaterialHash>;
-
-		std::array<MeshBufListMap, MAX_TILE_LAYERS> maps;
-
-		void clear()
-		{
-			for (auto &map : maps)
-				map.clear();
-		}
-
-		void add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
-		{
-			assert(layer < MAX_TILE_LAYERS);
-
-			// Append to the correct layer
-			auto &map = maps[layer];
-			const video::SMaterial &m = buf->getMaterial();
-			auto &bufs = map[m]; // default constructs if non-existent
-			bufs.emplace_back(position, buf);
-		}
-	};*/
-}
-
-/*
-	ClientMap
-*/
-
 static void on_settings_changed(const std::string &name, void *data)
 {
 	static_cast<ClientMap*>(data)->onSettingChanged(name, false);
@@ -93,6 +50,10 @@ static const std::string ClientMap_settings[] = {
 	"enable_raytraced_culling",
 	"enable_translucent_foliage"
 };
+
+/*
+	ClientMap
+*/
 
 ClientMap::ClientMap(
 		Client *client,
@@ -772,12 +733,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		prefix = "renderMap(TRANSPARENT): ";
 
 	/*
-		This is called two times per frame, reset on the non-transparent one
-	*/
-	//if (pass == scene::ESNRP_SOLID)
-	//	m_last_drawn_sectors.clear();
-
-	/*
 		Get animation parameters
 	*/
 	const u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
@@ -793,7 +748,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	// For limiting number of mesh animations per frame
 	u32 mesh_light_update_count = 0;
-	//u32 mesh_animate_count_far = 0;
 
 	/*
 		Update transparent meshes
@@ -804,10 +758,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	/*
 		Draw the selected MapBlocks
 	*/
-
-	//MeshBufListMaps grouped_buffers;
-	//std::vector<DrawBuffer> draw_buffers;
-	//video::SMaterial previous_material;
 
 	std::vector<MapBlock*> render_blocks;
 
@@ -859,7 +809,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	for (auto &rblock : render_blocks) {
 		MapblockMeshCollector *mesh = rblock->mesh->getMesh();
 
-		//infostream << "rblock layers count: " << mesh->layers.size() << std::endl;
 		if (is_transparent_pass)
 			for (auto &tlayer : mesh->transparent_layers) {
 				setupMaterial(driver, tlayer.first);
@@ -883,14 +832,13 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 				setupMaterial(driver, layer.first);
 
-				//infostream << "rblock layer buffers count: " << layer.second.size() << std::endl;
-				for (auto &buffer : layer.second) {
-					if (buffer->getVertexCount() == 0)
+				for (auto &part : layer.second) {
+					if (part.buffer->getVertexCount() == 0)
 						errorstream << "Block [" << analyze_block(rblock)
 								<< "] contains an empty meshbuf" << std::endl;
 
-					driver->drawMeshBuffer(buffer);
-					vertex_count += buffer->getVertexCount();
+					driver->drawMeshBuffer(part.buffer);
+					vertex_count += part.buffer->getVertexCount();
 				}
 
 				drawcall_count += layer.second.size();
@@ -1203,9 +1151,9 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 
 				setupShadowMaterial(driver, layer.first, material, is_transparent_pass);
 
-				for (auto buffer : layer.second) {
-					driver->drawMeshBuffer(buffer);
-					vertex_count += buffer->getVertexCount();
+				for (auto &part : layer.second) {
+					driver->drawMeshBuffer(part.buffer);
+					vertex_count += part.buffer->getVertexCount();
 				}
 
 				drawcall_count += layer.second.size();
@@ -1328,23 +1276,6 @@ void ClientMap::updateTransparentMeshBuffers()
 	g_profiler->avg("CM::Transparent Buffers - Unsorted", unsorted_blocks);
 	m_needs_update_transparent_meshes = false;
 }
-
-/*scene::IMeshBuffer* ClientMap::DrawBuffer::getBuffer()
-{
-	return m_use_partial_buffer ? m_partial_buffer->getBuffer() : m_buffer;
-}
-
-void ClientMap::DrawBuffer::draw(video::IVideoDriver* driver)
-{
-	if (m_use_partial_buffer) {
-		m_partial_buffer->beforeDraw();
-		driver->drawMeshBuffer(m_partial_buffer->getBuffer());
-		m_partial_buffer->afterDraw();
-	} else {
-		driver->drawMeshBuffer(m_buffer);
-		return m_buffer->getVertexCount();
-	}
-}*/
 
 bool ClientMap::isMeshOccluded(MapBlock *mesh_block, u16 mesh_size, v3s16 cam_pos_nodes)
 {

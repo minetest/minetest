@@ -420,20 +420,6 @@ void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *dat
 	tile.rotation = tile.world_aligned ? TileRotation::None : dir_to_tile[facedir][dir_i].rotation;
 }
 
-/*static void applyTileColor(PreMeshBuffer &pmb)
-{
-	video::SColor tc = pmb.layer.color;
-	if (tc == video::SColor(0xFFFFFFFF))
-		return;
-	for (video::S3DVertex &vertex : pmb.vertices) {
-		video::SColor *c = &vertex.Color;
-		c->set(c->getAlpha(),
-			c->getRed() * tc.getRed() / 255,
-			c->getGreen() * tc.getGreen() / 255,
-			c->getBlue() * tc.getBlue() / 255);
-	}
-}*/
-
 /*
 	MapBlockBspTree
 */
@@ -588,7 +574,6 @@ void MapBlockBspTree::traverse(s32 node, v3f viewpoint, std::vector<s32> &output
 		traverse(n.back_ref, viewpoint, output);
 }
 
-
 /*
 	MapBlockMesh
 */
@@ -641,26 +626,30 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 		client->getSceneManager()->getMeshManipulator()).generate();
 	}
 
-	for (auto &layer : m_mesh->buffers) {
-		m_mesh->layers.emplace_back(layer.first, std::vector<scene::SMeshBuffer *>());
+	for (auto &layer : m_mesh->layers)
 		for (auto &part : layer.second) {
-			scene::SMeshBuffer *new_buffer = new scene::SMeshBuffer();
-			new_buffer->setHardwareMappingHint(scene::EHM_STATIC);
-			new_buffer->Material = layer.first;
+			part.buffer = new scene::SMeshBuffer();
+			part.buffer->setHardwareMappingHint(scene::EHM_STATIC);
+			part.buffer->Material = layer.first;
 
 			video::IMaterialRenderer* rnd =
 					RenderingEngine::get_video_driver()->getMaterialRenderer(layer.first.MaterialType);
 			bool transparent = (rnd && rnd->isTransparent());
 
-			if (!transparent)
-				new_buffer->append(part.vertices.data(), part.vertices.size(),
+			if (!transparent) {
+				//if (part.vertices.size() == 0)
+				//	infostream << "solid MeshPart vertex array for SMeshBuffer is empty()" << std::endl;
+				part.buffer->append(part.vertices.data(), part.vertices.size(),
 					part.indices.data(), part.indices.size());
+			}
 			else {
-				new_buffer->append(part.vertices.data(),
+				//if (part.vertices.size() == 0)
+				//	infostream << "transparent MeshPart vertex array for SMeshBuffer is empty()" << std::endl;
+				part.buffer->append(part.vertices.data(),
 					part.vertices.size(), nullptr, 0);
 
 				MeshTriangle t;
-				t.buffer = new_buffer;
+				t.buffer = part.buffer;
 				m_mesh->transparent_triangles.reserve(part.indices.size() / 3);
 				for (u32 i = 0; i < part.indices.size(); i += 3) {
 					t.p1 = part.indices[i];
@@ -670,10 +659,8 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 					m_mesh->transparent_triangles.push_back(t);
 				}
 			}
-
-			m_mesh->layers.back().second.push_back(new_buffer);
 		}
-	}
+
 
 	m_bounding_radius = std::sqrt(m_mesh->bounding_radius_sq);
 
@@ -686,8 +673,8 @@ MapBlockMesh::~MapBlockMesh()
 
 	if (m_mesh) {
 		for (auto &layer : m_mesh->layers)
-			for (auto buffer : layer.second)
-				sz += buffer->getSize();
+			for (auto &part : layer.second)
+				sz += part.buffer->getSize();
 
 		delete m_mesh;
 	}
@@ -700,11 +687,6 @@ MapBlockMesh::~MapBlockMesh()
 
 bool MapBlockMesh::updateLighting(u32 daynight_ratio)
 {
-	if (m_mesh->layer_to_buf_v_map.empty()) {
-		m_update_light_force_timer = 100000;
-		return false;
-	}
-
     m_update_light_force_timer = myrand_range(5, 100);
 
 	// Day-night transition
@@ -712,20 +694,19 @@ bool MapBlockMesh::updateLighting(u32 daynight_ratio)
 		video::SColorf day_color;
 		get_sunlight_color(&day_color, daynight_ratio);
 
-		for (auto &buf_list : m_mesh->layer_to_buf_v_map) {
-			auto &layer = m_mesh->layers.at(buf_list.first);
+		for (auto &layer : m_mesh->layers)
+			for (auto &part : layer.second) {
+				if (part.opaque_verts_refs.empty())
+					continue;
 
-			for (auto &buf : buf_list.second) {
-				auto &buffer = layer.second.at(buf.first);
-				buffer->setDirty(scene::EBT_VERTEX); // force reload to VBO
+				part.buffer->setDirty(scene::EBT_VERTEX); // force reload to VBO
 
-				video::S3DVertex *vertices = (video::S3DVertex *)buffer->getVertices();
+				video::S3DVertex *vertices = (video::S3DVertex *)part.buffer->getVertices();
 
-				for (auto &vert : buf.second)
-					final_color_blend(&(vertices[vert].Color), vertices[vert].Color,
-						day_color);
-			}
-		}
+				for (auto &vert_ref : part.opaque_verts_refs)
+					final_color_blend(&(vertices[vert_ref].Color),
+						vertices[vert_ref].Color, day_color);
+           		 }
 		m_last_daynight_ratio = daynight_ratio;
 	}
 
@@ -738,14 +719,15 @@ void MapBlockMesh::addPartialBuffer(scene::SMeshBuffer *current_buffer, std::vec
 
 	// Batching following one another buffers with the same material
 	if (m_mesh->transparent_layers.empty()) {
-		std::vector<PartialMeshBuffer> pbuffers;
+		std::list<PartialMeshBuffer> pbuffers;
+		pbuffers.emplace_back(current_buffer, std::move(current_strain));
 		m_mesh->transparent_layers.emplace_back(mat, pbuffers);
 	}
 
-	std::pair<video::SMaterial, std::vector<PartialMeshBuffer>> &last_layer = m_mesh->transparent_layers.back();
+	auto &last_layer = m_mesh->transparent_layers.back();
 
 	if (last_layer.first != mat) {
-		std::vector<PartialMeshBuffer> pbuffers;
+		std::list<PartialMeshBuffer> pbuffers;
 		m_mesh->transparent_layers.emplace_back(mat, pbuffers);
 		last_layer = m_mesh->transparent_layers.back();
 	}

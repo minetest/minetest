@@ -104,7 +104,7 @@ public:
 	void setupMaterial(video::IVideoDriver *driver, video::SMaterial &mat);
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
-	void setupShadowMaterial(video::IVideoDriver *driver, video::SMaterial &mat, bool is_tpass);
+	void setupShadowMaterial(video::IVideoDriver *driver, video::SMaterial &mat, const video::SMaterial &override_mat, bool is_tpass);
 	void renderMapShadows(video::IVideoDriver *driver,
 			const video::SMaterial &material, s32 pass, int frame, int total_frames);
 
@@ -151,27 +151,6 @@ private:
 		v3s16 m_camera_block;
 	};
 
-
-	// reference to a mesh buffer used when rendering the map.
-	/*struct DrawBuffer {
-		union {
-			scene::IMeshBuffer *m_buffer;
-			const PartialMeshBuffer *m_partial_buffer;
-		};
-		bool m_use_partial_buffer:1;
-
-		DrawBuffer(scene::IMeshBuffer *buffer) :
-			m_buffer(buffer), m_use_partial_buffer(false)
-		{}
-
-		DrawBuffer(const PartialMeshBuffer *buffer) :
-			m_partial_buffer(buffer), m_use_partial_buffer(true)
-		{}
-
-		scene::IMeshBuffer* getBuffer();
-		void draw(video::IVideoDriver* driver);
-	};*/
-
 	Client *m_client;
 	RenderingEngine *m_rendering_engine;
 
@@ -191,8 +170,6 @@ private:
 	std::vector<MapBlock*> m_keeplist;
 	std::map<v3s16, MapBlock*> m_drawlist_shadow;
 	bool m_needs_update_drawlist;
-
-	std::set<v2s16> m_last_drawn_sectors;
 
 	bool m_cache_trilinear_filter;
 	bool m_cache_bilinear_filter;
