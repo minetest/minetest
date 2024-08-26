@@ -162,8 +162,9 @@ private:
 			m_pos(pos), m_partial_buffer(buffer), m_reuse_material(false), m_use_partial_buffer(true)
 		{}
 
-		scene::IMeshBuffer* getBuffer();
-		void draw(video::IVideoDriver* driver);
+		video::SMaterial &getMaterial();
+		/// @return index count
+		u32 draw(video::IVideoDriver* driver);
 	};
 
 	Client *m_client;

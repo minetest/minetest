@@ -841,10 +841,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	drawcall_count += draw_order.size();
 
 	for (auto &descriptor : draw_order) {
-		scene::IMeshBuffer *buf = descriptor.getBuffer();
-
 		if (!descriptor.m_reuse_material) {
-			auto &material = buf->getMaterial();
+			auto &material = descriptor.getMaterial();
 
 			// Apply filter settings
 			material.forEachTexture([this] (auto &tex) {
@@ -876,8 +874,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		m.setTranslation(block_wpos - offset);
 
 		driver->setTransform(video::ETS_WORLD, m);
-		descriptor.draw(driver);
-		vertex_count += buf->getIndexCount();
+		vertex_count += descriptor.draw(driver);
 	}
 
 	g_profiler->avg(prefix + "draw meshes [ms]", draw.stop(true));
@@ -1195,11 +1192,9 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	drawcall_count += draw_order.size();
 
 	for (auto &descriptor : draw_order) {
-		scene::IMeshBuffer *buf = descriptor.getBuffer();
-
 		if (!descriptor.m_reuse_material) {
 			// override some material properties
-			video::SMaterial local_material = buf->getMaterial();
+			video::SMaterial local_material = descriptor.getMaterial();
 			local_material.MaterialType = material.MaterialType;
 			// do not override culling if the original material renders both back
 			// and front faces in solid mode (e.g. plantlike)
@@ -1219,8 +1214,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		m.setTranslation(block_wpos - offset);
 
 		driver->setTransform(video::ETS_WORLD, m);
-		descriptor.draw(driver);
-		vertex_count += buf->getIndexCount();
+		vertex_count += descriptor.draw(driver);
 	}
 
 	// restore the driver material state
@@ -1335,19 +1329,22 @@ void ClientMap::updateTransparentMeshBuffers()
 	m_needs_update_transparent_meshes = false;
 }
 
-scene::IMeshBuffer* ClientMap::DrawDescriptor::getBuffer()
+video::SMaterial &ClientMap::DrawDescriptor::getMaterial()
 {
-	return m_use_partial_buffer ? m_partial_buffer->getBuffer() : m_buffer;
+	return (m_use_partial_buffer ? m_partial_buffer->getBuffer() : m_buffer)->getMaterial();
 }
 
-void ClientMap::DrawDescriptor::draw(video::IVideoDriver* driver)
+u32 ClientMap::DrawDescriptor::draw(video::IVideoDriver* driver)
 {
 	if (m_use_partial_buffer) {
 		m_partial_buffer->beforeDraw();
 		driver->drawMeshBuffer(m_partial_buffer->getBuffer());
+		auto count = m_partial_buffer->getBuffer()->getVertexCount();
 		m_partial_buffer->afterDraw();
+		return count;
 	} else {
 		driver->drawMeshBuffer(m_buffer);
+		return m_buffer->getVertexCount();
 	}
 }
 
