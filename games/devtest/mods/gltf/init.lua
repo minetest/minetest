@@ -14,7 +14,7 @@ register_entity("minimal_triangle", {}, false)
 register_entity("triangle_with_vertex_stride", {}, false)
 register_entity("triangle_without_indices", {}, false)
 do
-	local cube_textures = {"no_texture.png"} -- TODO provide proper textures
+	local cube_textures = {"gltf_cube.png"}
 	register_entity("blender_cube", cube_textures)
 	register_entity("blender_cube_scaled", cube_textures)
 	register_entity("blender_cube_matrix_transform", cube_textures)
