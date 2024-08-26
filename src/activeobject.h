@@ -96,6 +96,9 @@ struct BoneOverride
 	{
 		core::quaternion previous;
 		core::quaternion next;
+		// Redundantly store the euler angles serverside
+		// so that we can return them in the appropriate getters
+		v3f next_radians;
 		bool absolute = false;
 		f32 interp_timer = 0;
 	} rotation;
