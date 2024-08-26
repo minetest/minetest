@@ -8542,6 +8542,7 @@ child will follow movement and rotation of that bone.
       * `saturation` sets the saturation (vividness; default: `1.0`).
         * values > 1 increase the saturation
         * values in [0,1] decrease the saturation
+        * values < 0 invert the colors
       * `shadows` is a table that controls ambient shadows
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
             * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
