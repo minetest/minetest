@@ -255,10 +255,7 @@ bool COpenGL3DriverBase::genericDriverInit(const core::dimension2d<u32> &screenS
 
 	DriverAttributes->setAttribute("MaxTextures", (s32)Feature.MaxTextureUnits);
 	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Feature.MaxTextureUnits);
-	//		DriverAttributes->setAttribute("MaxLights", MaxLights);
 	DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
-	//		DriverAttributes->setAttribute("MaxAuxBuffers", MaxAuxBuffers);
-	//		DriverAttributes->setAttribute("MaxMultipleRenderTargets", MaxMultipleRenderTargets);
 	DriverAttributes->setAttribute("MaxIndices", (s32)MaxIndices);
 	DriverAttributes->setAttribute("MaxTextureSize", (s32)MaxTextureSize);
 	DriverAttributes->setAttribute("MaxTextureLODBias", MaxTextureLODBias);
@@ -493,6 +490,7 @@ bool COpenGL3DriverBase::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuff
 
 	const void *buffer = vertices;
 	size_t bufferSize = vertexSize * vertexCount;
+	accountHWBufferUpload(bufferSize);
 
 	// get or create buffer
 	bool newBuffer = false;
@@ -551,6 +549,9 @@ bool COpenGL3DriverBase::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffe
 	}
 	}
 
+	const size_t bufferSize = indexCount * indexSize;
+	accountHWBufferUpload(bufferSize);
+
 	// get or create buffer
 	bool newBuffer = false;
 	if (!HWBuffer->vbo_indicesID) {
@@ -558,7 +559,7 @@ bool COpenGL3DriverBase::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffe
 		if (!HWBuffer->vbo_indicesID)
 			return false;
 		newBuffer = true;
-	} else if (HWBuffer->vbo_indicesSize < indexCount * indexSize) {
+	} else if (HWBuffer->vbo_indicesSize < bufferSize) {
 		newBuffer = true;
 	}
 
@@ -566,16 +567,16 @@ bool COpenGL3DriverBase::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffe
 
 	// copy data to graphics card
 	if (!newBuffer)
-		GL.BufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indexCount * indexSize, indices);
+		GL.BufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, bufferSize, indices);
 	else {
-		HWBuffer->vbo_indicesSize = indexCount * indexSize;
+		HWBuffer->vbo_indicesSize = bufferSize;
 
 		GLenum usage = GL_STATIC_DRAW;
 		if (HWBuffer->Mapped_Index == scene::EHM_STREAM)
 			usage = GL_STREAM_DRAW;
 		else if (HWBuffer->Mapped_Index == scene::EHM_DYNAMIC)
 			usage = GL_DYNAMIC_DRAW;
-		GL.BufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * indexSize, indices, usage);
+		GL.BufferData(GL_ELEMENT_ARRAY_BUFFER, bufferSize, indices, usage);
 	}
 
 	GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -589,22 +590,24 @@ bool COpenGL3DriverBase::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 	if (!HWBuffer)
 		return false;
 
+	auto *b = static_cast<SHWBufferLink_opengl *>(HWBuffer);
+
 	if (HWBuffer->Mapped_Vertex != scene::EHM_NEVER) {
-		if (HWBuffer->ChangedID_Vertex != HWBuffer->MeshBuffer->getChangedID_Vertex() || !static_cast<SHWBufferLink_opengl *>(HWBuffer)->vbo_verticesID) {
+		if (HWBuffer->ChangedID_Vertex != HWBuffer->MeshBuffer->getChangedID_Vertex() || !b->vbo_verticesID) {
 
 			HWBuffer->ChangedID_Vertex = HWBuffer->MeshBuffer->getChangedID_Vertex();
 
-			if (!updateVertexHardwareBuffer(static_cast<SHWBufferLink_opengl *>(HWBuffer)))
+			if (!updateVertexHardwareBuffer(b))
 				return false;
 		}
 	}
 
 	if (HWBuffer->Mapped_Index != scene::EHM_NEVER) {
-		if (HWBuffer->ChangedID_Index != HWBuffer->MeshBuffer->getChangedID_Index() || !static_cast<SHWBufferLink_opengl *>(HWBuffer)->vbo_indicesID) {
+		if (HWBuffer->ChangedID_Index != HWBuffer->MeshBuffer->getChangedID_Index() || !b->vbo_indicesID) {
 
 			HWBuffer->ChangedID_Index = HWBuffer->MeshBuffer->getChangedID_Index();
 
-			if (!updateIndexHardwareBuffer((SHWBufferLink_opengl *)HWBuffer))
+			if (!updateIndexHardwareBuffer(b))
 				return false;
 		}
 	}
