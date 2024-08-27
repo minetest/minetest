@@ -556,8 +556,9 @@ scene::SMeshBuffer *Minimap::getMinimapMeshBuffer()
 {
 	scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 	auto &vertices = buf->Vertices->Data;
+	auto &indices = buf->Indices->Data;
 	vertices.resize(4);
-	buf->Indices.resize(6);
+	indices.resize(6);
 	static const video::SColor c(255, 255, 255, 255);
 
 	vertices[0] = video::S3DVertex(-1, -1, 0, 0, 0, 1, c, 0, 1);
@@ -565,12 +566,12 @@ scene::SMeshBuffer *Minimap::getMinimapMeshBuffer()
 	vertices[2] = video::S3DVertex( 1,  1, 0, 0, 0, 1, c, 1, 0);
 	vertices[3] = video::S3DVertex( 1, -1, 0, 0, 0, 1, c, 1, 1);
 
-	buf->Indices[0] = 0;
-	buf->Indices[1] = 1;
-	buf->Indices[2] = 2;
-	buf->Indices[3] = 2;
-	buf->Indices[4] = 3;
-	buf->Indices[5] = 0;
+	indices[0] = 0;
+	indices[1] = 1;
+	indices[2] = 2;
+	indices[3] = 2;
+	indices[4] = 3;
+	indices[5] = 0;
 
 	buf->setHardwareMappingHint(scene::EHM_STATIC);
 	return buf;

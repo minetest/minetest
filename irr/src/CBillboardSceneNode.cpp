@@ -27,16 +27,17 @@ CBillboardSceneNode::CBillboardSceneNode(ISceneNode *parent, ISceneManager *mgr,
 	setSize(size);
 
 	auto &Vertices = Buffer->Vertices->Data;
+	auto &Indices = Buffer->Indices->Data;
 
 	Vertices.resize(4);
-	Buffer->Indices.resize(6);
+	Indices.resize(6);
 
-	Buffer->Indices[0] = 0;
-	Buffer->Indices[1] = 2;
-	Buffer->Indices[2] = 1;
-	Buffer->Indices[3] = 0;
-	Buffer->Indices[4] = 3;
-	Buffer->Indices[5] = 2;
+	Indices[0] = 0;
+	Indices[1] = 2;
+	Indices[2] = 1;
+	Indices[3] = 0;
+	Indices[4] = 3;
+	Indices[5] = 2;
 
 	Vertices[0].TCoords.set(1.0f, 1.0f);
 	Vertices[0].Color = colorBottom;
