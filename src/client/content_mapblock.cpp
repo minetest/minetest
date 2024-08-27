@@ -432,7 +432,17 @@ void MapblockMeshGenerator::drawSolidNode()
 			continue;
 		if (n2 != CONTENT_AIR) {
 			const ContentFeatures &f2 = nodedef->get(n2);
-			if (f2.solidness == 2)
+			//if (f2.solidness == 2)//fork : probable reason
+			//	continue;
+			// fork : to fix: blocking rendering with flowing liquid. Still don't know why top is not rendered... To test.
+			// draw when flowing liquid enabled and cur_node is happened to be the source node and cur_node is rendering and cur_node is liquid at the same time.
+			if (g_settings->getBool("enable_waving_water")&&cur_node.f->drawtype == NDT_LIQUID)
+			{
+				MapBlock *b = client->getEnv().getMap().getBlockNoCreateNoEx(cur_node.p);
+				if (b != nullptr && b->getIsBeingDrawn() || f2.solidness == 2 && cur_liquid.c_source != n1)
+					continue;
+			}
+			else if (f2.solidness == 2)
 				continue;
 			if (cur_node.f->drawtype == NDT_LIQUID) {
 				if (cur_node.f->sameLiquidRender(f2))
@@ -690,7 +700,7 @@ void MapblockMeshGenerator::drawLiquidSides()
 
 		const ContentFeatures &neighbor_features = nodedef->get(neighbor.content);
 		// Don't draw face if neighbor is blocking the view
-		// to fix: blocking rendering with flowing liquid. Still don't know why top is not rendered... To test.
+		// fork : to fix: blocking rendering with flowing liquid. Still don't know why top is not rendered... To test.
 		// Don't draw only when no flowing liquid enabled and cur_node is happened to not be the source node and cur_node is rendering at the same time.
 		// Now : This is not what cause the top render to lose. move to other part
 		if (g_settings->getBool("enable_waving_water"))
@@ -1725,7 +1735,7 @@ void MapblockMeshGenerator::drawNode()
 	switch (cur_node.f->drawtype) {
 		case NDT_AIRLIKE:  // Not drawn at all
 			return;
-		case NDT_LIQUID:
+		case NDT_LIQUID: // fork: Might for this that the full liquid node keeps rendering the top.
 		case NDT_NORMAL: // solid nodes don’t need the usual setup
 			drawSolidNode();
 			return;
