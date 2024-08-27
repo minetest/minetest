@@ -1,4 +1,4 @@
-name: macos
+name: macos_11_arm64
 
 # build on c/cpp changes or workflow changes
 on:
@@ -13,8 +13,8 @@ on:
       - 'irr/**.mm' # Objective-C(++)
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
-      - 'util/ci/common.sh'
-      - '.github/workflows/macos.yml'
+      - 'util/ci/macos_build_deps.sh'
+      - '.github/workflows/macos_11_arm64.yml'
   pull_request:
     paths:
       - 'lib/**.[ch]'
@@ -26,26 +26,35 @@ on:
       - 'irr/**.mm' # Objective-C(++)
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
-      - 'util/ci/common.sh'
-      - '.github/workflows/macos.yml'
+      - 'util/ci/macos_build_deps.sh'
+      - '.github/workflows/macos_11_arm64.yml'
 
 jobs:
   build:
-    # use lowest possible macOS running on x86_64 to support more users
-    runs-on: macos-12
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
       - name: Install deps
         run: |
-          source ./util/ci/common.sh
-          install_macos_deps
+          source ./util/ci/macos_build_deps.sh 
+          echo "GETTING SDK"
+          download_macos_sdk "11"
+          echo "GETTING LIBRARY SOURCES"
+          download_macos_deps
+          echo "UNARCHIVING LIBRARY SOURCES"
+          untar_macos_deps
+          echo "COMPILING LIBRARIES"
+          compile_macos_deps "arm64" "11"
 
       - name: Build
         run: |
           mkdir build
           cd build
+          export CMAKE_PREFIX_PATH=$(realpath ../deps/install)
+          export SDKROOT=$(realpath ../deps/MacOSX11.sdk)
           cmake .. \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=11 \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
             -DCMAKE_FIND_FRAMEWORK=LAST \
             -DCMAKE_INSTALL_PREFIX=../build/macos/ \
             -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE \
@@ -68,5 +77,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: minetest-macos
+          name: minetest-macos_11_arm64
           path: ./build/macos/*.zip
