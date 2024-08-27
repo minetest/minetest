@@ -226,6 +226,8 @@ public:
 	If the size reaches less value than it, stop the generation.*/
 	virtual void regenerateMipMapLevels(void *data = 0, u32 layer = 0, u32 end_size = 1) = 0;
 
+	virtual std::vector<IImage*> getImagesCache() = 0;
+
 	//! Draws the content pixels of the tile texture onto this texture.
 	virtual void drawToSubImage(int x, int y, int width, int height, ITexture *texture) = 0;
 

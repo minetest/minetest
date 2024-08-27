@@ -78,7 +78,8 @@ TextureAtlas::TextureAtlas(video::IVideoDriver *vdrv, ITextureSource *src, std::
 		atlas_size += (tile_info.width * tile_info.height);
 	}
 
-	u32 atlas_side = std::min(getClosestPowerOfTwo(std::sqrt((f32)atlas_size)), 16384u);
+	u32 max_texture_size = (u32)(vdrv->getDriverAttributes().getAttributeAsInt("MaxTextureSize"));
+	u32 atlas_side = std::min(getClosestPowerOfTwo(std::sqrt((f32)atlas_size)), max_texture_size);
 
 	packTextures(atlas_side);
 
@@ -90,8 +91,8 @@ TextureAtlas::TextureAtlas(video::IVideoDriver *vdrv, ITextureSource *src, std::
 			m_atlas_texture->drawToSubImage(info.x, info.y, info.width, info.height, info.tex);
 
 	if (m_driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS)) {
-		// Each tile in both sides of the atlas must have not less 2 pixels in a mip
-		u32 min_pixels_count = m_tiles_infos.size()*4;
+		// Each tile in both sides of the atlas must have not less 128 pixels in a mip
+		u32 min_pixels_count = m_tiles_infos.size()* 128 * 2;
 		m_atlas_texture->regenerateMipMapLevels(0, 0, min_pixels_count);
 	}
 }
@@ -122,7 +123,6 @@ void TextureAtlas::packTextures(int side)
 
 	areas.emplace_back(0, 0, side, side);
 
-	u32 counter = 0;
 	for (auto &info : sorted_infos) {
 		bool packed = false;
 
@@ -156,8 +156,6 @@ void TextureAtlas::packTextures(int side)
 
 		if (!packed)
 			return;
-
-		counter++;
 	}
 }
 
@@ -187,8 +185,8 @@ void TextureAtlas::updateAnimations(f32 time)
 	}
 
 	if (m_driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS) && has_animated_tiles) {
-		// Each tile in both sides of the atlas must have not less 2 pixels in a mip
-		u32 min_pixels_count = m_tiles_infos.size()*4;
+		// Each tile in both sides of the atlas must have not less 128 pixels in a mip
+		u32 min_pixels_count = m_tiles_infos.size() * 128 * 2;
 		m_atlas_texture->regenerateMipMapLevels(0, 0, min_pixels_count);
 	}
 }
@@ -229,8 +227,8 @@ void TextureAtlas::updateCrackAnimations(int new_crack)
 	}
 
 	if (m_driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS) && has_crack_tiles) {
-		// Each tile in both sides of the atlas must have not less 2 pixels in a mip
-		u32 min_pixels_count = m_tiles_infos.size()*8;
+		// Each tile in both sides of the atlas must have not less 128 pixels in a mip
+		u32 min_pixels_count = m_tiles_infos.size() * 128 * 2;
 		m_atlas_texture->regenerateMipMapLevels(0, 0, min_pixels_count);
 	}
 }

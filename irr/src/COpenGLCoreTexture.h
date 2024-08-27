@@ -421,6 +421,11 @@ public:
 		Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
 	}
 
+	std::vector<IImage*> getImagesCache() override
+	{
+		return Images;
+	}
+
 	void drawToSubImage(int x, int y, int width, int height, ITexture *texture) override
 	{
 		// This method works only for 2D textures currently
@@ -437,7 +442,12 @@ public:
 			return;
 		}
 
-		void *data = texture->lock(ETLM_READ_ONLY);
+		std::vector<IImage*> imgs = texture->getImagesCache();
+
+		if (imgs.empty())
+			return;
+
+		void *data = imgs[0]->getData();
 
 		const ITexture *prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
 
