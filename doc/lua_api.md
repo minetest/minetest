@@ -10999,7 +10999,7 @@ Types used are defined in the previous section.
 * vec3 range `acc`: the direction and speed with which the particle
   accelerates
 
-* vec3 range `size`: scales the visual size of the particle texture.
+* float range `size`: scales the visual size of the particle texture.
   if `node` is set, this can be set to 0 to spawn randomly-sized particles
   (just like actual node dig particles).
 
