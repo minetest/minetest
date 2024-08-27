@@ -8,6 +8,15 @@ The main menu is defined as a formspec by Lua in `builtin/mainmenu/`
 Description of formspec language to show your menu is in `lua_api.md`
 
 
+Images
+------
+
+Directory delimiters change according to the OS (e.g. on Unix-like systems
+is `/`, on Windows is `\`). When putting an image inside a formspec, be sure
+to sanitize it first with `core.formspec_escape(img)`: otherwise, any image
+located in a subpath won't be displayed on OSs using `\` as delimiter.
+
+
 Callbacks
 ---------
 
