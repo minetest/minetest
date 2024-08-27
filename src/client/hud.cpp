@@ -134,16 +134,17 @@ Hud::Hud(Client *client, LocalPlayer *player,
 
 	// Prepare mesh for compass drawing
 	auto &b = m_rotation_mesh_buffer;
-	b.Vertices.resize(4);
+	auto &vertices = b.Vertices->Data;
+	vertices.resize(4);
 	b.Indices.resize(6);
 
 	video::SColor white(255, 255, 255, 255);
 	v3f normal(0.f, 0.f, 1.f);
 
-	b.Vertices[0] = video::S3DVertex(v3f(-1.f, -1.f, 0.f), normal, white, v2f(0.f, 1.f));
-	b.Vertices[1] = video::S3DVertex(v3f(-1.f,  1.f, 0.f), normal, white, v2f(0.f, 0.f));
-	b.Vertices[2] = video::S3DVertex(v3f( 1.f,  1.f, 0.f), normal, white, v2f(1.f, 0.f));
-	b.Vertices[3] = video::S3DVertex(v3f( 1.f, -1.f, 0.f), normal, white, v2f(1.f, 1.f));
+	vertices[0] = video::S3DVertex(v3f(-1.f, -1.f, 0.f), normal, white, v2f(0.f, 1.f));
+	vertices[1] = video::S3DVertex(v3f(-1.f,  1.f, 0.f), normal, white, v2f(0.f, 0.f));
+	vertices[2] = video::S3DVertex(v3f( 1.f,  1.f, 0.f), normal, white, v2f(1.f, 0.f));
+	vertices[3] = video::S3DVertex(v3f( 1.f, -1.f, 0.f), normal, white, v2f(1.f, 1.f));
 
 	b.Indices[0] = 0;
 	b.Indices[1] = 1;

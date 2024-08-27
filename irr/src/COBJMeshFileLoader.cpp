@@ -228,8 +228,8 @@ IAnimatedMesh *COBJMeshFileLoader::createMesh(io::IReadFile *file)
 				if (n != currMtl->VertMap.end()) {
 					vertLocation = n->second;
 				} else {
-					currMtl->Meshbuffer->Vertices.push_back(v);
-					vertLocation = currMtl->Meshbuffer->Vertices.size() - 1;
+					currMtl->Meshbuffer->VertexBuffer().push_back(v);
+					vertLocation = currMtl->Meshbuffer->VertexBuffer().size() - 1;
 					currMtl->VertMap.emplace(v, vertLocation);
 				}
 

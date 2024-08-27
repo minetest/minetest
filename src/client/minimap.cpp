@@ -555,14 +555,15 @@ v3f Minimap::getYawVec()
 scene::SMeshBuffer *Minimap::getMinimapMeshBuffer()
 {
 	scene::SMeshBuffer *buf = new scene::SMeshBuffer();
-	buf->Vertices.resize(4);
+	auto &vertices = buf->Vertices->Data;
+	vertices.resize(4);
 	buf->Indices.resize(6);
 	static const video::SColor c(255, 255, 255, 255);
 
-	buf->Vertices[0] = video::S3DVertex(-1, -1, 0, 0, 0, 1, c, 0, 1);
-	buf->Vertices[1] = video::S3DVertex(-1,  1, 0, 0, 0, 1, c, 0, 0);
-	buf->Vertices[2] = video::S3DVertex( 1,  1, 0, 0, 0, 1, c, 1, 0);
-	buf->Vertices[3] = video::S3DVertex( 1, -1, 0, 0, 0, 1, c, 1, 1);
+	vertices[0] = video::S3DVertex(-1, -1, 0, 0, 0, 1, c, 0, 1);
+	vertices[1] = video::S3DVertex(-1,  1, 0, 0, 0, 1, c, 0, 0);
+	vertices[2] = video::S3DVertex( 1,  1, 0, 0, 0, 1, c, 1, 0);
+	vertices[3] = video::S3DVertex( 1, -1, 0, 0, 0, 1, c, 1, 1);
 
 	buf->Indices[0] = 0;
 	buf->Indices[1] = 1;

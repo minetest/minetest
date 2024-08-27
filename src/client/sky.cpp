@@ -830,7 +830,8 @@ void Sky::updateStars()
 		warningstream << "Requested " << m_star_params.count << " stars but " << 0x4000 << " is the max\n";
 		m_star_params.count = 0x4000;
 	}
-	m_stars->Vertices.reserve(4 * m_star_params.count);
+	auto &vertices = m_stars->Vertices->Data;
+	vertices.reserve(4 * m_star_params.count);
 	m_stars->Indices.reserve(6 * m_star_params.count);
 
 	video::SColor fallback_color = m_star_params.starcolor; // used on GLES 2 “without shaders”
@@ -852,10 +853,10 @@ void Sky::updateStars()
 		a.rotateVect(p1);
 		a.rotateVect(p2);
 		a.rotateVect(p3);
-		m_stars->Vertices.push_back(video::S3DVertex(p, {}, fallback_color, {}));
-		m_stars->Vertices.push_back(video::S3DVertex(p1, {}, fallback_color, {}));
-		m_stars->Vertices.push_back(video::S3DVertex(p2, {}, fallback_color, {}));
-		m_stars->Vertices.push_back(video::S3DVertex(p3, {}, fallback_color, {}));
+		vertices.push_back(video::S3DVertex(p, {}, fallback_color, {}));
+		vertices.push_back(video::S3DVertex(p1, {}, fallback_color, {}));
+		vertices.push_back(video::S3DVertex(p2, {}, fallback_color, {}));
+		vertices.push_back(video::S3DVertex(p3, {}, fallback_color, {}));
 	}
 	for (u16 i = 0; i < m_star_params.count; i++) {
 		m_stars->Indices.push_back(i * 4 + 0);
