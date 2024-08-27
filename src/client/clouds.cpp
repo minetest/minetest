@@ -178,13 +178,14 @@ void Clouds::updateMesh()
 
 
 	auto *mb = m_meshbuffer.get();
+	auto &vertices = mb->Vertices->Data;
 	{
 		const u32 vertex_count = num_faces_to_draw * 16 * m_cloud_radius_i * m_cloud_radius_i;
 		const u32 quad_count = vertex_count / 4;
 		const u32 index_count = quad_count * 6;
 
 		// reserve memory
-		mb->Vertices.reserve(vertex_count);
+		vertices.reserve(vertex_count);
 		mb->Indices.reserve(index_count);
 	}
 
@@ -192,7 +193,7 @@ void Clouds::updateMesh()
 #define INAREA(x, z, radius) \
 	((x) >= -(radius) && (x) < (radius) && (z) >= -(radius) && (z) < (radius))
 
-	mb->Vertices.clear();
+	vertices.clear();
 	for (s16 zi0= -m_cloud_radius_i; zi0 < m_cloud_radius_i; zi0++)
 	for (s16 xi0= -m_cloud_radius_i; xi0 < m_cloud_radius_i; xi0++)
 	{
@@ -312,7 +313,7 @@ void Clouds::updateMesh()
 
 			for (video::S3DVertex &vertex : v) {
 				vertex.Pos += pos;
-				mb->Vertices.push_back(vertex);
+				vertices.push_back(vertex);
 			}
 		}
 	}

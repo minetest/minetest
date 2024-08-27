@@ -6,6 +6,7 @@
 
 #include <vector>
 #include "IMeshBuffer.h"
+#include "CVertexBuffer.h"
 
 namespace irr
 {
@@ -18,11 +19,17 @@ class CMeshBuffer : public IMeshBuffer
 public:
 	//! Default constructor for empty meshbuffer
 	CMeshBuffer() :
-			ChangedID_Vertex(1), ChangedID_Index(1), MappingHint_Vertex(EHM_NEVER), MappingHint_Index(EHM_NEVER), HWBuffer(NULL), PrimitiveType(EPT_TRIANGLES)
+			ChangedID_Index(1), MappingHint_Index(EHM_NEVER), HWBuffer(NULL), PrimitiveType(EPT_TRIANGLES)
 	{
 #ifdef _DEBUG
 		setDebugName("CMeshBuffer");
 #endif
+		Vertices = new CVertexBuffer<T>();
+	}
+
+	~CMeshBuffer()
+	{
+		Vertices->drop();
 	}
 
 	//! Get material of this meshbuffer
@@ -43,21 +50,27 @@ public:
 	/** \return Pointer to vertices. */
 	const void *getVertices() const override
 	{
-		return Vertices.data();
+		return Vertices->getData();
 	}
 
 	//! Get pointer to vertices
 	/** \return Pointer to vertices. */
 	void *getVertices() override
 	{
-		return Vertices.data();
+		return Vertices->getData();
 	}
 
 	//! Get number of vertices
 	/** \return Number of vertices. */
 	u32 getVertexCount() const override
 	{
-		return static_cast<u32>(Vertices.size());
+		return Vertices->getCount();
+	}
+
+	// TEMPORARY helper for direct buffer acess
+	inline auto &VertexBuffer()
+	{
+		return Vertices->Data;
 	}
 
 	//! Get type of index data which is stored in this meshbuffer.
@@ -107,11 +120,11 @@ public:
 	/** should be called if the mesh changed. */
 	void recalculateBoundingBox() override
 	{
-		if (!Vertices.empty()) {
-			BoundingBox.reset(Vertices[0].Pos);
-			const irr::u32 vsize = Vertices.size();
+		if (Vertices->getCount()) {
+			BoundingBox.reset(Vertices->getPosition(0));
+			const irr::u32 vsize = Vertices->getCount();
 			for (u32 i = 1; i < vsize; ++i)
-				BoundingBox.addInternalPoint(Vertices[i].Pos);
+				BoundingBox.addInternalPoint(Vertices->getPosition(i));
 		} else
 			BoundingBox.reset(0, 0, 0);
 	}
@@ -120,43 +133,43 @@ public:
 	/** \return Type of vertex data. */
 	video::E_VERTEX_TYPE getVertexType() const override
 	{
-		return T::getType();
+		return Vertices->getType();
 	}
 
 	//! returns position of vertex i
 	const core::vector3df &getPosition(u32 i) const override
 	{
-		return Vertices[i].Pos;
+		return Vertices->getPosition(i);
 	}
 
 	//! returns position of vertex i
 	core::vector3df &getPosition(u32 i) override
 	{
-		return Vertices[i].Pos;
+		return Vertices->getPosition(i);
 	}
 
 	//! returns normal of vertex i
 	const core::vector3df &getNormal(u32 i) const override
 	{
-		return Vertices[i].Normal;
+		return Vertices->getNormal(i);
 	}
 
 	//! returns normal of vertex i
 	core::vector3df &getNormal(u32 i) override
 	{
-		return Vertices[i].Normal;
+		return Vertices->getNormal(i);
 	}
 
 	//! returns texture coord of vertex i
 	const core::vector2df &getTCoords(u32 i) const override
 	{
-		return Vertices[i].TCoords;
+		return Vertices->getTCoords(i);
 	}
 
 	//! returns texture coord of vertex i
 	core::vector2df &getTCoords(u32 i) override
 	{
-		return Vertices[i].TCoords;
+		return Vertices->getTCoords(i);
 	}
 
 	//! Append the vertices and indices to the current buffer
@@ -169,9 +182,9 @@ public:
 		const u32 indexCount = getIndexCount();
 
 		auto *vt = static_cast<const T *>(vertices);
-		Vertices.insert(Vertices.end(), vt, vt + numVertices);
+		Vertices->Data.insert(Vertices->Data.end(), vt, vt + numVertices);
 		for (u32 i = vertexCount; i < getVertexCount(); i++)
-			BoundingBox.addInternalPoint(Vertices[i].Pos);
+			BoundingBox.addInternalPoint(Vertices->getPosition(i));
 
 		Indices.insert(Indices.end(), indices, indices + numIndices);
 		if (vertexCount != 0) {
@@ -183,7 +196,7 @@ public:
 	//! get the current hardware mapping hint
 	E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const override
 	{
-		return MappingHint_Vertex;
+		return Vertices->getHardwareMappingHint();
 	}
 
 	//! get the current hardware mapping hint
@@ -196,7 +209,7 @@ public:
 	void setHardwareMappingHint(E_HARDWARE_MAPPING NewMappingHint, E_BUFFER_TYPE Buffer = EBT_VERTEX_AND_INDEX) override
 	{
 		if (Buffer == EBT_VERTEX_AND_INDEX || Buffer == EBT_VERTEX)
-			MappingHint_Vertex = NewMappingHint;
+			Vertices->setHardwareMappingHint(NewMappingHint);
 		if (Buffer == EBT_VERTEX_AND_INDEX || Buffer == EBT_INDEX)
 			MappingHint_Index = NewMappingHint;
 	}
@@ -217,14 +230,14 @@ public:
 	void setDirty(E_BUFFER_TYPE Buffer = EBT_VERTEX_AND_INDEX) override
 	{
 		if (Buffer == EBT_VERTEX_AND_INDEX || Buffer == EBT_VERTEX)
-			++ChangedID_Vertex;
+			Vertices->setDirty();
 		if (Buffer == EBT_VERTEX_AND_INDEX || Buffer == EBT_INDEX)
 			++ChangedID_Index;
 	}
 
 	//! Get the currently used ID for identification of changes.
 	/** This shouldn't be used for anything outside the VideoDriver. */
-	u32 getChangedID_Vertex() const override { return ChangedID_Vertex; }
+	u32 getChangedID_Vertex() const override { return Vertices->getChangedID(); }
 
 	//! Get the currently used ID for identification of changes.
 	/** This shouldn't be used for anything outside the VideoDriver. */
@@ -240,18 +253,15 @@ public:
 		return HWBuffer;
 	}
 
-	u32 ChangedID_Vertex;
 	u32 ChangedID_Index;
 
-	//! hardware mapping hint
-	E_HARDWARE_MAPPING MappingHint_Vertex;
 	E_HARDWARE_MAPPING MappingHint_Index;
 	mutable void *HWBuffer;
 
 	//! Material for this meshbuffer.
 	video::SMaterial Material;
-	//! Vertices of this buffer
-	std::vector<T> Vertices;
+	//! Vertex buffer
+	CVertexBuffer<T> *Vertices;
 	//! Indices into the vertices of this buffer.
 	std::vector<u16> Indices;
 	//! Bounding box of this meshbuffer.

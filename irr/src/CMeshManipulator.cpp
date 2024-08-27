@@ -133,7 +133,7 @@ SMesh *CMeshManipulator::createMeshCopy(scene::IMesh *mesh) const
 			SMeshBuffer *buffer = new SMeshBuffer();
 			buffer->Material = mb->getMaterial();
 			auto *vt = static_cast<const video::S3DVertex*>(mb->getVertices());
-			buffer->Vertices.insert(buffer->Vertices.end(), vt, vt + mb->getVertexCount());
+			buffer->VertexBuffer().insert(buffer->VertexBuffer().end(), vt, vt + mb->getVertexCount());
 			auto *indices = mb->getIndices();
 			buffer->Indices.insert(buffer->Indices.end(), indices, indices + mb->getIndexCount());
 			clone->addMeshBuffer(buffer);
@@ -143,7 +143,7 @@ SMesh *CMeshManipulator::createMeshCopy(scene::IMesh *mesh) const
 			SMeshBufferLightMap *buffer = new SMeshBufferLightMap();
 			buffer->Material = mb->getMaterial();
 			auto *vt = static_cast<const video::S3DVertex2TCoords*>(mb->getVertices());
-			buffer->Vertices.insert(buffer->Vertices.end(), vt, vt + mb->getVertexCount());
+			buffer->VertexBuffer().insert(buffer->VertexBuffer().end(), vt, vt + mb->getVertexCount());
 			auto *indices = mb->getIndices();
 			buffer->Indices.insert(buffer->Indices.end(), indices, indices + mb->getIndexCount());
 			clone->addMeshBuffer(buffer);
@@ -153,7 +153,7 @@ SMesh *CMeshManipulator::createMeshCopy(scene::IMesh *mesh) const
 			SMeshBufferTangents *buffer = new SMeshBufferTangents();
 			buffer->Material = mb->getMaterial();
 			auto *vt = static_cast<const video::S3DVertexTangents*>(mb->getVertices());
-			buffer->Vertices.insert(buffer->Vertices.end(), vt, vt + mb->getVertexCount());
+			buffer->VertexBuffer().insert(buffer->VertexBuffer().end(), vt, vt + mb->getVertexCount());
 			auto *indices = mb->getIndices();
 			buffer->Indices.insert(buffer->Indices.end(), indices, indices + mb->getIndexCount());
 			clone->addMeshBuffer(buffer);
