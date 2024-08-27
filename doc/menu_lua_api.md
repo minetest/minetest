@@ -13,7 +13,7 @@ Images
 
 Directory delimiters change according to the OS (e.g. on Unix-like systems
 is `/`, on Windows is `\`). When putting an image inside a formspec, be sure
-to sanitize it first with `core.formspec_escape(img)`: otherwise, any image
+to sanitize it first with `core.formspec_escape(img)`; otherwise, any image
 located in a subpath won't be displayed on OSs using `\` as delimiter.
 
 
