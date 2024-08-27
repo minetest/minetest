@@ -114,6 +114,15 @@ const c8 *const FogTypeNames[] = {
 		0,
 	};
 
+struct SFrameStats {
+	//! Count of primitives drawn
+	u32 PrimitivesDrawn = 0;
+	//! Number of hardware buffers uploaded (new or updated)
+	u32 HWBuffersUploaded = 0;
+	//! Sum of uploaded hardware buffer size
+	u32 HWBuffersUploadedSize = 0;
+};
+
 //! Interface to driver which is able to perform 2d and 3d graphics functions.
 /** This interface is one of the most important interfaces of
 the Irrlicht Engine: All rendering and texture manipulation is done with
@@ -193,12 +202,6 @@ public:
 	AntiAlias (int) Number of Samples the driver uses for each pixel. 0 and 1 means anti aliasing is off, typical values are 2,4,8,16,32
 	*/
 	virtual const io::IAttributes &getDriverAttributes() const = 0;
-
-	//! Check if the driver was recently reset.
-	/** For d3d devices you will need to recreate the RTTs if the
-	driver was reset. Should be queried right after beginScene().
-	*/
-	virtual bool checkDriverReset() = 0;
 
 	//! Sets transformation matrices.
 	/** \param state Transformation type to be set, e.g. view,
@@ -855,12 +858,8 @@ public:
 	\return Approximate amount of frames per second drawn. */
 	virtual s32 getFPS() const = 0;
 
-	//! Returns amount of primitives (mostly triangles) which were drawn in the last frame.
-	/** Together with getFPS() very useful method for statistics.
-	\param mode Defines if the primitives drawn are accumulated or
-	counted per frame.
-	\return Amount of primitives drawn in the last frame. */
-	virtual u32 getPrimitiveCountDrawn(u32 mode = 0) const = 0;
+	//! Return some statistics about the last frame
+	virtual SFrameStats getFrameStats() const = 0;
 
 	//! Gets name of this video driver.
 	/** \return Returns the name of the video driver, e.g. in case

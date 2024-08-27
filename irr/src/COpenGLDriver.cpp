@@ -266,6 +266,8 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	const E_VERTEX_TYPE vType = mb->getVertexType();
 	const u32 vertexSize = getVertexPitchFromType(vType);
 
+	accountHWBufferUpload(vertexSize * vertexCount);
+
 	const c8 *vbuf = static_cast<const c8 *>(vertices);
 	core::array<c8> buffer;
 	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra]) {
@@ -366,6 +368,8 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		return false;
 	}
 	}
+
+	accountHWBufferUpload(indexCount * indexSize);
 
 	// get or create buffer
 	bool newBuffer = false;

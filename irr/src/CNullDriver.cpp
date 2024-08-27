@@ -53,7 +53,7 @@ public:
 //! constructor
 CNullDriver::CNullDriver(io::IFileSystem *io, const core::dimension2d<u32> &screenSize) :
 		SharedRenderTarget(0), CurrentRenderTarget(0), CurrentRenderTargetSize(0, 0), FileSystem(io), MeshManipulator(0),
-		ViewPort(0, 0, 0, 0), ScreenSize(screenSize), PrimitivesDrawn(0), MinVertexCountForVBO(500),
+		ViewPort(0, 0, 0, 0), ScreenSize(screenSize), MinVertexCountForVBO(500),
 		TextureCreationFlags(0), OverrideMaterial2DEnabled(false), AllowZWriteOnTransparent(false)
 {
 #ifdef _DEBUG
@@ -222,13 +222,13 @@ void CNullDriver::deleteAllTextures()
 
 bool CNullDriver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil, const SExposedVideoData &videoData, core::rect<s32> *sourceRect)
 {
-	PrimitivesDrawn = 0;
+	FrameStats = {};
 	return true;
 }
 
 bool CNullDriver::endScene()
 {
-	FPSCounter.registerFrame(os::Timer::getRealTime(), PrimitivesDrawn);
+	FPSCounter.registerFrame(os::Timer::getRealTime());
 	updateAllHardwareBuffers();
 	updateAllOcclusionQueries();
 	return true;
@@ -605,7 +605,7 @@ void CNullDriver::drawVertexPrimitiveList(const void *vertices, u32 vertexCount,
 {
 	if ((iType == EIT_16BIT) && (vertexCount > 65536))
 		os::Printer::log("Too many vertices for 16bit index type, render artifacts may occur.");
-	PrimitivesDrawn += primitiveCount;
+	FrameStats.PrimitivesDrawn += primitiveCount;
 }
 
 //! draws a vertex primitive list in 2d
@@ -613,7 +613,7 @@ void CNullDriver::draw2DVertexPrimitiveList(const void *vertices, u32 vertexCoun
 {
 	if ((iType == EIT_16BIT) && (vertexCount > 65536))
 		os::Printer::log("Too many vertices for 16bit index type, render artifacts may occur.");
-	PrimitivesDrawn += primitiveCount;
+	FrameStats.PrimitivesDrawn += primitiveCount;
 }
 
 //! Draws a 3d line.
@@ -743,12 +743,9 @@ s32 CNullDriver::getFPS() const
 	return FPSCounter.getFPS();
 }
 
-//! returns amount of primitives (mostly triangles) were drawn in the last frame.
-//! very useful method for statistics.
-u32 CNullDriver::getPrimitiveCountDrawn(u32 param) const
+SFrameStats CNullDriver::getFrameStats() const
 {
-	return (0 == param) ? FPSCounter.getPrimitive() : (1 == param) ? FPSCounter.getPrimitiveAverage()
-																   : FPSCounter.getPrimitiveTotal();
+	return FrameStats;
 }
 
 //! Sets the dynamic ambient light color. The default color is
