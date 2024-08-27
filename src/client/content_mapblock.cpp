@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/meshgen/collector.h"
 #include "client/renderingengine.h"
 #include "client.h"
+#include "map.h"
 #include "noise.h"
 
 // Distance of light extrapolation (for oversized nodes)
@@ -689,8 +690,19 @@ void MapblockMeshGenerator::drawLiquidSides()
 
 		const ContentFeatures &neighbor_features = nodedef->get(neighbor.content);
 		// Don't draw face if neighbor is blocking the view
-		if (neighbor_features.solidness == 2)
+		// to fix: blocking rendering with flowing liquid. Still don't know why top is not rendered... To test.
+		// Don't draw only when no flowing liquid enabled and cur_node is happened to not be the source node and cur_node is rendering at the same time.
+		// Now : This is not what cause the top render to lose. move to other part
+		if (g_settings->getBool("enable_waving_water"))
+		{
+			MapBlock *b = client->getEnv().getMap().getBlockNoCreateNoEx(cur_node.p);
+			if (b != nullptr && b->getIsBeingDrawn() || neighbor_features.solidness == 2 && cur_liquid.c_source != cur_node.n.getContent())
+				continue;
+		}
+		else if (neighbor_features.solidness == 2)
 			continue;
+		
+
 
 		video::S3DVertex vertices[4];
 		for (int j = 0; j < 4; j++) {

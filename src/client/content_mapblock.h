@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "nodedef.h"
 #include <IMeshManipulator.h>
+#include "mapblock.h"
 
 struct MeshMakeData;
 struct MeshCollector;
@@ -65,6 +66,7 @@ public:
 			scene::IMeshManipulator *mm);
 	void generate();
 	void renderSingle(content_t node, u8 param2 = 0x00);
+	inline void setClient(Client *c) { client = c; }
 
 private:
 	MeshMakeData *const data;
@@ -75,7 +77,9 @@ private:
 
 	const v3s16 blockpos_nodes;
 
-// options
+	Client *client;
+
+	// options
 	const bool enable_mesh_cache;
 
 // current node
