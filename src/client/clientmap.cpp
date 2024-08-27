@@ -1358,11 +1358,8 @@ video::SMaterial &ClientMap::DrawDescriptor::getMaterial()
 u32 ClientMap::DrawDescriptor::draw(video::IVideoDriver* driver)
 {
 	if (m_use_partial_buffer) {
-		m_partial_buffer->beforeDraw();
-		driver->drawMeshBuffer(m_partial_buffer->getBuffer());
-		auto count = m_partial_buffer->getBuffer()->getVertexCount();
-		m_partial_buffer->afterDraw();
-		return count;
+		m_partial_buffer->draw(driver);
+		return m_partial_buffer->getBuffer()->getVertexCount();
 	} else {
 		driver->drawMeshBuffer(m_buffer);
 		return m_buffer->getVertexCount();

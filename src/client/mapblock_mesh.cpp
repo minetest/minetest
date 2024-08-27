@@ -592,17 +592,14 @@ void MapBlockBspTree::traverse(s32 node, v3f viewpoint, std::vector<s32> &output
 	PartialMeshBuffer
 */
 
-void PartialMeshBuffer::beforeDraw() const
+void PartialMeshBuffer::draw(video::IVideoDriver *driver) const
 {
-	// Patch the indexes in the mesh buffer before draw
-	m_buffer->Indices = std::move(m_vertex_indexes);
-	m_buffer->setDirty(scene::EBT_INDEX);
-}
-
-void PartialMeshBuffer::afterDraw() const
-{
-	// Take the data back
-	m_vertex_indexes = std::move(m_buffer->Indices);
+	// Swap out the index buffer before drawing the mesh
+	auto *old = m_buffer->Indices;
+	m_buffer->Indices = m_indices.get();
+	m_buffer->setDirty(scene::EBT_INDEX); // TODO remove
+	driver->drawMeshBuffer(m_buffer);
+	m_buffer->Indices = old;
 }
 
 /*
@@ -789,6 +786,7 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	}
 
 	// Transparent parts have changing indices
+	// TODO: remove
 	for (auto &it : m_transparent_triangles)
 		it.buffer->setHardwareMappingHint(scene::EHM_STREAM, scene::EBT_INDEX);
 

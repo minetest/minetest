@@ -247,15 +247,16 @@ IAnimatedMesh *COBJMeshFileLoader::createMesh(io::IReadFile *file)
 			}
 
 			// triangulate the face
+			auto &Indices = currMtl->Meshbuffer->IndexBuffer();
 			const int c = faceCorners[0];
 			for (u32 i = 1; i < faceCorners.size() - 1; ++i) {
 				// Add a triangle
 				const int a = faceCorners[i + 1];
 				const int b = faceCorners[i];
 				if (a != b && a != c && b != c) { // ignore degenerated faces. We can get them when we merge vertices above in the VertMap.
-					currMtl->Meshbuffer->Indices.push_back(a);
-					currMtl->Meshbuffer->Indices.push_back(b);
-					currMtl->Meshbuffer->Indices.push_back(c);
+					Indices.push_back(a);
+					Indices.push_back(b);
+					Indices.push_back(c);
 				} else {
 					++degeneratedFaces;
 				}

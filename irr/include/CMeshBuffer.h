@@ -7,6 +7,7 @@
 #include <vector>
 #include "IMeshBuffer.h"
 #include "CVertexBuffer.h"
+#include "CIndexBuffer.h"
 
 namespace irr
 {
@@ -19,17 +20,19 @@ class CMeshBuffer : public IMeshBuffer
 public:
 	//! Default constructor for empty meshbuffer
 	CMeshBuffer() :
-			ChangedID_Index(1), MappingHint_Index(EHM_NEVER), HWBuffer(NULL), PrimitiveType(EPT_TRIANGLES)
+			HWBuffer(NULL), PrimitiveType(EPT_TRIANGLES)
 	{
 #ifdef _DEBUG
 		setDebugName("CMeshBuffer");
 #endif
 		Vertices = new CVertexBuffer<T>();
+		Indices = new SIndexBuffer();
 	}
 
 	~CMeshBuffer()
 	{
 		Vertices->drop();
+		Indices->drop();
 	}
 
 	//! Get material of this meshbuffer
@@ -77,28 +80,34 @@ public:
 	/** \return Index type of this buffer. */
 	video::E_INDEX_TYPE getIndexType() const override
 	{
-		return video::EIT_16BIT;
+		return Indices->getType();
 	}
 
 	//! Get pointer to indices
 	/** \return Pointer to indices. */
 	const u16 *getIndices() const override
 	{
-		return Indices.data();
+		return static_cast<const u16*>(Indices->getData());
 	}
 
 	//! Get pointer to indices
 	/** \return Pointer to indices. */
 	u16 *getIndices() override
 	{
-		return Indices.data();
+		return static_cast<u16*>(Indices->getData());
 	}
 
 	//! Get number of indices
 	/** \return Number of indices. */
 	u32 getIndexCount() const override
 	{
-		return static_cast<u32>(Indices.size());
+		return Indices->getCount();
+	}
+
+	// TEMPORARY helper for direct buffer acess
+	inline auto &IndexBuffer()
+	{
+		return Indices->Data;
 	}
 
 	//! Get the axis aligned bounding box
@@ -186,10 +195,10 @@ public:
 		for (u32 i = vertexCount; i < getVertexCount(); i++)
 			BoundingBox.addInternalPoint(Vertices->getPosition(i));
 
-		Indices.insert(Indices.end(), indices, indices + numIndices);
+		Indices->Data.insert(Indices->Data.end(), indices, indices + numIndices);
 		if (vertexCount != 0) {
 			for (u32 i = indexCount; i < getIndexCount(); i++)
-				Indices[i] += vertexCount;
+				Indices->Data[i] += vertexCount;
 		}
 	}
 
@@ -202,7 +211,7 @@ public:
 	//! get the current hardware mapping hint
 	E_HARDWARE_MAPPING getHardwareMappingHint_Index() const override
 	{
-		return MappingHint_Index;
+		return Indices->getHardwareMappingHint();
 	}
 
 	//! set the hardware mapping hint, for driver
@@ -211,7 +220,7 @@ public:
 		if (Buffer == EBT_VERTEX_AND_INDEX || Buffer == EBT_VERTEX)
 			Vertices->setHardwareMappingHint(NewMappingHint);
 		if (Buffer == EBT_VERTEX_AND_INDEX || Buffer == EBT_INDEX)
-			MappingHint_Index = NewMappingHint;
+			Indices->setHardwareMappingHint(NewMappingHint);
 	}
 
 	//! Describe what kind of primitive geometry is used by the meshbuffer
@@ -232,7 +241,7 @@ public:
 		if (Buffer == EBT_VERTEX_AND_INDEX || Buffer == EBT_VERTEX)
 			Vertices->setDirty();
 		if (Buffer == EBT_VERTEX_AND_INDEX || Buffer == EBT_INDEX)
-			++ChangedID_Index;
+			Indices->setDirty();
 	}
 
 	//! Get the currently used ID for identification of changes.
@@ -241,7 +250,7 @@ public:
 
 	//! Get the currently used ID for identification of changes.
 	/** This shouldn't be used for anything outside the VideoDriver. */
-	u32 getChangedID_Index() const override { return ChangedID_Index; }
+	u32 getChangedID_Index() const override { return Indices->getChangedID(); }
 
 	void setHWBuffer(void *ptr) const override
 	{
@@ -253,17 +262,14 @@ public:
 		return HWBuffer;
 	}
 
-	u32 ChangedID_Index;
-
-	E_HARDWARE_MAPPING MappingHint_Index;
 	mutable void *HWBuffer;
 
 	//! Material for this meshbuffer.
 	video::SMaterial Material;
 	//! Vertex buffer
 	CVertexBuffer<T> *Vertices;
-	//! Indices into the vertices of this buffer.
-	std::vector<u16> Indices;
+	//! Index buffer
+	SIndexBuffer *Indices;
 	//! Bounding box of this meshbuffer.
 	core::aabbox3d<f32> BoundingBox;
 	//! Primitive type used for rendering (triangles, lines, ...)
