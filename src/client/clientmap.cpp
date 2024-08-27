@@ -73,11 +73,23 @@ namespace {
 	};
 }
 
+/*
+	ClientMap
+*/
+
 static void on_settings_changed(const std::string &name, void *data)
 {
-	static_cast<ClientMap*>(data)->onSettingChanged(name);
+	static_cast<ClientMap*>(data)->onSettingChanged(name, false);
 }
-// ClientMap
+
+static const std::string ClientMap_settings[] = {
+	"trilinear_filter",
+	"bilinear_filter",
+	"anisotropic_filter",
+	"transparency_sorting_distance",
+	"occlusion_culler",
+	"enable_raytraced_culling",
+};
 
 ClientMap::ClientMap(
 		Client *client,
@@ -102,37 +114,32 @@ ClientMap::ClientMap(
 	m_box = aabb3f(-BS*1000000,-BS*1000000,-BS*1000000,
 			BS*1000000,BS*1000000,BS*1000000);
 
-	/* TODO: Add a callback function so these can be updated when a setting
-	 *       changes.  At this point in time it doesn't matter (e.g. /set
-	 *       is documented to change server settings only)
-	 *
-	 * TODO: Local caching of settings is not optimal and should at some stage
-	 *       be updated to use a global settings object for getting thse values
-	 *       (as opposed to the this local caching). This can be addressed in
-	 *       a later release.
-	 */
-	m_cache_trilinear_filter  = g_settings->getBool("trilinear_filter");
-	m_cache_bilinear_filter   = g_settings->getBool("bilinear_filter");
-	m_cache_anistropic_filter = g_settings->getBool("anisotropic_filter");
-	m_cache_transparency_sorting_distance = g_settings->getU16("transparency_sorting_distance");
-	m_loops_occlusion_culler = g_settings->get("occlusion_culler") == "loops";
-	g_settings->registerChangedCallback("occlusion_culler", on_settings_changed, this);
-	m_enable_raytraced_culling = g_settings->getBool("enable_raytraced_culling");
-	g_settings->registerChangedCallback("enable_raytraced_culling", on_settings_changed, this);
+	for (const auto &name : ClientMap_settings)
+		g_settings->registerChangedCallback(name, on_settings_changed, this);
+	// load all settings at once
+	onSettingChanged("", true);
 }
 
-void ClientMap::onSettingChanged(const std::string &name)
+void ClientMap::onSettingChanged(std::string_view name, bool all)
 {
-	if (name == "occlusion_culler")
+	if (all || name == "trilinear_filter")
+		m_cache_trilinear_filter  = g_settings->getBool("trilinear_filter");
+	if (all || name == "bilinear_filter")
+		m_cache_bilinear_filter   = g_settings->getBool("bilinear_filter");
+	if (all || name == "anisotropic_filter")
+		m_cache_anistropic_filter = g_settings->getBool("anisotropic_filter");
+	if (all || name == "transparency_sorting_distance")
+		m_cache_transparency_sorting_distance = g_settings->getU16("transparency_sorting_distance");
+	if (all || name == "occlusion_culler")
 		m_loops_occlusion_culler = g_settings->get("occlusion_culler") == "loops";
-	if (name == "enable_raytraced_culling")
+	if (all || name == "enable_raytraced_culling")
 		m_enable_raytraced_culling = g_settings->getBool("enable_raytraced_culling");
 }
 
 ClientMap::~ClientMap()
 {
-	g_settings->deregisterChangedCallback("occlusion_culler", on_settings_changed, this);
-	g_settings->deregisterChangedCallback("enable_raytraced_culling", on_settings_changed, this);
+	for (const auto &name : ClientMap_settings)
+		g_settings->deregisterChangedCallback(name, on_settings_changed, this);
 }
 
 void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset, video::SColor light_color)

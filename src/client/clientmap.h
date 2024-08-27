@@ -112,7 +112,7 @@ public:
 	f32 getWantedRange() const { return m_control.wanted_range; }
 	f32 getCameraFov() const { return m_camera_fov; }
 
-	void onSettingChanged(const std::string &name);
+	void onSettingChanged(std::string_view name, bool all);
 
 protected:
 	// use drop() instead
