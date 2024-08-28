@@ -74,7 +74,7 @@ Filesystem
 To access specific subpaths, use `DIR_DELIM` as a directory delimiter instead
 of manually putting one, as different OSs use different delimiters. E.g.
 ```lua
-"my" .. DIR_DELIM .. "custom" .. DIR_DELIM .. "path"
+"my" .. DIR_DELIM .. "custom" .. DIR_DELIM .. "path" -- and not my/custom/path
 ```
 
 * `core.get_builtin_path()`
