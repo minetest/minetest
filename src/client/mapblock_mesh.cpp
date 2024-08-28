@@ -783,12 +783,15 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 		}
 
 		if (mesh) {
-			// Use VBO for mesh (this just would set this for ever buffer)
+			// Use VBO for mesh (this just would set this for every buffer)
 			mesh->setHardwareMappingHint(scene::EHM_STATIC);
 		}
 	}
 
-	//std::cout<<"added "<<fastfaces.getSize()<<" faces."<<std::endl;
+	// Transparent parts have changing indices
+	for (auto &it : m_transparent_triangles)
+		it.buffer->setHardwareMappingHint(scene::EHM_STREAM, scene::EBT_INDEX);
+
 	m_bsp_tree.buildTree(&m_transparent_triangles, data->side_length);
 
 	// Check if animation is required for this mesh
