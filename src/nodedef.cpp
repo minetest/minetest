@@ -1323,6 +1323,7 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 			} else {
 				box_union->addInternalBox(half_processed);
 			}
+			break;
 		}
 		case NODEBOX_LEVELED_PLANTLIKE:
 		case NODEBOX_LEVELED_PLANTLIKE_ROOTED: {
