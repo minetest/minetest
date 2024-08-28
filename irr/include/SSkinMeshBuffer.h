@@ -60,8 +60,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 		return Material;
 	}
 
-protected:
-	const scene::IVertexBuffer *getVertexBuffer() const
+	const scene::IVertexBuffer *getVertexBuffer() const override
 	{
 		switch (VertexType) {
 		case video::EVT_2TCOORDS:
@@ -84,7 +83,16 @@ protected:
 			return Vertices_Standard;
 		}
 	}
-public:
+
+	const scene::IIndexBuffer *getIndexBuffer() const override
+	{
+		return Indices;
+	}
+
+	scene::IIndexBuffer *getIndexBuffer() override
+	{
+		return Indices;
+	}
 
 	//! Get standard vertex at given index
 	virtual video::S3DVertex *getVertex(u32 index)
@@ -97,49 +105,6 @@ public:
 		default:
 			return &Vertices_Standard->Data[index];
 		}
-	}
-
-	//! Get pointer to vertex array
-	const void *getVertices() const override
-	{
-		return getVertexBuffer()->getData();
-	}
-
-	//! Get pointer to vertex array
-	void *getVertices() override
-	{
-		return getVertexBuffer()->getData();
-	}
-
-	//! Get vertex count
-	u32 getVertexCount() const override
-	{
-		return getVertexBuffer()->getCount();
-	}
-
-	//! Get type of index data which is stored in this meshbuffer.
-	/** \return Index type of this buffer. */
-	video::E_INDEX_TYPE getIndexType() const override
-	{
-		return Indices->getType();
-	}
-
-	//! Get pointer to index array
-	const u16 *getIndices() const override
-	{
-		return static_cast<const u16*>(Indices->getData());
-	}
-
-	//! Get pointer to index array
-	u16 *getIndices() override
-	{
-		return static_cast<u16*>(Indices->getData());
-	}
-
-	//! Get index count
-	u32 getIndexCount() const override
-	{
-		return Indices->getCount();
 	}
 
 	//! Get bounding box
@@ -199,12 +164,6 @@ public:
 		}
 	}
 
-	//! Get vertex type
-	video::E_VERTEX_TYPE getVertexType() const override
-	{
-		return VertexType;
-	}
-
 	//! Convert to 2tcoords vertex type
 	void convertTo2TCoords()
 	{
@@ -250,67 +209,10 @@ public:
 		}
 	}
 
-	//! returns position of vertex i
-	const core::vector3df &getPosition(u32 i) const override
-	{
-		return getVertexBuffer()->getPosition(i);
-	}
-
-	//! returns position of vertex i
-	core::vector3df &getPosition(u32 i) override
-	{
-		return getVertexBuffer()->getPosition(i);
-	}
-
-	//! returns normal of vertex i
-	const core::vector3df &getNormal(u32 i) const override
-	{
-		return getVertexBuffer()->getNormal(i);
-	}
-
-	//! returns normal of vertex i
-	core::vector3df &getNormal(u32 i) override
-	{
-		return getVertexBuffer()->getNormal(i);
-	}
-
-	//! returns texture coords of vertex i
-	const core::vector2df &getTCoords(u32 i) const override
-	{
-		return getVertexBuffer()->getTCoords(i);
-	}
-
-	//! returns texture coords of vertex i
-	core::vector2df &getTCoords(u32 i) override
-	{
-		return getVertexBuffer()->getTCoords(i);
-	}
-
 	//! append the vertices and indices to the current buffer
 	void append(const void *const vertices, u32 numVertices, const u16 *const indices, u32 numIndices) override
 	{
 		_IRR_DEBUG_BREAK_IF(true);
-	}
-
-	//! get the current hardware mapping hint for vertex buffers
-	E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const override
-	{
-		return getVertexBuffer()->getHardwareMappingHint();
-	}
-
-	//! get the current hardware mapping hint for index buffers
-	E_HARDWARE_MAPPING getHardwareMappingHint_Index() const override
-	{
-		return Indices->getHardwareMappingHint();
-	}
-
-	//! set the hardware mapping hint, for driver
-	void setHardwareMappingHint(E_HARDWARE_MAPPING NewMappingHint, E_BUFFER_TYPE Buffer = EBT_VERTEX_AND_INDEX) override
-	{
-		if (Buffer == EBT_VERTEX || Buffer == EBT_VERTEX_AND_INDEX)
-			getVertexBuffer()->setHardwareMappingHint(NewMappingHint);
-		if (Buffer == EBT_INDEX || Buffer == EBT_VERTEX_AND_INDEX)
-			Indices->setHardwareMappingHint(NewMappingHint);
 	}
 
 	//! Describe what kind of primitive geometry is used by the meshbuffer
@@ -323,25 +225,6 @@ public:
 	E_PRIMITIVE_TYPE getPrimitiveType() const override
 	{
 		return PrimitiveType;
-	}
-
-	//! flags the mesh as changed, reloads hardware buffers
-	void setDirty(E_BUFFER_TYPE Buffer = EBT_VERTEX_AND_INDEX) override
-	{
-		if (Buffer == EBT_VERTEX_AND_INDEX || Buffer == EBT_VERTEX)
-			getVertexBuffer()->setDirty();
-		if (Buffer == EBT_VERTEX_AND_INDEX || Buffer == EBT_INDEX)
-			Indices->setDirty();
-	}
-
-	u32 getChangedID_Vertex() const override
-	{
-		return getVertexBuffer()->getChangedID();
-	}
-
-	u32 getChangedID_Index() const override
-	{
-		return Indices->getChangedID();
 	}
 
 	void setHWBuffer(void *ptr) const override

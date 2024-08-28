@@ -7,8 +7,8 @@
 #include "IReferenceCounted.h"
 #include "SMaterial.h"
 #include "aabbox3d.h"
-#include "S3DVertex.h"
-#include "SVertexIndex.h"
+#include "IVertexBuffer.h"
+#include "IIndexBuffer.h"
 #include "EHardwareBufferFlags.h"
 #include "EPrimitiveTypes.h"
 
@@ -46,39 +46,17 @@ public:
 	/** \return Material of this buffer. */
 	virtual const video::SMaterial &getMaterial() const = 0;
 
-	//! Get type of vertex data which is stored in this meshbuffer.
-	/** \return Vertex type of this buffer. */
-	virtual video::E_VERTEX_TYPE getVertexType() const = 0;
+	/// Get the vertex buffer
+	virtual const scene::IVertexBuffer *getVertexBuffer() const = 0;
 
-	//! Get access to vertex data. The data is an array of vertices.
-	/** Which vertex type is used can be determined by getVertexType().
-	\return Pointer to array of vertices. */
-	virtual const void *getVertices() const = 0;
+	/// Get the vertex buffer
+	virtual scene::IVertexBuffer *getVertexBuffer() = 0;
 
-	//! Get access to vertex data. The data is an array of vertices.
-	/** Which vertex type is used can be determined by getVertexType().
-	\return Pointer to array of vertices. */
-	virtual void *getVertices() = 0;
+	/// Get the index buffer
+	virtual const scene::IIndexBuffer *getIndexBuffer() const = 0;
 
-	//! Get amount of vertices in meshbuffer.
-	/** \return Number of vertices in this buffer. */
-	virtual u32 getVertexCount() const = 0;
-
-	//! Get type of index data which is stored in this meshbuffer.
-	/** \return Index type of this buffer. */
-	virtual video::E_INDEX_TYPE getIndexType() const = 0;
-
-	//! Get access to indices.
-	/** \return Pointer to indices array. */
-	virtual const u16 *getIndices() const = 0;
-
-	//! Get access to indices.
-	/** \return Pointer to indices array. */
-	virtual u16 *getIndices() = 0;
-
-	//! Get amount of indices in this meshbuffer.
-	/** \return Number of indices in this buffer. */
-	virtual u32 getIndexCount() const = 0;
+	/// Get the index buffer
+	virtual scene::IIndexBuffer *getIndexBuffer() = 0;
 
 	//! Get the axis aligned bounding box of this meshbuffer.
 	/** \return Axis aligned bounding box of this buffer. */
@@ -92,24 +70,6 @@ public:
 	//! Recalculates the bounding box. Should be called if the mesh changed.
 	virtual void recalculateBoundingBox() = 0;
 
-	//! returns position of vertex i
-	virtual const core::vector3df &getPosition(u32 i) const = 0;
-
-	//! returns position of vertex i
-	virtual core::vector3df &getPosition(u32 i) = 0;
-
-	//! returns normal of vertex i
-	virtual const core::vector3df &getNormal(u32 i) const = 0;
-
-	//! returns normal of vertex i
-	virtual core::vector3df &getNormal(u32 i) = 0;
-
-	//! returns texture coord of vertex i
-	virtual const core::vector2df &getTCoords(u32 i) const = 0;
-
-	//! returns texture coord of vertex i
-	virtual core::vector2df &getTCoords(u32 i) = 0;
-
 	//! Append the vertices and indices to the current buffer
 	/** Only works for compatible vertex types.
 	\param vertices Pointer to a vertex array.
@@ -118,25 +78,149 @@ public:
 	\param numIndices Number of indices in array. */
 	virtual void append(const void *const vertices, u32 numVertices, const u16 *const indices, u32 numIndices) = 0;
 
-	//! get the current hardware mapping hint
-	virtual E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const = 0;
+	/* Leftover functions that are now just helpers for accessing the respective buffer. */
+
+	//! Get type of vertex data which is stored in this meshbuffer.
+	/** \return Vertex type of this buffer. */
+	inline video::E_VERTEX_TYPE getVertexType() const
+	{
+		return getVertexBuffer()->getType();
+	}
+
+	//! Get access to vertex data. The data is an array of vertices.
+	/** Which vertex type is used can be determined by getVertexType().
+	\return Pointer to array of vertices. */
+	inline const void *getVertices() const
+	{
+		return getVertexBuffer()->getData();
+	}
+
+	//! Get access to vertex data. The data is an array of vertices.
+	/** Which vertex type is used can be determined by getVertexType().
+	\return Pointer to array of vertices. */
+	inline void *getVertices()
+	{
+		return getVertexBuffer()->getData();
+	}
+
+	//! Get amount of vertices in meshbuffer.
+	/** \return Number of vertices in this buffer. */
+	inline u32 getVertexCount() const
+	{
+		return getVertexBuffer()->getCount();
+	}
+
+	//! Get type of index data which is stored in this meshbuffer.
+	/** \return Index type of this buffer. */
+	inline video::E_INDEX_TYPE getIndexType() const
+	{
+		return getIndexBuffer()->getType();
+	}
+
+	//! Get access to indices.
+	/** \return Pointer to indices array. */
+	inline const u16 *getIndices() const
+	{
+		_IRR_DEBUG_BREAK_IF(getIndexBuffer()->getType() != video::EIT_16BIT);
+		return static_cast<const u16*>(getIndexBuffer()->getData());
+	}
+
+	//! Get access to indices.
+	/** \return Pointer to indices array. */
+	inline u16 *getIndices()
+	{
+		_IRR_DEBUG_BREAK_IF(getIndexBuffer()->getType() != video::EIT_16BIT);
+		return static_cast<u16*>(getIndexBuffer()->getData());
+	}
+
+	//! Get amount of indices in this meshbuffer.
+	/** \return Number of indices in this buffer. */
+	inline u32 getIndexCount() const
+	{
+		return getIndexBuffer()->getCount();
+	}
+
+	//! returns position of vertex i
+	inline const core::vector3df &getPosition(u32 i) const
+	{
+		return getVertexBuffer()->getPosition(i);
+	}
+
+	//! returns position of vertex i
+	inline core::vector3df &getPosition(u32 i)
+	{
+		return getVertexBuffer()->getPosition(i);
+	}
+
+	//! returns normal of vertex i
+	inline const core::vector3df &getNormal(u32 i) const
+	{
+		return getVertexBuffer()->getNormal(i);
+	}
+
+	//! returns normal of vertex i
+	inline core::vector3df &getNormal(u32 i)
+	{
+		return getVertexBuffer()->getNormal(i);
+	}
+
+	//! returns texture coord of vertex i
+	inline const core::vector2df &getTCoords(u32 i) const
+	{
+		return getVertexBuffer()->getTCoords(i);
+	}
+
+	//! returns texture coord of vertex i
+	inline core::vector2df &getTCoords(u32 i)
+	{
+		return getVertexBuffer()->getTCoords(i);
+	}
 
 	//! get the current hardware mapping hint
-	virtual E_HARDWARE_MAPPING getHardwareMappingHint_Index() const = 0;
+	inline E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const
+	{
+		return getVertexBuffer()->getHardwareMappingHint();
+	}
+
+	//! get the current hardware mapping hint
+	inline E_HARDWARE_MAPPING getHardwareMappingHint_Index() const
+	{
+		return getIndexBuffer()->getHardwareMappingHint();
+	}
 
 	//! set the hardware mapping hint, for driver
-	virtual void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer = EBT_VERTEX_AND_INDEX) = 0;
+	inline void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer = EBT_VERTEX_AND_INDEX)
+	{
+		if (buffer == EBT_VERTEX_AND_INDEX || buffer == EBT_VERTEX)
+			getVertexBuffer()->setHardwareMappingHint(newMappingHint);
+		if (buffer == EBT_VERTEX_AND_INDEX || buffer == EBT_INDEX)
+			getIndexBuffer()->setHardwareMappingHint(newMappingHint);
+	}
 
 	//! flags the meshbuffer as changed, reloads hardware buffers
-	virtual void setDirty(E_BUFFER_TYPE buffer = EBT_VERTEX_AND_INDEX) = 0;
+	inline void setDirty(E_BUFFER_TYPE buffer = EBT_VERTEX_AND_INDEX)
+	{
+		if (buffer == EBT_VERTEX_AND_INDEX || buffer == EBT_VERTEX)
+			getVertexBuffer()->setDirty();
+		if (buffer == EBT_VERTEX_AND_INDEX || buffer == EBT_INDEX)
+			getIndexBuffer()->setDirty();
+	}
 
 	//! Get the currently used ID for identification of changes.
 	/** This shouldn't be used for anything outside the VideoDriver. */
-	virtual u32 getChangedID_Vertex() const = 0;
+	inline u32 getChangedID_Vertex() const
+	{
+		return getVertexBuffer()->getChangedID();
+	}
 
 	//! Get the currently used ID for identification of changes.
 	/** This shouldn't be used for anything outside the VideoDriver. */
-	virtual u32 getChangedID_Index() const = 0;
+	inline u32 getChangedID_Index() const
+	{
+		return getIndexBuffer()->getChangedID();
+	}
+
+	/* End helpers */
 
 	//! Used by the VideoDriver to remember the buffer link.
 	virtual void setHWBuffer(void *ptr) const = 0;
