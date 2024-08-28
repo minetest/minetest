@@ -594,12 +594,9 @@ void MapBlockBspTree::traverse(s32 node, v3f viewpoint, std::vector<s32> &output
 
 void PartialMeshBuffer::draw(video::IVideoDriver *driver) const
 {
-	// Swap out the index buffer before drawing the mesh
-	auto *old = m_buffer->Indices;
-	m_buffer->Indices = m_indices.get();
-	m_buffer->setDirty(scene::EBT_INDEX); // TODO remove
-	driver->drawMeshBuffer(m_buffer);
-	m_buffer->Indices = old;
+	const auto pType = m_buffer->getPrimitiveType();
+	driver->drawBuffers(m_buffer->getVertexBuffer(), m_indices.get(),
+		m_indices->getPrimitiveCount(pType), pType);
 }
 
 /*
@@ -784,11 +781,6 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 			mesh->setHardwareMappingHint(scene::EHM_STATIC);
 		}
 	}
-
-	// Transparent parts have changing indices
-	// TODO: remove
-	for (auto &it : m_transparent_triangles)
-		it.buffer->setHardwareMappingHint(scene::EHM_STREAM, scene::EBT_INDEX);
 
 	m_bsp_tree.buildTree(&m_transparent_triangles, data->side_length);
 

@@ -192,6 +192,7 @@ IAnimatedMesh *COBJMeshFileLoader::createMesh(io::IReadFile *file)
 			faceCorners.set_used(0); // fast clear
 
 			// read in all vertices
+			auto &Vertices = currMtl->Meshbuffer->Vertices->Data;
 			linePtr = goNextWord(linePtr, endPtr);
 			while (0 != linePtr[0]) {
 				// Array to communicate with retrieveVertexIndices()
@@ -228,8 +229,8 @@ IAnimatedMesh *COBJMeshFileLoader::createMesh(io::IReadFile *file)
 				if (n != currMtl->VertMap.end()) {
 					vertLocation = n->second;
 				} else {
-					currMtl->Meshbuffer->VertexBuffer().push_back(v);
-					vertLocation = currMtl->Meshbuffer->VertexBuffer().size() - 1;
+					Vertices.push_back(v);
+					vertLocation = Vertices.size() - 1;
 					currMtl->VertMap.emplace(v, vertLocation);
 				}
 
@@ -247,7 +248,7 @@ IAnimatedMesh *COBJMeshFileLoader::createMesh(io::IReadFile *file)
 			}
 
 			// triangulate the face
-			auto &Indices = currMtl->Meshbuffer->IndexBuffer();
+			auto &Indices = currMtl->Meshbuffer->Indices->Data;
 			const int c = faceCorners[0];
 			for (u32 i = 1; i < faceCorners.size() - 1; ++i) {
 				// Add a triangle

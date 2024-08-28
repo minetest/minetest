@@ -21,7 +21,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	//! Default constructor
 	SSkinMeshBuffer(video::E_VERTEX_TYPE vt = video::EVT_STANDARD) :
 			VertexType(vt), PrimitiveType(EPT_TRIANGLES),
-			HWBuffer(nullptr), BoundingBoxNeedsRecalculated(true)
+			BoundingBoxNeedsRecalculated(true)
 	{
 #ifdef _DEBUG
 		setDebugName("SSkinMeshBuffer");
@@ -72,7 +72,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 		}
 	}
 
-	scene::IVertexBuffer *getVertexBuffer()
+	scene::IVertexBuffer *getVertexBuffer() override
 	{
 		switch (VertexType) {
 		case video::EVT_2TCOORDS:
@@ -119,6 +119,28 @@ struct SSkinMeshBuffer : public IMeshBuffer
 		BoundingBox = box;
 	}
 
+private:
+	template <typename T> void recalculateBoundingBox(const CVertexBuffer<T> *buf)
+	{
+		if (!buf->getCount()) {
+			BoundingBox.reset(0, 0, 0);
+		} else {
+			auto &vertices = buf->Data;
+			BoundingBox.reset(vertices[0].Pos);
+			for (size_t i = 1; i < vertices.size(); ++i)
+				BoundingBox.addInternalPoint(vertices[i].Pos);
+		}
+	}
+
+	template <typename T1, typename T2> static void copyVertex(const T1 &src, T2 &dst)
+	{
+		dst.Pos = src.Pos;
+		dst.Normal = src.Normal;
+		dst.Color = src.Color;
+		dst.TCoords = src.TCoords;
+	}
+public:
+
 	//! Recalculate bounding box
 	void recalculateBoundingBox() override
 	{
@@ -129,36 +151,15 @@ struct SSkinMeshBuffer : public IMeshBuffer
 
 		switch (VertexType) {
 		case video::EVT_STANDARD: {
-			if (!Vertices_Standard->getCount())
-				BoundingBox.reset(0, 0, 0);
-			else {
-				auto &vertices = Vertices_Standard->Data;
-				BoundingBox.reset(vertices[0].Pos);
-				for (size_t i = 1; i < vertices.size(); ++i)
-					BoundingBox.addInternalPoint(vertices[i].Pos);
-			}
+			recalculateBoundingBox(Vertices_Standard);
 			break;
 		}
 		case video::EVT_2TCOORDS: {
-			if (!Vertices_2TCoords->getCount())
-				BoundingBox.reset(0, 0, 0);
-			else {
-				auto &vertices = Vertices_2TCoords->Data;
-				BoundingBox.reset(vertices[0].Pos);
-				for (size_t i = 1; i < vertices.size(); ++i)
-					BoundingBox.addInternalPoint(vertices[i].Pos);
-			}
+			recalculateBoundingBox(Vertices_2TCoords);
 			break;
 		}
 		case video::EVT_TANGENTS: {
-			if (!Vertices_Tangents->getCount())
-				BoundingBox.reset(0, 0, 0);
-			else {
-				auto &vertices = Vertices_Tangents->Data;
-				BoundingBox.reset(vertices[0].Pos);
-				for (size_t i = 1; i < vertices.size(); ++i)
-					BoundingBox.addInternalPoint(vertices[i].Pos);
-			}
+			recalculateBoundingBox(Vertices_Tangents);
 			break;
 		}
 		}
@@ -170,10 +171,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 		if (VertexType == video::EVT_STANDARD) {
 			video::S3DVertex2TCoords Vertex;
 			for (const auto &Vertex_Standard : Vertices_Standard->Data) {
-				Vertex.Color = Vertex_Standard.Color;
-				Vertex.Pos = Vertex_Standard.Pos;
-				Vertex.Normal = Vertex_Standard.Normal;
-				Vertex.TCoords = Vertex_Standard.TCoords;
+				copyVertex(Vertex_Standard, Vertex);
 				Vertices_2TCoords->Data.push_back(Vertex);
 			}
 			Vertices_Standard->Data.clear();
@@ -185,12 +183,9 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	void convertToTangents()
 	{
 		if (VertexType == video::EVT_STANDARD) {
-				video::S3DVertexTangents Vertex;
+			video::S3DVertexTangents Vertex;
 			for (const auto &Vertex_Standard : Vertices_Standard->Data) {
-				Vertex.Color = Vertex_Standard.Color;
-				Vertex.Pos = Vertex_Standard.Pos;
-				Vertex.Normal = Vertex_Standard.Normal;
-				Vertex.TCoords = Vertex_Standard.TCoords;
+				copyVertex(Vertex_Standard, Vertex);
 				Vertices_Tangents->Data.push_back(Vertex);
 			}
 			Vertices_Standard->Data.clear();
@@ -198,10 +193,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 		} else if (VertexType == video::EVT_2TCOORDS) {
 			video::S3DVertexTangents Vertex;
 			for (const auto &Vertex_2TCoords : Vertices_2TCoords->Data) {
-				Vertex.Color = Vertex_2TCoords.Color;
-				Vertex.Pos = Vertex_2TCoords.Pos;
-				Vertex.Normal = Vertex_2TCoords.Normal;
-				Vertex.TCoords = Vertex_2TCoords.TCoords;
+				copyVertex(Vertex_2TCoords, Vertex);
 				Vertices_Tangents->Data.push_back(Vertex);
 			}
 			Vertices_2TCoords->Data.clear();
@@ -227,16 +219,6 @@ struct SSkinMeshBuffer : public IMeshBuffer
 		return PrimitiveType;
 	}
 
-	void setHWBuffer(void *ptr) const override
-	{
-		HWBuffer = ptr;
-	}
-
-	void *getHWBuffer() const override
-	{
-		return HWBuffer;
-	}
-
 	//! Call this after changing the positions of any vertex.
 	void boundingBoxNeedsRecalculated(void) { BoundingBoxNeedsRecalculated = true; }
 
@@ -254,8 +236,6 @@ struct SSkinMeshBuffer : public IMeshBuffer
 
 	//! Primitive type used for rendering (triangles, lines, ...)
 	E_PRIMITIVE_TYPE PrimitiveType;
-
-	mutable void *HWBuffer;
 
 	bool BoundingBoxNeedsRecalculated;
 };

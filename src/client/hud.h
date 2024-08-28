@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIFont.h>
 #include <SMaterial.h>
 #include <SMeshBuffer.h>
+#include "irr_ptr.h"
 #include "irr_aabb3d.h"
 #include "../hud.h"
 
@@ -152,7 +153,7 @@ private:
 	video::SMaterial m_selection_material;
 	video::SMaterial m_block_bounds_material;
 
-	scene::SMeshBuffer m_rotation_mesh_buffer;
+	irr_ptr<scene::SMeshBuffer> m_rotation_mesh_buffer;
 
 	enum
 	{
