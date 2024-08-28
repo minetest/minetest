@@ -273,12 +273,12 @@ bool CXMeshFileLoader::load(io::IReadFile *file)
 				}
 				if (mesh->TCoords2.size()) {
 					for (i = 0; i != mesh->Buffers.size(); ++i) {
-						mesh->Buffers[i]->Vertices_2TCoords.reserve(vCountArray[i]);
+						mesh->Buffers[i]->Vertices_2TCoords->Data.reserve(vCountArray[i]);
 						mesh->Buffers[i]->VertexType = video::EVT_2TCOORDS;
 					}
 				} else {
 					for (i = 0; i != mesh->Buffers.size(); ++i)
-						mesh->Buffers[i]->Vertices_Standard.reserve(vCountArray[i]);
+						mesh->Buffers[i]->Vertices_Standard->Data.reserve(vCountArray[i]);
 				}
 
 				verticesLinkIndex.set_used(mesh->Vertices.size());
@@ -290,14 +290,14 @@ bool CXMeshFileLoader::load(io::IReadFile *file)
 					scene::SSkinMeshBuffer *buffer = mesh->Buffers[verticesLinkBuffer[i]];
 
 					if (mesh->TCoords2.size()) {
-						verticesLinkIndex[i] = buffer->Vertices_2TCoords.size();
-						buffer->Vertices_2TCoords.emplace_back(mesh->Vertices[i]);
+						verticesLinkIndex[i] = buffer->Vertices_2TCoords->getCount();
+						buffer->Vertices_2TCoords->Data.emplace_back(mesh->Vertices[i]);
 						// We have a problem with correct tcoord2 handling here
 						// crash fixed for now by checking the values
-						buffer->Vertices_2TCoords.back().TCoords2 = (i < mesh->TCoords2.size()) ? mesh->TCoords2[i] : mesh->Vertices[i].TCoords;
+						buffer->Vertices_2TCoords->Data.back().TCoords2 = (i < mesh->TCoords2.size()) ? mesh->TCoords2[i] : mesh->Vertices[i].TCoords;
 					} else {
-						verticesLinkIndex[i] = buffer->Vertices_Standard.size();
-						buffer->Vertices_Standard.push_back(mesh->Vertices[i]);
+						verticesLinkIndex[i] = buffer->Vertices_Standard->getCount();
+						buffer->Vertices_Standard->Data.push_back(mesh->Vertices[i]);
 					}
 				}
 
@@ -306,13 +306,13 @@ bool CXMeshFileLoader::load(io::IReadFile *file)
 				for (i = 0; i < mesh->FaceMaterialIndices.size(); ++i)
 					++vCountArray[mesh->FaceMaterialIndices[i]];
 				for (i = 0; i != mesh->Buffers.size(); ++i)
-					mesh->Buffers[i]->Indices.reserve(vCountArray[i]);
+					mesh->Buffers[i]->Indices->Data.reserve(vCountArray[i]);
 				delete[] vCountArray;
 				// create indices per buffer
 				for (i = 0; i < mesh->FaceMaterialIndices.size(); ++i) {
 					scene::SSkinMeshBuffer *buffer = mesh->Buffers[mesh->FaceMaterialIndices[i]];
 					for (u32 id = i * 3 + 0; id != i * 3 + 3; ++id) {
-						buffer->Indices.push_back(verticesLinkIndex[mesh->Indices[id]]);
+						buffer->Indices->Data.push_back(verticesLinkIndex[mesh->Indices[id]]);
 					}
 				}
 			}
