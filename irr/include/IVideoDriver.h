@@ -31,6 +31,8 @@ class IWriteFile;
 namespace scene
 {
 class IMeshBuffer;
+class IVertexBuffer;
+class IIndexBuffer;
 class IMesh;
 class IMeshManipulator;
 class ISceneNode;
@@ -299,7 +301,10 @@ public:
 	virtual void removeAllTextures() = 0;
 
 	//! Remove hardware buffer
-	virtual void removeHardwareBuffer(const scene::IMeshBuffer *mb) = 0;
+	virtual void removeHardwareBuffer(const scene::IVertexBuffer *vb) = 0;
+
+	//! Remove hardware buffer
+	virtual void removeHardwareBuffer(const scene::IIndexBuffer *ib) = 0;
 
 	//! Remove all hardware buffers
 	virtual void removeAllHardwareBuffers() = 0;
@@ -737,6 +742,17 @@ public:
 	//! Draws a mesh buffer
 	/** \param mb Buffer to draw */
 	virtual void drawMeshBuffer(const scene::IMeshBuffer *mb) = 0;
+
+	/**
+	 * Draws a mesh from individual vertex and index buffers.
+	 * @param vb vertices to use
+	 * @param ib indices to use
+	 * @param primCount amount of primitives
+	 * @param pType primitive type
+	 */
+	virtual void drawBuffers(const scene::IVertexBuffer *vb,
+		const scene::IIndexBuffer *ib, u32 primCount,
+		scene::E_PRIMITIVE_TYPE pType = scene::EPT_TRIANGLES) = 0;
 
 	//! Draws normals of a mesh buffer
 	/** \param mb Buffer to draw the normals of

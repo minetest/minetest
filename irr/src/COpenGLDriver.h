@@ -58,27 +58,28 @@ public:
 
 	struct SHWBufferLink_opengl : public SHWBufferLink
 	{
-		SHWBufferLink_opengl(const scene::IMeshBuffer *_MeshBuffer) :
-				SHWBufferLink(_MeshBuffer), vbo_verticesID(0), vbo_indicesID(0) {}
+		SHWBufferLink_opengl(const scene::IVertexBuffer *vb) : SHWBufferLink(vb) {}
+		SHWBufferLink_opengl(const scene::IIndexBuffer *ib) : SHWBufferLink(ib) {}
 
-		GLuint vbo_verticesID; // tmp
-		GLuint vbo_indicesID;  // tmp
-
-		GLuint vbo_verticesSize; // tmp
-		GLuint vbo_indicesSize;  // tmp
+		GLuint vbo_ID = 0;
+		u32 vbo_Size = 0;
 	};
 
 	//! updates hardware buffer if needed
 	bool updateHardwareBuffer(SHWBufferLink *HWBuffer) override;
 
-	//! Create hardware buffer from mesh
-	SHWBufferLink *createHardwareBuffer(const scene::IMeshBuffer *mb) override;
+	//! Create hardware buffer from vertex buffer
+	SHWBufferLink *createHardwareBuffer(const scene::IVertexBuffer *vb) override;
+
+	//! Create hardware buffer from index buffer
+	SHWBufferLink *createHardwareBuffer(const scene::IIndexBuffer *ib) override;
 
 	//! Delete hardware buffer (only some drivers can)
 	void deleteHardwareBuffer(SHWBufferLink *HWBuffer) override;
 
-	//! Draw hardware buffer
-	void drawHardwareBuffer(SHWBufferLink *HWBuffer) override;
+	void drawBuffers(const scene::IVertexBuffer *vb,
+		const scene::IIndexBuffer *ib, u32 primCount,
+		scene::E_PRIMITIVE_TYPE pType = scene::EPT_TRIANGLES) override;
 
 	//! Create occlusion query.
 	/** Use node for identification and mesh for occlusion test. */

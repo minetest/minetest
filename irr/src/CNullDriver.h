@@ -269,8 +269,18 @@ public:
 			const core::position2d<s32> &pos,
 			const core::dimension2d<u32> &size) override;
 
-	//! Draws a mesh buffer
-	void drawMeshBuffer(const scene::IMeshBuffer *mb) override;
+	void drawMeshBuffer(const scene::IMeshBuffer *mb) override
+	{
+		if (!mb)
+			return;
+		drawBuffers(mb->getVertexBuffer(), mb->getIndexBuffer(),
+			mb->getPrimitiveCount(), mb->getPrimitiveType());
+	}
+
+	// Note: this should handle hw buffers
+	virtual void drawBuffers(const scene::IVertexBuffer *vb,
+		const scene::IIndexBuffer *ib, u32 primCount,
+		scene::E_PRIMITIVE_TYPE pType = scene::EPT_TRIANGLES) override;
 
 	//! Draws the normals of a mesh buffer
 	virtual void drawMeshBufferNormals(const scene::IMeshBuffer *mb, f32 length = 10.f,
@@ -283,53 +293,70 @@ public:
 	}
 
 protected:
+	/// Links a hardware buffer to either a vertex or index buffer
 	struct SHWBufferLink
 	{
-		SHWBufferLink(const scene::IMeshBuffer *_MeshBuffer) :
-				MeshBuffer(_MeshBuffer),
-				ChangedID_Vertex(0), ChangedID_Index(0),
-				Mapped_Vertex(scene::EHM_NEVER), Mapped_Index(scene::EHM_NEVER)
+		SHWBufferLink(const scene::IVertexBuffer *vb) :
+				VertexBuffer(vb), ChangedID(0), IsVertex(true)
 		{
-			if (MeshBuffer) {
-				MeshBuffer->grab();
-				MeshBuffer->setHWBuffer(reinterpret_cast<void *>(this));
+			if (VertexBuffer) {
+				VertexBuffer->grab();
+				VertexBuffer->setHWBuffer(this);
+			}
+		}
+		SHWBufferLink(const scene::IIndexBuffer *ib) :
+				IndexBuffer(ib), ChangedID(0), IsVertex(false)
+		{
+			if (IndexBuffer) {
+				IndexBuffer->grab();
+				IndexBuffer->setHWBuffer(this);
 			}
 		}
 
 		virtual ~SHWBufferLink()
 		{
-			if (MeshBuffer) {
-				MeshBuffer->setHWBuffer(NULL);
-				MeshBuffer->drop();
+			if (IsVertex && VertexBuffer) {
+				VertexBuffer->setHWBuffer(nullptr);
+				VertexBuffer->drop();
+			} else if (!IsVertex && IndexBuffer) {
+				IndexBuffer->setHWBuffer(nullptr);
+				IndexBuffer->drop();
 			}
 		}
 
-		const scene::IMeshBuffer *MeshBuffer;
-		u32 ChangedID_Vertex;
-		u32 ChangedID_Index;
-		scene::E_HARDWARE_MAPPING Mapped_Vertex;
-		scene::E_HARDWARE_MAPPING Mapped_Index;
-		std::list<SHWBufferLink *>::iterator listPosition;
+		union {
+			const scene::IVertexBuffer *VertexBuffer;
+			const scene::IIndexBuffer *IndexBuffer;
+		};
+		u32 ChangedID;
+		bool IsVertex;
+		std::list<SHWBufferLink*>::iterator listPosition;
 	};
 
-	//! Gets hardware buffer link from a meshbuffer (may create or update buffer)
-	virtual SHWBufferLink *getBufferLink(const scene::IMeshBuffer *mb);
+	//! Gets hardware buffer link from a vertex buffer (may create or update buffer)
+	virtual SHWBufferLink *getBufferLink(const scene::IVertexBuffer *mb);
+
+	//! Gets hardware buffer link from a index buffer (may create or update buffer)
+	virtual SHWBufferLink *getBufferLink(const scene::IIndexBuffer *mb);
 
 	//! updates hardware buffer if needed  (only some drivers can)
 	virtual bool updateHardwareBuffer(SHWBufferLink *HWBuffer) { return false; }
 
-	//! Draw hardware buffer (only some drivers can)
-	virtual void drawHardwareBuffer(SHWBufferLink *HWBuffer) {}
-
 	//! Delete hardware buffer
 	virtual void deleteHardwareBuffer(SHWBufferLink *HWBuffer);
 
-	//! Create hardware buffer from mesh (only some drivers can)
-	virtual SHWBufferLink *createHardwareBuffer(const scene::IMeshBuffer *mb) { return 0; }
+	//! Create hardware buffer from vertex buffer
+	virtual SHWBufferLink *createHardwareBuffer(const scene::IVertexBuffer *vb) { return 0; }
+
+	//! Create hardware buffer from index buffer
+	virtual SHWBufferLink *createHardwareBuffer(const scene::IIndexBuffer *ib) { return 0; }
 
 public:
 	//! Remove hardware buffer
-	void removeHardwareBuffer(const scene::IMeshBuffer *mb) override;
+	void removeHardwareBuffer(const scene::IVertexBuffer *vb) override;
+
+	//! Remove hardware buffer
+	void removeHardwareBuffer(const scene::IIndexBuffer *ib) override;
 
 	//! Remove all hardware buffers
 	void removeAllHardwareBuffers() override;
@@ -337,8 +364,11 @@ public:
 	//! Update all hardware buffers, remove unused ones
 	virtual void updateAllHardwareBuffers();
 
-	//! is vbo recommended on this mesh?
-	virtual bool isHardwareBufferRecommend(const scene::IMeshBuffer *mb);
+	//! is vbo recommended?
+	virtual bool isHardwareBufferRecommend(const scene::IVertexBuffer *mb);
+
+	//! is vbo recommended?
+	virtual bool isHardwareBufferRecommend(const scene::IIndexBuffer *mb);
 
 	//! Create occlusion query.
 	/** Use node for identification and mesh for occlusion test. */
