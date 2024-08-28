@@ -296,8 +296,7 @@ public:
 
 					delete[] tmpBuffer;
 				}
-#elif (defined(IRR_COMPILE_GLES2_COMMON) || defined(IRR_COMPILE_GLES_COMMON))
-				// TODO: on ES2 we can likely also work with glCopyTexImage2D instead of rendering which should be faster.
+#elif defined(IRR_COMPILE_GLES2_COMMON)
 				COpenGLCoreTexture *tmpTexture = new COpenGLCoreTexture("OGL_CORE_LOCK_TEXTURE", Size, ETT_2D, ColorFormat, Driver);
 
 				GLuint tmpFBO = 0;
