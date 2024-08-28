@@ -176,18 +176,6 @@ public:
 		return getVertexBuffer()->getTCoords(i);
 	}
 
-	//! get the current hardware mapping hint
-	inline E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const
-	{
-		return getVertexBuffer()->getHardwareMappingHint();
-	}
-
-	//! get the current hardware mapping hint
-	inline E_HARDWARE_MAPPING getHardwareMappingHint_Index() const
-	{
-		return getIndexBuffer()->getHardwareMappingHint();
-	}
-
 	//! set the hardware mapping hint, for driver
 	inline void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer = EBT_VERTEX_AND_INDEX)
 	{
@@ -206,25 +194,7 @@ public:
 			getIndexBuffer()->setDirty();
 	}
 
-	//! Get the currently used ID for identification of changes.
-	/** This shouldn't be used for anything outside the VideoDriver. */
-	inline u32 getChangedID_Vertex() const
-	{
-		return getVertexBuffer()->getChangedID();
-	}
-
-	//! Get the currently used ID for identification of changes.
-	/** This shouldn't be used for anything outside the VideoDriver. */
-	inline u32 getChangedID_Index() const
-	{
-		return getIndexBuffer()->getChangedID();
-	}
-
 	/* End helpers */
-
-	//! Used by the VideoDriver to remember the buffer link.
-	virtual void setHWBuffer(void *ptr) const = 0;
-	virtual void *getHWBuffer() const = 0;
 
 	//! Describe what kind of primitive geometry is used by the meshbuffer
 	/** Note: Default is EPT_TRIANGLES. Using other types is fine for rendering.
@@ -237,32 +207,13 @@ public:
 	virtual E_PRIMITIVE_TYPE getPrimitiveType() const = 0;
 
 	//! Calculate how many geometric primitives are used by this meshbuffer
-	virtual u32 getPrimitiveCount() const
+	u32 getPrimitiveCount() const
 	{
-		const u32 indexCount = getIndexCount();
-		switch (getPrimitiveType()) {
-		case scene::EPT_POINTS:
-			return indexCount;
-		case scene::EPT_LINE_STRIP:
-			return indexCount - 1;
-		case scene::EPT_LINE_LOOP:
-			return indexCount;
-		case scene::EPT_LINES:
-			return indexCount / 2;
-		case scene::EPT_TRIANGLE_STRIP:
-			return (indexCount - 2);
-		case scene::EPT_TRIANGLE_FAN:
-			return (indexCount - 2);
-		case scene::EPT_TRIANGLES:
-			return indexCount / 3;
-		case scene::EPT_POINT_SPRITES:
-			return indexCount;
-		}
-		return 0;
+		return getIndexBuffer()->getPrimitiveCount(getPrimitiveType());
 	}
 
 	//! Calculate size of vertices and indices in memory
-	virtual size_t getSize() const
+	size_t getSize() const
 	{
 		size_t ret = 0;
 		switch (getVertexType()) {

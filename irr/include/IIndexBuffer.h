@@ -7,6 +7,7 @@
 #include "IReferenceCounted.h"
 #include "irrArray.h"
 #include "EHardwareBufferFlags.h"
+#include "EPrimitiveTypes.h"
 #include "SVertexIndex.h"
 
 namespace irr
@@ -50,6 +51,31 @@ public:
 	//! Used by the VideoDriver to remember the buffer link.
 	virtual void setHWBuffer(void *ptr) const = 0;
 	virtual void *getHWBuffer() const = 0;
+
+	//! Calculate how many geometric primitives would be drawn
+	u32 getPrimitiveCount(E_PRIMITIVE_TYPE primitiveType) const
+	{
+		const u32 indexCount = getCount();
+		switch (primitiveType) {
+		case scene::EPT_POINTS:
+			return indexCount;
+		case scene::EPT_LINE_STRIP:
+			return indexCount - 1;
+		case scene::EPT_LINE_LOOP:
+			return indexCount;
+		case scene::EPT_LINES:
+			return indexCount / 2;
+		case scene::EPT_TRIANGLE_STRIP:
+			return (indexCount - 2);
+		case scene::EPT_TRIANGLE_FAN:
+			return (indexCount - 2);
+		case scene::EPT_TRIANGLES:
+			return indexCount / 3;
+		case scene::EPT_POINT_SPRITES:
+			return indexCount;
+		}
+		return 0;
+	}
 };
 
 } // end namespace scene

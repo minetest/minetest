@@ -24,7 +24,7 @@ public:
 #endif
 	}
 
-	video::E_INDEX_TYPE getType() const
+	video::E_INDEX_TYPE getType() const override
 	{
 		static_assert(sizeof(T) == 2 || sizeof(T) == 4, "invalid index type");
 		return sizeof(T) == 2 ? video::EIT_16BIT : video::EIT_32BIT;

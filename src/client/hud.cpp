@@ -133,9 +133,10 @@ Hud::Hud(Client *client, LocalPlayer *player,
 			rangelim(g_settings->getS16("selectionbox_width"), 1, 5);
 
 	// Prepare mesh for compass drawing
-	auto &b = m_rotation_mesh_buffer;
-	auto &vertices = b.Vertices->Data;
-	auto &indices = b.Indices->Data;
+	m_rotation_mesh_buffer.reset(new scene::SMeshBuffer());
+	auto *b = m_rotation_mesh_buffer.get();
+	auto &vertices = b->Vertices->Data;
+	auto &indices = b->Indices->Data;
 	vertices.resize(4);
 	indices.resize(6);
 
@@ -154,9 +155,9 @@ Hud::Hud(Client *client, LocalPlayer *player,
 	indices[4] = 3;
 	indices[5] = 0;
 
-	b.getMaterial().Lighting = false;
-	b.getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-	//b.setHardwareMappingHint(scene::EHM_STATIC); // FIXME: incorrectly stack allocated, not safe!
+	b->getMaterial().Lighting = false;
+	b->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	b->setHardwareMappingHint(scene::EHM_STATIC);
 }
 
 void Hud::readScalingSetting()
@@ -658,10 +659,10 @@ void Hud::drawCompassRotate(HudElement *e, video::ITexture *texture,
 	driver->setTransform(video::ETS_VIEW, core::matrix4());
 	driver->setTransform(video::ETS_WORLD, Matrix);
 
-	video::SMaterial &material = m_rotation_mesh_buffer.getMaterial();
+	auto &material = m_rotation_mesh_buffer->getMaterial();
 	material.TextureLayers[0].Texture = texture;
 	driver->setMaterial(material);
-	driver->drawMeshBuffer(&m_rotation_mesh_buffer);
+	driver->drawMeshBuffer(m_rotation_mesh_buffer.get());
 
 	driver->setTransform(video::ETS_WORLD, core::matrix4());
 	driver->setTransform(video::ETS_VIEW, oldViewMat);

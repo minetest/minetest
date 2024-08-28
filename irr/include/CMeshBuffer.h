@@ -20,7 +20,7 @@ class CMeshBuffer : public IMeshBuffer
 public:
 	//! Default constructor for empty meshbuffer
 	CMeshBuffer() :
-			HWBuffer(NULL), PrimitiveType(EPT_TRIANGLES)
+			PrimitiveType(EPT_TRIANGLES)
 	{
 #ifdef _DEBUG
 		setDebugName("CMeshBuffer");
@@ -67,18 +67,6 @@ public:
 	scene::IIndexBuffer *getIndexBuffer() override
 	{
 		return Indices;
-	}
-
-	// TEMPORARY helper for direct buffer acess
-	inline auto &VertexBuffer()
-	{
-		return Vertices->Data;
-	}
-
-	// TEMPORARY helper for direct buffer acess
-	inline auto &IndexBuffer()
-	{
-		return Indices->Data;
 	}
 
 	//! Get the axis aligned bounding box
@@ -141,18 +129,6 @@ public:
 	{
 		return PrimitiveType;
 	}
-
-	void setHWBuffer(void *ptr) const override
-	{
-		HWBuffer = ptr;
-	}
-
-	void *getHWBuffer() const override
-	{
-		return HWBuffer;
-	}
-
-	mutable void *HWBuffer;
 
 	//! Material for this meshbuffer.
 	video::SMaterial Material;
