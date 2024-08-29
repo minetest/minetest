@@ -653,7 +653,7 @@ bool PlayerSAO::checkMovementCheat()
 		return false;
 	}
 
-	float anticheat_movement_tolerance = g_settings->getFloat("anticheat_movement_tolerance");
+	float anticheat_movement_tolerance = std::max(g_settings->getFloat("anticheat_movement_tolerance"), 1.0f);
 
 	bool cheated = false;
 	/*
