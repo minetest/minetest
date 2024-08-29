@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "irrArray.h"
+#include <vector>
 #include "IMeshBuffer.h"
 
 namespace irr
@@ -43,21 +43,21 @@ public:
 	/** \return Pointer to vertices. */
 	const void *getVertices() const override
 	{
-		return Vertices.const_pointer();
+		return Vertices.data();
 	}
 
 	//! Get pointer to vertices
 	/** \return Pointer to vertices. */
 	void *getVertices() override
 	{
-		return Vertices.pointer();
+		return Vertices.data();
 	}
 
 	//! Get number of vertices
 	/** \return Number of vertices. */
 	u32 getVertexCount() const override
 	{
-		return Vertices.size();
+		return static_cast<u32>(Vertices.size());
 	}
 
 	//! Get type of index data which is stored in this meshbuffer.
@@ -71,21 +71,21 @@ public:
 	/** \return Pointer to indices. */
 	const u16 *getIndices() const override
 	{
-		return Indices.const_pointer();
+		return Indices.data();
 	}
 
 	//! Get pointer to indices
 	/** \return Pointer to indices. */
 	u16 *getIndices() override
 	{
-		return Indices.pointer();
+		return Indices.data();
 	}
 
 	//! Get number of indices
 	/** \return Number of indices. */
 	u32 getIndexCount() const override
 	{
-		return Indices.size();
+		return static_cast<u32>(Indices.size());
 	}
 
 	//! Get the axis aligned bounding box
@@ -160,27 +160,23 @@ public:
 	}
 
 	//! Append the vertices and indices to the current buffer
-	/** Only works for compatible types, i.e. either the same type
-	or the main buffer is of standard type. Otherwise, behavior is
-	undefined.
-	*/
 	void append(const void *const vertices, u32 numVertices, const u16 *const indices, u32 numIndices) override
 	{
 		if (vertices == getVertices())
 			return;
 
 		const u32 vertexCount = getVertexCount();
-		u32 i;
+		const u32 indexCount = getIndexCount();
 
-		Vertices.reallocate(vertexCount + numVertices);
-		for (i = 0; i < numVertices; ++i) {
-			Vertices.push_back(static_cast<const T *>(vertices)[i]);
-			BoundingBox.addInternalPoint(static_cast<const T *>(vertices)[i].Pos);
-		}
+		auto *vt = static_cast<const T *>(vertices);
+		Vertices.insert(Vertices.end(), vt, vt + numVertices);
+		for (u32 i = vertexCount; i < getVertexCount(); i++)
+			BoundingBox.addInternalPoint(Vertices[i].Pos);
 
-		Indices.reallocate(getIndexCount() + numIndices);
-		for (i = 0; i < numIndices; ++i) {
-			Indices.push_back(indices[i] + vertexCount);
+		Indices.insert(Indices.end(), indices, indices + numIndices);
+		if (vertexCount != 0) {
+			for (u32 i = indexCount; i < getIndexCount(); i++)
+				Indices[i] += vertexCount;
 		}
 	}
 
@@ -255,9 +251,9 @@ public:
 	//! Material for this meshbuffer.
 	video::SMaterial Material;
 	//! Vertices of this buffer
-	core::array<T> Vertices;
+	std::vector<T> Vertices;
 	//! Indices into the vertices of this buffer.
-	core::array<u16> Indices;
+	std::vector<u16> Indices;
 	//! Bounding box of this meshbuffer.
 	core::aabbox3d<f32> BoundingBox;
 	//! Primitive type used for rendering (triangles, lines, ...)

@@ -662,6 +662,8 @@ void *EmergeThread::run()
 		EmergeAction action;
 		MapBlock *block = nullptr;
 
+		porting::TriggerMemoryTrim();
+
 		if (!popBlockEmerge(&pos, &bedata)) {
 			m_queue_event.wait();
 			continue;
@@ -690,7 +692,7 @@ void *EmergeThread::run()
 					"EmergeThread: Lua on_generated", SPT_AVG);
 
 				try {
-					m_script->on_generated(&bmdata);
+					m_script->on_generated(&bmdata, m_mapgen->blockseed);
 				} catch (const LuaError &e) {
 					m_server->setAsyncFatalError(e);
 					error = true;

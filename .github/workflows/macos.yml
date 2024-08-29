@@ -10,6 +10,7 @@ on:
       - 'src/**.cpp'
       - 'irr/**.[ch]'
       - 'irr/**.cpp'
+      - 'irr/**.mm' # Objective-C(++)
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - '.github/workflows/macos.yml'
@@ -28,7 +29,8 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    # use macOS 13 since it's the last one that still runs on x86
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
       - name: Install deps
@@ -58,6 +60,7 @@ jobs:
       - name: CPack
         run: |
           cd build
+          rm -rf macos
           cmake .. -DINSTALL_DEVTEST=FALSE
           cpack -G ZIP -B macos
 

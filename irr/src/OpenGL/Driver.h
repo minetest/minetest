@@ -7,7 +7,6 @@
 #pragma once
 
 #include "SIrrCreationParameters.h"
-
 #include "Common.h"
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
@@ -227,18 +226,6 @@ public:
 	// Does *nothing* unless in debug mode.
 	bool testGLError(const char *file, int line);
 
-	//! Set/unset a clipping plane.
-	bool setClipPlane(u32 index, const core::plane3df &plane, bool enable = false) override;
-
-	//! returns the current amount of user clip planes set.
-	u32 getClipPlaneCount() const;
-
-	//! returns the 0 indexed Plane
-	const core::plane3df &getClipPlane(u32 index) const;
-
-	//! Enable/disable a clipping plane.
-	void enableClipPlane(u32 index, bool enable) override;
-
 	//! Returns the graphics card vendor name.
 	core::stringc getVendorInfo() override
 	{
@@ -278,7 +265,7 @@ protected:
 
 	ITexture *createDeviceDependentTexture(const io::path &name, IImage *image) override;
 
-	ITexture *createDeviceDependentTextureCubemap(const io::path &name, const core::array<IImage *> &image) override;
+	ITexture *createDeviceDependentTextureCubemap(const io::path &name, const std::vector<IImage*> &image) override;
 
 	//! Map Irrlicht wrap mode to OpenGL enum
 	GLint getTextureWrapMode(u8 clamp) const;
@@ -336,14 +323,6 @@ protected:
 	bool ResetRenderStates;
 	bool LockRenderStateMode;
 	u8 AntiAlias;
-
-	struct SUserClipPlane
-	{
-		core::plane3df Plane;
-		bool Enabled;
-	};
-
-	core::array<SUserClipPlane> UserClipPlane;
 
 	core::matrix4 TextureFlipMatrix;
 

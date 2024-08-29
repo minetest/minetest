@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <vector>
 #include <SColor.h>
 
@@ -28,17 +29,15 @@ using namespace irr;
 class EnrichedString {
 public:
 	EnrichedString();
-	EnrichedString(const std::wstring &s,
+	EnrichedString(std::wstring_view s,
 		const video::SColor &color = video::SColor(255, 255, 255, 255));
-	EnrichedString(const wchar_t *str,
-		const video::SColor &color = video::SColor(255, 255, 255, 255));
-	EnrichedString(const std::wstring &string,
+	EnrichedString(std::wstring_view string,
 		const std::vector<video::SColor> &colors);
-	EnrichedString &operator=(const wchar_t *str);
+	EnrichedString &operator=(std::wstring_view s);
 
 	void clear();
 
-	void addAtEnd(const std::wstring &s, video::SColor color);
+	void addAtEnd(std::wstring_view s, video::SColor color);
 
 	// Adds the character source[i] at the end.
 	// An EnrichedString should always be able to be copied
@@ -51,9 +50,18 @@ public:
 
 	EnrichedString getNextLine(size_t *pos) const;
 	EnrichedString substr(size_t pos = 0, size_t len = std::string::npos) const;
+
 	EnrichedString operator+(const EnrichedString &other) const;
 	void operator+=(const EnrichedString &other);
-	const wchar_t *c_str() const;
+	void operator+=(std::wstring_view other)
+	{
+		*this += EnrichedString(other);
+	}
+
+	const wchar_t *c_str() const
+	{
+		return getString().c_str();
+	}
 	const std::vector<video::SColor> &getColors() const;
 	const std::wstring &getString() const;
 
@@ -106,6 +114,5 @@ private:
 	video::SColor m_default_color;
 	video::SColor m_background;
 	// This variable defines the length of the default-colored text.
-	// Change this to a std::vector if an "end coloring" tag is wanted.
 	size_t m_default_length = 0;
 };

@@ -6,7 +6,6 @@
 
 #include "SColor.h"
 #include "matrix4.h"
-#include "irrArray.h"
 #include "irrMath.h"
 #include "EMaterialTypes.h"
 #include "EMaterialProps.h"

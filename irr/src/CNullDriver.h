@@ -195,9 +195,7 @@ public:
 	// get current frames per second value
 	s32 getFPS() const override;
 
-	//! returns amount of primitives (mostly triangles) were drawn in the last frame.
-	//! very useful method for statistics.
-	u32 getPrimitiveCountDrawn(u32 param = 0) const override;
+	SFrameStats getFrameStats() const override;
 
 	//! \return Returns the name of the video driver. Example: In case of the DIRECT3D8
 	//! driver, it would return "Direct3D8.1".
@@ -494,19 +492,6 @@ public:
 	//! looks if the image is already loaded
 	video::ITexture *findTexture(const io::path &filename) override;
 
-	//! Set/unset a clipping plane.
-	//! There are at least 6 clipping planes available for the user to set at will.
-	//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-	//! \param plane: The plane itself.
-	//! \param enable: If true, enable the clipping plane else disable it.
-	bool setClipPlane(u32 index, const core::plane3df &plane, bool enable = false) override;
-
-	//! Enable/disable a clipping plane.
-	//! There are at least 6 clipping planes available for the user to set at will.
-	//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-	//! \param enable: If true, enable the clipping plane else disable it.
-	void enableClipPlane(u32 index, bool enable) override;
-
 	//! Returns the graphics card vendor name.
 	core::stringc getVendorInfo() override { return "Not available on this driver."; }
 
@@ -551,8 +536,6 @@ public:
 	virtual void convertColor(const void *sP, ECOLOR_FORMAT sF, s32 sN,
 			void *dP, ECOLOR_FORMAT dF) const override;
 
-	bool checkDriverReset() override { return false; }
-
 protected:
 	//! deletes all textures
 	void deleteAllTextures();
@@ -565,14 +548,14 @@ protected:
 
 	virtual ITexture *createDeviceDependentTexture(const io::path &name, IImage *image);
 
-	virtual ITexture *createDeviceDependentTextureCubemap(const io::path &name, const core::array<IImage *> &image);
+	virtual ITexture *createDeviceDependentTextureCubemap(const io::path &name, const std::vector<IImage*> &image);
 
 	//! checks triangle count and print warning if wrong
 	bool checkPrimitiveCount(u32 prmcnt) const;
 
 	bool checkImage(IImage *image) const;
 
-	bool checkImage(const core::array<IImage *> &image) const;
+	bool checkImage(const std::vector<IImage*> &image) const;
 
 	// adds a material renderer and drops it afterwards. To be used for internal creation
 	s32 addAndDropMaterialRenderer(IMaterialRenderer *m);
@@ -582,6 +565,12 @@ protected:
 
 	// prints renderer version
 	void printVersion();
+
+	inline void accountHWBufferUpload(u32 size)
+	{
+		FrameStats.HWBuffersUploaded++;
+		FrameStats.HWBuffersUploadedSize += size;
+	}
 
 	inline bool getWriteZBuffer(const SMaterial &material) const
 	{
@@ -709,8 +698,8 @@ protected:
 	core::matrix4 TransformationMatrix;
 
 	CFPSCounter FPSCounter;
+	SFrameStats FrameStats;
 
-	u32 PrimitivesDrawn;
 	u32 MinVertexCountForVBO;
 
 	u32 TextureCreationFlags;

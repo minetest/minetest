@@ -675,6 +675,13 @@ int ModApiMainMenu::l_get_modpaths(lua_State *L)
 	ModApiMainMenu::l_get_modpath(L);
 	lua_setfield(L, -2, "mods");
 
+	if (porting::path_share != porting::path_user) {
+		std::string modpath = fs::RemoveRelativePathComponents(
+			porting::path_share + DIR_DELIM + "mods" + DIR_DELIM);
+		lua_pushstring(L, modpath.c_str());
+		lua_setfield(L, -2, "share");
+	}
+
 	for (const std::string &component : getEnvModPaths()) {
 		lua_pushstring(L, component.c_str());
 		lua_setfield(L, -2, fs::AbsolutePath(component).c_str());

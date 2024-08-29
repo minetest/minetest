@@ -168,7 +168,7 @@ class EmergeManager;
 
 */
 namespace con {
-	class Connection;
+	class IConnection;
 }
 
 
@@ -464,7 +464,7 @@ public:
 
 	friend class Server;
 
-	ClientInterface(const std::shared_ptr<con::Connection> &con);
+	ClientInterface(const std::shared_ptr<con::IConnection> &con);
 	~ClientInterface();
 
 	/* run sync step */
@@ -543,7 +543,7 @@ private:
 	void UpdatePlayerList();
 
 	// Connection
-	std::shared_ptr<con::Connection> m_con;
+	std::shared_ptr<con::IConnection> m_con;
 	std::recursive_mutex m_clients_mutex;
 	// Connected clients (behind the con mutex)
 	RemoteClientMap m_clients;

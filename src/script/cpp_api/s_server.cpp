@@ -246,7 +246,7 @@ void ScriptApiServer::freeDynamicMediaCallback(u32 token)
 	lua_pop(L, 2);
 }
 
-void ScriptApiServer::on_dynamic_media_added(u32 token, const char *playername)
+void ScriptApiServer::on_dynamic_media_added(u32 token, const std::string &playername)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -257,6 +257,6 @@ void ScriptApiServer::on_dynamic_media_added(u32 token, const char *playername)
 	lua_rawgeti(L, -1, token);
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 
-	lua_pushstring(L, playername);
+	lua_pushstring(L, playername.c_str());
 	PCALL_RES(lua_pcall(L, 1, 0, error_handler));
 }

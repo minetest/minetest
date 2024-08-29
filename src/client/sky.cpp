@@ -830,8 +830,8 @@ void Sky::updateStars()
 		warningstream << "Requested " << m_star_params.count << " stars but " << 0x4000 << " is the max\n";
 		m_star_params.count = 0x4000;
 	}
-	m_stars->Vertices.reallocate(4 * m_star_params.count);
-	m_stars->Indices.reallocate(6 * m_star_params.count);
+	m_stars->Vertices.reserve(4 * m_star_params.count);
+	m_stars->Indices.reserve(6 * m_star_params.count);
 
 	video::SColor fallback_color = m_star_params.starcolor; // used on GLES 2 “without shaders”
 	PcgRandom rgen(m_seed);

@@ -615,7 +615,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 
 	// If something goes wrong, this player is to blame
 	RollbackScopeActor rollback_scope(m_rollback,
-			std::string("player:")+player->getName());
+			"player:" + player->getName());
 
 	/*
 		Note: Always set inventory not sent, to repair cases
@@ -852,11 +852,11 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 
 	*pkt >> item;
 
-	if (item >= player->getHotbarItemcount()) {
+	if (item >= player->getMaxHotbarItemcount()) {
 		actionstream << "Player: " << player->getName()
 			<< " tried to access item=" << item
 			<< " out of hotbar_itemcount="
-			<< player->getHotbarItemcount()
+			<< player->getMaxHotbarItemcount()
 			<< "; ignoring." << std::endl;
 		return;
 	}
@@ -983,11 +983,11 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 	// Update wielded item
 
-	if (item_i >= player->getHotbarItemcount()) {
+	if (item_i >= player->getMaxHotbarItemcount()) {
 		actionstream << "Player: " << player->getName()
 			<< " tried to access item=" << item_i
 			<< " out of hotbar_itemcount="
-			<< player->getHotbarItemcount()
+			<< player->getMaxHotbarItemcount()
 			<< "; ignoring." << std::endl;
 		return;
 	}
@@ -1069,7 +1069,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		If something goes wrong, this player is to blame
 	*/
 	RollbackScopeActor rollback_scope(m_rollback,
-			std::string("player:")+player->getName());
+			"player:" + player->getName());
 
 	switch (action) {
 	// Start digging or punch object
@@ -1351,15 +1351,22 @@ static bool pkt_read_formspec_fields(NetworkPacket *pkt, StringMap &fields)
 	u16 field_count;
 	*pkt >> field_count;
 
-	u64 length = 0;
+	size_t length = 0;
 	for (u16 k = 0; k < field_count; k++) {
-		std::string fieldname;
+		std::string fieldname, fieldvalue;
 		*pkt >> fieldname;
-		fields[fieldname] = pkt->readLongString();
+		fieldvalue = pkt->readLongString();
 
-		length += fieldname.size();
-		length += fields[fieldname].size();
+		fieldname = sanitize_untrusted(fieldname, false);
+		// We'd love to strip escapes here but some formspec elements reflect data
+		// from the server (e.g. dropdown), which can contain translations.
+		fieldvalue = sanitize_untrusted(fieldvalue);
+
+		length += fieldname.size() + fieldvalue.size();
+
+		fields[std::move(fieldname)] = std::move(fieldvalue);
 	}
+
 	// 640K ought to be enough for anyone
 	return length < 640 * 1024;
 }
@@ -1400,7 +1407,7 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 
 	// If something goes wrong, this player is to blame
 	RollbackScopeActor rollback_scope(m_rollback,
-			std::string("player:")+player->getName());
+			"player:" + player->getName());
 
 	// Check the target node for rollback data; leave others unnoticed
 	RollbackNode rn_old(&m_env->getMap(), p, this);

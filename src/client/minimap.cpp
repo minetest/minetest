@@ -555,8 +555,8 @@ v3f Minimap::getYawVec()
 scene::SMeshBuffer *Minimap::getMinimapMeshBuffer()
 {
 	scene::SMeshBuffer *buf = new scene::SMeshBuffer();
-	buf->Vertices.set_used(4);
-	buf->Indices.set_used(6);
+	buf->Vertices.resize(4);
+	buf->Indices.resize(6);
 	static const video::SColor c(255, 255, 255, 255);
 
 	buf->Vertices[0] = video::S3DVertex(-1, -1, 0, 0, 0, 1, c, 0, 1);

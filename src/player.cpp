@@ -30,10 +30,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"  // strlcpy
 
 
-Player::Player(const char *name, IItemDefManager *idef):
+bool is_valid_player_name(std::string_view name) {
+	return !name.empty() && name.size() <= PLAYERNAME_SIZE && string_allowed(name, PLAYERNAME_ALLOWED_CHARS);
+}
+
+Player::Player(const std::string &name, IItemDefManager *idef):
 	inventory(idef)
 {
-	strlcpy(m_name, name, PLAYERNAME_SIZE);
+	m_name = name;
 
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
@@ -86,6 +90,11 @@ void Player::setWieldIndex(u16 index)
 {
 	const InventoryList *mlist = inventory.getList("main");
 	m_wield_index = MYMIN(index, mlist ? mlist->getSize() : 0);
+}
+
+u16 Player::getWieldIndex()
+{
+	return std::min(m_wield_index, getMaxHotbarItemcount());
 }
 
 ItemStack &Player::getWieldedItem(ItemStack *selected, ItemStack *hand) const
@@ -155,6 +164,12 @@ void Player::clearHud()
 		delete hud.back();
 		hud.pop_back();
 	}
+}
+
+u16 Player::getMaxHotbarItemcount()
+{
+	InventoryList *mainlist = inventory.getList("main");
+	return mainlist ? std::min(mainlist->getSize(), (u32) hud_hotbar_itemcount) : 0;
 }
 
 #ifndef SERVER

@@ -602,7 +602,7 @@ void PartialMeshBuffer::beforeDraw() const
 void PartialMeshBuffer::afterDraw() const
 {
 	// Take the data back
-	m_vertex_indexes = m_buffer->Indices.steal();
+	m_vertex_indexes = std::move(m_buffer->Indices);
 }
 
 /*
@@ -783,12 +783,15 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 		}
 
 		if (mesh) {
-			// Use VBO for mesh (this just would set this for ever buffer)
+			// Use VBO for mesh (this just would set this for every buffer)
 			mesh->setHardwareMappingHint(scene::EHM_STATIC);
 		}
 	}
 
-	//std::cout<<"added "<<fastfaces.getSize()<<" faces."<<std::endl;
+	// Transparent parts have changing indices
+	for (auto &it : m_transparent_triangles)
+		it.buffer->setHardwareMappingHint(scene::EHM_STREAM, scene::EBT_INDEX);
+
 	m_bsp_tree.buildTree(&m_transparent_triangles, data->side_length);
 
 	// Check if animation is required for this mesh
@@ -906,6 +909,7 @@ void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
 	m_bsp_tree.traverse(rel_camera_pos, triangle_refs);
 
 	// arrange index sequences into partial buffers
+	m_transparent_buffers_consolidated = false;
 	m_transparent_buffers.clear();
 
 	scene::SMeshBuffer *current_buffer = nullptr;
@@ -930,6 +934,8 @@ void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
 
 void MapBlockMesh::consolidateTransparentBuffers()
 {
+	if (m_transparent_buffers_consolidated)
+		return;
 	m_transparent_buffers.clear();
 
 	scene::SMeshBuffer *current_buffer = nullptr;
@@ -952,6 +958,8 @@ void MapBlockMesh::consolidateTransparentBuffers()
 	if (!current_strain.empty()) {
 		this->m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
 	}
+
+	m_transparent_buffers_consolidated = true;
 }
 
 video::SColor encode_light(u16 light, u8 emissive_light)

@@ -282,6 +282,8 @@ private:
 	MapBlockBspTree m_bsp_tree;
 	// Ordered list of references to parts of transparent buffers to draw
 	std::vector<PartialMeshBuffer> m_transparent_buffers;
+	// Is m_transparent_buffers currently in consolidated form?
+	bool m_transparent_buffers_consolidated = false;
 };
 
 /*!

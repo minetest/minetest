@@ -285,19 +285,6 @@ public:
 	//! for performance reasons only available in debug mode
 	bool testGLError(int code = 0);
 
-	//! Set/unset a clipping plane.
-	//! There are at least 6 clipping planes available for the user to set at will.
-	//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-	//! \param plane: The plane itself.
-	//! \param enable: If true, enable the clipping plane else disable it.
-	bool setClipPlane(u32 index, const core::plane3df &plane, bool enable = false) override;
-
-	//! Enable/disable a clipping plane.
-	//! There are at least 6 clipping planes available for the user to set at will.
-	//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-	//! \param enable: If true, enable the clipping plane else disable it.
-	void enableClipPlane(u32 index, bool enable) override;
-
 	//! Enable the 2d override material
 	void enableMaterial2D(bool enable = true) override;
 
@@ -343,14 +330,12 @@ private:
 	bool updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
 	bool updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
 
-	void uploadClipPlane(u32 index);
-
 	//! inits the parts of the open gl driver used on all platforms
 	bool genericDriverInit();
 
 	ITexture *createDeviceDependentTexture(const io::path &name, IImage *image) override;
 
-	ITexture *createDeviceDependentTextureCubemap(const io::path &name, const core::array<IImage *> &image) override;
+	ITexture *createDeviceDependentTextureCubemap(const io::path &name, const std::vector<IImage *> &image) override;
 
 	//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
 	inline void getGLMatrix(GLfloat gl_matrix[16], const core::matrix4 &m);
@@ -403,15 +388,6 @@ private:
 	u8 AntiAlias;
 
 	SMaterial Material, LastMaterial;
-
-	struct SUserClipPlane
-	{
-		SUserClipPlane() :
-				Enabled(false) {}
-		core::plane3df Plane;
-		bool Enabled;
-	};
-	core::array<SUserClipPlane> UserClipPlanes;
 
 	core::stringc VendorName;
 

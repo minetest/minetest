@@ -116,6 +116,8 @@ void *ServerThread::run()
 		m_server->setAsyncFatalError(e.what());
 	} catch (LuaError &e) {
 		m_server->setAsyncFatalError(e);
+	} catch (ModError &e) {
+		m_server->setAsyncFatalError(e.what());
 	}
 
 	float dtime = 0.0f;
@@ -142,6 +144,8 @@ void *ServerThread::run()
 			m_server->setAsyncFatalError(e.what());
 		} catch (LuaError &e) {
 			m_server->setAsyncFatalError(e);
+		} catch (ModError &e) {
+			m_server->setAsyncFatalError(e.what());
 		}
 
 		dtime = 1e-6f * (porting::getTimeUs() - t0);
@@ -254,11 +258,7 @@ Server::Server(
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
 	m_dedicated(dedicated),
 	m_async_fatal_error(""),
-	m_con(std::make_shared<con::Connection>(PROTOCOL_ID,
-			512,
-			CONNECTION_TIMEOUT,
-			m_bind_addr.isIPv6(),
-			this)),
+	m_con(con::createMTP(CONNECTION_TIMEOUT, m_bind_addr.isIPv6(), this)),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
@@ -329,27 +329,6 @@ Server::~Server()
 	SendChatMessage(PEER_ID_INEXISTENT, ChatMessage(CHATMESSAGE_TYPE_ANNOUNCE,
 			L"*** Server shutting down"));
 
-	if (m_env) {
-		MutexAutoLock envlock(m_env_mutex);
-
-		infostream << "Server: Saving players" << std::endl;
-		m_env->saveLoadedPlayers();
-
-		infostream << "Server: Kicking players" << std::endl;
-		std::string kick_msg;
-		bool reconnect = false;
-		if (isShutdownRequested()) {
-			reconnect = m_shutdown_state.should_reconnect;
-			kick_msg = m_shutdown_state.message;
-		}
-		if (kick_msg.empty()) {
-			kick_msg = g_settings->get("kick_msg_shutdown");
-		}
-		m_env->saveLoadedPlayers(true);
-		kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
-			kick_msg, reconnect);
-	}
-
 	actionstream << "Server: Shutting down" << std::endl;
 
 	// Stop server step from happening
@@ -369,16 +348,33 @@ Server::~Server()
 	if (m_env) {
 		MutexAutoLock envlock(m_env_mutex);
 
+		infostream << "Server: Executing shutdown hooks" << std::endl;
 		try {
-			// Empty out the environment, this can also invoke callbacks.
-			m_env->deactivateBlocksAndObjects();
+			m_script->on_shutdown();
 		} catch (ModError &e) {
 			addShutdownError(e);
 		}
 
-		infostream << "Server: Executing shutdown hooks" << std::endl;
+		infostream << "Server: Saving players" << std::endl;
+		m_env->saveLoadedPlayers();
+
+		infostream << "Server: Kicking players" << std::endl;
+		std::string kick_msg;
+		bool reconnect = false;
+		if (isShutdownRequested()) {
+			reconnect = m_shutdown_state.should_reconnect;
+			kick_msg = m_shutdown_state.message;
+		}
+		if (kick_msg.empty()) {
+			kick_msg = g_settings->get("kick_msg_shutdown");
+		}
+		m_env->saveLoadedPlayers(true);
+		kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
+			kick_msg, reconnect);
+
 		try {
-			m_script->on_shutdown();
+			// Empty out the environment, this can also invoke callbacks.
+			m_env->deactivateBlocksAndObjects();
 		} catch (ModError &e) {
 			addShutdownError(e);
 		}
@@ -785,6 +781,12 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 		//infostream<<"Server: Checking added and deleted active objects"<<std::endl;
 		MutexAutoLock envlock(m_env_mutex);
 
+		// This guarantees that each object recomputes its cache only once per server step,
+		// unless get_effective_observers is called.
+		// If we were to update observer sets eagerly in set_observers instead,
+		// the total costs of calls to set_observers could theoretically be higher.
+		m_env->invalidateActiveObjectObserverCaches();
+
 		{
 			ClientInterface::AutoLock clientlock(m_clients);
 			const RemoteClientMap &clients = m_clients.getClientList();
@@ -1157,7 +1159,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	*/
 	{
 		NetworkPacket notice_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
-		notice_pkt << (u8) PLAYER_LIST_ADD << (u16) 1 << std::string(player->getName());
+		notice_pkt << (u8) PLAYER_LIST_ADD << (u16) 1 << player->getName();
 		m_clients.sendToAll(&notice_pkt);
 	}
 	{
@@ -1252,7 +1254,7 @@ void Server::onMapEditEvent(const MapEditEvent &event)
 	m_unsent_map_edit_queue.push(new MapEditEvent(event));
 }
 
-void Server::peerAdded(con::Peer *peer)
+void Server::peerAdded(con::IPeer *peer)
 {
 	verbosestream<<"Server::peerAdded(): peer->id="
 			<<peer->id<<std::endl;
@@ -1260,7 +1262,7 @@ void Server::peerAdded(con::Peer *peer)
 	m_peer_change_queue.push(con::PeerChange(con::PEER_ADDED, peer->id, false));
 }
 
-void Server::deletingPeer(con::Peer *peer, bool timeout)
+void Server::deletingPeer(con::IPeer *peer, bool timeout)
 {
 	verbosestream<<"Server::deletingPeer(): peer->id="
 			<<peer->id<<", timeout="<<timeout<<std::endl;
@@ -2058,18 +2060,9 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 	// Removed objects
 	pkt << static_cast<u16>(removed_objects.size());
 
-	std::vector<u16> sounds_to_stop;
-
 	for (auto &it : removed_objects) {
 		const auto [gone, id] = it;
 		ServerActiveObject *obj = m_env->getActiveObject(id);
-
-		// Stop sounds if objects go out of range.
-		// This fixes https://github.com/minetest/minetest/issues/8094.
-		// We may not remove sounds if an entity was removed on the server.
-		// See https://github.com/minetest/minetest/issues/14422.
-		if (!gone) // just out of range for client, not gone on server?
-			sounds_to_stop.push_back(id);
 
 		pkt << id;
 
@@ -2079,8 +2072,10 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 			obj->m_known_by_count--;
 	}
 
-	if (!sounds_to_stop.empty())
-		stopAttachedSounds(client->peer_id, sounds_to_stop);
+	// Note: Do yet NOT stop or remove object-attached sounds where the object goes out
+	// of range (client side). Such sounds would need to be re-sent when coming into range.
+	// Currently, the client will initiate m_playing_sounds clean ups indirectly by
+	// "Server::handleCommand_RemovedSounds".
 
 	// Added objects
 	pkt << static_cast<u16>(added_objects.size());
@@ -2262,37 +2257,6 @@ void Server::fadeSound(s32 handle, float step, float gain)
 	// Remove sound reference
 	if (gain <= 0 || psound.clients.empty())
 		m_playing_sounds.erase(it);
-}
-
-void Server::stopAttachedSounds(session_t peer_id,
-	const std::vector<u16> &object_ids)
-{
-	assert(peer_id != PEER_ID_INEXISTENT);
-	assert(!object_ids.empty());
-
-	auto cb = [&] (const s32 id, ServerPlayingSound &sound) -> bool {
-		if (!CONTAINS(object_ids, sound.object))
-			return false;
-
-		auto clients_it = sound.clients.find(peer_id);
-		if (clients_it == sound.clients.end())
-			return false;
-
-		NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
-		pkt << id;
-		Send(peer_id, &pkt);
-
-		sound.clients.erase(clients_it);
-		// delete if client list empty
-		return sound.clients.empty();
-	};
-
-	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); ) {
-		if (cb(it->first, it->second))
-			it = m_playing_sounds.erase(it);
-		else
-			++it;
-	}
 }
 
 void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,
@@ -2968,9 +2932,6 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 			PlayerSAO *playersao = player->getPlayerSAO();
 			assert(playersao);
 
-			playersao->clearChildAttachments();
-			playersao->clearParentAttachment();
-
 			// inform connected clients
 			const std::string &player_name = player->getName();
 			NetworkPacket notice(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
@@ -3216,14 +3177,11 @@ std::string Server::getStatusString()
 	bool first = true;
 	os << " | clients: ";
 	if (m_env) {
-		std::vector<session_t> clients = m_clients.getClientIDs();
-		for (session_t client_id : clients) {
-			RemotePlayer *player = m_env->getPlayer(client_id);
+		std::vector<std::string> player_names = m_clients.getPlayerNames();
 
-			// Get name of player
-			const char *name = player ? player->getName() : "<unknown>";
+		std::sort(player_names.begin(), player_names.end());
 
-			// Add name to information string
+		for (const std::string& name : player_names) {
 			if (!first)
 				os << ", ";
 			else

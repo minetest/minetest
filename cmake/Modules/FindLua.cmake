@@ -11,7 +11,7 @@ if(ENABLE_LUAJIT)
 	find_package(LuaJIT)
 	if(LUAJIT_FOUND)
 		set(USE_LUAJIT TRUE)
-		message (STATUS "Using LuaJIT provided by system.")
+		message (STATUS "Using LuaJIT")
 	elseif(REQUIRE_LUAJIT)
 		message(FATAL_ERROR "LuaJIT not found whereas REQUIRE_LUAJIT=\"TRUE\" is used.\n"
 			"To continue, either install LuaJIT or do not use REQUIRE_LUAJIT=\"TRUE\".")

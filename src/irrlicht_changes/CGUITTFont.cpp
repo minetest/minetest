@@ -513,12 +513,15 @@ void CGUITTFont::setFontHinting(const bool enable, const bool enable_auto_hintin
 
 void CGUITTFont::draw(const core::stringw& text, const core::rect<s32>& position, video::SColor color, bool hcenter, bool vcenter, const core::rect<s32>* clip)
 {
-	draw(EnrichedString(std::wstring(text.c_str()), color), position, hcenter, vcenter, clip);
+	// Allow colors to work for strings that have passed through irrlicht by catching
+	// them here and converting them to enriched just before drawing.
+	EnrichedString s(text.c_str(), color);
+	draw(s, position, hcenter, vcenter, clip);
 }
 
 void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& position, bool hcenter, bool vcenter, const core::rect<s32>* clip)
 {
-	const std::vector<video::SColor> &colors = text.getColors();
+	const auto &colors = text.getColors();
 
 	if (!Driver)
 		return;

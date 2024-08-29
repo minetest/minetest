@@ -140,7 +140,7 @@ void ShadowRenderer::initialize()
 	}
 
 	createShaders();
-	
+
 
 	m_texture_format = m_shadow_map_texture_32bit
 					   ? video::ECOLOR_FORMAT::ECF_R32F

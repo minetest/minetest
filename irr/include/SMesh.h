@@ -4,10 +4,10 @@
 
 #pragma once
 
+#include <vector>
 #include "IMesh.h"
 #include "IMeshBuffer.h"
 #include "aabbox3d.h"
-#include "irrArray.h"
 
 namespace irr
 {
@@ -28,15 +28,15 @@ struct SMesh : public IMesh
 	virtual ~SMesh()
 	{
 		// drop buffers
-		for (u32 i = 0; i < MeshBuffers.size(); ++i)
-			MeshBuffers[i]->drop();
+		for (auto *buf : MeshBuffers)
+			buf->drop();
 	}
 
 	//! clean mesh
 	virtual void clear()
 	{
-		for (u32 i = 0; i < MeshBuffers.size(); ++i)
-			MeshBuffers[i]->drop();
+		for (auto *buf : MeshBuffers)
+			buf->drop();
 		MeshBuffers.clear();
 		BoundingBox.reset(0.f, 0.f, 0.f);
 	}
@@ -44,7 +44,7 @@ struct SMesh : public IMesh
 	//! returns amount of mesh buffers.
 	u32 getMeshBufferCount() const override
 	{
-		return MeshBuffers.size();
+		return static_cast<u32>(MeshBuffers.size());
 	}
 
 	//! returns pointer to a mesh buffer
@@ -57,12 +57,11 @@ struct SMesh : public IMesh
 	/** reverse search */
 	IMeshBuffer *getMeshBuffer(const video::SMaterial &material) const override
 	{
-		for (s32 i = (s32)MeshBuffers.size() - 1; i >= 0; --i) {
-			if (material == MeshBuffers[i]->getMaterial())
-				return MeshBuffers[i];
+		for (auto it = MeshBuffers.rbegin(); it != MeshBuffers.rend(); it++) {
+			if (material == (*it)->getMaterial())
+				return *it;
 		}
-
-		return 0;
+		return nullptr;
 	}
 
 	//! returns an axis aligned bounding box
@@ -81,8 +80,8 @@ struct SMesh : public IMesh
 	void recalculateBoundingBox()
 	{
 		bool hasMeshBufferBBox = false;
-		for (u32 i = 0; i < MeshBuffers.size(); ++i) {
-			const core::aabbox3df &bb = MeshBuffers[i]->getBoundingBox();
+		for (auto *buf : MeshBuffers) {
+			const core::aabbox3df &bb = buf->getBoundingBox();
 			if (!bb.isEmpty()) {
 				if (!hasMeshBufferBBox) {
 					hasMeshBufferBBox = true;
@@ -110,19 +109,19 @@ struct SMesh : public IMesh
 	//! set the hardware mapping hint, for driver
 	void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer = EBT_VERTEX_AND_INDEX) override
 	{
-		for (u32 i = 0; i < MeshBuffers.size(); ++i)
-			MeshBuffers[i]->setHardwareMappingHint(newMappingHint, buffer);
+		for (auto *buf : MeshBuffers)
+			buf->setHardwareMappingHint(newMappingHint, buffer);
 	}
 
 	//! flags the meshbuffer as changed, reloads hardware buffers
 	void setDirty(E_BUFFER_TYPE buffer = EBT_VERTEX_AND_INDEX) override
 	{
-		for (u32 i = 0; i < MeshBuffers.size(); ++i)
-			MeshBuffers[i]->setDirty(buffer);
+		for (auto *buf : MeshBuffers)
+			buf->setDirty(buffer);
 	}
 
 	//! The meshbuffers of this mesh
-	core::array<IMeshBuffer *> MeshBuffers;
+	std::vector<IMeshBuffer *> MeshBuffers;
 
 	//! The bounding box of this mesh
 	core::aabbox3d<f32> BoundingBox;

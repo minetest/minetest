@@ -2,6 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
+#include <algorithm>
+
 #include "CSceneManager.h"
 #include "IVideoDriver.h"
 #include "IFileSystem.h"
@@ -95,9 +97,8 @@ CSceneManager::~CSceneManager()
 	if (CollisionManager)
 		CollisionManager->drop();
 
-	u32 i;
-	for (i = 0; i < MeshLoaderList.size(); ++i)
-		MeshLoaderList[i]->drop();
+	for (auto *loader : MeshLoaderList)
+		loader->drop();
 
 	if (ActiveCamera)
 		ActiveCamera->drop();
@@ -140,12 +141,11 @@ IAnimatedMesh *CSceneManager::getUncachedMesh(io::IReadFile *file, const io::pat
 	IAnimatedMesh *msh = 0;
 
 	// iterate the list in reverse order so user-added loaders can override the built-in ones
-	s32 count = MeshLoaderList.size();
-	for (s32 i = count - 1; i >= 0; --i) {
-		if (MeshLoaderList[i]->isALoadableFileExtension(filename)) {
+	for (auto it = MeshLoaderList.rbegin(); it != MeshLoaderList.rend(); it++) {
+		if ((*it)->isALoadableFileExtension(filename)) {
 			// reset file to avoid side effects of previous calls to createMesh
 			file->seek(0);
-			msh = MeshLoaderList[i]->createMesh(file);
+			msh = (*it)->createMesh(file);
 			if (msh) {
 				MeshCache->addMesh(cachename, msh);
 				msh->drop();
@@ -388,14 +388,8 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode *node, E_SCENE_NODE_RENDE
 	switch (pass) {
 		// take camera if it is not already registered
 	case ESNRP_CAMERA: {
-		taken = 1;
-		for (u32 i = 0; i != CameraList.size(); ++i) {
-			if (CameraList[i] == node) {
-				taken = 0;
-				break;
-			}
-		}
-		if (taken) {
+		if (std::find(CameraList.begin(), CameraList.end(), node) == CameraList.end()) {
+			taken = 1;
 			CameraList.push_back(node);
 		}
 	} break;
@@ -405,19 +399,19 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode *node, E_SCENE_NODE_RENDE
 		break;
 	case ESNRP_SOLID:
 		if (!isCulled(node)) {
-			SolidNodeList.push_back(node);
+			SolidNodeList.emplace_back(node);
 			taken = 1;
 		}
 		break;
 	case ESNRP_TRANSPARENT:
 		if (!isCulled(node)) {
-			TransparentNodeList.push_back(TransparentNodeEntry(node, camWorldPos));
+			TransparentNodeList.emplace_back(node, camWorldPos);
 			taken = 1;
 		}
 		break;
 	case ESNRP_TRANSPARENT_EFFECT:
 		if (!isCulled(node)) {
-			TransparentEffectNodeList.push_back(TransparentNodeEntry(node, camWorldPos));
+			TransparentEffectNodeList.emplace_back(node, camWorldPos);
 			taken = 1;
 		}
 		break;
@@ -429,8 +423,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode *node, E_SCENE_NODE_RENDE
 			for (u32 i = 0; i < count; ++i) {
 				if (Driver->needsTransparentRenderPass(node->getMaterial(i))) {
 					// register as transparent node
-					TransparentNodeEntry e(node, camWorldPos);
-					TransparentNodeList.push_back(e);
+					TransparentNodeList.emplace_back(node, camWorldPos);
 					taken = 1;
 					break;
 				}
@@ -438,7 +431,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode *node, E_SCENE_NODE_RENDE
 
 			// not transparent, register as solid
 			if (!taken) {
-				SolidNodeList.push_back(node);
+				SolidNodeList.emplace_back(node);
 				taken = 1;
 			}
 		}
@@ -509,10 +502,10 @@ void CSceneManager::drawAll()
 		CurrentRenderPass = ESNRP_CAMERA;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
-		for (i = 0; i < CameraList.size(); ++i)
-			CameraList[i]->render();
+		for (auto *node : CameraList)
+			node->render();
 
-		CameraList.set_used(0);
+		CameraList.clear();
 	}
 
 	// render skyboxes
@@ -520,10 +513,10 @@ void CSceneManager::drawAll()
 		CurrentRenderPass = ESNRP_SKY_BOX;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
-		for (i = 0; i < SkyBoxList.size(); ++i)
-			SkyBoxList[i]->render();
+		for (auto *node : SkyBoxList)
+			node->render();
 
-		SkyBoxList.set_used(0);
+		SkyBoxList.clear();
 	}
 
 	// render default objects
@@ -531,12 +524,12 @@ void CSceneManager::drawAll()
 		CurrentRenderPass = ESNRP_SOLID;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
-		SolidNodeList.sort(); // sort by textures
+		std::sort(SolidNodeList.begin(), SolidNodeList.end());
 
-		for (i = 0; i < SolidNodeList.size(); ++i)
-			SolidNodeList[i].Node->render();
+		for (auto &it : SolidNodeList)
+			it.Node->render();
 
-		SolidNodeList.set_used(0);
+		SolidNodeList.clear();
 	}
 
 	// render transparent objects.
@@ -544,11 +537,12 @@ void CSceneManager::drawAll()
 		CurrentRenderPass = ESNRP_TRANSPARENT;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
-		TransparentNodeList.sort(); // sort by distance from camera
-		for (i = 0; i < TransparentNodeList.size(); ++i)
-			TransparentNodeList[i].Node->render();
+		std::sort(TransparentNodeList.begin(), TransparentNodeList.end());
 
-		TransparentNodeList.set_used(0);
+		for (auto &it : TransparentNodeList)
+			it.Node->render();
+
+		TransparentNodeList.clear();
 	}
 
 	// render transparent effect objects.
@@ -556,12 +550,12 @@ void CSceneManager::drawAll()
 		CurrentRenderPass = ESNRP_TRANSPARENT_EFFECT;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
-		TransparentEffectNodeList.sort(); // sort by distance from camera
+		std::sort(TransparentEffectNodeList.begin(), TransparentEffectNodeList.end());
 
-		for (i = 0; i < TransparentEffectNodeList.size(); ++i)
-			TransparentEffectNodeList[i].Node->render();
+		for (auto &it : TransparentEffectNodeList)
+			it.Node->render();
 
-		TransparentEffectNodeList.set_used(0);
+		TransparentEffectNodeList.clear();
 	}
 
 	// render custom gui nodes
@@ -569,10 +563,10 @@ void CSceneManager::drawAll()
 		CurrentRenderPass = ESNRP_GUI;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
-		for (i = 0; i < GuiNodeList.size(); ++i)
-			GuiNodeList[i]->render();
+		for (auto *node : GuiNodeList)
+			node->render();
 
-		GuiNodeList.set_used(0);
+		GuiNodeList.clear();
 	}
 	clearDeletionList();
 
@@ -592,7 +586,7 @@ void CSceneManager::addExternalMeshLoader(IMeshLoader *externalLoader)
 //! Returns the number of mesh loaders supported by Irrlicht at this time
 u32 CSceneManager::getMeshLoaderCount() const
 {
-	return MeshLoaderList.size();
+	return static_cast<u32>(MeshLoaderList.size());
 }
 
 //! Retrieve the given mesh loader
@@ -629,12 +623,9 @@ void CSceneManager::addToDeletionQueue(ISceneNode *node)
 //! clears the deletion list
 void CSceneManager::clearDeletionList()
 {
-	if (DeletionList.empty())
-		return;
-
-	for (u32 i = 0; i < DeletionList.size(); ++i) {
-		DeletionList[i]->remove();
-		DeletionList[i]->drop();
+	for (auto *node : DeletionList) {
+		node->remove();
+		node->drop();
 	}
 
 	DeletionList.clear();

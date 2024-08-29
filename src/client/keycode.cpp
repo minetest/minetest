@@ -348,7 +348,6 @@ const char *KeyPress::name() const
 }
 
 const KeyPress EscapeKey("KEY_ESCAPE");
-const KeyPress CancelKey("KEY_CANCEL");
 
 const KeyPress LMBKey("KEY_LBUTTON");
 const KeyPress MMBKey("KEY_MBUTTON");

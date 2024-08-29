@@ -73,11 +73,23 @@ namespace {
 	};
 }
 
+/*
+	ClientMap
+*/
+
 static void on_settings_changed(const std::string &name, void *data)
 {
-	static_cast<ClientMap*>(data)->onSettingChanged(name);
+	static_cast<ClientMap*>(data)->onSettingChanged(name, false);
 }
-// ClientMap
+
+static const std::string ClientMap_settings[] = {
+	"trilinear_filter",
+	"bilinear_filter",
+	"anisotropic_filter",
+	"transparency_sorting_distance",
+	"occlusion_culler",
+	"enable_raytraced_culling",
+};
 
 ClientMap::ClientMap(
 		Client *client,
@@ -102,37 +114,32 @@ ClientMap::ClientMap(
 	m_box = aabb3f(-BS*1000000,-BS*1000000,-BS*1000000,
 			BS*1000000,BS*1000000,BS*1000000);
 
-	/* TODO: Add a callback function so these can be updated when a setting
-	 *       changes.  At this point in time it doesn't matter (e.g. /set
-	 *       is documented to change server settings only)
-	 *
-	 * TODO: Local caching of settings is not optimal and should at some stage
-	 *       be updated to use a global settings object for getting thse values
-	 *       (as opposed to the this local caching). This can be addressed in
-	 *       a later release.
-	 */
-	m_cache_trilinear_filter  = g_settings->getBool("trilinear_filter");
-	m_cache_bilinear_filter   = g_settings->getBool("bilinear_filter");
-	m_cache_anistropic_filter = g_settings->getBool("anisotropic_filter");
-	m_cache_transparency_sorting_distance = g_settings->getU16("transparency_sorting_distance");
-	m_loops_occlusion_culler = g_settings->get("occlusion_culler") == "loops";
-	g_settings->registerChangedCallback("occlusion_culler", on_settings_changed, this);
-	m_enable_raytraced_culling = g_settings->getBool("enable_raytraced_culling");
-	g_settings->registerChangedCallback("enable_raytraced_culling", on_settings_changed, this);
+	for (const auto &name : ClientMap_settings)
+		g_settings->registerChangedCallback(name, on_settings_changed, this);
+	// load all settings at once
+	onSettingChanged("", true);
 }
 
-void ClientMap::onSettingChanged(const std::string &name)
+void ClientMap::onSettingChanged(std::string_view name, bool all)
 {
-	if (name == "occlusion_culler")
+	if (all || name == "trilinear_filter")
+		m_cache_trilinear_filter  = g_settings->getBool("trilinear_filter");
+	if (all || name == "bilinear_filter")
+		m_cache_bilinear_filter   = g_settings->getBool("bilinear_filter");
+	if (all || name == "anisotropic_filter")
+		m_cache_anistropic_filter = g_settings->getBool("anisotropic_filter");
+	if (all || name == "transparency_sorting_distance")
+		m_cache_transparency_sorting_distance = g_settings->getU16("transparency_sorting_distance");
+	if (all || name == "occlusion_culler")
 		m_loops_occlusion_culler = g_settings->get("occlusion_culler") == "loops";
-	if (name == "enable_raytraced_culling")
+	if (all || name == "enable_raytraced_culling")
 		m_enable_raytraced_culling = g_settings->getBool("enable_raytraced_culling");
 }
 
 ClientMap::~ClientMap()
 {
-	g_settings->deregisterChangedCallback("occlusion_culler", on_settings_changed, this);
-	g_settings->deregisterChangedCallback("enable_raytraced_culling", on_settings_changed, this);
+	for (const auto &name : ClientMap_settings)
+		g_settings->deregisterChangedCallback(name, on_settings_changed, this);
 }
 
 void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset, video::SColor light_color)
@@ -767,15 +774,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		if (is_frustum_culled(mesh_sphere_center, mesh_sphere_radius))
 			continue;
 
-		v3f block_pos_r = intToFloat(block->getPosRelative() + MAP_BLOCKSIZE / 2, BS);
-
-		float d = camera_position.getDistanceFrom(block_pos_r);
-		d = MYMAX(0,d - BLOCK_MAX_RADIUS);
-
 		// Mesh animation
 		if (pass == scene::ESNRP_SOLID) {
-			// Pretty random but this should work somewhat nicely
-			bool faraway = d >= BS * 50;
+			// 50 nodes is pretty arbitrary but it should work somewhat nicely
+			float distance_sq = camera_position.getDistanceFromSQ(mesh_sphere_center);
+			bool faraway = distance_sq >= std::pow(BS * 50 + mesh_sphere_radius, 2.0f);
+
 			if (block_mesh->isAnimationForced() || !faraway ||
 					mesh_animate_count < (m_control.range_all ? 200 : 50)) {
 
@@ -844,10 +848,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	drawcall_count += draw_order.size();
 
 	for (auto &descriptor : draw_order) {
-		scene::IMeshBuffer *buf = descriptor.getBuffer();
-
 		if (!descriptor.m_reuse_material) {
-			auto &material = buf->getMaterial();
+			auto &material = descriptor.getMaterial();
 
 			// Apply filter settings
 			material.forEachTexture([this] (auto &tex) {
@@ -879,8 +881,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		m.setTranslation(block_wpos - offset);
 
 		driver->setTransform(video::ETS_WORLD, m);
-		descriptor.draw(driver);
-		vertex_count += buf->getIndexCount();
+		vertex_count += descriptor.draw(driver);
 	}
 
 	g_profiler->avg(prefix + "draw meshes [ms]", draw.stop(true));
@@ -1197,22 +1198,11 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	// Render all mesh buffers in order
 	drawcall_count += draw_order.size();
 
-	bool translucent_foliage = g_settings->getBool("enable_translucent_foliage");
-
-	video::E_MATERIAL_TYPE leaves_material = video::EMT_SOLID;
-
-	// For translucent leaves, we want to use backface culling instead of frontface.
-	if (translucent_foliage) {
-		const u32 leaves_shader = m_client->getShaderSource()->getShader("nodes_shader", TILE_MATERIAL_WAVING_LEAVES, NDT_ALLFACES);
-		leaves_material = m_client->getShaderSource()->getShaderInfo(leaves_shader).material;
-	}
-
 	for (auto &descriptor : draw_order) {
-		scene::IMeshBuffer *buf = descriptor.getBuffer();
-
 		if (!descriptor.m_reuse_material) {
 			// override some material properties
-			video::SMaterial local_material = buf->getMaterial();
+			video::SMaterial local_material = descriptor.getMaterial();
+			local_material.MaterialType = material.MaterialType;
 			// do not override culling if the original material renders both back
 			// and front faces in solid mode (e.g. plantlike)
 			// Transparent plants would still render shadows only from one side,
@@ -1221,11 +1211,6 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 				local_material.BackfaceCulling = material.BackfaceCulling;
 				local_material.FrontfaceCulling = material.FrontfaceCulling;
 			}
-			if (local_material.MaterialType == leaves_material && translucent_foliage) {
-				local_material.BackfaceCulling = true;
-				local_material.FrontfaceCulling = false;
-			}
-			local_material.MaterialType = material.MaterialType;
 			local_material.BlendOperation = material.BlendOperation;
 			local_material.Lighting = false;
 			driver->setMaterial(local_material);
@@ -1236,8 +1221,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		m.setTranslation(block_wpos - offset);
 
 		driver->setTransform(video::ETS_WORLD, m);
-		descriptor.draw(driver);
-		vertex_count += buf->getIndexCount();
+		vertex_count += descriptor.draw(driver);
 	}
 
 	// restore the driver material state
@@ -1319,27 +1303,29 @@ void ClientMap::updateTransparentMeshBuffers()
 	ScopeProfiler sp(g_profiler, "CM::updateTransparentMeshBuffers", SPT_AVG);
 	u32 sorted_blocks = 0;
 	u32 unsorted_blocks = 0;
-	f32 sorting_distance_sq = std::pow(m_cache_transparency_sorting_distance * BS, 2.0f);
+	f32 sorting_distance = m_cache_transparency_sorting_distance * BS;
 
 
 	// Update the order of transparent mesh buffers in each mesh
 	for (auto it = m_drawlist.begin(); it != m_drawlist.end(); it++) {
-		MapBlock* block = it->second;
-		if (!block->mesh)
+		MapBlock *block = it->second;
+		MapBlockMesh *blockmesh = block->mesh;
+		if (!blockmesh)
 			continue;
 
 		if (m_needs_update_transparent_meshes ||
-				block->mesh->getTransparentBuffers().size() == 0) {
+				blockmesh->getTransparentBuffers().size() == 0) {
 
-			v3s16 block_pos = block->getPos();
-			v3f block_pos_f = intToFloat(block_pos * MAP_BLOCKSIZE + MAP_BLOCKSIZE / 2, BS);
-			f32 distance = m_camera_position.getDistanceFromSQ(block_pos_f);
-			if (distance <= sorting_distance_sq) {
-				block->mesh->updateTransparentBuffers(m_camera_position, block_pos);
+			v3f mesh_sphere_center = intToFloat(block->getPosRelative(), BS)
+					+ blockmesh->getBoundingSphereCenter();
+			f32 mesh_sphere_radius = blockmesh->getBoundingRadius();
+			f32 distance_sq = m_camera_position.getDistanceFromSQ(mesh_sphere_center);
+
+			if (distance_sq <= std::pow(sorting_distance + mesh_sphere_radius, 2.0f)) {
+				blockmesh->updateTransparentBuffers(m_camera_position, block->getPos());
 				++sorted_blocks;
-			}
-			else {
-				block->mesh->consolidateTransparentBuffers();
+			} else {
+				blockmesh->consolidateTransparentBuffers();
 				++unsorted_blocks;
 			}
 		}
@@ -1350,19 +1336,22 @@ void ClientMap::updateTransparentMeshBuffers()
 	m_needs_update_transparent_meshes = false;
 }
 
-scene::IMeshBuffer* ClientMap::DrawDescriptor::getBuffer()
+video::SMaterial &ClientMap::DrawDescriptor::getMaterial()
 {
-	return m_use_partial_buffer ? m_partial_buffer->getBuffer() : m_buffer;
+	return (m_use_partial_buffer ? m_partial_buffer->getBuffer() : m_buffer)->getMaterial();
 }
 
-void ClientMap::DrawDescriptor::draw(video::IVideoDriver* driver)
+u32 ClientMap::DrawDescriptor::draw(video::IVideoDriver* driver)
 {
 	if (m_use_partial_buffer) {
 		m_partial_buffer->beforeDraw();
 		driver->drawMeshBuffer(m_partial_buffer->getBuffer());
+		auto count = m_partial_buffer->getBuffer()->getVertexCount();
 		m_partial_buffer->afterDraw();
+		return count;
 	} else {
 		driver->drawMeshBuffer(m_buffer);
+		return m_buffer->getVertexCount();
 	}
 }
 

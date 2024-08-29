@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-10-20 20:44+0000\n"
-"Last-Translator: BRN Systems <brnsystems123@gmail.com>\n"
+"POT-Creation-Date: 2024-07-11 15:14+0200\n"
+"PO-Revision-Date: 2023-12-17 18:35+0000\n"
+"Last-Translator: Marian <daretmavi@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
 "sk/>\n"
 "Language: sk\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.1\n"
+"X-Generator: Weblate 5.3\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -71,7 +71,8 @@ msgid "Command not available: "
 msgstr "Príkaz nie je k dispozícií: "
 
 #: builtin/common/chatcommands.lua
-msgid "Get help for commands"
+#, fuzzy
+msgid "Get help for commands (-t: output in chat)"
 msgstr "Zobraz pomocníka k príkazom"
 
 #: builtin/common/chatcommands.lua
@@ -82,12 +83,9 @@ msgstr ""
 "zobrazenie všetkého."
 
 #: builtin/common/chatcommands.lua
-msgid "[all | <cmd>]"
+#, fuzzy
+msgid "[all | <cmd>] [-t]"
 msgstr "[all | <príkaz>]"
-
-#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
-msgid "OK"
-msgstr "V poriadku"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -104,6 +102,10 @@ msgstr "Objavila sa chyba:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Hlavná ponuka"
+
+#: builtin/fstk/ui.lua
+msgid "OK"
+msgstr "V poriadku"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -133,19 +135,28 @@ msgstr "Podporujeme iba protokol verzie $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Podporujeme verzie protokolov medzi $1 a $2."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "\"$1\" už exituje. Chcel by si ho prepísať?"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Error installing \"$1\": $2"
+msgstr "Chyba inštalácie \"$1\": $2"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "Nevyhnutné doplnky $1 a $2 budú nainštalované."
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download \"$1\""
+msgstr "Nepodarilo sa stiahnuť \"$1\""
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr "$1 od $2"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download $1"
+msgstr "Nepodarilo sa stiahnuť $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/contentdb.lua
+#, fuzzy
+msgid ""
+"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
+"broken archive)"
+msgstr ""
+"Nepodarilo sa rozbaliť \"$1\" (nepodporovaný typ súboru, alebo poškodený "
+"archív)"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -153,158 +164,157 @@ msgstr ""
 "$1 sa sťahuje,\n"
 "$2 čaká v rade"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "$1 downloading..."
 msgstr "$1 sťahujem..."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "$1 požadované nevyhnutné doplnky nie je možné nájsť."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "$1 bude nainštalovaný a $2 nevyhnutné doplnky budú vynechané."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All packages"
 msgstr "Všetky balíky"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "Už nainštalované"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Back to Main Menu"
 msgstr "Späť na Hlavnú ponuku"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "ContentDB nie je k dispozícií ak bol Minetest skompilovaný bez cURL"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Downloading..."
+msgstr "Sťahujem..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Error getting dependencies for package"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Games"
+msgstr "Hry"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "Nainštalovať"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Načítavam..."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Mods"
+msgstr "Rozšírenia"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No packages could be retrieved"
+msgstr "Nepodarilo sa stiahnuť žiadne balíčky"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "Bez výsledkov"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No updates"
+msgstr "Bez aktualizácií"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Queued"
+msgstr "Čaká v rade"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Texture packs"
+msgstr "Balíky textúr"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "The package $1 was not found."
+msgstr "Balíček $1 nebol nájdený."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Odinštalovať"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Aktualizácia"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Update All [$1]"
+msgstr "Aktualizovať všetky [$1]"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "View more information in a web browser"
+msgstr "Pozri si viac informácií vo webovom prehliadači"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "You need to install a game before you can install a mod"
+msgstr "Pred inštaláciou rozšírenia musíš nainštalovať hru"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "Nevyhnutné doplnky $1 a $2 budú nainštalované."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 by $2"
+msgstr "$1 od $2"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 required dependencies could not be found."
+msgstr "$1 požadované nevyhnutné doplnky nie je možné nájsť."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "$1 bude nainštalovaný a $2 nevyhnutné doplnky budú vynechané."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Already installed"
+msgstr "Už nainštalované"
+
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Base Game:"
 msgstr "Základná hra:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_overwrite.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
+#: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "Zrušiť"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB nie je k dispozícií ak bol Minetest skompilovaný bez cURL"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Nevyhnutné doplnky:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "Sťahujem..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr "Chyba inštalácie \"$1\": $2"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download \"$1\""
-msgstr "Nepodarilo sa stiahnuť \"$1\""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "Nepodarilo sa stiahnuť $1"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr ""
-"Nepodarilo sa rozbaliť \"$1\" (nepodporovaný typ súboru, alebo poškodený "
-"archív)"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Games"
-msgstr "Hry"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Install"
-msgstr "Nainštalovať"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install $1"
 msgstr "Nainštalovať $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install missing dependencies"
 msgstr "Nainštalovať chýbajúce závislosti"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Načítavam..."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Mods"
-msgstr "Rozšírenia"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "Nepodarilo sa stiahnuť žiadne balíčky"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "Bez výsledkov"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No updates"
-msgstr "Bez aktualizácií"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Not found"
 msgstr "Nenájdené"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "Prepísať"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Please check that the base game is correct."
 msgstr "Prosím skontroluj či je základná hra v poriadku."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Queued"
-msgstr "Čaká v rade"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "\"$1\" už exituje. Chcel by si ho prepísať?"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "Balíky textúr"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "The package $1 was not found."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "Odinštalovať"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "Aktualizácia"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "Aktualizovať všetky [$1]"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "Pozri si viac informácií vo webovom prehliadači"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "Overwrite"
+msgstr "Prepísať"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -453,8 +463,18 @@ msgid "Decorations"
 msgstr "Dekorácie"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Desert temples"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
 msgstr "Vývojový Test je určený vývojárom."
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Different dungeon variant generated in desert biomes (only if dungeons "
+"enabled)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -652,7 +672,7 @@ msgstr "Registrovať sa"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr ""
+msgstr "Odmietnuť"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -660,21 +680,25 @@ msgid ""
 "\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
 "game."
 msgstr ""
+"Po dlhú dobu sa engine Minetest dodával s predinštalovanou hrou s názvom "
+"\"Minetest Game\". Od verzie 5.8.0 sa Minetest dodáva bez predinštalovanej "
+"hry."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
 "If you want to continue playing in your Minetest Game worlds, you need to "
 "reinstall Minetest Game."
 msgstr ""
+"Ak chceš pokračovať v hraní svojich svetov v hre Minetest Game, musíš si hru "
+"Minetest Game znova nainštalovať."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Minetest Game is no longer installed by default"
-msgstr ""
+msgstr "Hra Minetest už nie je predvolene nainštalovaná"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
-#, fuzzy
 msgid "Reinstall Minetest Game"
-msgstr "Nainštalovať inú hru"
+msgstr "Preinštaluj hru Minetest Game"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -751,9 +775,8 @@ msgid "Select file"
 msgstr "Zvoľ súbor"
 
 #: builtin/mainmenu/settings/components.lua
-#, fuzzy
 msgid "Set"
-msgstr "Vybrať"
+msgstr "Nastav"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "(No description of setting given)"
@@ -822,20 +845,15 @@ msgstr "zjemnené (eased)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
-msgstr ""
+msgstr "(Použiť systémový jazyk)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Accessibility"
-msgstr ""
+msgstr "Dostupnosť"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Back"
-msgstr "Vzad"
-
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "Zmeň ovládacie klávesy"
+msgstr "Späť"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
@@ -846,7 +864,8 @@ msgstr "Komunikácia"
 msgid "Clear"
 msgstr "Zmaž"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Ovládanie"
 
@@ -855,18 +874,16 @@ msgid "General"
 msgstr "Všeobecné"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Movement"
-msgstr "Rýchly pohyb"
+msgstr "Pohyb"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Reset setting to default"
-msgstr "Obnov štand. hodnoty"
+msgstr "Obnov štand. nastavenia"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
-msgstr ""
+msgstr "Obnoviť predvolené nastavenie ($1)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
@@ -874,7 +891,7 @@ msgstr "Hľadaj"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
-msgstr ""
+msgstr "Zobraziť rozšírené nastavenia"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
@@ -894,11 +911,11 @@ msgstr "Doplnky: Rozšírenia (módy)"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
-msgstr ""
+msgstr "(V hre bude potrebné povoliť aj tiene)"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Custom"
-msgstr ""
+msgstr "Vlastné"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Disabled"
@@ -951,7 +968,7 @@ msgstr "Jadro tímu"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Irrlicht device:"
-msgstr ""
+msgstr "Zariadenie Irrlicht:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -982,18 +999,16 @@ msgid "Browse online content"
 msgstr "Hľadaj nový obsah na internete"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Browse online content [$1]"
-msgstr "Hľadaj nový obsah na internete"
+msgstr "Prezeranie online obsahu [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
 msgstr "Doplnky"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content [$1]"
-msgstr "Doplnky"
+msgstr "Obsah [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
@@ -1016,9 +1031,8 @@ msgid "Rename"
 msgstr "Premenuj"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Update available?"
-msgstr "<nie je k dispozícií>"
+msgstr "Je k dispozícii aktualizácia?"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1057,6 +1071,17 @@ msgid "Install games from ContentDB"
 msgstr "Inštaluj hry z ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Minetest doesn't come with a game by default."
+msgstr "Hra Minetest už nie je predvolene nainštalovaná"
+
+#: builtin/mainmenu/tab_local.lua
+msgid ""
+"Minetest is a game-creation platform that allows you to play many different "
+"games."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "Nový"
 
@@ -1089,8 +1114,9 @@ msgid "Start Game"
 msgstr "Spusti hru"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You have no games installed."
-msgstr "Nie je nainštalovaná žiadna hra."
+#, fuzzy
+msgid "You need to install a game before you can create a world."
+msgstr "Pred inštaláciou rozšírenia musíš nainštalovať hru"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1170,16 +1196,8 @@ msgid "Rebuilding shaders..."
 msgstr "Obnovujem shadery..."
 
 #: src/client/clientlauncher.cpp
-msgid "Connection error (timed out?)"
-msgstr "Chyba spojenia (časový limit?)"
-
-#: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "Nie je možné nájsť alebo nahrať hru: "
-
-#: src/client/clientlauncher.cpp
-msgid "Invalid gamespec."
-msgstr "Chybná špec. hry."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1205,7 +1223,11 @@ msgstr "Dodaný súbor s heslom nie je možné otvoriť: "
 msgid "Provided world path doesn't exist: "
 msgstr "Zadaná cesta k svetu neexistuje: "
 
-#: src/client/game.cpp src/server.cpp
+#: src/client/clientmedia.cpp src/client/game.cpp
+msgid "Media..."
+msgstr "Média..."
+
+#: src/client/game.cpp src/client/shader.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1214,16 +1236,8 @@ msgstr ""
 "Pozri detaily v debug.txt."
 
 #: src/client/game.cpp
-msgid "- Address: "
-msgstr "- Adresa: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "- Mode: "
-
-#: src/client/game.cpp
-msgid "- Port: "
-msgstr "- Port: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1260,10 +1274,6 @@ msgid "Block bounds hidden"
 msgstr "Hranice bloku sú skryté"
 
 #: src/client/game.cpp
-msgid "Block bounds shown for all blocks"
-msgstr "Hranice bloku sú zobrazené pre všetky bloky"
-
-#: src/client/game.cpp
 msgid "Block bounds shown for current block"
 msgstr "Hranice bloku sú zobrazené pre aktuálny blok"
 
@@ -1280,9 +1290,8 @@ msgid "Camera update enabled"
 msgstr "Aktualizácia kamery je aktivovaná"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Can't show block bounds (disabled by game or mod)"
-msgstr "Hranice bloku nie je možné zobraziť (zakázané rozšírením, alebo hrou)"
+msgstr "Hranice bloku nie je možné zobraziť (zakázané hrou, alebo rozšírením)"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1309,6 +1318,10 @@ msgid "Connecting to server..."
 msgstr "Pripájam sa k serveru..."
 
 #: src/client/game.cpp
+msgid "Connection error (timed out?)"
+msgstr "Chyba spojenia (časový limit?)"
+
+#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "Spojenie sa z neznámeho dôvodu nepodarilo"
 
@@ -1317,46 +1330,13 @@ msgid "Continue"
 msgstr "Pokračuj"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
-msgid ""
-"Controls:\n"
-"- %s: move forwards\n"
-"- %s: move backwards\n"
-"- %s: move left\n"
-"- %s: move right\n"
-"- %s: jump/climb up\n"
-"- %s: dig/punch/use\n"
-"- %s: place/use\n"
-"- %s: sneak/climb down\n"
-"- %s: drop item\n"
-"- %s: inventory\n"
-"- Mouse: turn/look\n"
-"- Mouse wheel: select item\n"
-"- %s: chat\n"
-msgstr ""
-"Ovládanie:\n"
-"- %s: pohyb vpred\n"
-"- %s: pohyb vzad\n"
-"- %s: pohyb doľava\n"
-"- %s: pohyb doprava\n"
-"- %s: skoč/vylez\n"
-"- %s: kop/udri\n"
-"- %s: polož/použi\n"
-"- %s: zakrádaj sa/choď dole\n"
-"- %s: odhoď vec\n"
-"- %s: inventár\n"
-"- Myš: otoč sa/obzeraj sa\n"
-"- Myš koliesko: zvoľ si vec\n"
-"- %s: komunikácia\n"
-
-#: src/client/game.cpp
 #, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/use\n"
-"- long tap: dig/punch/use\n"
+"- tap: place/punch/use (default)\n"
+"- long tap: dig/use (default)\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1373,10 +1353,10 @@ msgstr ""
 "Menu/Inventár je zobrazené/ý:\n"
 "- dvojklik (mimo):\n"
 " -->zatvor\n"
-"- klik na kôpku, klik na pozíciu:\n"
+"- klik na kôpku, klik na miesto:\n"
 " --> presuň kôpku \n"
 "- chyť a prenes, klik druhým prstom\n"
-" --> polož jednu vec na pozíciu\n"
+" --> polož jednu vec na miesto\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1449,6 +1429,11 @@ msgid "Fog enabled"
 msgstr "Hmla je aktivovaná"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Fog enabled by game or mod"
+msgstr "Zväčšenie je zakázané hrou, alebo rozšírením"
+
+#: src/client/game.cpp
 msgid "Game info:"
 msgstr "Informácie o hre:"
 
@@ -1467,10 +1452,6 @@ msgstr "Definície vecí..."
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "KiB/s"
-
-#: src/client/game.cpp
-msgid "Media..."
-msgstr "Média..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1573,28 +1554,28 @@ msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "Nemôžem sa spojiť s %s, lebo IPv6 je zakázané"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range disabled"
-msgstr "Neobmedzená dohľadnosť je aktivovaná"
+msgstr "Neobmedzená dohľadnosť je vypnutá"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range enabled"
 msgstr "Neobmedzená dohľadnosť je aktivovaná"
 
 #: src/client/game.cpp
 msgid "Unlimited viewing range enabled, but forbidden by game or mod"
-msgstr ""
+msgstr "Neobmedzená dohľadnosť je povolená, ale zakázaná hrou alebo rozšírením"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing changed to %d (the minimum)"
-msgstr "Dohľadnosť je na minime: %d"
+msgstr "Dohľadnosť zmenená na: %d (minimum)"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
 msgstr ""
+"Dohľadnosť zmenená na: %d (minimum), ale je obmedzená na %d hrou, alebo "
+"rozšírením"
 
 #: src/client/game.cpp
 #, c-format
@@ -1602,20 +1583,23 @@ msgid "Viewing range changed to %d"
 msgstr "Dohľadnosť je zmenená na %d"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d (the maximum)"
-msgstr "Dohľadnosť je zmenená na %d"
+msgstr "Dohľadnosť zmenená na: %d (maximum)"
 
 #: src/client/game.cpp
 #, c-format
 msgid ""
 "Viewing range changed to %d (the maximum), but limited to %d by game or mod"
 msgstr ""
+"Dohľadnosť zmenená na: %d (maximum), ale je obmedzená na %d hrou, alebo "
+"rozšírením"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d, but limited to %d by game or mod"
-msgstr "Dohľadnosť je zmenená na %d"
+msgstr ""
+"Dohľadnosť je zmenená na %d, ale je obmedzená na %d hrou, alebo rozšírením"
 
 #: src/client/game.cpp
 #, c-format
@@ -1629,10 +1613,6 @@ msgstr "Obrysy zobrazené"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "Zväčšenie je zakázané hrou, alebo rozšírením"
-
-#: src/client/game.cpp
-msgid "ok"
-msgstr "ok"
 
 #: src/client/gameui.cpp
 msgid "Chat currently disabled by game or mod"
@@ -1673,32 +1653,28 @@ msgstr "Backspace"
 
 #. ~ Usually paired with the Pause key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Break Key"
-msgstr "Tlačidlo zakrádania sa"
+msgstr "Klávesa Break"
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
 msgstr "Caps Lock"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Clear Key"
-msgstr "Zmaž"
+msgstr "Klávesa Clear"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Control Key"
-msgstr "CTRL"
+msgstr "Klávesa CTRL"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Delete Key"
-msgstr "Vymazať"
+msgstr "Klávesa Del"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
-msgstr ""
+msgstr "Šípka dole"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1745,9 +1721,8 @@ msgid "Insert"
 msgstr "Vlož"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Arrow"
-msgstr "Ľavý CRTL"
+msgstr "Ľavá šípka"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1771,9 +1746,8 @@ msgstr "Ľavá klávesa Windows"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Menu Key"
-msgstr "Menu"
+msgstr "Klávesa Menu"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
@@ -1848,20 +1822,17 @@ msgid "OEM Clear"
 msgstr "OEM Clear"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Down"
 msgstr "Page down"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Up"
 msgstr "Page up"
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Pause Key"
-msgstr "Pause"
+msgstr "Klávesa Pause"
 
 #: src/client/keycode.cpp
 msgid "Play"
@@ -1873,14 +1844,12 @@ msgid "Print"
 msgstr "PrtSc"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Return Key"
-msgstr "Enter"
+msgstr "Klávesa Enter"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Arrow"
-msgstr "Pravý CRTL"
+msgstr "Pravá šípka"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1912,9 +1881,8 @@ msgid "Select"
 msgstr "Vybrať"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Shift Key"
-msgstr "Shift"
+msgstr "Klávesa Shift"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
@@ -1934,7 +1902,7 @@ msgstr "Tab"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
-msgstr ""
+msgstr "Šípka hore"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -1945,9 +1913,8 @@ msgid "X Button 2"
 msgstr "X tlačidlo 2"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Zoom Key"
-msgstr "Priblíž"
+msgstr "Klávesa Zoom"
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
@@ -1966,6 +1933,15 @@ msgstr "Minimapa v povrchovom režime, priblíženie x%d"
 #: src/client/minimap.cpp
 msgid "Minimap in texture mode"
 msgstr "Minimapa v móde textúry"
+
+#: src/client/shader.cpp
+#, fuzzy, c-format
+msgid "Failed to compile the \"%s\" shader."
+msgstr "Nepodarilo sa otvoriť web stránku"
+
+#: src/client/shader.cpp
+msgid "Shaders are enabled but GLSL is not supported by the driver."
+msgstr ""
 
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
@@ -2160,6 +2136,19 @@ msgstr "Priblíž"
 msgid "press key"
 msgstr "stlač klávesu"
 
+#: src/gui/guiOpenURL.cpp
+msgid "Open"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+msgid "Open URL?"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+#, fuzzy
+msgid "Unable to open URL"
+msgstr "Nepodarilo sa otvoriť web stránku"
+
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "Zmeniť"
@@ -2193,6 +2182,7 @@ msgstr "Hlasitosť: %d%%"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
+#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "sk"
 
@@ -2208,9 +2198,9 @@ msgid "Name is taken. Please choose another name"
 msgstr "Meno už je použité. Prosím zvoľ si iné meno"
 
 #: src/server.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "%s while shutting down: "
-msgstr "Vypínam..."
+msgstr "%s počas vypínania: "
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2280,7 +2270,7 @@ msgstr "2D šum, ktorý určuje údolia a kanály riek."
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -2336,7 +2326,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D šum definujúci počet kobiek na časť mapy (mapchunk)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2416,14 +2405,6 @@ msgid "Adds particles when digging a node."
 msgstr "Pridá časticové efekty pri vykopávaní kocky."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
-"screens."
-msgstr ""
-"Nastav dpi konfiguráciu podľa svojej obrazovky (nie pre X11/len pre Android) "
-"napr. pre 4k obrazovky."
-
-#: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
 "Uprav zistenú hustotu zobrazenia, použitú pre zmenu veľkosti prvkov "
@@ -2452,6 +2433,10 @@ msgstr "Meno správcu"
 #: src/settings_translation_file.cpp
 msgid "Advanced"
 msgstr "Pokročilé"
+
+#: src/settings_translation_file.cpp
+msgid "Allows liquids to be translucent."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2492,14 +2477,12 @@ msgid "Announce to this serverlist."
 msgstr "Zverejni v zozname serverov."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Anti-aliasing scale"
-msgstr "Vyhladzovanie:"
+msgstr "Rozsah vyhladzovania:"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Antialiasing method"
-msgstr "Vyhladzovanie:"
+msgstr "Metóda vyhladzovania:"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2512,6 +2495,17 @@ msgstr "Pridaj názov veci do popisku."
 #: src/settings_translation_file.cpp
 msgid "Apple trees noise"
 msgstr "Šum jabloní"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Apply dithering to reduce color banding artifacts.\n"
+"Dithering significantly increases the size of losslessly-compressed\n"
+"screenshots and it works incorrectly if the display or operating system\n"
+"performs additional dithering or if the color channels are not quantized\n"
+"to 8 bits.\n"
+"With OpenGL ES, dithering only works if the shader supports high\n"
+"floating-point precision and it may have a higher performance impact."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
@@ -2530,18 +2524,38 @@ msgid "Ask to reconnect after crash"
 msgstr "Ponúkni obnovu pripojenia po páde"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "At this distance the server will aggressively optimize which blocks are sent "
 "to\n"
 "clients.\n"
 "Small values potentially improve performance a lot, at the expense of "
 "visible\n"
-"rendering glitches (some blocks will not be rendered under water and in "
-"caves,\n"
-"as well as sometimes on land).\n"
+"rendering glitches (some blocks might not be rendered correctly in caves).\n"
 "Setting this to a value greater than max_block_send_distance disables this\n"
 "optimization.\n"
-"Stated in mapblocks (16 nodes)."
+"Stated in MapBlocks (16 nodes)."
+msgstr ""
+"V tento vzdialenosti bude server agresívne optimalizovať, ktoré\n"
+"bloky pošle klientovi.\n"
+"Malé hodnoty potenciálne výrazne zvýšia výkon, za cenu viditeľných\n"
+"chýb renderovania (niektoré bloky nebudú vyrenderované pod vodou a v "
+"jaskyniach,\n"
+"prípadne niekedy aj na súši).\n"
+"Nastavenie hodnoty vyššej ako max_block_send_distance deaktivuje túto\n"
+"optimalizáciu.\n"
+"Udávane v blokoch mapy (16 kociek)."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"At this distance the server will perform a simpler and cheaper occlusion "
+"check.\n"
+"Smaller values potentially improve performance, at the expense of "
+"temporarily visible\n"
+"rendering glitches (missing blocks).\n"
+"This is especially useful for very large viewing range (upwards of 500).\n"
+"Stated in MapBlocks (16 nodes)."
 msgstr ""
 "V tento vzdialenosti bude server agresívne optimalizovať, ktoré\n"
 "bloky pošle klientovi.\n"
@@ -2582,9 +2596,8 @@ msgid "Base terrain height."
 msgstr "Základná výška terénu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base texture size"
-msgstr "Minimálna veľkosť textúry"
+msgstr "Základná veľkosť textúry"
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
@@ -2607,13 +2620,17 @@ msgid "Bind address"
 msgstr "Spájacia adresa"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Biome API"
-msgstr "Ekosystémy"
+msgstr "API pre biómy"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
 msgstr "Šum biómu"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Block cull optimize distance"
+msgstr "Vzdialenosť pre optimalizáciu posielania blokov"
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
@@ -2800,7 +2817,6 @@ msgid "Client-side Modding"
 msgstr "Úpravy (módovanie) na strane klienta"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client-side node lookup range restriction"
 msgstr "Obmedzenie vyhľadávania dosahu kociek na strane klienta"
 
@@ -2817,7 +2833,6 @@ msgid "Clouds"
 msgstr "Mraky"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds are a client-side effect."
 msgstr "Mraky sú efektom na strane klienta."
 
@@ -2832,6 +2847,12 @@ msgstr "Farebná hmla"
 #: src/settings_translation_file.cpp
 msgid "Colored shadows"
 msgstr "Farebné tiene"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Comma-separated list of AL and ALC extensions that should not be used.\n"
+"Useful for testing. See al_extensions.[h,cpp] for details."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2997,10 +3018,6 @@ msgstr ""
 "Nastavuje farbu objektu zameriavača"
 
 #: src/settings_translation_file.cpp
-msgid "DPI"
-msgstr "DPI"
-
-#: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
 msgstr "Hraničná veľkosť ladiaceho log súboru"
 
@@ -3053,6 +3070,23 @@ msgstr ""
 "Definuje kvalitu filtrovania tieňov\n"
 "Toto simuluje efekt jemných tieňov použitím PCF alebo poisson disk\n"
 "zároveň ale spotrebováva viac zdrojov."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Define the oldest clients allowed to connect.\n"
+"Older clients are compatible in the sense that they will not crash when "
+"connecting\n"
+"to new servers, but they may not support all new features that you are "
+"expecting.\n"
+"This allows for more fine-grained control than "
+"strict_protocol_version_checking.\n"
+"Minetest still enforces its own internal minimum, and enabling\n"
+"strict_protocol_version_checking will effectively override this."
+msgstr ""
+"Aktivuj zakázanie pripojenia starých klientov.\n"
+"Starší klienti sú kompatibilný v tom zmysle, že nepadnú pri pripájaní\n"
+"k novým serverom, ale nemusia podporovať nové funkcie, ktoré očakávaš."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -3119,6 +3153,8 @@ msgid ""
 "methods.\n"
 "Value of 2 means taking 2x2 = 4 samples."
 msgstr ""
+"Definuje veľkosť mriežky vzorkovania pre metódy antialiasingu FSAA a SSAA.\n"
+"Hodnota 2 znamená, že sa použijú 2x2 = 4 vzorky."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the width of the river channel."
@@ -3254,6 +3290,11 @@ msgid "Enable Bloom Debug"
 msgstr "Povoliť ladenie žiary"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Debanding"
+msgstr "Aktivuj zranenie"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enable IPv6 support (for both client and server).\n"
 "Required for IPv6 connections to work at all."
@@ -3278,6 +3319,11 @@ msgstr ""
 "Aktivuj poisson disk filtrovanie.\n"
 "Ak je aktivované použije poisson disk pre vytvorenie \"mäkkých tieňov\". V "
 "opačnom prípade sa použije PCF filtrovanie."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Post Processing"
+msgstr "Následné spracovanie"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
@@ -3325,7 +3371,12 @@ msgstr "Aktivuj rozšírenie pre zabezpečenie"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
-msgstr ""
+msgstr "Povolenie kolieska myši (posúvanie) pre výber položky v hlavnej lište."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable random mod loading (mainly used for testing)."
+msgstr "Aktivuje náhodný užívateľský vstup (používa sa len pre testovanie)."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3356,6 +3407,11 @@ msgstr ""
 "k novým serverom, ale nemusia podporovať nové funkcie, ktoré očakávaš."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable touchscreen"
+msgstr "Dotyková obrazovka"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enable usage of remote media server (if provided by server).\n"
 "Remote servers offer a significantly faster way to download media (e.g. "
@@ -3366,14 +3422,6 @@ msgstr ""
 "Vzdialený server poskytuje výrazne rýchlejší spôsob pre sťahovanie médií "
 "(napr. textúr)\n"
 "pri pripojení na server."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable vertex buffer objects.\n"
-"This should greatly improve graphics performance."
-msgstr ""
-"Aktivuj \"vertex buffer objects\".\n"
-"Toto by malo viditeľne zvýšiť grafický výkon."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3414,6 +3462,19 @@ msgid "Enables caching of facedir rotated meshes."
 msgstr "Aktivuje ukladanie tvárou rotovaných Mesh objektov do medzipamäti."
 
 #: src/settings_translation_file.cpp
+msgid "Enables debug and error-checking in the OpenGL driver."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enables the post processing pipeline."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enables touchscreen mode, allowing you to play the game with a touchscreen."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
@@ -3422,9 +3483,8 @@ msgstr ""
 "za cenu drobných vizuálnych chýb, ktoré neovplyvnia hrateľnosť."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Engine Profiler"
-msgstr "Profil enginu"
+msgstr "Profilovač enginu"
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3533,12 +3593,11 @@ msgid "Fixed virtual joystick"
 msgstr "Pevný virtuálny joystick"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Fixes the position of virtual joystick.\n"
 "If disabled, virtual joystick will center to first-touch's position."
 msgstr ""
-"(Android) Zafixuje pozíciu virtuálneho joysticku.\n"
+"Zafixuje pozíciu virtuálneho joysticku.\n"
 "Ak je vypnuté, virtuálny joystick sa vycentruje na pozícií prvého dotyku."
 
 #: src/settings_translation_file.cpp
@@ -3725,7 +3784,6 @@ msgid "Fullscreen mode."
 msgstr "Režim celej obrazovky."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "GUI"
 msgstr "Užívateľské rozhrania"
 
@@ -3848,9 +3906,8 @@ msgid "Heat noise"
 msgstr "Teplotný šum"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Height component of the initial window size."
-msgstr "Výška okna po spustení. Ignorované v móde plnej obrazovky."
+msgstr "Komponent výšky počiatočnej veľkosti okna."
 
 #: src/settings_translation_file.cpp
 msgid "Height noise"
@@ -3914,25 +3971,23 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar: Enable mouse wheel for selection"
-msgstr ""
+msgstr "Hlavná lišta: Povolenie kolieska myši pre výber"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar: Invert mouse wheel direction"
-msgstr ""
+msgstr "Hlavná lišta: Obrátenie smeru kolieska myši"
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
 msgstr "Aké hlboké majú byť rieky."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How fast liquid waves will move. Higher = faster.\n"
 "If negative, liquid waves will move backwards."
 msgstr ""
 "Ako rýchlo sa budú pohybovať vlny tekutín. Vyššia hodnota = rýchlejšie.\n"
-"Ak je záporná, tekutina sa bude pohybovať naspäť.\n"
-"Požaduje, aby boli aktivované vlniace sa tekutiny."
+"Ak je záporná, tekutina sa bude pohybovať naspäť."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4040,7 +4095,6 @@ msgstr ""
 "nemôžu heslo vymazať."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, the server will perform map block occlusion culling based on\n"
 "on the eye position of the player. This can reduce the number of blocks\n"
@@ -4050,11 +4104,10 @@ msgstr ""
 "Ak je aktivovaný, server bude realizovať occlusion culling blokov mapy "
 "založený\n"
 "na pozícií oka hráča. Toto môže znížiť počet blokov posielaných klientovi\n"
-"o 50-80%. Klient už nebude dostávať takmer neviditeľné bloky,\n"
-"takže funkčnosť režim prechádzania stenami je obmedzená."
+"o 50-80%. Klient už nebude dostávať väčšinu neviditeľných blokov,\n"
+"takže funkčnosť v režime prechádzania stenami je obmedzená."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, you can place nodes at the position (feet + eye level) where you "
 "stand.\n"
@@ -4170,6 +4223,7 @@ msgstr "Obrátiť smer myši"
 #: src/settings_translation_file.cpp
 msgid "Invert mouse wheel (scroll) direction for item selection in hotbar."
 msgstr ""
+"Obrátenie smeru kolieska myši (posúvania) pri výbere položky v hlavnej lište."
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
@@ -4347,18 +4401,19 @@ msgstr ""
 "-   Nepriehľadné: vypne priehliadnosť"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Length of a server tick and the interval at which objects are generally "
-"updated over\n"
-"network, stated in seconds."
+"Length of a server tick (the interval at which everything is generally "
+"updated),\n"
+"stated in seconds.\n"
+"Does not apply to sessions hosted from the client menu."
 msgstr ""
 "Dĺžka kroku servera a interval v ktorom sú objekty štandardne aktualizované\n"
 "cez sieť, uvedené v sekundách."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Length of liquid waves."
-msgstr "Rýchlosť vlny tekutín"
+msgstr "Dĺžka vlnenia kvapaliny."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4531,10 +4586,6 @@ msgstr ""
 "Prispôsob farbu hmly a oblohy dennej dobe (svitanie/súmrak) a uhlu pohľadu."
 
 #: src/settings_translation_file.cpp
-msgid "Makes all liquids opaque"
-msgstr "Všetky tekutiny budú nepriehľadné"
-
-#: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
 msgstr "Úroveň kompresie mapy pre diskové úložisko"
 
@@ -4589,11 +4640,14 @@ msgid "Map generation attributes specific to Mapgen v5."
 msgstr "Príznaky pre generovanie špecifické pre generátor V5."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
-"the 'jungles' flag is ignored."
+"the 'jungles' flag is ignored.\n"
+"The 'temples' flag disables generation of desert temples. Normal dungeons "
+"will appear instead."
 msgstr ""
 "Špecifické atribúty pre generátor V6.\n"
 "Príznak 'snowbiomes' aktivuje nový systém 5 biómov.\n"
@@ -4635,10 +4689,6 @@ msgstr "Oneskorenie generovania Mesh blokov"
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generation threads"
 msgstr "Vlákna generovania siete mapblock"
-
-#: src/settings_translation_file.cpp
-msgid "Mapblock mesh generator's MapBlock cache size in MB"
-msgstr "Medzipamäť Mapblock Mesh generátora blokov v MB"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
@@ -4854,12 +4904,10 @@ msgid "Maximum simultaneous block sends per client"
 msgstr "Maximum súčasných odoslaní bloku na klienta"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum size of the outgoing chat queue"
 msgstr "Maximálna veľkosť výstupnej komunikačnej fronty"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum size of the outgoing chat queue.\n"
 "0 to disable queueing and -1 to make the queue size unlimited."
@@ -4912,6 +4960,11 @@ msgid "Minimap scan height"
 msgstr "Minimapa výška skenovania"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Minimum dig repetition interval"
+msgstr "Interval opakovania pokladania"
+
+#: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of large caves per mapchunk."
 msgstr ""
 "Minimálny limit náhodného počtu veľkých jaskýň v danej časti mapy (mapchunk)."
@@ -4927,7 +4980,7 @@ msgstr "Mip-mapovanie"
 
 #: src/settings_translation_file.cpp
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Rôzne"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Profiler"
@@ -4980,6 +5033,11 @@ msgstr "Citlivosť myši"
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
 msgstr "Multiplikátor citlivosti myši."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Movement threshold"
+msgstr "Hraničná hodnota dutín"
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
@@ -5096,7 +5154,6 @@ msgstr ""
 "a spotrebou pamäti (4096=100MB, ako približné pravidlo)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Number of messages a player may send per 10 seconds."
 msgstr "Počet správ, ktoré môže hráč poslať za 10 sekúnd."
 
@@ -5112,16 +5169,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Occlusion Culler"
-msgstr ""
+msgstr "Occlusion Culler"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Occlusion Culling"
-msgstr "Occlusion culling na strane servera"
-
-#: src/settings_translation_file.cpp
-msgid "Opaque liquids"
-msgstr "Nepriehľadné tekutiny"
+msgstr "Occlusion Culling"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5136,6 +5188,11 @@ msgid ""
 msgstr ""
 "Otvorí menu pozastavenia, ak aktuálne okno hry nie je vybrané.\n"
 "Nepozastaví sa ak je otvorený formspec."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "OpenGL debug"
+msgstr "Ladenie generátora máp"
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
@@ -5213,20 +5270,20 @@ msgid "Poisson filtering"
 msgstr "Poisson filtrovanie"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Post Processing"
-msgstr "Post processing"
+msgstr "Následné spracovanie"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Prevent digging and placing from repeating when holding the respective "
 "buttons.\n"
 "Enable this when you dig or place too often by accident.\n"
 "On touchscreens, this only affects digging."
 msgstr ""
-"Zabráni opakovanému kopaniu a ukladaniu blokov pri držaní tlačítka myši.\n"
-"Aktivuj, ak príliš často omylom niečo vykopeš, alebo položíš blok."
+"Zabráni opakovanému kopaniu a ukladaniu blokov pri držaní určeného "
+"tlačítka.\n"
+"Aktivuj, ak príliš často omylom niečo vykopeš, alebo položíš blok.\n"
+"Na dotykových obrazovkách to ovplyvňuje len kopanie."
 
 #: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
@@ -5271,6 +5328,15 @@ msgid "Proportion of large caves that contain liquid."
 msgstr "Pomer častí veľkých jaskýň, ktoré obsahujú tekutinu."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Protocol version minimum"
+msgstr "Verzie protokolov sa nezhodujú. "
+
+#: src/settings_translation_file.cpp
+msgid "Punch gesture"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
@@ -5288,6 +5354,10 @@ msgid "Random input"
 msgstr "Náhodný vstup"
 
 #: src/settings_translation_file.cpp
+msgid "Random mod load order"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
 msgstr "Posledné správy v komunikácií"
 
@@ -5296,7 +5366,6 @@ msgid "Regular font path"
 msgstr "Štandardná cesta k písmam"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Remember screen size"
 msgstr "Pamätať si veľkosť obrazovky"
 
@@ -5416,6 +5485,12 @@ msgid ""
 "is maximized is stored in window_maximized.\n"
 "(Autosaving window_maximized only works if compiled with SDL.)"
 msgstr ""
+"Automatické ukladanie veľkosti okna pri úprave.\n"
+"Ak je to povolené, veľkosť obrazovky sa uloží do screen_w a screen_h a či je "
+"okno\n"
+"maximalizované, sa uloží do window_maximized.\n"
+"(Automatické ukladanie window_maximized funguje len vtedy, ak je "
+"skompilované s SDL.)"
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
@@ -5490,13 +5565,14 @@ msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
 msgstr "Viď. https://www.sqlite.org/pragma.html#pragma_synchronous"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Select the antialiasing method to apply.\n"
 "\n"
 "* None - No antialiasing (default)\n"
 "\n"
-"* FSAA - Hardware-provided full-screen antialiasing (incompatible with "
-"shaders)\n"
+"* FSAA - Hardware-provided full-screen antialiasing\n"
+"(incompatible with Post Processing and Undersampling)\n"
 "A.K.A multi-sample antialiasing (MSAA)\n"
 "Smoothens out block edges but does not affect the insides of textures.\n"
 "A restart is required to change this option.\n"
@@ -5510,6 +5586,24 @@ msgid ""
 "Renders higher-resolution image of the scene, then scales down to reduce\n"
 "the aliasing effects. This is the slowest and the most accurate method."
 msgstr ""
+"Vyber metódu vyhladzovania, ktorá sa má použiť.\n"
+"\n"
+"* Žiadna - žiadne vyhladzovanie (predvolené)\n"
+"\n"
+"* FSAA - hardvérové celoobrazovkové vyhladzovanie (nekompatibilné so "
+"shadermi)\n"
+"Známe aj ako multi-sample antialiasing (MSAA)\n"
+"Vyhladzuje okraje blokov, ale nemá vplyv na vnútro textúr.\n"
+"Na zmenu tejto možnosti je potrebný reštart.\n"
+"\n"
+"* FXAA - rýchle približné vyhladzovanie (vyžaduje shadery)\n"
+"Aplikuje filter následného spracovania na detekciu a vyhladenie "
+"vysokokontrastných hrán.\n"
+"Ponúka rovnováhu medzi rýchlosťou a kvalitou obrazu.\n"
+"\n"
+"* SSAA - Super-sampling antialiasing (vyžaduje shadery)\n"
+"Vykresľuje obraz scény s vyšším rozlíšením, potom ho zmenší, aby sa znížil\n"
+"aliasingové efekty. Ide o najpomalšiu a najpresnejšiu metódu."
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
@@ -5598,7 +5692,6 @@ msgid "Server port"
 msgstr "Port servera"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server-side occlusion culling"
 msgstr "Occlusion culling na strane servera"
 
@@ -5619,15 +5712,14 @@ msgid "Serverlist file"
 msgstr "Súbor so zoznamom serverov"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the default tilt of Sun/Moon orbit in degrees.\n"
 "Games may change orbit tilt via API.\n"
 "Value of 0 means no tilt / vertical orbit."
 msgstr ""
-"Nastav sklon orbity slnka/mesiaca v stupňoch\n"
-"Hodnota 0 znamená bez vertikálneho sklonu orbity.\n"
-"Minimálna hodnota: 0.0; max. hodnota: 60.0"
+"Nastav sklon obežnej dráhy slnka/mesiaca v stupňoch\n"
+"Hry môžu meniť sklon obežnej dráhy prostredníctvom rozhrania API.\n"
+"Hodnota 0 znamená bez vertikálneho sklonu obežnej dráhy ."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5640,8 +5732,9 @@ msgstr ""
 "Rozsah: od -1 do 1.0"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Set the language. Leave empty to use the system language.\n"
+"Set the language. By default, the system language is used.\n"
 "A restart is required after changing this."
 msgstr ""
 "Nastav jazyk. Ponechaj prázdne pre systémové nastavenie.\n"
@@ -5674,11 +5767,8 @@ msgstr ""
 "Minimálna hodnota: 1.0; Maximálna hodnota: 15.0"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Set to true to enable Shadow Mapping."
-msgstr ""
-"Nastav true pre povolenie mapovania tieňov.\n"
-"Požaduje aby boli aktivované shadery."
+msgstr "Nastav pre povolenie mapovania tieňov."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5689,25 +5779,20 @@ msgstr ""
 "Rozžiarené farby sa prelejú na susedné objekty."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
+msgid "Set to true to enable volumetric lighting effect (a.k.a. \"Godrays\")."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Set to true to enable waving leaves."
-msgstr ""
-"Nastav true pre povolenie vlniacich sa listov.\n"
-"Požaduje aby boli aktivované shadery."
+msgstr "Nastav pre povolenie vlniacich sa listov."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Set to true to enable waving liquids (like water)."
-msgstr ""
-"Nastav true pre aktivovanie vlniacich sa tekutín (ako napr. voda).\n"
-"Požaduje aby boli aktivované shadery."
+msgstr "Nastav pre aktivovanie vlniacich sa tekutín (ako napr. voda)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Set to true to enable waving plants."
-msgstr ""
-"Nastav true pre aktivovanie vlniacich sa rastlín.\n"
-"Požaduje aby boli aktivované shadery."
+msgstr "Nastav pre aktivovanie vlniacich sa rastlín."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5740,11 +5825,11 @@ msgid "Shaders"
 msgstr "Tieňovanie"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Shaders allow advanced visual effects and may increase performance on some "
 "video\n"
-"cards.\n"
-"This only works with the OpenGL video backend."
+"cards."
 msgstr ""
 "Shadery umožňujú pokročilé vizuálne efekty a na niektorých grafických "
 "kartách\n"
@@ -5819,7 +5904,6 @@ msgstr ""
 "Systémy so slabým GPU (alebo bez GPU) viac profitujú z menších hodnôt."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING: There is no benefit, and there are several dangers, in\n"
@@ -5835,16 +5919,6 @@ msgstr ""
 "Zníženie tejto hodnoty zvýši hustotu jaskýň a kobiek.\n"
 "Zmena tejto hodnoty slúži k špeciálnym účelom, odporúča sa ponechať\n"
 "to nezmenené."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Size of the MapBlock cache of the mesh generator. Increasing this will\n"
-"increase the cache hit %, reducing the data being copied from the main\n"
-"thread, thus reducing jitter."
-msgstr ""
-"Veľkosť medzipamäte blokov v Mesh generátori.\n"
-"Zvýšenie zvýši využitie medzipamäte %, zníži sa množstvo dát kopírovaných\n"
-"z hlavnej vetvy a tým sa zníži chvenie."
 
 #: src/settings_translation_file.cpp
 msgid "Sky Body Orbit Tilt"
@@ -5882,15 +5956,19 @@ msgstr "Jemné osvetlenie"
 #, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Change Keys."
-msgstr "Zjemní rotáciu kamery vo filmovom režime. 0 je pre vypnuté."
+"cinematic mode by using the key set in Controls."
+msgstr ""
+"Zjemní rotáciu kamery vo filmovom režime. 0 je pre vypnuté. Do filmového "
+"režimu vstúpiš pomocou tlačidla nastaveného v nastaveniach Zmeň ovládacie "
+"klávesy."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Smooths rotation of camera, also called look or mouse smoothing. 0 to "
 "disable."
-msgstr "Zjemní rotáciu kamery vo filmovom režime. 0 je pre vypnuté."
+msgstr ""
+"Vyhladzuje otáčanie kamery, nazývané aj vyhladzovanie vzhľadu alebo pohybu "
+"myši. 0 je pre vypnuté."
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed"
@@ -5903,6 +5981,15 @@ msgstr "Rýchlosť zakrádania sa, v kockách za sekundu."
 #: src/settings_translation_file.cpp
 msgid "Soft shadow radius"
 msgstr "Dosah mäkkých tieňov"
+
+#: src/settings_translation_file.cpp
+msgid "Sound"
+msgstr "Zvuk"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Sound Extensions Blacklist"
+msgstr "Čierna listina príznakov z ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5927,7 +6014,6 @@ msgstr ""
 "určité (alebo všetky) typy."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Spread a complete update of shadow map over given number of frames.\n"
 "Higher values might make shadows laggy, lower values\n"
@@ -5950,9 +6036,8 @@ msgstr ""
 "Štandardné gausovo rozdelenie odchýlky svetelnej krivky."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Static spawn point"
-msgstr "Pevný bod obnovy"
+msgstr "Pevný bod oživenia"
 
 #: src/settings_translation_file.cpp
 msgid "Steepness noise"
@@ -5989,7 +6074,6 @@ msgid "Strip color codes"
 msgstr "Odstráň farby"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Surface level of optional water placed on a solid floatland layer.\n"
 "Water is disabled by default and will only be placed if this value is set\n"
@@ -6006,15 +6090,15 @@ msgstr ""
 "krajiny.\n"
 "Štandardne je voda deaktivovaná a bude umiestnená len ak je táto voľba "
 "nastavená\n"
-"nad 'mgv7_floatland_ymax' - 'mgv7_floatland_taper'\n"
-"(štart horného zašpicaťovania).\n"
+"na 'mgv7_floatland_ymax' - 'mgv7_floatland_taper'\n"
+"(štart horného zužovania).\n"
 "***VAROVANIE, POTENCIÁLNE RIZIKO PRE VÝKON SVETOV A SERVEROV***:\n"
 "Pri aktivovaní vody na lietajúcich pevninách musí byť nastavený\n"
 "a otestovaný pevný povrch nastavením 'mgv7_floatland_density' na 2.0 ( alebo "
 "inú\n"
 "požadovanú hodnotu v závislosti na 'mgv7_np_floatland'), aby sa zabránilo\n"
 "pre server náročnému extrémnemu toku vody a rozsiahlym záplavám\n"
-"na svet pod nimi."
+"na svete pod nimi."
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -6111,11 +6195,30 @@ msgstr ""
 "pri volaní `/profiler save [format]` bez udania formátu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
+msgid ""
+"The delay in milliseconds after which a touch interaction is considered a "
+"long tap."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "The file path relative to your world path in which profiles will be saved to."
 msgstr ""
-"Relatívna cesta k súboru vzhľadom na svet z ktorého budú profily uložené."
+"Relatívna cesta k súboru vzhľadom na cestu k súborom sveta, do ktorého budú "
+"profily uložené."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The gesture for for punching players/entities.\n"
+"This can be overridden by games and mods.\n"
+"\n"
+"* short_tap\n"
+"Easy to use and well-known from other games that shall not be named.\n"
+"\n"
+"* long_tap\n"
+"Known from the classic Minetest mobile controls.\n"
+"Combat is more or less impossible."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
@@ -6123,12 +6226,12 @@ msgstr "Identifikátor joysticku na použitie"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "The length in pixels it takes for touchscreen interaction to start."
+msgid ""
+"The length in pixels after which a touch interaction is considered movement."
 msgstr ""
-"Dĺžka v pixloch, ktorú potrebuje dotyková obrazovka pre začiatok interakcie."
+"Dĺžka v pixeloch, ktorú potrebuje dotyková obrazovka pre začiatok interakcie."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The maximum height of the surface of waving liquids.\n"
 "4.0 = Wave height is two nodes.\n"
@@ -6138,8 +6241,16 @@ msgstr ""
 "Maximálna výška povrchu vlniacich sa tekutín.\n"
 "4.0 = Výška vlny sú dve kocky.\n"
 "0.0 = Vlna sa vôbec nehýbe.\n"
-"Štandardná hodnota je 1.0 (1/2 kocky).\n"
-"Požaduje, aby boli aktivované vlniace sa tekutiny."
+"Štandardná hodnota je 1.0 (1/2 kocky)."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"The minimum time in seconds it takes between digging nodes when holding\n"
+"the dig button."
+msgstr ""
+"Čas v sekundách pre opakované položenie kocky\n"
+"ak je držané tlačítko pokladania."
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -6172,11 +6283,12 @@ msgstr ""
 "Malo by to byť konfigurované spolu s active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
 "OpenGL is the default for desktop, and OGLES2 for Android.\n"
-"Shaders are supported by OpenGL and OGLES2 (experimental)."
+"Shaders are supported by everything but OGLES1."
 msgstr ""
 "Renderovací back-end.\n"
 "Poznámka: Po zmene je vyžadovaný reštart!\n"
@@ -6242,7 +6354,6 @@ msgid "The type of joystick"
 msgstr "Typ joysticku"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The vertical distance over which heat drops by 20 if 'altitude_chill' is\n"
 "enabled. Also, the vertical distance over which humidity drops by 10 if\n"
@@ -6255,6 +6366,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Third of 4 2D noises that together define hill/mountain range height."
 msgstr "Tretí zo 4 2D šumov, ktoré spolu definujú rozsah výšok kopcov/hôr."
+
+#: src/settings_translation_file.cpp
+msgid "Threshold for long taps"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6301,23 +6416,21 @@ msgid "Touchscreen"
 msgstr "Dotyková obrazovka"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen sensitivity"
-msgstr "Citlivosť myši"
+msgstr "Citlivosť dotykovej obrazovky"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen sensitivity multiplier."
-msgstr "Multiplikátor citlivosti myši."
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Touchscreen threshold"
-msgstr "Prah citlivosti dotykovej obrazovky"
+msgstr "Multiplikátor citlivosti dotykovej obrazovky."
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
 msgstr "Kompromisy za výkon"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Translucent liquids"
+msgstr "Nepriehľadné tekutiny"
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
@@ -6354,10 +6467,20 @@ msgid ""
 "\n"
 "This setting should only be changed if you have performance problems."
 msgstr ""
+"Typ occlusion_culler\n"
+"\n"
+"\"loops\" je starší algoritmus s vnorenými slučkami a zložitosťou O(n³)\n"
+"\"bfs\" je nový algoritmus založený na vyhľadávaní v šírke a bočnom "
+"vylučovaní\n"
+"\n"
+"Toto nastavenie by sa malo meniť len v prípade problémov s výkonom."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"URL to JSON file which provides information about the newest Minetest release"
+"URL to JSON file which provides information about the newest Minetest "
+"release\n"
+"If this is empty the engine will never check for updates."
 msgstr ""
 "URL na súbor JSON, ktorý sprostredkúva informácie o najnovšej verzií "
 "Minetestu"
@@ -6413,14 +6536,12 @@ msgid "Use a cloud animation for the main menu background."
 msgstr "Použi animáciu mrakov pre pozadie hlavného menu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use anisotropic filtering when looking at textures from an angle."
 msgstr "Použi anisotropné filtrovanie pri pohľade na textúry zo strany."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use bilinear filtering when scaling textures."
-msgstr "Použi trilineárne filtrovanie pri zmene mierky textúr."
+msgstr "Použi bilineárne filtrovanie pri zmene veľkosti textúr."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6436,7 +6557,6 @@ msgstr ""
 "objektu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
@@ -6447,14 +6567,14 @@ msgstr ""
 "Gama korektné podvzorkovanie nie je podporované."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use raytraced occlusion culling in the new culler.\n"
 "This flag enables use of raytraced occlusion culling test for\n"
 "client mesh sizes smaller than 4x4x4 map blocks."
 msgstr ""
-"Použite raytraced occlusion culling v novom culleri.\n"
-"Tento príznak umožňuje použiť raytraced occlusion culling test"
+"Použi raytraced occlusion culling v novom culleri.\n"
+"Tento príznak umožňuje použiť raytraced occlusion culling test pre\n"
+"veľkosti klientskej siete menšie ako 4x4x4 bloky mapy."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6462,25 +6582,23 @@ msgid ""
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
+"Pri zmene veľkosti textúr použi trilineárne filtrovanie.\n"
+"Ak je povolené bilineárne aj trilineárne filtrovanie,\n"
+"použije sa trilineárne filtrovanie."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use virtual joystick to trigger \"Aux1\" button.\n"
 "If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
 "circle."
 msgstr ""
-"(Android) Použije virtuálny joystick na stlačenie tlačidla \"Aux1\".\n"
-"Ak je aktivované, virtuálny joystick stlačí tlačidlo \"Aux1\" keď je mimo "
-"hlavný kruh."
+"Použi virtuálny joystick na stlačenie tlačidla \"Aux1\".\n"
+"Ak je aktivované, virtuálny joystick tiež stlačí tlačidlo \"Aux1\", keď je "
+"mimo hlavný kruh."
 
 #: src/settings_translation_file.cpp
 msgid "User Interfaces"
 msgstr "Užívateľské rozhranie"
-
-#: src/settings_translation_file.cpp
-msgid "VBO"
-msgstr "VBO"
 
 #: src/settings_translation_file.cpp
 msgid "VSync"
@@ -6547,6 +6665,8 @@ msgid ""
 "Vertical screen synchronization. Your system may still force VSync on even "
 "if this is disabled."
 msgstr ""
+"Vertikálna synchronizácia obrazovky. Systém môže vynútiť zapnutie funkcie "
+"VSync, aj keď je táto funkcia vypnutá."
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
@@ -6573,12 +6693,26 @@ msgid "Volume"
 msgstr "Hlasitosť"
 
 #: src/settings_translation_file.cpp
+msgid "Volume multiplier when the window is unfocused."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Volume of all sounds.\n"
 "Requires the sound system to be enabled."
 msgstr ""
 "Hlasitosť všetkých zvukov.\n"
 "Požaduje aby bol zvukový systém aktivovaný."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Volume when unfocused"
+msgstr "FPS ak je hra nezameraná, alebo pozastavená"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Volumetric lighting"
+msgstr "Jemné osvetlenie"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6713,7 +6847,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether the window is maximized."
-msgstr ""
+msgstr "Či je okno maximalizované."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6745,9 +6879,8 @@ msgid ""
 msgstr "Zobrazenie ladiaceho okna na klientovi (má rovnaký efekt ako F5)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Width component of the initial window size."
-msgstr "Šírka okna po spustení. Ignorované v móde celej obrazovky."
+msgstr "Šírka okna po spustení."
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
@@ -6755,7 +6888,7 @@ msgstr "Šírka línií obrysu kocky."
 
 #: src/settings_translation_file.cpp
 msgid "Window maximized"
-msgstr ""
+msgstr "Maximalizované okno"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6871,11 +7004,17 @@ msgstr "Paralelný limit cURL"
 #~ msgid "(game support required)"
 #~ msgstr "(vyžaduje sa podpora hry)"
 
+#~ msgid "- Address: "
+#~ msgstr "- Adresa: "
+
 #~ msgid "- Creative Mode: "
 #~ msgstr "- Kreatívny mód: "
 
 #~ msgid "- Damage: "
 #~ msgstr "- Poškodenie: "
+
+#~ msgid "- Port: "
+#~ msgstr "- Port: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -6913,6 +7052,13 @@ msgstr "Paralelný limit cURL"
 #~ "Adresa pre pripojenie sa.\n"
 #~ "Ponechaj prázdne pre spustenie lokálneho servera.\n"
 #~ "Adresné políčko v hlavnom menu prepíše toto nastavenie."
+
+#~ msgid ""
+#~ "Adjust dpi configuration to your screen (non X11/Android only) e.g. for "
+#~ "4k screens."
+#~ msgstr ""
+#~ "Nastav dpi konfiguráciu podľa svojej obrazovky (nie pre X11/len pre "
+#~ "Android) napr. pre 4k obrazovky."
 
 #~ msgid ""
 #~ "Adjust the saturation (or vividness) of the scene\n"
@@ -6974,6 +7120,9 @@ msgstr "Paralelný limit cURL"
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "Počet bitov na pixel (farebná hĺbka) v režime celej obrazovky."
 
+#~ msgid "Block bounds shown for all blocks"
+#~ msgstr "Hranice bloku sú zobrazené pre všetky bloky"
+
 #~ msgid "Bump Mapping"
 #~ msgstr "Bump Mapping (Ilúzia nerovnosti)"
 
@@ -6993,6 +7142,9 @@ msgstr "Paralelný limit cURL"
 
 #~ msgid "Camera update toggle key"
 #~ msgstr "Tlačidlo Aktualizácia pohľadu"
+
+#~ msgid "Change Keys"
+#~ msgstr "Zmeň ovládacie klávesy"
 
 #, fuzzy
 #~ msgid "Change keys"
@@ -7057,6 +7209,38 @@ msgstr "Paralelný limit cURL"
 #~ msgid "Controls sinking speed in liquid."
 #~ msgstr "Riadi rýchlosť ponárania v tekutinách."
 
+#, c-format
+#~ msgid ""
+#~ "Controls:\n"
+#~ "- %s: move forwards\n"
+#~ "- %s: move backwards\n"
+#~ "- %s: move left\n"
+#~ "- %s: move right\n"
+#~ "- %s: jump/climb up\n"
+#~ "- %s: dig/punch/use\n"
+#~ "- %s: place/use\n"
+#~ "- %s: sneak/climb down\n"
+#~ "- %s: drop item\n"
+#~ "- %s: inventory\n"
+#~ "- Mouse: turn/look\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- %s: chat\n"
+#~ msgstr ""
+#~ "Ovládanie:\n"
+#~ "- %s: pohyb vpred\n"
+#~ "- %s: pohyb vzad\n"
+#~ "- %s: pohyb doľava\n"
+#~ "- %s: pohyb doprava\n"
+#~ "- %s: skoč/vylez hore\n"
+#~ "- %s: kop/udri\n"
+#~ "- %s: polož/použi\n"
+#~ "- %s: zakrádaj sa/zlez dole\n"
+#~ "- %s: odhoď vec\n"
+#~ "- %s: inventár\n"
+#~ "- Myš: otoč sa/obzeraj sa\n"
+#~ "- Myš koliesko: zvoľ vec\n"
+#~ "- %s: komunikácia (chat)\n"
+
 #~ msgid "Creative"
 #~ msgstr "Kreatívny režim"
 
@@ -7065,6 +7249,9 @@ msgstr "Paralelný limit cURL"
 
 #~ msgid "Crosshair color (R,G,B)."
 #~ msgstr "Farba zameriavača (R,G,B)."
+
+#~ msgid "DPI"
+#~ msgstr "DPI"
 
 #~ msgid "Damage"
 #~ msgstr "Zranenie"
@@ -7134,6 +7321,13 @@ msgstr "Paralelný limit cURL"
 
 #~ msgid "Enable register confirmation"
 #~ msgstr "Aktivuj potvrdenie registrácie"
+
+#~ msgid ""
+#~ "Enable vertex buffer objects.\n"
+#~ "This should greatly improve graphics performance."
+#~ msgstr ""
+#~ "Aktivuj \"vertex buffer objects\".\n"
+#~ "Toto by malo viditeľne zvýšiť grafický výkon."
 
 #~ msgid "Enabled"
 #~ msgstr "Aktivované"
@@ -7428,6 +7622,9 @@ msgstr "Paralelný limit cURL"
 
 #~ msgid "Instrumentation"
 #~ msgstr "Výstroj"
+
+#~ msgid "Invalid gamespec."
+#~ msgstr "Chybná špec. hry."
 
 #~ msgid "Inventory key"
 #~ msgstr "Tlačidlo Inventár"
@@ -8116,6 +8313,12 @@ msgstr "Paralelný limit cURL"
 #~ msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
 #~ msgstr "Umožní DirectX pracovať s LuaJIT. Vypni ak to spôsobuje problémy."
 
+#~ msgid "Makes all liquids opaque"
+#~ msgstr "Všetky tekutiny budú nepriehľadné"
+
+#~ msgid "Mapblock mesh generator's MapBlock cache size in MB"
+#~ msgstr "Medzipamäť Mapblock Mesh generátora blokov v MB"
+
 #~ msgid "Menus"
 #~ msgstr "Menu"
 
@@ -8334,14 +8537,21 @@ msgstr "Paralelný limit cURL"
 #~ msgid "Simple Leaves"
 #~ msgstr "Jednoduché listy"
 
+#~ msgid ""
+#~ "Size of the MapBlock cache of the mesh generator. Increasing this will\n"
+#~ "increase the cache hit %, reducing the data being copied from the main\n"
+#~ "thread, thus reducing jitter."
+#~ msgstr ""
+#~ "Veľkosť medzipamäte blokov v Mesh generátori.\n"
+#~ "Zvýšenie zvýši využitie medzipamäte %, zníži sa množstvo dát "
+#~ "kopírovaných\n"
+#~ "z hlavnej vetvy a tým sa zníži chvenie."
+
 #~ msgid "Smooth Lighting"
 #~ msgstr "Jemné osvetlenie"
 
 #~ msgid "Smooths rotation of camera. 0 to disable."
 #~ msgstr "Zjemní rotáciu kamery. 0 je pre vypnuté."
-
-#~ msgid "Sound"
-#~ msgstr "Zvuk"
 
 #~ msgid "Special"
 #~ msgstr "Špeciál"
@@ -8392,6 +8602,9 @@ msgstr "Paralelný limit cURL"
 #~ msgid "Touch threshold (px):"
 #~ msgstr "Dotykový prah (px):"
 
+#~ msgid "Touchscreen threshold"
+#~ msgstr "Prah citlivosti dotykovej obrazovky"
+
 #~ msgid "Trilinear Filter"
 #~ msgstr "Trilineárny filter"
 
@@ -8437,6 +8650,9 @@ msgstr "Paralelný limit cURL"
 #~ "Ak sú shadery zakázané, objavia sa viditeľné medzery medzi kockami.\n"
 #~ "Ak sú nastavené na 0, MSAA je zakázané.\n"
 #~ "Po zmene tohto nastavenia je požadovaný reštart."
+
+#~ msgid "VBO"
+#~ msgstr "VBO"
 
 #~ msgid ""
 #~ "Version number which was last seen during an update check.\n"
@@ -8516,8 +8732,14 @@ msgstr "Paralelný limit cURL"
 #~ msgid "You died."
 #~ msgstr "Zomrel si."
 
+#~ msgid "You have no games installed."
+#~ msgstr "Nie je nainštalovaná žiadna hra."
+
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"
+
+#~ msgid "ok"
+#~ msgstr "ok"

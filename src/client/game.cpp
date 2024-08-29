@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content/subgames.h"
 #include "client/event_manager.h"
 #include "fontengine.h"
-#include "gui/touchscreengui.h"
+#include "gui/touchcontrols.h"
 #include "itemdef.h"
 #include "log.h"
 #include "filesys.h"
@@ -1251,8 +1251,8 @@ void Game::shutdown()
 	// Clear text when exiting.
 	m_game_ui->clearText();
 
-	if (g_touchscreengui)
-		g_touchscreengui->hide();
+	if (g_touchcontrols)
+		g_touchcontrols->hide();
 
 	// only if the shutdown progress bar isn't shown yet
 	if (m_shutdown_progress == 0.0f)
@@ -1452,7 +1452,7 @@ void Game::copyServerClientCache()
 {
 	// It would be possible to let the client directly read the media files
 	// from where the server knows they are. But aside from being more complicated
-	// it would also *not* fill the media cache and cause slower joining of 
+	// it would also *not* fill the media cache and cause slower joining of
 	// remote servers.
 	// (Imagine that you launch a game once locally and then connect to a server.)
 
@@ -1516,8 +1516,8 @@ bool Game::createClient(const GameStartData &start_data)
 		client->getScript()->on_camera_ready(camera);
 	client->setCamera(camera);
 
-	if (g_touchscreengui) {
-		g_touchscreengui->setUseCrosshair(!isTouchCrosshairDisabled());
+	if (g_touchcontrols) {
+		g_touchcontrols->setUseCrosshair(!isTouchCrosshairDisabled());
 	}
 
 	/* Clouds
@@ -1584,8 +1584,8 @@ bool Game::initGui()
 	gui_chat_console = new GUIChatConsole(guienv, guienv->getRootGUIElement(),
 			-1, chat_backend, client, &g_menumgr);
 
-	if (g_settings->getBool("enable_touch"))
-		g_touchscreengui = new TouchScreenGUI(device, texture_src);
+	if (g_settings->getBool("touch_controls"))
+		g_touchcontrols = new TouchControls(device, texture_src);
 
 	return true;
 }
@@ -1920,6 +1920,10 @@ void Game::updateDebugState()
 	if (!has_debug) {
 		draw_control->show_wireframe = false;
 		m_flags.disable_camera_update = false;
+		auto formspec = m_game_ui->getFormspecGUI();
+		if (formspec) {
+			formspec->setDebugView(false);
+		}
 	}
 
 	// noclip
@@ -1955,6 +1959,11 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
 	g_profiler->graphAdd("Sleep [us]", draw_times.sleep_time);
 
 	g_profiler->graphSet("FPS", 1.0f / dtime);
+
+	auto stats2 = driver->getFrameStats();
+	g_profiler->avg("Irr: primitives drawn", stats2.PrimitivesDrawn);
+	g_profiler->avg("Irr: buffers uploaded", stats2.HWBuffersUploaded);
+	g_profiler->avg("Irr: buffers uploaded (bytes)", stats2.HWBuffersUploadedSize);
 }
 
 void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
@@ -2024,15 +2033,15 @@ void Game::processUserInput(f32 dtime)
 			input->clear();
 		}
 
-		if (g_touchscreengui)
-			g_touchscreengui->hide();
+		if (g_touchcontrols)
+			g_touchcontrols->hide();
 
 	} else {
-		if (g_touchscreengui) {
-			/* on touchscreengui step may generate own input events which ain't
+		if (g_touchcontrols) {
+			/* on touchcontrols step may generate own input events which ain't
 			 * what we want in case we just did clear them */
-			g_touchscreengui->show();
-			g_touchscreengui->step(dtime);
+			g_touchcontrols->show();
+			g_touchcontrols->step(dtime);
 		}
 
 		m_game_focused = true;
@@ -2190,12 +2199,14 @@ void Game::processItemSelection(u16 *new_playeritem)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
+	*new_playeritem = player->getWieldIndex();
+	u16 max_item = player->getMaxHotbarItemcount();
+	if (max_item == 0)
+		return;
+	max_item -= 1;
+
 	/* Item selection using mouse wheel
 	 */
-	*new_playeritem = player->getWieldIndex();
-	u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE - 1,
-		    player->hud_hotbar_itemcount - 1);
-
 	s32 wheel = input->getMouseWheel();
 	if (!m_enable_hotbar_mouse_wheel)
 		wheel = 0;
@@ -2225,8 +2236,8 @@ void Game::processItemSelection(u16 *new_playeritem)
 		}
 	}
 
-	if (g_touchscreengui) {
-		std::optional<u16> selection = g_touchscreengui->getHotbarSelection();
+	if (g_touchcontrols) {
+		std::optional<u16> selection = g_touchcontrols->getHotbarSelection();
 		if (selection)
 			*new_playeritem = *selection;
 	}
@@ -2631,7 +2642,7 @@ void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 	this results in duplicated input. To avoid that, we don't enable relative
 	mouse mode if we're in touchscreen mode. */
 	if (cur_control)
-		cur_control->setRelativeMode(!g_touchscreengui && !isMenuActive());
+		cur_control->setRelativeMode(!g_touchcontrols && !isMenuActive());
 
 	if ((device->isWindowActive() && device->isWindowFocused()
 			&& !isMenuActive()) || input->isRandom()) {
@@ -2674,9 +2685,9 @@ f32 Game::getSensitivityScaleFactor() const
 
 void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 {
-	if (g_touchscreengui) {
-		cam->camera_yaw   += g_touchscreengui->getYawChange();
-		cam->camera_pitch += g_touchscreengui->getPitchChange();
+	if (g_touchcontrols) {
+		cam->camera_yaw   += g_touchcontrols->getYawChange();
+		cam->camera_pitch += g_touchcontrols->getPitchChange();
 	} else {
 		v2s32 center(driver->getScreenSize().Width / 2, driver->getScreenSize().Height / 2);
 		v2s32 dist = input->getMousePos() - center;
@@ -2741,7 +2752,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	 * touch then its meaning is inverted (i.e. holding aux1 means walk and
 	 * not fast)
 	 */
-	if (g_touchscreengui && m_touch_simulate_aux1) {
+	if (g_touchcontrols && m_touch_simulate_aux1) {
 		control.aux1 = control.aux1 ^ true;
 	}
 
@@ -3231,8 +3242,8 @@ void Game::updateCamera(f32 dtime)
 
 		camera->toggleCameraMode();
 
-		if (g_touchscreengui)
-			g_touchscreengui->setUseCrosshair(!isTouchCrosshairDisabled());
+		if (g_touchcontrols)
+			g_touchcontrols->setUseCrosshair(!isTouchCrosshairDisabled());
 
 		// Make the player visible depending on camera mode.
 		playercao->updateMeshCulling();
@@ -3333,8 +3344,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	}
 	shootline.end = shootline.start + camera_direction * BS * d;
 
-	if (g_touchscreengui && isTouchCrosshairDisabled()) {
-		shootline = g_touchscreengui->getShootline();
+	if (g_touchcontrols && isTouchCrosshairDisabled()) {
+		shootline = g_touchcontrols->getShootline();
 		// Scale shootline to the acual distance the player can reach
 		shootline.end = shootline.start +
 				shootline.getVector().normalize() * BS * d;
@@ -3351,9 +3362,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	if (pointed != runData.pointed_old)
 		infostream << "Pointing at " << pointed.dump() << std::endl;
 
-	if (g_touchscreengui) {
+	if (g_touchcontrols) {
 		auto mode = selected_def.touch_interaction.getMode(pointed.type);
-		g_touchscreengui->applyContextControls(mode);
+		g_touchcontrols->applyContextControls(mode);
 	}
 
 	// Note that updating the selection mesh every frame is not particularly efficient,
@@ -3990,8 +4001,12 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.nodig_delay_timer =
 				runData.dig_time_complete / (float)crack_animation_length;
 
-		// Don't add a corresponding delay to very time consuming nodes.
-		runData.nodig_delay_timer = std::min(runData.nodig_delay_timer, 0.3f);
+		// We don't want a corresponding delay to very time consuming nodes
+		// and nodes without digging time (e.g. torches) get a fixed delay.
+		if (runData.nodig_delay_timer > 0.3f)
+			runData.nodig_delay_timer = 0.3f;
+		else if (runData.dig_instantly)
+			runData.nodig_delay_timer = 0.15f;
 
 		// Ensure that the delay between breaking nodes
 		// (dig_time_complete + nodig_delay_timer) is at least the
@@ -4342,7 +4357,7 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 			(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
 			(this->camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
 
-	if (g_touchscreengui && isTouchCrosshairDisabled())
+	if (g_touchcontrols && isTouchCrosshairDisabled())
 		draw_crosshair = false;
 
 	this->m_rendering_engine->draw_scene(sky_color, this->m_game_ui->m_flags.show_hud,
@@ -4397,8 +4412,8 @@ void Game::readSettings()
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
 	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f);
 	m_cache_joystick_frustum_sensitivity = std::max(g_settings->getFloat("joystick_frustum_sensitivity"), 0.001f);
-	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.15f, 2.0f);
-	m_repeat_dig_time                    = g_settings->getFloat("repeat_dig_time", 0.15f, 2.0f);
+	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.16f, 2.0f);
+	m_repeat_dig_time                    = g_settings->getFloat("repeat_dig_time", 0.0f, 2.0f);
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");
@@ -4453,7 +4468,7 @@ void Game::showPauseMenu()
 {
 	std::string control_text;
 
-	if (g_touchscreengui) {
+	if (g_touchcontrols) {
 		control_text = strgettext("Controls:\n"
 			"No menu open:\n"
 			"- slide finger: look around\n"

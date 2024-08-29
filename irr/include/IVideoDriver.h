@@ -114,6 +114,15 @@ const c8 *const FogTypeNames[] = {
 		0,
 	};
 
+struct SFrameStats {
+	//! Count of primitives drawn
+	u32 PrimitivesDrawn = 0;
+	//! Number of hardware buffers uploaded (new or updated)
+	u32 HWBuffersUploaded = 0;
+	//! Sum of uploaded hardware buffer size
+	u32 HWBuffersUploadedSize = 0;
+};
+
 //! Interface to driver which is able to perform 2d and 3d graphics functions.
 /** This interface is one of the most important interfaces of
 the Irrlicht Engine: All rendering and texture manipulation is done with
@@ -182,7 +191,6 @@ public:
 	MaxSupportedTextures (int) The maximum number of simultaneous textures supported by the fixed function pipeline of the (hw) driver. The actual supported number of textures supported by the engine can be lower.
 	MaxLights (int) Number of hardware lights supported in the fixed function pipeline of the driver, typically 6-8. Use light manager or deferred shading for more.
 	MaxAnisotropy (int) Number of anisotropy levels supported for filtering. At least 1, max is typically at 16 or 32.
-	MaxUserClipPlanes (int) Number of additional clip planes, which can be set by the user via dedicated driver methods.
 	MaxAuxBuffers (int) Special render buffers, which are currently not really usable inside Irrlicht. Only supported by OpenGL
 	MaxMultipleRenderTargets (int) Number of render targets which can be bound simultaneously. Rendering to MRTs is done via shaders.
 	MaxIndices (int) Number of indices which can be used in one render call (i.e. one mesh buffer).
@@ -194,12 +202,6 @@ public:
 	AntiAlias (int) Number of Samples the driver uses for each pixel. 0 and 1 means anti aliasing is off, typical values are 2,4,8,16,32
 	*/
 	virtual const io::IAttributes &getDriverAttributes() const = 0;
-
-	//! Check if the driver was recently reset.
-	/** For d3d devices you will need to recreate the RTTs if the
-	driver was reset. Should be queried right after beginScene().
-	*/
-	virtual bool checkDriverReset() = 0;
 
 	//! Sets transformation matrices.
 	/** \param state Transformation type to be set, e.g. view,
@@ -856,12 +858,8 @@ public:
 	\return Approximate amount of frames per second drawn. */
 	virtual s32 getFPS() const = 0;
 
-	//! Returns amount of primitives (mostly triangles) which were drawn in the last frame.
-	/** Together with getFPS() very useful method for statistics.
-	\param mode Defines if the primitives drawn are accumulated or
-	counted per frame.
-	\return Amount of primitives drawn in the last frame. */
-	virtual u32 getPrimitiveCountDrawn(u32 mode = 0) const = 0;
+	//! Return some statistics about the last frame
+	virtual SFrameStats getFrameStats() const = 0;
 
 	//! Gets name of this video driver.
 	/** \return Returns the name of the video driver, e.g. in case
@@ -1108,26 +1106,6 @@ public:
 	\param filename Name of the texture.
 	\return Pointer to loaded texture, or 0 if not found. */
 	virtual video::ITexture *findTexture(const io::path &filename) = 0;
-
-	//! Set or unset a clipping plane.
-	/** There are at least 6 clipping planes available for the user
-	to set at will.
-	\param index The plane index. Must be between 0 and
-	MaxUserClipPlanes.
-	\param plane The plane itself.
-	\param enable If true, enable the clipping plane else disable
-	it.
-	\return True if the clipping plane is usable. */
-	virtual bool setClipPlane(u32 index, const core::plane3df &plane, bool enable = false) = 0;
-
-	//! Enable or disable a clipping plane.
-	/** There are at least 6 clipping planes available for the user
-	to set at will.
-	\param index The plane index. Must be between 0 and
-	MaxUserClipPlanes.
-	\param enable If true, enable the clipping plane else disable
-	it. */
-	virtual void enableClipPlane(u32 index, bool enable) = 0;
 
 	//! Set the minimum number of vertices for which a hw buffer will be created
 	/** \param count Number of vertices to set as minimum. */

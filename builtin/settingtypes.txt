@@ -61,7 +61,7 @@
 #
 #    # This is a comment
 #    #
-#    # Requires: shaders, enable_dynamic_shadows, !touchscreen_gui
+#    # Requires: shaders, enable_dynamic_shadows, !touch_controls
 #    name (Readable name) type type_args
 #
 # A requirement can be the name of a boolean setting or an engine-defined value.
@@ -72,7 +72,6 @@
 #     * shaders_support (a video driver that supports shaders, may not be enabled)
 #     * shaders (both enable_shaders and shaders_support)
 #     * desktop / android
-#     * touchscreen_gui / keyboard_mouse
 #     * opengl / gles
 # * You can negate any requirement by prepending with !
 #
@@ -92,7 +91,7 @@ camera_smoothing (Camera smoothing) float 0.0 0.0 0.99
 
 #    Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Controls.
 #
-#    Requires: keyboard_mouse
+#    Requires: !touch_controls
 cinematic_camera_smoothing (Camera smoothing in cinematic mode) float 0.7 0.0 0.99
 
 #    If enabled, you can place nodes at the position (feet + eye level) where you stand.
@@ -113,12 +112,12 @@ always_fly_fast (Always fly fast) bool true
 #    The time in seconds it takes between repeated node placements when holding
 #    the place button.
 #
-#    Requires: keyboard_mouse
-repeat_place_time (Place repetition interval) float 0.25 0.15 2.0
+#    Requires: !touch_controls
+repeat_place_time (Place repetition interval) float 0.25 0.16 2.0
 
 #    The minimum time in seconds it takes between digging nodes when holding
 #    the dig button.
-repeat_dig_time (Dig repetition interval) float 0.15 0.15 2.0
+repeat_dig_time (Minimum dig repetition interval) float 0.0 0.0 2.0
 
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
@@ -132,63 +131,63 @@ safe_dig_and_place (Safe digging and placing) bool false
 
 #    Invert vertical mouse movement.
 #
-#    Requires: keyboard_mouse
+#    Requires: !touch_controls
 invert_mouse (Invert mouse) bool false
 
 #    Mouse sensitivity multiplier.
 #
-#    Requires: keyboard_mouse
+#    Requires: !touch_controls
 mouse_sensitivity (Mouse sensitivity) float 0.2 0.001 10.0
 
 #    Enable mouse wheel (scroll) for item selection in hotbar.
 #
-#    Requires: keyboard_mouse
+#    Requires: !touch_controls
 enable_hotbar_mouse_wheel (Hotbar: Enable mouse wheel for selection) bool true
 
 #    Invert mouse wheel (scroll) direction for item selection in hotbar.
 #
-#    Requires: keyboard_mouse
+#    Requires: !touch_controls
 invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
 
 [*Touchscreen]
 
-#    Enables touchscreen mode, allowing you to play the game with a touchscreen.
-enable_touch (Enable touchscreen) bool true
+#    Enables the touchscreen controls, allowing you to play the game with a touchscreen.
+touch_controls (Enable touchscreen controls) bool true
 
 #    Touchscreen sensitivity multiplier.
 #
-#    Requires: touchscreen_gui
+#    Requires: touch_controls
 touchscreen_sensitivity (Touchscreen sensitivity) float 0.2 0.001 10.0
 
 #    The length in pixels after which a touch interaction is considered movement.
 #
-#    Requires: touchscreen_gui
+#    Requires: touch_controls
 touchscreen_threshold (Movement threshold) int 20 0 100
 
 #    The delay in milliseconds after which a touch interaction is considered a long tap.
 #
-#    Requires: touchscreen_gui
+#    Requires: touch_controls
 touch_long_tap_delay (Threshold for long taps) int 400 100 1000
 
 #    Use crosshair to select object instead of whole screen.
 #    If enabled, a crosshair will be shown and will be used for selecting object.
 #
-#    Requires: touchscreen_gui
+#    Requires: touch_controls
 touch_use_crosshair (Use crosshair for touch screen) bool false
 
 #    Fixes the position of virtual joystick.
 #    If disabled, virtual joystick will center to first-touch's position.
 #
-#    Requires: touchscreen_gui
+#    Requires: touch_controls
 fixed_virtual_joystick (Fixed virtual joystick) bool false
 
 #    Use virtual joystick to trigger "Aux1" button.
 #    If enabled, virtual joystick will also tap "Aux1" button when out of main circle.
 #
-#    Requires: touchscreen_gui
+#    Requires: touch_controls
 virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool false
 
-#    The gesture for for punching players/entities.
+#    The gesture for punching players/entities.
 #    This can be overridden by games and mods.
 #
 #    * short_tap
@@ -198,7 +197,7 @@ virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool fals
 #      Known from the classic Minetest mobile controls.
 #      Combat is more or less impossible.
 #
-#    Requires: touchscreen_gui
+#    Requires: touch_controls
 touch_punch_gesture (Punch gesture) enum short_tap short_tap,long_tap
 
 
@@ -707,12 +706,19 @@ language (Language) enum   ,be,bg,ca,cs,da,de,el,en,eo,es,et,eu,fi,fr,gd,gl,hu,i
 
 [**GUI]
 
+#    When enabled, the GUI is optimized to be more usable on touchscreens.
+#    Whether this is enabled by default depends on your hardware form-factor.
+touch_gui (Optimize GUI for touchscreens) bool false
+
 #    Scale GUI by a user specified value.
 #    Use a nearest-neighbor-anti-alias filter to scale the GUI.
 #    This will smooth over some of the rough edges, and blend
 #    pixels when scaling down, at the cost of blurring some
 #    edge pixels when images are scaled by non-integer sizes.
 gui_scaling (GUI scaling) float 1.0 0.5 20
+
+#    Enables smooth scrolling.
+smooth_scrolling (Smooth scrolling) bool true
 
 #    Enables animation of inventory items.
 inventory_items_animations (Inventory items animations) bool false
@@ -752,6 +758,12 @@ hud_scaling (HUD scaling) float 1.0 0.5 20
 #    Mods may still set a background.
 show_nametag_backgrounds (Show name tag backgrounds by default) bool true
 
+#    Whether to show the client debug info (has the same effect as hitting F5).
+show_debug (Show debug info) bool false
+
+#    Radius to use when the block bounds HUD feature is set to near blocks.
+show_block_bounds_radius_near (Block bounds HUD radius) int 4 0 1000
+
 [**Chat]
 
 #    Maximum number of recent chat messages to show
@@ -786,6 +798,10 @@ chat_font_size (Chat font size) int 0 0 72
 #    The URL for the content repository
 contentdb_url (ContentDB URL) string https://content.minetest.net
 
+#    If enabled and you have ContentDB packages installed, Minetest may contact ContentDB to
+#    check for package updates when opening the mainmenu.
+contentdb_enable_updates_indicator (Enable updates available indicator on content tab) bool true
+
 #    Comma-separated list of flags to hide in the content repository.
 #    "nonfree" can be used to hide packages which do not qualify as 'free software',
 #    as defined by the Free Software Foundation.
@@ -813,7 +829,7 @@ serverlist_url (Serverlist URL) string servers.minetest.net
 #    If disabled, new accounts will be registered automatically when logging in.
 enable_split_login_register (Enable split login/register) bool true
 
-#    URL to JSON file which provides information about the newest Minetest release
+#    URL to JSON file which provides information about the newest Minetest release.
 #    If this is empty the engine will never check for updates.
 update_information_url (Update information URL) string https://www.minetest.net/release_info.json
 
@@ -840,6 +856,9 @@ server_url (Server URL) string https://minetest.net
 
 #    Automatically report to the serverlist.
 server_announce (Announce server) bool false
+
+#    Send names of online players to the serverlist. If disabled only the player count is revealed.
+server_announce_send_players (Send player names to the server list) bool true
 
 #    Announce to this serverlist.
 serverlist_url (Serverlist URL) string servers.minetest.net
@@ -1855,8 +1874,7 @@ shader_path (Shader path) path
 #    The rendering back-end.
 #    Note: A restart is required after changing this!
 #    OpenGL is the default for desktop, and OGLES2 for Android.
-#    Shaders are supported by everything but OGLES1.
-video_driver (Video driver) enum  ,opengl,opengl3,ogles1,ogles2
+video_driver (Video driver) enum  ,opengl,opengl3,ogles2
 
 #    Distance in nodes at which transparency depth sorting is enabled
 #    Use this to limit the performance impact of transparency depth sorting
@@ -2018,9 +2036,6 @@ client_unload_unused_data_timeout (Mapblock unload timeout) float 600.0 0.0
 #    Maximum number of mapblocks for client to be kept in memory.
 #    Set to -1 for unlimited amount.
 client_mapblock_limit (Mapblock limit) int 7500 -1 2147483647
-
-#    Whether to show the client debug info (has the same effect as hitting F5).
-show_debug (Show debug info) bool false
 
 #    Maximum number of blocks that are simultaneously sent per client.
 #    The maximum total count is calculated dynamically:
@@ -2208,9 +2223,6 @@ curl_parallel_limit (cURL parallel limit) int 8 1 2147483647
 curl_file_download_timeout (cURL file download timeout) int 300000 5000 2147483647
 
 [**Miscellaneous]
-
-#    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
-screen_dpi (DPI) int 72 1
 
 #    Adjust the detected display density, used for scaling UI elements.
 display_density_factor (Display Density Scaling Factor) float 1 0.5 5.0

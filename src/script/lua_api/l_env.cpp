@@ -155,6 +155,7 @@ void LuaLBM::trigger(ServerEnvironment *env, v3s16 p,
 int LuaRaycast::l_next(lua_State *L)
 {
 	GET_PLAIN_ENV_PTR;
+	ServerEnvironment *senv = dynamic_cast<ServerEnvironment*>(env);
 
 	bool csm = false;
 #ifndef SERVER
@@ -163,7 +164,17 @@ int LuaRaycast::l_next(lua_State *L)
 
 	LuaRaycast *o = checkObject<LuaRaycast>(L, 1);
 	PointedThing pointed;
-	env->continueRaycast(&o->state, &pointed);
+	for (;;) {
+		env->continueRaycast(&o->state, &pointed);
+		if (pointed.type != POINTEDTHING_OBJECT)
+			break;
+		if (!senv)
+			break;
+		const auto *obj = senv->getActiveObject(pointed.object_id);
+		if (obj && !obj->isGone())
+			break;
+		// skip gone object
+	}
 	if (pointed.type == POINTEDTHING_NOTHING)
 		lua_pushnil(L);
 	else
@@ -959,8 +970,8 @@ int ModApiEnvBase::findNodesInArea(lua_State *L, const NodeDefManager *ndef,
 		});
 
 		// last filter table is at top of stack
-		u32 i = filter.size() - 1;
-		do {
+		u32 i = filter.size();
+		while (i --> 0) {
 			if (idx[i] == 0) {
 				// No such node found -> drop the empty table
 				lua_pop(L, 1);
@@ -968,7 +979,7 @@ int ModApiEnvBase::findNodesInArea(lua_State *L, const NodeDefManager *ndef,
 				// This node was found -> put table into the return table
 				lua_setfield(L, base, ndef->get(filter[i]).name.c_str());
 			}
-		} while (i-- != 0);
+		}
 
 		assert(lua_gettop(L) == base);
 		return 1;

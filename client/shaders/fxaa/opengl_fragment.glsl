@@ -58,11 +58,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     #define FXAA_SPAN_MAX     8.0
 #endif
 
-//optimized version for mobile, where dependent 
+//optimized version for mobile, where dependent
 //texture reads can be a bottleneck
 vec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 inverseVP,
-            vec2 v_rgbNW, vec2 v_rgbNE, 
-            vec2 v_rgbSW, vec2 v_rgbSE, 
+            vec2 v_rgbNW, vec2 v_rgbNE,
+            vec2 v_rgbSW, vec2 v_rgbSE,
             vec2 v_rgbM) {
     vec4 color;
     vec3 rgbNW = texture2D(tex, v_rgbNW).xyz;
@@ -111,6 +111,6 @@ void main(void)
 {
 	vec2 uv = varTexCoord.st;
 
-	gl_FragColor = fxaa(rendered, uv, texelSize0, 
+	gl_FragColor = fxaa(rendered, uv, texelSize0,
 		sampleNW, sampleNE, sampleSW, sampleSE, uv);
 }

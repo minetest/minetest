@@ -221,6 +221,7 @@ core.register_chatcommand("haspriv", {
 			return true, S("No online player has the \"@1\" privilege.",
 					param)
 		else
+			table.sort(players_with_priv)
 			return true, S("Players online with the \"@1\" privilege: @2",
 					param,
 					table.concat(players_with_priv, ", "))

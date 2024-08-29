@@ -84,12 +84,12 @@ class COpenGLCoreCacheHandler
 							if (curTextureType != prevTextureType) {
 								GL.BindTexture(prevTextureType, 0);
 
-#if (defined(IRR_COMPILE_GL_COMMON) || defined(IRR_COMPILE_GLES_COMMON))
+#if defined(IRR_COMPILE_GL_COMMON)
 								GL.Disable(prevTextureType);
 								GL.Enable(curTextureType);
 #endif
 							}
-#if (defined(IRR_COMPILE_GL_COMMON) || defined(IRR_COMPILE_GLES_COMMON))
+#if defined(IRR_COMPILE_GL_COMMON)
 							else if (!prevTexture)
 								GL.Enable(curTextureType);
 #endif
@@ -109,7 +109,7 @@ class COpenGLCoreCacheHandler
 
 						GL.BindTexture(prevTextureType, 0);
 
-#if (defined(IRR_COMPILE_GL_COMMON) || defined(IRR_COMPILE_GLES_COMMON))
+#if defined(IRR_COMPILE_GL_COMMON)
 						GL.Disable(prevTextureType);
 #endif
 					}
@@ -222,7 +222,7 @@ public:
 
 		Driver->irrGlActiveTexture(ActiveTexture);
 
-#if (defined(IRR_COMPILE_GL_COMMON) || defined(IRR_COMPILE_GLES_COMMON))
+#if defined(IRR_COMPILE_GL_COMMON)
 		GL.Disable(GL_TEXTURE_2D);
 #endif
 

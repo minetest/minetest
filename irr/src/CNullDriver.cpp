@@ -53,7 +53,7 @@ public:
 //! constructor
 CNullDriver::CNullDriver(io::IFileSystem *io, const core::dimension2d<u32> &screenSize) :
 		SharedRenderTarget(0), CurrentRenderTarget(0), CurrentRenderTargetSize(0, 0), FileSystem(io), MeshManipulator(0),
-		ViewPort(0, 0, 0, 0), ScreenSize(screenSize), PrimitivesDrawn(0), MinVertexCountForVBO(500),
+		ViewPort(0, 0, 0, 0), ScreenSize(screenSize), MinVertexCountForVBO(500),
 		TextureCreationFlags(0), OverrideMaterial2DEnabled(false), AllowZWriteOnTransparent(false)
 {
 #ifdef _DEBUG
@@ -64,7 +64,6 @@ CNullDriver::CNullDriver(io::IFileSystem *io, const core::dimension2d<u32> &scre
 	DriverAttributes->addInt("MaxTextures", MATERIAL_MAX_TEXTURES);
 	DriverAttributes->addInt("MaxSupportedTextures", MATERIAL_MAX_TEXTURES);
 	DriverAttributes->addInt("MaxAnisotropy", 1);
-	//	DriverAttributes->addInt("MaxUserClipPlanes", 0);
 	//	DriverAttributes->addInt("MaxAuxBuffers", 0);
 	DriverAttributes->addInt("MaxMultipleRenderTargets", 1);
 	DriverAttributes->addInt("MaxIndices", -1);
@@ -223,13 +222,13 @@ void CNullDriver::deleteAllTextures()
 
 bool CNullDriver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil, const SExposedVideoData &videoData, core::rect<s32> *sourceRect)
 {
-	PrimitivesDrawn = 0;
+	FrameStats = {};
 	return true;
 }
 
 bool CNullDriver::endScene()
 {
-	FPSCounter.registerFrame(os::Timer::getRealTime(), PrimitivesDrawn);
+	FPSCounter.registerFrame(os::Timer::getRealTime());
 	updateAllHardwareBuffers();
 	updateAllOcclusionQueries();
 	return true;
@@ -361,7 +360,7 @@ ITexture *CNullDriver::addTextureCubemap(const io::path &name, IImage *imagePosX
 
 	ITexture *t = 0;
 
-	core::array<IImage *> imageArray(6);
+	std::vector<IImage*> imageArray;
 	imageArray.push_back(imagePosX);
 	imageArray.push_back(imageNegX);
 	imageArray.push_back(imagePosY);
@@ -391,7 +390,7 @@ ITexture *CNullDriver::addTextureCubemap(const irr::u32 sideLen, const io::path 
 		return 0;
 	}
 
-	core::array<IImage *> imageArray(6);
+	std::vector<IImage*> imageArray;
 	for (int i = 0; i < 6; ++i)
 		imageArray.push_back(new CImage(format, core::dimension2du(sideLen, sideLen)));
 
@@ -548,7 +547,7 @@ ITexture *CNullDriver::createDeviceDependentTexture(const io::path &name, IImage
 	return dummy;
 }
 
-ITexture *CNullDriver::createDeviceDependentTextureCubemap(const io::path &name, const core::array<IImage *> &image)
+ITexture *CNullDriver::createDeviceDependentTextureCubemap(const io::path &name, const std::vector<IImage*> &image)
 {
 	return new SDummyTexture(name, ETT_CUBEMAP);
 }
@@ -606,7 +605,7 @@ void CNullDriver::drawVertexPrimitiveList(const void *vertices, u32 vertexCount,
 {
 	if ((iType == EIT_16BIT) && (vertexCount > 65536))
 		os::Printer::log("Too many vertices for 16bit index type, render artifacts may occur.");
-	PrimitivesDrawn += primitiveCount;
+	FrameStats.PrimitivesDrawn += primitiveCount;
 }
 
 //! draws a vertex primitive list in 2d
@@ -614,7 +613,7 @@ void CNullDriver::draw2DVertexPrimitiveList(const void *vertices, u32 vertexCoun
 {
 	if ((iType == EIT_16BIT) && (vertexCount > 65536))
 		os::Printer::log("Too many vertices for 16bit index type, render artifacts may occur.");
-	PrimitivesDrawn += primitiveCount;
+	FrameStats.PrimitivesDrawn += primitiveCount;
 }
 
 //! Draws a 3d line.
@@ -744,12 +743,9 @@ s32 CNullDriver::getFPS() const
 	return FPSCounter.getFPS();
 }
 
-//! returns amount of primitives (mostly triangles) were drawn in the last frame.
-//! very useful method for statistics.
-u32 CNullDriver::getPrimitiveCountDrawn(u32 param) const
+SFrameStats CNullDriver::getFrameStats() const
 {
-	return (0 == param) ? FPSCounter.getPrimitive() : (1 == param) ? FPSCounter.getPrimitiveAverage()
-																   : FPSCounter.getPrimitiveTotal();
+	return FrameStats;
 }
 
 //! Sets the dynamic ambient light color. The default color is
@@ -913,17 +909,17 @@ bool CNullDriver::checkImage(IImage *image) const
 	return true;
 }
 
-bool CNullDriver::checkImage(const core::array<IImage *> &image) const
+bool CNullDriver::checkImage(const std::vector<IImage*> &image) const
 {
-	if (!image.size())
+	if (image.empty())
 		return false;
 
 	ECOLOR_FORMAT lastFormat = image[0]->getColorFormat();
-	core::dimension2d<u32> lastSize = image[0]->getDimension();
+	auto lastSize = image[0]->getDimension();
 
-	for (u32 i = 0; i < image.size(); ++i) {
+	for (size_t i = 0; i < image.size(); ++i) {
 		ECOLOR_FORMAT format = image[i]->getColorFormat();
-		core::dimension2d<u32> size = image[i]->getDimension();
+		auto size = image[i]->getDimension();
 
 		if (!checkImage(image[i]))
 			return false;
@@ -1697,22 +1693,6 @@ IVideoDriver *createNullDriver(io::IFileSystem *io, const core::dimension2d<u32>
 	}
 
 	return nullDriver;
-}
-
-//! Set/unset a clipping plane.
-//! There are at least 6 clipping planes available for the user to set at will.
-//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-//! \param plane: The plane itself.
-//! \param enable: If true, enable the clipping plane else disable it.
-bool CNullDriver::setClipPlane(u32 index, const core::plane3df &plane, bool enable)
-{
-	return false;
-}
-
-//! Enable/disable a clipping plane.
-void CNullDriver::enableClipPlane(u32 index, bool enable)
-{
-	// not necessary
 }
 
 void CNullDriver::setMinHardwareBufferVertexCount(u32 count)

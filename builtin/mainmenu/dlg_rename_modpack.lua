@@ -45,7 +45,7 @@ local function rename_modpack_buttonhandler(this, fields)
 		local oldpath = this.data.mod.path
 		local targetpath = this.data.mod.parent_dir .. DIR_DELIM .. fields["te_modpack_name"]
 		os.rename(oldpath, targetpath)
-		pkgmgr.refresh_globals()
+		pkgmgr.reload_global_mods()
 		pkgmgr.selected_mod = pkgmgr.global_mods:get_current_index(
 			pkgmgr.global_mods:raw_index_by_uid(fields["te_modpack_name"]))
 

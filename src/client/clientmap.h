@@ -112,7 +112,7 @@ public:
 	f32 getWantedRange() const { return m_control.wanted_range; }
 	f32 getCameraFov() const { return m_camera_fov; }
 
-	void onSettingChanged(const std::string &name);
+	void onSettingChanged(std::string_view name, bool all);
 
 protected:
 	// use drop() instead
@@ -162,8 +162,9 @@ private:
 			m_pos(pos), m_partial_buffer(buffer), m_reuse_material(false), m_use_partial_buffer(true)
 		{}
 
-		scene::IMeshBuffer* getBuffer();
-		void draw(video::IVideoDriver* driver);
+		video::SMaterial &getMaterial();
+		/// @return index count
+		u32 draw(video::IVideoDriver* driver);
 	};
 
 	Client *m_client;

@@ -542,9 +542,9 @@ int LuaPcgRandom::l_set_state(lua_State *L)
 	u64 state[2];
 	s_state_0 >> std::hex >> state[0];
 	s_state_1 >> std::hex >> state[1];
-	
+
 	o->m_rnd.setState(state);
-	
+
 	return 0;
 }
 
@@ -641,10 +641,9 @@ int LuaSecureRandom::create_object(lua_State *L)
 {
 	LuaSecureRandom *o = new LuaSecureRandom();
 
-	// Fail and return nil if we can't securely fill the buffer
 	if (!o->fillRandBuf()) {
 		delete o;
-		return 0;
+		throw LuaError("SecureRandom: Failed to find secure random device on system");
 	}
 
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;

@@ -85,23 +85,13 @@ void RemoteClient::ResendBlockIfOnWire(v3s16 p)
 	}
 }
 
-LuaEntitySAO *getAttachedObject(PlayerSAO *sao, ServerEnvironment *env)
+static LuaEntitySAO *getAttachedObject(PlayerSAO *sao, ServerEnvironment *env)
 {
-	if (!sao->isAttached())
-		return nullptr;
+	ServerActiveObject *ao = sao;
+	while (ao->getParent())
+		ao = ao->getParent();
 
-	int id;
-	std::string bone;
-	v3f dummy;
-	bool force_visible;
-	sao->getAttachment(&id, &bone, &dummy, &dummy, &force_visible);
-	ServerActiveObject *ao = env->getActiveObject(id);
-	while (id && ao) {
-		ao->getAttachment(&id, &bone, &dummy, &dummy, &force_visible);
-		if (id)
-			ao = env->getActiveObject(id);
-	}
-	return dynamic_cast<LuaEntitySAO *>(ao);
+	return ao == sao ? nullptr : dynamic_cast<LuaEntitySAO*>(ao);
 }
 
 void RemoteClient::GetNextBlocks (
@@ -658,13 +648,14 @@ void RemoteClient::setLangCode(const std::string &code)
 	m_lang_code = string_sanitize_ascii(code, 12);
 }
 
-ClientInterface::ClientInterface(const std::shared_ptr<con::Connection> & con)
+ClientInterface::ClientInterface(const std::shared_ptr<con::IConnection> &con)
 :
 	m_con(con),
 	m_env(nullptr)
 {
 
 }
+
 ClientInterface::~ClientInterface()
 {
 	/*

@@ -19,7 +19,7 @@
 
 local BASE_SPACING = 0.1
 local function get_scroll_btn_width()
-	return core.settings:get_bool("enable_touch") and 0.8 or 0.5
+	return core.settings:get_bool("touch_gui") and 0.8 or 0.5
 end
 
 local function buttonbar_formspec(self)
@@ -102,14 +102,24 @@ local function buttonbar_formspec(self)
 end
 
 local function buttonbar_buttonhandler(self, fields)
-	if fields[self.btn_prev_name] and self.cur_page > 1 then
-		self.cur_page = self.cur_page - 1
-		return true
+	if fields[self.btn_prev_name] then
+		if self.cur_page > 1 then
+			self.cur_page = self.cur_page - 1
+			return true
+		elseif self.cur_page == 1 then
+			self.cur_page = self.num_pages
+			return true
+		end
 	end
 
-	if fields[self.btn_next_name] and self.cur_page < self.num_pages then
-		self.cur_page = self.cur_page + 1
-		return true
+	if fields[self.btn_next_name] then
+		if self.cur_page < self.num_pages then
+			self.cur_page = self.cur_page + 1
+			return true
+		elseif self.cur_page == self.num_pages then
+			self.cur_page = 1
+			return true
+		end
 	end
 
 	for _, btn in ipairs(self.buttons) do

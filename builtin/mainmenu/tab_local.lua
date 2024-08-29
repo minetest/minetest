@@ -94,7 +94,7 @@ function singleplayer_refresh_gamebar()
 
 	local btnbar = buttonbar_create(
 			"game_button_bar",
-			core.settings:get_bool("enable_touch") and {x = 0, y = 7.25} or {x = 0, y = 7.475},
+			core.settings:get_bool("touch_gui") and {x = 0, y = 7.25} or {x = 0, y = 7.475},
 			{x = 15.5, y = 1.25},
 			"#000000",
 			game_buttonbar_button_handler)

@@ -107,6 +107,7 @@ static const VertexType &getVertexTypeDescription(E_VERTEX_TYPE type)
 		return vtTangents;
 	default:
 		assert(false);
+		CODE_UNREACHABLE();
 	}
 }
 
@@ -254,11 +255,7 @@ bool COpenGL3DriverBase::genericDriverInit(const core::dimension2d<u32> &screenS
 
 	DriverAttributes->setAttribute("MaxTextures", (s32)Feature.MaxTextureUnits);
 	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Feature.MaxTextureUnits);
-	//		DriverAttributes->setAttribute("MaxLights", MaxLights);
 	DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
-	//		DriverAttributes->setAttribute("MaxUserClipPlanes", MaxUserClipPlanes);
-	//		DriverAttributes->setAttribute("MaxAuxBuffers", MaxAuxBuffers);
-	//		DriverAttributes->setAttribute("MaxMultipleRenderTargets", MaxMultipleRenderTargets);
 	DriverAttributes->setAttribute("MaxIndices", (s32)MaxIndices);
 	DriverAttributes->setAttribute("MaxTextureSize", (s32)MaxTextureSize);
 	DriverAttributes->setAttribute("MaxTextureLODBias", MaxTextureLODBias);
@@ -266,8 +263,6 @@ bool COpenGL3DriverBase::genericDriverInit(const core::dimension2d<u32> &screenS
 	DriverAttributes->setAttribute("AntiAlias", AntiAlias);
 
 	GL.PixelStorei(GL_PACK_ALIGNMENT, 1);
-
-	UserClipPlane.reallocate(0);
 
 	for (s32 i = 0; i < ETS_COUNT; ++i)
 		setTransform(static_cast<E_TRANSFORMATION_STATE>(i), core::IdentityMatrix);
@@ -495,6 +490,7 @@ bool COpenGL3DriverBase::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuff
 
 	const void *buffer = vertices;
 	size_t bufferSize = vertexSize * vertexCount;
+	accountHWBufferUpload(bufferSize);
 
 	// get or create buffer
 	bool newBuffer = false;
@@ -553,6 +549,9 @@ bool COpenGL3DriverBase::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffe
 	}
 	}
 
+	const size_t bufferSize = indexCount * indexSize;
+	accountHWBufferUpload(bufferSize);
+
 	// get or create buffer
 	bool newBuffer = false;
 	if (!HWBuffer->vbo_indicesID) {
@@ -560,7 +559,7 @@ bool COpenGL3DriverBase::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffe
 		if (!HWBuffer->vbo_indicesID)
 			return false;
 		newBuffer = true;
-	} else if (HWBuffer->vbo_indicesSize < indexCount * indexSize) {
+	} else if (HWBuffer->vbo_indicesSize < bufferSize) {
 		newBuffer = true;
 	}
 
@@ -568,16 +567,16 @@ bool COpenGL3DriverBase::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffe
 
 	// copy data to graphics card
 	if (!newBuffer)
-		GL.BufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indexCount * indexSize, indices);
+		GL.BufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, bufferSize, indices);
 	else {
-		HWBuffer->vbo_indicesSize = indexCount * indexSize;
+		HWBuffer->vbo_indicesSize = bufferSize;
 
 		GLenum usage = GL_STATIC_DRAW;
 		if (HWBuffer->Mapped_Index == scene::EHM_STREAM)
 			usage = GL_STREAM_DRAW;
 		else if (HWBuffer->Mapped_Index == scene::EHM_DYNAMIC)
 			usage = GL_DYNAMIC_DRAW;
-		GL.BufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * indexSize, indices, usage);
+		GL.BufferData(GL_ELEMENT_ARRAY_BUFFER, bufferSize, indices, usage);
 	}
 
 	GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -591,22 +590,24 @@ bool COpenGL3DriverBase::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 	if (!HWBuffer)
 		return false;
 
+	auto *b = static_cast<SHWBufferLink_opengl *>(HWBuffer);
+
 	if (HWBuffer->Mapped_Vertex != scene::EHM_NEVER) {
-		if (HWBuffer->ChangedID_Vertex != HWBuffer->MeshBuffer->getChangedID_Vertex() || !static_cast<SHWBufferLink_opengl *>(HWBuffer)->vbo_verticesID) {
+		if (HWBuffer->ChangedID_Vertex != HWBuffer->MeshBuffer->getChangedID_Vertex() || !b->vbo_verticesID) {
 
 			HWBuffer->ChangedID_Vertex = HWBuffer->MeshBuffer->getChangedID_Vertex();
 
-			if (!updateVertexHardwareBuffer(static_cast<SHWBufferLink_opengl *>(HWBuffer)))
+			if (!updateVertexHardwareBuffer(b))
 				return false;
 		}
 	}
 
 	if (HWBuffer->Mapped_Index != scene::EHM_NEVER) {
-		if (HWBuffer->ChangedID_Index != HWBuffer->MeshBuffer->getChangedID_Index() || !static_cast<SHWBufferLink_opengl *>(HWBuffer)->vbo_indicesID) {
+		if (HWBuffer->ChangedID_Index != HWBuffer->MeshBuffer->getChangedID_Index() || !b->vbo_indicesID) {
 
 			HWBuffer->ChangedID_Index = HWBuffer->MeshBuffer->getChangedID_Index();
 
-			if (!updateIndexHardwareBuffer((SHWBufferLink_opengl *)HWBuffer))
+			if (!updateIndexHardwareBuffer(b))
 				return false;
 		}
 	}
@@ -915,7 +916,8 @@ void COpenGL3DriverBase::draw2DImageBatch(const video::ITexture *texture,
 	const irr::u32 drawCount = core::min_<u32>(positions.size(), sourceRects.size());
 	assert(6 * drawCount <= QuadIndexCount); // FIXME split the batch? or let it crash?
 
-	core::array<S3DVertex> vtx(drawCount * 4);
+	std::vector<S3DVertex> vtx;
+	vtx.reserve(drawCount * 4);
 
 	for (u32 i = 0; i < drawCount; i++) {
 		core::position2d<s32> targetPos = positions[i];
@@ -938,22 +940,22 @@ void COpenGL3DriverBase::draw2DImageBatch(const video::ITexture *texture,
 		f32 down = 2.f - (f32)poss.LowerRightCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
 		f32 top = 2.f - (f32)poss.UpperLeftCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
 
-		vtx.push_back(S3DVertex(left, top, 0.0f,
+		vtx.emplace_back(left, top, 0.0f,
 				0.0f, 0.0f, 0.0f, color,
-				tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y));
-		vtx.push_back(S3DVertex(right, top, 0.0f,
+				tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
+		vtx.emplace_back(right, top, 0.0f,
 				0.0f, 0.0f, 0.0f, color,
-				tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y));
-		vtx.push_back(S3DVertex(right, down, 0.0f,
+				tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
+		vtx.emplace_back(right, down, 0.0f,
 				0.0f, 0.0f, 0.0f, color,
-				tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y));
-		vtx.push_back(S3DVertex(left, down, 0.0f,
+				tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
+		vtx.emplace_back(left, down, 0.0f,
 				0.0f, 0.0f, 0.0f, color,
-				tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y));
+				tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
 	}
 
 	GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, QuadIndexBuffer);
-	drawElements(GL_TRIANGLES, vt2DImage, vtx.const_pointer(), vtx.size(), 0, 6 * drawCount);
+	drawElements(GL_TRIANGLES, vt2DImage, vtx.data(), vtx.size(), 0, 6 * drawCount);
 	GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	if (clipRect)
@@ -1103,15 +1105,14 @@ void COpenGL3DriverBase::endDraw(const VertexType &vertexType)
 
 ITexture *COpenGL3DriverBase::createDeviceDependentTexture(const io::path &name, IImage *image)
 {
-	core::array<IImage *> imageArray(1);
-	imageArray.push_back(image);
+	std::vector<IImage*> tmp { image };
 
-	COpenGL3Texture *texture = new COpenGL3Texture(name, imageArray, ETT_2D, this);
+	COpenGL3Texture *texture = new COpenGL3Texture(name, tmp, ETT_2D, this);
 
 	return texture;
 }
 
-ITexture *COpenGL3DriverBase::createDeviceDependentTextureCubemap(const io::path &name, const core::array<IImage *> &image)
+ITexture *COpenGL3DriverBase::createDeviceDependentTextureCubemap(const io::path &name, const std::vector<IImage*> &image)
 {
 	COpenGL3Texture *texture = new COpenGL3Texture(name, image, ETT_CUBEMAP, this);
 
@@ -1873,40 +1874,6 @@ void COpenGL3DriverBase::removeTexture(ITexture *texture)
 {
 	CacheHandler->getTextureCache().remove(texture);
 	CNullDriver::removeTexture(texture);
-}
-
-//! Set/unset a clipping plane.
-bool COpenGL3DriverBase::setClipPlane(u32 index, const core::plane3df &plane, bool enable)
-{
-	if (index >= UserClipPlane.size())
-		UserClipPlane.push_back(SUserClipPlane());
-
-	UserClipPlane[index].Plane = plane;
-	UserClipPlane[index].Enabled = enable;
-	return true;
-}
-
-//! Enable/disable a clipping plane.
-void COpenGL3DriverBase::enableClipPlane(u32 index, bool enable)
-{
-	UserClipPlane[index].Enabled = enable;
-}
-
-//! Get the ClipPlane Count
-u32 COpenGL3DriverBase::getClipPlaneCount() const
-{
-	return UserClipPlane.size();
-}
-
-const core::plane3df &COpenGL3DriverBase::getClipPlane(irr::u32 index) const
-{
-	if (index < UserClipPlane.size())
-		return UserClipPlane[index].Plane;
-	else {
-		_IRR_DEBUG_BREAK_IF(true) // invalid index
-		static const core::plane3df dummy;
-		return dummy;
-	}
 }
 
 core::dimension2du COpenGL3DriverBase::getMaxTextureSize() const

@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "gui/mainmenumanager.h"
 #include "clouds.h"
-#include "gui/touchscreengui.h"
+#include "gui/touchcontrols.h"
 #include "server.h"
 #include "filesys.h"
 #include "gui/guiMainMenu.h"
@@ -69,6 +69,7 @@ static void dump_start_data(const GameStartData &data)
 ClientLauncher::~ClientLauncher()
 {
 	delete input;
+	g_settings->deregisterChangedCallback("dpi_change_notifier", setting_changed_callback, this);
 	g_settings->deregisterChangedCallback("gui_scaling", setting_changed_callback, this);
 
 	delete g_fontengine;
@@ -129,6 +130,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 	guienv = m_rendering_engine->get_gui_env();
 	config_guienv();
+	g_settings->registerChangedCallback("dpi_change_notifier", setting_changed_callback, this);
 	g_settings->registerChangedCallback("gui_scaling", setting_changed_callback, this);
 
 	g_fontengine = new FontEngine(guienv);
@@ -228,9 +230,9 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 		m_rendering_engine->get_scene_manager()->clear();
 
-		if (g_touchscreengui) {
-			delete g_touchscreengui;
-			g_touchscreengui = NULL;
+		if (g_touchcontrols) {
+			delete g_touchcontrols;
+			g_touchcontrols = NULL;
 		}
 
 		/* Save the settings when leaving the game.
@@ -350,6 +352,7 @@ void ClientLauncher::config_guienv()
 
 	float density = rangelim(g_settings->getFloat("gui_scaling"), 0.5f, 20) *
 		RenderingEngine::getDisplayDensity();
+	skin->setScale(density);
 	skin->setSize(gui::EGDS_CHECK_BOX_WIDTH, (s32)(17.0f * density));
 	skin->setSize(gui::EGDS_SCROLLBAR_SIZE, (s32)(21.0f * density));
 	skin->setSize(gui::EGDS_WINDOW_BUTTON_WIDTH, (s32)(15.0f * density));

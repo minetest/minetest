@@ -392,8 +392,7 @@ void Client::connect(const Address &address, const std::string &address_name,
 	}
 
 	m_address_name = address_name;
-	m_con.reset(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT,
-		address.isIPv6(), this));
+	m_con.reset(con::createMTP(CONNECTION_TIMEOUT, address.isIPv6(), this));
 
 	infostream << "Connecting to server at ";
 	address.print(infostream);
@@ -866,13 +865,13 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 }
 
 // Virtual methods from con::PeerHandler
-void Client::peerAdded(con::Peer *peer)
+void Client::peerAdded(con::IPeer *peer)
 {
 	infostream << "Client::peerAdded(): peer->id="
 			<< peer->id << std::endl;
 }
 
-void Client::deletingPeer(con::Peer *peer, bool timeout)
+void Client::deletingPeer(con::IPeer *peer, bool timeout)
 {
 	infostream << "Client::deletingPeer(): "
 			"Server Peer is getting deleted "
@@ -1594,7 +1593,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	{
 		// Check if we are working with local player inventory
 		LocalPlayer *player = m_env.getLocalPlayer();
-		if (!player || strcmp(player->getName(), loc.name.c_str()) != 0)
+		if (!player || player->getName() != loc.name)
 			return NULL;
 		return &player->inventory;
 	}

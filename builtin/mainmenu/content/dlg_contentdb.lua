@@ -63,21 +63,12 @@ local function install_or_update_package(this, package)
 	end
 
 	local function on_confirm()
-		local has_hard_deps = contentdb.has_hard_deps(package)
-		if has_hard_deps then
-			local dlg = create_install_dialog(package)
-			dlg:set_parent(this)
-			this:hide()
-			dlg:show()
-		elseif has_hard_deps == nil then
-			local dlg = messagebox("error_checking_deps",
-					fgettext("Error getting dependencies for package"))
-			dlg:set_parent(this)
-			this:hide()
-			dlg:show()
-		else
-			contentdb.queue_download(package, package.path and contentdb.REASON_UPDATE or contentdb.REASON_NEW)
-		end
+		local dlg = create_install_dialog(package)
+		dlg:set_parent(this)
+		this:hide()
+		dlg:show()
+
+		dlg:load_deps()
 	end
 
 	if package.type == "mod" and #pkgmgr.games == 0 then
@@ -190,7 +181,7 @@ local function get_info_formspec(text)
 	return table.concat({
 		"formspec_version[6]",
 		"size[15.75,9.5]",
-		core.settings:get_bool("enable_touch") and "padding[0.01,0.01]" or "position[0.5,0.55]",
+		core.settings:get_bool("touch_gui") and "padding[0.01,0.01]" or "position[0.5,0.55]",
 
 		"label[4,4.35;", text, "]",
 		"container[0,", H - 0.8 - 0.375, "]",
@@ -221,7 +212,7 @@ local function get_formspec(dlgdata)
 	local formspec = {
 		"formspec_version[6]",
 		"size[15.75,9.5]",
-		core.settings:get_bool("enable_touch") and "padding[0.01,0.01]" or "position[0.5,0.55]",
+		core.settings:get_bool("touch_gui") and "padding[0.01,0.01]" or "position[0.5,0.55]",
 
 		"style[status,downloading,queued;border=false]",
 
@@ -472,7 +463,7 @@ end
 local function handle_events(event)
 	if event == "DialogShow" then
 		-- On touchscreen, don't show the "MINETEST" header behind the dialog.
-		mm_game_theme.set_engine(core.settings:get_bool("enable_touch"))
+		mm_game_theme.set_engine(core.settings:get_bool("touch_gui"))
 
 		-- If ContentDB is already loaded, auto-install packages here.
 		do_auto_install()

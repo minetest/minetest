@@ -325,7 +325,7 @@ bool CZipReader::scanZipHeader(bool ignoreGPBits)
 		dirEnd.Offset = os::Byteswap::byteswap(dirEnd.Offset);
 		dirEnd.CommentLength = os::Byteswap::byteswap(dirEnd.CommentLength);
 #endif
-		FileInfo.reallocate(dirEnd.TotalEntries);
+		FileInfo.reserve(dirEnd.TotalEntries);
 		File->seek(dirEnd.Offset);
 		while (scanCentralDirectoryHeader()) {
 		}
@@ -381,9 +381,10 @@ bool CZipReader::scanCentralDirectoryHeader()
 	File->seek(entry.RelativeOffsetOfLocalHeader);
 	scanZipHeader(true);
 	File->seek(pos + entry.FilenameLength + entry.ExtraFieldLength + entry.FileCommentLength);
-	FileInfo.getLast().header.DataDescriptor.CompressedSize = entry.CompressedSize;
-	FileInfo.getLast().header.DataDescriptor.UncompressedSize = entry.UncompressedSize;
-	FileInfo.getLast().header.DataDescriptor.CRC32 = entry.CRC32;
+	auto &lastInfo = FileInfo.back();
+	lastInfo.header.DataDescriptor.CompressedSize = entry.CompressedSize;
+	lastInfo.header.DataDescriptor.UncompressedSize = entry.UncompressedSize;
+	lastInfo.header.DataDescriptor.CRC32 = entry.CRC32;
 	Files.getLast().Size = entry.UncompressedSize;
 	return true;
 }

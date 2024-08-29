@@ -179,7 +179,9 @@ struct MeshGrid {
 	/// @brief Returns true if p is an origin of a cell in the grid.
 	bool isMeshPos(v3s16 &p) const
 	{
-		return ((p.X + p.Y + p.Z) % cell_size) == 0;
+		return p.X % cell_size == 0
+				&& p.Y % cell_size == 0
+				&& p.Z % cell_size == 0;
 	}
 
 	/// @brief Returns index of the given offset in a grid cell
@@ -437,6 +439,17 @@ inline u32 npot2(u32 orig) {
 	orig |= orig >> 8;
 	orig |= orig >> 16;
 	return orig + 1;
+}
+
+// Distance between two values in a wrapped (circular) system
+template<typename T>
+inline unsigned wrappedDifference(T a, T b, const T maximum)
+{
+	if (a > b)
+		std::swap(a, b);
+	// now b >= a
+	unsigned s = b - a, l = static_cast<unsigned>(maximum - b) + a + 1;
+	return std::min(s, l);
 }
 
 // Gradual steps towards the target value in a wrapped (circular) system

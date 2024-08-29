@@ -66,7 +66,6 @@ protected:
 // Global defines for convenience
 
 extern const KeyPress EscapeKey;
-extern const KeyPress CancelKey;
 
 extern const KeyPress LMBKey;
 extern const KeyPress MMBKey; // Middle Mouse Button

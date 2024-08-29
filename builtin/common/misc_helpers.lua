@@ -206,6 +206,16 @@ function table.indexof(list, val)
 end
 
 --------------------------------------------------------------------------------
+function table.keyof(tb, val)
+	for k, v in pairs(tb) do
+		if v == val then
+			return k
+		end
+	end
+	return nil
+end
+
+--------------------------------------------------------------------------------
 function string:trim()
 	return self:match("^%s*(.-)%s*$")
 end
@@ -240,12 +250,15 @@ function math.factorial(x)
 	return v
 end
 
-
 function math.round(x)
-	if x >= 0 then
-		return math.floor(x + 0.5)
+	if x < 0 then
+		local int = math.ceil(x)
+		local frac = x - int
+		return int - ((frac <= -0.5) and 1 or 0)
 	end
-	return math.ceil(x - 0.5)
+	local int = math.floor(x)
+	local frac = x - int
+	return int + ((frac >= 0.5) and 1 or 0)
 end
 
 local formspec_escapes = {
@@ -689,6 +702,7 @@ function core.privs_to_string(privs, delim)
 			list[#list + 1] = priv
 		end
 	end
+	table.sort(list)
 	return table.concat(list, delim)
 end
 

@@ -52,7 +52,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 /*
-	ServerMap	
+	ServerMap
 */
 
 ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
