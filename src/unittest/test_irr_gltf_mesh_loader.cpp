@@ -6,14 +6,12 @@
 #include "filesys.h"
 
 #include "CReadFile.h"
-#include "vector3d.h"
+#include "irr_v3d.h"
+#include "irr_v2d.h"
 
 #include <irrlicht.h>
 
 #include "catch.h"
-
-using v3f = irr::core::vector3df;
-using v2f = irr::core::vector2df;
 
 TEST_CASE("gltf") {
 
