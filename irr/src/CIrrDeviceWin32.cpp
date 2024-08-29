@@ -17,6 +17,7 @@
 #include "COSOperator.h"
 #include "dimension2d.h"
 #include "IGUISpriteBank.h"
+#include "IVideoDriver.h"
 #include <winuser.h>
 #include "SExposedVideoData.h"
 

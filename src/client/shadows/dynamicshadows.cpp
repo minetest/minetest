@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/clientenvironment.h"
 #include "client/clientmap.h"
 #include "client/camera.h"
+#include <IVideoDriver.h>
 
 using m4f = core::matrix4;
 

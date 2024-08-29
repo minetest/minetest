@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiFormSpecMenu.h"
 #include "client/hud.h"
 #include "client/client.h"
+#include <IVideoDriver.h>
 
 GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env,
 	gui::IGUIElement *parent,

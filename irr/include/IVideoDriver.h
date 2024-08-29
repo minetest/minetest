@@ -9,14 +9,16 @@
 #include "ITexture.h"
 #include "irrArray.h"
 #include "matrix4.h"
-#include "plane3d.h"
 #include "dimension2d.h"
 #include "position2d.h"
-#include "IMeshBuffer.h"
 #include "EDriverTypes.h"
 #include "EDriverFeatures.h"
+#include "EPrimitiveTypes.h"
+#include "EVideoTypes.h"
 #include "SExposedVideoData.h"
 #include "SOverrideMaterial.h"
+#include "S3DVertex.h" // E_VERTEX_TYPE
+#include "SVertexIndex.h" // E_INDEX_TYPE
 
 namespace irr
 {
@@ -36,76 +38,11 @@ class ISceneNode;
 
 namespace video
 {
-struct S3DVertex;
-struct S3DVertex2TCoords;
-struct S3DVertexTangents;
 class IImageLoader;
 class IImageWriter;
 class IMaterialRenderer;
 class IGPUProgrammingServices;
 class IRenderTarget;
-
-//! enumeration for geometry transformation states
-enum E_TRANSFORMATION_STATE
-{
-	//! View transformation
-	ETS_VIEW = 0,
-	//! World transformation
-	ETS_WORLD,
-	//! Projection transformation
-	ETS_PROJECTION,
-	//! Texture 0 transformation
-	//! Use E_TRANSFORMATION_STATE(ETS_TEXTURE_0 + texture_number) to access other texture transformations
-	ETS_TEXTURE_0,
-	//! Only used internally
-	ETS_COUNT = ETS_TEXTURE_0 + MATERIAL_MAX_TEXTURES
-};
-
-//! Special render targets, which usually map to dedicated hardware
-/** These render targets (besides 0 and 1) need not be supported by gfx cards */
-enum E_RENDER_TARGET
-{
-	//! Render target is the main color frame buffer
-	ERT_FRAME_BUFFER = 0,
-	//! Render target is a render texture
-	ERT_RENDER_TEXTURE,
-	//! Multi-Render target textures
-	ERT_MULTI_RENDER_TEXTURES,
-	//! Render target is the main color frame buffer
-	ERT_STEREO_LEFT_BUFFER,
-	//! Render target is the right color buffer (left is the main buffer)
-	ERT_STEREO_RIGHT_BUFFER,
-	//! Render to both stereo buffers at once
-	ERT_STEREO_BOTH_BUFFERS,
-	//! Auxiliary buffer 0
-	ERT_AUX_BUFFER0,
-	//! Auxiliary buffer 1
-	ERT_AUX_BUFFER1,
-	//! Auxiliary buffer 2
-	ERT_AUX_BUFFER2,
-	//! Auxiliary buffer 3
-	ERT_AUX_BUFFER3,
-	//! Auxiliary buffer 4
-	ERT_AUX_BUFFER4
-};
-
-//! Enum for the flags of clear buffer
-enum E_CLEAR_BUFFER_FLAG
-{
-	ECBF_NONE = 0,
-	ECBF_COLOR = 1,
-	ECBF_DEPTH = 2,
-	ECBF_STENCIL = 4,
-	ECBF_ALL = ECBF_COLOR | ECBF_DEPTH | ECBF_STENCIL
-};
-
-//! Enum for the types of fog distributions to choose from
-enum E_FOG_TYPE
-{
-	EFT_FOG_EXP = 0,
-	EFT_FOG_LINEAR,
-	EFT_FOG_EXP2
-};
 
 const c8 *const FogTypeNames[] = {
 		"FogExp",

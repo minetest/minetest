@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 #include <vector>
+#include <IrrlichtDevice.h>
 #include "irrlichttypes_extrabloated.h"
 #include "client/shadows/dynamicshadows.h"
 

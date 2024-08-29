@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "porting.h"
 #include "profilergraph.h"
+#include "IVideoDriver.h"
 #include "util/string.h"
 
 void ProfilerGraph::put(const Profiler::GraphValues &values)
