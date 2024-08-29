@@ -79,11 +79,7 @@ public:
 		*this = other;
 	}
 
-	//! Copy (from standard library string) constructor
-	string(const stl_type &str) : str(str) {}
-
-	//! Move (from standard library string) constructor
-	string(stl_type &&str) : str(str) {}
+	string(stl_type &&str) : str(std::forward<stl_type>(str)) {}
 
 	//! Constructor from other string types
 	template <class B>
