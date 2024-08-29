@@ -291,7 +291,7 @@ in one of its parents, the parent's file is used.
 Although it is discouraged, a mod can overwrite a media file of any mod that it
 depends on by supplying a file with an equal name.
 
-Of the model file formats, only a subset is supported:
+Only a subset of model file format features is supported:
 
 Simple textured meshes (with multiple textures), optionally with normals.
 The .x and .b3d formats additionally support skeletal animation.
