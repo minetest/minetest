@@ -144,7 +144,7 @@ private:
 	*/
 	SharedBuffer<u8> processPacket(Channel *channel,
 			const SharedBuffer<u8> &packetdata, session_t peer_id,
-			u8 channelnum, bool reliable);
+			u8 channelnum, bool reliable, bool *was_reliable = nullptr);
 
 	SharedBuffer<u8> handlePacketType_Control(Channel *channel,
 			const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,

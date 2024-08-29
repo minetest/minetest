@@ -1007,6 +1007,13 @@ void Client::ProcessData(NetworkPacket *pkt)
 		return;
 	}
 
+	if (!pkt->getWasReliable() && !toClientCommandTable[command].can_be_unreliable) {
+		infostream << "Client::ProcessData(): Recieved an unreliable packet,"
+			"but we can only process reliable packets for kind of packet: "
+			<< toClientCommandTable[command].name;
+		return;
+	}
+
 	/*
 	 * Those packets are handled before m_server_ser_ver is set, it's normal
 	 * But we must use the new ToClientConnectionState in the future,

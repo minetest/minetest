@@ -36,6 +36,7 @@ struct ToServerCommandHandler
 	const char *name;
 	ToServerConnectionState state;
 	void (Server::*handler)(NetworkPacket* pkt);
+	bool can_be_unreliable;
 };
 
 struct ClientCommandFactory

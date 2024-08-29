@@ -80,13 +80,14 @@ struct ConnectionEvent
 	session_t peer_id = 0;
 	Buffer<u8> data;
 	bool timeout = false;
+	bool reliable = false;
 	Address address;
 
 	// We don't want to copy "data"
 	DISABLE_CLASS_COPY(ConnectionEvent);
 
 	static ConnectionEventPtr create(ConnectionEventType type);
-	static ConnectionEventPtr dataReceived(session_t peer_id, const Buffer<u8> &data);
+	static ConnectionEventPtr dataReceived(session_t peer_id, const Buffer<u8> &data, bool reliable);
 	static ConnectionEventPtr peerAdded(session_t peer_id, Address address);
 	static ConnectionEventPtr peerRemoved(session_t peer_id, bool is_timeout, Address address);
 	static ConnectionEventPtr bindFailed();

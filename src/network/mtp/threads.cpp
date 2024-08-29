@@ -921,7 +921,7 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 					if (!getFromBuffers(peer_id, resultdata))
 						break;
 
-					m_connection->putEvent(ConnectionEvent::dataReceived(peer_id, resultdata));
+					m_connection->putEvent(ConnectionEvent::dataReceived(peer_id, resultdata, true));
 				}
 				catch (ProcessedSilentlyException &e) {
 					/* try reading again */
@@ -1039,15 +1039,16 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 
 		try {
 			// Process it (the result is some data with no headers made by us)
+			bool was_reliable = false;
 			SharedBuffer<u8> resultdata = processPacket
-				(channel, strippeddata, peer_id, channelnum, false);
+				(channel, strippeddata, peer_id, channelnum, false, &was_reliable);
 
 			LOG(dout_con << m_connection->getDesc()
 				<< " ProcessPacket from peer_id: " << peer_id
 				<< ", channel: " << (u32)channelnum << ", returned "
 				<< resultdata.getSize() << " bytes" << std::endl);
 
-			m_connection->putEvent(ConnectionEvent::dataReceived(peer_id, resultdata));
+			m_connection->putEvent(ConnectionEvent::dataReceived(peer_id, resultdata, was_reliable));
 		}
 		catch (ProcessedSilentlyException &e) {
 		}
@@ -1120,7 +1121,8 @@ bool ConnectionReceiveThread::checkIncomingBuffers(Channel *channel,
 }
 
 SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
-	const SharedBuffer<u8> &packetdata, session_t peer_id, u8 channelnum, bool reliable)
+	const SharedBuffer<u8> &packetdata, session_t peer_id, u8 channelnum,
+	bool reliable, bool *was_reliable)
 {
 	PeerHelper peer = m_connection->getPeerNoEx(peer_id);
 
@@ -1145,6 +1147,9 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 			<< std::endl;
 		throw InvalidIncomingDataException("Invalid packet type");
 	}
+
+	if (was_reliable)
+		*was_reliable = reliable || type == PACKET_TYPE_RELIABLE;
 
 	const PacketTypeHandler &pHandle = packetTypeRouter[type];
 	return (this->*pHandle.handler)(channel, packetdata, &peer, channelnum, reliable);

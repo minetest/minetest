@@ -104,7 +104,7 @@ void TestConnection::testNetworkPacketSerialize()
 
 	{
 		NetworkPacket pkt;
-		pkt.putRawPacket(expected, sizeof(expected), 0);
+		pkt.putRawPacket(expected, sizeof(expected), 0, false);
 
 		// same for decoding
 		std::wstring pkt_s;

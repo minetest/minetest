@@ -40,7 +40,7 @@ public:
 
 	~NetworkPacket() = default;
 
-	void putRawPacket(const u8 *data, u32 datasize, session_t peer_id);
+	void putRawPacket(const u8 *data, u32 datasize, session_t peer_id, bool reliable);
 	void clear();
 
 	// Getters
@@ -49,6 +49,9 @@ public:
 	u16 getCommand() const { return m_command; }
 	u32 getRemainingBytes() const { return m_datasize - m_read_offset; }
 	const char *getRemainingString() { return getString(m_read_offset); }
+
+	// getters only valid for recieved packets
+	bool getWasReliable() const { return m_was_reliable; }
 
 	// Returns a c-string without copying.
 	// A better name for this would be getRawString()
@@ -140,4 +143,7 @@ private:
 	u32 m_read_offset = 0;
 	u16 m_command = 0;
 	session_t m_peer_id = 0;
+
+	// recieved packet
+	bool m_was_reliable = false;
 };

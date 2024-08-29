@@ -1197,6 +1197,19 @@ void Server::ProcessData(NetworkPacket *pkt)
 			return;
 		}
 
+		if (!pkt->getWasReliable() && !toServerCommandTable[command].can_be_unreliable)
+		{
+			RemotePlayer* player = m_env->getPlayer(peer_id);
+			if (player)
+				actionstream << "Recieved unreliable packet from '" << player->getName() << "'";
+			else
+				actionstream << "Recieved unreliable packet from peer_id=" << peer_id;
+			actionstream << " for command type: '" << toServerCommandTable[command].name
+				<< "', but only a reliable packet would have been valid. "
+				"Possible blind packet injection attempt." << std::endl;
+			return;
+		}
+
 		if (toServerCommandTable[command].state == TOSERVER_STATE_NOT_CONNECTED) {
 			handleCommand(pkt);
 			return;

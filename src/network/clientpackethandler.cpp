@@ -209,6 +209,8 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 	if (pkt->getCommand() != TOCLIENT_ACCESS_DENIED) {
 		// Legacy code from 0.4.12 and older but is still used
 		// in some places of the server code
+		// ^^^ that comment was highly optimistic,
+		// the server finally stopped using it in 2022 see commit a65f6f07f3a5601207b790edcc8cc945133112f7
 		if (pkt->getSize() >= 2) {
 			std::wstring wide_reason;
 			*pkt >> wide_reason;
@@ -1596,6 +1598,11 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 
 	if ( !bytes_M ) {
 		errorstream << "Client: SRP-6a S_B safety check violation!" << std::endl;
+
+		m_access_denied = true;
+		m_access_denied_reason = gettext("Internal safety check was trigged during login, unable to continue!");
+		m_con->Disconnect();
+
 		return;
 	}
 
