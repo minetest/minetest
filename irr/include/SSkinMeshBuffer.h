@@ -28,8 +28,8 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	SSkinMeshBuffer(std::vector<video::S3DVertex> &&vertices, std::vector<u16> &&indices) :
 			SSkinMeshBuffer()
 	{
-		Vertices_Standard = std::forward<std::vector<video::S3DVertex>>(vertices);
-		Indices = std::forward<std::vector<u16>>(indices);
+		Vertices_Standard = std::move(vertices);
+		Indices = std::move(indices);
 	}
 
 	//! Get Material of this buffer.

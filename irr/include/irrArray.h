@@ -45,8 +45,9 @@ public:
 	{
 	}
 
+	//! Move constructor
 	array(std::vector<T> &&data) :
-			m_data(std::forward(data)), is_sorted(false) {}
+			m_data(std::move(data)), is_sorted(false) {}
 
 	//! Reallocates the array, make it bigger or smaller.
 	/** \param new_size New size of array.
