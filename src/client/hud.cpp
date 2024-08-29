@@ -139,7 +139,7 @@ Hud::Hud(Client *client, LocalPlayer *player,
 
 	m_rotation_mesh_buffer.getMaterial().Lighting = false;
 	m_rotation_mesh_buffer.getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-	m_rotation_mesh_buffer.setHardwareMappingHint(scene::EHM_STATIC);
+	//m_rotation_mesh_buffer.setHardwareMappingHint(scene::EHM_STATIC); // FIXME: incorrectly stack allocated, not safe!
 }
 
 void Hud::readScalingSetting()
