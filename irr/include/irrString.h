@@ -79,7 +79,9 @@ public:
 		*this = other;
 	}
 
-	string(stl_type &&str) : str(std::forward<stl_type>(str)) {}
+	string(const stl_type &str) : str(str) {}
+
+	string(stl_type &&str) : str(std::move(str)) {}
 
 	//! Constructor from other string types
 	template <class B>
