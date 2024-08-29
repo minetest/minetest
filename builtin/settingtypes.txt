@@ -904,7 +904,7 @@ default_privs (Default privileges) string interact, shout
 basic_privs (Basic privileges) string interact, shout
 
 #    Server anticheat configuration
-anticheat_flags (Anticheat flags) flags digging,interation,movement digging,interation,movement
+anticheat_flags (Anticheat flags) flags digging,interaction,movement digging,interaction,movement
 
 #    Tolerance of movement anticheat detector.
 #    Increase the value if players experience stuttery movement.
