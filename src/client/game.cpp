@@ -384,6 +384,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 3> m_artificial_light{ "artificialLight" };
 	CachedPixelShaderSetting<float, 3> m_day_light{"dayLight"};
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
+	CachedPixelShaderSetting<float> m_minimap_size{"mapSize"};
 	CachedVertexShaderSetting<float, 3> m_camera_offset_vertex{"cameraOffset"};
 	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel{ "cameraOffset" };
 	CachedVertexShaderSetting<float, 3> m_camera_position_vertex{"cameraPosition"};
@@ -507,6 +508,8 @@ public:
 		if (m_client->getMinimap()) {
 			v3f minimap_yaw = m_client->getMinimap()->getYawVec();
 			m_minimap_yaw.set(minimap_yaw, services);
+			float minimap_size = m_client->getMinimap()->getModeDef().map_size;
+			m_minimap_size.set(&minimap_size, services);
 		}
 
 		v3f offset = intToFloat(m_client->getCamera()->getOffset(), BS);

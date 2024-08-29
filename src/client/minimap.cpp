@@ -607,8 +607,8 @@ void Minimap::drawMinimap(core::rect<s32> rect)
 
 	video::SMaterial &material = m_meshbuffer->getMaterial();
 	material.forEachTexture([] (auto &tex) {
-		tex.MinFilter = video::ETMINF_LINEAR_MIPMAP_LINEAR;
-		tex.MagFilter = video::ETMAGF_LINEAR;
+		tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+		tex.MagFilter = video::ETMAGF_NEAREST;
 	});
 	material.Lighting = false;
 	material.TextureLayers[0].Texture = minimap_texture;
@@ -647,6 +647,7 @@ void Minimap::drawMinimap(core::rect<s32> rect)
 	material.TextureLayers[0].Texture = data->player_marker;
 	driver->setTransform(video::ETS_WORLD, matrix);
 	driver->setMaterial(material);
+	driver->drawMeshBuffer(m_meshbuffer);
 	driver->drawMeshBuffer(m_meshbuffer);
 
 	// Reset transformations
