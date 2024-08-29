@@ -154,7 +154,7 @@ Hud::Hud(Client *client, LocalPlayer *player,
 
 	b.getMaterial().Lighting = false;
 	b.getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-	b.setHardwareMappingHint(scene::EHM_STATIC);
+	//b.setHardwareMappingHint(scene::EHM_STATIC); // FIXME: incorrectly stack allocated, not safe!
 }
 
 void Hud::readScalingSetting()
