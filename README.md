@@ -1,14 +1,12 @@
-Minetest
+Opal Client
 ========
 
-![Build Status](https://github.com/minetest/minetest/workflows/build/badge.svg)
-[![Translation status](https://hosted.weblate.org/widgets/minetest/-/svg-badge.svg)](https://hosted.weblate.org/engage/minetest/?utm_source=widget)
 [![License](https://img.shields.io/badge/license-LGPLv2.1%2B-blue.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)
 
-Minetest is a free open-source voxel game engine with easy modding and game creation.
+Opal Client is a forked client for Minetest the free open-source voxel game engine.
 
-Copyright (C) 2010-2022 Perttu Ahola <celeron55@gmail.com>
-and contributors (see source file comments and the version control log)
+Copyright (C) 2024 Altius Games <samuel@thesargents.org>
+and original Minetest contributors (see source file comments and the version control log)
 
 Table of Contents
 ------------------
@@ -25,12 +23,8 @@ Table of Contents
 
 Further documentation
 ----------------------
-- Website: https://www.minetest.net/
-- Wiki: https://wiki.minetest.net/
-- Forum: https://forum.minetest.net/
-- GitHub: https://github.com/minetest/minetest/
-- [Developer documentation](doc/developing/)
-- [doc/](doc/) directory of source distribution
+- GitHub: https://github.com/Python-Sargent/Opal-Client/
+- More info in the Minetest doc
 
 Default controls
 ----------------
