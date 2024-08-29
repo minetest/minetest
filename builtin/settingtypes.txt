@@ -903,13 +903,8 @@ default_privs (Default privileges) string interact, shout
 #    Privileges that players with basic_privs can grant
 basic_privs (Basic privileges) string interact, shout
 
-#    Configure server anticheat
-#    Combine the byteflags below to enable desired anticheat features, or set to 0
-#    to disable anticheat:
-#    DIGGING: 1 (Prevent fast/instant digging cheats)
-#    INTERACTION: 2 (Prevent illegal player interactions)
-#    MOVEMENT: 4 (Prevent moving too fast)
-anticheat_flags (Anticheat flags) int 7 0 7
+#    Server anticheat configuration
+anticheat_flags (Anticheat flags) flags digging,interation,movement digging,interation,movement
 
 #    Tolerance of movement anticheat detector.
 #    Increase the value if players experience stuttery movement.

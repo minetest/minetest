@@ -1011,12 +1011,12 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	/*
 		Check that target is reasonably close
 	*/
-	static thread_local const u16 anticheat_flags =
-		g_settings->getU16("anticheat_flags");
+	static thread_local const u32 anticheat_flags =
+		g_settings->getFlagStr("anticheat_flags", flagdesc_anticheat, nullptr);
 
 	if ((action == INTERACT_START_DIGGING || action == INTERACT_DIGGING_COMPLETED ||
 			action == INTERACT_PLACE || action == INTERACT_USE) &&
-			(anticheat_flags & 2) && !isSingleplayer()) {
+			(anticheat_flags & AC_INTERACTION) && !isSingleplayer()) {
 		v3f target_pos = player_pos;
 		if (pointed.type == POINTEDTHING_NODE) {
 			target_pos = intToFloat(pointed.node_undersurface, BS);
@@ -1119,7 +1119,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 		/* Cheat prevention */
 		bool is_valid_dig = true;
-		if ((anticheat_flags & 1) && !isSingleplayer()) {
+		if ((anticheat_flags & AC_DIGGING) && !isSingleplayer()) {
 			v3s16 nocheat_p = playersao->getNoCheatDigPos();
 			float nocheat_t = playersao->getNoCheatDigTime();
 			playersao->noCheatDigEnd();

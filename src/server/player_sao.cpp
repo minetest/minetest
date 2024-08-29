@@ -648,7 +648,7 @@ bool PlayerSAO::checkMovementCheat()
 {
 	if (m_is_singleplayer ||
 			isAttached() ||
-			!(g_settings->getU16("anticheat_flags") & 4)) {
+			!(g_settings->getFlagStr("anticheat_flags", flagdesc_anticheat, nullptr) & AC_MOVEMENT)) {
 		m_last_good_position = m_base_position;
 		return false;
 	}

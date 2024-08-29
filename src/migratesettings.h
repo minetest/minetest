@@ -22,7 +22,7 @@ void migrate_settings()
 
 	// Disables anticheat
 	if (g_settings->existsLocal("disable_anticheat")) {
-		g_settings->setU16("anticheat_flags", 0);
+		g_settings->set("anticheat_flags", "0");
 		g_settings->remove("disable_anticheat");
 	}
 }
