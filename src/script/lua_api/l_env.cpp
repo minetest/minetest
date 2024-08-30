@@ -349,10 +349,6 @@ int ModApiEnv::l_bulk_swap_node(lua_State *L)
 	luaL_checktype(L, 1, LUA_TTABLE);
 
 	s32 len = lua_objlen(L, 1);
-	if (len == 0) {
-		lua_pushboolean(L, true);
-		return 1;
-	}
 
 	MapNode n = readnode(L, 2);
 
