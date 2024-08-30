@@ -6701,6 +6701,8 @@ Timing
 
 * `job:get_elapsed_time()`
     * Returns the game time passed since the job was launched, in `dtime_s`.
+    * If the job has finished, it returns the duration of the job as declared
+    in `minetest.after`.
     * Returns `nil` if the job is cancelled.
 * `job:cancel()`
     * Cancels the job function from being called
