@@ -174,10 +174,8 @@ function core.after(after, func, ...)
 		get_elapsed_time = function(self)
 			if self.expired then
 				return after
-			else
-				if self.expiring_time then
-					return time - self.start_time
-				end
+			elseif self.expiring_time then
+				return time - self.start_time
 			end
 		end
 	}
