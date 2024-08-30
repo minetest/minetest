@@ -1,6 +1,9 @@
 minetest.register_chatcommand("hotbar", {
 	params = "<size>",
 	description = "Set hotbar size",
+	params_description = {
+		{"<size>", "Hotbar size to set, in slots"},
+	},
 	func = function(name, param)
 		local player = minetest.get_player_by_name(name)
 		if not player then
@@ -22,6 +25,9 @@ minetest.register_chatcommand("hotbar", {
 minetest.register_chatcommand("hp", {
 	params = "<hp>",
 	description = "Set your health",
+	params_description = {
+		{"<hp>", "Health points to set"},
+	},
 	func = function(name, param)
 		local player = minetest.get_player_by_name(name)
 		if not player then
@@ -64,6 +70,9 @@ minetest.register_chatcommand("infplace", {
 minetest.register_chatcommand("detach", {
 	params = "[<radius>]",
 	description = "Detach all objects nearby",
+	params_description = {
+		{"<radius>", "Radius to check for objects within, in nodes (default: 8)"},
+	},
 	func = function(name, param)
 		local radius = tonumber(param)
 		if type(radius) ~= "number" then
@@ -91,6 +100,11 @@ minetest.register_chatcommand("detach", {
 minetest.register_chatcommand("use_tool", {
 	params = "(dig <group> <leveldiff>) | (hit <damage_group> <time_from_last_punch>) [<uses>]",
 	description = "Apply tool wear a number of times, as if it were used for digging",
+	params_description = {
+		{"dig <group> <leveldiff>", "Emulate digging node with <group> of <leveldiff>"},
+		{"hit <damage_group> <time_from_last_punch>", "Emulate hitting entity of <damage_group> with <time_from_last_punch>"},
+		{"<uses>", "Amount of uses to wear tool by"},
+	},
 	func = function(name, param)
 		local player = minetest.get_player_by_name(name)
 		if not player then
@@ -166,6 +180,11 @@ end
 minetest.register_chatcommand("set_displayed_itemcount", {
 	params = "(-s \"<string>\" [-c <color>]) | -a <alignment_num>",
 	description = "Set the displayed itemcount of the wielded item",
+	params_description = {
+		{"-s \"<string>\"", "String to set in place of the itemcount"},
+		{"-c <color>", "Color of the string to set (ColorString)"},
+		{"-a <alignment_num>", "Alignment number"},
+	},
 	func = function(name, param)
 		local player = minetest.get_player_by_name(name)
 		local item = player:get_wielded_item()
@@ -233,11 +252,14 @@ minetest.register_chatcommand("dump_wear_bar", {
 	end,
 })
 
-core.register_chatcommand("set_saturation", {
-    params = "<saturation>",
-    description = "Set the saturation for current player.",
-    func = function(player_name, param)
-        local saturation = tonumber(param)
-        minetest.get_player_by_name(player_name):set_lighting({saturation = saturation })
-    end
+minetest.register_chatcommand("set_saturation", {
+	params = "<saturation>",
+	description = "Set the saturation for current player",
+	params_description = {
+		{"<saturation>", "Saturation value"},
+	},
+	func = function(player_name, param)
+		local saturation = tonumber(param)
+		minetest.get_player_by_name(player_name):set_lighting({saturation = saturation })
+	end
 })

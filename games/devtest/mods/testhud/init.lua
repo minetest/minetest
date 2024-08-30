@@ -55,6 +55,9 @@ end)
 minetest.register_chatcommand("hudfonts", {
 	params = "[<HUD elements>]",
 	description = "Show/Hide some text on the HUD with various font options",
+	params_description = {
+		{"<HUD elements>", "Font state index"},
+	},
 	func = function(name, param)
 		local player = minetest.get_player_by_name(name)
 		local param = tonumber(param) or 0
@@ -84,7 +87,12 @@ minetest.register_chatcommand("hudfonts", {
 local player_waypoints = {}
 minetest.register_chatcommand("hudwaypoints", {
 	params = "[ add | add_change | remove ]",
-	description = "Create HUD waypoints at your position for testing (add: Add waypoints and change them after 0.5s (default). add_change: Add waypoints and change immediately. remove: Remove all waypoints)",
+	description = "Create HUD waypoints at your position for testing",
+	params_description = {
+		{"add", "Add waypoints and change them after 0.5s (default)"},
+		{"add_change", "Add waypoints and change immediately"},
+		{"remove", "Remove all waypoints"},
+	},
 	func = function(name, params)
 		local player = minetest.get_player_by_name(name)
 		if not player then
@@ -189,6 +197,9 @@ end)
 minetest.register_chatcommand("zoomfov", {
 	params = "[<FOV>]",
 	description = "Set or display your zoom_fov",
+	params_description = {
+		{"<FOV>", "Field of view to set, in degrees"}
+	},
 	func = function(name, param)
 		local player = minetest.get_player_by_name(name)
 		if not player then

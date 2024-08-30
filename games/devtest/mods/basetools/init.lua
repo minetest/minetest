@@ -520,6 +520,9 @@ end
 minetest.register_chatcommand("wear_color", {
 	params = "[idx]",
 	description = "Set wear bar color override",
+	params_description = {
+		{"idx", "Tool params override index"},
+	},
 	func = function(player_name, param)
 		local player = minetest.get_player_by_name(player_name)
 		if not player then return end
