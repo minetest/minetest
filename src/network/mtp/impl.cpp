@@ -751,6 +751,7 @@ void Channel::UpdateTimers(float dtime)
 			packet_too_late = current_packet_too_late;
 			packets_successful = current_packet_successful;
 
+			// has half the window even been used?
 			if (current_bytes_transfered > (unsigned int) (m_window_size*512/2)) {
 				reasonable_amount_of_data_transmitted = true;
 			}
