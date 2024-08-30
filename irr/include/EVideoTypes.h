@@ -71,5 +71,5 @@ enum E_FOG_TYPE
 	EFT_FOG_EXP2
 };
 
-}; // irr::video
+} // irr::video
 

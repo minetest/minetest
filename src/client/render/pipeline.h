@@ -36,7 +36,7 @@ class ShadowRenderer;
 namespace irr::video
 {
 	class IRenderTarget;
-};
+}
 
 struct PipelineContext
 {

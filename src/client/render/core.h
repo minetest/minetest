@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace irr
 {
 	class IrrlichtDevice;
-};
+}
 
 class ShadowRenderer;
 class Camera;
