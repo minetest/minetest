@@ -67,6 +67,12 @@ local function build_chatcommands_formspec(name, sel, copy)
 				cmds[1], F(cmds[2].params))
 			if sel == #rows then
 				description = cmds[2].description
+				if cmds[2].params_description then
+					local params = cmds[2].params_description
+					for k = 1, #params do
+						description = description .. "\n* " .. params[k][1] .. ": " .. params[k][2]
+					end
+				end
 				if copy then
 					local msg = S("Command: @1 @2",
 						core.colorize("#0FF", (INIT == "client" and "." or "/") .. cmds[1]), cmds[2].params)
