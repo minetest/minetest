@@ -10559,10 +10559,16 @@ description fields is shown when the "/help" chatcommand is issued.
 ```lua
 {
     params = "",
-    -- Short parameter description.  See the below note.
+    -- Short parameter description. See the below note.
 
     description = "",
     -- General description of the command's purpose.
+
+    params_description = {
+        {"", ""},
+        {"", ""},
+    },
+    -- Usage description for each parameter.
 
     privs = {},
     -- Required privileges to run. See `minetest.check_player_privs()` for
@@ -10598,7 +10604,12 @@ Example:
 
     description = "Remove privilege from player",
 
-    privs = {privs=true},  -- Require the "privs" privilege to run
+    params_description = {
+        {"<name>", "Player name"},
+        {"<privilege>", "Privilege"},
+    },
+
+    privs = {privs=true}, -- Require the "privs" privilege to run
 
     func = function(name, param),
 }
