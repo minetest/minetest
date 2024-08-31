@@ -1009,7 +1009,13 @@ void UDPPeer::reportRTT(float rtt)
 	if (timeout > RESEND_TIMEOUT_MAX)
 		timeout = RESEND_TIMEOUT_MAX;
 
+	float timeout_old = getResendTimeout();
 	setResendTimeout(timeout);
+
+	if (std::abs(timeout - timeout_old) >= 0.001f) {
+		dout_con << m_connection->getDesc() << " set resend timeout " << timeout
+			<< " (rtt=" << rtt_stat << ") for peer id: " << id << std::endl;
+	}
 }
 
 bool UDPPeer::Ping(float dtime,SharedBuffer<u8>& data)
@@ -1129,7 +1135,7 @@ bool UDPPeer::processReliableSendCommand(
 	u16 packets_available = toadd.size();
 	/* we didn't get a single sequence number no need to fill queue */
 	if (!have_initial_sequence_number) {
-		LOG(derr_con << m_connection->getDesc() << "Ran out of sequence numbers!" << std::endl);
+		dout_con << m_connection->getDesc() << " No sequence numbers available!" << std::endl;
 		return false;
 	}
 
