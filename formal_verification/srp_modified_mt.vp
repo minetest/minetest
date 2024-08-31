@@ -1,0 +1,88 @@
+// SPDX-FileCopyrightText: red-001 <red-001@outlook.ie>
+// SPDX-License-Identifier: MIT
+
+
+attacker[passive]
+
+principal Client[
+	// digest of handshake key
+	knows public network_value
+	// user password
+	knows private password_hash
+	v_c = G^password_hash
+
+	generates a
+	gA = G^a
+]
+
+principal Server[
+	knows public network_value
+	// sever doesn't actually know user password hash, but we can pretend
+	knows private password_hash
+	// first thing the server actually knows
+	v_s = G^password_hash
+	
+	generates b
+	gB = G^b
+
+	enc_gB = ENC(v_s, gB)
+]
+
+Client -> Server: gA
+Server -> Client: enc_gB
+
+principal Client[
+	u_C = HASH(gA, enc_gB)
+	gB_C = DEC(v_c, enc_gB)
+
+	// g^ba
+	gBA_C = gB_C^a
+
+	// g^bux
+	gBU = gB_C^u_C
+	gBUX_C = gBU^password_hash
+
+	// (g^b)^(a+ux)
+	K_C = HASH(gBA_C, gBUX_C)
+	M1_C_old = HASH(gA, gB_C, K_C)
+	leaks M1_C_old
+	M1_C = HASH(gA, gB_C, network_value, K_C)
+]
+
+principal Server[
+	u_S = HASH(gA, enc_gB)
+
+	gBA_S = gA^b
+	
+	gUX = v_s^u_S
+	gBUX_S = gUX^b
+
+	K_S = HASH(gBA_S, gBUX_S)
+	M1_S = HASH(gA, gB, K_S)
+]
+
+Client -> Server: M1_C
+
+principal Server[
+	_ = ASSERT(M1_C, M1_S)
+	M2_S_old = HASH(gA, M1_S, K_S)
+	leaks M2_S_old
+	M2_S = HASH(gA, M1_S, network_value, K_S)
+]
+
+Server -> Client: M2_S
+
+principal Client[
+	M2_C = HASH(gA, M1_C, K_C)
+
+	_ = ASSERT(M2_S, M2_C)
+]
+
+
+queries[
+	confidentiality? v_s
+	confidentiality? v_c
+	confidentiality? K_S
+	confidentiality? K_C
+	confidentiality? network_value
+]
