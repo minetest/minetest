@@ -61,13 +61,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 int ModApiUtil::l_log(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::string text;
+	std::string_view text;
 	LogLevel level = LL_NONE;
-	if (lua_isnone(L, 2)) {
-		text = luaL_checkstring(L, 1);
+	if (lua_isnoneornil(L, 2)) {
+		text = readParam<std::string_view>(L, 1);
 	} else {
-		std::string name = luaL_checkstring(L, 1);
-		text = luaL_checkstring(L, 2);
+		auto name = readParam<std::string_view>(L, 1);
+		text = readParam<std::string_view>(L, 2);
 		if (name == "deprecated") {
 			log_deprecated(L, text, 2);
 			return 0;
@@ -75,7 +75,7 @@ int ModApiUtil::l_log(lua_State *L)
 		level = Logger::stringToLevel(name);
 		if (level == LL_MAX) {
 			warningstream << "Tried to log at unknown level '" << name
-				<< "'.  Defaulting to \"none\"." << std::endl;
+				<< "'. Defaulting to \"none\"." << std::endl;
 			level = LL_NONE;
 		}
 	}
