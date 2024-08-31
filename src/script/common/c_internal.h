@@ -26,6 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <string_view>
+
 extern "C" {
 #include <lua.h>
 #include <lauxlib.h>
@@ -127,7 +129,7 @@ int script_error_handler(lua_State *L);
 // Takes an error from lua_pcall and throws it as a LuaError
 void script_error(lua_State *L, int pcall_result, const char *mod, const char *fxn);
 
-bool script_log_unique(lua_State *L, std::string message, std::ostream &log_to,
+bool script_log_unique(lua_State *L, std::string_view message, std::ostream &log_to,
 	int stack_depth = 1);
 
 enum DeprecatedHandlingMode {
@@ -152,7 +154,8 @@ DeprecatedHandlingMode get_deprecated_handling_mode();
  *        (ie: not builtin or core). -1 to disabled.
  * @param once Log the deprecation warning only once per callsite.
  */
-void log_deprecated(lua_State *L, std::string message, int stack_depth = 1, bool once = false);
+void log_deprecated(lua_State *L, std::string_view message,
+	int stack_depth = 1, bool once = false);
 
 // Safely call string.dump on a function value
 // (does not pop, leaves one value on stack)
