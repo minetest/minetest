@@ -1071,6 +1071,8 @@ void Server::Receive(float timeout)
 				// and a faster server-step is better than busy waiting.
 				if (remaining_time_us() < 1000.0f)
 					break;
+				else
+					continue;
 			}
 
 			peer_id = pkt.getPeerId();
