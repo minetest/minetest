@@ -2,7 +2,7 @@
 -- HP Change Reasons
 --
 local expect = nil
-minetest.register_on_player_hpchange(function(player, hp, reason)
+core.register_on_player_hpchange(function(player, hp_change, reason)
 	if expect == nil then
 		return
 	end
@@ -36,6 +36,48 @@ local function run_hpchangereason_tests(player)
 	player:set_hp(old_hp)
 end
 unittests.register("test_hpchangereason", run_hpchangereason_tests, {player=true})
+
+--
+-- HP differences
+--
+
+local expected_diff = nil
+core.register_on_player_hpchange(function(player, hp_change, reason)
+	if expected_diff then
+		assert(hp_change == expected_diff)
+	end
+end)
+
+local function run_hp_difference_tests(player)
+	local old_hp = player:get_hp()
+	local old_hp_max = player:get_properties().hp_max
+
+	expected_diff = nil
+	player:set_properties({hp_max = 30})
+	player:set_hp(22)
+
+	-- final HP value is clamped to >= 0 before difference calculation
+	expected_diff = -22
+	player:set_hp(-3)
+	-- and actual final HP value is clamped to >= 0 too
+	assert(player:get_hp() == 0)
+
+	expected_diff = 22
+	player:set_hp(22)
+	assert(player:get_hp() == 22)
+
+	-- final HP value is clamped to <= U16_MAX before difference calculation
+	expected_diff = 65535 - 22
+	player:set_hp(1000000)
+	-- and actual final HP value is clamped to <= hp_max
+	assert(player:get_hp() == 30)
+
+	expected_diff = nil
+	player:set_properties({hp_max = old_hp_max})
+	player:set_hp(old_hp)
+	core.close_formspec(player:get_player_name(), "") -- hide death screen
+end
+unittests.register("test_hp_difference", run_hp_difference_tests, {player=true})
 
 --
 -- Player meta
