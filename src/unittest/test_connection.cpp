@@ -160,6 +160,9 @@ void TestConnection::testHelpers()
 
 void TestConnection::testConnectSendReceive()
 {
+
+	constexpr u32 timeout_ms = 100;
+
 	/*
 		Test some real connections
 
@@ -210,13 +213,11 @@ void TestConnection::testConnectSendReceive()
 	// Client should not have added client yet
 	UASSERT(hand_client.count == 0);
 
-	try {
-		NetworkPacket pkt;
-		infostream << "** running client.Receive()" << std::endl;
-		client.Receive(&pkt);
+	NetworkPacket pkt;
+	infostream << "** running client.Receive()" << std::endl;
+	if (client.ReceiveTimeoutMs(&pkt, timeout_ms)) {
 		infostream << "** Client received: peer_id=" << pkt.getPeerId()
 			<< ", size=" << pkt.getSize() << std::endl;
-	} catch (con::NoIncomingDataException &e) {
 	}
 
 	// Client should have added server now
@@ -227,14 +228,14 @@ void TestConnection::testConnectSendReceive()
 
 	sleep_ms(100);
 
-	try {
-		NetworkPacket pkt;
-		infostream << "** running server.Receive()" << std::endl;
-		server.Receive(&pkt);
+	NetworkPacket pkt1;
+	infostream << "** running server.Receive()" << std::endl;
+	if (server.ReceiveTimeoutMs(&pkt, timeout_ms)) {
 		infostream << "** Server received: peer_id=" << pkt.getPeerId()
-				<< ", size=" << pkt.getSize()
-				<< std::endl;
-	} catch (con::NoIncomingDataException &e) {
+			<< ", size=" << pkt.getSize()
+			<< std::endl;
+	}
+	else {
 		// No actual data received, but the client has
 		// probably been connected
 	}
@@ -249,27 +250,23 @@ void TestConnection::testConnectSendReceive()
 	//sleep_ms(50);
 
 	while (client.Connected() == false) {
-		try {
-			NetworkPacket pkt;
-			infostream << "** running client.Receive()" << std::endl;
-			client.Receive(&pkt);
+		NetworkPacket pkt;
+		infostream << "** running client.Receive()" << std::endl;
+		if (client.TryReceive(&pkt)) {
 			infostream << "** Client received: peer_id=" << pkt.getPeerId()
 				<< ", size=" << pkt.getSize() << std::endl;
-		} catch (con::NoIncomingDataException &e) {
 		}
 		sleep_ms(50);
 	}
 
 	sleep_ms(50);
 
-	try {
-		NetworkPacket pkt;
-		infostream << "** running server.Receive()" << std::endl;
-		server.Receive(&pkt);
+	NetworkPacket pkt2;
+	infostream << "** running server.Receive()" << std::endl;
+	if (server.ReceiveTimeoutMs(&pkt, timeout_ms)) {
 		infostream << "** Server received: peer_id=" << pkt.getPeerId()
-				<< ", size=" << pkt.getSize()
-				<< std::endl;
-	} catch (con::NoIncomingDataException &e) {
+			<< ", size=" << pkt.getSize()
+			<< std::endl;
 	}
 
 	/*
@@ -288,7 +285,7 @@ void TestConnection::testConnectSendReceive()
 
 		NetworkPacket recvpacket;
 		infostream << "** running server.Receive()" << std::endl;
-		server.Receive(&recvpacket);
+		UASSERT(server.ReceiveTimeoutMs(&recvpacket, timeout_ms));
 		infostream << "** Server received: peer_id=" << pkt.getPeerId()
 				<< ", size=" << pkt.getSize()
 				<< ", data=" << (const char*)pkt.getU8Ptr(0)
@@ -338,14 +335,12 @@ void TestConnection::testConnectSendReceive()
 		for (;;) {
 			if (porting::getTimeMs() - timems0 > 5000 || received)
 				break;
-			try {
-				NetworkPacket pkt;
-				client.Receive(&pkt);
+			NetworkPacket pkt;
+			if (client.ReceiveTimeoutMs(&pkt, timeout_ms)) {
 				size = pkt.getSize();
 				peer_id = pkt.getPeerId();
 				recvdata = pkt.oldForgePacket();
 				received = true;
-			} catch (con::NoIncomingDataException &e) {
 			}
 			sleep_ms(10);
 		}
