@@ -37,6 +37,12 @@ files["builtin/client/register.lua"] = {
 	}
 }
 
+files["builtin/common/math.lua"] = {
+	globals = {
+		"math",
+	},
+}
+
 files["builtin/common/misc_helpers.lua"] = {
 	globals = {
 		"dump", "dump2", "table", "math", "string",
@@ -46,7 +52,7 @@ files["builtin/common/misc_helpers.lua"] = {
 }
 
 files["builtin/common/vector.lua"] = {
-	globals = { "vector" },
+	globals = { "vector", "math" },
 }
 
 files["builtin/game/voxelarea.lua"] = {
