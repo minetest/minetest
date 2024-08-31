@@ -398,8 +398,6 @@ void Client::connect(const Address &address, const std::string &address_name,
 	address.print(infostream);
 	infostream << std::endl;
 
-	// Since we use TryReceive() a timeout here would be ineffective anyway
-	m_con->SetTimeoutMs(0);
 	m_con->Connect(address);
 
 	initLocalMapSaving(address, m_address_name, is_local_server);

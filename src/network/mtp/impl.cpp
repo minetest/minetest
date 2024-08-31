@@ -1486,13 +1486,6 @@ bool Connection::ReceiveTimeoutMs(NetworkPacket *pkt, u32 timeout_ms)
 	return false;
 }
 
-void Connection::Receive(NetworkPacket *pkt)
-{
-	bool any = ReceiveTimeoutMs(pkt, m_bc_receive_timeout);
-	if (!any)
-		throw NoIncomingDataException("No incoming data");
-}
-
 void Connection::Send(session_t peer_id, u8 channelnum,
 		NetworkPacket *pkt, bool reliable)
 {

@@ -551,7 +551,6 @@ void Server::start()
 	m_thread->stop();
 
 	// Initialize connection
-	m_con->SetTimeoutMs(30);
 	m_con->Serve(m_bind_addr);
 
 	// Start thread

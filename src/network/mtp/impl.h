@@ -249,13 +249,11 @@ public:
 
 	void putCommand(ConnectionCommandPtr c);
 
-	void SetTimeoutMs(u32 timeout) { m_bc_receive_timeout = timeout; }
 	void Serve(Address bind_addr);
 	void Connect(Address address);
 	bool Connected();
 	void Disconnect();
 	bool ReceiveTimeoutMs(NetworkPacket *pkt, u32 timeout_ms);
-	void Receive(NetworkPacket *pkt);
 	void Send(session_t peer_id, u8 channelnum, NetworkPacket *pkt, bool reliable);
 	session_t GetPeerID() const { return m_peer_id; }
 	Address GetPeerAddress(session_t peer_id);
@@ -317,7 +315,6 @@ private:
 
 	// Backwards compatibility
 	PeerHandler *m_bc_peerhandler;
-	u32 m_bc_receive_timeout = 0;
 
 	bool m_shutting_down = false;
 };
