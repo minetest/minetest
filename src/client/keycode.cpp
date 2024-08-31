@@ -245,7 +245,7 @@ static const table_key &lookup_keychar(wchar_t Char)
 	return table.emplace_back(std::move(new_key));
 }
 
-static const table_key &lookup_keyname(const std::string_view &name)
+static const table_key &lookup_keyname(std::string_view name)
 {
 	if (name.empty())
 		return invalid_key;
@@ -282,7 +282,7 @@ static const table_key &lookup_scancode(const u32 scancode)
 	return key.index() == 0 ? lookup_keykey(std::get<irr::EKEY_CODE>(key)) : lookup_keychar(std::get<wchar_t>(key));
 }
 
-KeyPress::KeyPress(const std::string_view &name)
+KeyPress::KeyPress(std::string_view name)
 {
 	if (loadFromScancode(name))
 		return;
@@ -322,7 +322,7 @@ wchar_t KeyPress::getKeychar() const
 	return lookup_scancode(scancode).Char;
 }
 
-bool KeyPress::loadFromScancode(const std::string_view &name)
+bool KeyPress::loadFromScancode(std::string_view name)
 {
 	if (name.size() < 2 || name[0] != '<')
 		return false;
