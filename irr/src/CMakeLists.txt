@@ -83,6 +83,10 @@ if(LINUX_PLATFORM)
 	add_definitions(-D_IRR_LINUX_PLATFORM_)
 endif()
 
+if(MSVC)
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
 if(USE_SDL2)
 	set(DEVICE "SDL")
 elseif(DEVICE STREQUAL "SDL")
