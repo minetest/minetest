@@ -224,9 +224,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add TOCLIENT_MOVE_PLAYER_REL
 		Move default minimap from client-side C++ to server-side builtin Lua
 		[scheduled bump for 5.9.0]
+	PROTOCOL VERSION 45:
+		Minimap HUD element supports negative size values as percentages
+		[bump for 5.9.1]
 */
 
-#define LATEST_PROTOCOL_VERSION 44
+#define LATEST_PROTOCOL_VERSION 45
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
