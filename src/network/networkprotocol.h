@@ -225,7 +225,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Move default minimap from client-side C++ to server-side builtin Lua
 		[scheduled bump for 5.9.0]
 	PROTOCOL VERSION 45:
-		Reserved for minimap size change
+		Minimap HUD element supports negative size values as percentages
+		[bump for 5.9.1]
 	PROTOCOL VERSION 46:
 		Move default hotbar from client-side C++ to server-side builtin Lua
 		[scheduled bump for 5.10.0]
