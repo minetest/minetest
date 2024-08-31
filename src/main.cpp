@@ -531,7 +531,6 @@ static bool setup_log_params(const Settings &cmd_args)
 	if (cmd_args.getFlag("trace")) {
 		dstream << _("Enabling trace level debug output") << std::endl;
 		g_logger.addOutput(&stderr_output, LL_TRACE);
-		socket_enable_debug_output = true;
 	}
 
 	return true;
