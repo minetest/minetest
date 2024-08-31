@@ -3358,9 +3358,10 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	if (g_touchcontrols) {
 		auto mode = selected_def.touch_interaction.getMode(pointed.type);
 		g_touchcontrols->applyContextControls(mode);
-		// update again so that TOSERVER_INTERACT packets have the correct controls set
-		client->getEnv().getLocalPlayer()->control.dig = isKeyDown(KeyType::DIG);
-		client->getEnv().getLocalPlayer()->control.place = isKeyDown(KeyType::PLACE);
+		// applyContextControls may change dig/place input.
+		// Update again so that TOSERVER_INTERACT packets have the correct controls set.
+		player->control.dig = isKeyDown(KeyType::DIG);
+		player->control.place = isKeyDown(KeyType::PLACE);
 	}
 
 	// Note that updating the selection mesh every frame is not particularly efficient,
