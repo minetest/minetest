@@ -60,7 +60,7 @@
 		Support float animation frame numbers in TOCLIENT_LOCAL_PLAYER_ANIMATIONS
 		[scheduled bump for 5.10.0]
 	PROTOCOL VERSION 47:
-		Add TOCLIENT_UI_MESSAGE
+		Add TOCLIENT_UI_MESSAGE and TOSERVER_UI_MESSAGE
 		[scheduled bump for 5.11.0]
 */
 
