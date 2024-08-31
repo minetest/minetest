@@ -255,7 +255,7 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 
 // NOTE: selectitem = 0 -> no selected; selectitem is 1-based
 // mainlist can be NULL, but draw the frame anyway.
-void Hud::drawItems(v2s32 screen_pos, v2s32 screen_offset, s32 itemcount, v2f alignment,
+void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction,
 		bool is_hotbar)
 {
@@ -268,11 +268,9 @@ void Hud::drawItems(v2s32 screen_pos, v2s32 screen_offset, s32 itemcount, v2f al
 		width = tmp;
 	}
 
-	// Position: screen_pos + screen_offset + alignment
-	v2s32 pos(screen_offset.X * m_scale_factor, screen_offset.Y * m_scale_factor);
-	pos += screen_pos;
-	pos.X += (alignment.X - 1.0f) * (width * 0.5f);
-	pos.Y += (alignment.Y - 1.0f) * (height * 0.5f);
+	// Position of upper left corner of bar
+	v2s32 pos = screen_offset * m_scale_factor;
+	pos += upperleftpos;
 
 	// Store hotbar_image in member variable, used by drawItem()
 	if (hotbar_image != player->hotbar_image) {
@@ -370,19 +368,12 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 	std::vector<HudElement*> elems;
 	elems.reserve(player->maxHudId());
 
-	// Add builtin elements if the server doesn't send them.
-	// Declared here such that they have the same lifetime as the elems vector
+	// Add builtin minimap if the server doesn't send it.
 	HudElement minimap;
-	HudElement hotbar;
 	if (client->getProtoVersion() < 44 && (player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE)) {
 		minimap = {HUD_ELEM_MINIMAP, v2f(1, 0), "", v2f(), "", 0 , 0, 0, v2f(-1, 1),
 				v2f(-10, 10), v3f(), v2s32(256, 256), 0, "", 0};
 		elems.push_back(&minimap);
-	}
-	if (client->getProtoVersion() < 46 && player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
-		hotbar = {HUD_ELEM_HOTBAR, v2f(0.5, 1), "", v2f(), "", 0 , 0, 0, v2f(-0.5, -1),
-				v2f(0, -4), v3f(), v2s32(), 0, "", 0};
-		elems.push_back(&hotbar);
 	}
 
 	for (size_t i = 0; i != player->maxHudId(); i++) {
@@ -458,7 +449,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				InventoryList *inv = inventory->getList(e->text);
 				if (!inv)
 					warningstream << "HUD: Unknown inventory list. name=" << e->text << std::endl;
-				drawItems(pos, v2s32(e->offset.X, e->offset.Y), e->number, e->align, 0,
+				drawItems(pos, v2s32(e->offset.X, e->offset.Y), e->number, 0,
 					inv, e->item, e->dir, false);
 				break; }
 			case HUD_ELEM_WAYPOINT: {
@@ -582,9 +573,6 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				rect += pos + offset + v2s32(e->offset.X * m_scale_factor,
 				                             e->offset.Y * m_scale_factor);
 				client->getMinimap()->drawMinimap(rect);
-				break; }
-			case HUD_ELEM_HOTBAR: {
-				drawHotbar(pos, e->offset, e->dir, e->align);
 				break; }
 			default:
 				infostream << "Hud::drawLuaElements: ignoring drawform " << e->type
@@ -795,7 +783,9 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 		}
 	}
 }
-void Hud::drawHotbar(const v2s32 &pos, const v2f &offset, u16 dir, const v2f &align)
+
+
+void Hud::drawHotbar(u16 playeritem)
 {
 	if (g_touchcontrols)
 		g_touchcontrols->resetHotbarRects();
@@ -806,30 +796,30 @@ void Hud::drawHotbar(const v2s32 &pos, const v2f &offset, u16 dir, const v2f &al
 		return;
 	}
 
-	u16 playeritem = player->getWieldIndex();
-	v2s32 screen_offset(offset.X, offset.Y);
-
 	v2s32 centerlowerpos(m_displaycenter.X, m_screensize.Y);
 
 	s32 hotbar_itemcount = player->getMaxHotbarItemcount();
 	s32 width = hotbar_itemcount * (m_hotbar_imagesize + m_padding * 2);
+	v2s32 pos = centerlowerpos - v2s32(width / 2, m_hotbar_imagesize + m_padding * 3);
 
 	const v2u32 &window_size = RenderingEngine::getWindowSize();
 	if ((float) width / (float) window_size.X <=
 			g_settings->getFloat("hud_hotbar_max_width")) {
-		drawItems(pos, screen_offset, hotbar_itemcount, align, 0,
-			mainlist, playeritem + 1, dir, true);
+		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
+			drawItems(pos, v2s32(0, 0), hotbar_itemcount, 0, mainlist, playeritem + 1, 0, true);
+		}
 	} else {
-		v2s32 firstpos = pos;
-		firstpos.X += width/4;
+		pos.X += width/4;
 
-		v2s32 secondpos = firstpos;
-		firstpos = firstpos - v2s32(0, m_hotbar_imagesize + m_padding);
+		v2s32 secondpos = pos;
+		pos = pos - v2s32(0, m_hotbar_imagesize + m_padding);
 
-		drawItems(firstpos, screen_offset, hotbar_itemcount / 2, align, 0,
-			mainlist, playeritem + 1, dir, true);
-		drawItems(secondpos, screen_offset, hotbar_itemcount, align,
-			hotbar_itemcount / 2, mainlist, playeritem + 1, dir, true);
+		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
+			drawItems(pos, v2s32(0, 0), hotbar_itemcount / 2, 0,
+				mainlist, playeritem + 1, 0, true);
+			drawItems(secondpos, v2s32(0, 0), hotbar_itemcount,
+				hotbar_itemcount / 2, mainlist, playeritem + 1, 0, true);
+		}
 	}
 }
 
