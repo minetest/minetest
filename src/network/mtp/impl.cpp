@@ -995,13 +995,15 @@ bool UDPPeer::isTimedOut(float timeout, std::string &reason)
 
 void UDPPeer::reportRTT(float rtt)
 {
-	if (rtt < 0.0) {
+	if (rtt < 0)
 		return;
-	}
 	RTTStatistics(rtt,"rudp",MAX_RELIABLE_WINDOW_SIZE*10);
 
 	// use this value to decide the resend timeout
-	float timeout = getStat(AVG_RTT) * RESEND_TIMEOUT_FACTOR;
+	const float rtt_stat = getStat(AVG_RTT);
+	if (rtt_stat < 0)
+		return;
+	float timeout = rtt_stat * RESEND_TIMEOUT_FACTOR;
 	if (timeout < RESEND_TIMEOUT_MIN)
 		timeout = RESEND_TIMEOUT_MIN;
 	if (timeout > RESEND_TIMEOUT_MAX)
