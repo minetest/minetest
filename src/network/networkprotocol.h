@@ -227,9 +227,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 45:
 		Minimap HUD element supports negative size values as percentages
 		[bump for 5.9.1]
+	PROTOCOL VERSION 46:
+		Move default hotbar from client-side C++ to server-side builtin Lua
+		[scheduled bump for 5.10.0]
 */
 
-#define LATEST_PROTOCOL_VERSION 45
+#define LATEST_PROTOCOL_VERSION 46
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range

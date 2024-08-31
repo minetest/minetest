@@ -264,3 +264,18 @@ register_builtin_hud_element("minimap", {
 		elem_def.size = proto_ver >= 45 and {x = 0, y = -25} or {x = 256, y = 256}
 	end,
 })
+
+--- Hotbar
+
+register_builtin_hud_element("hotbar", {
+	elem_def = {
+		type = "hotbar",
+		position = {x = 0.5, y = 1},
+		direction = 0,
+		alignment = {x = 0, y = -1},
+		offset = {x = 0, y = -4}, -- Extra padding below.
+	},
+	show_elem = function(player, flags)
+		return flags.hotbar
+	end,
+})
