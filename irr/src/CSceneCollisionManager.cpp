@@ -6,7 +6,6 @@
 #include "ICameraSceneNode.h"
 #include "SViewFrustum.h"
 
-#include "os.h"
 #include "irrMath.h"
 
 namespace irr

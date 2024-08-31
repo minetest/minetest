@@ -6,14 +6,16 @@
 
 #include "IReferenceCounted.h"
 #include "dimension2d.h"
-#include "IVideoDriver.h"
 #include "EDriverTypes.h"
 #include "EDeviceTypes.h"
 #include "IEventReceiver.h"
 #include "ICursorControl.h"
 #include "ITimer.h"
 #include "IOSOperator.h"
+#include "irrArray.h"
 #include "IrrCompileConfig.h"
+#include "position2d.h"
+#include "SColor.h" // video::ECOLOR_FORMAT
 
 namespace irr
 {
@@ -38,6 +40,9 @@ class ISceneManager;
 namespace video
 {
 class IContextManager;
+class IImage;
+class ITexture;
+class IVideoDriver;
 extern "C" IRRLICHT_API bool IRRCALLCONV isDriverSupported(E_DRIVER_TYPE driver);
 } // end namespace video
 

@@ -9,7 +9,7 @@
 #include "line3d.h"
 #include "aabbox3d.h"
 #include "matrix4.h"
-#include "IVideoDriver.h"
+#include "EVideoTypes.h"
 
 namespace irr
 {

@@ -20,6 +20,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "guiEditBoxWithScrollbar.h"
 #include <IGUIEditBox.h>
 #include <IGUIFont.h>
+#include <IVideoDriver.h>
 #include "client/renderingengine.h"
 #include "porting.h"
 #include "gettext.h"

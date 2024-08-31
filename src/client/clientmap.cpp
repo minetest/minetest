@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/mesh.h"
 #include "mapblock_mesh.h"
 #include <IMaterialRenderer.h>
+#include <IVideoDriver.h>
 #include <matrix4.h>
 #include "mapsector.h"
 #include "mapblock.h"
@@ -190,6 +191,13 @@ void ClientMap::OnRegisterSceneNode()
 	ISceneNode::OnRegisterSceneNode();
 	// It's not needed to register this node to the shadow renderer
 	// we have other way to find it
+}
+
+void ClientMap::render()
+{
+	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+	renderMap(driver, SceneManager->getSceneNodeRenderPass());
 }
 
 void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,

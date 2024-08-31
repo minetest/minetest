@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IEventReceiver.h>
 #include <IGUIImage.h>
 #include <IGUIEnvironment.h>
-#include <IrrlichtDevice.h>
 
 #include <memory>
 #include <optional>
@@ -34,6 +33,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "itemdef.h"
 #include "client/game.h"
+
+namespace irr
+{
+	class IrrlichtDevice;
+}
 
 using namespace irr;
 using namespace irr::core;
