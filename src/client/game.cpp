@@ -1510,10 +1510,6 @@ bool Game::createClient(const GameStartData &start_data)
 		client->getScript()->on_camera_ready(camera);
 	client->setCamera(camera);
 
-	if (g_touchcontrols) {
-		g_touchcontrols->setUseCrosshair(!isTouchCrosshairDisabled());
-	}
-
 	/* Clouds
 	 */
 	if (m_cache_enable_clouds)
@@ -1578,8 +1574,10 @@ bool Game::initGui()
 	gui_chat_console = new GUIChatConsole(guienv, guienv->getRootGUIElement(),
 			-1, chat_backend, client, &g_menumgr);
 
-	if (g_settings->getBool("touch_controls"))
+	if (g_settings->getBool("touch_controls")) {
 		g_touchcontrols = new TouchControls(device, texture_src);
+		g_touchcontrols->setUseCrosshair(!isTouchCrosshairDisabled());
+	}
 
 	return true;
 }
