@@ -78,11 +78,11 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 
 	u8 serialization_ver;
 	u16 proto_ver;
-	u16 compression_mode;
+	u16 unused_compression_mode;
 	u32 auth_mechs;
-	std::string username_legacy; // for case insensitivity
-	*pkt >> serialization_ver >> compression_mode >> proto_ver
-		>> auth_mechs >> username_legacy;
+	std::string unused;
+	*pkt >> serialization_ver >> unused_compression_mode >> proto_ver
+		>> auth_mechs >> unused;
 
 	// Chose an auth method we support
 	AuthMechanism chosen_auth_mechanism = choseAuthMech(auth_mechs);
@@ -91,7 +91,6 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 			<< "serialization_ver=" << (u32)serialization_ver
 			<< ", auth_mechs=" << auth_mechs
 			<< ", proto_ver=" << proto_ver
-			<< ", compression_mode=" << compression_mode
 			<< ". Doing auth with mech " << chosen_auth_mechanism << std::endl;
 
 	if (!ser_ver_supported(serialization_ver)) {
@@ -102,10 +101,6 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 
 	m_server_ser_ver = serialization_ver;
 	m_proto_ver = proto_ver;
-
-	//TODO verify that username_legacy matches sent username, only
-	// differs in casing (make both uppercase and compare)
-	// This is only necessary though when we actually want to add casing support
 
 	if (m_chosen_auth_mech != AUTH_MECHANISM_NONE) {
 		// we received a TOCLIENT_HELLO while auth was already going on
