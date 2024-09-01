@@ -15,7 +15,7 @@ namespace scene
 {
 //! Template implementation of the IMeshBuffer interface
 template <class T>
-class CMeshBuffer : public IMeshBuffer
+class CMeshBuffer final : public IMeshBuffer
 {
 public:
 	//! Default constructor for empty meshbuffer
