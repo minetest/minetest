@@ -16,7 +16,7 @@ namespace scene
 {
 
 //! A mesh buffer able to choose between S3DVertex2TCoords, S3DVertex and S3DVertexTangents at runtime
-struct SSkinMeshBuffer : public IMeshBuffer
+struct SSkinMeshBuffer final : public IMeshBuffer
 {
 	//! Default constructor
 	SSkinMeshBuffer(video::E_VERTEX_TYPE vt = video::EVT_STANDARD) :

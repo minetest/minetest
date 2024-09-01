@@ -269,11 +269,12 @@ public:
 	JoystickController joystick;
 	KeyCache keycache;
 };
+
 /*
-	Separated input handler
+	Separated input handler implementations
 */
 
-class RealInputHandler : public InputHandler
+class RealInputHandler final : public InputHandler
 {
 public:
 	RealInputHandler(MyEventReceiver *receiver) : m_receiver(receiver)
@@ -372,7 +373,7 @@ private:
 	v2s32 m_mousepos;
 };
 
-class RandomInputHandler : public InputHandler
+class RandomInputHandler final : public InputHandler
 {
 public:
 	RandomInputHandler() = default;

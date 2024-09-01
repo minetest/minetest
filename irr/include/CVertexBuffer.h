@@ -13,7 +13,7 @@ namespace scene
 {
 //! Template implementation of the IVertexBuffer interface
 template <class T>
-class CVertexBuffer : public IVertexBuffer
+class CVertexBuffer final : public IVertexBuffer
 {
 public:
 	//! Default constructor for empty buffer

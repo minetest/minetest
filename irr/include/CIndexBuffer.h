@@ -13,7 +13,7 @@ namespace scene
 {
 //! Template implementation of the IIndexBuffer interface
 template <class T>
-class CIndexBuffer : public IIndexBuffer
+class CIndexBuffer final : public IIndexBuffer
 {
 public:
 	//! Default constructor for empty buffer

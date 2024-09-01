@@ -234,7 +234,7 @@ class Peer : public IPeer {
 
 class UDPPeer;
 
-class Connection : public IConnection
+class Connection final : public IConnection
 {
 public:
 	friend class ConnectionSendThread;

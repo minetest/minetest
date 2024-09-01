@@ -39,7 +39,7 @@ struct TextureInfo
 };
 
 // TextureSource
-class TextureSource : public IWritableTextureSource
+class TextureSource final : public IWritableTextureSource
 {
 public:
 	TextureSource();

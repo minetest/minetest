@@ -14,7 +14,7 @@ namespace irr
 namespace scene
 {
 //! Simple implementation of the IMesh interface.
-struct SMesh : public IMesh
+struct SMesh final : public IMesh
 {
 	//! constructor
 	SMesh()

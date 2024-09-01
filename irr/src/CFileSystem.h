@@ -17,7 +17,7 @@ class CZipReader;
 /*!
 	FileSystem which uses normal files and one zipfile
 */
-class CFileSystem : public IFileSystem
+class CFileSystem final : public IFileSystem
 {
 public:
 	//! constructor
