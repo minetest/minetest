@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <vector>
 #include <IGUIFont.h>
+#include <SMaterial.h>
+#include <SMeshBuffer.h>
 #include "irr_aabb3d.h"
 #include "../hud.h"
 
@@ -31,6 +33,17 @@ class Inventory;
 class InventoryList;
 class LocalPlayer;
 struct ItemStack;
+
+namespace irr::scene
+{
+	class IMesh;
+}
+
+namespace irr::video
+{
+	class ITexture;
+	class IVideoDriver;
+}
 
 class Hud
 {

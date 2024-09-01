@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include "activeobject.h"
 #include <memory>
 #include <unordered_map>
@@ -33,6 +33,13 @@ class IGameDef;
 class LocalPlayer;
 struct ItemStack;
 class WieldMeshSceneNode;
+
+namespace irr::scene
+{
+	class IAnimatedMeshSceneNode;
+	class ISceneNode;
+	class ISceneManager;
+}
 
 class ClientActiveObject : public ActiveObject
 {

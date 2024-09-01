@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <unordered_map>
 #include <cassert>
-#include "irrlichttypes_bloated.h"
+#include "irrlichttypes.h"
 
 typedef std::unordered_map<u16, std::string> IdToNameMap;
 typedef std::unordered_map<std::string, u16> NameToIdMap;

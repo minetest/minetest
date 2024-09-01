@@ -17,16 +17,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#pragma once
+
 #include "client/texturesource.h"
 #include "client/fontengine.h"
 #include "debug.h"
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include "util/string.h"
 #include <algorithm>
 #include <array>
 #include <vector>
 
-#pragma once
 
 class StyleSpec
 {

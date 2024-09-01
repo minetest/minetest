@@ -20,9 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes.h"
-#include <ITexture.h>
+#include <SColor.h>
 #include <string>
 #include <vector>
+
+namespace irr::video
+{
+	class IImage;
+	class ITexture;
+}
 
 typedef std::vector<video::SColor> Palette;
 

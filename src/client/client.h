@@ -20,22 +20,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "clientenvironment.h"
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes.h"
 #include <ostream>
 #include <map>
 #include <memory>
 #include <set>
 #include <vector>
 #include <unordered_set>
-#include "clientobject.h"
 #include "gamedef.h"
 #include "inventorymanager.h"
-#include "client/hud.h"
-#include "tileanimation.h"
 #include "network/address.h"
+#include "network/networkprotocol.h" // multiple enums
 #include "network/peerhandler.h"
 #include "gameparams.h"
-#include "clientdynamicinfo.h"
+#include "script/common/c_types.h" // LuaError
 #include "util/numeric.h"
 
 #ifdef SERVER
@@ -44,32 +42,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
-struct ClientEvent;
-struct MeshMakeData;
-struct ChatMessage;
-class MapBlockMesh;
-class RenderingEngine;
-class IWritableTextureSource;
-class IWritableShaderSource;
-class IWritableItemDefManager;
-class ISoundManager;
-class NodeDefManager;
-//class IWritableCraftDefManager;
+class Camera;
 class ClientMediaDownloader;
-class SingleMediaDownloader;
-struct MapDrawControl;
+class ISoundManager;
+class IWritableItemDefManager;
+class IWritableShaderSource;
+class IWritableTextureSource;
+class MapBlockMesh;
+class MapDatabase;
+class MeshUpdateManager;
+class Minimap;
 class ModChannelMgr;
 class MtEventManager;
-struct PointedThing;
-struct MapNode;
-class MapDatabase;
-class Minimap;
-struct MinimapMapblock;
-class MeshUpdateManager;
-class ParticleManager;
-class Camera;
-struct PlayerControl;
 class NetworkPacket;
+class NodeDefManager;
+class ParticleManager;
+class RenderingEngine;
+class SingleMediaDownloader;
+struct ChatMessage;
+struct ClientDynamicInfo;
+struct ClientEvent;
+struct MapDrawControl;
+struct MapNode;
+struct MeshMakeData;
+struct MinimapMapblock;
+struct PlayerControl;
+struct PointedThing;
+
 namespace con {
 class IConnection;
 }
