@@ -118,6 +118,7 @@ enum MapgenType {
 	MAPGEN_V7,
 	MAPGEN_VALLEYS,
 	MAPGEN_CARPATHIAN,
+	MAPGEN_TRAILGEN,
 	MAPGEN_V5,
 	MAPGEN_FLAT,
 	MAPGEN_FRACTAL,
@@ -161,9 +162,9 @@ private:
 	If a feature exposed by a public member pointer is not supported by a
 	certain mapgen, it must be set to NULL.
 
-	Apart from makeChunk, getGroundLevelAtPoint, and getSpawnLevelAtPoint, all
-	methods can be used by constructing a Mapgen base class and setting the
-	appropriate public members (e.g. vm, ndef, and so on).
+	Apart from makeChunk and getSpawnLevelAtPoint, all methods can be used by
+	constructing a Mapgen base class and setting the appropriate public members
+	(e.g. vm, ndef, and so on).
 */
 class Mapgen {
 public:
@@ -242,7 +243,6 @@ public:
 	void spreadLight(const v3s16 &nmin, const v3s16 &nmax);
 
 	virtual void makeChunk(BlockMakeData *data) {}
-	virtual int getGroundLevelAtPoint(v2s16 p) { return 0; }
 
 	// getSpawnLevelAtPoint() is a function within each mapgen that returns a
 	// suitable y co-ordinate for player spawn ('suitable' usually meaning
