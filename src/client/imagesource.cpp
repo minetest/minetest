@@ -1908,8 +1908,8 @@ video::IImage* ImageSource::generateImage(std::string_view name,
 		video::IImage *tmp = generateImage(name2, source_image_names);
 		if (!tmp) {
 			errorstream << "generateImage(): "
-				"Failed to generate \"" << name2 << "\" "
-				"(attempted to create texture \"" << name << "\")"
+				"Failed to generate \"" << name2 << "\"\n"
+				"part of texture \"" << name << "\""
 				<< std::endl;
 			return NULL;
 		}
@@ -1924,8 +1924,8 @@ video::IImage* ImageSource::generateImage(std::string_view name,
 	} else if (!generateImagePart(last_part_of_name, baseimg, source_image_names)) {
 		// Generate image according to part of name
 		errorstream << "generateImage(): "
-				"Failed to generate \"" << last_part_of_name << "\" "
-				"(attempted to create texture \"" << name << "\")"
+				"Failed to generate \"" << last_part_of_name << "\"\n"
+				"part of texture \"" << name << "\""
 				<< std::endl;
 	}
 
