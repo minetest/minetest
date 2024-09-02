@@ -257,7 +257,7 @@ enum ToClientCommand : u16
 		Sent after TOSERVER_INIT.
 
 		u8 deployed serialization version
-		u16 deployed network compression mode (unused)
+		u16 unused (network compression, never implemeneted)
 		u16 deployed protocol version
 		u32 supported auth methods
 		std::string unused (used to be username)
