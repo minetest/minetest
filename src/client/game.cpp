@@ -1141,7 +1141,6 @@ bool Game::startup(bool *kill,
 
 void Game::run()
 {
-	[[maybe_unused]]
 	static const char *framename_Game_run = "Game::run()-frame";
 
 	ProfilerGraph graph;
@@ -1171,20 +1170,20 @@ void Game::run()
 	const bool initial_window_maximized = !g_settings->getBool("fullscreen") &&
 			g_settings->getBool("window_maximized");
 
-	FrameMarkStart(framename_Game_run);
+	auto framemarker = FrameMarker(framename_Game_run).started();
 
 	while (m_rendering_engine->run()
 			&& !(*kill || g_gamecallback->shutdown_requested
 			|| (server && server->isShutdownRequested()))) {
 
-		FrameMarkEnd(framename_Game_run);
+		framemarker.end();
 
 		// Calculate dtime =
 		//    m_rendering_engine->run() from this iteration
 		//  + Sleep time until the wanted FPS are reached
 		draw_times.limit(device, &dtime, g_menumgr.pausesGame());
 
-		FrameMarkStart(framename_Game_run);
+		framemarker.start();
 
 		const auto current_dynamic_info = ClientDynamicInfo::getCurrent();
 		if (!current_dynamic_info.equal(client_display_info)) {
@@ -1242,7 +1241,7 @@ void Game::run()
 		}
 	}
 
-	FrameMarkEnd(framename_Game_run);
+	framemarker.end();
 
 	RenderingEngine::autosaveScreensizeAndCo(initial_screen_size, initial_window_maximized);
 }
@@ -1597,7 +1596,6 @@ bool Game::initGui()
 bool Game::connectToServer(const GameStartData &start_data,
 		bool *connect_ok, bool *connection_aborted)
 {
-	[[maybe_unused]]
 	static const char *framename_Game_connectToServer =
 			"Game::connectToServer()-frame";
 
@@ -1687,13 +1685,13 @@ bool Game::connectToServer(const GameStartData &start_data,
 
 		fps_control.reset();
 
-		FrameMarkStart(framename_Game_connectToServer);
+		auto framemarker = FrameMarker(framename_Game_connectToServer).started();
 
 		while (m_rendering_engine->run()) {
 
-			FrameMarkEnd(framename_Game_connectToServer);
+			framemarker.end();
 			fps_control.limit(device, &dtime);
-			FrameMarkStart(framename_Game_connectToServer);
+			framemarker.start();
 
 			// Update client and server
 			step(dtime);
@@ -1739,10 +1737,9 @@ bool Game::connectToServer(const GameStartData &start_data,
 			// Update status
 			showOverlayMessage(N_("Connecting to server..."), dtime, 20);
 		}
-		FrameMarkEnd(framename_Game_connectToServer);
+		framemarker.end();
 	} catch (con::PeerNotFoundException &e) {
 		warningstream << "This should not happen. Please report a bug." << std::endl;
-		FrameMarkEnd(framename_Game_connectToServer);
 		return false;
 	}
 
@@ -1751,7 +1748,6 @@ bool Game::connectToServer(const GameStartData &start_data,
 
 bool Game::getServerContent(bool *aborted)
 {
-	[[maybe_unused]]
 	static const char *framename_Game_getServerContent =
 			"Game::getServerContent()-frame";
 
@@ -1762,12 +1758,11 @@ bool Game::getServerContent(bool *aborted)
 
 	fps_control.reset();
 
-	FrameMarkStart(framename_Game_getServerContent);
+	auto framemarker = FrameMarker(framename_Game_getServerContent).started();
 	while (m_rendering_engine->run()) {
-
-		FrameMarkEnd(framename_Game_getServerContent);
+		framemarker.end();
 		fps_control.limit(device, &dtime);
-		FrameMarkStart(framename_Game_getServerContent);
+		framemarker.start();
 
 		// Update client and server
 		step(dtime);
@@ -1775,27 +1770,22 @@ bool Game::getServerContent(bool *aborted)
 		// End condition
 		if (client->mediaReceived() && client->itemdefReceived() &&
 				client->nodedefReceived()) {
-			FrameMarkEnd(framename_Game_getServerContent);
 			return true;
 		}
 
 		// Error conditions
-		if (!checkConnection()) {
-			FrameMarkEnd(framename_Game_getServerContent);
+		if (!checkConnection())
 			return false;
-		}
 
 		if (client->getState() < LC_Init) {
 			*error_message = gettext("Client disconnected");
 			errorstream << *error_message << std::endl;
-			FrameMarkEnd(framename_Game_getServerContent);
 			return false;
 		}
 
 		if (input->cancelPressed()) {
 			*aborted = true;
 			infostream << "Connect aborted [Escape]" << std::endl;
-			FrameMarkEnd(framename_Game_getServerContent);
 			return false;
 		}
 
@@ -1838,7 +1828,7 @@ bool Game::getServerContent(bool *aborted)
 				texture_src, dtime, progress);
 		}
 	}
-	FrameMarkEnd(framename_Game_getServerContent);
+	framemarker.end();
 
 	*aborted = true;
 	infostream << "Connect aborted [device]" << std::endl;

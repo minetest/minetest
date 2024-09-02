@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  */
 
 #include "config.h"
+#include "util/basic_macros.h"
 
 #if BUILD_WITH_TRACY
 
@@ -140,3 +141,58 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define TracyFiberLeave
 
 #endif
+
+
+// Helper for making sure frames end in all possible control flow path
+class FrameMarker
+{
+	const char *m_name;
+	bool m_started = false;
+
+public:
+	FrameMarker(const char *name) : m_name(name) {}
+
+	~FrameMarker() { end(); }
+
+	DISABLE_CLASS_COPY(FrameMarker)
+
+	FrameMarker(FrameMarker &&other) noexcept :
+		m_name(other.m_name), m_started(other.m_started)
+	{
+		other.m_started = false;
+	}
+
+	FrameMarker &operator=(FrameMarker &&other) noexcept
+	{
+		if (&other != this) {
+			end();
+			m_name = other.m_name;
+			m_started = other.m_started;
+			other.m_started = false;
+		}
+		return *this;
+	}
+
+	FrameMarker &&started() &&
+	{
+		if (!m_started) {
+			FrameMarkStart(m_name);
+			m_started = true;
+		}
+		return std::move(*this);
+	}
+
+	void start()
+	{
+		// no move happens, because we drop the reference
+		(void)std::move(*this).started();
+	}
+
+	void end()
+	{
+		if (m_started) {
+			m_started = false;
+			FrameMarkEnd(m_name);
+		}
+	}
+};

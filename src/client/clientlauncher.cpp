@@ -541,7 +541,6 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 void ClientLauncher::main_menu(MainMenuData *menudata)
 {
-	[[maybe_unused]]
 	static const char *framename_ClientLauncher_main_menu =
 			"ClientLauncher::main_menu()-wait-frame";
 
@@ -549,19 +548,19 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 	video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
 
 	infostream << "Waiting for other menus" << std::endl;
-	FrameMarkStart(framename_ClientLauncher_main_menu);
+	auto framemarker = FrameMarker(framename_ClientLauncher_main_menu).started();
 	while (m_rendering_engine->run() && !*kill) {
 		if (!isMenuActive())
 			break;
 		driver->beginScene(true, true, video::SColor(255, 128, 128, 128));
 		m_rendering_engine->get_gui_env()->drawAll();
 		driver->endScene();
-		FrameMarkEnd(framename_ClientLauncher_main_menu);
+		framemarker.end();
 		// On some computers framerate doesn't seem to be automatically limited
 		sleep_ms(25);
-		FrameMarkStart(framename_ClientLauncher_main_menu);
+		framemarker.start();
 	}
-	FrameMarkEnd(framename_ClientLauncher_main_menu);
+	framemarker.end();
 	infostream << "Waited for other menus" << std::endl;
 
 	auto *cur_control = m_rendering_engine->get_raw_device()->getCursorControl();

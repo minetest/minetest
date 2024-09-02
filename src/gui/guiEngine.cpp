@@ -293,7 +293,6 @@ bool GUIEngine::loadMainMenuScript()
 /******************************************************************************/
 void GUIEngine::run()
 {
-	[[maybe_unused]]
 	static const char *framename_GuiEngine_run = "GUIEngine::run()-frame";
 
 	IrrlichtDevice *device = m_rendering_engine->get_raw_device();
@@ -333,13 +332,12 @@ void GUIEngine::run()
 
 	fps_control.reset();
 
-	FrameMarkStart(framename_GuiEngine_run);
+	auto framemarker = FrameMarker(framename_GuiEngine_run).started();
 
 	while (m_rendering_engine->run() && !m_startgame && !m_kill) {
-
-		FrameMarkEnd(framename_GuiEngine_run);
+		framemarker.end();
 		fps_control.limit(device, &dtime);
-		FrameMarkStart(framename_GuiEngine_run);
+		framemarker.end();
 
 		if (device->isWindowVisible()) {
 			// check if we need to update the "upper left corner"-text
@@ -379,7 +377,7 @@ void GUIEngine::run()
 		m_menu->getAndroidUIInput();
 #endif
 	}
-	FrameMarkEnd(framename_GuiEngine_run);
+	framemarker.end();
 
 	m_script->beforeClose();
 
