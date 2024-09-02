@@ -1311,8 +1311,8 @@ void ClientMap::updateTransparentMeshBuffers()
 	ScopeProfiler sp(g_profiler, "CM::updateTransparentMeshBuffers", SPT_AVG);
 	u32 sorted_blocks = 0;
 	u32 unsorted_blocks = 0;
+	bool transparency_sorting_enabled = m_cache_transparency_sorting_distance > 0;
 	f32 sorting_distance = m_cache_transparency_sorting_distance * BS;
-
 
 	// Update the order of transparent mesh buffers in each mesh
 	for (auto it = m_drawlist.begin(); it != m_drawlist.end(); it++) {
@@ -1323,13 +1323,19 @@ void ClientMap::updateTransparentMeshBuffers()
 
 		if (m_needs_update_transparent_meshes ||
 				blockmesh->getTransparentBuffers().size() == 0) {
+			bool do_sort_block = transparency_sorting_enabled;
 
-			v3f mesh_sphere_center = intToFloat(block->getPosRelative(), BS)
-					+ blockmesh->getBoundingSphereCenter();
-			f32 mesh_sphere_radius = blockmesh->getBoundingRadius();
-			f32 distance_sq = m_camera_position.getDistanceFromSQ(mesh_sphere_center);
+			if (do_sort_block) {
+				v3f mesh_sphere_center = intToFloat(block->getPosRelative(), BS)
+						+ blockmesh->getBoundingSphereCenter();
+				f32 mesh_sphere_radius = blockmesh->getBoundingRadius();
+				f32 distance_sq = m_camera_position.getDistanceFromSQ(mesh_sphere_center);
 
-			if (distance_sq <= std::pow(sorting_distance + mesh_sphere_radius, 2.0f)) {
+				if (distance_sq > std::pow(sorting_distance + mesh_sphere_radius, 2.0f))
+					do_sort_block = false;
+			}
+
+			if (do_sort_block) {
 				blockmesh->updateTransparentBuffers(m_camera_position, block->getPos());
 				++sorted_blocks;
 			} else {

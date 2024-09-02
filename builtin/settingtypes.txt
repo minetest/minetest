@@ -1854,8 +1854,9 @@ shader_path (Shader path) path
 #    OpenGL is the default for desktop, and OGLES2 for Android.
 video_driver (Video driver) enum  ,opengl,opengl3,ogles2
 
-#    Distance in nodes at which transparency depth sorting is enabled
-#    Use this to limit the performance impact of transparency depth sorting
+#    Distance in nodes at which transparency depth sorting is enabled.
+#    Use this to limit the performance impact of transparency depth sorting.
+#    Set to 0 to disable it entirely.
 transparency_sorting_distance (Transparency Sorting Distance) int 16 0 128
 
 #    Radius of cloud area stated in number of 64 node cloud squares.
