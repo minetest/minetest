@@ -2852,7 +2852,7 @@ void Server::DisconnectPeer(session_t peer_id)
 	m_con->DisconnectPeer(peer_id);
 }
 
-void Server::acceptAuth(session_t peer_id, bool forSudoMode, std::string H_bytes)
+void Server::acceptAuth(session_t peer_id, bool forSudoMode, const std::string &H_bytes)
 {
 	RemoteClient* client = getClient(peer_id, CS_Invalid);
 

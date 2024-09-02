@@ -1198,7 +1198,7 @@ bool UDPPeer::processReliableSendCommand(
 				m_connection->GetProtocolID(), m_connection->GetPeerID(),
 				c.channelnum);
 
-		toadd.push_back({ seqnum, p });
+		toadd.emplace_back(seqnum, p);
 	}
 
 	if (have_sequence_number) {

@@ -370,7 +370,7 @@ public:
 		const std::string &custom_reason = "", bool reconnect = false);
 	void kickAllPlayers(AccessDeniedCode reason,
 		const std::string &str_reason, bool reconnect);
-	void acceptAuth(session_t peer_id, bool forSudoMode, std::string H_bytes = {});
+	void acceptAuth(session_t peer_id, bool forSudoMode, const std::string &H_bytes = {});
 	void DisconnectPeer(session_t peer_id);
 	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
 	bool getClientInfo(session_t peer_id, ClientInfo &ret);
