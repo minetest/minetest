@@ -9,6 +9,10 @@
 
 class NetworkPacket;
 class PeerHandler;
+namespace NetworkEncryption
+{
+	struct AESChannelKeys;
+}
 
 namespace con
 {
@@ -65,6 +69,9 @@ public:
 	virtual Address GetPeerAddress(session_t peer_id) = 0;
 	virtual float getPeerStat(session_t peer_id, rtt_stat_type type) = 0;
 	virtual float getLocalStat(rate_stat_type type) = 0;
+
+	virtual bool setEncryptionKeys(session_t peer_id, NetworkEncryption::AESChannelKeys send_keys, NetworkEncryption::AESChannelKeys receive_keys) = 0;
+	virtual bool disableEncryption(session_t peer_id) = 0;
 };
 
 // MTP = Minetest Protocol

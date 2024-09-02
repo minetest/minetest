@@ -1,0 +1,14 @@
+#pragma once
+
+// DO NOT EDIT THESE VALUES UNLESS YOU KNOW WHAT YOU ARE DOING!
+
+#define CHANNEL_COUNT 3
+
+// encryption configuration settings
+#define NET_ECDHE_PRIVATE_KEY_LEN 32
+#define NET_ECDHE_PUBLIC_KEY_LEN 32
+#define NET_ECDHE_SECRET_LEN 32
+#define NET_AES_KEY_SIZE 16
+#define NET_AES_IV_SIZE 12
+#define NET_AAED_TAG_SIZE 12
+#define NET_HMAC_LEN 32

@@ -58,6 +58,9 @@ void NetworkPacket::clear()
 	m_read_offset = 0;
 	m_command = 0;
 	m_peer_id = 0;
+
+	m_was_encrypted = false;
+	m_was_reliable = false;
 }
 
 const char* NetworkPacket::getString(u32 from_offset) const
@@ -198,6 +201,14 @@ NetworkPacket& NetworkPacket::operator<<(std::wstring_view src)
 	writeU16(&m_data[len_offset], written);
 
 	return *this;
+}
+
+void NetworkPacket::readRawData(u8* src, u32 len)
+{
+	checkReadOffset(m_read_offset, len);
+
+	memcpy(src, &m_data[m_read_offset], len);
+	m_read_offset += len;
 }
 
 std::string NetworkPacket::readLongString()

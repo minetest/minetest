@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.18)
 
 # This can be read from ${PROJECT_NAME} after project() is called
 project(minetest)
@@ -274,6 +274,14 @@ endif()
 find_package(GMP REQUIRED)
 find_package(Json REQUIRED)
 find_package(Lua REQUIRED)
+find_package(OpenSSL REQUIRED COMPONENTS Crypto)
+
+message(STATUS "OpenSSL version: ${OPENSSL_VERSION}")
+
+if (NOT OPENSSL_VERSION VERSION_GREATER_EQUAL 1.1.0)
+	message(FATAL_ERROR "OpenSSL versions older than 1.1.0 are not supported as they are not thread-safe by default")
+endif()
+
 if(NOT USE_LUAJIT)
 	add_subdirectory(lib/bitop)
 endif()

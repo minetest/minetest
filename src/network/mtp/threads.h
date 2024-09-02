@@ -110,6 +110,14 @@ private:
 	unsigned int m_max_packets_requeued = 256;
 };
 
+struct ApplicationPacketData
+{
+	SharedBuffer<u8> data;
+
+	bool was_reliable;
+	bool is_encrypted;
+};
+
 class ConnectionReceiveThread : public Thread
 {
 public:
@@ -129,11 +137,10 @@ private:
 	// Returns next data from a buffer if possible
 	// If found, returns true; if not, false.
 	// If found, sets peer_id and dst
-	bool getFromBuffers(session_t &peer_id, SharedBuffer<u8> &dst);
+	bool getFromBuffers(session_t &peer_id, ApplicationPacketData &dst);
 
 	bool checkIncomingBuffers(
-			Channel *channel, session_t &peer_id, SharedBuffer<u8> &dst);
-
+			Channel &channel, u8 channelnum, session_t &peer_id, ApplicationPacketData &dst);
 	/*
 		Processes a packet with the basic header stripped out.
 		Parameters:
@@ -142,28 +149,28 @@ private:
 			channelnum: channel on which the packet was sent
 			reliable: true if recursing into a reliable packet
 	*/
-	SharedBuffer<u8> processPacket(Channel *channel,
+	ApplicationPacketData processPacket(Channel *channel,
 			const SharedBuffer<u8> &packetdata, session_t peer_id,
-			u8 channelnum, bool reliable);
+			u8 channelnum, bool reliable, bool encrypted);
 
-	SharedBuffer<u8> handlePacketType_Control(Channel *channel,
+	ApplicationPacketData handlePacketType_Control(Channel *channel,
 			const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
-			bool reliable);
-	SharedBuffer<u8> handlePacketType_Original(Channel *channel,
+			bool reliable, bool encrypted);
+	ApplicationPacketData handlePacketType_Original(Channel *channel,
 			const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
-			bool reliable);
-	SharedBuffer<u8> handlePacketType_Split(Channel *channel,
+			bool reliable, bool encrypted);
+	ApplicationPacketData handlePacketType_Split(Channel *channel,
 			const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
-			bool reliable);
-	SharedBuffer<u8> handlePacketType_Reliable(Channel *channel,
+			bool reliable, bool encrypted);
+	ApplicationPacketData handlePacketType_Reliable(Channel *channel,
 			const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
-			bool reliable);
+			bool reliable, bool encrypted);
 
 	struct PacketTypeHandler
 	{
-		SharedBuffer<u8> (ConnectionReceiveThread::*handler)(Channel *channel,
+		ApplicationPacketData(ConnectionReceiveThread::*handler)(Channel *channel,
 				const SharedBuffer<u8> &packet, Peer *peer, u8 channelnum,
-				bool reliable);
+				bool reliable, bool encrypted);
 	};
 
 	struct RateLimitHelper {

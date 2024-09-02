@@ -143,7 +143,7 @@ void TestConnection::testHelpers()
 
 	//infostream<<"initial data1[0]="<<((u32)data1[0]&0xff)<<std::endl;
 
-	SharedBuffer<u8> p2 = con::makeReliablePacket(data1, seqnum);
+	SharedBuffer<u8> p2 = con::makeReliablePacket(data1, { 0, seqnum }, 0, /*is_encrypted=*/false, nullptr);
 
 	/*infostream<<"p2.getSize()="<<p2.getSize()<<", data1.getSize()="
 			<<data1.getSize()<<std::endl;

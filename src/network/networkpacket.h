@@ -49,7 +49,19 @@ public:
 	u16 getCommand() const { return m_command; }
 	u32 getRemainingBytes() const { return m_datasize - m_read_offset; }
 	const char *getRemainingString() { return getString(m_read_offset); }
+	bool getIsEncryptionDisabled() const { return m_never_encrypt; }
 
+	// getters only valid for recieved packets
+	bool getWasEncrypted() const { return m_was_encrypted; }
+	bool getWasReliable() const { return m_was_reliable; }
+
+	void setRecievedData(bool encrypted, bool reliable)
+	{
+		m_was_encrypted = encrypted;
+		m_was_reliable = reliable;
+	}
+
+	void disableEncryption() { m_never_encrypt = true; }
 	// Returns a c-string without copying.
 	// A better name for this would be getRawString()
 	const char *getString(u32 from_offset) const;
@@ -59,6 +71,11 @@ public:
 	{
 		putRawString(src.data(), src.size());
 	}
+	void putRawData(const u8* src, u32 len)
+	{
+		putRawString(reinterpret_cast<const char*>(src), len);
+	}
+	void readRawData(u8* src, u32 len);
 
 	NetworkPacket &operator>>(std::string &dst);
 	NetworkPacket &operator<<(std::string_view src);
@@ -140,4 +157,11 @@ private:
 	u32 m_read_offset = 0;
 	u16 m_command = 0;
 	session_t m_peer_id = 0;
+
+	// sent packet
+	bool m_never_encrypt = false;
+
+	// recieved packet
+	bool m_was_encrypted = false;
+	bool m_was_reliable = false;
 };
