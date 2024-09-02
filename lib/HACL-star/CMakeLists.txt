@@ -28,6 +28,7 @@ set(HACL_C_SRC
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_SHA2.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_SHA3.c
 	#${HACL_MAIN_SRC_PATH}/Hacl_Hash_SHA3_Simd256.c
+	${HACL_MAIN_SRC_PATH}/Hacl_MAC_Poly1305.c
 	${HACL_MAIN_SRC_PATH}/Vale.c
 )
 
