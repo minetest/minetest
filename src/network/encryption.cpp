@@ -24,8 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <openssl/evp.h>
 #include "Hacl_HMAC.h"
 #include "Hacl_HKDF.h"
+#include "Hacl_AEAD_Chacha20Poly1305.h"
 #include "EverCrypt_Curve25519.h"
-#include "EverCrypt_Chacha20Poly1305.h"
 #include <optional>
 
 namespace NetworkEncryption
@@ -149,6 +149,54 @@ namespace NetworkEncryption
 			memset(shared_secret, 0, sizeof(shared_secret));
 			return false;
 		}
+		return true;
+	}
+
+	[[nodiscard]] bool encrypt_chacha20_poly1305(const u8(&key)[32], const u8(&iv)[12], const Buffer<u8>& plaintext, u8* encrypted_data, size_t encrypted_buf_length) {
+		static_assert(NET_AAED_TAG_SIZE == 16);
+		static_assert(sizeof(iv) == 12);
+		static_assert(sizeof(key) == 32);
+
+		assert(encrypted_buf_length == size_t(plaintext.getSize()) + NET_AAED_TAG_SIZE);
+		assert(plaintext.getSize() < std::numeric_limits<int>::max());
+
+		u8* tag = &encrypted_data[encrypted_buf_length - NET_AAED_TAG_SIZE];
+
+		if (encrypted_buf_length < NET_AAED_TAG_SIZE ||
+			encrypted_buf_length < size_t(plaintext.getSize()) + NET_AAED_TAG_SIZE ||
+			plaintext.getSize() >= std::numeric_limits<int>::max()) {
+			errorstream << "encrypt_chacha20_poly1305(): invalid paramters!" << std::endl;
+			return false;
+		}
+
+		Hacl_AEAD_Chacha20Poly1305_encrypt(encrypted_data, tag, &plaintext[0], plaintext.getSize(), nullptr, 0, const_cast<u8*>(key), const_cast<u8*>(iv));
+
+		return true;
+	}
+	[[nodiscard]] bool decrypt_chacha20_poly1305(const u8(&key)[32], const u8(&iv)[12], Buffer<u8>& encrypted_data) {
+		size_t total_length = encrypted_data.getSize();
+
+		if (total_length <= NET_AAED_TAG_SIZE) {
+			errorstream << "decrypt_chacha20_poly1305(): data is too short to even fit the tag!" << std::endl;
+			return false;
+		}
+
+		size_t length_without_tag = total_length - NET_AAED_TAG_SIZE;
+		if (Hacl_AEAD_Chacha20Poly1305_decrypt(
+				&encrypted_data[0],
+				&encrypted_data[0],
+				length_without_tag,
+				NULL, 0,
+				const_cast<u8*>(key),
+				const_cast<u8*>(iv),
+				&encrypted_data[length_without_tag]) != 0) {
+
+			errorstream << "decrypt_chacha20_poly1305(): Failed to decrypt data!" << std::endl;
+			return false;
+		}
+
+		encrypted_data.shrinkSize(length_without_tag);
+
 		return true;
 	}
 

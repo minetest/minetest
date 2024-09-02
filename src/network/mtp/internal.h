@@ -272,7 +272,7 @@ void makeAutoSplitPacket(const SharedBuffer<u8> &data, u32 chunksize_max,
 		u16 &split_seqnum, std::list<SharedBuffer<u8>> *list);
 
 // Add the TYPE_RELIABLE header to the data
-SharedBuffer<u8> makeReliablePacket(const SharedBuffer<u8> &data, SeqNumWithGen seqnum, u8 channel, bool is_encrypted, const u8(*encryption_key)[NET_AES_KEY_SIZE]);
+SharedBuffer<u8> makeReliablePacket(const SharedBuffer<u8> &data, SeqNumWithGen seqnum, u8 channel, bool is_encrypted, const u8(*encryption_key)[NET_CHACHA_KEY_SIZE]);
 
 struct IncomingSplitPacket
 {

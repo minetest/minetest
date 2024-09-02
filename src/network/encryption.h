@@ -170,7 +170,7 @@ namespace NetworkEncryption
 
 	struct AESChannelKeys
 	{
-		u8 keys[CHANNEL_COUNT][NET_AES_KEY_SIZE];
+		u8 keys[CHANNEL_COUNT][NET_CHACHA_KEY_SIZE];
 	};
 
 	struct PacketIV
@@ -205,6 +205,9 @@ namespace NetworkEncryption
 
 	void hkdf_extract_sha256(const u8* data, size_t length, u8(&output)[32], const std::string_view& salt = "");
 	void hkdf_expand_sha256(const u8(&input)[32], const std::string_view& info, u8* output, size_t length);
+
+	[[nodiscard]] bool encrypt_chacha20_poly1305(const u8(&key)[32], const u8(&iv)[12], const Buffer<u8>& plaintext, u8* encrypted_data, size_t encrypted_buf_length);
+	[[nodiscard]] bool decrypt_chacha20_poly1305(const u8(&key)[32], const u8(&iv)[12], Buffer<u8>& encrypted_data);
 
 	[[nodiscard]] bool encrypt_aes_128_gcm(const u8(&key)[16], const u8(&iv)[12], const Buffer<u8>& plaintext, u8* encrypted_data, size_t encrypted_buf_length);
 	[[nodiscard]] bool decrypt_aes_128_gcm(const u8 (&key)[16], const u8(&iv)[12], Buffer<u8> &encrypted_data);

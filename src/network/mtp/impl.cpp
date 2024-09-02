@@ -151,7 +151,7 @@ void makeAutoSplitPacket(const SharedBuffer<u8> &data, u32 chunksize_max,
 	list->push_back(makeOriginalPacket(data));
 }
 
-SharedBuffer<u8> makeReliablePacket(const SharedBuffer<u8> &data, SeqNumWithGen seqnum, u8 channel, bool is_encrypted, const u8 (*encryption_key)[NET_AES_KEY_SIZE])
+SharedBuffer<u8> makeReliablePacket(const SharedBuffer<u8> &data, SeqNumWithGen seqnum, u8 channel, bool is_encrypted, const u8 (*encryption_key)[NET_CHACHA_KEY_SIZE])
 {
 	assert(!is_encrypted || encryption_key);
 	tracestream << "makeReliablePacket(seqnum=" << seqnum << ",is_encrypted=" << is_encrypted << ")" << std::endl;
@@ -181,7 +181,7 @@ SharedBuffer<u8> makeReliablePacket(const SharedBuffer<u8> &data, SeqNumWithGen 
 
 		tracestream << "makeReliablePacket: channel=" << u32(channel) << " packet_counter=" << packet_counter << " seqnum:" << seqnum;
 
-		if (!NetworkEncryption::encrypt_aes_128_gcm(
+		if (!NetworkEncryption::encrypt_chacha20_poly1305(
 			*encryption_key,
 			iv.iv,
 			data,
@@ -1024,7 +1024,7 @@ bool Peer::decryptMessage(u8 channel_id, SeqNumWithGen seq_num, Buffer<u8>& data
 
 	tracestream << "decryptMessage: channel=" << u32(channel_id) << " packet_counter=" << packet_counter << " seqnum:" << seq_num;
 
-	if (!NetworkEncryption::decrypt_aes_128_gcm(m_receive_keys.keys[channel_id], iv.iv, data))
+	if (!NetworkEncryption::decrypt_chacha20_poly1305(m_receive_keys.keys[channel_id], iv.iv, data))
 	{
 		actionstream << "Recieved a packet from a peer that couldn't be decrypted, this indicates either a bug, network packet corruption, or attack attempt:"
 			<< std::endl << "peer_id: " << this->id
@@ -1179,7 +1179,7 @@ bool UDPPeer::processReliableSendCommand(
 		if (initial_sequence_number == -1)
 			initial_sequence_number = seqnum.packet_seq_num;
 
-		const u8 (&channel_encryption_key)[NET_AES_KEY_SIZE] = m_send_keys.keys[c.channelnum];
+		const u8 (&channel_encryption_key)[NET_CHACHA_KEY_SIZE] = m_send_keys.keys[c.channelnum];
 
 		SharedBuffer<u8> reliable = makeReliablePacket(original, seqnum, c.channelnum, is_encrypted, &channel_encryption_key);
 
