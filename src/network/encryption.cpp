@@ -1,9 +1,31 @@
+/*
+Minetest
+Copyright (C) 2024 red-001 <red-001@outlook.ie>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+
 #include "encryption.h"
 #include "settings.h"
 #include "util/base64.h"
+#include "porting.h"
 #include <openssl/evp.h>
 #include "Hacl_HMAC.h"
 #include "Hacl_HKDF.h"
+#include "EverCrypt_Curve25519.h"
+#include "EverCrypt_Chacha20Poly1305.h"
 #include <optional>
 
 namespace NetworkEncryption
@@ -123,60 +145,10 @@ namespace NetworkEncryption
 		const ECDHEPublicKey& other_pub_key,
 		u8(&shared_secret)[NET_ECDHE_SECRET_LEN])
 	{
-		unique_pkey_t pkey_peer_pub = make_unique_pkey(EVP_PKEY_new_raw_public_key(ECDHEKeyPair::key_type, NULL, &other_pub_key.key[0], NET_ECDHE_PUBLIC_KEY_LEN));
-
-		if (!pkey_peer_pub)
-		{
-			errorstream << "ecdh_calculate_shared_secret(): failed to load other peer's public key!" << std::endl;
+		if (!EverCrypt_Curve25519_ecdh(shared_secret, const_cast<u8*>(our_keys.private_key), const_cast<u8*>(other_pub_key.key))) {
+			memset(shared_secret, 0, sizeof(shared_secret));
 			return false;
 		}
-
-		unique_pkey_t pkey_our_private_key = make_unique_pkey(EVP_PKEY_new_raw_private_key(ECDHEKeyPair::key_type, NULL, &our_keys.private_key[0], NET_ECDHE_PRIVATE_KEY_LEN));
-
-		if (!pkey_our_private_key)
-		{
-			errorstream << "ecdh_calculate_shared_secret(): failed to load our peer's private key!" << std::endl;
-			return false;
-		}
-
-		std::unique_ptr<EVP_PKEY_CTX, decltype(&EVP_PKEY_CTX_free)> pctx = {
-			EVP_PKEY_CTX_new(pkey_our_private_key.get(), NULL),
-			&EVP_PKEY_CTX_free };
-
-		if (1 != EVP_PKEY_derive_init(pctx.get()))
-		{
-			errorstream << "ecdh_calculate_shared_secret(): failed init derive ctx!" << std::endl;
-			return false;
-		}
-
-		if (1 != EVP_PKEY_derive_set_peer(pctx.get(), pkey_peer_pub.get()))
-		{
-			errorstream << "ecdh_calculate_shared_secret(): failed set derive peer!" << std::endl;
-			return false;
-		}
-
-		size_t echd_secret_length = {};
-		if (1 != EVP_PKEY_derive(pctx.get(), NULL, &echd_secret_length) || echd_secret_length == 0)
-		{
-			errorstream << "ecdh_calculate_shared_secret(): failed get secret length!" << std::endl;
-			return false;
-		}
-
-		assert(NET_ECDHE_SECRET_LEN == echd_secret_length);
-		if (echd_secret_length != NET_ECDHE_SECRET_LEN)
-		{
-			errorstream << "ecdh_calculate_shared_secret(): secret length does not match expected length! got:"
-				<< echd_secret_length
-				<< " expected:" << NET_ECDHE_SECRET_LEN << std::endl;
-			return false;
-		}
-
-		if (1 != EVP_PKEY_derive(pctx.get(), shared_secret, &echd_secret_length) || NET_ECDHE_SECRET_LEN != echd_secret_length)
-		{
-			errorstream << "ecdh_calculate_shared_secret(): failed to calculate secret! len=" << echd_secret_length << std::endl;
-			return false;
-		}
-
 		return true;
 	}
 
@@ -282,57 +254,23 @@ namespace NetworkEncryption
 
 	}
 
-	bool EphemeralKeyGenerator::generate(ECDHEKeyPair& key_out)
-	{
-		if (!m_pctx.get())
+	bool generate_ephemeral_key_pair(ECDHEKeyPair& output) {
+		static_assert(sizeof(output.private_key) == 32);
+		static_assert(sizeof(output.public_key) == 32);
+
+		u8 random_data[32] = {};
+		if (!porting::secure_rand_fill_buf(random_data, sizeof(random_data)))
 			return false;
+		// from https://cr.yp.to/ecdh.html
+		random_data[0] &= 248;
+		random_data[31] &= 127;
+		random_data[31] |= 64;
 
-		bool success = true;
+		memcpy(output.private_key, random_data, sizeof(output.private_key));
+		EverCrypt_Curve25519_secret_to_public(random_data, output.public_key);
 
-		int key_gen_result;
-		unique_pkey_t pkey = keygen(key_gen_result);
-
-		if (key_gen_result == 1 && pkey)
-		{
-			size_t actual_private_key_length = NET_ECDHE_PRIVATE_KEY_LEN;
-			size_t actual_public_key_length = NET_ECDHE_PUBLIC_KEY_LEN;
-
-			int get_private_key_result = EVP_PKEY_get_raw_private_key(pkey.get(), key_out.private_key, &actual_private_key_length);
-			if (1 != get_private_key_result || NET_ECDHE_PRIVATE_KEY_LEN != actual_private_key_length)
-			{
-				errorstream << "NetworkEphemeralKeyGenerator: failed to get raw private key: " << get_private_key_result << std::endl;
-				success = false;
-			}
-
-			int get_public_key_result = EVP_PKEY_get_raw_public_key(pkey.get(), key_out.public_key, &actual_public_key_length);
-			if (1 != get_public_key_result || NET_ECDHE_PUBLIC_KEY_LEN != actual_public_key_length)
-			{
-				errorstream << "NetworkEphemeralKeyGenerator: failed to get raw public key: " << get_public_key_result << std::endl;
-				success = false;
-			}
-
-		}
-		else {
-			errorstream << "NetworkEphemeralKeyGenerator: failed to generate key: " << key_gen_result << std::endl;
-			success = false;
-		}
-
-
-		if (!success)
-		{
-			// clear output keys if generation failed
-			key_out = {};
-		}
-
-		return success;
+		return true;
 	}
 
-	unique_pkey_t EphemeralKeyGenerator::keygen(int& result)
-	{
-		EVP_PKEY* pkey = nullptr;
-		result = EVP_PKEY_keygen(m_pctx.get(), &pkey);
-
-		return make_unique_pkey(pkey);
-	}
 #pragma endregion
 }

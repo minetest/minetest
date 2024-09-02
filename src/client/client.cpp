@@ -149,11 +149,8 @@ Client::Client(
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 	m_mesh_grid = { g_settings->getU16("client_mesh_chunk") };
 
-	NetworkEncryption::EphemeralKeyGenerator key_gen;
-	if (!key_gen.generate(m_network_ephemeral_key))
-	{
+	if (!NetworkEncryption::generate_ephemeral_key_pair(m_network_ephemeral_key))
 		throw BaseException("Failed to generate network ECDHE key!");
-	}
 }
 
 void Client::migrateModStorage()

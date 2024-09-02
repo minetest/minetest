@@ -286,12 +286,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	{
 		verbosestream << "Generating server ephemeral key for client: " << peer_id << std::endl;
 
-		bool key_generated = false;
-
-		{
-			std::lock_guard lock{ m_keygen_lock };
-			key_generated = m_keygen.generate(server_key);
-		}
+		const bool key_generated = NetworkEncryption::generate_ephemeral_key_pair(server_key);
 
 		if (!key_generated)
 		{

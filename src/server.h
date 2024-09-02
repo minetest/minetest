@@ -662,10 +662,6 @@ private:
 
 	std::unordered_map<std::string, Translations> server_translations;
 
-	// network encryption
-	std::mutex m_keygen_lock;
-	NetworkEncryption::EphemeralKeyGenerator m_keygen;
-
 	/*
 		Threads
 	*/

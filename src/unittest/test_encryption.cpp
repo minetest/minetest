@@ -106,13 +106,13 @@ void TestEncyption::testHKDF()
 		SANITY_CHECK(PRK.size() == 32);
 
 		u8 prk_actual[32] = {};
-		UASSERT(NetworkEncryption::hkdf_extract_sha256(IKM.data(), IKM.size(), prk_actual, salt_sw));
+		NetworkEncryption::hkdf_extract_sha256(IKM.data(), IKM.size(), prk_actual, salt_sw);
 		UASSERT(memcmp(prk_actual, PRK.data(), 32) == 0);
 
 		std::vector<u8> OKM_actual;
 		OKM_actual.resize(OKM.size());
 
-		UASSERT(NetworkEncryption::hkdf_expand_sha256(prk_actual, info_sw, OKM_actual.data(), OKM_actual.size()));
+		NetworkEncryption::hkdf_expand_sha256(prk_actual, info_sw, OKM_actual.data(), OKM_actual.size());
 		UASSERT(OKM_actual == OKM);
 	}
 	// test 2
@@ -157,13 +157,13 @@ void TestEncyption::testHKDF()
 		SANITY_CHECK(PRK.size() == 32);
 
 		u8 prk_actual[32] = {};
-		UASSERT(NetworkEncryption::hkdf_extract_sha256(IKM.data(), IKM.size(), prk_actual, salt_sw));
+		NetworkEncryption::hkdf_extract_sha256(IKM.data(), IKM.size(), prk_actual, salt_sw);
 		UASSERT(memcmp(prk_actual, PRK.data(), 32) == 0);
 
 		std::vector<u8> OKM_actual;
 		OKM_actual.resize(OKM.size());
 
-		UASSERT(NetworkEncryption::hkdf_expand_sha256(prk_actual, info_sw, OKM_actual.data(), OKM_actual.size()));
+		NetworkEncryption::hkdf_expand_sha256(prk_actual, info_sw, OKM_actual.data(), OKM_actual.size());
 		UASSERT(OKM_actual == OKM);
 	}
 	// test 3
@@ -182,13 +182,13 @@ void TestEncyption::testHKDF()
 		SANITY_CHECK(PRK.size() == 32);
 
 		u8 prk_actual[32] = {};
-		UASSERT(NetworkEncryption::hkdf_extract_sha256(IKM.data(), IKM.size(), prk_actual));
+		NetworkEncryption::hkdf_extract_sha256(IKM.data(), IKM.size(), prk_actual);
 		UASSERT(memcmp(prk_actual, PRK.data(), 32) == 0);
 
 		std::vector<u8> OKM_actual;
 		OKM_actual.resize(OKM.size());
 
-		UASSERT(NetworkEncryption::hkdf_expand_sha256(prk_actual, "", OKM_actual.data(), OKM_actual.size()));
+		NetworkEncryption::hkdf_expand_sha256(prk_actual, "", OKM_actual.data(), OKM_actual.size());
 		UASSERT(OKM_actual == OKM);
 	}
 }
@@ -229,7 +229,7 @@ void TestEncyption::testAES_128_gcm_encrypt()
 
 		u8 key[16] = {};
 		u8 iv[12] = {};
-		u8 aaed_tag_expected[12] = {};
+		u8 aaed_tag_expected[16] = {};
 
 		rfc_string_to_c(key, "f00fdd018c02e03576008b516ea971ad");
 		rfc_string_to_c(iv, "3b3e276f9e98b1ecb7ce6d28");
@@ -255,7 +255,7 @@ void TestEncyption::testAES_128_gcm_encrypt()
 
 		u8 key[16] = {};
 		u8 iv[12] = {};
-		u8 aaed_tag_expected[12] = {};
+		u8 aaed_tag_expected[16] = {};
 
 		rfc_string_to_c(key, "bc8fb606bc51571912ad8732ca4ee7af");
 		rfc_string_to_c(iv, "fd4c8432015c5a5def1561c5");
@@ -280,7 +280,7 @@ void TestEncyption::testAES_128_gcm_encrypt()
 
 		u8 key[16] = {};
 		u8 iv[12] = {};
-		u8 aaed_tag_expected[12] = {};
+		u8 aaed_tag_expected[16] = {};
 
 		rfc_string_to_c(key, "9aa701eaf1146ae9a8aa14f36294e8e0");
 		rfc_string_to_c(iv, "fd78280e023ff4cdcaab5e67");
@@ -296,12 +296,10 @@ void TestEncyption::testAES_128_gcm_encrypt()
 
 void TestEncyption::testECKeyGen()
 {
-	NetworkEncryption::EphemeralKeyGenerator keygen;
 	for (int i = 0; i < 2000; i++)
 	{
 		NetworkEncryption::ECDHEKeyPair keypair = {};
-
-		UASSERT(keygen.generate(keypair));
+		UASSERT(NetworkEncryption::generate_ephemeral_key_pair(keypair));
 
 		// check if the private key is valid
 		UASSERT((keypair.private_key[0] & ~248u) == 0);

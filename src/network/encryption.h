@@ -1,10 +1,28 @@
 #pragma once
 
+/*
+Minetest
+Copyright (C) 2024 red-001 <red-001@outlook.ie>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+
 #include "networkconfig.h"
 #include "log.h"
 #include "util/pointer.h"
 #include "util/serialize.h"
-#include <openssl/evp.h>
 #include <memory>
 
 /*
@@ -91,21 +109,12 @@
 *   The cryptosystem as described above only provides confidentiality not authentication,
 *   without a PKI there's no way to verify the server is who they claim to be on initial connection.
 *
-*   If this is not the first login we can modify the SRP [4] login flow to add a digest generated from the root network key
-*   to the state hashed to generate the evidence messages M and H (also called M_2 or M_s in some descriptions of the protocol).
+*   If this is not the first login we can modify the SRP [4] login flow to include a
+*   digest of the handshake in the SRP username
 *
 *   srp_net_key_digest = hkdf_expand(root_net_key, "minetest-handshake-digest-for-srp", 64)
 * 
-*   M_1 = H(...|srp_net_key_digest)
-*   M_2 = H(...|srp_net_key_digest)
-*
-*   where ... is the standard state that SRP hashes over anyways
-*
-*   This should have no impact on the security of the SRP login process, no parts of the core
-*   protocol are changed, additional state is simply added to the evidence message.
-*
-*   Hashing the key into the state stops an active attacker from being able to tamper with a connection unless
-*   it's the first login for that user or a protocol downgrade attack is carried out.
+*   I_secure = I_name|":"|Base64Encode(HMAC(I_name, srp_net_key_digest))
 *
 * Partial resistance to downgrade attacks
 * 
@@ -150,8 +159,6 @@ namespace NetworkEncryption
 {
 	struct ECDHEKeyPair
 	{
-		static constexpr int key_type = EVP_PKEY_X25519;
-
 		u8 private_key[NET_ECDHE_PRIVATE_KEY_LEN];
 		u8 public_key[NET_ECDHE_PUBLIC_KEY_LEN];
 	};
@@ -212,11 +219,7 @@ namespace NetworkEncryption
 		return packet_iv;
 	}
 
-	typedef std::unique_ptr<EVP_PKEY, decltype(&EVP_PKEY_free)> unique_pkey_t;
-	[[nodiscard]] inline unique_pkey_t make_unique_pkey(EVP_PKEY* pkey)
-	{
-		return { pkey, &EVP_PKEY_free };
-	}
+	bool generate_ephemeral_key_pair(ECDHEKeyPair &output);
 
 	enum class ConnectionSecurityLevel {
 		// No encryption or authentication
@@ -233,40 +236,5 @@ namespace NetworkEncryption
 		// This is strictly a super-set of the protection offered by `ConnectionSecurityLevel::Passive`
 		FullyAuthenicated,
 
-	};
-
-	class EphemeralKeyGenerator
-	{
-	public:
-
-		EphemeralKeyGenerator() :
-			m_pctx(EVP_PKEY_CTX_new_id(ECDHEKeyPair::key_type, NULL), &EVP_PKEY_CTX_free)
-		{
-			if (m_pctx)
-			{
-				int result = EVP_PKEY_keygen_init(m_pctx.get());
-
-				assert(1 == result);
-
-				if (result < 1)
-				{
-					errorstream << "NetworkEphemeralKeyGenerator: failed to initialize key generator: " << result << std::endl;
-					m_pctx.reset();
-				}
-			}
-
-		}
-
-		[[nodiscard]] bool generate(ECDHEKeyPair& key_out);
-
-		operator bool() const noexcept
-		{
-			return m_pctx.operator bool();
-		}
-	private:
-
-		[[nodiscard]] unique_pkey_t keygen(int& result);
-
-		std::unique_ptr<EVP_PKEY_CTX, decltype(&EVP_PKEY_CTX_free)> m_pctx;
 	};
 }
