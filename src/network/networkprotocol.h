@@ -911,7 +911,7 @@ enum ToServerCommand : u16
 		Sent first after connected.
 
 		u8 serialization version (=SER_FMT_VER_HIGHEST_READ)
-		u16 supported network compression modes (unused)
+		u16 unused (supported network compression mode, never implemeneted)
 		u16 minimum supported network protocol version
 		u16 maximum supported network protocol version
 		std::string player name

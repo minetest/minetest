@@ -276,8 +276,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	verbosestream << "Sending TOCLIENT_HELLO with auth method field: "
 		<< auth_mechs << std::endl;
 
-	NetworkPacket resp_pkt(TOCLIENT_HELLO,
-		1 + 2 + 2 + 4 + 2, peer_id);
+	NetworkPacket resp_pkt(TOCLIENT_HELLO, 0, peer_id);
 
 	resp_pkt << depl_serial_v << u16(0) << net_proto_version
 		<< auth_mechs << std::string_view();
