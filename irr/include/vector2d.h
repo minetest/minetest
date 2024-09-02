@@ -38,6 +38,12 @@ public:
 	explicit constexpr vector2d(const std::array<T, 2> &arr) :
 			X(arr[0]), Y(arr[1]) {}
 
+	template <class U>
+	constexpr static vector2d<T> from(const vector2d<U> &other)
+	{
+		return {static_cast<T>(other.X), static_cast<T>(other.Y)};
+	}
+
 	// operators
 
 	vector2d<T> operator-() const { return vector2d<T>(-X, -Y); }

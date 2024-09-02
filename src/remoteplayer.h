@@ -113,14 +113,14 @@ public:
 
 	inline void setModified(const bool x) { m_dirty = x; }
 
-	void setLocalAnimations(v2s32 frames[4], float frame_speed)
+	void setLocalAnimations(v2f frames[4], float frame_speed)
 	{
 		for (int i = 0; i < 4; i++)
 			local_animations[i] = frames[i];
 		local_animation_speed = frame_speed;
 	}
 
-	void getLocalAnimations(v2s32 *frames, float *frame_speed)
+	void getLocalAnimations(v2f *frames, float *frame_speed)
 	{
 		for (int i = 0; i < 4; i++)
 			frames[i] = local_animations[i];

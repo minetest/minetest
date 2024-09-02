@@ -1052,7 +1052,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 				walking = true;
 			}
 
-			v2s32 new_anim = v2s32(0,0);
+			v2f new_anim(0,0);
 			bool allow_update = false;
 
 			// increase speed if using fast or flying fast
@@ -1799,10 +1799,9 @@ void GenericCAO::processMessage(const std::string &data)
 			phys.speed_walk = override_speed_walk;
 		}
 	} else if (cmd == AO_CMD_SET_ANIMATION) {
-		// TODO: change frames send as v2s32 value
 		v2f range = readV2F32(is);
 		if (!m_is_local_player) {
-			m_animation_range = v2s32((s32)range.X, (s32)range.Y);
+			m_animation_range = range;
 			m_animation_speed = readF32(is);
 			m_animation_blend = readF32(is);
 			// these are sent inverted so we get true when the server sends nothing
@@ -1812,7 +1811,7 @@ void GenericCAO::processMessage(const std::string &data)
 			LocalPlayer *player = m_env->getLocalPlayer();
 			if(player->last_animation == LocalPlayerAnimation::NO_ANIM)
 			{
-				m_animation_range = v2s32((s32)range.X, (s32)range.Y);
+				m_animation_range = range;
 				m_animation_speed = readF32(is);
 				m_animation_blend = readF32(is);
 				// these are sent inverted so we get true when the server sends nothing

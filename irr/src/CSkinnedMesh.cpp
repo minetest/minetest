@@ -111,11 +111,9 @@ CSkinnedMesh::~CSkinnedMesh()
 	}
 }
 
-//! returns the amount of frames in milliseconds.
-//! If the amount is 1, it is a static (=non animated) mesh.
-u32 CSkinnedMesh::getFrameCount() const
+f32 CSkinnedMesh::getMaxFrameNumber() const
 {
-	return core::floor32(EndFrame + 1.f);
+	return EndFrame;
 }
 
 //! Gets the default animation speed of the animated mesh.
@@ -133,14 +131,14 @@ void CSkinnedMesh::setAnimationSpeed(f32 fps)
 	FramesPerSecond = fps;
 }
 
-//! returns the animated mesh based on a detail level. 0 is the lowest, 255 the highest detail. Note, that some Meshes will ignore the detail level.
-IMesh *CSkinnedMesh::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop)
+//! returns the animated mesh based
+IMesh *CSkinnedMesh::getMesh(f32 frame)
 {
 	// animate(frame,startFrameLoop, endFrameLoop);
 	if (frame == -1)
 		return this;
 
-	animateMesh((f32)frame, 1.0f);
+	animateMesh(frame, 1.0f);
 	skinMesh();
 	return this;
 }

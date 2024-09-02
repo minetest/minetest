@@ -8059,8 +8059,7 @@ child will follow movement and rotation of that bone.
        * Animation interpolates towards the end frame but stops when it is reached
        * If looped, there is no interpolation back to the start frame
        * If looped, the model should look identical at start and end
-       * Only integer numbers are supported
-       * default: `{x=1, y=1}`
+       * default: `{x=1.0, y=1.0}`
     * `frame_speed`: How fast the animation plays, in frames per second (number)
        * default: `15.0`
     * `frame_blend`: number, default: `0.0`

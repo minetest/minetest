@@ -433,10 +433,10 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	v2s32 frames[4];
+	v2f frames[4];
 	for (int i=0;i<4;i++) {
 		if (!lua_isnil(L, 2+1))
-			frames[i] = read_v2s32(L, 2+i);
+			frames[i] = read_v2f(L, 2+i);
 	}
 	float frame_speed = readParam<float>(L, 6, 30.0f);
 
@@ -453,12 +453,12 @@ int ObjectRef::l_get_local_animation(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	v2s32 frames[4];
+	v2f frames[4];
 	float frame_speed;
 	player->getLocalAnimations(frames, &frame_speed);
 
-	for (const v2s32 &frame : frames) {
-		push_v2s32(L, frame);
+	for (const v2f &frame : frames) {
+		push_v2f(L, frame);
 	}
 
 	lua_pushnumber(L, frame_speed);

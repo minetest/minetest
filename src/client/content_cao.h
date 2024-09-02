@@ -99,7 +99,7 @@ private:
 	v2s16 m_tx_basepos;
 	bool m_initial_tx_basepos_set = false;
 	bool m_tx_select_horiz_by_yawpitch = false;
-	v2s32 m_animation_range;
+	v2f m_animation_range;
 	float m_animation_speed = 15.0f;
 	float m_animation_blend = 0.0f;
 	bool m_animation_loop = true;
