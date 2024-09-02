@@ -51,6 +51,7 @@
 #endif
 
 #include "my_sha256.h"
+#include "porting.h"
 
 #include "srp.h"
 //#define CSRP_USE_SHA1
@@ -69,12 +70,6 @@
 	}
 	printf("\n");
 }*/
-
-static int g_initialized = 0;
-
-#define RAND_BUFF_MAX 128
-static unsigned int g_rand_idx;
-static unsigned char g_rand_buff[RAND_BUFF_MAX];
 
 void *(*srp_alloc)(size_t) = &malloc;
 void *(*srp_realloc)(void *, size_t) = &realloc;
@@ -521,50 +516,13 @@ static SRP_Result calculate_H_AMK(SRP_HashAlgorithm alg, unsigned char *dest,
 	return SRP_OK;
 }
 
-static SRP_Result fill_buff()
-{
-	g_rand_idx = 0;
-
-#ifdef WIN32
-	HCRYPTPROV wctx;
-#else
-	FILE *fp = 0;
-#endif
-
-#ifdef WIN32
-
-	if (!CryptAcquireContext(&wctx, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
-		return SRP_ERR;
-	if (!CryptGenRandom(wctx, sizeof(g_rand_buff), (BYTE *)g_rand_buff)) return SRP_ERR;
-	if (!CryptReleaseContext(wctx, 0)) return SRP_ERR;
-
-#else
-	fp = fopen("/dev/urandom", "r");
-
-	if (!fp) return SRP_ERR;
-
-	if (fread(g_rand_buff, sizeof(g_rand_buff), 1, fp) != 1) { fclose(fp); return SRP_ERR; }
-	if (fclose(fp)) return SRP_ERR;
-#endif
-	return SRP_OK;
-}
-
 static SRP_Result mpz_fill_random(mpz_t num)
 {
-	// was call: BN_rand(num, 256, -1, 0);
-	if (RAND_BUFF_MAX - g_rand_idx < 32)
-		if (fill_buff() != SRP_OK) return SRP_ERR;
-	mpz_from_bin((const unsigned char *)(&g_rand_buff[g_rand_idx]), 32, num);
-	g_rand_idx += 32;
+	unsigned char random_buf[32];
+	if (!porting::secure_rand_fill_buf(random_buf, sizeof(random_buf)))
+		return SRP_ERR;
+	mpz_from_bin(random_buf, sizeof(random_buf), num);
 	return SRP_OK;
-}
-
-static SRP_Result init_random()
-{
-	if (g_initialized) return SRP_OK;
-	SRP_Result ret = fill_buff();
-	g_initialized = (ret == SRP_OK);
-	return ret;
 }
 
 #define srp_dbg_num(num, text) ;
@@ -600,18 +558,13 @@ SRP_Result srp_create_salted_verification_key( SRP_HashAlgorithm alg,
 
 	if (!ng) goto error_and_exit;
 
-	if (init_random() != SRP_OK) /* Only happens once */
-		goto error_and_exit;
-
 	if (*bytes_s == NULL) {
 		size_t size_to_fill = 16;
 		*len_s = size_to_fill;
-		if (RAND_BUFF_MAX - g_rand_idx < size_to_fill)
-			if (fill_buff() != SRP_OK) goto error_and_exit;
 		*bytes_s = (unsigned char *)srp_alloc(size_to_fill);
 		if (!*bytes_s) goto error_and_exit;
-		memcpy(*bytes_s, &g_rand_buff[g_rand_idx], size_to_fill);
-		g_rand_idx += size_to_fill;
+		if (!porting::secure_rand_fill_buf(*bytes_s, size_to_fill))
+			goto error_and_exit;
 	}
 
 	if (!calculate_x(
@@ -676,12 +629,6 @@ struct SRPVerifier *srp_verifier_new(SRP_HashAlgorithm alg,
 	ver = (struct SRPVerifier *)srp_alloc(sizeof(struct SRPVerifier));
 
 	if (!ver) goto cleanup_and_exit;
-
-	if (init_random() != SRP_OK) { /* Only happens once */
-		srp_free(ver);
-		ver = 0;
-		goto cleanup_and_exit;
-	}
 
 	ver->username = (char *)srp_alloc(ulen);
 	ver->hash_alg = alg;
@@ -823,9 +770,6 @@ struct SRPUser *srp_user_new(SRP_HashAlgorithm alg, SRP_NGType ng_type,
 	size_t uvlen = strlen(username_for_verifier) + 1;
 
 	if (!usr) goto err_exit;
-
-	if (init_random() != SRP_OK) /* Only happens once */
-		goto err_exit;
 
 	usr->hash_alg = alg;
 	usr->ng = new_ng(ng_type, n_hex, g_hex);
