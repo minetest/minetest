@@ -5,7 +5,6 @@ set(HACL_C_SRC
 	${HACL_MAIN_SRC_PATH}/Lib_Memzero0.c
 	${HACL_MAIN_SRC_PATH}/Lib_PrintBuffer.c
 	${HACL_MAIN_SRC_PATH}/Lib_RandomBuffer_System.c
-	${HACL_MAIN_SRC_PATH}/EverCrypt_AEAD.c
 	${HACL_MAIN_SRC_PATH}/EverCrypt_AutoConfig2.c
 	${HACL_MAIN_SRC_PATH}/EverCrypt_Chacha20Poly1305.c
 	${HACL_MAIN_SRC_PATH}/EverCrypt_Curve25519.c
@@ -67,7 +66,6 @@ set(HACL_ASM_SRC
 	${HACL_MAIN_SRC_PATH}/sha256-${HACL_TARGET}.${HACL_ASM_EXT}
 	${HACL_MAIN_SRC_PATH}/curve25519-${HACL_TARGET}.${HACL_ASM_EXT}
 	${HACL_MAIN_SRC_PATH}/cpuid-${HACL_TARGET}.${HACL_ASM_EXT}
-	${HACL_MAIN_SRC_PATH}/aesgcm-${HACL_TARGET}.${HACL_ASM_EXT}
 )
 
 set(HACL_SRC
