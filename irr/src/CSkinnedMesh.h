@@ -61,6 +61,10 @@ public:
 	NULL if there is no such mesh buffer. */
 	IMeshBuffer *getMeshBuffer(const video::SMaterial &material) const override;
 
+	u32 getTextureSlot(u32 meshbufNr) const override;
+
+	void setTextureSlot(u32 meshbufNr, u32 textureSlot);
+
 	//! returns an axis aligned bounding box
 	const core::aabbox3d<f32> &getBoundingBox() const override;
 
@@ -129,6 +133,9 @@ public:
 	//! Adds a new meshbuffer to the mesh, access it as last one
 	SSkinMeshBuffer *addMeshBuffer() override;
 
+	//! Adds a new meshbuffer to the mesh, access it as last one
+	void addMeshBuffer(SSkinMeshBuffer *meshbuf) override;
+
 	//! Adds a new joint to the mesh, access it as last one
 	SJoint *addJoint(SJoint *parent = 0) override;
 
@@ -184,6 +191,8 @@ private:
 	core::array<SSkinMeshBuffer *> *SkinningBuffers; // Meshbuffer to skin, default is to skin localBuffers
 
 	core::array<SSkinMeshBuffer *> LocalBuffers;
+	//! Mapping from meshbuffer number to bindable texture slot
+	std::vector<u32> TextureSlots;
 
 	core::array<SJoint *> AllJoints;
 	core::array<SJoint *> RootJoints;

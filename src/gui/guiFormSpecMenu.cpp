@@ -2807,8 +2807,13 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 
 	auto meshnode = e->setMesh(mesh);
 
-	for (u32 i = 0; i < textures.size() && i < meshnode->getMaterialCount(); ++i)
-		e->setTexture(i, m_tsrc->getTexture(unescape_string(textures[i])));
+	for (u32 i = 0; i < meshnode->getMaterialCount(); ++i) {
+		const auto texture_idx = mesh->getTextureSlot(i);
+		if (texture_idx >= textures.size())
+			warningstream << "Invalid model element: Not enough textures" << std::endl;
+		else
+			e->setTexture(i, m_tsrc->getTexture(unescape_string(textures[texture_idx])));
+	}
 
 	if (vec_rot.size() >= 2)
 		e->setRotation(v2f(stof(vec_rot[0]), stof(vec_rot[1])));

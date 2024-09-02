@@ -64,6 +64,17 @@ struct SMesh : public IMesh
 		return nullptr;
 	}
 
+	u32 getTextureSlot(u32 meshbufNr) const override
+	{
+		return TextureSlots.at(meshbufNr);
+	}
+
+	void setTextureSlot(u32 meshbufNr, u32 textureSlot)
+	{
+		TextureSlots.at(meshbufNr) = textureSlot;
+	}
+
+
 	//! returns an axis aligned bounding box
 	const core::aabbox3d<f32> &getBoundingBox() const override
 	{
@@ -103,6 +114,7 @@ struct SMesh : public IMesh
 		if (buf) {
 			buf->grab();
 			MeshBuffers.push_back(buf);
+			TextureSlots.push_back(getMeshBufferCount() - 1);
 		}
 	}
 
@@ -122,6 +134,8 @@ struct SMesh : public IMesh
 
 	//! The meshbuffers of this mesh
 	std::vector<IMeshBuffer *> MeshBuffers;
+	//! Mapping from meshbuffer number to bindable texture slot
+	std::vector<u32> TextureSlots;
 
 	//! The bounding box of this mesh
 	core::aabbox3d<f32> BoundingBox;

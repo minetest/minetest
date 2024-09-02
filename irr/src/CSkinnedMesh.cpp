@@ -6,6 +6,7 @@
 #include <optional>
 #include "CBoneSceneNode.h"
 #include "IAnimatedMeshSceneNode.h"
+#include "SSkinMeshBuffer.h"
 #include "os.h"
 
 namespace
@@ -596,6 +597,15 @@ IMeshBuffer *CSkinnedMesh::getMeshBuffer(const video::SMaterial &material) const
 	return 0;
 }
 
+u32 CSkinnedMesh::getTextureSlot(u32 meshbufNr) const
+{
+	return TextureSlots.at(meshbufNr);
+}
+
+void CSkinnedMesh::setTextureSlot(u32 meshbufNr, u32 textureSlot) {
+	TextureSlots.at(meshbufNr) = textureSlot;
+}
+
 //! returns an axis aligned bounding box
 const core::aabbox3d<f32> &CSkinnedMesh::getBoundingBox() const
 {
@@ -1057,8 +1067,15 @@ void CSkinnedMesh::updateBoundingBox(void)
 scene::SSkinMeshBuffer *CSkinnedMesh::addMeshBuffer()
 {
 	scene::SSkinMeshBuffer *buffer = new scene::SSkinMeshBuffer();
+	TextureSlots.push_back(LocalBuffers.size());
 	LocalBuffers.push_back(buffer);
 	return buffer;
+}
+
+void CSkinnedMesh::addMeshBuffer(SSkinMeshBuffer *meshbuf)
+{
+	TextureSlots.push_back(LocalBuffers.size());
+	LocalBuffers.push_back(meshbuf);
 }
 
 CSkinnedMesh::SJoint *CSkinnedMesh::addJoint(SJoint *parent)

@@ -274,7 +274,7 @@ Accepted formats are:
 
     images: .png, .jpg, .tga, (deprecated:) .bmp
     sounds: .ogg vorbis
-    models: .x, .b3d, .obj
+    models: .x, .b3d, .obj, .gltf (Minetest 5.10 or newer)
 
 Other formats won't be sent to the client (e.g. you can store .blend files
 in a folder for convenience, without the risk that such files are transferred)
@@ -290,6 +290,43 @@ in one of its parents, the parent's file is used.
 
 Although it is discouraged, a mod can overwrite a media file of any mod that it
 depends on by supplying a file with an equal name.
+
+Only a subset of model file format features is supported:
+
+Simple textured meshes (with multiple textures), optionally with normals.
+The .x and .b3d formats additionally support skeletal animation.
+
+#### glTF
+
+The glTF model file format for now only serves as a
+more modern alternative to the other static model file formats;
+it unlocks no special rendering features.
+
+This means that many glTF features are not supported *yet*, including:
+
+* Animation
+* Cameras
+* Materials
+  * Only base color textures are supported
+  * Backface culling is overridden
+  * Double-sided materials don't work
+* Alternative means of supplying data
+  * Embedded images
+  * References to files via URIs
+
+Textures are supplied solely via the same means as for the other model file formats:
+The `textures` object property, the `tiles` node definition field and
+the list of textures used in the `model[]` formspec element.
+
+The order in which textures are to be supplied
+is that in which they appear in the `textures` array in the glTF file.
+
+Do not rely on glTF features not being supported; they may be supported in the future.
+The backwards compatibility guarantee does not extend to ignoring unsupported features.
+
+For example, if your model used an emissive material,
+you should expect that a future version of Minetest may respect this,
+and thus cause your model to render differently there.
 
 Naming conventions
 ------------------

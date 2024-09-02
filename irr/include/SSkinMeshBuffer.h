@@ -6,6 +6,7 @@
 
 #include "IMeshBuffer.h"
 #include "S3DVertex.h"
+#include "irrArray.h"
 
 namespace irr
 {
@@ -21,10 +22,14 @@ struct SSkinMeshBuffer : public IMeshBuffer
 			PrimitiveType(EPT_TRIANGLES), HWBuffer(nullptr),
 			MappingHint_Vertex(EHM_NEVER), MappingHint_Index(EHM_NEVER),
 			BoundingBoxNeedsRecalculated(true)
+	{}
+
+	//! Constructor for standard vertices
+	SSkinMeshBuffer(std::vector<video::S3DVertex> &&vertices, std::vector<u16> &&indices) :
+			SSkinMeshBuffer()
 	{
-#ifdef _DEBUG
-		setDebugName("SSkinMeshBuffer");
-#endif
+		Vertices_Standard = std::move(vertices);
+		Indices = std::move(indices);
 	}
 
 	//! Get Material of this buffer.

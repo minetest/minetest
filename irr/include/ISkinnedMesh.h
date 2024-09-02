@@ -199,6 +199,9 @@ public:
 	//! Adds a new meshbuffer to the mesh, access it as last one
 	virtual SSkinMeshBuffer *addMeshBuffer() = 0;
 
+	//! Adds a new meshbuffer to the mesh, access it as last one
+	virtual void addMeshBuffer(SSkinMeshBuffer *meshbuf) = 0;
+
 	//! Adds a new joint to the mesh, access it as last one
 	virtual SJoint *addJoint(SJoint *parent = 0) = 0;
 

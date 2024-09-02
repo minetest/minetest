@@ -17,7 +17,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang|AppleClang)$")
 	set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 	set(CMAKE_CXX_FLAGS_DEBUG "-g")
 
-	add_compile_options(-Wall -pipe -fno-exceptions)
+	add_compile_options(-Wall -pipe)
 
 	# Enable SSE for floating point math on 32-bit x86 by default
 	# reasoning see minetest issue #11810 and https://gcc.gnu.org/wiki/FloatingPointMath
@@ -298,6 +298,7 @@ set(link_includes
 
 set(IRRMESHLOADER
 	CB3DMeshFileLoader.cpp
+	CGLTFMeshFileLoader.cpp
 	COBJMeshFileLoader.cpp
 	CXMeshFileLoader.cpp
 )
@@ -310,6 +311,8 @@ add_library(IRRMESHOBJ OBJECT
 	${IRRMESHLOADER}
 )
 
+target_link_libraries(IRRMESHOBJ PUBLIC tiniergltf::tiniergltf)
+
 add_library(IRROBJ OBJECT
 	CBillboardSceneNode.cpp
 	CCameraSceneNode.cpp
@@ -320,6 +323,10 @@ add_library(IRROBJ OBJECT
 	CSceneManager.cpp
 	CMeshCache.cpp
 )
+
+# Make sure IRROBJ gets the transitive include directories for
+# tiniergltf from IRRMESHOBJ.
+target_link_libraries(IRROBJ PRIVATE IRRMESHOBJ)
 
 set(IRRDRVROBJ
 	CNullDriver.cpp
@@ -477,6 +484,7 @@ target_include_directories(IrrlichtMt
 # this needs to be here and not in a variable (like link_includes) due to issues
 # with the generator expressions on at least CMake 3.22, but not 3.28 or later
 target_link_libraries(IrrlichtMt PRIVATE
+	tiniergltf::tiniergltf
 	${ZLIB_LIBRARY}
 	${JPEG_LIBRARY}
 	${PNG_LIBRARY}
