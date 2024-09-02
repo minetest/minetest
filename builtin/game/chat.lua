@@ -1234,7 +1234,7 @@ core.register_chatcommand("kick", {
 	end,
 })
 
-local clearobject_confirms = {}
+local clearobjects_confirms = {}
 
 core.register_chatcommand("clearobjects", {
 	params = S("[full | quick | confirm | cancel]"),
@@ -1242,34 +1242,32 @@ core.register_chatcommand("clearobjects", {
 	privs = {server=true},
 	func = function(name, param)
 		if param == "" or param == "quick" or param == "full" then
-			local options = {
-				mode = param == "" and "quick" or param
+			local now = os.time()
+			clearobjects_confirms[name] = {
+				options = {
+					mode = param == "" and "quick" or param
+				},
+				timestamp = now
 			}
-			if clearobject_confirms[name] then
-				clearobject_confirms[name][1]:cancel()
-			end
-			clearobject_confirms[name] = {
-				core.after(60, function()
-					clearobject_confirms[name][1]:cancel()
-					clearobject_confirms[name] = nil
-				end),
-				options
-			}
+			core.after(60, function()
+				if clearobjects_confirms[name] and clearobjects_confirms[name].timestamp == now then
+					clearobjects_confirms[name] = nil
+				end
+			end)
 			return true, S("Type /clearobjects confirm to execute the action, or /clearobjects cancel to stop.")
 		elseif param == "confirm" or param == "cancel" then
-			local data = clearobject_confirms[name]
+			local data = clearobjects_confirms[name]
 			if not data then
 				return false, S("There are no pending /clearobjects actions.")
 			end
 
-			data[1]:cancel()
-			clearobject_confirms[name] = nil
+			clearobjects_confirms[name] = nil
 			if param == "cancel" then
 				return true, S("Operation canceled.")
 			end
 
 			-- Main clear objects logic
-			local options = data[2]
+			local options = clearobjects_confirms[name].options
 			core.log("action", name .. " clears objects ("
 				.. options.mode .. " mode).")
 			if options.mode == "full" then
@@ -1288,11 +1286,7 @@ core.register_chatcommand("clearobjects", {
 
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
-	local data = clearobject_confirms[name]
-	if data then
-		data[1]:cancel()
-		clearobject_confirms[name] = nil
-	end
+	clearobjects_confirms[name] = nil
 end)
 
 core.register_chatcommand("msg", {
