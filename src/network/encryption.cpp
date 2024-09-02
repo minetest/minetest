@@ -132,7 +132,7 @@ namespace NetworkEncryption
 	}
 
 	void hkdf_extract_sha256(const u8* data, size_t length, u8(&output)[32], const std::string_view& salt) {
-		Hacl_HKDF_extract_sha2_256(const_cast<u8*>(data), (u8*)salt.data(), salt.size(), output, sizeof(output));
+		Hacl_HKDF_extract_sha2_256(output, (u8*)salt.data(), salt.size(), const_cast<u8*>(data), length);
 	}
 
 	void hkdf_expand_sha256(const u8(&input)[32], const std::string_view& info, u8* output, size_t length) {
