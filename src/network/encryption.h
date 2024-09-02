@@ -82,8 +82,7 @@
 *
 *   IV = [channel_id] + 3*[0] + (seq_num_gen << 48 | seq_num).to_bytes(64, byteorder="little")
 *
-*   The authentication hash is truncated to be 12-bytes/96-bits long to reduce overhead while
-*   still offering a high level of security.[6]
+*   A full 16-byte authenication tag is used.
 *
 *
 *   
