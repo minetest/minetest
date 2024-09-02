@@ -73,5 +73,5 @@ endif()
 
 target_include_directories(HACL-star PUBLIC ${HACL_MAIN_SRC_PATH})
 target_include_directories(HACL-star PUBLIC "${HACL_KARAMEL_SRC_PATH}/include")
-target_include_directories(HACL-star PRIVATE "${HACL_KARAMEL_SRC_PATH}/krmllib/dist/minimal")
+target_include_directories(HACL-star PUBLIC "${HACL_KARAMEL_SRC_PATH}/krmllib/dist/minimal")
 target_include_directories(HACL-star PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/config)

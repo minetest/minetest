@@ -50,13 +50,13 @@
 	#include <mini-gmp.h>
 #endif
 
-#include "my_sha256.h"
+#include "Hacl_Hash_SHA2.h"
 
 #include "srp.h"
-//#define CSRP_USE_SHA1
+#include <debug.h>
 #define CSRP_USE_SHA256
 
-#define CSRP_MAX_HASH (SHA256_DIGEST_LENGTH)
+#define CSRP_MAX_HASH 32
 
 #define srp_dbg_data(data, datalen, prevtext) ;
 /*void srp_dbg_data(unsigned char * data, size_t datalen, char * prevtext)
@@ -221,7 +221,7 @@ static NGConstant *new_ng(SRP_NGType ng_type, const char *n_hex, const char *g_h
 
 typedef union {
 	// SHA_CTX sha;
-	SHA256_CTX sha256;
+	Hacl_Streaming_MD_state_32 *sha256;
 	// SHA512_CTX sha512;
 } HashCTX;
 
@@ -259,100 +259,40 @@ struct SRPUser {
 	unsigned char session_key[CSRP_MAX_HASH];
 };
 
-static int hash_init(SRP_HashAlgorithm alg, HashCTX *c)
+static inline int hash_init(SRP_HashAlgorithm alg, HashCTX *c)
 {
-	switch (alg) {
-#ifdef CSRP_USE_SHA1
-		case SRP_SHA1: return SHA1_Init(&c->sha);
-#endif
-		/*
-		case SRP_SHA224: return SHA224_Init(&c->sha256);
-		*/
-#ifdef CSRP_USE_SHA256
-		case SRP_SHA256: return SHA256_Init(&c->sha256);
-#endif
-		/*
-		case SRP_SHA384: return SHA384_Init(&c->sha512);
-		case SRP_SHA512: return SHA512_Init(&c->sha512);
-		*/
-		default: return -1;
-	};
+	SANITY_CHECK(alg == SRP_SHA256);
+
+	c->sha256 = Hacl_Hash_SHA2_malloc_256();
+	return c->sha256 != NULL;
 }
-static int hash_update( SRP_HashAlgorithm alg, HashCTX *c, const void *data, size_t len )
+static inline int hash_update( SRP_HashAlgorithm alg, HashCTX *c, const void *data, size_t len )
 {
-	switch (alg) {
-#ifdef CSRP_USE_SHA1
-		case SRP_SHA1: return SHA1_Update(&c->sha, data, len);
-#endif
-		/*
-		case SRP_SHA224: return SHA224_Update(&c->sha256, data, len);
-		*/
-#ifdef CSRP_USE_SHA256
-		case SRP_SHA256: return SHA256_Update(&c->sha256, data, len);
-#endif
-		/*
-		case SRP_SHA384: return SHA384_Update(&c->sha512, data, len);
-		case SRP_SHA512: return SHA512_Update(&c->sha512, data, len);
-		*/
-		default: return -1;
-	};
+	SANITY_CHECK(alg == SRP_SHA256);
+
+	return Hacl_Hash_SHA2_update_256(c->sha256, (uint8_t*)data, len) == 0 ? 1 : -1;
 }
-static int hash_final( SRP_HashAlgorithm alg, HashCTX *c, unsigned char *md )
+static inline int hash_final( SRP_HashAlgorithm alg, HashCTX *c, unsigned char *md )
 {
-	switch (alg) {
-#ifdef CSRP_USE_SHA1
-		case SRP_SHA1: return SHA1_Final(md, &c->sha);
-#endif
-		/*
-		case SRP_SHA224: return SHA224_Final(md, &c->sha256);
-		*/
-#ifdef CSRP_USE_SHA256
-		case SRP_SHA256: return SHA256_Final(md, &c->sha256);
-#endif
-		/*
-		case SRP_SHA384: return SHA384_Final(md, &c->sha512);
-		case SRP_SHA512: return SHA512_Final(md, &c->sha512);
-		*/
-		default: return -1;
-	};
+	SANITY_CHECK(alg == SRP_SHA256);
+
+	Hacl_Hash_SHA2_digest_256(c->sha256, md);
+	Hacl_Hash_SHA2_free_256(c->sha256);
+	c->sha256 = NULL;
+
+	return 1;
 }
-static unsigned char *hash(SRP_HashAlgorithm alg, const unsigned char *d, size_t n, unsigned char *md)
+static inline void hash(SRP_HashAlgorithm alg, const unsigned char *d, size_t n, unsigned char *md)
 {
-	switch (alg) {
-#ifdef CSRP_USE_SHA1
-		case SRP_SHA1: return SHA1(d, n, md);
-#endif
-		/*
-		case SRP_SHA224: return SHA224( d, n, md );
-		*/
-#ifdef CSRP_USE_SHA256
-		case SRP_SHA256: return SHA256(d, n, md);
-#endif
-		/*
-		case SRP_SHA384: return SHA384( d, n, md );
-		case SRP_SHA512: return SHA512( d, n, md );
-		*/
-		default: return 0;
-	};
+	SANITY_CHECK(alg == SRP_SHA256);
+	Hacl_Hash_SHA2_hash_256(md, const_cast<unsigned char*>(d), n);
 }
-static size_t hash_length(SRP_HashAlgorithm alg)
+
+static inline size_t hash_length(SRP_HashAlgorithm alg)
 {
-	switch (alg) {
-#ifdef CSRP_USE_SHA1
-		case SRP_SHA1: return SHA_DIGEST_LENGTH;
-#endif
-		/*
-		case SRP_SHA224: return SHA224_DIGEST_LENGTH;
-		*/
-#ifdef CSRP_USE_SHA256
-		case SRP_SHA256: return SHA256_DIGEST_LENGTH;
-#endif
-		/*
-		case SRP_SHA384: return SHA384_DIGEST_LENGTH;
-		case SRP_SHA512: return SHA512_DIGEST_LENGTH;
-		*/
-		default: return 0;
-	};
+	SANITY_CHECK(alg == SRP_SHA256);
+
+	return CSRP_MAX_HASH;
 }
 
 inline static int mpz_num_bytes(const mpz_t op)

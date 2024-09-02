@@ -1,5 +1,0 @@
-// Filled in by the build system
-
-#pragma once
-
-#cmakedefine HAVE_ENDIAN_H

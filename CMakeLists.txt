@@ -285,7 +285,6 @@ endif()
 if(NOT USE_LUAJIT)
 	add_subdirectory(lib/bitop)
 endif()
-add_subdirectory(lib/sha256)
 add_subdirectory(lib/HACL-star)
 
 if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)

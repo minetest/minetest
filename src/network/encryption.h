@@ -186,7 +186,7 @@ namespace NetworkEncryption
 		AESChannelKeys&  server_send_keys,
 		HandshakeDigest& srp_signing_key);
 
-	[[nodiscard]] bool get_identity_for_srp(NetworkEncryption::HandshakeDigest handshake_digest,
+	void get_identity_for_srp(NetworkEncryption::HandshakeDigest handshake_digest,
 		std::string_view name,
 		std::string& identity_value_out);
 
@@ -195,10 +195,10 @@ namespace NetworkEncryption
 		const ECDHEPublicKey& other_pub_key,
 		u8(&shared_secret)[NET_ECDHE_SECRET_LEN]);
 
-	[[nodiscard]] bool hmac_sha256(const u8* key, size_t key_length, const u8* msg, size_t msg_length, u8(&output)[32]);
+	void hmac_sha256(const u8* key, size_t key_length, const u8* msg, size_t msg_length, u8(&output)[32]);
 
-	[[nodiscard]] bool hkdf_extract_sha256(const u8* data, size_t length, u8(&output)[32], const std::string_view& salt = "");
-	[[nodiscard]] bool hkdf_expand_sha256(const u8(&input)[32], const std::string_view& info, u8* output, size_t length);
+	void hkdf_extract_sha256(const u8* data, size_t length, u8(&output)[32], const std::string_view& salt = "");
+	void hkdf_expand_sha256(const u8(&input)[32], const std::string_view& info, u8* output, size_t length);
 
 	[[nodiscard]] bool encrypt_aes_128_gcm(const u8(&key)[16], const u8(&iv)[12], const Buffer<u8>& plaintext, u8* encrypted_data, size_t encrypted_buf_length);
 	[[nodiscard]] bool decrypt_aes_128_gcm(const u8 (&key)[16], const u8(&iv)[12], Buffer<u8> &encrypted_data);

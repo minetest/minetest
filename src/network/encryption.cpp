@@ -2,8 +2,8 @@
 #include "settings.h"
 #include "util/base64.h"
 #include <openssl/evp.h>
-#include <openssl/kdf.h>
-#include <openssl/hmac.h>
+#include "Hacl_HMAC.h"
+#include "Hacl_HKDF.h"
 #include <optional>
 
 namespace NetworkEncryption
@@ -22,41 +22,25 @@ namespace NetworkEncryption
 		}
 
 		u8 root_key[32] = {};
-		if (!hkdf_extract_sha256(shared_secret, sizeof(shared_secret), root_key))
-		{
-			errorstream << "derive_subkeys(): failed to derive root key" << std::endl;
-			return false;
-		}
+		hkdf_extract_sha256(shared_secret, sizeof(shared_secret), root_key);
 
-		if (!hkdf_expand_sha256(
+		hkdf_expand_sha256(
 			root_key,
 			"minetest-client-channel-send-key",
 			&client_send_keys.keys[0][0],
-			CHANNEL_COUNT * NET_AES_KEY_SIZE))
-		{
-			errorstream << "derive_subkeys(): failed to derive client sender keys" << std::endl;
-			return false;
-		}
+			CHANNEL_COUNT * NET_AES_KEY_SIZE);
 
-		if (!hkdf_expand_sha256(
+		hkdf_expand_sha256(
 			root_key,
 			"minetest-server-channel-send-key",
 			&server_send_keys.keys[0][0],
-			CHANNEL_COUNT * NET_AES_KEY_SIZE))
-		{
-			errorstream << "derive_subkeys(): failed to derive server sender keys" << std::endl;
-			return false;
-		}
+			CHANNEL_COUNT * NET_AES_KEY_SIZE);
 
-		if (!hkdf_expand_sha256(
+		hkdf_expand_sha256(
 			root_key,
 			"minetest-handshake-digest-for-srp",
 			handshake_digest.digest,
-			sizeof(handshake_digest.digest)))
-		{
-			errorstream << "derive_subkeys(): failed to derive handshake digest for SRP" << std::endl;
-			return false;
-		}
+			sizeof(handshake_digest.digest));
 
 #ifndef NDEBUG
 		if (g_settings->getBool("secure.dump_network_encryption_key"))
@@ -97,16 +81,15 @@ namespace NetworkEncryption
 		return true;
 	}
 
-	[[nodiscard]] bool get_identity_for_srp(NetworkEncryption::HandshakeDigest handshake_digest,
+	void get_identity_for_srp(NetworkEncryption::HandshakeDigest handshake_digest,
 		std::string_view name,
 		std::string& identity_value_out) {
 		u8 hmac_output[32] = {};
-		if (!hmac_sha256(
+		hmac_sha256(
 			handshake_digest.digest,
 			sizeof(handshake_digest.digest),
 			reinterpret_cast<const u8*>(name.data()), name.size(),
-			hmac_output))
-			return false;
+			hmac_output);
 
 		std::string_view hmac_output_view = std::string_view(reinterpret_cast<char*>(hmac_output), sizeof(hmac_output));
 
@@ -116,15 +99,25 @@ namespace NetworkEncryption
 		ss << base64_encode(hmac_output_view);
 
 		identity_value_out = ss.str();
-
-		return true;
 	}
 
 	/*
-	* Everything below this point is code for interfacing with openssl
+	* Everything below this point is code for interfacing with HACL*
 	*/
 
-#pragma region OPENSSL_IMPL
+#pragma region HACL_IMPL
+	void hmac_sha256(const u8* key, size_t key_length, const u8* msg, size_t msg_length, u8(&output)[32]) {
+		Hacl_HMAC_compute_sha2_256(output, const_cast<u8*>(key), key_length, const_cast<u8*>(msg), msg_length);
+	}
+
+	void hkdf_extract_sha256(const u8* data, size_t length, u8(&output)[32], const std::string_view& salt) {
+		Hacl_HKDF_extract_sha2_256(const_cast<u8*>(data), (u8*)salt.data(), salt.size(), output, sizeof(output));
+	}
+
+	void hkdf_expand_sha256(const u8(&input)[32], const std::string_view& info, u8* output, size_t length) {
+		Hacl_HKDF_expand_sha2_256(output, const_cast<u8*>(input), sizeof(input), (u8*)info.data(), info.size(), length);
+	}
+
 
 	[[nodiscard]] bool ecdh_calculate_shared_secret(const ECDHEKeyPair& our_keys,
 		const ECDHEPublicKey& other_pub_key,
@@ -186,154 +179,6 @@ namespace NetworkEncryption
 
 		return true;
 	}
-
-	bool hmac_sha256(const u8* key, size_t key_length, const u8* msg, size_t msg_length, u8(&output)[32]) {
-		static_assert(EVP_MAX_MD_SIZE >= 32);
-
-		u8 md_out[EVP_MAX_MD_SIZE];
-		unsigned int md_out_len = {};
-		if (!HMAC(EVP_sha256(), key, key_length, msg, msg_length, md_out, &md_out_len)
-			|| md_out_len != 32) {
-			return false;
-		}
-
-		memcpy(output, md_out, sizeof(output));
-		return true;
-	}
-
-#if OPENSSL_VERSION_NUMBER >= 0x30000000L
-	typedef std::unique_ptr<EVP_KDF_CTX, decltype(&EVP_KDF_CTX_free)> kdf_context_t;
-
-	static bool hkdf_sha256_derive_internal(const u8* input, size_t input_length, u8* output, size_t output_length,
-		bool is_expand, const std::string_view &info, const std::string_view& salt)
-	{
-		std::unique_ptr<EVP_KDF, decltype(&EVP_KDF_free)> kdf = { EVP_KDF_fetch(NULL, "hkdf", NULL), EVP_KDF_free };
-		if (kdf == NULL)
-		{
-			errorstream << "hkdf_sha256_derive_internal(): failed to fetch HKDF" << std::endl;
-			return false;
-		}
-
-		std::unique_ptr<EVP_KDF_CTX, decltype(&EVP_KDF_CTX_free)> kctx = { EVP_KDF_CTX_new(kdf.get()), EVP_KDF_CTX_free };
-		if (!kctx)
-		{
-			errorstream << "hkdf_sha256_derive_internal(): failed to create HKDF context" << std::endl;
-			return false;
-		}
-
-		// makes clang happier
-		char digest_type[] = "sha256";
-
-		OSSL_PARAM params[6] = {}, * p = params;
-		*p++ = OSSL_PARAM_construct_utf8_string("digest", digest_type, (size_t)7);
-		// openssl doesn't do strong typing
-		// this is safe
-		*p++ = OSSL_PARAM_construct_octet_string("key", const_cast<u8*>(input), input_length);
-		int mode = is_expand ? EVP_KDF_HKDF_MODE_EXPAND_ONLY : EVP_KDF_HKDF_MODE_EXTRACT_ONLY;
-		*p++ = OSSL_PARAM_construct_int("mode", &mode);
-		if (info.length() != 0 && is_expand)
-		{
-			*p++ = OSSL_PARAM_construct_octet_string("info", const_cast<char*>(info.data()), info.length());
-		}
-
-		if (salt.length() != 0 && !is_expand)
-		{
-			*p++ = OSSL_PARAM_construct_octet_string("salt", const_cast<char*>(salt.data()), salt.length());
-		}
-
-		if (1 != EVP_KDF_derive(kctx.get(), output, output_length, params))
-		{
-			errorstream << "hkdf_sha256_derive_internal(): failed to derive output key" << std::endl;
-			return false;
-		}
-
-		return true;
-	}
-
-	bool hkdf_extract_sha256(const u8* data, size_t length, u8(&output)[32], const std::string_view& salt)
-	{
-		return hkdf_sha256_derive_internal(data, length, output, sizeof(output), false, "", salt);
-	}
-
-	bool hkdf_expand_sha256(const u8(&input)[32], const std::string_view& info, u8* output, size_t length)
-	{
-		return hkdf_sha256_derive_internal(input, sizeof(input), output, length, true, info, "");
-	}
-#else
-
-	bool hkdf_extract_sha256(const u8* data, size_t length, u8(&output)[32], const std::string_view& salt)
-	{
-		const u8* salt_ptr = reinterpret_cast<const u8 *>(salt.data());
-		size_t salt_length = salt.size();
-		if (salt_length == 0)
-		{
-			static constexpr u8 static_salt[32] = {};
-
-			salt_ptr = static_salt;
-			salt_length = sizeof(static_salt);
-		}
-
-		return hmac_sha256(salt_ptr, salt_length, data, length, output);
-	}
-
-	bool hkdf_expand_sha256(const u8(&prk)[32], const std::string_view& info, u8* output, size_t length)
-	{
-		// fast return if no bytes were requested
-		// prints to warning stream as this is a misuse of the API
-		if (length == 0)
-		{
-			warningstream << "hkdf_expand_sha256(): got called with zero bytes of output requested, this is unexpected" << std::endl;
-			return true;
-		}
-
-		std::vector<u8> hmac_message;
-		hmac_message.reserve(32 + info.size() + 1);
-
-		u8 i = 0;
-		size_t bytes_generated = 0;
-		u8 last_hmac_output[32] = {};
-
-		while (bytes_generated < length)
-		{
-			if (i == std::numeric_limits<u8>::max())
-			{
-				// wipe output as it's incomplete
-				memset(output, 0, length);
-
-				errorstream << "hkdf_expand_sha256(): Too many bytes requested, unable to comply" << std::endl;
-				return false;
-			}
-
-			i++;
-			/* build message for HMAC */
-			if (i != 1)
-			{
-				hmac_message.insert(std::end(hmac_message), std::begin(last_hmac_output), std::end(last_hmac_output));
-			}
-			hmac_message.insert(std::end(hmac_message), info.begin(), info.end());
-			SANITY_CHECK(i != 0); // should never be zero, as we check for overflow at the start of this block.
-			hmac_message.push_back(i);
-
-			if (!hmac_sha256(prk, sizeof(prk), hmac_message.data(), hmac_message.size(), last_hmac_output))
-			{
-				// wipe output as it's incomplete
-				memset(output, 0, length);
-
-				errorstream << "hkdf_expand_sha256(): call to hmac_sha256 failed, unable to continue";
-
-				return false;
-			}
-
-			size_t length_left = length - bytes_generated;
-
-			memcpy(&output[bytes_generated], last_hmac_output, std::min(length_left, sizeof(last_hmac_output)));
-
-			bytes_generated += sizeof(last_hmac_output);
-		}
-
-		return true;
-	}
-#endif
 
 	bool encrypt_aes_128_gcm(const u8(&key)[16], const u8(&iv)[12], const Buffer<u8>& plaintext, u8 *encrypted_data, size_t encrypted_buf_length)
 	{
