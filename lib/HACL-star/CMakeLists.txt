@@ -1,7 +1,7 @@
 set(HACL_MAIN_SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/dist/msvc-compatible CACHE STRING "Main HACL* source path")
 set(HACL_KARAMEL_SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/dist/karamel CACHE STRING "Karamel source path")
 
-set(HACL_SRC
+set(HACL_C_SRC
 	${HACL_MAIN_SRC_PATH}/Lib_Memzero0.c
 	${HACL_MAIN_SRC_PATH}/Lib_PrintBuffer.c 
 	${HACL_MAIN_SRC_PATH}/Lib_RandomBuffer_System.c
@@ -54,20 +54,29 @@ endif()
 
 set(HACL_TARGET ${HACL_PLATFORM}-${HACL_ABI})
 
-set(HACL_ASM_SRC,
-	${HACL_MAIN_SRC_PATH}/sha256-${HACL_TARGET}.asm,
-	${HACL_MAIN_SRC_PATH}/curve25519-${HACL_TARGET}.asm,
-	${HACL_MAIN_SRC_PATH}/cpuid-${HACL_TARGET}.asm,
+set(HACL_ASM_SRC
+	${HACL_MAIN_SRC_PATH}/sha256-${HACL_TARGET}.asm
+	${HACL_MAIN_SRC_PATH}/curve25519-${HACL_TARGET}.asm
+	${HACL_MAIN_SRC_PATH}/cpuid-${HACL_TARGET}.asm
 	${HACL_MAIN_SRC_PATH}/aesgcm-${HACL_TARGET}.asm
 )
 
-add_library(HACL-star STATIC 
-	${HACL_SRC}
+set(HACL_SRC
+	${HACL_C_SRC}
 	$<$<BOOL:${HACL_HAS_VALE}>:${HACL_ASM_SRC}>)
+
+add_library(HACL-star STATIC 
+	${HACL_SRC})
 
 set_source_files_properties(${HACL_SRC} PROPERTIES LANGUAGE C)
 if (HACL_HAS_VALE)
-	set_source_files_properties(${HACL_ASM_SRC} PROPERTIES LANGUAGE ASM)
+	if (MSVC)
+		enable_language(C ASM_MASM)
+		set_source_files_properties(${HACL_ASM_SRC} PROPERTIES LANGUAGE ASM_MASM)
+	else()
+		enable_language(C ASM)
+		set_source_files_properties(${HACL_ASM_SRC} PROPERTIES LANGUAGE ASM)
+	endif()
 	target_compile_definitions(HACL-star PRIVATE HACL_CAN_COMPILE_VALE)
 endif()
 
