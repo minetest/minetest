@@ -1,0 +1,11 @@
+LIBRARY libkrmllib
+
+EXPORTS
+  FStar_UInt64_eq_mask
+  FStar_UInt64_gte_mask
+  FStar_UInt32_eq_mask
+  FStar_UInt32_gte_mask
+  FStar_UInt16_eq_mask
+  FStar_UInt16_gte_mask
+  FStar_UInt8_eq_mask
+  FStar_UInt8_gte_mask

@@ -1,0 +1,526 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+set -e
+
+if ! [ -f libintvector.h ]; then
+  echo "This script is intended to be run from dist/foo."
+  exit 1
+fi
+
+if [[ $CC == "" ]]; then
+  CC=cc
+fi
+
+my_mktemp_dir () {
+  local name=$1
+  # Note: --suffix is not POSIX, doesn't work on OSX.
+  # Also on OSX, the XXXXXXX pattern cannot be followed by anything else.
+  local dir=$(mktemp -d /tmp/$name-XXXXXXX)
+  if [[ $dir == "" ]]; then
+    # Note: -p doesn't work on OSX, all tests will fail in case there is no
+    # permission to write to /tmp
+    local dir=$(mktemp -d -p . $name-XXXXXXX)
+  fi
+  echo $dir
+}
+
+my_mktemp_c () {
+  local name=$1
+  local dir=$(my_mktemp_dir $name)
+  local file=$dir/$name.c
+  echo $file
+}
+
+# Helpers to help do feature or bug detection
+# -------------------------------------------
+
+detect_ocamlfind () {
+  package=$1
+  loc=$(ocamlfind query $package)
+  r=$?
+  if [[ $r == 0 ]]; then
+    echo "... found $package in $loc"
+  else
+    echo "OCaml package $package not found"
+  fi
+  return $r
+}
+
+detect_ocaml () {
+  # Detect ocamlfind
+  loc=$(which ocamlfind)
+  r=$?
+  if [[ $r == 0 ]]; then
+    echo "... found ocamlfind in $loc"
+  else
+    echo "ocamlfind not found"
+    return 1
+  fi
+  # Detect packages
+  for p in ctypes; do
+    detect_ocamlfind $p || return 1
+  done
+}
+
+check_no_bug81300 () {
+  if [[ "$cross_build" == "1" ]]; then
+    # We don't want to build anything with march=native
+    return 0
+  fi
+  # Perform the check only if lib_intrinsics.h is present. In practice,
+  # lib_intrinsics.h is present in all the directories which contain libintvector.h,
+  # but mozilla. If lib_intrinsics.h is not present, assume there is no bug and
+  # return success.
+  if [ -f lib_intrinsics.h ]; then
+  local dir=$(my_mktemp_dir testbug81300)
+  local file=$dir/testbug81300.c
+  local out=$dir/testbug81300.out
+  cat > $file <<EOF
+#include <inttypes.h>
+#include <stdio.h>
+#include <string.h>
+#include <lib_intrinsics.h>
+uint64_t add4_variables(uint64_t *x, uint64_t y0) {
+  uint64_t *r2 = x + 2;
+  uint64_t *r3 = x + 3;
+  uint64_t cc = Lib_IntTypes_Intrinsics_add_carry_u64(0, x[0], y0, x);
+  uint64_t cc1 = Lib_IntTypes_Intrinsics_add_carry_u64(cc, 1, 0, x);
+  uint64_t cc2 = Lib_IntTypes_Intrinsics_add_carry_u64(1, 0, 0, r2);
+  uint64_t cc3 = Lib_IntTypes_Intrinsics_add_carry_u64(cc2, x[3], y0, r3);
+  return cc3;
+}
+uint64_t sub4(uint64_t *x, uint64_t *y, uint64_t *result) {
+  uint64_t *r3 = result + 3;
+  uint64_t cc3 = Lib_IntTypes_Intrinsics_sub_borrow_u64(1, x[3], y[3], r3);
+  return cc3;
+}
+void p256_sub(uint64_t *arg1, uint64_t *arg2, uint64_t *out) {
+  uint64_t t = sub4(arg1, arg2, out);
+  uint64_t c = add4_variables(out, t);
+  (void)c;
+}
+int main() {
+  uint64_t *a = (uint64_t *) malloc(sizeof(uint64_t) * 4);
+  memset(a, 0, 32);
+  uint64_t *b = (uint64_t *) malloc(sizeof(uint64_t) * 4);
+  memset(b, 0, 32);
+  uint64_t *c = (uint64_t *) malloc(sizeof(uint64_t) * 4);
+  memset(c, 0, 32);
+  a[3] = 16561854653415423667ul;
+  b[3] = 16275405352713846784ul;
+  p256_sub(a, b, c);
+  printf("result == %"PRIu64" \n", c[3]);
+  return 0;
+}
+EOF
+  $CC $CROSS_CFLAGS -I. -I../karamel/include -I../karamel/krmllib/dist/minimal -DHACL_CAN_COMPILE_INTRINSICS -march=native -O3 $file -o $out && $out > $out.test
+  $CC $CROSS_CFLAGS -I. -I../karamel/include -I../karamel/krmllib/dist/minimal -march=native -O3 $file -o $out && $out > $out.ref
+  diff $out.test $out.ref
+  else
+    echo "... WARNING: lib_intrinsics.h is missing: we can't test whether bug 81300 is present or not and assume it is not."
+    return 0
+  fi
+}
+
+detect_uint128 () {
+  local file=$(my_mktemp_c testint128)
+  echo "unsigned __int128 x = 0;" > $file
+  $CC $CROSS_CFLAGS -c $file -o /dev/null
+}
+
+detect_broken_xcode () {
+  # For posterity, here are a list of things that don't work
+  # - checking if cc will compile curve25519-inline.h
+  # - checking if cc will compile fsqr2 as is
+  # - checking if cc will compile fsqr2 marked as extern
+  # - checking if cc will compile fsqr2 as is with an extern caller in the file to
+  # prevent it from being eliminated
+  #
+  # In short, I couldn't figure out a minimal testcase for the error:
+  #   ./curve25519-inline.h:595:5: error: inline assembly requires more registers than available
+  #
+  # Furthermore, this error only seems to happen on the exact config Travis
+  # uses.
+  # - Installing XCode 10.0 (for MacOS 10.14, Catalina) does not give me the right LLVM build
+  # - Installing XCode 10.1 (for MacOS 10.14, Catalina) does not give me the right LLVM build
+  # - Installing XCode 10.3 (for MacOS 10.14, Catalina) bails because my OSX is too recent
+  $CC --version | grep -q clang-1000.11.45.5
+}
+
+check_explicit_bzero () {
+  local file=$(my_mktemp_c testbzero)
+  cat > $file <<EOF
+#include <string.h>
+
+int main () {
+  unsigned char *block[32] = { 0 };
+  explicit_bzero(block, 32);
+  return 0;
+}
+EOF
+  $CC $CROSS_CFLAGS -Werror -c $file -o /dev/null
+}
+
+# Target platform detection
+# -------------------------
+
+detect_x64 () {
+  [[ $target_arch == "x86_64" ]] || [[ $target_arch == "amd64" ]]
+}
+
+detect_x86 () {
+  [[ $target_arch == "i386" ]] || [[ $target_arch == "i686" ]] || \
+  [[ $target_arch == "i86pc" ]] || [[ $target_arch == "ia32" ]]
+}
+
+detect_arm () {
+  # On Raspberry pi, uname -m is armv6l or armv7l so we need to cut!
+  [[ $(echo $target_arch | cut -c 1-3) == "arm" ]] || \
+  [[ $target_arch == "aarch64" ]]
+}
+
+detect_arm_neon () {
+  local file=$(my_mktemp_c testvec128)
+  cat > $file <<EOF
+#include <libintvector.h>
+
+int main () {
+  uint8_t block[32] = { 0 };
+  Lib_IntVector_Intrinsics_vec128 b1 = Lib_IntVector_Intrinsics_vec128_load32_le(block);
+  Lib_IntVector_Intrinsics_vec128 b2 = Lib_IntVector_Intrinsics_vec128_load32_le(block + 16);
+  Lib_IntVector_Intrinsics_vec128 test = Lib_IntVector_Intrinsics_vec128_interleave_high64(b1, b2);
+  return 0;
+}
+EOF
+  if [[ $target_arch == "aarch64" ]] && [[ $target_abi == "darwin" ]]; then
+    $CC $CROSS_CFLAGS -DHACL_CAN_COMPILE_VEC128 -I. -c $file -o /dev/null
+  else
+    $CC $CROSS_CFLAGS -DHACL_CAN_COMPILE_VEC128 -I. -march=armv8-a+simd -c $file -o /dev/null
+  fi
+}
+
+# We only detect the 64-bit version of the SystemZ architecture (s390x).
+detect_systemz () {
+  [[ $target_arch == "s390x" ]]
+}
+
+# We only detect the 64-bit version of the PowerPC architecture
+detect_powerpc () {
+  [[ $target_arch == "ppc64le" ]]
+}
+
+
+# Usage info
+# ----------
+
+show_help () {
+  printf "\nUsage: configure -target <triple>\n\n"
+  printf "This script configures HACL/Evercrypt. You can specify the following options:\n\n"
+  printf "    -target         Specify the target triple for the build. This follows the\n"
+  printf "                    Clang target triple convention.\n"
+  printf "                    Details: https://clang.llvm.org/docs/CrossCompilation.html\n"
+  printf "                    Currently supported triples are:\n"
+  printf "                    * aarch64-none-linux-android\n"
+  printf "                    * aarch64-none-linux-gnu\n"
+  printf "                    * aarch64-apple-darwin\n"
+  printf "                    * aarch64-apple-ios\n"
+  printf "                    * x86_64-apple-ios-simulator\n"
+  printf "    --disable-bzero Do not use explicit_bzero (binary will work with an old GLIBC)\n"
+  printf "    --enable-power9 Enable Power ISA v3.0 instruction set for PowerPC architecture\n"
+  printf "\n"
+}
+
+# Main auto-detection
+
+echo -n > Makefile.config
+echo -n > config.h
+
+# Default arguments
+disable_bzero=0
+enable_power9=0
+cross_build=0
+
+# Parse command line arguments.
+all_args=("$@")
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -target) build_target="$2"; shift ;;
+        --disable-bzero) disable_bzero=1 ;;
+        --enable-power9) enable_power9=1 ;;
+        --help) show_help; exit 0 ;;
+        *) show_help; exit 2 ;;
+    esac
+    shift
+done
+
+# We need to have the following to decide what to build and what not.
+# * build_target: the llvm target triplet, e.g. armv7a-none-eabi
+# This is being decomposed into the following information.
+# * target_arch: the target architecture, e.g. aarch64, arm, x86_64, i386
+# * target_sys: the target system, e.g. none, linux, win32, darwin
+# * target_abi: the target abi, e.g. eabi, gnu, android, macho
+
+# If the user provided a build target via a command-line option, fill
+# target_{arch,sys,abi} accordingly; otherwise, query the host via uname for
+# these parameteres and assume we don't do cross-compilation.
+if [ ! -z "$build_target" ]; then
+  cross_build=1
+  echo "Doing cross build for $build_target. Make sure that your toolchain is configured properly."
+  if [[ "$build_target" == "aarch64-none-linux-android" ]]; then
+    # NOTE: We assume that the Android environment is set up correctly.
+    #       Make sure that `crtbegin_so.o` and `crtend_so.o` can be found.
+
+    if [ -z $NDK ]; then
+      echo "Compiling for aarch64-none-linux-android requires an NDK toolchain."
+      echo "Then please set at least NDK appropriately. SYSROOT and NDK_TOOLCHAIN might be necessary as well."
+      echo "Get your toolchain here: https://developer.android.com/ndk/downloads/"
+      exit 1
+    fi
+    if [[ $SYSROOT == "" ]]; then
+      SYSROOT="$NDK/toolchains/llvm/prebuilt/darwin-x86_64/sysroot"
+    fi
+    if [[ $NDK_TOOLCHAIN == "" ]]; then
+      NDK_TOOLCHAIN="$NDK/toolchains/llvm/prebuilt/darwin-x86_64"
+    fi
+
+    target_arch="aarch64"
+    target_sys="Linux"
+    target_abi="android"
+    CROSS_TARGET="-target $build_target"
+    CROSS_SYSROOT="--sysroot=$SYSROOT"
+    CROSS_INCLUDES="-I$SYSROOT/usr/include/"
+
+    # Set compiler
+    CC="$NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang"
+    echo "CC=$CC" >> Makefile.config
+  elif [[ "$build_target" == "aarch64-none-linux-gnu" ]]; then
+    if [ -z $TOOLCHAIN ]; then
+      echo "Compiling for aarch64-none-linux-gnu-gcc requires a GCC toolchain."
+      echo "This probably only works on Windows and Linux."
+      echo "Get your toolchain here: https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-a/downloads"
+      echo "And then set TOOLCHAIN appropriately."
+      exit 1
+    fi
+
+    target_arch="aarch64"
+    target_sys="Linux"
+    target_abi="gnu"
+
+    # Set compiler
+    CC="$TOOLCHAIN/bin/aarch64-none-linux-gnu-gcc"
+    echo "CC=$CC" >> Makefile.config
+    # Using GCC here doesn't require setting anything else.
+  elif [[ "$build_target" == "ia32" ]]; then
+    # Cross compiling for 32-bit Intel (presumably from x64 Intel).
+    CROSS_TARGET="-m32"
+    CROSS_LDLAGS="-m32"
+    target_arch="ia32"
+    target_sys=$(uname)
+    target_abi="native"
+    echo "MARCH = ia32" >> Makefile.config
+  elif [[ "$build_target" == "aarch64-apple-darwin" ]]; then
+    # Cross compiling for aarch64-apple-darwin (presumably on x86_64-apple-darwin).
+    target_arch="aarch64"
+    target_sys="apple"
+    target_abi="darwin"
+    # See https://developer.apple.com/documentation/apple-silicon/building-a-universal-macos-binary
+    CROSS_TARGET="-target arm64-apple-macos11"
+  elif [[ "$build_target" == "aarch64-apple-ios" ]]; then
+    # Cross compiling for aarch64-apple-ios
+    # (presumably on x86_64-apple-darwin or aarch64-apple-darwin).
+    target_arch="aarch64"
+    target_sys="apple"
+    target_abi="ios"
+    CROSS_TARGET="-target arm64-apple-ios13.0"
+    CROSS_SYSROOT="-isysroot $(xcrun --sdk iphoneos --show-sdk-path) -arch arm64"
+    # CROSS_INCLUDES="-I$SYSROOT/usr/include/"
+  elif [[ "$build_target" == "x86_64-apple-ios-simulator" ]]; then
+    # Cross compiling for x86_64-apple-ios (emulator only)
+    # (presumably on x86_64-apple-darwin).
+    target_arch="x86_64"
+    target_sys="apple"
+    target_abi="ios-simulator"
+    CROSS_TARGET="-target x86_64-apple-ios-simulator -mios-simulator-version-min=13.0"
+    CROSS_SYSROOT="-isysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
+  else
+    show_help
+    exit 0
+  fi
+  CROSS_CFLAGS="$CROSS_TARGET $CROSS_SYSROOT $CROSS_INCLUDES"
+  echo "CFLAGS += $CROSS_CFLAGS" >> Makefile.config
+  echo "LDFLAGS += $CROSS_LDLAGS" >> Makefile.config
+else
+  target_arch=$(uname -m)
+  target_sys=$(uname)
+  target_abi="native"
+fi
+
+if [[ $target_arch == "aarch64" ]]; then
+  # Set UNAME and MARCH when cross-compiling
+  echo "UNAME = Linux" >> Makefile.config
+  echo "MARCH = aarch64" >> Makefile.config
+fi
+
+compile_vec128=false
+compile_vec256=false
+compile_vale=false
+compile_inline_asm=false
+compile_intrinsics=false
+
+echo "CFLAGS ?=" >> Makefile.config
+
+if detect_arm; then
+  echo "... detected ARM platform"
+  echo "TARGET_ARCHITECTURE = ARM" >> Makefile.config
+  if detect_arm_neon; then
+    echo "#define TARGET_ARCHITECTURE TARGET_ARCHITECTURE_ID_ARM8" >> config.h
+    echo "... $build_target supports 128-bit NEON"
+    compile_vec128=true
+    echo "... $CC $CROSS_CFLAGS can cross-compile to ARM64 with SIMD"
+    echo "CFLAGS_128 = -march=armv8-a+simd" >> Makefile.config
+  else
+    echo "#define TARGET_ARCHITECTURE TARGET_ARCHITECTURE_ID_ARM7" >> config.h
+  fi
+fi
+
+if detect_x86; then
+  # Just print information: none of the above build options are supported on x86
+  echo "... detected x86 platform"
+  echo "TARGET_ARCHITECTURE = x86" >> Makefile.config
+  echo "#define TARGET_ARCHITECTURE TARGET_ARCHITECTURE_ID_X86" >> config.h
+  # TODO: can probably detect intrinsics here too and try to enable them!
+fi
+
+if detect_x64; then
+  echo "... detected x64 platform"
+  echo "TARGET_ARCHITECTURE = x64" >> Makefile.config
+  echo "#define TARGET_ARCHITECTURE TARGET_ARCHITECTURE_ID_X64" >> config.h
+  echo "... $build_target supports compilation of 128-bit and 256-bit AVX/AVX2"
+  compile_vec128=true
+  echo "CFLAGS_128 = -mavx" >> Makefile.config
+  compile_vec256=true
+  echo "CFLAGS_256 = -mavx -mavx2" >> Makefile.config
+  # x64 always supports Vale -- this configure script assumes a GCC-like
+  # compiler, meaning that in theory inline assembly should work (rather than
+  # the external linking) BUT some versions of xcode are irremediably broken and
+  # fail with a register allocator error
+  # Note: MSVC compilers don't support inline GCC assembly and are expected to
+  # use their own build system
+  echo "... $build_target supports vale"
+  compile_vale=true
+  if detect_broken_xcode; then
+    echo "found broken XCode version, known to refuse to compile our inline ASM, disabling "
+  else
+    echo "... not using known buggy Apple LLVM build"
+    echo "... $build_target supports our inline ASM"
+    compile_inline_asm=true
+  fi
+fi
+
+if detect_x86 || detect_x64; then
+  if ! check_no_bug81300; then
+    echo "found broken GCC < 5.5 with bug 81300, disabling subborrow + addcarry"
+  else
+    compile_intrinsics=true
+    echo "... using a non-buggy GCC"
+  fi
+fi
+
+if detect_systemz; then
+  echo "... detected z platform"
+  echo "TARGET_ARCHITECTURE = SystemZ" >> Makefile.config
+  echo "#define TARGET_ARCHITECTURE TARGET_ARCHITECTURE_ID_SYSTEMZ" >> config.h
+  echo "... $build_target supports 128-bit z VSX"
+  compile_vec128=true
+  echo "CFLAGS_128 = -m64 -mzarch -mvx -mzvector -march=native" >> Makefile.config
+  # In the case of IBMz, some of the vectorized functions are defined as
+  # inline static rather than as macros, meaning we need to compile all
+  # the files with the vector compilation options. Note that this is not
+  # a problem because we don't do cross-compilation for IBMz. Also note
+  # that we don't have support for vec256 for IBMz.
+  echo "CFLAGS += \$(CFLAGS_128)" >> Makefile.config
+fi
+
+# TODO: try to enable the intrinsics
+if detect_powerpc; then
+  echo "... detected PowerPC platform"
+  echo "... $build_target supports 128-bit Power VSX"
+  echo "TARGET_ARCHITECTURE = PowerPC64" >> Makefile.config
+  echo "#define TARGET_ARCHITECTURE TARGET_ARCHITECTURE_ID_POWERPC64" >> config.h
+  compile_vec128=true
+  if [[ "$enable_power9" == "1" ]]; then
+    echo "... enable Power ISA v3.0 instruction set"
+    echo "CFLAGS_128 = -mcpu=power9" >> Makefile.config
+  fi
+fi
+
+if $compile_intrinsics; then
+  echo "$build_target supports _addcarry_u64"
+  echo "#define HACL_CAN_COMPILE_INTRINSICS 1" >> config.h
+fi
+
+if ! $compile_vale; then
+  # All reference to Vale symbols are properly guarded in the EverCrypt layer by
+  # ifdef TARGET_X64 -- with the exception of Curve25519, which needs to be
+  # disabled by the build system since it contains unguarded references to Vale
+  # symbols.
+  echo "$build_target does not support x64 assembly, disabling Curve64"
+  echo "BLACKLIST += Hacl_Curve25519_64.c $(ls Hacl_HPKE_Curve64_*.c | xargs)" >> Makefile.config
+  echo "$build_target does not support legacy vale stubs"
+  echo "BLACKLIST += evercrypt_vale_stubs.c" >> Makefile.config
+else
+  echo "#define HACL_CAN_COMPILE_VALE 1" >> config.h
+fi
+
+if $compile_inline_asm; then
+    echo "#define HACL_CAN_COMPILE_INLINE_ASM 1" >> config.h
+fi
+
+if ! $compile_vec128; then
+  echo "$CC $CROSS_CFLAGS cannot compile 128-bit vector arithmetic, disabling"
+  echo "BLACKLIST += $(ls *CP128*.c *_128.c *_Vec128.c *_Simd128.c | xargs)" >> Makefile.config
+  echo "#define Lib_IntVector_Intrinsics_vec128 void *" >> config.h
+else
+  echo "#define HACL_CAN_COMPILE_VEC128 1" >> config.h
+fi
+
+if ! $compile_vec256; then
+  echo "$build_target does not support 256-bit arithmetic"
+  echo "BLACKLIST += $(ls *CP256*.c *_256.c *_Vec256.c *_Simd256.c | xargs)" >> Makefile.config
+  echo "#define Lib_IntVector_Intrinsics_vec256 void *" >> config.h
+else
+  echo "#define HACL_CAN_COMPILE_VEC256 1" >> config.h
+fi
+
+if ! detect_uint128; then
+  # Explicitly not supporting compilation with MSVC, which would entail not
+  # defining KRML_VERIFIED_UINT128.
+  echo "$CC $CROSS_CFLAGS does not support unsigned __int128 -- using a fallback verified implementation"
+  echo "CFLAGS += -DKRML_VERIFIED_UINT128" >> Makefile.config
+else
+  echo "#define HACL_CAN_COMPILE_UINT128 1" >> config.h
+fi
+
+if [[ $target_sys == "Linux" ]]; then
+  if [[ "$disable_bzero" == "1" ]]; then
+    echo "disabling the use of explicit_bzero"
+    echo "#define LINUX_NO_EXPLICIT_BZERO" >> config.h
+  elif check_explicit_bzero; then
+    echo "... glibc is recent enough for explicit_bzero"
+  else
+    echo "toolchain does not support explicit_bzero"
+    echo "#define LINUX_NO_EXPLICIT_BZERO" >> config.h
+  fi
+  if [[ ! $target_arch == "aarch64" ]]; then
+    echo "LDFLAGS	+= -Xlinker -z -Xlinker noexecstack -Xlinker --unresolved-symbols=report-all" >> Makefile.config
+  fi
+fi
+
+# Export the compilation flags to Makefile.config so that we can reuse them
+# in other directories, like tests
+if $compile_vec128; then echo "COMPILE_VEC128 = 1" >> Makefile.config; fi
+if $compile_vec256; then echo "COMPILE_VEC256 = 1" >> Makefile.config; fi
+if $compile_vale; then echo "COMPILE_VALE = 1" >> Makefile.config; fi
+if $compile_inline_asm; then echo "COMPILE_INLINE_ASM = 1" >> Makefile.config; fi
+if $compile_intrinsics; then echo "COMPILE_INTRINSICS = 1" >> Makefile.config; fi

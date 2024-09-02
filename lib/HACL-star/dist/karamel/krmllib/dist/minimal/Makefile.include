@@ -1,0 +1,5 @@
+USER_TARGET=libkrmllib.a
+USER_CFLAGS=
+USER_C_FILES=fstar_uint128.c
+ALL_C_FILES=
+ALL_H_FILES=FStar_UInt128.h FStar_UInt_8_16_32_64.h LowStar_Endianness.h

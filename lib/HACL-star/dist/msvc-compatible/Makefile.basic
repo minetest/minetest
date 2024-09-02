@@ -1,0 +1,56 @@
+# A basic Makefile that KaRaMeL copies in the output directory; this is not
+# guaranteed to work and will only work well for very simple projects. This
+# Makefile uses:
+# - the custom C files passed to your krml invocation
+# - the custom C flags passed to your krml invocation
+# - the -o option passed to your krml invocation
+
+include Makefile.include
+
+ifeq (,$(KRML_HOME))
+  $(error please define KRML_HOME to point to the root of your KaRaMeL git checkout)
+endif
+
+CFLAGS 	+= -I. -I $(KRML_HOME)/include -I $(KRML_HOME)/krmllib/dist/minimal
+CFLAGS 	+= -Wall -Wextra -Werror -std=c11 \
+  -Wno-unknown-warning-option \
+  -Wno-infinite-recursion \
+  -g -fwrapv -D_BSD_SOURCE -D_DEFAULT_SOURCE
+ifeq ($(OS),Windows_NT)
+CFLAGS 	+= -D__USE_MINGW_ANSI_STDIO
+else
+CFLAGS 	+= -fPIC
+endif
+CFLAGS 	+= $(USER_CFLAGS)
+
+SOURCES += $(ALL_C_FILES) $(USER_C_FILES)
+ifneq (,$(BLACKLIST))
+  SOURCES := $(filter-out $(BLACKLIST),$(SOURCES))
+endif
+OBJS 	+= $(patsubst %.c,%.o,$(SOURCES))
+
+all: $(USER_TARGET)
+
+$(USER_TARGET): $(OBJS)
+
+AR ?= ar
+
+%.a:
+	$(AR) cr $@ $^
+
+%.exe:
+	$(CC) $(CFLAGS) -o $@ $^ $(KRML_HOME)/krmllib/dist/generic/libkrmllib.a
+
+%.so:
+	$(CC) $(CFLAGS) -shared -o $@ $^
+
+%.d: %.c
+	@set -e; rm -f $@; \
+	  $(CC) -MM -MG $(CFLAGS) $< > $@.$$$$; \
+	  sed 's,\($(notdir $*)\)\.o[ :]*,$(dir $@)\1.o $@ : ,g' < $@.$$$$ > $@; \
+	  rm -f $@.$$$$
+
+include $(patsubst %.c,%.d,$(SOURCES))
+
+clean:
+	rm -rf *.o *.d $(USER_TARGET)
