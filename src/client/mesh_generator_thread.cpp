@@ -192,7 +192,7 @@ void MeshUpdateQueue::done(v3s16 pos)
 void MeshUpdateQueue::fillDataFromMapBlocks(QueuedMeshUpdate *q)
 {
 	auto mesh_grid = m_client->getMeshGrid();
-	MeshMakeData *data = new MeshMakeData(m_client->ndef(), MAP_BLOCKSIZE * mesh_grid.cell_size, m_cache_enable_shaders);
+	MeshMakeData *data = new MeshMakeData(m_client, MAP_BLOCKSIZE * mesh_grid.cell_size, m_cache_enable_shaders);
 	q->data = data;
 
 	data->fillBlockDataBegin(q->p);
