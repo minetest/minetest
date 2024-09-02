@@ -272,7 +272,7 @@ enum ToClientCommand : u16
 		u16 deployed protocol version
 		u32 supported auth methods
 		std::string unused (used to be username)
-		u8[32] echde_pub_key, server ephemeral curve25519 public key 
+		u8[32] echde_pub_key, server ephemeral curve25519 public key
 	*/
 	TOCLIENT_AUTH_ACCEPT = 0x03,
 	/*

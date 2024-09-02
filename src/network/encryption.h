@@ -27,46 +27,46 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /*
 *  Network Encryption v1
-*  
+*
 *  A traditional PKI system is not a good fit for a video game where anyone can create a server,
 *  but there are still negative privacy and security implications to sending network packets in cleartext,
 *  and a best effort should be made to avoid it.
-*  
-*  
-*  
+*
+*
+*
 *  High level overview
-*   
+*
 *   For protocol level >=54 connections a ECDHE key-exchanged is performed in TOSERVER_INIT and TOCLIENT_HELLO,
 *   after this point - assuming both the client and the server support the required protocol level - all further *reliable* network packets are encrypted.
 *   Unreliable packets are considered low value and are *not* currently encrypted. Server or client identity is not checked at this point, an active attacker
 *   could intercept the session.
-*   
+*
 *   If this is the first session for that user (e.g. registration), then this is likely the best we can do without building a PKI for Minetest.
 *   A PKI could be managed by the main server list, or could piggyback of existing HTTPS ACME PKI (e.g. LetsEncrypt).
 *   Both are viable options but would seriously increase the complexity of the implementation and/or management burden for sysadmins.
-*   
+*
 *   However most session involve a user logging into an existing account, in this case the user and server mutually authenticate using SRP,
 *   a digest of the shared secret key established in the initial handshake can be added to the state hashed for the evidence messages (M_1 and M_2)
-*   
-*   To help Lua mods make reasonable decisions with regards to security the encryption and authentication level is available via the API. 
+*
+*   To help Lua mods make reasonable decisions with regards to security the encryption and authentication level is available via the API.
 *
 *  Implementation details
 *
 *
-* 
+*
 *  Initial handshake
-* 
+*
 *   On initial handshake the client generates an ephemeral Curve25519 [1] keypair and unconditionally sends the public key to the server in TOSERVER_INIT
 *   The server checks the client protocol version and if it's >=54, it generates its own key-pair and replies to the client with its own public key.
 *   Both sides then derive a shared EC secret using the x25519 ECDH function [1], the output is passed to SHA256 to generate the root network encryption key
 *   Key-pairs are completely ephemeral and a new pair is generated for each connection.
-* 
+*
 *   root_net_key = hkdf_extract_sha256(None, x25519(otherPubKey, otherPrivateKey))
-*   
+*
 *   The "salt" could be used here for domain separation, but it's not clear how this would improve the security of the construction.
 *
 *
-* 
+*
 *  Message encryption.
 *
 *   HKDF-Expand is used to generate domain-separated per-channel reliable message encryption keys,
@@ -82,7 +82,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 *   channel_1_send_key = our_channel_keys[16..32]
 *   ...
 *
-* 
+*
 *   AES-128 in GCM mode is then used to encrypt reliable messages, with the IV generated from 64-bit counter
 *   constructed from a 16-bit seq_num counter and a 48-bit seq_num_generation counter, along with the channel ID.
 *   In the exceptionally unlikely event this counter overflows the peer is disconnected.
@@ -103,8 +103,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 *   A full 16-byte authenication tag is used.
 *
 *
-*   
-*  SRP State Hash
+*
+*  SRP
 *
 *   The cryptosystem as described above only provides confidentiality not authentication,
 *   without a PKI there's no way to verify the server is who they claim to be on initial connection.
@@ -113,11 +113,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 *   digest of the handshake in the SRP username
 *
 *   srp_net_key_digest = hkdf_expand(root_net_key, "minetest-handshake-digest-for-srp", 64)
-* 
+*
 *   I_secure = I_name|":"|Base64Encode(HMAC(I_name, srp_net_key_digest))
 *
 * Partial resistance to downgrade attacks
-* 
+*
 *   Even if a protocol downgrade attack is carried out, there is no way to convince the server the connection is secure,
 *   a server or mod may for instance not allow access to administrative commands or refuse password change requests or
 *   apply other custom security policies.
@@ -144,8 +144,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 *  connection was not intercepted by a third party.
 *  It does not demonstrate the server is the one the user *thinks* it is, while knowledge of the SRP verifier,
 *  does indicate this is most likely the server the user has an account on.
-*   
-* 
+*
+*
 *  References
 *  [1] https://datatracker.ietf.org/doc/html/rfc7748
 *  [2] https://datatracker.ietf.org/doc/html/rfc5869

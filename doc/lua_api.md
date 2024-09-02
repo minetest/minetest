@@ -5540,10 +5540,10 @@ Utilities
       formspec_version = 2,      -- supported formspec version
       lang_code = "fr",          -- Language code used for translation
 
-	  -- network encryption state: "none", "passive" or "fully_authenicated"
-	  -- Passive indicates only a ECDHE handshake was performed (e.g. initial account registration)
-	  -- Fully authenticated is set after a successful logon
-	  network_security_level = "fully_authenicated"
+      -- network encryption state: "none", "passive" or "fully_authenicated"
+      -- Passive indicates only a ECDHE handshake was performed (e.g. initial account registration)
+      -- Fully authenticated is set after a successful logon
+      network_security_level = "fully_authenicated"
 
       -- the following keys can be missing if no stats have been collected yet
       min_rtt = 0.01,            -- minimum round trip time

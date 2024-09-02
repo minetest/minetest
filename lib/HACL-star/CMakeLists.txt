@@ -74,9 +74,9 @@ set(HACL_SRC
 	${HACL_C_SRC}
 	$<$<BOOL:${HACL_HAS_VALE}>:${HACL_ASM_SRC}>)
 
-add_library(HACL-star STATIC 
+add_library(HACL-star STATIC
 	${HACL_SRC})
-	
+
 if (ANDROID)
 	target_compile_definitions(HACL-star PRIVATE LINUX_NO_EXPLICIT_BZERO)
 endif()
