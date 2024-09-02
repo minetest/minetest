@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "server.h"
-#include "networkprotocol.h"
 
 class NetworkPacket;
 // Note: don't forward-declare Server here (#14324)

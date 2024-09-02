@@ -20,7 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <string>
-#include "irrlichttypes_bloated.h"
+#include "irrlichttypes.h"
+#include "client/hud.h" // HudElementStat
 
 struct ParticleParameters;
 struct ParticleSpawnerParameters;

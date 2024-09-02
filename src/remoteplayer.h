@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "skyparams.h"
 #include "lighting.h"
+#include "network/networkprotocol.h" // session_t
 
 class PlayerSAO;
 

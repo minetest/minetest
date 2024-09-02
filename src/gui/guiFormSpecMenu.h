@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stack>
 #include <unordered_set>
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include "irr_ptr.h"
 #include "inventory.h"
 #include "inventorymanager.h"
@@ -32,8 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiInventoryList.h"
 #include "guiScrollBar.h"
 #include "guiTable.h"
-#include "network/networkprotocol.h"
-#include "client/joystick_controller.h"
 #include "util/string.h"
 #include "util/enriched_string.h"
 #include "StyleSpec.h"
@@ -45,6 +43,7 @@ class ISimpleTextureSource;
 class Client;
 class GUIScrollContainer;
 class ISoundManager;
+class JoystickController;
 
 enum FormspecFieldType {
 	f_Button,

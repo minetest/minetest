@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIImage.h>
 #include <IAnimatedMeshSceneNode.h>
 #include "client/renderingengine.h"
+#include "client/joystick_controller.h"
 #include "log.h"
 #include "client/hud.h" // drawItemStack
 #include "filesys.h"
