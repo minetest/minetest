@@ -28,17 +28,8 @@ public:
 	void runTests(IGameDef* gamedef);
 
 	void testHKDF();
-	void testAES_128_gcm_encrypt();
 	void testECKeyGen();
 	void testX25519();
-
-	void testAESSingle(
-		const u8(&key)[16],
-		const u8(&iv)[12],
-		const u8(&aaed_tag_expected)[NET_AAED_TAG_SIZE],
-		const std::vector<u8> plaintext,
-		const std::vector<u8> expected_cryptotext
-	);
 };
 
 static TestEncyption g_test_instance;
@@ -46,7 +37,6 @@ static TestEncyption g_test_instance;
 void TestEncyption::runTests(IGameDef* gamedef)
 {
 	TEST(testHKDF);
-	TEST(testAES_128_gcm_encrypt);
 	TEST(testECKeyGen);
 	TEST(testX25519);
 }
@@ -191,107 +181,6 @@ void TestEncyption::testHKDF()
 		NetworkEncryption::hkdf_expand_sha256(prk_actual, "", OKM_actual.data(), OKM_actual.size());
 		UASSERT(OKM_actual == OKM);
 	}
-}
-
-void TestEncyption::testAESSingle(
-	const u8(&key)[16],
-	const u8(&iv)[12],
-	const u8(&aaed_tag_expected)[NET_AAED_TAG_SIZE],
-	const std::vector<u8> plaintext,
-	const std::vector<u8> expected_cryptotext
-)
-{
-	std::vector<u8> actual_cryptotext;
-	actual_cryptotext.resize(expected_cryptotext.size() + sizeof(aaed_tag_expected));
-
-	UASSERT(NetworkEncryption::encrypt_aes_128_gcm(key, iv, Buffer<u8>(plaintext.data(), plaintext.size()), actual_cryptotext.data(), actual_cryptotext.size()));
-
-	UASSERT(memcmp(expected_cryptotext.data(), actual_cryptotext.data(), expected_cryptotext.size()) == 0);
-	UASSERT(memcmp(aaed_tag_expected, &actual_cryptotext[expected_cryptotext.size()], sizeof(aaed_tag_expected)) == 0);
-}
-
-void TestEncyption::testAES_128_gcm_encrypt()
-{
-	// some test vectors from csrc.nist.gov/groups/STM/cavp/documents/mac/gcmtestvectors.zip
-
-	{
-		/*
-		*
-		*
-		[Keylen = 128]
-		[IVlen = 96]
-		[PTlen = 128]
-		[AADlen = 0]
-		[Taglen = 96]
-		*/
-
-		// count 0
-
-		u8 key[16] = {};
-		u8 iv[12] = {};
-		u8 aaed_tag_expected[16] = {};
-
-		rfc_string_to_c(key, "f00fdd018c02e03576008b516ea971ad");
-		rfc_string_to_c(iv, "3b3e276f9e98b1ecb7ce6d28");
-		rfc_string_to_c(aaed_tag_expected, "cba06bb4f6e097199250b0d1");
-
-		const std::vector<u8> plaintext = rfc_string_to_cpp("2853e66b7b1b3e1fa3d1f37279ac82be");
-		const std::vector<u8> expected_cryptotext = rfc_string_to_cpp("55d2da7a3fb773b8a073db499e24bf62");
-
-		testAESSingle(key, iv, aaed_tag_expected, plaintext, expected_cryptotext);
-	}
-	{
-		/*
-		*
-		*
-		[Keylen = 128]
-		[IVlen = 96]
-		[PTlen = 128]
-		[AADlen = 0]
-		[Taglen = 96]
-		*/
-
-		// count 1
-
-		u8 key[16] = {};
-		u8 iv[12] = {};
-		u8 aaed_tag_expected[16] = {};
-
-		rfc_string_to_c(key, "bc8fb606bc51571912ad8732ca4ee7af");
-		rfc_string_to_c(iv, "fd4c8432015c5a5def1561c5");
-		rfc_string_to_c(aaed_tag_expected, "c90cd06a5fffa615291c2f3b");
-
-		const std::vector<u8> plaintext = rfc_string_to_cpp("bcf430dc33aa27c6b31c377c2d6b0133");
-		const std::vector<u8> expected_cryptotext = rfc_string_to_cpp("3b864d7c12e8dca51a65b0be202cb8d0");
-
-		testAESSingle(key, iv, aaed_tag_expected, plaintext, expected_cryptotext);
-	}
-	// another test
-	{
-		/*
-		*
-		*
-		[Keylen = 128]
-		[IVlen = 96]
-		[PTlen = 408]
-		[AADlen = 0]
-		[Taglen = 96]
-		*/
-
-		u8 key[16] = {};
-		u8 iv[12] = {};
-		u8 aaed_tag_expected[16] = {};
-
-		rfc_string_to_c(key, "9aa701eaf1146ae9a8aa14f36294e8e0");
-		rfc_string_to_c(iv, "fd78280e023ff4cdcaab5e67");
-		rfc_string_to_c(aaed_tag_expected, "87b981bdd2c37fcc6ff734a9");
-
-		const std::vector<u8> plaintext = rfc_string_to_cpp("806f21e96bcd6c8ec1b7f688978c0ffd24492cd38eb62361fd73eeffbee4d9f9d7ad32d408ffc6706647bc723c620c83020f06");
-		const std::vector<u8> expected_cryptotext = rfc_string_to_cpp("010428fc5b03162f7e001fd2f4f2d1a8ab13ce97063c82cfe62e7cd5b26551b03a55358857159959ab021e7015f370b6fc1f16");
-
-		testAESSingle(key, iv, aaed_tag_expected, plaintext, expected_cryptotext);
-	}
-
 }
 
 void TestEncyption::testECKeyGen()

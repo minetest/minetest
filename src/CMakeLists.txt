@@ -595,7 +595,6 @@ if(BUILD_CLIENT)
 		${JSON_LIBRARY}
 		${LUA_BIT_LIBRARY}
 		HACL-star
-		OpenSSL::Crypto
 		${FREETYPE_LIBRARY}
 		${PLATFORM_LIBS}
 		# on Android, Minetest depends on SDL2 directly
@@ -673,7 +672,6 @@ if(BUILD_SERVER)
 		${LUA_LIBRARY}
 		${LUA_BIT_LIBRARY}
 		HACL-star
-		OpenSSL::Crypto
 		${GMP_LIBRARY}
 		${PLATFORM_LIBS}
 	)

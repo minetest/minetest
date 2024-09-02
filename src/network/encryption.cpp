@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "util/base64.h"
 #include "porting.h"
-#include <openssl/evp.h>
 #include "Hacl_HMAC.h"
 #include "Hacl_HKDF.h"
 #include "Hacl_AEAD_Chacha20Poly1305.h"
@@ -198,108 +197,6 @@ namespace NetworkEncryption
 		encrypted_data.shrinkSize(length_without_tag);
 
 		return true;
-	}
-
-	bool encrypt_aes_128_gcm(const u8(&key)[16], const u8(&iv)[12], const Buffer<u8>& plaintext, u8 *encrypted_data, size_t encrypted_buf_length)
-	{
-		assert(encrypted_buf_length == size_t(plaintext.getSize()) + NET_AAED_TAG_SIZE);
-		assert(plaintext.getSize() < std::numeric_limits<int>::max());
-
-		if (encrypted_buf_length < NET_AAED_TAG_SIZE ||
-			encrypted_buf_length < size_t(plaintext.getSize()) + NET_AAED_TAG_SIZE ||
-			plaintext.getSize() >= std::numeric_limits<int>::max())
-		{
-			errorstream << "encrypt_aes_128_gcm(): invalid paramters!" << std::endl;
-			return false;
-		}
-
-		std::unique_ptr<EVP_CIPHER_CTX, decltype(&EVP_CIPHER_CTX_free)> ctx = { EVP_CIPHER_CTX_new(), EVP_CIPHER_CTX_free };
-
-		if (!ctx || 1 != EVP_EncryptInit_ex(ctx.get(), EVP_aes_128_gcm(), NULL, key, iv))
-		{
-			errorstream << "encrypt_aes_128_gcm(): failed to setup encryption ctx!" << std::endl;
-			return false;
-		}
-
-		int encrypted_len = encrypted_buf_length - NET_AAED_TAG_SIZE;
-		if (1 != EVP_EncryptUpdate(ctx.get(), encrypted_data, &encrypted_len, &plaintext[0], plaintext.getSize()) ||
-			static_cast<int>(plaintext.getSize()) != encrypted_len)
-		{
-			errorstream << "encrypt_aes_128_gcm(): failed encrypt data!" << std::endl;
-			return false;
-		}
-
-		int final_len = {};
-		if (1 != EVP_EncryptFinal_ex(ctx.get(), &encrypted_data[encrypted_len], &final_len) ||
-			final_len != 0)
-		{
-			errorstream << "encrypt_aes_128_gcm(): failed finalize data encryption!" << std::endl;
-			return false;
-		}
-
-		if (1 != EVP_CIPHER_CTX_ctrl(ctx.get(), EVP_CTRL_GCM_GET_TAG, NET_AAED_TAG_SIZE, &encrypted_data[encrypted_len]))
-		{
-			errorstream << "encrypt_aes_128_gcm(): get AD tag!" << std::endl;
-			return false;
-		}
-
-		return true;
-	}
-
-	bool decrypt_aes_128_gcm(const u8(&key)[16], const u8(&iv)[12], Buffer<u8> &encrypted_data)
-	{
-		std::unique_ptr<EVP_CIPHER_CTX, decltype(&EVP_CIPHER_CTX_free)> ctx = { EVP_CIPHER_CTX_new(), EVP_CIPHER_CTX_free };
-
-		if (!ctx || 1 != EVP_DecryptInit_ex(ctx.get(), EVP_aes_128_gcm(), NULL, key, iv))
-		{
-			errorstream << "decrypt_aes_128_gcm(): failed to setup encryption ctx!" << std::endl;
-			return false;
-		}
-
-		size_t total_length = encrypted_data.getSize();
-
-		if (total_length <= NET_AAED_TAG_SIZE)
-		{
-			errorstream << "decrypt_aes_128_gcm(): data is too short to even fit the tag!" << std::endl;
-			return false;
-		}
-
-		size_t length_without_tag = total_length - NET_AAED_TAG_SIZE;
-
-		u8 AAD[NET_AAED_TAG_SIZE] = {};
-		memcpy(&AAD[0], &encrypted_data[total_length - NET_AAED_TAG_SIZE], NET_AAED_TAG_SIZE);
-
-		int plaintext_length{};
-		if (1 != EVP_DecryptUpdate(ctx.get(), &encrypted_data[0], &plaintext_length, &encrypted_data[0], length_without_tag) || plaintext_length < 0)
-		{
-			// wipe buffer as it might have invalid data (prevent misuse)
-			memset(&encrypted_data[0], 0xDE, length_without_tag);
-			errorstream << "decrypt_aes_128_gcm(): decryption failed!" << std::endl;
-			return false;
-		}
-
-		if (1 != EVP_CIPHER_CTX_ctrl(ctx.get(), EVP_CTRL_GCM_SET_TAG, NET_AAED_TAG_SIZE, AAD))
-		{
-			// wipe buffer as it might have invalid data (prevent misuse)
-			memset(&encrypted_data[0], 0xDE, length_without_tag);
-			errorstream << "decrypt_aes_128_gcm(): setting expected AAED tag failed!" << std::endl;
-			return false;
-		}
-
-		int final_length = {};
-		if (1 != EVP_DecryptFinal_ex(ctx.get(), &encrypted_data[plaintext_length], &final_length) ||
-			static_cast<size_t>(final_length) + static_cast<size_t>(plaintext_length) != length_without_tag)
-		{
-			// wipe buffer as it might have invalid data (prevent misuse)
-			memset(&encrypted_data[0], 0xDE, length_without_tag);
-			errorstream << "decrypt_aes_128_gcm(): validation failed!" << std::endl;
-			return false;
-		}
-
-		encrypted_data.shrinkSize(length_without_tag);
-
-		return true;
-
 	}
 
 	bool generate_ephemeral_key_pair(ECDHEKeyPair& output) {

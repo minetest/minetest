@@ -209,9 +209,6 @@ namespace NetworkEncryption
 	[[nodiscard]] bool encrypt_chacha20_poly1305(const u8(&key)[32], const u8(&iv)[12], const Buffer<u8>& plaintext, u8* encrypted_data, size_t encrypted_buf_length);
 	[[nodiscard]] bool decrypt_chacha20_poly1305(const u8(&key)[32], const u8(&iv)[12], Buffer<u8>& encrypted_data);
 
-	[[nodiscard]] bool encrypt_aes_128_gcm(const u8(&key)[16], const u8(&iv)[12], const Buffer<u8>& plaintext, u8* encrypted_data, size_t encrypted_buf_length);
-	[[nodiscard]] bool decrypt_aes_128_gcm(const u8 (&key)[16], const u8(&iv)[12], Buffer<u8> &encrypted_data);
-
 	[[nodiscard]] inline PacketIV generate_packet_iv(u8 channel_id, u64 packet_id)
 	{
 		PacketIV packet_iv = {};
