@@ -1786,7 +1786,7 @@ random_mod_load_order (Random mod load order) bool false
 enable_mod_channels (Mod channels) bool false
 
 #    Dump network encryption key to info-stream, only enabled in debug builds.
-#    Useful for network debugging with Wireshark. 
+#    Useful for network debugging with Wireshark.
 secure.dump_network_encryption_key (Network) bool false
 
 [**Mod Profiler]
