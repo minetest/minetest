@@ -243,9 +243,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CLIENT_PROTOCOL_VERSION_MIN 37
 #define CLIENT_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
-#define PASSWORD_SIZE 28    // Maximum password length. Allows for
-                            // base64-encoded SHA-1 (27+\0).
-
 // See also formspec [Version History] in doc/lua_api.md
 #define FORMSPEC_API_VERSION 7
 
@@ -260,10 +257,10 @@ enum ToClientCommand : u16
 		Sent after TOSERVER_INIT.
 
 		u8 deployed serialization version
-		u16 deployed network compression mode
+		u16 unused (network compression, never implemeneted)
 		u16 deployed protocol version
 		u32 supported auth methods
-		std::string username that should be used for legacy hash (for proper casing)
+		std::string unused (used to be username)
 	*/
 	TOCLIENT_AUTH_ACCEPT = 0x03,
 	/*
@@ -914,7 +911,7 @@ enum ToServerCommand : u16
 		Sent first after connected.
 
 		u8 serialization version (=SER_FMT_VER_HIGHEST_READ)
-		u16 supported network compression modes
+		u16 unused (supported network compression modes, never implemeneted)
 		u16 minimum supported network protocol version
 		u16 maximum supported network protocol version
 		std::string player name
@@ -1147,10 +1144,6 @@ enum AccessDeniedCode : u8 {
 	SERVER_ACCESSDENIED_SHUTDOWN,
 	SERVER_ACCESSDENIED_CRASH,
 	SERVER_ACCESSDENIED_MAX,
-};
-
-enum NetProtoCompressionMode {
-	NETPROTO_COMPRESSION_NONE = 0,
 };
 
 enum PlayerListModifer : u8
