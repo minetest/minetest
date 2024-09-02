@@ -38,7 +38,7 @@ namespace NetworkEncryption
 		u8 shared_secret[NET_ECDHE_SECRET_LEN] = {};
 		if (!ecdh_calculate_shared_secret(our_keys, other_pub_key, shared_secret))
 		{
-			errorstream << "derive_subkeys(): calculate shared secret" << std::endl;
+			errorstream << "derive_subkeys(): failed to calculate shared secret" << std::endl;
 			return false;
 		}
 
@@ -212,7 +212,7 @@ namespace NetworkEncryption
 		random_data[31] |= 64;
 
 		memcpy(output.private_key, random_data, sizeof(output.private_key));
-		EverCrypt_Curve25519_secret_to_public(random_data, output.public_key);
+		EverCrypt_Curve25519_secret_to_public(output.public_key, random_data);
 
 		return true;
 	}
