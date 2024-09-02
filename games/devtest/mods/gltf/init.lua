@@ -55,10 +55,20 @@ minetest.register_entity("gltf:simple_skin", {
 	end
 })
 
--- Note: Model has an animation, but we can use it as a static test nevertheless
 -- The claws rendering incorrectly from one side is expected behavior:
 -- They use an unsupported double-sided material.
-register_entity("frog", {"gltf_frog.png"}, false)
+minetest.register_entity("gltf:frog", {
+	initial_properties = {
+		visual = "mesh",
+		mesh = "gltf_frog.gltf",
+		textures = {"gltf_frog.png"},
+		backface_culling = false
+	},
+	on_activate = function(self)
+		self.object:set_animation({x = 0, y = 0.75}, 1)
+	end
+})
+
 
 minetest.register_node("gltf:frog", {
 	description = "glTF frog, but it's a node",

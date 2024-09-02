@@ -27,8 +27,8 @@ public:
 	//! destructor
 	virtual ~CSkinnedMesh();
 
-	//! returns the amount of frames. If the amount is 1, it is a static (=non animated) mesh.
-	u32 getFrameCount() const override;
+	//! If the duration is 0, it is a static (=non animated) mesh.
+	f32 getMaxFrameNumber() const override;
 
 	//! Gets the default animation speed of the animated mesh.
 	/** \return Amount of frames per second. If the amount is 0, it is a static, non animated mesh. */
@@ -39,8 +39,8 @@ public:
 	The actual speed is set in the scene node the mesh is instantiated in.*/
 	void setAnimationSpeed(f32 fps) override;
 
-	//! returns the animated mesh based on a detail level (which is ignored)
-	IMesh *getMesh(s32 frame, s32 detailLevel = 255, s32 startFrameLoop = -1, s32 endFrameLoop = -1) override;
+	//! returns the animated mesh for the given frame
+	IMesh *getMesh(f32) override;
 
 	//! Animates this mesh's joints based on frame input
 	//! blend: {0-old position, 1-New position}

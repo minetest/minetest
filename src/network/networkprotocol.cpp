@@ -57,6 +57,7 @@
 			old servers.
 		Rename TOCLIENT_DEATHSCREEN to TOCLIENT_DEATHSCREEN_LEGACY
 		Rename TOSERVER_RESPAWN to TOSERVER_RESPAWN_LEGACY
+		Support float animation frame numbers in TOCLIENT_LOCAL_PLAYER_ANIMATIONS
 		[scheduled bump for 5.10.0]
 */
 

@@ -344,7 +344,7 @@ public:
 
 	Address getPeerAddress(session_t peer_id);
 
-	void setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
+	void setLocalPlayerAnimations(RemotePlayer *player, v2f animation_frames[4],
 			f32 frame_speed);
 	void setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third, v3f third_front);
 
@@ -501,7 +501,7 @@ private:
 	virtual void SendChatMessage(session_t peer_id, const ChatMessage &message);
 	void SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed);
 
-	void SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],
+	void SendLocalPlayerAnimations(session_t peer_id, v2f animation_frames[4],
 		f32 animation_speed);
 	void SendEyeOffset(session_t peer_id, v3f first, v3f third, v3f third_front);
 	void SendPlayerPrivileges(session_t peer_id);
