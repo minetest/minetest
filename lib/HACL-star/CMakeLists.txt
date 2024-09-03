@@ -10,7 +10,6 @@ set(HACL_C_SRC
 	${HACL_MAIN_SRC_PATH}/EverCrypt_Curve25519.c
 	${HACL_MAIN_SRC_PATH}/EverCrypt_HKDF.c
 	${HACL_MAIN_SRC_PATH}/EverCrypt_HMAC.c
-	${HACL_MAIN_SRC_PATH}/EverCrypt_Hash.c
 	${HACL_MAIN_SRC_PATH}/Hacl_AEAD_Chacha20Poly1305.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Chacha20.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Curve25519_51.c
@@ -33,11 +32,13 @@ set(HACL_C_SRC
 
 set(HACL_ABI "unknown")
 set(HACL_PLATFORM "unknown")
+set(TARGET_ARCHITECTURE 0)
 set(HACL_HAS_VALE FALSE)
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
 	set(HACL_PLATFORM "x86_64")
 	set(HACL_HAS_VALE TRUE)
+	set(TARGET_ARCHITECTURE 2)
 	if (MSVC)
 		set(HACL_ABI "msvc")
 		if (CMAKE_SIZEOF_VOID_P EQUAL 4)
@@ -90,6 +91,7 @@ if (HACL_HAS_VALE)
 	endif()
 	target_compile_definitions(HACL-star PRIVATE HACL_CAN_COMPILE_VALE)
 endif()
+target_compile_definitions(HACL-star PRIVATE TARGET_ARCHITECTURE=${TARGET_ARCHITECTURE})
 
 target_include_directories(HACL-star PUBLIC ${HACL_MAIN_SRC_PATH})
 target_include_directories(HACL-star PUBLIC "${HACL_KARAMEL_SRC_PATH}/include")
