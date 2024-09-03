@@ -23,8 +23,8 @@
  */
 
 
-#ifndef __Hacl_Chacha20_Vec128_H
-#define __Hacl_Chacha20_Vec128_H
+#ifndef __internal_Hacl_MAC_Poly1305_Simd256_H
+#define __internal_Hacl_MAC_Poly1305_Simd256_H
 
 #if defined(__cplusplus)
 extern "C" {
@@ -35,29 +35,30 @@ extern "C" {
 #include "krml/lowstar_endianness.h"
 #include "krml/internal/target.h"
 
+#include "../Hacl_MAC_Poly1305_Simd256.h"
+#include "libintvector.h"
+
+void Hacl_MAC_Poly1305_Simd256_load_acc4(Lib_IntVector_Intrinsics_vec256 *acc, uint8_t *b);
+
 void
-Hacl_Chacha20_Vec128_chacha20_encrypt_128(
-  uint32_t len,
-  uint8_t *out,
-  uint8_t *text,
-  uint8_t *key,
-  uint8_t *n,
-  uint32_t ctr
+Hacl_MAC_Poly1305_Simd256_fmul_r4_normalize(
+  Lib_IntVector_Intrinsics_vec256 *out,
+  Lib_IntVector_Intrinsics_vec256 *p
 );
 
 void
-Hacl_Chacha20_Vec128_chacha20_decrypt_128(
-  uint32_t len,
-  uint8_t *out,
-  uint8_t *cipher,
+Hacl_MAC_Poly1305_Simd256_poly1305_init(Lib_IntVector_Intrinsics_vec256 *ctx, uint8_t *key);
+
+void
+Hacl_MAC_Poly1305_Simd256_poly1305_finish(
+  uint8_t *tag,
   uint8_t *key,
-  uint8_t *n,
-  uint32_t ctr
+  Lib_IntVector_Intrinsics_vec256 *ctx
 );
 
 #if defined(__cplusplus)
 }
 #endif
 
-#define __Hacl_Chacha20_Vec128_H_DEFINED
+#define __internal_Hacl_MAC_Poly1305_Simd256_H_DEFINED
 #endif

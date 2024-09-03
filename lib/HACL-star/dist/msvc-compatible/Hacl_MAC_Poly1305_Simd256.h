@@ -23,8 +23,8 @@
  */
 
 
-#ifndef __Hacl_IntTypes_Intrinsics_128_H
-#define __Hacl_IntTypes_Intrinsics_128_H
+#ifndef __Hacl_MAC_Poly1305_Simd256_H
+#define __Hacl_MAC_Poly1305_Simd256_H
 
 #if defined(__cplusplus)
 extern "C" {
@@ -35,37 +35,48 @@ extern "C" {
 #include "krml/lowstar_endianness.h"
 #include "krml/internal/target.h"
 
-#include "Hacl_Krmllib.h"
+#include "Hacl_Streaming_Types.h"
+#include "libintvector.h"
 
-static inline uint64_t
-Hacl_IntTypes_Intrinsics_128_add_carry_u64(uint64_t cin, uint64_t x, uint64_t y, uint64_t *r)
+typedef struct Hacl_MAC_Poly1305_Simd256_state_t_s
 {
-  FStar_UInt128_uint128
-  res =
-    FStar_UInt128_add_mod(FStar_UInt128_add_mod(FStar_UInt128_uint64_to_uint128(x),
-        FStar_UInt128_uint64_to_uint128(cin)),
-      FStar_UInt128_uint64_to_uint128(y));
-  uint64_t c = FStar_UInt128_uint128_to_uint64(FStar_UInt128_shift_right(res, 64U));
-  r[0U] = FStar_UInt128_uint128_to_uint64(res);
-  return c;
+  Lib_IntVector_Intrinsics_vec256 *block_state;
+  uint8_t *buf;
+  uint64_t total_len;
+  uint8_t *p_key;
 }
+Hacl_MAC_Poly1305_Simd256_state_t;
 
-static inline uint64_t
-Hacl_IntTypes_Intrinsics_128_sub_borrow_u64(uint64_t cin, uint64_t x, uint64_t y, uint64_t *r)
-{
-  FStar_UInt128_uint128
-  res =
-    FStar_UInt128_sub_mod(FStar_UInt128_sub_mod(FStar_UInt128_uint64_to_uint128(x),
-        FStar_UInt128_uint64_to_uint128(y)),
-      FStar_UInt128_uint64_to_uint128(cin));
-  uint64_t c = FStar_UInt128_uint128_to_uint64(FStar_UInt128_shift_right(res, 64U)) & 1ULL;
-  r[0U] = FStar_UInt128_uint128_to_uint64(res);
-  return c;
-}
+Hacl_MAC_Poly1305_Simd256_state_t *Hacl_MAC_Poly1305_Simd256_malloc(uint8_t *key);
+
+void Hacl_MAC_Poly1305_Simd256_reset(Hacl_MAC_Poly1305_Simd256_state_t *state, uint8_t *key);
+
+/**
+0 = success, 1 = max length exceeded
+*/
+Hacl_Streaming_Types_error_code
+Hacl_MAC_Poly1305_Simd256_update(
+  Hacl_MAC_Poly1305_Simd256_state_t *state,
+  uint8_t *chunk,
+  uint32_t chunk_len
+);
+
+void
+Hacl_MAC_Poly1305_Simd256_digest(Hacl_MAC_Poly1305_Simd256_state_t *state, uint8_t *output);
+
+void Hacl_MAC_Poly1305_Simd256_free(Hacl_MAC_Poly1305_Simd256_state_t *state);
+
+void
+Hacl_MAC_Poly1305_Simd256_mac(
+  uint8_t *output,
+  uint8_t *input,
+  uint32_t input_len,
+  uint8_t *key
+);
 
 #if defined(__cplusplus)
 }
 #endif
 
-#define __Hacl_IntTypes_Intrinsics_128_H_DEFINED
+#define __Hacl_MAC_Poly1305_Simd256_H_DEFINED
 #endif
