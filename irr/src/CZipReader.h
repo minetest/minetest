@@ -4,8 +4,8 @@
 
 #pragma once
 
+#include <vector>
 #include "IReadFile.h"
-#include "irrArray.h"
 #include "irrString.h"
 #include "IFileSystem.h"
 #include "CFileList.h"
@@ -209,7 +209,7 @@ protected:
 	IReadFile *File;
 
 	// holds extended info about files
-	core::array<SZipFileEntry> FileInfo;
+	std::vector<SZipFileEntry> FileInfo;
 
 	bool IsGZip;
 };

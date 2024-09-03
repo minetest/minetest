@@ -77,13 +77,6 @@ static bool detect_touch()
 	}
 
 	return false;
-#elif defined(_WIN32)
-	// 0x01 The device has an integrated touch digitizer
-	// 0x80 The device is ready to receive digitizer input.
-	if ((GetSystemMetrics(SM_DIGITIZER) & 0x81) == 0x81)
-		return true;
-
-	return false;
 #else
 	// we don't know, return default
 	return false;
@@ -104,7 +97,8 @@ void set_default_settings()
 	// Client
 	settings->setDefault("address", "");
 	settings->setDefault("enable_sound", "true");
-	settings->setDefault("enable_touch", bool_to_cstr(has_touch));
+	settings->setDefault("touch_controls", bool_to_cstr(has_touch));
+	settings->setDefault("touch_gui", bool_to_cstr(has_touch));
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("sound_volume_unfocused", "0.3");
 	settings->setDefault("mute_sound", "false");
@@ -309,6 +303,7 @@ void set_default_settings()
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
 	settings->setDefault("show_nametag_backgrounds", "true");
+	settings->setDefault("show_block_bounds_radius_near", "4");
 	settings->setDefault("transparency_sorting_distance", "16");
 
 	settings->setDefault("enable_minimap", "true");

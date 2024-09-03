@@ -29,7 +29,7 @@ EnrichedString::EnrichedString()
 	clear();
 }
 
-EnrichedString::EnrichedString(const std::wstring &string,
+EnrichedString::EnrichedString(std::wstring_view string,
 		const std::vector<SColor> &colors)
 {
 	clear();
@@ -37,16 +37,10 @@ EnrichedString::EnrichedString(const std::wstring &string,
 	m_colors = colors;
 }
 
-EnrichedString::EnrichedString(const std::wstring &s, const SColor &color)
+EnrichedString::EnrichedString(std::wstring_view s, const SColor &color)
 {
 	clear();
 	addAtEnd(translate_string(s), color);
-}
-
-EnrichedString::EnrichedString(const wchar_t *str, const SColor &color)
-{
-	clear();
-	addAtEnd(translate_string(std::wstring(str)), color);
 }
 
 void EnrichedString::clear()
@@ -59,19 +53,20 @@ void EnrichedString::clear()
 	m_background = irr::video::SColor(0, 0, 0, 0);
 }
 
-EnrichedString &EnrichedString::operator=(const wchar_t *str)
+EnrichedString &EnrichedString::operator=(std::wstring_view str)
 {
 	clear();
-	addAtEnd(translate_string(std::wstring(str)), m_default_color);
+	addAtEnd(translate_string(str), m_default_color);
 	return *this;
 }
 
-void EnrichedString::addAtEnd(const std::wstring &s, SColor initial_color)
+void EnrichedString::addAtEnd(std::wstring_view s, SColor initial_color)
 {
 	SColor color(initial_color);
 	bool use_default = (m_default_length == m_string.size() &&
 		color == m_default_color);
 
+	m_string.reserve(m_string.size() + s.size());
 	m_colors.reserve(m_colors.size() + s.size());
 
 	size_t i = 0;
@@ -142,7 +137,7 @@ void EnrichedString::addCharNoColor(wchar_t c)
 	if (m_colors.empty()) {
 		m_colors.emplace_back(m_default_color);
 	} else {
-		m_colors.push_back(m_colors[m_colors.size() - 1]);
+		m_colors.push_back(m_colors.back());
 	}
 }
 
@@ -201,11 +196,6 @@ EnrichedString EnrichedString::substr(size_t pos, size_t len) const
 		str.m_default_length = std::min(m_default_length - pos, str.size());
 	str.setDefaultColor(m_default_color);
 	return str;
-}
-
-const wchar_t *EnrichedString::c_str() const
-{
-	return m_string.c_str();
 }
 
 const std::vector<SColor> &EnrichedString::getColors() const

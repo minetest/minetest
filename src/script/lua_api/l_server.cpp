@@ -426,18 +426,8 @@ int ModApiServer::l_show_formspec(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char *playername = luaL_checkstring(L, 1);
 	const char *formname = luaL_checkstring(L, 2);
-	if (*formname == '\0') {
-		log_deprecated(L, "Deprecated call to `minetest.show_formspec`:"
-				"`formname` must not be empty");
-	}
 	const char *formspec = luaL_checkstring(L, 3);
-
-	if(getServer(L)->showFormspec(playername,formspec,formname))
-	{
-		lua_pushboolean(L, true);
-	}else{
-		lua_pushboolean(L, false);
-	}
+	lua_pushboolean(L, getServer(L)->showFormspec(playername,formspec,formname));
 	return 1;
 }
 

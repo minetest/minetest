@@ -29,6 +29,7 @@
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
+#include <IVideoDriver.h>
 #include "settings.h"
 #include <algorithm>
 
@@ -377,7 +378,7 @@ void GUIKeyChangeMenu::add_key(int id, std::wstring button_name, const std::stri
 	key_settings.push_back(k);
 }
 
-// compare with button_titles in touchscreengui.cpp
+// compare with button_titles in touchcontrols.cpp
 void GUIKeyChangeMenu::init_keys()
 {
 	this->add_key(GUI_ID_KEY_FORWARD_BUTTON,      wstrgettext("Forward"),          "keymap_forward");

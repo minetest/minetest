@@ -1,13 +1,12 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 project.ext.set("versionMajor", 5)      // Version Major
-project.ext.set("versionMinor", 10)      // Version Minor
+project.ext.set("versionMinor", 10)     // Version Minor
 project.ext.set("versionPatch", 0)      // Version Patch
 // ^ keep in sync with cmake
-project.ext.set("versionCode", 48)      // Android Version Code
-// NOTE: +2 after each release!
-// +1 for ARM and +1 for ARM64 APK's, because
-// each APK must have a larger `versionCode` than the previous
+
+project.ext.set("versionBuild", 0)      // Version Build
+// ^ fourth version number to allow releasing Android-only fixes and beta versions
 
 buildscript {
 	ext.ndk_version = '26.2.11394342'

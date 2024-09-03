@@ -23,7 +23,8 @@
 
 #include "modalMenu.h"
 #include "IGUIFileOpenDialog.h"
-#include "guiFormSpecMenu.h" //required because of TextDest only !!!
+
+struct TextDest;
 
 class GUIFileSelectMenu : public GUIModalMenu
 {

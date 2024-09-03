@@ -562,8 +562,10 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 	BoneOverride props;
 	if (!lua_isnoneornil(L, 3))
 		props.position.vector = check_v3f(L, 3);
-	if (!lua_isnoneornil(L, 4))
-		props.rotation.next = core::quaternion(check_v3f(L, 4) * core::DEGTORAD);
+	if (!lua_isnoneornil(L, 4)) {
+		props.rotation.next_radians = check_v3f(L, 4) * core::DEGTORAD;
+		props.rotation.next = core::quaternion(props.rotation.next_radians);
+	}
 	props.position.absolute = true;
 	props.rotation.absolute = true;
 	sao->setBoneOverride(bone, props);
@@ -585,9 +587,9 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 	std::string bone = readParam<std::string>(L, 2, "");
 	BoneOverride props = sao->getBoneOverride(bone);
 	push_v3f(L, props.position.vector);
-	v3f euler_rot;
-	props.rotation.next.toEuler(euler_rot);
-	push_v3f(L, euler_rot * core::RADTODEG);
+	// In order to give modders back the euler angles they passed in,
+	// this **must not** compute equivalent euler angles from the quaternion
+	push_v3f(L, props.rotation.next_radians * core::RADTODEG);
 	return 2;
 }
 
@@ -633,8 +635,10 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 	lua_getfield(L, 3, "rotation");
 	if (!lua_isnil(L, -1)) {
 		lua_getfield(L, -1, "vec");
-		if (!lua_isnil(L, -1))
-			props.rotation.next = core::quaternion(check_v3f(L, -1));
+		if (!lua_isnil(L, -1)) {
+			props.rotation.next_radians = check_v3f(L, -1);
+			props.rotation.next = core::quaternion(props.rotation.next_radians);
+		}
 		lua_pop(L, 1);
 
 		read_prop_attrs(props.rotation);
@@ -672,9 +676,9 @@ static void push_bone_override(lua_State *L, const BoneOverride &props)
 
 	push_prop("position", props.position, props.position.vector);
 
-	v3f euler_rot;
-	props.rotation.next.toEuler(euler_rot);
-	push_prop("rotation", props.rotation, euler_rot);
+	// In order to give modders back the euler angles they passed in,
+	// this **must not** compute equivalent euler angles from the quaternion
+	push_prop("rotation", props.rotation, props.rotation.next_radians);
 
 	push_prop("scale", props.scale, props.scale.vector);
 
@@ -2688,6 +2692,41 @@ int ObjectRef::l_respawn(lua_State *L)
 	return 1;
 }
 
+// set_flags(self, flags)
+int ObjectRef::l_set_flags(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	auto *psao = getplayersao(ref);
+	if (psao == nullptr)
+		return 0;
+	if (!lua_istable(L, -1))
+		throw LuaError("expected a table of flags");
+	auto &flags = psao->m_flags;
+	flags.drowning = getboolfield_default(L, -1, "drowning", flags.drowning);
+	flags.breathing = getboolfield_default(L, -1, "breathing", flags.breathing);
+	flags.node_damage = getboolfield_default(L, -1, "node_damage", flags.node_damage);
+	return 0;
+}
+
+// get_flags(self)
+int ObjectRef::l_get_flags(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	const auto *psao = getplayersao(ref);
+	if (psao == nullptr)
+		return 0;
+	lua_createtable(L, 0, 3);
+	lua_pushboolean(L, psao->m_flags.drowning);
+	lua_setfield(L, -2, "drowning");
+	lua_pushboolean(L, psao->m_flags.breathing);
+	lua_setfield(L, -2, "breathing");
+	lua_pushboolean(L, psao->m_flags.node_damage);
+	lua_setfield(L, -2, "node_damage");
+	return 1;
+}
+
 
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
@@ -2838,6 +2877,8 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_lighting),
 	luamethod(ObjectRef, get_lighting),
 	luamethod(ObjectRef, respawn),
+	luamethod(ObjectRef, set_flags),
+	luamethod(ObjectRef, get_flags),
 
 	{0,0}
 };

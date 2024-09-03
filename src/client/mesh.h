@@ -139,5 +139,5 @@ bool checkMeshNormals(scene::IMesh *mesh);
 	Set the MinFilter, MagFilter and AnisotropicFilter properties of a texture
 	layer according to the three relevant boolean values found in the Minetest
 	settings.
-*/ 
+*/
 void setMaterialFilters(video::SMaterialLayer &tex, bool bilinear, bool trilinear, bool anisotropic);

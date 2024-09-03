@@ -648,13 +648,14 @@ void RemoteClient::setLangCode(const std::string &code)
 	m_lang_code = string_sanitize_ascii(code, 12);
 }
 
-ClientInterface::ClientInterface(const std::shared_ptr<con::Connection> & con)
+ClientInterface::ClientInterface(const std::shared_ptr<con::IConnection> &con)
 :
 	m_con(con),
 	m_env(nullptr)
 {
 
 }
+
 ClientInterface::~ClientInterface()
 {
 	/*

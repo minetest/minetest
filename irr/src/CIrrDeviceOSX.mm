@@ -720,9 +720,8 @@ void CIrrDeviceMacOSX::createDriver()
 #endif
 	break;
 
-	case video::EDT_OGLES1:
 	case video::EDT_OGLES2:
-		os::Printer::log("This driver is not available in OSX. Try OpenGL or Software renderer.", ELL_ERROR);
+		os::Printer::log("This driver is not available on OSX.", ELL_ERROR);
 		break;
 
 	case video::EDT_NULL:

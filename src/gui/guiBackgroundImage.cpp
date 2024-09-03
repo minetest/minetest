@@ -19,6 +19,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "client/guiscalingfilter.h"
 #include "log.h"
 #include "client/texturesource.h"
+#include <ITexture.h>
 
 GUIBackgroundImage::GUIBackgroundImage(gui::IGUIEnvironment *env,
 	gui::IGUIElement *parent, s32 id, const core::rect<s32> &rectangle,

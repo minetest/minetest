@@ -26,6 +26,7 @@
 #include "IGUISpriteBank.h"
 #include "IImageLoader.h"
 #include "IFileSystem.h"
+#include "IVideoDriver.h"
 #include <X11/XKBlib.h>
 #include <X11/Xatom.h>
 
@@ -33,7 +34,7 @@
 #include <X11/extensions/XInput2.h>
 #endif
 
-#if defined(_IRR_COMPILE_WITH_OGLES1_) || defined(_IRR_COMPILE_WITH_OGLES2_)
+#if defined(_IRR_COMPILE_WITH_OGLES2_)
 #include "CEGLManager.h"
 #endif
 
@@ -74,10 +75,6 @@ namespace video
 {
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 IVideoDriver *createOpenGLDriver(const irr::SIrrlichtCreationParameters &params, io::IFileSystem *io, IContextManager *contextManager);
-#endif
-
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-IVideoDriver *createOGLES1Driver(const irr::SIrrlichtCreationParameters &params, io::IFileSystem *io, IContextManager *contextManager);
 #endif
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
@@ -554,22 +551,6 @@ void CIrrDeviceLinux::createDriver()
 	}
 #else
 		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
-#endif
-	break;
-	case video::EDT_OGLES1:
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-	{
-		video::SExposedVideoData data;
-		data.OpenGLLinux.X11Window = XWindow;
-		data.OpenGLLinux.X11Display = XDisplay;
-
-		ContextManager = new video::CEGLManager();
-		ContextManager->initialize(CreationParams, data);
-
-		VideoDriver = video::createOGLES1Driver(CreationParams, FileSystem, ContextManager);
-	}
-#else
-		os::Printer::log("No OpenGL-ES1 support compiled in.", ELL_ERROR);
 #endif
 	break;
 	case video::EDT_OGLES2:

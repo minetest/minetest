@@ -12,7 +12,7 @@ varying vec2 sampleSW;
 varying vec2 sampleSE;
 
 /*
-Based on 
+Based on
 https://github.com/mattdesl/glsl-fxaa/
 Portions Copyright (c) 2011 by Armin Ronacher.
 */

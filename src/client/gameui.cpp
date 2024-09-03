@@ -23,10 +23,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <gettext.h>
 #include "gui/mainmenumanager.h"
 #include "gui/guiChatConsole.h"
+#include "gui/guiFormSpecMenu.h"
+#include "util/enriched_string.h"
 #include "util/pointedthing.h"
 #include "client.h"
 #include "clientmap.h"
 #include "fontengine.h"
+#include "hud.h" // HUD_FLAG_*
 #include "nodedef.h"
 #include "profiler.h"
 #include "renderingengine.h"

@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIImage.h>
 #include <IAnimatedMeshSceneNode.h>
 #include "client/renderingengine.h"
+#include "client/joystick_controller.h"
 #include "log.h"
 #include "client/hud.h" // drawItemStack
 #include "filesys.h"
@@ -315,7 +316,7 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 		data->invsize.Y = MYMAX(0, stof(parts[1]));
 
 		lockSize(false);
-		if (!g_settings->getBool("enable_touch") && parts.size() == 3) {
+		if (!g_settings->getBool("touch_gui") && parts.size() == 3) {
 			if (parts[2] == "true") {
 				lockSize(true,v2u32(800,600));
 			}
@@ -2807,8 +2808,13 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 
 	auto meshnode = e->setMesh(mesh);
 
-	for (u32 i = 0; i < textures.size() && i < meshnode->getMaterialCount(); ++i)
-		e->setTexture(i, m_tsrc->getTexture(unescape_string(textures[i])));
+	for (u32 i = 0; i < meshnode->getMaterialCount(); ++i) {
+		const auto texture_idx = mesh->getTextureSlot(i);
+		if (texture_idx >= textures.size())
+			warningstream << "Invalid model element: Not enough textures" << std::endl;
+		else
+			e->setTexture(i, m_tsrc->getTexture(unescape_string(textures[texture_idx])));
+	}
 
 	if (vec_rot.size() >= 2)
 		e->setRotation(v2f(stof(vec_rot[0]), stof(vec_rot[1])));
@@ -3166,7 +3172,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			s32 min_screen_dim = std::min(padded_screensize.X, padded_screensize.Y);
 
 			double prefer_imgsize;
-			if (g_settings->getBool("enable_touch")) {
+			if (g_settings->getBool("touch_gui")) {
 				// The preferred imgsize should be larger to accommodate the
 				// smaller screensize.
 				prefer_imgsize = min_screen_dim / 10 * gui_scaling;
