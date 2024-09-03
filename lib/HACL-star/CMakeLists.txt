@@ -8,8 +8,6 @@ set(HACL_C_SRC
 	${HACL_MAIN_SRC_PATH}/EverCrypt_AutoConfig2.c
 	${HACL_MAIN_SRC_PATH}/EverCrypt_Chacha20Poly1305.c
 	${HACL_MAIN_SRC_PATH}/EverCrypt_Curve25519.c
-	${HACL_MAIN_SRC_PATH}/EverCrypt_HKDF.c
-	${HACL_MAIN_SRC_PATH}/EverCrypt_HMAC.c
 	${HACL_MAIN_SRC_PATH}/Hacl_AEAD_Chacha20Poly1305.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Chacha20.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Curve25519_51.c
