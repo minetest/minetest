@@ -466,11 +466,6 @@ public:
 		m_data[index] = n;
 		m_flags[index] &= ~VOXELFLAG_NO_DATA;
 	}
-	// TODO: Should be removed and replaced with setNode
-	void setNodeNoRef(const v3s16 &p, const MapNode &n)
-	{
-		setNode(p, n);
-	}
 
 	/*
 		Set stuff if available without an emerge.
