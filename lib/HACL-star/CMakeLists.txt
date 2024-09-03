@@ -15,7 +15,6 @@ set(HACL_C_SRC
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_Base.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_Blake2b.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_Blake2s.c
-	${HACL_MAIN_SRC_PATH}/Hacl_Hash_MD5.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_SHA1.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_SHA2.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_SHA3.c
