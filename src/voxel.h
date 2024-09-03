@@ -395,11 +395,6 @@ public:
 		const s32 index = m_area.index(p);
 
 		if (m_flags[index] & VOXELFLAG_NO_DATA) {
-			/*dstream<<"EXCEPT: VoxelManipulator::getNode(): "
-					<<"p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-					<<", index="<<m_area.index(p)
-					<<", flags="<<(int)m_flags[m_area.index(p)]
-					<<" is inexistent"<<std::endl;*/
 			throw InvalidPositionException
 			("VoxelManipulator: getNode: inexistent");
 		}
