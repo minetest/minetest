@@ -863,7 +863,7 @@ bool CIrrDeviceSDL::run()
 			const auto &entry = KeyMap.find(keysym);
 			EKEY_CODE key;
 			if (entry == KeyMap.end())
-				key = (EKEY_CODE)KEY_UNKNOWN;
+				key = KEY_UNKNOWN;
 			else
 				key = entry->second;
 

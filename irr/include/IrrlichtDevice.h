@@ -374,7 +374,7 @@ protected:
 	// TODO: This is just some boilerplate for non-SDL devices. Remove this once we fully switch to SDL.
 	void fillScancode(SEvent &irrevent)
 	{
-		auto &keyinput = irrevent.KeyInput;
+		const auto &keyinput = irrevent.KeyInput;
 		keyinput.SystemKeyCode = getScancodeFromKey(KeyCode(keyinput.Key, keyinput.Char));
 	}
 };
