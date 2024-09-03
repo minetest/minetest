@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "mapblock_mesh.h"
+#include "CMeshBuffer.h"
 #include "client.h"
 #include "mapblock.h"
 #include "map.h"
@@ -880,7 +881,8 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 	return true;
 }
 
-void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
+void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos,
+		bool group_by_buffers)
 {
 	// nothing to do if the entire block is opaque
 	if (m_transparent_triangles.empty())
@@ -896,24 +898,56 @@ void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
 	m_transparent_buffers_consolidated = false;
 	m_transparent_buffers.clear();
 
+	std::vector<std::pair<scene::SMeshBuffer *, std::vector<u16>>> ordered_strains;
+	std::unordered_map<scene::SMeshBuffer *, size_t> strain_idxs;
+
+	if (group_by_buffers) {
+		// find (reversed) order for strains, by iterating front-to-back
+		// (if a buffer A has a triangle nearer than all triangles of another
+		// buffer B, A should be drawn in front of (=after) B)
+		scene::SMeshBuffer *current_buffer = nullptr;
+		for (auto it = triangle_refs.rbegin(); it != triangle_refs.rend(); ++it) {
+			const auto &t = m_transparent_triangles[*it];
+			if (current_buffer == t.buffer)
+				continue;
+			current_buffer = t.buffer;
+			auto [_it2, is_new] =
+				strain_idxs.emplace(current_buffer, ordered_strains.size());
+			if (is_new)
+				ordered_strains.emplace_back(current_buffer, std::vector<u16>{});
+		}
+	}
+
+	// find order for triangles, by iterating back-to-front
 	scene::SMeshBuffer *current_buffer = nullptr;
-	std::vector<u16> current_strain;
+	std::vector<u16> *current_strain = nullptr;
 	for (auto i : triangle_refs) {
 		const auto &t = m_transparent_triangles[i];
 		if (current_buffer != t.buffer) {
-			if (current_buffer) {
-				m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
-				current_strain.clear();
-			}
 			current_buffer = t.buffer;
+			if (group_by_buffers) {
+				auto it = strain_idxs.find(current_buffer);
+				assert(it != strain_idxs.end());
+				current_strain = &ordered_strains[it->second].second;
+			} else {
+				ordered_strains.emplace_back(current_buffer, std::vector<u16>{});
+				current_strain = &ordered_strains.back().second;
+			}
 		}
-		current_strain.push_back(t.p1);
-		current_strain.push_back(t.p2);
-		current_strain.push_back(t.p3);
+		current_strain->push_back(t.p1);
+		current_strain->push_back(t.p2);
+		current_strain->push_back(t.p3);
 	}
 
-	if (!current_strain.empty())
-		m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
+	m_transparent_buffers.reserve(ordered_strains.size());
+	if (group_by_buffers) {
+		// the order was reversed
+		for (auto it = ordered_strains.rbegin(); it != ordered_strains.rend(); ++it)
+			m_transparent_buffers.emplace_back(it->first, std::move(it->second));
+	} else {
+		for (auto it = ordered_strains.begin(); it != ordered_strains.end(); ++it)
+			m_transparent_buffers.emplace_back(it->first, std::move(it->second));
+	}
 }
 
 void MapBlockMesh::consolidateTransparentBuffers()

@@ -225,8 +225,14 @@ public:
 	/// Center of the bounding-sphere, in BS-space, relative to block pos.
 	v3f getBoundingSphereCenter() const { return m_bounding_sphere_center; }
 
-	/// update transparent buffers to render towards the camera
-	void updateTransparentBuffers(v3f camera_pos, v3s16 block_pos);
+	/** Update transparent buffers to render towards the camera.
+	 * @param group_by_buffers If true, triangles in the same buffer are batched
+	 *     into the same PartialMeshBuffer, resulting in fewer draw calls, but
+	 *     wrong order. Triangles within a single buffer are still ordered, and
+	 *     buffers are ordered relative to each other (with respect to their nearest
+	 *     triangle).
+	 */
+	void updateTransparentBuffers(v3f camera_pos, v3s16 block_pos, bool group_by_buffers);
 	void consolidateTransparentBuffers();
 
 	/// get the list of transparent buffers
