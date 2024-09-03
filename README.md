@@ -1,5 +1,8 @@
+![logo](https://github.com/user-attachments/assets/ae1fccdb-adff-490f-956f-2f28c2311529)
 Opal Client
 ========
+
+![opalclient_header](https://github.com/user-attachments/assets/cc246b65-3bab-4708-a17c-00207991613a)
 
 [![License](https://img.shields.io/badge/license-LGPLv2.1%2B-blue.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)
 
