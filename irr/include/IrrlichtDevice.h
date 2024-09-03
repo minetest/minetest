@@ -349,11 +349,9 @@ public:
 	//! Get the scancode of the corresponding keycode.
 	virtual u32 getScancodeFromKey(const KeyCode &key) const
 	{
-		if (key.index() == 0) {
-			const auto keycode = std::get<EKEY_CODE>(key);
+		if (const auto *keycode = std::get_if<EKEY_CODE>(&key))
 			// treat KEY_UNKNOWN and KEY_KEY_CODES_COUNT as the same and return 0.
-			return KeyCode::isValid(keycode) ? keycode : 0;
-		}
+			return KeyCode::isValid(*keycode) ? *keycode : 0;
 		const auto keychar = std::get<wchar_t>(key);
 		return keychar == 0 ? 0 : KEY_KEY_CODES_COUNT + keychar;
 	}
