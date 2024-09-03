@@ -241,7 +241,7 @@ static const table_key &lookup_keychar(wchar_t Char)
 	std::ostringstream os;
 	os << "<Char " << hex_encode((char*) &Char, sizeof(wchar_t)) << ">";
 	auto newsym = wide_to_utf8(std::wstring_view(&Char, 1));
-	table_key new_key = {newsym, irr::KEY_KEY_CODES_COUNT, Char, newsym};
+	table_key new_key {newsym, irr::KEY_KEY_CODES_COUNT, Char, newsym};
 	return table.emplace_back(std::move(new_key));
 }
 
