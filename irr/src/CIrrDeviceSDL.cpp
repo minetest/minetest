@@ -223,10 +223,9 @@ int CIrrDeviceSDL::findCharToPassToIrrlicht(uint32_t sdlKey, EKEY_CODE irrlichtK
 u32 CIrrDeviceSDL::getScancodeFromKey(const KeyCode &key) const
 {
 	u32 keynum = 0;
-	if (key.index() == 0) {
-		auto keycode = std::get<EKEY_CODE>(key);
+	if (const auto *keycode = std::get_if<EKEY_CODE>(&key)) {
 		for (const auto &entry: KeyMap) {
-			if (entry.second == keycode) {
+			if (entry.second == *keycode) {
 				keynum = entry.first;
 				break;
 			}
