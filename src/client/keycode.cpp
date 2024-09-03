@@ -275,7 +275,9 @@ static const table_key &lookup_keykey(irr::EKEY_CODE key)
 static const table_key &lookup_scancode(const u32 scancode)
 {
 	auto key = RenderingEngine::get_raw_device()->getKeyFromScancode(scancode);
-	return key.index() == 0 ? lookup_keykey(std::get<irr::EKEY_CODE>(key)) : lookup_keychar(std::get<wchar_t>(key));
+	return std::holds_alternative<EKEY_CODE>(key) ?
+		lookup_keykey(std::get<irr::EKEY_CODE>(key)) :
+		lookup_keychar(std::get<wchar_t>(key));
 }
 
 KeyPress::KeyPress(std::string_view name)
