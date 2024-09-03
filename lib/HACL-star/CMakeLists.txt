@@ -3,8 +3,6 @@ set(HACL_KARAMEL_SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/dist/karamel CACHE STRING 
 
 set(HACL_C_SRC
 	${HACL_MAIN_SRC_PATH}/Lib_Memzero0.c
-	${HACL_MAIN_SRC_PATH}/Lib_PrintBuffer.c
-	${HACL_MAIN_SRC_PATH}/Lib_RandomBuffer_System.c
 	${HACL_MAIN_SRC_PATH}/EverCrypt_AutoConfig2.c
 	${HACL_MAIN_SRC_PATH}/EverCrypt_Chacha20Poly1305.c
 	${HACL_MAIN_SRC_PATH}/Hacl_AEAD_Chacha20Poly1305.c
