@@ -128,11 +128,14 @@ public:
 	// Same as above, but uses a raw numeric index correlating to the (x,z) position.
 	virtual Biome *getBiomeAtIndex(size_t index, v3s16 pos) const = 0;
 
-	virtual s16 *getBiomeTransitions() const = 0;
+	// Returns the next lower y position at which the biome could change.
+	// You can use this to optimize calls to getBiomeAtIndex().
+	virtual s16 getNextTransitionY(s16 y) const {
+		return y == S16_MIN ? y : (y - 1);
+	};
 
 	// Result of calcBiomes bulk computation.
 	biome_t *biomemap = nullptr;
-	s16 *biome_transitions = nullptr;
 
 protected:
 	BiomeManager *m_bmgr = nullptr;
@@ -167,7 +170,7 @@ struct BiomeParamsOriginal : public BiomeParams {
 	NoiseParams np_humidity_blend;
 };
 
-class BiomeGenOriginal : public BiomeGen {
+class BiomeGenOriginal final : public BiomeGen {
 public:
 	BiomeGenOriginal(BiomeManager *biomemgr,
 		const BiomeParamsOriginal *params, v3s16 chunksize);
@@ -189,7 +192,7 @@ public:
 	Biome *getBiomeAtIndex(size_t index, v3s16 pos) const;
 
 	Biome *calcBiomeFromNoise(float heat, float humidity, v3s16 pos) const;
-	s16 *getBiomeTransitions() const;
+	s16 getNextTransitionY(s16 y) const;
 
 	float *heatmap;
 	float *humidmap;
@@ -201,6 +204,9 @@ private:
 	Noise *noise_humidity;
 	Noise *noise_heat_blend;
 	Noise *noise_humidity_blend;
+
+	// ordered descending
+	std::vector<s16> m_transitions_y;
 };
 
 
