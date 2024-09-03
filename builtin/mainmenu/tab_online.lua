@@ -66,7 +66,8 @@ local function get_formspec(tabview, name, tabdata)
 
 	local retval =
 		-- Search
-		"field[0.25,0.25;7,0.75;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
+		"image_button[0.25,0.25;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "plus.png") .. ";btn_mp_add;]" ..
+		"field[1,0.25;6.2,0.75;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
 		"field_enter_after_edit[te_search;true]" ..
 		"container[7.25,0.25]" ..
 		"image_button[0,0;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "search.png") .. ";btn_mp_search;]" ..
@@ -149,7 +150,7 @@ local function get_formspec(tabview, name, tabdata)
 		"align=inline,padding=0.25,width=1.5;" ..
 		"color,align=inline,span=1;" ..
 		"text,align=inline,padding=1]" ..
-		"table[0.25,1;9.25,5.8;servers;"
+		"table[0.25,1;9.25,7.8;servers;"
 
 	local servers = get_sorted_servers()
 
@@ -328,6 +329,13 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	if fields.btn_mp_clear then
 		tabdata.search_for = ""
 		menudata.search_result = nil
+		return true
+	end
+
+	if fields.btn_mp_add then
+		local idx = core.get_table_index("servers")
+		local server = idx and tabdata.lookup[idx]
+		serverlistmgr.add_favorite(server)
 		return true
 	end
 

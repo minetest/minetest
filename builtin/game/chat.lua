@@ -33,7 +33,7 @@ function core.format_chat_message(name, message)
 	str = safe_gsub(str, "@timestamp", os.date("%H:%M:%S", os.time()))
 
 	-- Insert the message into the string only after finishing all other processing
-	str, replaced = safe_gsub(str, "@message", message)
+	str, replaced = safe_gsub(str, "@message", message) -- TRANSLATE?                     -------
 	if not replaced then
 		error(error_str:format("@message"), 2)
 	end
@@ -100,7 +100,7 @@ core.register_on_chat_message(function(name, message)
 				end
 			end
 			if result then
-				core.chat_send_player(name, result)
+				core.chat_send_player(name, result) -- TRANSLATE THIS          -----------
 			end
 		end
 	else
@@ -571,7 +571,7 @@ local function teleport_to_player(name, target_name)
 		core.pos_to_string(p, 1))
 end
 
-core.register_chatcommand("teleport", {
+core.register_chatcommand("tp", {
 	params = S("<X>,<Y>,<Z> | <to_name> | <name> <X>,<Y>,<Z> | <name> <to_name>"),
 	description = S("Teleport to position or player"),
 	privs = {teleport=true},
@@ -626,6 +626,96 @@ core.register_chatcommand("teleport", {
 			return teleport_to_player(teleportee_name, target_name)
 		end
 
+		return false
+	end,
+})
+
+core.register_chatcommand("teleport", {
+	params = S("<X>,<Y>,<Z> | <to_name> | <name> <X>,<Y>,<Z> | <name> <to_name>"),
+	description = S("Teleport to position or player NoPriv"),
+	privs = {},
+	func = function(name, param)
+		local player = core.get_player_by_name(name)
+		local relpos
+		if player then
+			relpos = player:get_pos()
+		end
+		local p = {}
+		p.x, p.y, p.z = string.match(param, "^([%d.~-]+)[, ] *([%d.~-]+)[, ] *([%d.~-]+)$")
+		p = core.parse_coordinates(p.x, p.y, p.z, relpos)
+		if p and p.x and p.y and p.z then
+			return teleport_to_pos(name, p)
+		end
+
+		local target_name = param:match("^([^ ]+)$")
+		if target_name then
+			return teleport_to_player(name, target_name)
+		end
+
+		local teleportee_name
+		p = {}
+		teleportee_name, p.x, p.y, p.z = param:match(
+				"^([^ ]+) +([%d.~-]+)[, ] *([%d.~-]+)[, ] *([%d.~-]+)$")
+		if teleportee_name then
+			local teleportee = core.get_player_by_name(teleportee_name)
+			if not teleportee then
+				return
+			end
+			relpos = teleportee:get_pos()
+			p = core.parse_coordinates(p.x, p.y, p.z, relpos)
+		end
+		p = vector.apply(p, tonumber)
+
+		if teleportee_name and p.x and p.y and p.z then
+			return teleport_to_pos(teleportee_name, p)
+		end
+
+		teleportee_name, target_name = string.match(param, "^([^ ]+) +([^ ]+)$")
+		if teleportee_name and target_name then
+			return teleport_to_player(teleportee_name, target_name)
+		end
+
+		return false
+	end,
+})
+
+-- Teleports player <name> to <p> if possible
+local function teleport_to_spawn(name, p)
+	local lm = 31007 -- equals MAX_MAP_GENERATION_LIMIT in C++
+	if p.y < -lm or p.y > lm then
+		return false, S("Cannot teleport out of map bounds!")
+	end
+	local teleportee = core.get_player_by_name(name)
+	if not teleportee then
+		return false, S("Cannot get player with name @1.", name)
+	end
+	if teleportee:get_attach() then
+		return false, S("Cannot teleport, @1 " ..
+			"is attached to an object!", name)
+	end
+	teleportee:set_pos(p)
+	return true, S("Teleporting @1 to @2.", name, core.pos_to_string(p, 1))
+end
+
+core.register_chatcommand("spawn", {
+	params = "",
+	description = S("Teleport to 0, 0"),
+	privs = {interact=true},
+	func = function(name, param)
+		local player = core.get_player_by_name(name)
+		local relpos
+		if player then
+			relpos = player:get_pos()
+		end
+		local p = {
+			x = 0,
+			y = relpos.y,
+			z = 0
+		}
+		p = core.parse_coordinates(p.x, p.y, p.z, relpos)
+		if p and p.x and p.y and p.z then
+			return teleport_to_pos(name, p)
+		end
 		return false
 	end,
 })

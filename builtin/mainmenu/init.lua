@@ -89,7 +89,7 @@ local function init_globals()
 	mm_game_theme.set_engine() -- This is just a fallback.
 
 	-- Create main tabview
-	local tv_main = tabview_create("maintab", {x = 15.5, y = 7.1}, {x = 0, y = 0})
+	local tv_main = tabview_create("maintab", {x = 15.5, y = 9}, {x = 0, y = 0})
 
 	tv_main:set_autosave_tab(true)
 	tv_main:add(tabs.local_game)

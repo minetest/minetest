@@ -1,2 +1,0 @@
-Put your own testing sounds here. The folder is gitignored.
-Using a sound-pack is also possible.

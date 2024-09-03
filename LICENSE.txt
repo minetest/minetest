@@ -1,9 +1,12 @@
 
-License of Minetest textures and sounds
+License of OpalClient/Minetest textures and sounds
 ---------------------------------------
 
 This applies to textures and sounds contained in the main Minetest
 distribution.
+
+OpalClient contains modified versions of original Minetest files, for more details
+see the Minetest License at https://github.com/minetest/minetest/blob/master/LICENSE.txt
 
 Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -11,42 +14,11 @@ http://creativecommons.org/licenses/by-sa/3.0/
 textures/base/pack/refresh.png is under the Apache 2 license
 https://www.apache.org/licenses/LICENSE-2.0.html
 
-Textures by Zughy are under CC BY-SA 4.0
-https://creativecommons.org/licenses/by-sa/4.0/
-
-Media files by DS are under CC BY-SA 4.0
-https://creativecommons.org/licenses/by-sa/4.0/
-
-textures/base/pack/server_public.png is under CC-BY 4.0, taken from Twitter's Twemoji set
-https://creativecommons.org/licenses/by/4.0/
-
 Authors of media files
 -----------------------
 Everything not listed in here:
 Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-ShadowNinja:
-  textures/base/pack/smoke_puff.png
-
-paramat:
-  textures/base/pack/menu_header.png
-  textures/base/pack/next_icon.png
-  textures/base/pack/prev_icon.png
-  textures/base/pack/clear.png
-  textures/base/pack/search.png
-
-rubenwardy, paramat:
-  textures/base/pack/start_icon.png
-  textures/base/pack/end_icon.png
-
-erlehmann:
-  misc/minetest-icon-24x24.png
-  misc/minetest-icon.ico
-  misc/minetest.svg
-  textures/base/pack/logo.png
-
-JRottm:
-  textures/base/pack/player_marker.png
+Copyright (C) 2024 python-sargent, Altius Games (Samuel Sargent) <samuel@thesargents.org>
 
 srifqi:
   textures/base/pack/chat_hide_btn.png
@@ -54,49 +26,39 @@ srifqi:
   textures/base/pack/joystick_bg.png
   textures/base/pack/joystick_center.png
   textures/base/pack/joystick_off.png
-  textures/base/pack/minimap_btn.png
-
-Zughy:
-  textures/base/pack/cdb_add.png
-  textures/base/pack/cdb_downloading.png
-  textures/base/pack/cdb_queued.png
-  textures/base/pack/cdb_update.png
-  textures/base/pack/cdb_update_cropped.png
-  textures/base/pack/cdb_viewonline.png
-  textures/base/pack/settings_btn.png
-  textures/base/pack/settings_info.png
-  textures/base/pack/settings_reset.png
-
-appgurueu:
-  textures/base/pack/server_incompatible.png
 
 erlehmann, Warr1024, rollerozxa:
   textures/base/pack/no_screenshot.png
 
 kilbith:
   textures/base/pack/server_favorite.png
-  textures/base/pack/progress_bar.png
-  textures/base/pack/progress_bar_bg.png
 
 SmallJoker:
   textures/base/pack/cdb_clear.png
   textures/base/pack/server_favorite_delete.png (based on server_favorite.png)
-
-DS:
-  games/devtest/mods/soundstuff/textures/soundstuff_bigfoot.png
-  games/devtest/mods/soundstuff/textures/soundstuff_jukebox.png
-  games/devtest/mods/soundstuff/textures/soundstuff_racecar.png
-  games/devtest/mods/soundstuff/sounds/soundstuff_sinus.ogg
-  games/devtest/mods/testtools/textures/testtools_branding_iron.png
-
-grorp:
-  textures/base/pack/exit_btn.png
 
 License of Minetest source code
 -------------------------------
 
 Minetest
 Copyright (C) 2010-2018 celeron55, Perttu Ahola <celeron55@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+Opal Client (Code modified from Minetest source)
+Copyright (C) 2024 python-sargent, Altius Games (Samuel Sargent) <samuel@thesargents.org>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by

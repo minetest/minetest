@@ -1,5 +1,8 @@
 {
 	"#": "https://github.com/orgs/minetest/teams/engine/members",
+	"opalclient_developers": [
+		"Samuel Sargent (python-sargent, AltiusGames) <samuel@thesargents.org> [Project Founder]"
+	],
 	"core_developers": [
 		"Perttu Ahola (celeron55) <celeron55@gmail.com> [Project founder]",
 		"sfan5 <sfan5@live.de>",

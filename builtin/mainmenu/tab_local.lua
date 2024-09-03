@@ -160,8 +160,8 @@ local function get_formspec(tabview, name, tabdata)
 		local H = tabview.height
 
 		local hypertext = "<global valign=middle halign=center size=18>" ..
-				fgettext_ne("Minetest is a game-creation platform that allows you to play many different games.") .. "\n" ..
-				fgettext_ne("Minetest doesn't come with a game by default.") .. " " ..
+				fgettext_ne("Opal Client is a client for the Minetest engine.") .. "\n" ..
+				fgettext_ne("Opal Clientt doesn't come with a game by default.") .. " " ..
 				fgettext_ne("You need to install a game before you can create a world.")
 
 		local button_y = H * 2/3 - 0.6

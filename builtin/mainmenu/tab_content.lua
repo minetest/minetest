@@ -84,11 +84,11 @@ local function get_formspec(tabview, name, tabdata)
 			",0=", core.formspec_escape(defaulttexturedir .. "blank.png"),
 			",4=", core.formspec_escape(defaulttexturedir .. "cdb_update_cropped.png"),
 			";text]",
-		"table[0.4,0.8;6.3,4.8;pkglist;",
+		"table[0.4,0.8;6.3,6.8;pkglist;",
 		pkgmgr.render_packagelist(packages, use_technical_names, update_icons),
 		";", tabdata.selected_pkg, "]",
 
-		"button[0.4,5.8;6.3,0.9;btn_contentdb;", contentdb_label, "]"
+		"button[0.4,7.8;6.3,0.9;btn_contentdb;", contentdb_label, "]"
 	}
 
 	local selected_pkg

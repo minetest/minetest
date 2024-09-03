@@ -50,13 +50,7 @@ function mm_game_theme.set_engine(hide_decorations)
 		mm_game_theme.set_engine_single("footer")
 	end
 
-	if not have_bg then
-		if core.settings:get_bool("menu_clouds") then
-			core.set_clouds(true)
-		else
-			mm_game_theme.set_dirt_bg()
-		end
-	end
+	if not have_bg then mm_game_theme.set_basic_bg() end
 end
 
 --------------------------------------------------------------------------------
@@ -85,13 +79,7 @@ function mm_game_theme.set_game(gamedetails)
 	mm_game_theme.set_game_single("header", gamedetails)
 	mm_game_theme.set_game_single("footer", gamedetails)
 
-	if not have_bg then
-		if core.settings:get_bool("menu_clouds") then
-			core.set_clouds(true)
-		else
-			mm_game_theme.set_dirt_bg()
-		end
-	end
+	if not have_bg then mm_game_theme.set_basic_bg() end
 end
 
 --------------------------------------------------------------------------------
@@ -159,7 +147,7 @@ function mm_game_theme.set_game_single(identifier, gamedetails)
 end
 
 --------------------------------------------------------------------------------
-function mm_game_theme.set_dirt_bg()
+function mm_game_theme.set_basic_bg()
 	if mm_game_theme.texturepack ~= nil then
 		local path = mm_game_theme.texturepack .. DIR_DELIM .."default_dirt.png"
 		if core.set_background("background", path, true, 128) then
