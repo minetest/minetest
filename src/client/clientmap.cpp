@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "camera.h"               // CameraModes
 #include "util/basic_macros.h"
+#include "util/tracy_wrapper.h"
 #include "client/renderingengine.h"
 
 #include <queue>
@@ -714,6 +715,8 @@ void ClientMap::touchMapBlocks()
 
 void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 {
+	ZoneScoped;
+
 	bool is_transparent_pass = pass == scene::ESNRP_TRANSPARENT;
 
 	std::string prefix;
