@@ -860,11 +860,7 @@ bool CIrrDeviceSDL::run()
 			}
 
 			const auto &entry = KeyMap.find(keysym);
-			EKEY_CODE key;
-			if (entry == KeyMap.end())
-				key = KEY_UNKNOWN;
-			else
-				key = entry->second;
+			auto key = entry == KeyMap.end() ? KEY_UNKNOWN : entry->second;
 
 			if (!KeyCode::isValid(key))
 				os::Printer::log("keycode not mapped", core::stringc(keysym), ELL_DEBUG);
