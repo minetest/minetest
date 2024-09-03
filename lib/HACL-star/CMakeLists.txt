@@ -7,17 +7,15 @@ set(HACL_C_SRC
 	${HACL_MAIN_SRC_PATH}/Lib_RandomBuffer_System.c
 	${HACL_MAIN_SRC_PATH}/EverCrypt_AutoConfig2.c
 	${HACL_MAIN_SRC_PATH}/EverCrypt_Chacha20Poly1305.c
-	${HACL_MAIN_SRC_PATH}/EverCrypt_Curve25519.c
 	${HACL_MAIN_SRC_PATH}/Hacl_AEAD_Chacha20Poly1305.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Chacha20.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Curve25519_51.c
-	${HACL_MAIN_SRC_PATH}/Hacl_Curve25519_64.c
 	${HACL_MAIN_SRC_PATH}/Hacl_HKDF.c
 	${HACL_MAIN_SRC_PATH}/Hacl_HMAC.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_Base.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_Blake2b.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_Blake2s.c
-	#${HACL_MAIN_SRC_PATH}/Hacl_Hash_MD5.c
+	${HACL_MAIN_SRC_PATH}/Hacl_Hash_MD5.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_SHA1.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_SHA2.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_SHA3.c
@@ -59,7 +57,6 @@ else()
 endif()
 
 set(HACL_ASM_SRC
-	${HACL_MAIN_SRC_PATH}/curve25519-${HACL_TARGET}.${HACL_ASM_EXT}
 	${HACL_MAIN_SRC_PATH}/cpuid-${HACL_TARGET}.${HACL_ASM_EXT}
 )
 

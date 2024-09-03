@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Hacl_HMAC.h"
 #include "Hacl_HKDF.h"
 #include "Hacl_AEAD_Chacha20Poly1305.h"
-#include "EverCrypt_Curve25519.h"
+#include "Hacl_Curve25519_51.h"
 #include <optional>
 
 namespace NetworkEncryption
@@ -144,7 +144,7 @@ namespace NetworkEncryption
 		const ECDHEPublicKey& other_pub_key,
 		u8(&shared_secret)[NET_ECDHE_SECRET_LEN])
 	{
-		if (!EverCrypt_Curve25519_ecdh(shared_secret, const_cast<u8*>(our_keys.private_key), const_cast<u8*>(other_pub_key.key))) {
+		if (!Hacl_Curve25519_51_ecdh(shared_secret, const_cast<u8*>(our_keys.private_key), const_cast<u8*>(other_pub_key.key))) {
 			memset(shared_secret, 0, sizeof(shared_secret));
 			return false;
 		}
@@ -212,7 +212,7 @@ namespace NetworkEncryption
 		random_data[31] |= 64;
 
 		memcpy(output.private_key, random_data, sizeof(output.private_key));
-		EverCrypt_Curve25519_secret_to_public(output.public_key, random_data);
+		Hacl_Curve25519_51_secret_to_public(output.public_key, random_data);
 
 		return true;
 	}
