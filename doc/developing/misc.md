@@ -81,4 +81,9 @@ macros and recompile. Please refer to Tracy's official documentation.
 
 ### Using in Lua
 
-Tracy also supports Lua. (TODO)
+Tracy also supports Lua.
+If built with Tracy, Minetest loads its API in the global `tracy` table.
+See Tracy's official documentation for more information.
+
+Note: The whole Tracy Lua API is accessible to all mods. And we don't check if it
+is or becomes insecure. Run untrusted mods at your own risk.

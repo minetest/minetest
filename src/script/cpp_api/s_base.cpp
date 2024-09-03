@@ -32,6 +32,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #endif
 
+#if BUILD_WITH_TRACY
+	#include "tracy/TracyLua.hpp"
+#endif
 
 extern "C" {
 #include "lualib.h"
@@ -94,6 +97,11 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 	lua_pushcfunction(m_luastack, luaopen_bit);
 	lua_pushstring(m_luastack, LUA_BITLIBNAME);
 	lua_call(m_luastack, 1, 0);
+
+#if BUILD_WITH_TRACY
+	// Load tracy lua bindings
+	tracy::LuaRegister(m_luastack);
+#endif
 
 	// Make the ScriptApiBase* accessible to ModApiBase
 #if INDIRECT_SCRIPTAPI_RIDX
