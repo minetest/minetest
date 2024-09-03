@@ -16,14 +16,11 @@ set(HACL_C_SRC
 	${HACL_MAIN_SRC_PATH}/Hacl_HMAC.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_Base.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_Blake2b.c
-	#${HACL_MAIN_SRC_PATH}/Hacl_Hash_Blake2b_Simd256.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_Blake2s.c
-	#${HACL_MAIN_SRC_PATH}/Hacl_Hash_Blake2s_Simd128.c
 	#${HACL_MAIN_SRC_PATH}/Hacl_Hash_MD5.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_SHA1.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_SHA2.c
 	${HACL_MAIN_SRC_PATH}/Hacl_Hash_SHA3.c
-	#${HACL_MAIN_SRC_PATH}/Hacl_Hash_SHA3_Simd256.c
 	${HACL_MAIN_SRC_PATH}/Hacl_MAC_Poly1305.c
 	${HACL_MAIN_SRC_PATH}/Vale.c
 )
@@ -62,7 +59,6 @@ else()
 endif()
 
 set(HACL_ASM_SRC
-	${HACL_MAIN_SRC_PATH}/sha256-${HACL_TARGET}.${HACL_ASM_EXT}
 	${HACL_MAIN_SRC_PATH}/curve25519-${HACL_TARGET}.${HACL_ASM_EXT}
 	${HACL_MAIN_SRC_PATH}/cpuid-${HACL_TARGET}.${HACL_ASM_EXT}
 )
