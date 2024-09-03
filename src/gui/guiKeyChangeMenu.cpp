@@ -238,9 +238,9 @@ bool GUIKeyChangeMenu::acceptInput()
 			g_settings->setBool("autojump", ((gui::IGUICheckBox*)e)->isChecked());
 	}
 	{
-		gui::IGUIElement *e = getElementFromId(GUI_ID_SAVE_AS_SCANCODES);
+		const auto *e = getElementFromId(GUI_ID_SAVE_AS_SCANCODES);
 		if(e && e->getType() == gui::EGUIET_CHECK_BOX) {
-			save_as_scancodes = ((gui::IGUICheckBox*)e)->isChecked();
+			save_as_scancodes = dynamic_cast<gui::IGUICheckBox*>(e)->isChecked();
 			g_settings->setBool("save_keys_as_scancodes", save_as_scancodes);
 		}
 	}
