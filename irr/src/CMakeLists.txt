@@ -468,6 +468,10 @@ foreach(object_lib
 	target_include_directories(${object_lib} PRIVATE ${link_includes})
 	# Add objects from object library to main library
 	target_sources(IrrlichtMt PRIVATE $<TARGET_OBJECTS:${object_lib}>)
+
+	if(BUILD_WITH_TRACY)
+		target_link_libraries(${object_lib} PRIVATE Tracy::TracyClient)
+	endif()
 endforeach()
 
 # Alias target provides add_submodule compatibility
