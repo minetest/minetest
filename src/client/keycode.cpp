@@ -322,11 +322,14 @@ wchar_t KeyPress::getKeychar() const
 
 bool KeyPress::loadFromScancode(std::string_view name)
 {
-	if (name.size() < 2 || name[0] != '<')
+	if (name.size() < 2 || name[0] != '<' || name.back() != '>')
 		return false;
 	char *p;
-	scancode = strtoul(name.data()+1, &p, 10);
-	return p > name.data()+1;
+	const auto code = strtoul(name.data()+1, &p, 10);
+	if (p != name.data() + name.size() - 1)
+		return false;
+	scancode = code;
+	return true;
 }
 
 std::unordered_map<std::string, KeyPress> KeyPress::specialKeyCache;
