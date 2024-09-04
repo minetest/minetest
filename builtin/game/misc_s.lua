@@ -36,7 +36,7 @@ end
 
 
 function core.setting_get_pos(name)
-    return core.settings:get_pos(name)
+	return core.settings:get_pos(name)
 end
 
 
