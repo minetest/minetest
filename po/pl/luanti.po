@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-08-11 15:14+0000\n"
+"PO-Revision-Date: 2024-09-05 22:09+0000\n"
 "Last-Translator: nauta-turbidus <wiktor-t@hotmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -5342,9 +5342,8 @@ msgid "Profiler"
 msgstr "Profiler"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Prometheus listener address"
-msgstr "Adres nasłuchiwacza Prometheusa"
+msgstr "Adres listenera Prometheusa"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5396,14 +5395,12 @@ msgid "Recent Chat Messages"
 msgstr "Najnowsze wiadomości czatu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Regular font path"
-msgstr "Ścieżka raportu"
+msgstr "Ścieżka zwykłej czcionki"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Remember screen size"
-msgstr "Automatyczny zapis rozmiaru okienka"
+msgstr "Pamiętaj rozmiar ekranu"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
@@ -5426,7 +5423,6 @@ msgid "Report path"
 msgstr "Ścieżka raportu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Restricts the access of certain client-side functions on servers.\n"
 "Combine the byteflags below to restrict client-side features, or set to 0\n"
@@ -5443,8 +5439,8 @@ msgstr ""
 "Połącz poniższe flagi bajtów, aby ograniczyć funkcje po stronie klienta, lub "
 "ustaw na 0\n"
 "bez ograniczeń:\n"
-"LOAD_CLIENT_MODS: 1 (wyłączenie ładowania modów dostarczonych przez "
-"klienta)\n"
+"LOAD_CLIENT_MODS: 1 (wyłączenie ładowania modów dostarczonych przez klienta)"
+"\n"
 "CHAT_MESSAGES: 2 (wyłączenie wywoływania send_chat_message po stronie "
 "klienta)\n"
 "READ_ITEMDEFS: 4 (wyłączenie wywoływania get_item_def po stronie klienta)\n"
@@ -5455,9 +5451,8 @@ msgstr ""
 "READ_PLAYERINFO: 32 (wyłącza wywoływanie get_player_names po stronie klienta)"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ridge mountain spread noise"
-msgstr "Szum podwodnej grani"
+msgstr "Szum rozrzutu grani gór"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge noise"
@@ -5468,39 +5463,32 @@ msgid "Ridge underwater noise"
 msgstr "Szum podwodnej grani"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ridged mountain size noise"
-msgstr "Szum podwodnej grani"
+msgstr "Szum rozmiaru grani gór"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River channel depth"
-msgstr "Głębokość rzeki"
+msgstr "Głębokość kanału rzecznego"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River channel width"
-msgstr "Głębokość rzeki"
+msgstr "Szerokość kanału rzecznego"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River depth"
 msgstr "Głębokość rzeki"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River noise"
-msgstr "Szum rzeki"
+msgstr "Szum rzek"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River size"
 msgstr "Rozmiar rzeki"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River valley width"
-msgstr "Głębokość rzeki"
+msgstr "Szerokość doliny rzeki"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
@@ -5511,7 +5499,6 @@ msgid "Rolling hill size noise"
 msgstr "Szum rozmiaru zaokrąglonych gór"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Rolling hills spread noise"
 msgstr "Szum rozrzutu zaokrąglonych gór"
 
@@ -5536,6 +5523,10 @@ msgid ""
 "is maximized is stored in window_maximized.\n"
 "(Autosaving window_maximized only works if compiled with SDL.)"
 msgstr ""
+"Zapisuj rozmiar okna automatycznie po zmodyfikowaniu.\n"
+"Jeśli włączone, rozmiar na ekranie jest zapisywany w screen_w i screen_h,\n"
+"a to, czy okno jest zmaksymalizowane jest zapisywane w window_maximized.\n"
+"(Autozapis window_maximized działa tylko przy skompilowaniu z SDL.)"
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
@@ -5632,6 +5623,24 @@ msgid ""
 "Renders higher-resolution image of the scene, then scales down to reduce\n"
 "the aliasing effects. This is the slowest and the most accurate method."
 msgstr ""
+"Wybierz metodę antyaliasingu do zastosowania.\n"
+"\n"
+"* Brak - bez antyaliasingu (domyślnie)\n"
+"\n"
+"* FSAA - Sprzętowy pełnoekranowy antyaliasing\n"
+"(niekompatybilny z Post Processing i Undersampling)\n"
+"A.K.A multi-sample antialiasing (MSAA)\n"
+"Wygładza krawędzie bloków, ale nie wpływa na wnętrze tekstur.\n"
+"Restart jest wymagany do zmiany tej opcji.\n"
+"\n"
+"* FXAA - Szybki przybliżony antyaliasing (wymaga shaderów)\n"
+"Stosuje filtr post-processingu by wykryć i wygładzić wysoko-kontrastowe "
+"krawędzie.\n"
+"Daje balans pomiędzy szybkością a jakością obrazu.\n"
+"\n"
+"* SSAA - Super-sampling antialiasing (wymaga shaderów)\n"
+"Renderuje obraz w wyższej rozdzielczości, a potem zmniejsza ją by uniknąć\n"
+"efektów aliasingu. To jest najpowolniejsza i najdokładniejsza metoda."
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
