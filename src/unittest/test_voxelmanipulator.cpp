@@ -87,7 +87,7 @@ void TestVoxelManipulator::testVoxelManipulator(const NodeDefManager *nodedef)
 	v.print(infostream, nodedef);
 
 	infostream << "*** Setting (-1,0,-1)=2 ***" << std::endl;
-	v.setNodeNoRef(v3s16(-1,0,-1), MapNode(t_CONTENT_GRASS));
+	v.setNode(v3s16(-1,0,-1), MapNode(t_CONTENT_GRASS));
 
 	v.print(infostream, nodedef);
 	UASSERT(v.getNode(v3s16(-1,0,-1)).getContent() == t_CONTENT_GRASS);
