@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/srp.h"
 #include "clientdynamicinfo.h"
+#include <string_view>
 
 void Server::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -70,7 +71,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		 * respond for some time, your server was overloaded or
 		 * things like that.
 		 */
-		infostream << "Server::ProcessData(): Canceling: peer " << peer_id <<
+		infostream << "Server::handleCommand_Init(): Canceling: peer " << peer_id <<
 			" not found" << std::endl;
 		return;
 	}
@@ -156,6 +157,17 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 			addr_s << " proto_max=" << (int)max_net_proto_version << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_VERSION);
 		return;
+	}
+
+	bool client_supports_wire_encryption = net_proto_version >= PROTOCOL_VERSION_ENCRYPTION;
+	NetworkEncryption::ECDHEPublicKey client_pub_key = {};
+	if (client_supports_wire_encryption) {
+		pkt->readRawData(client_pub_key.key, sizeof(client_pub_key.key));
+
+		verbosestream << "Server received INIT with client public key!" << std::endl;
+	}
+	else {
+		verbosestream << "Server received INIT from old client that doesn't support encryption." << std::endl;
 	}
 
 	/*
@@ -269,6 +281,48 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		}
 	}
 
+	NetworkEncryption::ECDHEKeyPair server_key = {};
+	if (client_supports_wire_encryption)
+	{
+		verbosestream << "Generating server ephemeral key for client: " << peer_id << std::endl;
+
+		const bool key_generated = NetworkEncryption::generate_ephemeral_key_pair(server_key);
+
+		if (!key_generated)
+		{
+			errorstream << "Failed to generate network encryption ECDHE keypair! Denying access to player: " <<
+				playername <<
+				"(" << peer_id << ") connecting from: " << addr_s << std::endl;
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_CRASH);
+		}
+
+		NetworkEncryption::AESChannelKeys  client_send_keys = {};
+		NetworkEncryption::AESChannelKeys  server_send_keys = {};
+		NetworkEncryption::HandshakeDigest handshake_digest = {};
+
+		if (!NetworkEncryption::derive_subkeys(server_key, client_pub_key, client_send_keys, server_send_keys, handshake_digest))
+		{
+			errorstream << "Failed to derive channel encryption keys! Denying access to player: " <<
+				playername <<
+				"(" << peer_id << ") connecting from: " << addr_s << std::endl;
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_CRASH);
+		}
+
+		// set encryption keys
+		if (!m_con->setEncryptionKeys(pkt->getPeerId(), server_send_keys, client_send_keys))
+		{
+			m_con->disableEncryption(pkt->getPeerId());
+
+			errorstream << "Failed to set network encryption keys! Denying access to player: " <<
+				playername <<
+				"(" << peer_id << ") connecting from: " << addr_s << std::endl;
+			DenyAccess(peer_id, SERVER_ACCESSDENIED_CRASH);
+		}
+
+		// set the client state
+		client->setEphemeralKeyState(client_pub_key, server_key, handshake_digest);
+	}
+
 	/*
 		Answer with a TOCLIENT_HELLO
 	*/
@@ -280,6 +334,13 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	resp_pkt << depl_serial_v << u16(0) << net_proto_version
 		<< auth_mechs << std::string_view();
+
+	if (client_supports_wire_encryption)
+	{
+		resp_pkt.putRawData(&server_key.public_key[0], sizeof(server_key.public_key));
+	}
+
+	resp_pkt.disableEncryption();
 
 	Send(&resp_pkt);
 
@@ -1649,8 +1710,18 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	char *bytes_B = 0;
 	size_t len_B = 0;
 
+	const char* identity = client->getName().c_str();
+
+	std::string identity_for_encrypted_srp;
+	if (client->hasEncryptedNetwork()) {
+ 		const auto &handshake_digest = client->getHandshakeDigest();
+		NetworkEncryption::get_identity_for_srp(client->getHandshakeDigest(), client->getName(), identity_for_encrypted_srp);
+
+		identity = identity_for_encrypted_srp.c_str();
+	}
+
 	client->auth_data = srp_verifier_new(SRP_SHA256, SRP_NG_2048,
-		client->getName().c_str(),
+		identity,
 		(const unsigned char *) salt.c_str(), salt.size(),
 		(const unsigned char *) verifier.c_str(), verifier.size(),
 		(const unsigned char *) bytes_A.c_str(), bytes_A.size(),
@@ -1711,20 +1782,36 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	std::string bytes_M;
 	*pkt >> bytes_M;
 
-	if (srp_verifier_get_session_key_length((SRPVerifier *) client->auth_data)
-			!= bytes_M.size()) {
+	SRPVerifier* srp_verifier = (SRPVerifier*)client->auth_data;
+	size_t srp_hash_len = srp_verifier_get_session_key_length(srp_verifier);
+
+	// if the client supports encryption then a value E_S derived from the
+	// shared ECDHE secret is included in the two state hashes M and H
+	// this protects the connection against active attacks
+	//
+	// E_S must be included in state hash directly,
+	// otherwise an attacker could carry out an active downgrade attack
+	// to get a client to do a legacy SRP handshake
+	// and then hash E_S with M, letting the attacker spoof a secure connection.
+
+	unsigned char* bytes_HAMK = nullptr;
+
+	if (srp_verifier_get_session_key_length(srp_verifier)
+		!= bytes_M.size()) {
 		actionstream << "Server: User " << playername << " at " << addr_s
 			<< " sent bytes_M with invalid length " << bytes_M.size() << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_UNEXPECTED_DATA);
 		return;
 	}
 
-	unsigned char *bytes_HAMK = 0;
+	srp_verifier_verify_session(srp_verifier,
+		(unsigned char*)bytes_M.c_str(), &bytes_HAMK);
 
-	srp_verifier_verify_session((SRPVerifier *) client->auth_data,
-		(unsigned char *)bytes_M.c_str(), &bytes_HAMK);
+	bool do_mutual_auth = false;
+	if (client->hasEncryptedNetwork())
+		do_mutual_auth = true;
 
-	if (!bytes_HAMK) {
+	if (!bytes_HAMK || !srp_verifier_is_authenticated(srp_verifier)) {
 		if (wantSudo) {
 			actionstream << "Server: User " << playername << " at " << addr_s
 				<< " tried to change their password, but supplied wrong"
@@ -1741,6 +1828,8 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 		return;
 	}
 
+	client->reportSRPSuccess();
+
 	if (client->create_player_on_auth_success) {
 		m_script->createAuth(playername, client->enc_pwd);
 
@@ -1755,7 +1844,10 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	}
 
 	m_script->on_authplayer(playername, addr_s, true);
-	acceptAuth(peer_id, wantSudo);
+	if (do_mutual_auth)
+		acceptAuth(peer_id, wantSudo, std::string{ (char*)bytes_HAMK, srp_hash_len });
+	else
+		acceptAuth(peer_id, wantSudo);
 }
 
 /*

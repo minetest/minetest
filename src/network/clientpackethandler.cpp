@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/clientopcodes.h"
 #include "network/connection.h"
 #include "network/networkpacket.h"
+#include "network/encryption.h"
 #include "script/scripting_client.h"
 #include "util/serialize.h"
 #include "util/srp.h"
@@ -84,6 +85,31 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 	*pkt >> serialization_ver >> unused_compression_mode >> proto_ver
 		>> auth_mechs >> unused;
 
+	const bool server_supports_wire_encryption = proto_ver >= PROTOCOL_VERSION_ENCRYPTION;
+	NetworkEncryption::ECDHEPublicKey server_pub_key = {};
+	if (server_supports_wire_encryption)
+	{
+		pkt->readRawData(server_pub_key.key, sizeof(server_pub_key.key));
+		m_server_ephemeral_key = server_pub_key;
+
+		NetworkEncryption::AESChannelKeys client_send_keys = {};
+		NetworkEncryption::AESChannelKeys server_send_keys = {};
+
+		if (!NetworkEncryption::derive_subkeys(m_network_ephemeral_key, server_pub_key, client_send_keys, server_send_keys, m_handshake_digest))
+		{
+			errorstream << "Failed to derive channel encryption keys! Disconnecting from server." << std::endl;
+
+			m_access_denied = true;
+			m_access_denied_reason = gettext("Internal error when establishing a secure connection!");
+			m_con->Disconnect();
+
+			return;
+		}
+
+		m_con->setEncryptionKeys(PEER_ID_SERVER, client_send_keys, server_send_keys);
+		m_network_security_level = NetworkEncryption::ConnectionSecurityLevel::Passive;
+	}
+
 	// Chose an auth method we support
 	AuthMechanism chosen_auth_mechanism = choseAuthMech(auth_mechs);
 
@@ -91,6 +117,7 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 			<< "serialization_ver=" << (u32)serialization_ver
 			<< ", auth_mechs=" << auth_mechs
 			<< ", proto_ver=" << proto_ver
+			<< ", encryption_enabled=" << server_supports_wire_encryption
 			<< ". Doing auth with mech " << chosen_auth_mechanism << std::endl;
 
 	if (!ser_ver_supported(serialization_ver)) {
@@ -143,11 +170,55 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 
 void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 {
-	deleteAuthData();
 
 	v3f playerpos;
 	*pkt >> playerpos >> m_map_seed >> m_recommended_send_interval
 		>> m_sudo_auth_methods;
+
+	if (m_proto_ver >= PROTOCOL_VERSION_ENCRYPTION &&
+		(m_chosen_auth_mech == AUTH_MECHANISM_SRP ||
+		 m_chosen_auth_mech == AUTH_MECHANISM_LEGACY_PASSWORD))
+	{
+		std::string signed_h_bytes;
+		*pkt >> signed_h_bytes;
+
+		SRPUser* user = (SRPUser*)m_auth_data;
+		size_t expected_h_len = srp_user_get_session_key_length(user);
+
+		if (signed_h_bytes.size() != expected_h_len)
+		{
+			actionstream << "Mutual authenication with server has failed! (wrong digest length"
+				<< " got: " << signed_h_bytes.size()
+				<< " expected: " << expected_h_len << ")" << std::endl;
+
+			m_access_denied = true;
+			m_access_denied_reason = gettext("Mutual authenication with the server failed, wrong SRP verification bytes length.");
+			m_con->Disconnect();
+
+			deleteAuthData();
+			return;
+		}
+
+		srp_user_verify_session(user, reinterpret_cast<const unsigned char*>(signed_h_bytes.c_str()));
+
+		if (!srp_user_is_authenticated(user))
+		{
+			actionstream << "Mutual authenication with server has failed! Disconnecting." << std::endl;
+
+			m_access_denied = true;
+			m_access_denied_reason = gettext("Mutual authenication with the server failed, your network connection might have been tampered with.");
+			m_con->Disconnect();
+
+			deleteAuthData();
+			return;
+		}
+		else
+		{
+			m_network_security_level = NetworkEncryption::ConnectionSecurityLevel::FullyAuthenicated;
+		}
+	}
+
+	deleteAuthData();
 
 	playerpos -= v3f(0, BS / 2, 0);
 
@@ -1590,6 +1661,15 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 
 	infostream << "Client: Received TOCLIENT_SRP_BYTES_S_B." << std::endl;
 
+	u8* extra_auth_data = nullptr;
+	size_t extra_auth_data_len = 0;
+
+	if (m_proto_ver >= PROTOCOL_VERSION_ENCRYPTION)
+	{
+		extra_auth_data = m_handshake_digest.digest;
+		extra_auth_data_len = sizeof(m_handshake_digest.digest);
+	}
+
 	srp_user_process_challenge(usr, (const unsigned char *) s.c_str(), s.size(),
 		(const unsigned char *) B.c_str(), B.size(),
 		(unsigned char **) &bytes_M, &len_M);
@@ -1599,7 +1679,7 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 		return;
 	}
 
-	NetworkPacket resp_pkt(TOSERVER_SRP_BYTES_M, 0);
+	NetworkPacket resp_pkt(TOSERVER_SRP_BYTES_M, len_M + 2);
 	resp_pkt << std::string(bytes_M, len_M);
 	Send(&resp_pkt);
 }

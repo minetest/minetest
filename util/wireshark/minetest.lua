@@ -51,6 +51,139 @@ function minetest_field_helper(lentype, name, abbr)
 	return f_textlen, f_text
 end
 
+local ok, gcrypt = pcall(require, "luagcrypt")
+if not ok then gcrypt = nil end
+
+if gcrypt then
+	print("Loaded luagcrypt")
+else
+	print("Failed to load luagcrypt")
+end
+
+function has_luagcrypt()
+	return gcrypt ~= nil
+end
+
+-- Convert a string of hexadecimal numbers to a bytes string
+function fromhex(hex)
+	hex = hex:gsub("%s+", "")
+	if string.match(hex, "[^0-9a-fA-F]") then
+		error("Invalid chars in hex")
+	end
+	if string.len(hex) % 2 == 1 then
+		error("Hex string must be a multiple of two")
+	end
+	local s = string.gsub(hex, "..", function(v)
+		return string.char(tonumber(v, 16))
+	end)
+	return s
+end
+
+function tohex(data)
+    local str = ""
+    for i = 1, #data do
+        str = str..string.format("%02X", string.byte(data:sub(i, i)) .. " ")
+    end
+	return str
+end
+
+
+function make_aes_gcm_iv(channel_id, gen_counter, seq_num)
+	local packet_counter = bit32.lshift(gen_counter, 16) + seq_num;
+	
+	return Struct.pack(">I1", channel_id).."\0\0\0"..Struct.pack(">I8", packet_counter)
+end
+
+function aes_gcm_decrypt(key, iv, adata)
+	local cipher = gcrypt.Cipher(gcrypt.CIPHER_AES128, gcrypt.CIPHER_MODE_GCM)
+	
+	cipher:setkey(key)
+	cipher:setiv(iv)
+	
+	local plaintext = cipher:decrypt(adata)
+	local auth_tag = cipher:gettag()
+	
+	return plaintext, auth_tag
+end
+
+function hmac_digest(key, msg)
+	local md = gcrypt.Hash(gcrypt.MD_SHA256, gcrypt.MD_FLAG_HMAC)
+	md:setkey(key)
+	md:write(msg)
+	return md:read()
+end
+
+function hkdf_expand(prk, info, length)
+	local t = ""
+	local okm = ""
+	local i = 0
+	
+	while okm:len() < length do
+		i = i + 1
+		local hmac_msg = t..info..Struct.pack(">I1", i)
+		t = hmac_digest(prk, hmac_msg)
+		okm = okm..t
+	end
+	
+	return okm:sub(1, length)
+end
+
+function calculate_channel_key(is_server, root_key, channel_id)
+	local key_len = 16
+	local client_chan_keys = hkdf_expand(root_key, "minetest-client-channel-send-key", key_len*3)
+	local server_chan_keys = hkdf_expand(root_key, "minetest-server-channel-send-key", key_len*3)
+	
+	print("client_chan_keys: "..tohex(client_chan_keys).. " l:" .. client_chan_keys:len())
+	print("server_chan_keys: "..tohex(server_chan_keys).. " l:" .. server_chan_keys:len())
+	
+	
+	local channel_key_offset = channel_id*key_len + 1
+	local channel_key_end_offset = channel_key_offset + key_len - 1
+	
+	print(channel_key_offset, channel_key_end_offset, channel_id, is_server)
+	
+	if is_server then
+		return server_chan_keys:sub(channel_key_offset, channel_key_end_offset)
+	else
+		return client_chan_keys:sub(channel_key_offset, channel_key_end_offset)
+	end
+end
+
+function packet_decrypt_brute_generation(key, channel_id, seq_num, encrypted_data, correct_auth_tag)
+
+	-- we live in a hellworld, there is no way to track values accross packets today
+	-- so we must guess the generation ID
+	-- https://gitlab.com/wireshark/wireshark/-/issues/15396
+	-- hopefully this changes one
+	for i=0,5 do
+		local iv = make_aes_gcm_iv(channel_id, i, seq_num)
+		local plaintext, auth_tag = aes_gcm_decrypt(key, iv, encrypted_data)
+		print("auth_tag: " .. tohex(auth_tag) .. " correct_auth_tag: " .. tohex(correct_auth_tag))
+		if auth_tag:sub(1, 12) == correct_auth_tag then
+			return plaintext, i, iv, auth_tag
+		end
+	end
+	
+	return nil, nil, nil, nil
+end
+
+function packet_decrypt(root_key, channel_id, peer_id, seq_num, aes_packet_data)
+	local correct_auth_tag = aes_packet_data:sub(aes_packet_data:len() - 12 + 1)
+	local encrypted_data_without_tag = aes_packet_data:sub(0, aes_packet_data:len() - 12)
+	
+	local is_server = false
+	if peer_id == 1 then
+		is_server = true
+	end
+	
+	local channel_decryption_key = calculate_channel_key(is_server, root_key, channel_id)
+	
+	--print("root_key: " .. tohex(root_key) .. " len: " .. root_key:len())
+	print("channel_decryption_key: " .. tohex(channel_decryption_key) .. " len: "..tostring(channel_decryption_key:len()))
+	--print("channel_id: " .. channel_id .. " seq_num:" .. seq_num .. " correct_auth_tag:" .. tohex(correct_auth_tag) .. " len:" .. correct_auth_tag:len())
+	
+	return packet_decrypt_brute_generation(channel_decryption_key, channel_id, seq_num, encrypted_data_without_tag, correct_auth_tag)
+end
 
 
 
@@ -75,6 +208,7 @@ do
 	local f_proto_max = ProtoField.uint16(abbr.."_proto_max", "Maximum protocol version", base.DEC)
 	local f_player_namelen, f_player_name =
 		minetest_field_helper("uint16", abbr.."player_name", "Player Name")
+	local f_ecdhe_key = ProtoField.bytes("ecdhe_key", "ECDH-E public key client")
 
 	minetest_client_commands[0x02] = {
 		"INIT",                            -- Command name
@@ -90,7 +224,11 @@ do
 			t:add(f_comp_modes, buffer(3,2))
 			t:add(f_proto_min, buffer(5,2))
 			t:add(f_proto_max, buffer(7,2))
-			minetest_decode_helper_ascii(buffer, t, "uint16", 9, f_player_namelen, f_player_name)
+			off = minetest_decode_helper_ascii(buffer, t, "uint16", 9, f_player_namelen, f_player_name)
+			print(off)
+			if off and minetest_check_length(buffer, off + 32, t) then
+				t:add(f_ecdhe_key, buffer(off, off + 32))
+			end
 		end
 	}
 end
@@ -1233,9 +1371,6 @@ do
 	end
 end
 
-
-
-
 -------------------------------------
 -- Part 5                          --
 -- Wrapper protocol main dissector --
@@ -1245,6 +1380,7 @@ end
 
 do
 	local p_minetest = Proto("minetest", "Minetest")
+	p_minetest.prefs.root_net_key = Pref.string("Decryption key", "", "128-bit AES key")
 
 	local minetest_id = 0x4f457403
 	local vs_id = {
@@ -1260,7 +1396,8 @@ do
 		[0] = "Control",
 		[1] = "Original",
 		[2] = "Split",
-		[3] = "Reliable"
+		[3] = "Reliable",
+		[0x83] = "Reliable Encrypted"
 	}
 
 	local f_id = ProtoField.uint32("minetest.id", "ID", base.HEX, vs_id)
@@ -1268,15 +1405,21 @@ do
 	local f_channel = ProtoField.uint8("minetest.channel", "Channel", base.DEC)
 	local f_type = ProtoField.uint8("minetest.type", "Type", base.DEC, vs_type)
 	local f_seq = ProtoField.uint16("minetest.seq", "Sequence number", base.DEC)
+	local f_encrypted_data = ProtoField.bytes("minetest.encrypted", "Encrypted message data")
+	local f_seq_gen = ProtoField.uint64("minetest.seq_gen", "Sequence generation number")
+	local f_iv = ProtoField.bytes("minetest.iv", "AES-128-GCM IV")
+	local f_ae_full_tag = ProtoField.bytes("minetest.iv", "Full AES-128-GCM AE Tag")
+	local f_decrypted_data = ProtoField.bytes("minetest.decrypted", "Decrypted data")
 	local f_subtype = ProtoField.uint8("minetest.subtype", "Subtype", base.DEC, vs_type)
 
-	p_minetest.fields = { f_id, f_peer, f_channel, f_type, f_seq, f_subtype }
+	p_minetest.fields = { f_id, f_peer, f_channel, f_type, f_seq, f_subtype, f_seq_gen, f_iv, f_ae_full_tag, f_decrypted_data }
 
 	local data_dissector = Dissector.get("data")
 	local control_dissector = Dissector.get("minetest.control")
 	local client_dissector = Dissector.get("minetest.client")
 	local server_dissector = Dissector.get("minetest.server")
 	local split_dissector = Dissector.get("minetest.split")
+	
 
 	function p_minetest.dissector(buffer, pinfo, tree)
 
@@ -1301,6 +1444,36 @@ do
 
 		local reliability_info
 		local pos
+		
+		local function minetest_packet_data_do_disect(sbuffer, spos, stree)
+			if sbuffer(spos,1):uint() == 0 then
+				-- Control message, possibly reliable
+				control_dissector:call(sbuffer(spos+1):tvb(), pinfo, stree)
+			elseif sbuffer(spos,1):uint() == 1 then
+				-- Original message, possibly reliable
+				if sbuffer(4,2):uint() == 1 then
+					server_dissector:call(sbuffer(spos+1):tvb(), pinfo, stree)
+				else
+					client_dissector:call(sbuffer(spos+1):tvb(), pinfo, stree)
+				end
+			elseif sbuffer(spos,1):uint() == 2 then
+				-- Split message, possibly reliable
+				if sbuffer(4,2):uint() == 1 then
+					pinfo.cols.info = "Server: Split message"
+				else
+					pinfo.cols.info = "Client: Split message"
+				end
+				split_dissector:call(sbuffer(spos+1):tvb(), pinfo, stree)
+			elseif sbuffer(spos,1):uint() == 3 then
+				-- Doubly reliable message??
+				t:add_expert_info(PI_MALFORMED, PI_ERROR, "Reliable message wrapped in reliable message")
+			else
+				data_dissector:call(sbuffer(spos+1):tvb(), pinfo, stree)
+			end
+
+			pinfo.cols.info:append(" (" .. reliability_info .. ")")
+		end
+		
 		if buffer(7,1):uint() == 3 then
 			-- Reliable message
 			reliability_info = "Seq=" .. buffer(8,2):uint()
@@ -1308,38 +1481,55 @@ do
 			t:add(f_seq, buffer(8,2))
 			t:add(f_subtype, buffer(10,1))
 			pos = 10
+		elseif buffer(7,1):uint() == 0x83 then
+			local seq_num = buffer(8,2):uint()
+			reliability_info = "AES Seq=" .. seq_num
+			t:set_len(10)
+			t:add(f_seq, buffer(8,2))
+			
+			local peer_id = buffer(4,2):uint()
+			local channel_id = buffer(6,1):uint()
+			
+			local enc_data = buffer:raw(10)
+			
+			if p_minetest.prefs.root_net_key ~= "" then
+				local root_key = fromhex(p_minetest.prefs.root_net_key)
+				if root_key ~= nil then
+					plaintext, i, iv, auth_tag = packet_decrypt(root_key, channel_id, peer_id, seq_num, enc_data)
+					if plaintext ~= nil then
+						
+						print(seq_gen_ba)
+						
+						--t:add(f_seq_gen, buffer, seq_gen_ba):set_generated()
+						--t:add(f_iv, buffer(), ByteArray.new(iv, true):tvb("IV data")):set_generated()
+						--t:add(f_ae_full_tag, buffer(), ):set_generated()
+						
+						--local seq_gen_buffer = ByteArray.new(Struct.pack(">I8", i), true):tvb("seq num generation counter")
+						local auth_tag_buffer = ByteArray.new(auth_tag, true):tvb("AE tag")
+						local plaintext_buffer = ByteArray.new(plaintext, true):tvb("Decrypted Minetest reliable packet data")
+						
+						--t:add(f_seq_gen, seq_gen_buffer(), "seq_num_generation")
+						t:add(f_ae_full_tag, auth_tag_buffer(), "AE Tag")
+						local subtree = t:add(f_decrypted_data, plaintext_buffer(), "decrypted")
+						minetest_packet_data_do_disect(plaintext_buffer, 0, subtree)
+					else
+						t:add_expert_info(PI_UNDECODED, PI_ERROR, "Unable to decrypt network packet!")
+					end
+					
+					return true
+				end
+			end
+			
+			pos = 10
+			
 		else
 			-- Unreliable message
 			reliability_info = "Unrel"
 			pos = 7
 		end
+		
+		minetest_packet_data_do_disect(buffer, pos, tree)
 
-		if buffer(pos,1):uint() == 0 then
-			-- Control message, possibly reliable
-			control_dissector:call(buffer(pos+1):tvb(), pinfo, tree)
-		elseif buffer(pos,1):uint() == 1 then
-			-- Original message, possibly reliable
-			if buffer(4,2):uint() == 1 then
-				server_dissector:call(buffer(pos+1):tvb(), pinfo, tree)
-			else
-				client_dissector:call(buffer(pos+1):tvb(), pinfo, tree)
-			end
-		elseif buffer(pos,1):uint() == 2 then
-			-- Split message, possibly reliable
-			if buffer(4,2):uint() == 1 then
-				pinfo.cols.info = "Server: Split message"
-			else
-				pinfo.cols.info = "Client: Split message"
-			end
-			split_dissector:call(buffer(pos+1):tvb(), pinfo, tree)
-		elseif buffer(pos,1):uint() == 3 then
-			-- Doubly reliable message??
-			t:add_expert_info(PI_MALFORMED, PI_ERROR, "Reliable message wrapped in reliable message")
-		else
-			data_dissector:call(buffer(pos+1):tvb(), pinfo, tree)
-		end
-
-		pinfo.cols.info:append(" (" .. reliability_info .. ")")
 		return true
 
 	end

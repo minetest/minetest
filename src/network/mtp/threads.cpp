@@ -199,8 +199,6 @@ void ConnectionSendThread::runTimeouts(float dtime, u32 peer_packet_quota)
 		PROFILE(ScopeProfiler
 		peerprofiler(g_profiler, peerIdentifier.str(), SPT_AVG));
 
-		SharedBuffer<u8> data(2); // data for sending ping, required here because of goto
-
 		/*
 			Check peer timeout
 		*/
@@ -260,6 +258,7 @@ void ConnectionSendThread::runTimeouts(float dtime, u32 peer_packet_quota)
 		}
 
 		/* send ping if necessary */
+		SharedBuffer<u8> data(2);
 		if (udpPeer->Ping(dtime, data)) {
 			LOG(dout_con << m_connection->getDesc()
 				<< "Sending ping for peer_id: " << udpPeer->id << std::endl);
@@ -325,7 +324,7 @@ void ConnectionSendThread::sendAsPacketReliable(BufferedPacketPtr &p, Channel *c
 		p->absolute_send_time = porting::getTimeMs();
 		// Buffer the packet
 		channel->outgoing_reliables_sent.insert(p,
-			(channel->readOutgoingSequenceNumber() - MAX_RELIABLE_WINDOW_SIZE)
+			(channel->readOutgoingSequenceNumber().packet_seq_num - MAX_RELIABLE_WINDOW_SIZE)
 				% (MAX_RELIABLE_WINDOW_SIZE + 1));
 	}
 	catch (AlreadyExistsException &e) {
@@ -352,12 +351,12 @@ bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
 
 	if (reliable) {
 		bool have_seqnum = false;
-		const u16 seqnum = channel->getOutgoingSequenceNumber(have_seqnum);
+		const SeqNumWithGen seqnum = channel->getOutgoingSequenceNumber(have_seqnum);
 
 		if (!have_seqnum)
 			return false;
 
-		SharedBuffer<u8> reliable = makeReliablePacket(data, seqnum);
+		SharedBuffer<u8> reliable = makeReliablePacket(data, seqnum, channelnum, /*is_encrypted=*/false, nullptr);
 
 		// Add base headers and make a packet
 		BufferedPacketPtr p = con::makePacket(peer->getAddress(), reliable,
@@ -699,7 +698,7 @@ void ConnectionSendThread::sendPackets(float dtime, u32 peer_packet_quota)
 
 			u16 next_to_ack = 0;
 			channel.outgoing_reliables_sent.getFirstSeqnum(next_to_ack);
-			u16 next_to_receive = 0;
+			SeqNumWithGen next_to_receive;
 			channel.incoming_reliables.getFirstSeqnum(next_to_receive);
 
 			LOG(dout_con << m_connection->getDesc() << "\t channel: "
@@ -915,13 +914,13 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 		// First, see if there any buffered packets we can process now
 		if (packet_queued) {
 			session_t peer_id;
-			SharedBuffer<u8> resultdata;
+			ApplicationPacketData resultdata;
 			while (true) {
 				try {
 					if (!getFromBuffers(peer_id, resultdata))
 						break;
 
-					m_connection->putEvent(ConnectionEvent::dataReceived(peer_id, resultdata));
+					m_connection->putEvent(ConnectionEvent::dataReceived(peer_id, resultdata.data, resultdata.was_reliable, resultdata.is_encrypted));
 				}
 				catch (ProcessedSilentlyException &e) {
 					/* try reading again */
@@ -1039,15 +1038,15 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 
 		try {
 			// Process it (the result is some data with no headers made by us)
-			SharedBuffer<u8> resultdata = processPacket
-				(channel, strippeddata, peer_id, channelnum, false);
+			ApplicationPacketData resultdata = processPacket
+				(channel, strippeddata, peer_id, channelnum, false, false);
 
 			LOG(dout_con << m_connection->getDesc()
 				<< " ProcessPacket from peer_id: " << peer_id
 				<< ", channel: " << (u32)channelnum << ", returned "
-				<< resultdata.getSize() << " bytes" << std::endl);
+				<< resultdata.data.getSize() << " bytes" << std::endl);
 
-			m_connection->putEvent(ConnectionEvent::dataReceived(peer_id, resultdata));
+			m_connection->putEvent(ConnectionEvent::dataReceived(peer_id, resultdata.data, resultdata.was_reliable, resultdata.is_encrypted));
 		}
 		catch (ProcessedSilentlyException &e) {
 		}
@@ -1063,7 +1062,7 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 	}
 }
 
-bool ConnectionReceiveThread::getFromBuffers(session_t &peer_id, SharedBuffer<u8> &dst)
+bool ConnectionReceiveThread::getFromBuffers(session_t &peer_id, ApplicationPacketData &dst)
 {
 	std::vector<session_t> peerids = m_connection->getPeerIDs();
 
@@ -1076,8 +1075,8 @@ bool ConnectionReceiveThread::getFromBuffers(session_t &peer_id, SharedBuffer<u8
 		if (!p)
 			continue;
 
-		for (Channel &channel : p->channels) {
-			if (checkIncomingBuffers(&channel, peer_id, dst)) {
+		for (u8 channel_id = 0; channel_id < CHANNEL_COUNT; channel_id++) {
+			if (checkIncomingBuffers(p->channels[channel_id], channel_id, peer_id, dst)) {
 				return true;
 			}
 		}
@@ -1085,42 +1084,39 @@ bool ConnectionReceiveThread::getFromBuffers(session_t &peer_id, SharedBuffer<u8
 	return false;
 }
 
-bool ConnectionReceiveThread::checkIncomingBuffers(Channel *channel,
-	session_t &peer_id, SharedBuffer<u8> &dst)
+bool ConnectionReceiveThread::checkIncomingBuffers(Channel &channel, u8 channelnum,
+	session_t &peer_id, ApplicationPacketData &dst)
 {
-	u16 firstseqnum = 0;
-	if (!channel->incoming_reliables.getFirstSeqnum(firstseqnum))
+	SeqNumWithGen firstseqnum;
+	if (!channel.incoming_reliables.getFirstSeqnum(firstseqnum))
 		return false;
 
-	if (firstseqnum != channel->readNextIncomingSeqNum())
+	const SeqNumWithGen nextSeqNum = channel.readNextIncomingSeqNum();
+
+	if (firstseqnum != nextSeqNum)
 		return false;
 
-	BufferedPacketPtr p = channel->incoming_reliables.popFirst();
+	const IncomingReliablePacket p = channel.incoming_reliables.popFirst();
 
-	peer_id = readPeerId(p->data); // Carried over to caller function
-	u8 channelnum = readChannel(p->data);
-	u16 seqnum = p->getSeqnum();
+	peer_id = p.getPeerID(); // Carried over to caller function
+	const SeqNumWithGen seqnum = p.getSeqnum();
 
 	LOG(dout_con << m_connection->getDesc()
 		<< "UNBUFFERING TYPE_RELIABLE"
-		<< " seqnum=" << seqnum
+		<< " seqnum=" << seqnum << " (" << seqnum.generation_counter << ")"
 		<< " peer_id=" << peer_id
 		<< " channel=" << ((int) channelnum & 0xff)
 		<< std::endl);
 
-	channel->incNextIncomingSeqNum();
+	channel.incNextIncomingSeqNum();
 
-	u32 headers_size = BASE_HEADER_SIZE + RELIABLE_HEADER_SIZE;
-	// Get out the inside packet and re-process it
-	SharedBuffer<u8> payload(p->size() - headers_size);
-	memcpy(*payload, &p->data[headers_size], payload.getSize());
-
-	dst = processPacket(channel, payload, peer_id, channelnum, true);
+	dst = processPacket(&channel, p.getData(), peer_id, channelnum, true, p.getIsEncrypted());
 	return true;
 }
 
-SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
-	const SharedBuffer<u8> &packetdata, session_t peer_id, u8 channelnum, bool reliable)
+ApplicationPacketData ConnectionReceiveThread::processPacket(Channel *channel,
+	const SharedBuffer<u8> &packetdata, session_t peer_id, u8 channelnum,
+	bool reliable, bool encrypted)
 {
 	PeerHelper peer = m_connection->getPeerNoEx(peer_id);
 
@@ -1140,6 +1136,9 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 		throw InvalidIncomingDataException(errmsg.c_str());
 	}
 
+	// clear flags
+	type = type & ~PACKET_TYPE_FLAG_MASK;
+
 	if (type >= PACKET_TYPE_MAX) {
 		derr_con << m_connection->getDesc() << "Got invalid type=" << ((int) type & 0xff)
 			<< std::endl;
@@ -1147,7 +1146,7 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 	}
 
 	const PacketTypeHandler &pHandle = packetTypeRouter[type];
-	return (this->*pHandle.handler)(channel, packetdata, &peer, channelnum, reliable);
+	return (this->*pHandle.handler)(channel, packetdata, &peer, channelnum, reliable, encrypted);
 }
 
 const ConnectionReceiveThread::PacketTypeHandler
@@ -1158,8 +1157,9 @@ const ConnectionReceiveThread::PacketTypeHandler
 	{&ConnectionReceiveThread::handlePacketType_Reliable},
 };
 
-SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *channel,
-	const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable)
+ApplicationPacketData ConnectionReceiveThread::handlePacketType_Control(Channel *channel,
+	const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
+	bool reliable, bool encrypted)
 {
 	if (packetdata.getSize() < 2)
 		throw InvalidIncomingDataException("packetdata.getSize() < 2");
@@ -1259,22 +1259,25 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 	}
 }
 
-SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Original(Channel *channel,
-	const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable)
+ApplicationPacketData ConnectionReceiveThread::handlePacketType_Original(Channel *channel,
+	const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
+	bool reliable, bool encrypted)
 {
 	if (packetdata.getSize() <= ORIGINAL_HEADER_SIZE)
 		throw InvalidIncomingDataException
 			("packetdata.getSize() <= ORIGINAL_HEADER_SIZE");
 	LOG(dout_con << m_connection->getDesc() << "RETURNING TYPE_ORIGINAL to user"
 		<< std::endl);
+
 	// Get the inside packet out and return it
 	SharedBuffer<u8> payload(packetdata.getSize() - ORIGINAL_HEADER_SIZE);
 	memcpy(*payload, &(packetdata[ORIGINAL_HEADER_SIZE]), payload.getSize());
-	return payload;
+	return ApplicationPacketData{ payload, reliable, encrypted };
 }
 
-SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Split(Channel *channel,
-	const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable)
+ApplicationPacketData ConnectionReceiveThread::handlePacketType_Split(Channel *channel,
+	const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
+	bool reliable, bool encrypted)
 {
 	// We have to create a packet again for buffering
 	// This isn't actually too bad an idea.
@@ -1291,14 +1294,15 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Split(Channel *channe
 		LOG(dout_con << m_connection->getDesc()
 			<< "RETURNING TYPE_SPLIT: Constructed full data, "
 			<< "size=" << data.getSize() << std::endl);
-		return data;
+		return ApplicationPacketData{ data, reliable, encrypted };
 	}
 	LOG(dout_con << m_connection->getDesc() << "BUFFERED TYPE_SPLIT" << std::endl);
 	throw ProcessedSilentlyException("Buffered a split packet chunk");
 }
 
-SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *channel,
-	const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable)
+ApplicationPacketData ConnectionReceiveThread::handlePacketType_Reliable(Channel *channel,
+	const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
+	bool reliable, bool encrypted)
 {
 	assert(channel != NULL);
 
@@ -1306,20 +1310,20 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *cha
 	if (reliable)
 		throw InvalidIncomingDataException("Found nested reliable packets");
 
-	if (packetdata.getSize() < RELIABLE_HEADER_SIZE)
-		throw InvalidIncomingDataException("packetdata.getSize() < RELIABLE_HEADER_SIZE");
+	if (packetdata.getSize() < RELIABLE_HEADER_SIZE + 1)
+		throw InvalidIncomingDataException("packetdata.getSize() < RELIABLE_HEADER_SIZE + 1");
 
 	const u16 seqnum = readU16(&packetdata[1]);
-	bool is_future_packet = false;
-	bool is_old_packet = false;
+
+	const SeqNumWithGen next_seq_num = channel->readNextIncomingSeqNum();
 
 	/* packet is within our receive window send ack */
 	if (seqnum_in_window(seqnum,
-		channel->readNextIncomingSeqNum(), MAX_RELIABLE_WINDOW_SIZE)) {
-		m_connection->sendAck(peer->id, channelnum, seqnum);
+			next_seq_num.packet_seq_num, MAX_RELIABLE_WINDOW_SIZE)) {
+		/**/
 	} else {
-		is_future_packet = seqnum_higher(seqnum, channel->readNextIncomingSeqNum());
-		is_old_packet = seqnum_higher(channel->readNextIncomingSeqNum(), seqnum);
+		bool is_future_packet = seqnum_higher(seqnum, next_seq_num.packet_seq_num);
+		bool is_old_packet = seqnum_higher(next_seq_num.packet_seq_num, seqnum);
 
 		/* packet is not within receive window, don't send ack.           *
 		 * if this was a valid packet it's gonna be retransmitted         */
@@ -1345,23 +1349,64 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *cha
 		}
 	}
 
-	if (seqnum != channel->readNextIncomingSeqNum()) {
+	bool is_future_packet = seqnum != next_seq_num.packet_seq_num;
+	SeqNumWithGen full_seqnum_for_packet;
+	if (is_future_packet)
+	{
+		u64 packet_gen = next_seq_num.generation_counter;
+		if (seqnum < next_seq_num.packet_seq_num)
+			packet_gen++;
+		full_seqnum_for_packet = { packet_gen, seqnum };
+	}
+	else
+	{
+		full_seqnum_for_packet = next_seq_num;
+	}
+
+	// Get out the inside packet and re-process it
+	Buffer<u8> payload(packetdata.getSize() - RELIABLE_HEADER_SIZE);
+	memcpy(*payload, &packetdata[RELIABLE_HEADER_SIZE], payload.getSize());
+
+	u8 type_field = readU8(&(packetdata[0]));
+	encrypted = encrypted || type_field & PACKET_TYPE_FLAG_ENCRYTPED;
+	if (type_field & PACKET_TYPE_FLAG_ENCRYTPED)
+	{
+		bool fatal_error = false;
+		if (!peer->decryptMessage(channelnum, full_seqnum_for_packet, payload, fatal_error))
+		{
+			errorstream << "handlePacketType_Reliable() Failed to decrypt packet sent by client." << std::endl;
+
+			if (fatal_error)
+			{
+				errorstream << "handlePacketType_Reliable() Disconnecting client due to encryption error." << std::endl;
+				m_connection->putCommand(ConnectionCommand::disconnect_peer(peer->id));
+			}
+
+			throw InvalidIncomingDataException("Invalid packet encryption.");
+		}
+	}
+
+	if (peer->isEncrypted()
+			&& !(type_field & PACKET_TYPE_FLAG_ENCRYTPED)
+			&& payload[0] != PACKET_TYPE_CONTROL)
+		throw InvalidIncomingDataException("got unencrypted message in encrypted mode, ignoring");
+
+	// ack packet if everything worked, otherwise pretend we never got it
+	m_connection->sendAck(peer->id, channelnum, seqnum);
+
+	if (is_future_packet) {
 		// This one comes later, buffer it.
 		// Actually we have to make a packet to buffer one.
 		// Well, we have all the ingredients, so just do it.
-		BufferedPacketPtr packet = con::makePacket(
-			peer->getAddress(),
-			packetdata,
-			m_connection->GetProtocolID(),
-			peer->id,
-			channelnum);
+		// We queue only the part wrapped by the reliable packet
 		try {
-			channel->incoming_reliables.insert(packet, channel->readNextIncomingSeqNum());
+			channel->incoming_reliables.insert(peer->id, full_seqnum_for_packet, encrypted, next_seq_num, std::move(payload));
 
 			LOG(dout_con << m_connection->getDesc()
 				<< "BUFFERING, TYPE_RELIABLE peer_id: " << peer->id
 				<< ", channel: " << (channelnum & 0xFF)
-				<< ", seqnum: " << seqnum << std::endl;)
+				<< ", seqnum: " << seqnum
+				<< ", encrypted: " << encrypted << std::endl;)
 
 			throw ProcessedQueued("Buffered future reliable packet");
 		} catch (AlreadyExistsException &e) {
@@ -1384,21 +1429,17 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *cha
 
 
 	/* check for resend case */
-	u16 queued_seqnum = 0;
+	SeqNumWithGen queued_seqnum;
 	if (channel->incoming_reliables.getFirstSeqnum(queued_seqnum)) {
-		if (queued_seqnum == seqnum) {
-			BufferedPacketPtr queued_packet = channel->incoming_reliables.popFirst();
+		if (queued_seqnum.packet_seq_num == seqnum) {
+			IncomingReliablePacket queued_packet = channel->incoming_reliables.popFirst();
 			/** TODO find a way to verify the new against the old packet */
 		}
 	}
 
 	channel->incNextIncomingSeqNum();
 
-	// Get out the inside packet and re-process it
-	SharedBuffer<u8> payload(packetdata.getSize() - RELIABLE_HEADER_SIZE);
-	memcpy(*payload, &packetdata[RELIABLE_HEADER_SIZE], payload.getSize());
-
-	return processPacket(channel, payload, peer->id, channelnum, true);
+	return processPacket(channel, payload, peer->id, channelnum, true, encrypted);
 }
 
 }

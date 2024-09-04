@@ -151,34 +151,106 @@ void makeAutoSplitPacket(const SharedBuffer<u8> &data, u32 chunksize_max,
 	list->push_back(makeOriginalPacket(data));
 }
 
-SharedBuffer<u8> makeReliablePacket(const SharedBuffer<u8> &data, u16 seqnum)
+SharedBuffer<u8> makeReliablePacket(const SharedBuffer<u8> &data, SeqNumWithGen seqnum, u8 channel, bool is_encrypted, const u8 (*encryption_key)[NET_CHACHA_KEY_SIZE])
 {
-	u32 header_size = 3;
+	assert(!is_encrypted || encryption_key);
+	tracestream << "makeReliablePacket(seqnum=" << seqnum << ",is_encrypted=" << is_encrypted << ")" << std::endl;
+
+	u32 header_size = RELIABLE_HEADER_SIZE + (is_encrypted ? NET_AAED_TAG_SIZE : 0);
 	u32 packet_size = data.getSize() + header_size;
-	SharedBuffer<u8> b(packet_size);
+	SharedBuffer<u8> buffer(packet_size);
 
-	writeU8(&b[0], PACKET_TYPE_RELIABLE);
-	writeU16(&b[1], seqnum);
+	writeU8(&buffer[0], PACKET_TYPE_RELIABLE | (is_encrypted ? PACKET_TYPE_FLAG_ENCRYTPED : 0));
+	writeU16(&buffer[1], seqnum.packet_seq_num);
 
-	memcpy(&b[header_size], *data, data.getSize());
+	if (!is_encrypted)
+	{
+		memcpy(&buffer[RELIABLE_HEADER_SIZE], *data, data.getSize());
+	}
+	else {
+		// build IV
+		if (seqnum.generation_counter >= (1ull << 48))
+		{
+			errorstream << "makeReliablePacket() SeqNumWithGen generation counter has overflown, this should never happen." << std::endl;
+			return {};
+		}
 
-	return b;
+		u64 packet_counter = seqnum.generation_counter << 16 | seqnum.packet_seq_num;
+
+		NetworkEncryption::PacketIV iv = NetworkEncryption::generate_packet_iv(channel, packet_counter);
+
+		tracestream << "makeReliablePacket: channel=" << u32(channel) << " packet_counter=" << packet_counter << " seqnum:" << seqnum;
+
+		if (!NetworkEncryption::encrypt_chacha20_poly1305(
+			*encryption_key,
+			iv.iv,
+			data,
+			&buffer[RELIABLE_HEADER_SIZE],
+			packet_size - RELIABLE_HEADER_SIZE))
+		{
+			errorstream << "makeReliablePacket() failed to encrypt packet, this should never happen." << std::endl;
+			return {};
+		}
+	}
+
+	return buffer;
+}
+
+/* ReliableIncomingPacketBuffer */
+
+void ReliableIncomingPacketBuffer::insert(IncomingReliablePacket&& packet, SeqNumWithGen next_expected)
+{
+	MutexAutoLock listlock(m_list_mutex);
+
+	sanity_check(m_list.size() <= SEQNUM_MAX); // FIXME: Handle the error?
+
+	// Find the right place for the packet and insert it there
+	// If list is empty, just add it
+	if (m_list.empty()) {
+		m_list.push_back(std::move(packet));
+		// Done.
+		return;
+	}
+
+	// Otherwise find the right place
+	SeqNumWithGen entry_seq_num;
+	auto it = m_list.begin();
+	while (it != m_list.end())
+	{
+		entry_seq_num = it->getSeqnum();
+		if (entry_seq_num.generation_counter >= packet.getSeqnum().generation_counter &&
+			entry_seq_num.packet_seq_num >= packet.getSeqnum().packet_seq_num)
+		{
+			// found the first entry with the same or higher seq_num
+			break;
+		}
+		++it;
+	}
+
+	if (entry_seq_num == packet.getSeqnum()) {
+		if (it->getIsEncrypted() != packet.getIsEncrypted() ||
+			it->getData().getSize() != packet.getData().getSize())
+		{
+			warningstream << "Got two mismatched reliable packets"
+				<< "old packet => encrypted: " << it->getIsEncrypted() << " data:" << it->getData().getSize()
+				<< std::endl
+				<< "new packet => encrypted: " << packet.getIsEncrypted() << " data:" << packet.getData().getSize()
+				<< std::endl
+				<< "Dropping new packet." << std::endl;
+			throw IncomingDataCorruption("duplicated packet isn't same as original one");
+		}
+	}
+	else if (it != m_list.end()) {
+		m_list.insert(it, std::move(packet));
+	}
+	else {
+		m_list.push_back(std::move(packet));
+	}
 }
 
 /*
 	ReliablePacketBuffer
 */
-
-void ReliablePacketBuffer::print()
-{
-	MutexAutoLock listlock(m_list_mutex);
-	LOG(dout_con<<"Dump of ReliablePacketBuffer:" << std::endl);
-	unsigned int index = 0;
-	for (BufferedPacketPtr &packet : m_list) {
-		LOG(dout_con<<index<< ":" << packet->getSeqnum() << std::endl);
-		index++;
-	}
-}
 
 bool ReliablePacketBuffer::empty()
 {
@@ -210,23 +282,6 @@ bool ReliablePacketBuffer::getFirstSeqnum(u16& result)
 	return true;
 }
 
-BufferedPacketPtr ReliablePacketBuffer::popFirst()
-{
-	MutexAutoLock listlock(m_list_mutex);
-	if (m_list.empty())
-		throw NotFoundException("Buffer is empty");
-
-	BufferedPacketPtr p(m_list.front());
-	m_list.pop_front();
-
-	if (m_list.empty()) {
-		m_oldest_non_answered_ack = 0;
-	} else {
-		m_oldest_non_answered_ack = m_list.front()->getSeqnum();
-	}
-	return p;
-}
-
 BufferedPacketPtr ReliablePacketBuffer::popSeqnum(u16 seqnum)
 {
 	MutexAutoLock listlock(m_list_mutex);
@@ -240,11 +295,6 @@ BufferedPacketPtr ReliablePacketBuffer::popSeqnum(u16 seqnum)
 	BufferedPacketPtr p(*r);
 	m_list.erase(r);
 
-	if (m_list.empty()) {
-		m_oldest_non_answered_ack = 0;
-	} else {
-		m_oldest_non_answered_ack = m_list.front()->getSeqnum();
-	}
 	return p;
 }
 
@@ -259,7 +309,7 @@ void ReliablePacketBuffer::insert(BufferedPacketPtr &p_ptr, u16 next_expected)
 		return;
 	}
 	u8 type = readU8(&p.data[BASE_HEADER_SIZE + 0]);
-	if (type != PACKET_TYPE_RELIABLE) {
+	if ((type & ~PACKET_TYPE_FLAG_MASK) != PACKET_TYPE_RELIABLE) {
 		errorstream << "ReliablePacketBuffer::insert(): type is not reliable"
 			<< std::endl;
 		return;
@@ -283,7 +333,6 @@ void ReliablePacketBuffer::insert(BufferedPacketPtr &p_ptr, u16 next_expected)
 	// If list is empty, just add it
 	if (m_list.empty()) {
 		m_list.push_back(p_ptr);
-		m_oldest_non_answered_ack = seqnum;
 		// Done.
 		return;
 	}
@@ -347,9 +396,6 @@ void ReliablePacketBuffer::insert(BufferedPacketPtr &p_ptr, u16 next_expected)
 	} else {
 		m_list.push_back(p_ptr);
 	}
-
-	/* update last packet number */
-	m_oldest_non_answered_ack = m_list.front()->getSeqnum();
 }
 
 void ReliablePacketBuffer::incrementTimeouts(float dtime)
@@ -460,7 +506,7 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacketPtr &p_ptr, bool reli
 		errorstream << "Invalid data size for split packet" << std::endl;
 		return SharedBuffer<u8>();
 	}
-	u8 type = readU8(&p.data[BASE_HEADER_SIZE+0]);
+	u8 type = readU8(&p.data[BASE_HEADER_SIZE+0]) & ~PACKET_TYPE_FLAG_MASK;
 	u16 seqnum = readU16(&p.data[BASE_HEADER_SIZE+1]);
 	u16 chunk_count = readU16(&p.data[BASE_HEADER_SIZE+3]);
 	u16 chunk_num = readU16(&p.data[BASE_HEADER_SIZE+5]);
@@ -592,6 +638,7 @@ ConnectionCommandPtr ConnectionCommand::send(session_t peer_id, u8 channelnum,
 	c->channelnum = channelnum;
 	c->reliable = reliable;
 	c->data = pkt->oldForgePacket();
+	c->force_disable_encryption = pkt->getIsEncryptionDisabled();
 	return c;
 }
 
@@ -620,17 +667,17 @@ ConnectionCommandPtr ConnectionCommand::createPeer(session_t peer_id, const Buff
 	Channel
 */
 
-u16 Channel::readNextIncomingSeqNum()
+SeqNumWithGen Channel::readNextIncomingSeqNum()
 {
 	MutexAutoLock internal(m_internal_mutex);
 	return next_incoming_seqnum;
 }
 
-u16 Channel::incNextIncomingSeqNum()
+SeqNumWithGen Channel::incNextIncomingSeqNum()
 {
 	MutexAutoLock internal(m_internal_mutex);
-	u16 retval = next_incoming_seqnum;
-	next_incoming_seqnum++;
+	SeqNumWithGen retval = next_incoming_seqnum;
+	next_incoming_seqnum = retval.next();
 	return retval;
 }
 
@@ -645,55 +692,54 @@ void Channel::setNextSplitSeqNum(u16 seqnum)
 	next_outgoing_split_seqnum = seqnum;
 }
 
-u16 Channel::getOutgoingSequenceNumber(bool& successful)
+SeqNumWithGen Channel::getOutgoingSequenceNumber(bool& successful)
 {
 	MutexAutoLock internal(m_internal_mutex);
 
-	u16 retval = next_outgoing_seqnum;
+	const SeqNumWithGen seqnum = next_outgoing_seqnum;
+
 	successful = false;
 
 	/* shortcut if there ain't any packet in outgoing list */
-	if (outgoing_reliables_sent.empty()) {
-		successful = true;
-		next_outgoing_seqnum++;
-		return retval;
-	}
-
 	u16 lowest_unacked_seqnumber;
-	if (outgoing_reliables_sent.getFirstSeqnum(lowest_unacked_seqnumber)) {
-		if (lowest_unacked_seqnumber < next_outgoing_seqnum) {
+	if (!outgoing_reliables_sent.empty()
+		&& outgoing_reliables_sent.getFirstSeqnum(lowest_unacked_seqnumber)) {
+		if (lowest_unacked_seqnumber < next_outgoing_seqnum.packet_seq_num) {
 			// ugly cast but this one is required in order to tell compiler we
 			// know about difference of two unsigned may be negative in general
 			// but we already made sure it won't happen in this case
-			if (((u16)(next_outgoing_seqnum - lowest_unacked_seqnumber)) > m_window_size) {
-				return 0;
+			if (((u16)(next_outgoing_seqnum.packet_seq_num - lowest_unacked_seqnumber)) > m_window_size) {
+				return SeqNumWithGen{};
 			}
 		} else {
 			// ugly cast but this one is required in order to tell compiler we
 			// know about difference of two unsigned may be negative in general
 			// but we already made sure it won't happen in this case
-			if ((next_outgoing_seqnum + (u16)(SEQNUM_MAX - lowest_unacked_seqnumber)) >
+			if ((next_outgoing_seqnum.packet_seq_num + (u16)(SEQNUM_MAX - lowest_unacked_seqnumber)) >
 					m_window_size) {
-				return 0;
+				return SeqNumWithGen{};
 			}
 		}
 	}
 
 	successful = true;
-	next_outgoing_seqnum++;
-	return retval;
+
+
+	next_outgoing_seqnum = seqnum.next();
+
+	return seqnum;
 }
 
-u16 Channel::readOutgoingSequenceNumber()
+SeqNumWithGen Channel::readOutgoingSequenceNumber()
 {
 	MutexAutoLock internal(m_internal_mutex);
 	return next_outgoing_seqnum;
 }
 
-bool Channel::putBackSequenceNumber(u16 seqnum)
+bool Channel::putBackSequenceNumber(SeqNumWithGen seqnum)
 {
-	if (((seqnum + 1) % (SEQNUM_MAX+1)) == next_outgoing_seqnum) {
-
+	if (seqnum.next() == next_outgoing_seqnum)
+	{
 		next_outgoing_seqnum = seqnum;
 		return true;
 	}
@@ -962,6 +1008,39 @@ void Peer::Drop()
 	delete this;
 }
 
+bool Peer::decryptMessage(u8 channel_id, SeqNumWithGen seq_num, Buffer<u8>& data, bool& fatal_error)
+{
+	// build IV
+	if (seq_num.generation_counter >= (1ull << 48))
+	{
+		errorstream << "decryptMessageIfNeeded() SeqNumWithGen generation counter has overflown, this should never happen. Please file a bug report!" << std::endl;
+		fatal_error = true;
+		return false;
+	}
+
+	u64 packet_counter = seq_num.generation_counter << 16 | seq_num.packet_seq_num;
+
+	NetworkEncryption::PacketIV iv = NetworkEncryption::generate_packet_iv(channel_id, packet_counter);
+
+	tracestream << "decryptMessage: channel=" << u32(channel_id) << " packet_counter=" << packet_counter << " seqnum:" << seq_num;
+
+	if (!NetworkEncryption::decrypt_chacha20_poly1305(m_receive_keys.keys[channel_id], iv.iv, data))
+	{
+		actionstream << "Recieved a packet from a peer that couldn't be decrypted, this indicates either a bug, network packet corruption, or attack attempt:"
+			<< std::endl << "peer_id: " << this->id
+			<< ", channel: " << u32(channel_id)
+			<< ", decryption failure count: " << m_decryption_failure_counter << std::endl;
+		m_decryption_failure_counter++;
+
+		if (m_decryption_failure_counter > MAX_DECRYPTION_FAILURE_COUNT)
+			fatal_error = true;
+
+		return false;
+	}
+
+	return true;
+}
+
 UDPPeer::UDPPeer(session_t id, const Address &address, Connection *connection) :
 	Peer(id, address, connection)
 {
@@ -977,8 +1056,7 @@ bool UDPPeer::isTimedOut(float timeout, std::string &reason)
 	MutexAutoLock lock(m_exclusive_access_mutex);
 
 	for (int i = 0; i < CHANNEL_COUNT; i++) {
-		Channel &channel = channels[i];
-		if (channel.outgoing_reliables_sent.getTimedOuts(timeout) > 0) {
+		if (channels[i].outgoing_reliables_sent.getTimedOuts(timeout) > 0) {
 			reason = "outgoing reliables channel=" + itos(i);
 			return true;
 		}
@@ -1059,11 +1137,18 @@ bool UDPPeer::processReliableSendCommand(
 	const auto &c = *c_ptr;
 	Channel &chan = channels[c.channelnum];
 
+	const bool is_encrypted = !c.force_disable_encryption && m_enable_encryption;
+
 	const u32 chunksize_max = max_packet_size
 							- BASE_HEADER_SIZE
-							- RELIABLE_HEADER_SIZE;
+							- RELIABLE_HEADER_SIZE
+							- (is_encrypted ? NET_AAED_TAG_SIZE : 0);
 
 	std::list<SharedBuffer<u8>> originals;
+
+	tracestream << "processReliableSendCommand(reliable=" << c.reliable << ", is_encrypted=" << is_encrypted
+		<< ", force_disable_encryption=" << c.force_disable_encryption
+		<< ", type=" << c.type << ", chan=" << (u32)c.channelnum << ")" << std::endl;
 
 	if (c.raw) {
 		originals.emplace_back(c.data);
@@ -1075,63 +1160,70 @@ bool UDPPeer::processReliableSendCommand(
 
 	sanity_check(originals.size() < MAX_RELIABLE_WINDOW_SIZE);
 
+	s32 initial_sequence_number = -1;
+
 	bool have_sequence_number = false;
-	bool have_initial_sequence_number = false;
-	std::queue<BufferedPacketPtr> toadd;
-	u16 initial_sequence_number = 0;
+	std::deque<std::pair<SeqNumWithGen,BufferedPacketPtr>> toadd;
 
 	for (SharedBuffer<u8> &original : originals) {
-		u16 seqnum = chan.getOutgoingSequenceNumber(have_sequence_number);
+		SeqNumWithGen seqnum = chan.getOutgoingSequenceNumber(have_sequence_number);
+
+		if (!have_sequence_number) {
+			LOG(derr_con << m_connection->getDesc() << "Ran out of sequence numbers!" << std::endl);
+		}
 
 		/* oops, we don't have enough sequence numbers to send this packet */
 		if (!have_sequence_number)
 			break;
 
-		if (!have_initial_sequence_number)
-		{
-			initial_sequence_number = seqnum;
-			have_initial_sequence_number = true;
-		}
+		if (initial_sequence_number == -1)
+			initial_sequence_number = seqnum.packet_seq_num;
 
-		SharedBuffer<u8> reliable = makeReliablePacket(original, seqnum);
+		const u8 (&channel_encryption_key)[NET_CHACHA_KEY_SIZE] = m_send_keys.keys[c.channelnum];
+
+		SharedBuffer<u8> reliable = makeReliablePacket(original, seqnum, c.channelnum, is_encrypted, &channel_encryption_key);
+
+		if (reliable.getSize() == 0)
+		{
+			m_has_fatal_encryption_error = true;
+
+			errorstream << "makeReliablePacket failed for peer_id=" << c.peer_id << ", this shouldn't happen, please file a bug report. Disconnecting peer!" << std::endl;
+			m_connection->DisconnectPeer(c.peer_id);
+
+			have_sequence_number = false;
+		}
 
 		// Add base headers and make a packet
 		BufferedPacketPtr p = con::makePacket(address, reliable,
 				m_connection->GetProtocolID(), m_connection->GetPeerID(),
 				c.channelnum);
 
-		toadd.push(p);
+		toadd.emplace_back(seqnum, p);
 	}
 
 	if (have_sequence_number) {
 		while (!toadd.empty()) {
-			BufferedPacketPtr p = toadd.front();
-			toadd.pop();
+			std::pair<SeqNumWithGen, BufferedPacketPtr> p = toadd.front();
+			toadd.pop_front();
 //			LOG(dout_con<<connection->getDesc()
 //					<< " queuing reliable packet for peer_id: " << c.peer_id
 //					<< " channel: " << (c.channelnum&0xFF)
 //					<< " seqnum: " << readU16(&p.data[BASE_HEADER_SIZE+1])
 //					<< std::endl)
-			chan.queued_reliables.push(p);
+			chan.queued_reliables.push(p.second);
 		}
 		sanity_check(chan.queued_reliables.size() < 0xFFFF);
 		return true;
 	}
 
 	u16 packets_available = toadd.size();
-	/* we didn't get a single sequence number no need to fill queue */
-	if (!have_initial_sequence_number) {
-		LOG(derr_con << m_connection->getDesc() << "Ran out of sequence numbers!" << std::endl);
-		return false;
-	}
 
 	while (!toadd.empty()) {
 		/* remove packet */
-		toadd.pop();
+		std::pair<SeqNumWithGen, BufferedPacketPtr> p = toadd.back();
+		toadd.pop_back();
 
-		bool successfully_put_back_sequence_number
-			= chan.putBackSequenceNumber(
-				(initial_sequence_number+toadd.size() % (SEQNUM_MAX+1)));
+		bool successfully_put_back_sequence_number = chan.putBackSequenceNumber(p.first);
 
 		FATAL_ERROR_IF(!successfully_put_back_sequence_number, "error");
 	}
@@ -1162,18 +1254,18 @@ void UDPPeer::RunCommandQueues(
 		if ((!channel.queued_commands.empty()) &&
 				(channel.queued_reliables.size() < maxtransfer)) {
 			try {
-				ConnectionCommandPtr c = channel.queued_commands.front();
+				ConnectionCommandPtr ptr = channel.queued_commands.front();
 
 				LOG(dout_con << m_connection->getDesc()
 						<< " processing queued reliable command " << std::endl);
 
 				// Packet is processed, remove it from queue
-				if (processReliableSendCommand(c, max_packet_size)) {
+				if (processReliableSendCommand(ptr, max_packet_size)) {
 					channel.queued_commands.pop_front();
 				} else {
 					LOG(dout_con << m_connection->getDesc()
-							<< " Failed to queue packets for peer_id: " << c->peer_id
-							<< ", delaying sending of " << c->data.getSize()
+							<< " Failed to queue packets for peer_id: " << ptr->peer_id
+							<< ", delaying sending of " << ptr->data.getSize()
 							<< " bytes" << std::endl);
 				}
 			}
@@ -1230,11 +1322,13 @@ ConnectionEventPtr ConnectionEvent::create(ConnectionEventType type)
 	return std::shared_ptr<ConnectionEvent>(new ConnectionEvent(type));
 }
 
-ConnectionEventPtr ConnectionEvent::dataReceived(session_t peer_id, const Buffer<u8> &data)
+ConnectionEventPtr ConnectionEvent::dataReceived(session_t peer_id, const Buffer<u8>& data, bool reliable, bool encrypted)
 {
 	auto e = create(CONNEVENT_DATA_RECEIVED);
 	e->peer_id = peer_id;
 	data.copyTo(e->data);
+	e->encrypted = encrypted;
+	e->reliable = reliable;
 	return e;
 }
 
@@ -1465,6 +1559,8 @@ bool Connection::ReceiveTimeoutMs(NetworkPacket *pkt, u32 timeout_ms)
 			}
 
 			pkt->putRawPacket(*e.data, e.data.getSize(), e.peer_id);
+			pkt->setRecievedData(e.encrypted, e.reliable);
+
 			return true;
 		case CONNEVENT_PEER_ADDED: {
 			UDPPeer tmp(e.peer_id, e.address, this);
@@ -1518,6 +1614,22 @@ float Connection::getPeerStat(session_t peer_id, rtt_stat_type type)
 	if (!peer)
 		return -1;
 	return peer->getStat(type);
+}
+
+bool Connection::setEncryptionKeys(session_t peer_id, NetworkEncryption::AESChannelKeys send_keys, NetworkEncryption::AESChannelKeys receive_keys)
+{
+	PeerHelper peer = getPeerNoEx(peer_id);
+	if (!peer)
+		return false;
+	return peer->setEncryptionKeys(send_keys, receive_keys);
+}
+
+bool Connection::disableEncryption(session_t peer_id)
+{
+	PeerHelper peer = getPeerNoEx(peer_id);
+	if (!peer)
+		return false;
+	return peer->disableEncryption();
 }
 
 float Connection::getLocalStat(rate_stat_type type)

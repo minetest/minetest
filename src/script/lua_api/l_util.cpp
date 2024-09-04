@@ -42,9 +42,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "util/hex.h"
 #include "util/sha1.h"
-#include "my_sha256.h"
 #include "util/png.h"
 #include "player.h"
+#include "Hacl_Hash_SHA2.h"
 #include <cstdio>
 
 // only available in zstd 1.3.5+
@@ -575,15 +575,14 @@ int ModApiUtil::l_sha256(lua_State *L)
 	auto data = readParam<std::string_view>(L, 1);
 	bool hex = !lua_isboolean(L, 2) || !readParam<bool>(L, 2);
 
-	std::string data_sha256;
-	data_sha256.resize(SHA256_DIGEST_LENGTH);
-	SHA256(reinterpret_cast<const unsigned char*>(data.data()), data.size(),
-		reinterpret_cast<unsigned char *>(data_sha256.data()));
+	std::string digest;
+	digest.resize(32);
+	Hacl_Hash_SHA2_hash_256((unsigned char*)digest.data(), (unsigned char*)data.data(), data.size());
 
 	if (hex) {
-		lua_pushstring(L, hex_encode(data_sha256).c_str());
+		lua_pushstring(L, hex_encode(digest).c_str());
 	} else {
-		lua_pushlstring(L, data_sha256.data(), data_sha256.size());
+		lua_pushlstring(L, digest.data(), digest.size());
 	}
 
 	return 1;

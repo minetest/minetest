@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "porting.h"
 #include "network/networkprotocol.h"
+#include "network/encryption.h"
 #include <iostream>
 #include <vector>
 #include <map>
@@ -81,12 +82,14 @@ struct ConnectionEvent
 	Buffer<u8> data;
 	bool timeout = false;
 	Address address;
+	bool encrypted = false;
+	bool reliable = false;
 
 	// We don't want to copy "data"
 	DISABLE_CLASS_COPY(ConnectionEvent);
 
 	static ConnectionEventPtr create(ConnectionEventType type);
-	static ConnectionEventPtr dataReceived(session_t peer_id, const Buffer<u8> &data);
+	static ConnectionEventPtr dataReceived(session_t peer_id, const Buffer<u8> &data, bool reliable, bool encrypted);
 	static ConnectionEventPtr peerAdded(session_t peer_id, Address address);
 	static ConnectionEventPtr peerRemoved(session_t peer_id, bool is_timeout, Address address);
 	static ConnectionEventPtr bindFailed();
@@ -106,6 +109,7 @@ typedef std::shared_ptr<BufferedPacket> BufferedPacketPtr;
 
 class Connection;
 class PeerHandler;
+struct SeqNumWithGen;
 
 class Peer : public IPeer {
 	public:
@@ -171,6 +175,27 @@ class Peer : public IPeer {
 			return -1;
 		}
 
+		bool setEncryptionKeys(NetworkEncryption::AESChannelKeys send_keys, NetworkEncryption::AESChannelKeys receive_keys) {
+			verbosestream << "setEncryptionKeys(): keys set!" << std::endl;
+			m_send_keys = send_keys;
+			m_receive_keys = receive_keys;
+
+			m_enable_encryption = true;
+			return true;
+		}
+
+		bool disableEncryption() {
+			m_enable_encryption = false;
+
+			return true;
+		}
+
+		bool decryptMessage(u8 channel_id, SeqNumWithGen seq_num, Buffer<u8>& data, bool& fatal_error);
+
+		bool isEncrypted() const {
+			return m_enable_encryption;
+		}
+
 	protected:
 		Peer(session_t id, const Address &address, Connection *connection) :
 			IPeer(id),
@@ -200,6 +225,11 @@ class Peer : public IPeer {
 
 		// Ping timer
 		float m_ping_timer = 0.0f;
+
+		bool m_enable_encryption = false;
+		NetworkEncryption::AESChannelKeys m_send_keys = {};
+		NetworkEncryption::AESChannelKeys m_receive_keys = {};
+		u32 m_decryption_failure_counter = 0;
 
 	private:
 		struct rttstats {
@@ -258,6 +288,8 @@ public:
 	session_t GetPeerID() const { return m_peer_id; }
 	Address GetPeerAddress(session_t peer_id);
 	float getPeerStat(session_t peer_id, rtt_stat_type type);
+	bool setEncryptionKeys(session_t peer_id, NetworkEncryption::AESChannelKeys send_keys, NetworkEncryption::AESChannelKeys receive_keys);
+	bool disableEncryption(session_t peer_id);
 	float getLocalStat(rate_stat_type type);
 	u32 GetProtocolID() const { return m_protocol_id; };
 	const std::string getDesc();

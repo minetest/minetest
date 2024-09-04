@@ -148,6 +148,9 @@ Client::Client(
 
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 	m_mesh_grid = { g_settings->getU16("client_mesh_chunk") };
+
+	if (!NetworkEncryption::generate_ephemeral_key_pair(m_network_ephemeral_key))
+		throw BaseException("Failed to generate network ECDHE key!");
 }
 
 void Client::migrateModStorage()
@@ -1139,11 +1142,12 @@ AuthMechanism Client::choseAuthMech(const u32 mechs)
 
 void Client::sendInit(const std::string &playerName)
 {
-	NetworkPacket pkt(TOSERVER_INIT, 1 + 2 + 2 + (1 + playerName.size()));
+	NetworkPacket pkt(TOSERVER_INIT, 1 + 2 + 2 + (1 + playerName.size()) + sizeof(m_network_ephemeral_key.public_key));
 
 	pkt << (u8) SER_FMT_VER_HIGHEST_READ << (u16) 0;
 	pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
 	pkt << playerName;
+	pkt.putRawData(&m_network_ephemeral_key.public_key[0], sizeof(m_network_ephemeral_key.public_key));
 
 	Send(&pkt);
 }
@@ -1177,9 +1181,18 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 				based_on = 0;
 			}
 
+			const char* identity = playername.c_str();
+
+			std::string identity_for_encrypted_srp;
+			if (m_proto_ver >= PROTOCOL_VERSION_ENCRYPTION) {
+				NetworkEncryption::get_identity_for_srp(m_handshake_digest, playername, identity_for_encrypted_srp);
+
+				identity = identity_for_encrypted_srp.c_str();
+			}
+
 			std::string playername_u = lowercase(playername);
 			m_auth_data = srp_user_new(SRP_SHA256, SRP_NG_2048,
-				playername.c_str(), playername_u.c_str(),
+				identity, playername_u.c_str(),
 				(const unsigned char *) m_password.c_str(),
 				m_password.length(), NULL, NULL);
 			char *bytes_A = 0;

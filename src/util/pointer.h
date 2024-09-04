@@ -141,6 +141,15 @@ public:
 		return std::string_view(reinterpret_cast<char*>(data), m_size);
 	}
 
+	void shrinkSize(size_t new_size)
+	{
+		assert(new_size <= m_size);
+		if (new_size <= m_size)
+		{
+			m_size = new_size;
+		}
+	}
+
 private:
 	void drop()
 	{
@@ -165,36 +174,54 @@ public:
 	{
 		m_size = 0;
 		data = NULL;
-		refcount = new unsigned int;
-		(*refcount) = 1;
+		refcount = 0;
 	}
 	SharedBuffer(unsigned int size)
 	{
 		m_size = size;
-		if(m_size != 0)
+		if (m_size != 0) {
 			data = new T[m_size];
-		else
-			data = nullptr;
-		refcount = new unsigned int;
-		memset(data,0,sizeof(T)*m_size);
-		(*refcount) = 1;
+			refcount = new unsigned int;
+			memset(data, 0, sizeof(T) * m_size);
+			(*refcount) = 1;
+		}
 	}
 	SharedBuffer(const SharedBuffer &buffer)
+	{
+		assert(refcount || (!m_size && !data));
+
+		m_size = buffer.m_size;
+		data = buffer.data;
+		refcount = buffer.refcount;
+		if (refcount)
+			(*refcount)++;
+	}
+	SharedBuffer(SharedBuffer&& buffer)
 	{
 		m_size = buffer.m_size;
 		data = buffer.data;
 		refcount = buffer.refcount;
-		(*refcount)++;
+
+		buffer.m_size = 0;
+		buffer.data = NULL;
+		buffer.refcount = 0;
 	}
+
 	SharedBuffer & operator=(const SharedBuffer & buffer)
 	{
+		assert(refcount || (!m_size && !data));
+		assert(buffer.refcount || (!buffer.m_size && !buffer.data));
+
 		if(this == &buffer)
 			return *this;
 		drop();
 		m_size = buffer.m_size;
 		data = buffer.data;
 		refcount = buffer.refcount;
-		(*refcount)++;
+
+		if (refcount)
+			(*refcount)++;
+
 		return *this;
 	}
 	/*
@@ -203,15 +230,18 @@ public:
 	SharedBuffer(const T *t, unsigned int size)
 	{
 		m_size = size;
-		if(m_size != 0)
-		{
+		if(m_size != 0) {
+
 			data = new T[m_size];
 			memcpy(data, t, m_size);
+
+			refcount = new unsigned int;
+			(*refcount) = 1;
 		}
-		else
+		else {
 			data = nullptr;
-		refcount = new unsigned int;
-		(*refcount) = 1;
+			refcount = nullptr;
+		}
 	}
 	/*
 		Copies whole buffer
@@ -222,11 +252,14 @@ public:
 		if (m_size != 0) {
 				data = new T[m_size];
 				memcpy(data, *buffer, buffer.getSize());
+
+				refcount = new unsigned int;
+				(*refcount) = 1;
 		}
-		else
+		else {
 			data = nullptr;
-		refcount = new unsigned int;
-		(*refcount) = 1;
+			refcount = nullptr;
+		}
 	}
 	~SharedBuffer()
 	{
@@ -245,6 +278,16 @@ public:
 	{
 		return m_size;
 	}
+
+	void shrinkSize(size_t new_size)
+	{
+		assert(new_size <= m_size);
+		if (new_size <= m_size)
+		{
+			m_size = new_size;
+		}
+	}
+
 	operator Buffer<T>() const
 	{
 		return Buffer<T>(data, m_size);
@@ -252,6 +295,10 @@ public:
 private:
 	void drop()
 	{
+		// if no ref count is set
+		// this is an empty ref buffer
+		if (!refcount)
+			return;
 		assert((*refcount) > 0);
 		(*refcount)--;
 		if(*refcount == 0)
@@ -260,9 +307,9 @@ private:
 			delete refcount;
 		}
 	}
-	T *data;
-	unsigned int m_size;
-	unsigned int *refcount;
+	T *data = nullptr;
+	unsigned int m_size = 0;
+	unsigned int *refcount = nullptr;
 };
 
 // This class is not thread-safe!

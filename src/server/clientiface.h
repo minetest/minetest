@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"             // for SER_FMT_VER_INVALID
 #include "network/networkpacket.h"
 #include "network/networkprotocol.h"
+#include "network/encryption.h"
 #include "network/address.h"
 #include "porting.h"
 #include "threading/mutex_auto_lock.h"
@@ -345,12 +346,62 @@ public:
 	void setDynamicInfo(const ClientDynamicInfo &info) { m_dynamic_info = info; }
 	const ClientDynamicInfo &getDynamicInfo() const { return m_dynamic_info; }
 
+	void setEphemeralKeyState(const NetworkEncryption::ECDHEPublicKey& client_key,
+		const NetworkEncryption::ECDHEKeyPair& server_key_pair,
+		const NetworkEncryption::HandshakeDigest& handshake_digest)
+	{
+		// can't be set more than once
+		assert(m_connection_security_level == NetworkEncryption::ConnectionSecurityLevel::None);
+
+		m_client_public_key = client_key;
+		m_server_key_pair = server_key_pair;
+		m_handshake_digest = handshake_digest;
+
+		m_connection_security_level = NetworkEncryption::ConnectionSecurityLevel::Passive;
+	}
+
+	const char *getNetSecurityLevelStr() const
+	{
+		switch (m_connection_security_level)
+		{
+		case NetworkEncryption::ConnectionSecurityLevel::None:
+			return "none";
+		case NetworkEncryption::ConnectionSecurityLevel::Passive:
+			return "passive";
+		case NetworkEncryption::ConnectionSecurityLevel::FullyAuthenicated:
+			return "fully_authenicated";
+		}
+
+		assert(0 && "unreachable");
+
+		return "";
+	}
+
+	bool hasEncryptedNetwork() const
+	{
+		return m_connection_security_level > NetworkEncryption::ConnectionSecurityLevel::None;
+	}
+
+	void reportSRPSuccess()
+	{
+		if (m_connection_security_level == NetworkEncryption::ConnectionSecurityLevel::Passive)
+			m_connection_security_level = NetworkEncryption::ConnectionSecurityLevel::FullyAuthenicated;
+	}
+
+	const NetworkEncryption::HandshakeDigest &getHandshakeDigest() const
+	{
+		return m_handshake_digest;
+	}
+
 private:
 	// Version is stored in here after INIT before INIT2
 	u8 m_pending_serialization_version = SER_FMT_VER_INVALID;
 
 	/* current state of client */
 	ClientState m_state = CS_Created;
+
+	/* network encryption state */
+	NetworkEncryption::ConnectionSecurityLevel m_connection_security_level = NetworkEncryption::ConnectionSecurityLevel::None;
 
 	// Cached here so retrieval doesn't have to go to connection API
 	Address m_addr;
@@ -360,6 +411,15 @@ private:
 
 	// Client-sent dynamic info
 	ClientDynamicInfo m_dynamic_info{};
+
+	// public, private and srp binding keys for clients that support encryption
+
+	// ephemeral public key the client connected with
+	NetworkEncryption::ECDHEPublicKey  m_client_public_key{};
+	// ephemeral server key pair
+	NetworkEncryption::ECDHEKeyPair    m_server_key_pair{};
+	// shared secret key for signing SRP m-bytes
+	NetworkEncryption::HandshakeDigest m_handshake_digest{};
 
 	/*
 		Blocks that have been sent to client.

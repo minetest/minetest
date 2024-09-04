@@ -143,7 +143,7 @@ void TestConnection::testHelpers()
 
 	//infostream<<"initial data1[0]="<<((u32)data1[0]&0xff)<<std::endl;
 
-	SharedBuffer<u8> p2 = con::makeReliablePacket(data1, seqnum);
+	SharedBuffer<u8> p2 = con::makeReliablePacket(data1, { 0, seqnum }, 0, /*is_encrypted=*/false, nullptr);
 
 	/*infostream<<"p2.getSize()="<<p2.getSize()<<", data1.getSize()="
 			<<data1.getSize()<<std::endl;
@@ -195,8 +195,8 @@ void TestConnection::testConnectSendReceive()
 	infostream << "** Creating client Connection" << std::endl;
 	con::Connection client(512, 5.0f, false, &hand_client);
 
-	UASSERT(hand_server.count == 0);
-	UASSERT(hand_client.count == 0);
+	UASSERTEQ(s32, hand_server.count, 0);
+	UASSERTEQ(s32, hand_client.count, 0);
 
 	sleep_ms(50);
 
@@ -293,6 +293,7 @@ void TestConnection::testConnectSendReceive()
 
 		auto recvdata = pkt.oldForgePacket();
 
+		UASSERTEQ(size_t, sentdata.getSize(), recvdata.getSize());
 		UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
 	}
 
@@ -360,6 +361,7 @@ void TestConnection::testConnectSendReceive()
 			infostream << "...";
 		infostream << std::endl;
 
+		UASSERTEQ(size_t, sentdata.getSize(), recvdata.getSize());
 		UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
 		UASSERT(peer_id == PEER_ID_SERVER);
 	}
