@@ -1336,7 +1336,7 @@ void drawItemStack(
 			rect2 = core::rect<s32>(x1, y1, x2, y2);
 		}
 
-		video::SColor color(255, 255, 255, 255);
+		video::SColor color(200, 160, 255, 255);
 		font->draw(utf8_to_wide(text).c_str(), rect2, color, false, false, &viewrect);
 	}
 }

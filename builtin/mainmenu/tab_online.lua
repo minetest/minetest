@@ -91,7 +91,7 @@ local function get_formspec(tabview, name, tabdata)
 
 		-- Description Background
 		"label[0.25,1.6;" .. fgettext("Server Description") .. "]" ..
-		"box[0.25,1.85;5.25,2.7;#999999]"..
+		"box[0.25,1.85;5.25,2.7;#A999AF]"..
 
 		-- Name / Password
 		"container[0,4.8]" ..
@@ -155,9 +155,9 @@ local function get_formspec(tabview, name, tabdata)
 	local servers = get_sorted_servers()
 
 	local dividers = {
-		fav = "5,#ffff00," .. fgettext("Favorites") .. ",,,0,0,,",
-		public = "6,#4bdd42," .. fgettext("Public Servers") .. ",,,0,0,,",
-		incompatible = "7,"..mt_color_grey.."," .. fgettext("Incompatible Servers") .. ",,,0,0,,"
+		fav = "5,#daf," .. fgettext("Favorites") .. ",,,0,0,,",
+		public = "6,#a8d," .. fgettext("Public Servers") .. ",,,0,0,,",
+		incompatible = "7,#a8b," .. fgettext("Incompatible Servers") .. ",,,0,0,,"
 	}
 	local order = {"fav", "public", "incompatible"}
 

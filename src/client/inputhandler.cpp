@@ -76,6 +76,7 @@ void KeyCache::populate()
 			getKeySetting("keymap_decrease_viewing_range_min");
 	key[KeyType::RANGESELECT] = getKeySetting("keymap_rangeselect");
 	key[KeyType::ZOOM] = getKeySetting("keymap_zoom");
+	key[KeyType::FREELOOK] = getKeySetting("keymap_freelook");
 
 	key[KeyType::QUICKTUNE_NEXT] = getKeySetting("keymap_quicktune_next");
 	key[KeyType::QUICKTUNE_PREV] = getKeySetting("keymap_quicktune_prev");

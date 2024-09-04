@@ -1417,10 +1417,12 @@ void Client::sendPlayerPos()
 			player->last_wanted_range    == wanted_range)
 		return;
 
-	player->last_position        = player->getPosition();
-	player->last_speed           = player->getSpeed();
-	player->last_pitch           = player->getPitch();
-	player->last_yaw             = player->getYaw();
+	if (m_camera->getCameraMode() != CAMERA_MODE_FREELOOK) {
+		player->last_position        = player->getPosition();
+		player->last_speed           = player->getSpeed();
+		player->last_pitch           = player->getPitch();
+		player->last_yaw             = player->getYaw();
+	}
 	player->last_keyPressed      = keyPressed;
 	player->last_camera_fov      = camera_fov;
 	player->last_camera_inverted = camera_inverted;

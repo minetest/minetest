@@ -49,6 +49,7 @@ Some can be changed in the key config dialog in the settings tab.
 | Mouse wheel                   | Select item                                                    |
 | 0-9                           | Select item                                                    |
 | Z                             | Zoom (needs zoom privilege)                                    |
+| V                             | Freelook                                                       |
 | T                             | Chat                                                           |
 | /                             | Command                                                        |
 | Esc                           | Pause menu/abort/exit (pauses only singleplayer game)          |
@@ -59,7 +60,7 @@ Some can be changed in the key config dialog in the settings tab.
 | H                             | Enable/disable noclip mode (needs noclip privilege)            |
 | E                             | Aux1 (Move fast in fast mode. Games may add special features)  |
 | C                             | Cycle through camera modes                                     |
-| V                             | Cycle through minimap modes                                    |
+| X                             | Cycle through minimap modes                                    |
 | Shift + V                     | Change minimap orientation                                     |
 | F1                            | Hide/show HUD                                                  |
 | F2                            | Hide/show chat                                                 |

@@ -328,7 +328,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 
 	// Set player node transformation
 	m_playernode->setPosition(player_position);
-	m_playernode->setRotation(v3f(0, -1 * yaw, 0));
+	if (player->getPlayerControl().freelook) {
+		m_camera_mode = CAMERA_MODE_FREELOOK;
+	} else if (m_camera_mode == CAMERA_MODE_FREELOOK) {
+		m_camera_mode = CAMERA_MODE_FIRST;
+		
+	}
+	m_playernode->setRotation(v3f(0, -1 * yaw, 0)); // this is the camera turning
 	m_playernode->updateAbsolutePosition();
 
 	// Get camera tilt timer (hurt animation)
@@ -362,6 +368,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 			eye_offset += player->eye_offset_first;
 			break;
 		case CAMERA_MODE_THIRD:
+			eye_offset += player->eye_offset_third;
+			break;
+		case CAMERA_MODE_FREELOOK:
 			eye_offset += player->eye_offset_third;
 			break;
 		case CAMERA_MODE_THIRD_FRONT:
@@ -443,7 +452,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 			}
 		}
 
-		// If node blocks camera position don't move y to heigh
+		// If node blocks camera position don't move y too high
 		if (abort && my_cp.Y > player_position.Y+BS*2)
 			my_cp.Y = player_position.Y+BS*2;
 	}

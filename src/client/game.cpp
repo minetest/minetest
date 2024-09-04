@@ -2724,6 +2724,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		isKeyDown(KeyType::AUX1),
 		isKeyDown(KeyType::SNEAK),
 		isKeyDown(KeyType::ZOOM),
+		isKeyDown(KeyType::FREELOOK),
 		isKeyDown(KeyType::DIG),
 		isKeyDown(KeyType::PLACE),
 		cam.camera_pitch,
@@ -3330,6 +3331,11 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 		shootline.start = camera->getHeadPosition();
 		break;
 	case CAMERA_MODE_THIRD_FRONT:
+		shootline.start = camera->getHeadPosition();
+		// prevent player pointing anything in front-view
+		d = 0;
+		break;
+	case CAMERA_MODE_FREELOOK:
 		shootline.start = camera->getHeadPosition();
 		// prevent player pointing anything in front-view
 		d = 0;

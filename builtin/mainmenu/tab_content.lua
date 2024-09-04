@@ -121,7 +121,7 @@ local function get_formspec(tabview, name, tabdata)
 			title_and_name = selected_pkg.name
 		else
 			title_and_name = (selected_pkg.title or selected_pkg.name) .. "\n" ..
-				core.colorize("#BFBFBF", selected_pkg.name)
+				core.colorize("#DFBFFF", selected_pkg.name)
 		end
 
 		local desc_height = 3.2

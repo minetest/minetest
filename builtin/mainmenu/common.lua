@@ -128,19 +128,19 @@ function render_serverlist_row(spec)
 
 	table.insert(details, ",")
 
-	local color = (grey_out and "#aaaaaa") or ((spec.is_favorite and "#ddddaa") or "#ffffff")
+	local color = (grey_out and "#bbaacc") or ((spec.is_favorite and "#cad") or "#eeddff")
 	if spec.clients and (spec.clients_max or 0) > 0 then
 		local clients_percent = 100 * spec.clients / spec.clients_max
 
 		-- Choose a color depending on how many clients are connected
 		-- (relatively to clients_max)
 		local clients_color
-		if     grey_out		      then clients_color = '#aaaaaa'
-		elseif spec.clients == 0      then clients_color = ''        -- 0 players: default/white
-		elseif clients_percent <= 60  then clients_color = '#a1e587' -- 0-60%: green
-		elseif clients_percent <= 90  then clients_color = '#ffdc97' -- 60-90%: yellow
-		elseif clients_percent == 100 then clients_color = '#dd5b5b' -- full server: red (darker)
-		else                               clients_color = '#ffba97' -- 90-100%: orange
+		if     grey_out		      then clients_color = '#bac'
+		elseif spec.clients == 0      then clients_color = '#b9f'        -- 0 players: default/white
+		elseif clients_percent <= 60  then clients_color = '#9fb' -- 0-60%: green
+		elseif clients_percent <= 90  then clients_color = '#fb9' -- 60-90%: yellow
+		elseif clients_percent == 100 then clients_color = '#f99' -- full server: red (darker)
+		else                               clients_color = '#ff3' -- 90-100%: orange
 		end
 
 		table.insert(details, clients_color)
@@ -286,7 +286,7 @@ end
 function confirmation_formspec(message, confirm_id, confirm_label, cancel_id, cancel_label)
 	return "size[10,2.5,true]" ..
 			"label[0.5,0.5;" .. message .. "]" ..
-			"style[" .. confirm_id .. ";bgcolor=red]" ..
+			"style[" .. confirm_id .. ";bgcolor=violet]" ..
 			"button[0.5,1.5;2.5,0.5;" .. confirm_id .. ";" .. confirm_label .. "]" ..
 			"button[7.0,1.5;2.5,0.5;" .. cancel_id .. ";" .. cancel_label .. "]"
 end

@@ -67,7 +67,7 @@ struct PlayerControl
 	PlayerControl(
 		bool a_up, bool a_down, bool a_left, bool a_right,
 		bool a_jump, bool a_aux1, bool a_sneak,
-		bool a_zoom,
+		bool a_zoom, bool a_freelook,
 		bool a_dig, bool a_place,
 		float a_pitch, float a_yaw,
 		float a_movement_speed, float a_movement_direction
@@ -81,6 +81,7 @@ struct PlayerControl
 		aux1 = a_aux1;
 		sneak = a_sneak;
 		zoom = a_zoom;
+		freelook = a_freelook;
 		dig = a_dig;
 		place = a_place;
 		pitch = a_pitch;
@@ -103,6 +104,7 @@ struct PlayerControl
 	bool aux1 = false;
 	bool sneak = false;
 	bool zoom = false;
+	bool freelook = false;
 	bool dig = false;
 	bool place = false;
 	// Note: These four are NOT available on the server
