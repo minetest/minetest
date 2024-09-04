@@ -2546,8 +2546,3 @@ bool ServerEnvironment::migrateAuthDatabase(
 	}
 	return true;
 }
-
-// HACK
-void ServerEnvironment_updatePos(ServerEnvironment *senv, const v3f &pos, u16 id) {
-	senv->updatePos(pos, id);
-}
