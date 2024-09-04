@@ -475,7 +475,7 @@ void TouchControls::translateEvent(const SEvent &event)
 
 			toggleOverflowMenu();
 			// refresh since visibility of buttons has changed
-		 	element = m_guienv->getRootGUIElement()->getElementFromPoint(touch_pos);
+			element = m_guienv->getRootGUIElement()->getElementFromPoint(touch_pos);
 			// continue processing, but avoid accidentally placing a node
 			// when closing the overflow menu
 			prevent_short_tap = true;

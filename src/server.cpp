@@ -2626,9 +2626,9 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 	std::string lang_suffixes[3];
 	for (size_t i = 0; i < 3; i++) {
 		lang_suffixes[i].append(".").append(lang_code).append(translation_formats[i]);
-  }
+	}
 
-  auto include = [&] (const std::string &name, const MediaInfo &info) -> bool {
+	auto include = [&] (const std::string &name, const MediaInfo &info) -> bool {
 		if (info.no_announce)
 			return false;
 		for (size_t j = 0; j < 3; j++) {
@@ -3890,13 +3890,13 @@ v3f Server::findSpawnPos()
 {
 	ServerMap &map = m_env->getServerMap();
 
-    std::optional<v3f> staticSpawnPoint;
+	std::optional<v3f> staticSpawnPoint;
 	if (g_settings->getV3FNoEx("static_spawnpoint", staticSpawnPoint) && staticSpawnPoint.has_value())
-    {
-       return *staticSpawnPoint * BS;
-    }
+	{
+		return *staticSpawnPoint * BS;
+	}
 
-    v3f nodeposf;
+	v3f nodeposf;
 
 	bool is_good = false;
 	// Limit spawn range to mapgen edges (determined by 'mapgen_limit')
