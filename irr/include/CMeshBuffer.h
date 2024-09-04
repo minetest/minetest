@@ -6,6 +6,8 @@
 
 #include <vector>
 #include "IMeshBuffer.h"
+#include "CVertexBuffer.h"
+#include "CIndexBuffer.h"
 
 namespace irr
 {
@@ -13,16 +15,24 @@ namespace scene
 {
 //! Template implementation of the IMeshBuffer interface
 template <class T>
-class CMeshBuffer : public IMeshBuffer
+class CMeshBuffer final : public IMeshBuffer
 {
 public:
 	//! Default constructor for empty meshbuffer
 	CMeshBuffer() :
-			ChangedID_Vertex(1), ChangedID_Index(1), MappingHint_Vertex(EHM_NEVER), MappingHint_Index(EHM_NEVER), HWBuffer(NULL), PrimitiveType(EPT_TRIANGLES)
+			PrimitiveType(EPT_TRIANGLES)
 	{
 #ifdef _DEBUG
 		setDebugName("CMeshBuffer");
 #endif
+		Vertices = new CVertexBuffer<T>();
+		Indices = new SIndexBuffer();
+	}
+
+	~CMeshBuffer()
+	{
+		Vertices->drop();
+		Indices->drop();
 	}
 
 	//! Get material of this meshbuffer
@@ -39,53 +49,24 @@ public:
 		return Material;
 	}
 
-	//! Get pointer to vertices
-	/** \return Pointer to vertices. */
-	const void *getVertices() const override
+	const scene::IVertexBuffer *getVertexBuffer() const override
 	{
-		return Vertices.data();
+		return Vertices;
 	}
 
-	//! Get pointer to vertices
-	/** \return Pointer to vertices. */
-	void *getVertices() override
+	scene::IVertexBuffer *getVertexBuffer() override
 	{
-		return Vertices.data();
+		return Vertices;
 	}
 
-	//! Get number of vertices
-	/** \return Number of vertices. */
-	u32 getVertexCount() const override
+	const scene::IIndexBuffer *getIndexBuffer() const override
 	{
-		return static_cast<u32>(Vertices.size());
+		return Indices;
 	}
 
-	//! Get type of index data which is stored in this meshbuffer.
-	/** \return Index type of this buffer. */
-	video::E_INDEX_TYPE getIndexType() const override
+	scene::IIndexBuffer *getIndexBuffer() override
 	{
-		return video::EIT_16BIT;
-	}
-
-	//! Get pointer to indices
-	/** \return Pointer to indices. */
-	const u16 *getIndices() const override
-	{
-		return Indices.data();
-	}
-
-	//! Get pointer to indices
-	/** \return Pointer to indices. */
-	u16 *getIndices() override
-	{
-		return Indices.data();
-	}
-
-	//! Get number of indices
-	/** \return Number of indices. */
-	u32 getIndexCount() const override
-	{
-		return static_cast<u32>(Indices.size());
+		return Indices;
 	}
 
 	//! Get the axis aligned bounding box
@@ -107,56 +88,13 @@ public:
 	/** should be called if the mesh changed. */
 	void recalculateBoundingBox() override
 	{
-		if (!Vertices.empty()) {
-			BoundingBox.reset(Vertices[0].Pos);
-			const irr::u32 vsize = Vertices.size();
+		if (Vertices->getCount()) {
+			BoundingBox.reset(Vertices->getPosition(0));
+			const irr::u32 vsize = Vertices->getCount();
 			for (u32 i = 1; i < vsize; ++i)
-				BoundingBox.addInternalPoint(Vertices[i].Pos);
+				BoundingBox.addInternalPoint(Vertices->getPosition(i));
 		} else
 			BoundingBox.reset(0, 0, 0);
-	}
-
-	//! Get type of vertex data stored in this buffer.
-	/** \return Type of vertex data. */
-	video::E_VERTEX_TYPE getVertexType() const override
-	{
-		return T::getType();
-	}
-
-	//! returns position of vertex i
-	const core::vector3df &getPosition(u32 i) const override
-	{
-		return Vertices[i].Pos;
-	}
-
-	//! returns position of vertex i
-	core::vector3df &getPosition(u32 i) override
-	{
-		return Vertices[i].Pos;
-	}
-
-	//! returns normal of vertex i
-	const core::vector3df &getNormal(u32 i) const override
-	{
-		return Vertices[i].Normal;
-	}
-
-	//! returns normal of vertex i
-	core::vector3df &getNormal(u32 i) override
-	{
-		return Vertices[i].Normal;
-	}
-
-	//! returns texture coord of vertex i
-	const core::vector2df &getTCoords(u32 i) const override
-	{
-		return Vertices[i].TCoords;
-	}
-
-	//! returns texture coord of vertex i
-	core::vector2df &getTCoords(u32 i) override
-	{
-		return Vertices[i].TCoords;
 	}
 
 	//! Append the vertices and indices to the current buffer
@@ -169,36 +107,15 @@ public:
 		const u32 indexCount = getIndexCount();
 
 		auto *vt = static_cast<const T *>(vertices);
-		Vertices.insert(Vertices.end(), vt, vt + numVertices);
+		Vertices->Data.insert(Vertices->Data.end(), vt, vt + numVertices);
 		for (u32 i = vertexCount; i < getVertexCount(); i++)
-			BoundingBox.addInternalPoint(Vertices[i].Pos);
+			BoundingBox.addInternalPoint(Vertices->getPosition(i));
 
-		Indices.insert(Indices.end(), indices, indices + numIndices);
+		Indices->Data.insert(Indices->Data.end(), indices, indices + numIndices);
 		if (vertexCount != 0) {
 			for (u32 i = indexCount; i < getIndexCount(); i++)
-				Indices[i] += vertexCount;
+				Indices->Data[i] += vertexCount;
 		}
-	}
-
-	//! get the current hardware mapping hint
-	E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const override
-	{
-		return MappingHint_Vertex;
-	}
-
-	//! get the current hardware mapping hint
-	E_HARDWARE_MAPPING getHardwareMappingHint_Index() const override
-	{
-		return MappingHint_Index;
-	}
-
-	//! set the hardware mapping hint, for driver
-	void setHardwareMappingHint(E_HARDWARE_MAPPING NewMappingHint, E_BUFFER_TYPE Buffer = EBT_VERTEX_AND_INDEX) override
-	{
-		if (Buffer == EBT_VERTEX_AND_INDEX || Buffer == EBT_VERTEX)
-			MappingHint_Vertex = NewMappingHint;
-		if (Buffer == EBT_VERTEX_AND_INDEX || Buffer == EBT_INDEX)
-			MappingHint_Index = NewMappingHint;
 	}
 
 	//! Describe what kind of primitive geometry is used by the meshbuffer
@@ -213,47 +130,12 @@ public:
 		return PrimitiveType;
 	}
 
-	//! flags the mesh as changed, reloads hardware buffers
-	void setDirty(E_BUFFER_TYPE Buffer = EBT_VERTEX_AND_INDEX) override
-	{
-		if (Buffer == EBT_VERTEX_AND_INDEX || Buffer == EBT_VERTEX)
-			++ChangedID_Vertex;
-		if (Buffer == EBT_VERTEX_AND_INDEX || Buffer == EBT_INDEX)
-			++ChangedID_Index;
-	}
-
-	//! Get the currently used ID for identification of changes.
-	/** This shouldn't be used for anything outside the VideoDriver. */
-	u32 getChangedID_Vertex() const override { return ChangedID_Vertex; }
-
-	//! Get the currently used ID for identification of changes.
-	/** This shouldn't be used for anything outside the VideoDriver. */
-	u32 getChangedID_Index() const override { return ChangedID_Index; }
-
-	void setHWBuffer(void *ptr) const override
-	{
-		HWBuffer = ptr;
-	}
-
-	void *getHWBuffer() const override
-	{
-		return HWBuffer;
-	}
-
-	u32 ChangedID_Vertex;
-	u32 ChangedID_Index;
-
-	//! hardware mapping hint
-	E_HARDWARE_MAPPING MappingHint_Vertex;
-	E_HARDWARE_MAPPING MappingHint_Index;
-	mutable void *HWBuffer;
-
 	//! Material for this meshbuffer.
 	video::SMaterial Material;
-	//! Vertices of this buffer
-	std::vector<T> Vertices;
-	//! Indices into the vertices of this buffer.
-	std::vector<u16> Indices;
+	//! Vertex buffer
+	CVertexBuffer<T> *Vertices;
+	//! Index buffer
+	SIndexBuffer *Indices;
 	//! Bounding box of this meshbuffer.
 	core::aabbox3d<f32> BoundingBox;
 	//! Primitive type used for rendering (triangles, lines, ...)

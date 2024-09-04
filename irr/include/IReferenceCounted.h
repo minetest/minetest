@@ -51,6 +51,10 @@ public:
 	{
 	}
 
+	// Reference counted objects can be neither copied nor moved.
+	IReferenceCounted(const IReferenceCounted &) = delete;
+	IReferenceCounted &operator=(const IReferenceCounted &) = delete;
+
 	//! Grabs the object. Increments the reference counter by one.
 	/** Someone who calls grab() to an object, should later also
 	call drop() to it. If an object never gets as much drop() as

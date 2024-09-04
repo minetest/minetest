@@ -283,6 +283,8 @@ if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
 	add_subdirectory(lib/catch2)
 endif()
 
+add_subdirectory(lib/tiniergltf)
+
 # Subdirectories
 # Be sure to add all relevant definitions above this
 add_subdirectory(src)

@@ -15,7 +15,7 @@ namespace scene
 {
 
 //! Simple implementation of the IAnimatedMesh interface.
-struct SAnimatedMesh : public IAnimatedMesh
+struct SAnimatedMesh final : public IAnimatedMesh
 {
 	//! constructor
 	SAnimatedMesh(scene::IMesh *mesh = 0, scene::E_ANIMATED_MESH_TYPE type = scene::EAMT_UNKNOWN) :

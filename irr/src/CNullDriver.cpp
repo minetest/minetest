@@ -1109,19 +1109,20 @@ void CNullDriver::getFog(SColor &color, E_FOG_TYPE &fogType, f32 &start, f32 &en
 	rangeFog = RangeFog;
 }
 
-//! Draws a mesh buffer
-void CNullDriver::drawMeshBuffer(const scene::IMeshBuffer *mb)
+void CNullDriver::drawBuffers(const scene::IVertexBuffer *vb,
+		const scene::IIndexBuffer *ib, u32 primCount,
+		scene::E_PRIMITIVE_TYPE pType)
 {
-	if (!mb)
+	if (!vb || !ib)
 		return;
 
-	// IVertexBuffer and IIndexBuffer later
-	SHWBufferLink *HWBuffer = getBufferLink(mb);
+	if (vb->getHWBuffer() || ib->getHWBuffer()) {
+		// subclass is supposed to override this if it supports hw buffers
+		_IRR_DEBUG_BREAK_IF(1);
+	}
 
-	if (HWBuffer)
-		drawHardwareBuffer(HWBuffer);
-	else
-		drawVertexPrimitiveList(mb->getVertices(), mb->getVertexCount(), mb->getIndices(), mb->getPrimitiveCount(), mb->getVertexType(), mb->getPrimitiveType(), mb->getIndexType());
+	drawVertexPrimitiveList(vb->getData(), vb->getCount(), ib->getData(),
+		primCount, vb->getType(), pType, ib->getType());
 }
 
 //! Draws the normals of a mesh buffer
@@ -1140,17 +1141,30 @@ void CNullDriver::drawMeshBufferNormals(const scene::IMeshBuffer *mb, f32 length
 	}
 }
 
-CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IMeshBuffer *mb)
+CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IVertexBuffer *vb)
 {
-	if (!mb || !isHardwareBufferRecommend(mb))
+	if (!vb || !isHardwareBufferRecommend(vb))
 		return 0;
 
 	// search for hardware links
-	SHWBufferLink *HWBuffer = reinterpret_cast<SHWBufferLink *>(mb->getHWBuffer());
+	SHWBufferLink *HWBuffer = reinterpret_cast<SHWBufferLink *>(vb->getHWBuffer());
 	if (HWBuffer)
 		return HWBuffer;
 
-	return createHardwareBuffer(mb); // no hardware links, and mesh wants one, create it
+	return createHardwareBuffer(vb); // no hardware links, and mesh wants one, create it
+}
+
+CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IIndexBuffer *ib)
+{
+	if (!ib || !isHardwareBufferRecommend(ib))
+		return 0;
+
+	// search for hardware links
+	SHWBufferLink *HWBuffer = reinterpret_cast<SHWBufferLink *>(ib->getHWBuffer());
+	if (HWBuffer)
+		return HWBuffer;
+
+	return createHardwareBuffer(ib); // no hardware links, and mesh wants one, create it
 }
 
 //! Update all hardware buffers, remove unused ones
@@ -1161,8 +1175,13 @@ void CNullDriver::updateAllHardwareBuffers()
 		SHWBufferLink *Link = *it;
 		++it;
 
-		if (!Link->MeshBuffer || Link->MeshBuffer->getReferenceCount() == 1)
-			deleteHardwareBuffer(Link);
+		if (Link->IsVertex) {
+			if (!Link->VertexBuffer || Link->VertexBuffer->getReferenceCount() == 1)
+				deleteHardwareBuffer(Link);
+		} else {
+			if (!Link->IndexBuffer || Link->IndexBuffer->getReferenceCount() == 1)
+				deleteHardwareBuffer(Link);
+		}
 	}
 }
 
@@ -1174,12 +1193,20 @@ void CNullDriver::deleteHardwareBuffer(SHWBufferLink *HWBuffer)
 	delete HWBuffer;
 }
 
-//! Remove hardware buffer
-void CNullDriver::removeHardwareBuffer(const scene::IMeshBuffer *mb)
+void CNullDriver::removeHardwareBuffer(const scene::IVertexBuffer *vb)
 {
-	if (!mb)
+	if (!vb)
 		return;
-	SHWBufferLink *HWBuffer = reinterpret_cast<SHWBufferLink *>(mb->getHWBuffer());
+	SHWBufferLink *HWBuffer = reinterpret_cast<SHWBufferLink *>(vb->getHWBuffer());
+	if (HWBuffer)
+		deleteHardwareBuffer(HWBuffer);
+}
+
+void CNullDriver::removeHardwareBuffer(const scene::IIndexBuffer *ib)
+{
+	if (!ib)
+		return;
+	SHWBufferLink *HWBuffer = reinterpret_cast<SHWBufferLink *>(ib->getHWBuffer());
 	if (HWBuffer)
 		deleteHardwareBuffer(HWBuffer);
 }
@@ -1191,12 +1218,24 @@ void CNullDriver::removeAllHardwareBuffers()
 		deleteHardwareBuffer(HWBufferList.front());
 }
 
-bool CNullDriver::isHardwareBufferRecommend(const scene::IMeshBuffer *mb)
+bool CNullDriver::isHardwareBufferRecommend(const scene::IVertexBuffer *vb)
 {
-	if (!mb || (mb->getHardwareMappingHint_Index() == scene::EHM_NEVER && mb->getHardwareMappingHint_Vertex() == scene::EHM_NEVER))
+	if (!vb || vb->getHardwareMappingHint() == scene::EHM_NEVER)
 		return false;
 
-	if (mb->getVertexCount() < MinVertexCountForVBO)
+	if (vb->getCount() < MinVertexCountForVBO)
+		return false;
+
+	return true;
+}
+
+bool CNullDriver::isHardwareBufferRecommend(const scene::IIndexBuffer *ib)
+{
+	if (!ib || ib->getHardwareMappingHint() == scene::EHM_NEVER)
+		return false;
+
+	// This is a bit stupid
+	if (ib->getCount() < MinVertexCountForVBO * 3)
 		return false;
 
 	return true;

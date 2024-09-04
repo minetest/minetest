@@ -51,12 +51,6 @@ public:
 	InvalidIncomingDataException(const char *s) : BaseException(s) {}
 };
 
-class NoIncomingDataException : public BaseException
-{
-public:
-	NoIncomingDataException(const char *s) : BaseException(s) {}
-};
-
 }
 
 class SocketException : public BaseException

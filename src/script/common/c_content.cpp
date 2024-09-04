@@ -2306,7 +2306,10 @@ void read_hud_element(lua_State *L, HudElement *elem)
 		elem->dir = getintfield_default(L, 2, "dir", 0);
 
 	lua_getfield(L, 2, "alignment");
-	elem->align = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
+	if (lua_istable(L, -1))
+		elem->align = read_v2f(L, -1);
+	else
+		elem->align = elem->type == HUD_ELEM_INVENTORY ? v2f(1.0f, 1.0f) : v2f();
 	lua_pop(L, 1);
 
 	lua_getfield(L, 2, "offset");

@@ -178,21 +178,23 @@ void Clouds::updateMesh()
 
 
 	auto *mb = m_meshbuffer.get();
+	auto &vertices = mb->Vertices->Data;
+	auto &indices = mb->Indices->Data;
 	{
 		const u32 vertex_count = num_faces_to_draw * 16 * m_cloud_radius_i * m_cloud_radius_i;
 		const u32 quad_count = vertex_count / 4;
 		const u32 index_count = quad_count * 6;
 
 		// reserve memory
-		mb->Vertices.reserve(vertex_count);
-		mb->Indices.reserve(index_count);
+		vertices.reserve(vertex_count);
+		indices.reserve(index_count);
 	}
 
 #define GETINDEX(x, z, radius) (((z)+(radius))*(radius)*2 + (x)+(radius))
 #define INAREA(x, z, radius) \
 	((x) >= -(radius) && (x) < (radius) && (z) >= -(radius) && (z) < (radius))
 
-	mb->Vertices.clear();
+	vertices.clear();
 	for (s16 zi0= -m_cloud_radius_i; zi0 < m_cloud_radius_i; zi0++)
 	for (s16 xi0= -m_cloud_radius_i; xi0 < m_cloud_radius_i; xi0++)
 	{
@@ -312,7 +314,7 @@ void Clouds::updateMesh()
 
 			for (video::S3DVertex &vertex : v) {
 				vertex.Pos += pos;
-				mb->Vertices.push_back(vertex);
+				vertices.push_back(vertex);
 			}
 		}
 	}
@@ -322,18 +324,18 @@ void Clouds::updateMesh()
 	const u32 index_count = quad_count * 6;
 	// rewrite index array as needed
 	if (mb->getIndexCount() > index_count) {
-		mb->Indices.resize(index_count);
+		indices.resize(index_count);
 		mb->setDirty(scene::EBT_INDEX);
 	} else if (mb->getIndexCount() < index_count) {
 		const u32 start = mb->getIndexCount() / 6;
 		assert(start * 6 == mb->getIndexCount());
 		for (u32 k = start; k < quad_count; k++) {
-			mb->Indices.push_back(4 * k + 0);
-			mb->Indices.push_back(4 * k + 1);
-			mb->Indices.push_back(4 * k + 2);
-			mb->Indices.push_back(4 * k + 2);
-			mb->Indices.push_back(4 * k + 3);
-			mb->Indices.push_back(4 * k + 0);
+			indices.push_back(4 * k + 0);
+			indices.push_back(4 * k + 1);
+			indices.push_back(4 * k + 2);
+			indices.push_back(4 * k + 2);
+			indices.push_back(4 * k + 3);
+			indices.push_back(4 * k + 0);
 		}
 		mb->setDirty(scene::EBT_INDEX);
 	}

@@ -5,6 +5,7 @@ Note: The vector.*-functions must be able to accept old vectors that had no meta
 
 -- localize functions
 local setmetatable = setmetatable
+local math = math
 
 vector = {}
 
@@ -97,18 +98,26 @@ function vector.floor(v)
 end
 
 function vector.round(v)
-	return fast_new(
-		math.round(v.x),
-		math.round(v.y),
-		math.round(v.z)
-	)
+	return vector.apply(v, math.round)
 end
 
-function vector.apply(v, func)
+function vector.ceil(v)
+	return vector.apply(v, math.ceil)
+end
+
+function vector.sign(v, tolerance)
+	return vector.apply(v, math.sign, tolerance)
+end
+
+function vector.abs(v)
+	return vector.apply(v, math.abs)
+end
+
+function vector.apply(v, func, ...)
 	return fast_new(
-		func(v.x),
-		func(v.y),
-		func(v.z)
+		func(v.x, ...),
+		func(v.y, ...),
+		func(v.z, ...)
 	)
 end
 
@@ -385,6 +394,14 @@ function vector.random_direction()
 	-- normalize
 	local l = math.sqrt(l2)
 	return fast_new(x/l, y/l, z/l)
+end
+
+function vector.random_in_area(min, max)
+	return fast_new(
+		math.random(min.x, max.x),
+		math.random(min.y, max.y),
+		math.random(min.z, max.z)
+	)
 end
 
 if rawget(_G, "core") and core.set_read_vector and core.set_push_vector then

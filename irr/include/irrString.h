@@ -11,7 +11,6 @@
 #include <cstdio>
 #include <cstring>
 #include <cwchar>
-#include <locale>
 
 /* HACK: import these string methods from MT's util/string.h */
 extern std::wstring utf8_to_wide(std::string_view input);
@@ -65,6 +64,7 @@ static inline u32 locale_upper(u32 x)
 template <typename T>
 class string
 {
+	using stl_type = std::basic_string<T>;
 public:
 	typedef T char_type;
 
@@ -78,6 +78,10 @@ public:
 	{
 		*this = other;
 	}
+
+	string(const stl_type &str) : str(str) {}
+
+	string(stl_type &&str) : str(std::move(str)) {}
 
 	//! Constructor from other string types
 	template <class B>
@@ -814,13 +818,6 @@ public:
 	friend size_t wStringToUTF8(stringc &destination, const wchar_t *source);
 
 private:
-	typedef std::basic_string<T> stl_type;
-
-	//! Private constructor
-	string(stl_type &&str) :
-			str(str)
-	{
-	}
 
 	//! strlen wrapper
 	template <typename U>

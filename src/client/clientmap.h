@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include "map.h"
 #include "camera.h"
 #include <set>
@@ -40,6 +40,16 @@ struct MapDrawControl
 class Client;
 class ITextureSource;
 class PartialMeshBuffer;
+
+namespace irr::scene
+{
+	class IMeshBuffer;
+}
+
+namespace irr::video
+{
+	class IVideoDriver;
+}
 
 /*
 	ClientMap
@@ -75,12 +85,7 @@ public:
 
 	virtual void OnRegisterSceneNode() override;
 
-	virtual void render() override
-	{
-		video::IVideoDriver* driver = SceneManager->getVideoDriver();
-		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-		renderMap(driver, SceneManager->getSceneNodeRenderPass());
-	}
+	virtual void render() override;
 
 	virtual const aabb3f &getBoundingBox() const override
 	{

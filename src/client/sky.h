@@ -19,16 +19,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include <ISceneNode.h>
+#include <SMeshBuffer.h>
 #include <array>
-#include "camera.h"
+#include "camera.h" // CameraMode
 #include "irr_ptr.h"
-#include "shader.h"
 #include "skyparams.h"
 
 #define SKY_MATERIAL_COUNT 12
 
+namespace irr::video
+{
+	class IVideoDriver;
+}
+
+class IShaderSource;
 class ITextureSource;
 
 // Skybox, rendered with zbuffer turned off, before all other nodes.

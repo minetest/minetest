@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/mesh.h"
 #include "mapblock_mesh.h"
 #include <IMaterialRenderer.h>
+#include <IVideoDriver.h>
 #include <matrix4.h>
 #include "mapsector.h"
 #include "mapblock.h"
@@ -190,6 +191,13 @@ void ClientMap::OnRegisterSceneNode()
 	ISceneNode::OnRegisterSceneNode();
 	// It's not needed to register this node to the shadow renderer
 	// we have other way to find it
+}
+
+void ClientMap::render()
+{
+	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+	renderMap(driver, SceneManager->getSceneNodeRenderPass());
 }
 
 void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
@@ -1303,8 +1311,8 @@ void ClientMap::updateTransparentMeshBuffers()
 	ScopeProfiler sp(g_profiler, "CM::updateTransparentMeshBuffers", SPT_AVG);
 	u32 sorted_blocks = 0;
 	u32 unsorted_blocks = 0;
+	bool transparency_sorting_enabled = m_cache_transparency_sorting_distance > 0;
 	f32 sorting_distance = m_cache_transparency_sorting_distance * BS;
-
 
 	// Update the order of transparent mesh buffers in each mesh
 	for (auto it = m_drawlist.begin(); it != m_drawlist.end(); it++) {
@@ -1315,13 +1323,19 @@ void ClientMap::updateTransparentMeshBuffers()
 
 		if (m_needs_update_transparent_meshes ||
 				blockmesh->getTransparentBuffers().size() == 0) {
+			bool do_sort_block = transparency_sorting_enabled;
 
-			v3f mesh_sphere_center = intToFloat(block->getPosRelative(), BS)
-					+ blockmesh->getBoundingSphereCenter();
-			f32 mesh_sphere_radius = blockmesh->getBoundingRadius();
-			f32 distance_sq = m_camera_position.getDistanceFromSQ(mesh_sphere_center);
+			if (do_sort_block) {
+				v3f mesh_sphere_center = intToFloat(block->getPosRelative(), BS)
+						+ blockmesh->getBoundingSphereCenter();
+				f32 mesh_sphere_radius = blockmesh->getBoundingRadius();
+				f32 distance_sq = m_camera_position.getDistanceFromSQ(mesh_sphere_center);
 
-			if (distance_sq <= std::pow(sorting_distance + mesh_sphere_radius, 2.0f)) {
+				if (distance_sq > std::pow(sorting_distance + mesh_sphere_radius, 2.0f))
+					do_sort_block = false;
+			}
+
+			if (do_sort_block) {
 				blockmesh->updateTransparentBuffers(m_camera_position, block->getPos());
 				++sorted_blocks;
 			} else {
@@ -1344,11 +1358,8 @@ video::SMaterial &ClientMap::DrawDescriptor::getMaterial()
 u32 ClientMap::DrawDescriptor::draw(video::IVideoDriver* driver)
 {
 	if (m_use_partial_buffer) {
-		m_partial_buffer->beforeDraw();
-		driver->drawMeshBuffer(m_partial_buffer->getBuffer());
-		auto count = m_partial_buffer->getBuffer()->getVertexCount();
-		m_partial_buffer->afterDraw();
-		return count;
+		m_partial_buffer->draw(driver);
+		return m_partial_buffer->getBuffer()->getVertexCount();
 	} else {
 		driver->drawMeshBuffer(m_buffer);
 		return m_buffer->getVertexCount();
