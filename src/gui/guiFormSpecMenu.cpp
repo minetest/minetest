@@ -5022,14 +5022,8 @@ std::array<StyleSpec, StyleSpec::NUM_STATES> GUIFormSpecMenu::getStyleForElement
 	return ret;
 }
 
-
-double GUIFormSpecMenu::calculateImgsize(const parserData &data)
+double GUIFormSpecMenu::getFixedImgsize(double screen_dpi, double gui_scaling)
 {
-	// must stay in sync with ClientDynamicInfo::calculateMaxFSSize
-
-	const double gui_scaling = g_settings->getFloat("gui_scaling", 0.5f, 42.0f);
-	const double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
-
 	// In fixed-size mode, inventory image size
 	// is 0.53 inch multiplied by the gui_scaling
 	// config parameter.  This magic size is chosen
@@ -5037,11 +5031,31 @@ double GUIFormSpecMenu::calculateImgsize(const parserData &data)
 	// wide, including border) just fit into the
 	// default window (800 pixels wide) at 96 DPI
 	// and default scaling (1.00).
-	double fixed_imgsize = 0.5555 * screen_dpi * gui_scaling;
+	return 0.5555 * screen_dpi * gui_scaling;
+}
+
+double GUIFormSpecMenu::getImgsize(v2u32 avail_screensize, double screen_dpi, double gui_scaling)
+{
+	double fixed_imgsize = getFixedImgsize(screen_dpi, gui_scaling);
+
+	s32 min_screen_dim = std::min(avail_screensize.X, avail_screensize.Y);
+	double prefer_imgsize = min_screen_dim / 15 * gui_scaling;
+	// Use the available space more effectively on small windows/screens.
+	// This is especially important for mobile platforms.
+	prefer_imgsize = std::max(prefer_imgsize, fixed_imgsize);
+	return prefer_imgsize;
+}
+
+double GUIFormSpecMenu::calculateImgsize(const parserData &data)
+{
+	// must stay in sync with ClientDynamicInfo::calculateMaxFSSize
+
+    const double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
+	const double gui_scaling = g_settings->getFloat("gui_scaling", 0.5f, 42.0f);
 
 	// Fixed-size mode
 	if (m_lock)
-		return fixed_imgsize;
+		return getFixedImgsize(screen_dpi, gui_scaling);
 
 	// Variables for the maximum imgsize that can fit in the screen.
 	double fitx_imgsize;
@@ -5065,12 +5079,8 @@ double GUIFormSpecMenu::calculateImgsize(const parserData &data)
 				((15.0 / 13.0) * (0.85 + data.invsize.Y));
 	}
 
-	s32 min_screen_dim = std::min(padded_screensize.X, padded_screensize.Y);
-
-	double prefer_imgsize = min_screen_dim / 15 * gui_scaling;
-	// Use the available space more effectively on small windows/screens.
-	// This is especially important for mobile platforms.
-	prefer_imgsize = std::max(prefer_imgsize, fixed_imgsize);
+	double prefer_imgsize = getImgsize(v2u32(padded_screensize.X, padded_screensize.Y),
+			screen_dpi, gui_scaling);
 
 	// Try to use the preferred imgsize, but if that's bigger than the maximum
 	// size, use the maximum size.

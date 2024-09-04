@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "settings.h"
 #include "client/renderingengine.h"
+#include "gui/guiFormSpecMenu.h"
 #include "gui/touchcontrols.h"
 
 ClientDynamicInfo ClientDynamicInfo::getCurrent()
@@ -47,13 +48,10 @@ v2f32 ClientDynamicInfo::calculateMaxFSSize(v2u32 render_target_size, f32 densit
 	// must stay in sync with GUIFormSpecMenu::calculateImgsize
 
     const double screen_dpi = density * 96;
-	double fixed_imgsize = 0.5555 * screen_dpi * gui_scaling;
 
     // assume padding[0,0] since max_formspec_size is used for fullscreen formspecs
-	s32 min_screen_dim = std::min(render_target_size.X, render_target_size.Y);
-	double prefer_imgsize = min_screen_dim / 15 * gui_scaling;
-	prefer_imgsize = std::max(prefer_imgsize, fixed_imgsize);
-
+	double prefer_imgsize = GUIFormSpecMenu::getImgsize(render_target_size,
+            screen_dpi, gui_scaling);
     return v2f32(render_target_size.X / prefer_imgsize,
             render_target_size.Y / prefer_imgsize);
 }
