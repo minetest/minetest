@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "mesh.h"
+#include "S3DVertex.h"
 #include "debug.h"
 #include "log.h"
 #include <cmath>
@@ -199,11 +200,12 @@ void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 
 void setMeshBufferTextureCoords(scene::IMeshBuffer *buf, const v2f *uv, u32 count)
 {
-	const u32 stride = getVertexPitchFromType(buf->getVertexType());
+	assert(buf->getVertexType() == video::EVT_STANDARD);
 	assert(buf->getVertexCount() >= count);
-	u8 *vertices = (u8 *) buf->getVertices();
+	auto *vertices = static_cast<video::S3DVertex *>(buf->getVertices());
 	for (u32 i = 0; i < count; i++)
-		((video::S3DVertex*) (vertices + i * stride))->TCoords = uv[i];
+		vertices[i].TCoords = uv[i];
+	buf->setDirty(scene::EBT_VERTEX);
 }
 
 template <typename F>
