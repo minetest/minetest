@@ -445,6 +445,11 @@ local function make_registration_wrap(reg_fn_name, clear_fn_name)
 
 	local orig_reg_fn = core[reg_fn_name]
 	core[reg_fn_name] = function(def)
+		if def.name ~= nil then
+			if list[def.name] then
+				error("Attempt to register already registered element - '" .. def.name .. "'", 2)
+			end
+		end
 		local retval = orig_reg_fn(def)
 		if retval ~= nil then
 			if def.name ~= nil then
@@ -467,7 +472,28 @@ local function make_registration_wrap(reg_fn_name, clear_fn_name)
 	return list
 end
 
-local function make_wrap_deregistration(reg_fn, clear_fn, list)
+local function make_wrap_override_deregistration(reg_fn, clear_fn, list)
+	local override = function (key, redef)
+		if type(key) ~= "string" then
+			error("key is not a string", 2)
+		end
+		local def = list[key]
+		if not def then
+			error("Attempt to override non-existent element - '" .. key .. "'", 2)
+		end
+		for k, v in pairs(redef) do
+			rawset(def, k, v)
+		end
+		local temporary_list = table.copy(list)
+		clear_fn()
+		for k,v in pairs(temporary_list) do
+			if key ~= k then
+				reg_fn(v)
+			else
+				reg_fn(def)
+			end
+		end
+	end
 	local unregister = function (key)
 		if type(key) ~= "string" then
 			error("key is not a string", 2)
@@ -483,7 +509,17 @@ local function make_wrap_deregistration(reg_fn, clear_fn, list)
 			end
 		end
 	end
-	return unregister
+	return override, unregister
+end
+local function make_wrap_reregistration(reg_fn, clear_fn, list)
+	local reregistration = function ()
+		local temporary_list = table.copy(list)
+		clear_fn()
+		for _,v in pairs(temporary_list) do
+			reg_fn(v)
+		end
+	end
+	return reregistration
 end
 
 core.registered_on_player_hpchanges = { modifiers = { }, loggers = { } }
@@ -524,8 +560,18 @@ core.registered_biomes      = make_registration_wrap("register_biome",      "cle
 core.registered_ores        = make_registration_wrap("register_ore",        "clear_registered_ores")
 core.registered_decorations = make_registration_wrap("register_decoration", "clear_registered_decorations")
 
-core.unregister_biome = make_wrap_deregistration(core.register_biome,
+core.override_biome, core.unregister_biome = make_wrap_override_deregistration(core.register_biome,
 		core.clear_registered_biomes, core.registered_biomes)
+
+core.override_ore, core.unregister_ore = make_wrap_override_deregistration(core.register_ore,
+		core.clear_registered_ores, core.registered_ores)
+core.reregister_ores = make_wrap_reregistration(core.register_ore,
+		core.clear_registered_ores, core.registered_ores)
+
+core.override_decoration, core.unregister_decoration = make_wrap_override_deregistration(core.register_decoration,
+		core.clear_registered_decorations, core.registered_decorations)
+core.reregister_decorations = make_wrap_reregistration(core.register_decoration,
+		core.clear_registered_decorations, core.registered_decorations)
 
 local make_registration = builtin_shared.make_registration
 local make_registration_reverse = builtin_shared.make_registration_reverse

@@ -5717,21 +5717,44 @@ Call these functions only at load time!
     * Returns an integer object handle uniquely identifying the registered
       ore on success.
     * The order of ore registrations determines the order of ore generation.
+* `minetest.override_ore(name, ore definition)`
+    * Override existing ore.
+* `minetest.unregister_ore(name)`
+    * Unregisters the decoration from the engine, and deletes the entry with key
+      `name` from `minetest.registered_decorations`.
+* `minetest.reregister_ores()`
+    * Clears all ores currently registered and register them again.
+    * Can be used after overriding/unregistering biome/bimes.
 * `minetest.register_biome(biome definition)`
     * Returns an integer object handle uniquely identifying the registered
       biome on success. To get the biome ID, use `minetest.get_biome_id`.
+* `minetest.override_biome(name, redefinition)`
+    * Override existing biome.
+    * Warning: This alters the biome to biome ID correspondences, so any
+      decorations or ores using the 'biomes' field must afterwards be cleared
+      and re-registered. Functions `minetest.reregister_decorations` and 
+      `minetest.reregister_ores` can be used for it.
 * `minetest.unregister_biome(name)`
     * Unregisters the biome from the engine, and deletes the entry with key
       `name` from `minetest.registered_biomes`.
     * Warning: This alters the biome to biome ID correspondences, so any
       decorations or ores using the 'biomes' field must afterwards be cleared
-      and re-registered.
+      and re-registered. Functions `minetest.reregister_decorations` and 
+      `minetest.reregister_ores` can be used for it.
 * `minetest.register_decoration(decoration definition)`
     * Returns an integer object handle uniquely identifying the registered
       decoration on success. To get the decoration ID, use
       `minetest.get_decoration_id`.
     * The order of decoration registrations determines the order of decoration
       generation.
+* `minetest.override_decoration(name, decoration definition)`
+    * Override existing decoration.
+* `minetest.unregister_decoration(name)`
+    * Unregisters the decoration from the engine, and deletes the entry with key
+      `name` from `minetest.registered_decorations`.
+* `minetest.reregister_decorations()`
+    * Clears all decorations currently registered and register them again.
+    * Can be used after overriding/unregistering biome/bimes.
 * `minetest.register_schematic(schematic definition)`
     * Returns an integer object handle uniquely identifying the registered
       schematic on success.
@@ -5744,7 +5767,8 @@ Call these functions only at load time!
     * Clears all biomes currently registered.
     * Warning: Clearing and re-registering biomes alters the biome to biome ID
       correspondences, so any decorations or ores using the 'biomes' field must
-      afterwards be cleared and re-registered.
+      afterwards be cleared and re-registered. Functions `minetest.reregister_decorations` and 
+      `minetest.reregister_ores` can be used for it.
 * `minetest.clear_registered_decorations()`
     * Clears all decorations currently registered.
 * `minetest.clear_registered_ores()`
@@ -10222,6 +10246,10 @@ See [Ores] section above for essential information.
 
 ```lua
 {
+    name = "default:iron_ore_1",
+    -- Optional field name. This is used as key in minetest.registered_ores table.
+    -- Nameed ores can be overriden by minetest.override_ore function.
+
     ore_type = "",
     -- Supported: "scatter", "sheet", "puff", "blob", "vein", "stratum"
 
@@ -10421,6 +10449,10 @@ See [Decoration types]. Used by `minetest.register_decoration`.
 
 ```lua
 {
+    name = "default:grass_decoration",
+    -- Optional field name. Is used as key in minetest.registered_decorations table.
+    -- Named decorations can be overriden by minetest.override_decoration function.
+
     deco_type = "simple",
     -- Type. "simple", "schematic" or "lsystem" supported
 
@@ -10590,7 +10622,7 @@ Chat command definition
 Used by `minetest.register_chatcommand`.
 
 Specifies the function to be called and the privileges required when a player
-issues the command.  A help message that is the concatenation of the params and
+issues the command.  A help message tdecorations the concatenation of the params and
 description fields is shown when the "/help" chatcommand is issued.
 
 ```lua
