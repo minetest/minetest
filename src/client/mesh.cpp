@@ -198,16 +198,6 @@ void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 		setMeshBufferColor(mesh->getMeshBuffer(j), color);
 }
 
-void setMeshBufferTextureCoords(scene::IMeshBuffer *buf, const v2f *uv, u32 count)
-{
-	assert(buf->getVertexType() == video::EVT_STANDARD);
-	assert(buf->getVertexCount() >= count);
-	auto *vertices = static_cast<video::S3DVertex *>(buf->getVertices());
-	for (u32 i = 0; i < count; i++)
-		vertices[i].TCoords = uv[i];
-	buf->setDirty(scene::EBT_VERTEX);
-}
-
 template <typename F>
 static void applyToMesh(scene::IMesh *mesh, const F &fn)
 {
