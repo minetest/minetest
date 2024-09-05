@@ -274,7 +274,7 @@ Accepted formats are:
 
     images: .png, .jpg, .tga, (deprecated:) .bmp
     sounds: .ogg vorbis
-    models: .x, .b3d, .obj, .gltf (Minetest 5.10 or newer)
+    models: .x, .b3d, .obj, (since version 5.10:) .gltf, .glb
 
 Other formats won't be sent to the client (e.g. you can store .blend files
 in a folder for convenience, without the risk that such files are transferred)
@@ -301,6 +301,9 @@ The .x and .b3d formats additionally support skeletal animation.
 The glTF model file format for now only serves as a
 more modern alternative to the other static model file formats;
 it unlocks no special rendering features.
+
+Binary glTF (`.glb`) files are supported and recommended over `.gltf` files
+due to their space savings.
 
 This means that many glTF features are not supported *yet*, including:
 

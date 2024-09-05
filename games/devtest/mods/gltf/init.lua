@@ -18,6 +18,14 @@ do
 	register_entity("blender_cube", cube_textures)
 	register_entity("blender_cube_scaled", cube_textures)
 	register_entity("blender_cube_matrix_transform", cube_textures)
+	minetest.register_entity("gltf:blender_cube_glb", {
+		initial_properties = {
+			visual = "mesh",
+			mesh = "gltf_blender_cube.glb",
+			textures = cube_textures,
+			backface_culling = true,
+		},
+	})
 end
 register_entity("snow_man", {"gltf_snow_man.png"})
 register_entity("spider", {"gltf_spider.png"})
