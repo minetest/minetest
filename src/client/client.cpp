@@ -827,7 +827,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 	}
 
 	const char *model_ext[] = {
-		".x", ".b3d", ".obj", ".gltf",
+		".x", ".b3d", ".obj", ".gltf", ".glb",
 		NULL
 	};
 	name = removeStringEnd(filename, model_ext);

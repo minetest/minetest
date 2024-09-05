@@ -87,7 +87,10 @@ SECTION("minimal triangle") {
 }
 
 SECTION("blender cube") {
-	const auto mesh = loadMesh(model_stem + "blender_cube.gltf");
+	const auto path = GENERATE(
+		model_stem + "blender_cube.gltf",
+		model_stem + "blender_cube.glb");
+	const auto mesh = loadMesh(path);
 	REQUIRE(mesh);
 	REQUIRE(mesh->getMeshBufferCount() == 1);
 	SECTION("vertex coordinates are correct") {

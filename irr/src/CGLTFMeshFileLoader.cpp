@@ -14,8 +14,6 @@
 #include "vector3d.h"
 #include "os.h"
 
-#include "tiniergltf.hpp"
-
 #include <array>
 #include <cstddef>
 #include <cstring>
@@ -303,13 +301,11 @@ std::array<f32, N> SelfType::getNormalizedValues(
 	return values;
 }
 
-/**
- * The most basic portion of the code base. This tells irllicht if this file has a .gltf extension.
-*/
 bool SelfType::isALoadableFileExtension(
 		const io::path& filename) const
 {
-	return core::hasFileExtension(filename, "gltf");
+	return core::hasFileExtension(filename, "gltf") ||
+			core::hasFileExtension(filename, "glb");
 }
 
 /**
@@ -662,6 +658,7 @@ void SelfType::MeshExtractor::copyTCoords(
 */
 std::optional<tiniergltf::GlTF> SelfType::tryParseGLTF(io::IReadFile* file)
 {
+	const bool isGlb = core::hasFileExtension(file->getFileName(), "glb");
 	auto size = file->getSize();
 	if (size < 0) // this can happen if `ftell` fails
 		return std::nullopt;
@@ -670,15 +667,11 @@ std::optional<tiniergltf::GlTF> SelfType::tryParseGLTF(io::IReadFile* file)
 		return std::nullopt;
 	// We probably don't need this, but add it just to be sure.
 	buf[size] = '\0';
-	Json::CharReaderBuilder builder;
-	const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-	Json::Value json;
-	JSONCPP_STRING err;
-	if (!reader->parse(buf.get(), buf.get() + size, &json, &err)) {
-		return std::nullopt;
-	}
 	try {
-		return tiniergltf::GlTF(json);
+		if (isGlb)
+			return tiniergltf::readGlb(buf.get(), size);
+		else
+			return tiniergltf::readGlTF(buf.get(), size);
 	} catch (const std::runtime_error &e) {
 		os::Printer::log("glTF loader", e.what(), ELL_ERROR);
 		return std::nullopt;
