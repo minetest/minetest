@@ -29,7 +29,7 @@ on:
 
 jobs:
   build:
-    # use lovest possible MacOS running on x86_64 to support more users
+    # use lowest possible macOS running on x86_64 to support more users
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v4
