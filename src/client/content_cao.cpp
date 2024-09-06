@@ -1267,6 +1267,16 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 	}
 }
 
+static void setMeshBufferTextureCoords(scene::IMeshBuffer *buf, const v2f *uv, u32 count)
+{
+	assert(buf->getVertexType() == video::EVT_STANDARD);
+	assert(buf->getVertexCount() == count);
+	auto *vertices = static_cast<video::S3DVertex *>(buf->getVertices());
+	for (u32 i = 0; i < count; i++)
+		vertices[i].TCoords = uv[i];
+	buf->setDirty(scene::EBT_VERTEX);
+}
+
 void GenericCAO::updateTexturePos()
 {
 	if(m_spritenode)
