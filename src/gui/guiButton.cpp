@@ -253,8 +253,8 @@ void GUIButton::draw()
 		setFromState();
 	}
 
-	GUISkin* skin = dynamic_cast<GUISkin*>(Environment->getSkin());
 	video::IVideoDriver* driver = Environment->getVideoDriver();
+	IGUISkin *skin = Environment->getSkin();
 	// END PATCH
 
 	if (DrawBorder)
@@ -737,7 +737,7 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 			Padding.UpperLeftCorner + BgMiddle.UpperLeftCorner,
 			Padding.LowerRightCorner + BgMiddle.LowerRightCorner);
 
-	GUISkin* skin = dynamic_cast<GUISkin*>(Environment->getSkin());
+	IGUISkin *skin = Environment->getSkin();
 	core::vector2d<s32> defaultPressOffset(
 			skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_X),
 			skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y));

@@ -4,7 +4,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "guiSkin.h"
+#include "CGUISkin.h"
 
 #include "IGUIFont.h"
 #include "IGUISpriteBank.h"
@@ -17,11 +17,11 @@ namespace irr
 namespace gui
 {
 
-GUISkin::GUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
+CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 : SpriteBank(0), Driver(driver), Type(type)
 {
 	#ifdef _DEBUG
-	setDebugName("GUISkin");
+	setDebugName("CGUISkin");
 	#endif
 
 	if ((Type == EGST_WINDOWS_CLASSIC) || (Type == EGST_WINDOWS_METALLIC))
@@ -167,7 +167,7 @@ GUISkin::GUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 
 
 //! destructor
-GUISkin::~GUISkin()
+CGUISkin::~CGUISkin()
 {
 	for (u32 i=0; i<EGDF_COUNT; ++i)
 	{
@@ -181,7 +181,7 @@ GUISkin::~GUISkin()
 
 
 //! returns default color
-video::SColor GUISkin::getColor(EGUI_DEFAULT_COLOR color) const
+video::SColor CGUISkin::getColor(EGUI_DEFAULT_COLOR color) const
 {
 	if ((u32)color < EGDC_COUNT)
 		return Colors[color];
@@ -191,7 +191,7 @@ video::SColor GUISkin::getColor(EGUI_DEFAULT_COLOR color) const
 
 
 //! sets a default color
-void GUISkin::setColor(EGUI_DEFAULT_COLOR which, video::SColor newColor)
+void CGUISkin::setColor(EGUI_DEFAULT_COLOR which, video::SColor newColor)
 {
 	if ((u32)which < EGDC_COUNT)
 		Colors[which] = newColor;
@@ -199,7 +199,7 @@ void GUISkin::setColor(EGUI_DEFAULT_COLOR which, video::SColor newColor)
 
 
 //! returns size for the given size type
-s32 GUISkin::getSize(EGUI_DEFAULT_SIZE size) const
+s32 CGUISkin::getSize(EGUI_DEFAULT_SIZE size) const
 {
 	if ((u32)size < EGDS_COUNT)
 		return Sizes[size];
@@ -209,7 +209,7 @@ s32 GUISkin::getSize(EGUI_DEFAULT_SIZE size) const
 
 
 //! sets a default size
-void GUISkin::setSize(EGUI_DEFAULT_SIZE which, s32 size)
+void CGUISkin::setSize(EGUI_DEFAULT_SIZE which, s32 size)
 {
 	if ((u32)which < EGDS_COUNT)
 		Sizes[which] = size;
@@ -217,7 +217,7 @@ void GUISkin::setSize(EGUI_DEFAULT_SIZE which, s32 size)
 
 
 //! returns the default font
-IGUIFont* GUISkin::getFont(EGUI_DEFAULT_FONT which) const
+IGUIFont* CGUISkin::getFont(EGUI_DEFAULT_FONT which) const
 {
 	if (((u32)which < EGDF_COUNT) && Fonts[which])
 		return Fonts[which];
@@ -227,7 +227,7 @@ IGUIFont* GUISkin::getFont(EGUI_DEFAULT_FONT which) const
 
 
 //! sets a default font
-void GUISkin::setFont(IGUIFont* font, EGUI_DEFAULT_FONT which)
+void CGUISkin::setFont(IGUIFont* font, EGUI_DEFAULT_FONT which)
 {
 	if ((u32)which >= EGDF_COUNT)
 		return;
@@ -244,14 +244,14 @@ void GUISkin::setFont(IGUIFont* font, EGUI_DEFAULT_FONT which)
 
 
 //! gets the sprite bank stored
-IGUISpriteBank* GUISkin::getSpriteBank() const
+IGUISpriteBank* CGUISkin::getSpriteBank() const
 {
 	return SpriteBank;
 }
 
 
 //! set a new sprite bank or remove one by passing 0
-void GUISkin::setSpriteBank(IGUISpriteBank* bank)
+void CGUISkin::setSpriteBank(IGUISpriteBank* bank)
 {
 	if (bank)
 		bank->grab();
@@ -264,7 +264,7 @@ void GUISkin::setSpriteBank(IGUISpriteBank* bank)
 
 
 //! Returns a default icon
-u32 GUISkin::getIcon(EGUI_DEFAULT_ICON icon) const
+u32 CGUISkin::getIcon(EGUI_DEFAULT_ICON icon) const
 {
 	if ((u32)icon < EGDI_COUNT)
 		return Icons[icon];
@@ -274,7 +274,7 @@ u32 GUISkin::getIcon(EGUI_DEFAULT_ICON icon) const
 
 
 //! Sets a default icon
-void GUISkin::setIcon(EGUI_DEFAULT_ICON icon, u32 index)
+void CGUISkin::setIcon(EGUI_DEFAULT_ICON icon, u32 index)
 {
 	if ((u32)icon < EGDI_COUNT)
 		Icons[icon] = index;
@@ -283,7 +283,7 @@ void GUISkin::setIcon(EGUI_DEFAULT_ICON icon, u32 index)
 
 //! Returns a default text. For example for Message box button captions:
 //! "OK", "Cancel", "Yes", "No" and so on.
-const wchar_t* GUISkin::getDefaultText(EGUI_DEFAULT_TEXT text) const
+const wchar_t* CGUISkin::getDefaultText(EGUI_DEFAULT_TEXT text) const
 {
 	if ((u32)text < EGDT_COUNT)
 		return Texts[text].c_str();
@@ -294,7 +294,7 @@ const wchar_t* GUISkin::getDefaultText(EGUI_DEFAULT_TEXT text) const
 
 //! Sets a default text. For example for Message box button captions:
 //! "OK", "Cancel", "Yes", "No" and so on.
-void GUISkin::setDefaultText(EGUI_DEFAULT_TEXT which, const wchar_t* newText)
+void CGUISkin::setDefaultText(EGUI_DEFAULT_TEXT which, const wchar_t* newText)
 {
 	if ((u32)which < EGDT_COUNT)
 		Texts[which] = newText;
@@ -311,7 +311,7 @@ EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details.
 is usually not used by ISkin, but can be used for example by more complex
 implementations to find out how to draw the part exactly. */
 // PATCH
-void GUISkin::drawColored3DButtonPaneStandard(IGUIElement* element,
+void CGUISkin::drawColored3DButtonPaneStandard(IGUIElement* element,
 					const core::rect<s32>& r,
 					const core::rect<s32>* clip,
 					const video::SColor* colors)
@@ -373,7 +373,7 @@ EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details.
 is usually not used by ISkin, but can be used for example by more complex
 implementations to find out how to draw the part exactly. */
 // PATCH
-void GUISkin::drawColored3DButtonPanePressed(IGUIElement* element,
+void CGUISkin::drawColored3DButtonPanePressed(IGUIElement* element,
 					const core::rect<s32>& r,
 					const core::rect<s32>* clip,
 					const video::SColor* colors)
@@ -423,7 +423,7 @@ deep into the ground.
 \param rect: Defining area where to draw.
 \param clip: Clip area.	*/
 // PATCH
-void GUISkin::drawColored3DSunkenPane(IGUIElement* element, video::SColor bgcolor,
+void CGUISkin::drawColored3DSunkenPane(IGUIElement* element, video::SColor bgcolor,
 				bool flat, bool fillBackGround,
 				const core::rect<s32>& r,
 				const core::rect<s32>* clip,
@@ -512,7 +512,7 @@ void GUISkin::drawColored3DSunkenPane(IGUIElement* element, video::SColor bgcolo
 //! draws a window background
 // return where to draw title bar text.
 // PATCH
-core::rect<s32> GUISkin::drawColored3DWindowBackground(IGUIElement* element,
+core::rect<s32> CGUISkin::drawColored3DWindowBackground(IGUIElement* element,
 				bool drawTitleBar, video::SColor titleBarColor,
 				const core::rect<s32>& r,
 				const core::rect<s32>* clip,
@@ -667,7 +667,7 @@ implementations to find out how to draw the part exactly.
 \param rect: Defining area where to draw.
 \param clip: Clip area.	*/
 // PATCH
-void GUISkin::drawColored3DMenuPane(IGUIElement* element,
+void CGUISkin::drawColored3DMenuPane(IGUIElement* element,
 			const core::rect<s32>& r, const core::rect<s32>* clip,
 			const video::SColor* colors)
 {
@@ -751,7 +751,7 @@ implementations to find out how to draw the part exactly.
 \param rect: Defining area where to draw.
 \param clip: Clip area.	*/
 // PATCH
-void GUISkin::drawColored3DToolBar(IGUIElement* element,
+void CGUISkin::drawColored3DToolBar(IGUIElement* element,
 				const core::rect<s32>& r,
 				const core::rect<s32>* clip,
 				const video::SColor* colors)
@@ -804,7 +804,7 @@ implementations to find out how to draw the part exactly.
 \param rect: Defining area where to draw.
 \param clip: Clip area.	*/
 // PATCH
-void GUISkin::drawColored3DTabButton(IGUIElement* element, bool active,
+void CGUISkin::drawColored3DTabButton(IGUIElement* element, bool active,
 	const core::rect<s32>& frameRect, const core::rect<s32>* clip, EGUI_ALIGNMENT alignment,
 	const video::SColor* colors)
 {
@@ -891,7 +891,7 @@ implementations to find out how to draw the part exactly.
 \param rect: Defining area where to draw.
 \param clip: Clip area.	*/
 // PATCH
-void GUISkin::drawColored3DTabBody(IGUIElement* element, bool border, bool background,
+void CGUISkin::drawColored3DTabBody(IGUIElement* element, bool border, bool background,
 	const core::rect<s32>& rect, const core::rect<s32>* clip, s32 tabHeight, EGUI_ALIGNMENT alignment,
 	const video::SColor* colors)
 {
@@ -989,7 +989,7 @@ by more complex implementations to find out how to draw the part exactly.
 \param loop: Whether the animation should loop or not
 \param clip: Clip area.	*/
 // PATCH
-void GUISkin::drawColoredIcon(IGUIElement* element, EGUI_DEFAULT_ICON icon,
+void CGUISkin::drawColoredIcon(IGUIElement* element, EGUI_DEFAULT_ICON icon,
 			const core::position2di position,
 			u32 starttime, u32 currenttime,
 			bool loop, const core::rect<s32>* clip,
@@ -1008,14 +1008,14 @@ void GUISkin::drawColoredIcon(IGUIElement* element, EGUI_DEFAULT_ICON icon,
 // END PATCH
 
 
-EGUI_SKIN_TYPE GUISkin::getType() const
+EGUI_SKIN_TYPE CGUISkin::getType() const
 {
 	return Type;
 }
 
 
 //! draws a 2d rectangle.
-void GUISkin::draw2DRectangle(IGUIElement* element,
+void CGUISkin::draw2DRectangle(IGUIElement* element,
 		const video::SColor &color, const core::rect<s32>& pos,
 		const core::rect<s32>* clip)
 {
@@ -1025,7 +1025,7 @@ void GUISkin::draw2DRectangle(IGUIElement* element,
 
 //! gets the colors
 // PATCH
-void GUISkin::getColors(video::SColor* colors)
+void CGUISkin::getColors(video::SColor* colors)
 {
 	u32 i;
 	for (i=0; i<EGDC_COUNT; ++i)
