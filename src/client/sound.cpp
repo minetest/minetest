@@ -101,7 +101,11 @@ void sound_volume_control(ISoundManager *sound_mgr, bool is_window_active)
 {
 	bool mute_sound = g_settings->getBool("mute_sound");
 	if (mute_sound) {
+#if defined(__APPLE__)
+		sound_mgr->setListenerGain(0.001f);
+#else
 		sound_mgr->setListenerGain(0.0f);
+#endif
 	} else {
 		// Check if volume is in the proper range, else fix it.
 		float old_volume = g_settings->getFloat("sound_volume");
