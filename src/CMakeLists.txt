@@ -379,87 +379,90 @@ add_custom_target(GenerateVersion
 add_subdirectory(threading)
 add_subdirectory(content)
 add_subdirectory(database)
-add_subdirectory(gui)
 add_subdirectory(mapgen)
 add_subdirectory(network)
 add_subdirectory(script)
-add_subdirectory(unittest)
-add_subdirectory(benchmark)
 add_subdirectory(util)
-add_subdirectory(irrlicht_changes)
 add_subdirectory(server)
 
-set(common_SRCS
-	${database_SRCS}
-	${mapgen_SRCS}
-	${server_SRCS}
-	${content_SRCS}
+# Source files that are identical between server & client builds.
+# This means they don't use or include anything that depends on the
+# CHECK_CLIENT_BUILD() macro. If you wrongly add something here there will be
+# a compiler error and you need to instead add it to client_SRCS or common_SRCS.
+set(independent_SRCS
 	chat.cpp
-	clientdynamicinfo.cpp
-	collision.cpp
-	content_mapnode.cpp
-	content_nodemeta.cpp
 	convert_json.cpp
-	craftdef.cpp
-	debug.cpp
-	defaultsettings.cpp
-	emerge.cpp
-	environment.cpp
 	face_position_cache.cpp
-	filesys.cpp
-	gettext.cpp
 	gettext_plural_form.cpp
 	httpfetch.cpp
 	hud.cpp
-	inventory.cpp
-	inventorymanager.cpp
-	itemdef.cpp
 	itemstackmetadata.cpp
-	light.cpp
 	lighting.cpp
 	log.cpp
-	main.cpp
-	map.cpp
-	map_settings_manager.cpp
-	mapblock.cpp
-	mapnode.cpp
-	mapsector.cpp
 	metadata.cpp
 	modchannels.cpp
 	nameidmapping.cpp
-	nodedef.cpp
-	nodemetadata.cpp
 	nodetimer.cpp
 	noise.cpp
 	objdef.cpp
 	object_properties.cpp
 	particles.cpp
-	pathfinder.cpp
-	player.cpp
-	porting.cpp
 	profiler.cpp
-	raycast.cpp
-	reflowscan.cpp
-	remoteplayer.cpp
-	rollback_interface.cpp
 	serialization.cpp
-	server.cpp
-	serverenvironment.cpp
-	servermap.cpp
-	settings.cpp
 	staticobject.cpp
 	terminal_chat_console.cpp
 	texture_override.cpp
 	tileanimation.cpp
+	${threading_SRCS}
+)
+
+# /!\ Consider carefully before adding files here /!\
+set(common_SRCS
+	clientdynamicinfo.cpp
+	collision.cpp
+	content_mapnode.cpp
+	content_nodemeta.cpp
+	craftdef.cpp
+	debug.cpp
+	defaultsettings.cpp
+	emerge.cpp
+	environment.cpp
+	filesys.cpp
+	gettext.cpp
+	inventory.cpp
+	inventorymanager.cpp
+	itemdef.cpp
+	light.cpp
+	main.cpp
+	map_settings_manager.cpp
+	map.cpp
+	mapblock.cpp
+	mapnode.cpp
+	mapsector.cpp
+	nodedef.cpp
+	nodemetadata.cpp
+	pathfinder.cpp
+	player.cpp
+	porting.cpp
+	raycast.cpp
+	reflowscan.cpp
+	remoteplayer.cpp
+	rollback_interface.cpp
+	server.cpp
+	serverenvironment.cpp
+	servermap.cpp
+	settings.cpp
 	tool.cpp
 	translation.cpp
 	version.cpp
 	voxel.cpp
 	voxelalgorithms.cpp
-	hud.cpp
 	${common_network_SRCS}
-	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
+	${common_server_SRCS}
+	${content_SRCS}
+	${database_SRCS}
+	${mapgen_SRCS}
 	${UTIL_SRCS}
 )
 
@@ -468,10 +471,12 @@ if(ANDROID)
 endif()
 
 if(BUILD_UNITTESTS)
+	add_subdirectory(unittest)
 	set(common_SRCS ${common_SRCS} ${UNITTEST_SRCS})
 endif()
 
 if(BUILD_BENCHMARKS)
+	add_subdirectory(benchmark)
 	set(common_SRCS ${common_SRCS} ${BENCHMARK_SRCS})
 endif()
 
@@ -503,6 +508,8 @@ endif()
 # Client sources
 if (BUILD_CLIENT)
 	add_subdirectory(client)
+	add_subdirectory(gui)
+	add_subdirectory(irrlicht_changes)
 endif(BUILD_CLIENT)
 
 set(client_SRCS
@@ -522,13 +529,11 @@ if(BUILD_BENCHMARKS)
 	set(client_SRCS ${client_SRCS} ${BENCHMARK_CLIENT_SRCS})
 endif()
 
-list(SORT client_SRCS)
-
 # Server sources
+# (nothing here because a client always comes with a server)
 set(server_SRCS
 	${common_SRCS}
 )
-list(SORT server_SRCS)
 
 # Avoid source_group on broken CMake version.
 # see issue #7074 #7075
@@ -577,13 +582,32 @@ if(NOT CMAKE_CROSSCOMPILING)
 	set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 endif()
 
+# shared object target
+add_library(EngineCommon OBJECT
+	${independent_SRCS}
+)
+add_dependencies(EngineCommon GenerateVersion)
+get_target_property(
+	IRRLICHT_INCLUDES IrrlichtMt::IrrlichtMt INTERFACE_INCLUDE_DIRECTORIES)
+target_include_directories(EngineCommon PRIVATE ${IRRLICHT_INCLUDES})
+if(PRECOMPILE_HEADERS)
+	target_precompile_headers(EngineCommon PRIVATE ${PRECOMPILED_HEADERS_LIST})
+endif()
+
 if(BUILD_CLIENT)
+	# client target
 	if(ANDROID)
-		add_library(${PROJECT_NAME} SHARED ${client_SRCS})
+		add_library(${PROJECT_NAME} SHARED)
 	else()
-		add_executable(${PROJECT_NAME} ${client_SRCS} ${extra_windows_SRCS})
+		add_executable(${PROJECT_NAME})
 	endif()
-	add_dependencies(${PROJECT_NAME} GenerateVersion)
+	list(SORT client_SRCS)
+	target_sources(${PROJECT_NAME} PRIVATE
+		$<TARGET_OBJECTS:EngineCommon>
+		${client_SRCS}
+		${extra_windows_SRCS}
+	)
+
 	target_link_libraries(
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
@@ -661,12 +685,18 @@ endif(BUILD_CLIENT)
 
 
 if(BUILD_SERVER)
-	add_executable(${PROJECT_NAME}server ${server_SRCS} ${extra_windows_SRCS})
-	add_dependencies(${PROJECT_NAME}server GenerateVersion)
+	# server target
+	add_executable(${PROJECT_NAME}server)
+	list(SORT server_SRCS)
+	target_sources(${PROJECT_NAME}server PRIVATE
+		$<TARGET_OBJECTS:EngineCommon>
+		${server_SRCS}
+		${extra_windows_SRCS}
+	)
 
+	# don't link the irrlicht library
 	get_target_property(
 		IRRLICHT_INCLUDES IrrlichtMt::IrrlichtMt INTERFACE_INCLUDE_DIRECTORIES)
-	# Doesn't work without PRIVATE/PUBLIC/INTERFACE mode specified.
 	target_include_directories(${PROJECT_NAME}server PRIVATE ${IRRLICHT_INCLUDES})
 	target_link_libraries(
 		${PROJECT_NAME}server
