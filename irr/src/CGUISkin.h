@@ -2,8 +2,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __GUI_SKIN_H_INCLUDED__
-#define __GUI_SKIN_H_INCLUDED__
+#pragma once
 
 #include "IGUISkin.h"
 #include "irrString.h"
@@ -18,14 +17,14 @@ namespace video
 }
 namespace gui
 {
-	class GUISkin : public IGUISkin
+	class CGUISkin : public IGUISkin
 	{
 	public:
 
-		GUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver);
+		CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver);
 
 		//! destructor
-		virtual ~GUISkin();
+		virtual ~CGUISkin();
 
 		//! returns display density scaling factor
 		virtual float getScale() const { return Scale; }
@@ -311,57 +310,6 @@ namespace gui
 		EGUI_SKIN_TYPE Type;
 	};
 
-	#define set3DSkinColors(skin, button_color) \
-		{ \
-			skin->setColor(EGDC_3D_FACE, button_color); \
-			skin->setColor(EGDC_3D_DARK_SHADOW, button_color, 0.25f); \
-			skin->setColor(EGDC_3D_SHADOW, button_color, 0.5f); \
-			skin->setColor(EGDC_3D_LIGHT, button_color); \
-			skin->setColor(EGDC_3D_HIGH_LIGHT, button_color, 1.5f); \
-		}
-
-	#define getElementSkinColor(color) \
-		{ \
-			if (!Colors) \
-			{ \
-				IGUISkin* skin = Environment->getSkin(); \
-				if (skin) \
-					return skin->getColor(color); \
-			} \
-			return Colors[color]; \
-		}
-
-	#define setElementSkinColor(which, newColor, shading) \
-		{ \
-			if (!Colors) \
-			{ \
-				Colors = new video::SColor[EGDC_COUNT]; \
-				GUISkin* skin = (GUISkin *)Environment->getSkin(); \
-				if (skin) \
-					skin->getColors(Colors); \
-			} \
-			Colors[which] = newColor; \
-			setShading(Colors[which],shading); \
-		}
 } // end namespace gui
-//! Sets the shading
-inline void setShading(video::SColor &color,f32 s) // :PATCH:
-{
-	if (s < 1.0f)
-	{
-		color.setRed(color.getRed() * s);
-		color.setGreen(color.getGreen() * s);
-		color.setBlue(color.getBlue() * s);
-	}
-	else if (s > 1.0f)
-	{
-		s -= 1.0f;
-
-		color.setRed(color.getRed() + (255 - color.getRed()) * s);
-		color.setGreen(color.getGreen() + (255 - color.getGreen()) * s);
-		color.setBlue(color.getBlue() + (255 - color.getBlue()) * s);
-	}
-}
 } // end namespace irr
 
-#endif
