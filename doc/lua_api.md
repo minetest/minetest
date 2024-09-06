@@ -8548,7 +8548,7 @@ child will follow movement and rotation of that bone.
         * This means that:
           * value of 1 (default) doesn't change the saturation
           * values > 1 increase the saturation
-          * values in [0,1] decrease the saturation
+          * values between 0 and 1 decrease the saturation
           * value of 0 makes the world greyscale
           * values < 0 alter the hue severely, causing an effect similar to inversion, but keeping original luma and being symmetrical in terms of saturation (eg. -1 and 1 is the same saturation and luma, but different hues)
       * `shadows` is a table that controls ambient shadows
