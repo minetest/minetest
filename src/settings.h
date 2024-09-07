@@ -28,9 +28,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <mutex>
 
 // Anticheat flags
-#define AC_DIGGING     0x01
-#define AC_INTERACTION 0x02
-#define AC_MOVEMENT    0x04
+enum {
+	AC_DIGGING     = 0x01,
+	AC_INTERACTION = 0x02,
+	AC_MOVEMENT    = 0x04
+};
 
 const FlagDesc flagdesc_anticheat[] = {
 	{"digging",     AC_DIGGING},
