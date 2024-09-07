@@ -54,6 +54,8 @@ const c8 *const FogTypeNames[] = {
 	};
 
 struct SFrameStats {
+	//! Number of draw calls
+	u32 Drawcalls = 0;
 	//! Count of primitives drawn
 	u32 PrimitivesDrawn = 0;
 	//! Number of hardware buffers uploaded (new or updated)

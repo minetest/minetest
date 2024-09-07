@@ -1953,7 +1953,10 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
 	g_profiler->graphSet("FPS", 1.0f / dtime);
 
 	auto stats2 = driver->getFrameStats();
-	g_profiler->avg("Irr: primitives drawn", stats2.PrimitivesDrawn);
+	g_profiler->avg("Irr: drawcalls", stats2.Drawcalls);
+	if (stats2.Drawcalls > 0)
+		g_profiler->avg("Irr: primitives per drawcall",
+			stats2.PrimitivesDrawn / float(stats2.Drawcalls));
 	g_profiler->avg("Irr: buffers uploaded", stats2.HWBuffersUploaded);
 	g_profiler->avg("Irr: buffers uploaded (bytes)", stats2.HWBuffersUploadedSize);
 }
