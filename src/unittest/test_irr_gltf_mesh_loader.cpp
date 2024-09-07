@@ -1,13 +1,12 @@
 // Minetest
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-#include "CSceneManager.h"
 #include "content/subgames.h"
 #include "filesys.h"
 
-#include "CReadFile.h"
 #include "irr_v3d.h"
 #include "irr_v2d.h"
+#include "irr_ptr.h"
 
 #include <irrlicht.h>
 
@@ -20,10 +19,16 @@ const auto gamespec = findSubgame("devtest");
 if (!gamespec.isValid())
 	SKIP();
 
-irr::scene::CSceneManager smgr(nullptr, nullptr, nullptr);
-const auto loadMesh = [&smgr](const irr::io::path& filepath) {
-	irr::io::CReadFile file(filepath);
-	return smgr.getMesh(&file);
+irr::SIrrlichtCreationParameters p;
+p.DriverType = video::EDT_NULL;
+auto *driver = irr::createDeviceEx(p);
+REQUIRE(driver);
+
+auto *smgr = driver->getSceneManager();
+const auto loadMesh = [&] (const io::path& filepath) {
+	irr_ptr<io::IReadFile> file(driver->getFileSystem()->createAndOpenFile(filepath));
+	REQUIRE(file);
+	return smgr->getMesh(file.get());
 };
 
 const static auto model_stem = gamespec.gamemods_path +
@@ -33,21 +38,21 @@ SECTION("error cases") {
 	const static auto invalid_model_path = gamespec.gamemods_path + DIR_DELIM + "gltf" + DIR_DELIM + "invalid" + DIR_DELIM;
 
 	SECTION("empty gltf file") {
-		CHECK(loadMesh(invalid_model_path + "empty.gltf") == nullptr);
+		CHECK(!loadMesh(invalid_model_path + "empty.gltf"));
 	}
 
 	SECTION("null file pointer") {
-		CHECK(smgr.getMesh(nullptr) == nullptr);
+		CHECK(!smgr->getMesh(nullptr));
 	}
 
 	SECTION("invalid JSON") {
-		CHECK(loadMesh(invalid_model_path + "json_missing_brace.gltf") == nullptr);
+		CHECK(!loadMesh(invalid_model_path + "json_missing_brace.gltf"));
 	}
 
 	// This is an example of something that should be validated by tiniergltf.
 	SECTION("invalid bufferview bounds")
 	{
-		CHECK(loadMesh(invalid_model_path + "invalid_bufferview_bounds.gltf") == nullptr);
+		CHECK(!loadMesh(invalid_model_path + "invalid_bufferview_bounds.gltf"));
 	}
 }
 
@@ -59,7 +64,7 @@ SECTION("minimal triangle") {
 			model_stem + "triangle_without_indices.gltf");
 	INFO(path);
 	const auto mesh = loadMesh(path);
-	REQUIRE(mesh != nullptr);
+	REQUIRE(mesh);
 	REQUIRE(mesh->getMeshBufferCount() == 1);
 
 	SECTION("vertex coordinates are correct") {
@@ -83,7 +88,7 @@ SECTION("minimal triangle") {
 
 SECTION("blender cube") {
 	const auto mesh = loadMesh(model_stem + "blender_cube.gltf");
-	REQUIRE(mesh != nullptr);
+	REQUIRE(mesh);
 	REQUIRE(mesh->getMeshBufferCount() == 1);
 	SECTION("vertex coordinates are correct") {
 		REQUIRE(mesh->getMeshBuffer(0)->getVertexCount() == 24);
@@ -136,7 +141,7 @@ SECTION("blender cube") {
 
 SECTION("blender cube scaled") {
 	const auto mesh = loadMesh(model_stem + "blender_cube_scaled.gltf");
-	REQUIRE(mesh != nullptr);
+	REQUIRE(mesh);
 	REQUIRE(mesh->getMeshBufferCount() == 1);
 
 	SECTION("Scaling is correct") {
@@ -157,7 +162,7 @@ SECTION("blender cube scaled") {
 
 SECTION("blender cube matrix transform") {
 	const auto mesh = loadMesh(model_stem + "blender_cube_matrix_transform.gltf");
-	REQUIRE(mesh != nullptr);
+	REQUIRE(mesh);
 	REQUIRE(mesh->getMeshBufferCount() == 1);
 
 	SECTION("Transformation is correct") {
@@ -183,7 +188,7 @@ SECTION("blender cube matrix transform") {
 
 SECTION("snow man") {
 	const auto mesh = loadMesh(model_stem + "snow_man.gltf");
-	REQUIRE(mesh != nullptr);
+	REQUIRE(mesh);
 	REQUIRE(mesh->getMeshBufferCount() == 3);
 
 	SECTION("vertex coordinates are correct for all buffers") {
@@ -338,7 +343,7 @@ SECTION("snow man") {
 SECTION("simple sparse accessor")
 {
 	const auto mesh = loadMesh(model_stem + "simple_sparse_accessor.gltf");
-	REQUIRE(mesh != nullptr);
+	REQUIRE(mesh);
 	const auto *vertices = reinterpret_cast<irr::video::S3DVertex *>(
 			mesh->getMeshBuffer(0)->getVertices());
 	const std::array<v3f, 14> expectedPositions = {
@@ -362,5 +367,8 @@ SECTION("simple sparse accessor")
 	for (std::size_t i = 0; i < expectedPositions.size(); ++i)
 		CHECK(vertices[i].Pos == expectedPositions[i]);
 }
+
+driver->closeDevice();
+driver->drop();
 
 }
