@@ -642,7 +642,7 @@ protected:
 
 		void *lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 mipmapLevel = 0, u32 layer = 0, E_TEXTURE_LOCK_FLAGS lockFlags = ETLF_FLIP_Y_UP_RTT) override { return 0; }
 		void unlock() override {}
-		void regenerateMipMapLevels(void *data = 0, u32 layer = 0, u32 end_size = 1) override {}
+		void regenerateMipMapLevels(void *data = 0, u32 layer = 0, u32 max_level = 1000) override {}
 		void drawToSubImage(int x, int y, int width, int height, ITexture *texture) override {}
 	};
 	core::array<SSurface> Textures;

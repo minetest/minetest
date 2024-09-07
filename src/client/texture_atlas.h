@@ -67,6 +67,11 @@ class TextureAtlas {
 	// Number of last crack
 	int m_last_crack = -1;
 
+	// Highest mip map level
+	u32 m_max_mip_level;
+
+	bool m_mip_maps;
+
 public:
 	TextureAtlas(video::IVideoDriver *vdrv, ITextureSource *src, std::vector<TileLayer*> &layers);
 
@@ -89,8 +94,6 @@ public:
 	{
 		return m_tiles_infos.at(i);
 	}
-
-	u32 getClosestPowerOfTwo(f32 num);
 
 	bool canFit(const TileInfo &area, const TileInfo &tex);
 

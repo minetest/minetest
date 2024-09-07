@@ -56,7 +56,12 @@ MapblockMeshCollector::MapblockMeshCollector(Client *_client, v3f _center_pos,
       atlas(_client->getNodeDefManager()->getAtlas()),
       shdrsrc(_client->getShaderSource()),
       tsrc(_client->getTextureSource())
-{}
+{
+	enable_shaders = g_settings->getBool("enable_shaders");
+	bilinear_filter = g_settings->getBool("bilinear_filter");
+	trilinear_filter = g_settings->getBool("trilinear_filter");
+	anisotropic_filter = g_settings->getBool("anisotropic_filter");
+}
 
 void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
     const video::S3DVertex *vertices, u32 numVertices,
@@ -81,15 +86,15 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
 		material.Lighting = false;
 		material.FogEnable = true;
 		material.setTexture(0, isMesh ? layer.texture : atlas->getTexture());
-		material.forEachTexture([] (auto &tex) {
+		material.forEachTexture([&] (auto &tex) {
 			setMaterialFilters(tex,
-				g_settings->getBool("bilinear_filter"),
-				g_settings->getBool("trilinear_filter"),
-				g_settings->getBool("anisotropic_filter")
+				bilinear_filter,
+				trilinear_filter,
+				anisotropic_filter
 			);
 		});
 
-        if (g_settings->getBool("enable_shaders")) {
+        if (enable_shaders) {
             material.MaterialType = shdrsrc->getShaderInfo(
                 layer.shader_id).material;
             layer.applyMaterialOptionsWithShaders(material);
@@ -179,7 +184,7 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
 
             vertex.Color = c;
 
-			if (!g_settings->getBool("enable_shaders") && c.getAlpha() != 0)
+			if (!enable_shaders && c.getAlpha() != 0)
 				part.opaque_verts_refs.push_back(part.vertices.size());
 
             bounding_radius_sq = std::max(bounding_radius_sq,

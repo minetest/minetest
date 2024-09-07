@@ -127,6 +127,11 @@ public:
 	IWritableShaderSource *shdrsrc;
 	ITextureSource *tsrc;
 
+	bool enable_shaders;
+	bool bilinear_filter;
+	bool trilinear_filter;
+	bool anisotropic_filter;
+
     MapblockMeshCollector(Client *_client, v3f _center_pos,
         v3f _offset, v3f _translation);
 

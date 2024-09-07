@@ -25,12 +25,17 @@ TextureAtlas::TextureAtlas(video::IVideoDriver *vdrv, ITextureSource *src, std::
 
 	m_tsrc = src;
 
-	u32 atlas_size = 0;
+	m_mip_maps = g_settings->getBool("mip_map");
+
+	u32 atlas_area = 0;
+
+	// Necessary for defining the max count of the atlas mips to avoid the artifacts with it
+	int min_area_tile = 0;
 
 	// Tile layers with unique ITextures
 	std::vector<TileLayer *> unique_layers;
 
-	for (auto layer : layers) {
+	for (auto &layer : layers) {
 		// If for the layer the TileInfo was already created,
 		// just save the index at this TileInfo and omit the iteration
 		bool is_layer_collected = false;
@@ -75,31 +80,37 @@ TextureAtlas::TextureAtlas(video::IVideoDriver *vdrv, ITextureSource *src, std::
 		m_tiles_infos.push_back(tile_info);
 		unique_layers.push_back(layer);
 
-		atlas_size += (tile_info.width * tile_info.height);
+		if (min_area_tile == 0)
+			min_area_tile = tile_info.width * tile_info.height;
+		else
+			min_area_tile = std::min(min_area_tile, tile_info.width * tile_info.height);
+
+		atlas_area += (tile_info.width * tile_info.height);
 	}
 
 	u32 max_texture_size = (u32)(vdrv->getDriverAttributes().getAttributeAsInt("MaxTextureSize"));
-	u32 atlas_side = std::min(getClosestPowerOfTwo(std::sqrt((f32)atlas_size)), max_texture_size);
+	u32 closest_power_of_two = std::pow(2u, (u32)std::ceil(std::log2(std::sqrt((f32)atlas_area))));
+	u32 atlas_side = std::min(closest_power_of_two, max_texture_size);
 
 	packTextures(atlas_side);
 
-	// Extending the atlas width twice for allocating the additional texture space for cracks
-	m_atlas_texture = m_driver->addTexture(core::dimension2du(atlas_side*2, atlas_side), "DiffuseAtlas", video::ECF_A32B32G32R32F);
+	// `atlas_side*2` doubles the texture area for crack tiles
+	core::dimension2du atlas_size(atlas_side*2, atlas_side);
+	video::ECOLOR_FORMAT atlas_format = video::ECF_A32B32G32R32F;
+
+	m_atlas_texture = m_driver->addTexture(atlas_size, "Atlas", atlas_format);
 
 	for (auto &info : m_tiles_infos)
 		if (info.tex)
 			m_atlas_texture->drawToSubImage(info.x, info.y, info.width, info.height, info.tex);
 
-	if (m_driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS)) {
-		// Each tile in both sides of the atlas must have not less 128 pixels in a mip
-		u32 min_pixels_count = m_tiles_infos.size()* 128 * 2;
-		m_atlas_texture->regenerateMipMapLevels(0, 0, min_pixels_count);
-	}
-}
+	if (m_mip_maps) {
+		m_max_mip_level = (u32)std::ceil(std::log2(std::sqrt((f32)min_area_tile)));
 
-u32 TextureAtlas::getClosestPowerOfTwo(f32 num)
-{
-	return std::pow(2u, (u32)std::ceil(std::log2(num)));
+		//infostream << "m_min_tile_side: " << m_min_tile_side << std::endl;
+
+		m_atlas_texture->regenerateMipMapLevels(nullptr, 0, m_max_mip_level);
+	}
 }
 
 bool TextureAtlas::canFit(const TileInfo &area, const TileInfo &tex)
@@ -184,11 +195,8 @@ void TextureAtlas::updateAnimations(f32 time)
 		}
 	}
 
-	if (m_driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS) && has_animated_tiles) {
-		// Each tile in both sides of the atlas must have not less 128 pixels in a mip
-		u32 min_pixels_count = m_tiles_infos.size() * 128 * 2;
-		m_atlas_texture->regenerateMipMapLevels(0, 0, min_pixels_count);
-	}
+	if (m_mip_maps && has_animated_tiles)
+		m_atlas_texture->regenerateMipMapLevels(nullptr, 0, m_max_mip_level);
 }
 
 void TextureAtlas::updateCrackAnimations(int new_crack)
@@ -226,9 +234,6 @@ void TextureAtlas::updateCrackAnimations(int new_crack)
 		}
 	}
 
-	if (m_driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS) && has_crack_tiles) {
-		// Each tile in both sides of the atlas must have not less 128 pixels in a mip
-		u32 min_pixels_count = m_tiles_infos.size() * 128 * 2;
-		m_atlas_texture->regenerateMipMapLevels(0, 0, min_pixels_count);
-	}
+	if (m_mip_maps && has_crack_tiles)
+		m_atlas_texture->regenerateMipMapLevels(nullptr, 0, m_max_mip_level);
 }

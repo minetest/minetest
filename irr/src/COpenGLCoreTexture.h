@@ -384,9 +384,10 @@ public:
 		LockLayer = 0;
 	}
 
-	void regenerateMipMapLevels(void *data = 0, u32 layer = 0, u32 end_size = 1) override
+	void regenerateMipMapLevels(void *data = 0, u32 layer = 0, u32 max_level = 1000) override
 	{
-		if (!HasMipMaps || LegacyAutoGenerateMipMaps || (Size.Width * Size.Height <= end_size))
+		if (!HasMipMaps || LegacyAutoGenerateMipMaps ||
+			(Size.Width <= 1 || Size.Height <= 1) || max_level == 0)
 			return;
 
 		const COpenGLCoreTexture *prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
@@ -403,17 +404,19 @@ public:
 				width >>= 1;
 				height >>= 1;
 
-				if (width * height < end_size)
+				++level;
+
+				if (width < 1 || height < 1 || level > max_level)
 					break;
 
 				dataSize = IImage::getDataSizeFromFormat(ColorFormat, width, height);
-				++level;
 
 				uploadTexture(true, layer, level, tmpData);
 
 				tmpData += dataSize;
 			} while (true);
 		} else {
+			GL.TexParameteri(TextureType, GL_TEXTURE_MAX_LEVEL, (GLint)max_level);
 			Driver->irrGlGenerateMipmap(TextureType);
 			TEST_GL_ERROR(Driver);
 		}

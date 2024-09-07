@@ -222,9 +222,8 @@ public:
 	level. At least one pixel will be always kept.
 	\param layer It informs a texture about which cubemap or texture array layer
 	needs mipmap regeneration.
-	\param end_size Defines until which minimal size of the mip generate mips.
-	If the size reaches less value than it, stop the generation.*/
-	virtual void regenerateMipMapLevels(void *data = 0, u32 layer = 0, u32 end_size = 1) = 0;
+	\param max_level Highest mipmap level until which necessary to generate mipmaps*/
+	virtual void regenerateMipMapLevels(void *data = 0, u32 layer = 0, u32 max_level = 1000) = 0;
 
 	virtual std::vector<IImage*> getImagesCache() = 0;
 
