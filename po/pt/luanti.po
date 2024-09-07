@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Portuguese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-01-30 16:01+0000\n"
-"Last-Translator: Alexsandro Vítor <alexsandro.vitor97@gmail.com>\n"
+"PO-Revision-Date: 2024-09-08 12:09+0000\n"
+"Last-Translator: Davi Lopes <davilopes@systemli.org>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/minetest/"
 "minetest/pt/>\n"
 "Language: pt\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -184,7 +184,7 @@ msgstr "A descarregar..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Error getting dependencies for package"
-msgstr ""
+msgstr "Erro ao obter as dependências do pacote"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Games"
@@ -464,7 +464,7 @@ msgstr "Decorações"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Desert temples"
-msgstr ""
+msgstr "Templos do deserto"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
@@ -1080,6 +1080,8 @@ msgid ""
 "Minetest is a game-creation platform that allows you to play many different "
 "games."
 msgstr ""
+"O Minetest é um plataforma de criação de jogos que permite você jogar muitos "
+"jogos diferentes."
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -1674,7 +1676,7 @@ msgstr "Eliminar"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
-msgstr ""
+msgstr "Seta para baixo"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -6985,7 +6987,7 @@ msgstr "Largura das linhas do bloco de seleção em torno de nodes."
 
 #: src/settings_translation_file.cpp
 msgid "Window maximized"
-msgstr ""
+msgstr "Janela maximizada"
 
 #: src/settings_translation_file.cpp
 msgid ""
