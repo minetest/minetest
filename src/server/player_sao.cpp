@@ -706,8 +706,6 @@ bool PlayerSAO::checkMovementCheat()
 
 	player_max_walk = MYMAX(player_max_walk, override_max_H);
 
-	player_max_walk *= anticheat_movement_tolerance;
-
 	player_max_jump = m_player->movement_speed_jump * m_player->physics_override.jump;
 	// FIXME: Bouncy nodes cause practically unbound increase in Y speed,
 	//        until this can be verified correctly, tolerate higher jumping speeds
@@ -735,6 +733,8 @@ bool PlayerSAO::checkMovementCheat()
 		float s = MYMAX(player_max_jump, player_max_walk);
 		required_time = MYMAX(required_time, d_vert / s);
 	}
+
+	required_time /= anticheat_movement_tolerance;
 
 	if (m_move_pool.grab(required_time)) {
 		m_last_good_position = m_base_position;
