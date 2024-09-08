@@ -52,10 +52,7 @@ MapblockMeshCollector::MapblockMeshCollector(Client *_client, v3f _center_pos,
         v3f _offset, v3f _translation)
     : MeshCollector(_center_pos, _offset),
       client(_client),
-      translation(_translation),
-      atlas(_client->getNodeDefManager()->getAtlas()),
-      shdrsrc(_client->getShaderSource()),
-      tsrc(_client->getTextureSource())
+      translation(_translation)
 {
 	enable_shaders = g_settings->getBool("enable_shaders");
 	bilinear_filter = g_settings->getBool("bilinear_filter");
@@ -64,13 +61,14 @@ MapblockMeshCollector::MapblockMeshCollector(Client *_client, v3f _center_pos,
 }
 
 void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
-    const video::S3DVertex *vertices, u32 numVertices,
-    const u16 *indices, u32 numIndices, v3f pos,
-    video::SColor clr, u8 light_source, bool own_color)
+	const video::S3DVertex *vertices, u32 numVertices,
+	const u16 *indices, u32 numIndices, bool outside_uv,
+	v3f pos, video::SColor clr,
+	u8 light_source, bool own_color)
 {
-    core::dimension2du atlas_size = atlas->getTextureSize();
-
-	bool isMesh = tile.draw_type == NDT_MESH;
+	TextureBuilder *tbuilder = client->getNodeDefManager()->getTextureBuilder();
+	ITextureSource *tsrc = client->getTextureSource();
+	IWritableShaderSource *shdrsrc = client->getShaderSource();
 
     for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
         const TileLayer &layer = tile.layers[layernum];
@@ -81,11 +79,29 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
         if (tile.world_aligned)
             scale = 1.0f / layer.scale;
 
+		TextureAtlas *atlas = nullptr;
+		TextureSingleton *st = nullptr;
+		core::dimension2du atlas_size;
+		core::dimension2du st_size;
+
+		if (outside_uv) {
+			st = tbuilder->findSingleton(layer.texture);
+
+			if (!st)
+				st = tbuilder->buildSingleton(client, layer.texture);
+
+			st_size = st->getTextureSize();
+		}
+		else {
+			atlas = tbuilder->getAtlas(layer.atlas_index);
+			atlas_size = atlas->getTextureSize();
+		}
+
         // Creating material
         video::SMaterial material;
 		material.Lighting = false;
 		material.FogEnable = true;
-		material.setTexture(0, isMesh ? layer.texture : atlas->getTexture());
+		material.setTexture(0, outside_uv ? st->getTexture() : atlas->getTexture());
 		material.forEachTexture([&] (auto &tex) {
 			setMaterialFilters(tex,
 				bilinear_filter,
@@ -115,7 +131,9 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
                 os << ":" << (u32)tiles;
             os << ":" << (u32)layer.animation_frame_count << ":";
 
-			if (!isMesh) {
+			if (outside_uv)
+				st->crack_tile = os.str();
+			else {
 				atlas->insertCrackTile(layer.atlas_tile_info_index, os.str());
 
 				// Shift each UV by the half-width of the atlas to locate it in the separate right side
@@ -149,7 +167,6 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
 		MeshPart &part = (*buffer_it);
         u32 vertex_count = part.vertices.size();
 
-        const TileInfo &tile_info = atlas->getTileInfo(layer.atlas_tile_info_index);
         video::SColor tc = layer.color;
 
         // Modify the vertices
@@ -159,7 +176,10 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
             vertex.Pos += pos + offset + translation;
             vertex.TCoords *= scale;
 
-			if (!isMesh) {
+			if (outside_uv)
+				vertex.TCoords.X *= 0.5f;
+			else {
+				const TileInfo &tile_info = atlas->getTileInfo(layer.atlas_tile_info_index);
 				// Re-calculate UV for linking to the necessary TileInfo pixels in the atlas
 				int rel_x = core::round32(vertex.TCoords.X * tile_info.width);
 				int rel_y = core::round32(vertex.TCoords.Y * tile_info.height);
@@ -200,8 +220,9 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
 
 void WieldMeshCollector::addTileMesh(const TileSpec &tile,
 	const video::S3DVertex *vertices, u32 numVertices,
-	const u16 *indices, u32 numIndices, v3f pos,
-	video::SColor clr, u8 light_source, bool own_color)
+	const u16 *indices, u32 numIndices, bool outside_uv,
+	v3f pos, video::SColor clr,
+	u8 light_source, bool own_color)
 {
 	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
 		const TileLayer &layer = tile.layers[layernum];

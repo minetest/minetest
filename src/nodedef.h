@@ -534,7 +534,7 @@ struct ContentFeatures
 #ifndef SERVER
 	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
 		scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings,
-		std::vector<TileLayer *> &tile_layers);
+		std::list<TileLayer *> &tile_layers);
 #endif
 
 private:
@@ -758,11 +758,11 @@ public:
 
 #ifndef SERVER
 	/*!
-	 * Provides access to the atlas
+	 * Provides access to the texture builder
 	 */
-	TextureAtlas *getAtlas() const
+	TextureBuilder *getTextureBuilder() const
 	{
-		return m_diffuse_atlas;
+		return m_texture_builder;
 	}
 #endif
 
@@ -859,9 +859,9 @@ private:
 
 #ifndef SERVER
 	/*!
-	 * Atlas object saving the tiles textures pixel data in the single texture.
+	 * Texture builder abstraction keeping and handling atlases and singletons.
 	 */
-	mutable TextureAtlas *m_diffuse_atlas = nullptr;
+	mutable TextureBuilder *m_texture_builder = nullptr;
 #endif
 };
 

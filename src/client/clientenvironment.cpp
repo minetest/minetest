@@ -296,14 +296,11 @@ void ClientEnvironment::step(float dtime)
 		}
 	}
 
-	/*
-	 * Draw new animations frames in the atlas
-	 */
-	TextureAtlas *atlas = m_client->getNodeDefManager()->getAtlas();
+	TextureBuilder *tbuilder = m_client->getNodeDefManager()->getTextureBuilder();
 
-	if (atlas) {
-		atlas->updateCrackAnimations(m_client->getCrackLevel());
-		atlas->updateAnimations(m_client->getAnimationTime());
+	if (tbuilder) {
+		tbuilder->updateCrackAnimations(m_client->getCrackLevel());
+		tbuilder->updateAnimations(m_client->getAnimationTime());
 	}
 }
 

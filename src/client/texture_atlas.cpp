@@ -14,83 +14,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "client/client.h"
 #include "client/texture_atlas.h"
 #include "settings.h"
 #include "log.h"
 
 
-TextureAtlas::TextureAtlas(video::IVideoDriver *vdrv, ITextureSource *src, std::vector<TileLayer*> &layers)
+TextureAtlas::TextureAtlas(Client *client, u32 atlas_area, u32 min_area_tile, std::vector<TileInfo> &tiles_infos)
+	: m_driver(client->getSceneManager()->getVideoDriver()), m_tsrc(client->getTextureSource())
 {
-	m_driver = vdrv;
-
-	m_tsrc = src;
-
+	m_tiles_infos = std::move(tiles_infos);
 	m_mip_maps = g_settings->getBool("mip_map");
 
-	u32 atlas_area = 0;
-
-	// Necessary for defining the max count of the atlas mips to avoid the artifacts with it
-	int min_area_tile = 0;
-
-	// Tile layers with unique ITextures
-	std::vector<TileLayer *> unique_layers;
-
-	for (auto &layer : layers) {
-		// If for the layer the TileInfo was already created,
-		// just save the index at this TileInfo and omit the iteration
-		bool is_layer_collected = false;
-		for (u32 i = 0; i < unique_layers.size(); i++)
-			if (unique_layers[i]->texture == layer->texture) {
-				layer->atlas_tile_info_index = i;
-				is_layer_collected = true;
-				break;
-			}
-
-		if (is_layer_collected)
-			continue;
-
-		TileInfo tile_info;
-
-		if (layer->animation_frame_count > 1)
-			tile_info.tex = (*layer->frames)[0].texture;
-		else
-			tile_info.tex = layer->texture;
-
-		if (tile_info.tex) {
-			core::dimension2du size = tile_info.tex->getSize();
-			tile_info.width = size.Width;
-			tile_info.height = size.Height;
-		}
-
-		if (layer->animation_frame_count > 1) {
-			tile_info.anim.frame_length_ms = layer->animation_frame_length_ms;
-			tile_info.anim.frame_count = layer->animation_frame_count;
-
-			//if (g_settings->getBool("desynchronize_mapblock_texture_animation"))
-			//	tile_info.anim.frame_offset =
-			//			100000 * (2.0 + noise3d(
-			//			blockpos.X, blockpos.Y,
-			//			blockpos.Z, 0));
-
-			for (auto &frame : *layer->frames)
-				tile_info.anim.frames.push_back(frame.texture);
-		}
-
-		layer->atlas_tile_info_index = m_tiles_infos.size();
-		m_tiles_infos.push_back(tile_info);
-		unique_layers.push_back(layer);
-
-		if (min_area_tile == 0)
-			min_area_tile = tile_info.width * tile_info.height;
-		else
-			min_area_tile = std::min(min_area_tile, tile_info.width * tile_info.height);
-
-		atlas_area += (tile_info.width * tile_info.height);
-	}
-
-	u32 max_texture_size = (u32)(vdrv->getDriverAttributes().getAttributeAsInt("MaxTextureSize"));
-	u32 closest_power_of_two = std::pow(2u, (u32)std::ceil(std::log2(std::sqrt((f32)atlas_area))));
-	u32 atlas_side = std::min(closest_power_of_two, max_texture_size);
+	u32 atlas_side = std::pow(2u, (u32)std::ceil(std::log2(std::sqrt((f32)atlas_area))));
 
 	packTextures(atlas_side);
 
@@ -98,18 +34,16 @@ TextureAtlas::TextureAtlas(video::IVideoDriver *vdrv, ITextureSource *src, std::
 	core::dimension2du atlas_size(atlas_side*2, atlas_side);
 	video::ECOLOR_FORMAT atlas_format = video::ECF_A32B32G32R32F;
 
-	m_atlas_texture = m_driver->addTexture(atlas_size, "Atlas", atlas_format);
+	m_texture = m_driver->addTexture(atlas_size, "Atlas", atlas_format);
 
 	for (auto &info : m_tiles_infos)
 		if (info.tex)
-			m_atlas_texture->drawToSubImage(info.x, info.y, info.width, info.height, info.tex);
+			m_texture->drawToSubImage(info.x, info.y, info.width, info.height, info.tex);
 
 	if (m_mip_maps) {
 		m_max_mip_level = (u32)std::ceil(std::log2(std::sqrt((f32)min_area_tile)));
 
-		//infostream << "m_min_tile_side: " << m_min_tile_side << std::endl;
-
-		m_atlas_texture->regenerateMipMapLevels(nullptr, 0, m_max_mip_level);
+		m_texture->regenerateMipMapLevels(nullptr, 0, m_max_mip_level);
 	}
 }
 
@@ -191,12 +125,12 @@ void TextureAtlas::updateAnimations(f32 time)
 
 		if (tile.anim.frames.at(new_frame)) {
 			has_animated_tiles = true;
-			m_atlas_texture->drawToSubImage(tile.x, tile.y, tile.width, tile.height, tile.anim.frames[new_frame]);
+			m_texture->drawToSubImage(tile.x, tile.y, tile.width, tile.height, tile.anim.frames[new_frame]);
 		}
 	}
 
 	if (m_mip_maps && has_animated_tiles)
-		m_atlas_texture->regenerateMipMapLevels(nullptr, 0, m_max_mip_level);
+		m_texture->regenerateMipMapLevels(nullptr, 0, m_max_mip_level);
 }
 
 void TextureAtlas::updateCrackAnimations(int new_crack)
@@ -217,7 +151,7 @@ void TextureAtlas::updateCrackAnimations(int new_crack)
 
 	m_last_crack = new_crack;
 
-	core::dimension2du atlas_size = m_atlas_texture->getSize();
+	core::dimension2du atlas_size = m_texture->getSize();
 
 	bool has_crack_tiles = false;
 
@@ -230,10 +164,185 @@ void TextureAtlas::updateCrackAnimations(int new_crack)
 		TileInfo &tile = m_tiles_infos.at(crack_tile.first);
 		if (new_texture) {
 			has_crack_tiles = true;
-			m_atlas_texture->drawToSubImage(tile.x + atlas_size.Width/2, tile.y, tile.width, tile.height, new_texture);
+			m_texture->drawToSubImage(tile.x + atlas_size.Width/2, tile.y, tile.width, tile.height, new_texture);
 		}
 	}
 
 	if (m_mip_maps && has_crack_tiles)
-		m_atlas_texture->regenerateMipMapLevels(nullptr, 0, m_max_mip_level);
+		m_texture->regenerateMipMapLevels(nullptr, 0, m_max_mip_level);
+}
+
+
+TextureSingleton::TextureSingleton(Client *client, video::ITexture *texture)
+	: m_driver(client->getSceneManager()->getVideoDriver()), m_tsrc(client->getTextureSource())
+{
+	original_texture = texture;
+	m_mip_maps = g_settings->getBool("mip_map");
+
+	core::dimension2du size = texture->getSize();
+	size.Width *= 2;
+
+	video::ECOLOR_FORMAT texture_format = video::ECF_A32B32G32R32F;
+
+	m_texture = m_driver->addTexture(size, "SingleTexture", texture_format);
+	m_texture->drawToSubImage(0, 0, size.Width / 2, size.Height, texture);
+
+	if (m_mip_maps)
+		m_texture->regenerateMipMapLevels(nullptr, 0);
+}
+
+void TextureSingleton::updateAnimation(f32 time)
+{
+	if (m_anim_info.frame_count == 0)
+		return;
+
+	int new_frame = (int)(time * 1000 / m_anim_info.frame_length_ms
+			+ m_anim_info.frame_offset) % m_anim_info.frame_count;
+
+	if (new_frame == m_anim_info.cur_frame)
+		return;
+
+	m_anim_info.cur_frame = new_frame;
+
+	if (m_anim_info.frames.at(new_frame)) {
+		const core::dimension2du &size = m_texture->getSize();
+		m_texture->drawToSubImage(0, 0, size.Width / 2, size.Height, m_anim_info.frames[new_frame]);
+
+		if (m_mip_maps)
+			m_texture->regenerateMipMapLevels(nullptr, 0);
+	}
+}
+
+void TextureSingleton::updateCrackAnimation(int new_crack)
+{
+	if (new_crack == m_last_crack)
+		// New crack is old yet
+		return;
+
+	if (new_crack == -1) {
+		// Animation has finished
+		crack_tile = "";
+		m_last_crack = -1;
+
+		return;
+	}
+
+	m_last_crack = new_crack;
+
+	std::string s = crack_tile + itos(new_crack);
+	u32 new_texture_id = 0;
+	video::ITexture *new_texture =
+		m_tsrc->getTextureForMesh(s, &new_texture_id);
+
+	const core::dimension2du &size = m_texture->getSize();
+	if (new_texture) {
+		m_texture->drawToSubImage(size.Width / 2, 0, size.Width / 2, size.Height, new_texture);
+
+		if (m_mip_maps)
+			m_texture->regenerateMipMapLevels(nullptr, 0);
+	}
+}
+
+
+TextureBuilder::~TextureBuilder()
+{
+	for (auto &atlas : m_atlases)
+		delete atlas;
+
+	for (auto &singleton : m_singletons)
+		delete singleton;
+}
+
+void TextureBuilder::buildAtlas(Client *client, std::list<TileLayer*> &layers)
+{
+	u32 atlas_area = 0;
+
+	// Necessary for defining the max count of the atlas mips to avoid the artifacts with it
+	int min_area_tile = 0;
+
+	video::IVideoDriver *vdrv = client->getSceneManager()->getVideoDriver();
+	u32 max_texture_size = (u32)(vdrv->getDriverAttributes().getAttributeAsInt("MaxTextureSize"));
+	u32 max_texture_area = std::pow(max_texture_size, 2);
+
+	// Tile layers with unique ITextures
+	std::vector<TileLayer *> unique_layers;
+	std::vector<TileInfo> tiles_infos;
+
+	for (; !layers.empty(); layers.pop_front()) {
+		TileLayer *layer = layers.front();
+		// If for the layer the TileInfo was already created,
+		// just save the index at this TileInfo and omit the iteration
+		bool is_layer_collected = false;
+		for (u32 i = 0; i < unique_layers.size(); i++)
+			if (unique_layers[i]->texture == layer->texture) {
+				layer->atlas_index = m_atlases.size();
+				layer->atlas_tile_info_index = i;
+
+				is_layer_collected = true;
+				break;
+			}
+
+		if (is_layer_collected)
+			continue;
+
+		TileInfo tile_info;
+
+		if (layer->animation_frame_count > 1)
+			tile_info.tex = (*layer->frames)[0].texture;
+		else
+			tile_info.tex = layer->texture;
+
+		if (tile_info.tex) {
+			core::dimension2du size = tile_info.tex->getSize();
+			tile_info.width = size.Width;
+			tile_info.height = size.Height;
+
+			if ((atlas_area + tile_info.width * tile_info.height) * 2 > max_texture_area)
+				break;
+		}
+
+		if (layer->animation_frame_count > 1) {
+			tile_info.anim.frame_length_ms = layer->animation_frame_length_ms;
+			tile_info.anim.frame_count = layer->animation_frame_count;
+
+			for (auto &frame : *layer->frames)
+				tile_info.anim.frames.push_back(frame.texture);
+		}
+
+		layer->atlas_index = m_atlases.size();
+		layer->atlas_tile_info_index = tiles_infos.size();
+		tiles_infos.push_back(tile_info);
+		unique_layers.push_back(layer);
+
+		if (min_area_tile == 0)
+			min_area_tile = tile_info.width * tile_info.height;
+		else
+			min_area_tile = std::min(min_area_tile, tile_info.width * tile_info.height);
+
+		atlas_area += (tile_info.width * tile_info.height);
+	}
+
+	m_atlases.push_back(new TextureAtlas(client, atlas_area, (u32)min_area_tile, tiles_infos));
+
+	// Recursively create new atlases if remain tiles didn't fit in the current one
+	if (!layers.empty())
+		buildAtlas(client, layers);
+}
+
+void TextureBuilder::updateAnimations(f32 time)
+{
+	for (auto &atlas : m_atlases)
+		atlas->updateAnimations(time);
+
+	for (auto &singleton : m_singletons)
+		singleton->updateAnimation(time);
+}
+
+void TextureBuilder::updateCrackAnimations(int new_crack)
+{
+	for (auto &atlas : m_atlases)
+		atlas->updateCrackAnimations(new_crack);
+
+	for (auto &singleton : m_singletons)
+		singleton->updateCrackAnimation(new_crack);
 }

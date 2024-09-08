@@ -199,17 +199,18 @@ static std::array<video::S3DVertex, 24> setupCuboidVertices(const aabb3f &box, c
 		for (int j = 0; j < 4; j++) {
 			video::S3DVertex &vertex = vertices[face * 4 + j];
 			v2f &tcoords = vertex.TCoords;
+
 			switch (tile.rotation) {
 			case TileRotation::None:
 				break;
 			case TileRotation::R90:
-				tcoords.set(-tcoords.Y, tcoords.X);
+				tcoords.rotateBy(90.0f, v2f(0.5f, 0.5f));
 				break;
 			case TileRotation::R180:
-				tcoords.set(-tcoords.X, -tcoords.Y);
+				tcoords.rotateBy(180.0f, v2f(0.5f, 0.5f));
 				break;
 			case TileRotation::R270:
-				tcoords.set(tcoords.Y, -tcoords.X);
+				tcoords.rotateBy(270.0f, v2f(0.5f, 0.5f));
 				break;
 			}
 		}
@@ -1725,6 +1726,11 @@ void MapblockMeshGenerator::drawMeshNode()
 	} else
 		return;
 
+	auto is_outside_uv = [] (const v2f &tcoords)
+	{
+		return (tcoords.X < 0.0f || tcoords.X > 1.0f) || (tcoords.Y < 0.0f || tcoords.Y > 1.0f);
+	};
+
 	int mesh_buffer_count = mesh->getMeshBufferCount();
 	for (int j = 0; j < mesh_buffer_count; j++) {
 		// Only up to 6 tiles are supported
@@ -1734,6 +1740,7 @@ void MapblockMeshGenerator::drawMeshNode()
 		video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
 		int vertex_count = buf->getVertexCount();
 
+		bool outside_uv = false;
 		if (data->m_smooth_lighting) {
 			// Mesh is always private here. So the lighting is applied to each
 			// vertex right here.
@@ -1741,15 +1748,25 @@ void MapblockMeshGenerator::drawMeshNode()
 				video::S3DVertex &vertex = vertices[k];
 				vertex.Color = blendLightColor(vertex.Pos, vertex.Normal);
 				vertex.Pos += cur_node.origin;
+
+				if (!outside_uv)
+					outside_uv = is_outside_uv(vertex.TCoords);
 			}
 			collector->addTileMesh(cur_node.tile, vertices, vertex_count,
-				buf->getIndices(), buf->getIndexCount());
+				buf->getIndices(), buf->getIndexCount(), outside_uv);
 		} else {
+			for (int k = 0; k < vertex_count; k++) {
+				video::S3DVertex &vertex = vertices[k];
+
+				if (!outside_uv)
+					outside_uv = is_outside_uv(vertex.TCoords);
+			}
+
 			// Don't modify the mesh, it may not be private here.
 			// Instead, let the collector process colors, etc.
 			collector->addTileMesh(cur_node.tile, vertices, vertex_count,
-				buf->getIndices(), buf->getIndexCount(), cur_node.origin,
-				cur_node.color, cur_node.f->light_source, true);
+				buf->getIndices(), buf->getIndexCount(), outside_uv,
+				cur_node.origin, cur_node.color, cur_node.f->light_source, true);
 		}
 	}
 	if (private_mesh)

@@ -42,8 +42,9 @@ public:
 
     virtual void addTileMesh(const TileSpec &tile,
 		const video::S3DVertex *vertices, u32 numVertices,
-		const u16 *indices, u32 numIndices, v3f pos = v3f(0.0f),
-		video::SColor clr = video::SColor(), u8 light_source = 0, bool own_color=false) = 0;
+		const u16 *indices, u32 numIndices, bool outside_uv=false,
+		v3f pos = v3f(0.0f), video::SColor clr = video::SColor(),
+		u8 light_source = 0, bool own_color=false) = 0;
 };
 
 // represents a triangle as indexes into the vertex buffer in SMeshBuffer
@@ -123,10 +124,6 @@ public:
 
 	std::vector<MeshTriangle> transparent_triangles;
 
-	TextureAtlas *atlas;
-	IWritableShaderSource *shdrsrc;
-	ITextureSource *tsrc;
-
 	bool enable_shaders;
 	bool bilinear_filter;
 	bool trilinear_filter;
@@ -144,8 +141,9 @@ public:
 
     void addTileMesh(const TileSpec &tile,
 		const video::S3DVertex *vertices, u32 numVertices,
-		const u16 *indices, u32 numIndices, v3f pos = v3f(0.0f),
-		video::SColor clr = video::SColor(), u8 light_source = 0, bool own_color=false) override;
+		const u16 *indices, u32 numIndices, bool outside_uv=false,
+		v3f pos = v3f(0.0f), video::SColor clr = video::SColor(),
+		u8 light_source = 0, bool own_color=false) override;
 };
 
 struct WieldPreMeshBuffer
@@ -170,8 +168,9 @@ public:
 
 	void addTileMesh(const TileSpec &tile,
 		const video::S3DVertex *vertices, u32 numVertices,
-		const u16 *indices, u32 numIndices, v3f pos = v3f(0.0f),
-		video::SColor clr = video::SColor(), u8 light_source = 0, bool own_color=false) override;
+		const u16 *indices, u32 numIndices, bool outside_uv=false,
+		v3f pos = v3f(0.0f), video::SColor clr = video::SColor(),
+		u8 light_source = 0, bool own_color=false) override;
 
 private:
 	WieldPreMeshBuffer &findBuffer(const TileLayer &layer, u32 numVertices);

@@ -779,7 +779,7 @@ bool isWorldAligned(AlignStyle style, WorldAlignMode mode, NodeDrawType drawtype
 
 void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
 	scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings,
-	std::vector<TileLayer *> &tile_layers)
+	std::list<TileLayer *> &tile_layers)
 {
 	// minimap pixel color - the average color of a texture
 	if (tsettings.enable_minimap && !tiledef[0].name.empty())
@@ -1043,8 +1043,8 @@ NodeDefManager::~NodeDefManager()
 		}
 	}
 
-	if (m_diffuse_atlas)
-		delete m_diffuse_atlas;
+	if (m_texture_builder)
+		delete m_texture_builder;
 #endif
 }
 
@@ -1503,10 +1503,12 @@ void NodeDefManager::updateTextures(IGameDef *gamedef, void *progress_callback_a
 	TextureSettings tsettings;
 	tsettings.readSettings();
 
+	m_texture_builder = new TextureBuilder();
+
 	u32 size = m_content_features.size();
 
 	// Collect all tile layers from each node
-	std::vector<TileLayer *> tile_layers;
+	std::list<TileLayer *> tile_layers;
 	for (u32 i = 0; i < size; i++) {
 		ContentFeatures *f = &(m_content_features[i]);
 		f->updateTextures(tsrc, shdsrc, meshmanip, client, tsettings, tile_layers);
@@ -1514,8 +1516,7 @@ void NodeDefManager::updateTextures(IGameDef *gamedef, void *progress_callback_a
 	}
 
 	if (!tile_layers.empty())
-		m_diffuse_atlas = new TextureAtlas(client->getSceneManager()->getVideoDriver(),
-			tsrc, tile_layers);
+		m_texture_builder->buildAtlas(client, tile_layers);
 #endif
 }
 
