@@ -10,6 +10,8 @@
 * 1. ipairs/pairs
 * 2. cleaned up generic_reader function
 * 3. moved coroutines to a seperate file
+* 4. added support for arguments for xpcall + optimization for xpcall/pcall
+* 5. rawlen
 */
 
 
@@ -169,6 +171,15 @@ static int luaB_rawequal (lua_State *L) {
   luaL_checkany(L, 1);
   luaL_checkany(L, 2);
   lua_pushboolean(L, lua_rawequal(L, 1, 2));
+  return 1;
+}
+
+
+static int luaB_rawlen (lua_State *L) {
+  int t = lua_type(L, 1);
+  luaL_argcheck(L, t == LUA_TTABLE || t == LUA_TSTRING, 1,
+                   "table or string expected");
+  lua_pushinteger(L, lua_objlen(L, 1));
   return 1;
 }
 
@@ -504,6 +515,7 @@ static const luaL_Reg base_funcs[] = {
   {"pcall", luaB_pcall},
   {"print", luaB_print},
   {"rawequal", luaB_rawequal},
+  {"rawlen", luaB_rawlen},
   {"rawget", luaB_rawget},
   {"rawset", luaB_rawset},
   {"select", luaB_select},
