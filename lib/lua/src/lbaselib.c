@@ -1,9 +1,14 @@
 /*
 ** $Id: lbaselib.c,v 1.191.1.6 2008/02/14 16:46:22 roberto Exp $
+** $Id: lbaselib.c,v 1.276.1.1 2013/04/12 18:48:47 roberto Exp $
 ** Basic library
 ** See Copyright Notice in lua.h
 */
 
+/*
+* Modified by the Minetest project maintainers to include backports from Lua 5.2 for:
+* 1. ipairs/pairs
+*/
 
 
 #include <ctype.h>
@@ -223,6 +228,23 @@ static int luaB_type (lua_State *L) {
 }
 
 
+static int pairsmeta (lua_State *L, const char *method, int iszero,
+                      lua_CFunction iter) {
+  if (!luaL_getmetafield(L, 1, method)) {  /* no metamethod? */
+    luaL_checktype(L, 1, LUA_TTABLE);  /* argument must be a table */
+    lua_pushcfunction(L, iter);  /* will return generator, */
+    lua_pushvalue(L, 1);  /* state, */
+    if (iszero) lua_pushinteger(L, 0);  /* and initial value */
+    else lua_pushnil(L);
+  }
+  else {
+    lua_pushvalue(L, 1);  /* argument 'self' to metamethod */
+    lua_call(L, 1, 3);  /* get 3 values from metamethod */
+  }
+  return 3;
+}
+
+
 static int luaB_next (lua_State *L) {
   luaL_checktype(L, 1, LUA_TTABLE);
   lua_settop(L, 2);  /* create a 2nd argument if there isn't one */
@@ -236,11 +258,7 @@ static int luaB_next (lua_State *L) {
 
 
 static int luaB_pairs (lua_State *L) {
-  luaL_checktype(L, 1, LUA_TTABLE);
-  lua_pushvalue(L, lua_upvalueindex(1));  /* return generator, */
-  lua_pushvalue(L, 1);  /* state, */
-  lua_pushnil(L);  /* and initial value */
-  return 3;
+  return pairsmeta(L, "__pairs", 0, luaB_next);
 }
 
 
@@ -250,16 +268,12 @@ static int ipairsaux (lua_State *L) {
   i++;  /* next value */
   lua_pushinteger(L, i);
   lua_rawgeti(L, 1, i);
-  return (lua_isnil(L, -1)) ? 0 : 2;
+  return (lua_isnil(L, -1)) ? 1 : 2;
 }
 
 
 static int luaB_ipairs (lua_State *L) {
-  luaL_checktype(L, 1, LUA_TTABLE);
-  lua_pushvalue(L, lua_upvalueindex(1));  /* return generator, */
-  lua_pushvalue(L, 1);  /* state, */
-  lua_pushinteger(L, 0);  /* and initial value */
-  return 3;
+  return pairsmeta(L, "__ipairs", 1, ipairsaux);
 }
 
 
@@ -453,10 +467,12 @@ static const luaL_Reg base_funcs[] = {
   {"gcinfo", luaB_gcinfo},
   {"getfenv", luaB_getfenv},
   {"getmetatable", luaB_getmetatable},
+  {"ipairs", luaB_ipairs},
   {"loadfile", luaB_loadfile},
   {"load", luaB_load},
   {"loadstring", luaB_loadstring},
   {"next", luaB_next},
+  {"pairs", luaB_pairs},
   {"pcall", luaB_pcall},
   {"print", luaB_print},
   {"rawequal", luaB_rawequal},
@@ -631,10 +647,8 @@ static void base_open (lua_State *L) {
   /* open lib into global table */
   luaL_register(L, "_G", base_funcs);
   lua_pushliteral(L, LUA_VERSION);
-  lua_setglobal(L, "_VERSION");  /* set global _VERSION */
-  /* `ipairs' and `pairs' need auxiliary functions as upvalues */
-  auxopen(L, "ipairs", luaB_ipairs, ipairsaux);
-  auxopen(L, "pairs", luaB_pairs, luaB_next);
+  lua_setfield(L, -2, "_VERSION");  /* set global _VERSION */
+
   /* `newproxy' needs a weaktable as upvalue */
   lua_createtable(L, 0, 1);  /* new table `w' */
   lua_pushvalue(L, -1);  /* `w' will be its own metatable */
