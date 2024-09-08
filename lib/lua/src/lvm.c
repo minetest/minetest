@@ -1,5 +1,6 @@
 /*
 ** $Id: lvm.c,v 2.63.1.5 2011/08/17 20:43:11 roberto Exp $
+** $Id: lvm.c,v 2.155.1.1 2013/04/12 18:48:47 roberto Exp $
 ** Lua virtual machine
 ** See Copyright Notice in lua.h
 */
@@ -25,6 +26,11 @@
 #include "ltable.h"
 #include "ltm.h"
 #include "lvm.h"
+
+/*
+* Modified by the Minetest project maintainers to include backports from Lua 5.2 for:
+* 1. __len metamethods for tables
+*/
 
 
 
@@ -314,6 +320,30 @@ void luaV_concat (lua_State *L, int total, int last) {
   } while (total > 1);  /* repeat until only 1 result left */
 }
 
+static void objlen (lua_State *L, StkId ra, const TValue *rb) {
+  const TValue *tm;
+  switch (ttype(rb)) {
+    case LUA_TTABLE: {
+      Table *h = hvalue(rb);
+      tm = fasttm(L, h->metatable, TM_LEN);
+      if (tm) break;  /* metamethod? break switch to call it */
+      setnvalue(ra, cast_num(luaH_getn(h)));  /* else primitive len */
+      return;
+    }
+    case LUA_TSTRING: {
+      setnvalue(ra, cast_num(tsvalue(rb)->len));
+      return;
+    }
+    default: {  /* try metamethod */
+      tm = luaT_gettmbyobj(L, rb, TM_LEN);
+      if (ttisnil(tm))  /* no metamethod? */
+        luaG_typeerror(L, rb, "get length of");
+      break;
+    }
+  }
+  callTMres(L, ra, tm, rb, luaO_nilobject);
+}
+
 
 static void Arith (lua_State *L, StkId ra, const TValue *rb,
                    const TValue *rc, TMS op) {
@@ -513,23 +543,7 @@ void luaV_execute (lua_State *L, int nexeccalls) {
         continue;
       }
       case OP_LEN: {
-        const TValue *rb = RB(i);
-        switch (ttype(rb)) {
-          case LUA_TTABLE: {
-            setnvalue(ra, cast_num(luaH_getn(hvalue(rb))));
-            break;
-          }
-          case LUA_TSTRING: {
-            setnvalue(ra, cast_num(tsvalue(rb)->len));
-            break;
-          }
-          default: {  /* try metamethod */
-            Protect(
-              if (!call_binTM(L, rb, luaO_nilobject, ra, TM_LEN))
-                luaG_typeerror(L, rb, "get length of");
-            )
-          }
-        }
+        Protect(objlen(L, ra, RB(i)));
         continue;
       }
       case OP_CONCAT: {
