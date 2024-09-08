@@ -5,6 +5,7 @@ set(LUA_CORE_SRC
 	lauxlib.c
 	lbaselib.c
 	lcode.c
+	lcorolib.c
 	ldblib.c
 	ldebug.c
 	ldo.c
