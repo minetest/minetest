@@ -211,28 +211,39 @@ LUA_API void lua_insert (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-
-LUA_API void lua_replace (lua_State *L, int idx) {
-  StkId o;
-  lua_lock(L);
+LUA_API void moveto(lua_State *L, StkId fr, int idx) {
   /* explicit test for incompatible code */
   if (idx == LUA_ENVIRONINDEX && L->ci == L->base_ci)
     luaG_runerror(L, "no calling environment");
-  api_checknelems(L, 1);
-  o = index2adr(L, idx);
-  api_checkvalidindex(L, o);
+  StkId to = index2adr(L, idx);
+  api_checkvalidindex(L, to);
   if (idx == LUA_ENVIRONINDEX) {
     Closure *func = curr_func(L);
-    api_check(L, ttistable(L->top - 1));
-    func->c.env = hvalue(L->top - 1);
-    luaC_barrier(L, func, L->top - 1);
+    api_check(L, ttistable(fr));
+    func->c.env = hvalue(fr);
+    luaC_barrier(L, func, fr);
   }
   else {
-    setobj(L, o, L->top - 1);
+    setobj(L, to, fr);
     if (idx < LUA_GLOBALSINDEX)  /* function upvalue? */
-      luaC_barrier(L, curr_func(L), L->top - 1);
+      luaC_barrier(L, curr_func(L), fr);
   }
+}
+
+
+LUA_API void lua_replace (lua_State *L, int idx) {
+  lua_lock(L);
+  api_checknelems(L, 1);
+  moveto(L, L->top - 1, idx);
   L->top--;
+  lua_unlock(L);
+}
+
+LUA_API void lua_copy (lua_State *L, int fromidx, int toidx) {
+  StkId fr;
+  lua_lock(L);
+  fr = index2adr(L, fromidx);
+  moveto(L, fr, toidx);
   lua_unlock(L);
 }
 

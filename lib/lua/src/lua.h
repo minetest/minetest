@@ -129,6 +129,8 @@ LUA_API void  (lua_pushvalue) (lua_State *L, int idx);
 LUA_API void  (lua_remove) (lua_State *L, int idx);
 LUA_API void  (lua_insert) (lua_State *L, int idx);
 LUA_API void  (lua_replace) (lua_State *L, int idx);
+/* backport from Lua 5.2 */
+LUA_API void  (lua_copy) (lua_State *L, int fromidx, int toidx);
 LUA_API int   (lua_checkstack) (lua_State *L, int sz);
 
 LUA_API void  (lua_xmove) (lua_State *from, lua_State *to, int n);
