@@ -401,25 +401,38 @@ static int luaB_select (lua_State *L) {
 }
 
 
+static int finishpcall (lua_State *L, int status) {
+  if (!lua_checkstack(L, 1)) {  /* no space for extra boolean? */
+    lua_settop(L, 0);  /* create space for return values */
+    lua_pushboolean(L, 0);
+    lua_pushstring(L, "stack overflow");
+    return 2;  /* return false, msg */
+  }
+  lua_pushboolean(L, status);  /* first result (status) */
+  lua_replace(L, 1);  /* put first result in first slot */
+  return lua_gettop(L);
+}
+
+
 static int luaB_pcall (lua_State *L) {
   int status;
   luaL_checkany(L, 1);
-  status = lua_pcall(L, lua_gettop(L) - 1, LUA_MULTRET, 0);
-  lua_pushboolean(L, (status == 0));
-  lua_insert(L, 1);
-  return lua_gettop(L);  /* return status + all results */
+  lua_pushnil(L);
+  lua_insert(L, 1);  /* create space for status result */
+  status = lua_pcall(L, lua_gettop(L) - 2, LUA_MULTRET, 0);
+  return finishpcall(L, (status == LUA_OK));
 }
 
 
 static int luaB_xpcall (lua_State *L) {
   int status;
-  luaL_checkany(L, 2);
-  lua_settop(L, 2);
-  lua_insert(L, 1);  /* put error function under function to be called */
-  status = lua_pcall(L, 0, LUA_MULTRET, 1);
-  lua_pushboolean(L, (status == 0));
-  lua_replace(L, 1);
-  return lua_gettop(L);  /* return status + all results */
+  int n = lua_gettop(L);
+  luaL_argcheck(L, n >= 2, 2, "value expected");
+  lua_pushvalue(L, 1);  /* exchange function... */
+  lua_copy(L, 2, 1);  /* ...and error handler */
+  lua_replace(L, 2);
+  status = lua_pcall(L, n - 2, LUA_MULTRET, 1);
+  return finishpcall(L, (status == LUA_OK));
 }
 
 
