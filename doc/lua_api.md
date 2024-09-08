@@ -8546,11 +8546,11 @@ child will follow movement and rotation of that bone.
           * `s` is the saturation set here
         * The resulting color always has the same luma (perceived brightness) as the original.
         * This means that:
-          * value of 1 (default) doesn't change the saturation
-          * values > 1 increase the saturation
-          * values between 0 and 1 decrease the saturation
-          * value of 0 makes the world greyscale
-          * values < 0 alter the hue severely, causing an effect similar to inversion, but keeping original luma and being symmetrical in terms of saturation (eg. -1 and 1 is the same saturation and luma, but different hues)
+          * values > 1 oversaturate
+          * values < 1 down to 0 desaturate, 0 being entirely greyscale
+          * values < 0 cause an effect similar to inversion,
+            but keeping original luma and being symmetrical in terms of saturation
+            (eg. -1 and 1 is the same saturation and luma, but different hues)
       * `shadows` is a table that controls ambient shadows
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
             * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
