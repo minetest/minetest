@@ -44,9 +44,9 @@ General options and their default values:
 
 Library specific options:
 
-    SDL2_DLL                        - Only if building with SDL2 on Windows; path to libsdl2.dll
-    SDL2_INCLUDE_DIR                - Only if building with SDL2; directory where sdl.h is located
-    SDL2_LIBRARY                    - Only if building with SDL2; path to libsdl.a/libsdl.so/libsdl.lib
+    SDL2_DLL                        - Only if building with SDL2 on Windows; path to libSDL2.dll
+    SDL2_INCLUDE_DIRS               - Only if building with SDL2; directory where SDL.h is located
+    SDL2_LIBRARIES                  - Only if building with SDL2; path to libSDL2.a/libSDL2.so/libSDL2.lib
     CURL_DLL                        - Only if building with cURL on Windows; path to libcurl.dll
     CURL_INCLUDE_DIR                - Only if building with cURL; directory where curl.h is located
     CURL_LIBRARY                    - Only if building with cURL; path to libcurl.a/libcurl.so/libcurl.lib
