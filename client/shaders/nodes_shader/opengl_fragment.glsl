@@ -86,8 +86,8 @@ vec3 gnoise(vec3 p){
     vec2 dx = (o3.yw - o3.xz) * dd.x;
 
     return vec3(
-        dx.y * d.y + dx.x * (1. - d.y), 
-        (o4.y - o4.x) * dd.y, 
+        dx.y * d.y + dx.x * (1. - d.y),
+        (o4.y - o4.x) * dd.y,
         dz2.y * d.y + dz2.x * (1. - d.y)
     );
 }
