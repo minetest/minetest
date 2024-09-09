@@ -393,6 +393,7 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_HOTBAR_PREV_BUTTON,  wstrgettext("Prev. item"),       "keymap_hotbar_previous");
 	this->add_key(GUI_ID_KEY_HOTBAR_NEXT_BUTTON,  wstrgettext("Next item"),        "keymap_hotbar_next");
 	this->add_key(GUI_ID_KEY_ZOOM_BUTTON,         wstrgettext("Zoom"),             "keymap_zoom");
+	this->add_key(GUI_ID_KEY_CINEMATIC_BUTTON,    wstrgettext("Cinematic"),        "keymap_cinematic");
 	this->add_key(GUI_ID_KEY_CAMERA_BUTTON,       wstrgettext("Change camera"),    "keymap_camera_mode");
 	this->add_key(GUI_ID_KEY_MINIMAP_BUTTON,      wstrgettext("Toggle minimap"),   "keymap_minimap");
 	this->add_key(GUI_ID_KEY_FLY_BUTTON,          wstrgettext("Toggle fly"),       "keymap_freemove");
