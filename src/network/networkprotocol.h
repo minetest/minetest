@@ -229,10 +229,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		[bump for 5.9.1]
 	PROTOCOL VERSION 46:
 		Move default hotbar from client-side C++ to server-side builtin Lua
+    Add shadow tint to Lighting packets
+		Add shadow color to CloudParam packets
 		[scheduled bump for 5.10.0]
 */
 
 #define LATEST_PROTOCOL_VERSION 46
+
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
