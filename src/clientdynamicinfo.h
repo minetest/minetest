@@ -42,6 +42,6 @@ public:
 	static ClientDynamicInfo getCurrent();
 
 private:
-	static v2f32 calculateMaxFSSize(v2u32 render_target_size, f32 gui_scaling);
+	static v2f32 calculateMaxFSSize(v2u32 render_target_size, f32 density, f32 gui_scaling);
 #endif
 };

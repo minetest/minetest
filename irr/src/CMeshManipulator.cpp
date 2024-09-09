@@ -67,7 +67,7 @@ void recalculateNormalsT(IMeshBuffer *buffer, bool smooth, bool angleWeighted)
 
 			core::vector3df weight(1.f, 1.f, 1.f);
 			if (angleWeighted)
-				weight = irr::scene::getAngleWeight(v1, v2, v3); // writing irr::scene:: necessary for borland
+				weight = getAngleWeight(v1, v2, v3);
 
 			buffer->getNormal(idx[i + 0]) += weight.X * normal;
 			buffer->getNormal(idx[i + 1]) += weight.Y * normal;
@@ -115,6 +115,21 @@ void CMeshManipulator::recalculateNormals(scene::IMesh *mesh, bool smooth, bool 
 	}
 }
 
+template <typename T>
+void copyVertices(const scene::IVertexBuffer *src, scene::CVertexBuffer<T> *dst)
+{
+	_IRR_DEBUG_BREAK_IF(T::getType() != src->getType());
+	auto *data = static_cast<const T*>(src->getData());
+	dst->Data.assign(data, data + src->getCount());
+}
+
+static void copyIndices(const scene::IIndexBuffer *src, scene::SIndexBuffer *dst)
+{
+	_IRR_DEBUG_BREAK_IF(src->getType() != video::EIT_16BIT);
+	auto *data = static_cast<const u16*>(src->getData());
+	dst->Data.assign(data, data + src->getCount());
+}
+
 //! Clones a static IMesh into a modifyable SMesh.
 // not yet 32bit
 SMesh *CMeshManipulator::createMeshCopy(scene::IMesh *mesh) const
@@ -132,30 +147,24 @@ SMesh *CMeshManipulator::createMeshCopy(scene::IMesh *mesh) const
 		case video::EVT_STANDARD: {
 			SMeshBuffer *buffer = new SMeshBuffer();
 			buffer->Material = mb->getMaterial();
-			auto *vt = static_cast<const video::S3DVertex*>(mb->getVertices());
-			buffer->Vertices.insert(buffer->Vertices.end(), vt, vt + mb->getVertexCount());
-			auto *indices = mb->getIndices();
-			buffer->Indices.insert(buffer->Indices.end(), indices, indices + mb->getIndexCount());
+			copyVertices(mb->getVertexBuffer(), buffer->Vertices);
+			copyIndices(mb->getIndexBuffer(), buffer->Indices);
 			clone->addMeshBuffer(buffer);
 			buffer->drop();
 		} break;
 		case video::EVT_2TCOORDS: {
 			SMeshBufferLightMap *buffer = new SMeshBufferLightMap();
 			buffer->Material = mb->getMaterial();
-			auto *vt = static_cast<const video::S3DVertex2TCoords*>(mb->getVertices());
-			buffer->Vertices.insert(buffer->Vertices.end(), vt, vt + mb->getVertexCount());
-			auto *indices = mb->getIndices();
-			buffer->Indices.insert(buffer->Indices.end(), indices, indices + mb->getIndexCount());
+			copyVertices(mb->getVertexBuffer(), buffer->Vertices);
+			copyIndices(mb->getIndexBuffer(), buffer->Indices);
 			clone->addMeshBuffer(buffer);
 			buffer->drop();
 		} break;
 		case video::EVT_TANGENTS: {
 			SMeshBufferTangents *buffer = new SMeshBufferTangents();
 			buffer->Material = mb->getMaterial();
-			auto *vt = static_cast<const video::S3DVertexTangents*>(mb->getVertices());
-			buffer->Vertices.insert(buffer->Vertices.end(), vt, vt + mb->getVertexCount());
-			auto *indices = mb->getIndices();
-			buffer->Indices.insert(buffer->Indices.end(), indices, indices + mb->getIndexCount());
+			copyVertices(mb->getVertexBuffer(), buffer->Vertices);
+			copyIndices(mb->getIndexBuffer(), buffer->Indices);
 			clone->addMeshBuffer(buffer);
 			buffer->drop();
 		} break;

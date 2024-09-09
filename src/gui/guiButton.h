@@ -10,7 +10,6 @@
 #include "IGUISpriteBank.h"
 #include "ITexture.h"
 #include "SColor.h"
-#include "guiSkin.h"
 #include "StyleSpec.h"
 
 using namespace irr;

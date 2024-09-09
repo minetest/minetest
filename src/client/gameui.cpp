@@ -23,10 +23,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <gettext.h>
 #include "gui/mainmenumanager.h"
 #include "gui/guiChatConsole.h"
+#include "gui/guiFormSpecMenu.h"
+#include "gui/touchcontrols.h"
+#include "util/enriched_string.h"
 #include "util/pointedthing.h"
 #include "client.h"
 #include "clientmap.h"
 #include "fontengine.h"
+#include "hud.h" // HUD_FLAG_*
 #include "nodedef.h"
 #include "profiler.h"
 #include "renderingengine.h"
@@ -188,16 +192,27 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 		}
 	}
 
-	setStaticText(m_guitext_status, m_statustext.c_str());
-	m_guitext_status->setVisible(!m_statustext.empty());
+	IGUIStaticText *guitext_status;
+	bool overriden = g_touchcontrols && g_touchcontrols->isStatusTextOverriden();
+	if (overriden) {
+		guitext_status = g_touchcontrols->getStatusText();
+		m_guitext_status->setVisible(false);
+	} else {
+		guitext_status = m_guitext_status;
+		if (g_touchcontrols)
+			g_touchcontrols->getStatusText()->setVisible(false);
+	}
+
+	setStaticText(guitext_status, m_statustext.c_str());
+	guitext_status->setVisible(!m_statustext.empty());
 
 	if (!m_statustext.empty()) {
-		s32 status_width  = m_guitext_status->getTextWidth();
-		s32 status_height = m_guitext_status->getTextHeight();
-		s32 status_y = screensize.Y - 150;
+		s32 status_width  = guitext_status->getTextWidth();
+		s32 status_height = guitext_status->getTextHeight();
+		s32 status_y = screensize.Y  - (overriden ? 15 : 150);
 		s32 status_x = (screensize.X - status_width) / 2;
 
-		m_guitext_status->setRelativePosition(core::rect<s32>(status_x ,
+		guitext_status->setRelativePosition(core::rect<s32>(status_x ,
 			status_y - status_height, status_x + status_width, status_y));
 
 		// Fade out
@@ -205,8 +220,8 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 		final_color.setAlpha(0);
 		video::SColor fade_color = m_statustext_initial_color.getInterpolated_quadratic(
 			m_statustext_initial_color, final_color, m_statustext_time / statustext_time_max);
-		m_guitext_status->setOverrideColor(fade_color);
-		m_guitext_status->enableOverrideColor(true);
+		guitext_status->setOverrideColor(fade_color);
+		guitext_status->enableOverrideColor(true);
 	}
 
 	// Hide chat when disabled by server or when console is visible

@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "anaglyph.h"
 #include "client/camera.h"
+#include <IrrlichtDevice.h>
 
 
 /// SetColorMaskStep step
