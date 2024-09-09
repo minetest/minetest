@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include "client/meshgen/collector.h"
 #include "client/tile.h"
+#include "client/texturesource.h"
 #include "log.h"
 #include "util/numeric.h"
 #include <map>
