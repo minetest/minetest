@@ -28,9 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 
 class Translations;
-#if IS_CLIENT_BUILD
 extern Translations *g_client_translations;
-#endif
 
 class Translations
 {

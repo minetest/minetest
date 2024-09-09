@@ -932,14 +932,9 @@ std::wstring translate_string(std::wstring_view s, Translations *translations)
 	return res;
 }
 
-// Translate string client side
 std::wstring translate_string(std::wstring_view s)
 {
-#if !CHECK_CLIENT_BUILD()
-	return translate_string(s, nullptr);
-#else
 	return translate_string(s, g_client_translations);
-#endif
 }
 
 static const std::array<std::wstring_view, 30> disallowed_dir_names = {

@@ -391,7 +391,10 @@ add_subdirectory(server)
 # a compiler error and you need to instead add it to client_SRCS or common_SRCS.
 set(independent_SRCS
 	chat.cpp
+	content_nodemeta.cpp
 	convert_json.cpp
+	craftdef.cpp
+	debug.cpp
 	face_position_cache.cpp
 	gettext_plural_form.cpp
 	httpfetch.cpp
@@ -411,11 +414,17 @@ set(independent_SRCS
 	particles.cpp
 	profiler.cpp
 	serialization.cpp
+	settings.cpp
 	staticobject.cpp
 	terminal_chat_console.cpp
 	texture_override.cpp
 	tileanimation.cpp
+	tool.cpp
+	${common_network_SRCS}
+	${content_SRCS}
+	${database_SRCS}
 	${threading_SRCS}
+	${util_SRCS}
 )
 
 # /!\ Consider carefully before adding files here /!\
@@ -423,9 +432,6 @@ set(common_SRCS
 	clientdynamicinfo.cpp
 	collision.cpp
 	content_mapnode.cpp
-	content_nodemeta.cpp
-	craftdef.cpp
-	debug.cpp
 	defaultsettings.cpp
 	emerge.cpp
 	environment.cpp
@@ -451,19 +457,14 @@ set(common_SRCS
 	server.cpp
 	serverenvironment.cpp
 	servermap.cpp
-	settings.cpp
-	tool.cpp
 	translation.cpp
 	version.cpp
 	voxel.cpp
 	voxelalgorithms.cpp
-	${common_network_SRCS}
 	${common_SCRIPT_SRCS}
 	${common_server_SRCS}
-	${content_SRCS}
-	${database_SRCS}
 	${mapgen_SRCS}
-	${UTIL_SRCS}
+	${server_network_SRCS}
 )
 
 if(ANDROID)
@@ -587,6 +588,9 @@ add_library(EngineCommon OBJECT
 	${independent_SRCS}
 )
 add_dependencies(EngineCommon GenerateVersion)
+target_link_libraries(EngineCommon
+	sha256
+)
 get_target_property(
 	IRRLICHT_INCLUDES IrrlichtMt::IrrlichtMt INTERFACE_INCLUDE_DIRECTORIES)
 target_include_directories(EngineCommon PRIVATE ${IRRLICHT_INCLUDES})
