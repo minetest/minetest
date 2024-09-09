@@ -658,7 +658,8 @@ std::wstring translate_string(std::wstring_view s, Translations *translations);
 
 std::wstring translate_string(std::wstring_view s);
 
-inline std::wstring unescape_translate(std::wstring_view s) {
+inline std::wstring unescape_translate(std::wstring_view s)
+{
 	return unescape_enriched(translate_string(s));
 }
 

@@ -29,6 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Client translations
 static Translations client_translations;
 Translations *g_client_translations = &client_translations;
+#else
+Translations *g_client_translations = nullptr;
 #endif
 
 const std::string_view Translations::getFileLanguage(const std::string &filename)

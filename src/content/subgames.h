@@ -41,7 +41,6 @@ struct SubgameSpec
 	 * Map from virtual path to mods path
 	 */
 	std::unordered_map<std::string, std::string> addon_mods_paths;
-	std::string menuicon_path;
 
 	// For logging purposes
 	std::vector<const char *> deprecation_msgs;
@@ -50,7 +49,6 @@ struct SubgameSpec
 			const std::string &gamemods_path = "",
 			const std::unordered_map<std::string, std::string> &addon_mods_paths = {},
 			const std::string &title = "",
-			const std::string &menuicon_path = "",
 			const std::string &author = "", int release = 0,
 			const std::string &first_mod = "",
 			const std::string &last_mod = "") :
@@ -60,8 +58,7 @@ struct SubgameSpec
 			last_mod(last_mod),
 			path(path),
 			gamemods_path(gamemods_path),
-			addon_mods_paths(addon_mods_paths),
-			menuicon_path(menuicon_path)
+			addon_mods_paths(addon_mods_paths)
 	{
 	}
 
