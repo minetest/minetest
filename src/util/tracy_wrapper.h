@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * <tracy/Tracy.hpp> directly (which also works in irr/).
  */
 
+#pragma once
+
 #include "config.h"
 #include "util/basic_macros.h"
 
