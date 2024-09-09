@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiscalingfilter.h"
 #include "localplayer.h"
 #include "client/hud.h"
+#include "client/texturesource.h"
 #include "camera.h"
 #include "minimap.h"
 #include "clientmap.h"

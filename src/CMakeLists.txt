@@ -395,12 +395,14 @@ set(independent_SRCS
 	face_position_cache.cpp
 	httpfetch.cpp
 	hud.cpp
+	inventory.cpp
 	itemstackmetadata.cpp
 	lighting.cpp
 	log.cpp
 	metadata.cpp
 	modchannels.cpp
 	nameidmapping.cpp
+	nodemetadata.cpp
 	nodetimer.cpp
 	noise.cpp
 	objdef.cpp
@@ -428,7 +430,6 @@ set(common_SRCS
 	environment.cpp
 	filesys.cpp
 	gettext.cpp
-	inventory.cpp
 	inventorymanager.cpp
 	itemdef.cpp
 	light.cpp
@@ -439,7 +440,6 @@ set(common_SRCS
 	mapnode.cpp
 	mapsector.cpp
 	nodedef.cpp
-	nodemetadata.cpp
 	pathfinder.cpp
 	player.cpp
 	porting.cpp
