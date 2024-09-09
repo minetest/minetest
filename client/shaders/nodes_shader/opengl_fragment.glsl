@@ -539,7 +539,7 @@ void main(void)
 			const float specular_exponent = 5.0;
 			const float fresnel_exponent =  4.0;
 
-			col.rgb += 
+			col.rgb +=
 				intensity * dayLight * (1.0 - nightRatio) * (1.0 - shadow_uncorrected) * f_adj_shadow_strength *
 				pow(max(dot(reflect_ray, viewVec), 0.0), fresnel_exponent) * pow(1.0 - abs(dot(viewVec, fNormal)), specular_exponent);
 		}
