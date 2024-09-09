@@ -207,6 +207,7 @@ static const struct table_key table[] = {
 	DEFINEKEY1(KEY_EREOF, N_("Erase EOF"))
 	DEFINEKEY1(KEY_PLAY, N_("Play"))
 	DEFINEKEY1(KEY_ZOOM, N_("Zoom Key"))
+	DEFINEKEY1(KEY_CINEMATIC, N_("Cinematic Key"))
 	DEFINEKEY1(KEY_PA1, "PA1")
 	DEFINEKEY1(KEY_OEM_CLEAR, N_("OEM Clear"))
 
