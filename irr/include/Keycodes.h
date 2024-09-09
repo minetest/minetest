@@ -175,6 +175,7 @@ enum EKEY_CODE
 	KEY_EREOF = 0xF9,             // Erase EOF key
 	KEY_PLAY = 0xFA,              // Play key
 	KEY_ZOOM = 0xFB,              // Zoom key
+	KEY_CINEMATIC = 0xFC,		  // Cinematic Camera key
 	KEY_PA1 = 0xFD,               // PA1 key
 	KEY_OEM_CLEAR = 0xFE,         // Clear key
 	KEY_NONE = 0xFF,              // usually no key mapping, but some laptops use it for fn key
