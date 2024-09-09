@@ -46,7 +46,7 @@ static inline int checkSettingSecurity(lua_State* L, const std::string &name)
 		throw LuaError("Attempted to set secure setting.");
 
 	bool is_mainmenu = false;
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	is_mainmenu = ModApiBase::getGuiEngine(L) != nullptr;
 #endif
 	if (!is_mainmenu && (name == "mg_name" || name == "mg_flags")) {

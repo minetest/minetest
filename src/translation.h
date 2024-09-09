@@ -21,9 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <unordered_map>
 #include <string>
+#include "config.h"
 
 class Translations;
-#ifndef SERVER
+#if IS_CLIENT_BUILD
 extern Translations *g_client_translations;
 #endif
 

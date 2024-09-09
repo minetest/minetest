@@ -47,7 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /* In debug mode ensure no code tries to retrieve the server env when it isn't
  * actually available (in CSM) */
-#if !defined(SERVER) && !defined(NDEBUG)
+#if CHECK_CLIENT_BUILD() && !defined(NDEBUG)
 #define DEBUG_ASSERT_NO_CLIENTAPI                    \
 	FATAL_ERROR_IF(getClient(L) != nullptr, "Tried " \
 		"to retrieve ServerEnvironment on client")

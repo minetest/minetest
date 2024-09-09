@@ -222,7 +222,7 @@ void ModApiHttp::Initialize(lua_State *L, int top)
 #if USE_CURL
 
 	bool isMainmenu = false;
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	isMainmenu = ModApiBase::getGuiEngine(L) != nullptr;
 #endif
 
