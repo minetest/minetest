@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/mesh.h"
 #include "client/wieldmesh.h"
 #include "client/client.h"
+#include "client/texturesource.h"
 #endif
 #include "log.h"
 #include "settings.h"
@@ -448,8 +449,9 @@ public:
 		// Get the definition
 		return m_item_definitions.find(name) != m_item_definitions.cend();
 	}
+
 #if CHECK_CLIENT_BUILD()
-public:
+protected:
 	ClientCached* createClientCachedDirect(const ItemStack &item, Client *client) const
 	{
 		// This is not thread-safe
@@ -490,6 +492,7 @@ public:
 		return ptr;
 	}
 
+public:
 	// Get item inventory texture
 	virtual video::ITexture* getInventoryTexture(const ItemStack &item,
 			Client *client) const

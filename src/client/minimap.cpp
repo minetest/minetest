@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "shader.h"
 #include "mapblock.h"
 #include "client/renderingengine.h"
+#include "client/texturesource.h"
 #include "gettext.h"
 
 ////

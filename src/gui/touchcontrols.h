@@ -34,13 +34,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "client/game.h"
 #include "util/basic_macros.h"
+#include "client/texturesource.h"
 
 namespace irr
 {
 	class IrrlichtDevice;
 }
 
-using namespace irr;
 using namespace irr::core;
 using namespace irr::gui;
 

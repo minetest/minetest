@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "util/numeric.h"
 #include "client/renderingengine.h"
+#include "client/texturesource.h"
 #include "settings.h"
 #include "camera.h" // CameraModes
 
