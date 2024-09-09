@@ -564,7 +564,11 @@ void main(void)
 	float clarity = clamp(fogShadingParameter
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
 	float fogColorMax = max(max(fogColor.r, fogColor.g), fogColor.b);
+	// Prevent zero division.
 	if (fogColorMax < 0.0000001) fogColorMax = 1.0;
+	// For high clarity (light fog) we tint the fog color. 
+	// For this to not make the fog color artificially dark we need to normalize using the
+	// fog color's brightest value. We then blend our base color with this to make the fog.
 	col = mix(fogColor * pow(fogColor / fogColorMax, vec4(2.0 * clarity)), col, clarity);
 	col = vec4(col.rgb, base.a);
 

@@ -223,12 +223,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		AO_CMD_SET_BONE_POSITION extended
 		Add TOCLIENT_MOVE_PLAYER_REL
 		Move default minimap from client-side C++ to server-side builtin Lua
+		[scheduled bump for 5.9.0]
+	PROTOCOL VERSION 45
 		Add shadow tint to Lighting packets
 		Add shadow color to CloudParam packets
-		[scheduled bump for 5.9.0]
+		[scheduled bump for 5.10.0]
 */
 
-#define LATEST_PROTOCOL_VERSION 44
+#define LATEST_PROTOCOL_VERSION 45
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range

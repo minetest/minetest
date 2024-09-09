@@ -8446,7 +8446,7 @@ child will follow movement and rotation of that bone.
         * `speed`: 2D cloud speed + direction in nodes per second
           (default `{x=0, z=-2}`).
         * `shadow`: shadow color, applied to the base of the cloud
-          (default `{r=204, g=204, b=204}`).
+          (default `#cccccc`).
 * `get_clouds()`: returns a table with the current cloud parameters as in
   `set_clouds`.
 * `override_day_night_ratio(ratio or nil)`
@@ -8484,7 +8484,7 @@ child will follow movement and rotation of that bone.
       * `shadows` is a table that controls ambient shadows
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
             * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
-        * `tint` tints the shadows with the provided color, with RGB values ranging from 0 to 1.
+        * `tint` tints the shadows with the provided color, with RGB values ranging from 0 to 255.
           (default `{r=0, g=0, b=0}`)
             * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
       * `exposure` is a table that controls automatic exposure.
