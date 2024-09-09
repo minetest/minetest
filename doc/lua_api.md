@@ -274,7 +274,7 @@ Accepted formats are:
 
     images: .png, .jpg, .tga, (deprecated:) .bmp
     sounds: .ogg vorbis
-    models: .x, .b3d, .obj
+    models: .x, .b3d, .obj, .gltf (Minetest 5.10 or newer)
 
 Other formats won't be sent to the client (e.g. you can store .blend files
 in a folder for convenience, without the risk that such files are transferred)
@@ -290,6 +290,43 @@ in one of its parents, the parent's file is used.
 
 Although it is discouraged, a mod can overwrite a media file of any mod that it
 depends on by supplying a file with an equal name.
+
+Only a subset of model file format features is supported:
+
+Simple textured meshes (with multiple textures), optionally with normals.
+The .x and .b3d formats additionally support skeletal animation.
+
+#### glTF
+
+The glTF model file format for now only serves as a
+more modern alternative to the other static model file formats;
+it unlocks no special rendering features.
+
+This means that many glTF features are not supported *yet*, including:
+
+* Animation
+* Cameras
+* Materials
+  * Only base color textures are supported
+  * Backface culling is overridden
+  * Double-sided materials don't work
+* Alternative means of supplying data
+  * Embedded images
+  * References to files via URIs
+
+Textures are supplied solely via the same means as for the other model file formats:
+The `textures` object property, the `tiles` node definition field and
+the list of textures used in the `model[]` formspec element.
+
+The order in which textures are to be supplied
+is that in which they appear in the `textures` array in the glTF file.
+
+Do not rely on glTF features not being supported; they may be supported in the future.
+The backwards compatibility guarantee does not extend to ignoring unsupported features.
+
+For example, if your model used an emissive material,
+you should expect that a future version of Minetest may respect this,
+and thus cause your model to render differently there.
 
 Naming conventions
 ------------------
@@ -1744,6 +1781,13 @@ Displays a horizontal bar made up of half-images with an optional background.
 * `item`: Position of item that is selected.
 * `direction`: Direction the list will be displayed in
 * `offset`: offset in pixels from position.
+* `alignment`: The alignment of the inventory. Aligned at the top left corner if not specified.
+
+### `hotbar`
+
+* `direction`: Direction the list will be displayed in
+* `offset`: offset in pixels from position.
+* `alignment`: The alignment of the inventory.
 
 ### `waypoint`
 
@@ -1802,6 +1846,11 @@ Displays a minimap on the HUD.
 
 * `size`: Size of the minimap to display. Minimap should be a square to avoid
   distortion.
+  * Negative values represent percentages of the screen. If either `x` or `y`
+    is specified as a percentage, the resulting pixel size will be used for
+    both `x` and `y`. Example: On a 1920x1080 screen, `{x = 0, y = -25}` will
+    result in a 270x270 minimap.
+  * Negative values are supported starting with protocol version 45.
 * `alignment`: The alignment of the minimap.
 * `offset`: offset in pixels from position.
 
@@ -3850,12 +3899,20 @@ vectors are written like this: `(x, y, z)`:
     * If `v` has zero length, returns `(0, 0, 0)`.
 * `vector.floor(v)`:
     * Returns a vector, each dimension rounded down.
+* `vector.ceil(v)`:
+    * Returns a vector, each dimension rounded up.
 * `vector.round(v)`:
     * Returns a vector, each dimension rounded to nearest integer.
     * At a multiple of 0.5, rounds away from zero.
-* `vector.apply(v, func)`:
+* `vector.sign(v, tolerance)`:
+    * Returns a vector where `math.sign` was called for each component.
+    * See [Helper functions] for details.
+* `vector.abs(v)`:
+    * Returns a vector with absolute values for each component.
+* `vector.apply(v, func, ...)`:
     * Returns a vector where the function `func` has been applied to each
       component.
+    * `...` are optional arguments passed to `func`.
 * `vector.combine(v, w, func)`:
     * Returns a vector where the function `func` has combined both components of `v` and `w`
       for each component
@@ -3879,6 +3936,10 @@ vectors are written like this: `(x, y, z)`:
     * Returns a boolean value indicating if `pos` is inside area formed by `min` and `max`.
     * `min` and `max` are inclusive.
     * If `min` is bigger than `max` on some axis, function always returns false.
+    * You can use `vector.sort` if you have two vectors and don't know which are the minimum and the maximum.
+* `vector.random_in_area(min, max)`:
+    * Returns a random integer position in area formed by `min` and `max`
+    * `min` and `max` are inclusive.
     * You can use `vector.sort` if you have two vectors and don't know which are the minimum and the maximum.
 
 For the following functions `x` can be either a vector or a number:
@@ -5459,6 +5520,8 @@ Utilities
       moveresult_new_pos = true,
       -- Allow removing definition fields in `minetest.override_item` (5.9.0)
       override_item_remove_fields = true,
+      -- The predefined hotbar is a Lua HUD element of type `hotbar` (5.10.0)
+      hotbar_hud_element = true,
   }
   ```
 
@@ -5517,8 +5580,8 @@ Utilities
       },
 
       -- Estimated maximum formspec size before Minetest will start shrinking the
-      -- formspec to fit. For a fullscreen formspec, use a size 10-20% larger than
-      -- this and `padding[-0.01,-0.01]`.
+      -- formspec to fit. For a fullscreen formspec, use this formspec size and
+      -- `padding[0,0]`. `bgcolor[;true]` is also recommended.
       max_formspec_size = {
           x = 20,
           y = 11.25
@@ -7105,7 +7168,7 @@ Misc.
   could be used as a player name (regardless of whether said player exists).
 * `minetest.hud_replace_builtin(name, hud_definition)`
     * Replaces definition of a builtin hud element
-    * `name`: `"breath"`, `"health"` or `"minimap"`
+    * `name`: `"breath"`, `"health"`, `"minimap"` or `"hotbar"`
     * `hud_definition`: definition to replace builtin definition
 * `minetest.parse_relative_number(arg, relative_to)`: returns number or nil
     * Helper function for chat commands.
@@ -10657,8 +10720,9 @@ Used by `ObjectRef:hud_add`. Returned by `ObjectRef:hud_get`.
 ```lua
 {
     type = "image",
-    -- Type of element, can be "image", "text", "statbar", "inventory",
-    -- "waypoint", "image_waypoint", "compass" or "minimap"
+    -- Type of element, can be "compass", "hotbar" (46 ¹), "image", "image_waypoint",
+    -- "inventory", "minimap" (44 ¹), "statbar", "text" or "waypoint"
+    -- ¹: minimal protocol version for client-side support
     -- If undefined "text" will be used.
 
     hud_elem_type = "image",

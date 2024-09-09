@@ -21,7 +21,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 #include <vector>
-#include "irrlichttypes_extrabloated.h"
+#include "irr_aabb3d.h"
+#include "irr_v3d.h"
+#include <EMaterialTypes.h>
+#include <IMeshSceneNode.h>
+#include <SColor.h>
+
+namespace irr::scene
+{
+	class ISceneManager;
+	class IMesh;
+	struct SMesh;
+}
+
+using namespace irr;
 
 struct ItemStack;
 class Client;

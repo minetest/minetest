@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stack>
 #include <unordered_set>
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include "irr_ptr.h"
 #include "inventory.h"
 #include "inventorymanager.h"
@@ -32,11 +32,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiInventoryList.h"
 #include "guiScrollBar.h"
 #include "guiTable.h"
-#include "network/networkprotocol.h"
-#include "client/joystick_controller.h"
 #include "util/string.h"
 #include "util/enriched_string.h"
 #include "StyleSpec.h"
+#include <ICursorControl.h> // gui::ECURSOR_ICON
 #include <IGUIStaticText.h>
 
 class InventoryManager;
@@ -44,6 +43,7 @@ class ISimpleTextureSource;
 class Client;
 class GUIScrollContainer;
 class ISoundManager;
+class JoystickController;
 
 enum FormspecFieldType {
 	f_Button,
@@ -296,6 +296,11 @@ public:
 	void getAndroidUIInput();
 #endif
 
+	// Returns the fixed formspec coordinate size for the given parameters.
+	static double getFixedImgsize(double screen_dpi, double gui_scaling);
+	// Returns the preferred non-fixed formspec coordinate size for the given parameters.
+	static double getImgsize(v2u32 avail_screensize, double screen_dpi, double gui_scaling);
+
 protected:
 	v2s32 getBasePos() const
 	{
@@ -514,6 +519,9 @@ private:
 
 	// used by getAbsoluteRect
 	s32 m_tabheader_upper_edge = 0;
+
+	// Determines the size (in pixels) of formspec coordinate units.
+	double calculateImgsize(const parserData &data);
 };
 
 class FormspecFormSource: public IFormSource

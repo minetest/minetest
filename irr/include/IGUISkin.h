@@ -437,6 +437,10 @@ public:
 	virtual void draw3DButtonPaneStandard(IGUIElement *element,
 			const core::rect<s32> &rect,
 			const core::rect<s32> *clip = 0) = 0;
+	virtual void drawColored3DButtonPaneStandard(IGUIElement* element,
+			const core::rect<s32>& rect,
+			const core::rect<s32>* clip=0,
+			const video::SColor* colors=0) = 0;
 
 	//! draws a pressed 3d button pane
 	/** Used for drawing for example buttons in pressed state.
@@ -450,6 +454,10 @@ public:
 	virtual void draw3DButtonPanePressed(IGUIElement *element,
 			const core::rect<s32> &rect,
 			const core::rect<s32> *clip = 0) = 0;
+	virtual void drawColored3DButtonPanePressed(IGUIElement* element,
+			const core::rect<s32>& rect,
+			const core::rect<s32>* clip=0,
+			const video::SColor* colors=0) = 0;
 
 	//! draws a sunken 3d pane
 	/** Used for drawing the background of edit, combo or check boxes.

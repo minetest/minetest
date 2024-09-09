@@ -48,7 +48,6 @@ class IConnection
 public:
 	virtual ~IConnection() = default;
 
-	virtual void SetTimeoutMs(u32 timeout) = 0;
 	virtual void Serve(Address bind_addr) = 0;
 	virtual void Connect(Address address) = 0;
 	virtual bool Connected() = 0;
@@ -56,7 +55,6 @@ public:
 	virtual void DisconnectPeer(session_t peer_id) = 0;
 
 	virtual bool ReceiveTimeoutMs(NetworkPacket *pkt, u32 timeout_ms) = 0;
-	virtual void Receive(NetworkPacket *pkt) = 0;
 	bool TryReceive(NetworkPacket *pkt) {
 		return ReceiveTimeoutMs(pkt, 0);
 	}

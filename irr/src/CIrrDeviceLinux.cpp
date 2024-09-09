@@ -26,6 +26,7 @@
 #include "IGUISpriteBank.h"
 #include "IImageLoader.h"
 #include "IFileSystem.h"
+#include "IVideoDriver.h"
 #include <X11/XKBlib.h>
 #include <X11/Xatom.h>
 

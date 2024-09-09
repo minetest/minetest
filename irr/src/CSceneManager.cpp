@@ -20,6 +20,7 @@
 #include "CXMeshFileLoader.h"
 #include "COBJMeshFileLoader.h"
 #include "CB3DMeshFileLoader.h"
+#include "CGLTFMeshFileLoader.h"
 #include "CBillboardSceneNode.h"
 #include "CAnimatedMeshSceneNode.h"
 #include "CCameraSceneNode.h"
@@ -78,6 +79,7 @@ CSceneManager::CSceneManager(video::IVideoDriver *driver,
 	MeshLoaderList.push_back(new CXMeshFileLoader(this));
 	MeshLoaderList.push_back(new COBJMeshFileLoader(this));
 	MeshLoaderList.push_back(new CB3DMeshFileLoader(this));
+	MeshLoaderList.push_back(new CGLTFMeshFileLoader());
 }
 
 //! destructor

@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <atomic>
 #include <map>
 #include <queue>
-#include <string>
+#include <string_view>
 #include <fstream>
 #include <thread>
 #include <mutex>
@@ -62,14 +62,14 @@ public:
 	LogLevelMask removeOutput(ILogOutput *out);
 	void setLevelSilenced(LogLevel lev, bool silenced);
 
-	void registerThread(const std::string &name);
+	void registerThread(std::string_view name);
 	void deregisterThread();
 
-	void log(LogLevel lev, const std::string &text);
+	void log(LogLevel lev, std::string_view text);
 	// Logs without a prefix
-	void logRaw(LogLevel lev, const std::string &text);
+	void logRaw(LogLevel lev, std::string_view text);
 
-	static LogLevel stringToLevel(const std::string &name);
+	static LogLevel stringToLevel(std::string_view name);
 	static const char *getLevelLabel(LogLevel lev);
 
 	bool hasOutput(LogLevel level) {
@@ -83,10 +83,10 @@ public:
 	static LogColor color_mode;
 
 private:
-	void logToOutputsRaw(LogLevel, const std::string &line);
+	void logToOutputsRaw(LogLevel, std::string_view line);
 	void logToOutputs(LogLevel, const std::string &combined,
 		const std::string &time, const std::string &thread_name,
-		const std::string &payload_text);
+		std::string_view payload_text);
 
 	const std::string &getThreadName();
 
@@ -99,17 +99,17 @@ private:
 
 class ILogOutput {
 public:
-	virtual void logRaw(LogLevel, const std::string &line) = 0;
+	virtual void logRaw(LogLevel, std::string_view line) = 0;
 	virtual void log(LogLevel, const std::string &combined,
 		const std::string &time, const std::string &thread_name,
-		const std::string &payload_text) = 0;
+		std::string_view payload_text) = 0;
 };
 
 class ICombinedLogOutput : public ILogOutput {
 public:
 	void log(LogLevel lev, const std::string &combined,
 		const std::string &time, const std::string &thread_name,
-		const std::string &payload_text)
+		std::string_view payload_text)
 	{
 		logRaw(lev, combined);
 	}
@@ -119,7 +119,7 @@ class StreamLogOutput : public ICombinedLogOutput {
 public:
 	StreamLogOutput(std::ostream &stream);
 
-	void logRaw(LogLevel lev, const std::string &line);
+	void logRaw(LogLevel lev, std::string_view line);
 
 private:
 	std::ostream &m_stream;
@@ -130,7 +130,7 @@ class FileLogOutput : public ICombinedLogOutput {
 public:
 	void setFile(const std::string &filename, s64 file_size_max);
 
-	void logRaw(LogLevel lev, const std::string &line)
+	void logRaw(LogLevel lev, std::string_view line)
 	{
 		m_stream << line << std::endl;
 	}
@@ -154,7 +154,7 @@ public:
 
 	void updateLogLevel();
 
-	void logRaw(LogLevel lev, const std::string &line);
+	void logRaw(LogLevel lev, std::string_view line);
 
 	void clear()
 	{
@@ -190,7 +190,7 @@ private:
 #ifdef __ANDROID__
 class AndroidLogOutput : public ICombinedLogOutput {
 public:
-	void logRaw(LogLevel lev, const std::string &line);
+	void logRaw(LogLevel lev, std::string_view line);
 };
 #endif
 
@@ -206,7 +206,7 @@ class LogTarget {
 public:
 	// Must be thread-safe. These can be called from any thread.
 	virtual bool hasOutput() = 0;
-	virtual void log(const std::string &buf) = 0;
+	virtual void log(std::string_view buf) = 0;
 };
 
 
@@ -304,7 +304,7 @@ public:
 		return m_target.hasOutput();
 	}
 
-	void internalFlush(const std::string &buf) {
+	void internalFlush(std::string_view buf) {
 		m_target.log(buf);
 	}
 

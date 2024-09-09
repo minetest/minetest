@@ -1516,10 +1516,6 @@ bool Game::createClient(const GameStartData &start_data)
 		client->getScript()->on_camera_ready(camera);
 	client->setCamera(camera);
 
-	if (g_touchcontrols) {
-		g_touchcontrols->setUseCrosshair(!isTouchCrosshairDisabled());
-	}
-
 	/* Clouds
 	 */
 	if (m_cache_enable_clouds)
@@ -1584,8 +1580,10 @@ bool Game::initGui()
 	gui_chat_console = new GUIChatConsole(guienv, guienv->getRootGUIElement(),
 			-1, chat_backend, client, &g_menumgr);
 
-	if (g_settings->getBool("touch_controls"))
+	if (g_settings->getBool("touch_controls")) {
 		g_touchcontrols = new TouchControls(device, texture_src);
+		g_touchcontrols->setUseCrosshair(!isTouchCrosshairDisabled());
+	}
 
 	return true;
 }
@@ -1961,7 +1959,10 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
 	g_profiler->graphSet("FPS", 1.0f / dtime);
 
 	auto stats2 = driver->getFrameStats();
-	g_profiler->avg("Irr: primitives drawn", stats2.PrimitivesDrawn);
+	g_profiler->avg("Irr: drawcalls", stats2.Drawcalls);
+	if (stats2.Drawcalls > 0)
+		g_profiler->avg("Irr: primitives per drawcall",
+			stats2.PrimitivesDrawn / float(stats2.Drawcalls));
 	g_profiler->avg("Irr: buffers uploaded", stats2.HWBuffersUploaded);
 	g_profiler->avg("Irr: buffers uploaded (bytes)", stats2.HWBuffersUploadedSize);
 }
@@ -3365,6 +3366,10 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	if (g_touchcontrols) {
 		auto mode = selected_def.touch_interaction.getMode(pointed.type);
 		g_touchcontrols->applyContextControls(mode);
+		// applyContextControls may change dig/place input.
+		// Update again so that TOSERVER_INTERACT packets have the correct controls set.
+		player->control.dig = isKeyDown(KeyType::DIG);
+		player->control.place = isKeyDown(KeyType::PLACE);
 	}
 
 	// Note that updating the selection mesh every frame is not particularly efficient,

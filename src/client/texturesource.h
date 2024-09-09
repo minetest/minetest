@@ -20,9 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes.h"
-#include <ITexture.h>
+#include <SColor.h>
 #include <string>
 #include <vector>
+
+namespace irr::video
+{
+	class IImage;
+	class ITexture;
+}
 
 typedef std::vector<video::SColor> Palette;
 
@@ -65,7 +71,6 @@ public:
 	virtual bool isKnownSourceImage(const std::string &name)=0;
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
 	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
-	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)=0;
 };
 
 class IWritableTextureSource : public ITextureSource
@@ -87,7 +92,6 @@ public:
 	virtual void rebuildImagesAndTextures()=0;
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
 	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
-	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)=0;
 };
 
 IWritableTextureSource *createTextureSource();

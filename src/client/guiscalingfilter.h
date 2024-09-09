@@ -18,7 +18,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes.h"
+#include <path.h>
+#include <rect.h>
+#include <SColor.h>
+
+namespace irr::video
+{
+	class IImage;
+	class ITexture;
+	class IVideoDriver;
+}
 
 /* Manually insert an image into the cache, useful to avoid texture-to-image
  * conversion whenever we can intercept it.

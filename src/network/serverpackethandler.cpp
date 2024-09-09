@@ -101,12 +101,12 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	// First byte after command is maximum supported
 	// serialization version
 	u8 client_max;
-	u16 supp_compr_modes;
+	u16 unused;
 	u16 min_net_proto_version = 0;
 	u16 max_net_proto_version;
 	std::string playerName;
 
-	*pkt >> client_max >> supp_compr_modes >> min_net_proto_version
+	*pkt >> client_max >> unused >> min_net_proto_version
 			>> max_net_proto_version >> playerName;
 
 	u8 our_max = SER_FMT_VER_HIGHEST_READ;
@@ -190,9 +190,6 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	}
 
 	m_clients.setPlayerName(peer_id, playername);
-	//TODO (later) case insensitivity
-
-	std::string legacyPlayerNameCasing = playerName;
 
 	if (!isSingleplayer() && strcasecmp(playername, "singleplayer") == 0) {
 		actionstream << "Server: Player with the name \"singleplayer\" tried "
@@ -279,17 +276,14 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	verbosestream << "Sending TOCLIENT_HELLO with auth method field: "
 		<< auth_mechs << std::endl;
 
-	NetworkPacket resp_pkt(TOCLIENT_HELLO,
-		1 + 4 + legacyPlayerNameCasing.size(), peer_id);
+	NetworkPacket resp_pkt(TOCLIENT_HELLO, 0, peer_id);
 
-	u16 depl_compress_mode = NETPROTO_COMPRESSION_NONE;
-	resp_pkt << depl_serial_v << depl_compress_mode << net_proto_version
-		<< auth_mechs << legacyPlayerNameCasing;
+	resp_pkt << depl_serial_v << u16(0) << net_proto_version
+		<< auth_mechs << std::string_view();
 
 	Send(&resp_pkt);
 
 	client->allowed_auth_mechs = auth_mechs;
-	client->setDeployedCompressionMode(depl_compress_mode);
 
 	m_clients.event(peer_id, CSE_Hello);
 }

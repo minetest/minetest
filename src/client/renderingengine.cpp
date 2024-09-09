@@ -36,7 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inputhandler.h"
 #include "gettext.h"
 #include "filesys.h"
-#include "../gui/guiSkin.h"
 #include "irrlicht_changes/static_text.h"
 #include "irr_ptr.h"
 
@@ -125,27 +124,6 @@ IShaderConstantSetter *FogShaderConstantSetterFactory::create()
 }
 
 /* Other helpers */
-
-static gui::GUISkin *createSkin(gui::IGUIEnvironment *environment,
-		gui::EGUI_SKIN_TYPE type, video::IVideoDriver *driver)
-{
-	gui::GUISkin *skin = new gui::GUISkin(type, driver);
-
-	gui::IGUIFont *builtinfont = environment->getBuiltInFont();
-	gui::IGUIFontBitmap *bitfont = nullptr;
-	if (builtinfont && builtinfont->getType() == gui::EGFT_BITMAP)
-		bitfont = (gui::IGUIFontBitmap*)builtinfont;
-
-	gui::IGUISpriteBank *bank = 0;
-	skin->setFont(builtinfont);
-
-	if (bitfont)
-		bank = bitfont->getSpriteBank();
-
-	skin->setSpriteBank(bank);
-
-	return skin;
-}
 
 static std::optional<video::E_DRIVER_TYPE> chooseVideoDriver()
 {
@@ -249,11 +227,6 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	driver->setMinHardwareBufferVertexCount(4);
 
 	s_singleton = this;
-
-	auto skin = createSkin(m_device->getGUIEnvironment(),
-			gui::EGST_WINDOWS_METALLIC, driver);
-	m_device->getGUIEnvironment()->setSkin(skin);
-	skin->drop();
 
 	g_settings->registerChangedCallback("fullscreen", settingChangedCallback, this);
 	g_settings->registerChangedCallback("window_maximized", settingChangedCallback, this);

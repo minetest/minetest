@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "EShaderTypes.h"
 #include "IGPUProgrammingServices.h"
 #include "IMaterialRenderer.h"
+#include <IVideoDriver.h>
 
 ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 		m_smgr(device->getSceneManager()), m_driver(device->getVideoDriver()),

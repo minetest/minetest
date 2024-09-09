@@ -1049,7 +1049,7 @@ mapgen_limit (Map generation limit) int 31007 0 31007
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
 #    and jungle grass, in all other mapgens this flag controls all decorations.
-mg_flags (Mapgen flags) flags caves,dungeons,light,decorations,biomes,ores caves,dungeons,light,decorations,biomes,ores,nocaves,nodungeons,nolight,nodecorations,nobiomes,noores
+mg_flags (Mapgen flags) flags caves,dungeons,light,decorations,biomes,ores caves,dungeons,light,decorations,biomes,ores
 
 [*Biome API]
 
@@ -1068,7 +1068,7 @@ mg_biome_np_humidity_blend (Humidity blend noise) noise_params_2d 0, 1.5, (8, 8,
 [*Mapgen V5]
 
 #    Map generation attributes specific to Mapgen v5.
-mgv5_spflags (Mapgen V5 specific flags) flags caverns caverns,nocaverns
+mgv5_spflags (Mapgen V5 specific flags) flags caverns caverns
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    Value >= 10.0 completely disables generation of tunnels and avoids the
@@ -1142,7 +1142,7 @@ mgv5_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2
 #    When the 'snowbiomes' flag is enabled jungles are automatically enabled and
 #    the 'jungles' flag is ignored.
 #    The 'temples' flag disables generation of desert temples. Normal dungeons will appear instead.
-mgv6_spflags (Mapgen V6 specific flags) flags jungles,biomeblend,mudflow,snowbiomes,noflat,trees,temples jungles,biomeblend,mudflow,snowbiomes,flat,trees,temples,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat,notrees,notemples
+mgv6_spflags (Mapgen V6 specific flags) flags jungles,biomeblend,mudflow,snowbiomes,noflat,trees,temples jungles,biomeblend,mudflow,snowbiomes,flat,trees,temples
 
 #    Deserts occur when np_biome exceeds this value.
 #    When the 'snowbiomes' flag is enabled, this is ignored.
@@ -1198,7 +1198,7 @@ mgv6_np_apple_trees (Apple trees noise) noise_params_2d 0, 1, (100, 100, 100), 3
 #    'ridges': Rivers.
 #    'floatlands': Floating land masses in the atmosphere.
 #    'caverns': Giant caves deep underground.
-mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,caverns mountains,ridges,floatlands,caverns,nomountains,noridges,nofloatlands,nocaverns
+mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,caverns mountains,ridges,floatlands,caverns
 
 #    Y of mountain density gradient zero level. Used to shift mountains vertically.
 mgv7_mount_zero_level (Mountain zero level) int 0 -31000 31000
@@ -1332,7 +1332,7 @@ mgv7_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2
 [*Mapgen Carpathian]
 
 #    Map generation attributes specific to Mapgen Carpathian.
-mgcarpathian_spflags (Mapgen Carpathian specific flags) flags caverns,norivers caverns,rivers,nocaverns,norivers
+mgcarpathian_spflags (Mapgen Carpathian specific flags) flags caverns,norivers caverns,rivers
 
 #    Defines the base ground level.
 mgcarpathian_base_level (Base ground level) float 12.0
@@ -1441,7 +1441,7 @@ mgcarpathian_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 50
 
 #    Map generation attributes specific to Mapgen Flat.
 #    Occasional lakes and hills can be added to the flat world.
-mgflat_spflags (Mapgen Flat specific flags) flags nolakes,nohills,nocaverns lakes,hills,caverns,nolakes,nohills,nocaverns
+mgflat_spflags (Mapgen Flat specific flags) flags nolakes,nohills,nocaverns lakes,hills,caverns
 
 #    Y of flat ground.
 mgflat_ground_level (Ground level) int 8 -31000 31000
@@ -1525,7 +1525,7 @@ mgflat_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0,
 #    Map generation attributes specific to Mapgen Fractal.
 #    'terrain' enables the generation of non-fractal terrain:
 #    ocean, islands and underground.
-mgfractal_spflags (Mapgen Fractal specific flags) flags terrain terrain,noterrain
+mgfractal_spflags (Mapgen Fractal specific flags) flags terrain terrain
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    Value >= 10.0 completely disables generation of tunnels and avoids the
@@ -1659,7 +1659,7 @@ mgfractal_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500),
 #    'vary_river_depth': If enabled, low humidity and high heat causes rivers
 #    to become shallower and occasionally dry.
 #    'altitude_dry': Reduces humidity with altitude.
-mgvalleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers,vary_river_depth,altitude_dry altitude_chill,humid_rivers,vary_river_depth,altitude_dry,noaltitude_chill,nohumid_rivers,novary_river_depth,noaltitude_dry
+mgvalleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers,vary_river_depth,altitude_dry altitude_chill,humid_rivers,vary_river_depth,altitude_dry
 
 #    The vertical distance over which heat drops by 20 if 'altitude_chill' is
 #    enabled. Also, the vertical distance over which humidity drops by 10 if
@@ -1876,8 +1876,9 @@ shader_path (Shader path) path
 #    OpenGL is the default for desktop, and OGLES2 for Android.
 video_driver (Video driver) enum  ,opengl,opengl3,ogles2
 
-#    Distance in nodes at which transparency depth sorting is enabled
-#    Use this to limit the performance impact of transparency depth sorting
+#    Distance in nodes at which transparency depth sorting is enabled.
+#    Use this to limit the performance impact of transparency depth sorting.
+#    Set to 0 to disable it entirely.
 transparency_sorting_distance (Transparency Sorting Distance) int 16 0 128
 
 #    Radius of cloud area stated in number of 64 node cloud squares.
@@ -2046,9 +2047,8 @@ max_simultaneous_block_sends_per_client (Maximum simultaneous block sends per cl
 #    This determines how long they are slowed down after placing or removing a node.
 full_block_send_enable_min_time_from_building (Delay in sending blocks after building) float 2.0 0.0
 
-#    Maximum number of packets sent per send step, if you have a slow connection
-#    try reducing it, but don't reduce it to a number below double of targeted
-#    client number.
+#    Maximum number of packets sent per send step in the low-level networking code.
+#    You generally don't need to change this, however busy servers may benefit from a higher number.
 max_packets_per_iteration (Max. packets per iteration) int 1024 1 65535
 
 #    Compression level to use when sending mapblocks to the client.

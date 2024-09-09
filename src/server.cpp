@@ -551,7 +551,6 @@ void Server::start()
 	m_thread->stop();
 
 	// Initialize connection
-	m_con->SetTimeoutMs(30);
 	m_con->Serve(m_bind_addr);
 
 	// Start thread
@@ -623,8 +622,6 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 		Update uptime
 	*/
 	m_uptime_counter->increment(dtime);
-
-	handlePeerChanges();
 
 	/*
 		Update time of day and overall game time
@@ -1077,6 +1074,8 @@ void Server::Receive(float timeout)
 				// and a faster server-step is better than busy waiting.
 				if (remaining_time_us() < 1000.0f)
 					break;
+				else
+					continue;
 			}
 
 			peer_id = pkt.getPeerId();
@@ -1256,19 +1255,18 @@ void Server::onMapEditEvent(const MapEditEvent &event)
 
 void Server::peerAdded(con::IPeer *peer)
 {
-	verbosestream<<"Server::peerAdded(): peer->id="
-			<<peer->id<<std::endl;
+	verbosestream << "Server::peerAdded(): id=" << peer->id << std::endl;
 
-	m_peer_change_queue.push(con::PeerChange(con::PEER_ADDED, peer->id, false));
+	m_clients.CreateClient(peer->id);
 }
 
 void Server::deletingPeer(con::IPeer *peer, bool timeout)
 {
-	verbosestream<<"Server::deletingPeer(): peer->id="
-			<<peer->id<<", timeout="<<timeout<<std::endl;
+	verbosestream << "Server::deletingPeer(): id=" << peer->id
+		<< ", timeout=" << timeout << std::endl;
 
 	m_clients.event(peer->id, CSE_Disconnect);
-	m_peer_change_queue.push(con::PeerChange(con::PEER_REMOVED, peer->id, timeout));
+	DeleteClient(peer->id, timeout ? CDR_TIMEOUT : CDR_LEAVE);
 }
 
 bool Server::getClientConInfo(session_t peer_id, con::rtt_stat_type type, float* retval)
@@ -1310,34 +1308,6 @@ const ClientDynamicInfo *Server::getClientDynamicInfo(session_t peer_id)
 		return nullptr;
 
 	return &client->getDynamicInfo();
-}
-
-void Server::handlePeerChanges()
-{
-	while(!m_peer_change_queue.empty())
-	{
-		con::PeerChange c = m_peer_change_queue.front();
-		m_peer_change_queue.pop();
-
-		verbosestream<<"Server: Handling peer change: "
-				<<"id="<<c.peer_id<<", timeout="<<c.timeout
-				<<std::endl;
-
-		switch(c.type)
-		{
-		case con::PEER_ADDED:
-			m_clients.CreateClient(c.peer_id);
-			break;
-
-		case con::PEER_REMOVED:
-			DeleteClient(c.peer_id, c.timeout?CDR_TIMEOUT:CDR_LEAVE);
-			break;
-
-		default:
-			FATAL_ERROR("Invalid peer change event received!");
-			break;
-		}
-	}
 }
 
 void Server::printToConsoleOnly(const std::string &text)
@@ -2495,7 +2465,7 @@ bool Server::addMediaFile(const std::string &filename,
 	const char *supported_ext[] = {
 		".png", ".jpg", ".bmp", ".tga",
 		".ogg",
-		".x", ".b3d", ".obj",
+		".x", ".b3d", ".obj", ".gltf",
 		// Custom translation file format
 		".tr",
 		NULL
