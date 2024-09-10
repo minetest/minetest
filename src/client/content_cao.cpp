@@ -814,15 +814,21 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	}
 
 	/* Set VBO hint */
-	// - if shaders are disabled we modify the mesh often
-	// - sprites are also modified often
-	// - the wieldmesh sets its own hint
-	// - bone transformations do not need to modify the vertex data
+	// wieldmesh sets its own hint, no need to handle it
 	if (m_enable_shaders && (m_meshnode || m_animated_meshnode)) {
-		if (m_meshnode)
+		// sprite uses vertex animation
+		if (m_meshnode && m_prop.visual != "upright_sprite")
 			m_meshnode->getMesh()->setHardwareMappingHint(scene::EHM_STATIC);
-		if (m_animated_meshnode)
-			m_animated_meshnode->getMesh()->setHardwareMappingHint(scene::EHM_STATIC);
+
+		if (m_animated_meshnode) {
+			auto *mesh = m_animated_meshnode->getMesh();
+			// skinning happens on the CPU
+			if (m_animated_meshnode->getJointCount() > 0)
+				mesh->setHardwareMappingHint(scene::EHM_STREAM, scene::EBT_VERTEX);
+			else
+				mesh->setHardwareMappingHint(scene::EHM_STATIC, scene::EBT_VERTEX);
+			mesh->setHardwareMappingHint(scene::EHM_STATIC, scene::EBT_INDEX);
+		}
 	}
 
 	/* don't update while punch texture modifier is active */
