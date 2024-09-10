@@ -1340,7 +1340,7 @@ int ObjectRef::l_get_look_roll(lua_State *L)
 	RemotePlayer *player = getplayer(ref);
 	if (!player)
 		return 0;
-	
+
 	lua_pushnumber(L, player->get_camera_roll() / core::RADTODEG);
 	return 1;
 }

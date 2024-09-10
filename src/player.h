@@ -276,6 +276,6 @@ private:
 	// and ServerThread
 	// FIXME: ^ this sounds like nonsense. should be checked.
 	std::mutex m_mutex;
-	
+
 	f32 m_camera_roll = 0.0f;
 };
