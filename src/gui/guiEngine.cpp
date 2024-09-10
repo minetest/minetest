@@ -337,7 +337,7 @@ void GUIEngine::run()
 	while (m_rendering_engine->run() && !m_startgame && !m_kill) {
 		framemarker.end();
 		fps_control.limit(device, &dtime);
-		framemarker.end();
+		framemarker.start();
 
 		if (device->isWindowVisible()) {
 			// check if we need to update the "upper left corner"-text
