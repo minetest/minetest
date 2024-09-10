@@ -8,6 +8,9 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
+      - 'irr/**.mm' # Objective-C(++)
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - '.github/workflows/macos.yml'
@@ -17,15 +20,19 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
+      - 'irr/**.mm' # Objective-C(++)
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - '.github/workflows/macos.yml'
 
 jobs:
   build:
-    runs-on: macos-latest
+    # use lowest possible macOS running on x86_64 to support more users
+    runs-on: macos-12
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install deps
         run: |
           source ./util/ci/common.sh
@@ -33,7 +40,6 @@ jobs:
 
       - name: Build
         run: |
-          git clone https://github.com/minetest/irrlicht lib/irrlichtmt --depth 1 -b $(cat misc/irrlichtmt_tag.txt)
           mkdir build
           cd build
           cmake .. \
@@ -54,9 +60,11 @@ jobs:
       - name: CPack
         run: |
           cd build
+          rm -rf macos
+          cmake .. -DINSTALL_DEVTEST=FALSE
           cpack -G ZIP -B macos
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: minetest-macos
           path: ./build/macos/*.zip

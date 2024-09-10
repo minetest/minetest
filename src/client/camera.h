@@ -19,9 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes.h"
 #include "inventory.h"
-#include "client/tile.h"
+#include "util/numeric.h"
 #include "client/localplayer.h"
 #include <ICameraSceneNode.h>
 #include <ISceneNode.h>
@@ -241,7 +241,7 @@ private:
 
 	// Server-sent FOV variables
 	bool m_server_sent_fov = false;
-	f32 m_curr_fov_degrees, m_old_fov_degrees, m_target_fov_degrees;
+	f32 m_curr_fov_degrees, m_target_fov_degrees;
 
 	// FOV transition variables
 	bool m_fov_transition_active = false;

@@ -92,10 +92,16 @@ function singleplayer_refresh_gamebar()
 		end
 	end
 
+	local ENABLE_TOUCH = core.settings:get_bool("enable_touch")
+
+	local gamebar_pos_y = MAIN_TAB_H
+		+ TABHEADER_H -- tabheader included in formspec size
+		+ (ENABLE_TOUCH and GAMEBAR_OFFSET_TOUCH or GAMEBAR_OFFSET_DESKTOP)
+
 	local btnbar = buttonbar_create(
 			"game_button_bar",
-			TOUCHSCREEN_GUI and {x = 0, y = 7.25} or {x = 0, y = 7.475},
-			{x = 15.5, y = 1.25},
+			{x = 0, y = gamebar_pos_y},
+			{x = MAIN_TAB_W, y = GAMEBAR_H},
 			"#000000",
 			game_buttonbar_button_handler)
 
@@ -156,10 +162,18 @@ local function get_formspec(tabview, name, tabdata)
 
 	-- Point the player to ContentDB when no games are found
 	if #pkgmgr.games == 0 then
+		local W = tabview.width
+		local H = tabview.height
+
+		local hypertext = "<global valign=middle halign=center size=18>" ..
+				fgettext_ne("Minetest is a game-creation platform that allows you to play many different games.") .. "\n" ..
+				fgettext_ne("Minetest doesn't come with a game by default.") .. " " ..
+				fgettext_ne("You need to install a game before you can create a world.")
+
+		local button_y = H * 2/3 - 0.6
 		return table.concat({
-			"style[label_button;border=false]",
-			"button[2.75,1.5;10,1;label_button;", fgettext("You have no games installed."), "]",
-			"button[5.25,3.5;5,1.2;game_open_cdb;", fgettext("Install a game"), "]"})
+			"hypertext[0.375,0;", W - 2*0.375, ",", button_y, ";ht;", core.formspec_escape(hypertext), "]",
+			"button[5.25,", button_y, ";5,1.2;game_open_cdb;", fgettext("Install a game"), "]"})
 	end
 
 	local retval = ""
@@ -264,7 +278,7 @@ local function main_button_handler(this, fields, name, tabdata)
 
 	if fields.game_open_cdb then
 		local maintab = ui.find_by_name("maintab")
-		local dlg = create_store_dlg("game")
+		local dlg = create_contentdb_dlg("game")
 		dlg:set_parent(maintab)
 		maintab:hide()
 		dlg:show()

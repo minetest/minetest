@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include "mapnode.h"
 #include "porting.h"
 #include "nodedef.h"
@@ -690,7 +690,7 @@ void MapNode::deSerialize(u8 *source, u8 version)
 	}
 }
 
-SharedBuffer<u8> MapNode::serializeBulk(int version,
+Buffer<u8> MapNode::serializeBulk(int version,
 		const MapNode *nodes, u32 nodecount,
 		u8 content_width, u8 params_width)
 {
@@ -706,17 +706,19 @@ SharedBuffer<u8> MapNode::serializeBulk(int version,
 		throw SerializationError("MapNode::serializeBulk: serialization to "
 				"version < 24 not possible");
 
-	SharedBuffer<u8> databuf(nodecount * (content_width + params_width));
+	Buffer<u8> databuf(nodecount * (content_width + params_width));
 
-	u32 start1 = content_width * nodecount;
-	u32 start2 = (content_width + 1) * nodecount;
+	// Writing to the buffer linearly is faster
+	u8 *p = &databuf[0];
+	for (u32 i = 0; i < nodecount; i++, p += 2)
+		writeU16(p, nodes[i].param0);
 
-	// Serialize content
-	for (u32 i = 0; i < nodecount; i++) {
-		writeU16(&databuf[i * 2], nodes[i].param0);
-		writeU8(&databuf[start1 + i], nodes[i].param1);
-		writeU8(&databuf[start2 + i], nodes[i].param2);
-	}
+	for (u32 i = 0; i < nodecount; i++, p++)
+		writeU8(p, nodes[i].param1);
+
+	for (u32 i = 0; i < nodecount; i++, p++)
+		writeU8(p, nodes[i].param2);
+
 	return databuf;
 }
 

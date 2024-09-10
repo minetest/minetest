@@ -18,7 +18,9 @@
 
 
 local BASE_SPACING = 0.1
-local SCROLL_BTN_WIDTH = TOUCHSCREEN_GUI and 0.8 or 0.5
+local function get_scroll_btn_width()
+	return core.settings:get_bool("touch_gui") and 0.8 or 0.5
+end
 
 local function buttonbar_formspec(self)
 	if self.hidden then
@@ -26,10 +28,8 @@ local function buttonbar_formspec(self)
 	end
 
 	local formspec = {
-		"style_type[box;noclip=true]",
 		string.format("box[%f,%f;%f,%f;%s]", self.pos.x, self.pos.y, self.size.x,
 				self.size.y, self.bgcolor),
-		"style_type[box;noclip=false]",
 	}
 
 	local btn_size = self.size.y - 2*BASE_SPACING
@@ -39,7 +39,7 @@ local function buttonbar_formspec(self)
 
 	-- The number of buttons per page is always calculated as if the scroll
     -- buttons were visible.
-	local avail_space = self.size.x - 2*BASE_SPACING - 2*SCROLL_BTN_WIDTH
+	local avail_space = self.size.x - 2*BASE_SPACING - 2*get_scroll_btn_width()
 	local btns_per_page = math.floor((avail_space - BASE_SPACING) / (btn_size + BASE_SPACING))
 
 	self.num_pages = math.ceil(#self.buttons / btns_per_page)
@@ -55,7 +55,7 @@ local function buttonbar_formspec(self)
 
 	local btn_start_x = self.pos.x + btn_spacing
 	if show_scroll_btns then
-		btn_start_x = btn_start_x + BASE_SPACING + SCROLL_BTN_WIDTH
+		btn_start_x = btn_start_x + BASE_SPACING + get_scroll_btn_width()
 	end
 
 	for i = first_btn, first_btn + btns_per_page - 1 do
@@ -69,7 +69,7 @@ local function buttonbar_formspec(self)
 			y = self.pos.y + BASE_SPACING,
 		}
 
-		table.insert(formspec, string.format("image_button[%f,%f;%f,%f;%s;%s;%s;true;false]tooltip[%s;%s]",
+		table.insert(formspec, string.format("image_button[%f,%f;%f,%f;%s;%s;%s;false;false]tooltip[%s;%s]",
 				btn_pos.x, btn_pos.y, btn_size, btn_size, btn.image, btn.name,
 				btn.caption, btn.name, btn.tooltip))
 	end
@@ -80,19 +80,16 @@ local function buttonbar_formspec(self)
 			y = self.pos.y + BASE_SPACING,
 		}
 		local btn_next_pos = {
-			x = self.pos.x + self.size.x - BASE_SPACING - SCROLL_BTN_WIDTH,
+			x = self.pos.x + self.size.x - BASE_SPACING - get_scroll_btn_width(),
 			y = self.pos.y + BASE_SPACING,
 		}
 
-		table.insert(formspec, string.format("style[%s,%s;noclip=true]",
-				self.btn_prev_name, self.btn_next_name))
-
 		table.insert(formspec, string.format("button[%f,%f;%f,%f;%s;<]",
-				btn_prev_pos.x, btn_prev_pos.y, SCROLL_BTN_WIDTH, btn_size,
+				btn_prev_pos.x, btn_prev_pos.y, get_scroll_btn_width(), btn_size,
 				self.btn_prev_name))
 
 		table.insert(formspec, string.format("button[%f,%f;%f,%f;%s;>]",
-				btn_next_pos.x, btn_next_pos.y, SCROLL_BTN_WIDTH, btn_size,
+				btn_next_pos.x, btn_next_pos.y, get_scroll_btn_width(), btn_size,
 				self.btn_next_name))
 	end
 
@@ -100,14 +97,24 @@ local function buttonbar_formspec(self)
 end
 
 local function buttonbar_buttonhandler(self, fields)
-	if fields[self.btn_prev_name] and self.cur_page > 1 then
-		self.cur_page = self.cur_page - 1
-		return true
+	if fields[self.btn_prev_name] then
+		if self.cur_page > 1 then
+			self.cur_page = self.cur_page - 1
+			return true
+		elseif self.cur_page == 1 then
+			self.cur_page = self.num_pages
+			return true
+		end
 	end
 
-	if fields[self.btn_next_name] and self.cur_page < self.num_pages then
-		self.cur_page = self.cur_page + 1
-		return true
+	if fields[self.btn_next_name] then
+		if self.cur_page < self.num_pages then
+			self.cur_page = self.cur_page + 1
+			return true
+		elseif self.cur_page == self.num_pages then
+			self.cur_page = 1
+			return true
+		end
 	end
 
 	for _, btn in ipairs(self.buttons) do

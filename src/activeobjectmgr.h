@@ -31,7 +31,6 @@ class TestServerActiveObjectMgr;
 template <typename T>
 class ActiveObjectMgr
 {
-	friend class ::TestClientActiveObjectMgr;
 	friend class ::TestServerActiveObjectMgr;
 
 public:

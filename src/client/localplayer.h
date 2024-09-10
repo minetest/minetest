@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "settings.h"
 #include "lighting.h"
-#include <list>
+#include <string>
 
 class Client;
 class Environment;
@@ -39,14 +39,34 @@ enum class LocalPlayerAnimation
 	NO_ANIM,
 	WALK_ANIM,
 	DIG_ANIM,
-	WD_ANIM
-}; // no local animation, walking, digging, both
+	WD_ANIM // walking + digging
+};
+
+struct PlayerSettings
+{
+	bool free_move = false;
+	bool pitch_move = false;
+	bool fast_move = false;
+	bool continuous_forward = false;
+	bool always_fly_fast = false;
+	bool aux1_descends = false;
+	bool noclip = false;
+	bool autojump = false;
+
+	void readGlobalSettings();
+	void registerSettingsCallback();
+	void deregisterSettingsCallback();
+
+private:
+	static void settingsChangedCallback(const std::string &name, void *data);
+};
 
 class LocalPlayer : public Player
 {
 public:
-	LocalPlayer(Client *client, const char *name);
-	virtual ~LocalPlayer() = default;
+
+	LocalPlayer(Client *client, const std::string &name);
+	virtual ~LocalPlayer();
 
 	// Initialize hp to 0, so that no hearts will be shown if server
 	// doesn't support health points
@@ -161,6 +181,8 @@ public:
 
 	inline Lighting& getLighting() { return m_lighting; }
 
+	inline PlayerSettings &getPlayerSettings() { return m_player_settings; }
+
 private:
 	void accelerate(const v3f &target_speed, const f32 max_increase_H,
 		const f32 max_increase_V, const bool use_pitch);
@@ -211,5 +233,7 @@ private:
 
 	GenericCAO *m_cao = nullptr;
 	Client *m_client;
+
+	PlayerSettings m_player_settings;
 	Lighting m_lighting;
 };

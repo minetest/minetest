@@ -49,8 +49,19 @@ private:
 		istack->getItem().metadata.clearToolCapabilities();
 	}
 
+	void setWearBarParams(const WearBarParams &params)
+	{
+		istack->getItem().metadata.setWearBarParams(params);
+	}
+
+	void clearWearBarParams()
+	{
+		istack->getItem().metadata.clearWearBarParams();
+	}
+
 	// Exported functions
 	static int l_set_tool_capabilities(lua_State *L);
+	static int l_set_wear_bar_params(lua_State *L);
 public:
 	// takes a reference
 	ItemStackMetaRef(LuaItemStack *istack);

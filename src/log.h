@@ -22,13 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <atomic>
 #include <map>
 #include <queue>
-#include <string>
+#include <string_view>
 #include <fstream>
 #include <thread>
 #include <mutex>
-#if !defined(_WIN32)  // POSIX
-	#include <unistd.h>
-#endif
 #include "threading/mutex_auto_lock.h"
 #include "util/basic_macros.h"
 #include "util/stream.h"
@@ -65,54 +62,54 @@ public:
 	LogLevelMask removeOutput(ILogOutput *out);
 	void setLevelSilenced(LogLevel lev, bool silenced);
 
-	void registerThread(const std::string &name);
+	void registerThread(std::string_view name);
 	void deregisterThread();
 
-	void log(LogLevel lev, const std::string &text);
+	void log(LogLevel lev, std::string_view text);
 	// Logs without a prefix
-	void logRaw(LogLevel lev, const std::string &text);
+	void logRaw(LogLevel lev, std::string_view text);
 
-	static LogLevel stringToLevel(const std::string &name);
-	static const std::string getLevelLabel(LogLevel lev);
+	static LogLevel stringToLevel(std::string_view name);
+	static const char *getLevelLabel(LogLevel lev);
 
 	bool hasOutput(LogLevel level) {
 		return m_has_outputs[level].load(std::memory_order_relaxed);
 	}
 
+	bool isLevelSilenced(LogLevel level) {
+		return m_silenced_levels[level].load(std::memory_order_relaxed);
+	}
+
 	static LogColor color_mode;
 
 private:
-	void logToOutputsRaw(LogLevel, const std::string &line);
+	void logToOutputsRaw(LogLevel, std::string_view line);
 	void logToOutputs(LogLevel, const std::string &combined,
 		const std::string &time, const std::string &thread_name,
-		const std::string &payload_text);
+		std::string_view payload_text);
 
-	const std::string getThreadName();
+	const std::string &getThreadName();
 
 	std::vector<ILogOutput *> m_outputs[LL_MAX];
 	std::atomic<bool> m_has_outputs[LL_MAX];
-
-	// Should implement atomic loads and stores (even though it's only
-	// written to when one thread has access currently).
-	// Works on all known architectures (x86, ARM, MIPS).
-	volatile bool m_silenced_levels[LL_MAX];
+	std::atomic<bool> m_silenced_levels[LL_MAX];
 	std::map<std::thread::id, std::string> m_thread_names;
 	mutable std::mutex m_mutex;
 };
 
 class ILogOutput {
 public:
-	virtual void logRaw(LogLevel, const std::string &line) = 0;
+	virtual void logRaw(LogLevel, std::string_view line) = 0;
 	virtual void log(LogLevel, const std::string &combined,
 		const std::string &time, const std::string &thread_name,
-		const std::string &payload_text) = 0;
+		std::string_view payload_text) = 0;
 };
 
 class ICombinedLogOutput : public ILogOutput {
 public:
 	void log(LogLevel lev, const std::string &combined,
 		const std::string &time, const std::string &thread_name,
-		const std::string &payload_text)
+		std::string_view payload_text)
 	{
 		logRaw(lev, combined);
 	}
@@ -120,18 +117,9 @@ public:
 
 class StreamLogOutput : public ICombinedLogOutput {
 public:
-	StreamLogOutput(std::ostream &stream) :
-		m_stream(stream)
-	{
-#if !defined(_WIN32)
-		if (&stream == &std::cout)
-			is_tty = isatty(STDOUT_FILENO);
-		else if (&stream == &std::cerr)
-			is_tty = isatty(STDERR_FILENO);
-#endif
-	}
+	StreamLogOutput(std::ostream &stream);
 
-	void logRaw(LogLevel lev, const std::string &line);
+	void logRaw(LogLevel lev, std::string_view line);
 
 private:
 	std::ostream &m_stream;
@@ -142,7 +130,7 @@ class FileLogOutput : public ICombinedLogOutput {
 public:
 	void setFile(const std::string &filename, s64 file_size_max);
 
-	void logRaw(LogLevel lev, const std::string &line)
+	void logRaw(LogLevel lev, std::string_view line)
 	{
 		m_stream << line << std::endl;
 	}
@@ -166,7 +154,7 @@ public:
 
 	void updateLogLevel();
 
-	void logRaw(LogLevel lev, const std::string &line);
+	void logRaw(LogLevel lev, std::string_view line);
 
 	void clear()
 	{
@@ -202,7 +190,7 @@ private:
 #ifdef __ANDROID__
 class AndroidLogOutput : public ICombinedLogOutput {
 public:
-	void logRaw(LogLevel lev, const std::string &line);
+	void logRaw(LogLevel lev, std::string_view line);
 };
 #endif
 
@@ -218,7 +206,7 @@ class LogTarget {
 public:
 	// Must be thread-safe. These can be called from any thread.
 	virtual bool hasOutput() = 0;
-	virtual void log(const std::string &buf) = 0;
+	virtual void log(std::string_view buf) = 0;
 };
 
 
@@ -316,7 +304,7 @@ public:
 		return m_target.hasOutput();
 	}
 
-	void internalFlush(const std::string &buf) {
+	void internalFlush(std::string_view buf) {
 		m_target.log(buf);
 	}
 

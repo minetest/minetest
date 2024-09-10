@@ -23,18 +23,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include <cstdio>
 #include "client/renderingengine.h"
+#include <IImage.h>
+#include <ITexture.h>
+#include <IVideoDriver.h>
 
 /* Maintain a static cache to store the images that correspond to textures
  * in a format that's manipulable by code.  Some platforms exhibit issues
  * converting textures back into images repeatedly, and some don't even
  * allow it at all.
  */
-std::map<io::path, video::IImage *> g_imgCache;
+static std::map<io::path, video::IImage *> g_imgCache;
 
 /* Maintain a static cache of all pre-scaled textures.  These need to be
  * cleared as well when the cached images.
  */
-std::map<io::path, video::ITexture *> g_txrCache;
+static std::map<io::path, video::ITexture *> g_txrCache;
 
 /* Manually insert an image into the cache, useful to avoid texture-to-image
  * conversion whenever we can intercept it.

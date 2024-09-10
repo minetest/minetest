@@ -8,10 +8,11 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - 'util/buildbot/**'
-      - 'misc/irrlichtmt_tag.txt'
       - 'misc/*.manifest'
       - '.github/workflows/windows.yml'
   pull_request:
@@ -20,51 +21,47 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - 'util/buildbot/**'
-      - 'misc/irrlichtmt_tag.txt'
       - 'misc/*.manifest'
       - '.github/workflows/windows.yml'
 
 jobs:
-  mingw32:
-    name: "MinGW cross-compiler (32-bit)"
+  mingw:
+    name: "MinGW cross-compiler (${{ matrix.bits }}-bit)"
     runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        bits: [32, 64]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install compiler
         run: |
-          sudo apt-get update && sudo apt-get install -y gettext
-          sudo ./util/buildbot/download_toolchain.sh i686 /usr
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gettext wine wine${{ matrix.bits }}
+          sudo ./util/buildbot/download_toolchain.sh /usr
 
       - name: Build
         run: |
-           EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh B
+           EXISTING_MINETEST_DIR=$PWD \
+           ./util/buildbot/buildwin${{ matrix.bits }}.sh B
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: mingw32
-          path: B/build/*.zip
-          if-no-files-found: error
-
-  mingw64:
-    name: "MinGW cross-compiler (64-bit)"
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install compiler
+      # Check that the resulting binary can run (DLLs etc.)
+      - name: Runtime test
         run: |
-          sudo apt-get update && sudo apt-get install -y gettext
-          sudo ./util/buildbot/download_toolchain.sh x86_64 /usr
+          dest=$(mktemp -d)
+          unzip -q -d "$dest" B/build/*.zip
+          cd "$dest"/minetest-*-win*
+          wine bin/minetest.exe --version
 
-      - name: Build
-        run: |
-          EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh B
-
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: mingw64
+          name: "mingw${{ matrix.bits }}"
           path: B/build/*.zip
           if-no-files-found: error
 
@@ -72,9 +69,9 @@ jobs:
     name: VS 2019 ${{ matrix.config.arch }}-${{ matrix.type }}
     runs-on: windows-2019
     env:
-      VCPKG_VERSION: 8eb57355a4ffb410a2e94c07b4dca2dffbee8e50
-      # 2023.10.19
-      vcpkg_packages: zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry sdl2
+      VCPKG_VERSION: 01f602195983451bc83e72f4214af2cbc495aa94
+      # 2024.05.24
+      vcpkg_packages: zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp sdl2
     strategy:
       fail-fast: false
       matrix:
@@ -95,12 +92,7 @@ jobs:
 # Enable it, when working on the installer.
 
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Checkout IrrlichtMt
-        run: |
-          $ref = @(Get-Content misc\irrlichtmt_tag.txt)
-          git clone https://github.com/minetest/irrlicht lib\irrlichtmt --depth 1 -b $ref[0]
+      - uses: actions/checkout@v4
 
       - name: Restore from cache and run vcpkg
         uses: lukka/run-vcpkg@v7
@@ -145,7 +137,7 @@ jobs:
         env:
           TYPE: ${{matrix.type}}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: msvc-${{ matrix.config.arch }}-${{ matrix.type }}
           path: .\Package\

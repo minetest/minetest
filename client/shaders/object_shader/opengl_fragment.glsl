@@ -1,13 +1,12 @@
 uniform sampler2D baseTexture;
 
 uniform vec3 dayLight;
-uniform vec4 fogColor;
+uniform lowp vec4 fogColor;
 uniform float fogDistance;
 uniform float fogShadingParameter;
-uniform vec3 eyePosition;
 
 // The cameraOffset is the current center of the visible world.
-uniform vec3 cameraOffset;
+uniform highp vec3 cameraOffset;
 uniform float animationTimer;
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	// shadow texture
@@ -44,7 +43,7 @@ varying mediump vec2 varTexCoord;
 #else
 centroid varying vec2 varTexCoord;
 #endif
-varying vec3 eyeVec;
+varying highp vec3 eyeVec;
 varying float nightRatio;
 
 varying float vIDiff;

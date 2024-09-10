@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "script/scripting_client.h"
 #include "gettext.h"
 #include <SViewFrustum.h>
+#include <IVideoDriver.h>
 
 #define CAMERA_OFFSET_STEP 200
 #define WIELDMESH_OFFSET_X 55.0f
@@ -97,38 +98,21 @@ void Camera::notifyFovChange()
 
 	PlayerFovSpec spec = player->getFov();
 
-	/*
-	 * Update m_old_fov_degrees first - it serves as the starting point of the
-	 * upcoming transition.
-	 *
-	 * If an FOV transition is already active, mark current FOV as the start of
-	 * the new transition. If not, set it to the previous transition's target FOV.
-	 */
-	if (m_fov_transition_active)
-		m_old_fov_degrees = m_curr_fov_degrees;
-	else
-		m_old_fov_degrees = m_server_sent_fov ? m_target_fov_degrees : m_cache_fov;
+	// Remember old FOV in case a transition is wanted
+	f32 m_old_fov_degrees = m_fov_transition_active
+		? m_curr_fov_degrees // FOV is overridden with transition
+		: m_server_sent_fov
+			? m_target_fov_degrees // FOV is overridden without transition
+			: m_cache_fov; // FOV is not overridden
 
-	/*
-	 * Update m_server_sent_fov next - it corresponds to the target FOV of the
-	 * upcoming transition.
-	 *
-	 * Set it to m_cache_fov, if server-sent FOV is 0. Otherwise check if
-	 * server-sent FOV is a multiplier, and multiply it with m_cache_fov instead
-	 * of overriding.
-	 */
-	if (spec.fov == 0.0f) {
-		m_server_sent_fov = false;
-		m_target_fov_degrees = m_cache_fov;
-	} else {
-		m_server_sent_fov = true;
-		m_target_fov_degrees = spec.is_multiplier ? m_cache_fov * spec.fov : spec.fov;
-	}
+	m_server_sent_fov = spec.fov > 0.0f;
+	m_target_fov_degrees = m_server_sent_fov
+		? spec.is_multiplier
+			? m_cache_fov * spec.fov // apply multiplier to client-set FOV
+			: spec.fov // absolute override
+		: m_cache_fov; // reset to client-set FOV
 
-	if (spec.transition_time > 0.0f)
-		m_fov_transition_active = true;
-
-	// If FOV smooth transition is active, initialize required variables
+	m_fov_transition_active = spec.transition_time > 0.0f;
 	if (m_fov_transition_active) {
 		m_transition_time = spec.transition_time;
 		m_fov_diff = m_target_fov_degrees - m_old_fov_degrees;
@@ -138,8 +122,8 @@ void Camera::notifyFovChange()
 // Returns the fractional part of x
 inline f32 my_modf(f32 x)
 {
-	double dummy;
-	return modf(x, &dummy);
+	float dummy;
+	return std::modf(x, &dummy);
 }
 
 void Camera::step(f32 dtime)
@@ -408,10 +392,10 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 		f32 bobdir = (m_view_bobbing_anim < 0.5) ? 1.0 : -1.0;
 
 		f32 bobknob = 1.2;
-		f32 bobtmp = sin(pow(bobfrac, bobknob) * M_PI);
+		f32 bobtmp = std::sin(std::pow(bobfrac, bobknob) * M_PI);
 
 		v3f bobvec = v3f(
-			0.3 * bobdir * sin(bobfrac * M_PI),
+			0.3 * bobdir * std::sin(bobfrac * M_PI),
 			-0.28 * bobtmp * bobtmp,
 			0.);
 
@@ -532,11 +516,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 		addArmInertia(yaw);
 
 	// Position the wielded item
-	//v3f wield_position = v3f(45, -35, 65);
 	v3f wield_position = v3f(m_wieldmesh_offset.X, m_wieldmesh_offset.Y, 65);
-	//v3f wield_rotation = v3f(-100, 120, -100);
 	v3f wield_rotation = v3f(-100, 120, -100);
-	wield_position.Y += fabs(m_wield_change_timer)*320 - 40;
+	wield_position.Y += std::abs(m_wield_change_timer)*320 - 40;
 	if(m_digging_anim < 0.05 || m_digging_anim > 0.5)
 	{
 		f32 frac = 1.0;
@@ -544,33 +526,29 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 			frac = 2.0 * (m_digging_anim - 0.5);
 		// This value starts from 1 and settles to 0
 		f32 ratiothing = std::pow((1.0f - tool_reload_ratio), 0.5f);
-		//f32 ratiothing2 = pow(ratiothing, 0.5f);
 		f32 ratiothing2 = (easeCurve(ratiothing*0.5))*2.0;
-		wield_position.Y -= frac * 25.0 * pow(ratiothing2, 1.7f);
-		//wield_position.Z += frac * 5.0 * ratiothing2;
-		wield_position.X -= frac * 35.0 * pow(ratiothing2, 1.1f);
-		wield_rotation.Y += frac * 70.0 * pow(ratiothing2, 1.4f);
-		//wield_rotation.X -= frac * 15.0 * pow(ratiothing2, 1.4f);
-		//wield_rotation.Z += frac * 15.0 * pow(ratiothing2, 1.0f);
+		wield_position.Y -= frac * 25.0f * std::pow(ratiothing2, 1.7f);
+		wield_position.X -= frac * 35.0f * std::pow(ratiothing2, 1.1f);
+		wield_rotation.Y += frac * 70.0f * std::pow(ratiothing2, 1.4f);
 	}
 	if (m_digging_button != -1)
 	{
 		f32 digfrac = m_digging_anim;
-		wield_position.X -= 50 * sin(pow(digfrac, 0.8f) * M_PI);
-		wield_position.Y += 24 * sin(digfrac * 1.8 * M_PI);
+		wield_position.X -= 50 * std::sin(std::pow(digfrac, 0.8f) * M_PI);
+		wield_position.Y += 24 * std::sin(digfrac * 1.8 * M_PI);
 		wield_position.Z += 25 * 0.5;
 
 		// Euler angles are PURE EVIL, so why not use quaternions?
 		core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
 		core::quaternion quat_end(v3f(80, 30, 100) * core::DEGTORAD);
 		core::quaternion quat_slerp;
-		quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * M_PI));
+		quat_slerp.slerp(quat_begin, quat_end, std::sin(digfrac * M_PI));
 		quat_slerp.toEuler(wield_rotation);
 		wield_rotation *= core::RADTODEG;
 	} else {
 		f32 bobfrac = my_modf(m_view_bobbing_anim);
-		wield_position.X -= sin(bobfrac*M_PI*2.0) * 3.0;
-		wield_position.Y += sin(my_modf(bobfrac*2.0)*M_PI) * 3.0;
+		wield_position.X -= std::sin(bobfrac*M_PI*2.0) * 3.0;
+		wield_position.Y += std::sin(my_modf(bobfrac*2.0)*M_PI) * 3.0;
 	}
 	m_wieldnode->setPosition(wield_position);
 	m_wieldnode->setRotation(wield_rotation);
@@ -585,8 +563,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	// view bobbing is enabled and free_move is off,
 	// start (or continue) the view bobbing animation.
 	const v3f &speed = player->getSpeed();
-	const bool movement_XZ = hypot(speed.X, speed.Z) > BS;
-	const bool movement_Y = fabs(speed.Y) > BS;
+	const bool movement_XZ = std::hypot(speed.X, speed.Z) > BS;
+	const bool movement_Y = std::abs(speed.Y) > BS;
 
 	const bool walking = movement_XZ && player->touching_ground;
 	const bool swimming = (movement_XZ || player->swimming_vertical) && player->in_liquid;

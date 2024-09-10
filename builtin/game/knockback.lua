@@ -22,14 +22,16 @@ local function vector_absmax(v)
 	return max(max(abs(v.x), abs(v.y)), abs(v.z))
 end
 
-core.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, unused_dir, damage)
+core.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage)
 	if player:get_hp() == 0 then
 		return -- RIP
 	end
 
-	-- Server::handleCommand_Interact() adds eye offset to one but not the other
-	-- so the direction is slightly off, calculate it ourselves
-	local dir = vector.subtract(player:get_pos(), hitter:get_pos())
+	if hitter then
+		-- Server::handleCommand_Interact() adds eye offset to one but not the other
+		-- so the direction is slightly off, calculate it ourselves
+		dir = vector.subtract(player:get_pos(), hitter:get_pos())
+	end
 	local d = vector.length(dir)
 	if d ~= 0.0 then
 		dir = vector.divide(dir, d)

@@ -20,55 +20,57 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "clientenvironment.h"
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes.h"
 #include <ostream>
 #include <map>
 #include <memory>
 #include <set>
 #include <vector>
 #include <unordered_set>
-#include "clientobject.h"
 #include "gamedef.h"
 #include "inventorymanager.h"
-#include "client/hud.h"
-#include "tileanimation.h"
 #include "network/address.h"
+#include "network/networkprotocol.h" // multiple enums
 #include "network/peerhandler.h"
 #include "gameparams.h"
-#include "clientdynamicinfo.h"
-#include <fstream>
+#include "script/common/c_types.h" // LuaError
 #include "util/numeric.h"
+
+#ifdef SERVER
+#error Do not include in server builds
+#endif
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
-struct ClientEvent;
-struct MeshMakeData;
-struct ChatMessage;
-class MapBlockMesh;
-class RenderingEngine;
-class IWritableTextureSource;
-class IWritableShaderSource;
-class IWritableItemDefManager;
-class ISoundManager;
-class NodeDefManager;
-//class IWritableCraftDefManager;
+class Camera;
 class ClientMediaDownloader;
-class SingleMediaDownloader;
-struct MapDrawControl;
+class ISoundManager;
+class IWritableItemDefManager;
+class IWritableShaderSource;
+class IWritableTextureSource;
+class MapBlockMesh;
+class MapDatabase;
+class MeshUpdateManager;
+class Minimap;
 class ModChannelMgr;
 class MtEventManager;
-struct PointedThing;
-struct MapNode;
-class MapDatabase;
-class Minimap;
-struct MinimapMapblock;
-class MeshUpdateManager;
-class ParticleManager;
-class Camera;
-struct PlayerControl;
 class NetworkPacket;
+class NodeDefManager;
+class ParticleManager;
+class RenderingEngine;
+class SingleMediaDownloader;
+struct ChatMessage;
+struct ClientDynamicInfo;
+struct ClientEvent;
+struct MapDrawControl;
+struct MapNode;
+struct MeshMakeData;
+struct MinimapMapblock;
+struct PlayerControl;
+struct PointedThing;
+
 namespace con {
-class Connection;
+class IConnection;
 }
 using sound_handle_t = int;
 
@@ -354,6 +356,7 @@ public:
 
 	float mediaReceiveProgress();
 
+	void drawLoadScreen(const std::wstring &text, float dtime, int percent);
 	void afterContentReceived();
 	void showUpdateProgressTexture(void *args, u32 progress, u32 max_progress);
 
@@ -369,8 +372,6 @@ public:
 
 	Camera* getCamera () { return m_camera; }
 	scene::ISceneManager *getSceneManager();
-
-	bool shouldShowMinimap() const;
 
 	// IGameDef interface
 	IItemDefManager* getItemDefManager() override;
@@ -413,8 +414,6 @@ public:
 
 	void pushToEventQueue(ClientEvent *event);
 
-	void showMinimap(bool show = true);
-
 	// IP and port we're connected to
 	const Address getServerAddress();
 
@@ -453,8 +452,8 @@ private:
 	void loadMods();
 
 	// Virtual methods from con::PeerHandler
-	void peerAdded(con::Peer *peer) override;
-	void deletingPeer(con::Peer *peer, bool timeout) override;
+	void peerAdded(con::IPeer *peer) override;
+	void deletingPeer(con::IPeer *peer, bool timeout) override;
 
 	void initLocalMapSaving(const Address &address,
 			const std::string &hostname,
@@ -494,12 +493,11 @@ private:
 	std::unique_ptr<MeshUpdateManager> m_mesh_update_manager;
 	ClientEnvironment m_env;
 	std::unique_ptr<ParticleManager> m_particle_manager;
-	std::unique_ptr<con::Connection> m_con;
+	std::unique_ptr<con::IConnection> m_con;
 	std::string m_address_name;
 	ELoginRegister m_allow_login_or_register = ELoginRegister::Any;
 	Camera *m_camera = nullptr;
 	Minimap *m_minimap = nullptr;
-	bool m_minimap_disabled_by_server = false;
 
 	// Server serialization version
 	u8 m_server_ser_ver;

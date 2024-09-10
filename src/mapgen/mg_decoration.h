@@ -31,6 +31,7 @@ class Mapgen;
 class MMVManip;
 class PcgRandom;
 class Schematic;
+namespace treegen { struct TreeDef; }
 
 enum DecorationType {
 	DECO_SIMPLE,
@@ -112,12 +113,15 @@ public:
 };
 
 
-/*
 class DecoLSystem : public Decoration {
 public:
-	virtual void generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	ObjDef *clone() const;
+
+	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling);
+
+	// In case it gets cloned it uses the same tree def.
+	std::shared_ptr<treegen::TreeDef> tree_def;
 };
-*/
 
 
 class DecorationManager : public ObjDefManager {
@@ -139,8 +143,8 @@ public:
 			return new DecoSimple;
 		case DECO_SCHEMATIC:
 			return new DecoSchematic;
-		//case DECO_LSYSTEM:
-		//	return new DecoLSystem;
+		case DECO_LSYSTEM:
+			return new DecoLSystem;
 		default:
 			return NULL;
 		}

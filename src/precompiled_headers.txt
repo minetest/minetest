@@ -1,0 +1,103 @@
+
+# stdlib
+# ------
+
+# C stuff:
+<cassert>
+<cctype>
+<cerrno>
+<cfenv>
+<cfloat>
+<cinttypes>
+<ciso646>
+<climits>
+<clocale>
+<cmath>
+<csetjmp>
+<csignal>
+<cstdarg>
+<cstdbool>
+<cstddef>
+<cstdint>
+<cstdio>
+<cstdlib>
+<cstring>
+<ctgmath>
+<ctime>
+<cuchar>
+<cwchar>
+<cwctype>
+
+# Containers:
+<array>
+<deque>
+<forward_list>
+<list>
+<map>
+<queue>
+<set>
+<stack>
+<unordered_map>
+<unordered_set>
+<vector>
+
+# Input/Output:
+<fstream>
+<iomanip>
+<ios>
+<iosfwd>
+<iostream>
+<istream>
+<ostream>
+<sstream>
+<streambuf>
+
+# Multi-threading:
+<atomic>
+<condition_variable>
+<future>
+<mutex>
+<shared_mutex>
+<thread>
+
+# Other:
+<algorithm>
+<any>
+<bitset>
+<charconv>
+<chrono>
+<codecvt>
+<complex>
+<exception>
+<execution>
+<functional>
+<initializer_list>
+<iterator>
+<limits>
+<locale>
+<memory>
+<memory_resource>
+<new>
+<numeric>
+<optional>
+<random>
+<ratio>
+<regex>
+<stdexcept>
+<string>
+<string_view>
+<system_error>
+<tuple>
+<typeindex>
+<typeinfo>
+<type_traits>
+<utility>
+<valarray>
+<variant>
+
+
+# libs
+# ----
+
+# jsoncpp
+<json/json.h>

@@ -1,3 +1,6 @@
+core.register_mapgen_script(core.get_modpath(core.get_current_modname()) ..
+	DIR_DELIM .. "inside_mapgen_env.lua")
+
 local function test_pseudo_random()
 	-- We have comprehensive unit tests in C++, this is just to make sure the API code isn't messing up
 	local gen1 = PseudoRandom(13)
@@ -96,17 +99,31 @@ local function test_clear_meta(_, pos)
 end
 unittests.register("test_clear_meta", test_clear_meta, {map=true})
 
-local on_punch_called
-minetest.register_on_punchnode(function()
+local on_punch_called, on_place_called
+core.register_on_placenode(function()
+	on_place_called = true
+end)
+core.register_on_punchnode(function()
 	on_punch_called = true
 end)
-unittests.register("test_punch_node", function(_, pos)
-	minetest.place_node(pos, {name="basenodes:dirt"})
+local function test_node_callbacks(_, pos)
+	on_place_called = false
 	on_punch_called = false
-	minetest.punch_node(pos)
-	minetest.remove_node(pos)
-	-- currently failing: assert(on_punch_called)
-end, {map=true})
+
+	core.place_node(pos, {name="basenodes:dirt"})
+	assert(on_place_called, "on_place not called")
+	core.punch_node(pos)
+	assert(on_punch_called, "on_punch not called")
+	core.remove_node(pos)
+end
+unittests.register("test_node_callbacks", test_node_callbacks, {map=true})
+
+local function test_hashing()
+	local input = "hello\000world"
+	assert(core.sha1(input) == "f85b420f1e43ebf88649dfcab302b898d889606c")
+	assert(core.sha256(input) == "b206899bc103669c8e7b36de29d73f95b46795b508aa87d612b2ce84bfb29df2")
+end
+unittests.register("test_hashing", test_hashing)
 
 local function test_compress()
 	-- This text should be compressible, to make sure the results are... normal
@@ -129,6 +146,12 @@ local function test_compress()
 	end
 end
 unittests.register("test_compress", test_compress)
+
+local function test_urlencode()
+	-- checks that API code handles null bytes
+	assert(core.urlencode("foo\000bar!") == "foo%00bar%21")
+end
+unittests.register("test_urlencode", test_urlencode)
 
 local function test_game_info()
 	local info = minetest.get_game_info()
@@ -204,3 +227,30 @@ local function test_on_mapblocks_changed(cb, player, pos)
 	end
 end
 unittests.register("test_on_mapblocks_changed", test_on_mapblocks_changed, {map=true, async=true})
+
+local function test_gennotify_api()
+	local DECO_ID = 123
+	local UD_ID = "unittests:dummy"
+
+	-- the engine doesn't check if the id is actually valid, maybe it should
+	core.set_gen_notify({decoration=true}, {DECO_ID})
+
+	core.set_gen_notify({custom=true}, nil, {UD_ID})
+
+	local flags, deco, custom = core.get_gen_notify()
+	local function ff(flag)
+		return (" " .. flags .. " "):match("[ ,]" .. flag .. "[ ,]") ~= nil
+	end
+	assert(ff("decoration"), "'decoration' flag missing")
+	assert(ff("custom"), "'custom' flag missing")
+	assert(table.indexof(deco, DECO_ID) > 0)
+	assert(table.indexof(custom, UD_ID) > 0)
+
+	core.set_gen_notify({decoration=false, custom=false})
+
+	flags, deco, custom = core.get_gen_notify()
+	assert(not ff("decoration") and not ff("custom"))
+	assert(#deco == 0, "deco ids not empty")
+	assert(#custom == 0, "custom ids not empty")
+end
+unittests.register("test_gennotify_api", test_gennotify_api)

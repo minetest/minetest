@@ -75,6 +75,7 @@ public:
 	virtual const ModSpec* getModSpec(const std::string &modname) const = 0;
 	virtual const SubgameSpec* getGameSpec() const { return nullptr; }
 	virtual std::string getWorldPath() const { return ""; }
+	virtual std::string getModDataPath() const { return ""; }
 	virtual ModStorageDatabase *getModStorageDatabase() = 0;
 
 	virtual bool joinModChannel(const std::string &channel) = 0;

@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include "map.h"
 #include "camera.h"
 #include <set>
@@ -41,6 +41,16 @@ class Client;
 class ITextureSource;
 class PartialMeshBuffer;
 
+namespace irr::scene
+{
+	class IMeshBuffer;
+}
+
+namespace irr::video
+{
+	class IVideoDriver;
+}
+
 /*
 	ClientMap
 
@@ -57,16 +67,9 @@ public:
 			s32 id
 	);
 
-	virtual ~ClientMap();
-
 	bool maySaveBlocks() override
 	{
 		return false;
-	}
-
-	void drop() override
-	{
-		ISceneNode::drop(); // calls destructor
 	}
 
 	void updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset, video::SColor light_color);
@@ -82,12 +85,7 @@ public:
 
 	virtual void OnRegisterSceneNode() override;
 
-	virtual void render() override
-	{
-		video::IVideoDriver* driver = SceneManager->getVideoDriver();
-		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-		renderMap(driver, SceneManager->getSceneNodeRenderPass());
-	}
+	virtual void render() override;
 
 	virtual const aabb3f &getBoundingBox() const override
 	{
@@ -119,9 +117,12 @@ public:
 	f32 getWantedRange() const { return m_control.wanted_range; }
 	f32 getCameraFov() const { return m_camera_fov; }
 
-	void onSettingChanged(const std::string &name);
+	void onSettingChanged(std::string_view name, bool all);
 
 protected:
+	// use drop() instead
+	virtual ~ClientMap();
+
 	void reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks) override;
 private:
 	bool isMeshOccluded(MapBlock *mesh_block, u16 mesh_size, v3s16 cam_pos_nodes);
@@ -166,8 +167,9 @@ private:
 			m_pos(pos), m_partial_buffer(buffer), m_reuse_material(false), m_use_partial_buffer(true)
 		{}
 
-		scene::IMeshBuffer* getBuffer();
-		void draw(video::IVideoDriver* driver);
+		video::SMaterial &getMaterial();
+		/// @return index count
+		u32 draw(video::IVideoDriver* driver);
 	};
 
 	Client *m_client;

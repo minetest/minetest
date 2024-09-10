@@ -1,0 +1,25 @@
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
+IrrlichtMtConfig.cmake
+IrrlichtMtConfigVersion.cmake
+IrrlichtMtTargets.cmake
+CTestTestfile.cmake
+Makefile
+libs/*
+*.so*
+*.a
+*.exe
+*.dll
+bin/Linux
+scripts/gl2ext.h
+scripts/glcorearb.h
+scripts/glext.h
+*.vcxproj*
+*.dir/
+*.sln
+*visualstudio/
+
+# vscode cmake plugin
+build/*

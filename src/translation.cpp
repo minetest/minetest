@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifndef SERVER
 // Client translations
-Translations client_translations;
+static Translations client_translations;
 Translations *g_client_translations = &client_translations;
 #endif
 
@@ -36,24 +36,19 @@ void Translations::clear()
 }
 
 const std::wstring &Translations::getTranslation(
-		const std::wstring &textdomain, const std::wstring &s)
+		const std::wstring &textdomain, const std::wstring &s) const
 {
 	std::wstring key = textdomain + L"|" + s;
-	try {
-		return m_translations.at(key);
-	} catch (const std::out_of_range &) {
-		verbosestream << "Translations: can't find translation for string \""
-		              << wide_to_utf8(s) << "\" in textdomain \""
-		              << wide_to_utf8(textdomain) << "\"" << std::endl;
-		// Silence that warning in the future
-		m_translations[key] = s;
-		return s;
-	}
+	auto it = m_translations.find(key);
+	if (it != m_translations.end())
+		return it->second;
+	return s;
 }
 
 void Translations::loadTranslation(const std::string &data)
 {
 	std::istringstream is(data);
+	std::string textdomain_narrow;
 	std::wstring textdomain;
 	std::string line;
 
@@ -70,7 +65,8 @@ void Translations::loadTranslation(const std::string &data)
 						<< "\"" << std::endl;
 				continue;
 			}
-			textdomain = utf8_to_wide(trim(parts[1]));
+			textdomain_narrow = trim(parts[1]);
+			textdomain = utf8_to_wide(textdomain_narrow);
 		}
 		if (line.empty() || line[0] == '#')
 			continue;
@@ -116,7 +112,7 @@ void Translations::loadTranslation(const std::string &data)
 
 		if (i == wline.length()) {
 			errorstream << "Malformed translation line \"" << line << "\""
-			            << std::endl;
+			            << " in text domain " << textdomain_narrow << std::endl;
 			continue;
 		}
 		i++;
@@ -153,10 +149,7 @@ void Translations::loadTranslation(const std::string &data)
 		if (!oword2.empty()) {
 			std::wstring translation_index = textdomain + L"|";
 			translation_index.append(oword1);
-			m_translations[translation_index] = oword2;
-		} else {
-			infostream << "Ignoring empty translation for \""
-				<< wide_to_utf8(oword1) << "\"" << std::endl;
+			m_translations.emplace(std::move(translation_index), std::move(oword2));
 		}
 	}
 }

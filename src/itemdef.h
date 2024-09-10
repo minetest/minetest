@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include <string>
 #include <iostream>
 #include <optional>
@@ -28,13 +28,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "sound.h"
 #include "texture_override.h" // TextureOverride
+#include "tool.h"
 #include "util/pointabilities.h"
+#include "util/pointedthing.h"
+
 class IGameDef;
 class Client;
 struct ToolCapabilities;
-struct PointedThing;
 #ifndef SERVER
-#include "client/tile.h"
+#include "client/texturesource.h"
 struct ItemMesh;
 struct ItemStack;
 #endif
@@ -56,6 +58,7 @@ enum TouchInteractionMode : u8
 {
 	LONG_DIG_SHORT_PLACE,
 	SHORT_DIG_LONG_PLACE,
+	TouchInteractionMode_USER, // Meaning depends on client-side settings
 	TouchInteractionMode_END, // Dummy for validity check
 };
 
@@ -66,7 +69,9 @@ struct TouchInteraction
 	TouchInteractionMode pointed_object;
 
 	TouchInteraction();
-	TouchInteractionMode getMode(const PointedThing &pointed) const;
+	// Returns the right mode for the pointed thing and resolves any occurrence
+	// of TouchInteractionMode_USER into an actual mode.
+	TouchInteractionMode getMode(PointedThingType pointed_type) const;
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 };
@@ -102,6 +107,8 @@ struct ItemDefinition
 
 	// They may be NULL. If non-NULL, deleted by destructor
 	ToolCapabilities *tool_capabilities;
+
+	std::optional<WearBarParams> wear_bar_params;
 
 	ItemGroupList groups;
 	SoundSpec sound_place;

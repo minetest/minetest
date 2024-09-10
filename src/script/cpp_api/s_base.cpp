@@ -141,6 +141,11 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 		return 0;
 	});
 	lua_setfield(m_luastack, -2, "set_push_node");
+	lua_pushcfunction(m_luastack, [](lua_State *L) -> int {
+		lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_MOVERESULT1);
+		return 0;
+	});
+	lua_setfield(m_luastack, -2, "set_push_moveresult1");
 	// Finally, put the table into the global environment:
 	lua_setglobal(m_luastack, "core");
 
@@ -152,13 +157,6 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 
 	lua_pushstring(m_luastack, porting::getPlatformName());
 	lua_setglobal(m_luastack, "PLATFORM");
-
-#ifdef HAVE_TOUCHSCREENGUI
-	lua_pushboolean(m_luastack, true);
-#else
-	lua_pushboolean(m_luastack, false);
-#endif
-	lua_setglobal(m_luastack, "TOUCHSCREEN_GUI");
 
 	// Make sure Lua uses the right locale
 	setlocale(LC_NUMERIC, "C");
@@ -179,6 +177,7 @@ int ScriptApiBase::luaPanic(lua_State *L)
 	return 0;
 }
 
+#ifndef SERVER
 void ScriptApiBase::clientOpenLibs(lua_State *L)
 {
 	static const std::vector<std::pair<std::string, lua_CFunction>> m_libs = {
@@ -199,28 +198,69 @@ void ScriptApiBase::clientOpenLibs(lua_State *L)
 	    lua_call(L, 1, 0);
 	}
 }
+#endif
+
+#define CHECK(ridx, name) do { \
+	lua_rawgeti(L, LUA_REGISTRYINDEX, ridx); \
+	FATAL_ERROR_IF(lua_type(L, -1) != LUA_TFUNCTION, "missing " name); \
+	lua_pop(L, 1); \
+	} while (0)
 
 void ScriptApiBase::checkSetByBuiltin()
 {
 	lua_State *L = getStack();
 
 	if (m_gamedef) {
-		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_READ_VECTOR);
-		FATAL_ERROR_IF(lua_type(L, -1) != LUA_TFUNCTION, "missing read_vector");
-		lua_pop(L, 1);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_VECTOR);
-		FATAL_ERROR_IF(lua_type(L, -1) != LUA_TFUNCTION, "missing push_vector");
-		lua_pop(L, 1);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_READ_NODE);
-		FATAL_ERROR_IF(lua_type(L, -1) != LUA_TFUNCTION, "missing read_node");
-		lua_pop(L, 1);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_NODE);
-		FATAL_ERROR_IF(lua_type(L, -1) != LUA_TFUNCTION, "missing push_node");
-		lua_pop(L, 1);
+		CHECK(CUSTOM_RIDX_READ_VECTOR, "read_vector");
+		CHECK(CUSTOM_RIDX_PUSH_VECTOR, "push_vector");
+		CHECK(CUSTOM_RIDX_READ_NODE, "read_node");
+		CHECK(CUSTOM_RIDX_PUSH_NODE, "push_node");
 	}
+
+	if (getType() == ScriptingType::Server) {
+		CHECK(CUSTOM_RIDX_PUSH_MOVERESULT1, "push_moveresult1");
+	}
+}
+
+#undef CHECK
+
+std::string ScriptApiBase::getCurrentModNameInsecure(lua_State *L)
+{
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	auto ret = lua_isstring(L, -1) ? readParam<std::string>(L, -1) : "";
+	lua_pop(L, 1);
+	return ret;
+}
+
+std::string ScriptApiBase::getCurrentModName(lua_State *L)
+{
+	auto script = ModApiBase::getScriptApiBase(L);
+	if (script->getType() == ScriptingType::Async ||
+		script->getType() == ScriptingType::Emerge)
+	{
+		// As a precaution never return a "secure" mod name in the async and
+		// emerge environment, because these currently do not track mod origins
+		// in a spoof-safe way (see l_register_async_dofile and l_register_mapgen_script).
+		return "";
+	}
+
+	// We have to make sure that this function is being called directly by
+	// a mod, otherwise a malicious mod could override a function and
+	// steal its return value. (e.g. request_insecure_environment)
+	lua_Debug info;
+
+	// Make sure there's only one item below this function on the stack...
+	if (lua_getstack(L, 2, &info))
+		return "";
+	FATAL_ERROR_IF(!lua_getstack(L, 1, &info), "lua_getstack() failed");
+	FATAL_ERROR_IF(!lua_getinfo(L, "S", &info), "lua_getinfo() failed");
+
+	// ...and that that item is the main file scope.
+	if (strcmp(info.what, "main") != 0)
+		return "";
+
+	// at this point we can trust this value:
+	return getCurrentModNameInsecure(L);
 }
 
 void ScriptApiBase::loadMod(const std::string &script_path,

@@ -90,3 +90,18 @@ minetest.register_craftitem("testitems:image_meta", {
 		return itemstack
 	end,
 })
+
+minetest.register_craftitem("testitems:telescope_stick", {
+	description = S("Telescope Stick (Increases range on use.)"),
+	inventory_image = "testitems_telescope_stick.png",
+	on_use = function(itemstack, player)
+		local meta = itemstack:get_meta()
+		local range = meta:get_float("range") + 1.2
+		if range > 10 then
+			range = 0
+		end
+		meta:set_float("range", range)
+		minetest.chat_send_player(player:get_player_name(), "Telescope Stick range set to "..range)
+		return itemstack
+	end,
+})

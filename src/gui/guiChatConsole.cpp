@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/keycode.h"
 #include "settings.h"
 #include "porting.h"
-#include "client/tile.h"
+#include "client/texturesource.h"
 #include "client/fontengine.h"
 #include "log.h"
 #include "gettext.h"
@@ -106,9 +106,13 @@ GUIChatConsole::~GUIChatConsole()
 
 void GUIChatConsole::openConsole(f32 scale)
 {
+	if (m_open)
+		return;
+
 	assert(scale > 0.0f && scale <= 1.0f);
 
 	m_open = true;
+
 	m_desired_height_fraction = scale;
 	m_desired_height = scale * m_screensize.Y;
 	reformatConsole();

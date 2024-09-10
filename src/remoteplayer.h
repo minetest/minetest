@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "skyparams.h"
 #include "lighting.h"
+#include "network/networkprotocol.h" // session_t
 
 class PlayerSAO;
 
@@ -41,8 +42,8 @@ class RemotePlayer : public Player
 	friend class PlayerDatabaseFiles;
 
 public:
-	RemotePlayer(const char *name, IItemDefManager *idef);
-	virtual ~RemotePlayer() = default;
+	RemotePlayer(const std::string &name, IItemDefManager *idef);
+	virtual ~RemotePlayer();
 
 	PlayerSAO *getPlayerSAO() { return m_sao; }
 	void setPlayerSAO(PlayerSAO *sao) { m_sao = sao; }
@@ -135,6 +136,7 @@ public:
 	u16 protocol_version = 0;
 	u16 formspec_version = 0;
 
+	/// returns PEER_ID_INEXISTENT when PlayerSAO is not ready
 	session_t getPeerId() const { return m_peer_id; }
 
 	void setPeerId(session_t peer_id) { m_peer_id = peer_id; }

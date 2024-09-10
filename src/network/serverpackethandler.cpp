@@ -101,12 +101,12 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	// First byte after command is maximum supported
 	// serialization version
 	u8 client_max;
-	u16 supp_compr_modes;
+	u16 unused;
 	u16 min_net_proto_version = 0;
 	u16 max_net_proto_version;
 	std::string playerName;
 
-	*pkt >> client_max >> supp_compr_modes >> min_net_proto_version
+	*pkt >> client_max >> unused >> min_net_proto_version
 			>> max_net_proto_version >> playerName;
 
 	u8 our_max = SER_FMT_VER_HIGHEST_READ;
@@ -179,7 +179,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		return;
 	}
 
-	RemotePlayer *player = m_env->getPlayer(playername);
+	RemotePlayer *player = m_env->getPlayer(playername, true);
 
 	// If player is already connected, cancel
 	if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
@@ -190,9 +190,6 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	}
 
 	m_clients.setPlayerName(peer_id, playername);
-	//TODO (later) case insensitivity
-
-	std::string legacyPlayerNameCasing = playerName;
 
 	if (!isSingleplayer() && strcasecmp(playername, "singleplayer") == 0) {
 		actionstream << "Server: Player with the name \"singleplayer\" tried "
@@ -261,7 +258,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		}
 	} else {
 		std::string default_password = g_settings->get("default_password");
-		if (default_password.length() == 0) {
+		if (isSingleplayer() || default_password.length() == 0) {
 			auth_mechs |= AUTH_MECHANISM_FIRST_SRP;
 		} else {
 			// Take care of default passwords.
@@ -279,17 +276,14 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	verbosestream << "Sending TOCLIENT_HELLO with auth method field: "
 		<< auth_mechs << std::endl;
 
-	NetworkPacket resp_pkt(TOCLIENT_HELLO,
-		1 + 4 + legacyPlayerNameCasing.size(), peer_id);
+	NetworkPacket resp_pkt(TOCLIENT_HELLO, 0, peer_id);
 
-	u16 depl_compress_mode = NETPROTO_COMPRESSION_NONE;
-	resp_pkt << depl_serial_v << depl_compress_mode << net_proto_version
-		<< auth_mechs << legacyPlayerNameCasing;
+	resp_pkt << depl_serial_v << u16(0) << net_proto_version
+		<< auth_mechs << std::string_view();
 
 	Send(&resp_pkt);
 
 	client->allowed_auth_mechs = auth_mechs;
-	client->setDeployedCompressionMode(depl_compress_mode);
 
 	m_clients.event(peer_id, CSE_Hello);
 }
@@ -512,7 +506,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	if (playersao->checkMovementCheat()) {
 		// Call callbacks
 		m_script->on_cheat(playersao, "moved_too_fast");
-		SendMovePlayer(pkt->getPeerId());
+		SendMovePlayer(playersao);
 	}
 }
 
@@ -615,7 +609,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 
 	// If something goes wrong, this player is to blame
 	RollbackScopeActor rollback_scope(m_rollback,
-			std::string("player:")+player->getName());
+			"player:" + player->getName());
 
 	/*
 		Note: Always set inventory not sent, to repair cases
@@ -852,11 +846,11 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 
 	*pkt >> item;
 
-	if (item >= player->getHotbarItemcount()) {
+	if (item >= player->getMaxHotbarItemcount()) {
 		actionstream << "Player: " << player->getName()
 			<< " tried to access item=" << item
 			<< " out of hotbar_itemcount="
-			<< player->getHotbarItemcount()
+			<< player->getMaxHotbarItemcount()
 			<< "; ignoring." << std::endl;
 		return;
 	}
@@ -895,8 +889,7 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 {
 	ItemStack selected_item, hand_item;
 	player->getWieldedItem(&selected_item, &hand_item);
-	f32 max_d = BS * getToolRange(selected_item.getDefinition(m_itemdef),
-			hand_item.getDefinition(m_itemdef));
+	f32 max_d = BS * getToolRange(selected_item, hand_item, m_itemdef);
 
 	// Cube diagonal * 1.5 for maximal supported node extents:
 	// sqrt(3) * 1.5 ≅ 2.6
@@ -984,16 +977,16 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 	// Update wielded item
 
-	if (item_i >= player->getHotbarItemcount()) {
+	if (item_i >= player->getMaxHotbarItemcount()) {
 		actionstream << "Player: " << player->getName()
 			<< " tried to access item=" << item_i
 			<< " out of hotbar_itemcount="
-			<< player->getHotbarItemcount()
+			<< player->getMaxHotbarItemcount()
 			<< "; ignoring." << std::endl;
 		return;
 	}
 
-	playersao->getPlayer()->setWieldIndex(item_i);
+	player->setWieldIndex(item_i);
 
 	// Get pointed to object (NULL if not POINTEDTYPE_OBJECT)
 	ServerActiveObject *pointed_object = NULL;
@@ -1070,7 +1063,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		If something goes wrong, this player is to blame
 	*/
 	RollbackScopeActor rollback_scope(m_rollback,
-			std::string("player:")+player->getName());
+			"player:" + player->getName());
 
 	switch (action) {
 	// Start digging or punch object
@@ -1161,7 +1154,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			// Get player's wielded item
 			// See also: Game::handleDigging
 			ItemStack selected_item, hand_item;
-			playersao->getPlayer()->getWieldedItem(&selected_item, &hand_item);
+			player->getWieldedItem(&selected_item, &hand_item);
 
 			// Get diggability and expected digging time
 			DigParams params = getDigParams(m_nodedef->get(n).groups,
@@ -1253,7 +1246,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			// Do stuff
 			if (m_script->item_OnSecondaryUse(selected_item, playersao, pointed)) {
 				if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
-					SendInventory(playersao, true);
+					SendInventory(player, true);
 			}
 
 			pointed_object->rightClick(playersao);
@@ -1262,7 +1255,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 			// Apply returned ItemStack
 			if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
-				SendInventory(playersao, true);
+				SendInventory(player, true);
 		}
 
 		if (pointed.type != POINTEDTHING_NODE)
@@ -1296,7 +1289,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		if (m_script->item_OnUse(selected_item, playersao, pointed)) {
 			// Apply returned ItemStack
 			if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
-				SendInventory(playersao, true);
+				SendInventory(player, true);
 		}
 
 		return;
@@ -1315,7 +1308,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		if (m_script->item_OnSecondaryUse(selected_item, playersao, pointed)) {
 			// Apply returned ItemStack
 			if (selected_item.has_value() && playersao->setWieldedItem(*selected_item))
-				SendInventory(playersao, true);
+				SendInventory(player, true);
 		}
 
 		return;
@@ -1336,15 +1329,14 @@ void Server::handleCommand_RemovedSounds(NetworkPacket* pkt)
 
 		*pkt >> id;
 
-		std::unordered_map<s32, ServerPlayingSound>::iterator i =
-			m_playing_sounds.find(id);
+		auto i = m_playing_sounds.find(id);
 		if (i == m_playing_sounds.end())
 			continue;
 
 		ServerPlayingSound &psound = i->second;
 		psound.clients.erase(pkt->getPeerId());
 		if (psound.clients.empty())
-			m_playing_sounds.erase(i++);
+			m_playing_sounds.erase(i);
 	}
 }
 
@@ -1353,15 +1345,22 @@ static bool pkt_read_formspec_fields(NetworkPacket *pkt, StringMap &fields)
 	u16 field_count;
 	*pkt >> field_count;
 
-	u64 length = 0;
+	size_t length = 0;
 	for (u16 k = 0; k < field_count; k++) {
-		std::string fieldname;
+		std::string fieldname, fieldvalue;
 		*pkt >> fieldname;
-		fields[fieldname] = pkt->readLongString();
+		fieldvalue = pkt->readLongString();
 
-		length += fieldname.size();
-		length += fields[fieldname].size();
+		fieldname = sanitize_untrusted(fieldname, false);
+		// We'd love to strip escapes here but some formspec elements reflect data
+		// from the server (e.g. dropdown), which can contain translations.
+		fieldvalue = sanitize_untrusted(fieldvalue);
+
+		length += fieldname.size() + fieldvalue.size();
+
+		fields[std::move(fieldname)] = std::move(fieldvalue);
 	}
+
 	// 640K ought to be enough for anyone
 	return length < 640 * 1024;
 }
@@ -1402,7 +1401,7 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 
 	// If something goes wrong, this player is to blame
 	RollbackScopeActor rollback_scope(m_rollback,
-			std::string("player:")+player->getName());
+			"player:" + player->getName());
 
 	// Check the target node for rollback data; leave others unnoticed
 	RollbackNode rn_old(&m_env->getMap(), p, this);

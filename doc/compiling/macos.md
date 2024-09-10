@@ -8,7 +8,7 @@
 Install dependencies with homebrew:
 
 ```
-brew install cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd gettext
+brew install cmake freetype gettext gmp hiredis jpeg-turbo jsoncpp leveldb libogg libpng libvorbis luajit zstd gettext
 ```
 
 ## Download
@@ -18,12 +18,6 @@ Download source (this is the URL to the latest of source repository, which might
 ```bash
 git clone --depth 1 https://github.com/minetest/minetest.git
 cd minetest
-```
-
-Download Minetest's fork of Irrlicht:
-
-```bash
-git clone --depth 1 --branch "$(cat misc/irrlichtmt_tag.txt)" https://github.com/minetest/irrlicht.git lib/irrlichtmt
 ```
 
 ## Build

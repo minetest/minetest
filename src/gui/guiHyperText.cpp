@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiHyperText.h"
 #include "guiScrollBar.h"
 #include "client/fontengine.h"
-#include "client/tile.h"
+#include "client/hud.h" // drawItemStack
 #include "IVideoDriver.h"
 #include "client/client.h"
 #include "client/renderingengine.h"
@@ -28,6 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "util/string.h"
 #include "irrlicht_changes/CGUITTFont.h"
+#include "mainmenumanager.h"
+#include "porting.h"
 
 using namespace irr::gui;
 
@@ -292,8 +294,8 @@ void ParsedText::pushChar(wchar_t c)
 		else
 			return;
 	} else {
-		m_empty_paragraph = false;
 		enterElement(ELEMENT_TEXT);
+		m_empty_paragraph = false;
 	}
 	m_element->text += c;
 }
@@ -420,14 +422,16 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 	AttrsList attrs;
 	while (c != L'>') {
 		std::string attr_name = "";
-		core::stringw attr_val = L"";
+		std::wstring attr_val = L"";
 
+		// Consume whitespace
 		while (c == ' ') {
 			c = text[++cursor];
 			if (c == L'\0' || c == L'=')
 				return 0;
 		}
 
+		// Read attribute name
 		while (c != L' ' && c != L'=') {
 			attr_name += (char)c;
 			c = text[++cursor];
@@ -435,28 +439,51 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 				return 0;
 		}
 
+		// Consume whitespace
 		while (c == L' ') {
 			c = text[++cursor];
 			if (c == L'\0' || c == L'>')
 				return 0;
 		}
 
+		// Skip equals
 		if (c != L'=')
 			return 0;
-
 		c = text[++cursor];
-
 		if (c == L'\0')
 			return 0;
 
-		while (c != L'>' && c != L' ') {
-			attr_val += c;
+		// Read optional quote
+		wchar_t quote_used = 0;
+		if (c == L'"' || c == L'\'') {
+			quote_used = c;
 			c = text[++cursor];
 			if (c == L'\0')
 				return 0;
 		}
 
-		attrs[attr_name] = stringw_to_utf8(attr_val);
+		// Read attribute value
+		bool escape = false;
+		while (escape || (quote_used && c != quote_used) || (!quote_used && c != L'>' && c != L' ')) {
+			if (quote_used && !escape && c == L'\\') {
+				escape = true;
+			} else {
+				escape = false;
+				attr_val += c;
+			}
+			c = text[++cursor];
+			if (c == L'\0')
+				return 0;
+		}
+
+		// Remove quote
+		if (quote_used) {
+			if (c != quote_used)
+				return 0;
+			c = text[++cursor];
+		}
+
+		attrs[attr_name] = wide_to_utf8(attr_val);
 	}
 
 	++cursor; // Last ">"
@@ -1083,7 +1110,7 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 			checkHover(event.MouseInput.X, event.MouseInput.Y);
 
 		if (event.MouseInput.Event == EMIE_MOUSE_WHEEL && m_vscrollbar->isVisible()) {
-			m_vscrollbar->setPos(m_vscrollbar->getPos() -
+			m_vscrollbar->setPosInterpolated(m_vscrollbar->getTargetPos() -
 					event.MouseInput.Wheel * m_vscrollbar->getSmallStep());
 			m_text_scrollpos.Y = -m_vscrollbar->getPos();
 			m_drawer.draw(m_display_text_rect, m_text_scrollpos);
@@ -1107,6 +1134,18 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 							newEvent.GUIEvent.EventType = EGET_BUTTON_CLICKED;
 							Parent->OnEvent(newEvent);
 						}
+
+						auto url_it = tag->attrs.find("url");
+						if (url_it != tag->attrs.end()) {
+							if (g_gamecallback) {
+								// in game
+								g_gamecallback->showOpenURLDialog(url_it->second);
+							} else {
+								// main menu
+								porting::open_url(url_it->second);
+							}
+						}
+
 						break;
 					}
 				}

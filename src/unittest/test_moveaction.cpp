@@ -23,9 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mock_server.h"
 #include "mock_serveractiveobject.h"
 
-#include "scripting_server.h"
-
-
 class TestMoveAction : public TestBase
 {
 public:
@@ -37,64 +34,54 @@ public:
 	void testMove(ServerActiveObject *obj, IGameDef *gamedef);
 	void testMoveFillStack(ServerActiveObject *obj, IGameDef *gamedef);
 	void testMoveSomewhere(ServerActiveObject *obj, IGameDef *gamedef);
+	void testMoveSomewherePartial(ServerActiveObject *obj, IGameDef *gamedef);
 	void testMoveUnallowed(ServerActiveObject *obj, IGameDef *gamedef);
 	void testMovePartial(ServerActiveObject *obj, IGameDef *gamedef);
+
 	void testSwap(ServerActiveObject *obj, IGameDef *gamedef);
 	void testSwapFromUnallowed(ServerActiveObject *obj, IGameDef *gamedef);
 	void testSwapToUnallowed(ServerActiveObject *obj, IGameDef *gamedef);
+
+	void testCallbacks(ServerActiveObject *obj, Server *server);
+	void testCallbacksSwap(ServerActiveObject *obj, Server *server);
 };
 
 static TestMoveAction g_test_instance;
-
-const static char *helper_lua_src = R"(
-core.register_allow_player_inventory_action(function(player, action, inventory, info)
-	if action == "move" then
-		return info.count
-	end
-
-	if info.stack:get_name() == "default:water" then
-		return 0
-	end
-	if info.stack:get_name() == "default:lava" then
-		return 5
-	end
-
-	return info.stack:get_count()
-end)
-)";
 
 void TestMoveAction::runTests(IGameDef *gamedef)
 {
 	MockServer server(getTestTempDirectory());
 
-	const auto helper_lua = getTestTempFile();
-	std::ofstream ofs(helper_lua, std::ios::out | std::ios::binary);
-	ofs << helper_lua_src;
-	ofs.close();
-
-	ServerScripting server_scripting(&server);
+	server.createScripting();
 	try {
-		server_scripting.loadMod(Server::getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
-		server_scripting.loadMod(helper_lua, BUILTIN_MOD_NAME);
+		std::string builtin = Server::getBuiltinLuaPath() + DIR_DELIM;
+		auto script = server.getScriptIface();
+		script->loadBuiltin();
+		script->loadMod(builtin + "game" DIR_DELIM "tests" DIR_DELIM "test_moveaction.lua", BUILTIN_MOD_NAME);
 	} catch (ModError &e) {
-		// Print backtrace in case of syntax errors
 		rawstream << e.what() << std::endl;
 		num_tests_failed = 1;
 		return;
 	}
 
 	MetricsBackend mb;
-	ServerEnvironment server_env(nullptr, &server_scripting, &server, "", &mb);
+	auto null_map = std::unique_ptr<ServerMap>();
+	ServerEnvironment server_env(std::move(null_map), &server, &mb);
 	MockServerActiveObject obj(&server_env);
 
 	TEST(testMove, &obj, gamedef);
 	TEST(testMoveFillStack, &obj, gamedef);
 	TEST(testMoveSomewhere, &obj, gamedef);
+	TEST(testMoveSomewherePartial, &obj, gamedef);
 	TEST(testMoveUnallowed, &obj, gamedef);
 	TEST(testMovePartial, &obj, gamedef);
+
 	TEST(testSwap, &obj, gamedef);
 	TEST(testSwapFromUnallowed, &obj, gamedef);
 	TEST(testSwapToUnallowed, &obj, gamedef);
+
+	TEST(testCallbacks, &obj, &server);
+	TEST(testCallbacksSwap, &obj, &server);
 }
 
 static ItemStack parse_itemstack(const char *s)
@@ -158,19 +145,41 @@ void TestMoveAction::testMoveSomewhere(ServerActiveObject *obj, IGameDef *gamede
 
 	UASSERT(inv.p2.getList("main")->getItem(0).getItemString() == "default:brick 10");
 	UASSERT(inv.p2.getList("main")->getItem(1).getItemString() == "default:stone 36");
+	// Partially moved
 	UASSERT(inv.p2.getList("main")->getItem(2).getItemString() == "default:stone 99");
+}
+
+void TestMoveAction::testMoveSomewherePartial(ServerActiveObject *obj, IGameDef *gamedef)
+{
+	// "Fail" because the destination list is full.
+	MockInventoryManager inv(gamedef);
+
+	InventoryList *src = inv.p1.addList("main", 3);
+	src->addItem(0, parse_itemstack("default:brick 10"));
+	src->changeItem(1, parse_itemstack("default:stone 111")); // oversized
+
+	InventoryList *dst = inv.p2.addList("main", 1);
+	dst->addItem(0, parse_itemstack("default:stone 98"));
+
+	// No free slots to fit
+	apply_action("MoveSomewhere 10 player:p1 main 0 player:p2 main", &inv, obj, gamedef);
+	UASSERT(inv.p1.getList("main")->getItem(0).getItemString() == "default:brick 10");
+
+	// Only 1 item fits
+	apply_action("MoveSomewhere 111 player:p1 main 1 player:p2 main", &inv, obj, gamedef);
+	UASSERT(inv.p1.getList("main")->getItem(1).getItemString() == "default:stone 110");
 }
 
 void TestMoveAction::testMoveUnallowed(ServerActiveObject *obj, IGameDef *gamedef)
 {
 	MockInventoryManager inv(gamedef);
 
-	inv.p1.addList("main", 10)->addItem(0, parse_itemstack("default:water 50"));
+	inv.p1.addList("main", 10)->addItem(0, parse_itemstack("default:takeput_deny 50"));
 	inv.p2.addList("main", 10);
 
 	apply_action("Move 20 player:p1 main 0 player:p2 main 0", &inv, obj, gamedef);
 
-	UASSERT(inv.p1.getList("main")->getItem(0).getItemString() == "default:water 50");
+	UASSERT(inv.p1.getList("main")->getItem(0).getItemString() == "default:takeput_deny 50");
 	UASSERT(inv.p2.getList("main")->getItem(0).empty())
 }
 
@@ -178,13 +187,14 @@ void TestMoveAction::testMovePartial(ServerActiveObject *obj, IGameDef *gamedef)
 {
 	MockInventoryManager inv(gamedef);
 
-	inv.p1.addList("main", 10)->addItem(0, parse_itemstack("default:lava 50"));
+	inv.p1.addList("main", 10)->addItem(0, parse_itemstack("default:takeput_max_5 50"));
 	inv.p2.addList("main", 10);
 
+	// Lua: limited to 5 per transaction
 	apply_action("Move 20 player:p1 main 0 player:p2 main 0", &inv, obj, gamedef);
 
-	UASSERT(inv.p1.getList("main")->getItem(0).getItemString() == "default:lava 45");
-	UASSERT(inv.p2.getList("main")->getItem(0).getItemString() == "default:lava 5");
+	UASSERT(inv.p1.getList("main")->getItem(0).getItemString() == "default:takeput_max_5 45");
+	UASSERT(inv.p2.getList("main")->getItem(0).getItemString() == "default:takeput_max_5 5");
 }
 
 void TestMoveAction::testSwap(ServerActiveObject *obj, IGameDef *gamedef)
@@ -204,12 +214,12 @@ void TestMoveAction::testSwapFromUnallowed(ServerActiveObject *obj, IGameDef *ga
 {
 	MockInventoryManager inv(gamedef);
 
-	inv.p1.addList("main", 10)->addItem(0, parse_itemstack("default:water 50"));
+	inv.p1.addList("main", 10)->addItem(0, parse_itemstack("default:takeput_deny 50"));
 	inv.p2.addList("main", 10)->addItem(0, parse_itemstack("default:brick 60"));
 
 	apply_action("Move 50 player:p1 main 0 player:p2 main 0", &inv, obj, gamedef);
 
-	UASSERT(inv.p1.getList("main")->getItem(0).getItemString() == "default:water 50");
+	UASSERT(inv.p1.getList("main")->getItem(0).getItemString() == "default:takeput_deny 50");
 	UASSERT(inv.p2.getList("main")->getItem(0).getItemString() == "default:brick 60");
 }
 
@@ -218,10 +228,60 @@ void TestMoveAction::testSwapToUnallowed(ServerActiveObject *obj, IGameDef *game
 	MockInventoryManager inv(gamedef);
 
 	inv.p1.addList("main", 10)->addItem(0, parse_itemstack("default:stone 50"));
-	inv.p2.addList("main", 10)->addItem(0, parse_itemstack("default:water 60"));
+	inv.p2.addList("main", 10)->addItem(0, parse_itemstack("default:takeput_deny 60"));
 
 	apply_action("Move 50 player:p1 main 0 player:p2 main 0", &inv, obj, gamedef);
 
 	UASSERT(inv.p1.getList("main")->getItem(0).getItemString() == "default:stone 50");
-	UASSERT(inv.p2.getList("main")->getItem(0).getItemString() == "default:water 60");
+	UASSERT(inv.p2.getList("main")->getItem(0).getItemString() == "default:takeput_deny 60");
+}
+
+static bool check_function(lua_State *L, bool expect_swap)
+{
+	bool ok = false;
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "__helper_check_callbacks");
+	lua_pushboolean(L, expect_swap);
+	int result = lua_pcall(L, 1, 1, error_handler);
+	if (result == 0)
+		ok = lua_toboolean(L, -1);
+	else
+		errorstream << lua_tostring(L, -1) << std::endl; // Error msg
+
+	lua_settop(L, 0);
+	return ok;
+}
+
+void TestMoveAction::testCallbacks(ServerActiveObject *obj, Server *server)
+{
+	server->m_inventory_mgr = std::make_unique<MockInventoryManager>(server);
+	MockInventoryManager &inv = *(MockInventoryManager *)server->getInventoryMgr();
+
+	inv.p1.addList("main", 10)->addItem(0, parse_itemstack("default:takeput_cb_1 10"));
+	inv.p2.addList("main", 10);
+
+	apply_action("Move 10 player:p1 main 0 player:p2 main 1", &inv, obj, server);
+
+	// Expecting no swap. 4 callback executions in total. See Lua file for details.
+	UASSERT(check_function(server->getScriptIface()->getStack(), false));
+
+	server->m_inventory_mgr.reset();
+}
+
+void TestMoveAction::testCallbacksSwap(ServerActiveObject *obj, Server *server)
+{
+	server->m_inventory_mgr = std::make_unique<MockInventoryManager>(server);
+	MockInventoryManager &inv = *(MockInventoryManager *)server->getInventoryMgr();
+
+	inv.p1.addList("main", 10)->addItem(0, parse_itemstack("default:takeput_cb_2 50"));
+	inv.p2.addList("main", 10)->addItem(1, parse_itemstack("default:takeput_cb_1 10"));
+
+	apply_action("Move 10 player:p1 main 0 player:p2 main 1", &inv, obj, server);
+
+	// Expecting swap. 8 callback executions in total. See Lua file for details.
+	UASSERT(check_function(server->getScriptIface()->getStack(), true));
+
+	server->m_inventory_mgr.reset();
 }

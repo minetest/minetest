@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "content/subgames.h"
 #include "network/peerhandler.h"
-#include "network/address.h"
+#include "network/connection.h"
 #include "util/numeric.h"
 #include "util/thread.h"
 #include "util/basic_macros.h"
@@ -44,6 +44,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <vector>
 #include <unordered_set>
+#include <optional>
+#include <string_view>
 
 class ChatEvent;
 struct ChatEventChat;
@@ -52,7 +54,6 @@ class IWritableItemDefManager;
 class NodeDefManager;
 class IWritableCraftDefManager;
 class BanManager;
-class EventManager;
 class Inventory;
 class ModChannelMgr;
 class RemotePlayer;
@@ -87,13 +88,17 @@ struct MediaInfo
 {
 	std::string path;
 	std::string sha1_digest; // base64-encoded
-	bool no_announce; // true: not announced in TOCLIENT_ANNOUNCE_MEDIA (at player join)
+	// true = not announced in TOCLIENT_ANNOUNCE_MEDIA (at player join)
+	bool no_announce;
+	// does what it says. used by some cases of dynamic media.
+	bool delete_at_shutdown;
 
-	MediaInfo(const std::string &path_="",
-	          const std::string &sha1_digest_=""):
+	MediaInfo(std::string_view path_ = "",
+	          std::string_view sha1_digest_ = ""):
 		path(path_),
 		sha1_digest(sha1_digest_),
-		no_announce(false)
+		no_announce(false),
+		delete_at_shutdown(false)
 	{
 	}
 };
@@ -258,14 +263,21 @@ public:
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
-	bool dynamicAddMedia(std::string filepath, u32 token,
-		const std::string &to_player, bool ephemeral);
+	struct DynamicMediaArgs {
+		std::string filename;
+		std::optional<std::string> filepath;
+		std::optional<std::string_view> data;
+		u32 token;
+		std::string to_player;
+		bool ephemeral = false;
+	};
+	bool dynamicAddMedia(const DynamicMediaArgs &args);
 
 	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
 	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);
 
 	// Envlock and conlock should be locked when using scriptapi
-	ServerScripting *getScriptIface(){ return m_script; }
+	inline ServerScripting *getScriptIface() { return m_script.get(); }
 
 	// actions: time-reversed list
 	// Return value: success/failure
@@ -279,7 +291,7 @@ public:
 	virtual ICraftDefManager* getCraftDefManager();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	IRollbackManager *getRollbackManager() { return m_rollback; }
-	virtual EmergeManager *getEmergeManager() { return m_emerge; }
+	virtual EmergeManager *getEmergeManager() { return m_emerge.get(); }
 	virtual ModStorageDatabase *getModStorageDatabase() { return m_mod_storage_database; }
 
 	IWritableItemDefManager* getWritableItemDefManager();
@@ -291,6 +303,7 @@ public:
 	virtual const SubgameSpec* getGameSpec() const { return &m_gamespec; }
 	static std::string getBuiltinLuaPath();
 	virtual std::string getWorldPath() const { return m_path_world; }
+	virtual std::string getModDataPath() const { return m_path_mod_data; }
 
 	inline bool isSingleplayer() const
 			{ return m_simple_singleplayer_mode; }
@@ -330,7 +343,7 @@ public:
 
 	void setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
 			f32 frame_speed);
-	void setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third, const v3f &third_front);
+	void setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third, v3f third_front);
 
 	void setPlayerCameraRoll(RemotePlayer *player, f32 roll);
 
@@ -348,12 +361,14 @@ public:
 	void RespawnPlayer(session_t peer_id);
 
 	/* con::PeerHandler implementation. */
-	void peerAdded(con::Peer *peer);
-	void deletingPeer(con::Peer *peer, bool timeout);
+	void peerAdded(con::IPeer *peer);
+	void deletingPeer(con::IPeer *peer, bool timeout);
 
 	void DenySudoAccess(session_t peer_id);
 	void DenyAccess(session_t peer_id, AccessDeniedCode reason,
 		const std::string &custom_reason = "", bool reconnect = false);
+	void kickAllPlayers(AccessDeniedCode reason,
+		const std::string &str_reason, bool reconnect);
 	void acceptAuth(session_t peer_id, bool forSudoMode);
 	void DisconnectPeer(session_t peer_id);
 	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
@@ -365,8 +380,8 @@ public:
 	void HandlePlayerHPChange(PlayerSAO *sao, const PlayerHPChangeReason &reason);
 	void SendPlayerHP(PlayerSAO *sao, bool effect);
 	void SendPlayerBreath(PlayerSAO *sao);
-	void SendInventory(PlayerSAO *playerSAO, bool incremental);
-	void SendMovePlayer(session_t peer_id);
+	void SendInventory(RemotePlayer *player, bool incremental);
+	void SendMovePlayer(PlayerSAO *sao);
 	void SendMovePlayerRel(session_t peer_id, const v3f &added_pos);
 	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
 	void SendPlayerFov(session_t peer_id);
@@ -388,6 +403,10 @@ public:
 	// Get or load translations for a language
 	Translations *getTranslationLanguage(const std::string &lang_code);
 
+	// Returns all media files the server knows about
+	// map key = binary sha1, map value = file path
+	std::unordered_map<std::string, std::string> getMediaList();
+
 	static ModStorageDatabase *openModStorageDatabase(const std::string &world_path);
 
 	static ModStorageDatabase *openModStorageDatabase(const std::string &backend,
@@ -401,6 +420,8 @@ public:
 
 	// Lua files registered for init of async env, pair of modname + path
 	std::vector<std::pair<std::string, std::string>> m_async_init_files;
+	// Identical but for mapgen env
+	std::vector<std::pair<std::string, std::string>> m_mapgen_init_files;
 
 	// Data transferred into other Lua envs at init time
 	std::unique_ptr<PackedValue> m_lua_globals_data;
@@ -411,10 +432,23 @@ public:
 	// Environment mutex (envlock)
 	std::mutex m_env_mutex;
 
+protected:
+	/* Do not add more members here, this is only required to make unit tests work. */
+
+	// Scripting
+	// Envlock and conlock should be locked when using Lua
+	std::unique_ptr<ServerScripting> m_script;
+
+	// Mods
+	std::unique_ptr<ServerModManager> m_modmgr;
+
 private:
 	friend class EmergeThread;
 	friend class RemoteClient;
+
+	// unittest classes
 	friend class TestServerShutdownState;
+	friend class TestMoveAction;
 
 	struct ShutdownState {
 		friend class TestServerShutdownState;
@@ -454,7 +488,6 @@ private:
 	void SendBreath(session_t peer_id, u16 breath);
 	void SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 		const std::string &custom_reason, bool reconnect = false);
-	void SendAccessDenied_Legacy(session_t peer_id, const std::wstring &reason);
 	void SendDeathscreen(session_t peer_id, bool set_camera_point_target,
 		v3f camera_point_target);
 	void SendItemDef(session_t peer_id, IItemDefManager *itemdef, u16 protocol_version);
@@ -478,7 +511,7 @@ private:
 	void SendHUDRemove(session_t peer_id, u32 id);
 	void SendHUDChange(session_t peer_id, u32 id, HudElementStat stat, void *value);
 	void SendHUDSetFlags(session_t peer_id, u32 flags, u32 mask);
-	void SendHUDSetParam(session_t peer_id, u16 param, const std::string &value);
+	void SendHUDSetParam(session_t peer_id, u16 param, std::string_view value);
 	void SendSetSky(session_t peer_id, const SkyboxParams &params);
 	void SendSetSun(session_t peer_id, const SunParams &params);
 	void SendSetMoon(session_t peer_id, const MoonParams &params);
@@ -577,6 +610,7 @@ private:
 	*/
 	// World directory
 	std::string m_path_world;
+	std::string m_path_mod_data;
 	// Subgame specification
 	SubgameSpec m_gamespec;
 	// If true, do not allow multiple players and hide some multiplayer
@@ -585,28 +619,28 @@ private:
 	u16 m_max_chatmessage_length;
 	// For "dedicated" server list flag
 	bool m_dedicated;
+
+	// Game settings layer
 	Settings *m_game_settings = nullptr;
 
 	// Thread can set; step() will throw as ServerError
 	MutexedVariable<std::string> m_async_fatal_error;
 
 	// Some timers
+	float m_time_of_day_send_timer = 0.0f;
 	float m_liquid_transform_timer = 0.0f;
 	float m_liquid_transform_every = 1.0f;
 	float m_masterserver_timer = 0.0f;
 	float m_emergethread_trigger_timer = 0.0f;
 	float m_savemap_timer = 0.0f;
 	IntervalLimiter m_map_timer_and_unload_interval;
+	IntervalLimiter m_max_lag_decrease;
 
 	// Environment
 	ServerEnvironment *m_env = nullptr;
 
-	// Reference to the server map until ServerEnvironment is initialized
-	// after that this variable must be a nullptr
-	ServerMap *m_startup_server_map = nullptr;
-
 	// server connection
-	std::shared_ptr<con::Connection> m_con;
+	std::shared_ptr<con::IConnection> m_con;
 
 	// Ban checking
 	BanManager *m_banmanager = nullptr;
@@ -615,11 +649,7 @@ private:
 	IRollbackManager *m_rollback = nullptr;
 
 	// Emerge manager
-	EmergeManager *m_emerge = nullptr;
-
-	// Scripting
-	// Envlock and conlock should be locked when using Lua
-	ServerScripting *m_script = nullptr;
+	std::unique_ptr<EmergeManager> m_emerge;
 
 	// Item definition manager
 	IWritableItemDefManager *m_itemdef;
@@ -629,9 +659,6 @@ private:
 
 	// Craft definition manager
 	IWritableCraftDefManager *m_craftdef;
-
-	// Mods
-	std::unique_ptr<ServerModManager> m_modmgr;
 
 	std::unordered_map<std::string, Translations> server_translations;
 
@@ -645,22 +672,9 @@ private:
 	ServerThread *m_thread = nullptr;
 
 	/*
-		Time related stuff
-	*/
-	// Timer for sending time of day over network
-	float m_time_of_day_send_timer = 0.0f;
-
-	/*
 	 	Client interface
 	*/
 	ClientInterface m_clients;
-
-	/*
-		Peer change queue.
-		Queues stuff from peerAdded() and deletingPeer() to
-		handlePeerChanges()
-	*/
-	std::queue<con::PeerChange> m_peer_change_queue;
 
 	std::unordered_map<session_t, std::string> m_formspec_state_data;
 

@@ -82,7 +82,7 @@ void TestServerModManager::runTests(IGameDef *gamedef)
 	TEST(testGetModNames);
 	TEST(testGetModMediaPathsWrongDir);
 	TEST(testGetModMediaPaths);
-	// TODO: test MINETEST_SUBGAME_PATH
+	// TODO: test MINETEST_GAME_PATH
 
 	unsetenv("MINETEST_MOD_PATH");
 }
@@ -121,7 +121,8 @@ void TestServerModManager::testGetMods()
 {
 	ServerModManager sm(m_worlddir);
 	const auto &mods = sm.getMods();
-	UASSERTEQ(bool, mods.empty(), false);
+	// `ls ./games/devtest/mods | wc -l` + 1 (test mod)
+	UASSERTEQ(std::size_t, mods.size(), 32 + 1);
 
 	// Ensure we found basenodes mod (part of devtest)
 	// and test_mod (for testing MINETEST_MOD_PATH).
@@ -139,6 +140,9 @@ void TestServerModManager::testGetMods()
 
 	UASSERTEQ(bool, default_found, true);
 	UASSERTEQ(bool, test_mod_found, true);
+
+	UASSERT(mods.front().name == "first_mod");
+	UASSERT(mods.back().name == "last_mod");
 }
 
 void TestServerModManager::testGetModspec()

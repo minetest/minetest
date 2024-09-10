@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstring>
 #include <cerrno>
 #include <fstream>
+#include <atomic>
 #include "log.h"
 #include "config.h"
 #include "porting.h"
@@ -32,6 +33,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_ptr.h"
 #include <IFileArchive.h>
 #include <IFileSystem.h>
+#endif
+#ifdef __linux__
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#ifndef FICLONE
+#define FICLONE _IOW(0x94, 9, int)
+#endif
+#endif
+
+// Error from last OS call as string
+#ifdef _WIN32
+#define LAST_OS_ERROR() porting::ConvertError(GetLastError())
+#else
+#define LAST_OS_ERROR() strerror(errno)
 #endif
 
 namespace fs
@@ -214,6 +229,41 @@ std::string CreateTempFile()
 		return "";
 	CloseHandle(file);
 	return path;
+}
+
+std::string CreateTempDir()
+{
+	std::string path = TempPath() + DIR_DELIM "MT_XXXXXX";
+	_mktemp_s(&path[0], path.size() + 1); // modifies path
+	// will error if it already exists
+	if (!CreateDirectory(path.c_str(), nullptr))
+		return "";
+	return path;
+}
+
+bool CopyFileContents(const std::string &source, const std::string &target)
+{
+	BOOL ok = CopyFileEx(source.c_str(), target.c_str(), nullptr, nullptr,
+		nullptr, COPY_FILE_ALLOW_DECRYPTED_DESTINATION);
+	if (!ok) {
+		errorstream << "copying " << source << " to " << target
+			<< " failed: " << GetLastError() << std::endl;
+		return false;
+	}
+
+	// docs: "File attributes for the existing file are copied to the new file."
+	// This is not our intention so get rid of unwanted attributes:
+	DWORD attr = GetFileAttributes(target.c_str());
+	if (attr == INVALID_FILE_ATTRIBUTES) {
+		errorstream << target << ": file disappeared after copy" << std::endl;
+		return false;
+	}
+	attr &= ~(FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_HIDDEN);
+	SetFileAttributes(target.c_str(), attr);
+
+	tracestream << "copied " << source << " to " << target
+		<< " using CopyFileEx" << std::endl;
+	return true;
 }
 
 #else
@@ -414,6 +464,110 @@ std::string CreateTempFile()
 	return path;
 }
 
+std::string CreateTempDir()
+{
+	std::string path = TempPath() + DIR_DELIM "MT_XXXXXX";
+	auto r = mkdtemp(&path[0]); // modifies path
+	if (!r)
+		return "";
+	return path;
+}
+
+namespace {
+	struct FileDeleter {
+		void operator()(FILE *stream) {
+			fclose(stream);
+		}
+	};
+
+	typedef std::unique_ptr<FILE, FileDeleter> FileUniquePtr;
+}
+
+bool CopyFileContents(const std::string &source, const std::string &target)
+{
+	FileUniquePtr sourcefile, targetfile;
+
+#ifdef __linux__
+	// Try to clone using Copy-on-Write (CoW). This is instant but supported
+	// only by some filesystems.
+
+	int srcfd, tgtfd;
+	srcfd = open(source.c_str(), O_RDONLY);
+	if (srcfd == -1) {
+		errorstream << source << ": can't open for reading: "
+			<< strerror(errno) << std::endl;
+		return false;
+	}
+	tgtfd = open(target.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (tgtfd == -1) {
+		errorstream << target << ": can't open for writing: "
+			<< strerror(errno) << std::endl;
+		close(srcfd);
+		return false;
+	}
+
+	if (ioctl(tgtfd, FICLONE, srcfd) == 0) {
+		tracestream << "copied " << source << " to " << target
+			<< " using FICLONE" << std::endl;
+		close(srcfd);
+		close(tgtfd);
+		return true;
+	}
+
+	// fallback to normal copy, but no need to reopen the files
+	sourcefile.reset(fdopen(srcfd, "rb"));
+	targetfile.reset(fdopen(tgtfd, "wb"));
+	goto fallback;
+
+#endif
+
+	sourcefile.reset(fopen(source.c_str(), "rb"));
+	targetfile.reset(fopen(target.c_str(), "wb"));
+
+fallback:
+
+	if (!sourcefile) {
+		errorstream << source << ": can't open for reading: "
+			<< strerror(errno) << std::endl;
+		return false;
+	}
+	if (!targetfile) {
+		errorstream << target << ": can't open for writing: "
+			<< strerror(errno) << std::endl;
+		return false;
+	}
+
+	size_t total = 0;
+	bool done = false;
+	char readbuffer[BUFSIZ];
+	while (!done) {
+		size_t readbytes = fread(readbuffer, 1,
+				sizeof(readbuffer), sourcefile.get());
+		total += readbytes;
+		if (ferror(sourcefile.get())) {
+			errorstream << source << ": IO error: "
+				<< strerror(errno) << std::endl;
+			return false;
+		}
+		if (readbytes > 0)
+			fwrite(readbuffer, 1, readbytes, targetfile.get());
+		if (feof(sourcefile.get())) {
+			// flush destination file to catch write errors (e.g. disk full)
+			fflush(targetfile.get());
+			done = true;
+		}
+		if (ferror(targetfile.get())) {
+			errorstream << target << ": IO error: "
+					<< strerror(errno) << std::endl;
+			return false;
+		}
+	}
+	tracestream << "copied " << total << " bytes from "
+		<< source << " to " << target << std::endl;
+
+	return true;
+}
+
 #endif
 
 /****************************
@@ -488,60 +642,6 @@ bool CreateAllDirs(const std::string &path)
 	return true;
 }
 
-bool CopyFileContents(const std::string &source, const std::string &target)
-{
-	FILE *sourcefile = fopen(source.c_str(), "rb");
-	if(sourcefile == NULL){
-		errorstream<<source<<": can't open for reading: "
-			<<strerror(errno)<<std::endl;
-		return false;
-	}
-
-	FILE *targetfile = fopen(target.c_str(), "wb");
-	if(targetfile == NULL){
-		errorstream<<target<<": can't open for writing: "
-			<<strerror(errno)<<std::endl;
-		fclose(sourcefile);
-		return false;
-	}
-
-	size_t total = 0;
-	bool retval = true;
-	bool done = false;
-	char readbuffer[BUFSIZ];
-	while(!done){
-		size_t readbytes = fread(readbuffer, 1,
-				sizeof(readbuffer), sourcefile);
-		total += readbytes;
-		if(ferror(sourcefile)){
-			errorstream<<source<<": IO error: "
-				<<strerror(errno)<<std::endl;
-			retval = false;
-			done = true;
-		}
-		if(readbytes > 0){
-			fwrite(readbuffer, 1, readbytes, targetfile);
-		}
-		if(feof(sourcefile) || ferror(sourcefile)){
-			// flush destination file to catch write errors
-			// (e.g. disk full)
-			fflush(targetfile);
-			done = true;
-		}
-		if(ferror(targetfile)){
-			errorstream<<target<<": IO error: "
-					<<strerror(errno)<<std::endl;
-			retval = false;
-			done = true;
-		}
-	}
-	infostream<<"copied "<<total<<" bytes from "
-		<<source<<" to "<<target<<std::endl;
-	fclose(sourcefile);
-	fclose(targetfile);
-	return retval;
-}
-
 bool CopyDir(const std::string &source, const std::string &target)
 {
 	if(PathExists(source)){
@@ -597,39 +697,50 @@ bool MoveDir(const std::string &source, const std::string &target)
 
 bool PathStartsWith(const std::string &path, const std::string &prefix)
 {
+	if (prefix.empty())
+		return path.empty();
 	size_t pathsize = path.size();
 	size_t pathpos = 0;
 	size_t prefixsize = prefix.size();
 	size_t prefixpos = 0;
 	for(;;){
+		// Test if current characters at path and prefix are delimiter OR EOS
 		bool delim1 = pathpos == pathsize
 			|| IsDirDelimiter(path[pathpos]);
 		bool delim2 = prefixpos == prefixsize
 			|| IsDirDelimiter(prefix[prefixpos]);
 
+		// Return false if it's delimiter/EOS in one path but not in the other
 		if(delim1 != delim2)
 			return false;
 
 		if(delim1){
+			// Skip consequent delimiters in path, in prefix
 			while(pathpos < pathsize &&
 					IsDirDelimiter(path[pathpos]))
 				++pathpos;
 			while(prefixpos < prefixsize &&
 					IsDirDelimiter(prefix[prefixpos]))
 				++prefixpos;
+			// Return true if prefix has ended (at delimiter/EOS)
 			if(prefixpos == prefixsize)
 				return true;
+			// Return false if path has ended (at delimiter/EOS)
+            // while prefix did not.
 			if(pathpos == pathsize)
 				return false;
 		}
 		else{
+			// Skip pairwise-equal characters in path and prefix until
+			// delimiter/EOS in path or prefix.
+			// Return false if differing characters are met.
 			size_t len = 0;
 			do{
 				char pathchar = path[pathpos+len];
 				char prefixchar = prefix[prefixpos+len];
 				if(FILESYS_CASE_INSENSITIVE){
-					pathchar = tolower(pathchar);
-					prefixchar = tolower(prefixchar);
+					pathchar = my_tolower(pathchar);
+					prefixchar = my_tolower(prefixchar);
 				}
 				if(pathchar != prefixchar)
 					return false;
@@ -755,42 +866,48 @@ const char *GetFilenameFromPath(const char *path)
 	return filename ? filename + 1 : path;
 }
 
-bool safeWriteToFile(const std::string &path, const std::string &content)
+// Note: this is not safe if two MT processes try this at the same time (FIXME?)
+bool safeWriteToFile(const std::string &path, std::string_view content)
 {
-	std::string tmp_file = path + ".~mt";
+	// Prevent two threads from writing to the same temporary file
+	static std::atomic<u16> g_file_counter;
+	const std::string tmp_file = path + ".~mt" + itos(g_file_counter.fetch_add(1));
 
-	// Write to a tmp file
-	bool tmp_success = false;
+	// Write data to a temporary file
+	std::string write_error;
 
 #ifdef _WIN32
 	// We've observed behavior suggesting that the MSVC implementation of std::ofstream::flush doesn't
 	// actually flush, so we use win32 APIs.
-	HANDLE tmp_handle = CreateFile(
-		tmp_file.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (tmp_handle == INVALID_HANDLE_VALUE) {
+	HANDLE handle = CreateFile(tmp_file.c_str(), GENERIC_WRITE, 0, nullptr,
+		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	if (handle == INVALID_HANDLE_VALUE) {
+		errorstream << "Failed to open file: " << LAST_OS_ERROR() << std::endl;
 		return false;
 	}
 	DWORD bytes_written;
-	tmp_success = (WriteFile(tmp_handle, content.c_str(), content.size(), &bytes_written, nullptr) &&
-					FlushFileBuffers(tmp_handle));
-	CloseHandle(tmp_handle);
+	if (!WriteFile(handle, content.data(), content.size(), &bytes_written, nullptr))
+		write_error = LAST_OS_ERROR();
+	else if (!FlushFileBuffers(handle))
+		write_error = LAST_OS_ERROR();
+	CloseHandle(handle);
 #else
-	std::ofstream os(tmp_file.c_str(), std::ios::binary);
-	if (!os.good()) {
+	auto os = open_ofstream(tmp_file.c_str(), true);
+	if (!os.good())
 		return false;
-	}
-	os << content;
-	os.flush();
+	os << content << std::flush;
 	os.close();
-	tmp_success = !os.fail();
+	if (os.fail())
+		write_error = "iostream fail";
 #endif
 
-	if (!tmp_success) {
+	if (!write_error.empty()) {
+		errorstream << "Failed to write file: " << write_error << std::endl;
 		remove(tmp_file.c_str());
 		return false;
 	}
 
-	bool rename_success = false;
+	std::string rename_error;
 
 	// Move the finished temporary file over the real file
 #ifdef _WIN32
@@ -798,22 +915,25 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 	// to query the file. This can make the move file call below fail.
 	// We retry up to 5 times, with a 1ms sleep between, before we consider the whole operation failed
 	for (int attempt = 0; attempt < 5; attempt++) {
-		rename_success = MoveFileEx(tmp_file.c_str(), path.c_str(),
+		auto ok = MoveFileEx(tmp_file.c_str(), path.c_str(),
 				MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH);
-		if (rename_success)
+		if (ok) {
+			rename_error.clear();
 			break;
+		}
+		rename_error = LAST_OS_ERROR();
 		sleep_ms(1);
 	}
 #else
 	// On POSIX compliant systems rename() is specified to be able to swap the
 	// file in place of the destination file, making this a truly error-proof
 	// transaction.
-	rename_success = rename(tmp_file.c_str(), path.c_str()) == 0;
+	if (rename(tmp_file.c_str(), path.c_str()) != 0)
+		rename_error = LAST_OS_ERROR();
 #endif
-	if (!rename_success) {
-		warningstream << "Failed to write to file: " << path.c_str() << std::endl;
-		// Remove the temporary file because moving it over the target file
-		// failed.
+
+	if (!rename_error.empty()) {
+		errorstream << "Failed to overwrite \"" << path << "\": " << rename_error << std::endl;
 		remove(tmp_file.c_str());
 		return false;
 	}
@@ -840,22 +960,33 @@ bool extractZipFile(io::IFileSystem *fs, const char *filename, const std::string
 	}
 
 	irr_ptr<io::IFileArchive> opened_zip(zip_loader->createArchive(filename, false, false));
+	if (!opened_zip)
+		return false;
 	const io::IFileList* files_in_zip = opened_zip->getFileList();
 
 	for (u32 i = 0; i < files_in_zip->getFileCount(); i++) {
-		std::string fullpath = destination + DIR_DELIM;
-		fullpath += files_in_zip->getFullFileName(i).c_str();
-		std::string fullpath_dir = fs::RemoveLastPathComponent(fullpath);
-
 		if (files_in_zip->isDirectory(i))
 			continue; // ignore, we create dirs as necessary
+
+		const auto &filename = files_in_zip->getFullFileName(i);
+		std::string fullpath = destination + DIR_DELIM;
+		fullpath += filename.c_str();
+
+		fullpath = fs::RemoveRelativePathComponents(fullpath);
+		if (!fs::PathStartsWith(fullpath, destination)) {
+			warningstream << "fs::extractZipFile(): refusing to extract file \""
+				<< filename.c_str() << "\"" << std::endl;
+			continue;
+		}
+
+		std::string fullpath_dir = fs::RemoveLastPathComponent(fullpath);
 
 		if (!fs::PathExists(fullpath_dir) && !fs::CreateAllDirs(fullpath_dir))
 			return false;
 
 		irr_ptr<io::IReadFile> toread(opened_zip->createAndOpenFile(i));
 
-		std::ofstream os(fullpath.c_str(), std::ios::binary);
+		auto os = open_ofstream(fullpath.c_str(), true);
 		if (!os.good())
 			return false;
 
@@ -882,12 +1013,11 @@ bool extractZipFile(io::IFileSystem *fs, const char *filename, const std::string
 }
 #endif
 
-bool ReadFile(const std::string &path, std::string &out)
+bool ReadFile(const std::string &path, std::string &out, bool log_error)
 {
-	std::ifstream is(path, std::ios::binary | std::ios::ate);
-	if (!is.good()) {
+	auto is = open_ifstream(path.c_str(), log_error, std::ios::ate);
+	if (!is.good())
 		return false;
-	}
 
 	auto size = is.tellg();
 	out.resize(size);
@@ -900,6 +1030,24 @@ bool ReadFile(const std::string &path, std::string &out)
 bool Rename(const std::string &from, const std::string &to)
 {
 	return rename(from.c_str(), to.c_str()) == 0;
+}
+
+bool OpenStream(std::filebuf &stream, const char *filename,
+	std::ios::openmode mode, bool log_error, bool log_warn)
+{
+	assert((mode & std::ios::in) || (mode & std::ios::out));
+	assert(!stream.is_open());
+	// C++ dropped the ball hard for file opening error handling, there's not even
+	// an implementation-defined mechanism for returning any kind of error code or message.
+	if (!stream.open(filename, mode)) {
+		if (log_warn || log_error) {
+			std::string msg = LAST_OS_ERROR();
+			(log_error ? errorstream : warningstream)
+				<< "Failed to open \"" << filename << "\": " << msg << std::endl;
+		}
+		return false;
+	}
+	return true;
 }
 
 } // namespace fs

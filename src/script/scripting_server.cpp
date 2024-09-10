@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "log.h"
 #include "settings.h"
+#include "filesys.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_areastore.h"
 #include "lua_api/l_auth.h"
@@ -87,6 +88,12 @@ ServerScripting::ServerScripting(Server* server):
 	lua_setglobal(L, "INIT");
 
 	infostream << "SCRIPTAPI: Initialized game modules" << std::endl;
+}
+
+void ServerScripting::loadBuiltin()
+{
+	loadMod(Server::getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
+	checkSetByBuiltin();
 }
 
 void ServerScripting::saveGlobals()

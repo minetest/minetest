@@ -58,54 +58,77 @@ public:
 	void getPage(GraphValues &o, u32 page, u32 pagecount);
 
 
+	void graphSet(const std::string &id, float value)
+	{
+		MutexAutoLock lock(m_mutex);
+		m_graphvalues[id] = value;
+	}
 	void graphAdd(const std::string &id, float value)
 	{
 		MutexAutoLock lock(m_mutex);
-		std::map<std::string, float>::iterator i =
-				m_graphvalues.find(id);
-		if(i == m_graphvalues.end())
-			m_graphvalues[id] = value;
+		auto it = m_graphvalues.find(id);
+		if (it == m_graphvalues.end())
+			m_graphvalues.emplace(id, value);
 		else
-			i->second += value;
+			it->second += value;
 	}
-	void graphGet(GraphValues &result)
+	void graphPop(GraphValues &result)
 	{
 		MutexAutoLock lock(m_mutex);
-		result = m_graphvalues;
-		m_graphvalues.clear();
+		assert(result.empty());
+		std::swap(result, m_graphvalues);
 	}
 
 	void remove(const std::string& name)
 	{
 		MutexAutoLock lock(m_mutex);
-		m_avgcounts.erase(name);
 		m_data.erase(name);
 	}
 
 private:
+	struct DataPair {
+		float value = 0;
+		int avgcount = 0;
+
+		inline void reset() {
+			value = 0;
+			// negative values are used for type checking, so leave them alone
+			if (avgcount >= 1)
+				avgcount = 0;
+		}
+		inline float getValue() const {
+			return avgcount >= 1 ? (value / avgcount) : value;
+		}
+	};
+
 	std::mutex m_mutex;
-	std::map<std::string, float> m_data;
-	std::map<std::string, int> m_avgcounts;
+	std::map<std::string, DataPair> m_data;
 	std::map<std::string, float> m_graphvalues;
 	u64 m_start_time;
 };
 
-enum ScopeProfilerType{
-	SPT_ADD,
+enum ScopeProfilerType : u8
+{
+	SPT_ADD = 1,
 	SPT_AVG,
 	SPT_GRAPH_ADD,
 	SPT_MAX
 };
 
+// Note: this class should be kept lightweight.
+
 class ScopeProfiler
 {
 public:
 	ScopeProfiler(Profiler *profiler, const std::string &name,
-			ScopeProfilerType type = SPT_ADD);
+			ScopeProfilerType type = SPT_ADD,
+			TimePrecision precision = PRECISION_MILLI);
 	~ScopeProfiler();
+
 private:
 	Profiler *m_profiler = nullptr;
 	std::string m_name;
-	TimeTaker *m_timer = nullptr;
-	enum ScopeProfilerType m_type;
+	u64 m_time1;
+	ScopeProfilerType m_type;
+	TimePrecision m_precision;
 };

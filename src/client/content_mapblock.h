@@ -138,7 +138,7 @@ private:
 	void prepareLiquidNodeDrawing();
 	void getLiquidNeighborhood();
 	void calculateCornerLevels();
-	f32 getCornerLevel(int i, int k);
+	f32 getCornerLevel(int i, int k) const;
 	void drawLiquidSides();
 	void drawLiquidTop();
 	void drawLiquidBottom();

@@ -61,7 +61,8 @@ vec4 applyBloom(vec4 color, vec2 uv)
 	equation used:  ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F
 */
 
-vec3 uncharted2Tonemap(vec3 x)
+// see https://github.com/minetest/minetest/pull/14688
+highp vec3 uncharted2Tonemap(highp vec3 x)
 {
 	return ((x * (0.22 * x + 0.03) + 0.002) / (x * (0.22 * x + 0.3) + 0.06)) - 0.03333;
 }

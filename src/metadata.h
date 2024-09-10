@@ -53,7 +53,7 @@ public:
 	bool getStringToRef(const std::string &name, std::string &str, u16 recursion = 0) const;
 
 	// Returns whether the metadata was (potentially) changed.
-	virtual bool setString(const std::string &name, const std::string &var) = 0;
+	virtual bool setString(const std::string &name, std::string_view var) = 0;
 
 	inline bool removeString(const std::string &name) { return setString(name, ""); }
 
@@ -89,7 +89,7 @@ public:
 
 	size_t size() const;
 	bool contains(const std::string &name) const override;
-	virtual bool setString(const std::string &name, const std::string &var) override;
+	virtual bool setString(const std::string &name, std::string_view var) override;
 	const StringMap &getStrings(StringMap *) const override final;
 	const std::vector<std::string> &getKeys(std::vector<std::string> *place)
 		const override final;

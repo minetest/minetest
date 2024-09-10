@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <string>
+#include <string_view>
 
 static const char hex_chars[] = "0123456789abcdef";
 
@@ -41,9 +42,9 @@ static inline std::string hex_encode(const char *data, unsigned int data_size)
 	return ret;
 }
 
-static inline std::string hex_encode(const std::string &data)
+static inline std::string hex_encode(std::string_view data)
 {
-	return hex_encode(data.c_str(), data.size());
+	return hex_encode(data.data(), data.size());
 }
 
 static inline bool hex_digit_decode(char hexdigit, unsigned char &value)

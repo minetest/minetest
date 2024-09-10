@@ -51,6 +51,20 @@ function ui.find_by_name(name)
 end
 
 --------------------------------------------------------------------------------
+-- "title" and "message" must already be formspec-escaped, e.g. via fgettext or
+-- core.formspec_escape.
+function ui.get_message_formspec(title, message, btn_id)
+	return table.concat({
+		"size[14,8]",
+		"real_coordinates[true]",
+		"set_focus[", btn_id, ";true]",
+		"box[0.5,1.2;13,5;#000]",
+		("textarea[0.5,1.2;13,5;;%s;%s]"):format(title, message),
+		"button[5,6.6;4,1;", btn_id, ";" .. fgettext("OK") .. "]",
+	})
+end
+
+--------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Internal functions not to be called from user
 --------------------------------------------------------------------------------
@@ -76,6 +90,9 @@ function ui.update()
 		}
 		ui.overridden = true
 	elseif gamedata ~= nil and gamedata.errormessage ~= nil then
+		-- Note to API users:
+		-- "gamedata.errormessage" must not be formspec-escaped yet.
+		-- For translations, fgettext_ne should be used.
 		local error_message = core.formspec_escape(gamedata.errormessage)
 
 		local error_title
@@ -84,15 +101,7 @@ function ui.update()
 		else
 			error_title = fgettext("An error occurred:")
 		end
-		formspec = {
-			"size[14,8]",
-			"real_coordinates[true]",
-			"set_focus[btn_error_confirm;true]",
-			"box[0.5,1.2;13,5;#000]",
-			("textarea[0.5,1.2;13,5;;%s;%s]"):format(
-				error_title, error_message),
-			"button[5,6.6;4,1;btn_error_confirm;" .. fgettext("OK") .. "]"
-		}
+		formspec = {ui.get_message_formspec(error_title, error_message, "btn_error_confirm")}
 		ui.overridden = true
 	else
 		local active_toplevel_ui_elements = 0

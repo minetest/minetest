@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/mapblock_mesh.h"
 #include "client/mesh.h"
 #include "client/wieldmesh.h"
-#include "client/tile.h"
 #include "client/client.h"
 #endif
 #include "log.h"
@@ -41,24 +40,37 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 TouchInteraction::TouchInteraction()
 {
-	pointed_nothing = LONG_DIG_SHORT_PLACE;
-	pointed_node    = LONG_DIG_SHORT_PLACE;
-	// Map punching to single tap by default.
-	pointed_object  = SHORT_DIG_LONG_PLACE;
+	pointed_nothing = TouchInteractionMode_USER;
+	pointed_node    = TouchInteractionMode_USER;
+	pointed_object  = TouchInteractionMode_USER;
 }
 
-TouchInteractionMode TouchInteraction::getMode(const PointedThing &pointed) const
+TouchInteractionMode TouchInteraction::getMode(PointedThingType pointed_type) const
 {
-	switch (pointed.type) {
+	TouchInteractionMode result;
+	switch (pointed_type) {
 	case POINTEDTHING_NOTHING:
-		return pointed_nothing;
+		result = pointed_nothing;
+		break;
 	case POINTEDTHING_NODE:
-		return pointed_node;
+		result = pointed_node;
+		break;
 	case POINTEDTHING_OBJECT:
-		return pointed_object;
+		result = pointed_object;
+		break;
 	default:
 		FATAL_ERROR("Invalid PointedThingType given to TouchInteraction::getMode");
 	}
+
+	if (result == TouchInteractionMode_USER) {
+		if (pointed_type == POINTEDTHING_OBJECT)
+			result = g_settings->get("touch_punch_gesture") == "long_tap" ?
+					LONG_DIG_SHORT_PLACE : SHORT_DIG_LONG_PLACE;
+		else
+			result = LONG_DIG_SHORT_PLACE;
+	}
+
+	return result;
 }
 
 void TouchInteraction::serialize(std::ostream &os) const
@@ -125,6 +137,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	pointabilities = def.pointabilities;
 	if (def.tool_capabilities)
 		tool_capabilities = new ToolCapabilities(*def.tool_capabilities);
+	wear_bar_params = def.wear_bar_params;
 	groups = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
 	place_param2 = def.place_param2;
@@ -149,6 +162,7 @@ void ItemDefinition::resetInitial()
 {
 	// Initialize pointers to NULL so reset() does not delete undefined pointers
 	tool_capabilities = NULL;
+	wear_bar_params = std::nullopt;
 	reset();
 }
 
@@ -171,6 +185,7 @@ void ItemDefinition::reset()
 	pointabilities = std::nullopt;
 	delete tool_capabilities;
 	tool_capabilities = NULL;
+	wear_bar_params.reset();
 	groups.clear();
 	sound_place = SoundSpec();
 	sound_place_failed = SoundSpec();
@@ -251,6 +266,13 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 		pointabilities_s = tmp_os.str();
 	}
 	os << serializeString16(pointabilities_s);
+
+	if (wear_bar_params.has_value()) {
+		writeU8(os, 1);
+		wear_bar_params->serialize(os);
+	} else {
+		writeU8(os, 0);
+	}
 }
 
 void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
@@ -332,6 +354,10 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 			std::istringstream tmp_is(pointabilities_s, std::ios::binary);
 			pointabilities = std::make_optional<Pointabilities>();
 			pointabilities->deSerialize(tmp_is);
+		}
+
+		if (readU8(is)) {
+			wear_bar_params = WearBarParams::deserialize(is);
 		}
 	} catch(SerializationError &e) {};
 }
@@ -448,7 +474,6 @@ public:
 		// Create new ClientCached
 		auto cc = std::make_unique<ClientCached>();
 
-		// Create an inventory texture
 		cc->inventory_texture = NULL;
 		if (!inventory_image.empty())
 			cc->inventory_texture = tsrc->getTexture(inventory_image);

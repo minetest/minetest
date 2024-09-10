@@ -283,7 +283,7 @@ void TileDef::deSerialize(std::istream &is, NodeDrawType drawtype, u16 protocol_
 void TextureSettings::readSettings()
 {
 	connected_glass                = g_settings->getBool("connected_glass");
-	opaque_water                   = g_settings->getBool("opaque_water");
+	translucent_liquids            = g_settings->getBool("translucent_liquids");
 	bool smooth_lighting           = g_settings->getBool("smooth_lighting");
 	enable_mesh_cache              = g_settings->getBool("enable_mesh_cache");
 	enable_minimap                 = g_settings->getBool("enable_minimap");
@@ -356,6 +356,8 @@ void ContentFeatures::reset()
 	has_on_construct = false;
 	has_on_destruct = false;
 	has_after_destruct = false;
+	floats = false;
+
 	/*
 		Actual data
 
@@ -681,7 +683,7 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 		if (is.eof())
 			throw SerializationError("");
 		post_effect_color_shaded = tmp;
-	} catch(SerializationError &e) {};
+	} catch (SerializationError &e) {};
 }
 
 #ifndef SERVER
@@ -710,8 +712,6 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	if (!tile.world_aligned)
 		layer->scale = 1;
 
-	layer->flags_texture = tsrc->getShaderFlagsTexture(layer->normal_texture ? true : false);
-
 	// Material flags
 	layer->material_flags = 0;
 	if (backface_culling)
@@ -734,7 +734,7 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	int frame_count = 1;
 	if (layer->material_flags & MATERIAL_FLAG_ANIMATION) {
 		assert(layer->texture);
-		int frame_length_ms;
+		int frame_length_ms = 0;
 		tiledef.animation.determineParams(layer->texture->getOriginalSize(),
 				&frame_count, &frame_length_ms, NULL);
 		layer->animation_frame_count = frame_count;
@@ -751,18 +751,13 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 
 		std::ostringstream os(std::ios::binary);
 		for (int i = 0; i < frame_count; i++) {
-			FrameSpec frame;
-
 			os.str("");
 			os << tiledef.name;
 			tiledef.animation.getTextureModifer(os,
 					layer->texture->getOriginalSize(), i);
 
+			FrameSpec &frame = (*layer->frames)[i];
 			frame.texture = tsrc->getTextureForMesh(os.str(), &frame.texture_id);
-			if (layer->normal_texture)
-				frame.normal_texture = tsrc->getNormalTexture(os.str());
-			frame.flags_texture = layer->flags_texture;
-			(*layer->frames)[i] = frame;
 		}
 	}
 }
@@ -823,14 +818,14 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		solidness = 0;
 		break;
 	case NDT_LIQUID:
-		if (tsettings.opaque_water)
+		if (!tsettings.translucent_liquids)
 			alpha = ALPHAMODE_OPAQUE;
 		solidness = 1;
 		is_liquid = true;
 		break;
 	case NDT_FLOWINGLIQUID:
 		solidness = 0;
-		if (tsettings.opaque_water)
+		if (!tsettings.translucent_liquids)
 			alpha = ALPHAMODE_OPAQUE;
 		is_liquid = true;
 		break;
@@ -1140,17 +1135,16 @@ bool NodeDefManager::getIds(const std::string &name,
 		std::vector<content_t> &result) const
 {
 	//TimeTaker t("getIds", NULL, PRECISION_MICRO);
-	if (name.substr(0,6) != "group:") {
+	if (!str_starts_with(name, "group:")) {
 		content_t id = CONTENT_IGNORE;
 		bool exists = getId(name, id);
 		if (exists)
 			result.push_back(id);
 		return exists;
 	}
-	std::string group = name.substr(6);
 
-	std::unordered_map<std::string, std::vector<content_t>>::const_iterator
-		i = m_group_to_items.find(group);
+	std::string group = name.substr(6);
+	auto i = m_group_to_items.find(group);
 	if (i == m_group_to_items.end())
 		return true;
 
@@ -1845,7 +1839,7 @@ bool NodeResolver::getIdsFromNrBacklog(std::vector<content_t> *result_out,
 		content_t c;
 		std::string &name = m_nodenames[m_nodenames_idx++];
 
-		if (name.substr(0,6) != "group:") {
+		if (!str_starts_with(name, "group:")) {
 			if (m_ndef->getId(name, c)) {
 				result_out->push_back(c);
 			} else if (all_required) {

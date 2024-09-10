@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "client/clientmedia.h"
 #include "log.h"
-#include "map.h"
+#include "servermap.h"
 #include "mapsector.h"
 #include "client/minimap.h"
 #include "modchannels.h"
@@ -48,6 +48,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 #include <memory>
 
+const char *accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
+	N_("Invalid password"),
+	N_("Your client sent something the server didn't expect.  Try reconnecting or updating your client."),
+	N_("The server is running in singleplayer mode.  You cannot connect."),
+	N_("Your client's version is not supported.\nPlease contact the server administrator."),
+	N_("Player name contains disallowed characters"),
+	N_("Player name not allowed"),
+	N_("Too many users"),
+	N_("Empty passwords are disallowed.  Set a password and try again."),
+	N_("Another client is connected with this name.  If your client closed unexpectedly, try again in a minute."),
+	N_("Internal server error"),
+	"",
+	N_("Server shutting down"),
+	N_("The server has experienced an internal error.  You will now be disconnected.")
+};
+
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
 {
 	infostream << "Got deprecated command "
@@ -62,11 +78,11 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 
 	u8 serialization_ver;
 	u16 proto_ver;
-	u16 compression_mode;
+	u16 unused_compression_mode;
 	u32 auth_mechs;
-	std::string username_legacy; // for case insensitivity
-	*pkt >> serialization_ver >> compression_mode >> proto_ver
-		>> auth_mechs >> username_legacy;
+	std::string unused;
+	*pkt >> serialization_ver >> unused_compression_mode >> proto_ver
+		>> auth_mechs >> unused;
 
 	// Chose an auth method we support
 	AuthMechanism chosen_auth_mechanism = choseAuthMech(auth_mechs);
@@ -75,7 +91,6 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 			<< "serialization_ver=" << (u32)serialization_ver
 			<< ", auth_mechs=" << auth_mechs
 			<< ", proto_ver=" << proto_ver
-			<< ", compression_mode=" << compression_mode
 			<< ". Doing auth with mech " << chosen_auth_mechanism << std::endl;
 
 	if (!ser_ver_supported(serialization_ver)) {
@@ -86,10 +101,6 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 
 	m_server_ser_ver = serialization_ver;
 	m_proto_ver = proto_ver;
-
-	//TODO verify that username_legacy matches sent username, only
-	// differs in casing (make both uppercase and compare)
-	// This is only necessary though when we actually want to add casing support
 
 	if (m_chosen_auth_mech != AUTH_MECHANISM_NONE) {
 		// we received a TOCLIENT_HELLO while auth was already going on
@@ -216,17 +227,17 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 			denyCode == SERVER_ACCESSDENIED_CRASH) {
 		*pkt >> m_access_denied_reason;
 		if (m_access_denied_reason.empty())
-			m_access_denied_reason = accessDeniedStrings[denyCode];
+			m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
 		u8 reconnect;
 		*pkt >> reconnect;
 		m_access_denied_reconnect = reconnect & 1;
 	} else if (denyCode == SERVER_ACCESSDENIED_CUSTOM_STRING) {
 		*pkt >> m_access_denied_reason;
 	} else if (denyCode == SERVER_ACCESSDENIED_TOO_MANY_USERS) {
-		m_access_denied_reason = accessDeniedStrings[denyCode];
+		m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
 		m_access_denied_reconnect = true;
 	} else if (denyCode < SERVER_ACCESSDENIED_MAX) {
-		m_access_denied_reason = accessDeniedStrings[denyCode];
+		m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
 	} else {
 		// Allow us to add new error messages to the
 		// protocol without raising the protocol version, if we want to.
@@ -471,6 +482,8 @@ void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
 		for (u16 i = 0; i < removed_count; i++) {
 			*pkt >> id;
 			m_env.removeActiveObject(id);
+			// Object-attached sounds MUST NOT be removed here because they might
+			// have started to play immediately before the entity was removed.
 		}
 
 		// Read added objects
@@ -1281,24 +1294,15 @@ void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
-	bool was_minimap_visible = player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE;
 	bool was_minimap_radar_visible = player->hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE;
 
 	player->hud_flags &= ~mask;
 	player->hud_flags |= flags;
 
-	m_minimap_disabled_by_server = !(player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE);
 	bool m_minimap_radar_disabled_by_server = !(player->hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE);
 
 	// Not so satisying code to keep compatibility with old fixed mode system
 	// -->
-
-	// Hide minimap if it has been disabled by the server
-	if (m_minimap && m_minimap_disabled_by_server && was_minimap_visible)
-		// defers a minimap update, therefore only call it if really
-		// needed, by checking that minimap was visible before
-		m_minimap->setModeIndex(0);
-
 	// If radar has been disabled, try to find a non radar mode or fall back to 0
 	if (m_minimap && m_minimap_radar_disabled_by_server
 			&& was_minimap_radar_visible) {
@@ -1660,10 +1664,8 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 		std::string computed_hash;
 		{
 			SHA1 ctx;
-			ctx.addBytes(filedata.c_str(), filedata.size());
-			unsigned char *buf = ctx.getDigest();
-			computed_hash.assign((char*) buf, 20);
-			free(buf);
+			ctx.addBytes(filedata);
+			computed_hash = ctx.getDigest();
 		}
 		if (raw_hash != computed_hash) {
 			verbosestream << "Hash of file data mismatches, ignoring." << std::endl;

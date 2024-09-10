@@ -48,9 +48,8 @@ void BanManager::load()
 {
 	MutexAutoLock lock(m_mutex);
 	infostream<<"BanManager: loading from "<<m_banfilepath<<std::endl;
-	std::ifstream is(m_banfilepath.c_str(), std::ios::binary);
+	auto is = open_ifstream(m_banfilepath.c_str(), false);
 	if (!is.good()) {
-		infostream<<"BanManager: failed loading from "<<m_banfilepath<<std::endl;
 		throw SerializationError("BanManager::load(): Couldn't open file");
 	}
 
@@ -123,9 +122,9 @@ void BanManager::add(const std::string &ip, const std::string &name)
 void BanManager::remove(const std::string &ip_or_name)
 {
 	MutexAutoLock lock(m_mutex);
-	for (StringMap::iterator it = m_ips.begin(); it != m_ips.end();) {
+	for (auto it = m_ips.begin(); it != m_ips.end();) {
 		if ((it->first == ip_or_name) || (it->second == ip_or_name)) {
-			m_ips.erase(it++);
+			it = m_ips.erase(it);
 			m_modified = true;
 		} else {
 			++it;

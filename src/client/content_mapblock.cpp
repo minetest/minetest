@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <cmath>
 #include "content_mapblock.h"
+#include "util/basic_macros.h"
 #include "util/numeric.h"
 #include "util/directiontables.h"
 #include "mapblock_mesh.h"
@@ -77,7 +78,7 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 		scene::IMeshManipulator *mm):
 	data(input),
 	collector(output),
-	nodedef(data->m_client->ndef()),
+	nodedef(data->nodedef),
 	meshmanip(mm),
 	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE),
 	enable_mesh_cache(g_settings->getBool("enable_mesh_cache") &&
@@ -463,6 +464,8 @@ void MapblockMeshGenerator::drawSolidNode()
 	if (data->m_smooth_lighting) {
 		LightPair lights[6][4];
 		for (int face = 0; face < 6; ++face) {
+			if (mask & (1 << face))
+				continue;
 			for (int k = 0; k < 4; k++) {
 				v3s16 corner = light_dirs[light_indices[face][k]];
 				lights[face][k] = LightPair(getSmoothLightSolid(
@@ -617,14 +620,14 @@ void MapblockMeshGenerator::calculateCornerLevels()
 		cur_liquid.corner_levels[k][i] = getCornerLevel(i, k);
 }
 
-f32 MapblockMeshGenerator::getCornerLevel(int i, int k)
+f32 MapblockMeshGenerator::getCornerLevel(int i, int k) const
 {
 	float sum = 0;
 	int count = 0;
 	int air_count = 0;
 	for (int dk = 0; dk < 2; dk++)
 	for (int di = 0; di < 2; di++) {
-		LiquidData::NeighborData &neighbor_data = cur_liquid.neighbors[k + dk][i + di];
+		const LiquidData::NeighborData &neighbor_data = cur_liquid.neighbors[k + dk][i + di];
 		content_t content = neighbor_data.content;
 
 		// If top is liquid, draw starting from top of node
@@ -1534,8 +1537,10 @@ void MapblockMeshGenerator::drawNodeboxNode()
 	bool param2_is_rotation =
 			cur_node.f->param_type_2 == CPT2_COLORED_FACEDIR ||
 			cur_node.f->param_type_2 == CPT2_COLORED_WALLMOUNTED ||
+			cur_node.f->param_type_2 == CPT2_COLORED_4DIR ||
 			cur_node.f->param_type_2 == CPT2_FACEDIR ||
-			cur_node.f->param_type_2 == CPT2_WALLMOUNTED;
+			cur_node.f->param_type_2 == CPT2_WALLMOUNTED ||
+			cur_node.f->param_type_2 == CPT2_4DIR;
 
 	bool param2_is_level =
 			cur_node.f->param_type_2 == CPT2_LEVELED;
@@ -1672,7 +1677,9 @@ void MapblockMeshGenerator::drawMeshNode()
 
 	int mesh_buffer_count = mesh->getMeshBufferCount();
 	for (int j = 0; j < mesh_buffer_count; j++) {
-		useTile(j);
+		// Only up to 6 tiles are supported
+		const auto tile =  mesh->getTextureSlot(j);
+		useTile(MYMIN(tile, 5));
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
 		int vertex_count = buf->getVertexCount();

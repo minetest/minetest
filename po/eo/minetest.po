@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-10-19 04:10+0000\n"
-"Last-Translator: Tirifto <tirifto@posteo.cz>\n"
+"POT-Creation-Date: 2024-07-11 15:14+0200\n"
+"PO-Revision-Date: 2024-06-23 19:09+0000\n"
+"Last-Translator: Va Milushnikov <va.milushnikov@gmail.com>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.1\n"
+"X-Generator: Weblate 5.6-rc\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -71,7 +71,8 @@ msgid "Command not available: "
 msgstr "Komando ne uzeblas: "
 
 #: builtin/common/chatcommands.lua
-msgid "Get help for commands"
+#, fuzzy
+msgid "Get help for commands (-t: output in chat)"
 msgstr "Trovu helpon pri komandoj"
 
 #: builtin/common/chatcommands.lua
@@ -82,12 +83,9 @@ msgstr ""
 "ĉion."
 
 #: builtin/common/chatcommands.lua
-msgid "[all | <cmd>]"
+#, fuzzy
+msgid "[all | <cmd>] [-t]"
 msgstr "[all | <komando>]"
-
-#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
-msgid "OK"
-msgstr "Bone"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -104,6 +102,10 @@ msgstr "Eraro okazis:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Ĉefmenuo"
+
+#: builtin/fstk/ui.lua
+msgid "OK"
+msgstr "Bone"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -133,19 +135,26 @@ msgstr "Ni nur subtenas protokolan version $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Ni subtenas protokolajn versiojn inter versioj $1 kaj $2."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "«$ 1» jam ekzistas. Ĉu superskribi ĝin?"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Error installing \"$1\": $2"
+msgstr "Eraro dum instalo de \"$1\": $2"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "Dependaĵoj $1 kaj $2 estos instalitaj."
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download \"$1\""
+msgstr "Malsukcesis elŝuti «$1»"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr "$1 de $2"
+#: builtin/mainmenu/content/contentdb.lua
+msgid "Failed to download $1"
+msgstr "Malsukcesis elŝuti $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/contentdb.lua
+#, fuzzy
+msgid ""
+"Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
+"broken archive)"
+msgstr "Malsukcesis elpaki «$1» (nesubtenata dosierspeco aŭ rompita arĥivo)"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
@@ -153,156 +162,157 @@ msgstr ""
 "elŝutante $1,\n"
 "atendante $2"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "$1 downloading..."
 msgstr "Elŝutante $1…"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "$1 nepraj dependaĵoj ne estis troveblaj."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "$ 1 estos instalita, ignorante $2 dependaĵojn."
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All packages"
 msgstr "Ĉiuj pakaĵoj"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "Jam instalita"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Back to Main Menu"
 msgstr "Reen al ĉefmenuo"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "ContentDB ne estas disponebla per Minetest kodotradukita sen cURL"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Downloading..."
+msgstr "Elŝutante…"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Error getting dependencies for package"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Games"
+msgstr "Ludoj"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "Instali"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Enlegante…"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Mods"
+msgstr "Modifaĵoj"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No packages could be retrieved"
+msgstr "Neniun pakaĵon sukcesis ricevi"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "Neniuj rezultoj"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "No updates"
+msgstr "Neniuj ĝisdatigoj"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Queued"
+msgstr "Atendata"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Texture packs"
+msgstr "Teksturaroj"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "The package $1 was not found."
+msgstr "La pakaĵo $1 estas ne trovita."
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Malinstali"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Ĝisdatigi"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "Update All [$1]"
+msgstr "Ĝisdatigi Ĉiujn [$1]"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "View more information in a web browser"
+msgstr "Vidi pli da informoj per TTT-legilo"
+
+#: builtin/mainmenu/content/dlg_contentdb.lua
+msgid "You need to install a game before you can install a mod"
+msgstr "Vi devos instali ludon antaŭ vi povos instali modifaĵon"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "Dependaĵoj $1 kaj $2 estos instalitaj."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 by $2"
+msgstr "$1 de $2"
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 required dependencies could not be found."
+msgstr "$1 nepraj dependaĵoj ne estis troveblaj."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "$ 1 estos instalita, ignorante $2 dependaĵojn."
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Already installed"
+msgstr "Jam instalita"
+
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Base Game:"
 msgstr "Baza Ludo:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
+#: builtin/mainmenu/content/dlg_overwrite.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
+#: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "Nuligi"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB ne estas disponebla per Minetest kodotradukita sen cURL"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
 msgstr "Dependas de:"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "Elŝutante…"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr "Eraro dum instalo de \"$1\": $2"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download \"$1\""
-msgstr "Malsukcesis elŝuti «$1»"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "Malsukcesis elŝuti $1"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Malsukcesis elpaki «$1» (nesubtenata dosierspeco aŭ rompita arĥivo)"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Games"
-msgstr "Ludoj"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Install"
-msgstr "Instali"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install $1"
 msgstr "Instali $1"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install missing dependencies"
 msgstr "Instali mankantajn dependaĵojn"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Enlegante…"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Mods"
-msgstr "Modifaĵoj"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "Neniujn pakaĵojn eblis ricevi"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "Neniuj rezultoj"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "No updates"
-msgstr "Neniuj ĝisdatigoj"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Not found"
 msgstr "Ne trovita"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "Superskribi"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Please check that the base game is correct."
 msgstr "Bonvolu kontroli, ke la baza ludo estas ĝusta."
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Queued"
-msgstr "Atendata"
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "«$ 1» jam ekzistas. Ĉu superskribi ĝin?"
 
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "Teksturaroj"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "The package $1 was not found."
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "Malinstali"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "Ĝisdatigi"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "Ĝisdatigi Ĉiujn [$1]"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "Vidi pli da informoj per TTT-legilo"
-
-#: builtin/mainmenu/content/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
+#: builtin/mainmenu/content/dlg_overwrite.lua
+msgid "Overwrite"
+msgstr "Superskribi"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -452,8 +462,18 @@ msgid "Decorations"
 msgstr "Ornamoj"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Desert temples"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
 msgstr "La programista testo estas intencita por programistoj."
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Different dungeon variant generated in desert biomes (only if dungeons "
+"enabled)"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -650,7 +670,7 @@ msgstr "Registriĝi"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr ""
+msgstr "Lasi"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -658,21 +678,25 @@ msgid ""
 "\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
 "game."
 msgstr ""
+"Dum jaroj, la ludmotoro Minetest instaliĝis kun implicita ludo nomita "
+"«Minetest Game». Ekde Minetest versio 5.8.0, Minetest instaliĝas sen "
+"implicita ludo."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
 "If you want to continue playing in your Minetest Game worlds, you need to "
 "reinstall Minetest Game."
 msgstr ""
+"Se vi volus ankoraŭ ludi viajn mondojn de Minetest Game, vi devos reinstali "
+"Minetest Game."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Minetest Game is no longer installed by default"
-msgstr ""
+msgstr "Minetest Game estas ne plu implicite instalita"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
-#, fuzzy
 msgid "Reinstall Minetest Game"
-msgstr "Instali alian ludon"
+msgstr "Reinstali Minetest Game"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -748,9 +772,8 @@ msgid "Select file"
 msgstr "Elekti dosieron"
 
 #: builtin/mainmenu/settings/components.lua
-#, fuzzy
 msgid "Set"
-msgstr "Elekti"
+msgstr "Agordi"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "(No description of setting given)"
@@ -819,19 +842,15 @@ msgstr "faciligita"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
-msgstr ""
+msgstr "(Uzu lingvon de la sistemo)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Accessibility"
-msgstr ""
+msgstr "Faciluzo"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
 msgstr "Reeniri"
-
-#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "Ŝanĝi klavojn"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
@@ -842,27 +861,26 @@ msgstr "Babilo"
 msgid "Clear"
 msgstr "Vakigo"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Stirado"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "Ĝenerale"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Movement"
-msgstr "Rapida moviĝo"
+msgstr "Moviĝo"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Reset setting to default"
-msgstr "Restarigi pravaloron"
+msgstr "Reagordi al implicita valoro"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
-msgstr ""
+msgstr "Reagordi al implicita valoro ($1)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
@@ -870,7 +888,7 @@ msgstr "Serĉi"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
-msgstr ""
+msgstr "Montri porspertulajn agordojn"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
@@ -890,11 +908,11 @@ msgstr "Enhavo: Modifaĵoj"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
-msgstr ""
+msgstr "(La ludo bezonos ŝalti ankaŭ ombrojn)"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Custom"
-msgstr ""
+msgstr "Propra"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Disabled"
@@ -947,7 +965,7 @@ msgstr "Ĉefaj zorgantoj"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Irrlicht device:"
-msgstr ""
+msgstr "Irrlicht aparato:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -978,18 +996,16 @@ msgid "Browse online content"
 msgstr "Foliumi enretan enhavon"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Browse online content [$1]"
-msgstr "Foliumi enretan enhavon"
+msgstr "Foliumi ĉeretajn pakaĵojn [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
 msgstr "Enhavo"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content [$1]"
-msgstr "Enhavo"
+msgstr "Enhavo [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
@@ -1012,9 +1028,8 @@ msgid "Rename"
 msgstr "Alinomi"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Update available?"
-msgstr "<neniu disponebla>"
+msgstr "Ĉu akireblas ĝisdatigo?"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1053,6 +1068,17 @@ msgid "Install games from ContentDB"
 msgstr "Instali ludojn de ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Minetest doesn't come with a game by default."
+msgstr "Minetest Game estas ne plu implicite instalita"
+
+#: builtin/mainmenu/tab_local.lua
+msgid ""
+"Minetest is a game-creation platform that allows you to play many different "
+"games."
+msgstr ""
+
+#: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "Nova"
 
@@ -1085,8 +1111,9 @@ msgid "Start Game"
 msgstr "Ekigi ludon"
 
 #: builtin/mainmenu/tab_local.lua
-msgid "You have no games installed."
-msgstr "Vi havas neniujn instalitajn ludojn."
+#, fuzzy
+msgid "You need to install a game before you can create a world."
+msgstr "Vi devos instali ludon antaŭ vi povos instali modifaĵon"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1166,16 +1193,8 @@ msgid "Rebuilding shaders..."
 msgstr "Refarante ombrigilojn…"
 
 #: src/client/clientlauncher.cpp
-msgid "Connection error (timed out?)"
-msgstr "Konekta eraro (ĉu eltempiĝo?)"
-
-#: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
 msgstr "Ne povis trovi aŭ enlegi ludon: "
-
-#: src/client/clientlauncher.cpp
-msgid "Invalid gamespec."
-msgstr "Nevalida ludspecifo."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1201,7 +1220,11 @@ msgstr "Malsukcesis malfermi donitan pasvortan dosieron: "
 msgid "Provided world path doesn't exist: "
 msgstr "Donita monda dosierindiko ne ekzistas: "
 
-#: src/client/game.cpp src/server.cpp
+#: src/client/clientmedia.cpp src/client/game.cpp
+msgid "Media..."
+msgstr "Vidaŭdaĵoj…"
+
+#: src/client/game.cpp src/client/shader.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1210,16 +1233,8 @@ msgstr ""
 "Rigardu dosieron debug.txt por detaloj."
 
 #: src/client/game.cpp
-msgid "- Address: "
-msgstr "– Adreso: "
-
-#: src/client/game.cpp
 msgid "- Mode: "
 msgstr "– Reĝimo: "
-
-#: src/client/game.cpp
-msgid "- Port: "
-msgstr "– Pordo: "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -1256,10 +1271,6 @@ msgid "Block bounds hidden"
 msgstr "Bloklimoj kaŝitaj"
 
 #: src/client/game.cpp
-msgid "Block bounds shown for all blocks"
-msgstr "Monderlimoj montritaj por ĉiuj blokoj"
-
-#: src/client/game.cpp
 msgid "Block bounds shown for current block"
 msgstr "Monderlimoj montritaj por nuna mondero"
 
@@ -1276,7 +1287,6 @@ msgid "Camera update enabled"
 msgstr "Ĝisdatigo de vidpunkto ŝaltita"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Can't show block bounds (disabled by game or mod)"
 msgstr "Ne povas montri monderlimojn (malŝaltita de ludo aŭ modifaĵo)"
 
@@ -1305,6 +1315,10 @@ msgid "Connecting to server..."
 msgstr "Konektante al servilo…"
 
 #: src/client/game.cpp
+msgid "Connection error (timed out?)"
+msgstr "Konekta eraro (ĉu eltempiĝo?)"
+
+#: src/client/game.cpp
 msgid "Connection failed for unknown reason"
 msgstr "Konekto malsukcesis pro nekonata kialo"
 
@@ -1313,46 +1327,13 @@ msgid "Continue"
 msgstr "Daŭrigi"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
-msgid ""
-"Controls:\n"
-"- %s: move forwards\n"
-"- %s: move backwards\n"
-"- %s: move left\n"
-"- %s: move right\n"
-"- %s: jump/climb up\n"
-"- %s: dig/punch/use\n"
-"- %s: place/use\n"
-"- %s: sneak/climb down\n"
-"- %s: drop item\n"
-"- %s: inventory\n"
-"- Mouse: turn/look\n"
-"- Mouse wheel: select item\n"
-"- %s: chat\n"
-msgstr ""
-"Stirado:\n"
-"– %s: moviĝi antaŭen\n"
-"– %s: moviĝi posten\n"
-"– %s: moviĝi maldekstren\n"
-"– %s: moviĝi dekstren\n"
-"– %s: salti/supreniri\n"
-"- %s: fosi/bati\n"
-"- %s: meti/uzi\n"
-"– %s: kaŝiri/malsupreniri\n"
-"– %s: demeti portaĵojn\n"
-"– %s: portaĵujo\n"
-"– Muso: turniĝi/rigardi\n"
-"– Musrado: elekti portaĵon\n"
-"– %s: babili\n"
-
-#: src/client/game.cpp
 #, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
 "- slide finger: look around\n"
-"- tap: place/use\n"
-"- long tap: dig/punch/use\n"
+"- tap: place/punch/use (default)\n"
+"- long tap: dig/use (default)\n"
 "Menu/inventory open:\n"
 "- double tap (outside):\n"
 " --> close\n"
@@ -1363,11 +1344,11 @@ msgid ""
 msgstr ""
 "Implicita stirado:\n"
 "Senmenue:\n"
-"- unuobla tuŝeto: aktivigi butonon\n"
-"- duobla tuŝeto: meti/uzi\n"
-"- ŝova fingro: rigardi\n"
-"Videbla menuo/portaĵujo:\n"
-"- duobla tuŝeto (ekstere):\n"
+"- tiri: rigardi ĉirkaŭen\n"
+"- tuŝeti: meti/uzi\n"
+"- longe tuŝeti: fosi/frapi/uzi\n"
+"Menue/portaĵuje:\n"
+"- dufoje tuŝeti (ekstere):\n"
 " -->fermi\n"
 "- tuŝi portaĵaron, tuŝi portaĵingon:\n"
 " --> movi portaĵaron\n"
@@ -1445,6 +1426,11 @@ msgid "Fog enabled"
 msgstr "Nebulo ŝaltita"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Fog enabled by game or mod"
+msgstr "Zomado nuntempe malŝaltita de ludo aŭ modifaĵo"
+
+#: src/client/game.cpp
 msgid "Game info:"
 msgstr "Ludaj informoj:"
 
@@ -1463,10 +1449,6 @@ msgstr "Objektaj difinoj…"
 #: src/client/game.cpp
 msgid "KiB/s"
 msgstr "KiB/s"
-
-#: src/client/game.cpp
-msgid "Media..."
-msgstr "Vidaŭdaĵoj…"
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1568,28 +1550,28 @@ msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "Ne povas aŭskulti je %s ĉar IPv6 estas malŝaltita"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range disabled"
-msgstr "Ŝaltis senliman vidodistancon"
+msgstr "Malŝaltis senliman vidodistancon"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range enabled"
 msgstr "Ŝaltis senliman vidodistancon"
 
 #: src/client/game.cpp
 msgid "Unlimited viewing range enabled, but forbidden by game or mod"
-msgstr ""
+msgstr "Senlima vidodistanco ŝaltita, sed ĝin malpermesas ludo aŭ modifaĵo"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing changed to %d (the minimum)"
-msgstr "Vidodistanco je la minimumo: %d"
+msgstr "Vidodistanco agordita al %d (la minimumo)"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
 msgstr ""
+"Vidodistanco agordita al %d (la minimumo), sed ĝin limigas al %d ludo aŭ "
+"modifaĵo"
 
 #: src/client/game.cpp
 #, c-format
@@ -1597,20 +1579,22 @@ msgid "Viewing range changed to %d"
 msgstr "Vidodistanco agordita al %d"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d (the maximum)"
-msgstr "Vidodistanco agordita al %d"
+msgstr "Vidodistanco agordita al %d (la maksimumo)"
 
 #: src/client/game.cpp
 #, c-format
 msgid ""
 "Viewing range changed to %d (the maximum), but limited to %d by game or mod"
 msgstr ""
+"Vidodistanco agordita al %d (la maksimumo), sed ĝin limigas al %d ludo aŭ "
+"modifaĵo"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d, but limited to %d by game or mod"
-msgstr "Vidodistanco agordita al %d"
+msgstr "Vidodistanco agordita al %d, sed limigas ĝin al %d ludo aŭ modifaĵo"
 
 #: src/client/game.cpp
 #, c-format
@@ -1624,10 +1608,6 @@ msgstr "Dratostaro montrita"
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
 msgstr "Zomado nuntempe malŝaltita de ludo aŭ modifaĵo"
-
-#: src/client/game.cpp
-msgid "ok"
-msgstr "bone"
 
 #: src/client/gameui.cpp
 msgid "Chat currently disabled by game or mod"
@@ -1677,23 +1657,20 @@ msgid "Caps Lock"
 msgstr "Majuskla baskulo"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Clear Key"
 msgstr "Vakigo"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Control Key"
-msgstr "Stiro"
+msgstr "Stirklavo"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Delete Key"
-msgstr "Forigi"
+msgstr "Forigo"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
-msgstr ""
+msgstr "Malsupren"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1740,9 +1717,8 @@ msgid "Insert"
 msgstr "Enmeti"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Arrow"
-msgstr "Maldekstra Stiro"
+msgstr "Maldekstren"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1766,7 +1742,6 @@ msgstr "Maldekstra Vindozo"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Menu Key"
 msgstr "Menuo"
 
@@ -1843,20 +1818,17 @@ msgid "OEM Clear"
 msgstr "OEM Vakigi"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Down"
-msgstr "Paĝon malsupren"
+msgstr "Paĝon suben"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Up"
 msgstr "Paĝon supren"
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Pause Key"
-msgstr "Haltigo"
+msgstr "Paŭzo"
 
 #: src/client/keycode.cpp
 msgid "Play"
@@ -1868,14 +1840,12 @@ msgid "Print"
 msgstr "Presi"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Return Key"
-msgstr "Enen"
+msgstr "Enigo"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Arrow"
-msgstr "Dekstra Stiro"
+msgstr "Dekstren"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1907,7 +1877,6 @@ msgid "Select"
 msgstr "Elekti"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Shift Key"
 msgstr "Majuskligo"
 
@@ -1929,7 +1898,7 @@ msgstr "Tabo"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
-msgstr ""
+msgstr "Supren"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -1940,7 +1909,6 @@ msgid "X Button 2"
 msgstr "X-Butono 2"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Zoom Key"
 msgstr "Zomo"
 
@@ -1961,6 +1929,15 @@ msgstr "Mapeto en supraĵa reĝimo, zomo ×%d"
 #: src/client/minimap.cpp
 msgid "Minimap in texture mode"
 msgstr "Mapeto en tekstura reĝimo"
+
+#: src/client/shader.cpp
+#, fuzzy, c-format
+msgid "Failed to compile the \"%s\" shader."
+msgstr "Malsukcesis malfermi retpaĝon"
+
+#: src/client/shader.cpp
+msgid "Shaders are enabled but GLSL is not supported by the driver."
+msgstr ""
 
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
@@ -2155,6 +2132,19 @@ msgstr "Zomo"
 msgid "press key"
 msgstr "premi klavon"
 
+#: src/gui/guiOpenURL.cpp
+msgid "Open"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+msgid "Open URL?"
+msgstr ""
+
+#: src/gui/guiOpenURL.cpp
+#, fuzzy
+msgid "Unable to open URL"
+msgstr "Malsukcesis malfermi retpaĝon"
+
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
 msgstr "Ŝanĝi"
@@ -2188,6 +2178,7 @@ msgstr "Laŭteco: %d%%"
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
+#: src/script/lua_api/l_mainmenu.cpp
 msgid "LANG_CODE"
 msgstr "eo"
 
@@ -2203,9 +2194,9 @@ msgid "Name is taken. Please choose another name"
 msgstr "La nomo jam estas prenita. Bonvolu elekti alian nomon."
 
 #: src/server.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "%s while shutting down: "
-msgstr "Malŝaltiĝante…"
+msgstr "%s dum malstarto: "
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2276,7 +2267,7 @@ msgstr "2d-a bruo, kiu lokas la riverajn valojn kaj kanalojn."
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -2412,14 +2403,6 @@ msgid "Adds particles when digging a node."
 msgstr "Aldonas partiklojn ĉe fosado de mondero."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
-"screens."
-msgstr ""
-"Ĝustigi punktojn cole al via ekrano (ekster X11/Android), ekzemple por "
-"kvarmilaj ekranoj."
-
-#: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr "Alĝustigi trovitan ekran-densecon, por aligrandigi la fasadon."
 
@@ -2445,6 +2428,10 @@ msgstr "Nomo de administranto"
 #: src/settings_translation_file.cpp
 msgid "Advanced"
 msgstr "Specialaj"
+
+#: src/settings_translation_file.cpp
+msgid "Allows liquids to be translucent."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2485,14 +2472,12 @@ msgid "Announce to this serverlist."
 msgstr "Anonci al ĉi tiu servillisto."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Anti-aliasing scale"
-msgstr "Glatigo:"
+msgstr "Skalo de glatigo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Antialiasing method"
-msgstr "Glatigo:"
+msgstr "Metodo de glatigo"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2505,6 +2490,17 @@ msgstr "Almeti nomon de portaĵo al ŝpruchelplio."
 #: src/settings_translation_file.cpp
 msgid "Apple trees noise"
 msgstr "Bruo de pomujoj"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Apply dithering to reduce color banding artifacts.\n"
+"Dithering significantly increases the size of losslessly-compressed\n"
+"screenshots and it works incorrectly if the display or operating system\n"
+"performs additional dithering or if the color channels are not quantized\n"
+"to 8 bits.\n"
+"With OpenGL ES, dithering only works if the shader supports high\n"
+"floating-point precision and it may have a higher performance impact."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
@@ -2523,18 +2519,37 @@ msgid "Ask to reconnect after crash"
 msgstr "Demandi pri rekonekto fiaskinte"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "At this distance the server will aggressively optimize which blocks are sent "
 "to\n"
 "clients.\n"
 "Small values potentially improve performance a lot, at the expense of "
 "visible\n"
-"rendering glitches (some blocks will not be rendered under water and in "
-"caves,\n"
-"as well as sometimes on land).\n"
+"rendering glitches (some blocks might not be rendered correctly in caves).\n"
 "Setting this to a value greater than max_block_send_distance disables this\n"
 "optimization.\n"
-"Stated in mapblocks (16 nodes)."
+"Stated in MapBlocks (16 nodes)."
+msgstr ""
+"Je ĉi tiu distanco, la servilo fervore alĝustigos la nombron de monderoj\n"
+"sendataj al klientoj.\n"
+"Malgrandaj valoroj povas multe plibonigi efikecon, je la kosto de videblaj\n"
+"bildigaj eraroj (iuj monderoj ne bildiĝos sub akvo kaj en kavernoj, kaj iam\n"
+"eĉ ne surtere).\n"
+"Valoro pli granda ol tiu de «max_block_send_distance» malŝaltas ĉi tiun\n"
+"plibonigon.\n"
+"Donita en mondopecoj (16 monderoj)."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"At this distance the server will perform a simpler and cheaper occlusion "
+"check.\n"
+"Smaller values potentially improve performance, at the expense of "
+"temporarily visible\n"
+"rendering glitches (missing blocks).\n"
+"This is especially useful for very large viewing range (upwards of 500).\n"
+"Stated in MapBlocks (16 nodes)."
 msgstr ""
 "Je ĉi tiu distanco, la servilo fervore alĝustigos la nombron de monderoj\n"
 "sendataj al klientoj.\n"
@@ -2574,9 +2589,8 @@ msgid "Base terrain height."
 msgstr "Baza alteco de tereno."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base texture size"
-msgstr "Minimuma grandeco de teksturoj"
+msgstr "Baza grandeco de teksturoj"
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
@@ -2599,13 +2613,17 @@ msgid "Bind address"
 msgstr "Bindi adreson"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Biome API"
-msgstr "Klimatoj"
+msgstr "API de klimatoj"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
 msgstr "Klimata bruo"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Block cull optimize distance"
+msgstr "Optimuma distanco de monder-sendado"
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
@@ -2613,7 +2631,7 @@ msgstr "Optimuma distanco de monder-sendado"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr "Lumvastiĝo"
+msgstr "Lumado"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Intensity"
@@ -2810,9 +2828,8 @@ msgid "Clouds"
 msgstr "Nuboj"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds are a client-side effect."
-msgstr "Nuboj kreiĝas klient-flanke."
+msgstr "Nuboj fariĝas klient-flanke."
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
@@ -2825,6 +2842,12 @@ msgstr "Kolora nebulo"
 #: src/settings_translation_file.cpp
 msgid "Colored shadows"
 msgstr "Koloraj ombroj"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Comma-separated list of AL and ALC extensions that should not be used.\n"
+"Useful for testing. See al_extensions.[h,cpp] for details."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2943,6 +2966,8 @@ msgid ""
 "Controls sinking speed in liquid when idling. Negative values will cause\n"
 "you to rise instead."
 msgstr ""
+"Decidas rapidecon de malsupreniro en fluaĵo sen aktiva moviĝo.\n"
+"Minusaj valoroj kaŭzos supreniron anstataŭe."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -2971,13 +2996,12 @@ msgid "Crosshair alpha"
 msgstr "Travidebleco de celilo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "This also applies to the object crosshair."
 msgstr ""
 "Travidebleco de celilo (maltravidebleco, inter 0 kaj 255).\n"
-"Ankaŭ determinas la koloron de la celilo de objekto."
+"Ankaŭ decidas la koloron de la celilo de objekto."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -2990,10 +3014,6 @@ msgid ""
 msgstr ""
 "Koloro de celilo (Ruĝo, Verdo, Bluo).\n"
 "Ankaŭ determinas la koloron de la celilo de objekto"
-
-#: src/settings_translation_file.cpp
-msgid "DPI"
-msgstr "Punktoj cole"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
@@ -3048,6 +3068,24 @@ msgstr ""
 "Difinas kvaliton de filtrado de ombroj.\n"
 "Ĉi tio imitas la efekton de molaj ombroj per PCF aŭ disko de Poisson,\n"
 "sed samtempe bezonas pli da komputaj rimedoj."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Define the oldest clients allowed to connect.\n"
+"Older clients are compatible in the sense that they will not crash when "
+"connecting\n"
+"to new servers, but they may not support all new features that you are "
+"expecting.\n"
+"This allows for more fine-grained control than "
+"strict_protocol_version_checking.\n"
+"Minetest still enforces its own internal minimum, and enabling\n"
+"strict_protocol_version_checking will effectively override this."
+msgstr ""
+"Ŝalti por malpermesi konekton de malnovaj klientoj.\n"
+"Malnovaj klientoj estas akordaj tiel, ke ili ne fiaskas konektante al novaj "
+"serviloj,\n"
+"sed eble ili ne subtenos ĉiujn atendatajn funkciojn."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -3251,6 +3289,11 @@ msgid "Enable Bloom Debug"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Debanding"
+msgstr "Ŝalti difektadon"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enable IPv6 support (for both client and server).\n"
 "Required for IPv6 connections to work at all."
@@ -3272,6 +3315,11 @@ msgid ""
 "On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Post Processing"
+msgstr "Ŝalti stirstangojn"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
@@ -3323,6 +3371,11 @@ msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable random mod loading (mainly used for testing)."
+msgstr "Ŝalti hazardan uzulan enigon (nur por testado)."
+
+#: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
 msgstr "Ŝalti hazardan uzulan enigon (nur por testado)."
 
@@ -3352,6 +3405,11 @@ msgstr ""
 "sed eble ili ne subtenos ĉiujn atendatajn funkciojn."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable touchscreen"
+msgstr "Sojlo de tuŝekrano"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enable usage of remote media server (if provided by server).\n"
 "Remote servers offer a significantly faster way to download media (e.g. "
@@ -3361,14 +3419,6 @@ msgstr ""
 "Ŝalti uzon de fora vidaŭdaĵa servilo (se ĝi donitas de la servilo).\n"
 "Foraj serviloj prezentas ege pli rapidon manieron elŝuti vidaŭdaĵojn\n"
 "(ekzemple teksturojn) konektante al la servilo."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable vertex buffer objects.\n"
-"This should greatly improve graphics performance."
-msgstr ""
-"Ŝalti verticajn bufrajn objektojn.\n"
-"Ĉi tio devus multe plibonigi efikecon de grafiko."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3407,6 +3457,19 @@ msgstr "Ŝaltas movbildojn en portaĵujo."
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
 msgstr "Ŝaltas kaŝmemoradon de maŝoj turnitaj per «facedir»."
+
+#: src/settings_translation_file.cpp
+msgid "Enables debug and error-checking in the OpenGL driver."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enables the post processing pipeline."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enables touchscreen mode, allowing you to play the game with a touchscreen."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3796,7 +3859,7 @@ msgstr "HTTP-modifaĵoj"
 
 #: src/settings_translation_file.cpp
 msgid "HUD"
-msgstr ""
+msgstr "Travida fasado"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4339,9 +4402,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Length of a server tick and the interval at which objects are generally "
-"updated over\n"
-"network, stated in seconds."
+"Length of a server tick (the interval at which everything is generally "
+"updated),\n"
+"stated in seconds.\n"
+"Does not apply to sessions hosted from the client menu."
 msgstr ""
 "Longeco de servila agociklo, kaj la intervalo dum kiu objektoj ĝenerale "
 "ĝisdatiĝas\n"
@@ -4518,10 +4582,6 @@ msgstr ""
 "kaj direkto de rigardo."
 
 #: src/settings_translation_file.cpp
-msgid "Makes all liquids opaque"
-msgstr "Igas fluaĵojn netravideblaj"
-
-#: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
 msgstr "Nivelo de densigo de mondopecoj por konservado sur disko"
 
@@ -4576,11 +4636,14 @@ msgid "Map generation attributes specific to Mapgen v5."
 msgstr "Mapestigaj ecoj speciale por Mapestigilo v5."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
 "When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
-"the 'jungles' flag is ignored."
+"the 'jungles' flag is ignored.\n"
+"The 'temples' flag disables generation of desert temples. Normal dungeons "
+"will appear instead."
 msgstr ""
 "Mondestigaj ecoj apartaj al Mondestigilo v6.\n"
 "La flago «snowbiomes» ŝaltas la novan 5-klimatan sistemon.\n"
@@ -4624,10 +4687,6 @@ msgstr "Prokrasto de estigo de maŝoj de mondopecoj"
 #, fuzzy
 msgid "Mapblock mesh generation threads"
 msgstr "Prokrasto de estigo de maŝoj de mondopecoj"
-
-#: src/settings_translation_file.cpp
-msgid "Mapblock mesh generator's MapBlock cache size in MB"
-msgstr "Grando (en megabitokoj) de la kaŝmemoro de la estiganto de mondopecoj"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
@@ -4901,6 +4960,11 @@ msgid "Minimap scan height"
 msgstr "Alteco de mapeta skanado"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Minimum dig repetition interval"
+msgstr "Intertempo inter ripetaj metoj"
+
+#: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of large caves per mapchunk."
 msgstr "Minimuma limo de hazarda nombro de grandaj kavernoj en mondoparto."
 
@@ -4971,6 +5035,11 @@ msgstr "Respondemo de muso"
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
 msgstr "Obligilo por respondeco de muso."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Movement threshold"
+msgstr "Sojlo de kavernoj"
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
@@ -5114,10 +5183,6 @@ msgid "Occlusion Culling"
 msgstr "Servilflanka elektado de postkaŝitoj"
 
 #: src/settings_translation_file.cpp
-msgid "Opaque liquids"
-msgstr "Netralumeblaj fluidoj"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Opaqueness (alpha) of the shadow behind the default font, between 0 and 255."
 msgstr ""
@@ -5132,6 +5197,11 @@ msgstr ""
 "Malfermas haltan menuon kiam fokuso je la fenestro perdiĝas. Ne haltigas se "
 "enluda\n"
 "fenestro estas malfermita."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "OpenGL debug"
+msgstr "Mapestigila erarserĉilo"
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
@@ -5278,6 +5348,15 @@ msgid "Proportion of large caves that contain liquid."
 msgstr "Proporcio de grandaj kavernoj, kiu enhavas fluaĵon."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Protocol version minimum"
+msgstr "Protokola versia miskongruo. "
+
+#: src/settings_translation_file.cpp
+msgid "Punch gesture"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
@@ -5293,6 +5372,10 @@ msgstr "Levas terenon por krei valojn ĉirkaŭ la riveroj."
 #: src/settings_translation_file.cpp
 msgid "Random input"
 msgstr "Hazarda enigo"
+
+#: src/settings_translation_file.cpp
+msgid "Random mod load order"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -5504,8 +5587,8 @@ msgid ""
 "\n"
 "* None - No antialiasing (default)\n"
 "\n"
-"* FSAA - Hardware-provided full-screen antialiasing (incompatible with "
-"shaders)\n"
+"* FSAA - Hardware-provided full-screen antialiasing\n"
+"(incompatible with Post Processing and Undersampling)\n"
 "A.K.A multi-sample antialiasing (MSAA)\n"
 "Smoothens out block edges but does not affect the insides of textures.\n"
 "A restart is required to change this option.\n"
@@ -5647,8 +5730,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Set the language. Leave empty to use the system language.\n"
+"Set the language. By default, the system language is used.\n"
 "A restart is required after changing this."
 msgstr ""
 "Agordi la lingvon. Lasu malplena por uzi la sisteman.\n"
@@ -5686,6 +5770,10 @@ msgstr ""
 msgid ""
 "Set to true to enable bloom effect.\n"
 "Bright colors will bleed over the neighboring objects."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Set to true to enable volumetric lighting effect (a.k.a. \"Godrays\")."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5733,11 +5821,11 @@ msgid "Shaders"
 msgstr "Ombrigiloj"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Shaders allow advanced visual effects and may increase performance on some "
 "video\n"
-"cards.\n"
-"This only works with the OpenGL video backend."
+"cards."
 msgstr ""
 "Ombrigiloj ebligas specialaj vidajn efektojn kaj povas plibonigi efikecon je "
 "kelkaj vidkartoj.\n"
@@ -5825,16 +5913,6 @@ msgstr ""
 "Ŝanĝeblo de la valoro celas specialajn uzojn; senŝanĝo estas rekomendata."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Size of the MapBlock cache of the mesh generator. Increasing this will\n"
-"increase the cache hit %, reducing the data being copied from the main\n"
-"thread, thus reducing jitter."
-msgstr ""
-"Grandeco de la mondopeca kaŝmemoro de la meŝestigilo. Plialtigo ankaŭ\n"
-"plialtigos la elcenton de kaŝmemoraj trafoj, kaj malpliigos la datenojn\n"
-"kopiatajn de la ĉefa fadeno, malhelpante skuadon."
-
-#: src/settings_translation_file.cpp
 msgid "Sky Body Orbit Tilt"
 msgstr ""
 
@@ -5870,7 +5948,7 @@ msgstr "Glata lumado"
 #, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
-"cinematic mode by using the key set in Change Keys."
+"cinematic mode by using the key set in Controls."
 msgstr "Glatigas la turnadon de vidpunkto en glita reĝimo. 0 por malŝalti."
 
 #: src/settings_translation_file.cpp
@@ -5891,6 +5969,15 @@ msgstr "Rapido de kaŝirado, en monderoj sekunde."
 #: src/settings_translation_file.cpp
 msgid "Soft shadow radius"
 msgstr "Radiuso de mola ombro"
+
+#: src/settings_translation_file.cpp
+msgid "Sound"
+msgstr "Sono"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Sound Extensions Blacklist"
+msgstr "Malpermesitaj flagoj de ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6091,6 +6178,12 @@ msgstr ""
 "vokiĝas «/profiler save [formo]» sen formo."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"The delay in milliseconds after which a touch interaction is considered a "
+"long tap."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "The file path relative to your world path in which profiles will be saved to."
@@ -6098,12 +6191,26 @@ msgstr ""
 "La dosierindiko relativa al via mondoindiko, kien konserviĝos profiloj."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"The gesture for for punching players/entities.\n"
+"This can be overridden by games and mods.\n"
+"\n"
+"* short_tap\n"
+"Easy to use and well-known from other games that shall not be named.\n"
+"\n"
+"* long_tap\n"
+"Known from the classic Minetest mobile controls.\n"
+"Combat is more or less impossible."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
 msgstr "Identigilo de la uzota stirstango"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "The length in pixels it takes for touchscreen interaction to start."
+msgid ""
+"The length in pixels after which a touch interaction is considered movement."
 msgstr "Longeco (en bilderoj) necesa por komenco de interago kun tuŝekrano."
 
 #: src/settings_translation_file.cpp
@@ -6119,6 +6226,15 @@ msgstr ""
 "0.0 = Ondo tute ne moviĝas.\n"
 "La antaŭagordo estas 1.0 (duono de mondero).\n"
 "Bezonas ŝaltitajn ondantajn fluaĵojn."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"The minimum time in seconds it takes between digging nodes when holding\n"
+"the dig button."
+msgstr ""
+"Tempo (en sekundoj) inter ripetaj metoj de monderoj dum premado de\n"
+"la butono por meti."
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -6158,7 +6274,7 @@ msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
 "OpenGL is the default for desktop, and OGLES2 for Android.\n"
-"Shaders are supported by OpenGL and OGLES2 (experimental)."
+"Shaders are supported by everything but OGLES1."
 msgstr ""
 "La bildiga internaĵo.\n"
 "Relanĉo necesas post ĉi tiu ŝanĝo.\n"
@@ -6243,6 +6359,10 @@ msgid "Third of 4 2D noises that together define hill/mountain range height."
 msgstr "Tria el la 4 3d-aj bruoj, kiuj kune difinas altecon de mont(et)aroj."
 
 #: src/settings_translation_file.cpp
+msgid "Threshold for long taps"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
@@ -6299,13 +6419,13 @@ msgid "Touchscreen sensitivity multiplier."
 msgstr "Obligilo por respondeco de muso."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Touchscreen threshold"
-msgstr "Sojlo de tuŝekrano"
-
-#: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Translucent liquids"
+msgstr "Netralumeblaj fluidoj"
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
@@ -6345,7 +6465,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"URL to JSON file which provides information about the newest Minetest release"
+"URL to JSON file which provides information about the newest Minetest "
+"release\n"
+"If this is empty the engine will never check for updates."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6457,10 +6579,6 @@ msgid "User Interfaces"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "VBO"
-msgstr "Vertica bufrobjekto"
-
-#: src/settings_translation_file.cpp
 msgid "VSync"
 msgstr "Vertikala akordigo"
 
@@ -6553,12 +6671,26 @@ msgid "Volume"
 msgstr "Laŭteco"
 
 #: src/settings_translation_file.cpp
+msgid "Volume multiplier when the window is unfocused."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Volume of all sounds.\n"
 "Requires the sound system to be enabled."
 msgstr ""
 "Laŭteco de ĉiuj sonoj\n"
 "Bezonas ŝaltitan sonsistemon."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Volume when unfocused"
+msgstr "Maksimuma nombro de kadroj en sekundo dum paŭzo aŭ sen fokuso"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Volumetric lighting"
+msgstr "Glata lumado"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6852,11 +6984,17 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "(game support required)"
 #~ msgstr "(subteno de ludo bezonata)"
 
+#~ msgid "- Address: "
+#~ msgstr "– Adreso: "
+
 #~ msgid "- Creative Mode: "
 #~ msgstr "– Krea reĝimo: "
 
 #~ msgid "- Damage: "
 #~ msgstr "– Difekto: "
+
+#~ msgid "- Port: "
+#~ msgstr "– Pordo: "
 
 #~ msgid ""
 #~ "0 = parallax occlusion with slope information (faster).\n"
@@ -6894,6 +7032,13 @@ msgstr "Samtempa limo de cURL"
 #~ "Adreso alkonektota.\n"
 #~ "Lasu ĝin malplena por komenci lokan servilon.\n"
 #~ "La adresa kampo en la ĉefmenuo transpasas ĉi tiun agordon."
+
+#~ msgid ""
+#~ "Adjust dpi configuration to your screen (non X11/Android only) e.g. for "
+#~ "4k screens."
+#~ msgstr ""
+#~ "Ĝustigi punktojn cole al via ekrano (ekster X11/Android), ekzemple por "
+#~ "kvarmilaj ekranoj."
 
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
@@ -6939,6 +7084,9 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "Bitoj bildere (aŭ kolornombro) en tutekrana reĝimo."
 
+#~ msgid "Block bounds shown for all blocks"
+#~ msgstr "Monderlimoj montritaj por ĉiuj blokoj"
+
 #~ msgid "Bump Mapping"
 #~ msgstr "Tubera mapado"
 
@@ -6960,6 +7108,9 @@ msgstr "Samtempa limo de cURL"
 
 #~ msgid "Camera update toggle key"
 #~ msgstr "Baskula klavo de ĝisdatigo de vidpunkto"
+
+#~ msgid "Change Keys"
+#~ msgstr "Ŝanĝi klavojn"
 
 #, fuzzy
 #~ msgid "Change keys"
@@ -7035,6 +7186,38 @@ msgstr "Samtempa limo de cURL"
 #~ "Regas larĝecon de tuneloj; pli malgranda valoro kreas pri larĝajn "
 #~ "tunelojn."
 
+#, c-format
+#~ msgid ""
+#~ "Controls:\n"
+#~ "- %s: move forwards\n"
+#~ "- %s: move backwards\n"
+#~ "- %s: move left\n"
+#~ "- %s: move right\n"
+#~ "- %s: jump/climb up\n"
+#~ "- %s: dig/punch/use\n"
+#~ "- %s: place/use\n"
+#~ "- %s: sneak/climb down\n"
+#~ "- %s: drop item\n"
+#~ "- %s: inventory\n"
+#~ "- Mouse: turn/look\n"
+#~ "- Mouse wheel: select item\n"
+#~ "- %s: chat\n"
+#~ msgstr ""
+#~ "Stirado:\n"
+#~ "– %s: moviĝi antaŭen\n"
+#~ "– %s: moviĝi posten\n"
+#~ "– %s: moviĝi maldekstren\n"
+#~ "– %s: moviĝi dekstren\n"
+#~ "– %s: salti/supreniri\n"
+#~ "- %s: fosi/bati\n"
+#~ "- %s: meti/uzi\n"
+#~ "– %s: kaŝiri/malsupreniri\n"
+#~ "– %s: demeti portaĵojn\n"
+#~ "– %s: portaĵujo\n"
+#~ "– Muso: turniĝi/rigardi\n"
+#~ "– Musrado: elekti portaĵon\n"
+#~ "– %s: babili\n"
+
 #~ msgid "Creative"
 #~ msgstr "Krea"
 
@@ -7043,6 +7226,9 @@ msgstr "Samtempa limo de cURL"
 
 #~ msgid "Crosshair color (R,G,B)."
 #~ msgstr "Koloro de celilo (R,V,B)."
+
+#~ msgid "DPI"
+#~ msgstr "Punktoj cole"
 
 #~ msgid "Damage"
 #~ msgstr "Difekto"
@@ -7137,6 +7323,13 @@ msgstr "Samtempa limo de cURL"
 
 #~ msgid "Enable register confirmation"
 #~ msgstr "Ŝalti konfirmon de registriĝo"
+
+#~ msgid ""
+#~ "Enable vertex buffer objects.\n"
+#~ "This should greatly improve graphics performance."
+#~ msgstr ""
+#~ "Ŝalti verticajn bufrajn objektojn.\n"
+#~ "Ĉi tio devus multe plibonigi efikecon de grafiko."
 
 #~ msgid "Enabled"
 #~ msgstr "Ŝaltita"
@@ -7440,6 +7633,9 @@ msgstr "Samtempa limo de cURL"
 
 #~ msgid "Instrumentation"
 #~ msgstr "Ekzamenado"
+
+#~ msgid "Invalid gamespec."
+#~ msgstr "Nevalida ludspecifo."
 
 #~ msgid "Inventory key"
 #~ msgstr "Klavo de portaĵujo"
@@ -8134,6 +8330,13 @@ msgstr "Samtempa limo de cURL"
 #~ "Funkciigas programaron «DirectX» kun «LuaJIT». Malŝaltu okaze de "
 #~ "problemoj."
 
+#~ msgid "Makes all liquids opaque"
+#~ msgstr "Igas fluaĵojn netravideblaj"
+
+#~ msgid "Mapblock mesh generator's MapBlock cache size in MB"
+#~ msgstr ""
+#~ "Grando (en megabitokoj) de la kaŝmemoro de la estiganto de mondopecoj"
+
 #~ msgid "Menus"
 #~ msgstr "Menuoj"
 
@@ -8362,14 +8565,20 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "Simple Leaves"
 #~ msgstr "Simplaj folioj"
 
+#~ msgid ""
+#~ "Size of the MapBlock cache of the mesh generator. Increasing this will\n"
+#~ "increase the cache hit %, reducing the data being copied from the main\n"
+#~ "thread, thus reducing jitter."
+#~ msgstr ""
+#~ "Grandeco de la mondopeca kaŝmemoro de la meŝestigilo. Plialtigo ankaŭ\n"
+#~ "plialtigos la elcenton de kaŝmemoraj trafoj, kaj malpliigos la datenojn\n"
+#~ "kopiatajn de la ĉefa fadeno, malhelpante skuadon."
+
 #~ msgid "Smooth Lighting"
 #~ msgstr "Glata lumado"
 
 #~ msgid "Smooths rotation of camera. 0 to disable."
 #~ msgstr "Glitigas turnadon de la vidpunkto. 0 por malŝalti."
-
-#~ msgid "Sound"
-#~ msgstr "Sono"
 
 #~ msgid "Special"
 #~ msgstr "Speciala"
@@ -8425,6 +8634,10 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "Touch threshold (px):"
 #~ msgstr "Tuŝa sojlo (px):"
 
+#, fuzzy
+#~ msgid "Touchscreen threshold"
+#~ msgstr "Sojlo de tuŝekrano"
+
 #~ msgid "Trilinear Filter"
 #~ msgstr "Trilineara filtrilo"
 
@@ -8468,6 +8681,9 @@ msgstr "Samtempa limo de cURL"
 #~ "Se la valoro de ĉi tiu elekteblo estas 0, multspecimena glatigo estas "
 #~ "malŝaltita.\n"
 #~ "Vi devas relanĉi post ŝanĝo de ĉi tiu elekteblo."
+
+#~ msgid "VBO"
+#~ msgstr "Vertica bufrobjekto"
 
 #~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr ""
@@ -8553,8 +8769,14 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "You died."
 #~ msgstr "Vi mortis."
 
+#~ msgid "You have no games installed."
+#~ msgstr "Vi havas neniujn instalitajn ludojn."
+
 #~ msgid "Z"
 #~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"
+
+#~ msgid "ok"
+#~ msgstr "bone"

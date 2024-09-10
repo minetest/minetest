@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #if defined(__ANDROID__)
 	#include "porting_android.h"
+	#include <android/api-level.h>
 #endif
 #if defined(__APPLE__)
 	#include <mach-o/dyld.h>
@@ -63,7 +64,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <FindDirectory.h>
 #endif
 
-#include "config.h"
+#if HAVE_MALLOC_TRIM
+	// glibc-only pretty much
+	#include <malloc.h>
+#endif
+
 #include "debug.h"
 #include "filesys.h"
 #include "log.h"
@@ -72,6 +77,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstdarg>
 #include <cstdio>
 #include <signal.h>
+#include <atomic>
 
 #if !defined(SERVER) && defined(_WIN32)
 // On Windows export some driver-specific variables to encourage Minetest to be
@@ -200,7 +206,10 @@ bool detectMSVCBuildDir(const std::string &path)
 	return (!removeStringEnd(path, ends).empty());
 }
 
-std::string get_sysinfo()
+// Note that the system info is sent in every HTTP request, so keep it reasonably
+// privacy-conserving while ideally still being meaningful.
+
+static std::string detectSystemInfo()
 {
 #ifdef _WIN32
 	std::ostringstream oss;
@@ -246,12 +255,32 @@ std::string get_sysinfo()
 	delete[] filePath;
 
 	return oss.str();
-#else
+#elif defined(__ANDROID__)
+	std::ostringstream oss;
 	struct utsname osinfo;
 	uname(&osinfo);
-	return std::string(osinfo.sysname) + "/"
-		+ osinfo.release + " " + osinfo.machine;
+	int api = android_get_device_api_level();
+
+	oss << "Android/" << api << " " << osinfo.machine;
+	return oss.str();
+#else /* POSIX */
+	struct utsname osinfo;
+	uname(&osinfo);
+
+	std::string_view release(osinfo.release);
+	// cut off anything but the primary version number
+	release = release.substr(0, release.find_first_not_of("0123456789."));
+
+	std::string ret = osinfo.sysname;
+	ret.append("/").append(release).append(" ").append(osinfo.machine);
+	return ret;
 #endif
+}
+
+const std::string &get_sysinfo()
+{
+	static std::string ret = detectSystemInfo();
+	return ret;
 }
 
 
@@ -553,7 +582,8 @@ bool setSystemPaths()
 
 #endif
 
-void migrateCachePath()
+// Move cache folder from path_user to system cache location if possible.
+[[maybe_unused]] static void migrateCachePath()
 {
 	const std::string local_cache_path = path_user + DIR_DELIM + "cache";
 
@@ -571,6 +601,24 @@ void migrateCachePath()
 		errorstream << "Failed to migrate local cache path "
 			"to system path!" << std::endl;
 	}
+}
+
+// Create tag in cache folder according to <https://bford.info/cachedir/> spec
+static void createCacheDirTag()
+{
+	const auto path = path_cache + DIR_DELIM + "CACHEDIR.TAG";
+
+	if (fs::PathExists(path))
+		return;
+	fs::CreateAllDirs(path_cache);
+	auto ofs = open_ofstream(path.c_str(), false);
+	if (!ofs.good())
+		return;
+	ofs << "Signature: 8a477f597d28d172789f06886806bc55\n"
+		"# This file is a cache directory tag automatically created by "
+		PROJECT_NAME_C ".\n"
+		"# For information about cache directory tags, see: "
+		"https://bford.info/cachedir/\n";
 }
 
 void initializePaths()
@@ -651,6 +699,8 @@ void initializePaths()
 	infostream << "Detected share path: " << path_share << std::endl;
 	infostream << "Detected user path: " << path_user << std::endl;
 	infostream << "Detected cache path: " << path_cache << std::endl;
+
+	createCacheDirTag();
 
 #if USE_GETTEXT
 	bool found_localedir = false;
@@ -779,6 +829,21 @@ std::string QuoteArgv(const std::string &arg)
 	ret.push_back('"');
 	return ret;
 }
+
+std::string ConvertError(DWORD error_code)
+{
+	wchar_t buffer[320];
+
+	auto r = FormatMessageW(
+		FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		nullptr, error_code, 0, buffer, ARRLEN(buffer) - 1, nullptr);
+	if (!r)
+		return std::to_string(error_code);
+
+	if (!buffer[0]) // should not happen normally
+		return "?";
+	return wide_to_utf8(buffer);
+}
 #endif
 
 int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...)
@@ -832,7 +897,7 @@ static bool open_uri(const std::string &uri)
 
 bool open_url(const std::string &url)
 {
-	if (url.substr(0, 7) != "http://" && url.substr(0, 8) != "https://") {
+	if (!str_starts_with(url, "http://") && !str_starts_with(url, "https://")) {
 		errorstream << "Unable to open browser as URL is missing schema: " << url << std::endl;
 		return false;
 	}
@@ -864,6 +929,46 @@ inline double get_perf_freq()
 }
 
 double perf_freq = get_perf_freq();
+
+#endif
+
+#if HAVE_MALLOC_TRIM
+
+/*
+ * On Linux/glibc we found that after deallocating bigger chunks of data (esp. MapBlocks)
+ * the memory would not be given back to the OS and would stay at peak usage.
+ * This appears to be a combination of unfortunate allocation order/fragmentation
+ * and the fact that glibc does not call madvise(MADV_DONTNEED) on its own.
+ * Some other allocators were also affected, jemalloc and musl libc were not.
+ * read more: <https://forum.minetest.net/viewtopic.php?t=30509>
+ *
+ * As a workaround we track freed memory coarsely and call malloc_trim() once a
+ * certain amount is reached.
+ *
+ * Because trimming can take more than 10ms and would cause jitter if done
+ * uncontrolled we have a separate function, which is called from background threads.
+ */
+
+static std::atomic<size_t> memory_freed;
+
+constexpr size_t MEMORY_TRIM_THRESHOLD = 256 * 1024 * 1024;
+
+void TrackFreedMemory(size_t amount)
+{
+	memory_freed.fetch_add(amount, std::memory_order_relaxed);
+}
+
+void TriggerMemoryTrim()
+{
+	constexpr auto MO = std::memory_order_relaxed;
+	if (memory_freed.load(MO) >= MEMORY_TRIM_THRESHOLD) {
+		// Synchronize call
+		if (memory_freed.exchange(0, MO) < MEMORY_TRIM_THRESHOLD)
+			return;
+		// Leave some headroom for future allocations
+		malloc_trim(8 * 1024 * 1024);
+	}
+}
 
 #endif
 

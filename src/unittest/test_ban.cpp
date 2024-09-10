@@ -80,13 +80,13 @@ void TestBan::testCreate()
 		BanManager bm(m_testbm);
 	}
 
-	UASSERT(std::ifstream(m_testbm, std::ios::binary).is_open());
+	UASSERT(fs::IsFile(m_testbm));
 
 	// test manual save
 	{
 		BanManager bm(m_testbm2);
 		bm.save();
-		UASSERT(std::ifstream(m_testbm2, std::ios::binary).is_open());
+		UASSERT(fs::IsFile(m_testbm2));
 	}
 }
 

@@ -19,11 +19,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
-#include "client/inputhandler.h"
-#include "gameparams.h"
+#include <string>
 
 class RenderingEngine;
+class Settings;
+class MyEventReceiver;
+class InputHandler;
+struct GameStartData;
+struct MainMenuData;
 
 class ClientLauncher
 {
@@ -39,6 +42,9 @@ private:
 	bool init_engine();
 	void init_input();
 
+	static void setting_changed_callback(const std::string &name, void *data);
+	void config_guienv();
+
 	bool launch_game(std::string &error_message, bool reconnect_requested,
 		GameStartData &start_data, const Settings &cmd_args);
 
@@ -49,5 +55,4 @@ private:
 	RenderingEngine *m_rendering_engine = nullptr;
 	InputHandler *input = nullptr;
 	MyEventReceiver *receiver = nullptr;
-	gui::IGUISkin *skin = nullptr;
 };

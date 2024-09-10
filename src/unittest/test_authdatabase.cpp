@@ -115,7 +115,7 @@ static TestAuthDatabase g_test_instance;
 void TestAuthDatabase::runTests(IGameDef *gamedef)
 {
 	// fixed directory, for persistence
-	thread_local const std::string test_dir = getTestTempDirectory();
+	const std::string test_dir = getTestTempDirectory();
 
 	// Each set of tests is run twice for each database type:
 	// one where we reuse the same AuthDatabase object (to test local caching),

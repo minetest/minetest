@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 
 #ifndef SERVER
-#include "client/tile.h" // getImagePath
+#include "client/texturepaths.h"
 #endif
 
 // The maximum number of identical world names allowed
@@ -77,8 +77,65 @@ struct GameFindPath
 
 std::string getSubgamePathEnv()
 {
+	static bool has_warned = false;
 	char *subgame_path = getenv("MINETEST_SUBGAME_PATH");
-	return subgame_path ? std::string(subgame_path) : "";
+	if (subgame_path && !has_warned) {
+		warningstream << "MINETEST_SUBGAME_PATH is deprecated, use MINETEST_GAME_PATH instead."
+				<< std::endl;
+		has_warned = true;
+	}
+
+	char *game_path = getenv("MINETEST_GAME_PATH");
+
+	if (game_path)
+		return std::string(game_path);
+	else if (subgame_path)
+		return std::string(subgame_path);
+	return "";
+}
+
+static SubgameSpec getSubgameSpec(const std::string &game_id,
+		const std::string &game_path,
+		const std::unordered_map<std::string, std::string> &mods_paths,
+		const std::string &menuicon_path)
+{
+	const auto gamemods_path = game_path + DIR_DELIM + "mods";
+	// Get meta
+	const std::string conf_path = game_path + DIR_DELIM + "game.conf";
+	Settings conf;
+	conf.readConfigFile(conf_path.c_str());
+
+	std::string game_title;
+	if (conf.exists("title"))
+		game_title = conf.get("title");
+	else if (conf.exists("name"))
+		game_title = conf.get("name");
+	else
+		game_title = game_id;
+
+	std::string game_author;
+	if (conf.exists("author"))
+		game_author = conf.get("author");
+
+	int game_release = 0;
+	if (conf.exists("release"))
+		game_release = conf.getS32("release");
+
+	std::string first_mod;
+	if (conf.exists("first_mod"))
+		first_mod = conf.get("first_mod");
+
+	std::string last_mod;
+	if (conf.exists("last_mod"))
+		last_mod = conf.get("last_mod");
+
+	SubgameSpec spec(game_id, game_path, gamemods_path, mods_paths, game_title,
+			menuicon_path, game_author, game_release, first_mod, last_mod);
+
+	if (conf.exists("name") && !conf.exists("title"))
+		spec.deprecation_msgs.push_back("\"name\" setting in game.conf is deprecated, please use \"title\" instead");
+
+	return spec;
 }
 
 SubgameSpec findSubgame(const std::string &id)
@@ -124,8 +181,6 @@ SubgameSpec findSubgame(const std::string &id)
 	if (game_path.empty())
 		return SubgameSpec();
 
-	std::string gamemod_path = game_path + DIR_DELIM + "mods";
-
 	// Find mod directories
 	std::unordered_map<std::string, std::string> mods_paths;
 	mods_paths["mods"] = user + DIR_DELIM + "mods";
@@ -136,40 +191,13 @@ SubgameSpec findSubgame(const std::string &id)
 		mods_paths[fs::AbsolutePath(mod_path)] = mod_path;
 	}
 
-	// Get meta
-	std::string conf_path = game_path + DIR_DELIM + "game.conf";
-	Settings conf;
-	conf.readConfigFile(conf_path.c_str());
-
-	std::string game_title;
-	if (conf.exists("title"))
-		game_title = conf.get("title");
-	else if (conf.exists("name"))
-		game_title = conf.get("name");
-	else
-		game_title = id;
-
-	std::string game_author;
-	if (conf.exists("author"))
-		game_author = conf.get("author");
-
-	int game_release = 0;
-	if (conf.exists("release"))
-		game_release = conf.getS32("release");
-
 	std::string menuicon_path;
 #ifndef SERVER
 	menuicon_path = getImagePath(
 			game_path + DIR_DELIM + "menu" + DIR_DELIM + "icon.png");
 #endif
 
-	SubgameSpec spec(id, game_path, gamemod_path, mods_paths, game_title,
-			menuicon_path, game_author, game_release);
-
-	if (conf.exists("name") && !conf.exists("title"))
-		spec.deprecation_msgs.push_back("\"name\" setting in game.conf is deprecated, please use \"title\" instead");
-
-	return spec;
+	return getSubgameSpec(id, game_path, mods_paths, menuicon_path);
 }
 
 SubgameSpec findWorldSubgame(const std::string &world_path)
@@ -177,25 +205,8 @@ SubgameSpec findWorldSubgame(const std::string &world_path)
 	std::string world_gameid = getWorldGameId(world_path, true);
 	// See if world contains an embedded game; if so, use it.
 	std::string world_gamepath = world_path + DIR_DELIM + "game";
-	if (fs::PathExists(world_gamepath)) {
-		SubgameSpec gamespec;
-		gamespec.id = world_gameid;
-		gamespec.path = world_gamepath;
-		gamespec.gamemods_path = world_gamepath + DIR_DELIM + "mods";
-
-		Settings conf;
-		std::string conf_path = world_gamepath + DIR_DELIM + "game.conf";
-		conf.readConfigFile(conf_path.c_str());
-
-		if (conf.exists("title"))
-			gamespec.title = conf.get("title");
-		else if (conf.exists("name"))
-			gamespec.title = conf.get("name");
-		else
-			gamespec.title = world_gameid;
-
-		return gamespec;
-	}
+	if (fs::PathExists(world_gamepath))
+		return getSubgameSpec(world_gameid, world_gamepath, {}, "");
 	return findSubgame(world_gameid);
 }
 
@@ -226,9 +237,9 @@ std::set<std::string> getAvailableGameIds()
 
 			// Add it to result
 			const char *ends[] = {"_game", NULL};
-			std::string shorter = removeStringEnd(dln.name, ends);
+			auto shorter = removeStringEnd(dln.name, ends);
 			if (!shorter.empty())
-				gameids.insert(shorter);
+				gameids.emplace(shorter);
 			else
 				gameids.insert(dln.name);
 		}

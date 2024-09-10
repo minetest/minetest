@@ -505,6 +505,28 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path, const char 
 }
 
 
+bool checkModNameWhitelisted(const std::string &mod_name, const std::string &setting)
+{
+	assert(str_starts_with(setting, "secure."));
+
+	if (mod_name.empty())
+		return false;
+
+	std::string value = g_settings->get(setting);
+	value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
+	auto mod_list = str_split(value, ',');
+
+	return CONTAINS(mod_list, mod_name);
+}
+
+
+bool ScriptApiSecurity::checkWhitelisted(lua_State *L, const std::string &setting)
+{
+	std::string mod_name = ScriptApiBase::getCurrentModName(L);
+	return checkModNameWhitelisted(mod_name, setting);
+}
+
+
 bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 		bool write_required, bool *write_allowed)
 {
@@ -555,10 +577,8 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 		return false;
 
 	// Get mod name
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	if (lua_isstring(L, -1)) {
-		std::string mod_name = readParam<std::string>(L, -1);
-
+	std::string mod_name = ScriptApiBase::getCurrentModNameInsecure(L);
+	if (!mod_name.empty()) {
 		// Builtin can access anything
 		if (mod_name == BUILTIN_MOD_NAME) {
 			if (write_allowed) *write_allowed = true;
@@ -572,13 +592,37 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 			if (mod) {
 				str = fs::AbsolutePath(mod->path);
 				if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
-					if (write_allowed) *write_allowed = true;
+					// `mod_name` cannot be trusted here, so we catch the scenarios where this becomes a problem:
+					bool is_trusted = checkModNameWhitelisted(mod_name, "secure.trusted_mods") ||
+							checkModNameWhitelisted(mod_name, "secure.http_mods");
+					std::string filename = lowercase(fs::GetFilenameFromPath(abs_path.c_str()));
+					// By writing to any of these a malicious mod could turn itself into
+					// an existing trusted mod by renaming or becoming a modpack.
+					bool is_dangerous_file = filename == "mod.conf" ||
+							filename == "modpack.conf" ||
+							filename == "modpack.txt";
+					if (write_required) {
+						if (is_trusted) {
+							throw LuaError(
+									"Unable to write to a trusted or http mod's directory. "
+									"For data storage consider minetest.get_mod_data_path() or minetest.get_worldpath() instead.");
+						} else if (is_dangerous_file) {
+							throw LuaError(
+									"Unable to write to special file for security reasons");
+						} else {
+							const char *message =
+									"Writing to mod directories is deprecated, as any changes "
+									"will be overwritten when updating content. "
+									"For data storage consider minetest.get_mod_data_path() or minetest.get_worldpath() instead.";
+							log_deprecated(L, message, 1);
+						}
+					}
+					if (write_allowed) *write_allowed = !is_trusted && !is_dangerous_file;
 					return true;
 				}
 			}
 		}
 	}
-	lua_pop(L, 1);  // Pop mod name
 
 	// Allow read-only access to game directory
 	if (!write_required) {
@@ -602,6 +646,13 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 		}
 	}
 
+	// Allow read/write access to all mod common dirs
+	str = fs::AbsolutePath(gamedef->getModDataPath());
+	if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
+		if (write_allowed) *write_allowed = true;
+		return true;
+	}
+
 	str = fs::AbsolutePath(gamedef->getWorldPath());
 	if (!str.empty()) {
 		// Don't allow access to other paths in the world mod/game path.
@@ -623,38 +674,6 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 
 	// Default to disallowing
 	return false;
-}
-
-bool ScriptApiSecurity::checkWhitelisted(lua_State *L, const std::string &setting)
-{
-	assert(str_starts_with(setting, "secure."));
-
-	// We have to make sure that this function is being called directly by
-	// a mod, otherwise a malicious mod could override this function and
-	// steal its return value.
-	lua_Debug info;
-
-	// Make sure there's only one item below this function on the stack...
-	if (lua_getstack(L, 2, &info))
-		return false;
-	FATAL_ERROR_IF(!lua_getstack(L, 1, &info), "lua_getstack() failed");
-	FATAL_ERROR_IF(!lua_getinfo(L, "S", &info), "lua_getinfo() failed");
-
-	// ...and that that item is the main file scope.
-	if (strcmp(info.what, "main") != 0)
-		return false;
-
-	// Mod must be listed in secure.http_mods or secure.trusted_mods
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	if (!lua_isstring(L, -1))
-		return false;
-	std::string mod_name = readParam<std::string>(L, -1);
-
-	std::string value = g_settings->get(setting);
-	value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
-	auto mod_list = str_split(value, ',');
-
-	return CONTAINS(mod_list, mod_name);
 }
 
 

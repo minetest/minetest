@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/gameui.h"
 #include "client/renderingengine.h"
 #include "client/sound.h"
-#include "client/tile.h"
+#include "client/texturepaths.h"
 #include "client/mesh_generator_thread.h"
 #include "client/particles.h"
 #include "client/localplayer.h"
@@ -52,6 +52,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "shader.h"
 #include "gettext.h"
+#include "clientdynamicinfo.h"
 #include "clientmap.h"
 #include "clientmedia.h"
 #include "version.h"
@@ -278,9 +279,7 @@ void Client::scanModSubfolder(const std::string &mod_name, const std::string &mo
 				<< "\" as \"" << vfs_path << "\"." << std::endl;
 
 		std::string contents;
-		if (!fs::ReadFile(real_path, contents)) {
-			errorstream << "Client::scanModSubfolder(): Can't read file \""
-					<< real_path << "\"." << std::endl;
+		if (!fs::ReadFile(real_path, contents, true)) {
 			continue;
 		}
 
@@ -394,15 +393,12 @@ void Client::connect(const Address &address, const std::string &address_name,
 	}
 
 	m_address_name = address_name;
-	m_con.reset(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT,
-		address.isIPv6(), this));
+	m_con.reset(con::createMTP(CONNECTION_TIMEOUT, address.isIPv6(), this));
 
 	infostream << "Connecting to server at ";
 	address.print(infostream);
 	infostream << std::endl;
 
-	// Since we use TryReceive() a timeout here would be ineffective anyway
-	m_con->SetTimeoutMs(0);
 	m_con->Connect(address);
 
 	initLocalMapSaving(address, m_address_name, is_local_server);
@@ -441,20 +437,16 @@ void Client::step(float dtime)
 		}
 	}
 
-	// UGLY hack to fix 2 second startup delay caused by non existent
-	// server client startup synchronization in local server or singleplayer mode
-	static bool initial_step = true;
-	if (initial_step) {
-		initial_step = false;
-	}
-	else if(m_state == LC_Created) {
+	// The issue that made this workaround necessary was fixed in August 2024, but
+	// it's not like we can remove this code - ever.
+	if (m_state == LC_Created) {
 		float &counter = m_connection_reinit_timer;
 		counter -= dtime;
-		if(counter <= 0.0) {
-			counter = 2.0;
+		if (counter <= 0) {
+			counter = 1.5f;
 
 			LocalPlayer *myplayer = m_env.getLocalPlayer();
-			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
+			FATAL_ERROR_IF(!myplayer, "Local player not found in environment");
 
 			sendInit(myplayer->getName());
 		}
@@ -799,7 +791,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 		video::IVideoDriver *vdrv = m_rendering_engine->get_video_driver();
 
 		io::IReadFile *rfile = irrfs->createMemoryReadFile(
-				data.c_str(), data.size(), "_tempreadfile");
+				data.c_str(), data.size(), filename.c_str());
 
 		FATAL_ERROR_IF(!rfile, "Could not create irrlicht memory file.");
 
@@ -835,7 +827,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 	}
 
 	const char *model_ext[] = {
-		".x", ".b3d", ".obj",
+		".x", ".b3d", ".obj", ".gltf",
 		NULL
 	};
 	name = removeStringEnd(filename, model_ext);
@@ -868,13 +860,13 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 }
 
 // Virtual methods from con::PeerHandler
-void Client::peerAdded(con::Peer *peer)
+void Client::peerAdded(con::IPeer *peer)
 {
 	infostream << "Client::peerAdded(): peer->id="
 			<< peer->id << std::endl;
 }
 
-void Client::deletingPeer(con::Peer *peer, bool timeout)
+void Client::deletingPeer(con::IPeer *peer, bool timeout)
 {
 	infostream << "Client::deletingPeer(): "
 			"Server Peer is getting deleted "
@@ -1149,10 +1141,7 @@ void Client::sendInit(const std::string &playerName)
 {
 	NetworkPacket pkt(TOSERVER_INIT, 1 + 2 + 2 + (1 + playerName.size()));
 
-	// we don't support network compression yet
-	u16 supp_comp_modes = NETPROTO_COMPRESSION_NONE;
-
-	pkt << (u8) SER_FMT_VER_HIGHEST_READ << (u16) supp_comp_modes;
+	pkt << (u8) SER_FMT_VER_HIGHEST_READ << (u16) 0;
 	pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
 	pkt << playerName;
 
@@ -1596,7 +1585,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	{
 		// Check if we are working with local player inventory
 		LocalPlayer *player = m_env.getLocalPlayer();
-		if (!player || strcmp(player->getName(), loc.name.c_str()) != 0)
+		if (!player || player->getName() != loc.name)
 			return NULL;
 		return &player->inventory;
 	}
@@ -1795,6 +1784,11 @@ float Client::mediaReceiveProgress()
 	return 1.0; // downloader only exists when not yet done
 }
 
+void Client::drawLoadScreen(const std::wstring &text, float dtime, int percent) {
+	m_rendering_engine->run();
+	m_rendering_engine->draw_load_screen(text, guienv, m_tsrc, dtime, percent);
+}
+
 struct TextureUpdateArgs {
 	gui::IGUIEnvironment *guienv;
 	u64 last_time_ms;
@@ -1806,7 +1800,7 @@ struct TextureUpdateArgs {
 void Client::showUpdateProgressTexture(void *args, u32 progress, u32 max_progress)
 {
 		TextureUpdateArgs* targs = (TextureUpdateArgs*) args;
-		u16 cur_percent = ceil(progress / (double) max_progress * 100.);
+		u16 cur_percent = std::ceil(progress / max_progress * 100.f);
 
 		// update the loading menu -- if necessary
 		bool do_draw = false;
@@ -1940,8 +1934,7 @@ void Client::makeScreenshot()
 
 	while (serial < SCREENSHOT_MAX_SERIAL_TRIES) {
 		filename = filename_base + (serial > 0 ? ("_" + itos(serial)) : "") + filename_ext;
-		std::ifstream tmp(filename.c_str());
-		if (!tmp.good())
+		if (!fs::PathExists(filename))
 			break;	// File did not apparently exist, we'll go with it
 		serial++;
 	}
@@ -1971,19 +1964,9 @@ void Client::makeScreenshot()
 	raw_image->drop();
 }
 
-bool Client::shouldShowMinimap() const
-{
-	return !m_minimap_disabled_by_server;
-}
-
 void Client::pushToEventQueue(ClientEvent *event)
 {
 	m_client_event_queue.push(event);
-}
-
-void Client::showMinimap(const bool show)
-{
-	m_game_ui->showMinimap(show);
 }
 
 // IGameDef interface

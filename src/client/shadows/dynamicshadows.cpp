@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/clientenvironment.h"
 #include "client/clientmap.h"
 #include "client/camera.h"
+#include <IVideoDriver.h>
 
 using m4f = core::matrix4;
 
@@ -42,7 +43,6 @@ static v3f quantizeDirection(v3f direction, float step)
 void DirectionalLight::createSplitMatrices(const Camera *cam)
 {
 	static const float COS_15_DEG = 0.965926f;
-	v3f newCenter;
 	v3f look = cam->getDirection().normalize();
 
 	// if current look direction is < 15 degrees away from the captured

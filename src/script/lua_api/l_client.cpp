@@ -62,7 +62,11 @@ const static CSMFlagDesc flagdesc_csm_restriction[] = {
 // get_current_modname()
 int ModApiClient::l_get_current_modname(lua_State *L)
 {
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	std::string s = ScriptApiBase::getCurrentModNameInsecure(L);
+	if (!s.empty())
+		lua_pushstring(L, s.c_str());
+	else
+		lua_pushnil(L);
 	return 1;
 }
 
@@ -73,30 +77,6 @@ int ModApiClient::l_get_modpath(lua_State *L)
 	// Client mods use a virtual filesystem, see Client::scanModSubfolder()
 	std::string path = modname + ":";
 	lua_pushstring(L, path.c_str());
-	return 1;
-}
-
-// get_last_run_mod()
-int ModApiClient::l_get_last_run_mod(lua_State *L)
-{
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	std::string current_mod = readParam<std::string>(L, -1, "");
-	if (current_mod.empty()) {
-		lua_pop(L, 1);
-		lua_pushstring(L, getScriptApiBase(L)->getOrigin().c_str());
-	}
-	return 1;
-}
-
-// set_last_run_mod(modname)
-int ModApiClient::l_set_last_run_mod(lua_State *L)
-{
-	if (!lua_isstring(L, 1))
-		return 0;
-
-	const char *mod = lua_tostring(L, 1);
-	getScriptApiBase(L)->setOriginDirect(mod);
-	lua_pushboolean(L, true);
 	return 1;
 }
 
@@ -367,8 +347,6 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(send_chat_message);
 	API_FCT(clear_out_chat_queue);
 	API_FCT(get_player_names);
-	API_FCT(set_last_run_mod);
-	API_FCT(get_last_run_mod);
 	API_FCT(show_formspec);
 	API_FCT(send_respawn);
 	API_FCT(gettext);

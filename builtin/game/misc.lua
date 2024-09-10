@@ -237,8 +237,8 @@ end
 core.dynamic_media_callbacks = {}
 
 
--- Transfer of certain globals into async environment
--- see builtin/async/game.lua for the other side
+-- Transfer of certain globals into seconday Lua environments
+-- see builtin/async/game.lua or builtin/emerge/register.lua for the unpacking
 
 local function copy_filtering(t, seen)
 	if type(t) == "userdata" or type(t) == "function" then
@@ -261,6 +261,9 @@ function core.get_globals_to_transfer()
 	local all = {
 		registered_items = copy_filtering(core.registered_items),
 		registered_aliases = core.registered_aliases,
+		registered_biomes = core.registered_biomes,
+		registered_ores = core.registered_ores,
+		registered_decorations = core.registered_decorations,
 
 		nodedef_default = copy_filtering(core.nodedef_default),
 		craftitemdef_default = copy_filtering(core.craftitemdef_default),
@@ -268,4 +271,30 @@ function core.get_globals_to_transfer()
 		noneitemdef_default = copy_filtering(core.noneitemdef_default),
 	}
 	return all
+end
+
+do
+	local function valid_object_iterator(objects)
+		local i = 0
+		local function next_valid_object()
+			i = i + 1
+			local obj = objects[i]
+			if obj == nil then
+				return
+			end
+			if obj:is_valid() then
+				return obj
+			end
+			return next_valid_object()
+		end
+		return next_valid_object
+	end
+
+	function core.objects_inside_radius(center, radius)
+		return valid_object_iterator(core.get_objects_inside_radius(center, radius))
+	end
+
+	function core.objects_in_area(min_pos, max_pos)
+		return valid_object_iterator(core.get_objects_in_area(min_pos, max_pos))
+	end
 end

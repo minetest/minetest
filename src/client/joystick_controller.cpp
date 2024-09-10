@@ -318,12 +318,14 @@ float JoystickController::getAxisWithoutDead(JoystickAxis axis)
 
 float JoystickController::getMovementDirection()
 {
-	return atan2(getAxisWithoutDead(JA_SIDEWARD_MOVE), -getAxisWithoutDead(JA_FORWARD_MOVE));
+	return std::atan2(getAxisWithoutDead(JA_SIDEWARD_MOVE),
+			-getAxisWithoutDead(JA_FORWARD_MOVE));
 }
 
 float JoystickController::getMovementSpeed()
 {
-	float speed = sqrt(pow(getAxisWithoutDead(JA_FORWARD_MOVE), 2) + pow(getAxisWithoutDead(JA_SIDEWARD_MOVE), 2));
+	float speed = std::sqrt(std::pow(getAxisWithoutDead(JA_FORWARD_MOVE), 2) +
+			std::pow(getAxisWithoutDead(JA_SIDEWARD_MOVE), 2));
 	if (speed > 1.0f)
 		speed = 1.0f;
 	return speed;

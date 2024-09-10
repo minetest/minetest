@@ -71,6 +71,22 @@ minetest.register_chatcommand("bench_content2name", {
 	end,
 })
 
+local function get_positions_cube(ppos)
+	local pos_list = {}
+
+	local i = 1
+	for x=2,100 do
+		for y=2,100 do
+			for z=2,100 do
+				pos_list[i] = ppos:offset(x, y, z)
+				i = i + 1
+			end
+		end
+	end
+
+	return pos_list
+end
+
 minetest.register_chatcommand("bench_bulk_set_node", {
 	params = "",
 	description = "Benchmark: Bulk-set 99×99×99 stone nodes",
@@ -79,25 +95,15 @@ minetest.register_chatcommand("bench_bulk_set_node", {
 		if not player then
 			return false, "No player."
 		end
-		local pos_list = {}
-		local ppos = player:get_pos()
-		local i = 1
-		for x=2,100 do
-			for y=2,100 do
-				for z=2,100 do
-					pos_list[i] = {x=ppos.x + x,y = ppos.y + y,z = ppos.z + z}
-					i = i + 1
-				end
-			end
-		end
+		local pos_list = get_positions_cube(player:get_pos())
 
-		minetest.chat_send_player(name, "Benchmarking minetest.bulk_set_node. Warming up ...");
+		minetest.chat_send_player(name, "Benchmarking minetest.bulk_set_node. Warming up ...")
 
 		-- warm up with stone to prevent having different callbacks
 		-- due to different node topology
 		minetest.bulk_set_node(pos_list, {name = "mapgen_stone"})
 
-		minetest.chat_send_player(name, "Warming up finished, now benchmarking ...");
+		minetest.chat_send_player(name, "Warming up finished, now benchmarking ...")
 
 		local start_time = minetest.get_us_time()
 		for i=1,#pos_list do
@@ -114,4 +120,37 @@ minetest.register_chatcommand("bench_bulk_set_node", {
 	end,
 })
 
+minetest.register_chatcommand("bench_bulk_get_node", {
+	params = "",
+	description = "Benchmark: Bulk-get 99×99×99 nodes",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "No player."
+		end
+		local pos_list = get_positions_cube(player:get_pos())
+		local function bench()
+			local start_time = minetest.get_us_time()
+			for i=1,#pos_list do
+				local n = minetest.get_node(pos_list[i])
+				-- Make sure the name lookup is never optimized away.
+				-- Table allocation might still be omitted. But only accessing
+				-- the name of a node is a common pattern anyways.
+				if n.name == "benchmarks:nonexistent_node" then
+					error("should never happen")
+				end
+			end
+			return minetest.get_us_time() - start_time
+		end
 
+		minetest.chat_send_player(name, "Benchmarking minetest.get_node. Warming up ...")
+		bench()
+
+		minetest.chat_send_player(name, "Warming up finished, now benchmarking ...")
+		local result_us = bench()
+
+		local msg = string.format("Benchmark results: minetest.get_node loop 1: %.2f ms",
+				result_us / 1000)
+		return true, msg
+	end,
+})

@@ -70,6 +70,7 @@ static inline bool uses_union(int type)
 	}
 }
 
+// can set_into be used with these key / value types in principle?
 static inline bool can_set_into(int ktype, int vtype)
 {
 	switch (ktype) {
@@ -82,7 +83,7 @@ static inline bool can_set_into(int ktype, int vtype)
 	}
 }
 
-// is the key suitable for use with set_into?
+// is the actual key suitable for use with set_into?
 static inline bool suitable_key(lua_State *L, int idx)
 {
 	if (lua_type(L, idx) == LUA_TSTRING) {
@@ -96,6 +97,27 @@ static inline bool suitable_key(lua_State *L, int idx)
 		lua_Number n = lua_tonumber(L, idx);
 		return std::floor(n) == n && n >= S32_MIN && n <= S32_MAX;
 	}
+}
+
+/**
+ * Push core.known_metatables to the stack if it exists.
+ * @param L Lua state
+ * @return true if core.known_metatables exists, false otherwise.
+*/
+static inline bool get_known_lua_metatables(lua_State *L)
+{
+	lua_getglobal(L, "core");
+	if (!lua_istable(L, -1)) {
+		lua_pop(L, 1);
+		return false;
+	}
+	lua_getfield(L, -1, "known_metatables");
+	if (lua_istable(L, -1)) {
+		lua_remove(L, -2);
+		return true;
+	}
+	lua_pop(L, 2);
+	return false;
 }
 
 namespace {
@@ -143,6 +165,13 @@ namespace {
 	typedef std::pair<std::string, Packer> PackerTuple;
 }
 
+/**
+ * Append instruction to end.
+ *
+ * @param pv target
+ * @param type instruction type
+ * @return reference to instruction
+*/
 static inline auto emplace(PackedValue &pv, s16 type)
 {
 	pv.i.emplace_back();
@@ -211,6 +240,13 @@ void script_register_packer(lua_State *L, const char *regname,
 	lua_pop(L, 1);
 }
 
+/**
+ * Find a packer for a metatable.
+ *
+ * @param regname metatable name
+ * @param out packer will be placed here
+ * @return success
+*/
 static bool find_packer(const char *regname, PackerTuple &out)
 {
 	MutexAutoLock autolock(g_packers_lock);
@@ -223,6 +259,14 @@ static bool find_packer(const char *regname, PackerTuple &out)
 	return true;
 }
 
+/**
+ * Find a packer matching the metatable of the Lua value.
+ *
+ * @param L Lua state
+ * @param idx Index on stack
+ * @param out packer will be placed here
+ * @return success
+*/
 static bool find_packer(lua_State *L, int idx, PackerTuple &out)
 {
 #ifndef NDEBUG
@@ -254,6 +298,21 @@ static bool find_packer(lua_State *L, int idx, PackerTuple &out)
 // Packing implementation
 //
 
+/**
+ * Keeps track of seen objects, which is needed to make circular references work.
+ * The first time an object is seen it remembers the instruction index.
+ * The caller is expected to add instructions that produce the value immediately after.
+ * For second, third, ... calls it pushes an instruction that references the already
+ * created value.
+ *
+ * @param L Lua state
+ * @param idx Index of value on Lua stack
+ * @param pv target
+ * @param seen Map of seen objects
+ * @return empty reference (first time) or reference to instruction that
+ *         reproduces the value (otherwise)
+ *
+*/
 static VectorRef<PackedInstr> record_object(lua_State *L, int idx, PackedValue &pv,
 		std::unordered_map<const void *, s32> &seen)
 {
@@ -261,18 +320,31 @@ static VectorRef<PackedInstr> record_object(lua_State *L, int idx, PackedValue &
 	assert(ptr);
 	auto found = seen.find(ptr);
 	if (found == seen.end()) {
+		// first time, record index
+		assert(pv.i.size() <= S32_MAX);
 		seen[ptr] = pv.i.size();
 		return VectorRef<PackedInstr>();
 	}
+
 	s32 ref = found->second;
 	assert(ref < (s32)pv.i.size());
 	// reuse the value from first time
 	auto r = emplace(pv, INSTR_PUSHREF);
-	r->ref = ref;
+	r->sidata1 = ref;
 	pv.i[ref].keep_ref = true;
 	return r;
 }
 
+/**
+ * Pack a single Lua value and add it to the instruction stream.
+ *
+ * @param L Lua state
+ * @param idx Index of value on Lua stack. Must be positive, use absidx if not!
+ * @param vidx Next free index on the stack as it would look during unpacking. (v = virtual)
+ * @param pv target
+ * @param seen Map of seen objects (see record_object)
+ * @return reference to the instruction that creates the value
+*/
 static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, PackedValue &pv,
 		std::unordered_map<const void *, s32> &seen)
 {
@@ -330,6 +402,7 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 			PackerTuple ser;
 			if (!find_packer(L, idx, ser))
 				throw LuaError("Cannot serialize unsupported userdata");
+			// use packer callback to turn into a void*
 			pv.contains_userdata = true;
 			r = emplace(pv, LUA_TUSERDATA);
 			r->sdata = ser.first;
@@ -358,22 +431,28 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 		else
 			rtable->uidata2++; // nrec
 
-		// check if we can use a shortcut
+		// set_into is a shortcut that allows a pushed value
+		// to be directly set into a table without separately pushing
+		// the key and using SETTABLE.
+		// only works in certain circumstances, hence the check:
 		if (can_set_into(ktype, vtype) && suitable_key(L, -2)) {
 			// push only the value
 			auto rval = pack_inner(L, absidx(L, -1), vidx, pv, seen);
+			vidx++;
 			rval->pop = rval->type != LUA_TTABLE;
-			// and where to put it:
+			// where to put it:
 			rval->set_into = vi_table;
 			if (ktype == LUA_TSTRING)
 				rval->sdata = lua_tostring(L, -2);
 			else
 				rval->sidata1 = lua_tointeger(L, -2);
-			// pop tables after the fact
+			// since tables take multiple instructions to populate we have to
+			// pop them separately afterwards.
 			if (!rval->pop) {
 				auto ri1 = emplace(pv, INSTR_POP);
-				ri1->sidata1 = vidx;
+				ri1->sidata1 = vidx - 1;
 			}
+			vidx--;
 		} else {
 			// push the key and value
 			pack_inner(L, absidx(L, -2), vidx, pv, seen);
@@ -392,6 +471,19 @@ static VectorRef<PackedInstr> pack_inner(lua_State *L, int idx, int vidx, Packed
 		lua_pop(L, 1);
 	}
 
+	// try to preserve metatable information
+	if (lua_getmetatable(L, idx) && get_known_lua_metatables(L)) {
+		lua_insert(L, -2);
+		lua_gettable(L, -2);
+		if (lua_isstring(L, -1)) {
+			auto r = emplace(pv, INSTR_SETMETATABLE);
+			r->sdata = std::string(lua_tostring(L, -1));
+			r->set_into = vi_table;
+		}
+		lua_pop(L, 2);
+	}
+
+	// exactly the table should be left on stack
 	assert(vidx == vi_table + 1);
 	return rtable;
 }
@@ -405,6 +497,7 @@ PackedValue *script_pack(lua_State *L, int idx)
 	std::unordered_map<const void *, s32> seen;
 	pack_inner(L, idx, 1, pv, seen);
 
+	// allocate last for exception safety
 	return new PackedValue(std::move(pv));
 }
 
@@ -414,14 +507,15 @@ PackedValue *script_pack(lua_State *L, int idx)
 
 void script_unpack(lua_State *L, PackedValue *pv)
 {
-	lua_newtable(L); // table at index top to track ref indices -> objects
+	// table that tracks objects for keep_ref / PUSHREF (key = instr index)
+	lua_newtable(L);
 	const int top = lua_gettop(L);
 	int ctr = 0;
 
 	for (size_t packed_idx = 0; packed_idx < pv->i.size(); packed_idx++) {
 		auto &i = pv->i[packed_idx];
 
-		// If leaving values on stack make sure there's space (every 5th iteration)
+		// Make sure there's space on the stack (if applicable)
 		if (!i.pop && (ctr++) >= 5) {
 			lua_checkstack(L, 5);
 			ctr = 0;
@@ -449,9 +543,20 @@ void script_unpack(lua_State *L, PackedValue *pv)
 					lua_remove(L, top + i.sidata2);
 				continue;
 			case INSTR_PUSHREF:
-				lua_pushinteger(L, i.ref);
+				// retrieve from top table
+				lua_pushinteger(L, i.sidata1);
 				lua_rawget(L, top);
 				break;
+			case INSTR_SETMETATABLE:
+				if (get_known_lua_metatables(L)) {
+					lua_getfield(L, -1, i.sdata.c_str());
+					lua_remove(L, -2);
+					if (lua_istable(L, -1))
+						lua_setmetatable(L, top + i.set_into);
+					else
+						lua_pop(L, 1);
+				}
+				continue;
 
 			/* Lua types */
 			case LUA_TNIL:
@@ -476,7 +581,7 @@ void script_unpack(lua_State *L, PackedValue *pv)
 				PackerTuple ser;
 				sanity_check(find_packer(i.sdata.c_str(), ser));
 				ser.second.fout(L, i.ptrdata);
-				i.ptrdata = nullptr; // ownership taken by callback
+				i.ptrdata = nullptr; // ownership taken by packer callback
 				break;
 			}
 
@@ -486,13 +591,14 @@ void script_unpack(lua_State *L, PackedValue *pv)
 		}
 
 		if (i.keep_ref) {
+			// remember in top table
 			lua_pushinteger(L, packed_idx);
 			lua_pushvalue(L, -2);
 			lua_rawset(L, top);
 		}
 
 		if (i.set_into) {
-			if (!i.pop)
+			if (!i.pop) // set will consume
 				lua_pushvalue(L, -1);
 			if (uses_sdata(i.type))
 				lua_rawseti(L, top + i.set_into, i.sidata1);
@@ -504,7 +610,7 @@ void script_unpack(lua_State *L, PackedValue *pv)
 		}
 	}
 
-	// as part of the unpacking process we take ownership of all userdata
+	// as part of the unpacking process all userdata is "used up"
 	pv->contains_userdata = false;
 	// leave exactly one value on the stack
 	lua_settop(L, top+1);
@@ -523,7 +629,7 @@ PackedValue::~PackedValue()
 		if (i.type == LUA_TUSERDATA && i.ptrdata) {
 			PackerTuple ser;
 			if (find_packer(i.sdata.c_str(), ser)) {
-				// tell it to deallocate object
+				// tell packer to deallocate object
 				ser.second.fout(nullptr, i.ptrdata);
 			} else {
 				assert(false);
@@ -536,7 +642,6 @@ PackedValue::~PackedValue()
 // script_dump_packed
 //
 
-#ifndef NDEBUG
 void script_dump_packed(const PackedValue *val)
 {
 	printf("instruction stream: [\n");
@@ -550,7 +655,10 @@ void script_dump_packed(const PackedValue *val)
 				printf(i.sidata2 ? "POP(%d, %d)" : "POP(%d)", i.sidata1, i.sidata2);
 				break;
 			case INSTR_PUSHREF:
-				printf("PUSHREF(%d)", i.ref);
+				printf("PUSHREF(%d)", i.sidata1);
+				break;
+			case INSTR_SETMETATABLE:
+				printf("SETMETATABLE(%s)", i.sdata.c_str());
 				break;
 			case LUA_TNIL:
 				printf("nil");
@@ -568,13 +676,13 @@ void script_dump_packed(const PackedValue *val)
 				printf("table(%d, %d)", i.uidata1, i.uidata2);
 				break;
 			case LUA_TFUNCTION:
-				printf("function(%lu byte)", i.sdata.size());
+				printf("function(%d bytes)", (int)i.sdata.size());
 				break;
 			case LUA_TUSERDATA:
 				printf("userdata %s %p", i.sdata.c_str(), i.ptrdata);
 				break;
 			default:
-				printf("!!UNKNOWN!!");
+				FATAL_ERROR("unknown type");
 				break;
 		}
 		if (i.set_into) {
@@ -593,4 +701,3 @@ void script_dump_packed(const PackedValue *val)
 	}
 	printf("]\n");
 }
-#endif

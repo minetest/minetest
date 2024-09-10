@@ -19,16 +19,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include <ISceneNode.h>
+#include <SMeshBuffer.h>
 #include <array>
-#include "camera.h"
+#include "camera.h" // CameraMode
 #include "irr_ptr.h"
-#include "shader.h"
 #include "skyparams.h"
 
 #define SKY_MATERIAL_COUNT 12
 
+namespace irr::video
+{
+	class IVideoDriver;
+}
+
+class IShaderSource;
 class ITextureSource;
 
 // Skybox, rendered with zbuffer turned off, before all other nodes.
@@ -114,7 +120,6 @@ public:
 	void clearSkyboxTextures() { m_sky_params.textures.clear(); }
 	void addTextureToSkybox(const std::string &texture, int material_id,
 		ITextureSource *tsrc);
-	const video::SColorf &getCurrentStarColor() const { return m_star_color; }
 
 	// Note: the Sky class doesn't use these values. It just stores them.
 	void setFogDistance(s16 fog_distance) { m_sky_params.fog_distance = fog_distance; }
@@ -210,7 +215,6 @@ private:
 
 	u64 m_seed = 0;
 	irr_ptr<scene::SMeshBuffer> m_stars;
-	video::SColorf m_star_color;
 
 	video::ITexture *m_sun_texture;
 	video::ITexture *m_moon_texture;

@@ -70,6 +70,7 @@ struct NoiseParams;
 class Schematic;
 class ServerActiveObject;
 struct collisionMoveResult;
+namespace treegen { struct TreeDef; }
 
 extern struct EnumString es_TileAnimationType[];
 
@@ -83,9 +84,6 @@ void               push_content_features     (lua_State *L,
 
 void               push_nodebox              (lua_State *L,
                                               const NodeBox &box);
-void               push_box                  (lua_State *L,
-                                              const std::vector<aabb3f> &box);
-
 void               push_palette              (lua_State *L,
                                               const std::vector<video::SColor> *palette);
 
@@ -116,6 +114,9 @@ void               push_pointabilities       (lua_State *L, const Pointabilities
 ToolCapabilities   read_tool_capabilities    (lua_State *L, int table);
 void               push_tool_capabilities    (lua_State *L,
                                               const ToolCapabilities &prop);
+WearBarParams      read_wear_bar_params      (lua_State *L, int table);
+void               push_wear_bar_params      (lua_State *L,
+                                              const WearBarParams &prop);
 
 void read_item_definition (lua_State *L, int index, const ItemDefinition &default_def,
 		ItemDefinition &def);
@@ -130,7 +131,7 @@ void               read_object_properties    (lua_State *L, int index,
                                               IItemDefManager *idef);
 
 void               push_object_properties    (lua_State *L,
-                                              ObjectProperties *prop);
+                                              const ObjectProperties *prop);
 
 void               push_inventory_list       (lua_State *L,
                                               const InventoryList &invlist);
@@ -188,6 +189,10 @@ bool               string_to_enum            (const EnumString *spec,
 bool               read_noiseparams          (lua_State *L, int index,
                                               NoiseParams *np);
 void               push_noiseparams          (lua_State *L, NoiseParams *np);
+
+bool               read_tree_def             (lua_State *L, int idx,
+                                              const NodeDefManager *ndef,
+                                              treegen::TreeDef &tree_def);
 
 void               luaentity_get             (lua_State *L,u16 id);
 

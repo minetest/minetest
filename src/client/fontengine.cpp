@@ -27,16 +27,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/CGUITTFont.h"
 #include "util/numeric.h" // rangelim
 
-/** maximum size distance for getting a "similar" font size */
-#define MAX_FONT_SIZE_OFFSET 10
-
 /** reference to access font engine, has to be initialized by main */
-FontEngine* g_fontengine = NULL;
+FontEngine *g_fontengine = nullptr;
 
 /** callback to be used on change of font size setting */
 static void font_setting_changed(const std::string &name, void *userdata)
 {
-	g_fontengine->readSettings();
+	if (g_fontengine)
+		g_fontengine->readSettings();
 }
 
 /******************************************************************************/
@@ -61,7 +59,7 @@ FontEngine::FontEngine(gui::IGUIEnvironment* env) :
 		"mono_font_path", "mono_font_path_bold", "mono_font_path_italic",
 		"mono_font_path_bold_italic",
 		"fallback_font_path",
-		"screen_dpi", "gui_scaling",
+		"dpi_change_notifier", "gui_scaling",
 	};
 
 	for (auto name : settings)
@@ -226,7 +224,7 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 	u16 divisible_by = g_settings->getU16(setting_prefix + "font_size_divisible_by");
 	if (divisible_by > 1) {
 		size = std::max<u32>(
-				std::round((double)size / divisible_by) * divisible_by, divisible_by);
+				std::round((float)size / divisible_by) * divisible_by, divisible_by);
 	}
 
 	sanity_check(size != 0);

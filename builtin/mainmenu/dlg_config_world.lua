@@ -126,7 +126,7 @@ local function get_formspec(data)
 	local retval =
 		"size[11.5,7.5,true]" ..
 		"label[0.5,0;" .. fgettext("World:") .. "]" ..
-		"label[1.75,0;" .. data.worldspec.name .. "]"
+		"label[1.75,0;" .. core.formspec_escape(data.worldspec.name) .. "]"
 
 	if mod.is_modpack or mod.type == "game" then
 		local info = core.formspec_escape(
@@ -334,7 +334,7 @@ local function handle_buttons(this, fields)
 	if fields.btn_config_world_cdb then
 		this.data.list = nil
 
-		local dlg = create_store_dlg("mod")
+		local dlg = create_contentdb_dlg("mod")
 		dlg:set_parent(this)
 		this:hide()
 		dlg:show()

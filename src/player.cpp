@@ -30,10 +30,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"  // strlcpy
 
 
-Player::Player(const char *name, IItemDefManager *idef):
+bool is_valid_player_name(std::string_view name) {
+	return !name.empty() && name.size() <= PLAYERNAME_SIZE && string_allowed(name, PLAYERNAME_ALLOWED_CHARS);
+}
+
+Player::Player(const std::string &name, IItemDefManager *idef):
 	inventory(idef)
 {
-	strlcpy(m_name, name, PLAYERNAME_SIZE);
+	m_name = name;
 
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
@@ -75,20 +79,10 @@ Player::Player(const char *name, IItemDefManager *idef):
 		HUD_FLAG_CHAT_VISIBLE;
 
 	hud_hotbar_itemcount = HUD_HOTBAR_ITEMCOUNT_DEFAULT;
-
-	m_player_settings.readGlobalSettings();
-	// Register player setting callbacks
-	for (const std::string &name : m_player_settings.setting_names)
-		g_settings->registerChangedCallback(name,
-			&Player::settingsChangedCallback, &m_player_settings);
 }
 
 Player::~Player()
 {
-	// m_player_settings becomes invalid, remove callbacks
-	for (const std::string &name : m_player_settings.setting_names)
-		g_settings->deregisterChangedCallback(name,
-			&Player::settingsChangedCallback, &m_player_settings);
 	clearHud();
 }
 
@@ -96,6 +90,11 @@ void Player::setWieldIndex(u16 index)
 {
 	const InventoryList *mlist = inventory.getList("main");
 	m_wield_index = MYMIN(index, mlist ? mlist->getSize() : 0);
+}
+
+u16 Player::getWieldIndex()
+{
+	return std::min(m_wield_index, getMaxHotbarItemcount());
 }
 
 ItemStack &Player::getWieldedItem(ItemStack *selected, ItemStack *hand) const
@@ -167,6 +166,12 @@ void Player::clearHud()
 	}
 }
 
+u16 Player::getMaxHotbarItemcount()
+{
+	InventoryList *mainlist = inventory.getList("main");
+	return mainlist ? std::min(mainlist->getSize(), (u32) hud_hotbar_itemcount) : 0;
+}
+
 #ifndef SERVER
 
 u32 PlayerControl::getKeysPressed() const
@@ -191,7 +196,7 @@ u32 PlayerControl::getKeysPressed() const
 		float abs_d;
 
 		// (absolute value indicates forward / backward)
-		abs_d = abs(movement_direction);
+		abs_d = std::abs(movement_direction);
 		if (abs_d < 3.0f / 8.0f * M_PI)
 			keypress_bits |= (u32)1; // Forward
 		if (abs_d > 5.0f / 8.0f * M_PI)
@@ -201,7 +206,7 @@ u32 PlayerControl::getKeysPressed() const
 		abs_d = movement_direction + M_PI_2;
 		if (abs_d >= M_PI)
 			abs_d -= 2 * M_PI;
-		abs_d = abs(abs_d);
+		abs_d = std::abs(abs_d);
 		// (value now indicates left / right)
 		if (abs_d < 3.0f / 8.0f * M_PI)
 			keypress_bits |= (u32)1 << 2; // Left
@@ -223,21 +228,4 @@ void PlayerControl::unpackKeysPressed(u32 keypress_bits)
 	dig   = keypress_bits & (1 << 7);
 	place = keypress_bits & (1 << 8);
 	zoom  = keypress_bits & (1 << 9);
-}
-
-void PlayerSettings::readGlobalSettings()
-{
-	free_move = g_settings->getBool("free_move");
-	pitch_move = g_settings->getBool("pitch_move");
-	fast_move = g_settings->getBool("fast_move");
-	continuous_forward = g_settings->getBool("continuous_forward");
-	always_fly_fast = g_settings->getBool("always_fly_fast");
-	aux1_descends = g_settings->getBool("aux1_descends");
-	noclip = g_settings->getBool("noclip");
-	autojump = g_settings->getBool("autojump");
-}
-
-void Player::settingsChangedCallback(const std::string &name, void *data)
-{
-	((PlayerSettings *)data)->readGlobalSettings();
 }

@@ -1,4 +1,6 @@
 #!/bin/bash
+# Runs a multiplayer server and connects a headless client, devtest unittests are executed.
+
 dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 gameid=${gameid:-devtest}
 minetest=$dir/../bin/minetest
@@ -21,6 +23,7 @@ waitfor () {
 
 [ -e "$minetest" ] || { echo "executable $minetest missing"; exit 1; }
 
+rm -f "$testspath/log.txt"
 rm -rf "$worldpath"
 mkdir -p "$worldpath/worldmods"
 
@@ -35,11 +38,13 @@ printf '%s\n' >"$testspath/server.conf" \
 ln -s "$dir/helper_mod" "$worldpath/worldmods/"
 
 echo "Starting server"
-"$minetest" --debugger --server --config "$conf_server" --world "$worldpath" --gameid $gameid 2>&1 | sed -u 's/^/(server) /' &
+"$minetest" --debugger --server --config "$conf_server" --world "$worldpath" --gameid $gameid 2>&1 \
+	| sed -u 's/^/(server) /' | tee -a "$testspath/log.txt" &
 waitfor "$worldpath/startup"
 
 echo "Starting client"
-"$minetest" --debugger --config "$conf_client1" --go --address 127.0.0.1 2>&1 | sed -u 's/^/(client) /' &
+"$minetest" --debugger --config "$conf_client1" --go --address 127.0.0.1 2>&1 \
+	| sed -u 's/^/(client) /' | tee -a "$testspath/log.txt" &
 waitfor "$worldpath/done"
 
 echo "Waiting for client and server to exit"
@@ -47,6 +52,11 @@ wait
 
 if [ -f "$worldpath/test_failure" ]; then
 	echo "There were test failures."
+	exit 1
+fi
+# gdb|lldb
+if grep -Eq "(Thread .* received signal|thread .* stop reason =)" "$testspath/log.txt"; then
+	echo "Debugger reported error."
 	exit 1
 fi
 echo "Success"

@@ -71,7 +71,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &d
 		break;
 	}
 	// create object
-	infostream << "LuaEntitySAO::create(name=\"" << name << "\" state is";
+	infostream << "LuaEntitySAO(name=\"" << name << "\" state is ";
 	if (state.empty())
 		infostream << "empty";
 	else
@@ -134,16 +134,20 @@ void LuaEntitySAO::dispatchScriptDeactivate(bool removal)
 
 void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
-	if(!m_properties_sent)
-	{
+	if (!m_properties_sent) {
 		m_properties_sent = true;
 		std::string str = getPropertyPacket();
 		// create message and add to list
-		m_messages_out.emplace(getId(), true, str);
+		m_messages_out.emplace(getId(), true, std::move(str));
+	}
+
+	if (!m_texture_modifier_sent) {
+		m_texture_modifier_sent = true;
+		m_messages_out.emplace(getId(), true, generateSetTextureModCommand());
 	}
 
 	// If attached, check that our parent is still there. If it isn't, detach.
-	if (m_attachment_parent_id && !isAttached()) {
+	if (m_attachment_parent_id && !getParent()) {
 		// This is handled when objects are removed from the map
 		warningstream << "LuaEntitySAO::step() " << m_init_name << " at " << m_last_sent_position << ", id=" << m_id <<
 			" is attached to nonexistent parent. This is a bug." << std::endl;
@@ -203,7 +207,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if (fabs(m_prop.automatic_rotate) > 0.001f) {
+	if (std::abs(m_prop.automatic_rotate) > 0.001f) {
 		m_rotation_add_yaw = modulo360f(m_rotation_add_yaw + dtime * core::RADTODEG *
 				m_prop.automatic_rotate);
 	}
@@ -285,6 +289,8 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 
 void LuaEntitySAO::getStaticData(std::string *result) const
 {
+	assert(isStaticAllowed());
+
 	std::ostringstream os(std::ios::binary);
 	// version must be 1 to keep backwards-compatibility. See version2
 	writeU8(os, 1);
@@ -326,16 +332,16 @@ u32 LuaEntitySAO::punch(v3f dir,
 		return 0;
 	}
 
-	FATAL_ERROR_IF(!puncher, "Punch action called without SAO");
-
 	s32 old_hp = getHP();
 	ItemStack selected_item, hand_item;
-	ItemStack tool_item = puncher->getWieldedItem(&selected_item, &hand_item);
+	ItemStack tool_item;
+	if (puncher)
+		tool_item = puncher->getWieldedItem(&selected_item, &hand_item);
 
 	PunchDamageResult result = getPunchDamage(
 			m_armor_groups,
 			toolcap,
-			&tool_item,
+			puncher ? &tool_item : nullptr,
 			time_from_last_punch,
 			initial_wear);
 
@@ -349,12 +355,16 @@ u32 LuaEntitySAO::punch(v3f dir,
 		}
 	}
 
-	actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
-			", hp=" << puncher->getHP() << ") punched " <<
-			getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
-			"), damage=" << (old_hp - (s32)getHP()) <<
-			(damage_handled ? " (handled by Lua)" : "") << std::endl;
-
+	if (puncher) {
+		actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
+				", hp=" << puncher->getHP() << ")";
+	} else {
+		actionstream << "(none)";
+	}
+	actionstream << " punched " <<
+		  getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
+		  "), damage=" << (old_hp - (s32)getHP()) <<
+		  (damage_handled ? " (handled by Lua)" : "") << std::endl;
 	// TODO: give Lua control over wear
 	return result.wear;
 }
@@ -405,8 +415,6 @@ void LuaEntitySAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 	sendPunchCommand();
 
 	if (m_hp == 0 && !isGone()) {
-		clearParentAttachment();
-		clearChildAttachments();
 		if (m_registered) {
 			ServerActiveObject *killer = nullptr;
 			if (reason.type == PlayerHPChangeReason::PLAYER_PUNCH)
@@ -444,16 +452,16 @@ v3f LuaEntitySAO::getAcceleration()
 
 void LuaEntitySAO::setTextureMod(const std::string &mod)
 {
-	m_current_texture_modifier = mod;
-	// create message and add to list
-	m_messages_out.emplace(getId(), true, generateSetTextureModCommand());
+	if (m_texture_modifier == mod)
+		return;
+	m_texture_modifier = mod;
+	m_texture_modifier_sent = false;
 }
 
 std::string LuaEntitySAO::getTextureMod() const
 {
-	return m_current_texture_modifier;
+	return m_texture_modifier;
 }
-
 
 std::string LuaEntitySAO::generateSetTextureModCommand() const
 {
@@ -461,7 +469,7 @@ std::string LuaEntitySAO::generateSetTextureModCommand() const
 	// command
 	writeU8(os, AO_CMD_SET_TEXTURE_MOD);
 	// parameters
-	os << serializeString16(m_current_texture_modifier);
+	os << serializeString16(m_texture_modifier);
 	return os.str();
 }
 

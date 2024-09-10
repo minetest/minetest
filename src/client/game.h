@@ -22,6 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include <string>
 
+#ifdef SERVER
+#error Do not include in server builds
+#endif
+
 class InputHandler;
 class ChatBackend;
 class RenderingEngine;

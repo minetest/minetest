@@ -46,6 +46,9 @@ local function reset()
 	function core.get_texturepath()
 		return txp_dir
 	end
+	function core.get_texturepath_share()
+		return txp_dir
+	end
 	function core.get_modpath()
 		return mods_dir
 	end
@@ -58,13 +61,6 @@ local function reset()
 
 	setfenv(loadfile("builtin/common/misc_helpers.lua"), env)()
 	setfenv(loadfile("builtin/mainmenu/content/pkgmgr.lua"), env)()
-
-	function env.pkgmgr.update_gamelist()
-		table.insert(calls, { "update_gamelist" })
-	end
-	function env.pkgmgr.refresh_globals()
-		table.insert(calls, { "refresh_globals" })
-	end
 
 	function env.assert_calls(list)
 		assert.are.same(list, calls)
@@ -113,7 +109,6 @@ describe("install_dir", function()
 		env.assert_calls({
 			{ "delete_dir", mods_dir .. "/mymod" },
 			{ "copy_dir", "/tmp/123", mods_dir .. "/mymod", false },
-			{ "refresh_globals" },
 		})
 	end)
 
@@ -129,7 +124,6 @@ describe("install_dir", function()
 		env.assert_calls({
 			{ "delete_dir", mods_dir .. "/mymod" },
 			{ "copy_dir", "/tmp/123", mods_dir .. "/mymod", false },
-			{ "refresh_globals" },
 		})
 	end)
 
@@ -145,7 +139,6 @@ describe("install_dir", function()
 		env.assert_calls({
 			{ "delete_dir", games_dir .. "/mygame" },
 			{ "copy_dir", "/tmp/123", games_dir .. "/mygame", false },
-			{ "update_gamelist" },
 		})
 	end)
 
@@ -161,7 +154,6 @@ describe("install_dir", function()
 		env.assert_calls({
 			{ "delete_dir", mods_dir .. "/123" },
 			{ "copy_dir", "/tmp/123", mods_dir .. "/123", false },
-			{ "refresh_globals" },
 		})
 	end)
 
@@ -188,7 +180,6 @@ describe("install_dir", function()
 		env.assert_calls({
 			{ "delete_dir", "/tmp/alt-target" },
 			{ "copy_dir", "/tmp/123", "/tmp/alt-target", false },
-			{ "refresh_globals" },
 		})
 	end)
 
@@ -238,6 +229,5 @@ describe("install_dir", function()
 		path, message = env.pkgmgr.install_dir("txp", "/tmp/123", "name", nil)
 		assert.is._not._nil(path)
 		assert.is._nil(message)
-
 	end)
 end)

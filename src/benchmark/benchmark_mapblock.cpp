@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "benchmark_setup.h"
+#include "catch.h"
 #include "mapblock.h"
 #include <vector>
 
@@ -27,7 +27,7 @@ static void allocateSome(MBContainer &vec, u32 n)
 {
 	vec.reserve(vec.size() + n);
 	for (u32 i = 0; i < n; i++) {
-		auto *mb = new MapBlock({i & 0xff, 0, i >> 8}, nullptr);
+		auto *mb = new MapBlock(v3s16(i & 0xff, 0, (i >> 8) & S16_MAX), nullptr);
 		vec.push_back(mb);
 	}
 }

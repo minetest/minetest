@@ -17,15 +17,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "catch.h"
+
 #include "test.h"
 
-#include "client/sound.h"
 #include "nodedef.h"
 #include "itemdef.h"
 #include "dummygamedef.h"
 #include "modchannels.h"
 #include "util/numeric.h"
 #include "porting.h"
+#include "debug.h"
+
+#include <iostream>
+
+#include "catch.h"
 
 content_t t_CONTENT_STONE;
 content_t t_CONTENT_GRASS;
@@ -234,6 +240,21 @@ bool run_tests()
 		num_total_tests_run += testmod->num_tests_run;
 	}
 
+	rawstream << "Catch test results: " << std::endl;
+	Catch::Session session{};
+	auto config = session.configData();
+	config.skipBenchmarks = true;
+	config.allowZeroTests = true;
+	session.useConfigData(config);
+	auto exit_code = session.run();
+	// We count all the Catch tests as one test for Minetest's own logging
+	// because we don't have a way to tell how many individual tests Catch ran.
+	++num_total_tests_run;
+	if (exit_code != 0) {
+		++num_modules_failed;
+		++num_total_tests_failed;
+	}
+
 	u64 tdiff = porting::getTimeMs() - t1;
 
 	g_logger.setLevelSilenced(LL_ERROR, false);
@@ -269,8 +290,11 @@ bool run_tests(const std::string &module_name)
 
 	auto testmod = findTestModule(module_name);
 	if (!testmod) {
-		errorstream << "Test module not found: " << module_name << std::endl;
-		return 1;
+		rawstream << "Did not find module, searching Catch tests: " << module_name << std::endl;
+		Catch::Session session;
+		session.configData().testsOrTags.push_back(module_name);
+		auto catch_test_failures = session.run();
+		return catch_test_failures == 0;
 	}
 
 	g_logger.setLevelSilenced(LL_ERROR, true);
@@ -325,13 +349,8 @@ std::string TestBase::getTestTempDirectory()
 	if (!m_test_dir.empty())
 		return m_test_dir;
 
-	char buf[32];
-	porting::mt_snprintf(buf, sizeof(buf), "%08X", myrand());
-
-	m_test_dir = fs::TempPath() + DIR_DELIM "mttest_" + buf;
-	if (!fs::CreateDir(m_test_dir))
-		UASSERT(false);
-
+	m_test_dir = fs::CreateTempDir();
+	UASSERT(!m_test_dir.empty());
 	return m_test_dir;
 }
 
@@ -354,11 +373,14 @@ void TestBase::runTest(const char *name, std::function<void()> &&test)
 		rawstream << "    at " << e.file << ":" << e.line << std::endl;
 		rawstream << "[FAIL] ";
 		num_tests_failed++;
-	} catch (std::exception &e) {
+	}
+#if CATCH_UNHANDLED_EXCEPTIONS == 1
+	catch (std::exception &e) {
 		rawstream << "Caught unhandled exception: " << e.what() << std::endl;
 		rawstream << "[FAIL] ";
 		num_tests_failed++;
 	}
+#endif
 	num_tests_run++;
 	u64 tdiff = porting::getTimeMs() - t1;
 	rawstream << name << " - " << tdiff << "ms" << std::endl;

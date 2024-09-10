@@ -206,25 +206,6 @@ Minimap::Minimap(Client *client)
 
 	data->minimap_shape_round = g_settings->getBool("minimap_shape_round");
 
-	// Get round minimap textures
-	data->minimap_mask_round = driver->createImage(
-		m_tsrc->getTexture("minimap_mask_round.png"),
-		core::position2d<s32>(0, 0),
-		core::dimension2d<u32>(MINIMAP_MAX_SX, MINIMAP_MAX_SY));
-	data->minimap_overlay_round = m_tsrc->getTexture("minimap_overlay_round.png");
-
-	// Get square minimap textures
-	data->minimap_mask_square = driver->createImage(
-		m_tsrc->getTexture("minimap_mask_square.png"),
-		core::position2d<s32>(0, 0),
-		core::dimension2d<u32>(MINIMAP_MAX_SX, MINIMAP_MAX_SY));
-	data->minimap_overlay_square = m_tsrc->getTexture("minimap_overlay_square.png");
-
-	// Create player marker texture
-	data->player_marker = m_tsrc->getTexture("player_marker.png");
-	// Create object marker texture
-	data->object_marker_red = m_tsrc->getTexture("object_marker_red.png");
-
 	setModeIndex(0);
 
 	// Create mesh buffer for minimap
@@ -243,8 +224,10 @@ Minimap::~Minimap()
 
 	m_meshbuffer->drop();
 
-	data->minimap_mask_round->drop();
-	data->minimap_mask_square->drop();
+	if (data->minimap_mask_round)
+		data->minimap_mask_round->drop();
+	if (data->minimap_mask_square)
+		data->minimap_mask_square->drop();
 
 	driver->removeTexture(data->texture);
 	driver->removeTexture(data->heightmap_texture);
@@ -461,6 +444,29 @@ void Minimap::blitMinimapPixelsToImageSurface(
 	}
 }
 
+video::IImage *Minimap::getMinimapMask()
+{
+	if (data->minimap_shape_round) {
+		if (!data->minimap_mask_round) {
+			// Get round minimap textures
+			data->minimap_mask_round = driver->createImage(
+				m_tsrc->getTexture("minimap_mask_round.png"),
+				core::position2d<s32>(0, 0),
+				core::dimension2d<u32>(MINIMAP_MAX_SX, MINIMAP_MAX_SY));
+		}
+		return data->minimap_mask_round;
+	}
+
+	if (!data->minimap_mask_square) {
+		// Get square minimap textures
+		data->minimap_mask_square = driver->createImage(
+			m_tsrc->getTexture("minimap_mask_square.png"),
+			core::position2d<s32>(0, 0),
+			core::dimension2d<u32>(MINIMAP_MAX_SX, MINIMAP_MAX_SY));
+	}
+	return data->minimap_mask_square;
+}
+
 video::ITexture *Minimap::getMinimapTexture()
 {
 	// update minimap textures when new scan is ready
@@ -509,16 +515,13 @@ video::ITexture *Minimap::getMinimapTexture()
 	map_image->copyToScaling(minimap_image);
 	map_image->drop();
 
-	video::IImage *minimap_mask = data->minimap_shape_round ?
-		data->minimap_mask_round : data->minimap_mask_square;
+	video::IImage *minimap_mask = getMinimapMask();
 
-	if (minimap_mask) {
-		for (s16 y = 0; y < MINIMAP_MAX_SY; y++)
-		for (s16 x = 0; x < MINIMAP_MAX_SX; x++) {
-			const video::SColor &mask_col = minimap_mask->getPixel(x, y);
-			if (!mask_col.getAlpha())
-				minimap_image->setPixel(x, y, video::SColor(0,0,0,0));
-		}
+	for (s16 y = 0; y < MINIMAP_MAX_SY; y++)
+	for (s16 x = 0; x < MINIMAP_MAX_SX; x++) {
+		const video::SColor &mask_col = minimap_mask->getPixel(x, y);
+		if (!mask_col.getAlpha())
+			minimap_image->setPixel(x, y, video::SColor(0,0,0,0));
 	}
 
 	if (data->texture)
@@ -552,44 +555,44 @@ v3f Minimap::getYawVec()
 scene::SMeshBuffer *Minimap::getMinimapMeshBuffer()
 {
 	scene::SMeshBuffer *buf = new scene::SMeshBuffer();
-	buf->Vertices.set_used(4);
-	buf->Indices.set_used(6);
+	auto &vertices = buf->Vertices->Data;
+	auto &indices = buf->Indices->Data;
+	vertices.resize(4);
+	indices.resize(6);
 	static const video::SColor c(255, 255, 255, 255);
 
-	buf->Vertices[0] = video::S3DVertex(-1, -1, 0, 0, 0, 1, c, 0, 1);
-	buf->Vertices[1] = video::S3DVertex(-1,  1, 0, 0, 0, 1, c, 0, 0);
-	buf->Vertices[2] = video::S3DVertex( 1,  1, 0, 0, 0, 1, c, 1, 0);
-	buf->Vertices[3] = video::S3DVertex( 1, -1, 0, 0, 0, 1, c, 1, 1);
+	vertices[0] = video::S3DVertex(-1, -1, 0, 0, 0, 1, c, 0, 1);
+	vertices[1] = video::S3DVertex(-1,  1, 0, 0, 0, 1, c, 0, 0);
+	vertices[2] = video::S3DVertex( 1,  1, 0, 0, 0, 1, c, 1, 0);
+	vertices[3] = video::S3DVertex( 1, -1, 0, 0, 0, 1, c, 1, 1);
 
-	buf->Indices[0] = 0;
-	buf->Indices[1] = 1;
-	buf->Indices[2] = 2;
-	buf->Indices[3] = 2;
-	buf->Indices[4] = 3;
-	buf->Indices[5] = 0;
+	indices[0] = 0;
+	indices[1] = 1;
+	indices[2] = 2;
+	indices[3] = 2;
+	indices[4] = 3;
+	indices[5] = 0;
 
+	buf->setHardwareMappingHint(scene::EHM_STATIC);
 	return buf;
 }
 
-void Minimap::drawMinimap()
+void Minimap::drawMinimap(core::rect<s32> rect)
 {
-	// Non hud managed minimap drawing (legacy minimap)
-	v2u32 screensize = RenderingEngine::getWindowSize();
-	const u32 size = 0.25 * screensize.Y;
+	if (data->mode.type == MINIMAP_TYPE_OFF)
+		return;
 
-	drawMinimap(core::rect<s32>(
-		screensize.X - size - 10, 10,
-		screensize.X - 10, size + 10));
-}
-
-void Minimap::drawMinimap(core::rect<s32> rect) {
-
+	// Get textures
 	video::ITexture *minimap_texture = getMinimapTexture();
 	if (!minimap_texture)
 		return;
-
-	if (data->mode.type == MINIMAP_TYPE_OFF)
-		return;
+	if (!data->textures_initialised) {
+		data->minimap_overlay_round = m_tsrc->getTexture("minimap_overlay_round.png");
+		data->minimap_overlay_square = m_tsrc->getTexture("minimap_overlay_square.png");
+		data->player_marker = m_tsrc->getTexture("player_marker.png");
+		data->object_marker_red = m_tsrc->getTexture("object_marker_red.png");
+		data->textures_initialised = true;
+	}
 
 	updateActiveMarkers();
 
@@ -614,7 +617,7 @@ void Minimap::drawMinimap(core::rect<s32> rect) {
 	material.TextureLayers[1].Texture = data->heightmap_texture;
 
 	if (m_enable_shaders && data->mode.type == MINIMAP_TYPE_SURFACE) {
-		u16 sid = m_shdrsrc->getShader("minimap_shader", TILE_MATERIAL_ALPHA);
+		auto sid = m_shdrsrc->getShader("minimap_shader", TILE_MATERIAL_ALPHA);
 		material.MaterialType = m_shdrsrc->getShaderInfo(sid).material;
 	} else {
 		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -700,8 +703,7 @@ void Minimap::removeMarker(MinimapMarker **m)
 
 void Minimap::updateActiveMarkers()
 {
-	video::IImage *minimap_mask = data->minimap_shape_round ?
-		data->minimap_mask_round : data->minimap_mask_square;
+	video::IImage *minimap_mask = getMinimapMask();
 
 	m_active_markers.clear();
 	v3f cam_offset = intToFloat(client->getCamera()->getOffset(), BS);

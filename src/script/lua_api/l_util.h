@@ -113,6 +113,9 @@ private:
 	// sha1(string, raw)
 	static int l_sha1(lua_State *L);
 
+	// sha256(string, raw)
+	static int l_sha256(lua_State *L);
+
 	// colorspec_to_colorstring(colorspec)
 	static int l_colorspec_to_colorstring(lua_State *L);
 
@@ -130,6 +133,9 @@ private:
 
 	// urlencode(value)
 	static int l_urlencode(lua_State *L);
+
+	// is_valid_player_name(name)
+	static int l_is_valid_player_name(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);
