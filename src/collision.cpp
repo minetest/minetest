@@ -348,6 +348,10 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	collisionMoveResult result;
 
+	// Assume no collisions when no velocity and no acceleration
+	if (*speed_f == v3f() && accel_f == v3f())
+		return result;
+
 	/*
 		Calculate new velocity
 	*/
@@ -362,20 +366,13 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		time_notification_done = false;
 	}
 
-	// Final position and speed
-	v3f dpos_f = (*speed_f + accel_f * 0.5f * dtime) * dtime;
-	*speed_f += accel_f * dtime;
-
-	// If the object is static, there are no collisions
-	if (dpos_f == v3f())
-		return result;
-
+	// Average speed
+	v3f aspeed_f = *speed_f + accel_f * 0.5f * dtime;
 	// Limit speed for avoiding hangs
-	speed_f->Y = rangelim(speed_f->Y, -5000, 5000);
-	speed_f->X = rangelim(speed_f->X, -5000, 5000);
-	speed_f->Z = rangelim(speed_f->Z, -5000, 5000);
-
-	*speed_f = truncate(*speed_f, 10000.0f);
+	aspeed_f.Y = rangelim(aspeed_f.Y, -5000, 5000);
+	aspeed_f.X = rangelim(aspeed_f.X, -5000, 5000);
+	aspeed_f.Z = rangelim(aspeed_f.Z, -5000, 5000);
+	aspeed_f = truncate(aspeed_f, 10000.0f);
 
 	// Collect node boxes in movement range
 
@@ -384,7 +381,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	cinfo.clear();
 	{
 		// Movement if no collisions
-		v3f newpos_f = *pos_f + dpos_f;
+		v3f newpos_f = *pos_f + aspeed_f * dtime;
 		v3f minpos_f(
 			MYMIN(pos_f->X, newpos_f.X),
 			MYMIN(pos_f->Y, newpos_f.Y) + 0.01f * BS, // bias rounding, player often at +/-n.5
@@ -412,8 +409,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	// Collect object boxes in movement range
 	if (collide_with_objects) {
-		add_object_boxes(env, box_0, dtime, *pos_f, *speed_f, self, cinfo);
-	}
+		add_object_boxes(env, box_0, dtime, *pos_f, aspeed_f, self, cinfo);
+    }
 
 	// Collision detection
 	f32 d = 0.0f;
@@ -441,8 +438,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			// Find nearest collision of the two boxes (raytracing-like)
 			f32 dtime_tmp = nearest_dtime;
 			CollisionAxis collided = axisAlignedCollision(box_info.box,
-					movingbox, *speed_f, &dtime_tmp);
-
+					movingbox, aspeed_f, &dtime_tmp);
 			if (collided == -1 || dtime_tmp >= nearest_dtime)
 				continue;
 
@@ -453,7 +449,14 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 		if (nearest_collided == COLLISION_AXIS_NONE) {
 			// No collision with any collision box.
-			*pos_f += truncate(*speed_f * dtime, 100.0f);
+			*pos_f += truncate(aspeed_f * dtime, 100.0f);
+			// Final speed:
+			*speed_f += accel_f * dtime;
+			// Limit speed for avoiding hangs
+			speed_f->Y = rangelim(speed_f->Y, -5000, 5000);
+			speed_f->X = rangelim(speed_f->X, -5000, 5000);
+			speed_f->Z = rangelim(speed_f->Z, -5000, 5000);
+			*speed_f = truncate(*speed_f, 10000.0f);
 			break;
 		}
 		// Otherwise, a collision occurred.
@@ -464,10 +467,12 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		bool step_up = false;
 		if (nearest_collided != COLLISION_AXIS_Y) {
 			aabb3f stepbox = movingbox;
-			stepbox.MinEdge.X += speed_f->X * dtime;
-			stepbox.MinEdge.Z += speed_f->Z * dtime;
-			stepbox.MaxEdge.X += speed_f->X * dtime;
-			stepbox.MaxEdge.Z += speed_f->Z * dtime;
+			// Look slightly ahead  for checking the height when stepping
+			float extra_dtime = nearest_dtime + 0.1f * fabsf(dtime - nearest_dtime);
+			stepbox.MinEdge.X += aspeed_f.X * extra_dtime;
+			stepbox.MinEdge.Z += aspeed_f.Z * extra_dtime;
+			stepbox.MaxEdge.X += aspeed_f.X * extra_dtime;
+			stepbox.MaxEdge.Z += aspeed_f.Z * extra_dtime;
 			// Check for stairs.
 			step_up = (movingbox.MinEdge.Y < cbox.MaxEdge.Y) &&
 				(movingbox.MinEdge.Y + stepheight > cbox.MaxEdge.Y) &&
@@ -482,16 +487,26 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		// Move to the point of collision and reduce dtime by nearest_dtime
 		if (nearest_dtime < 0) {
 			// Handle negative nearest_dtime
+			// This largely means an "instant" collision, e.g., with the floor.
+			// We use aspeed and nearest_dtime to be consistent with above and resolve this collision
 			if (!step_up) {
 				if (nearest_collided == COLLISION_AXIS_X)
-					pos_f->X += speed_f->X * nearest_dtime;
+					pos_f->X += aspeed_f.X * nearest_dtime;
 				if (nearest_collided == COLLISION_AXIS_Y)
-					pos_f->Y += speed_f->Y * nearest_dtime;
+					pos_f->Y += aspeed_f.Y * nearest_dtime;
 				if (nearest_collided == COLLISION_AXIS_Z)
-					pos_f->Z += speed_f->Z * nearest_dtime;
+					pos_f->Z += aspeed_f.Z * nearest_dtime;
 			}
-		} else {
-			*pos_f += truncate(*speed_f * nearest_dtime, 100.0f);
+		} else if (nearest_dtime > 0) {
+			aspeed_f = *speed_f + accel_f * 0.5f * nearest_dtime;
+			*pos_f += truncate(aspeed_f * nearest_dtime, 100.0f);
+			// Speed at (approximated) collision:
+			*speed_f += accel_f * nearest_dtime;
+			// Limit speed for avoiding hangs
+			speed_f->Y = rangelim(speed_f->Y, -5000, 5000);
+			speed_f->X = rangelim(speed_f->X, -5000, 5000);
+			speed_f->Z = rangelim(speed_f->Z, -5000, 5000);
+			*speed_f = truncate(*speed_f, 10000.0f);
 			dtime -= nearest_dtime;
 		}
 
@@ -517,24 +532,27 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			nearest_info.is_step_up = true;
 			is_collision = false;
 		} else if (nearest_collided == COLLISION_AXIS_X) {
-			if (fabsf(speed_f->X) > BS * 3) {
+			if (bounce < -1e-4 && fabsf(speed_f->X) > BS * 3) {
 				speed_f->X *= bounce;
 			} else {
 				speed_f->X = 0;
+				accel_f.X = 0;
 			}
 			result.collides = true;
 		} else if (nearest_collided == COLLISION_AXIS_Y) {
-			if(fabsf(speed_f->Y) > BS * 3) {
+			if(bounce < -1e-4 && fabsf(speed_f->Y) > BS * 3) {
 				speed_f->Y *= bounce;
 			} else {
 				speed_f->Y = 0;
+				accel_f.Y = 0;
 			}
 			result.collides = true;
 		} else if (nearest_collided == COLLISION_AXIS_Z) {
-			if (fabsf(speed_f->Z) > BS * 3) {
+			if (bounce < -1e-4 && fabsf(speed_f->Z) > BS * 3) {
 				speed_f->Z *= bounce;
 			} else {
 				speed_f->Z = 0;
+				accel_f.Z = 0;
 			}
 			result.collides = true;
 		}
@@ -550,6 +568,14 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 		if (dtime < BS * 1e-10f)
 			break;
+
+		// Speed for finding the next collision
+		aspeed_f = *speed_f + accel_f * 0.5f * dtime;
+		// Limit speed for avoiding hangs
+		aspeed_f.Y = rangelim(aspeed_f.Y, -5000, 5000);
+		aspeed_f.X = rangelim(aspeed_f.X, -5000, 5000);
+		aspeed_f.Z = rangelim(aspeed_f.Z, -5000, 5000);
+		aspeed_f = truncate(aspeed_f, 10000.0f);
 	}
 
 	/*
