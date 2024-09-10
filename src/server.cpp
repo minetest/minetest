@@ -104,10 +104,6 @@ void *ServerThread::run()
 {
 	ZoneScoped;
 
-	static const char *framename_ServerThread_run    = "ServerThread::run()-frame";
-	static const char *framename_Server_AsyncRunStep = "Server::AsyncRunStep()-frame";
-	static const char *framename_Server_Receive      = "Server::Receive()-frame";
-
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
 	/*
@@ -117,9 +113,8 @@ void *ServerThread::run()
 	 * server-step frequency. Receive() is used for waiting between the steps.
 	 */
 
-	auto framemarker_str = FrameMarker(framename_ServerThread_run).started();
+	auto framemarker = FrameMarker("ServerThread::run()-frame").started();
 	try {
-		auto framemarker_ars = FrameMarker(framename_Server_AsyncRunStep).started();
 		m_server->AsyncRunStep(0.0f, true);
 	} catch (con::ConnectionBindFailed &e) {
 		m_server->setAsyncFatalError(e.what());
@@ -128,12 +123,12 @@ void *ServerThread::run()
 	} catch (ModError &e) {
 		m_server->setAsyncFatalError(e.what());
 	}
-	framemarker_str.end();
+	framemarker.end();
 
 	float dtime = 0.0f;
 
 	while (!stopRequested()) {
-		framemarker_str.start();
+		framemarker.start();
 		ScopeProfiler spm(g_profiler, "Server::RunStep() (max)", SPT_MAX);
 
 		u64 t0 = porting::getTimeUs();
@@ -141,15 +136,11 @@ void *ServerThread::run()
 		const Server::StepSettings step_settings = m_server->getStepSettings();
 
 		try {
-			auto framemarker_ars = FrameMarker(framename_Server_AsyncRunStep).started();
 			m_server->AsyncRunStep(step_settings.pause ? 0.0f : dtime);
-			framemarker_ars.end();
 
 			const float remaining_time = step_settings.steplen
 					- 1e-6f * (porting::getTimeUs() - t0);
-			auto framemarker_rec = FrameMarker(framename_Server_Receive).started();
 			m_server->Receive(remaining_time);
-			framemarker_rec.end();
 
 		} catch (con::PeerNotFoundException &e) {
 			infostream<<"Server: PeerNotFoundException"<<std::endl;
@@ -164,7 +155,7 @@ void *ServerThread::run()
 		}
 
 		dtime = 1e-6f * (porting::getTimeUs() - t0);
-		framemarker_str.end();
+		framemarker.end();
 	}
 
 	END_DEBUG_EXCEPTION_HANDLER
@@ -624,6 +615,7 @@ void Server::step()
 void Server::AsyncRunStep(float dtime, bool initial_step)
 {
 	ZoneScoped;
+	auto framemarker = FrameMarker("Server::AsyncRunStep()-frame").started();
 
 	{
 		// Send blocks to clients
@@ -1074,6 +1066,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 void Server::Receive(float timeout)
 {
 	ZoneScoped;
+	auto framemarker = FrameMarker("Server::Receive()-frame").started();
 
 	const u64 t0 = porting::getTimeUs();
 	const float timeout_us = timeout * 1e6f;

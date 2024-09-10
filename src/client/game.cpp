@@ -1143,8 +1143,6 @@ void Game::run()
 {
 	ZoneScoped;
 
-	static const char *framename_Game_run = "Game::run()-frame";
-
 	ProfilerGraph graph;
 	RunStats stats = {};
 	CameraOrientation cam_view_target = {};
@@ -1172,7 +1170,7 @@ void Game::run()
 	const bool initial_window_maximized = !g_settings->getBool("fullscreen") &&
 			g_settings->getBool("window_maximized");
 
-	auto framemarker = FrameMarker(framename_Game_run).started();
+	auto framemarker = FrameMarker("Game::run()-frame").started();
 
 	while (m_rendering_engine->run()
 			&& !(*kill || g_gamecallback->shutdown_requested
@@ -1598,9 +1596,6 @@ bool Game::initGui()
 bool Game::connectToServer(const GameStartData &start_data,
 		bool *connect_ok, bool *connection_aborted)
 {
-	static const char *framename_Game_connectToServer =
-			"Game::connectToServer()-frame";
-
 	*connect_ok = false;	// Let's not be overly optimistic
 	*connection_aborted = false;
 	bool local_server_mode = false;
@@ -1687,7 +1682,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 
 		fps_control.reset();
 
-		auto framemarker = FrameMarker(framename_Game_connectToServer).started();
+		auto framemarker = FrameMarker("Game::connectToServer()-frame").started();
 
 		while (m_rendering_engine->run()) {
 
@@ -1750,9 +1745,6 @@ bool Game::connectToServer(const GameStartData &start_data,
 
 bool Game::getServerContent(bool *aborted)
 {
-	static const char *framename_Game_getServerContent =
-			"Game::getServerContent()-frame";
-
 	input->clear();
 
 	FpsControl fps_control;
@@ -1760,7 +1752,7 @@ bool Game::getServerContent(bool *aborted)
 
 	fps_control.reset();
 
-	auto framemarker = FrameMarker(framename_Game_getServerContent).started();
+	auto framemarker = FrameMarker("Game::getServerContent()-frame").started();
 	while (m_rendering_engine->run()) {
 		framemarker.end();
 		fps_control.limit(device, &dtime);

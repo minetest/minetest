@@ -541,14 +541,11 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 void ClientLauncher::main_menu(MainMenuData *menudata)
 {
-	static const char *framename_ClientLauncher_main_menu =
-			"ClientLauncher::main_menu()-wait-frame";
-
 	bool *kill = porting::signal_handler_killstatus();
 	video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
 
 	infostream << "Waiting for other menus" << std::endl;
-	auto framemarker = FrameMarker(framename_ClientLauncher_main_menu).started();
+	auto framemarker = FrameMarker("ClientLauncher::main_menu()-wait-frame").started();
 	while (m_rendering_engine->run() && !*kill) {
 		if (!isMenuActive())
 			break;

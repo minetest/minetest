@@ -293,8 +293,6 @@ bool GUIEngine::loadMainMenuScript()
 /******************************************************************************/
 void GUIEngine::run()
 {
-	static const char *framename_GuiEngine_run = "GUIEngine::run()-frame";
-
 	IrrlichtDevice *device = m_rendering_engine->get_raw_device();
 	video::IVideoDriver *driver = device->getVideoDriver();
 
@@ -332,7 +330,7 @@ void GUIEngine::run()
 
 	fps_control.reset();
 
-	auto framemarker = FrameMarker(framename_GuiEngine_run).started();
+	auto framemarker = FrameMarker("GUIEngine::run()-frame").started();
 
 	while (m_rendering_engine->run() && !m_startgame && !m_kill) {
 		framemarker.end();

@@ -451,9 +451,6 @@ void *OpenALSoundManager::run()
 {
 	using namespace sound_manager_messages_to_mgr;
 
-	static const char *framename_OpenALSoundManager_run =
-			"OpenALSoundManager::run()-frame";
-
 	struct MsgVisitor {
 		enum class Result { Ok, Empty, StopRequested };
 
@@ -496,7 +493,7 @@ void *OpenALSoundManager::run()
 
 	u64 t_step_start = porting::getTimeMs();
 	while (true) {
-		auto framemarker = FrameMarker(framename_OpenALSoundManager_run).started();
+		auto framemarker = FrameMarker("OpenALSoundManager::run()-frame").started();
 
 		auto get_time_since_last_step = [&] {
 			return (f32)(porting::getTimeMs() - t_step_start);
