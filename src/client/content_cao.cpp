@@ -186,6 +186,12 @@ static bool logOnce(const std::ostringstream &from, std::ostream &log_to)
 	return true;
 }
 
+static void setEmissiveColor(scene::ISceneNode *node, video::SColor color)
+{
+	for (u32 i = 0; i < node->getMaterialCount(); ++i)
+		node->getMaterial(i).EmissiveColor = color;
+}
+
 /*
 	TestCAO
 */
@@ -774,8 +780,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			// set vertex colors to ensure alpha is set
 			setMeshColor(m_animated_meshnode->getMesh(), video::SColor(0xFFFFFFFF));
 
-			setAnimatedMeshColor(m_animated_meshnode, video::SColor(0xFFFFFFFF));
-
 			setSceneNodeMaterials(m_animated_meshnode);
 
 			m_animated_meshnode->forEachMaterial([this] (auto &mat) {
@@ -923,26 +927,15 @@ void GenericCAO::setNodeLight(const video::SColor &light_color)
 	}
 
 	if (m_enable_shaders) {
-		if (m_prop.visual == "upright_sprite") {
-			if (!m_meshnode)
-				return;
-			for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i)
-				m_meshnode->getMaterial(i).EmissiveColor = light_color;
-		} else {
-			scene::ISceneNode *node = getSceneNode();
-			if (!node)
-				return;
-
-			for (u32 i = 0; i < node->getMaterialCount(); ++i) {
-				video::SMaterial &material = node->getMaterial(i);
-				material.EmissiveColor = light_color;
-			}
-		}
+		auto *node = getSceneNode();
+		if (!node)
+			return;
+		setEmissiveColor(node, light_color);
 	} else {
 		if (m_meshnode) {
 			setMeshColor(m_meshnode->getMesh(), light_color);
 		} else if (m_animated_meshnode) {
-			setAnimatedMeshColor(m_animated_meshnode, light_color);
+			setMeshColor(m_animated_meshnode->getMesh(), light_color);
 		} else if (m_spritenode) {
 			m_spritenode->setColor(light_color);
 		}
@@ -1404,7 +1397,6 @@ void GenericCAO::updateTextures(std::string mod)
 				material.MaterialType = m_material_type;
 				material.MaterialTypeParam = m_material_type_param;
 				material.TextureLayers[0].Texture = texture;
-				material.Lighting = true;
 				material.BackfaceCulling = m_prop.backface_culling;
 
 				// don't filter low-res textures, makes them look blurry

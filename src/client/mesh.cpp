@@ -181,13 +181,6 @@ void setMeshBufferColor(scene::IMeshBuffer *buf, const video::SColor &color)
 		((video::S3DVertex *) (vertices + i * stride))->Color = color;
 }
 
-void setAnimatedMeshColor(scene::IAnimatedMeshSceneNode *node, const video::SColor &color)
-{
-	for (u32 i = 0; i < node->getMaterialCount(); ++i) {
-		node->getMaterial(i).EmissiveColor = color;
-	}
-}
-
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 {
 	if (mesh == NULL)
