@@ -134,11 +134,10 @@ void MapblockMeshGenerator::getSpecialTile(int index, TileSpec *tile, bool apply
 		top_layer->material_flags |= MATERIAL_FLAG_CRACK;
 }
 
-void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal,
-	float vertical_tiling)
+void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
 {
 	const v2f tcoords[4] = {v2f(0.0, 0.0), v2f(1.0, 0.0),
-		v2f(1.0, vertical_tiling), v2f(0.0, vertical_tiling)};
+		v2f(1.0, 1.0), v2f(0.0, 1.0)};
 	video::S3DVertex vertices[4];
 	bool shade_face = !cur_node.f->light_source && (normal != v3s16(0, 0, 0));
 	v3f normal2(normal.X, normal.Y, normal.Z);
@@ -829,6 +828,12 @@ void MapblockMeshGenerator::drawLiquidTop()
 
 	std::swap(vertices[0].TCoords, vertices[2].TCoords);
 
+	infostream << "drawLiquidTop()" << std::endl;
+	infostream << "1 tcoord: " << vertices[0].TCoords.X << ", " << vertices[0].TCoords.Y << std::endl;
+	infostream << "2 tcoord: " << vertices[1].TCoords.X << ", " << vertices[1].TCoords.Y << std::endl;
+	infostream << "3 tcoord: " << vertices[2].TCoords.X << ", " << vertices[2].TCoords.Y << std::endl;
+	infostream << "4 tcoord: " << vertices[3].TCoords.X << ", " << vertices[3].TCoords.Y << std::endl;
+
 	collector->addTileMesh(cur_liquid.tile_top, vertices, 4, quad_indices, 6);
 }
 
@@ -1146,9 +1151,14 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	bool offset_top_only)
 {
 	const f32 scale = cur_node.scale;
+	const f32 dscale = 2.0f * scale;
+
+	int plant_height_int = (int)cur_plant.plant_height;
+	f32 lower_quad_height = plant_height_int > 0 ? 1.0f : cur_plant.plant_height;
+
 	v3f vertices[4] = {
-		v3f(-scale, -BS / 2 + 2.0 * scale * cur_plant.plant_height, 0),
-		v3f( scale, -BS / 2 + 2.0 * scale * cur_plant.plant_height, 0),
+		v3f(-scale, -BS / 2 + dscale * lower_quad_height, 0),
+		v3f( scale, -BS / 2 + dscale * lower_quad_height, 0),
 		v3f( scale, -BS / 2, 0),
 		v3f(-scale, -BS / 2, 0),
 	};
@@ -1195,7 +1205,27 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 		}
 	}
 
-	drawQuad(vertices, v3s16(0, 0, 0), cur_plant.plant_height);
+	for (int quad_i = 0; quad_i < plant_height_int; quad_i++) {
+		v3f vertices_c[4];
+
+		for (int v_i = 0; v_i < 4; v_i++)
+			vertices_c[v_i] = vertices[v_i] + v3f(0, dscale * quad_i, 0);
+
+		drawQuad(vertices_c, v3s16(0, 0, 0));
+	}
+
+	f32 height_remain = cur_plant.plant_height - plant_height_int;
+
+	if (height_remain > 0.0f) {
+		v3f vertices_c[4] = {
+			vertices[0] + v3f(0, dscale * cur_plant.plant_height, 0),
+			vertices[1] + v3f(0, dscale * cur_plant.plant_height, 0),
+			vertices[2] + v3f(0, dscale * plant_height_int, 0),
+			vertices[3] + v3f(0, dscale * plant_height_int, 0)
+		};
+
+		drawQuad(vertices_c, v3s16(0, 0, 0));
+	}
 }
 
 void MapblockMeshGenerator::drawPlantlike(bool is_rooted)
@@ -1236,6 +1266,7 @@ void MapblockMeshGenerator::drawPlantlike(bool is_rooted)
 	}
 
 	if (is_rooted) {
+		infostream << "drawPlantlikeRooted" << std::endl;
 		u8 wall = cur_node.n.getWallMounted(nodedef);
 		switch (wall) {
 			case DWM_YP:

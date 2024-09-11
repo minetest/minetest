@@ -104,8 +104,7 @@ private:
 	void getSpecialTile(int index, TileSpec *tile, bool apply_crack = false);
 
 // face drawing
-	void drawQuad(v3f *vertices, const v3s16 &normal = v3s16(0, 0, 0),
-		float vertical_tiling = 1.0);
+	void drawQuad(v3f *vertices, const v3s16 &normal = v3s16(0, 0, 0));
 
 // cuboid drawing!
 	template <typename Fn>
