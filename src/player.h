@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <functional>
 #include <tuple>
 #include <string>
-#include "client/client.h"
 
 #define PLAYERNAME_SIZE 20
 

@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/enriched_string.h"
 #include "util/pointedthing.h"
 #include "client.h"
-#include "player.h"
 #include "clientmap.h"
 #include "fontengine.h"
 #include "hud.h" // HUD_FLAG_*
@@ -36,9 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "renderingengine.h"
 #include "version.h"
-#include "network/connection.h"
-#include "network/networkprotocol.h"
-#include "network/serveropcodes.h"
 
 
 inline static const char *yawToDirectionString(int yaw)

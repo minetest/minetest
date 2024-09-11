@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "skyparams.h"
 #include "lighting.h"
 #include "network/networkprotocol.h" // session_t
-#include <iostream>
 
 class PlayerSAO;
 
