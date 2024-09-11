@@ -86,7 +86,7 @@ public:
 		return m_flags.show_chat && m_recent_chat_count != 0 && m_profiler_current_page == 0;
 	}
 	void setChatText(const EnrichedString &chat_text, u32 recent_chat_count);
-	void updateChatSize();
+	void updateChatSize(Client *client);
 
 	void updateProfiler();
 

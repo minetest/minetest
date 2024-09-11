@@ -2727,6 +2727,43 @@ int ObjectRef::l_get_flags(lua_State *L)
 	return 1;
 }
 
+// set_chat_position(x,y)
+int ObjectRef::l_set_chat_position(lua_State* L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	ObjectRef* ref = checkObject<ObjectRef>(L, 1);
+	RemotePlayer* player = getplayer(ref);
+	int x = luaL_checkinteger(L, 2);
+	int y = luaL_checkinteger(L, 3);
+
+	if (!player) {
+		lua_pushnil(L);
+		return 0;
+	}
+
+	getServer(L)->setChatPos(player, x, y);
+
+	return 1;
+}
+
+// get_chat_position(self)
+int ObjectRef::l_get_chat_position(lua_State* L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef* ref = checkObject<ObjectRef>(L, 1);
+	RemotePlayer* player = getplayer(ref);
+	if (!player)
+		return 0;
+
+	lua_createtable(L, 0, 2);
+	lua_pushnumber(L, player->get_chat_pos()[0]);
+	lua_setfield(L, -2, "chat_posX");
+	lua_pushnumber(L, player->get_chat_pos()[1]);
+	lua_setfield(L, -2, "chat_posY");
+
+	return 1;
+}
 
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
@@ -2756,6 +2793,7 @@ void ObjectRef::Register(lua_State *L)
 	};
 	registerClass(L, className, methods, metamethods);
 }
+
 
 const char ObjectRef::className[] = "ObjectRef";
 luaL_Reg ObjectRef::methods[] = {
@@ -2879,6 +2917,8 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, respawn),
 	luamethod(ObjectRef, set_flags),
 	luamethod(ObjectRef, get_flags),
+	luamethod(ObjectRef, set_chat_position),
+	luamethod(ObjectRef, get_chat_position),
 
 	{0,0}
 };

@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <functional>
 #include <tuple>
 #include <string>
+#include "client/client.h"
 
 #define PLAYERNAME_SIZE 20
 
@@ -196,6 +197,10 @@ public:
 	v3f eye_offset_first;
 	v3f eye_offset_third;
 	v3f eye_offset_third_front;
+
+	v2s32 chat_pos = { 10, 5 };
+	v2s32 get_chat_pos() { return chat_pos; }
+	void setChatOffset(s32 x, s32 y) { chat_pos[0] = x; chat_pos[1] = y; }
 
 	Inventory inventory;
 

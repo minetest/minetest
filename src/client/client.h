@@ -232,6 +232,7 @@ public:
 	void handleCommand_MediaPush(NetworkPacket *pkt);
 	void handleCommand_MinimapModes(NetworkPacket *pkt);
 	void handleCommand_SetLighting(NetworkPacket *pkt);
+	void handleCommand_SetChatPos(NetworkPacket* pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -295,6 +296,8 @@ public:
 
 	int getCrackLevel();
 	v3s16 getCrackPos();
+
+	v2s32 chat_pos;
 	void setCrack(int level, v3s16 pos);
 
 	u16 getHP();

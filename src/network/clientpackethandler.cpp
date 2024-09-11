@@ -48,6 +48,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 #include <memory>
 
+
 const char *accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
 	N_("Invalid password"),
 	N_("Your client sent something the server didn't expect.  Try reconnecting or updating your client."),
@@ -1828,4 +1829,13 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 	}
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.volumetric_light_strength;
+}
+
+void Client::handleCommand_SetChatPos(NetworkPacket* pkt)
+{
+	LocalPlayer* player = m_env.getLocalPlayer();
+	assert(player);
+	v2s32 pos;
+	*pkt >> pos[0] >> pos[1];
+	player->setChatOffset(pos[0], pos[1]);
 }

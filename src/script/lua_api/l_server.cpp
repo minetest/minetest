@@ -431,6 +431,7 @@ int ModApiServer::l_show_formspec(lua_State *L)
 	return 1;
 }
 
+
 // get_current_modname()
 int ModApiServer::l_get_current_modname(lua_State *L)
 {
@@ -739,7 +740,6 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(get_game_info);
 
 	API_FCT(print);
-
 	API_FCT(chat_send_all);
 	API_FCT(chat_send_player);
 	API_FCT(show_formspec);

@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/enriched_string.h"
 #include "util/pointedthing.h"
 #include "client.h"
+#include "player.h"
 #include "clientmap.h"
 #include "fontengine.h"
 #include "hud.h" // HUD_FLAG_*
@@ -35,6 +36,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "renderingengine.h"
 #include "version.h"
+#include "network/connection.h"
+#include "network/networkprotocol.h"
+#include "network/serveropcodes.h"
+
 
 inline static const char *yawToDirectionString(int yaw)
 {
@@ -246,10 +251,14 @@ void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 	m_recent_chat_count = recent_chat_count;
 }
 
-void GameUI::updateChatSize()
+void GameUI::updateChatSize(Client* client)
 {
 	// Update gui element size and position
-	s32 chat_y = 5;
+	LocalPlayer* player = client->getEnv().getLocalPlayer();
+	v2s32 &pos = player->get_chat_pos();
+
+	s32 chat_x = pos[0];
+	s32 chat_y = pos[1];
 
 	if (m_flags.show_minimal_debug)
 		chat_y += m_guitext->getTextHeight();
@@ -258,7 +267,7 @@ void GameUI::updateChatSize()
 
 	const v2u32 &window_size = RenderingEngine::getWindowSize();
 
-	core::rect<s32> chat_size(10, chat_y, window_size.X - 20, 0);
+	core::rect<s32> chat_size(chat_x, chat_y, window_size.X - 20, 0);
 	chat_size.LowerRightCorner.Y = std::min((s32)window_size.Y,
 			m_guitext_chat->getTextHeight() + chat_y);
 

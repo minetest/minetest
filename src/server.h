@@ -356,6 +356,8 @@ public:
 
 	void setLighting(RemotePlayer *player, const Lighting &lighting);
 
+	void setChatPos(RemotePlayer* player, s32 x, s32 y);
+
 	void RespawnPlayer(session_t peer_id);
 
 	/* con::PeerHandler implementation. */
@@ -383,6 +385,8 @@ public:
 	void SendMovePlayerRel(session_t peer_id, const v3f &added_pos);
 	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
 	void SendPlayerFov(session_t peer_id);
+
+	void SendChatPos(session_t peer_id, v2s32 pos);
 
 	void SendMinimapModes(session_t peer_id,
 			std::vector<MinimapMode> &modes,

@@ -3203,7 +3203,7 @@ void Game::updateChat(f32 dtime)
 	}
 
 	// Make sure that the size is still correct
-	m_game_ui->updateChatSize();
+	m_game_ui->updateChatSize(client);
 }
 
 void Game::updateCamera(f32 dtime)

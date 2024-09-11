@@ -417,4 +417,10 @@ private:
 
 	// get_flags(self)
 	static int l_get_flags(lua_State *L);
+
+	// set_chat_position(x, y)
+	static int l_set_chat_position(lua_State* L);
+
+	// get_chat_position(self)
+	static int l_get_chat_position(lua_State* L);
 };

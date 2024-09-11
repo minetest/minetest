@@ -901,7 +901,13 @@ enum ToClientCommand : u16
 			f32 center_weight_power
 	*/
 
-	TOCLIENT_NUM_MSG_TYPES = 0x64,
+	TOCLIENT_SET_CHAT_POS = 0x64,
+	/*
+		v2s32 pos
+	*/
+
+	TOCLIENT_NUM_MSG_TYPES = 0x65,
+
 };
 
 enum ToServerCommand : u16
@@ -1112,6 +1118,7 @@ enum ToServerCommand : u16
 	*/
 
 	TOSERVER_NUM_MSG_TYPES = 0x54,
+
 };
 
 enum AuthMechanism

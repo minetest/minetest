@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "skyparams.h"
 #include "lighting.h"
 #include "network/networkprotocol.h" // session_t
+#include <iostream>
 
 class PlayerSAO;
 
@@ -102,11 +103,10 @@ public:
 
 	const StarParams &getStarParams() const { return m_star_params; }
 
-	void setCloudParams(const CloudParams &cloud_params)
+	void setCloudParams(const CloudParams& cloud_params)
 	{
 		m_cloud_params = cloud_params;
 	}
-
 	const CloudParams &getCloudParams() const { return m_cloud_params; }
 
 	bool checkModified() const { return m_dirty || inventory.checkModified(); }

@@ -1883,6 +1883,13 @@ void Server::SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed)
 	}
 }
 
+void Server::SendChatPos(session_t peer_id, v2s32 pos)
+{
+	NetworkPacket pkt(TOCLIENT_SET_CHAT_POS, 0, peer_id);
+	pkt << pos;
+	Send(&pkt);
+}
+
 void Server::SendPlayerBreath(PlayerSAO *sao)
 {
 	assert(sao);
@@ -3464,6 +3471,11 @@ void Server::setLighting(RemotePlayer *player, const Lighting &lighting)
 	SendSetLighting(player->getPeerId(), lighting);
 }
 
+void Server::setChatPos(RemotePlayer* player, s32 x, s32 y) {
+	sanity_check(player);
+	player->setChatOffset(x, y);
+	SendChatPos(player->getPeerId(), { x, y });
+}
 void Server::notifyPlayers(const std::wstring &msg)
 {
 	SendChatMessage(PEER_ID_INEXISTENT, ChatMessage(msg));
