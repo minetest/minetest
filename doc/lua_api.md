@@ -5522,7 +5522,7 @@ Utilities
       override_item_remove_fields = true,
       -- The predefined hotbar is a Lua HUD element of type `hotbar` (5.10.0)
       hotbar_hud_element = true,
-      -- ABM supports field without_neighbors
+      -- ABM supports field without_neighbors (5.10.0)
       abm_without_neighbors = true,
   }
   ```
