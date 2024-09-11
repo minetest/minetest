@@ -306,7 +306,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	f32 pitch = player->getPitch();
 	f32 roll = player->getCameraRoll();
 	v3f base_rotation = player->getCameraBaseRotation();
-	
+
 	// This is worse than `LocalPlayer::getPosition()` but
 	// mods expect the player head to be at the parent's position
 	// plus eye height.
