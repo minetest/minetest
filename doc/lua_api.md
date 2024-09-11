@@ -8117,7 +8117,7 @@ child will follow movement and rotation of that bone.
     * The object is removed after returning from Lua. However the `ObjectRef`
       itself instantly becomes unusable with all further method calls having
       no effect and returning `nil`.
-* `set_guid(guid)`: 
+* `set_guid(guid)`:
     * Set a global unique identifier string of entity.
     * Is valid to be called only in `on_activate` callback.
     * Should be used ONLY for restoring saved guid from staticdata!!!

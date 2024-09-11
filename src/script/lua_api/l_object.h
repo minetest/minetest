@@ -215,7 +215,7 @@ private:
 
 	// set_sprite(self, start_frame, num_frames, framelength, select_x_by_camera)
 	static int l_set_sprite(lua_State *L);
-	
+
 	// set_guid(self, guid)
 	static int l_set_guid(lua_State *L);
 

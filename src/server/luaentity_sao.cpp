@@ -120,7 +120,7 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 		// Activate entity, supplying serialized state
 		m_env->getScriptIface()->
 			luaentity_Activate(m_id, m_init_state, dtime_s);
-		// if Activate callback does not set guid, set it. 
+		// if Activate callback does not set guid, set it.
 		if (m_guid.empty()) {
 			getGuid();
 		}
