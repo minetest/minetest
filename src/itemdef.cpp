@@ -474,7 +474,6 @@ public:
 		// Create new ClientCached
 		auto cc = std::make_unique<ClientCached>();
 
-		// Create an inventory texture
 		cc->inventory_texture = NULL;
 		if (!inventory_image.empty())
 			cc->inventory_texture = tsrc->getTexture(inventory_image);
