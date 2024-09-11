@@ -3431,14 +3431,14 @@ void Server::setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third, v3f 
 void Server::setPlayerCameraRoll(RemotePlayer *player, float roll)
 {
 	sanity_check(player);
-	player->set_camera_roll(roll);
+	player->setCameraRoll(roll);
 	SendCameraRoll(player->getPeerId(), roll);
 }
 
 void Server::setPlayerCameraBaseRotation(RemotePlayer *player, v3f rot)
 {
 	sanity_check(player);
-	player->set_camera_base_rotation(rot);
+	player->setCameraBaseRotation(rot);
 	SendCameraBaseRotation(player->getPeerId(), rot);
 }
 

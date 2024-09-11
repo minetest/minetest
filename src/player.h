@@ -197,20 +197,20 @@ public:
 	v3f eye_offset_third;
 	v3f eye_offset_third_front;
 
-	void set_camera_roll(f32 roll)
+	void setCameraRoll(f32 roll)
 	{
 		m_camera_roll = roll;
 	}
-	f32 get_camera_roll() const
+	f32 getCameraRoll() const
 	{
 		return m_camera_roll;
 	}
 
-	void set_camera_base_rotation(v3f rot)
+	void setCameraBaseRotation(v3f rot)
 	{
 		m_camera_base_rotation = rot;
 	}
-	v3f get_camera_base_rotation() const
+	v3f getCameraBaseRotation() const
 	{
 		return m_camera_base_rotation;
 	}

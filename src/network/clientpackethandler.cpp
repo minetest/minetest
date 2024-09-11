@@ -1838,7 +1838,7 @@ void Client::handleCommand_CameraRoll(NetworkPacket* pkt)
 	f32 roll;
 
 	*pkt >> roll;
-	player->set_camera_roll(roll);
+	player->setCameraRoll(roll);
 }
 
 void Client::handleCommand_CameraBaseRotation(NetworkPacket* pkt)
@@ -1849,5 +1849,5 @@ void Client::handleCommand_CameraBaseRotation(NetworkPacket* pkt)
 	v3f rot;
 
 	*pkt >> rot;
-	player->set_camera_base_rotation(rot);
+	player->setCameraBaseRotation(rot);
 }

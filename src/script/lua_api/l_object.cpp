@@ -1341,7 +1341,7 @@ int ObjectRef::l_get_look_roll(lua_State *L)
 	if (!player)
 		return 0;
 
-	lua_pushnumber(L, player->get_camera_roll() / core::RADTODEG);
+	lua_pushnumber(L, player->getCameraRoll() / core::RADTODEG);
 	return 1;
 }
 
@@ -1354,7 +1354,7 @@ int ObjectRef::l_get_look_base_rotation(lua_State *L)
 	if (!player)
 		return 0;
 
-	push_v3f(L, player->get_camera_base_rotation() * core::DEGTORAD);
+	push_v3f(L, player->getCameraBaseRotation() * core::DEGTORAD);
 	return 1;
 }
 
