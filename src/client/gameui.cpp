@@ -251,7 +251,7 @@ void GameUI::updateChatSize(Client* client)
 {
 	// Update gui element size and position
 	LocalPlayer* player = client->getEnv().getLocalPlayer();
-	v2s32 &pos = player->get_chat_pos();
+	v2s32 pos = player->get_chat_pos();
 
 	s32 chat_x = pos[0];
 	s32 chat_y = pos[1];
