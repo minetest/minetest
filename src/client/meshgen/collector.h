@@ -22,9 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <array>
 #include "client/tile.h"
+#include "client/texture_atlas.h"
 
 class Client;
-class TextureAtlas;
 class IWritableShaderSource;
 class ITextureSource;
 
@@ -40,7 +40,7 @@ public:
         : center_pos(_center_pos), offset(_offset)
     {}
 
-    virtual void addTileMesh(const TileSpec &tile,
+    virtual void addTileMesh(TileSpec &tile,
 		const video::S3DVertex *vertices, u32 numVertices,
 		const u16 *indices, u32 numIndices, bool outside_uv=false,
 		v3f pos = v3f(0.0f), video::SColor clr = video::SColor(),
@@ -120,6 +120,11 @@ public:
 	std::list<std::pair<video::SMaterial, std::list<MeshPart>>> layers;
 	std::list<std::pair<video::SMaterial, std::list<PartialMeshBuffer>>> transparent_layers;
 
+	std::map<u32, AnimationInfo> animated_textures;
+	std::map<u32, std::string> crack_textures;
+
+	int last_crack;
+
 	v3f translation;
 
 	std::vector<MeshTriangle> transparent_triangles;
@@ -139,7 +144,7 @@ public:
                 part.buffer->drop();
     }
 
-    void addTileMesh(const TileSpec &tile,
+    void addTileMesh(TileSpec &tile,
 		const video::S3DVertex *vertices, u32 numVertices,
 		const u16 *indices, u32 numIndices, bool outside_uv=false,
 		v3f pos = v3f(0.0f), video::SColor clr = video::SColor(),
@@ -166,7 +171,7 @@ public:
     WieldMeshCollector(v3f _center_pos, v3f _offset)
         : MeshCollector(_center_pos, _offset) {}
 
-	void addTileMesh(const TileSpec &tile,
+	void addTileMesh(TileSpec &tile,
 		const video::S3DVertex *vertices, u32 numVertices,
 		const u16 *indices, u32 numIndices, bool outside_uv=false,
 		v3f pos = v3f(0.0f), video::SColor clr = video::SColor(),

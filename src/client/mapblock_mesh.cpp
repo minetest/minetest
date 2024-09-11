@@ -685,9 +685,47 @@ MapBlockMesh::~MapBlockMesh()
 	porting::TrackFreedMemory(sz);
 }
 
-bool MapBlockMesh::updateLighting(u32 daynight_ratio)
+bool MapBlockMesh::animate(float time, int crack, u32 daynight_ratio)
 {
-    m_update_light_force_timer = myrand_range(5, 100);
+	if (!m_has_animation) {
+		m_animation_force_timer = 100000;
+		return false;
+	}
+
+    m_animation_force_timer = myrand_range(5, 100);
+
+	auto layer_it = m_mesh->layers.begin();
+	// Cracks
+	if (crack != m_mesh->last_crack) {
+		for (auto &crack_it : m_mesh->crack_textures) {
+			std::advance(layer_it, crack_it.first);
+
+			// Create new texture name from original
+			std::string s = crack_it.second + itos(crack);
+			u32 new_texture_id = 0;
+			video::ITexture *new_texture =
+					m_tsrc->getTextureForMesh(s, &new_texture_id);
+			layer_it->first.setTexture(0, new_texture);
+		}
+
+		m_mesh->last_crack = crack;
+	}
+
+	// Texture animation
+	for (auto &anim : m_mesh->animated_textures) {
+		// Figure out current frame
+		int frameno = (int)(time * 1000 / anim.second.frame_length_ms
+				+ anim.second.frame_offset) % anim.second.frame_count;
+		// If frame doesn't change, skip
+		if (frameno == anim.second.cur_frame)
+			continue;
+
+		anim.second.cur_frame = frameno;
+
+		std::advance(layer_it, anim.first);
+
+		layer_it->first.setTexture(0, anim.second.frames[frameno]);
+	}
 
 	// Day-night transition
 	if (!m_enable_shaders && (daynight_ratio != m_last_daynight_ratio)) {

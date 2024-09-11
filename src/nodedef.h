@@ -760,9 +760,9 @@ public:
 	/*!
 	 * Provides access to the texture builder
 	 */
-	TextureBuilder *getTextureBuilder() const
+	AtlasBuilder *getAtlasBuilder() const
 	{
-		return m_texture_builder;
+		return m_atlas_builder.get();
 	}
 #endif
 
@@ -859,9 +859,9 @@ private:
 
 #ifndef SERVER
 	/*!
-	 * Texture builder abstraction keeping and handling atlases and singletons.
+	 * Texture atlas builder abstraction keeping and handling atlases.
 	 */
-	mutable TextureBuilder *m_texture_builder = nullptr;
+	mutable std::unique_ptr<AtlasBuilder> m_atlas_builder;
 #endif
 };
 

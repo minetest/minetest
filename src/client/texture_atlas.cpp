@@ -172,88 +172,7 @@ void TextureAtlas::updateCrackAnimations(int new_crack)
 		m_texture->regenerateMipMapLevels(nullptr, 0, m_max_mip_level);
 }
 
-
-TextureSingleton::TextureSingleton(Client *client, video::ITexture *texture)
-	: m_driver(client->getSceneManager()->getVideoDriver()), m_tsrc(client->getTextureSource())
-{
-	original_texture = texture;
-	m_mip_maps = g_settings->getBool("mip_map");
-
-	core::dimension2du size = texture->getSize();
-	size.Width *= 2;
-
-	video::ECOLOR_FORMAT texture_format = video::ECF_A32B32G32R32F;
-
-	m_texture = m_driver->addTexture(size, "SingleTexture", texture_format);
-	m_texture->drawToSubImage(0, 0, size.Width / 2, size.Height, texture);
-
-	if (m_mip_maps)
-		m_texture->regenerateMipMapLevels(nullptr, 0);
-}
-
-void TextureSingleton::updateAnimation(f32 time)
-{
-	if (m_anim_info.frame_count == 0)
-		return;
-
-	int new_frame = (int)(time * 1000 / m_anim_info.frame_length_ms
-			+ m_anim_info.frame_offset) % m_anim_info.frame_count;
-
-	if (new_frame == m_anim_info.cur_frame)
-		return;
-
-	m_anim_info.cur_frame = new_frame;
-
-	if (m_anim_info.frames.at(new_frame)) {
-		const core::dimension2du &size = m_texture->getSize();
-		m_texture->drawToSubImage(0, 0, size.Width / 2, size.Height, m_anim_info.frames[new_frame]);
-
-		if (m_mip_maps)
-			m_texture->regenerateMipMapLevels(nullptr, 0);
-	}
-}
-
-void TextureSingleton::updateCrackAnimation(int new_crack)
-{
-	if (new_crack == m_last_crack)
-		// New crack is old yet
-		return;
-
-	if (new_crack == -1) {
-		// Animation has finished
-		crack_tile = "";
-		m_last_crack = -1;
-
-		return;
-	}
-
-	m_last_crack = new_crack;
-
-	std::string s = crack_tile + itos(new_crack);
-	u32 new_texture_id = 0;
-	video::ITexture *new_texture =
-		m_tsrc->getTextureForMesh(s, &new_texture_id);
-
-	const core::dimension2du &size = m_texture->getSize();
-	if (new_texture) {
-		m_texture->drawToSubImage(size.Width / 2, 0, size.Width / 2, size.Height, new_texture);
-
-		if (m_mip_maps)
-			m_texture->regenerateMipMapLevels(nullptr, 0);
-	}
-}
-
-
-TextureBuilder::~TextureBuilder()
-{
-	for (auto &atlas : m_atlases)
-		delete atlas;
-
-	for (auto &singleton : m_singletons)
-		delete singleton;
-}
-
-void TextureBuilder::buildAtlas(Client *client, std::list<TileLayer*> &layers)
+void AtlasBuilder::buildAtlas(Client *client, std::list<TileLayer*> &layers)
 {
 	u32 atlas_area = 0;
 
@@ -322,27 +241,21 @@ void TextureBuilder::buildAtlas(Client *client, std::list<TileLayer*> &layers)
 		atlas_area += (tile_info.width * tile_info.height);
 	}
 
-	m_atlases.push_back(new TextureAtlas(client, atlas_area, (u32)min_area_tile, tiles_infos));
+	m_atlases.push_back(std::make_unique<TextureAtlas>(client, atlas_area, (u32)min_area_tile, tiles_infos));
 
 	// Recursively create new atlases if remain tiles didn't fit in the current one
 	if (!layers.empty())
 		buildAtlas(client, layers);
 }
 
-void TextureBuilder::updateAnimations(f32 time)
+void AtlasBuilder::updateAnimations(f32 time)
 {
 	for (auto &atlas : m_atlases)
 		atlas->updateAnimations(time);
-
-	for (auto &singleton : m_singletons)
-		singleton->updateAnimation(time);
 }
 
-void TextureBuilder::updateCrackAnimations(int new_crack)
+void AtlasBuilder::updateCrackAnimations(int new_crack)
 {
 	for (auto &atlas : m_atlases)
 		atlas->updateCrackAnimations(new_crack);
-
-	for (auto &singleton : m_singletons)
-		singleton->updateCrackAnimation(new_crack);
 }

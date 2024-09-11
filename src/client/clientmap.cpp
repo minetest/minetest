@@ -735,6 +735,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	/*
 		Get animation parameters
 	*/
+	const float animation_time = m_client->getAnimationTime();
+	const int crack = m_client->getCrackLevel();
 	const u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
 
 	const v3f camera_position = m_camera_position;
@@ -747,7 +749,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	u32 drawcall_count = 0;
 
 	// For limiting number of mesh animations per frame
-	u32 mesh_light_update_count = 0;
+	u32 mesh_animate_count = 0;
 
 	/*
 		Update transparent meshes
@@ -785,14 +787,14 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			float distance_sq = camera_position.getDistanceFromSQ(mesh_sphere_center);
 			bool faraway = distance_sq >= std::pow(BS * 50 + mesh_sphere_radius, 2.0f);
 
-			if (block_mesh->isUpdateLightForced() || !faraway ||
-					mesh_light_update_count < (m_control.range_all ? 200 : 50)) {
+			if (block_mesh->isAnimationForced() || !faraway ||
+					mesh_animate_count < (m_control.range_all ? 200 : 50)) {
 
-				bool light_updated = block_mesh->updateLighting(daynight_ratio);
-				if (light_updated)
-					mesh_light_update_count++;
+				bool animated = block_mesh->animate(animation_time, crack, daynight_ratio);
+				if (animated)
+					mesh_animate_count++;
 			} else {
-				block_mesh->decreaseUpdateLightForceTimer();
+				block_mesh->decreaseAnimationForceTimer();
 			}
 		}
 
@@ -849,7 +851,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	// Log only on solid pass because values are the same
 	if (!is_transparent_pass) {
-		g_profiler->avg("renderMap(): update light in meshes [#]", mesh_light_update_count);
+		g_profiler->avg("renderMap(): animate in meshes [#]", mesh_animate_count);
 	}
 
 	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);

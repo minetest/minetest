@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "collector.h"
 #include "settings.h"
-#include "client/texture_atlas.h"
 #include "client/tile.h"
 #include <cassert>
 #include <sstream>
@@ -60,18 +59,18 @@ MapblockMeshCollector::MapblockMeshCollector(Client *_client, v3f _center_pos,
 	anisotropic_filter = g_settings->getBool("anisotropic_filter");
 }
 
-void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
+void MapblockMeshCollector::addTileMesh(TileSpec &tile,
 	const video::S3DVertex *vertices, u32 numVertices,
 	const u16 *indices, u32 numIndices, bool outside_uv,
 	v3f pos, video::SColor clr,
 	u8 light_source, bool own_color)
 {
-	TextureBuilder *tbuilder = client->getNodeDefManager()->getTextureBuilder();
+	AtlasBuilder *builder = client->getNodeDefManager()->getAtlasBuilder();
 	ITextureSource *tsrc = client->getTextureSource();
 	IWritableShaderSource *shdrsrc = client->getShaderSource();
 
     for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
-        const TileLayer &layer = tile.layers[layernum];
+        TileLayer &layer = tile.layers[layernum];
         if (layer.texture_id == 0)
             continue;
 
@@ -80,20 +79,17 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
             scale = 1.0f / layer.scale;
 
 		TextureAtlas *atlas = nullptr;
-		TextureSingleton *st = nullptr;
+		video::ITexture *tex = nullptr;
 		core::dimension2du atlas_size;
-		core::dimension2du st_size;
 
 		if (outside_uv) {
-			st = tbuilder->findSingleton(layer.texture);
-
-			if (!st)
-				st = tbuilder->buildSingleton(client, layer.texture);
-
-			st_size = st->getTextureSize();
+			if (layer.material_flags & MATERIAL_FLAG_ANIMATION)
+				tex = (*layer.frames)[0].texture;
+			else
+				tex = layer.texture;
 		}
 		else {
-			atlas = tbuilder->getAtlas(layer.atlas_index);
+			atlas = builder->getAtlas(layer.atlas_index);
 			atlas_size = atlas->getTextureSize();
 		}
 
@@ -101,7 +97,7 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
         video::SMaterial material;
 		material.Lighting = false;
 		material.FogEnable = true;
-		material.setTexture(0, outside_uv ? st->getTexture() : atlas->getTexture());
+		material.setTexture(0, outside_uv ? tex : atlas->getTexture());
 		material.forEachTexture([&] (auto &tex) {
 			setMaterialFilters(tex,
 				bilinear_filter,
@@ -117,29 +113,6 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
         }
         else
             layer.applyMaterialOptions(material);
-
-        int tile_pos_shift = 0;
-
-        // Check for crack animation of this layer
-        if (layer.material_flags & MATERIAL_FLAG_CRACK) {
-            std::ostringstream os(std::ios::binary);
-            os << tsrc->getTextureName(layer.texture_id) << "^[crack";
-            if (layer.material_flags & MATERIAL_FLAG_CRACK_OVERLAY)
-                os << "o";
-            u8 tiles = layer.scale;
-            if (tiles > 1)
-                os << ":" << (u32)tiles;
-            os << ":" << (u32)layer.animation_frame_count << ":";
-
-			if (outside_uv)
-				st->crack_tile = os.str();
-			else {
-				atlas->insertCrackTile(layer.atlas_tile_info_index, os.str());
-
-				// Shift each UV by the half-width of the atlas to locate it in the separate right side
-				tile_pos_shift = atlas_size.Width / 2;
-			}
-        }
 
         // Find already existent prelayer with such material, otherwise create it
         auto layer_it = std::find_if(layers.begin(), layers.end(),
@@ -164,6 +137,45 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
 			buffer_it = std::prev(layer_it->second.end());
 		}
 
+		int tile_pos_shift = 0;
+
+		u32 layer_i = std::distance(layers.begin(), layer_it);
+
+		if (layer.material_flags & MATERIAL_FLAG_CRACK) {
+            std::ostringstream os(std::ios::binary);
+            os << tsrc->getTextureName(layer.texture_id) << "^[crack";
+            if (layer.material_flags & MATERIAL_FLAG_CRACK_OVERLAY)
+                os << "o";
+            u8 tiles = layer.scale;
+            if (tiles > 1)
+                os << ":" << (u32)tiles;
+            os << ":" << (u32)layer.animation_frame_count << ":";
+
+			if (outside_uv) {
+				crack_textures[layer_i] = os.str();
+				material.setTexture(0, tsrc->getTextureForMesh(
+					os.str() + "0",
+					&layer.texture_id));
+			}
+			else {
+				atlas->insertCrackTile(layer.atlas_tile_info_index, os.str());
+
+				// Shift each UV by the half-width of the atlas to locate it in the separate right side
+				tile_pos_shift = atlas_size.Width / 2;
+			}
+        }
+
+        if (outside_uv && (layer.material_flags & MATERIAL_FLAG_ANIMATION)) {
+			AnimationInfo anim;
+			anim.frame_length_ms = layer.animation_frame_length_ms;
+			anim.frame_count = layer.animation_frame_count;
+
+			for (auto &frame : *layer.frames)
+				anim.frames.push_back(frame.texture);
+
+			animated_textures[layer_i] = anim;
+		}
+
 		MeshPart &part = (*buffer_it);
         u32 vertex_count = part.vertices.size();
 
@@ -176,9 +188,7 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
             vertex.Pos += pos + offset + translation;
             vertex.TCoords *= scale;
 
-			if (outside_uv)
-				vertex.TCoords.X *= 0.5f;
-			else {
+			if (!outside_uv) {
 				const TileInfo &tile_info = atlas->getTileInfo(layer.atlas_tile_info_index);
 				// Re-calculate UV for linking to the necessary TileInfo pixels in the atlas
 				int rel_x = core::round32(vertex.TCoords.X * tile_info.width);
@@ -218,14 +228,14 @@ void MapblockMeshCollector::addTileMesh(const TileSpec &tile,
     }
 }
 
-void WieldMeshCollector::addTileMesh(const TileSpec &tile,
+void WieldMeshCollector::addTileMesh(TileSpec &tile,
 	const video::S3DVertex *vertices, u32 numVertices,
 	const u16 *indices, u32 numIndices, bool outside_uv,
 	v3f pos, video::SColor clr,
 	u8 light_source, bool own_color)
 {
 	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
-		const TileLayer &layer = tile.layers[layernum];
+		TileLayer &layer = tile.layers[layernum];
 		if (layer.texture_id == 0)
 			continue;
 

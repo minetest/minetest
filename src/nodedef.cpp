@@ -1030,6 +1030,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 NodeDefManager::NodeDefManager()
 {
 	clear();
+	m_atlas_builder = std::make_unique<AtlasBuilder>();
 }
 
 
@@ -1043,8 +1044,6 @@ NodeDefManager::~NodeDefManager()
 		}
 	}
 
-	if (m_texture_builder)
-		delete m_texture_builder;
 #endif
 }
 
@@ -1503,8 +1502,6 @@ void NodeDefManager::updateTextures(IGameDef *gamedef, void *progress_callback_a
 	TextureSettings tsettings;
 	tsettings.readSettings();
 
-	m_texture_builder = new TextureBuilder();
-
 	u32 size = m_content_features.size();
 
 	// Collect all tile layers from each node
@@ -1516,7 +1513,7 @@ void NodeDefManager::updateTextures(IGameDef *gamedef, void *progress_callback_a
 	}
 
 	if (!tile_layers.empty())
-		m_texture_builder->buildAtlas(client, tile_layers);
+		m_atlas_builder->buildAtlas(client, tile_layers);
 #endif
 }
 

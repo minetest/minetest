@@ -137,7 +137,7 @@ public:
 	// Update the light in vertices, parameters:
 	//   daynight_ratio: 0 .. 1000
 	// Returns true if anything has been changed.
-	bool updateLighting(u32 daynight_ratio);
+	bool animate(float time, int crack, u32 daynight_ratio);
 
 	MapblockMeshCollector *getMesh()
 	{
@@ -151,15 +151,15 @@ public:
 		return minimap_mapblocks;
 	}
 
-	bool isUpdateLightForced() const
+	bool isAnimationForced() const
 	{
-		return m_update_light_force_timer == 0;
+		return m_animation_force_timer == 0;
 	}
 
-	void decreaseUpdateLightForceTimer()
+	void decreaseAnimationForceTimer()
 	{
-		if(m_update_light_force_timer > 0)
-			m_update_light_force_timer--;
+		if(m_animation_force_timer > 0)
+			m_animation_force_timer--;
 	}
 
 	/// Radius of the bounding-sphere, in BS-space.
@@ -192,10 +192,12 @@ private:
 
 	bool m_enable_shaders;
 
-	int m_update_light_force_timer;
+	// Must animate() be called before rendering?
+	bool m_has_animation;
+	int m_animation_force_timer;
 
 	// Animation info: day/night transitions
-	// Last daynight_ratio value passed to updateLighting()
+	// Last daynight_ratio value passed to animate()
 	u32 m_last_daynight_ratio;
 
 	// Binary Space Partitioning tree for the block

@@ -117,83 +117,20 @@ public:
 	void updateCrackAnimations(int new_crack);
 };
 
-class TextureSingleton
+class AtlasBuilder
 {
-	video::IVideoDriver *m_driver;
-	ITextureSource *m_tsrc;
-
-	video::ITexture *m_texture;
-
-	AnimationInfo m_anim_info;
-
-	// Number of last crack
-	int m_last_crack = -1;
-
-	bool m_mip_maps;
+	std::vector<std::unique_ptr<TextureAtlas>> m_atlases;
 
 public:
-	video::ITexture *original_texture;
-	std::string crack_tile;
-
-	TextureSingleton(Client *client, video::ITexture *texture);
-
-	~TextureSingleton()
-	{
-		m_driver->removeTexture(m_texture);
-	}
-
-	video::ITexture *getTexture() const
-	{
-		return m_texture;
-	}
-
-	core::dimension2du getTextureSize() const
-	{
-		return m_texture->getSize();
-	}
-
-	void updateAnimation(f32 time);
-
-	void updateCrackAnimation(int new_crack);
-};
-
-class TextureBuilder
-{
-	std::vector<TextureAtlas *> m_atlases;
-	std::vector<TextureSingleton *> m_singletons;
-
-public:
-	TextureBuilder() = default;
-
-	~TextureBuilder();
+	AtlasBuilder() = default;
 
 	TextureAtlas *getAtlas(u32 index) const {
 		assert(index <= m_atlases.size()-1);
 
-		return m_atlases.at(index);
-	}
-
-	TextureSingleton *findSingleton(video::ITexture *tex) const {
-		auto st_it = std::find_if(m_singletons.begin(), m_singletons.end(),
-			[tex] (TextureSingleton *st)
-			{
-				return st->original_texture == tex;
-			});
-
-		if (st_it == m_singletons.end())
-			return nullptr;
-
-		return *st_it;
+		return m_atlases.at(index).get();
 	}
 
 	void buildAtlas(Client *client, std::list<TileLayer*> &layers);
-	TextureSingleton *buildSingleton(Client *client, video::ITexture *texture)
-	{
-		TextureSingleton *st = new TextureSingleton(client, texture);
-		m_singletons.emplace_back(st);
-
-		return st;
-	}
 
 	void updateAnimations(f32 time);
 	void updateCrackAnimations(int new_crack);

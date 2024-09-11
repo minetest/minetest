@@ -296,11 +296,11 @@ void ClientEnvironment::step(float dtime)
 		}
 	}
 
-	TextureBuilder *tbuilder = m_client->getNodeDefManager()->getTextureBuilder();
+	AtlasBuilder *builder = m_client->getNodeDefManager()->getAtlasBuilder();
 
-	if (tbuilder) {
-		tbuilder->updateCrackAnimations(m_client->getCrackLevel());
-		tbuilder->updateAnimations(m_client->getAnimationTime());
+	if (builder) {
+		builder->updateCrackAnimations(m_client->getCrackLevel());
+		builder->updateAnimations(m_client->getAnimationTime());
 	}
 }
 
