@@ -1239,7 +1239,6 @@ void ServerEnvironment::clearObjects(ClearObjectsConfig &config)
 		if (obj->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 			return false;
 
-		
 		if ((config.callback != nullptr)
 				&& (obj->getType() == ACTIVEOBJECT_TYPE_LUAENTITY)) {
 			LuaEntitySAO *sao = dynamic_cast<LuaEntitySAO *>(obj);
