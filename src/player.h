@@ -206,6 +206,15 @@ public:
 		return m_camera_roll;
 	}
 
+	void set_camera_base_rotation(v3f rot)
+	{
+		m_camera_base_rotation = rot;
+	}
+	v3f get_camera_base_rotation() const
+	{
+		return m_camera_base_rotation;
+	}
+
 	Inventory inventory;
 
 	f32 movement_acceleration_default;
@@ -278,4 +287,5 @@ private:
 	std::mutex m_mutex;
 
 	f32 m_camera_roll = 0.0f;
+	v3f m_camera_base_rotation = v3f(0, 0, 0);
 };

@@ -1840,3 +1840,14 @@ void Client::handleCommand_CameraRoll(NetworkPacket* pkt)
 	*pkt >> roll;
 	player->set_camera_roll(roll);
 }
+
+void Client::handleCommand_CameraBaseRotation(NetworkPacket* pkt)
+{
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player);
+
+	v3f rot;
+
+	*pkt >> rot;
+	player->set_camera_base_rotation(rot);
+}

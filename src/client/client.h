@@ -233,6 +233,7 @@ public:
 	void handleCommand_MinimapModes(NetworkPacket *pkt);
 	void handleCommand_SetLighting(NetworkPacket *pkt);
 	void handleCommand_CameraRoll(NetworkPacket* pkt);
+	void handleCommand_CameraBaseRotation(NetworkPacket* pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 

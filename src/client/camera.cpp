@@ -304,8 +304,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 
 	f32 yaw = player->getYaw();
 	f32 pitch = player->getPitch();
-	f32 roll = player->get_camera_roll() * core::DEGTORAD;
-
+	f32 roll = player->get_camera_roll();
+	v3f base_rotation = player->get_camera_base_rotation();
+	
 	// This is worse than `LocalPlayer::getPosition()` but
 	// mods expect the player head to be at the parent's position
 	// plus eye height.
@@ -384,7 +385,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	// Compute relative camera position and target
 	v3f rel_cam_pos = v3f(0,0,0);
 	v3f rel_cam_target = v3f(0,0,1);
-	v3f rel_cam_up = v3f(sin(roll),cos(roll),0);
+	v3f rel_cam_up = v3f(sin(roll * core::DEGTORAD),cos(roll * core::DEGTORAD),0);
 
 	if (m_cache_view_bobbing_amount != 0.0f && m_view_bobbing_anim != 0.0f &&
 		m_camera_mode < CAMERA_MODE_THIRD) {
@@ -407,9 +408,15 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	// Compute absolute camera position and target
 	m_headnode->getAbsoluteTransformation().transformVect(m_camera_position, rel_cam_pos);
 	m_headnode->getAbsoluteTransformation().rotateVect(m_camera_direction, rel_cam_target - rel_cam_pos);
+	m_camera_direction.rotateXYBy(base_rotation.Z);
+	m_camera_direction.rotateYZBy(base_rotation.X);
+	m_camera_direction.rotateXZBy(base_rotation.Y);
 
 	v3f abs_cam_up;
 	m_headnode->getAbsoluteTransformation().rotateVect(abs_cam_up, rel_cam_up);
+	abs_cam_up.rotateXYBy(base_rotation.Z);
+	abs_cam_up.rotateYZBy(base_rotation.X);
+	abs_cam_up.rotateXZBy(base_rotation.Y);
 
 	// Separate camera position for calculation
 	v3f my_cp = m_camera_position;

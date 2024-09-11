@@ -1958,6 +1958,13 @@ void Server::SendCameraRoll(session_t peer_id, float roll)
 	Send(&pkt);
 }
 
+void Server::SendCameraBaseRotation(session_t peer_id, v3f rot)
+{
+	NetworkPacket pkt(TOCLIENT_CAMERA_BASE_ROTATION, 0, peer_id);
+	pkt << rot;
+	Send(&pkt);
+}
+
 void Server::SendPlayerPrivileges(session_t peer_id)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
@@ -3426,6 +3433,13 @@ void Server::setPlayerCameraRoll(RemotePlayer *player, float roll)
 	sanity_check(player);
 	player->set_camera_roll(roll);
 	SendCameraRoll(player->getPeerId(), roll);
+}
+
+void Server::setPlayerCameraBaseRotation(RemotePlayer *player, v3f rot)
+{
+	sanity_check(player);
+	player->set_camera_base_rotation(rot);
+	SendCameraBaseRotation(player->getPeerId(), rot);
 }
 
 void Server::setSky(RemotePlayer *player, const SkyboxParams &params)
