@@ -29,6 +29,7 @@
 #include "IVideoDriver.h"
 #include <X11/XKBlib.h>
 #include <X11/Xatom.h>
+#include <unistd.h>
 
 #if defined(_IRR_LINUX_X11_XINPUT2_)
 #include <X11/extensions/XInput2.h>
