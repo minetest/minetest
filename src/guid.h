@@ -57,7 +57,7 @@ public:
 
 private:
 	void setServerEnvironment(ServerEnvironment *env) { m_env = env; }
- 
+
 	ServerEnvironment *m_env;
 	std::random_device m_rand;
 	std::uniform_int_distribution<u64> m_uniform;
