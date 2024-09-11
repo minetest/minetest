@@ -8568,6 +8568,10 @@ child will follow movement and rotation of that bone.
 * `set_flags(flags)`: sets flags
   * takes a table in the same format as returned by `get_flags`
   * absent fields are left unchanged
+* `set_chat_position(x, y)` sets chat position
+  * Takes arguments X and Y
+* `get_chat_position()`: reutrn chat position 
+  * Returns a table with `chat_posX` and `chat_posY` fields
 
 
 `PcgRandom`
