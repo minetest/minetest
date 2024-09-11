@@ -110,6 +110,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 		IMenuManager *menumgr,
 		MainMenuData *data,
 		bool &kill) :
+	m_joystick(joystick),
 	m_rendering_engine(rendering_engine),
 	m_parent(parent),
 	m_menumanager(menumgr),
