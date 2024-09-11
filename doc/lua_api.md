@@ -8570,7 +8570,7 @@ child will follow movement and rotation of that bone.
   * absent fields are left unchanged
 * `set_chat_position(x, y)` sets chat position
   * Takes arguments X and Y
-* `get_chat_position()`: reutrn chat position 
+* `get_chat_position()`: reutrn chat position
   * Returns a table with `chat_posX` and `chat_posY` fields
 
 
