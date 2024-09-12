@@ -1845,9 +1845,8 @@ inline bool Game::handleCallbacks()
 	}
 
 	if (g_gamecallback->keyconfig_requested) {
-		(void)make_irr<GUIKeyChangeMenu>(guienv, &input->joystick,
-				      texture_src, sound_manager.get(),
-					  client->getFormspecPrepend());
+		(void)make_irr<GUIKeyChangeMenu>(client, guienv, &input->joystick,
+				      texture_src, sound_manager.get(), client->getFormspecPrepend());
 		g_gamecallback->keyconfig_requested = false;
 	}
 

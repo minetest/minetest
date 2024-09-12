@@ -5,7 +5,9 @@
 // Copyright (C) 2013 teddydestodes <derkomtur@schattengang.net>
 
 #include "guiKeyChangeMenu.h"
+#include "filesys.h"
 #include "gettext.h"
+#include "porting.h"
 #include <sstream>
 #include <vector>
 
@@ -85,6 +87,11 @@ void GUIKeyChangeMenu::KeyChangeFormspecHandler::gotText(const StringMap &fields
 	form->updateFormSource();
 }
 
+std::string GUIKeyChangeMenu::getTexture(const std::string &name) const
+{
+	return has_client ? name : porting::path_share + "/textures/base/pack/" + name;
+}
+
 void GUIKeyChangeMenu::updateFormSource(const std::string &message)
 {
 	// this is more or less make_scrollbaroptions_for_scroll_container from Lua
@@ -148,7 +155,8 @@ void GUIKeyChangeMenu::updateFormSource(const std::string &message)
 			<< "button[7.5," << pos_y << ";" << btn_width << ",1;btn_set_" << setting.setting_name << ";"
 			<< keydesc << "]";
 		if (show_clear)
-			os << "image_button[12.5," << pos_y << ";1,1;clear.png;btn_clear_" << setting.setting_name << ";]";
+			os << "image_button[12.5," << pos_y << ";1,1;" << getTexture("clear.png")
+				<< ";btn_clear_" << setting.setting_name << ";]";
 		pos_y += 1.5;
 	}
 

@@ -527,7 +527,7 @@ int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 	GUIEngine *engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
 
-	GUIKeyChangeMenu *kmenu = new GUIKeyChangeMenu(
+	GUIKeyChangeMenu *kmenu = new GUIKeyChangeMenu(nullptr, /* no Client object here */
 			engine->m_rendering_engine->get_gui_env(),
 			engine->m_joystick, engine->m_texture_source.get(), engine->m_sound_manager.get());
 	kmenu->drop();

@@ -19,11 +19,12 @@ class GUIKeyChangeMenu : public GUIFormSpecMenu
 
 public:
 	// We can't use Client* in the mainmenu
-	GUIKeyChangeMenu(gui::IGUIEnvironment *guienv, JoystickController *joystick,
+	GUIKeyChangeMenu(Client * client, gui::IGUIEnvironment *guienv, JoystickController *joystick,
 			ISimpleTextureSource *tsrc, ISoundManager *sound_manager,
 			const std::string &formspec_prepend = "") :
-		super(joystick, guiroot, -1, &g_menumgr, nullptr, guienv, tsrc,
-				sound_manager, nullptr, nullptr, formspec_prepend)
+		super(joystick, guiroot, -1, &g_menumgr, client, guienv, tsrc,
+				sound_manager, nullptr, nullptr, formspec_prepend),
+		has_client(client != nullptr)
 		{
 			updateFormSource();
 			setFormspecHandler();
@@ -73,7 +74,10 @@ private:
 		return g_settings->getBool(name);
 	}
 
+	std::string getTexture(const std::string &name) const;
+
 	std::unordered_map<std::string, KeyPress> keymap;
 	std::unordered_map<std::string, bool> control_options;
 	std::string active_key;
+	bool has_client;
 };
