@@ -1369,8 +1369,8 @@ int ObjectRef::l_get_look(lua_State *L)
 		return 0;
 
 	v3f rot = v3f(
-		playersao->getRadRotation().Y,
 		playersao->getRadLookPitch(),
+		playersao->getRadRotation().Y,
 		player->getCameraRoll() / core::RADTODEG
 	);
 
@@ -1450,8 +1450,8 @@ int ObjectRef::l_set_look(lua_State *L)
 
 	v3f rot = readParam<v3f>(L, 2) * core::RADTODEG;
 
-	playersao->setPlayerYawAndSend(rot.X);
-	playersao->setLookPitchAndSend(rot.Y);
+	playersao->setLookPitchAndSend(rot.X);
+	playersao->setPlayerYawAndSend(rot.Y);
 	getServer(L)->setPlayerCameraRoll(player,rot.Z);
 	return 0;
 }
