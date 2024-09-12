@@ -504,6 +504,7 @@ private:
 	void SendEyeOffset(session_t peer_id, v3f first, v3f third, v3f third_front);
 	void SendCameraRoll(session_t peer_id, float roll);
 	void SendCameraBaseRotation(session_t peer_id, v3f rot);
+	void SendCameraOrientation(session_t peer_id, v3f rot);
 	void SendPlayerPrivileges(session_t peer_id);
 	void SendPlayerInventoryFormspec(session_t peer_id);
 	void SendPlayerFormspecPrepend(session_t peer_id);

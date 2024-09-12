@@ -251,6 +251,9 @@ private:
 	// get_look_base_rotation(self)
 	static int l_get_look_base_rotation(lua_State *L);
 
+	// get_look(self)
+	static int l_get_look(lua_State *L);
+
 	// set_fov(self, degrees, is_multiplier, transition_time)
 	static int l_set_fov(lua_State *L);
 
@@ -265,6 +268,9 @@ private:
 
 	// set_look_base_rotation(self)
 	static int l_set_look_base_rotation(lua_State *L);
+
+	// set_look(self, rotation)
+	static int l_set_look(lua_State *L);
 
 	// DEPRECATED
 	// set_look_pitch(self, radians)
