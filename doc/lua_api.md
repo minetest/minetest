@@ -9337,9 +9337,17 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
       -- If specified as a table, the field to be used is selected according to
       -- the current `pointed_thing`.
       -- There are three possible TouchInteractionMode values:
-      -- * "user"                 (meaning depends on client-side settings)
       -- * "long_dig_short_place" (long tap  = dig, short tap = place)
       -- * "short_dig_long_place" (short tap = dig, long tap  = place)
+      -- * "user":
+      --   * For `pointed_object`: Equivalent to "short_dig_long_place" if the
+      --     client-side setting "touch_punch_gesture" is "short_tap" (the
+      --     default value) and the item is able to punch (i.e. has no on_use
+      --     callback defined).
+      --     Equivalent to "long_dig_short_place" otherwise.
+      --   * For `pointed_node` and `pointed_nothing`:
+      --     Equivalent to "long_dig_short_place".
+      --   * The behavior of "user" may change in the future.
       -- The default value is "user".
 
     sound = {

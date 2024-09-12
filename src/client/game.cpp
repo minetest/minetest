@@ -3357,7 +3357,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 		infostream << "Pointing at " << pointed.dump() << std::endl;
 
 	if (g_touchcontrols) {
-		auto mode = selected_def.touch_interaction.getMode(pointed.type);
+		auto mode = selected_def.touch_interaction.getMode(selected_def, pointed.type);
 		g_touchcontrols->applyContextControls(mode);
 		// applyContextControls may change dig/place input.
 		// Update again so that TOSERVER_INTERACT packets have the correct controls set.
