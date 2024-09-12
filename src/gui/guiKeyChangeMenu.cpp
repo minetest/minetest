@@ -188,6 +188,12 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent &event)
 {
 	if (!active_key.empty() && event.EventType == EET_KEY_INPUT_EVENT
 			&& event.KeyInput.PressedDown) {
+		if (event.KeyInput.Key == irr::KEY_ESCAPE) {
+			// Do not allow binding to the escape key
+			updateFormSource(fmtgettext("Binding to the Escape key is not allowed"));
+			return true;
+		}
+
 		KeyPress kp(event.KeyInput);
 		keymap[active_key] = kp;
 
