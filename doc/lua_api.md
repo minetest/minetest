@@ -8540,8 +8540,17 @@ child will follow movement and rotation of that bone.
     * Passing no arguments resets lighting to its default values.
     * `light_definition` is a table with the following optional fields:
       * `saturation` sets the saturation (vividness; default: `1.0`).
-        * values > 1 increase the saturation
-        * values in [0,1] decrease the saturation
+        * It is applied according to the function `result = b*(1-s) + c*s`, where:
+          * `c` is the original color
+          * `b` is the greyscale version of the color with the same luma
+          * `s` is the saturation set here
+        * The resulting color always has the same luma (perceived brightness) as the original.
+        * This means that:
+          * values > 1 oversaturate
+          * values < 1 down to 0 desaturate, 0 being entirely greyscale
+          * values < 0 cause an effect similar to inversion,
+            but keeping original luma and being symmetrical in terms of saturation
+            (eg. -1 and 1 is the same saturation and luma, but different hues)
       * `shadows` is a table that controls ambient shadows
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
             * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
