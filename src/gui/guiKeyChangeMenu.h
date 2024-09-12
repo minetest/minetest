@@ -80,4 +80,5 @@ private:
 	std::unordered_map<std::string, bool> control_options;
 	std::string active_key;
 	bool has_client;
+	float scroll_position = 0;
 };

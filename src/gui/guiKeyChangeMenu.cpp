@@ -69,6 +69,11 @@ void GUIKeyChangeMenu::KeyChangeFormspecHandler::gotText(const StringMap &fields
 	if (fields.find("btn_cancel") != fields.end())
 		return;
 
+	if (const auto &field = fields.find("scrollbar"); field != fields.end()) {
+		if (const auto &stringval = field->second; str_starts_with(stringval, "CHG:"))
+			form->scroll_position = stof(stringval.substr(4));
+	}
+
 	for (const auto &field: fields) {
 		const auto &name = field.first;
 		if (str_starts_with(name, "checkbox_"))
@@ -133,7 +138,7 @@ void GUIKeyChangeMenu::updateFormSource(const std::string &message)
 	float container_scroll_thumb = container_height / container_total_height * container_scroll_max;
 	os << "scrollbaroptions[min=0;max=" << container_scroll_max << ";"
 		<< "thumbsize=" << container_scroll_thumb <<  "]"
-		<< "scrollbar[14.5,0.5;0.5," << container_height << ";vertical;scrollbar;0]"
+		<< "scrollbar[14.5,0.5;0.5," << container_height << ";vertical;scrollbar;" << scroll_position << "]"
 		<< "scroll_container[0.5,0.5;14," << container_height << ";scrollbar;vertical]";
 
 	pos_y = 0;
