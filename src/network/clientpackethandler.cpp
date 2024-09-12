@@ -204,7 +204,6 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 	// to be processed even if the serialization format has
 	// not been agreed yet, the same as TOCLIENT_INIT.
 	m_access_denied = true;
-	m_access_denied_reason = "Unknown";
 
 	if (pkt->getCommand() != TOCLIENT_ACCESS_DENIED) {
 		// Legacy code from 0.4.12 and older but is still used
@@ -223,29 +222,23 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 	u8 denyCode;
 	*pkt >> denyCode;
 
-	if (denyCode == SERVER_ACCESSDENIED_SHUTDOWN ||
-			denyCode == SERVER_ACCESSDENIED_CRASH) {
+	if (pkt->getRemainingBytes() > 0)
 		*pkt >> m_access_denied_reason;
-		if (m_access_denied_reason.empty())
+
+	if (m_access_denied_reason.empty()) {
+		if (denyCode >= SERVER_ACCESSDENIED_MAX) {
+			m_access_denied_reason = gettext("Unknown disconnect reason.");
+		} else if (denyCode != SERVER_ACCESSDENIED_CUSTOM_STRING) {
 			m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
+		}
+	}
+
+	if (denyCode == SERVER_ACCESSDENIED_TOO_MANY_USERS) {
+		m_access_denied_reconnect = true;
+	} else if (pkt->getRemainingBytes() > 0) {
 		u8 reconnect;
 		*pkt >> reconnect;
 		m_access_denied_reconnect = reconnect & 1;
-	} else if (denyCode == SERVER_ACCESSDENIED_CUSTOM_STRING) {
-		*pkt >> m_access_denied_reason;
-	} else if (denyCode == SERVER_ACCESSDENIED_TOO_MANY_USERS) {
-		m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
-		m_access_denied_reconnect = true;
-	} else if (denyCode < SERVER_ACCESSDENIED_MAX) {
-		m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
-	} else {
-		// Allow us to add new error messages to the
-		// protocol without raising the protocol version, if we want to.
-		// Until then (which may be never), this is outside
-		// of the defined protocol.
-		*pkt >> m_access_denied_reason;
-		if (m_access_denied_reason.empty())
-			m_access_denied_reason = "Unknown";
 	}
 }
 
