@@ -571,7 +571,6 @@ scene::SMeshBuffer *Minimap::getMinimapMeshBuffer()
 	buf->Indices[4] = 3;
 	buf->Indices[5] = 0;
 
-	buf->setHardwareMappingHint(scene::EHM_STATIC);
 	return buf;
 }
 
