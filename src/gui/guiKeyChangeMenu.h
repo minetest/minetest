@@ -40,7 +40,7 @@ public:
 			guienv->setFocus(this);
 	}
 
-	void acceptInput();
+	void saveSettings();
 
 	bool OnEvent(const SEvent &event);
 
