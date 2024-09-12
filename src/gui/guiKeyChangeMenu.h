@@ -24,7 +24,7 @@ public:
 			const std::string &formspec_prepend = "") :
 		super(joystick, guiroot, -1, &g_menumgr, client, guienv, tsrc,
 				sound_manager, nullptr, nullptr, formspec_prepend),
-		has_client(client != nullptr)
+		has_client(client != nullptr), guienv(guienv)
 		{
 			updateFormSource();
 			setFormspecHandler();
@@ -33,6 +33,12 @@ public:
 	/*
 	 Remove and re-add (or reposition) stuff
 	 */
+	void regenerateGui(v2u32 screensize) {
+		super::regenerateGui(screensize);
+		if (!active_key.empty())
+			guienv->setFocus(this);
+	}
+
 	void acceptInput();
 
 	bool OnEvent(const SEvent &event);
@@ -80,5 +86,6 @@ private:
 	std::unordered_map<std::string, bool> control_options;
 	std::string active_key;
 	bool has_client;
+	gui::IGUIEnvironment *guienv;
 	float scroll_position = 0;
 };
