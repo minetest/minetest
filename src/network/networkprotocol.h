@@ -904,6 +904,7 @@ enum ToClientCommand : u16
 	TOCLIENT_CAMERA_ROLL = 0x64,
 	/*
 		f32 roll
+		f32 transition_time
 	*/
 
 	TOCLIENT_CAMERA_BASE_ROTATION = 0x65,

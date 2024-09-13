@@ -197,6 +197,22 @@ public:
 	v3f eye_offset_third;
 	v3f eye_offset_third_front;
 
+	void setTargetCameraRoll(f32 roll)
+	{
+		m_target_camera_roll = roll;
+	}
+	f32 getTargetCameraRoll() const
+	{
+		return m_target_camera_roll;
+	}
+	void setCameraRollTransitionTime(f32 transition_time)
+	{
+		m_camera_roll_transition_time = transition_time;
+	}
+	f32 getCameraRollTransitionTime() const
+	{
+		return m_camera_roll_transition_time;
+	}
 	void setCameraRoll(f32 roll)
 	{
 		m_camera_roll = roll;
@@ -287,5 +303,7 @@ private:
 	std::mutex m_mutex;
 
 	f32 m_camera_roll = 0.0f;
+	f32 m_target_camera_roll = 0.0f;
+	f32 m_camera_roll_transition_time = 0.0f;
 	v3f m_camera_base_rotation = v3f(0, 0, 0);
 };

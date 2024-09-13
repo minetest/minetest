@@ -1835,10 +1835,12 @@ void Client::handleCommand_CameraRoll(NetworkPacket* pkt)
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player);
 
-	f32 roll;
+	f32 roll, transition_time;
 
-	*pkt >> roll;
-	player->setCameraRoll(roll);
+	*pkt >> roll >> transition_time;
+	player->setCameraRollTransitionTime(transition_time);
+	player->setTargetCameraRoll(roll);
+	m_camera->notifyRollChange();
 }
 
 void Client::handleCommand_CameraBaseRotation(NetworkPacket* pkt)

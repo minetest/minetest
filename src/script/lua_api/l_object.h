@@ -263,7 +263,7 @@ private:
 	// set_look_horizontal(self, radians)
 	static int l_set_look_horizontal(lua_State *L);
 
-	// set_look_roll(self, radians)
+	// set_look_roll(self, radians, transition_time)
 	static int l_set_look_roll(lua_State *L);
 
 	// set_look_base_rotation(self)

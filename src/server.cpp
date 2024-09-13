@@ -1951,10 +1951,11 @@ void Server::SendEyeOffset(session_t peer_id, v3f first, v3f third, v3f third_fr
 	Send(&pkt);
 }
 
-void Server::SendCameraRoll(session_t peer_id, float roll)
+void Server::SendCameraRoll(session_t peer_id, float roll, float transition_time)
 {
 	NetworkPacket pkt(TOCLIENT_CAMERA_ROLL, 0, peer_id);
 	pkt << roll;
+	pkt << transition_time;
 	Send(&pkt);
 }
 
@@ -3428,11 +3429,12 @@ void Server::setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third, v3f 
 	SendEyeOffset(player->getPeerId(), first, third, third_front);
 }
 
-void Server::setPlayerCameraRoll(RemotePlayer *player, float roll)
+void Server::setPlayerCameraRoll(RemotePlayer *player, float roll, float transition_time)
 {
 	sanity_check(player);
-	player->setCameraRoll(roll);
-	SendCameraRoll(player->getPeerId(), roll);
+	player->setTargetCameraRoll(roll);
+	player->setCameraRollTransitionTime(transition_time);
+	SendCameraRoll(player->getPeerId(), roll, transition_time);
 }
 
 void Server::setPlayerCameraBaseRotation(RemotePlayer *player, v3f rot)

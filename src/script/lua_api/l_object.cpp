@@ -1420,7 +1420,12 @@ int ObjectRef::l_set_look_roll(lua_State *L)
 		return 0;
 
 	float roll = readParam<float>(L, 2) * core::RADTODEG;
-	getServer(L)->setPlayerCameraRoll(player,roll);
+
+	float transition_time = 0.0f;
+	if (lua_isnumber(L, 3))
+		transition_time = readParam<float>(L, 3);
+
+	getServer(L)->setPlayerCameraRoll(player, roll, transition_time);
 	return 0;
 }
 

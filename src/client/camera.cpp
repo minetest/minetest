@@ -119,6 +119,23 @@ void Camera::notifyFovChange()
 	}
 }
 
+void Camera::notifyRollChange()
+{
+	LocalPlayer *player = m_client->getEnv().getLocalPlayer();
+	assert(player);
+
+	m_camera_roll_transition_active = player->getCameraRollTransitionTime() > 0.0f;
+	if (m_camera_roll_transition_active)
+	{
+		m_camera_roll_transition_time = player->getCameraRollTransitionTime();
+		m_camera_roll_diff = player->getTargetCameraRoll() - player->getCameraRoll();
+	}
+	else
+	{
+		player->setCameraRoll(player->getTargetCameraRoll());
+	}
+}
+
 // Returns the fractional part of x
 inline f32 my_modf(f32 x)
 {
@@ -476,6 +493,22 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	// and correctly apply liquid post FX.
 	if (m_camera_mode != CAMERA_MODE_FIRST)
 		m_camera_position = my_cp;
+
+	/*
+	 * Apply server-sent roll, instantaneous or smooth transition.
+	 */
+	if (m_camera_roll_transition_active)
+	{
+		f32 delta = (frametime / m_camera_roll_transition_time) * m_camera_roll_diff;
+		player->setCameraRoll(player->getCameraRoll() + delta);
+
+		if ((m_camera_roll_diff > 0.0f && player->getCameraRoll() >= player->getTargetCameraRoll()) ||
+			(m_camera_roll_diff < 0.0f && player->getCameraRoll() <= player->getTargetCameraRoll()))
+		{
+			m_camera_roll_transition_active = false;
+			player->setCameraRoll(player->getTargetCameraRoll());
+		}
+	}
 
 	/*
 	 * Apply server-sent FOV, instantaneous or smooth transition.
