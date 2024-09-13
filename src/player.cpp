@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 #include "porting.h"  // strlcpy
+#include <tuple>
 
 
 bool is_valid_player_name(std::string_view name) {
@@ -230,24 +231,18 @@ void PlayerControl::unpackKeysPressed(u32 keypress_bits)
 	zoom  = keypress_bits & (1 << 9);
 }
 
-bool PlayerPhysicsOverride::operator==(const PlayerPhysicsOverride &other) const
+static auto tie(const PlayerPhysicsOverride &o)
 {
 	// Make sure to add new members to this list!
-	return
-		speed                  == other.speed &&
-		jump                   == other.jump &&
-		gravity                == other.gravity &&
-		sneak                  == other.sneak &&
-		sneak_glitch           == other.sneak_glitch &&
-		new_move               == other.new_move &&
-		speed_climb            == other.speed_climb &&
-		speed_crouch           == other.speed_crouch &&
-		liquid_fluidity        == other.liquid_fluidity &&
-		liquid_fluidity_smooth == other.liquid_fluidity_smooth &&
-		liquid_sink            == other.liquid_sink &&
-		acceleration_default   == other.acceleration_default &&
-		acceleration_air       == other.acceleration_air &&
-		speed_fast             == other.speed_fast &&
-		acceleration_fast      == other.acceleration_fast &&
-		speed_walk             == other.speed_walk;
-};
+	return std::tie(
+	o.speed, o.jump, o.gravity, o.sneak, o.sneak_glitch, o.new_move, o.speed_climb,
+	o.speed_crouch, o.liquid_fluidity, o.liquid_fluidity_smooth, o.liquid_sink,
+	o.acceleration_default, o.acceleration_air, o.speed_fast, o.acceleration_fast,
+	o.speed_walk
+	);
+}
+
+bool PlayerPhysicsOverride::operator==(const PlayerPhysicsOverride &other) const
+{
+	return tie(*this) == tie(other);
+}
