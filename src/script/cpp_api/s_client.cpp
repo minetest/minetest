@@ -125,21 +125,6 @@ void ScriptApiClient::on_hp_modification(int32_t newhp)
 	}
 }
 
-void ScriptApiClient::on_death()
-{
-	SCRIPTAPI_PRECHECKHEADER
-
-	// Get registered shutdown hooks
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_on_death");
-	// Call callbacks
-	try {
-		runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
-	} catch (LuaError &e) {
-		getClient()->setFatalError(e);
-	}
-}
-
 void ScriptApiClient::environment_step(float dtime)
 {
 	SCRIPTAPI_PRECHECKHEADER
