@@ -101,9 +101,6 @@ struct SOverrideMaterial
 					case EMP_GOURAUD_SHADING:
 						material.GouraudShading = Material.GouraudShading;
 						break;
-					case EMP_LIGHTING:
-						material.Lighting = Material.Lighting;
-						break;
 					case EMP_ZBUFFER:
 						material.ZBuffer = Material.ZBuffer;
 						break;
@@ -157,9 +154,6 @@ struct SOverrideMaterial
 						break;
 					case EMP_COLOR_MASK:
 						material.ColorMask = Material.ColorMask;
-						break;
-					case EMP_COLOR_MATERIAL:
-						material.ColorMaterial = Material.ColorMaterial;
 						break;
 					case EMP_USE_MIP_MAPS:
 						material.UseMipMaps = Material.UseMipMaps;

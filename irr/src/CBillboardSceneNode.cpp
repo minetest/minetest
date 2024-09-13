@@ -85,7 +85,6 @@ void CBillboardSceneNode::render()
 	if (DebugDataVisible & scene::EDS_BBOX) {
 		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		video::SMaterial m;
-		m.Lighting = false;
 		driver->setMaterial(m);
 		driver->draw3DBox(BBoxSafe, video::SColor(0, 208, 195, 152));
 	}

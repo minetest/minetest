@@ -21,9 +21,6 @@ enum E_MATERIAL_PROP
 	//! Corresponds to SMaterial::GouraudShading.
 	EMP_GOURAUD_SHADING = 0x4,
 
-	//! Corresponds to SMaterial::Lighting.
-	EMP_LIGHTING = 0x8,
-
 	//! Corresponds to SMaterial::ZBuffer.
 	EMP_ZBUFFER = 0x10,
 
@@ -60,9 +57,6 @@ enum E_MATERIAL_PROP
 
 	//! Corresponds to SMaterial::ColorMask.
 	EMP_COLOR_MASK = 0x8000,
-
-	//! Corresponds to SMaterial::ColorMaterial.
-	EMP_COLOR_MATERIAL = 0x10000,
 
 	//! Corresponds to SMaterial::UseMipMaps.
 	EMP_USE_MIP_MAPS = 0x20000,

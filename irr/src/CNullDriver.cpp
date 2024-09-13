@@ -104,7 +104,6 @@ CNullDriver::CNullDriver(io::IFileSystem *io, const core::dimension2d<u32> &scre
 		FeatureEnabled[i] = true;
 
 	InitMaterial2D.AntiAliasing = video::EAAM_OFF;
-	InitMaterial2D.Lighting = false;
 	InitMaterial2D.ZWriteEnable = video::EZW_OFF;
 	InitMaterial2D.ZBuffer = video::ECFN_DISABLED;
 	InitMaterial2D.UseMipMaps = false;
@@ -1306,7 +1305,6 @@ void CNullDriver::runOcclusionQuery(scene::ISceneNode *node, bool visible)
 	OcclusionQueries[index].Run = 0;
 	if (!visible) {
 		SMaterial mat;
-		mat.Lighting = false;
 		mat.AntiAliasing = 0;
 		mat.ColorMask = ECP_NONE;
 		mat.GouraudShading = false;

@@ -736,7 +736,6 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 
 			// Create material
 			video::SMaterial material;
-			material.Lighting = false;
 			material.BackfaceCulling = true;
 			material.FogEnable = true;
 			material.setTexture(0, p.layer.texture);

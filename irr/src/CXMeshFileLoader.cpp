@@ -109,10 +109,6 @@ bool CXMeshFileLoader::load(io::IReadFile *file)
 		// default material if nothing loaded
 		if (!mesh->Materials.size()) {
 			mesh->Materials.push_back(video::SMaterial());
-			mesh->Materials[0].DiffuseColor.set(0xff777777);
-			mesh->Materials[0].Shininess = 0.f;
-			mesh->Materials[0].SpecularColor.set(0xff777777);
-			mesh->Materials[0].EmissiveColor.set(0xff000000);
 		}
 
 		u32 i;
@@ -142,7 +138,7 @@ bool CXMeshFileLoader::load(io::IReadFile *file)
 		if (!mesh->HasVertexColors) {
 			for (u32 j = 0; j < mesh->FaceMaterialIndices.size(); ++j) {
 				for (u32 id = j * 3 + 0; id <= j * 3 + 2; ++id) {
-					mesh->Vertices[mesh->Indices[id]].Color = mesh->Buffers[mesh->FaceMaterialIndices[j]]->Material.DiffuseColor;
+					mesh->Vertices[mesh->Indices[id]].Color = 0xff777777;
 				}
 			}
 		}
