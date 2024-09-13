@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "my_sha256.h"
 #include "util/png.h"
 #include "player.h"
+#include "daynightratio.h"
 #include <cstdio>
 
 // only available in zstd 1.3.5+
@@ -640,6 +641,17 @@ int ModApiUtil::l_colorspec_to_table(lua_State *L)
 	return 0;
 }
 
+// time_to_day_night_ratio(time_of_day)
+int ModApiUtil::l_time_to_day_night_ratio(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	float time_of_day = lua_tonumber(L, 1) * 24000;
+	u32 dnr = time_to_daynight_ratio(time_of_day, true);
+	lua_pushnumber(L, dnr / 1000.0f);
+	return 1;
+}
+
 // encode_png(w, h, data, level)
 int ModApiUtil::l_encode_png(lua_State *L)
 {
@@ -741,6 +753,7 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
 	API_FCT(colorspec_to_table);
+	API_FCT(time_to_day_night_ratio);
 
 	API_FCT(encode_png);
 
@@ -777,6 +790,7 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
 	API_FCT(colorspec_to_table);
+	API_FCT(time_to_day_night_ratio);
 
 	API_FCT(get_last_run_mod);
 	API_FCT(set_last_run_mod);
@@ -822,6 +836,7 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
 	API_FCT(colorspec_to_table);
+	API_FCT(time_to_day_night_ratio);
 
 	API_FCT(encode_png);
 
