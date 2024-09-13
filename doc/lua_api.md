@@ -5659,6 +5659,9 @@ Utilities
   form. If the ColorSpec is invalid, returns `nil`. You can use this to parse
   ColorStrings.
     * `colorspec`: The ColorSpec to convert
+* `minetest.time_to_day_night_ratio(time_of_day)`: Returns a "day-night ratio" value
+  (as accepted by `ObjectRef:override_day_night_ratio`) that is equivalent to
+  the given "time of day" value (as returned by `minetest.get_timeofday`).
 * `minetest.encode_png(width, height, data, [compression])`: Encode a PNG
   image and return it in string form.
     * `width`: Width of the image
@@ -8519,6 +8522,7 @@ child will follow movement and rotation of that bone.
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific
       amount.
     * Passing no arguments disables override, defaulting to sunlight based on day-night cycle
+    * See also `minetest.time_to_day_night_ratio`,
 * `get_day_night_ratio()`: returns the ratio or nil if it isn't overridden
 * `set_local_animation(idle, walk, dig, walk_while_dig, frame_speed)`:
   set animation for player model in third person view.
