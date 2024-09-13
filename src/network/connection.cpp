@@ -739,16 +739,16 @@ void Channel::UpdateTimers(float dtime)
 	if (packet_loss_counter > 1.0f) {
 		packet_loss_counter -= 1.0f;
 
-		unsigned int packet_loss = 11; /* use a neutral value for initialization */
-		unsigned int packets_successful = 0;
-		//unsigned int packet_too_late = 0;
+		unsigned int packet_loss;
+		unsigned int packets_successful;
+		unsigned int packet_too_late;
 
 		bool reasonable_amount_of_data_transmitted = false;
 
 		{
 			MutexAutoLock internal(m_internal_mutex);
 			packet_loss = current_packet_loss;
-			//packet_too_late = current_packet_too_late;
+			packet_too_late = current_packet_too_late;
 			packets_successful = current_packet_successful;
 
 			if (current_bytes_transfered > (unsigned int) (m_window_size*512/2)) {
@@ -758,6 +758,11 @@ void Channel::UpdateTimers(float dtime)
 			current_packet_too_late = 0;
 			current_packet_successful = 0;
 		}
+
+		// Packets too late means either packet duplication along the way
+		// or we were too fast in resending it (which should be self-regulating).
+		// Count this a signal of congestion, like packet loss.
+		packet_loss = std::min(packet_loss + packet_too_late, packets_successful);
 
 		/* dynamic window size */
 		float successful_to_lost_ratio = 0.0f;
