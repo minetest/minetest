@@ -626,6 +626,20 @@ int ModApiUtil::l_colorspec_to_bytes(lua_State *L)
 	return 0;
 }
 
+// colorspec_to_table(colorspec)
+int ModApiUtil::l_colorspec_to_table(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::SColor color(0);
+	if (read_color(L, 1, &color)) {
+		push_ARGB8(L, color);
+		return 1;
+	}
+
+	return 0;
+}
+
 // encode_png(w, h, data, level)
 int ModApiUtil::l_encode_png(lua_State *L)
 {
@@ -726,6 +740,7 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(sha256);
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
+	API_FCT(colorspec_to_table);
 
 	API_FCT(encode_png);
 
@@ -761,6 +776,7 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	API_FCT(sha256);
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
+	API_FCT(colorspec_to_table);
 
 	API_FCT(get_last_run_mod);
 	API_FCT(set_last_run_mod);
@@ -805,6 +821,7 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 	API_FCT(sha256);
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
+	API_FCT(colorspec_to_table);
 
 	API_FCT(encode_png);
 

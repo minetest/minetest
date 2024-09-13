@@ -122,6 +122,9 @@ private:
 	// colorspec_to_bytes(colorspec)
 	static int l_colorspec_to_bytes(lua_State *L);
 
+	// colorspec_to_table(colorspec)
+	static int l_colorspec_to_table(lua_State *L);
+
 	// encode_png(w, h, data, level)
 	static int l_encode_png(lua_State *L);
 
