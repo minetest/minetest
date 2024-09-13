@@ -5655,6 +5655,10 @@ Utilities
 * `minetest.colorspec_to_bytes(colorspec)`: Converts a ColorSpec to a raw
   string of four bytes in an RGBA layout, returned as a string.
   * `colorspec`: The ColorSpec to convert
+* `minetest.colorspec_to_table(colorspec)`: Converts a ColorSpec into RGBA table
+  form. If the ColorSpec is invalid, returns `nil`. You can use this to parse
+  ColorStrings.
+    * `colorspec`: The ColorSpec to convert
 * `minetest.encode_png(width, height, data, [compression])`: Encode a PNG
   image and return it in string form.
     * `width`: Width of the image
