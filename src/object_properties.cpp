@@ -246,3 +246,23 @@ void ObjectProperties::deSerialize(std::istream &is)
 		rotate_selectionbox = tmp;
 	} catch (SerializationError &e) {}
 }
+
+static auto tie(const ObjectProperties &o)
+{
+	// Make sure to add new members to this list!
+	return std::tie(
+	o.textures, o.colors, o.collisionbox, o.selectionbox, o.visual, o.mesh, o.damage_texture_modifier,
+	o.nametag, o.infotext, o.wield_item, o.visual_size, o.nametag_color, o.nametag_bgcolor,
+	o.spritediv, o.initial_sprite_basepos, o.stepheight, o.automatic_rotate,
+	o.automatic_face_movement_dir_offset, o.automatic_face_movement_max_rotation_per_sec,
+	o.eye_height, o.zoom_fov, o.hp_max, o.breath_max, o.glow, o.pointable, o.physical,
+	o.collideWithObjects, o.rotate_selectionbox, o.is_visible, o.makes_footstep_sound,
+	o.automatic_face_movement_dir, o.backface_culling, o.static_save, o.use_texture_alpha,
+	o.shaded, o.show_on_minimap
+	);
+}
+
+bool ObjectProperties::operator==(const ObjectProperties &other) const
+{
+	return tie(*this) == tie(other);
+}
