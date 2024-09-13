@@ -317,6 +317,7 @@ void ConnectionSendThread::sendAsPacketReliable(BufferedPacketPtr &p, Channel *c
 		channel->outgoing_reliables_sent.insert(p,
 			(channel->readOutgoingSequenceNumber() - MAX_RELIABLE_WINDOW_SIZE)
 				% (MAX_RELIABLE_WINDOW_SIZE + 1));
+		// wtf is this calculation?? ^
 	}
 	catch (AlreadyExistsException &e) {
 		LOG(derr_con << m_connection->getDesc()
