@@ -231,6 +231,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Move default hotbar from client-side C++ to server-side builtin Lua
     Add shadow tint to Lighting packets
 		Add shadow color to CloudParam packets
+		Move death screen to server and make it a regular formspec
+			The server no longer triggers the hardcoded client-side death
+			formspec, but the client still supports it for compatibility with
+			old servers.
+		Rename TOCLIENT_DEATHSCREEN to TOCLIENT_DEATHSCREEN_LEGACY
+		Rename TOSERVER_RESPAWN to TOSERVER_RESPAWN_LEGACY
 		[scheduled bump for 5.10.0]
 */
 
@@ -393,8 +399,8 @@ enum ToClientCommand : u16
 
 	TOCLIENT_DEATHSCREEN_LEGACY = 0x37,
 	/*
-		u8 bool set camera point target
-		v3f1000 camera point target (to point the death cause or whatever)
+		u8 bool unused
+		v3f1000 unused
 	*/
 
 	TOCLIENT_MEDIA = 0x38,

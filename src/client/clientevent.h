@@ -97,13 +97,6 @@ struct ClientEvent
 		} player_force_move;
 		struct
 		{
-			bool set_camera_point_target;
-			f32 camera_point_target_x;
-			f32 camera_point_target_y;
-			f32 camera_point_target_z;
-		} deathscreen;
-		struct
-		{
 			std::string *formspec;
 			std::string *formname;
 		} show_formspec;
