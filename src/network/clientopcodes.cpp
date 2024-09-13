@@ -81,7 +81,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_MOVE_PLAYER",              TOCLIENT_STATE_CONNECTED, &Client::handleCommand_MovePlayer }, // 0x34
 	{ "TOCLIENT_ACCESS_DENIED_LEGACY",     TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_AccessDenied }, // 0x35
 	{ "TOCLIENT_FOV",                      TOCLIENT_STATE_CONNECTED, &Client::handleCommand_Fov }, // 0x36
-	{ "TOCLIENT_DEATHSCREEN",              TOCLIENT_STATE_CONNECTED, &Client::handleCommand_DeathScreen }, // 0x37
+	{ "TOCLIENT_DEATHSCREEN_LEGACY",       TOCLIENT_STATE_CONNECTED, &Client::handleCommand_DeathScreenLegacy }, // 0x37
 	{ "TOCLIENT_MEDIA",                    TOCLIENT_STATE_CONNECTED, &Client::handleCommand_Media }, // 0x38
 	null_command_handler,
 	{ "TOCLIENT_NODEDEF",                  TOCLIENT_STATE_CONNECTED, &Client::handleCommand_NodeDef }, // 0x3a

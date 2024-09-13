@@ -181,7 +181,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_MOVE_PLAYER",              0, true }, // 0x34
 	null_command_factory, // 0x35
 	{ "TOCLIENT_FOV",                      0, true }, // 0x36
-	{ "TOCLIENT_DEATHSCREEN",              0, true }, // 0x37
+	null_command_factory, // 0x37
 	{ "TOCLIENT_MEDIA",                    2, true }, // 0x38
 	null_command_factory, // 0x39
 	{ "TOCLIENT_NODEDEF",                  0, true }, // 0x3A

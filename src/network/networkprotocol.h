@@ -391,7 +391,7 @@ enum ToClientCommand : u16
 		f32 transition_time
 	*/
 
-	TOCLIENT_DEATHSCREEN = 0x37,
+	TOCLIENT_DEATHSCREEN_LEGACY = 0x37,
 	/*
 		u8 bool set camera point target
 		v3f1000 camera point target (to point the death cause or whatever)
