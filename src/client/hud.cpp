@@ -383,7 +383,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 		elems.push_back(&minimap);
 	}
 	if (client->getProtoVersion() < 46 && player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
-		hotbar = {HUD_ELEM_HOTBAR, v2f(0.5, 1), "", v2f(), "", 0 , 0, 0, v2f(-0.5, -1),
+		hotbar = {HUD_ELEM_HOTBAR, v2f(0.5, 1), "", v2f(), "", 0 , 0, 0, v2f(0, -1),
 				v2f(0, -4), v3f(), v2s32(), 0, "", 0};
 		elems.push_back(&hotbar);
 	}
