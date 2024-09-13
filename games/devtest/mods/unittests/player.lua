@@ -57,7 +57,7 @@ local function run_hp_difference_tests(player)
 	player:set_hp(22)
 
 	-- final HP value is clamped to >= 0 before difference calculation
-	expected_diff = -22
+	expected_diff = -25
 	player:set_hp(-3)
 	-- and actual final HP value is clamped to >= 0 too
 	assert(player:get_hp() == 0)
@@ -66,8 +66,17 @@ local function run_hp_difference_tests(player)
 	player:set_hp(22)
 	assert(player:get_hp() == 22)
 
-	-- final HP value is clamped to <= U16_MAX before difference calculation
-	expected_diff = 65535 - 22
+	-- HP change is rangelim from -U16_MAX to U16_MAX 
+	expected_diff = -65535 - 22
+	player:set_hp(-1000000)
+	-- and actual final HP value is clamped to 0
+	assert(player:get_hp() == 0)
+
+	expected_diff = 11
+	player:set_hp(11)
+	assert(player:get_hp() == 11)
+
+	expected_diff = 65535 - 11
 	player:set_hp(1000000)
 	-- and actual final HP value is clamped to <= hp_max
 	assert(player:get_hp() == 30)
