@@ -85,6 +85,50 @@ std::string ObjectProperties::dump() const
 	return os.str();
 }
 
+bool ObjectProperties::operator==(const ObjectProperties &other) const
+{
+	// Make sure to add new members to this list!
+	return
+		textures                    == other.textures &&
+		colors                      == other.colors &&
+		collisionbox                == other.collisionbox &&
+		selectionbox                == other.selectionbox &&
+		visual                      == other.visual &&
+		mesh                        == other.mesh &&
+		damage_texture_modifier     == other.damage_texture_modifier &&
+		nametag                     == other.nametag &&
+		infotext                    == other.infotext &&
+		wield_item                  == other.wield_item &&
+		visual_size                 == other.visual_size &&
+		nametag_color               == other.nametag_color &&
+		nametag_bgcolor             == other.nametag_bgcolor &&
+		spritediv                   == other.spritediv &&
+		initial_sprite_basepos      == other.initial_sprite_basepos &&
+		stepheight                  == other.stepheight &&
+		automatic_rotate            == other.automatic_rotate &&
+		automatic_face_movement_dir_offset
+				== other.automatic_face_movement_dir_offset &&
+		automatic_face_movement_max_rotation_per_sec
+				== other.automatic_face_movement_max_rotation_per_sec &&
+		eye_height                  == other.eye_height &&
+		zoom_fov                    == other.zoom_fov &&
+		hp_max                      == other.hp_max &&
+		breath_max                  == other.breath_max &&
+		glow                        == other.glow &&
+		pointable                   == other.pointable &&
+		physical                    == other.physical &&
+		collideWithObjects          == other.collideWithObjects &&
+		rotate_selectionbox         == other.rotate_selectionbox &&
+		is_visible                  == other.is_visible &&
+		makes_footstep_sound        == other.makes_footstep_sound &&
+		automatic_face_movement_dir == other.automatic_face_movement_dir &&
+		backface_culling            == other.backface_culling &&
+		static_save                 == other.static_save &&
+		use_texture_alpha           == other.use_texture_alpha &&
+		shaded                      == other.shaded &&
+		show_on_minimap             == other.show_on_minimap;
+}
+
 bool ObjectProperties::validate()
 {
 	const char *func = "ObjectProperties::validate(): ";
@@ -245,24 +289,4 @@ void ObjectProperties::deSerialize(std::istream &is)
 			return;
 		rotate_selectionbox = tmp;
 	} catch (SerializationError &e) {}
-}
-
-static auto tie(const ObjectProperties &o)
-{
-	// Make sure to add new members to this list!
-	return std::tie(
-	o.textures, o.colors, o.collisionbox, o.selectionbox, o.visual, o.mesh, o.damage_texture_modifier,
-	o.nametag, o.infotext, o.wield_item, o.visual_size, o.nametag_color, o.nametag_bgcolor,
-	o.spritediv, o.initial_sprite_basepos, o.stepheight, o.automatic_rotate,
-	o.automatic_face_movement_dir_offset, o.automatic_face_movement_max_rotation_per_sec,
-	o.eye_height, o.zoom_fov, o.hp_max, o.breath_max, o.glow, o.pointable, o.physical,
-	o.collideWithObjects, o.rotate_selectionbox, o.is_visible, o.makes_footstep_sound,
-	o.automatic_face_movement_dir, o.backface_culling, o.static_save, o.use_texture_alpha,
-	o.shaded, o.show_on_minimap
-	);
-}
-
-bool ObjectProperties::operator==(const ObjectProperties &other) const
-{
-	return tie(*this) == tie(other);
 }

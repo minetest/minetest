@@ -24,10 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "util/basic_macros.h"
 #include "util/string.h"
-#include <list>
 #include <mutex>
 #include <functional>
-#include <tuple>
 #include <string>
 
 #define PLAYERNAME_SIZE 20

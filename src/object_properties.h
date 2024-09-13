@@ -20,11 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <optional>
-#include <tuple>
 #include <string>
 #include "irrlichttypes_bloated.h"
 #include <iostream>
-#include <map>
 #include <vector>
 #include "util/pointabilities.h"
 
