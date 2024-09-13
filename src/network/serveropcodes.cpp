@@ -82,7 +82,7 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_DAMAGE",                   TOSERVER_STATE_INGAME, &Server::handleCommand_Damage }, // 0x35
 	null_command_handler, // 0x36
 	{ "TOSERVER_PLAYERITEM",               TOSERVER_STATE_INGAME, &Server::handleCommand_PlayerItem }, // 0x37
-	{ "TOSERVER_RESPAWN",                  TOSERVER_STATE_INGAME, &Server::handleCommand_Respawn }, // 0x38
+	null_command_handler, // 0x38
 	{ "TOSERVER_INTERACT",                 TOSERVER_STATE_INGAME, &Server::handleCommand_Interact }, // 0x39
 	{ "TOSERVER_REMOVED_SOUNDS",           TOSERVER_STATE_INGAME, &Server::handleCommand_RemovedSounds }, // 0x3a
 	{ "TOSERVER_NODEMETA_FIELDS",          TOSERVER_STATE_INGAME, &Server::handleCommand_NodeMetaFields }, // 0x3b

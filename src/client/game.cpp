@@ -186,7 +186,7 @@ struct LocalFormspecHandler : public TextDest
 			assert(m_client != nullptr);
 
 			if (fields.find("quit") != fields.end())
-				m_client->sendRespawn();
+				m_client->sendRespawnLegacy();
 
 			return;
 		}

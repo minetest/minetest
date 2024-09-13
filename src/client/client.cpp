@@ -1359,9 +1359,9 @@ void Client::sendDamage(u16 damage)
 	Send(&pkt);
 }
 
-void Client::sendRespawn()
+void Client::sendRespawnLegacy()
 {
-	NetworkPacket pkt(TOSERVER_RESPAWN, 0);
+	NetworkPacket pkt(TOSERVER_RESPAWN_LEGACY, 0);
 	Send(&pkt);
 }
 

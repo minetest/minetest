@@ -198,7 +198,7 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_DAMAGE",             0, true }, // 0x35
 	null_command_factory, // 0x36
 	{ "TOSERVER_PLAYERITEM",         0, true }, // 0x37
-	{ "TOSERVER_RESPAWN",            0, true }, // 0x38
+	{ "TOSERVER_RESPAWN_LEGACY",     0, true }, // 0x38
 	{ "TOSERVER_INTERACT",           0, true }, // 0x39
 	{ "TOSERVER_REMOVED_SOUNDS",     2, true }, // 0x3a
 	{ "TOSERVER_NODEMETA_FIELDS",    0, true }, // 0x3b

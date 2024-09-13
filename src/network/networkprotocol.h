@@ -1002,10 +1002,7 @@ enum ToServerCommand : u16
 		[2] u16 item
 	*/
 
-	TOSERVER_RESPAWN = 0x38,
-	/*
-		u16 TOSERVER_RESPAWN
-	*/
+	TOSERVER_RESPAWN_LEGACY = 0x38,
 
 	TOSERVER_INTERACT = 0x39,
 	/*

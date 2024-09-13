@@ -193,7 +193,6 @@ public:
 	void handleCommand_ChatMessage(NetworkPacket* pkt);
 	void handleCommand_Damage(NetworkPacket* pkt);
 	void handleCommand_PlayerItem(NetworkPacket* pkt);
-	void handleCommand_Respawn(NetworkPacket* pkt);
 	void handleCommand_Interact(NetworkPacket* pkt);
 	void handleCommand_RemovedSounds(NetworkPacket* pkt);
 	void handleCommand_NodeMetaFields(NetworkPacket* pkt);
