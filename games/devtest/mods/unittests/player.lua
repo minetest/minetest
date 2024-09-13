@@ -66,7 +66,7 @@ local function run_hp_difference_tests(player)
 	player:set_hp(22)
 	assert(player:get_hp() == 22)
 
-	-- HP change is rangelim from -U16_MAX to U16_MAX 
+	-- HP change is rangelim from -U16_MAX to U16_MAX
 	expected_diff = -65535 - 22
 	player:set_hp(-1000000)
 	-- and actual final HP value is clamped to 0
