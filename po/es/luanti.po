@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-08-19 07:09+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"PO-Revision-Date: 2024-09-13 14:54+0000\n"
+"Last-Translator: Ari <underfed_palace591@simplelogin.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1435,9 +1435,8 @@ msgid "Fog enabled"
 msgstr "Niebla activada"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog enabled by game or mod"
-msgstr "El zoom está actualmente desactivado por el juego o un mod"
+msgstr "Niebla activada por el juego o una modificación"
 
 #: src/client/game.cpp
 msgid "Game info:"
@@ -1918,9 +1917,8 @@ msgid "X Button 2"
 msgstr "X Botón 2"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Zoom Key"
-msgstr "Zoom"
+msgstr "Tecla Zum"
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
@@ -2151,9 +2149,8 @@ msgid "Open URL?"
 msgstr "Abrir URL?"
 
 #: src/gui/guiOpenURL.cpp
-#, fuzzy
 msgid "Unable to open URL"
-msgstr "Fallo al abrir la página web"
+msgstr "No se ha podido abrir el enlace"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
@@ -2643,9 +2640,8 @@ msgid "Bind address"
 msgstr "Dirección BIND"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Biome API"
-msgstr "Biomas"
+msgstr "API de Biomas"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2858,9 +2854,8 @@ msgid "Clouds"
 msgstr "Nubes"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds are a client-side effect."
-msgstr "Las nubes son un efecto del lado del cliente."
+msgstr "Las nubes son un efecto local."
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
@@ -3104,7 +3099,6 @@ msgstr ""
 "pero tambien utiliza más recursos."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Define the oldest clients allowed to connect.\n"
 "Older clients are compatible in the sense that they will not crash when "
@@ -3116,10 +3110,15 @@ msgid ""
 "Minetest still enforces its own internal minimum, and enabling\n"
 "strict_protocol_version_checking will effectively override this."
 msgstr ""
-"Habilitar para no permitir que clientes antíguos se conecten.\n"
-"Los clientes antíguos son compatibles al punto de conectarse a nueos "
-"servidores,\n"
-"pero pueden no soportar nuevas características."
+"Definir los clientes más antiguos con permiso para conectarse.\n"
+"Los clientes más antiguos no se colgarán al intento de conectarse\n"
+"a nuevos servidores, pero no soportarán todas las nuevas características que "
+"espera.\n"
+"Esto permite un control mucho más ajustado que "
+"strict_protocol_version_checking.\n"
+"Aún así, Minetest sigue forzando su minimo interno, y activar\n"
+"strict_protocol_version_checking ignorará efectivamente todos los parámetros "
+"que haya definido."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
