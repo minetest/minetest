@@ -138,11 +138,11 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 	// Create the menu clouds
 	// This is only global so it can be used by RenderingEngine::draw_load_screen().
-	assert(!menu_shader_source && !g_menucloudsmgr && !g_menuclouds);
-	menu_shader_source = createShaderSource();
-	menu_shader_source->addShaderConstantSetterFactory(new FogShaderConstantSetterFactory());
+	assert(!g_menucloudsmgr && !g_menuclouds);
+	std::unique_ptr<IWritableShaderSource> ssrc(createShaderSource());
+	ssrc->addShaderConstantSetterFactory(new FogShaderConstantSetterFactory());
 	g_menucloudsmgr = m_rendering_engine->get_scene_manager()->createNewSceneManager();
-	g_menuclouds = new Clouds(g_menucloudsmgr, menu_shader_source, -1, rand());
+	g_menuclouds = new Clouds(g_menucloudsmgr, ssrc.get(), -1, rand());
 	g_menuclouds->setHeight(100.0f);
 	g_menuclouds->update(v3f(0, 0, 0), video::SColor(255, 240, 240, 255));
 	scene::ICameraSceneNode* camera;
@@ -269,7 +269,6 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	assert(g_menuclouds->getReferenceCount() == 1);
 	g_menuclouds->drop();
 	g_menuclouds = nullptr;
-	delete menu_shader_source;
 
 	return retval;
 }
