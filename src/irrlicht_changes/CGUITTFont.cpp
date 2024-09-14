@@ -630,7 +630,7 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 				const u32 current_color = iter - utext.begin();
 				fallback->draw(core::stringw(l1),
 					core::rect<s32>({offset.X-1, offset.Y-1}, position.LowerRightCorner), // ???
-					current_color < colors.size() ? colors[current_color] : video::SColor(255, 255, 255, 255),
+					current_color < colors.size() ? colors[current_color] : video::SColor(225, 200, 255, 255),
 					false, false, clip);
 			}
 
@@ -1040,10 +1040,10 @@ void CGUITTFont::createSharedPlane()
 	using namespace scene;
 	S3DVertex vertices[4];
 	u16 indices[6] = {0,2,3,3,1,0};
-	vertices[0] = S3DVertex(vector3df(0,-1,0), vector3df(0,0,-1), SColor(255,255,255,255), vector2df(0,1));
-	vertices[1] = S3DVertex(vector3df(1,-1,0), vector3df(0,0,-1), SColor(255,255,255,255), vector2df(1,1));
-	vertices[2] = S3DVertex(vector3df(0, 0,0), vector3df(0,0,-1), SColor(255,255,255,255), vector2df(0,0));
-	vertices[3] = S3DVertex(vector3df(1, 0,0), vector3df(0,0,-1), SColor(255,255,255,255), vector2df(1,0));
+	vertices[0] = S3DVertex(vector3df(0,-1,0), vector3df(0,0,-1), SColor(200,155,255,255), vector2df(0,1));
+	vertices[1] = S3DVertex(vector3df(1,-1,0), vector3df(0,0,-1), SColor(200,155,255,255), vector2df(1,1));
+	vertices[2] = S3DVertex(vector3df(0, 0,0), vector3df(0,0,-1), SColor(225,200,255,255), vector2df(0,0));
+	vertices[3] = S3DVertex(vector3df(1, 0,0), vector3df(0,0,-1), SColor(225,200,255,255), vector2df(1,0));
 
 	SMeshBuffer* buf = new SMeshBuffer();
 	buf->append(vertices, 4, indices, 6);

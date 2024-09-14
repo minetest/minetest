@@ -33,13 +33,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 const static std::string PlayerSettings_names[] = {
-	"free_move", "pitch_move", "fast_move", "continuous_forward", "always_fly_fast",
+	"free_move", "override_jump", "pitch_move", "fast_move", "continuous_forward", "always_fly_fast",
 	"aux1_descends", "noclip", "autojump"
 };
 
 void PlayerSettings::readGlobalSettings()
 {
 	free_move = g_settings->getBool("free_move");
+	override_jump = g_settings->getBool("override_jump");
 	pitch_move = g_settings->getBool("pitch_move");
 	fast_move = g_settings->getBool("fast_move");
 	continuous_forward = g_settings->getBool("continuous_forward");
@@ -258,6 +259,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	bool fly_allowed = m_client->checkLocalPrivilege("fly");
 	bool noclip = m_client->checkLocalPrivilege("noclip") && player_settings.noclip;
 	bool free_move = player_settings.free_move && fly_allowed;
+	bool override_jump = player_settings.override_jump;
 
 	if (noclip && free_move) {
 		position += m_speed * dtime;
@@ -523,7 +525,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	// Jump/Sneak key pressed while bouncing from a bouncy block
 	float jumpspeed = movement_speed_jump * physics_override.jump;
-	if (m_can_jump && (control.jump || control.sneak) && standing_node_bouncy > 0) {
+	if ((override_jump || m_can_jump) && (control.jump || control.sneak) && standing_node_bouncy > 0) {
 		// controllable (>0) bouncy block
 		if (!control.jump) {
 			// sneak pressed, but not jump
@@ -554,7 +556,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 	move(dtime, env, pos_max_d, NULL);
 }
 
-void LocalPlayer::applyControl(float dtime, Environment *env)
+void LocalPlayer::applyControl(float dtime, Environment *env, LocalPlayer* player)
 {
 	// Clear stuff
 	swimming_vertical = false;
@@ -580,6 +582,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	bool fast_allowed = m_client->checkLocalPrivilege("fast");
 
 	bool free_move = fly_allowed && player_settings.free_move;
+	bool override_jump = player_settings.override_jump;
 	bool fast_move = fast_allowed && player_settings.fast_move;
 	bool pitch_move = (free_move || in_liquid) && player_settings.pitch_move;
 	// When aux1_descends is enabled the fast key is used to go down, so fast isn't possible
@@ -682,18 +685,6 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 						speedV.Y = speed_walk;
 				}
 			}
-		} else if (m_can_jump) {
-			/*
-				NOTE: The d value in move() affects jump height by
-				raising the height at which the jump speed is kept
-				at its starting value
-			*/
-			v3f speedJ = getSpeed();
-			if (speedJ.Y >= -0.5f * BS) {
-				speedJ.Y = movement_speed_jump * physics_override.jump;
-				setSpeed(speedJ);
-				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_JUMP));
-			}
 		} else if (in_liquid && !m_disable_jump && !control.sneak) {
 			if (fast_climb)
 				speedV.Y = speed_fast;
@@ -705,6 +696,18 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 				speedV.Y = speed_fast;
 			else
 				speedV.Y = movement_speed_climb * physics_override.speed_climb;
+		} else if (override_jump || m_can_jump) {
+			/*
+				NOTE: The d value in move() affects jump height by
+				raising the height at which the jump speed is kept
+				at its starting value
+			*/
+			v3f speedJ = getSpeed();
+			if (speedJ.Y >= -0.5f * BS) {
+				speedJ.Y = movement_speed_jump * physics_override.jump;
+				setSpeed(speedJ);
+				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_JUMP));
+			}
 		}
 	}
 
@@ -867,6 +870,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	bool fly_allowed = m_client->checkLocalPrivilege("fly");
 	bool noclip = m_client->checkLocalPrivilege("noclip") && player_settings.noclip;
 	bool free_move = noclip && fly_allowed && player_settings.free_move;
+	bool override_jump = player_settings.override_jump;
 	if (free_move) {
 		position += m_speed * dtime;
 		setPosition(position);
@@ -1153,7 +1157,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	// Jump/Sneak key pressed while bouncing from a bouncy block
 	float jumpspeed = movement_speed_jump * physics_override.jump;
-	if (m_can_jump && (control.jump || control.sneak) && standing_node_bouncy > 0) {
+	if ((override_jump || m_can_jump) && (control.jump || control.sneak) && standing_node_bouncy > 0) {
 		// controllable (>0) bouncy block
 		if (!control.jump) {
 			// sneak pressed, but not jump

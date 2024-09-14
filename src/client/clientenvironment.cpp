@@ -141,7 +141,7 @@ void ClientEnvironment::step(float dtime)
 		*/
 
 		// Control local player
-		lplayer->applyControl(dtime_part, this);
+		lplayer->applyControl(dtime_part, this, lplayer);
 
 		// Apply physics
 		lplayer->gravity = 0;

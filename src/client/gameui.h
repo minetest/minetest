@@ -56,6 +56,7 @@ public:
 	struct Flags
 	{
 		bool show_chat = true;
+		bool show_tablist = false;
 		bool show_hud = true;
 		bool show_minimal_debug = false;
 		bool show_basic_debug = false;
@@ -91,6 +92,7 @@ public:
 	void updateProfiler();
 
 	void toggleChat(Client *client);
+	void setTablist(Client *client, bool active);
 	void toggleHud();
 	void toggleProfiler();
 

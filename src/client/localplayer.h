@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "lighting.h"
 #include <string>
+#include "camera.h"
 
 class Client;
 class Environment;
@@ -45,6 +46,7 @@ enum class LocalPlayerAnimation
 struct PlayerSettings
 {
 	bool free_move = false;
+	bool override_jump = false;
 	bool pitch_move = false;
 	bool fast_move = false;
 	bool continuous_forward = false;
@@ -91,7 +93,7 @@ public:
 	void old_move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info);
 
-	void applyControl(float dtime, Environment *env);
+	void applyControl(float dtime, Environment *env, LocalPlayer* player);
 
 	v3s16 getStandingNodePos();
 	v3s16 getFootstepNodePos();

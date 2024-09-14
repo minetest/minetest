@@ -47,6 +47,7 @@ void KeyCache::populate()
 	key[KeyType::DROP] = getKeySetting("keymap_drop");
 	key[KeyType::INVENTORY] = getKeySetting("keymap_inventory");
 	key[KeyType::CHAT] = getKeySetting("keymap_chat");
+	key[KeyType::TABLIST] = getKeySetting("keymap_tablist");
 	key[KeyType::CMD] = getKeySetting("keymap_cmd");
 	key[KeyType::CMD_LOCAL] = getKeySetting("keymap_cmd_local");
 	key[KeyType::CONSOLE] = getKeySetting("keymap_console");

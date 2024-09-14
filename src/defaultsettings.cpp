@@ -146,6 +146,7 @@ void set_default_settings()
 	settings->setDefault("keymap_inventory", "KEY_KEY_I");
 	settings->setDefault("keymap_aux1", "KEY_KEY_E");
 	settings->setDefault("keymap_chat", "KEY_KEY_T");
+	settings->setDefault("keymap_tablist", "KEY_TAB");
 	settings->setDefault("keymap_cmd", "/");
 	settings->setDefault("keymap_cmd_local", ".");
 	settings->setDefault("keymap_minimap", "KEY_KEY_X");
@@ -370,6 +371,8 @@ void set_default_settings()
 	settings->setDefault("repeat_joystick_button_time", "0.17");
 	settings->setDefault("joystick_frustum_sensitivity", "170");
 	settings->setDefault("joystick_deadzone", "2048");
+
+	settings->setDefault("override_jump", "false");
 
 	// Main menu
 	settings->setDefault("main_menu_path", "");

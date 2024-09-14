@@ -138,7 +138,8 @@ void Camera::step(f32 dtime)
 	bool was_under_zero = m_wield_change_timer < 0;
 	m_wield_change_timer = MYMIN(m_wield_change_timer + dtime, 0.125);
 
-	if (m_wield_change_timer >= 0 && was_under_zero) {
+	if (m_wield_change_timer >= 0 && was_under_zero)
+	{
 		m_wieldnode->setItem(m_wield_item_next, m_client);
 		m_wieldnode->setNodeLightColor(m_player_light_color);
 	}
@@ -164,7 +165,8 @@ void Camera::step(f32 dtime)
 			}
 
 			if (m_view_bobbing_anim <= 0 || m_view_bobbing_anim >= 1 ||
-					fabs(m_view_bobbing_anim - 0.5) < 0.01) {
+					fabs(m_view_bobbing_anim - 0.5) < 0.01)
+			{
 				m_view_bobbing_anim = 0;
 				m_view_bobbing_state = 0;
 			}
@@ -328,14 +330,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	}
 
 	// Set player node transformation
-	m_playernode->setPosition(player_position);
 	if (player->getPlayerControl().freelook) {
 		m_camera_mode = CAMERA_MODE_FREELOOK;
 	} else if (m_camera_mode == CAMERA_MODE_FREELOOK) {
 		m_camera_mode = CAMERA_MODE_FIRST;
-		
 	}
-	m_playernode->setRotation(v3f(0, -1 * yaw, 0)); // this is the camera turning
+	m_playernode->setPosition(player_position);
+	m_playernode->setRotation(v3f(0, -1 * yaw, 0));
 	m_playernode->updateAbsolutePosition();
 
 	// Get camera tilt timer (hurt animation)
@@ -360,7 +361,6 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 
 		fall_bobbing *= m_cache_fall_bobbing_amount;
 	}
-
 	// Calculate and translate the head SceneNode offsets
 	{
 		v3f eye_offset = player->getEyeOffset();
@@ -384,8 +384,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 		// Set head node transformation
 		eye_offset.Y += cameratilt * -player->hurt_tilt_strength + fall_bobbing;
 		m_headnode->setPosition(eye_offset);
-		m_headnode->setRotation(v3f(pitch, 0,
-			cameratilt * player->hurt_tilt_strength));
+		m_headnode->setRotation(v3f(pitch, 0,cameratilt * player->hurt_tilt_strength));
 		m_headnode->updateAbsolutePosition();
 	}
 

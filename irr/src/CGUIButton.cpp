@@ -20,7 +20,7 @@ CGUIButton::CGUIButton(IGUIEnvironment *environment, IGUIElement *parent,
 		s32 id, core::rect<s32> rectangle, bool noclip) :
 		IGUIButton(environment, parent, id, rectangle),
 		SpriteBank(0), OverrideFont(0),
-		OverrideColorEnabled(false), OverrideColor(video::SColor(101, 255, 255, 255)),
+		OverrideColorEnabled(false), OverrideColor(video::SColor(200, 155, 255, 255)),
 		ClickTime(0), HoverTime(0), FocusTime(0),
 		ClickShiftState(false), ClickControlState(false),
 		IsPushButton(false), Pressed(false),

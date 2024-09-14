@@ -2068,7 +2068,7 @@ void Game::processUserInput(f32 dtime)
 void Game::processKeyInput()
 {
 	if (wasKeyDown(KeyType::DROP)) {
-		dropSelectedItem(isKeyDown(KeyType::SNEAK));
+		dropSelectedItem(!isKeyDown(KeyType::SNEAK));
 	} else if (wasKeyDown(KeyType::AUTOFORWARD)) {
 		toggleAutoforward();
 	} else if (wasKeyDown(KeyType::BACKWARD)) {
@@ -2080,6 +2080,7 @@ void Game::processKeyInput()
 #ifdef __ANDROID__
 		m_android_chat_open = false;
 #endif
+	m_game_ui->setTablist(client, wasKeyPressed(KeyType::TABLIST));
 		if (!gui_chat_console->isOpenInhibited()) {
 			showPauseMenu();
 		}

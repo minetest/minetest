@@ -309,6 +309,15 @@ void GameUI::toggleChat(Client *client)
 
 }
 
+void GameUI::setTablist(Client *client, bool active)
+{
+	m_flags.show_tablist = active;
+	if (m_flags.show_tablist)
+		showTranslatedStatusText("Tablist on"); // DUBUG, reomve for release
+	else
+		showTranslatedStatusText("Tablist off"); // DUBUG, reomve for release
+}
+
 void GameUI::toggleHud()
 {
 	m_flags.show_hud = !m_flags.show_hud;

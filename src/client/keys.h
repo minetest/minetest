@@ -44,6 +44,7 @@ public:
 		DROP,
 		INVENTORY,
 		CHAT,
+		TABLIST,
 		CMD,
 		CMD_LOCAL,
 		CONSOLE,

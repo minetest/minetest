@@ -57,6 +57,7 @@ return {
 		})
 		prepare_credits(hypertext, credits.opalclient_developers)
 		table.insert_all(hypertext, {
+			"\n",
 			"<heading>", fgettext_ne("Core Developers"), "</heading>\n",
 		})
 		prepare_credits(hypertext, credits.core_developers)

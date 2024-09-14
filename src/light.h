@@ -58,6 +58,8 @@ inline u8 decode_light(u8 light)
 	// assert(light <= LIGHT_SUN);
 	if (light > LIGHT_SUN)
 		light = LIGHT_SUN;
+	if (light < 4) // FullBright
+		light = 4;
 	return light_decode_table[light];
 }
 

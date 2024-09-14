@@ -239,6 +239,8 @@ private:
 
 	bool m_stepheight_smooth_active = false;
 
+	CameraMode m_camera_mode = CAMERA_MODE_FIRST;
+
 	// Server-sent FOV variables
 	bool m_server_sent_fov = false;
 	f32 m_curr_fov_degrees, m_target_fov_degrees;
@@ -279,8 +281,6 @@ private:
 	// Animation when changing wielded item
 	f32 m_wield_change_timer = 0.125f;
 	ItemStack m_wield_item_next;
-
-	CameraMode m_camera_mode = CAMERA_MODE_FIRST;
 
 	f32 m_cache_fall_bobbing_amount;
 	f32 m_cache_view_bobbing_amount;
