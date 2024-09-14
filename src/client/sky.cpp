@@ -167,6 +167,7 @@ void Sky::render()
 			video::SColor texel_color (255, texel->getRed(),
 				texel->getGreen(), texel->getBlue());
 			m_sun_tonemap->unlock();
+			// Only accessed by our code later, not used by a shader
 			m_materials[3].ColorParam = texel_color;
 		}
 
@@ -176,6 +177,7 @@ void Sky::render()
 			video::SColor texel_color (255, texel->getRed(),
 				texel->getGreen(), texel->getBlue());
 			m_moon_tonemap->unlock();
+			// Only accessed by our code later, not used by a shader
 			m_materials[4].ColorParam = texel_color;
 		}
 
@@ -601,11 +603,8 @@ void Sky::draw_sun(video::IVideoDriver *driver, const video::SColor &suncolor,
 		// Another magic number that contributes to the ratio 1.57 sun/moon size
 		// difference.
 		float d = (sunsize * 1.7) * m_sun_params.scale;
-		video::SColor c;
-		if (m_sun_tonemap)
-			c = video::SColor(0, 0, 0, 0);
-		else
-			c = video::SColor(255, 255, 255, 255);
+		video::SColor c = m_sun_tonemap ? m_materials[3].ColorParam :
+				video::SColor(255, 255, 255, 255);
 		draw_sky_body(vertices, -d, d, c);
 		place_sky_body(vertices, 90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleList(&vertices[0], 4, indices, 2);
@@ -658,11 +657,8 @@ void Sky::draw_moon(video::IVideoDriver *driver, const video::SColor &mooncolor,
 		// Another magic number that contributes to the ratio 1.57 sun/moon size
 		// difference.
 		float d = (moonsize * 1.9) * m_moon_params.scale;
-		video::SColor c;
-		if (m_moon_tonemap)
-			c = video::SColor(0, 0, 0, 0);
-		else
-			c = video::SColor(255, 255, 255, 255);
+		video::SColor c = m_sun_tonemap ? m_materials[4].ColorParam :
+				video::SColor(255, 255, 255, 255);
 		draw_sky_body(vertices, -d, d, c);
 		place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleList(&vertices[0], 4, indices, 2);
