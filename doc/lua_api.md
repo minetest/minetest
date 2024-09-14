@@ -11368,6 +11368,16 @@ Functions: bit.tobit, bit.tohex, bit.bnot, bit.band, bit.bor, bit.bxor, bit.lshi
 
 See http://bitop.luajit.org/ for advanced information.
 
+Tracy Profiler
+--------------
+
+Minetest can be built with support for the Tracy profiler, which can also be
+useful for profiling mods.
+
+See doc/developing/misc.md for details.
+
+Note: This feature may be removed at any point.
+
 Error Handling
 --------------
 
