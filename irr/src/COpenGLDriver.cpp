@@ -1844,6 +1844,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial &material, const SMater
 			glDisable(GL_COLOR_MATERIAL);
 			glDisable(GL_LIGHTING);
 			glShadeModel(GL_SMOOTH);
+			glDisable(GL_NORMALIZE);
 		}
 
 		// fog
@@ -1853,15 +1854,6 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial &material, const SMater
 				glEnable(GL_FOG);
 			else
 				glDisable(GL_FOG);
-		}
-
-		// normalization
-		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
-				lastmaterial.NormalizeNormals != material.NormalizeNormals) {
-			if (material.NormalizeNormals)
-				glEnable(GL_NORMALIZE);
-			else
-				glDisable(GL_NORMALIZE);
 		}
 
 		// Set fixed pipeline as active.

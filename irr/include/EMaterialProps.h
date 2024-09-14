@@ -42,9 +42,6 @@ enum E_MATERIAL_PROP
 	//! Corresponds to SMaterial::FogEnable.
 	EMP_FOG_ENABLE = 0x800,
 
-	//! Corresponds to SMaterial::NormalizeNormals.
-	EMP_NORMALIZE_NORMALS = 0x1000,
-
 	//! Corresponds to SMaterialLayer::TextureWrapU, TextureWrapV and
 	//! TextureWrapW.
 	EMP_TEXTURE_WRAP = 0x2000,

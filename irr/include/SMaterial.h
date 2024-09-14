@@ -246,7 +246,7 @@ public:
 			PolygonOffsetSlopeScale(0.f), Wireframe(false), PointCloud(false),
 			ZWriteEnable(EZW_AUTO),
 			BackfaceCulling(true), FrontfaceCulling(false), FogEnable(false),
-			NormalizeNormals(false), UseMipMaps(true)
+			UseMipMaps(true)
 	{
 	}
 
@@ -340,10 +340,6 @@ public:
 	//! Is fog enabled? Default: false
 	bool FogEnable : 1;
 
-	//! Should normals be normalized?
-	/** Always use this if the mesh lit and scaled. Default: false */
-	bool NormalizeNormals : 1;
-
 	//! Shall mipmaps be used if available
 	/** Sometimes, disabling mipmap usage can be useful. Default: true */
 	bool UseMipMaps : 1;
@@ -423,7 +419,6 @@ public:
 				BackfaceCulling != b.BackfaceCulling ||
 				FrontfaceCulling != b.FrontfaceCulling ||
 				FogEnable != b.FogEnable ||
-				NormalizeNormals != b.NormalizeNormals ||
 				AntiAliasing != b.AntiAliasing ||
 				ColorMask != b.ColorMask ||
 				BlendOperation != b.BlendOperation ||

@@ -1130,15 +1130,10 @@ void CNullDriver::drawBuffers(const scene::IVertexBuffer *vb,
 void CNullDriver::drawMeshBufferNormals(const scene::IMeshBuffer *mb, f32 length, SColor color)
 {
 	const u32 count = mb->getVertexCount();
-	const bool normalize = mb->getMaterial().NormalizeNormals;
-
 	for (u32 i = 0; i < count; ++i) {
-		core::vector3df normalizedNormal = mb->getNormal(i);
-		if (normalize)
-			normalizedNormal.normalize();
-
+		core::vector3df normal = mb->getNormal(i);
 		const core::vector3df &pos = mb->getPosition(i);
-		draw3DLine(pos, pos + (normalizedNormal * length), color);
+		draw3DLine(pos, pos + (normal * length), color);
 	}
 }
 

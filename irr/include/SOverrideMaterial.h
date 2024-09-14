@@ -134,9 +134,6 @@ struct SOverrideMaterial
 					case EMP_FOG_ENABLE:
 						material.FogEnable = Material.FogEnable;
 						break;
-					case EMP_NORMALIZE_NORMALS:
-						material.NormalizeNormals = Material.NormalizeNormals;
-						break;
 					case EMP_TEXTURE_WRAP:
 						for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i) {
 							if (EnableLayerProps[i]) {

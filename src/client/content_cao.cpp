@@ -648,9 +648,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	auto setMaterial = [this] (video::SMaterial &mat) {
 		mat.MaterialType = m_material_type;
 		mat.FogEnable = true;
-		if (m_enable_shaders) {
-			mat.NormalizeNormals = true;
-		}
 		mat.forEachTexture([] (auto &tex) {
 			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 			tex.MagFilter = video::ETMAGF_NEAREST;
