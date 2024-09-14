@@ -24,10 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "util/basic_macros.h"
 #include "util/string.h"
-#include <list>
 #include <mutex>
 #include <functional>
-#include <tuple>
 #include <string>
 
 #define PLAYERNAME_SIZE 20
@@ -133,23 +131,10 @@ struct PlayerPhysicsOverride
 	float acceleration_fast = 1.f;
 	float speed_walk = 1.f;
 
-private:
-	auto tie() const {
-		// Make sure to add new members to this list!
-		return std::tie(
-		speed, jump, gravity, sneak, sneak_glitch, new_move, speed_climb, speed_crouch,
-		liquid_fluidity, liquid_fluidity_smooth, liquid_sink, acceleration_default,
-		acceleration_air, speed_fast, acceleration_fast, speed_walk
-		);
-	}
-
-public:
-	bool operator==(const PlayerPhysicsOverride &other) const {
-		return tie() == other.tie();
-	};
+	bool operator==(const PlayerPhysicsOverride &other) const;
 	bool operator!=(const PlayerPhysicsOverride &other) const {
-		return tie() != other.tie();
-	};
+		return !(*this == other);
+	}
 };
 
 class Map;
