@@ -43,6 +43,7 @@ core.features = {
 	moveresult_new_pos = true,
 	override_item_remove_fields = true,
 	hotbar_hud_element = true,
+	clear_objects_with_callback = true,
 }
 
 function core.has_feature(arg)
