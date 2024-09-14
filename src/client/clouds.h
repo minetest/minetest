@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_bloated.h"
-#include "client/shader.h"
 #include "constants.h"
 #include "irr_ptr.h"
 #include "skyparams.h"
@@ -40,7 +39,6 @@ namespace irr::scene
 // The mainmenu and the loading screen use the same Clouds object so that the
 // clouds don't jump when switching between the two.
 class Clouds;
-extern IWritableShaderSource *g_menu_shader_source;
 extern scene::ISceneManager *g_menucloudsmgr;
 extern Clouds *g_menuclouds;
 

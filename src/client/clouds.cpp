@@ -29,9 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 
 class Clouds;
-IWritableShaderSource *g_menu_shader_source = NULL;
-scene::ISceneManager *g_menucloudsmgr = NULL;
-Clouds *g_menuclouds = NULL;
+scene::ISceneManager *g_menucloudsmgr = nullptr;
+Clouds *g_menuclouds = nullptr;
 
 // Constant for now
 static constexpr const float cloud_size = BS * 64.0f;

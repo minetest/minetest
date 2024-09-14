@@ -27,6 +27,7 @@ class MyEventReceiver;
 class InputHandler;
 struct GameStartData;
 struct MainMenuData;
+class IWritableShaderSource;
 
 class ClientLauncher
 {
@@ -55,4 +56,5 @@ private:
 	RenderingEngine *m_rendering_engine = nullptr;
 	InputHandler *input = nullptr;
 	MyEventReceiver *receiver = nullptr;
+	IWritableShaderSource *menu_shader_source = nullptr;
 };
