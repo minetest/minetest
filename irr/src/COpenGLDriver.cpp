@@ -1840,9 +1840,11 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial &material, const SMater
 	E_OPENGL_FIXED_PIPELINE_STATE tempState = FixedPipelineState;
 
 	if (resetAllRenderStates || tempState == EOFPS_ENABLE || tempState == EOFPS_DISABLE_TO_ENABLE) {
-		glDisable(GL_COLOR_MATERIAL);
-		glDisable(GL_LIGHTING);
-		glShadeModel(GL_SMOOTH);
+		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE) {
+			glDisable(GL_COLOR_MATERIAL);
+			glDisable(GL_LIGHTING);
+			glShadeModel(GL_SMOOTH);
+		}
 
 		// fog
 		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
