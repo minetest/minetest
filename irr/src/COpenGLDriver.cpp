@@ -1842,15 +1842,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial &material, const SMater
 	if (resetAllRenderStates || tempState == EOFPS_ENABLE || tempState == EOFPS_DISABLE_TO_ENABLE) {
 		glDisable(GL_COLOR_MATERIAL);
 		glDisable(GL_LIGHTING);
-
-		// shademode
-		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
-				lastmaterial.GouraudShading != material.GouraudShading) {
-			if (material.GouraudShading)
-				glShadeModel(GL_SMOOTH);
-			else
-				glShadeModel(GL_FLAT);
-		}
+		glShadeModel(GL_SMOOTH);
 
 		// fog
 		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||

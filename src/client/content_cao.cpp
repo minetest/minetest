@@ -649,7 +649,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		mat.MaterialType = m_material_type;
 		mat.FogEnable = true;
 		if (m_enable_shaders) {
-			mat.GouraudShading = false;
 			mat.NormalizeNormals = true;
 		}
 		mat.forEachTexture([] (auto &tex) {

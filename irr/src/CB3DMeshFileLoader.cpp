@@ -893,9 +893,6 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 
 		//------ Material fx ------
 
-		if (B3dMaterial.fx & 4) // flatshaded
-			B3dMaterial.Material.GouraudShading = false;
-
 		if (B3dMaterial.fx & 16) // disable backface culling
 			B3dMaterial.Material.BackfaceCulling = false;
 

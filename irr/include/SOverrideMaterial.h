@@ -98,9 +98,6 @@ struct SOverrideMaterial
 					case EMP_POINTCLOUD:
 						material.PointCloud = Material.PointCloud;
 						break;
-					case EMP_GOURAUD_SHADING:
-						material.GouraudShading = Material.GouraudShading;
-						break;
 					case EMP_ZBUFFER:
 						material.ZBuffer = Material.ZBuffer;
 						break;

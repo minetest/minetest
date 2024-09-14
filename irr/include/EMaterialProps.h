@@ -18,9 +18,6 @@ enum E_MATERIAL_PROP
 	//! Corresponds to SMaterial::PointCloud.
 	EMP_POINTCLOUD = 0x2,
 
-	//! Corresponds to SMaterial::GouraudShading.
-	EMP_GOURAUD_SHADING = 0x4,
-
 	//! Corresponds to SMaterial::ZBuffer.
 	EMP_ZBUFFER = 0x10,
 

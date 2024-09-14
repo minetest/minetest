@@ -244,7 +244,7 @@ public:
 			AntiAliasing(EAAM_SIMPLE), ColorMask(ECP_ALL),
 			BlendOperation(EBO_NONE), BlendFactor(0.0f), PolygonOffsetDepthBias(0.f),
 			PolygonOffsetSlopeScale(0.f), Wireframe(false), PointCloud(false),
-			GouraudShading(true), ZWriteEnable(EZW_AUTO),
+			ZWriteEnable(EZW_AUTO),
 			BackfaceCulling(true), FrontfaceCulling(false), FogEnable(false),
 			NormalizeNormals(false), UseMipMaps(true)
 	{
@@ -325,9 +325,6 @@ public:
 
 	//! Draw as point cloud or filled triangles? Default: false
 	bool PointCloud : 1;
-
-	//! Flat or Gouraud shading? Default: true
-	bool GouraudShading : 1;
 
 	//! Is the zbuffer writable or is it read-only. Default: EZW_AUTO.
 	/** If this parameter is not EZW_OFF, you probably also want to set ZBuffer
@@ -421,7 +418,6 @@ public:
 				Thickness != b.Thickness ||
 				Wireframe != b.Wireframe ||
 				PointCloud != b.PointCloud ||
-				GouraudShading != b.GouraudShading ||
 				ZBuffer != b.ZBuffer ||
 				ZWriteEnable != b.ZWriteEnable ||
 				BackfaceCulling != b.BackfaceCulling ||

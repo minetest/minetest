@@ -1307,7 +1307,6 @@ void CNullDriver::runOcclusionQuery(scene::ISceneNode *node, bool visible)
 		SMaterial mat;
 		mat.AntiAliasing = 0;
 		mat.ColorMask = ECP_NONE;
-		mat.GouraudShading = false;
 		mat.ZWriteEnable = EZW_OFF;
 		setMaterial(mat);
 	}
