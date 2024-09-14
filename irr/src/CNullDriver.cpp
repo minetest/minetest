@@ -605,6 +605,7 @@ void CNullDriver::drawVertexPrimitiveList(const void *vertices, u32 vertexCount,
 {
 	if ((iType == EIT_16BIT) && (vertexCount > 65536))
 		os::Printer::log("Too many vertices for 16bit index type, render artifacts may occur.");
+	FrameStats.Drawcalls++;
 	FrameStats.PrimitivesDrawn += primitiveCount;
 }
 
@@ -613,6 +614,7 @@ void CNullDriver::draw2DVertexPrimitiveList(const void *vertices, u32 vertexCoun
 {
 	if ((iType == EIT_16BIT) && (vertexCount > 65536))
 		os::Printer::log("Too many vertices for 16bit index type, render artifacts may occur.");
+	FrameStats.Drawcalls++;
 	FrameStats.PrimitivesDrawn += primitiveCount;
 }
 

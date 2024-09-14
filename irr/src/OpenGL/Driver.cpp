@@ -1096,8 +1096,11 @@ void COpenGL3DriverBase::setMaterial(const SMaterial &material)
 	OverrideMaterial.apply(Material);
 
 	for (u32 i = 0; i < Feature.MaxTextureUnits; ++i) {
-		CacheHandler->getTextureCache().set(i, material.getTexture(i));
-		setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
+		auto *texture = material.getTexture(i);
+		CacheHandler->getTextureCache().set(i, texture);
+		if (texture) {
+			setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
+		}
 	}
 }
 
