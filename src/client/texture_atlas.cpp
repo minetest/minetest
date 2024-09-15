@@ -108,21 +108,21 @@ video::ITexture *TextureAtlas::recreateTextureForFiltering(video::ITexture *tex,
 	v2s32 img_offset(ext_thickness, ext_thickness);
 	img->copyTo(ext_img, img_offset);
 
-	const std::array<v2s32, 4> offset_dirs = {
+	v2s32 offset_dirs[4] = {
 		v2s32(-1, 0),
 		v2s32(0, 1),
 		v2s32(1, 0),
 		v2s32(0, -1)
 	};
 
-	const std::array<v2s32, 4> start_offsets = {
+	v2s32 start_offsets[4] = {
 		img_offset,
 		img_offset + v2s32(0, old_size.Height-1),
 		img_offset + v2s32(old_size.Width-1, 0),
 		img_offset
 	};
 
-	const std::array<core::recti, 4> pixel_sides = {
+	core::recti pixel_sides[4] = {
 		core::recti(v2s32(0, 0), v2s32(1, old_size.Height)),	// Left
 		core::recti(v2s32(0, old_size.Height-1), v2s32(old_size.Width, old_size.Height)),	// Top
 		core::recti(v2s32(old_size.Width-1, 0), v2s32(old_size.Width, old_size.Height)),	// Right

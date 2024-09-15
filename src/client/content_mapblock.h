@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IMeshManipulator.h>
 
 struct MeshMakeData;
-struct MeshCollector;
+class MeshCollector;
 
 struct LightPair {
 	u8 lightDay;

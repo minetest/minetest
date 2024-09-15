@@ -1030,7 +1030,9 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 NodeDefManager::NodeDefManager()
 {
 	clear();
+#ifndef SERVER
 	m_atlas_builder = std::make_unique<AtlasBuilder>();
+#endif
 }
 
 
