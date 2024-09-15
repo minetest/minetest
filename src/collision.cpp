@@ -85,6 +85,14 @@ inline v3f truncate(const v3f vec, const f32 factor)
 	);
 }
 
+inline v3f rangelimv(const v3f vec, const f32 low, const f32 high)
+{
+	return v3f(
+		rangelim(vec.X, low, high),
+		rangelim(vec.Y, low, high),
+		rangelim(vec.Z, low, high)
+	);
+}
 }
 
 // Helper function:
@@ -369,10 +377,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	// Average speed
 	v3f aspeed_f = *speed_f + accel_f * 0.5f * dtime;
 	// Limit speed for avoiding hangs
-	aspeed_f.Y = rangelim(aspeed_f.Y, -5000, 5000);
-	aspeed_f.X = rangelim(aspeed_f.X, -5000, 5000);
-	aspeed_f.Z = rangelim(aspeed_f.Z, -5000, 5000);
-	aspeed_f = truncate(aspeed_f, 10000.0f);
+	aspeed_f = truncate(rangelimv(aspeed_f, -5000.0f, 5000.0f), 10000.0f);
 
 	// Collect node boxes in movement range
 
@@ -453,10 +458,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			// Final speed:
 			*speed_f += accel_f * dtime;
 			// Limit speed for avoiding hangs
-			speed_f->Y = rangelim(speed_f->Y, -5000, 5000);
-			speed_f->X = rangelim(speed_f->X, -5000, 5000);
-			speed_f->Z = rangelim(speed_f->Z, -5000, 5000);
-			*speed_f = truncate(*speed_f, 10000.0f);
+			*speed_f = truncate(rangelimv(*speed_f, -5000.0f, 5000.0f), 10000.0f);
 			break;
 		}
 		// Otherwise, a collision occurred.
@@ -468,6 +470,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		if (nearest_collided != COLLISION_AXIS_Y) {
 			aabb3f stepbox = movingbox;
 			// Look slightly ahead  for checking the height when stepping
+			// to ensure we also check above the node we collided with
+			// otherwise, might allow glitches such as a stack of stairs
 			float extra_dtime = nearest_dtime + 0.1f * fabsf(dtime - nearest_dtime);
 			stepbox.MinEdge.X += aspeed_f.X * extra_dtime;
 			stepbox.MinEdge.Z += aspeed_f.Z * extra_dtime;
@@ -503,10 +507,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			// Speed at (approximated) collision:
 			*speed_f += accel_f * nearest_dtime;
 			// Limit speed for avoiding hangs
-			speed_f->Y = rangelim(speed_f->Y, -5000, 5000);
-			speed_f->X = rangelim(speed_f->X, -5000, 5000);
-			speed_f->Z = rangelim(speed_f->Z, -5000, 5000);
-			*speed_f = truncate(*speed_f, 10000.0f);
+			*speed_f = truncate(rangelimv(*speed_f, -5000.0f, 5000.0f), 10000.0f);
 			dtime -= nearest_dtime;
 		}
 
@@ -572,10 +573,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		// Speed for finding the next collision
 		aspeed_f = *speed_f + accel_f * 0.5f * dtime;
 		// Limit speed for avoiding hangs
-		aspeed_f.Y = rangelim(aspeed_f.Y, -5000, 5000);
-		aspeed_f.X = rangelim(aspeed_f.X, -5000, 5000);
-		aspeed_f.Z = rangelim(aspeed_f.Z, -5000, 5000);
-		aspeed_f = truncate(aspeed_f, 10000.0f);
+		aspeed_f = truncate(rangelimv(aspeed_f, -5000.0f, 5000.0f), 10000.0f);
 	}
 
 	/*
