@@ -84,9 +84,9 @@ local function hp_diference_test(player, hp_max)
 	assert(hpchange_counter == 2)
 	assert(die_counter == 1)
 
-	-- HP change allowed minimum is -U16_MAX
-	expected_diff = -65535 - 22
-	player:set_hp(-1000000)
+	-- HP change allowed minimum is S32_MIN+U16_MAX
+	expected_diff = -2147483648 + 65535 - 22
+	player:set_hp(-3000000000)
 	-- actual final HP value is clamped to >= 0
 	assert(player:get_hp() == 0)
 	assert(hpchange_counter == 3)
