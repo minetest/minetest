@@ -133,9 +133,13 @@ void *ServerThread::run()
 
 		u64 t0 = porting::getTimeUs();
 
-		const Server::StepSettings step_settings = m_server->getStepSettings();
+		const auto step_settings = m_server->getStepSettings();
 
 		try {
+			// see explanation inside
+			if (dtime > step_settings.steplen)
+				m_server->yieldToOtherThreads(dtime);
+
 			m_server->AsyncRunStep(step_settings.pause ? 0.0f : dtime);
 
 			const float remaining_time = step_settings.steplen
@@ -655,7 +659,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	{
 		EnvAutoLock lock(this);
 		float max_lag = m_env->getMaxLagEstimate();
-		constexpr float lag_warn_threshold = 2.0f;
+		constexpr float lag_warn_threshold = 1.0f;
 
 		// Decrease value gradually, halve it every minute.
 		if (m_max_lag_decrease.step(dtime, 0.5f)) {
@@ -1111,6 +1115,52 @@ void Server::Receive(float timeout)
 			infostream << "Server: ClientNotFoundException" << std::endl;
 		}
 	}
+}
+
+void Server::yieldToOtherThreads(float dtime)
+{
+	/*
+	 * Problem: the server thread and emerge thread compete for the envlock.
+	 * While the emerge thread needs it just once or twice for every processed item
+	 * the server thread uses it much more generously.
+	 * This is usually not a problem as the server sleeps between steps, which leaves
+	 * enough chance. But if the server is overloaded it's busy all the time and
+	 * - even with a fair envlock - the emerge thread can't get up to speed.
+	 * This generally has a much worse impact on gameplay than server lag itself
+	 * ever would.
+	 *
+	 * Workaround: If we detect that the server is overloaded, introduce some careful
+	 * artificial sleeps to leave the emerge threads enough chance to do their job.
+	 *
+	 * In the future the emerge code should be reworked to exclusively use a result
+	 * queue, thereby avoiding this problem (and terrible workaround).
+	 */
+
+	// don't activate workaround too quickly
+	constexpr size_t MIN_EMERGE_QUEUE_SIZE = 32;
+	const size_t qs_initial = m_emerge->getQueueSize();
+	if (qs_initial < MIN_EMERGE_QUEUE_SIZE)
+		return;
+
+	// give the thread a chance to run for every 28ms (on average)
+	// this was experimentally determined
+	const float QUANTUM = 28.0f / 1000;
+	// put an upper limit to not cause too much lag, also so this doesn't become self-sustaining
+	const int SLEEP_MAX = 10;
+
+	int sleep_count = std::clamp<int>(dtime / QUANTUM, 1, SLEEP_MAX);
+
+	ScopeProfiler sp(g_profiler, "Server::yieldTo...() sleep", SPT_AVG);
+	size_t qs = qs_initial;
+	while (sleep_count-- > 0) {
+		sleep_ms(1);
+		// abort if we don't make progress
+		size_t qs2 = m_emerge->getQueueSize();
+		if (qs2 >= qs || qs2 == 0)
+			break;
+		qs = qs2;
+	}
+	g_profiler->avg("Server::yieldTo...() progress [#]", qs_initial - qs);
 }
 
 PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
