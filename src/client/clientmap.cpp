@@ -367,7 +367,7 @@ void ClientMap::updateDrawList()
 				// This is needed because this function is not called every frame.
 				float frustum_cull_extra_radius = 300.0f;
 				if (is_frustum_culled(mesh_sphere_center,
-						mesh_sphere_radius)) {
+						mesh_sphere_radius + frustum_cull_extra_radius)) {
 					blocks_frustum_culled++;
 					continue;
 				}
@@ -466,7 +466,7 @@ void ClientMap::updateDrawList()
 			// This is needed because this function is not called every frame.
 			float frustum_cull_extra_radius = 300.0f;
 			if (is_frustum_culled(mesh_sphere_center,
-					mesh_sphere_radius)) {
+					mesh_sphere_radius + frustum_cull_extra_radius)) {
 				blocks_frustum_culled++;
 				continue;
 			}
@@ -605,8 +605,6 @@ void ClientMap::updateDrawList()
 		g_profiler->avg("MapBlocks examined [#]", blocks_visited);
 	}
 	g_profiler->avg("MapBlocks shortlist [#]", shortlist.size());
-
-	f32 sorting_distance_sq = std::pow(m_cache_transparency_sorting_distance * BS, 2.0f);
 
 	assert(m_drawlist.empty() || shortlist.empty());
 	for (auto pos : shortlist) {
@@ -775,11 +773,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 		// Do exact frustum culling
 		// (The one in updateDrawList is only coarse.)
-		//v3f mesh_sphere_center = intToFloat(block->getPosRelative(), BS)
-		//		+ block_mesh->getBoundingSphereCenter();
-		//f32 mesh_sphere_radius = block_mesh->getBoundingRadius();
-		//if (is_frustum_culled(mesh_sphere_center, mesh_sphere_radius))
-		//	continue;
+		v3f mesh_sphere_center = intToFloat(block->getPosRelative(), BS)
+				+ block_mesh->getBoundingSphereCenter();
+		f32 mesh_sphere_radius = block_mesh->getBoundingRadius();
+		if (is_frustum_culled(mesh_sphere_center, mesh_sphere_radius))
+			continue;
 
 		// Mesh animation
 		if (pass == scene::ESNRP_SOLID) {
@@ -816,9 +814,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				setupMaterial(driver, tlayer.first);
 
 				for (auto &partial_buf : tlayer.second) {
-					partial_buf.beforeDraw();
-					driver->drawMeshBuffer(partial_buf.getBuffer());
-					partial_buf.afterDraw();
+					partial_buf.draw(driver);
 					vertex_count += partial_buf.getBuffer()->getVertexCount();
 				}
 
@@ -1135,9 +1131,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 				setupShadowMaterial(driver, tlayer.first, material, is_transparent_pass);
 
 				for (auto &partial_buf : tlayer.second) {
-					partial_buf.beforeDraw();
-					driver->drawMeshBuffer(partial_buf.getBuffer());
-					partial_buf.afterDraw();
+					partial_buf.draw(driver);
 					vertex_count += partial_buf.getBuffer()->getVertexCount();
 				}
 

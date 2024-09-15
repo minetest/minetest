@@ -17,6 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_extrabloated.h"
+#include <IVideoDriver.h>
+#include <memory>
 #include <map>
 #include <vector>
 #include <mutex>

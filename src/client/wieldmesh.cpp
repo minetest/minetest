@@ -338,7 +338,6 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 		if (prebuf.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
 			const FrameSpec &frame = (*prebuf.layer.frames)[0];
 			prebuf.layer.texture = frame.texture;
-			prebuf.layer.normal_texture = frame.normal_texture;
 		}
 		for (video::S3DVertex &v : prebuf.vertices) {
 			v.Color.setAlpha(255);

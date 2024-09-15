@@ -34,17 +34,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PartialMeshBuffer
 */
 
-void PartialMeshBuffer::beforeDraw() const
+void PartialMeshBuffer::draw(video::IVideoDriver *driver) const
 {
-	// Patch the indexes in the mesh buffer before draw
-	m_buffer->Indices = std::move(m_vertex_indexes);
-	m_buffer->setDirty(scene::EBT_INDEX);
-}
-
-void PartialMeshBuffer::afterDraw() const
-{
-	// Take the data back
-	m_vertex_indexes = std::move(m_buffer->Indices);
+	const auto pType = m_buffer->getPrimitiveType();
+	driver->drawBuffers(m_buffer->getVertexBuffer(), m_indices.get(),
+		m_indices->getPrimitiveCount(pType), pType);
 }
 
 MapblockMeshCollector::MapblockMeshCollector(Client *_client, v3f _center_pos,
