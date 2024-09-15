@@ -61,7 +61,7 @@ private:
 	std::optional<std::pair<std::wstring, std::wstring>> parsePoLine(const std::string &line);
 	bool inEscape(const std::wstring &str, size_t pos);
 	void loadPoEntry(const std::wstring &basefilename, const GettextPluralForm::Ptr &plural_form, const std::map<std::wstring, std::wstring> &entry);
-	void loadMoEntry(const std::wstring &basefilename, const GettextPluralForm::Ptr &plural_form, const std::string &orignal, const std::string &translated);
+	void loadMoEntry(const std::wstring &basefilename, const GettextPluralForm::Ptr &plural_form, const std::string &original, const std::string &translated);
 	void loadTrTranslation(const std::string &data);
 	void loadPoTranslation(const std::string &basefilename, const std::string &data);
 	void loadMoTranslation(const std::string &basefilename, const std::string &data);

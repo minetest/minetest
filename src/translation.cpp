@@ -538,22 +538,23 @@ void Translations::loadMoEntry(const std::wstring &basefilename, const GettextPl
 	}
 }
 
-inline u32 readVarEndian(bool is_be, const char *data)
+inline u32 readVarEndian(bool is_be, std::string_view data, size_t pos = 0)
 {
+	if (pos + 4 > data.size())
+		return 0;
 	if (is_be) {
 		return
-			((u32)(unsigned char)data[0] << 24) | ((u32)(unsigned char)data[1] << 16) |
-			((u32)(unsigned char)data[2] <<  8) | ((u32)(unsigned char)data[3] <<  0);
+			((u32)(unsigned char)data[pos+0] << 24) | ((u32)(unsigned char)data[pos+1] << 16) |
+			((u32)(unsigned char)data[pos+2] <<  8) | ((u32)(unsigned char)data[pos+3] <<  0);
 	} else {
 		return
-			((u32)(unsigned char)data[0] <<  0) | ((u32)(unsigned char)data[1] <<  8) |
-			((u32)(unsigned char)data[2] << 16) | ((u32)(unsigned char)data[3] << 24);
+			((u32)(unsigned char)data[pos+0] <<  0) | ((u32)(unsigned char)data[pos+1] <<  8) |
+			((u32)(unsigned char)data[pos+2] << 16) | ((u32)(unsigned char)data[pos+3] << 24);
 	}
 }
 
 void Translations::loadMoTranslation(const std::string &basefilename, const std::string &data) {
 	size_t length = data.length();
-	const char* cdata = data.c_str();
 	std::wstring wbasefilename = utf8_to_wide(basefilename);
 	GettextPluralForm::Ptr plural_form;
 
@@ -562,26 +563,26 @@ void Translations::loadMoTranslation(const std::string &basefilename, const std:
 		return;
 	}
 
-	u32 magic = readVarEndian(false, cdata);
+	u32 magic = readVarEndian(false, data);
 	bool is_be;
 	if (magic == 0x950412de) {
 		is_be = false;
 	} else if (magic == 0xde120495) {
 		is_be = true;
 	} else {
-		errorstream << "Bad magic number for mo file: 0x" << hex_encode(cdata, 4) << std::endl;
+		errorstream << "Bad magic number for mo file: 0x" << hex_encode(data.substr(0, 4)) << std::endl;
 		return;
 	}
 
-	u32 revision = readVarEndian(is_be, cdata + 4);
+	u32 revision = readVarEndian(is_be, data, 4);
 	if (revision != 0) {
 		errorstream << "Unknown revision " << revision << " for mo file" << std::endl;
 		return;
 	}
 
-	u32 nstring = readVarEndian(is_be, cdata + 8);
-	u32 original_offset = readVarEndian(is_be, cdata + 12);
-	u32 translated_offset = readVarEndian(is_be, cdata + 16);
+	u32 nstring = readVarEndian(is_be, data, 8);
+	u32 original_offset = readVarEndian(is_be, data, 12);
+	u32 translated_offset = readVarEndian(is_be, data, 16);
 
 	if (length < original_offset + 8 * (u64)nstring || length < translated_offset + 8 * (u64)nstring) {
 		errorstream << "Ignoring truncated mo file" << std::endl;
@@ -589,23 +590,23 @@ void Translations::loadMoTranslation(const std::string &basefilename, const std:
 	}
 
 	for (u32 i = 0; i < nstring; i++) {
-		u32 original_len = readVarEndian(is_be, cdata + original_offset + 8 * i);
-		u32 original_off = readVarEndian(is_be, cdata + original_offset + 8 * i + 4);
-		u32 translated_len = readVarEndian(is_be, cdata + translated_offset + 8 * i);
-		u32 translated_off = readVarEndian(is_be, cdata + translated_offset + 8 * i + 4);
+		u32 original_len = readVarEndian(is_be, data, original_offset + 8 * i);
+		u32 original_off = readVarEndian(is_be, data, original_offset + 8 * i + 4);
+		u32 translated_len = readVarEndian(is_be, data, translated_offset + 8 * i);
+		u32 translated_off = readVarEndian(is_be, data, translated_offset + 8 * i + 4);
 
 		if (length < original_off + (u64)original_len || length < translated_off + (u64)translated_len) {
 			errorstream << "Ignoring translation out of mo file" << std::endl;
 			continue;
 		}
 
-		if (cdata[original_off+original_len] != '\0' || cdata[translated_off+translated_len] != '\0') {
+		if (data[original_off+original_len] != '\0' || data[translated_off+translated_len] != '\0') {
 			errorstream << "String in mo entry does not have a trailing NUL" << std::endl;
 			continue;
 		}
 
-		const std::string original(cdata + original_off, original_len);
-		const std::string translated(cdata + translated_off, translated_len);
+		auto original = data.substr(original_off, original_len);
+		auto translated = data.substr(translated_off, translated_len);
 
 		if (original.empty()) {
 			if (plural_form) {
