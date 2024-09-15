@@ -519,8 +519,7 @@ void PlayerSAO::rightClick(ServerActiveObject *clicker)
 
 void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool from_client)
 {
-	target_hp = rangelim(target_hp, -U16_MAX, U16_MAX);
-	s32 hp_change = target_hp - (s32)m_hp;
+	s32 hp_change = std::max<s32>(target_hp, -U16_MAX) - (s32)m_hp;
 
 	target_hp = rangelim(target_hp, 0, U16_MAX);
 
