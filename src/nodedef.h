@@ -758,7 +758,7 @@ public:
 
 #ifndef SERVER
 	/*!
-	 * Provides access to the texture builder
+	 * Provides access to the atlas builder
 	 */
 	AtlasBuilder *getAtlasBuilder() const
 	{

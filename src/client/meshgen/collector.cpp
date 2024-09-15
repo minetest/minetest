@@ -190,12 +190,17 @@ void MapblockMeshCollector::addTileMesh(TileSpec &tile,
 
 			if (!outside_uv) {
 				const TileInfo &tile_info = atlas->getTileInfo(layer.atlas_tile_info_index);
-				// Re-calculate UV for linking to the necessary TileInfo pixels in the atlas
-				int rel_x = core::round32(vertex.TCoords.X * tile_info.width);
-				int rel_y = core::round32(vertex.TCoords.Y * tile_info.height);
+				u32 frame_thickness = atlas->getFrameThickness();
 
-				vertex.TCoords.X = f32(tile_info.x + rel_x + tile_pos_shift) / atlas_size.Width;
-				vertex.TCoords.Y = f32(tile_info.y + rel_y) / atlas_size.Height;
+				// Tile size without taking into account the frame
+				int width = tile_info.width - 2 * frame_thickness;
+				int height = tile_info.height - 2 * frame_thickness;
+				// Re-calculate UV for linking to the necessary TileInfo pixels in the atlas
+				int rel_x = core::round32(vertex.TCoords.X * width);
+				int rel_y = core::round32(vertex.TCoords.Y * height);
+
+				vertex.TCoords.X = f32(tile_info.x + frame_thickness + rel_x + tile_pos_shift) / atlas_size.Width;
+				vertex.TCoords.Y = f32(tile_info.y + frame_thickness + rel_y) / atlas_size.Height;
 			}
 
 			// Apply face shading

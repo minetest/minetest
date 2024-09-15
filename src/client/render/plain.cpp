@@ -47,7 +47,7 @@ void DrawWield::run(PipelineContext &context)
 	if (m_target)
 		m_target->activate(context);
 
-	//video::ITexture* atlas = context.client->getNodeDefManager()->getAtlas()->getTexture();
+	//video::ITexture* atlas = context.client->getNodeDefManager()->getAtlasBuilder()->getAtlas(0)->getTexture();
 	//context.device->getVideoDriver()->draw2DImage(atlas, core::position2d<s32>(0, 0));
 	if (context.draw_wield_tool)
 		context.client->getCamera()->drawWieldedTool();
