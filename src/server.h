@@ -167,9 +167,12 @@ public:
 	// Actual processing is done in another thread.
 	// This just checks if there was an error in that thread.
 	void step();
+
 	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep(float dtime, bool initial_step = false);
 	void Receive(float timeout);
+	void yieldToOtherThreads(float dtime);
+
 	PlayerSAO* StageTwoClientInit(session_t peer_id);
 
 	/*
@@ -601,8 +604,6 @@ private:
 		Call with env and con locked.
 	*/
 	PlayerSAO *emergePlayer(const char *name, session_t peer_id, u16 proto_version);
-
-	void handlePeerChanges();
 
 	/*
 		Variables

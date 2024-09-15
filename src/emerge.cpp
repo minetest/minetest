@@ -316,6 +316,12 @@ bool EmergeManager::enqueueBlockEmergeEx(
 }
 
 
+size_t EmergeManager::getQueueSize()
+{
+	MutexAutoLock queuelock(m_queue_mutex);
+	return m_blocks_enqueued.size();
+}
+
 bool EmergeManager::isBlockInQueue(v3s16 pos)
 {
 	MutexAutoLock queuelock(m_queue_mutex);
@@ -540,7 +546,9 @@ bool EmergeThread::popBlockEmerge(v3s16 *pos, BlockEmergeData *bedata)
 EmergeAction EmergeThread::getBlockOrStartGen(const v3s16 pos, bool allow_gen,
 	 const std::string *from_db, MapBlock **block, BlockMakeData *bmdata)
 {
+	//TimeTaker tt("", nullptr, PRECISION_MICRO);
 	Server::EnvAutoLock envlock(m_server);
+	//g_profiler->avg("EmergeThread: lock wait time [us]", tt.stop());
 
 	auto block_ok = [] (MapBlock *b) {
 		return b && b->isGenerated();

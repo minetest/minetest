@@ -196,6 +196,7 @@ public:
 		EmergeCompletionCallback callback,
 		void *callback_param);
 
+	size_t getQueueSize();
 	bool isBlockInQueue(v3s16 pos);
 
 	Mapgen *getCurrentMapgen();
