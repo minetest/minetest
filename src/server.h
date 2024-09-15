@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/metricsbackend.h"
 #include "serverenvironment.h"
 #include "server/clientiface.h"
+#include "threading/ordered_mutex.h"
 #include "chatmessage.h"
 #include "sound.h"
 #include "translation.h"
@@ -430,7 +431,7 @@ public:
 		EnvAutoLock(Server *server): m_lock(server->m_env_mutex) {}
 
 	private:
-		MutexAutoLock m_lock;
+		std::lock_guard<ordered_mutex> m_lock;
 	};
 
 protected:
@@ -608,7 +609,7 @@ private:
 	*/
 
 	// Environment mutex (envlock)
-	std::mutex m_env_mutex;
+	ordered_mutex m_env_mutex;
 
 	// World directory
 	std::string m_path_world;
