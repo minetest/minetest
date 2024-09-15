@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ICameraSceneNode.h>
 #include <IGUIStaticText.h>
 #include "client/imagefilters.h"
+#include "util/tracy_wrapper.h"
 
 #if USE_SOUND
 	#include "client/sound/sound_openal.h"
@@ -329,9 +330,12 @@ void GUIEngine::run()
 
 	fps_control.reset();
 
-	while (m_rendering_engine->run() && !m_startgame && !m_kill) {
+	auto framemarker = FrameMarker("GUIEngine::run()-frame").started();
 
+	while (m_rendering_engine->run() && !m_startgame && !m_kill) {
+		framemarker.end();
 		fps_control.limit(device, &dtime);
+		framemarker.start();
 
 		if (device->isWindowVisible()) {
 			// check if we need to update the "upper left corner"-text
@@ -371,6 +375,7 @@ void GUIEngine::run()
 		m_menu->getAndroidUIInput();
 #endif
 	}
+	framemarker.end();
 
 	m_script->beforeClose();
 
