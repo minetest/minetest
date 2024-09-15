@@ -31,7 +31,7 @@ static std::string read_translation_file(const std::string &filename)
 {
 		auto gamespec = findSubgame("devtest");
 		REQUIRE(gamespec.isValid());
-		auto path = gamespec.gamemods_path + (DIR_DELIM "testtranslations" DIR_DELIM "locale" DIR_DELIM) + filename;
+		auto path = gamespec.gamemods_path + (DIR_DELIM "testtranslations" DIR_DELIM "test_locale" DIR_DELIM) + filename;
 		std::string content;
 		REQUIRE(fs::ReadFile(path, content));
 		return content;
