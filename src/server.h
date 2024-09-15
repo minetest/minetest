@@ -424,8 +424,14 @@ public:
 	// Bind address
 	Address m_bind_addr;
 
-	// Environment mutex (envlock)
-	std::mutex m_env_mutex;
+	// Public helper for taking the envlock in a scope
+	class EnvAutoLock {
+	public:
+		EnvAutoLock(Server *server): m_lock(server->m_env_mutex) {}
+
+	private:
+		MutexAutoLock m_lock;
+	};
 
 protected:
 	/* Do not add more members here, this is only required to make unit tests work. */
@@ -600,6 +606,10 @@ private:
 	/*
 		Variables
 	*/
+
+	// Environment mutex (envlock)
+	std::mutex m_env_mutex;
+
 	// World directory
 	std::string m_path_world;
 	std::string m_path_mod_data;

@@ -540,7 +540,7 @@ bool EmergeThread::popBlockEmerge(v3s16 *pos, BlockEmergeData *bedata)
 EmergeAction EmergeThread::getBlockOrStartGen(const v3s16 pos, bool allow_gen,
 	 const std::string *from_db, MapBlock **block, BlockMakeData *bmdata)
 {
-	MutexAutoLock envlock(m_server->m_env_mutex);
+	Server::EnvAutoLock envlock(m_server);
 
 	auto block_ok = [] (MapBlock *b) {
 		return b && b->isGenerated();
@@ -581,7 +581,7 @@ EmergeAction EmergeThread::getBlockOrStartGen(const v3s16 pos, bool allow_gen,
 MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 	std::map<v3s16, MapBlock *> *modified_blocks)
 {
-	MutexAutoLock envlock(m_server->m_env_mutex);
+	Server::EnvAutoLock envlock(m_server);
 	ScopeProfiler sp(g_profiler,
 		"EmergeThread: after Mapgen::makeChunk", SPT_AVG);
 
@@ -762,7 +762,7 @@ void *EmergeThread::run()
 			MapEditEvent event;
 			event.type = MEET_OTHER;
 			event.setModifiedBlocks(modified_blocks);
-			MutexAutoLock envlock(m_server->m_env_mutex);
+			Server::EnvAutoLock envlock(m_server);
 			m_map->dispatchEvent(event);
 		}
 		modified_blocks.clear();
