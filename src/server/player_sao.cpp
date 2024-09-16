@@ -519,10 +519,11 @@ void PlayerSAO::rightClick(ServerActiveObject *clicker)
 
 void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool from_client)
 {
-	s32 hp_change = std::max<s32>(target_hp, S32_MIN+U16_MAX) - (s32)m_hp;
-
-	if ((target_hp == m_hp) || (m_hp == 0 && target_hp < 0))
+	if (target_hp == m_hp || (m_hp == 0 && target_hp < 0))
 		return; // Nothing to do
+
+	// Protect against overflow.
+	s32 hp_change = std::max<s64>((s64)target_hp - (s64)m_hp, S32_MIN);
 
 	hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp_change, reason);
 	hp_change = std::min<s32>(hp_change, U16_MAX); // Protect against overflow
