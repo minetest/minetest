@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ISceneManager.h>
 #include <ICameraSceneNode.h>
 #include <S3DVertex.h>
+#include "client/mesh.h"
 #include "client/tile.h"
 #include "noise.h" // easeCurve
 #include "profiler.h"
@@ -77,10 +78,9 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 	// Create materials
 
 	m_materials[0] = baseMaterial();
-	// FIXME: shouldn't this check m_enable_shaders?
-	m_materials[0].MaterialType = ssrc->getShaderInfo(ssrc->getShader("stars_shader", TILE_MATERIAL_ALPHA)).material;
-	m_materials[0].Lighting = true;
-	m_materials[0].ColorMaterial = video::ECM_NONE;
+	m_materials[0].MaterialType = m_enable_shaders ?
+			ssrc->getShaderInfo(ssrc->getShader("stars_shader", TILE_MATERIAL_ALPHA)).material :
+			video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 
 	m_materials[1] = baseMaterial();
 	m_materials[1].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -688,7 +688,10 @@ void Sky::draw_stars(video::IVideoDriver * driver, float wicked_time_of_day)
 	color.a *= alpha;
 	if (color.a <= 0.0f) // Stars are only drawn when not fully transparent
 		return;
-	m_materials[0].EmissiveColor = color.toSColor();
+	if (m_enable_shaders)
+		m_materials[0].EmissiveColor = color.toSColor();
+	else
+		setMeshBufferColor(m_stars.get(), color.toSColor());
 
 	auto sky_rotation = core::matrix4().setRotationAxisRadians(2.0f * M_PI * (wicked_time_of_day - 0.25f), v3f(0.0f, 0.0f, 1.0f));
 	auto world_matrix = driver->getTransform(video::ETS_WORLD);
@@ -835,7 +838,6 @@ void Sky::updateStars()
 	vertices.reserve(4 * m_star_params.count);
 	indices.reserve(6 * m_star_params.count);
 
-	video::SColor fallback_color = m_star_params.starcolor; // used on GLES 2 “without shaders”
 	PcgRandom rgen(m_seed);
 	float d = (0.006 / 2) * m_star_params.scale;
 	for (u16 i = 0; i < m_star_params.count; i++) {
@@ -854,10 +856,10 @@ void Sky::updateStars()
 		a.rotateVect(p1);
 		a.rotateVect(p2);
 		a.rotateVect(p3);
-		vertices.push_back(video::S3DVertex(p, {}, fallback_color, {}));
-		vertices.push_back(video::S3DVertex(p1, {}, fallback_color, {}));
-		vertices.push_back(video::S3DVertex(p2, {}, fallback_color, {}));
-		vertices.push_back(video::S3DVertex(p3, {}, fallback_color, {}));
+		vertices.push_back(video::S3DVertex(p, {}, {}, {}));
+		vertices.push_back(video::S3DVertex(p1, {}, {}, {}));
+		vertices.push_back(video::S3DVertex(p2, {}, {}, {}));
+		vertices.push_back(video::S3DVertex(p3, {}, {}, {}));
 	}
 	for (u16 i = 0; i < m_star_params.count; i++) {
 		indices.push_back(i * 4 + 0);
@@ -867,7 +869,8 @@ void Sky::updateStars()
 		indices.push_back(i * 4 + 3);
 		indices.push_back(i * 4 + 0);
 	}
-	m_stars->setHardwareMappingHint(scene::EHM_STATIC);
+	if (m_enable_shaders)
+		m_stars->setHardwareMappingHint(scene::EHM_STATIC);
 }
 
 void Sky::setSkyColors(const SkyColor &sky_color)
