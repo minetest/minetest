@@ -85,8 +85,9 @@ local function hp_diference_test(player, hp_max)
 	assert(die_counter == 1)
 
 	-- Integer overflow is prevented
-	expected_diff = -2147483648 -- S32_MIN
-	player:set_hp(-3000000000)
+	-- so result is S32_MIN, not S32_MIN - 22
+	expected_diff = -2147483648
+	player:set_hp(-2147483648)
 	-- actual final HP value is clamped to >= 0
 	assert(player:get_hp() == 0)
 	assert(hpchange_counter == 3)
