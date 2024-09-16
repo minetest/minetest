@@ -28,11 +28,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include <cmath>
 
-
-// Menu clouds are created later
 class Clouds;
-Clouds *g_menuclouds = NULL;
-scene::ISceneManager *g_menucloudsmgr = NULL;
+scene::ISceneManager *g_menucloudsmgr = nullptr;
+Clouds *g_menuclouds = nullptr;
 
 // Constant for now
 static constexpr const float cloud_size = BS * 64.0f;
@@ -49,9 +47,8 @@ Clouds::Clouds(scene::ISceneManager* mgr, IShaderSource *ssrc,
 	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
 	m_seed(seed)
 {
+	assert(ssrc);
 	m_enable_shaders = g_settings->getBool("enable_shaders");
-	// menu clouds use shader-less clouds for simplicity (ssrc == NULL)
-	m_enable_shaders = m_enable_shaders && ssrc;
 
 	m_material.Lighting = false;
 	m_material.BackfaceCulling = true;

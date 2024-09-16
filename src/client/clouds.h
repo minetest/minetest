@@ -36,11 +36,11 @@ namespace irr::scene
 }
 
 // Menu clouds
+// The mainmenu and the loading screen use the same Clouds object so that the
+// clouds don't jump when switching between the two.
 class Clouds;
-extern Clouds *g_menuclouds;
-
-// Scene manager used for menu clouds
 extern scene::ISceneManager *g_menucloudsmgr;
+extern Clouds *g_menuclouds;
 
 class Clouds : public scene::ISceneNode
 {

@@ -142,10 +142,6 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 	// create texture source
 	m_texture_source = std::make_unique<MenuTextureSource>(rendering_engine->get_video_driver());
 
-	// create shader source
-	// (currently only used by clouds)
-	m_shader_source.reset(createShaderSource());
-
 	// create soundmanager
 #if USE_SOUND
 	if (g_settings->getBool("enable_sound") && g_sound_manager_singleton.get()) {
@@ -296,10 +292,6 @@ void GUIEngine::run()
 	IrrlichtDevice *device = m_rendering_engine->get_raw_device();
 	video::IVideoDriver *driver = device->getVideoDriver();
 
-	// Always create clouds because they may or may not be
-	// needed based on the game selected
-	cloudInit();
-
 	unsigned int text_height = g_fontengine->getTextHeight();
 
 	// Reset fog color
@@ -395,8 +387,6 @@ GUIEngine::~GUIEngine()
 
 	m_irr_toplefttext->remove();
 
-	m_cloud.clouds.reset();
-
 	// delete textures
 	for (image_definition &texture : m_textures) {
 		if (texture.texture)
@@ -405,25 +395,10 @@ GUIEngine::~GUIEngine()
 }
 
 /******************************************************************************/
-void GUIEngine::cloudInit()
-{
-	m_shader_source->addShaderConstantSetterFactory(
-		new FogShaderConstantSetterFactory());
-
-	m_cloud.clouds = make_irr<Clouds>(m_smgr, m_shader_source.get(), -1, rand());
-	m_cloud.clouds->setHeight(100.0f);
-	m_cloud.clouds->update(v3f(0, 0, 0), video::SColor(255,240,240,255));
-
-	m_cloud.camera = m_smgr->addCameraSceneNode(0,
-				v3f(0,0,0), v3f(0, 60, 100));
-	m_cloud.camera->setFarValue(10000);
-}
-
-/******************************************************************************/
 void GUIEngine::drawClouds(float dtime)
 {
-	m_cloud.clouds->step(dtime*3);
-	m_smgr->drawAll();
+	g_menuclouds->step(dtime * 3);
+	g_menucloudsmgr->drawAll();
 }
 
 /******************************************************************************/
