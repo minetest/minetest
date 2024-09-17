@@ -229,6 +229,42 @@ int MetaDataRef::l_get_keys(lua_State *L)
 	return 1;
 }
 
+// get_bool(self, name)
+int MetaDataRef::l_get_bool(lua_State *L)
+{
+	MAP_LOCK_REQUIRED;
+
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
+	std::string name = luaL_checkstring(L, 2);
+
+	IMetadata *meta = ref->getmeta(false);
+	if (meta == NULL) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	std::string str_;
+	const std::string &str = meta->getString(name, &str_);
+	lua_pushboolean(L, is_yes(str));
+	return 1;
+}
+
+// set_bool(self, name, var)
+int MetaDataRef::l_set_bool(lua_State *L)
+{
+	MAP_LOCK_REQUIRED;
+
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
+	std::string name = luaL_checkstring(L, 2);
+	int a = lua_toboolean(L, 3);
+	std::string str = a ? "true" : "false";
+
+	IMetadata *meta = ref->getmeta(true);
+	if (meta != NULL && meta->setString(name, str))
+		ref->reportMetadataChange(&name);
+	return 0;
+}
+
 // to_table(self)
 int MetaDataRef::l_to_table(lua_State *L)
 {

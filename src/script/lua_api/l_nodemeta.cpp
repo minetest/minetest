@@ -209,6 +209,8 @@ const luaL_Reg NodeMetaRef::methodsServer[] = {
 	luamethod(MetaDataRef, set_int),
 	luamethod(MetaDataRef, get_float),
 	luamethod(MetaDataRef, set_float),
+	luamethod(MetaDataRef, get_bool),
+	luamethod(MetaDataRef, set_bool),
 	luamethod(MetaDataRef, get_keys),
 	luamethod(MetaDataRef, to_table),
 	luamethod(MetaDataRef, from_table),
@@ -231,6 +233,7 @@ const luaL_Reg NodeMetaRef::methodsClient[] = {
 	luamethod(MetaDataRef, get_string),
 	luamethod(MetaDataRef, get_int),
 	luamethod(MetaDataRef, get_float),
+	luamethod(MetaDataRef, get_bool),
 	luamethod(MetaDataRef, get_keys),
 	luamethod(MetaDataRef, to_table),
 	{0,0}
