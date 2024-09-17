@@ -186,6 +186,12 @@ static bool logOnce(const std::ostringstream &from, std::ostream &log_to)
 	return true;
 }
 
+static void setEmissiveColor(scene::ISceneNode *node, video::SColor color)
+{
+	for (u32 i = 0; i < node->getMaterialCount(); ++i)
+		node->getMaterial(i).EmissiveColor = color;
+}
+
 /*
 	TestCAO
 */
@@ -385,7 +391,7 @@ void GenericCAO::processInitData(const std::string &data)
 	if (m_is_player) {
 		// Check if it's the current player
 		LocalPlayer *player = m_env->getLocalPlayer();
-		if (player && strcmp(player->getName(), m_name.c_str()) == 0) {
+		if (player && player->getName() == m_name) {
 			m_is_local_player = true;
 			m_is_visible = false;
 			player->setCAO(this);
@@ -465,7 +471,7 @@ scene::IAnimatedMeshSceneNode *GenericCAO::getAnimatedMeshSceneNode() const
 
 void GenericCAO::setChildrenVisible(bool toset)
 {
-	for (u16 cao_id : m_attachment_child_ids) {
+	for (object_t cao_id : m_attachment_child_ids) {
 		GenericCAO *obj = m_env->getGenericCAO(cao_id);
 		if (obj) {
 			// Check if the entity is forced to appear in first person.
@@ -474,10 +480,10 @@ void GenericCAO::setChildrenVisible(bool toset)
 	}
 }
 
-void GenericCAO::setAttachment(int parent_id, const std::string &bone,
+void GenericCAO::setAttachment(object_t parent_id, const std::string &bone,
 		v3f position, v3f rotation, bool force_visible)
 {
-	int old_parent = m_attachment_parent_id;
+	const auto old_parent = m_attachment_parent_id;
 	m_attachment_parent_id = parent_id;
 	m_attachment_bone = bone;
 	m_attachment_position = position;
@@ -509,7 +515,7 @@ void GenericCAO::setAttachment(int parent_id, const std::string &bone,
 	}
 }
 
-void GenericCAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
+void GenericCAO::getAttachment(object_t *parent_id, std::string *bone, v3f *position,
 	v3f *rotation, bool *force_visible) const
 {
 	*parent_id = m_attachment_parent_id;
@@ -523,29 +529,21 @@ void GenericCAO::clearChildAttachments()
 {
 	// Cannot use for-loop here: setAttachment() modifies 'm_attachment_child_ids'!
 	while (!m_attachment_child_ids.empty()) {
-		int child_id = *m_attachment_child_ids.begin();
+		const auto child_id = *m_attachment_child_ids.begin();
 
-		if (ClientActiveObject *child = m_env->getActiveObject(child_id))
-			child->setAttachment(0, "", v3f(), v3f(), false);
-
-		removeAttachmentChild(child_id);
+		if (auto *child = m_env->getActiveObject(child_id))
+			child->clearParentAttachment();
+		else
+			removeAttachmentChild(child_id);
 	}
 }
 
-void GenericCAO::clearParentAttachment()
-{
-	if (m_attachment_parent_id)
-		setAttachment(0, "", m_attachment_position, m_attachment_rotation, false);
-	else
-		setAttachment(0, "", v3f(), v3f(), false);
-}
-
-void GenericCAO::addAttachmentChild(int child_id)
+void GenericCAO::addAttachmentChild(object_t child_id)
 {
 	m_attachment_child_ids.insert(child_id);
 }
 
-void GenericCAO::removeAttachmentChild(int child_id)
+void GenericCAO::removeAttachmentChild(object_t child_id)
 {
 	m_attachment_child_ids.erase(child_id);
 }
@@ -782,8 +780,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			// set vertex colors to ensure alpha is set
 			setMeshColor(m_animated_meshnode->getMesh(), video::SColor(0xFFFFFFFF));
 
-			setAnimatedMeshColor(m_animated_meshnode, video::SColor(0xFFFFFFFF));
-
 			setSceneNodeMaterials(m_animated_meshnode);
 
 			m_animated_meshnode->forEachMaterial([this] (auto &mat) {
@@ -818,15 +814,21 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	}
 
 	/* Set VBO hint */
-	// - if shaders are disabled we modify the mesh often
-	// - sprites are also modified often
-	// - the wieldmesh sets its own hint
-	// - bone transformations do not need to modify the vertex data
+	// wieldmesh sets its own hint, no need to handle it
 	if (m_enable_shaders && (m_meshnode || m_animated_meshnode)) {
-		if (m_meshnode)
+		// sprite uses vertex animation
+		if (m_meshnode && m_prop.visual != "upright_sprite")
 			m_meshnode->getMesh()->setHardwareMappingHint(scene::EHM_STATIC);
-		if (m_animated_meshnode)
-			m_animated_meshnode->getMesh()->setHardwareMappingHint(scene::EHM_STATIC);
+
+		if (m_animated_meshnode) {
+			auto *mesh = m_animated_meshnode->getMesh();
+			// skinning happens on the CPU
+			if (m_animated_meshnode->getJointCount() > 0)
+				mesh->setHardwareMappingHint(scene::EHM_STREAM, scene::EBT_VERTEX);
+			else
+				mesh->setHardwareMappingHint(scene::EHM_STATIC, scene::EBT_VERTEX);
+			mesh->setHardwareMappingHint(scene::EHM_STATIC, scene::EBT_INDEX);
+		}
 	}
 
 	/* don't update while punch texture modifier is active */
@@ -852,14 +854,19 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 	if (m_animated_meshnode) {
 		u32 mat_count = m_animated_meshnode->getMaterialCount();
+		assert(mat_count == m_animated_meshnode->getMesh()->getMeshBufferCount());
+		u32 max_tex_idx = 0;
+		for (u32 i = 0; i < mat_count; ++i) {
+			max_tex_idx = std::max(max_tex_idx,
+					m_animated_meshnode->getMesh()->getTextureSlot(i));
+		}
 		if (mat_count == 0 || m_prop.textures.empty()) {
 			// nothing
-		} else if (mat_count > m_prop.textures.size()) {
+		} else if (max_tex_idx >= m_prop.textures.size()) {
 			std::ostringstream oss;
 			oss << "GenericCAO::addToScene(): Model "
-				<< m_prop.mesh << " loaded with " << mat_count
-				<< " mesh buffers but only " << m_prop.textures.size()
-				<< " texture(s) specified, this is deprecated.";
+				<< m_prop.mesh << " is missing " << (max_tex_idx + 1 - m_prop.textures.size())
+				<< " more texture(s), this is deprecated.";
 			logOnce(oss, warningstream);
 
 			video::ITexture *last = m_animated_meshnode->getMaterial(0).TextureLayers[0].Texture;
@@ -926,26 +933,15 @@ void GenericCAO::setNodeLight(const video::SColor &light_color)
 	}
 
 	if (m_enable_shaders) {
-		if (m_prop.visual == "upright_sprite") {
-			if (!m_meshnode)
-				return;
-			for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i)
-				m_meshnode->getMaterial(i).EmissiveColor = light_color;
-		} else {
-			scene::ISceneNode *node = getSceneNode();
-			if (!node)
-				return;
-
-			for (u32 i = 0; i < node->getMaterialCount(); ++i) {
-				video::SMaterial &material = node->getMaterial(i);
-				material.EmissiveColor = light_color;
-			}
-		}
+		auto *node = getSceneNode();
+		if (!node)
+			return;
+		setEmissiveColor(node, light_color);
 	} else {
 		if (m_meshnode) {
 			setMeshColor(m_meshnode->getMesh(), light_color);
 		} else if (m_animated_meshnode) {
-			setAnimatedMeshColor(m_animated_meshnode, light_color);
+			setMeshColor(m_animated_meshnode->getMesh(), light_color);
 		} else if (m_spritenode) {
 			m_spritenode->setColor(light_color);
 		}
@@ -1267,6 +1263,16 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 	}
 }
 
+static void setMeshBufferTextureCoords(scene::IMeshBuffer *buf, const v2f *uv, u32 count)
+{
+	assert(buf->getVertexType() == video::EVT_STANDARD);
+	assert(buf->getVertexCount() == count);
+	auto *vertices = static_cast<video::S3DVertex *>(buf->getVertices());
+	for (u32 i = 0; i < count; i++)
+		vertices[i].TCoords = uv[i];
+	buf->setDirty(scene::EBT_VERTEX);
+}
+
 void GenericCAO::updateTexturePos()
 {
 	if(m_spritenode)
@@ -1378,9 +1384,11 @@ void GenericCAO::updateTextures(std::string mod)
 
 	else if (m_animated_meshnode) {
 		if (m_prop.visual == "mesh") {
-			for (u32 i = 0; i < m_prop.textures.size() &&
-					i < m_animated_meshnode->getMaterialCount(); ++i) {
-				std::string texturestring = m_prop.textures[i];
+			for (u32 i = 0; i < m_animated_meshnode->getMaterialCount(); ++i) {
+				const auto texture_idx = m_animated_meshnode->getMesh()->getTextureSlot(i);
+				if (texture_idx >= m_prop.textures.size())
+					continue;
+				std::string texturestring = m_prop.textures[texture_idx];
 				if (texturestring.empty())
 					continue; // Empty texture string means don't modify that material
 				texturestring += mod;
@@ -1395,7 +1403,6 @@ void GenericCAO::updateTextures(std::string mod)
 				material.MaterialType = m_material_type;
 				material.MaterialTypeParam = m_material_type_param;
 				material.TextureLayers[0].Texture = texture;
-				material.Lighting = true;
 				material.BackfaceCulling = m_prop.backface_culling;
 
 				// don't filter low-res textures, makes them look blurry
@@ -1526,9 +1533,8 @@ void GenericCAO::updateAnimation()
 	if (!m_animated_meshnode)
 		return;
 
-	if (m_animated_meshnode->getStartFrame() != m_animation_range.X ||
-		m_animated_meshnode->getEndFrame() != m_animation_range.Y)
-			m_animated_meshnode->setFrameLoop(m_animation_range.X, m_animation_range.Y);
+	// Note: This sets the current frame as well, (re)starting the animation.
+	m_animated_meshnode->setFrameLoop(m_animation_range.X, m_animation_range.Y);
 	if (m_animated_meshnode->getAnimationSpeed() != m_animation_speed)
 		m_animated_meshnode->setAnimationSpeed(m_animation_speed);
 	m_animated_meshnode->setTransitionTime(m_animation_blend);

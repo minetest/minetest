@@ -3,17 +3,17 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-06-23 19:09+0000\n"
-"Last-Translator: YearOfFuture <yearoffuture@gmail.com>\n"
+"PO-Revision-Date: 2024-08-04 22:09+0000\n"
+"Last-Translator: Yof <Yof@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.6-rc\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -72,9 +72,8 @@ msgid "Command not available: "
 msgstr "Команда недоступна: "
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Get help for commands (-t: output in chat)"
-msgstr "Отримати довідку щодо команд"
+msgstr "Отримати довідку щодо команд (-t: вивести у чаті)"
 
 #: builtin/common/chatcommands.lua
 msgid ""
@@ -84,9 +83,8 @@ msgstr ""
 "all', щоб перелічити все."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "[all | <cmd>] [-t]"
-msgstr "[all | <команда>]"
+msgstr "[all | <команда>] [-t]"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -149,12 +147,12 @@ msgid "Failed to download $1"
 msgstr "Не вдалося завантажити $1"
 
 #: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
 msgid ""
 "Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
 "broken archive)"
 msgstr ""
-"Не вдалося витягти \"$1\" (непідтримуваний тип файлу або пошкоджений архів)"
+"Не вдалося витягти \"$1\" (недостатнє місце на диску, непідтримуваний тип "
+"файлу або пошкоджений архів)"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
@@ -186,7 +184,7 @@ msgstr "Завантаження..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Error getting dependencies for package"
-msgstr ""
+msgstr "Помилка при отриманні залежностей для пакунку"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Games"
@@ -464,7 +462,7 @@ msgstr "Декорації"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Desert temples"
-msgstr ""
+msgstr "Храми пустель"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
@@ -475,6 +473,8 @@ msgid ""
 "Different dungeon variant generated in desert biomes (only if dungeons "
 "enabled)"
 msgstr ""
+"Інший варіант підземель, що генерується у біомах пустелі (тільки якщо "
+"увімкнені підземелля)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -1068,15 +1068,15 @@ msgid "Install games from ContentDB"
 msgstr "Встановити ігри з ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Minetest doesn't come with a game by default."
-msgstr "Minetest Game більше не встановлюється за замовчуванням"
+msgstr "Minetest більше не встановлювається з грою."
 
 #: builtin/mainmenu/tab_local.lua
 msgid ""
 "Minetest is a game-creation platform that allows you to play many different "
 "games."
 msgstr ""
+"Minetest – це ігрова платформа, що дозволяє вам грати у багато різних ігор."
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -1111,9 +1111,8 @@ msgid "Start Game"
 msgstr "Почати гру"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "You need to install a game before you can create a world."
-msgstr "Вам потрібно встановити гру перед тим, як встановлювати мод"
+msgstr "Вам потрібно встановити гру перед ти, як створювати світ."
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1327,7 +1326,6 @@ msgid "Continue"
 msgstr "Продовжити"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
@@ -1343,16 +1341,16 @@ msgid ""
 " --> place single item to slot\n"
 msgstr ""
 "Керування:\n"
-"Коли меню не відображається:\n"
-"- провести пальцем: роззирнутися\n"
-"- дотик: встановити/використати\n"
-"- довгий дотик: копати/вдарити/використати\n"
-"Коли відображається меню або інвертар:\n"
-"- дотикнутися двічі (поза межами):\n"
+"Коли немає відкритих меню:\n"
+"- проведення пальцем: роззирнутися\n"
+"- дотик: встановити/вдарити/використати\n"
+"- довгий дотик: копати/використати\n"
+"У відкритому меню або інвертарі:\n"
+"- подвійний дотик (поза межами):\n"
 " --> закрити\n"
-"- Торкнутися купи, торкнутися комірки:\n"
+"- доторкання купи, доторкання комірки\n"
 " --> перемістити купу\n"
-"- Торкнутися і тягнути, дотикнутися другим пальцем\n"
+"- доторкання і перетягування, дотик другим пальцем\n"
 " --> помістити один предмет у комірку\n"
 
 #: src/client/game.cpp
@@ -1426,9 +1424,8 @@ msgid "Fog enabled"
 msgstr "Туман увімкнено"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog enabled by game or mod"
-msgstr "Наближення (бінокль) вимкнено грою або модифікацією"
+msgstr "Туман увімкнено грою або модом"
 
 #: src/client/game.cpp
 msgid "Game info:"
@@ -1926,13 +1923,13 @@ msgid "Minimap in texture mode"
 msgstr "Мінімапа в текстурному режимі"
 
 #: src/client/shader.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to compile the \"%s\" shader."
-msgstr "Не вдалося завантажити вебсторінку"
+msgstr "Не вдалося скомпілювати шейдер \"%s\"."
 
 #: src/client/shader.cpp
 msgid "Shaders are enabled but GLSL is not supported by the driver."
-msgstr ""
+msgstr "Відтінювачі увімкнені, але GLSL не підтримується драйвером."
 
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
@@ -2129,16 +2126,15 @@ msgstr "натисніть клавішу"
 
 #: src/gui/guiOpenURL.cpp
 msgid "Open"
-msgstr ""
+msgstr "Відкрити"
 
 #: src/gui/guiOpenURL.cpp
 msgid "Open URL?"
-msgstr ""
+msgstr "Відкрити URL?"
 
 #: src/gui/guiOpenURL.cpp
-#, fuzzy
 msgid "Unable to open URL"
-msgstr "Не вдалося завантажити вебсторінку"
+msgstr "Не вдалося відкрити URL"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
@@ -2426,7 +2422,7 @@ msgstr "Додатково"
 
 #: src/settings_translation_file.cpp
 msgid "Allows liquids to be translucent."
-msgstr ""
+msgstr "Дозволяє рідинам бути напівпрозорими."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2496,6 +2492,13 @@ msgid ""
 "With OpenGL ES, dithering only works if the shader supports high\n"
 "floating-point precision and it may have a higher performance impact."
 msgstr ""
+"Застосуйте згладжування, щоб зменшити кількість артефактів кольорових смуг.\n"
+"Згладжування значно збільшує розмір знімків екрана, стиснутих без втрат,\n"
+"і працює некоректно, якщо екран або операційна система виконує\n"
+"додаткове згладжування або якщо кольорові канали не квантуються\n"
+"до 8 бітів.\n"
+"З OpenGL ES згладжування працює лише якщо відтінювач підтримує високу\n"
+"точність чисел з плаваючою комою й може більше впливати на продуктивність."
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
@@ -2514,7 +2517,6 @@ msgid "Ask to reconnect after crash"
 msgstr "Запитувати про перезʼєднання під час збою"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "At this distance the server will aggressively optimize which blocks are sent "
 "to\n"
@@ -2526,17 +2528,15 @@ msgid ""
 "optimization.\n"
 "Stated in MapBlocks (16 nodes)."
 msgstr ""
-"На цій відстані сервер буде агресивно оптимізувати те, які блоки\n"
-"надсилаються клієнтам.\n"
-"Маленькі значення можуть значно покращити продуктивність, за\n"
-"рахунок проблем відображення (деякі блоки не будуть\n"
-"відображені під водою й у печерах, а також иноді на поверхні).\n"
-"Виставлення цього до значення, що більше, ніж\n"
-"max_block_send_distance, вимикає цю оптимізацію.\n"
+"На цій відстані сервер буде агресивно оптимізувати, які блоки\n"
+"надсилатимуться клієнтам.\n"
+"Меньші значення потенційно значно підвищують продуктивність за рахунок\n"
+"проблем промальовування (блоки можуть неправильно відображатися у печерах).\n"
+"Виставлення цього до значення більше за max_block_send_distance вимикає\n"
+"цю оптимізацію.\n"
 "Зазначається у блоках мапи (16 блоків)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "At this distance the server will perform a simpler and cheaper occlusion "
 "check.\n"
@@ -2546,13 +2546,11 @@ msgid ""
 "This is especially useful for very large viewing range (upwards of 500).\n"
 "Stated in MapBlocks (16 nodes)."
 msgstr ""
-"На цій відстані сервер буде агресивно оптимізувати те, які блоки\n"
-"надсилаються клієнтам.\n"
-"Маленькі значення можуть значно покращити продуктивність, за\n"
-"рахунок проблем відображення (деякі блоки не будуть\n"
-"відображені під водою й у печерах, а також иноді на поверхні).\n"
-"Виставлення цього до значення, що більше, ніж\n"
-"max_block_send_distance, вимикає цю оптимізацію.\n"
+"На цій відстані сервер буде виконувати простіше й дешевше перевірку "
+"затінення.\n"
+"Меньші значення потенційно підвищують продуктивність, за рахунок тимчасово\n"
+"видимих проблем відображення (зниклі блоки).\n"
+"Це особливо корисно для дуже великого діапазону огляду (понад 500).\n"
 "Зазначається у блоках мапи (16 блоків)."
 
 #: src/settings_translation_file.cpp
@@ -2616,9 +2614,8 @@ msgid "Biome noise"
 msgstr "Шум біому"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Block cull optimize distance"
-msgstr "Оптимальна відстань надсилання блока"
+msgstr "Відстань оптимізації вибракування блоків"
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
@@ -2840,6 +2837,9 @@ msgid ""
 "Comma-separated list of AL and ALC extensions that should not be used.\n"
 "Useful for testing. See al_extensions.[h,cpp] for details."
 msgstr ""
+"Розділений комами перелік розширень AL і ALC, які не повинно використовувати."
+"\n"
+"Корисно для тестування. Подробиці у файлах al_extensions.[h,cpp]."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2851,9 +2851,9 @@ msgid ""
 "These flags are independent from Minetest versions,\n"
 "so see a full list at https://content.minetest.net/help/content_flags/"
 msgstr ""
-"Розділений комами перелік міток, які треба приховувати у репозиторії "
-"вмісту.\n"
-"\"nonfree\" використовується для приховання пакетів, що не є \"вільним "
+"Розділений комами перелік міток, які треба приховувати у репозиторії вмісту."
+"\n"
+"\"nonfree\" використовується для приховання пакунків, що не є \"вільним "
 "програмним\n"
 "забезпеченням\", як визначено Фондом вільного програмного забезпечення.\n"
 "Ви також можете вказувати оцінки вмісту.\n"
@@ -3064,7 +3064,6 @@ msgstr ""
 "диск, але також використовує більше ресурсів."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Define the oldest clients allowed to connect.\n"
 "Older clients are compatible in the sense that they will not crash when "
@@ -3076,10 +3075,14 @@ msgid ""
 "Minetest still enforces its own internal minimum, and enabling\n"
 "strict_protocol_version_checking will effectively override this."
 msgstr ""
-"Увімкніть, щоб заборонити підключення старим клієнтам.\n"
-"Старші клієнти сумісні у тому сенсі, що вони не зазнаватимуть збою при\n"
-"підключенні до нових серверів, але вони можуть не підтримувати усі нові "
-"функції, на які ви очікуєте."
+"Визначте найстаріші клієнти, яким дозволено під'єднуватися.\n"
+"Старіші клієнти сумісні у тому сенсі, що вони не зазнаватимуть збою при "
+"підключенні\n"
+"до нових серверів, але можуть не підтримувати усі нові функції, на які ви "
+"очікуєте.\n"
+"Це дозволяє детальніший контроль, ніж strict_protocol_version_checking.\n"
+"Minetest все ще примушує свій внутрішній мінімум, і включення\n"
+"strict_protocol_version_checking перевизначить це ефективно."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -3283,9 +3286,8 @@ msgid "Enable Bloom Debug"
 msgstr "Увімкнути зневадження світіння"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Debanding"
-msgstr "Пошкодження"
+msgstr "Увімкнути дебандинг"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3314,9 +3316,8 @@ msgstr ""
 "тіней\". Інакше використовується PCF."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Post Processing"
-msgstr "Постобробка"
+msgstr "Увімкнути постобробку"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
@@ -3369,9 +3370,8 @@ msgstr ""
 "доступу."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable random mod loading (mainly used for testing)."
-msgstr "Увімкнути випадкове введення користувача (тільки для тестування)."
+msgstr "Увімкнути випадкове завантаження модів (в основному для тестування)."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3403,9 +3403,8 @@ msgstr ""
 "функції, на які ви очікуєте."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable touchscreen"
-msgstr "Сенсорний екран"
+msgstr "Увімкнути сенсорний екран"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3443,7 +3442,7 @@ msgid ""
 "appearance of high dynamic range images. Mid-range contrast is slightly\n"
 "enhanced, highlights and shadows are gradually compressed."
 msgstr ""
-"Вмикає кінематографічне тональне відображення Hable's «Uncharted 2».\n"
+"Вмикає кінематографічне тональне відображення \"Uncharted 2\".\n"
 "Імітує криву тона фотоплівки й наближає\n"
 "зображення до більшого динамічного діапазону. Середній контраст злегка\n"
 "посилюється, відблиски й тіні поступово стискається."
@@ -3458,16 +3457,17 @@ msgstr "Вмикає кешування мешів, яких повернули.
 
 #: src/settings_translation_file.cpp
 msgid "Enables debug and error-checking in the OpenGL driver."
-msgstr ""
+msgstr "Вмикає зневадження й перевірку помилок у драйвері OpenGL."
 
 #: src/settings_translation_file.cpp
 msgid "Enables the post processing pipeline."
-msgstr ""
+msgstr "Вмикає конвеєр постобробки."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enables touchscreen mode, allowing you to play the game with a touchscreen."
 msgstr ""
+"Вмикає режим сенсорного екрану, дозволяючи вам грати з сенсорним екраном."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4387,15 +4387,15 @@ msgstr ""
 "-   Opaque: вимкнути прозорість"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Length of a server tick (the interval at which everything is generally "
 "updated),\n"
 "stated in seconds.\n"
 "Does not apply to sessions hosted from the client menu."
 msgstr ""
-"Довжина кроку серверу й інтервал, з яким об'єкти загалом оновлюються по\n"
-"мережі, зазначається у секундах."
+"Довжина кроку серверу (інтервал, з яким все зазвичай оновлюються),\n"
+"зазначається у секундах.\n"
+"Не застовується до сесій, які запущено з клієнтського меню."
 
 #: src/settings_translation_file.cpp
 msgid "Length of liquid waves."
@@ -4625,7 +4625,6 @@ msgid "Map generation attributes specific to Mapgen v5."
 msgstr "Спеціальні атрибути генерації для генератору світу V5."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
@@ -4634,10 +4633,12 @@ msgid ""
 "The 'temples' flag disables generation of desert temples. Normal dungeons "
 "will appear instead."
 msgstr ""
-"Спеціальні атрибути генерації для генератору світу V6.\n"
+"Спеціальні атрибути генерації для генератору світу v6.\n"
 "Мітка \"snowbiomes\" вмикає нову систему з 5 біомами.\n"
-"Коли мітку \"snowbiomes\" увімкнено, автоматично увімкаються джунглі,\n"
-"ігноруючи мітку \"jungles\"."
+"Коли мітку \"snowbiomes\" увімкнено, автоматично увімкаються джунглі й\n"
+"мітка \"jungles\" ігнорується.\n"
+"Мітка \"temples\" вимикає генерацію храмів пустель. Замість них "
+"з'являтимуться звичайні підземелля."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4943,9 +4944,8 @@ msgid "Minimap scan height"
 msgstr "Висота сканування мінімапи"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Minimum dig repetition interval"
-msgstr "Інтервал повторного розміщення"
+msgstr "Мінімальний інтервал повторення копання"
 
 #: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of large caves per mapchunk."
@@ -5016,9 +5016,8 @@ msgid "Mouse sensitivity multiplier."
 msgstr "Множник чутливості миші."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Movement threshold"
-msgstr "Поріг каверн"
+msgstr "Поріг переміщення"
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
@@ -5172,9 +5171,8 @@ msgstr ""
 "Не відкриває, якщо будь-яка форму вже відкрито."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "OpenGL debug"
-msgstr "Налагодження генератора світу"
+msgstr "Зневадження OpenGL"
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
@@ -5308,13 +5306,12 @@ msgid "Proportion of large caves that contain liquid."
 msgstr "Співвідношення великих печер, що містять рідину."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Protocol version minimum"
-msgstr "Невідповідність версії протоколу. "
+msgstr "Мінімальна версія протоколу"
 
 #: src/settings_translation_file.cpp
 msgid "Punch gesture"
-msgstr ""
+msgstr "Жест удару"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5335,7 +5332,7 @@ msgstr "Випадковий ввід"
 
 #: src/settings_translation_file.cpp
 msgid "Random mod load order"
-msgstr ""
+msgstr "Випадковий порядок завантаження модів"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -5545,7 +5542,6 @@ msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
 msgstr "Дивіться https://www.sqlite.org/pragma.html#pragma_synchronous"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Select the antialiasing method to apply.\n"
 "\n"
@@ -5570,9 +5566,9 @@ msgstr ""
 "\n"
 "* None - без згладжування (за замовчуванням)\n"
 "\n"
-"* FSAA - апаратне повноекранне згладжування (несумісно із відтінювачами),\n"
-"також відоме як згладжування з декількома вибірками (multi-sample "
-"antialiasing, MSAA)\n"
+"* FSAA - апаратне повноекранне згладжування\n"
+"(несумісне з пост-обробкою й субдискретизацією),\n"
+"також відоме як multi-sample antialiasing (MSAA)\n"
 "Згладжує кути блоків, але не впливає на внутрішню частину текстур.\n"
 "Для змінення цього вибору потребується перезавантаження.\n"
 "\n"
@@ -5582,9 +5578,8 @@ msgstr ""
 "Забезпечує баланс між швидкістю і якістю зображення.\n"
 "\n"
 "* SSAA - згладжування із супер-вибіркою (потребує відтінювачів)\n"
-"Промальовує зображення сцени з вищою роздільністю, потім зменьшує масштаб, "
-"для зменьшення\n"
-"ефектів накладення. Це найповільніший і найточніший метод."
+"Промальовує зображення сцени з вищою роздільністю, потім зменьшує масштаб,\n"
+"для зменшення ефектів накладення. Це найповільніший і найточніший метод."
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
@@ -5713,13 +5708,12 @@ msgstr ""
 "Діапазон: від -1 до 1.0"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the language. By default, the system language is used.\n"
 "A restart is required after changing this."
 msgstr ""
-"Вказати мову. Залиште порожнім, щоб використовувати системну мову.\n"
-"Потрібен перезапуск після цієї зміни."
+"Вкажіть мову. За замовчування використовується системна мова.\n"
+"Після зміни цього потрібен перезапуск."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5762,7 +5756,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Set to true to enable volumetric lighting effect (a.k.a. \"Godrays\")."
-msgstr ""
+msgstr "Увімкніть ефект об'ємного освітлення (також відомий як \"Godrays\")."
 
 #: src/settings_translation_file.cpp
 msgid "Set to true to enable waving leaves."
@@ -5809,15 +5803,13 @@ msgid "Shaders"
 msgstr "Відтінювачі"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Shaders allow advanced visual effects and may increase performance on some "
 "video\n"
 "cards."
 msgstr ""
-"Відтінювачі дозволяють додаткові визуальні ефекти й можуть збільшити\n"
-"продуктивність на деяких відеокартах.\n"
-"Це працює тільки з двигуном промальовування OpenGL."
+"Відтінювачі дозволяють просунуті визуальні ефекти й можуть збільшити\n"
+"продуктивність на деяких відеокартах."
 
 #: src/settings_translation_file.cpp
 msgid "Shadow filter quality"
@@ -5939,14 +5931,12 @@ msgid "Smooth lighting"
 msgstr "Згладжене освітлення"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
 "cinematic mode by using the key set in Controls."
 msgstr ""
-"Робить обертання камери плавним у кінематографічному режимі, 0 для "
-"відключення. Входіть у кінематографічний режім клавішою, визначеною у "
-"Змінити клавіші."
+"Згладжує обертання камери у кінематографічному режимі, 0 для відключення. "
+"Входьте у кінематографічний режім клавішою, визначеною у Керування."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5973,9 +5963,8 @@ msgid "Sound"
 msgstr "Звук"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sound Extensions Blacklist"
-msgstr "Чорний список міток ContentDB"
+msgstr "Чорний список розширень звуку"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6191,6 +6180,8 @@ msgid ""
 "The delay in milliseconds after which a touch interaction is considered a "
 "long tap."
 msgstr ""
+"Затримка в мілісекундах, після якої сенсорна взаємодія вважається довгим "
+"дотиком."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6210,16 +6201,25 @@ msgid ""
 "Known from the classic Minetest mobile controls.\n"
 "Combat is more or less impossible."
 msgstr ""
+"Жест, що означає удар по гравцю або сутності.\n"
+"Це перевизначатися іграми або модами.\n"
+"\n"
+"* short_tap (короткий дотик)\n"
+"Простий у використанні й відомий за іншими іграми, які не повинні бути "
+"названі.\n"
+"\n"
+"* long_tap (довгий дотик)\n"
+"Відомий за класичному мобільному управлінні Minetest.\n"
+"Бої більш-менш неможливі."
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
 msgstr "Ідентифікатор джойстика, що використовується"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The length in pixels after which a touch interaction is considered movement."
-msgstr "Довжина в пікселях, з якої починається дія з сенсорним екраном."
+msgstr "Довжина в пікселях, після якої сенсорна взаємодія вважається рухом."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6234,13 +6234,12 @@ msgstr ""
 "За замовчуванням – 1.0 (1/2 блоки)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The minimum time in seconds it takes between digging nodes when holding\n"
 "the dig button."
 msgstr ""
-"Затримка в секундах між повторними розміщеннями блоків при\n"
-"затисканні кнопки розміщення."
+"Мінімальний час у секундах у перервах на копання блоків при\n"
+"затисканні кнопки копання."
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -6273,7 +6272,6 @@ msgstr ""
 "Це повинно бути налаштовано разом з active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
@@ -6283,7 +6281,7 @@ msgstr ""
 "Двигун промальовування.\n"
 "Примітка: після змінення цього потрібен перезапуск!\n"
 "За замовчуванням OpenGL для ПК, й OGLES2 для Android.\n"
-"Відтінювачі підтримуються OpenGL і OGLES2 (експериментально)."
+"Відтінювачі підтримуються усіма крім OGLES1."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6328,7 +6326,7 @@ msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
-"Затримка в секундах між подіями, що повторюються,\n"
+"Затримка в секундах між подіями, що повторюються\n"
 "при затисканні комбінації кнопок джойстику."
 
 #: src/settings_translation_file.cpp
@@ -6359,7 +6357,7 @@ msgstr "Третій з 4 шумів 2D що разом визначають д�
 
 #: src/settings_translation_file.cpp
 msgid "Threshold for long taps"
-msgstr ""
+msgstr "Поріг для довгих дотиків"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6420,9 +6418,8 @@ msgid "Tradeoffs for performance"
 msgstr "Домовленності для продуктивності"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Translucent liquids"
-msgstr "Непрозорі рідини"
+msgstr "Напівпрозорі рідини"
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
@@ -6469,13 +6466,13 @@ msgstr ""
 "продуктивністю."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "URL to JSON file which provides information about the newest Minetest "
 "release\n"
 "If this is empty the engine will never check for updates."
 msgstr ""
-"Адреса файлу JSON, що забезпечує інформацію про найновіший реліз Minetest"
+"URL до файлу JSON, що забезпечує інформацію про найновіший реліз Minetest\n"
+"Якщо ще порожнє, рушій ніколи не перевірятиме оновлення."
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
@@ -6688,7 +6685,7 @@ msgstr "Гучність"
 
 #: src/settings_translation_file.cpp
 msgid "Volume multiplier when the window is unfocused."
-msgstr ""
+msgstr "Множник гучності, коли вікно не сфокусовано."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6699,14 +6696,12 @@ msgstr ""
 "Вимагає увімкнення системи звуку."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volume when unfocused"
-msgstr "FPS, при паузі або поза фокусом"
+msgstr "Гучність поза фокусом"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric lighting"
-msgstr "Згладжене освітлення"
+msgstr "Об'ємне освітлення"
 
 #: src/settings_translation_file.cpp
 msgid ""

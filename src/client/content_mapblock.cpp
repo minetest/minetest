@@ -19,8 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <cmath>
 #include "content_mapblock.h"
+#include "util/basic_macros.h"
 #include "util/numeric.h"
 #include "util/directiontables.h"
+#include "util/tracy_wrapper.h"
 #include "mapblock_mesh.h"
 #include "settings.h"
 #include "nodedef.h"
@@ -463,6 +465,8 @@ void MapblockMeshGenerator::drawSolidNode()
 	if (data->m_smooth_lighting) {
 		LightPair lights[6][4];
 		for (int face = 0; face < 6; ++face) {
+			if (mask & (1 << face))
+				continue;
 			for (int k = 0; k < 4; k++) {
 				v3s16 corner = light_dirs[light_indices[face][k]];
 				lights[face][k] = LightPair(getSmoothLightSolid(
@@ -1674,7 +1678,9 @@ void MapblockMeshGenerator::drawMeshNode()
 
 	int mesh_buffer_count = mesh->getMeshBufferCount();
 	for (int j = 0; j < mesh_buffer_count; j++) {
-		useTile(j);
+		// Only up to 6 tiles are supported
+		const auto tile =  mesh->getTextureSlot(j);
+		useTile(MYMIN(tile, 5));
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
 		int vertex_count = buf->getVertexCount();
@@ -1745,6 +1751,8 @@ void MapblockMeshGenerator::drawNode()
 
 void MapblockMeshGenerator::generate()
 {
+	ZoneScoped;
+
 	for (cur_node.p.Z = 0; cur_node.p.Z < data->side_length; cur_node.p.Z++)
 	for (cur_node.p.Y = 0; cur_node.p.Y < data->side_length; cur_node.p.Y++)
 	for (cur_node.p.X = 0; cur_node.p.X < data->side_length; cur_node.p.X++) {

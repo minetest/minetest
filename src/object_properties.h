@@ -20,11 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <optional>
-#include <tuple>
 #include <string>
 #include "irrlichttypes_bloated.h"
 #include <iostream>
-#include <map>
 #include <vector>
 #include "util/pointabilities.h"
 
@@ -77,28 +75,10 @@ struct ObjectProperties
 
 	std::string dump() const;
 
-private:
-	auto tie() const {
-		// Make sure to add new members to this list!
-		return std::tie(
-		textures, colors, collisionbox, selectionbox, visual, mesh, damage_texture_modifier,
-		nametag, infotext, wield_item, visual_size, nametag_color, nametag_bgcolor,
-		spritediv, initial_sprite_basepos, stepheight, automatic_rotate,
-		automatic_face_movement_dir_offset, automatic_face_movement_max_rotation_per_sec,
-		eye_height, zoom_fov, hp_max, breath_max, glow, pointable, physical,
-		collideWithObjects, rotate_selectionbox, is_visible, makes_footstep_sound,
-		automatic_face_movement_dir, backface_culling, static_save, use_texture_alpha,
-		shaded, show_on_minimap
-		);
-	}
-
-public:
-	bool operator==(const ObjectProperties &other) const {
-		return tie() == other.tie();
-	};
+	bool operator==(const ObjectProperties &other) const;
 	bool operator!=(const ObjectProperties &other) const {
-		return tie() != other.tie();
-	};
+		return !(*this == other);
+	}
 
 	/**
 	 * Check limits of some important properties that'd cause exceptions later on.

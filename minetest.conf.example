@@ -116,7 +116,7 @@
 #    type: bool
 # virtual_joystick_triggers_aux1 = false
 
-#    The gesture for for punching players/entities.
+#    The gesture for punching players/entities.
 #    This can be overridden by games and mods.
 #
 #    * short_tap
@@ -707,6 +707,11 @@
 #    type: string
 # contentdb_url = https://content.minetest.net
 
+#    If enabled and you have ContentDB packages installed, Minetest may contact ContentDB to
+#    check for package updates when opening the mainmenu.
+#    type: bool
+# contentdb_enable_updates_indicator = true
+
 #    Comma-separated list of flags to hide in the content repository.
 #    "nonfree" can be used to hide packages which do not qualify as 'free software',
 #    as defined by the Free Software Foundation.
@@ -740,7 +745,7 @@
 #    type: bool
 # enable_split_login_register = true
 
-#    URL to JSON file which provides information about the newest Minetest release
+#    URL to JSON file which provides information about the newest Minetest release.
 #    If this is empty the engine will never check for updates.
 #    type: string
 # update_information_url = https://www.minetest.net/release_info.json

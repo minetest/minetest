@@ -392,36 +392,36 @@ public:
 		VoxelArea voxel_area(p);
 		addArea(voxel_area);
 
-		if (m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA) {
-			/*dstream<<"EXCEPT: VoxelManipulator::getNode(): "
-					<<"p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-					<<", index="<<m_area.index(p)
-					<<", flags="<<(int)m_flags[m_area.index(p)]
-					<<" is inexistent"<<std::endl;*/
+		const s32 index = m_area.index(p);
+
+		if (m_flags[index] & VOXELFLAG_NO_DATA) {
 			throw InvalidPositionException
 			("VoxelManipulator: getNode: inexistent");
 		}
 
-		return m_data[m_area.index(p)];
+		return m_data[index];
 	}
 	MapNode getNodeNoEx(const v3s16 &p)
 	{
 		VoxelArea voxel_area(p);
 		addArea(voxel_area);
 
-		if (m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA) {
+		const s32 index = m_area.index(p);
+
+		if (m_flags[index] & VOXELFLAG_NO_DATA) {
 			return {CONTENT_IGNORE};
 		}
 
-		return m_data[m_area.index(p)];
+		return m_data[index];
 	}
 	MapNode getNodeNoExNoEmerge(const v3s16 &p)
 	{
 		if (!m_area.contains(p))
 			return {CONTENT_IGNORE};
-		if (m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA)
+		const s32 index = m_area.index(p);
+		if (m_flags[index] & VOXELFLAG_NO_DATA)
 			return {CONTENT_IGNORE};
-		return m_data[m_area.index(p)];
+		return m_data[index];
 	}
 	// Stuff explodes if non-emerged area is touched with this.
 	// Emerge first, and check VOXELFLAG_NO_DATA if appropriate.
@@ -456,13 +456,10 @@ public:
 		VoxelArea voxel_area(p);
 		addArea(voxel_area);
 
-		m_data[m_area.index(p)] = n;
-		m_flags[m_area.index(p)] &= ~VOXELFLAG_NO_DATA;
-	}
-	// TODO: Should be removed and replaced with setNode
-	void setNodeNoRef(const v3s16 &p, const MapNode &n)
-	{
-		setNode(p, n);
+		const s32 index = m_area.index(p);
+
+		m_data[index] = n;
+		m_flags[index] &= ~VOXELFLAG_NO_DATA;
 	}
 
 	/*

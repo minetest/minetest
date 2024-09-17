@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "wieldmesh.h"
 #include "client/renderingengine.h"
 #include "client/minimap.h"
-#include "gui/touchscreengui.h"
+#include "gui/touchcontrols.h"
 #include "util/enriched_string.h"
 #include "irrlicht_changes/CGUITTFont.h"
 
@@ -97,6 +97,8 @@ Hud::Hud(Client *client, LocalPlayer *player,
 		m_mode = HIGHLIGHT_BOX;
 	}
 
+	// Initialize m_selection_material
+
 	m_selection_material.Lighting = false;
 
 	if (g_settings->getBool("enable_shaders")) {
@@ -118,28 +120,44 @@ Hud::Hud(Client *client, LocalPlayer *player,
 		m_selection_material.MaterialType = video::EMT_SOLID;
 	}
 
+	// Initialize m_block_bounds_material
+	m_block_bounds_material.Lighting = false;
+	if (g_settings->getBool("enable_shaders")) {
+		IShaderSource *shdrsrc = client->getShaderSource();
+		auto shader_id = shdrsrc->getShader("default_shader", TILE_MATERIAL_ALPHA);
+		m_block_bounds_material.MaterialType = shdrsrc->getShaderInfo(shader_id).material;
+	} else {
+		m_block_bounds_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	}
+	m_block_bounds_material.Thickness =
+			rangelim(g_settings->getS16("selectionbox_width"), 1, 5);
+
 	// Prepare mesh for compass drawing
-	m_rotation_mesh_buffer.Vertices.set_used(4);
-	m_rotation_mesh_buffer.Indices.set_used(6);
+	m_rotation_mesh_buffer.reset(new scene::SMeshBuffer());
+	auto *b = m_rotation_mesh_buffer.get();
+	auto &vertices = b->Vertices->Data;
+	auto &indices = b->Indices->Data;
+	vertices.resize(4);
+	indices.resize(6);
 
 	video::SColor white(255, 255, 255, 255);
 	v3f normal(0.f, 0.f, 1.f);
 
-	m_rotation_mesh_buffer.Vertices[0] = video::S3DVertex(v3f(-1.f, -1.f, 0.f), normal, white, v2f(0.f, 1.f));
-	m_rotation_mesh_buffer.Vertices[1] = video::S3DVertex(v3f(-1.f,  1.f, 0.f), normal, white, v2f(0.f, 0.f));
-	m_rotation_mesh_buffer.Vertices[2] = video::S3DVertex(v3f( 1.f,  1.f, 0.f), normal, white, v2f(1.f, 0.f));
-	m_rotation_mesh_buffer.Vertices[3] = video::S3DVertex(v3f( 1.f, -1.f, 0.f), normal, white, v2f(1.f, 1.f));
+	vertices[0] = video::S3DVertex(v3f(-1.f, -1.f, 0.f), normal, white, v2f(0.f, 1.f));
+	vertices[1] = video::S3DVertex(v3f(-1.f,  1.f, 0.f), normal, white, v2f(0.f, 0.f));
+	vertices[2] = video::S3DVertex(v3f( 1.f,  1.f, 0.f), normal, white, v2f(1.f, 0.f));
+	vertices[3] = video::S3DVertex(v3f( 1.f, -1.f, 0.f), normal, white, v2f(1.f, 1.f));
 
-	m_rotation_mesh_buffer.Indices[0] = 0;
-	m_rotation_mesh_buffer.Indices[1] = 1;
-	m_rotation_mesh_buffer.Indices[2] = 2;
-	m_rotation_mesh_buffer.Indices[3] = 2;
-	m_rotation_mesh_buffer.Indices[4] = 3;
-	m_rotation_mesh_buffer.Indices[5] = 0;
+	indices[0] = 0;
+	indices[1] = 1;
+	indices[2] = 2;
+	indices[3] = 2;
+	indices[4] = 3;
+	indices[5] = 0;
 
-	m_rotation_mesh_buffer.getMaterial().Lighting = false;
-	m_rotation_mesh_buffer.getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-	m_rotation_mesh_buffer.setHardwareMappingHint(scene::EHM_STATIC);
+	b->getMaterial().Lighting = false;
+	b->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	b->setHardwareMappingHint(scene::EHM_STATIC);
 }
 
 void Hud::readScalingSetting()
@@ -240,7 +258,7 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 
 // NOTE: selectitem = 0 -> no selected; selectitem is 1-based
 // mainlist can be NULL, but draw the frame anyway.
-void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
+void Hud::drawItems(v2s32 screen_pos, v2s32 screen_offset, s32 itemcount, v2f alignment,
 		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction,
 		bool is_hotbar)
 {
@@ -253,9 +271,11 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 		width = tmp;
 	}
 
-	// Position of upper left corner of bar
-	v2s32 pos = screen_offset * m_scale_factor;
-	pos += upperleftpos;
+	// Position: screen_pos + screen_offset + alignment
+	v2s32 pos(screen_offset.X * m_scale_factor, screen_offset.Y * m_scale_factor);
+	pos += screen_pos;
+	pos.X += (alignment.X - 1.0f) * (width * 0.5f);
+	pos.Y += (alignment.Y - 1.0f) * (height * 0.5f);
 
 	// Store hotbar_image in member variable, used by drawItem()
 	if (hotbar_image != player->hotbar_image) {
@@ -307,8 +327,8 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 
 		drawItem(mainlist->getItem(i), item_rect, (i + 1) == selectitem);
 
-		if (is_hotbar && g_touchscreengui)
-			g_touchscreengui->registerHotbarRect(i, item_rect);
+		if (is_hotbar && g_touchcontrols)
+			g_touchcontrols->registerHotbarRect(i, item_rect);
 	}
 }
 
@@ -353,12 +373,19 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 	std::vector<HudElement*> elems;
 	elems.reserve(player->maxHudId());
 
-	// Add builtin minimap if the server doesn't send it.
+	// Add builtin elements if the server doesn't send them.
+	// Declared here such that they have the same lifetime as the elems vector
 	HudElement minimap;
+	HudElement hotbar;
 	if (client->getProtoVersion() < 44 && (player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE)) {
 		minimap = {HUD_ELEM_MINIMAP, v2f(1, 0), "", v2f(), "", 0 , 0, 0, v2f(-1, 1),
 				v2f(-10, 10), v3f(), v2s32(256, 256), 0, "", 0};
 		elems.push_back(&minimap);
+	}
+	if (client->getProtoVersion() < 46 && player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
+		hotbar = {HUD_ELEM_HOTBAR, v2f(0.5, 1), "", v2f(), "", 0 , 0, 0, v2f(0, -1),
+				v2f(0, -4), v3f(), v2s32(), 0, "", 0};
+		elems.push_back(&hotbar);
 	}
 
 	for (size_t i = 0; i != player->maxHudId(); i++) {
@@ -434,7 +461,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				InventoryList *inv = inventory->getList(e->text);
 				if (!inv)
 					warningstream << "HUD: Unknown inventory list. name=" << e->text << std::endl;
-				drawItems(pos, v2s32(e->offset.X, e->offset.Y), e->number, 0,
+				drawItems(pos, v2s32(e->offset.X, e->offset.Y), e->number, e->align, 0,
 					inv, e->item, e->dir, false);
 				break; }
 			case HUD_ELEM_WAYPOINT: {
@@ -544,20 +571,30 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				}
 				break; }
 			case HUD_ELEM_MINIMAP: {
-				if (e->size.X <= 0 || e->size.Y <= 0)
-					break;
 				if (!client->getMinimap())
 					break;
 				// Draw a minimap of size "size"
 				v2s32 dstsize(e->size.X * m_scale_factor,
 				              e->size.Y * m_scale_factor);
-				// (no percent size as minimap would likely be anamorphosed)
+
+				// Only one percentage is supported to avoid distortion.
+				if (e->size.X < 0)
+					dstsize.X = dstsize.Y = m_screensize.X * (e->size.X * -0.01);
+				else if (e->size.Y < 0)
+					dstsize.X = dstsize.Y = m_screensize.Y * (e->size.Y * -0.01);
+
+				if (dstsize.X <= 0 || dstsize.Y <= 0)
+					return;
+
 				v2s32 offset((e->align.X - 1.0) * dstsize.X / 2,
 				             (e->align.Y - 1.0) * dstsize.Y / 2);
 				core::rect<s32> rect(0, 0, dstsize.X, dstsize.Y);
 				rect += pos + offset + v2s32(e->offset.X * m_scale_factor,
 				                             e->offset.Y * m_scale_factor);
 				client->getMinimap()->drawMinimap(rect);
+				break; }
+			case HUD_ELEM_HOTBAR: {
+				drawHotbar(pos, e->offset, e->dir, e->align);
 				break; }
 			default:
 				infostream << "Hud::drawLuaElements: ignoring drawform " << e->type
@@ -622,10 +659,10 @@ void Hud::drawCompassRotate(HudElement *e, video::ITexture *texture,
 	driver->setTransform(video::ETS_VIEW, core::matrix4());
 	driver->setTransform(video::ETS_WORLD, Matrix);
 
-	video::SMaterial &material = m_rotation_mesh_buffer.getMaterial();
+	auto &material = m_rotation_mesh_buffer->getMaterial();
 	material.TextureLayers[0].Texture = texture;
 	driver->setMaterial(material);
-	driver->drawMeshBuffer(&m_rotation_mesh_buffer);
+	driver->drawMeshBuffer(m_rotation_mesh_buffer.get());
 
 	driver->setTransform(video::ETS_WORLD, core::matrix4());
 	driver->setTransform(video::ETS_VIEW, oldViewMat);
@@ -768,12 +805,10 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 		}
 	}
 }
-
-
-void Hud::drawHotbar(u16 playeritem)
+void Hud::drawHotbar(const v2s32 &pos, const v2f &offset, u16 dir, const v2f &align)
 {
-	if (g_touchscreengui)
-		g_touchscreengui->resetHotbarRects();
+	if (g_touchcontrols)
+		g_touchcontrols->resetHotbarRects();
 
 	InventoryList *mainlist = inventory->getList("main");
 	if (mainlist == NULL) {
@@ -781,30 +816,30 @@ void Hud::drawHotbar(u16 playeritem)
 		return;
 	}
 
+	u16 playeritem = player->getWieldIndex();
+	v2s32 screen_offset(offset.X, offset.Y);
+
 	v2s32 centerlowerpos(m_displaycenter.X, m_screensize.Y);
 
-	s32 hotbar_itemcount = player->hud_hotbar_itemcount;
+	s32 hotbar_itemcount = player->getMaxHotbarItemcount();
 	s32 width = hotbar_itemcount * (m_hotbar_imagesize + m_padding * 2);
-	v2s32 pos = centerlowerpos - v2s32(width / 2, m_hotbar_imagesize + m_padding * 3);
 
 	const v2u32 &window_size = RenderingEngine::getWindowSize();
 	if ((float) width / (float) window_size.X <=
 			g_settings->getFloat("hud_hotbar_max_width")) {
-		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
-			drawItems(pos, v2s32(0, 0), hotbar_itemcount, 0, mainlist, playeritem + 1, 0, true);
-		}
+		drawItems(pos, screen_offset, hotbar_itemcount, align, 0,
+			mainlist, playeritem + 1, dir, true);
 	} else {
-		pos.X += width/4;
+		v2s32 firstpos = pos;
+		firstpos.X += width/4;
 
-		v2s32 secondpos = pos;
-		pos = pos - v2s32(0, m_hotbar_imagesize + m_padding);
+		v2s32 secondpos = firstpos;
+		firstpos = firstpos - v2s32(0, m_hotbar_imagesize + m_padding);
 
-		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
-			drawItems(pos, v2s32(0, 0), hotbar_itemcount / 2, 0,
-				mainlist, playeritem + 1, 0, true);
-			drawItems(secondpos, v2s32(0, 0), hotbar_itemcount,
-				hotbar_itemcount / 2, mainlist, playeritem + 1, 0, true);
-		}
+		drawItems(firstpos, screen_offset, hotbar_itemcount / 2, align, 0,
+			mainlist, playeritem + 1, dir, true);
+		drawItems(secondpos, screen_offset, hotbar_itemcount, align,
+			hotbar_itemcount / 2, mainlist, playeritem + 1, dir, true);
 	}
 }
 
@@ -933,33 +968,57 @@ void Hud::drawBlockBounds()
 	}
 
 	video::SMaterial old_material = driver->getMaterial2D();
-	driver->setMaterial(m_selection_material);
+	driver->setMaterial(m_block_bounds_material);
+
+	u16 mesh_chunk_size = std::max<u16>(1, g_settings->getU16("client_mesh_chunk"));
 
 	v3s16 pos = player->getStandingNodePos();
-
-	v3s16 blockPos(
+	v3s16 block_pos(
 		floorf((float) pos.X / MAP_BLOCKSIZE),
 		floorf((float) pos.Y / MAP_BLOCKSIZE),
 		floorf((float) pos.Z / MAP_BLOCKSIZE)
 	);
 
-	v3f offset = intToFloat(client->getCamera()->getOffset(), BS);
+	v3f cam_offset = intToFloat(client->getCamera()->getOffset(), BS);
 
-	s8 radius = m_block_bounds_mode == BLOCK_BOUNDS_NEAR ? 2 : 0;
+	v3f half_node = v3f(BS, BS, BS) / 2.0f;
+	v3f base_corner = intToFloat(block_pos * MAP_BLOCKSIZE, BS) - cam_offset - half_node;
 
-	v3f halfNode = v3f(BS, BS, BS) / 2.0f;
+	s16 radius = m_block_bounds_mode == BLOCK_BOUNDS_NEAR ?
+			rangelim(g_settings->getU16("show_block_bounds_radius_near"), 0, 1000) : 0;
 
-	for (s8 x = -radius; x <= radius; x++)
-	for (s8 y = -radius; y <= radius; y++)
-	for (s8 z = -radius; z <= radius; z++) {
-		v3s16 blockOffset(x, y, z);
+	for (s16 x = -radius; x <= radius + 1; x++)
+	for (s16 y = -radius; y <= radius + 1; y++) {
+		// Red for mesh chunk edges, yellow for other block edges.
+		auto choose_color = [&](s16 x_base, s16 y_base) {
+			// See also MeshGrid::isMeshPos().
+			// If the block is mesh pos, it means it's at the (-,-,-) corner of
+			// the mesh. And we're drawing a (-,-) edge of this block. Hence,
+			// it is an edge of the mesh grid.
+			return (x + x_base) % mesh_chunk_size == 0
+					&& (y + y_base) % mesh_chunk_size == 0 ?
+				video::SColor(255, 255, 0, 0) :
+				video::SColor(255, 255, 255, 0);
+		};
 
-		aabb3f box(
-			intToFloat((blockPos + blockOffset) * MAP_BLOCKSIZE, BS) - offset - halfNode,
-			intToFloat(((blockPos + blockOffset) * MAP_BLOCKSIZE) + (MAP_BLOCKSIZE - 1), BS) - offset + halfNode
+		v3f pmin = v3f(x, y,    -radius) * MAP_BLOCKSIZE * BS;
+		v3f pmax = v3f(x, y, 1 + radius) * MAP_BLOCKSIZE * BS;
+
+		driver->draw3DLine(
+			base_corner + v3f(pmin.X, pmin.Y, pmin.Z),
+			base_corner + v3f(pmax.X, pmax.Y, pmax.Z),
+			choose_color(block_pos.X, block_pos.Y)
 		);
-
-		driver->draw3DBox(box, video::SColor(255, 255, 0, 0));
+		driver->draw3DLine(
+			base_corner + v3f(pmin.X, pmin.Z, pmin.Y),
+			base_corner + v3f(pmax.X, pmax.Z, pmax.Y),
+			choose_color(block_pos.X, block_pos.Z)
+		);
+		driver->draw3DLine(
+			base_corner + v3f(pmin.Z, pmin.X, pmin.Y),
+			base_corner + v3f(pmax.Z, pmax.X, pmax.Y),
+			choose_color(block_pos.Y, block_pos.Z)
+		);
 	}
 
 	driver->setMaterial(old_material);

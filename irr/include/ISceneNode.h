@@ -10,6 +10,7 @@
 #include "EDebugSceneTypes.h"
 #include "SMaterial.h"
 #include "irrString.h"
+#include "irrArray.h"
 #include "aabbox3d.h"
 #include "matrix4.h"
 #include "IAttributes.h"

@@ -8,6 +8,7 @@
 #include "IFileSystem.h"
 #include "IGUIElement.h"
 #include "IGUIEnvironment.h"
+#include "IVideoDriver.h"
 #include "os.h"
 #include "CTimer.h"
 #include "CLogger.h"

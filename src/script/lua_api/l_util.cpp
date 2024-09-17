@@ -44,6 +44,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/sha1.h"
 #include "my_sha256.h"
 #include "util/png.h"
+#include "player.h"
+#include "daynightratio.h"
 #include <cstdio>
 
 // only available in zstd 1.3.5+
@@ -60,13 +62,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 int ModApiUtil::l_log(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::string text;
+	std::string_view text;
 	LogLevel level = LL_NONE;
-	if (lua_isnone(L, 2)) {
-		text = luaL_checkstring(L, 1);
+	if (lua_isnoneornil(L, 2)) {
+		text = readParam<std::string_view>(L, 1);
 	} else {
-		std::string name = luaL_checkstring(L, 1);
-		text = luaL_checkstring(L, 2);
+		auto name = readParam<std::string_view>(L, 1);
+		text = readParam<std::string_view>(L, 2);
 		if (name == "deprecated") {
 			log_deprecated(L, text, 2);
 			return 0;
@@ -74,7 +76,7 @@ int ModApiUtil::l_log(lua_State *L)
 		level = Logger::stringToLevel(name);
 		if (level == LL_MAX) {
 			warningstream << "Tried to log at unknown level '" << name
-				<< "'.  Defaulting to \"none\"." << std::endl;
+				<< "'. Defaulting to \"none\"." << std::endl;
 			level = LL_NONE;
 		}
 	}
@@ -625,6 +627,31 @@ int ModApiUtil::l_colorspec_to_bytes(lua_State *L)
 	return 0;
 }
 
+// colorspec_to_table(colorspec)
+int ModApiUtil::l_colorspec_to_table(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::SColor color(0);
+	if (read_color(L, 1, &color)) {
+		push_ARGB8(L, color);
+		return 1;
+	}
+
+	return 0;
+}
+
+// time_to_day_night_ratio(time_of_day)
+int ModApiUtil::l_time_to_day_night_ratio(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	float time_of_day = lua_tonumber(L, 1) * 24000;
+	u32 dnr = time_to_daynight_ratio(time_of_day, true);
+	lua_pushnumber(L, dnr / 1000.0f);
+	return 1;
+}
+
 // encode_png(w, h, data, level)
 int ModApiUtil::l_encode_png(lua_State *L)
 {
@@ -674,6 +701,16 @@ int ModApiUtil::l_urlencode(lua_State *L)
 	return 1;
 }
 
+// is_valid_player_name(name)
+int ModApiUtil::l_is_valid_player_name(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	auto s = readParam<std::string_view>(L, 1);
+	lua_pushboolean(L, is_valid_player_name(s));
+	return 1;
+}
+
 void ModApiUtil::Initialize(lua_State *L, int top)
 {
 	API_FCT(log);
@@ -715,6 +752,8 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(sha256);
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
+	API_FCT(colorspec_to_table);
+	API_FCT(time_to_day_night_ratio);
 
 	API_FCT(encode_png);
 
@@ -722,6 +761,7 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(set_last_run_mod);
 
 	API_FCT(urlencode);
+	API_FCT(is_valid_player_name);
 
 	LuaSettings::create(L, g_settings, g_settings_path);
 	lua_setfield(L, top, "settings");
@@ -749,6 +789,8 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	API_FCT(sha256);
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
+	API_FCT(colorspec_to_table);
+	API_FCT(time_to_day_night_ratio);
 
 	API_FCT(get_last_run_mod);
 	API_FCT(set_last_run_mod);
@@ -793,6 +835,8 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 	API_FCT(sha256);
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
+	API_FCT(colorspec_to_table);
+	API_FCT(time_to_day_night_ratio);
 
 	API_FCT(encode_png);
 

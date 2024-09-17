@@ -4,12 +4,12 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
 #include "EMaterialTypes.h"
 #include "IMaterialRenderer.h"
 #include "IMaterialRendererServices.h"
 #include "IGPUProgrammingServices.h"
-#include "irrArray.h"
-#include "irrString.h"
 
 #include "Common.h"
 
@@ -79,13 +79,13 @@ protected:
 
 	struct SUniformInfo
 	{
-		core::stringc name;
+		std::string name;
 		GLenum type;
 		GLint location;
 	};
 
 	GLuint Program;
-	core::array<SUniformInfo> UniformInfo;
+	std::vector<SUniformInfo> UniformInfo;
 	s32 UserData;
 };
 

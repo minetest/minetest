@@ -159,7 +159,8 @@ public:
 		void setPosition(s32 x, s32 y) override
 		{
 			SDL_WarpMouseInWindow(Device->Window,
-					x / Device->ScaleX, y / Device->ScaleY);
+					static_cast<int>(x / Device->ScaleX),
+					static_cast<int>(y / Device->ScaleY));
 
 			if (SDL_GetRelativeMouseMode()) {
 				// There won't be an event for this warp (details on libsdl-org/SDL/issues/6034)
@@ -192,7 +193,7 @@ public:
 		virtual void setRelativeMode(bool relative) _IRR_OVERRIDE_
 		{
 			// Only change it when necessary, as it flushes mouse motion when enabled
-			if (relative != SDL_GetRelativeMouseMode()) {
+			if (relative != static_cast<bool>(SDL_GetRelativeMouseMode())) {
 				if (relative)
 					SDL_SetRelativeMouseMode(SDL_TRUE);
 				else

@@ -48,8 +48,7 @@ void PlayerDatabaseFiles::deSerialize(RemotePlayer *p, std::istream &is,
 
 	p->m_dirty = true;
 	//args.getS32("version"); // Version field value not used
-	const std::string &name = args.get("name");
-	strlcpy(p->m_name, name.c_str(), PLAYERNAME_SIZE);
+	p->m_name = args.get("name");
 
 	if (sao) {
 		try {
@@ -96,7 +95,7 @@ void PlayerDatabaseFiles::deSerialize(RemotePlayer *p, std::istream &is,
 		p->inventory.deSerialize(is);
 	} catch (SerializationError &e) {
 		errorstream << "Failed to deserialize player inventory. player_name="
-			<< name << " " << e.what() << std::endl;
+			<< p->getName() << " " << e.what() << std::endl;
 	}
 
 	if (!p->inventory.getList("craftpreview") && p->inventory.getList("craftresult")) {
@@ -119,7 +118,7 @@ void PlayerDatabaseFiles::serialize(RemotePlayer *p, std::ostream &os)
 	// Utilize a Settings object for storing values
 	Settings args("PlayerArgsEnd");
 	args.setS32("version", 1);
-	args.set("name", p->m_name);
+	args.set("name", p->getName());
 
 	PlayerSAO *sao = p->getPlayerSAO();
 	// This should not happen
@@ -171,7 +170,7 @@ void PlayerDatabaseFiles::savePlayer(RemotePlayer *player)
 
 		deSerialize(&testplayer, is, path, NULL);
 		is.close();
-		if (strcmp(testplayer.getName(), player->getName()) == 0) {
+		if (testplayer.getName() == player->getName()) {
 			path_found = true;
 			continue;
 		}

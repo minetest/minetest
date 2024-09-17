@@ -22,6 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <vector>
 #include <IGUIFont.h>
+#include <SMaterial.h>
+#include <SMeshBuffer.h>
+#include "irr_ptr.h"
 #include "irr_aabb3d.h"
 #include "../hud.h"
 
@@ -31,6 +34,17 @@ class Inventory;
 class InventoryList;
 class LocalPlayer;
 struct ItemStack;
+
+namespace irr::scene
+{
+	class IMesh;
+}
+
+namespace irr::video
+{
+	class ITexture;
+	class IVideoDriver;
+}
 
 class Hud
 {
@@ -63,7 +77,7 @@ public:
 	void disableBlockBounds();
 	void drawBlockBounds();
 
-	void drawHotbar(u16 playeritem);
+	void drawHotbar(const v2s32 &pos, const v2f &offset, u16 direction, const v2f &align);
 	void resizeHotbar();
 	void drawCrosshair();
 	void drawSelectionMesh();
@@ -99,7 +113,7 @@ private:
 			const std::string &texture, const std::string& bgtexture,
 			s32 count, s32 maxcount, v2s32 offset, v2s32 size = v2s32());
 
-	void drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
+	void drawItems(v2s32 screen_pos, v2s32 screen_offset, s32 itemcount, v2f alignment,
 			s32 inv_offset, InventoryList *mainlist, u16 selectitem,
 			u16 direction, bool is_hotbar);
 
@@ -137,8 +151,9 @@ private:
 	v3f m_selected_face_normal;
 
 	video::SMaterial m_selection_material;
+	video::SMaterial m_block_bounds_material;
 
-	scene::SMeshBuffer m_rotation_mesh_buffer;
+	irr_ptr<scene::SMeshBuffer> m_rotation_mesh_buffer;
 
 	enum
 	{

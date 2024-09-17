@@ -1,4 +1,5 @@
 _G.core = {}
+dofile("builtin/common/math.lua")
 dofile("builtin/common/vector.lua")
 dofile("builtin/common/misc_helpers.lua")
 
@@ -166,6 +167,16 @@ describe("table", function()
 	it("indexof()", function()
 		assert.equal(1, table.indexof({"foo", "bar"}, "foo"))
 		assert.equal(-1, table.indexof({"foo", "bar"}, "baz"))
+		assert.equal(-1, table.indexof({[2] = "foo", [3] = "bar"}, "foo"))
+		assert.equal(-1, table.indexof({[1] = "foo", [3] = "bar"}, "bar"))
+	end)
+
+	it("keyof()", function()
+		assert.equal("a", table.keyof({a = "foo", b = "bar"}, "foo"))
+		assert.equal(nil, table.keyof({a = "foo", b = "bar"}, "baz"))
+		assert.equal(1, table.keyof({"foo", "bar"}, "foo"))
+		assert.equal(2, table.keyof({[2] = "foo", [3] = "bar"}, "foo"))
+		assert.equal(3, table.keyof({[1] = "foo", [3] = "bar"}, "bar"))
 	end)
 end)
 

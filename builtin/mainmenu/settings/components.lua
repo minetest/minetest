@@ -306,17 +306,36 @@ function make.flags(setting)
 				"label[0,0.1;" .. get_label(setting) .. "]",
 			}
 
-			local value = core.settings:get(setting.name) or setting.default
 			self.resettable = core.settings:has(setting.name)
 
 			checkboxes = {}
-			for _, name in ipairs(value:split(",")) do
-				name = name:trim()
-				if name:sub(1, 2) == "no" then
-					checkboxes[name:sub(3)] = false
-				elseif name ~= "" then
-					checkboxes[name] = true
+			for _, name in ipairs(setting.possible) do
+				checkboxes[name] = false
+			end
+			local function apply_flags(flag_string, what)
+				local prefixed_flags = {}
+				for _, name in ipairs(flag_string:split(",")) do
+					prefixed_flags[name:trim()] = true
 				end
+				for _, name in ipairs(setting.possible) do
+					local enabled = prefixed_flags[name]
+					local disabled = prefixed_flags["no" .. name]
+					if enabled and disabled then
+						core.log("warning", "Flag " .. name .. " in " .. what .. " " ..
+								setting.name .. " both enabled and disabled, ignoring")
+					elseif enabled then
+						checkboxes[name] = true
+					elseif disabled then
+						checkboxes[name] = false
+					end
+				end
+			end
+			-- First apply the default, which is necessary since flags
+			-- which are not overridden may be missing from the value.
+			apply_flags(setting.default, "default for setting")
+			local value = core.settings:get(setting.name)
+			if value then
+				apply_flags(value, "setting")
 			end
 
 			local columns = math.max(math.floor(avail_w / 2.5), 1)
@@ -325,18 +344,16 @@ function make.flags(setting)
 			local y = 0.55
 
 			for _, possible in ipairs(setting.possible) do
-				if possible:sub(1, 2) ~= "no" then
-					if x >= avail_w then
-						x = 0
-						y = y + 0.5
-					end
-
-					local is_checked = checkboxes[possible]
-					fs[#fs + 1] = ("checkbox[%f,%f;%s;%s;%s]"):format(
-						x, y, setting.name .. "_" .. possible,
-						core.formspec_escape(possible), tostring(is_checked))
-					x = x + column_width
+				if x >= avail_w then
+					x = 0
+					y = y + 0.5
 				end
+
+				local is_checked = checkboxes[possible]
+				fs[#fs + 1] = ("checkbox[%f,%f;%s;%s;%s]"):format(
+					x, y, setting.name .. "_" .. possible,
+					core.formspec_escape(possible), tostring(is_checked))
+				x = x + column_width
 			end
 
 			return table.concat(fs, ""), y + 0.25
@@ -355,12 +372,10 @@ function make.flags(setting)
 			if changed then
 				local values = {}
 				for _, name in ipairs(setting.possible) do
-					if name:sub(1, 2) ~= "no" then
-						if checkboxes[name] then
-							table.insert(values, name)
-						else
-							table.insert(values, "no" .. name)
-						end
+					if checkboxes[name] then
+						table.insert(values, name)
+					else
+						table.insert(values, "no" .. name)
 					end
 				end
 

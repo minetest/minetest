@@ -20,12 +20,11 @@ The following libraries are required to be installed:
 Aside from standard search options (`ZLIB_INCLUDE_DIR`, `ZLIB_LIBRARY`, ...) the following options are available:
 * `ENABLE_OPENGL` - Enable OpenGL driver
 * `ENABLE_OPENGL3` (default: `OFF`) - Enable OpenGL 3+ driver
-* `ENABLE_GLES1` - Enable OpenGL ES driver, legacy
 * `ENABLE_GLES2` - Enable OpenGL ES 2+ driver
 * `USE_SDL2` (default: platform-dependent, usually `ON`) - Use SDL2 instead of older native device code
 
 However, IrrlichtMt cannot be built or installed separately.
-	
+
 Platforms
 ---------
 

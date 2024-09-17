@@ -151,8 +151,7 @@ are placeholders intended to be overwritten by the game.
 * `rangeview_btn.png`
 
 * `debug_btn.png`
-* `gear_icon.png`
-* `rare_controls.png`
+* `overflow_btn.png`
 * `exit_btn.png`
 
 Texture Overrides

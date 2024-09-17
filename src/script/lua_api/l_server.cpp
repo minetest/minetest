@@ -365,7 +365,7 @@ int ModApiServer::l_ban_player(lua_State *L)
 	return 1;
 }
 
-// disconnect_player(name, [reason]) -> success
+// disconnect_player(name[, reason[, reconnect]]) -> success
 int ModApiServer::l_disconnect_player(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -388,7 +388,9 @@ int ModApiServer::l_disconnect_player(lua_State *L)
 		return 1;
 	}
 
-	server->DenyAccess(player->getPeerId(), SERVER_ACCESSDENIED_CUSTOM_STRING, message);
+	bool reconnect = readParam<bool>(L, 3, false);
+
+	server->DenyAccess(player->getPeerId(), SERVER_ACCESSDENIED_CUSTOM_STRING, message, reconnect);
 	lua_pushboolean(L, true);
 	return 1;
 }
@@ -426,18 +428,8 @@ int ModApiServer::l_show_formspec(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char *playername = luaL_checkstring(L, 1);
 	const char *formname = luaL_checkstring(L, 2);
-	if (*formname == '\0') {
-		log_deprecated(L, "Deprecated call to `minetest.show_formspec`:"
-				"`formname` must not be empty");
-	}
 	const char *formspec = luaL_checkstring(L, 3);
-
-	if(getServer(L)->showFormspec(playername,formspec,formname))
-	{
-		lua_pushboolean(L, true);
-	}else{
-		lua_pushboolean(L, false);
-	}
+	lua_pushboolean(L, getServer(L)->showFormspec(playername,formspec,formname));
 	return 1;
 }
 

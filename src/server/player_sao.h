@@ -228,6 +228,12 @@ private:
 	SimpleMetadata m_meta;
 
 public:
+	struct {
+		bool breathing : 1;
+		bool drowning : 1;
+		bool node_damage : 1;
+	} m_flags = {true, true, true};
+
 	bool m_physics_override_sent = false;
 };
 

@@ -4,10 +4,10 @@
 
 #pragma once
 
+#include <vector>
 #include "IAnimatedMesh.h"
 #include "IMesh.h"
 #include "aabbox3d.h"
-#include "irrArray.h"
 
 namespace irr
 {
@@ -15,7 +15,7 @@ namespace scene
 {
 
 //! Simple implementation of the IAnimatedMesh interface.
-struct SAnimatedMesh : public IAnimatedMesh
+struct SAnimatedMesh final : public IAnimatedMesh
 {
 	//! constructor
 	SAnimatedMesh(scene::IMesh *mesh = 0, scene::E_ANIMATED_MESH_TYPE type = scene::EAMT_UNKNOWN) :
@@ -32,15 +32,15 @@ struct SAnimatedMesh : public IAnimatedMesh
 	virtual ~SAnimatedMesh()
 	{
 		// drop meshes
-		for (u32 i = 0; i < Meshes.size(); ++i)
-			Meshes[i]->drop();
+		for (auto *mesh : Meshes)
+			mesh->drop();
 	}
 
 	//! Gets the frame count of the animated mesh.
 	/** \return Amount of frames. If the amount is 1, it is a static, non animated mesh. */
 	u32 getFrameCount() const override
 	{
-		return Meshes.size();
+		return static_cast<u32>(Meshes.size());
 	}
 
 	//! Gets the default animation speed of the animated mesh.
@@ -161,7 +161,7 @@ struct SAnimatedMesh : public IAnimatedMesh
 	}
 
 	//! All meshes defining the animated mesh
-	core::array<IMesh *> Meshes;
+	std::vector<IMesh *> Meshes;
 
 	//! The bounding box of this mesh
 	core::aabbox3d<f32> Box;

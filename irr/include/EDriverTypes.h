@@ -24,9 +24,6 @@ enum E_DRIVER_TYPE
 	primitives. */
 	EDT_OPENGL,
 
-	//! OpenGL-ES 1.x driver, for embedded and mobile systems
-	EDT_OGLES1,
-
 	//! OpenGL-ES 2.x driver, for embedded and mobile systems
 	/** Supports shaders etc. */
 	EDT_OGLES2,

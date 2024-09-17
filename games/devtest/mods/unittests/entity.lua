@@ -40,12 +40,36 @@ core.register_entity("unittests:callbacks", {
 	end,
 	on_attach_child = function(self, child)
 		insert_log("on_attach_child(%s)", objref_str(self, child))
+		assert(child:get_attach() == self.object)
+		local ok = false
+		for _, obj in ipairs(self.object:get_children()) do
+			if obj == child then
+				ok = true
+			end
+		end
+		assert(ok, "Child not found in get_children")
 	end,
 	on_detach_child = function(self, child)
 		insert_log("on_detach_child(%s)", objref_str(self, child))
+		assert(child:get_attach() == nil)
+		local ok = true
+		for _, obj in ipairs(self.object:get_children()) do
+			if obj == child then
+				ok = false
+			end
+		end
+		assert(ok, "Former child found in get_children")
 	end,
 	on_detach = function(self, parent)
 		insert_log("on_detach(%s)", objref_str(self, parent))
+		assert(self.object:get_attach() == nil)
+		local ok = true
+		for _, obj in ipairs(parent:get_children()) do
+			if obj == self.object then
+				ok = false
+			end
+		end
+		assert(ok, "Former child found in get_children")
 	end,
 	get_staticdata = function(self)
 		assert(false)
@@ -118,18 +142,24 @@ local function test_entity_attach(player, pos)
 	-- attach player to entity
 	player:set_attach(obj)
 	check_log({"on_attach_child(player)"})
+	assert(player:get_attach() == obj)
 	player:set_detach()
 	check_log({"on_detach_child(player)"})
+	assert(player:get_attach() == nil)
 
 	-- attach entity to player
 	obj:set_attach(player)
 	check_log({})
+	assert(obj:get_attach() == player)
 	obj:set_detach()
 	check_log({"on_detach(player)"})
+	assert(obj:get_attach() == nil)
 
 	obj:remove()
 end
 unittests.register("test_entity_attach", test_entity_attach, {player=true, map=true})
+
+---------
 
 core.register_entity("unittests:dummy", {
 	initial_properties = {
@@ -184,3 +214,23 @@ unittests.register("test_objects_in_area", function(_, pos)
 		return core.objects_in_area(pos:offset(-1, -1, -1), pos:offset(1, 1, 1))
 	end)
 end, {map=true})
+
+-- Tests that bone rotation euler angles are preserved (see #14992)
+local function test_get_bone_rot(_, pos)
+	local obj = core.add_entity(pos, "unittests:dummy")
+	for _ = 1, 100 do
+		local function assert_similar(euler_angles)
+			local _, rot = obj:get_bone_position("bonename")
+			assert(euler_angles:distance(rot) < 1e-3)
+			local override = obj:get_bone_override("bonename")
+			assert(euler_angles:distance(override.rotation.vec:apply(math.deg)) < 1e-3)
+		end
+		local deg = 1e3 * vector.new(math.random(), math.random(), math.random())
+		obj:set_bone_position("bonename", vector.zero(), deg)
+		assert_similar(deg)
+		local rad = 3 * math.pi * vector.new(math.random(), math.random(), math.random())
+		obj:set_bone_override("bonename", {rotation = {vec = rad}})
+		assert_similar(rad:apply(math.deg))
+	end
+end
+unittests.register("test_get_bone_rot", test_get_bone_rot, {map=true})

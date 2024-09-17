@@ -91,7 +91,7 @@ bool ActiveObjectMgr::registerObject(std::unique_ptr<ServerActiveObject> obj)
 		return false;
 	}
 
-	auto obj_id = obj->getId(); 
+	auto obj_id = obj->getId();
 	m_active_objects.put(obj_id, std::move(obj));
 
 	auto new_size = m_active_objects.size();
@@ -115,6 +115,16 @@ void ActiveObjectMgr::removeObject(u16 id)
 	if (!ok) {
 		infostream << "Server::ActiveObjectMgr::removeObject(): "
 				<< "id=" << id << " not found" << std::endl;
+	}
+}
+
+void ActiveObjectMgr::invalidateActiveObjectObserverCaches()
+{
+	for (auto &active_object : m_active_objects.iter()) {
+		ServerActiveObject *obj = active_object.second.get();
+		if (!obj)
+			continue;
+		obj->invalidateEffectiveObservers();
 	}
 }
 
@@ -153,15 +163,18 @@ void ActiveObjectMgr::getObjectsInArea(const aabb3f &box,
 	}
 }
 
-void ActiveObjectMgr::getAddedActiveObjectsAroundPos(v3f player_pos, f32 radius,
-		f32 player_radius, const std::set<u16> &current_objects,
+void ActiveObjectMgr::getAddedActiveObjectsAroundPos(
+		const v3f &player_pos, const std::string &player_name,
+		f32 radius, f32 player_radius,
+		const std::set<u16> &current_objects,
 		std::vector<u16> &added_objects)
 {
 	/*
 		Go through the object list,
 		- discard removed/deactivated objects,
 		- discard objects that are too far away,
-		- discard objects that are found in current_objects.
+		- discard objects that are found in current_objects,
+		- discard objects that are not observed by the player.
 		- add remaining objects to added_objects
 	*/
 	for (auto &ao_it : m_active_objects.iter()) {
@@ -181,6 +194,9 @@ void ActiveObjectMgr::getAddedActiveObjectsAroundPos(v3f player_pos, f32 radius,
 			if (distance_f > player_radius && player_radius != 0)
 				continue;
 		} else if (distance_f > radius)
+			continue;
+
+		if (!object->isEffectivelyObservedBy(player_name))
 			continue;
 
 		// Discard if already on current_objects

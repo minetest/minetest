@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "minimap.h"
 #include "content_mapblock.h"
 #include "util/directiontables.h"
+#include "util/tracy_wrapper.h"
 #include "client/meshgen/collector.h"
 #include "client/renderingengine.h"
 #include <array>
@@ -592,17 +593,11 @@ void MapBlockBspTree::traverse(s32 node, v3f viewpoint, std::vector<s32> &output
 	PartialMeshBuffer
 */
 
-void PartialMeshBuffer::beforeDraw() const
+void PartialMeshBuffer::draw(video::IVideoDriver *driver) const
 {
-	// Patch the indexes in the mesh buffer before draw
-	m_buffer->Indices = std::move(m_vertex_indexes);
-	m_buffer->setDirty(scene::EBT_INDEX);
-}
-
-void PartialMeshBuffer::afterDraw() const
-{
-	// Take the data back
-	m_vertex_indexes = m_buffer->Indices.steal();
+	const auto pType = m_buffer->getPrimitiveType();
+	driver->drawBuffers(m_buffer->getVertexBuffer(), m_indices.get(),
+		m_indices->getPrimitiveCount(pType), pType);
 }
 
 /*
@@ -617,6 +612,8 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	m_last_crack(-1),
 	m_last_daynight_ratio((u32) -1)
 {
+	ZoneScoped;
+
 	for (auto &m : m_mesh)
 		m = new scene::SMesh();
 	m_enable_shaders = data->m_use_shaders;
@@ -752,9 +749,6 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 				material.MaterialType = m_shdrsrc->getShaderInfo(
 						p.layer.shader_id).material;
 				p.layer.applyMaterialOptionsWithShaders(material);
-				if (p.layer.normal_texture)
-					material.setTexture(1, p.layer.normal_texture);
-				material.setTexture(2, p.layer.flags_texture);
 			} else {
 				p.layer.applyMaterialOptions(material);
 			}
@@ -783,12 +777,11 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 		}
 
 		if (mesh) {
-			// Use VBO for mesh (this just would set this for ever buffer)
+			// Use VBO for mesh (this just would set this for every buffer)
 			mesh->setHardwareMappingHint(scene::EHM_STATIC);
 		}
 	}
 
-	//std::cout<<"added "<<fastfaces.getSize()<<" faces."<<std::endl;
 	m_bsp_tree.buildTree(&m_transparent_triangles, data->side_length);
 
 	// Check if animation is required for this mesh
@@ -865,11 +858,6 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 
 		const FrameSpec &frame = (*tile.frames)[frameno];
 		buf->getMaterial().setTexture(0, frame.texture);
-		if (m_enable_shaders) {
-			if (frame.normal_texture)
-				buf->getMaterial().setTexture(1, frame.normal_texture);
-			buf->getMaterial().setTexture(2, frame.flags_texture);
-		}
 	}
 
 	// Day-night transition
@@ -906,6 +894,7 @@ void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
 	m_bsp_tree.traverse(rel_camera_pos, triangle_refs);
 
 	// arrange index sequences into partial buffers
+	m_transparent_buffers_consolidated = false;
 	m_transparent_buffers.clear();
 
 	scene::SMeshBuffer *current_buffer = nullptr;
@@ -930,6 +919,8 @@ void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
 
 void MapBlockMesh::consolidateTransparentBuffers()
 {
+	if (m_transparent_buffers_consolidated)
+		return;
 	m_transparent_buffers.clear();
 
 	scene::SMeshBuffer *current_buffer = nullptr;
@@ -952,6 +943,8 @@ void MapBlockMesh::consolidateTransparentBuffers()
 	if (!current_strain.empty()) {
 		this->m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
 	}
+
+	m_transparent_buffers_consolidated = true;
 }
 
 video::SColor encode_light(u16 light, u8 emissive_light)
