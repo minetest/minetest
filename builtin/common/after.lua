@@ -107,6 +107,7 @@ end
 local function remove_first_jobs()
 	local removed_expiry = heap_pop(expiries)
 	local removed = job_map[removed_expiry]
+	removed.expired = true
 	job_map[removed_expiry] = nil
 	return removed
 end
@@ -151,12 +152,14 @@ local function dummy_func() end
 function job_metatable.__index:cancel()
 	self.func = dummy_func
 	self.args = {n = 0}
+	self.expiring_time = nil
 end
 
 function core.after(after, func, ...)
 	assert(tonumber(after) and not core.is_nan(after) and type(func) == "function",
 		"Invalid minetest.after invocation")
 
+	local expiry = time + after
 	local new_job = {
 		mod_origin = core.get_last_run_mod(),
 		func = func,
@@ -164,9 +167,20 @@ function core.after(after, func, ...)
 			n = select("#", ...),
 			...
 		},
+		start_time = time,
+		expiring_time = expiry,
+		expired = false,
+
+		get_elapsed_time = function(self)
+			if self.expired then
+				return after
+			elseif self.expiring_time then
+				return time - self.start_time
+			end
+		end
 	}
 
-	local expiry = time + after
+
 	add_job(expiry, new_job)
 	time_next = math.min(time_next, expiry)
 
