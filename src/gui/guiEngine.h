@@ -203,8 +203,6 @@ private:
 	MainMenuData                         *m_data = nullptr;
 	/** texture source */
 	std::unique_ptr<ISimpleTextureSource> m_texture_source;
-	/** shader source */
-	std::unique_ptr<IWritableShaderSource> m_shader_source;
 	/** sound manager */
 	std::unique_ptr<ISoundManager>        m_sound_manager;
 
@@ -279,23 +277,11 @@ private:
 	/** and text that is in it */
 	EnrichedString m_toplefttext;
 
-	/** initialize cloud subsystem */
-	void cloudInit();
 	/** do preprocessing for cloud subsystem */
 	void drawClouds(float dtime);
 
-	/** internam data required for drawing clouds */
-	struct clouddata {
-		/** pointer to cloud class */
-		irr_ptr<Clouds> clouds;
-		/** camera required for drawing clouds */
-		scene::ICameraSceneNode *camera = nullptr;
-	};
-
 	/** is drawing of clouds enabled atm */
-	bool        m_clouds_enabled = true;
-	/** data used to draw clouds */
-	clouddata   m_cloud;
+	bool m_clouds_enabled = true;
 
 	static void fullscreenChangedCallback(const std::string &name, void *data);
 };

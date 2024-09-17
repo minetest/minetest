@@ -42,7 +42,7 @@ class IReferenceCounted
 public:
 	//! Constructor.
 	IReferenceCounted() :
-			DebugName(0), ReferenceCounter(1)
+			ReferenceCounter(1)
 	{
 	}
 
@@ -136,6 +136,7 @@ public:
 		return ReferenceCounter;
 	}
 
+#ifdef _DEBUG
 	//! Returns the debug name of the object.
 	/** The Debugname may only be set and changed by the object
 	itself. This method should only be used in Debug mode.
@@ -157,7 +158,10 @@ protected:
 
 private:
 	//! The debug name.
-	const c8 *DebugName;
+	const c8 *DebugName = nullptr;
+#endif
+
+private:
 
 	//! The reference counter. Mutable to do reference counting on const objects.
 	mutable s32 ReferenceCounter;
