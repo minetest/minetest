@@ -28,6 +28,7 @@
 
 #pragma once
 
+// IWYU pragma: begin_exports
 #include "aabbox3d.h"
 #include "CMeshBuffer.h"
 #include "coreutil.h"
@@ -129,6 +130,7 @@
 #include "vector2d.h"
 #include "vector3d.h"
 #include "IrrCompileConfig.h" // for IRRLICHT_API and IRRCALLCONV
+// IWYU pragma: end_exports
 
 /*! \mainpage Irrlicht Engine 1.9 API documentation
  *
