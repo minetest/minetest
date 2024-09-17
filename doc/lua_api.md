@@ -1474,7 +1474,7 @@ Look for examples in `games/devtest` or `games/minetest_game`.
     * For This drawtype textures are as follows in the exact order:
     ```
         tiles = {tile definition 1, def2, def3, def4, def5, def6},
-        Textures of node;       -Y,  +Z,   +X,   -Z,   -Y,   -X
+        Textures of node;       -Y,  +Z,   +X,   -Z,   +Y,   -X
     ```
 * `allfaces_optional`
     * Often used for leaves nodes.
