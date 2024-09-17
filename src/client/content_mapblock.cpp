@@ -1001,8 +1001,12 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 void MapblockMeshGenerator::drawAllfacesNode()
 {
 	static const aabb3f box(-BS / 2, -BS / 2, -BS / 2, BS / 2, BS / 2, BS / 2);
-	useTile(0, 0, 0);
-	drawAutoLightedCuboid(box);
+	TileSpec tiles[6];
+	for (int face = 0; face < 6; face++)
+		getTile(g_6dirs[face], &tiles[face]);
+	if (data->m_smooth_lighting)
+		getSmoothLightFrame();
+	drawAutoLightedCuboid(box, nullptr, tiles, 6);
 }
 
 void MapblockMeshGenerator::drawTorchlikeNode()
