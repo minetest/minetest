@@ -93,6 +93,7 @@ public:
 	void addPos(const v3f &added_pos) override;
 	void moveTo(v3f pos, bool continuous) override;
 	void setPlayerYaw(const float yaw);
+	GUId getGuid() override;
 	// Data should not be sent at player initialization
 	void setPlayerYawAndSend(const float yaw);
 	void setLookPitch(const float pitch);
@@ -195,6 +196,7 @@ private:
 
 	RemotePlayer *m_player = nullptr;
 	session_t m_peer_id_initial = 0; ///< only used to initialize RemotePlayer
+	GUId m_guid;
 
 	// Cheat prevention
 	LagPool m_dig_pool;
