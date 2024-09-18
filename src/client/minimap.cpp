@@ -612,7 +612,6 @@ void Minimap::drawMinimap(core::rect<s32> rect)
 		tex.MinFilter = video::ETMINF_LINEAR_MIPMAP_LINEAR;
 		tex.MagFilter = video::ETMAGF_LINEAR;
 	});
-	material.Lighting = false;
 	material.TextureLayers[0].Texture = minimap_texture;
 	material.TextureLayers[1].Texture = data->heightmap_texture;
 

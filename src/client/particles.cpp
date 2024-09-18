@@ -989,7 +989,6 @@ video::SMaterial ParticleManager::getMaterialForParticle(const ClientParticleTex
 	video::SMaterial material;
 
 	// Texture
-	material.Lighting = false;
 	material.BackfaceCulling = false;
 	material.FogEnable = true;
 	material.forEachTexture([] (auto &tex) {
