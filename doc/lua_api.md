@@ -7772,7 +7772,7 @@ of the `${k}` syntax in formspecs is not deprecated.
     * The range for the value is system-dependent (usually 32 bits).
       The value will be converted into a string when stored.
 * `get_float(key)`: Returns `0` if key not present.
-* `set_bool(key, value)` Can be set to either `true` or `false`. Any other value crashes it.
+* `set_bool(key, value)` Can be set to either `true` or `false`. Any other value is invalid and will raise an error.
 * `get_bool(key)`: Gives an error if key not present.
 * `get_keys()`: returns a list of all keys in the metadata.
 * `to_table()`:
