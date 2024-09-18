@@ -236,16 +236,24 @@ int MetaDataRef::l_get_bool(lua_State *L)
 
 	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
-
+	
 	IMetadata *meta = ref->getmeta(false);
 	if (meta == NULL) {
-		lua_pushboolean(L, false);
-		return 1;
+    	return luaL_error(L, "The boolean meta value can't be nil");
 	}
 
 	std::string str_;
 	const std::string &str = meta->getString(name, &str_);
-	lua_pushboolean(L, is_yes(str));
+
+	// Explicit check for "true" or "false"
+	if (str == "true") {
+		lua_pushboolean(L, true);
+	} else if (str == "false") {
+		lua_pushboolean(L, false);
+	} else {
+		// Throw error if the value is neither "true" nor "false"
+		return luaL_error(L, "Invalid metadata value. Expected 'true' or 'false'.");
+	}
 	return 1;
 }
 
@@ -256,6 +264,12 @@ int MetaDataRef::l_set_bool(lua_State *L)
 
 	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
+
+	// Ensure only boolean values are accepted
+	if (!lua_isboolean(L, 3)) {
+		return luaL_error(L, "Invalid argument type. Expected boolean.");
+	}
+	
 	int a = lua_toboolean(L, 3);
 	std::string str = a ? "true" : "false";
 
