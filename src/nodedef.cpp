@@ -690,7 +690,7 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 		if (is.eof())
 			throw SerializationError("");
 		post_effect_color_shaded = tmp;
-
+		
 		tmp = readU8(is);
 		if (is.eof())
 			throw SerializationError("");
