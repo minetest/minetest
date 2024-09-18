@@ -1313,6 +1313,10 @@ The function of `param2` is determined by `paramtype2` in node definition.
       see `minetest.get_node_level`, `minetest.set_node_level` and `minetest.add_node_level`
       to access/manipulate the content of this field
     * Bit 3: If set, liquid is flowing downwards (no graphical effect)
+* `paramtype2 = "colorflowingliquid"`
+    * Same as `flowingliquid`, but with colors.
+    * The upper four bits of `param2` tell which color is picked from the
+      palette. The palette should have 16 pixels.
 * `paramtype2 = "wallmounted"`
     * Supported drawtypes: "torchlike", "signlike", "plantlike",
       "plantlike_rooted", "normal", "nodebox", "mesh"
@@ -5483,6 +5487,9 @@ Utilities
       mod_storage_on_disk = true,
       -- "zstd" method for compress/decompress (5.7.0)
       compress_zstd = true,
+      -- The upper four bits of liquid node param2 values are preserved
+      -- during liquid flow (5.10.0)
+      preserve_liquid_param2 = true,
       -- Sound parameter tables support start_time (5.8.0)
       sound_params_start_time = true,
       -- New fields for set_physics_override: speed_climb, speed_crouch,
@@ -9508,6 +9515,10 @@ Used by `minetest.register_node`.
     post_effect_color = "#00000000",
     -- Screen tint if a player is inside this node, see `ColorSpec`.
     -- Color is alpha-blended over the screen.
+    
+    post_effect_use_node_color = false,
+    -- If true, the specific node's coloration (with param2 etc.) will be
+    -- applied to the post effect color as it is applied to the node itself.
 
     post_effect_color_shaded = false,
     -- Determines whether `post_effect_color` is affected by lighting.
