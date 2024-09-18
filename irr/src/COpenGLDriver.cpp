@@ -1840,112 +1840,11 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial &material, const SMater
 	E_OPENGL_FIXED_PIPELINE_STATE tempState = FixedPipelineState;
 
 	if (resetAllRenderStates || tempState == EOFPS_ENABLE || tempState == EOFPS_DISABLE_TO_ENABLE) {
-		// material colors
-		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
-				lastmaterial.ColorMaterial != material.ColorMaterial) {
-			switch (material.ColorMaterial) {
-			case ECM_NONE:
-				glDisable(GL_COLOR_MATERIAL);
-				break;
-			case ECM_DIFFUSE:
-				glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
-				break;
-			case ECM_AMBIENT:
-				glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT);
-				break;
-			case ECM_EMISSIVE:
-				glColorMaterial(GL_FRONT_AND_BACK, GL_EMISSION);
-				break;
-			case ECM_SPECULAR:
-				glColorMaterial(GL_FRONT_AND_BACK, GL_SPECULAR);
-				break;
-			case ECM_DIFFUSE_AND_AMBIENT:
-				glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-				break;
-			}
-			if (material.ColorMaterial != ECM_NONE)
-				glEnable(GL_COLOR_MATERIAL);
-		}
-
-		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
-				lastmaterial.AmbientColor != material.AmbientColor ||
-				lastmaterial.DiffuseColor != material.DiffuseColor ||
-				lastmaterial.EmissiveColor != material.EmissiveColor ||
-				lastmaterial.ColorMaterial != material.ColorMaterial) {
-			GLfloat color[4];
-
-			const f32 inv = 1.0f / 255.0f;
-
-			if ((material.ColorMaterial != video::ECM_AMBIENT) &&
-					(material.ColorMaterial != video::ECM_DIFFUSE_AND_AMBIENT)) {
-				color[0] = material.AmbientColor.getRed() * inv;
-				color[1] = material.AmbientColor.getGreen() * inv;
-				color[2] = material.AmbientColor.getBlue() * inv;
-				color[3] = material.AmbientColor.getAlpha() * inv;
-				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, color);
-			}
-
-			if ((material.ColorMaterial != video::ECM_DIFFUSE) &&
-					(material.ColorMaterial != video::ECM_DIFFUSE_AND_AMBIENT)) {
-				color[0] = material.DiffuseColor.getRed() * inv;
-				color[1] = material.DiffuseColor.getGreen() * inv;
-				color[2] = material.DiffuseColor.getBlue() * inv;
-				color[3] = material.DiffuseColor.getAlpha() * inv;
-				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color);
-			}
-
-			if (material.ColorMaterial != video::ECM_EMISSIVE) {
-				color[0] = material.EmissiveColor.getRed() * inv;
-				color[1] = material.EmissiveColor.getGreen() * inv;
-				color[2] = material.EmissiveColor.getBlue() * inv;
-				color[3] = material.EmissiveColor.getAlpha() * inv;
-				glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, color);
-			}
-		}
-
-		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
-				lastmaterial.SpecularColor != material.SpecularColor ||
-				lastmaterial.Shininess != material.Shininess ||
-				lastmaterial.ColorMaterial != material.ColorMaterial) {
-			GLfloat color[4] = {0.f, 0.f, 0.f, 1.f};
-			const f32 inv = 1.0f / 255.0f;
-
-			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, material.Shininess);
-			// disable Specular colors if no shininess is set
-			if ((material.Shininess != 0.0f) &&
-					(material.ColorMaterial != video::ECM_SPECULAR)) {
-#ifdef GL_EXT_separate_specular_color
-				if (FeatureAvailable[IRR_EXT_separate_specular_color])
-					glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
-#endif
-				color[0] = material.SpecularColor.getRed() * inv;
-				color[1] = material.SpecularColor.getGreen() * inv;
-				color[2] = material.SpecularColor.getBlue() * inv;
-				color[3] = material.SpecularColor.getAlpha() * inv;
-			}
-#ifdef GL_EXT_separate_specular_color
-			else if (FeatureAvailable[IRR_EXT_separate_specular_color])
-				glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
-#endif
-			glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, color);
-		}
-
-		// shademode
-		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
-				lastmaterial.GouraudShading != material.GouraudShading) {
-			if (material.GouraudShading)
-				glShadeModel(GL_SMOOTH);
-			else
-				glShadeModel(GL_FLAT);
-		}
-
-		// lighting
-		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
-				lastmaterial.Lighting != material.Lighting) {
-			if (material.Lighting)
-				glEnable(GL_LIGHTING);
-			else
-				glDisable(GL_LIGHTING);
+		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE) {
+			glDisable(GL_COLOR_MATERIAL);
+			glDisable(GL_LIGHTING);
+			glShadeModel(GL_SMOOTH);
+			glDisable(GL_NORMALIZE);
 		}
 
 		// fog
@@ -1955,15 +1854,6 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial &material, const SMater
 				glEnable(GL_FOG);
 			else
 				glDisable(GL_FOG);
-		}
-
-		// normalization
-		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
-				lastmaterial.NormalizeNormals != material.NormalizeNormals) {
-			if (material.NormalizeNormals)
-				glEnable(GL_NORMALIZE);
-			else
-				glDisable(GL_NORMALIZE);
 		}
 
 		// Set fixed pipeline as active.
@@ -2405,7 +2295,6 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 	}
 
 	SMaterial currentMaterial = (!OverrideMaterial2DEnabled) ? InitMaterial2D : OverrideMaterial2D;
-	currentMaterial.Lighting = false;
 
 	if (texture) {
 		setTransform(ETS_TEXTURE_0, core::IdentityMatrix);

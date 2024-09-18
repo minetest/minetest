@@ -40,7 +40,6 @@ public:
 		video::ITexture *tex = env->getGameDef()->tsrc()->getTextureForMesh("smoke_puff.png");
 		m_spritenode->forEachMaterial([tex] (auto &mat) {
 			mat.TextureLayers[0].Texture = tex;
-			mat.Lighting = false;
 			mat.TextureLayers[0].MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 			mat.TextureLayers[0].MagFilter = video::ETMAGF_NEAREST;
 			mat.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;

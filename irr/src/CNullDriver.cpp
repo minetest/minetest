@@ -104,7 +104,6 @@ CNullDriver::CNullDriver(io::IFileSystem *io, const core::dimension2d<u32> &scre
 		FeatureEnabled[i] = true;
 
 	InitMaterial2D.AntiAliasing = video::EAAM_OFF;
-	InitMaterial2D.Lighting = false;
 	InitMaterial2D.ZWriteEnable = video::EZW_OFF;
 	InitMaterial2D.ZBuffer = video::ECFN_DISABLED;
 	InitMaterial2D.UseMipMaps = false;
@@ -1131,15 +1130,10 @@ void CNullDriver::drawBuffers(const scene::IVertexBuffer *vb,
 void CNullDriver::drawMeshBufferNormals(const scene::IMeshBuffer *mb, f32 length, SColor color)
 {
 	const u32 count = mb->getVertexCount();
-	const bool normalize = mb->getMaterial().NormalizeNormals;
-
 	for (u32 i = 0; i < count; ++i) {
-		core::vector3df normalizedNormal = mb->getNormal(i);
-		if (normalize)
-			normalizedNormal.normalize();
-
+		core::vector3df normal = mb->getNormal(i);
 		const core::vector3df &pos = mb->getPosition(i);
-		draw3DLine(pos, pos + (normalizedNormal * length), color);
+		draw3DLine(pos, pos + (normal * length), color);
 	}
 }
 
@@ -1306,10 +1300,8 @@ void CNullDriver::runOcclusionQuery(scene::ISceneNode *node, bool visible)
 	OcclusionQueries[index].Run = 0;
 	if (!visible) {
 		SMaterial mat;
-		mat.Lighting = false;
 		mat.AntiAliasing = 0;
 		mat.ColorMask = ECP_NONE;
-		mat.GouraudShading = false;
 		mat.ZWriteEnable = EZW_OFF;
 		setMaterial(mat);
 	}
