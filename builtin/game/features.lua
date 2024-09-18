@@ -27,7 +27,6 @@ core.features = {
 	get_light_data_buffer = true,
 	mod_storage_on_disk = true,
 	compress_zstd = true,
-	preserve_liquid_param2 = true,
 	sound_params_start_time = true,
 	physics_overrides_v2 = true,
 	hud_def_type_field = true,
@@ -44,6 +43,7 @@ core.features = {
 	moveresult_new_pos = true,
 	override_item_remove_fields = true,
 	hotbar_hud_element = true,
+	preserve_liquid_param2 = true,
 }
 
 function core.has_feature(arg)
