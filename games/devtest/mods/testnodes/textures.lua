@@ -367,3 +367,20 @@ core.register_node("testnodes:tga_type10_32bpp_tb", {
 	use_texture_alpha = "blend",
 	groups = { dig_immediate = 2 },
 })
+
+minetest.register_node("testnodes:glyph_font", {
+	description = S("Combine Test Node"),
+	tiles = {{
+		name = "testnodes_generated_mb.png"..
+			"^[text:regular font::::white"..
+			"^[text:large font(16pt):16::0,32:white"..
+			"^[text:larger font(32pt):32::0,64:white"..
+			"^[text:bold font(20pt):20:bold:0,96:white"..
+			"^[text:italic font(20pt):20:italic:0,128:white"..
+			"^[text:monospace font(20pt):20:mono:0,160:white"..
+			"^[text:red monospace font(20pt):20:mono:0,192:red",
+		align_style = "world",
+		scale = 8,
+	}},
+	groups = { dig_immediate = 2 },
+})

@@ -14,6 +14,8 @@
 #include "util/base64.h"
 #include "util/numeric.h"
 #include "util/strfnd.h"
+#include "client/fontengine.h"
+#include "irrlicht_changes/CGUITTFont.h"
 
 
 ////////////////////////////////
@@ -1761,6 +1763,101 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 
 			apply_brightness_contrast(baseimg, v2u32(0, 0),
 				baseimg->getDimension(), brightness, contrast);
+		}
+		/*
+			[text:string:size:mono,bold,italic:x,y:color
+			Render a character at given position
+			size and font is optional, but colon should be kept
+		*/
+		else if (str_starts_with(part_of_name, "[text:")) {
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			std::string textdef = sf.next(":");
+			core::stringw textdefW = utf8_to_stringw(textdef);
+
+			unsigned int fontSize = FONT_SIZE_UNSPECIFIED;
+			std::string sizeStr = sf.next(":");
+			if (is_number(sizeStr))
+			{
+				fontSize = mystoi(sizeStr,0,200);
+			}
+
+			FontMode mode = FM_Standard;
+			bool bold = false, italic = false;
+			std::string fontStyle = sf.next(":");
+			std::vector<std::string> styleWords = str_split(fontStyle, ',');
+			for(auto word : styleWords){
+				if (word == "mono")
+				{
+					mode = FM_Mono;
+				}else if (word == "bold")
+				{
+					bold = true;
+				}else if(word == "italic"){
+					italic = true;
+				}
+			}
+			FontSpec spec(fontSize, mode, bold, italic);
+
+			core::position2di pos(0,0);
+			std::string positionStr = sf.next(":");
+			std::vector<std::string> positionStrs = str_split(positionStr, ',');
+			if (positionStrs.size() >= 2)
+			{
+				if (is_number(positionStrs[0])) {
+					pos.X = mystoi(positionStrs[0]);
+				}
+				if (is_number(positionStrs[1])) {
+					pos.Y = mystoi(positionStrs[1]);
+				}
+			}
+
+			video::SColor color(0xff,0xff,0xff,0xff);
+			std::string colorStr = sf.next("");
+			if (!parseColorString(colorStr,color,false)){
+				return false;
+			};
+
+			irr::gui::CGUITTFont *font =
+					static_cast<irr::gui::CGUITTFont *>(g_fontengine->getFont(spec));
+			core::dimension2d<u32> sizeText = font->getDimension(textdefW.c_str());
+
+			video::ECOLOR_FORMAT colorFormat = video::ECF_A8R8G8B8;
+			core::dimension2d<u32> size =sizeText;
+			if (baseimg)
+			{
+				colorFormat = baseimg->getColorFormat();
+				size =baseimg->getDimension();
+			}
+			std::string textureName("text_renderer__");
+			textureName.append(part_of_name);
+
+			auto texture =
+				driver->addRenderTargetTexture(size, textureName, colorFormat);
+			if (driver->setRenderTarget(texture, video::ECBF_ALL, video::SColor(0,0,0,0))) {
+				if (baseimg) {
+					auto baseTexture = driver->addTexture("text_renderer_base__", baseimg);
+					driver->draw2DImage(baseTexture, core::vector2di(0,0));
+					driver->removeTexture(baseTexture);
+				}
+				font->draw(textdefW, core::recti(pos, sizeText), color);
+				driver->setRenderTarget(NULL);
+				void* lockedData = texture->lock();
+				if (lockedData) {
+					if (baseimg) {
+						baseimg->drop();
+					}
+					baseimg = driver->createImageFromData(colorFormat, size, lockedData, false);
+					texture->unlock();
+				} else {
+					errorstream << "no data inside texture, internal error" << std::endl;
+				}
+			} else {
+				errorstream << "fails to set render target, "
+						"can this driver renders to target:" <<
+						driver->queryFeature(video::EVDF_RENDER_TO_TARGET) << std::endl;
+			}
+			driver->removeTexture(texture);
 		}
 		else
 		{
