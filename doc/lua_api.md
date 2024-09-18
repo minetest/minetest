@@ -5487,9 +5487,6 @@ Utilities
       mod_storage_on_disk = true,
       -- "zstd" method for compress/decompress (5.7.0)
       compress_zstd = true,
-      -- The upper four bits of liquid node param2 values are preserved
-      -- during liquid flow (5.10.0)
-      preserve_liquid_param2 = true,
       -- Sound parameter tables support start_time (5.8.0)
       sound_params_start_time = true,
       -- New fields for set_physics_override: speed_climb, speed_crouch,
@@ -5529,6 +5526,9 @@ Utilities
       override_item_remove_fields = true,
       -- The predefined hotbar is a Lua HUD element of type `hotbar` (5.10.0)
       hotbar_hud_element = true,
+      -- The upper four bits of liquid node param2 values are preserved
+      -- during liquid flow (5.10.0)
+      preserve_liquid_param2 = true,
   }
   ```
 
@@ -9515,7 +9515,7 @@ Used by `minetest.register_node`.
     post_effect_color = "#00000000",
     -- Screen tint if a player is inside this node, see `ColorSpec`.
     -- Color is alpha-blended over the screen.
-    
+
     post_effect_use_node_color = false,
     -- If true, the specific node's coloration (with param2 etc.) will be
     -- applied to the post effect color as it is applied to the node itself.

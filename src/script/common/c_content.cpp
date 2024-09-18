@@ -791,7 +791,7 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	lua_getfield(L, index, "post_effect_color");
 	read_color(L, -1, &f.post_effect_color);
 	lua_pop(L, 1);
-	
+
 	getboolfield(L, index, "post_effect_use_node_color", f.post_effect_use_node_color);
 
 	getboolfield(L, index, "post_effect_color_shaded", f.post_effect_color_shaded);
