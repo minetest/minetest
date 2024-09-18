@@ -9515,7 +9515,7 @@ Used by `minetest.register_node`.
     post_effect_color = "#00000000",
     -- Screen tint if a player is inside this node, see `ColorSpec`.
     -- Color is alpha-blended over the screen.
-    
+
     post_effect_use_node_color = false,
     -- If true, the specific node's coloration (with param2 etc.) will be
     -- applied to the post effect color as it is applied to the node itself.
