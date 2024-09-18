@@ -15,6 +15,7 @@
 
 #include <list>
 #include <optional>
+#include <string>
 
 namespace irr
 {
