@@ -1825,7 +1825,7 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 			Strfnd sf(part_of_name);
 			sf.next(":");
 			std::string textdef = sf.next(":");
-			core::stringw textdefW =  utf8_to_stringw(textdef);
+			core::stringw textdefW = utf8_to_stringw(textdef);
 
 			unsigned int fontSize = FONT_SIZE_UNSPECIFIED;
 			std::string sizeStr = sf.next(":");
@@ -1856,16 +1856,14 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 			std::vector<std::string> positionStrs = str_split(positionStr, ',');
 			if (positionStrs.size() >= 2)
 			{
-				if (is_number(positionStrs[0]))
-				{
-					pos.X=mystoi(positionStrs[0]);
+				if (is_number(positionStrs[0])) {
+					pos.X = mystoi(positionStrs[0]);
 				}
-				if (is_number(positionStrs[1]))
-				{
-					pos.Y=mystoi(positionStrs[1]);
+				if (is_number(positionStrs[1])) {
+					pos.Y = mystoi(positionStrs[1]);
 				}
 			}
-			
+
 			video::SColor color(0xff,0xff,0xff,0xff);
 			std::string colorStr = sf.next("");
 			if (!parseColorString(colorStr,color,false)){
@@ -1888,30 +1886,28 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 
 			auto texture =
 				driver->addRenderTargetTexture(size, textureName, colorFormat);
-			
-			if(!driver->setRenderTarget(texture,irr::video::ECBF_ALL, video::SColor(0,0,0,0))){
-				errorstream << "fails to set render target" << std::endl;
-			};
-			if (baseimg){
-				auto baseTexture = driver->addTexture("text_renderer_base__", baseimg);
-				driver->draw2DImage(baseTexture, core::vector2di(0,0));
-				driver->removeTexture(baseTexture);
-			}
-			font->draw(textdefW, irr::core::recti(pos, sizeText), color);
-			driver->setRenderTarget(NULL);
-			void* lockedData = texture->lock();
-			if (lockedData)
-			{
-				if (baseimg)
-				{
-					baseimg->drop();
+			if (driver->setRenderTarget(texture, video::ECBF_ALL, video::SColor(0,0,0,0))) {
+				if (baseimg) {
+					auto baseTexture = driver->addTexture("text_renderer_base__", baseimg);
+					driver->draw2DImage(baseTexture, core::vector2di(0,0));
+					driver->removeTexture(baseTexture);
 				}
-				
-				baseimg = driver->createImageFromData(colorFormat, size, lockedData, false);
-				texture->unlock();
-			}else
-			{
-				errorstream << "no data inside texture, internal error" << std::endl;
+				font->draw(textdefW, core::recti(pos, sizeText), color);
+				driver->setRenderTarget(NULL);
+				void* lockedData = texture->lock();
+				if (lockedData) {
+					if (baseimg) {
+						baseimg->drop();
+					}
+					baseimg = driver->createImageFromData(colorFormat, size, lockedData, false);
+					texture->unlock();
+				} else {
+					errorstream << "no data inside texture, internal error" << std::endl;
+				}
+			} else {
+				errorstream << "fails to set render target, "
+						"can this driver renders to target:" <<
+						driver->queryFeature(video::EVDF_RENDER_TO_TARGET) << std::endl;
 			}
 			driver->removeTexture(texture);
 		}
