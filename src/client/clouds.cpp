@@ -50,7 +50,6 @@ Clouds::Clouds(scene::ISceneManager* mgr, IShaderSource *ssrc,
 	assert(ssrc);
 	m_enable_shaders = g_settings->getBool("enable_shaders");
 
-	m_material.Lighting = false;
 	m_material.BackfaceCulling = true;
 	m_material.FogEnable = true;
 	m_material.AntiAliasing = video::EAAM_SIMPLE;
@@ -139,7 +138,7 @@ void Clouds::updateMesh()
 	video::SColorf c_side_2_f(m_color);
 	video::SColorf c_bottom_f(m_color);
 	if (m_enable_shaders) {
-		// shader mixes the base color, set via EmissiveColor
+		// shader mixes the base color, set via ColorParam
 		c_top_f = c_side_1_f = c_side_2_f = c_bottom_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	c_side_1_f.r *= 0.95f;
@@ -364,7 +363,7 @@ void Clouds::render()
 
 	m_material.BackfaceCulling = is3D();
 	if (m_enable_shaders)
-		m_material.EmissiveColor = m_color.toSColor();
+		m_material.ColorParam = m_color.toSColor();
 
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 	driver->setMaterial(m_material);

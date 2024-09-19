@@ -595,7 +595,8 @@ public:
 		m_client(client)
 	{}
 
-	void setSky(Sky *sky) {
+	void setSky(Sky *sky)
+	{
 		m_sky = sky;
 		for (GameGlobalShaderConstantSetter *ggscs : created_nosky) {
 			ggscs->setSky(m_sky);
@@ -890,11 +891,11 @@ private:
 	QuicktuneShortcutter *quicktune = nullptr;
 
 	std::unique_ptr<GameUI> m_game_ui;
-	GUIChatConsole *gui_chat_console = nullptr; // Free using ->Drop()
+	irr_ptr<GUIChatConsole> gui_chat_console;
 	MapDrawControl *draw_control = nullptr;
 	Camera *camera = nullptr;
-	Clouds *clouds = nullptr;	                  // Free using ->Drop()
-	Sky *sky = nullptr;                         // Free using ->Drop()
+	irr_ptr<Clouds> clouds;
+	irr_ptr<Sky> sky;
 	Hud *hud = nullptr;
 	Minimap *mapper = nullptr;
 
@@ -1263,14 +1264,11 @@ void Game::shutdown()
 	if (m_shutdown_progress == 0.0f)
 		showOverlayMessage(N_("Shutting down..."), 0, 0);
 
-	if (clouds)
-		clouds->drop();
+	clouds.reset();
 
-	if (gui_chat_console)
-		gui_chat_console->drop();
+	gui_chat_console.reset();
 
-	if (sky)
-		sky->drop();
+	sky.reset();
 
 	/* cleanup menus */
 	while (g_menumgr.menuCount() > 0) {
@@ -1524,12 +1522,12 @@ bool Game::createClient(const GameStartData &start_data)
 	/* Clouds
 	 */
 	if (m_cache_enable_clouds)
-		clouds = new Clouds(smgr, shader_src, -1, rand());
+		clouds = make_irr<Clouds>(smgr, shader_src, -1, rand());
 
 	/* Skybox
 	 */
-	sky = new Sky(-1, m_rendering_engine, texture_src, shader_src);
-	scsf->setSky(sky);
+	sky = make_irr<Sky>(-1, m_rendering_engine, texture_src, shader_src);
+	scsf->setSky(sky.get());
 
 	/* Pre-calculated values
 	 */
@@ -1582,7 +1580,7 @@ bool Game::initGui()
 	chat_backend->applySettings();
 
 	// Chat backend and console
-	gui_chat_console = new GUIChatConsole(guienv, guienv->getRootGUIElement(),
+	gui_chat_console = make_irr<GUIChatConsole>(guienv, guienv->getRootGUIElement(),
 			-1, chat_backend, client, &g_menumgr);
 
 	if (g_settings->getBool("touch_controls")) {
@@ -1873,26 +1871,26 @@ inline bool Game::handleCallbacks()
 	}
 
 	if (g_gamecallback->changepassword_requested) {
-		(new GUIPasswordChange(guienv, guiroot, -1,
-				       &g_menumgr, client, texture_src))->drop();
+		(void)make_irr<GUIPasswordChange>(guienv, guiroot, -1,
+				       &g_menumgr, client, texture_src);
 		g_gamecallback->changepassword_requested = false;
 	}
 
 	if (g_gamecallback->changevolume_requested) {
-		(new GUIVolumeChange(guienv, guiroot, -1,
-				     &g_menumgr, texture_src))->drop();
+		(void)make_irr<GUIVolumeChange>(guienv, guiroot, -1,
+				     &g_menumgr, texture_src);
 		g_gamecallback->changevolume_requested = false;
 	}
 
 	if (g_gamecallback->keyconfig_requested) {
-		(new GUIKeyChangeMenu(guienv, guiroot, -1,
-				      &g_menumgr, texture_src))->drop();
+		(void)make_irr<GUIKeyChangeMenu>(guienv, guiroot, -1,
+				      &g_menumgr, texture_src);
 		g_gamecallback->keyconfig_requested = false;
 	}
 
 	if (!g_gamecallback->show_open_url_dialog.empty()) {
-		(new GUIOpenURLMenu(guienv, guiroot, -1,
-				 &g_menumgr, texture_src, g_gamecallback->show_open_url_dialog))->drop();
+		(void)make_irr<GUIOpenURLMenu>(guienv, guiroot, -1,
+				 &g_menumgr, texture_src, g_gamecallback->show_open_url_dialog);
 		g_gamecallback->show_open_url_dialog.clear();
 	}
 
@@ -2038,7 +2036,7 @@ void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
 void Game::processUserInput(f32 dtime)
 {
 	// Reset input if window not active or some menu is active
-	if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console)) {
+	if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console.get())) {
 		if (m_game_focused) {
 			m_game_focused = false;
 			infostream << "Game lost focus" << std::endl;
@@ -2061,7 +2059,7 @@ void Game::processUserInput(f32 dtime)
 		m_game_focused = true;
 	}
 
-	if (!guienv->hasFocus(gui_chat_console) && gui_chat_console->isOpen()) {
+	if (!guienv->hasFocus(gui_chat_console.get()) && gui_chat_console->isOpen()) {
 		gui_chat_console->closeConsoleAtOnce();
 	}
 
@@ -4218,7 +4216,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		updateShadows();
 	}
 
-	m_game_ui->update(*stats, client, draw_control, cam, runData.pointed_old, gui_chat_console, dtime);
+	m_game_ui->update(*stats, client, draw_control, cam, runData.pointed_old,
+			gui_chat_console.get(), dtime);
 
 	/*
 	   make sure menu is on top

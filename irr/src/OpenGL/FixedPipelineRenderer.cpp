@@ -24,13 +24,7 @@ COpenGL3MaterialBaseCB::COpenGL3MaterialBaseCB() :
 
 void COpenGL3MaterialBaseCB::OnSetMaterial(const SMaterial &material)
 {
-#ifdef _DEBUG
-	if (material.Lighting)
-		os::Printer::log("Lighted material not supported in unified driver.", ELL_INFORMATION);
-#endif
-
 	FogEnable = material.FogEnable;
-
 	Thickness = (material.Thickness > 0.f) ? material.Thickness : 1.f;
 }
 

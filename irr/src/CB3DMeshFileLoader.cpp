@@ -485,7 +485,8 @@ bool CB3DMeshFileLoader::readChunkTRIS(scene::SSkinMeshBuffer *meshBuffer, u32 m
 					video::S3DVertex *Vertex = meshBuffer->getVertex(meshBuffer->getVertexCount() - 1);
 
 					if (!HasVertexColors)
-						Vertex->Color = B3dMaterial->Material.DiffuseColor;
+						Vertex->Color = video::SColorf(B3dMaterial->red, B3dMaterial->green,
+								B3dMaterial->blue, B3dMaterial->alpha).toSColor();
 					else if (Vertex->Color.getAlpha() == 255)
 						Vertex->Color.setAlpha((s32)(B3dMaterial->alpha * 255.0f));
 
@@ -890,22 +891,7 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 			}
 		}
 
-		B3dMaterial.Material.DiffuseColor = video::SColorf(B3dMaterial.red, B3dMaterial.green, B3dMaterial.blue, B3dMaterial.alpha).toSColor();
-		B3dMaterial.Material.ColorMaterial = video::ECM_NONE;
-
 		//------ Material fx ------
-
-		if (B3dMaterial.fx & 1) { // full-bright
-			B3dMaterial.Material.AmbientColor = video::SColor(255, 255, 255, 255);
-			B3dMaterial.Material.Lighting = false;
-		} else
-			B3dMaterial.Material.AmbientColor = B3dMaterial.Material.DiffuseColor;
-
-		if (B3dMaterial.fx & 2) // use vertex colors instead of brush color
-			B3dMaterial.Material.ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
-
-		if (B3dMaterial.fx & 4) // flatshaded
-			B3dMaterial.Material.GouraudShading = false;
 
 		if (B3dMaterial.fx & 16) // disable backface culling
 			B3dMaterial.Material.BackfaceCulling = false;
@@ -914,8 +900,6 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 			B3dMaterial.Material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 			B3dMaterial.Material.ZWriteEnable = video::EZW_OFF;
 		}
-
-		B3dMaterial.Material.Shininess = B3dMaterial.shininess;
 	}
 
 	B3dStack.erase(B3dStack.size() - 1);
