@@ -103,12 +103,12 @@ minetest.register_node("testnodes:allfaces_6", {
 		S("Transparent node with visible internal backfaces"),
 	drawtype = "allfaces",
 	paramtype = "light",
-	tiles = { 
-			"testnodes_allfaces.png^[colorize:red", 
-			"testnodes_allfaces.png^[colorize:orange", 
-			"testnodes_allfaces.png^[colorize:yellow", 
-			"testnodes_allfaces.png^[colorize:green", 
-			"testnodes_allfaces.png^[colorize:blue", 
+	tiles = {
+			"testnodes_allfaces.png^[colorize:red",
+			"testnodes_allfaces.png^[colorize:orange",
+			"testnodes_allfaces.png^[colorize:yellow",
+			"testnodes_allfaces.png^[colorize:green",
+			"testnodes_allfaces.png^[colorize:blue",
 			"testnodes_allfaces.png^[colorize:purple"
 		},
 
