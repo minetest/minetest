@@ -836,10 +836,7 @@ int ModApiEnv::l_get_timeofday(lua_State *L)
 {
 	GET_PLAIN_ENV_PTR;
 
-	// Do it
-	int timeofday_mh = env->getTimeOfDay();
-	float timeofday_f = (float)timeofday_mh / 24000.0f;
-	lua_pushnumber(L, timeofday_f);
+	lua_pushnumber(L, env->getTimeOfDayF());
 	return 1;
 }
 
@@ -857,8 +854,7 @@ int ModApiEnv::l_get_gametime(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	int game_time = env->getGameTime();
-	lua_pushnumber(L, game_time);
+	lua_pushnumber(L, env->getGameTime());
 	return 1;
 }
 
