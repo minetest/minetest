@@ -32,7 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/fontengine.h"
 #include "irrlicht_changes/CGUITTFont.h"
 #include "gui/guiHyperText.h"
-#include <charconv>
 #include <string>
 
 
