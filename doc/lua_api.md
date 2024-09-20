@@ -1470,7 +1470,7 @@ Look for examples in `games/devtest` or `games/minetest_game`.
       'Connected Glass'.
 * `allfaces`
     * Often used for partially-transparent nodes.
-    * External sides of textures, unlike other drawtypes, the external sides
+    * External sides of textures, and unlike other drawtypes, the external sides
       of other blocks, are visible from the inside.
 * `allfaces_optional`
     * Often used for leaves nodes.
