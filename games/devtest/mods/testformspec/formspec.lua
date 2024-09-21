@@ -305,7 +305,7 @@ local scroll_fs =
 		"list[current_player;main;0,5;8,4;]"..
 	"scroll_container_end[]"..
 	"scrollbar[10.1,8;0.5,4;vertical;scrbar420;0]"..
-	-- Scale
+	-- Buttons for scale comparison
 	"button[11,8;1,1;;0]"..
 	"button[11,9;1,1;;1]"..
 	"button[11,10;1,1;;2]"..

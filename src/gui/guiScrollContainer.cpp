@@ -81,18 +81,31 @@ void GUIScrollContainer::setScrollBar(GUIScrollBar *scrollbar)
 			size.addInternalPoint(abs_rect.LowerRightCorner);
 		}
 
-		s32 hidden_content_px = *m_content_padding_px + (
+		s32 visible_content_px = (
 			m_orientation == VERTICAL
-				? std::max<s32>(0, size.LowerRightCorner.Y - AbsoluteClippingRect.LowerRightCorner.Y)
-				: std::max<s32>(0, size.LowerRightCorner.X - AbsoluteClippingRect.LowerRightCorner.X)
+				? AbsoluteClippingRect.getHeight()
+				: AbsoluteClippingRect.getWidth()
 		);
-		m_scrollbar->setMin(0);
-		m_scrollbar->setMax(std::ceil(hidden_content_px / std::fabs(m_scrollfactor)));
-		m_scrollbar->setPageSize(*m_content_padding_px + (
+
+		s32 total_content_px = *m_content_padding_px + (
 			m_orientation == VERTICAL
 				? (size.LowerRightCorner.Y - AbsoluteClippingRect.UpperLeftCorner.Y)
 				: (size.LowerRightCorner.X - AbsoluteClippingRect.UpperLeftCorner.X)
-		));
+		);
+
+		s32 hidden_content_px = std::max<s32>(0, total_content_px - visible_content_px);
+		m_scrollbar->setMin(0);
+		m_scrollbar->setMax(std::ceil(hidden_content_px / std::fabs(m_scrollfactor)));
+
+		// Note: generally, the scrollbar has the same size as the scroll container.
+		// However, in case it isn't, proportional adjustments are needed.
+		s32 scrollbar_px = (
+			m_scrollbar->isHorizontal()
+				? m_scrollbar->getRelativePosition().getWidth()
+				: m_scrollbar->getRelativePosition().getHeight()
+		);
+
+		m_scrollbar->setPageSize((total_content_px * scrollbar_px) / visible_content_px);
 	}
 
 	updateScrolling();
