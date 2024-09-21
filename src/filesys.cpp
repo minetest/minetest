@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cerrno>
 #include <fstream>
 #include <atomic>
+#include <filesystem>
 #include "log.h"
 #include "config.h"
 #include "porting.h"
@@ -376,46 +377,10 @@ bool IsDirDelimiter(char c)
 
 bool RecursiveDelete(const std::string &path)
 {
-	/*
-		Execute the 'rm' command directly, by fork() and execve()
-	*/
-
 	infostream<<"Removing \""<<path<<"\""<<std::endl;
 
-	pid_t child_pid = fork();
-
-	if(child_pid == 0)
-	{
-		// Child
-		const char *argv[4] = {
-#ifdef __ANDROID__
-			"/system/bin/rm",
-#else
-			"/bin/rm",
-#endif
-			"-rf",
-			path.c_str(),
-			NULL
-		};
-
-		verbosestream<<"Executing '"<<argv[0]<<"' '"<<argv[1]<<"' '"
-				<<argv[2]<<"'"<<std::endl;
-
-		execv(argv[0], const_cast<char**>(argv));
-
-		// Execv shouldn't return. Failed.
-		_exit(1);
-	}
-	else
-	{
-		// Parent
-		int child_status;
-		pid_t tpid;
-		do{
-			tpid = wait(&child_status);
-		}while(tpid != child_pid);
-		return (child_status == 0);
-	}
+	std::error_code ec;
+	return std::filesystem::remove_all(path, ec) != static_cast<std::uintmax_t>(-1);
 }
 
 bool DeleteSingleFileOrEmptyDirectory(const std::string &path)
