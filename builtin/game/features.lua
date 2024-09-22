@@ -43,6 +43,7 @@ core.features = {
 	moveresult_new_pos = true,
 	override_item_remove_fields = true,
 	hotbar_hud_element = true,
+	bulk_lbms = true,
 	preserve_liquid_param2 = true,
 }
 
