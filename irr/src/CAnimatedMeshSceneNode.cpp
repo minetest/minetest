@@ -258,7 +258,6 @@ void CAnimatedMeshSceneNode::render()
 	// for debug purposes only:
 	if (DebugDataVisible && PassCount == 1) {
 		video::SMaterial debug_mat;
-		debug_mat.Lighting = false;
 		debug_mat.AntiAliasing = 0;
 		driver->setMaterial(debug_mat);
 		// show normals
@@ -280,7 +279,6 @@ void CAnimatedMeshSceneNode::render()
 		}
 
 		debug_mat.ZBuffer = video::ECFN_DISABLED;
-		debug_mat.Lighting = false;
 		driver->setMaterial(debug_mat);
 
 		if (DebugDataVisible & scene::EDS_BBOX)
@@ -316,7 +314,6 @@ void CAnimatedMeshSceneNode::render()
 
 		// show mesh
 		if (DebugDataVisible & scene::EDS_MESH_WIRE_OVERLAY) {
-			debug_mat.Lighting = false;
 			debug_mat.Wireframe = true;
 			debug_mat.ZBuffer = video::ECFN_DISABLED;
 			driver->setMaterial(debug_mat);

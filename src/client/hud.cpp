@@ -99,7 +99,6 @@ Hud::Hud(Client *client, LocalPlayer *player,
 
 	// Initialize m_selection_material
 
-	m_selection_material.Lighting = false;
 
 	if (g_settings->getBool("enable_shaders")) {
 		IShaderSource *shdrsrc = client->getShaderSource();
@@ -121,7 +120,6 @@ Hud::Hud(Client *client, LocalPlayer *player,
 	}
 
 	// Initialize m_block_bounds_material
-	m_block_bounds_material.Lighting = false;
 	if (g_settings->getBool("enable_shaders")) {
 		IShaderSource *shdrsrc = client->getShaderSource();
 		auto shader_id = shdrsrc->getShader("default_shader", TILE_MATERIAL_ALPHA);
@@ -155,7 +153,6 @@ Hud::Hud(Client *client, LocalPlayer *player,
 	indices[4] = 3;
 	indices[5] = 0;
 
-	b->getMaterial().Lighting = false;
 	b->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	b->setHardwareMappingHint(scene::EHM_STATIC);
 }
@@ -1205,7 +1202,6 @@ void drawItemStack(
 
 			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			material.Lighting = false;
 			driver->setMaterial(material);
 			driver->drawMeshBuffer(buf);
 		}

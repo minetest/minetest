@@ -3976,10 +3976,9 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 	}
 
 	if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
-		/* TODO add a check like:
-		if (event.JoystickEvent != joystick_we_listen_for)
+		if (event.JoystickEvent.Joystick != m_joystick->getJoystickId())
 			return false;
-		*/
+
 		bool handled = m_joystick->handleEvent(event.JoystickEvent);
 		if (handled) {
 			if (m_joystick->wasKeyDown(KeyType::ESC)) {

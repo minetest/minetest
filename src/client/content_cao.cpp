@@ -186,10 +186,10 @@ static bool logOnce(const std::ostringstream &from, std::ostream &log_to)
 	return true;
 }
 
-static void setEmissiveColor(scene::ISceneNode *node, video::SColor color)
+static void setColorParam(scene::ISceneNode *node, video::SColor color)
 {
 	for (u32 i = 0; i < node->getMaterialCount(); ++i)
-		node->getMaterial(i).EmissiveColor = color;
+		node->getMaterial(i).ColorParam = color;
 }
 
 /*
@@ -261,7 +261,6 @@ void TestCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	u16 indices[] = {0,1,2,2,3,0};
 	buf->append(vertices, 4, indices, 6);
 	// Set material
-	buf->getMaterial().Lighting = false;
 	buf->getMaterial().BackfaceCulling = false;
 	buf->getMaterial().TextureLayers[0].Texture = tsrc->getTextureForMesh("rat.png");
 	buf->getMaterial().TextureLayers[0].MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
@@ -648,12 +647,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 	auto setMaterial = [this] (video::SMaterial &mat) {
 		mat.MaterialType = m_material_type;
-		mat.Lighting = false;
 		mat.FogEnable = true;
-		if (m_enable_shaders) {
-			mat.GouraudShading = false;
-			mat.NormalizeNormals = true;
-		}
 		mat.forEachTexture([] (auto &tex) {
 			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 			tex.MagFilter = video::ETMAGF_NEAREST;
@@ -710,7 +704,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			// Set material
 			setMaterial(buf->getMaterial());
 			if (m_enable_shaders) {
-				buf->getMaterial().EmissiveColor = c;
+				buf->getMaterial().ColorParam = c;
 			}
 
 			// Add to mesh
@@ -736,7 +730,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			// Set material
 			setMaterial(buf->getMaterial());
 			if (m_enable_shaders) {
-				buf->getMaterial().EmissiveColor = c;
+				buf->getMaterial().ColorParam = c;
 			}
 
 			// Add to mesh
@@ -936,7 +930,7 @@ void GenericCAO::setNodeLight(const video::SColor &light_color)
 		auto *node = getSceneNode();
 		if (!node)
 			return;
-		setEmissiveColor(node, light_color);
+		setColorParam(node, light_color);
 	} else {
 		if (m_meshnode) {
 			setMeshColor(m_meshnode->getMesh(), light_color);
@@ -1366,15 +1360,6 @@ void GenericCAO::updateTextures(std::string mod)
 			material.MaterialTypeParam = m_material_type_param;
 			material.setTexture(0, tsrc->getTextureForMesh(texturestring));
 
-			// This allows setting per-material colors. However, until a real lighting
-			// system is added, the code below will have no effect. Once MineTest
-			// has directional lighting, it should work automatically.
-			if (!m_prop.colors.empty()) {
-				material.AmbientColor = m_prop.colors[0];
-				material.DiffuseColor = m_prop.colors[0];
-				material.SpecularColor = m_prop.colors[0];
-			}
-
 			material.forEachTexture([=] (auto &tex) {
 				setMaterialFilters(tex, use_bilinear_filter, use_trilinear_filter,
 						use_anisotropic_filter);
@@ -1417,17 +1402,6 @@ void GenericCAO::updateTextures(std::string mod)
 							use_anisotropic_filter);
 				});
 			}
-			for (u32 i = 0; i < m_prop.colors.size() &&
-					i < m_animated_meshnode->getMaterialCount(); ++i)
-			{
-				video::SMaterial &material = m_animated_meshnode->getMaterial(i);
-				// This allows setting per-material colors. However, until a real lighting
-				// system is added, the code below will have no effect. Once MineTest
-				// has directional lighting, it should work automatically.
-				material.AmbientColor = m_prop.colors[i];
-				material.DiffuseColor = m_prop.colors[i];
-				material.SpecularColor = m_prop.colors[i];
-			}
 		}
 	}
 
@@ -1445,19 +1419,8 @@ void GenericCAO::updateTextures(std::string mod)
 				video::SMaterial &material = m_meshnode->getMaterial(i);
 				material.MaterialType = m_material_type;
 				material.MaterialTypeParam = m_material_type_param;
-				material.Lighting = false;
 				material.setTexture(0, tsrc->getTextureForMesh(texturestring));
 				material.getTextureMatrix(0).makeIdentity();
-
-				// This allows setting per-material colors. However, until a real lighting
-				// system is added, the code below will have no effect. Once MineTest
-				// has directional lighting, it should work automatically.
-				if(m_prop.colors.size() > i)
-				{
-					material.AmbientColor = m_prop.colors[i];
-					material.DiffuseColor = m_prop.colors[i];
-					material.SpecularColor = m_prop.colors[i];
-				}
 
 				material.forEachTexture([=] (auto &tex) {
 					setMaterialFilters(tex, use_bilinear_filter, use_trilinear_filter,
@@ -1475,15 +1438,6 @@ void GenericCAO::updateTextures(std::string mod)
 				auto &material = m_meshnode->getMaterial(0);
 				material.setTexture(0, tsrc->getTextureForMesh(tname));
 
-				// This allows setting per-material colors. However, until a real lighting
-				// system is added, the code below will have no effect. Once MineTest
-				// has directional lighting, it should work automatically.
-				if(!m_prop.colors.empty()) {
-					material.AmbientColor = m_prop.colors[0];
-					material.DiffuseColor = m_prop.colors[0];
-					material.SpecularColor = m_prop.colors[0];
-				}
-
 				material.forEachTexture([=] (auto &tex) {
 					setMaterialFilters(tex, use_bilinear_filter, use_trilinear_filter,
 							use_anisotropic_filter);
@@ -1499,19 +1453,6 @@ void GenericCAO::updateTextures(std::string mod)
 
 				auto &material = m_meshnode->getMaterial(1);
 				material.setTexture(0, tsrc->getTextureForMesh(tname));
-
-				// This allows setting per-material colors. However, until a real lighting
-				// system is added, the code below will have no effect. Once MineTest
-				// has directional lighting, it should work automatically.
-				if (m_prop.colors.size() >= 2) {
-					material.AmbientColor = m_prop.colors[1];
-					material.DiffuseColor = m_prop.colors[1];
-					material.SpecularColor = m_prop.colors[1];
-				} else if (!m_prop.colors.empty()) {
-					material.AmbientColor = m_prop.colors[0];
-					material.DiffuseColor = m_prop.colors[0];
-					material.SpecularColor = m_prop.colors[0];
-				}
 
 				material.forEachTexture([=] (auto &tex) {
 					setMaterialFilters(tex, use_bilinear_filter, use_trilinear_filter,

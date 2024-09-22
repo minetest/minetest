@@ -1223,7 +1223,6 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 				local_material.FrontfaceCulling = material.FrontfaceCulling;
 			}
 			local_material.BlendOperation = material.BlendOperation;
-			local_material.Lighting = false;
 			driver->setMaterial(local_material);
 			++material_swaps;
 		}

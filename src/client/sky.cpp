@@ -39,7 +39,6 @@ using namespace irr::core;
 static video::SMaterial baseMaterial()
 {
 	video::SMaterial mat;
-	mat.Lighting = false;
 	mat.ZBuffer = video::ECFN_DISABLED;
 	mat.ZWriteEnable = video::EZW_OFF;
 	mat.AntiAliasing = 0;
@@ -95,7 +94,6 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 
 	for (int i = 5; i < 11; i++) {
 		m_materials[i] = baseMaterial();
-		m_materials[i].Lighting = true;
 		m_materials[i].MaterialType = video::EMT_SOLID;
 	}
 
@@ -169,7 +167,8 @@ void Sky::render()
 			video::SColor texel_color (255, texel->getRed(),
 				texel->getGreen(), texel->getBlue());
 			m_sun_tonemap->unlock();
-			m_materials[3].EmissiveColor = texel_color;
+			// Only accessed by our code later, not used by a shader
+			m_materials[3].ColorParam = texel_color;
 		}
 
 		if (m_moon_tonemap) {
@@ -178,7 +177,8 @@ void Sky::render()
 			video::SColor texel_color (255, texel->getRed(),
 				texel->getGreen(), texel->getBlue());
 			m_moon_tonemap->unlock();
-			m_materials[4].EmissiveColor = texel_color;
+			// Only accessed by our code later, not used by a shader
+			m_materials[4].ColorParam = texel_color;
 		}
 
 		const f32 t = 1.0f;
@@ -465,11 +465,11 @@ void Sky::update(float time_of_day, float time_brightness,
 			// which keeps previous behavior.
 			if (m_sun_tonemap && m_default_tint) {
 				pointcolor_sun_f.r = pointcolor_light *
-					(float)m_materials[3].EmissiveColor.getRed() / 255;
+					(float)m_materials[3].ColorParam.getRed() / 255;
 				pointcolor_sun_f.b = pointcolor_light *
-					(float)m_materials[3].EmissiveColor.getBlue() / 255;
+					(float)m_materials[3].ColorParam.getBlue() / 255;
 				pointcolor_sun_f.g = pointcolor_light *
-					(float)m_materials[3].EmissiveColor.getGreen() / 255;
+					(float)m_materials[3].ColorParam.getGreen() / 255;
 			} else if (!m_default_tint) {
 				pointcolor_sun_f = m_sky_params.fog_sun_tint;
 			} else {
@@ -498,11 +498,11 @@ void Sky::update(float time_of_day, float time_brightness,
 			}
 			if (m_moon_tonemap && m_default_tint) {
 				pointcolor_moon_f.r = pointcolor_light *
-					(float)m_materials[4].EmissiveColor.getRed() / 255;
+					(float)m_materials[4].ColorParam.getRed() / 255;
 				pointcolor_moon_f.b = pointcolor_light *
-					(float)m_materials[4].EmissiveColor.getBlue() / 255;
+					(float)m_materials[4].ColorParam.getBlue() / 255;
 				pointcolor_moon_f.g = pointcolor_light *
-					(float)m_materials[4].EmissiveColor.getGreen() / 255;
+					(float)m_materials[4].ColorParam.getGreen() / 255;
 			}
 
 			video::SColor pointcolor_sun = pointcolor_sun_f.toSColor();
@@ -603,11 +603,8 @@ void Sky::draw_sun(video::IVideoDriver *driver, const video::SColor &suncolor,
 		// Another magic number that contributes to the ratio 1.57 sun/moon size
 		// difference.
 		float d = (sunsize * 1.7) * m_sun_params.scale;
-		video::SColor c;
-		if (m_sun_tonemap)
-			c = video::SColor(0, 0, 0, 0);
-		else
-			c = video::SColor(255, 255, 255, 255);
+		video::SColor c = m_sun_tonemap ? m_materials[3].ColorParam :
+				video::SColor(255, 255, 255, 255);
 		draw_sky_body(vertices, -d, d, c);
 		place_sky_body(vertices, 90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleList(&vertices[0], 4, indices, 2);
@@ -660,11 +657,8 @@ void Sky::draw_moon(video::IVideoDriver *driver, const video::SColor &mooncolor,
 		// Another magic number that contributes to the ratio 1.57 sun/moon size
 		// difference.
 		float d = (moonsize * 1.9) * m_moon_params.scale;
-		video::SColor c;
-		if (m_moon_tonemap)
-			c = video::SColor(0, 0, 0, 0);
-		else
-			c = video::SColor(255, 255, 255, 255);
+		video::SColor c = m_sun_tonemap ? m_materials[4].ColorParam :
+				video::SColor(255, 255, 255, 255);
 		draw_sky_body(vertices, -d, d, c);
 		place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleList(&vertices[0], 4, indices, 2);
@@ -689,7 +683,7 @@ void Sky::draw_stars(video::IVideoDriver * driver, float wicked_time_of_day)
 	if (color.a <= 0.0f) // Stars are only drawn when not fully transparent
 		return;
 	if (m_enable_shaders)
-		m_materials[0].EmissiveColor = color.toSColor();
+		m_materials[0].ColorParam = color.toSColor();
 	else
 		setMeshBufferColor(m_stars.get(), color.toSColor());
 
@@ -745,7 +739,6 @@ void Sky::setSunTexture(const std::string &sun_texture,
 	m_sun_params.tonemap = sun_tonemap;
 	m_sun_tonemap = tsrc->isKnownSourceImage(sun_tonemap) ?
 		tsrc->getTexture(sun_tonemap) : nullptr;
-	m_materials[3].Lighting = !!m_sun_tonemap;
 
 	if (m_sun_params.texture == sun_texture && !m_first_update)
 		return;
@@ -765,7 +758,6 @@ void Sky::setSunTexture(const std::string &sun_texture,
 		m_materials[3].setTexture(0, m_sun_texture);
 		m_materials[3].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		disableTextureFiltering(m_materials[3]);
-		m_materials[3].Lighting = !!m_sun_tonemap;
 	}
 }
 
@@ -789,7 +781,6 @@ void Sky::setMoonTexture(const std::string &moon_texture,
 	m_moon_params.tonemap = moon_tonemap;
 	m_moon_tonemap = tsrc->isKnownSourceImage(moon_tonemap) ?
 		tsrc->getTexture(moon_tonemap) : nullptr;
-	m_materials[4].Lighting = !!m_moon_tonemap;
 
 	if (m_moon_params.texture == moon_texture && !m_first_update)
 		return;
@@ -809,7 +800,6 @@ void Sky::setMoonTexture(const std::string &moon_texture,
 		m_materials[4].setTexture(0, m_moon_texture);
 		m_materials[4].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		disableTextureFiltering(m_materials[4]);
-		m_materials[4].Lighting = !!m_moon_tonemap;
 	}
 }
 

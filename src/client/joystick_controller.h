@@ -155,6 +155,11 @@ public:
 	float getMovementDirection();
 	float getMovementSpeed();
 
+	u8 getJoystickId() const
+	{
+		return m_joystick_id;
+	}
+
 	f32 doubling_dtime;
 
 private:
