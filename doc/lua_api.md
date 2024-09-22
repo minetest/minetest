@@ -5526,6 +5526,8 @@ Utilities
       override_item_remove_fields = true,
       -- The predefined hotbar is a Lua HUD element of type `hotbar` (5.10.0)
       hotbar_hud_element = true,
+      -- Bulk LBM support (5.10.0)
+      bulk_lbms = true,
       -- The upper four bits of liquid node param2 values are preserved
       -- during liquid flow (5.10.0)
       preserve_liquid_param2 = true,
