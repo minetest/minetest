@@ -355,8 +355,6 @@ public:
 
 	void setLighting(RemotePlayer *player, const Lighting &lighting);
 
-	void RespawnPlayer(session_t peer_id);
-
 	/* con::PeerHandler implementation. */
 	void peerAdded(con::IPeer *peer);
 	void deletingPeer(con::IPeer *peer, bool timeout);

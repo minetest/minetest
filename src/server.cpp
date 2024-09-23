@@ -2793,28 +2793,6 @@ void Server::HandlePlayerDeath(PlayerSAO *playersao, const PlayerHPChangeReason 
 	m_script->on_dieplayer(playersao, reason);
 }
 
-void Server::RespawnPlayer(session_t peer_id)
-{
-	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	assert(playersao);
-
-	infostream << "Server::RespawnPlayer(): Player "
-			<< playersao->getPlayer()->getName()
-			<< " respawns" << std::endl;
-
-	const auto *prop = playersao->accessObjectProperties();
-	playersao->setHP(prop->hp_max,
-			PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
-	playersao->setBreath(prop->breath_max);
-
-	bool repositioned = m_script->on_respawnplayer(playersao);
-	if (!repositioned) {
-		// setPos will send the new position to client
-		playersao->setPos(findSpawnPos());
-	}
-}
-
-
 void Server::DenySudoAccess(session_t peer_id)
 {
 	NetworkPacket pkt(TOCLIENT_DENY_SUDO_MODE, 0, peer_id);

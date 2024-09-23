@@ -124,6 +124,7 @@ public:
 	void setHPRaw(u16 hp) { m_hp = hp; }
 	u16 getBreath() const { return m_breath; }
 	void setBreath(const u16 breath, bool send = true);
+	void respawn();
 
 	/*
 		Inventory interface

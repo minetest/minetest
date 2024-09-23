@@ -2693,11 +2693,11 @@ int ObjectRef::l_respawn(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
-	RemotePlayer *player = getplayer(ref);
-	if (player == nullptr)
+	auto *psao = getplayersao(ref);
+	if (psao == nullptr)
 		return 0;
 
-	getServer(L)->RespawnPlayer(player->getPeerId());
+	psao->respawn();
 	lua_pushboolean(L, true);
 	return 1;
 }
