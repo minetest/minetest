@@ -35,7 +35,7 @@ enum ClientEventType : u8
 	CE_NONE,
 	CE_PLAYER_DAMAGE,
 	CE_PLAYER_FORCE_MOVE,
-	CE_DEATHSCREEN,
+	CE_DEATHSCREEN_LEGACY,
 	CE_SHOW_FORMSPEC,
 	CE_SHOW_LOCAL_FORMSPEC,
 	CE_SPAWN_PARTICLE,
@@ -95,13 +95,6 @@ struct ClientEvent
 			f32 pitch;
 			f32 yaw;
 		} player_force_move;
-		struct
-		{
-			bool set_camera_point_target;
-			f32 camera_point_target_x;
-			f32 camera_point_target_y;
-			f32 camera_point_target_z;
-		} deathscreen;
 		struct
 		{
 			std::string *formspec;

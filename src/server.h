@@ -193,7 +193,6 @@ public:
 	void handleCommand_ChatMessage(NetworkPacket* pkt);
 	void handleCommand_Damage(NetworkPacket* pkt);
 	void handleCommand_PlayerItem(NetworkPacket* pkt);
-	void handleCommand_Respawn(NetworkPacket* pkt);
 	void handleCommand_Interact(NetworkPacket* pkt);
 	void handleCommand_RemovedSounds(NetworkPacket* pkt);
 	void handleCommand_NodeMetaFields(NetworkPacket* pkt);
@@ -356,8 +355,6 @@ public:
 
 	void setLighting(RemotePlayer *player, const Lighting &lighting);
 
-	void RespawnPlayer(session_t peer_id);
-
 	/* con::PeerHandler implementation. */
 	void peerAdded(con::IPeer *peer);
 	void deletingPeer(con::IPeer *peer, bool timeout);
@@ -486,8 +483,6 @@ private:
 	void SendBreath(session_t peer_id, u16 breath);
 	void SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 		std::string_view custom_reason, bool reconnect = false);
-	void SendDeathscreen(session_t peer_id, bool set_camera_point_target,
-		v3f camera_point_target);
 	void SendItemDef(session_t peer_id, IItemDefManager *itemdef, u16 protocol_version);
 	void SendNodeDef(session_t peer_id, const NodeDefManager *nodedef,
 		u16 protocol_version);

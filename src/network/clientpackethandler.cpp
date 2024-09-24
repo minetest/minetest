@@ -653,20 +653,10 @@ void Client::handleCommand_MovePlayerRel(NetworkPacket *pkt)
 	player->addPosition(added_pos);
 }
 
-void Client::handleCommand_DeathScreen(NetworkPacket* pkt)
+void Client::handleCommand_DeathScreenLegacy(NetworkPacket* pkt)
 {
-	bool set_camera_point_target;
-	v3f camera_point_target;
-
-	*pkt >> set_camera_point_target;
-	*pkt >> camera_point_target;
-
 	ClientEvent *event = new ClientEvent();
-	event->type                                = CE_DEATHSCREEN;
-	event->deathscreen.set_camera_point_target = set_camera_point_target;
-	event->deathscreen.camera_point_target_x   = camera_point_target.X;
-	event->deathscreen.camera_point_target_y   = camera_point_target.Y;
-	event->deathscreen.camera_point_target_z   = camera_point_target.Z;
+	event->type = CE_DEATHSCREEN_LEGACY;
 	m_client_event_queue.push(event);
 }
 

@@ -1159,10 +1159,6 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	// Send HP
 	SendPlayerHP(playersao, false);
 
-	// Send death screen
-	if (playersao->isDead())
-		SendDeathscreen(peer_id, false, v3f(0,0,0));
-
 	// Send Breath
 	SendPlayerBreath(playersao);
 
@@ -1402,14 +1398,6 @@ void Server::SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 
 	NetworkPacket pkt(TOCLIENT_ACCESS_DENIED, 1, peer_id);
 	pkt << (u8)reason << custom_reason << (u8)reconnect;
-	Send(&pkt);
-}
-
-void Server::SendDeathscreen(session_t peer_id, bool set_camera_point_target,
-		v3f camera_point_target)
-{
-	NetworkPacket pkt(TOCLIENT_DEATHSCREEN, 1 + sizeof(v3f), peer_id);
-	pkt << set_camera_point_target << camera_point_target;
 	Send(&pkt);
 }
 
@@ -2803,31 +2791,7 @@ void Server::HandlePlayerDeath(PlayerSAO *playersao, const PlayerHPChangeReason 
 
 	// Trigger scripted stuff
 	m_script->on_dieplayer(playersao, reason);
-
-	SendDeathscreen(playersao->getPeerID(), false, v3f(0,0,0));
 }
-
-void Server::RespawnPlayer(session_t peer_id)
-{
-	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	assert(playersao);
-
-	infostream << "Server::RespawnPlayer(): Player "
-			<< playersao->getPlayer()->getName()
-			<< " respawns" << std::endl;
-
-	const auto *prop = playersao->accessObjectProperties();
-	playersao->setHP(prop->hp_max,
-			PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
-	playersao->setBreath(prop->breath_max);
-
-	bool repositioned = m_script->on_respawnplayer(playersao);
-	if (!repositioned) {
-		// setPos will send the new position to client
-		playersao->setPos(findSpawnPos());
-	}
-}
-
 
 void Server::DenySudoAccess(session_t peer_id)
 {

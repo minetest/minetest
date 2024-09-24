@@ -5869,6 +5869,7 @@ Call these functions only at load time!
 * `minetest.register_on_dieplayer(function(ObjectRef, reason))`
     * Called when a player dies
     * `reason`: a PlayerHPChangeReason table, see register_on_player_hpchange
+    * For customizing the death screen, see `minetest.show_death_screen`.
 * `minetest.register_on_respawnplayer(function(ObjectRef))`
     * Called when player is to be respawned
     * Called _before_ repositioning of player occurs
@@ -6573,6 +6574,13 @@ Formspec
         * `"INV"`: something failed
         * `"CHG"`: has been changed
         * `"VAL"`: not changed
+* `minetest.show_death_screen(player, reason)`
+    * Called when the death screen should be shown.
+    * `player` is an ObjectRef, `reason` is a PlayerHPChangeReason table or nil.
+    * By default, this shows a simple formspec with the option to respawn.
+      Respawning is done via `ObjectRef:respawn`.
+    * You can override this to show a custom death screen.
+    * For general death handling, use `minetest.register_on_dieplayer` instead.
 
 Item handling
 -------------

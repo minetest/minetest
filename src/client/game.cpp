@@ -186,7 +186,7 @@ struct LocalFormspecHandler : public TextDest
 			assert(m_client != nullptr);
 
 			if (fields.find("quit") != fields.end())
-				m_client->sendRespawn();
+				m_client->sendRespawnLegacy();
 
 			return;
 		}
@@ -837,7 +837,7 @@ private:
 		bool disable_camera_update = false;
 	};
 
-	void showDeathFormspec();
+	void showDeathFormspecLegacy();
 	void showPauseMenu();
 
 	void pauseAnimation();
@@ -847,7 +847,7 @@ private:
 	void handleClientEvent_None(ClientEvent *event, CameraOrientation *cam);
 	void handleClientEvent_PlayerDamage(ClientEvent *event, CameraOrientation *cam);
 	void handleClientEvent_PlayerForceMove(ClientEvent *event, CameraOrientation *cam);
-	void handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_DeathscreenLegacy(ClientEvent *event, CameraOrientation *cam);
 	void handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation *cam);
 	void handleClientEvent_ShowLocalFormSpec(ClientEvent *event, CameraOrientation *cam);
 	void handleClientEvent_HandleParticleEvent(ClientEvent *event,
@@ -2854,7 +2854,7 @@ const ClientEventHandler Game::clientEventHandler[CLIENTEVENT_MAX] = {
 	{&Game::handleClientEvent_None},
 	{&Game::handleClientEvent_PlayerDamage},
 	{&Game::handleClientEvent_PlayerForceMove},
-	{&Game::handleClientEvent_Deathscreen},
+	{&Game::handleClientEvent_DeathscreenLegacy},
 	{&Game::handleClientEvent_ShowFormSpec},
 	{&Game::handleClientEvent_ShowLocalFormSpec},
 	{&Game::handleClientEvent_HandleParticleEvent},
@@ -2910,20 +2910,9 @@ void Game::handleClientEvent_PlayerForceMove(ClientEvent *event, CameraOrientati
 	cam->camera_pitch = event->player_force_move.pitch;
 }
 
-void Game::handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *cam)
+void Game::handleClientEvent_DeathscreenLegacy(ClientEvent *event, CameraOrientation *cam)
 {
-	// If client scripting is enabled, deathscreen is handled by CSM code in
-	// builtin/client/init.lua
-	if (client->modsLoaded())
-		client->getScript()->on_death();
-	else
-		showDeathFormspec();
-
-	/* Handle visualization */
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	runData.damage_flash = 0;
-	player->hurt_tilt_timer = 0;
-	player->hurt_tilt_strength = 0;
+	showDeathFormspecLegacy();
 }
 
 void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation *cam)
@@ -4468,7 +4457,7 @@ void Game::readSettings()
  ****************************************************************************/
 /****************************************************************************/
 
-void Game::showDeathFormspec()
+void Game::showDeathFormspecLegacy()
 {
 	static std::string formspec_str =
 		std::string("formspec_version[1]") +

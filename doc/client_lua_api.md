@@ -338,8 +338,6 @@ Call these functions only at load time!
       is checked to see if the command exists, but after the input is parsed.
     * Return `true` to mark the command as handled, which means that the default
       handlers will be prevented.
-* `minetest.register_on_death(function())`
-    * Called when the local player dies
 * `minetest.register_on_hp_modification(function(hp))`
     * Called when server modified player's HP
 * `minetest.register_on_damage_taken(function(hp))`
@@ -487,8 +485,6 @@ Call these functions only at load time!
     * Returns `false` if the client is already disconnecting otherwise returns `true`.
 * `minetest.get_server_info()`
     * Returns [server info](#server-info).
-* `minetest.send_respawn()`
-    * Sends a respawn request to the server.
 
 ### Storage API
 * `minetest.get_mod_storage()`:
