@@ -4940,8 +4940,12 @@ Methods
       more lighting bugs.
 * `get_node_at(pos)`: Returns a `MapNode` table of the node currently loaded in
   the `VoxelManip` at that position
+* `get_node_raw(x, y, z)`: Returns `content_id`, `param1`, `param2` of the node
+  currently loaded in the `VoxelManip` at that position
 * `set_node_at(pos, node)`: Sets a specific `MapNode` in the `VoxelManip` at
   that position.
+* `set_node_raw(x, y, z, content_id, param1, param2)`: Sets the content of a node
+  in the `VoxelManip` at that position.
 * `get_data([buffer])`: Retrieves the node content data loaded into the
   `VoxelManip` object.
     * returns raw node data in the form of an array of node content IDs
