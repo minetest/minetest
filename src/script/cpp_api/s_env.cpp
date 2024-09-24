@@ -239,19 +239,7 @@ void ScriptApiEnv::readABMs()
 
 		std::vector<std::string> without_neighbors;
 		lua_getfield(L, current_abm, "without_neighbors");
-		if (lua_istable(L, -1)) {
-			int table = lua_gettop(L);
-			lua_pushnil(L);
-			while (lua_next(L, table)) {
-				// key at index -2 and value at index -1
-				luaL_checktype(L, -1, LUA_TSTRING);
-				without_neighbors.emplace_back(readParam<std::string>(L, -1));
-				// removes value, keeps key for next iteration
-				lua_pop(L, 1);
-			}
-		} else if (lua_isstring(L, -1)) {
-			without_neighbors.emplace_back(readParam<std::string>(L, -1));
-		}
+		read_nodenames(L, -1, without_neighbors);
 		lua_pop(L, 1);
 
 		float trigger_interval = 10.0;
