@@ -1209,11 +1209,22 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	// Render all mesh buffers in order
 	drawcall_count += draw_order.size();
 
+	bool translucent_foliage = g_settings->getBool("enable_translucent_foliage");
+
+	video::E_MATERIAL_TYPE leaves_material = video::EMT_SOLID;
+
+	// For translucent leaves, we want to use backface culling instead of frontface.
+	if (translucent_foliage) {
+		// this is the material leaves would use, compare to nodedef.cpp
+		auto* shdsrc = m_client->getShaderSource();
+		const u32 leaves_shader = shdsrc->getShader("nodes_shader", TILE_MATERIAL_WAVING_LEAVES, NDT_ALLFACES);
+		leaves_material = shdsrc->getShaderInfo(leaves_shader).material;
+	}
+
 	for (auto &descriptor : draw_order) {
 		if (!descriptor.m_reuse_material) {
 			// override some material properties
 			video::SMaterial local_material = descriptor.getMaterial();
-			local_material.MaterialType = material.MaterialType;
 			// do not override culling if the original material renders both back
 			// and front faces in solid mode (e.g. plantlike)
 			// Transparent plants would still render shadows only from one side,
@@ -1222,6 +1233,11 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 				local_material.BackfaceCulling = material.BackfaceCulling;
 				local_material.FrontfaceCulling = material.FrontfaceCulling;
 			}
+			if (local_material.MaterialType == leaves_material && translucent_foliage) {
+				local_material.BackfaceCulling = true;
+				local_material.FrontfaceCulling = false;
+			}
+			local_material.MaterialType = material.MaterialType;
 			local_material.BlendOperation = material.BlendOperation;
 			driver->setMaterial(local_material);
 			++material_swaps;

@@ -275,6 +275,7 @@ void set_default_settings()
 	settings->setDefault("view_bobbing_amount", "1.0");
 	settings->setDefault("fall_bobbing_amount", "0.03");
 	settings->setDefault("enable_3d_clouds", "true");
+	settings->setDefault("soft_clouds", "false");
 	settings->setDefault("cloud_radius", "12");
 	settings->setDefault("menu_clouds", "true");
 	settings->setDefault("translucent_liquids", "true");
@@ -335,6 +336,9 @@ void set_default_settings()
 	settings->setDefault("bloom_intensity", "0.05");
 	settings->setDefault("bloom_radius", "1");
 	settings->setDefault("enable_volumetric_lighting", "false");
+	settings->setDefault("enable_water_reflections", "false");
+	settings->setDefault("enable_translucent_foliage", "false");
+	settings->setDefault("enable_node_specular", "false");
 
 	// Effects Shadows
 	settings->setDefault("enable_dynamic_shadows", "false");

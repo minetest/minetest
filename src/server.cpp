@@ -1843,7 +1843,7 @@ void Server::SendCloudParams(session_t peer_id, const CloudParams &params)
 {
 	NetworkPacket pkt(TOCLIENT_CLOUD_PARAMS, 0, peer_id);
 	pkt << params.density << params.color_bright << params.color_ambient
-			<< params.height << params.thickness << params.speed;
+		<< params.height << params.thickness << params.speed << params.color_shadow;
 	Send(&pkt);
 }
 
@@ -1873,7 +1873,7 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 			<< lighting.exposure.speed_bright_dark
 			<< lighting.exposure.center_weight_power;
 
-	pkt << lighting.volumetric_light_strength;
+	pkt << lighting.volumetric_light_strength << lighting.shadow_tint;
 
 	Send(&pkt);
 }

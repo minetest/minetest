@@ -386,6 +386,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
 	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel{"cameraOffset"};
 	CachedVertexShaderSetting<float, 3> m_camera_offset_vertex{"cameraOffset"};
+	CachedPixelShaderSetting<float, 3> m_camera_position_pixel{ "cameraPosition" };
+	CachedVertexShaderSetting<float, 3> m_camera_position_vertex{ "cameraPosition" };
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture0{"texture0"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture1{"texture1"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture2{"texture2"};
@@ -491,6 +493,10 @@ public:
 		v3f offset = intToFloat(m_client->getCamera()->getOffset(), BS);
 		m_camera_offset_pixel.set(offset, services);
 		m_camera_offset_vertex.set(offset, services);
+
+		v3f camera_position = m_client->getCamera()->getPosition();
+		m_camera_position_pixel.set(camera_position, services);
+		m_camera_position_pixel.set(camera_position, services);
 
 		SamplerLayer_t tex_id;
 		tex_id = 0;
@@ -3184,6 +3190,7 @@ void Game::handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *
 	clouds->setDensity(event->cloud_params.density);
 	clouds->setColorBright(video::SColor(event->cloud_params.color_bright));
 	clouds->setColorAmbient(video::SColor(event->cloud_params.color_ambient));
+	clouds->setColorShadow(video::SColor(event->cloud_params.color_shadow));
 	clouds->setHeight(event->cloud_params.height);
 	clouds->setThickness(event->cloud_params.thickness);
 	clouds->setSpeed(v2f(event->cloud_params.speed_x, event->cloud_params.speed_y));
@@ -4315,7 +4322,9 @@ void Game::updateShadows()
 	float timeoftheday = getWickedTimeOfDay(in_timeofday);
 	bool is_day = timeoftheday > 0.25 && timeoftheday < 0.75;
 	bool is_shadow_visible = is_day ? sky->getSunVisible() : sky->getMoonVisible();
-	shadow->setShadowIntensity(is_shadow_visible ? client->getEnv().getLocalPlayer()->getLighting().shadow_intensity : 0.0f);
+	const auto &lighting = client->getEnv().getLocalPlayer()->getLighting();
+	shadow->setShadowIntensity(is_shadow_visible ? lighting.shadow_intensity : 0.0f);
+	shadow->setShadowTint(lighting.shadow_tint);
 
 	timeoftheday = std::fmod(timeoftheday + 0.75f, 0.5f) + 0.25f;
 	const float offset_constant = 10000.0f;
