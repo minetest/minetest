@@ -109,7 +109,12 @@ void ScriptApiSecurity::initializeSecurity()
 		"string",
 		"table",
 		"math",
-		"bit"
+		"bit",
+		// Not sure if completely safe. But if someone enables tracy, they'll
+		// know what they do.
+#if BUILD_WITH_TRACY
+		"tracy",
+#endif
 	};
 	static const char *io_whitelist[] = {
 		"close",
@@ -303,6 +308,11 @@ void ScriptApiSecurity::initializeSecurityClient()
 		"table",
 		"math",
 		"bit",
+		// Not sure if completely safe. But if someone enables tracy, they'll
+		// know what they do.
+#if BUILD_WITH_TRACY
+		"tracy",
+#endif
 	};
 	static const char *os_whitelist[] = {
 		"clock",

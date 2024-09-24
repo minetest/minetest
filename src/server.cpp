@@ -75,6 +75,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gameparams.h"
 #include "particles.h"
 #include "gettext.h"
+#include "util/tracy_wrapper.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -101,6 +102,8 @@ private:
 
 void *ServerThread::run()
 {
+	ZoneScoped;
+
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
 	/*
@@ -110,6 +113,7 @@ void *ServerThread::run()
 	 * server-step frequency. Receive() is used for waiting between the steps.
 	 */
 
+	auto framemarker = FrameMarker("ServerThread::run()-frame").started();
 	try {
 		m_server->AsyncRunStep(0.0f, true);
 	} catch (con::ConnectionBindFailed &e) {
@@ -119,10 +123,12 @@ void *ServerThread::run()
 	} catch (ModError &e) {
 		m_server->setAsyncFatalError(e.what());
 	}
+	framemarker.end();
 
 	float dtime = 0.0f;
 
 	while (!stopRequested()) {
+		framemarker.start();
 		ScopeProfiler spm(g_profiler, "Server::RunStep() (max)", SPT_MAX);
 
 		u64 t0 = porting::getTimeUs();
@@ -149,6 +155,7 @@ void *ServerThread::run()
 		}
 
 		dtime = 1e-6f * (porting::getTimeUs() - t0);
+		framemarker.end();
 	}
 
 	END_DEBUG_EXCEPTION_HANDLER
@@ -607,6 +614,9 @@ void Server::step()
 
 void Server::AsyncRunStep(float dtime, bool initial_step)
 {
+	ZoneScoped;
+	auto framemarker = FrameMarker("Server::AsyncRunStep()-frame").started();
+
 	{
 		// Send blocks to clients
 		SendBlocks(dtime);
@@ -1055,6 +1065,9 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 
 void Server::Receive(float timeout)
 {
+	ZoneScoped;
+	auto framemarker = FrameMarker("Server::Receive()-frame").started();
+
 	const u64 t0 = porting::getTimeUs();
 	const float timeout_us = timeout * 1e6f;
 	auto remaining_time_us = [&]() -> float {
@@ -1383,17 +1396,12 @@ void Server::SendBreath(session_t peer_id, u16 breath)
 }
 
 void Server::SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason, bool reconnect)
+		std::string_view custom_reason, bool reconnect)
 {
 	assert(reason < SERVER_ACCESSDENIED_MAX);
 
 	NetworkPacket pkt(TOCLIENT_ACCESS_DENIED, 1, peer_id);
-	pkt << (u8)reason;
-	if (reason == SERVER_ACCESSDENIED_CUSTOM_STRING)
-		pkt << custom_reason;
-	else if (reason == SERVER_ACCESSDENIED_SHUTDOWN ||
-			reason == SERVER_ACCESSDENIED_CRASH)
-		pkt << custom_reason << (u8)reconnect;
+	pkt << (u8)reason << custom_reason << (u8)reconnect;
 	Send(&pkt);
 }
 
@@ -2829,7 +2837,7 @@ void Server::DenySudoAccess(session_t peer_id)
 
 
 void Server::DenyAccess(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason, bool reconnect)
+		std::string_view custom_reason, bool reconnect)
 {
 	SendAccessDenied(peer_id, reason, custom_reason, reconnect);
 	m_clients.event(peer_id, CSE_SetDenied);

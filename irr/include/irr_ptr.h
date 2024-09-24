@@ -20,8 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 #include <type_traits>
 #include <utility>
-#include "irrlichttypes.h"
-#include "IReferenceCounted.h"
+namespace irr { class IReferenceCounted; }
 
 /** Shared pointer for IrrLicht objects.
  *
@@ -37,15 +36,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * from such object is a bug and may lead to a crash. Indirect construction
  * is possible though; see the @c grab free function for details and use cases.
  */
-template <class ReferenceCounted,
-		class = typename std::enable_if<std::is_base_of<IReferenceCounted,
-				ReferenceCounted>::value>::type>
+template <class ReferenceCounted>
 class irr_ptr
 {
 	ReferenceCounted *value = nullptr;
 
 public:
-	irr_ptr() {}
+	irr_ptr() noexcept = default;
 
 	irr_ptr(std::nullptr_t) noexcept {}
 
@@ -53,15 +50,15 @@ public:
 
 	irr_ptr(irr_ptr &&b) noexcept { reset(b.release()); }
 
-	template <typename B, class = typename std::enable_if<std::is_convertible<B *,
-					      ReferenceCounted *>::value>::type>
+	template <typename B,
+			std::enable_if_t<std::is_convertible_v<B *, ReferenceCounted *>, bool> = true>
 	irr_ptr(const irr_ptr<B> &b) noexcept
 	{
 		grab(b.get());
 	}
 
-	template <typename B, class = typename std::enable_if<std::is_convertible<B *,
-					      ReferenceCounted *>::value>::type>
+	template <typename B,
+			std::enable_if_t<std::is_convertible_v<B *, ReferenceCounted *>, bool> = true>
 	irr_ptr(irr_ptr<B> &&b) noexcept
 	{
 		reset(b.release());
@@ -88,16 +85,16 @@ public:
 		return *this;
 	}
 
-	template <typename B, class = typename std::enable_if<std::is_convertible<B *,
-					      ReferenceCounted *>::value>::type>
+	template <typename B,
+			std::enable_if_t<std::is_convertible_v<B *, ReferenceCounted *>, bool> = true>
 	irr_ptr &operator=(const irr_ptr<B> &b) noexcept
 	{
 		grab(b.get());
 		return *this;
 	}
 
-	template <typename B, class = typename std::enable_if<std::is_convertible<B *,
-					      ReferenceCounted *>::value>::type>
+	template <typename B,
+			std::enable_if_t<std::is_convertible_v<B *, ReferenceCounted *>, bool> = true>
 	irr_ptr &operator=(irr_ptr<B> &&b) noexcept
 	{
 		reset(b.release());
@@ -128,6 +125,8 @@ public:
 	 */
 	void reset(ReferenceCounted *object = nullptr) noexcept
 	{
+		static_assert(std::is_base_of_v<irr::IReferenceCounted, ReferenceCounted>,
+				"Class is not an IReferenceCounted");
 		if (value)
 			value->drop();
 		value = object;
@@ -138,6 +137,8 @@ public:
 	 */
 	void grab(ReferenceCounted *object) noexcept
 	{
+		static_assert(std::is_base_of_v<irr::IReferenceCounted, ReferenceCounted>,
+				"Class is not an IReferenceCounted");
 		if (object)
 			object->grab();
 		reset(object);
@@ -152,6 +153,7 @@ public:
  * in this function and decreased when the returned pointer is destroyed.
  */
 template <class ReferenceCounted>
+[[nodiscard]]
 irr_ptr<ReferenceCounted> grab(ReferenceCounted *object) noexcept
 {
 	irr_ptr<ReferenceCounted> ptr;

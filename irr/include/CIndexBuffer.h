@@ -7,6 +7,13 @@
 #include <vector>
 #include "IIndexBuffer.h"
 
+// Define to receive warnings when violating the hw mapping hints
+//#define INDEXBUFFER_HINT_DEBUG
+
+#ifdef INDEXBUFFER_HINT_DEBUG
+#include "../src/os.h"
+#endif
+
 namespace irr
 {
 namespace scene
@@ -58,6 +65,13 @@ public:
 	void setDirty() override
 	{
 		++ChangedID;
+#ifdef INDEXBUFFER_HINT_DEBUG
+		if (MappingHint == EHM_STATIC && HWBuffer) {
+			char buf[100];
+			snprintf_irr(buf, sizeof(buf), "CIndexBuffer @ %p modified, but it has a static hint", this);
+			os::Printer::log(buf, ELL_WARNING);
+		}
+#endif
 	}
 
 	u32 getChangedID() const override { return ChangedID; }

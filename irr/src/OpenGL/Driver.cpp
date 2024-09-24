@@ -1096,8 +1096,11 @@ void COpenGL3DriverBase::setMaterial(const SMaterial &material)
 	OverrideMaterial.apply(Material);
 
 	for (u32 i = 0; i < Feature.MaxTextureUnits; ++i) {
-		CacheHandler->getTextureCache().set(i, material.getTexture(i));
-		setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
+		auto *texture = material.getTexture(i);
+		CacheHandler->getTextureCache().set(i, texture);
+		if (texture) {
+			setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
+		}
 	}
 }
 
@@ -1475,10 +1478,8 @@ void COpenGL3DriverBase::chooseMaterial2D()
 		Material = InitMaterial2D;
 
 	if (OverrideMaterial2DEnabled) {
-		OverrideMaterial2D.Lighting = false;
 		OverrideMaterial2D.ZWriteEnable = EZW_OFF;
 		OverrideMaterial2D.ZBuffer = ECFN_DISABLED; // it will be ECFN_DISABLED after merge
-		OverrideMaterial2D.Lighting = false;
 
 		Material = OverrideMaterial2D;
 	}

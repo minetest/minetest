@@ -218,15 +218,15 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	CachedVertexShaderSetting<float, 16> m_texture{"mTexture"};
 
 	// commonly used way to pass material color to shader
-	video::SColor m_emissive_color;
-	CachedPixelShaderSetting<float, 4> m_emissive_color_setting{"emissiveColor"};
+	video::SColor m_material_color;
+	CachedPixelShaderSetting<float, 4> m_material_color_setting{"materialColor"};
 
 public:
 	~MainShaderConstantSetter() = default;
 
 	virtual void onSetMaterial(const video::SMaterial& material) override
 	{
-		m_emissive_color = material.EmissiveColor;
+		m_material_color = material.ColorParam;
 	}
 
 	virtual void onSetConstants(video::IMaterialRendererServices *services) override
@@ -249,13 +249,13 @@ public:
 		m_world_view_proj.set(worldViewProj, services);
 
 		if (driver->getDriverType() == video::EDT_OGLES2 || driver->getDriverType() == video::EDT_OPENGL3) {
-			core::matrix4 texture = driver->getTransform(video::ETS_TEXTURE_0);
+			auto &texture = driver->getTransform(video::ETS_TEXTURE_0);
 			m_world_view.set(worldView, services);
 			m_texture.set(texture, services);
 		}
 
-		video::SColorf emissive_color(m_emissive_color);
-		m_emissive_color_setting.set(emissive_color, services);
+		video::SColorf colorf(m_material_color);
+		m_material_color_setting.set(colorf, services);
 	}
 };
 
@@ -573,6 +573,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		} else {
 			shaders_header << "#version 100\n";
 		}
+		// cf. EVertexAttributes.h for the predefined ones
 		vertex_header = R"(
 			precision mediump float;
 
@@ -582,7 +583,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 
 			attribute highp vec4 inVertexPosition;
 			attribute lowp vec4 inVertexColor;
-			attribute mediump vec4 inTexCoord0;
+			attribute mediump vec2 inTexCoord0;
 			attribute mediump vec3 inVertexNormal;
 			attribute mediump vec4 inVertexTangent;
 			attribute mediump vec4 inVertexBinormal;

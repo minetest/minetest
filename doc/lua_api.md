@@ -5522,6 +5522,8 @@ Utilities
       override_item_remove_fields = true,
       -- The predefined hotbar is a Lua HUD element of type `hotbar` (5.10.0)
       hotbar_hud_element = true,
+      -- Bulk LBM support (5.10.0)
+      bulk_lbms = true,
       -- ABM supports field without_neighbors (5.10.0)
       abm_without_neighbors = true,
   }
@@ -5657,6 +5659,13 @@ Utilities
 * `minetest.colorspec_to_bytes(colorspec)`: Converts a ColorSpec to a raw
   string of four bytes in an RGBA layout, returned as a string.
   * `colorspec`: The ColorSpec to convert
+* `minetest.colorspec_to_table(colorspec)`: Converts a ColorSpec into RGBA table
+  form. If the ColorSpec is invalid, returns `nil`. You can use this to parse
+  ColorStrings.
+    * `colorspec`: The ColorSpec to convert
+* `minetest.time_to_day_night_ratio(time_of_day)`: Returns a "day-night ratio" value
+  (as accepted by `ObjectRef:override_day_night_ratio`) that is equivalent to
+  the given "time of day" value (as returned by `minetest.get_timeofday`).
 * `minetest.encode_png(width, height, data, [compression])`: Encode a PNG
   image and return it in string form.
     * `width`: Width of the image
@@ -7001,10 +7010,11 @@ Bans
     * Returns boolean indicating success
 * `minetest.unban_player_or_ip(ip_or_name)`: remove ban record matching
   IP address or name
-* `minetest.kick_player(name, [reason])`: disconnect a player with an optional
+* `minetest.kick_player(name[, reason[, reconnect]])`: disconnect a player with an optional
   reason.
     * Returns boolean indicating success (false if player nonexistent)
-* `minetest.disconnect_player(name, [reason])`: disconnect a player with an
+    * If `reconnect` is true, allow the user to reconnect.
+* `minetest.disconnect_player(name[, reason[, reconnect]])`: disconnect a player with an
   optional reason, this will not prefix with 'Kicked: ' like kick_player.
   If no reason is given, it will default to 'Disconnected.'
     * Returns boolean indicating success (false if player nonexistent)
@@ -8516,6 +8526,7 @@ child will follow movement and rotation of that bone.
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific
       amount.
     * Passing no arguments disables override, defaulting to sunlight based on day-night cycle
+    * See also `minetest.time_to_day_night_ratio`,
 * `get_day_night_ratio()`: returns the ratio or nil if it isn't overridden
 * `set_local_animation(idle, walk, dig, walk_while_dig, frame_speed)`:
   set animation for player model in third person view.
@@ -8542,8 +8553,17 @@ child will follow movement and rotation of that bone.
     * Passing no arguments resets lighting to its default values.
     * `light_definition` is a table with the following optional fields:
       * `saturation` sets the saturation (vividness; default: `1.0`).
-        * values > 1 increase the saturation
-        * values in [0,1] decrease the saturation
+        * It is applied according to the function `result = b*(1-s) + c*s`, where:
+          * `c` is the original color
+          * `b` is the greyscale version of the color with the same luma
+          * `s` is the saturation set here
+        * The resulting color always has the same luma (perceived brightness) as the original.
+        * This means that:
+          * values > 1 oversaturate
+          * values < 1 down to 0 desaturate, 0 being entirely greyscale
+          * values < 0 cause an effect similar to inversion,
+            but keeping original luma and being symmetrical in terms of saturation
+            (eg. -1 and 1 is the same saturation and luma, but different hues)
       * `shadows` is a table that controls ambient shadows
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
             * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
@@ -9113,7 +9133,12 @@ Used by `minetest.register_lbm`.
 
 A loading block modifier (LBM) is used to define a function that is called for
 specific nodes (defined by `nodenames`) when a mapblock which contains such nodes
-gets activated (not loaded!)
+gets activated (not loaded!).
+
+Note: LBMs operate on a "snapshot" of node positions taken once before they are triggered.
+That means if an LBM callback adds a node, it won't be taken into account.
+However the engine guarantees that when the callback is called that all given position(s)
+contain a matching node.
 
 ```lua
 {
@@ -9137,7 +9162,13 @@ gets activated (not loaded!)
     action = function(pos, node, dtime_s) end,
     -- Function triggered for each qualifying node.
     -- `dtime_s` is the in-game time (in seconds) elapsed since the block
-    -- was last active
+    -- was last active.
+
+    bulk_action = function(pos_list, dtime_s) end,
+    -- Function triggered with a list of all applicable node positions at once.
+    -- This can be provided as an alternative to `action` (not both).
+    -- Available since `minetest.features.bulk_lbms` (5.10.0)
+    -- `dtime_s`: as above
 }
 ```
 
@@ -9344,9 +9375,17 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
       -- If specified as a table, the field to be used is selected according to
       -- the current `pointed_thing`.
       -- There are three possible TouchInteractionMode values:
-      -- * "user"                 (meaning depends on client-side settings)
       -- * "long_dig_short_place" (long tap  = dig, short tap = place)
       -- * "short_dig_long_place" (short tap = dig, long tap  = place)
+      -- * "user":
+      --   * For `pointed_object`: Equivalent to "short_dig_long_place" if the
+      --     client-side setting "touch_punch_gesture" is "short_tap" (the
+      --     default value) and the item is able to punch (i.e. has no on_use
+      --     callback defined).
+      --     Equivalent to "long_dig_short_place" otherwise.
+      --   * For `pointed_node` and `pointed_nothing`:
+      --     Equivalent to "long_dig_short_place".
+      --   * The behavior of "user" may change in the future.
       -- The default value is "user".
 
     sound = {
@@ -11374,6 +11413,16 @@ Bit Library
 Functions: bit.tobit, bit.tohex, bit.bnot, bit.band, bit.bor, bit.bxor, bit.lshift, bit.rshift, bit.arshift, bit.rol, bit.ror, bit.bswap
 
 See http://bitop.luajit.org/ for advanced information.
+
+Tracy Profiler
+--------------
+
+Minetest can be built with support for the Tracy profiler, which can also be
+useful for profiling mods and is exposed to Lua as the global `tracy`.
+
+See doc/developing/misc.md for details.
+
+Note: This is a development feature and not covered by compatibility promises.
 
 Error Handling
 --------------

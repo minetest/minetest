@@ -194,10 +194,9 @@ private:
 static ExtrusionMeshCache *g_extrusion_mesh_cache = nullptr;
 
 
-WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool lighting):
+WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id):
 	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
-	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF),
-	m_lighting(lighting)
+	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
 {
 	m_enable_shaders = g_settings->getBool("enable_shaders");
 	m_anisotropic_filter = g_settings->getBool("anisotropic_filter");
@@ -306,9 +305,6 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		});
 		// mipmaps cause "thin black line" artifacts
 		material.UseMipMaps = false;
-		if (m_enable_shaders) {
-			material.setTexture(2, tsrc->getShaderFlagsTexture(false));
-		}
 	}
 }
 
@@ -343,7 +339,6 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 			if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
 				const FrameSpec &frame = (*p.layer.frames)[0];
 				p.layer.texture = frame.texture;
-				p.layer.normal_texture = frame.normal_texture;
 			}
 			for (video::S3DVertex &v : p.vertices) {
 				v.Color.setAlpha(255);
@@ -394,8 +389,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		// overlay is white, if present
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
 		// initialize the color
-		if (!m_lighting)
-			setColor(video::SColor(0xFFFFFFFF));
+		setColor(video::SColor(0xFFFFFFFF));
 		return;
 	}
 
@@ -472,8 +466,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		}
 
 		// initialize the color
-		if (!m_lighting)
-			setColor(video::SColor(0xFFFFFFFF));
+		setColor(video::SColor(0xFFFFFFFF));
 		return;
 	} else {
 		const std::string inventory_image = item.getInventoryImage(idef);
@@ -489,8 +482,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
 
 		// initialize the color
-		if (!m_lighting)
-			setColor(video::SColor(0xFFFFFFFF));
+		setColor(video::SColor(0xFFFFFFFF));
 		return;
 	}
 
@@ -500,7 +492,6 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 
 void WieldMeshSceneNode::setColor(video::SColor c)
 {
-	assert(!m_lighting);
 	scene::IMesh *mesh = m_meshnode->getMesh();
 	if (!mesh)
 		return;
@@ -539,7 +530,7 @@ void WieldMeshSceneNode::setNodeLightColor(video::SColor color)
 	if (m_enable_shaders) {
 		for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i) {
 			video::SMaterial &material = m_meshnode->getMaterial(i);
-			material.EmissiveColor = color;
+			material.ColorParam = color;
 		}
 	} else {
 		setColor(color);
@@ -569,11 +560,6 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 			mesh->setHardwareMappingHint(scene::EHM_DYNAMIC);
 	}
 
-	m_meshnode->forEachMaterial([this] (auto &mat) {
-		mat.Lighting = m_lighting;
-		// need to normalize normals when lighting is enabled (because of setScale())
-		mat.NormalizeNormals = m_lighting;
-	});
 	m_meshnode->setVisible(true);
 }
 
@@ -671,7 +657,6 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 				tex.MagFilter = video::ETMAGF_NEAREST;
 			});
 			material.BackfaceCulling = cull_backface;
-			material.Lighting = false;
 		}
 
 		rotateMeshXZby(mesh, -45);
@@ -724,7 +709,6 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 			tex.MagFilter = video::ETMAGF_NEAREST;
 		});
 		material.BackfaceCulling = true;
-		material.Lighting = false;
 		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		material.MaterialTypeParam = 0.5f;
 	}
@@ -771,16 +755,6 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 				material.setTexture(0, animation_frame.texture);
 			} else {
 				material.setTexture(0, layer->texture);
-			}
-			if (use_shaders) {
-				if (layer->normal_texture) {
-					if (layer->animation_frame_count > 1) {
-						const FrameSpec &animation_frame = (*layer->frames)[0];
-						material.setTexture(1, animation_frame.normal_texture);
-					} else
-						material.setTexture(1, layer->normal_texture);
-				}
-				material.setTexture(2, layer->flags_texture);
 			}
 
 			if (apply_scale && tile->world_aligned) {

@@ -56,6 +56,11 @@ if((WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU") OR APPLE)
 endif()
 set(ENABLE_LTO ${DEFAULT_ENABLE_LTO} CACHE BOOL "Use Link Time Optimization")
 
+set(BUILD_WITH_TRACY FALSE CACHE BOOL
+	"Fetch and build with the Tracy profiler client")
+set(FETCH_TRACY_GIT_TAG "master" CACHE STRING
+	"Git tag for fetching Tracy client. Match with your server (gui) version")
+
 set(DEFAULT_RUN_IN_PLACE FALSE)
 if(WIN32)
 	set(DEFAULT_RUN_IN_PLACE TRUE)
@@ -369,4 +374,20 @@ if(BUILD_DOCUMENTATION)
 			COMMENT "Generating API documentation with Doxygen" VERBATIM
 		)
 	endif()
+endif()
+
+# Fetch Tracy
+if(BUILD_WITH_TRACY)
+	include(FetchContent)
+
+	message(STATUS "Fetching Tracy (${FETCH_TRACY_GIT_TAG})...")
+	FetchContent_Declare(
+		tracy
+		GIT_REPOSITORY https://github.com/wolfpld/tracy.git
+		GIT_TAG ${FETCH_TRACY_GIT_TAG}
+		GIT_SHALLOW TRUE
+		GIT_PROGRESS TRUE
+	)
+	FetchContent_MakeAvailable(tracy)
+	message(STATUS "Fetching Tracy - done")
 endif()

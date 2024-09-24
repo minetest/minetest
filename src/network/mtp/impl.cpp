@@ -739,18 +739,19 @@ void Channel::UpdateTimers(float dtime)
 	if (packet_loss_counter > 1.0f) {
 		packet_loss_counter -= 1.0f;
 
-		unsigned int packet_loss = 11; /* use a neutral value for initialization */
-		unsigned int packets_successful = 0;
-		//unsigned int packet_too_late = 0;
+		unsigned int packet_loss;
+		unsigned int packets_successful;
+		unsigned int packet_too_late;
 
 		bool reasonable_amount_of_data_transmitted = false;
 
 		{
 			MutexAutoLock internal(m_internal_mutex);
 			packet_loss = current_packet_loss;
-			//packet_too_late = current_packet_too_late;
+			packet_too_late = current_packet_too_late;
 			packets_successful = current_packet_successful;
 
+			// has half the window even been used?
 			if (current_bytes_transfered > (unsigned int) (m_window_size*512/2)) {
 				reasonable_amount_of_data_transmitted = true;
 			}
@@ -758,6 +759,11 @@ void Channel::UpdateTimers(float dtime)
 			current_packet_too_late = 0;
 			current_packet_successful = 0;
 		}
+
+		// Packets too late means either packet duplication along the way
+		// or we were too fast in resending it (which should be self-regulating).
+		// Count this a signal of congestion, like packet loss.
+		packet_loss = std::min(packet_loss + packet_too_late, packets_successful);
 
 		/* dynamic window size */
 		float successful_to_lost_ratio = 0.0f;
@@ -989,19 +995,27 @@ bool UDPPeer::isTimedOut(float timeout, std::string &reason)
 
 void UDPPeer::reportRTT(float rtt)
 {
-	if (rtt < 0.0) {
+	if (rtt < 0)
 		return;
-	}
 	RTTStatistics(rtt,"rudp",MAX_RELIABLE_WINDOW_SIZE*10);
 
 	// use this value to decide the resend timeout
-	float timeout = getStat(AVG_RTT) * RESEND_TIMEOUT_FACTOR;
+	const float rtt_stat = getStat(AVG_RTT);
+	if (rtt_stat < 0)
+		return;
+	float timeout = rtt_stat * RESEND_TIMEOUT_FACTOR;
 	if (timeout < RESEND_TIMEOUT_MIN)
 		timeout = RESEND_TIMEOUT_MIN;
 	if (timeout > RESEND_TIMEOUT_MAX)
 		timeout = RESEND_TIMEOUT_MAX;
 
+	float timeout_old = getResendTimeout();
 	setResendTimeout(timeout);
+
+	if (std::abs(timeout - timeout_old) >= 0.001f) {
+		dout_con << m_connection->getDesc() << " set resend timeout " << timeout
+			<< " (rtt=" << rtt_stat << ") for peer id: " << id << std::endl;
+	}
 }
 
 bool UDPPeer::Ping(float dtime,SharedBuffer<u8>& data)
@@ -1121,7 +1135,7 @@ bool UDPPeer::processReliableSendCommand(
 	u16 packets_available = toadd.size();
 	/* we didn't get a single sequence number no need to fill queue */
 	if (!have_initial_sequence_number) {
-		LOG(derr_con << m_connection->getDesc() << "Ran out of sequence numbers!" << std::endl);
+		dout_con << m_connection->getDesc() << " No sequence numbers available!" << std::endl;
 		return false;
 	}
 

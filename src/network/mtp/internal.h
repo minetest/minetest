@@ -354,15 +354,24 @@ private:
 	static ConnectionCommandPtr create(ConnectionCommandType type);
 };
 
-/* maximum window size to use, 0xFFFF is theoretical maximum. don't think about
+/*
+ * Window sizes to use, in packets (not bytes!).
+ * 0xFFFF is theoretical maximum. don't think about
  * touching it, the less you're away from it the more likely data corruption
  * will occur
+ *
+ * Note: window sizes directly translate to maximum possible throughput, e.g.
+ *       (2048 * 512 bytes) / 33ms = 15 MiB/s
  */
+
+// Due to backwards compatibility we have different window sizes for what we'll
+// accept from peers vs. what we use for sending.
 #define MAX_RELIABLE_WINDOW_SIZE 0x8000
+#define MAX_RELIABLE_WINDOW_SIZE_SEND 2048
 /* starting value for window size */
-#define START_RELIABLE_WINDOW_SIZE 0x400
+#define START_RELIABLE_WINDOW_SIZE 64
 /* minimum value for window size */
-#define MIN_RELIABLE_WINDOW_SIZE 0x40
+#define MIN_RELIABLE_WINDOW_SIZE 32
 
 class Channel
 {
@@ -430,7 +439,7 @@ public:
 
 	void setWindowSize(long size)
 	{
-		m_window_size = (u16)rangelim(size, MIN_RELIABLE_WINDOW_SIZE, MAX_RELIABLE_WINDOW_SIZE);
+		m_window_size = (u16)rangelim(size, MIN_RELIABLE_WINDOW_SIZE, MAX_RELIABLE_WINDOW_SIZE_SEND);
 	}
 
 private:

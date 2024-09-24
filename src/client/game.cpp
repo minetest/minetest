@@ -79,6 +79,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 #include "clientdynamicinfo.h"
 #include <IAnimatedMeshSceneNode.h>
+#include "util/tracy_wrapper.h"
 
 #if USE_SOUND
 	#include "client/sound/sound_openal.h"
@@ -594,7 +595,8 @@ public:
 		m_client(client)
 	{}
 
-	void setSky(Sky *sky) {
+	void setSky(Sky *sky)
+	{
 		m_sky = sky;
 		for (GameGlobalShaderConstantSetter *ggscs : created_nosky) {
 			ggscs->setSky(m_sky);
@@ -889,11 +891,11 @@ private:
 	QuicktuneShortcutter *quicktune = nullptr;
 
 	std::unique_ptr<GameUI> m_game_ui;
-	GUIChatConsole *gui_chat_console = nullptr; // Free using ->Drop()
+	irr_ptr<GUIChatConsole> gui_chat_console;
 	MapDrawControl *draw_control = nullptr;
 	Camera *camera = nullptr;
-	Clouds *clouds = nullptr;	                  // Free using ->Drop()
-	Sky *sky = nullptr;                         // Free using ->Drop()
+	irr_ptr<Clouds> clouds;
+	irr_ptr<Sky> sky;
 	Hud *hud = nullptr;
 	Minimap *mapper = nullptr;
 
@@ -1140,6 +1142,8 @@ bool Game::startup(bool *kill,
 
 void Game::run()
 {
+	ZoneScoped;
+
 	ProfilerGraph graph;
 	RunStats stats = {};
 	CameraOrientation cam_view_target = {};
@@ -1167,14 +1171,20 @@ void Game::run()
 	const bool initial_window_maximized = !g_settings->getBool("fullscreen") &&
 			g_settings->getBool("window_maximized");
 
+	auto framemarker = FrameMarker("Game::run()-frame").started();
+
 	while (m_rendering_engine->run()
 			&& !(*kill || g_gamecallback->shutdown_requested
 			|| (server && server->isShutdownRequested()))) {
+
+		framemarker.end();
 
 		// Calculate dtime =
 		//    m_rendering_engine->run() from this iteration
 		//  + Sleep time until the wanted FPS are reached
 		draw_times.limit(device, &dtime, g_menumgr.pausesGame());
+
+		framemarker.start();
 
 		const auto current_dynamic_info = ClientDynamicInfo::getCurrent();
 		if (!current_dynamic_info.equal(client_display_info)) {
@@ -1232,6 +1242,8 @@ void Game::run()
 		}
 	}
 
+	framemarker.end();
+
 	RenderingEngine::autosaveScreensizeAndCo(initial_screen_size, initial_window_maximized);
 }
 
@@ -1252,14 +1264,11 @@ void Game::shutdown()
 	if (m_shutdown_progress == 0.0f)
 		showOverlayMessage(N_("Shutting down..."), 0, 0);
 
-	if (clouds)
-		clouds->drop();
+	clouds.reset();
 
-	if (gui_chat_console)
-		gui_chat_console->drop();
+	gui_chat_console.reset();
 
-	if (sky)
-		sky->drop();
+	sky.reset();
 
 	/* cleanup menus */
 	while (g_menumgr.menuCount() > 0) {
@@ -1513,12 +1522,12 @@ bool Game::createClient(const GameStartData &start_data)
 	/* Clouds
 	 */
 	if (m_cache_enable_clouds)
-		clouds = new Clouds(smgr, shader_src, -1, rand());
+		clouds = make_irr<Clouds>(smgr, shader_src, -1, rand());
 
 	/* Skybox
 	 */
-	sky = new Sky(-1, m_rendering_engine, texture_src, shader_src);
-	scsf->setSky(sky);
+	sky = make_irr<Sky>(-1, m_rendering_engine, texture_src, shader_src);
+	scsf->setSky(sky.get());
 
 	/* Pre-calculated values
 	 */
@@ -1571,7 +1580,7 @@ bool Game::initGui()
 	chat_backend->applySettings();
 
 	// Chat backend and console
-	gui_chat_console = new GUIChatConsole(guienv, guienv->getRootGUIElement(),
+	gui_chat_console = make_irr<GUIChatConsole>(guienv, guienv->getRootGUIElement(),
 			-1, chat_backend, client, &g_menumgr);
 
 	if (g_settings->getBool("touch_controls")) {
@@ -1671,9 +1680,13 @@ bool Game::connectToServer(const GameStartData &start_data,
 
 		fps_control.reset();
 
+		auto framemarker = FrameMarker("Game::connectToServer()-frame").started();
+
 		while (m_rendering_engine->run()) {
 
+			framemarker.end();
 			fps_control.limit(device, &dtime);
+			framemarker.start();
 
 			// Update client and server
 			step(dtime);
@@ -1719,6 +1732,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 			// Update status
 			showOverlayMessage(N_("Connecting to server..."), dtime, 20);
 		}
+		framemarker.end();
 	} catch (con::PeerNotFoundException &e) {
 		warningstream << "This should not happen. Please report a bug." << std::endl;
 		return false;
@@ -1736,9 +1750,11 @@ bool Game::getServerContent(bool *aborted)
 
 	fps_control.reset();
 
+	auto framemarker = FrameMarker("Game::getServerContent()-frame").started();
 	while (m_rendering_engine->run()) {
-
+		framemarker.end();
 		fps_control.limit(device, &dtime);
+		framemarker.start();
 
 		// Update client and server
 		step(dtime);
@@ -1804,6 +1820,7 @@ bool Game::getServerContent(bool *aborted)
 				texture_src, dtime, progress);
 		}
 	}
+	framemarker.end();
 
 	*aborted = true;
 	infostream << "Connect aborted [device]" << std::endl;
@@ -1854,26 +1871,26 @@ inline bool Game::handleCallbacks()
 	}
 
 	if (g_gamecallback->changepassword_requested) {
-		(new GUIPasswordChange(guienv, guiroot, -1,
-				       &g_menumgr, client, texture_src))->drop();
+		(void)make_irr<GUIPasswordChange>(guienv, guiroot, -1,
+				       &g_menumgr, client, texture_src);
 		g_gamecallback->changepassword_requested = false;
 	}
 
 	if (g_gamecallback->changevolume_requested) {
-		(new GUIVolumeChange(guienv, guiroot, -1,
-				     &g_menumgr, texture_src))->drop();
+		(void)make_irr<GUIVolumeChange>(guienv, guiroot, -1,
+				     &g_menumgr, texture_src);
 		g_gamecallback->changevolume_requested = false;
 	}
 
 	if (g_gamecallback->keyconfig_requested) {
-		(new GUIKeyChangeMenu(guienv, guiroot, -1,
-				      &g_menumgr, texture_src))->drop();
+		(void)make_irr<GUIKeyChangeMenu>(guienv, guiroot, -1,
+				      &g_menumgr, texture_src);
 		g_gamecallback->keyconfig_requested = false;
 	}
 
 	if (!g_gamecallback->show_open_url_dialog.empty()) {
-		(new GUIOpenURLMenu(guienv, guiroot, -1,
-				 &g_menumgr, texture_src, g_gamecallback->show_open_url_dialog))->drop();
+		(void)make_irr<GUIOpenURLMenu>(guienv, guiroot, -1,
+				 &g_menumgr, texture_src, g_gamecallback->show_open_url_dialog);
 		g_gamecallback->show_open_url_dialog.clear();
 	}
 
@@ -1953,7 +1970,10 @@ void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
 	g_profiler->graphSet("FPS", 1.0f / dtime);
 
 	auto stats2 = driver->getFrameStats();
-	g_profiler->avg("Irr: primitives drawn", stats2.PrimitivesDrawn);
+	g_profiler->avg("Irr: drawcalls", stats2.Drawcalls);
+	if (stats2.Drawcalls > 0)
+		g_profiler->avg("Irr: primitives per drawcall",
+			stats2.PrimitivesDrawn / float(stats2.Drawcalls));
 	g_profiler->avg("Irr: buffers uploaded", stats2.HWBuffersUploaded);
 	g_profiler->avg("Irr: buffers uploaded (bytes)", stats2.HWBuffersUploadedSize);
 }
@@ -2016,7 +2036,7 @@ void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
 void Game::processUserInput(f32 dtime)
 {
 	// Reset input if window not active or some menu is active
-	if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console)) {
+	if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console.get())) {
 		if (m_game_focused) {
 			m_game_focused = false;
 			infostream << "Game lost focus" << std::endl;
@@ -2039,7 +2059,7 @@ void Game::processUserInput(f32 dtime)
 		m_game_focused = true;
 	}
 
-	if (!guienv->hasFocus(gui_chat_console) && gui_chat_console->isOpen()) {
+	if (!guienv->hasFocus(gui_chat_console.get()) && gui_chat_console->isOpen()) {
 		gui_chat_console->closeConsoleAtOnce();
 	}
 
@@ -2770,6 +2790,8 @@ void Game::updatePauseState()
 
 inline void Game::step(f32 dtime)
 {
+	ZoneScoped;
+
 	if (server) {
 		float fps_max = (!device->isWindowFocused() || g_menumgr.pausesGame()) ?
 				g_settings->getFloat("fps_max_unfocused") :
@@ -3354,7 +3376,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 		infostream << "Pointing at " << pointed.dump() << std::endl;
 
 	if (g_touchcontrols) {
-		auto mode = selected_def.touch_interaction.getMode(pointed.type);
+		auto mode = selected_def.touch_interaction.getMode(selected_def, pointed.type);
 		g_touchcontrols->applyContextControls(mode);
 		// applyContextControls may change dig/place input.
 		// Update again so that TOSERVER_INTERACT packets have the correct controls set.
@@ -4049,6 +4071,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		const CameraOrientation &cam)
 {
+	ZoneScoped;
 	TimeTaker tt_update("Game::updateFrame()");
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
@@ -4193,7 +4216,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		updateShadows();
 	}
 
-	m_game_ui->update(*stats, client, draw_control, cam, runData.pointed_old, gui_chat_console, dtime);
+	m_game_ui->update(*stats, client, draw_control, cam, runData.pointed_old,
+			gui_chat_console.get(), dtime);
 
 	/*
 	   make sure menu is on top
@@ -4308,6 +4332,8 @@ void Game::updateShadows()
 
 void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 {
+	ZoneScoped;
+
 	const video::SColor fog_color = this->sky->getFogColor();
 	const video::SColor sky_color = this->sky->getSkyColor();
 
