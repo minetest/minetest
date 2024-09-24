@@ -187,7 +187,7 @@ void PlayerControl::setMovementFromKeys()
 		else if (a_up && a_down && !a_left && !a_right)
 			movement_speed = 0.0f;
 		else if (!a_up && !a_down && a_left && a_right)
-			movement_speed =  0.0f;
+			movement_speed = 0.0f;
 		else
 			// If there is a keyboard event, assume maximum speed
 			movement_speed = 1.0f;
@@ -267,6 +267,11 @@ void PlayerControl::unpackKeysPressed(u32 keypress_bits)
 	zoom  = keypress_bits & (1 << 9);
 }
 
+v2f PlayerControl::getMovement() const
+{
+	return v2f(std::sin(movement_direction), std::cos(movement_direction)) * movement_speed;
+}
+
 static auto tie(const PlayerPhysicsOverride &o)
 {
 	// Make sure to add new members to this list!
@@ -281,9 +286,4 @@ static auto tie(const PlayerPhysicsOverride &o)
 bool PlayerPhysicsOverride::operator==(const PlayerPhysicsOverride &other) const
 {
 	return tie(*this) == tie(other);
-}
-
-v2f PlayerControl::getMovement() const
-{
-	return v2f(std::sin(movement_direction), std::cos(movement_direction)) * movement_speed;
 }

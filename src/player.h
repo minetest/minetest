@@ -87,7 +87,8 @@ struct PlayerControl
 	}
 
 	// Sets movement_speed and movement_direction according to direction_keys
-	// if direction_keys != 0.
+	// if direction_keys != 0, otherwise leaves them unchanged to preserve
+	// joystick input.
 	void setMovementFromKeys();
 
 #ifndef SERVER
