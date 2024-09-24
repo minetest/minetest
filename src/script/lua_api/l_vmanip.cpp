@@ -172,6 +172,21 @@ int LuaVoxelManip::l_get_node_raw(lua_State *L)
 	return 3;
 }
 
+int LuaVoxelManip::l_get_node_raw_i(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaVoxelManip *o = checkObject<LuaVoxelManip>(L, 1);
+	s32 pos = lua_tointeger(L, 1);
+
+	MapNode n = o->vm->getNodeNoExNoEmerge(pos);
+	// Return node (CONTENT_IGNORE if out of area)
+	lua_pushinteger(L, n.getContent());
+	lua_pushinteger(L, n.getParam1());
+	lua_pushinteger(L, n.getParam2());
+	return 3;
+}
+
 int LuaVoxelManip::l_set_node_at(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -198,6 +213,21 @@ int LuaVoxelManip::l_set_node_raw(lua_State *L)
 	u8 param2 = lua_tointeger(L, 6);
 
 	v3s16 pos = doubleToInt(v3d(x, y, z), 1.0);
+	MapNode n = MapNode(content, param1, param2);
+
+	lua_pushboolean(L, o->vm->setNodeNoEmerge(pos, n));
+	return 1;
+}
+
+int LuaVoxelManip::l_set_node_raw_i(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaVoxelManip *o = checkObject<LuaVoxelManip>(L, 1);
+	s32 pos = lua_tointeger(L, 1);
+	content_t content = lua_tointeger(L, 2);
+	u8 param1 = lua_tointeger(L, 3);
+	u8 param2 = lua_tointeger(L, 4);
 	MapNode n = MapNode(content, param1, param2);
 
 	lua_pushboolean(L, o->vm->setNodeNoEmerge(pos, n));
@@ -486,8 +516,10 @@ const luaL_Reg LuaVoxelManip::methods[] = {
 	luamethod(LuaVoxelManip, set_data),
 	luamethod(LuaVoxelManip, get_node_at),
 	luamethod(LuaVoxelManip, get_node_raw),
+	luamethod(LuaVoxelManip, get_node_raw_i),
 	luamethod(LuaVoxelManip, set_node_at),
 	luamethod(LuaVoxelManip, set_node_raw),
+	luamethod(LuaVoxelManip, set_node_raw_i),
 	luamethod(LuaVoxelManip, write_to_map),
 	luamethod(LuaVoxelManip, update_map),
 	luamethod(LuaVoxelManip, update_liquids),

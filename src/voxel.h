@@ -423,6 +423,14 @@ public:
 			return {CONTENT_IGNORE};
 		return m_data[index];
 	}
+	MapNode getNodeNoExNoEmerge(s32 index)
+	{
+		if (!m_area.contains(index))
+			return {CONTENT_IGNORE};
+		if (m_flags[index] & VOXELFLAG_NO_DATA)
+			return {CONTENT_IGNORE};
+		return m_data[index];
+	}
 	// Stuff explodes if non-emerged area is touched with this.
 	// Emerge first, and check VOXELFLAG_NO_DATA if appropriate.
 	MapNode & getNodeRefUnsafe(const v3s16 &p)
@@ -473,6 +481,14 @@ public:
 		if(!m_area.contains(p))
 			return false;
 		m_data[m_area.index(p)] = n;
+		return true;
+	}
+
+	bool setNodeNoEmerge(s32 index, MapNode n)
+	{
+		if(!m_area.contains(index))
+			return false;
+		m_data[index] = n;
 		return true;
 	}
 
