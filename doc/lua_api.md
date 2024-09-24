@@ -6145,6 +6145,8 @@ Environment access
 * `minetest.swap_node(pos, node)`
     * Swap node at position with another.
     * This keeps the metadata intact and will not run con-/destructor callbacks.
+* `minetest.bulk_swap_node({pos1, pos2, pos3, ...}, node)`
+    * Equivalent to `minetest.swap_node` but in bulk.
 * `minetest.remove_node(pos)`: Remove a node
     * Equivalent to `minetest.set_node(pos, {name="air"})`, but a bit faster.
 * `minetest.get_node(pos)`
