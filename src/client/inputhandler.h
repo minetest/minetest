@@ -247,8 +247,8 @@ public:
 	virtual bool wasKeyReleased(GameKeyType k) = 0;
 	virtual bool cancelPressed() = 0;
 
-	virtual float getMovementSpeed() = 0;
-	virtual float getMovementDirection() = 0;
+	virtual float getJoystickSpeed() = 0;
+	virtual float getJoystickDirection() = 0;
 
 	virtual void clearWasKeyPressed() {}
 	virtual void clearWasKeyReleased() {}
@@ -304,9 +304,9 @@ public:
 		return m_receiver->WasKeyReleased(keycache.key[k]) || joystick.wasKeyReleased(k);
 	}
 
-	virtual float getMovementSpeed();
+	virtual float getJoystickSpeed();
 
-	virtual float getMovementDirection();
+	virtual float getJoystickDirection();
 
 	virtual bool cancelPressed()
 	{
@@ -388,8 +388,8 @@ public:
 	virtual bool wasKeyPressed(GameKeyType k) { return false; }
 	virtual bool wasKeyReleased(GameKeyType k) { return false; }
 	virtual bool cancelPressed() { return false; }
-	virtual float getMovementSpeed() { return movementSpeed; }
-	virtual float getMovementDirection() { return movementDirection; }
+	virtual float getJoystickSpeed() { return joystickSpeed; }
+	virtual float getJoystickDirection() { return joystickDirection; }
 	virtual v2s32 getMousePos() { return mousepos; }
 	virtual void setMousePos(s32 x, s32 y) { mousepos = v2s32(x, y); }
 
@@ -403,6 +403,6 @@ private:
 	KeyList keydown;
 	v2s32 mousepos;
 	v2s32 mousespeed;
-	float movementSpeed;
-	float movementDirection;
+	float joystickSpeed;
+	float joystickDirection;
 };

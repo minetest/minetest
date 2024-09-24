@@ -220,19 +220,19 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 /*
  * RealInputHandler
  */
-float RealInputHandler::getMovementSpeed()
+float RealInputHandler::getJoystickSpeed()
 {
-	if (g_touchcontrols && g_touchcontrols->getMovementSpeed())
-		return g_touchcontrols->getMovementSpeed();
+	if (g_touchcontrols && g_touchcontrols->getJoystickSpeed())
+		return g_touchcontrols->getJoystickSpeed();
 	return joystick.getMovementSpeed();
 }
 
-float RealInputHandler::getMovementDirection()
+float RealInputHandler::getJoystickDirection()
 {
-	// `getMovementDirection() == 0` means forward, so we cannot use
-	// `getMovementDirection()` as a condition.
-	if (g_touchcontrols && g_touchcontrols->getMovementSpeed())
-		return g_touchcontrols->getMovementDirection();
+	// `getJoystickDirection() == 0` means forward, so we cannot use
+	// `getJoystickDirection()` as a condition.
+	if (g_touchcontrols && g_touchcontrols->getJoystickSpeed())
+		return g_touchcontrols->getJoystickDirection();
 	return joystick.getMovementDirection();
 }
 
@@ -291,25 +291,11 @@ void RandomInputHandler::step(float dtime)
 		counterMovement -= dtime;
 		if (counterMovement < 0.0) {
 			counterMovement = 0.1 * Rand(1, 40);
-			movementSpeed = Rand(0,100)*0.01;
-			movementDirection = Rand(-100, 100)*0.01 * M_PI;
+			joystickSpeed = Rand(0,100)*0.01;
+			joystickDirection = Rand(-100, 100)*0.01 * M_PI;
 		}
 	} else {
-		bool f = keydown[keycache.key[KeyType::FORWARD]],
-			l = keydown[keycache.key[KeyType::LEFT]];
-		if (f || l) {
-			movementSpeed = 1.0f;
-			if (f && !l)
-				movementDirection = 0.0;
-			else if (!f && l)
-				movementDirection = -M_PI_2;
-			else if (f && l)
-				movementDirection = -M_PI_4;
-			else
-				movementDirection = 0.0;
-		} else {
-			movementSpeed = 0.0;
-			movementDirection = 0.0;
-		}
+		joystickSpeed = 0.0f;
+		joystickDirection = 0.0f;
 	}
 }
