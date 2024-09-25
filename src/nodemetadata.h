@@ -57,7 +57,10 @@ public:
 	{
 		return m_privatevars.count(name) != 0;
 	}
-	void markPrivate(const std::string &name, bool set);
+
+	/// Marks a key as private.
+	/// @return metadata modified?
+	bool markPrivate(const std::string &name, bool set);
 
 private:
 	int countNonPrivate() const;
