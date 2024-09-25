@@ -59,7 +59,7 @@ varying highp vec3 eyeVec;
 varying float nightRatio;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
-#if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS) && ENABLE_WAVING_WATER)
+#if ((defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS) && ENABLE_WAVING_WATER) || defined(ENABLE_BUMPMAPS))
 vec4 perm(vec4 x)
 {
 	return mod(((x * 34.0) + 1.0) * x, 289.0);
@@ -100,36 +100,6 @@ vec3 gnoise(vec3 p){
 
 vec2 wave_noise(vec3 p, float off) {
 	return (gnoise(p + vec3(0.0, 0.0, off)) * 0.4 + gnoise(2.0 * p + vec3(0.0, off, off)) * 0.2 + gnoise(3.0 * p + vec3(0.0, off, off)) * 0.225 + gnoise(4.0 * p + vec3(-off, off, 0.0)) * 0.2).xz;
-}
-#endif
-
-#ifdef ENABLE_BUMPMAPS
-vec4 perm(vec4 x)
-{
-	return mod(((x * 34.0) + 1.0) * x, 289.0);
-}
-
-float snoise(vec3 p)
-{
-	vec3 a = floor(p);
-	vec3 d = p - a;
-	d = d * d * (3.0 - 2.0 * d);
-
-	vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
-	vec4 k1 = perm(b.xyxy);
-	vec4 k2 = perm(k1.xyxy + b.zzww);
-
-	vec4 c = k2 + a.zzzz;
-	vec4 k3 = perm(c);
-	vec4 k4 = perm(c + 1.0);
-
-	vec4 o1 = fract(k3 * (1.0 / 41.0));
-	vec4 o2 = fract(k4 * (1.0 / 41.0));
-
-	vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
-	vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
-
-	return o4.y * d.y + o4.x * (1.0 - d.y);
 }
 #endif
 
@@ -474,17 +444,19 @@ void main(void)
 	// Fragment normal, can differ from vNormal which is derived from vertex normals.
 	vec3 fNormal = vNormal;
 
+#if ((defined(ENABLE_DYNAMIC_SHADOWS) && defined(ENABLE_BUMPMAPS)) && !defined(MATERIAL_LIQUID))
 	vec2 dr = vec2(0.25) * texelSize0;
-	// Sample the texture to then compute the derivative
+	// Sample the texture to then compute the gradient
 	float fx0y0 = texture2D(baseTexture, uv).r;
 	float fx1y0 = texture2D(baseTexture, uv + vec2(dr.x, 0.0)).r;
 	float fx0y1 = texture2D(baseTexture, uv + vec2(0.0, dr.y)).r;
+	vec2 gradient = 0.2 * vec2((fx1y0 - fx0y0) / dr.x, (fx0y1 - fx0y0) / dr.y) + 0.1 * gnoise(vec3(2.0 * uv / texelSize0, 0.0)).xy;
 	// Compute a set of orthogonal basis vectors representing the node's surface plane.
 	vec3 orth1 = normalize(cross(vNormal, mix(vec3(0.0, -1.0, 0.0), vec3(0.0, 0.0, -1.0), step(0.9, abs(vNormal.y)))));
 	vec3 orth2 = normalize(cross(vNormal, orth1));
 	// The normal is computed using the partial derivatives along the texture space x and y axes. 
 	// These axes in world space are assumed to be parallel to the basis vectors we defined before.
-	fNormal = normalize(vNormal + (orth1 * (fx1y0 - fx0y0) / dr.x + orth2 * (fx0y1 - fx0y0) / dr.y) * 0.25 * snoise(vec3(uv / texelSize0, 0.0)));
+	fNormal = normalize(vNormal + orth1 * gradient.x + orth2 * gradient.y);
 	float adj_cosLight = max(1e-5, dot(fNormal, -v_LightDirection));
 #else 
 	float adj_cosLight = cosLight;
@@ -578,7 +550,7 @@ void main(void)
 
 		// Sky reflection
 		col.rgb += reflection_color * pow(fresnel_factor, 2.0) * 0.5 * brightness_factor;
-		vec3 water_reflect_color = 12.0 * dayLight * fresnel_factor * mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0)) * max(1.0 - shadow_uncorrected, 0.0);
+		vec3 water_reflect_color = 12.0 * sunTint * dayLight * fresnel_factor * mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0)) * max(1.0 - shadow_uncorrected, 0.0);
 
 		// This line exists to prevent ridiculously bright reflection colors.
 		water_reflect_color /= clamp(max(water_reflect_color.r, max(water_reflect_color.g, water_reflect_color.b)) * 0.375, 1.0, 400.0);
@@ -593,7 +565,7 @@ void main(void)
 			const float fresnel_exponent =  4.0;
 
 			col.rgb +=
-				intensity * dayLight * (1.0 - nightRatio) * (1.0 - shadow_uncorrected) * f_adj_shadow_strength *
+				sunTint * intensity * dayLight * (1.0 - nightRatio) * (1.0 - shadow_uncorrected) * f_adj_shadow_strength *
 				pow(max(dot(reflect_ray, viewVec), 0.0), fresnel_exponent) * pow(1.0 - abs(dot(viewVec, fNormal)), specular_exponent);
 		}
 #endif

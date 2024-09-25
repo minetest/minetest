@@ -536,10 +536,6 @@ public:
 		float camera_far = m_client->getCamera()->getCameraNode()->getFarValue();
 		m_camera_far_pixel.set(&camera_far, services);
 
-		v3f camera_position = m_client->getCamera()->getPosition();
-		m_camera_position_pixel.set(camera_position, services);
-		m_camera_position_pixel.set(camera_position, services);
-
 		SamplerLayer_t tex_id;
 		tex_id = 0;
 		m_texture0.set(&tex_id, services);
@@ -1592,7 +1588,7 @@ bool Game::createClient(const GameStartData &start_data)
 	 */
 	if (m_cache_enable_clouds)
 		clouds = make_irr<Clouds>(smgr, shader_src, -1, rand());
-	client->setClouds(clouds);
+	client->setClouds(clouds.get());
 
 	/* Skybox
 	 */

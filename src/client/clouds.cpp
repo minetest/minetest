@@ -247,7 +247,7 @@ void Clouds::updateMesh()
 			case 1: // back
 				if (INAREA(xi, zi - 1, m_cloud_radius_i)) {
 					u32 j = GETINDEX(xi, zi - 1, m_cloud_radius_i);
-					if (grid[j])
+					if (m_grid[j])
 						continue;
 				}
 				if (soft_clouds_enabled) {
@@ -270,7 +270,7 @@ void Clouds::updateMesh()
 			case 2: //right
 				if (INAREA(xi + 1, zi, m_cloud_radius_i)) {
 					u32 j = GETINDEX(xi + 1, zi, m_cloud_radius_i);
-					if (grid[j])
+					if (m_grid[j])
 						continue;
 				}
 				if (soft_clouds_enabled) {
@@ -294,7 +294,7 @@ void Clouds::updateMesh()
 			case 3: // front
 				if (INAREA(xi, zi + 1, m_cloud_radius_i)) {
 					u32 j = GETINDEX(xi, zi + 1, m_cloud_radius_i);
-					if (grid[j])
+					if (m_grid[j])
 						continue;
 				}
 				if (soft_clouds_enabled) {
@@ -317,7 +317,7 @@ void Clouds::updateMesh()
 			case 4: // left
 				if (INAREA(xi - 1, zi, m_cloud_radius_i)) {
 					u32 j = GETINDEX(xi - 1, zi, m_cloud_radius_i);
-					if (grid[j])
+					if (m_grid[j])
 						continue;
 				}
 				if (soft_clouds_enabled) {
