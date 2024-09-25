@@ -24,18 +24,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "map.h"
 #include "util/directiontables.h"
+#include "porting.h"
 
-static class BlockPlaceholder {
-public:
-	MapNode data[MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE];
+// Data placeholder used for copying from non-existent blocks
+static struct BlockPlaceholder {
+	MapNode data[MapBlock::nodecount];
 
 	BlockPlaceholder()
 	{
-		for (std::size_t i = 0; i < MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE; i++)
+		for (std::size_t i = 0; i < MapBlock::nodecount; i++)
 			data[i] = MapNode(CONTENT_IGNORE);
 	}
 
 } block_placeholder;
+
 /*
 	QueuedMeshUpdate
 */
@@ -225,11 +227,12 @@ void MeshUpdateWorkerThread::doUpdate()
 	while ((q = m_queue_in->pop())) {
 		if (m_generation_interval)
 			sleep_ms(m_generation_interval);
+
+		porting::TriggerMemoryTrim();
+
 		ScopeProfiler sp(g_profiler, "Client: Mesh making (sum)");
 
 		MapBlockMesh *mesh_new = new MapBlockMesh(m_client, q->data, *m_camera_offset);
-
-
 
 		MeshUpdateResult r;
 		r.p = q->p;

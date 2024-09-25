@@ -19,59 +19,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "networkprotocol.h"
-
 namespace con
 {
 
-typedef enum
-{
-	MIN_RTT,
-	MAX_RTT,
-	AVG_RTT,
-	MIN_JITTER,
-	MAX_JITTER,
-	AVG_JITTER
-} rtt_stat_type;
-
-class Peer;
+class IPeer;
 
 class PeerHandler
 {
 public:
 	PeerHandler() = default;
-
 	virtual ~PeerHandler() = default;
+
+	// Note: all functions are called from within a Receive() call on the same thread.
 
 	/*
 		This is called after the Peer has been inserted into the
 		Connection's peer container.
 	*/
-	virtual void peerAdded(Peer *peer) = 0;
+	virtual void peerAdded(IPeer *peer) = 0;
 
 	/*
 		This is called before the Peer has been removed from the
 		Connection's peer container.
 	*/
-	virtual void deletingPeer(Peer *peer, bool timeout) = 0;
+	virtual void deletingPeer(IPeer *peer, bool timeout) = 0;
 };
 
-enum PeerChangeType : u8
-{
-	PEER_ADDED,
-	PEER_REMOVED
-};
-
-struct PeerChange
-{
-	PeerChange(PeerChangeType t, session_t _peer_id, bool _timeout) :
-			type(t), peer_id(_peer_id), timeout(_timeout)
-	{
-	}
-	PeerChange() = delete;
-
-	PeerChangeType type;
-	session_t peer_id;
-	bool timeout;
-};
 }

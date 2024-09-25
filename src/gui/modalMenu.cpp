@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiInventoryList.h"
 #include "porting.h"
 #include "settings.h"
-#include "touchscreengui.h"
+#include "touchcontrols.h"
 
 PointerAction PointerAction::fromEvent(const SEvent &event) {
 	switch (event.EventType) {
@@ -59,14 +59,8 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 		m_menumgr(menumgr),
 		m_remap_click_outside(remap_click_outside)
 {
-	m_gui_scale = std::max(g_settings->getFloat("gui_scaling"), 0.5f);
-	const float screen_dpi_scale = RenderingEngine::getDisplayDensity();
-
-	if (g_settings->getBool("enable_touch")) {
-		m_gui_scale *= 1.1f - 0.3f * screen_dpi_scale + 0.2f * screen_dpi_scale * screen_dpi_scale;
-	} else {
-		m_gui_scale *= screen_dpi_scale;
-	}
+	m_gui_scale = g_settings->getFloat("gui_scaling", 0.5f, 20.0f) *
+			RenderingEngine::getDisplayDensity();
 
 	setVisible(true);
 	m_menumgr->createdMenu(this);
@@ -117,8 +111,8 @@ void GUIModalMenu::quitMenu()
 	Environment->removeFocus(this);
 	m_menumgr->deletingMenu(this);
 	this->remove();
-	if (g_touchscreengui)
-		g_touchscreengui->show();
+	if (g_touchcontrols)
+		g_touchcontrols->show();
 }
 
 static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
@@ -324,6 +318,11 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 		}
 	}
 #endif
+
+	// If the second touch arrives here again, that means nobody handled it.
+	// Abort to avoid infinite recursion.
+	if (m_second_touch)
+		return true;
 
 	// Convert touch events into mouse events.
 	if (event.EventType == EET_TOUCH_INPUT_EVENT) {

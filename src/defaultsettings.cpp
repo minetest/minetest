@@ -77,13 +77,6 @@ static bool detect_touch()
 	}
 
 	return false;
-#elif defined(_WIN32)
-	// 0x01 The device has an integrated touch digitizer
-	// 0x80 The device is ready to receive digitizer input.
-	if ((GetSystemMetrics(SM_DIGITIZER) & 0x81) == 0x81)
-		return true;
-
-	return false;
 #else
 	// we don't know, return default
 	return false;
@@ -104,7 +97,8 @@ void set_default_settings()
 	// Client
 	settings->setDefault("address", "");
 	settings->setDefault("enable_sound", "true");
-	settings->setDefault("enable_touch", bool_to_cstr(has_touch));
+	settings->setDefault("touch_controls", bool_to_cstr(has_touch));
+	settings->setDefault("touch_gui", bool_to_cstr(has_touch));
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("sound_volume_unfocused", "0.3");
 	settings->setDefault("mute_sound", "false");
@@ -281,6 +275,7 @@ void set_default_settings()
 	settings->setDefault("view_bobbing_amount", "1.0");
 	settings->setDefault("fall_bobbing_amount", "0.03");
 	settings->setDefault("enable_3d_clouds", "true");
+	settings->setDefault("soft_clouds", "false");
 	settings->setDefault("cloud_radius", "12");
 	settings->setDefault("menu_clouds", "true");
 	settings->setDefault("translucent_liquids", "true");
@@ -299,6 +294,7 @@ void set_default_settings()
 	settings->setDefault("gui_scaling", "1.0");
 	settings->setDefault("gui_scaling_filter", "false");
 	settings->setDefault("gui_scaling_filter_txr2img", "true");
+	settings->setDefault("smooth_scrolling", "true");
 	settings->setDefault("desynchronize_mapblock_texture_animation", "false");
 	settings->setDefault("hud_hotbar_max_width", "1.0");
 	settings->setDefault("enable_local_map_saving", "false");
@@ -308,6 +304,7 @@ void set_default_settings()
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
 	settings->setDefault("show_nametag_backgrounds", "true");
+	settings->setDefault("show_block_bounds_radius_near", "4");
 	settings->setDefault("transparency_sorting_distance", "16");
 
 	settings->setDefault("enable_minimap", "true");
@@ -344,6 +341,9 @@ void set_default_settings()
 	settings->setDefault("enable_volumetric_lighting", "false");
 	settings->setDefault("enable_volumetric_clouds", "false");
 	settings->setDefault("enable_bumpmaps", "false");
+	settings->setDefault("enable_water_reflections", "false");
+	settings->setDefault("enable_translucent_foliage", "false");
+	settings->setDefault("enable_node_specular", "false");
 
 	// Effects Shadows
 	settings->setDefault("enable_dynamic_shadows", "false");
@@ -364,7 +364,7 @@ void set_default_settings()
 	settings->setDefault("invert_hotbar_mouse_wheel", "false");
 	settings->setDefault("mouse_sensitivity", "0.2");
 	settings->setDefault("repeat_place_time", "0.25");
-	settings->setDefault("repeat_dig_time", "0.15");
+	settings->setDefault("repeat_dig_time", "0.0");
 	settings->setDefault("safe_dig_and_place", "false");
 	settings->setDefault("random_input", "false");
 	settings->setDefault("aux1_descends", "false");
@@ -407,6 +407,7 @@ void set_default_settings()
 
 	// ContentDB
 	settings->setDefault("contentdb_url", "https://content.minetest.net");
+	settings->setDefault("contentdb_enable_updates_indicator", "true");
 	settings->setDefault("contentdb_max_concurrent_downloads", "3");
 
 #ifdef __ANDROID__
@@ -539,13 +540,14 @@ void set_default_settings()
 	settings->setDefault("server_address", "");
 	settings->setDefault("server_name", "");
 	settings->setDefault("server_description", "");
+	settings->setDefault("server_announce_send_players", "true");
 
 	settings->setDefault("enable_console", "false");
-	settings->setDefault("screen_dpi", "72");
 	settings->setDefault("display_density_factor", "1");
+	settings->setDefault("dpi_change_notifier", "0");
 
-	// Altered settings for macOS
-#if defined(__MACH__) && defined(__APPLE__)
+	// Altered settings for CIrrDeviceOSX
+#if !USE_SDL2 && defined(__MACH__) && defined(__APPLE__)
 	settings->setDefault("keymap_sneak", "KEY_SHIFT");
 #endif
 

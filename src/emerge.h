@@ -50,6 +50,7 @@ class ModApiMapgen;
 // Structure containing inputs/outputs for chunk generation
 struct BlockMakeData {
 	MMVManip *vmanip = nullptr;
+	// Global map seed
 	u64 seed = 0;
 	v3s16 blockpos_min;
 	v3s16 blockpos_max;

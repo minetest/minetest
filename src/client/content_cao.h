@@ -106,8 +106,8 @@ private:
 	// stores position and rotation for each bone name
 	BoneOverrideMap m_bone_override;
 
-	int m_attachment_parent_id = 0;
-	std::unordered_set<int> m_attachment_child_ids;
+	object_t m_attachment_parent_id = 0;
+	std::unordered_set<object_t> m_attachment_child_ids;
 	std::string m_attachment_bone = "";
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
@@ -226,16 +226,15 @@ public:
 	}
 
 	void setChildrenVisible(bool toset);
-	void setAttachment(int parent_id, const std::string &bone, v3f position,
+	void setAttachment(object_t parent_id, const std::string &bone, v3f position,
 			v3f rotation, bool force_visible) override;
-	void getAttachment(int *parent_id, std::string *bone, v3f *position,
+	void getAttachment(object_t *parent_id, std::string *bone, v3f *position,
 			v3f *rotation, bool *force_visible) const override;
 	void clearChildAttachments() override;
-	void clearParentAttachment() override;
-	void addAttachmentChild(int child_id) override;
-	void removeAttachmentChild(int child_id) override;
+	void addAttachmentChild(object_t child_id) override;
+	void removeAttachmentChild(object_t child_id) override;
 	ClientActiveObject *getParent() const override;
-	const std::unordered_set<int> &getAttachmentChildIds() const override
+	const std::unordered_set<object_t> &getAttachmentChildIds() const override
 	{ return m_attachment_child_ids; }
 	void updateAttachments() override;
 

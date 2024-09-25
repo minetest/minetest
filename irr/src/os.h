@@ -10,6 +10,22 @@
 #include "ILogger.h"
 #include "ITimer.h"
 
+// CODE_UNREACHABLE(): Invokes undefined behavior for unreachable code optimization
+#if defined(__cpp_lib_unreachable)
+#include <utility>
+#define CODE_UNREACHABLE() std::unreachable()
+#elif defined(__has_builtin)
+#if __has_builtin(__builtin_unreachable)
+#define CODE_UNREACHABLE() __builtin_unreachable()
+#endif
+#elif defined(_MSC_VER)
+#define CODE_UNREACHABLE() __assume(false)
+#endif
+
+#ifndef CODE_UNREACHABLE
+#define CODE_UNREACHABLE() (void)0
+#endif
+
 namespace irr
 {
 
@@ -36,7 +52,6 @@ public:
 	// prints out a string to the console out stdout or debug log or whatever
 	static void print(const c8 *message, ELOG_LEVEL ll = ELL_INFORMATION);
 	static void log(const c8 *message, ELOG_LEVEL ll = ELL_INFORMATION);
-	static void log(const wchar_t *message, ELOG_LEVEL ll = ELL_INFORMATION);
 
 	// The string ": " is added between message and hint
 	static void log(const c8 *message, const c8 *hint, ELOG_LEVEL ll = ELL_INFORMATION);

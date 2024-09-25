@@ -371,14 +371,12 @@ void blitBaseImage(video::IImage* &src, video::IImage* &dst)
 
 namespace {
 
-/** Calculate the color of a single pixel drawn on top of another pixel without
- * gamma correction
+/** Calculate the result of the overlay texture modifier (`^`) for a single
+ * pixel
  *
- * The color mixing is a little more complicated than just
- * video::SColor::getInterpolated because getInterpolated does not handle alpha
- * correctly.
- * For example, a pixel with alpha=64 drawn atop a pixel with alpha=128 should
- * yield a pixel with alpha=160, while getInterpolated would yield alpha=96.
+ * This is not alpha blending if both src and dst are semi-transparent. The
+ * reason this is that an old implementation did it wrong, and fixing it would
+ * break backwards compatibility (see #14847).
  *
  * \tparam overlay If enabled, only modify dst_col if it is fully opaque
  * \param src_col Color of the top pixel
@@ -420,12 +418,11 @@ void blit_pixel(video::SColor src_col, video::SColor &dst_col)
 		return;
 	}
 	// A semi-transparent pixel is on top of a
-	// semi-transparent pixel -> general alpha compositing
-	u16 a_new_255 = src_a * 255 + (255 - src_a) * dst_a;
-	dst.r = (dst.r * (255 - src_a) * dst_a + src.r * src_a * 255) / a_new_255;
-	dst.g = (dst.g * (255 - src_a) * dst_a + src.g * src_a * 255) / a_new_255;
-	dst.b = (dst.b * (255 - src_a) * dst_a + src.b * src_a * 255) / a_new_255;
-	dst_a = (a_new_255 + 127) / 255;
+	// semi-transparent pixel -> weird overlaying
+	dst.r = (dst.r * (255 - src_a) + src.r * src_a) / 255;
+	dst.g = (dst.g * (255 - src_a) + src.g * src_a) / 255;
+	dst.b = (dst.b * (255 - src_a) + src.b * src_a) / 255;
+	dst_a = dst_a + (255 - dst_a) * src_a * src_a / (255 * 255);
 	dst_col.set(dst_a, dst.r, dst.g, dst.b);
 }
 
@@ -1911,7 +1908,8 @@ video::IImage* ImageSource::generateImage(std::string_view name,
 		video::IImage *tmp = generateImage(name2, source_image_names);
 		if (!tmp) {
 			errorstream << "generateImage(): "
-				"Failed to generate \"" << name2 << "\""
+				"Failed to generate \"" << name2 << "\"\n"
+				"part of texture \"" << name << "\""
 				<< std::endl;
 			return NULL;
 		}
@@ -1926,7 +1924,8 @@ video::IImage* ImageSource::generateImage(std::string_view name,
 	} else if (!generateImagePart(last_part_of_name, baseimg, source_image_names)) {
 		// Generate image according to part of name
 		errorstream << "generateImage(): "
-				"Failed to generate \"" << last_part_of_name << "\""
+				"Failed to generate \"" << last_part_of_name << "\"\n"
+				"part of texture \"" << name << "\""
 				<< std::endl;
 	}
 

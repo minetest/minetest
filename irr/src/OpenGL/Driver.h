@@ -7,7 +7,6 @@
 #pragma once
 
 #include "SIrrCreationParameters.h"
-
 #include "Common.h"
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
@@ -47,16 +46,11 @@ public:
 
 	struct SHWBufferLink_opengl : public SHWBufferLink
 	{
-		SHWBufferLink_opengl(const scene::IMeshBuffer *meshBuffer) :
-				SHWBufferLink(meshBuffer), vbo_verticesID(0), vbo_indicesID(0), vbo_verticesSize(0), vbo_indicesSize(0)
-		{
-		}
+		SHWBufferLink_opengl(const scene::IVertexBuffer *vb) : SHWBufferLink(vb) {}
+		SHWBufferLink_opengl(const scene::IIndexBuffer *ib) : SHWBufferLink(ib) {}
 
-		u32 vbo_verticesID; // tmp
-		u32 vbo_indicesID;  // tmp
-
-		u32 vbo_verticesSize; // tmp
-		u32 vbo_indicesSize;  // tmp
+		GLuint vbo_ID = 0;
+		u32 vbo_Size = 0;
 	};
 
 	bool updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
@@ -65,14 +59,18 @@ public:
 	//! updates hardware buffer if needed
 	bool updateHardwareBuffer(SHWBufferLink *HWBuffer) override;
 
-	//! Create hardware buffer from mesh
-	SHWBufferLink *createHardwareBuffer(const scene::IMeshBuffer *mb) override;
+	//! Create hardware buffer from vertex buffer
+	SHWBufferLink *createHardwareBuffer(const scene::IVertexBuffer *vb) override;
+
+	//! Create hardware buffer from index buffer
+	SHWBufferLink *createHardwareBuffer(const scene::IIndexBuffer *ib) override;
 
 	//! Delete hardware buffer (only some drivers can)
 	void deleteHardwareBuffer(SHWBufferLink *HWBuffer) override;
 
-	//! Draw hardware buffer
-	void drawHardwareBuffer(SHWBufferLink *HWBuffer) override;
+	void drawBuffers(const scene::IVertexBuffer *vb,
+		const scene::IIndexBuffer *ib, u32 primCount,
+		scene::E_PRIMITIVE_TYPE pType = scene::EPT_TRIANGLES) override;
 
 	IRenderTarget *addRenderTarget() override;
 
@@ -227,18 +225,6 @@ public:
 	// Does *nothing* unless in debug mode.
 	bool testGLError(const char *file, int line);
 
-	//! Set/unset a clipping plane.
-	bool setClipPlane(u32 index, const core::plane3df &plane, bool enable = false) override;
-
-	//! returns the current amount of user clip planes set.
-	u32 getClipPlaneCount() const;
-
-	//! returns the 0 indexed Plane
-	const core::plane3df &getClipPlane(u32 index) const;
-
-	//! Enable/disable a clipping plane.
-	void enableClipPlane(u32 index, bool enable) override;
-
 	//! Returns the graphics card vendor name.
 	core::stringc getVendorInfo() override
 	{
@@ -278,7 +264,7 @@ protected:
 
 	ITexture *createDeviceDependentTexture(const io::path &name, IImage *image) override;
 
-	ITexture *createDeviceDependentTextureCubemap(const io::path &name, const core::array<IImage *> &image) override;
+	ITexture *createDeviceDependentTextureCubemap(const io::path &name, const std::vector<IImage*> &image) override;
 
 	//! Map Irrlicht wrap mode to OpenGL enum
 	GLint getTextureWrapMode(u8 clamp) const;
@@ -304,10 +290,7 @@ protected:
 		LockRenderStateMode = false;
 	}
 
-	void draw2D3DVertexPrimitiveList(const void *vertices,
-			u32 vertexCount, const void *indexList, u32 primitiveCount,
-			E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
-			E_INDEX_TYPE iType, bool is3D);
+	bool updateHardwareBuffer(SHWBufferLink_opengl *b, const void *buffer, size_t bufferSize, scene::E_HARDWARE_MAPPING hint);
 
 	void createMaterialRenderers();
 
@@ -336,14 +319,6 @@ protected:
 	bool ResetRenderStates;
 	bool LockRenderStateMode;
 	u8 AntiAlias;
-
-	struct SUserClipPlane
-	{
-		core::plane3df Plane;
-		bool Enabled;
-	};
-
-	core::array<SUserClipPlane> UserClipPlane;
 
 	core::matrix4 TextureFlipMatrix;
 

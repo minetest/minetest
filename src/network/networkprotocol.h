@@ -224,10 +224,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add TOCLIENT_MOVE_PLAYER_REL
 		Move default minimap from client-side C++ to server-side builtin Lua
 		[scheduled bump for 5.9.0]
+	PROTOCOL VERSION 45:
+		Minimap HUD element supports negative size values as percentages
+		[bump for 5.9.1]
+	PROTOCOL VERSION 46:
+		Move default hotbar from client-side C++ to server-side builtin Lua
+    Add shadow tint to Lighting packets
+		Add shadow color to CloudParam packets
+		Move death screen to server and make it a regular formspec
+			The server no longer triggers the hardcoded client-side death
+			formspec, but the client still supports it for compatibility with
+			old servers.
+		Rename TOCLIENT_DEATHSCREEN to TOCLIENT_DEATHSCREEN_LEGACY
+		Rename TOSERVER_RESPAWN to TOSERVER_RESPAWN_LEGACY
+		[scheduled bump for 5.10.0]
+	PROTOCOL VERSION 47:
 		Add artificial light color packet
 */
 
-#define LATEST_PROTOCOL_VERSION 44
+#define LATEST_PROTOCOL_VERSION 46
+
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
@@ -237,12 +253,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Client's supported network protocol range
 #define CLIENT_PROTOCOL_VERSION_MIN 37
 #define CLIENT_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
-
-// Constant that differentiates the protocol from random data and other protocols
-#define PROTOCOL_ID 0x4f457403
-
-#define PASSWORD_SIZE 28    // Maximum password length. Allows for
-                            // base64-encoded SHA-1 (27+\0).
 
 // See also formspec [Version History] in doc/lua_api.md
 #define FORMSPEC_API_VERSION 7
@@ -258,10 +268,10 @@ enum ToClientCommand : u16
 		Sent after TOSERVER_INIT.
 
 		u8 deployed serialization version
-		u16 deployed network compression mode
+		u16 unused (network compression, never implemeneted)
 		u16 deployed protocol version
 		u32 supported auth methods
-		std::string username that should be used for legacy hash (for proper casing)
+		std::string unused (used to be username)
 	*/
 	TOCLIENT_AUTH_ACCEPT = 0x03,
 	/*
@@ -389,10 +399,10 @@ enum ToClientCommand : u16
 		f32 transition_time
 	*/
 
-	TOCLIENT_DEATHSCREEN = 0x37,
+	TOCLIENT_DEATHSCREEN_LEGACY = 0x37,
 	/*
-		u8 bool set camera point target
-		v3f1000 camera point target (to point the death cause or whatever)
+		u8 bool unused
+		v3f1000 unused
 	*/
 
 	TOCLIENT_MEDIA = 0x38,
@@ -503,22 +513,50 @@ enum ToClientCommand : u16
 
 	TOCLIENT_SPAWN_PARTICLE = 0x46,
 	/*
-		-- struct range<T> { T min, T max, f32 bias };
+		using range<T> = RangedParameter<T> {
+			T min, max
+			f32 bias
+		}
+		using tween<T> = TweenedParameter<T> {
+			u8 style
+			u16 reps
+			f32 beginning
+			T start, end
+		}
+
 		v3f pos
 		v3f velocity
 		v3f acceleration
 		f32 expirationtime
 		f32 size
 		u8 bool collisiondetection
+
 		u32 len
 		u8[len] texture
+
 		u8 bool vertical
-		u8 collision_removal
+		u8 bool collision_removal
+
 		TileAnimation animation
+
 		u8 glow
-		u8 object_collision
+		u8 bool object_collision
+
+		u16 node_param0
+		u8 node_param2
+		u8 node_tile
+
 		v3f drag
-		range<v3f> bounce
+		range<v3f> jitter
+		range<f32> bounce
+
+		texture {
+			u8 flags (ParticleTextureFlags)
+			-- bit 0: animated
+			-- next bits: blend mode (BlendMode)
+			tween<f32> alpha
+			tween<v2f> scale
+		}
 	*/
 
 	TOCLIENT_ADD_PARTICLESPAWNER = 0x47,
@@ -537,7 +575,7 @@ enum ToClientCommand : u16
 		u16 amount
 		f32 spawntime
 		if PROTOCOL_VERSION >= 42 {
-			tween<T> pos, vel, acc, exptime, size
+			tween<range<T>> pos, vel, acc, exptime, size
 		} else {
 			v3f minpos
 			v3f maxpos
@@ -551,14 +589,23 @@ enum ToClientCommand : u16
 			f32 maxsize
 		}
 		u8 bool collisiondetection
+
 		u32 len
 		u8[len] texture
+
+		u32 spawner_id
 		u8 bool vertical
-		u8 collision_removal
-		u32 id
+		u8 bool collision_removal
+		u32 attached_id
+
 		TileAnimation animation
+
 		u8 glow
-		u8 object_collision
+		u8 bool object_collision
+
+		u16 node_param0
+		u8 node_param2
+		u8 node_tile
 
 		if PROTOCOL_VERSION < 42 {
 			f32 pos_start_bias
@@ -573,6 +620,19 @@ enum ToClientCommand : u16
 			--     f32 pos_end_bias
 			range<v3f> vel_end
 			range<v3f> acc_end
+			range<f32> exptime_end
+			range<f32> size_end
+		}
+
+		texture {
+			u8 flags (ParticleTextureFlags)
+			-- bit 0: animated
+			-- next bits: blend mode (BlendMode)
+			tween<f32> alpha
+			tween<v2f> scale
+
+			if (flags.animated)
+				TileAnimation animation
 		}
 
 		tween<range<v3f>> drag
@@ -598,24 +658,26 @@ enum ToClientCommand : u16
 			u8                spawner_flags
 			    bit 1: attractor_kill (particles dies on contact)
 			if attraction_mode > point {
-				tween<v3f> attractor_angle
-				u16        attractor_origin_attachment_object_id
+				tween<v3f> attractor_direction
+				u16        attractor_direction_attachment_object_id
 			}
 		}
 
 		tween<range<v3f>> radius
-		tween<range<v3f>> drag
 
-		u16 texpool_sz
-		texpool_sz.times {
-			u8 flags
+		u16 texpool_size
+		texpool_size.times {
+			u8 flags (ParticleTextureFlags)
 			-- bit 0: animated
-			-- other bits free & ignored as of proto v40
+			-- next bits: blend mode (BlendMode)
 			tween<f32> alpha
 			tween<v2f> scale
-			if flags.animated {
+
+			u32 len
+			u8[len] texture
+
+			if (flags.animated)
 				TileAnimation animation
-			}
 		}
 
 	*/
@@ -860,7 +922,7 @@ enum ToServerCommand : u16
 		Sent first after connected.
 
 		u8 serialization version (=SER_FMT_VER_HIGHEST_READ)
-		u16 supported network compression modes
+		u16 unused (supported network compression modes, never implemeneted)
 		u16 minimum supported network protocol version
 		u16 maximum supported network protocol version
 		std::string player name
@@ -948,10 +1010,7 @@ enum ToServerCommand : u16
 		[2] u16 item
 	*/
 
-	TOSERVER_RESPAWN = 0x38,
-	/*
-		u16 TOSERVER_RESPAWN
-	*/
+	TOSERVER_RESPAWN_LEGACY = 0x38,
 
 	TOSERVER_INTERACT = 0x39,
 	/*
@@ -1093,26 +1152,6 @@ enum AccessDeniedCode : u8 {
 	SERVER_ACCESSDENIED_SHUTDOWN,
 	SERVER_ACCESSDENIED_CRASH,
 	SERVER_ACCESSDENIED_MAX,
-};
-
-enum NetProtoCompressionMode {
-	NETPROTO_COMPRESSION_NONE = 0,
-};
-
-constexpr const char *accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
-	"Invalid password",
-	"Your client sent something the server didn't expect.  Try reconnecting or updating your client.",
-	"The server is running in simple singleplayer mode.  You cannot connect.",
-	"Your client's version is not supported.\nPlease contact the server administrator.",
-	"Player name contains disallowed characters",
-	"Player name not allowed",
-	"Too many users",
-	"Empty passwords are disallowed.  Set a password and try again.",
-	"Another client is connected with this name.  If your client closed unexpectedly, try again in a minute.",
-	"Internal server error",
-	"",
-	"Server shutting down",
-	"The server has experienced an internal error.  You will now be disconnected."
 };
 
 enum PlayerListModifer : u8

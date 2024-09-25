@@ -9,14 +9,16 @@
 #include "ITexture.h"
 #include "irrArray.h"
 #include "matrix4.h"
-#include "plane3d.h"
 #include "dimension2d.h"
 #include "position2d.h"
-#include "IMeshBuffer.h"
 #include "EDriverTypes.h"
 #include "EDriverFeatures.h"
+#include "EPrimitiveTypes.h"
+#include "EVideoTypes.h"
 #include "SExposedVideoData.h"
 #include "SOverrideMaterial.h"
+#include "S3DVertex.h" // E_VERTEX_TYPE
+#include "SVertexIndex.h" // E_INDEX_TYPE
 
 namespace irr
 {
@@ -29,6 +31,8 @@ class IWriteFile;
 namespace scene
 {
 class IMeshBuffer;
+class IVertexBuffer;
+class IIndexBuffer;
 class IMesh;
 class IMeshManipulator;
 class ISceneNode;
@@ -36,76 +40,11 @@ class ISceneNode;
 
 namespace video
 {
-struct S3DVertex;
-struct S3DVertex2TCoords;
-struct S3DVertexTangents;
 class IImageLoader;
 class IImageWriter;
 class IMaterialRenderer;
 class IGPUProgrammingServices;
 class IRenderTarget;
-
-//! enumeration for geometry transformation states
-enum E_TRANSFORMATION_STATE
-{
-	//! View transformation
-	ETS_VIEW = 0,
-	//! World transformation
-	ETS_WORLD,
-	//! Projection transformation
-	ETS_PROJECTION,
-	//! Texture 0 transformation
-	//! Use E_TRANSFORMATION_STATE(ETS_TEXTURE_0 + texture_number) to access other texture transformations
-	ETS_TEXTURE_0,
-	//! Only used internally
-	ETS_COUNT = ETS_TEXTURE_0 + MATERIAL_MAX_TEXTURES
-};
-
-//! Special render targets, which usually map to dedicated hardware
-/** These render targets (besides 0 and 1) need not be supported by gfx cards */
-enum E_RENDER_TARGET
-{
-	//! Render target is the main color frame buffer
-	ERT_FRAME_BUFFER = 0,
-	//! Render target is a render texture
-	ERT_RENDER_TEXTURE,
-	//! Multi-Render target textures
-	ERT_MULTI_RENDER_TEXTURES,
-	//! Render target is the main color frame buffer
-	ERT_STEREO_LEFT_BUFFER,
-	//! Render target is the right color buffer (left is the main buffer)
-	ERT_STEREO_RIGHT_BUFFER,
-	//! Render to both stereo buffers at once
-	ERT_STEREO_BOTH_BUFFERS,
-	//! Auxiliary buffer 0
-	ERT_AUX_BUFFER0,
-	//! Auxiliary buffer 1
-	ERT_AUX_BUFFER1,
-	//! Auxiliary buffer 2
-	ERT_AUX_BUFFER2,
-	//! Auxiliary buffer 3
-	ERT_AUX_BUFFER3,
-	//! Auxiliary buffer 4
-	ERT_AUX_BUFFER4
-};
-
-//! Enum for the flags of clear buffer
-enum E_CLEAR_BUFFER_FLAG
-{
-	ECBF_NONE = 0,
-	ECBF_COLOR = 1,
-	ECBF_DEPTH = 2,
-	ECBF_STENCIL = 4,
-	ECBF_ALL = ECBF_COLOR | ECBF_DEPTH | ECBF_STENCIL
-};
-
-//! Enum for the types of fog distributions to choose from
-enum E_FOG_TYPE
-{
-	EFT_FOG_EXP = 0,
-	EFT_FOG_LINEAR,
-	EFT_FOG_EXP2
-};
 
 const c8 *const FogTypeNames[] = {
 		"FogExp",
@@ -113,6 +52,17 @@ const c8 *const FogTypeNames[] = {
 		"FogExp2",
 		0,
 	};
+
+struct SFrameStats {
+	//! Number of draw calls
+	u32 Drawcalls = 0;
+	//! Count of primitives drawn
+	u32 PrimitivesDrawn = 0;
+	//! Number of hardware buffers uploaded (new or updated)
+	u32 HWBuffersUploaded = 0;
+	//! Sum of uploaded hardware buffer size
+	u32 HWBuffersUploadedSize = 0;
+};
 
 //! Interface to driver which is able to perform 2d and 3d graphics functions.
 /** This interface is one of the most important interfaces of
@@ -182,7 +132,6 @@ public:
 	MaxSupportedTextures (int) The maximum number of simultaneous textures supported by the fixed function pipeline of the (hw) driver. The actual supported number of textures supported by the engine can be lower.
 	MaxLights (int) Number of hardware lights supported in the fixed function pipeline of the driver, typically 6-8. Use light manager or deferred shading for more.
 	MaxAnisotropy (int) Number of anisotropy levels supported for filtering. At least 1, max is typically at 16 or 32.
-	MaxUserClipPlanes (int) Number of additional clip planes, which can be set by the user via dedicated driver methods.
 	MaxAuxBuffers (int) Special render buffers, which are currently not really usable inside Irrlicht. Only supported by OpenGL
 	MaxMultipleRenderTargets (int) Number of render targets which can be bound simultaneously. Rendering to MRTs is done via shaders.
 	MaxIndices (int) Number of indices which can be used in one render call (i.e. one mesh buffer).
@@ -194,12 +143,6 @@ public:
 	AntiAlias (int) Number of Samples the driver uses for each pixel. 0 and 1 means anti aliasing is off, typical values are 2,4,8,16,32
 	*/
 	virtual const io::IAttributes &getDriverAttributes() const = 0;
-
-	//! Check if the driver was recently reset.
-	/** For d3d devices you will need to recreate the RTTs if the
-	driver was reset. Should be queried right after beginScene().
-	*/
-	virtual bool checkDriverReset() = 0;
 
 	//! Sets transformation matrices.
 	/** \param state Transformation type to be set, e.g. view,
@@ -360,7 +303,10 @@ public:
 	virtual void removeAllTextures() = 0;
 
 	//! Remove hardware buffer
-	virtual void removeHardwareBuffer(const scene::IMeshBuffer *mb) = 0;
+	virtual void removeHardwareBuffer(const scene::IVertexBuffer *vb) = 0;
+
+	//! Remove hardware buffer
+	virtual void removeHardwareBuffer(const scene::IIndexBuffer *ib) = 0;
 
 	//! Remove all hardware buffers
 	virtual void removeAllHardwareBuffers() = 0;
@@ -799,6 +745,17 @@ public:
 	/** \param mb Buffer to draw */
 	virtual void drawMeshBuffer(const scene::IMeshBuffer *mb) = 0;
 
+	/**
+	 * Draws a mesh from individual vertex and index buffers.
+	 * @param vb vertices to use
+	 * @param ib indices to use
+	 * @param primCount amount of primitives
+	 * @param pType primitive type
+	 */
+	virtual void drawBuffers(const scene::IVertexBuffer *vb,
+		const scene::IIndexBuffer *ib, u32 primCount,
+		scene::E_PRIMITIVE_TYPE pType = scene::EPT_TRIANGLES) = 0;
+
 	//! Draws normals of a mesh buffer
 	/** \param mb Buffer to draw the normals of
 	\param length length scale factor of the normals
@@ -856,12 +813,8 @@ public:
 	\return Approximate amount of frames per second drawn. */
 	virtual s32 getFPS() const = 0;
 
-	//! Returns amount of primitives (mostly triangles) which were drawn in the last frame.
-	/** Together with getFPS() very useful method for statistics.
-	\param mode Defines if the primitives drawn are accumulated or
-	counted per frame.
-	\return Amount of primitives drawn in the last frame. */
-	virtual u32 getPrimitiveCountDrawn(u32 mode = 0) const = 0;
+	//! Return some statistics about the last frame
+	virtual SFrameStats getFrameStats() const = 0;
 
 	//! Gets name of this video driver.
 	/** \return Returns the name of the video driver, e.g. in case
@@ -1108,26 +1061,6 @@ public:
 	\param filename Name of the texture.
 	\return Pointer to loaded texture, or 0 if not found. */
 	virtual video::ITexture *findTexture(const io::path &filename) = 0;
-
-	//! Set or unset a clipping plane.
-	/** There are at least 6 clipping planes available for the user
-	to set at will.
-	\param index The plane index. Must be between 0 and
-	MaxUserClipPlanes.
-	\param plane The plane itself.
-	\param enable If true, enable the clipping plane else disable
-	it.
-	\return True if the clipping plane is usable. */
-	virtual bool setClipPlane(u32 index, const core::plane3df &plane, bool enable = false) = 0;
-
-	//! Enable or disable a clipping plane.
-	/** There are at least 6 clipping planes available for the user
-	to set at will.
-	\param index The plane index. Must be between 0 and
-	MaxUserClipPlanes.
-	\param enable If true, enable the clipping plane else disable
-	it. */
-	virtual void enableClipPlane(u32 index, bool enable) = 0;
 
 	//! Set the minimum number of vertices for which a hw buffer will be created
 	/** \param count Number of vertices to set as minimum. */

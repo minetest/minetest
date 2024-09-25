@@ -697,32 +697,43 @@ bool MoveDir(const std::string &source, const std::string &target)
 
 bool PathStartsWith(const std::string &path, const std::string &prefix)
 {
+	if (prefix.empty())
+		return path.empty();
 	size_t pathsize = path.size();
 	size_t pathpos = 0;
 	size_t prefixsize = prefix.size();
 	size_t prefixpos = 0;
 	for(;;){
+		// Test if current characters at path and prefix are delimiter OR EOS
 		bool delim1 = pathpos == pathsize
 			|| IsDirDelimiter(path[pathpos]);
 		bool delim2 = prefixpos == prefixsize
 			|| IsDirDelimiter(prefix[prefixpos]);
 
+		// Return false if it's delimiter/EOS in one path but not in the other
 		if(delim1 != delim2)
 			return false;
 
 		if(delim1){
+			// Skip consequent delimiters in path, in prefix
 			while(pathpos < pathsize &&
 					IsDirDelimiter(path[pathpos]))
 				++pathpos;
 			while(prefixpos < prefixsize &&
 					IsDirDelimiter(prefix[prefixpos]))
 				++prefixpos;
+			// Return true if prefix has ended (at delimiter/EOS)
 			if(prefixpos == prefixsize)
 				return true;
+			// Return false if path has ended (at delimiter/EOS)
+            // while prefix did not.
 			if(pathpos == pathsize)
 				return false;
 		}
 		else{
+			// Skip pairwise-equal characters in path and prefix until
+			// delimiter/EOS in path or prefix.
+			// Return false if differing characters are met.
 			size_t len = 0;
 			do{
 				char pathchar = path[pathpos+len];
@@ -954,12 +965,21 @@ bool extractZipFile(io::IFileSystem *fs, const char *filename, const std::string
 	const io::IFileList* files_in_zip = opened_zip->getFileList();
 
 	for (u32 i = 0; i < files_in_zip->getFileCount(); i++) {
-		std::string fullpath = destination + DIR_DELIM;
-		fullpath += files_in_zip->getFullFileName(i).c_str();
-		std::string fullpath_dir = fs::RemoveLastPathComponent(fullpath);
-
 		if (files_in_zip->isDirectory(i))
 			continue; // ignore, we create dirs as necessary
+
+		const auto &filename = files_in_zip->getFullFileName(i);
+		std::string fullpath = destination + DIR_DELIM;
+		fullpath += filename.c_str();
+
+		fullpath = fs::RemoveRelativePathComponents(fullpath);
+		if (!fs::PathStartsWith(fullpath, destination)) {
+			warningstream << "fs::extractZipFile(): refusing to extract file \""
+				<< filename.c_str() << "\"" << std::endl;
+			continue;
+		}
+
+		std::string fullpath_dir = fs::RemoveLastPathComponent(fullpath);
 
 		if (!fs::PathExists(fullpath_dir) && !fs::CreateAllDirs(fullpath_dir))
 			return false;

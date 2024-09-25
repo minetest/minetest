@@ -1,7 +1,7 @@
 uniform mat4 mWorld;
 uniform vec3 dayLight;
 uniform float animationTimer;
-uniform lowp vec4 emissiveColor;
+uniform lowp vec4 materialColor;
 
 varying vec3 vNormal;
 varying vec3 vPosition;
@@ -106,7 +106,7 @@ vec3 getDirectLightScatteringAtGround(vec3 v_LightDirection)
 
 void main(void)
 {
-	varTexCoord = (mTexture * inTexCoord0).st;
+	varTexCoord = (mTexture * vec4(inTexCoord0.xy, 1.0, 1.0)).st;
 	gl_Position = mWorldViewProj * inVertexPosition;
 
 	vPosition = gl_Position.xyz;
@@ -130,7 +130,7 @@ void main(void)
 	vec4 color = inVertexColor;
 #endif
 
-	color *= emissiveColor;
+	color *= materialColor;
 
 	// The alpha gives the ratio of sunlight in the incoming light.
 	nightRatio = 1.0 - color.a;

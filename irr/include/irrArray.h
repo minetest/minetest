@@ -45,6 +45,10 @@ public:
 	{
 	}
 
+	//! Move constructor
+	array(std::vector<T> &&data) :
+			m_data(std::move(data)), is_sorted(false) {}
+
 	//! Reallocates the array, make it bigger or smaller.
 	/** \param new_size New size of array.
 	\param canShrink Specifies whether the array is reallocated even if
@@ -163,13 +167,6 @@ public:
 	array<T> &operator=(const std::vector<T> &other)
 	{
 		m_data = other;
-		is_sorted = false;
-		return *this;
-	}
-
-	array<T> &operator=(std::vector<T> &&other)
-	{
-		m_data = std::move(other);
 		is_sorted = false;
 		return *this;
 	}
@@ -398,16 +395,6 @@ public:
 	{
 		m_data.swap(other.m_data);
 		std::swap(is_sorted, other.is_sorted);
-	}
-
-	//! Pull the contents of this array as a vector.
-	// The array is left empty.
-	std::vector<T> steal()
-	{
-		std::vector<T> ret = std::move(m_data);
-		m_data.clear();
-		is_sorted = true;
-		return ret;
 	}
 
 	typedef T value_type;

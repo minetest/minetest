@@ -28,12 +28,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 #include "porting.h"  // strlcpy
+#include <tuple>
 
 
-Player::Player(const char *name, IItemDefManager *idef):
+bool is_valid_player_name(std::string_view name) {
+	return !name.empty() && name.size() <= PLAYERNAME_SIZE && string_allowed(name, PLAYERNAME_ALLOWED_CHARS);
+}
+
+Player::Player(const std::string &name, IItemDefManager *idef):
 	inventory(idef)
 {
-	strlcpy(m_name, name, PLAYERNAME_SIZE);
+	m_name = name;
 
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
@@ -86,6 +91,11 @@ void Player::setWieldIndex(u16 index)
 {
 	const InventoryList *mlist = inventory.getList("main");
 	m_wield_index = MYMIN(index, mlist ? mlist->getSize() : 0);
+}
+
+u16 Player::getWieldIndex()
+{
+	return std::min(m_wield_index, getMaxHotbarItemcount());
 }
 
 ItemStack &Player::getWieldedItem(ItemStack *selected, ItemStack *hand) const
@@ -157,6 +167,12 @@ void Player::clearHud()
 	}
 }
 
+u16 Player::getMaxHotbarItemcount()
+{
+	InventoryList *mainlist = inventory.getList("main");
+	return mainlist ? std::min(mainlist->getSize(), (u32) hud_hotbar_itemcount) : 0;
+}
+
 #ifndef SERVER
 
 u32 PlayerControl::getKeysPressed() const
@@ -213,4 +229,20 @@ void PlayerControl::unpackKeysPressed(u32 keypress_bits)
 	dig   = keypress_bits & (1 << 7);
 	place = keypress_bits & (1 << 8);
 	zoom  = keypress_bits & (1 << 9);
+}
+
+static auto tie(const PlayerPhysicsOverride &o)
+{
+	// Make sure to add new members to this list!
+	return std::tie(
+	o.speed, o.jump, o.gravity, o.sneak, o.sneak_glitch, o.new_move, o.speed_climb,
+	o.speed_crouch, o.liquid_fluidity, o.liquid_fluidity_smooth, o.liquid_sink,
+	o.acceleration_default, o.acceleration_air, o.speed_fast, o.acceleration_fast,
+	o.speed_walk
+	);
+}
+
+bool PlayerPhysicsOverride::operator==(const PlayerPhysicsOverride &other) const
+{
+	return tie(*this) == tie(other);
 }

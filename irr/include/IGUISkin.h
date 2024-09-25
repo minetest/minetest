@@ -374,6 +374,12 @@ const c8 *const GUISkinFontNames[EGDF_COUNT + 1] = {
 class IGUISkin : virtual public IReferenceCounted
 {
 public:
+	//! returns display density scaling factor
+	virtual float getScale() const = 0;
+
+	//! sets display density scaling factor
+	virtual void setScale(float scale) = 0;
+
 	//! returns default color
 	virtual video::SColor getColor(EGUI_DEFAULT_COLOR color) const = 0;
 
@@ -431,6 +437,10 @@ public:
 	virtual void draw3DButtonPaneStandard(IGUIElement *element,
 			const core::rect<s32> &rect,
 			const core::rect<s32> *clip = 0) = 0;
+	virtual void drawColored3DButtonPaneStandard(IGUIElement* element,
+			const core::rect<s32>& rect,
+			const core::rect<s32>* clip=0,
+			const video::SColor* colors=0) = 0;
 
 	//! draws a pressed 3d button pane
 	/** Used for drawing for example buttons in pressed state.
@@ -444,6 +454,10 @@ public:
 	virtual void draw3DButtonPanePressed(IGUIElement *element,
 			const core::rect<s32> &rect,
 			const core::rect<s32> *clip = 0) = 0;
+	virtual void drawColored3DButtonPanePressed(IGUIElement* element,
+			const core::rect<s32>& rect,
+			const core::rect<s32>* clip=0,
+			const video::SColor* colors=0) = 0;
 
 	//! draws a sunken 3d pane
 	/** Used for drawing the background of edit, combo or check boxes.

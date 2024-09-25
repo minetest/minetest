@@ -1,4 +1,4 @@
-uniform lowp vec4 emissiveColor;
+uniform lowp vec4 materialColor;
 
 varying lowp vec4 varColor;
 
@@ -14,7 +14,7 @@ void main(void)
 	vec4 color = inVertexColor;
 #endif
 
-	color *= emissiveColor;
+	color *= materialColor;
 	varColor = color;
 
 	eyeVec = -(mWorldView * inVertexPosition).xyz;

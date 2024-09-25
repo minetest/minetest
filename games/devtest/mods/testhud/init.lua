@@ -208,9 +208,75 @@ minetest.register_chatcommand("zoomfov", {
 	end,
 })
 
+-- Hotbars
+
+local hud_hotbar_defs = {
+	{
+		type = "hotbar",
+		position = {x=0.2, y=0.5},
+		direction = 0,
+		alignment = {x=1, y=-1},
+	},
+	{
+		type = "hotbar",
+		position = {x=0.2, y=0.5},
+		direction = 2,
+		alignment = {x=1, y=1},
+	},
+	{
+		type = "hotbar",
+		position = {x=0.7, y=0.5},
+		direction = 0,
+		offset = {x=140, y=20},
+		alignment = {x=-1, y=-1},
+	},
+	{
+		type = "hotbar",
+		position = {x=0.7, y=0.5},
+		direction = 2,
+		offset = {x=140, y=20},
+		alignment = {x=-1, y=1},
+	},
+}
+
+
+local player_hud_hotbars= {}
+minetest.register_chatcommand("hudhotbars", {
+	description = "Shows some test Lua HUD elements of type hotbar. " ..
+			"(add: Adds elements (default). remove: Removes elements)",
+	params = "[ add | remove ]",
+	func = function(name, params)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "No player."
+		end
+
+		local id_table = player_hud_hotbars[name]
+		if not id_table then
+			id_table = {}
+			player_hud_hotbars[name] = id_table
+		end
+
+		if params == "remove" then
+			for _, id in ipairs(id_table) do
+				player:hud_remove(id)
+			end
+			return true, "Hotbars removed."
+		end
+
+		-- params == "add" or default
+		for _, def in ipairs(hud_hotbar_defs) do
+			table.insert(id_table, player:hud_add(def))
+		end
+		return true, #hud_hotbar_defs .." Hotbars added."
+	end
+})
+
+
 minetest.register_on_leaveplayer(function(player)
 	player_font_huds[player:get_player_name()] = nil
 	player_waypoints[player:get_player_name()] = nil
+	player_hud_hotbars[player:get_player_name()] = nil
 end)
 
 minetest.register_chatcommand("hudprint", {
@@ -230,5 +296,28 @@ minetest.register_chatcommand("hudprint", {
 		end
 
 		return true, s
+	end
+})
+
+local hud_flags = {"hotbar", "healthbar", "crosshair", "wielditem", "breathbar",
+		"minimap", "minimap_radar", "basic_debug", "chat"}
+
+minetest.register_chatcommand("hudtoggleflag", {
+	description = "Toggles a hud flag.",
+	params = "[ ".. table.concat(hud_flags, " | ") .." ]",
+	func = function(name, params)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "No player."
+		end
+
+		local flags = player:hud_get_flags()
+		if flags[params] == nil then
+			return false, "Unknown hud flag."
+		end
+
+		flags[params] = not flags[params]
+		player:hud_set_flags(flags)
+		return true, "Flag \"".. params .."\" set to ".. tostring(flags[params]) .. "."
 	end
 })

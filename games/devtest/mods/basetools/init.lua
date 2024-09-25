@@ -71,7 +71,7 @@ end
 -- Mese Pickaxe: special tool that digs "everything" instantly
 minetest.register_tool("basetools:pick_mese", {
 	description = "Mese Pickaxe".."\n"..
-			"Digs diggable nodes instantly",
+			"Digs diggable nodes instantly.",
 	inventory_image = "basetools_mesepick.png",
 	tool_capabilities = {
 		full_punch_interval = 1.0,
@@ -82,6 +82,28 @@ minetest.register_tool("basetools:pick_mese", {
 			snappy={times={[1]=0.0, [2]=0.0, [3]=0.0}, maxlevel=255},
 			choppy={times={[1]=0.0, [2]=0.0, [3]=0.0}, maxlevel=255},
 			dig_immediate={times={[1]=0.0, [2]=0.0, [3]=0.0}, maxlevel=255},
+		},
+		damage_groups = {fleshy=100},
+	},
+})
+
+
+-- A variant of the mese pickaxe that is not affected by the 0.15s digging delay
+minetest.register_tool("basetools:pick_mese_no_delay", {
+	description = "Mese Pickaxe (no delay)".."\n"..
+			"Digs diggable nodes instantly.".."\n"..
+			"There is no delay between digging each node,\n"..
+			'but the "repeat_dig_time" setting is still respected.',
+	inventory_image = "basetools_mesepick_no_delay.png",
+	tool_capabilities = {
+		full_punch_interval = 1.0,
+		max_drop_level=3,
+		groupcaps={
+			cracky={times={[1]=0.001, [2]=0.001, [3]=0.001}, maxlevel=255},
+			crumbly={times={[1]=0.001, [2]=0.001, [3]=0.001}, maxlevel=255},
+			snappy={times={[1]=0.001, [2]=0.001, [3]=0.001}, maxlevel=255},
+			choppy={times={[1]=0.001, [2]=0.001, [3]=0.001}, maxlevel=255},
+			dig_immediate={times={[1]=0.001, [2]=0.001, [3]=0.001}, maxlevel=255},
 		},
 		damage_groups = {fleshy=100},
 	},

@@ -468,7 +468,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 	std::string hp = itos(sao->getHP());
 	std::string breath = itos(sao->getBreath());
 	const char *values[] = {
-		player->getName(),
+		player->getName().c_str(),
 		pitch.c_str(),
 		yaw.c_str(),
 		posx.c_str(), posy.c_str(), posz.c_str(),
@@ -476,7 +476,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 		breath.c_str()
 	};
 
-	const char* rmvalues[] = { player->getName() };
+	const char* rmvalues[] = { player->getName().c_str() };
 	beginSave();
 
 	if (getPGVersion() < 90500) {
@@ -501,7 +501,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 			inv_id = itos(i), lsize = itos(list->getSize());
 
 		const char* inv_values[] = {
-			player->getName(),
+			player->getName().c_str(),
 			inv_id.c_str(),
 			width.c_str(),
 			name.c_str(),
@@ -516,7 +516,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 			std::string itemStr = oss.str(), slotId = itos(j);
 
 			const char* invitem_values[] = {
-				player->getName(),
+				player->getName().c_str(),
 				inv_id.c_str(),
 				slotId.c_str(),
 				itemStr.c_str()
@@ -529,7 +529,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 	const StringMap &attrs = sao->getMeta().getStrings();
 	for (const auto &attr : attrs) {
 		const char *meta_values[] = {
-			player->getName(),
+			player->getName().c_str(),
 			attr.first.c_str(),
 			attr.second.c_str()
 		};
@@ -545,7 +545,7 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 	sanity_check(sao);
 	verifyDatabase();
 
-	const char *values[] = { player->getName() };
+	const char *values[] = { player->getName().c_str() };
 	PGresult *results = execPrepared("load_player", 1, values, false, false);
 
 	// Player not found, return not found
@@ -580,7 +580,7 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 		std::string invIdStr = itos(invId);
 
 		const char* values2[] = {
-			player->getName(),
+			player->getName().c_str(),
 			invIdStr.c_str()
 		};
 		PGresult *results2 = execPrepared("load_player_inventory_items", 2,

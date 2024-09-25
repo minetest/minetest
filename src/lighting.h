@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #pragma once
-#include <SColor.h>
+#include "SColor.h"
 
 using namespace irr;
 
@@ -57,4 +57,5 @@ struct Lighting
 	float saturation {1.0f};
 	float volumetric_light_strength {0.0f};
 	video::SColor artificial_light_color{ 255, 133, 133, 133 };
+	video::SColor shadow_tint;
 };

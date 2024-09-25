@@ -186,6 +186,8 @@ dofile(modpath .. "/metadata.lua")
 dofile(modpath .. "/raycast.lua")
 dofile(modpath .. "/inventory.lua")
 dofile(modpath .. "/load_time.lua")
+dofile(modpath .. "/on_shutdown.lua")
+dofile(modpath .. "/color.lua")
 
 --------------
 

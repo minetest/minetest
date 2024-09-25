@@ -40,10 +40,17 @@ static std::unordered_map<u64, std::queue<HTTPFetchResult>>
 	g_httpfetch_results;
 static PcgRandom g_callerid_randomness;
 
+static std::string default_user_agent()
+{
+	std::string ret(PROJECT_NAME_C "/");
+	ret.append(g_version_string).append(" (").append(porting::get_sysinfo()).append(")");
+	return ret;
+}
+
 HTTPFetchRequest::HTTPFetchRequest() :
 	timeout(g_settings->getS32("curl_timeout")),
 	connect_timeout(10 * 1000),
-	useragent(std::string(PROJECT_NAME_C "/") + g_version_hash + " (" + porting::get_sysinfo() + ")")
+	useragent(default_user_agent())
 {
 	timeout = std::max(timeout, MIN_HTTPFETCH_TIMEOUT_INTERACTIVE);
 }
@@ -749,19 +756,6 @@ static void httpfetch_request_clear(u64 caller)
 	}
 }
 
-static void httpfetch_sync(const HTTPFetchRequest &fetch_request,
-		HTTPFetchResult &fetch_result)
-{
-	// Create ongoing fetch data and make a cURL handle
-	// Set cURL options based on HTTPFetchRequest
-	CurlHandlePool pool;
-	HTTPFetchOngoing ongoing(fetch_request, &pool);
-	// Do the fetch (curl_easy_perform)
-	CURLcode res = ongoing.start(nullptr);
-	// Update fetch result
-	fetch_result = *ongoing.complete(res);
-}
-
 bool httpfetch_sync_interruptible(const HTTPFetchRequest &fetch_request,
 		HTTPFetchResult &fetch_result, long interval)
 {
@@ -779,7 +773,8 @@ bool httpfetch_sync_interruptible(const HTTPFetchRequest &fetch_request,
 		} while (!httpfetch_async_get(req.caller, fetch_result));
 		httpfetch_caller_free(req.caller);
 	} else {
-		httpfetch_sync(fetch_request, fetch_result);
+		throw ModError(std::string("You have tried to execute a synchronous HTTP request on the main thread! "
+				"This offense shall be punished. (").append(fetch_request.url).append(")"));
 	}
 	return true;
 }

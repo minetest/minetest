@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "content/subgames.h"
 #include "network/peerhandler.h"
-#include "network/address.h"
+#include "network/connection.h"
 #include "util/numeric.h"
 #include "util/thread.h"
 #include "util/basic_macros.h"
@@ -193,7 +193,6 @@ public:
 	void handleCommand_ChatMessage(NetworkPacket* pkt);
 	void handleCommand_Damage(NetworkPacket* pkt);
 	void handleCommand_PlayerItem(NetworkPacket* pkt);
-	void handleCommand_Respawn(NetworkPacket* pkt);
 	void handleCommand_Interact(NetworkPacket* pkt);
 	void handleCommand_RemovedSounds(NetworkPacket* pkt);
 	void handleCommand_NodeMetaFields(NetworkPacket* pkt);
@@ -239,9 +238,6 @@ public:
 	s32 playSound(ServerPlayingSound &params, bool ephemeral=false);
 	void stopSound(s32 handle);
 	void fadeSound(s32 handle, float step, float gain);
-	// Stop all sounds attached to given objects, for a certain client
-	void stopAttachedSounds(session_t peer_id,
-		const std::vector<u16> &object_ids);
 
 	// Envlock
 	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);
@@ -359,15 +355,13 @@ public:
 
 	void setLighting(RemotePlayer *player, const Lighting &lighting);
 
-	void RespawnPlayer(session_t peer_id);
-
 	/* con::PeerHandler implementation. */
-	void peerAdded(con::Peer *peer);
-	void deletingPeer(con::Peer *peer, bool timeout);
+	void peerAdded(con::IPeer *peer);
+	void deletingPeer(con::IPeer *peer, bool timeout);
 
 	void DenySudoAccess(session_t peer_id);
 	void DenyAccess(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason = "", bool reconnect = false);
+		std::string_view custom_reason = "", bool reconnect = false);
 	void kickAllPlayers(AccessDeniedCode reason,
 		const std::string &str_reason, bool reconnect);
 	void acceptAuth(session_t peer_id, bool forSudoMode);
@@ -488,9 +482,7 @@ private:
 	void SendHP(session_t peer_id, u16 hp, bool effect);
 	void SendBreath(session_t peer_id, u16 breath);
 	void SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason, bool reconnect = false);
-	void SendDeathscreen(session_t peer_id, bool set_camera_point_target,
-		v3f camera_point_target);
+		std::string_view custom_reason, bool reconnect = false);
 	void SendItemDef(session_t peer_id, IItemDefManager *itemdef, u16 protocol_version);
 	void SendNodeDef(session_t peer_id, const NodeDefManager *nodedef,
 		u16 protocol_version);
@@ -640,7 +632,7 @@ private:
 	ServerEnvironment *m_env = nullptr;
 
 	// server connection
-	std::shared_ptr<con::Connection> m_con;
+	std::shared_ptr<con::IConnection> m_con;
 
 	// Ban checking
 	BanManager *m_banmanager = nullptr;
@@ -675,13 +667,6 @@ private:
 	 	Client interface
 	*/
 	ClientInterface m_clients;
-
-	/*
-		Peer change queue.
-		Queues stuff from peerAdded() and deletingPeer() to
-		handlePeerChanges()
-	*/
-	std::queue<con::PeerChange> m_peer_change_queue;
 
 	std::unordered_map<session_t, std::string> m_formspec_state_data;
 

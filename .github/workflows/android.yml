@@ -35,7 +35,12 @@ jobs:
     - name: Install deps
       run: |
         sudo apt-get update
-        sudo apt-get install -y --no-install-recommends gettext openjdk-17-jdk-headless
+        sudo apt-get install -y --no-install-recommends gettext
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+          distribution: 'temurin'
+          java-version: '17'
     - name: Build AAB with Gradle
       # We build an AAB as well for uploading to the the Play Store.
       run: cd android; ./gradlew bundlerelease

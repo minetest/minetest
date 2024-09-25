@@ -631,11 +631,11 @@ std::vector<std::basic_string<T> > split(const std::basic_string<T> &s, T delim)
 	return tokens;
 }
 
-std::wstring translate_string(const std::wstring &s, Translations *translations);
+std::wstring translate_string(std::wstring_view s, Translations *translations);
 
-std::wstring translate_string(const std::wstring &s);
+std::wstring translate_string(std::wstring_view s);
 
-inline std::wstring unescape_translate(const std::wstring &s) {
+inline std::wstring unescape_translate(std::wstring_view s) {
 	return unescape_enriched(translate_string(s));
 }
 
@@ -760,6 +760,16 @@ inline irr::core::stringw utf8_to_stringw(std::string_view input)
  * 2. Remove 'unsafe' characters from the name by replacing them with '_'
  */
 std::string sanitizeDirName(std::string_view str, std::string_view optional_prefix);
+
+/**
+ * Sanitize an untrusted string (e.g. from the network). This will get strip
+ * control characters and (optionally) any MT-style escape sequences too.
+ * Note that they won't be removed cleanly but rather just broken, unlike with
+ * unescape_enriched.
+ * Line breaks and UTF-8 is permitted.
+ */
+[[nodiscard]]
+std::string sanitize_untrusted(std::string_view str, bool keep_escapes = true);
 
 /**
  * Prints a sanitized version of a string without control characters.

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "exceptions.h"
 #include "irr_ptr.h"
+#include "IReferenceCounted.h"
 
 class TestIrrPtr : public TestBase
 {

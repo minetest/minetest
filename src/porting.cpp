@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #if defined(__ANDROID__)
 	#include "porting_android.h"
+	#include <android/api-level.h>
 #endif
 #if defined(__APPLE__)
 	#include <mach-o/dyld.h>
@@ -72,6 +73,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 #include "util/string.h"
+#include "util/tracy_wrapper.h"
 #include <vector>
 #include <cstdarg>
 #include <cstdio>
@@ -205,7 +207,10 @@ bool detectMSVCBuildDir(const std::string &path)
 	return (!removeStringEnd(path, ends).empty());
 }
 
-std::string get_sysinfo()
+// Note that the system info is sent in every HTTP request, so keep it reasonably
+// privacy-conserving while ideally still being meaningful.
+
+static std::string detectSystemInfo()
 {
 #ifdef _WIN32
 	std::ostringstream oss;
@@ -251,12 +256,32 @@ std::string get_sysinfo()
 	delete[] filePath;
 
 	return oss.str();
-#else
+#elif defined(__ANDROID__)
+	std::ostringstream oss;
 	struct utsname osinfo;
 	uname(&osinfo);
-	return std::string(osinfo.sysname) + "/"
-		+ osinfo.release + " " + osinfo.machine;
+	int api = android_get_device_api_level();
+
+	oss << "Android/" << api << " " << osinfo.machine;
+	return oss.str();
+#else /* POSIX */
+	struct utsname osinfo;
+	uname(&osinfo);
+
+	std::string_view release(osinfo.release);
+	// cut off anything but the primary version number
+	release = release.substr(0, release.find_first_not_of("0123456789."));
+
+	std::string ret = osinfo.sysname;
+	ret.append("/").append(release).append(" ").append(osinfo.machine);
+	return ret;
 #endif
+}
+
+const std::string &get_sysinfo()
+{
+	static std::string ret = detectSystemInfo();
+	return ret;
 }
 
 
@@ -920,22 +945,31 @@ double perf_freq = get_perf_freq();
  *
  * As a workaround we track freed memory coarsely and call malloc_trim() once a
  * certain amount is reached.
+ *
+ * Because trimming can take more than 10ms and would cause jitter if done
+ * uncontrolled we have a separate function, which is called from background threads.
  */
 
 static std::atomic<size_t> memory_freed;
 
-constexpr size_t MEMORY_TRIM_THRESHOLD = 128 * 1024 * 1024;
+constexpr size_t MEMORY_TRIM_THRESHOLD = 256 * 1024 * 1024;
 
 void TrackFreedMemory(size_t amount)
 {
+	memory_freed.fetch_add(amount, std::memory_order_relaxed);
+}
+
+void TriggerMemoryTrim()
+{
+	ZoneScoped;
+
 	constexpr auto MO = std::memory_order_relaxed;
-	memory_freed.fetch_add(amount, MO);
 	if (memory_freed.load(MO) >= MEMORY_TRIM_THRESHOLD) {
 		// Synchronize call
 		if (memory_freed.exchange(0, MO) < MEMORY_TRIM_THRESHOLD)
 			return;
 		// Leave some headroom for future allocations
-		malloc_trim(1 * 1024 * 1024);
+		malloc_trim(8 * 1024 * 1024);
 	}
 }
 

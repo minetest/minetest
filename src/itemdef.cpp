@@ -45,7 +45,8 @@ TouchInteraction::TouchInteraction()
 	pointed_object  = TouchInteractionMode_USER;
 }
 
-TouchInteractionMode TouchInteraction::getMode(PointedThingType pointed_type) const
+TouchInteractionMode TouchInteraction::getMode(const ItemDefinition &selected_def,
+		PointedThingType pointed_type) const
 {
 	TouchInteractionMode result;
 	switch (pointed_type) {
@@ -63,7 +64,9 @@ TouchInteractionMode TouchInteraction::getMode(PointedThingType pointed_type) co
 	}
 
 	if (result == TouchInteractionMode_USER) {
-		if (pointed_type == POINTEDTHING_OBJECT)
+		if (pointed_type == POINTEDTHING_OBJECT && !selected_def.usable)
+			// Only apply when we're actually able to punch the object, i.e. when
+			// the selected item has no on_use callback defined.
 			result = g_settings->get("touch_punch_gesture") == "long_tap" ?
 					LONG_DIG_SHORT_PLACE : SHORT_DIG_LONG_PLACE;
 		else

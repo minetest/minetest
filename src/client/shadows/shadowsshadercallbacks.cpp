@@ -40,6 +40,9 @@ void ShadowConstantSetter::onSetConstants(video::IMaterialRendererServices *serv
 	f32 ShadowStrength = shadow->getShadowStrength();
 	m_shadow_strength.set(&ShadowStrength, services);
 
+	video::SColor ShadowTint = shadow->getShadowTint();
+	m_shadow_tint.set(ShadowTint, services);
+
 	f32 timeOfDay = shadow->getTimeOfDay();
 	m_time_of_day.set(&timeOfDay, services);
 

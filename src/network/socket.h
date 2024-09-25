@@ -25,8 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "networkexceptions.h"
 
-extern bool socket_enable_debug_output;
-
 void sockets_init();
 void sockets_cleanup();
 

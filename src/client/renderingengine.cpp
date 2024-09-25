@@ -36,7 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inputhandler.h"
 #include "gettext.h"
 #include "filesys.h"
-#include "../gui/guiSkin.h"
 #include "irrlicht_changes/static_text.h"
 #include "irr_ptr.h"
 
@@ -125,27 +124,6 @@ IShaderConstantSetter *FogShaderConstantSetterFactory::create()
 }
 
 /* Other helpers */
-
-static gui::GUISkin *createSkin(gui::IGUIEnvironment *environment,
-		gui::EGUI_SKIN_TYPE type, video::IVideoDriver *driver)
-{
-	gui::GUISkin *skin = new gui::GUISkin(type, driver);
-
-	gui::IGUIFont *builtinfont = environment->getBuiltInFont();
-	gui::IGUIFontBitmap *bitfont = nullptr;
-	if (builtinfont && builtinfont->getType() == gui::EGFT_BITMAP)
-		bitfont = (gui::IGUIFontBitmap*)builtinfont;
-
-	gui::IGUISpriteBank *bank = 0;
-	skin->setFont(builtinfont);
-
-	if (bitfont)
-		bank = bitfont->getSpriteBank();
-
-	skin->setSpriteBank(bank);
-
-	return skin;
-}
 
 static std::optional<video::E_DRIVER_TYPE> chooseVideoDriver()
 {
@@ -249,11 +227,6 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	driver->setMinHardwareBufferVertexCount(4);
 
 	s_singleton = this;
-
-	auto skin = createSkin(m_device->getGUIEnvironment(),
-			gui::EGST_WINDOWS_METALLIC, driver);
-	m_device->getGUIEnvironment()->setSkin(skin);
-	skin->drop();
 
 	g_settings->registerChangedCallback("fullscreen", settingChangedCallback, this);
 	g_settings->registerChangedCallback("window_maximized", settingChangedCallback, this);
@@ -418,7 +391,6 @@ std::vector<video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers()
 		video::EDT_OPENGL,
 		video::EDT_OPENGL3,
 		video::EDT_OGLES2,
-		video::EDT_OGLES1,
 		video::EDT_NULL,
 	};
 	std::vector<video::E_DRIVER_TYPE> drivers;
@@ -454,7 +426,6 @@ const VideoDriverInfo &RenderingEngine::getVideoDriverInfo(irr::video::E_DRIVER_
 		{(int)video::EDT_NULL,   {"null",   "NULL Driver"}},
 		{(int)video::EDT_OPENGL, {"opengl", "OpenGL"}},
 		{(int)video::EDT_OPENGL3, {"opengl3", "OpenGL 3+"}},
-		{(int)video::EDT_OGLES1, {"ogles1", "OpenGL ES1"}},
 		{(int)video::EDT_OGLES2, {"ogles2", "OpenGL ES2"}},
 	};
 	return driver_info_map.at((int)type);
@@ -462,18 +433,14 @@ const VideoDriverInfo &RenderingEngine::getVideoDriverInfo(irr::video::E_DRIVER_
 
 float RenderingEngine::getDisplayDensity()
 {
+	float user_factor = g_settings->getFloat("display_density_factor", 0.5f, 5.0f);
 #ifndef __ANDROID__
-	static float cached_display_density = [&] {
-		float dpi = get_raw_device()->getDisplayDensity();
-		// fall back to manually specified dpi
-		if (dpi == 0.0f)
-			dpi = g_settings->getFloat("screen_dpi");
-		return dpi / 96.0f;
-	}();
-	return std::max(cached_display_density * g_settings->getFloat("display_density_factor"), 0.5f);
-
+	float dpi = get_raw_device()->getDisplayDensity();
+	if (dpi == 0.0f)
+		dpi = 96.0f;
+	return std::max(dpi / 96.0f * user_factor, 0.5f);
 #else // __ANDROID__
-	return porting::getDisplayDensity();
+	return porting::getDisplayDensity() * user_factor;
 #endif // __ANDROID__
 }
 
@@ -489,11 +456,14 @@ void RenderingEngine::autosaveScreensizeAndCo(
 	// we do not want to save the thing. This allows users to also manually change
 	// the settings.
 
+	// Don't save the fullscreen size, we want the windowed size.
+	bool fullscreen = RenderingEngine::get_raw_device()->isFullscreen();
 	// Screen size
 	const irr::core::dimension2d<u32> current_screen_size =
 		RenderingEngine::get_video_driver()->getScreenSize();
 	// Don't replace good value with (0, 0)
-	if (current_screen_size != irr::core::dimension2d<u32>(0, 0) &&
+	if (!fullscreen &&
+			current_screen_size != irr::core::dimension2d<u32>(0, 0) &&
 			current_screen_size != initial_screen_size) {
 		g_settings->setU16("screen_w", current_screen_size.Width);
 		g_settings->setU16("screen_h", current_screen_size.Height);

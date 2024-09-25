@@ -65,96 +65,10 @@ const EnumString ModApiEnvBase::es_BlockStatusType[] =
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
-void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
-		u32 active_object_count, u32 active_object_count_wider)
-{
-	ServerScripting *scriptIface = env->getScriptIface();
-	scriptIface->realityCheck();
-
-	lua_State *L = scriptIface->getStack();
-	sanity_check(lua_checkstack(L, 20));
-	StackUnroller stack_unroller(L);
-
-	int error_handler = PUSH_ERROR_HANDLER(L);
-
-	// Get registered_abms
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_abms");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_remove(L, -2); // Remove core
-
-	// Get registered_abms[m_id]
-	lua_pushinteger(L, m_id);
-	lua_gettable(L, -2);
-	if(lua_isnil(L, -1))
-		FATAL_ERROR("");
-	lua_remove(L, -2); // Remove registered_abms
-
-	scriptIface->setOriginFromTable(-1);
-
-	// Call action
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_getfield(L, -1, "action");
-	luaL_checktype(L, -1, LUA_TFUNCTION);
-	lua_remove(L, -2); // Remove registered_abms[m_id]
-	push_v3s16(L, p);
-	pushnode(L, n);
-	lua_pushnumber(L, active_object_count);
-	lua_pushnumber(L, active_object_count_wider);
-
-	int result = lua_pcall(L, 4, 0, error_handler);
-	if (result)
-		scriptIface->scriptError(result, "LuaABM::trigger");
-
-	lua_pop(L, 1); // Pop error handler
-}
-
-void LuaLBM::trigger(ServerEnvironment *env, v3s16 p,
-	const MapNode n, const float dtime_s)
-{
-	ServerScripting *scriptIface = env->getScriptIface();
-	scriptIface->realityCheck();
-
-	lua_State *L = scriptIface->getStack();
-	sanity_check(lua_checkstack(L, 20));
-	StackUnroller stack_unroller(L);
-
-	int error_handler = PUSH_ERROR_HANDLER(L);
-
-	// Get registered_lbms
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_lbms");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_remove(L, -2); // Remove core
-
-	// Get registered_lbms[m_id]
-	lua_pushinteger(L, m_id);
-	lua_gettable(L, -2);
-	FATAL_ERROR_IF(lua_isnil(L, -1), "Entry with given id not found in registered_lbms table");
-	lua_remove(L, -2); // Remove registered_lbms
-
-	scriptIface->setOriginFromTable(-1);
-
-	// Call action
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_getfield(L, -1, "action");
-	luaL_checktype(L, -1, LUA_TFUNCTION);
-	lua_remove(L, -2); // Remove registered_lbms[m_id]
-	push_v3s16(L, p);
-	pushnode(L, n);
-	lua_pushnumber(L, dtime_s);
-
-	int result = lua_pcall(L, 3, 0, error_handler);
-	if (result)
-		scriptIface->scriptError(result, "LuaLBM::trigger");
-
-	lua_pop(L, 1); // Pop error handler
-}
-
 int LuaRaycast::l_next(lua_State *L)
 {
 	GET_PLAIN_ENV_PTR;
+	ServerEnvironment *senv = dynamic_cast<ServerEnvironment*>(env);
 
 	bool csm = false;
 #ifndef SERVER
@@ -163,7 +77,17 @@ int LuaRaycast::l_next(lua_State *L)
 
 	LuaRaycast *o = checkObject<LuaRaycast>(L, 1);
 	PointedThing pointed;
-	env->continueRaycast(&o->state, &pointed);
+	for (;;) {
+		env->continueRaycast(&o->state, &pointed);
+		if (pointed.type != POINTEDTHING_OBJECT)
+			break;
+		if (!senv)
+			break;
+		const auto *obj = senv->getActiveObject(pointed.object_id);
+		if (obj && !obj->isGone())
+			break;
+		// skip gone object
+	}
 	if (pointed.type == POINTEDTHING_NOTHING)
 		lua_pushnil(L);
 	else
@@ -325,6 +249,31 @@ int ModApiEnv::l_swap_node(lua_State *L)
 	MapNode n = readnode(L, 2);
 	// Do it
 	bool succeeded = env->swapNode(pos, n);
+	lua_pushboolean(L, succeeded);
+	return 1;
+}
+
+// bulk_swap_node([pos1, pos2, ...], node)
+// pos = {x=num, y=num, z=num}
+int ModApiEnv::l_bulk_swap_node(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	luaL_checktype(L, 1, LUA_TTABLE);
+
+	s32 len = lua_objlen(L, 1);
+
+	MapNode n = readnode(L, 2);
+
+	// Do it
+	bool succeeded = true;
+	for (s32 i = 1; i <= len; i++) {
+		lua_rawgeti(L, 1, i);
+		if (!env->swapNode(read_v3s16(L, -1), n))
+			succeeded = false;
+		lua_pop(L, 1);
+	}
+
 	lua_pushboolean(L, succeeded);
 	return 1;
 }
@@ -825,10 +774,7 @@ int ModApiEnv::l_get_timeofday(lua_State *L)
 {
 	GET_PLAIN_ENV_PTR;
 
-	// Do it
-	int timeofday_mh = env->getTimeOfDay();
-	float timeofday_f = (float)timeofday_mh / 24000.0f;
-	lua_pushnumber(L, timeofday_f);
+	lua_pushnumber(L, env->getTimeOfDayF());
 	return 1;
 }
 
@@ -846,8 +792,7 @@ int ModApiEnv::l_get_gametime(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	int game_time = env->getGameTime();
-	lua_pushnumber(L, game_time);
+	lua_pushnumber(L, env->getGameTime());
 	return 1;
 }
 
@@ -959,8 +904,8 @@ int ModApiEnvBase::findNodesInArea(lua_State *L, const NodeDefManager *ndef,
 		});
 
 		// last filter table is at top of stack
-		u32 i = filter.size() - 1;
-		do {
+		u32 i = filter.size();
+		while (i --> 0) {
 			if (idx[i] == 0) {
 				// No such node found -> drop the empty table
 				lua_pop(L, 1);
@@ -968,7 +913,7 @@ int ModApiEnvBase::findNodesInArea(lua_State *L, const NodeDefManager *ndef,
 				// This node was found -> put table into the return table
 				lua_setfield(L, base, ndef->get(filter[i]).name.c_str());
 			}
-		} while (i-- != 0);
+		}
 
 		assert(lua_gettop(L) == base);
 		return 1;
@@ -1457,6 +1402,7 @@ void ModApiEnv::Initialize(lua_State *L, int top)
 	API_FCT(bulk_set_node);
 	API_FCT(add_node);
 	API_FCT(swap_node);
+	API_FCT(bulk_swap_node);
 	API_FCT(add_item);
 	API_FCT(remove_node);
 	API_FCT(get_node_raw);

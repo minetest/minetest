@@ -18,11 +18,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "shadowsScreenQuad.h"
+#include <IVideoDriver.h>
 
 shadowScreenQuad::shadowScreenQuad()
 {
 	Material.Wireframe = false;
-	Material.Lighting = false;
 
 	video::SColor color(0x0);
 	Vertices[0] = video::S3DVertex(

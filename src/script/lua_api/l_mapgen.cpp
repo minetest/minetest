@@ -1354,7 +1354,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	ore->flags          = 0;
 
 	//// Get noise_threshold
-	warn_if_field_exists(L, index, "noise_threshhold",
+	warn_if_field_exists(L, index, "noise_threshhold", "ore " + ore->name,
 		"Deprecated: new name is \"noise_threshold\".");
 
 	float nthresh;
@@ -1364,9 +1364,9 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	ore->nthresh = nthresh;
 
 	//// Get y_min/y_max
-	warn_if_field_exists(L, index, "height_min",
+	warn_if_field_exists(L, index, "height_min", "ore " + ore->name,
 		"Deprecated: new name is \"y_min\".");
-	warn_if_field_exists(L, index, "height_max",
+	warn_if_field_exists(L, index, "height_max", "ore " + ore->name,
 		"Deprecated: new name is \"y_max\".");
 
 	int ymin, ymax;

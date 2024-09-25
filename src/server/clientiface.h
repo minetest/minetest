@@ -126,7 +126,7 @@ class EmergeManager;
 | TOCLIENT_INVENTORY          |                |                 |                     |
 | TOCLIENT_HP (opt)           |                \-----------------/                     |
 | TOCLIENT_BREATH             |                                                        |
-| TOCLIENT_DEATHSCREEN        |                                                        |
+| TOCLIENT_DEATHSCREEN_LEGACY |                                                        |
 +-----------------------------+                                                        |
               |                                                                        |
               v                                                                        |
@@ -168,7 +168,7 @@ class EmergeManager;
 
 */
 namespace con {
-	class Connection;
+	class IConnection;
 }
 
 
@@ -321,9 +321,6 @@ public:
 	void setPendingSerializationVersion(u8 version)
 		{ m_pending_serialization_version = version; }
 
-	void setDeployedCompressionMode(u16 byteFlag)
-		{ m_deployed_compression = byteFlag; }
-
 	void confirmSerializationVersion()
 		{ serialization_version = m_pending_serialization_version; }
 
@@ -449,8 +446,6 @@ private:
 
 	std::string m_full_version = "unknown";
 
-	u16 m_deployed_compression = 0;
-
 	/*
 		time this client was created
 	 */
@@ -464,7 +459,7 @@ public:
 
 	friend class Server;
 
-	ClientInterface(const std::shared_ptr<con::Connection> &con);
+	ClientInterface(const std::shared_ptr<con::IConnection> &con);
 	~ClientInterface();
 
 	/* run sync step */
@@ -543,7 +538,7 @@ private:
 	void UpdatePlayerList();
 
 	// Connection
-	std::shared_ptr<con::Connection> m_con;
+	std::shared_ptr<con::IConnection> m_con;
 	std::recursive_mutex m_clients_mutex;
 	// Connected clients (behind the con mutex)
 	RemoteClientMap m_clients;

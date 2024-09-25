@@ -61,6 +61,7 @@ public:
 	void testSanitizeDirName();
 	void testIsBlockInSight();
 	void testColorizeURL();
+	void testSanitizeUntrusted();
 };
 
 static TestUtilities g_test_instance;
@@ -95,6 +96,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testSanitizeDirName);
 	TEST(testIsBlockInSight);
 	TEST(testColorizeURL);
+	TEST(testSanitizeUntrusted);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -742,4 +744,29 @@ void TestUtilities::testColorizeURL()
 #else
 	warningstream << "Test skipped." << std::endl;
 #endif
+}
+
+void TestUtilities::testSanitizeUntrusted()
+{
+	std::string_view t1{u8"Anästhesieausrüstung"};
+	UASSERTEQ(auto, sanitize_untrusted(t1), t1);
+
+	std::string_view t2{"stop\x00here", 9};
+	UASSERTEQ(auto, sanitize_untrusted(t2), "stop");
+
+	UASSERTEQ(auto, sanitize_untrusted("\x01\x08\x13\x1dhello\r\n\tworld"), "hello\n\tworld");
+
+	std::string_view t3{"some \x1b(T@whatever)text\x1b" "E here"};
+	UASSERTEQ(auto, sanitize_untrusted(t3), t3);
+	auto t3_sanitized = sanitize_untrusted(t3, false);
+	UASSERT(str_starts_with(t3_sanitized, "some ") && str_ends_with(t3_sanitized, " here"));
+	UASSERT(t3_sanitized.find('\x1b') == std::string::npos);
+
+	UASSERTEQ(auto, sanitize_untrusted("\x1b[31m"), "[31m");
+
+	// edge cases
+	for (bool keep : {true, false}) {
+		UASSERTEQ(auto, sanitize_untrusted("\x1b", keep), "");
+		UASSERTEQ(auto, sanitize_untrusted("\x1b(", keep), "(");
+	}
 }
