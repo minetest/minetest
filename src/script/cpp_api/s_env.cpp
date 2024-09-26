@@ -34,10 +34,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class LuaABM : public ActiveBlockModifier {
 private:
-	int m_id;
+	const int m_id;
 
 	std::vector<std::string> m_trigger_contents;
 	std::vector<std::string> m_required_neighbors;
+	std::vector<std::string> m_without_neighbors;
 	float m_trigger_interval;
 	u32 m_trigger_chance;
 	bool m_simple_catch_up;
@@ -47,11 +48,13 @@ public:
 	LuaABM(int id,
 			const std::vector<std::string> &trigger_contents,
 			const std::vector<std::string> &required_neighbors,
+			const std::vector<std::string> &without_neighbors,
 			float trigger_interval, u32 trigger_chance, bool simple_catch_up,
 			s16 min_y, s16 max_y):
 		m_id(id),
 		m_trigger_contents(trigger_contents),
 		m_required_neighbors(required_neighbors),
+		m_without_neighbors(without_neighbors),
 		m_trigger_interval(trigger_interval),
 		m_trigger_chance(trigger_chance),
 		m_simple_catch_up(simple_catch_up),
@@ -66,6 +69,10 @@ public:
 	virtual const std::vector<std::string> &getRequiredNeighbors() const
 	{
 		return m_required_neighbors;
+	}
+	virtual const std::vector<std::string> &getWithoutNeighbors() const
+	{
+		return m_without_neighbors;
 	}
 	virtual float getTriggerInterval()
 	{
@@ -230,6 +237,11 @@ void ScriptApiEnv::readABMs()
 		read_nodenames(L, -1, required_neighbors);
 		lua_pop(L, 1);
 
+		std::vector<std::string> without_neighbors;
+		lua_getfield(L, current_abm, "without_neighbors");
+		read_nodenames(L, -1, without_neighbors);
+		lua_pop(L, 1);
+
 		float trigger_interval = 10.0;
 		getfloatfield(L, current_abm, "interval", trigger_interval);
 
@@ -250,7 +262,8 @@ void ScriptApiEnv::readABMs()
 		lua_pop(L, 1);
 
 		LuaABM *abm = new LuaABM(id, trigger_contents, required_neighbors,
-			trigger_interval, trigger_chance, simple_catch_up, min_y, max_y);
+			without_neighbors, trigger_interval, trigger_chance,
+			simple_catch_up, min_y, max_y);
 
 		env->addActiveBlockModifier(abm);
 

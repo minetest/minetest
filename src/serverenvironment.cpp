@@ -827,6 +827,7 @@ struct ActiveABM
 {
 	ActiveBlockModifier *abm;
 	std::vector<content_t> required_neighbors;
+	std::vector<content_t> without_neighbors;
 	int chance;
 	s16 min_y, max_y;
 };
@@ -884,6 +885,10 @@ public:
 			for (const auto &s : abm->getRequiredNeighbors())
 				ndef->getIds(s, aabm.required_neighbors);
 			SORT_AND_UNIQUE(aabm.required_neighbors);
+
+			for (const auto &s : abm->getWithoutNeighbors())
+				ndef->getIds(s, aabm.without_neighbors);
+			SORT_AND_UNIQUE(aabm.without_neighbors);
 
 			// Trigger contents
 			std::vector<content_t> ids;
@@ -996,8 +1001,11 @@ public:
 					continue;
 
 				// Check neighbors
-				if (!aabm.required_neighbors.empty()) {
+				const bool check_required_neighbors = !aabm.required_neighbors.empty();
+				const bool check_without_neighbors = !aabm.without_neighbors.empty();
+				if (check_required_neighbors || check_without_neighbors) {
 					v3s16 p1;
+					bool have_required = false;
 					for(p1.X = p0.X-1; p1.X <= p0.X+1; p1.X++)
 					for(p1.Y = p0.Y-1; p1.Y <= p0.Y+1; p1.Y++)
 					for(p1.Z = p0.Z-1; p1.Z <= p0.Z+1; p1.Z++)
@@ -1015,12 +1023,25 @@ public:
 							MapNode n = map->getNode(p1 + block->getPosRelative());
 							c = n.getContent();
 						}
-						if (CONTAINS(aabm.required_neighbors, c))
-							goto neighbor_found;
+						if (check_required_neighbors && !have_required) {
+							if (CONTAINS(aabm.required_neighbors, c)) {
+								if (!check_without_neighbors)
+									goto neighbor_found;
+								have_required = true;
+							}
+						}
+						if (check_without_neighbors) {
+							if (CONTAINS(aabm.without_neighbors, c))
+								goto neighbor_invalid;
+						}
 					}
+					if (have_required || !check_required_neighbors)
+						goto neighbor_found;
 					// No required neighbor found
+					neighbor_invalid:
 					continue;
 				}
+
 				neighbor_found:
 
 				abms_run++;

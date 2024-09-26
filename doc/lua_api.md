@@ -5524,6 +5524,8 @@ Utilities
       hotbar_hud_element = true,
       -- Bulk LBM support (5.10.0)
       bulk_lbms = true,
+      -- ABM supports field without_neighbors (5.10.0)
+      abm_without_neighbors = true,
   }
   ```
 
@@ -9104,6 +9106,11 @@ Used by `minetest.register_abm`.
     -- Only apply `action` to nodes that have one of, or any
     -- combination of, these neighbors.
     -- If left out or empty, any neighbor will do.
+    -- `group:groupname` can also be used here.
+
+    without_neighbors = {"default:lava_source", "default:lava_flowing"},
+    -- Only apply `action` to nodes that have no one of these neighbors.
+    -- If left out or empty, it has no effect.
     -- `group:groupname` can also be used here.
 
     interval = 10.0,
