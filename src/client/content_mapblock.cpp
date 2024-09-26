@@ -1016,13 +1016,6 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 	}
 }
 
-void MapblockMeshGenerator::drawAllfacesNode()
-{
-	static const aabb3f box(-BS / 2, -BS / 2, -BS / 2, BS / 2, BS / 2, BS / 2);
-	useTile(0, 0, 0);
-	drawAutoLightedCuboid(box);
-}
-
 void MapblockMeshGenerator::drawTorchlikeNode()
 {
 	u8 wall = cur_node.n.getWallMounted(nodedef);
@@ -1543,6 +1536,17 @@ namespace {
 		v3s16( 0,  0,  1), // back
 		v3s16( 1,  0,  0), // right
 	};
+}
+
+void MapblockMeshGenerator::drawAllfacesNode()
+{
+	static const aabb3f box(-BS / 2, -BS / 2, -BS / 2, BS / 2, BS / 2, BS / 2);
+	TileSpec tiles[6];
+	for (int face = 0; face < 6; face++)
+		getTile(nodebox_tile_dirs[face], &tiles[face]);
+	if (data->m_smooth_lighting)
+		getSmoothLightFrame();
+	drawAutoLightedCuboid(box, nullptr, tiles, 6);
 }
 
 void MapblockMeshGenerator::drawNodeboxNode()
