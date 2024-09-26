@@ -122,7 +122,7 @@ void TestServerModManager::testGetMods()
 	ServerModManager sm(m_worlddir);
 	const auto &mods = sm.getMods();
 	// `ls ./games/devtest/mods | wc -l` + 1 (test mod)
-	UASSERTEQ(std::size_t, mods.size(), 32 + 1);
+	UASSERTEQ(std::size_t, mods.size(), 33 + 1);
 
 	// Ensure we found basenodes mod (part of devtest)
 	// and test_mod (for testing MINETEST_MOD_PATH).

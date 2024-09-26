@@ -186,7 +186,7 @@ struct LocalFormspecHandler : public TextDest
 			assert(m_client != nullptr);
 
 			if (fields.find("quit") != fields.end())
-				m_client->sendRespawn();
+				m_client->sendRespawnLegacy();
 
 			return;
 		}
@@ -386,6 +386,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
 	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel{"cameraOffset"};
 	CachedVertexShaderSetting<float, 3> m_camera_offset_vertex{"cameraOffset"};
+	CachedPixelShaderSetting<float, 3> m_camera_position_pixel{ "cameraPosition" };
+	CachedVertexShaderSetting<float, 3> m_camera_position_vertex{ "cameraPosition" };
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture0{"texture0"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture1{"texture1"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture2{"texture2"};
@@ -491,6 +493,10 @@ public:
 		v3f offset = intToFloat(m_client->getCamera()->getOffset(), BS);
 		m_camera_offset_pixel.set(offset, services);
 		m_camera_offset_vertex.set(offset, services);
+
+		v3f camera_position = m_client->getCamera()->getPosition();
+		m_camera_position_pixel.set(camera_position, services);
+		m_camera_position_pixel.set(camera_position, services);
 
 		SamplerLayer_t tex_id;
 		tex_id = 0;
@@ -831,7 +837,7 @@ private:
 		bool disable_camera_update = false;
 	};
 
-	void showDeathFormspec();
+	void showDeathFormspecLegacy();
 	void showPauseMenu();
 
 	void pauseAnimation();
@@ -841,7 +847,7 @@ private:
 	void handleClientEvent_None(ClientEvent *event, CameraOrientation *cam);
 	void handleClientEvent_PlayerDamage(ClientEvent *event, CameraOrientation *cam);
 	void handleClientEvent_PlayerForceMove(ClientEvent *event, CameraOrientation *cam);
-	void handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_DeathscreenLegacy(ClientEvent *event, CameraOrientation *cam);
 	void handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation *cam);
 	void handleClientEvent_ShowLocalFormSpec(ClientEvent *event, CameraOrientation *cam);
 	void handleClientEvent_HandleParticleEvent(ClientEvent *event,
@@ -2848,7 +2854,7 @@ const ClientEventHandler Game::clientEventHandler[CLIENTEVENT_MAX] = {
 	{&Game::handleClientEvent_None},
 	{&Game::handleClientEvent_PlayerDamage},
 	{&Game::handleClientEvent_PlayerForceMove},
-	{&Game::handleClientEvent_Deathscreen},
+	{&Game::handleClientEvent_DeathscreenLegacy},
 	{&Game::handleClientEvent_ShowFormSpec},
 	{&Game::handleClientEvent_ShowLocalFormSpec},
 	{&Game::handleClientEvent_HandleParticleEvent},
@@ -2904,20 +2910,9 @@ void Game::handleClientEvent_PlayerForceMove(ClientEvent *event, CameraOrientati
 	cam->camera_pitch = event->player_force_move.pitch;
 }
 
-void Game::handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *cam)
+void Game::handleClientEvent_DeathscreenLegacy(ClientEvent *event, CameraOrientation *cam)
 {
-	// If client scripting is enabled, deathscreen is handled by CSM code in
-	// builtin/client/init.lua
-	if (client->modsLoaded())
-		client->getScript()->on_death();
-	else
-		showDeathFormspec();
-
-	/* Handle visualization */
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	runData.damage_flash = 0;
-	player->hurt_tilt_timer = 0;
-	player->hurt_tilt_strength = 0;
+	showDeathFormspecLegacy();
 }
 
 void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation *cam)
@@ -3184,6 +3179,7 @@ void Game::handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *
 	clouds->setDensity(event->cloud_params.density);
 	clouds->setColorBright(video::SColor(event->cloud_params.color_bright));
 	clouds->setColorAmbient(video::SColor(event->cloud_params.color_ambient));
+	clouds->setColorShadow(video::SColor(event->cloud_params.color_shadow));
 	clouds->setHeight(event->cloud_params.height);
 	clouds->setThickness(event->cloud_params.thickness);
 	clouds->setSpeed(v2f(event->cloud_params.speed_x, event->cloud_params.speed_y));
@@ -4315,7 +4311,9 @@ void Game::updateShadows()
 	float timeoftheday = getWickedTimeOfDay(in_timeofday);
 	bool is_day = timeoftheday > 0.25 && timeoftheday < 0.75;
 	bool is_shadow_visible = is_day ? sky->getSunVisible() : sky->getMoonVisible();
-	shadow->setShadowIntensity(is_shadow_visible ? client->getEnv().getLocalPlayer()->getLighting().shadow_intensity : 0.0f);
+	const auto &lighting = client->getEnv().getLocalPlayer()->getLighting();
+	shadow->setShadowIntensity(is_shadow_visible ? lighting.shadow_intensity : 0.0f);
+	shadow->setShadowTint(lighting.shadow_tint);
 
 	timeoftheday = std::fmod(timeoftheday + 0.75f, 0.5f) + 0.25f;
 	const float offset_constant = 10000.0f;
@@ -4459,7 +4457,7 @@ void Game::readSettings()
  ****************************************************************************/
 /****************************************************************************/
 
-void Game::showDeathFormspec()
+void Game::showDeathFormspecLegacy()
 {
 	static std::string formspec_str =
 		std::string("formspec_version[1]") +

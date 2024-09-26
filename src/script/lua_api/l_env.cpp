@@ -160,7 +160,7 @@ void LuaEmergeAreaCallback(v3s16 blockpos, EmergeAction action, void *param)
 
 	// state must be protected by envlock
 	Server *server = state->script->getServer();
-	MutexAutoLock envlock(server->m_env_mutex);
+	Server::EnvAutoLock envlock(server);
 
 	state->refcount--;
 
@@ -249,6 +249,31 @@ int ModApiEnv::l_swap_node(lua_State *L)
 	MapNode n = readnode(L, 2);
 	// Do it
 	bool succeeded = env->swapNode(pos, n);
+	lua_pushboolean(L, succeeded);
+	return 1;
+}
+
+// bulk_swap_node([pos1, pos2, ...], node)
+// pos = {x=num, y=num, z=num}
+int ModApiEnv::l_bulk_swap_node(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	luaL_checktype(L, 1, LUA_TTABLE);
+
+	s32 len = lua_objlen(L, 1);
+
+	MapNode n = readnode(L, 2);
+
+	// Do it
+	bool succeeded = true;
+	for (s32 i = 1; i <= len; i++) {
+		lua_rawgeti(L, 1, i);
+		if (!env->swapNode(read_v3s16(L, -1), n))
+			succeeded = false;
+		lua_pop(L, 1);
+	}
+
 	lua_pushboolean(L, succeeded);
 	return 1;
 }
@@ -1377,6 +1402,7 @@ void ModApiEnv::Initialize(lua_State *L, int top)
 	API_FCT(bulk_set_node);
 	API_FCT(add_node);
 	API_FCT(swap_node);
+	API_FCT(bulk_swap_node);
 	API_FCT(add_item);
 	API_FCT(remove_node);
 	API_FCT(get_node_raw);

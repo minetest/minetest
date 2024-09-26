@@ -403,6 +403,11 @@ enable_clouds (Clouds) bool true
 #    Requires: enable_clouds
 enable_3d_clouds (3D clouds) bool true
 
+#   Use smooth cloud shading.
+#
+#   Requires: enable_3d_clouds, enable_clouds
+soft_clouds (Soft clouds) bool false
+
 [**Filtering and Antialiasing]
 
 #    Use mipmaps when scaling textures. May slightly increase performance,
@@ -504,6 +509,11 @@ water_wave_length (Waving liquids wavelength) float 20.0 0.1
 #
 #    Requires: shaders, enable_waving_water
 water_wave_speed (Waving liquids wave speed) float 5.0
+
+#   When enabled, liquid reflections are simulated.
+#
+#   Requires: shaders, enable_waving_water, enable_dynamic_shadows
+enable_water_reflections (Liquid reflections) bool false
 
 [**Dynamic shadows]
 
@@ -660,6 +670,18 @@ bloom_radius (Bloom Radius) float 1 0.1 8
 #
 #    Requires: shaders, enable_post_processing, enable_bloom
 enable_volumetric_lighting (Volumetric lighting) bool false
+
+[**Other Effects]
+
+#   Simulate translucency when looking at foliage in the sunlight.
+#
+#   Requires: shaders, enable_dynamic_shadows
+enable_translucent_foliage (Translucent foliage) bool false
+
+#   Apply specular shading to nodes.
+#
+#   Requires: shaders, enable_dynamic_shadows
+enable_node_specular (Node specular) bool false
 
 [*Audio]
 

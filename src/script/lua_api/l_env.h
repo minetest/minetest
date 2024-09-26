@@ -65,6 +65,10 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_bulk_set_node(lua_State *L);
 
+	// bulk_swap_node([pos1, pos2, ...], node)
+	// pos = {x=num, y=num, z=num}
+	static int l_bulk_swap_node(lua_State *L);
+
 	static int l_add_node(lua_State *L);
 
 	// remove_node(pos)
