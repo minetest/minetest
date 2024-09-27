@@ -69,7 +69,7 @@ function core.override_chatcommand(name, redefinition)
 	core.registered_chatcommands[name] = chatcommand
 end
 
-local function format_help_line(cmd, def)
+local function format_help_line(cmd, def, short_params)
 	local cmd_marker = INIT == "client" and "." or "/"
 	local msg = core.colorize("#00ffff", cmd_marker .. cmd)
 	if def.params and def.params ~= "" then
@@ -77,6 +77,14 @@ local function format_help_line(cmd, def)
 	end
 	if def.description and def.description ~= "" then
 		msg = msg .. ": " .. def.description
+	end
+	if not short_params then
+		if def.params_description then
+			local params = def.params_description
+			for i = 1, #params do
+				msg = msg .. "\n* " .. params[i][1] .. ": " .. params[i][2]
+			end
+		end
 	end
 	return msg
 end
@@ -122,7 +130,7 @@ local function do_help_cmd(name, param)
 		local cmds = {}
 		for cmd, def in pairs(core.registered_chatcommands) do
 			if INIT == "client" or core.check_player_privs(name, def.privs) then
-				cmds[#cmds + 1] = format_help_line(cmd, def)
+				cmds[#cmds + 1] = format_help_line(cmd, def, true)
 			end
 		end
 		table.sort(cmds)
@@ -164,7 +172,12 @@ end
 if INIT == "client" then
 	core.register_chatcommand("help", {
 		params = core.gettext("[all | <cmd>] [-t]"),
-		description = core.gettext("Get help for commands (-t: output in chat)"),
+		description = core.gettext("Get help for commands"),
+		params_description = {
+			{"all", core.gettext("List all commands")},
+			{core.gettext("<cmd>"), core.gettext("Show help for command <cmd>")},
+			{"-t", core.gettext("Output in chat")}
+		},
 		func = function(param)
 			return do_help_cmd(nil, param)
 		end,
@@ -172,7 +185,13 @@ if INIT == "client" then
 else
 	core.register_chatcommand("help", {
 		params = S("[all | privs | <cmd>] [-t]"),
-		description = S("Get help for commands or list privileges (-t: output in chat)"),
+		params_description = {
+			{"all", S("List all commands")},
+			{"privs", S("List all privileges")},
+			{S("<cmd>"), S("Show help for <cmd>")},
+			{"-t", S("Output in chat")}
+		},
+		description = S("Get help for commands or list privileges"),
 		func = do_help_cmd,
 	})
 end

@@ -32,6 +32,11 @@ end)
 minetest.register_chatcommand("test_formspec_callbacks", {
 	params = "[ 0 | 1 | 2 ]",
 	description = "Test: Change formspec callbacks testing mode",
+	params_description = {
+		{"0", "Disable callback test"},
+		{"1", "Callback test mode 1: Logging only"},
+		{"2", "Callback test mode 2: Three callbacks, disable pre-registered callbacks"},
+	},
 	func = function(name, param)
 		local mode = tonumber(param)
 		if not mode then

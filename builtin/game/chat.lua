@@ -152,6 +152,9 @@ core.register_chatcommand("me", {
 	params = S("<action>"),
 	description = S("Show chat action (e.g., '/me orders a pizza' "
 		.. "displays '<player name> orders a pizza')"),
+	params_description = {
+		{S("<action>"), S("Chat action to show")},
+	},
 	privs = {shout=true},
 	func = function(name, param)
 		core.chat_send_all("* " .. name .. " " .. param)
@@ -187,6 +190,9 @@ end
 core.register_chatcommand("privs", {
 	params = S("[<name>]"),
 	description = S("Show privileges of yourself or another player"),
+	params_description = {
+		{S("<name>"), S("Player name")},
+	},
 	func = function(caller, param)
 		param = param:trim()
 		local name = (param ~= "" and param or caller)
@@ -200,6 +206,9 @@ core.register_chatcommand("privs", {
 core.register_chatcommand("haspriv", {
 	params = S("<privilege>"),
 	description = S("Return list of all online players with privilege"),
+	params_description = {
+		{S("<privilege>"), S("Privilege to check for")},
+	},
 	privs = {basic_privs = true},
 	func = function(caller, param)
 		param = param:trim()
@@ -278,6 +287,11 @@ end
 core.register_chatcommand("grant", {
 	params = S("<name> (<privilege> [, <privilege2> [<...>]] | all)"),
 	description = S("Give privileges to player"),
+	params_description = {
+		{S("<name>"), S("Player name")},
+		{S("<privilege>"), S("Privilege to give")},
+		{S("all"), S("Give all privileges")},
+	},
 	func = function(name, param)
 		local grantname, grantprivstr = string.match(param, "([^ ]+) (.+)")
 		if not grantname or not grantprivstr then
@@ -290,6 +304,10 @@ core.register_chatcommand("grant", {
 core.register_chatcommand("grantme", {
 	params = S("<privilege> [, <privilege2> [<...>]] | all"),
 	description = S("Grant privileges to yourself"),
+	params_description = {
+		{S("<privilege>"), S("Privilege to give")},
+		{S("all"), S("Give all privileges")},
+	},
 	func = function(name, param)
 		if param == "" then
 			return false, S("Invalid parameters (see /help grantme).")
@@ -393,6 +411,11 @@ end
 core.register_chatcommand("revoke", {
 	params = S("<name> (<privilege> [, <privilege2> [<...>]] | all)"),
 	description = S("Remove privileges from player"),
+	params_description = {
+		{S("<name>"), S("Player name")},
+		{S("<privilege>"), S("Privilege to revoke")},
+		{S("all"), S("Revoke all privileges")},
+	},
 	privs = {},
 	func = function(name, param)
 		local revokename, revokeprivstr = string.match(param, "([^ ]+) (.+)")
@@ -406,6 +429,10 @@ core.register_chatcommand("revoke", {
 core.register_chatcommand("revokeme", {
 	params = S("<privilege> [, <privilege2> [<...>]] | all"),
 	description = S("Revoke privileges from yourself"),
+	params_description = {
+		{S("<privilege>"), S("Privilege to revoke")},
+		{S("all"), S("Revoke all privileges")},
+	},
 	privs = {},
 	func = function(name, param)
 		if param == "" then
@@ -418,6 +445,10 @@ core.register_chatcommand("revokeme", {
 core.register_chatcommand("setpassword", {
 	params = S("<name> <password>"),
 	description = S("Set player's password (sent unencrypted, thus insecure)"),
+	params_description = {
+		{S("<name>"), S("Player name")},
+		{S("<password>"), S("New password")},
+	},
 	privs = {password=true},
 	func = function(name, param)
 		local toname, raw_password = string.match(param, "^([^ ]+) +(.+)$")
@@ -458,6 +489,9 @@ core.register_chatcommand("setpassword", {
 core.register_chatcommand("clearpassword", {
 	params = S("<name>"),
 	description = S("Set empty password for a player"),
+	params_description = {
+		{S("<name>"), S("Player name")},
+	},
 	privs = {password=true},
 	func = function(name, param)
 		local toname = param
@@ -485,6 +519,9 @@ core.register_chatcommand("auth_reload", {
 core.register_chatcommand("remove_player", {
 	params = S("<name>"),
 	description = S("Remove a player's data"),
+	params_description = {
+		{S("<name>"), S("Player name")},
+	},
 	privs = {server=true},
 	func = function(name, param)
 		local toname = param
@@ -574,6 +611,12 @@ end
 core.register_chatcommand("teleport", {
 	params = S("<X>,<Y>,<Z> | <to_name> | <name> <X>,<Y>,<Z> | <name> <to_name>"),
 	description = S("Teleport to position or player"),
+	params_description = {
+		{S("<X>,<Y>,<Z>"), S("Teleport to coordinates")},
+		{S("<to_name>"), S("Teleport to player with this player name")},
+		{S("<name> <X>,<Y>,<Z>"), S("Teleport player with this player name to coordinates")},
+		{S("<name> <to_name>"), S("Teleport player to another player by name")},
+	},
 	privs = {teleport=true},
 	func = function(name, param)
 		local player = core.get_player_by_name(name)
@@ -633,12 +676,17 @@ core.register_chatcommand("teleport", {
 core.register_chatcommand("set", {
 	params = S("([-n] <name> <value>) | <name>"),
 	description = S("Set or read server configuration setting"),
+	params_description = {
+		{"-n", S("Create a new setting")},
+		{S("<name>"), S("Setting name")},
+		{S("<value>"), S("Value to set for the setting")},
+	},
 	privs = {server=true},
 	func = function(name, param)
 		local arg, setname, setvalue = string.match(param, "(-[n]) ([^ ]+) (.+)")
 		if arg and arg == "-n" and setname and setvalue then
 			core.settings:set(setname, setvalue)
-			return true, setname .. " = " .. setvalue
+			return true, S("@1 = @2", setname, setvalue)
 		end
 
 		setname, setvalue = string.match(param, "([^ ]+) (.+)")
@@ -696,8 +744,11 @@ end
 
 core.register_chatcommand("emergeblocks", {
 	params = S("(here [<radius>]) | (<pos1> <pos2>)"),
-	description = S("Load (or, if nonexistent, generate) map blocks contained in "
-		.. "area pos1 to pos2 (<pos1> and <pos2> must be in parentheses)"),
+	description = S("Load (or, if nonexistent, generate) map blocks contained in area"),
+	params_description = {
+		{S("here [<radius>]"), S("Load/generate map blocks in <radius> around current position")},
+		{S("<pos1> <pos2>"), S("Load/generate map blocks in area from <pos1> to <pos2>")},
+	},
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -722,8 +773,11 @@ core.register_chatcommand("emergeblocks", {
 
 core.register_chatcommand("deleteblocks", {
 	params = S("(here [<radius>]) | (<pos1> <pos2>)"),
-	description = S("Delete map blocks contained in area pos1 to pos2 "
-		.. "(<pos1> and <pos2> must be in parentheses)"),
+	description = S("Delete map blocks contained in area"),
+	params_description = {
+		{S("here [<radius>]"), S("Delete map blocks in <radius> around current position")},
+		{S("<pos1> <pos2>"), S("Delete map blocks in area from <pos1> to <pos2>")},
+	},
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -744,8 +798,11 @@ core.register_chatcommand("deleteblocks", {
 
 core.register_chatcommand("fixlight", {
 	params = S("(here [<radius>]) | (<pos1> <pos2>)"),
-	description = S("Resets lighting in the area between pos1 and pos2 "
-		.. "(<pos1> and <pos2> must be in parentheses)"),
+	description = S("Reset lighting in the area"),
+	params_description = {
+		{S("here [<radius>]"), S("Reset lighting in <radius> around current position")},
+		{S("<pos1> <pos2>"), S("Reset lighting in area from <pos1> to <pos2>")},
+	},
 	privs = {server = true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -835,6 +892,12 @@ end
 core.register_chatcommand("give", {
 	params = S("<name> <ItemString> [<count> [<wear>]]"),
 	description = S("Give item to player"),
+	params_description = {
+		{S("<name>"), S("Player name")},
+		{S("<ItemString>"), S("ItemString of the item to give")},
+		{S("<count>"), S("Amount of item to give")},
+		{S("<wear>"), S("Wear of item to give")},
+	},
 	privs = {give=true},
 	func = function(name, param)
 		local toname, itemstring = string.match(param, "^([^ ]+) +(.+)$")
@@ -848,6 +911,11 @@ core.register_chatcommand("give", {
 core.register_chatcommand("giveme", {
 	params = S("<ItemString> [<count> [<wear>]]"),
 	description = S("Give item to yourself"),
+	params_description = {
+		{S("<ItemString>"), S("ItemString of the item to give")},
+		{S("<count>"), S("Amount of item to give")},
+		{S("<wear>"), S("Wear of item to give")},
+	},
 	privs = {give=true},
 	func = function(name, param)
 		local itemstring = string.match(param, "(.+)$")
@@ -861,6 +929,10 @@ core.register_chatcommand("giveme", {
 core.register_chatcommand("spawnentity", {
 	params = S("<EntityName> [<X>,<Y>,<Z>]"),
 	description = S("Spawn entity at given (or your) position"),
+	params_description = {
+		{S("<EntityName>"), S("EntityName to spawn")},
+		{S("<X>,<Y>,<Z>"), S("Spawn at coordinates")},
+	},
 	privs = {give=true, interact=true},
 	func = function(name, param)
 		local entityname, pstr = string.match(param, "^([^ ]+) *(.*)$")
@@ -932,10 +1004,12 @@ end)
 
 core.register_chatcommand("rollback_check", {
 	params = S("[<range>] [<seconds>] [<limit>]"),
-	description = S("Check who last touched a node or a node near it "
-		.. "within the time specified by <seconds>. "
-		.. "Default: range = 0, seconds = 86400 = 24h, limit = 5. "
-		.. "Set <seconds> to inf for no time limit"),
+	description = S("Check who last touched a node or a node near it"),
+	params_description = {
+		{S("<range>"), S("Range of nodes to check around the node (default: 0)")},
+		{S("<seconds>"), S("Time range to check within, in seconds (default: 86400 = 24h; set to inf for no time limit)")},
+		{S("<limit>"), S("Action log limit (default: 5)")}, -- ???
+	},
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -986,9 +1060,12 @@ core.register_chatcommand("rollback_check", {
 
 core.register_chatcommand("rollback", {
 	params = S("(<name> [<seconds>]) | (:<actor> [<seconds>])"),
-	description = S("Revert actions of a player. "
-		.. "Default for <seconds> is 60. "
-		.. "Set <seconds> to inf for no time limit"),
+	description = S("Revert actions of a player"),
+	params_description = {
+		{S("<name>"), S("Player name")},
+		{S("<actor>"), S("Actor name")}, -- ???
+		{S("<seconds>"), S("Time to roll back to, in seconds (default: 60; set to inf for no time limit)")},
+	},
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -1054,6 +1131,10 @@ end
 core.register_chatcommand("time", {
 	params = S("[<0..23>:<0..59> | <0..24000>]"),
 	description = S("Show or set time of day"),
+	params_description = {
+		{S("<0..23>:<0..59>"), S("Set time of day, in real-life equivalent")},
+		{S("<0..24000>>"), S("Set time of day, in millihours")},
+	},
 	privs = {},
 	func = function(name, param)
 		if param == "" then
@@ -1157,6 +1238,11 @@ end
 core.register_chatcommand("shutdown", {
 	params = S("[<delay_in_seconds> | -1] [-r] [<message>]"),
 	description = S("Shutdown server (-1 cancels a delayed shutdown, -r allows players to reconnect)"),
+	params_description = {
+		{S("<delay_in_seconds>"), S("Shutdown delay, in seconds (default: 0; -1 aborts shutdown)")},
+		{"-r", S("Allow players to reconnect")},
+		{S("<message>"), S("Shutdown message to display")},
+	},
 	privs = {server=true},
 	func = function(name, param)
 		local delay, reconnect, message = parse_shutdown_param(param)
@@ -1178,6 +1264,9 @@ core.register_chatcommand("shutdown", {
 core.register_chatcommand("ban", {
 	params = S("[<name>]"),
 	description = S("Ban the IP of a player or show the ban list"),
+	params_description = {
+		{S("<name>"), S("Player name")},
+	},
 	privs = {ban=true},
 	func = function(name, param)
 		if param == "" then
@@ -1206,6 +1295,10 @@ core.register_chatcommand("ban", {
 core.register_chatcommand("unban", {
 	params = S("<name> | <IP_address>"),
 	description = S("Remove IP ban belonging to a player/IP"),
+	params_description = {
+		{S("<name>"), S("Player name")},
+		{S("<IP_address>"), S("IP address")},
+	},
 	privs = {ban=true},
 	func = function(name, param)
 		if not core.unban_player_or_ip(param) then
@@ -1219,6 +1312,10 @@ core.register_chatcommand("unban", {
 core.register_chatcommand("kick", {
 	params = S("<name> [<reason>]"),
 	description = S("Kick a player"),
+	params_description = {
+		{S("<name>"), S("Player name")},
+		{S("<reason>"), S("Reason")},
+	},
 	privs = {kick=true},
 	func = function(name, param)
 		local tokick, reason = param:match("([^ ]+) (.+)")
@@ -1238,6 +1335,10 @@ core.register_chatcommand("kick", {
 core.register_chatcommand("clearobjects", {
 	params = S("[full | quick]"),
 	description = S("Clear all objects in world"),
+	params_description = {
+		{"full", S("Clear all objects in full mode")}, -- ???
+		{"quick", S("Clear all objects in quick mode")}, -- ???
+	},
 	privs = {server=true},
 	func = function(name, param)
 		local options = {}
@@ -1265,6 +1366,10 @@ core.register_chatcommand("clearobjects", {
 core.register_chatcommand("msg", {
 	params = S("<name> <message>"),
 	description = S("Send a direct message to a player"),
+	params_description = {
+		{S("<name>"), S("Player name")},
+		{S("<message>"), S("Message")},
+	},
 	privs = {shout=true},
 	func = function(name, param)
 		local sendto, message = param:match("^(%S+)%s(.+)$")
@@ -1284,6 +1389,9 @@ core.register_chatcommand("msg", {
 core.register_chatcommand("last-login", {
 	params = S("[<name>]"),
 	description = S("Get the last login time of a player or yourself"),
+	params_description = {
+		{S("<name>"), S("Player name")},
+	},
 	func = function(name, param)
 		if param == "" then
 			param = name
@@ -1302,6 +1410,9 @@ core.register_chatcommand("last-login", {
 core.register_chatcommand("clearinv", {
 	params = S("[<name>]"),
 	description = S("Clear the inventory of yourself or another player"),
+	params_description = {
+		{S("<name>"), S("Player name")},
+	},
 	func = function(name, param)
 		local player
 		if param and param ~= "" and param ~= name then
@@ -1353,6 +1464,9 @@ end
 core.register_chatcommand("kill", {
 	params = S("[<name>]"),
 	description = S("Kill player or yourself"),
+	params_description = {
+		{S("<name>"), S("Player name")},
+	},
 	privs = {server=true},
 	func = function(name, param)
 		return handle_kill_command(name, param == "" and name or param)

@@ -43,9 +43,16 @@ function profiler.init_chatcommand()
 	end
 
 	local param_usage = S("print [<filter>] | dump [<filter>] | save [<format> [<filter>]] | reset")
+	local format_desc = S("Format can be one of txt, csv, lua, json, json_pretty (structures may be subject to change).")
 	core.register_chatcommand("profiler", {
 		description = S("Handle the profiler and profiling data"),
 		params = param_usage,
+		params_description = {
+			{"print [<filter>]", S("Print statistics")},
+			{"dump [<filter>]", S("Write statistics to action log")},
+			{"save [<format> [<filter>]]", S("Save statistics to a file. ") .. format_desc},
+			{"reset", S("Reset statistics")},
+		},
 		privs = { server=true },
 		func = function(name, param)
 			local command, arg0 = string.match(param, "([^ ]+) ?(.*)")
@@ -64,8 +71,7 @@ function profiler.init_chatcommand()
 			end
 
 			return false,
-				S("Usage: @1", param_usage) .. "\n" ..
-				S("Format can be one of txt, csv, lua, json, json_pretty (structures may be subject to change).")
+				S("Usage: @1", param_usage) .. "\n" .. format_desc
 		end
 	})
 

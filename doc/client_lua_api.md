@@ -958,6 +958,10 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 {
     params = "<name> <privilege>", -- Short parameter description
     description = "Remove privilege from player", -- Full description
+    params_description = { -- Description for each parameter
+        {"<name>", "Player name"},
+        {"<privilege>", "Privilege"},
+    },
     func = function(param),        -- Called when command is run.
                                    -- Returns boolean success and text output.
 }
