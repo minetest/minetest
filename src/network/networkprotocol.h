@@ -229,7 +229,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		[bump for 5.9.1]
 	PROTOCOL VERSION 46:
 		Move default hotbar from client-side C++ to server-side builtin Lua
-    Add shadow tint to Lighting packets
+		Add shadow tint to Lighting packets
 		Add shadow color to CloudParam packets
 		Move death screen to server and make it a regular formspec
 			The server no longer triggers the hardcoded client-side death
@@ -241,7 +241,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #define LATEST_PROTOCOL_VERSION 46
-
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
