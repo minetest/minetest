@@ -180,5 +180,5 @@ private:
 	bool m_enable_raytraced_culling;
 
 	bool m_enable_translucent_foliage;
-	video::E_MATERIAL_TYPE m_leaves_foliage;
+	video::E_MATERIAL_TYPE m_leaves_material;
 };

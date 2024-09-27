@@ -1059,16 +1059,16 @@ void ClientMap::setupShadowMaterial(video::IVideoDriver *driver, video::SMateria
 	// Transparent plants would still render shadows only from one side,
 	// but this conflicts with water which occurs much more frequently
 	if (is_tpass || local_mat.BackfaceCulling || local_mat.FrontfaceCulling) {
-		local_material.BackfaceCulling = override_mat.BackfaceCulling;
-		local_material.FrontfaceCulling = override_mat.FrontfaceCulling;
+		local_mat.BackfaceCulling = override_mat.BackfaceCulling;
+		local_mat.FrontfaceCulling = override_mat.FrontfaceCulling;
 	}
-	if (local_material.MaterialType == m_leaves_material && m_enable_translucent_foliage) {
-		local_material.BackfaceCulling = true;
-		local_material.FrontfaceCulling = false;
+	if (local_mat.MaterialType == m_leaves_material && m_enable_translucent_foliage) {
+		local_mat.BackfaceCulling = true;
+		local_mat.FrontfaceCulling = false;
 	}
-	local_material.MaterialType = override_mat.MaterialType;
-	local_material.BlendOperation = override_mat.BlendOperation;
-	driver->setMaterial(local_material);
+	local_mat.MaterialType = override_mat.MaterialType;
+	local_mat.BlendOperation = override_mat.BlendOperation;
+	driver->setMaterial(local_mat);
 }
 
 void ClientMap::renderMapShadows(video::IVideoDriver *driver,

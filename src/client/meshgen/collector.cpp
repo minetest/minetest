@@ -89,7 +89,6 @@ void MapblockMeshCollector::addTileMesh(TileSpec &tile,
 
         // Creating material
         video::SMaterial material;
-		material.Lighting = false;
 		material.FogEnable = true;
 		material.setTexture(0, outside_uv ? tex : atlas->getTexture());
 		material.forEachTexture([&] (auto &tex) {
