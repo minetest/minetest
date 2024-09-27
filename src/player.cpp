@@ -194,19 +194,19 @@ void PlayerControl::setMovementFromKeys()
 	}
 
 	// Check keyboard for input
-	float x = 0, z = 0;
+	float x = 0, y = 0;
 	if (a_up)
-		z += 1;
+		y += 1;
 	if (a_down)
-		z -= 1;
+		y -= 1;
 	if (a_left)
 		x -= 1;
 	if (a_right)
 		x += 1;
 
-	if (x != 0 || z != 0)
+	if (x != 0 || y != 0)
 		// If there is a keyboard event, it takes priority
-		movement_direction = std::atan2(x, z);
+		movement_direction = std::atan2(x, y);
 }
 
 #ifndef SERVER
