@@ -1258,7 +1258,7 @@ core.register_chatcommand("clearobjects", {
 		elseif param == "confirm" or param == "cancel" then
 			local data = clearobjects_confirms[name]
 			if not data then
-				return false, S("There are no pending /clearobjects actions.")
+				return false, S("There is no pending /clearobjects action.")
 			end
 
 			clearobjects_confirms[name] = nil
