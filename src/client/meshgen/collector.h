@@ -37,15 +37,17 @@ struct PreMeshBuffer
 
 struct MeshCollector
 {
-	std::array<std::vector<PreMeshBuffer>, MAX_TILE_LAYERS> prebuffers;
+	std::vector<PreMeshBuffer> prebuffers;
 	// bounding sphere radius and center
-	f32 m_bounding_radius_sq = 0.0f;
-	v3f m_center_pos;
+	f32 bounding_radius_sq = 0.0f;
+	v3f center_pos;
+	v3f translation;
 	v3f offset;
 
 	// center_pos: pos to use for bounding-sphere, in BS-space
 	// offset: offset added to vertices
-	MeshCollector(const v3f center_pos, v3f offset = v3f()) : m_center_pos(center_pos), offset(offset) {}
+	MeshCollector(const v3f _center_pos, v3f _translation = v3f(), v3f _offset = v3f())
+		: center_pos(_center_pos), translation(_translation), offset(_offset) {}
 
 	void append(const TileSpec &material,
 			const video::S3DVertex *vertices, u32 numVertices,
@@ -56,15 +58,6 @@ struct MeshCollector
 			v3f pos, video::SColor c, u8 light_source);
 
 private:
-	void append(const TileLayer &material,
-			const video::S3DVertex *vertices, u32 numVertices,
-			const u16 *indices, u32 numIndices,
-			u8 layernum, bool use_scale = false);
-	void append(const TileLayer &material,
-			const video::S3DVertex *vertices, u32 numVertices,
-			const u16 *indices, u32 numIndices,
-			v3f pos, video::SColor c, u8 light_source,
-			u8 layernum, bool use_scale = false);
 
-	PreMeshBuffer &findBuffer(const TileLayer &layer, u8 layernum, u32 numVertices);
+	PreMeshBuffer &findBuffer(const TileLayer &layer, u32 numVertices);
 };

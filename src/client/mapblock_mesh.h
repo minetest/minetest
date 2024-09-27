@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <array>
 #include <map>
 #include <unordered_map>
+#include <IVertexArrayRef.h>
 
 class Client;
 class NodeDefManager;
@@ -40,6 +41,7 @@ class ITextureSource;
 
 class MapBlock;
 struct MinimapMapblock;
+struct BlockVertexBuffer;
 
 struct MeshMakeData
 {
@@ -75,28 +77,14 @@ struct MeshMakeData
 class MeshTriangle
 {
 public:
-	scene::SMeshBuffer *buffer;
+	BlockVertexBuffer *buffer;
 	u16 p1, p2, p3;
 	v3f centroid;
 	float areaSQ;
 
-	void updateAttributes()
-	{
-		v3f v1 = buffer->getPosition(p1);
-		v3f v2 = buffer->getPosition(p2);
-		v3f v3 = buffer->getPosition(p3);
+	void updateAttributes();
 
-		centroid = (v1 + v2 + v3) / 3;
-		areaSQ = (v2-v1).crossProduct(v3-v1).getLengthSQ() / 4;
-	}
-
-	v3f getNormal() const {
-		v3f v1 = buffer->getPosition(p1);
-		v3f v2 = buffer->getPosition(p2);
-		v3f v3 = buffer->getPosition(p3);
-
-		return (v2-v1).crossProduct(v3-v1);
-	}
+	v3f getNormal() const;
 };
 
 /**
@@ -140,29 +128,40 @@ private:
 	s32 root = -1; // index of the root node
 };
 
-/*
- * PartialMeshBuffer
- *
- * Attach alternate `Indices` to an existing mesh buffer, to make it possible to use different
- * indices with the same vertex buffer.
- */
-class PartialMeshBuffer
+struct BlockVertexBuffer
+{
+	video::SMaterial material;
+
+	std::vector<video::S3DVertex> vertices;
+	u32 vertex_count;
+
+	bool dirty = true;
+
+	std::unique_ptr<scene::IVertexArrayRef> array_ref;
+
+	BlockVertexBuffer() = default;
+
+	bool operator==(const BlockVertexBuffer *other_buffer) const
+	{
+		return (array_ref.get() == other_buffer->array_ref.get());
+	}
+};
+
+class BlockIndexBuffer
 {
 public:
-	PartialMeshBuffer(scene::SMeshBuffer *buffer, std::vector<u16> &&vertex_indices) :
-			m_buffer(buffer), m_indices(make_irr<scene::SIndexBuffer>())
-	{
-		m_indices->Data = std::move(vertex_indices);
-		m_indices->setHardwareMappingHint(scene::EHM_STATIC);
-	}
+	BlockIndexBuffer(BlockVertexBuffer *buffer, std::vector<u16> &vertex_indices) :
+			m_buffer(buffer), m_indices(std::move(vertex_indices))
+	{}
 
 	auto *getBuffer() const { return m_buffer; }
+	auto &getIndices() const { return m_indices; }
 
-	void draw(video::IVideoDriver *driver) const;
+	u32 draw(video::IVideoDriver *driver, bool enable_shaders);
 
 private:
-	scene::SMeshBuffer *m_buffer;
-	irr_ptr<scene::SIndexBuffer> m_indices;
+	BlockVertexBuffer *m_buffer;
+	std::vector<u16> m_indices;
 };
 
 /*
@@ -191,14 +190,21 @@ public:
 	// Returns true if anything has been changed.
 	bool animate(bool faraway, float time, int crack, u32 daynight_ratio);
 
-	scene::IMesh *getMesh()
+	const std::vector<std::unique_ptr<BlockIndexBuffer>> &getSolidBuffers() const
 	{
-		return m_mesh[0].get();
+		infostream << "m_solid_buffers: " << m_solid_buffers.size() << std::endl;
+		return m_solid_buffers;
 	}
 
-	scene::IMesh *getMesh(u8 layer)
+	/// get the list of transparent buffers
+	const std::vector<std::unique_ptr<BlockIndexBuffer>> &getTransparentBuffers() const
 	{
-		return m_mesh[layer].get();
+		return m_transparent_buffers;
+	}
+
+	bool isEmpty() const
+	{
+		return m_mesh.empty();
 	}
 
 	std::vector<MinimapMapblock*> moveMinimapMapblocks()
@@ -229,12 +235,6 @@ public:
 	void updateTransparentBuffers(v3f camera_pos, v3s16 block_pos);
 	void consolidateTransparentBuffers();
 
-	/// get the list of transparent buffers
-	const std::vector<PartialMeshBuffer> &getTransparentBuffers() const
-	{
-		return this->m_transparent_buffers;
-	}
-
 private:
 	struct AnimationInfo {
 		int frame; // last animation frame
@@ -242,7 +242,10 @@ private:
 		TileLayer tile;
 	};
 
-	irr_ptr<scene::IMesh> m_mesh[MAX_TILE_LAYERS];
+	std::vector<std::unique_ptr<BlockVertexBuffer>> m_mesh;
+	std::vector<std::unique_ptr<BlockIndexBuffer>> m_solid_buffers;
+	// Ordered list of references to parts of transparent buffers to draw
+	std::vector<std::unique_ptr<BlockIndexBuffer>> m_transparent_buffers;
 	std::vector<MinimapMapblock*> m_minimap_mapblocks;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
@@ -259,28 +262,24 @@ private:
 	// Animation info: cracks
 	// Last crack value passed to animate()
 	int m_last_crack;
-	// Maps mesh and mesh buffer (i.e. material) indices to base texture names
-	std::map<std::pair<u8, u32>, std::string> m_crack_materials;
+	// Maps mesh buffer (i.e. material) indices to base texture names
+	std::map<u32, std::string> m_crack_materials;
 
 	// Animation info: texture animation
-	// Maps mesh and mesh buffer indices to TileSpecs
-	// Keys are pairs of (mesh index, buffer index in the mesh)
-	std::map<std::pair<u8, u32>, AnimationInfo> m_animation_info;
+	// Maps mesh buffer indices to TileSpecs
+	std::map<u32, AnimationInfo> m_animation_info;
 
 	// Animation info: day/night transitions
 	// Last daynight_ratio value passed to animate()
 	u32 m_last_daynight_ratio;
-	// For each mesh and mesh buffer, stores pre-baked colors
+	// For each mesh buffer, stores pre-baked colors
 	// of sunlit vertices
-	// Keys are pairs of (mesh index, buffer index in the mesh)
-	std::map<std::pair<u8, u32>, std::map<u32, video::SColor > > m_daynight_diffs;
+	std::map<u32, std::map<u32, video::SColor > > m_daynight_diffs;
 
 	// list of all semitransparent triangles in the mapblock
 	std::vector<MeshTriangle> m_transparent_triangles;
 	// Binary Space Partitioning tree for the block
 	MapBlockBspTree m_bsp_tree;
-	// Ordered list of references to parts of transparent buffers to draw
-	std::vector<PartialMeshBuffer> m_transparent_buffers;
 	// Is m_transparent_buffers currently in consolidated form?
 	bool m_transparent_buffers_consolidated = false;
 };

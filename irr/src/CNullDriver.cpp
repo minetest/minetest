@@ -262,6 +262,12 @@ const core::matrix4 &CNullDriver::getTransform(E_TRANSFORMATION_STATE state) con
 	return TransformationMatrix;
 }
 
+//! create the vertex array object reference
+scene::IVertexArrayRef *CNullDriver::createVertexArrayRef() const
+{
+	return nullptr;
+}
+
 //! sets a material
 void CNullDriver::setMaterial(const SMaterial &material)
 {
@@ -597,6 +603,11 @@ void CNullDriver::setViewPort(const core::rect<s32> &area)
 const core::rect<s32> &CNullDriver::getViewPort() const
 {
 	return ViewPort;
+}
+
+//! Draws VAO content (vertex and index buffers).
+void CNullDriver::drawVertexArray(const scene::IVertexArrayRef *varray, const void *index_data)
+{
 }
 
 //! draws a vertex primitive list
