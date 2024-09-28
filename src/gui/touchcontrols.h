@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "itemdef.h"
 #include "client/game.h"
+#include "util/basic_macros.h"
 
 namespace irr
 {
@@ -136,6 +137,8 @@ class TouchControls
 {
 public:
 	TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc);
+	~TouchControls();
+	DISABLE_CLASS_COPY(TouchControls);
 
 	void translateEvent(const SEvent &event);
 	void applyContextControls(const TouchInteractionMode &mode);
