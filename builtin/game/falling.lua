@@ -80,7 +80,7 @@ core.register_entity(":__builtin:falling_node", {
 		self.floats = core.get_item_group(node.name, "float") ~= 0
 
 		-- Save liquidtype for falling water
-        self.liquidtype = def.liquidtype
+		self.liquidtype = def.liquidtype
 
 		-- Set entity visuals
 		if def.drawtype == "torchlike" or def.drawtype == "signlike" then

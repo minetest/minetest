@@ -917,7 +917,7 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	lua_getfield(L, index, "selection_box");
 	if(lua_istable(L, -1))
 		f.selection_box = read_nodebox(L, -1);
- 	lua_pop(L, 1);
+	lua_pop(L, 1);
 
 	lua_getfield(L, index, "collision_box");
 	if(lua_istable(L, -1))
