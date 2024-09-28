@@ -157,13 +157,6 @@ int ModApiClient::l_show_formspec(lua_State *L)
 	return 1;
 }
 
-// send_respawn()
-int ModApiClient::l_send_respawn(lua_State *L)
-{
-	getClient(L)->sendRespawn();
-	return 0;
-}
-
 // disconnect()
 int ModApiClient::l_disconnect(lua_State *L)
 {
@@ -348,7 +341,6 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(clear_out_chat_queue);
 	API_FCT(get_player_names);
 	API_FCT(show_formspec);
-	API_FCT(send_respawn);
 	API_FCT(gettext);
 	API_FCT(get_node_or_nil);
 	API_FCT(disconnect);

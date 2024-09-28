@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "minimap.h"
 #include "content_mapblock.h"
 #include "util/directiontables.h"
+#include "util/tracy_wrapper.h"
 #include "client/meshgen/collector.h"
 #include "client/renderingengine.h"
 #include <array>
@@ -611,8 +612,10 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	m_last_crack(-1),
 	m_last_daynight_ratio((u32) -1)
 {
+	ZoneScoped;
+
 	for (auto &m : m_mesh)
-		m = new scene::SMesh();
+		m = make_irr<scene::SMesh>();
 	m_enable_shaders = data->m_use_shaders;
 
 	auto mesh_grid = client->getMeshGrid();
@@ -660,7 +663,7 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	m_bounding_radius = std::sqrt(collector.m_bounding_radius_sq);
 
 	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
-		scene::SMesh *mesh = (scene::SMesh *)m_mesh[layer];
+		scene::SMesh *mesh = static_cast<scene::SMesh *>(m_mesh[layer].get());
 
 		for(u32 i = 0; i < collector.prebuffers[layer].size(); i++)
 		{
@@ -733,7 +736,6 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 
 			// Create material
 			video::SMaterial material;
-			material.Lighting = false;
 			material.BackfaceCulling = true;
 			material.FogEnable = true;
 			material.setTexture(0, p.layer.texture);
@@ -746,9 +748,6 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 				material.MaterialType = m_shdrsrc->getShaderInfo(
 						p.layer.shader_id).material;
 				p.layer.applyMaterialOptionsWithShaders(material);
-				if (p.layer.normal_texture)
-					material.setTexture(1, p.layer.normal_texture);
-				material.setTexture(2, p.layer.flags_texture);
 			} else {
 				p.layer.applyMaterialOptions(material);
 			}
@@ -794,10 +793,10 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 MapBlockMesh::~MapBlockMesh()
 {
 	size_t sz = 0;
-	for (scene::IMesh *m : m_mesh) {
+	for (auto &&m : m_mesh) {
 		for (u32 i = 0; i < m->getMeshBufferCount(); i++)
 			sz += m->getMeshBuffer(i)->getSize();
-		m->drop();
+		m.reset();
 	}
 	for (MinimapMapblock *block : m_minimap_mapblocks)
 		delete block;
@@ -858,11 +857,6 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 
 		const FrameSpec &frame = (*tile.frames)[frameno];
 		buf->getMaterial().setTexture(0, frame.texture);
-		if (m_enable_shaders) {
-			if (frame.normal_texture)
-				buf->getMaterial().setTexture(1, frame.normal_texture);
-			buf->getMaterial().setTexture(2, frame.flags_texture);
-		}
 	}
 
 	// Day-night transition
@@ -871,7 +865,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 		get_sunlight_color(&day_color, daynight_ratio);
 
 		for (auto &daynight_diff : m_daynight_diffs) {
-			auto *mesh = m_mesh[daynight_diff.first.first];
+			auto *mesh = m_mesh[daynight_diff.first.first].get();
 			mesh->setDirty(scene::EBT_VERTEX); // force reload to VBO
 			scene::IMeshBuffer *buf = mesh->
 				getMeshBuffer(daynight_diff.first.second);

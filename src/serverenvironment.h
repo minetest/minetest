@@ -63,6 +63,9 @@ public:
 	// Set of required neighbors (trigger doesn't happen if none are found)
 	// Empty = do not check neighbors
 	virtual const std::vector<std::string> &getRequiredNeighbors() const = 0;
+	// Set of without neighbors (trigger doesn't happen if any are found)
+	// Empty = do not check neighbors
+	virtual const std::vector<std::string> &getWithoutNeighbors() const = 0;
 	// Trigger interval in seconds
 	virtual float getTriggerInterval() = 0;
 	// Random chance of (1 / return value), 0 is disallowed
@@ -90,29 +93,40 @@ struct ABMWithState
 struct LoadingBlockModifierDef
 {
 	// Set of contents to trigger on
-	std::set<std::string> trigger_contents;
+	std::vector<std::string> trigger_contents;
 	std::string name;
 	bool run_at_every_load = false;
 
 	virtual ~LoadingBlockModifierDef() = default;
 
-	virtual void trigger(ServerEnvironment *env, v3s16 p,
-			MapNode n, float dtime_s) {};
+	/// @brief Called to invoke LBM
+	/// @param env environment
+	/// @param block the block in question
+	/// @param positions set of node positions (block-relative!)
+	/// @param dtime_s game time since last deactivation
+	virtual void trigger(ServerEnvironment *env, MapBlock *block,
+		const std::unordered_set<v3s16> &positions, float dtime_s) {};
 };
 
-struct LBMContentMapping
+class LBMContentMapping
 {
-	typedef std::unordered_map<content_t, std::vector<LoadingBlockModifierDef *>> lbm_map;
-	lbm_map map;
+public:
+	typedef std::vector<LoadingBlockModifierDef*> lbm_vector;
+	typedef std::unordered_map<content_t, lbm_vector> lbm_map;
 
-	std::vector<LoadingBlockModifierDef *> lbm_list;
-
-	// Needs to be separate method (not inside destructor),
-	// because the LBMContentMapping may be copied and destructed
-	// many times during operation in the lbm_lookup_map.
-	void deleteContents();
+	LBMContentMapping() = default;
 	void addLBM(LoadingBlockModifierDef *lbm_def, IGameDef *gamedef);
 	const lbm_map::mapped_type *lookup(content_t c) const;
+	const lbm_vector &getList() const { return lbm_list; }
+
+	// This struct owns the LBM pointers.
+	~LBMContentMapping();
+	DISABLE_CLASS_COPY(LBMContentMapping);
+	ALLOW_CLASS_MOVE(LBMContentMapping);
+
+private:
+	lbm_vector lbm_list;
+	lbm_map map;
 };
 
 class LBMManager

@@ -177,6 +177,9 @@ public:
 	void registerHotbarRect(u16 index, const recti &rect);
 	std::optional<u16> getHotbarSelection();
 
+	bool isStatusTextOverriden() { return m_overflow_open; }
+	IGUIStaticText *getStatusText() { return m_status_text.get(); }
+
 private:
 	IrrlichtDevice *m_device = nullptr;
 	IGUIEnvironment *m_guienv = nullptr;
@@ -234,6 +237,8 @@ private:
 	std::vector<button_info> m_overflow_buttons;
 	std::vector<std::shared_ptr<IGUIStaticText>> m_overflow_button_titles;
 	std::vector<recti> m_overflow_button_rects;
+
+	std::shared_ptr<IGUIStaticText> m_status_text;
 
 	void toggleOverflowMenu();
 	void updateVisibility();

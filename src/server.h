@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/metricsbackend.h"
 #include "serverenvironment.h"
 #include "server/clientiface.h"
+#include "threading/ordered_mutex.h"
 #include "chatmessage.h"
 #include "sound.h"
 #include "translation.h"
@@ -167,9 +168,12 @@ public:
 	// Actual processing is done in another thread.
 	// This just checks if there was an error in that thread.
 	void step();
+
 	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep(float dtime, bool initial_step = false);
 	void Receive(float timeout);
+	void yieldToOtherThreads(float dtime);
+
 	PlayerSAO* StageTwoClientInit(session_t peer_id);
 
 	/*
@@ -194,7 +198,6 @@ public:
 	void handleCommand_ChatMessage(NetworkPacket* pkt);
 	void handleCommand_Damage(NetworkPacket* pkt);
 	void handleCommand_PlayerItem(NetworkPacket* pkt);
-	void handleCommand_Respawn(NetworkPacket* pkt);
 	void handleCommand_Interact(NetworkPacket* pkt);
 	void handleCommand_RemovedSounds(NetworkPacket* pkt);
 	void handleCommand_NodeMetaFields(NetworkPacket* pkt);
@@ -357,15 +360,13 @@ public:
 
 	void setLighting(RemotePlayer *player, const Lighting &lighting);
 
-	void RespawnPlayer(session_t peer_id);
-
 	/* con::PeerHandler implementation. */
 	void peerAdded(con::IPeer *peer);
 	void deletingPeer(con::IPeer *peer, bool timeout);
 
 	void DenySudoAccess(session_t peer_id);
 	void DenyAccess(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason = "", bool reconnect = false);
+		std::string_view custom_reason = "", bool reconnect = false);
 	void kickAllPlayers(AccessDeniedCode reason,
 		const std::string &str_reason, bool reconnect);
 	void acceptAuth(session_t peer_id, bool forSudoMode);
@@ -428,8 +429,14 @@ public:
 	// Bind address
 	Address m_bind_addr;
 
-	// Environment mutex (envlock)
-	std::mutex m_env_mutex;
+	// Public helper for taking the envlock in a scope
+	class EnvAutoLock {
+	public:
+		EnvAutoLock(Server *server): m_lock(server->m_env_mutex) {}
+
+	private:
+		std::lock_guard<ordered_mutex> m_lock;
+	};
 
 protected:
 	/* Do not add more members here, this is only required to make unit tests work. */
@@ -486,9 +493,7 @@ private:
 	void SendHP(session_t peer_id, u16 hp, bool effect);
 	void SendBreath(session_t peer_id, u16 breath);
 	void SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
-		const std::string &custom_reason, bool reconnect = false);
-	void SendDeathscreen(session_t peer_id, bool set_camera_point_target,
-		v3f camera_point_target);
+		std::string_view custom_reason, bool reconnect = false);
 	void SendItemDef(session_t peer_id, IItemDefManager *itemdef, u16 protocol_version);
 	void SendNodeDef(session_t peer_id, const NodeDefManager *nodedef,
 		u16 protocol_version);
@@ -601,11 +606,13 @@ private:
 	*/
 	PlayerSAO *emergePlayer(const char *name, session_t peer_id, u16 proto_version);
 
-	void handlePeerChanges();
-
 	/*
 		Variables
 	*/
+
+	// Environment mutex (envlock)
+	ordered_mutex m_env_mutex;
+
 	// World directory
 	std::string m_path_world;
 	std::string m_path_mod_data;

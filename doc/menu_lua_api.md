@@ -253,8 +253,8 @@ GUI
       },
 
       -- Estimated maximum formspec size before Minetest will start shrinking the
-      -- formspec to fit. For a fullscreen formspec, use a size 10-20% larger than
-      -- this and `padding[-0.01,-0.01]`.
+      -- formspec to fit. For a fullscreen formspec, use this formspec size and
+      -- `padding[0,0]`. `bgcolor[;true]` is also recommended.
       max_formspec_size = {
           x = 20,
           y = 11.25

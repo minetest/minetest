@@ -35,7 +35,7 @@ u64 TimeTaker::stop(bool quiet)
 		if (m_result != nullptr) {
 			(*m_result) += dtime;
 		} else {
-			if (!quiet) {
+			if (!quiet && !m_name.empty()) {
 				infostream << m_name << " took "
 					<< dtime << TimePrecision_units[m_precision] << std::endl;
 			}

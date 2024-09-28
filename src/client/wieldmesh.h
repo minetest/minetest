@@ -104,7 +104,7 @@ struct ItemMesh
 class WieldMeshSceneNode : public scene::ISceneNode
 {
 public:
-	WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id = -1, bool lighting = false);
+	WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id = -1);
 	virtual ~WieldMeshSceneNode();
 
 	void setCube(const ContentFeatures &f, v3f wield_scale);
@@ -131,9 +131,6 @@ private:
 	// Child scene node with the current wield mesh
 	scene::IMeshSceneNode *m_meshnode = nullptr;
 	video::E_MATERIAL_TYPE m_material_type;
-
-	// True if SMaterial::Lighting should be enabled.
-	bool m_lighting;
 
 	bool m_enable_shaders;
 	bool m_anisotropic_filter;

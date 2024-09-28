@@ -204,7 +204,6 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 	// to be processed even if the serialization format has
 	// not been agreed yet, the same as TOCLIENT_INIT.
 	m_access_denied = true;
-	m_access_denied_reason = "Unknown";
 
 	if (pkt->getCommand() != TOCLIENT_ACCESS_DENIED) {
 		// Legacy code from 0.4.12 and older but is still used
@@ -223,29 +222,23 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 	u8 denyCode;
 	*pkt >> denyCode;
 
-	if (denyCode == SERVER_ACCESSDENIED_SHUTDOWN ||
-			denyCode == SERVER_ACCESSDENIED_CRASH) {
+	if (pkt->getRemainingBytes() > 0)
 		*pkt >> m_access_denied_reason;
-		if (m_access_denied_reason.empty())
+
+	if (m_access_denied_reason.empty()) {
+		if (denyCode >= SERVER_ACCESSDENIED_MAX) {
+			m_access_denied_reason = gettext("Unknown disconnect reason.");
+		} else if (denyCode != SERVER_ACCESSDENIED_CUSTOM_STRING) {
 			m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
+		}
+	}
+
+	if (denyCode == SERVER_ACCESSDENIED_TOO_MANY_USERS) {
+		m_access_denied_reconnect = true;
+	} else if (pkt->getRemainingBytes() > 0) {
 		u8 reconnect;
 		*pkt >> reconnect;
 		m_access_denied_reconnect = reconnect & 1;
-	} else if (denyCode == SERVER_ACCESSDENIED_CUSTOM_STRING) {
-		*pkt >> m_access_denied_reason;
-	} else if (denyCode == SERVER_ACCESSDENIED_TOO_MANY_USERS) {
-		m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
-		m_access_denied_reconnect = true;
-	} else if (denyCode < SERVER_ACCESSDENIED_MAX) {
-		m_access_denied_reason = gettext(accessDeniedStrings[denyCode]);
-	} else {
-		// Allow us to add new error messages to the
-		// protocol without raising the protocol version, if we want to.
-		// Until then (which may be never), this is outside
-		// of the defined protocol.
-		*pkt >> m_access_denied_reason;
-		if (m_access_denied_reason.empty())
-			m_access_denied_reason = "Unknown";
 	}
 }
 
@@ -660,20 +653,10 @@ void Client::handleCommand_MovePlayerRel(NetworkPacket *pkt)
 	player->addPosition(added_pos);
 }
 
-void Client::handleCommand_DeathScreen(NetworkPacket* pkt)
+void Client::handleCommand_DeathScreenLegacy(NetworkPacket* pkt)
 {
-	bool set_camera_point_target;
-	v3f camera_point_target;
-
-	*pkt >> set_camera_point_target;
-	*pkt >> camera_point_target;
-
 	ClientEvent *event = new ClientEvent();
-	event->type                                = CE_DEATHSCREEN;
-	event->deathscreen.set_camera_point_target = set_camera_point_target;
-	event->deathscreen.camera_point_target_x   = camera_point_target.X;
-	event->deathscreen.camera_point_target_y   = camera_point_target.Y;
-	event->deathscreen.camera_point_target_z   = camera_point_target.Z;
+	event->type = CE_DEATHSCREEN_LEGACY;
 	m_client_event_queue.push(event);
 }
 
@@ -1483,12 +1466,17 @@ void Client::handleCommand_CloudParams(NetworkPacket* pkt)
 	f32 density;
 	video::SColor color_bright;
 	video::SColor color_ambient;
+	video::SColor color_shadow = video::SColor(255, 204, 204, 204);
 	f32 height;
 	f32 thickness;
 	v2f speed;
 
 	*pkt >> density >> color_bright >> color_ambient
 			>> height >> thickness >> speed;
+
+	if (pkt->getRemainingBytes() >= 4) {
+		*pkt >> color_shadow;
+	}
 
 	ClientEvent *event = new ClientEvent();
 	event->type                       = CE_CLOUD_PARAMS;
@@ -1498,6 +1486,7 @@ void Client::handleCommand_CloudParams(NetworkPacket* pkt)
 	// we avoid using new() and delete() for no good reason
 	event->cloud_params.color_bright  = color_bright.color;
 	event->cloud_params.color_ambient = color_ambient.color;
+	event->cloud_params.color_shadow = color_shadow.color;
 	event->cloud_params.height        = height;
 	event->cloud_params.thickness     = thickness;
 	// same here: deconstruct to skip constructor
@@ -1828,4 +1817,6 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 	}
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.volumetric_light_strength;
+	if (pkt->getRemainingBytes() >= 4)
+		*pkt >> lighting.shadow_tint;
 }

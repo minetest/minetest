@@ -94,9 +94,11 @@ public:
 	bool is_active() const { return m_shadows_enabled && shadowMapTextureFinal != nullptr; }
 	void setTimeOfDay(float isDay) { m_time_day = isDay; };
 	void setShadowIntensity(float shadow_intensity);
+	void setShadowTint(video::SColor shadow_tint) { m_shadow_tint = shadow_tint; }
 
 	s32 getShadowSamples() const { return m_shadow_samples; }
 	float getShadowStrength() const { return m_shadows_enabled ? m_shadow_strength : 0.0f; }
+	video::SColor getShadowTint() const { return m_shadow_tint; }
 	float getTimeOfDay() const { return m_time_day; }
 
 	f32 getPerspectiveBiasXY() { return m_perspective_bias_xy; }
@@ -131,6 +133,7 @@ private:
 	std::vector<NodeToApply> m_shadow_node_array;
 
 	float m_shadow_strength;
+	video::SColor m_shadow_tint{ 255, 0, 0, 0 };
 	float m_shadow_strength_gamma;
 	float m_shadow_map_max_distance;
 	float m_shadow_map_texture_size;

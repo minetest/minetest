@@ -519,12 +519,13 @@ void PlayerSAO::rightClick(ServerActiveObject *clicker)
 
 void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool from_client)
 {
-	target_hp = rangelim(target_hp, 0, U16_MAX);
-
-	if (target_hp == m_hp)
+	if (target_hp == m_hp || (m_hp == 0 && target_hp < 0))
 		return; // Nothing to do
 
-	s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, target_hp - (s32)m_hp, reason);
+	// Protect against overflow.
+	s32 hp_change = std::max<s64>((s64)target_hp - (s64)m_hp, S32_MIN);
+
+	hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp_change, reason);
 	hp_change = std::min<s32>(hp_change, U16_MAX); // Protect against overflow
 
 	s32 hp = (s32)m_hp + hp_change;
@@ -556,6 +557,21 @@ void PlayerSAO::setBreath(const u16 breath, bool send)
 
 	if (send)
 		m_env->getGameDef()->SendPlayerBreath(this);
+}
+
+void PlayerSAO::respawn()
+{
+	infostream << "PlayerSAO::respawn(): Player " << m_player->getName()
+			<< " respawns" << std::endl;
+
+	setHP(m_prop.hp_max, PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
+	setBreath(m_prop.breath_max);
+
+	bool repositioned = m_env->getScriptIface()->on_respawnplayer(this);
+	if (!repositioned) {
+		// setPos will send the new position to client
+		setPos(m_env->getGameDef()->findSpawnPos());
+	}
 }
 
 Inventory *PlayerSAO::getInventory() const

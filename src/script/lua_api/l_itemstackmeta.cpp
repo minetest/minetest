@@ -41,7 +41,7 @@ void ItemStackMetaRef::clearMeta()
 
 void ItemStackMetaRef::reportMetadataChange(const std::string *name)
 {
-	// TODO
+	// nothing to do
 }
 
 // Exported functions
@@ -89,7 +89,6 @@ ItemStackMetaRef::~ItemStackMetaRef()
 void ItemStackMetaRef::create(lua_State *L, LuaItemStack *istack)
 {
 	ItemStackMetaRef *o = new ItemStackMetaRef(istack);
-	//infostream<<"NodeMetaRef::create: o="<<o<<std::endl;
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
@@ -98,9 +97,6 @@ void ItemStackMetaRef::create(lua_State *L, LuaItemStack *istack)
 void ItemStackMetaRef::Register(lua_State *L)
 {
 	registerMetadataClass(L, className, methods);
-
-	// Cannot be created from Lua
-	//lua_register(L, className, create_object);
 }
 
 const char ItemStackMetaRef::className[] = "ItemStackMetaRef";

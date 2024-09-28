@@ -106,7 +106,7 @@ private:
 	// unban_player_or_ip()
 	static int l_unban_player_or_ip(lua_State *L);
 
-	// disconnect_player(name, [reason]) -> success
+	// disconnect_player(name[, reason[, reconnect]]) -> success
 	static int l_disconnect_player(lua_State *L);
 
 	// remove_player(name)

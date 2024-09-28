@@ -296,6 +296,11 @@ public:
 	void getAndroidUIInput();
 #endif
 
+	// Returns the fixed formspec coordinate size for the given parameters.
+	static double getFixedImgsize(double screen_dpi, double gui_scaling);
+	// Returns the preferred non-fixed formspec coordinate size for the given parameters.
+	static double getImgsize(v2u32 avail_screensize, double screen_dpi, double gui_scaling);
+
 protected:
 	v2s32 getBasePos() const
 	{
@@ -514,6 +519,9 @@ private:
 
 	// used by getAbsoluteRect
 	s32 m_tabheader_upper_edge = 0;
+
+	// Determines the size (in pixels) of formspec coordinate units.
+	double calculateImgsize(const parserData &data);
 };
 
 class FormspecFormSource: public IFormSource

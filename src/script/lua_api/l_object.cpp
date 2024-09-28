@@ -2448,6 +2448,10 @@ int ObjectRef::l_set_clouds(lua_State *L)
 		if (!lua_isnil(L, -1))
 			read_color(L, -1, &cloud_params.color_ambient);
 		lua_pop(L, 1);
+		lua_getfield(L, 2, "shadow");
+		if (!lua_isnil(L, -1))
+			read_color(L, -1, &cloud_params.color_shadow);
+		lua_pop(L, 1);
 
 		cloud_params.height    = getfloatfield_default(L, 2, "height",    cloud_params.height);
 		cloud_params.thickness = getfloatfield_default(L, 2, "thickness", cloud_params.thickness);
@@ -2483,6 +2487,8 @@ int ObjectRef::l_get_clouds(lua_State *L)
 	lua_setfield(L, -2, "color");
 	push_ARGB8(L, cloud_params.color_ambient);
 	lua_setfield(L, -2, "ambient");
+	push_ARGB8(L, cloud_params.color_shadow);
+	lua_setfield(L, -2, "shadow");
 	lua_pushnumber(L, cloud_params.height);
 	lua_setfield(L, -2, "height");
 	lua_pushnumber(L, cloud_params.thickness);
@@ -2611,6 +2617,8 @@ int ObjectRef::l_set_lighting(lua_State *L)
 		lua_getfield(L, 2, "shadows");
 		if (lua_istable(L, -1)) {
 			getfloatfield(L, -1, "intensity", lighting.shadow_intensity);
+			lua_getfield(L, -1, "tint");
+			read_color(L, -1, &lighting.shadow_tint);
 		}
 		lua_pop(L, 1); // shadows
 
@@ -2654,6 +2662,8 @@ int ObjectRef::l_get_lighting(lua_State *L)
 	lua_newtable(L); // "shadows"
 	lua_pushnumber(L, lighting.shadow_intensity);
 	lua_setfield(L, -2, "intensity");
+	push_ARGB8(L, lighting.shadow_tint);
+	lua_setfield(L, -2, "tint");
 	lua_setfield(L, -2, "shadows");
 	lua_pushnumber(L, lighting.saturation);
 	lua_setfield(L, -2, "saturation");
@@ -2683,11 +2693,11 @@ int ObjectRef::l_respawn(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
-	RemotePlayer *player = getplayer(ref);
-	if (player == nullptr)
+	auto *psao = getplayersao(ref);
+	if (psao == nullptr)
 		return 0;
 
-	getServer(L)->RespawnPlayer(player->getPeerId());
+	psao->respawn();
 	lua_pushboolean(L, true);
 	return 1;
 }

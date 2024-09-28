@@ -99,7 +99,6 @@ Hud::Hud(Client *client, LocalPlayer *player,
 
 	// Initialize m_selection_material
 
-	m_selection_material.Lighting = false;
 
 	if (g_settings->getBool("enable_shaders")) {
 		IShaderSource *shdrsrc = client->getShaderSource();
@@ -121,7 +120,6 @@ Hud::Hud(Client *client, LocalPlayer *player,
 	}
 
 	// Initialize m_block_bounds_material
-	m_block_bounds_material.Lighting = false;
 	if (g_settings->getBool("enable_shaders")) {
 		IShaderSource *shdrsrc = client->getShaderSource();
 		auto shader_id = shdrsrc->getShader("default_shader", TILE_MATERIAL_ALPHA);
@@ -155,7 +153,6 @@ Hud::Hud(Client *client, LocalPlayer *player,
 	indices[4] = 3;
 	indices[5] = 0;
 
-	b->getMaterial().Lighting = false;
 	b->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	b->setHardwareMappingHint(scene::EHM_STATIC);
 }
@@ -383,7 +380,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 		elems.push_back(&minimap);
 	}
 	if (client->getProtoVersion() < 46 && player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
-		hotbar = {HUD_ELEM_HOTBAR, v2f(0.5, 1), "", v2f(), "", 0 , 0, 0, v2f(-0.5, -1),
+		hotbar = {HUD_ELEM_HOTBAR, v2f(0.5, 1), "", v2f(), "", 0 , 0, 0, v2f(0, -1),
 				v2f(0, -4), v3f(), v2s32(), 0, "", 0};
 		elems.push_back(&hotbar);
 	}
@@ -1205,7 +1202,6 @@ void drawItemStack(
 
 			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			material.Lighting = false;
 			driver->setMaterial(material);
 			driver->drawMeshBuffer(buf);
 		}

@@ -1470,7 +1470,8 @@ Look for examples in `games/devtest` or `games/minetest_game`.
       'Connected Glass'.
 * `allfaces`
     * Often used for partially-transparent nodes.
-    * External and internal sides of textures are visible.
+    * External sides of textures, and unlike other drawtypes, the external sides
+      of other blocks, are visible from the inside.
 * `allfaces_optional`
     * Often used for leaves nodes.
     * This switches between `normal`, `glasslike` and `allfaces` according to
@@ -5522,6 +5523,10 @@ Utilities
       override_item_remove_fields = true,
       -- The predefined hotbar is a Lua HUD element of type `hotbar` (5.10.0)
       hotbar_hud_element = true,
+      -- Bulk LBM support (5.10.0)
+      bulk_lbms = true,
+      -- ABM supports field without_neighbors (5.10.0)
+      abm_without_neighbors = true,
   }
   ```
 
@@ -5580,8 +5585,8 @@ Utilities
       },
 
       -- Estimated maximum formspec size before Minetest will start shrinking the
-      -- formspec to fit. For a fullscreen formspec, use a size 10-20% larger than
-      -- this and `padding[-0.01,-0.01]`.
+      -- formspec to fit. For a fullscreen formspec, use this formspec size and
+      -- `padding[0,0]`. `bgcolor[;true]` is also recommended.
       max_formspec_size = {
           x = 20,
           y = 11.25
@@ -5655,6 +5660,13 @@ Utilities
 * `minetest.colorspec_to_bytes(colorspec)`: Converts a ColorSpec to a raw
   string of four bytes in an RGBA layout, returned as a string.
   * `colorspec`: The ColorSpec to convert
+* `minetest.colorspec_to_table(colorspec)`: Converts a ColorSpec into RGBA table
+  form. If the ColorSpec is invalid, returns `nil`. You can use this to parse
+  ColorStrings.
+    * `colorspec`: The ColorSpec to convert
+* `minetest.time_to_day_night_ratio(time_of_day)`: Returns a "day-night ratio" value
+  (as accepted by `ObjectRef:override_day_night_ratio`) that is equivalent to
+  the given "time of day" value (as returned by `minetest.get_timeofday`).
 * `minetest.encode_png(width, height, data, [compression])`: Encode a PNG
   image and return it in string form.
     * `width`: Width of the image
@@ -5838,8 +5850,13 @@ Call these functions only at load time!
     * `clicker`: ObjectRef - Object that acted upon `player`, may or may not be a player
 * `minetest.register_on_player_hpchange(function(player, hp_change, reason), modifier)`
     * Called when the player gets damaged or healed
+    * When `hp == 0`, damage doesn't trigger this callback.
+    * When `hp == hp_max`, healing does still trigger this callback.
     * `player`: ObjectRef of the player
     * `hp_change`: the amount of change. Negative when it is damage.
+      * Historically, the new HP value was clamped to [0, 65535] before
+        calculating the HP change. This clamping has been removed as of
+        Minetest 5.10.0
     * `reason`: a PlayerHPChangeReason table.
         * The `type` field will have one of the following values:
             * `set_hp`: A mod or the engine called `set_hp` without
@@ -5860,6 +5877,7 @@ Call these functions only at load time!
 * `minetest.register_on_dieplayer(function(ObjectRef, reason))`
     * Called when a player dies
     * `reason`: a PlayerHPChangeReason table, see register_on_player_hpchange
+    * For customizing the death screen, see `minetest.show_death_screen`.
 * `minetest.register_on_respawnplayer(function(ObjectRef))`
     * Called when player is to be respawned
     * Called _before_ repositioning of player occurs
@@ -6136,6 +6154,8 @@ Environment access
 * `minetest.swap_node(pos, node)`
     * Swap node at position with another.
     * This keeps the metadata intact and will not run con-/destructor callbacks.
+* `minetest.bulk_swap_node({pos1, pos2, pos3, ...}, node)`
+    * Equivalent to `minetest.swap_node` but in bulk.
 * `minetest.remove_node(pos)`: Remove a node
     * Equivalent to `minetest.set_node(pos, {name="air"})`, but a bit faster.
 * `minetest.get_node(pos)`
@@ -6562,6 +6582,13 @@ Formspec
         * `"INV"`: something failed
         * `"CHG"`: has been changed
         * `"VAL"`: not changed
+* `minetest.show_death_screen(player, reason)`
+    * Called when the death screen should be shown.
+    * `player` is an ObjectRef, `reason` is a PlayerHPChangeReason table or nil.
+    * By default, this shows a simple formspec with the option to respawn.
+      Respawning is done via `ObjectRef:respawn`.
+    * You can override this to show a custom death screen.
+    * For general death handling, use `minetest.register_on_dieplayer` instead.
 
 Item handling
 -------------
@@ -6999,10 +7026,11 @@ Bans
     * Returns boolean indicating success
 * `minetest.unban_player_or_ip(ip_or_name)`: remove ban record matching
   IP address or name
-* `minetest.kick_player(name, [reason])`: disconnect a player with an optional
+* `minetest.kick_player(name[, reason[, reconnect]])`: disconnect a player with an optional
   reason.
     * Returns boolean indicating success (false if player nonexistent)
-* `minetest.disconnect_player(name, [reason])`: disconnect a player with an
+    * If `reconnect` is true, allow the user to reconnect.
+* `minetest.disconnect_player(name[, reason[, reconnect]])`: disconnect a player with an
   optional reason, this will not prefix with 'Kicked: ' like kick_player.
   If no reason is given, it will default to 'Disconnected.'
     * Returns boolean indicating success (false if player nonexistent)
@@ -8508,12 +8536,15 @@ child will follow movement and rotation of that bone.
           if set to zero the clouds are rendered flat.
         * `speed`: 2D cloud speed + direction in nodes per second
           (default `{x=0, z=-2}`).
+        * `shadow`: shadow color, applied to the base of the cloud
+          (default `#cccccc`).
 * `get_clouds()`: returns a table with the current cloud parameters as in
   `set_clouds`.
 * `override_day_night_ratio(ratio or nil)`
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific
       amount.
     * Passing no arguments disables override, defaulting to sunlight based on day-night cycle
+    * See also `minetest.time_to_day_night_ratio`,
 * `get_day_night_ratio()`: returns the ratio or nil if it isn't overridden
 * `set_local_animation(idle, walk, dig, walk_while_dig, frame_speed)`:
   set animation for player model in third person view.
@@ -8540,10 +8571,22 @@ child will follow movement and rotation of that bone.
     * Passing no arguments resets lighting to its default values.
     * `light_definition` is a table with the following optional fields:
       * `saturation` sets the saturation (vividness; default: `1.0`).
-        * values > 1 increase the saturation
-        * values in [0,1] decrease the saturation
+        * It is applied according to the function `result = b*(1-s) + c*s`, where:
+          * `c` is the original color
+          * `b` is the greyscale version of the color with the same luma
+          * `s` is the saturation set here
+        * The resulting color always has the same luma (perceived brightness) as the original.
+        * This means that:
+          * values > 1 oversaturate
+          * values < 1 down to 0 desaturate, 0 being entirely greyscale
+          * values < 0 cause an effect similar to inversion,
+            but keeping original luma and being symmetrical in terms of saturation
+            (eg. -1 and 1 is the same saturation and luma, but different hues)
       * `shadows` is a table that controls ambient shadows
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
+            * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
+        * `tint` tints the shadows with the provided color, with RGB values ranging from 0 to 255.
+          (default `{r=0, g=0, b=0}`)
             * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
       * `exposure` is a table that controls automatic exposure.
         The basic exposure factor equation is `e = 2^exposure_correction / clamp(luminance, 2^luminance_min, 2^luminance_max)`
@@ -9071,6 +9114,11 @@ Used by `minetest.register_abm`.
     -- If left out or empty, any neighbor will do.
     -- `group:groupname` can also be used here.
 
+    without_neighbors = {"default:lava_source", "default:lava_flowing"},
+    -- Only apply `action` to nodes that have no one of these neighbors.
+    -- If left out or empty, it has no effect.
+    -- `group:groupname` can also be used here.
+
     interval = 10.0,
     -- Operation interval in seconds
 
@@ -9106,7 +9154,12 @@ Used by `minetest.register_lbm`.
 
 A loading block modifier (LBM) is used to define a function that is called for
 specific nodes (defined by `nodenames`) when a mapblock which contains such nodes
-gets activated (not loaded!)
+gets activated (not loaded!).
+
+Note: LBMs operate on a "snapshot" of node positions taken once before they are triggered.
+That means if an LBM callback adds a node, it won't be taken into account.
+However the engine guarantees that when the callback is called that all given position(s)
+contain a matching node.
 
 ```lua
 {
@@ -9130,7 +9183,13 @@ gets activated (not loaded!)
     action = function(pos, node, dtime_s) end,
     -- Function triggered for each qualifying node.
     -- `dtime_s` is the in-game time (in seconds) elapsed since the block
-    -- was last active
+    -- was last active.
+
+    bulk_action = function(pos_list, dtime_s) end,
+    -- Function triggered with a list of all applicable node positions at once.
+    -- This can be provided as an alternative to `action` (not both).
+    -- Available since `minetest.features.bulk_lbms` (5.10.0)
+    -- `dtime_s`: as above
 }
 ```
 
@@ -9337,9 +9396,17 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
       -- If specified as a table, the field to be used is selected according to
       -- the current `pointed_thing`.
       -- There are three possible TouchInteractionMode values:
-      -- * "user"                 (meaning depends on client-side settings)
       -- * "long_dig_short_place" (long tap  = dig, short tap = place)
       -- * "short_dig_long_place" (short tap = dig, long tap  = place)
+      -- * "user":
+      --   * For `pointed_object`: Equivalent to "short_dig_long_place" if the
+      --     client-side setting "touch_punch_gesture" is "short_tap" (the
+      --     default value) and the item is able to punch (i.e. has no on_use
+      --     callback defined).
+      --     Equivalent to "long_dig_short_place" otherwise.
+      --   * For `pointed_node` and `pointed_nothing`:
+      --     Equivalent to "long_dig_short_place".
+      --   * The behavior of "user" may change in the future.
       -- The default value is "user".
 
     sound = {
@@ -11367,6 +11434,16 @@ Bit Library
 Functions: bit.tobit, bit.tohex, bit.bnot, bit.band, bit.bor, bit.bxor, bit.lshift, bit.rshift, bit.arshift, bit.rol, bit.ror, bit.bswap
 
 See http://bitop.luajit.org/ for advanced information.
+
+Tracy Profiler
+--------------
+
+Minetest can be built with support for the Tracy profiler, which can also be
+useful for profiling mods and is exposed to Lua as the global `tracy`.
+
+See doc/developing/misc.md for details.
+
+Note: This is a development feature and not covered by compatibility promises.
 
 Error Handling
 --------------

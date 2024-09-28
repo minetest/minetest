@@ -412,6 +412,10 @@ TouchControls::TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc)
 
 		pos.X += spacing.X;
 	}
+
+	m_status_text = grab_gui_element<IGUIStaticText>(
+			m_guienv->addStaticText(L"", recti(), false, false));
+	m_status_text->setVisible(false);
 }
 
 void TouchControls::addButton(std::vector<button_info> &buttons, touch_gui_button_id id,
@@ -477,14 +481,11 @@ void TouchControls::handleReleaseEvent(size_t pointer_id)
 	m_pointer_downpos.erase(pointer_id);
 	m_pointer_pos.erase(pointer_id);
 
-	if (m_overflow_open) {
-		buttons_handleRelease(m_overflow_buttons, pointer_id, m_device->getVideoDriver(),
-				m_receiver, m_texturesource);
-		return;
-	}
-
 	// handle buttons
 	if (buttons_handleRelease(m_buttons, pointer_id, m_device->getVideoDriver(),
+			m_receiver, m_texturesource))
+		return;
+	if (buttons_handleRelease(m_overflow_buttons, pointer_id, m_device->getVideoDriver(),
 			m_receiver, m_texturesource))
 		return;
 
@@ -513,9 +514,7 @@ void TouchControls::handleReleaseEvent(size_t pointer_id)
 		m_joystick_status_aux1 = false;
 		applyJoystickStatus();
 
-		m_joystick_btn_off->setVisible(true);
-		m_joystick_btn_bg->setVisible(false);
-		m_joystick_btn_center->setVisible(false);
+		updateVisibility();
 	} else {
 		infostream << "TouchControls::translateEvent released unknown button: "
 				<< pointer_id << std::endl;
@@ -572,9 +571,6 @@ void TouchControls::translateEvent(const SEvent &event)
 			toggleOverflowMenu();
 			// refresh since visibility of buttons has changed
 		 	element = m_guienv->getRootGUIElement()->getElementFromPoint(touch_pos);
-			// restore after releaseAll in toggleOverflowMenu
-			m_pointer_downpos[pointer_id] = touch_pos;
-			m_pointer_pos[pointer_id] = touch_pos;
 			// continue processing, but avoid accidentally placing a node
 			// when closing the overflow menu
 			prevent_short_tap = true;
@@ -600,9 +596,7 @@ void TouchControls::translateEvent(const SEvent &event)
 				m_joystick_id               = pointer_id;
 				m_joystick_has_really_moved = false;
 
-				m_joystick_btn_off->setVisible(false);
-				m_joystick_btn_bg->setVisible(true);
-				m_joystick_btn_center->setVisible(true);
+				updateVisibility();
 
 				// If it's a fixed joystick, don't move the joystick "button".
 				if (!m_fixed_joystick)
@@ -632,9 +626,6 @@ void TouchControls::translateEvent(const SEvent &event)
 		handleReleaseEvent(event.TouchInput.ID);
 	} else {
 		assert(event.TouchInput.Event == ETIE_MOVED);
-
-		if (m_overflow_open)
-			return;
 
 		if (!(m_has_joystick_id && m_fixed_joystick) &&
 				m_pointer_pos[event.TouchInput.ID] == touch_pos)
@@ -721,13 +712,9 @@ void TouchControls::applyJoystickStatus()
 
 void TouchControls::step(float dtime)
 {
-	if (m_overflow_open) {
-		buttons_step(m_overflow_buttons, dtime, m_device->getVideoDriver(), m_receiver, m_texturesource);
-		return;
-	}
-
 	// simulate keyboard repeats
 	buttons_step(m_buttons, dtime, m_device->getVideoDriver(), m_receiver, m_texturesource);
+	buttons_step(m_overflow_buttons, dtime, m_device->getVideoDriver(), m_receiver, m_texturesource);
 
 	// joystick
 	applyJoystickStatus();
@@ -774,7 +761,6 @@ void TouchControls::setVisible(bool visible)
 		return;
 
 	m_visible = visible;
-	// order matters
 	if (!visible) {
 		releaseAll();
 		m_overflow_open = false;
@@ -784,7 +770,8 @@ void TouchControls::setVisible(bool visible)
 
 void TouchControls::toggleOverflowMenu()
 {
-	releaseAll(); // must be done first
+	// no releaseAll here so that you can e.g. continue holding the joystick
+	// while the overflow menu is open
 	m_overflow_open = !m_overflow_open;
 	updateVisibility();
 }
@@ -795,7 +782,10 @@ void TouchControls::updateVisibility()
 	for (auto &button : m_buttons)
 		button.gui_button->setVisible(regular_visible);
 	m_overflow_btn->setVisible(regular_visible);
-	m_joystick_btn_off->setVisible(regular_visible);
+
+	m_joystick_btn_off->setVisible(regular_visible && !m_has_joystick_id);
+	m_joystick_btn_bg->setVisible(regular_visible && m_has_joystick_id);
+	m_joystick_btn_center->setVisible(regular_visible && m_has_joystick_id);
 
 	bool overflow_visible = m_visible && m_overflow_open;
 	m_overflow_bg->setVisible(overflow_visible);
