@@ -534,7 +534,7 @@ struct ContentFeatures
 #ifndef SERVER
 	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
 		scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings,
-		std::list<TileLayer *> &tile_layers);
+		std::vector<TileInfo> &tiles_infos);
 #endif
 
 private:

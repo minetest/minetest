@@ -109,8 +109,8 @@ struct TileLayer
 		return false;
 	}
 
-	u32 atlas_index;
-	u32 atlas_tile_info_index;
+	//u32 atlas_index;
+	u32 tiles_infos_index;
 
 	// Ordered for size, please do not reorder
 

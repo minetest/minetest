@@ -83,7 +83,7 @@ void MapblockMeshCollector::addTileMesh(TileSpec &tile,
 				tex = layer.texture;
 		}
 		else {
-			atlas = builder->getAtlas(layer.atlas_index);
+			atlas = builder->getAtlas(layer.tiles_infos_index);
 			atlas_size = atlas->getTextureSize();
 		}
 
@@ -151,7 +151,7 @@ void MapblockMeshCollector::addTileMesh(TileSpec &tile,
 					&layer.texture_id));
 			}
 			else {
-				atlas->insertCrackTile(layer.atlas_tile_info_index, os.str());
+				atlas->insertCrackTile(layer.tiles_infos_index, os.str());
 
 				// Shift each UV by the half-width of the atlas to locate it in the separate right side
 				tile_pos_shift = atlas_size.Width / 2;
@@ -182,7 +182,7 @@ void MapblockMeshCollector::addTileMesh(TileSpec &tile,
             vertex.TCoords *= scale;
 
 			if (!outside_uv) {
-				const TileInfo &tile_info = atlas->getTileInfo(layer.atlas_tile_info_index);
+				TileInfo &tile_info = builder->getTileInfo(layer.tiles_infos_index);
 				u32 frame_thickness = atlas->getFrameThickness();
 
 				// Tile size without taking into account the frame

@@ -779,7 +779,7 @@ bool isWorldAligned(AlignStyle style, WorldAlignMode mode, NodeDrawType drawtype
 
 void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
 	scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings,
-	std::list<TileLayer *> &tile_layers)
+	std::vector<TileInfo> &tiles_infos)
 {
 	// minimap pixel color - the average color of a texture
 	if (tsettings.enable_minimap && !tiledef[0].name.empty())
@@ -929,6 +929,18 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 
 	u32 overlay_shader = shdsrc->getShader("nodes_shader", overlay_material, drawtype);
 
+	auto add_unique_tile = [&] (const TileInfo &tile)
+	{
+		auto find_tile = std::find(tiles_infos.begin(), tiles_infos.end(), tile);
+
+		if (find_tile == tiles_infos.end()) {
+			tiles_infos.push_back(tile);
+			find_tile = tiles_infos.end()-1;
+		}
+
+		return find_tile;
+	};
+
 	// Tiles (fill in f->tiles[])
 	for (u16 j = 0; j < 6; j++) {
 		tiles[j].draw_type = (u8)drawtype;
@@ -937,13 +949,16 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		fillTileAttribs(tsrc, &tiles[j].layers[0], tiles[j], tdef[j],
 				color, material_type, tile_shader,
 				tdef[j].backface_culling, tsettings);
-		tile_layers.push_back(&tiles[j].layers[0]);
+		auto added_tile = add_unique_tile(TileInfo(tiles[j].layers[0]));
+		tiles[j].layers[0].tiles_infos_index = (u32)std::distance(tiles_infos.begin(), added_tile);
 
 		if (!tdef_overlay[j].name.empty()) {
 			fillTileAttribs(tsrc, &tiles[j].layers[1], tiles[j], tdef_overlay[j],
 					color, overlay_material, overlay_shader,
 					tdef[j].backface_culling, tsettings);
-			tile_layers.push_back(&tiles[j].layers[1]);
+
+			added_tile = add_unique_tile(TileInfo(tiles[j].layers[1]));
+			tiles[j].layers[1].tiles_infos_index = (u32)std::distance(tiles_infos.begin(), added_tile);
 		}
 	}
 
@@ -962,7 +977,8 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		fillTileAttribs(tsrc, &special_tiles[j].layers[0], special_tiles[j], tdef_spec[j],
 				color, special_material, special_shader,
 				tdef_spec[j].backface_culling, tsettings);
-		tile_layers.push_back(&special_tiles[j].layers[0]);
+		auto added_tile = add_unique_tile(TileInfo(special_tiles[j].layers[0]));
+		special_tiles[j].layers[0].tiles_infos_index = (u32)std::distance(tiles_infos.begin(), added_tile);
 	}
 
 	if (param_type_2 == CPT2_COLOR ||
@@ -1507,15 +1523,15 @@ void NodeDefManager::updateTextures(IGameDef *gamedef, void *progress_callback_a
 	u32 size = m_content_features.size();
 
 	// Collect all tile layers from each node
-	std::list<TileLayer *> tile_layers;
+	std::vector<TileInfo> tiles_infos;
 	for (u32 i = 0; i < size; i++) {
 		ContentFeatures *f = &(m_content_features[i]);
-		f->updateTextures(tsrc, shdsrc, meshmanip, client, tsettings, tile_layers);
+		f->updateTextures(tsrc, shdsrc, meshmanip, client, tsettings, tiles_infos);
 		client->showUpdateProgressTexture(progress_callback_args, i, size);
 	}
 
-	if (!tile_layers.empty())
-		m_atlas_builder->buildAtlas(client, tile_layers);
+	if (!tiles_infos.empty())
+		m_atlas_builder->buildAtlases(client, tiles_infos);
 #endif
 }
 

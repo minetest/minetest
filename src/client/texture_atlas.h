@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IVideoDriver.h>
 #include <memory>
 #include <map>
+#include <set>
 #include <vector>
 #include <mutex>
 #include <cassert>
@@ -61,9 +62,17 @@ struct TileInfo
 	TileInfo(int _x, int _y, int _width, int _height)
 		: x(_x), y(_y), width(_width), height(_height)
 	{}
+
+	TileInfo(const TileLayer &layer);
+
+	bool operator==(const TileInfo &other_info)
+	{
+		return tex == other_info.tex;
+	}
 };
 
 class Client;
+class AtlasBuilder;
 
 /*!
  * Texture atlas handler.
@@ -72,6 +81,7 @@ class TextureAtlas
 {
 	video::IVideoDriver *m_driver;
 	ITextureSource *m_tsrc;
+	AtlasBuilder *m_builder;
 
 	/*!
 	 * Texture of the atlas.
@@ -82,9 +92,9 @@ class TextureAtlas
 	video::ITexture *m_texture;
 
 	/*!
-	 * Saves all tiles that will be drawn to the atlas.
+	 * Saves all indices to tiles that will be drawn to the atlas.
 	 */
-	std::vector<TileInfo> m_tiles_infos;
+	std::vector<u32> m_tiles_infos_refs;
 
 	/*!
 	 * Mappings of the m_tiles_infos index and texture string for the corresponding tile.
@@ -115,7 +125,7 @@ public:
 	/*!
 	 * Constructor.
 	 */
-	TextureAtlas(Client *client, u32 atlas_area, u32 min_area_tile, std::vector<TileInfo> &tiles_infos);
+	TextureAtlas(Client *client, u32 atlas_area, u32 max_mip_level, std::vector<u32> &tiles_infos_refs);
 
 	/*!
 	 * Destructor.
@@ -135,15 +145,17 @@ public:
 		return m_texture->getSize();
 	}
 
+	bool contains(u32 index) const
+	{
+		auto find_i = std::find(m_tiles_infos_refs.begin(), m_tiles_infos_refs.end(), index);
+
+		return find_i != m_tiles_infos_refs.end();
+	}
+
 	/*!
 	 * Returns a precalculated thickness of the frame around each tile in pixels.
 	 */
 	u32 getFrameThickness() const;
-
-	const TileInfo &getTileInfo(u32 i) const
-	{
-		return m_tiles_infos.at(i);
-	}
 
 	/*!
 	 * Checks if 'tex' can be entirely put inside 'area'.
@@ -189,17 +201,34 @@ public:
 class AtlasBuilder
 {
 	std::vector<std::unique_ptr<TextureAtlas>> m_atlases;
+	std::vector<TileInfo> m_tiles_infos;
+	// Indices to m_tile_infos sorted in order of increasing the tiles sizes
+	std::vector<u32> m_sorted_tiles_infos;
+
+	// Index to m_sorted_tile_infos
+	u32 m_fill_start_index = 0;
+
+	bool m_mip_maps;
+	bool m_filtering;
 
 public:
 	AtlasBuilder() = default;
 
-	TextureAtlas *getAtlas(u32 index) const {
-		assert(index <= m_atlases.size()-1);
+	TextureAtlas *getAtlas(u32 tile_info_i) const {
+		for (auto &atlas : m_atlases)
+			if (atlas->contains(tile_info_i))
+				return atlas.get();
 
-		return m_atlases.at(index).get();
+		return nullptr;
 	}
 
-	void buildAtlas(Client *client, std::list<TileLayer*> &layers);
+	TileInfo &getTileInfo(u32 i) const
+	{
+		return const_cast<TileInfo &>(m_tiles_infos.at(i));
+	}
+
+	void buildAtlases(Client *client, std::vector<TileInfo> &infos);
+	void buildAtlas(Client *client);
 
 	void updateAnimations(f32 time);
 	void updateCrackAnimations(int new_crack);
