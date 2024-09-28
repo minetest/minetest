@@ -199,15 +199,11 @@ void main(void)
 	vNormal = inVertexNormal;
 
 	// Calculate color.
+	vec4 color = inVertexColor;
 	// Red, green and blue components are pre-multiplied with
 	// the brightness, so now we have to multiply these
 	// colors with the color of the incoming light.
 	// The pre-baked colors are halved to prevent overflow.
-#ifdef GL_ES
-	vec4 color = inVertexColor.bgra;
-#else
-	vec4 color = inVertexColor;
-#endif
 	// The alpha gives the ratio of sunlight in the incoming light.
 	nightRatio = 1.0 - color.a;
 	color.rgb = color.rgb * (color.a * dayLight.rgb +

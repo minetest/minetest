@@ -561,7 +561,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 
 	// Create shaders header
 	bool fully_programmable = driver->getDriverType() == video::EDT_OGLES2 || driver->getDriverType() == video::EDT_OPENGL3;
-	std::stringstream shaders_header;
+	std::ostringstream shaders_header;
 	shaders_header
 		<< std::noboolalpha
 		<< std::showpoint // for GLSL ES
@@ -588,10 +588,14 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			attribute mediump vec4 inVertexTangent;
 			attribute mediump vec4 inVertexBinormal;
 		)";
+		// Our vertex color has components reversed compared to what OpenGL
+		// normally expects, so we need to take that into account.
+		vertex_header += "#define inVertexColor (inVertexColor.bgra)\n";
 		fragment_header = R"(
 			precision mediump float;
 		)";
 	} else {
+		/* legacy OpenGL driver */
 		shaders_header << R"(
 			#version 120
 			#define lowp
