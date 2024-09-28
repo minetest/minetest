@@ -1,4 +1,4 @@
-name: macos
+name: macos_10.15_x86_64
 
 # build on c/cpp changes or workflow changes
 on:
@@ -13,8 +13,8 @@ on:
       - 'irr/**.mm' # Objective-C(++)
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
-      - 'util/ci/common.sh'
-      - '.github/workflows/macos.yml'
+      - 'util/ci/macos_build_deps.sh'
+      - '.github/workflows/macos_10.15_x86_64.yml'
   pull_request:
     paths:
       - 'lib/**.[ch]'
@@ -26,26 +26,38 @@ on:
       - 'irr/**.mm' # Objective-C(++)
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
-      - 'util/ci/common.sh'
-      - '.github/workflows/macos.yml'
+      - 'util/ci/macos_build_deps.sh'
+      - '.github/workflows/macos_10.15_x86_64.yml'
 
 jobs:
   build:
-    # use lowest possible macOS running on x86_64 to support more users
-    runs-on: macos-12
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
       - name: Install deps
         run: |
-          source ./util/ci/common.sh
-          install_macos_deps
+          source ./util/ci/macos_build_deps.sh 
+          echo "GETTING SDK"
+          download_macos_sdk "10.15"
+          echo "GETTING LIBRARY SOURCES"
+          download_macos_deps
+          echo "UNARCHIVING LIBRARY SOURCES"
+          untar_macos_deps
+          echo "COMPILING LIBRARIES"
+          compile_macos_deps "x86_64" "10.15"
 
       - name: Build
         run: |
           mkdir build
           cd build
+          export CMAKE_PREFIX_PATH=$(realpath ../deps/install)
+          # CXXFLAGS are needed only for SDK older than 11.
+          # SDK 11 and newer include C++/v1 directory and header files.
+          export CXXFLAGS="-I$(xcrun --show-sdk-path)/usr/include/c++/v1"
+          export SDKROOT=$(realpath ../deps/MacOSX10.15.sdk)
           cmake .. \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+            -DCMAKE_OSX_ARCHITECTURES=x86_64 \
             -DCMAKE_FIND_FRAMEWORK=LAST \
             -DCMAKE_INSTALL_PREFIX=../build/macos/ \
             -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE \
@@ -68,5 +80,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: minetest-macos
+          name: minetest-macos_10.15_x86_64
           path: ./build/macos/*.zip
