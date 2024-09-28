@@ -420,7 +420,7 @@ Server::~Server()
 			// Wait until the lan_adv_server thread has finished.
 			// This is so that its thread destructor doesn't kill the thread
 			// before it sends the 'shutdown' command to remove this server's
-			// server info from the serverlist of local clients. 
+			// server info from the serverlist of local clients.
 		}
 	}
 }

@@ -163,16 +163,12 @@ void lan_adv::send_string(const std::string &str)
 		addr.sin_port = htons(adv_port);
 		UDPSocket socket_send(false);
 
-		// Full discloser, the use of inet_proto and the mreq stucture 
-		// were suggested by ai.
-
 		inet_pton(AF_INET, adv_multicast_addr, &(addr.sin_addr));
 
 		struct ip_mreq mreq;
 
 		mreq.imr_multiaddr.s_addr = inet_addr(adv_multicast_addr);
 		mreq.imr_interface.s_addr = htonl(INADDR_ANY);
-		
 
 		setsockopt(socket_send.GetHandle(), IPPROTO_IP, IP_ADD_MEMBERSHIP,
 				(const char *)&mreq, sizeof(mreq));
@@ -191,7 +187,7 @@ void lan_adv::serve(unsigned short port)
 {
 	server_port = port;
 	stop();
-	start(); 
+	start();
 }
 
 void *lan_adv::run()
