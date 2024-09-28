@@ -97,7 +97,10 @@ void set_default_settings()
 	// Client
 	settings->setDefault("address", "");
 	settings->setDefault("enable_sound", "true");
-	settings->setDefault("touch_controls", bool_to_cstr(has_touch));
+	settings->setDefault("touch_controls", "auto");
+	// Since GUI scaling shouldn't suddenly change during a session, we use
+	// hardware detection for "touch_gui" instead of switching based on the last
+	// input method used.
 	settings->setDefault("touch_gui", bool_to_cstr(has_touch));
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("sound_volume_unfocused", "0.3");

@@ -237,6 +237,12 @@ local function load()
 		zh_CN = "中文 (简体) [zh_CN]",
 		zh_TW = "正體中文 (繁體) [zh_TW]",
 	}
+
+	get_setting_info("touch_controls").option_labels = {
+		["auto"] = fgettext_ne("Auto"),
+		["true"] = fgettext_ne("Enabled"),
+		["false"] = fgettext_ne("Disabled"),
+	}
 end
 
 
@@ -336,9 +342,14 @@ local function check_requirements(name, requires)
 
 	local video_driver = core.get_active_driver()
 	local shaders_support = video_driver == "opengl" or video_driver == "opengl3" or video_driver == "ogles2"
+	local touch_controls = core.settings:get("touch_controls")
 	local special = {
 		android = PLATFORM == "Android",
 		desktop = PLATFORM ~= "Android",
+		-- When touch_controls is "auto", we don't which input method will be used,
+		-- so we show settings for both.
+		touchscreen = touch_controls == "auto" or core.is_yes(touch_controls),
+		keyboard_mouse = touch_controls == "auto" or not core.is_yes(touch_controls),
 		shaders_support = shaders_support,
 		shaders = core.settings:get_bool("enable_shaders") and shaders_support,
 		opengl = video_driver == "opengl",
@@ -624,6 +635,18 @@ function write_settings_early()
 	end
 end
 
+local function regenerate_page_list(dialogdata)
+	local suggested_page_id = update_filtered_pages(dialogdata.query)
+
+	dialogdata.components = nil
+
+	if not filtered_page_by_id[dialogdata.page_id] then
+		dialogdata.leftscroll = 0
+		dialogdata.rightscroll = 0
+
+		dialogdata.page_id = suggested_page_id
+	end
+end
 
 local function buttonhandler(this, fields)
 	local dialogdata = this.data
@@ -648,27 +671,7 @@ local function buttonhandler(this, fields)
 		local value = core.is_yes(fields.show_advanced)
 		core.settings:set_bool("show_advanced", value)
 		write_settings_early()
-	end
-
-	-- touch_controls is a checkbox in a setting component. We handle this
-	-- setting differently so we can hide/show pages using the next if-statement
-	if fields.touch_controls ~= nil then
-		local value = core.is_yes(fields.touch_controls)
-		core.settings:set_bool("touch_controls", value)
-		write_settings_early()
-	end
-
-	if fields.show_advanced ~= nil or fields.touch_controls ~= nil then
-		local suggested_page_id = update_filtered_pages(dialogdata.query)
-
-		dialogdata.components = nil
-
-		if not filtered_page_by_id[dialogdata.page_id] then
-			dialogdata.leftscroll = 0
-			dialogdata.rightscroll = 0
-
-			dialogdata.page_id = suggested_page_id
-		end
+		regenerate_page_list(dialogdata)
 
 		return true
 	end
@@ -701,20 +704,26 @@ local function buttonhandler(this, fields)
 		end
 	end
 
-	for i, comp in ipairs(dialogdata.components) do
-		if comp.on_submit and comp:on_submit(fields, this) then
-			write_settings_early()
-
+	local function after_setting_change(comp)
+		write_settings_early()
+		if comp.setting.name == "touch_controls" then
+			-- Changing the "touch_controls" setting may result in a different
+			-- page list.
+			regenerate_page_list(dialogdata)
+		else
 			-- Clear components so they regenerate
 			dialogdata.components = nil
+		end
+	end
+
+	for i, comp in ipairs(dialogdata.components) do
+		if comp.on_submit and comp:on_submit(fields, this) then
+			after_setting_change(comp)
 			return true
 		end
 		if comp.setting and fields["reset_" .. i] then
 			core.settings:remove(comp.setting.name)
-			write_settings_early()
-
-			-- Clear components so they regenerate
-			dialogdata.components = nil
+			after_setting_change(comp)
 			return true
 		end
 	end
