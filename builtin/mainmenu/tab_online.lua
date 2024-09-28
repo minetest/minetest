@@ -25,7 +25,6 @@ local function get_sorted_servers()
 
 	local merged_serverlist = table.copy(serverlistmgr.servers)
 
-	--Special thanks to proller <proller@gmail.com> for letting use use the get_lan_servers function.
 	if minetest.settings:get_bool("serverlist_lan") then
 		if core.get_lan_servers then
 			local lan = core.get_lan_servers()

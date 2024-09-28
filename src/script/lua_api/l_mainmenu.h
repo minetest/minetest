@@ -60,12 +60,7 @@ private:
 	 */
 	static bool mayModifyPath(std::string path);
 
-	//lan
-
-	/*
-	ModApiMainMenu::l_ask_lan_servers, ModApiMainMenu::l_get_lan_servers
-	by proller <proler@gmail.com>, special thanks for letting us use it.
-	*/
+	//lan discovery
 
 	static int l_ask_lan_servers(lua_State *L);
 

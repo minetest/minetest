@@ -1092,11 +1092,6 @@ int ModApiMainMenu::l_do_async_callback(lua_State *L)
 
 /******************************************************************************/
 
-/*
-ModApiMainMenu::l_ask_lan_servers, ModApiMainMenu::l_get_lan_servers
-by proller <proler@gmail.com>, special thanks for letting us use them.
-*/
-
 int ModApiMainMenu::l_ask_lan_servers(lua_State *L)
 {
 	ServerList::lan_get();

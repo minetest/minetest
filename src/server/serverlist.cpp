@@ -34,12 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace ServerList
 {
 
-/*
-Special thanks to proller <proler@gmail.com> for
-letting us use the methods lan_get() and lan_fresh()
-as well as the lan_adv class.
-*/
-
 static std::string ask_str;
 
 lan_adv lan_adv_client;
