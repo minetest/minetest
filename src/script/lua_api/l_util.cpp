@@ -531,7 +531,7 @@ int ModApiUtil::l_get_version(lua_State *L)
 	lua_pushnumber(L, SERVER_PROTOCOL_VERSION_MIN);
 	lua_setfield(L, table, "proto_min");
 
-	lua_pushnumber(L, SERVER_PROTOCOL_VERSION_MAX);
+	lua_pushnumber(L, LATEST_PROTOCOL_VERSION);
 	lua_setfield(L, table, "proto_max");
 
 	if (strcmp(g_version_string, g_version_hash) != 0) {

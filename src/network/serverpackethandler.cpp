@@ -135,10 +135,10 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	// Figure out a working version if it is possible at all
 	if (max_net_proto_version >= SERVER_PROTOCOL_VERSION_MIN ||
-			min_net_proto_version <= SERVER_PROTOCOL_VERSION_MAX) {
+			min_net_proto_version <= LATEST_PROTOCOL_VERSION) {
 		// If maximum is larger than our maximum, go with our maximum
-		if (max_net_proto_version > SERVER_PROTOCOL_VERSION_MAX)
-			net_proto_version = SERVER_PROTOCOL_VERSION_MAX;
+		if (max_net_proto_version > LATEST_PROTOCOL_VERSION)
+			net_proto_version = LATEST_PROTOCOL_VERSION;
 		// Else go with client's maximum
 		else
 			net_proto_version = max_net_proto_version;
