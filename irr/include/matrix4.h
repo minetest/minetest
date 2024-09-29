@@ -868,15 +868,15 @@ inline CMatrix4<T> &CMatrix4<T>::setRotationRadians(const vector3d<T> &rotation)
 	M[1] = (T)(cy * sr);
 	M[2] = (T)(-sy);
 
-	const f64 srsp = sp * sy;
-	const f64 crsp = cp * sy;
+	const f64 spsy = sp * sy;
+	const f64 cpsy = cp * sy;
 
-	M[4] = (T)(srsp * cr - cp * sr);
-	M[5] = (T)(srsp * sr + cp * cr);
+	M[4] = (T)(spsy * cr - cp * sr);
+	M[5] = (T)(spsy * sr + cp * cr);
 	M[6] = (T)(sp * cy);
 
-	M[8] = (T)(crsp * cr + sp * sr);
-	M[9] = (T)(crsp * sr - sp * cr);
+	M[8] = (T)(cpsy * cr + sp * sr);
+	M[9] = (T)(cpsy * sr - sp * cr);
 	M[10] = (T)(cp * cy);
 #if defined(USE_MATRIX_TEST)
 	definitelyIdentityMatrix = false;
@@ -972,15 +972,15 @@ inline CMatrix4<T> &CMatrix4<T>::setInverseRotationRadians(const vector3d<T> &ro
 	M[4] = (T)(cy * sr);
 	M[8] = (T)(-sy);
 
-	f64 srsp = sp * sy;
-	f64 crsp = cp * sy;
+	f64 spsy = sp * sy;
+	f64 cpsy = cp * sy;
 
-	M[1] = (T)(srsp * cr - cp * sr);
-	M[5] = (T)(srsp * sr + cp * cr);
+	M[1] = (T)(spsy * cr - cp * sr);
+	M[5] = (T)(spsy * sr + cp * cr);
 	M[9] = (T)(sp * cy);
 
-	M[2] = (T)(crsp * cr + sp * sr);
-	M[6] = (T)(crsp * sr - sp * cr);
+	M[2] = (T)(cpsy * cr + sp * sr);
+	M[6] = (T)(cpsy * sr - sp * cr);
 	M[10] = (T)(cp * cy);
 #if defined(USE_MATRIX_TEST)
 	definitelyIdentityMatrix = false;
