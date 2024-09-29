@@ -109,8 +109,8 @@ struct TileLayer
 		return false;
 	}
 
-	//u32 atlas_index;
 	u32 tiles_infos_index;
+	bool atlas_used;
 
 	// Ordered for size, please do not reorder
 
@@ -166,6 +166,4 @@ struct TileSpec
 	u8 emissive_light = 0;
 	//! The first is base texture, the second is overlay.
 	TileLayer layers[MAX_TILE_LAYERS];
-	//! Draw type of the tile
-	u8 draw_type;
 };

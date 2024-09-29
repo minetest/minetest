@@ -46,7 +46,7 @@ TileInfo::TileInfo(const TileLayer &layer)
 /*!
  * Constructor.
  */
-TextureAtlas::TextureAtlas(Client *client, u32 atlas_area, u32 max_mip_level, std::vector<u32> &tiles_infos_refs)
+TextureAtlas::TextureAtlas(Client *client, u32 atlas_area, u32 max_mip_level, u32 atlas_n, std::vector<u32> &tiles_infos_refs)
 	: m_driver(client->getSceneManager()->getVideoDriver()), m_tsrc(client->getTextureSource()),
 	  m_builder(client->getNodeDefManager()->getAtlasBuilder()), m_tiles_infos_refs(std::move(tiles_infos_refs)),
 	  m_max_mip_level(max_mip_level)
@@ -69,17 +69,17 @@ TextureAtlas::TextureAtlas(Client *client, u32 atlas_area, u32 max_mip_level, st
 		}
 	}
 
-	infostream << "TextureAtlas() atlas_area: " << atlas_area << std::endl;
-	infostream << "TextureAtlas() tiles_infos_indices size: " << m_tiles_infos_refs.size() << std::endl;
 	u32 atlas_side = std::pow(2u, (u32)std::ceil(std::log2(std::sqrt((f32)atlas_area))));
-	infostream << "TextureAtlas() atlas_side: " << atlas_side << std::endl;
 
 	packTextures(atlas_side);
 
 	core::dimension2du atlas_size(atlas_side*2, atlas_side);
 	video::ECOLOR_FORMAT atlas_format = video::ECF_A32B32G32R32F;
 
-	m_texture = m_driver->addTexture(atlas_size, "Atlas", atlas_format);
+	std::string atlas_name = "Atlas" + atlas_n;
+	m_texture = m_driver->addTexture(atlas_size, atlas_name, atlas_format);
+
+	m_texture_cache_id = m_tsrc->cacheExistentTexture(atlas_name, m_texture);
 
 	for (auto &info_i : m_tiles_infos_refs) {
 		TileInfo &info = m_builder->getTileInfo(info_i);
@@ -91,54 +91,6 @@ TextureAtlas::TextureAtlas(Client *client, u32 atlas_area, u32 max_mip_level, st
 	if (m_mip_maps)
 		m_texture->regenerateMipMapLevels(nullptr, 0, m_max_mip_level);
 }
-/*TextureAtlas::TextureAtlas(Client *client, u32 atlas_area, u32 min_area_tile, std::vector<TileInfo> &tiles_infos)
-	: m_driver(client->getSceneManager()->getVideoDriver()), m_tsrc(client->getTextureSource())
-{
-	m_tiles_infos = std::move(tiles_infos);
-	m_mip_maps = g_settings->getBool("mip_map");
-	m_filtering = g_settings->getBool("bilinear_filter") ||
-		g_settings->getBool("trilinear_filter") || g_settings->getBool("anisotropic_filter");
-
-	if (m_mip_maps)
-		m_max_mip_level = (u32)std::ceil(std::log2(std::sqrt((f32)min_area_tile)));
-
-	u32 tile_frame_thickness = 0;
-
-	if (m_filtering) {
-		tile_frame_thickness = m_max_mip_level + 4;
-		atlas_area = 0;
-
-		for (auto &info : m_tiles_infos) {
-			info.width += 2 * tile_frame_thickness;
-			info.height += 2 * tile_frame_thickness;
-
-			atlas_area += (info.width * info.height);
-
-			if (info.tex)
-				info.tex = recreateTextureForFiltering(info.tex, tile_frame_thickness);
-
-			for (u16 frame_i = 0; frame_i < info.anim.frames.size(); frame_i++)
-				info.anim.frames[frame_i] = recreateTextureForFiltering(info.anim.frames[frame_i], tile_frame_thickness);
-		}
-	}
-
-	u32 atlas_side = std::pow(2u, (u32)std::ceil(std::log2(std::sqrt((f32)atlas_area))));
-
-	packTextures(atlas_side);
-
-	// `atlas_side*2` doubles the texture area for crack tiles
-	core::dimension2du atlas_size(atlas_side*2, atlas_side);
-	video::ECOLOR_FORMAT atlas_format = video::ECF_A32B32G32R32F;
-
-	m_texture = m_driver->addTexture(atlas_size, "Atlas", atlas_format);
-
-	for (auto &info : m_tiles_infos)
-		if (info.tex)
-			m_texture->drawToSubImage(info.x, info.y, info.width, info.height, info.tex);
-
-	if (m_mip_maps)
-		m_texture->regenerateMipMapLevels(nullptr, 0, m_max_mip_level);
-}*/
 
 /*!
  * Returns a precalculated thickness of the frame around each tile in pixels.
@@ -409,90 +361,12 @@ void AtlasBuilder::buildAtlas(Client *client)
 		tiles_infos_indices.push_back(m_sorted_tiles_infos.at(i));
 	}
 
-	infostream << "atlas_area: " << atlas_area << std::endl;
-	infostream << "tiles_infos_indices size: " << tiles_infos_indices.size() << std::endl;
-	m_atlases.emplace_back(std::make_unique<TextureAtlas>(client, atlas_area, max_mip_level, tiles_infos_indices));
+	u32 atlas_n = m_atlases.size();
+	m_atlases.emplace_back(std::make_unique<TextureAtlas>(client, atlas_area, max_mip_level, atlas_n, tiles_infos_indices));
 
 	if (i < m_sorted_tiles_infos.size())
 		buildAtlas(client);
 }
-/*void AtlasBuilder::buildAtlas(Client *client, std::list<TileLayer*> &layers)
-{
-	u32 atlas_area = 0;
-
-	// Necessary for defining the max count of the atlas mips to avoid the artifacts with it
-	int min_area_tile = 0;
-
-	video::IVideoDriver *vdrv = client->getSceneManager()->getVideoDriver();
-	u32 max_texture_size = (u32)(vdrv->getDriverAttributes().getAttributeAsInt("MaxTextureSize"));
-	u32 max_texture_area = std::pow(max_texture_size, 2);
-
-	// Tile layers with unique ITextures
-	std::vector<TileLayer *> unique_layers;
-	std::vector<TileInfo> tiles_infos;
-
-	for (; !layers.empty(); layers.pop_front()) {
-		TileLayer *layer = layers.front();
-		// If for the layer the TileInfo was already created,
-		// just save the indices at the last atlas and at this TileInfo and skip the iteration
-		bool is_layer_collected = false;
-		for (u32 i = 0; i < unique_layers.size(); i++)
-			if (unique_layers[i]->texture == layer->texture) {
-				layer->atlas_index = m_atlases.size();
-				layer->atlas_tile_info_index = i;
-
-				is_layer_collected = true;
-				break;
-			}
-
-		if (is_layer_collected)
-			continue;
-
-		TileInfo tile_info;
-
-		if (layer->animation_frame_count > 1)
-			tile_info.tex = (*layer->frames)[0].texture;
-		else
-			tile_info.tex = layer->texture;
-
-		if (tile_info.tex) {
-			core::dimension2du size = tile_info.tex->getSize();
-			tile_info.width = size.Width;
-			tile_info.height = size.Height;
-		}
-
-		int tile_area = tile_info.width * tile_info.height;
-
-		if ((atlas_area + tile_area) * 2 > max_texture_area)
-			break;
-
-		if (layer->animation_frame_count > 1) {
-			tile_info.anim.frame_length_ms = layer->animation_frame_length_ms;
-			tile_info.anim.frame_count = layer->animation_frame_count;
-
-			for (auto &frame : *layer->frames)
-				tile_info.anim.frames.push_back(frame.texture);
-		}
-
-		layer->atlas_index = m_atlases.size();
-		layer->atlas_tile_info_index = tiles_infos.size();
-		tiles_infos.push_back(tile_info);
-		unique_layers.push_back(layer);
-
-		if (min_area_tile == 0)
-			min_area_tile = tile_area;
-		else
-			min_area_tile = std::min(min_area_tile, tile_area);
-
-		atlas_area += tile_area;
-	}
-
-	m_atlases.push_back(std::make_unique<TextureAtlas>(client, atlas_area, (u32)min_area_tile, tiles_infos));
-
-	// Recursively create new atlases if remain tiles didn't fit in the current one
-	if (!layers.empty())
-		buildAtlas(client, layers);
-}*/
 
 void AtlasBuilder::updateAnimations(f32 time)
 {

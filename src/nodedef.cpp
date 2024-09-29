@@ -943,7 +943,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 
 	// Tiles (fill in f->tiles[])
 	for (u16 j = 0; j < 6; j++) {
-		tiles[j].draw_type = (u8)drawtype;
 		tiles[j].world_aligned = isWorldAligned(tdef[j].align_style,
 				tsettings.world_aligned_mode, drawtype);
 		fillTileAttribs(tsrc, &tiles[j].layers[0], tiles[j], tdef[j],
@@ -951,6 +950,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 				tdef[j].backface_culling, tsettings);
 		auto added_tile = add_unique_tile(TileInfo(tiles[j].layers[0]));
 		tiles[j].layers[0].tiles_infos_index = (u32)std::distance(tiles_infos.begin(), added_tile);
+		infostream << "updateTextures() tiles_infos_index: " << (tiles[j].layers[0].tiles_infos_index) << std::endl;
 
 		if (!tdef_overlay[j].name.empty()) {
 			fillTileAttribs(tsrc, &tiles[j].layers[1], tiles[j], tdef_overlay[j],
@@ -959,6 +959,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 
 			added_tile = add_unique_tile(TileInfo(tiles[j].layers[1]));
 			tiles[j].layers[1].tiles_infos_index = (u32)std::distance(tiles_infos.begin(), added_tile);
+			infostream << "updateTextures() tiles_infos_index: " << (tiles[j].layers[1].tiles_infos_index) << std::endl;
 		}
 	}
 
@@ -973,12 +974,12 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 
 	// Special tiles (fill in f->special_tiles[])
 	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++) {
-		special_tiles[j].draw_type = (u8)drawtype;
 		fillTileAttribs(tsrc, &special_tiles[j].layers[0], special_tiles[j], tdef_spec[j],
 				color, special_material, special_shader,
 				tdef_spec[j].backface_culling, tsettings);
 		auto added_tile = add_unique_tile(TileInfo(special_tiles[j].layers[0]));
 		special_tiles[j].layers[0].tiles_infos_index = (u32)std::distance(tiles_infos.begin(), added_tile);
+		infostream << "updateTextures() tiles_infos_index: " << (special_tiles[j].layers[0].tiles_infos_index) << std::endl;
 	}
 
 	if (param_type_2 == CPT2_COLOR ||

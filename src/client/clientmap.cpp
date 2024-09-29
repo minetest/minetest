@@ -36,6 +36,49 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <queue>
 
+namespace {
+	// A helper struct
+	struct MeshBufListMaps
+	{
+		struct MaterialHash
+		{
+			size_t operator()(const video::SMaterial &m) const noexcept
+			{
+				// Only hash first texture. Simple and fast.
+				return std::hash<video::ITexture *>{}(m.TextureLayers[0].Texture);
+			}
+		};
+
+		using MeshBufListMap = std::unordered_map<
+				video::SMaterial,
+				std::vector<std::pair<v3s16, scene::IMeshBuffer *>>,
+				MaterialHash>;
+
+		std::array<MeshBufListMap, MAX_TILE_LAYERS> maps;
+
+		void clear()
+		{
+			for (auto &map : maps)
+				map.clear();
+		}
+
+		void add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
+		{
+			assert(layer < MAX_TILE_LAYERS);
+
+			// Append to the correct layer
+			auto &map = maps[layer];
+			const video::SMaterial &m = buf->getMaterial();
+			auto &bufs = map[m]; // default constructs if non-existent
+			bufs.emplace_back(position, buf);
+		}
+	};
+}
+
+/*
+	ClientMap
+*/
+
 static void on_settings_changed(const std::string &name, void *data)
 {
 	static_cast<ClientMap*>(data)->onSettingChanged(name, false);
@@ -48,12 +91,7 @@ static const std::string ClientMap_settings[] = {
 	"transparency_sorting_distance",
 	"occlusion_culler",
 	"enable_raytraced_culling",
-	"enable_translucent_foliage"
 };
-
-/*
-	ClientMap
-*/
 
 ClientMap::ClientMap(
 		Client *client,
@@ -82,18 +120,6 @@ ClientMap::ClientMap(
 		g_settings->registerChangedCallback(name, on_settings_changed, this);
 	// load all settings at once
 	onSettingChanged("", true);
-
-	m_enable_translucent_foliage = g_settings->getBool("enable_translucent_foliage");
-
-	m_leaves_material = video::EMT_SOLID;
-
-	// For translucent leaves, we want to use backface culling instead of frontface.
-	if (m_enable_translucent_foliage) {
-		// this is the material leaves would use, compare to nodedef.cpp
-		auto* shdsrc = m_client->getShaderSource();
-		const u32 leaves_shader = shdsrc->getShader("nodes_shader", TILE_MATERIAL_WAVING_LEAVES, NDT_ALLFACES);
-		m_leaves_material = shdsrc->getShaderInfo(leaves_shader).material;
-	}
 }
 
 void ClientMap::onSettingChanged(std::string_view name, bool all)
@@ -110,8 +136,6 @@ void ClientMap::onSettingChanged(std::string_view name, bool all)
 		m_loops_occlusion_culler = g_settings->get("occlusion_culler") == "loops";
 	if (all || name == "enable_raytraced_culling")
 		m_enable_raytraced_culling = g_settings->getBool("enable_raytraced_culling");
-	if (all || name == "enable_translucent_foliage")
-		m_enable_translucent_foliage = g_settings->getBool("enable_translucent_foliage");
 }
 
 ClientMap::~ClientMap()
@@ -689,35 +713,6 @@ void ClientMap::touchMapBlocks()
 	g_profiler->avg("MapBlocks loaded [#]", blocks_loaded);
 }
 
-void ClientMap::setupMaterial(video::IVideoDriver *driver, video::SMaterial &mat)
-{
-	// Apply filter settings
-	mat.forEachTexture([this] (auto &tex) {
-		setMaterialFilters(tex, m_cache_bilinear_filter, m_cache_trilinear_filter,
-				m_cache_anistropic_filter);
-	});
-	mat.Wireframe = m_control.show_wireframe;
-
-	// pass the shadow map texture to the buffer texture
-	ShadowRenderer *shadow = m_rendering_engine->get_shadow_renderer();
-	if (shadow && shadow->is_active()) {
-		auto &layer = mat.TextureLayers[ShadowRenderer::TEXTURE_LAYER_SHADOW];
-		layer.Texture = shadow->get_texture();
-		layer.TextureWrapU = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
-		layer.TextureWrapV = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
-		// Do not enable filter on shadow texture to avoid visual artifacts
-		// with colored shadows.
-		// Filtering is done in shader code anyway
-		layer.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
-		layer.MagFilter = video::ETMAGF_NEAREST;
-		layer.AnisotropicFilter = 0;
-	}
-
-	driver->setMaterial(mat);
-
-	mat.TextureLayers[ShadowRenderer::TEXTURE_LAYER_SHADOW].Texture = nullptr;
-}
-
 void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 {
 	ZoneScoped;
@@ -729,6 +724,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		prefix = "renderMap(SOLID): ";
 	else
 		prefix = "renderMap(TRANSPARENT): ";
+
+	/*
+		This is called two times per frame, reset on the non-transparent one
+	*/
+	if (pass == scene::ESNRP_SOLID)
+		m_last_drawn_sectors.clear();
 
 	/*
 		Get animation parameters
@@ -748,6 +749,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	// For limiting number of mesh animations per frame
 	u32 mesh_animate_count = 0;
+	//u32 mesh_animate_count_far = 0;
 
 	/*
 		Update transparent meshes
@@ -759,11 +761,15 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		Draw the selected MapBlocks
 	*/
 
-	std::vector<MapBlock*> render_blocks;
+	MeshBufListMaps grouped_buffers;
+	std::vector<DrawDescriptor> draw_order;
+	video::SMaterial previous_material;
 
 	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
 
+	const MeshGrid mesh_grid = m_client->getMeshGrid();
 	for (auto &i : m_drawlist) {
+		v3s16 block_pos = i.first;
 		MapBlock *block = i.second;
 		MapBlockMesh *block_mesh = block->mesh;
 
@@ -788,7 +794,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			if (block_mesh->isAnimationForced() || !faraway ||
 					mesh_animate_count < (m_control.range_all ? 200 : 50)) {
 
-				bool animated = block_mesh->animate(animation_time, crack, daynight_ratio);
+				bool animated = block_mesh->animate(faraway, animation_time,
+					crack, daynight_ratio);
 				if (animated)
 					mesh_animate_count++;
 			} else {
@@ -796,7 +803,50 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			}
 		}
 
-		render_blocks.emplace_back(block);
+		/*
+			Get the meshbuffers of the block
+		*/
+		if (is_transparent_pass) {
+			// In transparent pass, the mesh will give us
+			// the partial buffers in the correct order
+			for (auto &buffer : block_mesh->getTransparentBuffers())
+				draw_order.emplace_back(block_pos, &buffer);
+		}
+		else {
+			// otherwise, group buffers across meshes
+			// using MeshBufListMaps
+			for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
+				scene::IMesh *mesh = block_mesh->getMesh(layer);
+				assert(mesh);
+
+				u32 c = mesh->getMeshBufferCount();
+				for (u32 i = 0; i < c; i++) {
+					scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+
+					video::SMaterial& material = buf->getMaterial();
+					video::IMaterialRenderer* rnd =
+							driver->getMaterialRenderer(material.MaterialType);
+					bool transparent = (rnd && rnd->isTransparent());
+					if (!transparent) {
+						if (buf->getVertexCount() == 0)
+							errorstream << "Block [" << analyze_block(block)
+									<< "] contains an empty meshbuf" << std::endl;
+
+						grouped_buffers.add(buf, block_pos, layer);
+					}
+				}
+			}
+		}
+	}
+
+	// Capture draw order for all solid meshes
+	for (auto &map : grouped_buffers.maps) {
+		for (auto &list : map) {
+			// iterate in reverse to draw closest blocks first
+			for (auto it = list.second.rbegin(); it != list.second.rend(); ++it) {
+				draw_order.emplace_back(it->first, it->second, it != list.second.rbegin());
+			}
+		}
 	}
 
 	TimeTaker draw("Drawing mesh buffers");
@@ -805,53 +855,61 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	m.setTranslation(-intToFloat(m_camera_offset, BS));
 	driver->setTransform(video::ETS_WORLD, m);
 
-	// Render all visible blocks
-	for (auto &rblock : render_blocks) {
-		MapblockMeshCollector *mesh = rblock->mesh->getMesh();
+	u32 material_swaps = 0;
 
-		if (is_transparent_pass)
-			for (auto &tlayer : mesh->transparent_layers) {
-				setupMaterial(driver, tlayer.first);
+	// Render all mesh buffers in order
+	drawcall_count += draw_order.size();
 
-				for (auto &partial_buf : tlayer.second) {
-					partial_buf.draw(driver);
-					vertex_count += partial_buf.getBuffer()->getVertexCount();
-				}
+	for (auto &descriptor : draw_order) {
+		if (!descriptor.m_reuse_material) {
+			auto &material = descriptor.getMaterial();
 
-				drawcall_count += tlayer.second.size();
+			// Apply filter settings
+			material.forEachTexture([this] (auto &tex) {
+				setMaterialFilters(tex, m_cache_bilinear_filter, m_cache_trilinear_filter,
+						m_cache_anistropic_filter);
+			});
+			material.Wireframe = m_control.show_wireframe;
+
+			// pass the shadow map texture to the buffer texture
+			ShadowRenderer *shadow = m_rendering_engine->get_shadow_renderer();
+			if (shadow && shadow->is_active()) {
+				auto &layer = material.TextureLayers[ShadowRenderer::TEXTURE_LAYER_SHADOW];
+				layer.Texture = shadow->get_texture();
+				layer.TextureWrapU = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
+				layer.TextureWrapV = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
+				// Do not enable filter on shadow texture to avoid visual artifacts
+				// with colored shadows.
+				// Filtering is done in shader code anyway
+				layer.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+				layer.MagFilter = video::ETMAGF_NEAREST;
+				layer.AnisotropicFilter = 0;
 			}
-		else
-			for (auto &layer : mesh->layers) {
-				video::IMaterialRenderer* rnd =
-						driver->getMaterialRenderer(layer.first.MaterialType);
-				bool transparent = (rnd && rnd->isTransparent());
-				if (transparent)
-					continue;
+			driver->setMaterial(material);
+			++material_swaps;
+			material.TextureLayers[ShadowRenderer::TEXTURE_LAYER_SHADOW].Texture = nullptr;
+		}
 
-				setupMaterial(driver, layer.first);
-
-				for (auto &part : layer.second) {
-					if (part.buffer->getVertexCount() == 0)
-						errorstream << "Block [" << analyze_block(rblock)
-								<< "] contains an empty meshbuf" << std::endl;
-
-					driver->drawMeshBuffer(part.buffer);
-					vertex_count += part.buffer->getVertexCount();
-				}
-
-				drawcall_count += layer.second.size();
-			}
+		vertex_count += descriptor.draw(driver);
 	}
+
+	//infostream << "renderMap() count of materials switches per a step: " << material_swaps << std::endl;
+	//infostream << "renderMap() count of buffers draws per a step: " << drawcall_count << std::endl;
 
 	g_profiler->avg(prefix + "draw meshes [ms]", draw.stop(true));
 
 	// Log only on solid pass because values are the same
-	if (!is_transparent_pass) {
-		g_profiler->avg("renderMap(): animate in meshes [#]", mesh_animate_count);
+	if (pass == scene::ESNRP_SOLID) {
+		g_profiler->avg("renderMap(): animated meshes [#]", mesh_animate_count);
+	}
+
+	if (pass == scene::ESNRP_TRANSPARENT) {
+		g_profiler->avg("renderMap(): transparent buffers [#]", draw_order.size());
 	}
 
 	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);
 	g_profiler->avg(prefix + "drawcalls [#]", drawcall_count);
+	g_profiler->avg(prefix + "material swaps [#]", material_swaps);
 }
 
 static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
@@ -1051,26 +1109,6 @@ void ClientMap::PrintInfo(std::ostream &out)
 	out<<"ClientMap: ";
 }
 
-void ClientMap::setupShadowMaterial(video::IVideoDriver *driver, video::SMaterial &mat, const video::SMaterial &override_mat, bool is_tpass)
-{
-	video::SMaterial local_mat(mat);
-	// do not override culling if the original material renders both back
-	// and front faces in solid mode (e.g. plantlike)
-	// Transparent plants would still render shadows only from one side,
-	// but this conflicts with water which occurs much more frequently
-	if (is_tpass || local_mat.BackfaceCulling || local_mat.FrontfaceCulling) {
-		local_mat.BackfaceCulling = override_mat.BackfaceCulling;
-		local_mat.FrontfaceCulling = override_mat.FrontfaceCulling;
-	}
-	if (local_mat.MaterialType == m_leaves_material && m_enable_translucent_foliage) {
-		local_mat.BackfaceCulling = true;
-		local_mat.FrontfaceCulling = false;
-	}
-	local_mat.MaterialType = override_mat.MaterialType;
-	local_mat.BlendOperation = override_mat.BlendOperation;
-	driver->setMaterial(local_mat);
-}
-
 void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		const video::SMaterial &material, s32 pass, int frame, int total_frames)
 {
@@ -1084,8 +1122,9 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	u32 drawcall_count = 0;
 	u32 vertex_count = 0;
 
-	//MeshBufListMaps grouped_buffers;
-	//std::vector<DrawBuffer> draw_buffers;
+	MeshBufListMaps grouped_buffers;
+	std::vector<DrawDescriptor> draw_order;
+
 
 	std::size_t count = 0;
 	std::size_t meshes_per_frame = m_drawlist_shadow.size() / total_frames + 1;
@@ -1097,8 +1136,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		return;
 	}
 
-	std::vector<MapBlock*> render_blocks;
-
+	const MeshGrid mesh_grid = m_client->getMeshGrid();
 	for (const auto &i : m_drawlist_shadow) {
 		// only process specific part of the list & break early
 		++count;
@@ -1107,15 +1145,61 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		if (count > high_bound)
 			break;
 
+		v3s16 block_pos = i.first;
 		MapBlock *block = i.second;
 
 		// If the mesh of the block happened to get deleted, ignore it
 		if (!block->mesh)
 			continue;
 
-		render_blocks.emplace_back(block);
+		/*
+			Get the meshbuffers of the block
+		*/
+		if (is_transparent_pass) {
+			// In transparent pass, the mesh will give us
+			// the partial buffers in the correct order
+			for (auto &buffer : block->mesh->getTransparentBuffers())
+				draw_order.emplace_back(block_pos, &buffer);
+		}
+		else {
+			// otherwise, group buffers across meshes
+			// using MeshBufListMaps
+			MapBlockMesh *mapBlockMesh = block->mesh;
+			assert(mapBlockMesh);
+
+			for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
+				scene::IMesh *mesh = mapBlockMesh->getMesh(layer);
+				assert(mesh);
+
+				u32 c = mesh->getMeshBufferCount();
+				for (u32 i = 0; i < c; i++) {
+					scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+
+					video::SMaterial &mat = buf->getMaterial();
+					auto rnd = driver->getMaterialRenderer(mat.MaterialType);
+					bool transparent = rnd && rnd->isTransparent();
+					if (!transparent)
+						grouped_buffers.add(buf, block_pos, layer);
+				}
+			}
+		}
 	}
 
+	u32 buffer_count = 0;
+	for (auto &map : grouped_buffers.maps)
+		for (auto &list : map)
+			buffer_count += list.second.size();
+
+	draw_order.reserve(draw_order.size() + buffer_count);
+
+	// Capture draw order for all solid meshes
+	for (auto &map : grouped_buffers.maps) {
+		for (auto &list : map) {
+			// iterate in reverse to draw closest blocks first
+			for (auto it = list.second.rbegin(); it != list.second.rend(); ++it)
+				draw_order.emplace_back(it->first, it->second, it != list.second.rbegin());
+		}
+	}
 
 	TimeTaker draw("Drawing shadow mesh buffers");
 
@@ -1123,37 +1207,46 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	m.setTranslation(-intToFloat(m_camera_offset, BS));
 	driver->setTransform(video::ETS_WORLD, m);
 
-	for (auto rblock : render_blocks) {
-		MapblockMeshCollector *mesh = rblock->mesh->getMesh();
+	u32 material_swaps = 0;
 
-		if (is_transparent_pass)
-			for (auto &tlayer : mesh->transparent_layers) {
-				setupShadowMaterial(driver, tlayer.first, material, is_transparent_pass);
+	// Render all mesh buffers in order
+	drawcall_count += draw_order.size();
 
-				for (auto &partial_buf : tlayer.second) {
-					partial_buf.draw(driver);
-					vertex_count += partial_buf.getBuffer()->getVertexCount();
-				}
+	bool translucent_foliage = g_settings->getBool("enable_translucent_foliage");
 
-				drawcall_count += tlayer.second.size();
+	video::E_MATERIAL_TYPE leaves_material = video::EMT_SOLID;
+
+	// For translucent leaves, we want to use backface culling instead of frontface.
+	if (translucent_foliage) {
+		// this is the material leaves would use, compare to nodedef.cpp
+		auto* shdsrc = m_client->getShaderSource();
+		const u32 leaves_shader = shdsrc->getShader("nodes_shader", TILE_MATERIAL_WAVING_LEAVES, NDT_ALLFACES);
+		leaves_material = shdsrc->getShaderInfo(leaves_shader).material;
+	}
+
+	for (auto &descriptor : draw_order) {
+		if (!descriptor.m_reuse_material) {
+			// override some material properties
+			video::SMaterial local_material = descriptor.getMaterial();
+			// do not override culling if the original material renders both back
+			// and front faces in solid mode (e.g. plantlike)
+			// Transparent plants would still render shadows only from one side,
+			// but this conflicts with water which occurs much more frequently
+			if (is_transparent_pass || local_material.BackfaceCulling || local_material.FrontfaceCulling) {
+				local_material.BackfaceCulling = material.BackfaceCulling;
+				local_material.FrontfaceCulling = material.FrontfaceCulling;
 			}
-		else
-			for (auto &layer : mesh->layers) {
-				video::IMaterialRenderer* rnd =
-						driver->getMaterialRenderer(layer.first.MaterialType);
-				bool transparent = (rnd && rnd->isTransparent());
-				if (transparent)
-					continue;
-
-				setupShadowMaterial(driver, layer.first, material, is_transparent_pass);
-
-				for (auto &part : layer.second) {
-					driver->drawMeshBuffer(part.buffer);
-					vertex_count += part.buffer->getVertexCount();
-				}
-
-				drawcall_count += layer.second.size();
+			if (local_material.MaterialType == leaves_material && translucent_foliage) {
+				local_material.BackfaceCulling = true;
+				local_material.FrontfaceCulling = false;
 			}
+			local_material.MaterialType = material.MaterialType;
+			local_material.BlendOperation = material.BlendOperation;
+			driver->setMaterial(local_material);
+			++material_swaps;
+		}
+
+		vertex_count += descriptor.draw(driver);
 	}
 
 	// restore the driver material state
@@ -1165,6 +1258,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	g_profiler->avg(prefix + "draw meshes [ms]", draw.stop(true));
 	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);
 	g_profiler->avg(prefix + "drawcalls [#]", drawcall_count);
+	g_profiler->avg(prefix + "material swaps [#]", material_swaps);
 }
 
 /*
@@ -1245,7 +1339,7 @@ void ClientMap::updateTransparentMeshBuffers()
 			continue;
 
 		if (m_needs_update_transparent_meshes ||
-				blockmesh->getMesh()->transparent_layers.size() == 0) {
+				blockmesh->getTransparentBuffers().size() == 0) {
 			bool do_sort_block = transparency_sorting_enabled;
 
 			if (do_sort_block) {
@@ -1271,6 +1365,22 @@ void ClientMap::updateTransparentMeshBuffers()
 	g_profiler->avg("CM::Transparent Buffers - Sorted", sorted_blocks);
 	g_profiler->avg("CM::Transparent Buffers - Unsorted", unsorted_blocks);
 	m_needs_update_transparent_meshes = false;
+}
+
+video::SMaterial &ClientMap::DrawDescriptor::getMaterial()
+{
+	return (m_use_partial_buffer ? m_partial_buffer->getBuffer() : m_buffer)->getMaterial();
+}
+
+u32 ClientMap::DrawDescriptor::draw(video::IVideoDriver* driver)
+{
+	if (m_use_partial_buffer) {
+		m_partial_buffer->draw(driver);
+		return m_partial_buffer->getBuffer()->getVertexCount();
+	} else {
+		driver->drawMeshBuffer(m_buffer);
+		return m_buffer->getVertexCount();
+	}
 }
 
 bool ClientMap::isMeshOccluded(MapBlock *mesh_block, u16 mesh_size, v3s16 cam_pos_nodes)

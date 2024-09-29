@@ -76,16 +76,33 @@ static const auto &quad_indices = quad_indices_02;
 const std::string MapblockMeshGenerator::raillike_groupname = "connect_to_raillike";
 
 MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output,
-		scene::IMeshManipulator *mm):
+		scene::IMeshManipulator *mm, bool use_atlas):
 	data(input),
 	collector(output),
 	nodedef(data->nodedef),
 	meshmanip(mm),
 	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE),
+	enable_atlas(use_atlas),
 	enable_mesh_cache(g_settings->getBool("enable_mesh_cache") &&
 			!data->m_smooth_lighting), // Mesh cache is not supported with smooth lighting
 	smooth_liquids(g_settings->getBool("enable_water_reflections"))
 {
+}
+
+void MapblockMeshGenerator::replaceToAtlas(TileSpec &tile, bool outside_uv)
+{
+	for (auto &layer : tile.layers) {
+		layer.atlas_used = enable_atlas && !outside_uv;
+
+		if (layer.atlas_used) {
+			TextureAtlas *atlas = nodedef->getAtlasBuilder()->getAtlas(layer.tiles_infos_index);
+
+			if (atlas) {
+				layer.texture_id = atlas->getTextureCacheId();
+				layer.texture = atlas->getTexture();
+			}
+		}
+	}
 }
 
 void MapblockMeshGenerator::useTile(int index, u8 set_flags, u8 reset_flags, bool special)
@@ -152,7 +169,9 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
 			applyFacesShading(vertices[j].Color, normal2);
 		vertices[j].TCoords = tcoords[j];
 	}
-	collector->addTileMesh(cur_node.tile, vertices, 4, quad_indices, 6);
+
+	replaceToAtlas(cur_node.tile);
+	collector->append(cur_node.tile, vertices, 4, quad_indices, 6);
 }
 
 static std::array<video::S3DVertex, 24> setupCuboidVertices(const aabb3f &box, const f32 *txc, TileSpec *tiles, int tilecount) {
@@ -250,7 +269,9 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 		QuadDiagonal diagonal = face_lighter(k, &vertices[4 * k]);
 		const u16 *indices = diagonal == QuadDiagonal::Diag13 ? quad_indices_13 : quad_indices_02;
 		int tileindex = MYMIN(k, tilecount - 1);
-		collector->addTileMesh(tiles[tileindex], &vertices[4 * k], 4, indices, 6);
+
+		replaceToAtlas(tiles[tileindex]);
+		collector->append(tiles[tileindex], &vertices[4 * k], 4, indices, 6);
 	}
 }
 
@@ -747,7 +768,9 @@ void MapblockMeshGenerator::drawLiquidSides()
 			pos += cur_node.origin;
 			vertices[j] = video::S3DVertex(pos.X, pos.Y, pos.Z, face.dir.X, face.dir.Y, face.dir.Z, cur_node.color, vertex.u, v);
 		};
-		collector->addTileMesh(cur_liquid.tile, vertices, 4, quad_indices, 6);
+
+		replaceToAtlas(cur_liquid.tile);
+		collector->append(cur_liquid.tile, vertices, 4, quad_indices, 6);
 	}
 }
 
@@ -834,7 +857,8 @@ void MapblockMeshGenerator::drawLiquidTop()
 	infostream << "3 tcoord: " << vertices[2].TCoords.X << ", " << vertices[2].TCoords.Y << std::endl;
 	infostream << "4 tcoord: " << vertices[3].TCoords.X << ", " << vertices[3].TCoords.Y << std::endl;
 
-	collector->addTileMesh(cur_liquid.tile_top, vertices, 4, quad_indices, 6);
+	replaceToAtlas(cur_liquid.tile_top);
+	collector->append(cur_liquid.tile_top, vertices, 4, quad_indices, 6);
 }
 
 void MapblockMeshGenerator::drawLiquidBottom()
@@ -852,7 +876,8 @@ void MapblockMeshGenerator::drawLiquidBottom()
 		vertices[i].Pos += cur_node.origin;
 	}
 
-	collector->addTileMesh(cur_liquid.tile_top, vertices, 4, quad_indices, 6);
+	replaceToAtlas(cur_liquid.tile_top);
+	collector->append(cur_liquid.tile_top, vertices, 4, quad_indices, 6);
 }
 
 void MapblockMeshGenerator::drawLiquidNode()
@@ -1766,10 +1791,10 @@ void MapblockMeshGenerator::drawMeshNode()
 	for (int j = 0; j < mesh_buffer_count; j++) {
 		// Only up to 6 tiles are supported
 		const auto tile =  mesh->getTextureSlot(j);
-		useTile(MYMIN(tile, 5));
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
 		int vertex_count = buf->getVertexCount();
+		useTile(MYMIN(tile, 5));
 
 		bool outside_uv = false;
 		if (data->m_smooth_lighting) {
@@ -1783,8 +1808,10 @@ void MapblockMeshGenerator::drawMeshNode()
 				if (!outside_uv)
 					outside_uv = is_outside_uv(vertex.TCoords);
 			}
-			collector->addTileMesh(cur_node.tile, vertices, vertex_count,
-				buf->getIndices(), buf->getIndexCount(), outside_uv);
+
+			replaceToAtlas(cur_node.tile, outside_uv);
+			collector->append(cur_node.tile, vertices, vertex_count,
+				buf->getIndices(), buf->getIndexCount());
 		} else {
 			for (int k = 0; k < vertex_count; k++) {
 				video::S3DVertex &vertex = vertices[k];
@@ -1793,11 +1820,12 @@ void MapblockMeshGenerator::drawMeshNode()
 					outside_uv = is_outside_uv(vertex.TCoords);
 			}
 
+			replaceToAtlas(cur_node.tile, outside_uv);
 			// Don't modify the mesh, it may not be private here.
 			// Instead, let the collector process colors, etc.
-			collector->addTileMesh(cur_node.tile, vertices, vertex_count,
-				buf->getIndices(), buf->getIndexCount(), outside_uv,
-				cur_node.origin, cur_node.color, cur_node.f->light_source, true);
+			collector->append(cur_node.tile, vertices, vertex_count,
+				buf->getIndices(), buf->getIndexCount(),
+				cur_node.origin, cur_node.color, cur_node.f->light_source);
 		}
 	}
 	if (private_mesh)

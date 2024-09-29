@@ -312,10 +312,10 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 	std::vector<ItemPartColor> *colors, const ContentFeatures &f)
 {
 	MeshMakeData mesh_make_data(client->ndef(), 1, false);
-	WieldMeshCollector collector(v3f(0.0f * BS), v3f());
+	MeshCollector collector(v3f(0.0f * BS), v3f());
 	mesh_make_data.setSmoothLighting(false);
 	MapblockMeshGenerator gen(&mesh_make_data, &collector,
-		client->getSceneManager()->getMeshManipulator());
+		client->getSceneManager()->getMeshManipulator(), false);
 
 	if (n.getParam2()) {
 		// keep it
@@ -334,24 +334,25 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 
 	colors->clear();
 	scene::SMesh *mesh = new scene::SMesh();
-	for (WieldPreMeshBuffer &prebuf : collector.prebuffers) {
-		if (prebuf.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
-			const FrameSpec &frame = (*prebuf.layer.frames)[0];
-			prebuf.layer.texture = frame.texture;
+	for (auto &prebuffers : collector.prebuffers)
+		for (PreMeshBuffer &p : prebuffers) {
+			if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
+				const FrameSpec &frame = (*p.layer.frames)[0];
+				p.layer.texture = frame.texture;
+			}
+			for (video::S3DVertex &v : p.vertices) {
+				v.Color.setAlpha(255);
+			}
+			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
+			buf->Material.setTexture(0, p.layer.texture);
+			p.layer.applyMaterialOptions(buf->Material);
+			mesh->addMeshBuffer(buf);
+			buf->append(&p.vertices[0], p.vertices.size(),
+					&p.indices[0], p.indices.size());
+			buf->drop();
+			colors->push_back(
+				ItemPartColor(p.layer.has_color, p.layer.color));
 		}
-		for (video::S3DVertex &v : prebuf.vertices) {
-			v.Color.setAlpha(255);
-		}
-		scene::SMeshBuffer *buf = new scene::SMeshBuffer();
-		buf->Material.setTexture(0, prebuf.layer.texture);
-		prebuf.layer.applyMaterialOptions(buf->Material);
-		mesh->addMeshBuffer(buf);
-		buf->append(&prebuf.vertices[0], prebuf.vertices.size(),
-                	&prebuf.indices[0], prebuf.indices.size());
-		buf->drop();
-		colors->push_back(
-			ItemPartColor(prebuf.layer.has_color, prebuf.layer.color));
-	}
 	return mesh;
 }
 

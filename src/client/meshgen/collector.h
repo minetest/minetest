@@ -15,166 +15,57 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #pragma once
-
-#include "irrlichttypes_extrabloated.h"
-#include "irr_ptr.h"
-#include <vector>
-#include <unordered_map>
-#include <map>
 #include <array>
+#include <vector>
+#include "irrlichttypes.h"
+#include "irr_v3d.h"
+#include <S3DVertex.h>
 #include "client/tile.h"
-#include "client/texture_atlas.h"
 
-class Client;
-class IWritableShaderSource;
-class ITextureSource;
-
-class MeshCollector
-{
-public:
-	// bounding sphere radius and center
-	f32 bounding_radius_sq = 0.0f;
-	v3f center_pos;
-	v3f offset;
-
-    MeshCollector(v3f _center_pos, v3f _offset)
-        : center_pos(_center_pos), offset(_offset)
-    {}
-
-    virtual void addTileMesh(TileSpec &tile,
-		const video::S3DVertex *vertices, u32 numVertices,
-		const u16 *indices, u32 numIndices, bool outside_uv=false,
-		v3f pos = v3f(0.0f), video::SColor clr = video::SColor(),
-		u8 light_source = 0, bool own_color=false) = 0;
-};
-
-// represents a triangle as indexes into the vertex buffer in SMeshBuffer
-class MeshTriangle
-{
-public:
-	scene::SMeshBuffer *buffer;
-	u16 p1, p2, p3;
-	v3f centroid;
-	float areaSQ;
-
-	void updateAttributes()
-	{
-		v3f v1 = buffer->getPosition(p1);
-		v3f v2 = buffer->getPosition(p2);
-		v3f v3 = buffer->getPosition(p3);
-
-		centroid = (v1 + v2 + v3) / 3;
-		areaSQ = (v2-v1).crossProduct(v3-v1).getLengthSQ() / 4;
-	}
-
-	v3f getNormal() const {
-		v3f v1 = buffer->getPosition(p1);
-		v3f v2 = buffer->getPosition(p2);
-		v3f v3 = buffer->getPosition(p3);
-
-		return (v2-v1).crossProduct(v3-v1);
-	}
-};
-
-/*
- * PartialMeshBuffer
- *
- * Attach alternate `Indices` to an existing mesh buffer, to make it possible to use different
- * indices with the same vertex buffer.
- */
-class PartialMeshBuffer
-{
-public:
-	PartialMeshBuffer(scene::SMeshBuffer *buffer, std::vector<u16> &&vertex_indices) :
-			m_buffer(buffer), m_indices(make_irr<scene::SIndexBuffer>())
-	{
-		m_indices->Data = std::move(vertex_indices);
-		m_indices->setHardwareMappingHint(scene::EHM_STATIC);
-	}
-
-	auto *getBuffer() const { return m_buffer; }
-
-	void draw(video::IVideoDriver *driver) const;
-private:
-	scene::SMeshBuffer *m_buffer;
-	irr_ptr<scene::SIndexBuffer> m_indices;
-};
-
-struct MeshPart
-{
-	std::vector<video::S3DVertex> vertices;
-	std::vector<u16> indices;
-
-	std::vector<u16> opaque_verts_refs;
-
-	scene::SMeshBuffer *buffer;
-};
-
-class MapblockMeshCollector final : public MeshCollector
-{
-	Client *client;
-
-public:
-	std::list<std::pair<video::SMaterial, std::list<MeshPart>>> layers;
-	std::list<std::pair<video::SMaterial, std::list<PartialMeshBuffer>>> transparent_layers;
-
-	std::map<u32, AnimationInfo> animated_textures;
-	std::map<u32, std::string> crack_textures;
-
-	int last_crack;
-
-	v3f translation;
-
-	std::vector<MeshTriangle> transparent_triangles;
-
-	bool enable_shaders;
-	bool bilinear_filter;
-	bool trilinear_filter;
-	bool anisotropic_filter;
-
-    MapblockMeshCollector(Client *_client, v3f _center_pos,
-        v3f _offset, v3f _translation);
-
-    ~MapblockMeshCollector()
-    {
-        for (auto &layer : layers)
-            for (auto &part : layer.second)
-                part.buffer->drop();
-    }
-
-    void addTileMesh(TileSpec &tile,
-		const video::S3DVertex *vertices, u32 numVertices,
-		const u16 *indices, u32 numIndices, bool outside_uv=false,
-		v3f pos = v3f(0.0f), video::SColor clr = video::SColor(),
-		u8 light_source = 0, bool own_color=false) override;
-};
-
-struct WieldPreMeshBuffer
+struct PreMeshBuffer
 {
 	TileLayer layer;
 	std::vector<u16> indices;
 	std::vector<video::S3DVertex> vertices;
 
-	WieldPreMeshBuffer() = default;
-	explicit WieldPreMeshBuffer(const TileLayer &layer) : layer(layer) {}
+	PreMeshBuffer() = default;
+	explicit PreMeshBuffer(const TileLayer &layer) : layer(layer) {}
 };
 
-class WieldMeshCollector final : public MeshCollector
+struct MeshCollector
 {
-public:
-	std::vector<WieldPreMeshBuffer> prebuffers;
+	std::array<std::vector<PreMeshBuffer>, MAX_TILE_LAYERS> prebuffers;
+	// bounding sphere radius and center
+	f32 bounding_radius_sq = 0.0f;
+	v3f center_pos;
+	v3f offset;
+	v3f translation;
 
 	// center_pos: pos to use for bounding-sphere, in BS-space
 	// offset: offset added to vertices
-    WieldMeshCollector(v3f _center_pos, v3f _offset)
-        : MeshCollector(_center_pos, _offset) {}
+	// translation: positions in absolute coordinates
+	MeshCollector(const v3f _center_pos, v3f _offset = v3f(), v3f _translation = v3f())
+		: center_pos(_center_pos), offset(_offset), translation(_translation)
+{}
 
-	void addTileMesh(TileSpec &tile,
-		const video::S3DVertex *vertices, u32 numVertices,
-		const u16 *indices, u32 numIndices, bool outside_uv=false,
-		v3f pos = v3f(0.0f), video::SColor clr = video::SColor(),
-		u8 light_source = 0, bool own_color=false) override;
+	void append(const TileSpec &material,
+			const video::S3DVertex *vertices, u32 numVertices,
+			const u16 *indices, u32 numIndices);
+	void append(const TileSpec &material,
+			const video::S3DVertex *vertices, u32 numVertices,
+			const u16 *indices, u32 numIndices,
+			v3f pos, video::SColor c, u8 light_source);
 
 private:
-	WieldPreMeshBuffer &findBuffer(const TileLayer &layer, u32 numVertices);
+	void append(const TileLayer &material,
+			const video::S3DVertex *vertices, u32 numVertices,
+			const u16 *indices, u32 numIndices,
+			u8 layernum, bool use_scale = false);
+	void append(const TileLayer &material,
+			const video::S3DVertex *vertices, u32 numVertices,
+			const u16 *indices, u32 numIndices,
+			v3f pos, video::SColor c, u8 light_source,
+			u8 layernum, bool use_scale = false);
+
+	PreMeshBuffer &findBuffer(const TileLayer &layer, u8 layernum, u32 numVertices);
 };

@@ -113,6 +113,10 @@ class TextureAtlas
 	int m_last_crack = -1;
 
 	/*!
+	 * Cached texture id inside TextureSource
+	 */
+	u32 m_texture_cache_id;
+	/*!
 	 * Highest mip map level before which the atlas mipmaps will be generated.
 	 * Necessary for solving the problem of the "adjacent pixels pollution" when mips downscale.
 	 */
@@ -125,7 +129,7 @@ public:
 	/*!
 	 * Constructor.
 	 */
-	TextureAtlas(Client *client, u32 atlas_area, u32 max_mip_level, std::vector<u32> &tiles_infos_refs);
+	TextureAtlas(Client *client, u32 atlas_area, u32 max_mip_level, u32 atlas_n, std::vector<u32> &tiles_infos_refs);
 
 	/*!
 	 * Destructor.
@@ -143,6 +147,11 @@ public:
 	core::dimension2du getTextureSize() const
 	{
 		return m_texture->getSize();
+	}
+
+	u32 getTextureCacheId() const
+	{
+		return m_texture_cache_id;
 	}
 
 	bool contains(u32 index) const

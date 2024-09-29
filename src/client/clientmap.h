@@ -100,11 +100,8 @@ public:
 	void updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir, float radius, float length);
 	// Returns true if draw list needs updating before drawing the next frame.
 	bool needsUpdateDrawList() { return m_needs_update_drawlist; }
-
-	void setupMaterial(video::IVideoDriver *driver, video::SMaterial &mat);
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
-	void setupShadowMaterial(video::IVideoDriver *driver, video::SMaterial &mat, const video::SMaterial &override_mat, bool is_tpass);
 	void renderMapShadows(video::IVideoDriver *driver,
 			const video::SMaterial &material, s32 pass, int frame, int total_frames);
 
@@ -151,6 +148,30 @@ private:
 		v3s16 m_camera_block;
 	};
 
+
+	// reference to a mesh buffer used when rendering the map.
+	struct DrawDescriptor {
+		v3s16 m_pos;
+		union {
+			scene::IMeshBuffer *m_buffer;
+			const PartialMeshBuffer *m_partial_buffer;
+		};
+		bool m_reuse_material:1;
+		bool m_use_partial_buffer:1;
+
+		DrawDescriptor(v3s16 pos, scene::IMeshBuffer *buffer, bool reuse_material) :
+			m_pos(pos), m_buffer(buffer), m_reuse_material(reuse_material), m_use_partial_buffer(false)
+		{}
+
+		DrawDescriptor(v3s16 pos, const PartialMeshBuffer *buffer) :
+			m_pos(pos), m_partial_buffer(buffer), m_reuse_material(false), m_use_partial_buffer(true)
+		{}
+
+		video::SMaterial &getMaterial();
+		/// @return index count
+		u32 draw(video::IVideoDriver* driver);
+	};
+
 	Client *m_client;
 	RenderingEngine *m_rendering_engine;
 
@@ -171,6 +192,8 @@ private:
 	std::map<v3s16, MapBlock*> m_drawlist_shadow;
 	bool m_needs_update_drawlist;
 
+	std::set<v2s16> m_last_drawn_sectors;
+
 	bool m_cache_trilinear_filter;
 	bool m_cache_bilinear_filter;
 	bool m_cache_anistropic_filter;
@@ -178,7 +201,4 @@ private:
 
 	bool m_loops_occlusion_culler;
 	bool m_enable_raytraced_culling;
-
-	bool m_enable_translucent_foliage;
-	video::E_MATERIAL_TYPE m_leaves_material;
 };
