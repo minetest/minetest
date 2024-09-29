@@ -1447,6 +1447,8 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 
 			video::IImage *img = generateImage(filename, source_image_names);
 			if (img) {
+				upscaleImagesToMatchLargest(baseimg, img);
+
 				apply_mask(img, baseimg, v2s32(0, 0), v2s32(0, 0),
 						img->getDimension());
 				img->drop();
