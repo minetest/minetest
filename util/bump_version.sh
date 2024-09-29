@@ -43,7 +43,7 @@ read_versions() {
 # in: $1
 read_proto_ver() {
 	local ref=$1
-	git show "$ref":src/network/networkprotocol.h | grep -oE 'LATEST_PROTOCOL_VERSION [0-9]+' | tr -dC 0-9
+	git show "$ref":src/network/networkprotocol.cpp | grep -oE 'LATEST_PROTOCOL_VERSION =\s*[0-9]+' | tr -dC 0-9
 }
 
 ## Prompts for new version
