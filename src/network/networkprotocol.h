@@ -25,10 +25,10 @@ using namespace irr;
 extern const u16 LATEST_PROTOCOL_VERSION;
 
 // Server's supported network protocol range
-#define SERVER_PROTOCOL_VERSION_MIN ((u16) 37)
+constexpr u16 SERVER_PROTOCOL_VERSION_MIN = 37;
 
 // Client's supported network protocol range
-#define CLIENT_PROTOCOL_VERSION_MIN ((u16) 37)
+constexpr u16 CLIENT_PROTOCOL_VERSION_MIN = 37;
 
 extern const u16 FORMSPEC_API_VERSION;
 
