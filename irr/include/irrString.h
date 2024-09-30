@@ -173,9 +173,6 @@ public:
 			return *this;
 		}
 
-		// no longer allowed!
-		_IRR_DEBUG_BREAK_IF((void *)c == (void *)c_str());
-
         u32 len = calclen(c);
         // We must check if the new length is different, otherwise we experience
         //  a use-after-free. In such a case, we decide whether to resize based
