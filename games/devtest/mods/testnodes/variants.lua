@@ -38,7 +38,8 @@ minetest.register_node("testnodes:variant_animated", {
 minetest.register_node("testnodes:variant_color", {
 	description = S("Variant Color Test Node").."\n"..
 		S("param2 = color + 3 bit variant").."\n"..
-		S("Has six variants"),
+		S("Has six unique variants").."\n"..
+		S("Variants 6 and 7 are same as variant 0"),
 	paramtype2 = "color",
 	is_ground_content = false,
 	groups = {dig_immediate = 3},
@@ -55,16 +56,37 @@ minetest.register_node("testnodes:variant_color", {
 	palette = "testnodes_palette_wallmounted.png",
 })
 
+minetest.register_node("testnodes:variant_tile_color", {
+	description = S("Variant Tile Color Test Node").."\n"..
+		S("Has seven unique variants").."\n"..
+		S("Variant 7 is same as variant 0 (red colored)"),
+	is_ground_content = false,
+	groups = {dig_immediate = 3},
+	variant_count = 8, -- Last one variant are the same as the first.
+	param2_variant = {width = 3, offset = 0},
+	tiles = {{ name = "testnodes_1g.png", color = "#F00"}},
+	variants = {
+		{tiles = {{ name = "testnodes_1g.png", color = "#0F0"}}},
+		{tiles = {{ name = "testnodes_1g.png", color = "#00F"}}},
+		{tiles = {{ name = "testnodes_1g.png", color = "#FF0"}}},
+		{tiles = {{ name = "testnodes_1g.png", color = "#0FF"}}},
+		{tiles = {{ name ="testnodes_1g.png", color = "#F0F"}}},
+		{tiles = {{ name ="testnodes_1g.png"}}},
+	},
+})
+
 minetest.register_node("testnodes:variant_drop", {
 	description = S("Variant Drop Test Node").."\n"..
-		S("Has four variants").."\n"..
+		S("Has five variants").."\n"..
+		S("Variiant 1 is copied from variant 0").."\n"..
 		S("Drops one node with an inherited variant and one without"),
 	is_ground_content = false,
 	groups = {dig_immediate = 3},
-	variant_count = 4,
-	param2_variant = {width = 2, offset = 0},
+	variant_count = 5,
+	param2_variant = {width = 3, offset = 0},
 	tiles = {"testnodes_1.png"},
 	variants = {
+		nil,
 		{tiles = {"testnodes_2.png"}},
 		{tiles = {"testnodes_3.png"}},
 		{tiles = {"testnodes_4.png"}},
@@ -160,27 +182,53 @@ minetest.register_node("testnodes:variant_mesh", {
 
 minetest.register_node("testnodes:variant_overlay", {
 	description = S("Variant Overlay Test Node").."\n"..
-		S("Has two variants"),
+		S("Has four variants"),
+		S("Variant 1 is same as variant 0"),
 	is_ground_content = false,
 	groups = {dig_immediate = 3},
 	variant_count = 4,
-	param2_variant = {width = 1, offset = 0},
+	param2_variant = {width = 2, offset = 0},
 	tiles = {"testnodes_node.png"},
-	overlay_tiles = {{name = "testnodes_overlay.png", color = "#555"}},
+	overlay_tiles = {{name = "testnodes_overlay.png", color = "#F00"}},
 	variants = {
 		{
 			tiles = {"testnodes_node.png"},
 		},
 		{
 			tiles = {"testnodes_node.png"},
-			overlay_tiles = {{name = "testnodes_overlay.png", color = "#FFF"}},
+			overlay_tiles = {{name = "testnodes_overlay.png", color = "#0FF"}},
 		},
 		{
 			tiles = {"testnodes_node.png"},
 			overlay_tiles = {},
 		},
 	},
-	color = "#F00",
+})
+
+minetest.register_node("testnodes:variant_overlay_color", {
+	description = S("Variant Overlay Test Node With Node Color").."\n"..
+		S("Has four variants"),
+		S("Variant 1 is same as variant 1"),
+	is_ground_content = false,
+	groups = {dig_immediate = 3},
+	variant_count = 4,
+	param2_variant = {width = 2, offset = 0},
+	tiles = {"testnodes_node.png"},
+	overlay_tiles = {{name = "testnodes_overlay.png", color = "#F00"}},
+	color = "#00F",
+	variants = {
+		{
+			tiles = {"testnodes_node.png"},
+		},
+		{
+			tiles = {"testnodes_node.png"},
+			overlay_tiles = {{name = "testnodes_overlay.png", color = "#0FF"}},
+		},
+		{
+			tiles = {"testnodes_node.png"},
+			overlay_tiles = {},
+		},
+	},
 })
 
 minetest.register_node("testnodes:variant_plantlike_rooted", {

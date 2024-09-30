@@ -9633,6 +9633,9 @@ Used by `minetest.register_node`.
                 special_tiles = {def1, def2},
             },
             { -- Variant number 2.
+							-- reuse tiles and special_tiles from variant number 0
+							-- no overlay_tiles
+							overlay_tiles = {},
               ...
             },
             ...

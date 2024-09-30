@@ -633,6 +633,8 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype, bool special)
 		// color = ...
 		lua_getfield(L, index, "color");
 		tiledef.has_color = read_color(L, -1, &tiledef.color);
+		if (!tiledef.has_color)
+			tiledef.color = video::SColor();
 		lua_pop(L, 1);
 		// animation = {}
 		lua_getfield(L, index, "animation");
@@ -663,6 +665,11 @@ void read_tiledefs(lua_State *L, int index, u8 drawtype, bool special,
 				break;
 			}
 		}
+		// Allow empthy {} definition of tile
+		if (i==0) {
+			tiledefs[0] = TileDef();
+			i++;
+		}
 		// Copy last value to all remaining textures
 		if (i >= 1) {
 			TileDef lasttile = tiledefs[i - 1];
@@ -678,7 +685,7 @@ void read_default_tiledefs(lua_State *L, int index, u8 drawtype, bool special,
 		std::vector<std::array<TileDef, 6> > &tiledefs)
 {
 	read_tiledefs(L, index, drawtype, special, tiledefs[0]);
-	for (u16 v = 2; v < tiledefs.size(); v++)
+	for (u16 v = 1; v < tiledefs.size(); v++)
 		tiledefs[v] = tiledefs[0];
 }
 
