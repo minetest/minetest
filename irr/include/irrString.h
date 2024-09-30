@@ -173,7 +173,7 @@ public:
 			return *this;
 		}
 		
-		if ((void*)c == (void*)c_str())
+        if ((void*)c == (void*)c_str())
             return *this;
 
         u32 len = calclen(c);
