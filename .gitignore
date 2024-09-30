@@ -26,7 +26,6 @@ tags
 !tags/
 gtags.files
 .idea
-# QT Creator
 .qtcreator/
 # Codelite
 *.project
