@@ -172,7 +172,7 @@ public:
 			clear();
 			return *this;
 		}
-		
+
         if ((void*)c == (void*)c_str())
             return *this;
 
