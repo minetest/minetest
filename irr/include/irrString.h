@@ -177,6 +177,9 @@ public:
 		_IRR_DEBUG_BREAK_IF((void *)c == (void *)c_str());
 
         u32 len = calclen(c);
+        // We must check if the new length is different, otherwise we experience
+        //  a use-after-free. In such a case, we decide whether to resize based
+        //  on it's length.
         if (len > str.size()) str.resize(len);
         for (u32 l = 0; l < len; ++l)
             str[l] = static_cast<T>(c[l]);
