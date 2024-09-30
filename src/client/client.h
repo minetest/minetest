@@ -316,6 +316,8 @@ public:
 	void addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server=false, bool urgent=false);
 	void addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server=false, bool urgent=false);
 
+	void addUpdateAllMeshTask(bool ack_to_server=false, bool urgent=false);
+
 	void updateCameraOffset(v3s16 camera_offset);
 
 	bool hasClientEvents() const { return !m_client_event_queue.empty(); }

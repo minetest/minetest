@@ -1756,6 +1756,23 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 		addUpdateMeshTask(blockpos + v3s16(0, 0, -1), false, urgent);
 }
 
+void Client::addUpdateAllMeshTask(bool ack_to_server, bool urgent)
+{
+	Map *map = &m_env.getMap();
+	ClientMap *client_map = dynamic_cast<ClientMap*>(map);
+
+	v3s16 min_block, max_block, block;
+	v3s16 camera_pos = floatToInt(m_camera->getPosition(), BS);
+	client_map->getBlocksInViewRange(camera_pos, &min_block, &max_block);
+
+	for (block.Z = min_block.Z; block.Z < max_block.Z; block.Z++)
+	for (block.Y = min_block.Y; block.Y < max_block.Y; block.Y++)
+	for (block.X = min_block.X; block.X < max_block.X; block.X++) {
+		if (map->getBlockNoCreateNoEx(block))
+			m_mesh_update_manager->updateBlock(map, block, ack_to_server, urgent);
+	}
+}
+
 void Client::updateCameraOffset(v3s16 camera_offset)
 {
 	m_mesh_update_manager->m_camera_offset = camera_offset;

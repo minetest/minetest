@@ -1832,4 +1832,6 @@ void Client::handleCommand_SetNodeVisual(NetworkPacket *pkt)
 		*pkt >> node_visual.variant_offset;
 
 	m_nodedef->applyNodeVisual(node_name, node_visual);
+
+	addUpdateAllMeshTask();
 }
