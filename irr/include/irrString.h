@@ -172,6 +172,9 @@ public:
 			clear();
 			return *this;
 		}
+		
+		if ((void*)c == (void*)c_str())
+            return *this;
 
         u32 len = calclen(c);
         // In case `c` is a pointer to our own buffer, we may not resize first
