@@ -192,7 +192,7 @@ bool CZipReader::scanGZipHeader()
 		} else {
 			// no file name?
 			ZipFileName = Path;
-			core::deletePathFromFilename(ZipFileName);
+			ZipFileName = core::deletePathFromFilename(ZipFileName);
 
 			// rename tgz to tar or remove gz extension
 			if (core::hasFileExtension(ZipFileName, "tgz")) {
