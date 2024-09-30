@@ -80,7 +80,7 @@ u32 CFileList::addItem(const io::path &fullPath, u32 offset, u32 size, bool isDi
 
 	entry.FullName = entry.Name;
 
-	core::deletePathFromFilename(entry.Name);
+	entry.Name = core::deletePathFromFilename(entry.Name);
 
 	if (IgnorePaths)
 		entry.FullName = entry.Name;

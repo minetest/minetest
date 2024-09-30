@@ -63,8 +63,9 @@ inline io::path &getFileNameExtension(io::path &dest, const io::path &source)
 }
 
 //! delete path from filename
-inline io::path &deletePathFromFilename(io::path &filename)
+inline io::path deletePathFromFilename(const io::path &filename)
 {
+    io::path res;
 	// delete path from filename
 	const fschar_t *s = filename.c_str();
 	const fschar_t *p = s + filename.size();
@@ -75,9 +76,9 @@ inline io::path &deletePathFromFilename(io::path &filename)
 
 	if (p != s) {
 		++p;
-		filename = p;
+		res = p;
 	}
-	return filename;
+	return res;
 }
 
 //! trim paths
