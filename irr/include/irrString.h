@@ -174,9 +174,8 @@ public:
 		}
 
         u32 len = calclen(c);
-        // We must check if the new length is different, otherwise we experience
-        //  a use-after-free. In such a case, we decide whether to resize based
-        //  on it's length.
+        // In case `c` is a pointer to our own buffer, we may not resize first
+        // or it can become invalid.
         if (len > str.size()) str.resize(len);
         for (u32 l = 0; l < len; ++l)
             str[l] = static_cast<T>(c[l]);
