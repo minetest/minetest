@@ -31,7 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <tuple>
 
 
-bool is_valid_player_name(std::string_view name) {
+bool is_valid_player_name(std::string_view name)
+{
 	return !name.empty() && name.size() <= PLAYERNAME_SIZE && string_allowed(name, PLAYERNAME_ALLOWED_CHARS);
 }
 
@@ -173,8 +174,6 @@ u16 Player::getMaxHotbarItemcount()
 	return mainlist ? std::min(mainlist->getSize(), (u32) hud_hotbar_itemcount) : 0;
 }
 
-#ifndef SERVER
-
 u32 PlayerControl::getKeysPressed() const
 {
 	u32 keypress_bits =
@@ -218,7 +217,6 @@ u32 PlayerControl::getKeysPressed() const
 	return keypress_bits;
 }
 
-#endif
 
 void PlayerControl::unpackKeysPressed(u32 keypress_bits)
 {

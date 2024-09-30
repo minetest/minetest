@@ -998,7 +998,7 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 		lua_pushstring(L, c.mesh.c_str());
 		lua_setfield(L, -2, "mesh");
 	}
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	push_ARGB8(L, c.minimap_color);       // I know this is not set-able w/ register_node,
 	lua_setfield(L, -2, "minimap_color"); // but the people need to know!
 #endif

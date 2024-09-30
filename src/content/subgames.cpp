@@ -28,10 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map_settings_manager.h"
 #include "util/string.h"
 
-#ifndef SERVER
-#include "client/texturepaths.h"
-#endif
-
 // The maximum number of identical world names allowed
 #define MAX_WORLD_NAMES 100
 
@@ -96,8 +92,7 @@ std::string getSubgamePathEnv()
 
 static SubgameSpec getSubgameSpec(const std::string &game_id,
 		const std::string &game_path,
-		const std::unordered_map<std::string, std::string> &mods_paths,
-		const std::string &menuicon_path)
+		const std::unordered_map<std::string, std::string> &mods_paths)
 {
 	const auto gamemods_path = game_path + DIR_DELIM + "mods";
 	// Get meta
@@ -130,7 +125,7 @@ static SubgameSpec getSubgameSpec(const std::string &game_id,
 		last_mod = conf.get("last_mod");
 
 	SubgameSpec spec(game_id, game_path, gamemods_path, mods_paths, game_title,
-			menuicon_path, game_author, game_release, first_mod, last_mod);
+			game_author, game_release, first_mod, last_mod);
 
 	if (conf.exists("name") && !conf.exists("title"))
 		spec.deprecation_msgs.push_back("\"name\" setting in game.conf is deprecated, please use \"title\" instead");
@@ -191,13 +186,7 @@ SubgameSpec findSubgame(const std::string &id)
 		mods_paths[fs::AbsolutePath(mod_path)] = mod_path;
 	}
 
-	std::string menuicon_path;
-#ifndef SERVER
-	menuicon_path = getImagePath(
-			game_path + DIR_DELIM + "menu" + DIR_DELIM + "icon.png");
-#endif
-
-	return getSubgameSpec(id, game_path, mods_paths, menuicon_path);
+	return getSubgameSpec(id, game_path, mods_paths);
 }
 
 SubgameSpec findWorldSubgame(const std::string &world_path)
@@ -206,7 +195,7 @@ SubgameSpec findWorldSubgame(const std::string &world_path)
 	// See if world contains an embedded game; if so, use it.
 	std::string world_gamepath = world_path + DIR_DELIM + "game";
 	if (fs::PathExists(world_gamepath))
-		return getSubgameSpec(world_gameid, world_gamepath, {}, "");
+		return getSubgameSpec(world_gameid, world_gamepath, {});
 	return findSubgame(world_gameid);
 }
 

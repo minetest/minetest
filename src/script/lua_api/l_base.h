@@ -30,7 +30,7 @@ extern "C" {
 #include <lauxlib.h>
 }
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 class Client;
 class GUIEngine;
 #endif
@@ -45,7 +45,7 @@ public:
 	static ScriptApiBase*   getScriptApiBase(lua_State *L);
 	static Server*          getServer(lua_State *L);
 	static ServerInventoryManager *getServerInventoryMgr(lua_State *L);
-	#ifndef SERVER
+	#if CHECK_CLIENT_BUILD()
 	static Client*          getClient(lua_State *L);
 	static GUIEngine*       getGuiEngine(lua_State *L);
 	#endif // !SERVER

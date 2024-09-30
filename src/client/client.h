@@ -35,8 +35,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gameparams.h"
 #include "script/common/c_types.h" // LuaError
 #include "util/numeric.h"
+#include "config.h"
 
-#ifdef SERVER
+#if !IS_CLIENT_BUILD
 #error Do not include in server builds
 #endif
 

@@ -20,11 +20,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 
 #include "itemdef.h"
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 #include "client/mesh.h"
 #include "client/shader.h"
 #include "client/client.h"
 #include "client/renderingengine.h"
+#include "client/texturesource.h"
 #include "client/tile.h"
 #include <IMeshManipulator.h>
 #endif
@@ -332,7 +333,7 @@ ContentFeatures::ContentFeatures()
 
 ContentFeatures::~ContentFeatures()
 {
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	for (u16 j = 0; j < 6; j++) {
 		delete tiles[j].layers[0].frames;
 		delete tiles[j].layers[1].frames;
@@ -347,7 +348,7 @@ void ContentFeatures::reset()
 	/*
 		Cached stuff
 	*/
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	solidness = 2;
 	visual_solidness = 0;
 	backface_culling = true;
@@ -370,7 +371,7 @@ void ContentFeatures::reset()
 	groups["dig_immediate"] = 2;
 	drawtype = NDT_NORMAL;
 	mesh.clear();
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	for (auto &i : mesh_ptr)
 		i = NULL;
 	minimap_color = video::SColor(0, 0, 0, 0);
@@ -686,7 +687,7 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 	} catch (SerializationError &e) {};
 }
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 		const TileSpec &tile, const TileDef &tiledef, video::SColor color,
 		u8 material_type, u32 shader_id, bool backface_culling,
@@ -1026,7 +1027,7 @@ NodeDefManager::NodeDefManager()
 
 NodeDefManager::~NodeDefManager()
 {
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	for (ContentFeatures &f : m_content_features) {
 		for (auto &j : f.mesh_ptr) {
 			if (j)
@@ -1479,7 +1480,7 @@ void NodeDefManager::applyTextureOverrides(const std::vector<TextureOverride> &o
 
 void NodeDefManager::updateTextures(IGameDef *gamedef, void *progress_callback_args)
 {
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	infostream << "NodeDefManager::updateTextures(): Updating "
 		"textures in node definitions" << std::endl;
 

@@ -20,8 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_bloated.h"
-#ifndef SERVER
+#include "config.h" // IS_CLIENT_BUILD
+#if IS_CLIENT_BUILD
 #include "irrString.h"
+#include "translation.h"
 #endif
 #include <cstdlib>
 #include <string>
@@ -633,9 +635,17 @@ std::vector<std::basic_string<T> > split(const std::basic_string<T> &s, T delim)
 
 std::wstring translate_string(std::wstring_view s, Translations *translations);
 
-std::wstring translate_string(std::wstring_view s);
+inline std::wstring translate_string(std::wstring_view s)
+{
+#if IS_CLIENT_BUILD
+	return translate_string(s, g_client_translations);
+#else
+	return translate_string(s, nullptr);
+#endif
+}
 
-inline std::wstring unescape_translate(std::wstring_view s) {
+inline std::wstring unescape_translate(std::wstring_view s)
+{
 	return unescape_enriched(translate_string(s));
 }
 
@@ -733,7 +743,7 @@ inline std::string str_join(const std::vector<std::string> &list,
 	return oss.str();
 }
 
-#ifndef SERVER
+#if IS_CLIENT_BUILD
 /**
  * Create a UTF8 std::string from an irr::core::stringw.
  */

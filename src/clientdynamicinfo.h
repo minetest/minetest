@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_bloated.h"
+#include "config.h"
 
 
 struct ClientDynamicInfo
@@ -38,7 +39,7 @@ public:
 				touch_controls == other.touch_controls;
 	}
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	static ClientDynamicInfo getCurrent();
 
 private:

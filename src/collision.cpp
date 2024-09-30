@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "nodedef.h"
 #include "gamedef.h"
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 #include "client/clientenvironment.h"
 #include "client/localplayer.h"
 #endif
@@ -285,7 +285,7 @@ static void add_object_boxes(Environment *env,
 	const f32 distance = speed_f.getLength() * dtime +
 		box_0.getExtent().getLength() + 1.5f * BS;
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	ClientEnvironment *c_env = dynamic_cast<ClientEnvironment*>(env);
 	if (c_env) {
 		std::vector<DistanceSortedActiveObject> clientobjects;

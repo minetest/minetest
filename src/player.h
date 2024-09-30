@@ -86,11 +86,9 @@ struct PlayerControl
 		movement_direction = a_movement_direction;
 	}
 
-#ifndef SERVER
 	// For client use
 	u32 getKeysPressed() const;
 	inline bool isMoving() const { return movement_speed > 0.001f; }
-#endif
 
 	// For server use
 	void unpackKeysPressed(u32 keypress_bits);

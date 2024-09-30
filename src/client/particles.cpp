@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/content_cao.h"
 #include "client/clientevent.h"
 #include "client/renderingengine.h"
+#include "client/texturesource.h"
 #include "util/numeric.h"
 #include "light.h"
 #include "localplayer.h"

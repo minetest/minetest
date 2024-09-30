@@ -35,11 +35,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class IGameDef;
 class Client;
 struct ToolCapabilities;
-#ifndef SERVER
-#include "client/texturesource.h"
 struct ItemMesh;
 struct ItemStack;
-#endif
+typedef std::vector<video::SColor> Palette; // copied from src/client/texturesource.h
+namespace irr::video { class ITexture; }
+using namespace irr;
 
 /*
 	Base item definition
@@ -155,25 +155,32 @@ public:
 	virtual void getAll(std::set<std::string> &result) const=0;
 	// Check if item is known
 	virtual bool isKnown(const std::string &name) const=0;
-#ifndef SERVER
+
+	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
+
+	/* Client-specific methods */
+	// TODO: should be moved elsewhere in the future
+
 	// Get item inventory texture
-	virtual video::ITexture* getInventoryTexture(const ItemStack &item, Client *client) const=0;
+	virtual video::ITexture* getInventoryTexture(const ItemStack &item, Client *client) const
+	{ return nullptr; }
 
 	/**
 	 * Get wield mesh
-	 *
-	 * Returns nullptr if there is an inventory image
+	 * @returns nullptr if there is an inventory image
 	 */
-	virtual ItemMesh* getWieldMesh(const ItemStack &item, Client *client) const = 0;
+	virtual ItemMesh* getWieldMesh(const ItemStack &item, Client *client) const
+	{ return nullptr; }
+
 	// Get item palette
-	virtual Palette* getPalette(const ItemStack &item, Client *client) const = 0;
+	virtual Palette* getPalette(const ItemStack &item, Client *client) const
+	{ return nullptr; }
+
 	// Returns the base color of an item stack: the color of all
 	// tiles that do not define their own color.
 	virtual video::SColor getItemstackColor(const ItemStack &stack,
-		Client *client) const = 0;
-#endif
-
-	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
+		Client *client) const
+	{ return video::SColor(0); }
 };
 
 class IWritableItemDefManager : public IItemDefManager

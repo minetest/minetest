@@ -66,7 +66,7 @@ enum class ScriptingType: u8 {
 };
 
 class Server;
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 class Client;
 #endif
 class EmergeThread;
@@ -91,7 +91,7 @@ public:
 	void loadMod(const std::string &script_path, const std::string &mod_name);
 	void loadScript(const std::string &script_path);
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	void loadModFromMemory(const std::string &mod_name);
 #endif
 
@@ -106,7 +106,7 @@ public:
 
 	IGameDef *getGameDef() { return m_gamedef; }
 	Server* getServer();
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	Client* getClient();
 #endif
 
@@ -128,7 +128,7 @@ public:
 	// returns "" on error
 	static std::string getCurrentModName(lua_State *L);
 
-#ifdef SERVER
+#if !CHECK_CLIENT_BUILD()
 	inline void clientOpenLibs(lua_State *L) { assert(false); }
 #else
 	void clientOpenLibs(lua_State *L);
@@ -172,7 +172,7 @@ protected:
 	Environment* getEnv() { return m_environment; }
 	void setEnv(Environment* env) { m_environment = env; }
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	GUIEngine* getGuiEngine() { return m_guiengine; }
 	void setGuiEngine(GUIEngine* guiengine) { m_guiengine = guiengine; }
 #endif
@@ -199,7 +199,7 @@ private:
 
 	IGameDef       *m_gamedef = nullptr;
 	Environment    *m_environment = nullptr;
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	GUIEngine      *m_guiengine = nullptr;
 #endif
 	EmergeThread   *m_emerge = nullptr;
