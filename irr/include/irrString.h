@@ -176,10 +176,11 @@ public:
 		// no longer allowed!
 		_IRR_DEBUG_BREAK_IF((void *)c == (void *)c_str());
 
-		u32 len = calclen(c);
-		str.resize(len);
-		for (u32 l = 0; l < len; ++l)
-			str[l] = (T)c[l];
+        u32 len = calclen(c);
+        if (len > str.size()) str.resize(len);
+        for (u32 l = 0; l < len; ++l)
+            str[l] = static_cast<T>(c[l]);
+        if (len < str.size()) str.resize(len);
 
 		return *this;
 	}
