@@ -10,6 +10,7 @@ which includes automatic scaling of the thumb slider and hiding of
 the arrow buttons where there is insufficient space.
 */
 
+#include <iostream>
 #include "guiScrollBar.h"
 #include "guiButton.h"
 #include "porting.h"
@@ -188,9 +189,10 @@ void GUIScrollBar::draw()
 	IGUIElement::draw();
 }
 
-static inline s32 interpolate_scroll(s32 from, s32 to, f32 amount)
+static inline f32 interpolate_scroll(f32 from, f32 to, f32 amount)
 {
-	s32 step = core::round32((to - from) * core::clamp(amount, 0.001f, 1.0f));
+	f32 step = /*core::round32*/((to - from) * amount);
+	std::cout << "step: " << step << " ";
 	if (step == 0)
 		return to;
 	return from + step;
@@ -201,10 +203,11 @@ void GUIScrollBar::interpolatePos()
 	if (target_pos.has_value()) {
 		// Adjust to match 60 FPS. This also means that interpolation is
 		// effectively disabled at <= 30 FPS.
-		f32 amount = 0.5f * (last_delta_ms / 16.667f);
+		f32 amount = 0.1f * (last_delta_ms / 16.667f);
 		setPosRaw(interpolate_scroll(scroll_pos, *target_pos, amount));
-		if (scroll_pos == target_pos)
-			target_pos = std::nullopt;
+		std::cout << "Amount: " << amount << " | at:" << scroll_pos << ", want:" << *target_pos << std::endl;
+		// if (scroll_pos == target_pos)
+		// 	target_pos = std::nullopt;
 
 		SEvent e;
 		e.EventType = EET_GUI_EVENT;
@@ -267,7 +270,18 @@ void GUIScrollBar::setPosRaw(const s32 &pos)
 				thumb_area / (f32(page_size) / f32(thumb_area + border_size * 2)));
 
 	thumb_size = core::s32_clamp(thumb_size, thumb_min, thumb_area);
-	scroll_pos = core::s32_clamp(pos, min_pos, max_pos);
+	scroll_pos = core::s32_clamp(pos, min_pos-20, max_pos+20);
+	//scroll_pos = pos;
+	
+	if (!is_dragging)
+	{
+	if (scroll_pos < 0) {
+        *target_pos = (*target_pos * 0.9);
+	}
+	else if (scroll_pos > max_pos) {
+        *target_pos += ((*target_pos) - max_pos) * -0.3;
+	}
+	}
 
 	f32 f = core::isnotzero(range()) ? (f32(thumb_area) - f32(thumb_size)) / range()
 					 : 1.0f;
@@ -278,7 +292,8 @@ void GUIScrollBar::setPosRaw(const s32 &pos)
 void GUIScrollBar::setPos(const s32 &pos)
 {
 	setPosRaw(pos);
-	target_pos = std::nullopt;
+	target_pos = pos;
+	//target_pos = std::nullopt;
 }
 
 void GUIScrollBar::setPosAndSend(const s32 &pos)
@@ -302,12 +317,12 @@ void GUIScrollBar::setPosInterpolated(const s32 &pos)
 		return;
 	}
 
-	s32 clamped = core::s32_clamp(pos, min_pos, max_pos);
+	s32 clamped = pos;//core::s32_clamp(pos, min_pos, max_pos);
 	if (scroll_pos != clamped) {
 		target_pos = clamped;
 		interpolatePos();
 	} else {
-		target_pos = std::nullopt;
+		//target_pos = std::nullopt;
 	}
 }
 
@@ -365,8 +380,7 @@ s32 GUIScrollBar::getPos() const
 s32 GUIScrollBar::getTargetPos() const
 {
 	if (target_pos.has_value()) {
-		s32 clamped = core::s32_clamp(*target_pos, min_pos, max_pos);
-		return clamped;
+		return *target_pos;
 	}
 	return scroll_pos;
 }
