@@ -435,8 +435,6 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float> m_moon_brightness_pixel{"moonBrightness"};
 	CachedPixelShaderSetting<float>
 		m_volumetric_light_strength_pixel{"volumetricLightStrength"};
-	CachedPixelShaderSetting<float, 3>
-		m_volumetric_cloud_color{"cloudColor"};
 
 	static constexpr std::array<const char*, 5> SETTING_CALLBACKS = {
 		"exposure_compensation",
@@ -574,23 +572,6 @@ public:
 		m_saturation_pixel.set(&saturation, services);
 		video::SColorf artificial_light = lighting.artificial_light_color;
 		m_artificial_light.set(artificial_light, services);
-
-		// TODO: settings
-		Clouds* clouds = m_client->getClouds();
-		if (clouds && g_settings->getBool("enable_volumetric_clouds")) {
-			float cloud_height = clouds->getHeight() * 10.0f;
-			m_cloud_height_pixel.set(&cloud_height, services);
-			float cloud_thickness = clouds->getThickness() * 10.0f;
-			m_cloud_thickness_pixel.set(&cloud_thickness, services);
-			float cloud_density = clouds->getDensity();
-			m_cloud_density_pixel.set(&cloud_density, services);
-			v2f cloud_offset = clouds->getCloudOffset();
-			m_cloud_offset_pixel.set(cloud_offset, services);
-			float cloud_radius = g_settings->getU16("cloud_radius");
-			m_cloud_radius_pixel.set(&cloud_radius, services);
-			video::SColor cloud_color = clouds->getColor();
-			m_volumetric_cloud_color.set(cloud_color, services);
-		}
 
 		if (m_volumetric_light_enabled) {
 			// Map directional light to screen space
@@ -1588,7 +1569,6 @@ bool Game::createClient(const GameStartData &start_data)
 	 */
 	if (m_cache_enable_clouds)
 		clouds = make_irr<Clouds>(smgr, shader_src, -1, rand());
-	client->setClouds(clouds.get());
 
 	/* Skybox
 	 */
@@ -4334,7 +4314,7 @@ void Game::updateClouds(float dtime)
 		camera_node_position.Y   = camera_node_position.Y + camera_offset.Y * BS;
 		camera_node_position.Z   = camera_node_position.Z + camera_offset.Z * BS;
 		this->clouds->update(camera_node_position, this->sky->getCloudColor());
-		if (this->clouds->isCameraInsideCloud() && this->fogEnabled() && !g_settings->getBool("enable_volumetric_clouds")) {
+		if (this->clouds->isCameraInsideCloud() && this->fogEnabled()) {
 			// If camera is inside cloud and fog is enabled, use cloud's colors as sky colors.
 			video::SColor clouds_dark = this->clouds->getColor().getInterpolated(
 					video::SColor(255, 0, 0, 0), 0.9);

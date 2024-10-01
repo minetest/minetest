@@ -510,9 +510,10 @@ water_wave_length (Waving liquids wavelength) float 20.0 0.1
 #    Requires: shaders, enable_waving_water
 water_wave_speed (Waving liquids wave speed) float 5.0
 
-#   When enabled, liquid reflections are simulated.
+#   When enabled, crude liquid reflections are simulated.
+#   When waving liquids are enabled, the wave parameters will affect these reflections.
 #
-#   Requires: shaders, enable_waving_water, enable_dynamic_shadows
+#   Requires: shaders, enable_dynamic_shadows
 enable_water_reflections (Liquid reflections) bool false
 
 [**Dynamic shadows]
@@ -684,39 +685,25 @@ bloom_strength_factor (Bloom Strength Factor) float 1.0 0.1 10.0
 #    Requires: shaders, enable_post_processing, enable_bloom
 bloom_radius (Bloom Radius) float 1 0.1 8
 
-[**Volumetric Effects]
-
 #    Set to true to enable volumetric lighting effect (a.k.a. "Godrays").
 #
 #    Requires: shaders, enable_post_processing, enable_bloom
 enable_volumetric_lighting (Volumetric Lighting) bool false
 
-#   Set to true to render clouds as scatter volumes.
-#
-#   Requires: shaders, enable_post_processing, enable_clouds
-enable_volumetric_clouds (Volumetric Clouds) bool false
-
-#   Higher values reduce visual quality and may introduce artifacts, but improve performance of volumetric cloud/aurora effects.
-#   Range: from 1 to 4, default: 2
-#
-#   Requires: shaders, enable_post_processing
-volumetrics_undersampling (Volumetric Undersampling) int 2 1 4
-
-#   Set to true to render volumetric auroras ("Northern Lights").
-#
-#   Requires: shaders, enable_post_processing
-enable_volumetric_auroras (Volumetric Auroras) bool false
-
 [**Other Effects]
+
+#   Makes the color of light fog more saturated.
+#
+#   Requires: shaders
+enable_tinted_fog (Tinted fog) bool false
 
 #   Apply bump maps to nodes based on their textures. It is recommended to use a tilted sun orbit to go with this (Sky Body Orbit Tilt).
 #
 #   Requires: shaders, enable_dynamic_shadows
 enable_bumpmaps (Bump maps) bool false
 
-[**Other Effects]
-
 #   Simulate translucency when looking at foliage in the sunlight.
+#   It is recommended to use this with the leaves style set to fancy. 
 #
 #   Requires: shaders, enable_dynamic_shadows
 enable_translucent_foliage (Translucent foliage) bool false

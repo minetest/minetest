@@ -59,7 +59,7 @@ varying highp vec3 eyeVec;
 varying float nightRatio;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
-#if ((defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS) && ENABLE_WAVING_WATER) || defined(ENABLE_BUMPMAPS))
+#if ((defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS)) || defined(ENABLE_BUMPMAPS))
 vec4 perm(vec4 x)
 {
 	return mod(((x * 34.0) + 1.0) * x, 289.0);
@@ -450,7 +450,7 @@ void main(void)
 	float fx0y0 = texture2D(baseTexture, uv).r;
 	float fx1y0 = texture2D(baseTexture, uv + vec2(dr.x, 0.0)).r;
 	float fx0y1 = texture2D(baseTexture, uv + vec2(0.0, dr.y)).r;
-	vec2 gradient = 0.2 * vec2((fx1y0 - fx0y0) / dr.x, (fx0y1 - fx0y0) / dr.y) + 0.1 * gnoise(vec3(2.0 * uv / texelSize0, 0.0)).xy;
+	vec2 gradient = 0.1 * vec2((fx1y0 - fx0y0) / dr.x, (fx0y1 - fx0y0) / dr.y) + 0.05 * gnoise(vec3(2.0 * uv / texelSize0, 0.0)).xy;
 	// Compute a set of orthogonal basis vectors representing the node's surface plane.
 	vec3 orth1 = normalize(cross(vNormal, mix(vec3(0.0, -1.0, 0.0), vec3(0.0, 0.0, -1.0), step(0.9, abs(vNormal.y)))));
 	vec3 orth2 = normalize(cross(vNormal, orth1));
@@ -529,7 +529,14 @@ void main(void)
 		vec3 viewVec = normalize(worldPosition + cameraOffset - cameraPosition);
 
 		// Water reflections
-#if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS) && ENABLE_WAVING_WATER)
+#if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS))
+
+#if !ENABLE_WAVING_WATER
+#define WATER_WAVE_HEIGHT 0.5
+#define WATER_WAVE_SPEED 5.0
+#define WATER_WAVE_LENGTH 10.0
+#endif
+
 		vec3 wavePos = worldPosition * vec3(2.0, 0.0, 2.0);
 		float off = animationTimer * WATER_WAVE_SPEED * 10.0;
 		wavePos.x /= WATER_WAVE_LENGTH * 3.0;
@@ -560,7 +567,8 @@ void main(void)
 #if (defined(ENABLE_NODE_SPECULAR) && !defined(MATERIAL_WAVING_LIQUID))
 		// Apply specular to blocks.
 		if (dot(v_LightDirection, vNormal) < 0.0) {
-			float intensity = 2.0 * (1.0 - (base.r * varColor.r));
+			// This intensity is a placeholder and should be replaced by proper specular maps.
+			float intensity = 4.0 * min(1.0, length(varColor.rgb * base.rgb));
 			const float specular_exponent = 5.0;
 			const float fresnel_exponent =  4.0;
 
@@ -588,6 +596,8 @@ void main(void)
 	// Note: clarity = (1 - fogginess)
 	float clarity = clamp(fogShadingParameter
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
+		
+#ifdef ENABLE_TINTED_FOG
 	float fogColorMax = max(max(fogColor.r, fogColor.g), fogColor.b);
 	// Prevent zero division.
 	if (fogColorMax < 0.0000001) fogColorMax = 1.0;
@@ -595,6 +605,10 @@ void main(void)
 	// For this to not make the fog color artificially dark we need to normalize using the
 	// fog color's brightest value. We then blend our base color with this to make the fog.
 	col = mix(fogColor * pow(fogColor / fogColorMax, vec4(2.0 * clarity)), col, clarity);
+#else
+	col = mix(fogColor, col, clarity);
+#endif
+
 	col = vec4(col.rgb, base.a);
 
 	gl_FragData[0] = col;

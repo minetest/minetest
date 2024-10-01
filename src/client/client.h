@@ -35,7 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gameparams.h"
 #include "script/common/c_types.h" // LuaError
 #include "util/numeric.h"
-#include "clouds.h"
 
 #ifdef SERVER
 #error Do not include in server builds
@@ -373,9 +372,6 @@ public:
 	Camera* getCamera () { return m_camera; }
 	scene::ISceneManager *getSceneManager();
 
-	Clouds* getClouds() { return m_clouds; }
-	void setClouds(Clouds* clouds) { m_clouds = clouds; }
-
 	// IGameDef interface
 	IItemDefManager* getItemDefManager() override;
 	const NodeDefManager* getNodeDefManager() override;
@@ -501,7 +497,6 @@ private:
 	ELoginRegister m_allow_login_or_register = ELoginRegister::Any;
 	Camera *m_camera = nullptr;
 	Minimap *m_minimap = nullptr;
-	Clouds *m_clouds = nullptr;
 
 	// Server serialization version
 	u8 m_server_ser_ver;

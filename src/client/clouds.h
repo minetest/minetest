@@ -60,8 +60,6 @@ public:
 
 	virtual void render();
 
-	void renderDepth();
-
 	virtual const aabb3f &getBoundingBox() const
 	{
 		return m_box;
@@ -101,10 +99,6 @@ public:
 		invalidateMesh();
 	}
 
-	float getDensity() const {
-		return m_params.density;
-	}
-
 	void setColorBright(video::SColor color_bright)
 	{
 		m_params.color_bright = color_bright;
@@ -132,10 +126,6 @@ public:
 		invalidateMesh();
 	}
 
-	float getHeight() const {
-		return m_params.height;
-	}
-
 	void setSpeed(v2f speed)
 	{
 		m_params.speed = speed;
@@ -150,23 +140,9 @@ public:
 		invalidateMesh();
 	}
 
-	float getThickness() const {
-		return m_params.thickness;
-	}
-
 	bool isCameraInsideCloud() const { return m_camera_inside_cloud; }
 
 	const video::SColor getColor() const { return m_color.toSColor(); }
-
-	bool getGrid(int x, int y)
-	{
-		int index = x + y * m_cloud_radius_i * 2;
-		if (index < 0 || index >= m_grid.size())
-			return false;
-		return m_grid[index];
-	}
-
-	v2f getCloudOffset() const { return m_noise_position; }
 
 private:
 	void updateBox()
@@ -204,7 +180,6 @@ private:
 	u16 m_cloud_radius_i;
 	u32 m_seed;
 	v3f m_camera_pos;
-	v2f m_noise_position;
 
 	v3s16 m_camera_offset;
 	bool m_camera_inside_cloud = false;
@@ -212,7 +187,4 @@ private:
 	bool m_enable_shaders, m_enable_3d;
 	video::SColorf m_color = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	CloudParams m_params;
-
-	std::vector<bool> m_grid;
-
 };

@@ -113,19 +113,6 @@ void TextureBuffer::swapTextures(u8 texture_a, u8 texture_b)
 	m_textures[texture_b] = temp;
 }
 
-void TextureBuffer::setTextureImage(u8 id, video::IImage* image) {
-	assert(m_definitions[id].valid);
-
-	auto &definition = m_definitions[id];
-
-	if (m_textures[id]) m_driver->removeTexture(m_textures[id]);
-
-	m_textures[id] = m_driver->addTexture(definition.name.c_str(), image);
-	definition.fixed_size = true;
-	definition.size = image->getDimension();
-	definition.dirty = false;
-}
-
 bool TextureBuffer::ensureTexture(video::ITexture **texture, const TextureDefinition& definition, PipelineContext &context)
 {
 	bool modify;
@@ -194,8 +181,6 @@ void TextureBufferOutput::activate(PipelineContext &context)
 
 	if (!render_target)
 		render_target = driver->addRenderTarget();
-
-	if (disable_clear) m_clear = false;
 
 	core::array<video::ITexture *> textures;
 	core::dimension2du size(0, 0);

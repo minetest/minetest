@@ -190,7 +190,6 @@ public:
 	TextureBufferOutput(TextureBuffer *buffer, const std::vector<u8> &texture_map, u8 depth_stencil);
 	virtual ~TextureBufferOutput() override;
 	void activate(PipelineContext &context) override;
-	void disableClearing() { disable_clear = true; }
 private:
 	static const u8 NO_DEPTH_TEXTURE = 255;
 
@@ -199,7 +198,6 @@ private:
 	u8 depth_stencil { NO_DEPTH_TEXTURE };
 	video::IRenderTarget* render_target { nullptr };
 	video::IVideoDriver* driver { nullptr };
-	bool disable_clear = false;
 };
 
 /**
