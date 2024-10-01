@@ -2752,9 +2752,10 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		isKeyDown(KeyType::PLACE),
 		cam.camera_pitch,
 		cam.camera_yaw,
-		input->getMovementSpeed(),
-		input->getMovementDirection()
+		input->getJoystickSpeed(),
+		input->getJoystickDirection()
 	);
+	control.setMovementFromKeys();
 
 	// autoforward if set: move at maximum speed
 	if (player->getPlayerSettings().continuous_forward &&
