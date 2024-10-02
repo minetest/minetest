@@ -448,7 +448,7 @@ translucent_liquids (Translucent liquids) bool true
 
 #    Leaves style:
 #    -   Fancy:  all faces visible
-#    -   Simple: only outer faces, if defined special_tiles are used
+#    -   Simple: only outer faces
 #    -   Opaque: disable transparency
 leaves_style (Leaves style) enum fancy fancy,simple,opaque
 
@@ -456,7 +456,6 @@ leaves_style (Leaves style) enum fancy fancy,simple,opaque
 connected_glass (Connect glass) bool false
 
 #    Enable smooth lighting with simple ambient occlusion.
-#    Disable for speed or for different looks.
 smooth_lighting (Smooth lighting) bool true
 
 #    Enables tradeoffs that reduce CPU load or increase rendering performance
