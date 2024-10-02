@@ -173,6 +173,42 @@ u16 Player::getMaxHotbarItemcount()
 	return mainlist ? std::min(mainlist->getSize(), (u32) hud_hotbar_itemcount) : 0;
 }
 
+void PlayerControl::setMovementFromKeys()
+{
+	bool a_up = direction_keys & (1 << 0),
+		a_down = direction_keys & (1 << 1),
+		a_left = direction_keys & (1 << 2),
+		a_right = direction_keys & (1 << 3);
+
+	if (a_up || a_down || a_left || a_right)  {
+		// if contradictory keys pressed, stay still
+		if (a_up && a_down && a_left && a_right)
+			movement_speed = 0.0f;
+		else if (a_up && a_down && !a_left && !a_right)
+			movement_speed = 0.0f;
+		else if (!a_up && !a_down && a_left && a_right)
+			movement_speed = 0.0f;
+		else
+			// If there is a keyboard event, assume maximum speed
+			movement_speed = 1.0f;
+	}
+
+	// Check keyboard for input
+	float x = 0, y = 0;
+	if (a_up)
+		y += 1;
+	if (a_down)
+		y -= 1;
+	if (a_left)
+		x -= 1;
+	if (a_right)
+		x += 1;
+
+	if (x != 0 || y != 0)
+		// If there is a keyboard event, it takes priority
+		movement_direction = std::atan2(x, y);
+}
+
 #ifndef SERVER
 
 u32 PlayerControl::getKeysPressed() const
@@ -229,6 +265,11 @@ void PlayerControl::unpackKeysPressed(u32 keypress_bits)
 	dig   = keypress_bits & (1 << 7);
 	place = keypress_bits & (1 << 8);
 	zoom  = keypress_bits & (1 << 9);
+}
+
+v2f PlayerControl::getMovement() const
+{
+	return v2f(std::sin(movement_direction), std::cos(movement_direction)) * movement_speed;
 }
 
 static auto tie(const PlayerPhysicsOverride &o)
