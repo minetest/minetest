@@ -843,6 +843,8 @@ In particular consider `minetest.dynamic_add_media` and test whether
 using other texture modifiers could result in a shorter string than
 embedding a whole image, this may vary by use case.
 
+*See notes: `TEXMOD_UPSCALE`*
+
 Hardware coloring
 -----------------
 
