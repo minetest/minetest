@@ -26,7 +26,7 @@ GUIScrollBar::GUIScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s3
 		dragged_by_slider(false), tray_clicked(false), scroll_pos(0),
 		draw_center(0), thumb_size(0), min_pos(0), max_pos(100), small_step(10),
 		large_step(50), drag_offset(0), page_size(100), border_size(0),
-		m_tsrc(tsrc)
+		m_tsrc(tsrc), target_pos(0.0f), variable_step(0.0f)
 {
 	refreshControls();
 	setNotClipped(false);
@@ -90,7 +90,10 @@ bool GUIScrollBar::OnEvent(const SEvent &event)
 				if (Environment->hasFocus(this)) {
 					s8 d = event.MouseInput.Wheel < 0 ? -1 : 1;
 					s8 h = is_horizontal ? 1 : -1;
-					setPosInterpolated(getTargetPos() + (d * small_step * h));
+					
+					// NOTE: Is this noticable at all?
+					variable_step += d;
+					setPosInterpolated(getTargetPos() + ((event.MouseInput.Wheel + variable_step) * small_step * h));
 					return true;
 				}
 				break;
@@ -192,7 +195,6 @@ void GUIScrollBar::draw()
 static inline f32 interpolate_scroll(f32 from, f32 to, f32 amount)
 {
 	f32 step = /*core::round32*/((to - from) * amount);
-	std::cout << "step: " << step << " ";
 	if (step == 0)
 		return to;
 	return from + step;
@@ -200,22 +202,18 @@ static inline f32 interpolate_scroll(f32 from, f32 to, f32 amount)
 
 void GUIScrollBar::interpolatePos()
 {
-	if (target_pos.has_value()) {
-		// Adjust to match 60 FPS. This also means that interpolation is
-		// effectively disabled at <= 30 FPS.
-		f32 amount = 0.1f * (last_delta_ms / 16.667f);
-		setPosRaw(interpolate_scroll(scroll_pos, *target_pos, amount));
-		std::cout << "Amount: " << amount << " | at:" << scroll_pos << ", want:" << *target_pos << std::endl;
-		// if (scroll_pos == target_pos)
-		// 	target_pos = std::nullopt;
+    // Adjust to match 60 FPS. This also means that interpolation is
+    // effectively disabled at <= 30 FPS.
+    f32 amount = 0.2f * (last_delta_ms / 16.667f);
+    setPosRaw(interpolate_scroll(scroll_pos, target_pos, amount));
+    variable_step *= 0.9f;
 
-		SEvent e;
-		e.EventType = EET_GUI_EVENT;
-		e.GUIEvent.Caller = this;
-		e.GUIEvent.Element = nullptr;
-		e.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
-		Parent->OnEvent(e);
-	}
+    SEvent e;
+    e.EventType = EET_GUI_EVENT;
+    e.GUIEvent.Caller = this;
+    e.GUIEvent.Element = nullptr;
+    e.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
+    Parent->OnEvent(e);
 }
 
 void GUIScrollBar::OnPostRender(u32 time_ms)
@@ -275,12 +273,13 @@ void GUIScrollBar::setPosRaw(const s32 &pos)
 	
 	if (!is_dragging)
 	{
-	if (scroll_pos < 0) {
-        *target_pos = (*target_pos * 0.9);
-	}
-	else if (scroll_pos > max_pos) {
-        *target_pos += ((*target_pos) - max_pos) * -0.3;
-	}
+        // TODO support deltatime
+        if (scroll_pos < 0) {
+            target_pos = (target_pos * 0.9);
+        }
+        else if (scroll_pos > max_pos) {
+            target_pos += (target_pos - max_pos) * -0.3;
+        }
 	}
 
 	f32 f = core::isnotzero(range()) ? (f32(thumb_area) - f32(thumb_size)) / range()
@@ -293,7 +292,6 @@ void GUIScrollBar::setPos(const s32 &pos)
 {
 	setPosRaw(pos);
 	target_pos = pos;
-	//target_pos = std::nullopt;
 }
 
 void GUIScrollBar::setPosAndSend(const s32 &pos)
@@ -316,14 +314,9 @@ void GUIScrollBar::setPosInterpolated(const s32 &pos)
 		setPosAndSend(pos);
 		return;
 	}
-
-	s32 clamped = pos;//core::s32_clamp(pos, min_pos, max_pos);
-	if (scroll_pos != clamped) {
-		target_pos = clamped;
-		interpolatePos();
-	} else {
-		//target_pos = std::nullopt;
-	}
+	
+	target_pos = pos;
+	interpolatePos();
 }
 
 void GUIScrollBar::setSmallStep(const s32 &step)
@@ -379,10 +372,7 @@ s32 GUIScrollBar::getPos() const
 
 s32 GUIScrollBar::getTargetPos() const
 {
-	if (target_pos.has_value()) {
-		return *target_pos;
-	}
-	return scroll_pos;
+	return target_pos;
 }
 
 void GUIScrollBar::refreshControls()
