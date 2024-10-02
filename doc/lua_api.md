@@ -8610,7 +8610,7 @@ child will follow movement and rotation of that bone.
       * `sky_light` is a table that controls calculation of sun light color.
         `sun_color = color_offset + color_ratio_coef*daynight_ratio` where `daynight_ratio` is not linear to day time.
         Result color lesser or equal to 0.0 means no color in light.
-        Result color greater or equal to 1.0 means full color in light. 
+        Result color greater or equal to 1.0 means full color in light.
         * `color_offset` is a table that controls red, green and blue color offsets.
           * `r` (default: `-0.04`)
           * `g` (default: `-0.04`)

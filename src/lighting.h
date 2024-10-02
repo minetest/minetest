@@ -67,7 +67,7 @@ struct SkyLight
 	v3f color_offset;
 	/// @brief Sunlight color dayratio effect
 	v3f color_ratio_coef;
-	
+
 	SkyLight();
 };
 
