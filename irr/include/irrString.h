@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cwchar>
+#include <type_traits>
 
 /* HACK: import these string methods from MT's util/string.h */
 extern std::wstring utf8_to_wide(std::string_view input);
@@ -165,16 +166,17 @@ public:
 	}
 
 	//! Assignment operator for strings, ASCII and Unicode
-	template <class B>
-	string<T> &operator=(const B *const c)
+	template <class B, std::enable_if_t<std::is_array_v<B[]>, bool> = true>
+	string<T> &operator=(const B * c)
 	{
 		if (!c) {
 			clear();
 			return *this;
 		}
 		
-        if ((void*)c == (void*)c_str())
-            return *this;
+        _IRR_DEBUG_BREAK_IF(
+            reinterpret_cast<uintptr_t>(c) >= (uintptr_t)(str.data()) &&
+            reinterpret_cast<uintptr_t>(c) <  (uintptr_t)(str.data()) + str.size());
 
         u32 len = calclen(c);
         // In case `c` is a pointer to our own buffer, we may not resize first
