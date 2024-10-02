@@ -26,6 +26,7 @@ tags
 !tags/
 gtags.files
 .idea
+.qtcreator/
 # Codelite
 *.project
 # Visual Studio Code & plugins
@@ -109,6 +110,8 @@ src/cmake_config_githash.h
 *.layout
 *.o
 *.a
+*.dump
+*.dmp
 *.ninja
 .ninja*
 *.gch
