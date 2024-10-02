@@ -1034,7 +1034,7 @@ int ModApiMainMenu::l_get_min_supp_proto(lua_State *L)
 
 int ModApiMainMenu::l_get_max_supp_proto(lua_State *L)
 {
-	lua_pushinteger(L, CLIENT_PROTOCOL_VERSION_MAX);
+	lua_pushinteger(L, LATEST_PROTOCOL_VERSION);
 	return 1;
 }
 
