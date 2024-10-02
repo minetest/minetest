@@ -10,7 +10,6 @@ which includes automatic scaling of the thumb slider and hiding of
 the arrow buttons where there is insufficient space.
 */
 
-#include <iostream>
 #include "guiScrollBar.h"
 #include "guiButton.h"
 #include "porting.h"
