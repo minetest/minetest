@@ -1394,16 +1394,19 @@ The function of `param2` is determined by `paramtype2` in node definition.
       The palette should have 256 pixels.
 * `paramtype2 = "colorfacedir"`
     * Same as `facedir`, but with colors.
-    * The first three bits of `param2` tells which color is picked from the
+    * The three most significant bits of `param2` tells which color is picked from the
       palette. The palette should have 8 pixels.
+    * The five least significant bits contain the `facedir` value.
 * `paramtype2 = "color4dir"`
-    * Same as `facedir`, but with colors.
-    * The first six bits of `param2` tells which color is picked from the
+    * Same as `4dir`, but with colors.
+    * The six most significant bits of `param2` tells which color is picked from the
       palette. The palette should have 64 pixels.
+    * The two least significant bits contain the `4dir` rotation.
 * `paramtype2 = "colorwallmounted"`
     * Same as `wallmounted`, but with colors.
-    * The first five bits of `param2` tells which color is picked from the
+    * The five most significant bits of `param2` tells which color is picked from the
       palette. The palette should have 32 pixels.
+    * The three least significant bits contain the `wallmounted` value.
 * `paramtype2 = "glasslikeliquidlevel"`
     * Only valid for "glasslike_framed" or "glasslike_framed_optional"
       drawtypes. "glasslike_framed_optional" nodes are only affected if the
@@ -1417,9 +1420,9 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * Liquid texture is defined using `special_tiles = {"modname_tilename.png"}`
 * `paramtype2 = "colordegrotate"`
     * Same as `degrotate`, but with colors.
-    * The first (most-significant) three bits of `param2` tells which color
-      is picked from the palette. The palette should have 8 pixels.
-    * Remaining 5 bits store rotation in range 0–23 (i.e. in 15° steps)
+    * The three most significant bits of `param2` tells which color is picked
+      from the palette. The palette should have 8 pixels.
+    * The five least significant bits store rotation in range 0–23 (i.e. in 15° steps)
 * `paramtype2 = "none"`
     * `param2` will not be used by the engine and can be used to store
       an arbitrary value
