@@ -905,12 +905,14 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 	// Initialize with full alpha, otherwise entity won't be visible
 	video::SColor light{0xFFFFFFFF};
 
-	// Encode light into color, adding a small boost
-	// based on the entity glow.
 	if (m_enable_shaders)
 		light = encode_light(light_at_pos, m_prop.glow);
-	else
-		final_color_blend(&light, light_at_pos, day_night_ratio);
+	else {
+		video::SColor ambient_light = g_settings->getBool("enable_shaders") ?
+		m_env->getLocalPlayer()->getLighting().ambient_light : video::SColor(255, 0, 0, 0);
+
+		final_color_blend(&light, light_at_pos, day_night_ratio, ambient_light);
+	}
 
 	if (light != m_last_light) {
 		m_last_light = light;

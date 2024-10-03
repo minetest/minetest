@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/content_cao.h"
 #include "client/clientevent.h"
 #include "client/renderingengine.h"
+#include "client/mapblock_mesh.h"
 #include "util/numeric.h"
 #include "light.h"
 #include "localplayer.h"
@@ -185,11 +186,19 @@ video::SColor Particle::updateLight(ClientEnvironment *env)
 	else
 		light = blend_light(env->getDayNightRatio(), LIGHT_SUN, 0);
 
-	u8 m_light = decode_light(light + m_p.glow);
+	light = decode_light(light + m_p.glow);
+
+	video::SColor light_color(0xFFFFFFFF);
+	video::SColor ambient_light = g_settings->getBool("enable_shaders") ?
+		env->getLocalPlayer()->getLighting().ambient_light : video::SColor(255, 0, 0, 0);
+
+	final_color_blend(&light_color, static_cast<u16>(light) * 255, env->getDayNightRatio(),
+			ambient_light);
+
 	return video::SColor(255,
-		m_light * m_base_color.getRed() / 255,
-		m_light * m_base_color.getGreen() / 255,
-		m_light * m_base_color.getBlue() / 255);
+		light_color.getRed() * m_base_color.getRed() / 255,
+		light_color.getGreen() * m_base_color.getGreen() / 255,
+		light_color.getBlue() * m_base_color.getBlue() / 255);
 }
 
 void Particle::updateVertices(ClientEnvironment *env, video::SColor color)

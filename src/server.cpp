@@ -1919,6 +1919,7 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 			4, peer_id);
 
 	pkt << lighting.shadow_intensity;
+	pkt << lighting.ambient_light;
 	pkt << lighting.saturation;
 
 	pkt << lighting.exposure.luminance_min

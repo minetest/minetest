@@ -8757,6 +8757,14 @@ child will follow movement and rotation of that bone.
 * `set_lighting(light_definition)`: sets lighting for the player
     * Passing no arguments resets lighting to its default values.
     * `light_definition` is a table with the following optional fields:
+      * `ambient_light` is a ColorSpec controlling color of global ambient light;
+        (default: `{a = 255, r = 0, g = 0, b = 0}` / last set value).
+        * It works only if shaders are enabled.
+        * Alpha is ignored (it is always set to 255).
+        * Note: Total light is clamped before being applied.
+          This means that when an object is fully lit, ambient light
+          will take no effect. Setting ambient light to `"#FFFFFF"`
+          will make all objects be fully lit at all times ("fullbright").
       * `saturation` sets the saturation (vividness; default: `1.0`).
         * It is applied according to the function `result = b*(1-s) + c*s`, where:
           * `c` is the original color
