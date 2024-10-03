@@ -794,7 +794,6 @@ private:
 
 	/*!
 	 * Calculate ContentFeatures bigSelectonBox value.
-	 * m_selection_box_union.
 	 */
 	void calcBigSelectionBox(content_t id, const ContentFeatures &def);
 
