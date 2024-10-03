@@ -180,9 +180,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 		}
 
 		// for check bigSelectionBox
-		s16 cx = state->m_iterator.m_current_node_pos.X;
-		s16 cy = state->m_iterator.m_current_node_pos.Y;
-		s16 cz = state->m_iterator.m_current_node_pos.Z;
+		v3s16 &current_pos = state->m_iterator.m_current_node_pos;
 
 		// For each untested node
 		for (s16 z = new_nodes.MinEdge.Z; z <= new_nodes.MaxEdge.Z; z++)
@@ -197,8 +195,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 				continue;
 
 			// if take sense to use it
-			if ( (cy != y || cx != x || cz != z)
-					&& !n.haveBigSelectionBox(nodedef))
+			if ((current_pos != np) && !n.haveBigSelectionBox(nodedef))
 				continue;
 
 			PointabilityType pointable = isPointableNode(n, nodedef,

@@ -796,7 +796,7 @@ private:
 	 * Calculate ContentFeatures bigSelectonBox value.
 	 * m_selection_box_union.
 	 */
-	void calcBigSelectinBox(content_t id, const ContentFeatures &def);
+	void calcBigSelectionBox(content_t id, const ContentFeatures &def);
 
 	//! Features indexed by ID.
 	std::vector<ContentFeatures> m_content_features;
