@@ -291,16 +291,18 @@ void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio){
 }
 
 void final_color_blend(video::SColor *result,
-		u16 light, u32 daynight_ratio)
+		u16 light, u32 daynight_ratio,
+		const video::SColorf &ambientLight)
 {
 	video::SColorf dayLight;
 	get_sunlight_color(&dayLight, daynight_ratio);
 	final_color_blend(result,
-		encode_light(light, 0), dayLight);
+		encode_light(light, 0), dayLight, ambientLight);
 }
 
 void final_color_blend(video::SColor *result,
-		const video::SColor &data, const video::SColorf &dayLight)
+		const video::SColor &data, const video::SColorf &dayLight,
+		const video::SColorf &ambientLight)
 {
 	static const video::SColorf artificialColor(1.04f, 1.04f, 1.04f);
 
@@ -320,6 +322,11 @@ void final_color_blend(video::SColor *result,
 
 	b += emphase_blue_when_dark[irr::core::clamp((s32) ((r + g + b) / 3 * 255),
 		0, 255) / 8] / 255.0f;
+
+	// Add ambient light
+	r += ambientLight.r;
+	g += ambientLight.g;
+	b += ambientLight.b;
 
 	result->setRed(core::clamp((s32) (r * 255.0f), 0, 255));
 	result->setGreen(core::clamp((s32) (g * 255.0f), 0, 255));

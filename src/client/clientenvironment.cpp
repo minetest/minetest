@@ -261,7 +261,11 @@ void ClientEnvironment::step(float dtime)
 
 		u16 light = getInteriorLight(node_at_lplayer, 0, m_client->ndef());
 		lplayer->light_color = encode_light(light, 0); // this transfers light.alpha
-		final_color_blend(&lplayer->light_color, light, day_night_ratio);
+
+		video::SColor ambient_light = g_settings->getBool("enable_shaders") ?
+			lplayer->getLighting().ambient_light : video::SColor(255, 0, 0, 0);
+
+		final_color_blend(&lplayer->light_color, light, day_night_ratio, ambient_light);
 	}
 
 	/*
