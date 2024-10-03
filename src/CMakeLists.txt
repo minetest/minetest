@@ -851,7 +851,7 @@ else()
 		endif()
 	endif()
 
-set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${OTHER_FLAGS} -pipe -funroll-loops -O3 -fomit-frame-pointer $ENV{CPPFLAGS}")
+	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${OTHER_FLAGS} -pipe -funroll-loops -O3 -fomit-frame-pointer $ENV{CPPFLAGS}")
 	if(CMAKE_SYSTEM_NAME STREQUAL "Linux"
 			AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
 			AND CMAKE_CXX_COMPILER_VERSION MATCHES "^9\\.")
