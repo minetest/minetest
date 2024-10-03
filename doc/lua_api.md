@@ -2824,7 +2824,7 @@ Elements
   * be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
 * `orientation`: possible values are `vertical` and `horizontal`.
 * `scroll factor`: optional, defaults to `0.1`.
-* `content padding`: (optional), in formspec units
+* `content padding`: (optional), in formspec coordinate units
   * If specified, the scrollbar properties `max` and `thumbsize` are calculated automatically
     based on the content size plus `content padding` at the end of the container. `min` is set to 0.
   * Negative `scroll factor` is not supported.
