@@ -410,6 +410,7 @@ public:
 	{
 		bool different =
 				MaterialType != b.MaterialType ||
+				ColorParam != b.ColorParam ||
 				MaterialTypeParam != b.MaterialTypeParam ||
 				Thickness != b.Thickness ||
 				Wireframe != b.Wireframe ||
