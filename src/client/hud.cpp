@@ -802,42 +802,20 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 		}
 	}
 }
+
 void Hud::drawHotbar(const v2s32 &pos, const v2f &offset, u16 dir, const v2f &align)
 {
 	if (g_touchcontrols)
 		g_touchcontrols->resetHotbarRects();
 
 	InventoryList *mainlist = inventory->getList("main");
-	if (mainlist == NULL) {
+	if (mainlist == nullptr) {
 		// Silently ignore this. We may not be initialized completely.
 		return;
 	}
 
-	u16 playeritem = player->getWieldIndex();
-	v2s32 screen_offset(offset.X, offset.Y);
-
-	v2s32 centerlowerpos(m_displaycenter.X, m_screensize.Y);
-
-	s32 hotbar_itemcount = player->getMaxHotbarItemcount();
-	s32 width = hotbar_itemcount * (m_hotbar_imagesize + m_padding * 2);
-
-	const v2u32 &window_size = RenderingEngine::getWindowSize();
-	if ((float) width / (float) window_size.X <=
-			g_settings->getFloat("hud_hotbar_max_width")) {
-		drawItems(pos, screen_offset, hotbar_itemcount, align, 0,
-			mainlist, playeritem + 1, dir, true);
-	} else {
-		v2s32 firstpos = pos;
-		firstpos.X += width/4;
-
-		v2s32 secondpos = firstpos;
-		firstpos = firstpos - v2s32(0, m_hotbar_imagesize + m_padding);
-
-		drawItems(firstpos, screen_offset, hotbar_itemcount / 2, align, 0,
-			mainlist, playeritem + 1, dir, true);
-		drawItems(secondpos, screen_offset, hotbar_itemcount, align,
-			hotbar_itemcount / 2, mainlist, playeritem + 1, dir, true);
-	}
+	drawItems(pos, v2s32(offset.X, offset.Y), player->getMaxHotbarItemcount(), align, 0,
+		mainlist, player->getWieldIndex() + 1, dir, true);
 }
 
 

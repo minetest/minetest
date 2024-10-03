@@ -758,6 +758,10 @@ show_debug (Show debug info) bool false
 #    Radius to use when the block bounds HUD feature is set to near blocks.
 show_block_bounds_radius_near (Block bounds HUD radius) int 4 0 1000
 
+#    Maximum proportion of current window to be used for hotbar.
+#    Deprecated, use the setting hud_scaling instead.
+hud_hotbar_max_width (Maximum hotbar width) float 1.0 0.001 1.0
+
 [**Chat]
 
 #    Maximum number of recent chat messages to show
@@ -771,10 +775,6 @@ console_color (Console color) string (0,0,0)
 
 #    In-game chat console background alpha (opaqueness, between 0 and 255).
 console_alpha (Console alpha) int 200 0 255
-
-#    Maximum proportion of current window to be used for hotbar.
-#    Useful if there's something to be displayed right or left of hotbar.
-hud_hotbar_max_width (Maximum hotbar width) float 1.0 0.001 1.0
 
 #    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
 clickable_chat_weblinks (Chat weblinks) bool true

@@ -665,6 +665,11 @@
 #    type: bool
 # show_nametag_backgrounds = true
 
+#    Maximum proportion of current window to be used for hotbar.
+#    Deprecated, use the setting hud_scaling instead.
+#    type: float min: 0.001 max: 1
+# hud_hotbar_max_width = 1.0
+
 ### Chat
 
 #    Maximum number of recent chat messages to show
@@ -682,11 +687,6 @@
 #    In-game chat console background alpha (opaqueness, between 0 and 255).
 #    type: int min: 0 max: 255
 # console_alpha = 200
-
-#    Maximum proportion of current window to be used for hotbar.
-#    Useful if there's something to be displayed right or left of hotbar.
-#    type: float min: 0.001 max: 1
-# hud_hotbar_max_width = 1.0
 
 #    Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console output.
 #    type: bool

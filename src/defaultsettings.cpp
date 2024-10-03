@@ -296,7 +296,6 @@ void set_default_settings()
 	settings->setDefault("gui_scaling_filter_txr2img", "true");
 	settings->setDefault("smooth_scrolling", "true");
 	settings->setDefault("desynchronize_mapblock_texture_animation", "false");
-	settings->setDefault("hud_hotbar_max_width", "1.0");
 	settings->setDefault("enable_local_map_saving", "false");
 	settings->setDefault("show_entity_selectionbox", "false");
 	settings->setDefault("ambient_occlusion_gamma", "1.8");
