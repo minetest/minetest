@@ -966,6 +966,8 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 		errorstream << "Field \"liquid_move_physics\": Invalid type!" << std::endl;
 	}
 	lua_pop(L, 1);
+
+	getfloatfield(L, index, "climb_factor", f.climb_factor);
 }
 
 void push_content_features(lua_State *L, const ContentFeatures &c)
@@ -1099,6 +1101,8 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "move_resistance");
 	lua_pushboolean(L, c.liquid_move_physics);
 	lua_setfield(L, -2, "liquid_move_physics");
+	lua_pushnumber(L, c.climb_factor);
+	lua_setfield(L, -2, "climb_factor");
 }
 
 /******************************************************************************/

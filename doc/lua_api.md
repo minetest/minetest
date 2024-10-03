@@ -9603,6 +9603,13 @@ Used by `minetest.register_node`.
     -- (see `liquid_move_physics`), the movement speed will also be
     -- affected by the `movement_liquid_*` settings.
 
+    climb_factor = 1.0,
+    -- The speed at which a climbable node can be climbed is multiplied
+    -- with this number. Must not be negative. No effect if node isn't
+    -- climbable.
+    -- Note: The base climbing speed is controlled by the setting
+    -- `movement_speed_climb`.
+
     buildable_to = false,  -- If true, placed nodes can replace this node
 
     floodable = false,

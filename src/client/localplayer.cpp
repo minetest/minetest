@@ -336,6 +336,9 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	} else {
 		is_climbing = (nodemgr->get(node.getContent()).climbable ||
 			nodemgr->get(node2.getContent()).climbable) && !free_move;
+		if (is_climbing) {
+			node_climb_factor = nodemgr->get(node.getContent()).climb_factor;
+		}
 	}
 
 	/*
@@ -613,7 +616,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 				speedV.Y = -speed_walk;
 				swimming_vertical = true;
 			} else if (is_climbing && !m_disable_descend) {
-				speedV.Y = -movement_speed_climb * physics_override.speed_climb;
+				speedV.Y = -movement_speed_climb * physics_override.speed_climb * node_climb_factor;
 			} else {
 				// If not free movement but fast is allowed, aux1 is
 				// "Turbo button"
@@ -649,9 +652,9 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 				swimming_vertical = true;
 			} else if (is_climbing && !m_disable_descend) {
 				if (fast_climb)
-					speedV.Y = -speed_fast;
+					speedV.Y = -speed_fast * node_climb_factor;
 				else
-					speedV.Y = -movement_speed_climb * physics_override.speed_climb;
+					speedV.Y = -movement_speed_climb * physics_override.speed_climb * node_climb_factor;
 			}
 		}
 	}
@@ -704,7 +707,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 			if (fast_climb)
 				speedV.Y = speed_fast;
 			else
-				speedV.Y = movement_speed_climb * physics_override.speed_climb;
+				speedV.Y = movement_speed_climb * physics_override.speed_climb * node_climb_factor;
 		}
 	}
 
