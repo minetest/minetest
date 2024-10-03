@@ -1146,7 +1146,7 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 							}
 						}
 
-						break;
+						return true;
 					}
 				}
 			}
