@@ -161,6 +161,11 @@ local function load()
 		note.requires = get_setting_info("enable_auto_exposure").requires
 		table.insert(content, idx, note)
 
+		idx = table.indexof(content, "enable_bloom") + 1
+		note = component_funcs.note(fgettext_ne("(The game will need to enable bloom as well)"))
+		note.requires = get_setting_info("enable_bloom").requires
+		table.insert(content, idx, note)
+
 		idx = table.indexof(content, "enable_volumetric_lighting") + 1
 		note = component_funcs.note(fgettext_ne("(The game will need to enable volumetric lighting as well)"))
 		note.requires = get_setting_info("enable_volumetric_lighting").requires
