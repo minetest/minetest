@@ -4,6 +4,12 @@
 - [Compiling on Windows](windows.md)
 - [Compiling on MacOS](macos.md)
 
+## Environment variables
+
+These variables are inherited from the environment and extend the list of flags passed by Minetest itself.
+
+    CFLAGS=                    - C compiler flags
+    CPPFLAGS=                  - C++ compiler flags
 
 ## CMake options
 
