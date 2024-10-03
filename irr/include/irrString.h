@@ -166,7 +166,7 @@ public:
 	}
 
 	//! Assignment operator for strings, ASCII and Unicode
-	template <class B, std::enable_if_t<std::is_array_v<B[]>, bool> = true>
+	template <class B>
 	string<T> &operator=(const B * c)
 	{
 		if (!c) {
@@ -174,18 +174,22 @@ public:
 			return *this;
 		}
 		
-        _IRR_DEBUG_BREAK_IF(
-            reinterpret_cast<uintptr_t>(c) >= (uintptr_t)(str.data()) &&
-            reinterpret_cast<uintptr_t>(c) <  (uintptr_t)(str.data()) + str.size());
+		if constexpr (sizeof(T) != sizeof(B)) {
+			_IRR_DEBUG_BREAK_IF(
+				(uintptr_t)c >= (uintptr_t)(str.data()) &&
+				(uintptr_t)c <  (uintptr_t)(str.data() + str.size()));
+		}
 
-        u32 len = calclen(c);
-        // In case `c` is a pointer to our own buffer, we may not resize first
-        // or it can become invalid.
-        if (len > str.size()) str.resize(len);
-        for (u32 l = 0; l < len; ++l)
-            str[l] = static_cast<T>(c[l]);
-        if (len < str.size()) str.resize(len);
-
+		u32 len = calclen(c);
+		// In case `c` is a pointer to our own buffer, we may not resize first
+		// or it can become invalid.
+		if (len > str.size())
+			str.resize(len);
+		for (u32 l = 0; l < len; ++l)
+			str[l] = static_cast<T>(c[l]);
+		if (len < str.size())
+			str.resize(len);
+		
 		return *this;
 	}
 
