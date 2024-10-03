@@ -2319,6 +2319,9 @@ pitch_move (Pitch move mode) bool false
 #    This requires the "fast" privilege on the server.
 fast_move (Fast movement) bool false
 
+#    Sneak Lock
+sneak_lock (Sneak lock) bool false
+
 #    If enabled together with fly mode, player is able to fly through solid nodes.
 #    This requires the "noclip" privilege on the server.
 noclip (Noclip) bool false
@@ -2364,6 +2367,9 @@ keymap_jump (Jump key) key KEY_SPACE
 #    Key for sneaking.
 #    Also used for climbing down and descending in water if aux1_descends is disabled.
 keymap_sneak (Sneak key) key KEY_LSHIFT
+
+#    Key for locking sneak.
+keymap_sneak_lock (Sneak lock key) key
 
 #    Key for digging, punching or using something.
 #    (Note: The actual meaning might vary on a per-game basis.)
