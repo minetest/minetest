@@ -81,7 +81,6 @@ class RenderingEngine
 {
 public:
 	static const video::SColor MENU_SKY_COLOR;
-	static const float BASE_BLOOM_STRENGTH;
 
 	RenderingEngine(IEventReceiver *eventReceiver);
 	~RenderingEngine();

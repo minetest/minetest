@@ -332,9 +332,6 @@ void set_default_settings()
 	settings->setDefault("antialiasing", "none");
 	settings->setDefault("enable_bloom", "false");
 	settings->setDefault("enable_bloom_debug", "false");
-	settings->setDefault("bloom_strength_factor", "1.0");
-	settings->setDefault("bloom_intensity", "0.05");
-	settings->setDefault("bloom_radius", "1");
 	settings->setDefault("enable_volumetric_lighting", "false");
 	settings->setDefault("enable_water_reflections", "false");
 	settings->setDefault("enable_translucent_foliage", "false");

@@ -41,7 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
 const video::SColor RenderingEngine::MENU_SKY_COLOR = video::SColor(255, 140, 186, 250);
-const float RenderingEngine::BASE_BLOOM_STRENGTH = 1.0f;
 
 /* Helper classes */
 
