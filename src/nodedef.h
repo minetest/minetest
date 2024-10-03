@@ -441,6 +441,8 @@ struct ContentFeatures
 	NodeBox node_box;
 	NodeBox selection_box;
 	NodeBox collision_box;
+	// if selection box is bigger then (-BS,-BS,-BS)/2 and (BS,BS,BS)/2 edges
+	bool bigSelectionBox;
 
 	// --- SOUND PROPERTIES ---
 
@@ -789,6 +791,12 @@ private:
 	 * m_selection_box_union.
 	 */
 	void fixSelectionBoxIntUnion();
+
+	/*!
+	 * Calculate ContentFeatures bigSelectonBox value.
+	 * m_selection_box_union.
+	 */
+	void calcBigSelectinBox(content_t id, const ContentFeatures &def);
 
 	//! Features indexed by ID.
 	std::vector<ContentFeatures> m_content_features;

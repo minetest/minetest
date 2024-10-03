@@ -1311,6 +1311,16 @@ inline void NodeDefManager::fixSelectionBoxIntUnion()
 		m_selection_box_union.MaxEdge.Z / BS - 0.5f);
 }
 
+inline void NodeDefManager::calcBigSelectinBox(content_t id, const ContentFeatures &def)
+{
+	aabb3f box_union;
+	getNodeBoxUnion(def.selection_box, def, &box_union);
+	bool bigSelectionBox =
+			(box_union.MinEdge.X < -BS/2) || (box_union.MaxEdge.X > BS/2) ||
+			(box_union.MinEdge.Y < -BS/2) || (box_union.MaxEdge.Y > BS/2) ||
+			(box_union.MinEdge.Z < -BS/2) || (box_union.MaxEdge.Z > BS/2);
+	m_content_features[id].bigSelectionBox = bigSelectionBox;
+}
 
 void NodeDefManager::eraseIdFromGroups(content_t id)
 {
@@ -1360,12 +1370,14 @@ content_t NodeDefManager::set(const std::string &name, const ContentFeatures &de
 	m_content_features[id] = def;
 	m_content_features[id].floats = itemgroup_get(def.groups, "float") != 0;
 	m_content_lighting_flag_cache[id] = def.getLightingFlags();
+
+	calcBigSelectinBox(id, def);
+
 	verbosestream << "NodeDefManager: registering content id \"" << id
 		<< "\": name=\"" << def.name << "\""<<std::endl;
 
 	getNodeBoxUnion(def.selection_box, def, &m_selection_box_union);
 	fixSelectionBoxIntUnion();
-
 	// Add this content to the list of all groups it belongs to
 	for (const auto &group : def.groups) {
 		const std::string &group_name = group.first;
@@ -1575,6 +1587,9 @@ void NodeDefManager::deSerialize(std::istream &is, u16 protocol_version)
 		m_content_features[i].floats = itemgroup_get(f.groups, "float") != 0;
 		m_content_lighting_flag_cache[i] = f.getLightingFlags();
 		addNameIdMapping(i, f.name);
+
+		calcBigSelectinBox(i, f);
+
 		TRACESTREAM(<< "NodeDef: deserialized " << f.name << std::endl);
 
 		getNodeBoxUnion(f.selection_box, f, &m_selection_box_union);

@@ -9702,6 +9702,8 @@ Used by `minetest.register_node`.
 
     selection_box = {
         -- see [Node boxes] for possibilities
+        -- Selection boxes that oversize node size can cause
+        -- signifiant performance drop of Raycasts.
     },
     -- Custom selection box definition. Multiple boxes can be defined.
     -- If "nodebox" drawtype is used and selection_box is nil, then node_box
