@@ -172,13 +172,13 @@ public:
 			clear();
 			return *this;
 		}
-		
+
 		if constexpr (sizeof(T) != sizeof(B)) {
 			_IRR_DEBUG_BREAK_IF(
 				(uintptr_t)c >= (uintptr_t)(str.data()) &&
 				(uintptr_t)c <  (uintptr_t)(str.data() + str.size()));
 		}
-		
+
 		if ((void *)c == (void *)c_str())
 			return *this;
 
@@ -191,7 +191,7 @@ public:
 			str[l] = static_cast<T>(c[l]);
 		if (len < str.size())
 			str.resize(len);
-		
+
 		return *this;
 	}
 
