@@ -490,6 +490,11 @@ to let the client generate textures on-the-fly.
 The modifiers are applied directly in sRGB colorspace,
 i.e. without gamma-correction.
 
+### Notes
+
+ * `TEXMOD_UPSCALE`: The texture with the lower resolution will be automatically
+   upscaled to the higher resolution texture.
+
 ### Texture overlaying
 
 Textures can be overlaid by putting a `^` between them.
@@ -503,8 +508,9 @@ Example:
     default_dirt.png^default_grass_side.png
 
 `default_grass_side.png` is overlaid over `default_dirt.png`.
-The texture with the lower resolution will be automatically upscaled to
-the higher resolution texture.
+
+*See notes: `TEXMOD_UPSCALE`*
+
 
 ### Texture grouping
 
@@ -701,6 +707,8 @@ Apply a mask to the base image.
 
 The mask is applied using binary AND.
 
+*See notes: `TEXMOD_UPSCALE`*
+
 #### `[sheet:<w>x<h>:<x>,<y>`
 
 Retrieves a tile at position x, y (in tiles, 0-indexed)
@@ -798,6 +806,8 @@ in GIMP. Overlay is the same as Hard light but with the role of the two
 textures swapped, see the `[hardlight` modifier description for more detail
 about these blend modes.
 
+*See notes: `TEXMOD_UPSCALE`*
+
 #### `[hardlight:<file>`
 
 Applies a Hard light blend with the two textures, like the Hard light layer
@@ -812,6 +822,8 @@ increase contrast without clipping.
 
 Hard light is the same as Overlay but with the roles of the two textures
 swapped, i.e. `A.png^[hardlight:B.png` is the same as `B.png^[overlay:A.png`
+
+*See notes: `TEXMOD_UPSCALE`*
 
 #### `[png:<base64>`
 
@@ -830,6 +842,8 @@ that you could instead achieve by just using a file.
 In particular consider `minetest.dynamic_add_media` and test whether
 using other texture modifiers could result in a shorter string than
 embedding a whole image, this may vary by use case.
+
+*See notes: `TEXMOD_UPSCALE`*
 
 Hardware coloring
 -----------------
@@ -1394,16 +1408,19 @@ The function of `param2` is determined by `paramtype2` in node definition.
       The palette should have 256 pixels.
 * `paramtype2 = "colorfacedir"`
     * Same as `facedir`, but with colors.
-    * The first three bits of `param2` tells which color is picked from the
+    * The three most significant bits of `param2` tells which color is picked from the
       palette. The palette should have 8 pixels.
+    * The five least significant bits contain the `facedir` value.
 * `paramtype2 = "color4dir"`
-    * Same as `facedir`, but with colors.
-    * The first six bits of `param2` tells which color is picked from the
+    * Same as `4dir`, but with colors.
+    * The six most significant bits of `param2` tells which color is picked from the
       palette. The palette should have 64 pixels.
+    * The two least significant bits contain the `4dir` rotation.
 * `paramtype2 = "colorwallmounted"`
     * Same as `wallmounted`, but with colors.
-    * The first five bits of `param2` tells which color is picked from the
+    * The five most significant bits of `param2` tells which color is picked from the
       palette. The palette should have 32 pixels.
+    * The three least significant bits contain the `wallmounted` value.
 * `paramtype2 = "glasslikeliquidlevel"`
     * Only valid for "glasslike_framed" or "glasslike_framed_optional"
       drawtypes. "glasslike_framed_optional" nodes are only affected if the
@@ -1417,9 +1434,9 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * Liquid texture is defined using `special_tiles = {"modname_tilename.png"}`
 * `paramtype2 = "colordegrotate"`
     * Same as `degrotate`, but with colors.
-    * The first (most-significant) three bits of `param2` tells which color
-      is picked from the palette. The palette should have 8 pixels.
-    * Remaining 5 bits store rotation in range 0–23 (i.e. in 15° steps)
+    * The three most significant bits of `param2` tells which color is picked
+      from the palette. The palette should have 8 pixels.
+    * The five least significant bits store rotation in range 0–23 (i.e. in 15° steps)
 * `paramtype2 = "none"`
     * `param2` will not be used by the engine and can be used to store
       an arbitrary value
