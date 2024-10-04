@@ -29,8 +29,8 @@ on:
 
 jobs:
   build:
-    # use lowest possible macOS running on x86_64 to support more users
-    runs-on: macos-12
+    # use lowest possible macOS running on x86_64 supported by brew to support more users
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
       - name: Install deps
