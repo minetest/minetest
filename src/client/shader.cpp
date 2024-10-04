@@ -732,8 +732,13 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	if (g_settings->getBool("enable_auto_exposure"))
 		shaders_header << "#define ENABLE_AUTO_EXPOSURE 1\n";
 
-	if (g_settings->get("antialiasing") == "ssaa") {
-		shaders_header << "#define ENABLE_SSAA 1\n";
+	const std::string antialiasing = g_settings->get("antialiasing");
+	if (antialiasing == "ssaa") {
+		shaders_header << "#define ENABLE_SSAA_SMOOTH 1\n";
+	} else if (antialiasing == "ssaa_ssim_based") {
+		shaders_header << "#define ENABLE_SSAA_SSIM_BASED 1\n";
+	}
+	if (antialiasing == "ssaa" || antialiasing == "ssaa_ssim_based") {
 		u16 ssaa_scale = MYMAX(2, g_settings->getU16("fsaa"));
 		shaders_header << "#define SSAA_SCALE " << ssaa_scale << ".\n";
 	}
