@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Kazakh (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2020-09-09 01:23+0000\n"
-"Last-Translator: Fontan 030 <pomanfedurin@gmail.com>\n"
+"PO-Revision-Date: 2024-10-06 05:16+0000\n"
+"Last-Translator: Soupborshfe5e4d4ba7c349aa <bssoupborsh@gmail.com>\n"
 "Language-Team: Kazakh <https://hosted.weblate.org/projects/minetest/minetest/"
 "kk/>\n"
 "Language: kk\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr ""
+msgstr "Бос пәрмен."
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -29,21 +29,19 @@ msgstr "Мәзірге шығу"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr ""
+msgstr "Жарамсыз пәрмен: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "Берілген пәрмен: "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "Бір ойыншы"
+msgstr "Онлайн ойыншыларды атап шығу"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "Бір ойыншы"
+msgstr "Онлайн ойыншылар: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
@@ -51,15 +49,15 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Бұл пәрмен сервер арқылы алып тастаған."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "Тірілу"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr ""
+msgstr "Сіз өліп қалдыңыз"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
@@ -71,11 +69,11 @@ msgstr ""
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Қожетімсіз пәрмен: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands (-t: output in chat)"
-msgstr ""
+msgstr "Пәрмендер бойынша көмек алыңыз (-t: чатқа шығару)"
 
 #: builtin/common/chatcommands.lua
 msgid ""
