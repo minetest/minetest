@@ -3,8 +3,9 @@ msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-03-29 15:47+0000\n"
-"Last-Translator: Just Playing <aryadhisuma@gmail.com>\n"
+"PO-Revision-Date: 2024-10-06 05:16+0000\n"
+"Last-Translator: Muhammad Rifqi Priyo Susanto "
+"<muhammadrifqipriyosusanto@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
 "minetest/id/>\n"
 "Language: id\n"
@@ -12,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -71,9 +72,8 @@ msgid "Command not available: "
 msgstr "Perintah tidak tersedia: "
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Get help for commands (-t: output in chat)"
-msgstr "Dapatkan bantuan untuk perintah-perintah"
+msgstr "Dapatkan bantuan untuk perintah (-t: keluar di obrolan)"
 
 #: builtin/common/chatcommands.lua
 msgid ""
@@ -83,9 +83,8 @@ msgstr ""
 "all' untuk menampilkan semuanya."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "[all | <cmd>] [-t]"
-msgstr "[semua | <perintah>]"
+msgstr "[semua | <perintah>] [-t]"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -185,7 +184,7 @@ msgstr "Mengunduh..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Error getting dependencies for package"
-msgstr ""
+msgstr "Bermasalah dalam mengambil dependensi paket"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Games"
@@ -463,7 +462,7 @@ msgstr "Dekorasi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Desert temples"
-msgstr ""
+msgstr "Kuil gurun"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
@@ -473,7 +472,7 @@ msgstr "Development Test ditujukan untuk para pengembang."
 msgid ""
 "Different dungeon variant generated in desert biomes (only if dungeons "
 "enabled)"
-msgstr ""
+msgstr "Variasi dungeon lain yang dibuat dalam bioma gurun"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -1067,15 +1066,16 @@ msgid "Install games from ContentDB"
 msgstr "Pasang permainan dari ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Minetest doesn't come with a game by default."
-msgstr "Minetest Game tidak lagi dipasang secara bawaan"
+msgstr "Minetest tidak berisi permainan secara bawaan."
 
 #: builtin/mainmenu/tab_local.lua
 msgid ""
 "Minetest is a game-creation platform that allows you to play many different "
 "games."
 msgstr ""
+"Minetest adalah platform pembuatan permainan yang membuat Anda bisa bermain "
+"banyak permainan berbeda."
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -1110,9 +1110,8 @@ msgid "Start Game"
 msgstr "Mulai Permainan"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "You need to install a game before you can create a world."
-msgstr "Anda perlu pasang sebuah permainan sebelum pasang sebuah mod"
+msgstr "Anda perlu pasang sebuah permainan sebelum bisa membuat dunia."
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1425,9 +1424,8 @@ msgid "Fog enabled"
 msgstr "Kabut dinyalakan"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog enabled by game or mod"
-msgstr "Zum sedang dilarang oleh permainan atau mod"
+msgstr "Kabut dinyalakan oleh permainan atau mod"
 
 #: src/client/game.cpp
 msgid "Game info:"
@@ -1932,13 +1930,13 @@ msgid "Minimap in texture mode"
 msgstr "Peta mini mode tekstur"
 
 #: src/client/shader.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to compile the \"%s\" shader."
-msgstr "Gagal membuka laman web"
+msgstr "Gagal mengompilasi shader \"%s\"."
 
 #: src/client/shader.cpp
 msgid "Shaders are enabled but GLSL is not supported by the driver."
-msgstr ""
+msgstr "Shader dinyalakan, tetapi GLSL tidak didukung oleh pengandar."
 
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
@@ -2135,16 +2133,15 @@ msgstr "tekan tombol"
 
 #: src/gui/guiOpenURL.cpp
 msgid "Open"
-msgstr ""
+msgstr "Buka"
 
 #: src/gui/guiOpenURL.cpp
 msgid "Open URL?"
-msgstr ""
+msgstr "Buka URL?"
 
 #: src/gui/guiOpenURL.cpp
-#, fuzzy
 msgid "Unable to open URL"
-msgstr "Gagal membuka laman web"
+msgstr "Gagal membuka URL"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
@@ -2431,7 +2428,7 @@ msgstr "Lanjutan"
 
 #: src/settings_translation_file.cpp
 msgid "Allows liquids to be translucent."
-msgstr ""
+msgstr "Bolehkan cairan agak tembus pandang."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3319,9 +3316,8 @@ msgstr ""
 "lain berarti menggunakan filter PCF."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Post Processing"
-msgstr "Pasca-Pengolahan"
+msgstr "Nyalakan Pasca-Pengolahan"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
@@ -3407,9 +3403,8 @@ msgstr ""
 "server baru, tetapi mungkin tidak mendukung semua fitur baru yang diharapkan."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable touchscreen"
-msgstr "Layar Sentuh"
+msgstr "Nyalakan layar sentuh"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3462,16 +3457,17 @@ msgstr "Gunakan tembolok untuk facedir mesh yang diputar."
 
 #: src/settings_translation_file.cpp
 msgid "Enables debug and error-checking in the OpenGL driver."
-msgstr ""
+msgstr "Nyalakan awakutu dan pemeriksa-masalah dalam pengandar OpenGL."
 
 #: src/settings_translation_file.cpp
 msgid "Enables the post processing pipeline."
-msgstr ""
+msgstr "Nyalakan alur pasca-pengolahan."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enables touchscreen mode, allowing you to play the game with a touchscreen."
 msgstr ""
+"Nyalakan mode layar sentuh sehingga Anda bisa bermain dengan layar sentuh."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4953,9 +4949,8 @@ msgid "Minimap scan height"
 msgstr "Ketinggian pemindaian peta mini"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Minimum dig repetition interval"
-msgstr "Jeda waktu menaruh berulang"
+msgstr "Jeda waktu menggali berulang minimum"
 
 #: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of large caves per mapchunk."
@@ -5026,9 +5021,8 @@ msgid "Mouse sensitivity multiplier."
 msgstr "Pengali kepekaan tetikus."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Movement threshold"
-msgstr "Ambang batas gua besar"
+msgstr "Ambang batas gerak"
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
@@ -5184,9 +5178,8 @@ msgstr ""
 "dibuka."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "OpenGL debug"
-msgstr "Awakutu pembuat peta"
+msgstr "Awakutu OpenGL"
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
@@ -5320,13 +5313,12 @@ msgid "Proportion of large caves that contain liquid."
 msgstr "Perbandingan gua besar yang punya cairan."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Protocol version minimum"
-msgstr "Versi protokol tidak sesuai. "
+msgstr "Versi protokol minimum"
 
 #: src/settings_translation_file.cpp
 msgid "Punch gesture"
-msgstr ""
+msgstr "Gerakan memukul"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5347,7 +5339,7 @@ msgstr "Masukan acak"
 
 #: src/settings_translation_file.cpp
 msgid "Random mod load order"
-msgstr ""
+msgstr "Acak urutan pemuatan mod"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -5775,6 +5767,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Set to true to enable volumetric lighting effect (a.k.a. \"Godrays\")."
 msgstr ""
+"Atur ke true untuk menyalakan efek pencahayaan volume (alias \"Godrays\")."
 
 #: src/settings_translation_file.cpp
 msgid "Set to true to enable waving leaves."
@@ -5980,9 +5973,8 @@ msgid "Sound"
 msgstr "Suara"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sound Extensions Blacklist"
-msgstr "Daftar Hitam Flag ContentDB"
+msgstr "Daftar Hitam Ekstensi Suara"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6189,7 +6181,7 @@ msgstr ""
 msgid ""
 "The delay in milliseconds after which a touch interaction is considered a "
 "long tap."
-msgstr ""
+msgstr "Jeda dalam milidetik setelah ketuk/sentuh agar dianggap ketuk lama."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6359,7 +6351,7 @@ msgstr "Noise 2D ketiga dari empat yang mengatur ketinggian bukit/gunung."
 
 #: src/settings_translation_file.cpp
 msgid "Threshold for long taps"
-msgstr ""
+msgstr "Ambang batas ketuk lama"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6420,9 +6412,8 @@ msgid "Tradeoffs for performance"
 msgstr "Pertukaran untuk kinerja"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Translucent liquids"
-msgstr "Cairan opak"
+msgstr "Cairan agak tembus pandang"
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
@@ -6687,7 +6678,7 @@ msgstr "Volume"
 
 #: src/settings_translation_file.cpp
 msgid "Volume multiplier when the window is unfocused."
-msgstr ""
+msgstr "Pengali volume saat jendela tidak difokuskan."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6698,14 +6689,12 @@ msgstr ""
 "Perlu menyalakan sistem suara."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volume when unfocused"
-msgstr "FPS saat dijeda atau tidak difokuskan"
+msgstr "Volume saat tidak difokuskan"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric lighting"
-msgstr "Pencahayaan halus"
+msgstr "Pencahayaan volume"
 
 #: src/settings_translation_file.cpp
 msgid ""
