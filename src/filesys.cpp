@@ -406,7 +406,7 @@ bool RecursiveDelete(const std::string &path)
 
 		execvp(argv[0], const_cast<char**>(argv.data()));
 
-		// exec shouldn't return. failed.
+		// note: use cerr because our logging won't flush in forked process
 		std::cerr << "exec errno: " << errno << ": " << strerror(errno)
 			<< std::endl;
 		_exit(1);
