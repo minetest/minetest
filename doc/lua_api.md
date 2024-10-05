@@ -8604,7 +8604,8 @@ child will follow movement and rotation of that bone.
         * `speed_bright_dark` set the speed of adapting to dark scene (default: `1000.0`)
         * `center_weight_power` set the power factor for center-weighted luminance measurement (default: `1.0`)
       * `bloom` is a table that controls bloom.
-        * This has no effect on clients who have the "Bloom" effect disabled.
+        * This has no effect on clients older than 5.10.0 or clients who have
+          the "Bloom" effect disabled.
         * `intensity` defines much bloom is applied to the rendered image.
           * Range: from 0.0 to 1.0, default: 0.05
           * If set to 0, bloom is disabled.
