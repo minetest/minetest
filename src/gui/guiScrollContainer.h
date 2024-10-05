@@ -57,7 +57,7 @@ private:
 
 	GUIScrollBar *m_scrollbar;
 	OrientationEnum m_orientation;
-	f32 m_scrollfactor; //< abs(scollfactor * scrollstep) = container pixels to scroll
+	f32 m_scrollfactor; //< scrollbar pos * scrollfactor = scroll offset in pixels
 	std::optional<s32> m_content_padding_px; //< in pixels
 
 	void updateScrolling();
