@@ -1808,26 +1808,27 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 {
 	Lighting& lighting = m_env.getLocalPlayer()->getLighting();
 
-	//if (pkt->getRemainingBytes() >= 4)
+	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.shadow_intensity;
-		*pkt >> lighting.ambient_light;
-	//if (pkt->getRemainingBytes() >= 4)
+	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.saturation;
-	//if (pkt->getRemainingBytes() >= 24) {
+	if (pkt->getRemainingBytes() >= 24) {
 		*pkt >> lighting.exposure.luminance_min
 				>> lighting.exposure.luminance_max
 				>> lighting.exposure.exposure_correction
 				>> lighting.exposure.speed_dark_bright
 				>> lighting.exposure.speed_bright_dark
 				>> lighting.exposure.center_weight_power;
-	//}
-	//if (pkt->getRemainingBytes() >= 4)
+	}
+	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.volumetric_light_strength;
-	//if (pkt->getRemainingBytes() >= 4)
+	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.shadow_tint;
 	if (pkt->getRemainingBytes() >= 12) {
 		*pkt >> lighting.bloom_intensity
 				>> lighting.bloom_strength_factor
 				>> lighting.bloom_radius;
 	}
+	if (pkt->getRemainingBytes() >= 4)
+		*pkt >> lighting.ambient_light;
 }

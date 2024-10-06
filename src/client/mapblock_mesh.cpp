@@ -306,31 +306,29 @@ void final_color_blend(video::SColor *result,
 {
 	static const video::SColorf artificialColor(1.04f, 1.04f, 1.04f);
 
-	video::SColorf c(data);
-	f32 n = 1 - c.a;
+	f32 ratio = std::floor(data.getAlpha() / 255.0f * 16.0f)/16.0f;
+	f32 lightBase = std::floor((data.getAlpha() / 255.0f - ratio)*256.0f)/16.0f;
 
-	f32 r = c.r * (c.a * dayLight.r + n * artificialColor.r) * 2.0f;
-	f32 g = c.g * (c.a * dayLight.g + n * artificialColor.g) * 2.0f;
-	f32 b = c.b * (c.a * dayLight.b + n * artificialColor.b) * 2.0f;
+	video::SColorf light(lightBase, lightBase, lightBase, 1.0f);
 
-	// Emphase blue a bit in darker places
-	// Each entry of this array represents a range of 8 blue levels
-	static const u8 emphase_blue_when_dark[32] = {
-		1, 4, 6, 6, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	};
+	f32 nightRatio = 1.0f - ratio;
 
-	b += emphase_blue_when_dark[irr::core::clamp((s32) ((r + g + b) / 3 * 255),
-		0, 255) / 8] / 255.0f;
+	light.r *= ((ratio * dayLight.r + nightRatio * artificialColor.r) * 2.0f);
+	light.g *= ((ratio * dayLight.g + nightRatio * artificialColor.g) * 2.0f);
+	light.b *= ((ratio * dayLight.b + nightRatio * artificialColor.b) * 2.0f);
+
+	f32 brightness = (light.r + light.g + light.b) / 3.0f;
+	light.b += std::max(0.0f, 0.021f - std::fabs(0.2f * brightness - 0.021f) +
+		0.07f * brightness);
 
 	// Add ambient light
-	r += ambientLight.r;
-	g += ambientLight.g;
-	b += ambientLight.b;
+	light.r += ambientLight.r;
+	light.g += ambientLight.g;
+	light.b += ambientLight.b;
 
-	result->setRed(core::clamp((s32) (r * 255.0f), 0, 255));
-	result->setGreen(core::clamp((s32) (g * 255.0f), 0, 255));
-	result->setBlue(core::clamp((s32) (b * 255.0f), 0, 255));
+	result->setRed(core::clamp((s32) (light.r * 255.0f), 0, 255));
+	result->setGreen(core::clamp((s32) (light.g * 255.0f), 0, 255));
+	result->setBlue(core::clamp((s32) (light.b * 255.0f), 0, 255));
 }
 
 /*
@@ -433,10 +431,9 @@ static void applyTileColor(PreMeshBuffer &pmb)
 		return;
 	for (video::S3DVertex &vertex : pmb.vertices) {
 		video::SColor *c = &vertex.Color;
-		c->set(c->getAlpha(),
-			c->getRed() * tc.getRed() / 255,
-			c->getGreen() * tc.getGreen() / 255,
-			c->getBlue() * tc.getBlue() / 255);
+		c->setRed(tc.getRed());
+		c->setGreen(tc.getGreen());
+		c->setBlue(tc.getBlue());
 	}
 }
 
@@ -973,12 +970,12 @@ video::SColor encode_light(u16 light, u8 emissive_light)
 	// Ratio of sunlight:
 	u32 r;
 	if (sum > 0)
-		r = day * 255 / sum;
+		r = day * 15 / sum;
 	else
 		r = 0;
 	// Average light:
-	float b = (day + night) / 2;
-	return video::SColor(r, b, b, b);
+	u32 b = (day + night) / 30;
+	return video::SColor((r<<4)|b, 255, 255, 255);
 }
 
 u8 get_solid_sides(MeshMakeData *data)
