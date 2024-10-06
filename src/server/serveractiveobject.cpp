@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "serveractiveobject.h"
+#include "serverenvironment.h"
 #include "inventory.h"
 #include "inventorymanager.h"
 #include "constants.h" // BS
@@ -27,6 +28,13 @@ ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
 	m_env(env),
 	m_base_position(pos)
 {
+}
+
+void ServerActiveObject::setBasePosition(const v3f &pos) {
+	bool changed = m_base_position != pos;
+	if (changed && getEnv())
+		getEnv()->updateObjectPosition(getId(), m_base_position, pos);
+	m_base_position = pos;
 }
 
 float ServerActiveObject::getMinimumSavedMovement()
