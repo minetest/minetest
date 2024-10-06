@@ -5544,6 +5544,8 @@ Utilities
       bulk_lbms = true,
       -- ABM supports field without_neighbors (5.10.0)
       abm_without_neighbors = true,
+      -- set_lighting support sky_light table (5.10.0)
+      sky_light = true,
   }
   ```
 
@@ -8625,6 +8627,18 @@ child will follow movement and rotation of that bone.
       * `volumetric_light`: is a table that controls volumetric light (a.k.a. "godrays")
         * `strength`: sets the strength of the volumetric light effect from 0 (off, default) to 1 (strongest)
            * This value has no effect on clients who have the "Volumetric Lighting" or "Bloom" shaders disabled.
+      * `sky_light` is a table that controls calculation of sun light color.
+        `sun_color = color_offset + color_ratio_coef*daynight_ratio` where `daynight_ratio` is not linear to day time.
+        Result color lesser or equal to 0.0 means no color in light.
+        Result color greater or equal to 1.0 means full color in light.
+        * `color_offset` is a table that controls red, green and blue color offsets.
+          * `r` (default: `-0.04`)
+          * `g` (default: `-0.04`)
+          * `b` (default: `0.078`)
+        * `color_ratio_coef` is a table that controls red, green and blue color ration coefficients.
+          * `r` (default: `0.001`)
+          * `g` (default: `0.001`)
+          * `b` (default: `0.00098`)
 
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
