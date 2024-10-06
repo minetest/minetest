@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Danish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2023-01-11 21:48+0000\n"
-"Last-Translator: Kristian <macrofag@protonmail.com>\n"
+"PO-Revision-Date: 2024-10-06 23:41+0000\n"
+"Last-Translator: Luna <social.pvxuu@slmail.me>\n"
 "Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
 "da/>\n"
 "Language: da\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -20,11 +20,11 @@ msgstr "Ryd chatkøen"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr "Tøm kommando,."
+msgstr "Tøm kommando."
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
-msgstr "Afslut til menu"
+msgstr "Afslut til hovedmenu"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
@@ -48,7 +48,7 @@ msgstr "Udgående chatkøe er nu tom."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr "Kommandoen er slået fra af serveren."
+msgstr "Denne kommando er slået fra af serveren."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -68,24 +68,22 @@ msgstr "Tilgængelige kommandoer: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr "Kommando ikke tilgængelig; "
+msgstr "Kommando ikke tilgængelig: "
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Get help for commands (-t: output in chat)"
-msgstr "Få hjælp til kommandoer"
+msgstr "Få hjælp til kommandoer (-t: output i chat)"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
-"Brug .'help<cmd>' for at få mere information, eller 'help all' for at vise "
+"Brug '.help <cmd>' for at få mere information eller '.help all' for at vise "
 "alt."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "[all | <cmd>] [-t]"
-msgstr "[all | <cmd>j"
+msgstr "[all | <cmd>] [-t]"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -93,7 +91,7 @@ msgstr "<ingen tilgængelige>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr "Der skete en fejl i et Lua script:"
+msgstr "Der skete en fejl i et Lua-script:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -117,7 +115,7 @@ msgstr "Serveren har anmodet om at forbinde igen:"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr "Protokol versionerne matchede ikke. "
+msgstr "Mismatch mellem protokolversioner. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
@@ -125,19 +123,19 @@ msgstr "Serveren kræver protokol version $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "Serveren understøtter protokol versioner mellem $1 og $2. "
+msgstr "Serveren understøtter protokolversioner mellem $1 og $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr "Vi understøtter kun protokol version $1."
+msgstr "Vi understøtter kun protokolversion $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr "Vi understøtter protokol versioner mellem $1 og $2."
+msgstr "Vi understøtter protokolversioner mellem $1 og $2."
 
 #: builtin/mainmenu/content/contentdb.lua
 msgid "Error installing \"$1\": $2"
-msgstr "Fejl ved installation af \"$1\":$2"
+msgstr "Fejl ved installation af \"$1\": $2"
 
 #: builtin/mainmenu/content/contentdb.lua
 msgid "Failed to download \"$1\""
@@ -148,19 +146,19 @@ msgid "Failed to download $1"
 msgstr "Kunne ikke hente $1"
 
 #: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
 msgid ""
 "Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
 "broken archive)"
 msgstr ""
-"Kunne ikke pakke \"$1\" ud (ikke-understøttet filtype eller korrupt arkiv)"
+"Kunne ikke udpakke \"$1\" (utilstrækkelig diskplads, ikke-understøttet "
+"filtype eller beskadiget arkiv)"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
-"$1 downloader.\n"
+"$1 henter,\n"
 "$2 i kø"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
@@ -173,11 +171,11 @@ msgstr "Alle pakker"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Back to Main Menu"
-msgstr "Tilbage til hovedmenuen"
+msgstr "Tilbage til Hovedmenu"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB er ikke tilgængelig når Minetest blev compileret uden cURL"
+msgstr "ContentDB er ikke tilgængelig, når Minetest blev kompileret uden cURL"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Downloading..."
@@ -185,7 +183,7 @@ msgstr "Henter..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Error getting dependencies for package"
-msgstr ""
+msgstr "Fejl ved hentning af afhængigheder for pakken"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Games"
@@ -207,12 +205,12 @@ msgstr "Mods"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "No packages could be retrieved"
-msgstr "Der var ingen pakker at hente"
+msgstr "Ingen pakker kunne hentes"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "No results"
-msgstr "Der er ingen resultater at vise"
+msgstr "Ingen resultater"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "No updates"
@@ -228,7 +226,7 @@ msgstr "Teksturpakker"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "The package $1 was not found."
-msgstr ""
+msgstr "Pakken $1 blev ikke fundet."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Uninstall"
@@ -240,7 +238,7 @@ msgstr "Opdater"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Update All [$1]"
-msgstr "Opdater alle [$1]"
+msgstr "Opdater Alle [$1]"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "View more information in a web browser"
@@ -248,7 +246,7 @@ msgstr "Se mere information i en webbrowser"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "Du skal installere et spil, før du kan installere en mod"
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "$1 and $2 dependencies will be installed."
@@ -256,7 +254,7 @@ msgstr "Påkrævet grundlag for $1 og $2 vl blive installeret."
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "$1 by $2"
-msgstr "$1 med $2"
+msgstr "$1 af $2"
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "$1 required dependencies could not be found."
@@ -286,7 +284,7 @@ msgstr "Basisspil:"
 #: src/gui/guiKeyChangeMenu.cpp src/gui/guiOpenURL.cpp
 #: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr "Anuller"
+msgstr "Annuller"
 
 #: builtin/mainmenu/content/dlg_install.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
@@ -295,11 +293,11 @@ msgstr "Afhængigheder:"
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "Install $1"
-msgstr "Installér $1"
+msgstr "Installer $1"
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "Install missing dependencies"
-msgstr "Installér manglende grundlag"
+msgstr "Installer manglende afhængigheder"
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "Not found"
@@ -307,7 +305,7 @@ msgstr "Ikke fundet"
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "Please check that the base game is correct."
-msgstr "Kontrollér venlist, at basisspillet er korrekt."
+msgstr "Tjek venligst, at basisspillet er korrekt."
 
 #: builtin/mainmenu/content/dlg_overwrite.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
@@ -335,7 +333,7 @@ msgstr "Installation: Kunne ikke finde passende mappenavn til $1"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Kan ikke finde en gyldigt mod, samling af mods eller spil"
+msgstr "Kan ikke finde en gyldig mod, modpakke eller spil"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to install a $1 as a $2"
@@ -347,7 +345,7 @@ msgstr "Kan ikke installere $1 som en teksturpakke"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr "(Slået til, fejler)"
+msgstr "(Aktiveret. Har fejl)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
@@ -359,7 +357,7 @@ msgstr "Deaktivér alle"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "Deaktiver samlingen af mods"
+msgstr "Deaktivér modpakke"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -367,7 +365,7 @@ msgstr "Aktivér alle"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "Aktiver samlingen af mods"
+msgstr "Aktivér modpakke"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -379,7 +377,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr "Find flere mods"
+msgstr "Find Flere Mods"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -391,7 +389,7 @@ msgstr "Ingen (valgfrie) afhængigheder"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr "Der er ikke nogen beskrivelse af tilgængelig af det valgte spil."
+msgstr "Ingen beskrivelse af spillet."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
@@ -399,12 +397,11 @@ msgstr "Ingen tvungne grundlag"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr ""
-"Der er ikke nogen beskrivelse af tilgængelig af den valgte samling af mods."
+msgstr "Ingen beskrivelse af modpakken."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr "Ingen valgfrie grundlag"
+msgstr "Ingen valgfrie afhængigheder"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -426,7 +423,7 @@ msgstr "aktiveret"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "En verden med navnet »$1« findes allerede"
+msgstr "En verden ved navn \"$1\" findes allerede"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
@@ -462,7 +459,7 @@ msgstr "Skab"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
-msgstr "Udsmykninger"
+msgstr "Dekorationer"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Desert temples"
@@ -512,7 +509,7 @@ msgstr "Øger fugtigheden omkring floder"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr "Installér et andet spil"
+msgstr "Installer et andet spil"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
