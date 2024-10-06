@@ -9534,12 +9534,18 @@ Used by `minetest.register_node`.
 
     use_texture_alpha = ...,
     -- Specifies how the texture's alpha channel will be used for rendering.
-    -- possible values:
-    -- * "opaque": Node is rendered opaque regardless of alpha channel
-    -- * "clip": A given pixel is either fully see-through or opaque
-    --           depending on the alpha channel being below/above 50% in value
-    -- * "blend": The alpha channel specifies how transparent a given pixel
-    --            of the rendered node is
+    -- Possible values:
+    -- * "opaque":
+    --   Node is rendered opaque regardless of alpha channel.
+    -- * "clip":
+    --   A given pixel is either fully see-through or opaque
+    --   depending on the alpha channel being below/above 50% in value.
+    --   Use this for nodes with fully transparent and fully opaque areas.
+    -- * "blend":
+    --   The alpha channel specifies how transparent a given pixel
+    --   of the rendered node is. This comes at a performance cost.
+    --   Only use this when correct rendering
+    --   among semitransparent nodes is necessary.
     -- The default is "opaque" for drawtypes normal, liquid and flowingliquid,
     -- mesh and nodebox or "clip" otherwise.
     -- If set to a boolean value (deprecated): true either sets it to blend
