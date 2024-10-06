@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
 "PO-Revision-Date: 2024-10-06 23:41+0000\n"
-"Last-Translator: Jynweythek Vordhosbn <jynweythek.nmk5s@simplelogin.fr>\n"
+"Last-Translator: Jordan Irwin <antumdeluge@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -5337,7 +5337,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
-msgstr "Pausar cuando se pierda el foco de la ventana"
+msgstr "Pausar al perder el foco de la ventana"
 
 #: src/settings_translation_file.cpp
 msgid "Per-player limit of queued blocks load from disk"
