@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-10-06 23:41+0000\n"
-"Last-Translator: joserene-007 <green.soul277@gmail.com>\n"
+"PO-Revision-Date: 2024-10-12 03:08+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -5453,7 +5453,7 @@ msgstr "Orden aleatorio de carga de mods"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
-msgstr "Mensajes de Chat Recientes"
+msgstr "Mensajes recientes del chat"
 
 #: src/settings_translation_file.cpp
 msgid "Regular font path"
@@ -5643,9 +5643,9 @@ msgid ""
 "1 means worst quality; 100 means best quality.\n"
 "Use 0 for default quality."
 msgstr ""
-"Calidad de captura de pantalla. Solo se utiliza para formato JPEG.\n"
+"Calidad de la captura de pantalla. Solo se utiliza para el formato JPEG.\n"
 "1 significa la peor calidad; 100 significa la mejor calidad.\n"
-"Utilice 0 para la calidad predeterminada."
+"Utilice 0 para la calidad por defecto."
 
 #: src/settings_translation_file.cpp
 msgid "Screenshots"
@@ -5653,7 +5653,7 @@ msgstr "Capturas de pantalla"
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
-msgstr "Ruido del lecho marino"
+msgstr "Ruido del fondo marino"
 
 #: src/settings_translation_file.cpp
 msgid "Second of 4 2D noises that together define hill/mountain range height."
@@ -6052,7 +6052,7 @@ msgstr "Número máximo de cuevas pequeñas"
 
 #: src/settings_translation_file.cpp
 msgid "Small cave minimum number"
-msgstr "Número mínimo de cuevas pequeñas"
+msgstr "Cantidad mínima de cuevas pequeñas"
 
 #: src/settings_translation_file.cpp
 msgid "Small-scale humidity variation for blending biomes on borders."
@@ -6730,9 +6730,10 @@ msgid ""
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
-"Usar filtro trilinear al escalar texturas.\n"
-"Si tanto los filtros bilinear y trilinear están activos, se aplica\n"
-"el filtro trilinear."
+"Utilice filtrado trilineal al escalar texturas.\n"
+"Si están habilitados tanto el filtrado bilineal como el trilineal, el "
+"filtrado trilineal\n"
+"se aplica."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6740,9 +6741,9 @@ msgid ""
 "If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
 "circle."
 msgstr ""
-"Usar el joystick virtual para activar el botón \"Aux1\".\n"
-"Si está activado, el joystick virtual también activará el botón \"Aux1\" al "
-"deslizarse fuera del círculo."
+"Utilice el joystick virtual para activar el botón \"Aux1\".\n"
+"Si está activado, el joystick virtual también pulsará el botón \"Aux1\" "
+"cuando esté fuera del círculo principal."
 
 #: src/settings_translation_file.cpp
 msgid "User Interfaces"
@@ -6814,8 +6815,8 @@ msgid ""
 "Vertical screen synchronization. Your system may still force VSync on even "
 "if this is disabled."
 msgstr ""
-"Sincronización vertical de pantalla. Tu sistema aún podría forzar la "
-"sincronización vertical incluso si está deshabilitada."
+"Sincronización vertical de pantalla. El sistema puede forzar VSync aunque "
+"esté desactivado."
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
