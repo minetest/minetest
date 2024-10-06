@@ -152,9 +152,19 @@ local function load()
 
 	table.insert(page_by_id.controls_keyboard_and_mouse.content, 1, change_keys)
 	do
-		local content = page_by_id.graphics_and_audio_shaders.content
+		local content = page_by_id.graphics_and_audio_effects.content
 		local idx = table.indexof(content, "enable_dynamic_shadows")
 		table.insert(content, idx, shadows_component)
+
+		idx = table.indexof(content, "enable_auto_exposure") + 1
+		local note = component_funcs.note(fgettext_ne("(The game will need to enable automatic exposure as well)"))
+		note.requires = get_setting_info("enable_auto_exposure").requires
+		table.insert(content, idx, note)
+
+		idx = table.indexof(content, "enable_volumetric_lighting") + 1
+		note = component_funcs.note(fgettext_ne("(The game will need to enable volumetric lighting as well)"))
+		note.requires = get_setting_info("enable_volumetric_lighting").requires
+		table.insert(content, idx, note)
 	end
 
 	-- These must not be translated, as they need to show in the local

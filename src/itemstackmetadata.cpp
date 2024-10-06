@@ -89,11 +89,11 @@ void ItemStackMetadata::deSerialize(std::istream &is)
 			while (!fnd.at_end()) {
 				std::string name = fnd.next(DESERIALIZE_KV_DELIM_STR);
 				std::string var  = fnd.next(DESERIALIZE_PAIR_DELIM_STR);
-				m_stringvars[name] = var;
+				m_stringvars[name] = std::move(var);
 			}
 		} else {
 			// BACKWARDS COMPATIBILITY
-			m_stringvars[""] = in;
+			m_stringvars[""] = std::move(in);
 		}
 	}
 	updateToolCapabilities();

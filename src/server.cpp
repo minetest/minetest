@@ -393,6 +393,10 @@ Server::~Server()
 		infostream << "Server: Saving environment metadata" << std::endl;
 		m_env->saveMeta();
 
+		// Delete classes that depend on the environment
+		m_inventory_mgr.reset();
+		m_script.reset();
+
 		// Note that this also deletes and saves the map.
 		delete m_env;
 		m_env = nullptr;
@@ -408,6 +412,9 @@ Server::~Server()
 			fs::DeleteSingleFileOrEmptyDirectory(it.second.path);
 		}
 	}
+
+	// emerge may depend on definition managers, so destroy first
+	m_emerge.reset();
 
 	// Delete the rest in the reverse order of creation
 	delete m_game_settings;
@@ -4285,12 +4292,10 @@ u16 Server::getProtocolVersionMin()
 		min_proto = LATEST_PROTOCOL_VERSION;
 	return rangelim(min_proto,
 		SERVER_PROTOCOL_VERSION_MIN,
-		SERVER_PROTOCOL_VERSION_MAX);
+		LATEST_PROTOCOL_VERSION);
 }
 
 u16 Server::getProtocolVersionMax()
 {
-	return g_settings->getBool("strict_protocol_version_checking")
-		? LATEST_PROTOCOL_VERSION
-		: SERVER_PROTOCOL_VERSION_MAX;
+	return LATEST_PROTOCOL_VERSION;
 }

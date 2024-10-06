@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <vector>
 #include <set>
+#include <unordered_map>
 #include <unordered_set>
 #include <memory>
 #include <mutex>

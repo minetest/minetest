@@ -262,31 +262,6 @@ viewing_range (Viewing range) int 190 20 4000
 #    Higher values result in a less detailed image.
 undersampling (Undersampling) int 1 1 8
 
-[**Graphics Effects]
-
-#    Allows liquids to be translucent.
-translucent_liquids (Translucent liquids) bool true
-
-#    Leaves style:
-#    -   Fancy:  all faces visible
-#    -   Simple: only outer faces, if defined special_tiles are used
-#    -   Opaque: disable transparency
-leaves_style (Leaves style) enum fancy fancy,simple,opaque
-
-#    Connects glass if supported by node.
-connected_glass (Connect glass) bool false
-
-#    Enable smooth lighting with simple ambient occlusion.
-#    Disable for speed or for different looks.
-smooth_lighting (Smooth lighting) bool true
-
-#    Enables tradeoffs that reduce CPU load or increase rendering performance
-#    at the expense of minor visual glitches that do not impact game playability.
-performance_tradeoffs (Tradeoffs for performance) bool false
-
-#    Adds particles when digging a node.
-enable_particles (Digging particles) bool true
-
 [**3D]
 
 #    3D support.
@@ -466,13 +441,29 @@ enable_raytraced_culling (Enable Raytraced Culling) bool true
 
 
 
-[*Shaders]
+[*Effects]
 
-#    Shaders allow advanced visual effects and may increase performance on some video
-#    cards.
-#
-#    Requires: shaders_support
-enable_shaders (Shaders) bool true
+#    Allows liquids to be translucent.
+translucent_liquids (Translucent liquids) bool true
+
+#    Leaves style:
+#    -   Fancy:  all faces visible
+#    -   Simple: only outer faces
+#    -   Opaque: disable transparency
+leaves_style (Leaves style) enum fancy fancy,simple,opaque
+
+#    Connects glass if supported by node.
+connected_glass (Connect glass) bool false
+
+#    Enable smooth lighting with simple ambient occlusion.
+smooth_lighting (Smooth lighting) bool true
+
+#    Enables tradeoffs that reduce CPU load or increase rendering performance
+#    at the expense of minor visual glitches that do not impact game playability.
+performance_tradeoffs (Tradeoffs for performance) bool false
+
+#    Adds particles when digging a node.
+enable_particles (Digging particles) bool true
 
 [**Waving Nodes]
 
@@ -509,11 +500,6 @@ water_wave_length (Waving liquids wavelength) float 20.0 0.1
 #
 #    Requires: shaders, enable_waving_water
 water_wave_speed (Waving liquids wave speed) float 5.0
-
-#   When enabled, liquid reflections are simulated.
-#
-#   Requires: shaders, enable_waving_water, enable_dynamic_shadows
-enable_water_reflections (Liquid reflections) bool false
 
 [**Dynamic shadows]
 
@@ -638,14 +624,6 @@ debanding (Enable Debanding) bool true
 #    Requires: shaders, enable_post_processing
 enable_bloom (Enable Bloom) bool false
 
-#    Set to true to render debugging breakdown of the bloom effect.
-#    In debug mode, the screen is split into 4 quadrants:
-#    top-left - processed base image, top-right - final image
-#    bottom-left - raw base image, bottom-right - bloom texture.
-#
-#    Requires: shaders, enable_post_processing, enable_bloom
-enable_bloom_debug (Enable Bloom Debug) bool false
-
 #    Defines how much bloom is applied to the rendered image
 #    Smaller values make bloom more subtle
 #    Range: from 0.01 to 1.0, default: 0.05
@@ -682,6 +660,11 @@ enable_translucent_foliage (Translucent foliage) bool false
 #
 #   Requires: shaders, enable_dynamic_shadows
 enable_node_specular (Node specular) bool false
+
+#   When enabled, liquid reflections are simulated.
+#
+#   Requires: shaders, enable_waving_water, enable_dynamic_shadows
+enable_water_reflections (Liquid reflections) bool false
 
 [*Audio]
 
@@ -1866,6 +1849,11 @@ ignore_world_load_errors (Ignore world errors) bool false
 
 [**Graphics]
 
+#    Shaders are a fundamental part of rendering and enable advanced visual effects.
+#
+#    Requires: shaders_support
+enable_shaders (Shaders) bool true
+
 #    Path to shader directory. If no path is defined, default location will be used.
 #
 #    Requires: shaders
@@ -1889,6 +1877,7 @@ cloud_radius (Cloud radius) int 12 1 62
 desynchronize_mapblock_texture_animation (Desynchronize block animation) bool false
 
 #    Enables caching of facedir rotated meshes.
+#    This is only effective with shaders disabled.
 enable_mesh_cache (Mesh cache) bool false
 
 #    Delay between mesh updates on the client in ms. Increasing this will slow
@@ -1939,6 +1928,14 @@ client_mesh_chunk (Client Mesh Chunksize) int 1 1 16
 
 #    Enables debug and error-checking in the OpenGL driver.
 opengl_debug (OpenGL debug) bool false
+
+#    Set to true to render debugging breakdown of the bloom effect.
+#    In debug mode, the screen is split into 4 quadrants:
+#    top-left - processed base image, top-right - final image
+#    bottom-left - raw base image, bottom-right - bloom texture.
+#
+#    Requires: shaders, enable_post_processing, enable_bloom
+enable_bloom_debug (Enable Bloom Debug) bool false
 
 [**Sound]
 #    Comma-separated list of AL and ALC extensions that should not be used.

@@ -19,7 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "util/pointer.h"
+#include "util/pointer.h" // Buffer<T>
+#include "irrlichttypes_bloated.h"
 #include "networkprotocol.h"
 #include <SColor.h>
 

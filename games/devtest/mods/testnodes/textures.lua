@@ -52,6 +52,12 @@ minetest.register_node("testnodes:fill_positioning_reference", {
 	groups = {dig_immediate = 3},
 })
 
+minetest.register_node("testnodes:modifier_mask", {
+	description = S("[mask Modifier Test Node"),
+	tiles = {"testnodes_128x128_rgb.png^[mask:testnodes_mask_WRGBKW.png"},
+	groups = {dig_immediate = 3},
+})
+
 -- Node texture transparency test
 
 local alphas = { 64, 128, 191 }

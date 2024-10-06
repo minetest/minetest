@@ -38,7 +38,7 @@ void PlayerMetaRef::clearMeta()
 
 void PlayerMetaRef::reportMetadataChange(const std::string *name)
 {
-	// TODO
+	// the server saves these on its own
 }
 
 // Creates an PlayerMetaRef and leaves it on top of stack
@@ -54,9 +54,6 @@ void PlayerMetaRef::create(lua_State *L, IMetadata *metadata)
 void PlayerMetaRef::Register(lua_State *L)
 {
 	registerMetadataClass(L, className, methods);
-
-	// Cannot be created from Lua
-	// lua_register(L, className, create_object);
 }
 
 const char PlayerMetaRef::className[] = "PlayerMetaRef";

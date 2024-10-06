@@ -220,48 +220,19 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 /*
  * RealInputHandler
  */
-float RealInputHandler::getMovementSpeed()
+float RealInputHandler::getJoystickSpeed()
 {
-	bool f = m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]),
-		b = m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]),
-		l = m_receiver->IsKeyDown(keycache.key[KeyType::LEFT]),
-		r = m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]);
-	if (f || b || l || r)
-	{
-		// if contradictory keys pressed, stay still
-		if (f && b && l && r)
-			return 0.0f;
-		else if (f && b && !l && !r)
-			return 0.0f;
-		else if (!f && !b && l && r)
-			return 0.0f;
-		return 1.0f; // If there is a keyboard event, assume maximum speed
-	}
-	if (g_touchcontrols && g_touchcontrols->getMovementSpeed())
-		return g_touchcontrols->getMovementSpeed();
+	if (g_touchcontrols && g_touchcontrols->getJoystickSpeed())
+		return g_touchcontrols->getJoystickSpeed();
 	return joystick.getMovementSpeed();
 }
 
-float RealInputHandler::getMovementDirection()
+float RealInputHandler::getJoystickDirection()
 {
-	float x = 0, z = 0;
-
-	/* Check keyboard for input */
-	if (m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]))
-		z += 1;
-	if (m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]))
-		z -= 1;
-	if (m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]))
-		x += 1;
-	if (m_receiver->IsKeyDown(keycache.key[KeyType::LEFT]))
-		x -= 1;
-
-	if (x != 0 || z != 0) /* If there is a keyboard event, it takes priority */
-		return std::atan2(x, z);
-	// `getMovementDirection() == 0` means forward, so we cannot use
-	// `getMovementDirection()` as a condition.
-	else if (g_touchcontrols && g_touchcontrols->getMovementSpeed())
-		return g_touchcontrols->getMovementDirection();
+	// `getJoystickDirection() == 0` means forward, so we cannot use
+	// `getJoystickDirection()` as a condition.
+	if (g_touchcontrols && g_touchcontrols->getJoystickSpeed())
+		return g_touchcontrols->getJoystickDirection();
 	return joystick.getMovementDirection();
 }
 
@@ -320,25 +291,11 @@ void RandomInputHandler::step(float dtime)
 		counterMovement -= dtime;
 		if (counterMovement < 0.0) {
 			counterMovement = 0.1 * Rand(1, 40);
-			movementSpeed = Rand(0,100)*0.01;
-			movementDirection = Rand(-100, 100)*0.01 * M_PI;
+			joystickSpeed = Rand(0,100)*0.01;
+			joystickDirection = Rand(-100, 100)*0.01 * M_PI;
 		}
 	} else {
-		bool f = keydown[keycache.key[KeyType::FORWARD]],
-			l = keydown[keycache.key[KeyType::LEFT]];
-		if (f || l) {
-			movementSpeed = 1.0f;
-			if (f && !l)
-				movementDirection = 0.0;
-			else if (!f && l)
-				movementDirection = -M_PI_2;
-			else if (f && l)
-				movementDirection = -M_PI_4;
-			else
-				movementDirection = 0.0;
-		} else {
-			movementSpeed = 0.0;
-			movementDirection = 0.0;
-		}
+		joystickSpeed = 0.0f;
+		joystickDirection = 0.0f;
 	}
 }
