@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
 "PO-Revision-Date: 2024-10-06 23:41+0000\n"
-"Last-Translator: ludemys <lucianodellasavia@gmail.com>\n"
+"Last-Translator: Jynweythek Vordhosbn <jynweythek.nmk5s@simplelogin.fr>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -4762,7 +4762,7 @@ msgstr "Intervalo de guardado de mapa"
 
 #: src/settings_translation_file.cpp
 msgid "Map shadows update frames"
-msgstr "Intervalo de actualización de las sombras del mapa"
+msgstr "Cuadros de actualización de las sombras del mapa"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
