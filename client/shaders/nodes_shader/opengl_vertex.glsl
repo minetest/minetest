@@ -15,7 +15,8 @@ varying vec3 vPosition;
 // cameraOffset + worldPosition (for large coordinates the limits of float
 // precision must be considered).
 varying vec3 worldPosition;
-varying lowp vec4 varColor;
+varying lowp vec3 lightColor;
+varying vec3 hardwareColor;
 // The centroid keyword ensures that after interpolation the texture coordinates
 // lie within the same bounds when MSAA is en- and disabled.
 // This fixes the stripes problem with nearest-neighbor textures and MSAA.
@@ -200,26 +201,37 @@ void main(void)
 	vNormal = inVertexNormal;
 
 	// Calculate color.
-	vec4 color = inVertexColor;
+
+	// Extract the hardware color and send that
+	// to the fragment shader for mixing with texture color.
+	hardwareColor.rgb = inVertexColor.rgb;
+
+	// Unpack the values from alpha
+	float ratio = floor(inVertexColor.a*16)/16;
+	float lightBase = floor((inVertexColor.a - ratio)*256)/16;
+
 	// Red, green and blue components are pre-multiplied with
 	// the brightness, so now we have to multiply these
 	// colors with the color of the incoming light.
 	// The pre-baked colors are halved to prevent overflow.
 	// The alpha gives the ratio of sunlight in the incoming light.
-	nightRatio = 1.0 - color.a;
-	color.rgb = color.rgb * (color.a * dayLight.rgb +
+	nightRatio = 1.0 - ratio;
+
+	// Modify the color with the base light
+	vec3 light = vec3(lightBase, lightBase, lightBase);
+	light.rgb = light.rgb * (ratio * dayLight.rgb +
 		nightRatio * artificialLight.rgb) * 2.0;
-	color.a = 1.0;
 
 	// Emphase blue a bit in darker places
 	// See C++ implementation in mapblock_mesh.cpp final_color_blend()
-	float brightness = (color.r + color.g + color.b) / 3.0;
-	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
+	float brightness = (light.r + light.g + light.b) / 3.0;
+	light.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
 		0.07 * brightness);
 
-	color.rgb += ambientLight;
+	// In the end add the normalized ambient light and clamp that.
+	light.rgb += ambientLight;
 
-	varColor = clamp(color, 0.0, 1.0);
+	lightColor = clamp(light, 0.0, 1.0);
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	if (f_shadow_strength > 0.0) {
