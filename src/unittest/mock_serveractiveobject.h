@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class MockServerActiveObject : public ServerActiveObject
 {
 public:
-	MockServerActiveObject(ServerEnvironment *env = nullptr, const v3f &p = v3f()) :
+	MockServerActiveObject(ServerEnvironment *env = nullptr, v3f p = v3f()) :
 		ServerActiveObject(env, p) {}
 
 	virtual ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_TEST; }

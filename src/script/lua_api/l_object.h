@@ -38,10 +38,12 @@ public:
 	~ObjectRef() = default;
 
 	// Creates an ObjectRef and leaves it on top of stack
-	// Not callable from Lua; all references are created on the C side.
+	// NOTE: do not call this, use `ScriptApiBase::objectrefGetOrCreate()`!
 	static void create(lua_State *L, ServerActiveObject *object);
 
-	static void set_null(lua_State *L);
+	// Clear the pointer in the ObjectRef (at -1).
+	// Throws an fatal error if the object pointer wasn't `expect`.
+	static void set_null(lua_State *L, void *expect);
 
 	static void Register(lua_State *L);
 
