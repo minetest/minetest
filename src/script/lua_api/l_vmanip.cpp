@@ -71,8 +71,7 @@ int LuaVoxelManip::l_get_data(lua_State *L)
 	bool use_buffer  = lua_istable(L, 2);
 
 	MMVManip *vm = o->vm;
-
-	u32 volume = vm->m_area.getVolume();
+	const u32 volume = vm->m_area.getVolume();
 
 	if (use_buffer)
 		lua_pushvalue(L, 2);
@@ -80,7 +79,8 @@ int LuaVoxelManip::l_get_data(lua_State *L)
 		lua_createtable(L, volume, 0);
 
 	for (u32 i = 0; i != volume; i++) {
-		lua_Integer cid = vm->m_data[i].getContent();
+		// Do not push unintialized data to Lua
+		lua_Integer cid = (vm->m_flags[i] & VOXELFLAG_NO_DATA) ? CONTENT_IGNORE : vm->m_data[i].getContent();
 		lua_pushinteger(L, cid);
 		lua_rawseti(L, -2, i + 1);
 	}
@@ -107,6 +107,12 @@ int LuaVoxelManip::l_set_data(lua_State *L)
 
 		lua_pop(L, 1);
 	}
+
+	// FIXME: in theory we should clear VOXELFLAG_NO_DATA here
+	// However there is no way to tell which values Lua code has intended to set
+	// (if they were VOXELFLAG_NO_DATA before), and which were just not touched.
+	// In practice this doesn't cause problems because read_from_map() will cause
+	// all covered blocks to be loaded anyway.
 
 	return 0;
 }
@@ -231,8 +237,7 @@ int LuaVoxelManip::l_get_light_data(lua_State *L)
 	bool use_buffer  = lua_istable(L, 2);
 
 	MMVManip *vm = o->vm;
-
-	u32 volume = vm->m_area.getVolume();
+	const u32 volume = vm->m_area.getVolume();
 
 	if (use_buffer)
 		lua_pushvalue(L, 2);
@@ -240,7 +245,8 @@ int LuaVoxelManip::l_get_light_data(lua_State *L)
 		lua_createtable(L, volume, 0);
 
 	for (u32 i = 0; i != volume; i++) {
-		lua_Integer light = vm->m_data[i].param1;
+		// Do not push unintialized data to Lua
+		lua_Integer light = (vm->m_flags[i] & VOXELFLAG_NO_DATA) ? 0 : vm->m_data[i].getParam1();
 		lua_pushinteger(L, light);
 		lua_rawseti(L, -2, i + 1);
 	}
@@ -280,8 +286,7 @@ int LuaVoxelManip::l_get_param2_data(lua_State *L)
 	bool use_buffer  = lua_istable(L, 2);
 
 	MMVManip *vm = o->vm;
-
-	u32 volume = vm->m_area.getVolume();
+	const u32 volume = vm->m_area.getVolume();
 
 	if (use_buffer)
 		lua_pushvalue(L, 2);
@@ -289,7 +294,8 @@ int LuaVoxelManip::l_get_param2_data(lua_State *L)
 		lua_createtable(L, volume, 0);
 
 	for (u32 i = 0; i != volume; i++) {
-		lua_Integer param2 = vm->m_data[i].param2;
+		// Do not push unintialized data to Lua
+		lua_Integer param2 = (vm->m_flags[i] & VOXELFLAG_NO_DATA) ? 0 : vm->m_data[i].getParam2();
 		lua_pushinteger(L, param2);
 		lua_rawseti(L, -2, i + 1);
 	}
