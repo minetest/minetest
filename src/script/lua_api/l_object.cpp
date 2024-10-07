@@ -2776,9 +2776,11 @@ void ObjectRef::create(lua_State *L, ServerActiveObject *object)
 	lua_setmetatable(L, -2);
 }
 
-void ObjectRef::set_null(lua_State *L)
+void ObjectRef::set_null(lua_State *L, void *expect)
 {
 	ObjectRef *obj = checkObject<ObjectRef>(L, -1);
+	assert(obj);
+	FATAL_ERROR_IF(obj->m_object != expect, "ObjectRef table was messed with");
 	obj->m_object = nullptr;
 }
 
