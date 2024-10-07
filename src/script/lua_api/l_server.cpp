@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "common/c_packer.h"
+#include "common/c_window_info.h"
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_security.h"
 #include "scripting_server.h"
@@ -300,29 +301,7 @@ int ModApiServer::l_get_player_window_information(lua_State *L)
 	if (!dynamic || dynamic->render_target_size == v2u32())
 		return 0;
 
-	lua_newtable(L);
-	int dyn_table = lua_gettop(L);
-
-	lua_pushstring(L, "size");
-	push_v2u32(L, dynamic->render_target_size);
-	lua_settable(L, dyn_table);
-
-	lua_pushstring(L, "max_formspec_size");
-	push_v2f(L, dynamic->max_fs_size);
-	lua_settable(L, dyn_table);
-
-	lua_pushstring(L, "real_gui_scaling");
-	lua_pushnumber(L, dynamic->real_gui_scaling);
-	lua_settable(L, dyn_table);
-
-	lua_pushstring(L, "real_hud_scaling");
-	lua_pushnumber(L, dynamic->real_hud_scaling);
-	lua_settable(L, dyn_table);
-
-	lua_pushstring(L, "touch_controls");
-	lua_pushboolean(L, dynamic->touch_controls);
-	lua_settable(L, dyn_table);
-
+	push_window_info(L, *dynamic);
 	return 1;
 }
 

@@ -2764,7 +2764,7 @@ Elements
 ### `size[<W>,<H>,<fixed_size>]`
 
 * Define the size of the menu in inventory slots
-* `fixed_size`: `true`/`false` (optional)
+* `fixed_size`: `true`/`false` (optional, defaults to `false`)
 * deprecated: `invsize[<W>,<H>;]`
 
 ### `position[<X>,<Y>]`
@@ -5587,6 +5587,7 @@ Utilities
   --
   -- Note that none of these things are constant, they are likely to change during a client
   -- connection as the player resizes the window and moves it between monitors
+  -- or rotates the phone screen.
   --
   -- real_gui_scaling and real_hud_scaling can be used instead of DPI.
   -- OSes don't necessarily give the physical DPI, as they may allow user configuration.
@@ -5601,9 +5602,28 @@ Utilities
           y = 577,
       },
 
+      -- Window insets that can be used to avoid display cutouts on mobile (pixels).
+      --
+      -- When creating a fullscreen formspec using `max_formspec_size` (see below),
+      -- you shouldn't place any content in the area occupied by these insets.
+      -- In this case, you can convert each inset value into formspec coordinates
+      -- using `insets.<side> / size.<axis> * max_formspec_size.<axis>`.
+      insets = {
+          bottom = 0,
+          left = 110,
+          right = 0,
+          top = 0,
+      },
+
       -- Estimated maximum formspec size before Minetest will start shrinking the
-      -- formspec to fit. For a fullscreen formspec, use this formspec size and
-      -- `padding[0,0]`. `bgcolor[;true]` is also recommended.
+      -- formspec to fit. Only correct for formspecs that do not have `fixed_size`
+      -- enabled in their `size[]` element.
+      --
+      -- For a fullscreen formspec, use this formspec size and `padding[0,0]`.
+      -- `bgcolor[;true]` is also recommended.
+      --
+      -- Remember to take window insets (see above) into account for the layout
+      -- of your fullscreen formspec.
       max_formspec_size = {
           x = 20,
           y = 11.25

@@ -1859,12 +1859,14 @@ void Server::handleCommand_UpdateClientInfo(NetworkPacket *pkt)
 	*pkt >> info.real_hud_scaling;
 	*pkt >> info.max_fs_size.X;
 	*pkt >> info.max_fs_size.Y;
+
+	info.touch_controls = false;
+	info.insets = core::rect<s32>();
 	try {
 		// added in 5.9.0
 		*pkt >> info.touch_controls;
-	} catch (PacketError &e) {
-		info.touch_controls = false;
-	}
+		*pkt >> info.insets.UpperLeftCorner >> info.insets.LowerRightCorner;
+	} catch (PacketError &e) {}
 
 	session_t peer_id = pkt->getPeerId();
 	RemoteClient *client = getClient(peer_id, CS_Invalid);
