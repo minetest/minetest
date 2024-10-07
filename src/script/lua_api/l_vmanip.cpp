@@ -333,6 +333,9 @@ int LuaVoxelManip::l_was_modified(lua_State *L)
 	LuaVoxelManip *o = checkObject<LuaVoxelManip>(L, 1);
 	MMVManip *vm = o->vm;
 
+	if (!o->is_mapgen_vm)
+		log_deprecated(L, "was_modified called for a non-mapgen VoxelManip object");
+
 	lua_pushboolean(L, vm->m_is_dirty);
 
 	return 1;

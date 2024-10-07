@@ -5010,8 +5010,7 @@ Methods
   the `VoxelManip`.
 * `calc_lighting([p1, p2], [propagate_shadow])`:  Calculate lighting within the
   `VoxelManip`.
-    * To be used only by a `VoxelManip` object from
-      `minetest.get_mapgen_object`.
+    * To be used only with a `VoxelManip` object from `minetest.get_mapgen_object`.
     * (`p1`, `p2`) is the area in which lighting is set, defaults to the whole
       area if left out or nil. For almost all uses these should be left out
       or nil to use the default.
@@ -5019,9 +5018,11 @@ Methods
       generated mapchunk above are propagated down into the mapchunk, defaults
       to `true` if left out.
 * `update_liquids()`: Update liquid flow
-* `was_modified()`: Returns `true` or `false` if the data in the voxel
-  manipulator had been modified since the last read from map, due to a call to
-  `minetest.set_data()` on the loaded area elsewhere.
+* `was_modified()`: Returns `true` if the data in the voxel manipulator has been modified
+   since it was last read from the map. This means you have to call `get_data` again.
+   This only applies to a `VoxelManip` object from `minetest.get_mapgen_object`,
+   where the engine will keep the map and the VM in sync automatically.
+   * Note: this doesn't do what you think it does and is subject to removal. Don't use it!
 * `get_emerged_area()`: Returns actual emerged minimum and maximum positions.
 
 `VoxelArea`
