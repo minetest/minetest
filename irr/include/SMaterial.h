@@ -6,7 +6,6 @@
 
 #include "SColor.h"
 #include "matrix4.h"
-#include "irrArray.h"
 #include "irrMath.h"
 #include "EMaterialTypes.h"
 #include "EMaterialProps.h"
@@ -195,29 +194,6 @@ enum E_ANTI_ALIASING_MODE
 	EAAM_ALPHA_TO_COVERAGE = 4
 };
 
-//! These flags allow to define the interpretation of vertex color when lighting is enabled
-/** Without lighting being enabled the vertex color is the only value defining the fragment color.
-Once lighting is enabled, the four values for diffuse, ambient, emissive, and specular take over.
-With these flags it is possible to define which lighting factor shall be defined by the vertex color
-instead of the lighting factor which is the same for all faces of that material.
-The default is to use vertex color for the diffuse value, another pretty common value is to use
-vertex color for both diffuse and ambient factor. */
-enum E_COLOR_MATERIAL
-{
-	//! Don't use vertex color for lighting
-	ECM_NONE = 0,
-	//! Use vertex color for diffuse light, this is default
-	ECM_DIFFUSE,
-	//! Use vertex color for ambient light
-	ECM_AMBIENT,
-	//! Use vertex color for emissive light
-	ECM_EMISSIVE,
-	//! Use vertex color for specular light
-	ECM_SPECULAR,
-	//! Use vertex color for both diffuse and ambient light
-	ECM_DIFFUSE_AND_AMBIENT
-};
-
 //! Names for polygon offset direction
 const c8 *const PolygonOffsetDirectionNames[] = {
 		"Back",
@@ -263,16 +239,14 @@ class SMaterial
 public:
 	//! Default constructor. Creates a solid, lit material with white colors
 	SMaterial() :
-			MaterialType(EMT_SOLID), AmbientColor(255, 255, 255, 255),
-			DiffuseColor(255, 255, 255, 255), EmissiveColor(0, 0, 0, 0),
-			SpecularColor(255, 255, 255, 255), Shininess(0.0f),
+			MaterialType(EMT_SOLID), ColorParam(0, 0, 0, 0),
 			MaterialTypeParam(0.0f), Thickness(1.0f), ZBuffer(ECFN_LESSEQUAL),
-			AntiAliasing(EAAM_SIMPLE), ColorMask(ECP_ALL), ColorMaterial(ECM_DIFFUSE),
+			AntiAliasing(EAAM_SIMPLE), ColorMask(ECP_ALL),
 			BlendOperation(EBO_NONE), BlendFactor(0.0f), PolygonOffsetDepthBias(0.f),
 			PolygonOffsetSlopeScale(0.f), Wireframe(false), PointCloud(false),
-			GouraudShading(true), Lighting(true), ZWriteEnable(EZW_AUTO),
+			ZWriteEnable(EZW_AUTO),
 			BackfaceCulling(true), FrontfaceCulling(false), FogEnable(false),
-			NormalizeNormals(false), UseMipMaps(true)
+			UseMipMaps(true)
 	{
 	}
 
@@ -282,42 +256,9 @@ public:
 	//! Type of the material. Specifies how everything is blended together
 	E_MATERIAL_TYPE MaterialType;
 
-	//! How much ambient light (a global light) is reflected by this material.
-	/** The default is full white, meaning objects are completely
-	globally illuminated. Reduce this if you want to see diffuse
-	or specular light effects. */
-	SColor AmbientColor;
-
-	//! How much diffuse light coming from a light source is reflected by this material.
-	/** The default is full white. */
-	SColor DiffuseColor;
-
-	//! Light emitted by this material. Default is to emit no light.
-	SColor EmissiveColor;
-
-	//! How much specular light (highlights from a light) is reflected.
-	/** The default is to reflect white specular light. See
-	SMaterial::Shininess on how to enable specular lights. */
-	SColor SpecularColor;
-
-	//! Value affecting the size of specular highlights.
-	/** A value of 20 is common. If set to 0, no specular
-	highlights are being used. To activate, simply set the
-	shininess of a material to a value in the range [0.5;128]:
-	\code
-	sceneNode->getMaterial(0).Shininess = 20.0f;
-	\endcode
-
-	You can change the color of the highlights using
-	\code
-	sceneNode->getMaterial(0).SpecularColor.set(255,255,255,255);
-	\endcode
-
-	The specular color of the dynamic lights
-	(SLight::SpecularColor) will influence the the highlight color
-	too, but they are set to a useful value by default when
-	creating the light scene node.*/
-	f32 Shininess;
+	//! Custom color parameter, can be used by custom shader materials.
+	// See MainShaderConstantSetter in Minetest.
+	SColor ColorParam;
 
 	//! Free parameter, dependent on the material type.
 	/** Mostly ignored, used for example in
@@ -344,14 +285,6 @@ public:
 	target. Typical use is to disable all colors when rendering only to
 	depth or stencil buffer, or using Red and Green for Stereo rendering. */
 	u8 ColorMask : 4;
-
-	//! Defines the interpretation of vertex color in the lighting equation
-	/** Values should be chosen from E_COLOR_MATERIAL.
-	When lighting is enabled, vertex color can be used instead of the
-	material values for light modulation. This allows to easily change e.g. the
-	diffuse light behavior of each face. The default, ECM_DIFFUSE, will result in
-	a very similar rendering as with lighting turned off, just with light shading. */
-	u8 ColorMaterial : 3;
 
 	//! Store the blend operation of choice
 	/** Values to be chosen from E_BLEND_OPERATION. */
@@ -393,12 +326,6 @@ public:
 	//! Draw as point cloud or filled triangles? Default: false
 	bool PointCloud : 1;
 
-	//! Flat or Gouraud shading? Default: true
-	bool GouraudShading : 1;
-
-	//! Will this material be lighted? Default: true
-	bool Lighting : 1;
-
 	//! Is the zbuffer writable or is it read-only. Default: EZW_AUTO.
 	/** If this parameter is not EZW_OFF, you probably also want to set ZBuffer
 	to values other than ECFN_DISABLED */
@@ -412,10 +339,6 @@ public:
 
 	//! Is fog enabled? Default: false
 	bool FogEnable : 1;
-
-	//! Should normals be normalized?
-	/** Always use this if the mesh lit and scaled. Default: false */
-	bool NormalizeNormals : 1;
 
 	//! Shall mipmaps be used if available
 	/** Sometimes, disabling mipmap usage can be useful. Default: true */
@@ -487,26 +410,18 @@ public:
 	{
 		bool different =
 				MaterialType != b.MaterialType ||
-				AmbientColor != b.AmbientColor ||
-				DiffuseColor != b.DiffuseColor ||
-				EmissiveColor != b.EmissiveColor ||
-				SpecularColor != b.SpecularColor ||
-				Shininess != b.Shininess ||
+				ColorParam != b.ColorParam ||
 				MaterialTypeParam != b.MaterialTypeParam ||
 				Thickness != b.Thickness ||
 				Wireframe != b.Wireframe ||
 				PointCloud != b.PointCloud ||
-				GouraudShading != b.GouraudShading ||
-				Lighting != b.Lighting ||
 				ZBuffer != b.ZBuffer ||
 				ZWriteEnable != b.ZWriteEnable ||
 				BackfaceCulling != b.BackfaceCulling ||
 				FrontfaceCulling != b.FrontfaceCulling ||
 				FogEnable != b.FogEnable ||
-				NormalizeNormals != b.NormalizeNormals ||
 				AntiAliasing != b.AntiAliasing ||
 				ColorMask != b.ColorMask ||
-				ColorMaterial != b.ColorMaterial ||
 				BlendOperation != b.BlendOperation ||
 				BlendFactor != b.BlendFactor ||
 				PolygonOffsetDepthBias != b.PolygonOffsetDepthBias ||

@@ -119,6 +119,7 @@ Command-line options
 Compiling
 ---------
 
+- [Compiling - common information](doc/compiling/README.md)
 - [Compiling on GNU/Linux](doc/compiling/linux.md)
 - [Compiling on Windows](doc/compiling/windows.md)
 - [Compiling on MacOS](doc/compiling/macos.md)

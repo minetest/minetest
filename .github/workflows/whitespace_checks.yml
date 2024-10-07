@@ -1,0 +1,45 @@
+name: whitespace_checks
+
+# Check whitespaces of the following file types
+# Not checked: .lua, .yml, .properties, .conf, .java, .py, .svg, .gradle, .xml, ...
+# (luacheck already checks .lua files)
+on:
+  push:
+    paths:
+      - '**.txt'
+      - '**.md'
+      - '**.[ch]'
+      - '**.cpp'
+      - '**.hpp'
+      - '**.sh'
+      - '**.cmake'
+      - '**.glsl'
+  pull_request:
+    paths:
+      - '**.txt'
+      - '**.md'
+      - '**.[ch]'
+      - '**.cpp'
+      - '**.hpp'
+      - '**.sh'
+      - '**.cmake'
+      - '**.glsl'
+
+jobs:
+  trailing_whitespaces:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Line endings are already ensured by .gitattributes
+      - name: Check trailing whitespaces
+        run: if git ls-files | grep -E '\.txt$|\.md$|\.[ch]$|\.cpp$|\.hpp$|\.sh$|\.cmake$|\.glsl$' | xargs grep -n '\s$'; then echo -e "\033[0;31mFound trailing whitespace"; (exit 1); else (exit 0); fi
+
+  tabs_lua_api_files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Some files should not contain tabs
+      - name: Check tabs in Lua API files
+        run: if grep -n $'\t' doc/lua_api.md doc/client_lua_api.md; then echo -e "\033[0;31mFound tab in markdown file"; (exit 1); else (exit 0); fi
+
+

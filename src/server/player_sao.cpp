@@ -156,7 +156,10 @@ void PlayerSAO::getStaticData(std::string * result) const
 
 void PlayerSAO::step(float dtime, bool send_recommended)
 {
-	if (!isImmortal() && m_drowning_interval.step(dtime, 2.0f)) {
+	bool not_immortal = !isImmortal();
+
+	if (not_immortal && m_flags.drowning
+			&& m_drowning_interval.step(dtime, 2.0f)) {
 		// Get nose/mouth position, approximate with eye position
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNode(p);
@@ -174,7 +177,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if (m_breathing_interval.step(dtime, 0.5f) && !isImmortal()) {
+	if (not_immortal && m_flags.breathing
+			&& m_breathing_interval.step(dtime, 0.5f)) {
 		// Get nose/mouth position, approximate with eye position
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNode(p);
@@ -185,7 +189,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			setBreath(m_breath + 1);
 	}
 
-	if (!isImmortal() && m_node_hurt_interval.step(dtime, 1.0f)) {
+	if (not_immortal && m_flags.node_damage
+			&& m_node_hurt_interval.step(dtime, 1.0f)) {
 		u32 damage_per_second = 0;
 		std::string nodename;
 		v3s16 node_pos;
@@ -233,13 +238,12 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	}
 
 	// If attached, check that our parent is still there. If it isn't, detach.
-	if (m_attachment_parent_id && !isAttached()) {
+	if (m_attachment_parent_id && !getParent()) {
 		// This is handled when objects are removed from the map
 		warningstream << "PlayerSAO::step() id=" << m_id <<
 			" is attached to nonexistent parent. This is a bug." << std::endl;
 		clearParentAttachment();
-		setBasePosition(m_last_good_position);
-		m_env->getGameDef()->SendMovePlayer(this);
+		setPos(m_last_good_position);
 	}
 
 	//dstream<<"PlayerSAO::step: dtime: "<<dtime<<std::endl;
@@ -515,12 +519,13 @@ void PlayerSAO::rightClick(ServerActiveObject *clicker)
 
 void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool from_client)
 {
-	target_hp = rangelim(target_hp, 0, U16_MAX);
-
-	if (target_hp == m_hp)
+	if (target_hp == m_hp || (m_hp == 0 && target_hp < 0))
 		return; // Nothing to do
 
-	s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, target_hp - (s32)m_hp, reason);
+	// Protect against overflow.
+	s32 hp_change = std::max<s64>((s64)target_hp - (s64)m_hp, S32_MIN);
+
+	hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp_change, reason);
 	hp_change = std::min<s32>(hp_change, U16_MAX); // Protect against overflow
 
 	s32 hp = (s32)m_hp + hp_change;
@@ -552,6 +557,21 @@ void PlayerSAO::setBreath(const u16 breath, bool send)
 
 	if (send)
 		m_env->getGameDef()->SendPlayerBreath(this);
+}
+
+void PlayerSAO::respawn()
+{
+	infostream << "PlayerSAO::respawn(): Player " << m_player->getName()
+			<< " respawns" << std::endl;
+
+	setHP(m_prop.hp_max, PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
+	setBreath(m_prop.breath_max);
+
+	bool repositioned = m_env->getScriptIface()->on_respawnplayer(this);
+	if (!repositioned) {
+		// setPos will send the new position to client
+		setPos(m_env->getGameDef()->findSpawnPos());
+	}
 }
 
 Inventory *PlayerSAO::getInventory() const

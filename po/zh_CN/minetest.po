@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-01-30 16:01+0000\n"
-"Last-Translator: yue weikai <send52@outlook.com>\n"
+"PO-Revision-Date: 2024-07-31 22:09+0000\n"
+"Last-Translator: y5nw <y5nw@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -82,9 +82,8 @@ msgstr ""
 "使用 '.help <cmd>' 获取该命令的更多信息，或使用 '.help all' 列出所有内容。"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "[all | <cmd>] [-t]"
-msgstr "[all | <命令>]"
+msgstr "[all | <命令>] [-t]"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -151,7 +150,7 @@ msgstr "下载 $1 失败"
 msgid ""
 "Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
 "broken archive)"
-msgstr "安装：\"$1\" 的文件类型不支持或压缩包已损坏"
+msgstr "无法解压\"$1\"：存储空间不足、文件类型不支持或压缩包已损坏"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
@@ -182,8 +181,9 @@ msgid "Downloading..."
 msgstr "下载中..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
+#, fuzzy
 msgid "Error getting dependencies for package"
-msgstr ""
+msgstr "无法获取这个包的依赖项"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Games"
@@ -1102,7 +1102,7 @@ msgstr "启动游戏"
 #: builtin/mainmenu/tab_local.lua
 #, fuzzy
 msgid "You need to install a game before you can create a world."
-msgstr "在安装mod前，你需要先安装一个子游戏"
+msgstr "您需要先安装一个子游戏才能创建新的世界。"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1417,7 +1417,7 @@ msgstr "雾气已启用"
 #: src/client/game.cpp
 #, fuzzy
 msgid "Fog enabled by game or mod"
-msgstr "缩放被当前子游戏或 mod 禁用"
+msgstr "雾被当前子游戏或 mod 启用"
 
 #: src/client/game.cpp
 msgid "Game info:"
@@ -1917,11 +1917,12 @@ msgstr "材质模式小地图"
 #: src/client/shader.cpp
 #, fuzzy, c-format
 msgid "Failed to compile the \"%s\" shader."
-msgstr "网页打不开"
+msgstr "无法编译“%s”着色器。"
 
 #: src/client/shader.cpp
+#, fuzzy
 msgid "Shaders are enabled but GLSL is not supported by the driver."
-msgstr ""
+msgstr "着色器已启用，但是驱动程序不支持 GLSL。"
 
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
@@ -2114,16 +2115,17 @@ msgstr "按键"
 
 #: src/gui/guiOpenURL.cpp
 msgid "Open"
-msgstr ""
+msgstr "打开"
 
 #: src/gui/guiOpenURL.cpp
+#, fuzzy
 msgid "Open URL?"
-msgstr ""
+msgstr "是否打开网页？"
 
 #: src/gui/guiOpenURL.cpp
 #, fuzzy
 msgid "Unable to open URL"
-msgstr "网页打不开"
+msgstr "无法打开网页"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
@@ -3335,7 +3337,7 @@ msgstr "启用鼠标滚轮（滚动），以便在热栏中选择项目。"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Enable random mod loading (mainly used for testing)."
-msgstr "启用随机用户输入（仅用于测试）。"
+msgstr "使用随机顺序加载 mod（主要用于测试）。"
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3428,9 +3430,10 @@ msgid "Enables the post processing pipeline."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Enables touchscreen mode, allowing you to play the game with a touchscreen."
-msgstr ""
+msgstr "启用触摸屏模式。启用后您可以使用触摸屏玩游戏。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5097,9 +5100,8 @@ msgstr ""
 "则不暂停。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "OpenGL debug"
-msgstr "地图生成器调试"
+msgstr "OpenGL 调试"
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
@@ -5230,7 +5232,7 @@ msgstr "包含液体的大洞穴的比例。"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Protocol version minimum"
-msgstr "协议版本不匹配。 "
+msgstr "最低协议版本"
 
 #: src/settings_translation_file.cpp
 msgid "Punch gesture"
@@ -5254,8 +5256,9 @@ msgid "Random input"
 msgstr "随机输入"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Random mod load order"
-msgstr ""
+msgstr "使用随机顺序加载 Mod"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -5633,7 +5636,7 @@ msgid ""
 "Set the language. By default, the system language is used.\n"
 "A restart is required after changing this."
 msgstr ""
-"设定语言。留空以使用系统语言。\n"
+"设定语言。默认使用系统语言。\n"
 "变更后须重新启动。"
 
 #: src/settings_translation_file.cpp
@@ -6166,10 +6169,10 @@ msgid ""
 "OpenGL is the default for desktop, and OGLES2 for Android.\n"
 "Shaders are supported by everything but OGLES1."
 msgstr ""
-"关于渲染的后端引擎\n"
+"用于渲染的后端引擎\n"
 "注：更改之后要重启游戏！\n"
 "OpenGL是默认的电脑端渲染引擎，OGLES2是用于安卓的.\n"
-"实验性：被OpenGL和OGLES2的着色器."
+"除了OGLES1之外的后端引擎都支持着色器"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6302,9 +6305,8 @@ msgid "Tradeoffs for performance"
 msgstr "性能权衡"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Translucent liquids"
-msgstr "不透明液体"
+msgstr "半透明液体"
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
@@ -6573,7 +6575,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Volume when unfocused"
-msgstr "游戏暂停时最高 FPS"
+msgstr "游戏暂停时的音量"
 
 #: src/settings_translation_file.cpp
 #, fuzzy

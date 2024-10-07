@@ -88,7 +88,7 @@ jobs:
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-7 llvm
+          install_linux_deps clang-7 llvm-7
 
       - name: Build
         run: |
@@ -101,6 +101,11 @@ jobs:
       - name: Unittest
         run: |
           ./bin/minetest --run-unittests
+
+      # Do this here because we have ASan and error paths are sensitive to dangling pointers
+      - name: Test error cases
+        run: |
+          ./util/test_error_cases.sh
 
   # Current clang version
   clang_18:

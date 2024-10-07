@@ -31,6 +31,7 @@ class ShadowConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<f32, 3> m_light_direction{"v_LightDirection"};
 	CachedPixelShaderSetting<f32> m_texture_res{"f_textureresolution"};
 	CachedPixelShaderSetting<f32> m_shadow_strength{"f_shadow_strength"};
+	CachedPixelShaderSetting<f32, 3> m_shadow_tint{ "shadow_tint" };
 	CachedPixelShaderSetting<f32> m_time_of_day{"f_timeofday"};
 	CachedPixelShaderSetting<f32> m_shadowfar{"f_shadowfar"};
 	CachedPixelShaderSetting<f32, 4> m_camera_pos{"CameraPos"};

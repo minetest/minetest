@@ -22,13 +22,13 @@ end
 
 
 local function get_loading_formspec()
-	local ENABLE_TOUCH = core.settings:get_bool("enable_touch")
-	local w = ENABLE_TOUCH and 14 or 7
+	local TOUCH_GUI = core.settings:get_bool("touch_gui")
+	local w = TOUCH_GUI and 14 or 7
 
 	local formspec = {
 		"formspec_version[3]",
 		"size[", w, ",9.05]",
-		ENABLE_TOUCH and "padding[0.01,0.01]" or "position[0.5,0.55]",
+		TOUCH_GUI and "padding[0.01,0.01]" or "position[0.5,0.55]",
 		"label[3,4.525;", fgettext("Loading..."), "]",
 	}
 	return table.concat(formspec)
@@ -110,18 +110,18 @@ local function get_formspec(data)
 		message_bg = mt_color_orange
 	end
 
-	local ENABLE_TOUCH = core.settings:get_bool("enable_touch")
+	local TOUCH_GUI = core.settings:get_bool("touch_gui")
 
-	local w = ENABLE_TOUCH and 14 or 7
+	local w = TOUCH_GUI and 14 or 7
 	local padded_w = w - 2*0.375
-	local dropdown_w = ENABLE_TOUCH and 10.2 or 4.25
+	local dropdown_w = TOUCH_GUI and 10.2 or 4.25
 	local button_w = (padded_w - 0.25) / 3
 	local button_pad = button_w / 2
 
 	local formspec = {
 		"formspec_version[3]",
 		"size[", w, ",9.05]",
-		ENABLE_TOUCH and "padding[0.01,0.01]" or "position[0.5,0.55]",
+		TOUCH_GUI and "padding[0.01,0.01]" or "position[0.5,0.55]",
 		"style[title;border=false]",
 		"box[0,0;", w, ",0.8;#3333]",
 		"button[0,0;", w, ",0.8;title;", fgettext("Install $1", package.title) , "]",
@@ -243,4 +243,46 @@ function create_install_dialog(package)
 	dlg.data.dlg = dlg
 
 	return dlg
+end
+
+
+function install_or_update_package(parent, package)
+	local install_parent
+	if package.type == "mod" then
+		install_parent = core.get_modpath()
+	elseif package.type == "game" then
+		install_parent = core.get_gamepath()
+	elseif package.type == "txp" then
+		install_parent = core.get_texturepath()
+	else
+		error("Unknown package type: " .. package.type)
+	end
+
+	if package.queued or package.downloading then
+		return
+	end
+
+	local function on_confirm()
+		local dlg = create_install_dialog(package)
+		dlg:set_parent(parent)
+		parent:hide()
+		dlg:show()
+
+		dlg:load_deps()
+	end
+
+	if package.type == "mod" and #pkgmgr.games == 0 then
+		local dlg = messagebox("install_game",
+				fgettext("You need to install a game before you can install a mod"))
+		dlg:set_parent(parent)
+		parent:hide()
+		dlg:show()
+	elseif not package.path and core.is_dir(install_parent .. DIR_DELIM .. package.name) then
+		local dlg = create_confirm_overwrite(package, on_confirm)
+		dlg:set_parent(parent)
+		parent:hide()
+		dlg:show()
+	else
+		on_confirm()
+	end
 end

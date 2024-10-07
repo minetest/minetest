@@ -40,7 +40,7 @@ class EmergeScripting;
 class EmergeThread : public Thread {
 public:
 	bool enable_mapgen_debug_info;
-	int id;
+	const int id; // Index of this thread
 
 	EmergeThread(Server *server, int ethreadid);
 	~EmergeThread() = default;
@@ -49,7 +49,7 @@ public:
 	void signal();
 
 	// Requires queue mutex held
-	bool pushBlock(const v3s16 &pos);
+	bool pushBlock(v3s16 pos);
 
 	void cancelPendingItems();
 
@@ -59,7 +59,7 @@ public:
 protected:
 
 	void runCompletionCallbacks(
-		const v3s16 &pos, EmergeAction action,
+		v3s16 pos, EmergeAction action,
 		const EmergeCallbackList &callbacks);
 
 private:
@@ -79,8 +79,20 @@ private:
 
 	bool popBlockEmerge(v3s16 *pos, BlockEmergeData *bedata);
 
-	EmergeAction getBlockOrStartGen(
-		const v3s16 &pos, bool allow_gen, MapBlock **block, BlockMakeData *data);
+	/**
+	 * Try to get a block from memory and decide what to do.
+	 *
+	 * @param pos block position
+	 * @param from_db serialized block data, optional
+	 *                (for second call after EMERGE_FROM_DISK was returned)
+	 * @param allow_gen allow invoking mapgen?
+	 * @param block output pointer for block
+	 * @param data info for mapgen
+	 * @return what to do for this block
+	 */
+	EmergeAction getBlockOrStartGen(v3s16 pos, bool allow_gen,
+		const std::string *from_db,  MapBlock **block, BlockMakeData *data);
+
 	MapBlock *finishGen(v3s16 pos, BlockMakeData *bmdata,
 		std::map<v3s16, MapBlock *> *modified_blocks);
 

@@ -19,8 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <cmath>
 #include "content_mapblock.h"
+#include "util/basic_macros.h"
 #include "util/numeric.h"
 #include "util/directiontables.h"
+#include "util/tracy_wrapper.h"
 #include "mapblock_mesh.h"
 #include "settings.h"
 #include "nodedef.h"
@@ -81,7 +83,8 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	meshmanip(mm),
 	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE),
 	enable_mesh_cache(g_settings->getBool("enable_mesh_cache") &&
-			!data->m_smooth_lighting) // Mesh cache is not supported with smooth lighting
+			!data->m_smooth_lighting), // Mesh cache is not supported with smooth lighting
+	smooth_liquids(g_settings->getBool("enable_water_reflections"))
 {
 }
 
@@ -463,6 +466,8 @@ void MapblockMeshGenerator::drawSolidNode()
 	if (data->m_smooth_lighting) {
 		LightPair lights[6][4];
 		for (int face = 0; face < 6; ++face) {
+			if (mask & (1 << face))
+				continue;
 			for (int k = 0; k < 4; k++) {
 				v3s16 corner = light_dirs[light_indices[face][k]];
 				lights[face][k] = LightPair(getSmoothLightSolid(
@@ -713,7 +718,7 @@ void MapblockMeshGenerator::drawLiquidSides()
 			if (data->m_smooth_lighting)
 				cur_node.color = blendLightColor(pos);
 			pos += cur_node.origin;
-			vertices[j] = video::S3DVertex(pos.X, pos.Y, pos.Z, 0, 0, 0, cur_node.color, vertex.u, v);
+			vertices[j] = video::S3DVertex(pos.X, pos.Y, pos.Z, face.dir.X, face.dir.Y, face.dir.Z, cur_node.color, vertex.u, v);
 		};
 		collector->append(cur_liquid.tile, vertices, 4, quad_indices, 6);
 	}
@@ -736,6 +741,19 @@ void MapblockMeshGenerator::drawLiquidTop()
 	for (int i = 0; i < 4; i++) {
 		int u = corner_resolve[i][0];
 		int w = corner_resolve[i][1];
+
+		if (smooth_liquids) {
+			int x = vertices[i].Pos.X > 0;
+			int z = vertices[i].Pos.Z > 0;
+
+			f32 dx = 0.5f * (cur_liquid.neighbors[z][x].level - cur_liquid.neighbors[z][x + 1].level +
+				cur_liquid.neighbors[z + 1][x].level - cur_liquid.neighbors[z + 1][x + 1].level);
+			f32 dz = 0.5f * (cur_liquid.neighbors[z][x].level - cur_liquid.neighbors[z + 1][x].level +
+				cur_liquid.neighbors[z][x + 1].level - cur_liquid.neighbors[z + 1][x + 1].level);
+
+			vertices[i].Normal = v3f(dx, 1., dz).normalize();
+		}
+
 		vertices[i].Pos.Y += cur_liquid.corner_levels[w][u] * BS;
 		if (data->m_smooth_lighting)
 			vertices[i].Color = blendLightColor(vertices[i].Pos);
@@ -775,6 +793,10 @@ void MapblockMeshGenerator::drawLiquidTop()
 		vertex.TCoords += tcoord_center;
 
 		vertex.TCoords += tcoord_translate;
+
+		if (!smooth_liquids) {
+			vertex.Normal = v3f(dx, 1., dz).normalize();
+		}
 	}
 
 	std::swap(vertices[0].TCoords, vertices[2].TCoords);
@@ -992,13 +1014,6 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		                              (nb[1] ? g : b) * vlev,
 		                              (nb[0] ? g : b)));
 	}
-}
-
-void MapblockMeshGenerator::drawAllfacesNode()
-{
-	static const aabb3f box(-BS / 2, -BS / 2, -BS / 2, BS / 2, BS / 2, BS / 2);
-	useTile(0, 0, 0);
-	drawAutoLightedCuboid(box);
 }
 
 void MapblockMeshGenerator::drawTorchlikeNode()
@@ -1523,6 +1538,17 @@ namespace {
 	};
 }
 
+void MapblockMeshGenerator::drawAllfacesNode()
+{
+	static const aabb3f box(-BS / 2, -BS / 2, -BS / 2, BS / 2, BS / 2, BS / 2);
+	TileSpec tiles[6];
+	for (int face = 0; face < 6; face++)
+		getTile(nodebox_tile_dirs[face], &tiles[face]);
+	if (data->m_smooth_lighting)
+		getSmoothLightFrame();
+	drawAutoLightedCuboid(box, nullptr, tiles, 6);
+}
+
 void MapblockMeshGenerator::drawNodeboxNode()
 {
 	TileSpec tiles[6];
@@ -1674,7 +1700,9 @@ void MapblockMeshGenerator::drawMeshNode()
 
 	int mesh_buffer_count = mesh->getMeshBufferCount();
 	for (int j = 0; j < mesh_buffer_count; j++) {
-		useTile(j);
+		// Only up to 6 tiles are supported
+		const auto tile =  mesh->getTextureSlot(j);
+		useTile(MYMIN(tile, 5));
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
 		int vertex_count = buf->getVertexCount();
@@ -1745,6 +1773,8 @@ void MapblockMeshGenerator::drawNode()
 
 void MapblockMeshGenerator::generate()
 {
+	ZoneScoped;
+
 	for (cur_node.p.Z = 0; cur_node.p.Z < data->side_length; cur_node.p.Z++)
 	for (cur_node.p.Y = 0; cur_node.p.Y < data->side_length; cur_node.p.Y++)
 	for (cur_node.p.X = 0; cur_node.p.X < data->side_length; cur_node.p.X++) {

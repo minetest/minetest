@@ -43,10 +43,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	ClientEnvironment
 */
 
-ClientEnvironment::ClientEnvironment(ClientMap *map,
+ClientEnvironment::ClientEnvironment(irr_ptr<ClientMap> map,
 	ITextureSource *texturesource, Client *client):
 	Environment(client),
-	m_map(map),
+	m_map(std::move(map)),
 	m_texturesource(texturesource),
 	m_client(client)
 {
@@ -60,18 +60,17 @@ ClientEnvironment::~ClientEnvironment()
 		delete simple_object;
 	}
 
-	// Drop/delete map
-	m_map->drop();
+	m_map.reset();
 
 	delete m_local_player;
 }
 
-Map & ClientEnvironment::getMap()
+Map &ClientEnvironment::getMap()
 {
 	return *m_map;
 }
 
-ClientMap & ClientEnvironment::getClientMap()
+ClientMap &ClientEnvironment::getClientMap()
 {
 	return *m_map;
 }
@@ -368,7 +367,7 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 void ClientEnvironment::removeActiveObject(u16 id)
 {
 	// Get current attachment childs to detach them visually
-	std::unordered_set<int> attachment_childs;
+	std::unordered_set<ClientActiveObject::object_t> attachment_childs;
 	if (auto *obj = getActiveObject(id))
 		attachment_childs = obj->getAttachmentChildIds();
 

@@ -371,14 +371,12 @@ void blitBaseImage(video::IImage* &src, video::IImage* &dst)
 
 namespace {
 
-/** Calculate the color of a single pixel drawn on top of another pixel without
- * gamma correction
+/** Calculate the result of the overlay texture modifier (`^`) for a single
+ * pixel
  *
- * The color mixing is a little more complicated than just
- * video::SColor::getInterpolated because getInterpolated does not handle alpha
- * correctly.
- * For example, a pixel with alpha=64 drawn atop a pixel with alpha=128 should
- * yield a pixel with alpha=160, while getInterpolated would yield alpha=96.
+ * This is not alpha blending if both src and dst are semi-transparent. The
+ * reason this is that an old implementation did it wrong, and fixing it would
+ * break backwards compatibility (see #14847).
  *
  * \tparam overlay If enabled, only modify dst_col if it is fully opaque
  * \param src_col Color of the top pixel
@@ -1449,6 +1447,8 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 
 			video::IImage *img = generateImage(filename, source_image_names);
 			if (img) {
+				upscaleImagesToMatchLargest(baseimg, img);
+
 				apply_mask(img, baseimg, v2s32(0, 0), v2s32(0, 0),
 						img->getDimension());
 				img->drop();
@@ -1910,7 +1910,8 @@ video::IImage* ImageSource::generateImage(std::string_view name,
 		video::IImage *tmp = generateImage(name2, source_image_names);
 		if (!tmp) {
 			errorstream << "generateImage(): "
-				"Failed to generate \"" << name2 << "\""
+				"Failed to generate \"" << name2 << "\"\n"
+				"part of texture \"" << name << "\""
 				<< std::endl;
 			return NULL;
 		}
@@ -1925,7 +1926,8 @@ video::IImage* ImageSource::generateImage(std::string_view name,
 	} else if (!generateImagePart(last_part_of_name, baseimg, source_image_names)) {
 		// Generate image according to part of name
 		errorstream << "generateImage(): "
-				"Failed to generate \"" << last_part_of_name << "\""
+				"Failed to generate \"" << last_part_of_name << "\"\n"
+				"part of texture \"" << name << "\""
 				<< std::endl;
 	}
 

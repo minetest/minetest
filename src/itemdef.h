@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include <string>
 #include <iostream>
 #include <optional>
@@ -71,7 +71,8 @@ struct TouchInteraction
 	TouchInteraction();
 	// Returns the right mode for the pointed thing and resolves any occurrence
 	// of TouchInteractionMode_USER into an actual mode.
-	TouchInteractionMode getMode(PointedThingType pointed_type) const;
+	TouchInteractionMode getMode(const ItemDefinition &selected_def,
+			PointedThingType pointed_type) const;
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 };

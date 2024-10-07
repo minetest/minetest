@@ -72,7 +72,7 @@ int LuaLocalPlayer::l_get_name(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
 
-	lua_pushstring(L, player->getName());
+	lua_pushstring(L, player->getName().c_str());
 	return 1;
 }
 
@@ -260,12 +260,13 @@ int LuaLocalPlayer::l_get_control(lua_State *L)
 	set("zoom",  c.zoom);
 	set("dig",   c.dig);
 	set("place", c.place);
-	// Player movement in polar coordinates and non-binary speed
-	lua_pushnumber(L, c.movement_speed);
-	lua_setfield(L, -2, "movement_speed");
-	lua_pushnumber(L, c.movement_direction);
-	lua_setfield(L, -2, "movement_direction");
-	// Provide direction keys to ensure compatibility
+
+	v2f movement = c.getMovement();
+	lua_pushnumber(L, movement.X);
+	lua_setfield(L, -2, "movement_x");
+	lua_pushnumber(L, movement.Y);
+	lua_setfield(L, -2, "movement_y");
+
 	set("up",    c.direction_keys & (1 << 0));
 	set("down",  c.direction_keys & (1 << 1));
 	set("left",  c.direction_keys & (1 << 2));

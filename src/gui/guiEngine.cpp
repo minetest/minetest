@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ICameraSceneNode.h>
 #include <IGUIStaticText.h>
 #include "client/imagefilters.h"
+#include "util/tracy_wrapper.h"
 
 #if USE_SOUND
 	#include "client/sound/sound_openal.h"
@@ -140,10 +141,6 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 
 	// create texture source
 	m_texture_source = std::make_unique<MenuTextureSource>(rendering_engine->get_video_driver());
-
-	// create shader source
-	// (currently only used by clouds)
-	m_shader_source.reset(createShaderSource());
 
 	// create soundmanager
 #if USE_SOUND
@@ -295,10 +292,6 @@ void GUIEngine::run()
 	IrrlichtDevice *device = m_rendering_engine->get_raw_device();
 	video::IVideoDriver *driver = device->getVideoDriver();
 
-	// Always create clouds because they may or may not be
-	// needed based on the game selected
-	cloudInit();
-
 	unsigned int text_height = g_fontengine->getTextHeight();
 
 	// Reset fog color
@@ -329,9 +322,12 @@ void GUIEngine::run()
 
 	fps_control.reset();
 
-	while (m_rendering_engine->run() && !m_startgame && !m_kill) {
+	auto framemarker = FrameMarker("GUIEngine::run()-frame").started();
 
+	while (m_rendering_engine->run() && !m_startgame && !m_kill) {
+		framemarker.end();
 		fps_control.limit(device, &dtime);
+		framemarker.start();
 
 		if (device->isWindowVisible()) {
 			// check if we need to update the "upper left corner"-text
@@ -371,6 +367,7 @@ void GUIEngine::run()
 		m_menu->getAndroidUIInput();
 #endif
 	}
+	framemarker.end();
 
 	m_script->beforeClose();
 
@@ -390,8 +387,6 @@ GUIEngine::~GUIEngine()
 
 	m_irr_toplefttext->remove();
 
-	m_cloud.clouds.reset();
-
 	// delete textures
 	for (image_definition &texture : m_textures) {
 		if (texture.texture)
@@ -400,25 +395,10 @@ GUIEngine::~GUIEngine()
 }
 
 /******************************************************************************/
-void GUIEngine::cloudInit()
-{
-	m_shader_source->addShaderConstantSetterFactory(
-		new FogShaderConstantSetterFactory());
-
-	m_cloud.clouds = make_irr<Clouds>(m_smgr, m_shader_source.get(), -1, rand());
-	m_cloud.clouds->setHeight(100.0f);
-	m_cloud.clouds->update(v3f(0, 0, 0), video::SColor(255,240,240,255));
-
-	m_cloud.camera = m_smgr->addCameraSceneNode(0,
-				v3f(0,0,0), v3f(0, 60, 100));
-	m_cloud.camera->setFarValue(10000);
-}
-
-/******************************************************************************/
 void GUIEngine::drawClouds(float dtime)
 {
-	m_cloud.clouds->step(dtime*3);
-	m_smgr->drawAll();
+	g_menuclouds->step(dtime * 3);
+	g_menucloudsmgr->drawAll();
 }
 
 /******************************************************************************/

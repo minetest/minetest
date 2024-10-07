@@ -34,12 +34,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content/subgames.h"
 #include "mapgen/mapgen.h"
 #include "settings.h"
+#include "clientdynamicinfo.h"
 #include "client/client.h"
 #include "client/renderingengine.h"
 #include "network/networkprotocol.h"
 #include "content/mod_configuration.h"
 #include "threading/mutex_auto_lock.h"
 #include "common/c_converter.h"
+#include "gui/guiOpenURL.h"
 
 /******************************************************************************/
 std::string ModApiMainMenu::getTextData(lua_State *L, const std::string &name)
@@ -675,6 +677,13 @@ int ModApiMainMenu::l_get_modpaths(lua_State *L)
 	ModApiMainMenu::l_get_modpath(L);
 	lua_setfield(L, -2, "mods");
 
+	if (porting::path_share != porting::path_user) {
+		std::string modpath = fs::RemoveRelativePathComponents(
+			porting::path_share + DIR_DELIM + "mods" + DIR_DELIM);
+		lua_pushstring(L, modpath.c_str());
+		lua_setfield(L, -2, "share");
+	}
+
 	for (const std::string &component : getEnvModPaths()) {
 		lua_pushstring(L, component.c_str());
 		lua_setfield(L, -2, fs::AbsolutePath(component).c_str());
@@ -1026,7 +1035,14 @@ int ModApiMainMenu::l_get_min_supp_proto(lua_State *L)
 
 int ModApiMainMenu::l_get_max_supp_proto(lua_State *L)
 {
-	lua_pushinteger(L, CLIENT_PROTOCOL_VERSION_MAX);
+	lua_pushinteger(L, LATEST_PROTOCOL_VERSION);
+	return 1;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_get_formspec_version(lua_State  *L)
+{
+	lua_pushinteger(L, FORMSPEC_API_VERSION);
 	return 1;
 }
 
@@ -1035,6 +1051,22 @@ int ModApiMainMenu::l_open_url(lua_State *L)
 {
 	std::string url = luaL_checkstring(L, 1);
 	lua_pushboolean(L, porting::open_url(url));
+	return 1;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_open_url_dialog(lua_State *L)
+{
+	GUIEngine* engine = getGuiEngine(L);
+	sanity_check(engine != NULL);
+
+	std::string url = luaL_checkstring(L, 1);
+
+	GUIOpenURLMenu* openURLMenu =
+			new GUIOpenURLMenu(engine->m_rendering_engine->get_gui_env(),
+				engine->m_parent, -1, engine->m_menumanager,
+				engine->m_texture_source.get(), url);
+	openURLMenu->drop();
 	return 1;
 }
 
@@ -1128,7 +1160,9 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_active_irrlicht_device);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
+	API_FCT(get_formspec_version);
 	API_FCT(open_url);
+	API_FCT(open_url_dialog);
 	API_FCT(open_dir);
 	API_FCT(share_file);
 	API_FCT(do_async_callback);
@@ -1158,6 +1192,7 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 	API_FCT(download_file);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
+	API_FCT(get_formspec_version);
 	API_FCT(get_language);
 	API_FCT(gettext);
 }

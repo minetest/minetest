@@ -124,6 +124,7 @@ public:
 	void setHPRaw(u16 hp) { m_hp = hp; }
 	u16 getBreath() const { return m_breath; }
 	void setBreath(const u16 breath, bool send = true);
+	void respawn();
 
 	/*
 		Inventory interface
@@ -228,6 +229,12 @@ private:
 	SimpleMetadata m_meta;
 
 public:
+	struct {
+		bool breathing : 1;
+		bool drowning : 1;
+		bool node_damage : 1;
+	} m_flags = {true, true, true};
+
 	bool m_physics_override_sent = false;
 };
 

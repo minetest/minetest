@@ -3,7 +3,7 @@ unittests = {}
 core.log("info", "Hello World")
 
 unittests.custom_metatable = {}
-core.register_async_metatable("unittests:custom_metatable", unittests.custom_metatable)
+core.register_portable_metatable("unittests:custom_metatable", unittests.custom_metatable)
 
 local function do_tests()
 	assert(core == minetest)

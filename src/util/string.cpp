@@ -670,23 +670,26 @@ std::string wrap_rows(std::string_view from, unsigned row_len, bool has_color_co
  * before filling it again.
  */
 
-static void translate_all(const std::wstring &s, size_t &i,
+static void translate_all(std::wstring_view s, size_t &i,
 		Translations *translations, std::wstring &res);
 
-static void translate_string(const std::wstring &s, Translations *translations,
+static void translate_string(std::wstring_view s, Translations *translations,
 		const std::wstring &textdomain, size_t &i, std::wstring &res)
 {
-	std::wostringstream output;
 	std::vector<std::wstring> args;
 	int arg_number = 1;
+
+	// Re-assemble the template.
+	std::wstring output;
+	output.reserve(s.length());
 	while (i < s.length()) {
 		// Not an escape sequence: just add the character.
 		if (s[i] != '\x1b') {
-			output.put(s[i]);
+			output += s[i];
 			// The character is a literal '@'; add it twice
 			// so that it is not mistaken for an argument.
 			if (s[i] == L'@')
-				output.put(L'@');
+				output += L'@';
 			++i;
 			continue;
 		}
@@ -733,12 +736,12 @@ static void translate_string(const std::wstring &s, Translations *translations,
 				args.push_back(arg);
 				continue;
 			}
-			output.put(L'@');
-			output << arg_number;
+			output += L'@';
+			output += std::to_wstring(arg_number);
 			++arg_number;
 			std::wstring arg;
 			translate_all(s, i, translations, arg);
-			args.push_back(arg);
+			args.push_back(std::move(arg));
 		} else {
 			// This is an escape sequence *inside* the template string to translate itself.
 			// This should not happen, show an error message.
@@ -747,21 +750,18 @@ static void translate_string(const std::wstring &s, Translations *translations,
 		}
 	}
 
-	std::wstring toutput;
 	// Translate the template.
-	if (translations != nullptr)
-		toutput = translations->getTranslation(
-				textdomain, output.str());
-	else
-		toutput = output.str();
+	const std::wstring &toutput = translations ?
+		translations->getTranslation(textdomain, output) : output;
 
 	// Put back the arguments in the translated template.
-	std::wostringstream result;
 	size_t j = 0;
+	res.clear();
+	res.reserve(toutput.length());
 	while (j < toutput.length()) {
 		// Normal character, add it to output and continue.
 		if (toutput[j] != L'@' || j == toutput.length() - 1) {
-			result.put(toutput[j]);
+			res += toutput[j];
 			++j;
 			continue;
 		}
@@ -769,7 +769,7 @@ static void translate_string(const std::wstring &s, Translations *translations,
 		++j;
 		// Literal escape for '@'.
 		if (toutput[j] == L'@') {
-			result.put(L'@');
+			res += L'@';
 			++j;
 			continue;
 		}
@@ -778,16 +778,15 @@ static void translate_string(const std::wstring &s, Translations *translations,
 		int arg_index = toutput[j] - L'1';
 		++j;
 		if (0 <= arg_index && (size_t)arg_index < args.size()) {
-			result << args[arg_index];
+			res += args[arg_index];
 		} else {
 			// This is not allowed: show an error message
 			errorstream << "Ignoring out-of-bounds argument escape sequence in translation" << std::endl;
 		}
 	}
-	res = result.str();
 }
 
-static void translate_all(const std::wstring &s, size_t &i,
+static void translate_all(std::wstring_view s, size_t &i,
 		Translations *translations, std::wstring &res)
 {
 	res.clear();
@@ -849,7 +848,7 @@ static void translate_all(const std::wstring &s, size_t &i,
 }
 
 // Translate string server side
-std::wstring translate_string(const std::wstring &s, Translations *translations)
+std::wstring translate_string(std::wstring_view s, Translations *translations)
 {
 	size_t i = 0;
 	std::wstring res;
@@ -858,7 +857,7 @@ std::wstring translate_string(const std::wstring &s, Translations *translations)
 }
 
 // Translate string client side
-std::wstring translate_string(const std::wstring &s)
+std::wstring translate_string(std::wstring_view s)
 {
 #ifdef SERVER
 	return translate_string(s, nullptr);
@@ -950,6 +949,53 @@ std::string sanitizeDirName(std::string_view str, std::string_view optional_pref
 	return wide_to_utf8(safe_name);
 }
 
+template <class F>
+void remove_indexed(std::string &s, F pred)
+{
+	size_t j = 0;
+	for (size_t i = 0; i < s.length();) {
+		if (pred(s, i++))
+			j++;
+		if (i != j)
+			s[j] = s[i];
+	}
+	s.resize(j);
+}
+
+std::string sanitize_untrusted(std::string_view str, bool keep_escapes)
+{
+	// truncate on NULL
+	std::string s{str.substr(0, str.find('\0'))};
+
+	// remove control characters except tab, feed and escape
+	s.erase(std::remove_if(s.begin(), s.end(), [] (unsigned char c) {
+		return c < 9 || (c >= 13 && c < 27) || (c >= 28 && c < 32);
+	}), s.end());
+
+	if (!keep_escapes) {
+		s.erase(std::remove(s.begin(), s.end(), '\x1b'), s.end());
+		return s;
+	}
+	// Note: Minetest escapes generally just look like \x1b# or \x1b(###)
+	// where # is a single character and ### any number of characters.
+	// Here we additionally assume that the first character in the sequence
+	// is [A-Za-z], to enable us to filter foreign types of escapes that might
+	// be unsafe e.g. ANSI escapes in a terminal.
+	const auto &check = [] (char c) {
+		return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+	};
+	remove_indexed(s, [&check] (const std::string &s, size_t i) {
+		if (s[i] != '\x1b')
+			return true;
+		if (i+1 >= s.length())
+			return false;
+		if (s[i+1] == '(')
+			return i+2 < s.length() && check(s[i+2]); // long-form escape
+		else
+			return check(s[i+1]); // short-form escape
+	});
+	return s;
+}
 
 void safe_print_string(std::ostream &os, std::string_view str)
 {

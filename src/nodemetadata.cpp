@@ -62,14 +62,14 @@ void NodeMetadata::serialize(std::ostream &os, u8 version, bool disk) const
 void NodeMetadata::deSerialize(std::istream &is, u8 version)
 {
 	clear();
-	int num_vars = readU32(is);
-	for(int i=0; i<num_vars; i++){
+	u32 num_vars = readU32(is);
+	for (u32 i = 0; i < num_vars; i++){
 		std::string name = deSerializeString16(is);
 		std::string var = deSerializeString32(is);
-		m_stringvars[name] = var;
+		m_stringvars[name] = std::move(var);
 		if (version >= 2) {
 			if (readU8(is) == 1)
-				markPrivate(name, true);
+				m_privatevars.insert(name);
 		}
 	}
 
@@ -89,12 +89,12 @@ bool NodeMetadata::empty() const
 }
 
 
-void NodeMetadata::markPrivate(const std::string &name, bool set)
+bool NodeMetadata::markPrivate(const std::string &name, bool set)
 {
 	if (set)
-		m_privatevars.insert(name);
+		return m_privatevars.insert(name).second;
 	else
-		m_privatevars.erase(name);
+		return m_privatevars.erase(name) > 0;
 }
 
 int NodeMetadata::countNonPrivate() const
@@ -144,6 +144,8 @@ void NodeMetadataList::serialize(std::ostream &os, u8 blockver, bool disk,
 			writeS16(os, p.Z);
 		} else {
 			// Serialize positions within a mapblock
+			static_assert(MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE <= U16_MAX,
+				"position too big to serialize");
 			u16 p16 = (p.Z * MAP_BLOCKSIZE + p.Y) * MAP_BLOCKSIZE + p.X;
 			writeU16(os, p16);
 		}
@@ -246,8 +248,7 @@ void NodeMetadataList::set(v3s16 p, NodeMetadata *d)
 void NodeMetadataList::clear()
 {
 	if (m_is_metadata_owner) {
-		NodeMetadataMap::const_iterator it;
-		for (it = m_data.begin(); it != m_data.end(); ++it)
+		for (auto it = m_data.begin(); it != m_data.end(); ++it)
 			delete it->second;
 	}
 	m_data.clear();

@@ -52,6 +52,12 @@ minetest.register_node("testnodes:fill_positioning_reference", {
 	groups = {dig_immediate = 3},
 })
 
+minetest.register_node("testnodes:modifier_mask", {
+	description = S("[mask Modifier Test Node"),
+	tiles = {"testnodes_128x128_rgb.png^[mask:testnodes_mask_WRGBKW.png"},
+	groups = {dig_immediate = 3},
+})
+
 -- Node texture transparency test
 
 local alphas = { 64, 128, 191 }
@@ -89,10 +95,12 @@ for a=1,#alphas do
 end
 
 minetest.register_node("testnodes:alpha_compositing", {
-	description = S("Alpha Compositing Test Node") .. "\n" ..
+	description = S("Texture Overlay Test Node") .. "\n" ..
 		S("A regular grid should be visible where each cell contains two " ..
-		"texels with the same colour.") .. "\n" ..
-		S("Alpha compositing is gamma-incorrect for backwards compatibility."),
+		"texels with the same color.") .. "\n" ..
+		S("Texture overlay is gamma-incorrect, " ..
+		"and in general it does not do alpha compositing, " ..
+		"both for backwards compatibility."),
 	drawtype = "glasslike",
 	paramtype = "light",
 	tiles = {"testnodes_alpha_compositing_bottom.png^"  ..

@@ -53,7 +53,7 @@ public:
 	/* dynamic media handling */
 	static u32 allocateDynamicMediaCallback(lua_State *L, int f_idx);
 	void freeDynamicMediaCallback(u32 token);
-	void on_dynamic_media_added(u32 token, const char *playername);
+	void on_dynamic_media_added(u32 token, const std::string &playername);
 
 private:
 	void getAuthHandler();

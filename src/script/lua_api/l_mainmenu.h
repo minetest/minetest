@@ -159,8 +159,12 @@ private:
 
 	static int l_get_max_supp_proto(lua_State *L);
 
+	static int l_get_formspec_version(lua_State  *L);
+
 	// other
 	static int l_open_url(lua_State *L);
+
+	static int l_open_url_dialog(lua_State *L);
 
 	static int l_open_dir(lua_State *L);
 

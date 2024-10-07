@@ -20,7 +20,7 @@ namespace io
 	This can be useful, for example for reading uncompressed files
 	in an archive (zip, tar).
 !*/
-class CLimitReadFile : public IReadFile
+class CLimitReadFile final : public IReadFile
 {
 public:
 	CLimitReadFile(IReadFile *alreadyOpenedFile, long pos, long areaSize, const io::path &name);

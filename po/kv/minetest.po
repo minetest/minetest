@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-05-27 12:33+0000\n"
+"PO-Revision-Date: 2024-08-06 19:09+0000\n"
 "Last-Translator: Mićadźoridź <otto.grotovel@gmail.com>\n"
 "Language-Team: Komi <https://hosted.weblate.org/projects/minetest/minetest/"
 "kv/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -76,9 +76,8 @@ msgid "Command not available: "
 msgstr "Командаыс сиптӧма: "
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Get help for commands (-t: output in chat)"
-msgstr "Командаяс йылысь юӧр босьтны"
+msgstr "Командаяс йылысь юӧр босьтны (-t: чатӧ гижӧм)"
 
 #: builtin/common/chatcommands.lua
 msgid ""
@@ -86,9 +85,8 @@ msgid ""
 msgstr "Гиж «.help <cmd>» содтӧд юӧрла али «.help all» — тыр лыддьӧгла."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "[all | <cmd>] [-t]"
-msgstr "[all | <команда>]"
+msgstr "[all | <команда>] [-t]"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -151,11 +149,12 @@ msgid "Failed to download $1"
 msgstr "$1 бӧсьтӧм эз артмы"
 
 #: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
 msgid ""
 "Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
 "broken archive)"
-msgstr "«$1» перйыны эз артмы (уджавтӧм файл сикас али жугалӧм топӧдӧм файл)"
+msgstr ""
+"«$1» перйыны эз артмы (дискын пуктанін этша, уджавтӧм файл сикас али жугалӧм "
+"топӧдӧм файл)"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
@@ -273,7 +272,6 @@ msgid "Already installed"
 msgstr "Нин пуктӧма"
 
 #: builtin/mainmenu/content/dlg_install.lua
-#, fuzzy
 msgid "Base Game:"
 msgstr "Медшӧр ворсӧм:"
 
@@ -572,7 +570,6 @@ msgid "Seed"
 msgstr "Сид"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Smooth transition between biomes"
 msgstr "Биомъяс костын лайкыд вуджӧм"
 
@@ -588,15 +585,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr "Шӧр климат, Пустыня"
+msgstr "Шӧр климата ин, Лыааин"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr "Шӧр климат, Пустыня, Джунгли"
+msgstr "Шӧр климата ин, Лыааин, Джунгли"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr "Шӧр климат, Пустыня, Джунгли, Тундра, Парма"
+msgstr "Шӧр климата ин, Лыааин, Джунгли, Тундра, Парма"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
@@ -692,7 +689,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Reinstall Minetest Game"
-msgstr "Minetest Game вылысь пуктыны"
+msgstr "Minetest Game выльысь пуктыны"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -713,7 +710,6 @@ msgid "A new $1 version is available"
 msgstr "Выль $1 версия восьтӧма"
 
 #: builtin/mainmenu/dlg_version_info.lua
-#, fuzzy
 msgid ""
 "Installed version: $1\n"
 "New version: $2\n"
@@ -722,8 +718,8 @@ msgid ""
 msgstr ""
 "Пуктӧм версия: $1\n"
 "Выль версия: $2\n"
-"$3-ӧ пырӧй медвыль версия босьтӧмла да выль функцияяс да веськӧдӧмъяс йылысь "
-"тӧдмалӧмла."
+"Медвыль версия босьтӧм да выль функцияяс али лӧсьӧдӧмъяс йылысь тӧдмалӧм "
+"могысь пырӧй $3-ӧ."
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Later"
@@ -743,7 +739,7 @@ msgstr "Лӧсьӧданін"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
-msgstr "Восьса серверъяслӧн лыддьӧг кусӧдӧма"
+msgstr "Восьса серверъяслӧн лыддьӧгныс кусӧдӧма"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -789,7 +785,6 @@ msgstr "Октавъяс"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Offset"
 msgstr "Вештӧм"
 
@@ -803,14 +798,12 @@ msgid "Scale"
 msgstr "Бердӧг"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#, fuzzy
 msgid "X spread"
-msgstr "X паськалӧм"
+msgstr "X кузя разалӧм"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
-#, fuzzy
 msgid "Y spread"
-msgstr "Y паськалӧм"
+msgstr "Y кузя разалӧм"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Z spread"
@@ -870,9 +863,8 @@ msgid "General"
 msgstr "Медшӧр"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Movement"
-msgstr "Вештӧм"
+msgstr "Вуджӧм"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default"
@@ -956,12 +948,10 @@ msgid "Active renderer:"
 msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Core Developers"
-msgstr "Медшӧр артмӧдысь"
+msgstr "Медшӧр артмӧдысьяс"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Core Team"
 msgstr "Медшӧр котыр"
 
@@ -1112,9 +1102,8 @@ msgid "Start Game"
 msgstr "Ворсны кутны"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "You need to install a game before you can create a world."
-msgstr "Мод пуктытӧдз тіянлы колӧ ворсӧм пуктыны"
+msgstr "Енкӧла вӧчтӧдз тіянлы колӧ пуктыны ворсӧм."
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1126,9 +1115,8 @@ msgstr ""
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Damage / PvP"
-msgstr "Воштӧм / PvP"
+msgstr "Доймӧм / PvP"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Favorites"
@@ -1212,7 +1200,7 @@ msgstr "Ворсысьлӧн нимыс вывті кузь."
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr "Ен могысь, ним бӧрйы!"
+msgstr "Ен могысь, ним бӧрйӧй!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
@@ -1247,7 +1235,7 @@ msgstr "- РvP: "
 
 #: src/client/game.cpp
 msgid "- Server Name: "
-msgstr "- Серверлӧн нимыс: "
+msgstr "- Серверлӧн ним: "
 
 #: src/client/game.cpp
 msgid "A serialization error occurred:"
@@ -1662,9 +1650,8 @@ msgid "Erase EOF"
 msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Execute"
-msgstr "Лэдзны"
+msgstr "Вӧчны"
 
 #: src/client/keycode.cpp
 msgid "Help"
@@ -1963,9 +1950,8 @@ msgid "Autoforward"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
-#, fuzzy
 msgid "Automatic jumping"
-msgstr "Автоматика чеччалӧм"
+msgstr "Автоматӧн чеччыштӧм"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Aux1"
@@ -1976,9 +1962,8 @@ msgid "Backward"
 msgstr "Бӧрӧ"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Block bounds"
-msgstr "Блок доръяс"
+msgstr "Мапблоклӧн доръяс"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
@@ -2057,9 +2042,8 @@ msgid "Prev. item"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Range select"
-msgstr "Тыдалан шымыртӧм"
+msgstr "Тыдалан диапазон"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Right"
@@ -2360,7 +2344,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Admin name"
-msgstr "Веськӧдлысьлӧн нимыс"
+msgstr "Веськӧдлысьлӧн ним"
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2435,9 +2419,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Arm inertia"
-msgstr "Лайкъялӧм ки"
+msgstr "Довкъялысь ки"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2527,7 +2510,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Biome API"
-msgstr "Биомлӧн API'ыс"
+msgstr "Биомлӧн API"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2603,11 +2586,11 @@ msgstr "Рудӧглӧн шувгӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr "Рудӧглӧн шувгӧмыс #1"
+msgstr "Рудӧглӧн шувгӧм #1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr "Рудӧглӧн шувгӧмыс #2"
+msgstr "Рудӧглӧн шувгӧм #2"
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
@@ -2657,7 +2640,7 @@ msgstr "Чатлӧн командаяс"
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
-msgstr "Чатса шрифтлӧн ыдждаыс"
+msgstr "Чатса шрифтлӧн ыджда"
 
 #: src/settings_translation_file.cpp
 msgid "Chat log level"
@@ -2743,7 +2726,7 @@ msgstr "Менюын кымӧръяс"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
-msgstr "Рӧма ру"
+msgstr "Рӧма руалӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Colored shadows"
@@ -2808,15 +2791,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Console alpha"
-msgstr "Консольлӧн сӧдзлуныс"
+msgstr "Консольлӧн сӧдзлун"
 
 #: src/settings_translation_file.cpp
 msgid "Console color"
-msgstr "Консольлӧн рӧмыс"
+msgstr "Консольлӧн рӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Console height"
-msgstr "Консольлӧн сутдас"
+msgstr "Консольлӧн судта"
 
 #: src/settings_translation_file.cpp
 msgid "Content Repository"
@@ -2832,7 +2815,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
-msgstr "ContentDB-лӧн инпасыс"
+msgstr "ContentDB-лӧн инпас"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2878,7 +2861,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
-msgstr "Витанторлӧн рӧмыс"
+msgstr "Витанторлӧн рӧм"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2895,9 +2878,8 @@ msgid "Debug log level"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Debugging"
-msgstr "Ладвыв пуктӧм"
+msgstr "Лӧсьӧдӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3134,9 +3116,8 @@ msgid "Enable Bloom Debug"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Debanding"
-msgstr "Ставсӧ ӧзтыны"
+msgstr "Лӧсьӧдӧм ӧзтыны"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3158,9 +3139,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Post Processing"
-msgstr "Контроллерсӧ ӧзтыны"
+msgstr "Содтӧд эффектъяслысь вӧччӧм ӧзтыны"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
@@ -3431,9 +3411,8 @@ msgid "Fog"
 msgstr "Ру"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fog start"
-msgstr "Руалӧм суйӧр"
+msgstr "Руалӧмлӧн доръяс"
 
 #: src/settings_translation_file.cpp
 msgid "Font"
@@ -3457,7 +3436,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
-msgstr "Шрифтлӧн ыдждаыс"
+msgstr "Шрифтлӧн ыджда"
 
 #: src/settings_translation_file.cpp
 msgid "Font size divisible by"
@@ -4222,7 +4201,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Main menu script"
-msgstr "Медшӧр менюлӧн скриптыс"
+msgstr "Медшӧр менюлӧн скрипт"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4628,9 +4607,8 @@ msgid "Mouse sensitivity multiplier."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Movement threshold"
-msgstr "Вештӧм"
+msgstr "Вуджан тагӧс"
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
@@ -4816,9 +4794,8 @@ msgid "Player transfer distance"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Poisson filtering"
-msgstr "Пуассонлӧн юклӧм"
+msgstr "Пуассон серти разӧдӧм"
 
 #: src/settings_translation_file.cpp
 msgid "Post Processing"
@@ -4867,9 +4844,8 @@ msgid "Proportion of large caves that contain liquid."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Protocol version minimum"
-msgstr "Протоколлӧн версияыс оз лӧсяв. "
+msgstr "Протоколлӧн медічӧт версия"
 
 #: src/settings_translation_file.cpp
 msgid "Punch gesture"
@@ -5146,11 +5122,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
-msgstr "Серверлӧн инпасыс"
+msgstr "Серверлӧн инпас"
 
 #: src/settings_translation_file.cpp
 msgid "Server address"
-msgstr "Серверлӧн доменыс"
+msgstr "Серверлӧн домен"
 
 #: src/settings_translation_file.cpp
 msgid "Server description"
@@ -5158,7 +5134,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server name"
-msgstr "Серверлӧн нимыс"
+msgstr "Серверлӧн ним"
 
 #: src/settings_translation_file.cpp
 msgid "Server port"
@@ -5303,7 +5279,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shadow strength gamma"
-msgstr "Вуджӧрлӧн гаммаыс"
+msgstr "Вуджӧрлӧн гамма"
 
 #: src/settings_translation_file.cpp
 msgid "Show debug info"
@@ -5751,9 +5727,8 @@ msgid "Tradeoffs for performance"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Translucent liquids"
-msgstr "Сӧдзтӧм кизьӧрторъяс"
+msgstr "Сӧдзов кизьӧрторъяс"
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
@@ -5800,7 +5775,6 @@ msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Undersampling"
 msgstr "Субдискретизация"
 
@@ -5888,7 +5862,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "User Interfaces"
 msgstr "Интерфейсъяс"
 
@@ -6057,7 +6030,7 @@ msgstr "Лайкъялысь быдмӧгъяс"
 
 #: src/settings_translation_file.cpp
 msgid "Weblink color"
-msgstr "Ыстӧглӧн рӧмыс"
+msgstr "Ыстӧглӧн рӧм"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6220,7 +6193,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL"
-msgstr "cURL"
+msgstr "URL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"

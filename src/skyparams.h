@@ -46,7 +46,7 @@ struct SkyboxParams
 	float body_orbit_tilt { INVALID_SKYBOX_TILT };
 	s16 fog_distance { -1 };
 	float fog_start { -1.0f };
-	video::SColor fog_color; // override, only used if alpha > 0
+	video::SColor fog_color { 0 }; // override, only used if alpha > 0
 };
 
 struct SunParams
@@ -81,6 +81,7 @@ struct CloudParams
 	float density;
 	video::SColor color_bright;
 	video::SColor color_ambient;
+	video::SColor color_shadow;
 	float thickness;
 	float height;
 	v2f speed;
@@ -160,6 +161,7 @@ public:
 		clouds.density = 0.4f;
 		clouds.color_bright = video::SColor(229, 240, 240, 255);
 		clouds.color_ambient = video::SColor(255, 0, 0, 0);
+		clouds.color_shadow = video::SColor(255, 204, 204, 204);
 		clouds.thickness = 16.0f;
 		clouds.height = 120;
 		clouds.speed = v2f(0.0f, -2.0f);

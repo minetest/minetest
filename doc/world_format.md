@@ -394,7 +394,7 @@ Timestamp and node ID mappings were introduced in map format version 29.
 
 * `u8` `name_id_mapping_version`
     * Should be zero for map format version 29.
-  
+
 * `u16` `num_name_id_mappings`
     * foreach `num_name_id_mappings`:
         * `u16` `id`

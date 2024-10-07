@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_extrabloated.h"
+#include "irr_ptr.h"
 #include "util/numeric.h"
 #include "client/tile.h"
 #include "voxel.h"
@@ -144,26 +145,24 @@ private:
  *
  * Attach alternate `Indices` to an existing mesh buffer, to make it possible to use different
  * indices with the same vertex buffer.
- *
- * Irrlicht does not currently support this: `CMeshBuffer` ties together a single vertex buffer
- * and a single index buffer. There's no way to share these between mesh buffers.
- *
  */
 class PartialMeshBuffer
 {
 public:
-	PartialMeshBuffer(scene::SMeshBuffer *buffer, std::vector<u16> &&vertex_indexes) :
-			m_buffer(buffer), m_vertex_indexes(std::move(vertex_indexes))
-	{}
+	PartialMeshBuffer(scene::SMeshBuffer *buffer, std::vector<u16> &&vertex_indices) :
+			m_buffer(buffer), m_indices(make_irr<scene::SIndexBuffer>())
+	{
+		m_indices->Data = std::move(vertex_indices);
+		m_indices->setHardwareMappingHint(scene::EHM_STATIC);
+	}
 
-	scene::IMeshBuffer *getBuffer() const { return m_buffer; }
-	const std::vector<u16> &getVertexIndexes() const { return m_vertex_indexes; }
+	auto *getBuffer() const { return m_buffer; }
 
-	void beforeDraw() const;
-	void afterDraw() const;
+	void draw(video::IVideoDriver *driver) const;
+
 private:
 	scene::SMeshBuffer *m_buffer;
-	mutable std::vector<u16> m_vertex_indexes;
+	irr_ptr<scene::SIndexBuffer> m_indices;
 };
 
 /*
@@ -194,12 +193,12 @@ public:
 
 	scene::IMesh *getMesh()
 	{
-		return m_mesh[0];
+		return m_mesh[0].get();
 	}
 
 	scene::IMesh *getMesh(u8 layer)
 	{
-		return m_mesh[layer];
+		return m_mesh[layer].get();
 	}
 
 	std::vector<MinimapMapblock*> moveMinimapMapblocks()
@@ -243,7 +242,7 @@ private:
 		TileLayer tile;
 	};
 
-	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
+	irr_ptr<scene::IMesh> m_mesh[MAX_TILE_LAYERS];
 	std::vector<MinimapMapblock*> m_minimap_mapblocks;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
@@ -282,6 +281,8 @@ private:
 	MapBlockBspTree m_bsp_tree;
 	// Ordered list of references to parts of transparent buffers to draw
 	std::vector<PartialMeshBuffer> m_transparent_buffers;
+	// Is m_transparent_buffers currently in consolidated form?
+	bool m_transparent_buffers_consolidated = false;
 };
 
 /*!

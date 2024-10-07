@@ -52,6 +52,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "shader.h"
 #include "gettext.h"
+#include "clientdynamicinfo.h"
 #include "clientmap.h"
 #include "clientmedia.h"
 #include "version.h"
@@ -119,7 +120,7 @@ Client::Client(
 	m_rendering_engine(rendering_engine),
 	m_mesh_update_manager(std::make_unique<MeshUpdateManager>(this)),
 	m_env(
-		new ClientMap(this, rendering_engine, control, 666),
+		make_irr<ClientMap>(this, rendering_engine, control, 666),
 		tsrc, this
 	),
 	m_particle_manager(std::make_unique<ParticleManager>(&m_env)),
@@ -392,15 +393,12 @@ void Client::connect(const Address &address, const std::string &address_name,
 	}
 
 	m_address_name = address_name;
-	m_con.reset(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT,
-		address.isIPv6(), this));
+	m_con.reset(con::createMTP(CONNECTION_TIMEOUT, address.isIPv6(), this));
 
 	infostream << "Connecting to server at ";
 	address.print(infostream);
 	infostream << std::endl;
 
-	// Since we use TryReceive() a timeout here would be ineffective anyway
-	m_con->SetTimeoutMs(0);
 	m_con->Connect(address);
 
 	initLocalMapSaving(address, m_address_name, is_local_server);
@@ -439,20 +437,16 @@ void Client::step(float dtime)
 		}
 	}
 
-	// UGLY hack to fix 2 second startup delay caused by non existent
-	// server client startup synchronization in local server or singleplayer mode
-	static bool initial_step = true;
-	if (initial_step) {
-		initial_step = false;
-	}
-	else if(m_state == LC_Created) {
+	// The issue that made this workaround necessary was fixed in August 2024, but
+	// it's not like we can remove this code - ever.
+	if (m_state == LC_Created) {
 		float &counter = m_connection_reinit_timer;
 		counter -= dtime;
-		if(counter <= 0.0) {
-			counter = 2.0;
+		if (counter <= 0) {
+			counter = 1.5f;
 
 			LocalPlayer *myplayer = m_env.getLocalPlayer();
-			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
+			FATAL_ERROR_IF(!myplayer, "Local player not found in environment");
 
 			sendInit(myplayer->getName());
 		}
@@ -833,7 +827,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 	}
 
 	const char *model_ext[] = {
-		".x", ".b3d", ".obj",
+		".x", ".b3d", ".obj", ".gltf",
 		NULL
 	};
 	name = removeStringEnd(filename, model_ext);
@@ -866,13 +860,13 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 }
 
 // Virtual methods from con::PeerHandler
-void Client::peerAdded(con::Peer *peer)
+void Client::peerAdded(con::IPeer *peer)
 {
 	infostream << "Client::peerAdded(): peer->id="
 			<< peer->id << std::endl;
 }
 
-void Client::deletingPeer(con::Peer *peer, bool timeout)
+void Client::deletingPeer(con::IPeer *peer, bool timeout)
 {
 	infostream << "Client::deletingPeer(): "
 			"Server Peer is getting deleted "
@@ -1040,7 +1034,7 @@ void Client::Send(NetworkPacket* pkt)
 	m_con->Send(PEER_ID_SERVER, scf.channel, pkt, scf.reliable);
 }
 
-// Will fill up 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1 bytes
+// Will fill up 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1 + 4 + 4 bytes
 void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt, bool camera_inverted)
 {
 	v3f pf           = myplayer->getPosition() * 100;
@@ -1052,6 +1046,8 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 	u8 fov           = std::fmin(255.0f, clientMap->getCameraFov() * 80.0f);
 	u8 wanted_range  = std::fmin(255.0f,
 			std::ceil(clientMap->getWantedRange() * (1.0f / MAP_BLOCKSIZE)));
+	f32 movement_speed = myplayer->control.movement_speed;
+	f32 movement_dir = myplayer->control.movement_direction;
 
 	v3s32 position(pf.X, pf.Y, pf.Z);
 	v3s32 speed(sf.X, sf.Y, sf.Z);
@@ -1066,10 +1062,13 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 		[12+12+4+4+4] u8 fov*80
 		[12+12+4+4+4+1] u8 ceil(wanted_range / MAP_BLOCKSIZE)
 		[12+12+4+4+4+1+1] u8 camera_inverted (bool)
+		[12+12+4+4+4+1+1+1] f32 movement_speed
+		[12+12+4+4+4+1+1+1+4] f32 movement_direction
 	*/
 	*pkt << position << speed << pitch << yaw << keyPressed;
 	*pkt << fov << wanted_range;
 	*pkt << camera_inverted;
+	*pkt << movement_speed << movement_dir;
 }
 
 void Client::interact(InteractAction action, const PointedThing& pointed)
@@ -1147,11 +1146,8 @@ void Client::sendInit(const std::string &playerName)
 {
 	NetworkPacket pkt(TOSERVER_INIT, 1 + 2 + 2 + (1 + playerName.size()));
 
-	// we don't support network compression yet
-	u16 supp_comp_modes = NETPROTO_COMPRESSION_NONE;
-
-	pkt << (u8) SER_FMT_VER_HIGHEST_READ << (u16) supp_comp_modes;
-	pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
+	pkt << (u8) SER_FMT_VER_HIGHEST_READ << (u16) 0;
+	pkt << CLIENT_PROTOCOL_VERSION_MIN << LATEST_PROTOCOL_VERSION;
 	pkt << playerName;
 
 	Send(&pkt);
@@ -1368,9 +1364,9 @@ void Client::sendDamage(u16 damage)
 	Send(&pkt);
 }
 
-void Client::sendRespawn()
+void Client::sendRespawnLegacy()
 {
-	NetworkPacket pkt(TOSERVER_RESPAWN, 0);
+	NetworkPacket pkt(TOSERVER_RESPAWN_LEGACY, 0);
 	Send(&pkt);
 }
 
@@ -1406,6 +1402,8 @@ void Client::sendPlayerPos()
 
 	u32 keyPressed = player->control.getKeysPressed();
 	bool camera_inverted = m_camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT;
+	f32 movement_speed = player->control.movement_speed;
+	f32 movement_dir = player->control.movement_direction;
 
 	if (
 			player->last_position        == player->getPosition() &&
@@ -1415,7 +1413,9 @@ void Client::sendPlayerPos()
 			player->last_keyPressed      == keyPressed            &&
 			player->last_camera_fov      == camera_fov            &&
 			player->last_camera_inverted == camera_inverted       &&
-			player->last_wanted_range    == wanted_range)
+			player->last_wanted_range    == wanted_range          &&
+			player->last_movement_speed  == movement_speed        &&
+			player->last_movement_dir    == movement_dir)
 		return;
 
 	player->last_position        = player->getPosition();
@@ -1426,8 +1426,10 @@ void Client::sendPlayerPos()
 	player->last_camera_fov      = camera_fov;
 	player->last_camera_inverted = camera_inverted;
 	player->last_wanted_range    = wanted_range;
+	player->last_movement_speed  = movement_speed;
+	player->last_movement_dir    = movement_dir;
 
-	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1);
+	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1 + 4 + 4);
 
 	writePlayerPos(player, &map, &pkt, camera_inverted);
 
@@ -1594,7 +1596,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	{
 		// Check if we are working with local player inventory
 		LocalPlayer *player = m_env.getLocalPlayer();
-		if (!player || strcmp(player->getName(), loc.name.c_str()) != 0)
+		if (!player || player->getName() != loc.name)
 			return NULL;
 		return &player->inventory;
 	}

@@ -58,14 +58,8 @@ CFileSystem::CFileSystem()
 //! destructor
 CFileSystem::~CFileSystem()
 {
-	u32 i;
-
-	for (i = 0; i < FileArchives.size(); ++i) {
-		FileArchives[i]->drop();
-	}
-
-	for (i = 0; i < ArchiveLoader.size(); ++i) {
-		ArchiveLoader[i]->drop();
+	for (auto *it : ArchiveLoader) {
+		it->drop();
 	}
 }
 
@@ -74,15 +68,6 @@ IReadFile *CFileSystem::createAndOpenFile(const io::path &filename)
 {
 	if (filename.empty())
 		return 0;
-
-	IReadFile *file = 0;
-	u32 i;
-
-	for (i = 0; i < FileArchives.size(); ++i) {
-		file = FileArchives[i]->createAndOpenFile(filename);
-		if (file)
-			return file;
-	}
 
 	// Create the file using an absolute path so that it matches
 	// the scheme used by CNullDriver::getTexture().
@@ -148,241 +133,6 @@ IArchiveLoader *CFileSystem::getArchiveLoader(u32 index) const
 		return ArchiveLoader[index];
 	else
 		return 0;
-}
-
-//! move the hirarchy of the filesystem. moves sourceIndex relative up or down
-bool CFileSystem::moveFileArchive(u32 sourceIndex, s32 relative)
-{
-	bool r = false;
-	const s32 dest = (s32)sourceIndex + relative;
-	const s32 dir = relative < 0 ? -1 : 1;
-	const s32 sourceEnd = ((s32)FileArchives.size()) - 1;
-	IFileArchive *t;
-
-	for (s32 s = (s32)sourceIndex; s != dest; s += dir) {
-		if (s < 0 || s > sourceEnd || s + dir < 0 || s + dir > sourceEnd)
-			continue;
-
-		t = FileArchives[s + dir];
-		FileArchives[s + dir] = FileArchives[s];
-		FileArchives[s] = t;
-		r = true;
-	}
-	return r;
-}
-
-//! Adds an archive to the file system.
-bool CFileSystem::addFileArchive(const io::path &filename, bool ignoreCase,
-		bool ignorePaths, E_FILE_ARCHIVE_TYPE archiveType,
-		const core::stringc &password,
-		IFileArchive **retArchive)
-{
-	IFileArchive *archive = 0;
-	bool ret = false;
-
-	// see if archive is already added
-
-	s32 i;
-
-	// do we know what type it should be?
-	if (archiveType == EFAT_UNKNOWN) {
-		// try to load archive based on file name
-		for (i = ArchiveLoader.size() - 1; i >= 0; --i) {
-			if (ArchiveLoader[i]->isALoadableFileFormat(filename)) {
-				archive = ArchiveLoader[i]->createArchive(filename, ignoreCase, ignorePaths);
-				if (archive)
-					break;
-			}
-		}
-
-		// try to load archive based on content
-		if (!archive) {
-			io::IReadFile *file = createAndOpenFile(filename);
-			if (file) {
-				for (i = ArchiveLoader.size() - 1; i >= 0; --i) {
-					file->seek(0);
-					if (ArchiveLoader[i]->isALoadableFileFormat(file)) {
-						file->seek(0);
-						archive = ArchiveLoader[i]->createArchive(file, ignoreCase, ignorePaths);
-						if (archive)
-							break;
-					}
-				}
-				file->drop();
-			}
-		}
-	} else {
-		// try to open archive based on archive loader type
-
-		io::IReadFile *file = 0;
-
-		for (i = ArchiveLoader.size() - 1; i >= 0; --i) {
-			if (ArchiveLoader[i]->isALoadableFileFormat(archiveType)) {
-				// attempt to open file
-				if (!file)
-					file = createAndOpenFile(filename);
-
-				// is the file open?
-				if (file) {
-					// attempt to open archive
-					file->seek(0);
-					if (ArchiveLoader[i]->isALoadableFileFormat(file)) {
-						file->seek(0);
-						archive = ArchiveLoader[i]->createArchive(file, ignoreCase, ignorePaths);
-						if (archive)
-							break;
-					}
-				} else {
-					// couldn't open file
-					break;
-				}
-			}
-		}
-
-		// if open, close the file
-		if (file)
-			file->drop();
-	}
-
-	if (archive) {
-		FileArchives.push_back(archive);
-		if (password.size())
-			archive->Password = password;
-		if (retArchive)
-			*retArchive = archive;
-		ret = true;
-	} else {
-		os::Printer::log("Could not create archive for", filename, ELL_ERROR);
-	}
-
-	return ret;
-}
-
-bool CFileSystem::addFileArchive(IReadFile *file, bool ignoreCase,
-		bool ignorePaths, E_FILE_ARCHIVE_TYPE archiveType,
-		const core::stringc &password, IFileArchive **retArchive)
-{
-	if (!file)
-		return false;
-
-	if (file) {
-		IFileArchive *archive = 0;
-		s32 i;
-
-		if (archiveType == EFAT_UNKNOWN) {
-			// try to load archive based on file name
-			for (i = ArchiveLoader.size() - 1; i >= 0; --i) {
-				if (ArchiveLoader[i]->isALoadableFileFormat(file->getFileName())) {
-					archive = ArchiveLoader[i]->createArchive(file, ignoreCase, ignorePaths);
-					if (archive)
-						break;
-				}
-			}
-
-			// try to load archive based on content
-			if (!archive) {
-				for (i = ArchiveLoader.size() - 1; i >= 0; --i) {
-					file->seek(0);
-					if (ArchiveLoader[i]->isALoadableFileFormat(file)) {
-						file->seek(0);
-						archive = ArchiveLoader[i]->createArchive(file, ignoreCase, ignorePaths);
-						if (archive)
-							break;
-					}
-				}
-			}
-		} else {
-			// try to open archive based on archive loader type
-			for (i = ArchiveLoader.size() - 1; i >= 0; --i) {
-				if (ArchiveLoader[i]->isALoadableFileFormat(archiveType)) {
-					// attempt to open archive
-					file->seek(0);
-					if (ArchiveLoader[i]->isALoadableFileFormat(file)) {
-						file->seek(0);
-						archive = ArchiveLoader[i]->createArchive(file, ignoreCase, ignorePaths);
-						if (archive)
-							break;
-					}
-				}
-			}
-		}
-
-		if (archive) {
-			FileArchives.push_back(archive);
-			if (password.size())
-				archive->Password = password;
-			if (retArchive)
-				*retArchive = archive;
-			return true;
-		} else {
-			os::Printer::log("Could not create archive for", file->getFileName(), ELL_ERROR);
-		}
-	}
-
-	return false;
-}
-
-//! Adds an archive to the file system.
-bool CFileSystem::addFileArchive(IFileArchive *archive)
-{
-	if (archive) {
-		for (u32 i = 0; i < FileArchives.size(); ++i) {
-			if (archive == FileArchives[i]) {
-				return false;
-			}
-		}
-		FileArchives.push_back(archive);
-		archive->grab();
-
-		return true;
-	}
-
-	return false;
-}
-
-//! removes an archive from the file system.
-bool CFileSystem::removeFileArchive(u32 index)
-{
-	bool ret = false;
-	if (index < FileArchives.size()) {
-		FileArchives[index]->drop();
-		FileArchives.erase(index);
-		ret = true;
-	}
-	return ret;
-}
-
-//! removes an archive from the file system.
-bool CFileSystem::removeFileArchive(const io::path &filename)
-{
-	const path absPath = getAbsolutePath(filename);
-	for (u32 i = 0; i < FileArchives.size(); ++i) {
-		if (absPath == FileArchives[i]->getFileList()->getPath())
-			return removeFileArchive(i);
-	}
-	return false;
-}
-
-//! Removes an archive from the file system.
-bool CFileSystem::removeFileArchive(const IFileArchive *archive)
-{
-	for (u32 i = 0; i < FileArchives.size(); ++i) {
-		if (archive == FileArchives[i]) {
-			return removeFileArchive(i);
-		}
-	}
-	return false;
-}
-
-//! gets an archive
-u32 CFileSystem::getFileArchiveCount() const
-{
-	return FileArchives.size();
-}
-
-IFileArchive *CFileSystem::getFileArchive(u32 index)
-{
-	return index < getFileArchiveCount() ? FileArchives[index] : 0;
 }
 
 //! Returns the string of the current working directory
@@ -711,17 +461,6 @@ IFileList *CFileSystem::createFileList()
 
 		//! parent
 		r->addItem(Path + _IRR_TEXT(".."), 0, 0, true, 0);
-
-		//! merge archives
-		for (u32 i = 0; i < FileArchives.size(); ++i) {
-			const IFileList *merge = FileArchives[i]->getFileList();
-
-			for (u32 j = 0; j < merge->getFileCount(); ++j) {
-				if (core::isInSameDirectory(Path, merge->getFullFileName(j)) == 0) {
-					r->addItem(merge->getFullFileName(j), merge->getFileOffset(j), merge->getFileSize(j), merge->isDirectory(j), 0);
-				}
-			}
-		}
 	}
 
 	if (r)
@@ -738,10 +477,6 @@ IFileList *CFileSystem::createEmptyFileList(const io::path &path, bool ignoreCas
 //! determines if a file exists and would be able to be opened.
 bool CFileSystem::existFile(const io::path &filename) const
 {
-	for (u32 i = 0; i < FileArchives.size(); ++i)
-		if (FileArchives[i]->getFileList()->findFile(filename) != -1)
-			return true;
-
 #if defined(_MSC_VER)
 	return (_access(filename.c_str(), 0) != -1);
 #elif defined(F_OK)

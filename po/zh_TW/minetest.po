@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-01-14 12:31+0000\n"
-"Last-Translator: reimu105 <peter112548@gmail.com>\n"
+"PO-Revision-Date: 2024-08-10 06:09+0000\n"
+"Last-Translator: hugoalh <hugoalh@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -71,9 +71,8 @@ msgid "Command not available: "
 msgstr "指令無法使用: "
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Get help for commands (-t: output in chat)"
-msgstr "取得指令的說明"
+msgstr "取得指令幫助（-t：輸出至聊天中）"
 
 #: builtin/common/chatcommands.lua
 msgid ""
@@ -81,9 +80,8 @@ msgid ""
 msgstr "使用「.help <cmd>」來取得更多資訊，或使用「.help all」來列出所有指令。"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "[all | <cmd>] [-t]"
-msgstr "[all | <命令>]"
+msgstr "[all | <指令>] [-t]"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -182,7 +180,7 @@ msgstr "正在下載..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Error getting dependencies for package"
-msgstr ""
+msgstr "獲取套件的相依元件時發生錯誤"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Games"
@@ -196,7 +194,7 @@ msgstr "安裝"
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
-msgstr "正在載入..."
+msgstr "載入中…"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Mods"
@@ -458,7 +456,7 @@ msgstr "裝飾物"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Desert temples"
-msgstr ""
+msgstr "沙漠聖殿"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
@@ -468,7 +466,7 @@ msgstr "開發測試是針對開發人員的。"
 msgid ""
 "Different dungeon variant generated in desert biomes (only if dungeons "
 "enabled)"
-msgstr ""
+msgstr "在沙漠生物群落中生成不同的地牢變體（僅當啟用地牢時）"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -645,7 +643,7 @@ msgstr "缺少名稱"
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Name"
-msgstr "名字"
+msgstr "名稱"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
@@ -719,7 +717,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Later"
-msgstr "稍後提醒"
+msgstr "稍後"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Never"
@@ -1054,15 +1052,14 @@ msgid "Install games from ContentDB"
 msgstr "從 ContentDB 安裝遊戲"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Minetest doesn't come with a game by default."
-msgstr "預設不再安裝 Minetest 遊戲"
+msgstr "預設不再安裝 Minetest 遊戲。"
 
 #: builtin/mainmenu/tab_local.lua
 msgid ""
 "Minetest is a game-creation platform that allows you to play many different "
 "games."
-msgstr ""
+msgstr "Minetest 是一個遊戲創建平台，可以讓你遊玩許多不同的遊戲。"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -1097,9 +1094,8 @@ msgid "Start Game"
 msgstr "開始遊戲"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "You need to install a game before you can create a world."
-msgstr "您需要先安裝遊戲才能安裝模組"
+msgstr "您需要先安裝遊戲才能安裝模組。"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1128,7 +1124,7 @@ msgstr "加入遊戲"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr "登錄"
+msgstr "登入"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1412,9 +1408,8 @@ msgid "Fog enabled"
 msgstr "已啟用霧氣"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog enabled by game or mod"
-msgstr "遠近調整目前已被遊戲或模組停用"
+msgstr "霧已由遊戲或模組啟用"
 
 #: src/client/game.cpp
 msgid "Game info:"
@@ -1442,7 +1437,7 @@ msgstr "MiB/秒"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr "迷你地圖目前已被遊戲或 Mod 停用"
+msgstr "迷你地圖目前已被遊戲或模組停用"
 
 #: src/client/game.cpp
 msgid "Multiplayer"
@@ -1639,9 +1634,8 @@ msgid "Caps Lock"
 msgstr "大寫鎖定鍵"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Clear Key"
-msgstr "清除"
+msgstr "清除鍵"
 
 #: src/client/keycode.cpp
 msgid "Control Key"
@@ -1669,7 +1663,7 @@ msgstr "執行"
 
 #: src/client/keycode.cpp
 msgid "Help"
-msgstr "說明"
+msgstr "幫助"
 
 #: src/client/keycode.cpp
 msgid "Home"
@@ -1725,9 +1719,8 @@ msgstr "左 Windows 鍵"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Menu Key"
-msgstr "選單"
+msgstr "選單鍵"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
@@ -1813,9 +1806,8 @@ msgstr "Page up"
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Pause Key"
-msgstr "暫停"
+msgstr "暫停鍵"
 
 #: src/client/keycode.cpp
 msgid "Play"
@@ -1866,9 +1858,8 @@ msgid "Select"
 msgstr "選擇"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Shift Key"
-msgstr "Shift"
+msgstr "Shift 鍵"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
@@ -1905,7 +1896,7 @@ msgstr "遠近調整"
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
-msgstr "已隱藏迷你地圖"
+msgstr "迷你地圖已隱藏"
 
 #: src/client/minimap.cpp
 #, c-format
@@ -1922,13 +1913,13 @@ msgid "Minimap in texture mode"
 msgstr "材質模式的迷你地圖"
 
 #: src/client/shader.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to compile the \"%s\" shader."
-msgstr "無法開啟網頁"
+msgstr "無法編譯「%s」著色器。"
 
 #: src/client/shader.cpp
 msgid "Shaders are enabled but GLSL is not supported by the driver."
-msgstr ""
+msgstr "著色器已啟用，但是驅動程式不支援 GLSL。"
 
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
@@ -2121,16 +2112,15 @@ msgstr "按下按鍵"
 
 #: src/gui/guiOpenURL.cpp
 msgid "Open"
-msgstr ""
+msgstr "開啟"
 
 #: src/gui/guiOpenURL.cpp
 msgid "Open URL?"
-msgstr ""
+msgstr "開啟網址？"
 
 #: src/gui/guiOpenURL.cpp
-#, fuzzy
 msgid "Unable to open URL"
-msgstr "無法開啟網頁"
+msgstr "無法開啟網址"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
@@ -2396,16 +2386,15 @@ msgid ""
 "Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
 "to be sure) creates a solid floatland layer."
 msgstr ""
-"調整浮地層的密度。\n"
-"增加值以增加密度。 可以是正值，也可以是負值。\n"
-"值 = 0.0：50% 的體積是浮地。\n"
-"值 = 2.0（可以更高，取決於“mgv7_np_floatland”，始終測試\n"
-"可以肯定的是）創造了一個堅固的浮地層。"
+"調整浮空島層的密度。\n"
+"增加數值以增加密度。可以是正值或負值。\n"
+"值 = 0.0：50% 的體積是浮空島。\n"
+"值 = 2.0（可以更高，取決於「mgv7_np_floatland」，總是進行測試以確定）建立一個"
+"堅固的浮空島層。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Admin name"
-msgstr "將物品名稱加至末尾"
+msgstr "管理員名稱"
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2413,7 +2402,7 @@ msgstr "進階"
 
 #: src/settings_translation_file.cpp
 msgid "Allows liquids to be translucent."
-msgstr ""
+msgstr "允許液體呈半透明狀。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2430,9 +2419,8 @@ msgstr ""
 "在夜晚的自然光照下作用很小。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Always fly fast"
-msgstr "總是啟用飛行與快速模式"
+msgstr "總是快速飛行"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
@@ -2572,9 +2560,8 @@ msgid "Base terrain height."
 msgstr "基礎地形高度。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base texture size"
-msgstr "過濾器的最大材質大小"
+msgstr "基礎材質大小"
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
@@ -2597,9 +2584,8 @@ msgid "Bind address"
 msgstr "綁定地址"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Biome API"
-msgstr "生物雜訊"
+msgstr "生物群落 API"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2619,14 +2605,12 @@ msgid "Bloom"
 msgstr "泛光"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bloom Intensity"
-msgstr "泛光强度"
+msgstr "泛光強度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bloom Radius"
-msgstr "雲朵範圍"
+msgstr "泛光半徑"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Strength Factor"
@@ -3048,7 +3032,6 @@ msgstr ""
 "但也使用更多的資源。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Define the oldest clients allowed to connect.\n"
 "Older clients are compatible in the sense that they will not crash when "
@@ -3060,9 +3043,12 @@ msgid ""
 "Minetest still enforces its own internal minimum, and enabling\n"
 "strict_protocol_version_checking will effectively override this."
 msgstr ""
-"啟用以讓舊的用戶端無法連線。\n"
-"較舊的用戶端在這個意義上相容，它們不會在連線至\n"
-"新伺服器時當掉，但它們可能會不支援一些您預期會有的新功能。"
+"定義允許連線的最早的客戶端。\n"
+"較舊的客戶端是相容的，因為它們在連接時不會崩潰\n"
+"到新伺服器，但它們可能不支援您期望的所有新功能。\n"
+"這允許比 strict_protocol_version_checking 更細粒度的控制。\n"
+"Minetest 仍然強制執行其自己的內部最低限度，並啟用\n"
+"strict_protocol_version_checking 將有效地覆蓋這一點。"
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -3292,9 +3278,8 @@ msgstr ""
 "使用泊松盤演算法來產生“軟陰影”。 不啟用的話就會使用 PCF 濾鏡。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Post Processing"
-msgstr "後製處理"
+msgstr "啟用後製處理"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
@@ -3378,9 +3363,8 @@ msgstr ""
 "新伺服器時當掉，但它們可能會不支援一些您預期會有的新功能。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable touchscreen"
-msgstr "海灘雜訊閾值"
+msgstr "啟用觸控螢幕"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3442,7 +3426,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Enables touchscreen mode, allowing you to play the game with a touchscreen."
-msgstr ""
+msgstr "啟用觸控螢幕模式，讓你可以使用觸控螢幕玩遊戲。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4651,7 +4635,6 @@ msgid "Mapgen Flat specific flags"
 msgstr "地圖產生器平地標籤"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Fractal"
 msgstr "地圖產生器分形"
 
@@ -4922,14 +4905,12 @@ msgid "Miscellaneous"
 msgstr "各種的"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mod Profiler"
-msgstr "分析器"
+msgstr "模組分析器"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mod Security"
-msgstr "安全"
+msgstr "模組安全"
 
 #: src/settings_translation_file.cpp
 msgid "Mod channels"
@@ -4979,9 +4960,8 @@ msgid "Mouse sensitivity multiplier."
 msgstr "滑鼠靈敏度倍數。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Movement threshold"
-msgstr "洞穴閾值"
+msgstr "移動閾值"
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
@@ -5035,7 +5015,6 @@ msgstr ""
 "當從主選單啟動時，這個值將會被覆寫。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Networking"
 msgstr "網路"
 
@@ -5136,9 +5115,8 @@ msgstr ""
 "打開。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "OpenGL debug"
-msgstr "Mapgen 除錯"
+msgstr "OpenGL 偵錯"
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
@@ -5252,26 +5230,24 @@ msgid "Prometheus listener address"
 msgstr "Prometheus 監聽器位址"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Prometheus listener address.\n"
 "If Minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
 "enable metrics listener for Prometheus on that address.\n"
 "Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
-"Prometheus 监听器地址。\n"
-"如果Minetest在编译时启用了ENABLE_PROMETHEUS选项，\n"
-"在该地址上为 Prometheus 启用指标侦听器。\n"
-"可以从 http://127.0.0.1:30000/metrics 获取指标"
+"Prometheus 監聽器地址。\n"
+"如果Minetest在編輯時啓用了ENABLE_PROMETHEUS選項，\n"
+"在該地址上為 Prometheus 啓用指標偵聽器。\n"
+"可以從 http://127.0.0.1:30000/metrics 獲取指標"
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
 msgstr "含有液體的大型洞穴的比例。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Protocol version minimum"
-msgstr "協定版本不符合。 "
+msgstr "協定版本不符合"
 
 #: src/settings_translation_file.cpp
 msgid "Punch gesture"
@@ -5296,19 +5272,17 @@ msgstr "隨機輸入"
 
 #: src/settings_translation_file.cpp
 msgid "Random mod load order"
-msgstr ""
+msgstr "依隨機順序載入 mod"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
 msgstr "最近聊天訊息"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Regular font path"
-msgstr "報告路徑"
+msgstr "常規字型路徑"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Remember screen size"
 msgstr "自動儲存視窗大小"
 
@@ -5487,7 +5461,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screenshots"
-msgstr "螢幕擷取"
+msgstr "螢幕截圖"
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
@@ -5672,13 +5646,12 @@ msgstr ""
 "範圍：從-1到1.0"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the language. By default, the system language is used.\n"
 "A restart is required after changing this."
 msgstr ""
-"設定語言。留空以使用系統語言。\n"
-"變更後必須重新啟動以使其生效。"
+"設定語言。預設情況下，使用系統語言。\n"
+"變更後需要重新啟動。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5764,15 +5737,13 @@ msgid "Shaders"
 msgstr "著色器"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Shaders allow advanced visual effects and may increase performance on some "
 "video\n"
 "cards."
 msgstr ""
-"著色器可實現高級視覺效果，並可能提高某些影片的效能\n"
-"牌。\n"
-"這僅適用於 OpenGL 視訊後端。"
+"著色器允許實現高級視覺效果，\n"
+"並可能提高某些顯示卡的性能。"
 
 #: src/settings_translation_file.cpp
 msgid "Shadow filter quality"
@@ -6332,28 +6303,24 @@ msgid "Tooltip delay"
 msgstr "工具提示延遲"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen"
-msgstr "海灘雜訊閾值"
+msgstr "觸控螢幕"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen sensitivity"
-msgstr "滑鼠靈敏度"
+msgstr "觸控螢幕靈敏度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen sensitivity multiplier."
-msgstr "滑鼠靈敏度倍數。"
+msgstr "觸控螢幕靈敏度倍數。"
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
 msgstr "性能的權衡"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Translucent liquids"
-msgstr "不透明液體"
+msgstr "半透明液體"
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
@@ -6368,7 +6335,6 @@ msgid "Trilinear filtering"
 msgstr "三線性過濾器"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "True = 256\n"
 "False = 128\n"
@@ -6376,7 +6342,7 @@ msgid ""
 msgstr ""
 "True = 256\n"
 "False = 128\n"
-"對於讓迷你地圖在較慢的機器上變得流暢有效。"
+"使迷你地圖在速度較慢的機器上更加平滑。"
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
@@ -6691,18 +6657,16 @@ msgid "Waving liquids wave speed"
 msgstr "波動的水速度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wavelength"
-msgstr "波動的水長度"
+msgstr "波動液體的波長"
 
 #: src/settings_translation_file.cpp
 msgid "Waving plants"
 msgstr "植物擺動"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Weblink color"
-msgstr "色彩選取框"
+msgstr "網路連結顏色"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6831,9 +6795,8 @@ msgstr ""
 "若從主選單啟動則不需要。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "World start time"
-msgstr "世界遊戲"
+msgstr "世界開始時間"
 
 #: src/settings_translation_file.cpp
 msgid ""

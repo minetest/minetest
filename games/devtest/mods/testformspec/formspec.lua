@@ -66,7 +66,7 @@ local inv_style_fs = [[
 
 -- Some textures from textures/base/pack and Devtest, with many different sizes
 -- and aspect ratios.
-local image_column = "image,0=logo.png,1=rare_controls.png,2=checkbox_16.png," ..
+local image_column = "image,0=logo.png,1=crack_anylength.png^[invert:rgb,2=checkbox_16.png," ..
 		"3=checkbox_32.png,4=checkbox_64.png,5=default_lava.png," ..
 		"6=progress_bar.png,7=progress_bar_bg.png"
 local words = {

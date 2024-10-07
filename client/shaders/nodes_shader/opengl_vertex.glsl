@@ -199,15 +199,11 @@ void main(void)
 	vNormal = inVertexNormal;
 
 	// Calculate color.
+	vec4 color = inVertexColor;
 	// Red, green and blue components are pre-multiplied with
 	// the brightness, so now we have to multiply these
 	// colors with the color of the incoming light.
 	// The pre-baked colors are halved to prevent overflow.
-#ifdef GL_ES
-	vec4 color = inVertexColor.bgra;
-#else
-	vec4 color = inVertexColor;
-#endif
 	// The alpha gives the ratio of sunlight in the incoming light.
 	nightRatio = 1.0 - color.a;
 	color.rgb = color.rgb * (color.a * dayLight.rgb +
@@ -256,7 +252,9 @@ void main(void)
 		z_bias *= pFactor * pFactor / f_textureresolution / f_shadowfar;
 
 		shadow_position = applyPerspectiveDistortion(m_ShadowViewProj * mWorld * (shadow_pos + vec4(normalOffsetScale * nNormal, 0.0))).xyz;
+#if !defined(ENABLE_TRANSLUCENT_FOLIAGE) || MATERIAL_TYPE != TILE_MATERIAL_WAVING_LEAVES
 		shadow_position.z -= z_bias;
+#endif
 		perspective_factor = pFactor;
 
 		if (f_timeofday < 0.2) {

@@ -50,7 +50,7 @@ fake_function() {
 	gettext("Virtual joystick triggers Aux1 button");
 	gettext("Use virtual joystick to trigger \"Aux1\" button.\nIf enabled, virtual joystick will also tap \"Aux1\" button when out of main circle.");
 	gettext("Punch gesture");
-	gettext("The gesture for for punching players/entities.\nThis can be overridden by games and mods.\n\n* short_tap\nEasy to use and well-known from other games that shall not be named.\n\n* long_tap\nKnown from the classic Minetest mobile controls.\nCombat is more or less impossible.");
+	gettext("The gesture for punching players/entities.\nThis can be overridden by games and mods.\n\n* short_tap\nEasy to use and well-known from other games that shall not be named.\n\n* long_tap\nKnown from the classic Minetest mobile controls.\nCombat is more or less impossible.");
 	gettext("Graphics and Audio");
 	gettext("Graphics");
 	gettext("Screen");
@@ -276,6 +276,8 @@ fake_function() {
 	gettext("Content Repository");
 	gettext("ContentDB URL");
 	gettext("The URL for the content repository");
+	gettext("Enable updates available indicator on content tab");
+	gettext("If enabled and you have ContentDB packages installed, Minetest may contact ContentDB to\ncheck for package updates when opening the mainmenu.");
 	gettext("ContentDB Flag Blacklist");
 	gettext("Comma-separated list of flags to hide in the content repository.\n\"nonfree\" can be used to hide packages which do not qualify as 'free software',\nas defined by the Free Software Foundation.\nYou can also specify content ratings.\nThese flags are independent from Minetest versions,\nso see a full list at https://content.minetest.net/help/content_flags/");
 	gettext("ContentDB Max Concurrent Downloads");
@@ -289,7 +291,7 @@ fake_function() {
 	gettext("Enable split login/register");
 	gettext("If enabled, account registration is separate from login in the UI.\nIf disabled, new accounts will be registered automatically when logging in.");
 	gettext("Update information URL");
-	gettext("URL to JSON file which provides information about the newest Minetest release\nIf this is empty the engine will never check for updates.");
+	gettext("URL to JSON file which provides information about the newest Minetest release.\nIf this is empty the engine will never check for updates.");
 	gettext("Server");
 	gettext("Admin name");
 	gettext("Name of the player.\nWhen running a server, clients connecting with this name are admins.\nWhen starting from the main menu, this is overridden.");
