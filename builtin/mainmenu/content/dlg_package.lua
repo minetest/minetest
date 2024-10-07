@@ -16,7 +16,7 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-local function get_info_formspec(size, padding, text)
+local function get_info_formspec(size, insets, text)
 	return table.concat({
 		"formspec_version[6]",
 		"size[", size.x, ",", size.y, "]",
@@ -24,7 +24,7 @@ local function get_info_formspec(size, padding, text)
 		"bgcolor[;true]",
 
 		"label[4,4.35;", text, "]",
-		"container[", padding.x, ",", size.y - 0.8 - padding.y, "]",
+		"container[", insets.left, ",", size.y - 0.8 - insets.bottom, "]",
 		"button[0,0;2,0.8;back;", fgettext("Back"), "]",
 		"container_end[]",
 	})
@@ -32,11 +32,11 @@ end
 
 
 local function get_formspec(data)
-	local window_padding =  contentdb.get_formspec_padding()
+	local insets =  contentdb.get_formspec_insets()
 	local size = contentdb.get_formspec_size()
 	size.x = math.min(size.x, 20)
-	local W = size.x - window_padding.x * 2
-	local H = size.y - window_padding.y * 2
+	local W = size.x - insets.left - insets.right
+	local H = size.y - insets.top - insets.bottom
 
 	if not data.info then
 		if not data.loading and not data.loading_error then
@@ -65,9 +65,9 @@ local function get_formspec(data)
 		-- check to see if that happened
 		if not data.info then
 			if data.loading_error then
-				return get_info_formspec(size, window_padding, fgettext("No packages could be retrieved"))
+				return get_info_formspec(size, insets, fgettext("No packages could be retrieved"))
 			end
-			return get_info_formspec(size, window_padding, fgettext("Loading..."))
+			return get_info_formspec(size, insets, fgettext("Loading..."))
 		end
 	end
 
@@ -89,7 +89,7 @@ local function get_formspec(data)
 		"padding[0,0]",
 		"bgcolor[;true]",
 
-		"container[", window_padding.x, ",", window_padding.y, "]",
+		"container[", insets.left, ",", insets.top, "]",
 
 		"button[0,", bottom_buttons_y, ";2,0.8;back;", fgettext("Back"), "]",
 		"button[", W - 3, ",", bottom_buttons_y, ";3,0.8;open_contentdb;", fgettext("ContentDB page"), "]",
