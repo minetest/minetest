@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include "client/shader.h"
 #include "client/tile.h"
+#include "clientdynamicinfo.h"
 #include "config.h"
 #include "content/content.h"
 #include "content/mods.h"
@@ -316,6 +317,7 @@ void GUIEngine::run()
 		);
 	const bool initial_window_maximized = !g_settings->getBool("fullscreen") &&
 			g_settings->getBool("window_maximized");
+	auto last_window_info = ClientDynamicInfo::getCurrent();
 
 	FpsControl fps_control;
 	f32 dtime = 0.0f;
@@ -334,6 +336,11 @@ void GUIEngine::run()
 			if (text_height != g_fontengine->getTextHeight()) {
 				updateTopLeftTextSize();
 				text_height = g_fontengine->getTextHeight();
+			}
+			auto window_info = ClientDynamicInfo::getCurrent();
+			if (!window_info.equal(last_window_info)) {
+				m_script->handleMainMenuEvent("WindowInfoChange");
+				last_window_info = window_info;
 			}
 
 			driver->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
