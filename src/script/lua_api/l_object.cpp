@@ -1521,7 +1521,7 @@ int ObjectRef::l_get_meta(lua_State *L)
 	if (playersao == nullptr)
 		return 0;
 
-	PlayerMetaRef::create(L, &playersao->getMeta());
+	PlayerMetaRef::create(L, &getServer(L)->getEnv(), playersao->getPlayer()->getName());
 	return 1;
 }
 
