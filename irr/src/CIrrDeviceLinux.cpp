@@ -862,10 +862,15 @@ bool CIrrDeviceLinux::run()
 
 				irrevent.EventType = irr::EET_KEY_INPUT_EVENT;
 				irrevent.KeyInput.PressedDown = false;
-				irrevent.KeyInput.Char = 0; // on release that's undefined
 				irrevent.KeyInput.Control = (event.xkey.state & ControlMask) != 0;
 				irrevent.KeyInput.Shift = (event.xkey.state & ShiftMask) != 0;
 				irrevent.KeyInput.Key = getKeyCode(event);
+				{ // Pass a char on release as well since this is needed for the scancode stub.
+					char buf[8] = {0};
+					XLookupString(&event.xkey, buf, sizeof(buf), NULL, NULL);
+					irrevent.KeyInput.Char = buf[0];
+				}
+				fillScancode(irrevent);
 
 				postEventFromUser(irrevent);
 				break;
@@ -908,13 +913,9 @@ bool CIrrDeviceLinux::run()
 					}
 				} else // Old version without InputContext. Does not support i18n, but good to have as fallback.
 				{
-					union
-					{
-						char buf[8];
-						wchar_t wbuf[2];
-					} tmp = {{0}};
-					XLookupString(&event.xkey, tmp.buf, sizeof(tmp.buf), &mp.X11Key, NULL);
-					irrevent.KeyInput.Char = tmp.wbuf[0];
+					char buf[8] = {0};
+					XLookupString(&event.xkey, buf, sizeof(buf), &mp.X11Key, NULL);
+					irrevent.KeyInput.Char = buf[0];
 				}
 
 				irrevent.EventType = irr::EET_KEY_INPUT_EVENT;
@@ -922,6 +923,7 @@ bool CIrrDeviceLinux::run()
 				irrevent.KeyInput.Control = (event.xkey.state & ControlMask) != 0;
 				irrevent.KeyInput.Shift = (event.xkey.state & ShiftMask) != 0;
 				irrevent.KeyInput.Key = getKeyCode(event);
+				fillScancode(irrevent);
 				postEventFromUser(irrevent);
 			} break;
 

@@ -769,6 +769,7 @@ bool CIrrDeviceMacOSX::run()
 
 				IsShiftDown = ievent.KeyInput.Shift;
 
+				fillScancode(ievent);
 				postEventFromUser(ievent);
 			}
 
@@ -779,6 +780,7 @@ bool CIrrDeviceMacOSX::run()
 
 				IsControlDown = ievent.KeyInput.Control;
 
+				fillScancode(ievent);
 				postEventFromUser(ievent);
 			}
 
@@ -980,6 +982,7 @@ void CIrrDeviceMacOSX::postKeyEvent(void *event, irr::SEvent &ievent, bool press
 		ievent.KeyInput.Shift = ([(NSEvent *)event modifierFlags] & NSShiftKeyMask) != 0;
 		ievent.KeyInput.Control = ([(NSEvent *)event modifierFlags] & NSControlKeyMask) != 0;
 		ievent.KeyInput.Char = mchar;
+		fillScancode(ievent);
 
 		if (skipCommand)
 			ievent.KeyInput.Control = true;
