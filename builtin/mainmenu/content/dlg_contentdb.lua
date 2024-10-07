@@ -496,6 +496,11 @@ local function handle_events(event)
 		return true
 	end
 
+	if event == "WindowInfoChange" then
+		ui.update()
+		return true
+	end
+
 	return false
 end
 
