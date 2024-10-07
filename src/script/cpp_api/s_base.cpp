@@ -474,7 +474,7 @@ void ScriptApiBase::addObjectReference(ServerActiveObject *cobj)
 	int objectstable = lua_gettop(L);
 
 	// object_refs[id] = object
-	lua_pushnumber(L, cobj->getId()); // Push id
+	lua_pushinteger(L, cobj->getId()); // Push id
 	lua_pushvalue(L, object); // Copy object to top of stack
 	lua_settable(L, objectstable);
 }
@@ -491,24 +491,29 @@ void ScriptApiBase::removeObjectReference(ServerActiveObject *cobj)
 	int objectstable = lua_gettop(L);
 
 	// Get object_refs[id]
-	lua_pushnumber(L, cobj->getId()); // Push id
+	lua_pushinteger(L, cobj->getId()); // Push id
 	lua_gettable(L, objectstable);
 	// Set object reference to NULL
-	ObjectRef::set_null(L);
+	ObjectRef::set_null(L, cobj);
 	lua_pop(L, 1); // pop object
 
 	// Set object_refs[id] = nil
-	lua_pushnumber(L, cobj->getId()); // Push id
+	lua_pushinteger(L, cobj->getId()); // Push id
 	lua_pushnil(L);
 	lua_settable(L, objectstable);
 }
 
-// Creates a new anonymous reference if cobj=NULL or id=0
-void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
-		ServerActiveObject *cobj)
+void ScriptApiBase::objectrefGetOrCreate(lua_State *L, ServerActiveObject *cobj)
 {
 	assert(getType() == ScriptingType::Server);
-	if (cobj == NULL || cobj->getId() == 0) {
+	if (!cobj) {
+		ObjectRef::create(L, nullptr); // dummy reference
+	} else if (cobj->getId() == 0) {
+		// TODO after 5.10.0: convert this to a FATAL_ERROR
+		errorstream << "ScriptApiBase::objectrefGetOrCreate(): "
+				<< "Pushing orphan ObjectRef. Please open a bug report for this."
+				<< std::endl;
+		assert(0);
 		ObjectRef::create(L, cobj);
 	} else {
 		push_objectRef(L, cobj->getId());

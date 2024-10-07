@@ -2236,12 +2236,14 @@ void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm,
 
 void push_objectRef(lua_State *L, const u16 id)
 {
+	assert(id != 0);
 	// Get core.object_refs[i]
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "object_refs");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_pushinteger(L, id);
 	lua_gettable(L, -2);
+	assert(!lua_isnoneornil(L, -1));
 	lua_remove(L, -2); // object_refs
 	lua_remove(L, -2); // core
 }
