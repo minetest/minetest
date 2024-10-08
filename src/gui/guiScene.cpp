@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <SViewFrustum.h>
 #include <IAnimatedMeshSceneNode.h>
 #include <IVideoDriver.h>
+#include "IAttributes.h"
 #include "porting.h"
 
 GUIScene::GUIScene(gui::IGUIEnvironment *env, scene::ISceneManager *smgr,

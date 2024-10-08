@@ -9,8 +9,6 @@
 #include "irr_v3d.h"
 #include "irr_v2d.h"
 
-#include <irrlicht.h>
-
 #include "catch.h"
 
 TEST_CASE("gltf") {

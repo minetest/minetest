@@ -10,6 +10,7 @@
 
 #include "IVideoDriver.h"
 #include "IFileSystem.h"
+#include "coreutil.h"
 #include "os.h"
 
 #include <algorithm>

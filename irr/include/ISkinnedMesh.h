@@ -5,11 +5,12 @@
 #pragma once
 
 #include "irrArray.h"
-#include "IBoneSceneNode.h"
 #include "IAnimatedMesh.h"
 #include "SSkinMeshBuffer.h"
+#include "quaternion.h"
 
 #include <optional>
+#include <string>
 
 namespace irr
 {
