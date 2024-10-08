@@ -8621,8 +8621,8 @@ child will follow movement and rotation of that bone.
         * This has no effect on clients who have the "Volumetric Lighting" or "Bloom" effects disabled.
         * `strength`: sets the strength of the volumetric light effect from 0 (off, default) to 1 (strongest).
             * `0.2` is a reasonable standard value.
-            * Currently, bloom `intensity`/`strength_factor` affects volumetric
-              lighting `strength`  and vice versa. This behavior is to be changed
+            * Currently, bloom `intensity` and `strength_factor` affect volumetric
+              lighting `strength` and vice versa. This behavior is to be changed
               in the future, do not rely on it.
 
 * `get_lighting()`: returns the current state of lighting for the player.

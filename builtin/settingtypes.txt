@@ -616,8 +616,6 @@ exposure_compensation (Exposure compensation) float 0.0 -1.0 1.0
 #    Requires: shaders, enable_post_processing
 debanding (Enable Debanding) bool true
 
-[**Bloom]
-
 #    Set to true to enable bloom effect.
 #    Bright colors will bleed over the neighboring objects.
 #
