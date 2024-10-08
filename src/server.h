@@ -86,7 +86,7 @@ enum {
 	AC_MOVEMENT    = 0x04
 };
 
-const FlagDesc flagdesc_anticheat[] = {
+constexpr const static FlagDesc flagdesc_anticheat[] = {
 	{"digging",     AC_DIGGING},
 	{"interaction", AC_INTERACTION},
 	{"movement",    AC_MOVEMENT},
