@@ -98,7 +98,7 @@ private:
 	public:
 		MeshExtractor(tiniergltf::GlTF &&model,
 				CSkinnedMesh *mesh) noexcept
-			: m_gltf_model(model), m_irr_model(mesh) {};
+			: m_gltf_model(std::move(model)), m_irr_model(mesh) {};
 
 		/* Gets indices for the given mesh/primitive.
 		 *
