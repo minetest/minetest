@@ -22,7 +22,7 @@ void migrate_settings()
 
 	// Disables anticheat
 	if (g_settings->existsLocal("disable_anticheat")) {
-		if (g_settings->getBool("disable_anticheat") == true) {
+		if (g_settings->getBool("disable_anticheat")) {
 			g_settings->set("anticheat_flags", "nodigging,nointeraction,nomovement");
 		}
 		g_settings->remove("disable_anticheat");
