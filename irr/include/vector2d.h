@@ -8,6 +8,7 @@
 #include "dimension2d.h"
 
 #include <functional>
+#include <array>
 
 namespace irr
 {
@@ -33,6 +34,9 @@ public:
 
 	constexpr vector2d(const dimension2d<T> &other) :
 			X(other.Width), Y(other.Height) {}
+
+	explicit constexpr vector2d(const std::array<T, 2> &arr) :
+			X(arr[0]), Y(arr[1]) {}
 
 	// operators
 

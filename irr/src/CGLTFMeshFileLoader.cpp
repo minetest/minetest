@@ -3,6 +3,7 @@
 
 #include "CGLTFMeshFileLoader.h"
 
+#include "SMaterialLayer.h"
 #include "coreutil.h"
 #include "CSkinnedMesh.h"
 #include "ISkinnedMesh.h"
@@ -11,6 +12,7 @@
 #include "matrix4.h"
 #include "path.h"
 #include "quaternion.h"
+#include "vector2d.h"
 #include "vector3d.h"
 #include "os.h"
 
@@ -381,6 +383,20 @@ static std::vector<u16> generateIndices(const std::size_t nVerts)
 	return indices;
 }
 
+using Wrap = tiniergltf::Sampler::Wrap;
+static video::E_TEXTURE_CLAMP convertTextureWrap(const Wrap wrap) {
+	switch (wrap) {
+		case Wrap::REPEAT:
+			return video::ETC_REPEAT;
+		case Wrap::CLAMP_TO_EDGE:
+			return video::ETC_CLAMP_TO_EDGE;
+		case Wrap::MIRRORED_REPEAT:
+            return video::ETC_MIRROR;
+		default:
+			throw std::runtime_error("invalid sampler wrapping mode");
+    }
+}
+
 /**
  * Load up the rawest form of the model. The vertex positions and indices.
  * Documentation: https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#meshes
@@ -415,6 +431,8 @@ void SelfType::MeshExtractor::loadMesh(
 
 		m_irr_model->addMeshBuffer(
 				new SSkinMeshBuffer(std::move(*vertices), std::move(indices)));
+		auto *meshbuf = m_irr_model->getMeshBuffer(m_irr_model->getMeshBufferCount() - 1);
+		auto &irr_mat = meshbuf->getMaterial();
 
 		if (primitive.material.has_value()) {
 			const auto &material = m_gltf_model.materials->at(*primitive.material);
@@ -423,6 +441,13 @@ void SelfType::MeshExtractor::loadMesh(
 				if (texture.has_value()) {
 					const auto meshbufNr = m_irr_model->getMeshBufferCount() - 1;
 					m_irr_model->setTextureSlot(meshbufNr, static_cast<u32>(texture->index));
+					const auto samplerIdx = m_gltf_model.textures->at(texture->index).sampler;
+					if (samplerIdx.has_value()) {
+						auto &sampler = m_gltf_model.samplers->at(*samplerIdx);
+						auto &layer = irr_mat.TextureLayers[0];
+						layer.TextureWrapU = convertTextureWrap(sampler.wrapS);
+						layer.TextureWrapV = convertTextureWrap(sampler.wrapT);
+					}
 				}
 			}
 		}
@@ -650,11 +675,19 @@ void SelfType::MeshExtractor::copyTCoords(
 		const std::size_t accessorIdx,
 		std::vector<video::S3DVertex>& vertices) const
 {
-	const auto accessor = createNormalizedValuesAccessor<2>(m_gltf_model, accessorIdx);
-	const auto count = std::visit([](auto &&a) { return a.getCount(); }, accessor);
-	for (std::size_t i = 0; i < count; ++i) {
-		const auto vals = getNormalizedValues(accessor, i);
-		vertices[i].TCoords = core::vector2df(vals[0], vals[1]);
+	const auto componentType = m_gltf_model.accessors->at(accessorIdx).componentType;
+	if (componentType == tiniergltf::Accessor::ComponentType::FLOAT) {
+		// If floats are used, they need not be normalized: Wrapping may take effect.
+		const auto accessor = Accessor<std::array<f32, 2>>::make(m_gltf_model, accessorIdx);
+		for (std::size_t i = 0; i < accessor.getCount(); ++i) {
+			vertices[i].TCoords = core::vector2d<f32>(accessor.get(i));
+		}
+	} else {
+		const auto accessor = createNormalizedValuesAccessor<2>(m_gltf_model, accessorIdx);
+		const auto count = std::visit([](auto &&a) { return a.getCount(); }, accessor);
+		for (std::size_t i = 0; i < count; ++i) {
+			vertices[i].TCoords = core::vector2d<f32>(getNormalizedValues(accessor, i));
+		}
 	}
 }
 

@@ -980,21 +980,16 @@ struct Sampler {
 	};
 	std::optional<MinFilter> minFilter;
 	std::optional<std::string> name;
-	enum class WrapS {
+	enum class Wrap {
 		REPEAT,
 		CLAMP_TO_EDGE,
 		MIRRORED_REPEAT,
 	};
-	WrapS wrapS;
-	enum class WrapT {
-		REPEAT,
-		CLAMP_TO_EDGE,
-		MIRRORED_REPEAT,
-	};
-	WrapT wrapT;
+	Wrap wrapS;
+	Wrap wrapT;
 	Sampler(const Json::Value &o)
-		: wrapS(WrapS::REPEAT)
-		, wrapT(WrapT::REPEAT)
+		: wrapS(Wrap::REPEAT)
+		, wrapT(Wrap::REPEAT)
 	{
 		check(o.isObject());
 		if (o.isMember("magFilter")) {
@@ -1020,21 +1015,16 @@ struct Sampler {
 		if (o.isMember("name")) {
 			name = as<std::string>(o["name"]);
 		}
+		static std::unordered_map<Json::UInt64, Wrap> map = {
+			{10497, Wrap::REPEAT},
+			{33071, Wrap::CLAMP_TO_EDGE},
+			{33648, Wrap::MIRRORED_REPEAT},
+		};
 		if (o.isMember("wrapS")) {
-			static std::unordered_map<Json::UInt64, WrapS> map = {
-				{10497, WrapS::REPEAT},
-				{33071, WrapS::CLAMP_TO_EDGE},
-				{33648, WrapS::MIRRORED_REPEAT},
-			};
 			const auto &v = o["wrapS"]; check(v.isUInt64());
 			wrapS = map.at(v.asUInt64());
 		}
 		if (o.isMember("wrapT")) {
-			static std::unordered_map<Json::UInt64, WrapT> map = {
-				{10497, WrapT::REPEAT},
-				{33071, WrapT::CLAMP_TO_EDGE},
-				{33648, WrapT::MIRRORED_REPEAT},
-			};
 			const auto &v = o["wrapT"]; check(v.isUInt64());
 			wrapT = map.at(v.asUInt64());
 		}
