@@ -8609,6 +8609,9 @@ child will follow movement and rotation of that bone.
         * `intensity` defines much bloom is applied to the rendered image.
           * Range: from 0.0 to 1.0, default: 0.05
           * If set to 0, bloom is disabled.
+          * The default value is to be changed from 0.05 to 0 in the future.
+            If you wish to keep the current default value, you should set it
+            explicitly.
         * `strength_factor` defines the magnitude of bloom overexposure.
           * Range: from 0.1 to 10.0, default: 1.0
         * `radius` is a logical value that controls how far the bloom effect
@@ -8618,7 +8621,9 @@ child will follow movement and rotation of that bone.
         * This has no effect on clients who have the "Volumetric Lighting" or "Bloom" effects disabled.
         * `strength`: sets the strength of the volumetric light effect from 0 (off, default) to 1 (strongest).
             * `0.2` is a reasonable standard value.
-            * Volumetric lighting strength is also affected by bloom intensity.
+            * Currently, bloom `intensity`/`strength_factor` affects volumetric
+              lighting `strength`  and vice versa. This behavior is to be changed
+              in the future, do not rely on it.
 
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
