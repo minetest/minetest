@@ -511,11 +511,11 @@ public:
 		m_exposure_params_pixel.set(exposure_buffer.data(), services);
 
 		if (m_bloom_enabled) {
-			float intensity = rangelim(lighting.bloom_intensity, 0.0f, 1.0f);
+			float intensity = std::max(lighting.bloom_intensity, 0.0f);
 			m_bloom_intensity_pixel.set(&intensity, services);
-			float strength_factor = rangelim(lighting.bloom_strength_factor, 0.1f, 10.0f);
+			float strength_factor = std::max(lighting.bloom_strength_factor, 0.0f);
 			m_bloom_strength_pixel.set(&strength_factor, services);
-			float radius = rangelim(lighting.bloom_radius, 0.1f, 8.0f);
+			float radius = std::max(lighting.bloom_radius, 0.0f);
 			m_bloom_radius_pixel.set(&radius, services);
 		}
 
