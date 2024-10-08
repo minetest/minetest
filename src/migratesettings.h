@@ -24,8 +24,6 @@ void migrate_settings()
 	if (g_settings->existsLocal("disable_anticheat")) {
 		if (g_settings->getBool("disable_anticheat") == true) {
 			g_settings->set("anticheat_flags", "nodigging,nointeraction,nomovement");
-		} else {
-			g_settings->set("anticheat_flags", "digging,interaction,movement");
 		}
 		g_settings->remove("disable_anticheat");
 	}
