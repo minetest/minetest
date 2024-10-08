@@ -320,6 +320,11 @@ IAnimatedMesh* SelfType::createMesh(io::IReadFile* file)
 	if (!model.has_value()) {
 		return nullptr;
 	}
+	if (model->extensionsRequired) {
+		os::Printer::log("glTF loader",
+				"model requires extensions, but we support none", ELL_ERROR);
+		return nullptr;
+	}
 
 	if (!(model->buffers.has_value()
 			&& model->bufferViews.has_value()
