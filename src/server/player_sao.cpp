@@ -732,7 +732,7 @@ bool PlayerSAO::checkMovementCheat()
 		required_time = MYMAX(required_time, d_vert / s);
 	}
 
-	static thread_local float anticheat_movement_tolerance = 
+	static thread_local float anticheat_movement_tolerance =
 		std::max(g_settings->getFloat("anticheat_movement_tolerance"), 1.0f);
 
 	required_time /= anticheat_movement_tolerance;
