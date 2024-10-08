@@ -8617,7 +8617,7 @@ child will follow movement and rotation of that bone.
         * `radius` is a logical value that controls how far the bloom effect
           spreads from the bright objects.
           * Recommended range: from 0.1 to 8.0, default: 1.0
-        * The behavior of values outside the recommend range is unspecified.
+        * The behavior of values outside the recommended range is unspecified.
       * `volumetric_light`: is a table that controls volumetric light (a.k.a. "godrays")
         * This has no effect on clients who have the "Volumetric Lighting" or "Bloom" effects disabled.
         * `strength`: sets the strength of the volumetric light effect from 0 (off, default) to 1 (strongest).
