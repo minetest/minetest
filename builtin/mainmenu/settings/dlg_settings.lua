@@ -443,19 +443,6 @@ local function build_page_components(page)
 end
 
 
---- Creates a scrollbaroptions for a scroll_container
---
--- @param visible_l the length of the scroll_container and scrollbar
--- @param total_l length of the scrollable area
--- @param scroll_factor as passed to scroll_container
-local function make_scrollbaroptions_for_scroll_container(visible_l, total_l, scroll_factor)
-	assert(total_l >= visible_l)
-	local max = total_l - visible_l
-	local thumb_size = (visible_l / total_l) * max
-	return ("scrollbaroptions[min=0;max=%f;thumbsize=%f]"):format(max / scroll_factor, thumb_size / scroll_factor)
-end
-
-
 local formspec_show_hack = false
 
 
@@ -517,8 +504,8 @@ local function get_formspec(dialogdata)
 			"tooltip[search;", fgettext("Search"), "]",
 			"tooltip[search_clear;", fgettext("Clear"), "]",
 		"container_end[]",
-		"scroll_container[0.25,1.25;", tostring(left_pane_width), ",",
-				tostring(tabsize.height - 1.5), ";leftscroll;vertical;0.1]",
+		("scroll_container[0.25,1.25;%f,%f;leftscroll;vertical;0.1;0]"):format(
+			left_pane_width, tabsize.height - 1.5),
 		"style_type[button;border=false;bgcolor=#3333]",
 		"style_type[button:hover;border=false;bgcolor=#6663]",
 	}
@@ -548,7 +535,6 @@ local function get_formspec(dialogdata)
 	fs[#fs + 1] = "scroll_container_end[]"
 
 	if y >= tabsize.height - 1.25 then
-		fs[#fs + 1] = make_scrollbaroptions_for_scroll_container(tabsize.height - 1.5, y, 0.1)
 		fs[#fs + 1] = ("scrollbar[%f,1.25;%f,%f;vertical;leftscroll;%f]"):format(
 				left_pane_width + 0.25, scrollbar_w, tabsize.height - 1.5, dialogdata.leftscroll or 0)
 	end
@@ -560,7 +546,7 @@ local function get_formspec(dialogdata)
 	end
 
 	local right_pane_width = tabsize.width - left_pane_width - 0.375 - 2*scrollbar_w - 0.25
-	fs[#fs + 1] = ("scroll_container[%f,0;%f,%f;rightscroll;vertical;0.1]"):format(
+	fs[#fs + 1] = ("scroll_container[%f,0;%f,%f;rightscroll;vertical;0.1;0.25]"):format(
 			tabsize.width - right_pane_width - scrollbar_w, right_pane_width, tabsize.height)
 
 	y = 0.25
@@ -616,7 +602,6 @@ local function get_formspec(dialogdata)
 	fs[#fs + 1] = "scroll_container_end[]"
 
 	if y >= tabsize.height then
-		fs[#fs + 1] = make_scrollbaroptions_for_scroll_container(tabsize.height, y + 0.375, 0.1)
 		fs[#fs + 1] = ("scrollbar[%f,0;%f,%f;vertical;rightscroll;%f]"):format(
 				tabsize.width - scrollbar_w, scrollbar_w, tabsize.height, dialogdata.rightscroll or 0)
 	end

@@ -2747,6 +2747,8 @@ Version History
 * Formspec version 7 (5.8.0):
   * style[]: Add focused state for buttons
   * Add field_enter_after_edit[] (experimental)
+* Formspec version 8 (5.10.0)
+  * scroll_container[]: content padding parameter
 
 Elements
 --------
@@ -2830,7 +2832,7 @@ Elements
 * End of a container, following elements are no longer relative to this
   container.
 
-### `scroll_container[<X>,<Y>;<W>,<H>;<scrollbar name>;<orientation>;<scroll factor>]`
+### `scroll_container[<X>,<Y>;<W>,<H>;<scrollbar name>;<orientation>;<scroll factor>;<content padding>]`
 
 * Start of a scroll_container block. All contained elements will ...
   * take the scroll_container coordinate as position origin,
@@ -2839,6 +2841,12 @@ Elements
   * be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
 * `orientation`: possible values are `vertical` and `horizontal`.
 * `scroll factor`: optional, defaults to `0.1`.
+* `content padding`: (optional), in formspec coordinate units
+  * If specified, the scrollbar properties `max` and `thumbsize` are calculated automatically
+    based on the content size plus `content padding` at the end of the container. `min` is set to 0.
+  * Negative `scroll factor` is not supported.
+  * When active, `scrollbaroptions[]` has no effect on the affected properties.
+  * Defaults to empty value (= disabled).
 * Nesting is possible.
 * Some elements might work a little different if they are in a scroll_container.
 * Note: If you want the scroll_container to actually work, you also need to add a
