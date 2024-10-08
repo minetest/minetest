@@ -79,6 +79,20 @@ struct PackedValue;
 struct ParticleParameters;
 struct ParticleSpawnerParameters;
 
+// Anticheat flags
+enum {
+	AC_DIGGING     = 0x01,
+	AC_INTERACTION = 0x02,
+	AC_MOVEMENT    = 0x04
+};
+
+const FlagDesc flagdesc_anticheat[] = {
+	{"digging",     AC_DIGGING},
+	{"interaction", AC_INTERACTION},
+	{"movement",    AC_MOVEMENT},
+	{NULL,          0}
+};
+
 enum ClientDeletionReason {
 	CDR_LEAVE,
 	CDR_TIMEOUT,

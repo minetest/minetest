@@ -27,20 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <mutex>
 
-// Anticheat flags
-enum {
-	AC_DIGGING     = 0x01,
-	AC_INTERACTION = 0x02,
-	AC_MOVEMENT    = 0x04
-};
-
-const FlagDesc flagdesc_anticheat[] = {
-	{"digging",     AC_DIGGING},
-	{"interaction", AC_INTERACTION},
-	{"movement",    AC_MOVEMENT},
-	{NULL,          0}
-};
-
 class Settings;
 struct NoiseParams;
 
