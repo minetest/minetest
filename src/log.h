@@ -32,16 +32,62 @@ class StreamProxy {
 public:
 	StreamProxy(std::ostream *os) : m_os(os) { }
 
+	inline static void maybe_fix_stream_state(std::ostream &os)
+	{
+		std::ios::iostate state = os.rdstate();
+		if (state != std::ios::goodbit) {
+			// clear error state so the stream works again
+			os.clear();
+			if (state & std::ios::eofbit)
+				os << "(ostream:eofbit)";
+			if (state & std::ios::badbit)
+				os << "(ostream:badbit)";
+			if (state & std::ios::failbit)
+				os << "(ostream:failbit)";
+		}
+	}
+
 	template<typename T>
-	StreamProxy& operator<<(T&& arg) {
+	StreamProxy& operator<<(T&& arg)
+	{
 		if (m_os) {
+			maybe_fix_stream_state(*m_os);
 			*m_os << std::forward<T>(arg);
 		}
 		return *this;
 	}
 
-	StreamProxy& operator<<(std::ostream& (*manip)(std::ostream&)) {
+	template<typename T>
+	StreamProxy& emit_with_null_check(T&& arg)
+	{
+		if (arg == NULL)
+			return *this << "(null)";
+		else
+			return this->operator<< <T>(std::forward<T>(arg));
+	}
+
+	// Add specific overrides for operator<< which check for NULL string
+	// pointers. This is undefined behavior in the C++ spec, so emit "(null)"
+	// instead
+#define ADD_NULL_CHECK(_type) \
+	StreamProxy& operator<<(_type arg) \
+	{ \
+		return emit_with_null_check(std::forward<_type>(arg)); \
+	}
+
+	ADD_NULL_CHECK(char*)
+	ADD_NULL_CHECK(unsigned char*)
+	ADD_NULL_CHECK(signed char*)
+	ADD_NULL_CHECK(const char*)
+	ADD_NULL_CHECK(const unsigned char*)
+	ADD_NULL_CHECK(const signed char*)
+
+#undef ADD_NULL_CHECK
+
+	StreamProxy& operator<<(std::ostream& (*manip)(std::ostream&))
+	{
 		if (m_os) {
+			maybe_fix_stream_state(*m_os);
 			*m_os << manip;
 		}
 		return *this;
