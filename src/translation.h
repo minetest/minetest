@@ -41,11 +41,15 @@ public:
 	const std::wstring &getPluralTranslation(const std::wstring &textdomain,
 			const std::wstring &s, unsigned long int number) const;
 	static const std::string_view getFileLanguage(const std::string &filename);
-	static inline bool isTranslationFile(const std::string &filename) {
+	static inline bool isTranslationFile(const std::string &filename)
+	{
 		return getFileLanguage(filename) != "";
 	}
 	// for testing
-	inline size_t size() { return m_translations.size() + m_plural_translations.size()/2; }
+	inline size_t size()
+	{
+		return m_translations.size() + m_plural_translations.size()/2;
+	}
 
 private:
 	std::unordered_map<std::wstring, std::wstring> m_translations;

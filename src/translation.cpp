@@ -209,7 +209,8 @@ void Translations::loadTrTranslation(const std::string &data)
 }
 
 
-std::wstring Translations::unescapeC(const std::wstring &str) {
+std::wstring Translations::unescapeC(const std::wstring &str)
+{
 	// Process escape sequences in str as if it were a C string
 	std::wstring result;
 	size_t i = 0;
@@ -330,7 +331,8 @@ std::wstring Translations::unescapeC(const std::wstring &str) {
 	return result;
 }
 
-void Translations::loadPoEntry(const std::wstring &basefilename, const GettextPluralForm::Ptr &plural_form, const std::map<std::wstring, std::wstring> &entry) {
+void Translations::loadPoEntry(const std::wstring &basefilename, const GettextPluralForm::Ptr &plural_form, const std::map<std::wstring, std::wstring> &entry)
+{
 	// Process an entry from a PO file and add it to the translation table
 	// Assumes that entry[L"msgid"] is always defined
 	std::wstring textdomain;
@@ -362,7 +364,8 @@ void Translations::loadPoEntry(const std::wstring &basefilename, const GettextPl
 	}
 }
 
-bool Translations::inEscape(const std::wstring &line, size_t pos) {
+bool Translations::inEscape(const std::wstring &line, size_t pos)
+{
 	if (pos == std::wstring::npos || pos == 0)
 		return false;
 	pos--;
@@ -375,7 +378,8 @@ bool Translations::inEscape(const std::wstring &line, size_t pos) {
 	return count % 2 == 1;
 }
 
-std::optional<std::pair<std::wstring, std::wstring>> Translations::parsePoLine(const std::string &line) {
+std::optional<std::pair<std::wstring, std::wstring>> Translations::parsePoLine(const std::string &line)
+{
 	if (line.empty())
 		return std::nullopt;
 	if (line[0] == '#')
@@ -423,7 +427,8 @@ std::optional<std::pair<std::wstring, std::wstring>> Translations::parsePoLine(c
 	return std::pair(prefix, s);
 }
 
-void Translations::loadPoTranslation(const std::string &basefilename, const std::string &data) {
+void Translations::loadPoTranslation(const std::string &basefilename, const std::string &data)
+{
 	std::istringstream is(data);
 	std::string line;
 	std::map<std::wstring, std::wstring> last_entry;
@@ -516,7 +521,8 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 	}
 }
 
-void Translations::loadMoEntry(const std::wstring &basefilename, const GettextPluralForm::Ptr &plural_form, const std::string &original, const std::string &translated) {
+void Translations::loadMoEntry(const std::wstring &basefilename, const GettextPluralForm::Ptr &plural_form, const std::string &original, const std::string &translated)
+{
 	std::wstring textdomain = L"";
 	size_t found;
 	std::string noriginal = original;
@@ -553,7 +559,8 @@ inline u32 readVarEndian(bool is_be, std::string_view data, size_t pos = 0)
 	}
 }
 
-void Translations::loadMoTranslation(const std::string &basefilename, const std::string &data) {
+void Translations::loadMoTranslation(const std::string &basefilename, const std::string &data)
+{
 	size_t length = data.length();
 	std::wstring wbasefilename = utf8_to_wide(basefilename);
 	GettextPluralForm::Ptr plural_form;
@@ -629,7 +636,8 @@ void Translations::loadMoTranslation(const std::string &basefilename, const std:
 	return;
 }
 
-void Translations::loadTranslation(const std::string &filename, const std::string &data) {
+void Translations::loadTranslation(const std::string &filename, const std::string &data)
+{
 	const char *trExtension[] = { ".tr", NULL };
 	const char *poExtension[] = { ".po", NULL };
 	const char *moExtension[] = { ".mo", NULL };
