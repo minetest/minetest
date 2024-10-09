@@ -96,7 +96,6 @@ private:
 	void setPosRaw(const s32 &pos);
 	void updatePos();
 	f32 target_pos;
-	f32 variable_step;
 	u32 last_time_ms = 0;
 	u32 last_delta_ms = 17; // assume 60 FPS
 	void interpolatePos();

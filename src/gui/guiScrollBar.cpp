@@ -25,7 +25,7 @@ GUIScrollBar::GUIScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s3
 		dragged_by_slider(false), tray_clicked(false), scroll_pos(0),
 		draw_center(0), thumb_size(0), min_pos(0), max_pos(100), small_step(10),
 		large_step(50), drag_offset(0), page_size(100), border_size(0),
-		m_tsrc(tsrc), target_pos(0.0f), variable_step(0.0f)
+		m_tsrc(tsrc), target_pos(0.0f)
 {
 	refreshControls();
 	setNotClipped(false);
@@ -90,9 +90,7 @@ bool GUIScrollBar::OnEvent(const SEvent &event)
 					s8 d = event.MouseInput.Wheel < 0 ? -1 : 1;
 					s8 h = is_horizontal ? 1 : -1;
 					
-					// NOTE: Is this noticable at all?
-					variable_step += d;
-					setPosInterpolated(getTargetPos() + ((event.MouseInput.Wheel + variable_step) * small_step * h));
+					setPosInterpolated(getTargetPos() + (event.MouseInput.Wheel * small_step * h));
 					return true;
 				}
 				break;
@@ -205,8 +203,7 @@ void GUIScrollBar::interpolatePos()
     // effectively disabled at <= 30 FPS.
     f32 amount = 0.2f * (last_delta_ms / 16.667f);
     setPosRaw(interpolate_scroll(scroll_pos, target_pos, amount));
-    variable_step *= 0.9f;
-
+    
     SEvent e;
     e.EventType = EET_GUI_EVENT;
     e.GUIEvent.Caller = this;
