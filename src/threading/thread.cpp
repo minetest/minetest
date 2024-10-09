@@ -25,7 +25,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "threading/thread.h"
 #include "threading/mutex_auto_lock.h"
-#include "log.h"
+#include "log_internal.h"
 #include "porting.h"
 
 // for setName

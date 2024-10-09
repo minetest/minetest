@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "itemdef.h"
 #include "dummygamedef.h"
+#include "log_internal.h"
 #include "modchannels.h"
 #include "util/numeric.h"
 #include "porting.h"

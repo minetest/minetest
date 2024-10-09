@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/mainmenumanager.h"
 #include "gui/touchcontrols.h"
 #include "hud.h"
+#include "log_internal.h"
 
 void KeyCache::populate_nonchanging()
 {

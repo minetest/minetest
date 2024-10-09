@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <zlib.h>
 #include <zstd.h>
+#include <memory>
 
 /* report a zlib or i/o error */
 static void zerr(int ret)

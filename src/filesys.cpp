@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cerrno>
 #include <fstream>
 #include <atomic>
+#include <memory>
 #include "log.h"
 #include "config.h"
 #include "porting.h"

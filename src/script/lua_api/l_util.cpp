@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "convert_json.h"
 #include "debug.h"
 #include "log.h"
+#include "log_internal.h"
 #include "tool.h"
 #include "filesys.h"
 #include "settings.h"
