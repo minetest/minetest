@@ -4335,6 +4335,7 @@ The file should be a text file, with the following format:
   the end of the line.
 
 Using the earlier example of greeting the player, the translation file would be
+
 ```
 # textdomain: hello
 Hello @1, how are you today?=Hallo @1, wie geht es dir heute?
