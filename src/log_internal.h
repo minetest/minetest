@@ -123,6 +123,64 @@ private:
 	std::ofstream m_stream;
 };
 
+struct LogEntry {
+	std::string timestamp;
+	std::string thread_name;
+	std::string text;
+	// "timestamp: level[thread_name]: text"
+	std::string combined;
+
+	LogEntry(std::string timestamp, std::string thread_name, std::string text, std::string combined) :
+		timestamp(std::move(timestamp)),
+		thread_name(std::move(thread_name)),
+		text(std::move(text)),
+		combined(std::move(combined)) { }
+};
+
+class CaptureLogOutput : public ILogOutput {
+public:
+	CaptureLogOutput() = delete;
+	DISABLE_CLASS_COPY(CaptureLogOutput);
+
+	CaptureLogOutput(Logger &logger) : m_logger(logger)
+	{
+		m_logger.addOutput(this);
+	}
+
+	~CaptureLogOutput()
+	{
+		m_logger.removeOutput(this);
+	}
+
+	void logRaw(LogLevel lev, std::string_view line) override
+	{
+		MutexAutoLock lock(m_mutex);
+		m_entries.emplace_back("", "", std::string(line), "");
+	}
+
+	void log(LogLevel, const std::string &combined,
+		const std::string &time, const std::string &thread_name,
+		std::string_view payload_text) override
+	{
+		MutexAutoLock lock(m_mutex);
+		m_entries.emplace_back(time, thread_name, std::string(payload_text), combined);
+	}
+
+	// Take the log entries currently stored, clearing the buffer.
+	std::vector<LogEntry> take()
+	{
+		std::vector<LogEntry> entries;
+		MutexAutoLock lock(m_mutex);
+		std::swap(m_entries, entries);
+		return entries;
+	}
+
+private:
+	Logger &m_logger;
+	std::mutex m_mutex;
+	std::vector<LogEntry> m_entries;
+};
+
 class LogOutputBuffer : public ICombinedLogOutput {
 public:
 	LogOutputBuffer(Logger &logger) :
