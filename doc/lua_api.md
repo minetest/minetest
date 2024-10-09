@@ -490,6 +490,11 @@ to let the client generate textures on-the-fly.
 The modifiers are applied directly in sRGB colorspace,
 i.e. without gamma-correction.
 
+### Notes
+
+ * `TEXMOD_UPSCALE`: The texture with the lower resolution will be automatically
+   upscaled to the higher resolution texture.
+
 ### Texture overlaying
 
 Textures can be overlaid by putting a `^` between them.
@@ -503,8 +508,9 @@ Example:
     default_dirt.png^default_grass_side.png
 
 `default_grass_side.png` is overlaid over `default_dirt.png`.
-The texture with the lower resolution will be automatically upscaled to
-the higher resolution texture.
+
+*See notes: `TEXMOD_UPSCALE`*
+
 
 ### Texture grouping
 
@@ -701,6 +707,8 @@ Apply a mask to the base image.
 
 The mask is applied using binary AND.
 
+*See notes: `TEXMOD_UPSCALE`*
+
 #### `[sheet:<w>x<h>:<x>,<y>`
 
 Retrieves a tile at position x, y (in tiles, 0-indexed)
@@ -798,6 +806,8 @@ in GIMP. Overlay is the same as Hard light but with the role of the two
 textures swapped, see the `[hardlight` modifier description for more detail
 about these blend modes.
 
+*See notes: `TEXMOD_UPSCALE`*
+
 #### `[hardlight:<file>`
 
 Applies a Hard light blend with the two textures, like the Hard light layer
@@ -812,6 +822,8 @@ increase contrast without clipping.
 
 Hard light is the same as Overlay but with the roles of the two textures
 swapped, i.e. `A.png^[hardlight:B.png` is the same as `B.png^[overlay:A.png`
+
+*See notes: `TEXMOD_UPSCALE`*
 
 #### `[png:<base64>`
 
@@ -830,6 +842,8 @@ that you could instead achieve by just using a file.
 In particular consider `minetest.dynamic_add_media` and test whether
 using other texture modifiers could result in a shorter string than
 embedding a whole image, this may vary by use case.
+
+*See notes: `TEXMOD_UPSCALE`*
 
 Hardware coloring
 -----------------
@@ -1394,16 +1408,19 @@ The function of `param2` is determined by `paramtype2` in node definition.
       The palette should have 256 pixels.
 * `paramtype2 = "colorfacedir"`
     * Same as `facedir`, but with colors.
-    * The first three bits of `param2` tells which color is picked from the
+    * The three most significant bits of `param2` tells which color is picked from the
       palette. The palette should have 8 pixels.
+    * The five least significant bits contain the `facedir` value.
 * `paramtype2 = "color4dir"`
-    * Same as `facedir`, but with colors.
-    * The first six bits of `param2` tells which color is picked from the
+    * Same as `4dir`, but with colors.
+    * The six most significant bits of `param2` tells which color is picked from the
       palette. The palette should have 64 pixels.
+    * The two least significant bits contain the `4dir` rotation.
 * `paramtype2 = "colorwallmounted"`
     * Same as `wallmounted`, but with colors.
-    * The first five bits of `param2` tells which color is picked from the
+    * The five most significant bits of `param2` tells which color is picked from the
       palette. The palette should have 32 pixels.
+    * The three least significant bits contain the `wallmounted` value.
 * `paramtype2 = "glasslikeliquidlevel"`
     * Only valid for "glasslike_framed" or "glasslike_framed_optional"
       drawtypes. "glasslike_framed_optional" nodes are only affected if the
@@ -1417,9 +1434,9 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * Liquid texture is defined using `special_tiles = {"modname_tilename.png"}`
 * `paramtype2 = "colordegrotate"`
     * Same as `degrotate`, but with colors.
-    * The first (most-significant) three bits of `param2` tells which color
-      is picked from the palette. The palette should have 8 pixels.
-    * Remaining 5 bits store rotation in range 0–23 (i.e. in 15° steps)
+    * The three most significant bits of `param2` tells which color is picked
+      from the palette. The palette should have 8 pixels.
+    * The five least significant bits store rotation in range 0–23 (i.e. in 15° steps)
 * `paramtype2 = "none"`
     * `param2` will not be used by the engine and can be used to store
       an arbitrary value
@@ -2730,6 +2747,8 @@ Version History
 * Formspec version 7 (5.8.0):
   * style[]: Add focused state for buttons
   * Add field_enter_after_edit[] (experimental)
+* Formspec version 8 (5.10.0)
+  * scroll_container[]: content padding parameter
 
 Elements
 --------
@@ -2813,7 +2832,7 @@ Elements
 * End of a container, following elements are no longer relative to this
   container.
 
-### `scroll_container[<X>,<Y>;<W>,<H>;<scrollbar name>;<orientation>;<scroll factor>]`
+### `scroll_container[<X>,<Y>;<W>,<H>;<scrollbar name>;<orientation>;<scroll factor>;<content padding>]`
 
 * Start of a scroll_container block. All contained elements will ...
   * take the scroll_container coordinate as position origin,
@@ -2822,6 +2841,12 @@ Elements
   * be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
 * `orientation`: possible values are `vertical` and `horizontal`.
 * `scroll factor`: optional, defaults to `0.1`.
+* `content padding`: (optional), in formspec coordinate units
+  * If specified, the scrollbar properties `max` and `thumbsize` are calculated automatically
+    based on the content size plus `content padding` at the end of the container. `min` is set to 0.
+  * Negative `scroll factor` is not supported.
+  * When active, `scrollbaroptions[]` has no effect on the affected properties.
+  * Defaults to empty value (= disabled).
 * Nesting is possible.
 * Some elements might work a little different if they are in a scroll_container.
 * Note: If you want the scroll_container to actually work, you also need to add a
@@ -6564,6 +6589,9 @@ Formspec
 * `minetest.formspec_escape(string)`: returns a string
     * escapes the characters "[", "]", "\", "," and ";", which cannot be used
       in formspecs.
+* `minetest.hypertext_escape(string)`: returns a string
+    * escapes the characters "\", "<", and ">" to show text in a hypertext element.
+    * not safe for use with tag attributes.
 * `minetest.explode_table_event(string)`: returns a table
     * returns e.g. `{type="CHG", row=1, column=2}`
     * `type` is one of:
@@ -8249,12 +8277,18 @@ child will follow movement and rotation of that bone.
       bgcolor[], any non-style elements (eg: label) may result in weird behavior.
     * Only affects formspecs shown after this is called.
 * `get_formspec_prepend()`: returns a formspec string.
-* `get_player_control()`: returns table with player pressed keys
-    * The table consists of fields with the following boolean values
-      representing the pressed keys: `up`, `down`, `left`, `right`, `jump`,
-      `aux1`, `sneak`, `dig`, `place`, `LMB`, `RMB`, and `zoom`.
+* `get_player_control()`: returns table with player input
+    * The table contains the following boolean fields representing the pressed
+      keys: `up`, `down`, `left`, `right`, `jump`, `aux1`, `sneak`, `dig`,
+      `place`, `LMB`, `RMB` and `zoom`.
     * The fields `LMB` and `RMB` are equal to `dig` and `place` respectively,
       and exist only to preserve backwards compatibility.
+    * The table also contains the fields `movement_x` and `movement_y`.
+        * They represent the movement of the player. Values are numbers in the
+          range [-1.0,+1.0].
+        * They take both keyboard and joystick input into account.
+        * You should prefer them over `up`, `down`, `left` and `right` to
+          support different input methods correctly.
     * Returns an empty table `{}` if the object is not a player.
 * `get_player_control_bits()`: returns integer with bit packed player pressed
   keys.
@@ -9528,12 +9562,18 @@ Used by `minetest.register_node`.
 
     use_texture_alpha = ...,
     -- Specifies how the texture's alpha channel will be used for rendering.
-    -- possible values:
-    -- * "opaque": Node is rendered opaque regardless of alpha channel
-    -- * "clip": A given pixel is either fully see-through or opaque
-    --           depending on the alpha channel being below/above 50% in value
-    -- * "blend": The alpha channel specifies how transparent a given pixel
-    --            of the rendered node is
+    -- Possible values:
+    -- * "opaque":
+    --   Node is rendered opaque regardless of alpha channel.
+    -- * "clip":
+    --   A given pixel is either fully see-through or opaque
+    --   depending on the alpha channel being below/above 50% in value.
+    --   Use this for nodes with fully transparent and fully opaque areas.
+    -- * "blend":
+    --   The alpha channel specifies how transparent a given pixel
+    --   of the rendered node is. This comes at a performance cost.
+    --   Only use this when correct rendering
+    --   among semitransparent nodes is necessary.
     -- The default is "opaque" for drawtypes normal, liquid and flowingliquid,
     -- mesh and nodebox or "clip" otherwise.
     -- If set to a boolean value (deprecated): true either sets it to blend

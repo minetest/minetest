@@ -4292,12 +4292,10 @@ u16 Server::getProtocolVersionMin()
 		min_proto = LATEST_PROTOCOL_VERSION;
 	return rangelim(min_proto,
 		SERVER_PROTOCOL_VERSION_MIN,
-		SERVER_PROTOCOL_VERSION_MAX);
+		LATEST_PROTOCOL_VERSION);
 }
 
 u16 Server::getProtocolVersionMax()
 {
-	return g_settings->getBool("strict_protocol_version_checking")
-		? LATEST_PROTOCOL_VERSION
-		: SERVER_PROTOCOL_VERSION_MAX;
+	return LATEST_PROTOCOL_VERSION;
 }

@@ -86,6 +86,11 @@ struct PlayerControl
 		movement_direction = a_movement_direction;
 	}
 
+	// Sets movement_speed and movement_direction according to direction_keys
+	// if direction_keys != 0, otherwise leaves them unchanged to preserve
+	// joystick input.
+	void setMovementFromKeys();
+
 #ifndef SERVER
 	// For client use
 	u32 getKeysPressed() const;
@@ -94,6 +99,7 @@ struct PlayerControl
 
 	// For server use
 	void unpackKeysPressed(u32 keypress_bits);
+	v2f getMovement() const;
 
 	u8 direction_keys = 0;
 	bool jump = false;
@@ -102,7 +108,7 @@ struct PlayerControl
 	bool zoom = false;
 	bool dig = false;
 	bool place = false;
-	// Note: These four are NOT available on the server
+	// Note: These two are NOT available on the server
 	float pitch = 0.0f;
 	float yaw = 0.0f;
 	float movement_speed = 0.0f;

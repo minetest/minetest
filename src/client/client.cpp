@@ -1034,7 +1034,7 @@ void Client::Send(NetworkPacket* pkt)
 	m_con->Send(PEER_ID_SERVER, scf.channel, pkt, scf.reliable);
 }
 
-// Will fill up 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1 bytes
+// Will fill up 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1 + 4 + 4 bytes
 void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt, bool camera_inverted)
 {
 	v3f pf           = myplayer->getPosition() * 100;
@@ -1046,6 +1046,8 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 	u8 fov           = std::fmin(255.0f, clientMap->getCameraFov() * 80.0f);
 	u8 wanted_range  = std::fmin(255.0f,
 			std::ceil(clientMap->getWantedRange() * (1.0f / MAP_BLOCKSIZE)));
+	f32 movement_speed = myplayer->control.movement_speed;
+	f32 movement_dir = myplayer->control.movement_direction;
 
 	v3s32 position(pf.X, pf.Y, pf.Z);
 	v3s32 speed(sf.X, sf.Y, sf.Z);
@@ -1060,10 +1062,13 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 		[12+12+4+4+4] u8 fov*80
 		[12+12+4+4+4+1] u8 ceil(wanted_range / MAP_BLOCKSIZE)
 		[12+12+4+4+4+1+1] u8 camera_inverted (bool)
+		[12+12+4+4+4+1+1+1] f32 movement_speed
+		[12+12+4+4+4+1+1+1+4] f32 movement_direction
 	*/
 	*pkt << position << speed << pitch << yaw << keyPressed;
 	*pkt << fov << wanted_range;
 	*pkt << camera_inverted;
+	*pkt << movement_speed << movement_dir;
 }
 
 void Client::interact(InteractAction action, const PointedThing& pointed)
@@ -1142,7 +1147,7 @@ void Client::sendInit(const std::string &playerName)
 	NetworkPacket pkt(TOSERVER_INIT, 1 + 2 + 2 + (1 + playerName.size()));
 
 	pkt << (u8) SER_FMT_VER_HIGHEST_READ << (u16) 0;
-	pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
+	pkt << CLIENT_PROTOCOL_VERSION_MIN << LATEST_PROTOCOL_VERSION;
 	pkt << playerName;
 
 	Send(&pkt);
@@ -1397,6 +1402,8 @@ void Client::sendPlayerPos()
 
 	u32 keyPressed = player->control.getKeysPressed();
 	bool camera_inverted = m_camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT;
+	f32 movement_speed = player->control.movement_speed;
+	f32 movement_dir = player->control.movement_direction;
 
 	if (
 			player->last_position        == player->getPosition() &&
@@ -1406,7 +1413,9 @@ void Client::sendPlayerPos()
 			player->last_keyPressed      == keyPressed            &&
 			player->last_camera_fov      == camera_fov            &&
 			player->last_camera_inverted == camera_inverted       &&
-			player->last_wanted_range    == wanted_range)
+			player->last_wanted_range    == wanted_range          &&
+			player->last_movement_speed  == movement_speed        &&
+			player->last_movement_dir    == movement_dir)
 		return;
 
 	player->last_position        = player->getPosition();
@@ -1417,8 +1426,10 @@ void Client::sendPlayerPos()
 	player->last_camera_fov      = camera_fov;
 	player->last_camera_inverted = camera_inverted;
 	player->last_wanted_range    = wanted_range;
+	player->last_movement_speed  = movement_speed;
+	player->last_movement_dir    = movement_dir;
 
-	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1);
+	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1 + 4 + 4);
 
 	writePlayerPos(player, &map, &pkt, camera_inverted);
 

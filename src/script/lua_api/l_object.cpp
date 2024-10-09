@@ -1622,6 +1622,13 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	lua_setfield(L, -2, "dig");
 	lua_pushboolean(L, control.place);
 	lua_setfield(L, -2, "place");
+
+	v2f movement = control.getMovement();
+	lua_pushnumber(L, movement.X);
+	lua_setfield(L, -2, "movement_x");
+	lua_pushnumber(L, movement.Y);
+	lua_setfield(L, -2, "movement_y");
+
 	// Legacy fields to ensure mod compatibility
 	lua_pushboolean(L, control.dig);
 	lua_setfield(L, -2, "LMB");
@@ -2619,6 +2626,7 @@ int ObjectRef::l_set_lighting(lua_State *L)
 			getfloatfield(L, -1, "intensity", lighting.shadow_intensity);
 			lua_getfield(L, -1, "tint");
 			read_color(L, -1, &lighting.shadow_tint);
+			lua_pop(L, 1); // tint
 		}
 		lua_pop(L, 1); // shadows
 
