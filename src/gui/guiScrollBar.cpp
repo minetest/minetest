@@ -189,10 +189,10 @@ void GUIScrollBar::draw()
 	IGUIElement::draw();
 }
 
-static inline f32 interpolate_scroll(f32 from, f32 to, f32 amount)
+f32 GUIScrollBar::interpolate_scroll(f32 from, f32 to, f32 amount)
 {
-	f32 step = /*core::round32*/((to - from) * amount);
-	if (step == 0)
+	f32 step = /*core::round32*/((to - from) * (amount * (last_delta_ms / 16.667f)));
+	if (core::round32(step) == 0)
 		return to;
 	return from + step;
 }
@@ -201,8 +201,7 @@ void GUIScrollBar::interpolatePos()
 {
     // Adjust to match 60 FPS. This also means that interpolation is
     // effectively disabled at <= 30 FPS.
-    f32 amount = 0.2f * (last_delta_ms / 16.667f);
-    setPosRaw(interpolate_scroll(scroll_pos, target_pos, amount));
+    setPosRaw(interpolate_scroll(scroll_pos, target_pos, 0.2f));
     
     SEvent e;
     e.EventType = EET_GUI_EVENT;
@@ -264,10 +263,9 @@ void GUIScrollBar::setPosRaw(const s32 &pos)
 				thumb_area / (f32(page_size) / f32(thumb_area + border_size * 2)));
 
     bool is_elastic = g_settings->getBool("elastic_smooth_scrolling");
-    int elastic_amount = is_elastic ? 20 : 0;
+    int elastic_overscroll = is_elastic ? 20 : 0;
 	thumb_size = core::s32_clamp(thumb_size, thumb_min, thumb_area);
-	scroll_pos = core::s32_clamp(pos, min_pos-elastic_amount, max_pos+elastic_amount);
-	//scroll_pos = pos;
+	scroll_pos = core::s32_clamp(pos, min_pos-elastic_overscroll, max_pos+elastic_overscroll);
 	
 	if (!is_dragging)
 	{
@@ -276,7 +274,7 @@ void GUIScrollBar::setPosRaw(const s32 &pos)
             target_pos = is_elastic ? (target_pos * 0.9) : min_pos;
         }
         else if (scroll_pos > max_pos) {
-            target_pos += (target_pos - max_pos) * -0.3;
+            target_pos = is_elastic ? max_pos+((target_pos - max_pos) * 0.9) : max_pos;
         }
 	}
 

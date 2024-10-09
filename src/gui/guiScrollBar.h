@@ -67,6 +67,7 @@ public:
 private:
 	void refreshControls();
 	s32 getPosFromMousePos(const core::position2di &p) const;
+	f32 interpolate_scroll(f32 from, f32 to, f32 amount);
 	f32 range() const { return f32(max_pos - min_pos); }
 
 	IGUIButton *up_button;
