@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2018 rubenwardy <rw@rubenwardy.com>
+Copyright (C) 2024 Hyland B. (swagtoy) <me@swag.toys>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -18,46 +18,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #pragma once
-#include "config.h"
-#include "convert_json.h"
-#include "irrlichttypes.h"
+
+#include <string>
+#include "content.h"
+#include "../httpfetch.h"
 
 namespace content {
-
-enum class ContentType
+ 
+class PkgMgr
 {
-	UNKNOWN,
-	MOD,
-	MODPACK,
-	GAME,
-	TXP
+public:
+	PkgMgr() = default;
+	~PkgMgr() = default;
+	
+	static bool isValidModname(const std::string& str);
+	static std::string getContentdbId(const ContentSpec& content);
 };
 
-
-struct ContentSpec
-{
-	// TODO Maybe use ContentType here
-	std::string type;
-	std::string author;
-	u32 release = 0;
-
-	/// Technical name / Id
-	std::string name;
-	std::string id;
-
-	/// Human-readable title
-	std::string title;
-
-	/// Short description
-	std::string desc;
-	std::string path;
-	std::string textdomain;
-};
-
-std::string content_type_to_string(ContentType &t);
-
-
-ContentType getContentType(const std::string &path);
-void parseContentInfo(ContentSpec &spec);
-
-} // namespace content
+}

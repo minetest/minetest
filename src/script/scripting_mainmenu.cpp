@@ -26,6 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_mainmenu_sound.h"
 #include "lua_api/l_util.h"
 #include "lua_api/l_settings.h"
+#include "lua_api/l_pkgmgr.h"
+#include "lua_api/l_internal.h"
 #include "log.h"
 
 extern "C" {
@@ -43,6 +45,9 @@ MainMenuScripting::MainMenuScripting(GUIEngine* guiengine):
 
 	lua_getglobal(L, "core");
 	int top = lua_gettop(L);
+	
+	lua_newtable(L);
+	lua_setglobal(L, "pkgmgr");
 
 	lua_newtable(L);
 	lua_setglobal(L, "gamedata");
@@ -67,11 +72,13 @@ void MainMenuScripting::initializeModApi(lua_State *L, int top)
 	ModApiUtil::Initialize(L, top);
 	ModApiMainMenuSound::Initialize(L, top);
 	ModApiHttp::Initialize(L, top);
+	ModApiPkgMgr::Initialize(L);
 
 	asyncEngine.registerStateInitializer(registerLuaClasses);
 	asyncEngine.registerStateInitializer(ModApiMainMenu::InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiHttp::InitializeAsync);
+	asyncEngine.registerStateInitializer(ModApiPkgMgr::InitializeAsync);
 
 	// Initialize async environment
 	//TODO possibly make number of async threads configurable

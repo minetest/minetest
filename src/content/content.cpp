@@ -24,13 +24,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "settings.h"
 
-ContentType getContentType(const std::string &path)
-{
-	if (fs::IsFile(path + DIR_DELIM "modpack.txt") || fs::IsFile(path + DIR_DELIM "modpack.conf"))
-		return ContentType::MODPACK;
+using namespace content;
 
+ContentType content::getContentType(const std::string &path)
+{
 	if (fs::IsFile(path + DIR_DELIM "init.lua"))
 		return ContentType::MOD;
+		
+	if (fs::IsFile(path + DIR_DELIM "modpack.txt") ||
+		fs::IsFile(path + DIR_DELIM "modpack.conf"))
+		return ContentType::MODPACK;
 
 	if (fs::IsFile(path + DIR_DELIM "game.conf"))
 		return ContentType::GAME;
@@ -41,7 +44,28 @@ ContentType getContentType(const std::string &path)
 	return ContentType::UNKNOWN;
 }
 
-void parseContentInfo(ContentSpec &spec)
+
+
+std::string content::content_type_to_string(ContentType &t)
+{
+	switch (t)
+	{
+	case ContentType::MOD:
+		return "mod";
+	case ContentType::MODPACK:
+		return "modpack";
+	case ContentType::GAME:
+		return "game";
+	case ContentType::TXP:
+		return "txp";
+	case ContentType::UNKNOWN:
+		return "unknown";
+	default:
+		return nullptr;
+	}
+}
+
+void content::parseContentInfo(ContentSpec &spec)
 {
 	std::string conf_path;
 

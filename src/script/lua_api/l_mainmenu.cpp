@@ -354,6 +354,8 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_content_info(lua_State *L)
 {
+	using namespace content;
+	
 	std::string path = luaL_checkstring(L, 1);
 
 	ContentSpec spec;
@@ -840,6 +842,7 @@ int ModApiMainMenu::l_get_mainmenu_path(lua_State *L)
 }
 
 /******************************************************************************/
+// TODO Move to fs? Used in content/pkgmgr
 bool ModApiMainMenu::mayModifyPath(std::string path)
 {
 	path = fs::RemoveRelativePathComponents(path);
