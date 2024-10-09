@@ -4281,6 +4281,7 @@ It is recommended to first generate a translation template. The translation
 template includes translatable strings that translators can directly work on.
 After creating the `locale` directory, a translation template for the above
 example using the following command:
+
 ```sh
 xgettext -L lua -kS -kNS:1,2 -d hello -o locale/hello.pot *.lua
 ```
@@ -4289,12 +4290,15 @@ The above command can also be used to update the translation template when new
 translatable strings are added.
 
 The German translator can then create the translation file with
+
 ```sh
 msginit -l de -i locale/hello.pot -o locale/hello.de.po
 ```
+
 and provide the translations by editing `locale/hello.de.po`.
 
 The translation file can be updated using
+
 ```sh
 msgmerge -U locale/hello.de.po locale/hello.pot
 ```
@@ -4353,7 +4357,6 @@ A typical entry in a `.po` file would look like:
 
 ```po
 msgctxt "textdomain"
-
 msgid "Hello world!"
 msgstr "Bonjour le monde!"
 ```
