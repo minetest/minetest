@@ -427,8 +427,7 @@ void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *dat
 static void applyTileColor(PreMeshBuffer &pmb)
 {
 	video::SColor tc = pmb.layer.color;
-	if (tc == video::SColor(0xFFFFFFFF))
-		return;
+
 	for (video::S3DVertex &vertex : pmb.vertices) {
 		video::SColor *c = &vertex.Color;
 		c->setRed(tc.getRed());
@@ -975,7 +974,7 @@ video::SColor encode_light(u16 light, u8 emissive_light)
 		r = 0;
 	// Average light:
 	u32 b = (day + night) / 30;
-	return video::SColor((r<<4)|b, 255, 255, 255);
+	return video::SColor((r<<4)|b, 0, 0, 0);
 }
 
 u8 get_solid_sides(MeshMakeData *data)
