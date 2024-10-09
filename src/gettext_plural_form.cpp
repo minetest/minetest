@@ -4,28 +4,34 @@
 #include "gettext_plural_form.h"
 #include "util/string.h"
 
-static size_t minsize(const GettextPluralForm::Ptr &form) {
+static size_t minsize(const GettextPluralForm::Ptr &form)
+{
 	return form ? form->size() : 0;
 }
 
-static size_t minsize(const GettextPluralForm::Ptr &f, const GettextPluralForm::Ptr &g) {
+static size_t minsize(const GettextPluralForm::Ptr &f, const GettextPluralForm::Ptr &g)
+{
 	if (sizeof(g) > 0)
 		return std::min(minsize(f), minsize(g));
 	return f ? f->size() : 0;
 }
 
-class Identity: public GettextPluralForm {
+class Identity: public GettextPluralForm
+{
 	public:
 		Identity(size_t nplurals): GettextPluralForm(nplurals) {};
-		NumT operator()(const NumT n) const override {
+		NumT operator()(const NumT n) const override
+		{
 			return n;
 		}
 };
 
-class ConstValue: public GettextPluralForm {
+class ConstValue: public GettextPluralForm
+{
 	public:
 		ConstValue(size_t nplurals, NumT val): GettextPluralForm(nplurals), value(val) {};
-		NumT operator()(const NumT n) const override {
+		NumT operator()(const NumT n) const override
+		{
 			return value;
 		}
 	private:
@@ -33,11 +39,13 @@ class ConstValue: public GettextPluralForm {
 };
 
 template<template<typename> typename F>
-class UnaryOperation: public GettextPluralForm {
+class UnaryOperation: public GettextPluralForm
+{
 	public:
 		UnaryOperation(const Ptr &op):
 			GettextPluralForm(minsize(op)), op(op) {}
-		NumT operator()(const NumT n) const override {
+		NumT operator()(const NumT n) const override
+		{
 			if (operator bool())
 				return func((*op)(n));
 			return 0;
@@ -48,12 +56,14 @@ class UnaryOperation: public GettextPluralForm {
 };
 
 template<template<typename> typename F>
-class BinaryOperation: public GettextPluralForm {
+class BinaryOperation: public GettextPluralForm
+{
 	public:
 		BinaryOperation(const Ptr &lhs, const Ptr &rhs):
 			GettextPluralForm(minsize(lhs, rhs)),
 			lhs(lhs), rhs(rhs) {}
-		NumT operator()(const NumT n) const override {
+		NumT operator()(const NumT n) const override
+		{
 			if (operator bool())
 				return func((*lhs)(n), (*rhs)(n));
 			return 0;
@@ -63,12 +73,14 @@ class BinaryOperation: public GettextPluralForm {
 		static constexpr F<NumT> func = {};
 };
 
-class TernaryOperation: public GettextPluralForm {
+class TernaryOperation: public GettextPluralForm
+{
 	public:
 		TernaryOperation(const Ptr &cond, const Ptr &val, const Ptr &alt):
 			GettextPluralForm(std::min(minsize(cond), minsize(val, alt))),
 			cond(cond), val(val), alt(alt) {}
-		NumT operator()(const NumT n) const override {
+		NumT operator()(const NumT n) const override
+		{
 			if (operator bool())
 				return (*cond)(n) ? (*val)(n) : (*alt)(n);
 			return 0;
@@ -102,7 +114,8 @@ static ParserResult reduce_ltr(const size_t nplurals, const ParserResult &res, c
 }
 
 template<Parser Parser, template<typename> typename Operator, template<typename> typename... Operators>
-static ParserResult reduce_ltr(const size_t nplurals, const ParserResult &res, const wchar_t** patterns) {
+static ParserResult reduce_ltr(const size_t nplurals, const ParserResult &res, const wchar_t** patterns)
+{
 	auto next = reduce_ltr<Parser, Operator>(nplurals, res, patterns[0]);
 	if (next.first || next.second != res.second)
 		return next;
@@ -110,13 +123,13 @@ static ParserResult reduce_ltr(const size_t nplurals, const ParserResult &res, c
 }
 
 template<Parser Parser, template<typename> typename Operator, template<typename> typename... Operators>
-static ParserResult parse_ltr(const size_t nplurals, const std::wstring_view &str, const wchar_t** patterns) {
+static ParserResult parse_ltr(const size_t nplurals, const std::wstring_view &str, const wchar_t** patterns)
+{
 	auto &&pres = Parser(nplurals, str);
 	if (!pres.first)
 		return pres;
 	pres.second = trim(pres.second);
-	while (!pres.second.empty())
-	{
+	while (!pres.second.empty()) {
 		auto next = reduce_ltr<Parser, Operator, Operators...>(nplurals, pres, patterns);
 		if (!next.first)
 			return pres;
@@ -221,7 +234,8 @@ static ParserResult parse_expr(const size_t nplurals, const std::wstring_view &s
 	return parse_ternary(nplurals, trim(str));
 }
 
-GettextPluralForm::Ptr GettextPluralForm::parse(const size_t nplurals, const std::wstring_view &str) {
+GettextPluralForm::Ptr GettextPluralForm::parse(const size_t nplurals, const std::wstring_view &str)
+{
 	if (nplurals == 0)
 		return nullptr;
 	auto result = parse_expr(nplurals, str);
@@ -230,7 +244,8 @@ GettextPluralForm::Ptr GettextPluralForm::parse(const size_t nplurals, const std
 	return result.first;
 }
 
-GettextPluralForm::Ptr GettextPluralForm::parseHeaderLine(const std::wstring_view &str) {
+GettextPluralForm::Ptr GettextPluralForm::parseHeaderLine(const std::wstring_view &str)
+{
 	if (!str_starts_with(str, L"Plural-Forms: nplurals=") || !str_ends_with(str, L";"))
 		return nullptr;
 	auto nplurals = wcstoul(str.data()+23, nullptr, 10);
