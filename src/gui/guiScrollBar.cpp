@@ -185,12 +185,16 @@ void GUIScrollBar::draw()
 					slider_rect.UpperLeftCorner.Y + thumb_size;
 		}
 		
-		if (up_button && down_button) {
+		// Clip scrollbar so it doesn't show behind buttons for elastic scrolling
+		if (up_button->isVisible() || down_button->isVisible()) {
             core::rect<s32> clip = AbsoluteClippingRect;
-            clip.UpperLeftCorner.Y += up_button->getRelativePosition().LowerRightCorner.Y;
-            clip.LowerRightCorner.Y = down_button->getAbsolutePosition().UpperLeftCorner.Y;
+            if (up_button->isVisible())
+                clip.UpperLeftCorner.Y = up_button->getAbsolutePosition().LowerRightCorner.Y;
+            if (down_button->isVisible())
+                clip.LowerRightCorner.Y = down_button->getAbsolutePosition().UpperLeftCorner.Y;
             skin->draw3DButtonPaneStandard(this, slider_rect, &clip);
         } else {
+            // Just clip it directly
             skin->draw3DButtonPaneStandard(this, slider_rect, &AbsoluteClippingRect);
         }
 	}
