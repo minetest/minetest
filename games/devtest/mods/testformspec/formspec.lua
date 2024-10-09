@@ -299,7 +299,18 @@ local scroll_fs =
 	"scrollbaroptions[max=170]".. -- lowest seen pos is: 0.1*170+6=23 (factor*max+height)
 	"scrollbar[7.5,0;0.3,4;vertical;scrbar;0]"..
 	"scrollbar[8,0;0.3,4;vertical;scrbarhmmm;0]"..
-	"dropdown[0,6;2;hmdrpdwnnn;Outside,of,container;1]"
+	"dropdown[0,6;2;hmdrpdwnnn;Outside,of,container;1]"..
+	"scroll_container[0,8;10,4;scrbar420;vertical;0.1;2]"..
+		"button[0.5,0.5;10,1;;Container with padding=2]"..
+		"list[current_player;main;0,5;8,4;]"..
+	"scroll_container_end[]"..
+	"scrollbar[10.1,8;0.5,4;vertical;scrbar420;0]"..
+	-- Buttons for scale comparison
+	"button[11,8;1,1;;0]"..
+	"button[11,9;1,1;;1]"..
+	"button[11,10;1,1;;2]"..
+	"button[11,11;1,1;;3]"..
+	"button[11,12;1,1;;4]"
 
 --style_type[label;textcolor=green]
 --label[0,0;Green]
@@ -462,7 +473,7 @@ mouse control = true]
 		]],
 
 	-- Scroll containers
-		"formspec_version[3]size[12,13]" ..
+		"formspec_version[7]size[12,13]" ..
 		scroll_fs,
 
 	-- Sound
