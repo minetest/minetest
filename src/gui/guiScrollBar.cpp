@@ -184,15 +184,22 @@ void GUIScrollBar::draw()
 			slider_rect.LowerRightCorner.Y =
 					slider_rect.UpperLeftCorner.Y + thumb_size;
 		}
-		skin->draw3DButtonPaneStandard(this, slider_rect, &AbsoluteClippingRect);
+		
+		if (up_button && down_button) {
+            core::rect<s32> clip = AbsoluteClippingRect;
+            clip.UpperLeftCorner.Y += up_button->getRelativePosition().LowerRightCorner.Y;
+            clip.LowerRightCorner.Y = down_button->getAbsolutePosition().UpperLeftCorner.Y;
+            skin->draw3DButtonPaneStandard(this, slider_rect, &clip);
+        } else {
+            skin->draw3DButtonPaneStandard(this, slider_rect, &AbsoluteClippingRect);
+        }
 	}
 	IGUIElement::draw();
 }
 
-#include <iostream>
 f32 GUIScrollBar::interpolate_scroll(f32 from, f32 to, f32 amount)
 {
-	f32 step = /*core::round32*/((to - from) * (amount * (last_delta_ms / 16.667f)));
+	f32 step = (to - from) * (amount * (last_delta_ms / 16.667f));
 	return from + step;
 }
 
