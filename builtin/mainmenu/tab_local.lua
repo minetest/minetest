@@ -92,11 +92,11 @@ function singleplayer_refresh_gamebar()
 		end
 	end
 
-	local ENABLE_TOUCH = core.settings:get_bool("enable_touch")
+	local TOUCH_GUI = core.settings:get_bool("touch_gui")
 
 	local gamebar_pos_y = MAIN_TAB_H
 		+ TABHEADER_H -- tabheader included in formspec size
-		+ (ENABLE_TOUCH and GAMEBAR_OFFSET_TOUCH or GAMEBAR_OFFSET_DESKTOP)
+		+ (TOUCH_GUI and GAMEBAR_OFFSET_TOUCH or GAMEBAR_OFFSET_DESKTOP)
 
 	local btnbar = buttonbar_create(
 			"game_button_bar",
