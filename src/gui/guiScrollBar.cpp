@@ -263,15 +263,17 @@ void GUIScrollBar::setPosRaw(const s32 &pos)
 		thumb_size = (s32)std::fmin(S32_MAX,
 				thumb_area / (f32(page_size) / f32(thumb_area + border_size * 2)));
 
+    bool is_elastic = g_settings->getBool("elastic_smooth_scrolling");
+    int elastic_amount = is_elastic ? 20 : 0;
 	thumb_size = core::s32_clamp(thumb_size, thumb_min, thumb_area);
-	scroll_pos = core::s32_clamp(pos, min_pos-20, max_pos+20);
+	scroll_pos = core::s32_clamp(pos, min_pos-elastic_amount, max_pos+elastic_amount);
 	//scroll_pos = pos;
 	
 	if (!is_dragging)
 	{
         // TODO support deltatime
         if (scroll_pos < 0) {
-            target_pos = (target_pos * 0.9);
+            target_pos = is_elastic ? (target_pos * 0.9) : min_pos;
         }
         else if (scroll_pos > max_pos) {
             target_pos += (target_pos - max_pos) * -0.3;
@@ -306,12 +308,13 @@ void GUIScrollBar::setPosAndSend(const s32 &pos)
 
 void GUIScrollBar::setPosInterpolated(const s32 &pos)
 {
+    bool is_elastic = g_settings->getBool("elastic_smooth_scrolling");
 	if (!g_settings->getBool("smooth_scrolling")) {
 		setPosAndSend(pos);
 		return;
 	}
 	
-	target_pos = pos;
+	target_pos = is_elastic ? pos : core::s32_clamp(pos, min_pos, max_pos);
 	interpolatePos();
 }
 
