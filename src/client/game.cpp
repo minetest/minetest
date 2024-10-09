@@ -447,9 +447,6 @@ public:
 
 		m_user_exposure_compensation = g_settings->getFloat("exposure_compensation", -1.0f, 1.0f);
 		m_bloom_enabled = g_settings->getBool("enable_bloom");
-		m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
-		m_bloom_strength = RenderingEngine::BASE_BLOOM_STRENGTH * g_settings->getFloat("bloom_strength_factor", 0.1f, 10.0f);
-		m_bloom_radius = g_settings->getFloat("bloom_radius", 0.1f, 8.0f);
 		m_volumetric_light_enabled = g_settings->getBool("enable_volumetric_lighting") && m_bloom_enabled;
 	}
 
