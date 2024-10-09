@@ -87,7 +87,6 @@ bool GUIScrollBar::OnEvent(const SEvent &event)
 			switch (event.MouseInput.Event) {
 			case EMIE_MOUSE_WHEEL:
 				if (Environment->hasFocus(this)) {
-					s8 d = event.MouseInput.Wheel < 0 ? -1 : 1;
 					s8 h = is_horizontal ? 1 : -1;
 					
 					setPosInterpolated(getTargetPos() + (event.MouseInput.Wheel * small_step * h));
