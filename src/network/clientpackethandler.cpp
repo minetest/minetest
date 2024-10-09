@@ -1819,4 +1819,9 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 		*pkt >> lighting.volumetric_light_strength;
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.shadow_tint;
+	if (pkt->getRemainingBytes() >= 12) {
+		*pkt >> lighting.bloom_intensity
+				>> lighting.bloom_strength_factor
+				>> lighting.bloom_radius;
+	}
 }

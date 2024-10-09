@@ -8616,23 +8616,43 @@ child will follow movement and rotation of that bone.
           * values < 0 cause an effect similar to inversion,
             but keeping original luma and being symmetrical in terms of saturation
             (eg. -1 and 1 is the same saturation and luma, but different hues)
+        * This value has no effect on clients who have shaders or post-processing disabled.
       * `shadows` is a table that controls ambient shadows
+        * This has no effect on clients who have the "Dynamic Shadows" effect disabled.
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
-            * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
         * `tint` tints the shadows with the provided color, with RGB values ranging from 0 to 255.
           (default `{r=0, g=0, b=0}`)
-            * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
       * `exposure` is a table that controls automatic exposure.
         The basic exposure factor equation is `e = 2^exposure_correction / clamp(luminance, 2^luminance_min, 2^luminance_max)`
+        * This has no effect on clients who have the "Automatic Exposure" effect disabled.
         * `luminance_min` set the lower luminance boundary to use in the calculation (default: `-3.0`)
         * `luminance_max` set the upper luminance boundary to use in the calculation (default: `-3.0`)
         * `exposure_correction` correct observed exposure by the given EV value (default: `0.0`)
         * `speed_dark_bright` set the speed of adapting to bright light (default: `1000.0`)
         * `speed_bright_dark` set the speed of adapting to dark scene (default: `1000.0`)
         * `center_weight_power` set the power factor for center-weighted luminance measurement (default: `1.0`)
+      * `bloom` is a table that controls bloom.
+        * This has no effect on clients with protocol version < 46 or clients who
+          have the "Bloom" effect disabled.
+        * `intensity` defines much bloom is applied to the rendered image.
+          * Recommended range: from 0.0 to 1.0, default: 0.05
+          * If set to 0, bloom is disabled.
+          * The default value is to be changed from 0.05 to 0 in the future.
+            If you wish to keep the current default value, you should set it
+            explicitly.
+        * `strength_factor` defines the magnitude of bloom overexposure.
+          * Recommended range: from 0.1 to 10.0, default: 1.0
+        * `radius` is a logical value that controls how far the bloom effect
+          spreads from the bright objects.
+          * Recommended range: from 0.1 to 8.0, default: 1.0
+        * The behavior of values outside the recommended range is unspecified.
       * `volumetric_light`: is a table that controls volumetric light (a.k.a. "godrays")
-        * `strength`: sets the strength of the volumetric light effect from 0 (off, default) to 1 (strongest)
-           * This value has no effect on clients who have the "Volumetric Lighting" or "Bloom" shaders disabled.
+        * This has no effect on clients who have the "Volumetric Lighting" or "Bloom" effects disabled.
+        * `strength`: sets the strength of the volumetric light effect from 0 (off, default) to 1 (strongest).
+            * `0.2` is a reasonable standard value.
+            * Currently, bloom `intensity` and `strength_factor` affect volumetric
+              lighting `strength` and vice versa. This behavior is to be changed
+              in the future, do not rely on it.
 
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.

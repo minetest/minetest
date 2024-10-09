@@ -14,7 +14,21 @@ local lighting_sections = {
 			{n = "speed_bright_dark", d = "Dark scene adaptation speed", min = -10, max = 10, type="log2"},
 			{n = "center_weight_power", d = "Power factor for center-weighting", min = 0.1, max = 10},
 		}
-	}
+	},
+	{
+		n = "bloom", d = "Bloom",
+		entries = {
+			{n = "intensity", d = "Intensity", min = 0, max = 1},
+			{n = "strength_factor", d = "Strength Factor", min = 0.1, max = 10},
+			{n = "radius", d = "Radius", min = 0.1, max = 8},
+		},
+	},
+	{
+		n = "volumetric_light", d = "Volumetric Lighting",
+		entries = {
+			{n = "strength", d = "Strength", min = 0, max = 1},
+		},
+	},
 }
 
 local function dump_lighting(lighting)
@@ -59,38 +73,40 @@ minetest.register_chatcommand("set_lighting", {
 		local lighting = player:get_lighting()
 		local exposure = lighting.exposure or {}
 
-		local form = {
-			"formspec_version[2]",
-			"size[15,30]",
-			"position[0.99,0.15]",
-			"anchor[1,0]",
-			"padding[0.05,0.1]",
-			"no_prepend[]"
-		};
-
+		local content = {}
 		local line = 1
 		for _,section in ipairs(lighting_sections) do
 			local parameters = section.entries or {}
 			local state = lighting[section.n] or {}
 
-			table.insert(form, "label[1,"..line..";"..section.d.."]")
+			table.insert(content, "label[1,"..line..";"..section.d.."]")
 			line  = line + 1
 
 			for _,v in ipairs(parameters) do
-				table.insert(form, "label[2,"..line..";"..v.d.."]")
-				table.insert(form, "scrollbaroptions[min=0;max=1000;smallstep=10;largestep=100;thumbsize=10]")
+				table.insert(content, "label[2,"..line..";"..v.d.."]")
+				table.insert(content, "scrollbaroptions[min=0;max=1000;smallstep=10;largestep=100;thumbsize=10]")
 				local value = state[v.n]
 				if v.type == "log2" then
 					value = math.log(value or 1) / math.log(2)
 				end
 				local sb_scale = math.floor(1000 * (math.max(v.min, value or 0) - v.min) / (v.max - v.min))
-				table.insert(form, "scrollbar[2,"..(line+0.7)..";12,1;horizontal;"..section.n.."."..v.n..";"..sb_scale.."]")
+				table.insert(content, "scrollbar[2,"..(line+0.7)..";12,1;horizontal;"..section.n.."."..v.n..";"..sb_scale.."]")
 				line = line + 2.7
 			end
 
 			line = line + 1
 		end
 
+		local form = {
+			"formspec_version[2]",
+			"size[15,", line, "]",
+			"position[0.99,0.15]",
+			"anchor[1,0]",
+			"padding[0.05,0.1]",
+			"no_prepend[]",
+		}
+		table.insert_all(form, content)
+	
 		minetest.show_formspec(player_name, "lighting", table.concat(form))
 		local debug_value = dump_lighting(lighting)
 		local debug_ui = player:hud_add({type="text", position={x=0.1, y=0.3}, scale={x=1,y=1}, alignment = {x=1, y=1}, text=debug_value, number=0xFFFFFF})

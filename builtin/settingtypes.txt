@@ -616,33 +616,11 @@ exposure_compensation (Exposure compensation) float 0.0 -1.0 1.0
 #    Requires: shaders, enable_post_processing
 debanding (Enable Debanding) bool true
 
-[**Bloom]
-
 #    Set to true to enable bloom effect.
 #    Bright colors will bleed over the neighboring objects.
 #
 #    Requires: shaders, enable_post_processing
 enable_bloom (Enable Bloom) bool false
-
-#    Defines how much bloom is applied to the rendered image
-#    Smaller values make bloom more subtle
-#    Range: from 0.01 to 1.0, default: 0.05
-#
-#    Requires: shaders, enable_post_processing, enable_bloom
-bloom_intensity (Bloom Intensity) float 0.05 0.01 1.0
-
-#    Defines the magnitude of bloom overexposure.
-#    Range: from 0.1 to 10.0, default: 1.0
-#
-#    Requires: shaders, enable_post_processing, enable_bloom
-bloom_strength_factor (Bloom Strength Factor) float 1.0 0.1 10.0
-
-#    Logical value that controls how far the bloom effect spreads
-#    from the bright objects.
-#    Range: from 0.1 to 8, default: 1
-#
-#    Requires: shaders, enable_post_processing, enable_bloom
-bloom_radius (Bloom Radius) float 1 0.1 8
 
 #    Set to true to enable volumetric lighting effect (a.k.a. "Godrays").
 #
