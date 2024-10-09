@@ -189,11 +189,10 @@ void GUIScrollBar::draw()
 	IGUIElement::draw();
 }
 
+#include <iostream>
 f32 GUIScrollBar::interpolate_scroll(f32 from, f32 to, f32 amount)
 {
 	f32 step = /*core::round32*/((to - from) * (amount * (last_delta_ms / 16.667f)));
-	if (core::round32(step) == 0)
-		return to;
 	return from + step;
 }
 
@@ -264,17 +263,18 @@ void GUIScrollBar::setPosRaw(const s32 &pos)
 
     bool is_elastic = g_settings->getBool("elastic_smooth_scrolling");
     int elastic_overscroll = is_elastic ? 20 : 0;
-	thumb_size = core::s32_clamp(thumb_size, thumb_min, thumb_area);
-	scroll_pos = core::s32_clamp(pos, min_pos-elastic_overscroll, max_pos+elastic_overscroll);
+	thumb_size = core::clamp<f32>(thumb_size, thumb_min, thumb_area);
+	scroll_pos = core::clamp<f32>(pos, min_pos-elastic_overscroll, max_pos+elastic_overscroll);
 	
+	constexpr f32 elastic_change = 0.15f;
 	if (!is_dragging)
 	{
         // TODO support deltatime
-        if (scroll_pos < 0) {
-            target_pos = is_elastic ? (target_pos * 0.9) : min_pos;
+        if (scroll_pos < 0.0f) {
+            target_pos = is_elastic ? interpolate_scroll(target_pos, 0, elastic_change) : min_pos;
         }
         else if (scroll_pos > max_pos) {
-            target_pos = is_elastic ? max_pos+((target_pos - max_pos) * 0.9) : max_pos;
+            target_pos = is_elastic ? interpolate_scroll(target_pos, max_pos, elastic_change) : max_pos;
         }
 	}
 
