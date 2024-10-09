@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "migratesettings.h"
 #include "gettext.h"
 #include "log.h"
+#include "log_internal.h"
 #include "util/quicktune.h"
 #include "httpfetch.h"
 #include "gameparams.h"
