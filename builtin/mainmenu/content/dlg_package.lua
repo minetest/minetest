@@ -305,12 +305,23 @@ local function handle_submit(this, fields)
 end
 
 
+local function handle_events(event)
+	if event == "WindowInfoChange" then
+		ui.update()
+		return true
+	end
+
+	return false
+end
+
+
 function create_package_dialog(package)
 	assert(package)
 
 	local dlg = dialog_create("package_dialog_" .. package.id,
 			get_formspec,
-			handle_submit)
+			handle_submit,
+			handle_events)
 	local data = dlg.data
 
 	data.package = package
