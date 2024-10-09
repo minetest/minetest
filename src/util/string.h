@@ -328,11 +328,13 @@ inline std::string lowercase(std::string_view str)
 }
 
 
-inline bool my_isspace(const char c) {
+inline bool my_isspace(const char c)
+{
 	return std::isspace(c);
 }
 
-inline bool my_isspace(const wchar_t c) {
+inline bool my_isspace(const wchar_t c)
+{
 	return std::iswspace(c);
 }
 
