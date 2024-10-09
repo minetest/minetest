@@ -52,7 +52,7 @@ void Translations::clear()
 const std::wstring &Translations::getTranslation(
 		const std::wstring &textdomain, const std::wstring &s) const
 {
-	std::wstring key = textdomain + L"|"; key.append(s);
+	std::wstring key = textdomain + L"|" + s;
 	auto it = m_translations.find(key);
 	if (it != m_translations.end())
 		return it->second;
@@ -62,7 +62,7 @@ const std::wstring &Translations::getTranslation(
 const std::wstring &Translations::getPluralTranslation(
 		const std::wstring &textdomain, const std::wstring &s, unsigned long int number) const
 {
-	std::wstring key = textdomain + L"|"; key.append(s);
+	std::wstring key = textdomain + L"|" + s;
 	auto it = m_plural_translations.find(key);
 	if (it != m_plural_translations.end()) {
 		auto n = (*(it->second.first))(number);
@@ -80,7 +80,7 @@ const std::wstring &Translations::getPluralTranslation(
 void Translations::addTranslation(
 		const std::wstring &textdomain, const std::wstring &original, const std::wstring &translated)
 {
-	std::wstring key = textdomain + L"|"; key.append(original);
+	std::wstring key = textdomain + L"|" + original;
 	if (!translated.empty()) {
 		m_translations.emplace(std::move(key), std::move(translated));
 	}
@@ -99,7 +99,7 @@ void Translations::addPluralTranslation(
 		errorstream << "Translations: incorrect number of plural translations (expected " << plural->size() << ", got " << translated.size() << ")" << std::endl;
 		return;
 	}
-	std::wstring key = textdomain + L"|"; key.append(original);
+	std::wstring key = textdomain + L"|" + original;
 	m_plural_translations.emplace(std::move(key), std::pair(plural, translated));
 }
 
