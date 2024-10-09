@@ -156,6 +156,9 @@ public:
 	// Notify about new server-sent FOV and initialize smooth FOV transition
 	void notifyFovChange();
 
+	// Notify about new server-sent roll and initialize smooth roll transition
+	void notifyRollChange();
+
 	// Step the camera: updates the viewing range and view bobbing.
 	void step(f32 dtime);
 
@@ -246,6 +249,10 @@ private:
 	// FOV transition variables
 	bool m_fov_transition_active = false;
 	f32 m_fov_diff, m_transition_time;
+
+	// Camera roll transition variables
+	bool m_camera_roll_transition_active = false;
+	f32 m_camera_roll_diff, m_camera_roll_transition_time;
 
 	v2f m_wieldmesh_offset = v2f(55.0f, -35.0f);
 	v2f m_arm_dir;
