@@ -706,11 +706,6 @@ smooth_scrolling (Smooth scrolling) bool true
 #    Enables elastic smooth scrolling.
 elastic_smooth_scrolling (Elastic smooth scrolling) bool true
 
-#    Enables precise scrolling.
-#    Helpful for most modern trackpads that have pixel-perfect scroll precision. (and even some mice)
-#    Keep this disabled if your trackpad is scrolling too slowly.
-precision_scrolling (Precision scrolling) bool false
-
 #    Enables animation of inventory items.
 inventory_items_animations (Inventory items animations) bool false
 
