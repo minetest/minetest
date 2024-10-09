@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "log.h"
+#include "log_internal.h"
 
 #include "threading/mutex_auto_lock.h"
 #include "debug.h"
@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "exceptions.h"
 #include "util/numeric.h"
-#include "log.h"
 #include "filesys.h"
 
 #ifdef __ANDROID__

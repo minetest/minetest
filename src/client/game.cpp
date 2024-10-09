@@ -43,6 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/touchcontrols.h"
 #include "itemdef.h"
 #include "log.h"
+#include "log_internal.h"
 #include "filesys.h"
 #include "gameparams.h"
 #include "gettext.h"

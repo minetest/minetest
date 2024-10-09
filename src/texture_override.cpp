@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include <algorithm>
 #include <fstream>
+#include <map>
 
 #define override_cast static_cast<override_t>
 

@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/thread.h"
 #include "util/container.h"
 #include "log.h"
+#include "log_internal.h"
 #include <set>
 #include <sstream>
 
