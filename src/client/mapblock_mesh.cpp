@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <cmath>
 #include "client/texturesource.h"
+#include <IMaterialRenderer.h>
 
 /*
 	MeshMakeData
@@ -419,20 +420,6 @@ void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *dat
 	tile.rotation = tile.world_aligned ? TileRotation::None : dir_to_tile[facedir][dir_i].rotation;
 }
 
-static void applyTileColor(PreMeshBuffer &pmb)
-{
-	video::SColor tc = pmb.layer.color;
-	if (tc == video::SColor(0xFFFFFFFF))
-		return;
-	for (video::S3DVertex &vertex : pmb.vertices) {
-		video::SColor *c = &vertex.Color;
-		c->set(c->getAlpha(),
-			c->getRed() * tc.getRed() / 255,
-			c->getGreen() * tc.getGreen() / 255,
-			c->getBlue() * tc.getBlue() / 255);
-	}
-}
-
 /*
 	MapBlockBspTree
 */
@@ -587,8 +574,6 @@ void MapBlockBspTree::traverse(s32 node, v3f viewpoint, std::vector<s32> &output
 		traverse(n.back_ref, viewpoint, output);
 }
 
-
-
 /*
 	PartialMeshBuffer
 */
@@ -608,8 +593,6 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	m_tsrc(client->getTextureSource()),
 	m_shdrsrc(client->getShaderSource()),
 	m_bounding_sphere_center((data->side_length * 0.5f - 0.5f) * BS),
-	m_animation_force_timer(0), // force initial animation
-	m_last_crack(-1),
 	m_last_daynight_ratio((u32) -1)
 {
 	ZoneScoped;
@@ -639,7 +622,10 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	}
 
 	v3f offset = intToFloat((data->m_blockpos - mesh_grid.getMeshPos(data->m_blockpos)) * MAP_BLOCKSIZE, BS);
-	MeshCollector collector(m_bounding_sphere_center, offset);
+	v3f translation = intToFloat(mesh_grid.getMeshPos(data->m_blockpos) * MAP_BLOCKSIZE, BS);
+
+	MeshCollector collector(m_bounding_sphere_center, offset, translation);
+
 	/*
 		Add special graphics:
 		- torches
@@ -649,49 +635,63 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	*/
 
 	{
-		MapblockMeshGenerator(data, &collector,
-			client->getSceneManager()->getMeshManipulator()).generate();
+	MapblockMeshGenerator(data, &collector,
+		client->getSceneManager()->getMeshManipulator()).generate();
 	}
-
-	/*
-		Convert MeshCollector to SMesh
-	*/
 
 	const bool desync_animations = g_settings->getBool(
 		"desynchronize_mapblock_texture_animation");
 
-	m_bounding_radius = std::sqrt(collector.m_bounding_radius_sq);
+	m_bounding_radius = std::sqrt(collector.bounding_radius_sq);
+
+	AtlasBuilder *builder = client->getNodeDefManager()->getAtlasBuilder();
 
 	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
 		scene::SMesh *mesh = static_cast<scene::SMesh *>(m_mesh[layer].get());
 
+		//infostream << "MapBlockMesh() prebuffers count: " << collector.prebuffers[layer].size() << std::endl;
 		for(u32 i = 0; i < collector.prebuffers[layer].size(); i++)
 		{
 			PreMeshBuffer &p = collector.prebuffers[layer][i];
 
-			applyTileColor(p);
+			//infostream << "MapBlockMesh() tiles_infos_index: " << p.layer.tiles_infos_index << std::endl;
 
-			// Generate animation data
-			// - Cracks
+			//TileInfo &info = builder->getTileInfo(p.layer.tiles_infos_index);
+			//infostream << "MapBlockMesh() x: " << info.x << ", y: " << info.y << std::endl;
+
+			TextureAtlas *atlas = builder->getAtlas(p.layer.tiles_infos_index);
+			core::dimension2du atlas_size = atlas->getTextureSize();
+
+			int tile_pos_shift = 0;
+
 			if (p.layer.material_flags & MATERIAL_FLAG_CRACK) {
-				// Find the texture name plus ^[crack:N:
 				std::ostringstream os(std::ios::binary);
 				os << m_tsrc->getTextureName(p.layer.texture_id) << "^[crack";
 				if (p.layer.material_flags & MATERIAL_FLAG_CRACK_OVERLAY)
-					os << "o";  // use ^[cracko
+					os << "o";
 				u8 tiles = p.layer.scale;
 				if (tiles > 1)
 					os << ":" << (u32)tiles;
 				os << ":" << (u32)p.layer.animation_frame_count << ":";
-				m_crack_materials.insert(std::make_pair(
+
+				if (p.layer.atlas_used) {
+					atlas->insertCrackTile(p.layer.tiles_infos_index, os.str());
+
+					// Shift each UV by the half-width of the atlas to locate it in the separate right side
+					tile_pos_shift = atlas_size.Width / 2;
+				}
+				else {
+					m_crack_materials.insert(std::make_pair(
 						std::pair<u8, u32>(layer, i), os.str()));
-				// Replace tile texture with the cracked one
-				p.layer.texture = m_tsrc->getTextureForMesh(
-						os.str() + "0",
-						&p.layer.texture_id);
+					// Replace tile texture with the cracked one
+					p.layer.texture = m_tsrc->getTextureForMesh(
+							os.str() + "0",
+							&p.layer.texture_id);
+				}
 			}
+
 			// - Texture animation
-			if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
+			if (!p.layer.atlas_used && (p.layer.material_flags & MATERIAL_FLAG_ANIMATION)) {
 				// Add to MapBlockMesh in order to animate these tiles
 				auto &info = m_animation_info[{layer, i}];
 				info.tile = p.layer;
@@ -710,34 +710,65 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 				p.layer.texture = (*p.layer.frames)[0].texture;
 			}
 
-			if (!m_enable_shaders) {
-				// Extract colors for day-night animation
-				// Dummy sunlight to handle non-sunlit areas
-				video::SColorf sunlight;
-				get_sunlight_color(&sunlight, 0);
+			video::SColorf sunlight;
+			get_sunlight_color(&sunlight, 0);
 
-				std::map<u32, video::SColor> colors;
-				const u32 vertex_count = p.vertices.size();
-				for (u32 j = 0; j < vertex_count; j++) {
-					video::SColor *vc = &p.vertices[j].Color;
+			std::map<u32, video::SColor> colors;
+
+			video::SColor &tc = p.layer.color;
+
+			// Modify the vertices
+			for (u32 k = 0; k < p.vertices.size(); k++) {
+				video::S3DVertex &vertex = p.vertices[k];
+
+				if (p.layer.atlas_used) {
+					TileInfo &tile_info = builder->getTileInfo(p.layer.tiles_infos_index);
+					u32 frame_thickness = atlas->getFrameThickness();
+
+					// Tile size without taking into account the frame
+					int width = tile_info.width - 2 * frame_thickness;
+					int height = tile_info.height - 2 * frame_thickness;
+					// Re-calculate UV for linking to the necessary TileInfo pixels in the atlas
+					int rel_x = core::round32(vertex.TCoords.X * width);
+					int rel_y = core::round32(vertex.TCoords.Y * height);
+
+					//infostream << "MapBlockMesh() x: " << tile_info.x << ", y: " << tile_info.y << std::endl;
+					vertex.TCoords.X = f32(tile_info.x + frame_thickness + rel_x + tile_pos_shift) / atlas_size.Width;
+					vertex.TCoords.Y = f32(tile_info.y + frame_thickness + rel_y) / atlas_size.Height;
+
+					//infostream << "vertex.TCoords.X: " << vertex.TCoords.X << ", vertex.TCoords.Y: " << vertex.TCoords.Y << std::endl;
+				}
+
+				video::SColor *vc = &vertex.Color;
+
+				// Multiply the current color with the HW one
+				if (tc != video::SColor(0xFFFFFFFF)) {
+					vc->setRed(vc->getRed() * tc.getRed() / 255);
+					vc->setGreen(vc->getGreen() * tc.getGreen() / 255);
+					vc->setBlue(vc->getBlue() * tc.getBlue() / 255);
+				}
+
+				if (!m_enable_shaders) {
 					video::SColor copy = *vc;
 					if (vc->getAlpha() == 0) // No sunlight - no need to animate
 						final_color_blend(vc, copy, sunlight); // Finalize color
 					else // Record color to animate
-						colors[j] = copy;
+						colors[k] = copy;
 
 					// The sunlight ratio has been stored,
 					// delete alpha (for the final rendering).
 					vc->setAlpha(255);
 				}
-				if (!colors.empty())
-					m_daynight_diffs[{layer, i}] = std::move(colors);
 			}
+
+			if (!colors.empty())
+				m_daynight_diffs[{layer, i}] = std::move(colors);
 
 			// Create material
 			video::SMaterial material;
 			material.BackfaceCulling = true;
 			material.FogEnable = true;
+			//infostream << "MapBlockMesh() texture size: " << p.layer.texture->getSize().Width << ", " << p.layer.texture->getSize().Height << std::endl;
 			material.setTexture(0, p.layer.texture);
 			material.forEachTexture([] (auto &tex) {
 				tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
@@ -804,8 +835,7 @@ MapBlockMesh::~MapBlockMesh()
 	porting::TrackFreedMemory(sz);
 }
 
-bool MapBlockMesh::animate(bool faraway, float time, int crack,
-	u32 daynight_ratio)
+bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_ratio)
 {
 	if (!m_has_animation) {
 		m_animation_force_timer = 100000;

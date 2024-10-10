@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_ptr.h"
 #include "util/numeric.h"
 #include "client/tile.h"
+#include "client/meshgen/collector.h"
 #include "voxel.h"
 #include <array>
 #include <map>

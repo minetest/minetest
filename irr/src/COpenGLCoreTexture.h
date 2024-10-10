@@ -384,9 +384,10 @@ public:
 		LockLayer = 0;
 	}
 
-	void regenerateMipMapLevels(void *data = 0, u32 layer = 0) override
+	void regenerateMipMapLevels(void *data = 0, u32 layer = 0, u32 max_level = 1000) override
 	{
-		if (!HasMipMaps || LegacyAutoGenerateMipMaps || (Size.Width <= 1 && Size.Height <= 1))
+		if (!HasMipMaps || LegacyAutoGenerateMipMaps ||
+			(Size.Width <= 1 || Size.Height <= 1) || max_level == 0)
 			return;
 
 		const COpenGLCoreTexture *prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
@@ -400,23 +401,72 @@ public:
 			u32 level = 0;
 
 			do {
-				if (width > 1)
-					width >>= 1;
+				width >>= 1;
+				height >>= 1;
 
-				if (height > 1)
-					height >>= 1;
+				++level;
+
+				if (width < 1 || height < 1 || level > max_level)
+					break;
 
 				dataSize = IImage::getDataSizeFromFormat(ColorFormat, width, height);
-				++level;
 
 				uploadTexture(true, layer, level, tmpData);
 
 				tmpData += dataSize;
-			} while (width != 1 || height != 1);
+			} while (true);
 		} else {
+			GL.TexParameteri(TextureType, GL_TEXTURE_MAX_LEVEL, (GLint)max_level);
 			Driver->irrGlGenerateMipmap(TextureType);
 			TEST_GL_ERROR(Driver);
 		}
+
+		Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
+	}
+
+	std::vector<IImage*> getImagesCache() override
+	{
+		return Images;
+	}
+
+	void drawToSubImage(int x, int y, int width, int height, ITexture *texture) override
+	{
+		// This method works only for 2D textures currently
+		if (TextureType != GL_TEXTURE_2D || !texture)
+			return;
+
+		ECOLOR_FORMAT format = texture->getColorFormat();
+		GLint internal_format = 0;
+		GLenum pixel_format = 0;
+		GLenum pixeltype = 0;
+
+		if (!Driver->getColorFormatParameters(format, internal_format, pixel_format, pixeltype, &Converter)) {
+			os::Printer::log("COpenGLCoreTexture: Color format is not supported", ColorFormatNames[format < ECF_UNKNOWN ? format : ECF_UNKNOWN], ELL_ERROR);
+			return;
+		}
+
+		std::vector<IImage*> imgs = texture->getImagesCache();
+
+		if (imgs.empty())
+			return;
+
+		void *data = imgs[0]->getData();
+
+		const ITexture *prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
+
+		Driver->getCacheHandler()->getTextureCache().set(0, this);
+
+		if (!IImage::isCompressedFormat(format))
+			GL.TexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, pixel_format, pixeltype, data);
+		else {
+			u32 dataSize = IImage::getDataSizeFromFormat(format, width, height);
+
+			Driver->irrGlCompressedTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, pixel_format, dataSize, data);
+		}
+
+		TEST_GL_ERROR(Driver);
+
+		texture->unlock();
 
 		Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
 	}

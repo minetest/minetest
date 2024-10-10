@@ -71,6 +71,7 @@ public:
 	virtual bool isKnownSourceImage(const std::string &name)=0;
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
 	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
+	virtual u32 cacheExistentTexture(const std::string &name, video::ITexture *tex)=0;
 };
 
 class IWritableTextureSource : public ITextureSource
@@ -92,6 +93,7 @@ public:
 	virtual void rebuildImagesAndTextures()=0;
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
 	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
+	virtual u32 cacheExistentTexture(const std::string &name, video::ITexture *tex)=0;
 };
 
 IWritableTextureSource *createTextureSource();

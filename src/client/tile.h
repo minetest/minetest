@@ -109,6 +109,9 @@ struct TileLayer
 		return false;
 	}
 
+	u32 tiles_infos_index;
+	bool atlas_used;
+
 	// Ordered for size, please do not reorder
 
 	video::ITexture *texture = nullptr;
