@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_mainmenu.h"
 #include "lua_api/l_internal.h"
 #include "common/c_content.h"
+#include "common/c_window_info.h"
 #include "cpp_api/s_async.h"
 #include "scripting_mainmenu.h"
 #include "gui/guiEngine.h"
@@ -966,31 +967,7 @@ int ModApiMainMenu::l_gettext(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_window_info(lua_State *L)
 {
-	lua_newtable(L);
-	int top = lua_gettop(L);
-
-	auto info = ClientDynamicInfo::getCurrent();
-
-	lua_pushstring(L, "size");
-	push_v2u32(L, info.render_target_size);
-	lua_settable(L, top);
-
-	lua_pushstring(L, "max_formspec_size");
-	push_v2f(L, info.max_fs_size);
-	lua_settable(L, top);
-
-	lua_pushstring(L, "real_gui_scaling");
-	lua_pushnumber(L, info.real_gui_scaling);
-	lua_settable(L, top);
-
-	lua_pushstring(L, "real_hud_scaling");
-	lua_pushnumber(L, info.real_hud_scaling);
-	lua_settable(L, top);
-
-	lua_pushstring(L, "touch_controls");
-	lua_pushboolean(L, info.touch_controls);
-	lua_settable(L, top);
-
+	push_window_info(L, ClientDynamicInfo::getCurrent());
 	return 1;
 }
 

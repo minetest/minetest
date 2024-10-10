@@ -128,15 +128,15 @@ local function load()
 end
 
 
-local function get_info_formspec(size, padding, text)
+local function get_info_formspec(size, insets, text)
 	return table.concat({
 		"formspec_version[6]",
 		"size[", size.x, ",", size.y, "]",
 		"padding[0,0]",
 		"bgcolor[;true]",
 
-		"label[", padding.x + 3.625, ",4.35;", text, "]",
-		"container[", padding.x, ",", size.y - 0.8 - padding.y, "]",
+		"label[", insets.left + 3.625, ",4.35;", text, "]",
+		"container[", insets.left, ",", size.y - 0.8 - insets.bottom, "]",
 		"button[0,0;2,0.8;back;", fgettext("Back"), "]",
 		"container_end[]",
 	})
@@ -168,11 +168,11 @@ end
 
 local function calculate_num_per_page()
 	local size = contentdb.get_formspec_size()
-	local padding = contentdb.get_formspec_padding()
+	local insets = contentdb.get_formspec_insets()
 	local window = core.get_window_info()
 
-	size.x = size.x - padding.x * 2
-	size.y = size.y - padding.y * 2 - 1.425 - 0.25 - 0.8
+	size.x = size.x - insets.left - insets.right
+	size.y = size.y - insets.top - insets.bottom - 1.425 - 0.25 - 0.8
 
 	local coordToPx = window.size.x / window.max_formspec_size.x / window.real_gui_scaling
 
@@ -190,14 +190,14 @@ end
 
 
 local function get_formspec(dlgdata)
-	local window_padding = contentdb.get_formspec_padding()
+	local insets = contentdb.get_formspec_insets()
 	local size = contentdb.get_formspec_size()
 
 	if contentdb.loading then
-		return get_info_formspec(size, window_padding, fgettext("Loading..."))
+		return get_info_formspec(size, insets, fgettext("Loading..."))
 	end
 	if contentdb.load_error then
-		return get_info_formspec(size, window_padding, fgettext("No packages could be retrieved"))
+		return get_info_formspec(size, insets, fgettext("No packages could be retrieved"))
 	end
 	assert(contentdb.load_ok)
 
@@ -209,8 +209,8 @@ local function get_formspec(dlgdata)
 		cur_page = 1
 	end
 
-	local W = size.x - window_padding.x * 2
-	local H = size.y - window_padding.y * 2
+	local W = size.x - insets.left - insets.right
+	local H = size.y - insets.top - insets.bottom
 
 	local category_x = 0
 	local number_category_buttons = 4
@@ -234,7 +234,7 @@ local function get_formspec(dlgdata)
 		"padding[0,0]",
 		"bgcolor[;true]",
 
-		"container[", window_padding.x, ",", window_padding.y, "]",
+		"container[", insets.left, ",", insets.top, "]",
 
 		-- Top-left: categories
 		make_category_button("type_all", fgettext("All"), selected_type == nil),

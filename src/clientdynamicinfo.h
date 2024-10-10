@@ -20,12 +20,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_bloated.h"
+#include "rect.h"
 
 
 struct ClientDynamicInfo
 {
 public:
 	v2u32 render_target_size;
+	core::rect<s32> insets;
 	f32 real_gui_scaling;
 	f32 real_hud_scaling;
 	v2f32 max_fs_size;
@@ -33,6 +35,7 @@ public:
 
 	bool equal(const ClientDynamicInfo &other) const {
 		return render_target_size == other.render_target_size &&
+				insets == other.insets &&
 				std::abs(real_gui_scaling - other.real_gui_scaling) < 0.001f &&
 				std::abs(real_hud_scaling - other.real_hud_scaling) < 0.001f &&
 				touch_controls == other.touch_controls;

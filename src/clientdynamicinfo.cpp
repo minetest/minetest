@@ -26,6 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiFormSpecMenu.h"
 #include "gui/touchcontrols.h"
 
+#ifdef __ANDROID__
+#include "porting.h"
+#endif
+
 ClientDynamicInfo ClientDynamicInfo::getCurrent()
 {
     v2u32 screen_size = RenderingEngine::getWindowSize();
@@ -36,8 +40,15 @@ ClientDynamicInfo ClientDynamicInfo::getCurrent()
     f32 real_hud_scaling = hud_scaling * density;
     bool touch_controls = g_touchcontrols;
 
+#ifdef __ANDROID__
+    core::rect<s32> insets = porting::getDisplayInsets();
+#else
+    core::rect<s32> insets;
+#endif
+
     return {
-        screen_size, real_gui_scaling, real_hud_scaling,
+        screen_size, insets,
+        real_gui_scaling, real_hud_scaling,
         ClientDynamicInfo::calculateMaxFSSize(screen_size, density, gui_scaling),
         touch_controls
     };

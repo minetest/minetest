@@ -51,6 +51,16 @@ Java_net_minetest_minetest_GameActivity_saveSettings(JNIEnv* env, jobject /* thi
 }
 
 namespace porting {
+	static core::rect<s32> display_insets;
+};
+
+extern "C" JNIEXPORT void JNICALL
+Java_net_minetest_minetest_GameActivity_updateInsets(JNIEnv* env, jobject /* this */,
+		jint bottom, jint left, jint right, jint top) {
+	porting::display_insets = core::rect<s32>(left, top, right, bottom);
+}
+
+namespace porting {
 	// used here:
 	void cleanupAndroid();
 	std::string getLanguageAndroid();
@@ -279,7 +289,7 @@ v2u32 getDisplaySize()
 				"getDisplayWidth", "()I");
 
 		FATAL_ERROR_IF(getDisplayWidth == nullptr,
-			"porting::getDisplayWidth unable to find Java getDisplayWidth method");
+			"porting::getDisplaySize unable to find Java getDisplayWidth method");
 
 		retval.X = jnienv->CallIntMethod(activity,
 				getDisplayWidth);
@@ -288,7 +298,7 @@ v2u32 getDisplaySize()
 				"getDisplayHeight", "()I");
 
 		FATAL_ERROR_IF(getDisplayHeight == nullptr,
-			"porting::getDisplayHeight unable to find Java getDisplayHeight method");
+			"porting::getDisplaySize unable to find Java getDisplayHeight method");
 
 		retval.Y = jnienv->CallIntMethod(activity,
 				getDisplayHeight);
@@ -297,6 +307,13 @@ v2u32 getDisplaySize()
 	}
 
 	return retval;
+}
+
+// This works via a Java -> C++ callback instead of the other way around so that
+// we can react to changes without having to poll.
+core::rect<s32> getDisplayInsets()
+{
+	return display_insets;
 }
 
 std::string getLanguageAndroid()

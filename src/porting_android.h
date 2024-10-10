@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include "irrlichttypes_bloated.h"
+#include "rect.h"
 #include <string>
 
 namespace porting {
@@ -100,6 +101,7 @@ bool hasPhysicalKeyboardAndroid();
 #ifndef SERVER
 float getDisplayDensity();
 v2u32 getDisplaySize();
+core::rect<s32> getDisplayInsets();
 #endif
 
 }
