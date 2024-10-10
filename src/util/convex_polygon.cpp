@@ -30,11 +30,10 @@ void draw_convex_polygon(video::IVideoDriver *driver, const std::vector<v2f> &po
 	if (polygon.size() < 3)
 		return;
 
-	v2u32 ss = driver->getScreenSize();
-
-	auto new_2d_vertex = [&color, &ss](const v2f &pos) -> video::S3DVertex {
-		return video::S3DVertex(v3f(pos.X * ss.X, pos.Y * ss.Y, -1.0f), v3f(),
-				color, v2f());
+	auto new_2d_vertex = [&color](const v2f &pos) -> video::S3DVertex {
+		return video::S3DVertex(
+				v3f(pos.X * 2.0f - 1.0f, -(pos.Y * 2.0f - 1.0f), 0.0f),
+				v3f(), color, v2f());
 	};
 
 	std::vector<video::S3DVertex> vertices;
@@ -49,10 +48,14 @@ void draw_convex_polygon(video::IVideoDriver *driver, const std::vector<v2f> &po
 
 	video::SMaterial material;
 	material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-
+	material.ZWriteEnable = video::EZW_OFF;
 	driver->setMaterial(material);
 
-	driver->draw2DVertexPrimitiveList((void *)&vertices[0], (u32)vertices.size(),
+	driver->setTransform(video::ETS_PROJECTION, core::matrix4::EM4CONST_IDENTITY);
+	driver->setTransform(video::ETS_VIEW, core::matrix4::EM4CONST_IDENTITY);
+	driver->setTransform(video::ETS_WORLD, core::matrix4::EM4CONST_IDENTITY);
+
+	driver->drawVertexPrimitiveList((void *)&vertices[0], (u32)vertices.size(),
 			(void *)&index_list[0], (u32)index_list.size() - 2,
 			video::EVT_STANDARD, // S3DVertex vertices
 			scene::EPT_TRIANGLE_FAN,
