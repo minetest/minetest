@@ -882,7 +882,7 @@ private:
 	SoundMaker *soundmaker = nullptr;
 
 	ChatBackend *chat_backend = nullptr;
-	LogOutputBuffer m_chat_log_buf;
+	CaptureLogOutput m_chat_log_buf;
 
 	EventManager *eventmgr = nullptr;
 	QuicktuneShortcutter *quicktune = nullptr;
@@ -930,6 +930,7 @@ private:
 	 *       (as opposed to the this local caching). This can be addressed in
 	 *       a later release.
 	 */
+	bool m_cache_disable_escape_sequences;
 	bool m_cache_doubletap_jump;
 	bool m_cache_enable_clouds;
 	bool m_cache_enable_joysticks;
@@ -973,6 +974,10 @@ Game::Game() :
 	m_chat_log_buf(g_logger),
 	m_game_ui(new GameUI())
 {
+	g_settings->registerChangedCallback("chat_log_level",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("disable_escape_sequences",
+		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("doubletap_jump",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("enable_clouds",
@@ -1041,6 +1046,10 @@ Game::~Game()
 
 	clearTextureNameCache();
 
+	g_settings->deregisterChangedCallback("chat_log_level",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("disable_escape_sequences",
+		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("doubletap_jump",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("enable_clouds",
@@ -1277,7 +1286,6 @@ void Game::shutdown()
 
 	chat_backend->addMessage(L"", L"# Disconnected.");
 	chat_backend->addMessage(L"", L"");
-	m_chat_log_buf.clear();
 
 	if (client) {
 		client->Stop();
@@ -3208,9 +3216,27 @@ void Game::processClientEvents(CameraOrientation *cam)
 
 void Game::updateChat(f32 dtime)
 {
+	auto color_for = [](LogLevel level) -> const char* {
+		switch (level) {
+		case LL_ERROR  : return "\x1b(c@#F00)"; // red
+		case LL_WARNING: return "\x1b(c@#EE0)"; // yellow
+		case LL_INFO   : return "\x1b(c@#BBB)"; // grey
+		case LL_VERBOSE: return "\x1b(c@#888)"; // dark grey
+		case LL_TRACE  : return "\x1b(c@#888)"; // dark grey
+		default        : return "";
+		}
+	};
+
 	// Get new messages from error log buffer
-	while (!m_chat_log_buf.empty())
-		chat_backend->addMessage(L"", utf8_to_wide(m_chat_log_buf.get()));
+	std::vector<LogEntry> entries = m_chat_log_buf.take();
+	for (const auto& entry : entries) {
+		std::string line;
+		if (!m_cache_disable_escape_sequences) {
+			line.append(color_for(entry.level));
+		}
+		line.append(entry.combined);
+		chat_backend->addMessage(L"", utf8_to_wide(line));
+	}
 
 	// Get new messages from client
 	std::wstring message;
@@ -4433,6 +4459,14 @@ void Game::settingChangedCallback(const std::string &setting_name, void *data)
 
 void Game::readSettings()
 {
+	LogLevel chat_log_level = Logger::stringToLevel(g_settings->get("chat_log_level"));
+	if (chat_log_level == LL_MAX) {
+		warningstream << "Supplied unrecognized chat_log_level; showing none." << std::endl;
+		chat_log_level = LL_NONE;
+	}
+	m_chat_log_buf.setLogLevel(chat_log_level);
+
+	m_cache_disable_escape_sequences     = g_settings->getBool("disable_escape_sequences");
 	m_cache_doubletap_jump               = g_settings->getBool("doubletap_jump");
 	m_cache_enable_clouds                = g_settings->getBool("enable_clouds");
 	m_cache_enable_joysticks             = g_settings->getBool("enable_joysticks");
