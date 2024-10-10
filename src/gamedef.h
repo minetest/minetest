@@ -34,19 +34,19 @@ class Camera;
 class ModChannel;
 class ModStorage;
 class ModStorageDatabase;
+struct SubgameSpec;
+struct ModSpec;
+struct ModIPCStore;
 
 namespace irr::scene {
 	class IAnimatedMesh;
 	class ISceneManager;
 }
 
-struct SubgameSpec;
-struct ModSpec;
 /*
 	An interface for fetching game-global definitions like tool and
 	mapnode properties
 */
-
 class IGameDef
 {
 public:
@@ -62,6 +62,9 @@ public:
 	// Only usable on the server, and NOT thread-safe. It is usable from the
 	// environment thread.
 	virtual IRollbackManager* getRollbackManager() { return NULL; }
+
+	// Only usable on server.
+	virtual ModIPCStore *getModIPCStore() { return nullptr; }
 
 	// Shorthands
 	// TODO: these should be made const-safe so that a const IGameDef* is

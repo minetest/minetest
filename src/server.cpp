@@ -86,6 +86,15 @@ public:
 	{}
 };
 
+ModIPCStore::~ModIPCStore()
+{
+	// we don't have to do this, it's pure debugging aid
+	if (!std::unique_lock(mutex, std::try_to_lock).owns_lock()) {
+		errorstream << FUNCTION_NAME << ": lock is still in use!" << std::endl;
+		assert(0);
+	}
+}
+
 class ServerThread : public Thread
 {
 public:

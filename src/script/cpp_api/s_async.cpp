@@ -50,11 +50,12 @@ AsyncEngine::~AsyncEngine()
 	}
 
 	// Wait for threads to finish
+	infostream << "AsyncEngine: Waiting for " << workerThreads.size()
+		<< " threads" << std::endl;
 	for (AsyncWorkerThread *workerThread : workerThreads) {
 		workerThread->wait();
 	}
 
-	// Force kill all threads
 	for (AsyncWorkerThread *workerThread : workerThreads) {
 		delete workerThread;
 	}
