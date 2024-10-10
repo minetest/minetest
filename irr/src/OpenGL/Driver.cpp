@@ -68,6 +68,15 @@ static const VertexType vtStandard = {
 		},
 };
 
+static const VertexType vtStandard2D = {
+		sizeof(S3DVertex),
+		{
+				{EVA_POSITION, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex, Pos)},
+				{EVA_COLOR, 4, GL_UNSIGNED_BYTE, VertexAttribute::Mode::Normalized, offsetof(S3DVertex, Color)},
+				{EVA_TCOORD0, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex, TCoords)},
+		},
+};
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
 
@@ -76,6 +85,16 @@ static const VertexType vt2TCoords = {
 		{
 				{EVA_POSITION, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2TCoords, Pos)},
 				{EVA_NORMAL, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2TCoords, Normal)},
+				{EVA_COLOR, 4, GL_UNSIGNED_BYTE, VertexAttribute::Mode::Normalized, offsetof(S3DVertex2TCoords, Color)},
+				{EVA_TCOORD0, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2TCoords, TCoords)},
+				{EVA_TCOORD1, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2TCoords, TCoords2)},
+		},
+};
+
+static const VertexType vt2TCoords2D = {
+		sizeof(S3DVertex2TCoords),
+		{
+				{EVA_POSITION, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2TCoords, Pos)},
 				{EVA_COLOR, 4, GL_UNSIGNED_BYTE, VertexAttribute::Mode::Normalized, offsetof(S3DVertex2TCoords, Color)},
 				{EVA_TCOORD0, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2TCoords, TCoords)},
 				{EVA_TCOORD1, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2TCoords, TCoords2)},
@@ -94,6 +113,17 @@ static const VertexType vtTangents = {
 		},
 };
 
+static const VertexType vtTangents2D = {
+		sizeof(S3DVertexTangents),
+		{
+				{EVA_POSITION, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertexTangents, Pos)},
+				{EVA_COLOR, 4, GL_UNSIGNED_BYTE, VertexAttribute::Mode::Normalized, offsetof(S3DVertexTangents, Color)},
+				{EVA_TCOORD0, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertexTangents, TCoords)},
+				{EVA_TANGENT, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertexTangents, Tangent)},
+				{EVA_BINORMAL, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertexTangents, Binormal)},
+		},
+};
+
 #pragma GCC diagnostic pop
 
 static const VertexType &getVertexTypeDescription(E_VERTEX_TYPE type)
@@ -105,6 +135,21 @@ static const VertexType &getVertexTypeDescription(E_VERTEX_TYPE type)
 		return vt2TCoords;
 	case EVT_TANGENTS:
 		return vtTangents;
+	default:
+		assert(false);
+		CODE_UNREACHABLE();
+	}
+}
+
+static const VertexType &getVertexTypeDescription2D(E_VERTEX_TYPE type)
+{
+	switch (type) {
+	case EVT_STANDARD:
+		return vtStandard2D;
+	case EVT_2TCOORDS:
+		return vt2TCoords2D;
+	case EVT_TANGENTS:
+		return vtTangents2D;
 	default:
 		assert(false);
 		CODE_UNREACHABLE();
@@ -691,6 +736,93 @@ void COpenGL3DriverBase::drawVertexPrimitiveList(const void *vertices, u32 verte
 	setRenderStates3DMode();
 
 	auto &vTypeDesc = getVertexTypeDescription(vType);
+	beginDraw(vTypeDesc, reinterpret_cast<uintptr_t>(vertices));
+	GLenum indexSize = 0;
+
+	switch (iType) {
+	case (EIT_16BIT): {
+		indexSize = GL_UNSIGNED_SHORT;
+		break;
+	}
+	case (EIT_32BIT): {
+#ifdef GL_OES_element_index_uint
+#ifndef GL_UNSIGNED_INT
+#define GL_UNSIGNED_INT 0x1405
+#endif
+		if (FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_OES_element_index_uint])
+			indexSize = GL_UNSIGNED_INT;
+		else
+#endif
+			indexSize = GL_UNSIGNED_SHORT;
+		break;
+	}
+	}
+
+	switch (pType) {
+	case scene::EPT_POINTS:
+	case scene::EPT_POINT_SPRITES:
+		GL.DrawArrays(GL_POINTS, 0, primitiveCount);
+		break;
+	case scene::EPT_LINE_STRIP:
+		GL.DrawElements(GL_LINE_STRIP, primitiveCount + 1, indexSize, indexList);
+		break;
+	case scene::EPT_LINE_LOOP:
+		GL.DrawElements(GL_LINE_LOOP, primitiveCount, indexSize, indexList);
+		break;
+	case scene::EPT_LINES:
+		GL.DrawElements(GL_LINES, primitiveCount * 2, indexSize, indexList);
+		break;
+	case scene::EPT_TRIANGLE_STRIP:
+		GL.DrawElements(GL_TRIANGLE_STRIP, primitiveCount + 2, indexSize, indexList);
+		break;
+	case scene::EPT_TRIANGLE_FAN:
+		GL.DrawElements(GL_TRIANGLE_FAN, primitiveCount + 2, indexSize, indexList);
+		break;
+	case scene::EPT_TRIANGLES:
+		GL.DrawElements((LastMaterial.Wireframe) ? GL_LINES : (LastMaterial.PointCloud) ? GL_POINTS
+																						: GL_TRIANGLES,
+				primitiveCount * 3, indexSize, indexList);
+		break;
+	default:
+		break;
+	}
+
+	endDraw(vTypeDesc);
+}
+
+void COpenGL3DriverBase::draw2DVertexPrimitiveList(const void *vertices, u32 vertexCount,
+		const void *indexList, u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
+{
+	if (!primitiveCount || !vertexCount)
+		return;
+
+	if (!checkPrimitiveCount(primitiveCount))
+		return;
+
+	CNullDriver::draw2DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
+
+	// OverrideMaterial2D is weird. Just use setMaterial().
+	// chooseMaterial2D();
+
+	auto *texture = Material.getTexture(0);
+	CacheHandler->getTextureCache().set(0, texture);
+	if (Material.MaterialType == EMT_ONETEXTURE_BLEND) {
+		E_BLEND_FACTOR srcFact;
+		E_BLEND_FACTOR dstFact;
+		E_MODULATE_FUNC modulo;
+		u32 alphaSource;
+		unpack_textureBlendFunc(srcFact, dstFact, modulo, alphaSource, Material.MaterialTypeParam);
+		setRenderStates2DMode(alphaSource & video::EAS_VERTEX_COLOR,
+				texture != nullptr,
+				alphaSource & video::EAS_TEXTURE);
+	} else {
+		setRenderStates2DMode(Material.MaterialType == EMT_TRANSPARENT_VERTEX_ALPHA,
+				texture != nullptr,
+				Material.MaterialType == EMT_TRANSPARENT_ALPHA_CHANNEL);
+	}
+
+	auto &vTypeDesc = getVertexTypeDescription2D(vType);
 	beginDraw(vTypeDesc, reinterpret_cast<uintptr_t>(vertices));
 	GLenum indexSize = 0;
 
@@ -1432,6 +1564,14 @@ void COpenGL3DriverBase::setRenderStates2DMode(bool alpha, bool texture, bool al
 	COpenGL3Renderer2D *nextActiveRenderer = texture ? MaterialRenderer2DTexture : MaterialRenderer2DNoTexture;
 
 	if (CurrentRenderMode != ERM_2D) {
+
+		// tmp, doesn't work
+		const core::dimension2d<u32> &renderTargetSize = getCurrentRenderTargetSize();
+		core::matrix4 m(core::matrix4::EM4CONST_NOTHING);
+		m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-(s32)(renderTargetSize.Height)), -1.0f, 1.0f);
+		m.setTranslation(core::vector3df(-1, 1, 0));
+		setTransform(ETS_PROJECTION, m);
+
 		// unset last 3d material
 		if (CurrentRenderMode == ERM_3D) {
 			if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
