@@ -36,7 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	// the USE_GETTEXT=0 case and can't assume that gettext is installed.
 	#include <locale>
 
-	#define gettext(String) String
+	#define gettext(String) (String)
+	#define ngettext(String1, String2, n) ((n) == 1 ? (String1) : (String2))
 #endif
 
 #define _(String) gettext(String)
