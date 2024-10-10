@@ -136,6 +136,8 @@ private:
 
 	bool visualExpiryRequired(const ObjectProperties &newprops) const;
 
+	void fixBones();
+
 public:
 	GenericCAO(Client *client, ClientEnvironment *env);
 
