@@ -19,6 +19,7 @@
 #include "SOverrideMaterial.h"
 #include "S3DVertex.h" // E_VERTEX_TYPE
 #include "SVertexIndex.h" // E_INDEX_TYPE
+#include "IVertexArrayRef.h"
 
 namespace irr
 {
@@ -149,6 +150,9 @@ public:
 	world, or projection.
 	\param mat Matrix describing the transformation. */
 	virtual void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4 &mat) = 0;
+
+	//! create the vertex array object reference
+	virtual scene::IVertexArrayRef *createVertexArrayRef() const = 0;
 
 	//! Returns the transformation set by setTransform
 	/** \param state Transformation type to query
@@ -458,6 +462,9 @@ public:
 	//! Gets the area of the current viewport.
 	/** \return Rectangle of the current viewport. */
 	virtual const core::rect<s32> &getViewPort() const = 0;
+
+	//! Draws VAO content (vertex and index buffers).
+	virtual void drawVertexArray(const scene::IVertexArrayRef *varray, const void *index_data=0) = 0;
 
 	//! Draws a vertex primitive list
 	/** Note that, depending on the index type, some vertices might be not

@@ -359,6 +359,8 @@ if(ENABLE_OPENGL3 OR ENABLE_GLES2)
 		OpenGL/FixedPipelineRenderer.cpp
 		OpenGL/MaterialRenderer.cpp
 		OpenGL/Renderer2D.cpp
+		OpenGL/VertexArrayRef.cpp
+		OpenGL/VertexType.cpp
 	)
 endif()
 

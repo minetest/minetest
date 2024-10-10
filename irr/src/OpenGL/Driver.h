@@ -53,6 +53,9 @@ public:
 		u32 vbo_Size = 0;
 	};
 
+	//! create the vertex array object reference
+	scene::IVertexArrayRef *createVertexArrayRef() const override;
+
 	bool updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
 	bool updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
 
@@ -71,6 +74,9 @@ public:
 	void drawBuffers(const scene::IVertexBuffer *vb,
 		const scene::IIndexBuffer *ib, u32 primCount,
 		scene::E_PRIMITIVE_TYPE pType = scene::EPT_TRIANGLES) override;
+
+	//! Draws VAO content (vertex and index buffers).
+	void drawVertexArray(const scene::IVertexArrayRef *varray, const void *index_data=0) override;
 
 	IRenderTarget *addRenderTarget() override;
 

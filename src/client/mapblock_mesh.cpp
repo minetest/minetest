@@ -433,6 +433,24 @@ static void applyTileColor(PreMeshBuffer &pmb)
 	}
 }
 
+void MeshTriangle::updateAttributes()
+{
+    v3f v1 = buffer->vertices[p1].Pos;
+    v3f v2 = buffer->vertices[p2].Pos;
+    v3f v3 = buffer->vertices[p3].Pos;
+
+    centroid = (v1 + v2 + v3) / 3;
+    areaSQ = (v2-v1).crossProduct(v3-v1).getLengthSQ() / 4;
+}
+
+v3f MeshTriangle::getNormal() const {
+    v3f v1 = buffer->vertices[p1].Pos;
+    v3f v2 = buffer->vertices[p2].Pos;
+    v3f v3 = buffer->vertices[p3].Pos;
+
+    return (v2-v1).crossProduct(v3-v1);
+}
+
 /*
 	MapBlockBspTree
 */
@@ -588,16 +606,34 @@ void MapBlockBspTree::traverse(s32 node, v3f viewpoint, std::vector<s32> &output
 }
 
 
-
-/*
-	PartialMeshBuffer
-*/
-
-void PartialMeshBuffer::draw(video::IVideoDriver *driver) const
+u32 BlockIndexBuffer::draw(video::IVideoDriver* driver, bool enable_shaders)
 {
-	const auto pType = m_buffer->getPrimitiveType();
-	driver->drawBuffers(m_buffer->getVertexBuffer(), m_indices.get(),
-		m_indices->getPrimitiveCount(pType), pType);
+	//infostream << "draw() 1" << std::endl;
+	if (!m_buffer)
+		return 0;
+
+	//infostream << "draw() 2" << std::endl;
+
+	if (m_buffer->dirty) {
+		if (!(m_buffer->array_ref.get()))
+			m_buffer->array_ref = std::unique_ptr<scene::IVertexArrayRef>(RenderingEngine::get_video_driver()->createVertexArrayRef());
+
+		//infostream << "uploadData() vertex count: " << m_buffer->vertices.size() << ", index count: " << m_indices.size() << std::endl;
+		m_buffer->array_ref->uploadData(m_buffer->vertices.size(), m_buffer->vertices.data(),
+			m_indices.size(), m_indices.data());
+
+		if (enable_shaders)
+			m_buffer->vertices.clear();
+
+		m_buffer->dirty = false;
+	}
+
+	//infostream << "draw() 3" << std::endl;
+
+	infostream << "draw() m_indices: " << m_indices.size() << std::endl;
+	driver->drawVertexArray(m_buffer->array_ref.get());
+
+	return m_buffer->vertex_count;
 }
 
 /*
@@ -614,8 +650,6 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 {
 	ZoneScoped;
 
-	for (auto &m : m_mesh)
-		m = make_irr<scene::SMesh>();
 	m_enable_shaders = data->m_use_shaders;
 
 	auto mesh_grid = client->getMeshGrid();
@@ -638,8 +672,9 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 		}
 	}
 
+	v3f translation = intToFloat(mesh_grid.getMeshPos(data->m_blockpos) * MAP_BLOCKSIZE, BS);
 	v3f offset = intToFloat((data->m_blockpos - mesh_grid.getMeshPos(data->m_blockpos)) * MAP_BLOCKSIZE, BS);
-	MeshCollector collector(m_bounding_sphere_center, offset);
+	MeshCollector collector(m_bounding_sphere_center, translation, offset);
 	/*
 		Add special graphics:
 		- torches
@@ -660,125 +695,119 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	const bool desync_animations = g_settings->getBool(
 		"desynchronize_mapblock_texture_animation");
 
-	m_bounding_radius = std::sqrt(collector.m_bounding_radius_sq);
+	m_bounding_radius = std::sqrt(collector.bounding_radius_sq);
 
-	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
-		scene::SMesh *mesh = static_cast<scene::SMesh *>(m_mesh[layer].get());
+	for(u32 i = 0; i < collector.prebuffers.size(); i++)
+	{
+		PreMeshBuffer &p = collector.prebuffers[i];
 
-		for(u32 i = 0; i < collector.prebuffers[layer].size(); i++)
-		{
-			PreMeshBuffer &p = collector.prebuffers[layer][i];
+		applyTileColor(p);
 
-			applyTileColor(p);
+		// Generate animation data
+		// - Cracks
+		if (p.layer.material_flags & MATERIAL_FLAG_CRACK) {
+			// Find the texture name plus ^[crack:N:
+			std::ostringstream os(std::ios::binary);
+			os << m_tsrc->getTextureName(p.layer.texture_id) << "^[crack";
+			if (p.layer.material_flags & MATERIAL_FLAG_CRACK_OVERLAY)
+				os << "o";  // use ^[cracko
+			u8 tiles = p.layer.scale;
+			if (tiles > 1)
+				os << ":" << (u32)tiles;
+			os << ":" << (u32)p.layer.animation_frame_count << ":";
+			m_crack_materials[i] = os.str();
 
-			// Generate animation data
-			// - Cracks
-			if (p.layer.material_flags & MATERIAL_FLAG_CRACK) {
-				// Find the texture name plus ^[crack:N:
-				std::ostringstream os(std::ios::binary);
-				os << m_tsrc->getTextureName(p.layer.texture_id) << "^[crack";
-				if (p.layer.material_flags & MATERIAL_FLAG_CRACK_OVERLAY)
-					os << "o";  // use ^[cracko
-				u8 tiles = p.layer.scale;
-				if (tiles > 1)
-					os << ":" << (u32)tiles;
-				os << ":" << (u32)p.layer.animation_frame_count << ":";
-				m_crack_materials.insert(std::make_pair(
-						std::pair<u8, u32>(layer, i), os.str()));
-				// Replace tile texture with the cracked one
-				p.layer.texture = m_tsrc->getTextureForMesh(
-						os.str() + "0",
-						&p.layer.texture_id);
-			}
-			// - Texture animation
-			if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
-				// Add to MapBlockMesh in order to animate these tiles
-				auto &info = m_animation_info[{layer, i}];
-				info.tile = p.layer;
-				info.frame = 0;
-				if (desync_animations) {
-					// Get starting position from noise
-					info.frame_offset =
-							100000 * (2.0 + noise3d(
-							data->m_blockpos.X, data->m_blockpos.Y,
-							data->m_blockpos.Z, 0));
-				} else {
-					// Play all synchronized
-					info.frame_offset = 0;
-				}
-				// Replace tile texture with the first animation frame
-				p.layer.texture = (*p.layer.frames)[0].texture;
-			}
-
-			if (!m_enable_shaders) {
-				// Extract colors for day-night animation
-				// Dummy sunlight to handle non-sunlit areas
-				video::SColorf sunlight;
-				get_sunlight_color(&sunlight, 0);
-
-				std::map<u32, video::SColor> colors;
-				const u32 vertex_count = p.vertices.size();
-				for (u32 j = 0; j < vertex_count; j++) {
-					video::SColor *vc = &p.vertices[j].Color;
-					video::SColor copy = *vc;
-					if (vc->getAlpha() == 0) // No sunlight - no need to animate
-						final_color_blend(vc, copy, sunlight); // Finalize color
-					else // Record color to animate
-						colors[j] = copy;
-
-					// The sunlight ratio has been stored,
-					// delete alpha (for the final rendering).
-					vc->setAlpha(255);
-				}
-				if (!colors.empty())
-					m_daynight_diffs[{layer, i}] = std::move(colors);
-			}
-
-			// Create material
-			video::SMaterial material;
-			material.BackfaceCulling = true;
-			material.FogEnable = true;
-			material.setTexture(0, p.layer.texture);
-			material.forEachTexture([] (auto &tex) {
-				tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
-				tex.MagFilter = video::ETMAGF_NEAREST;
-			});
-
-			if (m_enable_shaders) {
-				material.MaterialType = m_shdrsrc->getShaderInfo(
-						p.layer.shader_id).material;
-				p.layer.applyMaterialOptionsWithShaders(material);
-			} else {
-				p.layer.applyMaterialOptions(material);
-			}
-
-			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
-			buf->Material = material;
-			if (p.layer.isTransparent()) {
-				buf->append(&p.vertices[0], p.vertices.size(), nullptr, 0);
-
-				MeshTriangle t;
-				t.buffer = buf;
-				m_transparent_triangles.reserve(p.indices.size() / 3);
-				for (u32 i = 0; i < p.indices.size(); i += 3) {
-					t.p1 = p.indices[i];
-					t.p2 = p.indices[i + 1];
-					t.p3 = p.indices[i + 2];
-					t.updateAttributes();
-					m_transparent_triangles.push_back(t);
-				}
-			} else {
-				buf->append(&p.vertices[0], p.vertices.size(),
-					&p.indices[0], p.indices.size());
-			}
-			mesh->addMeshBuffer(buf);
-			buf->drop();
+			// Replace tile texture with the cracked one
+			p.layer.texture = m_tsrc->getTextureForMesh(
+					os.str() + "0",
+					&p.layer.texture_id);
 		}
 
-		if (mesh) {
-			// Use VBO for mesh (this just would set this for every buffer)
-			mesh->setHardwareMappingHint(scene::EHM_STATIC);
+		// - Texture animation
+		if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
+			// Add to MapBlockMesh in order to animate these tiles
+			auto &info = m_animation_info[i];
+			info.tile = p.layer;
+			info.frame = 0;
+			if (desync_animations) {
+				// Get starting position from noise
+				info.frame_offset =
+						100000 * (2.0 + noise3d(
+						data->m_blockpos.X, data->m_blockpos.Y,
+						data->m_blockpos.Z, 0));
+			} else {
+				// Play all synchronized
+				info.frame_offset = 0;
+			}
+			// Replace tile texture with the first animation frame
+			p.layer.texture = (*p.layer.frames)[0].texture;
 		}
+
+		if (!m_enable_shaders) {
+			// Extract colors for day-night animation
+			// Dummy sunlight to handle non-sunlit areas
+			video::SColorf sunlight;
+			get_sunlight_color(&sunlight, 0);
+
+			std::map<u32, video::SColor> colors;
+			const u32 vertex_count = p.vertices.size();
+			for (u32 j = 0; j < vertex_count; j++) {
+				video::SColor *vc = &p.vertices[j].Color;
+				video::SColor copy = *vc;
+				if (vc->getAlpha() == 0) // No sunlight - no need to animate
+					final_color_blend(vc, copy, sunlight); // Finalize color
+				else // Record color to animate
+					colors[j] = copy;
+
+				// The sunlight ratio has been stored,
+				// delete alpha (for the final rendering).
+				vc->setAlpha(255);
+			}
+
+			if (!colors.empty())
+				m_daynight_diffs[i] = std::move(colors);
+		}
+
+		// Create material
+		video::SMaterial material;
+		material.BackfaceCulling = true;
+		material.FogEnable = true;
+		material.setTexture(0, p.layer.texture);
+		material.forEachTexture([] (auto &tex) {
+			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+			tex.MagFilter = video::ETMAGF_NEAREST;
+		});
+
+		if (m_enable_shaders) {
+			material.MaterialType = m_shdrsrc->getShaderInfo(
+					p.layer.shader_id).material;
+			p.layer.applyMaterialOptionsWithShaders(material);
+		} else {
+			p.layer.applyMaterialOptions(material);
+		}
+
+		std::unique_ptr<BlockVertexBuffer> buffer(std::make_unique<BlockVertexBuffer>());
+		buffer->material = material;
+		buffer->vertex_count = p.vertices.size();
+		buffer->vertices = std::move(p.vertices);
+
+		if (p.layer.isTransparent()) {
+			MeshTriangle t;
+			t.buffer = buffer.get();
+			m_transparent_triangles.reserve(p.indices.size() / 3);
+			for (u32 i = 0; i < p.indices.size(); i += 3) {
+				t.p1 = p.indices[i];
+				t.p2 = p.indices[i + 1];
+				t.p3 = p.indices[i + 2];
+				t.updateAttributes();
+				m_transparent_triangles.push_back(t);
+			}
+		}
+		else {
+			m_solid_buffers.emplace_back(std::make_unique<BlockIndexBuffer>(buffer.get(), p.indices));
+		}
+
+		m_mesh.emplace_back(std::move(buffer));
 	}
 
 	m_bsp_tree.buildTree(&m_transparent_triangles, data->side_length);
@@ -788,16 +817,17 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 		!m_crack_materials.empty() ||
 		!m_daynight_diffs.empty() ||
 		!m_animation_info.empty();
+
+	infostream << "m_solid_buffers: " << m_solid_buffers.size() << std::endl;
 }
 
 MapBlockMesh::~MapBlockMesh()
 {
 	size_t sz = 0;
-	for (auto &&m : m_mesh) {
-		for (u32 i = 0; i < m->getMeshBufferCount(); i++)
-			sz += m->getMeshBuffer(i)->getSize();
-		m.reset();
-	}
+
+	for (auto &buffer : m_mesh)
+		sz += buffer->vertex_count * sizeof(video::S3DVertex);
+
 	for (MinimapMapblock *block : m_minimap_mapblocks)
 		delete block;
 
@@ -817,15 +847,14 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 	// Cracks
 	if (crack != m_last_crack) {
 		for (auto &crack_material : m_crack_materials) {
-			scene::IMeshBuffer *buf = m_mesh[crack_material.first.first]->
-				getMeshBuffer(crack_material.first.second);
+			BlockVertexBuffer *buf = m_mesh.at(crack_material.first).get();
 
 			// Create new texture name from original
 			std::string s = crack_material.second + itos(crack);
 			u32 new_texture_id = 0;
 			video::ITexture *new_texture =
 					m_tsrc->getTextureForMesh(s, &new_texture_id);
-			buf->getMaterial().setTexture(0, new_texture);
+			buf->material.setTexture(0, new_texture);
 
 			// If the current material is also animated, update animation info
 			auto anim_it = m_animation_info.find(crack_material.first);
@@ -842,21 +871,21 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 	}
 
 	// Texture animation
-	for (auto &it : m_animation_info) {
-		const TileLayer &tile = it.second.tile;
+	for (auto &anim_info : m_animation_info) {
+		const TileLayer &tile = anim_info.second.tile;
 		// Figure out current frame
 		int frameno = (int)(time * 1000 / tile.animation_frame_length_ms
-				+ it.second.frame_offset) % tile.animation_frame_count;
+				+ anim_info.second.frame_offset) % tile.animation_frame_count;
 		// If frame doesn't change, skip
-		if (frameno == it.second.frame)
+		if (frameno == anim_info.second.frame)
 			continue;
 
-		it.second.frame = frameno;
+		anim_info.second.frame = frameno;
 
-		scene::IMeshBuffer *buf = m_mesh[it.first.first]->getMeshBuffer(it.first.second);
+		BlockVertexBuffer *buf = m_mesh.at(anim_info.first).get();
 
 		const FrameSpec &frame = (*tile.frames)[frameno];
-		buf->getMaterial().setTexture(0, frame.texture);
+		buf->material.setTexture(0, frame.texture);
 	}
 
 	// Day-night transition
@@ -865,14 +894,13 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 		get_sunlight_color(&day_color, daynight_ratio);
 
 		for (auto &daynight_diff : m_daynight_diffs) {
-			auto *mesh = m_mesh[daynight_diff.first.first].get();
-			mesh->setDirty(scene::EBT_VERTEX); // force reload to VBO
-			scene::IMeshBuffer *buf = mesh->
-				getMeshBuffer(daynight_diff.first.second);
-			video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
+			BlockVertexBuffer *buf = m_mesh.at(daynight_diff.first).get();
+
 			for (const auto &j : daynight_diff.second)
-				final_color_blend(&(vertices[j.first].Color), j.second,
+				final_color_blend(&(buf->vertices[j.first].Color), j.second,
 						day_color);
+
+			buf->dirty = true;
 		}
 		m_last_daynight_ratio = daynight_ratio;
 	}
@@ -896,13 +924,42 @@ void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
 	m_transparent_buffers_consolidated = false;
 	m_transparent_buffers.clear();
 
-	scene::SMeshBuffer *current_buffer = nullptr;
+	BlockVertexBuffer *current_buffer = nullptr;
 	std::vector<u16> current_strain;
 	for (auto i : triangle_refs) {
 		const auto &t = m_transparent_triangles[i];
 		if (current_buffer != t.buffer) {
 			if (current_buffer) {
-				m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
+				m_transparent_buffers.emplace_back(std::make_unique<BlockIndexBuffer>(current_buffer, current_strain));
+				current_strain.clear();
+			}
+			current_buffer = t.buffer;
+		}
+
+		current_strain.push_back(t.p1);
+		current_strain.push_back(t.p2);
+		current_strain.push_back(t.p3);
+	}
+
+	if (!current_strain.empty())
+		m_transparent_buffers.emplace_back(std::make_unique<BlockIndexBuffer>(current_buffer, current_strain));
+}
+
+void MapBlockMesh::consolidateTransparentBuffers()
+{
+	if (m_transparent_buffers_consolidated)
+		return;
+
+	m_transparent_buffers.clear();
+
+	BlockVertexBuffer *current_buffer = nullptr;
+	std::vector<u16> current_strain;
+
+	// use the fact that m_transparent_triangles is already arranged by buffer
+	for (const auto &t : m_transparent_triangles) {
+		if (current_buffer != t.buffer) {
+			if (current_buffer != nullptr) {
+				m_transparent_buffers.emplace_back(std::make_unique<BlockIndexBuffer>(current_buffer, current_strain));
 				current_strain.clear();
 			}
 			current_buffer = t.buffer;
@@ -913,35 +970,7 @@ void MapBlockMesh::updateTransparentBuffers(v3f camera_pos, v3s16 block_pos)
 	}
 
 	if (!current_strain.empty())
-		m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
-}
-
-void MapBlockMesh::consolidateTransparentBuffers()
-{
-	if (m_transparent_buffers_consolidated)
-		return;
-	m_transparent_buffers.clear();
-
-	scene::SMeshBuffer *current_buffer = nullptr;
-	std::vector<u16> current_strain;
-
-	// use the fact that m_transparent_triangles is already arranged by buffer
-	for (const auto &t : m_transparent_triangles) {
-		if (current_buffer != t.buffer) {
-			if (current_buffer != nullptr) {
-				this->m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
-				current_strain.clear();
-			}
-			current_buffer = t.buffer;
-		}
-		current_strain.push_back(t.p1);
-		current_strain.push_back(t.p2);
-		current_strain.push_back(t.p3);
-	}
-
-	if (!current_strain.empty()) {
-		this->m_transparent_buffers.emplace_back(current_buffer, std::move(current_strain));
-	}
+		m_transparent_buffers.emplace_back(std::make_unique<BlockIndexBuffer>(current_buffer, current_strain));
 
 	m_transparent_buffers_consolidated = true;
 }

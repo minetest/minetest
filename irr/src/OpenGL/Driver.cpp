@@ -23,110 +23,13 @@
 
 #include "mt_opengl.h"
 
+#include "VertexType.h"
+#include "VertexArrayRef.h"
+
 namespace irr
 {
 namespace video
 {
-struct VertexAttribute
-{
-	enum class Mode
-	{
-		Regular,
-		Normalized,
-		Integral,
-	};
-	int Index;
-	int ComponentCount;
-	GLenum ComponentType;
-	Mode mode;
-	int Offset;
-};
-
-struct VertexType
-{
-	int VertexSize;
-	std::vector<VertexAttribute> Attributes;
-};
-
-static const VertexAttribute *begin(const VertexType &type)
-{
-	return type.Attributes.data();
-}
-
-static const VertexAttribute *end(const VertexType &type)
-{
-	return type.Attributes.data() + type.Attributes.size();
-}
-
-static const VertexType vtStandard = {
-		sizeof(S3DVertex),
-		{
-				{EVA_POSITION, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex, Pos)},
-				{EVA_NORMAL, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex, Normal)},
-				{EVA_COLOR, 4, GL_UNSIGNED_BYTE, VertexAttribute::Mode::Normalized, offsetof(S3DVertex, Color)},
-				{EVA_TCOORD0, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex, TCoords)},
-		},
-};
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Winvalid-offsetof"
-
-static const VertexType vt2TCoords = {
-		sizeof(S3DVertex2TCoords),
-		{
-				{EVA_POSITION, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2TCoords, Pos)},
-				{EVA_NORMAL, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2TCoords, Normal)},
-				{EVA_COLOR, 4, GL_UNSIGNED_BYTE, VertexAttribute::Mode::Normalized, offsetof(S3DVertex2TCoords, Color)},
-				{EVA_TCOORD0, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2TCoords, TCoords)},
-				{EVA_TCOORD1, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex2TCoords, TCoords2)},
-		},
-};
-
-static const VertexType vtTangents = {
-		sizeof(S3DVertexTangents),
-		{
-				{EVA_POSITION, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertexTangents, Pos)},
-				{EVA_NORMAL, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertexTangents, Normal)},
-				{EVA_COLOR, 4, GL_UNSIGNED_BYTE, VertexAttribute::Mode::Normalized, offsetof(S3DVertexTangents, Color)},
-				{EVA_TCOORD0, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertexTangents, TCoords)},
-				{EVA_TANGENT, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertexTangents, Tangent)},
-				{EVA_BINORMAL, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertexTangents, Binormal)},
-		},
-};
-
-#pragma GCC diagnostic pop
-
-static const VertexType &getVertexTypeDescription(E_VERTEX_TYPE type)
-{
-	switch (type) {
-	case EVT_STANDARD:
-		return vtStandard;
-	case EVT_2TCOORDS:
-		return vt2TCoords;
-	case EVT_TANGENTS:
-		return vtTangents;
-	default:
-		assert(false);
-		CODE_UNREACHABLE();
-	}
-}
-
-static const VertexType vt2DImage = {
-		sizeof(S3DVertex),
-		{
-				{EVA_POSITION, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex, Pos)},
-				{EVA_COLOR, 4, GL_UNSIGNED_BYTE, VertexAttribute::Mode::Normalized, offsetof(S3DVertex, Color)},
-				{EVA_TCOORD0, 2, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex, TCoords)},
-		},
-};
-
-static const VertexType vtPrimitive = {
-		sizeof(S3DVertex),
-		{
-				{EVA_POSITION, 3, GL_FLOAT, VertexAttribute::Mode::Regular, offsetof(S3DVertex, Pos)},
-				{EVA_COLOR, 4, GL_UNSIGNED_BYTE, VertexAttribute::Mode::Normalized, offsetof(S3DVertex, Color)},
-		},
-};
 
 void APIENTRY COpenGL3DriverBase::debugCb(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
@@ -477,6 +380,13 @@ void COpenGL3DriverBase::setTransform(E_TRANSFORMATION_STATE state, const core::
 	Transformation3DChanged = true;
 }
 
+//! create the vertex array object reference
+scene::IVertexArrayRef *COpenGL3DriverBase::createVertexArrayRef() const
+{
+	scene::COpenGL3VertexArrayRef *array = new scene::COpenGL3VertexArrayRef();
+	return dynamic_cast<scene::IVertexArrayRef *>(array);
+}
+
 bool COpenGL3DriverBase::updateHardwareBuffer(SHWBufferLink_opengl *HWBuffer,
 	const void *buffer, size_t bufferSize, scene::E_HARDWARE_MAPPING hint)
 {
@@ -665,6 +575,21 @@ void COpenGL3DriverBase::drawBuffers(const scene::IVertexBuffer *vb,
 		GL.BindBuffer(GL_ARRAY_BUFFER, 0);
 	if (hwidx)
 		GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+//! Draws VAO content (vertex and index buffers).
+void COpenGL3DriverBase::drawVertexArray(const scene::IVertexArrayRef *varray, const void *index_data)
+{
+	if (!varray)
+		return;
+
+	setRenderStates3DMode();
+
+	varray->bind();
+
+	varray->draw(this, LastMaterial, scene::EPT_TRIANGLES, index_data);
+
+	varray->unbind();
 }
 
 IRenderTarget *COpenGL3DriverBase::addRenderTarget()
@@ -1055,13 +980,13 @@ void COpenGL3DriverBase::beginDraw(const VertexType &vertexType, uintptr_t verti
 		GL.EnableVertexAttribArray(attr.Index);
 		switch (attr.mode) {
 		case VertexAttribute::Mode::Regular:
-			GL.VertexAttribPointer(attr.Index, attr.ComponentCount, attr.ComponentType, GL_FALSE, vertexType.VertexSize, reinterpret_cast<void *>(verticesBase + attr.Offset));
+			GL.VertexAttribPointer(attr.Index, attr.ComponentCount, (u32)attr.ComponentType, GL_FALSE, vertexType.VertexSize, reinterpret_cast<void *>(verticesBase + attr.Offset));
 			break;
 		case VertexAttribute::Mode::Normalized:
-			GL.VertexAttribPointer(attr.Index, attr.ComponentCount, attr.ComponentType, GL_TRUE, vertexType.VertexSize, reinterpret_cast<void *>(verticesBase + attr.Offset));
+			GL.VertexAttribPointer(attr.Index, attr.ComponentCount, (u32)attr.ComponentType, GL_TRUE, vertexType.VertexSize, reinterpret_cast<void *>(verticesBase + attr.Offset));
 			break;
 		case VertexAttribute::Mode::Integral:
-			GL.VertexAttribIPointer(attr.Index, attr.ComponentCount, attr.ComponentType, vertexType.VertexSize, reinterpret_cast<void *>(verticesBase + attr.Offset));
+			GL.VertexAttribIPointer(attr.Index, attr.ComponentCount, (u32)attr.ComponentType, vertexType.VertexSize, reinterpret_cast<void *>(verticesBase + attr.Offset));
 			break;
 		}
 	}

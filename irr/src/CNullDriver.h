@@ -57,6 +57,9 @@ public:
 	//! sets transformation
 	void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4 &mat) override;
 
+	//! create the vertex array object reference
+	scene::IVertexArrayRef *createVertexArrayRef() const override;
+
 	//! Retrieve the number of image loaders
 	u32 getImageLoaderCount() const override;
 
@@ -101,6 +104,9 @@ public:
 
 	//! gets the area of the current viewport
 	const core::rect<s32> &getViewPort() const override;
+
+	//! Draws VAO content (vertex and index buffers).
+	void drawVertexArray(const scene::IVertexArrayRef *varray, const void *index_data=0) override;
 
 	//! draws a vertex primitive list
 	virtual void drawVertexPrimitiveList(const void *vertices, u32 vertexCount,
