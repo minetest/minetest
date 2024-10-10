@@ -816,8 +816,6 @@ void Hud::drawHotbar(const v2s32 &pos, const v2f &offset, u16 dir, const v2f &al
 	u16 playeritem = player->getWieldIndex();
 	v2s32 screen_offset(offset.X, offset.Y);
 
-	v2s32 centerlowerpos(m_displaycenter.X, m_screensize.Y);
-
 	s32 hotbar_itemcount = player->getMaxHotbarItemcount();
 	s32 width = hotbar_itemcount * (m_hotbar_imagesize + m_padding * 2);
 
@@ -827,15 +825,11 @@ void Hud::drawHotbar(const v2s32 &pos, const v2f &offset, u16 dir, const v2f &al
 		drawItems(pos, screen_offset, hotbar_itemcount, align, 0,
 			mainlist, playeritem + 1, dir, true);
 	} else {
-		v2s32 firstpos = pos;
-		firstpos.X += width/4;
+		v2s32 upper_pos = pos - v2s32(0, m_hotbar_imagesize + m_padding);
 
-		v2s32 secondpos = firstpos;
-		firstpos = firstpos - v2s32(0, m_hotbar_imagesize + m_padding);
-
-		drawItems(firstpos, screen_offset, hotbar_itemcount / 2, align, 0,
+		drawItems(upper_pos, screen_offset, hotbar_itemcount / 2, align, 0,
 			mainlist, playeritem + 1, dir, true);
-		drawItems(secondpos, screen_offset, hotbar_itemcount, align,
+		drawItems(pos, screen_offset, hotbar_itemcount, align,
 			hotbar_itemcount / 2, mainlist, playeritem + 1, dir, true);
 	}
 }
