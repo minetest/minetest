@@ -1,0 +1,3 @@
+# Used for translating the mod title
+msgid "Test translations"
+msgstr "Test translations (French)"
