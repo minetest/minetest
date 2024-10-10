@@ -24,9 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <IVideoDriver.h>
 
-#include "log.h"
-#include "irrlicht_changes/printing.h"
-
 void draw_convex_polygon(video::IVideoDriver *driver, const std::vector<v2f> &polygon,
 		const video::SColor &color)
 {
@@ -35,16 +32,9 @@ void draw_convex_polygon(video::IVideoDriver *driver, const std::vector<v2f> &po
 
 	v2u32 ss = driver->getScreenSize();
 
-	// errorstream << "ss: "<< ss <<std::endl;
-
 	auto new_2d_vertex = [&color, &ss](const v2f &pos) -> video::S3DVertex {
-		if (false) {
-			return video::S3DVertex(v3f(pos.X * ss.X, pos.Y * ss.Y, 0.0f), v3f(),
-					color, v2f());
-		} else {
-			return video::S3DVertex(v3f(pos.X * 2.0f - 1.0f, -(pos.Y * 2.0f - 1.0f), 0.0f), v3f(),
-					color, v2f());
-		}
+		return video::S3DVertex(v3f(pos.X * ss.X, pos.Y * ss.Y, -1.0f), v3f(),
+				color, v2f());
 	};
 
 	std::vector<video::S3DVertex> vertices;
@@ -59,7 +49,6 @@ void draw_convex_polygon(video::IVideoDriver *driver, const std::vector<v2f> &po
 
 	video::SMaterial material;
 	material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-	material.ZWriteEnable = video::EZW_OFF;
 
 	driver->setMaterial(material);
 
