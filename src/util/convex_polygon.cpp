@@ -9,10 +9,9 @@
 
 #include <IVideoDriver.h>
 
-void draw_convex_polygon(video::IVideoDriver *driver, const std::vector<v2f> &polygon,
-		const video::SColor &color)
+void ConvexPolygon::draw(video::IVideoDriver *driver, const video::SColor &color) const
 {
-	if (polygon.size() < 3)
+	if (vertices.size() < 3)
 		return;
 
 	auto new_2d_vertex = [&color](const v2f &pos) -> video::S3DVertex {
@@ -21,14 +20,14 @@ void draw_convex_polygon(video::IVideoDriver *driver, const std::vector<v2f> &po
 				v3f(), color, v2f());
 	};
 
-	std::vector<video::S3DVertex> vertices;
-	vertices.reserve(polygon.size());
-	for (const v2f &v : polygon)
-		vertices.push_back(new_2d_vertex(v));
+	std::vector<video::S3DVertex> s3d_vertices;
+	s3d_vertices.reserve(vertices.size());
+	for (const v2f &v : vertices)
+		s3d_vertices.push_back(new_2d_vertex(v));
 
 	std::vector<u16> index_list;
-	index_list.reserve(polygon.size());
-	for (size_t i = 0; i < polygon.size(); ++i)
+	index_list.reserve(vertices.size());
+	for (size_t i = 0; i < vertices.size(); ++i)
 		index_list.push_back(i);
 
 	video::SMaterial material;
@@ -40,7 +39,7 @@ void draw_convex_polygon(video::IVideoDriver *driver, const std::vector<v2f> &po
 	driver->setTransform(video::ETS_VIEW, core::matrix4::EM4CONST_IDENTITY);
 	driver->setTransform(video::ETS_WORLD, core::matrix4::EM4CONST_IDENTITY);
 
-	driver->drawVertexPrimitiveList((void *)&vertices[0], (u32)vertices.size(),
+	driver->drawVertexPrimitiveList((void *)&s3d_vertices[0], (u32)s3d_vertices.size(),
 			(void *)&index_list[0], (u32)index_list.size() - 2,
 			video::EVT_STANDARD, // S3DVertex vertices
 			scene::EPT_TRIANGLE_FAN,
@@ -49,16 +48,16 @@ void draw_convex_polygon(video::IVideoDriver *driver, const std::vector<v2f> &po
 
 #endif // !def(SERVER)
 
-f32 get_convex_polygon_area(const std::vector<v2f> &polygon)
+f32 ConvexPolygon::area() const
 {
-	if (polygon.size() < 3)
+	if (vertices.size() < 3)
 		return 0.0f;
 	// sum up the areas of all triangles
 	f32 area = 0.0f;
-	const v2f &v1 = polygon[0];
-	for (size_t i = 2; i < polygon.size(); ++i) {
-		const v2f &v2 = polygon[i-1];
-		const v2f &v3 = polygon[i];
+	const v2f &v1 = vertices[0];
+	for (size_t i = 2; i < vertices.size(); ++i) {
+		const v2f &v2 = vertices[i-1];
+		const v2f &v3 = vertices[i];
 		// area of the triangle v1 v2 v3: 0.5 * det(d1 d2)
 		// (winding order matters, for sign)
 		v2f d1 = v2 - v1;
@@ -68,12 +67,16 @@ f32 get_convex_polygon_area(const std::vector<v2f> &polygon)
 	return area;
 }
 
-std::vector<v2f> clip_convex_polygon(const std::vector<v2f> &polygon, v3f clip_line)
+ConvexPolygon ConvexPolygon::clip(v3f clip_line) const
 {
 	using polygon_iterator = std::vector<v2f>::const_iterator;
 
 	// the return value
-	std::vector<v2f> polygon_clipped;
+	ConvexPolygon clipped;
+	auto &vertices_out = clipped.vertices;
+
+	if (vertices.empty())
+		return clipped; // emtpty
 
 	// returns whether pos is in the not clipped half-space
 	auto is_in = [&](const v2f &pos) {
@@ -102,39 +105,39 @@ std::vector<v2f> clip_convex_polygon(const std::vector<v2f> &polygon, v3f clip_l
 	// before
 	polygon_iterator first_in, first_out;
 	polygon_iterator last_out, last_in;
-	if (is_in(polygon[0])) {
-		first_out = std::find_if(polygon.begin() + 1, polygon.end(), is_out);
-		if (first_out == polygon.end()) {
+	if (is_in(vertices[0])) {
+		first_out = std::find_if(vertices.begin() + 1, vertices.end(), is_out);
+		if (first_out == vertices.end()) {
 			// all are in
-			polygon_clipped = polygon;
-			return polygon_clipped;
+			clipped = {vertices};
+			return clipped;
 		}
 		last_in = first_out - 1;
-		first_in = std::find_if(first_out + 1, polygon.end(), is_in);
+		first_in = std::find_if(first_out + 1, vertices.end(), is_in);
 		last_out = first_in - 1;
-		if (first_in == polygon.end())
-			first_in = polygon.begin(); // we already checked that the 0th is in
+		if (first_in == vertices.end())
+			first_in = vertices.begin(); // we already checked that the 0th is in
 	} else {
-		first_in = std::find_if(polygon.begin() + 1, polygon.end(), is_in);
-		if (first_in == polygon.end()) {
+		first_in = std::find_if(vertices.begin() + 1, vertices.end(), is_in);
+		if (first_in == vertices.end()) {
 			// all are out
-			return polygon_clipped; // empty
+			return clipped; // empty
 		}
 		last_out = first_in - 1;
-		first_out = std::find_if(first_in + 1, polygon.end(), is_out);
+		first_out = std::find_if(first_in + 1, vertices.end(), is_out);
 		last_in = first_out - 1;
-		if (first_out == polygon.end())
-			first_out = polygon.begin(); // we already checked that the 0th is out
+		if (first_out == vertices.end())
+			first_out = vertices.begin(); // we already checked that the 0th is out
 	}
 
 	// copy all vertices that are in
 	if (first_in <= last_in) {
-		polygon_clipped.reserve((last_in - first_in) + 1 + 2);
-		polygon_clipped.insert(polygon_clipped.end(), first_in, last_in + 1);
+		vertices_out.reserve((last_in - first_in) + 1 + 2);
+		vertices_out.insert(vertices_out.end(), first_in, last_in + 1);
 	} else {
-		polygon_clipped.reserve((polygon.end() - first_in) + (last_in - polygon.begin()) + 1 + 2);
-		polygon_clipped.insert(polygon_clipped.end(), first_in, polygon.end());
-		polygon_clipped.insert(polygon_clipped.end(), polygon.begin(), last_in + 1);
+		vertices_out.reserve((vertices.end() - first_in) + (last_in - vertices.begin()) + 1 + 2);
+		vertices_out.insert(vertices_out.end(), first_in, vertices.end());
+		vertices_out.insert(vertices_out.end(), vertices.begin(), last_in + 1);
 	}
 
 	auto split_edge = [&](const v2f &p1, const v2f &p2) {
@@ -147,10 +150,10 @@ std::vector<v2f> clip_convex_polygon(const std::vector<v2f> &polygon, v3f clip_l
 	};
 
 	// split in-out pair
-	polygon_clipped.push_back(split_edge(*last_in, *first_out));
+	vertices_out.push_back(split_edge(*last_in, *first_out));
 
 	// split out-in pair
-	polygon_clipped.push_back(split_edge(*last_out, *first_in));
+	vertices_out.push_back(split_edge(*last_out, *first_in));
 
-	return polygon_clipped;
+	return clipped;
 }

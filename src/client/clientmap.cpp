@@ -1052,7 +1052,7 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 	return ret;
 }
 
-std::vector<std::pair<std::vector<v2f>, video::SColor>>
+std::vector<std::pair<ConvexPolygon, video::SColor>>
 ClientMap::getPostFxPolygons()
 {
 	using mat4 = core::matrix4;
@@ -1151,7 +1151,7 @@ ClientMap::getPostFxPolygons()
 		return mat4(proj_mat * view_mat, mat4::EM4CONST_INVERSE_TRANSPOSED);
 	}();
 
-	std::vector<std::pair<std::vector<v2f>, video::SColor>> polygons;
+	std::vector<std::pair<ConvexPolygon, video::SColor>> polygons;
 
 	// Go through all 8 nodes that the near plane possibly instersects with
 
@@ -1182,12 +1182,12 @@ ClientMap::getPostFxPolygons()
 		if (post_color.getAlpha() == 0)
 			continue;
 
-		const std::vector<v2f> screen_polygon{
+		const ConvexPolygon screen_polygon{{
 				{0.0f, 0.0f}, // upper-left
 				{1.0f, 0.0f}, // upper-right
 				{1.0f, 1.0f}, // lower-right
 				{0.0f, 1.0f}, // lower-left
-			};
+			}};
 
 		// the (inverse and inverse transposed) world matrix for the node
 		// Transforms planes from node-local space to camera-offset-local world
@@ -1199,7 +1199,7 @@ ClientMap::getPostFxPolygons()
 
 		const mat4 wvp_mat_ti = vp_mat_ti * world_mat_ti;
 
-		auto clip_polygon_by_objsp_plane = [&](std::vector<v2f> &polyg,
+		auto clip_polygon_by_objsp_plane = [&](ConvexPolygon &polyg,
 				const v4f &clip_plane) -> bool {
 			v4f clip_plane_clipspace = mat4_mult_v4f(wvp_mat_ti, clip_plane);
 
@@ -1208,11 +1208,11 @@ ClientMap::getPostFxPolygons()
 			// a*p.X + b*p.Y + c*p.Z + d >= 0
 			v3f clip_line(clip_plane_clipspace[0], clip_plane_clipspace[1], clip_plane_clipspace[3]);
 
-			polyg = clip_convex_polygon(polyg, clip_line);
-			return polyg.size() >= 3;
+			polyg = polyg.clip(clip_line);
+			return polyg.vertices.size() >= 3;
 		};
 
-		auto clip_polygon_by_objsp_planes = [&](std::vector<v2f> &polyg,
+		auto clip_polygon_by_objsp_planes = [&](ConvexPolygon &polyg,
 				const std::vector<v4f> &clip_planes) -> bool {
 			for (const v4f &clip_plane : clip_planes)
 				if (!clip_polygon_by_objsp_plane(polyg, clip_plane))
@@ -1222,7 +1222,7 @@ ClientMap::getPostFxPolygons()
 
 		if (features.drawtype == NDT_NORMAL) {
 			// draw full cube
-			std::vector<v2f> polygon = screen_polygon;
+			ConvexPolygon polygon = screen_polygon;
 			if (!clip_polygon_by_objsp_planes(polygon, {
 						{ 2.0f, 0.0f, 0.0f, 1.0f},
 						{-2.0f, 0.0f, 0.0f, 1.0f},
@@ -1236,7 +1236,7 @@ ClientMap::getPostFxPolygons()
 
 		} else if (features.drawtype == NDT_LIQUID
 				|| features.drawtype == NDT_FLOWINGLIQUID) {
-			std::vector<v2f> polygon = screen_polygon;
+			ConvexPolygon polygon = screen_polygon;
 			// clip by all but top
 			if (!clip_polygon_by_objsp_planes(polygon, {
 						{ 2.0f, 0.0f, 0.0f, 1.0f},
@@ -1294,8 +1294,8 @@ ClientMap::getPostFxPolygons()
 				indices = {0, 1, 3,  0, 3, 2};
 			}
 
-			std::vector<v2f> polygon1 = polygon;
-			std::vector<v2f> &polygon2 = polygon;
+			ConvexPolygon polygon1 = polygon;
+			ConvexPolygon &polygon2 = polygon;
 
 			if (clip_polygon_by_objsp_plane(polygon1, triangle_split_plane)
 					&& clip_polygon_by_objsp_plane(polygon1,
@@ -1329,7 +1329,7 @@ video::SColorf ClientMap::renderPostFx()
 	video::IVideoDriver *driver = SceneManager->getVideoDriver();
 
 	for (const auto &[polygon, post_color] : polygons) {
-		draw_convex_polygon(driver, polygon, post_color);
+		polygon.draw(driver, post_color);
 	}
 
 	// Color for wield item
@@ -1341,7 +1341,7 @@ video::SColorf ClientMap::renderPostFx()
 		video::SColorf color = post_color;
 
 		// (screen size and aspect ratio don't matter for relative screen area)
-		f32 area = get_convex_polygon_area(polygon);
+		f32 area = polygon.area();
 		color.a *= area;
 
 		color_sum.r += color.a * color.r;
