@@ -85,7 +85,15 @@ local function init_globals()
 		end,
 		-- Filter function
 		function(element, gameid)
-			return element.gameid == gameid
+			-- Keep in sync with the logic in pkgmgr.find_by_gameid
+			local el_gameid = pkgmgr.normalize_game_id(element.gameid)
+			if el_gameid == gameid then
+				return true
+			end
+			if pkgmgr.find_by_gameid(gameid).aliases[el_gameid] then
+				return true
+			end
+			return false
 		end
 	)
 
