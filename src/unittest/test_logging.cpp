@@ -13,7 +13,7 @@ public:
 
 	void runTests(IGameDef *gamedef);
 
-	void testNullCheck();
+	void testNullChecks();
 	void testBitCheck();
 };
 
@@ -21,22 +21,33 @@ static TestLogging g_test_instance;
 
 void TestLogging::runTests(IGameDef *gamedef)
 {
-	TEST(testNullCheck);
+	TEST(testNullChecks);
 	TEST(testBitCheck);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void TestLogging::testNullCheck()
+void TestLogging::testNullChecks()
 {
 	CaptureLogOutput capture(g_logger);
 
-	infostream << "Testing " << (const char*)0 << std::endl;
+	infostream << "Test char*: "          << (char*)0          << std::endl;
+	infostream << "Test signed char*: "   << (signed char*)0   << std::endl;
+	infostream << "Test unsigned char*: " << (unsigned char*)0 << std::endl;
+
+	infostream << "Test const char*: "          << (const char*)0          << std::endl;
+	infostream << "Test const signed char*: "   << (const signed char*)0   << std::endl;
+	infostream << "Test const unsigned char*: " << (const unsigned char*)0 << std::endl;
+
 
 	auto logs = capture.take();
-
-	UASSERTEQ(size_t, logs.size(), 1);
-	UASSERTEQ(std::string, logs[0].text, "Testing (null)");
+	UASSERTEQ(size_t, logs.size(), 6);
+	UASSERTEQ(std::string, logs[0].text, "Test char*: (null)");
+	UASSERTEQ(std::string, logs[1].text, "Test signed char*: (null)");
+	UASSERTEQ(std::string, logs[2].text, "Test unsigned char*: (null)");
+	UASSERTEQ(std::string, logs[3].text, "Test const char*: (null)");
+	UASSERTEQ(std::string, logs[4].text, "Test const signed char*: (null)");
+	UASSERTEQ(std::string, logs[5].text, "Test const unsigned char*: (null)");
 }
 
 class ForceEofBit {};

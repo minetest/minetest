@@ -124,13 +124,16 @@ private:
 };
 
 struct LogEntry {
+	LogLevel level;
 	std::string timestamp;
 	std::string thread_name;
 	std::string text;
 	// "timestamp: level[thread_name]: text"
 	std::string combined;
 
-	LogEntry(std::string timestamp, std::string thread_name, std::string text, std::string combined) :
+	LogEntry(LogLevel level, std::string timestamp, std::string thread_name,
+			std::string text, std::string combined) :
+		level(level),
 		timestamp(std::move(timestamp)),
 		thread_name(std::move(thread_name)),
 		text(std::move(text)),
@@ -152,18 +155,24 @@ public:
 		m_logger.removeOutput(this);
 	}
 
+	void setLogLevel(LogLevel level)
+	{
+		m_logger.removeOutput(this);
+		m_logger.addOutputMaxLevel(this, level);
+	}
+
 	void logRaw(LogLevel lev, std::string_view line) override
 	{
 		MutexAutoLock lock(m_mutex);
-		m_entries.emplace_back("", "", std::string(line), "");
+		m_entries.emplace_back(lev, "", "", std::string(line), std::string(line));
 	}
 
-	void log(LogLevel, const std::string &combined,
+	void log(LogLevel lev, const std::string &combined,
 		const std::string &time, const std::string &thread_name,
 		std::string_view payload_text) override
 	{
 		MutexAutoLock lock(m_mutex);
-		m_entries.emplace_back(time, thread_name, std::string(payload_text), combined);
+		m_entries.emplace_back(lev, time, thread_name, std::string(payload_text), combined);
 	}
 
 	// Take the log entries currently stored, clearing the buffer.
@@ -177,57 +186,13 @@ public:
 
 private:
 	Logger &m_logger;
+	// g_logger serializes calls to log/logRaw with a mutex, but that
+	// doesn't prevent take() from being called on top of it.
+	// This mutex prevents that.
 	std::mutex m_mutex;
 	std::vector<LogEntry> m_entries;
 };
 
-class LogOutputBuffer : public ICombinedLogOutput {
-public:
-	LogOutputBuffer(Logger &logger) :
-		m_logger(logger)
-	{
-		updateLogLevel();
-	};
-
-	virtual ~LogOutputBuffer()
-	{
-		m_logger.removeOutput(this);
-	}
-
-	void updateLogLevel();
-
-	void logRaw(LogLevel lev, std::string_view line);
-
-	void clear()
-	{
-		MutexAutoLock lock(m_buffer_mutex);
-		m_buffer = std::queue<std::string>();
-	}
-
-	bool empty() const
-	{
-		MutexAutoLock lock(m_buffer_mutex);
-		return m_buffer.empty();
-	}
-
-	std::string get()
-	{
-		MutexAutoLock lock(m_buffer_mutex);
-		if (m_buffer.empty())
-			return "";
-		std::string s = std::move(m_buffer.front());
-		m_buffer.pop();
-		return s;
-	}
-
-private:
-	// g_logger serializes calls to logRaw() with a mutex, but that
-	// doesn't prevent get() / clear() from being called on top of it.
-	// This mutex prevents that.
-	mutable std::mutex m_buffer_mutex;
-	std::queue<std::string> m_buffer;
-	Logger &m_logger;
-};
 
 #ifdef __ANDROID__
 class AndroidLogOutput : public ICombinedLogOutput {
