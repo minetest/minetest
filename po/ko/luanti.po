@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Korean (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-01-11 09:06+0000\n"
-"Last-Translator: dog <dog808657@gmail.com>\n"
+"PO-Revision-Date: 2024-10-10 21:04+0000\n"
+"Last-Translator: alasa ala <dave.stop.stop@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/minetest/minetest/"
 "ko/>\n"
 "Language: ko\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -5555,7 +5555,7 @@ msgstr "쉐이더 경로"
 
 #: src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr "쉐이더"
+msgstr "셰이더"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
