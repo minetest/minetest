@@ -822,17 +822,9 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 			} else {
 				flags |= VMANIP_BLOCK_DATA_INEXIST;
 
-				/*
-					Mark area inexistent
-				*/
+				// Mark area inexistent
 				VoxelArea a(p*MAP_BLOCKSIZE, (p+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
-				// Fill with VOXELFLAG_NO_DATA
-				for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
-				for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
-				{
-					s32 i = m_area.index(a.MinEdge.X,y,z);
-					memset(&m_flags[i], VOXELFLAG_NO_DATA, MAP_BLOCKSIZE);
-				}
+				setFlags(a, VOXELFLAG_NO_DATA);
 			}
 		}
 		/*else if (block->getNode(0, 0, 0).getContent() == CONTENT_IGNORE)
@@ -848,9 +840,9 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 }
 
 void MMVManip::blitBackAll(std::map<v3s16, MapBlock*> *modified_blocks,
-	bool overwrite_generated)
+	bool overwrite_generated) const
 {
-	if(m_area.getExtent() == v3s16(0,0,0))
+	if (m_area.hasEmptyExtent())
 		return;
 	assert(m_map);
 

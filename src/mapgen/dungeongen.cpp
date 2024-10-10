@@ -91,7 +91,7 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 	random.seed(bseed + 2);
 
 	// Dungeon generator doesn't modify places which have this set
-	vm->clearFlag(VMANIP_FLAG_DUNGEON_INSIDE | VMANIP_FLAG_DUNGEON_PRESERVE);
+	vm->clearFlags(vm->m_area, VMANIP_FLAG_DUNGEON_INSIDE | VMANIP_FLAG_DUNGEON_PRESERVE);
 
 	if (dp.only_in_ground) {
 		// Set all air and liquid drawtypes to be untouchable to make dungeons generate

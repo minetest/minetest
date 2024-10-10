@@ -178,13 +178,13 @@ void MapBlock::copyTo(VoxelManipulator &dst)
 			getPosRelative(), data_size);
 }
 
-void MapBlock::copyFrom(VoxelManipulator &dst)
+void MapBlock::copyFrom(const VoxelManipulator &src)
 {
 	v3s16 data_size(MAP_BLOCKSIZE, MAP_BLOCKSIZE, MAP_BLOCKSIZE);
 	VoxelArea data_area(v3s16(0,0,0), data_size - v3s16(1,1,1));
 
 	// Copy from VoxelManipulator to data
-	dst.copyTo(data, data_area, v3s16(0,0,0),
+	src.copyTo(data, data_area, v3s16(0,0,0),
 			getPosRelative(), data_size);
 }
 

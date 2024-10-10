@@ -68,6 +68,8 @@ void TestMoveAction::runTests(IGameDef *gamedef)
 	auto null_map = std::unique_ptr<ServerMap>();
 	ServerEnvironment server_env(std::move(null_map), &server, &mb);
 	MockServerActiveObject obj(&server_env);
+	obj.setId(1);
+	server.getScriptIface()->addObjectReference(&obj);
 
 	TEST(testMove, &obj, gamedef);
 	TEST(testMoveFillStack, &obj, gamedef);
@@ -82,6 +84,8 @@ void TestMoveAction::runTests(IGameDef *gamedef)
 
 	TEST(testCallbacks, &obj, &server);
 	TEST(testCallbacksSwap, &obj, &server);
+
+	server.getScriptIface()->removeObjectReference(&obj);
 }
 
 static ItemStack parse_itemstack(const char *s)

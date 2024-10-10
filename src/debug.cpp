@@ -54,7 +54,7 @@ void sanity_check_fn(const char *assertion, const char *file,
 #endif
 
 	errorstream << std::endl << "In thread " << std::hex
-		<< std::this_thread::get_id() << ":" << std::endl;
+		<< std::this_thread::get_id() << ":\n" << std::dec;
 	errorstream << file << ":" << line << ": " << function
 		<< ": An engine assumption '" << assertion << "' failed." << std::endl;
 
@@ -69,7 +69,7 @@ void fatal_error_fn(const char *msg, const char *file,
 #endif
 
 	errorstream << std::endl << "In thread " << std::hex
-		<< std::this_thread::get_id() << ":" << std::endl;
+		<< std::this_thread::get_id() << ":\n" << std::dec;
 	errorstream << file << ":" << line << ": " << function
 		<< ": A fatal error occurred: " << msg << std::endl;
 
