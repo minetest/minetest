@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
 #include "settings.h"
+#include "server.h"
 
 void migrate_settings()
 {
@@ -23,7 +24,7 @@ void migrate_settings()
 	// Disables anticheat
 	if (g_settings->existsLocal("disable_anticheat")) {
 		if (g_settings->getBool("disable_anticheat")) {
-			g_settings->set("anticheat_flags", "nodigging,nointeraction,nomovement");
+			g_settings->setFlagStr("anticheat_flags", 0, flagdesc_anticheat);
 		}
 		g_settings->remove("disable_anticheat");
 	}
