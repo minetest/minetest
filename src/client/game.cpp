@@ -384,6 +384,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float>
 		m_animation_timer_delta_pixel{"animationTimerDelta"};
 	CachedPixelShaderSetting<float, 3> m_day_light{"dayLight"};
+	CachedVertexShaderSetting<float, 3> m_ambient_light{"ambientLight"};
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
 	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel{"cameraOffset"};
 	CachedVertexShaderSetting<float, 3> m_camera_offset_vertex{"cameraOffset"};
@@ -462,6 +463,11 @@ public:
 		get_sunlight_color(&sunlight, daynight_ratio);
 		m_day_light.set(sunlight, services);
 
+		const auto &lighting = m_client->getEnv().getLocalPlayer()->getLighting();
+
+		video::SColorf ambient_light_f(lighting.ambient_light);
+		m_ambient_light.set(ambient_light_f, services);
+
 		u32 animation_timer = m_client->getEnv().getFrameTime() % 1000000;
 		float animation_timer_f = (float)animation_timer / 100000.f;
 		m_animation_timer_vertex.set(&animation_timer_f, services);
@@ -497,16 +503,13 @@ public:
 		m_texel_size0_vertex.set(m_texel_size0, services);
 		m_texel_size0_pixel.set(m_texel_size0, services);
 
-		const auto &lighting = m_client->getEnv().getLocalPlayer()->getLighting();
-
-		const AutoExposure &exposure_params = lighting.exposure;
 		std::array<float, 7> exposure_buffer = {
-			std::pow(2.0f, exposure_params.luminance_min),
-			std::pow(2.0f, exposure_params.luminance_max),
-			exposure_params.exposure_correction,
-			exposure_params.speed_dark_bright,
-			exposure_params.speed_bright_dark,
-			exposure_params.center_weight_power,
+			std::pow(2.0f, lighting.exposure.luminance_min),
+			std::pow(2.0f, lighting.exposure.luminance_max),
+			lighting.exposure.exposure_correction,
+			lighting.exposure.speed_dark_bright,
+			lighting.exposure.speed_bright_dark,
+			lighting.exposure.center_weight_power,
 			powf(2.f, m_user_exposure_compensation)
 		};
 		m_exposure_params_pixel.set(exposure_buffer.data(), services);

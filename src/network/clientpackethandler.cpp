@@ -1829,4 +1829,6 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 				>> lighting.bloom_strength_factor
 				>> lighting.bloom_radius;
 	}
+	if (pkt->getRemainingBytes() >= 4)
+		*pkt >> lighting.ambient_light;
 }

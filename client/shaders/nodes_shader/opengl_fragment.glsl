@@ -43,7 +43,8 @@ varying vec3 vPosition;
 // cameraOffset + worldPosition (for large coordinates the limits of float
 // precision must be considered).
 varying vec3 worldPosition;
-varying lowp vec4 varColor;
+varying lowp vec3 lightColor;
+varying vec3 hardwareColor;
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
 #else
@@ -432,7 +433,7 @@ void main(void)
 #endif
 
 	color = base.rgb;
-	vec4 col = vec4(color.rgb * varColor.rgb, 1.0);
+	vec4 col = vec4(color.rgb * hardwareColor.rgb * lightColor.rgb, 1.0);
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	// Fragment normal, can differ from vNormal which is derived from vertex normals.
@@ -535,7 +536,7 @@ void main(void)
 #if (defined(ENABLE_NODE_SPECULAR) && !defined(MATERIAL_WAVING_LIQUID))
 		// Apply specular to blocks.
 		if (dot(v_LightDirection, vNormal) < 0.0) {
-			float intensity = 2.0 * (1.0 - (base.r * varColor.r));
+			float intensity = 2.0 * (1.0 - (base.r * lightColor.r));
 			const float specular_exponent = 5.0;
 			const float fresnel_exponent =  4.0;
 
@@ -547,7 +548,7 @@ void main(void)
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES) && defined(ENABLE_TRANSLUCENT_FOLIAGE)
 		// Simulate translucent foliage.
-		col.rgb += 4.0 * dayLight * base.rgb * normalize(base.rgb * varColor.rgb * varColor.rgb) * f_adj_shadow_strength * pow(max(-dot(v_LightDirection, viewVec), 0.0), 4.0) * max(1.0 - shadow_uncorrected, 0.0);
+		col.rgb += 4.0 * dayLight * base.rgb * normalize(base.rgb * lightColor.rgb * lightColor.rgb) * f_adj_shadow_strength * pow(max(-dot(v_LightDirection, viewVec), 0.0), 4.0) * max(1.0 - shadow_uncorrected, 0.0);
 #endif
 	}
 #endif

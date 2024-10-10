@@ -1923,6 +1923,8 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 	pkt << lighting.bloom_intensity << lighting.bloom_strength_factor <<
 			lighting.bloom_radius;
 
+	pkt << lighting.ambient_light;
+
 	Send(&pkt);
 }
 

@@ -2,6 +2,7 @@ uniform mat4 mWorld;
 uniform vec3 dayLight;
 uniform float animationTimer;
 uniform lowp vec4 materialColor;
+uniform vec3 ambientLight;
 
 varying vec3 vNormal;
 varying vec3 vPosition;
@@ -109,23 +110,29 @@ void main(void)
 		: directional_ambient(normalize(inVertexNormal));
 #endif
 
-	vec4 color = inVertexColor;
+	// Calculate color.
 
-	color *= materialColor;
+	// Unpack the values from alpha
+	float ratio = floor(materialColor.a*16)/16;
+	float lightBase = floor((materialColor.a - ratio)*256)/16;
+
+	vec3 light = vec3(lightBase, lightBase, lightBase);
 
 	// The alpha gives the ratio of sunlight in the incoming light.
-	nightRatio = 1.0 - color.a;
-	color.rgb = color.rgb * (color.a * dayLight.rgb +
+	nightRatio = 1.0 - ratio;
+	light.rgb = light.rgb * (ratio * dayLight.rgb +
 		nightRatio * artificialLight.rgb) * 2.0;
-	color.a = 1.0;
 
 	// Emphase blue a bit in darker places
 	// See C++ implementation in mapblock_mesh.cpp final_color_blend()
-	float brightness = (color.r + color.g + color.b) / 3.0;
-	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
+	float brightness = (light.r + light.g + light.b) / 3.0;
+	light.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
 		0.07 * brightness);
 
-	varColor = clamp(color, 0.0, 1.0);
+	// In the end add the normalized ambient light and clamp that.
+	light.rgb += ambientLight;
+
+	varColor = vec4(clamp(light.rgb, 0.0, 1.0), 1.0);
 
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
