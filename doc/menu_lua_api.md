@@ -57,7 +57,10 @@ Functions
   * returns the maximum supported network protocol version
 * `core.open_url(url)`
   * opens the URL in a web browser, returns false on failure.
-  * Must begin with http:// or https://
+  * `url` must begin with http:// or https://
+* `core.open_url_dialog(url)`
+  * shows a dialog to allow the user to choose whether to open a URL.
+  * `url` must begin with http:// or https://
 * `core.open_dir(path)`
   * opens the path in the system file browser/explorer, returns false on failure.
   * Must be an existing directory.
@@ -65,6 +68,8 @@ Functions
   * Android only. Shares file using the share popup
 * `core.get_version()` (possible in async calls)
   * returns current core version
+* `core.get_formspec_version()`
+  * returns maximum supported formspec version
 
 
 

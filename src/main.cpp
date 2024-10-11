@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "migratesettings.h"
 #include "gettext.h"
 #include "log.h"
+#include "log_internal.h"
 #include "util/quicktune.h"
 #include "httpfetch.h"
 #include "gameparams.h"
@@ -728,7 +729,7 @@ static void startup_message()
 	print_version(infostream);
 	infostream << "SER_FMT_VER_HIGHEST_READ=" <<
 		TOSTRING(SER_FMT_VER_HIGHEST_READ) <<
-		" LATEST_PROTOCOL_VERSION=" << TOSTRING(LATEST_PROTOCOL_VERSION)
+		" LATEST_PROTOCOL_VERSION=" << LATEST_PROTOCOL_VERSION
 		<< std::endl;
 }
 
@@ -1278,8 +1279,7 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 
 		{
 			MapBlock mb(v3s16(0,0,0), &server);
-			u8 ver = readU8(iss);
-			mb.deSerialize(iss, ver, true);
+			ServerMap::deSerializeBlock(&mb, iss);
 
 			oss.str("");
 			oss.clear();

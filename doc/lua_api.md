@@ -274,7 +274,7 @@ Accepted formats are:
 
     images: .png, .jpg, .tga, (deprecated:) .bmp
     sounds: .ogg vorbis
-    models: .x, .b3d, .obj, .gltf (Minetest 5.10 or newer)
+    models: .x, .b3d, .obj, (since version 5.10:) .gltf, .glb
 
 Other formats won't be sent to the client (e.g. you can store .blend files
 in a folder for convenience, without the risk that such files are transferred)
@@ -294,7 +294,7 @@ depends on by supplying a file with an equal name.
 Only a subset of model file format features is supported:
 
 Simple textured meshes (with multiple textures), optionally with normals.
-The .x and .b3d formats additionally support skeletal animation.
+The .x, .b3d and .gltf formats additionally support (a single) animation.
 
 #### glTF
 
@@ -302,9 +302,15 @@ The glTF model file format for now only serves as a
 more modern alternative to the other static model file formats;
 it unlocks no special rendering features.
 
+Binary glTF (`.glb`) files are supported and recommended over `.gltf` files
+due to their space savings.
+
 This means that many glTF features are not supported *yet*, including:
 
-* Animation
+* Animations
+  * Only a single animation is supported,
+    use frame ranges within this animation.
+  * Only integer frames are supported.
 * Cameras
 * Materials
   * Only base color textures are supported
@@ -490,6 +496,11 @@ to let the client generate textures on-the-fly.
 The modifiers are applied directly in sRGB colorspace,
 i.e. without gamma-correction.
 
+### Notes
+
+ * `TEXMOD_UPSCALE`: The texture with the lower resolution will be automatically
+   upscaled to the higher resolution texture.
+
 ### Texture overlaying
 
 Textures can be overlaid by putting a `^` between them.
@@ -503,8 +514,9 @@ Example:
     default_dirt.png^default_grass_side.png
 
 `default_grass_side.png` is overlaid over `default_dirt.png`.
-The texture with the lower resolution will be automatically upscaled to
-the higher resolution texture.
+
+*See notes: `TEXMOD_UPSCALE`*
+
 
 ### Texture grouping
 
@@ -701,6 +713,8 @@ Apply a mask to the base image.
 
 The mask is applied using binary AND.
 
+*See notes: `TEXMOD_UPSCALE`*
+
 #### `[sheet:<w>x<h>:<x>,<y>`
 
 Retrieves a tile at position x, y (in tiles, 0-indexed)
@@ -798,6 +812,8 @@ in GIMP. Overlay is the same as Hard light but with the role of the two
 textures swapped, see the `[hardlight` modifier description for more detail
 about these blend modes.
 
+*See notes: `TEXMOD_UPSCALE`*
+
 #### `[hardlight:<file>`
 
 Applies a Hard light blend with the two textures, like the Hard light layer
@@ -812,6 +828,8 @@ increase contrast without clipping.
 
 Hard light is the same as Overlay but with the roles of the two textures
 swapped, i.e. `A.png^[hardlight:B.png` is the same as `B.png^[overlay:A.png`
+
+*See notes: `TEXMOD_UPSCALE`*
 
 #### `[png:<base64>`
 
@@ -830,6 +848,8 @@ that you could instead achieve by just using a file.
 In particular consider `minetest.dynamic_add_media` and test whether
 using other texture modifiers could result in a shorter string than
 embedding a whole image, this may vary by use case.
+
+*See notes: `TEXMOD_UPSCALE`*
 
 Hardware coloring
 -----------------
@@ -1394,16 +1414,19 @@ The function of `param2` is determined by `paramtype2` in node definition.
       The palette should have 256 pixels.
 * `paramtype2 = "colorfacedir"`
     * Same as `facedir`, but with colors.
-    * The first three bits of `param2` tells which color is picked from the
+    * The three most significant bits of `param2` tells which color is picked from the
       palette. The palette should have 8 pixels.
+    * The five least significant bits contain the `facedir` value.
 * `paramtype2 = "color4dir"`
-    * Same as `facedir`, but with colors.
-    * The first six bits of `param2` tells which color is picked from the
+    * Same as `4dir`, but with colors.
+    * The six most significant bits of `param2` tells which color is picked from the
       palette. The palette should have 64 pixels.
+    * The two least significant bits contain the `4dir` rotation.
 * `paramtype2 = "colorwallmounted"`
     * Same as `wallmounted`, but with colors.
-    * The first five bits of `param2` tells which color is picked from the
+    * The five most significant bits of `param2` tells which color is picked from the
       palette. The palette should have 32 pixels.
+    * The three least significant bits contain the `wallmounted` value.
 * `paramtype2 = "glasslikeliquidlevel"`
     * Only valid for "glasslike_framed" or "glasslike_framed_optional"
       drawtypes. "glasslike_framed_optional" nodes are only affected if the
@@ -1417,9 +1440,9 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * Liquid texture is defined using `special_tiles = {"modname_tilename.png"}`
 * `paramtype2 = "colordegrotate"`
     * Same as `degrotate`, but with colors.
-    * The first (most-significant) three bits of `param2` tells which color
-      is picked from the palette. The palette should have 8 pixels.
-    * Remaining 5 bits store rotation in range 0–23 (i.e. in 15° steps)
+    * The three most significant bits of `param2` tells which color is picked
+      from the palette. The palette should have 8 pixels.
+    * The five least significant bits store rotation in range 0–23 (i.e. in 15° steps)
 * `paramtype2 = "none"`
     * `param2` will not be used by the engine and can be used to store
       an arbitrary value
@@ -1470,7 +1493,8 @@ Look for examples in `games/devtest` or `games/minetest_game`.
       'Connected Glass'.
 * `allfaces`
     * Often used for partially-transparent nodes.
-    * External and internal sides of textures are visible.
+    * External sides of textures, and unlike other drawtypes, the external sides
+      of other blocks, are visible from the inside.
 * `allfaces_optional`
     * Often used for leaves nodes.
     * This switches between `normal`, `glasslike` and `allfaces` according to
@@ -2729,6 +2753,8 @@ Version History
 * Formspec version 7 (5.8.0):
   * style[]: Add focused state for buttons
   * Add field_enter_after_edit[] (experimental)
+* Formspec version 8 (5.10.0)
+  * scroll_container[]: content padding parameter
 
 Elements
 --------
@@ -2812,7 +2838,7 @@ Elements
 * End of a container, following elements are no longer relative to this
   container.
 
-### `scroll_container[<X>,<Y>;<W>,<H>;<scrollbar name>;<orientation>;<scroll factor>]`
+### `scroll_container[<X>,<Y>;<W>,<H>;<scrollbar name>;<orientation>;<scroll factor>;<content padding>]`
 
 * Start of a scroll_container block. All contained elements will ...
   * take the scroll_container coordinate as position origin,
@@ -2821,6 +2847,12 @@ Elements
   * be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
 * `orientation`: possible values are `vertical` and `horizontal`.
 * `scroll factor`: optional, defaults to `0.1`.
+* `content padding`: (optional), in formspec coordinate units
+  * If specified, the scrollbar properties `max` and `thumbsize` are calculated automatically
+    based on the content size plus `content padding` at the end of the container. `min` is set to 0.
+  * Negative `scroll factor` is not supported.
+  * When active, `scrollbaroptions[]` has no effect on the affected properties.
+  * Defaults to empty value (= disabled).
 * Nesting is possible.
 * Some elements might work a little different if they are in a scroll_container.
 * Note: If you want the scroll_container to actually work, you also need to add a
@@ -5524,6 +5556,8 @@ Utilities
       hotbar_hud_element = true,
       -- Bulk LBM support (5.10.0)
       bulk_lbms = true,
+      -- ABM supports field without_neighbors (5.10.0)
+      abm_without_neighbors = true,
   }
   ```
 
@@ -5847,8 +5881,13 @@ Call these functions only at load time!
     * `clicker`: ObjectRef - Object that acted upon `player`, may or may not be a player
 * `minetest.register_on_player_hpchange(function(player, hp_change, reason), modifier)`
     * Called when the player gets damaged or healed
+    * When `hp == 0`, damage doesn't trigger this callback.
+    * When `hp == hp_max`, healing does still trigger this callback.
     * `player`: ObjectRef of the player
     * `hp_change`: the amount of change. Negative when it is damage.
+      * Historically, the new HP value was clamped to [0, 65535] before
+        calculating the HP change. This clamping has been removed as of
+        Minetest 5.10.0
     * `reason`: a PlayerHPChangeReason table.
         * The `type` field will have one of the following values:
             * `set_hp`: A mod or the engine called `set_hp` without
@@ -6556,6 +6595,9 @@ Formspec
 * `minetest.formspec_escape(string)`: returns a string
     * escapes the characters "[", "]", "\", "," and ";", which cannot be used
       in formspecs.
+* `minetest.hypertext_escape(string)`: returns a string
+    * escapes the characters "\", "<", and ">" to show text in a hypertext element.
+    * not safe for use with tag attributes.
 * `minetest.explode_table_event(string)`: returns a table
     * returns e.g. `{type="CHG", row=1, column=2}`
     * `type` is one of:
@@ -6813,17 +6855,6 @@ This allows you easy interoperability for delegating work to jobs.
     * Register a path to a Lua file to be imported when an async environment
       is initialized. You can use this to preload code which you can then call
       later using `minetest.handle_async()`.
-* `minetest.register_portable_metatable(name, mt)`:
-    * Register a metatable that should be preserved when data is transferred
-    between the main thread and the async environment.
-    * `name` is a string that identifies the metatable. It is recommended to
-      follow the `modname:name` convention for this identifier.
-    * `mt` is the metatable to register.
-    * Note that it is allowed to register the same metatable under multiple
-      names, but it is not allowed to register multiple metatables under the
-      same name.
-    * You must register the metatable in both the main environment
-      and the async environment for this mechanism to work.
 
 
 ### List of APIs available in an async environment
@@ -6853,7 +6884,8 @@ Functions:
 
 * Standalone helpers such as logging, filesystem, encoding,
   hashing or compression APIs
-* `minetest.register_portable_metatable` (see above)
+* `minetest.register_portable_metatable`
+* IPC
 
 Variables:
 
@@ -6931,6 +6963,7 @@ Functions:
 * `minetest.get_node`, `set_node`, `find_node_near`, `find_nodes_in_area`,
   `spawn_tree` and similar
     * these only operate on the current chunk (if inside a callback)
+* IPC
 
 Variables:
 
@@ -7007,6 +7040,52 @@ Server
     * Clients will attempt to fetch files added this way via remote media,
       this can make transfer of bigger files painless (if set up). Nevertheless
       it is advised not to use dynamic media for big media files.
+
+IPC
+---
+
+The engine provides a generalized mechanism to enable sharing data between the
+different Lua environments (main, mapgen and async).
+It is essentially a shared in-memory key-value store.
+
+* `minetest.ipc_get(key)`:
+  * Read a value from the shared data area.
+  * `key`: string, should use the `"modname:thing"` convention to avoid conflicts.
+  * returns an arbitrary Lua value, or `nil` if this key does not exist
+* `minetest.ipc_set(key, value)`:
+  * Write a value to the shared data area.
+  * `key`: as above
+  * `value`: an arbitrary Lua value, cannot be or contain userdata.
+
+Interacting with the shared data will perform an operation comparable to
+(de)serialization on each access.
+For that reason modifying references will not have any effect, as in this example:
+```lua
+minetest.ipc_set("test:foo", {})
+minetest.ipc_get("test:foo").subkey = "value" -- WRONG!
+minetest.ipc_get("test:foo") -- returns an empty table
+```
+
+**Advanced**:
+
+* `minetest.ipc_cas(key, old_value, new_value)`:
+  * Write a value to the shared data area, but only if the previous value
+    equals what was given.
+    This operation is called Compare-and-Swap and can be used to implement
+    synchronization between threads.
+  * `key`: as above
+  * `old_value`: value compared to using `==` (`nil` compares equal for non-existing keys)
+  * `new_value`: value that will be set
+  * returns: true on success, false otherwise
+* `minetest.ipc_poll(key, timeout)`:
+  * Do a blocking wait until a value (other than `nil`) is present at the key.
+  * **IMPORTANT**: You usually don't need this function. Use this as a last resort
+    if nothing else can satisfy your use case! None of the Lua environments the
+    engine has are safe to block for extended periods, especially on the main
+    thread any delays directly translate to lag felt by players.
+  * `key`: as above
+  * `timeout`: maximum wait time, in milliseconds (positive values only)
+  * returns: true on success, false on timeout
 
 Bans
 ----
@@ -7406,6 +7485,17 @@ Misc.
 
 * `minetest.global_exists(name)`
     * Checks if a global variable has been set, without triggering a warning.
+
+* `minetest.register_portable_metatable(name, mt)`:
+    * Register a metatable that should be preserved when Lua data is transferred
+      between environments (via IPC or `handle_async`).
+    * `name` is a string that identifies the metatable. It is recommended to
+      follow the `modname:name` convention for this identifier.
+    * `mt` is the metatable to register.
+    * Note that the same metatable can be registered under multiple names,
+      but multiple metatables must not be registered under the same name.
+    * You must register the metatable in both the main environment
+      and the async environment for this mechanism to work.
 
 Global objects
 --------------
@@ -8017,8 +8107,7 @@ child will follow movement and rotation of that bone.
        * Animation interpolates towards the end frame but stops when it is reached
        * If looped, there is no interpolation back to the start frame
        * If looped, the model should look identical at start and end
-       * Only integer numbers are supported
-       * default: `{x=1, y=1}`
+       * default: `{x=1.0, y=1.0}`
     * `frame_speed`: How fast the animation plays, in frames per second (number)
        * default: `15.0`
     * `frame_blend`: number, default: `0.0`
@@ -8241,12 +8330,18 @@ child will follow movement and rotation of that bone.
       bgcolor[], any non-style elements (eg: label) may result in weird behavior.
     * Only affects formspecs shown after this is called.
 * `get_formspec_prepend()`: returns a formspec string.
-* `get_player_control()`: returns table with player pressed keys
-    * The table consists of fields with the following boolean values
-      representing the pressed keys: `up`, `down`, `left`, `right`, `jump`,
-      `aux1`, `sneak`, `dig`, `place`, `LMB`, `RMB`, and `zoom`.
+* `get_player_control()`: returns table with player input
+    * The table contains the following boolean fields representing the pressed
+      keys: `up`, `down`, `left`, `right`, `jump`, `aux1`, `sneak`, `dig`,
+      `place`, `LMB`, `RMB` and `zoom`.
     * The fields `LMB` and `RMB` are equal to `dig` and `place` respectively,
       and exist only to preserve backwards compatibility.
+    * The table also contains the fields `movement_x` and `movement_y`.
+        * They represent the movement of the player. Values are numbers in the
+          range [-1.0,+1.0].
+        * They take both keyboard and joystick input into account.
+        * You should prefer them over `up`, `down`, `left` and `right` to
+          support different input methods correctly.
     * Returns an empty table `{}` if the object is not a player.
 * `get_player_control_bits()`: returns integer with bit packed player pressed
   keys.
@@ -8574,23 +8669,43 @@ child will follow movement and rotation of that bone.
           * values < 0 cause an effect similar to inversion,
             but keeping original luma and being symmetrical in terms of saturation
             (eg. -1 and 1 is the same saturation and luma, but different hues)
+        * This value has no effect on clients who have shaders or post-processing disabled.
       * `shadows` is a table that controls ambient shadows
+        * This has no effect on clients who have the "Dynamic Shadows" effect disabled.
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
-            * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
         * `tint` tints the shadows with the provided color, with RGB values ranging from 0 to 255.
           (default `{r=0, g=0, b=0}`)
-            * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
       * `exposure` is a table that controls automatic exposure.
         The basic exposure factor equation is `e = 2^exposure_correction / clamp(luminance, 2^luminance_min, 2^luminance_max)`
+        * This has no effect on clients who have the "Automatic Exposure" effect disabled.
         * `luminance_min` set the lower luminance boundary to use in the calculation (default: `-3.0`)
         * `luminance_max` set the upper luminance boundary to use in the calculation (default: `-3.0`)
         * `exposure_correction` correct observed exposure by the given EV value (default: `0.0`)
         * `speed_dark_bright` set the speed of adapting to bright light (default: `1000.0`)
         * `speed_bright_dark` set the speed of adapting to dark scene (default: `1000.0`)
         * `center_weight_power` set the power factor for center-weighted luminance measurement (default: `1.0`)
+      * `bloom` is a table that controls bloom.
+        * This has no effect on clients with protocol version < 46 or clients who
+          have the "Bloom" effect disabled.
+        * `intensity` defines much bloom is applied to the rendered image.
+          * Recommended range: from 0.0 to 1.0, default: 0.05
+          * If set to 0, bloom is disabled.
+          * The default value is to be changed from 0.05 to 0 in the future.
+            If you wish to keep the current default value, you should set it
+            explicitly.
+        * `strength_factor` defines the magnitude of bloom overexposure.
+          * Recommended range: from 0.1 to 10.0, default: 1.0
+        * `radius` is a logical value that controls how far the bloom effect
+          spreads from the bright objects.
+          * Recommended range: from 0.1 to 8.0, default: 1.0
+        * The behavior of values outside the recommended range is unspecified.
       * `volumetric_light`: is a table that controls volumetric light (a.k.a. "godrays")
-        * `strength`: sets the strength of the volumetric light effect from 0 (off, default) to 1 (strongest)
-           * This value has no effect on clients who have the "Volumetric Lighting" or "Bloom" shaders disabled.
+        * This has no effect on clients who have the "Volumetric Lighting" or "Bloom" effects disabled.
+        * `strength`: sets the strength of the volumetric light effect from 0 (off, default) to 1 (strongest).
+            * `0.2` is a reasonable standard value.
+            * Currently, bloom `intensity` and `strength_factor` affect volumetric
+              lighting `strength` and vice versa. This behavior is to be changed
+              in the future, do not rely on it.
 
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
@@ -9106,6 +9221,11 @@ Used by `minetest.register_abm`.
     -- If left out or empty, any neighbor will do.
     -- `group:groupname` can also be used here.
 
+    without_neighbors = {"default:lava_source", "default:lava_flowing"},
+    -- Only apply `action` to nodes that have no one of these neighbors.
+    -- If left out or empty, it has no effect.
+    -- `group:groupname` can also be used here.
+
     interval = 10.0,
     -- Operation interval in seconds
 
@@ -9515,12 +9635,18 @@ Used by `minetest.register_node`.
 
     use_texture_alpha = ...,
     -- Specifies how the texture's alpha channel will be used for rendering.
-    -- possible values:
-    -- * "opaque": Node is rendered opaque regardless of alpha channel
-    -- * "clip": A given pixel is either fully see-through or opaque
-    --           depending on the alpha channel being below/above 50% in value
-    -- * "blend": The alpha channel specifies how transparent a given pixel
-    --            of the rendered node is
+    -- Possible values:
+    -- * "opaque":
+    --   Node is rendered opaque regardless of alpha channel.
+    -- * "clip":
+    --   A given pixel is either fully see-through or opaque
+    --   depending on the alpha channel being below/above 50% in value.
+    --   Use this for nodes with fully transparent and fully opaque areas.
+    -- * "blend":
+    --   The alpha channel specifies how transparent a given pixel
+    --   of the rendered node is. This comes at a performance cost.
+    --   Only use this when correct rendering
+    --   among semitransparent nodes is necessary.
     -- The default is "opaque" for drawtypes normal, liquid and flowingliquid,
     -- mesh and nodebox or "clip" otherwise.
     -- If set to a boolean value (deprecated): true either sets it to blend

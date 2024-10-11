@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "convert_json.h"
 #include "debug.h"
 #include "log.h"
+#include "log_internal.h"
 #include "tool.h"
 #include "filesys.h"
 #include "settings.h"
@@ -531,7 +532,7 @@ int ModApiUtil::l_get_version(lua_State *L)
 	lua_pushnumber(L, SERVER_PROTOCOL_VERSION_MIN);
 	lua_setfield(L, table, "proto_min");
 
-	lua_pushnumber(L, SERVER_PROTOCOL_VERSION_MAX);
+	lua_pushnumber(L, LATEST_PROTOCOL_VERSION);
 	lua_setfield(L, table, "proto_max");
 
 	if (strcmp(g_version_string, g_version_hash) != 0) {

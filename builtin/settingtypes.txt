@@ -61,7 +61,7 @@
 #
 #    # This is a comment
 #    #
-#    # Requires: shaders, enable_dynamic_shadows, !touch_controls
+#    # Requires: shaders, enable_dynamic_shadows, !enable_waving_leaves
 #    name (Readable name) type type_args
 #
 # A requirement can be the name of a boolean setting or an engine-defined value.
@@ -72,6 +72,7 @@
 #     * shaders_support (a video driver that supports shaders, may not be enabled)
 #     * shaders (both enable_shaders and shaders_support)
 #     * desktop / android
+#     * touchscreen / keyboard_mouse
 #     * opengl / gles
 # * You can negate any requirement by prepending with !
 #
@@ -91,7 +92,7 @@ camera_smoothing (Camera smoothing) float 0.0 0.0 0.99
 
 #    Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Controls.
 #
-#    Requires: !touch_controls
+#    Requires: keyboard_mouse
 cinematic_camera_smoothing (Camera smoothing in cinematic mode) float 0.7 0.0 0.99
 
 #    If enabled, you can place nodes at the position (feet + eye level) where you stand.
@@ -112,8 +113,8 @@ always_fly_fast (Always fly fast) bool true
 #    The time in seconds it takes between repeated node placements when holding
 #    the place button.
 #
-#    Requires: !touch_controls
-repeat_place_time (Place repetition interval) float 0.25 0.16 2.0
+#    Requires: keyboard_mouse
+repeat_place_time (Place repetition interval) float 0.25 0.15 2.0
 
 #    The minimum time in seconds it takes between digging nodes when holding
 #    the dig button.
@@ -131,60 +132,62 @@ safe_dig_and_place (Safe digging and placing) bool false
 
 #    Invert vertical mouse movement.
 #
-#    Requires: !touch_controls
+#    Requires: keyboard_mouse
 invert_mouse (Invert mouse) bool false
 
 #    Mouse sensitivity multiplier.
 #
-#    Requires: !touch_controls
+#    Requires: keyboard_mouse
 mouse_sensitivity (Mouse sensitivity) float 0.2 0.001 10.0
 
 #    Enable mouse wheel (scroll) for item selection in hotbar.
 #
-#    Requires: !touch_controls
+#    Requires: keyboard_mouse
 enable_hotbar_mouse_wheel (Hotbar: Enable mouse wheel for selection) bool true
 
 #    Invert mouse wheel (scroll) direction for item selection in hotbar.
 #
-#    Requires: !touch_controls
+#    Requires: keyboard_mouse
 invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
 
 [*Touchscreen]
 
 #    Enables the touchscreen controls, allowing you to play the game with a touchscreen.
-touch_controls (Enable touchscreen controls) bool true
+#    "auto" means that the touchscreen controls will be enabled and disabled
+#    automatically depending on the last used input method.
+touch_controls (Touchscreen controls) enum auto auto,true,false
 
 #    Touchscreen sensitivity multiplier.
 #
-#    Requires: touch_controls
+#    Requires: touchscreen
 touchscreen_sensitivity (Touchscreen sensitivity) float 0.2 0.001 10.0
 
 #    The length in pixels after which a touch interaction is considered movement.
 #
-#    Requires: touch_controls
+#    Requires: touchscreen
 touchscreen_threshold (Movement threshold) int 20 0 100
 
 #    The delay in milliseconds after which a touch interaction is considered a long tap.
 #
-#    Requires: touch_controls
+#    Requires: touchscreen
 touch_long_tap_delay (Threshold for long taps) int 400 100 1000
 
 #    Use crosshair to select object instead of whole screen.
 #    If enabled, a crosshair will be shown and will be used for selecting object.
 #
-#    Requires: touch_controls
+#    Requires: touchscreen
 touch_use_crosshair (Use crosshair for touch screen) bool false
 
 #    Fixes the position of virtual joystick.
 #    If disabled, virtual joystick will center to first-touch's position.
 #
-#    Requires: touch_controls
+#    Requires: touchscreen
 fixed_virtual_joystick (Fixed virtual joystick) bool false
 
 #    Use virtual joystick to trigger "Aux1" button.
 #    If enabled, virtual joystick will also tap "Aux1" button when out of main circle.
 #
-#    Requires: touch_controls
+#    Requires: touchscreen
 virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool false
 
 #    The gesture for punching players/entities.
@@ -197,7 +200,7 @@ virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool fals
 #      Known from the classic Minetest mobile controls.
 #      Combat is more or less impossible.
 #
-#    Requires: touch_controls
+#    Requires: touchscreen
 touch_punch_gesture (Punch gesture) enum short_tap short_tap,long_tap
 
 
@@ -261,31 +264,6 @@ viewing_range (Viewing range) int 190 20 4000
 #    It should give a significant performance boost at the cost of less detailed image.
 #    Higher values result in a less detailed image.
 undersampling (Undersampling) int 1 1 8
-
-[**Graphics Effects]
-
-#    Allows liquids to be translucent.
-translucent_liquids (Translucent liquids) bool true
-
-#    Leaves style:
-#    -   Fancy:  all faces visible
-#    -   Simple: only outer faces, if defined special_tiles are used
-#    -   Opaque: disable transparency
-leaves_style (Leaves style) enum fancy fancy,simple,opaque
-
-#    Connects glass if supported by node.
-connected_glass (Connect glass) bool false
-
-#    Enable smooth lighting with simple ambient occlusion.
-#    Disable for speed or for different looks.
-smooth_lighting (Smooth lighting) bool true
-
-#    Enables tradeoffs that reduce CPU load or increase rendering performance
-#    at the expense of minor visual glitches that do not impact game playability.
-performance_tradeoffs (Tradeoffs for performance) bool false
-
-#    Adds particles when digging a node.
-enable_particles (Digging particles) bool true
 
 [**3D]
 
@@ -466,13 +444,29 @@ enable_raytraced_culling (Enable Raytraced Culling) bool true
 
 
 
-[*Shaders]
+[*Effects]
 
-#    Shaders allow advanced visual effects and may increase performance on some video
-#    cards.
-#
-#    Requires: shaders_support
-enable_shaders (Shaders) bool true
+#    Allows liquids to be translucent.
+translucent_liquids (Translucent liquids) bool true
+
+#    Leaves style:
+#    -   Fancy:  all faces visible
+#    -   Simple: only outer faces
+#    -   Opaque: disable transparency
+leaves_style (Leaves style) enum fancy fancy,simple,opaque
+
+#    Connects glass if supported by node.
+connected_glass (Connect glass) bool false
+
+#    Enable smooth lighting with simple ambient occlusion.
+smooth_lighting (Smooth lighting) bool true
+
+#    Enables tradeoffs that reduce CPU load or increase rendering performance
+#    at the expense of minor visual glitches that do not impact game playability.
+performance_tradeoffs (Tradeoffs for performance) bool false
+
+#    Adds particles when digging a node.
+enable_particles (Digging particles) bool true
 
 [**Waving Nodes]
 
@@ -649,41 +643,11 @@ enable_vignette (Vignette) bool false
 #    Requires: shaders, enable_post_processing
 debanding (Enable Debanding) bool true
 
-[**Bloom]
-
 #    Set to true to enable bloom effect.
 #    Bright colors will bleed over the neighboring objects.
 #
 #    Requires: shaders, enable_post_processing
 enable_bloom (Enable Bloom) bool false
-
-#    Set to true to render debugging breakdown of the bloom effect.
-#    In debug mode, the screen is split into 4 quadrants:
-#    top-left - processed base image, top-right - final image
-#    bottom-left - raw base image, bottom-right - bloom texture.
-#
-#    Requires: shaders, enable_post_processing, enable_bloom
-enable_bloom_debug (Enable Bloom Debug) bool false
-
-#    Defines how much bloom is applied to the rendered image
-#    Smaller values make bloom more subtle
-#    Range: from 0.01 to 1.0, default: 0.05
-#
-#    Requires: shaders, enable_post_processing, enable_bloom
-bloom_intensity (Bloom Intensity) float 0.05 0.01 1.0
-
-#    Defines the magnitude of bloom overexposure.
-#    Range: from 0.1 to 10.0, default: 1.0
-#
-#    Requires: shaders, enable_post_processing, enable_bloom
-bloom_strength_factor (Bloom Strength Factor) float 1.0 0.1 10.0
-
-#    Logical value that controls how far the bloom effect spreads
-#    from the bright objects.
-#    Range: from 0.1 to 8, default: 1
-#
-#    Requires: shaders, enable_post_processing, enable_bloom
-bloom_radius (Bloom Radius) float 1 0.1 8
 
 #    Set to true to enable volumetric lighting effect (a.k.a. "Godrays").
 #
@@ -712,6 +676,11 @@ enable_translucent_foliage (Translucent foliage) bool false
 #
 #   Requires: shaders, enable_dynamic_shadows
 enable_node_specular (Node specular) bool false
+
+#   When enabled, liquid reflections are simulated.
+#
+#   Requires: shaders, enable_waving_water, enable_dynamic_shadows
+enable_water_reflections (Liquid reflections) bool false
 
 [*Audio]
 
@@ -950,8 +919,13 @@ default_privs (Default privileges) string interact, shout
 #    Privileges that players with basic_privs can grant
 basic_privs (Basic privileges) string interact, shout
 
-#    If enabled, disable cheat prevention in multiplayer.
-disable_anticheat (Disable anticheat) bool false
+#    Server anticheat configuration.
+#    Flags are positive. Uncheck the flag to disable corresponding anticheat module.
+anticheat_flags (Anticheat flags) flags digging,interaction,movement digging,interaction,movement
+
+#    Tolerance of movement cheat detector.
+#    Increase the value if players experience stuttery movement.
+anticheat_movement_tolerance (Anticheat movement tolerance) float 1.0 1.0
 
 #    If enabled, actions are recorded for rollback.
 #    This option is only read when server starts.
@@ -1896,6 +1870,11 @@ ignore_world_load_errors (Ignore world errors) bool false
 
 [**Graphics]
 
+#    Shaders are a fundamental part of rendering and enable advanced visual effects.
+#
+#    Requires: shaders_support
+enable_shaders (Shaders) bool true
+
 #    Path to shader directory. If no path is defined, default location will be used.
 #
 #    Requires: shaders
@@ -1919,6 +1898,7 @@ cloud_radius (Cloud radius) int 12 1 62
 desynchronize_mapblock_texture_animation (Desynchronize block animation) bool false
 
 #    Enables caching of facedir rotated meshes.
+#    This is only effective with shaders disabled.
 enable_mesh_cache (Mesh cache) bool false
 
 #    Delay between mesh updates on the client in ms. Increasing this will slow
@@ -1969,6 +1949,14 @@ client_mesh_chunk (Client Mesh Chunksize) int 1 1 16
 
 #    Enables debug and error-checking in the OpenGL driver.
 opengl_debug (OpenGL debug) bool false
+
+#    Set to true to render debugging breakdown of the bloom effect.
+#    In debug mode, the screen is split into 4 quadrants:
+#    top-left - processed base image, top-right - final image
+#    bottom-left - raw base image, bottom-right - bloom texture.
+#
+#    Requires: shaders, enable_post_processing, enable_bloom
+enable_bloom_debug (Enable Bloom Debug) bool false
 
 [**Sound]
 #    Comma-separated list of AL and ALC extensions that should not be used.

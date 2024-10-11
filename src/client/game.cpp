@@ -43,6 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/touchcontrols.h"
 #include "itemdef.h"
 #include "log.h"
+#include "log_internal.h"
 #include "filesys.h"
 #include "gameparams.h"
 #include "gettext.h"
@@ -413,16 +414,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	float m_user_exposure_compensation;
 	bool m_bloom_enabled;
 	CachedPixelShaderSetting<float> m_bloom_intensity_pixel{"bloomIntensity"};
-	float m_bloom_intensity;
 	CachedPixelShaderSetting<float> m_bloom_strength_pixel{"bloomStrength"};
-	float m_bloom_strength;
 	CachedPixelShaderSetting<float> m_bloom_radius_pixel{"bloomRadius"};
-	float m_bloom_radius;
-	CachedPixelShaderSetting<float> m_cloud_height_pixel{"cloudHeight"};
-	CachedPixelShaderSetting<float> m_cloud_thickness_pixel{"cloudThickness"};
-	CachedPixelShaderSetting<float> m_cloud_density_pixel{"cloudDensity"};
-	CachedPixelShaderSetting<float, 2> m_cloud_offset_pixel{"cloudOffset"};
-	CachedPixelShaderSetting<float> m_cloud_radius_pixel{"cloudRadius"};
 	CachedPixelShaderSetting<float> m_saturation_pixel{"saturation"};
 	float m_gamma;
 	CachedPixelShaderSetting<float> m_gamma_pixel{"gamma"};
@@ -436,12 +429,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float>
 		m_volumetric_light_strength_pixel{"volumetricLightStrength"};
 
-	static constexpr std::array<const char*, 5> SETTING_CALLBACKS = {
+	static constexpr std::array<const char*, 1> SETTING_CALLBACKS = {
 		"exposure_compensation",
-		"bloom_intensity",
-		"bloom_strength_factor",
-		"bloom_radius",
-		"gamma"
 	};
 
 public:
@@ -449,14 +438,6 @@ public:
 	{
 		if (name == "exposure_compensation")
 			m_user_exposure_compensation = g_settings->getFloat("exposure_compensation", -1.0f, 1.0f);
-		if (name == "bloom_intensity")
-			m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
-		if (name == "bloom_strength_factor")
-			m_bloom_strength = RenderingEngine::BASE_BLOOM_STRENGTH * g_settings->getFloat("bloom_strength_factor", 0.1f, 10.0f);
-		if (name == "bloom_radius")
-			m_bloom_radius = g_settings->getFloat("bloom_radius", 0.1f, 8.0f);
-		if (name == "gamma")
-			m_gamma = g_settings->getFloat("gamma", 1.0f, 5.0f);
 	}
 
 	static void settingsCallback(const std::string &name, void *userdata)
@@ -475,10 +456,6 @@ public:
 
 		m_user_exposure_compensation = g_settings->getFloat("exposure_compensation", -1.0f, 1.0f);
 		m_bloom_enabled = g_settings->getBool("enable_bloom");
-		m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
-		m_bloom_strength = RenderingEngine::BASE_BLOOM_STRENGTH * g_settings->getFloat("bloom_strength_factor", 0.1f, 10.0f);
-		m_bloom_radius = g_settings->getFloat("bloom_radius", 0.1f, 8.0f);
-		m_gamma = g_settings->getFloat("gamma", 1.0f, 5.0f);
 		m_volumetric_light_enabled = g_settings->getBool("enable_volumetric_lighting") && m_bloom_enabled;
 	}
 
@@ -547,7 +524,9 @@ public:
 		m_texel_size0_vertex.set(m_texel_size0, services);
 		m_texel_size0_pixel.set(m_texel_size0, services);
 
-		const AutoExposure &exposure_params = m_client->getEnv().getLocalPlayer()->getLighting().exposure;
+		const auto &lighting = m_client->getEnv().getLocalPlayer()->getLighting();
+
+		const AutoExposure &exposure_params = lighting.exposure;
 		std::array<float, 7> exposure_buffer = {
 			std::pow(2.0f, exposure_params.luminance_min),
 			std::pow(2.0f, exposure_params.luminance_max),
@@ -560,14 +539,14 @@ public:
 		m_exposure_params_pixel.set(exposure_buffer.data(), services);
 
 		if (m_bloom_enabled) {
-			m_bloom_intensity_pixel.set(&m_bloom_intensity, services);
-			m_bloom_radius_pixel.set(&m_bloom_radius, services);
-			m_bloom_strength_pixel.set(&m_bloom_strength, services);
+			float intensity = std::max(lighting.bloom_intensity, 0.0f);
+			m_bloom_intensity_pixel.set(&intensity, services);
+			float strength_factor = std::max(lighting.bloom_strength_factor, 0.0f);
+			m_bloom_strength_pixel.set(&strength_factor, services);
+			float radius = std::max(lighting.bloom_radius, 0.0f);
+			m_bloom_radius_pixel.set(&radius, services);
 		}
 
-		m_gamma_pixel.set(&m_gamma, services);
-
-		const auto &lighting = m_client->getEnv().getLocalPlayer()->getLighting();
 		float saturation = lighting.saturation;
 		m_saturation_pixel.set(&saturation, services);
 		video::SColorf artificial_light = lighting.artificial_light_color;
@@ -773,6 +752,7 @@ protected:
 	void processUserInput(f32 dtime);
 	void processKeyInput();
 	void processItemSelection(u16 *new_playeritem);
+	bool shouldShowTouchControls();
 
 	void dropSelectedItem(bool single_item = false);
 	void openInventory();
@@ -1615,6 +1595,14 @@ bool Game::createClient(const GameStartData &start_data)
 	return true;
 }
 
+bool Game::shouldShowTouchControls()
+{
+	const std::string &touch_controls = g_settings->get("touch_controls");
+	if (touch_controls == "auto")
+		return RenderingEngine::getLastPointerType() == PointerType::Touch;
+	return is_yes(touch_controls);
+}
+
 bool Game::initGui()
 {
 	m_game_ui->init();
@@ -1629,7 +1617,7 @@ bool Game::initGui()
 	gui_chat_console = make_irr<GUIChatConsole>(guienv, guienv->getRootGUIElement(),
 			-1, chat_backend, client, &g_menumgr);
 
-	if (g_settings->getBool("touch_controls")) {
+	if (shouldShowTouchControls()) {
 		g_touchcontrols = new TouchControls(device, texture_src);
 		g_touchcontrols->setUseCrosshair(!isTouchCrosshairDisabled());
 	}
@@ -2081,6 +2069,15 @@ void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
 
 void Game::processUserInput(f32 dtime)
 {
+	bool desired = shouldShowTouchControls();
+	if (desired && !g_touchcontrols) {
+		g_touchcontrols = new TouchControls(device, texture_src);
+
+	} else if (!desired && g_touchcontrols) {
+		delete g_touchcontrols;
+		g_touchcontrols = nullptr;
+	}
+
 	// Reset input if window not active or some menu is active
 	if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console.get())) {
 		if (m_game_focused) {
@@ -2711,7 +2708,7 @@ void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 				cur_control->setVisible(false);
 		}
 
-		if (m_first_loop_after_window_activation) {
+		if (m_first_loop_after_window_activation && !g_touchcontrols) {
 			m_first_loop_after_window_activation = false;
 
 			input->setMousePos(driver->getScreenSize().Width / 2,
@@ -2727,6 +2724,8 @@ void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 
 		m_first_loop_after_window_activation = true;
 	}
+	if (g_touchcontrols)
+		m_first_loop_after_window_activation = true;
 }
 
 // Get the factor to multiply with sensitivity to get the same mouse/joystick
@@ -2792,9 +2791,10 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		isKeyDown(KeyType::PLACE),
 		cam.camera_pitch,
 		cam.camera_yaw,
-		input->getMovementSpeed(),
-		input->getMovementDirection()
+		input->getJoystickSpeed(),
+		input->getJoystickDirection()
 	);
+	control.setMovementFromKeys();
 
 	// autoforward if set: move at maximum speed
 	if (player->getPlayerSettings().continuous_forward &&

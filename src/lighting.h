@@ -57,5 +57,8 @@ struct Lighting
 	float saturation {1.0f};
 	float volumetric_light_strength {0.0f};
 	video::SColor artificial_light_color{ 255, 133, 133, 133 };
-	video::SColor shadow_tint;
+	video::SColor shadow_tint {255, 0, 0, 0};
+	float bloom_intensity {0.05f};
+	float bloom_strength_factor {1.0f};
+	float bloom_radius {1.0f};
 };

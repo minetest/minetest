@@ -838,14 +838,10 @@ void Sky::updateStars()
 		);
 		core::CMatrix4<f32> a;
 		a.buildRotateFromTo(v3f(0, 1, 0), r);
-		v3f p = v3f(-d, 1, -d);
-		v3f p1 = v3f(d, 1, -d);
-		v3f p2 = v3f(d, 1, d);
-		v3f p3 = v3f(-d, 1, d);
-		a.rotateVect(p);
-		a.rotateVect(p1);
-		a.rotateVect(p2);
-		a.rotateVect(p3);
+		v3f p = a.rotateAndScaleVect(v3f(-d, 1, -d));
+		v3f p1 = a.rotateAndScaleVect(v3f(d, 1, -d));
+		v3f p2 = a.rotateAndScaleVect(v3f(d, 1, d));
+		v3f p3 = a.rotateAndScaleVect(v3f(-d, 1, d));
 		vertices.push_back(video::S3DVertex(p, {}, {}, {}));
 		vertices.push_back(video::S3DVertex(p1, {}, {}, {}));
 		vertices.push_back(video::S3DVertex(p2, {}, {}, {}));

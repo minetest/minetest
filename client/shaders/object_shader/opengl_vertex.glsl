@@ -124,11 +124,7 @@ void main(void)
 		: directional_ambient(normalize(inVertexNormal));
 #endif
 
-#ifdef GL_ES
-	vec4 color = inVertexColor.bgra;
-#else
 	vec4 color = inVertexColor;
-#endif
 
 	color *= materialColor;
 

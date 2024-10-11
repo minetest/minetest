@@ -480,8 +480,8 @@ add_library(IrrlichtMt::IrrlichtMt ALIAS IrrlichtMt)
 target_include_directories(IrrlichtMt
 	PUBLIC
 		"$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/>"
-		"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
 	PRIVATE
+		"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
 		${link_includes}
 )
 

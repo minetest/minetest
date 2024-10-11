@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/metricsbackend.h"
 #include "serverenvironment.h"
 #include "server/clientiface.h"
+#include "threading/ordered_mutex.h"
 #include "chatmessage.h"
 #include "sound.h"
 #include "translation.h"
@@ -46,6 +47,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unordered_set>
 #include <optional>
 #include <string_view>
+#include <shared_mutex>
+#include <condition_variable>
 
 class ChatEvent;
 struct ChatEventChat;
@@ -77,6 +80,20 @@ class ServerInventoryManager;
 struct PackedValue;
 struct ParticleParameters;
 struct ParticleSpawnerParameters;
+
+// Anticheat flags
+enum {
+	AC_DIGGING     = 0x01,
+	AC_INTERACTION = 0x02,
+	AC_MOVEMENT    = 0x04
+};
+
+constexpr const static FlagDesc flagdesc_anticheat[] = {
+	{"digging",     AC_DIGGING},
+	{"interaction", AC_INTERACTION},
+	{"movement",    AC_MOVEMENT},
+	{NULL,          0}
+};
 
 enum ClientDeletionReason {
 	CDR_LEAVE,
@@ -141,6 +158,25 @@ struct ClientInfo {
 	std::string vers_string, lang_code;
 };
 
+struct ModIPCStore {
+	ModIPCStore() = default;
+	~ModIPCStore();
+
+	/// RW lock for this entire structure
+	std::shared_mutex mutex;
+	/// Signalled on any changes to the map contents
+	std::condition_variable_any condvar;
+	/**
+	 * Map storing the data
+	 *
+	 * @note Do not store `nil` data in this map, instead remove the whole key.
+	 */
+	std::unordered_map<std::string, std::unique_ptr<PackedValue>> map;
+
+	/// @note Should be called without holding the lock.
+	inline void signal() { condvar.notify_all(); }
+};
+
 class Server : public con::PeerHandler, public MapEventReceiver,
 		public IGameDef
 {
@@ -166,9 +202,12 @@ public:
 	// Actual processing is done in another thread.
 	// This just checks if there was an error in that thread.
 	void step();
+
 	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep(float dtime, bool initial_step = false);
 	void Receive(float timeout);
+	void yieldToOtherThreads(float dtime);
+
 	PlayerSAO* StageTwoClientInit(session_t peer_id);
 
 	/*
@@ -297,12 +336,14 @@ public:
 	NodeDefManager* getWritableNodeDefManager();
 	IWritableCraftDefManager* getWritableCraftDefManager();
 
+	// Not under envlock
 	virtual const std::vector<ModSpec> &getMods() const;
 	virtual const ModSpec* getModSpec(const std::string &modname) const;
 	virtual const SubgameSpec* getGameSpec() const { return &m_gamespec; }
 	static std::string getBuiltinLuaPath();
 	virtual std::string getWorldPath() const { return m_path_world; }
 	virtual std::string getModDataPath() const { return m_path_mod_data; }
+	virtual ModIPCStore *getModIPCStore() { return &m_ipcstore; }
 
 	inline bool isSingleplayer() const
 			{ return m_simple_singleplayer_mode; }
@@ -340,7 +381,7 @@ public:
 
 	Address getPeerAddress(session_t peer_id);
 
-	void setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
+	void setLocalPlayerAnimations(RemotePlayer *player, v2f animation_frames[4],
 			f32 frame_speed);
 	void setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third, v3f third_front);
 
@@ -424,8 +465,14 @@ public:
 	// Bind address
 	Address m_bind_addr;
 
-	// Environment mutex (envlock)
-	std::mutex m_env_mutex;
+	// Public helper for taking the envlock in a scope
+	class EnvAutoLock {
+	public:
+		EnvAutoLock(Server *server): m_lock(server->m_env_mutex) {}
+
+	private:
+		std::lock_guard<ordered_mutex> m_lock;
+	};
 
 protected:
 	/* Do not add more members here, this is only required to make unit tests work. */
@@ -491,7 +538,7 @@ private:
 	virtual void SendChatMessage(session_t peer_id, const ChatMessage &message);
 	void SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed);
 
-	void SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],
+	void SendLocalPlayerAnimations(session_t peer_id, v2f animation_frames[4],
 		f32 animation_speed);
 	void SendEyeOffset(session_t peer_id, v3f first, v3f third, v3f third_front);
 	void SendPlayerPrivileges(session_t peer_id);
@@ -595,11 +642,13 @@ private:
 	*/
 	PlayerSAO *emergePlayer(const char *name, session_t peer_id, u16 proto_version);
 
-	void handlePeerChanges();
-
 	/*
 		Variables
 	*/
+
+	// Environment mutex (envlock)
+	ordered_mutex m_env_mutex;
+
 	// World directory
 	std::string m_path_world;
 	std::string m_path_mod_data;
@@ -653,6 +702,8 @@ private:
 	IWritableCraftDefManager *m_craftdef;
 
 	std::unordered_map<std::string, Translations> server_translations;
+
+	ModIPCStore m_ipcstore;
 
 	/*
 		Threads

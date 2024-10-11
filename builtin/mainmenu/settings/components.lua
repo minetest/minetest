@@ -67,6 +67,19 @@ function make.heading(text)
 end
 
 
+function make.note(text)
+	return {
+		full_width = true,
+		get_formspec = function(self, avail_w)
+			-- Assuming label height 0.4:
+			-- Position at y=0 to eat 0.2 of the padding above, leave 0.05.
+			-- The returned used_height doesn't include padding.
+			return ("label[0,0;%s]"):format(core.colorize("#bbb", core.formspec_escape(text))), 0.2
+		end,
+	}
+end
+
+
 --- Used for string and numeric style fields
 ---
 --- @param converter Function to coerce values from strings.

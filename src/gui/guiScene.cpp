@@ -157,7 +157,7 @@ void GUIScene::setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES> &sty
 /**
  * Sets the frame loop range for the mesh
  */
-void GUIScene::setFrameLoop(s32 begin, s32 end)
+void GUIScene::setFrameLoop(f32 begin, f32 end)
 {
 	if (m_mesh->getStartFrame() != begin || m_mesh->getEndFrame() != end)
 		m_mesh->setFrameLoop(begin, end);
@@ -225,8 +225,7 @@ void GUIScene::setCameraRotation(v3f rot)
 	core::matrix4 mat;
 	mat.setRotationDegrees(rot);
 
-	m_cam_pos = v3f(0.f, 0.f, m_cam_distance);
-	mat.rotateVect(m_cam_pos);
+	m_cam_pos = mat.rotateAndScaleVect(v3f(0.f, 0.f, m_cam_distance));
 
 	m_cam_pos += m_target_pos;
 	m_cam->setPosition(m_cam_pos);

@@ -158,9 +158,13 @@ public:
 		//! Sets the new position of the cursor.
 		void setPosition(s32 x, s32 y) override
 		{
+#ifndef __ANDROID__
+			// On Android, this somehow results in a camera jump when enabling
+			// relative mouse mode and it isn't supported anyway.
 			SDL_WarpMouseInWindow(Device->Window,
 					static_cast<int>(x / Device->ScaleX),
 					static_cast<int>(y / Device->ScaleY));
+#endif
 
 			if (SDL_GetRelativeMouseMode()) {
 				// There won't be an event for this warp (details on libsdl-org/SDL/issues/6034)
@@ -298,6 +302,7 @@ private:
 #endif
 
 	s32 MouseX, MouseY;
+	// these two only continue to exist for some Emscripten stuff idk about
 	s32 MouseXRel, MouseYRel;
 	u32 MouseButtonStates;
 

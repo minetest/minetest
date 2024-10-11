@@ -41,7 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
 const video::SColor RenderingEngine::MENU_SKY_COLOR = video::SColor(255, 140, 186, 250);
-const float RenderingEngine::BASE_BLOOM_STRENGTH = 1.0f;
 
 /* Helper classes */
 
@@ -173,7 +172,7 @@ static irr::IrrlichtDevice *createDevice(SIrrlichtCreationParameters params, std
 
 /* RenderingEngine class */
 
-RenderingEngine::RenderingEngine(IEventReceiver *receiver)
+RenderingEngine::RenderingEngine(MyEventReceiver *receiver)
 {
 	sanity_check(!s_singleton);
 
@@ -225,6 +224,8 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 
 	// This changes the minimum allowed number of vertices in a VBO. Default is 500.
 	driver->setMinHardwareBufferVertexCount(4);
+
+	m_receiver = receiver;
 
 	s_singleton = this;
 

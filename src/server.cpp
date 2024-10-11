@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <queue>
 #include <algorithm>
+#include "irr_v2d.h"
 #include "network/connection.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
@@ -85,6 +86,15 @@ public:
 	{}
 };
 
+ModIPCStore::~ModIPCStore()
+{
+	// we don't have to do this, it's pure debugging aid
+	if (!std::unique_lock(mutex, std::try_to_lock).owns_lock()) {
+		errorstream << FUNCTION_NAME << ": lock is still in use!" << std::endl;
+		assert(0);
+	}
+}
+
 class ServerThread : public Thread
 {
 public:
@@ -133,9 +143,13 @@ void *ServerThread::run()
 
 		u64 t0 = porting::getTimeUs();
 
-		const Server::StepSettings step_settings = m_server->getStepSettings();
+		const auto step_settings = m_server->getStepSettings();
 
 		try {
+			// see explanation inside
+			if (dtime > step_settings.steplen)
+				m_server->yieldToOtherThreads(dtime);
+
 			m_server->AsyncRunStep(step_settings.pause ? 0.0f : dtime);
 
 			const float remaining_time = step_settings.steplen
@@ -353,7 +367,7 @@ Server::~Server()
 		m_emerge->stopThreads();
 
 	if (m_env) {
-		MutexAutoLock envlock(m_env_mutex);
+		EnvAutoLock envlock(this);
 
 		infostream << "Server: Executing shutdown hooks" << std::endl;
 		try {
@@ -389,6 +403,10 @@ Server::~Server()
 		infostream << "Server: Saving environment metadata" << std::endl;
 		m_env->saveMeta();
 
+		// Delete classes that depend on the environment
+		m_inventory_mgr.reset();
+		m_script.reset();
+
 		// Note that this also deletes and saves the map.
 		delete m_env;
 		m_env = nullptr;
@@ -404,6 +422,9 @@ Server::~Server()
 			fs::DeleteSingleFileOrEmptyDirectory(it.second.path);
 		}
 	}
+
+	// emerge may depend on definition managers, so destroy first
+	m_emerge.reset();
 
 	// Delete the rest in the reverse order of creation
 	delete m_game_settings;
@@ -461,7 +482,7 @@ void Server::init()
 	}
 
 	//lock environment
-	MutexAutoLock envlock(m_env_mutex);
+	EnvAutoLock envlock(this);
 
 	// Create the Map (loads map_meta.txt, overriding configured mapgen params)
 	auto startup_server_map = std::make_unique<ServerMap>(m_path_world, this,
@@ -653,9 +674,9 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	}
 
 	{
-		MutexAutoLock lock(m_env_mutex);
+		EnvAutoLock lock(this);
 		float max_lag = m_env->getMaxLagEstimate();
-		constexpr float lag_warn_threshold = 2.0f;
+		constexpr float lag_warn_threshold = 1.0f;
 
 		// Decrease value gradually, halve it every minute.
 		if (m_max_lag_decrease.step(dtime, 0.5f)) {
@@ -686,7 +707,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	static const float map_timer_and_unload_dtime = 2.92;
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
 	{
-		MutexAutoLock lock(m_env_mutex);
+		EnvAutoLock lock(this);
 		// Run Map's timers and unload unused data
 		ScopeProfiler sp(g_profiler, "Server: map timer and unload");
 		m_env->getMap().timerUpdate(map_timer_and_unload_dtime,
@@ -704,7 +725,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	*/
 	if (m_admin_chat) {
 		if (!m_admin_chat->command_queue.empty()) {
-			MutexAutoLock lock(m_env_mutex);
+			EnvAutoLock lock(this);
 			while (!m_admin_chat->command_queue.empty()) {
 				ChatEvent *evt = m_admin_chat->command_queue.pop_frontNoEx();
 				handleChatInterfaceEvent(evt);
@@ -725,7 +746,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	{
 		m_liquid_transform_timer -= m_liquid_transform_every;
 
-		MutexAutoLock lock(m_env_mutex);
+		EnvAutoLock lock(this);
 
 		ScopeProfiler sp(g_profiler, "Server: liquid transform");
 
@@ -786,7 +807,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	*/
 	{
 		//infostream<<"Server: Checking added and deleted active objects"<<std::endl;
-		MutexAutoLock envlock(m_env_mutex);
+		EnvAutoLock envlock(this);
 
 		// This guarantees that each object recomputes its cache only once per server step,
 		// unless get_effective_observers is called.
@@ -831,7 +852,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 		Send object messages
 	*/
 	{
-		MutexAutoLock envlock(m_env_mutex);
+		EnvAutoLock envlock(this);
 		ScopeProfiler sp(g_profiler, "Server: send SAO messages");
 
 		// Key = object id
@@ -933,7 +954,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	*/
 	{
 		// We will be accessing the environment
-		MutexAutoLock lock(m_env_mutex);
+		EnvAutoLock lock(this);
 
 		// Single change sending is disabled if queue size is big
 		bool disable_single_change_sending = false;
@@ -1040,7 +1061,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 			g_settings->getFloat("server_map_save_interval");
 		if (counter >= save_interval) {
 			counter = 0.0;
-			MutexAutoLock lock(m_env_mutex);
+			EnvAutoLock lock(this);
 
 			ScopeProfiler sp(g_profiler, "Server: map saving (sum)");
 
@@ -1111,6 +1132,52 @@ void Server::Receive(float timeout)
 			infostream << "Server: ClientNotFoundException" << std::endl;
 		}
 	}
+}
+
+void Server::yieldToOtherThreads(float dtime)
+{
+	/*
+	 * Problem: the server thread and emerge thread compete for the envlock.
+	 * While the emerge thread needs it just once or twice for every processed item
+	 * the server thread uses it much more generously.
+	 * This is usually not a problem as the server sleeps between steps, which leaves
+	 * enough chance. But if the server is overloaded it's busy all the time and
+	 * - even with a fair envlock - the emerge thread can't get up to speed.
+	 * This generally has a much worse impact on gameplay than server lag itself
+	 * ever would.
+	 *
+	 * Workaround: If we detect that the server is overloaded, introduce some careful
+	 * artificial sleeps to leave the emerge threads enough chance to do their job.
+	 *
+	 * In the future the emerge code should be reworked to exclusively use a result
+	 * queue, thereby avoiding this problem (and terrible workaround).
+	 */
+
+	// don't activate workaround too quickly
+	constexpr size_t MIN_EMERGE_QUEUE_SIZE = 32;
+	const size_t qs_initial = m_emerge->getQueueSize();
+	if (qs_initial < MIN_EMERGE_QUEUE_SIZE)
+		return;
+
+	// give the thread a chance to run for every 28ms (on average)
+	// this was experimentally determined
+	const float QUANTUM = 28.0f / 1000;
+	// put an upper limit to not cause too much lag, also so this doesn't become self-sustaining
+	const int SLEEP_MAX = 10;
+
+	int sleep_count = std::clamp<int>(dtime / QUANTUM, 1, SLEEP_MAX);
+
+	ScopeProfiler sp(g_profiler, "Server::yieldTo...() sleep", SPT_AVG);
+	size_t qs = qs_initial;
+	while (sleep_count-- > 0) {
+		sleep_ms(1);
+		// abort if we don't make progress
+		size_t qs2 = m_emerge->getQueueSize();
+		if (qs2 >= qs || qs2 == 0)
+			break;
+		qs = qs2;
+	}
+	g_profiler->avg("Server::yieldTo...() progress [#]", qs_initial - qs);
 }
 
 PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
@@ -1191,7 +1258,7 @@ inline void Server::handleCommand(NetworkPacket *pkt)
 void Server::ProcessData(NetworkPacket *pkt)
 {
 	// Environment is locked first.
-	MutexAutoLock envlock(m_env_mutex);
+	EnvAutoLock envlock(this);
 
 	ScopeProfiler sp(g_profiler, "Server: Process network packet (sum)");
 	u32 peer_id = pkt->getPeerId();
@@ -1861,7 +1928,10 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 			<< lighting.exposure.speed_bright_dark
 			<< lighting.exposure.center_weight_power;
 
-	pkt << lighting.volumetric_light_strength << lighting.shadow_tint << lighting.artificial_light_color;
+	pkt << lighting.volumetric_light_strength << lighting.shadow_tint;
+	pkt << lighting.bloom_intensity << lighting.bloom_strength_factor <<
+			lighting.bloom_radius;
+	pkt << lighting.artificial_light_color;
 
 	Send(&pkt);
 }
@@ -1928,14 +1998,21 @@ void Server::SendPlayerFov(session_t peer_id)
 	Send(&pkt);
 }
 
-void Server::SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],
+void Server::SendLocalPlayerAnimations(session_t peer_id, v2f animation_frames[4],
 		f32 animation_speed)
 {
 	NetworkPacket pkt(TOCLIENT_LOCAL_PLAYER_ANIMATIONS, 0,
 		peer_id);
 
-	pkt << animation_frames[0] << animation_frames[1] << animation_frames[2]
-			<< animation_frames[3] << animation_speed;
+	for (int i = 0; i < 4; ++i) {
+		if (m_clients.getProtocolVersion(peer_id) >= 46) {
+			pkt << animation_frames[i];
+		} else {
+			pkt << v2s32::from(animation_frames[i]);
+		}
+	}
+
+	pkt  << animation_speed;
 
 	Send(&pkt);
 }
@@ -2363,8 +2440,7 @@ void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 
 void Server::SendBlocks(float dtime)
 {
-	MutexAutoLock envlock(m_env_mutex);
-	//TODO check if one big lock could be faster then multiple small ones
+	EnvAutoLock envlock(this);
 
 	std::vector<PrioritySortedBlockTransfer> queue;
 
@@ -2461,7 +2537,7 @@ bool Server::addMediaFile(const std::string &filename,
 	const char *supported_ext[] = {
 		".png", ".jpg", ".bmp", ".tga",
 		".ogg",
-		".x", ".b3d", ".obj", ".gltf",
+		".x", ".b3d", ".obj", ".gltf", ".glb",
 		// Custom translation file format
 		".tr",
 		NULL
@@ -2695,7 +2771,7 @@ void Server::sendRequestedMedia(session_t peer_id,
 
 void Server::stepPendingDynMediaCallbacks(float dtime)
 {
-	MutexAutoLock lock(m_env_mutex);
+	EnvAutoLock lock(this);
 
 	for (auto it = m_pending_dyn_media.begin(); it != m_pending_dyn_media.end();) {
 		it->second.expiry_timer -= dtime;
@@ -2914,7 +2990,7 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 			}
 		}
 		{
-			MutexAutoLock env_lock(m_env_mutex);
+			EnvAutoLock envlock(this);
 			m_clients.DeleteClient(peer_id);
 		}
 	}
@@ -3366,7 +3442,7 @@ Address Server::getPeerAddress(session_t peer_id)
 }
 
 void Server::setLocalPlayerAnimations(RemotePlayer *player,
-		v2s32 animation_frames[4], f32 frame_speed)
+		v2f animation_frames[4], f32 frame_speed)
 {
 	sanity_check(player);
 	player->setLocalAnimations(animation_frames, frame_speed);
@@ -4107,7 +4183,7 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 
 std::unordered_map<std::string, std::string> Server::getMediaList()
 {
-	MutexAutoLock env_lock(m_env_mutex);
+	EnvAutoLock envlock(this);
 
 	std::unordered_map<std::string, std::string> ret;
 	for (auto &it : m_media) {
@@ -4236,12 +4312,10 @@ u16 Server::getProtocolVersionMin()
 		min_proto = LATEST_PROTOCOL_VERSION;
 	return rangelim(min_proto,
 		SERVER_PROTOCOL_VERSION_MIN,
-		SERVER_PROTOCOL_VERSION_MAX);
+		LATEST_PROTOCOL_VERSION);
 }
 
 u16 Server::getProtocolVersionMax()
 {
-	return g_settings->getBool("strict_protocol_version_checking")
-		? LATEST_PROTOCOL_VERSION
-		: SERVER_PROTOCOL_VERSION_MAX;
+	return LATEST_PROTOCOL_VERSION;
 }

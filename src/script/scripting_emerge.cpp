@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_util.h"
 #include "lua_api/l_vmanip.h"
 #include "lua_api/l_settings.h"
+#include "lua_api/l_ipc.h"
 
 extern "C" {
 #include <lualib.h>
@@ -89,5 +90,6 @@ void EmergeScripting::InitializeModApi(lua_State *L, int top)
 	ModApiMapgen::InitializeEmerge(L, top);
 	ModApiServer::InitializeAsync(L, top);
 	ModApiUtil::InitializeAsync(L, top);
+	ModApiIPC::Initialize(L, top);
 	// TODO ^ these should also be renamed to InitializeRO or such
 }

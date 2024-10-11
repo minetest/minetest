@@ -433,10 +433,10 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	v2s32 frames[4];
+	v2f frames[4];
 	for (int i=0;i<4;i++) {
 		if (!lua_isnil(L, 2+1))
-			frames[i] = read_v2s32(L, 2+i);
+			frames[i] = read_v2f(L, 2+i);
 	}
 	float frame_speed = readParam<float>(L, 6, 30.0f);
 
@@ -453,12 +453,12 @@ int ObjectRef::l_get_local_animation(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	v2s32 frames[4];
+	v2f frames[4];
 	float frame_speed;
 	player->getLocalAnimations(frames, &frame_speed);
 
-	for (const v2s32 &frame : frames) {
-		push_v2s32(L, frame);
+	for (const v2f &frame : frames) {
+		push_v2f(L, frame);
 	}
 
 	lua_pushnumber(L, frame_speed);
@@ -1622,6 +1622,13 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	lua_setfield(L, -2, "dig");
 	lua_pushboolean(L, control.place);
 	lua_setfield(L, -2, "place");
+
+	v2f movement = control.getMovement();
+	lua_pushnumber(L, movement.X);
+	lua_setfield(L, -2, "movement_x");
+	lua_pushnumber(L, movement.Y);
+	lua_setfield(L, -2, "movement_y");
+
 	// Legacy fields to ensure mod compatibility
 	lua_pushboolean(L, control.dig);
 	lua_setfield(L, -2, "LMB");
@@ -2626,6 +2633,7 @@ int ObjectRef::l_set_lighting(lua_State *L)
 			getfloatfield(L, -1, "intensity", lighting.shadow_intensity);
 			lua_getfield(L, -1, "tint");
 			read_color(L, -1, &lighting.shadow_tint);
+			lua_pop(L, 1); // tint
 		}
 		lua_pop(L, 1); // shadows
 
@@ -2648,6 +2656,14 @@ int ObjectRef::l_set_lighting(lua_State *L)
 			lighting.volumetric_light_strength = rangelim(lighting.volumetric_light_strength, 0.0f, 1.0f);
 		}
 		lua_pop(L, 1); // volumetric_light
+
+		lua_getfield(L, 2, "bloom");
+		if (lua_istable(L, -1)) {
+			lighting.bloom_intensity       = getfloatfield_default(L, -1, "intensity",       lighting.bloom_intensity);
+			lighting.bloom_strength_factor = getfloatfield_default(L, -1, "strength_factor", lighting.bloom_strength_factor);
+			lighting.bloom_radius          = getfloatfield_default(L, -1, "radius",          lighting.bloom_radius);
+		}
+		lua_pop(L, 1); // bloom
 }
 
 	getServer(L)->setLighting(player, lighting);
@@ -2694,6 +2710,14 @@ int ObjectRef::l_get_lighting(lua_State *L)
 	lua_pushnumber(L, lighting.volumetric_light_strength);
 	lua_setfield(L, -2, "strength");
 	lua_setfield(L, -2, "volumetric_light");
+	lua_newtable(L); // "bloom"
+	lua_pushnumber(L, lighting.bloom_intensity);
+	lua_setfield(L, -2, "intensity");
+	lua_pushnumber(L, lighting.bloom_strength_factor);
+	lua_setfield(L, -2, "strength_factor");
+	lua_pushnumber(L, lighting.bloom_radius);
+	lua_setfield(L, -2, "radius");
+	lua_setfield(L, -2, "bloom");
 	return 1;
 }
 
