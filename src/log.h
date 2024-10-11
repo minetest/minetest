@@ -32,18 +32,7 @@ class StreamProxy {
 public:
 	StreamProxy(std::ostream *os) : m_os(os) { }
 
-	static void fix_stream_state(std::ostream &os)
-	{
-		std::ios::iostate state = os.rdstate();
-		// clear error state so the stream works again
-		os.clear();
-		if (state & std::ios::eofbit)
-			os << "(ostream:eofbit)";
-		if (state & std::ios::badbit)
-			os << "(ostream:badbit)";
-		if (state & std::ios::failbit)
-			os << "(ostream:failbit)";
-	}
+	static void fix_stream_state(std::ostream &os);
 
 	template<typename T>
 	StreamProxy& operator<<(T&& arg)

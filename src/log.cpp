@@ -370,3 +370,16 @@ void StreamLogOutput::logRaw(LogLevel lev, std::string_view line)
 		m_stream << "\033[0m";
 	}
 }
+
+void StreamProxy::fix_stream_state(std::ostream &os)
+{
+	std::ios::iostate state = os.rdstate();
+	// clear error state so the stream works again
+	os.clear();
+	if (state & std::ios::eofbit)
+		os << "(ostream:eofbit)";
+	if (state & std::ios::badbit)
+		os << "(ostream:badbit)";
+	if (state & std::ios::failbit)
+		os << "(ostream:failbit)";
+}

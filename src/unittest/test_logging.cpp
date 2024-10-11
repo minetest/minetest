@@ -50,26 +50,28 @@ void TestLogging::testNullChecks()
 	UASSERTEQ(std::string, logs[5].text, "Test const unsigned char*: (null)");
 }
 
-class ForceEofBit {};
-class ForceFailBit {};
-class ForceBadBit {};
+namespace {
+	class ForceEofBit {};
+	class ForceFailBit {};
+	class ForceBadBit {};
 
-ostream& operator<<(ostream& os, ForceEofBit)
-{
-	os.setstate(std::ios::eofbit);
-	return os;
-}
+	ostream& operator<<(ostream& os, ForceEofBit)
+	{
+		os.setstate(std::ios::eofbit);
+		return os;
+	}
 
-ostream& operator<<(ostream& os, ForceFailBit)
-{
-	os.setstate(std::ios::failbit);
-	return os;
-}
+	ostream& operator<<(ostream& os, ForceFailBit)
+	{
+		os.setstate(std::ios::failbit);
+		return os;
+	}
 
-ostream& operator<<(ostream& os, ForceBadBit)
-{
-	os.setstate(std::ios::badbit);
-	return os;
+	ostream& operator<<(ostream& os, ForceBadBit)
+	{
+		os.setstate(std::ios::badbit);
+		return os;
+	}
 }
 
 void TestLogging::testBitCheck()
