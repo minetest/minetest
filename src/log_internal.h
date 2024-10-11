@@ -130,14 +130,6 @@ struct LogEntry {
 	std::string text;
 	// "timestamp: level[thread_name]: text"
 	std::string combined;
-
-	LogEntry(LogLevel level, std::string timestamp, std::string thread_name,
-			std::string text, std::string combined) :
-		level(level),
-		timestamp(std::move(timestamp)),
-		thread_name(std::move(thread_name)),
-		text(std::move(text)),
-		combined(std::move(combined)) { }
 };
 
 class CaptureLogOutput : public ILogOutput {
@@ -164,7 +156,7 @@ public:
 	void logRaw(LogLevel lev, std::string_view line) override
 	{
 		MutexAutoLock lock(m_mutex);
-		m_entries.emplace_back(lev, "", "", std::string(line), std::string(line));
+		m_entries.emplace_back(LogEntry{lev, "", "", std::string(line), std::string(line)});
 	}
 
 	void log(LogLevel lev, const std::string &combined,
@@ -172,7 +164,7 @@ public:
 		std::string_view payload_text) override
 	{
 		MutexAutoLock lock(m_mutex);
-		m_entries.emplace_back(lev, time, thread_name, std::string(payload_text), combined);
+		m_entries.emplace_back(LogEntry{lev, time, thread_name, std::string(payload_text), combined});
 	}
 
 	// Take the log entries currently stored, clearing the buffer.
