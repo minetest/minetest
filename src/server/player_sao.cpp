@@ -646,9 +646,12 @@ void PlayerSAO::setMaxSpeedOverride(const v3f &vel)
 
 bool PlayerSAO::checkMovementCheat()
 {
+	static thread_local const u32 anticheat_flags =
+		g_settings->getFlagStr("anticheat_flags", flagdesc_anticheat, nullptr);
+
 	if (m_is_singleplayer ||
 			isAttached() ||
-			g_settings->getBool("disable_anticheat")) {
+			!(anticheat_flags & AC_MOVEMENT)) {
 		m_last_good_position = m_base_position;
 		return false;
 	}
@@ -728,6 +731,11 @@ bool PlayerSAO::checkMovementCheat()
 		float s = MYMAX(player_max_jump, player_max_walk);
 		required_time = MYMAX(required_time, d_vert / s);
 	}
+
+	static thread_local float anticheat_movement_tolerance =
+		std::max(g_settings->getFloat("anticheat_movement_tolerance"), 1.0f);
+
+	required_time /= anticheat_movement_tolerance;
 
 	if (m_move_pool.grab(required_time)) {
 		m_last_good_position = m_base_position;

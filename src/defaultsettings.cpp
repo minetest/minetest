@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "mapgen/mapgen.h" // Mapgen::setDefaultSettings
 #include "util/string.h"
+#include "server.h"
 
 
 /*
@@ -459,7 +460,9 @@ void set_default_settings()
 	settings->setDefault("enable_pvp", "true");
 	settings->setDefault("enable_mod_channels", "false");
 	settings->setDefault("disallow_empty_password", "false");
-	settings->setDefault("disable_anticheat", "false");
+	settings->setDefault("anticheat_flags", flagdesc_anticheat,
+		AC_DIGGING | AC_INTERACTION | AC_MOVEMENT);
+	settings->setDefault("anticheat_movement_tolerance", "1.0");
 	settings->setDefault("enable_rollback_recording", "false");
 	settings->setDefault("deprecated_lua_api_handling", "log");
 
