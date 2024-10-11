@@ -61,6 +61,7 @@ Hud::Hud(Client *client, LocalPlayer *player,
 
 	readScalingSetting();
 	g_settings->registerChangedCallback("dpi_change_notifier", setting_changed_callback, this);
+	g_settings->registerChangedCallback("display_density_factor", setting_changed_callback, this);
 	g_settings->registerChangedCallback("hud_scaling", setting_changed_callback, this);
 
 	for (auto &hbar_color : hbar_colors)
@@ -170,6 +171,7 @@ void Hud::readScalingSetting()
 Hud::~Hud()
 {
 	g_settings->deregisterChangedCallback("dpi_change_notifier", setting_changed_callback, this);
+	g_settings->deregisterChangedCallback("display_density_factor", setting_changed_callback, this);
 	g_settings->deregisterChangedCallback("hud_scaling", setting_changed_callback, this);
 
 	if (m_selection_mesh)
