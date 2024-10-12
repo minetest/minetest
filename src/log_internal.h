@@ -123,53 +123,68 @@ private:
 	std::ofstream m_stream;
 };
 
-class LogOutputBuffer : public ICombinedLogOutput {
-public:
-	LogOutputBuffer(Logger &logger) :
-		m_logger(logger)
-	{
-		updateLogLevel();
-	};
+struct LogEntry {
+	LogLevel level;
+	std::string timestamp;
+	std::string thread_name;
+	std::string text;
+	// "timestamp: level[thread_name]: text"
+	std::string combined;
+};
 
-	virtual ~LogOutputBuffer()
+class CaptureLogOutput : public ILogOutput {
+public:
+	CaptureLogOutput() = delete;
+	DISABLE_CLASS_COPY(CaptureLogOutput);
+
+	CaptureLogOutput(Logger &logger) : m_logger(logger)
+	{
+		m_logger.addOutput(this);
+	}
+
+	~CaptureLogOutput()
 	{
 		m_logger.removeOutput(this);
 	}
 
-	void updateLogLevel();
-
-	void logRaw(LogLevel lev, std::string_view line);
-
-	void clear()
+	void setLogLevel(LogLevel level)
 	{
-		MutexAutoLock lock(m_buffer_mutex);
-		m_buffer = std::queue<std::string>();
+		m_logger.removeOutput(this);
+		m_logger.addOutputMaxLevel(this, level);
 	}
 
-	bool empty() const
+	void logRaw(LogLevel lev, std::string_view line) override
 	{
-		MutexAutoLock lock(m_buffer_mutex);
-		return m_buffer.empty();
+		MutexAutoLock lock(m_mutex);
+		m_entries.emplace_back(LogEntry{lev, "", "", std::string(line), std::string(line)});
 	}
 
-	std::string get()
+	void log(LogLevel lev, const std::string &combined,
+		const std::string &time, const std::string &thread_name,
+		std::string_view payload_text) override
 	{
-		MutexAutoLock lock(m_buffer_mutex);
-		if (m_buffer.empty())
-			return "";
-		std::string s = std::move(m_buffer.front());
-		m_buffer.pop();
-		return s;
+		MutexAutoLock lock(m_mutex);
+		m_entries.emplace_back(LogEntry{lev, time, thread_name, std::string(payload_text), combined});
+	}
+
+	// Take the log entries currently stored, clearing the buffer.
+	std::vector<LogEntry> take()
+	{
+		std::vector<LogEntry> entries;
+		MutexAutoLock lock(m_mutex);
+		std::swap(m_entries, entries);
+		return entries;
 	}
 
 private:
-	// g_logger serializes calls to logRaw() with a mutex, but that
-	// doesn't prevent get() / clear() from being called on top of it.
-	// This mutex prevents that.
-	mutable std::mutex m_buffer_mutex;
-	std::queue<std::string> m_buffer;
 	Logger &m_logger;
+	// g_logger serializes calls to log/logRaw with a mutex, but that
+	// doesn't prevent take() from being called on top of it.
+	// This mutex prevents that.
+	std::mutex m_mutex;
+	std::vector<LogEntry> m_entries;
 };
+
 
 #ifdef __ANDROID__
 class AndroidLogOutput : public ICombinedLogOutput {

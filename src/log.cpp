@@ -371,42 +371,15 @@ void StreamLogOutput::logRaw(LogLevel lev, std::string_view line)
 	}
 }
 
-void LogOutputBuffer::updateLogLevel()
+void StreamProxy::fix_stream_state(std::ostream &os)
 {
-	const std::string &conf_loglev = g_settings->get("chat_log_level");
-	LogLevel log_level = Logger::stringToLevel(conf_loglev);
-	if (log_level == LL_MAX) {
-		warningstream << "Supplied unrecognized chat_log_level; "
-			"showing none." << std::endl;
-		log_level = LL_NONE;
-	}
-
-	m_logger.removeOutput(this);
-	m_logger.addOutputMaxLevel(this, log_level);
-}
-
-void LogOutputBuffer::logRaw(LogLevel lev, std::string_view line)
-{
-	std::string color;
-
-	if (!g_settings->getBool("disable_escape_sequences")) {
-		switch (lev) {
-		case LL_ERROR: // red
-			color = "\x1b(c@#F00)";
-			break;
-		case LL_WARNING: // yellow
-			color = "\x1b(c@#EE0)";
-			break;
-		case LL_INFO: // grey
-			color = "\x1b(c@#BBB)";
-			break;
-		case LL_VERBOSE: // dark grey
-		case LL_TRACE:
-			color = "\x1b(c@#888)";
-			break;
-		default: break;
-		}
-	}
-	MutexAutoLock lock(m_buffer_mutex);
-	m_buffer.emplace(color.append(line));
+	std::ios::iostate state = os.rdstate();
+	// clear error state so the stream works again
+	os.clear();
+	if (state & std::ios::eofbit)
+		os << "(ostream:eofbit)";
+	if (state & std::ios::badbit)
+		os << "(ostream:badbit)";
+	if (state & std::ios::failbit)
+		os << "(ostream:failbit)";
 }
