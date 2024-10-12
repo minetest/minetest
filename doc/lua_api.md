@@ -4283,7 +4283,8 @@ After creating the `locale` directory, a translation template for the above
 example using the following command:
 
 ```sh
-xgettext -L lua -kS -kNS:1,2 -d hello -o locale/hello.pot *.lua
+xgettext -L lua -kS -kNS:1,2 -kminetest.translate:1c,2 -kminetest.translate_n:1c,2,3 \
+  -d hello -o locale/hello.pot *.lua
 ```
 
 The above command can also be used to update the translation template when new
