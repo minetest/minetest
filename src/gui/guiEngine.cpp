@@ -277,7 +277,7 @@ Translations *GUIEngine::getContentTranslations(const std::string &path,
 
 	std::string data;
 	if (fs::ReadFile(trans_path, data)) {
-		m_last_translations.loadTranslation(trans_path, data);
+		m_last_translations.loadTranslation(fs::GetFilenameFromPath(trans_path.c_str()), data);
 	}
 
 	return &m_last_translations;
