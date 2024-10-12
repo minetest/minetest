@@ -20,15 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "imagesource.h"
 
 #include <IFileSystem.h>
-#include "settings.h"
-#include "mesh.h"
-#include "util/strfnd.h"
-#include "renderingengine.h"
-#include "util/base64.h"
-#include "irrlicht_changes/printing.h"
 #include "imagefilters.h"
+#include "mesh.h"
+#include "renderingengine.h"
+#include "settings.h"
 #include "texturepaths.h"
+#include "irrlicht_changes/printing.h"
+#include "util/base64.h"
 #include "util/numeric.h"
+#include "util/strfnd.h"
 
 
 ////////////////////////////////
@@ -1832,6 +1832,12 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 
 #undef CHECK_DIM
 
+ImageSource::ImageSource() :
+		m_setting_mipmap{g_settings->getBool("mip_map")},
+		m_setting_trilinear_filter{g_settings->getBool("trilinear_filter")},
+		m_setting_bilinear_filter{g_settings->getBool("bilinear_filter")},
+		m_setting_anisotropic_filter{g_settings->getBool("anisotropic_filter")}
+{}
 
 video::IImage* ImageSource::generateImage(std::string_view name,
 		std::set<std::string> &source_image_names)

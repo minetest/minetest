@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "script/scripting_client.h"
 #include "gettext.h"
 #include <SViewFrustum.h>
+#include <IGUIFont.h>
 #include <IVideoDriver.h>
 
 #define CAMERA_OFFSET_STEP 200
