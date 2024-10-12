@@ -268,7 +268,7 @@ Media files (textures, sounds, whatever) that will be transferred to the
 client and will be available for use by the mod and translation files for
 the clients (see [Translations]). Accepted characters for names are:
 
-    a-zA-Z0-9_.-
+    a-z,A-Z,0-9 and _.-
 
 Accepted formats are:
 
@@ -339,11 +339,11 @@ Naming conventions
 
 Registered names should generally be in this format:
 
-    modname:<whatever>
+    modname:<your_mod_name>
 
-`<whatever>` can have these characters:
+`<your_mod_name>` can have these characters:
 
-    a-zA-Z0-9_
+    a-z,A-Z,0-9 and _
 
 This is to prevent conflicting names from corrupting maps and is
 enforced by the mod loader.
@@ -483,6 +483,8 @@ stripping out the file extension:
 
 * e.g. `foomod_foothing.png`
 * e.g. `foomod_foothing`
+
+Accepted characters for texture file names are `a-z,A-Z,0-9 and _.-`
 
 Supported texture formats are PNG (`.png`), JPEG (`.jpg`), Bitmap (`.bmp`)
 and Targa (`.tga`).
