@@ -450,13 +450,15 @@ void Translations::loadPoTranslation(const std::string &basefilename, const std:
 		auto prefix = parsed->first;
 		auto s = parsed->second;
 
-		if (prefix == L"#" && s[0] == L',') {
-			// Skip fuzzy entries
-			if ((s + L' ').find(L" fuzzy ") != line.npos) {
-				if (last_entry.empty())
-					skip_last = true;
-				else
-					skip = true;
+		if (prefix == L"#") {
+			if (s[0] == L',') {
+				// Skip fuzzy entries
+				if ((s + L' ').find(L" fuzzy ") != line.npos) {
+					if (last_entry.empty())
+						skip_last = true;
+					else
+						skip = true;
+				}
 			}
 			continue;
 		}
