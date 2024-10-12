@@ -140,8 +140,7 @@ void ClientMap::onSettingChanged(std::string_view name, bool all)
 
 ClientMap::~ClientMap()
 {
-	for (const auto &name : ClientMap_settings)
-		g_settings->deregisterChangedCallback(name, on_settings_changed, this);
+	g_settings->deregisterAllChangedCallbacks(this);
 }
 
 void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset, video::SColor light_color)

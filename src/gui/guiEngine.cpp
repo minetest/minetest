@@ -404,7 +404,7 @@ void GUIEngine::run()
 /******************************************************************************/
 GUIEngine::~GUIEngine()
 {
-	g_settings->deregisterChangedCallback("fullscreen", fullscreenChangedCallback, this);
+	g_settings->deregisterAllChangedCallbacks(this);
 
 	// deinitialize script first. gc destructors might depend on other stuff
 	infostream << "GUIEngine: Deinitializing scripting" << std::endl;
