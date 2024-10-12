@@ -356,7 +356,8 @@ void Translations::loadPoEntry(const std::wstring &basefilename, const GettextPl
 		std::vector<std::wstring> translations;
 		for (int i = 0; ; i++) {
 			auto translated = entry.find(L"msgstr[" + std::to_wstring(i) + L"]");
-			if (translated == entry.end()) break;
+			if (translated == entry.end())
+				break;
 			translations.push_back(translated->second);
 		}
 		addPluralTranslation(textdomain, plural_form, original, translations);
