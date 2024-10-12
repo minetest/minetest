@@ -20,12 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "texturesource.h"
 
 #include <IVideoDriver.h>
-#include "util/thread.h"
-#include "imagefilters.h"
 #include "guiscalingfilter.h"
-#include "renderingengine.h"
-#include "texturepaths.h"
+#include "imagefilters.h"
 #include "imagesource.h"
+#include "renderingengine.h"
+#include "settings.h"
+#include "texturepaths.h"
+#include "util/thread.h"
 
 
 // Stores internal information about a texture.

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "config.h"
 #include "debug.h"
+#include "settings.h"
 #include "util/strfnd.h"
 #include "util/string.h"
 #include "util/numeric.h"

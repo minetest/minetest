@@ -24,8 +24,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "filesys.h"
 #include "gettext.h"
+#include "settings.h"
 #include "irrlicht_changes/CGUITTFont.h"
 #include "util/numeric.h" // rangelim
+#include <IGUIEnvironment.h>
+#include <IGUIFont.h>
 
 /** reference to access font engine, has to be initialized by main */
 FontEngine *g_fontengine = nullptr;

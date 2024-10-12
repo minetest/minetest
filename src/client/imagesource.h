@@ -20,8 +20,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <IImage.h>
+#include <map>
+#include <set>
 #include <string>
-#include "settings.h"
+
+using namespace irr;
 
 // This file is only used for internal generation of images.
 // Use texturesource.h to handle textures.
@@ -45,6 +48,8 @@ private:
 
 // Generates images using texture modifiers, and caches source images.
 struct ImageSource {
+	ImageSource();
+
 	/*! Generates an image from a full string like
 	 * "stone.png^mineral_coal.png^[crack:1:0".
 	 * The returned Image should be dropped.
@@ -57,13 +62,6 @@ struct ImageSource {
 
 	// TODO should probably be moved elsewhere
 	static video::SColor getImageAverageColor(const video::IImage &image);
-
-	ImageSource() :
-		m_setting_mipmap{g_settings->getBool("mip_map")},
-		m_setting_trilinear_filter{g_settings->getBool("trilinear_filter")},
-		m_setting_bilinear_filter{g_settings->getBool("bilinear_filter")},
-		m_setting_anisotropic_filter{g_settings->getBool("anisotropic_filter")}
-	{};
 
 private:
 
