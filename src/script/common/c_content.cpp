@@ -2087,11 +2087,7 @@ static bool push_json_value_helper(lua_State *L, const Json::Value &value,
 			lua_pushvalue(L, nullindex);
 			break;
 		case Json::intValue:
-			lua_pushinteger(L, value.asLargestInt());
-			break;
 		case Json::uintValue:
-			lua_pushinteger(L, value.asLargestUInt());
-			break;
 		case Json::realValue:
 			lua_pushnumber(L, value.asDouble());
 			break;
