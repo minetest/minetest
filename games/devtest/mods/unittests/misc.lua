@@ -155,13 +155,22 @@ unittests.register("test_urlencode", test_urlencode)
 
 local function test_parse_json()
 	local raw = "{\"how\\u0000weird\":\n\"yes\\u0000really\",\"n\":-1234567891011,\"z\":null}"
-	local data = core.parse_json(raw)
-	assert(data["how\000weird"] == "yes\000really")
-	assert(data.n == -1234567891011)
-	assert(data.z == nil)
-	local null = {}
-	data = core.parse_json(raw, null)
-	assert(data.z == null)
+	do
+		local data = core.parse_json(raw)
+		assert(data["how\000weird"] == "yes\000really")
+		assert(data.n == -1234567891011)
+		assert(data.z == nil)
+	end
+	do
+		local null = {}
+		local data = core.parse_json(raw, null)
+		assert(data.z == null)
+	end
+	do
+		local data, err = core.parse_json('"ceci n\'est pas un json', nil, true)
+		assert(data == nil)
+		assert(type(err) == "string")
+	end
 end
 unittests.register("test_parse_json", test_parse_json)
 
