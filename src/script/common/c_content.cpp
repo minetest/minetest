@@ -2063,6 +2063,10 @@ bool read_tree_def(lua_State *L, int idx, const NodeDefManager *ndef,
 }
 
 /******************************************************************************/
+#if defined(JSONCPP_STRING) || !(JSONCPP_VERSION_MAJOR < 1 || JSONCPP_VERSION_MINOR < 9)
+#define HAVE_JSON_STRING
+#endif
+
 // Returns depth of json value tree
 static int push_json_value_getdepth(const Json::Value &value)
 {
@@ -2070,11 +2074,8 @@ static int push_json_value_getdepth(const Json::Value &value)
 		return 1;
 
 	int maxdepth = 0;
-	for (const auto &it : value) {
-		int elemdepth = push_json_value_getdepth(it);
-		if (elemdepth > maxdepth)
-			maxdepth = elemdepth;
-	}
+	for (const auto &it : value)
+		maxdepth = std::max(push_json_value_getdepth(it), maxdepth);
 	return maxdepth + 1;
 }
 // Recursive function to convert JSON --> Lua table
@@ -2087,41 +2088,40 @@ static bool push_json_value_helper(lua_State *L, const Json::Value &value,
 			lua_pushvalue(L, nullindex);
 			break;
 		case Json::intValue:
-			lua_pushinteger(L, value.asLargestInt());
-			break;
 		case Json::uintValue:
-			lua_pushinteger(L, value.asLargestUInt());
-			break;
 		case Json::realValue:
+			// push everything as a double since Lua integers may be too small
 			lua_pushnumber(L, value.asDouble());
 			break;
-		case Json::stringValue:
-			{
-				const char *str = value.asCString();
-				lua_pushstring(L, str ? str : "");
-			}
+		case Json::stringValue: {
+#ifdef HAVE_JSON_STRING
+			const auto &str = value.asString();
+			lua_pushlstring(L, str.c_str(), str.size());
+#else
+			const char *str = value.asCString();
+			lua_pushstring(L, str ? str : "");
+#endif
 			break;
+		}
 		case Json::booleanValue:
 			lua_pushboolean(L, value.asInt());
 			break;
 		case Json::arrayValue:
 			lua_createtable(L, value.size(), 0);
-			for (Json::Value::const_iterator it = value.begin();
-					it != value.end(); ++it) {
+			for (auto it = value.begin(); it != value.end(); ++it) {
 				push_json_value_helper(L, *it, nullindex);
 				lua_rawseti(L, -2, it.index() + 1);
 			}
 			break;
 		case Json::objectValue:
 			lua_createtable(L, 0, value.size());
-			for (Json::Value::const_iterator it = value.begin();
-					it != value.end(); ++it) {
-#if !defined(JSONCPP_STRING) && (JSONCPP_VERSION_MAJOR < 1 || JSONCPP_VERSION_MINOR < 9)
+			for (auto it = value.begin(); it != value.end(); ++it) {
+#ifdef HAVE_JSON_STRING
+				const auto &str = it.name();
+				lua_pushlstring(L, str.c_str(), str.size());
+#else
 				const char *str = it.memberName();
 				lua_pushstring(L, str ? str : "");
-#else
-				std::string str = it.name();
-				lua_pushstring(L, str.c_str());
 #endif
 				push_json_value_helper(L, *it, nullindex);
 				lua_rawset(L, -3);
@@ -2130,6 +2130,7 @@ static bool push_json_value_helper(lua_State *L, const Json::Value &value,
 	}
 	return true;
 }
+
 // converts JSON --> Lua table; returns false if lua stack limit exceeded
 // nullindex: Lua stack index of value to use in place of JSON null
 bool push_json_value(lua_State *L, const Json::Value &value, int nullindex)
