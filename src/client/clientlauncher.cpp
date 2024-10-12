@@ -71,9 +71,8 @@ static void dump_start_data(const GameStartData &data)
 ClientLauncher::~ClientLauncher()
 {
 	delete input;
-	g_settings->deregisterChangedCallback("dpi_change_notifier", setting_changed_callback, this);
-	g_settings->deregisterChangedCallback("display_density_factor", setting_changed_callback, this);
-	g_settings->deregisterChangedCallback("gui_scaling", setting_changed_callback, this);
+
+	g_settings->deregisterAllChangedCallbacks(this);
 
 	delete g_fontengine;
 	g_fontengine = nullptr;

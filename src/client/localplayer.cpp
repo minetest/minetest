@@ -60,10 +60,7 @@ void PlayerSettings::registerSettingsCallback()
 
 void PlayerSettings::deregisterSettingsCallback()
 {
-	for (auto &name : PlayerSettings_names) {
-		g_settings->deregisterChangedCallback(name,
-			&PlayerSettings::settingsChangedCallback, this);
-	}
+	g_settings->deregisterAllChangedCallbacks(this);
 }
 
 void PlayerSettings::settingsChangedCallback(const std::string &name, void *data)

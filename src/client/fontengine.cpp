@@ -68,8 +68,7 @@ FontEngine::FontEngine(gui::IGUIEnvironment* env) :
 /******************************************************************************/
 FontEngine::~FontEngine()
 {
-	for (auto name : settings)
-		g_settings->deregisterChangedCallback(name, font_setting_changed, this);
+	g_settings->deregisterAllChangedCallbacks(this);
 
 	cleanCache();
 }

@@ -76,10 +76,7 @@ Clouds::Clouds(scene::ISceneManager* mgr, IShaderSource *ssrc,
 
 Clouds::~Clouds()
 {
-	g_settings->deregisterChangedCallback("enable_3d_clouds",
-		&cloud_3d_setting_changed, this);
-	g_settings->deregisterChangedCallback("soft_clouds",
-		&cloud_3d_setting_changed, this);
+	g_settings->deregisterAllChangedCallbacks(this);
 }
 
 void Clouds::OnRegisterSceneNode()

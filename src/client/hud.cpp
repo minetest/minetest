@@ -170,9 +170,7 @@ void Hud::readScalingSetting()
 
 Hud::~Hud()
 {
-	g_settings->deregisterChangedCallback("dpi_change_notifier", setting_changed_callback, this);
-	g_settings->deregisterChangedCallback("display_density_factor", setting_changed_callback, this);
-	g_settings->deregisterChangedCallback("hud_scaling", setting_changed_callback, this);
+	g_settings->deregisterAllChangedCallbacks(this);
 
 	if (m_selection_mesh)
 		m_selection_mesh->drop();

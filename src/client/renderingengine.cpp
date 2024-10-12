@@ -237,8 +237,7 @@ RenderingEngine::~RenderingEngine()
 {
 	sanity_check(s_singleton == this);
 
-	g_settings->deregisterChangedCallback("fullscreen", settingChangedCallback, this);
-	g_settings->deregisterChangedCallback("window_maximized", settingChangedCallback, this);
+	g_settings->deregisterAllChangedCallbacks(this);
 
 	core.reset();
 	m_device->closeDevice();

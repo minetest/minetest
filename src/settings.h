@@ -238,8 +238,7 @@ public:
 
 	void registerChangedCallback(const std::string &name,
 		SettingsChangedCallback cbf, void *userdata = NULL);
-	void deregisterChangedCallback(const std::string &name,
-		SettingsChangedCallback cbf, void *userdata = NULL);
+	size_t deregisterAllChangedCallbacks(const void *userdata);
 
 	void removeSecureSettings();
 
