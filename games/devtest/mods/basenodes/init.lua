@@ -20,6 +20,12 @@ minetest.register_node("basenodes:desert_stone", {
 	groups = {cracky=3},
 })
 
+minetest.register_node("basenodes:test_ore", {
+	description = "Test ore in stone",
+	tiles = {"default_stone.png^basenodes_test_ore.png"},
+	groups = {cracky=3},
+})
+
 minetest.register_node("basenodes:dirt_with_grass", {
 	description = "Dirt with Grass",
 	tiles ={"default_grass.png",
