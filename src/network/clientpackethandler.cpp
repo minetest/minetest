@@ -1527,6 +1527,8 @@ void Client::handleCommand_LocalPlayerAnimations(NetworkPacket* pkt)
 		}
 	}
 
+	*pkt >> player->local_animation_speed;
+
 	player->last_animation = LocalPlayerAnimation::NO_ANIM;
 }
 
