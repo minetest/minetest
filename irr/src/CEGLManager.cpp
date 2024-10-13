@@ -58,14 +58,14 @@ bool CEGLManager::initialize(const SIrrlichtCreationParameters &params, const SE
 
 	// We must check if EGL display is valid.
 	if (EglDisplay == EGL_NO_DISPLAY) {
-		os::Printer::log("Could not get EGL display.");
+		os::Printer::log("Could not get EGL display.", ELL_ERROR);
 		terminate();
 		return false;
 	}
 
 	// Initialize EGL here.
 	if (!eglInitialize(EglDisplay, &MajorVersion, &MinorVersion)) {
-		os::Printer::log("Could not initialize EGL display.");
+		os::Printer::log("Could not initialize EGL display.", ELL_ERROR);
 
 		EglDisplay = EGL_NO_DISPLAY;
 		terminate();
@@ -121,7 +121,7 @@ bool CEGLManager::generateSurface()
 #endif
 
 	if (EglConfig == 0) {
-		os::Printer::log("Could not get config for EGL display.");
+		os::Printer::log("Could not get config for EGL display.", ELL_ERROR);
 		return false;
 	}
 
@@ -132,11 +132,26 @@ bool CEGLManager::generateSurface()
 		EglSurface = eglCreateWindowSurface(EglDisplay, EglConfig, 0, 0);
 
 	if (EGL_NO_SURFACE == EglSurface)
-		os::Printer::log("Could not create EGL surface.");
+		os::Printer::log("Could not create EGL surface.", ELL_ERROR);
 
 #ifdef EGL_VERSION_1_2
-	if (MinorVersion > 1)
-		eglBindAPI(EGL_OPENGL_ES_API);
+	if (MinorVersion > 1) {
+		EGLBoolean ok = 0;
+		switch (Params.DriverType) {
+		case EDT_OGLES2:
+		case EDT_WEBGL1:
+			ok = eglBindAPI(EGL_OPENGL_ES_API);
+			break;
+		case EDT_OPENGL:
+			ok = eglBindAPI(EGL_OPENGL_API);
+		default:
+			break;
+		}
+		if (!ok) {
+			os::Printer::log("Could not bind EGL API.", ELL_ERROR);
+			return false;
+		}
+	}
 #endif
 
 	if (Params.Vsync)
@@ -156,6 +171,8 @@ EGLConfig CEGLManager::chooseConfig(EConfigStyle confStyle)
 	case EDT_WEBGL1:
 		eglOpenGLBIT = EGL_OPENGL_ES2_BIT;
 		break;
+	case EDT_OPENGL:
+		eglOpenGLBIT = EGL_OPENGL_BIT;
 	default:
 		break;
 	}
@@ -296,6 +313,8 @@ EGLConfig CEGLManager::chooseConfig(EConfigStyle confStyle)
 		}
 
 		delete[] configs;
+	} else {
+		_IRR_DEBUG_BREAK_IF(1)
 	}
 
 	return configResult;
@@ -453,32 +472,35 @@ bool CEGLManager::generateContext()
 	if (EglContext != EGL_NO_CONTEXT)
 		return true;
 
-	EGLint OpenGLESVersion = 0;
+	std::vector<EGLint> ContextAttrib;
 
 	switch (Params.DriverType) {
 	case EDT_OGLES2:
 	case EDT_WEBGL1:
-		OpenGLESVersion = 2;
+#ifdef EGL_VERSION_1_3
+		ContextAttrib.push_back(EGL_CONTEXT_CLIENT_VERSION);
+		ContextAttrib.push_back(2);
+#endif
+		break;
+	case EDT_OPENGL:
+#ifdef EGL_VERSION_1_5
+		ContextAttrib.push_back(EGL_CONTEXT_OPENGL_PROFILE_MASK);
+		ContextAttrib.push_back(EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT);
+#endif
 		break;
 	default:
 		break;
 	}
 
-	EGLint ContextAttrib[] = {
-#ifdef EGL_VERSION_1_3
-			EGL_CONTEXT_CLIENT_VERSION, OpenGLESVersion,
-#endif
-			EGL_NONE, 0,
-		};
+	ContextAttrib.push_back(EGL_NONE);
+	ContextAttrib.push_back(0);
 
-	EglContext = eglCreateContext(EglDisplay, EglConfig, EGL_NO_CONTEXT, ContextAttrib);
+	EglContext = eglCreateContext(EglDisplay, EglConfig, EGL_NO_CONTEXT, ContextAttrib.data());
 
 	if (testEGLError()) {
 		os::Printer::log("Could not create EGL context.", ELL_ERROR);
 		return false;
 	}
-
-	os::Printer::log("EGL context created with OpenGLESVersion: ", core::stringc((int)OpenGLESVersion), ELL_DEBUG);
 
 	return true;
 }
