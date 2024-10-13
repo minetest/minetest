@@ -969,12 +969,16 @@ video::SColor encode_light(u16 light, u8 emissive_light)
 	// Ratio of sunlight:
 	u32 r;
 	if (sum > 0)
-		r = day * 15 / sum;
+		r = day * 255 / sum;
 	else
 		r = 0;
+	if (r < 0xF0 && r&0b1100)
+		r += 0x10;
 	// Average light:
-	u32 b = (day + night) / 30;
-	return video::SColor((r<<4)|b, 0, 0, 0);
+	u32 b = sum / 2;
+	if (b < 0xF0 && b&0b1100)
+		b += 0x10;
+	return video::SColor((r&0xF0)|(b>>4), 0, 0, 0);
 }
 
 u8 get_solid_sides(MeshMakeData *data)
