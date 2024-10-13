@@ -338,7 +338,6 @@ target_link_libraries(IRROBJ PRIVATE IRRMESHOBJ)
 
 set(IRRDRVROBJ
 	CNullDriver.cpp
-	CGLXManager.cpp
 	CWGLManager.cpp
 	CEGLManager.cpp
 	CSDLManager.cpp
