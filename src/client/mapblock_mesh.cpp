@@ -430,9 +430,9 @@ static void applyTileColor(PreMeshBuffer &pmb)
 
 	for (video::S3DVertex &vertex : pmb.vertices) {
 		video::SColor *c = &vertex.Color;
-		c->setRed(tc.getRed());
-		c->setGreen(tc.getGreen());
-		c->setBlue(tc.getBlue());
+		c->setRed(tc.getRed() * c->getRed() / 255);
+		c->setGreen(tc.getGreen() * c->getGreen() / 255);
+		c->setBlue(tc.getBlue() * c->getBlue() / 255);
 	}
 }
 
@@ -972,13 +972,18 @@ video::SColor encode_light(u16 light, u8 emissive_light)
 		r = day * 255 / sum;
 	else
 		r = 0;
-	if (r < 0xF0 && r&0b1100)
-		r += 0x10;
+	if (r < 0xF0) // round 8-bit to 4-bit number
+		r += 8;
 	// Average light:
 	u32 b = sum / 2;
-	if (b < 0xF0 && b&0b1100)
-		b += 0x10;
-	return video::SColor((r&0xF0)|(b>>4), 0, 0, 0);
+	if (b < 0xF0) // round 8-bit to 4-bit number
+		b += 8;
+	// pack both ratio and average light into the alpha channel
+	// this leaves space for hardware coloring to be applied,
+	// regardless of light, and facilitates ambient light,
+	// allowing making the dark places bright without losing hw color
+	// these values are unpacked in the nodes vertex shader
+	return video::SColor((r&0xF0)|(b>>4), 255, 255, 255);
 }
 
 u8 get_solid_sides(MeshMakeData *data)
