@@ -44,7 +44,7 @@ varying vec3 vPosition;
 // precision must be considered).
 varying vec3 worldPosition;
 varying lowp vec3 lightColor;
-varying vec3 hardwareColor;
+varying lowp vec3 hardwareColor;
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
 #else

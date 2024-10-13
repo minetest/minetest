@@ -16,7 +16,7 @@ varying vec3 vPosition;
 // precision must be considered).
 varying vec3 worldPosition;
 varying lowp vec3 lightColor;
-varying vec3 hardwareColor;
+varying lowp vec3 hardwareColor;
 // The centroid keyword ensures that after interpolation the texture coordinates
 // lie within the same bounds when MSAA is en- and disabled.
 // This fixes the stripes problem with nearest-neighbor textures and MSAA.
