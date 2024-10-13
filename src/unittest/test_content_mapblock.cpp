@@ -197,6 +197,8 @@ void TestMapblockMeshGenerator::testSimpleNode()
 
 	auto &&buf = col.prebuffers[0][0];
 	UASSERTEQ(u32, buf.layer.texture_id, 42);
+	for (auto &v : buf.vertices)
+		v.Color = video::SColor();
 	UASSERT(checkMeshEqual(buf.vertices, buf.indices, {quad::xn, quad::xp, quad::yn, quad::yp, quad::zn, quad::zp}));
 }
 
@@ -219,6 +221,8 @@ void TestMapblockMeshGenerator::testSurroundedNode()
 
 	auto &&buf = col.prebuffers[0][0];
 	UASSERTEQ(u32, buf.layer.texture_id, 42);
+	for (auto &v : buf.vertices)
+		v.Color = video::SColor();
 	UASSERT(checkMeshEqual(buf.vertices, buf.indices, {quad::xn, quad::yn, quad::yp, quad::zn, quad::zp}));
 }
 
@@ -240,6 +244,8 @@ void TestMapblockMeshGenerator::testInterliquidSame()
 
 	auto &&buf = col.prebuffers[0][0];
 	UASSERTEQ(u32, buf.layer.texture_id, 42);
+	for (auto &v : buf.vertices)
+		v.Color = video::SColor();
 	UASSERT(checkMeshEqual(buf.vertices, buf.indices, {quad::xn, quad::yn, quad::yp, quad::zn, quad::zp}));
 }
 
@@ -262,6 +268,8 @@ void TestMapblockMeshGenerator::testInterliquidDifferent()
 
 	auto &&buf = col.prebuffers[0][0];
 	UASSERTEQ(u32, buf.layer.texture_id, 42);
+	for (auto &v : buf.vertices)
+		v.Color = video::SColor();
 	UASSERT(checkMeshEqual(buf.vertices, buf.indices, {quad::xn, quad::xp, quad::yn, quad::yp, quad::zn, quad::zp}));
 }
 
