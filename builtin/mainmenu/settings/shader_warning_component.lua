@@ -13,7 +13,7 @@ return {
             "box[0,0;", avail_w, ",1.2;", mt_color_orange, "]",
 			"label[0.2,0.4;", fgettext("Shaders are disabled."), "]",
 			"label[0.2,0.8;", fgettext("This is not a recommended configuration."), "]",
-			"button[", avail_w - 2.2, ",0.2;2,0.8;fix_shader_warning;Enable]",
+			"button[", avail_w - 2.2, ",0.2;2,0.8;fix_shader_warning;", fgettext("Enable"), "]",
         }
 		return table.concat(fs, ""), 1.2
 	end,
