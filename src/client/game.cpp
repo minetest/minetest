@@ -1576,6 +1576,9 @@ bool Game::createClient(const GameStartData &start_data)
 
 bool Game::shouldShowTouchControls()
 {
+	if (!device->supportsTouchEvents())
+		return false;
+
 	const std::string &touch_controls = g_settings->get("touch_controls");
 	if (touch_controls == "auto")
 		return RenderingEngine::getLastPointerType() == PointerType::Touch;

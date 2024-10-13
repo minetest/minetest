@@ -1205,6 +1205,17 @@ bool CIrrDeviceLinux::isWindowMaximized() const
 	return WindowMaximized;
 }
 
+//! Checks if the Irrlicht device supports touch events.
+bool CIrrDeviceLinux::supportsTouchEvents() const
+{
+#if defined(_IRR_LINUX_X11_XINPUT2_)
+	return true;
+#else
+	return false;
+#endif
+}
+
+
 //! returns color format of the window.
 video::ECOLOR_FORMAT CIrrDeviceLinux::getColorFormat() const
 {

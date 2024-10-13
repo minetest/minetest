@@ -1027,6 +1027,14 @@ int ModApiMainMenu::l_get_active_irrlicht_device(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_irrlicht_device_supports_touch(lua_State *L)
+{
+	lua_pushboolean(L, RenderingEngine::get_raw_device()->supportsTouchEvents());
+	return 1;
+}
+
+
+/******************************************************************************/
 int ModApiMainMenu::l_get_min_supp_proto(lua_State *L)
 {
 	lua_pushinteger(L, CLIENT_PROTOCOL_VERSION_MIN);
@@ -1158,6 +1166,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_active_driver);
 	API_FCT(get_active_renderer);
 	API_FCT(get_active_irrlicht_device);
+	API_FCT(irrlicht_device_supports_touch);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
 	API_FCT(get_formspec_version);

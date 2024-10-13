@@ -1293,6 +1293,11 @@ bool CIrrDeviceSDL::isWindowVisible() const
 	return !IsInBackground;
 }
 
+bool CIrrDeviceSDL::supportsTouchEvents() const
+{
+	return true;
+}
+
 //! returns if window is active. if not, nothing need to be drawn
 bool CIrrDeviceSDL::isWindowActive() const
 {
