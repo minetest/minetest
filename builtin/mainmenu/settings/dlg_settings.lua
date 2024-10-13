@@ -348,8 +348,8 @@ local function check_requirements(name, requires)
 		android = PLATFORM == "Android",
 		desktop = PLATFORM ~= "Android",
 		touch_support = touch_support,
-		-- When touch_controls is "auto", we don't which input method will be used,
-		-- so we show settings for both.
+		-- When touch_controls is "auto", we don't know which input method will
+		-- be used, so we show settings for both.
 		touchscreen = touch_support and (touch_controls == "auto" or core.is_yes(touch_controls)),
 		keyboard_mouse = not touch_support or (touch_controls == "auto" or not core.is_yes(touch_controls)),
 		shaders_support = shaders_support,
