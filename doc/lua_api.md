@@ -5509,7 +5509,7 @@ Luanti includes the following settings to control behavior of privileges:
     the `basic_privs` privilege. This can be used, for example, to give
     limited moderation powers to selected users.
 
-'minetest' namespace reference
+'core' namespace reference
 ==============================
 
 Utilities
@@ -7333,7 +7333,7 @@ HTTP Requests
       `fetch_async_get` described below.
     * Only works at init time and must be called from the mod's main scope
       (not from a function).
-    * Function only exists if minetest server was built with cURL support.
+    * Function only exists if Luanti server was built with cURL support.
     * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED TABLE, STORE IT IN
       A LOCAL VARIABLE!**
 * `HTTPApiTable.fetch(HTTPRequest req, callback)`
@@ -7598,7 +7598,7 @@ Global objects
 --------------
 
 * `core.env`: `EnvRef` of the server environment and world.
-    * Any function in the minetest namespace can be called using the syntax
+    * Any function in the core namespace can be called using the syntax
       `core.env:somefunction(somearguments)`
       instead of `core.somefunction(somearguments)`
     * Deprecated, but support is not to be dropped soon
@@ -11551,7 +11551,7 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
     -- table as x-www-form-urlencoded key-value pairs.
 
     user_agent = "ExampleUserAgent",
-    -- Optional, if specified replaces the default minetest user agent with
+    -- Optional, if specified replaces the default Luanti user agent with
     -- given string
 
     extra_headers = { "Accept-Language: en-us", "Accept-Charset: utf-8" },
