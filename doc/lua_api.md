@@ -1,4 +1,4 @@
-Minetest Lua Modding API Reference
+Luanti Lua Modding API Reference
 ==================================
 
 * More information at <http://www.minetest.net/>
@@ -9,11 +9,11 @@ Minetest Lua Modding API Reference
 Introduction
 ------------
 
-Content and functionality can be added to Minetest using Lua scripting
+Content and functionality can be added to Luanti using Lua scripting
 in run-time loaded mods.
 
 A mod is a self-contained bunch of scripts, textures and other related
-things, which is loaded by and interfaces with Minetest.
+things, which is loaded by and interfaces with Luanti.
 
 Mods are contained and ran solely on the server side. Definitions and media
 files are automatically transferred to the client.
@@ -36,7 +36,7 @@ the `init.lua` scripts in a shared environment.
 Paths
 -----
 
-Minetest keeps and looks for files mostly in two paths. `path_share` or `path_user`.
+Luanti keeps and looks for files mostly in two paths. `path_share` or `path_user`.
 
 `path_share` contains possibly read-only content for the engine (incl. games and mods).
 `path_user` contains mods or games installed by the user but also the users
@@ -159,7 +159,7 @@ Mods can be put in a subdirectory, if the parent directory, which otherwise
 should be a mod, contains a file named `modpack.conf`.
 The file is a key-value store of modpack details.
 
-* `name`: The modpack name. Allows Minetest to determine the modpack name even
+* `name`: The modpack name. Allows Luanti to determine the modpack name even
           if the folder is wrongly named.
 * `title`: A human-readable title to address the modpack. See [Translating content meta](#translating-content-meta).
 * `description`: Description of mod to be shown in the Mods tab of the main
@@ -199,13 +199,13 @@ Mod directory structure
 ### modname
 
 The location of this directory can be fetched by using
-`minetest.get_modpath(modname)`.
+`core.get_modpath(modname)`.
 
 ### mod.conf
 
 A `Settings` file that provides meta information about the mod.
 
-* `name`: The mod name. Allows Minetest to determine the mod name even if the
+* `name`: The mod name. Allows Luanti to determine the mod name even if the
           folder is wrongly named.
 * `title`: A human-readable title to address the mod. See [Translating content meta](#translating-content-meta).
 * `description`: Description of mod to be shown in the Mods tab of the main
@@ -259,7 +259,7 @@ See [`Settings`].
 ### `init.lua`
 
 The main Lua script. Running this script should register everything it
-wants to register. Subsequent execution depends on Minetest calling the
+wants to register. Subsequent execution depends on Luanti calling the
 registered callbacks.
 
 ### `textures`, `sounds`, `media`, `models`, `locale`
@@ -331,7 +331,7 @@ Do not rely on glTF features not being supported; they may be supported in the f
 The backwards compatibility guarantee does not extend to ignoring unsupported features.
 
 For example, if your model used an emissive material,
-you should expect that a future version of Minetest may respect this,
+you should expect that a future version of Luanti may respect this,
 and thus cause your model to render differently there.
 
 Naming conventions
@@ -1023,7 +1023,7 @@ Soft texture overlay
 --------------------
 
 Sometimes hardware coloring is not enough, because it affects the
-whole tile. Soft texture overlays were added to Minetest to allow
+whole tile. Soft texture overlays were added to Luanti to allow
 the dynamic coloring of only specific parts of the node's texture.
 For example a grass block may have colored grass, while keeping the
 dirt brown.
@@ -2701,7 +2701,7 @@ reserved to pass key press events to formspec!
 **WARNING**: names and values of elements cannot contain binary data such as ASCII
 control characters. For values, escape sequences used by the engine are an exception to this.
 
-**WARNING**: Minetest allows you to add elements to every single formspec instance
+**WARNING**: Luanti allows you to add elements to every single formspec instance
 using `player:set_formspec_prepend()`, which may be the reason backgrounds are
 appearing when you don't expect them to, or why things are styled differently
 to normal. See [`no_prepend[]`] and [Styling Formspecs].
@@ -3826,7 +3826,7 @@ The following functions provide escape sequences:
 Spatial Vectors
 ===============
 
-Minetest stores 3-dimensional spatial vectors in Lua as tables of 3 coordinates,
+Luanti stores 3-dimensional spatial vectors in Lua as tables of 3 coordinates,
 and has a class to represent them (`vector.*`), which this chapter is about.
 For details on what a spatial vectors is, please refer to Wikipedia:
 https://en.wikipedia.org/wiki/Euclidean_vector.
@@ -3853,12 +3853,12 @@ Compatibility notes
 -------------------
 
 Vectors used to be defined as tables of the form `{x = num, y = num, z = num}`.
-Since Minetest 5.5.0, vectors additionally have a metatable to enable easier use.
+Since version 5.5.0, vectors additionally have a metatable to enable easier use.
 Note: Those old-style vectors can still be found in old mod code. Hence, mod and
 engine APIs still need to be able to cope with them in many places.
 
 Manually constructed tables are deprecated and highly discouraged. This interface
-should be used to ensure seamless compatibility between mods and the Minetest API.
+should be used to ensure seamless compatibility between mods and the Luanti API.
 This is especially important to callback function parameters and functions overwritten
 by mods.
 Also, though not likely, the internal implementation of a vector might change in
@@ -4343,7 +4343,7 @@ Hello @1, how are you today?=Hallo @1, wie geht es dir heute?
 ```
 
 For old translation files, consider using the script `mod_translation_updater.py`
-in the Minetest [modtools](https://github.com/minetest/modtools) repository to
+in the Luanti [modtools](https://github.com/minetest/modtools) repository to
 generate and update translation files automatically from the Lua sources.
 
 Gettext translation file format
@@ -4414,7 +4414,7 @@ Say you have a mod called `mymod` with a short description in mod.conf:
 description = This is the short description
 ```
 
-Minetest will look for translations in the `mymod` textdomain as there's no
+Luanti will look for translations in the `mymod` textdomain as there's no
 textdomain specified in mod.conf. For example, `mymod/locale/mymod.fr.tr`:
 
 ```
@@ -4424,7 +4424,7 @@ This is the short description=Voici la description succincte
 
 ### Games and Modpacks
 
-For games and modpacks, Minetest will look for the textdomain in all mods.
+For games and modpacks, Luanti will look for the textdomain in all mods.
 
 Say you have a game called `mygame` with the following game.conf:
 
@@ -4433,7 +4433,7 @@ description = This is the game's short description
 textdomain = mygame
 ```
 
-Minetest will then look for the textdomain `mygame` in all mods, for example,
+Luanti will then look for the textdomain `mygame` in all mods, for example,
 `mygame/mods/anymod/locale/mygame.fr.tr`. Note that it is still recommended that your
 textdomain match the mod name, but this isn't required.
 
@@ -4443,7 +4443,7 @@ Perlin noise
 ============
 
 Perlin noise creates a continuously-varying value depending on the input values.
-Usually in Minetest the input values are either 2D or 3D coordinates in nodes.
+Usually in Luanti the input values are either 2D or 3D coordinates in nodes.
 The result is used during map generation to create the terrain shape, vary heat
 and humidity to distribute biomes, vary the density of decorations or vary the
 structure of ores.
@@ -4795,7 +4795,7 @@ Schematic specifier
 --------------------
 
 A schematic specifier identifies a schematic by either a filename to a
-Minetest Schematic file (`.mts`) or through raw data supplied through Lua,
+Luanti Schematic file (`.mts`) or through raw data supplied through Lua,
 in the form of a table.  This table specifies the following fields:
 
 * The `size` field is a 3D vector containing the dimensions of the provided
@@ -5130,7 +5130,7 @@ Methods
 A helper class for voxel areas.
 It can be created via `VoxelArea(pmin, pmax)` or
 `VoxelArea:new({MinEdge = pmin, MaxEdge = pmax})`.
-The coordinates are *inclusive*, like most other things in Minetest.
+The coordinates are *inclusive*, like most other things in Luanti.
 
 ### Methods
 
@@ -5464,8 +5464,8 @@ and `minetest.register_on_priv_revoke` functions.
 Built-in privileges
 -------------------
 
-Minetest includes a set of built-in privileges that control capabilities
-provided by the Minetest engine and can be used by mods:
+Luanti includes a set of built-in privileges that control capabilities
+provided by the Luanti engine and can be used by mods:
 
   * Basic privileges are normally granted to all players:
       * `shout`: can communicate using the in-game chat.
@@ -5505,7 +5505,7 @@ provided by the Minetest engine and can be used by mods:
 Related settings
 ----------------
 
-Minetest includes the following settings to control behavior of privileges:
+Luanti includes the following settings to control behavior of privileges:
 
    * `default_privs`: defines privileges granted to new players.
    * `basic_privs`: defines privileges that can be granted/revoked by players having
@@ -5548,7 +5548,7 @@ Utilities
     * Useful for storing custom data *independently of worlds*.
     * Must be called during mod load time.
     * Can read or write to this directory at any time.
-    * It's possible that multiple Minetest instances are running at the same
+    * It's possible that multiple Luanti instances are running at the same
       time, which may lead to corruption if you are not careful.
 * `minetest.is_singleplayer()`
 * `minetest.features`: Table containing API feature flags
@@ -5715,7 +5715,7 @@ Utilities
           y = 577,
       },
 
-      -- Estimated maximum formspec size before Minetest will start shrinking the
+      -- Estimated maximum formspec size before Luanti will start shrinking the
       -- formspec to fit. For a fullscreen formspec, use this formspec size and
       -- `padding[0,0]`. `bgcolor[;true]` is also recommended.
       max_formspec_size = {
@@ -5733,7 +5733,7 @@ Utilities
 
       -- Whether the touchscreen controls are enabled.
       -- Usually (but not always) `true` on Android.
-      -- Requires at least Minetest 5.9.0 on the client. For older clients, it
+      -- Requires at least version 5.9.0 on the client. For older clients, it
       -- is always set to `false`.
       touch_controls = false,
   }
@@ -5766,7 +5766,7 @@ Utilities
       `local f = io.open(path, "wb"); f:write(content); f:close()`
 * `minetest.get_version()`: returns a table containing components of the
    engine version.  Components:
-    * `project`: Name of the project, eg, "Minetest"
+    * `project`: Name of the project, eg, "Luanti"
     * `string`: Simple version, eg, "1.2.3-dev"
     * `proto_min`: The minimum supported protocol version
     * `proto_max`: The maximum supported protocol version
@@ -5987,7 +5987,7 @@ Call these functions only at load time!
     * `hp_change`: the amount of change. Negative when it is damage.
       * Historically, the new HP value was clamped to [0, 65535] before
         calculating the HP change. This clamping has been removed as of
-        Minetest 5.10.0
+        Luanti 5.10.0
     * `reason`: a PlayerHPChangeReason table.
         * The `type` field will have one of the following values:
             * `set_hp`: A mod or the engine called `set_hp` without
@@ -6207,7 +6207,7 @@ Authentication
     * Only use this function for making it possible to log in via password from
       external protocols such as IRC, other uses are frowned upon.
 * `minetest.get_password_hash(name, raw_password)`
-    * Convert a name-password pair to a password hash that Minetest can use.
+    * Convert a name-password pair to a password hash that Luanti can use.
     * The returned value alone is not a good basis for password checks based
       on comparing the password hash in the database with the password hash
       from the function, with an externally provided password, as the hash
@@ -7261,7 +7261,7 @@ Schematics
               applied, the lowest slice being `ypos = 0`.
             * If slice probability list equals `nil`, no slice probabilities
               are applied.
-    * Saves schematic in the Minetest Schematic format to filename.
+    * Saves schematic in the Luanti Schematic format to filename.
 
 * `minetest.place_schematic(pos, schematic, rotation, replacements, force_placement, flags)`
     * Place the schematic specified by schematic (see [Schematic specifier]) at
@@ -7716,7 +7716,7 @@ use the provided load and write functions for this.
     * `type_name`: optional, forces the internally used API.
         * Possible values: `"LibSpatial"` (default).
         * When other values are specified, or SpatialIndex is not available,
-          the custom Minetest functions are used.
+          the custom Luanti functions are used.
 * `get_area(id, include_corners, include_data)`
     * Returns the area information about the specified ID.
     * Returned values are either of these:
@@ -8620,7 +8620,7 @@ child will follow movement and rotation of that bone.
               at sunrise and sunset. (default: `#7f99cc`)
             * `fog_tint_type`: string, changes which mode the directional fog
                 abides by, `"custom"` uses `sun_tint` and `moon_tint`, while
-                `"default"` uses the classic Minetest sun and moon tinting.
+                `"default"` uses the classic Luanti sun and moon tinting.
                 Will use tonemaps, if set to `"default"`. (default: `"default"`)
         * `fog`: A table with following optional fields:
             * `fog_distance`: integer, set an upper bound for the client's viewing_range.
@@ -10248,7 +10248,7 @@ Parameters:
       `old_item` is the input item to replace (same syntax as for a regular input
       slot; groups are allowed) and `new_item` is an itemstring for the item stack
       it will become
-    * When the output is crafted, Minetest iterates through the list
+    * When the output is crafted, Luanti iterates through the list
       of input items if the crafting grid. For each input item stack, it checks if
       it matches with an `old_item` in the item pair list.
         * If it matches, the item will be replaced. Also, this item pair
@@ -10817,7 +10817,7 @@ See [Decoration types]. Used by `minetest.register_decoration`.
 
     schematic = "foobar.mts",
     -- If schematic is a string, it is the filepath relative to the current
-    -- working directory of the specified Minetest schematic file.
+    -- working directory of the specified Luanti schematic file.
     -- Could also be the ID of a previously registered schematic.
 
     schematic = {
@@ -11651,7 +11651,7 @@ See http://bitop.luajit.org/ for advanced information.
 Tracy Profiler
 --------------
 
-Minetest can be built with support for the Tracy profiler, which can also be
+Luanti can be built with support for the Tracy profiler, which can also be
 useful for profiling mods and is exposed to Lua as the global `tracy`.
 
 See doc/developing/misc.md for details.
@@ -11661,7 +11661,7 @@ Note: This is a development feature and not covered by compatibility promises.
 Error Handling
 --------------
 
-When an error occurs that is not caught, Minetest calls the function
+When an error occurs that is not caught, Luanti calls the function
 `minetest.error_handler` with the error object as its first argument. The second
 argument is the stack level where the error occurred. The return value is the
 error string that should be shown. By default this is a backtrace from
