@@ -40,20 +40,14 @@ bool CEGLManager::initialize(const SIrrlichtCreationParameters &params, const SE
 	if (EglWindow != 0 && EglDisplay != EGL_NO_DISPLAY)
 		return true;
 
-		// Window is depend on platform.
+	// Window is depend on platform.
+	setWindow(Data);
 #if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
-	EglWindow = (NativeWindowType)Data.OpenGLWin32.HWnd;
-	Data.OpenGLWin32.HDc = GetDC((HWND)EglWindow);
 	EglDisplay = eglGetDisplay((NativeDisplayType)Data.OpenGLWin32.HDc);
 #elif defined(_IRR_EMSCRIPTEN_PLATFORM_)
-	EglWindow = 0;
 	EglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
-	EglWindow = (NativeWindowType)Data.OpenGLLinux.X11Window;
 	EglDisplay = eglGetDisplay((NativeDisplayType)Data.OpenGLLinux.X11Display);
-#elif defined(_IRR_COMPILE_WITH_FB_DEVICE_)
-	EglWindow = (NativeWindowType)Data.OpenGLFB.Window;
-	EglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 #endif
 
 	// We must check if EGL display is valid.
@@ -74,6 +68,22 @@ bool CEGLManager::initialize(const SIrrlichtCreationParameters &params, const SE
 		os::Printer::log("EGL version", core::stringc(MajorVersion + (MinorVersion * 0.1f)).c_str());
 
 	return true;
+}
+
+void CEGLManager::setWindow(const SExposedVideoData &inData)
+{
+#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
+	Data.OpenGLWin32.HWnd = inData.OpenGLWin32.HWnd;
+	if (Data.OpenGLWin32.HWnd) {
+		EglWindow = (NativeWindowType)Data.OpenGLWin32.HWnd;
+		Data.OpenGLWin32.HDc = GetDC((HWND)EglWindow);
+	}
+#elif defined(_IRR_EMSCRIPTEN_PLATFORM_)
+	EglWindow = 0;
+#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
+	Data.OpenGLLinux.X11Window = inData.OpenGLLinux.X11Window;
+	EglWindow = (NativeWindowType)Data.OpenGLLinux.X11Window;
+#endif
 }
 
 void CEGLManager::terminate()
@@ -108,20 +118,16 @@ bool CEGLManager::generateSurface()
 	if (EglSurface != EGL_NO_SURFACE)
 		return true;
 
-		// We should assign new WindowID on platforms, where WindowID may change at runtime,
-		// at this time only Android support this feature.
-		// this needs an update method instead!
-
+	if (!EglConfig) {
 #if defined(_IRR_EMSCRIPTEN_PLATFORM_)
-	// eglChooseConfig is currently only implemented as stub in emscripten (version 1.37.22 at point of writing)
-	// But the other solution would also be fine as it also only generates a single context so there is not much to choose from.
-	EglConfig = chooseConfig(ECS_IRR_CHOOSE);
+		EglConfig = chooseConfig(ECS_IRR_CHOOSE);
 #else
-	EglConfig = chooseConfig(ECS_EGL_CHOOSE_FIRST_LOWER_EXPECTATIONS);
+		EglConfig = chooseConfig(ECS_EGL_CHOOSE_FIRST_LOWER_EXPECTATIONS);
 #endif
+	}
 
-	if (EglConfig == 0) {
-		os::Printer::log("Could not get config for EGL display.", ELL_ERROR);
+	if (!EglConfig) {
+		os::Printer::log("Could not choose EGL config.", ELL_ERROR);
 		return false;
 	}
 
@@ -158,6 +164,26 @@ bool CEGLManager::generateSurface()
 		eglSwapInterval(EglDisplay, 1);
 
 	return true;
+}
+
+EGLint CEGLManager::getNativeVisualID()
+{
+	if (!EglConfig) {
+#if defined(_IRR_EMSCRIPTEN_PLATFORM_)
+		EglConfig = chooseConfig(ECS_IRR_CHOOSE);
+#else
+		EglConfig = chooseConfig(ECS_EGL_CHOOSE_FIRST_LOWER_EXPECTATIONS);
+#endif
+	}
+
+	if (!EglConfig) {
+		os::Printer::log("Could not choose EGL config.", ELL_WARNING);
+		return 0;
+	}
+
+	EGLint ret = 0;
+	eglGetConfigAttrib(EglDisplay, EglConfig, EGL_NATIVE_VISUAL_ID, &ret);
+	return ret;
 }
 
 EGLConfig CEGLManager::chooseConfig(EConfigStyle confStyle)
