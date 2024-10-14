@@ -19,6 +19,8 @@
 local component_funcs =  dofile(core.get_mainmenu_path() .. DIR_DELIM ..
 		"settings" .. DIR_DELIM .. "components.lua")
 
+local shader_warning_component =  dofile(core.get_mainmenu_path() .. DIR_DELIM ..
+		"settings" .. DIR_DELIM .. "shader_warning_component.lua")
 local shadows_component =  dofile(core.get_mainmenu_path() .. DIR_DELIM ..
 		"settings" .. DIR_DELIM .. "shadows_component.lua")
 
@@ -152,7 +154,12 @@ local function load()
 
 	table.insert(page_by_id.controls_keyboard_and_mouse.content, 1, change_keys)
 	do
-		local content = page_by_id.graphics_and_audio_effects.content
+		local content = page_by_id.graphics_and_audio_graphics.content
+		table.insert(content, 1, shader_warning_component)
+
+		content = page_by_id.graphics_and_audio_effects.content
+		table.insert(content, 1, shader_warning_component)
+
 		local idx = table.indexof(content, "enable_dynamic_shadows")
 		table.insert(content, idx, shadows_component)
 
@@ -706,7 +713,7 @@ local function buttonhandler(this, fields)
 
 	local function after_setting_change(comp)
 		write_settings_early()
-		if comp.setting.name == "touch_controls" then
+		if comp.setting and comp.setting.name == "touch_controls" then
 			-- Changing the "touch_controls" setting may result in a different
 			-- page list.
 			regenerate_page_list(dialogdata)
