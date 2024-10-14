@@ -174,6 +174,21 @@ local function test_parse_json()
 end
 unittests.register("test_parse_json", test_parse_json)
 
+local function test_write_json()
+	-- deeply nested structures should be preserved
+	local leaf = 42
+	local data = leaf
+	for i = 1, 1000 do
+		data = {data}
+	end
+	local roundtripped = minetest.parse_json(minetest.write_json(data))
+	for i = 1, 1000 do
+		roundtripped = roundtripped[1]
+	end
+	assert(roundtripped == 42)
+end
+unittests.register("test_write_json", test_write_json)
+
 local function test_game_info()
 	local info = minetest.get_game_info()
 	local game_conf = Settings(info.path .. "/game.conf")

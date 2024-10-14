@@ -93,6 +93,10 @@ int ModApiUtil::l_get_us_time(lua_State *L)
 	return 1;
 }
 
+// Maximum depth of a JSON object:
+// Reading and writing should not overflow the Lua, C, or jsoncpp stacks.
+constexpr static u16 MAX_JSON_DEPTH = 1024;
+
 // parse_json(str[, nullvalue, return_error])
 int ModApiUtil::l_parse_json(lua_State *L)
 {
@@ -129,10 +133,11 @@ int ModApiUtil::l_parse_json(lua_State *L)
 	Json::Value root;
 	{
 		Json::CharReaderBuilder builder;
+		builder.settings_["stackLimit"] = MAX_JSON_DEPTH;
 		builder.settings_["collectComments"] = false;
 		const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
 		std::string errmsg;
-		if (!reader->parse(jsonstr.begin(), jsonstr.end(), &root, &errmsg))
+		if (!reader->parse(jsonstr.data(), jsonstr.data() + jsonstr.size(), &root, &errmsg))
 			return handle_error(errmsg.c_str());
 	}
 
@@ -155,7 +160,7 @@ int ModApiUtil::l_write_json(lua_State *L)
 
 	Json::Value root;
 	try {
-		read_json_value(L, root, 1);
+		read_json_value(L, root, 1, MAX_JSON_DEPTH);
 	} catch (SerializationError &e) {
 		lua_pushnil(L);
 		lua_pushstring(L, e.what());

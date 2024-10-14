@@ -200,7 +200,7 @@ bool               push_json_value           (lua_State *L,
                                               const Json::Value &value,
                                               int nullindex);
 void               read_json_value           (lua_State *L, Json::Value &root,
-                                              int index, u8 recursion = 0);
+                                              int index, u16 max_depth);
 
 /*!
  * Pushes a Lua `pointed_thing` to the given Lua stack.
