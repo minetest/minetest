@@ -25,11 +25,8 @@ end
 
 
 function core.get_item_group(name, group)
-	if not core.registered_items[name] or not
-			core.registered_items[name].groups[group] then
-		return 0
-	end
-	return core.registered_items[name].groups[group]
+	local def = core.registered_items[name]
+	return def and def.groups[group] or 0
 end
 
 
