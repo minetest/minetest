@@ -26,7 +26,7 @@ end
 
 function core.get_item_group(name, group)
 	local def = core.registered_items[name]
-	return def and def.groups and def.groups[group] or 0
+	return def and def.groups[group] or 0
 end
 
 
