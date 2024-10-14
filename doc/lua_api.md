@@ -1,6 +1,10 @@
 Luanti Lua Modding API Reference
 ==================================
 
+**WARNING**: if you're looking for the `minetest` namespace (e.g. `minetest.something`),
+it's now called `core` due to the renaming of Luanti (formerly Minetest).
+`minetest` will keep existing as an alias, so that old code won't break.
+
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
 * (Unofficial) Minetest Modding Book by rubenwardy: <https://rubenwardy.com/minetest_modding_book/>
