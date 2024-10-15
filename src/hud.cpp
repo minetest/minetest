@@ -55,7 +55,7 @@ const struct EnumString es_HudElementStat[] =
 	{0, NULL},
 };
 
-const struct EnumString es_HudBuiltinElement[] =
+const struct EnumString es_HudFlag[] =
 {
 	{HUD_FLAG_HOTBAR_VISIBLE,        "hotbar"},
 	{HUD_FLAG_HEALTHBAR_VISIBLE,     "healthbar"},
@@ -66,5 +66,6 @@ const struct EnumString es_HudBuiltinElement[] =
 	{HUD_FLAG_MINIMAP_RADAR_VISIBLE, "minimap_radar"},
 	{HUD_FLAG_BASIC_DEBUG,           "basic_debug"},
 	{HUD_FLAG_CHAT_VISIBLE,          "chat"},
+	{HUD_FLAG_TOUCH_HIDE_CROSSHAIR_IF_UNUSED, "touch_hide_crosshair_if_unused"},
 	{0, NULL},
 };
