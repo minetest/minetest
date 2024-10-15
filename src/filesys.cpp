@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "config.h"
 #include "porting.h"
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 #include "irr_ptr.h"
 #include <IFileArchive.h>
 #include <IFileSystem.h>
@@ -945,7 +945,7 @@ bool safeWriteToFile(const std::string &path, std::string_view content)
 	return true;
 }
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 bool extractZipFile(io::IFileSystem *fs, const char *filename, const std::string &destination)
 {
 	// Be careful here not to touch the global file hierarchy in Irrlicht

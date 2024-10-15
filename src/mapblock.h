@@ -460,7 +460,7 @@ private:
 	 */
 
 public:
-#ifndef SERVER // Only on client
+#if CHECK_CLIENT_BUILD() // Only on client
 	MapBlockMesh *mesh = nullptr;
 
 	// marks the sides which are opaque: 00+Z-Z+Y-Y+X-X

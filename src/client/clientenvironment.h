@@ -23,9 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h" // IntervalLimiter
 #include "activeobjectmgr.h" // client::ActiveObjectMgr
 #include "irr_ptr.h"
+#include "config.h"
 #include <set>
 
-#ifdef SERVER
+#if !IS_CLIENT_BUILD
 #error Do not include in server builds
 #endif
 

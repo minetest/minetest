@@ -44,7 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_CURSES
 	#include "terminal_chat_console.h"
 #endif
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 #include "gui/guiMainMenu.h"
 #include "client/clientlauncher.h"
 #include "gui/guiEngine.h"
@@ -243,7 +243,7 @@ int main(int argc, char *argv[])
 	}
 
 	GameStartData game_params;
-#ifdef SERVER
+#if !CHECK_CLIENT_BUILD()
 	porting::attachOrCreateConsole();
 	game_params.is_dedicated_server = true;
 #else
@@ -261,7 +261,7 @@ int main(int argc, char *argv[])
 	if (game_params.is_dedicated_server)
 		return run_dedicated_server(game_params, cmd_args) ? 0 : 1;
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	retval = ClientLauncher().run(game_params, cmd_args) ? 0 : 1;
 #else
 	retval = 0;
@@ -377,7 +377,7 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Feature an interactive terminal (Only works when using minetestserver or with --server)"))));
 	allowed_options->insert(std::make_pair("recompress", ValueSpec(VALUETYPE_FLAG,
 			_("Recompress the blocks of the given map database."))));
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	allowed_options->insert(std::make_pair("address", ValueSpec(VALUETYPE_STRING,
 			_("Address to connect to. ('' = local game)"))));
 	allowed_options->insert(std::make_pair("random-input", ValueSpec(VALUETYPE_FLAG,

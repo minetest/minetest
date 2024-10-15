@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include "mapnode.h"
 #include "nameidmapping.h"
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 #include "client/tile.h"
 #include <IMeshManipulator.h>
 class Client;
@@ -315,7 +315,7 @@ struct ContentFeatures
 	/*
 		Cached stuff
 	 */
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	// 0     1     2     3     4     5
 	// up    down  right left  back  front
 	TileSpec tiles[6];
@@ -351,7 +351,7 @@ struct ContentFeatures
 
 	enum NodeDrawType drawtype;
 	std::string mesh;
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	scene::IMesh *mesh_ptr[24];
 	video::SColor minimap_color;
 #endif
@@ -530,7 +530,7 @@ struct ContentFeatures
 		return itemgroup_get(groups, group);
 	}
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
 		scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings);
 #endif

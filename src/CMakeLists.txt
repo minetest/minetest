@@ -602,6 +602,7 @@ if(BUILD_CLIENT)
 		# on other platforms, only IrrlichtMt depends on SDL2
 		"$<$<PLATFORM_ID:Android>:${SDL2_LIBRARIES}>"
 	)
+	target_compile_definitions(${PROJECT_NAME} PRIVATE "MT_BUILDTARGET=1")
 	if(NOT USE_LUAJIT)
 		set_target_properties(${PROJECT_NAME} PROPERTIES
 			# This is necessary for dynamic Lua modules
@@ -679,8 +680,7 @@ if(BUILD_SERVER)
 		${GMP_LIBRARY}
 		${PLATFORM_LIBS}
 	)
-	set_target_properties(${PROJECT_NAME}server PROPERTIES
-		COMPILE_DEFINITIONS "SERVER")
+	target_compile_definitions(${PROJECT_NAME}server PRIVATE "MT_BUILDTARGET=2")
 	if(NOT USE_LUAJIT)
 		set_target_properties(${PROJECT_NAME}server PROPERTIES
 			# This is necessary for dynamic Lua modules

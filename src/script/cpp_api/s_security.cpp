@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "porting.h"
 #include "server.h"
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 #include "client/client.h"
 #endif
 #include "settings.h"
@@ -423,7 +423,7 @@ void ScriptApiSecurity::setLuaEnv(lua_State *L, int thread)
 
 bool ScriptApiSecurity::isSecure(lua_State *L)
 {
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	auto script = ModApiBase::getScriptApiBase(L);
 	// CSM keeps no globals backup but is always secure
 	if (script->getType() == ScriptingType::Client)
@@ -743,7 +743,7 @@ int ScriptApiSecurity::sl_g_load(lua_State *L)
 
 int ScriptApiSecurity::sl_g_loadfile(lua_State *L)
 {
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	ScriptApiBase *script = ModApiBase::getScriptApiBase(L);
 
 	// Client implementation

@@ -935,7 +935,7 @@ std::wstring translate_string(std::wstring_view s, Translations *translations)
 // Translate string client side
 std::wstring translate_string(std::wstring_view s)
 {
-#ifdef SERVER
+#if !CHECK_CLIENT_BUILD()
 	return translate_string(s, nullptr);
 #else
 	return translate_string(s, g_client_translations);

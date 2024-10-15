@@ -249,7 +249,6 @@ int getInputDialogSelection()
 	return jnienv->CallIntMethod(activity, dialogvalue);
 }
 
-#ifndef SERVER
 float getDisplayDensity()
 {
 	static bool firstrun = true;
@@ -325,5 +324,4 @@ bool hasPhysicalKeyboardAndroid()
 	return result;
 }
 
-#endif // ndef SERVER
 }

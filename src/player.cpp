@@ -209,7 +209,7 @@ void PlayerControl::setMovementFromKeys()
 		movement_direction = std::atan2(x, y);
 }
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 
 u32 PlayerControl::getKeysPressed() const
 {

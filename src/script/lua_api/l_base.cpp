@@ -51,7 +51,7 @@ ServerInventoryManager *ModApiBase::getServerInventoryMgr(lua_State *L)
 	return getScriptApiBase(L)->getServer()->getInventoryMgr();
 }
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 Client *ModApiBase::getClient(lua_State *L)
 {
 	return getScriptApiBase(L)->getClient();
@@ -68,7 +68,7 @@ Environment *ModApiBase::getEnv(lua_State *L)
 	return getScriptApiBase(L)->getEnv();
 }
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 GUIEngine *ModApiBase::getGuiEngine(lua_State *L)
 {
 	return getScriptApiBase(L)->getGuiEngine();

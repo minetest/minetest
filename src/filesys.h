@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "config.h"
 #include <set>
 #include <string>
 #include <string_view>
@@ -154,7 +155,7 @@ const char *GetFilenameFromPath(const char *path);
 // logs and returns false on error
 bool safeWriteToFile(const std::string &path, std::string_view content);
 
-#ifndef SERVER
+#if IS_CLIENT_BUILD
 bool extractZipFile(irr::io::IFileSystem *fs, const char *filename, const std::string &destination);
 #endif
 
