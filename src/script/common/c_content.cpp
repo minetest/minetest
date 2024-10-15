@@ -2149,11 +2149,11 @@ bool push_json_value(lua_State *L, const Json::Value &value, int nullindex)
 }
 
 // Converts Lua table --> JSON
-void read_json_value(lua_State *L, Json::Value &root, int index, u8 recursion)
+void read_json_value(lua_State *L, Json::Value &root, int index, u16 max_depth)
 {
-	if (recursion > 16) {
-		throw SerializationError("Maximum recursion depth exceeded");
-	}
+	if (max_depth == 0)
+		throw SerializationError("depth exceeds MAX_JSON_DEPTH");
+
 	int type = lua_type(L, index);
 	if (type == LUA_TBOOLEAN) {
 		root = (bool) lua_toboolean(L, index);
@@ -2164,11 +2164,13 @@ void read_json_value(lua_State *L, Json::Value &root, int index, u8 recursion)
 		const char *str = lua_tolstring(L, index, &len);
 		root = std::string(str, len);
 	} else if (type == LUA_TTABLE) {
+		// Reserve two slots for key and value.
+		lua_checkstack(L, 2);
 		lua_pushnil(L);
 		while (lua_next(L, index)) {
 			// Key is at -2 and value is at -1
 			Json::Value value;
-			read_json_value(L, value, lua_gettop(L), recursion + 1);
+			read_json_value(L, value, lua_gettop(L), max_depth - 1);
 
 			Json::ValueType roottype = root.type();
 			int keytype = lua_type(L, -1);
