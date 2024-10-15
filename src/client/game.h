@@ -20,9 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes.h"
+#include "config.h"
 #include <string>
 
-#ifdef SERVER
+#if !IS_CLIENT_BUILD
 #error Do not include in server builds
 #endif
 

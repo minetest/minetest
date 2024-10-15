@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "tool.h"
 #include "inventory.h"
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 #include "client/mapblock_mesh.h"
 #include "client/mesh.h"
 #include "client/wieldmesh.h"
@@ -374,7 +374,7 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 
 class CItemDefManager: public IWritableItemDefManager
 {
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	struct ClientCached
 	{
 		video::ITexture *inventory_texture;
@@ -399,7 +399,7 @@ public:
 	CItemDefManager()
 	{
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 		m_main_thread = std::this_thread::get_id();
 #endif
 		clear();
@@ -448,7 +448,7 @@ public:
 		// Get the definition
 		return m_item_definitions.find(name) != m_item_definitions.cend();
 	}
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 public:
 	ClientCached* createClientCachedDirect(const ItemStack &item, Client *client) const
 	{
@@ -678,7 +678,7 @@ private:
 	std::map<std::string, ItemDefinition*> m_item_definitions;
 	// Aliases
 	StringMap m_aliases;
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	// The id of the thread that is allowed to use irrlicht directly
 	std::thread::id m_main_thread;
 	// Cached textures and meshes

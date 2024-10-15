@@ -25,9 +25,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <optional>
 #include <string>
 #include <vector>
+#include "config.h"
 
 class Translations;
-#ifndef SERVER
+#if IS_CLIENT_BUILD
 extern Translations *g_client_translations;
 #endif
 

@@ -80,7 +80,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <signal.h>
 #include <atomic>
 
-#if !defined(SERVER) && defined(_WIN32)
+#if CHECK_CLIENT_BUILD() && defined(_WIN32)
 // On Windows export some driver-specific variables to encourage Minetest to be
 // executed on the discrete GPU in case of systems with two. Portability is fun.
 extern "C" {

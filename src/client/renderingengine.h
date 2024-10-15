@@ -26,13 +26,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/inputhandler.h"
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
+#include "config.h"
 #include "client/shader.h"
 #include "client/render/core.h"
 // include the shadow mapper classes too
 #include "client/shadows/dynamicshadowsrender.h"
 #include <IVideoDriver.h>
 
-#ifdef SERVER
+#if !IS_CLIENT_BUILD
 #error Do not include in server builds
 #endif
 

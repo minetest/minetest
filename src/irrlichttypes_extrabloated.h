@@ -20,8 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_bloated.h"
+#include "config.h" // IS_CLIENT_BUILD
 
-#ifndef SERVER
+#if IS_CLIENT_BUILD
 #include <IMesh.h>
 #include <IImage.h>
 #include <IMeshSceneNode.h>

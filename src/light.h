@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 #include <cassert>
+#include "config.h"
 #include "irrlichttypes.h"
 
 /*
@@ -35,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // This brightness is reserved for sunlight
 #define LIGHT_SUN 15
 
-#ifndef SERVER
+#if IS_CLIENT_BUILD
 
 /**
  * \internal
@@ -67,7 +68,7 @@ float decode_light_f(float light_f);
 
 void set_light_table(float gamma);
 
-#endif // ifndef SERVER
+#endif
 
 // 0 <= daylight_factor <= 1000
 // 0 <= lightday, lightnight <= LIGHT_SUN

@@ -20,13 +20,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irr_v3d.h"
+#include "config.h"
 #include <limits>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-#ifdef SERVER
+#if !IS_CLIENT_BUILD
 #error Do not include in server builds
 #endif
 

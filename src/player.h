@@ -91,7 +91,7 @@ struct PlayerControl
 	// joystick input.
 	void setMovementFromKeys();
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	// For client use
 	u32 getKeysPressed() const;
 	inline bool isMoving() const { return movement_speed > 0.001f; }
