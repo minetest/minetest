@@ -1,6 +1,7 @@
 // Minetest
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
+#include "EDriverTypes.h"
 #include "content/subgames.h"
 #include "filesys.h"
 
