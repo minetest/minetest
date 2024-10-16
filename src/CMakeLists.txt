@@ -4,6 +4,10 @@ INCLUDE(CheckTypeSize)
 INCLUDE(CheckIncludeFiles)
 INCLUDE(CheckLibraryExists)
 
+macro(CreateSymlink _path _target)
+	execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${_target}" "${_path}")
+endmacro()
+
 check_type_size(int SIZEOF_INT BUILTIN_TYPES_ONLY LANGUAGE CXX)
 if(SIZEOF_INT LESS 4)
 	message(FATAL_ERROR "${PROJECT_NAME_CAPITALIZED} will not work with int less than 32 bits wide.")
@@ -582,6 +586,7 @@ endif()
 if(NOT CMAKE_CROSSCOMPILING)
 	set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 endif()
+file(MAKE_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}") # create it early
 
 # shared object target
 add_library(EngineCommon OBJECT
@@ -994,7 +999,8 @@ if(BUILD_CLIENT AND NOT ANDROID)
 		BUNDLE DESTINATION .
 	)
 	if(UNIX)
-		install(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/../misc/aliases/minetest" DESTINATION ${BINDIR})
+		CreateSymlink("${EXECUTABLE_OUTPUT_PATH}/minetest" ${PROJECT_NAME})
+		install(PROGRAMS "${EXECUTABLE_OUTPUT_PATH}/minetest" DESTINATION ${BINDIR})
 	endif()
 
 	if(APPLE)
@@ -1020,7 +1026,8 @@ endif()
 if(BUILD_SERVER)
 	install(TARGETS ${PROJECT_NAME}server DESTINATION ${BINDIR})
 	if(UNIX)
-		install(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/../misc/aliases/minetestserver" DESTINATION ${BINDIR})
+		CreateSymlink("${EXECUTABLE_OUTPUT_PATH}/minetestserver" ${PROJECT_NAME}server)
+		install(PROGRAMS "${EXECUTABLE_OUTPUT_PATH}/minetestserver" DESTINATION ${BINDIR})
 	endif()
 endif()
 
