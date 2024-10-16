@@ -227,6 +227,10 @@ static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *game
 	thread_local std::vector<aabb3f> nodeboxes;
 	Map *map = &env->getMap();
 
+	// Cap the maximum invalid nodes to avoid memory exhaustion (Max: 16 MiB)
+	int invalid_max = 16 * 1024 * 1024 / sizeof(struct NearbyCollisionInfo);
+	int invalid_cnt = 0;
+
 	v3s16 p;
 	for (p.Z = min.Z; p.Z <= max.Z; p.Z++)
 	for (p.Y = min.Y; p.Y <= max.Y; p.Y++)
@@ -263,6 +267,10 @@ static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *game
 			// CONTENT_IGNORE nodes (position valid)
 			aabb3f box = getNodeBox(p, BS);
 			cinfo.emplace_back(true, 0, p, box);
+			if (++invalid_cnt > invalid_max) {
+				warningstream << "add_area_node_boxes: Invalid node limit exceeded, aborting to avoid memory exhaustion" << std::endl;
+				return false;
+			}
 		}
 	}
 	return any_position_valid;
