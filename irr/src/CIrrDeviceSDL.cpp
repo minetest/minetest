@@ -1293,6 +1293,12 @@ bool CIrrDeviceSDL::isWindowVisible() const
 	return !IsInBackground;
 }
 
+//! Checks if the Irrlicht device supports touch events.
+bool CIrrDeviceSDL::supportsTouchEvents() const
+{
+	return true;
+}
+
 //! returns if window is active. if not, nothing need to be drawn
 bool CIrrDeviceSDL::isWindowActive() const
 {

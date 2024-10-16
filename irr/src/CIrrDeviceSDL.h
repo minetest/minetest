@@ -93,6 +93,9 @@ public:
 	//! Checks if the window could possibly be visible.
 	bool isWindowVisible() const override;
 
+	//! Checks if the Irrlicht device supports touch events.
+	bool supportsTouchEvents() const override;
+
 	//! Get the position of this window on screen
 	core::position2di getWindowPosition() override;
 

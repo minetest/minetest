@@ -155,6 +155,8 @@ invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
 #    Enables the touchscreen controls, allowing you to play the game with a touchscreen.
 #    "auto" means that the touchscreen controls will be enabled and disabled
 #    automatically depending on the last used input method.
+#
+#    Requires: touch_support
 touch_controls (Touchscreen controls) enum auto auto,true,false
 
 #    Touchscreen sensitivity multiplier.

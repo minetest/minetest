@@ -349,14 +349,16 @@ local function check_requirements(name, requires)
 
 	local video_driver = core.get_active_driver()
 	local shaders_support = video_driver == "opengl" or video_driver == "opengl3" or video_driver == "ogles2"
+	local touch_support = core.irrlicht_device_supports_touch()
 	local touch_controls = core.settings:get("touch_controls")
 	local special = {
 		android = PLATFORM == "Android",
 		desktop = PLATFORM ~= "Android",
-		-- When touch_controls is "auto", we don't which input method will be used,
-		-- so we show settings for both.
-		touchscreen = touch_controls == "auto" or core.is_yes(touch_controls),
-		keyboard_mouse = touch_controls == "auto" or not core.is_yes(touch_controls),
+		touch_support = touch_support,
+		-- When touch_controls is "auto", we don't know which input method will
+		-- be used, so we show settings for both.
+		touchscreen = touch_support and (touch_controls == "auto" or core.is_yes(touch_controls)),
+		keyboard_mouse = not touch_support or (touch_controls == "auto" or not core.is_yes(touch_controls)),
 		shaders_support = shaders_support,
 		shaders = core.settings:get_bool("enable_shaders") and shaders_support,
 		opengl = video_driver == "opengl",
