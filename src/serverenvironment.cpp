@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stack>
 #include <utility>
 #include "serverenvironment.h"
+#include "irr_aabb3d.h"
 #include "settings.h"
 #include "log.h"
 #include "mapblock.h"
@@ -1936,10 +1937,12 @@ void ServerEnvironment::getSelectedActiveObjects(
 		return false;
 	};
 
+	aabb3f search_area(shootline_on_map.start - 5 * BS, shootline_on_map.end + 5 * BS);
+	search_area.repair();
+
 	// Use "logic in callback" pattern to avoid useless vector filling
 	std::vector<ServerActiveObject*> tmp;
-	getObjectsInsideRadius(tmp, shootline_on_map.getMiddle(),
-		0.5 * shootline_on_map.getLength() + 5 * BS, process);
+	getObjectsInArea(tmp, search_area, process);
 }
 
 /*
