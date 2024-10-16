@@ -40,9 +40,9 @@ rubenwardy, paramat:
   textures/base/pack/end_icon.png
 
 erle:
-  misc/minetest-icon-24x24.png
-  misc/minetest-icon.ico
-  misc/minetest.svg
+  misc/luanti-icon-24x24.png
+  misc/luanti-icon.ico
+  misc/luanti.svg
   textures/base/pack/logo.png
 
 JRottm:
