@@ -295,6 +295,13 @@ void ClientEnvironment::step(float dtime)
 			++i;
 		}
 	}
+
+	AtlasBuilder *builder = m_client->getNodeDefManager()->getAtlasBuilder();
+
+	if (builder) {
+		builder->updateCrackAnimations(m_client->getCrackLevel());
+		builder->updateAnimations(m_client->getAnimationTime());
+	}
 }
 
 void ClientEnvironment::addSimpleObject(ClientSimpleObject *simple)

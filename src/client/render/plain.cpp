@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/hud.h"
 #include "client/minimap.h"
 #include "client/shadows/dynamicshadowsrender.h"
+#include "nodedef.h"
 
 /// Draw3D pipeline step
 void Draw3D::run(PipelineContext &context)
@@ -46,6 +47,8 @@ void DrawWield::run(PipelineContext &context)
 	if (m_target)
 		m_target->activate(context);
 
+	//video::ITexture* atlas = context.client->getNodeDefManager()->getAtlasBuilder()->getAtlas(0)->getTexture();
+	//context.device->getVideoDriver()->draw2DImage(atlas, core::position2d<s32>(0, 0));
 	if (context.draw_wield_tool)
 		context.client->getCamera()->drawWieldedTool();
 }
@@ -149,6 +152,7 @@ RenderStep* addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f
 
 void populatePlainPipeline(RenderPipeline *pipeline, Client *client)
 {
+	//pipeline->addStep<DrawWield>();
 	auto downscale_factor = getDownscaleFactor();
 	auto step3D = pipeline->own(create3DStage(client, downscale_factor));
 	pipeline->addStep(step3D);

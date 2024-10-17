@@ -851,7 +851,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	TimeTaker draw("Drawing mesh buffers");
 
 	core::matrix4 m; // Model matrix
-	v3f offset = intToFloat(m_camera_offset, BS);
+	m.setTranslation(-intToFloat(m_camera_offset, BS));
+	driver->setTransform(video::ETS_WORLD, m);
+
 	u32 material_swaps = 0;
 
 	// Render all mesh buffers in order
@@ -887,12 +889,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			material.TextureLayers[ShadowRenderer::TEXTURE_LAYER_SHADOW].Texture = nullptr;
 		}
 
-		v3f block_wpos = intToFloat(mesh_grid.getMeshPos(descriptor.m_pos) * MAP_BLOCKSIZE, BS);
-		m.setTranslation(block_wpos - offset);
-
-		driver->setTransform(video::ETS_WORLD, m);
 		vertex_count += descriptor.draw(driver);
 	}
+
+	//infostream << "renderMap() count of materials switches per a step: " << material_swaps << std::endl;
+	//infostream << "renderMap() count of buffers draws per a step: " << drawcall_count << std::endl;
 
 	g_profiler->avg(prefix + "draw meshes [ms]", draw.stop(true));
 
@@ -1201,7 +1202,9 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	TimeTaker draw("Drawing shadow mesh buffers");
 
 	core::matrix4 m; // Model matrix
-	v3f offset = intToFloat(m_camera_offset, BS);
+	m.setTranslation(-intToFloat(m_camera_offset, BS));
+	driver->setTransform(video::ETS_WORLD, m);
+
 	u32 material_swaps = 0;
 
 	// Render all mesh buffers in order
@@ -1241,10 +1244,6 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 			++material_swaps;
 		}
 
-		v3f block_wpos = intToFloat(mesh_grid.getMeshPos(descriptor.m_pos) * MAP_BLOCKSIZE, BS);
-		m.setTranslation(block_wpos - offset);
-
-		driver->setTransform(video::ETS_WORLD, m);
 		vertex_count += descriptor.draw(driver);
 	}
 
