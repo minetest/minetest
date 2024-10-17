@@ -1002,7 +1002,7 @@ if(BUILD_CLIENT AND NOT ANDROID)
 		BUNDLE DESTINATION .
 	)
 	if(UNIX)
-		CreateLegacyAlias(alias "${EXECUTABLE_OUTPUT_PATH}/minetest" ${PROJECT_NAME})
+		CreateLegacyAlias(minetest_alias "${EXECUTABLE_OUTPUT_PATH}/minetest" ${PROJECT_NAME})
 	endif()
 
 	if(APPLE)
@@ -1028,7 +1028,7 @@ endif()
 if(BUILD_SERVER)
 	install(TARGETS ${PROJECT_NAME}server DESTINATION ${BINDIR})
 	if(UNIX)
-		CreateLegacyAlias(serveralias "${EXECUTABLE_OUTPUT_PATH}/minetestserver" ${PROJECT_NAME}server)
+		CreateLegacyAlias(minetestserver_alias "${EXECUTABLE_OUTPUT_PATH}/minetestserver" ${PROJECT_NAME}server)
 	endif()
 endif()
 
