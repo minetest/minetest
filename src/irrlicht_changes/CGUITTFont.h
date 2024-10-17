@@ -35,9 +35,9 @@
 #include <ft2build.h>
 #include <map>
 #include "IGUIEnvironment.h"
+#include "IGUIFont.h"
 #include "ISceneManager.h"
 #include "IVideoDriver.h"
-#include "IGUIFont.h"
 #include "IrrlichtDevice.h"
 #include "SMesh.h"
 #include "util/enriched_string.h"
