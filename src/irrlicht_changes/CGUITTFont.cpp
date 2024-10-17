@@ -721,7 +721,7 @@ core::dimension2d<u32> CGUITTFont::getDimension(const std::u32string& text) cons
 		if (p == '\r')	// Mac or Windows line breaks.
 		{
 			lineBreak = true;
-			if (*(iter + 1) == '\n')
+			if (iter + 1 != text.end() && *(iter + 1) == '\n')
 			{
 				++iter;
 				p = *iter;
