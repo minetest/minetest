@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "aabbox3d.h"
 #include "IMesh.h"
 
 namespace irr

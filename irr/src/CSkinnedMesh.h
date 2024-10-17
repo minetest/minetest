@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "ISceneManager.h"
 #include "ISkinnedMesh.h"
 #include "SMeshBuffer.h"
 #include "quaternion.h"
@@ -17,6 +18,7 @@ namespace scene
 
 class IAnimatedMeshSceneNode;
 class IBoneSceneNode;
+class ISceneManager;
 
 class CSkinnedMesh : public ISkinnedMesh
 {

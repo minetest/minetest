@@ -1,7 +1,6 @@
 // Minetest
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-#include "EDriverTypes.h"
 #include "content/subgames.h"
 #include "filesys.h"
 
@@ -9,8 +8,12 @@
 #include "irr_v2d.h"
 #include "irr_ptr.h"
 
+#include "EDriverTypes.h"
+#include "IFileSystem.h"
+#include "IReadFile.h"
+#include "ISceneManager.h"
 #include "ISkinnedMesh.h"
-#include <irrlicht.h>
+#include "irrlicht.h"
 
 #include "catch.h"
 
