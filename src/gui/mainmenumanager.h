@@ -36,6 +36,7 @@ public:
 	virtual void changeVolume() = 0;
 	virtual void showOpenURLDialog(const std::string &url) = 0;
 	virtual void signalKeyConfigChange() = 0;
+	virtual void touchscreenLayout() = 0;
 };
 
 extern gui::IGUIEnvironment *guienv;
@@ -142,6 +143,11 @@ public:
 		keyconfig_changed = true;
 	}
 
+	void touchscreenLayout() override
+	{
+		touchscreenlayout_requested = true;
+	}
+
 	void showOpenURLDialog(const std::string &url) override
 	{
 		show_open_url_dialog = url;
@@ -151,6 +157,7 @@ public:
 	bool changepassword_requested = false;
 	bool changevolume_requested = false;
 	bool keyconfig_requested = false;
+	bool touchscreenlayout_requested = false;
 	bool shutdown_requested = false;
 	bool keyconfig_changed = false;
 	std::string show_open_url_dialog = "";
