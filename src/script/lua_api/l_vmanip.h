@@ -44,7 +44,11 @@ private:
 	static int l_write_to_map(lua_State *L);
 
 	static int l_get_node_at(lua_State *L);
+	static int l_get_node_raw(lua_State *L);
+	static int l_get_node_raw_i(lua_State *L);
 	static int l_set_node_at(lua_State *L);
+	static int l_set_node_raw(lua_State *L);
+	static int l_set_node_raw_i(lua_State *L);
 
 	static int l_update_map(lua_State *L);
 	static int l_update_liquids(lua_State *L);
