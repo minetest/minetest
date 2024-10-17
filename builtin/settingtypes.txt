@@ -686,6 +686,9 @@ gui_scaling (GUI scaling) float 1.0 0.5 20
 #    Enables smooth scrolling.
 smooth_scrolling (Smooth scrolling) bool true
 
+#    Enables elastic smooth scrolling.
+elastic_smooth_scrolling (Elastic smooth scrolling) bool true
+
 #    Enables animation of inventory items.
 inventory_items_animations (Inventory items animations) bool false
 
