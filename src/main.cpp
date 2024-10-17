@@ -177,10 +177,10 @@ int main(int argc, char *argv[])
 	{
 		auto exe_name = lowercase(fs::GetFilenameFromPath(argv[0]));
 		if (str_starts_with(exe_name, "minetest")) {
-#ifdef SERVER
-			const char *new_ = PROJECT_NAME "server";
-#else
+#if CHECK_CLIENT_BUILD()
 			const char *new_ = PROJECT_NAME;
+#else
+			const char *new_ = PROJECT_NAME "server";
 #endif
 			warningstream << exe_name << " is a deprecated alias, please use " << new_ << " instead." << std::endl;
 		}
