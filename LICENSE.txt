@@ -29,7 +29,6 @@ ShadowNinja:
   textures/base/pack/smoke_puff.png
 
 paramat:
-  textures/base/pack/menu_header.png
   textures/base/pack/next_icon.png
   textures/base/pack/prev_icon.png
   textures/base/pack/clear.png
@@ -88,6 +87,9 @@ DS:
 
 grorp:
   textures/base/pack/exit_btn.png
+  textures/base/pack/menu_header.png
+    using the font "undefined medium" (https://undefined-medium.com/),
+    which is licensed under the SIL Open Font License, Version 1.1
 
 License of Minetest source code
 -------------------------------
