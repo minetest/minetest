@@ -197,6 +197,7 @@ private:
 	bool m_cache_trilinear_filter;
 	bool m_cache_bilinear_filter;
 	bool m_cache_anistropic_filter;
+	bool m_cache_transparency_sorting_group_by_buffers;
 	u16 m_cache_transparency_sorting_distance;
 
 	bool m_loops_occlusion_culler;
