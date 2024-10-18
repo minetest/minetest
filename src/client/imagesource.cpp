@@ -16,6 +16,8 @@
 #include "util/strfnd.h"
 #include "client/fontengine.h"
 #include "irrlicht_changes/CGUITTFont.h"
+#include "gui/guiHyperText.h"
+#include <string>
 
 
 ////////////////////////////////
@@ -1765,97 +1767,116 @@ bool ImageSource::generateImagePart(std::string_view part_of_name,
 				baseimg->getDimension(), brightness, contrast);
 		}
 		/*
-			[text:string:size:mono,bold,italic:x,y:color
-			Render a character at given position
-			size and font is optional, but colon should be kept
+			[text:string:WxH:x,y
+			[text:string:WxH
+			[text:string
+			Render a character at given position, string is encoded by base64
+			coordinate is optional, but colon should be kept
 		*/
 		else if (str_starts_with(part_of_name, "[text:")) {
-			Strfnd sf(part_of_name);
-			sf.next(":");
-			std::string textdef = sf.next(":");
+			const auto colonSeparatedPartsOfName = str_split(part_of_name, ':');
+			auto numPartsOfName = colonSeparatedPartsOfName.size();
+			if (numPartsOfName < 2) {
+				errorstream << "generateImagePart(): "
+							<< "text is missing in [text" << std::endl;
+				return false;
+			}
+
+			std::string textdef;
+			{
+				auto blob = colonSeparatedPartsOfName[1];
+				if (!base64_is_valid(blob)) {
+					errorstream << "generateImagePart(): "
+								<< "malformed base64 in [text" << std::endl;
+					return false;
+				}
+				textdef = base64_decode(blob);
+			}
 			core::stringw textdefW = utf8_to_stringw(textdef);
 
-			unsigned int fontSize = FONT_SIZE_UNSPECIFIED;
-			std::string sizeStr = sf.next(":");
-			if (is_number(sizeStr))
-			{
-				fontSize = mystoi(sizeStr,0,200);
-			}
-
-			FontMode mode = FM_Standard;
-			bool bold = false, italic = false;
-			std::string fontStyle = sf.next(":");
-			std::vector<std::string> styleWords = str_split(fontStyle, ',');
-			for(auto word : styleWords){
-				if (word == "mono")
-				{
-					mode = FM_Mono;
-				}else if (word == "bold")
-				{
-					bold = true;
-				}else if(word == "italic"){
-					italic = true;
+			core::dimension2du size(0,0);
+			if (numPartsOfName >= 3) {
+				auto sizeStr = colonSeparatedPartsOfName[2];
+				std::vector<std::string_view> sizeStringArr = str_split(sizeStr, 'x');
+				if (sizeStringArr.size() >= 2) {
+					if (is_number(sizeStringArr[0])) {
+						size.Width = mystoi(std::string(sizeStringArr[0]));
+					}
+					if (is_number(sizeStringArr[1])) {
+						size.Height = mystoi(std::string(sizeStringArr[1]));
+					}
 				}
+				infostream << "size string: " << sizeStringArr.size() <<std::endl;
+			} else if (baseimg)	{
+				size = baseimg->getDimension();
+			} else {
+				errorstream << "generateImagePart(): width and height is not specified and cannot be inferred from base image" << std::endl;
+				return false;
 			}
-			FontSpec spec(fontSize, mode, bold, italic);
 
 			core::position2di pos(0,0);
-			std::string positionStr = sf.next(":");
-			std::vector<std::string> positionStrs = str_split(positionStr, ',');
-			if (positionStrs.size() >= 2)
+			if (numPartsOfName >= 4)
 			{
-				if (is_number(positionStrs[0])) {
-					pos.X = mystoi(positionStrs[0]);
-				}
-				if (is_number(positionStrs[1])) {
-					pos.Y = mystoi(positionStrs[1]);
+				auto posStr = colonSeparatedPartsOfName[3];
+				std::vector<std::string_view> posStringArr = str_split(posStr, ',');
+				if (posStringArr.size() >= 2) {
+					if (is_number(posStringArr[0])) {
+						pos.X = mystoi(std::string(posStringArr[0]));
+					}
+					if (is_number(posStringArr[1])) {
+						pos.Y = mystoi(std::string(posStringArr[1]));
+					}
 				}
 			}
 
-			video::SColor color(0xff,0xff,0xff,0xff);
-			std::string colorStr = sf.next("");
-			if (!parseColorString(colorStr,color,false)){
-				return false;
-			};
-
-			irr::gui::CGUITTFont *font =
-					static_cast<irr::gui::CGUITTFont *>(g_fontengine->getFont(spec));
-			core::dimension2d<u32> sizeText = font->getDimension(textdefW.c_str());
-
-			video::ECOLOR_FORMAT colorFormat = video::ECF_A8R8G8B8;
-			core::dimension2d<u32> size =sizeText;
-			if (baseimg)
-			{
-				colorFormat = baseimg->getColorFormat();
-				size =baseimg->getDimension();
+			video::ITexture* referredTexture = nullptr;
+			TextDrawer drawer(textdefW.c_str(), [&, driver, baseimg](auto texturePath){
+				if (referredTexture) {
+					driver->removeTexture(referredTexture);
+				}
+				video::IImage *image = m_sourcecache.getOrLoad(texturePath);
+				referredTexture = driver->addTexture("text_renderer_base__", baseimg);
+				return referredTexture;
+			});
+			if (referredTexture) {
+				driver->removeTexture(referredTexture);
 			}
-			std::string textureName("text_renderer__");
-			textureName.append(part_of_name);
+
+			core::dimension2du canvasSize = size;
+			if (baseimg) {
+				canvasSize = baseimg->getDimension();
+			}
+			core::recti drawingArea(pos, size);
+			video::ECOLOR_FORMAT colorFormat =
+				baseimg ? baseimg->getColorFormat() : video::ECF_A8R8G8B8;
+			drawer.place(drawingArea);
 
 			auto texture =
-				driver->addRenderTargetTexture(size, textureName, colorFormat);
+				driver->addRenderTargetTexture(canvasSize, "text_renderer__", colorFormat);
 			if (driver->setRenderTarget(texture, video::ECBF_ALL, video::SColor(0,0,0,0))) {
 				if (baseimg) {
 					auto baseTexture = driver->addTexture("text_renderer_base__", baseimg);
-					driver->draw2DImage(baseTexture, core::vector2di(0,0));
+					driver->draw2DImage(baseTexture, core::position2di(0,0));
 					driver->removeTexture(baseTexture);
 				}
-				font->draw(textdefW, core::recti(pos, sizeText), color);
+				drawer.draw(drawingArea, pos, driver, nullptr);
 				driver->setRenderTarget(NULL);
 				void* lockedData = texture->lock();
 				if (lockedData) {
 					if (baseimg) {
 						baseimg->drop();
 					}
-					baseimg = driver->createImageFromData(colorFormat, size, lockedData, false);
+					baseimg = driver->createImageFromData(colorFormat, canvasSize, lockedData, false);
 					texture->unlock();
 				} else {
-					errorstream << "no data inside texture, internal error" << std::endl;
+					errorstream << "generateImagePart(): no data inside texture, internal error" << std::endl;
+					return false;
 				}
 			} else {
-				errorstream << "fails to set render target, "
+				errorstream << "generateImagePart(): fails to set render target, "
 						"can this driver renders to target:" <<
 						driver->queryFeature(video::EVDF_RENDER_TO_TARGET) << std::endl;
+				return false;
 			}
 			driver->removeTexture(texture);
 		}

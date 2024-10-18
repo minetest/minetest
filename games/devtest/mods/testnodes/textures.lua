@@ -372,13 +372,32 @@ minetest.register_node("testnodes:glyph_font", {
 	description = S("Combine Test Node"),
 	tiles = {{
 		name = "testnodes_generated_mb.png"..
-			"^[text:regular font::::white"..
-			"^[text:large font(16pt):16::0,32:white"..
-			"^[text:larger font(32pt):32::0,64:white"..
-			"^[text:bold font(20pt):20:bold:0,96:white"..
-			"^[text:italic font(20pt):20:italic:0,128:white"..
-			"^[text:monospace font(20pt):20:mono:0,160:white"..
-			"^[text:red monospace font(20pt):20:mono:0,192:red",
+			"^[text:" .. minetest.encode_base64([[A hypertext element
+<bigger>Normal test</bigger>
+This is a normal text. 中文也应当可以渲染。special characters ^[:,
+
+<bigger><mono>style</mono> test</bigger>
+<style color="#FFFF00">Yellow text.</style> <style color='#FF0000'>Red text.</style>
+<style size="24">Size 24.</style> <style size=16>Size 16</style>. <style size=12>Size 12.</style>
+<style font="normal">Normal font.</style> <style font=mono>Mono font.</style>]]),
+		align_style = "world",
+		scale = 8,
+	},
+	{
+		name = "testnodes_generated_mb.png"..
+			"^[text:" .. minetest.encode_base64([[<global background=#80AAAAAA margin=20 valign=bottom halign=right color=pink hovercolor=purple size=12 font=mono>
+This is a test of the global tag. The parameters are:
+background=#80AAAAAA margin=20 valign=bottom halign=right color=pink hovercolor=purple size=12 font=mono
+<action name=global>action</action>]]) .. ":500x240",
+		align_style = "world",
+		scale = 8,
+	},
+	{
+		name = "testnodes_generated_mb.png"..
+			"^[text:" .. minetest.encode_base64([[<global background=#80AAAAAA margin=20 valign=middle halign=center color=pink hovercolor=purple size=12 font=mono>
+<bigger>Custom tag test</bigger>
+<tag name="t_multi" color=green font=mono size=24>
+<t_multi>color=green font=mono size=24</t_multi>]]) .. ":500x260:4,3",
 		align_style = "world",
 		scale = 8,
 	}},
