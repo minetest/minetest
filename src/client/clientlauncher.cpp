@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientlauncher.h"
 #include "version.h"
 #include "renderingengine.h"
+#include "settings.h"
 #include "util/tracy_wrapper.h"
 #include <IGUISpriteBank.h>
 #include <ICameraSceneNode.h>
