@@ -602,6 +602,86 @@ if(BUILD_CLIENT)
 	# client target
 	if(ANDROID)
 		add_library(${PROJECT_NAME} SHARED)
+	elseif(CMAKE_GENERATOR STREQUAL "Xcode")
+		set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/macos")
+		set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/macos)")
+
+		add_executable(${PROJECT_NAME})
+
+		add_dependencies(${PROJECT_NAME} translations)
+
+		set_target_properties(${PROJECT_NAME} PROPERTIES
+			MACOSX_BUNDLE TRUE
+			MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME_CAPITALIZED}"
+			MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/misc/Info.plist"
+			RESOURCE "${client_RESOURCES}"
+			XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME "YES"
+			XCODE_ATTRIBUTE_INSTALL_PATH "@executable_path/../Applications"
+			XCODE_ATTRIBUTE_SKIP_INSTALL "NO"
+		)
+
+		if (CMAKE_BUILD_TYPE STREQUAL Release)
+			set_target_properties(${PROJECT_NAME} PROPERTIES
+				XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/misc/entitlements/release.entitlements"
+			)
+		else()
+			set_target_properties(${PROJECT_NAME} PROPERTIES
+				XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/misc/entitlements/debug.entitlements"
+			)
+		endif()
+
+		# Enable scheme generation
+		#set(CMAKE_XCODE_GENERATE_SCHEME ON)
+
+		#set_target_properties(${PROJECT_NAME} PROPERTIES
+		#	XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Minetest Developer"
+		#	XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "Minetest-team"
+		#)
+		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_SOURCE_DIR}/builtin
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources/builtin
+		)
+		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_SOURCE_DIR}/client/shaders
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources/client/shaders
+		)
+		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_SOURCE_DIR}/fonts
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources/fonts
+		)
+		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_BINARY_DIR}/locale
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources/locale
+		)
+		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E make_directory
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources/${PROJECT_NAME}
+		)
+		set(RESOURCE_MINETEST_FILES
+			${CMAKE_SOURCE_DIR}/README.md
+			${CMAKE_SOURCE_DIR}/doc/client_lua_api.md
+			${CMAKE_SOURCE_DIR}/doc/lua_api.md
+			${CMAKE_SOURCE_DIR}/doc/menu_lua_api.md
+			${CMAKE_SOURCE_DIR}/minetest.conf.example
+			${CMAKE_SOURCE_DIR}/doc/texture_packs.md
+			${CMAKE_SOURCE_DIR}/doc/world_format.md
+		)
+		foreach (file ${RESOURCE_MINETEST_FILES})
+			add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E copy
+				${file}
+				$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources/${PROJECT_NAME}/
+			)
+		endforeach()
+		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_SOURCE_DIR}/textures/base/pack
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources/textures/base/pack
+		)
 	else()
 		add_executable(${PROJECT_NAME})
 	endif()
