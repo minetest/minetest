@@ -3091,8 +3091,8 @@ std::wstring Server::handleChat(const std::string &name,
 	if (message.empty())
 		return L"";
 
-	if (message.find_first_of("\n\r") != std::wstring::npos) {
-		return L"Newlines are not permitted in chat messages";
+	if (wmessage.find_first_of(CHAT_DISALLOWED_CHARS) != std::wstring::npos) {
+		return L"Your message contains disallowed characters.";
 	}
 
 	// Run script hook, exit if script ate the chat message
