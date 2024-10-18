@@ -303,7 +303,9 @@ set(IRRMESHLOADER
 	CXMeshFileLoader.cpp
 )
 
-add_library(IRRMESHOBJ OBJECT
+#add_library(IRRMESHOBJ OBJECT
+set (IRRLICHTMT_SOURCES
+	${IRRLICHTMT_SOURCES}
 	CSkinnedMesh.cpp
 	CBoneSceneNode.cpp
 	CMeshSceneNode.cpp
@@ -311,9 +313,9 @@ add_library(IRRMESHOBJ OBJECT
 	${IRRMESHLOADER}
 )
 
-target_link_libraries(IRRMESHOBJ PUBLIC tiniergltf::tiniergltf)
-
-add_library(IRROBJ OBJECT
+#add_library(IRROBJ OBJECT
+set (IRRLICHTMT_SOURCES
+	${IRRLICHTMT_SOURCES}
 	CBillboardSceneNode.cpp
 	CCameraSceneNode.cpp
 	CDummyTransformationSceneNode.cpp
@@ -323,10 +325,6 @@ add_library(IRROBJ OBJECT
 	CSceneManager.cpp
 	CMeshCache.cpp
 )
-
-# Make sure IRROBJ gets the transitive include directories for
-# tiniergltf from IRRMESHOBJ.
-target_link_libraries(IRROBJ PRIVATE IRRMESHOBJ)
 
 set(IRRDRVROBJ
 	CNullDriver.cpp
@@ -387,13 +385,17 @@ set(IRRIMAGEOBJ
 	CImageWriterPNG.cpp
 )
 
-add_library(IRRVIDEOOBJ OBJECT
+#add_library(IRRVIDEOOBJ OBJECT
+set (IRRLICHTMT_SOURCES
+	${IRRLICHTMT_SOURCES}
 	CFPSCounter.cpp
 	${IRRDRVROBJ}
 	${IRRIMAGEOBJ}
 )
 
-add_library(IRRIOOBJ OBJECT
+#add_library(IRRIOOBJ OBJECT
+set (IRRLICHTMT_SOURCES
+	${IRRLICHTMT_SOURCES}
 	CFileList.cpp
 	CFileSystem.cpp
 	CLimitReadFile.cpp
@@ -404,7 +406,9 @@ add_library(IRRIOOBJ OBJECT
 	CAttributes.cpp
 )
 
-add_library(IRROTHEROBJ OBJECT
+#add_library(IRROTHEROBJ OBJECT
+set (IRRLICHTMT_SOURCES
+	${IRRLICHTMT_SOURCES}
 	CIrrDeviceSDL.cpp
 	CIrrDeviceLinux.cpp
 	CIrrDeviceStub.cpp
@@ -415,32 +419,9 @@ add_library(IRROTHEROBJ OBJECT
 	os.cpp
 )
 
-if(ENABLE_OPENGL3)
-	target_compile_definitions(IRROTHEROBJ PRIVATE ENABLE_OPENGL3)
-endif()
-
-if(APPLE)
-	# Build all IRROTHEROBJ sources as objc++, including the .cpp's
-	set_target_properties(IRROTHEROBJ PROPERTIES COMPILE_OPTIONS "-xobjective-c++")
-	target_sources(IRROTHEROBJ PRIVATE
-		CIrrDeviceOSX.mm
-		CNSOGLManager.mm
-	)
-endif()
-
-if(USE_X11)
-	target_compile_definitions(IRROTHEROBJ PRIVATE _IRR_COMPILE_WITH_X11_)
-endif()
-
-if(USE_XINPUT2)
-	target_compile_definitions(IRROTHEROBJ PRIVATE _IRR_LINUX_X11_XINPUT2_)
-endif()
-
-if(USE_XCURSOR)
-	target_compile_definitions(IRROTHEROBJ PRIVATE _IRR_LINUX_XCURSOR_)
-endif()
-
-add_library(IRRGUIOBJ OBJECT
+#add_library(IRRGUIOBJ OBJECT
+set (IRRLICHTMT_SOURCES
+	${IRRLICHTMT_SOURCES}
 	CGUIButton.cpp
 	CGUICheckBox.cpp
 	CGUIComboBox.cpp
@@ -460,19 +441,38 @@ add_library(IRRGUIOBJ OBJECT
 
 # Library
 
-add_library(IrrlichtMt STATIC)
-foreach(object_lib
-	IRRMESHOBJ IRROBJ IRRVIDEOOBJ
-	IRRIOOBJ IRROTHEROBJ IRRGUIOBJ)
-	# Set include directories for object library compilation
-	target_include_directories(${object_lib} PRIVATE ${link_includes})
-	# Add objects from object library to main library
-	target_sources(IrrlichtMt PRIVATE $<TARGET_OBJECTS:${object_lib}>)
+add_library(IrrlichtMt STATIC
+	${IRRLICHTMT_SOURCES}
+)
 
-	if(BUILD_WITH_TRACY)
-		target_link_libraries(${object_lib} PRIVATE Tracy::TracyClient)
-	endif()
-endforeach()
+if(ENABLE_OPENGL3)
+	target_compile_definitions(IrrlichtMt PRIVATE ENABLE_OPENGL3)
+endif()
+
+if(APPLE)
+	# Build all IRROTHEROBJ sources as objc++, including the .cpp's
+	set_target_properties(IrrlichtMt PROPERTIES COMPILE_OPTIONS "-xobjective-c++")
+	target_sources(IrrlichtMt PRIVATE
+		CIrrDeviceOSX.mm
+		CNSOGLManager.mm
+	)
+endif()
+
+if(USE_X11)
+	target_compile_definitions(IrrlichtMt PRIVATE _IRR_COMPILE_WITH_X11_)
+endif()
+
+if(USE_XINPUT2)
+	target_compile_definitions(IrrlichtMt PRIVATE _IRR_LINUX_X11_XINPUT2_)
+endif()
+
+if(USE_XCURSOR)
+	target_compile_definitions(IrrlichtMt PRIVATE _IRR_LINUX_XCURSOR_)
+endif()
+
+if(BUILD_WITH_TRACY)
+	target_link_libraries(IrrlichtMt PRIVATE Tracy::TracyClient)
+endif()
 
 # Alias target provides add_submodule compatibility
 add_library(IrrlichtMt::IrrlichtMt ALIAS IrrlichtMt)

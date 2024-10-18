@@ -34,8 +34,9 @@ cmake .. \
 make -j$(sysctl -n hw.logicalcpu)
 make install
 
-# M1 Macs w/ MacOS >= BigSur
+# Apple Silicon (M1/M2) Macs w/ MacOS >= BigSur
 codesign --force --deep -s - macos/minetest.app
+codesign --force --deep --sign - -o runtime --entitlements ../macos/entitlements.plist --timestamp=none --generate-entitlement-der macos/minetest.app
 ```
 
 ## Run
