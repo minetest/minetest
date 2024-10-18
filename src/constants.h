@@ -75,6 +75,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Use floatToInt(p, BS) and intToFloat(p, BS).
 #define BS 10.0f
 
+// This number defines the safe max absolute X/Y/Z coordinate in which
+// selection boxes still work safely. Beyond that limit, selection boxes
+// might break.
+#define SAFE_SELECTION_BOX_LIMIT (16.5f)
+
 // Dimension of a MapBlock
 #define MAP_BLOCKSIZE 16
 // This makes mesh updates too slow, as many meshes are updated during

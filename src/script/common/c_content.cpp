@@ -1111,12 +1111,26 @@ void push_nodebox(lua_State *L, const NodeBox &box)
 			lua_pushstring(L, "regular");
 			lua_setfield(L, -2, "type");
 			break;
-		case NODEBOX_LEVELED:
 		case NODEBOX_FIXED:
 			lua_pushstring(L, "fixed");
 			lua_setfield(L, -2, "type");
 			push_aabb3f_vector(L, box.fixed);
 			lua_setfield(L, -2, "fixed");
+			break;
+		case NODEBOX_LEVELED:
+		case NODEBOX_LEVELED_PLANTLIKE:
+		case NODEBOX_LEVELED_PLANTLIKE_ROOTED:
+			if (box.type == NODEBOX_LEVELED)
+				lua_pushstring(L, "leveled");
+			else if (box.type == NODEBOX_LEVELED_PLANTLIKE)
+				lua_pushstring(L, "leveled_plantlike");
+			else if (box.type == NODEBOX_LEVELED_PLANTLIKE_ROOTED)
+				lua_pushstring(L, "leveled_plantlike_rooted");
+			lua_setfield(L, -2, "type");
+			push_aabb3f_vector(L, box.fixed);
+			lua_setfield(L, -2, "fixed");
+			push_aabb3f_vector(L, box.leveled_fixed);
+			lua_setfield(L, -2, "leveled_fixed");
 			break;
 		case NODEBOX_WALLMOUNTED:
 			lua_pushstring(L, "wallmounted");
@@ -1286,6 +1300,7 @@ NodeBox read_nodebox(lua_State *L, int index)
 		NODEBOXREADVEC(c.disconnected, "disconnected");
 		NODEBOXREADVEC(c.disconnected_sides, "disconnected_sides");
 	}
+	NODEBOXREADVEC(nodebox.leveled_fixed, "leveled_fixed");
 
 	return nodebox;
 }

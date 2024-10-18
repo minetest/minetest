@@ -103,6 +103,8 @@ enum NodeBoxType : u8
 	NODEBOX_WALLMOUNTED, // Box for wall mounted nodes; (top, bottom, side)
 	NODEBOX_LEVELED, // Same as fixed, but with dynamic height from param2. for snow, ...
 	NODEBOX_CONNECTED, // optionally draws nodeboxes if a neighbor node attaches
+	NODEBOX_LEVELED_PLANTLIKE, // Same as leveled, but in sync with plantlike height
+	NODEBOX_LEVELED_PLANTLIKE_ROOTED, // Same as leveled, but in sync with plantlike_rooted height
 };
 
 struct NodeBoxConnected
@@ -136,6 +138,8 @@ struct NodeBox
 	// NODEBOX_CONNECTED
 	// (kept externally to not bloat the structure)
 	std::shared_ptr<NodeBoxConnected> connected;
+	// NODEBOX_LEVELED
+	std::vector<aabb3f> leveled_fixed;
 
 	NodeBox()
 	{ reset(); }
