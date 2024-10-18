@@ -21,9 +21,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "nodedef.h"
 #include <IMeshManipulator.h>
+#include <array>
 
 struct MeshMakeData;
 struct MeshCollector;
+
+enum class QuadDiagonal {
+	Diag02,
+	Diag13,
+};
 
 struct LightPair {
 	u8 lightDay;
@@ -36,6 +42,9 @@ struct LightPair {
 		lightDay(core::clamp(core::round32(valueA), 0, 255)),
 		lightNight(core::clamp(core::round32(valueB), 0, 255)) {}
 	operator u16() const { return lightDay | lightNight << 8; }
+
+	static int lightDiff(LightPair a, LightPair b);
+	static QuadDiagonal quadDiagonalForFace(LightPair final_lights[4]);
 };
 
 struct LightInfo {
@@ -114,10 +123,16 @@ private:
 	void drawAutoLightedCuboid(aabb3f box, f32 const *txc = nullptr, TileSpec *tiles = nullptr, int tile_count = 0, u8 mask = 0);
 	u8 getNodeBoxMask(aabb3f box, u8 solid_neighbors, u8 sametype_neighbors) const;
 
+// solid-specific
+public:
+	static bool isSolidFaceDrawn(content_t n1, const ContentFeatures &f1,
+		content_t n2, const NodeDefManager *nodedef,
+		bool *backface_culling_out = nullptr);
+
 // liquid-specific
 	struct LiquidData {
 		struct NeighborData {
-			f32 level;
+			f32 level; // in range [-0.5, 0.5]
 			content_t content;
 			bool is_same_liquid;
 			bool top_is_same_liquid;
@@ -130,16 +145,33 @@ private:
 		content_t c_flowing;
 		content_t c_source;
 		video::SColor color_top;
-		NeighborData neighbors[3][3];
-		f32 corner_levels[2][2];
+		std::array<std::array<NeighborData, 3>, 3> neighbors;
+		std::array<std::array<f32, 2>, 2> corner_levels;
 	};
 	LiquidData cur_liquid;
 	bool smooth_liquids = false;
 
+	static std::array<std::array<LiquidData::NeighborData, 3>, 3>
+	getLiquidNeighborsData(content_t c_source, content_t c_flowing, u8 liquid_range,
+			const std::function<MapNode(v3s16)> &get_node_rel);
+
+	// the arrays are indexed Z-first, i.e. neighbors[z][x], ret[z][x]
+	static std::array<std::array<f32, 2>, 2>
+	calculateLiquidCornerLevels(content_t c_source, content_t c_flowing,
+			const std::array<std::array<LiquidData::NeighborData, 3>, 3> &neighbors);
+
+private:
+	template <typename F>
+	static std::array<std::array<LiquidData::NeighborData, 3>, 3>
+	getLiquidNeighborsDataRaw(content_t c_source, content_t c_flowing,
+			u8 liquid_range, F &&get_node_rel);
+
+	static f32 calculateLiquidCornerLevel(content_t c_source, content_t c_flowing,
+			const std::array<std::reference_wrapper<const LiquidData::NeighborData>, 4> &neighbors);
+
 	void prepareLiquidNodeDrawing();
 	void getLiquidNeighborhood();
 	void calculateCornerLevels();
-	f32 getCornerLevel(int i, int k) const;
 	void drawLiquidSides();
 	void drawLiquidTop();
 	void drawLiquidBottom();
