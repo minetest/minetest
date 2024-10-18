@@ -89,6 +89,12 @@ DS:
 grorp:
   textures/base/pack/exit_btn.png
 
+Material Design, Google (Apache license v2.0):
+  textures/base/pack/contentdb_thumb_up.png
+  textures/base/pack/contentdb_thumb_down.png
+  textures/base/pack/contentdb_neutral.png
+
+
 License of Minetest source code
 -------------------------------
 
