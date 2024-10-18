@@ -34,12 +34,8 @@
 #include <X11/extensions/XInput2.h>
 #endif
 
-#if defined(_IRR_COMPILE_WITH_OGLES2_)
+#if defined(_IRR_COMPILE_WITH_OPENGL_) || defined(_IRR_COMPILE_WITH_OGLES2_)
 #include "CEGLManager.h"
-#endif
-
-#if defined(_IRR_COMPILE_WITH_OPENGL_)
-#include "CGLXManager.h"
 #endif
 
 #ifdef _IRR_LINUX_XCURSOR_
@@ -152,8 +148,20 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters &param) :
 	// without it, multi-threaded GL drivers may crash
 	XInitThreads();
 
-	// create window
 	if (CreationParams.DriverType != video::EDT_NULL) {
+		// initialize EGL so it can choose a config
+#ifdef _IRR_COMPILE_WITH_X11_
+#if defined(_IRR_COMPILE_WITH_OPENGL_) || defined(_IRR_COMPILE_WITH_OGLES2_)
+		video::SExposedVideoData data;
+		data.OpenGLLinux.X11Window = 0; // not created yet, but that's ok
+		data.OpenGLLinux.X11Display = XDisplay;
+
+		ContextManager = new video::CEGLManager();
+		if (!ContextManager->initialize(CreationParams, data))
+			return;
+#endif
+#endif
+
 		// create the window, only if we do not use the null device
 		if (!createWindow())
 			return;
@@ -397,14 +405,14 @@ bool CIrrDeviceLinux::createWindow()
 	if (WMCheck != None)
 		HasNetWM = true;
 
-#if defined(_IRR_COMPILE_WITH_OPENGL_)
-	// don't use the XVisual with OpenGL, because it ignores all requested
-	// properties of the CreationParams
-	if (CreationParams.DriverType == video::EDT_OPENGL) {
-		video::SExposedVideoData data;
-		data.OpenGLLinux.X11Display = XDisplay;
-		ContextManager = new video::CGLXManager(CreationParams, data, Screennr);
-		VisualInfo = ((video::CGLXManager *)ContextManager)->getVisual();
+#if defined(_IRR_COMPILE_WITH_OPENGL_) || defined(_IRR_COMPILE_WITH_OGLES2_)
+	if (ContextManager) {
+		auto *c = static_cast<video::CEGLManager*>(ContextManager);
+		os::Printer::log("Using X visual from EGL");
+		XVisualInfo templ;
+		int n;
+		templ.visualid = static_cast<VisualID>(c->getNativeVisualID());
+		VisualInfo = XGetVisualInfo(XDisplay, VisualIDMask, &templ, &n);
 	}
 #endif
 
@@ -543,9 +551,7 @@ void CIrrDeviceLinux::createDriver()
 	{
 		video::SExposedVideoData data;
 		data.OpenGLLinux.X11Window = XWindow;
-		data.OpenGLLinux.X11Display = XDisplay;
-
-		ContextManager->initialize(CreationParams, data);
+		static_cast<video::CEGLManager*>(ContextManager)->setWindow(data);
 
 		VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, ContextManager);
 	}
@@ -558,10 +564,7 @@ void CIrrDeviceLinux::createDriver()
 	{
 		video::SExposedVideoData data;
 		data.OpenGLLinux.X11Window = XWindow;
-		data.OpenGLLinux.X11Display = XDisplay;
-
-		ContextManager = new video::CEGLManager();
-		ContextManager->initialize(CreationParams, data);
+		static_cast<video::CEGLManager*>(ContextManager)->setWindow(data);
 
 		VideoDriver = video::createOGLES2Driver(CreationParams, FileSystem, ContextManager);
 	}
@@ -574,10 +577,7 @@ void CIrrDeviceLinux::createDriver()
 	{
 		video::SExposedVideoData data;
 		data.OpenGLLinux.X11Window = XWindow;
-		data.OpenGLLinux.X11Display = XDisplay;
-
-		ContextManager = new video::CEGLManager();
-		ContextManager->initialize(CreationParams, data);
+		static_cast<video::CEGLManager*>(ContextManager)->setWindow(data);
 
 		VideoDriver = video::createWebGL1Driver(CreationParams, FileSystem, ContextManager);
 	}
