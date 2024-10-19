@@ -598,93 +598,62 @@ if(PRECOMPILE_HEADERS)
 	target_precompile_headers(EngineCommon PRIVATE ${PRECOMPILED_HEADERS_LIST})
 endif()
 
+# File with used entitlements
+set(XCODE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/misc/entitlements/release.entitlements" CACHE FILEPATH "Path to entitlements file to be used with Xcode signing")
+
+if(APPLE)
+	# Configure the Info.plist file
+	configure_file(
+		"${CMAKE_SOURCE_DIR}/misc/Info.plist.in"
+		"${CMAKE_BINARY_DIR}/Info.plist"
+	)
+endif()
+
 if(BUILD_CLIENT)
 	# client target
 	if(ANDROID)
-		add_library(${PROJECT_NAME} SHARED)
-	elseif(CMAKE_GENERATOR STREQUAL "Xcode")
-		set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/macos")
-		set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/macos)")
-
+		add_library(${PROJECT_NAME})
+	else()
 		add_executable(${PROJECT_NAME})
+	endif()
+
+
+	if(CMAKE_GENERATOR STREQUAL "Xcode")
+		set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/build")
+		set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/build")
+
+		target_sources(${PROJECT_NAME} PUBLIC ${client_RESOURCES})
 
 		add_dependencies(${PROJECT_NAME} translations)
 
 		set_target_properties(${PROJECT_NAME} PROPERTIES
 			MACOSX_BUNDLE TRUE
-			MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME_CAPITALIZED}"
-			MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/misc/Info.plist"
+			MACOSX_BUNDLE_INFO_PLIST "${CMAKE_BINARY_DIR}/Info.plist"
 			RESOURCE "${client_RESOURCES}"
+			XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "org.luanti.luanti"
 			XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME "YES"
-			XCODE_ATTRIBUTE_INSTALL_PATH "@executable_path/../Applications"
+			XCODE_ATTRIBUTE_INSTALL_PATH "/Applications"
 			XCODE_ATTRIBUTE_SKIP_INSTALL "NO"
+			XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym"
+			XCODE_ATTRIBUTE_GCC_GENERATE_DEBUGGING_SYMBOLS "YES"
+			XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "$(inherited)"
+			XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${XCODE_CODE_SIGN_ENTITLEMENTS}"
 		)
 
-		if (CMAKE_BUILD_TYPE STREQUAL Release)
-			set_target_properties(${PROJECT_NAME} PROPERTIES
-				XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/misc/entitlements/release.entitlements"
-			)
-		else()
-			set_target_properties(${PROJECT_NAME} PROPERTIES
-				XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/misc/entitlements/debug.entitlements"
-			)
-		endif()
-
-		# Enable scheme generation
-		#set(CMAKE_XCODE_GENERATE_SCHEME ON)
-
-		#set_target_properties(${PROJECT_NAME} PROPERTIES
-		#	XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Minetest Developer"
-		#	XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "Minetest-team"
+		# Prinv env variables to file, for debugging purposes
+		#add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		#	COMMAND ${CMAKE_COMMAND} -E env bash ${CMAKE_SOURCE_DIR}/util/xcode/capture_env.sh ${CMAKE_BINARY_DIR}/post_env.log
 		#)
+
 		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_directory
-			${CMAKE_SOURCE_DIR}/builtin
-			$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources/builtin
+			COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/util/xcode/install_resources.cmake
+				-DTARGET_DIR=$<TARGET_FILE_DIR:${PROJECT_NAME}>
+				-DBINARY_DIR=${CMAKE_BINARY_DIR}
+				-DPROJECT_NAME=${PROJECT_NAME}
+			COMMENT "Checking INSTALL_ROOT and copying resources"
 		)
-		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_directory
-			${CMAKE_SOURCE_DIR}/client/shaders
-			$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources/client/shaders
-		)
-		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_directory
-			${CMAKE_SOURCE_DIR}/fonts
-			$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources/fonts
-		)
-		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_directory
-			${CMAKE_BINARY_DIR}/locale
-			$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources/locale
-		)
-		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E make_directory
-			$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources/${PROJECT_NAME}
-		)
-		set(RESOURCE_MINETEST_FILES
-			${CMAKE_SOURCE_DIR}/README.md
-			${CMAKE_SOURCE_DIR}/doc/client_lua_api.md
-			${CMAKE_SOURCE_DIR}/doc/lua_api.md
-			${CMAKE_SOURCE_DIR}/doc/menu_lua_api.md
-			${CMAKE_SOURCE_DIR}/minetest.conf.example
-			${CMAKE_SOURCE_DIR}/doc/texture_packs.md
-			${CMAKE_SOURCE_DIR}/doc/world_format.md
-		)
-		foreach (file ${RESOURCE_MINETEST_FILES})
-			add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E copy
-				${file}
-				$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources/${PROJECT_NAME}/
-			)
-		endforeach()
-		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_directory
-			${CMAKE_SOURCE_DIR}/textures/base/pack
-			$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources/textures/base/pack
-		)
-	else()
-		add_executable(${PROJECT_NAME})
 	endif()
+
 	list(SORT client_SRCS)
 	target_sources(${PROJECT_NAME} PRIVATE
 		$<TARGET_OBJECTS:EngineCommon>

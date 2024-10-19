@@ -272,29 +272,11 @@ endif()
 
 if(APPLE)
 	install(FILES "misc/luanti-icon.icns" DESTINATION "${SHAREDIR}")
-	install(FILES "misc/Info.plist" DESTINATION "${BUNDLE_PATH}/Contents")
+	install(FILES "${CMAKE_BINARY_DIR}/Info.plist" DESTINATION "${BUNDLE_PATH}/Contents")
 endif()
 
 if(CMAKE_GENERATOR STREQUAL "Xcode")
-	set(client_RESOURCES ${CMAKE_SOURCE_DIR}/misc/luanti-icon.icns)
-
-	foreach(resource ${client_RESOURCES})
-		set_source_files_properties(${resource} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-	endforeach()
-	
-	#set(client_RESOURCES ${client_RESOURCES} ${CMAKE_SOURCE_DIR}/builtin)
-
-	set_source_files_properties(${CMAKE_SOURCE_DIR}/builtin PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-
-	file(GLOB_RECURSE client_BUILTINS "${CMAKE_SOURCE_DIR}/builtin/*")
-	foreach (FILE ${client_BUILTINS})
-    file(RELATIVE_PATH NEW_FILE "${CMAKE_SOURCE_DIR}/builtin" ${FILE})
-    get_filename_component(NEW_FILE_PATH ${NEW_FILE} DIRECTORY)
-    set_source_files_properties(${FILE}
-        PROPERTIES
-            MACOSX_PACKAGE_LOCATION "Resources/builtin/${NEW_FILE_PATH}"
-    )
-	endforeach()
+	set(client_RESOURCES "${CMAKE_SOURCE_DIR}/misc/luanti-icon.icns")
 endif()
 
 # Library pack
