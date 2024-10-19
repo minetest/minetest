@@ -132,6 +132,8 @@ public:
 	// Shall be called from the main thread.
 	void insertSourceImage(const std::string &name, video::IImage *img);
 
+	u32 cacheExistentTexture(const std::string &name, video::ITexture *tex) override;
+
 	// Rebuild images and textures from the current set of source images
 	// Shall be called from the main thread.
 	void rebuildImagesAndTextures();
@@ -457,6 +459,26 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 	if (affected > 0)
 		verbosestream << "TextureSource: inserting \"" << name << "\" caused rebuild of "
 				<< affected << " textures." << std::endl;
+}
+
+u32 TextureSource::cacheExistentTexture(const std::string &name, video::ITexture *tex)
+{
+	if (!tex)
+		return 0;
+
+	sanity_check(std::this_thread::get_id() == m_main_thread);
+
+	MutexAutoLock lock(m_textureinfo_cache_mutex);
+
+	u32 id = m_textureinfo_cache.size();
+	TextureInfo ti;
+	ti.name = name;
+	ti.texture = tex;
+
+	m_textureinfo_cache.emplace_back(std::move(ti));
+	m_name_to_id[name] = id;
+
+	return id;
 }
 
 void TextureSource::rebuildImagesAndTextures()

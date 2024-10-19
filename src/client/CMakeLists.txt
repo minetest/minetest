@@ -66,6 +66,7 @@ set(client_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/renderingengine.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/shader.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/sky.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/texture_atlas.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/tile.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/texturepaths.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/texturesource.cpp

@@ -220,8 +220,14 @@ public:
 	1x1 pixel. Each mipmap has to be half the width and height of the previous
 	level. At least one pixel will be always kept.
 	\param layer It informs a texture about which cubemap or texture array layer
-	needs mipmap regeneration. */
-	virtual void regenerateMipMapLevels(void *data = 0, u32 layer = 0) = 0;
+	needs mipmap regeneration.
+	\param max_level Highest mipmap level until which necessary to generate mipmaps.*/
+	virtual void regenerateMipMapLevels(void *data = 0, u32 layer = 0, u32 max_level = 1000) = 0;
+
+	virtual std::vector<IImage*> getImagesCache() = 0;
+
+	//! Draws the content pixels of the tile texture onto this texture.
+	virtual void drawToSubImage(int x, int y, int width, int height, ITexture *texture) = 0;
 
 	//! Get original size of the texture.
 	/** The texture is usually scaled, if it was created with an unoptimal

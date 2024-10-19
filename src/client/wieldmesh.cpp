@@ -316,7 +316,7 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 	MeshCollector collector(v3f(0.0f * BS), v3f());
 	mesh_make_data.setSmoothLighting(false);
 	MapblockMeshGenerator gen(&mesh_make_data, &collector,
-		client->getSceneManager()->getMeshManipulator());
+		client->getSceneManager()->getMeshManipulator(), false);
 
 	if (n.getParam2()) {
 		// keep it

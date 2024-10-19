@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IMeshManipulator.h>
 
 struct MeshMakeData;
-struct MeshCollector;
+class MeshCollector;
 
 struct LightPair {
 	u8 lightDay;
@@ -62,7 +62,7 @@ class MapblockMeshGenerator
 {
 public:
 	MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output,
-			scene::IMeshManipulator *mm);
+			scene::IMeshManipulator *mm, bool use_atlas=true);
 	void generate();
 	void renderSingle(content_t node, u8 param2 = 0x00);
 
@@ -74,6 +74,7 @@ private:
 	scene::IMeshManipulator *const meshmanip;
 
 	const v3s16 blockpos_nodes;
+	const bool enable_atlas;
 
 // options
 	const bool enable_mesh_cache;
@@ -97,6 +98,7 @@ private:
 	video::SColor blendLightColor(const v3f &vertex_pos);
 	video::SColor blendLightColor(const v3f &vertex_pos, const v3f &vertex_normal);
 
+	void replaceToAtlas(TileSpec &tile, bool outside_uv = false);
 	void useTile(int index = 0, u8 set_flags = MATERIAL_FLAG_CRACK_OVERLAY,
 		u8 reset_flags = 0, bool special = false);
 	void getTile(int index, TileSpec *tile);
@@ -104,8 +106,7 @@ private:
 	void getSpecialTile(int index, TileSpec *tile, bool apply_crack = false);
 
 // face drawing
-	void drawQuad(v3f *vertices, const v3s16 &normal = v3s16(0, 0, 0),
-		float vertical_tiling = 1.0);
+	void drawQuad(v3f *vertices, const v3s16 &normal = v3s16(0, 0, 0));
 
 // cuboid drawing!
 	template <typename Fn>
