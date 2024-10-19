@@ -118,3 +118,14 @@ minetest.register_on_item_pickup(function(itemstack, picker, pointed_thing, time
 		return picker:get_inventory():add_item("main", itemstack)
 	end
 end)
+
+minetest.register_on_item_drop(function(itemstack, player, pos)
+	local item_name = itemstack:get_name()
+	if item_name ~= "callbacks:callback_item_1"
+			and item_name ~= "callbacks:callback_item_2" then
+		return
+	end
+	print_to_everything("[" .. item_name .. " register_on_item_drop] " ..
+			player:get_player_name() .. " drops " .. item_name ..
+			" at " .. minetest.pos_to_string(pos, 0))
+end)

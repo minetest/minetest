@@ -360,6 +360,12 @@ function core.item_secondary_use(itemstack, placer)
 end
 
 function core.item_drop(itemstack, dropper, pos)
+	for _, callback in ipairs(core.registered_on_item_drops) do
+		local result = callback(itemstack, dropper, pos)
+		if result then
+			return ItemStack(result)
+		end
+	end
 	local dropper_is_player = dropper and dropper:is_player()
 	local p = table.copy(pos)
 	local cnt = itemstack:get_count()
