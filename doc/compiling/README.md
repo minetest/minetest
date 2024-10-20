@@ -91,7 +91,7 @@ Library specific options:
     PNG_LIBRARY                     - Path to libpng.a/libpng.so/libpng.lib
     PROMETHEUS_PULL_LIBRARY         - Only if building with prometheus; path to prometheus-cpp-pull
     PROMETHEUS_CORE_LIBRARY         - Only if building with prometheus; path to prometheus-cpp-core
-    PROMETHEUS_CPP_INCLUDE_DIR      - Only if building with prometheus; path to prometheus/counter.h
+    PROMETHEUS_CPP_INCLUDE_DIR      - Only if building with prometheus; directory where prometheus/counter.h is located
     SQLITE3_INCLUDE_DIR             - Directory that contains sqlite3.h
     SQLITE3_LIBRARY                 - Path to libsqlite3.a/libsqlite3.so/sqlite3.lib
     VORBISFILE_LIBRARY              - Only if building with sound; path to libvorbisfile.a/libvorbisfile.so/libvorbisfile.dll.a
