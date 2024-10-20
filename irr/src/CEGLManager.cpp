@@ -149,6 +149,7 @@ bool CEGLManager::generateSurface()
 			ok = eglBindAPI(EGL_OPENGL_ES_API);
 			break;
 		case EDT_OPENGL:
+		case EDT_OPENGL3:
 			ok = eglBindAPI(EGL_OPENGL_API);
 		default:
 			break;
@@ -509,6 +510,7 @@ bool CEGLManager::generateContext()
 #endif
 		break;
 	case EDT_OPENGL:
+	case EDT_OPENGL3:
 #ifdef EGL_VERSION_1_5
 		ContextAttrib.push_back(EGL_CONTEXT_OPENGL_PROFILE_MASK);
 		ContextAttrib.push_back(EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT);

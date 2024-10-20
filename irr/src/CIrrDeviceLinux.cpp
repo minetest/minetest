@@ -73,6 +73,10 @@ namespace video
 IVideoDriver *createOpenGLDriver(const irr::SIrrlichtCreationParameters &params, io::IFileSystem *io, IContextManager *contextManager);
 #endif
 
+#ifdef ENABLE_OPENGL3
+IVideoDriver *createOpenGL3Driver(const SIrrlichtCreationParameters &params, io::IFileSystem *io, IContextManager *contextManager);
+#endif
+
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 IVideoDriver *createOGLES2Driver(const irr::SIrrlichtCreationParameters &params, io::IFileSystem *io, IContextManager *contextManager);
 #endif
@@ -557,6 +561,19 @@ void CIrrDeviceLinux::createDriver()
 	}
 #else
 		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
+#endif
+	break;
+	case video::EDT_OPENGL3:
+#ifdef ENABLE_OPENGL3
+	{
+		video::SExposedVideoData data;
+		data.OpenGLLinux.X11Window = XWindow;
+		static_cast<video::CEGLManager*>(ContextManager)->setWindow(data);
+
+		VideoDriver = video::createOpenGL3Driver(CreationParams, FileSystem, ContextManager);
+	}
+#else
+		os::Printer::log("No OpenGL 3 support compiled in.", ELL_ERROR);
 #endif
 	break;
 	case video::EDT_OGLES2:
