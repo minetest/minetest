@@ -9,9 +9,13 @@
 #include "ECullingTypes.h"
 #include "EDebugSceneTypes.h"
 #include "SMaterial.h"
+#include "Transform.h"
+#include "irrMath.h"
 #include "irrArray.h"
 #include "aabbox3d.h"
 #include "matrix4.h"
+#include "quaternion.h"
+#include "vector3d.h"
 
 #include <list>
 #include <optional>
@@ -392,6 +396,25 @@ public:
 	virtual core::vector3df getAbsolutePosition() const
 	{
 		return AbsoluteTransformation.getTranslation();
+	}
+
+	virtual void setRelativeTransform(const core::Transform &transform) {
+		setPosition(transform.translation);
+		core::vector3df euler;
+		auto rot = transform.rotation;
+		// rot.makeInverse();
+		rot.toEuler(euler);
+		setRotation(core::RADTODEG * euler);
+		setScale(transform.scale);
+	}
+
+	virtual core::Transform getRelativeTransform() const
+	{
+		return {
+			getPosition(),
+			core::quaternion(core::DEGTORAD * getRotation()),
+			getScale(),
+		};
 	}
 
 	//! Set a culling style or disable culling completely.

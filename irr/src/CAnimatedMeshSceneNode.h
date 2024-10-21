@@ -7,7 +7,7 @@
 #include "IAnimatedMeshSceneNode.h"
 #include "IAnimatedMesh.h"
 
-#include "matrix4.h"
+#include "Transform.h"
 
 namespace irr
 {
@@ -165,7 +165,7 @@ private:
 	s32 PassCount;
 
 	core::array<IBoneSceneNode *> JointChildSceneNodes;
-	core::array<core::matrix4> PretransitingSave;
+	std::vector<core::Transform> PretransitingSave;
 };
 
 } // end namespace scene
