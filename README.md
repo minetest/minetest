@@ -1,5 +1,5 @@
 Luanti (formerly Minetest)
-========
+==========================
 
 ![Build Status](https://github.com/minetest/minetest/workflows/build/badge.svg)
 [![Translation status](https://hosted.weblate.org/widgets/minetest/-/svg-badge.svg)](https://hosted.weblate.org/engage/minetest/?utm_source=widget)

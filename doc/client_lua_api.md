@@ -1,5 +1,5 @@
 Luanti Lua Client Modding API Reference 5.10.0
-================================================
+==============================================
 
 **WARNING**: if you're looking for the `minetest` namespace (e.g. `minetest.something`),
 it's now called `core` due to the renaming of Luanti (formerly Minetest).
@@ -270,7 +270,7 @@ Helper functions
     * returns a deep copy of `table`
 
 Luanti namespace reference
-------------------------------
+--------------------------
 
 ### Utilities
 

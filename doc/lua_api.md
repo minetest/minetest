@@ -1,5 +1,5 @@
 Luanti Lua Modding API Reference
-==================================
+================================
 
 **WARNING**: if you're looking for the `minetest` namespace (e.g. `minetest.something`),
 it's now called `core` due to the renaming of Luanti (formerly Minetest).
@@ -5514,7 +5514,7 @@ Luanti includes the following settings to control behavior of privileges:
     limited moderation powers to selected users.
 
 'core' namespace reference
-==============================
+==========================
 
 Utilities
 ---------
@@ -5988,7 +5988,7 @@ Call these functions only at load time!
     * `hp_change`: the amount of change. Negative when it is damage.
       * Historically, the new HP value was clamped to [0, 65535] before
         calculating the HP change. This clamping has been removed as of
-        Luanti 5.10.0
+        version 5.10.0
     * `reason`: a PlayerHPChangeReason table.
         * The `type` field will have one of the following values:
             * `set_hp`: A mod or the engine called `set_hp` without

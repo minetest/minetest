@@ -7,7 +7,7 @@ following documents:
 
 * [What is Luanti?](http://c55.me/blog/?p=1491)
 * [celeron55's roadmap](https://forum.minetest.net/viewtopic.php?t=9177)
-* [celeron55's comment in "A clear mission statement for Luanti is missing"](https://github.com/minetest/minetest/issues/3476#issuecomment-167399287)
+* [celeron55's comment in "A clear mission statement for Minetest is missing"](https://github.com/minetest/minetest/issues/3476#issuecomment-167399287)
 * [Core developer to-do/wish lists](https://forum.minetest.net/viewforum.php?f=7)
 
 ## 2. Medium-term Roadmap
