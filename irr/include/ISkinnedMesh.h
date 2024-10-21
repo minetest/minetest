@@ -66,7 +66,7 @@ public:
 	virtual void setInterpolationMode(E_INTERPOLATION_MODE mode) = 0;
 
 	//! Animates this mesh's joints based on frame input
-	virtual void animateMesh(f32 frame, f32 blend) = 0;
+	virtual void animateMesh(f32 frame) = 0;
 
 	//! Preforms a software skin on this mesh based of joint positions
 	virtual void skinMesh() = 0;

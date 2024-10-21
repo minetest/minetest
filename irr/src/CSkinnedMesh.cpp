@@ -136,11 +136,10 @@ void CSkinnedMesh::setAnimationSpeed(f32 fps)
 //! returns the animated mesh based
 IMesh *CSkinnedMesh::getMesh(f32 frame)
 {
-	// animate(frame,startFrameLoop, endFrameLoop);
 	if (frame == -1)
 		return this;
 
-	animateMesh(frame, 1.0f);
+	animateMesh(frame); // TODO why does this exist?
 	skinMesh();
 	return this;
 }
@@ -150,17 +149,13 @@ IMesh *CSkinnedMesh::getMesh(f32 frame)
 //--------------------------------------------------------------------------
 
 //! Animates this mesh's joints based on frame input
-//! blend: {0-old position, 1-New position}
-void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
+void CSkinnedMesh::animateMesh(f32 frame)
 {
 	// if (!HasAnimation || LastAnimatedFrame == frame)
 	//	return; // TODO sus
 
 	LastAnimatedFrame = frame;
 	SkinnedLastFrame = false;
-
-	if (blend <= 0.f)
-		return; // No need to animate
 
 	for (u32 i = 0; i < AllJoints.size(); ++i) {
 		// The joints can be animated here with no input from their
@@ -176,22 +171,15 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 		core::vector3df scale = oldScale;
 		core::quaternion rotation = oldRotation;
 
+		// Note that this interpolates as is necessary.
 		getFrameData(frame, joint,
 				position, joint->positionHint,
 				scale, joint->scaleHint,
 				rotation, joint->rotationHint);
 
-		if (blend == 1.0f) {
-			// No blending needed
-			joint->Animatedposition = position;
-			joint->Animatedscale = scale;			
-			joint->Animatedrotation = rotation;
-		} else {
-			// Blend animation
-			joint->Animatedposition = core::lerp(oldPosition, position, blend);
-			joint->Animatedscale = core::lerp(oldScale, scale, blend);
-			joint->Animatedrotation.slerp(oldRotation, rotation, blend);
-		}
+		joint->Animatedposition = position;
+		joint->Animatedscale = scale;			
+		joint->Animatedrotation = rotation;
 	}
 
 	// Note:
@@ -1014,10 +1002,6 @@ void CSkinnedMesh::finalize()
 	// Needed for animation and skinning...
 
 	calculateGlobalMatrices(0, 0);
-
-	// animateMesh(0, 1);
-	// buildAllLocalAnimatedMatrices();
-	// buildAllGlobalAnimatedMatrices();
 
 	// rigid animation for non animated meshes
 	for (i = 0; i < AllJoints.size(); ++i) {

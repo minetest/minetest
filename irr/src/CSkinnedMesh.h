@@ -45,8 +45,7 @@ public:
 	IMesh *getMesh(f32) override;
 
 	//! Animates this mesh's joints based on frame input
-	//! blend: {0-old position, 1-New position}
-	void animateMesh(f32 frame, f32 blend) override;
+	void animateMesh(f32 frame) override;
 
 	//! Preforms a software skin on this mesh based of joint positions
 	void skinMesh() override;

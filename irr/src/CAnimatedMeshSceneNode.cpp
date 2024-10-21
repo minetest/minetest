@@ -574,7 +574,7 @@ void CAnimatedMeshSceneNode::animateJoints()
 
 		CSkinnedMesh *skinnedMesh = static_cast<CSkinnedMesh *>(Mesh);
 
-		skinnedMesh->animateMesh(frame, 1.0f);
+		skinnedMesh->animateMesh(frame);
 		skinnedMesh->recoverJointsFromMesh(JointChildSceneNodes);
 
 		//-----------------------------------------
