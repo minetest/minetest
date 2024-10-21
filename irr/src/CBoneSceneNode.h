@@ -42,8 +42,6 @@ public:
 
 	void OnAnimate(u32 timeMs) override;
 
-	void updateAbsolutePositionOfAllChildren() override;
-
 	//! How the relative transformation of the bone is used
 	void setSkinningSpace(E_BONE_SKINNING_SPACE space) override
 	{
@@ -56,7 +54,6 @@ public:
 	}
 
 private:
-	void helper_updateAbsolutePositionOfAllChildren(ISceneNode *Node);
 
 	u32 BoneIndex;
 

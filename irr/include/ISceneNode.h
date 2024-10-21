@@ -93,16 +93,13 @@ public:
 	\param timeMs Current time in milliseconds. */
 	virtual void OnAnimate(u32 timeMs)
 	{
-		if (IsVisible) {
-			// update absolute position
-			updateAbsolutePosition();
+		if (!IsVisible && Children.empty())
+			return;
 
-			// perform the post render process on all children
+		updateAbsolutePosition();
 
-			ISceneNodeList::iterator it = Children.begin();
-			for (; it != Children.end(); ++it)
-				(*it)->OnAnimate(timeMs);
-		}
+		for (auto *child : Children)
+			child->OnAnimate(timeMs);
 	}
 
 	//! Renders the node.

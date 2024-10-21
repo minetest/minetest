@@ -84,9 +84,6 @@ public:
 	//! How the relative transformation of the bone is used
 	virtual E_BONE_SKINNING_SPACE getSkinningSpace() const = 0;
 
-	//! Updates the absolute position based on the relative and the parents position
-	virtual void updateAbsolutePositionOfAllChildren() = 0;
-
 	s32 positionHint;
 	s32 scaleHint;
 	s32 rotationHint;

@@ -148,15 +148,6 @@ static void setBillboardTextureMatrix(scene::IBillboardSceneNode *bill,
 	matrix.setTextureScale(txs, tys);
 }
 
-// Evaluate transform chain recursively; irrlicht does not do this for us
-static void updatePositionRecursive(scene::ISceneNode *node)
-{
-	scene::ISceneNode *parent = node->getParent();
-	if (parent)
-		updatePositionRecursive(parent);
-	node->updateAbsolutePosition();
-}
-
 static bool logOnce(const std::ostringstream &from, std::ostream &log_to)
 {
 	thread_local std::vector<u64> logged;
@@ -594,9 +585,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 	m_visuals_expired = false;
 
-	if (!m_prop.is_visible)
-		return;
-
 	infostream << "GenericCAO::addToScene(): " << m_prop.visual << std::endl;
 
 	m_material_type_param = 0.5f; // May cut off alpha < 128 depending on m_material_type
@@ -634,7 +622,9 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		node->forEachMaterial(setMaterial);
 	};
 
-	if (m_prop.visual == "sprite") {
+	if (!m_prop.is_visible) {
+		grabMatrixNode();
+	} if (m_prop.visual == "sprite") {
 		grabMatrixNode();
 		m_spritenode = m_smgr->addBillboardSceneNode(
 				m_matrixnode, v2f(1, 1), v3f(0,0,0), -1);
@@ -740,7 +730,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			m_animated_meshnode = m_smgr->addAnimatedMeshSceneNode(mesh, m_matrixnode);
 			m_animated_meshnode->grab();
 			mesh->drop(); // The scene node took hold of it
-			m_animated_meshnode->animateJoints(); // Needed for some animations
 			m_animated_meshnode->setScale(m_prop.visual_size);
 
 			// set vertex colors to ensure alpha is set
@@ -798,7 +787,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	}
 
 	/* don't update while punch texture modifier is active */
-	if (m_reset_textures_timer < 0)
+	if (m_prop.is_visible && m_reset_textures_timer < 0)
 		updateTextures(m_current_texture_modifier);
 
 	if (scene::ISceneNode *node = getSceneNode()) {
@@ -1204,17 +1193,8 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		updateNodePos();
 	}
 
-	if (m_animated_meshnode) {
-		// Everything must be updated; the whole transform
-		// chain as well as the animated mesh node.
-		// Otherwise, bone attachments would be relative to
-		// a position that's one frame old.
-		if (m_matrixnode)
-			updatePositionRecursive(m_matrixnode);
-		m_animated_meshnode->updateAbsolutePosition();
-		m_animated_meshnode->animateJoints();
+	if (m_animated_meshnode)
 		updateBones(dtime);
-	}
 }
 
 static void setMeshBufferTextureCoords(scene::IMeshBuffer *buf, const v2f *uv, u32 count)
@@ -1456,11 +1436,9 @@ void GenericCAO::updateBones(f32 dtime)
 	if (!m_animated_meshnode)
 		return;
 	if (m_bone_override.empty()) {
-		m_animated_meshnode->setJointMode(scene::EJUOR_NONE);
 		return;
 	}
 
-	m_animated_meshnode->setJointMode(scene::EJUOR_CONTROL); // To write positions to the mesh on render
 	for (auto &it : m_bone_override) {
 		std::string bone_name = it.first;
 		scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
@@ -1473,47 +1451,6 @@ void GenericCAO::updateBones(f32 dtime)
 		bone->setPosition(props.getPosition(bone->getPosition()));
 		bone->setRotation(props.getRotationEulerDeg(bone->getRotation()));
 		bone->setScale(props.getScale(bone->getScale()));
-	}
-
-	// search through bones to find mistakenly rotated bones due to bug in Irrlicht
-	for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
-		scene::IBoneSceneNode *bone = m_animated_meshnode->getJointNode(i);
-		if (!bone)
-			continue;
-
-		//If bone is manually positioned there is no need to perform the bug check
-		bool skip = false;
-		for (auto &it : m_bone_override) {
-			if (it.first == bone->getName()) {
-				skip = true;
-				break;
-			}
-		}
-		if (skip)
-			continue;
-
-		// Workaround for Irrlicht bug
-		// We check each bone to see if it has been rotated ~180deg from its expected position due to a bug in Irricht
-		// when using EJUOR_CONTROL joint control. If the bug is detected we update the bone to the proper position
-		// and update the bones transformation.
-		v3f bone_rot = bone->getRelativeTransformation().getRotationDegrees();
-		float offset = fabsf(bone_rot.X - bone->getRotation().X);
-		if (offset > 179.9f && offset < 180.1f) {
-			bone->setRotation(bone_rot);
-			bone->updateAbsolutePosition();
-		}
-	}
-	// The following is needed for set_bone_pos to propagate to
-	// attached objects correctly.
-	// Irrlicht ought to do this, but doesn't when using EJUOR_CONTROL.
-	for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
-		auto bone = m_animated_meshnode->getJointNode(i);
-		// Look for the root bone.
-		if (bone && bone->getParent() == m_animated_meshnode) {
-			// Update entire skeleton.
-			bone->updateAbsolutePositionOfAllChildren();
-			break;
-		}
 	}
 }
 
@@ -1557,12 +1494,10 @@ void GenericCAO::updateAttachments()
 
 		if (m_matrixnode && parent_node) {
 			m_matrixnode->setParent(parent_node);
-			parent_node->updateAbsolutePosition();
 			getPosRotMatrix().setTranslation(m_attachment_position);
 			//setPitchYawRoll(getPosRotMatrix(), m_attachment_rotation);
 			// use Irrlicht eulers instead
 			getPosRotMatrix().setRotationDegrees(m_attachment_rotation);
-			m_matrixnode->updateAbsolutePosition();
 		}
 	}
 }

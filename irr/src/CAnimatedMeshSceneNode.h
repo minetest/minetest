@@ -117,15 +117,12 @@ public:
 	//! updates the absolute position based on the relative and the parents position
 	void updateAbsolutePosition() override;
 
-	//! Set the joint update mode (0-unused, 1-get joints only, 2-set joints only, 3-move and set)
-	void setJointMode(E_JOINT_UPDATE_ON_RENDER mode) override;
-
-	//! Sets the transition time in seconds (note: This needs to enable joints, and setJointmode maybe set to 2)
+	//! Sets the transition time in seconds (note: This needs to enable joints)
 	//! you must call animateJoints(), or the mesh will not animate
 	void setTransitionTime(f32 Time) override;
 
 	//! updates the joint positions of this mesh
-	void animateJoints(bool CalculateAbsolutePositions = true) override;
+	void animateJoints() override;
 
 	//! render mesh ignoring its transformation. Used with ragdolls. (culling is unaffected)
 	void setRenderFromIdentity(bool On) override;
@@ -158,8 +155,6 @@ private:
 	f32 Transiting;      // is mesh transiting (plus cache of TransitionTime)
 	f32 TransitingBlend; // 0-1, calculated on buildFrameNr
 
-	// 0-unused, 1-get joints only, 2-set joints only, 3-move and set
-	E_JOINT_UPDATE_ON_RENDER JointMode;
 	bool JointsUsed;
 
 	bool Looping;

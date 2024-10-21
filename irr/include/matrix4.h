@@ -835,7 +835,11 @@ inline CMatrix4<T> &CMatrix4<T>::setRotationRadians(const vector3d<T> &rotation)
 //! Returns a rotation which (mostly) works in combination with the given scale
 /**
 This code was originally written by by Chev (assuming no scaling back then,
-we can be blamed for all problems added by regarding scale)
+we can be blamed for all problems added by regarding scale).
+It is likely subtly broken.
+You should not need to use this: Instead of extracting a rotation from a matrix,
+you should be storing the transformation (translation, rotation, scale)
+and computing the matrix from the that on demand.
 */
 template <class T>
 inline core::vector3d<T> CMatrix4<T>::getRotationDegrees(const vector3d<T> &scale_) const

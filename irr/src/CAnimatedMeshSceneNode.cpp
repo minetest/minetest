@@ -34,7 +34,7 @@ CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh *mesh,
 		StartFrame(0), EndFrame(0), FramesPerSecond(0.025f),
 		CurrentFrameNr(0.f), LastTimeMs(0),
 		TransitionTime(0), Transiting(0.f), TransitingBlend(0.f),
-		JointMode(EJUOR_NONE), JointsUsed(false),
+		JointsUsed(false),
 		Looping(true), ReadOnlyMaterials(false), RenderFromIdentity(false),
 		LoopCallBack(0), PassCount(0)
 {
@@ -167,28 +167,11 @@ IMesh *CAnimatedMeshSceneNode::getMeshForCurrentFrame()
 
 		CSkinnedMesh *skinnedMesh = static_cast<CSkinnedMesh *>(Mesh);
 
-		if (JointMode == EJUOR_CONTROL) // write to mesh
-			skinnedMesh->transferJointsToMesh(JointChildSceneNodes);
-		else
-			skinnedMesh->animateMesh(getFrameNr(), 1.0f);
+		skinnedMesh->transferJointsToMesh(JointChildSceneNodes);
 
 		// Update the skinned mesh for the current joint transforms.
 		skinnedMesh->skinMesh();
-
-		if (JointMode == EJUOR_READ) { // read from mesh
-			skinnedMesh->recoverJointsFromMesh(JointChildSceneNodes);
-
-			//---slow---
-			for (u32 n = 0; n < JointChildSceneNodes.size(); ++n)
-				if (JointChildSceneNodes[n]->getParent() == this) {
-					JointChildSceneNodes[n]->updateAbsolutePositionOfAllChildren(); // temp, should be an option
-				}
-		}
-
-		if (JointMode == EJUOR_CONTROL) {
-			// For meshes other than EJUOR_CONTROL, this is done by calling animateMesh()
-			skinnedMesh->updateBoundingBox();
-		}
+		skinnedMesh->updateBoundingBox();
 
 		return skinnedMesh;
 	}
@@ -204,6 +187,10 @@ void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 	// set CurrentFrameNr
 	buildFrameNr(timeMs - LastTimeMs);
 	LastTimeMs = timeMs;
+
+	// This needs to be done on animate, which is called recursively *before*
+	// anything is rendered so that the transformations of children are up to date
+	animateJoints();
 
 	IAnimatedMeshSceneNode::OnAnimate(timeMs);
 }
@@ -562,14 +549,7 @@ void CAnimatedMeshSceneNode::updateAbsolutePosition()
 	IAnimatedMeshSceneNode::updateAbsolutePosition();
 }
 
-//! Set the joint update mode (0-unused, 1-get joints only, 2-set joints only, 3-move and set)
-void CAnimatedMeshSceneNode::setJointMode(E_JOINT_UPDATE_ON_RENDER mode)
-{
-	checkJoints();
-	JointMode = mode;
-}
-
-//! Sets the transition time in seconds (note: This needs to enable joints, and setJointmode maybe set to 2)
+//! Sets the transition time in seconds (note: This needs to enable joints)
 //! you must call animateJoints(), or the mesh will not animate
 void CAnimatedMeshSceneNode::setTransitionTime(f32 time)
 {
@@ -577,10 +557,6 @@ void CAnimatedMeshSceneNode::setTransitionTime(f32 time)
 	if (TransitionTime == ttime)
 		return;
 	TransitionTime = ttime;
-	if (ttime != 0)
-		setJointMode(EJUOR_CONTROL);
-	else
-		setJointMode(EJUOR_NONE);
 }
 
 //! render mesh ignoring its transformation. Used with ragdolls. (culling is unaffected)
@@ -590,7 +566,7 @@ void CAnimatedMeshSceneNode::setRenderFromIdentity(bool enable)
 }
 
 //! updates the joint positions of this mesh
-void CAnimatedMeshSceneNode::animateJoints(bool CalculateAbsolutePositions)
+void CAnimatedMeshSceneNode::animateJoints()
 {
 	if (Mesh && Mesh->getMeshType() == EAMT_SKINNED) {
 		checkJoints();
@@ -598,7 +574,6 @@ void CAnimatedMeshSceneNode::animateJoints(bool CalculateAbsolutePositions)
 
 		CSkinnedMesh *skinnedMesh = static_cast<CSkinnedMesh *>(Mesh);
 
-		skinnedMesh->transferOnlyJointsHintsToMesh(JointChildSceneNodes);
 		skinnedMesh->animateMesh(frame, 1.0f);
 		skinnedMesh->recoverJointsFromMesh(JointChildSceneNodes);
 
@@ -646,15 +621,6 @@ void CAnimatedMeshSceneNode::animateJoints(bool CalculateAbsolutePositions)
 				//			TransitingBlend));
 			}
 		}
-
-		if (CalculateAbsolutePositions) {
-			//---slow---
-			for (u32 n = 0; n < JointChildSceneNodes.size(); ++n) {
-				if (JointChildSceneNodes[n]->getParent() == this) {
-					JointChildSceneNodes[n]->updateAbsolutePositionOfAllChildren(); // temp, should be an option
-				}
-			}
-		}
 	}
 }
 
@@ -675,7 +641,6 @@ void CAnimatedMeshSceneNode::checkJoints()
 		((CSkinnedMesh *)Mesh)->recoverJointsFromMesh(JointChildSceneNodes);
 
 		JointsUsed = true;
-		JointMode = EJUOR_READ;
 	}
 }
 
@@ -729,7 +694,6 @@ ISceneNode *CAnimatedMeshSceneNode::clone(ISceneNode *newParent, ISceneManager *
 	newNode->EndFrame = EndFrame;
 	newNode->FramesPerSecond = FramesPerSecond;
 	newNode->CurrentFrameNr = CurrentFrameNr;
-	newNode->JointMode = JointMode;
 	newNode->JointsUsed = JointsUsed;
 	newNode->TransitionTime = TransitionTime;
 	newNode->Transiting = Transiting;

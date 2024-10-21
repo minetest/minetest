@@ -59,30 +59,13 @@ core::matrix4 CBoneSceneNode::getRelativeTransformation() const
 
 void CBoneSceneNode::OnAnimate(u32 timeMs)
 {
-	if (IsVisible) {
-		// update absolute position
-		// updateAbsolutePosition();
+	if (!IsVisible && Children.empty())
+		return;
 
-		// perform the post render process on all children
-		ISceneNodeList::iterator it = Children.begin();
-		for (; it != Children.end(); ++it)
-			(*it)->OnAnimate(timeMs);
-	}
-}
+	updateAbsolutePosition();
 
-void CBoneSceneNode::helper_updateAbsolutePositionOfAllChildren(ISceneNode *Node)
-{
-	Node->updateAbsolutePosition();
-
-	ISceneNodeList::const_iterator it = Node->getChildren().begin();
-	for (; it != Node->getChildren().end(); ++it) {
-		helper_updateAbsolutePositionOfAllChildren((*it));
-	}
-}
-
-void CBoneSceneNode::updateAbsolutePositionOfAllChildren()
-{
-	helper_updateAbsolutePositionOfAllChildren(this);
+	for (auto *child : Children)
+		child->OnAnimate(timeMs);
 }
 
 } // namespace scene

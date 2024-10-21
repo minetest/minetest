@@ -7,7 +7,9 @@
 #include "CBoneSceneNode.h"
 #include "IAnimatedMeshSceneNode.h"
 #include "SSkinMeshBuffer.h"
+#include "irrMath.h"
 #include "os.h"
+#include "vector3d.h"
 
 namespace
 {
@@ -151,8 +153,8 @@ IMesh *CSkinnedMesh::getMesh(f32 frame)
 //! blend: {0-old position, 1-New position}
 void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 {
-	if (!HasAnimation || LastAnimatedFrame == frame)
-		return;
+	// if (!HasAnimation || LastAnimatedFrame == frame)
+	//	return; // TODO sus
 
 	LastAnimatedFrame = frame;
 	SkinnedLastFrame = false;
@@ -182,7 +184,7 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 		if (blend == 1.0f) {
 			// No blending needed
 			joint->Animatedposition = position;
-			joint->Animatedscale = scale;
+			joint->Animatedscale = scale;			
 			joint->Animatedrotation = rotation;
 		} else {
 			// Blend animation
@@ -196,11 +198,7 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 	// LocalAnimatedMatrix needs to be built at some point, but this function may be called lots of times for
 	// one render (to play two animations at the same time) LocalAnimatedMatrix only needs to be built once.
 	// a call to buildAllLocalAnimatedMatrices is needed before skinning the mesh, and before the user gets the joints to move
-
-	//----------------
-	// Temp!
 	buildAllLocalAnimatedMatrices();
-	//-----------------
 
 	updateBoundingBox();
 }
@@ -306,7 +304,7 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *joint,
 			foundPositionIndex = -1;
 
 			// Test the Hints...
-			if (positionHint >= 0 && (u32)positionHint < PositionKeys.size()) {
+			/* if (positionHint >= 0 && (u32)positionHint < PositionKeys.size()) {
 				// check this hint
 				if (positionHint > 0 && PositionKeys[positionHint].frame >= frame && PositionKeys[positionHint - 1].frame < frame)
 					foundPositionIndex = positionHint;
@@ -318,7 +316,7 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *joint,
 						foundPositionIndex = positionHint;
 					}
 				}
-			}
+			} */
 
 			// The hint test failed, do a full scan...
 			if (foundPositionIndex == -1) {
@@ -352,7 +350,7 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *joint,
 			foundScaleIndex = -1;
 
 			// Test the Hints...
-			if (scaleHint >= 0 && (u32)scaleHint < ScaleKeys.size()) {
+			/* if (scaleHint >= 0 && (u32)scaleHint < ScaleKeys.size()) {
 				// check this hint
 				if (scaleHint > 0 && ScaleKeys[scaleHint].frame >= frame && ScaleKeys[scaleHint - 1].frame < frame)
 					foundScaleIndex = scaleHint;
@@ -364,7 +362,7 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *joint,
 						foundScaleIndex = scaleHint;
 					}
 				}
-			}
+			} */
 
 			// The hint test failed, do a full scan...
 			if (foundScaleIndex == -1) {
@@ -398,7 +396,7 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *joint,
 			foundRotationIndex = -1;
 
 			// Test the Hints...
-			if (rotationHint >= 0 && (u32)rotationHint < RotationKeys.size()) {
+			/* if (rotationHint >= 0 && (u32)rotationHint < RotationKeys.size()) {
 				// check this hint
 				if (rotationHint > 0 && RotationKeys[rotationHint].frame >= frame && RotationKeys[rotationHint - 1].frame < frame)
 					foundRotationIndex = rotationHint;
@@ -410,7 +408,7 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *joint,
 						foundRotationIndex = rotationHint;
 					}
 				}
-			}
+			} */
 
 			// The hint test failed, do a full scan...
 			if (foundRotationIndex == -1) {
@@ -455,8 +453,8 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *joint,
 //! Preforms a software skin on this mesh based of joint positions
 void CSkinnedMesh::skinMesh()
 {
-	if (!HasAnimation || SkinnedLastFrame)
-		return;
+	// if (!HasAnimation || SkinnedLastFrame)
+	//	return;
 
 	//----------------
 	// This is marked as "Temp!".  A shiny dubloon to whomever can tell me why.
@@ -1181,9 +1179,13 @@ void CSkinnedMesh::recoverJointsFromMesh(core::array<IBoneSceneNode *> &jointChi
 	for (u32 i = 0; i < AllJoints.size(); ++i) {
 		IBoneSceneNode *node = jointChildSceneNodes[i];
 		SJoint *joint = AllJoints[i];
-		node->setPosition(joint->LocalAnimatedMatrix.getTranslation());
-		node->setRotation(joint->LocalAnimatedMatrix.getRotationDegrees());
-		node->setScale(joint->LocalAnimatedMatrix.getScale());
+		node->setPosition(joint->Animatedposition);
+		core::vector3df euler;
+		core::quaternion rot = joint->Animatedrotation;
+		rot.makeInverse();
+		rot.toEuler(euler);
+		node->setRotation(core::RADTODEG * euler);
+		node->setScale(joint->Animatedscale);
 
 		node->positionHint = joint->positionHint;
 		node->scaleHint = joint->scaleHint;

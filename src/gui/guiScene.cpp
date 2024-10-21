@@ -44,7 +44,6 @@ scene::IAnimatedMeshSceneNode *GUIScene::setMesh(scene::IAnimatedMesh *mesh)
 
 	m_mesh = m_smgr->addAnimatedMeshSceneNode(mesh);
 	m_mesh->setPosition(-m_mesh->getBoundingBox().getCenter());
-	m_mesh->animateJoints();
 
 	return m_mesh;
 }
