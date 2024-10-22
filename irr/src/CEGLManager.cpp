@@ -40,32 +40,26 @@ bool CEGLManager::initialize(const SIrrlichtCreationParameters &params, const SE
 	if (EglWindow != 0 && EglDisplay != EGL_NO_DISPLAY)
 		return true;
 
-		// Window is depend on platform.
+	// Window is depend on platform.
+	setWindow(Data);
 #if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
-	EglWindow = (NativeWindowType)Data.OpenGLWin32.HWnd;
-	Data.OpenGLWin32.HDc = GetDC((HWND)EglWindow);
 	EglDisplay = eglGetDisplay((NativeDisplayType)Data.OpenGLWin32.HDc);
 #elif defined(_IRR_EMSCRIPTEN_PLATFORM_)
-	EglWindow = 0;
 	EglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
-	EglWindow = (NativeWindowType)Data.OpenGLLinux.X11Window;
 	EglDisplay = eglGetDisplay((NativeDisplayType)Data.OpenGLLinux.X11Display);
-#elif defined(_IRR_COMPILE_WITH_FB_DEVICE_)
-	EglWindow = (NativeWindowType)Data.OpenGLFB.Window;
-	EglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 #endif
 
 	// We must check if EGL display is valid.
 	if (EglDisplay == EGL_NO_DISPLAY) {
-		os::Printer::log("Could not get EGL display.");
+		os::Printer::log("Could not get EGL display.", ELL_ERROR);
 		terminate();
 		return false;
 	}
 
 	// Initialize EGL here.
 	if (!eglInitialize(EglDisplay, &MajorVersion, &MinorVersion)) {
-		os::Printer::log("Could not initialize EGL display.");
+		os::Printer::log("Could not initialize EGL display.", ELL_ERROR);
 
 		EglDisplay = EGL_NO_DISPLAY;
 		terminate();
@@ -74,6 +68,22 @@ bool CEGLManager::initialize(const SIrrlichtCreationParameters &params, const SE
 		os::Printer::log("EGL version", core::stringc(MajorVersion + (MinorVersion * 0.1f)).c_str());
 
 	return true;
+}
+
+void CEGLManager::setWindow(const SExposedVideoData &inData)
+{
+#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
+	Data.OpenGLWin32.HWnd = inData.OpenGLWin32.HWnd;
+	if (Data.OpenGLWin32.HWnd) {
+		EglWindow = (NativeWindowType)Data.OpenGLWin32.HWnd;
+		Data.OpenGLWin32.HDc = GetDC((HWND)EglWindow);
+	}
+#elif defined(_IRR_EMSCRIPTEN_PLATFORM_)
+	EglWindow = 0;
+#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
+	Data.OpenGLLinux.X11Window = inData.OpenGLLinux.X11Window;
+	EglWindow = (NativeWindowType)Data.OpenGLLinux.X11Window;
+#endif
 }
 
 void CEGLManager::terminate()
@@ -108,20 +118,16 @@ bool CEGLManager::generateSurface()
 	if (EglSurface != EGL_NO_SURFACE)
 		return true;
 
-		// We should assign new WindowID on platforms, where WindowID may change at runtime,
-		// at this time only Android support this feature.
-		// this needs an update method instead!
-
+	if (!EglConfig) {
 #if defined(_IRR_EMSCRIPTEN_PLATFORM_)
-	// eglChooseConfig is currently only implemented as stub in emscripten (version 1.37.22 at point of writing)
-	// But the other solution would also be fine as it also only generates a single context so there is not much to choose from.
-	EglConfig = chooseConfig(ECS_IRR_CHOOSE);
+		EglConfig = chooseConfig(ECS_IRR_CHOOSE);
 #else
-	EglConfig = chooseConfig(ECS_EGL_CHOOSE_FIRST_LOWER_EXPECTATIONS);
+		EglConfig = chooseConfig(ECS_EGL_CHOOSE_FIRST_LOWER_EXPECTATIONS);
 #endif
+	}
 
-	if (EglConfig == 0) {
-		os::Printer::log("Could not get config for EGL display.");
+	if (!EglConfig) {
+		os::Printer::log("Could not choose EGL config.", ELL_ERROR);
 		return false;
 	}
 
@@ -132,17 +138,52 @@ bool CEGLManager::generateSurface()
 		EglSurface = eglCreateWindowSurface(EglDisplay, EglConfig, 0, 0);
 
 	if (EGL_NO_SURFACE == EglSurface)
-		os::Printer::log("Could not create EGL surface.");
+		os::Printer::log("Could not create EGL surface.", ELL_ERROR);
 
 #ifdef EGL_VERSION_1_2
-	if (MinorVersion > 1)
-		eglBindAPI(EGL_OPENGL_ES_API);
+	if (MinorVersion > 1) {
+		EGLBoolean ok = 0;
+		switch (Params.DriverType) {
+		case EDT_OGLES2:
+		case EDT_WEBGL1:
+			ok = eglBindAPI(EGL_OPENGL_ES_API);
+			break;
+		case EDT_OPENGL:
+			ok = eglBindAPI(EGL_OPENGL_API);
+		default:
+			break;
+		}
+		if (!ok) {
+			os::Printer::log("Could not bind EGL API.", ELL_ERROR);
+			return false;
+		}
+	}
 #endif
 
 	if (Params.Vsync)
 		eglSwapInterval(EglDisplay, 1);
 
 	return true;
+}
+
+EGLint CEGLManager::getNativeVisualID()
+{
+	if (!EglConfig) {
+#if defined(_IRR_EMSCRIPTEN_PLATFORM_)
+		EglConfig = chooseConfig(ECS_IRR_CHOOSE);
+#else
+		EglConfig = chooseConfig(ECS_EGL_CHOOSE_FIRST_LOWER_EXPECTATIONS);
+#endif
+	}
+
+	if (!EglConfig) {
+		os::Printer::log("Could not choose EGL config.", ELL_WARNING);
+		return 0;
+	}
+
+	EGLint ret = 0;
+	eglGetConfigAttrib(EglDisplay, EglConfig, EGL_NATIVE_VISUAL_ID, &ret);
+	return ret;
 }
 
 EGLConfig CEGLManager::chooseConfig(EConfigStyle confStyle)
@@ -156,6 +197,8 @@ EGLConfig CEGLManager::chooseConfig(EConfigStyle confStyle)
 	case EDT_WEBGL1:
 		eglOpenGLBIT = EGL_OPENGL_ES2_BIT;
 		break;
+	case EDT_OPENGL:
+		eglOpenGLBIT = EGL_OPENGL_BIT;
 	default:
 		break;
 	}
@@ -296,6 +339,8 @@ EGLConfig CEGLManager::chooseConfig(EConfigStyle confStyle)
 		}
 
 		delete[] configs;
+	} else {
+		_IRR_DEBUG_BREAK_IF(1)
 	}
 
 	return configResult;
@@ -453,32 +498,35 @@ bool CEGLManager::generateContext()
 	if (EglContext != EGL_NO_CONTEXT)
 		return true;
 
-	EGLint OpenGLESVersion = 0;
+	std::vector<EGLint> ContextAttrib;
 
 	switch (Params.DriverType) {
 	case EDT_OGLES2:
 	case EDT_WEBGL1:
-		OpenGLESVersion = 2;
+#ifdef EGL_VERSION_1_3
+		ContextAttrib.push_back(EGL_CONTEXT_CLIENT_VERSION);
+		ContextAttrib.push_back(2);
+#endif
+		break;
+	case EDT_OPENGL:
+#ifdef EGL_VERSION_1_5
+		ContextAttrib.push_back(EGL_CONTEXT_OPENGL_PROFILE_MASK);
+		ContextAttrib.push_back(EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT);
+#endif
 		break;
 	default:
 		break;
 	}
 
-	EGLint ContextAttrib[] = {
-#ifdef EGL_VERSION_1_3
-			EGL_CONTEXT_CLIENT_VERSION, OpenGLESVersion,
-#endif
-			EGL_NONE, 0,
-		};
+	ContextAttrib.push_back(EGL_NONE);
+	ContextAttrib.push_back(0);
 
-	EglContext = eglCreateContext(EglDisplay, EglConfig, EGL_NO_CONTEXT, ContextAttrib);
+	EglContext = eglCreateContext(EglDisplay, EglConfig, EGL_NO_CONTEXT, ContextAttrib.data());
 
 	if (testEGLError()) {
 		os::Printer::log("Could not create EGL context.", ELL_ERROR);
 		return false;
 	}
-
-	os::Printer::log("EGL context created with OpenGLESVersion: ", core::stringc((int)OpenGLESVersion), ELL_DEBUG);
 
 	return true;
 }
