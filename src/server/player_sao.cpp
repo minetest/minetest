@@ -504,7 +504,7 @@ u32 PlayerSAO::punch(v3f dir,
 	} else {
 		actionstream << "(none)";
 	}
-	actionstream << " puched " <<
+	actionstream << " punched " <<
 			getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
 			"), damage=" << (old_hp - (s32)getHP()) <<
 			(damage_handled ? " (handled by Lua)" : "") << std::endl;
