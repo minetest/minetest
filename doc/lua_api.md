@@ -9101,6 +9101,7 @@ Player properties need to be saved manually.
     -- Defines the maximum and default HP of the object
     -- For Lua entities the maximum is not enforced.
     -- For players this defaults to `core.PLAYER_MAX_HP_DEFAULT` (20).
+    -- For other entities this is overridden to a value of 10.
 
     breath_max = 0,
     -- Defines the maximum amount of "breath" for the object.
