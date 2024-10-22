@@ -269,7 +269,7 @@ Helper functions
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
 
-Luanti namespace reference
+'core' namespace reference
 --------------------------
 
 ### Utilities
