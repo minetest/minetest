@@ -261,7 +261,7 @@ install(FILES "doc/world_format.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
 install(FILES "minetest.conf.example" DESTINATION "${EXAMPLE_CONF_DIR}")
 
 if(UNIX AND NOT APPLE)
-	install(FILES "doc/minetest.6" "doc/minetestserver.6" DESTINATION "${MANDIR}/man6")
+	install(FILES "doc/luanti.6" "doc/luantiserver.6" DESTINATION "${MANDIR}/man6")
 	install(FILES "misc/net.minetest.minetest.desktop" DESTINATION "${XDG_APPS_DIR}")
 	install(FILES "misc/net.minetest.minetest.metainfo.xml" DESTINATION "${METAINFODIR}")
 	install(FILES "misc/luanti.svg" DESTINATION "${ICONDIR}/hicolor/scalable/apps")
