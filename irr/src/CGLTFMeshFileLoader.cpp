@@ -305,7 +305,7 @@ SelfType::createNormalizedValuesAccessor(
 	}
 }
 
-template <std::size_t N>
+template <std::size_t N, bool validate>
 std::array<f32, N> SelfType::getNormalizedValues(
 		const NormalizedValuesAccessor<N> &accessor,
 		const std::size_t i)
@@ -313,17 +313,19 @@ std::array<f32, N> SelfType::getNormalizedValues(
 	std::array<f32, N> values;
 	if (std::holds_alternative<Accessor<std::array<u8, N>>>(accessor)) {
 		const auto u8s = std::get<Accessor<std::array<u8, N>>>(accessor).get(i);
-		for (u8 i = 0; i < N; ++i)
-			values[i] = static_cast<f32>(u8s[i]) / std::numeric_limits<u8>::max();
+		for (u8 j = 0; j < N; ++j)
+			values[j] = static_cast<f32>(u8s[j]) / std::numeric_limits<u8>::max();
 	} else if (std::holds_alternative<Accessor<std::array<u16, N>>>(accessor)) {
 		const auto u16s = std::get<Accessor<std::array<u16, N>>>(accessor).get(i);
-		for (u8 i = 0; i < N; ++i)
-			values[i] = static_cast<f32>(u16s[i]) / std::numeric_limits<u16>::max();
+		for (u8 j = 0; j < N; ++j)
+			values[j] = static_cast<f32>(u16s[j]) / std::numeric_limits<u16>::max();
 	} else {
 		values = std::get<Accessor<std::array<f32, N>>>(accessor).get(i);
-		for (u8 i = 0; i < N; ++i) {
-			if (values[i] < 0 || values[i] > 1)
-				throw std::runtime_error("invalid normalized value");
+		if constexpr (validate) {
+			for (u8 j = 0; j < N; ++j) {
+				if (values[j] < 0 || values[j] > 1)
+					throw std::runtime_error("invalid normalized value");
+			}
 		}
 	}
 	return values;
@@ -493,6 +495,7 @@ void SelfType::MeshExtractor::addPrimitive(
 
 		const auto weightAccessor = createNormalizedValuesAccessor<4>(m_gltf_model, weights->at(set));
 
+		bool negative_weights = false;
 		for (std::size_t v = 0; v < n_vertices; ++v) {
 			std::array<u16, 4> jointIdxs;
 			if (std::holds_alternative<Accessor<std::array<u8, 4>>>(jointAccessor)) {
@@ -501,14 +504,18 @@ void SelfType::MeshExtractor::addPrimitive(
 			} else if (std::holds_alternative<Accessor<std::array<u16, 4>>>(jointAccessor)) {
 				jointIdxs = std::get<Accessor<std::array<u16, 4>>>(jointAccessor).get(v);
 			}
-			std::array<f32, 4> strengths = getNormalizedValues(weightAccessor, v);
+
+			// Be lax: We can allow weights that aren't normalized. Irrlicht already normalizes them.
+			// The glTF spec only requires that these be "as close to 1 as reasonably possible".
+			auto strengths = getNormalizedValues<4, false>(weightAccessor, v);
 
 			// 4 joints per set
 			for (std::size_t in_set = 0; in_set < 4; ++in_set) {
 				u16 jointIdx = jointIdxs[in_set];
 				f32 strength = strengths[in_set];
-				if (strength == 0)
-					continue;
+				negative_weights = negative_weights || (strength < 0);
+				if (strength <= 0)
+					continue; // note: also ignores negative weights
 
 				CSkinnedMesh::SWeight *weight = m_irr_model->addWeight(m_loaded_nodes.at(skin.joints.at(jointIdx)));
 				weight->buffer_id = meshbufNr;
@@ -516,6 +523,8 @@ void SelfType::MeshExtractor::addPrimitive(
 				weight->strength = strength;
 			}
 		}
+		if (negative_weights)
+			warn("negative weights");
 	}
 }
 

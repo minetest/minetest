@@ -91,7 +91,7 @@ private:
 			const tiniergltf::GlTF &model,
 			const std::size_t accessorIdx);
 
-	template <std::size_t N>
+	template <std::size_t N, bool validate = true>
 	static std::array<f32, N> getNormalizedValues(
 			const NormalizedValuesAccessor<N> &accessor,
 			const std::size_t i);
@@ -118,7 +118,7 @@ private:
 		std::size_t getPrimitiveCount(const std::size_t meshIdx) const;
 
 		void load();
-		const std::vector<std::string> &getWarnings() {
+		const std::unordered_set<std::string> &getWarnings() {
 			return warnings;
 		}
 
@@ -129,9 +129,9 @@ private:
 		std::vector<std::function<void()>> m_mesh_loaders;
 		std::vector<CSkinnedMesh::SJoint *> m_loaded_nodes;
 
-		std::vector<std::string> warnings;
+		std::unordered_set<std::string> warnings;
 		void warn(const std::string &warning) {
-			warnings.push_back(warning);
+			warnings.insert(warning);
 		}
 
 		void copyPositions(const std::size_t accessorIdx,
