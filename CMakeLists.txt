@@ -307,7 +307,7 @@ include(CPackComponent)
 
 cpack_add_component(Docs
 	DISPLAY_NAME "Documentation"
-	DESCRIPTION "Documentation about Minetest and Minetest modding"
+	DESCRIPTION "Documentation about ${PROJECT_NAME_CAPITALIZED} and ${PROJECT_NAME_CAPITALIZED} modding"
 )
 
 if(WIN32)
