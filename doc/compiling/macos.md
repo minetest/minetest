@@ -85,7 +85,7 @@ If you are using LuaJIT with `MAP_JIT` support add `-DXCODE_CODE_SIGN_ENTITLEMEN
 ### Build and Run
 
 * Open generated Xcode project
-* Select schemae `minetest`
+* Select scheme `minetest`
 * Configure signing Team etc.
 * Run Build command
 * Open application from `build/build/Debug/` directory or run it from Xcode
@@ -93,7 +93,7 @@ If you are using LuaJIT with `MAP_JIT` support add `-DXCODE_CODE_SIGN_ENTITLEMEN
 ### Archive and Run
 
 * Open generated Xcode project
-* Select schemae `minetest`
+* Select scheme `minetest`
 * Configure signing Team etc.
 * Run Build command
 * Open application archive in finder, go into it, copy application and test it.
