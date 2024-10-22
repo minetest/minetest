@@ -663,7 +663,7 @@ bool PlayerSAO::checkMovementCheat()
 		NOTE: Actually the server should handle player physics like the
 		client does and compare player's position to what is calculated
 		on our side. This is required when eg. players fly due to an
-		explosion. Altough a node-based alternative might be possible
+		explosion. Although a node-based alternative might be possible
 		too, and much more lightweight.
 	*/
 
