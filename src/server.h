@@ -50,9 +50,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <shared_mutex>
 #include <condition_variable>
 
-// U+001B is the Escape character needed for color codes
-#define CHAT_DISALLOWED_CHARS L"\n\r\x1b"
-
 class ChatEvent;
 struct ChatEventChat;
 struct ChatInterface;
