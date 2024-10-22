@@ -7604,9 +7604,11 @@ Global objects
 --------------
 
 * `core.env`: `EnvRef` of the server environment and world.
-    * Any function in the core namespace can be called using the syntax
+    * Any function in the `core` namespace can be called using the syntax
       `core.env:somefunction(somearguments)`
       instead of `core.somefunction(somearguments)`
+    * Deprecated, but support is not to be dropped soon
+* `minetest`: alias for the `core` namespace
     * Deprecated, but support is not to be dropped soon
 
 Global tables
