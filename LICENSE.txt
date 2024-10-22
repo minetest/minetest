@@ -1,8 +1,8 @@
 
-License of Minetest textures and sounds
+License of Luanti textures and sounds
 ---------------------------------------
 
-This applies to textures and sounds contained in the main Minetest
+This applies to textures and sounds contained in the main Luanti
 distribution.
 
 Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
@@ -91,11 +91,12 @@ grorp:
     using the font "undefined medium" (https://undefined-medium.com/),
     which is licensed under the SIL Open Font License, Version 1.1
 
-License of Minetest source code
+License of Luanti source code
 -------------------------------
 
-Minetest
-Copyright (C) 2010-2018 celeron55, Perttu Ahola <celeron55@gmail.com>
+Luanti
+Copyright (C) 2010-2024 celeron55, Perttu Ahola <celeron55@gmail.com>
+and contributors (see source file comments and the version control log)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -114,7 +115,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 Irrlicht
 ---------------
 
-This program uses IrrlichtMt, Minetest's fork of
+This program uses IrrlichtMt, Luanti's fork of
 the Irrlicht Engine. http://irrlicht.sourceforge.net/
 
  The Irrlicht Engine License
