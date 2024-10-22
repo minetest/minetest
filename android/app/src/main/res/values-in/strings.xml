@@ -1,2 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="no_web_browser">Tidak ada peramban web yang ditemukan</string>
+    <string name="ime_dialog_done">Selesai</string>
+    <string name="label">Minetest</string>
+    <string name="loading">Memuat…</string>
+    <string name="notification_channel_name">Notifikasi umum</string>
+    <string name="unzip_notification_description">Kurang dari 1 menit…</string>
+    <string name="notification_channel_description">Notifikasi dari Minetest</string>
+    <string name="unzip_notification_title">Memuat Minetest…</string>
+</resources>
