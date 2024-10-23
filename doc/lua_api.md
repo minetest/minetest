@@ -2920,6 +2920,7 @@ Elements
 ### `tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>;<fontcolor>]`
 
 * Adds tooltip for an element
+* It has to be declared *after* the element that is bound to
 * `bgcolor` tooltip background color as `ColorString` (optional)
 * `fontcolor` tooltip font color as `ColorString` (optional)
 
@@ -2928,6 +2929,25 @@ Elements
 * Adds tooltip for an area. Other tooltips will take priority when present.
 * `bgcolor` tooltip background color as `ColorString` (optional)
 * `fontcolor` tooltip font color as `ColorString` (optional)
+
+### `supertip[<gui_element_name>;<staticPos>;<width>;<name>;<text>]`
+
+* Adds an advanced tooltip for an element. Displays a formatted text using
+  `Markup Language` in a tooltip.
+* This supertip has to be declared *after* the element that is bound to.
+* `staticPos` is an optional position of the form `posX,posY` in formspec coordinates.
+  If specified, the tooltip will always appear at these given formspec coordinates.
+  If this field is empty, the tooltip will follow the cursor.
+* `width` sets the tooltip width (in typographical 'em' units of the default font style).
+* `name` is the name of the field.
+* `text` is the formatted text using `Markup Language` described below.
+
+### `supertip[<X>,<Y>;<W>,<H>;<staticPos>;<width>;<name>;<text>]`
+
+* Adds an advanced tooltip for an area. Displays a formatted text using
+  `Markup Language` in a tooltip.
+* `X`, `Y`, `W` and `H` set the cursor hover area that allows the tooltip to pop-up.
+* `staticPos`, `width`, `name`, `text`: See above.
 
 ### `image[<X>,<Y>;<W>,<H>;<texture name>;<middle>]`
 
@@ -3489,6 +3509,7 @@ Some types may inherit styles from parent types.
 * model
 * pwdfield, inherits from field
 * scrollbar
+* supertip
 * tabheader
 * table
 * textarea
@@ -3589,6 +3610,12 @@ Some types may inherit styles from parent types.
     * sound - a sound to be played when triggered.
 * scrollbar
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* supertip
+    * bgcolor - color, sets background color.
+    * border - boolean, draw border. Set to false to hide the bevelled tooltip pane. Default true.
+    * bgimg - standard background image. Defaults to none.
+    * bgimg_middle - Makes the bgimg textures render in 9-sliced mode and defines the middle rect.
+                     See background9[] documentation for more details.
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * sound - a sound to be played when a different tab is selected.
