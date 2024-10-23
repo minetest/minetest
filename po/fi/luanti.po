@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2022-09-07 21:01+0000\n"
-"Last-Translator: Hraponssi <hraponssi@gmail.com>\n"
+"PO-Revision-Date: 2024-10-24 18:15+0000\n"
+"Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/minetest/"
 "minetest/fi/>\n"
 "Language: fi\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.1-dev\n"
+"X-Generator: Weblate 5.8.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -137,12 +137,11 @@ msgstr "Tuemme protokollaversioita välillä $1 ja $2."
 
 #: builtin/mainmenu/content/contentdb.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Virhe asentaessa \"$1\": $2"
 
 #: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "Epäonnistui ladata $1"
+msgstr "Kohteen \"$1\" lataaminen epäonnistui"
 
 #: builtin/mainmenu/content/contentdb.lua
 msgid "Failed to download $1"
@@ -228,7 +227,7 @@ msgstr "Tekstuuripaketit"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "The package $1 was not found."
-msgstr ""
+msgstr "Pakettia $1 ei löytynyt."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
 msgid "Uninstall"
@@ -248,7 +247,7 @@ msgstr "Katso lisätietoja verkkoselaimessa"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "Sinun tulee asentaa peli, ennen kuin voit asentaa modin"
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "$1 and $2 dependencies will be installed."
@@ -668,7 +667,7 @@ msgstr "Rekisteröidy"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr ""
+msgstr "Hylkää"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -688,9 +687,8 @@ msgid "Minetest Game is no longer installed by default"
 msgstr ""
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
-#, fuzzy
 msgid "Reinstall Minetest Game"
-msgstr "Asenna toinen peli"
+msgstr "Asenna Minetest Game uudelleen"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -766,7 +764,7 @@ msgstr "Valitse tiedosto"
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Set"
-msgstr ""
+msgstr "Aseta"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "(No description of setting given)"
@@ -835,16 +833,15 @@ msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
-msgstr ""
+msgstr "(Käytä järjestelmän kieltä)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Accessibility"
-msgstr ""
+msgstr "Esteettömyys"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Back"
-msgstr "Taakse"
+msgstr "Takaisin"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
@@ -862,20 +859,19 @@ msgstr "Ohjaimet"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "Yleiset"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Movement"
-msgstr ""
+msgstr "Liikkuminen"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Reset setting to default"
-msgstr "Palauta oletus"
+msgstr "Palauta oletusarvoon"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
-msgstr ""
+msgstr "Palauta oletusarvoon ($1)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
@@ -883,7 +879,7 @@ msgstr "Etsi"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
-msgstr ""
+msgstr "Näytä lisäasetukset"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
@@ -989,18 +985,16 @@ msgid "Browse online content"
 msgstr "Selaa sisältöä verkossa"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Browse online content [$1]"
-msgstr "Selaa sisältöä verkossa"
+msgstr "Selaa sisältöä verkossa [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
 msgstr "Sisältö"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content [$1]"
-msgstr "Sisältö"
+msgstr "Sisältö [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
@@ -1065,13 +1059,15 @@ msgstr "Asenna pelejä ContentDB:stä"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Minetest doesn't come with a game by default."
-msgstr ""
+msgstr "Minetest ei sisällä oletuksena peliä."
 
 #: builtin/mainmenu/tab_local.lua
 msgid ""
 "Minetest is a game-creation platform that allows you to play many different "
 "games."
 msgstr ""
+"Minetest on pelinluontialusta, joka mahdollistaa monien erilaisten pelien "
+"pelaamisen."
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -1107,7 +1103,7 @@ msgstr "Aloita peli"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "You need to install a game before you can create a world."
-msgstr ""
+msgstr "Sinun tulee asentaa peli, ennen kuin voit luoda maailman."
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -2590,13 +2586,12 @@ msgid "Builtin"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Camera"
-msgstr "Vaihda kameraa"
+msgstr "Kamera"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
-msgstr ""
+msgstr "Kameran sulavoittaminen"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
@@ -2663,7 +2658,7 @@ msgstr "Chat-komennnot"
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
-msgstr ""
+msgstr "Keskustelun fontin koko"
 
 #: src/settings_translation_file.cpp
 msgid "Chat log level"
@@ -2745,7 +2740,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
-msgstr ""
+msgstr "Pilvet valikossa"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
@@ -2826,7 +2821,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Content Repository"
-msgstr ""
+msgstr "Sisällön tietovarasto"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
@@ -3164,9 +3159,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Post Processing"
-msgstr "Käytä konsoli-ikkunaa"
+msgstr "Ota jälkikäsittely käyttöön"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
@@ -3238,9 +3232,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable touchscreen"
-msgstr "Koko näyttö"
+msgstr "Ota kosketusnäyttö käyttöön"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3464,7 +3457,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
-msgstr ""
+msgstr "Fontin koko"
 
 #: src/settings_translation_file.cpp
 msgid "Font size divisible by"
@@ -3504,7 +3497,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
-msgstr ""
+msgstr "Kuvakaappausten muoto."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Color"
@@ -3931,7 +3924,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr ""
+msgstr "Käänteinen hiiri"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse wheel (scroll) direction for item selection in hotbar."
@@ -4040,7 +4033,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Keyboard and Mouse"
-msgstr ""
+msgstr "Näppäimistö ja hiiri"
 
 #: src/settings_translation_file.cpp
 msgid "Kick players who sent more than X messages per 10 seconds."
@@ -4805,7 +4798,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
-msgstr ""
+msgstr "Keskeytä jos ikkunan kohdistus katoaa"
 
 #: src/settings_translation_file.cpp
 msgid "Per-player limit of queued blocks load from disk"
@@ -4833,7 +4826,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Post Processing"
-msgstr ""
+msgstr "Jälkikäsittely"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4914,9 +4907,8 @@ msgid "Regular font path"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Remember screen size"
-msgstr "Tallenna näytön koko automaattisesti"
+msgstr "Muista näytön koko"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
@@ -5037,9 +5029,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screen"
-msgstr "Näyttö:"
+msgstr "Näyttö"
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
@@ -5069,9 +5060,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshots"
-msgstr "Kuvakaappaus"
+msgstr "Kuvakaappaukset"
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
@@ -5572,7 +5562,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
-msgstr ""
+msgstr "Sisällön tietovaraston URL-osoite"
 
 #: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
@@ -5750,22 +5740,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
-msgstr ""
+msgstr "Työkaluvihjeen viive"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen"
-msgstr "Koko näyttö"
+msgstr "Kosketusnäyttö"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen sensitivity"
-msgstr "Hiiren herkkyys"
+msgstr "Kosketusnäytön herkkyys"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen sensitivity multiplier."
-msgstr "Hiiren herkkyys"
+msgstr "Kosketusnäytön herkkyyden kerroin."
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
@@ -5994,7 +5981,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
-msgstr ""
+msgstr "Äänenvoimakkuus"
 
 #: src/settings_translation_file.cpp
 msgid "Volume multiplier when the window is unfocused."
@@ -6008,7 +5995,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Volume when unfocused"
-msgstr ""
+msgstr "Äänenvoimakkuus kun ei kohdistettu"
 
 #: src/settings_translation_file.cpp
 msgid "Volumetric lighting"
@@ -6120,7 +6107,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether the window is maximized."
-msgstr ""
+msgstr "Onko ikkuna suurennettu."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6155,7 +6142,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Window maximized"
-msgstr ""
+msgstr "Suurennettu ikkuna"
 
 #: src/settings_translation_file.cpp
 msgid ""
