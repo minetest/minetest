@@ -253,6 +253,7 @@ static bool add_area_node_boxes(const v3s16 min, const v3s16 max, IGameDef *game
 
 			// Calculate float position only once
 			v3f posf = intToFloat(p, BS);
+			cinfo.reserve(nodeboxes.size());
 			for (auto box : nodeboxes) {
 				box.MinEdge += posf;
 				box.MaxEdge += posf;

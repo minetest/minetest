@@ -45,6 +45,7 @@ const std::vector<v3s16> &FacePositionCache::generateFacePosition(u16 d)
 	}
 	if (d == 1) {
 		// This is an optimized sequence of coordinates.
+		c.reserve(26);
 		c.emplace_back(0, 1, 0); // Top
 		c.emplace_back(0, 0, 1); // Back
 		c.emplace_back(-1, 0, 0); // Left
@@ -80,7 +81,8 @@ const std::vector<v3s16> &FacePositionCache::generateFacePosition(u16 d)
 	// Take blocks in all sides, starting from y=0 and going +-y
 	for (s16 y = 0; y <= d - 1; y++) {
 		// Left and right side, including borders
-		for (s16 z =- d; z <= d; z++) {
+		c.reserve(((d * 2) + 1) * 2); // formula ((d - (-d)) + 1) * 2
+		for (s16 z = -d; z <= d; z++) { // + 1 it condition in for loop <=, mul by 2 because 2pcs emplace without (y != 0)
 			c.emplace_back(d, y, z);
 			c.emplace_back(-d, y, z);
 			if (y != 0) {
@@ -89,7 +91,8 @@ const std::vector<v3s16> &FacePositionCache::generateFacePosition(u16 d)
 			}
 		}
 		// Back and front side, excluding borders
-		for (s16 x = -d + 1; x <= d - 1; x++) {
+		c.reserve(((d * 2) + 1) * 2);         // formula (((d - 1) - (-d + 1)) + 1) * 2
+		for (s16 x = -d + 1; x <= d - 1; x++) { // + 1 it condition in for loop <=, mul by 2 because 2pcs emplace without (y != 0)
 			c.emplace_back(x, y, d);
 			c.emplace_back(x, y, -d);
 			if (y != 0) {
@@ -101,7 +104,8 @@ const std::vector<v3s16> &FacePositionCache::generateFacePosition(u16 d)
 
 	// Take the bottom and top face with borders
 	// -d < x < d, y = +-d, -d < z < d
-	for (s16 x = -d; x <= d; x++)
+	c.reserve((((d * 2) + 1) * ((d * 2) + 1)) * 2); // formula (((d - (-d)) + 1) * (d - (-d)) + 1)) * 2
+	for (s16 x = -d; x <= d; x++)                     // + 1 it condition in for loop <=, mul by 2 because 2pcs emplace
 	for (s16 z = -d; z <= d; z++) {
 		c.emplace_back(x, -d, z);
 		c.emplace_back(x, d, z);
