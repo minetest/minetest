@@ -158,7 +158,7 @@ if(ENABLE_OPENGL)
 	if(DEVICE STREQUAL "WINDOWS")
 		add_definitions(-D_IRR_COMPILE_WITH_WGL_MANAGER_)
 	elseif(DEVICE STREQUAL "X11")
-		add_definitions(-D_IRR_COMPILE_WITH_EGL_MANAGER_)
+		add_definitions(-D_IRR_COMPILE_WITH_GLX_MANAGER_)
 	elseif(DEVICE STREQUAL "OSX")
 		add_definitions(-D_IRR_COMPILE_WITH_NSOGL_MANAGER_)
 	endif()
@@ -213,15 +213,7 @@ if(ENABLE_GLES2)
 	find_package(OpenGLES2 REQUIRED)
 endif()
 if(ENABLE_OPENGL)
-	if(DEVICE STREQUAL "X11")
-		# use components so we can grab EGL
-		find_package(OpenGL REQUIRED COMPONENTS EGL OpenGL)
-		set(OPENGL_LIBRARIES OpenGL::GL)
-		set(EGL_INCLUDE_DIR OpenGL::EGL)
-		set(EGL_LIBRARY OpenGL::EGL)
-	else()
-		find_package(OpenGL REQUIRED)
-	endif()
+	find_package(OpenGL REQUIRED)
 endif()
 if(USE_SDL2)
 	if(NOT ANDROID)
@@ -338,6 +330,7 @@ target_link_libraries(IRROBJ PRIVATE IRRMESHOBJ)
 
 set(IRRDRVROBJ
 	CNullDriver.cpp
+	CGLXManager.cpp
 	CWGLManager.cpp
 	CEGLManager.cpp
 	CSDLManager.cpp

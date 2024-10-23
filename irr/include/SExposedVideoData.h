@@ -63,6 +63,12 @@ struct SExposedVideoData
 		void *Window;
 	};
 
+	struct SOpenGLFB
+	{
+		//! The EGLNativeWindowType object.
+		void *Window;
+	};
+
 	struct SOGLESAndroid
 	{
 		//! The ANativeWindow object.
@@ -74,6 +80,7 @@ struct SExposedVideoData
 		SOpenGLWin32 OpenGLWin32;
 		SOpenGLLinux OpenGLLinux;
 		SOpenGLOSX OpenGLOSX;
+		SOpenGLFB OpenGLFB;
 		SOGLESAndroid OGLESAndroid;
 	};
 };

@@ -31,10 +31,6 @@ public:
 	aren't create. */
 	bool initialize(const SIrrlichtCreationParameters &params, const SExposedVideoData &data) override;
 
-	// Set EGL window.
-	// Call this if window is not known at time of initialize()
-	void setWindow(const SExposedVideoData &data);
-
 	// Terminate EGL.
 	/* Terminate EGL context. This method break both existed surface and context. */
 	void terminate() override;
@@ -69,9 +65,6 @@ public:
 
 	// Swap buffers.
 	bool swapBuffers() override;
-
-	// Returns native visual ID. Will choose config if not already done.
-	EGLint getNativeVisualID();
 
 protected:
 	enum EConfigStyle
