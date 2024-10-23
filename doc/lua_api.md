@@ -10708,7 +10708,8 @@ performance and computing power the practical limit is much lower.
     -- 0 and 100 but can exceed these values.
 
     weight = 1.0,
-    -- Relative weight of the biome in the Voronoi diagram
+    -- Relative weight of the biome in the Voronoi diagram.
+    -- A value of 0 (or less) is ignored and equivalent to 1.0.
 }
 ```
 
