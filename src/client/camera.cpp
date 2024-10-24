@@ -516,9 +516,22 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	if (m_arm_inertia)
 		addArmInertia(yaw);
 
+	// Read left-handed mode from the settings
+	bool left_hand_mode = false;
+	if (g_settings->exists("enable_left_hand")) {
+	    left_hand_mode = g_settings->getBool("enable_left_hand");
+	}
+
 	// Position the wielded item
 	v3f wield_position = v3f(m_wieldmesh_offset.X, m_wieldmesh_offset.Y, 65);
 	v3f wield_rotation = v3f(-100, 120, -100);
+
+	// Invert the X position when left-handed mode is active
+	if (left_hand_mode) {
+	    wield_position.X = -wield_position.X;
+	    wield_rotation.Y = -wield_rotation.Y + 270;
+	}
+
 	wield_position.Y += std::abs(m_wield_change_timer)*320 - 40;
 	if(m_digging_anim < 0.05 || m_digging_anim > 0.5)
 	{
