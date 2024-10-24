@@ -6923,6 +6923,14 @@ Timing
     * Optional: Variable number of arguments that are passed to `func`
     * Jobs set for earlier times are executed earlier. If multiple jobs expire
       at exactly the same time, then they are executed in registration order.
+    * `time` is a lower bound. The job is executed in the first server-step that
+      started at least `time` seconds after the last time a server-step started,
+      measured with globalstep dtime.
+    * In particular this can result in relatively large delays if `time` is close
+      to the server-step dtime. For example, with a target server-step of 0.09 s,
+      `core.after(0.09, ...)` often waits two steps, resulting in a delay of about
+      0.18 s.
+    * If `time` is `0`, the job is executed in the next step.
 
 * `job:cancel()`
     * Cancels the job function from being called
