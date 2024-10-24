@@ -1,4 +1,4 @@
--- Minetest: builtin/features.lua
+-- Luanti: builtin/features.lua
 
 core.features = {
 	glasslike_framed = true,

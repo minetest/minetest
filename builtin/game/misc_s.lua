@@ -1,4 +1,4 @@
--- Minetest: builtin/misc_s.lua
+-- Luanti: builtin/misc_s.lua
 -- The distinction of what goes here is a bit tricky, basically it's everything
 -- that does not (directly or indirectly) need access to ServerEnvironment,
 -- Server or writable access to IGameDef on the engine side.

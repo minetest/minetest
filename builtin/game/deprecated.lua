@@ -1,4 +1,4 @@
--- Minetest: builtin/deprecated.lua
+-- Luanti: builtin/deprecated.lua
 
 --
 -- EnvRef
