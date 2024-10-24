@@ -74,6 +74,21 @@ function profiler.init_chatcommand()
 	end
 end
 
+-- Instrument the given function (may be nil if profiler not loaded)
+-- def: table with the following keys
+-- def.func: Function to be wrapped
+-- def.mod: Mod of the function
+-- def.class: Group similar functions together
+-- def.label: Human-readable description
+-- def.func_name: Machine-readable function name
+function core.instrument_function(def)
+	assert(type(def) == "table", "Table expected in core.instrument_function")
+	if type(def.class) ~= "string" then
+		def.class = "Custom"
+	end
+	return profiler.instrument(def)
+end
+
 sampler.init()
 instrumentation.init()
 
