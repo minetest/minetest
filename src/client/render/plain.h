@@ -38,6 +38,9 @@ private:
 	RenderTarget *m_target {nullptr};
 };
 
+/**
+ * Implements a pipeline step that renders the wieldhand
+ */
 class DrawWield : public RenderStep
 {
 public:
