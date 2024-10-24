@@ -6927,10 +6927,9 @@ Timing
       started at least `time` seconds after the last time a server-step started,
       measured with globalstep dtime.
     * In particular this can result in relatively large delays if `time` is close
-      to the server-step dtime. For example, with a target server-step of 0.09 s
-      (the engine uses the target as a lower bound for the actual server-step
-      dtime), `minetest.after(0.09, ...)` usually waits two steps, resulting in
-      a delay of about 0.18 s.
+      to the server-step dtime. For example, with a target server-step of 0.09 s,
+      `minetest.after(0.09, ...)` usually waits two steps, resulting in a delay
+      of about 0.18 s.
     * If `time` is `0`, the job is executed in the next step.
 
 * `job:cancel()`
