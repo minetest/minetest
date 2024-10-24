@@ -205,7 +205,11 @@ public:
 
 	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep(float dtime, bool initial_step = false);
-	void Receive(float timeout);
+	// timeout: How long this function should take, in seconds. It waits this long
+	//          even if there are some incoming packets. (Negative values allowed.)
+	// Returns the remaining time from timeout (timeout minus time it actually
+	// took), can be negative (took too long) or positive (<1 ms remaining).
+	float Receive(float timeout);
 	void yieldToOtherThreads(float dtime);
 
 	PlayerSAO* StageTwoClientInit(session_t peer_id);
