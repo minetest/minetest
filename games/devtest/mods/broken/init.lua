@@ -1,4 +1,4 @@
--- Register stuff with empty definitions to test if Minetest fallback options
+-- Register stuff with empty definitions to test if Luanti fallback options
 -- for these things work properly.
 
 -- The itemstrings are deliberately kept descriptive to keep them easy to
