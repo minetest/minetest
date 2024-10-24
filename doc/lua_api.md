@@ -9106,12 +9106,14 @@ Player properties need to be saved manually.
 ```lua
 {
     hp_max = 10,
-    -- Defines the maximum and default HP of the entity
-    -- For Lua entities the maximum is not enforced.
-    -- For players this defaults to `core.PLAYER_MAX_HP_DEFAULT`.
+    -- Defines the maximum and default HP of the object.
+    -- For Lua entities, the maximum is not enforced.
+    -- For players, this defaults to `core.PLAYER_MAX_HP_DEFAULT` (20).
+    -- For Lua entities, the default is 10.
 
     breath_max = 0,
-    -- For players only. Defaults to `core.PLAYER_MAX_BREATH_DEFAULT`.
+    -- For players only. Defines the maximum amount of "breath" for the player.
+    -- Defaults to `core.PLAYER_MAX_BREATH_DEFAULT` (10).
 
     zoom_fov = 0.0,
     -- For players only. Zoom FOV in degrees.
