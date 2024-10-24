@@ -138,8 +138,8 @@ void *ServerThread::run()
 	// how long the last step took, in seconds
 	float dtime = 0.0f;
 	// If there's no server lag and packet handling doesn't take too long,
-	// Server::Receive() waits a bit less than its timeout. We use the remaining
-	// time to get an average dtime of step_settings.steplen.
+	// Server::Receive() waits a bit (<1ms) less than its timeout.
+	// If negative, the step took too long.
 	float last_remaining_time = 0.0f;
 
 	while (!stopRequested()) {
@@ -152,19 +152,19 @@ void *ServerThread::run()
 
 		try {
 			// see explanation inside
-			// (+1 ms, because we don't sleep more fine grained)
-			if (dtime > step_settings.steplen + 0.001f)
+			if (last_remaining_time < 0.0f)
 				m_server->yieldToOtherThreads(dtime);
 
 			m_server->AsyncRunStep(step_settings.pause ? 0.0f : dtime);
 
+			// Wait up to last_remaining_time longer, to get an average dtime of
+			// step_settings.steplen.
 			const float this_target_steplen = step_settings.steplen +
-					last_remaining_time;
+					std::max(0.0f, last_remaining_time);
 			float remaining_time = this_target_steplen
 					- 1e-6f * (porting::getTimeUs() - t0);
 			remaining_time = m_server->Receive(remaining_time);
-			// if negative, the step took too long
-			last_remaining_time = std::max(0.0f, remaining_time);
+			last_remaining_time = remaining_time;
 
 		} catch (con::PeerNotFoundException &e) {
 			infostream<<"Server: PeerNotFoundException"<<std::endl;
