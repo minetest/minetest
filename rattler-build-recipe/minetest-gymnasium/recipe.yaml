@@ -20,7 +20,7 @@ requirements:
     - python
     - setuptools
   run:
-    - minetest =0.14
+    - minetest =0.15
     # python deps
     - gymnasium
     - numpy =1.26
