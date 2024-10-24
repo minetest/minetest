@@ -1,4 +1,4 @@
-project(minetest)
+project(luanti)
 
 INCLUDE(CheckTypeSize)
 INCLUDE(CheckIncludeFiles)
@@ -6,12 +6,12 @@ INCLUDE(CheckLibraryExists)
 
 check_type_size(int SIZEOF_INT BUILTIN_TYPES_ONLY LANGUAGE CXX)
 if(SIZEOF_INT LESS 4)
-	message(FATAL_ERROR "Minetest will not work with int less than 32 bits wide.")
+	message(FATAL_ERROR "${PROJECT_NAME_CAPITALIZED} will not work with int less than 32 bits wide.")
 endif()
 
 check_type_size(size_t SIZEOF_SIZE_T LANGUAGE CXX)
 if(SIZEOF_SIZE_T LESS 4)
-	message(FATAL_ERROR "Minetest will not work with size_t less than 32 bits wide.")
+	message(FATAL_ERROR "${PROJECT_NAME_CAPITALIZED} will not work with size_t less than 32 bits wide.")
 endif()
 
 # Add custom SemiDebug build mode
@@ -488,7 +488,7 @@ endif()
 # This gives us the icon and file version information
 if(WIN32)
 	set(WINRESOURCE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../misc/winresource.rc")
-	set(MINETEST_EXE_MANIFEST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../misc/minetest.exe.manifest")
+	set(EXE_MANIFEST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../misc/luanti.exe.manifest")
 	if(MINGW)
 		if(NOT CMAKE_RC_COMPILER)
 			set(CMAKE_RC_COMPILER "windres.exe")
@@ -498,10 +498,10 @@ if(WIN32)
 			-i${WINRESOURCE_FILE}
 			-o ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			DEPENDS ${WINRESOURCE_FILE} ${MINETEST_EXE_MANIFEST_FILE})
+			DEPENDS ${WINRESOURCE_FILE} ${EXE_MANIFEST_FILE})
 		SET(extra_windows_SRCS ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o)
 	else(MINGW) # Probably MSVC
-		set(extra_windows_SRCS ${WINRESOURCE_FILE} ${MINETEST_EXE_MANIFEST_FILE})
+		set(extra_windows_SRCS ${WINRESOURCE_FILE} ${EXE_MANIFEST_FILE})
 	endif(MINGW)
 endif()
 
@@ -556,7 +556,7 @@ include_directories(SYSTEM
 	${GMP_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 	${LUA_BIT_INCLUDE_DIR}
-	# on Android, Minetest depends on SDL2 directly
+	# on Android, Luanti depends on SDL2 directly
 	# on other platforms, only IrrlichtMt depends on SDL2
 	"$<$<PLATFORM_ID:Android>:${SDL2_INCLUDE_DIRS}>"
 )
@@ -578,7 +578,7 @@ endif()
 
 
 # When cross-compiling assume the user doesn't want to run the executable anyway,
-# otherwise place it in <source dir>/bin/ since Minetest can only run from there.
+# otherwise place it in <source dir>/bin/ since Luanti can only run from there.
 if(NOT CMAKE_CROSSCOMPILING)
 	set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 endif()
@@ -626,7 +626,7 @@ if(BUILD_CLIENT)
 		sha256
 		${FREETYPE_LIBRARY}
 		${PLATFORM_LIBS}
-		# on Android, Minetest depends on SDL2 directly
+		# on Android, Luanti depends on SDL2 directly
 		# on other platforms, only IrrlichtMt depends on SDL2
 		"$<$<PLATFORM_ID:Android>:${SDL2_LIBRARIES}>"
 	)
@@ -812,7 +812,7 @@ elseif(NOT MSVC)
 	check_c_source_compiles("#include <lua.h>\nint main(){return sizeof(lua_atccall);}" HAVE_ATCCALL)
 	if(NOT HAVE_ATCCALL)
 		string(CONCAT explanation_msg
-			"It looks like you're trying to build Minetest using a system-wide "
+			"It looks like you're trying to build ${PROJECT_NAME_CAPITALIZED} using a system-wide "
 			"Lua installation. This is no longer supported because PUC Lua "
 			"cannot interoperate with C++ correctly. Read src/unittest/test_lua.cpp "
 			" for technical details.")
@@ -986,6 +986,14 @@ if(WIN32)
 	endif()
 endif()
 
+macro(CreateLegacyAlias _cmake_target _old_path _new_name)
+	add_custom_target("${_cmake_target}" ALL
+		COMMAND "${CMAKE_COMMAND}" -E create_symlink "${_new_name}" "${_old_path}"
+		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+	add_dependencies("${_cmake_target}" "${_new_name}")
+	install(PROGRAMS "${_old_path}" DESTINATION ${BINDIR})
+endmacro()
+
 if(BUILD_CLIENT AND NOT ANDROID)
 	install(TARGETS ${PROJECT_NAME}
 		RUNTIME DESTINATION ${BINDIR}
@@ -993,6 +1001,9 @@ if(BUILD_CLIENT AND NOT ANDROID)
 		ARCHIVE DESTINATION ${BINDIR}
 		BUNDLE DESTINATION .
 	)
+	if(UNIX)
+		CreateLegacyAlias(minetest_alias "${EXECUTABLE_OUTPUT_PATH}/minetest" ${PROJECT_NAME})
+	endif()
 
 	if(APPLE)
 		install(CODE "
@@ -1016,6 +1027,9 @@ endif()
 
 if(BUILD_SERVER)
 	install(TARGETS ${PROJECT_NAME}server DESTINATION ${BINDIR})
+	if(UNIX)
+		CreateLegacyAlias(minetestserver_alias "${EXECUTABLE_OUTPUT_PATH}/minetestserver" ${PROJECT_NAME}server)
+	endif()
 endif()
 
 if (ANDROID)
