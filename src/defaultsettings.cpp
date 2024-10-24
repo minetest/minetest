@@ -34,6 +34,7 @@ void set_default_settings()
 	settings->setDefault("language", "");
 	settings->setDefault("name", "");
 	settings->setDefault("server_step_wait_for_all_clients", "false");
+	settings->setDefault("remote_input_handler_time_step", "0.0");
 	settings->setDefault("bind_address", "");
 	settings->setDefault("serverlist_url", "servers.minetest.net");
 
