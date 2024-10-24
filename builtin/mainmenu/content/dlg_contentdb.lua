@@ -1,4 +1,4 @@
---Minetest
+--Luanti
 --Copyright (C) 2018-20 rubenwardy
 --
 --This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 if not core.get_http_api then
 	function create_contentdb_dlg()
 		return messagebox("contentdb",
-				fgettext("ContentDB is not available when Minetest was compiled without cURL"))
+				fgettext("ContentDB is not available when Luanti was compiled without cURL"))
 	end
 	return
 end

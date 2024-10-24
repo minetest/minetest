@@ -1,4 +1,4 @@
--- Minetest: builtin/client/init.lua
+-- Luanti: builtin/client/init.lua
 local scriptpath = core.get_builtin_path()
 local clientpath = scriptpath.."client"..DIR_DELIM
 local commonpath = scriptpath.."common"..DIR_DELIM

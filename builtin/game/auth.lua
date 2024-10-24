@@ -1,4 +1,4 @@
--- Minetest: builtin/auth.lua
+-- Luanti: builtin/auth.lua
 
 --
 -- Builtin authentication handler
