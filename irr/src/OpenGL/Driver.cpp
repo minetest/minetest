@@ -226,7 +226,7 @@ void COpenGL3DriverBase::initVersion()
 	printVersion();
 
 	// print renderer information
-	VendorName = GL.GetString(GL_VENDOR);
+	VendorName = GL.GetString(GL_RENDERER);
 	os::Printer::log("Vendor", VendorName.c_str(), ELL_INFORMATION);
 
 	Version = getVersionFromOpenGL();

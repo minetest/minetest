@@ -123,10 +123,10 @@ if(USE_SDL2)
 	if(NOT ANDROID)
 		set(DEFAULT_OPENGL3 TRUE)
 	endif()
-	option(ENABLE_OPENGL3 "Enable OpenGL 3+" ${DEFAULT_OPENGL3})
 else()
-	set(ENABLE_OPENGL3 FALSE)
+	set(DEFAULT_OPENGL3 FALSE)
 endif()
+option(ENABLE_OPENGL3 "Enable OpenGL 3+" ${DEFAULT_OPENGL3})
 
 if(ANDROID OR EMSCRIPTEN)
 	set(ENABLE_OPENGL FALSE)
@@ -158,14 +158,16 @@ if(ENABLE_OPENGL)
 	if(DEVICE STREQUAL "WINDOWS")
 		add_definitions(-D_IRR_COMPILE_WITH_WGL_MANAGER_)
 	elseif(DEVICE STREQUAL "X11")
-		add_definitions(-D_IRR_COMPILE_WITH_GLX_MANAGER_)
+		add_definitions(-D_IRR_COMPILE_WITH_EGL_MANAGER_)
 	elseif(DEVICE STREQUAL "OSX")
 		add_definitions(-D_IRR_COMPILE_WITH_NSOGL_MANAGER_)
 	endif()
 endif()
 
 if(ENABLE_OPENGL3)
-	if (NOT USE_SDL2)
+	if (DEVICE STREQUAL "X11")
+		# supported
+	elseif (NOT USE_SDL2)
 		message(FATAL_ERROR "OpenGL 3 driver requires SDL2")
 	endif()
 endif()
@@ -213,7 +215,15 @@ if(ENABLE_GLES2)
 	find_package(OpenGLES2 REQUIRED)
 endif()
 if(ENABLE_OPENGL)
-	find_package(OpenGL REQUIRED)
+	if(DEVICE STREQUAL "X11")
+		# use components so we can grab EGL
+		find_package(OpenGL REQUIRED COMPONENTS EGL OpenGL)
+		set(OPENGL_LIBRARIES OpenGL::GL)
+		set(EGL_INCLUDE_DIR OpenGL::EGL)
+		set(EGL_LIBRARY OpenGL::EGL)
+	else()
+		find_package(OpenGL REQUIRED)
+	endif()
 endif()
 if(USE_SDL2)
 	if(NOT ANDROID)
@@ -330,7 +340,6 @@ target_link_libraries(IRROBJ PRIVATE IRRMESHOBJ)
 
 set(IRRDRVROBJ
 	CNullDriver.cpp
-	CGLXManager.cpp
 	CWGLManager.cpp
 	CEGLManager.cpp
 	CSDLManager.cpp
