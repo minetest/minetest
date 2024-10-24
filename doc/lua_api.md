@@ -309,19 +309,26 @@ it unlocks no special rendering features.
 Binary glTF (`.glb`) files are supported and recommended over `.gltf` files
 due to their space savings.
 
-This means that many glTF features are not supported *yet*, including:
+Bone weights should be normalized, e.g. using ["normalize all" in Blender](https://docs.blender.org/manual/en/4.2/grease_pencil/modes/weight_paint/weights_menu.html#normalize-all).
+
+You can use the [Khronos glTF validator](https://github.com/KhronosGroup/glTF-Validator)
+to check whether a model is a valid glTF file.
+
+Many glTF features are not supported *yet*, including:
 
 * Animations
   * Only a single animation is supported,
     use frame ranges within this animation.
   * Only integer frames are supported.
+  * Only linear interpolation is supported.
 * Cameras
 * Materials
   * Only base color textures are supported
   * Backface culling is overridden
   * Double-sided materials don't work
 * Alternative means of supplying data
-  * Embedded images
+  * Embedded images. You can use `gltfutil.py` from the
+    [modding tools](https://github.com/minetest/modtools) to strip or extract embedded images.
   * References to files via URIs
 
 Textures are supplied solely via the same means as for the other model file formats:
