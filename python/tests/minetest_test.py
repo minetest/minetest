@@ -236,32 +236,34 @@ def test_async_vector_env(artifact_dir, world_dir, minetest_executable, caplog):
         )
         for _ in range(num_envs)
     ]
-    with gym.vector.AsyncVectorEnv(envs, context=async_env_context) as env:
-        initial_obs, info = env.reset()
-        assert len(initial_obs["image"]) == num_envs
-        assert len(initial_obs["return"]) == num_envs
-        for i in range(5):
-            action = {
-                "keys": np.zeros((num_envs, len(INVERSE_KEY_MAP)), dtype=bool),
-                "mouse": np.zeros((num_envs, 2)),
-            }
-            if i == 3:
-                action["keys"][:, INVERSE_KEY_MAP["forward"]] = True
-                action["keys"][:, INVERSE_KEY_MAP["left"]] = True
-                action["mouse"] = np.tile(np.array([0.0, 1.0]), (num_envs, 1))
-            obs, reward, terminated, truncated, info = env.step(action)
-            assert len(obs["image"]) == num_envs
-            assert len(obs["return"]) == num_envs
-            assert len(reward) == num_envs
-            assert len(terminated) == num_envs
-            assert len(truncated) == num_envs
-            assert not terminated.any()
-            if i == max_episode_steps - 1:
-                assert truncated.all()
-            else:
-                assert not truncated.any()
+    env = gym.vector.AsyncVectorEnv(envs, context=async_env_context)
 
-        shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
+    initial_obs, info = env.reset()
+    assert len(initial_obs["image"]) == num_envs
+    assert len(initial_obs["return"]) == num_envs
+    for i in range(5):
+        action = {
+            "keys": np.zeros((num_envs, len(INVERSE_KEY_MAP)), dtype=bool),
+            "mouse": np.zeros((num_envs, 2)),
+        }
+        if i == 3:
+            action["keys"][:, INVERSE_KEY_MAP["forward"]] = True
+            action["keys"][:, INVERSE_KEY_MAP["left"]] = True
+            action["mouse"] = np.tile(np.array([0.0, 1.0]), (num_envs, 1))
+        obs, reward, terminated, truncated, info = env.step(action)
+        assert len(obs["image"]) == num_envs
+        assert len(obs["return"]) == num_envs
+        assert len(reward) == num_envs
+        assert len(terminated) == num_envs
+        assert len(truncated) == num_envs
+        assert not terminated.any()
+        if i == max_episode_steps - 1:
+            assert truncated.all()
+        else:
+            assert not truncated.any()
+
+    shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
+    env.close()
 
 
 def test_run_on_event_loop_timeout(env):

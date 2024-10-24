@@ -167,7 +167,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gettext-tools-0.22.5-h59595ed_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gmp-6.3.0-hac33072_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/graphite2-1.3.13-h59595ed_1003.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/gymnasium-0.29.1-py311h781c19f_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/gymnasium-1.0.0-py311h781c19f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/harfbuzz-9.0.0-hda332d3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/icu-75.1-he02047a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/jack-1.9.22-h7c63dc7_2.conda
@@ -299,7 +299,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/gettext-tools-0.22.5-h8fbad5d_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/gmp-6.3.0-h7bae524_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/graphite2-1.3.13-hebf3989_1003.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/gymnasium-0.29.1-py311h8d5925d_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/gymnasium-1.0.0-py311h8d5925d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/harfbuzz-9.0.0-h997cde5_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/icu-75.1-hfee45f7_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/jax-jumpy-1.0.0-pyhd8ed1ab_0.conda
@@ -418,7 +418,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gettext-tools-0.22.5-h59595ed_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/gmp-6.3.0-hac33072_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/graphite2-1.3.13-h59595ed_1003.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/gymnasium-0.29.1-py311h781c19f_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/gymnasium-1.0.0-py311h781c19f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/harfbuzz-9.0.0-hda332d3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/icu-75.1-he02047a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/iniconfig-2.0.0-pyhd8ed1ab_0.conda
@@ -561,7 +561,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/gettext-tools-0.22.5-h8fbad5d_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/gmp-6.3.0-h7bae524_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/graphite2-1.3.13-hebf3989_1003.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/gymnasium-0.29.1-py311h8d5925d_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/gymnasium-1.0.0-py311h8d5925d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/harfbuzz-9.0.0-h997cde5_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/icu-75.1-hfee45f7_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/iniconfig-2.0.0-pyhd8ed1ab_0.conda
@@ -1446,40 +1446,9 @@ packages:
   - libpng >=1.6.39,<1.7.0a0
   - libzlib >=1.2.13,<2.0.0a0
   license: GPL-2.0-only OR FTL
-  size: 634972
-  timestamp: 1694615932610
-- kind: conda
-  name: freetype
-  version: 2.12.1
-  build: h267a509_2
-  build_number: 2
-  subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/freetype-2.12.1-h267a509_2.conda
-  sha256: b2e3c449ec9d907dd4656cb0dc93e140f447175b125a3824b31368b06c666bb6
-  md5: 9ae35c3d96db2c94ce0cef86efdfa2cb
-  depends:
-  - libgcc-ng >=12
-  - libpng >=1.6.39,<1.7.0a0
-  - libzlib >=1.2.13,<2.0.0a0
-  license: GPL-2.0-only OR FTL
   purls: []
   size: 634972
   timestamp: 1694615932610
-- kind: conda
-  name: freetype
-  version: 2.12.1
-  build: hadb7bae_2
-  build_number: 2
-  subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/freetype-2.12.1-hadb7bae_2.conda
-  sha256: 791673127e037a2dc0eebe122dc4f904cb3f6e635bb888f42cbe1a76b48748d9
-  md5: e6085e516a3e304ce41a8ee08b9b89ad
-  depends:
-  - libpng >=1.6.39,<1.7.0a0
-  - libzlib >=1.2.13,<2.0.0a0
-  license: GPL-2.0-only OR FTL
-  size: 596430
-  timestamp: 1694616332835
 - kind: conda
   name: freetype
   version: 2.12.1
@@ -1640,13 +1609,12 @@ packages:
   timestamp: 1711634444608
 - kind: conda
   name: gymnasium
-  version: 0.29.1
-  build: py311h781c19f_1
-  build_number: 1
+  version: 1.0.0
+  build: py311h781c19f_0
   subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/gymnasium-0.29.1-py311h781c19f_1.conda
-  sha256: 3e049ab1159b0b3f26bd3949f1b99bfe87ec94196d25dee9980f3ead9261e1c1
-  md5: 8543944dfe0d07f20817d2fb6b0dd9c2
+  url: https://conda.anaconda.org/conda-forge/linux-64/gymnasium-1.0.0-py311h781c19f_0.conda
+  sha256: e108b4b2d98c39a4da3db78d16adba41a4e9f223069a53d6659e385cfc160c9f
+  md5: c4bc0b2eefbcc47c4d07363eea73a364
   depends:
   - cloudpickle >=1.2.0
   - farama-notifications
@@ -1659,17 +1627,16 @@ packages:
   license_family: MIT
   purls:
   - pkg:pypi/gymnasium?source=conda-forge-mapping
-  size: 1104231
-  timestamp: 1712294572260
+  size: 1105224
+  timestamp: 1729640596118
 - kind: conda
   name: gymnasium
-  version: 0.29.1
-  build: py311h8d5925d_1
-  build_number: 1
+  version: 1.0.0
+  build: py311h8d5925d_0
   subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/gymnasium-0.29.1-py311h8d5925d_1.conda
-  sha256: 6dbdb51ee59b1d05302023da065c1f369f33818c699ed23611c52518f314e10f
-  md5: c832de30c794bcf0958a3e8f5eaa9eab
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/gymnasium-1.0.0-py311h8d5925d_0.conda
+  sha256: 88b3e141d9e72663ddc6750b068f1ac6ab23014af7382d674a7d993b1bc89ca3
+  md5: ac0f3d42609d5305c48f97c3c179fc34
   depends:
   - cloudpickle >=1.2.0
   - farama-notifications
@@ -1683,8 +1650,8 @@ packages:
   license_family: MIT
   purls:
   - pkg:pypi/gymnasium?source=conda-forge-mapping
-  size: 1106766
-  timestamp: 1712294818709
+  size: 1105014
+  timestamp: 1729640926461
 - kind: conda
   name: harfbuzz
   version: 9.0.0
