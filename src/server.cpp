@@ -135,7 +135,12 @@ void *ServerThread::run()
 	}
 	framemarker.end();
 
+	// how long the last step took, in seconds
 	float dtime = 0.0f;
+	// If there's no server lag and packet handling doesn't take too long,
+	// Server::Receive() waits a bit less than its timeout. We use the remaining
+	// time to get an average dtime of step_settings.steplen.
+	float last_remaining_time = 0.0f;
 
 	while (!stopRequested()) {
 		framemarker.start();
@@ -147,14 +152,19 @@ void *ServerThread::run()
 
 		try {
 			// see explanation inside
-			if (dtime > step_settings.steplen)
+			// (+1 ms, because we don't sleep more fine grained)
+			if (dtime > step_settings.steplen + 0.001f)
 				m_server->yieldToOtherThreads(dtime);
 
 			m_server->AsyncRunStep(step_settings.pause ? 0.0f : dtime);
 
-			const float remaining_time = step_settings.steplen
+			const float this_target_steplen = step_settings.steplen +
+					last_remaining_time;
+			float remaining_time = this_target_steplen
 					- 1e-6f * (porting::getTimeUs() - t0);
-			m_server->Receive(remaining_time);
+			remaining_time = m_server->Receive(remaining_time);
+			// if negative, the step took too long
+			last_remaining_time = std::max(0.0f, remaining_time);
 
 		} catch (con::PeerNotFoundException &e) {
 			infostream<<"Server: PeerNotFoundException"<<std::endl;
@@ -1084,7 +1094,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	m_shutdown_state.tick(dtime, this);
 }
 
-void Server::Receive(float timeout)
+float Server::Receive(float timeout)
 {
 	ZoneScoped;
 	auto framemarker = FrameMarker("Server::Receive()-frame").started();
@@ -1092,7 +1102,7 @@ void Server::Receive(float timeout)
 	const u64 t0 = porting::getTimeUs();
 	const float timeout_us = timeout * 1e6f;
 	auto remaining_time_us = [&]() -> float {
-		return std::max(0.0f, timeout_us - (porting::getTimeUs() - t0));
+		return timeout_us - (porting::getTimeUs() - t0);
 	};
 
 	NetworkPacket pkt;
@@ -1102,12 +1112,15 @@ void Server::Receive(float timeout)
 		peer_id = 0;
 		try {
 			if (!m_con->ReceiveTimeoutMs(&pkt,
-					(u32)remaining_time_us() / 1000)) {
+					(u32)std::max(0.0f, remaining_time_us()) / 1000)) {
 				// No incoming data.
 				// Already break if there's 1ms left, as ReceiveTimeoutMs is too coarse
 				// and a faster server-step is better than busy waiting.
-				if (remaining_time_us() < 1000.0f)
-					break;
+				// The caller can accumulate the return value, and give us a larger
+				// timeout next time.
+				float remaining = remaining_time_us();
+				if (remaining < 1000.0f)
+					return remaining * 1e-6f;
 				else
 					continue;
 			}
