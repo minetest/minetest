@@ -766,6 +766,9 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			}
 
 			m_animated_meshnode = m_smgr->addAnimatedMeshSceneNode(mesh, m_matrixnode);
+			// EJUOR_CONTROL is necessary for bone overrides to work.
+			// HACK enable it unconditionally for animation blending to work.
+			m_animated_meshnode->setJointMode(scene::EJUOR_CONTROL);
 			m_animated_meshnode->grab();
 			mesh->drop(); // The scene node took hold of it
 			m_animated_meshnode->animateJoints(); // Needed for some animations
@@ -1491,37 +1494,15 @@ void GenericCAO::updateAnimationSpeed()
 	m_animated_meshnode->setAnimationSpeed(m_animation_speed);
 }
 
-void GenericCAO::updateBones(f32 dtime)
+void GenericCAO::fixBones()
 {
-	if (!m_animated_meshnode)
-		return;
-	if (m_bone_override.empty()) {
-		m_animated_meshnode->setJointMode(scene::EJUOR_NONE);
-		return;
-	}
-
-	m_animated_meshnode->setJointMode(scene::EJUOR_CONTROL); // To write positions to the mesh on render
-	for (auto &it : m_bone_override) {
-		std::string bone_name = it.first;
-		scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
-		if (!bone)
-			continue;
-
-		BoneOverride &props = it.second;
-		props.dtime_passed += dtime;
-
-		bone->setPosition(props.getPosition(bone->getPosition()));
-		bone->setRotation(props.getRotationEulerDeg(bone->getRotation()));
-		bone->setScale(props.getScale(bone->getScale()));
-	}
-
-	// search through bones to find mistakenly rotated bones due to bug in Irrlicht
+	// HACK search through bones to find mistakenly rotated bones due to bug in Irrlicht
 	for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
 		scene::IBoneSceneNode *bone = m_animated_meshnode->getJointNode(i);
 		if (!bone)
 			continue;
 
-		//If bone is manually positioned there is no need to perform the bug check
+		// If bone is manually positioned there is no need to perform the bug check
 		bool skip = false;
 		for (auto &it : m_bone_override) {
 			if (it.first == bone->getName()) {
@@ -1543,9 +1524,32 @@ void GenericCAO::updateBones(f32 dtime)
 			bone->updateAbsolutePosition();
 		}
 	}
-	// The following is needed for set_bone_pos to propagate to
-	// attached objects correctly.
-	// Irrlicht ought to do this, but doesn't when using EJUOR_CONTROL.
+}
+
+void GenericCAO::updateBones(f32 dtime)
+{
+	if (!m_animated_meshnode)
+		return;
+
+	for (auto &it : m_bone_override) {
+		std::string bone_name = it.first;
+		scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
+		if (!bone)
+			continue;
+
+		BoneOverride &props = it.second;
+		props.dtime_passed += dtime;
+
+		bone->setPosition(props.getPosition(bone->getPosition()));
+		bone->setRotation(props.getRotationEulerDeg(bone->getRotation()));
+		bone->setScale(props.getScale(bone->getScale()));
+	}
+
+	fixBones();
+
+	// The following is needed to propagate to attached objects correctly.
+	// Irrlicht ought to do this, but doesn't when using EJUOR_CONTROL,
+	// which we use unconditionally to work around another bug.
 	for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
 		auto bone = m_animated_meshnode->getJointNode(i);
 		// Look for the root bone.
