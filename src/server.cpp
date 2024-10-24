@@ -121,59 +121,41 @@ void *ServerThread::run()
 		m_server->setAsyncFatalError(e);
 	}
 
-	float df = 0.0f;
-    float fixed_time_step=g_settings->getFloatNoEx("fixed_time_step",df);
-    gServer=m_server;
+	float remote_input_handler_time_step = 0.0f;
+    g_settings->getFloatNoEx("remote_input_handler_time_step",remote_input_handler_time_step);
+	bool remote_input_handler_handles_server_step = remote_input_handler_time_step > 0.0f;
+	// remote input handler uses the global to call AsyncRunStep so we can run the client and server in lock-step. This is kind of freaky.
+    gServer = m_server;
 
-    if(fixed_time_step>0)
-    {
-        infostream<<"FIXED TIME STEP"<<std::endl;
-        while (!stopRequested()) {
-            ScopeProfiler spm(g_profiler, "Server::RunStep() (max)", SPT_MAX);
+	float dtime = 0.0f;
+	while (!stopRequested()) {
+		ScopeProfiler spm(g_profiler, "Server::RunStep() (max)", SPT_MAX);
 
-            const Server::StepSettings step_settings = m_server->getStepSettings();
+		u64 t0 = porting::getTimeUs();
 
-            try {
-                m_server->Receive(fixed_time_step);
-            } catch (con::PeerNotFoundException &e) {
-                infostream<<"Server: PeerNotFoundException"<<std::endl;
-            } catch (ClientNotFoundException &e) {
-            } catch (con::ConnectionBindFailed &e) {
-                m_server->setAsyncFatalError(e.what());
-            } catch (LuaError &e) {
-                m_server->setAsyncFatalError(e);
-            }
+		const Server::StepSettings step_settings = m_server->getStepSettings();
+
+		try {
+			// NOTE: Still needs to be called when remote_input_handler_handles_server_step is true because it accepts client connections.
+			m_server->AsyncRunStep(remote_input_handler_handles_server_step || step_settings.pause ? 0.0f : dtime);
+
+			const float remaining_time = step_settings.steplen
+					- 1e-6f * (porting::getTimeUs() - t0);
+			m_server->Receive(remaining_time);
+
+		} catch (con::PeerNotFoundException &e) {
+			infostream<<"Server: PeerNotFoundException"<<std::endl;
+		} catch (ClientNotFoundException &e) {
+		} catch (con::ConnectionBindFailed &e) {
+			m_server->setAsyncFatalError(e.what());
+		} catch (LuaError &e) {
+			m_server->setAsyncFatalError(e);
+		}
+
+		dtime = 1e-6f * (porting::getTimeUs() - t0);
         }
-    }else{
-        float dtime = 0.0f;
-        while (!stopRequested()) {
-            ScopeProfiler spm(g_profiler, "Server::RunStep() (max)", SPT_MAX);
 
-            u64 t0 = porting::getTimeUs();
 
-            const Server::StepSettings step_settings = m_server->getStepSettings();
-
-            try {
-                m_server->AsyncRunStep(step_settings.pause ? 0.0f : dtime);
-
-                const float remaining_time = step_settings.steplen
-                        - 1e-6f * (porting::getTimeUs() - t0);
-                m_server->Receive(remaining_time);
-
-            } catch (con::PeerNotFoundException &e) {
-                infostream<<"Server: PeerNotFoundException"<<std::endl;
-            } catch (ClientNotFoundException &e) {
-            } catch (con::ConnectionBindFailed &e) {
-                m_server->setAsyncFatalError(e.what());
-            } catch (LuaError &e) {
-                m_server->setAsyncFatalError(e);
-            }
-
-            dtime = 1e-6f * (porting::getTimeUs() - t0);
-        }
-    }
-
-	
 
 	END_DEBUG_EXCEPTION_HANDLER
 
@@ -635,6 +617,9 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 		SendBlocks(dtime);
 	}
 
+	// Always do this to allow a client to connect when running in lock-step, see server_step_wait_for_all_clients and remote_input_handler_time_step options.
+	handlePeerChanges();
+
 	// If paused, this function is called with a 0.0f literal
 	if ((dtime == 0.0f) && !initial_step)
 		return;
@@ -645,8 +630,6 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 		Update uptime
 	*/
 	m_uptime_counter->increment(dtime);
-
-	handlePeerChanges();
 
 	/*
 		Update time of day and overall game time

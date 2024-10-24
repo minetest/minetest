@@ -135,11 +135,11 @@ void RemoteInputHandler::step(float dtime) {
     m_chan.m_action_cv.notify_one();
   }
 
-    float df = 0.0f;
-    float fixed_time_step=g_settings->getFloatNoEx("fixed_time_step",df);
-    if(fixed_time_step>0)
-        gServer->AsyncRunStep(fixed_time_step);
-
+  float remote_input_handler_time_step = 0.0f;
+  g_settings->getFloatNoEx("remote_input_handler_time_step", remote_input_handler_time_step);
+  if(remote_input_handler_time_step > 0.0f) {
+	  gServer->AsyncRunStep(remote_input_handler_time_step);
+  }
 
   // send current observation
   irr::video::IVideoDriver *driver = m_rendering_engine->get_video_driver();

@@ -116,6 +116,7 @@ class MinetestEnv(gym.Env):
         verbose_logging: bool = False,
         log_to_stderr: bool = False,
         additional_observation_spaces: Optional[Dict[str, gym.Space]] = None,
+        remote_input_handler_time_step: float = 0.125,
     ):
         self._prev_score = None
         if config_dict is None:
@@ -123,6 +124,7 @@ class MinetestEnv(gym.Env):
         self.unique_env_id = str(uuid.uuid4())
 
         self.display_size = DisplaySize(*display_size)
+        self.remote_input_handler_time_step = remote_input_handler_time_step
         self.fov_y = fov
         self.fov_x = self.fov_y * self.display_size.width / self.display_size.height
         self.render_mode = render_mode
@@ -378,6 +380,8 @@ class MinetestEnv(gym.Env):
             hud_scaling=self.display_size[0] / 1024,
             # Ensure server doesn't advance if client hasn't called step().
             server_step_wait_for_all_clients=True,
+            # How much time is simulated in between each environment step.
+            remote_input_handler_time_step=self.remote_input_handler_time_step,
             # Attempt to improve performance. Impact unclear.
             server_map_save_interval=1000000,
             profiler_print_interval=0,
@@ -517,7 +521,7 @@ class MinetestEnv(gym.Env):
             f"Failed to get a valid observation after {valid_obs_max_attempts} attempts"
         )
 
-    def _run_on_event_loop(self, coro, timeout=10):
+    def _run_on_event_loop(self, coro, timeout=10000):
         try:
             try:
                 return self._event_loop.run_until_complete(
@@ -545,7 +549,7 @@ class MinetestEnv(gym.Env):
         self._event_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._event_loop)
         return self._run_on_event_loop(
-            self._async_reset(seed=seed, options=options), timeout=60
+            self._async_reset(seed=seed, options=options), timeout=10000
         )
 
     async def _async_step(self, action: Dict[str, Any], _key_map=KEY_MAP):
