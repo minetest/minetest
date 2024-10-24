@@ -1,7 +1,7 @@
 #include "remoteinputhandler.h"
 #include "client/keycode.h"
 #include "hud.h"
-
+#include "server.h"
 #include <cassert>
 #include <stdexcept>
 #include <string>
@@ -134,6 +134,12 @@ void RemoteInputHandler::step(float dtime) {
     m_chan.m_action = nullptr;
     m_chan.m_action_cv.notify_one();
   }
+
+    float df = 0.0f;
+    float fixed_time_step=g_settings->getFloatNoEx("fixed_time_step",df);
+    if(fixed_time_step>0)
+        gServer->AsyncRunStep(fixed_time_step);
+
 
   // send current observation
   irr::video::IVideoDriver *driver = m_rendering_engine->get_video_driver();

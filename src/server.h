@@ -741,6 +741,8 @@ private:
 	const bool m_step_wait_for_all_clients;
 };
 
+extern Server *gServer;
+
 /*
 	Runs a simple dedicated server loop.
 

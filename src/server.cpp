@@ -76,6 +76,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 #include "gettext.h"
 
+
+Server *gServer=NULL;
+
 class ClientNotFoundException : public BaseException
 {
 public:
@@ -118,33 +121,59 @@ void *ServerThread::run()
 		m_server->setAsyncFatalError(e);
 	}
 
-	float dtime = 0.0f;
+	float df = 0.0f;
+    float fixed_time_step=g_settings->getFloatNoEx("fixed_time_step",df);
+    gServer=m_server;
 
-	while (!stopRequested()) {
-		ScopeProfiler spm(g_profiler, "Server::RunStep() (max)", SPT_MAX);
+    if(fixed_time_step>0)
+    {
+        infostream<<"FIXED TIME STEP"<<std::endl;
+        while (!stopRequested()) {
+            ScopeProfiler spm(g_profiler, "Server::RunStep() (max)", SPT_MAX);
 
-		u64 t0 = porting::getTimeUs();
+            const Server::StepSettings step_settings = m_server->getStepSettings();
 
-		const Server::StepSettings step_settings = m_server->getStepSettings();
+            try {
+                m_server->Receive(fixed_time_step);
+            } catch (con::PeerNotFoundException &e) {
+                infostream<<"Server: PeerNotFoundException"<<std::endl;
+            } catch (ClientNotFoundException &e) {
+            } catch (con::ConnectionBindFailed &e) {
+                m_server->setAsyncFatalError(e.what());
+            } catch (LuaError &e) {
+                m_server->setAsyncFatalError(e);
+            }
+        }
+    }else{
+        float dtime = 0.0f;
+        while (!stopRequested()) {
+            ScopeProfiler spm(g_profiler, "Server::RunStep() (max)", SPT_MAX);
 
-		try {
-			m_server->AsyncRunStep(step_settings.pause ? 0.0f : dtime);
+            u64 t0 = porting::getTimeUs();
 
-			const float remaining_time = step_settings.steplen
-					- 1e-6f * (porting::getTimeUs() - t0);
-			m_server->Receive(remaining_time);
+            const Server::StepSettings step_settings = m_server->getStepSettings();
 
-		} catch (con::PeerNotFoundException &e) {
-			infostream<<"Server: PeerNotFoundException"<<std::endl;
-		} catch (ClientNotFoundException &e) {
-		} catch (con::ConnectionBindFailed &e) {
-			m_server->setAsyncFatalError(e.what());
-		} catch (LuaError &e) {
-			m_server->setAsyncFatalError(e);
-		}
+            try {
+                m_server->AsyncRunStep(step_settings.pause ? 0.0f : dtime);
 
-		dtime = 1e-6f * (porting::getTimeUs() - t0);
-	}
+                const float remaining_time = step_settings.steplen
+                        - 1e-6f * (porting::getTimeUs() - t0);
+                m_server->Receive(remaining_time);
+
+            } catch (con::PeerNotFoundException &e) {
+                infostream<<"Server: PeerNotFoundException"<<std::endl;
+            } catch (ClientNotFoundException &e) {
+            } catch (con::ConnectionBindFailed &e) {
+                m_server->setAsyncFatalError(e.what());
+            } catch (LuaError &e) {
+                m_server->setAsyncFatalError(e);
+            }
+
+            dtime = 1e-6f * (porting::getTimeUs() - t0);
+        }
+    }
+
+	
 
 	END_DEBUG_EXCEPTION_HANDLER
 

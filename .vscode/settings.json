@@ -23,5 +23,8 @@
         "-DRUN_IN_PLACE=TRUE",
         "-DENABLE_GETTEXT=TRUE",
         "-DENABLE_SOUND=FALSE"
-    ]
+    ],
+    "files.associations": {
+        "xstring": "cpp"
+    }
 }
