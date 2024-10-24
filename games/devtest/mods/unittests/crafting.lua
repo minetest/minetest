@@ -87,7 +87,7 @@ local function test_get_craft_result()
 	minetest.log("info", "[unittests] repairable tool crafting output.item:to_table(): "..dump(output.item:to_table()))
 	assert(output.item:get_name() == "unittests:repairable_tool")
 	-- Test the wear value.
-	-- See src/craftdef.cpp in Minetest source code for the formula. The formula to calculate
+	-- See src/craftdef.cpp in Luanti source code for the formula. The formula to calculate
 	-- the value 51187 is:
 	--    65536 - ((65536-60000)+(65536-60000)) + floor(additonal_wear * 65536 + 0.5) = 51187
 	-- where additional_wear = 0.05
