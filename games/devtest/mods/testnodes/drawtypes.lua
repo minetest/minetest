@@ -1,5 +1,5 @@
 --[[ Drawtype Test: This file tests out and provides examples for
-all drawtypes in Minetest. It is attempted to keep the node
+all drawtypes in Luanti. It is attempted to keep the node
 definitions as simple and minimal as possible to keep
 side-effects to a minimum.
 
