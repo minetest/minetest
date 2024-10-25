@@ -1104,12 +1104,10 @@ void Server::Receive(float timeout)
 			if (!m_con->ReceiveTimeoutMs(&pkt,
 					(u32)remaining_time_us() / 1000)) {
 				// No incoming data.
-				// Already break if there's 1ms left, as ReceiveTimeoutMs is too coarse
-				// and a faster server-step is better than busy waiting.
-				if (remaining_time_us() < 1000.0f)
-					break;
-				else
+				if (remaining_time_us() > 0.0f)
 					continue;
+				else
+					break;
 			}
 
 			peer_id = pkt.getPeerId();
