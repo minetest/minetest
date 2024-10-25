@@ -22,6 +22,7 @@ struct Channel {
   ::capnp::MallocMessageBuilder m_obs_msg_builder;
   Observation::Builder m_obs_builder; // GUARDED_BY(m_obs_mutex)
   Image::Builder m_image_builder; // GUARDED_BY(m_obs_mutex)
+  irr::video::IImage *m_image_builder_data{nullptr}; // GUARDED_BY(m_obs_mutex)
   AuxMap::Builder m_aux_map_builder; // GUARDED_BY(m_obs_mutex)
   Action::Reader *m_action; // GUARDED_BY(m_action_mutex)
   bool m_has_obs{}; // GUARDED_BY(m_obs_mutex)
