@@ -1319,6 +1319,10 @@ void Game::run()
 		if (m_does_lost_focus_pause_game && !device->isWindowFocused() && !isMenuActive()) {
 			showPauseMenu();
 		}
+
+		// NOTE: This allows the RemoteInputHandler to take a screenshot after the client has
+		// rendered an updated image.
+		input->step_post_render();
 	}
 
 	RenderingEngine::autosaveScreensizeAndCo(initial_screen_size, initial_window_maximized);
