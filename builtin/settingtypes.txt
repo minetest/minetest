@@ -730,6 +730,9 @@ show_debug (Show debug info) bool false
 #    Radius to use when the block bounds HUD feature is set to near blocks.
 show_block_bounds_radius_near (Block bounds HUD radius) int 4 0 1000
 
+#    Enables left-hand mode for wielded items in the HUD.
+enable_left_hand (Enable Left-Hand Mode) bool false
+
 [**Chat]
 
 #    Maximum number of recent chat messages to show
