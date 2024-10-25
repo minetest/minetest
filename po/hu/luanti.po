@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-11 15:14+0200\n"
-"PO-Revision-Date: 2024-06-28 05:09+0000\n"
-"Last-Translator: Kisbenedek Márton <martonkisbenedek@gmail.com>\n"
+"PO-Revision-Date: 2024-10-26 09:15+0000\n"
+"Last-Translator: Unacceptium <unacceptium@proton.me>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.8.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -185,7 +185,7 @@ msgstr "Letöltés…"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Error getting dependencies for package"
-msgstr ""
+msgstr "Hiba történt a csomag függőségeinek beszerzésekor"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Games"
@@ -463,7 +463,7 @@ msgstr "Dekorációk"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Desert temples"
-msgstr ""
+msgstr "Sivatag sablonok"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
@@ -474,6 +474,8 @@ msgid ""
 "Different dungeon variant generated in desert biomes (only if dungeons "
 "enabled)"
 msgstr ""
+"Különböző tömlöc változatok sivatag biomokban (csak ha a tömlöcök "
+"engedélyezettek)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -1080,6 +1082,8 @@ msgid ""
 "Minetest is a game-creation platform that allows you to play many different "
 "games."
 msgstr ""
+"A Minetest egy játék-létrehozó felület, amely lehetővé teszi sok különböző "
+"játék játszását."
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -1943,6 +1947,7 @@ msgstr "Weblap megnyitása nem sikerült"
 #: src/client/shader.cpp
 msgid "Shaders are enabled but GLSL is not supported by the driver."
 msgstr ""
+"Az árnyalók engedélyezve vannak, de a GLSL nem támogatott a meghajtó által."
 
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
@@ -2139,11 +2144,11 @@ msgstr "Nyomj meg egy gombot"
 
 #: src/gui/guiOpenURL.cpp
 msgid "Open"
-msgstr ""
+msgstr "Nyitás"
 
 #: src/gui/guiOpenURL.cpp
 msgid "Open URL?"
-msgstr ""
+msgstr "URL megnyitása?"
 
 #: src/gui/guiOpenURL.cpp
 #, fuzzy
@@ -2442,7 +2447,7 @@ msgstr "Haladó"
 
 #: src/settings_translation_file.cpp
 msgid "Allows liquids to be translucent."
-msgstr ""
+msgstr "A folyadékok áttetszőségét teszi lehetővé."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2503,6 +2508,7 @@ msgid "Apple trees noise"
 msgstr "Almafa zaj"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Apply dithering to reduce color banding artifacts.\n"
 "Dithering significantly increases the size of losslessly-compressed\n"
@@ -2512,6 +2518,15 @@ msgid ""
 "With OpenGL ES, dithering only works if the shader supports high\n"
 "floating-point precision and it may have a higher performance impact."
 msgstr ""
+"DITHERING-et alkalmaz a színsávosodás csökkentéséhez.\n"
+"a DITHERING feltűnően növeli a veszteségmentesen\n"
+"tömörített képernyőképek méretét, de hibásan\n"
+"működik, ha a kijelző, vagy az operációs rendszer\n"
+"önmagától is DITHERING-et alkalmaz, vagy ha a\n"
+"színcsatornák nem hozzávetőlegesek 8 bithez.\n"
+"OpenGL ES-el a DITHERING csak akkor működik, ha\n"
+"az árnyalók támogatják a precíz lebegő-pontos számítást, így tőbb erőforrást "
+"használ."
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
@@ -2861,6 +2876,9 @@ msgid ""
 "Comma-separated list of AL and ALC extensions that should not be used.\n"
 "Useful for testing. See al_extensions.[h,cpp] for details."
 msgstr ""
+"Vesszővel elválasztott lista az AL és ALC bővítményekről, amiket nem akar "
+"használni.\n"
+"Tesztelésnél hasznos. nézze az al_extensions.[h,cpp]-t leírásért."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3492,16 +3510,17 @@ msgstr "Az elforgatott hálók irányának gyorsítótárazásának engedélyez�
 
 #: src/settings_translation_file.cpp
 msgid "Enables debug and error-checking in the OpenGL driver."
-msgstr ""
+msgstr "Engedélyezi a debug-ot és a hibakeresést az OpenGL meghajtón."
 
 #: src/settings_translation_file.cpp
 msgid "Enables the post processing pipeline."
-msgstr ""
+msgstr "Engedélyezi az utófeldogozó motort (post-processing)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enables touchscreen mode, allowing you to play the game with a touchscreen."
 msgstr ""
+"Engedélyezi az érintőkijelzős módot, ami által érintőkijelzővel is játszhat."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5407,13 +5426,12 @@ msgid "Proportion of large caves that contain liquid."
 msgstr "Nagy barlangok aránya amelyek folyadékot tartalmaznak."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Protocol version minimum"
-msgstr "Protokollverzió-eltérés. "
+msgstr "Minimum Protokollverzió"
 
 #: src/settings_translation_file.cpp
 msgid "Punch gesture"
-msgstr ""
+msgstr "Ütési gesztus"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5434,7 +5452,7 @@ msgstr "Véletlenszerű bemenet"
 
 #: src/settings_translation_file.cpp
 msgid "Random mod load order"
-msgstr ""
+msgstr "Véletlenszerű mod betőltési sorrend"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -6295,7 +6313,7 @@ msgstr ""
 msgid ""
 "The delay in milliseconds after which a touch interaction is considered a "
 "long tap."
-msgstr ""
+msgstr "A késleltetés, ami után egy rövid érintés hosszú nyomásnak minősül."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6315,6 +6333,15 @@ msgid ""
 "Known from the classic Minetest mobile controls.\n"
 "Combat is more or less impossible."
 msgstr ""
+"A játékos/entitás ütési gesztus.\n"
+"Felülírhatják modok és játék is.\n"
+"\n"
+"*rövid_érintés\n"
+"Könnyű használni, ismert sok más játékból, amit nem nevezünk meg.\n"
+"\n"
+"*hosszú_érintés\n"
+"ismert a klasszikus Minetest telefonos irányitásból.\n"
+"az ütés valamivel nehezebb lessz."
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
@@ -6477,7 +6504,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Threshold for long taps"
-msgstr ""
+msgstr "A hosszú érintés küszöbe"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6803,8 +6830,9 @@ msgid "Volume"
 msgstr "Hangerő"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Volume multiplier when the window is unfocused."
-msgstr ""
+msgstr "Hangerő többszörös kifókuszált ablak esetén."
 
 #: src/settings_translation_file.cpp
 msgid ""
