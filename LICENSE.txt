@@ -39,7 +39,7 @@ rubenwardy, paramat:
   textures/base/pack/start_icon.png
   textures/base/pack/end_icon.png
 
-erlehmann:
+erle:
   misc/minetest-icon-24x24.png
   misc/minetest-icon.ico
   misc/minetest.svg
@@ -68,7 +68,7 @@ Zughy:
 appgurueu:
   textures/base/pack/server_incompatible.png
 
-erlehmann, Warr1024, rollerozxa:
+erle, Warr1024, rollerozxa:
   textures/base/pack/no_screenshot.png
 
 kilbith:
