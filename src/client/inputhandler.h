@@ -276,6 +276,7 @@ public:
 	virtual s32 getMouseWheel() = 0;
 
 	virtual void step(float dtime) {}
+	virtual void step_post_render() {}
 
 	virtual void clear() {}
 	virtual void releaseAllKeys() {}

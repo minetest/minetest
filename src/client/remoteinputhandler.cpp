@@ -74,31 +74,6 @@ RemoteInputHandler::RemoteInputHandler(const std::string &endpoint,
   m_chan.m_action_cv.wait(lock, [this] { return m_chan.m_did_init; });
 };
 
-void RemoteInputHandler::fill_observation(
-    irr::video::IImage *image, float reward, std::map<std::string, float> aux) {
-  std::unique_lock<std::mutex> lock(m_chan.m_obs_mutex);
-  m_chan.m_obs_cv.wait(lock, [this] { return !m_chan.m_has_obs; });
-
-  m_chan.m_obs_builder.setReward(reward);
-  m_chan.m_image_builder.setWidth(image->getDimension().Width);
-  m_chan.m_image_builder.setHeight(image->getDimension().Height);
-  m_chan.m_image_builder.setData(
-      capnp::Data::Reader(reinterpret_cast<const uint8_t *>(image->getData()),
-                          image->getImageDataSizeInBytes()));
-
-  auto entries = m_chan.m_aux_map_builder.initEntries(aux.size());
-  size_t i = 0;
-  for (auto [key, value] : aux) {
-    auto aux_elem = entries[i];
-    i++;
-    aux_elem.setKey(key);
-    aux_elem.setValue(value);
-  }
-  m_chan.m_has_obs = true;
-  m_chan.m_obs_cv.notify_one();
-  image->drop();
-}
-
 void RemoteInputHandler::step(float dtime) {
   // skip first loop, because we don't have an observation yet
   // as draw is called after step
@@ -138,43 +113,67 @@ void RemoteInputHandler::step(float dtime) {
   float remote_input_handler_time_step = 0.0f;
   g_settings->getFloatNoEx("remote_input_handler_time_step", remote_input_handler_time_step);
   if(remote_input_handler_time_step > 0.0f) {
-	  gServer->AsyncRunStep(remote_input_handler_time_step);
+    gServer->AsyncRunStep(remote_input_handler_time_step);
   }
 
-  // send current observation
-  irr::video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
-  irr::video::IImage *image = driver->createScreenShot(video::ECF_R8G8B8);
-
-  // parse score from hud
-  // during game startup, the hud is not yet initialized, so there'll be no
-  // score for the first 1-2 steps
-  float score{};
-  std::map<std::string, float> aux{};
-  for (u32 i = 0; i < m_player->maxHudId(); ++i) {
-    auto hud_element = m_player->getHud(i);
-    std::string_view elem_text = hud_element->text;
-    // find the index of the first :
-    const auto colon_pos = elem_text.find(':');
-    if (colon_pos == std::string_view::npos) {
-      continue;
-    }
-    elem_text.remove_prefix(colon_pos + 1); // +1 for space
-    // I'd rather use std::from_chars, but it's not available in libc++ yet.
-    std::stringstream ss{std::string(elem_text)};
-    if (hud_element->name == "score") {
-      ss >> score;
-    } else {
-      float value{};
-      ss >> value;
-      aux[hud_element->name] = value;
-    }
-  }
-
-  // copying the image into the capnp message is slow, so we do it in a separate thread
-  std::thread([this, image, score, aux]() {
-    fill_observation(image, score, aux);
-  }).detach();
+  m_should_send_observation = true;
 };
+
+void RemoteInputHandler::step_post_render() {
+  if (m_should_send_observation) {
+    m_should_send_observation = false;
+
+    // send current observation
+    irr::video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
+    irr::video::IImage *image = driver->createScreenShot(video::ECF_R8G8B8);
+
+    // parse score from hud
+    // during game startup, the hud is not yet initialized, so there'll be no
+    // score for the first 1-2 steps
+    float score{};
+    std::map<std::string, float> aux{};
+    for (u32 i = 0; i < m_player->maxHudId(); ++i) {
+      auto hud_element = m_player->getHud(i);
+      std::string_view elem_text = hud_element->text;
+      // find the index of the first :
+      const auto colon_pos = elem_text.find(':');
+      if (colon_pos == std::string_view::npos) {
+        continue;
+      }
+      elem_text.remove_prefix(colon_pos + 1); // +1 for space
+      // I'd rather use std::from_chars, but it's not available in libc++ yet.
+      std::stringstream ss{std::string(elem_text)};
+      if (hud_element->name == "score") {
+        ss >> score;
+      } else {
+        float value{};
+        ss >> value;
+        aux[hud_element->name] = value;
+      }
+    }
+
+    std::unique_lock<std::mutex> lock(m_chan.m_obs_mutex);
+    m_chan.m_obs_cv.wait(lock, [this] { return !m_chan.m_has_obs; });
+
+    m_chan.m_obs_builder.setReward(score);
+    m_chan.m_image_builder.setWidth(image->getDimension().Width);
+    m_chan.m_image_builder.setHeight(image->getDimension().Height);
+    m_chan.m_image_builder.setData(
+        capnp::Data::Reader(reinterpret_cast<const uint8_t *>(image->getData()),
+                            image->getImageDataSizeInBytes()));
+
+    auto entries = m_chan.m_aux_map_builder.initEntries(aux.size());
+    auto entry_it = entries.begin();
+    for (const auto& [key, value] : aux) {
+      entry_it->setKey(key);
+      entry_it->setValue(value);
+	    ++entry_it;
+    }
+    m_chan.m_has_obs = true;
+    m_chan.m_obs_cv.notify_one();
+    image->drop(); // TODO(mickvangelderen): I'm worried we have a use-after free. The capnp docs mentiond that Reader does not own the underlying data. The notify_one call doesn't block (I think) and the image data referenced by the builder may not have been read yet. 
+  }
+}
 
 void RemoteInputHandler::clearInput() {
   m_key_is_down.clear();

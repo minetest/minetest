@@ -124,6 +124,8 @@ public:
   void clearInput();
 
   virtual void step(float dtime) override;
+  virtual void step_post_render() override;
+
   void simulateEvent(const SEvent &event) {
     if (event.EventType == EET_MOUSE_INPUT_EVENT) {
       // we need this call to trigger GUIEvents
@@ -170,4 +172,6 @@ private:
   float m_movement_direction;
 
   bool m_is_first_loop = true;
+
+  bool m_should_send_observation = false;
 };
