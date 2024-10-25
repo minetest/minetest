@@ -5659,6 +5659,8 @@ Utilities
       bulk_lbms = true,
       -- ABM supports field without_neighbors (5.10.0)
       abm_without_neighbors = true,
+      -- biomes have a weight parameter (5.11.0)
+      biome_weights = true,
   }
   ```
 
