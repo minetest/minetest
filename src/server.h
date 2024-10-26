@@ -205,7 +205,7 @@ public:
 
 	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep(float dtime, bool initial_step = false);
-	// Receive all incoming packets and wait for at least `timeout` seconds.
+	//! Receive all incoming packets and wait for at least `timeout` seconds.
 	void Receive(float timeout);
 	void yieldToOtherThreads(float dtime);
 

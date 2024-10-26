@@ -1085,6 +1085,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	m_shutdown_state.tick(dtime, this);
 }
 
+//! Receive all incoming packets and wait for at least `timeout` seconds.
 void Server::Receive(float timeout)
 {
 	ZoneScoped;
