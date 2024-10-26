@@ -9850,11 +9850,11 @@ Used by `core.register_node`.
     -- affected by the `movement_liquid_*` settings.
 
     climb_factor = 1.0,
-    -- The speed at which a climbable node can be climbed is multiplied
-    -- with this number. Must not be negative. No effect if node isn't
-    -- climbable.
+    -- The speed at which a climbable node can be climbed up and down
+    -- is multiplied by this number. Must not be negative. No effect if
+    -- node isn't climbable.
     -- Note: The base climbing speed is controlled by the setting
-    -- `movement_speed_climb`.
+    -- `movement_speed_climb` multiplied by the physics override `speed_climb`.
 
     buildable_to = false,  -- If true, placed nodes can replace this node
 

@@ -406,7 +406,7 @@ void ContentFeatures::reset()
 	move_resistance = 0;
 	liquid_move_physics = false;
 	post_effect_color_shaded = false;
-	climb_factor = 1.0;
+	climb_factor = 1.0f;
 }
 
 void ContentFeatures::setAlphaFromLegacy(u8 legacy_alpha)
