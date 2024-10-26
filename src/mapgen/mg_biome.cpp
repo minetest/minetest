@@ -53,8 +53,10 @@ BiomeManager::BiomeManager(Server *server) :
 			MAX_MAP_GENERATION_LIMIT, MAX_MAP_GENERATION_LIMIT);
 	b->heat_point      = 0.0;
 	b->humidity_point  = 0.0;
+	b->height_point    = 0;
 	b->vertical_blend  = 0;
 	b->weight          = 1.0f;
+	b->height_weight   = 0.0f;
 
 	b->m_nodenames.emplace_back("mapgen_stone");
 	b->m_nodenames.emplace_back("mapgen_stone");
@@ -272,7 +274,8 @@ Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 po
 
 		float d_heat = heat - b->heat_point;
 		float d_humidity = humidity - b->humidity_point;
-		float dist = ((d_heat * d_heat) + (d_humidity * d_humidity));
+		float d_height = b->height_weight == 0 ? 0 : (pos.Y - b->height_point) * b->height_weight;
+		float dist = ((d_heat * d_heat) + (d_humidity * d_humidity) + (d_height * d_height));
 		if (b->weight > 0.f)
 		       dist /= b->weight;
 
@@ -338,6 +341,7 @@ ObjDef *Biome::clone() const
 	obj->max_pos = max_pos;
 	obj->heat_point = heat_point;
 	obj->humidity_point = humidity_point;
+	obj->height_point = height_point;
 	obj->vertical_blend = vertical_blend;
 	obj->weight = weight;
 

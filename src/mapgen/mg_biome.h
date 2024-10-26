@@ -68,8 +68,10 @@ public:
 	v3s16 max_pos;
 	float heat_point;
 	float humidity_point;
+	float height_point;
 	s16 vertical_blend;
 	float weight;
+	float height_weight;
 
 	virtual void resolveNodeNames();
 };
