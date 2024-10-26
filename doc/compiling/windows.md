@@ -38,7 +38,7 @@ There are other optional libraries, but we don't test if they can build and link
 
 Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-windows`.
 
-## Compile Minetest
+## Compile Luanti
 
 ### a) Using the vcpkg toolchain and CMake GUI
 
@@ -55,7 +55,7 @@ Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-window
 11. If there are any errors, solve them and hit **Configure**
 12. Click **Generate**
 13. Click **Open Project**
-14. Compile Minetest inside Visual studio.
+14. Compile Luanti inside Visual studio.
 
 ### b) Using the vcpkg toolchain and the commandline
 
