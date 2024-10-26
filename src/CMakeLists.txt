@@ -598,13 +598,10 @@ if(PRECOMPILE_HEADERS)
 	target_precompile_headers(EngineCommon PRIVATE ${PRECOMPILED_HEADERS_LIST})
 endif()
 
-# File with used entitlements
-set(XCODE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/misc/entitlements/release.entitlements" CACHE FILEPATH "Path to entitlements file to be used with Xcode signing")
-
 if(APPLE)
 	# Configure the Info.plist file
 	configure_file(
-		"${CMAKE_SOURCE_DIR}/misc/Info.plist.in"
+		"${CMAKE_SOURCE_DIR}/misc/macos/Info.plist.in"
 		"${CMAKE_BINARY_DIR}/Info.plist"
 	)
 endif()
@@ -612,13 +609,16 @@ endif()
 if(BUILD_CLIENT)
 	# client target
 	if(ANDROID)
-		add_library(${PROJECT_NAME})
+		add_library(${PROJECT_NAME} SHARED)
 	else()
 		add_executable(${PROJECT_NAME})
 	endif()
 
 
 	if(CMAKE_GENERATOR STREQUAL "Xcode")
+		# File with used entitlements
+		set(XCODE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/misc/macos/entitlements/release.entitlements" CACHE FILEPATH "Path to entitlements file to be used with Xcode signing")
+
 		set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/build")
 		set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/build")
 

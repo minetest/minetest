@@ -37,7 +37,7 @@ make -j$(sysctl -n hw.logicalcpu)
 make install
 
 # Apple Silicon (M1/M2) Macs w/ MacOS >= BigSur signature for local run
-codesign --force --deep --sign - -o runtime --entitlements ../misc/entitlements/debug.entitlements --timestamp=none --generate-entitlement-der macos/minetest.app
+codesign --force --deep -s - --entitlements ../misc/macos/entitlements/debug.entitlements macos/minetest.app
 ```
 
 If you are using LuaJIT with `MAP_JIT` support use `debug_map_jit.entitlements`.
@@ -78,7 +78,7 @@ cmake .. \
     -GXcode
 ```
 
-If you are using LuaJIT with `MAP_JIT` support add `-DXCODE_CODE_SIGN_ENTITLEMENTS=../misc/entitlements/release_map_jit.entitlements`.
+If you are using LuaJIT with `MAP_JIT` support add `-DXCODE_CODE_SIGN_ENTITLEMENTS=../misc/macos/entitlements/release_map_jit.entitlements`.
 
 *WARNING:* You have to regenerate Xcode project if you switch commit, branch or etc.
 
