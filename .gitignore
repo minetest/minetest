@@ -138,3 +138,7 @@ lib/irrlichtmt
 
 # Generated mod storage database
 client/mod_storage.sqlite
+
+# mark-wiemer build stuff
+minetest-build
+vcpkg_installed
