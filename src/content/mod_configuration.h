@@ -87,6 +87,9 @@ public:
 	void checkConflictsAndDeps();
 
 private:
+	std::string m_first_mod; // "" <=> no mod
+	std::string m_last_mod; // "" <=> no mod
+
 	std::vector<ModSpec> m_sorted_mods;
 
 	/**

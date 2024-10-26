@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include <string>
 #include "common/c_types.h"
 
@@ -67,10 +67,11 @@ enum HudElementType {
 	HUD_ELEM_WAYPOINT  = 4,
 	HUD_ELEM_IMAGE_WAYPOINT = 5,
 	HUD_ELEM_COMPASS   = 6,
-	HUD_ELEM_MINIMAP   = 7
+	HUD_ELEM_MINIMAP   = 7,
+	HUD_ELEM_HOTBAR    = 8,
 };
 
-enum HudElementStat {
+enum HudElementStat : u8 {
 	HUD_STAT_POS = 0,
 	HUD_STAT_NAME,
 	HUD_STAT_SCALE,
@@ -85,6 +86,7 @@ enum HudElementStat {
 	HUD_STAT_Z_INDEX,
 	HUD_STAT_TEXT2,
 	HUD_STAT_STYLE,
+	HudElementStat_END // Dummy for validity check
 };
 
 enum HudCompassDir {

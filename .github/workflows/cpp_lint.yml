@@ -10,6 +10,8 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - 'util/ci/**'
@@ -20,6 +22,8 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - 'util/ci/**'
@@ -32,11 +36,11 @@ jobs:
   clang_tidy:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - name: Install deps
-        run: |
-          source ./util/ci/common.sh
-          install_linux_deps $CLANG_TIDY
+    - uses: actions/checkout@v4
+    - name: Install deps
+      run: |
+        source ./util/ci/common.sh
+        install_linux_deps $CLANG_TIDY
 
       - uses: prefix-dev/setup-pixi@v0.8.1
         with:

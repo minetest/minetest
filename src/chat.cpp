@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "config.h"
 #include "debug.h"
+#include "settings.h"
 #include "util/strfnd.h"
 #include "util/string.h"
 #include "util/numeric.h"
@@ -376,6 +377,13 @@ u32 ChatBuffer::formatChatLine(const ChatLine &line, u32 cols,
 					tempchar = linestring[in_pos+frag_length];
 				}
 
+				// Remove tailing punctuation characters
+				static const std::wstring tailing_chars = L",.";
+				tempchar = linestring[in_pos+frag_length - 1];
+				if (tailing_chars.find(tempchar) != std::wstring::npos) {
+					frag_length--;
+				}
+
 				space_pos = frag_length - 1;
 				// This frag may need to be force-split. That's ok, urls aren't "words"
 				if (frag_length >= remaining_in_output) {
@@ -577,6 +585,7 @@ void ChatPrompt::historyNext()
 
 void ChatPrompt::nickCompletion(const std::set<std::string> &names, bool backwards)
 {
+	const std::wstring_view line(getLineRef());
 	// Two cases:
 	// (a) m_nick_completion_start == m_nick_completion_end == 0
 	//     Then no previous nick completion is active.
@@ -586,7 +595,6 @@ void ChatPrompt::nickCompletion(const std::set<std::string> &names, bool backwar
 	//     m_nick_completion_start..m_nick_completion_end are the
 	//     interval where the originally used prefix was. Cycle
 	//     through the list of completions of that prefix.
-	const std::wstring &line = getLineRef();
 	u32 prefix_start = m_nick_completion_start;
 	u32 prefix_end = m_nick_completion_end;
 	bool initial = (prefix_end == 0);
@@ -601,7 +609,7 @@ void ChatPrompt::nickCompletion(const std::set<std::string> &names, bool backwar
 		if (prefix_start == prefix_end)
 			return;
 	}
-	std::wstring prefix = line.substr(prefix_start, prefix_end - prefix_start);
+	auto prefix = line.substr(prefix_start, prefix_end - prefix_start);
 
 	// find all names that start with the selected prefix
 	std::vector<std::wstring> completions;
@@ -624,7 +632,7 @@ void ChatPrompt::nickCompletion(const std::set<std::string> &names, bool backwar
 	{
 		while (word_end < line.size() && !iswspace(line[word_end]))
 			++word_end;
-		std::wstring word = line.substr(prefix_start, word_end - prefix_start);
+		auto word = line.substr(prefix_start, word_end - prefix_start);
 
 		// cycle through completions
 		for (u32 i = 0; i < completions.size(); ++i)
@@ -640,7 +648,7 @@ void ChatPrompt::nickCompletion(const std::set<std::string> &names, bool backwar
 			}
 		}
 	}
-	std::wstring replacement = completions[replacement_index];
+	const auto &replacement = completions[replacement_index];
 	if (word_end < line.size() && iswspace(line[word_end]))
 		++word_end;
 
@@ -775,9 +783,9 @@ void ChatPrompt::clampView()
 
 
 ChatBackend::ChatBackend():
-	m_console_buffer(500),
+	m_console_buffer(1500),
 	m_recent_buffer(6),
-	m_prompt(L"]", 500)
+	m_prompt(L"]", 1500)
 {
 }
 

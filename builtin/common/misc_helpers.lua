@@ -3,6 +3,7 @@
 --------------------------------------------------------------------------------
 -- Localize functions to avoid table lookups (better performance).
 local string_sub, string_find = string.sub, string.find
+local math = math
 
 --------------------------------------------------------------------------------
 local function basic_dump(o)
@@ -206,46 +207,18 @@ function table.indexof(list, val)
 end
 
 --------------------------------------------------------------------------------
+function table.keyof(tb, val)
+	for k, v in pairs(tb) do
+		if v == val then
+			return k
+		end
+	end
+	return nil
+end
+
+--------------------------------------------------------------------------------
 function string:trim()
 	return self:match("^%s*(.-)%s*$")
-end
-
---------------------------------------------------------------------------------
-function math.hypot(x, y)
-	return math.sqrt(x * x + y * y)
-end
-
---------------------------------------------------------------------------------
-function math.sign(x, tolerance)
-	tolerance = tolerance or 0
-	if x > tolerance then
-		return 1
-	elseif x < -tolerance then
-		return -1
-	end
-	return 0
-end
-
---------------------------------------------------------------------------------
-function math.factorial(x)
-	assert(x % 1 == 0 and x >= 0, "factorial expects a non-negative integer")
-	if x >= 171 then
-		-- 171! is greater than the biggest double, no need to calculate
-		return math.huge
-	end
-	local v = 1
-	for k = 2, x do
-		v = v * k
-	end
-	return v
-end
-
-
-function math.round(x)
-	if x >= 0 then
-		return math.floor(x + 0.5)
-	end
-	return math.ceil(x - 0.5)
 end
 
 local formspec_escapes = {
@@ -259,6 +232,16 @@ local formspec_escapes = {
 function core.formspec_escape(text)
 	-- Use explicit character set instead of dot here because it doubles the performance
 	return text and string.gsub(text, "[\\%[%];,$]", formspec_escapes)
+end
+
+
+local hypertext_escapes = {
+	["\\"] = "\\\\",
+	["<"] = "\\<",
+	[">"] = "\\>",
+}
+function core.hypertext_escape(text)
+	return text and text:gsub("[\\<>]", hypertext_escapes)
 end
 
 
@@ -490,6 +473,9 @@ end
 
 
 function table.insert_all(t, other)
+	if table.move then -- LuaJIT
+		return table.move(other, 1, #other, #t + 1, t)
+	end
 	for i=1, #other do
 		t[#t + 1] = other[i]
 	end
@@ -588,12 +574,14 @@ function core.strip_colors(str)
 	return (str:gsub(ESCAPE_CHAR .. "%([bc]@[^)]+%)", ""))
 end
 
-function core.translate(textdomain, str, ...)
+local function translate(textdomain, str, num, ...)
 	local start_seq
-	if textdomain == "" then
+	if textdomain == "" and num == "" then
 		start_seq = ESCAPE_CHAR .. "T"
-	else
+	elseif num == "" then
 		start_seq = ESCAPE_CHAR .. "(T@" .. textdomain .. ")"
+	else
+		start_seq = ESCAPE_CHAR .. "(T@" .. textdomain .. "@" .. num .. ")"
 	end
 	local arg = {n=select('#', ...), ...}
 	local end_seq = ESCAPE_CHAR .. "E"
@@ -624,8 +612,31 @@ function core.translate(textdomain, str, ...)
 	return start_seq .. translated .. end_seq
 end
 
+function core.translate(textdomain, str, ...)
+	return translate(textdomain, str, "", ...)
+end
+
+function core.translate_n(textdomain, str, str_plural, n, ...)
+	assert (type(n) == "number")
+	assert (n >= 0)
+	assert (math.floor(n) == n)
+
+	-- Truncate n if too large
+	local max = 1000000
+	if n >= 2 * max then
+		n = n % max + max
+	end
+	if n == 1 then
+		return translate(textdomain, str, "1", ...)
+	else
+		return translate(textdomain, str_plural, tostring(n), ...)
+	end
+end
+
 function core.get_translator(textdomain)
-	return function(str, ...) return core.translate(textdomain or "", str, ...) end
+	return
+		(function(str, ...) return core.translate(textdomain or "", str, ...) end),
+		(function(str, str_plural, n, ...) return core.translate_n(textdomain or "", str, str_plural, n, ...) end)
 end
 
 --------------------------------------------------------------------------------
@@ -686,6 +697,7 @@ function core.privs_to_string(privs, delim)
 			list[#list + 1] = priv
 		end
 	end
+	table.sort(list)
 	return table.concat(list, delim)
 end
 

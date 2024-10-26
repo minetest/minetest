@@ -166,6 +166,7 @@ protected:
 		video::SColor color;
 		bool color_defined;
 		s32 reported_column;
+		f32 image_scale; // only for "image" type columns
 	};
 
 	struct Row {

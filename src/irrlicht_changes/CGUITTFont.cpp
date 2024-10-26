@@ -30,9 +30,15 @@
    john@suckerfreegames.com
 */
 
-#include <irrlicht.h>
 #include <iostream>
 #include "CGUITTFont.h"
+#include "CMeshBuffer.h"
+#include "IFileSystem.h"
+#include "IGUIEnvironment.h"
+#include "IMeshManipulator.h"
+#include "IMeshSceneNode.h"
+#include "ISceneManager.h"
+#include "ISceneNode.h"
 
 namespace irr
 {
@@ -240,37 +246,6 @@ CGUITTFont* CGUITTFont::createTTFont(IGUIEnvironment *env, const io::path& filen
 	return font;
 }
 
-CGUITTFont* CGUITTFont::createTTFont(IrrlichtDevice *device, const io::path& filename, const u32 size, const bool antialias, const bool transparency)
-{
-	if (!c_libraryLoaded)
-	{
-		if (FT_Init_FreeType(&c_library))
-			return 0;
-		c_libraryLoaded = true;
-	}
-
-	CGUITTFont* font = new CGUITTFont(device->getGUIEnvironment());
-	font->Device = device;
-	bool ret = font->load(filename, size, antialias, transparency);
-	if (!ret)
-	{
-		font->drop();
-		return 0;
-	}
-
-	return font;
-}
-
-CGUITTFont* CGUITTFont::create(IGUIEnvironment *env, const io::path& filename, const u32 size, const bool antialias, const bool transparency)
-{
-	return CGUITTFont::createTTFont(env, filename, size, antialias, transparency);
-}
-
-CGUITTFont* CGUITTFont::create(IrrlichtDevice *device, const io::path& filename, const u32 size, const bool antialias, const bool transparency)
-{
-	return CGUITTFont::createTTFont(device, filename, size, antialias, transparency);
-}
-
 //////////////////////
 
 //! Constructor.
@@ -304,6 +279,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 
 	io::IFileSystem* filesystem = Environment->getFileSystem();
 	irr::ILogger* logger = (Device != 0 ? Device->getLogger() : 0);
+	// FIXME: this is always null ^
 	this->size = size;
 	this->filename = filename;
 
@@ -314,7 +290,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 
 	// Log.
 	if (logger)
-		logger->log(L"CGUITTFont", core::stringw(core::stringw(L"Creating new font: ") + core::stringw(filename) + L" " + core::stringc(size) + L"pt " + (antialias ? L"+antialias " : L"-antialias ") + (transparency ? L"+transparency" : L"-transparency")).c_str(), irr::ELL_INFORMATION);
+		logger->log("CGUITTFont", (core::stringc(L"Creating new font: ") + filename + " " + core::stringc(size) + "pt " + (antialias ? "+antialias " : "-antialias ") + (transparency ? "+transparency" : "-transparency")).c_str(), irr::ELL_INFORMATION);
 
 	// Grab the face.
 	SGUITTFace* face = 0;
@@ -330,7 +306,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 			io::IReadFile* file = filesystem->createAndOpenFile(filename);
 			if (file == 0)
 			{
-				if (logger) logger->log(L"CGUITTFont", L"Failed to open the file.", irr::ELL_INFORMATION);
+				if (logger) logger->log("CGUITTFont", "Failed to open the file.", irr::ELL_INFORMATION);
 
 				c_faces.erase(filename);
 				delete face;
@@ -345,7 +321,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 			// Create the face.
 			if (FT_New_Memory_Face(c_library, face->face_buffer, face->face_buffer_size, 0, &face->face))
 			{
-				if (logger) logger->log(L"CGUITTFont", L"FT_New_Memory_Face failed.", irr::ELL_INFORMATION);
+				if (logger) logger->log("CGUITTFont", "FT_New_Memory_Face failed.", irr::ELL_INFORMATION);
 
 				c_faces.erase(filename);
 				delete face;
@@ -357,7 +333,7 @@ bool CGUITTFont::load(const io::path& filename, const u32 size, const bool antia
 		{
 			if (FT_New_Face(c_library, reinterpret_cast<const char*>(filename.c_str()), 0, &face->face))
 			{
-				if (logger) logger->log(L"CGUITTFont", L"FT_New_Face failed.", irr::ELL_INFORMATION);
+				if (logger) logger->log("CGUITTFont", "FT_New_Face failed.", irr::ELL_INFORMATION);
 
 				c_faces.erase(filename);
 				delete face;
@@ -543,12 +519,15 @@ void CGUITTFont::setFontHinting(const bool enable, const bool enable_auto_hintin
 
 void CGUITTFont::draw(const core::stringw& text, const core::rect<s32>& position, video::SColor color, bool hcenter, bool vcenter, const core::rect<s32>* clip)
 {
-	draw(EnrichedString(std::wstring(text.c_str()), color), position, hcenter, vcenter, clip);
+	// Allow colors to work for strings that have passed through irrlicht by catching
+	// them here and converting them to enriched just before drawing.
+	EnrichedString s(text.c_str(), color);
+	draw(s, position, hcenter, vcenter, clip);
 }
 
 void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& position, bool hcenter, bool vcenter, const core::rect<s32>* clip)
 {
-	const std::vector<video::SColor> &colors = text.getColors();
+	const auto &colors = text.getColors();
 
 	if (!Driver)
 		return;
@@ -748,7 +727,7 @@ core::dimension2d<u32> CGUITTFont::getDimension(const std::u32string& text) cons
 		if (p == '\r')	// Mac or Windows line breaks.
 		{
 			lineBreak = true;
-			if (*(iter + 1) == '\n')
+			if (iter + 1 != text.end() && *(iter + 1) == '\n')
 			{
 				++iter;
 				p = *iter;
@@ -1076,6 +1055,7 @@ void CGUITTFont::createSharedPlane()
 	buf->append(vertices, 4, indices, 6);
 
 	shared_plane_.addMeshBuffer( buf );
+	shared_plane_.setHardwareMappingHint(EHM_STATIC);
 
 	shared_plane_ptr_ = &shared_plane_;
 	buf->drop(); //the addMeshBuffer method will grab it, so we can drop this ptr.
@@ -1124,13 +1104,9 @@ core::array<scene::ISceneNode*> CGUITTFont::addTextSceneNode(const wchar_t* text
 
 	// the default font material
 	SMaterial mat;
-	mat.Lighting = true;
 	mat.ZWriteEnable = video::EZW_OFF;
-	mat.NormalizeNormals = true;
-	mat.ColorMaterial = video::ECM_NONE;
 	mat.MaterialType = use_transparency ? video::EMT_TRANSPARENT_ALPHA_CHANNEL : video::EMT_SOLID;
 	mat.MaterialTypeParam = 0.01f;
-	mat.DiffuseColor = color;
 
 	wchar_t current_char = 0, previous_char = 0;
 	u32 n = 0;

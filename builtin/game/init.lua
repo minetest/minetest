@@ -18,6 +18,7 @@ if core.settings:get_bool("profiler.load") then
 end
 
 dofile(commonpath .. "after.lua")
+dofile(commonpath .. "metatable.lua")
 dofile(commonpath .. "mod_storage.lua")
 dofile(gamepath .. "item_entity.lua")
 dofile(gamepath .. "deprecated.lua")
@@ -34,9 +35,10 @@ assert(loadfile(gamepath .. "falling.lua"))(builtin_shared)
 dofile(gamepath .. "features.lua")
 dofile(gamepath .. "voxelarea.lua")
 dofile(gamepath .. "forceloading.lua")
-dofile(gamepath .. "statbars.lua")
+dofile(gamepath .. "hud.lua")
 dofile(gamepath .. "knockback.lua")
 dofile(gamepath .. "async.lua")
+dofile(gamepath .. "death_screen.lua")
 
 core.after(0, builtin_shared.cache_content_ids)
 

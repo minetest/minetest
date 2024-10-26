@@ -22,11 +22,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include "util/basic_macros.h"
 #include "irrlichttypes.h"
-#include <IGUIFont.h>
-#include <IGUISkin.h>
-#include <IGUIEnvironment.h>
-#include "settings.h"
+#include "irrString.h" // utf8_to_wide
 #include "threading/mutex_auto_lock.h"
+
+namespace irr {
+	namespace gui {
+		class IGUIEnvironment;
+		class IGUIFont;
+	}
+}
 
 #define FONT_SIZE_UNSPECIFIED 0xFFFFFFFF
 

@@ -20,10 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_bloated.h"
-#ifndef SERVER
-#include "settings.h"
-#include "client/renderingengine.h"
-#endif
+#include "config.h"
 
 
 struct ClientDynamicInfo
@@ -37,47 +34,15 @@ public:
 
 	bool equal(const ClientDynamicInfo &other) const {
 		return render_target_size == other.render_target_size &&
-				abs(real_gui_scaling - other.real_gui_scaling) < 0.001f &&
-				abs(real_hud_scaling - other.real_hud_scaling) < 0.001f &&
+				std::abs(real_gui_scaling - other.real_gui_scaling) < 0.001f &&
+				std::abs(real_hud_scaling - other.real_hud_scaling) < 0.001f &&
 				touch_controls == other.touch_controls;
 	}
 
-#ifndef SERVER
-	static ClientDynamicInfo getCurrent() {
-		v2u32 screen_size = RenderingEngine::getWindowSize();
-		f32 density = RenderingEngine::getDisplayDensity();
-		f32 gui_scaling = g_settings->getFloat("gui_scaling", 0.5f, 20.0f);
-		f32 hud_scaling = g_settings->getFloat("hud_scaling", 0.5f, 20.0f);
-		f32 real_gui_scaling = gui_scaling * density;
-		f32 real_hud_scaling = hud_scaling * density;
-#ifdef HAVE_TOUCHSCREENGUI
-		bool touch_controls = true;
-#else
-		bool touch_controls = false;
-#endif
-
-		return {
-			screen_size, real_gui_scaling, real_hud_scaling,
-			ClientDynamicInfo::calculateMaxFSSize(screen_size, gui_scaling),
-			touch_controls
-		};
-	}
-#endif
+#if CHECK_CLIENT_BUILD()
+	static ClientDynamicInfo getCurrent();
 
 private:
-#ifndef SERVER
-	static v2f32 calculateMaxFSSize(v2u32 render_target_size, f32 gui_scaling) {
-		f32 factor =
-#ifdef HAVE_TOUCHSCREENGUI
-				10 / gui_scaling;
-#else
-				15 / gui_scaling;
-#endif
-		f32 ratio = (f32)render_target_size.X / (f32)render_target_size.Y;
-		if (ratio < 1)
-			return { factor, factor / ratio };
-		else
-			return { factor * ratio, factor };
-	}
+	static v2f32 calculateMaxFSSize(v2u32 render_target_size, f32 density, f32 gui_scaling);
 #endif
 };

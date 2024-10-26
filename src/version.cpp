@@ -37,7 +37,7 @@ const char *g_build_info =
 	"BUILD_TYPE=" BUILD_TYPE "\n"
 	"RUN_IN_PLACE=" STR(RUN_IN_PLACE) "\n"
 	"USE_CURL=" STR(USE_CURL) "\n"
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	"USE_GETTEXT=" STR(USE_GETTEXT) "\n"
 	"USE_SOUND=" STR(USE_SOUND) "\n"
 #endif

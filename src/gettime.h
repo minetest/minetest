@@ -23,14 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <mutex>
 
-enum TimePrecision
-{
-	PRECISION_SECONDS,
-	PRECISION_MILLI,
-	PRECISION_MICRO,
-	PRECISION_NANO
-};
-
 inline struct tm mt_localtime()
 {
 	// initialize the time zone on first invocation

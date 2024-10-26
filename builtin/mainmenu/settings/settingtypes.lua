@@ -439,9 +439,9 @@ function settingtypes.parse_config_file(read_all, parse_mods)
 		end
 
 		-- Parse mods
+		pkgmgr.load_all()
 		local mods_category_initialized = false
-		local mods = {}
-		pkgmgr.get_mods(core.get_modpath(), "mods", mods)
+		local mods = pkgmgr.global_mods:get_list()
 		table.sort(mods, function(a, b) return a.name < b.name end)
 
 		for _, mod in ipairs(mods) do

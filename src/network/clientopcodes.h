@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "networkprotocol.h"
 
 class NetworkPacket;
+// Note: don't forward-declare Client here (#14324)
 
 enum ToClientConnectionState {
 	TOCLIENT_STATE_NOT_CONNECTED,

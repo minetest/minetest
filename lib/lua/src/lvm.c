@@ -209,14 +209,15 @@ static int l_strcmp (const TString *ls, const TString *rs) {
     int temp = strcoll(l, r);
     if (temp != 0) return temp;
     else {  /* strings are equal up to a `\0' */
-      size_t len = strlen(l);  /* index of first `\0' in both strings */
-      if (len == lr)  /* r is finished? */
-        return (len == ll) ? 0 : 1;
-      else if (len == ll)  /* l is finished? */
-        return -1;  /* l is smaller than r (because r is not finished) */
-      /* both strings longer than `len'; go on comparing (after the `\0') */
-      len++;
-      l += len; ll -= len; r += len; lr -= len;
+      size_t zl1 = strlen(l);  /* index of first '\0' in 'l' */
+      size_t zl2 = strlen(r);  /* index of first '\0' in 'r' */
+      if (zl2 == lr)  /* 'r' is finished? */
+        return (zl1 == ll) ? 0 : 1;  /* check 'l' */
+      else if (zl1 == ll)  /* 'l' is finished? */
+        return -1;  /* 'l' is less than 'r' ('r' is not finished) */
+      /* both strings longer than 'zl'; go on comparing after the '\0' */
+      zl1++; zl2++;
+      l += zl1; ll -= zl1; r += zl2; lr -= zl2;
     }
   }
 }

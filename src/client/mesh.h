@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * Applies shading to a color based on the surface's
  * normal vector.
  */
-void applyFacesShading(video::SColor &color, const v3f &normal);
+void applyFacesShading(video::SColor &color, const v3f normal);
 
 /*
 	Create a new cube mesh.
@@ -52,24 +52,12 @@ void translateMesh(scene::IMesh *mesh, v3f vec);
 /*!
  * Sets a constant color for all vertices in the mesh buffer.
  */
-void setMeshBufferColor(scene::IMeshBuffer *buf, const video::SColor &color);
+void setMeshBufferColor(scene::IMeshBuffer *buf, const video::SColor color);
 
 /*
 	Set a constant color for all vertices in the mesh
 */
-void setMeshColor(scene::IMesh *mesh, const video::SColor &color);
-
-
-/*
-	Sets texture coords for vertices in the mesh buffer.
-	`uv[]` must have `count` elements
-*/
-void setMeshBufferTextureCoords(scene::IMeshBuffer *buf, const v2f *uv, u32 count);
-
-/*
-	Set a constant color for an animated mesh
-*/
-void setAnimatedMeshColor(scene::IAnimatedMeshSceneNode *node, const video::SColor &color);
+void setMeshColor(scene::IMesh *mesh, const video::SColor color);
 
 /*!
  * Overwrites the color of a mesh buffer.
@@ -139,5 +127,5 @@ bool checkMeshNormals(scene::IMesh *mesh);
 	Set the MinFilter, MagFilter and AnisotropicFilter properties of a texture
 	layer according to the three relevant boolean values found in the Minetest
 	settings.
-*/ 
+*/
 void setMaterialFilters(video::SMaterialLayer &tex, bool bilinear, bool trilinear, bool anisotropic);

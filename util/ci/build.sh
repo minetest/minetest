@@ -1,10 +1,11 @@
-#! /bin/bash -e
+#!/bin/bash -e
 
 set -x
 
 cmake -B build -S . \
 	-DCMAKE_FIND_FRAMEWORK=LAST \
 	-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-Debug} \
+	-DENABLE_LTO=FALSE \
 	-DRUN_IN_PLACE=TRUE \
 	-G Ninja \
 	-DENABLE_GETTEXT=${CMAKE_ENABLE_GETTEXT:-TRUE} \

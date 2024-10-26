@@ -18,10 +18,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "settings.h"
 #include "util/numeric.h"
 #include "inputhandler.h"
 #include "gui/mainmenumanager.h"
+#include "gui/touchcontrols.h"
 #include "hud.h"
+#include "log_internal.h"
+#include "client/renderingengine.h"
 
 void KeyCache::populate_nonchanging()
 {
@@ -92,27 +96,68 @@ void KeyCache::populate()
 			handler->listenForKey(k);
 		}
 		handler->listenForKey(EscapeKey);
-		handler->listenForKey(CancelKey);
 	}
 }
 
 bool MyEventReceiver::OnEvent(const SEvent &event)
 {
-	/*
-		React to nothing here if a menu is active
-	*/
-	if (isMenuActive()) {
-#ifdef HAVE_TOUCHSCREENGUI
-		if (m_touchscreengui) {
-			m_touchscreengui->setVisible(false);
+	if (event.EventType == irr::EET_LOG_TEXT_EVENT) {
+		static const LogLevel irr_loglev_conv[] = {
+			LL_VERBOSE, // ELL_DEBUG
+			LL_INFO,    // ELL_INFORMATION
+			LL_WARNING, // ELL_WARNING
+			LL_ERROR,   // ELL_ERROR
+			LL_NONE,    // ELL_NONE
+		};
+		assert(event.LogEvent.Level < ARRLEN(irr_loglev_conv));
+		g_logger.log(irr_loglev_conv[event.LogEvent.Level],
+				std::string("Irrlicht: ") + event.LogEvent.Text);
+		return true;
+	}
+
+	if (event.EventType == EET_APPLICATION_EVENT &&
+			event.ApplicationEvent.EventType == EAET_DPI_CHANGED) {
+		// This is a fake setting so that we can use (de)registerChangedCallback
+		// not only to listen for gui/hud_scaling changes, but also for DPI changes.
+		g_settings->setU16("dpi_change_notifier",
+				g_settings->getU16("dpi_change_notifier") + 1);
+		return true;
+	}
+
+	// This is separate from other keyboard handling so that it also works in menus.
+	if (event.EventType == EET_KEY_INPUT_EVENT) {
+		const KeyPress keyCode(event.KeyInput);
+		if (keyCode == getKeySetting("keymap_fullscreen")) {
+			if (event.KeyInput.PressedDown && !fullscreen_is_down) {
+				IrrlichtDevice *device = RenderingEngine::get_raw_device();
+
+				bool new_fullscreen = !device->isFullscreen();
+				// Only update the setting if toggling succeeds - it always fails
+				// if Minetest was built without SDL.
+				if (device->setFullscreen(new_fullscreen)) {
+					g_settings->setBool("fullscreen", new_fullscreen);
+				}
+			}
+			fullscreen_is_down = event.KeyInput.PressedDown;
+			return true;
 		}
-#endif
+	}
+
+	if (event.EventType == EET_MOUSE_INPUT_EVENT && !event.MouseInput.Simulated)
+		last_pointer_type = PointerType::Mouse;
+	else if (event.EventType == EET_TOUCH_INPUT_EVENT)
+		last_pointer_type = PointerType::Touch;
+
+	// Let the menu handle events, if one is active.
+	if (isMenuActive()) {
+		if (g_touchcontrols)
+			g_touchcontrols->setVisible(false);
 		return g_menumgr.preprocessEvent(event);
 	}
 
 	// Remember whether each key is down or up
 	if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
-		const KeyPress &keyCode = event.KeyInput;
+		const KeyPress keyCode(event.KeyInput);
 		if (keysListenedFor[keyCode]) {
 			if (event.KeyInput.PressedDown) {
 				if (!IsKeyDown(keyCode))
@@ -130,73 +175,92 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 			return true;
 		}
 
-#ifdef HAVE_TOUCHSCREENGUI
-	} else if (m_touchscreengui && event.EventType == irr::EET_TOUCH_INPUT_EVENT) {
-		// In case of touchscreengui, we have to handle different events
-		m_touchscreengui->translateEvent(event);
+	} else if (g_touchcontrols && event.EventType == irr::EET_TOUCH_INPUT_EVENT) {
+		// In case of touchcontrols, we have to handle different events
+		g_touchcontrols->translateEvent(event);
 		return true;
-#endif
-
 	} else if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
 		// joystick may be nullptr if game is launched with '--random-input' parameter
 		return joystick && joystick->handleEvent(event.JoystickEvent);
 	} else if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 		// Handle mouse events
-		KeyPress key;
 		switch (event.MouseInput.Event) {
 		case EMIE_LMOUSE_PRESSED_DOWN:
-			key = "KEY_LBUTTON";
-			keyIsDown.set(key);
-			keyWasDown.set(key);
-			keyWasPressed.set(key);
+			keyIsDown.set(LMBKey);
+			keyWasDown.set(LMBKey);
+			keyWasPressed.set(LMBKey);
 			break;
 		case EMIE_MMOUSE_PRESSED_DOWN:
-			key = "KEY_MBUTTON";
-			keyIsDown.set(key);
-			keyWasDown.set(key);
-			keyWasPressed.set(key);
+			keyIsDown.set(MMBKey);
+			keyWasDown.set(MMBKey);
+			keyWasPressed.set(MMBKey);
 			break;
 		case EMIE_RMOUSE_PRESSED_DOWN:
-			key = "KEY_RBUTTON";
-			keyIsDown.set(key);
-			keyWasDown.set(key);
-			keyWasPressed.set(key);
+			keyIsDown.set(RMBKey);
+			keyWasDown.set(RMBKey);
+			keyWasPressed.set(RMBKey);
 			break;
 		case EMIE_LMOUSE_LEFT_UP:
-			key = "KEY_LBUTTON";
-			keyIsDown.unset(key);
-			keyWasReleased.set(key);
+			keyIsDown.unset(LMBKey);
+			keyWasReleased.set(LMBKey);
 			break;
 		case EMIE_MMOUSE_LEFT_UP:
-			key = "KEY_MBUTTON";
-			keyIsDown.unset(key);
-			keyWasReleased.set(key);
+			keyIsDown.unset(MMBKey);
+			keyWasReleased.set(MMBKey);
 			break;
 		case EMIE_RMOUSE_LEFT_UP:
-			key = "KEY_RBUTTON";
-			keyIsDown.unset(key);
-			keyWasReleased.set(key);
+			keyIsDown.unset(RMBKey);
+			keyWasReleased.set(RMBKey);
 			break;
 		case EMIE_MOUSE_WHEEL:
 			mouse_wheel += event.MouseInput.Wheel;
 			break;
-		default: break;
+		default:
+			break;
 		}
-	} else if (event.EventType == irr::EET_LOG_TEXT_EVENT) {
-		static const LogLevel irr_loglev_conv[] = {
-				LL_VERBOSE, // ELL_DEBUG
-				LL_INFO,    // ELL_INFORMATION
-				LL_WARNING, // ELL_WARNING
-				LL_ERROR,   // ELL_ERROR
-				LL_NONE,    // ELL_NONE
-		};
-		assert(event.LogEvent.Level < ARRLEN(irr_loglev_conv));
-		g_logger.log(irr_loglev_conv[event.LogEvent.Level],
-				std::string("Irrlicht: ") + event.LogEvent.Text);
-		return true;
 	}
-	/* always return false in order to continue processing events */
+
+	// tell Irrlicht to continue processing this event
 	return false;
+}
+
+/*
+ * RealInputHandler
+ */
+float RealInputHandler::getJoystickSpeed()
+{
+	if (g_touchcontrols && g_touchcontrols->getJoystickSpeed())
+		return g_touchcontrols->getJoystickSpeed();
+	return joystick.getMovementSpeed();
+}
+
+float RealInputHandler::getJoystickDirection()
+{
+	// `getJoystickDirection() == 0` means forward, so we cannot use
+	// `getJoystickDirection()` as a condition.
+	if (g_touchcontrols && g_touchcontrols->getJoystickSpeed())
+		return g_touchcontrols->getJoystickDirection();
+	return joystick.getMovementDirection();
+}
+
+v2s32 RealInputHandler::getMousePos()
+{
+	auto control = RenderingEngine::get_raw_device()->getCursorControl();
+	if (control) {
+		return control->getPosition();
+	}
+
+	return m_mousepos;
+}
+
+void RealInputHandler::setMousePos(s32 x, s32 y)
+{
+	auto control = RenderingEngine::get_raw_device()->getCursorControl();
+	if (control) {
+		control->setPosition(x, y);
+	} else {
+		m_mousepos = v2s32(x, y);
+	}
 }
 
 /*
@@ -254,25 +318,11 @@ void RandomInputHandler::step(float dtime)
 		counterMovement -= dtime;
 		if (counterMovement < 0.0) {
 			counterMovement = 0.1 * Rand(1, 40);
-			movementSpeed = Rand(0,100)*0.01;
-			movementDirection = Rand(-100, 100)*0.01 * M_PI;
+			joystickSpeed = Rand(0,100)*0.01;
+			joystickDirection = Rand(-100, 100)*0.01 * M_PI;
 		}
 	} else {
-		bool f = keydown[keycache.key[KeyType::FORWARD]],
-			l = keydown[keycache.key[KeyType::LEFT]];
-		if (f || l) {
-			movementSpeed = 1.0f;
-			if (f && !l)
-				movementDirection = 0.0;
-			else if (!f && l)
-				movementDirection = -M_PI_2;
-			else if (f && l)
-				movementDirection = -M_PI_4;
-			else
-				movementDirection = 0.0;
-		} else {
-			movementSpeed = 0.0;
-			movementDirection = 0.0;
-		}
+		joystickSpeed = 0.0f;
+		joystickDirection = 0.0f;
 	}
 }

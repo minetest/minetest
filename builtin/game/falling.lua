@@ -79,6 +79,9 @@ core.register_entity(":__builtin:falling_node", {
 		-- Cache whether we're supposed to float on water
 		self.floats = core.get_item_group(node.name, "float") ~= 0
 
+		-- Save liquidtype for falling water
+        self.liquidtype = def.liquidtype
+
 		-- Set entity visuals
 		if def.drawtype == "torchlike" or def.drawtype == "signlike" then
 			local textures
@@ -150,7 +153,12 @@ core.register_entity(":__builtin:falling_node", {
 
 		-- Rotate entity
 		if def.drawtype == "torchlike" then
-			self.object:set_yaw(math.pi*0.25)
+			if (def.paramtype2 == "wallmounted" or def.paramtype2 == "colorwallmounted")
+					and node.param2 % 8 == 7 then
+				self.object:set_yaw(-math.pi*0.25)
+			else
+				self.object:set_yaw(math.pi*0.25)
+			end
 		elseif ((node.param2 ~= 0 or def.drawtype == "nodebox" or def.drawtype == "mesh")
 				and (def.wield_image == "" or def.wield_image == nil))
 				or def.drawtype == "signlike"
@@ -190,6 +198,10 @@ core.register_entity(":__builtin:falling_node", {
 						pitch, yaw = 0, -math.pi/2
 					elseif rot == 4 then
 						pitch, yaw = 0, math.pi
+					elseif rot == 6 then
+						pitch, yaw = math.pi/2, 0
+					elseif rot == 7 then
+						pitch, yaw = -math.pi/2, math.pi
 					end
 				else
 					if rot == 1 then
@@ -202,6 +214,10 @@ core.register_entity(":__builtin:falling_node", {
 						pitch, yaw = math.pi/2, math.pi
 					elseif rot == 5 then
 						pitch, yaw = math.pi/2, 0
+					elseif rot == 6 then
+						pitch, yaw = math.pi, -math.pi/2
+					elseif rot == 7 then
+						pitch, yaw = 0, -math.pi/2
 					end
 				end
 				if def.drawtype == "signlike" then
@@ -210,10 +226,20 @@ core.register_entity(":__builtin:falling_node", {
 						yaw = yaw + math.pi/2
 					elseif rot == 1 then
 						yaw = yaw - math.pi/2
+					elseif rot == 6 then
+						yaw = yaw - math.pi/2
+						pitch = pitch + math.pi
+					elseif rot == 7 then
+						yaw = yaw + math.pi/2
+						pitch = pitch + math.pi
 					end
 				elseif def.drawtype == "mesh" or def.drawtype == "normal" or def.drawtype == "nodebox" then
-					if rot >= 0 and rot <= 1 then
+					if rot == 0 or rot == 1 then
 						roll = roll + math.pi
+					elseif rot == 6 or rot == 7 then
+						if def.drawtype ~= "normal" then
+							roll = roll - math.pi/2
+						end
 					else
 						yaw = yaw + math.pi
 					end
@@ -271,9 +297,17 @@ core.register_entity(":__builtin:falling_node", {
 		end
 
 		-- Decide if we're replacing the node or placing on top
+		-- This condition is very similar to the check in core.check_single_for_falling(p)
 		local np = vector.copy(bcp)
-		if bcd and bcd.buildable_to and
-				(not self.floats or bcd.liquidtype == "none") then
+		if bcd and bcd.buildable_to
+				and -- Take "float" group into consideration:
+				(
+					-- Fall through non-liquids
+					not self.floats or bcd.liquidtype == "none" or
+					-- Only let sources fall through flowing liquids
+					(self.floats and self.liquidtype ~= "none" and bcd.liquidtype ~= "source")
+				) then
+
 			core.remove_node(bcp)
 		else
 			np.y = np.y + 1
@@ -284,7 +318,7 @@ core.register_entity(":__builtin:falling_node", {
 		local nd = core.registered_nodes[n2.name]
 		-- If it's not air or liquid, remove node and replace it with
 		-- it's drops
-		if n2.name ~= "air" and (not nd or nd.liquidtype == "none") then
+		if n2.name ~= "air" and (not nd or nd.liquidtype ~= "source") then
 			if nd and nd.buildable_to == false then
 				nd.on_dig(np, n2, nil)
 				-- If it's still there, it might be protected
@@ -532,11 +566,19 @@ function core.check_single_for_falling(p)
 				local success, _ = convert_to_falling_node(p, n)
 				return success
 			end
+			local d_falling = core.registered_nodes[n.name]
+			local do_float = core.get_item_group(n.name, "float") > 0
 			-- Otherwise only if the bottom node is considered "fall through"
 			if not same and
-					(not d_bottom.walkable or d_bottom.buildable_to) and
-					(core.get_item_group(n.name, "float") == 0 or
-					d_bottom.liquidtype == "none") then
+					(not d_bottom.walkable or d_bottom.buildable_to)
+					and -- Take "float" group into consideration:
+					(
+						-- Fall through non-liquids
+						not do_float or d_bottom.liquidtype == "none" or
+						-- Only let sources fall through flowing liquids
+						(do_float and d_falling.liquidtype == "source" and d_bottom.liquidtype ~= "source")
+					) then
+
 				local success, _ = convert_to_falling_node(p, n)
 				return success
 			end

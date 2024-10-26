@@ -74,6 +74,8 @@ private:
 
 	static int l_get_mapgen_names(lua_State *L);
 
+	static int l_get_language(lua_State *L);
+
 	static int l_gettext(lua_State *L);
 
 	//packages
@@ -83,6 +85,8 @@ private:
 	static int l_get_content_info(lua_State *L);
 
 	static int l_check_mod_configuration(lua_State *L);
+
+	static int l_get_content_translation(lua_State *L);
 
 	//gui
 
@@ -111,6 +115,8 @@ private:
 	static int l_get_active_renderer(lua_State *L);
 
 	static int l_get_active_irrlicht_device(lua_State *L);
+
+	static int l_irrlicht_device_supports_touch(lua_State *L);
 
 	//filesystem
 
@@ -155,16 +161,16 @@ private:
 
 	static int l_get_max_supp_proto(lua_State *L);
 
+	static int l_get_formspec_version(lua_State  *L);
+
 	// other
 	static int l_open_url(lua_State *L);
+
+	static int l_open_url_dialog(lua_State *L);
 
 	static int l_open_dir(lua_State *L);
 
 	static int l_share_file(lua_State *L);
-
-	static int l_set_once(lua_State *L);
-
-	static int l_get_once(lua_State *L);
 
 	// async
 	static int l_do_async_callback(lua_State *L);

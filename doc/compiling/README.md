@@ -1,4 +1,4 @@
-# Compiling Minetest
+# Compiling Luanti
 
 - [Compiling on GNU/Linux](linux.md)
 - [Compiling on Windows](windows.md)
@@ -9,8 +9,8 @@
 
 General options and their default values:
 
-    BUILD_CLIENT=TRUE          - Build Minetest client
-    BUILD_SERVER=FALSE         - Build Minetest server
+    BUILD_CLIENT=TRUE          - Build Luanti client
+    BUILD_SERVER=FALSE         - Build Luanti server
     BUILD_UNITTESTS=TRUE       - Build unittest sources
     BUILD_BENCHMARKS=FALSE     - Build benchmark sources
     BUILD_DOCUMENTATION=TRUE   - Build doxygen documentation
@@ -20,6 +20,9 @@ General options and their default values:
         SemiDebug              - Partially optimized debug build
         RelWithDebInfo         - Release build with debug information
         MinSizeRel             - Release build with -Os passed to compiler to make executable as small as possible
+    PRECOMPILE_HEADERS=FALSE   - Precompile some headers (experimental; requires CMake 3.16 or later)
+    PRECOMPILED_HEADERS_PATH=  - Path to a file listing all headers to precompile (default points to src/precompiled_headers.txt)
+    USE_SDL2=TRUE              - Build with SDL2; Enables IrrlichtMt device SDL2
     ENABLE_CURL=ON             - Build with cURL; Enables use of online mod repo, public serverlist and remote media fetching via http
     ENABLE_CURSES=ON           - Build with (n)curses; Enables a server side terminal (command line option: --terminal)
     ENABLE_GETTEXT=ON          - Build with Gettext; Allows using translations
@@ -28,6 +31,7 @@ General options and their default values:
     ENABLE_REDIS=ON            - Build with libhiredis; Enables use of Redis map backend
     ENABLE_SPATIAL=ON          - Build with LibSpatial; Speeds up AreaStores
     ENABLE_SOUND=ON            - Build with OpenAL, libogg & libvorbis; in-game sounds
+    ENABLE_LTO=<varies>        - Build with IPO/LTO optimizations (smaller and more efficient than regular build)
     ENABLE_LUAJIT=ON           - Build with LuaJIT (much faster than non-JIT Lua)
     ENABLE_PROMETHEUS=OFF      - Build with Prometheus metrics exporter (listens on tcp/30000 by default)
     ENABLE_SYSTEM_GMP=ON       - Use GMP from system (much faster than bundled mini-gmp)
@@ -37,11 +41,15 @@ General options and their default values:
     INSTALL_DEVTEST=FALSE      - Whether the Development Test game should be installed alongside Minetest
     INSTALL_MINETEST_GAME=FALSE- Whether the Minetest game should be installed alongside Minetest. Useful on MacOS for getting pytest to pass without having to symlink minetest game into Application Support.
     USE_GPROF=FALSE            - Enable profiling using GProf
-    VERSION_EXTRA=             - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
-    ENABLE_TOUCH=FALSE         - Enable Touchscreen support (requires support by IrrlichtMt)
+    BUILD_WITH_TRACY=FALSE     - Fetch and build with the Tracy profiler client
+    FETCH_TRACY_GIT_TAG=master - Git tag for fetching Tracy client. Match with your server (gui) version
+    VERSION_EXTRA=             - Text to append to version (e.g. VERSION_EXTRA=foobar -> Luanti 5.10.0-foobar)
 
 Library specific options:
 
+    SDL2_DLL                        - Only if building with SDL2 on Windows; path to libSDL2.dll
+    SDL2_INCLUDE_DIRS               - Only if building with SDL2; directory where SDL.h is located
+    SDL2_LIBRARIES                  - Only if building with SDL2; path to libSDL2.a/libSDL2.so/libSDL2.lib
     CURL_DLL                        - Only if building with cURL on Windows; path to libcurl.dll
     CURL_INCLUDE_DIR                - Only if building with cURL; directory where curl.h is located
     CURL_LIBRARY                    - Only if building with cURL; path to libcurl.a/libcurl.so/libcurl.lib
@@ -55,8 +63,6 @@ Library specific options:
     GETTEXT_LIBRARY                 - Optional/platform-dependent with gettext; path to libintl.so/libintl.dll.a
     GETTEXT_MSGFMT                  - Only when building with gettext; path to msgfmt/msgfmt.exe
     ICONV_LIBRARY                   - Optional/platform-dependent; path to libiconv.so/libiconv.dylib
-    IRRLICHT_DLL                    - Only on Windows; path to IrrlichtMt.dll
-    IRRLICHT_INCLUDE_DIR            - Directory that contains IrrCompileConfig.h (usable for server build only)
     LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
     LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll.a
     LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll

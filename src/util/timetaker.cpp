@@ -23,12 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include <ostream>
 
-TimeTaker::TimeTaker(const std::string &name, u64 *result, TimePrecision prec)
+void TimeTaker::start()
 {
-	m_name = name;
-	m_result = result;
-	m_precision = prec;
-	m_time1 = porting::getTime(prec);
+	m_time1 = porting::getTime(m_precision);
 }
 
 u64 TimeTaker::stop(bool quiet)
@@ -38,16 +35,9 @@ u64 TimeTaker::stop(bool quiet)
 		if (m_result != nullptr) {
 			(*m_result) += dtime;
 		} else {
-			if (!quiet) {
-				static const char* const units[] = {
-					"s"  /* PRECISION_SECONDS */,
-					"ms" /* PRECISION_MILLI */,
-					"us" /* PRECISION_MICRO */,
-					"ns" /* PRECISION_NANO */,
-				};
+			if (!quiet && !m_name.empty()) {
 				infostream << m_name << " took "
-				           << dtime << units[m_precision]
-					   << std::endl;
+					<< dtime << TimePrecision_units[m_precision] << std::endl;
 			}
 		}
 		m_running = false;

@@ -17,12 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <cstdint>
 #include <ctime>
-#include <limits>
+#include <random>
 #include "irrlichttypes.h" // must be included before anything irrlicht, see comment in the file
 #include "irrlicht.h" // createDevice
-#include "irrlichttypes_extrabloated.h"
 #include "irrlicht_changes/printing.h"
 #include "benchmark/benchmark.h"
 #include "chat_interface.h"
@@ -31,10 +29,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "filesys.h"
 #include "version.h"
-#include "client/game.h"
 #include "defaultsettings.h"
+#include "migratesettings.h"
 #include "gettext.h"
 #include "log.h"
+#include "log_internal.h"
 #include "util/quicktune.h"
 #include "httpfetch.h"
 #include "gameparams.h"
@@ -47,14 +46,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_CURSES
 	#include "terminal_chat_console.h"
 #endif
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 #include "gui/guiMainMenu.h"
 #include "client/clientlauncher.h"
 #include "gui/guiEngine.h"
 #include "gui/mainmenumanager.h"
-#endif
-#ifdef HAVE_TOUCHSCREENGUI
-	#include "gui/touchscreengui.h"
 #endif
 
 // for version information only
@@ -70,12 +66,14 @@ extern "C" {
 #error Minetest cannot be built without exceptions or RTTI
 #endif
 
-#if defined(__MINGW32__) && !defined(__MINGW64__) && !defined(__clang__) && \
-	(__GNUC__ < 11 || (__GNUC__ == 11 && __GNUC_MINOR__ < 1))
-// see e.g. https://github.com/minetest/minetest/issues/10137
-#warning ==================================
-#warning 32-bit MinGW gcc before 11.1 has known issues with crashes on thread exit, you should upgrade.
-#warning ==================================
+#if defined(__MINGW32__) && !defined(__clang__)
+// see https://github.com/minetest/minetest/issues/14140 or
+// https://github.com/minetest/minetest/issues/10137 for one of the various issues we had
+#error ==================================
+#error MinGW gcc has a broken TLS implementation and is not supported for building \
+	Minetest. Look at testTLS() in test_threading.cpp and see for yourself. \
+	Please use a clang-based compiler or alternatively MSVC.
+#error ==================================
 #endif
 
 #define DEBUGFILE "debug.txt"
@@ -247,7 +245,7 @@ int main(int argc, char *argv[])
 	}
 
 	GameStartData game_params;
-#ifdef SERVER
+#if !CHECK_CLIENT_BUILD()
 	porting::attachOrCreateConsole();
 	game_params.is_dedicated_server = true;
 #else
@@ -265,7 +263,7 @@ int main(int argc, char *argv[])
 	if (game_params.is_dedicated_server)
 		return run_dedicated_server(game_params, cmd_args) ? 0 : 1;
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	retval = ClientLauncher().run(game_params, cmd_args) ? 0 : 1;
 #else
 	retval = 0;
@@ -381,9 +379,7 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Feature an interactive terminal (Only works when using minetestserver or with --server)"))));
 	allowed_options->insert(std::make_pair("recompress", ValueSpec(VALUETYPE_FLAG,
 			_("Recompress the blocks of the given map database."))));
-#ifndef SERVER
-	allowed_options->insert(std::make_pair("speedtests", ValueSpec(VALUETYPE_FLAG,
-			_("Run speed tests"))));
+#if CHECK_CLIENT_BUILD()
 	allowed_options->insert(std::make_pair("address", ValueSpec(VALUETYPE_STRING,
 			_("Address to connect to. ('' = local game)"))));
 	allowed_options->insert(std::make_pair("remote-input", ValueSpec(VALUETYPE_STRING,
@@ -435,13 +431,21 @@ static void print_version(std::ostream &os)
 {
 	os << PROJECT_NAME_C " " << g_version_hash
 		<< " (" << porting::getPlatformName() << ")" << std::endl;
-#ifndef SERVER
-	os << "Using Irrlicht " IRRLICHT_SDK_VERSION << std::endl;
-#endif
 #if USE_LUAJIT
-	os << "Using " << LUAJIT_VERSION << std::endl;
+	os << "Using " << LUAJIT_VERSION
+#ifdef OPENRESTY_LUAJIT
+	<< " (OpenResty)"
+#endif
+	<< std::endl;
 #else
 	os << "Using " << LUA_RELEASE << std::endl;
+#endif
+#if defined(__clang__)
+	os << "Built by Clang " << __clang_major__ << "." << __clang_minor__ << std::endl;
+#elif defined(__GNUC__)
+	os << "Built by GCC " << __GNUC__ << "." << __GNUC_MINOR__ << std::endl;
+#elif defined(_MSC_VER)
+	os << "Built by MSVC " << (_MSC_VER / 100) << "." << (_MSC_VER % 100) << std::endl;
 #endif
 	os << "Running on " << porting::get_sysinfo() << std::endl;
 	os << g_build_info << std::endl;
@@ -532,7 +536,6 @@ static bool setup_log_params(const Settings &cmd_args)
 	if (cmd_args.getFlag("trace")) {
 		dstream << _("Enabling trace level debug output") << std::endl;
 		g_logger.addOutput(&stderr_output, LL_TRACE);
-		socket_enable_debug_output = true;
 	}
 
 	return true;
@@ -693,6 +696,8 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 	if (!read_config_file(cmd_args))
 		return false;
 
+	migrate_settings();
+
 	init_log_streams(cmd_args);
 
 	// Initialize random seed
@@ -726,7 +731,7 @@ static void startup_message()
 	print_version(infostream);
 	infostream << "SER_FMT_VER_HIGHEST_READ=" <<
 		TOSTRING(SER_FMT_VER_HIGHEST_READ) <<
-		" LATEST_PROTOCOL_VERSION=" << TOSTRING(LATEST_PROTOCOL_VERSION)
+		" LATEST_PROTOCOL_VERSION=" << LATEST_PROTOCOL_VERSION
 		<< std::endl;
 }
 
@@ -1130,13 +1135,9 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 
 	if (cmd_args.exists("terminal")) {
 #if USE_CURSES
-		bool name_ok = true;
 		std::string admin_nick = g_settings->get("name");
 
-		name_ok = name_ok && !admin_nick.empty();
-		name_ok = name_ok && string_allowed(admin_nick, PLAYERNAME_ALLOWED_CHARS);
-
-		if (!name_ok) {
+		if (!is_valid_player_name(admin_nick)) {
 			if (admin_nick.empty()) {
 				errorstream << "No name given for admin. "
 					<< "Please check your minetest.conf that it "
@@ -1145,7 +1146,8 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 			} else {
 				errorstream << "Name for admin '"
 					<< admin_nick << "' is not valid. "
-					<< "Please check that it only contains allowed characters. "
+					<< "Please check that it only contains allowed characters "
+					<< "and that it is at most 20 characters long. "
 					<< "Valid characters are: " << PLAYERNAME_ALLOWED_CHARS_USER_EXPL
 					<< std::endl;
 			}
@@ -1317,8 +1319,7 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 
 		{
 			MapBlock mb(v3s16(0,0,0), &server);
-			u8 ver = readU8(iss);
-			mb.deSerialize(iss, ver, true);
+			ServerMap::deSerializeBlock(&mb, iss);
 
 			oss.str("");
 			oss.clear();

@@ -20,17 +20,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "client/localplayer.h"
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes.h"
 #include "joystick_controller.h"
 #include <list>
 #include "keycode.h"
-#include "renderingengine.h"
-
-#ifdef HAVE_TOUCHSCREENGUI
-#include "gui/touchscreengui.h"
-#endif
 
 class InputHandler;
+
+enum class PointerType {
+	Mouse,
+	Touch,
+};
 
 /****************************************************************************
  Fast key cache for main game loop
@@ -202,18 +202,9 @@ public:
 		keyWasReleased.clear();
 	}
 
-	MyEventReceiver()
-	{
-#ifdef HAVE_TOUCHSCREENGUI
-		m_touchscreengui = NULL;
-#endif
-	}
-
 	JoystickController *joystick = nullptr;
 
-#ifdef HAVE_TOUCHSCREENGUI
-	TouchScreenGUI *m_touchscreengui;
-#endif
+	PointerType getLastPointerType() { return last_pointer_type; }
 
 private:
 	s32 mouse_wheel = 0;
@@ -236,6 +227,11 @@ private:
 	// often changing keys, and keysListenedFor is expected
 	// to change seldomly but contain lots of keys.
 	KeyList keysListenedFor;
+
+	// Intentionally not reset by clearInput/releaseAllKeys.
+	bool fullscreen_is_down = false;
+
+	PointerType last_pointer_type = PointerType::Mouse;
 };
 
 class InputHandler
@@ -249,6 +245,11 @@ public:
 
 	virtual ~InputHandler() = default;
 
+	virtual bool isRandom() const
+	{
+		return false;
+	}
+	
 	// true if no physical keyboard is attached
 	virtual bool isDetached() const { return false; }
 	virtual void registerLocalPlayer(LocalPlayer *player) {
@@ -261,8 +262,8 @@ public:
 	virtual bool wasKeyReleased(GameKeyType k) = 0;
 	virtual bool cancelPressed() = 0;
 
-	virtual float getMovementSpeed() = 0;
-	virtual float getMovementDirection() = 0;
+	virtual float getJoystickSpeed() = 0;
+	virtual float getJoystickDirection() = 0;
 
 	virtual void clearWasKeyPressed() {}
 	virtual void clearWasKeyReleased() {}
@@ -286,11 +287,12 @@ public:
 protected:
 	LocalPlayer *m_player = nullptr;
 };
+
 /*
-	Separated input handler
+	Separated input handler implementations
 */
 
-class RealInputHandler : public InputHandler
+class RealInputHandler final : public InputHandler
 {
 public:
 	RealInputHandler(MyEventReceiver *receiver) : m_receiver(receiver)
@@ -320,57 +322,13 @@ public:
 		return m_receiver->WasKeyReleased(keycache.key[k]) || joystick.wasKeyReleased(k);
 	}
 
-	virtual float getMovementSpeed()
-	{
-		bool f = m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]),
-			b = m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]),
-			l = m_receiver->IsKeyDown(keycache.key[KeyType::LEFT]),
-			r = m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]);
-		if (f || b || l || r)
-		{
-			// if contradictory keys pressed, stay still
-			if (f && b && l && r)
-				return 0.0f;
-			else if (f && b && !l && !r)
-				return 0.0f;
-			else if (!f && !b && l && r)
-				return 0.0f;
-			return 1.0f; // If there is a keyboard event, assume maximum speed
-		}
-#ifdef HAVE_TOUCHSCREENGUI
-		return m_receiver->m_touchscreengui->getMovementSpeed();
-#else
-		return joystick.getMovementSpeed();
-#endif
-	}
+	virtual float getJoystickSpeed();
 
-	virtual float getMovementDirection()
-	{
-		float x = 0, z = 0;
-
-		/* Check keyboard for input */
-		if (m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]))
-			z += 1;
-		if (m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]))
-			z -= 1;
-		if (m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]))
-			x += 1;
-		if (m_receiver->IsKeyDown(keycache.key[KeyType::LEFT]))
-			x -= 1;
-
-		if (x != 0 || z != 0) /* If there is a keyboard event, it takes priority */
-			return atan2(x, z);
-		else
-#ifdef HAVE_TOUCHSCREENGUI
-			return m_receiver->m_touchscreengui->getMovementDirection();
-#else
-			return joystick.getMovementDirection();
-#endif
-	}
+	virtual float getJoystickDirection();
 
 	virtual bool cancelPressed()
 	{
-		return wasKeyDown(KeyType::ESC) || m_receiver->WasKeyDown(CancelKey);
+		return wasKeyDown(KeyType::ESC);
 	}
 
 	virtual void clearWasKeyPressed()
@@ -391,25 +349,8 @@ public:
 		m_receiver->dontListenForKeys();
 	}
 
-	virtual v2s32 getMousePos()
-	{
-		auto control = RenderingEngine::get_raw_device()->getCursorControl();
-		if (control) {
-			return control->getPosition();
-		}
-
-		return m_mousepos;
-	}
-
-	virtual void setMousePos(s32 x, s32 y)
-	{
-		auto control = RenderingEngine::get_raw_device()->getCursorControl();
-		if (control) {
-			control->setPosition(x, y);
-		} else {
-			m_mousepos = v2s32(x, y);
-		}
-	}
+	virtual v2s32 getMousePos();
+	virtual void setMousePos(s32 x, s32 y);
 
 	virtual s32 getMouseWheel()
 	{
@@ -433,7 +374,7 @@ private:
 	v2s32 m_mousepos;
 };
 
-class RandomInputHandler : public InputHandler
+class RandomInputHandler final : public InputHandler
 {
 public:
 	RandomInputHandler() = default;
@@ -448,8 +389,8 @@ public:
 	virtual bool wasKeyPressed(GameKeyType k) { return false; }
 	virtual bool wasKeyReleased(GameKeyType k) { return false; }
 	virtual bool cancelPressed() { return false; }
-	virtual float getMovementSpeed() { return movementSpeed; }
-	virtual float getMovementDirection() { return movementDirection; }
+	virtual float getJoystickSpeed() { return joystickSpeed; }
+	virtual float getJoystickDirection() { return joystickDirection; }
 	virtual v2s32 getMousePos() { return mousepos; }
 	virtual void setMousePos(s32 x, s32 y) { mousepos = v2s32(x, y); }
 
@@ -463,6 +404,6 @@ private:
 	KeyList keydown;
 	v2s32 mousepos;
 	v2s32 mousespeed;
-	float movementSpeed;
-	float movementDirection;
+	float joystickSpeed;
+	float joystickDirection;
 };

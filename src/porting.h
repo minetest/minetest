@@ -23,14 +23,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#if (defined(__linux__) || defined(__GNU__)) && !defined(_GNU_SOURCE)
+	#define _GNU_SOURCE
+#endif
+
+// Be mindful of what you include here!
 #include <string>
-#include <vector>
-#include "irrlicht.h"
-#include "irrlichttypes.h" // u32
-#include "irrlichttypes_extrabloated.h"
+#include "config.h"
+#include "irrlichttypes.h" // u64
 #include "debug.h"
 #include "constants.h"
-#include "gettime.h"
+#include "util/timetaker.h" // TimePrecision
 
 #ifdef _MSC_VER
 	#define SWPRINTF_CHARSTRING L"%S"
@@ -43,12 +46,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	#define sleep_ms(x) Sleep(x)
 	#define sleep_us(x) Sleep((x)/1000)
+
+	#define setenv(n,v,o) _putenv_s(n,v)
+	#define unsetenv(n) _putenv_s(n,"")
 #else
 	#include <unistd.h>
-
-	#if (defined(__linux__) || defined(__GNU__)) && !defined(_GNU_SOURCE)
-		#define _GNU_SOURCE
-	#endif
+	#include <cstdlib> // setenv
 
 	#define sleep_ms(x) usleep((x)*1000)
 	#define sleep_us(x) usleep(x)
@@ -68,21 +71,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define strtok_r(x, y, z) mystrtok_r(x, y, z)
 #endif
 
-// strlcpy is missing from glibc.  thanks a lot, drepper.
-// strlcpy is also missing from AIX and HP-UX because they aim to be weird.
-// We can't simply alias strlcpy to MSVC's strcpy_s, since strcpy_s by
-// default raises an assertion error and aborts the program if the buffer is
-// too small.
-#if defined(__FreeBSD__) || defined(__NetBSD__)    || \
-	defined(__OpenBSD__) || defined(__DragonFly__) || \
-	defined(__APPLE__)   ||                           \
-	defined(__sun)       || defined(sun)           || \
-	defined(__QNX__)     || defined(__QNXNTO__)
-	#define HAVE_STRLCPY
-#endif
-
-// So we need to define our own.
-#ifndef HAVE_STRLCPY
+#if !HAVE_STRLCPY
 	#define strlcpy(d, s, n) mystrlcpy(d, s, n)
 #endif
 
@@ -141,12 +130,6 @@ bool getCurrentExecPath(char *buf, size_t len);
 std::string getDataPath(const char *subpath);
 
 /*
-	Move cache folder from path_user to the
-	system cache location if possible.
-*/
-void migrateCachePath();
-
-/*
 	Initialize path_*.
 */
 void initializePaths();
@@ -155,7 +138,7 @@ void initializePaths();
 	Return system information
 	e.g. "Linux/3.12.7 x86_64"
 */
-std::string get_sysinfo();
+const std::string &get_sysinfo();
 
 
 // Monotonic timer
@@ -307,11 +290,33 @@ void osSpecificInit();
 // This attaches to the parents process console, or creates a new one if it doesnt exist.
 void attachOrCreateConsole();
 
+#if HAVE_MALLOC_TRIM
+/**
+ * Call this after freeing bigger blocks of memory. Used on some platforms to
+ * properly give memory back to the OS.
+ * @param amount Number of bytes freed
+*/
+void TrackFreedMemory(size_t amount);
+
+/**
+ * Call this regularly from background threads. This performs the actual trimming
+ * and is potentially slow.
+ */
+void TriggerMemoryTrim();
+#else
+static inline void TrackFreedMemory(size_t amount) { (void)amount; }
+static inline void TriggerMemoryTrim() { (void)0; }
+#endif
+
 #ifdef _WIN32
 // Quotes an argument for use in a CreateProcess() commandline (not cmd.exe!!)
 std::string QuoteArgv(const std::string &arg);
+
+// Convert an error code (e.g. from GetLastError()) into a string.
+std::string ConvertError(DWORD error_code);
 #endif
 
+// snprintf wrapper
 int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...);
 
 /**

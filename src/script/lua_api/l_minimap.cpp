@@ -132,9 +132,6 @@ int LuaMinimap::l_show(lua_State *L)
 	if (!g_settings->getBool("enable_minimap"))
 		return 1;
 
-	Client *client = getClient(L);
-	assert(client);
-
 	LuaMinimap *ref = checkObject<LuaMinimap>(L, 1);
 	Minimap *m = getobject(ref);
 
@@ -144,15 +141,11 @@ int LuaMinimap::l_show(lua_State *L)
 	if (m->getModeIndex() == 0 && m->getMaxModeIndex() > 0)
 		m->setModeIndex(1);
 
-	client->showMinimap(true);
 	return 1;
 }
 
 int LuaMinimap::l_hide(lua_State *L)
 {
-	Client *client = getClient(L);
-	assert(client);
-
 	LuaMinimap *ref = checkObject<LuaMinimap>(L, 1);
 	Minimap *m = getobject(ref);
 
@@ -162,7 +155,6 @@ int LuaMinimap::l_hide(lua_State *L)
 	if (m->getModeIndex() != 0)
 		m->setModeIndex(0);
 
-	client->showMinimap(false);
 	return 1;
 }
 

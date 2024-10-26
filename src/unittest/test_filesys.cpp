@@ -40,6 +40,9 @@ public:
 	void testRemoveLastPathComponentWithTrailingDelimiter();
 	void testRemoveRelativePathComponent();
 	void testSafeWriteToFile();
+	void testCopyFileContents();
+	void testNonExist();
+	void testRecursiveDelete();
 };
 
 static TestFileSys g_test_instance;
@@ -52,6 +55,9 @@ void TestFileSys::runTests(IGameDef *gamedef)
 	TEST(testRemoveLastPathComponentWithTrailingDelimiter);
 	TEST(testRemoveRelativePathComponent);
 	TEST(testSafeWriteToFile);
+	TEST(testCopyFileContents);
+	TEST(testNonExist);
+	TEST(testRecursiveDelete);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +65,7 @@ void TestFileSys::runTests(IGameDef *gamedef)
 // adjusts a POSIX path to system-specific conventions
 // -> changes '/' to DIR_DELIM
 // -> absolute paths start with "C:\\" on windows
-std::string p(std::string path)
+static std::string p(std::string path)
 {
 	for (size_t i = 0; i < path.size(); ++i) {
 		if (path[i] == '/') {
@@ -109,6 +115,7 @@ void TestFileSys::testPathStartsWith()
 	};
 	/*
 		expected fs::PathStartsWith results
+		(row for every path, column for every prefix)
 		0 = returns false
 		1 = returns true
 		2 = returns false on windows, true elsewhere
@@ -118,17 +125,17 @@ void TestFileSys::testPathStartsWith()
 	*/
 	int expected_results[numpaths][numpaths] = {
 		{1,2,0,0,0,0,0,0,0,0,0,0},
-		{1,1,0,0,0,0,0,0,0,0,0,0},
-		{1,1,1,0,0,0,0,0,0,0,0,0},
-		{1,1,1,1,0,0,0,0,0,0,0,0},
-		{1,1,0,0,1,0,0,0,0,0,0,0},
-		{1,1,0,0,0,1,0,0,1,1,0,0},
-		{1,1,0,0,0,0,1,4,1,0,0,0},
-		{1,1,0,0,0,0,4,1,4,0,0,0},
-		{1,1,0,0,0,0,0,0,1,0,0,0},
-		{1,1,0,0,0,0,0,0,1,1,0,0},
-		{1,1,0,0,0,0,0,0,0,0,1,0},
-		{1,1,0,0,0,0,0,0,0,0,0,1},
+		{0,1,0,0,0,0,0,0,0,0,0,0},
+		{0,1,1,0,0,0,0,0,0,0,0,0},
+		{0,1,1,1,0,0,0,0,0,0,0,0},
+		{0,1,0,0,1,0,0,0,0,0,0,0},
+		{0,1,0,0,0,1,0,0,1,1,0,0},
+		{0,1,0,0,0,0,1,4,1,0,0,0},
+		{0,1,0,0,0,0,4,1,4,0,0,0},
+		{0,1,0,0,0,0,0,0,1,0,0,0},
+		{0,1,0,0,0,0,0,0,1,1,0,0},
+		{0,1,0,0,0,0,0,0,0,0,1,0},
+		{0,1,0,0,0,0,0,0,0,0,0,1},
 	};
 
 	for (int i = 0; i < numpaths; i++)
@@ -269,11 +276,96 @@ void TestFileSys::testRemoveRelativePathComponent()
 
 void TestFileSys::testSafeWriteToFile()
 {
-	const std::string dest_path = fs::TempPath() + DIR_DELIM + "testSafeWriteToFile.txt";
+	const std::string dest_path = getTestTempFile();
 	const std::string test_data("hello\0world", 11);
 	fs::safeWriteToFile(dest_path, test_data);
 	UASSERT(fs::PathExists(dest_path));
 	std::string contents_actual;
 	UASSERT(fs::ReadFile(dest_path, contents_actual));
-	UASSERT(contents_actual == test_data);
+	UASSERTEQ(auto, contents_actual, test_data);
+}
+
+void TestFileSys::testCopyFileContents()
+{
+	const auto dir_path = getTestTempDirectory();
+	const auto file1 = dir_path + DIR_DELIM "src", file2 = dir_path + DIR_DELIM "dst";
+	const std::string test_data("hello\0world", 11);
+
+	// error case
+	UASSERT(!fs::CopyFileContents(file1, "somewhere"));
+
+	{
+		std::ofstream ofs(file1);
+		ofs << test_data;
+	}
+
+	// normal case
+	UASSERT(fs::CopyFileContents(file1, file2));
+	std::string contents_actual;
+	UASSERT(fs::ReadFile(file2, contents_actual));
+	UASSERTEQ(auto, contents_actual, test_data);
+
+	// should overwrite and truncate
+	{
+		std::ofstream ofs(file2);
+		for (int i = 0; i < 10; i++)
+			ofs << "OH MY GAH";
+	}
+	UASSERT(fs::CopyFileContents(file1, file2));
+	contents_actual.clear();
+	UASSERT(fs::ReadFile(file2, contents_actual));
+	UASSERTEQ(auto, contents_actual, test_data);
+}
+
+void TestFileSys::testNonExist()
+{
+	const auto path = getTestTempFile();
+	fs::DeleteSingleFileOrEmptyDirectory(path);
+
+	UASSERT(!fs::IsFile(path));
+	UASSERT(!fs::IsDir(path));
+	UASSERT(!fs::IsExecutable(path));
+
+	std::string s;
+	UASSERT(!fs::ReadFile(path, s));
+	UASSERT(s.empty());
+
+	UASSERT(!fs::Rename(path, getTestTempFile()));
+
+	std::filebuf buf;
+	// with logging enabled to test that code path
+	UASSERT(!fs::OpenStream(buf, path.c_str(), std::ios::in, false, true));
+	UASSERT(!buf.is_open());
+
+	auto ifs = open_ifstream(path.c_str(), false);
+	UASSERT(!ifs.good());
+}
+
+void TestFileSys::testRecursiveDelete()
+{
+	std::string dirs[2];
+	dirs[0] = getTestTempDirectory() + DIR_DELIM "a";
+	dirs[1] = dirs[0] + DIR_DELIM "b";
+
+	std::string files[2] = {
+		dirs[0] + DIR_DELIM "file1",
+		dirs[1] + DIR_DELIM "file2"
+	};
+
+	for (auto &it : dirs)
+		fs::CreateDir(it);
+	for (auto &it : files)
+		open_ofstream(it.c_str(), false).close();
+
+	for (auto &it : dirs)
+		UASSERT(fs::IsDir(it));
+	for (auto &it : files)
+		UASSERT(fs::IsFile(it));
+
+	UASSERT(fs::RecursiveDelete(dirs[0]));
+
+	for (auto &it : dirs)
+		UASSERT(!fs::IsDir(it));
+	for (auto &it : files)
+		UASSERT(!fs::IsFile(it));
 }

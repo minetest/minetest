@@ -20,14 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <cstring>
 #include <iostream>
-#include <cstdlib>
 #include "gettext.h"
 #include "util/string.h"
+#include "porting.h"
 #include "log.h"
-
-#ifdef _WIN32
-#define setenv(n,v,o) _putenv_s(n,v)
-#endif
 
 #if USE_GETTEXT && defined(_MSC_VER)
 #include <windows.h>
@@ -119,7 +115,7 @@ static const char* MSVC_LocaleLookup(const char* raw_shortname)
 	return "";
 }
 
-static void MSVC_LocaleWorkaround()
+static void MSVC_LocaleWorkaround(int argc, char* argv[])
 {
 	errorstream << "MSVC localization workaround active.  "
 		"Restarting " PROJECT_NAME_C " in a new environment!" << std::endl;
@@ -151,20 +147,16 @@ static void MSVC_LocaleWorkaround()
 		exit(0);
 		// NOTREACHED
 	} else {
-		char buffer[1024];
+		auto e = GetLastError();
 
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(),
-			MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), buffer,
-			sizeof(buffer) - 1, NULL);
-
-		errorstream << "*******************************************************" << std::endl;
-		errorstream << "CMD: " << app_name << std::endl;
-		errorstream << "Failed to restart with current locale: " << std::endl;
-		errorstream << buffer;
-		errorstream << "Expect language to be broken!" << std::endl;
-		errorstream << "*******************************************************" << std::endl;
+		errorstream
+			<< "*******************************************************" << '\n'
+			<< "CMD: " << app_name << '\n'
+			<< "Failed to restart with current locale: "
+			<< porting::ConvertError(e) << '\n'
+			<< "Expect language to be broken!" << '\n'
+			<< "*******************************************************" << std::endl;
 	}
-}
 }
 
 #endif
@@ -192,10 +184,10 @@ void init_gettext(const char *path, const std::string &configured_language,
 		setenv("LANGUAGE", configured_language.c_str(), 1);
 		SetEnvironmentVariableA("LANGUAGE", configured_language.c_str());
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 		// Hack to force gettext to see the right environment
 		if (current_language != configured_language)
-			MSVC_LocaleWorkaround();
+			MSVC_LocaleWorkaround(argc, argv);
 #else
 		errorstream << "*******************************************************" << std::endl;
 		errorstream << "Can't apply locale workaround for server!" << std::endl;

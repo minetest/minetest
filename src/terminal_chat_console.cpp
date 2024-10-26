@@ -280,7 +280,7 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
 			break;
-		case KEY_TAB:
+		case '\t':
 			// Tab pressed
 			// Nick completion
 			prompt.nickCompletion(m_nicks, false);
@@ -426,7 +426,7 @@ void TerminalChatConsole::step(int ch)
 		printw("[ESC] Toggle ESC mode |"
 			" [CTRL+C] Shut down |"
 			" (L) in-, (l) decrease loglevel %s",
-			Logger::getLevelLabel((LogLevel) m_log_level).c_str());
+			Logger::getLevelLabel((LogLevel) m_log_level));
 	}
 
 	refresh();

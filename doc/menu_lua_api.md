@@ -1,5 +1,5 @@
-Minetest Lua Mainmenu API Reference 5.9.0
-=========================================
+Luanti Lua Mainmenu API Reference 5.10.0
+========================================
 
 Introduction
 -------------
@@ -8,13 +8,23 @@ The main menu is defined as a formspec by Lua in `builtin/mainmenu/`
 Description of formspec language to show your menu is in `lua_api.md`
 
 
+Images and 3D models
+------
+
+Directory delimiters change according to the OS (e.g. on Unix-like systems
+is `/`, on Windows is `\`). When putting an image or a 3D model inside a formspec,
+be sure to sanitize it first with `core.formspec_escape(img)`; otherwise,
+any resource located in a subpath won't be displayed on OSs using `\` as delimiter.
+
+
 Callbacks
 ---------
 
 * `core.button_handler(fields)`: called when a button is pressed.
   * `fields` = `{name1 = value1, name2 = value2, ...}`
 * `core.event_handler(event)`
-  * `event`: `"MenuQuit"`, `"KeyEnter"`, `"ExitButton"` or `"EditBoxEnter"`
+  * `event`: `"MenuQuit"`, `"KeyEnter"`, `"ExitButton"`, `"EditBoxEnter"` or
+    `"FullscreenChange"`
 
 
 Gamedata
@@ -47,7 +57,10 @@ Functions
   * returns the maximum supported network protocol version
 * `core.open_url(url)`
   * opens the URL in a web browser, returns false on failure.
-  * Must begin with http:// or https://
+  * `url` must begin with http:// or https://
+* `core.open_url_dialog(url)`
+  * shows a dialog to allow the user to choose whether to open a URL.
+  * `url` must begin with http:// or https://
 * `core.open_dir(path)`
   * opens the path in the system file browser/explorer, returns false on failure.
   * Must be an existing directory.
@@ -55,15 +68,19 @@ Functions
   * Android only. Shares file using the share popup
 * `core.get_version()` (possible in async calls)
   * returns current core version
-* `core.set_once(key, value)`:
-  * save a string value that persists even if menu is closed
-* `core.get_once(key)`:
-  * get a string value saved by above function, or `nil`
+* `core.get_formspec_version()`
+  * returns maximum supported formspec version
 
 
 
 Filesystem
 ----------
+
+To access specific subpaths, use `DIR_DELIM` as a directory delimiter instead
+of manually putting one, as different OSs use different delimiters. E.g.
+```lua
+"my" .. DIR_DELIM .. "custom" .. DIR_DELIM .. "path" -- and not my/custom/path
+```
 
 * `core.get_builtin_path()`
   * returns path to builtin root
@@ -97,8 +114,8 @@ Filesystem
     registered in the core (possible in async calls)
 * `core.get_cache_path()` -> path of cache
 * `core.get_temp_path([param])` (possible in async calls)
-  * `param`=true: returns path to a temporary file
-    otherwise: returns path to the temporary folder
+  * `param`=true: returns path to a newly created temporary file
+  * otherwise: returns path to a newly created temporary folder
 
 
 HTTP Requests
@@ -111,7 +128,7 @@ HTTP Requests
     * returns `HTTPApiTable` containing http functions.
     * The returned table contains the functions `fetch_sync`, `fetch_async` and
       `fetch_async_get` described below.
-    * Function only exists if minetest server was built with cURL support.
+    * Function only exists if Luanti server was built with cURL support.
 * `HTTPApiTable.fetch_sync(HTTPRequest req)`: returns HTTPRequestResult
     * Performs given request synchronously
 * `HTTPApiTable.fetch_async(HTTPRequest req)`: returns handle
@@ -138,7 +155,7 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
     -- If post_data is not specified, a GET request is performed instead.
 
     user_agent = "ExampleUserAgent",
-    -- Optional, if specified replaces the default minetest user agent with
+    -- Optional, if specified replaces the default Luanti user agent with
     -- given string
 
     extra_headers = { "Accept-Language: en-us", "Accept-Charset: utf-8" },
@@ -240,9 +257,9 @@ GUI
           y = 577,
       },
 
-      -- Estimated maximum formspec size before Minetest will start shrinking the
-      -- formspec to fit. For a fullscreen formspec, use a size 10-20% larger than
-      -- this and `padding[-0.01,-0.01]`.
+      -- Estimated maximum formspec size before Luanti will start shrinking the
+      -- formspec to fit. For a fullscreen formspec, use this formspec size and
+      -- `padding[0,0]`. `bgcolor[;true]` is also recommended.
       max_formspec_size = {
           x = 20,
           y = 11.25
@@ -278,14 +295,14 @@ Package - content which is downloadable from the content db, may or may not be i
 * `core.get_modpaths()` (possible in async calls)
     * returns table of virtual path to global modpaths, where mods have been installed
       The difference with `core.get_modpath` is that no mods should be installed in these
-      directories by Minetest -- they might be read-only.
+      directories by Luanti -- they might be read-only.
 
       Ex:
 
       ```lua
       {
           mods = "/home/user/.minetest/mods",
-          share = "/usr/share/minetest/mods",
+          share = "/usr/share/minetest/mods", -- only provided when RUN_IN_PLACE=0
 
           -- Custom dirs can be specified by the MINETEST_MOD_DIR env variable
           ["/path/to/custom/dir"] = "/path/to/custom/dir",
@@ -323,6 +340,7 @@ Package - content which is downloadable from the content db, may or may not be i
           description      = "description",
           author           = "author",
           path             = "path/to/content",
+          textdomain = "textdomain", -- textdomain to translate title / description with
           depends          = {"mod", "names"}, -- mods only
           optional_depends = {"mod", "names"}, -- mods only
       }
@@ -340,6 +358,13 @@ Package - content which is downloadable from the content db, may or may not be i
           error_message = "",  -- message or nil
       }
       ```
+* `core.get_content_translation(path, domain, string)`
+  * Translates `string` using `domain` in content directory at `path`.
+  * Textdomains will be found by looking through all locale folders.
+  * String should contain translation markup from `core.translate(textdomain, ...)`.
+  * Ex: `core.get_content_translation("mods/mymod", "mymod", core.translate("mymod", "Hello World"))`
+    will translate "Hello World" into the current user's language
+    using `mods/mymod/locale/mymod.fr.tr`.
 
 Logging
 -------

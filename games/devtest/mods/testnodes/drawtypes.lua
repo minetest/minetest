@@ -98,6 +98,23 @@ minetest.register_node("testnodes:allfaces", {
 	groups = { dig_immediate = 3 },
 })
 
+minetest.register_node("testnodes:allfaces_6", {
+	description = S("\"allfaces 6 Textures\" Drawtype Test Node").."\n"..
+		S("Transparent node with visible internal backfaces"),
+	drawtype = "allfaces",
+	paramtype = "light",
+	tiles = {
+			"testnodes_allfaces.png^[colorize:red",
+			"testnodes_allfaces.png^[colorize:orange",
+			"testnodes_allfaces.png^[colorize:yellow",
+			"testnodes_allfaces.png^[colorize:green",
+			"testnodes_allfaces.png^[colorize:blue",
+			"testnodes_allfaces.png^[colorize:purple"
+		},
+
+	groups = { dig_immediate = 3 },
+})
+
 local allfaces_optional_tooltip = ""..
 	S("Rendering depends on 'leaves_style' setting:").."\n"..
 	S("* 'fancy': transparent with visible internal backfaces").."\n"..
@@ -163,7 +180,7 @@ minetest.register_node("testnodes:torchlike", {
 
 minetest.register_node("testnodes:torchlike_wallmounted", {
 	description = S("Wallmounted \"torchlike\" Drawtype Test Node").."\n"..
-		S("param2 = wallmounted rotation (0..5)"),
+		S("param2 = wallmounted rotation (0..7)"),
 	drawtype = "torchlike",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
@@ -179,6 +196,24 @@ minetest.register_node("testnodes:torchlike_wallmounted", {
 	groups = { dig_immediate = 3 },
 })
 
+minetest.register_node("testnodes:torchlike_wallmounted_rot", {
+	description = S("Wallmounted Rotatable Torchlike Drawtype Test Node"),
+	drawtype = "torchlike",
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	wallmounted_rotate_vertical = true,
+	tiles = {
+		"testnodes_torchlike_floor.png^[colorize:#FFFF00:40",
+		"testnodes_torchlike_ceiling.png^[colorize:#FFFF00:40",
+		"testnodes_torchlike_wall.png^[colorize:#FFFF00:40",
+	},
+
+
+	walkable = false,
+	sunlight_propagates = true,
+	groups = { dig_immediate = 3 },
+})
+
 minetest.register_node("testnodes:signlike", {
 	description = S("Floor \"signlike\" Drawtype Test Node").."\n"..
 		S("Always on floor"),
@@ -186,16 +221,14 @@ minetest.register_node("testnodes:signlike", {
 	paramtype = "light",
 	tiles = { "testnodes_signlike.png^[colorize:#FF0000:64" },
 
-
 	walkable = false,
-	groups = { dig_immediate = 3 },
 	sunlight_propagates = true,
+	groups = { dig_immediate = 3 },
 })
-
 
 minetest.register_node("testnodes:signlike_wallmounted", {
 	description = S("Wallmounted \"signlike\" Drawtype Test Node").."\n"..
-		S("param2 = wallmounted rotation (0..5)"),
+		S("param2 = wallmounted rotation (0..7)"),
 	drawtype = "signlike",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
@@ -206,6 +239,22 @@ minetest.register_node("testnodes:signlike_wallmounted", {
 	groups = { dig_immediate = 3 },
 	sunlight_propagates = true,
 })
+
+minetest.register_node("testnodes:signlike_rot", {
+	description = S("Wallmounted Rotatable Signlike Drawtype Test Node"),
+	drawtype = "signlike",
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	wallmounted_rotate_vertical = true,
+	tiles = { "testnodes_signlike.png^[colorize:#FFFF00:40" },
+
+
+	walkable = false,
+	groups = { dig_immediate = 3 },
+	sunlight_propagates = true,
+})
+
+
 
 minetest.register_node("testnodes:plantlike", {
 	description = S("\"plantlike\" Drawtype Test Node"),
@@ -235,7 +284,7 @@ minetest.register_node("testnodes:plantlike_waving", {
 
 minetest.register_node("testnodes:plantlike_wallmounted", {
 	description = S("Wallmounted \"plantlike\" Drawtype Test Node").."\n"..
-		S("param2 = wallmounted rotation (0..5)"),
+		S("param2 = wallmounted rotation (0..7)"),
 	drawtype = "plantlike",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
@@ -366,7 +415,7 @@ minetest.register_node("testnodes:plantlike_rooted", {
 
 minetest.register_node("testnodes:plantlike_rooted_wallmounted", {
 	description = S("Wallmounted \"rooted_plantlike\" Drawtype Test Node").."\n"..
-		S("param2 = wallmounted rotation (0..5)"),
+		S("param2 = wallmounted rotation (0..7)"),
 	drawtype = "plantlike_rooted",
 	paramtype = "light",
 	paramtype2 = "wallmounted",

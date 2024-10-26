@@ -50,7 +50,7 @@ ServerModManager::ServerModManager(const std::string &worldpath):
 }
 
 // This function cannot be currenctly easily tested but it should be ASAP
-void ServerModManager::loadMods(ServerScripting *script)
+void ServerModManager::loadMods(ServerScripting &script)
 {
 	// Print mods
 	infostream << "Server: Loading mods: ";
@@ -65,13 +65,13 @@ void ServerModManager::loadMods(ServerScripting *script)
 
 		std::string script_path = mod.path + DIR_DELIM + "init.lua";
 		auto t = porting::getTimeMs();
-		script->loadMod(script_path, mod.name);
+		script.loadMod(script_path, mod.name);
 		infostream << "Mod \"" << mod.name << "\" loaded after "
 			<< (porting::getTimeMs() - t) << " ms" << std::endl;
 	}
 
 	// Run a callback when mods are loaded
-	script->on_mods_loaded();
+	script.on_mods_loaded();
 }
 
 const ModSpec *ServerModManager::getModSpec(const std::string &modname) const

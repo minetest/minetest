@@ -25,7 +25,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "threading/thread.h"
 #include "threading/mutex_auto_lock.h"
-#include "log.h"
+#include "log_internal.h"
 #include "porting.h"
 
 // for setName
@@ -61,6 +61,9 @@ DEALINGS IN THE SOFTWARE.
 
 // See https://msdn.microsoft.com/en-us/library/hh920601.aspx#thread__native_handle_method
 #define win32_native_handle() ((HANDLE) getThreadHandle())
+
+thread_local Thread *current_thread = nullptr;
+
 
 Thread::Thread(const std::string &name) :
 	m_name(name),
@@ -114,7 +117,7 @@ bool Thread::start()
 
 	// The mutex may already be locked if the thread is being restarted
 	// FIXME: what if this fails, or if already locked by same thread?
-	MutexAutoLock sf_lock(m_start_finished_mutex, std::try_to_lock);
+	std::unique_lock sf_lock(m_start_finished_mutex, std::try_to_lock);
 
 	try {
 		m_thread_obj = new std::thread(threadProc, this);
@@ -177,6 +180,8 @@ void Thread::threadProc(Thread *thr)
 	thr->m_kernel_thread_id = thread_self();
 #endif
 
+	current_thread = thr;
+
 	thr->setName(thr->m_name);
 
 	g_logger.registerThread(thr->m_name);
@@ -184,7 +189,7 @@ void Thread::threadProc(Thread *thr)
 
 	// Wait for the thread that started this one to finish initializing the
 	// thread handle so that getThreadId/getThreadHandle will work.
-	MutexAutoLock sf_lock(thr->m_start_finished_mutex);
+	std::unique_lock sf_lock(thr->m_start_finished_mutex);
 
 	thr->m_retval = thr->run();
 
@@ -194,6 +199,12 @@ void Thread::threadProc(Thread *thr)
 	// released. We try to unlock it from caller thread and it's refused by system.
 	sf_lock.unlock();
 	g_logger.deregisterThread();
+}
+
+
+Thread *Thread::getCurrentThread()
+{
+	return current_thread;
 }
 
 

@@ -23,20 +23,87 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "tool.h"
 #include "inventory.h"
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 #include "client/mapblock_mesh.h"
 #include "client/mesh.h"
 #include "client/wieldmesh.h"
-#include "client/tile.h"
 #include "client/client.h"
+#include "client/texturesource.h"
 #endif
 #include "log.h"
 #include "settings.h"
 #include "util/serialize.h"
 #include "util/container.h"
 #include "util/thread.h"
+#include "util/pointedthing.h"
 #include <map>
 #include <set>
+
+TouchInteraction::TouchInteraction()
+{
+	pointed_nothing = TouchInteractionMode_USER;
+	pointed_node    = TouchInteractionMode_USER;
+	pointed_object  = TouchInteractionMode_USER;
+}
+
+TouchInteractionMode TouchInteraction::getMode(const ItemDefinition &selected_def,
+		PointedThingType pointed_type) const
+{
+	TouchInteractionMode result;
+	switch (pointed_type) {
+	case POINTEDTHING_NOTHING:
+		result = pointed_nothing;
+		break;
+	case POINTEDTHING_NODE:
+		result = pointed_node;
+		break;
+	case POINTEDTHING_OBJECT:
+		result = pointed_object;
+		break;
+	default:
+		FATAL_ERROR("Invalid PointedThingType given to TouchInteraction::getMode");
+	}
+
+	if (result == TouchInteractionMode_USER) {
+		if (pointed_type == POINTEDTHING_OBJECT && !selected_def.usable)
+			// Only apply when we're actually able to punch the object, i.e. when
+			// the selected item has no on_use callback defined.
+			result = g_settings->get("touch_punch_gesture") == "long_tap" ?
+					LONG_DIG_SHORT_PLACE : SHORT_DIG_LONG_PLACE;
+		else
+			result = LONG_DIG_SHORT_PLACE;
+	}
+
+	return result;
+}
+
+void TouchInteraction::serialize(std::ostream &os) const
+{
+	writeU8(os, pointed_nothing);
+	writeU8(os, pointed_node);
+	writeU8(os, pointed_object);
+}
+
+void TouchInteraction::deSerialize(std::istream &is)
+{
+	u8 tmp = readU8(is);
+	if (is.eof())
+		throw SerializationError("");
+	if (tmp < TouchInteractionMode_END)
+		pointed_nothing = (TouchInteractionMode)tmp;
+
+	tmp = readU8(is);
+	if (is.eof())
+		throw SerializationError("");
+	if (tmp < TouchInteractionMode_END)
+		pointed_node = (TouchInteractionMode)tmp;
+
+	tmp = readU8(is);
+	if (is.eof())
+		throw SerializationError("");
+	if (tmp < TouchInteractionMode_END)
+		pointed_object = (TouchInteractionMode)tmp;
+}
 
 /*
 	ItemDefinition
@@ -71,11 +138,14 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	stack_max = def.stack_max;
 	usable = def.usable;
 	liquids_pointable = def.liquids_pointable;
+	pointabilities = def.pointabilities;
 	if (def.tool_capabilities)
 		tool_capabilities = new ToolCapabilities(*def.tool_capabilities);
+	wear_bar_params = def.wear_bar_params;
 	groups = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
 	place_param2 = def.place_param2;
+	wallmounted_rotate_vertical = def.wallmounted_rotate_vertical;
 	sound_place = def.sound_place;
 	sound_place_failed = def.sound_place_failed;
 	sound_use = def.sound_use;
@@ -83,6 +153,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	range = def.range;
 	palette_image = def.palette_image;
 	color = def.color;
+	touch_interaction = def.touch_interaction;
 	return *this;
 }
 
@@ -95,6 +166,7 @@ void ItemDefinition::resetInitial()
 {
 	// Initialize pointers to NULL so reset() does not delete undefined pointers
 	tool_capabilities = NULL;
+	wear_bar_params = std::nullopt;
 	reset();
 }
 
@@ -114,8 +186,10 @@ void ItemDefinition::reset()
 	stack_max = 99;
 	usable = false;
 	liquids_pointable = false;
+	pointabilities = std::nullopt;
 	delete tool_capabilities;
 	tool_capabilities = NULL;
+	wear_bar_params.reset();
 	groups.clear();
 	sound_place = SoundSpec();
 	sound_place_failed = SoundSpec();
@@ -124,6 +198,8 @@ void ItemDefinition::reset()
 	range = -1;
 	node_placement_prediction.clear();
 	place_param2.reset();
+	wallmounted_rotate_vertical = false;
+	touch_interaction = TouchInteraction();
 }
 
 void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
@@ -183,6 +259,24 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	os << (u8)place_param2.has_value(); // protocol_version >= 43
 	if (place_param2)
 		os << *place_param2;
+
+	writeU8(os, wallmounted_rotate_vertical);
+	touch_interaction.serialize(os);
+
+	std::string pointabilities_s;
+	if (pointabilities) {
+		std::ostringstream tmp_os(std::ios::binary);
+		pointabilities->serialize(tmp_os);
+		pointabilities_s = tmp_os.str();
+	}
+	os << serializeString16(pointabilities_s);
+
+	if (wear_bar_params.has_value()) {
+		writeU8(os, 1);
+		wear_bar_params->serialize(os);
+	} else {
+		writeU8(os, 0);
+	}
 }
 
 void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
@@ -195,7 +289,11 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 	if (version < 6)
 		throw SerializationError("unsupported ItemDefinition version");
 
-	type = (enum ItemType)readU8(is);
+	type = static_cast<ItemType>(readU8(is));
+	if (type >= ItemType_END) {
+		type = ITEM_NONE;
+	}
+
 	name = deSerializeString16(is);
 	description = deSerializeString16(is);
 	inventory_image = deSerializeString16(is);
@@ -251,6 +349,20 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 
 		if (readU8(is)) // protocol_version >= 43
 			place_param2 = readU8(is);
+
+		wallmounted_rotate_vertical = readU8(is); // 0 if missing
+		touch_interaction.deSerialize(is);
+
+		std::string pointabilities_s = deSerializeString16(is);
+		if (!pointabilities_s.empty()) {
+			std::istringstream tmp_is(pointabilities_s, std::ios::binary);
+			pointabilities = std::make_optional<Pointabilities>();
+			pointabilities->deSerialize(tmp_is);
+		}
+
+		if (readU8(is)) {
+			wear_bar_params = WearBarParams::deserialize(is);
+		}
 	} catch(SerializationError &e) {};
 }
 
@@ -263,7 +375,7 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 
 class CItemDefManager: public IWritableItemDefManager
 {
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	struct ClientCached
 	{
 		video::ITexture *inventory_texture;
@@ -288,7 +400,7 @@ public:
 	CItemDefManager()
 	{
 
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 		m_main_thread = std::this_thread::get_id();
 #endif
 		clear();
@@ -337,8 +449,9 @@ public:
 		// Get the definition
 		return m_item_definitions.find(name) != m_item_definitions.cend();
 	}
-#ifndef SERVER
-public:
+
+#if CHECK_CLIENT_BUILD()
+protected:
 	ClientCached* createClientCachedDirect(const ItemStack &item, Client *client) const
 	{
 		// This is not thread-safe
@@ -366,7 +479,6 @@ public:
 		// Create new ClientCached
 		auto cc = std::make_unique<ClientCached>();
 
-		// Create an inventory texture
 		cc->inventory_texture = NULL;
 		if (!inventory_image.empty())
 			cc->inventory_texture = tsrc->getTexture(inventory_image);
@@ -380,6 +492,7 @@ public:
 		return ptr;
 	}
 
+public:
 	// Get item inventory texture
 	virtual video::ITexture* getInventoryTexture(const ItemStack &item,
 			Client *client) const
@@ -568,7 +681,7 @@ private:
 	std::map<std::string, ItemDefinition*> m_item_definitions;
 	// Aliases
 	StringMap m_aliases;
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	// The id of the thread that is allowed to use irrlicht directly
 	std::thread::id m_main_thread;
 	// Cached textures and meshes

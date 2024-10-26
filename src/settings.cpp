@@ -97,7 +97,7 @@ void SettingsHierarchy::onLayerRemoved(int layer)
 
 /* Settings implementation */
 
-Settings *Settings::createLayer(SettingsLayer sl, const std::string &end_tag)
+Settings *Settings::createLayer(SettingsLayer sl, std::string_view end_tag)
 {
 	return new Settings(end_tag, &g_hierarchy, (int)sl);
 }
@@ -109,7 +109,7 @@ Settings *Settings::getLayer(SettingsLayer sl)
 }
 
 
-Settings::Settings(const std::string &end_tag, SettingsHierarchy *h,
+Settings::Settings(std::string_view end_tag, SettingsHierarchy *h,
 		int settings_layer) :
 	m_end_tag(end_tag),
 	m_hierarchy(h),
@@ -131,7 +131,7 @@ Settings::~Settings()
 }
 
 
-Settings & Settings::operator = (const Settings &other)
+Settings & Settings::operator=(const Settings &other)
 {
 	if (&other == this)
 		return *this;
@@ -151,7 +151,7 @@ Settings & Settings::operator = (const Settings &other)
 }
 
 
-bool Settings::checkNameValid(const std::string &name)
+bool Settings::checkNameValid(std::string_view name)
 {
 	bool valid = name.find_first_of("=\"{}#") == std::string::npos;
 	if (valid)
@@ -166,7 +166,7 @@ bool Settings::checkNameValid(const std::string &name)
 }
 
 
-bool Settings::checkValueValid(const std::string &value)
+bool Settings::checkValueValid(std::string_view value)
 {
 	if (value.substr(0, 3) == "\"\"\"" ||
 		value.find("\n\"\"\"") != std::string::npos) {
@@ -392,11 +392,8 @@ bool Settings::updateConfigFile(const char *filename)
 	if (!was_modified)
 		return true;
 
-	if (!fs::safeWriteToFile(filename, os.str())) {
-		errorstream << "Error writing configuration file: \""
-			<< filename << "\"" << std::endl;
+	if (!fs::safeWriteToFile(filename, os.str()))
 		return false;
-	}
 
 	return true;
 }
@@ -407,13 +404,13 @@ bool Settings::parseCommandLine(int argc, char *argv[],
 {
 	int nonopt_index = 0;
 	for (int i = 1; i < argc; i++) {
-		std::string arg_name = argv[i];
+		std::string_view arg_name(argv[i]);
 		if (arg_name.substr(0, 2) != "--") {
 			// If option doesn't start with -, read it in as nonoptX
-			if (arg_name[0] != '-'){
+			if (arg_name[0] != '-') {
 				std::string name = "nonopt";
 				name += itos(nonopt_index);
-				set(name, arg_name);
+				set(name, std::string(arg_name));
 				nonopt_index++;
 				continue;
 			}
@@ -422,7 +419,7 @@ bool Settings::parseCommandLine(int argc, char *argv[],
 			return false;
 		}
 
-		std::string name = arg_name.substr(2);
+		std::string name(arg_name.substr(2));
 
 		auto n = allowed_options.find(name);
 		if (n == allowed_options.end()) {
@@ -997,7 +994,7 @@ bool Settings::remove(const std::string &name)
 SettingsParseEvent Settings::parseConfigObject(const std::string &line,
 	std::string &name, std::string &value)
 {
-	std::string trimmed_line = trim(line);
+	auto trimmed_line = trim(line);
 
 	if (trimmed_line.empty())
 		return SPE_NONE;
@@ -1051,21 +1048,22 @@ void Settings::registerChangedCallback(const std::string &name,
 	m_callbacks[name].emplace_back(cbf, userdata);
 }
 
-void Settings::deregisterChangedCallback(const std::string &name,
-	SettingsChangedCallback cbf, void *userdata)
+size_t Settings::deregisterAllChangedCallbacks(const void *userdata)
 {
 	MutexAutoLock lock(m_callback_mutex);
-	SettingsCallbackMap::iterator it_cbks = m_callbacks.find(name);
 
-	if (it_cbks != m_callbacks.end()) {
-		SettingsCallbackList &cbks = it_cbks->second;
-
-		SettingsCallbackList::iterator position =
-			std::find(cbks.begin(), cbks.end(), std::make_pair(cbf, userdata));
-
-		if (position != cbks.end())
-			cbks.erase(position);
+	size_t n_removed = 0;
+	for (auto &settings : m_callbacks) {
+		for (auto cb = settings.second.begin(); cb != settings.second.end();) {
+			if (cb->second == userdata) {
+				cb = settings.second.erase(cb);
+				n_removed++;
+			} else {
+				++cb;
+			}
+		}
 	}
+	return n_removed;
 }
 
 void Settings::removeSecureSettings()

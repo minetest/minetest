@@ -76,3 +76,26 @@ minetest.register_entity("callbacks:callback_step", {
 		message("on_step callback entity: on_step! pos="..spos(self).."; dtime="..dtime)
 	end,
 })
+
+-- Callback punch with nil puncher
+minetest.register_entity("callbacks:callback_puncher", {
+	initial_properties = {
+		visual = "upright_sprite",
+		textures = { "callbacks_callback_entity.png" },
+		infotext = "Callback entity for nil puncher test.",
+	},
+
+	on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir, damage)
+		if puncher then
+			puncher:punch(nil, time_from_last_punch, tool_capabilities, dir)
+			self.object:punch(nil, time_from_last_punch, tool_capabilities, dir)
+		else
+			message(
+				"Callback entity: on_punch with nil puncher "..
+				"pos="..spos(self).."; "..
+				"time_from_last_punch="..time_from_last_punch.."; "..
+				"tool_capabilities="..dump(tool_capabilities).."; "..
+				"dir="..dump(dir).."; damage="..damage)
+		end
+	end,
+})

@@ -1,4 +1,5 @@
 #pragma once
+#include "client/renderingengine.h"
 #include "gui/mainmenumanager.h"
 #include "inputhandler.h"
 #include "remoteclient.capnp.h"
@@ -76,7 +77,7 @@ public:
   virtual bool cancelPressed() override {
     return m_key_was_down[keycache.key[KeyType::ESC]];
   }
-  virtual float getMovementSpeed() override {
+  virtual float getJoystickSpeed() override {
     bool f = m_key_is_down[keycache.key[KeyType::FORWARD]],
          b = m_key_is_down[keycache.key[KeyType::BACKWARD]],
          l = m_key_is_down[keycache.key[KeyType::LEFT]],
@@ -93,7 +94,7 @@ public:
     }
     return 0.0f;
   }
-  virtual float getMovementDirection() override {
+  virtual float getJoystickDirection() override {
     float x = 0, z = 0;
 
     /* Check keyboard for input */
@@ -107,7 +108,7 @@ public:
       x -= 1;
 
     if (x != 0 || z != 0) /* If there is a keyboard event, it takes priority */
-      return atan2(x, z);
+      return atan2((double) x, (double) z);
     return m_movement_direction;
   }
   virtual v2s32 getMousePos() override { return m_mouse_pos; }

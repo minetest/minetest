@@ -18,7 +18,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes.h"
+#include <rect.h>
+
+namespace irr::video
+{
+	class IVideoDriver;
+	class IImage;
+}
 
 /* Fill in RGB values for transparent pixels, to correct for odd colors
  * appearing at borders when blending.  This is because many PNG optimizers
@@ -41,3 +48,11 @@ void imageCleanTransparent(video::IImage *src, u32 threshold);
  * and downscaling.
  */
 void imageScaleNNAA(video::IImage *src, const core::rect<s32> &srcrect, video::IImage *dest);
+
+/* Check and align image to npot2 if required by hardware
+ * @param image image to check for npot2 alignment
+ * @param driver driver to use for image operations
+ * @return image or copy of image aligned to npot2
+ */
+video::IImage *Align2Npot2(video::IImage *image, video::IVideoDriver *driver);
+

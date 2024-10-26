@@ -36,6 +36,9 @@ Contributions are welcome! Here's how you can help:
     - Follow the [C/C++](http://dev.minetest.net/Code_style_guidelines) and
       [Lua](http://dev.minetest.net/Lua_code_style_guidelines) code style guidelines.
     - Check your code works as expected and document any changes to the Lua API.
+    - To avoid conflicting changes between contributions, do not do the following manually. They will be done before each release.
+      - Run `updatepo.sh` or update `minetest.po{,t}` even if your code adds new translatable strings.
+      - Update `minetest.conf.example` and `settings_translation_file.cpp` even if your code adds new core settings.
 
 4. Commit & [push](https://help.github.com/articles/pushing-to-a-remote/) your changes to a new branch (not `master`, one change per branch)
     - Commit messages should:

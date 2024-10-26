@@ -24,70 +24,43 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "settings.h"
 
-enum ContentType
+ContentType getContentType(const std::string &path)
 {
-	ECT_UNKNOWN,
-	ECT_MOD,
-	ECT_MODPACK,
-	ECT_GAME,
-	ECT_TXP
-};
+	if (fs::IsFile(path + DIR_DELIM "modpack.txt") || fs::IsFile(path + DIR_DELIM "modpack.conf"))
+		return ContentType::MODPACK;
 
-ContentType getContentType(const ContentSpec &spec)
-{
-	std::ifstream modpack_is((spec.path + DIR_DELIM + "modpack.txt").c_str());
-	if (modpack_is.good()) {
-		modpack_is.close();
-		return ECT_MODPACK;
-	}
+	if (fs::IsFile(path + DIR_DELIM "init.lua"))
+		return ContentType::MOD;
 
-	std::ifstream modpack2_is((spec.path + DIR_DELIM + "modpack.conf").c_str());
-	if (modpack2_is.good()) {
-		modpack2_is.close();
-		return ECT_MODPACK;
-	}
+	if (fs::IsFile(path + DIR_DELIM "game.conf"))
+		return ContentType::GAME;
 
-	std::ifstream init_is((spec.path + DIR_DELIM + "init.lua").c_str());
-	if (init_is.good()) {
-		init_is.close();
-		return ECT_MOD;
-	}
+	if (fs::IsFile(path + DIR_DELIM "texture_pack.conf"))
+		return ContentType::TXP;
 
-	std::ifstream game_is((spec.path + DIR_DELIM + "game.conf").c_str());
-	if (game_is.good()) {
-		game_is.close();
-		return ECT_GAME;
-	}
-
-	std::ifstream txp_is((spec.path + DIR_DELIM + "texture_pack.conf").c_str());
-	if (txp_is.good()) {
-		txp_is.close();
-		return ECT_TXP;
-	}
-
-	return ECT_UNKNOWN;
+	return ContentType::UNKNOWN;
 }
 
 void parseContentInfo(ContentSpec &spec)
 {
 	std::string conf_path;
 
-	switch (getContentType(spec)) {
-	case ECT_MOD:
+	switch (getContentType(spec.path)) {
+	case ContentType::MOD:
 		spec.type = "mod";
-		conf_path = spec.path + DIR_DELIM + "mod.conf";
+		conf_path = spec.path + DIR_DELIM "mod.conf";
 		break;
-	case ECT_MODPACK:
+	case ContentType::MODPACK:
 		spec.type = "modpack";
-		conf_path = spec.path + DIR_DELIM + "modpack.conf";
+		conf_path = spec.path + DIR_DELIM "modpack.conf";
 		break;
-	case ECT_GAME:
+	case ContentType::GAME:
 		spec.type = "game";
-		conf_path = spec.path + DIR_DELIM + "game.conf";
+		conf_path = spec.path + DIR_DELIM "game.conf";
 		break;
-	case ECT_TXP:
+	case ContentType::TXP:
 		spec.type = "txp";
-		conf_path = spec.path + DIR_DELIM + "texture_pack.conf";
+		conf_path = spec.path + DIR_DELIM "texture_pack.conf";
 		break;
 	default:
 		spec.type = "unknown";
@@ -104,6 +77,15 @@ void parseContentInfo(ContentSpec &spec)
 		if (spec.type != "game" && conf.exists("name"))
 			spec.name = conf.get("name");
 
+		if (conf.exists("title"))
+			spec.title = conf.get("title");
+
+		if (spec.type == "game") {
+			if (spec.title.empty())
+				spec.title = spec.name;
+			spec.name = "";
+		}
+
 		if (conf.exists("description"))
 			spec.desc = conf.get("description");
 
@@ -112,11 +94,18 @@ void parseContentInfo(ContentSpec &spec)
 
 		if (conf.exists("release"))
 			spec.release = conf.getS32("release");
+
+		if (conf.exists("textdomain"))
+			spec.textdomain = conf.get("textdomain");
 	}
 
+	if (spec.name.empty())
+		spec.name = fs::GetFilenameFromPath(spec.path.c_str());
+
+	if (spec.textdomain.empty())
+		spec.textdomain = spec.name;
+
 	if (spec.desc.empty()) {
-		std::ifstream is((spec.path + DIR_DELIM + "description.txt").c_str());
-		spec.desc = std::string((std::istreambuf_iterator<char>(is)),
-				std::istreambuf_iterator<char>());
+		fs::ReadFile(spec.path + DIR_DELIM + "description.txt", spec.desc);
 	}
 }

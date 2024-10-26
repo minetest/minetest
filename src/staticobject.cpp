@@ -25,6 +25,7 @@ StaticObject::StaticObject(const ServerActiveObject *s_obj, const v3f &pos_):
 	type(s_obj->getType()),
 	pos(pos_)
 {
+	assert(s_obj->isStaticAllowed());
 	s_obj->getStaticData(&data);
 }
 

@@ -22,15 +22,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "inventory.h"
 #include "constants.h"
-#include "network/networkprotocol.h"
 #include "util/basic_macros.h"
-#include <list>
+#include "util/string.h"
 #include <mutex>
+#include <functional>
+#include <string>
 
 #define PLAYERNAME_SIZE 20
 
 #define PLAYERNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
 #define PLAYERNAME_ALLOWED_CHARS_USER_EXPL "'a' to 'z', 'A' to 'Z', '0' to '9', '-', '_'"
+
+bool is_valid_player_name(std::string_view name);
 
 struct PlayerFovSpec
 {
@@ -41,7 +44,17 @@ struct PlayerFovSpec
 
 	// The time to be take to trasition to the new FOV value.
 	// Transition is instantaneous if omitted. Omitted by default.
-	f32 transition_time;
+	f32 transition_time = 0;
+
+	inline bool operator==(const PlayerFovSpec &other) const {
+		// transition_time is compared here since that could be relevant
+		// when aborting a running transition.
+		return fov == other.fov && is_multiplier == other.is_multiplier &&
+			transition_time == other.transition_time;
+	}
+	inline bool operator!=(const PlayerFovSpec &other) const {
+		return !(*this == other);
+	}
 };
 
 struct PlayerControl
@@ -73,14 +86,18 @@ struct PlayerControl
 		movement_direction = a_movement_direction;
 	}
 
-#ifndef SERVER
+	// Sets movement_speed and movement_direction according to direction_keys
+	// if direction_keys != 0, otherwise leaves them unchanged to preserve
+	// joystick input.
+	void setMovementFromKeys();
+
 	// For client use
 	u32 getKeysPressed() const;
 	inline bool isMoving() const { return movement_speed > 0.001f; }
-#endif
 
 	// For server use
 	void unpackKeysPressed(u32 keypress_bits);
+	v2f getMovement() const;
 
 	u8 direction_keys = 0;
 	bool jump = false;
@@ -89,7 +106,7 @@ struct PlayerControl
 	bool zoom = false;
 	bool dig = false;
 	bool place = false;
-	// Note: These four are NOT available on the server
+	// Note: These two are NOT available on the server
 	float pitch = 0.0f;
 	float yaw = 0.0f;
 	float movement_speed = 0.0f;
@@ -114,24 +131,14 @@ struct PlayerPhysicsOverride
 	float liquid_sink = 1.f;
 	float acceleration_default = 1.f;
 	float acceleration_air = 1.f;
-};
+	float speed_fast = 1.f;
+	float acceleration_fast = 1.f;
+	float speed_walk = 1.f;
 
-struct PlayerSettings
-{
-	bool free_move = false;
-	bool pitch_move = false;
-	bool fast_move = false;
-	bool continuous_forward = false;
-	bool always_fly_fast = false;
-	bool aux1_descends = false;
-	bool noclip = false;
-	bool autojump = false;
-
-	const std::string setting_names[8] = {
-		"free_move", "pitch_move", "fast_move", "continuous_forward", "always_fly_fast",
-		"aux1_descends", "noclip", "autojump"
-	};
-	void readGlobalSettings();
+	bool operator==(const PlayerPhysicsOverride &other) const;
+	bool operator!=(const PlayerPhysicsOverride &other) const {
+		return !(*this == other);
+	}
 };
 
 class Map;
@@ -143,7 +150,7 @@ class Player
 {
 public:
 
-	Player(const char *name, IItemDefManager *idef);
+	Player(const std::string &name, IItemDefManager *idef);
 	virtual ~Player() = 0;
 
 	DISABLE_CLASS_COPY(Player);
@@ -155,18 +162,15 @@ public:
 	{}
 
 	// in BS-space
-	v3f getSpeed() const
-	{
-		return m_speed;
-	}
-
-	// in BS-space
-	void setSpeed(v3f speed)
+	inline void setSpeed(v3f speed)
 	{
 		m_speed = speed;
 	}
 
-	const char *getName() const { return m_name; }
+	// in BS-space
+	v3f getSpeed() const { return m_speed; }
+
+	const std::string& getName() const { return m_name; }
 
 	u32 getFreeHudID()
 	{
@@ -197,7 +201,7 @@ public:
 	f32 movement_liquid_sink;
 	f32 movement_gravity;
 
-	v2s32 local_animations[4];
+	v2f local_animations[4];
 	float local_animation_speed;
 
 	std::string inventory_formspec;
@@ -205,18 +209,20 @@ public:
 
 	PlayerControl control;
 	const PlayerControl& getPlayerControl() { return control; }
+
 	PlayerPhysicsOverride physics_override;
-	PlayerSettings &getPlayerSettings() { return m_player_settings; }
-	static void settingsChangedCallback(const std::string &name, void *data);
 
 	// Returns non-empty `selected` ItemStack. `hand` is a fallback, if specified
 	ItemStack &getWieldedItem(ItemStack *selected, ItemStack *hand) const;
 	void setWieldIndex(u16 index);
-	u16 getWieldIndex() const { return m_wield_index; }
+	u16 getWieldIndex();
 
-	void setFov(const PlayerFovSpec &spec)
+	bool setFov(const PlayerFovSpec &spec)
 	{
+		if (m_fov_override_spec == spec)
+			return false;
 		m_fov_override_spec = spec;
+		return true;
 	}
 
 	const PlayerFovSpec &getFov() const
@@ -225,6 +231,7 @@ public:
 	}
 
 	HudElement* getHud(u32 id);
+	void        hudApply(std::function<void(const std::vector<HudElement*>&)> f);
 	u32         addHud(HudElement* hud);
 	HudElement* removeHud(u32 id);
 	void        clearHud();
@@ -232,17 +239,21 @@ public:
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;
 
+	// Get actual usable number of hotbar items (clamped to size of "main" list)
+	u16 getMaxHotbarItemcount();
+
 protected:
-	char m_name[PLAYERNAME_SIZE];
+	std::string m_name;
 	v3f m_speed; // velocity; in BS-space
 	u16 m_wield_index = 0;
 	PlayerFovSpec m_fov_override_spec = { 0.0f, false, 0.0f };
 
 	std::vector<HudElement *> hud;
+
 private:
 	// Protect some critical areas
 	// hud for example can be modified by EmergeThread
 	// and ServerThread
+	// FIXME: ^ this sounds like nonsense. should be checked.
 	std::mutex m_mutex;
-	PlayerSettings m_player_settings;
 };

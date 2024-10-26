@@ -115,9 +115,13 @@ int MetaDataRef::l_set_string(lua_State *L)
 
 	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
-	size_t len = 0;
-	const char *s = lua_tolstring(L, 3, &len);
-	std::string str(s, len);
+	std::string_view str;
+	if (!lua_isnoneornil(L, 3)) {
+		str = readParam<std::string_view>(L, 3);
+	} else {
+		log_deprecated(L, "Value passed to set_string is nil. This behaviour is"
+			" undocumented and will result in an error in the future.", 1, true);
+	}
 
 	IMetadata *meta = ref->getmeta(!str.empty());
 	if (meta != NULL && meta->setString(name, str))
@@ -300,9 +304,8 @@ bool MetaDataRef::handleFromTable(lua_State *L, int table, IMetadata *meta)
 		while (lua_next(L, fieldstable) != 0) {
 			// key at index -2 and value at index -1
 			std::string name = readParam<std::string>(L, -2);
-			size_t cl;
-			const char *cs = lua_tolstring(L, -1, &cl);
-			meta->setString(name, std::string(cs, cl));
+			auto value = readParam<std::string_view>(L, -1);
+			meta->setString(name, value);
 			lua_pop(L, 1); // Remove value, keep key for next iteration
 		}
 		lua_pop(L, 1);

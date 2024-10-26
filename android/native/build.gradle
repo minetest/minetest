@@ -2,17 +2,16 @@ apply plugin: 'com.android.library'
 apply plugin: 'de.undercouch.download'
 
 android {
-	compileSdkVersion 33
-	buildToolsVersion '33.0.2'
 	ndkVersion "$ndk_version"
 	defaultConfig {
 		minSdkVersion 21
-		targetSdkVersion 33
+		compileSdk 34
+		targetSdkVersion 34
 		externalNativeBuild {
-            cmake {
+			cmake {
 				arguments "-DANDROID_STL=c++_shared",
 					"-DENABLE_CURL=1", "-DENABLE_SOUND=1",
-					"-DENABLE_TOUCH=1", "-DENABLE_GETTEXT=1",
+					"-DENABLE_GETTEXT=1",
 					"-DBUILD_UNITTESTS=0", "-DENABLE_UPDATE_CHECKER=0"
 			}
 		}
@@ -36,26 +35,33 @@ android {
 	buildTypes {
 		release {
 			ndk {
-				debugSymbolLevel 'SYMBOL_TABLE'
+				debugSymbolLevel 'FULL'
 			}
 		}
 	}
+	namespace 'net.minetest'
 }
 
 // get precompiled deps
-task downloadDeps(type: Download) {
-	def depsDir = new File(buildDir.parent, 'deps')
-	def depsZip = new File(buildDir, 'deps.zip')
+def depsDir = new File(buildDir.parent, 'deps')
+if (new File(depsDir, 'armeabi-v7a').exists()) {
+	task getDeps {
+		doLast { logger.lifecycle('Using existing deps from {}', depsDir) }
+	}
+} else {
+	task downloadDeps(type: Download) {
+		def depsZip = new File(buildDir, 'deps.zip')
 
-	src 'https://github.com/minetest/minetest_android_deps/releases/download/latest/deps.zip'
-	dest depsZip
-	overwrite false
+		src 'https://github.com/minetest/minetest_android_deps/releases/download/latest/deps-lite.zip'
+		dest depsZip
+		overwrite false
 
-	task getDeps(dependsOn: downloadDeps, type: Copy) {
-		depsDir.mkdir()
-		from zipTree(depsZip)
-		into depsDir
-		doFirst { logger.lifecycle('Extracting to {}', depsDir) }
+		task getDeps(dependsOn: downloadDeps, type: Copy) {
+			depsDir.mkdir()
+			from zipTree(depsZip)
+			into depsDir
+			doFirst { logger.lifecycle('Extracting to {}', depsDir) }
+		}
 	}
 }
 

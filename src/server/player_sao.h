@@ -124,6 +124,7 @@ public:
 	void setHPRaw(u16 hp) { m_hp = hp; }
 	u16 getBreath() const { return m_breath; }
 	void setBreath(const u16 breath, bool send = true);
+	void respawn();
 
 	/*
 		Inventory interface
@@ -142,8 +143,9 @@ public:
 
 	void disconnected();
 
+	void setPlayer(RemotePlayer *player) { m_player = player; }
 	RemotePlayer *getPlayer() { return m_player; }
-	session_t getPeerID() const { return m_peer_id; }
+	session_t getPeerID() const;
 
 	// Cheat prevention
 
@@ -193,7 +195,7 @@ private:
 	std::string generateUpdatePhysicsOverrideCommand() const;
 
 	RemotePlayer *m_player = nullptr;
-	session_t m_peer_id = 0;
+	session_t m_peer_id_initial = 0; ///< only used to initialize RemotePlayer
 
 	// Cheat prevention
 	LagPool m_dig_pool;
@@ -227,6 +229,12 @@ private:
 	SimpleMetadata m_meta;
 
 public:
+	struct {
+		bool breathing : 1;
+		bool drowning : 1;
+		bool node_damage : 1;
+	} m_flags = {true, true, true};
+
 	bool m_physics_override_sent = false;
 };
 

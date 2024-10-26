@@ -19,8 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "clientopcodes.h"
+#include "client/client.h"
 
-const static ToClientCommandHandler null_command_handler = {"TOCLIENT_NULL", TOCLIENT_STATE_ALL, &Client::handleCommand_Null};
+const static ToClientCommandHandler null_command_handler =
+	{"TOCLIENT_NULL", TOCLIENT_STATE_ALL, &Client::handleCommand_Null};
 
 const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 {
@@ -79,7 +81,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_MOVE_PLAYER",              TOCLIENT_STATE_CONNECTED, &Client::handleCommand_MovePlayer }, // 0x34
 	{ "TOCLIENT_ACCESS_DENIED_LEGACY",     TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_AccessDenied }, // 0x35
 	{ "TOCLIENT_FOV",                      TOCLIENT_STATE_CONNECTED, &Client::handleCommand_Fov }, // 0x36
-	{ "TOCLIENT_DEATHSCREEN",              TOCLIENT_STATE_CONNECTED, &Client::handleCommand_DeathScreen }, // 0x37
+	{ "TOCLIENT_DEATHSCREEN_LEGACY",       TOCLIENT_STATE_CONNECTED, &Client::handleCommand_DeathScreenLegacy }, // 0x37
 	{ "TOCLIENT_MEDIA",                    TOCLIENT_STATE_CONNECTED, &Client::handleCommand_Media }, // 0x38
 	null_command_handler,
 	{ "TOCLIENT_NODEDEF",                  TOCLIENT_STATE_CONNECTED, &Client::handleCommand_NodeDef }, // 0x3a
@@ -126,7 +128,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_SET_LIGHTING",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_SetLighting }, // 0x63,
 };
 
-const static ServerCommandFactory null_command_factory = { "TOSERVER_NULL", 0, false };
+const static ServerCommandFactory null_command_factory = { nullptr, 0, false };
 
 /*
 	Channels used for Client -> Server communication
@@ -196,7 +198,7 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_DAMAGE",             0, true }, // 0x35
 	null_command_factory, // 0x36
 	{ "TOSERVER_PLAYERITEM",         0, true }, // 0x37
-	{ "TOSERVER_RESPAWN",            0, true }, // 0x38
+	{ "TOSERVER_RESPAWN_LEGACY",     0, true }, // 0x38
 	{ "TOSERVER_INTERACT",           0, true }, // 0x39
 	{ "TOSERVER_REMOVED_SOUNDS",     2, true }, // 0x3a
 	{ "TOSERVER_NODEMETA_FIELDS",    0, true }, // 0x3b
@@ -223,5 +225,5 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_FIRST_SRP",          1, true }, // 0x50
 	{ "TOSERVER_SRP_BYTES_A",        1, true }, // 0x51
 	{ "TOSERVER_SRP_BYTES_M",        1, true }, // 0x52
-	{ "TOSERVER_UPDATE_CLIENT_INFO", 1, true }, // 0x53
+	{ "TOSERVER_UPDATE_CLIENT_INFO", 2, true }, // 0x53
 };

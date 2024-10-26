@@ -16,7 +16,7 @@ on:
       - '.github/workflows/**.yml'
 
 jobs:
-  # Note that the integration tests are also run build.yml, but only when C++ code is changed.
+  # Note that the integration tests are also run in build.yml, but only when C++ code is changed.
   integration_tests:
     name: "Compile and run multiplayer tests"
     runs-on: ubuntu-22.04
@@ -25,7 +25,7 @@ jobs:
     - name: Install deps
       run: |
         source ./util/ci/common.sh
-        install_linux_deps clang-14 gdb
+        install_linux_deps clang gdb libluajit-5.1-dev
 
     - uses: prefix-dev/setup-pixi@v0.8.1
       with:
@@ -40,29 +40,26 @@ jobs:
         CC: clang-14
         CXX: clang++-14
         CMAKE_BUILD_SERVER: FALSE
+        CMAKE_FLAGS: "-DENABLE_GETTEXT=0 -DBUILD_SERVER=0 -DBUILD_UNITTESTS=0"
 
     - name: Integration test + devtest
       run: |
-        ./util/test_multiplayer.sh
+        serverconf="profiler.load=true" ./util/test_multiplayer.sh
 
   luacheck:
     name: "Builtin Luacheck and Unit Tests"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
 
     - uses: actions/checkout@v4
-    - uses: leafo/gh-actions-lua@v9
+    - uses: leafo/gh-actions-lua@v10
       with:
         luaVersion: "5.1.5"
-    - uses: leafo/gh-actions-luarocks@v4
+    - uses: leafo/gh-actions-luarocks@v4.3.0
 
     - name: Install LuaJIT
-      run: |
-        cd $HOME
-        git clone https://github.com/LuaJIT/LuaJIT/
-        cd LuaJIT
-        make -j$(nproc)
+      run: ./util/ci/build_luajit.sh
 
     - name: Install luarocks tools
       run: |

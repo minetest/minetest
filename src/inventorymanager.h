@@ -191,7 +191,8 @@ struct IMoveAction : public InventoryAction, public MoveAction
 
 	void swapDirections();
 
-	void onPutAndOnTake(const ItemStack &src_item, ServerActiveObject *player) const;
+	void onTake(const ItemStack &src_item, ServerActiveObject *player) const;
+	void onPut(const ItemStack &src_item, ServerActiveObject *player) const;
 
 	void onMove(int count, ServerActiveObject *player) const;
 

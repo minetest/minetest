@@ -3,128 +3,14 @@
 # https://gitlab.com/minetest/minetest
 # Pipelines URL: https://gitlab.com/minetest/minetest/pipelines
 
-stages:
-  - build
-  - package
-  - deploy
-
-variables:
-  CONTAINER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
-
-.build_template:
-  stage: build
-  before_script:
-   - apt-get update
-   - DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential gettext git cmake libpng-dev libjpeg-dev libxi-dev libgl1-mesa-dev libsqlite3-dev libleveldb-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev libzstd-dev libluajit-5.1-dev
-  script:
-    - git clone https://github.com/minetest/irrlicht lib/irrlichtmt --depth 1 -b $(cat misc/irrlichtmt_tag.txt)
-    - mkdir build && cd build
-    - cmake -DCMAKE_INSTALL_PREFIX=../artifact/minetest/usr/ -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE ..
-    - make -j $(($(nproc) + 1))
-    - make install
-  artifacts:
-    when: on_success
-    expire_in: 1h
-    paths:
-      - artifact/*
-
-##
-## Ubuntu (prerequisite for AppImage build)
-##
-
-build:ubuntu-20.04:
-  extends: .build_template
-  image: ubuntu:focal
-
-##
-## MinGW for Windows
-##
-
-.generic_win_template:
-  image: ubuntu:focal
-  before_script:
-    - apt-get update
-    - DEBIAN_FRONTEND=noninteractive apt-get install -y wget xz-utils unzip git cmake gettext
-    - wget -nv http://minetest.kitsunemimi.pw/mingw-w64-${WIN_ARCH}_11.2.0_ubuntu20.04.tar.xz -O mingw.tar.xz
-    - tar -xaf mingw.tar.xz -C /usr
-
-.build_win_template:
-  extends: .generic_win_template
-  stage: build
-  artifacts:
-    expire_in: 90 day
-    paths:
-      - minetest-*-win*/*
-
-build:win32:
-  extends: .build_win_template
-  script:
-    - EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh build
-    - unzip -q build/build/*.zip
-  variables:
-    WIN_ARCH: "i686"
-
-build:win64:
-  extends: .build_win_template
-  script:
-    - EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh build
-    - unzip -q build/build/*.zip
-  variables:
-    WIN_ARCH: "x86_64"
-
-##
-## Docker
-##
-
-package:docker:
-  stage: package
-  image: docker:stable
-  services:
-    - docker:dind
-  before_script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
-  script:
-    - ./util/ci/docker.sh
-
-##
-## Gitlab Pages (Lua API documentation)
-##
 
 pages:
   stage: deploy
   image: python:3.8
-  before_script:
-    - pip install -U -r doc/mkdocs/requirements.txt
   script:
-    - cd doc/mkdocs && ./build.sh
+    - ./misc/make_redirects.sh
   artifacts:
     paths:
       - public
   only:
     - master
-
-##
-## AppImage
-##
-
-package:appimage-client:
-  stage: package
-  image: appimagecrafters/appimage-builder
-  needs:
-    - build:ubuntu-20.04
-  before_script:
-    - apt-get update
-    - apt-get install -y git
-    # Collect files
-    - mkdir AppDir
-    - cp -a artifact/minetest/usr/ AppDir/usr/
-    - cp -a clientmods AppDir/usr/share/minetest
-    # Remove PrefersNonDefaultGPU property due to validation errors
-    - sed -i '/PrefersNonDefaultGPU/d' AppDir/usr/share/applications/net.minetest.minetest.desktop
-  script:
-    - export VERSION=$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
-    - appimage-builder --skip-test --recipe misc/AppImageBuilder.yml
-  artifacts:
-    expire_in: 90 day
-    paths:
-      - ./*.AppImage

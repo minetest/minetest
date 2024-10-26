@@ -34,17 +34,18 @@ public:
 
 	virtual void draw() override;
 
+	inline void setContentPadding(std::optional<s32> padding)
+	{
+		m_content_padding_px = padding;
+	}
+
 	inline void onScrollEvent(gui::IGUIElement *caller)
 	{
 		if (caller == m_scrollbar)
 			updateScrolling();
 	}
 
-	inline void setScrollBar(GUIScrollBar *scrollbar)
-	{
-		m_scrollbar = scrollbar;
-		updateScrolling();
-	}
+	void setScrollBar(GUIScrollBar *scrollbar);
 
 private:
 	enum OrientationEnum
@@ -56,7 +57,8 @@ private:
 
 	GUIScrollBar *m_scrollbar;
 	OrientationEnum m_orientation;
-	f32 m_scrollfactor;
+	f32 m_scrollfactor; //< scrollbar pos * scrollfactor = scroll offset in pixels
+	std::optional<s32> m_content_padding_px; //< in pixels
 
 	void updateScrolling();
 };

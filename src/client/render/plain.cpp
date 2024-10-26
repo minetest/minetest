@@ -61,12 +61,8 @@ void DrawHUD::run(PipelineContext &context)
 		if (context.draw_crosshair)
 			context.hud->drawCrosshair();
 
-		context.hud->drawHotbar(context.client->getEnv().getLocalPlayer()->getWieldIndex());
 		context.hud->drawLuaElements(context.client->getCamera()->getOffset());
 		context.client->getCamera()->drawNametags();
-		auto mapper = context.client->getMinimap();
-		if (mapper && context.show_minimap)
-			mapper->drawMinimap();
 	}
 	context.device->getGUIEnvironment()->drawAll();
 }
@@ -106,7 +102,7 @@ void UpscaleStep::run(PipelineContext &context)
 std::unique_ptr<RenderStep> create3DStage(Client *client, v2f scale)
 {
 	RenderStep *step = new Draw3D();
-	if (g_settings->getBool("enable_shaders")) {
+	if (g_settings->getBool("enable_shaders") && g_settings->getBool("enable_post_processing")) {
 		RenderPipeline *pipeline = new RenderPipeline();
 		pipeline->addStep(pipeline->own(std::unique_ptr<RenderStep>(step)));
 
@@ -131,7 +127,7 @@ RenderStep* addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f
 		return previousStep;
 
 	// When shaders are enabled, post-processing pipeline takes care of rescaling
-	if (g_settings->getBool("enable_shaders"))
+	if (g_settings->getBool("enable_shaders") && g_settings->getBool("enable_post_processing"))
 		return previousStep;
 
 

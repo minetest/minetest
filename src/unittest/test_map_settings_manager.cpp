@@ -189,10 +189,9 @@ void TestMapSettingsManager::testMapSettingsManager()
 	SHA1 ctx;
 	std::string metafile_contents;
 	UASSERT(fs::ReadFile(test_mapmeta_path, metafile_contents));
-	ctx.addBytes(&metafile_contents[0], metafile_contents.size());
-	unsigned char *sha1_result = ctx.getDigest();
-	int resultdiff = memcmp(sha1_result, expected_contents_hash, 20);
-	free(sha1_result);
+	ctx.addBytes(metafile_contents);
+	std::string sha1_result = ctx.getDigest();
+	int resultdiff = memcmp(sha1_result.data(), expected_contents_hash, 20);
 
 	UASSERT(!resultdiff);
 #endif

@@ -45,7 +45,7 @@ public:
 
 	void deleteBlocks();
 
-	v2s16 getPos()
+	v2s16 getPos() const
 	{
 		return m_pos;
 	}
@@ -62,7 +62,15 @@ public:
 	// Returns an owning ptr to block.
 	std::unique_ptr<MapBlock> detachBlock(MapBlock *block);
 
+	// This makes a copy of the internal collection.
+	// Prefer getBlocks() if possible.
 	void getBlocks(MapBlockVect &dest);
+
+	// Get access to the internal collection
+	// This is explicitly only allowed on a const object since modifying anything while iterating is unsafe.
+	// The caller needs to make sure that this does not happen.
+	const auto &getBlocks() const { return m_blocks; }
+	const auto &getBlocks() = delete;
 
 	bool empty() const { return m_blocks.empty(); }
 

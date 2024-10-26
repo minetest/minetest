@@ -23,8 +23,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <deque>
 #include <utility>
 #include <IGUIFont.h>
-#include <IVideoDriver.h>
 #include "profiler.h"
+
+namespace irr::video {
+	class IVideoDriver;
+}
 
 /* Profiler display */
 class ProfilerGraph

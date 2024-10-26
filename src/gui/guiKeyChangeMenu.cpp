@@ -29,6 +29,7 @@
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
+#include <IVideoDriver.h>
 #include "settings.h"
 #include <algorithm>
 
@@ -107,13 +108,9 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	removeAllChildren();
 	key_used_text = nullptr;
 
-	const float s = m_gui_scale;
-	DesiredRect = core::rect<s32>(
-		screensize.X / 2 - 835 * s / 2,
-		screensize.Y / 2 - 430 * s / 2,
-		screensize.X / 2 + 835 * s / 2,
-		screensize.Y / 2 + 430 * s / 2
-	);
+	ScalingInfo info = getScalingInfo(screensize, v2u32(835, 430));
+	const float s = info.scale;
+	DesiredRect = info.rect;
 	recalculateAbsolutePosition(false);
 
 	v2s32 size = DesiredRect.getSize();
@@ -381,6 +378,7 @@ void GUIKeyChangeMenu::add_key(int id, std::wstring button_name, const std::stri
 	key_settings.push_back(k);
 }
 
+// compare with button_titles in touchcontrols.cpp
 void GUIKeyChangeMenu::init_keys()
 {
 	this->add_key(GUI_ID_KEY_FORWARD_BUTTON,      wstrgettext("Forward"),          "keymap_forward");

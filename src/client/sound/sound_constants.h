@@ -89,14 +89,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * In the worst case, a sound is stepped at the start of one bigstep and in the
  * end of the next bigstep. So between two stepStream()-calls lie at most
  * 2 * STREAM_BIGSTEP_TIME seconds.
- * As there are always 2 sound buffers enqueued, at least one untouched full buffer
- * is still available after the first stepStream().
- * If we take a MIN_STREAM_BUFFER_LENGTH > 2 * STREAM_BIGSTEP_TIME, we can hence
- * not run into an empty queue.
- *
- * The MIN_STREAM_BUFFER_LENGTH needs to be a little bigger because of dtime jitter,
- * other sounds that may have taken long to stepStream(), and sounds being played
- * faster due to Doppler effect.
+ * We ensure that there are always enough untouched full buffers left such that
+ * we do not run into an empty queue in this time period, see stepStream().
  *
  */
 
@@ -115,8 +109,6 @@ constexpr f32 STREAM_BIGSTEP_TIME = 0.3f;
 // step duration for the OpenALSoundManager thread, in seconds
 constexpr f32 SOUNDTHREAD_DTIME = 0.016f;
 
-static_assert(MIN_STREAM_BUFFER_LENGTH > STREAM_BIGSTEP_TIME * 2.0f,
-		"See [Streaming of sounds].");
 static_assert(SOUND_DURATION_MAX_SINGLE >= MIN_STREAM_BUFFER_LENGTH * 2.0f,
 		"There's no benefit in streaming if we can't queue more than 2 buffers.");
 

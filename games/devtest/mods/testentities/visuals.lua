@@ -66,6 +66,19 @@ minetest.register_entity("testentities:mesh_unshaded", {
 	},
 })
 
+minetest.register_entity("testentities:sam", {
+	initial_properties = {
+		visual = "mesh",
+		mesh = "testentities_sam.b3d",
+		textures = {
+			"testentities_sam.png"
+		},
+	},
+	on_activate = function(self)
+		self.object:set_animation({x = 0, y = 219}, 30, 0, true)
+	end,
+})
+
 -- Advanced visual tests
 
 -- An entity for testing animated and yaw-modulated sprites

@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <unordered_set>
 #include <algorithm>
+#include <queue>
 #include "gamedef.h"
 #include "inventory.h"
 #include "util/serialize.h"
@@ -34,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 inline bool isGroupRecipeStr(const std::string &rec_name)
 {
-	return str_starts_with(rec_name, std::string("group:"));
+	return str_starts_with(rec_name, "group:");
 }
 
 static bool hasGroupItem(const std::vector<std::string> &recipe)
