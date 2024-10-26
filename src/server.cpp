@@ -147,7 +147,8 @@ void *ServerThread::run()
 
 		try {
 			// see explanation inside
-			if (dtime > step_settings.steplen)
+			// (+1 ms, because we don't sleep more fine-grained)
+			if (dtime > step_settings.steplen + 0.001f)
 				m_server->yieldToOtherThreads(dtime);
 
 			m_server->AsyncRunStep(step_settings.pause ? 0.0f : dtime);
@@ -1101,8 +1102,12 @@ void Server::Receive(float timeout)
 		pkt.clear();
 		peer_id = 0;
 		try {
+			// Round up since the target step length is the minimum step length,
+			// we only have millisecond precision and we don't want to busy-wait by calling
+			// ReceiveTimeoutMs(.., 0) repeatedly.
+			// Also be sure we don't wait if the remaining time is zero/negative.
 			if (!m_con->ReceiveTimeoutMs(&pkt,
-					(u32)remaining_time_us() / 1000)) {
+					((u32)remaining_time_us() + 999) / 1000)) {
 				// No incoming data.
 				if (remaining_time_us() > 0.0f)
 					continue;
