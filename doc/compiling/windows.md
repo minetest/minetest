@@ -28,6 +28,8 @@ After you successfully built vcpkg you can easily install the required libraries
 vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp gettext[tools] sdl2 --triplet x64-windows
 ```
 
+This command takes about 10-30 minutes to complete, depending on your device.
+
 -   `curl` is optional, but required to read the serverlist, `curl[winssl]` is required to use the content store.
 -   `openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
 -   `luajit` is optional, it replaces the integrated Lua interpreter with a faster just-in-time interpreter.
@@ -40,24 +42,26 @@ Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-window
 
 ## Compile Luanti
 
-### a) Using the vcpkg toolchain and CMake GUI
+There are two ways to compile Luanti: CMake GUI and CLI
 
-1. Start up the CMake GUI
-2. Select **Browse Source...** and select DIR/luanti
-3. Select **Browse Build...** and select DIR/luanti-build
+### a) CMake GUI
+
+1. Start up the CMake GUI (Win > search "cmake-gui" > open)
+2. Select **Browse Source...** and select `DIR/luanti` (this is where you've cloned the repo)
+3. Select **Browse Build...** and select `DIR/luanti/build` (this is a new folder that CMake will prompt to create)
 4. Select **Configure**
-5. Choose the right visual Studio version and target platform. It has to match the version of the installed dependencies
+5. Choose the right Visual Studio version and target platform. Currently, Luanti uses Visual Studio 16 2019, but newer VS versions should work as well. The VS version has to match the version of the installed dependencies.
 6. Choose **Specify toolchain file for cross-compiling**
 7. Click **Next**
 8. Select the vcpkg toolchain file e.g. `D:/vcpkg/scripts/buildsystems/vcpkg.cmake`
 9. Click Finish
-10. Wait until CMake generates the cache file
+10. Wait until CMake generates the cache file (this may take about 10-30 minutes, depending on your device)
 11. If there are any errors, solve them and hit **Configure**
 12. Click **Generate**
 13. Click **Open Project**
 14. Compile Luanti inside Visual studio.
 
-### b) Using the vcpkg toolchain and the commandline
+### b) CLI
 
 Run the following script in PowerShell:
 
