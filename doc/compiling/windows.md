@@ -59,7 +59,8 @@ There are two ways to compile Luanti: CMake GUI and CLI
 11. If there are any errors, solve them and hit **Configure**
 12. Click **Generate**
 13. Click **Open Project**
-14. Compile Luanti inside Visual studio.
+14. Compile Luanti inside Visual Studio.
+    - If you get "Unable to start program '...\x64\Debug\ALL_BUILD'. Access is denied", try compiling via the CLI instead.
 
 ### b) CLI
 
