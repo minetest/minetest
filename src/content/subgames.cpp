@@ -16,6 +16,9 @@
 // The maximum number of identical world names allowed
 #define MAX_WORLD_NAMES 100
 
+// gameid to assume for worlds that are missing world.mt
+#define LEGACY_GAMEID "minetest"
+
 namespace
 {
 
@@ -231,10 +234,9 @@ std::vector<SubgameSpec> getAvailableGames()
 	return specs;
 }
 
-#define LEGACY_GAMEID "minetest"
-
 bool getWorldExists(const std::string &world_path)
 {
+	// Note: very old worlds are valid without a world.mt
 	return (fs::PathExists(world_path + DIR_DELIM + "map_meta.txt") ||
 			fs::PathExists(world_path + DIR_DELIM + "world.mt"));
 }
@@ -261,7 +263,7 @@ std::string getWorldGameId(const std::string &world_path, bool can_be_legacy)
 	bool succeeded = conf.readConfigFile(conf_path.c_str());
 	if (!succeeded) {
 		if (can_be_legacy) {
-			// If map_meta.txt exists, it is probably an old minetest world
+			// If map_meta.txt exists, it is probably a very old world
 			if (fs::PathExists(world_path + DIR_DELIM + "map_meta.txt"))
 				return LEGACY_GAMEID;
 		}
@@ -269,9 +271,6 @@ std::string getWorldGameId(const std::string &world_path, bool can_be_legacy)
 	}
 	if (!conf.exists("gameid"))
 		return "";
-	// The "mesetint" gameid has been discarded
-	if (conf.get("gameid") == "mesetint")
-		return "minetest";
 	return conf.get("gameid");
 }
 
