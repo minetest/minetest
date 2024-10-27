@@ -1085,7 +1085,6 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	m_shutdown_state.tick(dtime, this);
 }
 
-//! Receive all incoming packets and wait for at least `timeout` seconds.
 void Server::Receive(float timeout)
 {
 	ZoneScoped;
@@ -1106,7 +1105,6 @@ void Server::Receive(float timeout)
 			// Round up since the target step length is the minimum step length,
 			// we only have millisecond precision and we don't want to busy-wait by calling
 			// ReceiveTimeoutMs(.., 0) repeatedly.
-			// Also be sure we don't wait if the remaining time is zero/negative.
 			if (!m_con->ReceiveTimeoutMs(&pkt,
 					((u32)remaining_time_us() + 999) / 1000)) {
 				// No incoming data.
