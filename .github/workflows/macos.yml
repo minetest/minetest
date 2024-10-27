@@ -116,18 +116,18 @@ jobs:
             -DPNG_LIBRARY=/opt/homebrew/lib/libpng.a \
             -DCMAKE_EXE_LINKER_FLAGS=-lbz2\
             -GXcode
-          xcodebuild -project minetest.xcodeproj -scheme minetest -configuration Release build
-          xcodebuild -project minetest.xcodeproj -scheme minetest -archivePath ./minetest.xcarchive archive
+          xcodebuild -project luanti.xcodeproj -scheme luanti -configuration Release build
+          xcodebuild -project luanti.xcodeproj -scheme luanti -archivePath ./luanti.xcarchive archive
 
       - name: Tests
         run: |
           mkdir -p "${HOME}/Library/Application Support/minetest/games/"
           ln -s "${PWD}/games/devtest" "${HOME}/Library/Application Support/minetest/games/"
-          ./build/macos/minetest.app/Contents/MacOS/minetest --run-unittests
-          ./build_xcode/build/Release/minetest.app/Contents/MacOS/minetest --run-unittests
-          ./build_xcode/minetest.xcarchive/Products/Applications/minetest.app/Contents/MacOS/minetest --run-unittests
+          ./build/macos/luanti.app/Contents/MacOS/luanti --run-unittests
+          ./build_xcode/build/Release/luanti.app/Contents/MacOS/luanti --run-unittests
+          ./build_xcode/luanti.xcarchive/Products/Applications/luanti.app/Contents/MacOS/luanti --run-unittests
 
       - name: Diff Resources
         run: |
-          diff -rd ./build/macos/minetest.app/Contents/Resources ./build_xcode/build/Release/minetest.app/Contents/Resources || exit 1
-          diff -rd ./build/macos/minetest.app/Contents/Resources ./build_xcode/minetest.xcarchive/Products/Applications/minetest.app/Contents/Resources || exit 1
+          diff -rd ./build/macos/luanti.app/Contents/Resources ./build_xcode/build/Release/luanti.app/Contents/Resources || exit 1
+          diff -rd ./build/macos/luanti.app/Contents/Resources ./build_xcode/luanti.xcarchive/Products/Applications/luanti.app/Contents/Resources || exit 1
