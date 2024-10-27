@@ -215,7 +215,7 @@ function core.deserialize(str, safe)
 	local func, err = loadstring(str)
 	if not func then return nil, err end
 
-	-- math.huge was serialized to inf and NaNs to nan by Lua in version 5.6, so we have to support this here
+	-- math.huge was serialized to inf and NaNs to nan by Lua in engine version 5.6, so we have to support this here
 	local env = {inf = math_huge, nan = 0/0}
 	if safe then
 		env.loadstring = dummy_func
