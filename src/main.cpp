@@ -61,7 +61,7 @@ extern "C" {
 }
 
 #if !defined(__cpp_rtti) || !defined(__cpp_exceptions)
-#error Minetest cannot be built without exceptions or RTTI
+#error Luanti cannot be built without exceptions or RTTI
 #endif
 
 #if defined(__MINGW32__) && !defined(__clang__)
@@ -69,7 +69,7 @@ extern "C" {
 // https://github.com/minetest/minetest/issues/10137 for one of the various issues we had
 #error ==================================
 #error MinGW gcc has a broken TLS implementation and is not supported for building \
-	Minetest. Look at testTLS() in test_threading.cpp and see for yourself. \
+	Luanti. Look at testTLS() in test_threading.cpp and see for yourself. \
 	Please use a clang-based compiler or alternatively MSVC.
 #error ==================================
 #endif
@@ -379,15 +379,15 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
 			_("Set gameid (\"--gameid list\" prints available ones)"))));
 	allowed_options->insert(std::make_pair("migrate", ValueSpec(VALUETYPE_STRING,
-			_("Migrate from current map backend to another (Only works when using minetestserver or with --server)"))));
+			_("Migrate from current map backend to another (Only works when using " PROJECT_NAME "server or with --server)"))));
 	allowed_options->insert(std::make_pair("migrate-players", ValueSpec(VALUETYPE_STRING,
-		_("Migrate from current players backend to another (Only works when using minetestserver or with --server)"))));
+		_("Migrate from current players backend to another (Only works when using " PROJECT_NAME "server or with --server)"))));
 	allowed_options->insert(std::make_pair("migrate-auth", ValueSpec(VALUETYPE_STRING,
-		_("Migrate from current auth backend to another (Only works when using minetestserver or with --server)"))));
+		_("Migrate from current auth backend to another (Only works when using " PROJECT_NAME "server or with --server)"))));
 	allowed_options->insert(std::make_pair("migrate-mod-storage", ValueSpec(VALUETYPE_STRING,
-		_("Migrate from current mod storage backend to another (Only works when using minetestserver or with --server)"))));
+		_("Migrate from current mod storage backend to another (Only works when using " PROJECT_NAME "server or with --server)"))));
 	allowed_options->insert(std::make_pair("terminal", ValueSpec(VALUETYPE_FLAG,
-			_("Feature an interactive terminal (Only works when using minetestserver or with --server)"))));
+			_("Feature an interactive terminal (Only works when using " PROJECT_NAME "server or with --server)"))));
 	allowed_options->insert(std::make_pair("recompress", ValueSpec(VALUETYPE_FLAG,
 			_("Recompress the blocks of the given map database."))));
 #if CHECK_CLIENT_BUILD()
