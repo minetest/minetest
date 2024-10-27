@@ -24,6 +24,7 @@ namespace
 
 bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
 {
+	// TODO: rename this
 	std::string conf_path = game_path + DIR_DELIM + "minetest.conf";
 	return conf.readConfigFile(conf_path.c_str());
 }
@@ -388,7 +389,7 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 			conf.set("blocksize", std::to_string(MAP_BLOCKSIZE));
 
 		if (!conf.updateConfigFile(worldmt_path.c_str())) {
-			throw BaseException("Failed to update the config file");
+			throw BaseException("Failed to update world.mt");
 		}
 	}
 
