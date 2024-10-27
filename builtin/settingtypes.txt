@@ -584,6 +584,11 @@ shadow_soft_radius (Soft shadow radius) float 5.0 1.0 15.0
 #    Requires: shaders, enable_dynamic_shadows, opengl
 shadow_sky_body_orbit_tilt (Sky Body Orbit Tilt) float 0.0 -60.0 60.0
 
+#    Tint sunlight during sunrise/sunset.
+#
+#    Requires: shaders, enable_dynamic_shadows, opengl
+enable_sun_tint (Tinted sunlight) bool false
+
 [**Post Processing]
 
 #    Enables the post processing pipeline.
@@ -620,7 +625,7 @@ exposure_compensation (Exposure compensation) float 0.0 -1.0 1.0
 #   Default: 1.6
 #
 #   Requires: shaders, enable_post_processing, tone_mapping
-gamma (Gamma) float 1.6 1.0 5.0
+secondstage_gamma (Gamma) float 1.6 1.0 5.0
 
 #   Apply ASL CDL color grading to make brighter colors warmer and darker colors cooler.
 #
@@ -653,6 +658,11 @@ enable_bloom (Enable Bloom) bool false
 #
 #    Requires: shaders, enable_post_processing, enable_bloom
 enable_volumetric_lighting (Volumetric Lighting) bool false
+
+#    Make volumetrics weaker against closer objects to emulate physical volumetrics.
+#
+#    Requires: shaders, enable_post_processing, enable_bloom, enable_volumetric_lighting
+enable_volumetric_depth_attenuation (Volumetric Depth Attenuation) bool false
 
 [**Other Effects]
 

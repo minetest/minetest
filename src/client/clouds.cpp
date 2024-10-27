@@ -53,8 +53,7 @@ Clouds::Clouds(scene::ISceneManager* mgr, IShaderSource *ssrc,
 	m_material.FogEnable = true;
 	m_material.AntiAliasing = video::EAAM_SIMPLE;
 	if (m_enable_shaders) {
-		bool shaded_clouds = g_settings->getBool("soft_clouds") && g_settings->getBool("enable_dynamic_shadows");
-		auto sid = ssrc->getShader(shaded_clouds ? "soft_clouds" : "cloud_shader", TILE_MATERIAL_ALPHA);
+		auto sid = ssrc->getShader("cloud_shader", TILE_MATERIAL_ALPHA);
 		m_material.MaterialType = ssrc->getShaderInfo(sid).material;
 	} else {
 		m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -226,210 +225,137 @@ void Clouds::updateMesh()
 
 		v3f pos(p0.X, m_params.height * BS, p0.Y);
 
-		if (shaded_clouds_enabled) {
-			bool neighbours[4] = {false, false, false, false};
-			if (INAREA(xi - 1, zi, m_cloud_radius_i))
-				neighbours[0] = grid[GETINDEX(xi - 1, zi, m_cloud_radius_i)];
-			if (INAREA(xi, zi - 1, m_cloud_radius_i))
-				neighbours[1] = grid[GETINDEX(xi, zi - 1, m_cloud_radius_i)];
-			if (INAREA(xi + 1, zi, m_cloud_radius_i))
-				neighbours[2] = grid[GETINDEX(xi + 1, zi, m_cloud_radius_i)];
-			if (INAREA(xi, zi + 1, m_cloud_radius_i))
-				neighbours[3] = grid[GETINDEX(xi, zi + 1, m_cloud_radius_i)];
+		video::S3DVertex v[4] = {
+		video::S3DVertex(0,0,0, 0,0,0, c_top, 0, 1),
+		video::S3DVertex(0,0,0, 0,0,0, c_top, 1, 1),
+		video::S3DVertex(0,0,0, 0,0,0, c_top, 1, 0),
+		video::S3DVertex(0,0,0, 0,0,0, c_top, 0, 0)
+		};
 
-			video::S3DVertex v[32];
-			v[ 0].Pos = core::vector3df(       -rx, ry,        -rz);
-			v[ 1].Pos = core::vector3df(-0.75 * rx, ry,        -rz);
-			v[ 2].Pos = core::vector3df( 0.75 * rx, ry,        -rz);
-			v[ 3].Pos = core::vector3df(        rx, ry,        -rz);
-			v[ 4].Pos = core::vector3df(       -rx, ry, -0.75 * rz);
-			v[ 5].Pos = core::vector3df(-0.75 * rx, ry, -0.75 * rz);
-			v[ 6].Pos = core::vector3df( 0.75 * rx, ry, -0.75 * rz);
-			v[ 7].Pos = core::vector3df(        rx, ry, -0.75 * rz);
-			v[ 8].Pos = core::vector3df(       -rx, ry,  0.75 * rz);
-			v[ 9].Pos = core::vector3df(-0.75 * rx, ry,  0.75 * rz);
-			v[10].Pos = core::vector3df( 0.75 * rx, ry,  0.75 * rz);
-			v[11].Pos = core::vector3df(        rx, ry,  0.75 * rz);
-			v[12].Pos = core::vector3df(       -rx, ry,         rz);
-			v[13].Pos = core::vector3df(-0.75 * rx, ry,         rz);
-			v[14].Pos = core::vector3df( 0.75 * rx, ry,         rz);
-			v[15].Pos = core::vector3df(        rx, ry,         rz);
-
-			// These normals are intentionally left unnormalized
-			if (neighbours[0]) {
-				v[ 0].Normal.X -= 1.0;
-				v[ 4].Normal.X -= 1.0;
-				v[ 8].Normal.X -= 1.0;
-				v[12].Normal.X -= 1.0;
-			}
-			if (neighbours[1]) {
-				v[0].Normal.Z -= 1.0;
-				v[1].Normal.Z -= 1.0;
-				v[2].Normal.Z -= 1.0;
-				v[3].Normal.Z -= 1.0;
-			}
-			if (neighbours[2]) {
-				v[ 3].Normal.X += 1.0;
-				v[ 7].Normal.X += 1.0;
-				v[11].Normal.X += 1.0;
-				v[15].Normal.X += 1.0;
-			}
-			if (neighbours[3]) {
-				v[12].Normal.Z += 1.0;
-				v[13].Normal.Z += 1.0;
-				v[14].Normal.Z += 1.0;
-				v[15].Normal.Z += 1.0;
-			}
-
-			for (int i = 0; i < 16; ++i) {
-				v[i + 32] = v[i];
-				v[i + 32].Pos.Y = -ry;
-
-				v[i].Normal = core::vector3df(0.0, 1.0, 0.0);
-				v[i + 32].Normal = core::vector3df(0.0, -1.0, 0.0);
+		for (u32 i = 0; i < num_faces_to_draw; i++)
+		{
+			switch (i)
+			{
+			case 0:	// top
+				for (video::S3DVertex& vertex : v) {
+					vertex.Normal.set(0, 1, 0);
+				}
+				v[0].Pos.set(-rx, ry, -rz);
+				v[1].Pos.set(-rx, ry, rz);
+				v[2].Pos.set(rx, ry, rz);
+				v[3].Pos.set(rx, ry, -rz);
+				break;
+			case 1: // back
+				if (INAREA(xi, zi - 1, m_cloud_radius_i)) {
+					u32 j = GETINDEX(xi, zi - 1, m_cloud_radius_i);
+					if (grid[j])
+						continue;
+				}
+				if (soft_clouds_enabled) {
+					for (video::S3DVertex& vertex : v) {
+						vertex.Normal.set(0, 0, -1);
+					}
+					v[2].Color = c_bottom;
+					v[3].Color = c_bottom;
+				}
+				else {
+					for (video::S3DVertex& vertex : v) {
+						vertex.Color = c_side_1;
+						vertex.Normal.set(0, 0, -1);
+					}
+				}
+				v[0].Pos.set(-rx, ry, -rz);
+				v[1].Pos.set(rx, ry, -rz);
+				v[2].Pos.set(rx, 0, -rz);
+				v[3].Pos.set(-rx, 0, -rz);
+				break;
+			case 2: //right
+				if (INAREA(xi + 1, zi, m_cloud_radius_i)) {
+					u32 j = GETINDEX(xi + 1, zi, m_cloud_radius_i);
+					if (grid[j])
+						continue;
+				}
+				if (soft_clouds_enabled) {
+					for (video::S3DVertex& vertex : v) {
+						vertex.Normal.set(1, 0, 0);
+					}
+					v[2].Color = c_bottom;
+					v[3].Color = c_bottom;
+				}
+				else {
+					for (video::S3DVertex& vertex : v) {
+						vertex.Color = c_side_2;
+						vertex.Normal.set(1, 0, 0);
+					}
+				}
+				v[0].Pos.set(rx, ry, -rz);
+				v[1].Pos.set(rx, ry, rz);
+				v[2].Pos.set(rx, 0, rz);
+				v[3].Pos.set(rx, 0, -rz);
+				break;
+			case 3: // front
+				if (INAREA(xi, zi + 1, m_cloud_radius_i)) {
+					u32 j = GETINDEX(xi, zi + 1, m_cloud_radius_i);
+					if (grid[j])
+						continue;
+				}
+				if (soft_clouds_enabled) {
+					for (video::S3DVertex& vertex : v) {
+						vertex.Normal.set(0, 0, -1);
+					}
+					v[2].Color = c_bottom;
+					v[3].Color = c_bottom;
+				}
+				else {
+					for (video::S3DVertex& vertex : v) {
+						vertex.Color = c_side_1;
+						vertex.Normal.set(0, 0, -1);
+					}
+				}
+				v[0].Pos.set(rx, ry, rz);
+				v[1].Pos.set(-rx, ry, rz);
+				v[2].Pos.set(-rx, 0, rz);
+				v[3].Pos.set(rx, 0, rz);
+				break;
+			case 4: // left
+				if (INAREA(xi - 1, zi, m_cloud_radius_i)) {
+					u32 j = GETINDEX(xi - 1, zi, m_cloud_radius_i);
+					if (grid[j])
+						continue;
+				}
+				if (soft_clouds_enabled) {
+					for (video::S3DVertex& vertex : v) {
+						vertex.Normal.set(-1, 0, 0);
+					}
+					v[2].Color = c_bottom;
+					v[3].Color = c_bottom;
+				}
+				else {
+					for (video::S3DVertex& vertex : v) {
+						vertex.Color = c_side_2;
+						vertex.Normal.set(-1, 0, 0);
+					}
+				}
+				v[0].Pos.set(-rx, ry, rz);
+				v[1].Pos.set(-rx, ry, -rz);
+				v[2].Pos.set(-rx, 0, -rz);
+				v[3].Pos.set(-rx, 0, rz);
+				break;
+			case 5: // bottom
+				for (video::S3DVertex& vertex : v) {
+					vertex.Color = c_bottom;
+					vertex.Normal.set(0, -1, 0);
+				}
+				v[0].Pos.set(rx, 0, rz);
+				v[1].Pos.set(-rx, 0, rz);
+				v[2].Pos.set(-rx, 0, -rz);
+				v[3].Pos.set(rx, 0, -rz);
+				break;
 			}
 
 			for (video::S3DVertex& vertex : v) {
-				vertex.Color = shadow.toSColor();
 				vertex.Pos += pos;
-			}
-
-			//top
-			
-		}
-		else {
-			video::S3DVertex v[4] = {
-			video::S3DVertex(0,0,0, 0,0,0, c_top, 0, 1),
-			video::S3DVertex(0,0,0, 0,0,0, c_top, 1, 1),
-			video::S3DVertex(0,0,0, 0,0,0, c_top, 1, 0),
-			video::S3DVertex(0,0,0, 0,0,0, c_top, 0, 0)
-			};
-
-			for (u32 i = 0; i < num_faces_to_draw; i++)
-			{
-				switch (i)
-				{
-				case 0:	// top
-					for (video::S3DVertex& vertex : v) {
-						vertex.Normal.set(0, 1, 0);
-					}
-					v[0].Pos.set(-rx, ry, -rz);
-					v[1].Pos.set(-rx, ry, rz);
-					v[2].Pos.set(rx, ry, rz);
-					v[3].Pos.set(rx, ry, -rz);
-					break;
-				case 1: // back
-					if (INAREA(xi, zi - 1, m_cloud_radius_i)) {
-						u32 j = GETINDEX(xi, zi - 1, m_cloud_radius_i);
-						if (grid[j])
-							continue;
-					}
-					if (soft_clouds_enabled) {
-						for (video::S3DVertex& vertex : v) {
-							vertex.Normal.set(0, 0, -1);
-						}
-						v[2].Color = c_bottom;
-						v[3].Color = c_bottom;
-					}
-					else {
-						for (video::S3DVertex& vertex : v) {
-							vertex.Color = c_side_1;
-							vertex.Normal.set(0, 0, -1);
-						}
-					}
-					v[0].Pos.set(-rx, ry, -rz);
-					v[1].Pos.set(rx, ry, -rz);
-					v[2].Pos.set(rx, 0, -rz);
-					v[3].Pos.set(-rx, 0, -rz);
-					break;
-				case 2: //right
-					if (INAREA(xi + 1, zi, m_cloud_radius_i)) {
-						u32 j = GETINDEX(xi + 1, zi, m_cloud_radius_i);
-						if (grid[j])
-							continue;
-					}
-					if (soft_clouds_enabled) {
-						for (video::S3DVertex& vertex : v) {
-							vertex.Normal.set(1, 0, 0);
-						}
-						v[2].Color = c_bottom;
-						v[3].Color = c_bottom;
-					}
-					else {
-						for (video::S3DVertex& vertex : v) {
-							vertex.Color = c_side_2;
-							vertex.Normal.set(1, 0, 0);
-						}
-					}
-					v[0].Pos.set(rx, ry, -rz);
-					v[1].Pos.set(rx, ry, rz);
-					v[2].Pos.set(rx, 0, rz);
-					v[3].Pos.set(rx, 0, -rz);
-					break;
-				case 3: // front
-					if (INAREA(xi, zi + 1, m_cloud_radius_i)) {
-						u32 j = GETINDEX(xi, zi + 1, m_cloud_radius_i);
-						if (grid[j])
-							continue;
-					}
-					if (soft_clouds_enabled) {
-						for (video::S3DVertex& vertex : v) {
-							vertex.Normal.set(0, 0, -1);
-						}
-						v[2].Color = c_bottom;
-						v[3].Color = c_bottom;
-					}
-					else {
-						for (video::S3DVertex& vertex : v) {
-							vertex.Color = c_side_1;
-							vertex.Normal.set(0, 0, -1);
-						}
-					}
-					v[0].Pos.set(rx, ry, rz);
-					v[1].Pos.set(-rx, ry, rz);
-					v[2].Pos.set(-rx, 0, rz);
-					v[3].Pos.set(rx, 0, rz);
-					break;
-				case 4: // left
-					if (INAREA(xi - 1, zi, m_cloud_radius_i)) {
-						u32 j = GETINDEX(xi - 1, zi, m_cloud_radius_i);
-						if (grid[j])
-							continue;
-					}
-					if (soft_clouds_enabled) {
-						for (video::S3DVertex& vertex : v) {
-							vertex.Normal.set(-1, 0, 0);
-						}
-						v[2].Color = c_bottom;
-						v[3].Color = c_bottom;
-					}
-					else {
-						for (video::S3DVertex& vertex : v) {
-							vertex.Color = c_side_2;
-							vertex.Normal.set(-1, 0, 0);
-						}
-					}
-					v[0].Pos.set(-rx, ry, rz);
-					v[1].Pos.set(-rx, ry, -rz);
-					v[2].Pos.set(-rx, 0, -rz);
-					v[3].Pos.set(-rx, 0, rz);
-					break;
-				case 5: // bottom
-					for (video::S3DVertex& vertex : v) {
-						vertex.Color = c_bottom;
-						vertex.Normal.set(0, -1, 0);
-					}
-					v[0].Pos.set(rx, 0, rz);
-					v[1].Pos.set(-rx, 0, rz);
-					v[2].Pos.set(-rx, 0, -rz);
-					v[3].Pos.set(rx, 0, -rz);
-					break;
-				}
-
-				for (video::S3DVertex& vertex : v) {
-					vertex.Pos += pos;
-					vertices.push_back(vertex);
-				}
+				vertices.push_back(vertex);
 			}
 		}
 	}

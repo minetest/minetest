@@ -58,6 +58,7 @@
 		Rename TOCLIENT_DEATHSCREEN to TOCLIENT_DEATHSCREEN_LEGACY
 		Rename TOSERVER_RESPAWN to TOSERVER_RESPAWN_LEGACY
 		Support float animation frame numbers in TOCLIENT_LOCAL_PLAYER_ANIMATIONS
+		Add beta_r0, vignette and cdl parameters to Lighting packets
 		[scheduled bump for 5.10.0]
 */
 

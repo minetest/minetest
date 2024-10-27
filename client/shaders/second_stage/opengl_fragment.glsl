@@ -12,6 +12,14 @@ struct ExposureParams {
 	float compensationFactor;
 };
 
+uniform vec3 cdl_slope;
+uniform vec3 cdl_offset;
+uniform vec3 cdl_power;
+
+uniform float vignette_dark;
+uniform float vignette_bright;
+uniform float vignette_power;
+
 uniform sampler2D rendered;
 uniform sampler2D bloom;
 
@@ -148,7 +156,7 @@ void main(void)
 	{
 
 #ifdef ENABLE_VIGNETTE
-		color.rgb *= 0.8 * pow(1.0 - length(uv - vec2(0.5)) * 1.4, 0.9) + 0.3;
+		color.rgb *= (vignette_bright - vignette_dark) * (1.0 - pow(length(uv - vec2(0.5)) * 1.4, vignette_power)) + vignette_dark;
 #endif
 
 #if ENABLE_TONE_MAPPING
@@ -157,13 +165,7 @@ void main(void)
 
 #ifdef ENABLE_COLOR_GRADING
 		// ASC CDL color grading
-		const vec3 slope = vec3(1.2, 1.0, 0.8);
-		const vec3 power = vec3(1.25, 1.0, 0.9);
-
-		// Filter out blue pixels, because the color grading tends to wash them out.
-		float blue_factor = clamp((color.b - max(color.r, color.g)) / max(0.01, min(color.r, color.g)), 0.0, 1.0);
-
-		color.rgb = mix(color.rgb, pow(color.rgb * slope, power), 1.);
+		color.rgb = mix(color.rgb, pow(max(color.rgb * cdl_slope + cdl_offset, 0.0), cdl_power), 1.);
 #endif
 		color.rgb = applySaturation(color.rgb, saturation);
 	}

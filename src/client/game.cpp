@@ -395,8 +395,6 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 16> m_camera_projinv_pixel{"mCameraProjInv"};
 	CachedVertexShaderSetting<float, 16> m_camera_view_vertex{"mCameraView"};
 	CachedPixelShaderSetting<float, 16> m_camera_view_pixel{"mCameraView"};
-	CachedPixelShaderSetting<float> m_camera_near_pixel{"cameraNear"};
-	CachedPixelShaderSetting<float> m_camera_far_pixel{"cameraFar"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture0{"texture0"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture1{"texture1"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture2{"texture2"};
@@ -428,6 +426,18 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float> m_moon_brightness_pixel{"moonBrightness"};
 	CachedPixelShaderSetting<float>
 		m_volumetric_light_strength_pixel{"volumetricLightStrength"};
+	CachedPixelShaderSetting<float, 3>
+		m_volumetric_beta_r0_pixel{ "beta_r0_l" };
+	CachedVertexShaderSetting<float, 3>
+		m_volumetric_beta_r0_vertex{ "beta_r0_l" };
+	CachedPixelShaderSetting<float, 3> m_cdl_slope_pixel{"cdl_slope"};
+	CachedPixelShaderSetting<float, 3> m_cdl_offset_pixel{"cdl_offset"};
+	CachedPixelShaderSetting<float, 3> m_cdl_power_pixel{"cdl_power"};
+	CachedPixelShaderSetting<float> m_vignette_dark_pixel{"vignette_dark"};
+	CachedPixelShaderSetting<float> m_vignette_bright_pixel{"vignette_bright"};
+	CachedPixelShaderSetting<float> m_vignette_power_pixel{"vignette_power"};
+	CachedPixelShaderSetting<float> m_fov_pixel{"fov"};
+	CachedPixelShaderSetting<float, 2> m_window_size_pixel{"windowSize"};
 
 	static constexpr std::array<const char*, 1> SETTING_CALLBACKS = {
 		"exposure_compensation",
@@ -457,6 +467,7 @@ public:
 		m_user_exposure_compensation = g_settings->getFloat("exposure_compensation", -1.0f, 1.0f);
 		m_bloom_enabled = g_settings->getBool("enable_bloom");
 		m_volumetric_light_enabled = g_settings->getBool("enable_volumetric_lighting") && m_bloom_enabled;
+		m_gamma = g_settings->getFloat("secondstage_gamma");
 	}
 
 	~GameGlobalShaderConstantSetter()
@@ -506,10 +517,11 @@ public:
 		m_camera_view_vertex.set(camera_view, services);
 		m_camera_view_pixel.set(camera_view, services);
 
-		float camera_near = m_client->getCamera()->getCameraNode()->getNearValue();
-		m_camera_near_pixel.set(&camera_near, services);
-		float camera_far = m_client->getCamera()->getCameraNode()->getFarValue();
-		m_camera_far_pixel.set(&camera_far, services);
+		float fov = m_client->getCamera()->getFovMax();
+		m_fov_pixel.set(&fov, services);
+		v2u32 window_size_int = RenderingEngine::getWindowSize();
+		core::vector2df window_size = core::vector2df(window_size_int.X, window_size_int.Y);
+		m_window_size_pixel.set(window_size, services);
 
 		SamplerLayer_t tex_id;
 		tex_id = 0;
@@ -551,6 +563,26 @@ public:
 		m_saturation_pixel.set(&saturation, services);
 		video::SColorf artificial_light = lighting.artificial_light_color;
 		m_artificial_light.set(artificial_light, services);
+
+		float gamma = m_gamma;
+		m_gamma_pixel.set(&gamma, services);
+
+		if (g_settings->getBool("enable_vignette")) {
+			const Vignette &vignette_params = lighting.vignette;
+			m_vignette_dark_pixel.set(&vignette_params.dark, services);
+			m_vignette_bright_pixel.set(&vignette_params.bright, services);
+			m_vignette_power_pixel.set(&vignette_params.power, services);
+		}
+
+		if (g_settings->getBool("enable_color_grading")) {
+			const ColorDecisionList& cdl_params = lighting.cdl;
+			core::vector3df slope = cdl_params.slope;
+			m_cdl_slope_pixel.set(slope, services);
+			core::vector3df offset = cdl_params.offset;
+			m_cdl_offset_pixel.set(offset, services);
+			core::vector3df power = cdl_params.power;
+			m_cdl_power_pixel.set(power, services);
+		}
 
 		if (m_volumetric_light_enabled) {
 			// Map directional light to screen space
@@ -594,6 +626,10 @@ public:
 
 			float volumetric_light_strength = lighting.volumetric_light_strength;
 			m_volumetric_light_strength_pixel.set(&volumetric_light_strength, services);
+
+			core::vector3df beta_r0 = lighting.volumetric_beta_r0;
+			m_volumetric_beta_r0_vertex.set(beta_r0, services);
+			m_volumetric_beta_r0_pixel.set(beta_r0, services);
 		}
 	}
 

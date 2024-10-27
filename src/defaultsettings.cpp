@@ -344,12 +344,13 @@ void set_default_settings()
 	settings->setDefault("enable_auto_exposure", "false");
 	settings->setDefault("enable_color_grading", "false");
 	settings->setDefault("enable_vignette", "false");
-	settings->setDefault("gamma", "1.6");
+	settings->setDefault("secondstage_gamma", "1.6");
 	settings->setDefault("debanding", "true");
 	settings->setDefault("antialiasing", "none");
 	settings->setDefault("enable_bloom", "false");
 	settings->setDefault("enable_bloom_debug", "false");
 	settings->setDefault("enable_volumetric_lighting", "false");
+	settings->setDefault("enable_volumetric_depth_attenuation", "false");
 	settings->setDefault("enable_bumpmaps", "false");
 	settings->setDefault("enable_water_reflections", "false");
 	settings->setDefault("enable_translucent_foliage", "false");
@@ -368,6 +369,7 @@ void set_default_settings()
 	settings->setDefault("shadow_update_frames", "8");
 	settings->setDefault("shadow_soft_radius", "5.0");
 	settings->setDefault("shadow_sky_body_orbit_tilt", "0.0");
+	settings->setDefault("enable_sun_tint", "false");
 
 	// Input
 	settings->setDefault("invert_mouse", "false");

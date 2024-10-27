@@ -40,6 +40,8 @@ uniform float animationTimer;
 	varying float perspective_factor;
 #endif
 
+uniform vec2 windowSize;
+uniform float fov;
 
 varying vec3 vNormal;
 varying vec3 vPosition;
@@ -98,6 +100,36 @@ vec3 gnoise(vec3 p){
     );
 }
 
+float snoise(vec3 p)
+{
+	vec3 a = floor(p);
+	vec3 d = p - a;
+	d = d * d * (3.0 - 2.0 * d);
+
+	vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
+	vec4 k1 = perm(b.xyxy);
+	vec4 k2 = perm(k1.xyxy + b.zzww);
+
+	vec4 c = k2 + a.zzzz;
+	vec4 k3 = perm(c);
+	vec4 k4 = perm(c + 1.0);
+
+	vec4 o1 = fract(k3 * (1.0 / 41.0));
+	vec4 o2 = fract(k4 * (1.0 / 41.0));
+
+	vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
+	vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
+
+	return o4.y * d.y + o4.x * (1.0 - d.y);
+}
+
+vec3 hnoise(vec3 p) {
+	vec3 g = gnoise(p);
+	float s = snoise(p);
+	g *= 3.0 / (1.0 + exp(-16.0 * (s - 0.5))) - 1.5;
+	return g;
+}
+
 vec2 wave_noise(vec3 p, float off) {
 	return (gnoise(p + vec3(0.0, 0.0, off)) * 0.4 + gnoise(2.0 * p + vec3(0.0, off, off)) * 0.2 + gnoise(3.0 * p + vec3(0.0, off, off)) * 0.225 + gnoise(4.0 * p + vec3(-off, off, 0.0)) * 0.2).xz;
 }
@@ -123,7 +155,7 @@ float mtsmoothstep(in float edge0, in float edge1, in float x)
 
 float shadowCutoff(float x) {
 	#if defined(ENABLE_TRANSLUCENT_FOLIAGE) && MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES
-		return mtsmoothstep(0.0, 0.002, x);
+		return mtsmoothstep(0.0, 3.0 / f_shadowfar, x);
 	#else
 		return step(0.0, x);
 	#endif
@@ -415,8 +447,26 @@ float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 }
 
 #endif
-
 #endif
+
+#if (defined(ENABLE_BUMPMAPS) && !defined(MATERIAL_LIQUID))
+//This is mostly a placeholder and probably should use proper textures eventually...
+vec3 getBumpMap(vec2 uv) {
+	vec2 dr = vec2(0.25) * texelSize0;
+	// Sample the texture to then compute the gradient
+	float fx0y0 = texture2D(baseTexture, uv).r;
+	float fx1y0 = texture2D(baseTexture, uv + vec2(dr.x, 0.0)).r;
+	float fx0y1 = texture2D(baseTexture, uv + vec2(0.0, dr.y)).r;
+	vec2 gradient = 0.1 * vec2((fx1y0 - fx0y0) / dr.x, (fx0y1 - fx0y0) / dr.y) + 0.05 * gnoise(vec3(2.0 * uv / texelSize0, 0.0)).xy;
+	// Compute a set of orthonormal basis vectors representing the node's surface plane.
+	vec3 orth1 = normalize(cross(vNormal, mix(vec3(0.0, -1.0, 0.0), vec3(0.0, 0.0, -1.0), step(0.9, abs(vNormal.y)))));
+	vec3 orth2 = normalize(cross(vNormal, orth1));
+	// The normal is computed using the partial derivatives along the texture space x and y axes. 
+	// These axes in world space are assumed to be parallel to the basis vectors we defined before.
+	return orth1 * gradient.x + orth2 * gradient.y;
+}
+#endif
+
 #endif
 
 void main(void)
@@ -444,19 +494,15 @@ void main(void)
 	// Fragment normal, can differ from vNormal which is derived from vertex normals.
 	vec3 fNormal = vNormal;
 
+	vec3 viewVec = normalize(worldPosition + cameraOffset - cameraPosition);
+
 #if ((defined(ENABLE_DYNAMIC_SHADOWS) && defined(ENABLE_BUMPMAPS)) && !defined(MATERIAL_LIQUID))
-	vec2 dr = vec2(0.25) * texelSize0;
-	// Sample the texture to then compute the gradient
-	float fx0y0 = texture2D(baseTexture, uv).r;
-	float fx1y0 = texture2D(baseTexture, uv + vec2(dr.x, 0.0)).r;
-	float fx0y1 = texture2D(baseTexture, uv + vec2(0.0, dr.y)).r;
-	vec2 gradient = 0.1 * vec2((fx1y0 - fx0y0) / dr.x, (fx0y1 - fx0y0) / dr.y) + 0.05 * gnoise(vec3(2.0 * uv / texelSize0, 0.0)).xy;
-	// Compute a set of orthogonal basis vectors representing the node's surface plane.
-	vec3 orth1 = normalize(cross(vNormal, mix(vec3(0.0, -1.0, 0.0), vec3(0.0, 0.0, -1.0), step(0.9, abs(vNormal.y)))));
-	vec3 orth2 = normalize(cross(vNormal, orth1));
-	// The normal is computed using the partial derivatives along the texture space x and y axes. 
-	// These axes in world space are assumed to be parallel to the basis vectors we defined before.
-	fNormal = normalize(vNormal + orth1 * gradient.x + orth2 * gradient.y);
+	vec3 bump_normal = getBumpMap(uv);
+	// When applied to all blocks, these bump maps produce irritating Moiré effects.
+	// So we hide the bump maps when close up.
+	float moire_factor = abs(dot(vNormal, viewVec));
+	bump_normal *= mtsmoothstep(0.4 * moire_factor, 0.2 * moire_factor, length(eyeVec) * fov / windowSize.x);
+	fNormal = normalize(vNormal + bump_normal);
 	float adj_cosLight = max(1e-5, dot(fNormal, -v_LightDirection));
 #else 
 	float adj_cosLight = cosLight;
@@ -526,8 +572,6 @@ void main(void)
 
 		vec3 reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.0);
 
-		vec3 viewVec = normalize(worldPosition + cameraOffset - cameraPosition);
-
 		// Water reflections
 #if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS))
 
@@ -548,7 +592,7 @@ void main(void)
 		reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.0);
 		float fresnel_factor = dot(fNormal, viewVec);
 
-		float brightness_factor = 1.0 - adjusted_night_ratio;
+		float brightness_factor = (1.0 - adjusted_night_ratio) / base.a;
 
 		// A little trig hack. We go from the dot product of viewVec and normal to the dot product of viewVec and tangent to apply a fresnel effect.
 		fresnel_factor = clamp(pow(1.0 - fresnel_factor * fresnel_factor, 8.0), 0.0, 1.0) * 0.8 + 0.2;
@@ -557,10 +601,12 @@ void main(void)
 
 		// Sky reflection
 		col.rgb += reflection_color * pow(fresnel_factor, 2.0) * 0.5 * brightness_factor;
-		vec3 water_reflect_color = 12.0 * sunTint * dayLight * fresnel_factor * mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0)) * max(1.0 - shadow_uncorrected, 0.0);
 
-		// This line exists to prevent ridiculously bright reflection colors.
-		water_reflect_color /= clamp(max(water_reflect_color.r, max(water_reflect_color.g, water_reflect_color.b)) * 0.375, 1.0, 400.0);
+		// We clip the reflection color if it gets too bright
+		vec3 water_reflect_color = 6.0 * sunTint * dayLight * fresnel_factor * mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0)) * max(1.0 - shadow_uncorrected, 0.0);
+		water_reflect_color /= max(0.4 * length(water_reflect_color), 1.0);
+
+		// Sun reflection
 		col.rgb += water_reflect_color * f_adj_shadow_strength * brightness_factor;
 #endif
 
@@ -580,7 +626,7 @@ void main(void)
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES) && defined(ENABLE_TRANSLUCENT_FOLIAGE)
 		// Simulate translucent foliage.
-		col.rgb += 4.0 * dayLight * base.rgb * normalize(base.rgb * varColor.rgb * varColor.rgb) * f_adj_shadow_strength * pow(max(-dot(v_LightDirection, viewVec), 0.0), 4.0) * max(1.0 - shadow_uncorrected, 0.0);
+		col.rgb += 4.0 * sunTint * dayLight * base.rgb * normalize(base.rgb * varColor.rgb * varColor.rgb) * f_adj_shadow_strength * pow(max(-dot(v_LightDirection, viewVec), 0.0), 4.0) * max(1.0 - shadow_uncorrected, 0.0);
 #endif
 	}
 #endif

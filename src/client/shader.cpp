@@ -727,6 +727,9 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		if (shadow_soft_radius < 1.0f)
 			shadow_soft_radius = 1.0f;
 		shaders_header << "#define SOFTSHADOWRADIUS " << shadow_soft_radius << "\n";
+
+		if (g_settings->getBool("enable_sun_tint"))
+			shaders_header << "#define ENABLE_TINTED_SUNLIGHT 1\n";
 	}
 
 	if (g_settings->getBool("enable_bloom")) {
@@ -755,6 +758,10 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 
 	if (g_settings->getBool("enable_volumetric_lighting")) {
 		shaders_header << "#define VOLUMETRIC_LIGHT 1\n";
+	}
+
+	if (g_settings->getBool("enable_volumetric_depth_attenuation")) {
+		shaders_header << "#define VOLUMETRIC_DEPTH_ATTENUATION 1\n";
 	}
 
 	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics

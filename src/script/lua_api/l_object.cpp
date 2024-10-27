@@ -2654,6 +2654,12 @@ int ObjectRef::l_set_lighting(lua_State *L)
 		if (lua_istable(L, -1)) {
 			getfloatfield(L, -1, "strength", lighting.volumetric_light_strength);
 			lighting.volumetric_light_strength = rangelim(lighting.volumetric_light_strength, 0.0f, 1.0f);
+
+			lua_getfield(L, -1, "beta_r0");
+			if (!lua_isnil(L, -1)) {
+				lighting.volumetric_beta_r0 = read_v3f(L, -1);
+			}
+			lua_pop(L, 1); // beta_r0
 		}
 		lua_pop(L, 1); // volumetric_light
 
@@ -2664,6 +2670,31 @@ int ObjectRef::l_set_lighting(lua_State *L)
 			lighting.bloom_radius          = getfloatfield_default(L, -1, "radius",          lighting.bloom_radius);
 		}
 		lua_pop(L, 1); // bloom
+
+		lua_getfield(L, 2, "vignette");
+		if (lua_istable(L, -1)) {
+			lighting.vignette.dark   = getfloatfield_default(L, -1, "dark",   lighting.vignette.dark);
+			lighting.vignette.bright = getfloatfield_default(L, -1, "bright", lighting.vignette.bright);
+			lighting.vignette.power  = getfloatfield_default(L, -1, "power",  lighting.vignette.power);
+		}
+		lua_pop(L, 1); // vignette
+
+		lua_getfield(L, 2, "cdl");
+		if (lua_istable(L, -1)) {
+			lua_getfield(L, -1, "slope");
+			if (!lua_isnil(L, -1))
+				lighting.cdl.slope = read_v3f(L, -1);
+			lua_pop(L, 1); // slope
+			lua_getfield(L, -1, "offset");
+			if (!lua_isnil(L, -1))
+				lighting.cdl.offset = read_v3f(L, -1);
+			lua_pop(L, 1); // offset
+			lua_getfield(L, -1, "power");
+			if (!lua_isnil(L, -1))
+				lighting.cdl.power = read_v3f(L, -1);
+			lua_pop(L, 1); // power
+		}
+		lua_pop(L, 1); // cdl
 }
 
 	getServer(L)->setLighting(player, lighting);
@@ -2709,6 +2740,8 @@ int ObjectRef::l_get_lighting(lua_State *L)
 	lua_newtable(L); // "volumetric_light"
 	lua_pushnumber(L, lighting.volumetric_light_strength);
 	lua_setfield(L, -2, "strength");
+	push_v3f(L, lighting.volumetric_beta_r0);
+	lua_setfield(L, -2, "beta_r0");
 	lua_setfield(L, -2, "volumetric_light");
 	lua_newtable(L); // "bloom"
 	lua_pushnumber(L, lighting.bloom_intensity);
@@ -2718,6 +2751,22 @@ int ObjectRef::l_get_lighting(lua_State *L)
 	lua_pushnumber(L, lighting.bloom_radius);
 	lua_setfield(L, -2, "radius");
 	lua_setfield(L, -2, "bloom");
+	lua_newtable(L); // "vignette"
+	lua_pushnumber(L, lighting.vignette.dark);
+	lua_setfield(L, -2, "dark");
+	lua_pushnumber(L, lighting.vignette.bright);
+	lua_setfield(L, -2, "bright");
+	lua_pushnumber(L, lighting.vignette.power);
+	lua_setfield(L, -2, "power");
+	lua_setfield(L, -2, "vignette");
+	lua_newtable(L); // "cdl"
+	push_v3f(L, lighting.cdl.slope);
+	lua_setfield(L, -2, "slope");
+	push_v3f(L, lighting.cdl.offset);
+	lua_setfield(L, -2, "offset");
+	push_v3f(L, lighting.cdl.power);
+	lua_setfield(L, -2, "power");
+	lua_setfield(L, -2, "cdl");
 	return 1;
 }
 
