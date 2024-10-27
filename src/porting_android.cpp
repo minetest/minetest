@@ -142,7 +142,7 @@ void showTextInputDialog(const std::string &hint, const std::string &current, in
 			jhint, jcurrent, jeditType);
 }
 
-void showComboBoxDialog(const std::string optionList[], s32 listSize, s32 selectedIdx)
+void showComboBoxDialog(const std::string *optionList, s32 listSize, s32 selectedIdx)
 {
 	jmethodID showdialog = jnienv->GetMethodID(activityClass, "showSelectionInputDialog",
 			"([Ljava/lang/String;I)V");

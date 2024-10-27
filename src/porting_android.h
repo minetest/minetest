@@ -27,7 +27,7 @@ void showTextInputDialog(const std::string &hint, const std::string &current, in
  * @param listSize Size of the list
  * @param selectedIdx Selected index
  */
-void showComboBoxDialog(const std::string optionList[], s32 listSize, s32 selectedIdx);
+void showComboBoxDialog(const std::string *optionList, s32 listSize, s32 selectedIdx);
 
 /**
  * Opens a share intent to the file at path

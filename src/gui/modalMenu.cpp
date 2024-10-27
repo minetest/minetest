@@ -291,13 +291,13 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 
 			s32 selected_idx = dropdown->getSelected();
 			s32 option_size = dropdown->getItemCount();
-			std::string list_of_options[option_size];
+			std::vector<std::string> list_of_options;
 
 			for (s32 i = 0; i < option_size; i++) {
-				list_of_options[i] = wide_to_utf8(dropdown->getItem(i));
+				list_of_options.push_back(wide_to_utf8(dropdown->getItem(i)));
 			}
 
-			porting::showComboBoxDialog(list_of_options, option_size, selected_idx);
+			porting::showComboBoxDialog(list_of_options.data(), option_size, selected_idx);
 			return true; // Prevent the Irrlicht dropdown from opening.
 		}
 	}
