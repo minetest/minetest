@@ -18,7 +18,7 @@
 if not core.get_http_api then
 	function create_contentdb_dlg()
 		return messagebox("contentdb",
-				fgettext("ContentDB is not available when Minetest was compiled without cURL"))
+				fgettext("ContentDB is not available when Luanti was compiled without cURL"))
 	end
 	return
 end

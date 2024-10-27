@@ -341,7 +341,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters &param) :
 		SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
 
 #if defined(SDL_HINT_APP_NAME)
-		SDL_SetHint(SDL_HINT_APP_NAME, "Minetest");
+		SDL_SetHint(SDL_HINT_APP_NAME, "Luanti");
 #endif
 
 		// Set IME hints

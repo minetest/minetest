@@ -90,7 +90,7 @@ void osSpecificInit()
 #ifdef GPROF
 	// in the start-up code
 	warningstream << "Initializing GPROF profiler" << std::endl;
-	monstartup("libMinetest.so");
+	monstartup("libluanti.so");
 #endif
 }
 
