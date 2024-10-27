@@ -16,8 +16,8 @@ brew install cmake freetype gettext gmp hiredis jpeg-turbo jsoncpp leveldb libog
 Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
 
 ```bash
-git clone --depth 1 https://github.com/minetest/minetest.git
-cd minetest
+git clone --depth 1 https://github.com/minetest/minetest.git luanti
+cd luanti
 ```
 
 ## Building for personal usage
@@ -37,7 +37,7 @@ make -j$(sysctl -n hw.logicalcpu)
 make install
 
 # Apple Silicon (M1/M2) Macs w/ MacOS >= BigSur signature for local run
-codesign --force --deep -s - --entitlements ../misc/macos/entitlements/debug.entitlements macos/minetest.app
+codesign --force --deep -s - --entitlements ../misc/macos/entitlements/debug.entitlements macos/luanti.app
 ```
 
 If you are using LuaJIT with `MAP_JIT` support use `debug_map_jit.entitlements`.
@@ -45,7 +45,7 @@ If you are using LuaJIT with `MAP_JIT` support use `debug_map_jit.entitlements`.
 ### Run
 
 ```
-open ./build/macos/minetest.app
+open ./build/macos/luanti.app
 ```
 
 ## Building for distribution
@@ -85,7 +85,7 @@ If you are using LuaJIT with `MAP_JIT` support add `-DXCODE_CODE_SIGN_ENTITLEMEN
 ### Build and Run
 
 * Open generated Xcode project
-* Select scheme `minetest`
+* Select scheme `luanti`
 * Configure signing Team etc.
 * Run Build command
 * Open application from `build/build/Debug/` directory or run it from Xcode
@@ -93,7 +93,7 @@ If you are using LuaJIT with `MAP_JIT` support add `-DXCODE_CODE_SIGN_ENTITLEMEN
 ### Archive and Run
 
 * Open generated Xcode project
-* Select scheme `minetest`
+* Select scheme `luanti`
 * Configure signing Team etc.
 * Run Build command
 * Open application archive in finder, go into it, copy application and test it.
