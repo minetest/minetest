@@ -1,4 +1,4 @@
---Minetest
+--Luanti
 --Copyright (C) 2018-20 rubenwardy
 --
 --This program is free software; you can redistribute it and/or modify
@@ -487,7 +487,7 @@ end
 
 local function handle_events(event)
 	if event == "DialogShow" then
-		-- Don't show the "MINETEST" header behind the dialog.
+		-- Don't show the header image behind the dialog.
 		mm_game_theme.set_engine(true)
 
 		-- If ContentDB is already loaded, auto-install packages here.

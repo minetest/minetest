@@ -1,4 +1,4 @@
--- Minetest: builtin/game/chat.lua
+-- Luanti: builtin/game/chat.lua
 
 local S = core.get_translator("__builtin")
 

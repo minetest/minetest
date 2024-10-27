@@ -1,4 +1,4 @@
--- Minetest: builtin/common/chatcommands.lua
+-- Luanti: builtin/common/chatcommands.lua
 
 -- For server-side translations (if INIT == "game")
 -- Otherwise, use core.gettext
