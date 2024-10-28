@@ -3049,6 +3049,8 @@ std::wstring Server::handleChat(const std::string &name,
 	if (g_settings->getBool("strip_color_codes"))
 		wmessage = unescape_enriched(wmessage);
 
+	wmessage = trim(wmessage);
+
 	if (player) {
 		switch (player->canSendChatMessage()) {
 		case RPLAYER_CHATRESULT_FLOODING: {
@@ -3075,13 +3077,12 @@ std::wstring Server::handleChat(const std::string &name,
 				L"It was refused. Send a shorter message";
 	}
 
-	auto message = trim(wide_to_utf8(wmessage));
+	auto message = wide_to_utf8(wmessage);
 	if (message.empty())
 		return L"";
 
-	if (message.find_first_of("\n\r") != std::wstring::npos) {
+	if (message.find_first_of("\r\n") != std::string::npos)
 		return L"Newlines are not permitted in chat messages";
-	}
 
 	// Run script hook, exit if script ate the chat message
 	if (m_script->on_chat_message(name, message))
@@ -3103,8 +3104,7 @@ std::wstring Server::handleChat(const std::string &name,
 #ifdef __ANDROID__
 		line += L"<" + utf8_to_wide(name) + L"> " + wmessage;
 #else
-		line += utf8_to_wide(m_script->formatChatMessage(name,
-				wide_to_utf8(wmessage)));
+		line += utf8_to_wide(m_script->formatChatMessage(name, message));
 #endif
 	}
 
