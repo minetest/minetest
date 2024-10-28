@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="label">Minetest</string>
-    <string name="notification_channel_description">Pemberitahuan dari Minetest</string>
-    <string name="unzip_notification_title">Memuatkan Minetest…</string>
+    <string name="label">Luanti</string>
+    <string name="notification_channel_description">Pemberitahuan dari Luanti</string>
+    <string name="unzip_notification_title">Memuatkan Luanti…</string>
     <string name="unzip_notification_description">Kurang dari 1 minit…</string>
     <string name="no_web_browser">Tiada pelayar sesawang dijumpai</string>
     <string name="loading">Memuatkan…</string>
