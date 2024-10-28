@@ -41,6 +41,8 @@ env:
 
 jobs:
   publish:
+    # NOTE: Disable this job without removing the code to make merging upstream changes easier.
+    if: false
     runs-on: ubuntu-latest
 
     permissions:
