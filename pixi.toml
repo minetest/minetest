@@ -6,7 +6,7 @@ version = "0.1.0"
 description = "Minetst + Gymnasium"
 authors = ["Obelisk team <obelisk@astera.org>"]
 channels = ["conda-forge"]
-platforms = ["linux-64", "osx-64", "osx-arm64"]
+platforms = ["linux-64", "osx-arm64"]
 
 [tasks]
 
