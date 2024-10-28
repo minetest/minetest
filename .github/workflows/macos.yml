@@ -96,7 +96,7 @@ jobs:
         run: |
           mkdir build_xcode
           cd build_xcode
-          ./util/ci/build_xcode.sh
+          ../util/ci/build_xcode.sh
 
       - name: Tests
         run: |
