@@ -1,5 +1,3 @@
--- Minetest: builtin/misc_helpers.lua
-
 --------------------------------------------------------------------------------
 -- Localize functions to avoid table lookups (better performance).
 local string_sub, string_find = string.sub, string.find

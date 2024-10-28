@@ -1,4 +1,4 @@
---Minetest
+--Luanti
 --Copyright (C) 2014 sapier
 --Copyright (C) 2018 rubenwardy <rw@rubenwardy.com>
 --
