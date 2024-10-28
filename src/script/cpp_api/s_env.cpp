@@ -164,8 +164,8 @@ void ScriptApiEnv::player_event(ServerActiveObject *player, const std::string &t
 	if (player == NULL)
 		return;
 
-	// Get minetest.registered_playerevents
-	lua_getglobal(L, "minetest");
+	// Get core.registered_playerevents
+	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_playerevents");
 
 	// Call callbacks
