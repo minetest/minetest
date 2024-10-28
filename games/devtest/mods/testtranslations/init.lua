@@ -1,11 +1,11 @@
-local S, NS = minetest.get_translator("testtranslations")
+local S, NS = core.get_translator("testtranslations")
 
 local function send_compare(name, text)
 	core.chat_send_player(name, ("%s | %s | %s"):format(
 			core.get_translated_string("", text), text, core.get_translated_string("fr", text)))
 end
 
-minetest.register_chatcommand("testtranslations", {
+core.register_chatcommand("testtranslations", {
 	params = "",
 	description = "Test translations",
 	privs = {},
