@@ -1085,15 +1085,15 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	m_shutdown_state.tick(dtime, this);
 }
 
-void Server::Receive(float timeout)
+void Server::Receive(float min_time)
 {
 	ZoneScoped;
 	auto framemarker = FrameMarker("Server::Receive()-frame").started();
 
 	const u64 t0 = porting::getTimeUs();
-	const float timeout_us = timeout * 1e6f;
+	const float min_time_us = min_time * 1e6f;
 	auto remaining_time_us = [&]() -> float {
-		return std::max(0.0f, timeout_us - (porting::getTimeUs() - t0));
+		return std::max(0.0f, min_time_us - (porting::getTimeUs() - t0));
 	};
 
 	NetworkPacket pkt;
@@ -1103,10 +1103,11 @@ void Server::Receive(float timeout)
 		peer_id = 0;
 		try {
 			// Round up since the target step length is the minimum step length,
-			// we only have millisecond precision and we don't want to busy-wait by calling
-			// ReceiveTimeoutMs(.., 0) repeatedly.
-			if (!m_con->ReceiveTimeoutMs(&pkt,
-					((u32)remaining_time_us() + 999) / 1000)) {
+			// we only have millisecond precision and we don't want to busy-wait
+			// by calling ReceiveTimeoutMs(.., 0) repeatedly.
+			const u32 cur_timeout_ms = std::ceil(remaining_time_us() / 1000.0f);
+
+			if (!m_con->ReceiveTimeoutMs(&pkt, cur_timeout_ms)) {
 				// No incoming data.
 				if (remaining_time_us() > 0.0f)
 					continue;
