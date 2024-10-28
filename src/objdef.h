@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "util/basic_macros.h"
 #include "porting.h"
+#include <vector>
 
 class IGameDef;
 class NodeDefManager;

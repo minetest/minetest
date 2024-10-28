@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ogg_file.h"
 #include <memory>
 #include <tuple>
+#include <vector>
 
 namespace sound {
 
