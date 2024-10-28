@@ -156,6 +156,15 @@ void RemoteInputHandler::step_post_render() {
     m_chan.m_obs_cv.wait(lock, [this] { return !m_chan.m_has_obs; });
 
     m_chan.m_obs_builder.setReward(score);
+
+    // We need to keep around the underlying data until the capnp message is serialized. We saw no
+    // way to add this drop after the serialization occurs for the generated server implementation,
+    // and so we decided to drop the previous image, if any, here.
+    if (m_chan.m_image_builder_data != nullptr) {
+      m_chan.m_image_builder_data->drop();
+    }
+    m_chan.m_image_builder_data = image;
+
     m_chan.m_image_builder.setWidth(image->getDimension().Width);
     m_chan.m_image_builder.setHeight(image->getDimension().Height);
     m_chan.m_image_builder.setData(
@@ -171,7 +180,6 @@ void RemoteInputHandler::step_post_render() {
     }
     m_chan.m_has_obs = true;
     m_chan.m_obs_cv.notify_one();
-    image->drop(); // TODO(mickvangelderen): I'm worried we have a use-after free. The capnp docs mentiond that Reader does not own the underlying data. The notify_one call doesn't block (I think) and the image data referenced by the builder may not have been read yet. 
   }
 }
 
