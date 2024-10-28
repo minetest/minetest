@@ -8,6 +8,7 @@
 #include "irrlichttypes_bloated.h"
 #include "networkprotocol.h"
 #include <SColor.h>
+#include <vector>
 
 class NetworkPacket
 {
