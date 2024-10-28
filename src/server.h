@@ -205,7 +205,9 @@ public:
 
 	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep(float dtime, bool initial_step = false);
-	void Receive(float timeout);
+	/// Receive and process all incoming packets. Sleep if the time goal isn't met.
+	/// @param min_time minimum time to take [s]
+	void Receive(float min_time);
 	void yieldToOtherThreads(float dtime);
 
 	PlayerSAO* StageTwoClientInit(session_t peer_id);
