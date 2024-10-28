@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swedish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-11 15:14+0200\n"
+"POT-Creation-Date: 2024-10-28 19:57+0100\n"
 "PO-Revision-Date: 2024-06-08 08:09+0000\n"
 "Last-Translator: ROllerozxa <rollerozxa@voxelmanip.se>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
@@ -49,14 +49,6 @@ msgstr "Den utgående chattkön är nu tom."
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
 msgstr "Detta kommando är inaktiverat av servern."
-
-#: builtin/client/death_formspec.lua src/client/game.cpp
-msgid "Respawn"
-msgstr "Återuppstå"
-
-#: builtin/client/death_formspec.lua src/client/game.cpp
-msgid "You died"
-msgstr "Du dog"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
@@ -169,15 +161,18 @@ msgid "$1 downloading..."
 msgstr "$1 laddas ner..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "All packages"
-msgstr "Alla paket"
+msgid "All"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Back to Main Menu"
-msgstr "Tillbaka till huvudmeny"
+#: builtin/mainmenu/content/dlg_package.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Back"
+msgstr "Tillbaka"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
+#, fuzzy
+msgid "ContentDB is not available when Luanti was compiled without cURL"
 msgstr "ContentDB är inte tillgänglig när Minetest är kompilerad utan cURL"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
@@ -185,7 +180,7 @@ msgid "Downloading..."
 msgstr "Laddar ner..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Error getting dependencies for package"
+msgid "Featured"
 msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
@@ -194,11 +189,8 @@ msgstr "Spel"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #: builtin/mainmenu/content/dlg_install.lua
-msgid "Install"
-msgstr "Installera"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+#: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/serverlistmgr.lua
+#: src/client/game.cpp
 msgid "Loading..."
 msgstr "Laddar..."
 
@@ -207,6 +199,7 @@ msgid "Mods"
 msgstr "Moddar"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_package.lua
 msgid "No packages could be retrieved"
 msgstr "Inga paket kunde hämtas"
 
@@ -224,7 +217,8 @@ msgid "Queued"
 msgstr "Köad"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Texture packs"
+#, fuzzy
+msgid "Texture Packs"
 msgstr "Texturpaket"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
@@ -232,25 +226,9 @@ msgstr "Texturpaket"
 msgid "The package $1 was not found."
 msgstr "Paketet $1/$2 kunde inte hittas."
 
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "Avnstallera"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "Uppdatera"
-
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Update All [$1]"
 msgstr "Uppdatera Alla [$1]"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "View more information in a web browser"
-msgstr "Visa mer information i en webbläsare"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "You need to install a game before you can install a mod"
-msgstr "Du behöver installera ett spel innan du kan installera en modd"
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "$1 and $2 dependencies will be installed."
@@ -294,6 +272,14 @@ msgid "Dependencies:"
 msgstr "Beroenden:"
 
 #: builtin/mainmenu/content/dlg_install.lua
+msgid "Error getting dependencies for package $1"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "Installera"
+
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install $1"
 msgstr "Installera $1"
 
@@ -309,6 +295,10 @@ msgstr "Hittades inte"
 msgid "Please check that the base game is correct."
 msgstr "Var snäll se att basspelet är korrekt."
 
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "You need to install a game before you can install a mod"
+msgstr "Du behöver installera ett spel innan du kan installera en modd"
+
 #: builtin/mainmenu/content/dlg_overwrite.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
 msgstr "\"$1\" finns redan. Vill du skriva över den?"
@@ -316,6 +306,63 @@ msgstr "\"$1\" finns redan. Vill du skriva över den?"
 #: builtin/mainmenu/content/dlg_overwrite.lua
 msgid "Overwrite"
 msgstr "Skriv över"
+
+#: builtin/mainmenu/content/dlg_package.lua
+#, fuzzy
+msgid "ContentDB page"
+msgstr "ContentDB URL"
+
+#: builtin/mainmenu/content/dlg_package.lua
+#, fuzzy
+msgid "Description"
+msgstr "Serverbeskrivning"
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Donate"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Forum Topic"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+#, fuzzy
+msgid "Information"
+msgstr "Information:"
+
+#: builtin/mainmenu/content/dlg_package.lua
+#, fuzzy
+msgid "Install [$1]"
+msgstr "Installera $1"
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Issue Tracker"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Source"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Translate"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Avnstallera"
+
+#: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Uppdatera"
+
+#: builtin/mainmenu/content/dlg_package.lua
+#, fuzzy
+msgid "Website"
+msgstr "Besök hemsida"
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
+msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -674,10 +721,10 @@ msgid "Dismiss"
 msgstr "Nej tack"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
+#, fuzzy
 msgid ""
-"For a long time, the Minetest engine shipped with a default game called "
-"\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
-"game."
+"For a long time, Luanti shipped with a default game called \"Minetest "
+"Game\". Since version 5.8.0, Luanti ships without a default game."
 msgstr ""
 "Under en lång period kom Minetest med det förinstallerat spelet \"Minetest "
 "Game\". Sedan Minetest 5.8.0 kommer Minetest utan ett standardspel "
@@ -842,6 +889,21 @@ msgid "eased"
 msgstr "lättad"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "(The game will need to enable automatic exposure as well)"
+msgstr "(Spelet behöver även aktivera skuggor för att visas)"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "(The game will need to enable bloom as well)"
+msgstr "(Spelet behöver även aktivera skuggor för att visas)"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "(The game will need to enable volumetric lighting as well)"
+msgstr "(Spelet behöver även aktivera skuggor för att visas)"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
 msgstr "(Använd systemspråk)"
 
@@ -850,11 +912,11 @@ msgid "Accessibility"
 msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-msgid "Back"
-msgstr "Tillbaka"
+msgid "Auto"
+msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
-#: src/settings_translation_file.cpp
+#: src/gui/touchcontrols.cpp src/settings_translation_file.cpp
 msgid "Chat"
 msgstr "Chatta"
 
@@ -866,6 +928,15 @@ msgstr "Rensa"
 #: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Kontrollerar"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Disabled"
+msgstr "Inaktiverad"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Enabled"
+msgstr "Aktiverad"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "General"
@@ -908,6 +979,20 @@ msgstr "Innehåll: Spel"
 msgid "Content: Mods"
 msgstr "Innehåll: Moddar"
 
+#: builtin/mainmenu/settings/shader_warning_component.lua
+#, fuzzy
+msgid "Enable"
+msgstr "Aktiverad"
+
+#: builtin/mainmenu/settings/shader_warning_component.lua
+#, fuzzy
+msgid "Shaders are disabled."
+msgstr "Kamerauppdatering inaktiverad"
+
+#: builtin/mainmenu/settings/shader_warning_component.lua
+msgid "This is not a recommended configuration."
+msgstr ""
+
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
 msgstr "(Spelet behöver även aktivera skuggor för att visas)"
@@ -915,10 +1000,6 @@ msgstr "(Spelet behöver även aktivera skuggor för att visas)"
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Custom"
 msgstr "Anpassad"
-
-#: builtin/mainmenu/settings/shadows_component.lua
-msgid "Disabled"
-msgstr "Inaktiverad"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 #: src/settings_translation_file.cpp
@@ -1074,12 +1155,12 @@ msgstr "Installera spel från ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 #, fuzzy
-msgid "Minetest doesn't come with a game by default."
+msgid "Luanti doesn't come with a game by default."
 msgstr "Minetest Game är inte längre installerat som standard"
 
 #: builtin/mainmenu/tab_local.lua
 msgid ""
-"Minetest is a game-creation platform that allows you to play many different "
+"Luanti is a game-creation platform that allows you to play many different "
 "games."
 msgstr ""
 
@@ -1512,6 +1593,10 @@ msgid "Resolving address..."
 msgstr "Kollar upp address...."
 
 #: src/client/game.cpp
+msgid "Respawn"
+msgstr "Återuppstå"
+
+#: src/client/game.cpp
 msgid "Shutting down..."
 msgstr "Stänger av..."
 
@@ -1611,6 +1696,10 @@ msgstr "Volym ändrad till to %d%%"
 #: src/client/game.cpp
 msgid "Wireframe shown"
 msgstr "Wireframe visas"
+
+#: src/client/game.cpp
+msgid "You died"
+msgstr "Du dog"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
@@ -2006,7 +2095,7 @@ msgstr "Autoframåt"
 msgid "Automatic jumping"
 msgstr "Automatiskt hopp"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Aux1"
 msgstr "Aux1"
 
@@ -2018,7 +2107,7 @@ msgstr "Bakåt"
 msgid "Block bounds"
 msgstr "Blockgränser"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Change camera"
 msgstr "Ändra kamera"
 
@@ -2042,7 +2131,7 @@ msgstr "Sänk volym"
 msgid "Double tap \"jump\" to toggle fly"
 msgstr "Dubbeltr. \"hoppa\" för att växla flygläge"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Drop"
 msgstr "Släpp"
 
@@ -2058,11 +2147,11 @@ msgstr "Höj räckvidd"
 msgid "Inc. volume"
 msgstr "Öka volym"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Inventory"
 msgstr "Lagring"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Jump"
 msgstr "Hoppa"
 
@@ -2094,7 +2183,7 @@ msgstr "Nästa föremål"
 msgid "Prev. item"
 msgstr "Tidigare föremål"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Range select"
 msgstr "Välj räckvidd"
 
@@ -2106,7 +2195,7 @@ msgstr "Höger"
 msgid "Screenshot"
 msgstr "Skärmdump"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Sneak"
 msgstr "Smyg"
 
@@ -2114,15 +2203,15 @@ msgstr "Smyg"
 msgid "Toggle HUD"
 msgstr "Växla HUD"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Toggle chat log"
 msgstr "Växla chattlog"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Toggle fast"
 msgstr "Växla snabbläge"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Toggle fly"
 msgstr "Växla flygläge"
 
@@ -2130,11 +2219,11 @@ msgstr "Växla flygläge"
 msgid "Toggle fog"
 msgstr "Växla dimma"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Toggle minimap"
 msgstr "Växla minimapp"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Toggle noclip"
 msgstr "Växla noclip"
 
@@ -2142,7 +2231,7 @@ msgstr "Växla noclip"
 msgid "Toggle pitchmove"
 msgstr "Växla höjdförändr."
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Zoom"
 msgstr "Zoom"
 
@@ -2179,7 +2268,7 @@ msgstr "Gammalt Lösenord"
 msgid "Passwords do not match!"
 msgstr "Lösenorden matchar inte!"
 
-#: src/gui/guiVolumeChange.cpp
+#: src/gui/guiVolumeChange.cpp src/gui/touchcontrols.cpp
 msgid "Exit"
 msgstr "Avsluta"
 
@@ -2191,6 +2280,38 @@ msgstr "Tyst"
 #, c-format
 msgid "Sound Volume: %d%%"
 msgstr "Ljudvolym: %d%%"
+
+#: src/gui/touchcontrols.cpp
+msgid "Joystick"
+msgstr ""
+
+#: src/gui/touchcontrols.cpp
+msgid "Overflow menu"
+msgstr ""
+
+#: src/gui/touchcontrols.cpp
+#, fuzzy
+msgid "Toggle debug"
+msgstr "Växla dimma"
+
+#: src/network/clientpackethandler.cpp
+msgid ""
+"Another client is connected with this name.  If your client closed "
+"unexpectedly, try again in a minute."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "Empty passwords are disallowed.  Set a password and try again."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "Internal server error"
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+#, fuzzy
+msgid "Invalid password"
+msgstr "Gammalt Lösenord"
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
@@ -2210,6 +2331,49 @@ msgstr ""
 #: src/network/clientpackethandler.cpp
 msgid "Name is taken. Please choose another name"
 msgstr "Namnet är redan taget. Var snäll välj ett annat namn"
+
+#: src/network/clientpackethandler.cpp
+msgid "Player name contains disallowed characters"
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+#, fuzzy
+msgid "Player name not allowed"
+msgstr "Spelarnamn för långt."
+
+#: src/network/clientpackethandler.cpp
+#, fuzzy
+msgid "Server shutting down"
+msgstr "Stänger av..."
+
+#: src/network/clientpackethandler.cpp
+msgid ""
+"The server has experienced an internal error.  You will now be disconnected."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "The server is running in singleplayer mode.  You cannot connect."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "Too many users"
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "Unknown disconnect reason."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid ""
+"Your client sent something the server didn't expect.  Try reconnecting or "
+"updating your client."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid ""
+"Your client's version is not supported.\n"
+"Please contact the server administrator."
+msgstr ""
 
 #: src/server.cpp
 #, c-format
@@ -2500,6 +2664,14 @@ msgid "Antialiasing method"
 msgstr "Kantutjämningsmetod"
 
 #: src/settings_translation_file.cpp
+msgid "Anticheat flags"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Anticheat movement tolerance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Append item name"
 msgstr "Infoga objektnamn"
 
@@ -2520,6 +2692,10 @@ msgid ""
 "to 8 bits.\n"
 "With OpenGL ES, dithering only works if the shader supports high\n"
 "floating-point precision and it may have a higher performance impact."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Apply specular shading to nodes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2651,28 +2827,17 @@ msgstr "Biotopoljud"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "Block bounds HUD radius"
+msgstr "Blockgränser"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Block cull optimize distance"
 msgstr "Distans för optimering av blockskickning"
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
 msgstr "Distans för optimering av blockskickning"
-
-#: src/settings_translation_file.cpp
-msgid "Bloom"
-msgstr "Bloom"
-
-#: src/settings_translation_file.cpp
-msgid "Bloom Intensity"
-msgstr "Bloomintensitet"
-
-#: src/settings_translation_file.cpp
-msgid "Bloom Radius"
-msgstr "Bloomradie"
-
-#: src/settings_translation_file.cpp
-msgid "Bloom Strength Factor"
-msgstr "Bloomstyrkefaktor"
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -2879,13 +3044,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Comma-separated list of flags to hide in the content repository.\n"
 "\"nonfree\" can be used to hide packages which do not qualify as 'free "
 "software',\n"
 "as defined by the Free Software Foundation.\n"
 "You can also specify content ratings.\n"
-"These flags are independent from Minetest versions,\n"
+"These flags are independent from Luanti versions,\n"
 "so see a full list at https://content.minetest.net/help/content_flags/"
 msgstr ""
 "Kommaseparerad lista av flaggar som ska döljas i innehållsdatabasen.\n"
@@ -3109,7 +3275,7 @@ msgid ""
 "expecting.\n"
 "This allows for more fine-grained control than "
 "strict_protocol_version_checking.\n"
-"Minetest still enforces its own internal minimum, and enabling\n"
+"Luanti still enforces its own internal minimum, and enabling\n"
 "strict_protocol_version_checking will effectively override this."
 msgstr ""
 "Aktivera för att hindra gamla klienter från att ansluta.\n"
@@ -3139,16 +3305,6 @@ msgstr ""
 "Definierar total storlek av grottor, mindre värden skapar större grottor."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines how much bloom is applied to the rendered image\n"
-"Smaller values make bloom more subtle\n"
-"Range: from 0.01 to 1.0, default: 0.05"
-msgstr ""
-"Definierar hur mycket bloom som appliceras på den återgivna bilden.\n"
-"Mindre värden gör bloomningen mindre stark.\n"
-"Intervall: från 0,01 till 1,0, standard: 0,05"
-
-#: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
 msgstr "Definierar strukturen för storskaliga älvkanaler."
 
@@ -3163,14 +3319,6 @@ msgstr "Definierar basnivån."
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
 msgstr "Definierar djupet av älvkanalen."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Defines the magnitude of bloom overexposure.\n"
-"Range: from 0.1 to 10.0, default: 1.0"
-msgstr ""
-"Definierar storleken på överexponeringen av bloomningen.\n"
-"Intervall: från 0,1 till 10,0, standard: 1,0"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3258,10 +3406,6 @@ msgid "Digging particles"
 msgstr "Grävpartiklar"
 
 #: src/settings_translation_file.cpp
-msgid "Disable anticheat"
-msgstr "Inaktivera antifusk"
-
-#: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
 msgstr "Tillåt inte tomma lösenord"
 
@@ -3270,9 +3414,11 @@ msgid "Display Density Scaling Factor"
 msgstr "Skalningsfaktor för displaytäthet"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Distance in nodes at which transparency depth sorting is enabled\n"
-"Use this to limit the performance impact of transparency depth sorting"
+"Distance in nodes at which transparency depth sorting is enabled.\n"
+"Use this to limit the performance impact of transparency depth sorting.\n"
+"Set to 0 to disable it entirely."
 msgstr ""
 "Avstånd i noder vid vilket sortering av transparensdjup aktiveras.\n"
 "Använd detta för att begränsa prestandapåverkan av sortering av "
@@ -3305,6 +3451,11 @@ msgstr "Minimalt Y för fängelsehålor"
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
 msgstr "Grottbrus"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Effects"
+msgstr "Grafikeffekter"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Automatic Exposure"
@@ -3408,9 +3559,8 @@ msgid "Enable random user input (only used for testing)."
 msgstr "Aktivera slumpmässig användarinmatning (används endast för testning)."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Enable smooth lighting with simple ambient occlusion.\n"
-"Disable for speed or for different looks."
+#, fuzzy
+msgid "Enable smooth lighting with simple ambient occlusion."
 msgstr ""
 "Möjliggör mjuk belysning med enkel omgivande ocklusion.\n"
 "Inaktivera för prestanda eller för ett annat utseende."
@@ -3433,9 +3583,8 @@ msgstr ""
 "dig."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Enable touchscreen"
-msgstr "Pekskärm"
+msgid "Enable updates available indicator on content tab"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3484,7 +3633,10 @@ msgid "Enables animation of inventory items."
 msgstr "Aktiverar animering av lagerföremål."
 
 #: src/settings_translation_file.cpp
-msgid "Enables caching of facedir rotated meshes."
+#, fuzzy
+msgid ""
+"Enables caching of facedir rotated meshes.\n"
+"This is only effective with shaders disabled."
 msgstr "Aktiverar cachning av facedirroterade mesher."
 
 #: src/settings_translation_file.cpp
@@ -3492,12 +3644,20 @@ msgid "Enables debug and error-checking in the OpenGL driver."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enables smooth scrolling."
+msgstr "Aktivera joysticks"
+
+#: src/settings_translation_file.cpp
 msgid "Enables the post processing pipeline."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Enables touchscreen mode, allowing you to play the game with a touchscreen."
+"Enables the touchscreen controls, allowing you to play the game with a "
+"touchscreen.\n"
+"\"auto\" means that the touchscreen controls will be enabled and disabled\n"
+"automatically depending on the last used input method."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3851,10 +4011,6 @@ msgid "Graphics"
 msgstr "Grafik"
 
 #: src/settings_translation_file.cpp
-msgid "Graphics Effects"
-msgstr "Grafikeffekter"
-
-#: src/settings_translation_file.cpp
 msgid "Graphics and Audio"
 msgstr "Grafik och ljud"
 
@@ -4052,6 +4208,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"If enabled and you have ContentDB packages installed, Luanti may contact "
+"ContentDB to\n"
+"check for package updates when opening the mainmenu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "If enabled, \"Aux1\" key instead of \"Sneak\" key is used for climbing down "
 "and\n"
 "descending."
@@ -4069,10 +4232,6 @@ msgstr ""
 msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "If enabled, disable cheat prevention in multiplayer."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4160,7 +4319,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument global callback functions on registration.\n"
-"(anything you pass to a minetest.register_*() function)"
+"(anything you pass to a core.register_*() function)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4342,7 +4501,7 @@ msgstr ""
 msgid ""
 "Leaves style:\n"
 "-   Fancy:  all faces visible\n"
-"-   Simple: only outer faces, if defined special_tiles are used\n"
+"-   Simple: only outer faces\n"
 "-   Opaque: disable transparency"
 msgstr ""
 
@@ -4351,7 +4510,9 @@ msgid ""
 "Length of a server tick (the interval at which everything is generally "
 "updated),\n"
 "stated in seconds.\n"
-"Does not apply to sessions hosted from the client menu."
+"Does not apply to sessions hosted from the client menu.\n"
+"This is a lower bound, i.e. server steps may not be shorter than this, but\n"
+"they are often longer."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4447,6 +4608,10 @@ msgid "Liquid queue purge time"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Liquid reflections"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Liquid sinking"
 msgstr "Vätskesjunkning"
 
@@ -4471,13 +4636,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Logical value that controls how far the bloom effect spreads\n"
-"from the bright objects.\n"
-"Range: from 0.1 to 8, default: 1"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4742,9 +4900,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Maximum number of packets sent per send step, if you have a slow connection\n"
-"try reducing it, but don't reduce it to a number below double of targeted\n"
-"client number."
+"Maximum number of packets sent per send step in the low-level networking "
+"code.\n"
+"You generally don't need to change this, however busy servers may benefit "
+"from a higher number."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4958,6 +5117,10 @@ msgid "Node highlighting"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Node specular"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "NodeTimer interval"
 msgstr ""
 
@@ -4998,7 +5161,7 @@ msgstr "Antal meddelanden en spelare får skicka per 10 sekunder."
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of threads to use for mesh generation.\n"
-"Value of 0 (default) will let Minetest autodetect the number of available "
+"Value of 0 (default) will let Luanti autodetect the number of available "
 "threads."
 msgstr ""
 
@@ -5027,8 +5190,17 @@ msgid "OpenGL debug"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Optimize GUI for touchscreens"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Other Effects"
+msgstr "Grafikeffekter"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5126,7 +5298,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Prometheus listener address.\n"
-"If Minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"If Luanti is compiled with ENABLE_PROMETHEUS option enabled,\n"
 "enable metrics listener for Prometheus on that address.\n"
 "Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
@@ -5149,6 +5321,10 @@ msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
 "corners."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Radius to use when the block bounds HUD feature is set to near blocks."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5421,6 +5597,17 @@ msgstr ""
 "18 = 4D \"Mandelbulb\" Julia set."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Send names of online players to the serverlist. If disabled only the player "
+"count is revealed."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Send player names to the server list"
+msgstr "Annonsera till serverlistan."
+
+#: src/settings_translation_file.cpp
 msgid "Server"
 msgstr "Server"
 
@@ -5438,6 +5625,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server address"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Server anticheat configuration.\n"
+"Flags are positive. Uncheck the flag to disable corresponding anticheat "
+"module."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5562,9 +5756,8 @@ msgstr "Shaders"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Shaders allow advanced visual effects and may increase performance on some "
-"video\n"
-"cards."
+"Shaders are a fundamental part of rendering and enable advanced visual "
+"effects."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5625,6 +5818,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Simulate translucency when looking at foliage in the sunlight."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING: There is no benefit, and there are several dangers, in\n"
@@ -5667,6 +5864,11 @@ msgid "Smooth lighting"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Smooth scrolling"
+msgstr "Utjämnad Belysning"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
 "cinematic mode by using the key set in Controls."
@@ -5685,6 +5887,11 @@ msgstr "Smyghastighet"
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Soft clouds"
+msgstr "3D-moln"
 
 #: src/settings_translation_file.cpp
 msgid "Soft shadow radius"
@@ -5869,14 +6076,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The gesture for for punching players/entities.\n"
+"The gesture for punching players/entities.\n"
 "This can be overridden by games and mods.\n"
 "\n"
 "* short_tap\n"
 "Easy to use and well-known from other games that shall not be named.\n"
 "\n"
 "* long_tap\n"
-"Known from the classic Minetest mobile controls.\n"
+"Known from the classic Luanti mobile controls.\n"
 "Combat is more or less impossible."
 msgstr ""
 
@@ -5928,8 +6135,7 @@ msgstr ""
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
-"OpenGL is the default for desktop, and OGLES2 for Android.\n"
-"Shaders are supported by everything but OGLES1."
+"OpenGL is the default for desktop, and OGLES2 for Android."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6021,12 +6227,23 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Tolerance of movement cheat detector.\n"
+"Increase the value if players experience stuttery movement."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen"
 msgstr "Pekskärm"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Touchscreen controls"
+msgstr "Tröskelvärde för pekskärm"
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen sensitivity"
@@ -6039,6 +6256,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Translucent foliage"
+msgstr "Vajande vätskor"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6080,8 +6302,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"URL to JSON file which provides information about the newest Minetest "
-"release\n"
+"URL to JSON file which provides information about the newest Luanti "
+"release.\n"
 "If this is empty the engine will never check for updates."
 msgstr ""
 
@@ -6160,6 +6382,10 @@ msgid ""
 "Use raytraced occlusion culling in the new culler.\n"
 "This flag enables use of raytraced occlusion culling test for\n"
 "client mesh sizes smaller than 4x4x4 map blocks."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Use smooth cloud shading."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6351,6 +6577,16 @@ msgid "Weblink color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "When enabled, liquid reflections are simulated."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"When enabled, the GUI is optimized to be more usable on touchscreens.\n"
+"Whether this is enabled by default depends on your hardware form-factor."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "When gui_scaling_filter is true, all GUI images need to be\n"
 "filtered in software, but some images are generated directly\n"
@@ -6434,7 +6670,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Windows systems only: Start Minetest with the command line window in the "
+"Windows systems only: Start Luanti with the command line window in the "
 "background.\n"
 "Contains the same information as the file debug.txt (default name)."
 msgstr ""
@@ -6607,6 +6843,9 @@ msgstr "cURL parallellgräns"
 #~ msgid "All Settings"
 #~ msgstr "Alla inställningar"
 
+#~ msgid "All packages"
+#~ msgstr "Alla paket"
+
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "Är du säker på att du vill starta om din enspelarvärld?"
 
@@ -6618,6 +6857,9 @@ msgstr "cURL parallellgräns"
 
 #~ msgid "Aux1 key"
 #~ msgstr "Aux1-knappen"
+
+#~ msgid "Back to Main Menu"
+#~ msgstr "Tillbaka till huvudmeny"
 
 #~ msgid "Backward key"
 #~ msgstr "Bakåttangent"
@@ -6636,6 +6878,18 @@ msgstr "cURL parallellgräns"
 
 #~ msgid "Block bounds shown for all blocks"
 #~ msgstr "Blockgränser visas för alla block"
+
+#~ msgid "Bloom"
+#~ msgstr "Bloom"
+
+#~ msgid "Bloom Intensity"
+#~ msgstr "Bloomintensitet"
+
+#~ msgid "Bloom Radius"
+#~ msgstr "Bloomradie"
+
+#~ msgid "Bloom Strength Factor"
+#~ msgstr "Bloomstyrkefaktor"
 
 #~ msgid "Bump Mapping"
 #~ msgstr "Stötkartläggning"
@@ -6805,14 +7059,33 @@ msgstr "cURL parallellgräns"
 #~ "Jämna luftöar förekommer när oljud > 0."
 
 #~ msgid ""
+#~ "Defines how much bloom is applied to the rendered image\n"
+#~ "Smaller values make bloom more subtle\n"
+#~ "Range: from 0.01 to 1.0, default: 0.05"
+#~ msgstr ""
+#~ "Definierar hur mycket bloom som appliceras på den återgivna bilden.\n"
+#~ "Mindre värden gör bloomningen mindre stark.\n"
+#~ "Intervall: från 0,01 till 1,0, standard: 0,05"
+
+#~ msgid ""
 #~ "Defines sampling step of texture.\n"
 #~ "A higher value results in smoother normal maps."
 #~ msgstr ""
 #~ "Definierar samplingssteg av textur.\n"
 #~ "Högre värden resulterar i jämnare normalmappning."
 
+#~ msgid ""
+#~ "Defines the magnitude of bloom overexposure.\n"
+#~ "Range: from 0.1 to 10.0, default: 1.0"
+#~ msgstr ""
+#~ "Definierar storleken på överexponeringen av bloomningen.\n"
+#~ "Intervall: från 0,1 till 10,0, standard: 1,0"
+
 #~ msgid "Dig key"
 #~ msgstr "Gräv-knapp"
+
+#~ msgid "Disable anticheat"
+#~ msgstr "Inaktivera antifusk"
 
 #~ msgid "Disabled unlimited viewing range"
 #~ msgstr "Inaktiverat obegränsat visningsområde"
@@ -6844,15 +7117,16 @@ msgstr "cURL parallellgräns"
 #~ msgid "Enable register confirmation"
 #~ msgstr "Aktivera registreringsbekräftelse"
 
+#, fuzzy
+#~ msgid "Enable touchscreen"
+#~ msgstr "Pekskärm"
+
 #~ msgid ""
 #~ "Enable vertex buffer objects.\n"
 #~ "This should greatly improve graphics performance."
 #~ msgstr ""
 #~ "Aktivera vertexbuffertobjekt.\n"
 #~ "Detta bör avsevärt förbättra grafikprestandan."
-
-#~ msgid "Enabled"
-#~ msgstr "Aktiverad"
 
 #~ msgid "Enables minimap."
 #~ msgstr "Aktiverar minimap."
@@ -6958,9 +7232,6 @@ msgstr "cURL parallellgräns"
 #~ msgid "In-Game"
 #~ msgstr "In-game"
 
-#~ msgid "Information:"
-#~ msgstr "Information:"
-
 #~ msgid "Install Mod: Unable to find real mod name for: $1"
 #~ msgstr "Moddinstallation: Lyckades ej hitta riktiga moddnamnet för: $1"
 
@@ -7060,9 +7331,6 @@ msgstr "cURL parallellgräns"
 #~ msgid "Simple Leaves"
 #~ msgstr "Enkla löv"
 
-#~ msgid "Smooth Lighting"
-#~ msgstr "Utjämnad Belysning"
-
 #, fuzzy
 #~ msgid "Special key"
 #~ msgstr "tryck på tangent"
@@ -7091,9 +7359,6 @@ msgstr "cURL parallellgräns"
 #~ msgid "Touch threshold (px):"
 #~ msgstr "Touch-tröskel (px):"
 
-#~ msgid "Touchscreen threshold"
-#~ msgstr "Tröskelvärde för pekskärm"
-
 #~ msgid "Trilinear Filter"
 #~ msgstr "Trilinjärt filter"
 
@@ -7108,6 +7373,9 @@ msgstr "cURL parallellgräns"
 
 #~ msgid "Up"
 #~ msgstr "Upp"
+
+#~ msgid "View more information in a web browser"
+#~ msgstr "Visa mer information i en webbläsare"
 
 #, c-format
 #~ msgid "Viewing range is at maximum: %d"

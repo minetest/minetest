@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Serbian (cyrillic) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-11 15:14+0200\n"
+"POT-Creation-Date: 2024-10-28 19:57+0100\n"
 "PO-Revision-Date: 2022-07-12 16:18+0000\n"
 "Last-Translator: OrbitalPetrol <ccorporation981@gmail.com>\n"
 "Language-Team: Serbian (cyrillic) <https://hosted.weblate.org/projects/"
@@ -50,14 +50,6 @@ msgstr "Излазни ред са ћаскање је сада празан."
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
 msgstr "Ова команда није дозвољена од стране сервера."
-
-#: builtin/client/death_formspec.lua src/client/game.cpp
-msgid "Respawn"
-msgstr "Врати се у живот"
-
-#: builtin/client/death_formspec.lua src/client/game.cpp
-msgid "You died"
-msgstr "Умро си"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
@@ -169,15 +161,18 @@ msgid "$1 downloading..."
 msgstr "$1 се преузима..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "All packages"
-msgstr "Сви пакети"
+msgid "All"
+msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Back to Main Menu"
-msgstr "Назад у главни мени"
+#: builtin/mainmenu/content/dlg_package.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Back"
+msgstr "Назад"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
+#, fuzzy
+msgid "ContentDB is not available when Luanti was compiled without cURL"
 msgstr ""
 "ContentDB није доступан када је Minetest компајлиран без cURL библиотеке"
 
@@ -186,7 +181,7 @@ msgid "Downloading..."
 msgstr "Преузимање..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Error getting dependencies for package"
+msgid "Featured"
 msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
@@ -195,11 +190,8 @@ msgstr "Игре"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #: builtin/mainmenu/content/dlg_install.lua
-msgid "Install"
-msgstr "Инсталирај"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+#: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/serverlistmgr.lua
+#: src/client/game.cpp
 msgid "Loading..."
 msgstr "Учитавање..."
 
@@ -208,6 +200,7 @@ msgid "Mods"
 msgstr "Модови"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_package.lua
 msgid "No packages could be retrieved"
 msgstr "Ниједан пакет није било могуће преузети"
 
@@ -225,32 +218,17 @@ msgid "Queued"
 msgstr "На чекању"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Texture packs"
+#, fuzzy
+msgid "Texture Packs"
 msgstr "Сетови текстура"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "The package $1 was not found."
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-msgid "Uninstall"
-msgstr "Деинсталирај"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr "Ажурирај"
-
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Update All [$1]"
 msgstr "Ажурирај све [$1]"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "View more information in a web browser"
-msgstr "Погледај још информација у веб претраживачу"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "$1 and $2 dependencies will be installed."
@@ -294,6 +272,14 @@ msgid "Dependencies:"
 msgstr "Зависи од:"
 
 #: builtin/mainmenu/content/dlg_install.lua
+msgid "Error getting dependencies for package $1"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "Инсталирај"
+
+#: builtin/mainmenu/content/dlg_install.lua
 msgid "Install $1"
 msgstr "Инсталирај $1"
 
@@ -309,6 +295,10 @@ msgstr "Није пронађено"
 msgid "Please check that the base game is correct."
 msgstr "Молим проверите да ли је основна игра исправна."
 
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
+
 #: builtin/mainmenu/content/dlg_overwrite.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
 msgstr "\"$1\" већ постоји. Да ли желите да га препишете?"
@@ -316,6 +306,62 @@ msgstr "\"$1\" већ постоји. Да ли желите да га преп�
 #: builtin/mainmenu/content/dlg_overwrite.lua
 msgid "Overwrite"
 msgstr "Препиши"
+
+#: builtin/mainmenu/content/dlg_package.lua
+#, fuzzy
+msgid "ContentDB page"
+msgstr "Настави"
+
+#: builtin/mainmenu/content/dlg_package.lua
+#, fuzzy
+msgid "Description"
+msgstr "Серверски порт"
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Donate"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Forum Topic"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+#, fuzzy
+msgid "Information"
+msgstr "Информације о моду:"
+
+#: builtin/mainmenu/content/dlg_package.lua
+#, fuzzy
+msgid "Install [$1]"
+msgstr "Инсталирај $1"
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Issue Tracker"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Source"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Translate"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Деинсталирај"
+
+#: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Ажурирај"
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Website"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
+msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
 #, fuzzy
@@ -688,9 +734,8 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
-"For a long time, the Minetest engine shipped with a default game called "
-"\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
-"game."
+"For a long time, Luanti shipped with a default game called \"Minetest "
+"Game\". Since version 5.8.0, Luanti ships without a default game."
 msgstr ""
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
@@ -853,6 +898,18 @@ msgid "eased"
 msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
+msgid "(The game will need to enable automatic exposure as well)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "(The game will need to enable bloom as well)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "(The game will need to enable volumetric lighting as well)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
 msgstr ""
 
@@ -861,11 +918,11 @@ msgid "Accessibility"
 msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-msgid "Back"
-msgstr "Назад"
+msgid "Auto"
+msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
-#: src/settings_translation_file.cpp
+#: src/gui/touchcontrols.cpp src/settings_translation_file.cpp
 msgid "Chat"
 msgstr "Чет"
 
@@ -877,6 +934,15 @@ msgstr "Очисти"
 #: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Контроле"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Disabled"
+msgstr "Онемогућено"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Enabled"
+msgstr "Омогућено"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "General"
@@ -923,6 +989,20 @@ msgstr "Настави"
 msgid "Content: Mods"
 msgstr "Настави"
 
+#: builtin/mainmenu/settings/shader_warning_component.lua
+#, fuzzy
+msgid "Enable"
+msgstr "Омогућено"
+
+#: builtin/mainmenu/settings/shader_warning_component.lua
+#, fuzzy
+msgid "Shaders are disabled."
+msgstr "Кључ за укључивање/искључивање освежавања камере"
+
+#: builtin/mainmenu/settings/shader_warning_component.lua
+msgid "This is not a recommended configuration."
+msgstr ""
+
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
 msgstr ""
@@ -930,10 +1010,6 @@ msgstr ""
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Custom"
 msgstr ""
-
-#: builtin/mainmenu/settings/shadows_component.lua
-msgid "Disabled"
-msgstr "Онемогућено"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 #: src/settings_translation_file.cpp
@@ -1093,12 +1169,12 @@ msgid "Install games from ContentDB"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Minetest doesn't come with a game by default."
+msgid "Luanti doesn't come with a game by default."
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid ""
-"Minetest is a game-creation platform that allows you to play many different "
+"Luanti is a game-creation platform that allows you to play many different "
 "games."
 msgstr ""
 
@@ -1557,6 +1633,10 @@ msgid "Resolving address..."
 msgstr "Разлучујем адресу..."
 
 #: src/client/game.cpp
+msgid "Respawn"
+msgstr "Врати се у живот"
+
+#: src/client/game.cpp
 msgid "Shutting down..."
 msgstr "Искључивање..."
 
@@ -1652,6 +1732,10 @@ msgstr "Јачина звука промењена на %d%%"
 #: src/client/game.cpp
 msgid "Wireframe shown"
 msgstr ""
+
+#: src/client/game.cpp
+msgid "You died"
+msgstr "Умро си"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
@@ -2049,7 +2133,7 @@ msgstr "Напред"
 msgid "Automatic jumping"
 msgstr ""
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Aux1"
 msgstr ""
 
@@ -2061,7 +2145,7 @@ msgstr "Назад"
 msgid "Block bounds"
 msgstr ""
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 #, fuzzy
 msgid "Change camera"
 msgstr "Промени дугмад"
@@ -2086,7 +2170,7 @@ msgstr "Смањи звук"
 msgid "Double tap \"jump\" to toggle fly"
 msgstr "Дупли скок за летење"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Drop"
 msgstr "Бацање"
 
@@ -2102,11 +2186,11 @@ msgstr ""
 msgid "Inc. volume"
 msgstr "Појачај звук"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Inventory"
 msgstr "Инвентар"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Jump"
 msgstr "Скакање"
 
@@ -2139,7 +2223,7 @@ msgstr "Следеће"
 msgid "Prev. item"
 msgstr "Претходно"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Range select"
 msgstr "Одабир домета"
 
@@ -2151,7 +2235,7 @@ msgstr "Десно"
 msgid "Screenshot"
 msgstr ""
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Sneak"
 msgstr "Шуњање"
 
@@ -2160,16 +2244,16 @@ msgstr "Шуњање"
 msgid "Toggle HUD"
 msgstr "Укључи/Искључи летење"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 #, fuzzy
 msgid "Toggle chat log"
 msgstr "Укључи/Искључи трчање"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Toggle fast"
 msgstr "Укључи/Искључи трчање"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Toggle fly"
 msgstr "Укључи/Искључи летење"
 
@@ -2178,12 +2262,12 @@ msgstr "Укључи/Искључи летење"
 msgid "Toggle fog"
 msgstr "Укључи/Искључи летење"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 #, fuzzy
 msgid "Toggle minimap"
 msgstr "Укључи/искључи пролажење кроз препреке"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Toggle noclip"
 msgstr "Укључи/искључи пролажење кроз препреке"
 
@@ -2192,7 +2276,7 @@ msgstr "Укључи/искључи пролажење кроз препреке
 msgid "Toggle pitchmove"
 msgstr "Укључи/Искључи трчање"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Zoom"
 msgstr "Зумирај"
 
@@ -2229,7 +2313,7 @@ msgstr "Стара шифра"
 msgid "Passwords do not match!"
 msgstr "Шифре се не поклапају!"
 
-#: src/gui/guiVolumeChange.cpp
+#: src/gui/guiVolumeChange.cpp src/gui/touchcontrols.cpp
 msgid "Exit"
 msgstr "Изађи"
 
@@ -2242,6 +2326,38 @@ msgstr "Изкључи звук"
 #, fuzzy, c-format
 msgid "Sound Volume: %d%%"
 msgstr "Јачина звука: "
+
+#: src/gui/touchcontrols.cpp
+msgid "Joystick"
+msgstr ""
+
+#: src/gui/touchcontrols.cpp
+msgid "Overflow menu"
+msgstr ""
+
+#: src/gui/touchcontrols.cpp
+#, fuzzy
+msgid "Toggle debug"
+msgstr "Укључи/Искључи летење"
+
+#: src/network/clientpackethandler.cpp
+msgid ""
+"Another client is connected with this name.  If your client closed "
+"unexpectedly, try again in a minute."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "Empty passwords are disallowed.  Set a password and try again."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "Internal server error"
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+#, fuzzy
+msgid "Invalid password"
+msgstr "Стара шифра"
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
@@ -2260,6 +2376,49 @@ msgstr ""
 #, fuzzy
 msgid "Name is taken. Please choose another name"
 msgstr "Молим одаберите име!"
+
+#: src/network/clientpackethandler.cpp
+msgid "Player name contains disallowed characters"
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+#, fuzzy
+msgid "Player name not allowed"
+msgstr "Име играча је предуачко."
+
+#: src/network/clientpackethandler.cpp
+#, fuzzy
+msgid "Server shutting down"
+msgstr "Искључивање..."
+
+#: src/network/clientpackethandler.cpp
+msgid ""
+"The server has experienced an internal error.  You will now be disconnected."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "The server is running in singleplayer mode.  You cannot connect."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "Too many users"
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "Unknown disconnect reason."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid ""
+"Your client sent something the server didn't expect.  Try reconnecting or "
+"updating your client."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid ""
+"Your client's version is not supported.\n"
+"Please contact the server administrator."
+msgstr ""
 
 #: src/server.cpp
 #, fuzzy, c-format
@@ -2527,6 +2686,14 @@ msgid "Antialiasing method"
 msgstr "Гланчање текстура:"
 
 #: src/settings_translation_file.cpp
+msgid "Anticheat flags"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Anticheat movement tolerance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Append item name"
 msgstr ""
 
@@ -2547,6 +2714,10 @@ msgid ""
 "to 8 bits.\n"
 "With OpenGL ES, dithering only works if the shader supports high\n"
 "floating-point precision and it may have a higher performance impact."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Apply specular shading to nodes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2672,28 +2843,16 @@ msgid "Biome noise"
 msgstr "Семе биома"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Block bounds HUD radius"
+msgstr "Величина облака"
+
+#: src/settings_translation_file.cpp
 msgid "Block cull optimize distance"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Bloom"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Bloom Intensity"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Bloom Radius"
-msgstr "Величина облака"
-
-#: src/settings_translation_file.cpp
-msgid "Bloom Strength Factor"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2914,7 +3073,7 @@ msgid ""
 "software',\n"
 "as defined by the Free Software Foundation.\n"
 "You can also specify content ratings.\n"
-"These flags are independent from Minetest versions,\n"
+"These flags are independent from Luanti versions,\n"
 "so see a full list at https://content.minetest.net/help/content_flags/"
 msgstr ""
 
@@ -3111,7 +3270,7 @@ msgid ""
 "expecting.\n"
 "This allows for more fine-grained control than "
 "strict_protocol_version_checking.\n"
-"Minetest still enforces its own internal minimum, and enabling\n"
+"Luanti still enforces its own internal minimum, and enabling\n"
 "strict_protocol_version_checking will effectively override this."
 msgstr ""
 
@@ -3136,13 +3295,6 @@ msgid "Defines full size of caverns, smaller values create larger caverns."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines how much bloom is applied to the rendered image\n"
-"Smaller values make bloom more subtle\n"
-"Range: from 0.01 to 1.0, default: 0.05"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
 msgstr ""
 
@@ -3156,12 +3308,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Defines the magnitude of bloom overexposure.\n"
-"Range: from 0.1 to 10.0, default: 1.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3244,10 +3390,6 @@ msgid "Digging particles"
 msgstr "Честице"
 
 #: src/settings_translation_file.cpp
-msgid "Disable anticheat"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
 msgstr ""
 
@@ -3257,8 +3399,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Distance in nodes at which transparency depth sorting is enabled\n"
-"Use this to limit the performance impact of transparency depth sorting"
+"Distance in nodes at which transparency depth sorting is enabled.\n"
+"Use this to limit the performance impact of transparency depth sorting.\n"
+"Set to 0 to disable it entirely."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3289,6 +3432,10 @@ msgstr ""
 #, fuzzy
 msgid "Dungeon noise"
 msgstr "Семе пећина"
+
+#: src/settings_translation_file.cpp
+msgid "Effects"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable Automatic Exposure"
@@ -3382,9 +3529,7 @@ msgid "Enable random user input (only used for testing)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Enable smooth lighting with simple ambient occlusion.\n"
-"Disable for speed or for different looks."
+msgid "Enable smooth lighting with simple ambient occlusion."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3401,9 +3546,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Enable touchscreen"
-msgstr "Граница семена за плаже"
+msgid "Enable updates available indicator on content tab"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3439,7 +3583,9 @@ msgid "Enables animation of inventory items."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enables caching of facedir rotated meshes."
+msgid ""
+"Enables caching of facedir rotated meshes.\n"
+"This is only effective with shaders disabled."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3447,12 +3593,20 @@ msgid "Enables debug and error-checking in the OpenGL driver."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enables smooth scrolling."
+msgstr "Граница семена за плаже"
+
+#: src/settings_translation_file.cpp
 msgid "Enables the post processing pipeline."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Enables touchscreen mode, allowing you to play the game with a touchscreen."
+"Enables the touchscreen controls, allowing you to play the game with a "
+"touchscreen.\n"
+"\"auto\" means that the touchscreen controls will be enabled and disabled\n"
+"automatically depending on the last used input method."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3775,10 +3929,6 @@ msgid "Graphics"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Graphics Effects"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Graphics and Audio"
 msgstr ""
 
@@ -3960,6 +4110,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"If enabled and you have ContentDB packages installed, Luanti may contact "
+"ContentDB to\n"
+"check for package updates when opening the mainmenu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "If enabled, \"Aux1\" key instead of \"Sneak\" key is used for climbing down "
 "and\n"
 "descending."
@@ -3975,10 +4132,6 @@ msgstr ""
 msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "If enabled, disable cheat prevention in multiplayer."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4069,7 +4222,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument global callback functions on registration.\n"
-"(anything you pass to a minetest.register_*() function)"
+"(anything you pass to a core.register_*() function)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4251,7 +4404,7 @@ msgstr ""
 msgid ""
 "Leaves style:\n"
 "-   Fancy:  all faces visible\n"
-"-   Simple: only outer faces, if defined special_tiles are used\n"
+"-   Simple: only outer faces\n"
 "-   Opaque: disable transparency"
 msgstr ""
 
@@ -4260,7 +4413,9 @@ msgid ""
 "Length of a server tick (the interval at which everything is generally "
 "updated),\n"
 "stated in seconds.\n"
-"Does not apply to sessions hosted from the client menu."
+"Does not apply to sessions hosted from the client menu.\n"
+"This is a lower bound, i.e. server steps may not be shorter than this, but\n"
+"they are often longer."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4358,6 +4513,10 @@ msgid "Liquid queue purge time"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Liquid reflections"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Liquid sinking"
 msgstr ""
 
@@ -4382,13 +4541,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Logical value that controls how far the bloom effect spreads\n"
-"from the bright objects.\n"
-"Range: from 0.1 to 8, default: 1"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4660,9 +4812,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Maximum number of packets sent per send step, if you have a slow connection\n"
-"try reducing it, but don't reduce it to a number below double of targeted\n"
-"client number."
+"Maximum number of packets sent per send step in the low-level networking "
+"code.\n"
+"You generally don't need to change this, however busy servers may benefit "
+"from a higher number."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4876,6 +5029,10 @@ msgid "Node highlighting"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Node specular"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "NodeTimer interval"
 msgstr ""
 
@@ -4915,7 +5072,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of threads to use for mesh generation.\n"
-"Value of 0 (default) will let Minetest autodetect the number of available "
+"Value of 0 (default) will let Luanti autodetect the number of available "
 "threads."
 msgstr ""
 
@@ -4944,7 +5101,15 @@ msgid "OpenGL debug"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Optimize GUI for touchscreens"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Other Effects"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5044,7 +5209,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Prometheus listener address.\n"
-"If Minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"If Luanti is compiled with ENABLE_PROMETHEUS option enabled,\n"
 "enable metrics listener for Prometheus on that address.\n"
 "Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
@@ -5067,6 +5232,10 @@ msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
 "corners."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Radius to use when the block bounds HUD feature is set to near blocks."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5345,6 +5514,17 @@ msgstr ""
 "18 = 4Д \"Mandelbulb\" жулијин скуп."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Send names of online players to the serverlist. If disabled only the player "
+"count is revealed."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Send player names to the server list"
+msgstr "Јавни сервер"
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Server"
 msgstr "Направи сервер"
@@ -5365,6 +5545,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server address"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Server anticheat configuration.\n"
+"Flags are positive. Uncheck the flag to disable corresponding anticheat "
+"module."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5491,9 +5678,8 @@ msgstr "Шејдери"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Shaders allow advanced visual effects and may increase performance on some "
-"video\n"
-"cards."
+"Shaders are a fundamental part of rendering and enable advanced visual "
+"effects."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5554,6 +5740,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Simulate translucency when looking at foliage in the sunlight."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING: There is no benefit, and there are several dangers, in\n"
@@ -5596,6 +5786,11 @@ msgid "Smooth lighting"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Smooth scrolling"
+msgstr "Глатко осветљење"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
 "cinematic mode by using the key set in Controls."
@@ -5615,6 +5810,11 @@ msgstr "Брзина успона"
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Soft clouds"
+msgstr "Тродимензионални облаци"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5799,14 +5999,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The gesture for for punching players/entities.\n"
+"The gesture for punching players/entities.\n"
 "This can be overridden by games and mods.\n"
 "\n"
 "* short_tap\n"
 "Easy to use and well-known from other games that shall not be named.\n"
 "\n"
 "* long_tap\n"
-"Known from the classic Minetest mobile controls.\n"
+"Known from the classic Luanti mobile controls.\n"
 "Combat is more or less impossible."
 msgstr ""
 
@@ -5858,8 +6058,7 @@ msgstr ""
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
-"OpenGL is the default for desktop, and OGLES2 for Android.\n"
-"Shaders are supported by everything but OGLES1."
+"OpenGL is the default for desktop, and OGLES2 for Android."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5951,12 +6150,23 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Tolerance of movement cheat detector.\n"
+"Increase the value if players experience stuttery movement."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Touchscreen"
+msgstr "Граница семена за плаже"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Touchscreen controls"
 msgstr "Граница семена за плаже"
 
 #: src/settings_translation_file.cpp
@@ -5971,6 +6181,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Translucent foliage"
+msgstr "Лепршајуће лишће"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6012,8 +6227,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"URL to JSON file which provides information about the newest Minetest "
-"release\n"
+"URL to JSON file which provides information about the newest Luanti "
+"release.\n"
 "If this is empty the engine will never check for updates."
 msgstr ""
 
@@ -6093,6 +6308,10 @@ msgid ""
 "Use raytraced occlusion culling in the new culler.\n"
 "This flag enables use of raytraced occlusion culling test for\n"
 "client mesh sizes smaller than 4x4x4 map blocks."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Use smooth cloud shading."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6284,6 +6503,16 @@ msgid "Weblink color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "When enabled, liquid reflections are simulated."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"When enabled, the GUI is optimized to be more usable on touchscreens.\n"
+"Whether this is enabled by default depends on your hardware form-factor."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "When gui_scaling_filter is true, all GUI images need to be\n"
 "filtered in software, but some images are generated directly\n"
@@ -6367,7 +6596,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Windows systems only: Start Minetest with the command line window in the "
+"Windows systems only: Start Luanti with the command line window in the "
 "background.\n"
 "Contains the same information as the file debug.txt (default name)."
 msgstr ""
@@ -6525,6 +6754,9 @@ msgstr ""
 #~ msgid "All Settings"
 #~ msgstr "Поставке"
 
+#~ msgid "All packages"
+#~ msgstr "Сви пакети"
+
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "Да ли сте сигурни да желите да ресетујете ваш свет?"
 
@@ -6535,6 +6767,9 @@ msgstr ""
 #, fuzzy
 #~ msgid "Autosave Screen Size"
 #~ msgstr "Аутоматски сачувај величину екрана"
+
+#~ msgid "Back to Main Menu"
+#~ msgstr "Назад у главни мени"
 
 #~ msgid "Backward key"
 #~ msgstr "Кључ за назад"
@@ -6551,6 +6786,10 @@ msgstr ""
 
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "Битови по пикселу (или дубина боје) у моду целог екрана."
+
+#, fuzzy
+#~ msgid "Bloom Radius"
+#~ msgstr "Величина облака"
 
 #~ msgid "Bump Mapping"
 #~ msgstr "Bump-Мапирање"
@@ -6685,9 +6924,6 @@ msgstr ""
 #~ msgid "Downloading and installing $1, please wait..."
 #~ msgstr "Преузима се $1, молим вас сачекајте..."
 
-#~ msgid "Enabled"
-#~ msgstr "Омогућено"
-
 #~ msgid "Enter "
 #~ msgstr "Уреду "
 
@@ -6711,10 +6947,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Hide: Temporary Settings"
 #~ msgstr "Поставке"
-
-#, fuzzy
-#~ msgid "Information:"
-#~ msgstr "Информације о моду:"
 
 #, fuzzy
 #~ msgid "Install Mod: Unable to find real mod name for: $1"
@@ -6823,9 +7055,6 @@ msgstr ""
 #~ msgid "Simple Leaves"
 #~ msgstr "Једноставно лишће"
 
-#~ msgid "Smooth Lighting"
-#~ msgstr "Глатко осветљење"
-
 #, fuzzy
 #~ msgid "Special key"
 #~ msgstr "притисните дугме"
@@ -6855,10 +7084,6 @@ msgstr ""
 #~ msgid "Touch threshold (px):"
 #~ msgstr "Праг додиривања (px)"
 
-#, fuzzy
-#~ msgid "Touchscreen threshold"
-#~ msgstr "Граница семена за плаже"
-
 #~ msgid "Trilinear Filter"
 #~ msgstr "Трилинеарни филтер"
 
@@ -6876,6 +7101,9 @@ msgstr ""
 
 #~ msgid "Up"
 #~ msgstr "Горе"
+
+#~ msgid "View more information in a web browser"
+#~ msgstr "Погледај још информација у веб претраживачу"
 
 #~ msgid "Waving Leaves"
 #~ msgstr "Лепршајуће лишће"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swahili (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-11 15:14+0200\n"
+"POT-Creation-Date: 2024-10-28 19:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Swahili <https://hosted.weblate.org/projects/minetest/"
@@ -54,14 +54,6 @@ msgstr ""
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
 msgstr ""
-
-#: builtin/client/death_formspec.lua src/client/game.cpp
-msgid "Respawn"
-msgstr "Respawn"
-
-#: builtin/client/death_formspec.lua src/client/game.cpp
-msgid "You died"
-msgstr "Umekufa."
 
 #: builtin/common/chatcommands.lua
 #, fuzzy
@@ -175,16 +167,17 @@ msgid "$1 downloading..."
 msgstr "Inapakia..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "All packages"
+msgid "All"
 msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
-msgid "Back to Main Menu"
-msgstr "Menyu kuu"
+#: builtin/mainmenu/content/dlg_package.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Back"
+msgstr "Nyuma"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgid "ContentDB is not available when Luanti was compiled without cURL"
 msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
@@ -193,7 +186,7 @@ msgid "Downloading..."
 msgstr "Inapakia..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "Error getting dependencies for package"
+msgid "Featured"
 msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
@@ -202,11 +195,8 @@ msgstr "Michezo"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #: builtin/mainmenu/content/dlg_install.lua
-msgid "Install"
-msgstr "Sakinisha"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+#: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/serverlistmgr.lua
+#: src/client/game.cpp
 msgid "Loading..."
 msgstr "Inapakia..."
 
@@ -215,6 +205,7 @@ msgid "Mods"
 msgstr "Mods"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
+#: builtin/mainmenu/content/dlg_package.lua
 msgid "No packages could be retrieved"
 msgstr ""
 
@@ -233,32 +224,15 @@ msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #, fuzzy
-msgid "Texture packs"
+msgid "Texture Packs"
 msgstr "Texturepacks"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "The package $1 was not found."
 msgstr ""
 
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-#, fuzzy
-msgid "Uninstall"
-msgstr "Sakinisha"
-
-#: builtin/mainmenu/content/dlg_contentdb.lua builtin/mainmenu/tab_content.lua
-msgid "Update"
-msgstr ""
-
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Update All [$1]"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "View more information in a web browser"
-msgstr ""
-
-#: builtin/mainmenu/content/dlg_contentdb.lua
-msgid "You need to install a game before you can install a mod"
 msgstr ""
 
 #: builtin/mainmenu/content/dlg_install.lua
@@ -305,6 +279,14 @@ msgid "Dependencies:"
 msgstr "Mategemezi:"
 
 #: builtin/mainmenu/content/dlg_install.lua
+msgid "Error getting dependencies for package $1"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "Install"
+msgstr "Sakinisha"
+
+#: builtin/mainmenu/content/dlg_install.lua
 #, fuzzy
 msgid "Install $1"
 msgstr "Sakinisha"
@@ -322,12 +304,73 @@ msgstr ""
 msgid "Please check that the base game is correct."
 msgstr ""
 
+#: builtin/mainmenu/content/dlg_install.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
+
 #: builtin/mainmenu/content/dlg_overwrite.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
 msgstr ""
 
 #: builtin/mainmenu/content/dlg_overwrite.lua
 msgid "Overwrite"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+#, fuzzy
+msgid "ContentDB page"
+msgstr "Kuendelea"
+
+#: builtin/mainmenu/content/dlg_package.lua
+#, fuzzy
+msgid "Description"
+msgstr "Maelezo ya seva"
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Donate"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Forum Topic"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+#, fuzzy
+msgid "Information"
+msgstr "Taarifa Moduli:"
+
+#: builtin/mainmenu/content/dlg_package.lua
+#, fuzzy
+msgid "Install [$1]"
+msgstr "Sakinisha"
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Issue Tracker"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Source"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Translate"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Uninstall"
+msgstr "Sakinisha"
+
+#: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "Website"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_package.lua
+msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
 msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
@@ -721,9 +764,8 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
-"For a long time, the Minetest engine shipped with a default game called "
-"\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
-"game."
+"For a long time, Luanti shipped with a default game called \"Minetest "
+"Game\". Since version 5.8.0, Luanti ships without a default game."
 msgstr ""
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
@@ -883,6 +925,18 @@ msgid "eased"
 msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
+msgid "(The game will need to enable automatic exposure as well)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "(The game will need to enable bloom as well)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "(The game will need to enable volumetric lighting as well)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
 msgstr ""
 
@@ -891,11 +945,11 @@ msgid "Accessibility"
 msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-msgid "Back"
-msgstr "Nyuma"
+msgid "Auto"
+msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
-#: src/settings_translation_file.cpp
+#: src/gui/touchcontrols.cpp src/settings_translation_file.cpp
 msgid "Chat"
 msgstr "Kuzungumza"
 
@@ -907,6 +961,15 @@ msgstr "Wazi"
 #: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Vidhibiti"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Disabled"
+msgstr "Walemavu"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Enabled"
+msgstr "Kuwezeshwa"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "General"
@@ -953,6 +1016,20 @@ msgstr "Kuendelea"
 msgid "Content: Mods"
 msgstr "Kuendelea"
 
+#: builtin/mainmenu/settings/shader_warning_component.lua
+#, fuzzy
+msgid "Enable"
+msgstr "Kuwezeshwa"
+
+#: builtin/mainmenu/settings/shader_warning_component.lua
+#, fuzzy
+msgid "Shaders are disabled."
+msgstr "Kibonye guro Usasishaji wa kamera"
+
+#: builtin/mainmenu/settings/shader_warning_component.lua
+msgid "This is not a recommended configuration."
+msgstr ""
+
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
 msgstr ""
@@ -960,10 +1037,6 @@ msgstr ""
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Custom"
 msgstr ""
-
-#: builtin/mainmenu/settings/shadows_component.lua
-msgid "Disabled"
-msgstr "Walemavu"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 #: src/settings_translation_file.cpp
@@ -1127,12 +1200,12 @@ msgid "Install games from ContentDB"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-msgid "Minetest doesn't come with a game by default."
+msgid "Luanti doesn't come with a game by default."
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid ""
-"Minetest is a game-creation platform that allows you to play many different "
+"Luanti is a game-creation platform that allows you to play many different "
 "games."
 msgstr ""
 
@@ -1596,6 +1669,10 @@ msgid "Resolving address..."
 msgstr "Kusuluhisha anwani..."
 
 #: src/client/game.cpp
+msgid "Respawn"
+msgstr "Respawn"
+
+#: src/client/game.cpp
 msgid "Shutting down..."
 msgstr "Inazima..."
 
@@ -1692,6 +1769,10 @@ msgstr ""
 #: src/client/game.cpp
 msgid "Wireframe shown"
 msgstr ""
+
+#: src/client/game.cpp
+msgid "You died"
+msgstr "Umekufa."
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
@@ -2099,7 +2180,7 @@ msgstr "Mbele"
 msgid "Automatic jumping"
 msgstr ""
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Aux1"
 msgstr ""
 
@@ -2111,7 +2192,7 @@ msgstr "Nyuma"
 msgid "Block bounds"
 msgstr ""
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 #, fuzzy
 msgid "Change camera"
 msgstr "Badilisha funguo"
@@ -2137,7 +2218,7 @@ msgstr ""
 msgid "Double tap \"jump\" to toggle fly"
 msgstr "Mara mbili bomba \"Ruka\" hadi Togo kuruka"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Drop"
 msgstr "Achia"
 
@@ -2155,11 +2236,11 @@ msgstr "Kuonyesha masafa"
 msgid "Inc. volume"
 msgstr "Kiwango cha sauti"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Inventory"
 msgstr "Hesabu"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Jump"
 msgstr "Kuruka"
 
@@ -2193,7 +2274,7 @@ msgstr "Ijayo"
 msgid "Prev. item"
 msgstr ""
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Range select"
 msgstr "Teua masafa"
 
@@ -2205,7 +2286,7 @@ msgstr "Kulia"
 msgid "Screenshot"
 msgstr "Screenshot"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Sneak"
 msgstr "Taarifa"
 
@@ -2214,16 +2295,16 @@ msgstr "Taarifa"
 msgid "Toggle HUD"
 msgstr "Togoa kuruka"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 #, fuzzy
 msgid "Toggle chat log"
 msgstr "Togoa haraka"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Toggle fast"
 msgstr "Togoa haraka"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Toggle fly"
 msgstr "Togoa kuruka"
 
@@ -2232,12 +2313,12 @@ msgstr "Togoa kuruka"
 msgid "Toggle fog"
 msgstr "Togoa kuruka"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 #, fuzzy
 msgid "Toggle minimap"
 msgstr "Togoa noclip"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Toggle noclip"
 msgstr "Togoa noclip"
 
@@ -2246,7 +2327,7 @@ msgstr "Togoa noclip"
 msgid "Toggle pitchmove"
 msgstr "Togoa haraka"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/touchcontrols.cpp
 msgid "Zoom"
 msgstr "Kuza"
 
@@ -2283,7 +2364,7 @@ msgstr "Nywila ya zamani"
 msgid "Passwords do not match!"
 msgstr "MaNenotambulishi hayaoani!"
 
-#: src/gui/guiVolumeChange.cpp
+#: src/gui/guiVolumeChange.cpp src/gui/touchcontrols.cpp
 msgid "Exit"
 msgstr "Toka"
 
@@ -2296,6 +2377,38 @@ msgstr "Ufunguo wa matumizi"
 #, fuzzy, c-format
 msgid "Sound Volume: %d%%"
 msgstr "Kiwango sauti:"
+
+#: src/gui/touchcontrols.cpp
+msgid "Joystick"
+msgstr ""
+
+#: src/gui/touchcontrols.cpp
+msgid "Overflow menu"
+msgstr ""
+
+#: src/gui/touchcontrols.cpp
+#, fuzzy
+msgid "Toggle debug"
+msgstr "Togoa kuruka"
+
+#: src/network/clientpackethandler.cpp
+msgid ""
+"Another client is connected with this name.  If your client closed "
+"unexpectedly, try again in a minute."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "Empty passwords are disallowed.  Set a password and try again."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "Internal server error"
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+#, fuzzy
+msgid "Invalid password"
+msgstr "Nywila ya zamani"
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
@@ -2312,6 +2425,49 @@ msgstr ""
 
 #: src/network/clientpackethandler.cpp
 msgid "Name is taken. Please choose another name"
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "Player name contains disallowed characters"
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+#, fuzzy
+msgid "Player name not allowed"
+msgstr "Mchezaji jina refu."
+
+#: src/network/clientpackethandler.cpp
+#, fuzzy
+msgid "Server shutting down"
+msgstr "Inazima..."
+
+#: src/network/clientpackethandler.cpp
+msgid ""
+"The server has experienced an internal error.  You will now be disconnected."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "The server is running in singleplayer mode.  You cannot connect."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "Too many users"
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "Unknown disconnect reason."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid ""
+"Your client sent something the server didn't expect.  Try reconnecting or "
+"updating your client."
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid ""
+"Your client's version is not supported.\n"
+"Please contact the server administrator."
 msgstr ""
 
 #: src/server.cpp
@@ -2584,6 +2740,14 @@ msgid "Antialiasing method"
 msgstr "Antialiasing:"
 
 #: src/settings_translation_file.cpp
+msgid "Anticheat flags"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Anticheat movement tolerance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Append item name"
 msgstr ""
 
@@ -2604,6 +2768,10 @@ msgid ""
 "to 8 bits.\n"
 "With OpenGL ES, dithering only works if the shader supports high\n"
 "floating-point precision and it may have a higher performance impact."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Apply specular shading to nodes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2714,6 +2882,11 @@ msgstr "Kelele za mto"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "Block bounds HUD radius"
+msgstr "Wingu eneo"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Block cull optimize distance"
 msgstr "Umbo la Max Tuma umbali"
 
@@ -2721,23 +2894,6 @@ msgstr "Umbo la Max Tuma umbali"
 #, fuzzy
 msgid "Block send optimize distance"
 msgstr "Umbo la Max Tuma umbali"
-
-#: src/settings_translation_file.cpp
-msgid "Bloom"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Bloom Intensity"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Bloom Radius"
-msgstr "Wingu eneo"
-
-#: src/settings_translation_file.cpp
-msgid "Bloom Strength Factor"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -2968,7 +3124,7 @@ msgid ""
 "software',\n"
 "as defined by the Free Software Foundation.\n"
 "You can also specify content ratings.\n"
-"These flags are independent from Minetest versions,\n"
+"These flags are independent from Luanti versions,\n"
 "so see a full list at https://content.minetest.net/help/content_flags/"
 msgstr ""
 
@@ -3166,7 +3322,7 @@ msgid ""
 "expecting.\n"
 "This allows for more fine-grained control than "
 "strict_protocol_version_checking.\n"
-"Minetest still enforces its own internal minimum, and enabling\n"
+"Luanti still enforces its own internal minimum, and enabling\n"
 "strict_protocol_version_checking will effectively override this."
 msgstr ""
 "Wezesha Usiruhusu wateja wa zamani kutoka kuunganisha.\n"
@@ -3195,13 +3351,6 @@ msgid "Defines full size of caverns, smaller values create larger caverns."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines how much bloom is applied to the rendered image\n"
-"Smaller values make bloom more subtle\n"
-"Range: from 0.01 to 1.0, default: 0.05"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
 msgstr ""
 
@@ -3215,12 +3364,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Defines the magnitude of bloom overexposure.\n"
-"Range: from 0.1 to 10.0, default: 1.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3307,10 +3450,6 @@ msgid "Digging particles"
 msgstr "Chembe"
 
 #: src/settings_translation_file.cpp
-msgid "Disable anticheat"
-msgstr "Lemaza anticheat"
-
-#: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
 msgstr "Usiruhusu nywila tupu"
 
@@ -3320,8 +3459,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Distance in nodes at which transparency depth sorting is enabled\n"
-"Use this to limit the performance impact of transparency depth sorting"
+"Distance in nodes at which transparency depth sorting is enabled.\n"
+"Use this to limit the performance impact of transparency depth sorting.\n"
+"Set to 0 to disable it entirely."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3353,6 +3493,11 @@ msgstr ""
 #, fuzzy
 msgid "Dungeon noise"
 msgstr "Kelele za mto"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Effects"
+msgstr "Michoro"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Automatic Exposure"
@@ -3450,9 +3595,8 @@ msgid "Enable random user input (only used for testing)."
 msgstr "Wezesha ingizo la mtumiaji nasibu (kutumika tu kwa ajili ya kupima)."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Enable smooth lighting with simple ambient occlusion.\n"
-"Disable for speed or for different looks."
+#, fuzzy
+msgid "Enable smooth lighting with simple ambient occlusion."
 msgstr ""
 "Wezesha taa laini na rahisi iliyoko occlusion.\n"
 "Lemaza kwa kasi au kwa ajili ya inaonekana tofauti."
@@ -3475,9 +3619,8 @@ msgstr ""
 "mpya ambayo ni kutarajia."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Enable touchscreen"
-msgstr "Touchthreshold (px)"
+msgid "Enable updates available indicator on content tab"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3523,7 +3666,10 @@ msgid "Enables animation of inventory items."
 msgstr "Huwezesha uhuishaji wa vitu inventering."
 
 #: src/settings_translation_file.cpp
-msgid "Enables caching of facedir rotated meshes."
+#, fuzzy
+msgid ""
+"Enables caching of facedir rotated meshes.\n"
+"This is only effective with shaders disabled."
 msgstr "Huwezesha uwekaji kache kwa facedir Iliyozungushwa meshes."
 
 #: src/settings_translation_file.cpp
@@ -3531,12 +3677,20 @@ msgid "Enables debug and error-checking in the OpenGL driver."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enables smooth scrolling."
+msgstr "Wezesha vifimbocheza"
+
+#: src/settings_translation_file.cpp
 msgid "Enables the post processing pipeline."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Enables touchscreen mode, allowing you to play the game with a touchscreen."
+"Enables the touchscreen controls, allowing you to play the game with a "
+"touchscreen.\n"
+"\"auto\" means that the touchscreen controls will be enabled and disabled\n"
+"automatically depending on the last used input method."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3890,11 +4044,6 @@ msgstr "Michoro"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Graphics Effects"
-msgstr "Michoro"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Graphics and Audio"
 msgstr "Michoro"
 
@@ -4109,6 +4258,13 @@ msgstr ""
 "hali-tumizi ya kuruka na ya haraka ni kuwezeshwa."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"If enabled and you have ContentDB packages installed, Luanti may contact "
+"ContentDB to\n"
+"check for package updates when opening the mainmenu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "If enabled, \"Aux1\" key instead of \"Sneak\" key is used for climbing down "
@@ -4131,10 +4287,6 @@ msgid ""
 msgstr ""
 "Ikiwa imewezeshwa, matendo ni kumbukumbu kwa ajili ya mserereko.\n"
 "Chaguo hili ni soma tu wakati wa kuanza kwa seva."
-
-#: src/settings_translation_file.cpp
-msgid "If enabled, disable cheat prevention in multiplayer."
-msgstr "Ikiwa imewezeshwa, kulemaza uzuiaji wa soka katika multiplayer."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4234,9 +4386,10 @@ msgid "Instrument chat commands on registration."
 msgstr "Chombo chatcommands kwenye usajili."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Instrument global callback functions on registration.\n"
-"(anything you pass to a minetest.register_*() function)"
+"(anything you pass to a core.register_*() function)"
 msgstr ""
 "Chombo mwito-rejeshi kimataifa kazi kwenye usajili.\n"
 "(kitu chochote unaweza kupita kwa kazi minetest.register_*())"
@@ -4437,10 +4590,11 @@ msgid "Leaves style"
 msgstr "Mtindo wa majani"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Leaves style:\n"
 "-   Fancy:  all faces visible\n"
-"-   Simple: only outer faces, if defined special_tiles are used\n"
+"-   Simple: only outer faces\n"
 "-   Opaque: disable transparency"
 msgstr ""
 "Majani mtindo: - dhana: nyuso zote kuonekana - rahisi: tu nyuso nje, kama "
@@ -4452,7 +4606,9 @@ msgid ""
 "Length of a server tick (the interval at which everything is generally "
 "updated),\n"
 "stated in seconds.\n"
-"Does not apply to sessions hosted from the client menu."
+"Does not apply to sessions hosted from the client menu.\n"
+"This is a lower bound, i.e. server steps may not be shorter than this, but\n"
+"they are often longer."
 msgstr ""
 "Urefu wa alama ya tiki seva na nafasi ambayo vitu ni kwa ujumla kusasaishwa "
 "kwenye mtandao."
@@ -4565,6 +4721,11 @@ msgstr "Wakati wa usafishaji wa foleni ya kioevu"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "Liquid reflections"
+msgstr "Fluidity kioevu"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Liquid sinking"
 msgstr "Kuzama kioevu"
 
@@ -4593,13 +4754,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
 msgstr "Inapakiza umbo Modifiers"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Logical value that controls how far the bloom effect spreads\n"
-"from the bright objects.\n"
-"Range: from 0.1 to 8, default: 1"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -4918,13 +5072,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Maximum number of packets sent per send step, if you have a slow connection\n"
-"try reducing it, but don't reduce it to a number below double of targeted\n"
-"client number."
+"Maximum number of packets sent per send step in the low-level networking "
+"code.\n"
+"You generally don't need to change this, however busy servers may benefit "
+"from a higher number."
 msgstr ""
-"Namba ya juu ya pakiti iliyotumwa kwa hatua ya kutuma, kama una muunganisho "
-"polepole jaribu kupunguza ni, lakini si ya kupunguza kadhaa chini ya mara "
-"mbili ya idadi ya mteja lengwa."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5161,6 +5313,10 @@ msgid "Node highlighting"
 msgstr "Fundo udhulisho"
 
 #: src/settings_translation_file.cpp
+msgid "Node specular"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "NodeTimer interval"
 msgstr "Nafasi ya NodeTimer"
 
@@ -5204,7 +5360,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of threads to use for mesh generation.\n"
-"Value of 0 (default) will let Minetest autodetect the number of available "
+"Value of 0 (default) will let Luanti autodetect the number of available "
 "threads."
 msgstr ""
 
@@ -5234,8 +5390,17 @@ msgid "OpenGL debug"
 msgstr "Utatuaji wa Mwandishi ramani"
 
 #: src/settings_translation_file.cpp
+msgid "Optimize GUI for touchscreens"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Other Effects"
+msgstr "Michoro"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5339,7 +5504,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Prometheus listener address.\n"
-"If Minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"If Luanti is compiled with ENABLE_PROMETHEUS option enabled,\n"
 "enable metrics listener for Prometheus on that address.\n"
 "Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
@@ -5366,6 +5531,10 @@ msgstr ""
 "Eneo la eneo la wingu alisema katika idadi ya 64 fundo wingu miraba.\n"
 "Thamani kubwa kuliko 26 itaanza kuzalisha cutoffs mkali katika wingu eneo la "
 "pembe."
+
+#: src/settings_translation_file.cpp
+msgid "Radius to use when the block bounds HUD feature is set to near blocks."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5662,6 +5831,17 @@ msgstr ""
 "18 = 4 D seti ya julia \"Mandelbulb\"."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Send names of online players to the serverlist. If disabled only the player "
+"count is revealed."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Send player names to the server list"
+msgstr "Kutangaza seva"
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Server"
 msgstr "URL ya seva"
@@ -5683,6 +5863,13 @@ msgstr "URL ya seva"
 #: src/settings_translation_file.cpp
 msgid "Server address"
 msgstr "Anwani ya seva"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Server anticheat configuration.\n"
+"Flags are positive. Uncheck the flag to disable corresponding anticheat "
+"module."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server description"
@@ -5823,15 +6010,10 @@ msgid "Shaders"
 msgstr "Shaders"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
-"Shaders allow advanced visual effects and may increase performance on some "
-"video\n"
-"cards."
+"Shaders are a fundamental part of rendering and enable advanced visual "
+"effects."
 msgstr ""
-"Shaders kuruhusu athari pevu onekana na inaweza kuongeza utendaji wa baadhi "
-"ya kadi ya video.\n"
-"Kazi yako tu na OpenGL video backend."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5897,6 +6079,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Simulate translucency when looking at foliage in the sunlight."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING: There is no benefit, and there are several dangers, in\n"
@@ -5941,6 +6127,11 @@ msgstr "Taa laini"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "Smooth scrolling"
+msgstr "Taa laini"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
 "cinematic mode by using the key set in Controls."
@@ -5961,6 +6152,11 @@ msgstr "Kutembea kasi"
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Soft clouds"
+msgstr "Mawingu ya 3D"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6168,14 +6364,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The gesture for for punching players/entities.\n"
+"The gesture for punching players/entities.\n"
 "This can be overridden by games and mods.\n"
 "\n"
 "* short_tap\n"
 "Easy to use and well-known from other games that shall not be named.\n"
 "\n"
 "* long_tap\n"
-"Known from the classic Minetest mobile controls.\n"
+"Known from the classic Luanti mobile controls.\n"
 "Combat is more or less impossible."
 msgstr ""
 
@@ -6233,8 +6429,7 @@ msgstr ""
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
-"OpenGL is the default for desktop, and OGLES2 for Android.\n"
-"Shaders are supported by everything but OGLES1."
+"OpenGL is the default for desktop, and OGLES2 for Android."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6347,12 +6542,23 @@ msgstr ""
 "Hii huamua lini wao ni sjunkit baada ya kuweka au kuondoa fundo."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Tolerance of movement cheat detector.\n"
+"Increase the value if players experience stuttery movement."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr "Kidokezozana kuchelewa"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Touchscreen"
+msgstr "Touchthreshold (px)"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Touchscreen controls"
 msgstr "Touchthreshold (px)"
 
 #: src/settings_translation_file.cpp
@@ -6368,6 +6574,11 @@ msgstr "Mengi ya unyeti wa kipanya."
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Translucent foliage"
+msgstr "Waving fundo"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6412,8 +6623,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"URL to JSON file which provides information about the newest Minetest "
-"release\n"
+"URL to JSON file which provides information about the newest Luanti "
+"release.\n"
 "If this is empty the engine will never check for updates."
 msgstr ""
 
@@ -6496,6 +6707,10 @@ msgid ""
 "Use raytraced occlusion culling in the new culler.\n"
 "This flag enables use of raytraced occlusion culling test for\n"
 "client mesh sizes smaller than 4x4x4 map blocks."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Use smooth cloud shading."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6707,6 +6922,16 @@ msgid "Weblink color"
 msgstr "Uteuzi kikasha rangi"
 
 #: src/settings_translation_file.cpp
+msgid "When enabled, liquid reflections are simulated."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"When enabled, the GUI is optimized to be more usable on touchscreens.\n"
+"Whether this is enabled by default depends on your hardware form-factor."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "When gui_scaling_filter is true, all GUI images need to be\n"
 "filtered in software, but some images are generated directly\n"
@@ -6812,7 +7037,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Windows systems only: Start Minetest with the command line window in the "
+"Windows systems only: Start Luanti with the command line window in the "
 "background.\n"
 "Contains the same information as the file debug.txt (default name)."
 msgstr ""
@@ -6986,6 +7211,10 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Aux1 key"
 #~ msgstr "Ufunguo wa kuruka"
 
+#, fuzzy
+#~ msgid "Back to Main Menu"
+#~ msgstr "Menyu kuu"
+
 #~ msgid "Backward key"
 #~ msgstr "Ufunguo wa nyuma"
 
@@ -7002,6 +7231,10 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr ""
 #~ "Biti kwa pikseli (a.k.a rangi kina) katika hali-tumizi ya skrini nzima."
+
+#, fuzzy
+#~ msgid "Bloom Radius"
+#~ msgstr "Wingu eneo"
 
 #~ msgid "Bump Mapping"
 #~ msgstr "Mapema ramani"
@@ -7147,6 +7380,9 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Dig key"
 #~ msgstr "Ufunguo sahihi"
 
+#~ msgid "Disable anticheat"
+#~ msgstr "Lemaza anticheat"
+
 #, fuzzy
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "Pakua subgame, kama vile minetest_game, kutoka minetest.net"
@@ -7171,8 +7407,9 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Enable players getting damage and dying."
 #~ msgstr "Wezesha wachezaji kupata uharibifu na kufa."
 
-#~ msgid "Enabled"
-#~ msgstr "Kuwezeshwa"
+#, fuzzy
+#~ msgid "Enable touchscreen"
+#~ msgstr "Touchthreshold (px)"
 
 #~ msgid ""
 #~ "Enables bumpmapping for textures. Normalmaps need to be supplied by the "
@@ -7326,16 +7563,15 @@ msgstr "cURL kikomo sambamba"
 #~ "fundo imara.\n"
 #~ "Hii inahitaji upendeleo wa \"noclip\" kwenye seva."
 
+#~ msgid "If enabled, disable cheat prevention in multiplayer."
+#~ msgstr "Ikiwa imewezeshwa, kulemaza uzuiaji wa soka katika multiplayer."
+
 #~ msgid "In-Game"
 #~ msgstr "Katika mchezo"
 
 #, fuzzy
 #~ msgid "Inc. volume key"
 #~ msgstr "Muhimu ya Kiweko"
-
-#, fuzzy
-#~ msgid "Information:"
-#~ msgstr "Taarifa Moduli:"
 
 #, fuzzy
 #~ msgid "Install Mod: Unable to find real mod name for: $1"
@@ -8094,6 +8330,17 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Mapblock mesh generator's MapBlock cache size in MB"
 #~ msgstr "Kikomo cha kizazi cha ramani"
 
+#~ msgid ""
+#~ "Maximum number of packets sent per send step, if you have a slow "
+#~ "connection\n"
+#~ "try reducing it, but don't reduce it to a number below double of "
+#~ "targeted\n"
+#~ "client number."
+#~ msgstr ""
+#~ "Namba ya juu ya pakiti iliyotumwa kwa hatua ya kutuma, kama una "
+#~ "muunganisho polepole jaribu kupunguza ni, lakini si ya kupunguza kadhaa "
+#~ "chini ya mara mbili ya idadi ya mteja lengwa."
+
 #~ msgid "Menus"
 #~ msgstr "Menyu"
 
@@ -8282,6 +8529,16 @@ msgstr "cURL kikomo sambamba"
 #~ msgstr "Kiwango cha maji"
 
 #, fuzzy
+#~ msgid ""
+#~ "Shaders allow advanced visual effects and may increase performance on "
+#~ "some video\n"
+#~ "cards."
+#~ msgstr ""
+#~ "Shaders kuruhusu athari pevu onekana na inaweza kuongeza utendaji wa "
+#~ "baadhi ya kadi ya video.\n"
+#~ "Kazi yako tu na OpenGL video backend."
+
+#, fuzzy
 #~ msgid "Shadow limit"
 #~ msgstr "Kikomo cha Mapblock"
 
@@ -8358,10 +8615,6 @@ msgstr "cURL kikomo sambamba"
 
 #, fuzzy
 #~ msgid "Touch threshold (px):"
-#~ msgstr "Touchthreshold (px)"
-
-#, fuzzy
-#~ msgid "Touchscreen threshold"
 #~ msgstr "Touchthreshold (px)"
 
 #~ msgid "Trilinear Filter"
