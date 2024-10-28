@@ -781,6 +781,16 @@ int ModApiEnv::l_get_gametime(lua_State *L)
 	return 1;
 }
 
+// get_target_dtime()
+int ModApiEnv::l_get_target_dtime(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	auto server = getServer(L);
+	lua_pushnumber(L, server->getStepSettings().steplen);
+	return 1;
+}
+
 void ModApiEnvBase::collectNodeIds(lua_State *L, int idx, const NodeDefManager *ndef,
 	std::vector<content_t> &filter)
 {
@@ -1413,6 +1423,7 @@ void ModApiEnv::Initialize(lua_State *L, int top)
 	API_FCT(get_timeofday);
 	API_FCT(get_gametime);
 	API_FCT(get_day_count);
+	API_FCT(get_target_dtime);
 	API_FCT(find_node_near);
 	API_FCT(find_nodes_in_area);
 	API_FCT(find_nodes_in_area_under_air);

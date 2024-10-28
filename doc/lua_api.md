@@ -5934,6 +5934,8 @@ Call these functions only at load time!
 * `core.register_globalstep(function(dtime))`
     * Called every server step, usually interval of 0.1s.
     * `dtime` is the time since last execution in seconds.
+    * You can get the target interval via `core.get_target_dtime()`.
+    * This is usually true: `dtime >= core.get_target_dtime()`
 * `core.register_on_mods_loaded(function())`
     * Called after mods have finished loading and before the media is cached or the
       aliases handled.
@@ -6378,6 +6380,12 @@ Environment access
 * `core.get_day_count()`: returns number days elapsed since world was
   created.
     * Time changes are accounted for.
+* `core.get_target_dtime()`: returns the target server step `dtime` in seconds.
+    * This is a lower bound, i.e. server steps may not be shorter than this,
+      but they are often longer.
+    * On dedicated servers, this value can be configured via the
+      `dedicated_server_step` setting in minetest.conf.
+    * See `core.register_globalstep`.
 * `core.find_node_near(pos, radius, nodenames, [search_center])`: returns
   pos or `nil`.
     * `radius`: using a maximum metric
