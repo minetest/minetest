@@ -1,5 +1,3 @@
--- Luanti: builtin/constants.lua
-
 --
 -- Constants values for use with the Lua API
 --

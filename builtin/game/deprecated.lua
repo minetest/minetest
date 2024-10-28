@@ -1,5 +1,3 @@
--- Luanti: builtin/deprecated.lua
-
 --
 -- EnvRef
 --

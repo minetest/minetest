@@ -1,5 +1,3 @@
--- Luanti: builtin/register.lua
-
 local builtin_shared = ...
 local S = core.get_translator("__builtin")
 

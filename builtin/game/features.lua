@@ -1,5 +1,3 @@
--- Luanti: builtin/features.lua
-
 core.features = {
 	glasslike_framed = true,
 	nodebox_as_selectionbox = true,

@@ -1,5 +1,3 @@
--- Luanti: builtin/auth.lua
-
 --
 -- Builtin authentication handler
 --
