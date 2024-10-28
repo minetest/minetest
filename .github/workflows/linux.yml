@@ -49,7 +49,14 @@ jobs:
           source ./util/ci/common.sh
           install_linux_deps g++-7
 
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          manifest-path: pixi.toml
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
+  
       - name: Build
+        shell: pixi run -- bash -e {0}
         run: |
           ./util/ci/build.sh
         env:
@@ -77,10 +84,9 @@ jobs:
           cache-write: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
 
       - name: Build
-        # Needed so conda environment is active
-        shell: bash -l {0}
+        shell: pixi run -- bash -e {0}
         run: |
-          pixi run ./util/ci/build.sh
+          ./util/ci/build.sh
         env:
           CC: gcc-14
           CXX: g++-14
@@ -102,7 +108,14 @@ jobs:
           source ./util/ci/common.sh
           install_linux_deps clang-7 llvm-7
 
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          manifest-path: pixi.toml
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
+  
       - name: Build
+        shell: pixi run -- bash -e {0}
         run: |
           ./util/ci/build.sh
         env:
@@ -111,11 +124,13 @@ jobs:
           CMAKE_FLAGS: '-DCMAKE_C_FLAGS="-fsanitize=address" -DCMAKE_CXX_FLAGS="-fsanitize=address"'
 
       - name: Unittest
+        shell: pixi run bash -e {0}
         run: |
           ./bin/minetest --run-unittests
 
       # Do this here because we have ASan and error paths are sensitive to dangling pointers
       - name: Test error cases
+        shell: pixi run bash -e {0}
         run: |
           ./util/test_error_cases.sh
 
@@ -129,11 +144,16 @@ jobs:
           source ./util/ci/common.sh
           install_linux_deps clang-18 lldb
 
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          manifest-path: pixi.toml
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
+  
       - name: Build
-        # Needed so conda environment is active
-        shell: bash -l {0}
+        shell: pixi run -- bash -e {0}
         run: |
-          pixi run ./util/ci/build.sh
+          ./util/ci/build.sh
         env:
           CC: clang-18
           CXX: clang++-18
@@ -157,10 +177,18 @@ jobs:
           source ./util/ci/common.sh
           install_linux_deps clang-11
 
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          manifest-path: pixi.toml
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
+  
       - name: Build prometheus-cpp
+        shell: pixi run -- bash -e {0}
         run: ./util/ci/build_prometheus_cpp.sh
 
       - name: Build
+        shell: pixi run -- bash -e {0}
         run: |
           ./util/ci/build.sh
         env:

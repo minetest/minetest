@@ -639,7 +639,7 @@ if(BUILD_CLIENT)
 		"$<$<PLATFORM_ID:Android>:${SDL2_LIBRARIES}>"
 	)
 	target_compile_definitions(${PROJECT_NAME} PRIVATE "MT_BUILDTARGET=1")
-	
+
 	target_link_libraries(${PROJECT_NAME} ${CAPNP_LIBRARIES})
 
 	if(NOT USE_LUAJIT)

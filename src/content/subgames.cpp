@@ -177,7 +177,7 @@ SubgameSpec subgameFromDir(const std::string &game_path) {
 SubgameSpec subgameFromDirWithId(const std::string &game_id, const std::string &game_path) {
 
 	std::string gamemod_path = game_path + DIR_DELIM + "mods";
-	
+
 	// Find mod directories
 	std::unordered_map<std::string, std::string> mods_paths;
 	mods_paths["mods"] = porting::path_user + DIR_DELIM + "mods";

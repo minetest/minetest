@@ -170,7 +170,7 @@ void RemoteInputHandler::step_post_render() {
     }
     m_chan.m_has_obs = true;
     m_chan.m_obs_cv.notify_one();
-    image->drop(); // TODO(mickvangelderen): I'm worried we have a use-after free. The capnp docs mentiond that Reader does not own the underlying data. The notify_one call doesn't block (I think) and the image data referenced by the builder may not have been read yet. 
+    image->drop(); // TODO(mickvangelderen): I'm worried we have a use-after free. The capnp docs mentiond that Reader does not own the underlying data. The notify_one call doesn't block (I think) and the image data referenced by the builder may not have been read yet.
   }
 }
 

@@ -249,7 +249,7 @@ public:
 	{
 		return false;
 	}
-	
+
 	// true if no physical keyboard is attached
 	virtual bool isDetached() const { return false; }
 	virtual void registerLocalPlayer(LocalPlayer *player) {
