@@ -3,7 +3,7 @@
 context: {}
 package:
   name: minetest-gymnasium
-  version: "0.24"
+  version: "0.25"
 
 source:
   path: ../../
@@ -20,7 +20,7 @@ requirements:
     - python
     - setuptools
   run:
-    - minetest =0.19
+    - minetest =0.20
     # python deps
     - gymnasium
     - numpy =1.26
