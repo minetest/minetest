@@ -3,7 +3,7 @@
 context: {}
 package:
   name: minetest
-  version: "0.18"
+  version: "0.19"
 
 source:
   path: ../../
