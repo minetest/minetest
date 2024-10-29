@@ -11,11 +11,6 @@ on: # yamllint disable-line rule:truthy
 jobs:
   rattler-build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        package:
-          - name: minetest
-          - name: minetest-gymnasium
     steps:
       # Needed to run the tests
       - name: install libgl
@@ -31,10 +26,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - name: build ${{ matrix.package.name }}
+      - name: build minetest
         uses: prefix-dev/rattler-build-action@v0.2.9
         with:
-          recipe-path: ./rattler-build-recipe/${{ matrix.package.name }}/recipe.yaml
+          recipe-path: ./rattler-build-recipe/minetest/recipe.yaml
+          build-args: --channel=conda-forge
+      - name: build minetest-gymnasium
+        uses: prefix-dev/rattler-build-action@v0.2.9
+        with:
+          recipe-path: ./rattler-build-recipe/minetest-gymnasium/recipe.yaml
           build-args: --channel=conda-forge
           upload-artifact: false # don't upload to GitHub
       - name: upload
