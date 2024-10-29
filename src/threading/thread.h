@@ -59,6 +59,7 @@ public:
 	Thread(const std::string &name="");
 	virtual ~Thread();
 	DISABLE_CLASS_COPY(Thread)
+	// Note: class cannot be moved since other references exist
 
 	/*
 	 * Begins execution of a new thread at the pure virtual method Thread::run().
@@ -118,6 +119,11 @@ public:
 	 * supported by default, otherwise this call will have no effect.
 	 */
 	bool setPriority(int prio);
+
+	/*
+	 * Returns the thread object of the current thread if it exists.
+	 */
+	static Thread *getCurrentThread();
 
 	/*
 	 * Sets the currently executing thread's name to where supported; useful

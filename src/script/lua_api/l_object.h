@@ -38,10 +38,12 @@ public:
 	~ObjectRef() = default;
 
 	// Creates an ObjectRef and leaves it on top of stack
-	// Not callable from Lua; all references are created on the C side.
+	// NOTE: do not call this, use `ScriptApiBase::objectrefGetOrCreate()`!
 	static void create(lua_State *L, ServerActiveObject *object);
 
-	static void set_null(lua_State *L);
+	// Clear the pointer in the ObjectRef (at -1).
+	// Throws an fatal error if the object pointer wasn't `expect`.
+	static void set_null(lua_State *L, void *expect);
 
 	static void Register(lua_State *L);
 
@@ -66,6 +68,9 @@ private:
 
 	// remove(self)
 	static int l_remove(lua_State *L);
+
+	// is_valid(self)
+	static int l_is_valid(lua_State *L);
 
 	// get_pos(self)
 	static int l_get_pos(lua_State *L);
@@ -159,6 +164,15 @@ private:
 
 	// get_properties(self)
 	static int l_get_properties(lua_State *L);
+
+	// set_observers(self, observers)
+	static int l_set_observers(lua_State *L);
+
+	// get_observers(self)
+	static int l_get_observers(lua_State *L);
+
+	// get_effective_observers(self)
+	static int l_get_effective_observers(lua_State *L);
 
 	// is_player(self)
 	static int l_is_player(lua_State *L);
@@ -300,6 +314,9 @@ private:
 	// hud_get(self, id)
 	static int l_hud_get(lua_State *L);
 
+	// hud_get_all(self)
+	static int l_hud_get_all(lua_State *L);
+
 	// hud_set_flags(self, flags)
 	static int l_hud_set_flags(lua_State *L);
 
@@ -396,4 +413,10 @@ private:
 
 	// respawn(self)
 	static int l_respawn(lua_State *L);
+
+	// set_flags(self, flags)
+	static int l_set_flags(lua_State *L);
+
+	// get_flags(self)
+	static int l_get_flags(lua_State *L);
 };

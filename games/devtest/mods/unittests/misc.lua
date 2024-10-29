@@ -1,10 +1,40 @@
-local function test_random()
-	-- Try out PseudoRandom
-	local pseudo = PseudoRandom(13)
-	assert(pseudo:next() == 22290)
-	assert(pseudo:next() == 13854)
+core.register_mapgen_script(core.get_modpath(core.get_current_modname()) ..
+	DIR_DELIM .. "inside_mapgen_env.lua")
+
+local function test_pseudo_random()
+	-- We have comprehensive unit tests in C++, this is just to make sure the API code isn't messing up
+	local gen1 = PseudoRandom(13)
+	assert(gen1:next() == 22290)
+	assert(gen1:next() == 13854)
+
+	local gen2 = PseudoRandom(gen1:get_state())
+	for n = 0, 16 do
+		assert(gen1:next() == gen2:next())
+	end
+
+	local pr3 = PseudoRandom(-101)
+	assert(pr3:next(0, 100) == 35)
+	-- unusual case that is normally disallowed:
+	assert(pr3:next(10000, 42767) == 12485)
 end
-unittests.register("test_random", test_random)
+unittests.register("test_pseudo_random", test_pseudo_random)
+
+local function test_pcg_random()
+	-- We have comprehensive unit tests in C++, this is just to make sure the API code isn't messing up
+	local gen1 = PcgRandom(55)
+
+	for n = 0, 16 do
+		gen1:next()
+	end
+
+	local gen2 = PcgRandom(26)
+	gen2:set_state(gen1:get_state())
+
+	for n = 16, 32 do
+		assert(gen1:next() == gen2:next())
+	end
+end
+unittests.register("test_pcg_random", test_pcg_random)
 
 local function test_dynamic_media(cb, player)
 	if core.get_player_information(player:get_player_name()).protocol_version < 40 then
@@ -69,17 +99,31 @@ local function test_clear_meta(_, pos)
 end
 unittests.register("test_clear_meta", test_clear_meta, {map=true})
 
-local on_punch_called
-minetest.register_on_punchnode(function()
+local on_punch_called, on_place_called
+core.register_on_placenode(function()
+	on_place_called = true
+end)
+core.register_on_punchnode(function()
 	on_punch_called = true
 end)
-unittests.register("test_punch_node", function(_, pos)
-	minetest.place_node(pos, {name="basenodes:dirt"})
+local function test_node_callbacks(_, pos)
+	on_place_called = false
 	on_punch_called = false
-	minetest.punch_node(pos)
-	minetest.remove_node(pos)
-	-- currently failing: assert(on_punch_called)
-end, {map=true})
+
+	core.place_node(pos, {name="basenodes:dirt"})
+	assert(on_place_called, "on_place not called")
+	core.punch_node(pos)
+	assert(on_punch_called, "on_punch not called")
+	core.remove_node(pos)
+end
+unittests.register("test_node_callbacks", test_node_callbacks, {map=true})
+
+local function test_hashing()
+	local input = "hello\000world"
+	assert(core.sha1(input) == "f85b420f1e43ebf88649dfcab302b898d889606c")
+	assert(core.sha256(input) == "b206899bc103669c8e7b36de29d73f95b46795b508aa87d612b2ce84bfb29df2")
+end
+unittests.register("test_hashing", test_hashing)
 
 local function test_compress()
 	-- This text should be compressible, to make sure the results are... normal
@@ -102,6 +146,48 @@ local function test_compress()
 	end
 end
 unittests.register("test_compress", test_compress)
+
+local function test_urlencode()
+	-- checks that API code handles null bytes
+	assert(core.urlencode("foo\000bar!") == "foo%00bar%21")
+end
+unittests.register("test_urlencode", test_urlencode)
+
+local function test_parse_json()
+	local raw = "{\"how\\u0000weird\":\n\"yes\\u0000really\",\"n\":-1234567891011,\"z\":null}"
+	do
+		local data = core.parse_json(raw)
+		assert(data["how\000weird"] == "yes\000really")
+		assert(data.n == -1234567891011)
+		assert(data.z == nil)
+	end
+	do
+		local null = {}
+		local data = core.parse_json(raw, null)
+		assert(data.z == null)
+	end
+	do
+		local data, err = core.parse_json('"ceci n\'est pas un json', nil, true)
+		assert(data == nil)
+		assert(type(err) == "string")
+	end
+end
+unittests.register("test_parse_json", test_parse_json)
+
+local function test_write_json()
+	-- deeply nested structures should be preserved
+	local leaf = 42
+	local data = leaf
+	for i = 1, 1000 do
+		data = {data}
+	end
+	local roundtripped = minetest.parse_json(minetest.write_json(data))
+	for i = 1, 1000 do
+		roundtripped = roundtripped[1]
+	end
+	assert(roundtripped == 42)
+end
+unittests.register("test_write_json", test_write_json)
 
 local function test_game_info()
 	local info = minetest.get_game_info()
@@ -177,3 +263,70 @@ local function test_on_mapblocks_changed(cb, player, pos)
 	end
 end
 unittests.register("test_on_mapblocks_changed", test_on_mapblocks_changed, {map=true, async=true})
+
+local function test_gennotify_api()
+	local DECO_ID = 123
+	local UD_ID = "unittests:dummy"
+
+	-- the engine doesn't check if the id is actually valid, maybe it should
+	core.set_gen_notify({decoration=true}, {DECO_ID})
+
+	core.set_gen_notify({custom=true}, nil, {UD_ID})
+
+	local flags, deco, custom = core.get_gen_notify()
+	local function ff(flag)
+		return (" " .. flags .. " "):match("[ ,]" .. flag .. "[ ,]") ~= nil
+	end
+	assert(ff("decoration"), "'decoration' flag missing")
+	assert(ff("custom"), "'custom' flag missing")
+	assert(table.indexof(deco, DECO_ID) > 0)
+	assert(table.indexof(custom, UD_ID) > 0)
+
+	core.set_gen_notify({decoration=false, custom=false})
+
+	flags, deco, custom = core.get_gen_notify()
+	assert(not ff("decoration") and not ff("custom"))
+	assert(#deco == 0, "deco ids not empty")
+	assert(#custom == 0, "custom ids not empty")
+end
+unittests.register("test_gennotify_api", test_gennotify_api)
+
+-- <=> inside_mapgen_env.lua
+local function test_mapgen_env(cb)
+	-- emerge threads start delayed so this can take a second
+	local res = core.ipc_get("unittests:mg")
+	if res == nil then
+		return core.after(0, test_mapgen_env, cb)
+	end
+	-- handle error status
+	if res[1] then
+		cb()
+	else
+		cb(res[2])
+	end
+end
+unittests.register("test_mapgen_env", test_mapgen_env, {async=true})
+
+local function test_ipc_vector_preserve(cb)
+	-- the IPC also uses register_portable_metatable
+	core.ipc_set("unittests:v", vector.new(4, 0, 4))
+	local v = core.ipc_get("unittests:v")
+	assert(type(v) == "table")
+	assert(vector.check(v))
+end
+unittests.register("test_ipc_vector_preserve", test_ipc_vector_preserve)
+
+local function test_ipc_poll(cb)
+	core.ipc_set("unittests:flag", nil)
+	assert(core.ipc_poll("unittests:flag", 1) == false)
+
+	-- Note that unlike the async result callback - which has to wait for the
+	-- next server step - the IPC is instant
+	local t0 = core.get_us_time()
+	core.handle_async(function()
+		core.ipc_set("unittests:flag", true)
+	end, function() end)
+	assert(core.ipc_poll("unittests:flag", 1000) == true, "Wait failed (or slow machine?)")
+	print("delta: " .. (core.get_us_time() - t0) .. "us")
+end
+unittests.register("test_ipc_poll", test_ipc_poll)

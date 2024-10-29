@@ -29,7 +29,8 @@ René Nyffenegger rene.nyffenegger@adp-gmbh.ch
 #pragma once
 
 #include <string>
+#include <string_view>
 
-bool base64_is_valid(std::string const& s);
-std::string base64_encode(unsigned char const* , unsigned int len);
-std::string base64_decode(std::string const& s);
+bool base64_is_valid(std::string_view s);
+std::string base64_encode(std::string_view s);
+std::string base64_decode(std::string_view s);

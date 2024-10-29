@@ -19,18 +19,31 @@
 local component_funcs =  dofile(core.get_mainmenu_path() .. DIR_DELIM ..
 		"settings" .. DIR_DELIM .. "components.lua")
 
+local shader_warning_component =  dofile(core.get_mainmenu_path() .. DIR_DELIM ..
+		"settings" .. DIR_DELIM .. "shader_warning_component.lua")
 local shadows_component =  dofile(core.get_mainmenu_path() .. DIR_DELIM ..
 		"settings" .. DIR_DELIM .. "shadows_component.lua")
 
-
-local full_settings = settingtypes.parse_config_file(false, true)
+local loaded = false
+local full_settings
 local info_icon_path = core.formspec_escape(defaulttexturedir .. "settings_info.png")
 local reset_icon_path = core.formspec_escape(defaulttexturedir .. "settings_reset.png")
-
 local all_pages = {}
 local page_by_id = {}
 local filtered_pages = all_pages
 local filtered_page_by_id = page_by_id
+
+
+local function get_setting_info(name)
+	for _, entry in ipairs(full_settings) do
+		if entry.type ~= "category" and entry.name == name then
+			return entry
+		end
+	end
+
+	return nil
+end
+
 
 local function add_page(page)
 	assert(type(page.id) == "string")
@@ -44,49 +57,6 @@ local function add_page(page)
 	page_by_id[page.id] = page
 	return page
 end
-
-
-local change_keys = {
-	query_text = "Controls",
-	requires = {
-		keyboard_mouse = true,
-	},
-	get_formspec = function(self, avail_w)
-		local btn_w = math.min(avail_w, 3)
-		return ("button[0,0;%f,0.8;btn_change_keys;%s]"):format(btn_w, fgettext("Controls")), 0.8
-	end,
-	on_submit = function(self, fields)
-		if fields.btn_change_keys then
-			core.show_keys_menu()
-		end
-	end,
-}
-
-
-add_page({
-	id = "accessibility",
-	title = fgettext_ne("Accessibility"),
-	content = {
-		"language",
-		{ heading = fgettext_ne("General") },
-		"font_size",
-		"chat_font_size",
-		"gui_scaling",
-		"hud_scaling",
-		"show_nametag_backgrounds",
-		{ heading = fgettext_ne("Chat") },
-		"console_height",
-		"console_alpha",
-		"console_color",
-		{ heading = fgettext_ne("Controls") },
-		"autojump",
-		"safe_dig_and_place",
-		{ heading = fgettext_ne("Movement") },
-		"arm_inertia",
-		"view_bobbing_amount",
-		"fall_bobbing_amount",
-	},
-})
 
 
 local function load_settingtypes()
@@ -129,92 +99,158 @@ local function load_settingtypes()
 		end
 	end
 end
-load_settingtypes()
-
-table.insert(page_by_id.controls_keyboard_and_mouse.content, 1, change_keys)
-do
-	local content = page_by_id.graphics_and_audio_shaders.content
-	local idx = table.indexof(content, "enable_dynamic_shadows")
-	table.insert(content, idx, shadows_component)
-end
 
 
-local function get_setting_info(name)
-	for _, entry in ipairs(full_settings) do
-		if entry.type ~= "category" and entry.name == name then
-			return entry
-		end
+local function load()
+	if loaded then
+		return
+	end
+	loaded = true
+
+	full_settings = settingtypes.parse_config_file(false, true)
+
+	local change_keys = {
+		query_text = "Controls",
+		requires = {
+			touch_controls = false,
+		},
+		get_formspec = function(self, avail_w)
+			local btn_w = math.min(avail_w, 3)
+			return ("button[0,0;%f,0.8;btn_change_keys;%s]"):format(btn_w, fgettext("Controls")), 0.8
+		end,
+		on_submit = function(self, fields)
+			if fields.btn_change_keys then
+				core.show_keys_menu()
+			end
+		end,
+	}
+
+	add_page({
+		id = "accessibility",
+		title = fgettext_ne("Accessibility"),
+		content = {
+			"language",
+			{ heading = fgettext_ne("General") },
+			"font_size",
+			"chat_font_size",
+			"gui_scaling",
+			"hud_scaling",
+			"show_nametag_backgrounds",
+			{ heading = fgettext_ne("Chat") },
+			"console_height",
+			"console_alpha",
+			"console_color",
+			{ heading = fgettext_ne("Controls") },
+			"autojump",
+			"safe_dig_and_place",
+			{ heading = fgettext_ne("Movement") },
+			"arm_inertia",
+			"view_bobbing_amount",
+			"fall_bobbing_amount",
+		},
+	})
+
+	load_settingtypes()
+
+	table.insert(page_by_id.controls_keyboard_and_mouse.content, 1, change_keys)
+	do
+		local content = page_by_id.graphics_and_audio_graphics.content
+		table.insert(content, 1, shader_warning_component)
+
+		content = page_by_id.graphics_and_audio_effects.content
+		table.insert(content, 1, shader_warning_component)
+
+		local idx = table.indexof(content, "enable_dynamic_shadows")
+		table.insert(content, idx, shadows_component)
+
+		idx = table.indexof(content, "enable_auto_exposure") + 1
+		local note = component_funcs.note(fgettext_ne("(The game will need to enable automatic exposure as well)"))
+		note.requires = get_setting_info("enable_auto_exposure").requires
+		table.insert(content, idx, note)
+
+		idx = table.indexof(content, "enable_bloom") + 1
+		note = component_funcs.note(fgettext_ne("(The game will need to enable bloom as well)"))
+		note.requires = get_setting_info("enable_bloom").requires
+		table.insert(content, idx, note)
+
+		idx = table.indexof(content, "enable_volumetric_lighting") + 1
+		note = component_funcs.note(fgettext_ne("(The game will need to enable volumetric lighting as well)"))
+		note.requires = get_setting_info("enable_volumetric_lighting").requires
+		table.insert(content, idx, note)
 	end
 
-	return nil
+	-- These must not be translated, as they need to show in the local
+	-- language no matter the user's current language.
+	-- This list must be kept in sync with src/unsupported_language_list.txt.
+	get_setting_info("language").option_labels = {
+		[""] = fgettext_ne("(Use system language)"),
+		--ar = " [ar]", blacklisted
+		be = "Беларуская [be]",
+		bg = "Български [bg]",
+		ca = "Català [ca]",
+		cs = "Česky [cs]",
+		cy = "Cymraeg [cy]",
+		da = "Dansk [da]",
+		de = "Deutsch [de]",
+		--dv = " [dv]", blacklisted
+		el = "Ελληνικά [el]",
+		en = "English [en]",
+		eo = "Esperanto [eo]",
+		es = "Español [es]",
+		et = "Eesti [et]",
+		eu = "Euskara [eu]",
+		fi = "Suomi [fi]",
+		fil = "Wikang Filipino [fil]",
+		fr = "Français [fr]",
+		gd = "Gàidhlig [gd]",
+		gl = "Galego [gl]",
+		--he = " [he]", blacklisted
+		--hi = " [hi]", blacklisted
+		hu = "Magyar [hu]",
+		id = "Bahasa Indonesia [id]",
+		it = "Italiano [it]",
+		ja = "日本語 [ja]",
+		jbo = "Lojban [jbo]",
+		kk = "Қазақша [kk]",
+		--kn = " [kn]", blacklisted
+		ko = "한국어 [ko]",
+		ky = "Kırgızca / Кыргызча [ky]",
+		lt = "Lietuvių [lt]",
+		lv = "Latviešu [lv]",
+		mn = "Монгол [mn]",
+		mr = "मराठी [mr]",
+		ms = "Bahasa Melayu [ms]",
+		--ms_Arab = " [ms_Arab]", blacklisted
+		nb = "Norsk Bokmål [nb]",
+		nl = "Nederlands [nl]",
+		nn = "Norsk Nynorsk [nn]",
+		oc = "Occitan [oc]",
+		pl = "Polski [pl]",
+		pt = "Português [pt]",
+		pt_BR = "Português do Brasil [pt_BR]",
+		ro = "Română [ro]",
+		ru = "Русский [ru]",
+		sk = "Slovenčina [sk]",
+		sl = "Slovenščina [sl]",
+		sr_Cyrl = "Српски [sr_Cyrl]",
+		sr_Latn = "Srpski (Latinica) [sr_Latn]",
+		sv = "Svenska [sv]",
+		sw = "Kiswahili [sw]",
+		--th = " [th]", blacklisted
+		tr = "Türkçe [tr]",
+		tt = "Tatarça [tt]",
+		uk = "Українська [uk]",
+		vi = "Tiếng Việt [vi]",
+		zh_CN = "中文 (简体) [zh_CN]",
+		zh_TW = "正體中文 (繁體) [zh_TW]",
+	}
+
+	get_setting_info("touch_controls").option_labels = {
+		["auto"] = fgettext_ne("Auto"),
+		["true"] = fgettext_ne("Enabled"),
+		["false"] = fgettext_ne("Disabled"),
+	}
 end
-
-
--- These must not be translated, as they need to show in the local
--- language no matter the user's current language.
--- This list must be kept in sync with src/unsupported_language_list.txt.
-get_setting_info("language").option_labels = {
-	[""] = fgettext_ne("(Use system language)"),
-	--ar = " [ar]", blacklisted
-	be = "Беларуская [be]",
-	bg = "Български [bg]",
-	ca = "Català [ca]",
-	cs = "Česky [cs]",
-	cy = "Cymraeg [cy]",
-	da = "Dansk [da]",
-	de = "Deutsch [de]",
-	--dv = " [dv]", blacklisted
-	el = "Ελληνικά [el]",
-	en = "English [en]",
-	eo = "Esperanto [eo]",
-	es = "Español [es]",
-	et = "Eesti [et]",
-	eu = "Euskara [eu]",
-	fi = "Suomi [fi]",
-	fil = "Wikang Filipino [fil]",
-	fr = "Français [fr]",
-	gd = "Gàidhlig [gd]",
-	gl = "Galego [gl]",
-	--he = " [he]", blacklisted
-	--hi = " [hi]", blacklisted
-	hu = "Magyar [hu]",
-	id = "Bahasa Indonesia [id]",
-	it = "Italiano [it]",
-	ja = "日本語 [ja]",
-	jbo = "Lojban [jbo]",
-	kk = "Қазақша [kk]",
-	--kn = " [kn]", blacklisted
-	ko = "한국어 [ko]",
-	ky = "Kırgızca / Кыргызча [ky]",
-	lt = "Lietuvių [lt]",
-	lv = "Latviešu [lv]",
-	mn = "Монгол [mn]",
-	mr = "मराठी [mr]",
-	ms = "Bahasa Melayu [ms]",
-	--ms_Arab = " [ms_Arab]", blacklisted
-	nb = "Norsk Bokmål [nb]",
-	nl = "Nederlands [nl]",
-	nn = "Norsk Nynorsk [nn]",
-	oc = "Occitan [oc]",
-	pl = "Polski [pl]",
-	pt = "Português [pt]",
-	pt_BR = "Português do Brasil [pt_BR]",
-	ro = "Română [ro]",
-	ru = "Русский [ru]",
-	sk = "Slovenčina [sk]",
-	sl = "Slovenščina [sl]",
-	sr_Cyrl = "Српски [sr_Cyrl]",
-	sr_Latn = "Srpski (Latinica) [sr_Latn]",
-	sv = "Svenska [sv]",
-	sw = "Kiswahili [sw]",
-	--th = " [th]", blacklisted
-	tr = "Türkçe [tr]",
-	tt = "Tatarça [tt]",
-	uk = "Українська [uk]",
-	vi = "Tiếng Việt [vi]",
-	zh_CN = "中文 (简体) [zh_CN]",
-	zh_TW = "正體中文 (繁體) [zh_TW]",
-}
 
 
 -- See if setting matches keywords
@@ -312,12 +348,17 @@ local function check_requirements(name, requires)
 	end
 
 	local video_driver = core.get_active_driver()
-	local shaders_support = video_driver == "opengl" or video_driver == "ogles2"
+	local shaders_support = video_driver == "opengl" or video_driver == "opengl3" or video_driver == "ogles2"
+	local touch_support = core.irrlicht_device_supports_touch()
+	local touch_controls = core.settings:get("touch_controls")
 	local special = {
 		android = PLATFORM == "Android",
 		desktop = PLATFORM ~= "Android",
-		touchscreen_gui = TOUCHSCREEN_GUI,
-		keyboard_mouse = not TOUCHSCREEN_GUI,
+		touch_support = touch_support,
+		-- When touch_controls is "auto", we don't know which input method will
+		-- be used, so we show settings for both.
+		touchscreen = touch_support and (touch_controls == "auto" or core.is_yes(touch_controls)),
+		keyboard_mouse = not touch_support or (touch_controls == "auto" or not core.is_yes(touch_controls)),
 		shaders_support = shaders_support,
 		shaders = core.settings:get_bool("enable_shaders") and shaders_support,
 		opengl = video_driver == "opengl",
@@ -427,19 +468,6 @@ local function build_page_components(page)
 end
 
 
---- Creates a scrollbaroptions for a scroll_container
---
--- @param visible_l the length of the scroll_container and scrollbar
--- @param total_l length of the scrollable area
--- @param scroll_factor as passed to scroll_container
-local function make_scrollbaroptions_for_scroll_container(visible_l, total_l, scroll_factor)
-	assert(total_l >= visible_l)
-	local max = total_l - visible_l
-	local thumb_size = (visible_l / total_l) * max
-	return ("scrollbaroptions[min=0;max=%f;thumbsize=%f]"):format(max / scroll_factor, thumb_size / scroll_factor)
-end
-
-
 local formspec_show_hack = false
 
 
@@ -449,13 +477,14 @@ local function get_formspec(dialogdata)
 
 	local extra_h = 1 -- not included in tabsize.height
 	local tabsize = {
-		width = TOUCHSCREEN_GUI and 16.5 or 15.5,
-		height = TOUCHSCREEN_GUI and (10 - extra_h) or 12,
+		width = core.settings:get_bool("touch_gui") and 16.5 or 15.5,
+		height = core.settings:get_bool("touch_gui") and (10 - extra_h) or 12,
 	}
 
-	local scrollbar_w = TOUCHSCREEN_GUI and 0.6 or 0.4
+	local scrollbar_w = core.settings:get_bool("touch_gui") and 0.6 or 0.4
 
-	local left_pane_width = TOUCHSCREEN_GUI and 4.5 or 4.25
+	local left_pane_width = core.settings:get_bool("touch_gui") and 4.5 or 4.25
+	local left_pane_padding = 0.25
 	local search_width = left_pane_width + scrollbar_w - (0.75 * 2)
 
 	local back_w = 3
@@ -468,7 +497,7 @@ local function get_formspec(dialogdata)
 	local fs = {
 		"formspec_version[6]",
 		"size[", tostring(tabsize.width), ",", tostring(tabsize.height + extra_h), "]",
-		TOUCHSCREEN_GUI and "padding[0.01,0.01]" or "",
+		core.settings:get_bool("touch_gui") and "padding[0.01,0.01]" or "",
 		"bgcolor[#0000]",
 
 		-- HACK: this is needed to allow resubmitting the same formspec
@@ -500,8 +529,8 @@ local function get_formspec(dialogdata)
 			"tooltip[search;", fgettext("Search"), "]",
 			"tooltip[search_clear;", fgettext("Clear"), "]",
 		"container_end[]",
-		"scroll_container[0.25,1.25;", tostring(left_pane_width), ",",
-				tostring(tabsize.height - 1.5), ";leftscroll;vertical;0.1]",
+		("scroll_container[0.25,1.25;%f,%f;leftscroll;vertical;0.1;0]"):format(
+			left_pane_width, tabsize.height - 1.5),
 		"style_type[button;border=false;bgcolor=#3333]",
 		"style_type[button:hover;border=false;bgcolor=#6663]",
 	}
@@ -516,9 +545,9 @@ local function get_formspec(dialogdata)
 			y = y + 0.82
 		end
 		fs[#fs + 1] = ("box[0,%f;%f,0.8;%s]"):format(
-			y, left_pane_width, other_page.id == page_id and "#467832FF" or "#3339")
+			y, left_pane_width-left_pane_padding, other_page.id == page_id and "#467832FF" or "#3339")
 		fs[#fs + 1] = ("button[0,%f;%f,0.8;page_%s;%s]")
-			:format(y, left_pane_width, other_page.id, fgettext(other_page.title))
+			:format(y, left_pane_width-left_pane_padding, other_page.id, fgettext(other_page.title))
 		y = y + 0.82
 	end
 
@@ -531,7 +560,6 @@ local function get_formspec(dialogdata)
 	fs[#fs + 1] = "scroll_container_end[]"
 
 	if y >= tabsize.height - 1.25 then
-		fs[#fs + 1] = make_scrollbaroptions_for_scroll_container(tabsize.height - 1.5, y, 0.1)
 		fs[#fs + 1] = ("scrollbar[%f,1.25;%f,%f;vertical;leftscroll;%f]"):format(
 				left_pane_width + 0.25, scrollbar_w, tabsize.height - 1.5, dialogdata.leftscroll or 0)
 	end
@@ -543,7 +571,7 @@ local function get_formspec(dialogdata)
 	end
 
 	local right_pane_width = tabsize.width - left_pane_width - 0.375 - 2*scrollbar_w - 0.25
-	fs[#fs + 1] = ("scroll_container[%f,0;%f,%f;rightscroll;vertical;0.1]"):format(
+	fs[#fs + 1] = ("scroll_container[%f,0;%f,%f;rightscroll;vertical;0.1;0.25]"):format(
 			tabsize.width - right_pane_width - scrollbar_w, right_pane_width, tabsize.height)
 
 	y = 0.25
@@ -599,7 +627,6 @@ local function get_formspec(dialogdata)
 	fs[#fs + 1] = "scroll_container_end[]"
 
 	if y >= tabsize.height then
-		fs[#fs + 1] = make_scrollbaroptions_for_scroll_container(tabsize.height, y + 0.375, 0.1)
 		fs[#fs + 1] = ("scrollbar[%f,0;%f,%f;vertical;rightscroll;%f]"):format(
 				tabsize.width - scrollbar_w, scrollbar_w, tabsize.height, dialogdata.rightscroll or 0)
 	end
@@ -607,6 +634,28 @@ local function get_formspec(dialogdata)
 	return table.concat(fs, "")
 end
 
+
+-- On Android, closing the app via the "Recents screen" won't result in a clean
+-- exit, discarding any setting changes made by the user.
+-- To avoid that, we write the settings file in more cases on Android.
+function write_settings_early()
+	if PLATFORM == "Android" then
+		core.settings:write()
+	end
+end
+
+local function regenerate_page_list(dialogdata)
+	local suggested_page_id = update_filtered_pages(dialogdata.query)
+
+	dialogdata.components = nil
+
+	if not filtered_page_by_id[dialogdata.page_id] then
+		dialogdata.leftscroll = 0
+		dialogdata.rightscroll = 0
+
+		dialogdata.page_id = suggested_page_id
+	end
+end
 
 local function buttonhandler(this, fields)
 	local dialogdata = this.data
@@ -622,22 +671,16 @@ local function buttonhandler(this, fields)
 	if fields.show_technical_names ~= nil then
 		local value = core.is_yes(fields.show_technical_names)
 		core.settings:set_bool("show_technical_names", value)
+		write_settings_early()
+
 		return true
 	end
 
 	if fields.show_advanced ~= nil then
 		local value = core.is_yes(fields.show_advanced)
 		core.settings:set_bool("show_advanced", value)
-
-		local suggested_page_id = update_filtered_pages(dialogdata.query)
-
-		if not filtered_page_by_id[dialogdata.page_id] then
-			dialogdata.components = nil
-			dialogdata.leftscroll = 0
-			dialogdata.rightscroll = 0
-
-			dialogdata.page_id = suggested_page_id
-		end
+		write_settings_early()
+		regenerate_page_list(dialogdata)
 
 		return true
 	end
@@ -670,17 +713,26 @@ local function buttonhandler(this, fields)
 		end
 	end
 
-	for i, comp in ipairs(dialogdata.components) do
-		if comp.on_submit and comp:on_submit(fields, this) then
+	local function after_setting_change(comp)
+		write_settings_early()
+		if comp.setting and comp.setting.name == "touch_controls" then
+			-- Changing the "touch_controls" setting may result in a different
+			-- page list.
+			regenerate_page_list(dialogdata)
+		else
 			-- Clear components so they regenerate
 			dialogdata.components = nil
+		end
+	end
+
+	for i, comp in ipairs(dialogdata.components) do
+		if comp.on_submit and comp:on_submit(fields, this) then
+			after_setting_change(comp)
 			return true
 		end
 		if comp.setting and fields["reset_" .. i] then
 			core.settings:remove(comp.setting.name)
-
-			-- Clear components so they regenerate
-			dialogdata.components = nil
+			after_setting_change(comp)
 			return true
 		end
 	end
@@ -695,12 +747,18 @@ local function eventhandler(event)
 		mm_game_theme.set_engine(true)
 		return true
 	end
+	if event == "FullscreenChange" then
+		-- Refresh the formspec to keep the fullscreen checkbox up to date.
+		ui.update()
+		return true
+	end
 
 	return false
 end
 
 
 function create_settings_dlg()
+	load()
 	local dlg = dialog_create("dlg_settings", get_formspec, buttonhandler, eventhandler)
 
 	dlg.data.page_id = update_filtered_pages("")

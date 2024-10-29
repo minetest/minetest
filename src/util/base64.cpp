@@ -45,15 +45,15 @@ static inline bool is_base64(unsigned char c)
 			|| c == '+' || c == '/';
 }
 
-bool base64_is_valid(std::string const& s)
+bool base64_is_valid(std::string_view s)
 {
 	size_t i = 0;
 	for (; i < s.size(); ++i)
 		if (!is_base64(s[i]))
 			break;
 	unsigned char padding = 3 - ((i + 3) % 4);
-	if ((padding == 1 && base64_chars_padding_1.find(s[i - 1]) == std::string::npos)
-			|| (padding == 2 && base64_chars_padding_2.find(s[i - 1]) == std::string::npos)
+	if ((padding == 1 && base64_chars_padding_1.find(s[i - 1]) == s.npos)
+			|| (padding == 2 && base64_chars_padding_2.find(s[i - 1]) == s.npos)
 			|| padding == 3)
 		return false;
 	int actual_padding = s.size() - i;
@@ -69,8 +69,14 @@ bool base64_is_valid(std::string const& s)
 	return padding == actual_padding;
 }
 
-std::string base64_encode(unsigned char const* bytes_to_encode, unsigned int in_len) {
+std::string base64_encode(std::string_view s)
+{
+	const unsigned char *bytes_to_encode = reinterpret_cast<const unsigned char*>(s.data());
+	size_t in_len = s.size();
+
 	std::string ret;
+	ret.reserve(in_len + in_len / 3);
+
 	int i = 0;
 	int j = 0;
 	unsigned char char_array_3[3];
@@ -110,16 +116,17 @@ std::string base64_encode(unsigned char const* bytes_to_encode, unsigned int in_
 	}
 
 	return ret;
-
 }
 
-std::string base64_decode(std::string const& encoded_string) {
+std::string base64_decode(std::string_view encoded_string)
+{
 	int in_len = encoded_string.size();
 	int i = 0;
 	int j = 0;
 	int in_ = 0;
 	unsigned char char_array_4[4], char_array_3[3];
 	std::string ret;
+	ret.reserve(in_len / 4 * 3);
 
 	while (in_len-- && ( encoded_string[in_] != '=') && is_base64(encoded_string[in_])) {
 		char_array_4[i++] = encoded_string[in_]; in_++;

@@ -39,6 +39,9 @@ private:
 	// get_worldpath()
 	static int l_get_worldpath(lua_State *L);
 
+	// get_mod_data_path()
+	static int l_get_mod_data_path(lua_State *L);
+
 	// is_singleplayer()
 	static int l_is_singleplayer(lua_State *L);
 
@@ -103,7 +106,7 @@ private:
 	// unban_player_or_ip()
 	static int l_unban_player_or_ip(lua_State *L);
 
-	// disconnect_player(name, [reason]) -> success
+	// disconnect_player(name[, reason[, reconnect]]) -> success
 	static int l_disconnect_player(lua_State *L);
 
 	// remove_player(name)
@@ -117,6 +120,9 @@ private:
 
 	// register_async_dofile(path)
 	static int l_register_async_dofile(lua_State *L);
+
+	// register_mapgen_script(path)
+	static int l_register_mapgen_script(lua_State *L);
 
 	// serialize_roundtrip(obj)
 	static int l_serialize_roundtrip(lua_State *L);

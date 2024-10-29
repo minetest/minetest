@@ -61,7 +61,7 @@ namespace gui
 
 		static irr::gui::IGUIStaticText *add(
 			irr::gui::IGUIEnvironment *guienv,
-			const wchar_t *text,
+			std::wstring_view text,
 			const core::rect< s32 > &rectangle,
 			bool border = false,
 			bool wordWrap = true,
@@ -204,7 +204,7 @@ inline void setStaticText(irr::gui::IGUIStaticText *static_text, const EnrichedS
 	}
 }
 
-inline void setStaticText(irr::gui::IGUIStaticText *static_text, const wchar_t *text)
+inline void setStaticText(irr::gui::IGUIStaticText *static_text, std::wstring_view text)
 {
 	setStaticText(static_text, EnrichedString(text, static_text->getOverrideColor()));
 }

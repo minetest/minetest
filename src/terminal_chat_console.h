@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/thread.h"
 #include "util/container.h"
 #include "log.h"
+#include "log_internal.h"
 #include <set>
 #include <sstream>
 
@@ -32,14 +33,14 @@ struct ChatInterface;
 class TermLogOutput : public ILogOutput {
 public:
 
-	void logRaw(LogLevel lev, const std::string &line)
+	void logRaw(LogLevel lev, std::string_view line)
 	{
-		queue.push_back(std::make_pair(lev, line));
+		queue.push_back(std::make_pair(lev, std::string(line)));
 	}
 
 	virtual void log(LogLevel lev, const std::string &combined,
 		const std::string &time, const std::string &thread_name,
-		const std::string &payload_text)
+		std::string_view payload_text)
 	{
 		std::ostringstream os(std::ios_base::binary);
 		os << time << ": [" << thread_name << "] " << payload_text;

@@ -70,6 +70,8 @@ local flag_checkboxes = {
 		{ "trees", fgettext("Trees and jungle grass") },
 		{ "flat", fgettext("Flat terrain") },
 		{ "mudflow", fgettext("Mud flow"), fgettext("Terrain surface erosion") },
+		{ "temples", fgettext("Desert temples"),
+		fgettext("Different dungeon variant generated in desert biomes (only if dungeons enabled)") },
 		-- Biome settings are in mgv6_biomes below
 	},
 }
@@ -279,7 +281,7 @@ local function create_world_formspec(dialogdata)
 	end
 
 	local retval =
-		"size[12.25,7,true]" ..
+		"size[12.25,7.4,true]" ..
 
 		-- Left side
 		"container[0,0]"..
@@ -321,8 +323,10 @@ local function create_world_formspec(dialogdata)
 		"container_end[]"..
 
 		-- Menu buttons
-		"button[3.25,6.5;3,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
-		"button[6.25,6.5;3,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
+		"container[0,6.9]"..
+		"button[3.25,0;3,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
+		"button[6.25,0;3,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]" ..
+		"container_end[]"
 
 	return retval
 
@@ -331,7 +335,7 @@ end
 local function create_world_buttonhandler(this, fields)
 
 	if fields["world_create_open_cdb"] then
-		local dlg = create_store_dlg("game")
+		local dlg = create_contentdb_dlg("game")
 		dlg:set_parent(this.parent)
 		this:delete()
 		this.parent:hide()

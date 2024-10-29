@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "filecache.h"
 #include "util/basic_macros.h"
-#include <ostream>
 #include <map>
 #include <set>
 #include <vector>
@@ -35,9 +34,14 @@ struct HTTPFetchResult;
 #define MTHASHSET_FILE_NAME "index.mth"
 
 // Store file into media cache (unless it exists already)
-// Validating the hash is responsibility of the caller
+// Caller should check the hash.
+// return true if something was updated
 bool clientMediaUpdateCache(const std::string &raw_hash,
 	const std::string &filedata);
+
+// Copy file on disk(!) into media cache (unless it exists already)
+bool clientMediaUpdateCacheCopy(const std::string &raw_hash,
+	const std::string &path);
 
 // more of a base class than an interface but this name was most convenient...
 class IClientMediaDownloader
@@ -80,8 +84,6 @@ protected:
 	// Forwards the call to the appropriate Client method
 	virtual bool loadMedia(Client *client, const std::string &data,
 		const std::string &name) = 0;
-
-	void createCacheDirs();
 
 	bool tryLoadFromCache(const std::string &name, const std::string &sha1,
 			Client *client);

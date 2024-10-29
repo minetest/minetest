@@ -19,249 +19,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "util/string.h"
+#include "irrTypes.h"
+using namespace irr;
 
-/*
-	changes by PROTOCOL_VERSION:
-
-	PROTOCOL_VERSION 3:
-		Base for writing changes here
-	PROTOCOL_VERSION 4:
-		Add TOCLIENT_MEDIA
-		Add TOCLIENT_TOOLDEF
-		Add TOCLIENT_NODEDEF
-		Add TOCLIENT_CRAFTITEMDEF
-		Add TOSERVER_INTERACT
-		Obsolete TOSERVER_CLICK_ACTIVEOBJECT
-		Obsolete TOSERVER_GROUND_ACTION
-	PROTOCOL_VERSION 5:
-		Make players to be handled mostly as ActiveObjects
-	PROTOCOL_VERSION 6:
-		Only non-cached textures are sent
-	PROTOCOL_VERSION 7:
-		Add TOCLIENT_ITEMDEF
-		Obsolete TOCLIENT_TOOLDEF
-		Obsolete TOCLIENT_CRAFTITEMDEF
-		Compress the contents of TOCLIENT_ITEMDEF and TOCLIENT_NODEDEF
-	PROTOCOL_VERSION 8:
-		Digging based on item groups
-		Many things
-	PROTOCOL_VERSION 9:
-		ContentFeatures and NodeDefManager use a different serialization
-		    format; better for future version cross-compatibility
-		Many things
-		Obsolete TOCLIENT_PLAYERITEM
-	PROTOCOL_VERSION 10:
-		TOCLIENT_PRIVILEGES
-		Version raised to force 'fly' and 'fast' privileges into effect.
-		Node metadata change (came in later; somewhat incompatible)
-	PROTOCOL_VERSION 11:
-		TileDef in ContentFeatures
-		Nodebox drawtype
-		(some dev snapshot)
-		TOCLIENT_INVENTORY_FORMSPEC
-		(0.4.0, 0.4.1)
-	PROTOCOL_VERSION 12:
-		TOSERVER_INVENTORY_FIELDS
-		16-bit node ids
-		TOCLIENT_DETACHED_INVENTORY
-	PROTOCOL_VERSION 13:
-		InventoryList field "Width" (deserialization fails with old versions)
-	PROTOCOL_VERSION 14:
-		Added transfer of player pressed keys to the server
-		Added new messages for mesh and bone animation, as well as attachments
-		AO_CMD_SET_ANIMATION
-		AO_CMD_SET_BONE_POSITION
-		GENERIC_CMD_SET_ATTACHMENT
-	PROTOCOL_VERSION 15:
-		Serialization format changes
-	PROTOCOL_VERSION 16:
-		TOCLIENT_SHOW_FORMSPEC
-	PROTOCOL_VERSION 17:
-		Serialization format change: include backface_culling flag in TileDef
-		Added rightclickable field in nodedef
-		TOCLIENT_SPAWN_PARTICLE
-		TOCLIENT_ADD_PARTICLESPAWNER
-		TOCLIENT_DELETE_PARTICLESPAWNER
-	PROTOCOL_VERSION 18:
-		damageGroups added to ToolCapabilities
-		sound_place added to ItemDefinition
-	PROTOCOL_VERSION 19:
-		AO_CMD_SET_PHYSICS_OVERRIDE
-	PROTOCOL_VERSION 20:
-		TOCLIENT_HUDADD
-		TOCLIENT_HUDRM
-		TOCLIENT_HUDCHANGE
-		TOCLIENT_HUD_SET_FLAGS
-	PROTOCOL_VERSION 21:
-		TOCLIENT_BREATH
-		TOSERVER_BREATH
-		range added to ItemDefinition
-		drowning, leveled and liquid_range added to ContentFeatures
-		stepheight and collideWithObjects added to object properties
-		version, heat and humidity transfer in MapBock
-		automatic_face_movement_dir and automatic_face_movement_dir_offset
-			added to object properties
-	PROTOCOL_VERSION 22:
-		add swap_node
-	PROTOCOL_VERSION 23:
-		Obsolete TOSERVER_RECEIVED_MEDIA
-		Server: Stop using TOSERVER_CLIENT_READY
-	PROTOCOL_VERSION 24:
-		ContentFeatures version 7
-		ContentFeatures: change number of special tiles to 6 (CF_SPECIAL_COUNT)
-	PROTOCOL_VERSION 25:
-		Rename TOCLIENT_ACCESS_DENIED to TOCLIENT_ACCESS_DENIED_LEGAGY
-		Rename TOCLIENT_DELETE_PARTICLESPAWNER to
-			TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY
-		Rename TOSERVER_PASSWORD to TOSERVER_PASSWORD_LEGACY
-		Rename TOSERVER_INIT to TOSERVER_INIT_LEGACY
-		Rename TOCLIENT_INIT to TOCLIENT_INIT_LEGACY
-		Add TOCLIENT_ACCESS_DENIED new opcode (0x0A), using error codes
-			for standard error, keeping customisation possible. This
-			permit translation
-		Add TOCLIENT_DELETE_PARTICLESPAWNER (0x53), fixing the u16 read and
-			reading u32
-		Add new opcode TOSERVER_INIT for client presentation to server
-		Add new opcodes TOSERVER_FIRST_SRP, TOSERVER_SRP_BYTES_A,
-			TOSERVER_SRP_BYTES_M, TOCLIENT_SRP_BYTES_S_B
-			for the three supported auth mechanisms around srp
-		Add new opcodes TOCLIENT_ACCEPT_SUDO_MODE and TOCLIENT_DENY_SUDO_MODE
-			for sudo mode handling (auth mech generic way of changing password).
-		Add TOCLIENT_HELLO for presenting server to client after client
-			presentation
-		Add TOCLIENT_AUTH_ACCEPT to accept connection from client
-		Rename GENERIC_CMD_SET_ATTACHMENT to AO_CMD_ATTACH_TO
-	PROTOCOL_VERSION 26:
-		Add TileDef tileable_horizontal, tileable_vertical flags
-	PROTOCOL_VERSION 27:
-		backface_culling: backwards compatibility for playing with
-		newer client on pre-27 servers.
-		Add nodedef v3 - connected nodeboxes
-	PROTOCOL_VERSION 28:
-		CPT2_MESHOPTIONS
-	PROTOCOL_VERSION 29:
-		Server doesn't accept TOSERVER_BREATH anymore
-		serialization of TileAnimation params changed
-		TAT_SHEET_2D
-		Removed client-sided chat perdiction
-	PROTOCOL VERSION 30:
-		New ContentFeatures serialization version
-		Add node and tile color and palette
-		Fix plantlike visual_scale being applied squared and add compatibility
-			with pre-30 clients by sending sqrt(visual_scale)
-	PROTOCOL VERSION 31:
-		Add tile overlay
-		Stop sending TOSERVER_CLIENT_READY
-	PROTOCOL VERSION 32:
-		Add fading sounds
-	PROTOCOL VERSION 33:
-		Add TOCLIENT_UPDATE_PLAYER_LIST and send the player list to the client,
-			instead of guessing based on the active object list.
-	PROTOCOL VERSION 34:
-		Add sound pitch
-	PROTOCOL VERSION 35:
- 		Rename TOCLIENT_CHAT_MESSAGE to TOCLIENT_CHAT_MESSAGE_OLD (0x30)
- 		Add TOCLIENT_CHAT_MESSAGE (0x2F)
- 			This chat message is a signalisation message containing various
-			informations:
- 			* timestamp
- 			* sender
- 			* type (RAW, NORMAL, ANNOUNCE, SYSTEM)
- 			* content
-		Add TOCLIENT_CSM_RESTRICTION_FLAGS to define which CSM features should be
-			limited
-		Add settable player collisionbox. Breaks compatibility with older
-			clients as a 1-node vertical offset has been removed from player's
-			position
-		Add settable player stepheight using existing object property.
-			Breaks compatibility with older clients.
-	PROTOCOL VERSION 36:
-		Backwards compatibility drop
-		Add 'can_zoom' to player object properties
-		Add glow to object properties
-		Change TileDef serialization format.
-		Add world-aligned tiles.
-		Mod channels
-		Raise ObjectProperties version to 3 for removing 'can_zoom' and adding
-			'zoom_fov'.
-		Nodebox version 5
-		Add disconnected nodeboxes
-		Add TOCLIENT_FORMSPEC_PREPEND
-	PROTOCOL VERSION 37:
-		Redo detached inventory sending
-		Add TOCLIENT_NODEMETA_CHANGED
-		New network float format
-		ContentFeatures version 13
-		Add full Euler rotations instead of just yaw
-		Add TOCLIENT_PLAYER_SPEED
-	PROTOCOL VERSION 38:
-		Incremental inventory sending mode
-		Unknown inventory serialization fields no longer throw an error
-		Mod-specific formspec version
-		Player FOV override API
-		"ephemeral" added to TOCLIENT_PLAY_SOUND
-	PROTOCOL VERSION 39:
-		Updated set_sky packet
-		Adds new sun, moon and stars packets
-		Minimap modes
-	PROTOCOL VERSION 40:
-		TOCLIENT_MEDIA_PUSH changed, TOSERVER_HAVE_MEDIA added
-	PROTOCOL VERSION 41:
-		Added new particlespawner parameters
-		[scheduled bump for 5.6.0]
-	PROTOCOL VERSION 42:
-		TOSERVER_UPDATE_CLIENT_INFO added
-		new fields for TOCLIENT_SET_LIGHTING and TOCLIENT_SET_SKY
-		Send forgotten TweenedParameter properties
-		[scheduled bump for 5.7.0]
-	PROTOCOL VERSION 43:
-		"start_time" added to TOCLIENT_PLAY_SOUND
-		place_param2 type change u8 -> optional<u8>
-		[scheduled bump for 5.8.0]
-	PROTOCOL VERSION 44:
-		AO_CMD_SET_BONE_POSITION extended
-		Add TOCLIENT_MOVE_PLAYER_REL
-		[scheduled bump for 5.9.0]
-*/
-
-#define LATEST_PROTOCOL_VERSION 44
-#define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
+extern const u16 LATEST_PROTOCOL_VERSION;
 
 // Server's supported network protocol range
-#define SERVER_PROTOCOL_VERSION_MIN 37
-#define SERVER_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
+constexpr u16 SERVER_PROTOCOL_VERSION_MIN = 37;
 
 // Client's supported network protocol range
-// The minimal version depends on whether
-// send_pre_v25_init is enabled or not
-#define CLIENT_PROTOCOL_VERSION_MIN 37
-#define CLIENT_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
+constexpr u16 CLIENT_PROTOCOL_VERSION_MIN = 37;
 
-// Constant that differentiates the protocol from random data and other protocols
-#define PROTOCOL_ID 0x4f457403
-
-#define PASSWORD_SIZE 28    // Maximum password length. Allows for
-                            // base64-encoded SHA-1 (27+\0).
-
-// See also formspec [Version History] in doc/lua_api.md
-#define FORMSPEC_API_VERSION 7
+extern const u16 FORMSPEC_API_VERSION;
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
 typedef u16 session_t;
 
-enum ToClientCommand
+enum ToClientCommand : u16
 {
 	TOCLIENT_HELLO = 0x02,
 	/*
 		Sent after TOSERVER_INIT.
 
 		u8 deployed serialization version
-		u16 deployed network compression mode
+		u16 unused (network compression, never implemeneted)
 		u16 deployed protocol version
 		u32 supported auth methods
-		std::string username that should be used for legacy hash (for proper casing)
+		std::string unused (used to be username)
 	*/
 	TOCLIENT_AUTH_ACCEPT = 0x03,
 	/*
@@ -288,9 +73,7 @@ enum ToClientCommand
 		u8 (bool) reconnect
 	*/
 
-	TOCLIENT_INIT_LEGACY = 0x10, // Obsolete
-
-	TOCLIENT_BLOCKDATA = 0x20, //TODO: Multiple blocks
+	TOCLIENT_BLOCKDATA = 0x20,
 	TOCLIENT_ADDNODE = 0x21,
 	/*
 		v3s16 position
@@ -299,23 +82,15 @@ enum ToClientCommand
 	*/
 	TOCLIENT_REMOVENODE = 0x22,
 
-	TOCLIENT_PLAYERPOS = 0x23, // Obsolete
-	TOCLIENT_PLAYERINFO = 0x24, // Obsolete
-	TOCLIENT_OPT_BLOCK_NOT_FOUND = 0x25, // Obsolete
-	TOCLIENT_SECTORMETA = 0x26, // Obsolete
-
 	TOCLIENT_INVENTORY = 0x27,
 	/*
 		[0] u16 command
 		[2] serialized inventory
 	*/
 
-	TOCLIENT_OBJECTDATA = 0x28, // Obsolete
-
 	TOCLIENT_TIME_OF_DAY = 0x29,
 	/*
 		u16 time (0-23999)
-		Added in a later version:
 		f1000 time_speed
 	*/
 
@@ -337,8 +112,6 @@ enum ToClientCommand
 		bool should_be_cached
 	*/
 
-	// (oops, there is some gap here)
-
 	TOCLIENT_CHAT_MESSAGE = 0x2F,
 	/*
 		u8 version
@@ -348,8 +121,6 @@ enum ToClientCommand
 		u16 length
 		wstring message
 	*/
-
-	TOCLIENT_CHAT_MESSAGE_OLD = 0x30, // Obsolete
 
 	TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD = 0x31,
 	/*
@@ -403,10 +174,10 @@ enum ToClientCommand
 		f32 transition_time
 	*/
 
-	TOCLIENT_DEATHSCREEN = 0x37,
+	TOCLIENT_DEATHSCREEN_LEGACY = 0x37,
 	/*
-		u8 bool set camera point target
-		v3f1000 camera point target (to point the death cause or whatever)
+		u8 bool unused
+		v3f1000 unused
 	*/
 
 	TOCLIENT_MEDIA = 0x38,
@@ -424,26 +195,13 @@ enum ToClientCommand
 		string url
 	*/
 
-	TOCLIENT_TOOLDEF = 0x39,
-	/*
-		u32 length of the next item
-		serialized ToolDefManager
-	*/
-
 	TOCLIENT_NODEDEF = 0x3a,
 	/*
 		u32 length of the next item
 		serialized NodeDefManager
 	*/
 
-	TOCLIENT_CRAFTITEMDEF = 0x3b,
-	/*
-		u32 length of the next item
-		serialized CraftiItemDefManager
-	*/
-
 	TOCLIENT_ANNOUNCE_MEDIA = 0x3c,
-
 	/*
 		u32 number of files
 		for each texture {
@@ -530,22 +288,50 @@ enum ToClientCommand
 
 	TOCLIENT_SPAWN_PARTICLE = 0x46,
 	/*
-		-- struct range<T> { T min, T max, f32 bias };
+		using range<T> = RangedParameter<T> {
+			T min, max
+			f32 bias
+		}
+		using tween<T> = TweenedParameter<T> {
+			u8 style
+			u16 reps
+			f32 beginning
+			T start, end
+		}
+
 		v3f pos
 		v3f velocity
 		v3f acceleration
 		f32 expirationtime
 		f32 size
 		u8 bool collisiondetection
+
 		u32 len
 		u8[len] texture
+
 		u8 bool vertical
-		u8 collision_removal
+		u8 bool collision_removal
+
 		TileAnimation animation
+
 		u8 glow
-		u8 object_collision
+		u8 bool object_collision
+
+		u16 node_param0
+		u8 node_param2
+		u8 node_tile
+
 		v3f drag
-		range<v3f> bounce
+		range<v3f> jitter
+		range<f32> bounce
+
+		texture {
+			u8 flags (ParticleTextureFlags)
+			-- bit 0: animated
+			-- next bits: blend mode (BlendMode)
+			tween<f32> alpha
+			tween<v2f> scale
+		}
 	*/
 
 	TOCLIENT_ADD_PARTICLESPAWNER = 0x47,
@@ -564,7 +350,7 @@ enum ToClientCommand
 		u16 amount
 		f32 spawntime
 		if PROTOCOL_VERSION >= 42 {
-			tween<T> pos, vel, acc, exptime, size
+			tween<range<T>> pos, vel, acc, exptime, size
 		} else {
 			v3f minpos
 			v3f maxpos
@@ -578,14 +364,23 @@ enum ToClientCommand
 			f32 maxsize
 		}
 		u8 bool collisiondetection
+
 		u32 len
 		u8[len] texture
+
+		u32 spawner_id
 		u8 bool vertical
-		u8 collision_removal
-		u32 id
+		u8 bool collision_removal
+		u32 attached_id
+
 		TileAnimation animation
+
 		u8 glow
-		u8 object_collision
+		u8 bool object_collision
+
+		u16 node_param0
+		u8 node_param2
+		u8 node_tile
 
 		if PROTOCOL_VERSION < 42 {
 			f32 pos_start_bias
@@ -600,6 +395,19 @@ enum ToClientCommand
 			--     f32 pos_end_bias
 			range<v3f> vel_end
 			range<v3f> acc_end
+			range<f32> exptime_end
+			range<f32> size_end
+		}
+
+		texture {
+			u8 flags (ParticleTextureFlags)
+			-- bit 0: animated
+			-- next bits: blend mode (BlendMode)
+			tween<f32> alpha
+			tween<v2f> scale
+
+			if (flags.animated)
+				TileAnimation animation
 		}
 
 		tween<range<v3f>> drag
@@ -625,29 +433,29 @@ enum ToClientCommand
 			u8                spawner_flags
 			    bit 1: attractor_kill (particles dies on contact)
 			if attraction_mode > point {
-				tween<v3f> attractor_angle
-				u16        attractor_origin_attachment_object_id
+				tween<v3f> attractor_direction
+				u16        attractor_direction_attachment_object_id
 			}
 		}
 
 		tween<range<v3f>> radius
-		tween<range<v3f>> drag
 
-		u16 texpool_sz
-		texpool_sz.times {
-			u8 flags
+		u16 texpool_size
+		texpool_size.times {
+			u8 flags (ParticleTextureFlags)
 			-- bit 0: animated
-			-- other bits free & ignored as of proto v40
+			-- next bits: blend mode (BlendMode)
 			tween<f32> alpha
 			tween<v2f> scale
-			if flags.animated {
+
+			u32 len
+			u8[len] texture
+
+			if (flags.animated)
 				TileAnimation animation
-			}
 		}
 
 	*/
-
-	TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY = 0x48, // Obsolete
 
 	TOCLIENT_HUDADD = 0x49,
 	/*
@@ -882,27 +690,23 @@ enum ToClientCommand
 	TOCLIENT_NUM_MSG_TYPES = 0x64,
 };
 
-enum ToServerCommand
+enum ToServerCommand : u16
 {
 	TOSERVER_INIT = 0x02,
 	/*
 		Sent first after connected.
 
 		u8 serialization version (=SER_FMT_VER_HIGHEST_READ)
-		u16 supported network compression modes
+		u16 unused (supported network compression modes, never implemeneted)
 		u16 minimum supported network protocol version
 		u16 maximum supported network protocol version
 		std::string player name
 	*/
 
-	TOSERVER_INIT_LEGACY = 0x10, // Obsolete
-
 	TOSERVER_INIT2 = 0x11,
 	/*
-		Sent as an ACK for TOCLIENT_INIT.
+		Sent as an ACK for TOCLIENT_AUTH_ACCEPT.
 		After this, the server can send data.
-
-		[0] u16 TOSERVER_INIT2
 	*/
 
 	TOSERVER_MODCHANNEL_JOIN = 0x17,
@@ -925,10 +729,6 @@ enum ToServerCommand
 	 	std::string message
 	 */
 
-	TOSERVER_GETBLOCK = 0x20, // Obsolete
-	TOSERVER_ADDNODE = 0x21, // Obsolete
-	TOSERVER_REMOVENODE = 0x22, // Obsolete
-
 	TOSERVER_PLAYERPOS = 0x23,
 	/*
 		[0] u16 command
@@ -940,6 +740,8 @@ enum ToServerCommand
 		[2+12+12+4+4+4] u8 fov*80
 		[2+12+12+4+4+4+1] u8 ceil(wanted_range / MAP_BLOCKSIZE)
 		[2+12+12+4+4+4+1+1] u8 camera_inverted (bool)
+		[2+12+12+4+4+4+1+1+1] f32 movement_speed
+		[2+12+12+4+4+4+1+1+1+4] f32 movement_direction
 
 	*/
 
@@ -961,12 +763,6 @@ enum ToServerCommand
 		...
 	*/
 
-	TOSERVER_ADDNODE_FROM_INVENTORY = 0x26, // Obsolete
-	TOSERVER_CLICK_OBJECT = 0x27, // Obsolete
-	TOSERVER_GROUND_ACTION = 0x28, // Obsolete
-	TOSERVER_RELEASE = 0x29, // Obsolete
-	TOSERVER_SIGNTEXT = 0x30, // Obsolete
-
 	TOSERVER_INVENTORY_ACTION = 0x31,
 	/*
 		See InventoryAction in inventorymanager.h
@@ -978,15 +774,10 @@ enum ToServerCommand
 		wstring message
 	*/
 
-	TOSERVER_SIGNNODETEXT = 0x33, // Obsolete
-	TOSERVER_CLICK_ACTIVEOBJECT = 0x34, // Obsolete
-
 	TOSERVER_DAMAGE = 0x35,
 	/*
 		u8 amount
 	*/
-
-	TOSERVER_PASSWORD_LEGACY = 0x36, // Obsolete
 
 	TOSERVER_PLAYERITEM = 0x37,
 	/*
@@ -996,10 +787,7 @@ enum ToServerCommand
 		[2] u16 item
 	*/
 
-	TOSERVER_RESPAWN = 0x38,
-	/*
-		u16 TOSERVER_RESPAWN
-	*/
+	TOSERVER_RESPAWN_LEGACY = 0x38,
 
 	TOSERVER_INTERACT = 0x39,
 	/*
@@ -1062,8 +850,6 @@ enum ToServerCommand
 		for each:
 			u32 token
 	*/
-
-	TOSERVER_BREATH = 0x42, // Obsolete
 
 	TOSERVER_CLIENT_READY = 0x43,
 	/*
@@ -1143,26 +929,6 @@ enum AccessDeniedCode : u8 {
 	SERVER_ACCESSDENIED_SHUTDOWN,
 	SERVER_ACCESSDENIED_CRASH,
 	SERVER_ACCESSDENIED_MAX,
-};
-
-enum NetProtoCompressionMode {
-	NETPROTO_COMPRESSION_NONE = 0,
-};
-
-const static std::string accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
-	"Invalid password",
-	"Your client sent something the server didn't expect.  Try reconnecting or updating your client.",
-	"The server is running in simple singleplayer mode.  You cannot connect.",
-	"Your client's version is not supported.\nPlease contact the server administrator.",
-	"Player name contains disallowed characters",
-	"Player name not allowed",
-	"Too many users",
-	"Empty passwords are disallowed.  Set a password and try again.",
-	"Another client is connected with this name.  If your client closed unexpectedly, try again in a minute.",
-	"Internal server error",
-	"",
-	"Server shutting down",
-	"The server has experienced an internal error.  You will now be disconnected."
 };
 
 enum PlayerListModifer : u8

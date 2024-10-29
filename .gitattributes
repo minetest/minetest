@@ -1,5 +1,10 @@
+# Forces all files which git considers text files to use LF line endings
+* text=auto eol=lf
+
 *.cpp diff=cpp
 *.h diff=cpp
 # GitHub syntax highlighting
 pixi.lock linguist-language=YAML generated=true
 
+
+*.gltf binary

@@ -27,10 +27,15 @@ mark_as_advanced(
 	CMAKE_CXX_FLAGS_SEMIDEBUG
 	CMAKE_C_FLAGS_SEMIDEBUG
 )
+set(SUPPORTED_BUILD_TYPES None Release Debug SemiDebug RelWithDebInfo MinSizeRel)
 set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
-	"Choose the type of build. Options are: None Debug SemiDebug RelWithDebInfo MinSizeRel."
+	"Choose the type of build. Options are: ${SUPPORTED_BUILD_TYPES}."
 	FORCE
 )
+if(NOT (CMAKE_BUILD_TYPE IN_LIST SUPPORTED_BUILD_TYPES))
+	message(WARNING
+			"Unknown CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}. Options are: ${SUPPORTED_BUILD_TYPES}.")
+endif()
 
 
 # Set some random things default to not being visible in the GUI
@@ -42,11 +47,30 @@ if(NOT (BUILD_CLIENT OR BUILD_SERVER))
 endif()
 
 
+option(PRECOMPILE_HEADERS "Precompile some headers (experimental; requires CMake 3.16 or later)" FALSE)
+set(PRECOMPILED_HEADERS_PATH "" CACHE FILEPATH "Path to a file listing all headers to precompile")
+
+if(PRECOMPILE_HEADERS)
+	if(${CMAKE_VERSION} VERSION_LESS 3.16)
+		message(FATAL_ERROR "PRECOMPILE_HEADERS is on, but precompiled headers require at least CMake 3.16.")
+	endif()
+	if(PRECOMPILED_HEADERS_PATH)
+		set(PRECOMPILED_HEADERS ${PRECOMPILED_HEADERS_PATH})
+	else()
+		set(PRECOMPILED_HEADERS "${CMAKE_SOURCE_DIR}/src/precompiled_headers.txt")
+	endif()
+	message(STATUS "Reading headers to precompile from: ${PRECOMPILED_HEADERS}")
+	# ignore lines that begin with # and empty lines
+	file(STRINGS ${PRECOMPILED_HEADERS} PRECOMPILED_HEADERS_LIST REGEX "^[^#].*$")
+	set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${PRECOMPILED_HEADERS})
+endif()
+
+
 option(ENABLE_CURL "Enable cURL support for fetching media" TRUE)
 set(USE_CURL FALSE)
 
 if(ENABLE_CURL)
-	find_package(CURL)
+	find_package(CURL 7.28.0)
 	if (CURL_FOUND)
 		message(STATUS "cURL support enabled.")
 		set(USE_CURL TRUE)
@@ -106,11 +130,6 @@ if(BUILD_CLIENT AND ENABLE_SOUND)
 		message(FATAL_ERROR "Sound enabled, but cannot be used.\n"
 			"To continue, either fill in the required paths or disable sound. (-DENABLE_SOUND=0)")
 	endif()
-endif()
-
-option(ENABLE_TOUCH "Enable Touchscreen support" FALSE)
-if(ENABLE_TOUCH)
-	add_definitions(-DHAVE_TOUCHSCREENGUI)
 endif()
 
 if(BUILD_CLIENT)
@@ -279,9 +298,14 @@ if(WIN32)
 	if(NOT VCPKG_APPLOCAL_DEPS)
 		set(ZLIB_DLL "" CACHE FILEPATH "Path to Zlib DLL for installation (optional)")
 		set(ZSTD_DLL "" CACHE FILEPATH "Path to Zstd DLL for installation (optional)")
-		if(ENABLE_SOUND)
-			set(OPENAL_DLL "" CACHE FILEPATH "Path to OpenAL32.dll for installation (optional)")
-			set(OGG_DLL "" CACHE FILEPATH "Path to libogg.dll for installation (optional)")
+		if(BUILD_CLIENT)
+			set(PNG_DLL "" CACHE FILEPATH "Path to libpng DLL for installation (optional)")
+			set(JPEG_DLL "" CACHE FILEPATH "Path to libjpeg DLL for installation (optional)")
+			set(SDL2_DLL "" CACHE FILEPATH "Path to SDL2 DLL for installation (optional)")
+		endif()
+		if(BUILD_CLIENT AND ENABLE_SOUND)
+			set(OPENAL_DLL "" CACHE FILEPATH "Path to OpenAL DLL for installation (optional)")
+			set(OGG_DLL "" CACHE FILEPATH "Path to Ogg DLL for installation (optional)")
 			set(VORBIS_DLL "" CACHE FILEPATH "Path to Vorbis DLLs for installation (optional)")
 		endif()
 		if(USE_GETTEXT)
@@ -314,10 +338,6 @@ else()
 	endif()
 
 	if (ANDROID)
-		include_directories(${ANDROID_NDK}/sources/android/native_app_glue)
-		add_library(native_app_glue OBJECT ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} native_app_glue)
-
 		set(PLATFORM_LIBS ${PLATFORM_LIBS} android log)
 	endif()
 endif()
@@ -327,11 +347,22 @@ endif()
 # Note that find_library does not reliably find it so we have to resort to this.
 # Also, passing -latomic is not always the same as adding atomic to the library list.
 include(CheckCSourceCompiles)
-set(CMAKE_REQUIRED_LIBRARIES "-latomic")
-check_c_source_compiles("int main(){}" HAVE_LINK_ATOMIC)
-set(CMAKE_REQUIRED_LIBRARIES "")
-if(HAVE_LINK_ATOMIC)
-	set(PLATFORM_LIBS ${PLATFORM_LIBS} "-latomic")
+if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+	set(CMAKE_REQUIRED_LIBRARIES "-latomic")
+	check_c_source_compiles("int main(){}" HAVE_LINK_ATOMIC)
+	set(CMAKE_REQUIRED_LIBRARIES "")
+	if(HAVE_LINK_ATOMIC)
+		set(PLATFORM_LIBS ${PLATFORM_LIBS} "-latomic")
+	endif()
+endif()
+
+include(CheckSymbolExists)
+check_symbol_exists(strlcpy "string.h" HAVE_STRLCPY)
+
+if(UNIX)
+	check_symbol_exists(malloc_trim "malloc.h" HAVE_MALLOC_TRIM)
+else()
+	set(HAVE_MALLOC_TRIM FALSE)
 endif()
 
 check_include_files(endian.h HAVE_ENDIAN_H)
@@ -356,89 +387,92 @@ add_custom_target(GenerateVersion
 add_subdirectory(threading)
 add_subdirectory(content)
 add_subdirectory(database)
-add_subdirectory(gui)
 add_subdirectory(mapgen)
 add_subdirectory(network)
 add_subdirectory(script)
-add_subdirectory(unittest)
-add_subdirectory(benchmark)
 add_subdirectory(util)
-add_subdirectory(irrlicht_changes)
 add_subdirectory(server)
 
-set(common_SRCS
-	${database_SRCS}
-	${mapgen_SRCS}
-	${server_SRCS}
-	${content_SRCS}
-	ban.cpp
+# Source files that are identical between server & client builds.
+# This means they don't use or include anything that depends on the
+# CHECK_CLIENT_BUILD() macro. If you wrongly add something here there will be
+# a compiler error and you need to instead add it to client_SRCS or common_SRCS.
+set(independent_SRCS
 	chat.cpp
-	clientiface.cpp
-	collision.cpp
-	content_mapnode.cpp
 	content_nodemeta.cpp
 	convert_json.cpp
 	craftdef.cpp
 	debug.cpp
-	defaultsettings.cpp
-	emerge.cpp
-	environment.cpp
 	face_position_cache.cpp
-	filesys.cpp
-	gettext.cpp
+	gettext_plural_form.cpp
 	httpfetch.cpp
 	hud.cpp
 	inventory.cpp
-	inventorymanager.cpp
-	itemdef.cpp
 	itemstackmetadata.cpp
-	light.cpp
 	lighting.cpp
 	log.cpp
-	main.cpp
-	map.cpp
-	map_settings_manager.cpp
-	mapblock.cpp
-	mapnode.cpp
-	mapsector.cpp
 	metadata.cpp
 	modchannels.cpp
 	nameidmapping.cpp
-	nodedef.cpp
 	nodemetadata.cpp
 	nodetimer.cpp
 	noise.cpp
 	objdef.cpp
 	object_properties.cpp
 	particles.cpp
-	pathfinder.cpp
-	player.cpp
-	porting.cpp
 	profiler.cpp
-	raycast.cpp
-	reflowscan.cpp
-	remoteplayer.cpp
-	rollback.cpp
-	rollback_interface.cpp
 	serialization.cpp
-	server.cpp
-	serverenvironment.cpp
-	serverlist.cpp
 	settings.cpp
 	staticobject.cpp
 	terminal_chat_console.cpp
 	texture_override.cpp
 	tileanimation.cpp
 	tool.cpp
+	${common_network_SRCS}
+	${content_SRCS}
+	${database_SRCS}
+	${threading_SRCS}
+	${util_SRCS}
+)
+
+# /!\ Consider carefully before adding files here /!\
+set(common_SRCS
+	clientdynamicinfo.cpp
+	collision.cpp
+	content_mapnode.cpp
+	defaultsettings.cpp
+	emerge.cpp
+	environment.cpp
+	filesys.cpp
+	gettext.cpp
+	inventorymanager.cpp
+	itemdef.cpp
+	light.cpp
+	main.cpp
+	map_settings_manager.cpp
+	map.cpp
+	mapblock.cpp
+	mapnode.cpp
+	mapsector.cpp
+	nodedef.cpp
+	pathfinder.cpp
+	player.cpp
+	porting.cpp
+	raycast.cpp
+	reflowscan.cpp
+	remoteplayer.cpp
+	rollback_interface.cpp
+	server.cpp
+	serverenvironment.cpp
+	servermap.cpp
 	translation.cpp
 	version.cpp
 	voxel.cpp
 	voxelalgorithms.cpp
-	hud.cpp
-	${common_network_SRCS}
-	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
-	${UTIL_SRCS}
+	${common_server_SRCS}
+	${mapgen_SRCS}
+	${server_network_SRCS}
 )
 
 if(ANDROID)
@@ -446,11 +480,17 @@ if(ANDROID)
 endif()
 
 if(BUILD_UNITTESTS)
+	add_subdirectory(unittest)
 	set(common_SRCS ${common_SRCS} ${UNITTEST_SRCS})
 endif()
 
 if(BUILD_BENCHMARKS)
+	add_subdirectory(benchmark)
 	set(common_SRCS ${common_SRCS} ${BENCHMARK_SRCS})
+endif()
+
+if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
+	set(common_SRCS ${common_SRCS} catch.cpp)
 endif()
 
 # This gives us the icon and file version information
@@ -477,6 +517,8 @@ endif()
 # Client sources
 if (BUILD_CLIENT)
 	add_subdirectory(client)
+	add_subdirectory(gui)
+	add_subdirectory(irrlicht_changes)
 endif(BUILD_CLIENT)
 
 set(client_SRCS
@@ -497,13 +539,11 @@ if(BUILD_BENCHMARKS)
 	set(client_SRCS ${client_SRCS} ${BENCHMARK_CLIENT_SRCS})
 endif()
 
-list(SORT client_SRCS)
-
 # Server sources
+# (nothing here because a client always comes with a server)
 set(server_SRCS
 	${common_SRCS}
 )
-list(SORT server_SRCS)
 
 include_directories(
 	${PROJECT_BINARY_DIR}
@@ -520,6 +560,9 @@ include_directories(SYSTEM
 	${GMP_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 	${LUA_BIT_INCLUDE_DIR}
+	# on Android, Minetest depends on SDL2 directly
+	# on other platforms, only IrrlichtMt depends on SDL2
+	"$<$<PLATFORM_ID:Android>:${SDL2_INCLUDE_DIRS}>"
 )
 
 if(USE_GETTEXT)
@@ -544,13 +587,35 @@ if(NOT CMAKE_CROSSCOMPILING)
 	set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 endif()
 
+# shared object target
+add_library(EngineCommon OBJECT
+	${independent_SRCS}
+)
+add_dependencies(EngineCommon GenerateVersion)
+target_link_libraries(EngineCommon
+	sha256
+)
+get_target_property(
+	IRRLICHT_INCLUDES IrrlichtMt::IrrlichtMt INTERFACE_INCLUDE_DIRECTORIES)
+target_include_directories(EngineCommon PRIVATE ${IRRLICHT_INCLUDES})
+if(PRECOMPILE_HEADERS)
+	target_precompile_headers(EngineCommon PRIVATE ${PRECOMPILED_HEADERS_LIST})
+endif()
+
 if(BUILD_CLIENT)
+	# client target
 	if(ANDROID)
-		add_library(${PROJECT_NAME} SHARED ${client_SRCS})
+		add_library(${PROJECT_NAME} SHARED)
 	else()
-		add_executable(${PROJECT_NAME} ${client_SRCS} ${extra_windows_SRCS})
+		add_executable(${PROJECT_NAME})
 	endif()
-	add_dependencies(${PROJECT_NAME} GenerateVersion)
+	list(SORT client_SRCS)
+	target_sources(${PROJECT_NAME} PRIVATE
+		$<TARGET_OBJECTS:EngineCommon>
+		${client_SRCS}
+		${extra_windows_SRCS}
+	)
+
 	target_link_libraries(
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
@@ -566,9 +631,15 @@ if(BUILD_CLIENT)
 		${GMP_LIBRARY}
 		${JSON_LIBRARY}
 		${LUA_BIT_LIBRARY}
+		sha256
 		${FREETYPE_LIBRARY}
 		${PLATFORM_LIBS}
+		# on Android, Minetest depends on SDL2 directly
+		# on other platforms, only IrrlichtMt depends on SDL2
+		"$<$<PLATFORM_ID:Android>:${SDL2_LIBRARIES}>"
 	)
+	target_compile_definitions(${PROJECT_NAME} PRIVATE "MT_BUILDTARGET=1")
+
 	target_link_libraries(${PROJECT_NAME} ${CAPNP_LIBRARIES})
 
 	if(NOT USE_LUAJIT)
@@ -615,19 +686,32 @@ if(BUILD_CLIENT)
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME} ${SPATIAL_LIBRARY})
 	endif()
-	if(BUILD_BENCHMARKS)
-		target_link_libraries(${PROJECT_NAME} catch2)
+	if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
+		target_link_libraries(${PROJECT_NAME} Catch2::Catch2)
+	endif()
+	if(BUILD_WITH_TRACY)
+		target_link_libraries(${PROJECT_NAME} Tracy::TracyClient)
+	endif()
+
+	if(PRECOMPILE_HEADERS)
+		target_precompile_headers(${PROJECT_NAME} PRIVATE ${PRECOMPILED_HEADERS_LIST})
 	endif()
 endif(BUILD_CLIENT)
 
 
 if(BUILD_SERVER)
-	add_executable(${PROJECT_NAME}server ${server_SRCS} ${extra_windows_SRCS})
-	add_dependencies(${PROJECT_NAME}server GenerateVersion)
+	# server target
+	add_executable(${PROJECT_NAME}server)
+	list(SORT server_SRCS)
+	target_sources(${PROJECT_NAME}server PRIVATE
+		$<TARGET_OBJECTS:EngineCommon>
+		${server_SRCS}
+		${extra_windows_SRCS}
+	)
 
+	# don't link the irrlicht library
 	get_target_property(
 		IRRLICHT_INCLUDES IrrlichtMt::IrrlichtMt INTERFACE_INCLUDE_DIRECTORIES)
-	# Doesn't work without PRIVATE/PUBLIC/INTERFACE mode specified.
 	target_include_directories(${PROJECT_NAME}server PRIVATE ${IRRLICHT_INCLUDES})
 	target_link_libraries(
 		${PROJECT_NAME}server
@@ -637,11 +721,11 @@ if(BUILD_SERVER)
 		${JSON_LIBRARY}
 		${LUA_LIBRARY}
 		${LUA_BIT_LIBRARY}
+		sha256
 		${GMP_LIBRARY}
 		${PLATFORM_LIBS}
 	)
-	set_target_properties(${PROJECT_NAME}server PROPERTIES
-		COMPILE_DEFINITIONS "SERVER")
+	target_compile_definitions(${PROJECT_NAME}server PRIVATE "MT_BUILDTARGET=2")
 	if(NOT USE_LUAJIT)
 		set_target_properties(${PROJECT_NAME}server PROPERTIES
 			# This is necessary for dynamic Lua modules
@@ -677,8 +761,15 @@ if(BUILD_SERVER)
 			${CURL_LIBRARY}
 		)
 	endif()
-	if(BUILD_BENCHMARKS)
-		target_link_libraries(${PROJECT_NAME}server catch2)
+	if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
+		target_link_libraries(${PROJECT_NAME}server Catch2::Catch2)
+	endif()
+	if(BUILD_WITH_TRACY)
+		target_link_libraries(${PROJECT_NAME}server Tracy::TracyClient)
+	endif()
+
+	if(PRECOMPILE_HEADERS)
+		target_precompile_headers(${PROJECT_NAME}server PRIVATE ${PRECOMPILED_HEADERS_LIST})
 	endif()
 endif(BUILD_SERVER)
 
@@ -703,15 +794,16 @@ endif()
 # Set some optimizations and tweaks
 
 include(CheckCSourceCompiles)
-include(CheckSymbolExists)
 
 set(CMAKE_REQUIRED_INCLUDES ${LUA_INCLUDE_DIR})
 if(USE_LUAJIT)
-	set(CMAKE_REQUIRED_LIBRARIES ${LUA_LIBRARY})
+	# libm usually required if statically linking
+	set(CMAKE_REQUIRED_LIBRARIES ${LUA_LIBRARY} m)
 	# LuaJIT provides exactly zero ways to determine how recent it is (the version
 	# is unchanged since 2017), however it happens that string buffers were added
 	# after the changes which we care about so that works as an indicator.
 	# (https://github.com/LuaJIT/LuaJIT/commit/4c6b669 March 2021)
+	# Note: This is no longer true as of August 2023, but we're keeping the old check.
 	unset(HAVE_RECENT_LJ CACHE)
 	check_symbol_exists(luaopen_string_buffer "lualib.h" HAVE_RECENT_LJ)
 	if(NOT HAVE_RECENT_LJ)
@@ -741,7 +833,7 @@ endif()
 
 if(MSVC)
 	# Visual Studio
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D _WIN32_WINNT=0x0601 /D WIN32_LEAN_AND_MEAN")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D _WIN32_WINNT=0x0601 /D WIN32_LEAN_AND_MEAN /D _CRT_SECURE_NO_WARNINGS")
 	# EHa enables SEH exceptions (used for catching segfaults)
 	set(CMAKE_CXX_FLAGS_RELEASE "/EHa /Ox /MD /GS- /Zi /fp:fast /D NDEBUG /D _HAS_ITERATOR_DEBUGGING=0")
 	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
@@ -867,6 +959,20 @@ if(WIN32)
 				install(FILES ${VORBIS_DLL} DESTINATION ${BINDIR})
 			endif()
 		endif()
+		if(BUILD_CLIENT)
+			if(PNG_DLL)
+				install(FILES ${PNG_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(JPEG_DLL)
+				install(FILES ${JPEG_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(SDL2_DLL)
+				install(FILES ${SDL2_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(FREETYPE_DLL)
+				install(FILES ${FREETYPE_DLL} DESTINATION ${BINDIR})
+			endif()
+		endif()
 		if(CURL_DLL)
 			install(FILES ${CURL_DLL} DESTINATION ${BINDIR})
 		endif()
@@ -875,9 +981,6 @@ if(WIN32)
 		endif()
 		if(ZSTD_DLL)
 			install(FILES ${ZSTD_DLL} DESTINATION ${BINDIR})
-		endif()
-		if(BUILD_CLIENT AND FREETYPE_DLL)
-			install(FILES ${FREETYPE_DLL} DESTINATION ${BINDIR})
 		endif()
 		if(SQLITE3_DLL)
 			install(FILES ${SQLITE3_DLL} DESTINATION ${BINDIR})
@@ -891,10 +994,6 @@ if(WIN32)
 		if(BUILD_CLIENT AND USE_GETTEXT AND GETTEXT_DLL)
 			install(FILES ${GETTEXT_DLL} DESTINATION ${BINDIR})
 		endif()
-	endif()
-
-	if(BUILD_CLIENT AND IRRLICHT_DLL)
-		install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
 	endif()
 endif()
 

@@ -23,29 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include <sstream>
 
-PointedThing::PointedThing(const v3s16 &under, const v3s16 &above,
-	const v3s16 &real_under, const v3f &point, const v3f &normal,
-	u16 box_id, f32 distSq):
-	type(POINTEDTHING_NODE),
-	node_undersurface(under),
-	node_abovesurface(above),
-	node_real_undersurface(real_under),
-	intersection_point(point),
-	intersection_normal(normal),
-	box_id(box_id),
-	distanceSq(distSq)
-{}
-
-PointedThing::PointedThing(u16 id, const v3f &point,
-  const v3f &normal, const v3f &raw_normal, f32 distSq) :
-	type(POINTEDTHING_OBJECT),
-	object_id(id),
-	intersection_point(point),
-	intersection_normal(normal),
-	raw_intersection_normal(raw_normal),
-	distanceSq(distSq)
-{}
-
 std::string PointedThing::dump() const
 {
 	std::ostringstream os(std::ios::binary);
@@ -92,7 +69,7 @@ void PointedThing::deSerialize(std::istream &is)
 	int version = readU8(is);
 	if (version != 0) throw SerializationError(
 			"unsupported PointedThing version");
-	type = (PointedThingType) readU8(is);
+	type = static_cast<PointedThingType>(readU8(is));
 	switch (type) {
 	case POINTEDTHING_NOTHING:
 		break;
@@ -118,18 +95,14 @@ bool PointedThing::operator==(const PointedThing &pt2) const
 	{
 		if ((node_undersurface != pt2.node_undersurface)
 				|| (node_abovesurface != pt2.node_abovesurface)
-				|| (node_real_undersurface != pt2.node_real_undersurface))
+				|| (node_real_undersurface != pt2.node_real_undersurface)
+				|| (pointability != pt2.pointability))
 			return false;
 	}
 	else if (type == POINTEDTHING_OBJECT)
 	{
-		if (object_id != pt2.object_id)
+		if (object_id != pt2.object_id || pointability != pt2.pointability)
 			return false;
 	}
 	return true;
-}
-
-bool PointedThing::operator!=(const PointedThing &pt2) const
-{
-	return !(*this == pt2);
 }

@@ -134,11 +134,12 @@ private:
 		f32 corner_levels[2][2];
 	};
 	LiquidData cur_liquid;
+	bool smooth_liquids = false;
 
 	void prepareLiquidNodeDrawing();
 	void getLiquidNeighborhood();
 	void calculateCornerLevels();
-	f32 getCornerLevel(int i, int k);
+	f32 getCornerLevel(int i, int k) const;
 	void drawLiquidSides();
 	void drawLiquidTop();
 	void drawLiquidBottom();

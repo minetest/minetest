@@ -68,7 +68,10 @@ bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
 	lua_getfield(L, -1, "registered_on_punchplayers");
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
-	objectrefGetOrCreate(L, hitter);
+	if (hitter)
+		objectrefGetOrCreate(L, hitter);
+	else
+		lua_pushnil(L);
 	lua_pushnumber(L, time_from_last_punch);
 	push_tool_capabilities(L, *toolcap);
 	push_v3f(L, dir);

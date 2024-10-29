@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 
 class ServerEnvironment;
+class MapBlock;
 struct ScriptCallbackState;
 
 class ScriptApiEnv : virtual public ScriptApiBase
@@ -55,5 +56,20 @@ public:
 	// Determines whether there are any on_mapblocks_changed callbacks
 	bool has_on_mapblocks_changed();
 
+	// Initializes environment and loads some definitions from Lua
 	void initializeEnvironment(ServerEnvironment *env);
+
+	void triggerABM(int id, v3s16 p, MapNode n,
+			u32 active_object_count, u32 active_object_count_wider);
+
+	void triggerLBM(int id, MapBlock *block,
+		const std::unordered_set<v3s16> &positions, float dtime_s);
+
+private:
+	void readABMs();
+
+	void readLBMs();
+
+	// Reads a single or a list of node names into a vector
+	static bool read_nodenames(lua_State *L, int idx, std::vector<std::string> &to);
 };

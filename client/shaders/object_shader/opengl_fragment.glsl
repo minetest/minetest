@@ -1,13 +1,12 @@
 uniform sampler2D baseTexture;
 
 uniform vec3 dayLight;
-uniform vec4 skyBgColor;
+uniform lowp vec4 fogColor;
 uniform float fogDistance;
 uniform float fogShadingParameter;
-uniform vec3 eyePosition;
 
 // The cameraOffset is the current center of the visible world.
-uniform vec3 cameraOffset;
+uniform highp vec3 cameraOffset;
 uniform float animationTimer;
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	// shadow texture
@@ -21,6 +20,7 @@ uniform float animationTimer;
 	uniform vec4 CameraPos;
 	uniform float xyPerspectiveBias0;
 	uniform float xyPerspectiveBias1;
+	uniform vec3 shadow_tint;
 
 	varying float adj_shadow_strength;
 	varying float cosLight;
@@ -44,7 +44,7 @@ varying mediump vec2 varTexCoord;
 #else
 centroid varying vec2 varTexCoord;
 #endif
-varying vec3 eyeVec;
+varying highp vec3 eyeVec;
 varying float nightRatio;
 
 varying float vIDiff;
@@ -433,7 +433,7 @@ void main(void)
 		col.rgb =
 				adjusted_night_ratio * col.rgb + // artificial light
 				(1.0 - adjusted_night_ratio) * ( // natural light
-						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color)) +  // filtered texture color
+						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color) * (1.0 - shadow_tint)) +  // filtered texture color
 						dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
 	}
 #endif
@@ -449,7 +449,13 @@ void main(void)
 	// Note: clarity = (1 - fogginess)
 	float clarity = clamp(fogShadingParameter
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
-	col = mix(skyBgColor, col, clarity);
+	float fogColorMax = max(max(fogColor.r, fogColor.g), fogColor.b);
+	// Prevent zero division.
+	if (fogColorMax < 0.0000001) fogColorMax = 1.0;
+	// For high clarity (light fog) we tint the fog color.
+	// For this to not make the fog color artificially dark we need to normalize using the
+	// fog color's brightest value. We then blend our base color with this to make the fog.
+	col = mix(fogColor * pow(fogColor / fogColorMax, vec4(2.0 * clarity)), col, clarity);
 	col = vec4(col.rgb, base.a);
 
 	gl_FragData[0] = col;

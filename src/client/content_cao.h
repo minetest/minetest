@@ -99,15 +99,15 @@ private:
 	v2s16 m_tx_basepos;
 	bool m_initial_tx_basepos_set = false;
 	bool m_tx_select_horiz_by_yawpitch = false;
-	v2s32 m_animation_range;
+	v2f m_animation_range;
 	float m_animation_speed = 15.0f;
 	float m_animation_blend = 0.0f;
 	bool m_animation_loop = true;
 	// stores position and rotation for each bone name
 	BoneOverrideMap m_bone_override;
 
-	int m_attachment_parent_id = 0;
-	std::unordered_set<int> m_attachment_child_ids;
+	object_t m_attachment_parent_id = 0;
+	std::unordered_set<object_t> m_attachment_child_ids;
 	std::string m_attachment_bone = "";
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
@@ -130,6 +130,7 @@ private:
 	bool m_is_visible = false;
 	// Material
 	video::E_MATERIAL_TYPE m_material_type;
+	f32 m_material_type_param;
 	// Settings
 	bool m_enable_shaders = false;
 
@@ -173,6 +174,8 @@ public:
 
 	inline const ObjectProperties &getProperties() const { return m_prop; }
 
+	inline const std::string &getName() const { return m_name; }
+
 	scene::ISceneNode *getSceneNode() const override;
 
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const override;
@@ -207,6 +210,11 @@ public:
 		return m_is_local_player;
 	}
 
+	inline bool isPlayer() const
+	{
+		return m_is_player;
+	}
+
 	inline bool isVisible() const
 	{
 		return m_is_visible;
@@ -218,16 +226,15 @@ public:
 	}
 
 	void setChildrenVisible(bool toset);
-	void setAttachment(int parent_id, const std::string &bone, v3f position,
+	void setAttachment(object_t parent_id, const std::string &bone, v3f position,
 			v3f rotation, bool force_visible) override;
-	void getAttachment(int *parent_id, std::string *bone, v3f *position,
+	void getAttachment(object_t *parent_id, std::string *bone, v3f *position,
 			v3f *rotation, bool *force_visible) const override;
 	void clearChildAttachments() override;
-	void clearParentAttachment() override;
-	void addAttachmentChild(int child_id) override;
-	void removeAttachmentChild(int child_id) override;
+	void addAttachmentChild(object_t child_id) override;
+	void removeAttachmentChild(object_t child_id) override;
 	ClientActiveObject *getParent() const override;
-	const std::unordered_set<int> &getAttachmentChildIds() const override
+	const std::unordered_set<object_t> &getAttachmentChildIds() const override
 	{ return m_attachment_child_ids; }
 	void updateAttachments() override;
 

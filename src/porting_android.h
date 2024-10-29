@@ -23,19 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #error This header has to be included on Android port only!
 #endif
 
-#include <jni.h>
-#include <android_native_app_glue.h>
-#include <android/log.h>
-
+#include "irrlichttypes_bloated.h"
 #include <string>
 
 namespace porting {
-// Java app
-extern android_app *app_global;
-
-// Java <-> C++ interaction interface
-extern JNIEnv *jnienv;
-
 /**
  * Show a text input dialog in Java
  * @param hint Hint to be shown
@@ -103,9 +94,10 @@ std::string getInputDialogMessage();
  */
 int getInputDialogSelection();
 
-#ifndef SERVER
+
+bool hasPhysicalKeyboardAndroid();
+
 float getDisplayDensity();
 v2u32 getDisplaySize();
-#endif
 
 }

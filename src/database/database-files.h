@@ -84,7 +84,7 @@ public:
 		const std::string &key, std::string *value);
 	virtual bool hasModEntry(const std::string &modname, const std::string &key);
 	virtual bool setModEntry(const std::string &modname,
-		const std::string &key, const std::string &value);
+		const std::string &key, std::string_view value);
 	virtual bool removeModEntry(const std::string &modname, const std::string &key);
 	virtual bool removeModEntries(const std::string &modname);
 	virtual void listMods(std::vector<std::string> *res);
@@ -94,7 +94,6 @@ public:
 
 private:
 	Json::Value *getOrCreateJson(const std::string &modname);
-	bool writeJson(const std::string &modname, const Json::Value &json);
 
 	std::string m_storage_dir;
 	std::unordered_map<std::string, Json::Value> m_mod_storage;

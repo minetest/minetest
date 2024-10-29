@@ -94,7 +94,6 @@ void StaticText::draw()
 				getTextWidth();
 		}
 
-		irr::video::SColor previous_color(255, 255, 255, 255);
 		for (const EnrichedString &str : BrokenText) {
 			if (HAlign == EGUIA_LOWERRIGHT)
 			{

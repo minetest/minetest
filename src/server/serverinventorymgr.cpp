@@ -124,7 +124,7 @@ Inventory *ServerInventoryManager::createDetachedInventory(
 		RemotePlayer *p = m_env->getPlayer(name.c_str());
 
 		// if player is connected, send him the inventory
-		if (p && p->getPeerId() != PEER_ID_INEXISTENT) {
+		if (p) {
 			m_env->getGameDef()->sendDetachedInventory(
 					inv, name, p->getPeerId());
 		}
@@ -152,7 +152,7 @@ bool ServerInventoryManager::removeDetachedInventory(const std::string &name)
 		if (m_env) {
 			RemotePlayer *player = m_env->getPlayer(owner.c_str());
 
-			if (player && player->getPeerId() != PEER_ID_INEXISTENT)
+			if (player)
 				m_env->getGameDef()->sendDetachedInventory(
 						nullptr, name, player->getPeerId());
 		}

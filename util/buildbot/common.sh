@@ -5,14 +5,17 @@ CORE_NAME=minetest
 ogg_version=1.3.5
 openal_version=1.23.1
 vorbis_version=1.3.7
-curl_version=8.5.0
+curl_version=8.9.1
 gettext_version=0.20.2
-freetype_version=2.13.2
-sqlite3_version=3.44.2
-luajit_version=20231211
+freetype_version=2.13.3
+sqlite3_version=3.46.1
+luajit_version=20240905
 leveldb_version=1.23
-zlib_version=1.3
-zstd_version=1.5.5
+zlib_version=1.3.1
+zstd_version=1.5.6
+libjpeg_version=3.0.1
+libpng_version=1.6.43
+sdl2_version=2.30.7
 
 download () {
 	local url=$1
@@ -48,11 +51,11 @@ get_sources () {
 # sets $runtime_dlls
 find_runtime_dlls () {
 	local triple=$1
-	# Try to find runtime DLLs in various paths (varies by distribution, sigh)
+	# Try to find runtime DLLs in various paths
 	local tmp=$(dirname "$(command -v $compiler)")/..
 	runtime_dlls=
-	for name in lib{gcc_,stdc++-,winpthread-}'*'.dll; do
-		for dir in $tmp/$triple/{bin,lib} $tmp/lib/gcc/$triple/*; do
+	for name in lib{clang_rt,c++,unwind,winpthread-}'*'.dll; do
+		for dir in $tmp/$triple/{bin,lib}; do
 			[ -d "$dir" ] || continue
 			local file=$(echo $dir/$name)
 			[ -f "$file" ] && { runtime_dlls+="$file;"; break; }
@@ -65,14 +68,25 @@ find_runtime_dlls () {
 	fi
 }
 
-add_cmake_libs () {
-	local irr_dlls=$(echo $libdir/irrlicht/lib/*.dll | tr ' ' ';')
-	local vorbis_dlls=$(echo $libdir/libvorbis/bin/libvorbis{,file}-*.dll | tr ' ' ';')
-	local gettext_dlls=$(echo $libdir/gettext/bin/lib{intl,iconv}-*.dll | tr ' ' ';')
+_dlls () {
+	for f in "$@"; do
+		if [ ! -e "$f" ]; then
+			echo "Could not find $f" >&2
+		elif [[ -f "$f" && "$f" == *.dll ]]; then
+			printf '%s;' "$f"
+		fi
+	done
+}
 
+add_cmake_libs () {
 	cmake_args+=(
-		-DCMAKE_PREFIX_PATH=$libdir/irrlicht
-		-DIRRLICHT_DLL="$irr_dlls"
+		-DPNG_LIBRARY=$libdir/libpng/lib/libpng16.dll.a
+		-DPNG_PNG_INCLUDE_DIR=$libdir/libpng/include
+		-DPNG_DLL="$(_dlls $libdir/libpng/bin/*)"
+
+		-DJPEG_LIBRARY=$libdir/libjpeg/lib/libjpeg.dll.a
+		-DJPEG_INCLUDE_DIR=$libdir/libjpeg/include
+		-DJPEG_DLL="$(_dlls $libdir/libjpeg/bin/libjpeg*)"
 
 		-DZLIB_INCLUDE_DIR=$libdir/zlib/include
 		-DZLIB_LIBRARY=$libdir/zlib/lib/libz.dll.a
@@ -87,37 +101,37 @@ add_cmake_libs () {
 
 		-DOGG_INCLUDE_DIR=$libdir/libogg/include
 		-DOGG_LIBRARY=$libdir/libogg/lib/libogg.dll.a
-		-DOGG_DLL=$libdir/libogg/bin/libogg-0.dll
+		-DOGG_DLL="$(_dlls $libdir/libogg/bin/*)"
 
 		-DVORBIS_INCLUDE_DIR=$libdir/libvorbis/include
 		-DVORBIS_LIBRARY=$libdir/libvorbis/lib/libvorbis.dll.a
-		-DVORBIS_DLL="$vorbis_dlls"
+		-DVORBIS_DLL="$(_dlls $libdir/libvorbis/bin/libvorbis{,file}[-.]*)"
 		-DVORBISFILE_LIBRARY=$libdir/libvorbis/lib/libvorbisfile.dll.a
 
 		-DOPENAL_INCLUDE_DIR=$libdir/openal/include/AL
 		-DOPENAL_LIBRARY=$libdir/openal/lib/libOpenAL32.dll.a
 		-DOPENAL_DLL=$libdir/openal/bin/OpenAL32.dll
 
-		-DCURL_DLL=$libdir/curl/bin/libcurl-4.dll
+		-DCURL_DLL="$(_dlls $libdir/curl/bin/libcurl*)"
 		-DCURL_INCLUDE_DIR=$libdir/curl/include
 		-DCURL_LIBRARY=$libdir/curl/lib/libcurl.dll.a
 
 		-DGETTEXT_MSGFMT=`command -v msgfmt`
-		-DGETTEXT_DLL="$gettext_dlls"
+		-DGETTEXT_DLL="$(_dlls $libdir/gettext/bin/lib{intl,iconv}*)"
 		-DGETTEXT_INCLUDE_DIR=$libdir/gettext/include
 		-DGETTEXT_LIBRARY=$libdir/gettext/lib/libintl.dll.a
 
 		-DFREETYPE_INCLUDE_DIR_freetype2=$libdir/freetype/include/freetype2
 		-DFREETYPE_INCLUDE_DIR_ft2build=$libdir/freetype/include/freetype2
 		-DFREETYPE_LIBRARY=$libdir/freetype/lib/libfreetype.dll.a
-		-DFREETYPE_DLL=$libdir/freetype/bin/libfreetype-6.dll
+		-DFREETYPE_DLL="$(_dlls $libdir/freetype/bin/libfreetype*)"
 
 		-DSQLITE3_INCLUDE_DIR=$libdir/sqlite3/include
 		-DSQLITE3_LIBRARY=$libdir/sqlite3/lib/libsqlite3.dll.a
-		-DSQLITE3_DLL=$libdir/sqlite3/bin/libsqlite3-0.dll
+		-DSQLITE3_DLL="$(_dlls $libdir/sqlite3/bin/libsqlite*)"
 
-		-DLEVELDB_INCLUDE_DIR=$libdir/leveldb/include
-		-DLEVELDB_LIBRARY=$libdir/leveldb/lib/libleveldb.dll.a
-		-DLEVELDB_DLL=$libdir/leveldb/bin/libleveldb.dll
+		-DLEVELDB_INCLUDE_DIR=$libdir/libleveldb/include
+		-DLEVELDB_LIBRARY=$libdir/libleveldb/lib/libleveldb.dll.a
+		-DLEVELDB_DLL=$libdir/libleveldb/bin/libleveldb.dll
 	)
 }

@@ -22,7 +22,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "util/numeric.h" // IntervalLimiter
 #include "activeobjectmgr.h" // client::ActiveObjectMgr
+#include "irr_ptr.h"
+#include "config.h"
 #include <set>
+
+#if !IS_CLIENT_BUILD
+#error Do not include in server builds
+#endif
 
 class ClientSimpleObject;
 class ClientMap;
@@ -62,7 +68,7 @@ typedef std::unordered_map<u16, ClientActiveObject*> ClientActiveObjectMap;
 class ClientEnvironment : public Environment
 {
 public:
-	ClientEnvironment(ClientMap *map, ITextureSource *texturesource, Client *client);
+	ClientEnvironment(irr_ptr<ClientMap> map, ITextureSource *texturesource, Client *client);
 	~ClientEnvironment();
 
 	Map & getMap();
@@ -131,7 +137,8 @@ public:
 
 	virtual void getSelectedActiveObjects(
 		const core::line3d<f32> &shootline_on_map,
-		std::vector<PointedThing> &objects
+		std::vector<PointedThing> &objects,
+		const std::optional<Pointabilities> &pointabilities
 	);
 
 	const std::set<std::string> &getPlayerNames() { return m_player_names; }
@@ -146,7 +153,7 @@ public:
 	u64 getFrameTimeDelta() const { return m_frame_dtime; }
 
 private:
-	ClientMap *m_map;
+	irr_ptr<ClientMap> m_map;
 	LocalPlayer *m_local_player = nullptr;
 	ITextureSource *m_texturesource;
 	Client *m_client;

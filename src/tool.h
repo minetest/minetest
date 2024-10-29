@@ -20,12 +20,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes.h"
-#include <string>
-#include <iostream>
 #include "itemgroup.h"
 #include "json-forwards.h"
+#include "common/c_types.h"
+#include <SColor.h>
+
+#include <string>
+#include <iostream>
+#include <map>
+#include <unordered_map>
+#include <optional>
 
 struct ItemDefinition;
+class IItemDefManager;
 
 struct ToolGroupCap
 {
@@ -35,15 +42,11 @@ struct ToolGroupCap
 
 	ToolGroupCap() = default;
 
-	bool getTime(int rating, float *time) const
-	{
-		std::unordered_map<int, float>::const_iterator i = times.find(rating);
-		if (i == times.end()) {
-			*time = 0;
-			return false;
-		}
-		*time = i->second;
-		return true;
+	std::optional<float> getTime(int rating) const {
+		auto i = times.find(rating);
+		if (i == times.end())
+			return std::nullopt;
+		return i->second;
 	}
 
 	void toJson(Json::Value &object) const;
@@ -80,6 +83,41 @@ struct ToolCapabilities
 	void deSerialize(std::istream &is);
 	void serializeJson(std::ostream &os) const;
 	void deserializeJson(std::istream &is);
+
+private:
+	void deserializeJsonGroupcaps(Json::Value &json);
+	void deserializeJsonDamageGroups(Json::Value &json);
+};
+
+struct WearBarParams
+{
+	std::map<f32, video::SColor> colorStops;
+	enum BlendMode : u8 {
+	    BLEND_MODE_CONSTANT,
+	    BLEND_MODE_LINEAR,
+	    BlendMode_END // Dummy for validity check
+	};
+	constexpr const static EnumString es_BlendMode[3] = {
+		{WearBarParams::BLEND_MODE_CONSTANT, "constant"},
+		{WearBarParams::BLEND_MODE_LINEAR, "linear"},
+		{0, nullptr}
+	};
+	BlendMode blend;
+
+	WearBarParams(const std::map<f32, video::SColor> &colorStops, BlendMode blend):
+		colorStops(colorStops),
+		blend(blend)
+	{}
+
+	WearBarParams(const video::SColor color):
+		WearBarParams({{0.0f, color}}, WearBarParams::BLEND_MODE_CONSTANT)
+	{};
+
+	void serialize(std::ostream &os) const;
+	static WearBarParams deserialize(std::istream &is);
+	void serializeJson(std::ostream &os) const;
+	static std::optional<WearBarParams> deserializeJson(std::istream &is);
+	video::SColor getWearBarColor(f32 durabilityPercent);
 };
 
 struct DigParams
@@ -143,4 +181,5 @@ PunchDamageResult getPunchDamage(
 );
 
 u32 calculateResultWear(const u32 uses, const u16 initial_wear);
-f32 getToolRange(const ItemDefinition &def_selected, const ItemDefinition &def_hand);
+f32 getToolRange(const ItemStack &wielded_item, const ItemStack &hand_item,
+		const IItemDefManager *itemdef_manager);

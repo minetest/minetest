@@ -6,9 +6,12 @@
 | ---------- | ------- | ---------- |
 | GCC        | 7.5+    | or Clang 7.0.1+ |
 | CMake      | 3.5+    |            |
-| IrrlichtMt | -       | Custom version of Irrlicht, see https://github.com/minetest/irrlicht |
+| libjpeg    | -       |            |
+| libpng     | -       |            |
+| SDL        | 2.x     |            |
 | Freetype   | 2.0+    |            |
 | SQLite3    | 3+      |            |
+| Zlib       | -       |            |
 | Zstd       | 1.0+    |            |
 | LuaJIT     | 2.0+    | Bundled Lua 5.1 is used if not present |
 | GMP        | 5.0.0+  | Bundled mini-GMP is used if not present |
@@ -26,7 +29,7 @@ For Fedora users (not checked):
 
 For openSUSE users (not checked):
 
-	sudo zypper install gcc cmake libjpeg8-devel libpng16-devel openal-soft-devel libcurl-devel sqlite3-devel luajit-devel libzstd-devel Mesa-libGL-devel libXi-devel libvorbis-devel freetype2-devel
+	sudo zypper install gcc gcc-c++ cmake libjpeg8-devel libpng16-devel openal-soft-devel libcurl-devel sqlite3-devel luajit-devel libzstd-devel Mesa-libGL-devel libXi-devel libvorbis-devel freetype2-devel
 
 For Arch users (not checked):
 
@@ -38,7 +41,7 @@ For Alpine users (not checked):
 
 For Void users (not checked):
 
-    sudo xbps-install cmake libpng-devel jpeg-devel libXi-devel mesa sqlite-devel libogg-devel libvorbis-devel libopenal-devel libcurl-devel freetype-devel zlib-devel gmp-devel jsoncpp-devel LuaJIT-devel libzstd-devel gettext
+    sudo xbps-install cmake libpng-devel jpeg-devel libXi-devel mesa sqlite-devel libogg-devel libvorbis-devel libopenal-devel libcurl-devel freetype-devel zlib-devel gmp-devel jsoncpp-devel LuaJIT-devel zstd libzstd-devel gettext
 
 ## Download
 
@@ -69,23 +72,11 @@ Download source (this is the URL to the latest of source repository, which might
     git clone --depth 1 https://github.com/minetest/minetest.git
     cd minetest
 
-Download IrrlichtMt to `lib/irrlichtmt`, it will be used to satisfy the IrrlichtMt dependency that way:
-
-    git clone --depth 1 --branch "$(cat misc/irrlichtmt_tag.txt)" https://github.com/minetest/irrlicht.git lib/irrlichtmt
-
 Download source, without using Git:
 
     wget https://github.com/minetest/minetest/archive/master.tar.gz
     tar xf master.tar.gz
     cd minetest-master
-
-Download IrrlichtMt, without using Git:
-
-    cd lib/
-    wget https://github.com/minetest/irrlicht/archive/master.tar.gz
-    tar xf master.tar.gz
-    mv irrlicht-master irrlichtmt
-    cd ..
 
 ## Build
 

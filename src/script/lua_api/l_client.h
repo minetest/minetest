@@ -51,20 +51,11 @@ private:
 	// show_formspec(name, formspec)
 	static int l_show_formspec(lua_State *L);
 
-	// send_respawn()
-	static int l_send_respawn(lua_State *L);
-
 	// disconnect()
 	static int l_disconnect(lua_State *L);
 
 	// gettext(text)
 	static int l_gettext(lua_State *L);
-
-	// get_last_run_mod(n)
-	static int l_get_last_run_mod(lua_State *L);
-
-	// set_last_run_mod(modname)
-	static int l_set_last_run_mod(lua_State *L);
 
 	// get_node(pos)
 	static int l_get_node_or_nil(lua_State *L);

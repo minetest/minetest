@@ -23,7 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "settings.h"
 #include "util/serialize.h"
-#include "network/connection.h"
+#include "network/peerhandler.h"
+#include "network/mtp/internal.h"
 #include "network/networkpacket.h"
 #include "network/socket.h"
 
@@ -59,7 +60,7 @@ struct Handler : public con::PeerHandler
 {
 	Handler(const char *a_name) : name(a_name) {}
 
-	void peerAdded(con::Peer *peer)
+	void peerAdded(con::IPeer *peer)
 	{
 		infostream << "Handler(" << name << ")::peerAdded(): "
 			"id=" << peer->id << std::endl;
@@ -67,7 +68,7 @@ struct Handler : public con::PeerHandler
 		count++;
 	}
 
-	void deletingPeer(con::Peer *peer, bool timeout)
+	void deletingPeer(con::IPeer *peer, bool timeout)
 	{
 		infostream << "Handler(" << name << ")::deletingPeer(): "
 			"id=" << peer->id << ", timeout=" << timeout << std::endl;
@@ -159,13 +160,14 @@ void TestConnection::testHelpers()
 
 void TestConnection::testConnectSendReceive()
 {
+
+	constexpr u32 timeout_ms = 100;
+
 	/*
 		Test some real connections
 
 		NOTE: This mostly tests the legacy interface.
 	*/
-
-	u32 proto_id = 0xad26846a;
 
 	Handler hand_server("server");
 	Handler hand_client("client");
@@ -187,11 +189,11 @@ void TestConnection::testConnectSendReceive()
 	}
 
 	infostream << "** Creating server Connection" << std::endl;
-	con::Connection server(proto_id, 512, 5.0, false, &hand_server);
+	con::Connection server(512, 5.0f, false, &hand_server);
 	server.Serve(address);
 
 	infostream << "** Creating client Connection" << std::endl;
-	con::Connection client(proto_id, 512, 5.0, false, &hand_client);
+	con::Connection client(512, 5.0f, false, &hand_client);
 
 	UASSERT(hand_server.count == 0);
 	UASSERT(hand_client.count == 0);
@@ -211,13 +213,11 @@ void TestConnection::testConnectSendReceive()
 	// Client should not have added client yet
 	UASSERT(hand_client.count == 0);
 
-	try {
-		NetworkPacket pkt;
-		infostream << "** running client.Receive()" << std::endl;
-		client.Receive(&pkt);
+	NetworkPacket pkt;
+	infostream << "** running client.Receive()" << std::endl;
+	if (client.ReceiveTimeoutMs(&pkt, timeout_ms)) {
 		infostream << "** Client received: peer_id=" << pkt.getPeerId()
 			<< ", size=" << pkt.getSize() << std::endl;
-	} catch (con::NoIncomingDataException &e) {
 	}
 
 	// Client should have added server now
@@ -228,14 +228,14 @@ void TestConnection::testConnectSendReceive()
 
 	sleep_ms(100);
 
-	try {
-		NetworkPacket pkt;
-		infostream << "** running server.Receive()" << std::endl;
-		server.Receive(&pkt);
+	NetworkPacket pkt1;
+	infostream << "** running server.Receive()" << std::endl;
+	if (server.ReceiveTimeoutMs(&pkt, timeout_ms)) {
 		infostream << "** Server received: peer_id=" << pkt.getPeerId()
-				<< ", size=" << pkt.getSize()
-				<< std::endl;
-	} catch (con::NoIncomingDataException &e) {
+			<< ", size=" << pkt.getSize()
+			<< std::endl;
+	}
+	else {
 		// No actual data received, but the client has
 		// probably been connected
 	}
@@ -245,40 +245,36 @@ void TestConnection::testConnectSendReceive()
 	UASSERT(hand_client.last_id == 1);
 	// Server should have the client
 	UASSERT(hand_server.count == 1);
-	UASSERT(hand_server.last_id == 2);
+	UASSERT(hand_server.last_id >= 2);
 
 	//sleep_ms(50);
 
 	while (client.Connected() == false) {
-		try {
-			NetworkPacket pkt;
-			infostream << "** running client.Receive()" << std::endl;
-			client.Receive(&pkt);
+		NetworkPacket pkt;
+		infostream << "** running client.Receive()" << std::endl;
+		if (client.TryReceive(&pkt)) {
 			infostream << "** Client received: peer_id=" << pkt.getPeerId()
 				<< ", size=" << pkt.getSize() << std::endl;
-		} catch (con::NoIncomingDataException &e) {
 		}
 		sleep_ms(50);
 	}
 
 	sleep_ms(50);
 
-	try {
-		NetworkPacket pkt;
-		infostream << "** running server.Receive()" << std::endl;
-		server.Receive(&pkt);
+	NetworkPacket pkt2;
+	infostream << "** running server.Receive()" << std::endl;
+	if (server.ReceiveTimeoutMs(&pkt, timeout_ms)) {
 		infostream << "** Server received: peer_id=" << pkt.getPeerId()
-				<< ", size=" << pkt.getSize()
-				<< std::endl;
-	} catch (con::NoIncomingDataException &e) {
+			<< ", size=" << pkt.getSize()
+			<< std::endl;
 	}
 
 	/*
 		Simple send-receive test
 	*/
 	{
-		NetworkPacket pkt;
-		pkt.putRawPacket((u8*) "Hello World !", 14, 0);
+		NetworkPacket pkt(0x4b, 0);
+		pkt.putRawString("Hello World !", 14);
 
 		auto sentdata = pkt.oldForgePacket();
 
@@ -289,7 +285,7 @@ void TestConnection::testConnectSendReceive()
 
 		NetworkPacket recvpacket;
 		infostream << "** running server.Receive()" << std::endl;
-		server.Receive(&recvpacket);
+		UASSERT(server.ReceiveTimeoutMs(&recvpacket, timeout_ms));
 		infostream << "** Server received: peer_id=" << pkt.getPeerId()
 				<< ", size=" << pkt.getSize()
 				<< ", data=" << (const char*)pkt.getU8Ptr(0)
@@ -300,15 +296,15 @@ void TestConnection::testConnectSendReceive()
 		UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
 	}
 
-	session_t peer_id_client = 2;
+	const session_t peer_id_client = hand_server.last_id;
 	/*
 		Send a large packet
 	*/
 	{
 		const int datasize = 30000;
-		NetworkPacket pkt(0, datasize);
+		NetworkPacket pkt(0xff, datasize);
 		for (u16 i=0; i<datasize; i++) {
-			pkt << (u8) i/4;
+			pkt << static_cast<u8>(i/4);
 		}
 
 		infostream << "Sending data (size=" << datasize << "):";
@@ -339,14 +335,12 @@ void TestConnection::testConnectSendReceive()
 		for (;;) {
 			if (porting::getTimeMs() - timems0 > 5000 || received)
 				break;
-			try {
-				NetworkPacket pkt;
-				client.Receive(&pkt);
+			NetworkPacket pkt;
+			if (client.ReceiveTimeoutMs(&pkt, timeout_ms)) {
 				size = pkt.getSize();
 				peer_id = pkt.getPeerId();
 				recvdata = pkt.oldForgePacket();
 				received = true;
-			} catch (con::NoIncomingDataException &e) {
 			}
 			sleep_ms(10);
 		}
@@ -374,5 +368,5 @@ void TestConnection::testConnectSendReceive()
 	UASSERT(hand_client.count == 1);
 	UASSERT(hand_client.last_id == 1);
 	UASSERT(hand_server.count == 1);
-	UASSERT(hand_server.last_id == 2);
+	UASSERT(hand_server.last_id >= 2);
 }

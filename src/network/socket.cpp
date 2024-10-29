@@ -43,15 +43,12 @@ typedef int socklen_t;
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <fcntl.h>
-#include <netdb.h>
+#include <poll.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #define LAST_SOCKET_ERR() (errno)
 #define SOCKET_ERR_STR(e) strerror(e)
 #endif
-
-// Set to true to enable verbose debug output
-bool socket_enable_debug_output = false; // yuck
 
 static bool g_sockets_initialized = false;
 
@@ -104,12 +101,6 @@ bool UDPSocket::init(bool ipv6, bool noExceptions)
 	m_addr_family = ipv6 ? AF_INET6 : AF_INET;
 	m_handle = socket(m_addr_family, SOCK_DGRAM, IPPROTO_UDP);
 
-	if (socket_enable_debug_output) {
-		tracestream << "UDPSocket(" << (int)m_handle
-			<< ")::UDPSocket(): ipv6 = " << (ipv6 ? "true" : "false")
-			<< std::endl;
-	}
-
 	if (m_handle < 0) {
 		if (noExceptions) {
 			return false;
@@ -135,11 +126,6 @@ bool UDPSocket::init(bool ipv6, bool noExceptions)
 
 UDPSocket::~UDPSocket()
 {
-	if (socket_enable_debug_output) {
-		tracestream << "UDPSocket( " << (int)m_handle << ")::~UDPSocket()"
-			<< std::endl;
-	}
-
 	if (m_handle >= 0) {
 #ifdef _WIN32
 		closesocket(m_handle);
@@ -151,12 +137,6 @@ UDPSocket::~UDPSocket()
 
 void UDPSocket::Bind(Address addr)
 {
-	if (socket_enable_debug_output) {
-		tracestream << "UDPSocket(" << (int)m_handle
-			<< ")::Bind(): " << addr.serializeString() << ":"
-			<< addr.getPort() << std::endl;
-	}
-
 	if (addr.getFamily() != m_addr_family) {
 		const char *errmsg =
 				"Socket and bind address families do not match";
@@ -201,30 +181,6 @@ void UDPSocket::Send(const Address &destination, const void *data, int size)
 
 	if (INTERNET_SIMULATOR)
 		dumping_packet = myrand() % INTERNET_SIMULATOR_PACKET_LOSS == 0;
-
-	if (socket_enable_debug_output) {
-		// Print packet destination and size
-		tracestream << (int)m_handle << " -> ";
-		destination.print(tracestream);
-		tracestream << ", size=" << size;
-
-		// Print packet contents
-		tracestream << ", data=";
-		for (int i = 0; i < size && i < 20; i++) {
-			if (i % 2 == 0)
-				tracestream << " ";
-			unsigned int a = ((const unsigned char *)data)[i];
-			tracestream << std::hex << std::setw(2) << std::setfill('0') << a;
-		}
-
-		if (size > 20)
-			tracestream << "...";
-
-		if (dumping_packet)
-			tracestream << " (DUMPED BY INTERNET_SIMULATOR)";
-
-		tracestream << std::endl;
-	}
 
 	if (dumping_packet) {
 		// Lol let's forget it
@@ -302,26 +258,6 @@ int UDPSocket::Receive(Address &sender, void *data, int size)
 		sender = Address(address_ip, address_port);
 	}
 
-	if (socket_enable_debug_output) {
-		// Print packet sender and size
-		tracestream << (int)m_handle << " <- ";
-		sender.print(tracestream);
-		tracestream << ", size=" << received;
-
-		// Print packet contents
-		tracestream << ", data=";
-		for (int i = 0; i < received && i < 20; i++) {
-			if (i % 2 == 0)
-				tracestream << " ";
-			unsigned int a = ((const unsigned char *)data)[i];
-			tracestream << std::hex << std::setw(2) << std::setfill('0') << a;
-		}
-		if (received > 20)
-			tracestream << "...";
-
-		tracestream << std::endl;
-	}
-
 	return received;
 }
 
@@ -332,46 +268,45 @@ void UDPSocket::setTimeoutMs(int timeout_ms)
 
 bool UDPSocket::WaitData(int timeout_ms)
 {
-	fd_set readset;
-	int result;
+	timeout_ms = MYMAX(timeout_ms, 0);
 
-	// Initialize the set
-	FD_ZERO(&readset);
-	FD_SET(m_handle, &readset);
-
-	// Initialize time out struct
-	struct timeval tv;
-	tv.tv_sec = 0;
-	tv.tv_usec = timeout_ms * 1000;
-
-	// select()
-	result = select(m_handle + 1, &readset, NULL, NULL, &tv);
-
-	if (result == 0)
-		return false;
-
-	int e = LAST_SOCKET_ERR();
 #ifdef _WIN32
-	if (result < 0 && (e == WSAEINTR || e == WSAEBADF)) {
+	WSAPOLLFD pfd;
+	pfd.fd = m_handle;
+	pfd.events = POLLRDNORM;
+
+	int result = WSAPoll(&pfd, 1, timeout_ms);
 #else
-	if (result < 0 && (e == EINTR || e == EBADF)) {
+	struct pollfd pfd;
+	pfd.fd = m_handle;
+	pfd.events = POLLIN;
+
+	int result = poll(&pfd, 1, timeout_ms);
 #endif
-		// N.B. select() fails when sockets are destroyed on Connection's dtor
-		// with EBADF.  Instead of doing tricky synchronization, allow this
+
+	if (result == 0) {
+		return false; // No data
+	} else if (result > 0) {
+		// There might be data
+		return pfd.revents != 0;
+	}
+
+	// Error case
+	int e = LAST_SOCKET_ERR();
+
+#ifdef _WIN32
+	if (e == WSAEINTR || e == WSAEBADF) {
+#else
+	if (e == EINTR || e == EBADF) {
+#endif
+		// N.B. poll() fails when sockets are destroyed on Connection's dtor
+		// with EBADF. Instead of doing tricky synchronization, allow this
 		// thread to exit but don't throw an exception.
 		return false;
 	}
 
-	if (result < 0) {
-		tracestream << (int)m_handle << ": Select failed: " << SOCKET_ERR_STR(e)
-			<< std::endl;
+	tracestream << (int)m_handle << ": poll failed: "
+		<< SOCKET_ERR_STR(e) << std::endl;
 
-		throw SocketException("Select failed");
-	} else if (!FD_ISSET(m_handle, &readset)) {
-		// No data
-		return false;
-	}
-
-	// There is data
-	return true;
+	throw SocketException("poll failed");
 }

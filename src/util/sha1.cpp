@@ -65,7 +65,7 @@ void SHA1::storeBigEndianUint32( unsigned char* byte, Uint32 num )
 SHA1::SHA1()
 {
 	// make sure that the data type is the right size
-	assert( sizeof( Uint32 ) * 5 == 20 );
+	static_assert( sizeof( Uint32 ) * 5 == 20 );
 }
 
 // Destructor ********************************************************
@@ -134,20 +134,19 @@ void SHA1::process()
 }
 
 // addBytes **********************************************************
-void SHA1::addBytes( const char* data, int num )
+void SHA1::addBytes( const char* data, Uint32 num )
 {
 	assert( data );
-	assert( num >= 0 );
 	// add these bytes to the running total
 	size += num;
 	// repeat until all data is processed
 	while( num > 0 )
 	{
 		// number of bytes required to complete block
-		int needed = 64 - unprocessedBytes;
-		assert( needed > 0 );
+		Uint32 needed = 64 - unprocessedBytes;
+		assert( needed <= 64 );
 		// number of bytes to copy (use smaller of two)
-		int toCopy = (num < needed) ? num : needed;
+		Uint32 toCopy = (num < needed) ? num : needed;
 		// Copy the bytes
 		memcpy( bytes + unprocessedBytes, data, toCopy );
 		// Bytes have been copied
@@ -161,7 +160,7 @@ void SHA1::addBytes( const char* data, int num )
 }
 
 // digest ************************************************************
-unsigned char* SHA1::getDigest()
+void SHA1::getDigest(unsigned char *digest)
 {
 	// save the message size
 	Uint32 totalBitsL = size << 3;
@@ -179,20 +178,16 @@ unsigned char* SHA1::getDigest()
 		addBytes( (char*)footer, 64 - unprocessedBytes);
 	assert( unprocessedBytes <= 56 );
 	// how many zeros do we need
-	int neededZeros = 56 - unprocessedBytes;
+	Uint32 neededZeros = 56 - unprocessedBytes;
 	// store file size (in bits) in big-endian format
 	storeBigEndianUint32( footer + neededZeros    , totalBitsH );
 	storeBigEndianUint32( footer + neededZeros + 4, totalBitsL );
 	// finish the final block
 	addBytes( (char*)footer, neededZeros + 8 );
-	// allocate memory for the digest bytes
-	unsigned char* digest = (unsigned char*)malloc( 20 );
 	// copy the digest bytes
 	storeBigEndianUint32( digest, H0 );
 	storeBigEndianUint32( digest + 4, H1 );
 	storeBigEndianUint32( digest + 8, H2 );
 	storeBigEndianUint32( digest + 12, H3 );
 	storeBigEndianUint32( digest + 16, H4 );
-	// return the digest
-	return digest;
 }

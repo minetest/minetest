@@ -10,6 +10,8 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - 'util/ci/**'
@@ -20,6 +22,8 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - 'util/ci/**'
@@ -32,18 +36,18 @@ jobs:
   clang_tidy:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - name: Install deps
-        run: |
-          source ./util/ci/common.sh
-          install_linux_deps $CLANG_TIDY
+    - uses: actions/checkout@v4
+    - name: Install deps
+      run: |
+        source ./util/ci/common.sh
+        install_linux_deps $CLANG_TIDY
 
-      - uses: prefix-dev/setup-pixi@v0.8.1
-        with:
-          manifest-path: pixi.toml
-          cache: true
-          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
+    - uses: prefix-dev/setup-pixi@v0.8.1
+      with:
+        manifest-path: pixi.toml
+        cache: true
+        cache-write: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
 
-      - name: Run clang-tidy
-        run: |
-          pixi run ./util/ci/clang-tidy.sh
+    - name: Run clang-tidy
+      shell: pixi run -- bash -e {0}
+      run: ./util/ci/clang-tidy.sh

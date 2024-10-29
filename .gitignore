@@ -1,5 +1,8 @@
 ## Editors and development environments
 *~
+.cmake
+CMakeUserPresets.json
+Testing/*
 *.swp
 *.bak*
 *.orig
@@ -23,8 +26,12 @@ tags
 !tags/
 gtags.files
 .idea
+.qtcreator/
 # Codelite
 *.project
+# Visual Studio Code & plugins
+.vscode/*
+!.vscode/extensions.json
 build/.cmake/
 # Fleet
 .fleet
@@ -37,6 +44,10 @@ build/.cmake/
 *.zsync
 appimage-build
 AppDir
+# Direnv
+.direnv/
+# Nix
+/result
 
 ## Files related to Minetest development cycle
 /*.patch
@@ -62,6 +73,7 @@ AppDir
 /clientmods/*
 !/clientmods/preview/
 /client/mod_storage/
+/mod_data
 
 ## Configuration/log files
 artifacts/
@@ -91,24 +103,26 @@ cmake_install.cmake
 CMakeCache.txt
 CPackConfig.cmake
 CPackSourceConfig.cmake
-src/test_config.h
 src/cmake_config.h
 src/cmake_config_githash.h
-src/unittest/test_world/world.mt
-games/devtest/mods/testnodes/textures/testnodes_generated_*.png
 /locale/
 .directory
 *.cbp
 *.layout
 *.o
 *.a
+*.dump
+*.dmp
 *.ninja
 .ninja*
 *.gch
 *.iml
 test_config.h
 cmake-build-debug/
+cmake-build-minsizerel/
 cmake-build-release/
+cmake-build-relwithdebinfo/
+cmake-build-default/
 cmake_config.h
 cmake_config_githash.h
 CMakeDoxy*
@@ -119,6 +133,9 @@ compile_commands.json
 *.vcxproj*
 *.sln
 .vs/
+
+# Old irrlichtmt. Still ignored to make bisecting easier.
+lib/irrlichtmt
 
 # Generated mod storage database
 client/mod_storage.sqlite

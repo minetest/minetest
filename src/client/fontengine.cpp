@@ -24,20 +24,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "filesys.h"
 #include "gettext.h"
+#include "settings.h"
 #include "irrlicht_changes/CGUITTFont.h"
 #include "util/numeric.h" // rangelim
-
-/** maximum size distance for getting a "similar" font size */
-#define MAX_FONT_SIZE_OFFSET 10
+#include <IGUIEnvironment.h>
+#include <IGUIFont.h>
 
 /** reference to access font engine, has to be initialized by main */
-FontEngine* g_fontengine = NULL;
+FontEngine *g_fontengine = nullptr;
 
 /** callback to be used on change of font size setting */
 static void font_setting_changed(const std::string &name, void *userdata)
 {
-	g_fontengine->readSettings();
+	static_cast<FontEngine *>(userdata)->readSettings();
 }
+
+static const char *settings[] = {
+	"font_size", "font_bold", "font_italic", "font_size_divisible_by",
+	"mono_font_size", "mono_font_size_divisible_by",
+	"font_shadow", "font_shadow_alpha",
+	"font_path", "font_path_bold", "font_path_italic", "font_path_bold_italic",
+	"mono_font_path", "mono_font_path_bold", "mono_font_path_italic",
+	"mono_font_path_bold_italic",
+	"fallback_font_path",
+	"dpi_change_notifier", "display_density_factor", "gui_scaling",
+};
 
 /******************************************************************************/
 FontEngine::FontEngine(gui::IGUIEnvironment* env) :
@@ -53,24 +64,15 @@ FontEngine::FontEngine(gui::IGUIEnvironment* env) :
 
 	readSettings();
 
-	const char *settings[] = {
-		"font_size", "font_bold", "font_italic", "font_size_divisible_by",
-		"mono_font_size", "mono_font_size_divisible_by",
-		"font_shadow", "font_shadow_alpha",
-		"font_path", "font_path_bold", "font_path_italic", "font_path_bold_italic",
-		"mono_font_path", "mono_font_path_bold", "mono_font_path_italic",
-		"mono_font_path_bold_italic",
-		"fallback_font_path",
-		"screen_dpi", "gui_scaling",
-	};
-
 	for (auto name : settings)
-		g_settings->registerChangedCallback(name, font_setting_changed, NULL);
+		g_settings->registerChangedCallback(name, font_setting_changed, this);
 }
 
 /******************************************************************************/
 FontEngine::~FontEngine()
 {
+	g_settings->deregisterAllChangedCallbacks(this);
+
 	cleanCache();
 }
 
@@ -226,7 +228,7 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 	u16 divisible_by = g_settings->getU16(setting_prefix + "font_size_divisible_by");
 	if (divisible_by > 1) {
 		size = std::max<u32>(
-				std::round((double)size / divisible_by) * divisible_by, divisible_by);
+				std::round((float)size / divisible_by) * divisible_by, divisible_by);
 	}
 
 	sanity_check(size != 0);

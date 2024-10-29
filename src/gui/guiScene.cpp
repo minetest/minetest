@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <SViewFrustum.h>
 #include <IAnimatedMeshSceneNode.h>
+#include <IVideoDriver.h>
+#include "IAttributes.h"
 #include "porting.h"
 
 GUIScene::GUIScene(gui::IGUIEnvironment *env, scene::ISceneManager *smgr,
@@ -66,7 +68,6 @@ void GUIScene::setTexture(u32 idx, video::ITexture *texture)
 	material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	material.MaterialTypeParam = 0.5f;
 	material.TextureLayers[0].Texture = texture;
-	material.Lighting = false;
 	material.FogEnable = true;
 	material.TextureLayers[0].MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 	material.TextureLayers[0].MagFilter = video::ETMAGF_NEAREST;
@@ -157,7 +158,7 @@ void GUIScene::setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES> &sty
 /**
  * Sets the frame loop range for the mesh
  */
-void GUIScene::setFrameLoop(s32 begin, s32 end)
+void GUIScene::setFrameLoop(f32 begin, f32 end)
 {
 	if (m_mesh->getStartFrame() != begin || m_mesh->getEndFrame() != end)
 		m_mesh->setFrameLoop(begin, end);
@@ -225,8 +226,7 @@ void GUIScene::setCameraRotation(v3f rot)
 	core::matrix4 mat;
 	mat.setRotationDegrees(rot);
 
-	m_cam_pos = v3f(0.f, 0.f, m_cam_distance);
-	mat.rotateVect(m_cam_pos);
+	m_cam_pos = mat.rotateAndScaleVect(v3f(0.f, 0.f, m_cam_distance));
 
 	m_cam_pos += m_target_pos;
 	m_cam->setPosition(m_cam_pos);

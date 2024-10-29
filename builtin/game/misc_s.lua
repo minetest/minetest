@@ -25,11 +25,8 @@ end
 
 
 function core.get_item_group(name, group)
-	if not core.registered_items[name] or not
-			core.registered_items[name].groups[group] then
-		return 0
-	end
-	return core.registered_items[name].groups[group]
+	local def = core.registered_items[name]
+	return def and def.groups[group] or 0
 end
 
 
@@ -96,4 +93,27 @@ function core.encode_png(width, height, data, compression)
 	end
 
 	return o_encode_png(width, height, data, compression or 6)
+end
+
+-- Helper that pushes a collisionMoveResult structure
+if core.set_push_moveresult1 then
+	-- must match CollisionAxis in collision.h
+	local AXES = {"x", "y", "z"}
+	-- <=> script/common/c_content.cpp push_collision_move_result()
+	core.set_push_moveresult1(function(b0, b1, b2, axis, npx, npy, npz, v0x, v0y, v0z, v1x, v1y, v1z, v2x, v2y, v2z)
+		return {
+			touching_ground = b0,
+			collides = b1,
+			standing_on_object = b2,
+			collisions = {{
+				type = "node",
+				axis = AXES[axis + 1],
+				node_pos = vector.new(npx, npy, npz),
+				new_pos = vector.new(v0x, v0y, v0z),
+				old_velocity = vector.new(v1x, v1y, v1z),
+				new_velocity = vector.new(v2x, v2y, v2z),
+			}},
+		}
+	end)
+	core.set_push_moveresult1 = nil
 end

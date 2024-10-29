@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiFormSpecMenu.h"
 #include "client/hud.h"
 #include "client/client.h"
+#include "client/renderingengine.h"
+#include <IVideoDriver.h>
 
 GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env,
 	gui::IGUIElement *parent,
@@ -153,7 +155,7 @@ void GUIInventoryList::draw()
 		// Add hovering tooltip
 		bool show_tooltip = !item.empty() && hovering && !selected_item;
 		// Make it possible to see item tooltips on touchscreens
-		if (m_fs_menu->getPointerType() == PointerType::Touch) {
+		if (RenderingEngine::getLastPointerType() == PointerType::Touch) {
 			show_tooltip |= hovering && selected && m_fs_menu->getSelectedAmount() != 0;
 		}
 		if (show_tooltip) {

@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <unordered_set>
+#include <map>
 #include "metadata.h"
 
 /*
@@ -56,7 +57,10 @@ public:
 	{
 		return m_privatevars.count(name) != 0;
 	}
-	void markPrivate(const std::string &name, bool set);
+
+	/// Marks a key as private.
+	/// @return metadata modified?
+	bool markPrivate(const std::string &name, bool set);
 
 private:
 	int countNonPrivate() const;

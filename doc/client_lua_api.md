@@ -1,5 +1,10 @@
-Minetest Lua Client Modding API Reference 5.9.0
-================================================
+Luanti Lua Client Modding API Reference 5.10.0
+==============================================
+
+**WARNING**: if you're looking for the `minetest` namespace (e.g. `minetest.something`),
+it's now called `core` due to the renaming of Luanti (formerly Minetest).
+`minetest` will keep existing as an alias, so that old code won't break.
+
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
 
@@ -8,11 +13,11 @@ Introduction
 
 ** WARNING: The client API is currently unstable, and may break/change without warning. **
 
-Content and functionality can be added to Minetest 0.4.15-dev+ by using Lua
+Content and functionality can be added to Luanti by using Lua
 scripting in run-time loaded mods.
 
 A mod is a self-contained bunch of scripts, textures and other related
-things that is loaded by and interfaces with Minetest.
+things that is loaded by and interfaces with Luanti.
 
 Transferring client-sided mods from the server to the client is planned, but not implemented yet.
 
@@ -62,7 +67,7 @@ Generic:
 
 In a run-in-place version (e.g. the distributed windows version):
 
-* `minetest-0.4.x/clientmods/` (User-installed mods)
+* `minetest/clientmods/` (User-installed mods)
 
 On an installed version on Linux:
 
@@ -97,7 +102,7 @@ The location of this directory.
 
 An (optional) settings file that provides meta information about the mod.
 
-* `name`: The mod name. Allows Minetest to determine the mod name even if the
+* `name`: The mod name. Allows Luanti to determine the mod name even if the
           folder is wrongly named.
 * `description`: Description of mod to be shown in the Mods tab of the main
                  menu.
@@ -109,7 +114,7 @@ An (optional) settings file that provides meta information about the mod.
 ### `init.lua`
 
 The main Lua script. Running this script should register everything it
-wants to register. Subsequent execution depends on minetest calling the
+wants to register. Subsequent execution depends on Luanti calling the
 registered callbacks.
 
 **NOTE**: Client mods currently can't provide textures, sounds, or models by
@@ -185,15 +190,9 @@ Examples of sound parameter tables:
     pos = {x = 1, y = 2, z = 3},
     gain = 1.0, -- default
 }
--- Play connected to an object, looped
-{
-    object = <an ObjectRef>,
-    gain = 1.0, -- default
-    loop = true,
-}
 ```
 
-Looped sounds must either be connected to an object or played locationless.
+Looped sounds must be played locationless.
 
 ### SimpleSoundSpec
 * e.g. `""`
@@ -220,387 +219,20 @@ For helper functions see "Vector helpers".
 
 Flag Specifier Format
 ---------------------
-Flags using the standardized flag specifier format can be specified in either of
-two ways, by string or table.
 
-The string format is a comma-delimited set of flag names; whitespace and
-unrecognized flag fields are ignored. Specifying a flag in the string sets the
-flag, and specifying a flag prefixed by the string `"no"` explicitly
-clears the flag from whatever the default may be.
-
-In addition to the standard string flag format, the schematic flags field can
-also be a table of flag names to boolean values representing whether or not the
-flag is set. Additionally, if a field with the flag name prefixed with `"no"`
-is present, mapped to a boolean of any value, the specified flag is unset.
-
-E.g. A flag field of value
-
-```lua
-{place_center_x = true, place_center_y=false, place_center_z=true}
-```
-
-is equivalent to
-
-```lua
-{place_center_x = true, noplace_center_y=true, place_center_z=true}
-```
-
-which is equivalent to
-
-```lua
-"place_center_x, noplace_center_y, place_center_z"
-```
-
-or even
-
-```lua
-"place_center_x, place_center_z"
-```
-
-since, by default, no schematic attributes are set.
+Refer to `lua_api.md`.
 
 Formspec
 --------
+
 Formspec defines a menu. It is a string, with a somewhat strange format.
 
-Spaces and newlines can be inserted between the blocks, as is used in the
-examples.
-
-### Examples
-
-#### Chest
-
-    size[8,9]
-    list[context;main;0,0;8,4;]
-    list[current_player;main;0,5;8,4;]
-
-#### Furnace
-
-    size[8,9]
-    list[context;fuel;2,3;1,1;]
-    list[context;src;2,1;1,1;]
-    list[context;dst;5,1;2,2;]
-    list[current_player;main;0,5;8,4;]
-
-#### Minecraft-like player inventory
-
-    size[8,7.5]
-    image[1,0.6;1,2;player.png]
-    list[current_player;main;0,3.5;8,4;]
-    list[current_player;craft;3,0;3,3;]
-    list[current_player;craftpreview;7,1;1,1;]
-
-### Elements
-
-#### `size[<W>,<H>,<fixed_size>]`
-* Define the size of the menu in inventory slots
-* `fixed_size`: `true`/`false` (optional)
-* deprecated: `invsize[<W>,<H>;]`
-
-#### `container[<X>,<Y>]`
-* Start of a container block, moves all physical elements in the container by (X, Y)
-* Must have matching container_end
-* Containers can be nested, in which case the offsets are added
-  (child containers are relative to parent containers)
-
-#### `container_end[]`
-* End of a container, following elements are no longer relative to this container
-
-#### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
-* Show an inventory list
-
-#### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
-* Show an inventory list
-
-#### `listring[<inventory location>;<list name>]`
-* Allows to create a ring of inventory lists
-* Shift-clicking on items in one element of the ring
-  will send them to the next inventory list inside the ring
-* The first occurrence of an element inside the ring will
-  determine the inventory where items will be sent to
-
-#### `listring[]`
-* Shorthand for doing `listring[<inventory location>;<list name>]`
-  for the last two inventory lists added by list[...]
-
-#### `listcolors[<slot_bg_normal>;<slot_bg_hover>]`
-* Sets background color of slots as `ColorString`
-* Sets background color of slots on mouse hovering
-
-#### `listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>]`
-* Sets background color of slots as `ColorString`
-* Sets background color of slots on mouse hovering
-* Sets color of slots border
-
-#### `listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>;<tooltip_bgcolor>;<tooltip_fontcolor>]`
-* Sets background color of slots as `ColorString`
-* Sets background color of slots on mouse hovering
-* Sets color of slots border
-* Sets default background color of tooltips
-* Sets default font color of tooltips
-
-#### `tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>,<fontcolor>]`
-* Adds tooltip for an element
-* `<bgcolor>` tooltip background color as `ColorString` (optional)
-* `<fontcolor>` tooltip font color as `ColorString` (optional)
-
-#### `image[<X>,<Y>;<W>,<H>;<texture name>]`
-* Show an image
-* Position and size units are inventory slots
-
-#### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
-* Show an inventory image of registered item/node
-* Position and size units are inventory slots
-
-#### `bgcolor[<color>;<fullscreen>]`
-* Sets background color of formspec as `ColorString`
-* If `true`, the background color is drawn fullscreen (does not affect the size of the formspec)
-
-#### `background[<X>,<Y>;<W>,<H>;<texture name>]`
-* Use a background. Inventory rectangles are not drawn then.
-* Position and size units are inventory slots
-* Example for formspec 8x4 in 16x resolution: image shall be sized
-  8 times 16px  times  4 times 16px.
-
-#### `background[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>]`
-* Use a background. Inventory rectangles are not drawn then.
-* Position and size units are inventory slots
-* Example for formspec 8x4 in 16x resolution:
-  image shall be sized 8 times 16px  times  4 times 16px
-* If `true` the background is clipped to formspec size
-  (`x` and `y` are used as offset values, `w` and `h` are ignored)
-
-#### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
-* Textual password style field; will be sent to server when a button is clicked
-* When enter is pressed in field, fields.key_enter_field will be sent with the name
-  of this field.
-* `x` and `y` position the field relative to the top left of the menu
-* `w` and `h` are the size of the field
-* Fields are a set height, but will be vertically centered on `h`
-* Position and size units are inventory slots
-* `name` is the name of the field as returned in fields to `on_receive_fields`
-* `label`, if not blank, will be text printed on the top left above the field
-* See field_close_on_enter to stop enter closing the formspec
-
-#### `field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
-* Textual field; will be sent to server when a button is clicked
-* When enter is pressed in field, fields.key_enter_field will be sent with the name
-  of this field.
-* `x` and `y` position the field relative to the top left of the menu
-* `w` and `h` are the size of the field
-* Fields are a set height, but will be vertically centered on `h`
-* Position and size units are inventory slots
-* `name` is the name of the field as returned in fields to `on_receive_fields`
-* `label`, if not blank, will be text printed on the top left above the field
-* `default` is the default value of the field
-    * `default` may contain variable references such as `${text}'` which
-      will fill the value from the metadata value `text`
-    * **Note**: no extra text or more than a single variable is supported ATM.
-* See field_close_on_enter to stop enter closing the formspec
-
-#### `field[<name>;<label>;<default>]`
-* As above, but without position/size units
-* When enter is pressed in field, fields.key_enter_field will be sent with the name
-  of this field.
-* Special field for creating simple forms, such as sign text input
-* Must be used without a `size[]` element
-* A "Proceed" button will be added automatically
-* See field_close_on_enter to stop enter closing the formspec
-
-#### `field_close_on_enter[<name>;<close_on_enter>]`
-* <name> is the name of the field
-* if <close_on_enter> is false, pressing enter in the field will submit the form but not close it
-* defaults to true when not specified (ie: no tag for a field)
-
-#### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
-* Same as fields above, but with multi-line input
-
-#### `label[<X>,<Y>;<label>]`
-* `x` and `y` work as per field
-* `label` is the text on the label
-* Position and size units are inventory slots
-
-#### `vertlabel[<X>,<Y>;<label>]`
-* Textual label drawn vertically
-* `x` and `y` work as per field
-* `label` is the text on the label
-* Position and size units are inventory slots
-
-#### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
-* Clickable button. When clicked, fields will be sent.
-* `x`, `y` and `name` work as per field
-* `w` and `h` are the size of the button
-* Fixed button height. It will be vertically centered on `h`
-* `label` is the text on the button
-* Position and size units are inventory slots
-
-#### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
-* `x`, `y`, `w`, `h`, and `name` work as per button
-* `texture name` is the filename of an image
-* Position and size units are inventory slots
-
-#### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>;<pressed texture name>]`
-* `x`, `y`, `w`, `h`, and `name` work as per button
-* `texture name` is the filename of an image
-* Position and size units are inventory slots
-* `noclip=true` means the image button doesn't need to be within specified formsize
-* `drawborder`: draw button border or not
-* `pressed texture name` is the filename of an image on pressed state
-
-#### `item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]`
-* `x`, `y`, `w`, `h`, `name` and `label` work as per button
-* `item name` is the registered name of an item/node,
-   tooltip will be made out of its description
-   to override it use tooltip element
-* Position and size units are inventory slots
-
-#### `button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]`
-* When clicked, fields will be sent and the form will quit.
-
-#### `image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
-* When clicked, fields will be sent and the form will quit.
-
-#### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]`
-* Scrollable item list showing arbitrary text elements
-* `x` and `y` position the itemlist relative to the top left of the menu
-* `w` and `h` are the size of the itemlist
-* `name` fieldname sent to server on doubleclick value is current selected element
-* `listelements` can be prepended by #color in hexadecimal format RRGGBB (only),
-     * if you want a listelement to start with "#" write "##".
-
-#### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]`
-* Scrollable itemlist showing arbitrary text elements
-* `x` and `y` position the item list relative to the top left of the menu
-* `w` and `h` are the size of the item list
-* `name` fieldname sent to server on doubleclick value is current selected element
-* `listelements` can be prepended by #RRGGBB (only) in hexadecimal format
-     * if you want a listelement to start with "#" write "##"
-* Index to be selected within textlist
-* `true`/`false`: draw transparent background
-* See also `minetest.explode_textlist_event` (main menu: `engine.explode_textlist_event`)
-
-#### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
-* Show a tab**header** at specific position (ignores formsize)
-* `x` and `y` position the itemlist relative to the top left of the menu
-* `name` fieldname data is transferred to Lua
-* `caption 1`...: name shown on top of tab
-* `current_tab`: index of selected tab 1...
-* `transparent` (optional): show transparent
-* `draw_border` (optional): draw border
-
-#### `box[<X>,<Y>;<W>,<H>;<color>]`
-* Simple colored semitransparent box
-* `x` and `y` position the box relative to the top left of the menu
-* `w` and `h` are the size of box
-* `color` is color specified as a `ColorString`
-
-#### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
-* Show a dropdown field
-* **Important note**: There are two different operation modes:
-     1. handle directly on change (only changed dropdown is submitted)
-     2. read the value on pressing a button (all dropdown values are available)
-* `x` and `y` position of dropdown
-* Width of dropdown
-* Fieldname data is transferred to Lua
-* Items to be shown in dropdown
-* Index of currently selected dropdown item
-
-#### `checkbox[<X>,<Y>;<name>;<label>;<selected>]`
-* Show a checkbox
-* `x` and `y`: position of checkbox
-* `name` fieldname data is transferred to Lua
-* `label` to be shown left of checkbox
-* `selected` (optional): `true`/`false`
-
-#### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
-* Show a scrollbar
-* There are two ways to use it:
-     1. handle the changed event (only changed scrollbar is available)
-     2. read the value on pressing a button (all scrollbars are available)
-* `x` and `y`: position of trackbar
-* `w` and `h`: width and height
-* `orientation`:  `vertical`/`horizontal`
-* Fieldname data is transferred to Lua
-* Value this trackbar is set to (`0`-`1000`)
-* See also `minetest.explode_scrollbar_event` (main menu: `engine.explode_scrollbar_event`)
-
-#### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
-* Show scrollable table using options defined by the previous `tableoptions[]`
-* Displays cells as defined by the previous `tablecolumns[]`
-* `x` and `y`: position the itemlist relative to the top left of the menu
-* `w` and `h` are the size of the itemlist
-* `name`: fieldname sent to server on row select or doubleclick
-* `cell 1`...`cell n`: cell contents given in row-major order
-* `selected idx`: index of row to be selected within table (first row = `1`)
-* See also `minetest.explode_table_event` (main menu: `engine.explode_table_event`)
-
-#### `tableoptions[<opt 1>;<opt 2>;...]`
-* Sets options for `table[]`
-* `color=#RRGGBB`
-     * default text color (`ColorString`), defaults to `#FFFFFF`
-* `background=#RRGGBB`
-     * table background color (`ColorString`), defaults to `#000000`
-* `border=<true/false>`
-     * should the table be drawn with a border? (default: `true`)
-* `highlight=#RRGGBB`
-     * highlight background color (`ColorString`), defaults to `#466432`
-* `highlight_text=#RRGGBB`
-     * highlight text color (`ColorString`), defaults to `#FFFFFF`
-* `opendepth=<value>`
-     * all subtrees up to `depth < value` are open (default value = `0`)
-     * only useful when there is a column of type "tree"
-
-#### `tablecolumns[<type 1>,<opt 1a>,<opt 1b>,...;<type 2>,<opt 2a>,<opt 2b>;...]`
-* Sets columns for `table[]`
-* Types: `text`, `image`, `color`, `indent`, `tree`
-    * `text`:   show cell contents as text
-    * `image`:  cell contents are an image index, use column options to define images
-    * `color`:   cell contents are a ColorString and define color of following cell
-    * `indent`: cell contents are a number and define indentation of following cell
-    * `tree`:   same as indent, but user can open and close subtrees (treeview-like)
-* Column options:
-    * `align=<value>`
-        * for `text` and `image`: content alignment within cells.
-          Available values: `left` (default), `center`, `right`, `inline`
-    * `width=<value>`
-        * for `text` and `image`: minimum width in em (default: `0`)
-        * for `indent` and `tree`: indent width in em (default: `1.5`)
-    * `padding=<value>`: padding left of the column, in em (default `0.5`).
-      Exception: defaults to 0 for indent columns
-    * `tooltip=<value>`: tooltip text (default: empty)
-    * `image` column options:
-        * `0=<value>` sets image for image index 0
-        * `1=<value>` sets image for image index 1
-        * `2=<value>` sets image for image index 2
-        * and so on; defined indices need not be contiguous empty or
-          non-numeric cells are treated as `0`.
-    * `color` column options:
-        * `span=<value>`: number of following columns to affect (default: infinite)
-
-**Note**: do _not_ use an element name starting with `key_`; those names are reserved to
-pass key press events to formspec!
+For details, refer to `lua_api.md`.
 
 Spatial Vectors
 ---------------
-* `vector.new(a[, b, c])`: returns a vector:
-    * A copy of `a` if `a` is a vector.
-    * `{x = a, y = b, z = c}`, if all `a, b, c` are defined
-* `vector.direction(p1, p2)`: returns a vector
-* `vector.distance(p1, p2)`: returns a number
-* `vector.length(v)`: returns a number
-* `vector.normalize(v)`: returns a vector
-* `vector.floor(v)`: returns a vector, each dimension rounded down
-* `vector.round(v)`: returns a vector, each dimension rounded to nearest int
-* `vector.apply(v, func)`: returns a vector
-* `vector.combine(v, w, func)`: returns a vector
-* `vector.equals(v1, v2)`: returns a boolean
 
-For the following functions `x` can be either a vector or a number:
-
-* `vector.add(v, x)`: returns a vector
-* `vector.subtract(v, x)`: returns a vector
-* `vector.multiply(v, x)`: returns a scaled vector or Schur product
-* `vector.divide(v, x)`: returns a scaled vector or Schur quotient
+Refer to `lua_api.md`.
 
 Helper functions
 ----------------
@@ -620,39 +252,39 @@ Helper functions
     * e.g. `string:split("a,b", ",") == {"a","b"}`
 * `string:trim()`
     * e.g. `string.trim("\n \t\tfoo bar\t ") == "foo bar"`
-* `minetest.wrap_text(str, limit)`: returns a string
+* `core.wrap_text(str, limit)`: returns a string
     * Adds new lines to the string to keep it within the specified character limit
     * limit: Maximal amount of characters in one line
-* `minetest.pos_to_string({x=X,y=Y,z=Z}, decimal_places))`: returns string `"(X,Y,Z)"`
+* `core.pos_to_string({x=X,y=Y,z=Z}, decimal_places))`: returns string `"(X,Y,Z)"`
     * Convert position to a printable string
       Optional: 'decimal_places' will round the x, y and z of the pos to the given decimal place.
-* `minetest.string_to_pos(string)`: returns a position
+* `core.string_to_pos(string)`: returns a position
     * Same but in reverse. Returns `nil` if the string can't be parsed to a position.
-* `minetest.string_to_area("(X1, Y1, Z1) (X2, Y2, Z2)")`: returns two positions
+* `core.string_to_area("(X1, Y1, Z1) (X2, Y2, Z2)")`: returns two positions
     * Converts a string representing an area box into two positions
-* `minetest.is_yes(arg)`
+* `core.is_yes(arg)`
     * returns whether `arg` can be interpreted as yes
-* `minetest.is_nan(arg)`
+* `core.is_nan(arg)`
     * returns true when the passed number represents NaN.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
 
-Minetest namespace reference
-------------------------------
+'core' namespace reference
+--------------------------
 
 ### Utilities
 
-* `minetest.get_current_modname()`: returns the currently loading mod's name, when we are loading a mod
-* `minetest.get_modpath(modname)`: returns virtual path of given mod including
+* `core.get_current_modname()`: returns the currently loading mod's name, when we are loading a mod
+* `core.get_modpath(modname)`: returns virtual path of given mod including
    the trailing separator. This is useful to load additional Lua files
    contained in your mod:
-   e.g. `dofile(minetest.get_modpath(minetest.get_current_modname()) .. "stuff.lua")`
-* `minetest.get_language()`: returns two strings
+   e.g. `dofile(core.get_modpath(core.get_current_modname()) .. "stuff.lua")`
+* `core.get_language()`: returns two strings
    * the current gettext locale
    * the current language code (the same as used for client-side translations)
-* `minetest.get_version()`: returns a table containing components of the
+* `core.get_version()`: returns a table containing components of the
    engine version.  Components:
-    * `project`: Name of the project, eg, "Minetest"
+    * `project`: Name of the project, eg, "Luanti"
     * `string`: Simple version, eg, "1.2.3-dev"
     * `hash`: Full git version (only set if available), eg, "1.2.3-dev-01234567-dirty"
   Use this for informational purposes only. The information in the returned
@@ -660,86 +292,85 @@ Minetest namespace reference
   reliable or verifiable. Compatible forks will have a different name and
   version entirely. To check for the presence of engine features, test
   whether the functions exported by the wanted features exist. For example:
-  `if minetest.check_for_falling then ... end`.
-* `minetest.sha1(data, [raw])`: returns the sha1 hash of data
+  `if core.check_for_falling then ... end`.
+* `core.sha1(data, [raw])`: returns the sha1 hash of data
     * `data`: string of data to hash
     * `raw`: return raw bytes instead of hex digits, default: false
-* `minetest.colorspec_to_colorstring(colorspec)`: Converts a ColorSpec to a
+* `core.colorspec_to_colorstring(colorspec)`: Converts a ColorSpec to a
   ColorString. If the ColorSpec is invalid, returns `nil`.
     * `colorspec`: The ColorSpec to convert
-* `minetest.get_csm_restrictions()`: returns a table of `Flags` indicating the
+* `core.get_csm_restrictions()`: returns a table of `Flags` indicating the
    restrictions applied to the current mod.
    * If a flag in this table is set to true, the feature is RESTRICTED.
    * Possible flags: `load_client_mods`, `chat_messages`, `read_itemdefs`,
                    `read_nodedefs`, `lookup_nodes`, `read_playerinfo`
-* `minetest.urlencode(str)`: Encodes non-unreserved URI characters by a
+* `core.urlencode(str)`: Encodes non-unreserved URI characters by a
   percent sign followed by two hex digits. See
   [RFC 3986, section 2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-2.3).
 
 ### Logging
-* `minetest.debug(...)`
-    * Equivalent to `minetest.log(table.concat({...}, "\t"))`
-* `minetest.log([level,] text)`
+* `core.debug(...)`
+    * Equivalent to `core.log(table.concat({...}, "\t"))`
+* `core.log([level,] text)`
     * `level` is one of `"none"`, `"error"`, `"warning"`, `"action"`,
       `"info"`, or `"verbose"`.  Default is `"none"`.
 
 ### Global callback registration functions
 Call these functions only at load time!
 
-* `minetest.register_globalstep(function(dtime))`
-    * Called every client environment step, usually interval of 0.1s
-* `minetest.register_on_mods_loaded(function())`
+* `core.register_globalstep(function(dtime))`
+    * Called every client environment step
+    * `dtime` is the time since last execution in seconds.
+* `core.register_on_mods_loaded(function())`
     * Called just after mods have finished loading.
-* `minetest.register_on_shutdown(function())`
+* `core.register_on_shutdown(function())`
     * Called before client shutdown
     * **Warning**: If the client terminates abnormally (i.e. crashes), the registered
       callbacks **will likely not be run**. Data should be saved at
       semi-frequent intervals as well as on server shutdown.
-* `minetest.register_on_receiving_chat_message(function(message))`
+* `core.register_on_receiving_chat_message(function(message))`
     * Called always when a client receive a message
     * Return `true` to mark the message as handled, which means that it will not be shown to chat
-* `minetest.register_on_sending_chat_message(function(message))`
+* `core.register_on_sending_chat_message(function(message))`
     * Called always when a client sends a message from chat
     * Return `true` to mark the message as handled, which means that it will not be sent to server
-* `minetest.register_chatcommand(cmd, chatcommand definition)`
-    * Adds definition to minetest.registered_chatcommands
-* `minetest.unregister_chatcommand(name)`
+* `core.register_chatcommand(cmd, chatcommand definition)`
+    * Adds definition to core.registered_chatcommands
+* `core.unregister_chatcommand(name)`
     * Unregisters a chatcommands registered with register_chatcommand.
-* `minetest.register_on_chatcommand(function(command, params))`
-    * Called always when a chatcommand is triggered, before `minetest.registered_chatcommands`
+* `core.register_on_chatcommand(function(command, params))`
+    * Called always when a chatcommand is triggered, before `core.registered_chatcommands`
       is checked to see if the command exists, but after the input is parsed.
     * Return `true` to mark the command as handled, which means that the default
       handlers will be prevented.
-* `minetest.register_on_death(function())`
-    * Called when the local player dies
-* `minetest.register_on_hp_modification(function(hp))`
+* `core.register_on_hp_modification(function(hp))`
     * Called when server modified player's HP
-* `minetest.register_on_damage_taken(function(hp))`
+* `core.register_on_damage_taken(function(hp))`
     * Called when the local player take damages
-* `minetest.register_on_formspec_input(function(formname, fields))`
+* `core.register_on_formspec_input(function(formname, fields))`
     * Called when a button is pressed in the local player's inventory form
     * Newest functions are called first
     * If function returns `true`, remaining functions are not called
-* `minetest.register_on_dignode(function(pos, node))`
+* `core.register_on_dignode(function(pos, node))`
     * Called when the local player digs a node
     * Newest functions are called first
     * If any function returns true, the node isn't dug
-* `minetest.register_on_punchnode(function(pos, node))`
+* `core.register_on_punchnode(function(pos, node))`
     * Called when the local player punches a node
     * Newest functions are called first
     * If any function returns true, the punch is ignored
-* `minetest.register_on_placenode(function(pointed_thing, node))`
+* `core.register_on_placenode(function(pointed_thing, node))`
     * Called when a node has been placed
-* `minetest.register_on_item_use(function(item, pointed_thing))`
+* `core.register_on_item_use(function(item, pointed_thing))`
     * Called when the local player uses an item.
     * Newest functions are called first.
     * If any function returns true, the item use is not sent to server.
-* `minetest.register_on_modchannel_message(function(channel_name, sender, message))`
+* `core.register_on_modchannel_message(function(channel_name, sender, message))`
     * Called when an incoming mod channel message is received
     * You must have joined some channels before, and server must acknowledge the
       join request.
     * If message comes from a server mod, `sender` field is an empty string.
-* `minetest.register_on_modchannel_signal(function(channel_name, signal))`
+* `core.register_on_modchannel_signal(function(channel_name, signal))`
     * Called when a valid incoming mod channel signal is received
     * Signal id permit to react to server mod channel events
     * Possible values are:
@@ -749,50 +380,54 @@ Call these functions only at load time!
       3: leave_failed
       4: event_on_not_joined_channel
       5: state_changed
-* `minetest.register_on_inventory_open(function(inventory))`
+* `core.register_on_inventory_open(function(inventory))`
     * Called when the local player open inventory
     * Newest functions are called first
     * If any function returns true, inventory doesn't open
 ### Sounds
-* `minetest.sound_play(spec, parameters)`: returns a handle
+* `core.sound_play(spec, parameters)`: returns a handle
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
-* `handle:stop()` or `minetest.sound_stop(handle)`
-    * `handle` is a handle returned by `minetest.sound_play`
-* `handle:fade(step, gain)` or `minetest.sound_fade(handle, step, gain)`
-    * `handle` is a handle returned by `minetest.sound_play`
+* `handle:stop()` or `core.sound_stop(handle)`
+    * `handle` is a handle returned by `core.sound_play`
+* `handle:fade(step, gain)` or `core.sound_fade(handle, step, gain)`
+    * `handle` is a handle returned by `core.sound_play`
     * `step` determines how fast a sound will fade.
       Negative step will lower the sound volume, positive step will increase
       the sound volume.
     * `gain` the target gain for the fade.
 
 ### Timing
-* `minetest.after(time, func, ...)`
+* `core.after(time, func, ...)`
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
-* `minetest.get_us_time()`
+    * Jobs set for earlier times are executed earlier. If multiple jobs expire
+      at exactly the same time, then they expire in the order in which they were
+      registered. This basically just applies to jobs registered on the same
+      step with the exact same delay.
+* `core.get_us_time()`
     * Returns time with microsecond precision. May not return wall time.
-* `minetest.get_timeofday()`
+* `core.get_timeofday()`
     * Returns the time of day: `0` for midnight, `0.5` for midday
 
 ### Map
-* `minetest.get_node_or_nil(pos)`
+* `core.get_node_or_nil(pos)`
     * Returns the node at the given position as table in the format
       `{name="node_name", param1=0, param2=0}`, returns `nil`
       for unloaded areas or flavor limited areas.
-* `minetest.get_node_light(pos, timeofday)`
+* `core.get_node_light(pos, timeofday)`
     * Gets the light value at the given position. Note that the light value
       "inside" the node at the given position is returned, so you usually want
       to get the light value of a neighbor.
     * `pos`: The position where to measure the light.
     * `timeofday`: `nil` for current time, `0` for night, `0.5` for day
     * Returns a number between `0` and `15` or `nil`
-* `minetest.find_node_near(pos, radius, nodenames, [search_center])`: returns pos or `nil`
+* `core.find_node_near(pos, radius, nodenames, [search_center])`: returns pos or `nil`
     * `radius`: using a maximum metric
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
     * `search_center` is an optional boolean (default: `false`)
       If true `pos` is also checked for the nodes
-* `minetest.find_nodes_in_area(pos1, pos2, nodenames, [grouped])`
+* `core.find_nodes_in_area(pos1, pos2, nodenames, [grouped])`
     * `pos1` and `pos2` are the min and max positions of the area to search.
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
     * If `grouped` is true the return value is a table indexed by node name
@@ -802,93 +437,91 @@ Call these functions only at load time!
       second value: Table with the count of each node with the node name
       as index
     * Area volume is limited to 4,096,000 nodes
-* `minetest.find_nodes_in_area_under_air(pos1, pos2, nodenames)`: returns a
+* `core.find_nodes_in_area_under_air(pos1, pos2, nodenames)`: returns a
   list of positions.
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
     * Return value: Table with all node positions with a node air above
     * Area volume is limited to 4,096,000 nodes
-* `minetest.line_of_sight(pos1, pos2)`: returns `boolean, pos`
+* `core.line_of_sight(pos1, pos2)`: returns `boolean, pos`
     * Checks if there is anything other than air between pos1 and pos2.
     * Returns false if something is blocking the sight.
     * Returns the position of the blocking node when `false`
     * `pos1`: First position
     * `pos2`: Second position
-* `minetest.raycast(pos1, pos2, objects, liquids)`: returns `Raycast`
+* `core.raycast(pos1, pos2, objects, liquids)`: returns `Raycast`
     * Creates a `Raycast` object.
     * `pos1`: start of the ray
     * `pos2`: end of the ray
     * `objects`: if false, only nodes will be returned. Default is `true`.
     * `liquids`: if false, liquid nodes won't be returned. Default is `false`.
 
-* `minetest.find_nodes_with_meta(pos1, pos2)`
+* `core.find_nodes_with_meta(pos1, pos2)`
     * Get a table of positions of nodes that have metadata within a region
       {pos1, pos2}.
-* `minetest.get_meta(pos)`
+* `core.get_meta(pos)`
     * Get a `NodeMetaRef` at that position
-* `minetest.get_node_level(pos)`
+* `core.get_node_level(pos)`
     * get level of leveled node (water, snow)
-* `minetest.get_node_max_level(pos)`
+* `core.get_node_max_level(pos)`
     * get max available level for leveled node
 
 ### Player
-* `minetest.send_chat_message(message)`
+* `core.send_chat_message(message)`
     * Act as if `message` was typed by the player into the terminal.
-* `minetest.run_server_chatcommand(cmd, param)`
-    * Alias for `minetest.send_chat_message("/" .. cmd .. " " .. param)`
-* `minetest.clear_out_chat_queue()`
+* `core.run_server_chatcommand(cmd, param)`
+    * Alias for `core.send_chat_message("/" .. cmd .. " " .. param)`
+* `core.clear_out_chat_queue()`
     * Clears the out chat queue
-* `minetest.localplayer`
+* `core.localplayer`
     * Reference to the LocalPlayer object. See [`LocalPlayer`](#localplayer) class reference for methods.
 
 ### Privileges
-* `minetest.get_privilege_list()`
+* `core.get_privilege_list()`
     * Returns a list of privileges the current player has in the format `{priv1=true,...}`
-* `minetest.string_to_privs(str)`: returns `{priv1=true,...}`
-* `minetest.privs_to_string(privs)`: returns `"priv1,priv2,..."`
+* `core.string_to_privs(str)`: returns `{priv1=true,...}`
+* `core.privs_to_string(privs)`: returns `"priv1,priv2,..."`
     * Convert between two privilege representations
 
 ### Client Environment
-* `minetest.get_player_names()`
+* `core.get_player_names()`
     * Returns list of player names on server (nil if CSM_RF_READ_PLAYERINFO is enabled by server)
-* `minetest.disconnect()`
+* `core.disconnect()`
     * Disconnect from the server and exit to main menu.
     * Returns `false` if the client is already disconnecting otherwise returns `true`.
-* `minetest.get_server_info()`
+* `core.get_server_info()`
     * Returns [server info](#server-info).
-* `minetest.send_respawn()`
-    * Sends a respawn request to the server.
 
 ### Storage API
-* `minetest.get_mod_storage()`:
+* `core.get_mod_storage()`:
     * returns reference to mod private `StorageRef`
     * must be called during mod load time
 
 ### Mod channels
 ![Mod channels communication scheme](docs/mod channels.png)
 
-* `minetest.mod_channel_join(channel_name)`
+* `core.mod_channel_join(channel_name)`
     * Client joins channel `channel_name`, and creates it, if necessary. You
-      should listen from incoming messages with `minetest.register_on_modchannel_message`
+      should listen from incoming messages with `core.register_on_modchannel_message`
       call to receive incoming messages. Warning, this function is asynchronous.
 
 ### Particles
-* `minetest.add_particle(particle definition)`
+* `core.add_particle(particle definition)`
 
-* `minetest.add_particlespawner(particlespawner definition)`
+* `core.add_particlespawner(particlespawner definition)`
     * Add a `ParticleSpawner`, an object that spawns an amount of particles over `time` seconds
     * Returns an `id`, and -1 if adding didn't succeed
 
-* `minetest.delete_particlespawner(id)`
-    * Delete `ParticleSpawner` with `id` (return value from `minetest.add_particlespawner`)
+* `core.delete_particlespawner(id)`
+    * Delete `ParticleSpawner` with `id` (return value from `core.add_particlespawner`)
 
 ### Misc.
-* `minetest.parse_json(string[, nullvalue])`: returns something
+* `core.parse_json(string[, nullvalue])`: returns something
     * Convert a string containing JSON data into the Lua equivalent
     * `nullvalue`: returned in place of the JSON null; defaults to `nil`
     * On success returns a table, a string, a number, a boolean or `nullvalue`
     * On failure outputs an error message and returns `nil`
     * Example: `parse_json("[10, {\"a\":false}]")`, returns `{10, {a = false}}`
-* `minetest.write_json(data[, styled])`: returns a string or `nil` and an error message
+* `core.write_json(data[, styled])`: returns a string or `nil` and an error message
     * Convert a Lua table into a JSON string
     * styled: Outputs in a human-readable format if this is set, defaults to false
     * Unserializable things like functions and userdata are saved as null.
@@ -897,18 +530,18 @@ Call these functions only at load time!
         2. You cannot mix string and integer keys.
            This is due to the fact that JSON has two distinct array and object values.
     * Example: `write_json({10, {a = false}})`, returns `"[10, {\"a\": false}]"`
-* `minetest.serialize(table)`: returns a string
+* `core.serialize(table)`: returns a string
     * Convert a table containing tables, strings, numbers, booleans and `nil`s
-      into string form readable by `minetest.deserialize`
+      into string form readable by `core.deserialize`
     * Example: `serialize({foo='bar'})`, returns `'return { ["foo"] = "bar" }'`
-* `minetest.deserialize(string)`: returns a table
-    * Convert a string returned by `minetest.deserialize` into a table
+* `core.deserialize(string)`: returns a table
+    * Convert a string returned by `core.deserialize` into a table
     * `string` is loaded in an empty sandbox environment.
     * Will load functions, but they cannot access the global environment.
     * Example: `deserialize('return { ["foo"] = "bar" }')`, returns `{foo='bar'}`
     * Example: `deserialize('print("foo")')`, returns `nil` (function call fails)
         * `error:[string "print("foo")"]:1: attempt to call global 'print' (a nil value)`
-* `minetest.compress(data, method, ...)`: returns `compressed_data`
+* `core.compress(data, method, ...)`: returns `compressed_data`
     * Compress a string of data.
     * `method` is a string identifying the compression method to be used.
     * Supported compression methods:
@@ -920,50 +553,50 @@ Call these functions only at load time!
         * Zstandard: `level` - Compression level. Integer or `nil`. Default `3`.
         Note any supported Zstandard compression level could be used here,
         but these are subject to change between Zstandard versions.
-* `minetest.decompress(compressed_data, method, ...)`: returns data
+* `core.decompress(compressed_data, method, ...)`: returns data
     * Decompress a string of data using the algorithm specified by `method`.
-    * See documentation on `minetest.compress()` for supported compression
+    * See documentation on `core.compress()` for supported compression
       methods.
     * `...` indicates method-specific arguments. Currently, no methods use this
-* `minetest.rgba(red, green, blue[, alpha])`: returns a string
+* `core.rgba(red, green, blue[, alpha])`: returns a string
     * Each argument is an 8 Bit unsigned integer
     * Returns the ColorString from rgb or rgba values
-    * Example: `minetest.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`
-* `minetest.encode_base64(string)`: returns string encoded in base64
+    * Example: `core.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`
+* `core.encode_base64(string)`: returns string encoded in base64
     * Encodes a string in base64.
-* `minetest.decode_base64(string)`: returns string or nil on failure
+* `core.decode_base64(string)`: returns string or nil on failure
     * Padding characters are only supported starting at version 5.4.0, where
       5.5.0 and newer perform proper checks.
     * Decodes a string encoded in base64.
-* `minetest.gettext(string)` : returns string
+* `core.gettext(string)` : returns string
     * look up the translation of a string in the gettext message catalog
 * `fgettext_ne(string, ...)`
-    * call minetest.gettext(string), replace "$1"..."$9" with the given
+    * call core.gettext(string), replace "$1"..."$9" with the given
       extra arguments and return the result
 * `fgettext(string, ...)` : returns string
-    * same as fgettext_ne(), but calls minetest.formspec_escape before returning result
-* `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a position
+    * same as fgettext_ne(), but calls core.formspec_escape before returning result
+* `core.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a position
     * returns the exact position on the surface of a pointed node
-* `minetest.global_exists(name)`
+* `core.global_exists(name)`
     * Checks if a global variable has been set, without triggering a warning.
 
 ### UI
-* `minetest.ui.minimap`
+* `core.ui.minimap`
     * Reference to the minimap object. See [`Minimap`](#minimap) class reference for methods.
     * If client disabled minimap (using enable_minimap setting) this reference will be nil.
-* `minetest.camera`
+* `core.camera`
     * Reference to the camera object. See [`Camera`](#camera) class reference for methods.
-* `minetest.show_formspec(formname, formspec)` : returns true on success
-	* Shows a formspec to the player
-* `minetest.display_chat_message(message)` returns true on success
-	* Shows a chat message to the current player.
+* `core.show_formspec(formname, formspec)` : returns true on success
+    * Shows a formspec to the player
+* `core.display_chat_message(message)` returns true on success
+    * Shows a chat message to the current player.
 
 Setting-related
 ---------------
 
-* `minetest.settings`: Settings object containing all of the settings from the
+* `core.settings`: Settings object containing all of the settings from the
   main config file (`minetest.conf`). Check lua_api.md for class reference.
-* `minetest.setting_get_pos(name)`: Loads a setting from the main settings and
+* `core.setting_get_pos(name)`: Loads a setting from the main settings and
   parses it as a position (in the format `(1,2,3)`). Returns a position or nil.
 
 Class reference
@@ -1071,8 +704,18 @@ Methods:
         ```lua
         {
             speed = float,
+            speed_climb = float,
+            speed_crouch = float,
+            speed_fast = float,
+            speed_walk = float,
+            acceleration_default = float,
+            acceleration_air = float,
+            acceleration_fast = float,
             jump = float,
             gravity = float,
+            liquid_fluidity = float,
+            liquid_fluidity_smooth = float,
+            liquid_sink = float,
             sneak = boolean,
             sneak_glitch = boolean,
             new_move = boolean,
@@ -1088,7 +731,8 @@ Methods:
 * `get_breath()`
     * returns the player's breath
 * `get_movement_acceleration()`
-    * returns acceleration of the player in different environments:
+    * returns acceleration of the player in different environments
+      (note: does not take physics overrides into account):
 
         ```lua
         {
@@ -1099,7 +743,8 @@ Methods:
         ```
 
 * `get_movement_speed()`
-    * returns player's speed in different environments:
+    * returns player's speed in different environments
+      (note: does not take physics overrides into account):
 
         ```lua
         {
@@ -1112,7 +757,8 @@ Methods:
         ```
 
 * `get_movement()`
-    * returns player's movement in different environments:
+    * returns player's movement in different environments
+      (note: does not take physics overrides into account):
 
         ```lua
         {
@@ -1152,6 +798,10 @@ Methods:
     * See [`HUD definition`](#hud-definition-hud_add-hud_get)
 * `hud_get(id)`
     * returns the [`definition`](#hud-definition-hud_add-hud_get) of the HUD with that ID number or `nil`, if non-existent.
+* `hud_get_all()`:
+    * Returns a table in the form `{ [id] = HUD definition, [id] = ... }`.
+    * A mod should keep track of its introduced IDs and only use this to access foreign elements.
+    * It is discouraged to change foreign HUD elements.
 * `hud_remove(id)`
     * remove the HUD element of the specified id, returns `true` on success
 * `hud_change(id, stat, value)`
@@ -1176,7 +826,7 @@ It can be created via `Settings(filename)`.
 
 ### NodeMetaRef
 Node metadata: reference extra data and functionality stored in a node.
-Can be obtained via `minetest.get_meta(pos)`.
+Can be obtained via `core.get_meta(pos)`.
 
 #### Methods
 * `get_string(name)`
@@ -1202,7 +852,7 @@ The map is loaded as the ray advances. If the map is modified after the
 `Raycast` is created, the changes may or may not have an effect on the object.
 
 It can be created via `Raycast(pos1, pos2, objects, liquids)` or
-`minetest.raycast(pos1, pos2, objects, liquids)` where:
+`core.raycast(pos1, pos2, objects, liquids)` where:
 
 * `pos1`: start of the ray
 * `pos2`: end of the ray
@@ -1216,10 +866,10 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 
 -----------------
 ### Definitions
-* `minetest.get_node_def(nodename)`
-	* Returns [node definition](#node-definition) table of `nodename`
-* `minetest.get_item_def(itemstring)`
-	* Returns item definition table of `itemstring`
+* `core.get_node_def(nodename)`
+    * Returns [node definition](#node-definition) table of `nodename`
+* `core.get_item_def(itemstring)`
+    * Returns item definition table of `itemstring`
 
 #### Node Definition
 
@@ -1249,7 +899,7 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
         "node1",
         "node2"
     },
-    post_effect_color = Color,      -- Color overlayed on the screen when the player is in the node
+    post_effect_color = Color,      -- Color overlaid on the screen when the player is in the node
     leveled = number,               -- Max level for node
     sunlight_propogates = bool,     -- Whether light passes through the block
     light_source = number,          -- Light emitted by the block
@@ -1319,241 +969,57 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 ```
 
 ### Server info
+
 ```lua
 {
-	address = "minetest.example.org", -- The domain name/IP address of a remote server or "" for a local server.
-	ip = "203.0.113.156",             -- The IP address of the server.
-	port = 30000,                     -- The port the client is connected to.
-	protocol_version = 30             -- Will not be accurate at start up as the client might not be connected to the server yet, in that case it will be 0.
+    address = "luanti.example.org",   -- The domain name/IP address of a remote server or "" for a local server.
+    ip = "203.0.113.156",             -- The IP address of the server.
+    port = 30000,                     -- The port the client is connected to.
+    protocol_version = 30             -- Will not be accurate at start up as the client might not be connected to the server yet, in that case it will be 0.
 }
 ```
 
 ### HUD Definition (`hud_add`, `hud_get`)
 
-```lua
-{
-    type = "image", -- see HUD element types, default "text"
---  ^ type of HUD element, can be either of "image", "text", "statbar", or "inventory"
-    hud_elem_type = "image",
---  ^ Deprecated, same as `type`. In case both are specified `type` will be used.
-    position = {x=0.5, y=0.5},
---  ^ Left corner position of element, default `{x=0,y=0}`.
-    name = "<name>",    -- default ""
-    scale = {x=2, y=2}, -- default {x=0,y=0}
-    text = "<text>",    -- default ""
-    number = 2,         -- default 0
-    item = 3,           -- default 0
---  ^ Selected item in inventory.  0 for no item selected.
-    direction = 0,      -- default 0
---  ^ Direction: 0: left-right, 1: right-left, 2: top-bottom, 3: bottom-top
-    alignment = {x=0, y=0},   -- default {x=0, y=0}
---  ^ See "HUD Element Types"
-    offset = {x=0, y=0},      -- default {x=0, y=0}
---  ^ See "HUD Element Types"
-    size = { x=100, y=100 },  -- default {x=0, y=0}
---  ^ Size of element in pixels
-    style = 0,
---  ^ For "text" elements sets font style: bitfield with 1 = bold, 2 = italic, 4 = monospace
-}
-```
+Refer to `lua_api.md`.
 
 Escape sequences
 ----------------
 Most text can contain escape sequences that can for example color the text.
 There are a few exceptions: tab headers, dropdowns and vertical labels can't.
 The following functions provide escape sequences:
-* `minetest.get_color_escape_sequence(color)`:
+* `core.get_color_escape_sequence(color)`:
     * `color` is a [ColorString](#colorstring)
     * The escape sequence sets the text color to `color`
-* `minetest.colorize(color, message)`:
+* `core.colorize(color, message)`:
     * Equivalent to:
-      `minetest.get_color_escape_sequence(color) ..
+      `core.get_color_escape_sequence(color) ..
        message ..
-       minetest.get_color_escape_sequence("#ffffff")`
-* `minetest.get_background_escape_sequence(color)`
+       core.get_color_escape_sequence("#ffffff")`
+* `core.get_background_escape_sequence(color)`
     * `color` is a [ColorString](#colorstring)
     * The escape sequence sets the background of the whole text element to
       `color`. Only defined for item descriptions and tooltips.
-* `minetest.strip_foreground_colors(str)`
+* `core.strip_foreground_colors(str)`
     * Removes foreground colors added by `get_color_escape_sequence`.
-* `minetest.strip_background_colors(str)`
+* `core.strip_background_colors(str)`
     * Removes background colors added by `get_background_escape_sequence`.
-* `minetest.strip_colors(str)`
+* `core.strip_colors(str)`
     * Removes all color escape sequences.
 
 `ColorString`
 -------------
-`#RGB` defines a color in hexadecimal format.
 
-`#RGBA` defines a color in hexadecimal format and alpha channel.
-
-`#RRGGBB` defines a color in hexadecimal format.
-
-`#RRGGBBAA` defines a color in hexadecimal format and alpha channel.
-
-Named colors are also supported and are equivalent to
-[CSS Color Module Level 4](http://dev.w3.org/csswg/css-color/#named-colors).
-To specify the value of the alpha channel, append `#A` or `#AA` to the end of
-the color name (e.g. `colorname#08`).
+Refer to `lua_api.md`.
 
 `Color`
 -------------
 `{a = alpha, r = red, g = green, b = blue}` defines an ARGB8 color.
 
-HUD element types
------------------
-The position field is used for all element types.
-
-To account for differing resolutions, the position coordinates are the percentage
-of the screen, ranging in value from `0` to `1`.
-
-The name field is not yet used, but should contain a description of what the
-HUD element represents. The direction field is the direction in which something
-is drawn.
-
-`0` draws from left to right, `1` draws from right to left, `2` draws from
-top to bottom, and `3` draws from bottom to top.
-
-The `alignment` field specifies how the item will be aligned. It ranges from `-1` to `1`,
-with `0` being the center, `-1` is moved to the left/up, and `1` is to the right/down.
-Fractional values can be used.
-
-The `offset` field specifies a pixel offset from the position. Contrary to position,
-the offset is not scaled to screen size. This allows for some precisely-positioned
-items in the HUD.
-
-**Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling factor!
-
-Below are the specific uses for fields in each type; fields not listed for that type are ignored.
-
-**Note**: Future revisions to the HUD API may be incompatible; the HUD API is still
-in the experimental stages.
-
-### `image`
-Displays an image on the HUD.
-
-* `scale`: The scale of the image, with 1 being the original texture size.
-  Only the X coordinate scale is used (positive values).
-  Negative values represent that percentage of the screen it
-  should take; e.g. `x=-100` means 100% (width).
-* `text`: The name of the texture that is displayed.
-* `alignment`: The alignment of the image.
-* `offset`: offset in pixels from position.
-
-### `text`
-Displays text on the HUD.
-
-* `scale`: Defines the bounding rectangle of the text.
-  A value such as `{x=100, y=100}` should work.
-* `text`: The text to be displayed in the HUD element.
-* `number`: An integer containing the RGB value of the color used to draw the text.
-  Specify `0xFFFFFF` for white text, `0xFF0000` for red, and so on.
-* `alignment`: The alignment of the text.
-* `offset`: offset in pixels from position.
-
-### `statbar`
-Displays a horizontal bar made up of half-images.
-
-* `text`: The name of the texture that is used.
-* `number`: The number of half-textures that are displayed.
-  If odd, will end with a vertically center-split texture.
-* `direction`
-* `offset`: offset in pixels from position.
-* `size`: If used, will force full-image size to this value (override texture pack image size)
-
-### `inventory`
-* `text`: The name of the inventory list to be displayed.
-* `number`: Number of items in the inventory to be displayed.
-* `item`: Position of item that is selected.
-* `direction`
-* `offset`: offset in pixels from position.
-
-### `waypoint`
-
-Displays distance to selected world position.
-
-* `name`: The name of the waypoint.
-* `text`: Distance suffix. Can be blank.
-* `precision`: Waypoint precision, integer >= 0. Defaults to 10.
-  If set to 0, distance is not shown. Shown value is `floor(distance*precision)/precision`.
-  When the precision is an integer multiple of 10, there will be `log_10(precision)` digits after the decimal point.
-  `precision = 1000`, for example, will show 3 decimal places (eg: `0.999`).
-  `precision = 2` will show multiples of `0.5`; precision = 5 will show multiples of `0.2` and so on:
-  `precision = n` will show multiples of `1/n`
-* `number:` An integer containing the RGB value of the color used to draw the
-  text.
-* `world_pos`: World position of the waypoint.
-* `offset`: offset in pixels from position.
-* `alignment`: The alignment of the waypoint.
-
-### `image_waypoint`
-
-Same as `image`, but does not accept a `position`; the position is instead determined by `world_pos`, the world position of the waypoint.
-
-* `scale`: The scale of the image, with 1 being the original texture size.
-  Only the X coordinate scale is used (positive values).
-  Negative values represent that percentage of the screen it
-  should take; e.g. `x=-100` means 100% (width).
-* `text`: The name of the texture that is displayed.
-* `alignment`: The alignment of the image.
-* `world_pos`: World position of the waypoint.
-* `offset`: offset in pixels from position.
-
 ### Particle definition (`add_particle`)
 
-```lua
-{
-    pos = {x=0, y=0, z=0},
-    velocity = {x=0, y=0, z=0},
-    acceleration = {x=0, y=0, z=0},
-    --  ^ Spawn particle at pos with velocity and acceleration
-    expirationtime = 1,
-    --  ^ Disappears after expirationtime seconds
-    size = 1,
-    collisiondetection = false,
-    --  ^ collisiondetection: if true collides with physical objects
-    collision_removal = false,
-    --  ^ collision_removal: if true then particle is removed when it collides,
-    --  ^ requires collisiondetection = true to have any effect
-    vertical = false,
-    --  ^ vertical: if true faces player using y axis only
-    texture = "image.png",
-    --  ^ Uses texture (string)
-    animation = {Tile Animation definition},
-    --  ^ optional, specifies how to animate the particle texture
-    glow = 0
-    --  ^ optional, specify particle self-luminescence in darkness
-}
-```
+As documented in `lua_api.md`, except for obvious reasons, the `playername` field is not supported.
 
 ### `ParticleSpawner` definition (`add_particlespawner`)
 
-```lua
-{
-    amount = 1,
-    time = 1,
-    --  ^ If time is 0 has infinite lifespan and spawns the amount on a per-second base
-    minpos = {x=0, y=0, z=0},
-    maxpos = {x=0, y=0, z=0},
-    minvel = {x=0, y=0, z=0},
-    maxvel = {x=0, y=0, z=0},
-    minacc = {x=0, y=0, z=0},
-    maxacc = {x=0, y=0, z=0},
-    minexptime = 1,
-    maxexptime = 1,
-    minsize = 1,
-    maxsize = 1,
-    --  ^ The particle's properties are random values in between the bounds:
-    --  ^ minpos/maxpos, minvel/maxvel (velocity), minacc/maxacc (acceleration),
-    --  ^ minsize/maxsize, minexptime/maxexptime (expirationtime)
-    collisiondetection = false,
-    --  ^ collisiondetection: if true uses collision detection
-    collision_removal = false,
-    --  ^ collision_removal: if true then particle is removed when it collides,
-    --  ^ requires collisiondetection = true to have any effect
-    vertical = false,
-    --  ^ vertical: if true faces player using y axis only
-    texture = "image.png",
-    --  ^ Uses texture (string)
-}
-```
+As documented in `lua_api.md`, except for obvious reasons, the `playername` field is not supported.

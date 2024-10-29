@@ -25,6 +25,7 @@ extern "C" {
 #include <cmath>
 #include <irr_v2d.h>
 #include <irr_v3d.h>
+#include <string_view>
 #include "c_converter.h"
 #include "c_types.h"
 
@@ -78,11 +79,16 @@ v3f LuaHelper::readParam(lua_State *L, int index)
 }
 
 template <>
-std::string LuaHelper::readParam(lua_State *L, int index)
+std::string_view LuaHelper::readParam(lua_State *L, int index)
 {
 	size_t length;
-	std::string result;
 	const char *str = luaL_checklstring(L, index, &length);
-	result.assign(str, length);
-	return result;
+	return std::string_view(str, length);
+}
+
+template <>
+std::string LuaHelper::readParam(lua_State *L, int index)
+{
+	auto sv = readParam<std::string_view>(L, index);
+	return std::string(sv); // a copy
 }

@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h" // For assert()
 #include <cstring>
 #include <memory> // std::shared_ptr
+#include <string_view>
 
 
 template<typename T> class ConstSharedPtr {
@@ -131,6 +132,13 @@ public:
 	unsigned int getSize() const
 	{
 		return m_size;
+	}
+
+	operator std::string_view() const
+	{
+		if (!data)
+			return std::string_view();
+		return std::string_view(reinterpret_cast<char*>(data), m_size);
 	}
 
 private:
@@ -265,9 +273,7 @@ public:
 	void grab() noexcept { ++m_refcount; }
 	void drop() noexcept { if (--m_refcount == 0) delete this; }
 
-	// Preserve own reference count.
-	IntrusiveReferenceCounted(const IntrusiveReferenceCounted &) {}
-	IntrusiveReferenceCounted &operator=(const IntrusiveReferenceCounted &) { return *this; }
+	DISABLE_CLASS_COPY(IntrusiveReferenceCounted)
 private:
 	u32 m_refcount = 1;
 };

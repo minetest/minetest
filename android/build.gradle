@@ -1,22 +1,21 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 project.ext.set("versionMajor", 5)      // Version Major
-project.ext.set("versionMinor", 9)      // Version Minor
+project.ext.set("versionMinor", 10)     // Version Minor
 project.ext.set("versionPatch", 0)      // Version Patch
 // ^ keep in sync with cmake
-project.ext.set("versionCode", 46)      // Android Version Code
-// NOTE: +2 after each release!
-// +1 for ARM and +1 for ARM64 APK's, because
-// each APK must have a larger `versionCode` than the previous
+
+project.ext.set("versionBuild", 0)      // Version Build
+// ^ fourth version number to allow releasing Android-only fixes and beta versions
 
 buildscript {
-	ext.ndk_version = '25.2.9519653'
+	ext.ndk_version = '26.2.11394342'
 	repositories {
 		google()
 		mavenCentral()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:7.4.1'
+		classpath 'com.android.tools.build:gradle:8.5.1'
 		classpath 'de.undercouch:gradle-download-task:4.1.1'
 		// NOTE: Do not place your application dependencies here; they belong
 		// in the individual module build.gradle files

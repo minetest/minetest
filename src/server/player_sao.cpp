@@ -29,17 +29,17 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 		bool is_singleplayer):
 	UnitSAO(env_, v3f(0,0,0)),
 	m_player(player_),
-	m_peer_id(peer_id_),
+	m_peer_id_initial(peer_id_),
 	m_is_singleplayer(is_singleplayer)
 {
-	SANITY_CHECK(m_peer_id != PEER_ID_INEXISTENT);
+	SANITY_CHECK(m_peer_id_initial != PEER_ID_INEXISTENT);
 
 	m_prop.hp_max = PLAYER_MAX_HP_DEFAULT;
 	m_prop.breath_max = PLAYER_MAX_BREATH_DEFAULT;
 	m_prop.physical = false;
 	m_prop.collisionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
 	m_prop.selectionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
-	m_prop.pointable = true;
+	m_prop.pointable = PointabilityType::POINTABLE;
 	// Start of default appearance, this should be overwritten by Lua
 	m_prop.visual = "upright_sprite";
 	m_prop.visual_size = v3f(1, 2, 1);
@@ -88,7 +88,8 @@ void PlayerSAO::addedToEnvironment(u32 dtime_s)
 	ServerActiveObject::addedToEnvironment(dtime_s);
 	ServerActiveObject::setBasePosition(m_base_position);
 	m_player->setPlayerSAO(this);
-	m_player->setPeerId(m_peer_id);
+	m_player->setPeerId(m_peer_id_initial);
+	m_peer_id_initial = PEER_ID_INEXISTENT; // don't try to use it again.
 	m_last_good_position = m_base_position;
 }
 
@@ -96,11 +97,13 @@ void PlayerSAO::addedToEnvironment(u32 dtime_s)
 void PlayerSAO::removingFromEnvironment()
 {
 	ServerActiveObject::removingFromEnvironment();
-	if (m_player->getPlayerSAO() == this) {
-		unlinkPlayerSessionAndSave();
-		for (u32 attached_particle_spawner : m_attached_particle_spawners) {
-			m_env->deleteParticleSpawner(attached_particle_spawner, false);
-		}
+
+	// If this fails, fix the ActiveObjectMgr code in ServerEnvironment
+	SANITY_CHECK(m_player->getPlayerSAO() == this);
+
+	unlinkPlayerSessionAndSave();
+	for (u32 attached_particle_spawner : m_attached_particle_spawners) {
+		m_env->deleteParticleSpawner(attached_particle_spawner, false);
 	}
 }
 
@@ -153,7 +156,10 @@ void PlayerSAO::getStaticData(std::string * result) const
 
 void PlayerSAO::step(float dtime, bool send_recommended)
 {
-	if (!isImmortal() && m_drowning_interval.step(dtime, 2.0f)) {
+	bool not_immortal = !isImmortal();
+
+	if (not_immortal && m_flags.drowning
+			&& m_drowning_interval.step(dtime, 2.0f)) {
 		// Get nose/mouth position, approximate with eye position
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNode(p);
@@ -171,7 +177,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if (m_breathing_interval.step(dtime, 0.5f) && !isImmortal()) {
+	if (not_immortal && m_flags.breathing
+			&& m_breathing_interval.step(dtime, 0.5f)) {
 		// Get nose/mouth position, approximate with eye position
 		v3s16 p = floatToInt(getEyePosition(), BS);
 		MapNode n = m_env->getMap().getNode(p);
@@ -182,7 +189,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			setBreath(m_breath + 1);
 	}
 
-	if (!isImmortal() && m_node_hurt_interval.step(dtime, 1.0f)) {
+	if (not_immortal && m_flags.node_damage
+			&& m_node_hurt_interval.step(dtime, 1.0f)) {
 		u32 damage_per_second = 0;
 		std::string nodename;
 		v3s16 node_pos;
@@ -230,13 +238,12 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	}
 
 	// If attached, check that our parent is still there. If it isn't, detach.
-	if (m_attachment_parent_id && !isAttached()) {
+	if (m_attachment_parent_id && !getParent()) {
 		// This is handled when objects are removed from the map
 		warningstream << "PlayerSAO::step() id=" << m_id <<
 			" is attached to nonexistent parent. This is a bug." << std::endl;
 		clearParentAttachment();
-		setBasePosition(m_last_good_position);
-		m_env->getGameDef()->SendMovePlayer(m_peer_id);
+		setPos(m_last_good_position);
 	}
 
 	//dstream<<"PlayerSAO::step: dtime: "<<dtime<<std::endl;
@@ -333,6 +340,9 @@ std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const
 	writeF32(os, phys.liquid_sink);
 	writeF32(os, phys.acceleration_default);
 	writeF32(os, phys.acceleration_air);
+	writeF32(os, phys.speed_fast);
+	writeF32(os, phys.acceleration_fast);
+	writeF32(os, phys.speed_walk);
 	return os.str();
 }
 
@@ -357,14 +367,14 @@ void PlayerSAO::setPos(const v3f &pos)
 
 	// Send mapblock of target location
 	v3s16 blockpos = v3s16(pos.X / MAP_BLOCKSIZE, pos.Y / MAP_BLOCKSIZE, pos.Z / MAP_BLOCKSIZE);
-	m_env->getGameDef()->SendBlock(m_peer_id, blockpos);
+	m_env->getGameDef()->SendBlock(getPeerID(), blockpos);
 
 	setBasePosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = getBasePosition();
 	m_move_pool.empty();
 	m_time_from_last_teleport = 0.0;
-	m_env->getGameDef()->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(this);
 }
 
 void PlayerSAO::addPos(const v3f &added_pos)
@@ -381,14 +391,14 @@ void PlayerSAO::addPos(const v3f &added_pos)
 	// Send mapblock of target location
 	v3f pos = getBasePosition() + added_pos;
 	v3s16 blockpos = v3s16(pos.X / MAP_BLOCKSIZE, pos.Y / MAP_BLOCKSIZE, pos.Z / MAP_BLOCKSIZE);
-	m_env->getGameDef()->SendBlock(m_peer_id, blockpos);
+	m_env->getGameDef()->SendBlock(getPeerID(), blockpos);
 
 	setBasePosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = getBasePosition();
 	m_move_pool.empty();
 	m_time_from_last_teleport = 0.0;
-	m_env->getGameDef()->SendMovePlayerRel(m_peer_id, added_pos);
+	m_env->getGameDef()->SendMovePlayerRel(getPeerID(), added_pos);
 }
 
 void PlayerSAO::moveTo(v3f pos, bool continuous)
@@ -401,7 +411,7 @@ void PlayerSAO::moveTo(v3f pos, bool continuous)
 	m_last_good_position = getBasePosition();
 	m_move_pool.empty();
 	m_time_from_last_teleport = 0.0;
-	m_env->getGameDef()->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(this);
 }
 
 void PlayerSAO::setPlayerYaw(const float yaw)
@@ -433,7 +443,7 @@ void PlayerSAO::setWantedRange(const s16 range)
 void PlayerSAO::setPlayerYawAndSend(const float yaw)
 {
 	setPlayerYaw(yaw);
-	m_env->getGameDef()->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(this);
 }
 
 void PlayerSAO::setLookPitch(const float pitch)
@@ -447,7 +457,7 @@ void PlayerSAO::setLookPitch(const float pitch)
 void PlayerSAO::setLookPitchAndSend(const float pitch)
 {
 	setLookPitch(pitch);
-	m_env->getGameDef()->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(this);
 }
 
 u32 PlayerSAO::punch(v3f dir,
@@ -459,11 +469,9 @@ u32 PlayerSAO::punch(v3f dir,
 	if (!toolcap)
 		return 0;
 
-	FATAL_ERROR_IF(!puncher, "Punch action called without SAO");
-
 	// No effect if PvP disabled or if immortal
 	if (isImmortal() || !g_settings->getBool("enable_pvp")) {
-		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		if (puncher && puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			// create message and add to list
 			sendPunchCommand();
 			return 0;
@@ -490,11 +498,16 @@ u32 PlayerSAO::punch(v3f dir,
 		}
 	}
 
-	actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
-		", hp=" << puncher->getHP() << ") punched " <<
-		getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
-		"), damage=" << (old_hp - (s32)getHP()) <<
-		(damage_handled ? " (handled by Lua)" : "") << std::endl;
+	if (puncher) {
+		actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
+				", hp=" << puncher->getHP() << ")";
+	} else {
+		actionstream << "(none)";
+	}
+	actionstream << " punched " <<
+			getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
+			"), damage=" << (old_hp - (s32)getHP()) <<
+			(damage_handled ? " (handled by Lua)" : "") << std::endl;
 
 	return hitparams.wear;
 }
@@ -506,14 +519,16 @@ void PlayerSAO::rightClick(ServerActiveObject *clicker)
 
 void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool from_client)
 {
-	target_hp = rangelim(target_hp, 0, U16_MAX);
-
-	if (target_hp == m_hp)
+	if (target_hp == m_hp || (m_hp == 0 && target_hp < 0))
 		return; // Nothing to do
 
-	s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, target_hp - (s32)m_hp, reason);
+	// Protect against overflow.
+	s32 hp_change = std::max<s64>((s64)target_hp - (s64)m_hp, S32_MIN);
 
-	s32 hp = (s32)m_hp + std::min(hp_change, U16_MAX); // Protection against s32 overflow
+	hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp_change, reason);
+	hp_change = std::min<s32>(hp_change, U16_MAX); // Protect against overflow
+
+	s32 hp = (s32)m_hp + hp_change;
 	hp = rangelim(hp, 0, U16_MAX);
 
 	if (hp > m_prop.hp_max)
@@ -542,6 +557,21 @@ void PlayerSAO::setBreath(const u16 breath, bool send)
 
 	if (send)
 		m_env->getGameDef()->SendPlayerBreath(this);
+}
+
+void PlayerSAO::respawn()
+{
+	infostream << "PlayerSAO::respawn(): Player " << m_player->getName()
+			<< " respawns" << std::endl;
+
+	setHP(m_prop.hp_max, PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
+	setBreath(m_prop.breath_max);
+
+	bool repositioned = m_env->getScriptIface()->on_respawnplayer(this);
+	if (!repositioned) {
+		// setPos will send the new position to client
+		setPos(m_env->getGameDef()->findSpawnPos());
+	}
 }
 
 Inventory *PlayerSAO::getInventory() const
@@ -578,16 +608,20 @@ bool PlayerSAO::setWieldedItem(const ItemStack &item)
 
 void PlayerSAO::disconnected()
 {
-	m_peer_id = PEER_ID_INEXISTENT;
 	markForRemoval();
+	m_player->setPeerId(PEER_ID_INEXISTENT);
+}
+
+session_t PlayerSAO::getPeerID() const
+{
+	// Before adding `this` to the server env, m_player is still nullptr.
+	return m_player ? m_player->getPeerId() : PEER_ID_INEXISTENT;
 }
 
 void PlayerSAO::unlinkPlayerSessionAndSave()
 {
 	assert(m_player->getPlayerSAO() == this);
-	m_player->setPeerId(PEER_ID_INEXISTENT);
 	m_env->savePlayer(m_player);
-	m_player->setPlayerSAO(NULL);
 	m_env->removePlayer(m_player);
 }
 
@@ -612,9 +646,12 @@ void PlayerSAO::setMaxSpeedOverride(const v3f &vel)
 
 bool PlayerSAO::checkMovementCheat()
 {
+	static thread_local const u32 anticheat_flags =
+		g_settings->getFlagStr("anticheat_flags", flagdesc_anticheat, nullptr);
+
 	if (m_is_singleplayer ||
 			isAttached() ||
-			g_settings->getBool("disable_anticheat")) {
+			!(anticheat_flags & AC_MOVEMENT)) {
 		m_last_good_position = m_base_position;
 		return false;
 	}
@@ -626,7 +663,7 @@ bool PlayerSAO::checkMovementCheat()
 		NOTE: Actually the server should handle player physics like the
 		client does and compare player's position to what is calculated
 		on our side. This is required when eg. players fly due to an
-		explosion. Altough a node-based alternative might be possible
+		explosion. Although a node-based alternative might be possible
 		too, and much more lightweight.
 	*/
 
@@ -641,14 +678,15 @@ bool PlayerSAO::checkMovementCheat()
 	float player_max_walk = 0; // horizontal movement
 	float player_max_jump = 0; // vertical upwards movement
 
-	float speed_walk   = m_player->movement_speed_walk;
-	float speed_fast   = m_player->movement_speed_fast;
+	float speed_walk = m_player->movement_speed_walk * m_player->physics_override.speed_walk;
+	float speed_fast = m_player->movement_speed_fast * m_player->physics_override.speed_fast;
 	float speed_crouch = m_player->movement_speed_crouch * m_player->physics_override.speed_crouch;
-	float speed_climb  = m_player->movement_speed_climb  * m_player->physics_override.speed_climb;
-	speed_walk   *= m_player->physics_override.speed;
-	speed_fast   *= m_player->physics_override.speed;
+	float speed_climb = m_player->movement_speed_climb * m_player->physics_override.speed_climb;
+
+	speed_walk *= m_player->physics_override.speed;
+	speed_fast *= m_player->physics_override.speed;
 	speed_crouch *= m_player->physics_override.speed;
-	speed_climb  *= m_player->physics_override.speed;
+	speed_climb *= m_player->physics_override.speed;
 
 	// Get permissible max. speed
 	if (m_privs.count("fast") != 0) {
@@ -694,6 +732,11 @@ bool PlayerSAO::checkMovementCheat()
 		required_time = MYMAX(required_time, d_vert / s);
 	}
 
+	static thread_local float anticheat_movement_tolerance =
+		std::max(g_settings->getFloat("anticheat_movement_tolerance"), 1.0f);
+
+	required_time /= anticheat_movement_tolerance;
+
 	if (m_move_pool.grab(required_time)) {
 		m_last_good_position = m_base_position;
 	} else {
@@ -724,7 +767,7 @@ bool PlayerSAO::getCollisionBox(aabb3f *toset) const
 
 bool PlayerSAO::getSelectionBox(aabb3f *toset) const
 {
-	if (!m_prop.is_visible || !m_prop.pointable) {
+	if (!m_prop.is_visible) {
 		return false;
 	}
 

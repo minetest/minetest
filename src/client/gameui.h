@@ -22,15 +22,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes.h"
 #include <IGUIEnvironment.h>
-#include "gui/guiFormSpecMenu.h"
-#include "util/enriched_string.h"
-#include "util/pointedthing.h"
 #include "game.h"
 
 using namespace irr;
 class Client;
+class EnrichedString;
 class GUIChatConsole;
+class GUIFormSpecMenu;
 struct MapDrawControl;
+struct PointedThing;
 
 /*
  * This object intend to contain the core UI elements
@@ -57,7 +57,6 @@ public:
 	{
 		bool show_chat = true;
 		bool show_hud = true;
-		bool show_minimap = false;
 		bool show_minimal_debug = false;
 		bool show_basic_debug = false;
 		bool show_profiler_graph = false;
@@ -70,8 +69,6 @@ public:
 
 	void initFlags();
 	const Flags &getFlags() const { return m_flags; }
-
-	void showMinimap(bool show);
 
 	inline void setInfoText(const std::wstring &str) { m_infotext = str; }
 	inline void clearInfoText() { m_infotext.clear(); }

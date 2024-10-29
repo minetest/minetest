@@ -131,6 +131,15 @@ struct ItemStack
 		return metadata.getToolCapabilities(*item_cap); // Check for override
 	}
 
+	const std::optional<WearBarParams> &getWearBarParams(
+			const IItemDefManager *itemdef) const
+	{
+		auto &meta_override = metadata.getWearBarParamOverride();
+		if (meta_override.has_value())
+			return meta_override;
+		return itemdef->get(name).wear_bar_params;
+	}
+
 	// Wear out (only tools)
 	// Returns true if the item is (was) a tool
 	bool addWear(s32 amount, const IItemDefManager *itemdef)
@@ -277,8 +286,8 @@ public:
 
 	// Move an item to a different list (or a different stack in the same list)
 	// count is the maximum number of items to move (0 for everything)
-	// returns number of moved items
-	u32 moveItem(u32 i, InventoryList *dest, u32 dest_i,
+	// returns the moved stack
+	ItemStack moveItem(u32 i, InventoryList *dest, u32 dest_i,
 		u32 count = 0, bool swap_if_needed = true, bool *did_swap = NULL);
 
 	// like moveItem, but without a fixed destination index

@@ -15,15 +15,30 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+---- IMPORTANT ----
+-- This whole file can be removed after a while.
+-- It was only directly useful for upgrades from 5.7.0 to 5.8.0, but
+-- maybe some odd fellow directly upgrades from 5.6.1 to 5.9.0 in the future...
+-- see <https://github.com/minetest/minetest/pull/13850> in case it's not obvious
+---- ----
+
+local SETTING_NAME = "no_mtg_notification"
+
 function check_reinstall_mtg()
-	if core.settings:get_bool("no_mtg_notification") then
+	-- used to be in minetest.conf
+	if core.settings:get_bool(SETTING_NAME) then
+		cache_settings:set_bool(SETTING_NAME, true)
+		core.settings:remove(SETTING_NAME)
+	end
+
+	if cache_settings:get_bool(SETTING_NAME) then
 		return
 	end
 
 	local games = core.get_games()
 	for _, game in ipairs(games) do
 		if game.id == "minetest" then
-			core.settings:set_bool("no_mtg_notification", true)
+			cache_settings:set_bool(SETTING_NAME, true)
 			return
 		end
 	end
@@ -37,7 +52,7 @@ function check_reinstall_mtg()
 		end
 	end
 	if not mtg_world_found then
-		core.settings:set_bool("no_mtg_notification", true)
+		cache_settings:set_bool(SETTING_NAME, true)
 		return
 	end
 
@@ -78,7 +93,7 @@ local function buttonhandler(this, fields)
 
 		local maintab = ui.find_by_name("maintab")
 
-		local dlg = create_store_dlg(nil, "minetest/minetest")
+		local dlg = create_contentdb_dlg(nil, "minetest/minetest")
 		dlg:set_parent(maintab)
 		maintab:hide()
 		dlg:show()
@@ -87,7 +102,7 @@ local function buttonhandler(this, fields)
 	end
 
 	if fields.dismiss then
-		core.settings:set_bool("no_mtg_notification", true)
+		cache_settings:set_bool("no_mtg_notification", true)
 		this:delete()
 		return true
 	end
@@ -111,5 +126,3 @@ function create_reinstall_mtg_dlg()
 			buttonhandler, eventhandler)
 	return dlg
 end
-
-

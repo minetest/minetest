@@ -40,6 +40,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <sys/time.h>
 #endif
 
+#include <queue>
+
 /******************************************************************************/
 /* Typedefs and macros                                                        */
 /******************************************************************************/

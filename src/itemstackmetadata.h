@@ -22,17 +22,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "metadata.h"
 #include "tool.h"
 
+#include <optional>
+
 class Inventory;
 class IItemDefManager;
 
 class ItemStackMetadata : public SimpleMetadata
 {
 public:
-	ItemStackMetadata() : toolcaps_overridden(false) {}
+	ItemStackMetadata():
+			toolcaps_overridden(false)
+	{}
 
 	// Overrides
 	void clear() override;
-	bool setString(const std::string &name, const std::string &var) override;
+	bool setString(const std::string &name, std::string_view var) override;
 
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
@@ -46,9 +50,20 @@ public:
 	void setToolCapabilities(const ToolCapabilities &caps);
 	void clearToolCapabilities();
 
+	const std::optional<WearBarParams> &getWearBarParamOverride() const
+	{
+		return wear_bar_override;
+	}
+
+
+	void setWearBarParams(const WearBarParams &params);
+	void clearWearBarParams();
+
 private:
 	void updateToolCapabilities();
+	void updateWearBarParams();
 
 	bool toolcaps_overridden;
 	ToolCapabilities toolcaps_override;
+	std::optional<WearBarParams> wear_bar_override;
 };

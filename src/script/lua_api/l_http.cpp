@@ -114,9 +114,9 @@ int ModApiHttp::l_http_fetch_sync(lua_State *L)
 	infostream << "Mod performs HTTP request with URL " << req.url << std::endl;
 
 	HTTPFetchResult res;
-	httpfetch_sync(req, res);
+	bool completed = httpfetch_sync_interruptible(req, res);
 
-	push_http_fetch_result(L, res, true);
+	push_http_fetch_result(L, res, completed);
 
 	return 1;
 }
@@ -222,7 +222,7 @@ void ModApiHttp::Initialize(lua_State *L, int top)
 #if USE_CURL
 
 	bool isMainmenu = false;
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	isMainmenu = ModApiBase::getGuiEngine(L) != nullptr;
 #endif
 

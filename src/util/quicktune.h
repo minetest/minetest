@@ -74,7 +74,7 @@ struct QuicktuneValue
 	void relativeAdd(float amount);
 };
 
-std::vector<std::string> getQuicktuneNames();
+const std::vector<std::string> &getQuicktuneNames();
 QuicktuneValue getQuicktuneValue(const std::string &name);
 void setQuicktuneValue(const std::string &name, const QuicktuneValue &val);
 

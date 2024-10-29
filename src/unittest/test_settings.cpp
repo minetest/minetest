@@ -36,7 +36,7 @@ public:
 	void testFlagDesc();
 
 	static const char *config_text_before;
-	static const std::string config_text_after;
+	static const char *config_text_after;
 };
 
 static TestSettings g_test_instance;
@@ -51,7 +51,7 @@ void TestSettings::runTests(IGameDef *gamedef)
 ////////////////////////////////////////////////////////////////////////////////
 
 const char *TestSettings::config_text_before =
-	"leet = 1337\n"
+	u8"leet = 1337\n"
 	"leetleet = 13371337\n"
 	"leetleet_neg = -13371337\n"
 	"floaty_thing = 1.1\n"
@@ -76,8 +76,8 @@ const char *TestSettings::config_text_before =
 	"zoop = true\n"
 	"[dummy_eof_end_tag]\n";
 
-const std::string TestSettings::config_text_after =
-	"leet = 1337\n"
+const char *TestSettings::config_text_after =
+	u8"leet = 1337\n"
 	"leetleet = 13371337\n"
 	"leetleet_neg = -13371337\n"
 	"floaty_thing = 1.1\n"
@@ -154,7 +154,7 @@ void TestSettings::testAllSettings()
 
 	// Not sure if 1.1 is an exact value as a float, but doesn't matter
 	UASSERT(fabs(s.getFloat("floaty_thing") - 1.1) < 0.001);
-	UASSERT(s.get("stringy_thing") == "asd /( ¤%&(/\" BLÖÄRP");
+	UASSERT(s.get("stringy_thing") == u8"asd /( ¤%&(/\" BLÖÄRP");
 	UASSERT(fabs(s.getV3F("coord").X - 1.0) < 0.001);
 	UASSERT(fabs(s.getV3F("coord").Y - 2.0) < 0.001);
 	UASSERT(fabs(s.getV3F("coord").Z - 4.5) < 0.001);

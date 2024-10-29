@@ -3,7 +3,6 @@
 #include "hud.h"
 #include "server.h"
 #include <cassert>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <sstream>

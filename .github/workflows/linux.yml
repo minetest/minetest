@@ -10,10 +10,11 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - 'util/ci/**'
-      - 'misc/irrlichtmt_tag.txt'
       - 'Dockerfile'
       - '.dockerignore'
       - '.github/workflows/linux.yml'
@@ -24,10 +25,11 @@ on:
       - 'lib/**.cpp'
       - 'src/**.[ch]'
       - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - 'util/ci/**'
-      - 'misc/irrlichtmt_tag.txt'
       - 'Dockerfile'
       - '.dockerignore'
       - '.github/workflows/linux.yml'
@@ -37,44 +39,45 @@ env:
   MINETEST_POSTGRESQL_CONNECT_STRING: 'host=localhost user=minetest password=minetest dbname=minetest'
 
 jobs:
-  # Current gcc version
-  gcc_12:
-    runs-on: ubuntu-22.04
+  # Older gcc version (should be close to our minimum supported version)
+  gcc_7:
+    # NOTE: Disable this job without removing the code to make merging upstream changes easier.
+    if: false
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps g++-12 libluajit-5.1-dev
+          install_linux_deps g++-7
 
       - uses: prefix-dev/setup-pixi@v0.8.1
         with:
           manifest-path: pixi.toml
           cache: true
           cache-write: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
-
+  
       - name: Build
-        # Needed so conda environment is active
-        shell: bash -l {0}
+        shell: pixi run -- bash -e {0}
         run: |
-          pixi run ./util/ci/build.sh
+          ./util/ci/build.sh
         env:
-          CC: gcc-12
-          CXX: g++-12
+          CC: gcc-7
+          CXX: g++-7
 
       - name: Test
         run: |
-          pixi run ./bin/minetest --run-unittests
+          ./bin/minetest --run-unittests
 
-  # Current clang version
-  clang_14:
-    runs-on: ubuntu-22.04
+  # Current gcc version
+  gcc_14:
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-14 gdb
+          install_linux_deps g++-14 libluajit-5.1-dev
 
       - uses: prefix-dev/setup-pixi@v0.8.1
         with:
@@ -83,13 +86,81 @@ jobs:
           cache-write: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
 
       - name: Build
-        # Needed so conda environment is active
-        shell: bash -l {0}
+        shell: pixi run -- bash -e {0}
         run: |
-          pixi run ./util/ci/build.sh
+          ./util/ci/build.sh
         env:
-          CC: clang-14
-          CXX: clang++-14
+          CC: gcc-14
+          CXX: g++-14
+
+      - name: Test
+        run: |
+          mkdir nowrite
+          chmod a-w nowrite
+          cd nowrite
+          ../bin/minetest --run-unittests
+
+  # Older clang version (should be close to our minimum supported version)
+  clang_7:
+    # NOTE: Disable this job without removing the code to make merging upstream changes easier.
+    if: false
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install deps
+        run: |
+          source ./util/ci/common.sh
+          install_linux_deps clang-7 llvm-7
+
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          manifest-path: pixi.toml
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
+  
+      - name: Build
+        shell: pixi run -- bash -e {0}
+        run: |
+          ./util/ci/build.sh
+        env:
+          CC: clang-7
+          CXX: clang++-7
+          CMAKE_FLAGS: '-DCMAKE_C_FLAGS="-fsanitize=address" -DCMAKE_CXX_FLAGS="-fsanitize=address"'
+
+      - name: Unittest
+        shell: pixi run bash -e {0}
+        run: |
+          ./bin/minetest --run-unittests
+
+      # Do this here because we have ASan and error paths are sensitive to dangling pointers
+      - name: Test error cases
+        shell: pixi run bash -e {0}
+        run: |
+          ./util/test_error_cases.sh
+
+  # Current clang version
+  clang_18:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install deps
+        run: |
+          source ./util/ci/common.sh
+          install_linux_deps clang-18 lldb
+
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          manifest-path: pixi.toml
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
+  
+      - name: Build
+        shell: pixi run -- bash -e {0}
+        run: |
+          ./util/ci/build.sh
+        env:
+          CC: clang-18
+          CXX: clang++-18
 
       - name: Test
         run: |
@@ -99,6 +170,38 @@ jobs:
         run: |
           pixi run ./util/test_multiplayer.sh
 
-      - name: Valgrind
+  # Build with prometheus-cpp (server-only)
+  clang_11_prometheus:
+    # NOTE: Disable this job without removing the code to make merging upstream changes easier.
+    if: false
+    name: "clang_11 (PROMETHEUS=1)"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install deps
         run: |
-          pixi run -e valgrind valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ./bin/minetest --run-unittests
+          source ./util/ci/common.sh
+          install_linux_deps clang-11
+
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          manifest-path: pixi.toml
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
+  
+      - name: Build prometheus-cpp
+        shell: pixi run -- bash -e {0}
+        run: ./util/ci/build_prometheus_cpp.sh
+
+      - name: Build
+        shell: pixi run -- bash -e {0}
+        run: |
+          ./util/ci/build.sh
+        env:
+          CC: clang-11
+          CXX: clang++-11
+          CMAKE_FLAGS: "-DENABLE_PROMETHEUS=1 -DBUILD_CLIENT=0 -DENABLE_CURSES=0"
+
+      - name: Test
+        run: |
+          ./bin/minetestserver --run-unittests

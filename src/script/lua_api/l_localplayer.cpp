@@ -72,7 +72,7 @@ int LuaLocalPlayer::l_get_name(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
 
-	lua_pushstring(L, player->getName());
+	lua_pushstring(L, player->getName().c_str());
 	return 1;
 }
 
@@ -198,6 +198,15 @@ int LuaLocalPlayer::l_get_physics_override(lua_State *L)
 	lua_pushnumber(L, phys.acceleration_air);
 	lua_setfield(L, -2, "acceleration_air");
 
+	lua_pushnumber(L, phys.speed_fast);
+	lua_setfield(L, -2, "speed_fast");
+
+	lua_pushnumber(L, phys.acceleration_fast);
+	lua_setfield(L, -2, "acceleration_fast");
+
+	lua_pushnumber(L, phys.speed_walk);
+	lua_setfield(L, -2, "speed_walk");
+
 	return 1;
 }
 
@@ -251,12 +260,13 @@ int LuaLocalPlayer::l_get_control(lua_State *L)
 	set("zoom",  c.zoom);
 	set("dig",   c.dig);
 	set("place", c.place);
-	// Player movement in polar coordinates and non-binary speed
-	lua_pushnumber(L, c.movement_speed);
-	lua_setfield(L, -2, "movement_speed");
-	lua_pushnumber(L, c.movement_direction);
-	lua_setfield(L, -2, "movement_direction");
-	// Provide direction keys to ensure compatibility
+
+	v2f movement = c.getMovement();
+	lua_pushnumber(L, movement.X);
+	lua_setfield(L, -2, "movement_x");
+	lua_pushnumber(L, movement.Y);
+	lua_setfield(L, -2, "movement_y");
+
 	set("up",    c.direction_keys & (1 << 0));
 	set("down",  c.direction_keys & (1 << 1));
 	set("left",  c.direction_keys & (1 << 2));
@@ -422,6 +432,26 @@ int LuaLocalPlayer::l_hud_get(lua_State *L)
 	return 1;
 }
 
+// hud_get_all(self)
+int LuaLocalPlayer::l_hud_get_all(lua_State *L)
+{
+	LocalPlayer *player = getobject(L, 1);
+	if (player == nullptr)
+		return 0;
+
+	lua_newtable(L);
+	player->hudApply([&](const std::vector<HudElement*>& hud) {
+		for (std::size_t id = 0; id < hud.size(); ++id) {
+			HudElement *elem = hud[id];
+			if (elem != nullptr) {
+				push_hud_element(L, elem);
+				lua_rawseti(L, -2, id);
+			}
+		}
+	});
+	return 1;
+}
+
 LocalPlayer *LuaLocalPlayer::getobject(LuaLocalPlayer *ref)
 {
 	return ref->m_localplayer;
@@ -483,6 +513,7 @@ const luaL_Reg LuaLocalPlayer::methods[] = {
 		luamethod(LuaLocalPlayer, hud_remove),
 		luamethod(LuaLocalPlayer, hud_change),
 		luamethod(LuaLocalPlayer, hud_get),
+		luamethod(LuaLocalPlayer, hud_get_all),
 
 		luamethod(LuaLocalPlayer, get_move_resistance),
 

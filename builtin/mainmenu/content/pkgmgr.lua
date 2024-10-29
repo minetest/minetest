@@ -110,7 +110,7 @@ pkgmgr = {}
 -- @param modpack      Currently processing modpack or nil/"" if none (recursion)
 function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 	local mods = core.get_dir_list(path, true)
-
+	local added = {}
 	for _, name in ipairs(mods) do
 		if name:sub(1, 1) ~= "." then
 			local mod_path = path .. DIR_DELIM .. name
@@ -120,6 +120,7 @@ function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 				parent_dir = path,
 			}
 			listing[#listing + 1] = toadd
+			added[#added + 1] = toadd
 
 			-- Get config file
 			local mod_conf
@@ -169,6 +170,8 @@ function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 		end
 	end
 
+	pkgmgr.update_translations(added)
+
 	if not modpack then
 		-- Sort all when the recursion is done
 		table.sort(listing, function(a, b)
@@ -178,26 +181,31 @@ function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.get_texture_packs()
+function pkgmgr.reload_texture_packs()
 	local txtpath = core.get_texturepath()
 	local txtpath_system = core.get_texturepath_share()
 	local retval = {}
 
 	load_texture_packs(txtpath, retval)
+
 	-- on portable versions these two paths coincide. It avoids loading the path twice
 	if txtpath ~= txtpath_system then
 		load_texture_packs(txtpath_system, retval)
 	end
 
+	pkgmgr.update_translations(retval)
+
 	table.sort(retval, function(a, b)
 		return a.title:lower() < b.title:lower()
 	end)
 
-	return retval
+	pkgmgr.texture_packs = retval
 end
 
 --------------------------------------------------------------------------------
 function pkgmgr.get_all()
+	pkgmgr.load_all()
+
 	local result = {}
 
 	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
@@ -206,7 +214,7 @@ function pkgmgr.get_all()
 	for _, game in pairs(pkgmgr.games) do
 		result[#result + 1] = game
 	end
-	for _, txp in pairs(pkgmgr.get_texture_packs()) do
+	for _, txp in pairs(pkgmgr.texture_packs) do
 		result[#result + 1] = txp
 	end
 
@@ -284,7 +292,7 @@ end
 function pkgmgr.render_packagelist(render_list, use_technical_names, with_icon)
 	if not render_list then
 		if not pkgmgr.global_mods then
-			pkgmgr.refresh_globals()
+			pkgmgr.reload_global_mods()
 		end
 		render_list = pkgmgr.global_mods
 	end
@@ -545,6 +553,7 @@ function pkgmgr.get_worldconfig(worldpath)
 end
 
 --------------------------------------------------------------------------------
+-- Caller is responsible for reloading content types (see reload_by_type)
 function pkgmgr.install_dir(expected_type, path, basename, targetpath)
 	assert(type(expected_type) == "string")
 	assert(type(path) == "string")
@@ -609,12 +618,6 @@ function pkgmgr.install_dir(expected_type, path, basename, targetpath)
 	if not core.copy_dir(basefolder.path, targetpath, false) then
 		return nil,
 			fgettext_ne("Failed to install $1 to $2", basename, targetpath)
-	end
-
-	if basefolder.type == "game" then
-		pkgmgr.update_gamelist()
-	else
-		pkgmgr.refresh_globals()
 	end
 
 	return targetpath, nil
@@ -738,7 +741,7 @@ function pkgmgr.comparemod(elem1,elem2)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.refresh_globals()
+function pkgmgr.reload_global_mods()
 	local function is_equal(element,uid) --uid match
 		if element.name == uid then
 			return true
@@ -770,11 +773,60 @@ function pkgmgr.get_game_mods(gamespec, retval)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.update_gamelist()
+function pkgmgr.reload_games()
 	pkgmgr.games = core.get_games()
 	table.sort(pkgmgr.games, function(a, b)
 		return a.title:lower() < b.title:lower()
 	end)
+	pkgmgr.update_translations(pkgmgr.games)
+end
+
+--------------------------------------------------------------------------------
+function pkgmgr.reload_by_type(type)
+	if type == "game" then
+		pkgmgr.reload_games()
+	elseif type == "txp" then
+		pkgmgr.reload_texture_packs()
+	elseif type == "mod" or type == "modpack" then
+		pkgmgr.reload_global_mods()
+	else
+		error("Unknown package type: " .. type)
+	end
+end
+
+--------------------------------------------------------------------------------
+function pkgmgr.load_all()
+	if not pkgmgr.global_mods then
+		pkgmgr.reload_global_mods()
+	end
+	if not pkgmgr.games then
+		pkgmgr.reload_games()
+	end
+	if not pkgmgr.texture_packs then
+		pkgmgr.reload_texture_packs()
+	end
+end
+
+--------------------------------------------------------------------------------
+function pkgmgr.update_translations(list)
+	for _, item in ipairs(list) do
+		local info = core.get_content_info(item.path)
+		assert(info.path)
+		assert(info.textdomain)
+
+		assert(not item.is_translated)
+		item.is_translated = true
+
+		if info.title and info.title ~= "" then
+			item.title = core.get_content_translation(info.path, info.textdomain,
+				core.translate(info.textdomain, info.title))
+		end
+
+		if info.description and info.description ~= "" then
+			item.description = core.get_content_translation(info.path, info.textdomain,
+				core.translate(info.textdomain, info.description))
+		end
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -804,4 +856,4 @@ end
 --------------------------------------------------------------------------------
 -- read initial data
 --------------------------------------------------------------------------------
-pkgmgr.update_gamelist()
+pkgmgr.reload_games()
