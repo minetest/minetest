@@ -105,8 +105,8 @@ class MinetestEnv(gym.Env):
         artifact_dir: Optional[os.PathLike] = None,
         config_path: Optional[os.PathLike] = None,
         server_addr: Optional[str] = None,
-        display_size: Tuple[int, int] = (600, 400),
-        render_size: Optional[Tuple[int, int]] = None,
+        render_size: Tuple[int, int] =  (600, 400),
+        display_size: Optional[Tuple[int, int]] = None,
         render_mode: str = "rgb_array",
         game_dir: Optional[os.PathLike] = None,
         fov: int = 72,
@@ -124,8 +124,8 @@ class MinetestEnv(gym.Env):
             config_dict = {}
         self.unique_env_id = str(uuid.uuid4())
 
-        self.display_size = DisplaySize(*display_size)
-        self.render_size = DisplaySize(*(display_size if render_size is None else render_size))
+        self.render_size = DisplaySize(*(render_size))
+        self.display_size = DisplaySize(*(render_size if display_size is None else display_size))
         self.remote_input_handler_time_step = remote_input_handler_time_step
         self.fov_y = fov
         self.fov_x = self.fov_y * self.render_size.width / self.render_size.height

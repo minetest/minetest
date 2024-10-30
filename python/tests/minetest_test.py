@@ -56,13 +56,13 @@ def minetest_executable():
 
 @pytest.fixture
 def env(artifact_dir, world_dir, minetest_executable):
-    display_size = (223, 111)
+    render_size = (223, 111)
     env = gym.make(
         "minetest-v0",
         executable=minetest_executable,
         artifact_dir=artifact_dir,
         headless=sys.platform == "linux",
-        display_size=display_size,
+        render_size=render_size,
         world_dir=world_dir,
         verbose_logging=True,
         additional_observation_spaces={
@@ -120,13 +120,13 @@ def test_double_reset(env, artifact_dir, caplog):
 
 def test_minetest_basic(artifact_dir, world_dir, minetest_executable, caplog):
     caplog.set_level(logging.DEBUG)
-    display_size = (223, 111)
+    render_size = (223, 111)
     env = gym.make(
         "minetest-v0",
         headless=sys.platform == "linux",
         executable=minetest_executable,
         artifact_dir=artifact_dir,
-        display_size=display_size,
+        render_size=render_size,
         world_dir=world_dir,
         verbose_logging=True,
         additional_observation_spaces={
@@ -140,7 +140,7 @@ def test_minetest_basic(artifact_dir, world_dir, minetest_executable, caplog):
         # should not be set when we specify world_dir and don't set world_seed.
         assert not contains_key(env.unwrapped.config_path, "fixed_map_seed")
         nonzero_reward = False
-        expected_shape = display_size + (3,)
+        expected_shape = render_size + (3,)
         for i in range(5):
             action = {
                 "keys": np.zeros(len(INVERSE_KEY_MAP), dtype=bool),

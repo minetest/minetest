@@ -235,10 +235,6 @@ class MinetestGymnasium(gymnasium.Wrapper):
                 break
         return obs, cum_reward, terminated, truncated, info
 
-    @property
-    def display_size(self):
-        return self.env.display_size
-
 
 import signal
 

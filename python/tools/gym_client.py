@@ -107,7 +107,8 @@ if __name__ == "__main__":
     gym_make_args = {
         "id": "minetest-v0",
         "render_mode": "human",
-        "display_size": (512, 512),
+        "render_size": (64, 64),
+        "display_size": (1024, 1024),
     }
     args = arg_parser.parse_args()
     if args.server_addr:
