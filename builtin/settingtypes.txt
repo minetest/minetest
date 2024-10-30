@@ -762,7 +762,7 @@ chat_font_size (Chat font size) int 0 0 72
 [**Content Repository]
 
 #    The URL for the content repository
-contentdb_url (ContentDB URL) string https://content.minetest.net
+contentdb_url (ContentDB URL) string https://content.luanti.org
 
 #    If enabled and you have ContentDB packages installed, Luanti may contact ContentDB to
 #    check for package updates when opening the mainmenu.
@@ -773,7 +773,7 @@ contentdb_enable_updates_indicator (Enable updates available indicator on conten
 #    as defined by the Free Software Foundation.
 #    You can also specify content ratings.
 #    These flags are independent from Luanti versions,
-#    so see a full list at https://content.minetest.net/help/content_flags/
+#    so see a full list at https://content.luanti.org/help/content_flags/
 contentdb_flag_blacklist (ContentDB Flag Blacklist) string nonfree, desktop_default
 
 #    Maximum number of concurrent downloads. Downloads exceeding this limit will be queued.
