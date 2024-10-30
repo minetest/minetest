@@ -155,7 +155,10 @@ void *ServerThread::run()
 		const auto step_settings = m_server->getStepSettings();
 
 		try {
-			if (!remote_input_handler_handles_server_step) {
+			if (remote_input_handler_handles_server_step) {
+				// NOTE(astera): Not sure if necessary but probably a good idea to just always call, given that the original implementation needs it in between `Receive` calls.
+				m_server->yieldToOtherThreads(0.0f);
+			} else {
 				// see explanation inside
 				if (dtime > step_settings.steplen)
 					m_server->yieldToOtherThreads(dtime);
