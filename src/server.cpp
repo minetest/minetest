@@ -21,8 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <queue>
 #include <algorithm>
-#include <set>
-#include "irrTypes.h"
 #include "irr_v2d.h"
 #include "network/connection.h"
 #include "network/networkprotocol.h"
@@ -33,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/mutex_auto_lock.h"
 #include "constants.h"
 #include "voxel.h"
+#include "config.h"
 #include "version.h"
 #include "filesys.h"
 #include "mapblock.h"
@@ -47,6 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "mapgen/mapgen.h"
 #include "mapgen/mg_biome.h"
+#include "content_mapnode.h"
 #include "content_nodemeta.h"
 #include "content/mods.h"
 #include "modchannels.h"
@@ -145,6 +145,7 @@ void *ServerThread::run()
     gServer = m_server;
 
 	float dtime = 0.0f;
+
 	while (!stopRequested()) {
 		framemarker.start();
 		ScopeProfiler spm(g_profiler, "Server::RunStep() (max)", SPT_MAX);
@@ -154,13 +155,13 @@ void *ServerThread::run()
 		const auto step_settings = m_server->getStepSettings();
 
 		try {
-			// NOTE: Still needs to be called when remote_input_handler_handles_server_step is true because it accepts client connections.
-			m_server->AsyncRunStep(remote_input_handler_handles_server_step || step_settings.pause ? 0.0f : dtime);
-			// see explanation inside
-			if (dtime > step_settings.steplen)
-				m_server->yieldToOtherThreads(dtime);
+			if (!remote_input_handler_handles_server_step) {
+				// see explanation inside
+				if (dtime > step_settings.steplen)
+					m_server->yieldToOtherThreads(dtime);
 
-			m_server->AsyncRunStep(step_settings.pause ? 0.0f : dtime);
+				m_server->AsyncRunStep(step_settings.pause ? 0.0f : dtime);
+			}
 
 			const float remaining_time = step_settings.steplen
 					- 1e-6f * (porting::getTimeUs() - t0);
@@ -658,9 +659,6 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 		SendBlocks(dtime);
 	}
 
-	// Always do this to allow a client to connect when running in lock-step, see server_step_wait_for_all_clients and remote_input_handler_time_step options.
-	// handlePeerChanges();
-
 	// If paused, this function is called with a 0.0f literal
 	if ((dtime == 0.0f) && !initial_step)
 		return;
@@ -1130,9 +1128,8 @@ void Server::Receive(float timeout)
 				// No incoming data.
 				// Already break if there's 1ms left, as ReceiveTimeoutMs is too coarse
 				// and a faster server-step is better than busy waiting.
-				if (wait_for_client_ids.empty() && remaining_time_us() < 1000.0f) {
+				if (wait_for_client_ids.empty() && remaining_time_us() < 1000.0f)
 					break;
-				}
 				else
 					continue;
 			}
