@@ -106,6 +106,7 @@ class MinetestEnv(gym.Env):
         config_path: Optional[os.PathLike] = None,
         server_addr: Optional[str] = None,
         display_size: Tuple[int, int] = (600, 400),
+        render_size: Optional[Tuple[int, int]] = None,
         render_mode: str = "rgb_array",
         game_dir: Optional[os.PathLike] = None,
         fov: int = 72,
@@ -124,9 +125,10 @@ class MinetestEnv(gym.Env):
         self.unique_env_id = str(uuid.uuid4())
 
         self.display_size = DisplaySize(*display_size)
+        self.render_size = DisplaySize(*(display_size if render_size is None else render_size))
         self.remote_input_handler_time_step = remote_input_handler_time_step
         self.fov_y = fov
-        self.fov_x = self.fov_y * self.display_size.width / self.display_size.height
+        self.fov_x = self.fov_y * self.render_size.width / self.render_size.height
         self.render_mode = render_mode
         if (not server_addr) and headless and sys.platform != "linux":
             raise ValueError(
@@ -231,8 +233,8 @@ class MinetestEnv(gym.Env):
 
     def _configure_spaces(self, additional_observation_spaces):
         # Define action and observation space
-        self.max_mouse_move_x = self.display_size[0] // 2
-        self.max_mouse_move_y = self.display_size[1] // 2
+        self.max_mouse_move_x = self.render_size[0] // 2
+        self.max_mouse_move_y = self.render_size[1] // 2
         self.action_space = gym.spaces.Dict(
             {
                 "keys": gym.spaces.MultiBinary(len(KEY_MAP)),
@@ -248,7 +250,7 @@ class MinetestEnv(gym.Env):
             "image": gym.spaces.Box(
                 0,
                 255,
-                shape=(self.display_size.height, self.display_size.width, 3),
+                shape=(self.render_size.height, self.render_size.width, 3),
                 dtype=np.uint8,
             ),
         }
@@ -373,11 +375,11 @@ class MinetestEnv(gym.Env):
             enable_client_modding=True,
             csm_restriction_flags=0,
             enable_mod_channels=True,
-            screen_w=self.display_size.width,
-            screen_h=self.display_size.height,
+            screen_w=self.render_size.width,
+            screen_h=self.render_size.height,
             fov=self.fov_y,
             # Adapt HUD size to display size, based on (1024, 600) default
-            hud_scaling=self.display_size[0] / 1024,
+            hud_scaling=self.render_size[0] / 1024,
             # Ensure server doesn't advance if client hasn't called step().
             server_step_wait_for_all_clients=True,
             # How much time is simulated in between each environment step.
@@ -431,7 +433,7 @@ class MinetestEnv(gym.Env):
 
         # Convert the numpy array to a Pygame Surface and display it
         img = pygame.surfarray.make_surface(img_data)
-        self.screen.blit(img, (0, 0))
+        self.screen.blit(pygame.transform.scale(img, self.display_size), (0, 0))
         pygame.display.update()
 
     def seed(self, seed: Optional[int] = None):
