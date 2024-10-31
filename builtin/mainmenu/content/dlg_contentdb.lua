@@ -357,7 +357,7 @@ local function get_formspec(dlgdata)
 		if package.featured then
 			table.insert_all(formspec, {
 				"tooltip[0,0;0.8,0.8;", fgettext("Featured"), "]",
-				"image[0.2,0.2;0.4,0.4;", defaulttexturedir, "server_favorite.png]",
+				"image[0.2,0.2;0.4,0.4;", core.formspec_escape(defaulttexturedir .. "server_favorite.png"), "]",
 			})
 		end
 
@@ -367,20 +367,21 @@ local function get_formspec(dlgdata)
 
 		if package.downloading then
 			table.insert_all(formspec, {
-				"animated_image[0,0;0.5,0.5;downloading;", defaulttexturedir, "cdb_downloading.png;3;400;;]",
+				"animated_image[0,0;0.5,0.5;downloading;", core.formspec_escape(defaulttexturedir .. "cdb_downloading.png"),
+					";3;400;;]",
 			})
 		elseif package.queued then
 			table.insert_all(formspec, {
-				"image[0,0;0.5,0.5;", defaulttexturedir, "cdb_queued.png]",
+				"image[0,0;0.5,0.5;", core.formspec_escape(defaulttexturedir .. "cdb_queued.png"), "]",
 			})
 		elseif package.path then
 			if package.installed_release < package.release then
 				table.insert_all(formspec, {
-					"image[0,0;0.5,0.5;", defaulttexturedir, "cdb_update.png]",
+					"image[0,0;0.5,0.5;", core.formspec_escape(defaulttexturedir .. "cdb_update.png"), "]",
 				})
 			else
 				table.insert_all(formspec, {
-					"image[0.1,0.1;0.3,0.3;", defaulttexturedir, "checkbox_64.png]",
+					"image[0.1,0.1;0.3,0.3;", core.formspec_escape(defaulttexturedir .. "checkbox_64.png"), "]",
 				})
 			end
 		end
