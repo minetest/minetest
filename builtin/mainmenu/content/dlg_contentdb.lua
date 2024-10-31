@@ -367,7 +367,8 @@ local function get_formspec(dlgdata)
 
 		if package.downloading then
 			table.insert_all(formspec, {
-				"animated_image[0,0;0.5,0.5;downloading;", core.formspec_escape(defaulttexturedir .. "cdb_downloading.png"), ";3;400;;]",
+				"animated_image[0,0;0.5,0.5;downloading;", core.formspec_escape(defaulttexturedir .. "cdb_downloading.png"),
+					";3;400;;]",
 			})
 		elseif package.queued then
 			table.insert_all(formspec, {
