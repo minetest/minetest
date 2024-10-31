@@ -1107,7 +1107,6 @@ void GUITable::sendTableEvent(s32 column, bool doubleclick)
 	m_sel_doubleclick = doubleclick;
 	if (Parent) {
 		SEvent e;
-		memset(&e, 0, sizeof e);
 		e.EventType = EET_GUI_EVENT;
 		e.GUIEvent.Caller = this;
 		e.GUIEvent.Element = 0;

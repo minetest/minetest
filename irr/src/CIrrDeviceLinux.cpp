@@ -1581,7 +1581,6 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> &joystickInfo
 		fcntl(info.fd, F_SETFL, O_NONBLOCK);
 #endif
 
-		(void)memset(&info.persistentData, 0, sizeof(info.persistentData));
 		info.persistentData.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
 		info.persistentData.JoystickEvent.Joystick = ActiveJoysticks.size();
 
