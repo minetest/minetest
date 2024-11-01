@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-11-01 22:34+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"PO-Revision-Date: 2024-11-01 22:36+0000\n"
+"Last-Translator: chocomint <silentxe1@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -5947,9 +5947,8 @@ msgstr ""
 "está deshabilitada, solo se revela el número de jugadores."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Send player names to the server list"
-msgstr "Anunciar en esta lista de servidores."
+msgstr "Enviar nombres de los jugadores a la lista de servidores"
 
 #: src/settings_translation_file.cpp
 msgid "Server"
@@ -6269,9 +6268,8 @@ msgid "Smooth lighting"
 msgstr "Iluminación suave"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Smooth scrolling"
-msgstr "Iluminación suave"
+msgstr "Desplazado suave"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6298,9 +6296,8 @@ msgid "Sneaking speed, in nodes per second."
 msgstr "Velocidad agachado, en nodos por segundo."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Soft clouds"
-msgstr "Nubes 3D"
+msgstr "Nubes suaves"
 
 #: src/settings_translation_file.cpp
 msgid "Soft shadow radius"
@@ -6562,7 +6559,7 @@ msgstr ""
 "Fácil de usar y bien conocido de otros juegos que no deben ser nombrados.\n"
 "\n"
 "* long_tap\n"
-"Conocido por los controles clásicos del móvil Luanti.\n"
+"Conocido por los controles clásicos de móvil en Luanti.\n"
 "El combate es más o menos imposible."
 
 #: src/settings_translation_file.cpp
@@ -6634,9 +6631,9 @@ msgid ""
 "Note: A restart is required after changing this!\n"
 "OpenGL is the default for desktop, and OGLES2 for Android."
 msgstr ""
-"El back-end de renderizado.\n"
-"Nota: ¡es necesario reiniciar después de cambiar esto!\n"
-"OpenGL es el predeterminado para escritorio, y OGLES2 para Android."
+"El renderizado de back-end.\n"
+"Nota: ¡Se requiere un reinicio después de cambiar esto!\n"
+"OpenGL es el predeterminado para el escritorio, y OGLES2 para Android."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6778,7 +6775,7 @@ msgstr "Pantalla táctil"
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen controls"
-msgstr "Controles táctiles"
+msgstr "Controles de pantalla táctil"
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen sensitivity"
