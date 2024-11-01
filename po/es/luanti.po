@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
 "PO-Revision-Date: 2024-11-01 22:36+0000\n"
-"Last-Translator: chocomint <silentxe1@gmail.com>\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -6790,9 +6790,8 @@ msgid "Tradeoffs for performance"
 msgstr "Contrapartidas para el rendimiento"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Translucent foliage"
-msgstr "Líquidos translúcidos"
+msgstr "Follaje translúcido"
 
 #: src/settings_translation_file.cpp
 msgid "Translucent liquids"
@@ -6842,14 +6841,13 @@ msgstr ""
 "Esta configuración solo debe cambiarse si tiene problemas de rendimiento."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
 msgstr ""
-"URL del archivo JSON que proporciona información sobre la última versión de "
-"Minetest\n"
+"Dirección URL al archivo JSON que proporciona información sobre la última "
+"versión de Luanti.\n"
 "Si está vacío, el motor nunca buscará actualizaciones."
 
 #: src/settings_translation_file.cpp
@@ -7293,15 +7291,14 @@ msgid "Window maximized"
 msgstr "Ventana maximizada"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Windows systems only: Start Luanti with the command line window in the "
 "background.\n"
 "Contains the same information as the file debug.txt (default name)."
 msgstr ""
-"Solo para sistemas Windows: Iniciar Minetest con la ventana de la linea de "
-"comandos en el fondo.\n"
-"Contiene la misma información que el archivo debug.txt (Nombre por defecto)."
+"Solo sistemas Windows: Inicia Luanti con la ventana de línea de comandos en "
+"segundo plano.\n"
+"Contiene la misma información que el archivo debug.txt (nombre por defecto)."
 
 #: src/settings_translation_file.cpp
 msgid ""
