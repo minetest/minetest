@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
 "PO-Revision-Date: 2024-11-01 22:30+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"Last-Translator: chocomint <silentxe1@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -5448,18 +5448,16 @@ msgid "OpenGL debug"
 msgstr "Depuración OpenGL"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Optimize GUI for touchscreens"
-msgstr "Usar retícula en pantalla táctil"
+msgstr "Optimizar la interfaz gráfica de usuario para pantallas táctiles"
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
 msgstr "Anulación opcional del color de un enlace web en el chat."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Other Effects"
-msgstr "Efectos gráficos"
+msgstr "Otros Efectos"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5576,16 +5574,15 @@ msgid "Prometheus listener address"
 msgstr "Dirección del receptor \"Prometheus\""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Prometheus listener address.\n"
 "If Luanti is compiled with ENABLE_PROMETHEUS option enabled,\n"
 "enable metrics listener for Prometheus on that address.\n"
 "Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
-"Dirección de escucha de \"Prometheus\".\n"
-"Si Minetest se compila con la opción 'ENABLE_PROMETHEUS' activada,\n"
-"se habilitará el detector de métricas para \"Prometheus\" en esa dirección.\n"
+"Dirección de escucha de Prometheus.\n"
+"Si Luanti se compila con la opción ENABLE_PROMETHEUS activada,\n"
+"habilite el detector de métricas para Prometheus en esa dirección.\n"
 "Las métricas pueden obtenerse en http://127.0.0.1:30000/metrics"
 
 #: src/settings_translation_file.cpp
