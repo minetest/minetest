@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-11-01 22:24+0000\n"
-"Last-Translator: chocomint <silentxe1@gmail.com>\n"
+"PO-Revision-Date: 2024-11-01 22:25+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -347,7 +347,7 @@ msgstr "Actualizar"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Website"
-msgstr "Sitio web"
+msgstr "Página web"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
@@ -720,8 +720,8 @@ msgid ""
 "For a long time, Luanti shipped with a default game called \"Minetest "
 "Game\". Since version 5.8.0, Luanti ships without a default game."
 msgstr ""
-"Por un largo tiempo, Luanti incluía un juego predeterminado llamado "
-"'Minetest Game'. Desde la versión 5.8.0, Luanti se incluye sin un juego "
+"Durante mucho tiempo, Luanti se entregó con un juego predeterminado llamado "
+"\"Minetest Game\". Desde la versión 5.8.0, Luanti se entrega sin un juego "
 "predeterminado."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
@@ -729,16 +729,16 @@ msgid ""
 "If you want to continue playing in your Minetest Game worlds, you need to "
 "reinstall Minetest Game."
 msgstr ""
-"Si quieres continuar jugando en tus mundos de Minetest, necesitarás "
-"reinstalar Minetest Game."
+"Si deseas seguir jugando en los mundos de Minetest Game, deberás reinstalar "
+"Minetest Game."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Minetest Game is no longer installed by default"
-msgstr "Minetest Game ya no es instalado por predeterminado"
+msgstr "Minetest Game ya no se instala de forma predeterminada"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Reinstall Minetest Game"
-msgstr "Reinstala Minetest Game"
+msgstr "Reinstalar Minetest Game"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -893,7 +893,7 @@ msgstr "(El juego necesitará habilitar el efecto de bloom también)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(The game will need to enable volumetric lighting as well)"
-msgstr "(El juego necesitará habilitar la iluminación volumétrica también)"
+msgstr "(El juego también deberá habilitar la iluminación volumétrica)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
@@ -2333,23 +2333,27 @@ msgstr ""
 
 #: src/network/clientpackethandler.cpp
 msgid "Too many users"
-msgstr "Muchos usuarios"
+msgstr "Demasiados usuarios"
 
 #: src/network/clientpackethandler.cpp
 msgid "Unknown disconnect reason."
-msgstr ""
+msgstr "Motivo de desconexión desconocido."
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Your client sent something the server didn't expect.  Try reconnecting or "
 "updating your client."
 msgstr ""
+"Su cliente envió algo que el servidor no esperaba.  Intente reconectarse o "
+"actualizar su cliente."
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Your client's version is not supported.\n"
 "Please contact the server administrator."
 msgstr ""
+"La versión de su cliente no es compatible.\n"
+"Por favor, póngase en contacto con el administrador del servidor."
 
 #: src/server.cpp
 #, c-format
@@ -2654,11 +2658,11 @@ msgstr "Método de suavizado"
 
 #: src/settings_translation_file.cpp
 msgid "Anticheat flags"
-msgstr ""
+msgstr "Banderas antitrampas"
 
 #: src/settings_translation_file.cpp
 msgid "Anticheat movement tolerance"
-msgstr ""
+msgstr "Tolerancia al movimiento antitrampas"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2695,7 +2699,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Apply specular shading to nodes."
-msgstr ""
+msgstr "Aplique la sombra especulativa a los nodos."
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
@@ -3587,6 +3591,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Enable updates available indicator on content tab"
 msgstr ""
+"Habilitar el indicador de actualizaciones disponibles en la pestaña de "
+"contenido"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3650,11 +3656,11 @@ msgstr "Activa depuración y comprobación de errores en el driver OpenGL."
 
 #: src/settings_translation_file.cpp
 msgid "Enables smooth scrolling."
-msgstr "Habilita el desplazamiento suave."
+msgstr "Activar el desplazamiento suave."
 
 #: src/settings_translation_file.cpp
 msgid "Enables the post processing pipeline."
-msgstr "Activas el proceso de posprocesamiento."
+msgstr "Habilita la canalización para el posprocesamiento."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3663,6 +3669,11 @@ msgid ""
 "\"auto\" means that the touchscreen controls will be enabled and disabled\n"
 "automatically depending on the last used input method."
 msgstr ""
+"Habilita los controles de pantalla táctil, lo que te permite jugar el juego "
+"con una pantalla táctil.\n"
+"\"auto\" significa que los controles de la pantalla táctil se habilitarán y "
+"deshabilitarán\n"
+"automáticamente dependiendo del último método de entrada utilizado."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4248,6 +4259,9 @@ msgid ""
 "ContentDB to\n"
 "check for package updates when opening the mainmenu."
 msgstr ""
+"Si está habilitado y tiene paquetes ContentDB instalados, Luanti puede "
+"comunicarse con ContentDB para\n"
+"Compruebe si hay actualizaciones del paquete al abrir el menú principal."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5099,6 +5113,10 @@ msgid ""
 "You generally don't need to change this, however busy servers may benefit "
 "from a higher number."
 msgstr ""
+"Número máximo de paquetes enviados por paso de envío en el código de red de "
+"bajo nivel.\n"
+"Generalmente no es necesario cambiar esto, sin embargo los servidores "
+"ocupados pueden beneficiarse de un número mayor."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can be connected simultaneously."
@@ -5597,6 +5615,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Radius to use when the block bounds HUD feature is set to near blocks."
 msgstr ""
+"El radio que se utilizará cuando la función HUD de límite de bloque está en "
+"el modo Bloques cercanos."
 
 #: src/settings_translation_file.cpp
 msgid "Raises terrain to make valleys around the rivers."
@@ -5928,6 +5948,8 @@ msgid ""
 "Send names of online players to the serverlist. If disabled only the player "
 "count is revealed."
 msgstr ""
+"Envía los nombres de los jugadores en línea a la lista de servidores. Si "
+"está deshabilitada, solo se revela el número de jugadores."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5960,6 +5982,9 @@ msgid ""
 "Flags are positive. Uncheck the flag to disable corresponding anticheat "
 "module."
 msgstr ""
+"Configuración antitrampas del servidor.\n"
+"Las banderas son positivas. Desmarque la bandera para desactivar el módulo "
+"antitrampas correspondiente."
 
 #: src/settings_translation_file.cpp
 msgid "Server description"
@@ -6120,6 +6145,8 @@ msgid ""
 "Shaders are a fundamental part of rendering and enable advanced visual "
 "effects."
 msgstr ""
+"Los Shaders son una parte fundamental del renderizado y permiten efectos "
+"visuales avanzados."
 
 #: src/settings_translation_file.cpp
 msgid "Shadow filter quality"
@@ -6192,7 +6219,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Simulate translucency when looking at foliage in the sunlight."
-msgstr ""
+msgstr "Simule la translucidez al mirar el follaje a la luz del sol."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6746,6 +6773,8 @@ msgid ""
 "Tolerance of movement cheat detector.\n"
 "Increase the value if players experience stuttery movement."
 msgstr ""
+"Detector de trampas de tolerancia de movimiento.\n"
+"Aumente el valor si los jugadores experimentan movimientos entrecortados."
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -6931,7 +6960,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
-msgstr ""
+msgstr "Utilice un sombreado de nubes suave."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7140,13 +7169,17 @@ msgstr "Color de los enlaces web"
 
 #: src/settings_translation_file.cpp
 msgid "When enabled, liquid reflections are simulated."
-msgstr ""
+msgstr "Cuando está habilitado, se simulan reflejos de líquidos."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "When enabled, the GUI is optimized to be more usable on touchscreens.\n"
 "Whether this is enabled by default depends on your hardware form-factor."
 msgstr ""
+"Cuando está habilitada, la GUI se optimiza para que sea más fácil de usar en "
+"pantallas táctiles.\n"
+"Si esta opción está habilitada de manera predeterminada depende del factor "
+"de forma de su hardware."
 
 #: src/settings_translation_file.cpp
 msgid ""
