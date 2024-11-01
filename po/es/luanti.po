@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
 "PO-Revision-Date: 2024-11-01 22:25+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"Last-Translator: chocomint <silentxe1@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -4406,13 +4406,12 @@ msgid "Instrument chat commands on registration."
 msgstr "Instrumento de comandos del chat al registrarse."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Instrument global callback functions on registration.\n"
 "(anything you pass to a core.register_*() function)"
 msgstr ""
-"Funciones de devolución de llamada global del instrumento en el registro.\n"
-"(Cualquier cosa que pase a una función minetest.register _ * ())"
+"Manejar funciones de devolución de llamada global en el registro.\n"
+"(Cualquier cosa que pase a una función core.register_*())"
 
 #: src/settings_translation_file.cpp
 msgid ""
