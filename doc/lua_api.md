@@ -7,7 +7,7 @@ it's now called `core` due to the renaming of Luanti (formerly Minetest).
 
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
-* (Unofficial) Minetest Modding Book by rubenwardy: <https://rubenwardy.com/minetest_modding_book/>
+* (Unofficial) Minetest Modding Book by rubenwardy: <https://rubenwardy.gitlab.io/minetest_modding_book/>
 * Modding tools: <https://github.com/minetest/modtools>
 
 Introduction
