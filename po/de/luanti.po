@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-11-01 15:20+0000\n"
-"Last-Translator: grorp <grorp@posteo.de>\n"
+"PO-Revision-Date: 2024-11-01 16:26+0000\n"
+"Last-Translator: Wuzzy <Wuzzy@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -177,7 +177,7 @@ msgstr "Herunterladen …"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Featured"
-msgstr ""
+msgstr "Vorgestellt"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Games"
@@ -316,7 +316,7 @@ msgstr "Spenden"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Forum Topic"
-msgstr ""
+msgstr "Forumthema"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Information"
@@ -2271,6 +2271,8 @@ msgid ""
 "Another client is connected with this name.  If your client closed "
 "unexpectedly, try again in a minute."
 msgstr ""
+"Ein anderer Client ist mit diesem Namen verbunden. Falls Ihr Client "
+"unerwartet geschlossen wurde, versuchen Sie es in einer Minute erneut."
 
 #: src/network/clientpackethandler.cpp
 msgid "Empty passwords are disallowed.  Set a password and try again."
@@ -2700,7 +2702,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Apply specular shading to nodes."
-msgstr ""
+msgstr "Specular-Shading auf Nodes anwenden."
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
@@ -3660,7 +3662,7 @@ msgstr "Aktiviert Debug und Fehlerprüfungen im OpenGL-Treiber."
 
 #: src/settings_translation_file.cpp
 msgid "Enables smooth scrolling."
-msgstr "Weiches Scrollen aktivieren"
+msgstr "Weiches Scrollen aktivieren."
 
 #: src/settings_translation_file.cpp
 msgid "Enables the post processing pipeline."
@@ -5124,6 +5126,10 @@ msgid ""
 "You generally don't need to change this, however busy servers may benefit "
 "from a higher number."
 msgstr ""
+"Maximale Anzahl der Pakete, die jeden Server-Step im Low-Level-Netzwerkcode "
+"gesendet werden.\n"
+"Sie brauchen das normalerweise nicht ändern, jedoch können ausgelastete "
+"Server von einer höheren Zahl profitieren."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can be connected simultaneously."
@@ -5364,7 +5370,7 @@ msgstr "Blockhervorhebung"
 
 #: src/settings_translation_file.cpp
 msgid "Node specular"
-msgstr ""
+msgstr "Node-Specular"
 
 #: src/settings_translation_file.cpp
 msgid "NodeTimer interval"
@@ -5421,14 +5427,13 @@ msgstr ""
 "darf."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Number of threads to use for mesh generation.\n"
 "Value of 0 (default) will let Luanti autodetect the number of available "
 "threads."
 msgstr ""
 "Anzahl der Threads, die für die Meshgenerierung benutzt werden.\n"
-"Der Wert 0 (Standard) sorgt dafür, dass Minetest die Anzahl verfügbarer "
+"Der Wert 0 (Standard) sorgt dafür, dass Luanti die Anzahl verfügbarer "
 "Threads automatisch ermittelt."
 
 #: src/settings_translation_file.cpp
@@ -5460,18 +5465,16 @@ msgid "OpenGL debug"
 msgstr "OpenGL-Debug"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Optimize GUI for touchscreens"
-msgstr "Fadenkreuz für Touchscreen benutzen"
+msgstr "GUI für Touchscreens optimieren"
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
 msgstr "Optionaler manueller Wert für die Farbe von Chat-Weblinks."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Other Effects"
-msgstr "Grafikeffekte"
+msgstr "Andere Effekte"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5589,7 +5592,6 @@ msgid "Prometheus listener address"
 msgstr "Prometheus-Lauschadresse"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Prometheus listener address.\n"
 "If Luanti is compiled with ENABLE_PROMETHEUS option enabled,\n"
@@ -5597,7 +5599,7 @@ msgid ""
 "Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
 "Prometheus-Lauschadresse.\n"
-"Falls Minetest mit der ENABLE_PROMETEUS-Option kompiliert wurde,\n"
+"Falls Luanti mit der ENABLE_PROMETEUS-Option kompiliert wurde,\n"
 "wird dies den Metriklauscher für Prometheus auf dieser Adresse aktivieren.\n"
 "Metriken können von http://127.0.0.1:30000/metrics abgegriffen werden."
 
@@ -5626,6 +5628,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Radius to use when the block bounds HUD feature is set to near blocks."
 msgstr ""
+"Der zu verwendende Radius, wenn sich die Blockbegrenzungs-HUD-Funktion im "
+"Modus „Blöcke in Nähe“ befindet."
 
 #: src/settings_translation_file.cpp
 msgid "Raises terrain to make valleys around the rivers."
@@ -5952,11 +5956,12 @@ msgid ""
 "Send names of online players to the serverlist. If disabled only the player "
 "count is revealed."
 msgstr ""
+"Name von Spielern, die online sind, an die Serverliste senden. Fall "
+"deaktiviert, wird nur die Anzahl der Spieler offengelegt."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Send player names to the server list"
-msgstr "Zu dieser Serverliste ankündigen."
+msgstr "Spielernamen an die Serverliste senden"
 
 #: src/settings_translation_file.cpp
 msgid "Server"
@@ -5984,6 +5989,9 @@ msgid ""
 "Flags are positive. Uncheck the flag to disable corresponding anticheat "
 "module."
 msgstr ""
+"Server-Anticheat-Konfiguration.\n"
+"Flags sind positiv. Das Kreuzchen beim jeweiligen Flag entfernen, um das "
+"dazugehörige Anticheatmodul zu deaktivieren."
 
 #: src/settings_translation_file.cpp
 msgid "Server description"
@@ -6140,6 +6148,8 @@ msgid ""
 "Shaders are a fundamental part of rendering and enable advanced visual "
 "effects."
 msgstr ""
+"Shader sind ein fundamentaler Teil des Renderns und aktivieren erweiterte "
+"visuelle Effekte."
 
 #: src/settings_translation_file.cpp
 msgid "Shadow filter quality"
@@ -6211,6 +6221,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Simulate translucency when looking at foliage in the sunlight."
 msgstr ""
+"Transluzenz simulieren, wenn auf Blattwerk im Sonnenlicht geblickt wird."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6264,9 +6275,8 @@ msgid "Smooth lighting"
 msgstr "Weiches Licht"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Smooth scrolling"
-msgstr "Weiches Licht"
+msgstr "Weiches Scrollen"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6294,9 +6304,8 @@ msgid "Sneaking speed, in nodes per second."
 msgstr "Schleichgeschwindigkeit, in Blöcken pro Sekunde."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Soft clouds"
-msgstr "3-D-Wolken"
+msgstr "Weiche Wolken"
 
 #: src/settings_translation_file.cpp
 msgid "Soft shadow radius"
@@ -6533,7 +6542,6 @@ msgstr ""
 "Der Dateipfad relativ zu Ihrem Weltpfad, in dem Profile abgespeichert werden."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The gesture for punching players/entities.\n"
 "This can be overridden by games and mods.\n"
@@ -6553,7 +6561,7 @@ msgstr ""
 "sollen.\n"
 "\n"
 "* long_tap\n"
-"Bekannt aus der klassischen Mineteststeuerung für mobile Endgeräte.\n"
+"Bekannt aus der klassischen Luantisteuerung für mobile Endgeräte.\n"
 "Der Kampf ist mehr oder weniger unmöglich."
 
 #: src/settings_translation_file.cpp
@@ -6620,7 +6628,6 @@ msgstr ""
 "konfiguriert werden."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
@@ -6629,8 +6636,7 @@ msgstr ""
 "Das Renderer-Backend.\n"
 "Anmerkung: Ein Neustart ist nach einer Änderung notwendig!\n"
 "Auf Desktopsystemen ist OpenGL die Standardeinstellung. Bei Android ist "
-"OGLES2 die Standardeinstellung.\n"
-"Shader werden von allem außer OGLES1 unterstützt."
+"OGLES2 die Standardeinstellung."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6760,6 +6766,8 @@ msgid ""
 "Tolerance of movement cheat detector.\n"
 "Increase the value if players experience stuttery movement."
 msgstr ""
+"Toleranz des Bewegungs-Cheaterkenners.\n"
+"Erhöhen Sie den Wert, falls Spieler bei Bewegungen ein Stottern feststellen."
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -6770,9 +6778,8 @@ msgid "Touchscreen"
 msgstr "Touchscreen"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen controls"
-msgstr "Touchscreenschwellwert"
+msgstr "Touchscreensteuerung"
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen sensitivity"
@@ -6787,9 +6794,8 @@ msgid "Tradeoffs for performance"
 msgstr "Kompromisse für Performanz"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Translucent foliage"
-msgstr "Transluzente Flüssigkeiten"
+msgstr "Transluzentes Blattwerk"
 
 #: src/settings_translation_file.cpp
 msgid "Translucent liquids"
@@ -6842,14 +6848,13 @@ msgstr ""
 "haben."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
 msgstr ""
-"URL zu einer JSON-Datei, welche Informationen über das neueste Minetest-"
-"Release enthält\n"
+"URL zu einer JSON-Datei, welche Informationen über das neueste Luanti-"
+"Release enthält.\n"
 "Wenn dies leer ist, wird die Engine nie nach Updates suchen."
 
 #: src/settings_translation_file.cpp
@@ -6952,7 +6957,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
-msgstr ""
+msgstr "Weiches Wolken-Shading benutzen."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7162,13 +7167,16 @@ msgstr "Weblinkfarbe"
 
 #: src/settings_translation_file.cpp
 msgid "When enabled, liquid reflections are simulated."
-msgstr ""
+msgstr "Falls aktiviert, werden Flüssigkeitsreflextionen simuliert."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "When enabled, the GUI is optimized to be more usable on touchscreens.\n"
 "Whether this is enabled by default depends on your hardware form-factor."
 msgstr ""
+"Falls aktiviert, wird die GUI optimiert, damit sie für Touchscreens "
+"benutzbarer wird.\n"
+"Die Standardeinstellung hängt von ihrem Hardware-Formfaktor ab."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7290,13 +7298,12 @@ msgid "Window maximized"
 msgstr "Fenster maximiert"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Windows systems only: Start Luanti with the command line window in the "
 "background.\n"
 "Contains the same information as the file debug.txt (default name)."
 msgstr ""
-"Nur für Windows-Systeme: Startet Minetest mit dem Kommandozeilenfenster im\n"
+"Nur für Windows-Systeme: Startet Luanti mit dem Kommandozeilenfenster im\n"
 "Hintergrund. Enthält die selbe Information wie die Datei debug.txt "
 "(Standardname)."
 
