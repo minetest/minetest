@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-11-01 22:30+0000\n"
-"Last-Translator: chocomint <silentxe1@gmail.com>\n"
+"PO-Revision-Date: 2024-11-01 22:34+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -5449,15 +5449,15 @@ msgstr "Depuración OpenGL"
 
 #: src/settings_translation_file.cpp
 msgid "Optimize GUI for touchscreens"
-msgstr "Optimizar la interfaz gráfica de usuario para pantallas táctiles"
+msgstr "Optimización de la interfaz gráfica para pantallas táctiles"
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
-msgstr "Anulación opcional del color de un enlace web en el chat."
+msgstr "Cambio opcional del color del enlace web del chat."
 
 #: src/settings_translation_file.cpp
 msgid "Other Effects"
-msgstr "Otros Efectos"
+msgstr "Otros efectos"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5582,12 +5582,12 @@ msgid ""
 msgstr ""
 "Dirección de escucha de Prometheus.\n"
 "Si Luanti se compila con la opción ENABLE_PROMETHEUS activada,\n"
-"habilite el detector de métricas para Prometheus en esa dirección.\n"
-"Las métricas pueden obtenerse en http://127.0.0.1:30000/metrics"
+"habilita la escucha de métricas para Prometheus en esa dirección.\n"
+"Las métricas se pueden obtener en http://127.0.0.1:30000/metrics"
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
-msgstr "Proporción de cuevas grandes que contienen líquido."
+msgstr "Proporción de grandes cuevas que contienen líquido."
 
 #: src/settings_translation_file.cpp
 msgid "Protocol version minimum"
@@ -6544,7 +6544,6 @@ msgstr ""
 "los perfiles."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The gesture for punching players/entities.\n"
 "This can be overridden by games and mods.\n"
@@ -6556,14 +6555,14 @@ msgid ""
 "Known from the classic Luanti mobile controls.\n"
 "Combat is more or less impossible."
 msgstr ""
-"El gesto para golpear jugadores/entidades.\n"
-"Los juegos y mods pueden ignorar esto.\n"
+"El gesto para golpear a jugadores/entidades.\n"
+"Esto puede ser anulado por juegos y mods.\n"
 "\n"
-"* sort_tap\n"
-"Fácil de usar y muy conocido por otros juegos que no se mencionarán.\n"
+"* short_tap\n"
+"Fácil de usar y bien conocido de otros juegos que no deben ser nombrados.\n"
 "\n"
 "* long_tap\n"
-"Conocido por los controles clásicos para móviles de Minetest.\n"
+"Conocido por los controles clásicos del móvil Luanti.\n"
 "El combate es más o menos imposible."
 
 #: src/settings_translation_file.cpp
@@ -6630,16 +6629,14 @@ msgstr ""
 "Esto debe configurarse junto con active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
 "OpenGL is the default for desktop, and OGLES2 for Android."
 msgstr ""
 "El back-end de renderizado.\n"
-"Nota: ¡se debe reiniciar después de cambiar esto!\n"
-"OpenGL es el predeterminado para PC, y OGLES2 para Android.\n"
-"Los shaders son compatibles con todos los sistemas excepto OGLES1."
+"Nota: ¡es necesario reiniciar después de cambiar esto!\n"
+"OpenGL es el predeterminado para escritorio, y OGLES2 para Android."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6780,9 +6777,8 @@ msgid "Touchscreen"
 msgstr "Pantalla táctil"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen controls"
-msgstr "Umbral de la pantalla táctil"
+msgstr "Controles táctiles"
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen sensitivity"
