@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
 "PO-Revision-Date: 2024-11-01 22:28+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"Last-Translator: chocomint <silentxe1@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -4619,7 +4619,6 @@ msgid "Leaves style"
 msgstr "Estilo de las hojas"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Leaves style:\n"
 "-   Fancy:  all faces visible\n"
@@ -4627,12 +4626,11 @@ msgid ""
 "-   Opaque: disable transparency"
 msgstr ""
 "Estilo de hojas:\n"
-"-   Fabuloso: Todas las caras son visibles\n"
-"-   Simple: Solo caras externas, si se utilizan special_tiles definidos\n"
-"-   Opaco: Transparencia desactivada"
+"-      Fabuloso:    todas las caras son visibles\n"
+"-      Simple: solo caras externas\n"
+"-      Opaco: desactivar transparencia"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Length of a server tick (the interval at which everything is generally "
 "updated),\n"
@@ -4644,7 +4642,10 @@ msgstr ""
 "Duración de un tick del servidor (el intervalo en el que todo es "
 "actualizado),\n"
 "expresado en segundos.\n"
-"No se aplica a las sesiones iniciadas desde el menú del cliente."
+"No se aplica a las sesiones iniciadas desde el menú del cliente.\n"
+"Esta es una cota inferior, es decir, los pasos del servidor no pueden ser "
+"más cortos que esto, pero\n"
+"a menudo son más largos."
 
 #: src/settings_translation_file.cpp
 msgid "Length of liquid waves."
@@ -4766,9 +4767,8 @@ msgid "Liquid queue purge time"
 msgstr "Tiempo de purga de colas de líquidos"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Liquid reflections"
-msgstr "Fluidez líquida"
+msgstr "Reflejos líquidos"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid sinking"
@@ -5353,7 +5353,7 @@ msgstr "Resaltado de los nodos"
 
 #: src/settings_translation_file.cpp
 msgid "Node specular"
-msgstr ""
+msgstr "Nodo especular"
 
 #: src/settings_translation_file.cpp
 msgid "NodeTimer interval"
@@ -5409,15 +5409,14 @@ msgid "Number of messages a player may send per 10 seconds."
 msgstr "Número de mensajes que un jugador puede enviar cada 10 segundos."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Number of threads to use for mesh generation.\n"
 "Value of 0 (default) will let Luanti autodetect the number of available "
 "threads."
 msgstr ""
-"Numero de hilos del procesador a usar para la generación de mayas.\n"
-"Un valor de 0 (default) dejará que Minetest detecte automáticamente el "
-"número de hilos disponibles."
+"Número de hilos a utilizar para la generación de mallas.\n"
+"Un valor de 0 (predeterminado) permitirá que Luanti detecte automáticamente "
+"el número de hilos disponibles."
 
 #: src/settings_translation_file.cpp
 msgid "Occlusion Culler"
