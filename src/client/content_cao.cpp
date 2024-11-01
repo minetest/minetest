@@ -917,6 +917,9 @@ void GenericCAO::setNodeLight(const video::SColor &light_color)
 			return;
 		setColorParam(node, light_color);
 	} else {
+		// TODO refactor vertex colors to be separate from the other vertex attributes
+		// instead of mutating meshes / buffers for everyone via setMeshColor.
+		// (Note: There are a couple more places here where setMeshColor is used.)
 		if (m_meshnode) {
 			setMeshColor(m_meshnode->getMesh(), light_color);
 		} else if (m_animated_meshnode) {
