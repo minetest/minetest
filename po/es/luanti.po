@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-11-01 22:40+0000\n"
-"Last-Translator: chocomint <silentxe1@gmail.com>\n"
+"PO-Revision-Date: 2024-11-02 23:00+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8.2-dev\n"
+"X-Generator: Weblate 5.8.2\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -3052,7 +3052,7 @@ msgstr ""
 "según lo definido por la Free Software Foundation.\n"
 "También puedes especificar clasificaciones de contenido.\n"
 "Estas banderas son independientes de las versiones de Luanti,\n"
-"así que consulta una lista completa en https://content.luanti.org/help/"
+"así que consulta una lista completa en https://content.minetest.net/help/"
 "content_flags/"
 
 #: src/settings_translation_file.cpp
@@ -6631,9 +6631,9 @@ msgid ""
 "Note: A restart is required after changing this!\n"
 "OpenGL is the default for desktop, and OGLES2 for Android."
 msgstr ""
-"El renderizado de back-end.\n"
-"Nota: ¡Se requiere un reinicio después de cambiar esto!\n"
-"OpenGL es el predeterminado para el escritorio, y OGLES2 para Android."
+"El back-end de renderizado.\n"
+"Nota: ¡Es necesario reiniciar después de cambiar esto!\n"
+"OpenGL es el predeterminado para escritorio y OGLES2 para Android."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6775,7 +6775,7 @@ msgstr "Pantalla táctil"
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen controls"
-msgstr "Controles de pantalla táctil"
+msgstr "Controles en pantalla táctil"
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen sensitivity"
@@ -6846,9 +6846,9 @@ msgid ""
 "release.\n"
 "If this is empty the engine will never check for updates."
 msgstr ""
-"URL al archivo JSON que proporciona información sobre la nueva versión de "
-"Luanti.\n"
-"Si esto está vacío el motor nunca comprobará las actualizaciones."
+"URL del archivo JSON que proporciona información sobre la versión más "
+"reciente de Luanti.\n"
+"Si está vacío, el motor nunca buscará actualizaciones."
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
