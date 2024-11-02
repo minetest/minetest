@@ -34,8 +34,14 @@ OpenGLVersion COpenGL3Driver::getVersionFromOpenGL() const
 
 void COpenGL3Driver::initFeatures()
 {
-	assert(Version.Spec == OpenGLSpec::Compat);
-	assert(isVersionAtLeast(3, 2));
+	if (Version.Spec != OpenGLSpec::Compat) {
+		os::Printer::log("OpenGL 3 driver requires Compatibility Mode", ELL_ERROR);
+		throw std::exception();
+	}
+	if (!isVersionAtLeast(3, 2)) {
+		os::Printer::log("OpenGL 3 driver requires OpenGL >= 3.2 ", ELL_ERROR);
+		throw std::exception();
+	}
 	initExtensions();
 
 	TextureFormats[ECF_A1R5G5B5] = {GL_RGB5_A1, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV}; // WARNING: may not be renderable
