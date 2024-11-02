@@ -1015,10 +1015,12 @@ static bool determine_subgame(GameParams *game_params)
 			infostream << "Using commanded gameid [" << gamespec.id << "]" << std::endl;
 		} else {
 			if (game_params->is_dedicated_server) {
+				std::string contentdb_url = g_settings->get("contentdb_url");
+
 				// If this is a dedicated server and no gamespec has been specified,
 				// print a friendly error pointing to ContentDB.
 				errorstream << "To run a " PROJECT_NAME_C " server, you need to select a game using the '--gameid' argument." << std::endl
-				            << "Check out https://content.minetest.net for a selection of games to pick from and download." << std::endl;
+				            << "Check out " << contentdb_url << " for a selection of games to pick from and download." << std::endl;
 			}
 
 			return false;
