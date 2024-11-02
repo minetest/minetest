@@ -13,9 +13,16 @@
 #include <array>
 #include <optional>
 #include <limits>
+#include <memory> // unique_ptr
 #include <stdexcept>
 #include <unordered_map>
 #include <unordered_set>
+
+#if JSONCPP_VERSION_HEXA < 0x01090000 /* 1.9.0 */
+namespace Json {
+	using String = JSONCPP_STRING; // Polyfill
+}
+#endif
 
 namespace tiniergltf {
 
@@ -1381,7 +1388,7 @@ static Json::Value readJson(Span<const char> span) {
 	Json::CharReaderBuilder builder;
 	const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
 	Json::Value json;
-	JSONCPP_STRING err;
+	Json::String err;
 	if (!reader->parse(span.ptr, span.end(), &json, &err))
 		throw std::runtime_error(std::string("invalid JSON: ") + err);
 	return json;
