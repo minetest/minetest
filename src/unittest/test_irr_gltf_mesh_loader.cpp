@@ -405,14 +405,17 @@ SECTION("simple skin")
 
 	SECTION("transformations are correct")
 	{
-		CHECK(parent->Animatedposition == v3f(0, 0, 0));
-		CHECK(parent->Animatedrotation == irr::core::quaternion());
-		CHECK(parent->Animatedscale == v3f(1, 1, 1));
+		const auto &parentTransform = parent->AnimatedTransform;
+		CHECK(parentTransform.translation == v3f(0, 0, 0));
+		CHECK(parentTransform.rotation == irr::core::quaternion());
+		CHECK(parentTransform.scale == v3f(1, 1, 1));
 		CHECK(parent->GlobalInversedMatrix == irr::core::matrix4());
+
+		const auto &childTransform = child->AnimatedTransform;
 		const v3f childTranslation(0, 1, 0);
-		CHECK(child->Animatedposition == childTranslation);
-		CHECK(child->Animatedrotation == irr::core::quaternion());
-		CHECK(child->Animatedscale == v3f(1, 1, 1));
+		CHECK(childTransform.translation == childTranslation);
+		CHECK(childTransform.rotation == irr::core::quaternion());
+		CHECK(childTransform.scale == v3f(1, 1, 1));
 		irr::core::matrix4 inverseBindMatrix;
 		inverseBindMatrix.setInverseTranslation(childTranslation);
 		CHECK(child->GlobalInversedMatrix == inverseBindMatrix);

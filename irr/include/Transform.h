@@ -23,6 +23,19 @@ struct Transform {
 			scale.getInterpolated(other.scale, progress),
 		};
 	}
+
+	core::matrix4 toMatrix() const {
+		core::matrix4 T, R, S;
+		T.setTranslation(translation);
+		rotation.getMatrix_transposed(R);
+		S.setScale(scale);
+		return T * R * S;
+	}
+
+	// There deliberately is *no* way to turn a matrix into a transform here.
+	// There is pretty much only one reason for this matrix decomposition
+	// (file formats which store transforms as matrices);
+	// otherwise you should just have kept the transform around to begin with.
 };
 
 } // namespace core

@@ -53,7 +53,7 @@ class IBoneSceneNode : public ISceneNode
 {
 public:
 	IBoneSceneNode(ISceneNode *parent, ISceneManager *mgr, s32 id = -1) :
-			ISceneNode(parent, mgr, id), positionHint(-1), scaleHint(-1), rotationHint(-1) {}
+			ISceneNode(parent, mgr, id) {}
 
 	//! Get the index of the bone
 	virtual u32 getBoneIndex() const = 0;
@@ -83,10 +83,6 @@ public:
 
 	//! How the relative transformation of the bone is used
 	virtual E_BONE_SKINNING_SPACE getSkinningSpace() const = 0;
-
-	s32 positionHint;
-	s32 scaleHint;
-	s32 rotationHint;
 };
 
 } // end namespace scene

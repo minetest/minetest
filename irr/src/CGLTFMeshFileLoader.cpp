@@ -557,10 +557,11 @@ static core::matrix4 loadTransform(const tiniergltf::Node::Matrix &m, CSkinnedMe
 			m[12], m[13], m[14], m[15]));
 
 	// Decompose the matrix into translation, scale, and rotation.
-	joint->Animatedposition = mat.getTranslation();
+	auto &transform = joint->AnimatedTransform;
+	transform.translation = mat.getTranslation();
 
 	auto scale = mat.getScale();
-	joint->Animatedscale = scale;
+	transform.scale = scale;
 	core::matrix4 inverseScale;
 	inverseScale.setScale(core::vector3df(
 			scale.X == 0 ? 0 : 1 / scale.X,
@@ -568,11 +569,10 @@ static core::matrix4 loadTransform(const tiniergltf::Node::Matrix &m, CSkinnedMe
 			scale.Z == 0 ? 0 : 1 / scale.Z));
 
 	core::matrix4 axisNormalizedMat = inverseScale * mat;
-	joint->Animatedrotation = axisNormalizedMat.getRotationDegrees();
+	transform.rotation = axisNormalizedMat.getRotationDegrees();
 	// Invert the rotation because it is applied using `getMatrix_transposed`,
 	// which again inverts.
-	joint->Animatedrotation.makeInverse();
-
+	transform.rotation.makeInverse();
 	return mat;
 }
 
@@ -581,16 +581,12 @@ static core::matrix4 loadTransform(const tiniergltf::Node::TRS &trs, CSkinnedMes
 	const auto &trans = trs.translation;
 	const auto &rot = trs.rotation;
 	const auto &scale = trs.scale;
-	core::matrix4 transMat;
-	joint->Animatedposition = convertHandedness(core::vector3df(trans[0], trans[1], trans[2]));
-	transMat.setTranslation(joint->Animatedposition);
-	core::matrix4 rotMat;
-	joint->Animatedrotation = convertHandedness(core::quaternion(rot[0], rot[1], rot[2], rot[3]));
-	core::quaternion(joint->Animatedrotation).getMatrix_transposed(rotMat);
-	joint->Animatedscale = core::vector3df(scale[0], scale[1], scale[2]);
-	core::matrix4 scaleMat;
-	scaleMat.setScale(joint->Animatedscale);
-	return transMat * rotMat * scaleMat;
+	joint->AnimatedTransform = {
+		convertHandedness(core::vector3df(trans[0], trans[1], trans[2])),
+		convertHandedness(core::quaternion(rot[0], rot[1], rot[2], rot[3])),
+		core::vector3df(scale[0], scale[1], scale[2]),
+	};
+	return joint->AnimatedTransform.toMatrix();
 }
 
 static core::matrix4 loadTransform(std::optional<std::variant<tiniergltf::Node::Matrix, tiniergltf::Node::TRS>> transform,
@@ -682,27 +678,27 @@ void SelfType::MeshExtractor::loadAnimation(const std::size_t animIdx)
 		case tiniergltf::AnimationChannelTarget::Path::TRANSLATION: {
 			const auto outputAccessor = Accessor<core::vector3df>::make(m_gltf_model, sampler.output);
 			for (std::size_t i = 0; i < n_frames; ++i) {
-				auto *key = m_irr_model->addPositionKey(joint);
-				key->frame = inputAccessor.get(i);
-				key->position = convertHandedness(outputAccessor.get(i));
+				f32 frame = inputAccessor.get(i);
+				core::vector3df position = outputAccessor.get(i);
+				m_irr_model->addPositionKey(joint, frame, convertHandedness(position));
 			}
 			break;
 		}
 		case tiniergltf::AnimationChannelTarget::Path::ROTATION: {
 			const auto outputAccessor = Accessor<core::quaternion>::make(m_gltf_model, sampler.output);
 			for (std::size_t i = 0; i < n_frames; ++i) {
-				auto *key = m_irr_model->addRotationKey(joint);
-				key->frame = inputAccessor.get(i);
-				key->rotation = convertHandedness(outputAccessor.get(i));
+				f32 frame = inputAccessor.get(i);
+				core::quaternion rotation = outputAccessor.get(i);
+				m_irr_model->addRotationKey(joint, frame, convertHandedness(rotation));
 			}
 			break;
 		}
 		case tiniergltf::AnimationChannelTarget::Path::SCALE: {
 			const auto outputAccessor = Accessor<core::vector3df>::make(m_gltf_model, sampler.output);
 			for (std::size_t i = 0; i < n_frames; ++i) {
-				auto *key = m_irr_model->addScaleKey(joint);
-				key->frame = inputAccessor.get(i);
-				key->scale = outputAccessor.get(i);
+				f32 frame = inputAccessor.get(i);
+				core::vector3df scale = outputAccessor.get(i);
+				m_irr_model->addScaleKey(joint, frame, scale);
 			}
 			break;
 		}

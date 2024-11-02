@@ -181,6 +181,9 @@ public:
 	*/
 	quaternion &slerp(quaternion q1, quaternion q2,
 			f32 time, f32 threshold = .05f);
+	
+	//! Non-mutating variant of slerp, consistent with vectors
+	quaternion getInterpolated(quaternion next, f32 time) const;
 
 	//! Set this quaternion to represent a rotation from angle and axis.
 	/** Axis must be unit length.
@@ -580,6 +583,13 @@ inline quaternion &quaternion::slerp(quaternion q1, quaternion q2, f32 time, f32
 		return (*this = (q1 * scale) + (q2 * invscale));
 	} else // linear interpolation
 		return lerpN(q1, q2, time);
+}
+
+inline quaternion quaternion::getInterpolated(quaternion next, f32 time) const
+{
+	quaternion result;
+	result.slerp(*this, next, time);
+	return result;
 }
 
 // calculates the dot product
