@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-11-01 16:26+0000\n"
-"Last-Translator: Wuzzy <Wuzzy@disroot.org>\n"
+"PO-Revision-Date: 2024-11-02 23:00+0000\n"
+"Last-Translator: grorp <grorp@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8.2-dev\n"
+"X-Generator: Weblate 5.8.2\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -6532,8 +6532,8 @@ msgid ""
 "The delay in milliseconds after which a touch interaction is considered a "
 "long tap."
 msgstr ""
-"Die Verzögerung in Millisekunden, nachdem eine Berührungsinteraktion als "
-"langes Antippen zählt."
+"Die Verzögerung in Millisekunden, nach der eine Touch-Interaktion als langes "
+"Antippen zählt."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6553,16 +6553,16 @@ msgid ""
 "Known from the classic Luanti mobile controls.\n"
 "Combat is more or less impossible."
 msgstr ""
-"Die Geste für für das Schlagen von Spielern/Entitys.\n"
+"Die Geste für das Schlagen von Spielern/Entitys.\n"
 "Dies kann von Spielen und Mods überschrieben werden.\n"
 "\n"
 "* short_tap\n"
-"Leicht zu benutzen und bekannt von anderen Spielen, die nicht genannt werden "
+"Leicht zu benutzen und bekannt aus anderen Spielen, die nicht genannt werden "
 "sollen.\n"
 "\n"
 "* long_tap\n"
-"Bekannt aus der klassischen Luantisteuerung für mobile Endgeräte.\n"
-"Der Kampf ist mehr oder weniger unmöglich."
+"Bekannt aus der klassischen Luanti-Touchscreen-Steuerung.\n"
+"Kämpfen ist mehr oder weniger unmöglich."
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
@@ -6572,7 +6572,7 @@ msgstr "Die Kennung des zu verwendeten Joysticks"
 msgid ""
 "The length in pixels after which a touch interaction is considered movement."
 msgstr ""
-"Die Länge in Pixeln, die benötigt wird, damit die Touch-Interaktion als "
+"Die Länge in Pixeln, die benötigt wird, damit eine Touch-Interaktion als "
 "Bewegung zählt."
 
 #: src/settings_translation_file.cpp
@@ -6779,15 +6779,15 @@ msgstr "Touchscreen"
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen controls"
-msgstr "Touchscreensteuerung"
+msgstr "Touchscreen-Steuerung"
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen sensitivity"
-msgstr "Touchscreenempfindlichkeit"
+msgstr "Touchscreen-Empfindlichkeit"
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen sensitivity multiplier."
-msgstr "Faktor für die Touchscreenempfindlichkeit."
+msgstr "Faktor für die Touchscreen-Empfindlichkeit."
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
