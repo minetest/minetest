@@ -3239,19 +3239,9 @@ COpenGLCacheHandler *COpenGLDriver::getCacheHandler() const
 	return CacheHandler;
 }
 
-} // end namespace
-} // end namespace
-
-#endif // _IRR_COMPILE_WITH_OPENGL_
-
-namespace irr
-{
-namespace video
-{
 
 IVideoDriver *createOpenGLDriver(const SIrrlichtCreationParameters &params, io::IFileSystem *io, IContextManager *contextManager)
 {
-#ifdef _IRR_COMPILE_WITH_OPENGL_
 	COpenGLDriver *ogl = new COpenGLDriver(params, io, contextManager);
 
 	if (!ogl->initDriver()) {
@@ -3260,10 +3250,8 @@ IVideoDriver *createOpenGLDriver(const SIrrlichtCreationParameters &params, io::
 	}
 
 	return ogl;
-#else
-	return 0;
-#endif
 }
 
-} // end namespace
-} // end namespace
+} // end namespace video
+} // end namespace irr
+#endif // opengl
