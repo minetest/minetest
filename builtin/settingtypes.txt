@@ -789,7 +789,7 @@ contentdb_max_concurrent_downloads (ContentDB Max Concurrent Downloads) int 3 1
 enable_local_map_saving (Saving map received from server) bool false
 
 #    URL to the server list displayed in the Multiplayer Tab.
-serverlist_url (Serverlist URL) string servers.minetest.net
+serverlist_url (Serverlist URL) string servers.luanti.org
 
 #    If enabled, account registration is separate from login in the UI.
 #    If disabled, new accounts will be registered automatically when logging in.
@@ -815,10 +815,10 @@ server_name (Server name) string Luanti server
 server_description (Server description) string mine here
 
 #    Domain name of server, to be displayed in the serverlist.
-server_address (Server address) string game.minetest.net
+server_address (Server address) string game.example.net
 
 #    Homepage of server, to be displayed in the serverlist.
-server_url (Server URL) string https://minetest.net
+server_url (Server URL) string https://game.example.net
 
 #    Automatically report to the serverlist.
 server_announce (Announce server) bool false
@@ -827,7 +827,7 @@ server_announce (Announce server) bool false
 server_announce_send_players (Send player names to the server list) bool true
 
 #    Announce to this serverlist.
-serverlist_url (Serverlist URL) string servers.minetest.net
+serverlist_url (Serverlist URL) string servers.luanti.org
 
 #    Message of the day displayed to players connecting.
 motd (Message of the day) string
