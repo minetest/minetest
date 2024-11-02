@@ -2049,6 +2049,10 @@ bool read_tree_def(lua_State *L, int idx, const NodeDefManager *ndef,
 
 /******************************************************************************/
 
+#if JSONCPP_VERSION_HEXA < 0x01000000 /* 1.0.0 */
+#warning "Your JsonCPP version is too old and might not be compatible."
+#endif
+
 // Returns depth of json value tree
 static int push_json_value_getdepth(const Json::Value &value)
 {
@@ -2076,13 +2080,8 @@ static bool push_json_value_helper(lua_State *L, const Json::Value &value,
 			lua_pushnumber(L, value.asDouble());
 			break;
 		case Json::stringValue: {
-#if JSONCPP_VERSION_HEXA >= 0x01000000 /* 1.0.0 */
 			const auto &str = value.asString();
 			lua_pushlstring(L, str.c_str(), str.size());
-#else
-			const char *str = value.asCString();
-			lua_pushstring(L, str ? str : "");
-#endif
 			break;
 		}
 		case Json::booleanValue:
