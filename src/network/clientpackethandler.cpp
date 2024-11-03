@@ -1,24 +1,10 @@
-/*
-Minetest
-Copyright (C) 2015 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2015 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 #include "client/client.h"
 
+#include "irr_v2d.h"
 #include "util/base64.h"
 #include "client/camera.h"
 #include "client/mesh_generator_thread.h"
@@ -653,20 +639,10 @@ void Client::handleCommand_MovePlayerRel(NetworkPacket *pkt)
 	player->addPosition(added_pos);
 }
 
-void Client::handleCommand_DeathScreen(NetworkPacket* pkt)
+void Client::handleCommand_DeathScreenLegacy(NetworkPacket* pkt)
 {
-	bool set_camera_point_target;
-	v3f camera_point_target;
-
-	*pkt >> set_camera_point_target;
-	*pkt >> camera_point_target;
-
 	ClientEvent *event = new ClientEvent();
-	event->type                                = CE_DEATHSCREEN;
-	event->deathscreen.set_camera_point_target = set_camera_point_target;
-	event->deathscreen.camera_point_target_x   = camera_point_target.X;
-	event->deathscreen.camera_point_target_y   = camera_point_target.Y;
-	event->deathscreen.camera_point_target_z   = camera_point_target.Z;
+	event->type = CE_DEATHSCREEN_LEGACY;
 	m_client_event_queue.push(event);
 }
 
@@ -1476,12 +1452,17 @@ void Client::handleCommand_CloudParams(NetworkPacket* pkt)
 	f32 density;
 	video::SColor color_bright;
 	video::SColor color_ambient;
+	video::SColor color_shadow = video::SColor(255, 204, 204, 204);
 	f32 height;
 	f32 thickness;
 	v2f speed;
 
 	*pkt >> density >> color_bright >> color_ambient
 			>> height >> thickness >> speed;
+
+	if (pkt->getRemainingBytes() >= 4) {
+		*pkt >> color_shadow;
+	}
 
 	ClientEvent *event = new ClientEvent();
 	event->type                       = CE_CLOUD_PARAMS;
@@ -1491,6 +1472,7 @@ void Client::handleCommand_CloudParams(NetworkPacket* pkt)
 	// we avoid using new() and delete() for no good reason
 	event->cloud_params.color_bright  = color_bright.color;
 	event->cloud_params.color_ambient = color_ambient.color;
+	event->cloud_params.color_shadow = color_shadow.color;
 	event->cloud_params.height        = height;
 	event->cloud_params.thickness     = thickness;
 	// same here: deconstruct to skip constructor
@@ -1520,10 +1502,16 @@ void Client::handleCommand_LocalPlayerAnimations(NetworkPacket* pkt)
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
-	*pkt >> player->local_animations[0];
-	*pkt >> player->local_animations[1];
-	*pkt >> player->local_animations[2];
-	*pkt >> player->local_animations[3];
+	for (int i = 0; i < 4; ++i) {
+		if (getProtoVersion() >= 46) {
+			*pkt >> player->local_animations[i];
+		} else {
+			v2s32 local_animation;
+			*pkt >> local_animation;
+			player->local_animations[i] = v2f::from(local_animation);
+		}
+	}
+
 	*pkt >> player->local_animation_speed;
 
 	player->last_animation = LocalPlayerAnimation::NO_ANIM;
@@ -1821,4 +1809,11 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 	}
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.volumetric_light_strength;
+	if (pkt->getRemainingBytes() >= 4)
+		*pkt >> lighting.shadow_tint;
+	if (pkt->getRemainingBytes() >= 12) {
+		*pkt >> lighting.bloom_intensity
+				>> lighting.bloom_strength_factor
+				>> lighting.bloom_radius;
+	}
 }

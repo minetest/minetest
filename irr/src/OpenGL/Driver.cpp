@@ -1478,10 +1478,8 @@ void COpenGL3DriverBase::chooseMaterial2D()
 		Material = InitMaterial2D;
 
 	if (OverrideMaterial2DEnabled) {
-		OverrideMaterial2D.Lighting = false;
 		OverrideMaterial2D.ZWriteEnable = EZW_OFF;
 		OverrideMaterial2D.ZBuffer = ECFN_DISABLED; // it will be ECFN_DISABLED after merge
-		OverrideMaterial2D.Lighting = false;
 
 		Material = OverrideMaterial2D;
 	}

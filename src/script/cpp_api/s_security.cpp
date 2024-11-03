@@ -1,28 +1,13 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "cpp_api/s_security.h"
 #include "lua_api/l_base.h"
 #include "filesys.h"
 #include "porting.h"
 #include "server.h"
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 #include "client/client.h"
 #endif
 #include "settings.h"
@@ -109,7 +94,12 @@ void ScriptApiSecurity::initializeSecurity()
 		"string",
 		"table",
 		"math",
-		"bit"
+		"bit",
+		// Not sure if completely safe. But if someone enables tracy, they'll
+		// know what they do.
+#if BUILD_WITH_TRACY
+		"tracy",
+#endif
 	};
 	static const char *io_whitelist[] = {
 		"close",
@@ -303,6 +293,11 @@ void ScriptApiSecurity::initializeSecurityClient()
 		"table",
 		"math",
 		"bit",
+		// Not sure if completely safe. But if someone enables tracy, they'll
+		// know what they do.
+#if BUILD_WITH_TRACY
+		"tracy",
+#endif
 	};
 	static const char *os_whitelist[] = {
 		"clock",
@@ -413,7 +408,7 @@ void ScriptApiSecurity::setLuaEnv(lua_State *L, int thread)
 
 bool ScriptApiSecurity::isSecure(lua_State *L)
 {
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	auto script = ModApiBase::getScriptApiBase(L);
 	// CSM keeps no globals backup but is always secure
 	if (script->getType() == ScriptingType::Client)
@@ -733,7 +728,7 @@ int ScriptApiSecurity::sl_g_load(lua_State *L)
 
 int ScriptApiSecurity::sl_g_loadfile(lua_State *L)
 {
-#ifndef SERVER
+#if CHECK_CLIENT_BUILD()
 	ScriptApiBase *script = ModApiBase::getScriptApiBase(L);
 
 	// Client implementation

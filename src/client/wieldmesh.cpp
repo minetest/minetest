@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2014 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2014 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "wieldmesh.h"
 #include "settings.h"
@@ -29,6 +14,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include "client/meshgen/collector.h"
 #include "client/tile.h"
+#include "client/texturesource.h"
 #include "log.h"
 #include "util/numeric.h"
 #include <map>
@@ -194,10 +180,9 @@ private:
 static ExtrusionMeshCache *g_extrusion_mesh_cache = nullptr;
 
 
-WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool lighting):
+WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id):
 	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
-	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF),
-	m_lighting(lighting)
+	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
 {
 	m_enable_shaders = g_settings->getBool("enable_shaders");
 	m_anisotropic_filter = g_settings->getBool("anisotropic_filter");
@@ -390,8 +375,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		// overlay is white, if present
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
 		// initialize the color
-		if (!m_lighting)
-			setColor(video::SColor(0xFFFFFFFF));
+		setColor(video::SColor(0xFFFFFFFF));
 		return;
 	}
 
@@ -468,8 +452,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		}
 
 		// initialize the color
-		if (!m_lighting)
-			setColor(video::SColor(0xFFFFFFFF));
+		setColor(video::SColor(0xFFFFFFFF));
 		return;
 	} else {
 		const std::string inventory_image = item.getInventoryImage(idef);
@@ -485,8 +468,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
 
 		// initialize the color
-		if (!m_lighting)
-			setColor(video::SColor(0xFFFFFFFF));
+		setColor(video::SColor(0xFFFFFFFF));
 		return;
 	}
 
@@ -496,7 +478,6 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 
 void WieldMeshSceneNode::setColor(video::SColor c)
 {
-	assert(!m_lighting);
 	scene::IMesh *mesh = m_meshnode->getMesh();
 	if (!mesh)
 		return;
@@ -535,7 +516,7 @@ void WieldMeshSceneNode::setNodeLightColor(video::SColor color)
 	if (m_enable_shaders) {
 		for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i) {
 			video::SMaterial &material = m_meshnode->getMaterial(i);
-			material.EmissiveColor = color;
+			material.ColorParam = color;
 		}
 	} else {
 		setColor(color);
@@ -565,11 +546,6 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 			mesh->setHardwareMappingHint(scene::EHM_DYNAMIC);
 	}
 
-	m_meshnode->forEachMaterial([this] (auto &mat) {
-		mat.Lighting = m_lighting;
-		// need to normalize normals when lighting is enabled (because of setScale())
-		mat.NormalizeNormals = m_lighting;
-	});
 	m_meshnode->setVisible(true);
 }
 
@@ -667,7 +643,6 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 				tex.MagFilter = video::ETMAGF_NEAREST;
 			});
 			material.BackfaceCulling = cull_backface;
-			material.Lighting = false;
 		}
 
 		rotateMeshXZby(mesh, -45);
@@ -720,7 +695,6 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 			tex.MagFilter = video::ETMAGF_NEAREST;
 		});
 		material.BackfaceCulling = true;
-		material.Lighting = false;
 		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		material.MaterialTypeParam = 0.5f;
 	}

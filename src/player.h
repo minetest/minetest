@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
@@ -24,10 +9,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "util/basic_macros.h"
 #include "util/string.h"
-#include <list>
 #include <mutex>
 #include <functional>
-#include <tuple>
 #include <string>
 
 #define PLAYERNAME_SIZE 20
@@ -89,14 +72,18 @@ struct PlayerControl
 		movement_direction = a_movement_direction;
 	}
 
-#ifndef SERVER
+	// Sets movement_speed and movement_direction according to direction_keys
+	// if direction_keys != 0, otherwise leaves them unchanged to preserve
+	// joystick input.
+	void setMovementFromKeys();
+
 	// For client use
 	u32 getKeysPressed() const;
 	inline bool isMoving() const { return movement_speed > 0.001f; }
-#endif
 
 	// For server use
 	void unpackKeysPressed(u32 keypress_bits);
+	v2f getMovement() const;
 
 	u8 direction_keys = 0;
 	bool jump = false;
@@ -106,7 +93,7 @@ struct PlayerControl
 	bool freelook = false;
 	bool dig = false;
 	bool place = false;
-	// Note: These four are NOT available on the server
+	// Note: These two are NOT available on the server
 	float pitch = 0.0f;
 	float yaw = 0.0f;
 	float movement_speed = 0.0f;
@@ -151,8 +138,8 @@ public:
 		return tie() == other.tie();
 	};
 	bool operator!=(const PlayerPhysicsOverride &other) const {
-		return tie() != other.tie();
-	};
+		return !(*this == other);
+	}
 };
 
 class Map;
@@ -216,7 +203,7 @@ public:
 	f32 movement_liquid_sink;
 	f32 movement_gravity;
 
-	v2s32 local_animations[4];
+	v2f local_animations[4];
 	float local_animation_speed;
 
 	std::string inventory_formspec;

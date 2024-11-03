@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2021 Liso <anlismon@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2021 Liso <anlismon@gmail.com>
 
 #pragma once
 
@@ -94,9 +79,11 @@ public:
 	bool is_active() const { return m_shadows_enabled && shadowMapTextureFinal != nullptr; }
 	void setTimeOfDay(float isDay) { m_time_day = isDay; };
 	void setShadowIntensity(float shadow_intensity);
+	void setShadowTint(video::SColor shadow_tint) { m_shadow_tint = shadow_tint; }
 
 	s32 getShadowSamples() const { return m_shadow_samples; }
 	float getShadowStrength() const { return m_shadows_enabled ? m_shadow_strength : 0.0f; }
+	video::SColor getShadowTint() const { return m_shadow_tint; }
 	float getTimeOfDay() const { return m_time_day; }
 
 	f32 getPerspectiveBiasXY() { return m_perspective_bias_xy; }
@@ -131,6 +118,7 @@ private:
 	std::vector<NodeToApply> m_shadow_node_array;
 
 	float m_shadow_strength;
+	video::SColor m_shadow_tint{ 255, 0, 0, 0 };
 	float m_shadow_strength_gamma;
 	float m_shadow_map_max_distance;
 	float m_shadow_map_texture_size;

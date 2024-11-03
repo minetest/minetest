@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "mapblock_mesh.h"
 #include "client.h"
@@ -28,6 +13,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "minimap.h"
 #include "content_mapblock.h"
 #include "util/directiontables.h"
+#include "util/tracy_wrapper.h"
 #include "client/meshgen/collector.h"
 #include "client/renderingengine.h"
 #include <array>
@@ -611,8 +597,10 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	m_last_crack(-1),
 	m_last_daynight_ratio((u32) -1)
 {
+	ZoneScoped;
+
 	for (auto &m : m_mesh)
-		m = new scene::SMesh();
+		m = make_irr<scene::SMesh>();
 	m_enable_shaders = data->m_use_shaders;
 
 	auto mesh_grid = client->getMeshGrid();
@@ -660,7 +648,7 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	m_bounding_radius = std::sqrt(collector.m_bounding_radius_sq);
 
 	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
-		scene::SMesh *mesh = (scene::SMesh *)m_mesh[layer];
+		scene::SMesh *mesh = static_cast<scene::SMesh *>(m_mesh[layer].get());
 
 		for(u32 i = 0; i < collector.prebuffers[layer].size(); i++)
 		{
@@ -733,7 +721,6 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 
 			// Create material
 			video::SMaterial material;
-			material.Lighting = false;
 			material.BackfaceCulling = true;
 			material.FogEnable = true;
 			material.setTexture(0, p.layer.texture);
@@ -791,10 +778,10 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 MapBlockMesh::~MapBlockMesh()
 {
 	size_t sz = 0;
-	for (scene::IMesh *m : m_mesh) {
+	for (auto &&m : m_mesh) {
 		for (u32 i = 0; i < m->getMeshBufferCount(); i++)
 			sz += m->getMeshBuffer(i)->getSize();
-		m->drop();
+		m.reset();
 	}
 	for (MinimapMapblock *block : m_minimap_mapblocks)
 		delete block;
@@ -863,7 +850,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 		get_sunlight_color(&day_color, daynight_ratio);
 
 		for (auto &daynight_diff : m_daynight_diffs) {
-			auto *mesh = m_mesh[daynight_diff.first.first];
+			auto *mesh = m_mesh[daynight_diff.first.first].get();
 			mesh->setDirty(scene::EBT_VERTEX); // force reload to VBO
 			scene::IMeshBuffer *buf = mesh->
 				getMeshBuffer(daynight_diff.first.second);

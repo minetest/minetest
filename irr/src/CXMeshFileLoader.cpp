@@ -109,10 +109,6 @@ bool CXMeshFileLoader::load(io::IReadFile *file)
 		// default material if nothing loaded
 		if (!mesh->Materials.size()) {
 			mesh->Materials.push_back(video::SMaterial());
-			mesh->Materials[0].DiffuseColor.set(0xff777777);
-			mesh->Materials[0].Shininess = 0.f;
-			mesh->Materials[0].SpecularColor.set(0xff777777);
-			mesh->Materials[0].EmissiveColor.set(0xff000000);
 		}
 
 		u32 i;
@@ -142,7 +138,7 @@ bool CXMeshFileLoader::load(io::IReadFile *file)
 		if (!mesh->HasVertexColors) {
 			for (u32 j = 0; j < mesh->FaceMaterialIndices.size(); ++j) {
 				for (u32 id = j * 3 + 0; id <= j * 3 + 2; ++id) {
-					mesh->Vertices[mesh->Indices[id]].Color = mesh->Buffers[mesh->FaceMaterialIndices[j]]->Material.DiffuseColor;
+					mesh->Vertices[mesh->Indices[id]].Color = 0xff777777;
 				}
 			}
 		}
@@ -994,9 +990,9 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 	// transforms the mesh vertices to the space of the bone
 	// When concatenated to the bone's transform, this provides the
 	// world space coordinates of the mesh as affected by the bone
-	core::matrix4 &MatrixOffset = joint->GlobalInversedMatrix;
-
+	core::matrix4 MatrixOffset;
 	readMatrix(MatrixOffset);
+	joint->GlobalInversedMatrix = MatrixOffset;
 
 	if (!checkForOneFollowingSemicolons()) {
 		os::Printer::log("No finishing semicolon in Skin Weights found in x file", ELL_WARNING);

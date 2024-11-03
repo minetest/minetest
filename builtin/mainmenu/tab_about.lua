@@ -1,4 +1,4 @@
---Minetest
+--Luanti
 --Copyright (C) 2013 sapier
 --
 --This program is free software; you can redistribute it and/or modify
@@ -19,12 +19,7 @@
 local function prepare_credits(dest, source)
 	local string = table.concat(source, "\n") .. "\n"
 
-	local hypertext_escapes = {
-		["\\"] = "\\\\",
-		["<"] = "\\<",
-		[">"] = "\\>",
-	}
-	string = string:gsub("[\\<>]", hypertext_escapes)
+	string = core.hypertext_escape(string)
 	string = string:gsub("%[.-%]", "<gray>%1</gray>")
 
 	table.insert(dest, string)

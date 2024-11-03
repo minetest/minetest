@@ -1,26 +1,12 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "server.h"
 #include <iostream>
 #include <queue>
 #include <algorithm>
+#include "irr_v2d.h"
 #include "network/connection.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
@@ -75,6 +61,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gameparams.h"
 #include "particles.h"
 #include "gettext.h"
+#include "util/tracy_wrapper.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -83,6 +70,15 @@ public:
 		BaseException(s)
 	{}
 };
+
+ModIPCStore::~ModIPCStore()
+{
+	// we don't have to do this, it's pure debugging aid
+	if (!std::unique_lock(mutex, std::try_to_lock).owns_lock()) {
+		errorstream << FUNCTION_NAME << ": lock is still in use!" << std::endl;
+		assert(0);
+	}
+}
 
 class ServerThread : public Thread
 {
@@ -101,6 +97,8 @@ private:
 
 void *ServerThread::run()
 {
+	ZoneScoped;
+
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
 	/*
@@ -110,6 +108,7 @@ void *ServerThread::run()
 	 * server-step frequency. Receive() is used for waiting between the steps.
 	 */
 
+	auto framemarker = FrameMarker("ServerThread::run()-frame").started();
 	try {
 		m_server->AsyncRunStep(0.0f, true);
 	} catch (con::ConnectionBindFailed &e) {
@@ -119,17 +118,24 @@ void *ServerThread::run()
 	} catch (ModError &e) {
 		m_server->setAsyncFatalError(e.what());
 	}
+	framemarker.end();
 
 	float dtime = 0.0f;
 
 	while (!stopRequested()) {
+		framemarker.start();
 		ScopeProfiler spm(g_profiler, "Server::RunStep() (max)", SPT_MAX);
 
 		u64 t0 = porting::getTimeUs();
 
-		const Server::StepSettings step_settings = m_server->getStepSettings();
+		const auto step_settings = m_server->getStepSettings();
 
 		try {
+			// see explanation inside
+			// (+1 ms, because we don't sleep more fine-grained)
+			if (dtime > step_settings.steplen + 0.001f)
+				m_server->yieldToOtherThreads(dtime);
+
 			m_server->AsyncRunStep(step_settings.pause ? 0.0f : dtime);
 
 			const float remaining_time = step_settings.steplen
@@ -149,6 +155,7 @@ void *ServerThread::run()
 		}
 
 		dtime = 1e-6f * (porting::getTimeUs() - t0);
+		framemarker.end();
 	}
 
 	END_DEBUG_EXCEPTION_HANDLER
@@ -346,7 +353,7 @@ Server::~Server()
 		m_emerge->stopThreads();
 
 	if (m_env) {
-		MutexAutoLock envlock(m_env_mutex);
+		EnvAutoLock envlock(this);
 
 		infostream << "Server: Executing shutdown hooks" << std::endl;
 		try {
@@ -382,6 +389,10 @@ Server::~Server()
 		infostream << "Server: Saving environment metadata" << std::endl;
 		m_env->saveMeta();
 
+		// Delete classes that depend on the environment
+		m_inventory_mgr.reset();
+		m_script.reset();
+
 		// Note that this also deletes and saves the map.
 		delete m_env;
 		m_env = nullptr;
@@ -397,6 +408,9 @@ Server::~Server()
 			fs::DeleteSingleFileOrEmptyDirectory(it.second.path);
 		}
 	}
+
+	// emerge may depend on definition managers, so destroy first
+	m_emerge.reset();
 
 	// Delete the rest in the reverse order of creation
 	delete m_game_settings;
@@ -454,7 +468,7 @@ void Server::init()
 	}
 
 	//lock environment
-	MutexAutoLock envlock(m_env_mutex);
+	EnvAutoLock envlock(this);
 
 	// Create the Map (loads map_meta.txt, overriding configured mapgen params)
 	auto startup_server_map = std::make_unique<ServerMap>(m_path_world, this,
@@ -606,6 +620,9 @@ void Server::step()
 
 void Server::AsyncRunStep(float dtime, bool initial_step)
 {
+	ZoneScoped;
+	auto framemarker = FrameMarker("Server::AsyncRunStep()-frame").started();
+
 	{
 		// Send blocks to clients
 		SendBlocks(dtime);
@@ -642,9 +659,9 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	}
 
 	{
-		MutexAutoLock lock(m_env_mutex);
+		EnvAutoLock lock(this);
 		float max_lag = m_env->getMaxLagEstimate();
-		constexpr float lag_warn_threshold = 2.0f;
+		constexpr float lag_warn_threshold = 1.0f;
 
 		// Decrease value gradually, halve it every minute.
 		if (m_max_lag_decrease.step(dtime, 0.5f)) {
@@ -675,7 +692,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	static const float map_timer_and_unload_dtime = 2.92;
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
 	{
-		MutexAutoLock lock(m_env_mutex);
+		EnvAutoLock lock(this);
 		// Run Map's timers and unload unused data
 		ScopeProfiler sp(g_profiler, "Server: map timer and unload");
 		m_env->getMap().timerUpdate(map_timer_and_unload_dtime,
@@ -693,7 +710,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	*/
 	if (m_admin_chat) {
 		if (!m_admin_chat->command_queue.empty()) {
-			MutexAutoLock lock(m_env_mutex);
+			EnvAutoLock lock(this);
 			while (!m_admin_chat->command_queue.empty()) {
 				ChatEvent *evt = m_admin_chat->command_queue.pop_frontNoEx();
 				handleChatInterfaceEvent(evt);
@@ -714,7 +731,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	{
 		m_liquid_transform_timer -= m_liquid_transform_every;
 
-		MutexAutoLock lock(m_env_mutex);
+		EnvAutoLock lock(this);
 
 		ScopeProfiler sp(g_profiler, "Server: liquid transform");
 
@@ -775,7 +792,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	*/
 	{
 		//infostream<<"Server: Checking added and deleted active objects"<<std::endl;
-		MutexAutoLock envlock(m_env_mutex);
+		EnvAutoLock envlock(this);
 
 		// This guarantees that each object recomputes its cache only once per server step,
 		// unless get_effective_observers is called.
@@ -820,7 +837,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 		Send object messages
 	*/
 	{
-		MutexAutoLock envlock(m_env_mutex);
+		EnvAutoLock envlock(this);
 		ScopeProfiler sp(g_profiler, "Server: send SAO messages");
 
 		// Key = object id
@@ -922,7 +939,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	*/
 	{
 		// We will be accessing the environment
-		MutexAutoLock lock(m_env_mutex);
+		EnvAutoLock lock(this);
 
 		// Single change sending is disabled if queue size is big
 		bool disable_single_change_sending = false;
@@ -1029,7 +1046,7 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 			g_settings->getFloat("server_map_save_interval");
 		if (counter >= save_interval) {
 			counter = 0.0;
-			MutexAutoLock lock(m_env_mutex);
+			EnvAutoLock lock(this);
 
 			ScopeProfiler sp(g_profiler, "Server: map saving (sum)");
 
@@ -1052,12 +1069,15 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	m_shutdown_state.tick(dtime, this);
 }
 
-void Server::Receive(float timeout)
+void Server::Receive(float min_time)
 {
+	ZoneScoped;
+	auto framemarker = FrameMarker("Server::Receive()-frame").started();
+
 	const u64 t0 = porting::getTimeUs();
-	const float timeout_us = timeout * 1e6f;
+	const float min_time_us = min_time * 1e6f;
 	auto remaining_time_us = [&]() -> float {
-		return std::max(0.0f, timeout_us - (porting::getTimeUs() - t0));
+		return std::max(0.0f, min_time_us - (porting::getTimeUs() - t0));
 	};
 
 	NetworkPacket pkt;
@@ -1066,15 +1086,17 @@ void Server::Receive(float timeout)
 		pkt.clear();
 		peer_id = 0;
 		try {
-			if (!m_con->ReceiveTimeoutMs(&pkt,
-					(u32)remaining_time_us() / 1000)) {
+			// Round up since the target step length is the minimum step length,
+			// we only have millisecond precision and we don't want to busy-wait
+			// by calling ReceiveTimeoutMs(.., 0) repeatedly.
+			const u32 cur_timeout_ms = std::ceil(remaining_time_us() / 1000.0f);
+
+			if (!m_con->ReceiveTimeoutMs(&pkt, cur_timeout_ms)) {
 				// No incoming data.
-				// Already break if there's 1ms left, as ReceiveTimeoutMs is too coarse
-				// and a faster server-step is better than busy waiting.
-				if (remaining_time_us() < 1000.0f)
-					break;
-				else
+				if (remaining_time_us() > 0.0f)
 					continue;
+				else
+					break;
 			}
 
 			peer_id = pkt.getPeerId();
@@ -1097,6 +1119,52 @@ void Server::Receive(float timeout)
 			infostream << "Server: ClientNotFoundException" << std::endl;
 		}
 	}
+}
+
+void Server::yieldToOtherThreads(float dtime)
+{
+	/*
+	 * Problem: the server thread and emerge thread compete for the envlock.
+	 * While the emerge thread needs it just once or twice for every processed item
+	 * the server thread uses it much more generously.
+	 * This is usually not a problem as the server sleeps between steps, which leaves
+	 * enough chance. But if the server is overloaded it's busy all the time and
+	 * - even with a fair envlock - the emerge thread can't get up to speed.
+	 * This generally has a much worse impact on gameplay than server lag itself
+	 * ever would.
+	 *
+	 * Workaround: If we detect that the server is overloaded, introduce some careful
+	 * artificial sleeps to leave the emerge threads enough chance to do their job.
+	 *
+	 * In the future the emerge code should be reworked to exclusively use a result
+	 * queue, thereby avoiding this problem (and terrible workaround).
+	 */
+
+	// don't activate workaround too quickly
+	constexpr size_t MIN_EMERGE_QUEUE_SIZE = 32;
+	const size_t qs_initial = m_emerge->getQueueSize();
+	if (qs_initial < MIN_EMERGE_QUEUE_SIZE)
+		return;
+
+	// give the thread a chance to run for every 28ms (on average)
+	// this was experimentally determined
+	const float QUANTUM = 28.0f / 1000;
+	// put an upper limit to not cause too much lag, also so this doesn't become self-sustaining
+	const int SLEEP_MAX = 10;
+
+	int sleep_count = std::clamp<int>(dtime / QUANTUM, 1, SLEEP_MAX);
+
+	ScopeProfiler sp(g_profiler, "Server::yieldTo...() sleep", SPT_AVG);
+	size_t qs = qs_initial;
+	while (sleep_count-- > 0) {
+		sleep_ms(1);
+		// abort if we don't make progress
+		size_t qs2 = m_emerge->getQueueSize();
+		if (qs2 >= qs || qs2 == 0)
+			break;
+		qs = qs2;
+	}
+	g_profiler->avg("Server::yieldTo...() progress [#]", qs_initial - qs);
 }
 
 PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
@@ -1145,10 +1213,6 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	// Send HP
 	SendPlayerHP(playersao, false);
 
-	// Send death screen
-	if (playersao->isDead())
-		SendDeathscreen(peer_id, false, v3f(0,0,0));
-
 	// Send Breath
 	SendPlayerBreath(playersao);
 
@@ -1181,7 +1245,7 @@ inline void Server::handleCommand(NetworkPacket *pkt)
 void Server::ProcessData(NetworkPacket *pkt)
 {
 	// Environment is locked first.
-	MutexAutoLock envlock(m_env_mutex);
+	EnvAutoLock envlock(this);
 
 	ScopeProfiler sp(g_profiler, "Server: Process network packet (sum)");
 	u32 peer_id = pkt->getPeerId();
@@ -1388,14 +1452,6 @@ void Server::SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 
 	NetworkPacket pkt(TOCLIENT_ACCESS_DENIED, 1, peer_id);
 	pkt << (u8)reason << custom_reason << (u8)reconnect;
-	Send(&pkt);
-}
-
-void Server::SendDeathscreen(session_t peer_id, bool set_camera_point_target,
-		v3f camera_point_target)
-{
-	NetworkPacket pkt(TOCLIENT_DEATHSCREEN, 1 + sizeof(v3f), peer_id);
-	pkt << set_camera_point_target << camera_point_target;
 	Send(&pkt);
 }
 
@@ -1829,7 +1885,7 @@ void Server::SendCloudParams(session_t peer_id, const CloudParams &params)
 {
 	NetworkPacket pkt(TOCLIENT_CLOUD_PARAMS, 0, peer_id);
 	pkt << params.density << params.color_bright << params.color_ambient
-			<< params.height << params.thickness << params.speed;
+		<< params.height << params.thickness << params.speed << params.color_shadow;
 	Send(&pkt);
 }
 
@@ -1859,7 +1915,9 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 			<< lighting.exposure.speed_bright_dark
 			<< lighting.exposure.center_weight_power;
 
-	pkt << lighting.volumetric_light_strength;
+	pkt << lighting.volumetric_light_strength << lighting.shadow_tint;
+	pkt << lighting.bloom_intensity << lighting.bloom_strength_factor <<
+			lighting.bloom_radius;
 
 	Send(&pkt);
 }
@@ -1926,14 +1984,21 @@ void Server::SendPlayerFov(session_t peer_id)
 	Send(&pkt);
 }
 
-void Server::SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],
+void Server::SendLocalPlayerAnimations(session_t peer_id, v2f animation_frames[4],
 		f32 animation_speed)
 {
 	NetworkPacket pkt(TOCLIENT_LOCAL_PLAYER_ANIMATIONS, 0,
 		peer_id);
 
-	pkt << animation_frames[0] << animation_frames[1] << animation_frames[2]
-			<< animation_frames[3] << animation_speed;
+	for (int i = 0; i < 4; ++i) {
+		if (m_clients.getProtocolVersion(peer_id) >= 46) {
+			pkt << animation_frames[i];
+		} else {
+			pkt << v2s32::from(animation_frames[i]);
+		}
+	}
+
+	pkt  << animation_speed;
 
 	Send(&pkt);
 }
@@ -2361,8 +2426,7 @@ void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 
 void Server::SendBlocks(float dtime)
 {
-	MutexAutoLock envlock(m_env_mutex);
-	//TODO check if one big lock could be faster then multiple small ones
+	EnvAutoLock envlock(this);
 
 	std::vector<PrioritySortedBlockTransfer> queue;
 
@@ -2459,9 +2523,9 @@ bool Server::addMediaFile(const std::string &filename,
 	const char *supported_ext[] = {
 		".png", ".jpg", ".bmp", ".tga",
 		".ogg",
-		".x", ".b3d", ".obj", ".gltf",
-		// Custom translation file format
-		".tr",
+		".x", ".b3d", ".obj", ".gltf", ".glb",
+		// Translation file formats
+		".tr", ".po", ".mo",
 		NULL
 	};
 	if (removeStringEnd(filename, supported_ext).empty()) {
@@ -2544,14 +2608,20 @@ void Server::fillMediaCache()
 
 void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_code)
 {
-	std::string lang_suffix = ".";
-	lang_suffix.append(lang_code).append(".tr");
+	std::string translation_formats[3] = { ".tr", ".po", ".mo" };
+	std::string lang_suffixes[3];
+	for (size_t i = 0; i < 3; i++) {
+		lang_suffixes[i].append(".").append(lang_code).append(translation_formats[i]);
+  }
 
-	auto include = [&] (const std::string &name, const MediaInfo &info) -> bool {
+  auto include = [&] (const std::string &name, const MediaInfo &info) -> bool {
 		if (info.no_announce)
 			return false;
-		if (str_ends_with(name, ".tr") && !str_ends_with(name, lang_suffix))
-			return false;
+		for (size_t j = 0; j < 3; j++) {
+			if (str_ends_with(name, translation_formats[j]) && !str_ends_with(name, lang_suffixes[j])) {
+				return false;
+			}
+		}
 		return true;
 	};
 
@@ -2693,7 +2763,7 @@ void Server::sendRequestedMedia(session_t peer_id,
 
 void Server::stepPendingDynMediaCallbacks(float dtime)
 {
-	MutexAutoLock lock(m_env_mutex);
+	EnvAutoLock lock(this);
 
 	for (auto it = m_pending_dyn_media.begin(); it != m_pending_dyn_media.end();) {
 		it->second.expiry_timer -= dtime;
@@ -2789,31 +2859,7 @@ void Server::HandlePlayerDeath(PlayerSAO *playersao, const PlayerHPChangeReason 
 
 	// Trigger scripted stuff
 	m_script->on_dieplayer(playersao, reason);
-
-	SendDeathscreen(playersao->getPeerID(), false, v3f(0,0,0));
 }
-
-void Server::RespawnPlayer(session_t peer_id)
-{
-	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	assert(playersao);
-
-	infostream << "Server::RespawnPlayer(): Player "
-			<< playersao->getPlayer()->getName()
-			<< " respawns" << std::endl;
-
-	const auto *prop = playersao->accessObjectProperties();
-	playersao->setHP(prop->hp_max,
-			PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
-	playersao->setBreath(prop->breath_max);
-
-	bool repositioned = m_script->on_respawnplayer(playersao);
-	if (!repositioned) {
-		// setPos will send the new position to client
-		playersao->setPos(findSpawnPos());
-	}
-}
-
 
 void Server::DenySudoAccess(session_t peer_id)
 {
@@ -2936,7 +2982,7 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 			}
 		}
 		{
-			MutexAutoLock env_lock(m_env_mutex);
+			EnvAutoLock envlock(this);
 			m_clients.DeleteClient(peer_id);
 		}
 	}
@@ -3002,6 +3048,8 @@ std::wstring Server::handleChat(const std::string &name,
 	if (g_settings->getBool("strip_color_codes"))
 		wmessage = unescape_enriched(wmessage);
 
+	wmessage = trim(wmessage);
+
 	if (player) {
 		switch (player->canSendChatMessage()) {
 		case RPLAYER_CHATRESULT_FLOODING: {
@@ -3028,13 +3076,12 @@ std::wstring Server::handleChat(const std::string &name,
 				L"It was refused. Send a shorter message";
 	}
 
-	auto message = trim(wide_to_utf8(wmessage));
+	auto message = wide_to_utf8(wmessage);
 	if (message.empty())
 		return L"";
 
-	if (message.find_first_of("\n\r") != std::wstring::npos) {
+	if (message.find_first_of("\r\n") != std::string::npos)
 		return L"Newlines are not permitted in chat messages";
-	}
 
 	// Run script hook, exit if script ate the chat message
 	if (m_script->on_chat_message(name, message))
@@ -3056,8 +3103,7 @@ std::wstring Server::handleChat(const std::string &name,
 #ifdef __ANDROID__
 		line += L"<" + utf8_to_wide(name) + L"> " + wmessage;
 #else
-		line += utf8_to_wide(m_script->formatChatMessage(name,
-				wide_to_utf8(wmessage)));
+		line += utf8_to_wide(m_script->formatChatMessage(name, message));
 #endif
 	}
 
@@ -3388,7 +3434,7 @@ Address Server::getPeerAddress(session_t peer_id)
 }
 
 void Server::setLocalPlayerAnimations(RemotePlayer *player,
-		v2s32 animation_frames[4], f32 frame_speed)
+		v2f animation_frames[4], f32 frame_speed)
 {
 	sanity_check(player);
 	player->setLocalAnimations(animation_frames, frame_speed);
@@ -4114,12 +4160,11 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 	// [] will create an entry
 	auto *translations = &server_translations[lang_code];
 
-	std::string suffix = "." + lang_code + ".tr";
 	for (const auto &i : m_media) {
-		if (str_ends_with(i.first, suffix)) {
+		if (Translations::getFileLanguage(i.first) == lang_code) {
 			std::string data;
 			if (fs::ReadFile(i.second.path, data, true)) {
-				translations->loadTranslation(data);
+				translations->loadTranslation(i.first, data);
 			}
 		}
 	}
@@ -4129,7 +4174,7 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 
 std::unordered_map<std::string, std::string> Server::getMediaList()
 {
-	MutexAutoLock env_lock(m_env_mutex);
+	EnvAutoLock envlock(this);
 
 	std::unordered_map<std::string, std::string> ret;
 	for (auto &it : m_media) {
@@ -4258,12 +4303,10 @@ u16 Server::getProtocolVersionMin()
 		min_proto = LATEST_PROTOCOL_VERSION;
 	return rangelim(min_proto,
 		SERVER_PROTOCOL_VERSION_MIN,
-		SERVER_PROTOCOL_VERSION_MAX);
+		LATEST_PROTOCOL_VERSION);
 }
 
 u16 Server::getProtocolVersionMax()
 {
-	return g_settings->getBool("strict_protocol_version_checking")
-		? LATEST_PROTOCOL_VERSION
-		: SERVER_PROTOCOL_VERSION_MAX;
+	return LATEST_PROTOCOL_VERSION;
 }

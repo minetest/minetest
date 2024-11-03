@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "mesh.h"
 #include "S3DVertex.h"
@@ -34,7 +19,7 @@ inline static void applyShadeFactor(video::SColor& color, float factor)
 	color.setBlue(core::clamp(core::round32(color.getBlue()*factor), 0, 255));
 }
 
-void applyFacesShading(video::SColor &color, const v3f &normal)
+void applyFacesShading(video::SColor &color, const v3f normal)
 {
 	/*
 		Some drawtypes have normals set to (0, 0, 0), this must result in
@@ -99,7 +84,6 @@ scene::IAnimatedMesh* createCubeMesh(v3f scale)
 		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 		buf->append(vertices + 4 * i, 4, indices, 6);
 		// Set default material
-		buf->getMaterial().Lighting = false;
 		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		buf->getMaterial().forEachTexture([] (auto &tex) {
 			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
@@ -133,6 +117,7 @@ void scaleMesh(scene::IMesh *mesh, v3f scale)
 		for (u32 i = 0; i < vertex_count; i++)
 			((video::S3DVertex *)(vertices + i * stride))->Pos *= scale;
 
+		buf->setDirty(scene::EBT_VERTEX);
 		buf->recalculateBoundingBox();
 
 		// calculate total bounding box
@@ -161,6 +146,7 @@ void translateMesh(scene::IMesh *mesh, v3f vec)
 		for (u32 i = 0; i < vertex_count; i++)
 			((video::S3DVertex *)(vertices + i * stride))->Pos += vec;
 
+		buf->setDirty(scene::EBT_VERTEX);
 		buf->recalculateBoundingBox();
 
 		// calculate total bounding box
@@ -172,23 +158,17 @@ void translateMesh(scene::IMesh *mesh, v3f vec)
 	mesh->setBoundingBox(bbox);
 }
 
-void setMeshBufferColor(scene::IMeshBuffer *buf, const video::SColor &color)
+void setMeshBufferColor(scene::IMeshBuffer *buf, const video::SColor color)
 {
 	const u32 stride = getVertexPitchFromType(buf->getVertexType());
 	u32 vertex_count = buf->getVertexCount();
 	u8 *vertices = (u8 *) buf->getVertices();
 	for (u32 i = 0; i < vertex_count; i++)
 		((video::S3DVertex *) (vertices + i * stride))->Color = color;
+	buf->setDirty(scene::EBT_VERTEX);
 }
 
-void setAnimatedMeshColor(scene::IAnimatedMeshSceneNode *node, const video::SColor &color)
-{
-	for (u32 i = 0; i < node->getMaterialCount(); ++i) {
-		node->getMaterial(i).EmissiveColor = color;
-	}
-}
-
-void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
+void setMeshColor(scene::IMesh *mesh, const video::SColor color)
 {
 	if (mesh == NULL)
 		return;
@@ -209,6 +189,7 @@ static void applyToMesh(scene::IMesh *mesh, const F &fn)
 		char *vertices = reinterpret_cast<char *>(buf->getVertices());
 		for (u32 i = 0; i < vertex_count; i++)
 			fn(reinterpret_cast<video::S3DVertex *>(vertices + i * stride));
+		buf->setDirty(scene::EBT_VERTEX);
 	}
 }
 
@@ -225,6 +206,7 @@ void colorizeMeshBuffer(scene::IMeshBuffer *buf, const video::SColor *buffercolo
 		// Apply shading
 		applyFacesShading(*vc, vertex->Normal);
 	}
+	buf->setDirty(scene::EBT_VERTEX);
 }
 
 void setMeshColorByNormalXYZ(scene::IMesh *mesh,
@@ -403,7 +385,6 @@ scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 	for (u16 j = 0; j < 6; j++)
 	{
 		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-		buf->getMaterial().Lighting = false;
 		buf->getMaterial().forEachTexture([] (auto &tex) {
 			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 			tex.MagFilter = video::ETMAGF_NEAREST;

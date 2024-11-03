@@ -1,4 +1,4 @@
---Minetest
+--Luanti
 --Copyright (C) 2022 rubenwardy
 --
 --This program is free software; you can redistribute it and/or modify
@@ -62,6 +62,19 @@ function make.heading(text)
 		full_width = true,
 		get_formspec = function(self, avail_w)
 			return ("label[0,0.6;%s]box[0,0.9;%f,0.05;#ccc6]"):format(core.formspec_escape(text), avail_w), 1.2
+		end,
+	}
+end
+
+
+function make.note(text)
+	return {
+		full_width = true,
+		get_formspec = function(self, avail_w)
+			-- Assuming label height 0.4:
+			-- Position at y=0 to eat 0.2 of the padding above, leave 0.05.
+			-- The returned used_height doesn't include padding.
+			return ("label[0,0;%s]"):format(core.colorize("#bbb", core.formspec_escape(text))), 0.2
 		end,
 	}
 end

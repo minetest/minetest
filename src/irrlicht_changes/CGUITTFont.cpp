@@ -30,9 +30,15 @@
    john@suckerfreegames.com
 */
 
-#include <irrlicht.h>
 #include <iostream>
 #include "CGUITTFont.h"
+#include "CMeshBuffer.h"
+#include "IFileSystem.h"
+#include "IGUIEnvironment.h"
+#include "IMeshManipulator.h"
+#include "IMeshSceneNode.h"
+#include "ISceneManager.h"
+#include "ISceneNode.h"
 
 namespace irr
 {
@@ -721,7 +727,7 @@ core::dimension2d<u32> CGUITTFont::getDimension(const std::u32string& text) cons
 		if (p == '\r')	// Mac or Windows line breaks.
 		{
 			lineBreak = true;
-			if (*(iter + 1) == '\n')
+			if (iter + 1 != text.end() && *(iter + 1) == '\n')
 			{
 				++iter;
 				p = *iter;
@@ -1098,13 +1104,9 @@ core::array<scene::ISceneNode*> CGUITTFont::addTextSceneNode(const wchar_t* text
 
 	// the default font material
 	SMaterial mat;
-	mat.Lighting = true;
 	mat.ZWriteEnable = video::EZW_OFF;
-	mat.NormalizeNormals = true;
-	mat.ColorMaterial = video::ECM_NONE;
 	mat.MaterialType = use_transparency ? video::EMT_TRANSPARENT_ALPHA_CHANNEL : video::EMT_SOLID;
 	mat.MaterialTypeParam = 0.01f;
-	mat.DiffuseColor = color;
 
 	wchar_t current_char = 0, previous_char = 0;
 	u32 n = 0;

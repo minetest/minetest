@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
@@ -35,8 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gameparams.h"
 #include "script/common/c_types.h" // LuaError
 #include "util/numeric.h"
+#include "util/string.h" // StringMap
+#include "config.h"
 
-#ifdef SERVER
+#if !IS_CLIENT_BUILD
 #error Do not include in server builds
 #endif
 
@@ -194,7 +181,7 @@ public:
 	void handleCommand_Breath(NetworkPacket* pkt);
 	void handleCommand_MovePlayer(NetworkPacket* pkt);
 	void handleCommand_MovePlayerRel(NetworkPacket* pkt);
-	void handleCommand_DeathScreen(NetworkPacket* pkt);
+	void handleCommand_DeathScreenLegacy(NetworkPacket* pkt);
 	void handleCommand_AnnounceMedia(NetworkPacket* pkt);
 	void handleCommand_Media(NetworkPacket* pkt);
 	void handleCommand_NodeDef(NetworkPacket* pkt);
@@ -249,7 +236,7 @@ public:
 	void sendChangePassword(const std::string &oldpassword,
 		const std::string &newpassword);
 	void sendDamage(u16 damage);
-	void sendRespawn();
+	void sendRespawnLegacy();
 	void sendReady();
 	void sendHaveMedia(const std::vector<u32> &tokens);
 	void sendUpdateClientInfo(const ClientDynamicInfo &info);

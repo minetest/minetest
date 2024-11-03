@@ -2,7 +2,7 @@
 License of OpalClient/Minetest/Luanti textures and sounds
 ---------------------------------------
 
-This applies to textures and sounds contained in the main Minetest/Luanti
+This applies to textures and sounds contained in the main Luanti
 distribution.
 
 OpalClient contains modified versions of original Minetest files, for more details
@@ -20,45 +20,65 @@ Everything not listed in here:
 Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 Copyright (C) 2024 python-sargent, Altius Games (Samuel Sargent) <samuel@thesargents.org>
 
+ShadowNinja:
+  textures/base/pack/smoke_puff.png
+
+paramat:
+  textures/base/pack/next_icon.png
+  textures/base/pack/prev_icon.png
+  textures/base/pack/clear.png
+  textures/base/pack/search.png
+
+rubenwardy, paramat:
+  textures/base/pack/start_icon.png
+  textures/base/pack/end_icon.png
+
+erle:
+  misc/luanti-icon-24x24.png
+  misc/luanti-icon.ico
+  misc/luanti.svg
+  textures/base/pack/logo.png
+
+JRottm:
+  textures/base/pack/player_marker.png
+
 srifqi:
   textures/base/pack/chat_hide_btn.png
   textures/base/pack/chat_show_btn.png
   textures/base/pack/joystick_bg.png
   textures/base/pack/joystick_center.png
   textures/base/pack/joystick_off.png
+  textures/base/pack/minimap_btn.png
 
-erlehmann, Warr1024, rollerozxa:
+Zughy:
+  textures/base/pack/cdb_add.png
+  textures/base/pack/cdb_downloading.png
+  textures/base/pack/cdb_queued.png
+  textures/base/pack/cdb_update.png
+  textures/base/pack/cdb_update_cropped.png
+  textures/base/pack/cdb_viewonline.png
+  textures/base/pack/settings_btn.png
+  textures/base/pack/settings_info.png
+  textures/base/pack/settings_reset.png
+
+appgurueu:
+  textures/base/pack/server_incompatible.png
+
+erle, Warr1024, rollerozxa:
   textures/base/pack/no_screenshot.png
 
 kilbith:
   textures/base/pack/server_favorite.png
 
 SmallJoker:
-  textures/base/pack/cdb_clear.png
   textures/base/pack/server_favorite_delete.png (based on server_favorite.png)
 
 License of Minetest source code
 -------------------------------
 
-Minetest
-Copyright (C) 2010-2018 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-Opal Client (Code modified from Minetest source)
-Copyright (C) 2024 python-sargent, Altius Games (Samuel Sargent) <samuel@thesargents.org>
+Luanti
+Copyright (C) 2010-2024 celeron55, Perttu Ahola <celeron55@gmail.com>
+and contributors (see source file comments and the version control log)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -77,7 +97,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 Irrlicht
 ---------------
 
-This program uses IrrlichtMt, Minetest's fork of
+This program uses IrrlichtMt, Luanti's fork of
 the Irrlicht Engine. http://irrlicht.sourceforge.net/
 
  The Irrlicht Engine License

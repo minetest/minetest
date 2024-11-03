@@ -1,22 +1,7 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2013-2020 Minetest core developers & community
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+// Copyright (C) 2013-2020 Minetest core developers & community
 
 #include "player_sao.h"
 #include "nodedef.h"
@@ -504,7 +489,7 @@ u32 PlayerSAO::punch(v3f dir,
 	} else {
 		actionstream << "(none)";
 	}
-	actionstream << " puched " <<
+	actionstream << " punched " <<
 			getDescription() << " (id=" << m_id << ", hp=" << m_hp <<
 			"), damage=" << (old_hp - (s32)getHP()) <<
 			(damage_handled ? " (handled by Lua)" : "") << std::endl;
@@ -519,12 +504,13 @@ void PlayerSAO::rightClick(ServerActiveObject *clicker)
 
 void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool from_client)
 {
-	target_hp = rangelim(target_hp, 0, U16_MAX);
-
-	if (target_hp == m_hp)
+	if (target_hp == m_hp || (m_hp == 0 && target_hp < 0))
 		return; // Nothing to do
 
-	s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, target_hp - (s32)m_hp, reason);
+	// Protect against overflow.
+	s32 hp_change = std::max<s64>((s64)target_hp - (s64)m_hp, S32_MIN);
+
+	hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp_change, reason);
 	hp_change = std::min<s32>(hp_change, U16_MAX); // Protect against overflow
 
 	s32 hp = (s32)m_hp + hp_change;
@@ -556,6 +542,21 @@ void PlayerSAO::setBreath(const u16 breath, bool send)
 
 	if (send)
 		m_env->getGameDef()->SendPlayerBreath(this);
+}
+
+void PlayerSAO::respawn()
+{
+	infostream << "PlayerSAO::respawn(): Player " << m_player->getName()
+			<< " respawns" << std::endl;
+
+	setHP(m_prop.hp_max, PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
+	setBreath(m_prop.breath_max);
+
+	bool repositioned = m_env->getScriptIface()->on_respawnplayer(this);
+	if (!repositioned) {
+		// setPos will send the new position to client
+		setPos(m_env->getGameDef()->findSpawnPos());
+	}
 }
 
 Inventory *PlayerSAO::getInventory() const
@@ -630,9 +631,12 @@ void PlayerSAO::setMaxSpeedOverride(const v3f &vel)
 
 bool PlayerSAO::checkMovementCheat()
 {
+	static thread_local const u32 anticheat_flags =
+		g_settings->getFlagStr("anticheat_flags", flagdesc_anticheat, nullptr);
+
 	if (m_is_singleplayer ||
 			isAttached() ||
-			g_settings->getBool("disable_anticheat")) {
+			!(anticheat_flags & AC_MOVEMENT)) {
 		m_last_good_position = m_base_position;
 		return false;
 	}
@@ -644,7 +648,7 @@ bool PlayerSAO::checkMovementCheat()
 		NOTE: Actually the server should handle player physics like the
 		client does and compare player's position to what is calculated
 		on our side. This is required when eg. players fly due to an
-		explosion. Altough a node-based alternative might be possible
+		explosion. Although a node-based alternative might be possible
 		too, and much more lightweight.
 	*/
 
@@ -712,6 +716,11 @@ bool PlayerSAO::checkMovementCheat()
 		float s = MYMAX(player_max_jump, player_max_walk);
 		required_time = MYMAX(required_time, d_vert / s);
 	}
+
+	static thread_local float anticheat_movement_tolerance =
+		std::max(g_settings->getFloat("anticheat_movement_tolerance"), 1.0f);
+
+	required_time /= anticheat_movement_tolerance;
 
 	if (m_move_pool.grab(required_time)) {
 		m_last_good_position = m_base_position;

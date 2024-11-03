@@ -104,7 +104,7 @@ Configuration file
 ------------------
 - Default location:
     `user/minetest.conf`
-- This file is created by closing Minetest for the first time.
+- This file is created by closing Luanti for the first time.
 - A specific file can be specified on the command line:
     `--config <path-to-file>`
 - A run-in-place build will look for the configuration file in

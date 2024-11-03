@@ -1,5 +1,3 @@
--- Minetest: builtin/misc.lua
-
 local S = core.get_translator("__builtin")
 
 --
@@ -296,5 +294,30 @@ do
 
 	function core.objects_in_area(min_pos, max_pos)
 		return valid_object_iterator(core.get_objects_in_area(min_pos, max_pos))
+	end
+end
+
+--
+-- Helper for LBM execution, called from C++
+--
+
+function core.run_lbm(id, pos_list, dtime_s)
+	local lbm = core.registered_lbms[id]
+	assert(lbm, "Entry with given id not found in registered_lbms table")
+	core.set_last_run_mod(lbm.mod_origin)
+	if lbm.bulk_action then
+		return lbm.bulk_action(pos_list, dtime_s)
+	end
+	-- emulate non-bulk LBMs
+	local expect = core.get_node(pos_list[1]).name
+	-- engine guarantees that
+	-- 1) all nodes are the same content type
+	-- 2) the list is up-to-date when we're called
+	assert(expect ~= "ignore")
+	for _, pos in ipairs(pos_list) do
+		local n = core.get_node(pos)
+		if n.name == expect then -- might have been changed by previous call
+			lbm.action(pos, n, dtime_s)
+		end
 	end
 end

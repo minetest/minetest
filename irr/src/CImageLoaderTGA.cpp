@@ -5,10 +5,10 @@
 #include "CImageLoaderTGA.h"
 
 #include "IReadFile.h"
+#include "coreutil.h"
 #include "os.h"
 #include "CColorConverter.h"
 #include "CImage.h"
-#include "irrString.h"
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 

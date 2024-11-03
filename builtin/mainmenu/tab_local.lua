@@ -1,4 +1,4 @@
---Minetest
+--Luanti
 --Copyright (C) 2014 sapier
 --
 --This program is free software; you can redistribute it and/or modify
@@ -92,11 +92,11 @@ function singleplayer_refresh_gamebar()
 		end
 	end
 
-	local ENABLE_TOUCH = core.settings:get_bool("enable_touch")
+	local TOUCH_GUI = core.settings:get_bool("touch_gui")
 
 	local gamebar_pos_y = MAIN_TAB_H
 		+ TABHEADER_H -- tabheader included in formspec size
-		+ (ENABLE_TOUCH and GAMEBAR_OFFSET_TOUCH or GAMEBAR_OFFSET_DESKTOP)
+		+ (TOUCH_GUI and GAMEBAR_OFFSET_TOUCH or GAMEBAR_OFFSET_DESKTOP)
 
 	local btnbar = buttonbar_create(
 			"game_button_bar",
@@ -166,8 +166,8 @@ local function get_formspec(tabview, name, tabdata)
 		local H = tabview.height
 
 		local hypertext = "<global valign=middle halign=center size=18>" ..
-				fgettext_ne("Opal Client is a client for the Minetest engine.") .. "\n" ..
-				fgettext_ne("Opal Clientt doesn't come with a game by default.") .. " " ..
+				fgettext_ne("Opal Client is a client for Luanti.") .. "\n" ..
+				fgettext_ne("Opal Client doesn't come with a game by default.") .. " " ..
 				fgettext_ne("You need to install a game before you can create a world.")
 
 		local button_y = H * 2/3 - 0.6
