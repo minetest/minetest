@@ -439,7 +439,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 		if (nearest_collided == COLLISION_AXIS_NONE) {
 			// No collision with any collision box.
-			*pos_f += truncate(aspeed_f * dtime, 100.0f);
+			*pos_f += aspeed_f * dtime;
 			// Final speed:
 			*speed_f += accel_f * dtime;
 			// Limit speed for avoiding hangs
@@ -489,7 +489,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		} else if (nearest_dtime > 0) {
 			// updated average speed for the sub-interval up to nearest_dtime
 			aspeed_f = *speed_f + accel_f * 0.5f * nearest_dtime;
-			*pos_f += truncate(aspeed_f * nearest_dtime, 100.0f);
+			*pos_f += aspeed_f * nearest_dtime;
 			// Speed at (approximated) collision:
 			*speed_f += accel_f * nearest_dtime;
 			// Limit speed for avoiding hangs
@@ -542,11 +542,11 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				accel_f.Z = 0;
 			}
 			result.collides = true;
+		} else {
+			is_collision = false;
 		}
 
 		info.new_speed = *speed_f;
-		if (info.new_speed.getDistanceFrom(info.old_speed) < 0.1f * BS)
-			is_collision = false;
 
 		if (is_collision) {
 			info.axis = nearest_collided;
