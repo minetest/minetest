@@ -50,10 +50,16 @@ class AsyncWorkerThread : public Thread,
 public:
 	virtual ~AsyncWorkerThread();
 
-	void *run();
+	void *run() override;
 
 protected:
 	AsyncWorkerThread(AsyncEngine* jobDispatcher, const std::string &name);
+
+	bool checkPathInternal(const std::string &abs_path, bool write_required,
+		bool *write_allowed) override {
+		return ScriptApiSecurity::checkPathWithGamedef(getStack(),
+			abs_path, write_required, write_allowed);
+	};
 
 private:
 	AsyncEngine *jobDispatcher = nullptr;

@@ -494,18 +494,13 @@ int ModApiUtil::l_request_insecure_environment(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	// Just return _G if security is disabled
-	if (!ScriptApiSecurity::isSecure(L)) {
-		lua_getglobal(L, "_G");
-		return 1;
-	}
-
-	if (!ScriptApiSecurity::checkWhitelisted(L, "secure.trusted_mods")) {
-		return 0;
+	if (ScriptApiSecurity::isSecure(L)) {
+		if (!ScriptApiSecurity::checkWhitelisted(L, "secure.trusted_mods"))
+			return 0;
 	}
 
 	// Push insecure environment
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
+	ScriptApiSecurity::getGlobalsBackup(L);
 	return 1;
 }
 
