@@ -52,7 +52,7 @@ local function get_formspec(data)
 				end
 
 				if info.forums then
-					info.forums = "https://forum.minetest.net/viewtopic.php?t=" .. info.forums
+					info.forums = "https://forum.luanti.org/viewtopic.php?t=" .. info.forums
 				end
 
 				assert(data.package.name == info.name)
