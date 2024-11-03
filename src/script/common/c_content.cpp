@@ -2048,9 +2048,6 @@ bool read_tree_def(lua_State *L, int idx, const NodeDefManager *ndef,
 }
 
 /******************************************************************************/
-#if defined(JSONCPP_STRING) || !(JSONCPP_VERSION_MAJOR < 1 || JSONCPP_VERSION_MINOR < 9)
-#define HAVE_JSON_STRING
-#endif
 
 // Returns depth of json value tree
 static int push_json_value_getdepth(const Json::Value &value)
@@ -2079,13 +2076,8 @@ static bool push_json_value_helper(lua_State *L, const Json::Value &value,
 			lua_pushnumber(L, value.asDouble());
 			break;
 		case Json::stringValue: {
-#ifdef HAVE_JSON_STRING
 			const auto &str = value.asString();
 			lua_pushlstring(L, str.c_str(), str.size());
-#else
-			const char *str = value.asCString();
-			lua_pushstring(L, str ? str : "");
-#endif
 			break;
 		}
 		case Json::booleanValue:
@@ -2101,7 +2093,7 @@ static bool push_json_value_helper(lua_State *L, const Json::Value &value,
 		case Json::objectValue:
 			lua_createtable(L, 0, value.size());
 			for (auto it = value.begin(); it != value.end(); ++it) {
-#ifdef HAVE_JSON_STRING
+#if JSONCPP_VERSION_HEXA >= 0x01060000 /* 1.6.0 */
 				const auto &str = it.name();
 				lua_pushlstring(L, str.c_str(), str.size());
 #else
