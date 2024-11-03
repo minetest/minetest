@@ -1,4 +1,4 @@
-# Minetest Direction Document
+# Luanti Direction Document
 
 ## 1. Long-term Roadmap
 
@@ -12,7 +12,7 @@ following documents:
 
 ## 2. Medium-term Roadmap
 
-These are the current medium-term goals for Minetest development, in no
+These are the current medium-term goals for Luanti development, in no
 particular order.
 
 These goals were created from the top points in a
@@ -42,7 +42,7 @@ alternative libraries to replace Irrlicht functionality as needed
 
 ### 2.2 Internal code refactoring
 
-To ensure sustainable development, Minetest's code needs to be
+To ensure sustainable development, Luanti's code needs to be
 [refactored and improved](https://github.com/minetest/minetest/pulls?q=is%3Aopen+sort%3Aupdated-desc+label%3A%22Code+quality%22+).
 This will remove code rot and allow for more efficient development.
 
@@ -54,7 +54,7 @@ be a replacement for HUDs, allowing for a unified API.
 
 A [new mainmenu](https://github.com/minetest/minetest/issues/6733) is needed to
 improve user experience. First impressions matter, and the current main menu
-doesn't do a very good job at selling Minetest or explaining what it is.
+doesn't do a very good job at selling Luanti or explaining what it is.
 A new main menu should promote games to users, allowing Minetest Game to no
 longer be bundled by default.
 
