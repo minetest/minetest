@@ -51,7 +51,7 @@ local function get_formspec(data)
 					return
 				end
 
-				if info.forums then
+				if type(info.forums) == "number" then
 					info.forums = "https://forum.minetest.net/viewtopic.php?t=" .. info.forums
 				end
 
