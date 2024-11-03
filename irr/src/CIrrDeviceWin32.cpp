@@ -645,7 +645,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if ((allKeys[VK_MENU] & 0x80) != 0)
 			event.KeyInput.Control = 0;
 
-		fillScancode(event);
+		IrrlichtDevice::fillScancode(event);
 
 		dev = getDeviceFromHWnd(hWnd);
 		if (dev)
