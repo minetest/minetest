@@ -594,6 +594,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env, LocalPlayer* playe
 
 	const f32 speed_walk = movement_speed_walk * physics_override.speed_walk;
 	const f32 speed_fast = movement_speed_fast * physics_override.speed_fast;
+	const f32 speed_freelook = movement_speed_freelook * physics_override.speed_freelook;
 
 	if (always_fly_fast && free_move && fast_move)
 		superspeed = true;
@@ -703,8 +704,12 @@ void LocalPlayer::applyControl(float dtime, Environment *env, LocalPlayer* playe
 				at its starting value
 			*/
 			v3f speedJ = getSpeed();
-			if (speedJ.Y >= -0.5f * BS) {
+			if (speedJ.Y >= 0.0f * BS) {
 				speedJ.Y = movement_speed_jump * physics_override.jump;
+				setSpeed(speedJ);
+				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_JUMP));
+			} else if (speedJ.Y < 0.0f * BS) {
+				speedJ.Y = speedJ.Y + (movement_speed_jump * physics_override.jump);
 				setSpeed(speedJ);
 				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_JUMP));
 			}
@@ -712,11 +717,13 @@ void LocalPlayer::applyControl(float dtime, Environment *env, LocalPlayer* playe
 	}
 
 	// The speed of the player (Y is ignored)
-	if (superspeed || (is_climbing && fast_climb) ||
+	if ((superspeed && free_move) || ((is_climbing && fast_climb) && free_move) ||
 			((in_liquid || in_liquid_stable) && fast_climb))
 		speedH = speedH.normalize() * speed_fast;
 	else if (control.sneak && !free_move && !in_liquid && !in_liquid_stable)
 		speedH = speedH.normalize() * movement_speed_crouch * physics_override.speed_crouch;
+	else if (control.freelook)
+		speedH = speedH.normalize() * speed_freelook;
 	else
 		speedH = speedH.normalize() * speed_walk;
 

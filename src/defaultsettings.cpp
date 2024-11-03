@@ -132,7 +132,7 @@ void set_default_settings()
 	// Keymap
 	settings->setDefault("remote_port", "30000");
 	settings->setDefault("keymap_forward", "KEY_KEY_W");
-	settings->setDefault("keymap_autoforward", "");
+	settings->setDefault("keymap_autoforward", "KEY_KEY_F");
 	settings->setDefault("keymap_backward", "KEY_KEY_S");
 	settings->setDefault("keymap_left", "KEY_KEY_A");
 	settings->setDefault("keymap_right", "KEY_KEY_D");
@@ -143,8 +143,8 @@ void set_default_settings()
 	settings->setDefault("keymap_drop", "KEY_KEY_Q");
 	settings->setDefault("keymap_zoom", "KEY_KEY_Z");
 	settings->setDefault("keymap_freelook", "KEY_KEY_V");
-	settings->setDefault("keymap_inventory", "KEY_KEY_I");
-	settings->setDefault("keymap_aux1", "KEY_KEY_E");
+	settings->setDefault("keymap_inventory", "KEY_KEY_E");
+	settings->setDefault("keymap_aux1", "KEY_LCTRL");
 	settings->setDefault("keymap_chat", "KEY_KEY_T");
 	settings->setDefault("keymap_tablist", "KEY_TAB");
 	settings->setDefault("keymap_cmd", "/");
@@ -179,7 +179,7 @@ void set_default_settings()
 	settings->setDefault("keymap_camera_mode", "KEY_KEY_C");
 	settings->setDefault("keymap_screenshot", "KEY_F12");
 	settings->setDefault("keymap_fullscreen", "KEY_F11");
-	settings->setDefault("keymap_increase_viewing_range_min", "+");
+	settings->setDefault("keymap_increase_viewing_range_min", "=");
 	settings->setDefault("keymap_decrease_viewing_range_min", "-");
 	settings->setDefault("keymap_slot1", "KEY_KEY_1");
 	settings->setDefault("keymap_slot2", "KEY_KEY_2");
@@ -189,7 +189,7 @@ void set_default_settings()
 	settings->setDefault("keymap_slot6", "KEY_KEY_6");
 	settings->setDefault("keymap_slot7", "KEY_KEY_7");
 	settings->setDefault("keymap_slot8", "KEY_KEY_8");
-	settings->setDefault("keymap_slot9", "KEY_KEY_9");
+	settings->setDefault("keymap_slot9", "");
 	settings->setDefault("keymap_slot10", "KEY_KEY_0");
 	settings->setDefault("keymap_slot11", "");
 	settings->setDefault("keymap_slot12", "");
@@ -290,7 +290,7 @@ void set_default_settings()
 	settings->setDefault("node_highlighting", "box");
 	settings->setDefault("crosshair_color", "(255,255,255)");
 	settings->setDefault("crosshair_alpha", "255");
-	settings->setDefault("recent_chat_messages", "6");
+	settings->setDefault("recent_chat_messages", "8");
 	settings->setDefault("hud_scaling", "1.0");
 	settings->setDefault("gui_scaling", "1.0");
 	settings->setDefault("gui_scaling_filter", "false");
@@ -360,7 +360,7 @@ void set_default_settings()
 	settings->setDefault("repeat_dig_time", "0.0");
 	settings->setDefault("safe_dig_and_place", "false");
 	settings->setDefault("random_input", "false");
-	settings->setDefault("aux1_descends", "false");
+	settings->setDefault("aux1_descends", "true");
 	settings->setDefault("doubletap_jump", "false");
 	settings->setDefault("always_fly_fast", "true");
 	settings->setDefault("autojump", bool_to_cstr(has_touch));
@@ -533,8 +533,8 @@ void set_default_settings()
 	settings->setDefault("server_announce", "false");
 	settings->setDefault("server_url", "");
 	settings->setDefault("server_address", "");
-	settings->setDefault("server_name", "");
-	settings->setDefault("server_description", "");
+	settings->setDefault("server_name", "OpalClient User's Server");
+	settings->setDefault("server_description", "Server hosted from OpalClient");
 	settings->setDefault("server_announce_send_players", "true");
 
 	settings->setDefault("enable_console", "false");

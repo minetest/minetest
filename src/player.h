@@ -132,6 +132,7 @@ struct PlayerPhysicsOverride
 	float acceleration_default = 1.f;
 	float acceleration_air = 1.f;
 	float speed_fast = 1.f;
+	float speed_freelook = 1.f;
 	float acceleration_fast = 1.f;
 	float speed_walk = 1.f;
 
@@ -141,7 +142,7 @@ private:
 		return std::tie(
 		speed, jump, gravity, sneak, sneak_glitch, new_move, speed_climb, speed_crouch,
 		liquid_fluidity, liquid_fluidity_smooth, liquid_sink, acceleration_default,
-		acceleration_air, speed_fast, acceleration_fast, speed_walk
+		acceleration_air, speed_fast, speed_freelook, acceleration_fast, speed_walk
 		);
 	}
 
@@ -207,6 +208,7 @@ public:
 	f32 movement_speed_walk;
 	f32 movement_speed_crouch;
 	f32 movement_speed_fast;
+	f32 movement_speed_freelook;
 	f32 movement_speed_climb;
 	f32 movement_speed_jump;
 	f32 movement_liquid_fluidity;

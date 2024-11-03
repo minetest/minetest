@@ -6,10 +6,10 @@ Opal Client
 
 [![License](https://img.shields.io/badge/license-LGPLv2.1%2B-blue.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)
 
-Opal Client is a forked client for Minetest the free open-source voxel game engine.
+Opal Client is a forked client for Minetest/Luanti the free open-source voxel game engine.
 
 Copyright (C) 2024 Altius Games <samuel@thesargents.org>
-and original Minetest contributors (see source file comments and the version control log)
+and original Minetest/Luanti contributors (see source file comments and the version control log)
 
 Table of Contents
 ------------------
@@ -27,7 +27,7 @@ Table of Contents
 Further documentation
 ----------------------
 - GitHub: https://github.com/Python-Sargent/Opal-Client/
-- More info in the Minetest doc
+- More info in the Minetest/Luanti doc
 
 Default controls
 ----------------
@@ -40,12 +40,12 @@ Some can be changed in the key config dialog in the settings tab.
 | W, A, S, D                    | Move                                                           |
 | Space                         | Jump/move up                                                   |
 | Shift                         | Sneak/move down                                                |
-| Q                             | Drop itemstack                                                 |
-| Shift + Q                     | Drop single item                                               |
+| Shift + Q                     | Drop itemstack                                                 |
+| Q                             | Drop single item                                               |
 | Left mouse button             | Dig/punch/use                                                  |
 | Right mouse button            | Place/use                                                      |
 | Shift + right mouse button    | Build (without using)                                          |
-| I                             | Inventory menu                                                 |
+| E                             | Inventory menu                                                 |
 | Mouse wheel                   | Select item                                                    |
 | 0-9                           | Select item                                                    |
 | Z                             | Zoom (needs zoom privilege)                                    |
@@ -58,7 +58,7 @@ Some can be changed in the key config dialog in the settings tab.
 | K                             | Enable/disable fly mode (needs fly privilege)                  |
 | J                             | Enable/disable fast mode (needs fast privilege)                |
 | H                             | Enable/disable noclip mode (needs noclip privilege)            |
-| E                             | Aux1 (Move fast in fast mode. Games may add special features)  |
+| Control                       | Aux1 (Move fast in fast mode. Games may add special features)  |
 | C                             | Cycle through camera modes                                     |
 | X                             | Cycle through minimap modes                                    |
 | Shift + V                     | Change minimap orientation                                     |
@@ -86,17 +86,17 @@ Where each location is on each platform:
     * `share` = `.`
     * `user`  = `.`
 * Windows installed:
-    * `bin`   = `C:\Program Files\Minetest\bin (Depends on the install location)`
-    * `share` = `C:\Program Files\Minetest (Depends on the install location)`
-    * `user`  = `%APPDATA%\Minetest` or `%MINETEST_USER_PATH%`
+    * `bin`   = `C:\Program Files\OpalClient\bin (Depends on the install location)`
+    * `share` = `C:\Program Files\OpalClient (Depends on the install location)`
+    * `user`  = `%APPDATA%\OpalClient` or `%OPALCLIENT_USER_PATH%`
 * Linux installed:
     * `bin`   = `/usr/bin`
-    * `share` = `/usr/share/minetest`
-    * `user`  = `~/.minetest` or `$MINETEST_USER_PATH`
+    * `share` = `/usr/share/opalclient`
+    * `user`  = `~/.opalclient` or `$OPALCLIENT_USER_PATH`
 * macOS:
     * `bin`   = `Contents/MacOS`
     * `share` = `Contents/Resources`
-    * `user`  = `Contents/User` or `~/Library/Application Support/minetest` or `$MINETEST_USER_PATH`
+    * `user`  = `Contents/User` or `~/Library/Application Support/opalclient` or `$OPALCLIENT_USER_PATH`
 
 Worlds can be found as separate folders in: `user/worlds/`
 

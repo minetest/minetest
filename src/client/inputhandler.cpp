@@ -89,6 +89,8 @@ void KeyCache::populate()
 		key[KeyType::SLOT_1 + i] = getKeySetting(slot_key_name.c_str());
 	}
 
+	key[KeyType::SLOT_8] = "KEY_KEY_9";
+
 	if (handler) {
 		// First clear all keys, then re-add the ones we listen for
 		handler->dontListenForKeys();

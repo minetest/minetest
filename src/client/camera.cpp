@@ -330,11 +330,6 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	}
 
 	// Set player node transformation
-	if (player->getPlayerControl().freelook) {
-		m_camera_mode = CAMERA_MODE_FREELOOK;
-	} else if (m_camera_mode == CAMERA_MODE_FREELOOK) {
-		m_camera_mode = CAMERA_MODE_FIRST;
-	}
 	m_playernode->setPosition(player_position);
 	m_playernode->setRotation(v3f(0, -1 * yaw, 0));
 	m_playernode->updateAbsolutePosition();
@@ -366,15 +361,19 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 		v3f eye_offset = player->getEyeOffset();
 		switch(m_camera_mode) {
 		case CAMERA_MODE_FIRST:
+			//player->getCAO()->setVisible(false);
 			eye_offset += player->eye_offset_first;
 			break;
 		case CAMERA_MODE_THIRD:
+			//player->getCAO()->setVisible(true);
 			eye_offset += player->eye_offset_third;
 			break;
 		case CAMERA_MODE_FREELOOK:
+			//player->getCAO()->setVisible(true);
 			eye_offset += player->eye_offset_third;
 			break;
 		case CAMERA_MODE_THIRD_FRONT:
+			//player->getCAO()->setVisible(true);
 			eye_offset.X += player->eye_offset_third_front.X;
 			eye_offset.Y += player->eye_offset_third_front.Y;
 			eye_offset.Z -= player->eye_offset_third_front.Z;

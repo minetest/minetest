@@ -122,6 +122,9 @@ repeat_dig_time (Minimum dig repetition interval) float 0.0 0.0 2.0
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
 
+#    Override Jump so that  you can jump whenever the jump key is pressed
+override_jump (Override Jump) bool false
+
 #    Prevent digging and placing from repeating when holding the respective buttons.
 #    Enable this when you dig or place too often by accident.
 #    On touchscreens, this only affects digging.
@@ -810,6 +813,9 @@ enable_split_login_register (Enable split login/register) bool true
 #    URL to JSON file which provides information about the newest Minetest release.
 #    If this is empty the engine will never check for updates.
 update_information_url (Update information URL) string https://www.minetest.net/release_info.json
+
+#    Override Jump so that  you can jump whenever the jump key is pressed
+override_jump (Override Jump) bool false
 
 [*Server]
 

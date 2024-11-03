@@ -1,8 +1,8 @@
 
-License of OpalClient/Minetest textures and sounds
+License of OpalClient/Minetest/Luanti textures and sounds
 ---------------------------------------
 
-This applies to textures and sounds contained in the main Minetest
+This applies to textures and sounds contained in the main Minetest/Luanti
 distribution.
 
 OpalClient contains modified versions of original Minetest files, for more details

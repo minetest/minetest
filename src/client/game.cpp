@@ -2019,6 +2019,7 @@ void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
 void Game::processUserInput(f32 dtime)
 {
 	// Reset input if window not active or some menu is active
+	//if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console)) {
 	if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console)) {
 		if (m_game_focused) {
 			m_game_focused = false;
@@ -2336,11 +2337,12 @@ void Game::toggleFreeMove()
 	g_settings->set("free_move", bool_to_cstr(free_move));
 
 	if (free_move) {
-		if (client->checkPrivilege("fly")) {
+		/*if (client->checkPrivilege("fly")) {
 			m_game_ui->showTranslatedStatusText("Fly mode enabled");
 		} else {
 			m_game_ui->showTranslatedStatusText("Fly mode enabled (note: no 'fly' privilege)");
-		}
+		}*/
+		m_game_ui->showTranslatedStatusText("Fly mode enabled");
 	} else {
 		m_game_ui->showTranslatedStatusText("Fly mode disabled");
 	}
@@ -2401,11 +2403,13 @@ void Game::toggleNoClip()
 	g_settings->set("noclip", bool_to_cstr(noclip));
 
 	if (noclip) {
-		if (client->checkPrivilege("noclip")) {
+		/*if (client->checkPrivilege("noclip")) {
 			m_game_ui->showTranslatedStatusText("Noclip mode enabled");
 		} else {
 			m_game_ui->showTranslatedStatusText("Noclip mode enabled (note: no 'noclip' privilege)");
-		}
+		}*/
+
+		m_game_ui->showTranslatedStatusText("Noclip mode enabled");
 	} else {
 		m_game_ui->showTranslatedStatusText("Noclip mode disabled");
 	}
@@ -2459,7 +2463,7 @@ void Game::toggleAutoforward()
 
 void Game::toggleMinimap(bool shift_pressed)
 {
-	if (!mapper || !m_game_ui->m_flags.show_hud || !g_settings->getBool("enable_minimap"))
+	if (!mapper || !m_game_ui->m_flags.show_hud) // || !g_settings->getBool("enable_minimap")
 		return;
 
 	if (shift_pressed)
@@ -3231,9 +3235,7 @@ void Game::updateCamera(f32 dtime)
 
 	if (wasKeyPressed(KeyType::CAMERA_MODE)) {
 		GenericCAO *playercao = player->getCAO();
-
-		// If playercao not loaded, don't change camera
-		if (!playercao)
+		if (!playercao) // If playercao not loaded, don't change camera
 			return;
 
 		camera->toggleCameraMode();
@@ -3243,7 +3245,33 @@ void Game::updateCamera(f32 dtime)
 
 		// Make the player visible depending on camera mode.
 		playercao->updateMeshCulling();
-		playercao->setChildrenVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
+		playercao->setChildrenVisible(camera->getCameraMode() != CAMERA_MODE_FIRST);
+	} else if (wasKeyDown(KeyType::FREELOOK) || wasKeyPressed(KeyType::FREELOOK)) {
+		GenericCAO *playercao = player->getCAO();
+		if (!playercao) // If playercao not loaded, don't change camera
+			return;
+		camera->setCameraMode(CAMERA_MODE_FREELOOK);
+		playercao->setVisible(true);
+		playercao->setChildrenVisible(true);
+	} else if (wasKeyReleased(KeyType::FREELOOK)) {
+		GenericCAO *playercao = player->getCAO();
+		if (!playercao) // If playercao not loaded, don't change camera
+			return;
+		camera->setCameraMode(CAMERA_MODE_FIRST);
+		playercao->setVisible(false);
+		playercao->setChildrenVisible(false);
+	} else if (camera->getCameraMode() == CAMERA_MODE_FIRST) {
+		GenericCAO *playercao = player->getCAO();
+		if (!playercao) // If playercao not loaded, don't change camera
+			return;
+		playercao->setVisible(false);
+		playercao->setChildrenVisible(false);
+	} else {
+		GenericCAO *playercao = player->getCAO();
+		if (!playercao) // If playercao not loaded, don't change camera
+			return;
+		playercao->setVisible(true);
+		playercao->setChildrenVisible(true);
 	}
 
 	float full_punch_interval = playeritem_toolcap.full_punch_interval;
