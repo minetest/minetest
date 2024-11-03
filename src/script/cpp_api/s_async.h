@@ -56,10 +56,7 @@ protected:
 	AsyncWorkerThread(AsyncEngine* jobDispatcher, const std::string &name);
 
 	bool checkPathInternal(const std::string &abs_path, bool write_required,
-		bool *write_allowed) override {
-		return ScriptApiSecurity::checkPathWithGamedef(getStack(),
-			abs_path, write_required, write_allowed);
-	};
+		bool *write_allowed) override;
 
 private:
 	AsyncEngine *jobDispatcher = nullptr;
