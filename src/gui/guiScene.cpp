@@ -9,6 +9,8 @@
 #include <IVideoDriver.h>
 #include "IAttributes.h"
 #include "porting.h"
+#include "client/mesh.h"
+#include "settings.h"
 
 GUIScene::GUIScene(gui::IGUIEnvironment *env, scene::ISceneManager *smgr,
 		   gui::IGUIElement *parent, core::recti rect, s32 id)
@@ -95,6 +97,11 @@ void GUIScene::draw()
 	// Continuous rotation
 	if (m_inf_rot)
 		rotateCamera(v3f(0.f, -0.03f * (float)dtime_ms, 0.f));
+
+	// HACK restore mesh vertex colors to full brightness:
+	// They may have been mutated in entity rendering code before.
+	if (!g_settings->getBool("enable_shaders"))
+		setMeshColor(m_mesh->getMesh(), irr::video::SColor(0xFFFFFFFF));
 
 	m_smgr->drawAll();
 
