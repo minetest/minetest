@@ -51,10 +51,6 @@ local function get_formspec(data)
 					return
 				end
 
-				if type(info.forums) == "number" then
-					info.forums = "https://forum.minetest.net/viewtopic.php?t=" .. info.forums
-				end
-
 				assert(data.package.name == info.name)
 				data.info = info
 				ui.update()
@@ -194,7 +190,10 @@ local function get_formspec(data)
 		add_link_button(fgettext("Source"), "repo")
 		add_link_button(fgettext("Issue Tracker"), "issue_tracker")
 		add_link_button(fgettext("Translate"), "translation_url")
-		add_link_button(fgettext("Forum Topic"), "forums")
+		if info.forums then
+			info.forum_url = ("https://forum.luanti.org/viewtopic.php?t=%d"):format(info.forums)
+			add_link_button(fgettext("Forum Topic"), "forum_url")
+		end
 
 		hypertext = hypertext .. "\n\n" .. info.long_description.body
 
