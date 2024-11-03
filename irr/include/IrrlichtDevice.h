@@ -368,7 +368,7 @@ public:
 	}
 
 	// TODO: This is just some boilerplate for non-SDL devices. Remove this once we fully switch to SDL.
-	static void fillScancode(SEvent &irrevent)
+	void fillScancode(SEvent &irrevent)
 	{
 		auto &keyinput = irrevent.KeyInput;
 		keyinput.SystemKeyCode = getScancodeFromKey(KeyCode(keyinput.Key, keyinput.Char));
