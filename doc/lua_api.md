@@ -5659,6 +5659,10 @@ Utilities
       bulk_lbms = true,
       -- ABM supports field without_neighbors (5.10.0)
       abm_without_neighbors = true,
+      -- biomes have a weight parameter (5.11.0)
+      biome_weights = true,
+      -- biomes have height_point and height_weight parameters (5.11.0)
+      biome_heights = true,
   }
   ```
 
@@ -10702,6 +10706,18 @@ performance and computing power the practical limit is much lower.
     -- distribution of the biomes.
     -- Heat and humidity have average values of 50, vary mostly between
     -- 0 and 100 but can exceed these values.
+
+    height_point = 0,
+    -- Characteristic height of the biome.
+    height_weight = 0.0,
+    -- Weight of the height difference in the distance computations for the
+    -- Voronoi partitioning. A scaling is necessary because the value range
+    -- of humidity and heat differs from the range of the y axis.
+    -- A weight of 0 disables the use of heights for biome assignment.
+
+    weight = 1.0,
+    -- Relative weight of the biome in the Voronoi diagram.
+    -- A value of 0 (or less) is ignored and equivalent to 1.0.
 }
 ```
 
