@@ -31,11 +31,6 @@
 // Corresponding offsets are listed in g_27dirs
 #define FRAMED_NEIGHBOR_COUNT 18
 
-// Liquid vertices do not wave if their y pos is exactly on (at most 0.001 above
-// (in node length)) the node border. If you want them to wave anyways, add this
-// offset (in node length).
-static constexpr f32 LIQUID_Y_OFFSET_ALLOW_WAVE = -0.002f;
-
 // Maps light index to corner direction
 static const v3s16 light_dirs[8] = {
 	v3s16(-1, -1, -1),
@@ -72,7 +67,8 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	nodedef(data->nodedef),
 	meshmanip(mm),
 	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE),
-	smooth_liquids(g_settings->getBool("enable_water_reflections"))
+	smooth_liquids(g_settings->getBool("enable_water_reflections")),
+	liquid_y_offset_allow_wave(g_settings->getBool("enable_waving_water") ? -0.002f : 0.0f)
 {
 }
 
@@ -453,7 +449,7 @@ void MapblockMeshGenerator::drawSolidNode()
 	generateCuboidTextureCoords(box, texture_coord_buf);
 	if (cur_node.f->drawtype == NDT_LIQUID) {
 		// FIXME: don't allow wave if a neighbor on vertex side has no top
-		box.MaxEdge.Y += BS * LIQUID_Y_OFFSET_ALLOW_WAVE;
+		box.MaxEdge.Y += BS * liquid_y_offset_allow_wave;
 	}
 	if (data->m_smooth_lighting) {
 		LightPair lights[6][4];
@@ -701,14 +697,14 @@ void MapblockMeshGenerator::drawLiquidSides()
 			pos.Z = (base.Z - 0.5f) * BS;
 			if (vertex.v) {
 				pos.Y = (neighbor.is_same_liquid ?
-						cur_liquid.corner_levels[base.Z][base.X] + LIQUID_Y_OFFSET_ALLOW_WAVE :
+						cur_liquid.corner_levels[base.Z][base.X] + liquid_y_offset_allow_wave :
 						-0.5f)
 					* BS;
 			} else if (cur_liquid.top_is_same_liquid) {
 				pos.Y = 0.5f * BS;
 			} else {
 				pos.Y = (cur_liquid.corner_levels[base.Z][base.X]
-						+ LIQUID_Y_OFFSET_ALLOW_WAVE) * BS;
+						+ liquid_y_offset_allow_wave) * BS;
 				v += 0.5f - cur_liquid.corner_levels[base.Z][base.X];
 			}
 
@@ -756,7 +752,7 @@ void MapblockMeshGenerator::drawLiquidTop()
 
 		// FIXME: don't allow wave if a neighbor on vertex side has no top
 		vertices[i].Pos.Y += (cur_liquid.corner_levels[w][u]
-				+ LIQUID_Y_OFFSET_ALLOW_WAVE) * BS;
+				+ liquid_y_offset_allow_wave) * BS;
 		if (data->m_smooth_lighting)
 			vertices[i].Color = blendLightColor(vertices[i].Pos);
 		vertices[i].Pos += cur_node.origin;

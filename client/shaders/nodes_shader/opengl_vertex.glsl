@@ -180,7 +180,7 @@ void main(void)
 	// Flowing liquid waveheight is scaled by node height, so it doesn't wave
 	// into the floor.
 	// Also, vertices that are exactly on the border do not wave, see
-	// LIQUID_Y_OFFSET_ALLOW_WAVE in content_mapblock.cpp.
+	// liquid_y_offset_allow_wave in content_mapblock.h.
 	float nodecorner_height = fract(pos.y * (1.0 / BS) + 0.5 + 0.001);
 	pos.y += (snoise(wavePos) - 1.0) * WATER_WAVE_HEIGHT * 5.0 * nodecorner_height;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES
