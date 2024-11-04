@@ -177,7 +177,15 @@ void main(void)
 	wavePos.x /= WATER_WAVE_LENGTH * 3.0;
 	wavePos.z /= WATER_WAVE_LENGTH * 2.0;
 	wavePos.z += animationTimer * WATER_WAVE_SPEED * 10.0;
-	pos.y += (snoise(wavePos) - 1.0) * WATER_WAVE_HEIGHT * 5.0;
+	// Flowing liquid waveheight is scaled by node height, so it doesn't wave
+	// into the floor.
+	float nodecorner_height = fract(pos.y * (1.0 / BS) + 0.5);
+	if (nodecorner_height < 0.001)
+		nodecorner_height = 1.0;
+	if ((abs(inVertexNormal.y) < 0.001 && varTexCoord.y > 0.95)
+			|| abs(inVertexNormal.x) + abs(inVertexNormal.y) + abs(inVertexNormal.z) < 0.001)
+		nodecorner_height = 0.0;
+	pos.y += (snoise(wavePos) - 1.0) * WATER_WAVE_HEIGHT * 5.0 * nodecorner_height;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES
 	pos.x += disp_x;
 	pos.y += disp_z * 0.1;
