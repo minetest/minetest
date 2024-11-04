@@ -451,6 +451,10 @@ void MapblockMeshGenerator::drawSolidNode()
 	box.MinEdge += cur_node.origin;
 	box.MaxEdge += cur_node.origin;
 	generateCuboidTextureCoords(box, texture_coord_buf);
+	if (cur_node.f->drawtype == NDT_LIQUID) {
+		// FIXME: don't allow wave if a neighbor on vertex side has no top
+		box.MaxEdge.Y += BS * LIQUID_Y_OFFSET_ALLOW_WAVE;
+	}
 	if (data->m_smooth_lighting) {
 		LightPair lights[6][4];
 		for (int face = 0; face < 6; ++face) {
@@ -668,7 +672,8 @@ namespace {
 void MapblockMeshGenerator::drawLiquidSides()
 {
 	for (const auto &face : liquid_base_faces) {
-		const LiquidData::NeighborData &neighbor = cur_liquid.neighbors[face.dir.Z + 1][face.dir.X + 1];
+		const LiquidData::NeighborData &neighbor =
+				cur_liquid.neighbors[face.dir.Z + 1][face.dir.X + 1];
 
 		// No face between nodes of the same liquid, unless there is node
 		// at the top to which it should be connected. Again, unless the face
@@ -695,18 +700,25 @@ void MapblockMeshGenerator::drawLiquidSides()
 			pos.X = (base.X - 0.5f) * BS;
 			pos.Z = (base.Z - 0.5f) * BS;
 			if (vertex.v) {
-				pos.Y = (neighbor.is_same_liquid ? cur_liquid.corner_levels[base.Z][base.X] : -0.5f + 0.0011f) * BS;
+				pos.Y = (neighbor.is_same_liquid ?
+						cur_liquid.corner_levels[base.Z][base.X] + LIQUID_Y_OFFSET_ALLOW_WAVE :
+						-0.5f)
+					* BS;
 			} else if (cur_liquid.top_is_same_liquid) {
-				pos.Y = (0.5f + 0.0011f) * BS;
+				pos.Y = 0.5f * BS;
 			} else {
-				pos.Y = cur_liquid.corner_levels[base.Z][base.X] * BS;
+				pos.Y = (cur_liquid.corner_levels[base.Z][base.X]
+						+ LIQUID_Y_OFFSET_ALLOW_WAVE) * BS;
 				v += 0.5f - cur_liquid.corner_levels[base.Z][base.X];
 			}
 
 			if (data->m_smooth_lighting)
 				cur_node.color = blendLightColor(pos);
 			pos += cur_node.origin;
-			vertices[j] = video::S3DVertex(pos.X, pos.Y, pos.Z, face.dir.X, face.dir.Y, face.dir.Z, cur_node.color, vertex.u, v);
+			vertices[j] = video::S3DVertex(pos.X, pos.Y, pos.Z,
+					face.dir.X, face.dir.Y, face.dir.Z,
+					cur_node.color,
+					vertex.u, v);
 		};
 		collector->append(cur_liquid.tile, vertices, 4, quad_indices, 6);
 	}
@@ -742,7 +754,9 @@ void MapblockMeshGenerator::drawLiquidTop()
 			vertices[i].Normal = v3f(dx, 1., dz).normalize();
 		}
 
-		vertices[i].Pos.Y += cur_liquid.corner_levels[w][u] * BS;
+		// FIXME: don't allow wave if a neighbor on vertex side has no top
+		vertices[i].Pos.Y += (cur_liquid.corner_levels[w][u]
+				+ LIQUID_Y_OFFSET_ALLOW_WAVE) * BS;
 		if (data->m_smooth_lighting)
 			vertices[i].Color = blendLightColor(vertices[i].Pos);
 		vertices[i].Pos += cur_node.origin;
@@ -795,10 +809,10 @@ void MapblockMeshGenerator::drawLiquidTop()
 void MapblockMeshGenerator::drawLiquidBottom()
 {
 	video::S3DVertex vertices[4] = {
-		video::S3DVertex(-BS / 2, -BS / 2 + BS * 0.0011f, -BS / 2, 0, 0, 0, cur_liquid.color_top, 0, 0),
-		video::S3DVertex( BS / 2, -BS / 2 + BS * 0.0011f, -BS / 2, 0, 0, 0, cur_liquid.color_top, 1, 0),
-		video::S3DVertex( BS / 2, -BS / 2 + BS * 0.0011f,  BS / 2, 0, 0, 0, cur_liquid.color_top, 1, 1),
-		video::S3DVertex(-BS / 2, -BS / 2 + BS * 0.0011f,  BS / 2, 0, 0, 0, cur_liquid.color_top, 0, 1),
+		video::S3DVertex(-BS / 2, -BS / 2, -BS / 2, 0, 0, 0, cur_liquid.color_top, 0, 0),
+		video::S3DVertex( BS / 2, -BS / 2, -BS / 2, 0, 0, 0, cur_liquid.color_top, 1, 0),
+		video::S3DVertex( BS / 2, -BS / 2,  BS / 2, 0, 0, 0, cur_liquid.color_top, 1, 1),
+		video::S3DVertex(-BS / 2, -BS / 2,  BS / 2, 0, 0, 0, cur_liquid.color_top, 0, 1),
 	};
 
 	for (int i = 0; i < 4; i++) {
