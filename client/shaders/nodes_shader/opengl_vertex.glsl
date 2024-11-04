@@ -178,7 +178,7 @@ void main(void)
 	wavePos.z /= WATER_WAVE_LENGTH * 2.0;
 	wavePos.z += animationTimer * WATER_WAVE_SPEED * 10.0;
 	// Flowing liquid waveheight is scaled by node height, so it doesn't wave
-	// into the floor.
+	// into the floor (only works for vertices on top).
 	float nodecorner_height = fract(pos.y * (1.0 / BS) + 0.5);
 	if (nodecorner_height < 0.001)
 		nodecorner_height = 1.0;
