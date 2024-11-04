@@ -31,6 +31,11 @@
 // Corresponding offsets are listed in g_27dirs
 #define FRAMED_NEIGHBOR_COUNT 18
 
+// Liquid vertices do not wave if their y pos is exactly on (at most 0.001 above
+// (in node length)) the node border. If you want them to wave anyways, add this
+// offset (in node length).
+static constexpr f32 LIQUID_Y_OFFSET_ALLOW_WAVE = -0.002f;
+
 // Maps light index to corner direction
 static const v3s16 light_dirs[8] = {
 	v3s16(-1, -1, -1),
@@ -690,9 +695,9 @@ void MapblockMeshGenerator::drawLiquidSides()
 			pos.X = (base.X - 0.5f) * BS;
 			pos.Z = (base.Z - 0.5f) * BS;
 			if (vertex.v) {
-				pos.Y = (neighbor.is_same_liquid ? cur_liquid.corner_levels[base.Z][base.X] : -0.5f) * BS;
+				pos.Y = (neighbor.is_same_liquid ? cur_liquid.corner_levels[base.Z][base.X] : -0.5f + 0.0011f) * BS;
 			} else if (cur_liquid.top_is_same_liquid) {
-				pos.Y = 0.5f * BS;
+				pos.Y = (0.5f + 0.0011f) * BS;
 			} else {
 				pos.Y = cur_liquid.corner_levels[base.Z][base.X] * BS;
 				v += 0.5f - cur_liquid.corner_levels[base.Z][base.X];
@@ -790,10 +795,10 @@ void MapblockMeshGenerator::drawLiquidTop()
 void MapblockMeshGenerator::drawLiquidBottom()
 {
 	video::S3DVertex vertices[4] = {
-		video::S3DVertex(-BS / 2, -BS / 2, -BS / 2, 0, 0, 0, cur_liquid.color_top, 0, 0),
-		video::S3DVertex( BS / 2, -BS / 2, -BS / 2, 0, 0, 0, cur_liquid.color_top, 1, 0),
-		video::S3DVertex( BS / 2, -BS / 2,  BS / 2, 0, 0, 0, cur_liquid.color_top, 1, 1),
-		video::S3DVertex(-BS / 2, -BS / 2,  BS / 2, 0, 0, 0, cur_liquid.color_top, 0, 1),
+		video::S3DVertex(-BS / 2, -BS / 2 + BS * 0.0011f, -BS / 2, 0, 0, 0, cur_liquid.color_top, 0, 0),
+		video::S3DVertex( BS / 2, -BS / 2 + BS * 0.0011f, -BS / 2, 0, 0, 0, cur_liquid.color_top, 1, 0),
+		video::S3DVertex( BS / 2, -BS / 2 + BS * 0.0011f,  BS / 2, 0, 0, 0, cur_liquid.color_top, 1, 1),
+		video::S3DVertex(-BS / 2, -BS / 2 + BS * 0.0011f,  BS / 2, 0, 0, 0, cur_liquid.color_top, 0, 1),
 	};
 
 	for (int i = 0; i < 4; i++) {
