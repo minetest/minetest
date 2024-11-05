@@ -37,6 +37,8 @@ struct CollisionInfo
 	v3f new_pos;
 	v3f old_speed;
 	v3f new_speed;
+
+	// FIXME: this is equivalent to `axis`, why does it exist?
 	int plane = -1;
 };
 
@@ -44,11 +46,15 @@ struct collisionMoveResult
 {
 	collisionMoveResult() = default;
 
-	bool touching_ground = false;
 	bool collides = false;
+	bool touching_ground = false;
 	bool standing_on_object = false;
 	std::vector<CollisionInfo> collisions;
 };
+
+/// Status if any problems were ever encountered during collision detection.
+/// @warning For unit test use only.
+extern bool g_collision_problems_encountered;
 
 /// @brief Moves using a single iteration; speed should not exceed pos_max_d/dtime
 /// @param self (optional) ActiveObject to ignore in the collision detection.
