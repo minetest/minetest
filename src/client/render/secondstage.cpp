@@ -9,6 +9,7 @@
 #include "client/shader.h"
 #include "client/tile.h"
 #include "settings.h"
+#include "mt_opengl.h"
 
 PostProcessingStep::PostProcessingStep(u32 _shader_id, const std::vector<u8> &_texture_map) :
 	shader_id(_shader_id), texture_map(_texture_map)
@@ -102,21 +103,52 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	static const u8 TEXTURE_EXPOSURE_2 = 4;
 	static const u8 TEXTURE_FXAA = 5;
 	static const u8 TEXTURE_VOLUME = 6;
+
+	static const u8 TEXTURE_MSAA_COLOR = 7;
+	static const u8 TEXTURE_MSAA_DEPTH = 8;
+
 	static const u8 TEXTURE_SCALE_DOWN = 10;
 	static const u8 TEXTURE_SCALE_UP = 20;
 
-	// Super-sampling is simply rendering into a larger texture.
-	// Downscaling is done by the final step when rendering to the screen.
-	const std::string antialiasing = g_settings->get("antialiasing");
 	const bool enable_bloom = g_settings->getBool("enable_bloom");
+	const bool enable_volumetric_light = g_settings->getBool("enable_volumetric_lighting") && enable_bloom;
 	const bool enable_auto_exposure = g_settings->getBool("enable_auto_exposure");
+
+	const std::string antialiasing = g_settings->get("antialiasing");
+	const u16 antialiasing_scale = MYMAX(2, g_settings->getU16("fsaa"));
+
+	// This code only deals with MSAA in combination with post-processing. MSAA without
+	// post-processing works via a flag at OpenGL context creation instead.
+
+	// To make MSAA work with post-processing, we need multisample texture support,
+	// which has a higher OpenGL version requirement:
+	// > glTexImage2DMultisample is available only if the GL version is 3.2 or greater.
+	// > ~ https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage2DMultisample.xhtml
+	// Older versions may support it via the GL_ARB_texture_multisample extension.
+
+	// Note: No support for OpenGL ES implemented. That seems to be another can of worms,
+	// different version requirements, different API functions and possibly some extensions.
+	// Another note: This is not about renderbuffer objects, but about textures,
+	// since that's what we use and what Irrlicht allows us to use.
+
+	const bool msaa_available = driver->queryFeature(video::EVDF_TEXTURE_MULTISAMPLE);
+	const bool enable_msaa = antialiasing == "fsaa" && msaa_available;
+	if (antialiasing == "fsaa" && !msaa_available)
+		warningstream << "Ignoring configured FSAA. FSAA is not supported in "
+			<< "combination with post-processing by the current video driver." << std::endl;
+
 	const bool enable_ssaa = antialiasing == "ssaa";
 	const bool enable_fxaa = antialiasing == "fxaa";
-	const bool enable_volumetric_light = g_settings->getBool("enable_volumetric_lighting") && enable_bloom;
 
+	// Super-sampling is simply rendering into a larger texture.
+	// Downscaling is done by the final step when rendering to the screen.
 	if (enable_ssaa) {
-		u16 ssaa_scale = MYMAX(2, g_settings->getU16("fsaa"));
-		scale *= ssaa_scale;
+		scale *= antialiasing_scale;
+	}
+
+	if (enable_msaa) {
+		buffer->setTexture(TEXTURE_MSAA_COLOR, scale, "3d_render_msaa", color_format, false, antialiasing_scale);
+		buffer->setTexture(TEXTURE_MSAA_DEPTH, scale, "3d_depthmap_msaa", depth_format, false, antialiasing_scale);
 	}
 
 	buffer->setTexture(TEXTURE_COLOR, scale, "3d_render", color_format);
@@ -125,7 +157,14 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	buffer->setTexture(TEXTURE_DEPTH, scale, "3d_depthmap", depth_format);
 
 	// attach buffer to the previous step
-	previousStep->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, std::vector<u8> { TEXTURE_COLOR }, TEXTURE_DEPTH));
+	if (enable_msaa) {
+		TextureBufferOutput *msaa = pipeline->createOwned<TextureBufferOutput>(buffer, std::vector<u8> { TEXTURE_MSAA_COLOR }, TEXTURE_MSAA_DEPTH);
+		previousStep->setRenderTarget(msaa);
+		TextureBufferOutput *normal = pipeline->createOwned<TextureBufferOutput>(buffer, std::vector<u8> { TEXTURE_COLOR }, TEXTURE_DEPTH);
+		pipeline->addStep<ResolveMSAAStep>(msaa, normal);
+	} else {
+		previousStep->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, std::vector<u8> { TEXTURE_COLOR }, TEXTURE_DEPTH));
+	}
 
 	// shared variables
 	u32 shader_id;
@@ -233,4 +272,15 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	}
 
 	return effect;
+}
+
+void ResolveMSAAStep::run(PipelineContext &context)
+{
+	u32 msaa_fbo_id = msaa_fbo->getGLBufferID(context);
+	u32 target_fbo_id = target_fbo->getGLBufferID(context);
+	GL.BindFramebuffer(GL.READ_FRAMEBUFFER, msaa_fbo_id);
+	GL.BindFramebuffer(GL.DRAW_FRAMEBUFFER, target_fbo_id);
+	v2u32 size = context.target_size;
+	GL.BlitFramebuffer(0, 0, size.X, size.Y, 0, 0, size.X, size.Y,
+			GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT, GL.NEAREST);
 }

@@ -156,6 +156,9 @@ enum E_TEXTURE_TYPE
 	//! 2D texture.
 	ETT_2D,
 
+	//! 2D texture with multisampling.
+	ETT_2D_MS,
+
 	//! Cubemap texture.
 	ETT_CUBEMAP
 };

@@ -92,6 +92,8 @@ public:
 		return DriverType;
 	}
 
+	virtual u32 getBufferID() const = 0;
+
 protected:
 	//! Set multiple textures.
 	// NOTE: working with pointers instead of arrays to avoid unnecessary memory allocations for the single textures case

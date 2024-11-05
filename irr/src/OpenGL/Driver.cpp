@@ -1632,11 +1632,17 @@ IGPUProgrammingServices *COpenGL3DriverBase::getGPUProgrammingServices()
 ITexture *COpenGL3DriverBase::addRenderTargetTexture(const core::dimension2d<u32> &size,
 		const io::path &name, const ECOLOR_FORMAT format)
 {
+	return addRenderTargetTextureMs(size, 0, name, format);
+}
+
+ITexture *COpenGL3DriverBase::addRenderTargetTextureMs(const core::dimension2d<u32> &size, u16 msaa,
+		const io::path &name, const ECOLOR_FORMAT format)
+{
 	// disable mip-mapping
 	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);
 
-	COpenGL3Texture *renderTargetTexture = new COpenGL3Texture(name, size, ETT_2D, format, this);
+	COpenGL3Texture *renderTargetTexture = new COpenGL3Texture(name, size, msaa > 0 ? ETT_2D_MS : ETT_2D, format, this, msaa);
 	addTexture(renderTargetTexture);
 	renderTargetTexture->drop();
 
