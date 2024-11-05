@@ -21,6 +21,8 @@
 #warning "-ffast-math is known to cause bugs in collision code, do not use!"
 #endif
 
+bool g_collision_problems_encountered = false;
+
 namespace {
 
 struct NearbyCollisionInfo {
@@ -342,6 +344,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			warningstream << "collisionMoveSimple: maximum step interval exceeded,"
 					" lost movement details!"<<std::endl;
 		}
+		g_collision_problems_encountered = true;
 		dtime = DTIME_LIMIT;
 	} else {
 		time_notification_done = false;
@@ -415,7 +418,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		// Avoid infinite loop
 		loopcount++;
 		if (loopcount >= 100) {
-			warningstream << "collisionMoveSimple: Loop count exceeded, aborting to avoid infiniite loop" << std::endl;
+			warningstream << "collisionMoveSimple: Loop count exceeded, aborting to avoid infinite loop" << std::endl;
+			g_collision_problems_encountered = true;
 			break;
 		}
 
