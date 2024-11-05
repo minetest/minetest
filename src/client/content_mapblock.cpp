@@ -396,6 +396,8 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 void MapblockMeshGenerator::drawSolidNode()
 {
 	u8 faces = 0; // k-th bit will be set if k-th face is to be drawn.
+	// for liquids, if the k-th bit will be set, the k-th corner is to be waving
+	u8 top_corner_waving = 15;
 	static const v3s16 tile_dirs[6] = {
 		v3s16(0, 1, 0),
 		v3s16(0, -1, 0),
@@ -418,12 +420,39 @@ void MapblockMeshGenerator::drawSolidNode()
 			continue;
 		if (n2 != CONTENT_AIR) {
 			const ContentFeatures &f2 = nodedef->get(n2);
-			if (f2.solidness == 2)
+			bool is_liquid_top = cur_node.f->drawtype == NDT_LIQUID && face == 0;
+			if (f2.solidness == 2 && !is_liquid_top)
 				continue;
 			if (cur_node.f->drawtype == NDT_LIQUID) {
 				if (cur_node.f->sameLiquidRender(f2))
 					continue;
-				backface_culling = f2.solidness || f2.visual_solidness;
+				if (is_liquid_top) {
+					bool top_solids[3][3] = {};
+					for (s16 z = -1; z <= 1; ++z) {
+					for (s16 x = -1; x <= 1; ++x) {
+						v3s16 pxz = blockpos_nodes + cur_node.p + v3s16(x, 1, z);
+						MapNode nxz = data->m_vmanip.getNodeNoEx(pxz);
+						const ContentFeatures &fxz = nodedef->get(nxz);
+						top_solids[x+1][z+1] = fxz.solidness == 2
+								|| cur_node.f->sameLiquidRender(fxz);
+					}}
+					if (top_solids[0][0] && top_solids[1][0]
+							&& top_solids[0][1] && top_solids[1][1])
+						top_corner_waving &= ~8; // ok
+					if (top_solids[1][0] && top_solids[2][0]
+							&& top_solids[1][1] && top_solids[2][1])
+						top_corner_waving &= ~4;
+					if (top_solids[0][1] && top_solids[1][1]
+							&& top_solids[0][2] && top_solids[1][2])
+						top_corner_waving &= ~1; // ok
+					if (top_solids[1][1] && top_solids[2][1]
+							&& top_solids[1][2] && top_solids[2][2])
+						top_corner_waving &= ~2;
+					if (top_corner_waving == 0)
+						continue;
+				} else {
+					backface_culling = f2.solidness || f2.visual_solidness;
+				}
 			}
 		}
 		faces |= 1 << face;
@@ -447,10 +476,10 @@ void MapblockMeshGenerator::drawSolidNode()
 	box.MinEdge += cur_node.origin;
 	box.MaxEdge += cur_node.origin;
 	generateCuboidTextureCoords(box, texture_coord_buf);
-	if (cur_node.f->drawtype == NDT_LIQUID) {
+	/*if (cur_node.f->drawtype == NDT_LIQUID && top_corner_waving == 15) {
 		// FIXME: don't allow wave if a neighbor on vertex side has no top
 		box.MaxEdge.Y += BS * liquid_y_offset_allow_wave;
-	}
+	}*/
 	if (data->m_smooth_lighting) {
 		LightPair lights[6][4];
 		for (int face = 0; face < 6; ++face) {
@@ -464,6 +493,13 @@ void MapblockMeshGenerator::drawSolidNode()
 		}
 
 		drawCuboid(box, tiles, 6, texture_coord_buf, mask, [&] (int face, video::S3DVertex vertices[4]) {
+			if (face == 0 && cur_node.f->drawtype == NDT_LIQUID) {
+				for (size_t i = 0; i < 4; ++i) {
+					if (top_corner_waving & (1 << i)) {
+						vertices[i].Pos.Y += BS * liquid_y_offset_allow_wave;
+					}
+				}
+			}
 			auto final_lights = lights[face];
 			for (int j = 0; j < 4; j++) {
 				video::S3DVertex &vertex = vertices[j];
