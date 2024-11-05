@@ -107,6 +107,8 @@ CollisionAxis axisAlignedCollision(
 
 	if (speed.Y) {
 		distance = relbox.MaxEdge.Y - relbox.MinEdge.Y;
+		// FIXME: The dtime calculation is inaccurate without acceleration information.
+		// Exact formula: `dtime = (-vel ± sqrt(vel² + 2 * acc * distance)) / acc`
 		*dtime = distance / std::abs(speed.Y);
 		time = std::max(*dtime, 0.0f);
 
@@ -400,7 +402,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	// Collect object boxes in movement range
 	if (collide_with_objects) {
 		add_object_boxes(env, box_0, dtime, *pos_f, aspeed_f, self, cinfo);
-    }
+	}
 
 	// Collision detection
 	f32 d = 0.0f;
@@ -523,15 +525,22 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				speed_f->X *= bounce;
 			} else {
 				speed_f->X = 0;
-				accel_f.X = 0;
+				accel_f.X = 0; // avoid colliding in the next interations
 			}
 			result.collides = true;
 		} else if (nearest_collided == COLLISION_AXIS_Y) {
-			if(bounce < -1e-4 && fabsf(speed_f->Y) > BS * 3) {
+			if (bounce < -1e-4 && fabsf(speed_f->Y) > BS * 3) {
 				speed_f->Y *= bounce;
 			} else {
+				if (speed_f->Y < 0.0f) {
+					// FIXME: This code is necessary until `axisAlignedCollision` takes acceleration
+					// into consideration for the time calculation. Otherwise, the colliding faces
+					// never line up, especially at high step (dtime) intervals.
+					result.touching_ground = true;
+					result.standing_on_object = nearest_info.isObject();
+				}
 				speed_f->Y = 0;
-				accel_f.Y = 0;
+				accel_f.Y = 0; // avoid colliding in the next interations
 			}
 			result.collides = true;
 		} else if (nearest_collided == COLLISION_AXIS_Z) {
@@ -539,7 +548,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				speed_f->Z *= bounce;
 			} else {
 				speed_f->Z = 0;
-				accel_f.Z = 0;
+				accel_f.Z = 0; // avoid colliding in the next interations
 			}
 			result.collides = true;
 		} else {
@@ -589,10 +598,10 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				box.MaxEdge += *pos_f;
 			}
 			if (std::fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.05f) {
+				// This is code is technically only required if `box_info.is_step_up == true`.
+				// However, players rely on this check/condition to climb stairs faster. See PR #10587.
 				result.touching_ground = true;
-
-				if (box_info.isObject())
-					result.standing_on_object = true;
+				result.standing_on_object = box_info.isObject();
 			}
 		}
 	}
