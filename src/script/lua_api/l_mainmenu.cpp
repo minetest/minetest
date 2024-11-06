@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 sapier
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 sapier
 
 #include "lua_api/l_mainmenu.h"
 #include "lua_api/l_internal.h"
@@ -37,10 +22,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientdynamicinfo.h"
 #include "client/client.h"
 #include "client/renderingengine.h"
+#include "client/texturepaths.h"
 #include "network/networkprotocol.h"
 #include "content/mod_configuration.h"
 #include "threading/mutex_auto_lock.h"
 #include "common/c_converter.h"
+#include "gui/guiOpenURL.h"
 
 /******************************************************************************/
 std::string ModApiMainMenu::getTextData(lua_State *L, const std::string &name)
@@ -329,8 +316,9 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 		lua_pushinteger(L, game.release);
 		lua_settable(L,    top_lvl2);
 
+		auto menuicon = getImagePath(game.path + DIR_DELIM "menu" DIR_DELIM "icon.png");
 		lua_pushstring(L,  "menuicon_path");
-		lua_pushstring(L,  game.menuicon_path.c_str());
+		lua_pushstring(L,  menuicon.c_str());
 		lua_settable(L,    top_lvl2);
 
 		lua_pushstring(L, "addon_mods_paths");
@@ -1026,6 +1014,14 @@ int ModApiMainMenu::l_get_active_irrlicht_device(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_irrlicht_device_supports_touch(lua_State *L)
+{
+	lua_pushboolean(L, RenderingEngine::get_raw_device()->supportsTouchEvents());
+	return 1;
+}
+
+
+/******************************************************************************/
 int ModApiMainMenu::l_get_min_supp_proto(lua_State *L)
 {
 	lua_pushinteger(L, CLIENT_PROTOCOL_VERSION_MIN);
@@ -1039,10 +1035,33 @@ int ModApiMainMenu::l_get_max_supp_proto(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_get_formspec_version(lua_State  *L)
+{
+	lua_pushinteger(L, FORMSPEC_API_VERSION);
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_open_url(lua_State *L)
 {
 	std::string url = luaL_checkstring(L, 1);
 	lua_pushboolean(L, porting::open_url(url));
+	return 1;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_open_url_dialog(lua_State *L)
+{
+	GUIEngine* engine = getGuiEngine(L);
+	sanity_check(engine != NULL);
+
+	std::string url = luaL_checkstring(L, 1);
+
+	GUIOpenURLMenu* openURLMenu =
+			new GUIOpenURLMenu(engine->m_rendering_engine->get_gui_env(),
+				engine->m_parent, -1, engine->m_menumanager,
+				engine->m_texture_source.get(), url);
+	openURLMenu->drop();
 	return 1;
 }
 
@@ -1134,9 +1153,12 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_active_driver);
 	API_FCT(get_active_renderer);
 	API_FCT(get_active_irrlicht_device);
+	API_FCT(irrlicht_device_supports_touch);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
+	API_FCT(get_formspec_version);
 	API_FCT(open_url);
+	API_FCT(open_url_dialog);
 	API_FCT(open_dir);
 	API_FCT(share_file);
 	API_FCT(do_async_callback);
@@ -1166,6 +1188,7 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 	API_FCT(download_file);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
+	API_FCT(get_formspec_version);
 	API_FCT(get_language);
 	API_FCT(gettext);
 }
