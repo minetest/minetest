@@ -5,3 +5,6 @@ stujones11, An0n3m0us (CC BY-SA 3.0):
 
 Jordach (CC BY-SA 3.0):
   testentities_sam.png
+
+Irrlicht authors (refer to irr/LICENSE):
+  "Cool guy" (testentities_cool_guy.x, testentities_cool_guy.png)
