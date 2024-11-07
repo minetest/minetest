@@ -624,7 +624,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 	if (!m_prop.is_visible) {
 		grabMatrixNode();
-	} if (m_prop.visual == "sprite") {
+	} else if (m_prop.visual == "sprite") {
 		grabMatrixNode();
 		m_spritenode = m_smgr->addBillboardSceneNode(
 				m_matrixnode, v2f(1, 1), v3f(0,0,0), -1);
