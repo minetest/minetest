@@ -81,32 +81,56 @@ void RemoteInputHandler::step(float dtime) {
     return;
   }
 
-  // We don't model key release events, keys need to be re-pressed every step.
-  // Rationale: there's only one place in the engine were keyRelease events are
-  // used, and it doesn't seem important.
-  clearInput();
+  KeyList new_key_is_down;
+  v2s32 mouse_movement;
 
-  KeyPress new_key_code;
-  // receive action
+  // Receive next action.
   {
     std::unique_lock<std::mutex> lock(m_chan.m_action_mutex);
     m_chan.m_action_cv.wait(lock, [this] { return m_chan.m_action; });
 
+    // Copy data out of action.
     for (auto keyEvent : m_chan.m_action->getKeyEvents()) {
-      new_key_code = keycache.key[static_cast<int>(keyEvent)];
-      if (!m_key_is_down[new_key_code]) {
-        m_key_was_pressed.set(new_key_code);
-      }
-      m_key_is_down.set(new_key_code);
-      m_key_was_down.set(new_key_code);
+      KeyPress key_code = keycache.key[static_cast<int>(keyEvent)];
+      new_key_is_down.set(key_code);
     }
-    m_mouse_speed = v2s32(m_chan.m_action->getMouseDx(), m_chan.m_action->getMouseDy());
+    mouse_movement = v2s32(m_chan.m_action->getMouseDx(), m_chan.m_action->getMouseDy());
+
+    m_chan.m_action = nullptr;
+    m_chan.m_action_cv.notify_one();
+  }
+
+  // Process action.
+  {
+    // Compute pressed keys.
+    m_key_was_pressed.clear();
+    for (const auto& key_code: new_key_is_down) {
+      if (!m_key_is_down[key_code]) {
+        m_key_was_pressed.set(key_code);
+      }
+    }
+
+    // Compute released keys.
+    m_key_was_released.clear();
+    for (const auto& key_code: m_key_is_down) {
+      if (!new_key_is_down[key_code]) {
+        m_key_was_released.set(key_code);
+      }
+    }
+
+    // Apply new key state.
+    m_key_is_down.clear();
+    m_key_is_down.append(new_key_is_down);
+    m_key_was_down.clear();
+    m_key_was_down.append(new_key_is_down);
+
+    // Apply mouse state.
     // mousepos is reset to (WIDTH/2, HEIGHT/2) after every iteration of main game
     // loop unit is pixels, origin is top left corner, bounds is (0,0) to (WIDTH,
     // HEIGHT)
+    m_mouse_speed = mouse_movement;
     m_mouse_pos += m_mouse_speed;
-    m_chan.m_action = nullptr;
-    m_chan.m_action_cv.notify_one();
+    m_mouse_wheel = 0;
   }
 
   float remote_input_handler_time_step = 0.0f;
@@ -180,10 +204,4 @@ void RemoteInputHandler::step_post_render() {
     m_chan.m_has_obs = true;
     m_chan.m_obs_cv.notify_one();
   }
-}
-
-void RemoteInputHandler::clearInput() {
-  m_key_is_down.clear();
-  m_key_was_pressed.clear();
-  m_mouse_wheel = 0;
 }

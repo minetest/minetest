@@ -99,6 +99,12 @@ class KeyList : private std::list<KeyPress>
 	}
 
 public:
+    iterator begin() { return super::begin(); }
+    iterator end() { return super::end(); }
+
+    const_iterator begin() const { return super::begin(); }
+    const_iterator end() const { return super::end(); }
+
 	void clear() { super::clear(); }
 
 	void set(const KeyPress &key)
