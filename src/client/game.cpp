@@ -1147,6 +1147,10 @@ void Game::run()
 		//  + Sleep time until the wanted FPS are reached
 		draw_times.limit(device, &dtime, g_menumgr.pausesGame());
 
+		float remote_input_handler_time_step = 0.0f;
+		g_settings->getFloatNoEx("remote_input_handler_time_step", remote_input_handler_time_step);
+		float sim_dtime = remote_input_handler_time_step > 0.0f ? remote_input_handler_time_step : dtime;
+
 		framemarker.start();
 
 		const auto current_dynamic_info = ClientDynamicInfo::getCurrent();
@@ -1177,9 +1181,9 @@ void Game::run()
 		m_game_ui->clearInfoText();
 
 		updateProfilers(stats, draw_times, dtime);
-		processUserInput(dtime);
+		processUserInput(sim_dtime);
 		// Update camera before player movement to avoid camera lag of one frame
-		updateCameraDirection(&cam_view_target, dtime);
+		updateCameraDirection(&cam_view_target, sim_dtime);
 		cam_view.camera_yaw += (cam_view_target.camera_yaw -
 				cam_view.camera_yaw) * m_cache_cam_smoothing;
 		cam_view.camera_pitch += (cam_view_target.camera_pitch -
@@ -1187,16 +1191,18 @@ void Game::run()
 		updatePlayerControl(cam_view);
 
 		updatePauseState();
-		if (m_is_paused)
+		if (m_is_paused) {
 			dtime = 0.0f;
+			sim_dtime = 0.0f;
+		}
 
-		step(dtime);
+		step(sim_dtime);
 
 		processClientEvents(&cam_view_target);
 		updateDebugState();
-		updateCamera(dtime);
+		updateCamera(sim_dtime);
 		updateSound(dtime);
-		processPlayerInteraction(dtime, m_game_ui->m_flags.show_hud);
+		processPlayerInteraction(sim_dtime, m_game_ui->m_flags.show_hud);
 		updateFrame(&graph, &stats, dtime, cam_view);
 		updateProfilerGraphs(&graph);
 
@@ -1675,8 +1681,12 @@ bool Game::connectToServer(const GameStartData &start_data,
 			fps_control.limit(device, &dtime);
 			framemarker.start();
 
+			float remote_input_handler_time_step = 0.0f;
+			g_settings->getFloatNoEx("remote_input_handler_time_step", remote_input_handler_time_step);
+			float sim_dtime = remote_input_handler_time_step > 0.0f ? remote_input_handler_time_step : dtime;
+
 			// Update client and server
-			step(dtime);
+			step(sim_dtime);
 
 			// End condition
 			if (client->getState() == LC_Init) {
@@ -1743,8 +1753,12 @@ bool Game::getServerContent(bool *aborted)
 		fps_control.limit(device, &dtime);
 		framemarker.start();
 
+		float remote_input_handler_time_step = 0.0f;
+		g_settings->getFloatNoEx("remote_input_handler_time_step", remote_input_handler_time_step);
+		float sim_dtime = remote_input_handler_time_step > 0.0f ? remote_input_handler_time_step : dtime;
+
 		// Update client and server
-		step(dtime);
+		step(sim_dtime);
 
 		// End condition
 		if (client->mediaReceived() && client->itemdefReceived() &&

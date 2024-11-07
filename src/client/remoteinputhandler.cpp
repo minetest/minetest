@@ -82,7 +82,7 @@ void RemoteInputHandler::step(float dtime) {
   }
 
   KeyList new_key_is_down;
-  v2s32 mouse_movement;
+  v2f mouse_movement;
 
   // Receive next action.
   {
@@ -94,7 +94,7 @@ void RemoteInputHandler::step(float dtime) {
       KeyPress key_code = keycache.key[static_cast<int>(keyEvent)];
       new_key_is_down.set(key_code);
     }
-    mouse_movement = v2s32(m_chan.m_action->getMouseDx(), m_chan.m_action->getMouseDy());
+    mouse_movement = v2f(m_chan.m_action->getMouseDx(), m_chan.m_action->getMouseDy());
 
     m_chan.m_action = nullptr;
     m_chan.m_action_cv.notify_one();
@@ -128,7 +128,7 @@ void RemoteInputHandler::step(float dtime) {
     // mousepos is reset to (WIDTH/2, HEIGHT/2) after every iteration of main game
     // loop unit is pixels, origin is top left corner, bounds is (0,0) to (WIDTH,
     // HEIGHT)
-    m_mouse_speed = mouse_movement;
+    m_mouse_speed = v2s32::from(dtime * mouse_movement);
     m_mouse_pos += m_mouse_speed;
     m_mouse_wheel = 0;
   }
