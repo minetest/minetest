@@ -90,6 +90,13 @@
             "pid": "${command:pickMyProcess}"
         },
         {
+            "name": "lldb - wait for minetest",
+            "type": "lldb",
+            "request": "attach",
+            "program": "minetest",
+            "waitFor": true,
+        },
+        {
             "type": "cppdbg",
             "request": "attach",
             "name": "cppdbg attach",
