@@ -90,6 +90,9 @@ protected:
 		dispatchScriptDeactivate(true);
 	}
 
+	constexpr void setPositionChecked(v3f value);
+	constexpr void setVelocityChecked(v3f value);
+	constexpr void setRotationChecked(v3f value);
 private:
 	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);

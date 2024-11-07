@@ -27,6 +27,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scripting_server.h"
 #include "server.h"
 #include "serverenvironment.h"
+#include <cmath>
+
+constexpr bool v3f_isfinite(const v3f v) {
+	return std::isfinite(v.X) && std::isfinite(v.Y) && std::isfinite(v.Z);
+}
+
 
 LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &data)
 	: UnitSAO(env, pos)
@@ -81,8 +87,8 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &d
 	m_init_name = name;
 	m_init_state = state;
 	m_hp = hp;
-	m_velocity = velocity;
-	m_rotation = rotation;
+	setVelocityChecked(velocity);
+	setRotationChecked(rotation);
 }
 
 LuaEntitySAO::~LuaEntitySAO()
@@ -132,6 +138,22 @@ void LuaEntitySAO::dispatchScriptDeactivate(bool removal)
 		m_env->getScriptIface()->luaentity_Deactivate(m_id, removal);
 }
 
+
+constexpr void LuaEntitySAO::setPositionChecked(v3f value) {
+	assert(v3f_isfinite(value));
+	m_base_position = value;
+}
+
+constexpr void LuaEntitySAO::setVelocityChecked(v3f value) {
+	assert(v3f_isfinite(value));
+	m_velocity = value;
+}
+
+constexpr void LuaEntitySAO::setRotationChecked(v3f value) {
+	assert(v3f_isfinite(value));
+	m_rotation = value;
+}
+
 void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
 	if (!m_properties_sent) {
@@ -162,8 +184,8 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	// Each frame, parent position is copied if the object is attached, otherwise it's calculated normally
 	// If the object gets detached this comes into effect automatically from the last known origin
 	if (auto *parent = getParent()) {
-		m_base_position = parent->getBasePosition();
-		m_velocity = v3f(0,0,0);
+		setPositionChecked(parent->getBasePosition());
+		setVelocityChecked(v3f(0,0,0));
 		m_acceleration = v3f(0,0,0);
 	} else {
 		if(m_prop.physical){
@@ -181,12 +203,12 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			moveresult_p = &moveresult;
 
 			// Apply results
-			m_base_position = p_pos;
-			m_velocity = p_velocity;
+			setPositionChecked(p_pos);
+			setVelocityChecked(p_velocity);
 			m_acceleration = p_acceleration;
 		} else {
-			m_base_position += (m_velocity + m_acceleration * 0.5f * dtime) * dtime;
-			m_velocity += dtime * m_acceleration;
+			setPositionChecked(m_base_position + (m_velocity + m_acceleration * 0.5f * dtime) * dtime);
+			setVelocityChecked(m_velocity + dtime * m_acceleration);
 		}
 
 		if (m_prop.automatic_face_movement_dir &&
@@ -197,12 +219,16 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 					m_prop.automatic_face_movement_max_rotation_per_sec;
 
 			if (max_rotation_per_sec > 0) {
-				m_rotation.Y = wrapDegrees_0_360(m_rotation.Y);
+				auto rot = m_rotation;
+				rot.Y = wrapDegrees_0_360(rot.Y);
+				setRotationChecked(rot);
 				wrappedApproachShortest(m_rotation.Y, target_yaw,
 					dtime * max_rotation_per_sec, 360.f);
 			} else {
 				// Negative values of max_rotation_per_sec mean disabled.
-				m_rotation.Y = target_yaw;
+				auto rot = m_rotation;
+				rot.Y = target_yaw;
+				setRotationChecked(rot);
 			}
 		}
 	}
@@ -381,7 +407,7 @@ void LuaEntitySAO::setPos(const v3f &pos)
 {
 	if(isAttached())
 		return;
-	m_base_position = pos;
+	setPositionChecked(pos);
 	sendPosition(false, true);
 }
 
@@ -389,7 +415,7 @@ void LuaEntitySAO::moveTo(v3f pos, bool continuous)
 {
 	if(isAttached())
 		return;
-	m_base_position = pos;
+	setPositionChecked(pos);
 	if(!continuous)
 		sendPosition(true, true);
 }
@@ -432,7 +458,7 @@ u16 LuaEntitySAO::getHP() const
 
 void LuaEntitySAO::setVelocity(v3f velocity)
 {
-	m_velocity = velocity;
+	setVelocityChecked(velocity);
 }
 
 v3f LuaEntitySAO::getVelocity()
