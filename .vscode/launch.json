@@ -16,6 +16,18 @@
                 "${workspaceFolder}/python/tests/minetest_test.py",
             ]
         },
+        // If you can not use your mouse when the process is paused, see https://github.com/Astera-org/minetest/issues/70.
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug globo",
+            "program": "${workspaceFolder}/bin/minetest",
+            "args": [
+                "--info",
+                "--gameid", "globo"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
         {
             "type": "lldb",
             "request": "launch",
