@@ -79,38 +79,12 @@ public:
     return m_key_was_down[keycache.key[KeyType::ESC]];
   }
   virtual float getJoystickSpeed() override {
-    bool f = m_key_is_down[keycache.key[KeyType::FORWARD]],
-         b = m_key_is_down[keycache.key[KeyType::BACKWARD]],
-         l = m_key_is_down[keycache.key[KeyType::LEFT]],
-         r = m_key_is_down[keycache.key[KeyType::RIGHT]];
-    if (f || b || l || r) {
-      // if contradictory keys pressed, stay still
-      if (f && b && l && r)
-        return 0.0f;
-      else if (f && b && !l && !r)
-        return 0.0f;
-      else if (!f && !b && l && r)
-        return 0.0f;
-      return 1.0f; // If there is a keyboard event, assume maximum speed
-    }
-    return 0.0f;
+    auto axes = getJoystickAxes();
+    return (axes.X == 0 && axes.Y == 0) ? 0.0 : 1.0;
   }
   virtual float getJoystickDirection() override {
-    float x = 0, z = 0;
-
-    /* Check keyboard for input */
-    if (m_key_is_down[keycache.key[KeyType::FORWARD]])
-      z += 1;
-    if (m_key_is_down[keycache.key[KeyType::BACKWARD]])
-      z -= 1;
-    if (m_key_is_down[keycache.key[KeyType::RIGHT]])
-      x += 1;
-    if (m_key_is_down[keycache.key[KeyType::LEFT]])
-      x -= 1;
-
-    if (x != 0 || z != 0) /* If there is a keyboard event, it takes priority */
-      return atan2((double) x, (double) z);
-    return m_movement_direction;
+    auto axes = getJoystickAxes();
+    return (axes.X == 0 && axes.Y == 0) ? 0.0 : atan2((double) axes.X, (double) axes.Y);
   }
   virtual v2s32 getMousePos() override { return m_mouse_pos; }
   virtual void setMousePos(s32 x, s32 y) override { m_mouse_pos = v2s32(x, y); }
@@ -143,6 +117,17 @@ public:
   }
 
 private:
+  // Returns a vector with 2 elements in the set (-1, 0, 1) representing the joystick axes.
+  virtual v2s32 getJoystickAxes() {
+    return v2s32(
+      (int) m_key_is_down[keycache.key[KeyType::RIGHT]] -
+        (int) m_key_is_down[keycache.key[KeyType::LEFT]]
+      ,
+      (int) m_key_is_down[keycache.key[KeyType::FORWARD]] -
+        (int) m_key_is_down[keycache.key[KeyType::BACKWARD]]
+    );
+  }
+
   void fill_observation(irr::video::IImage *image, float reward, std::map<std::string, float> aux);
 
   RenderingEngine *m_rendering_engine;
