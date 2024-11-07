@@ -187,6 +187,28 @@ public:
 		}
 	}
 
+	inline bool getIsRecentlyDrawn()
+	{
+		return is_recently_drawn;
+	}
+
+	inline void setIsRecentlyDrawn(bool b)
+	{
+		if (b != is_recently_drawn)
+			is_recently_drawn = b;
+	}
+
+	inline bool getIsBeingDrawn()
+	{
+		return is_being_drawn;
+	}
+
+	inline void setIsBeingDrawn(bool b)
+	{
+		if (b != is_being_drawn)
+			is_being_drawn = b;
+	}
+
 	////
 	//// Position stuff
 	////
@@ -542,6 +564,18 @@ private:
 		caves.
 	*/
 	bool is_underground = false;
+
+	/*
+		When entering the draw list, this will be set to true.
+		It will be set to false again only when it fails the distance check.
+	*/
+	bool is_recently_drawn = false;
+
+	/*
+		When entering the draw list, this will be set to true.
+		It will be set to false again once it fails the draw check.
+	*/
+	bool is_being_drawn = false;
 
 public:
 	NodeMetadataList m_node_metadata;

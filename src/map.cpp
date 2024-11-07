@@ -270,6 +270,21 @@ struct TimeOrderedMapBlock {
 	};
 };
 
+struct DistanceOrderedMapBlock {
+	MapSector *sect;
+	MapBlock *block;
+
+	DistanceOrderedMapBlock(MapSector *sect = nullptr, MapBlock *block= nullptr) :
+		sect(sect ),
+		block(block )
+	{}
+
+	bool operator<(const DistanceOrderedMapBlock &b) const
+	{
+		return block->getPosRelative().getLengthSQ() < b.block->getPosRelative().getLengthSQ();
+	};
+};
+
 /*
 	Updates usage timers
 */
@@ -286,6 +301,10 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 	u32 saved_blocks_count = 0;
 	u32 block_count_all = 0;
 	u32 locked_blocks = 0;
+	u32 recently_drawn_blocks_skipped = 0;
+	u32 recently_drawn_blocks_dropped = 0;
+	u32 possibly_culled_blocks_skipped = 0;
+	u32 possibly_culled_blocks_dropped = 0;
 
 	const auto start_time = porting::getTimeUs();
 	beginSave();
@@ -336,6 +355,11 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 		}
 	} else {
 		std::priority_queue<TimeOrderedMapBlock> mapblock_queue;
+		std::priority_queue<DistanceOrderedMapBlock> mapblock_queue_d_recently_drawn;
+		std::priority_queue<DistanceOrderedMapBlock> mapblock_queue_d_rest;
+		s32 overload_block_count = 0;
+		bool was_overload = false;
+		const float radiusSQ = g_settings->getFloat("viewing_range") * g_settings->getFloat("viewing_range");
 		for (auto &sector_it : m_sectors) {
 			MapSector *sector = sector_it.second;
 
@@ -344,14 +368,126 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 
 			for (MapBlock *block : blocks) {
 				block->incrementUsageTimer(dtime);
+				// no way if a block which is outside viewing range can be seen, also if it's recently drown makes no sense.
+				if (block->getPosRelative().getLengthSQ() > radiusSQ)
+					block->setIsRecentlyDrawn(false);
+				if (block->getIsRecentlyDrawn())
+				{
+					mapblock_queue_d_recently_drawn.push(DistanceOrderedMapBlock(sector, block));
+					mapblock_queue.push(TimeOrderedMapBlock(sector, block));
+					continue;
+				}
 				mapblock_queue.push(TimeOrderedMapBlock(sector, block));
+				mapblock_queue_d_rest.push(DistanceOrderedMapBlock(sector, block));
+			}
+
+		}
+		// todo: release recently drawn blocks only after all culled blocks have been released.
+		// is refGet()!=0 equals when the block is being drawn?
+		block_count_all = mapblock_queue.size();
+		overload_block_count = (s32)block_count_all - max_loaded_blocks;
+		was_overload = overload_block_count > 0;
+		// execute block dumping by distance first if there's an overload of blocks.
+		// possibly culled blocks are dumped first, by distance.
+		while (overload_block_count > 0)
+		{
+			DistanceOrderedMapBlock b;
+			bool is_block_recently_drown;
+			if (!mapblock_queue_d_rest.empty())
+			{
+				b = mapblock_queue_d_rest.top();
+				mapblock_queue_d_rest.pop();
+			}
+			else if (!mapblock_queue_d_recently_drawn.empty())
+			{
+				b = mapblock_queue_d_recently_drawn.top();
+				mapblock_queue_d_recently_drawn.pop();
+			}
+			MapBlock *block = b.block;
+			is_block_recently_drown = block->getIsRecentlyDrawn();
+			if (block->refGet() != 0)
+			{
+				locked_blocks++;
+				if (is_block_recently_drown)
+				{
+					recently_drawn_blocks_skipped++;
+				}
+				else
+				{
+					possibly_culled_blocks_skipped++;
+				}
+				continue;
+			}
+			v3s16 p = block->getPos();
+			// Save if modified
+			if (block->getModified() != MOD_STATE_CLEAN && save_before_unloading)
+			{
+				modprofiler.add(block->getModifiedReasonString(), 1);
+				if (!saveBlock(block))
+				{
+					if (is_block_recently_drown)
+					{
+						recently_drawn_blocks_skipped++;
+					}
+					else
+					{
+						possibly_culled_blocks_skipped++;
+					}
+					continue;
+				}
+				saved_blocks_count++;
+			}
+			if (is_block_recently_drown)
+			{
+				recently_drawn_blocks_dropped++;
+			}
+			else
+			{
+				possibly_culled_blocks_dropped++;
+			}
+			// Delete from memory
+			b.sect->deleteBlock(block);
+
+			if (unloaded_blocks)
+				unloaded_blocks->push_back(p);
+
+			deleted_blocks_count++;
+			block_count_all--;
+			overload_block_count--;
+			continue;
+		}
+		// refresh the time ordered map block queue, for later use of timed block dumping.
+		if (was_overload)
+		{
+			std::priority_queue<TimeOrderedMapBlock> q;
+			while (!mapblock_queue_d_rest.empty())
+			{
+				q.push(TimeOrderedMapBlock(mapblock_queue_d_rest.top().sect, mapblock_queue_d_rest.top().block));
+				mapblock_queue_d_rest.pop();
+			}
+			while (!mapblock_queue_d_recently_drawn.empty())
+			{
+				q.push(TimeOrderedMapBlock(mapblock_queue_d_recently_drawn.top().sect, mapblock_queue_d_recently_drawn.top().block));
+				mapblock_queue_d_recently_drawn.pop();
+			}
+			mapblock_queue = q;
+		}
+		else
+		{
+			// without overflow, these two queues are useless.
+			while (!mapblock_queue_d_rest.empty())
+			{
+				mapblock_queue_d_rest.pop();
+			}
+			while (!mapblock_queue_d_recently_drawn.empty())
+			{
+				mapblock_queue_d_recently_drawn.pop();
 			}
 		}
-		block_count_all = mapblock_queue.size();
 
-		// Delete old blocks, and blocks over the limit from the memory
-		while (!mapblock_queue.empty() && ((s32)mapblock_queue.size() > max_loaded_blocks
-				|| mapblock_queue.top().block->getUsageTimer() > unload_timeout)) {
+		// Delete old blocks from the memory
+		while (mapblock_queue.top().block->getUsageTimer() > unload_timeout)
+		{
 			TimeOrderedMapBlock b = mapblock_queue.top();
 			mapblock_queue.pop();
 
@@ -380,6 +516,7 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 
 			deleted_blocks_count++;
 			block_count_all--;
+			overload_block_count--;
 		}
 
 		// Delete empty sectors
@@ -407,7 +544,12 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 			infostream<<", of which "<<saved_blocks_count<<" were written";
 		infostream<<", "<<block_count_all<<" blocks in memory, " << locked_blocks << " locked";
 		infostream<<"."<<std::endl;
-		if(saved_blocks_count != 0){
+		infostream << recently_drawn_blocks_dropped << " recently drown blocks unloaded by distance." << std::endl
+				   << recently_drawn_blocks_skipped << " skipped." << std::endl
+				   << possibly_culled_blocks_dropped << " possibly culled blocks unloaded by distance." << std::endl
+				   << possibly_culled_blocks_skipped << " skipped." << std::endl;
+		if (saved_blocks_count != 0)
+		{
 			PrintInfo(infostream); // ServerMap/ClientMap:
 			infostream<<"Blocks modified by: "<<std::endl;
 			modprofiler.print(infostream);
