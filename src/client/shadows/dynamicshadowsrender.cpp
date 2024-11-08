@@ -21,8 +21,9 @@
 
 ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 		m_smgr(device->getSceneManager()), m_driver(device->getVideoDriver()),
-		m_client(client), m_current_frame(0),
-		m_perspective_bias_xy(0.8), m_perspective_bias_z(0.5)
+		m_client(client), m_shadow_strength(0.0f), m_shadow_tint(255, 0, 0, 0),
+		m_time_day(0.0f), m_force_update_shadow_map(false), m_current_frame(0),
+		m_perspective_bias_xy(0.8f), m_perspective_bias_z(0.5f)
 {
 	(void) m_client;
 
