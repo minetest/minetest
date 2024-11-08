@@ -24,7 +24,7 @@ void InitInterlacedMaskStep::run(PipelineContext &context)
 	last_mask = mask;
 
 	auto size = mask->getSize();
-	u8 *data = reinterpret_cast<u8 *>(mask->lock());
+	u8 *data = reinterpret_cast<u8 *>(mask->lock(video::ETLM_WRITE_ONLY));
 	for (u32 j = 0; j < size.Height; j++) {
 		u8 val = j % 2 ? 0xff : 0x00;
 		memset(data, val, 4 * size.Width);

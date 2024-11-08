@@ -1020,6 +1020,7 @@ video::IImage* CGUITTFont::createTextureFromChar(const char32_t& ch)
 	pageholder->copyTo(image, core::position2di(0, 0), glyph.source_rect);
 
 	tex->unlock();
+	pageholder->drop();
 	return image;
 }
 
