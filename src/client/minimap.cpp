@@ -474,17 +474,15 @@ video::ITexture *Minimap::getMinimapTexture()
 		blitMinimapPixelsToImageRadar(map_image);
 		break;
 	case MINIMAP_TYPE_TEXTURE:
-		// Want to use texture source, to : 1 find texture, 2 cache it
+		// FIXME: this is a pointless roundtrip through the gpu
 		video::ITexture* texture = m_tsrc->getTexture(data->mode.texture);
 		video::IImage* image = driver->createImageFromData(
-			 texture->getColorFormat(), texture->getSize(),
-			 texture->lock(video::ETLM_READ_ONLY), true, false);
-		texture->unlock();
+			texture->getColorFormat(), texture->getSize(),
+			texture->lock(video::ETLM_READ_ONLY), true, false);
 
 		auto dim = image->getDimension();
 
 		map_image->fill(video::SColor(255, 0, 0, 0));
-
 		image->copyTo(map_image,
 			irr::core::vector2d<int> {
 				((data->mode.map_size - (static_cast<int>(dim.Width))) >> 1)
@@ -492,7 +490,9 @@ video::ITexture *Minimap::getMinimapTexture()
 				((data->mode.map_size - (static_cast<int>(dim.Height))) >> 1)
 					+ data->pos.Z / data->mode.scale
 			});
+
 		image->drop();
+		texture->unlock();
 	}
 
 	map_image->copyToScaling(minimap_image);

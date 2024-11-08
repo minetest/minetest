@@ -145,21 +145,15 @@ void Sky::render()
 		float offset = (1.0 - fabs(sin((m_time_of_day - 0.5) * irr::core::PI))) * 511;
 
 		if (m_sun_tonemap) {
-			u8 * texels = (u8 *)m_sun_tonemap->lock();
-			video::SColor* texel = (video::SColor *)(texels + (u32)offset * 4);
-			video::SColor texel_color (255, texel->getRed(),
-				texel->getGreen(), texel->getBlue());
-			m_sun_tonemap->unlock();
+			auto texel_color = m_sun_tonemap->getPixel(offset, 0);
+			texel_color.setAlpha(255);
 			// Only accessed by our code later, not used by a shader
 			m_materials[3].ColorParam = texel_color;
 		}
 
 		if (m_moon_tonemap) {
-			u8 * texels = (u8 *)m_moon_tonemap->lock();
-			video::SColor* texel = (video::SColor *)(texels + (u32)offset * 4);
-			video::SColor texel_color (255, texel->getRed(),
-				texel->getGreen(), texel->getBlue());
-			m_moon_tonemap->unlock();
+			auto texel_color = m_moon_tonemap->getPixel(offset, 0);
+			texel_color.setAlpha(255);
 			// Only accessed by our code later, not used by a shader
 			m_materials[4].ColorParam = texel_color;
 		}
@@ -711,14 +705,33 @@ void Sky::place_sky_body(
 	}
 }
 
+// FIXME: stupid helper that does a pointless texture upload/download
+static void getTextureAsImage(video::IImage *&dst, const std::string &name, ITextureSource *tsrc)
+{
+	if (dst) {
+		dst->drop();
+		dst = nullptr;
+	}
+	if (tsrc->isKnownSourceImage(name)) {
+		auto *texture = tsrc->getTexture(name);
+		assert(texture);
+		auto *driver = RenderingEngine::get_video_driver();
+		dst = driver->createImageFromData(
+			texture->getColorFormat(), texture->getSize(),
+			texture->lock(video::ETLM_READ_ONLY));
+		texture->unlock();
+	}
+}
+
 void Sky::setSunTexture(const std::string &sun_texture,
 		const std::string &sun_tonemap, ITextureSource *tsrc)
 {
 	// Ignore matching textures (with modifiers) entirely,
 	// but lets at least update the tonemap before hand.
-	m_sun_params.tonemap = sun_tonemap;
-	m_sun_tonemap = tsrc->isKnownSourceImage(sun_tonemap) ?
-		tsrc->getTexture(sun_tonemap) : nullptr;
+	if (m_sun_params.tonemap != sun_tonemap) {
+		m_sun_params.tonemap = sun_tonemap;
+		getTextureAsImage(m_sun_tonemap, sun_tonemap, tsrc);
+	}
 
 	if (m_sun_params.texture == sun_texture && !m_first_update)
 		return;
@@ -758,9 +771,10 @@ void Sky::setMoonTexture(const std::string &moon_texture,
 {
 	// Ignore matching textures (with modifiers) entirely,
 	// but lets at least update the tonemap before hand.
-	m_moon_params.tonemap = moon_tonemap;
-	m_moon_tonemap = tsrc->isKnownSourceImage(moon_tonemap) ?
-		tsrc->getTexture(moon_tonemap) : nullptr;
+	if (m_moon_params.tonemap != moon_tonemap) {
+		m_moon_params.tonemap = moon_tonemap;
+		getTextureAsImage(m_moon_tonemap, moon_tonemap, tsrc);
+	}
 
 	if (m_moon_params.texture == moon_texture && !m_first_update)
 		return;
