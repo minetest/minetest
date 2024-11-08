@@ -12,13 +12,13 @@ class IGameDef;
 class Environment;
 class ActiveObject;
 
-enum CollisionType
+enum CollisionType : u8
 {
 	COLLISION_NODE,
 	COLLISION_OBJECT,
 };
 
-enum CollisionAxis
+enum CollisionAxis : s8
 {
 	COLLISION_AXIS_NONE = -1,
 	COLLISION_AXIS_X,
@@ -37,9 +37,6 @@ struct CollisionInfo
 	v3f new_pos;
 	v3f old_speed;
 	v3f new_speed;
-
-	// FIXME: this is equivalent to `axis`, why does it exist?
-	int plane = -1;
 };
 
 struct collisionMoveResult

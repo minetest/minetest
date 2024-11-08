@@ -1196,7 +1196,7 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 
 	bool horizontal_collision = false;
 	for (const auto &colinfo : result.collisions) {
-		if (colinfo.type == COLLISION_NODE && colinfo.plane != 1) {
+		if (colinfo.type == COLLISION_NODE && colinfo.axis != COLLISION_AXIS_Y) {
 			horizontal_collision = true;
 			break; // one is enough
 		}
