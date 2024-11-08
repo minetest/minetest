@@ -74,9 +74,7 @@ enum E_TEXTURE_CREATION_FLAG
 
 	//! Allow the driver to keep a copy of the texture in memory
 	/** Enabling this makes calls to ITexture::lock a lot faster, but costs main memory.
-	Currently only used in combination with OpenGL drivers.
-	NOTE: Disabling this does not yet work correctly with alpha-textures.
-	So the default is on for now (but might change with Irrlicht 1.9 if we get the alpha-troubles fixed).
+	This is enabled by default.
 	*/
 	ETCF_ALLOW_MEMORY_COPY = 0x00000080,
 
