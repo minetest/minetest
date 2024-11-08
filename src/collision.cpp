@@ -509,7 +509,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			info.object = nearest_info.obj;
 			info.new_pos = *pos_f;
 			info.old_speed = *speed_f;
-			info.plane = nearest_collided;
 
 			// Set the speed component that caused the collision to zero
 			if (step_up) {
