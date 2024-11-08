@@ -162,8 +162,8 @@ video::ECOLOR_FORMAT selectColorFormat(video::IVideoDriver *driver)
 
 video::ECOLOR_FORMAT selectDepthFormat(video::IVideoDriver *driver)
 {
-	if (driver->queryTextureFormat(video::ECF_D32))
-		return video::ECF_D32;
+	if (driver->queryTextureFormat(video::ECF_D24))
+		return video::ECF_D24;
 	if (driver->queryTextureFormat(video::ECF_D24S8))
 		return video::ECF_D24S8;
 	return video::ECF_D16; // fallback depth format
