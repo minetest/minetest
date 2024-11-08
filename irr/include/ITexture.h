@@ -74,7 +74,7 @@ enum E_TEXTURE_CREATION_FLAG
 
 	//! Allow the driver to keep a copy of the texture in memory
 	/** Enabling this makes calls to ITexture::lock a lot faster, but costs main memory.
-	This is enabled by default.
+	This is disabled by default.
 	*/
 	ETCF_ALLOW_MEMORY_COPY = 0x00000080,
 
