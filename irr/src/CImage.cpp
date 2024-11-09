@@ -95,6 +95,7 @@ SColor CImage::getPixel(u32 x, u32 y) const
 	case ECF_A8R8G8B8:
 		return ((u32 *)Data)[y * Size.Width + x];
 	case ECF_R8G8B8: {
+		// FIXME this is byte order RGB8, whereas SColor is endianness order ARGB8.
 		u8 *p = Data + (y * 3) * Size.Width + (x * 3);
 		return SColor(255, p[0], p[1], p[2]);
 	}

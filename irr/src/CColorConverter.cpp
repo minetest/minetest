@@ -7,6 +7,14 @@
 #include "os.h"
 #include "irrString.h"
 
+// FIXME much of this code does not make sense when endianness is taken into account.
+// It seems likely that the author(s) only thought in terms of big endian,
+// because then byte order and endianness order are the same:
+// The most significant byte is also the first byte.
+// Some of the conversion functions here are thus on little endian inconsistent
+// when it comes to byte order vs. endianness order,
+// that is, they also do a byte order to endianness order conversion.
+
 namespace irr
 {
 namespace video
@@ -393,19 +401,6 @@ void CColorConverter::convert_R8G8B8toA1R5G5B5(const void *sP, s32 sN, void *dP)
 	}
 }
 
-void CColorConverter::convert_B8G8R8toA8R8G8B8(const void *sP, s32 sN, void *dP)
-{
-	u8 *sB = (u8 *)sP;
-	u32 *dB = (u32 *)dP;
-
-	for (s32 x = 0; x < sN; ++x) {
-		*dB = 0xff000000 | (sB[2] << 16) | (sB[1] << 8) | sB[0];
-
-		sB += 3;
-		++dB;
-	}
-}
-
 void CColorConverter::convert_A8R8G8B8toR8G8B8A8(const void *sP, s32 sN, void *dP)
 {
 	const u32 *sB = (const u32 *)sP;
@@ -425,22 +420,6 @@ void CColorConverter::convert_A8R8G8B8toA8B8G8R8(const void *sP, s32 sN, void *d
 	for (s32 x = 0; x < sN; ++x) {
 		*dB++ = (*sB & 0xff00ff00) | ((*sB & 0x00ff0000) >> 16) | ((*sB & 0x000000ff) << 16);
 		++sB;
-	}
-}
-
-void CColorConverter::convert_B8G8R8A8toA8R8G8B8(const void *sP, s32 sN, void *dP)
-{
-	u8 *sB = (u8 *)sP;
-	u8 *dB = (u8 *)dP;
-
-	for (s32 x = 0; x < sN; ++x) {
-		dB[0] = sB[3];
-		dB[1] = sB[2];
-		dB[2] = sB[1];
-		dB[3] = sB[0];
-
-		sB += 4;
-		dB += 4;
 	}
 }
 
