@@ -265,6 +265,8 @@ viewing_range (Viewing range) int 190 20 4000
 #    to the game world only, keeping the GUI intact.
 #    It should give a significant performance boost at the cost of less detailed image.
 #    Higher values result in a less detailed image.
+#    Note: Undersampling is currently not supported if the "3d_mode" setting is set
+#    to a non-default value.
 undersampling (Undersampling) int 1 1 8
 
 [**3D]

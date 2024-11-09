@@ -38,9 +38,8 @@ void populateInterlacedPipeline(RenderPipeline *pipeline, Client *client)
 	// FIXME: "3d_mode = interlaced" is currently broken. Two options:
 	// 1. Remove it
 	// 2. Fix it
-	// If you fix it, make sure to test it with "enable_post_processing = false"
-	// and no undersampling. You'll probably have to add a depth texture to make
-	// that combination work.
+	// If you fix it, make sure to test it with "enable_post_processing = false".
+	// You'll probably have to add a depth texture to make that combination work.
 
 	static const u8 TEXTURE_LEFT = 0;
 	static const u8 TEXTURE_RIGHT = 1;
