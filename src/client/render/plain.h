@@ -82,7 +82,7 @@ private:
 };
 
 std::unique_ptr<RenderStep> create3DStage(Client *client, v2f scale);
-RenderStep* addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f downscale_factor, Client* client);
+RenderStep* addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f downscale_factor, Client *client);
 
 void populatePlainPipeline(RenderPipeline *pipeline, Client *client);
 
