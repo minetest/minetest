@@ -40,6 +40,7 @@ void populateInterlacedPipeline(RenderPipeline *pipeline, Client *client)
 	// 2. Fix it
 	// If you fix it, make sure to test it with "enable_post_processing = false".
 	// You'll probably have to add a depth texture to make that combination work.
+	// Also, this code should probably use selectColorFormat/selectDepthFormat.
 
 	static const u8 TEXTURE_LEFT = 0;
 	static const u8 TEXTURE_RIGHT = 1;
