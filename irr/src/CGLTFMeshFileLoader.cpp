@@ -669,7 +669,7 @@ void SelfType::MeshExtractor::loadAnimation(const std::size_t animIdx)
 
 		const auto &sampler = anim.samplers.at(channel.sampler);
 		if (sampler.interpolation != tiniergltf::AnimationSampler::Interpolation::LINEAR)
-			throw std::runtime_error("unsupported interpolation");
+			throw std::runtime_error("unsupported interpolation, only linear interpolation is supported");
 
 		const auto inputAccessor = Accessor<f32>::make(m_gltf_model, sampler.input);
 		const auto n_frames = inputAccessor.getCount();
