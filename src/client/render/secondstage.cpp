@@ -87,16 +87,8 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	auto driver = client->getSceneManager()->getVideoDriver();
 
 	// configure texture formats
-	video::ECOLOR_FORMAT color_format = video::ECF_A8R8G8B8;
-	if (driver->queryTextureFormat(video::ECF_A16B16G16R16F))
-		color_format = video::ECF_A16B16G16R16F;
-
-	video::ECOLOR_FORMAT depth_format = video::ECF_D16; // fallback depth format
-	if (driver->queryTextureFormat(video::ECF_D32))
-		depth_format = video::ECF_D32;
-	else if (driver->queryTextureFormat(video::ECF_D24S8))
-		depth_format = video::ECF_D24S8;
-
+	video::ECOLOR_FORMAT color_format = selectColorFormat(driver);
+	video::ECOLOR_FORMAT depth_format = selectDepthFormat(driver);
 
 	// init post-processing buffer
 	static const u8 TEXTURE_COLOR = 0;
