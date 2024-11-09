@@ -312,9 +312,7 @@ due to their space savings.
 This means that many glTF features are not supported *yet*, including:
 
 * Animations
-  * Only a single animation is supported,
-    use frame ranges within this animation.
-  * Only integer frames are supported.
+  * Only a single animation is supported, use frame ranges within this animation.
 * Cameras
 * Materials
   * Only base color textures are supported
