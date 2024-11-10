@@ -80,7 +80,12 @@ public:
 		return false;
 	}
 
-	// FIXME: why isn't this private?
+	void deleteFront() {
+		m_stack.front()->setVisible(false);
+		deletingMenu(m_stack.front());
+	}
+
+private:
 	std::list<gui::IGUIElement*> m_stack;
 };
 
