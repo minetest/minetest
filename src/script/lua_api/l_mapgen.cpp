@@ -1322,14 +1322,15 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	BiomeManager *bmgr    = emerge->getWritableBiomeManager();
 	OreManager *oremgr    = emerge->getWritableOreManager();
 
-	enum OreType oretype = (OreType)getenumfield(L, index,
-				"ore_type", es_OreType, ORE_SCATTER);
-	Ore *ore = oremgr->create(oretype);
-	if (!ore) {
-		errorstream << "register_ore: ore_type " << oretype << " not implemented\n";
+	int oretype_int;
+	std::string oretype_string = getstringfield_default(L, index, "ore_type", "nil");
+	if (!string_to_enum(es_OreType, oretype_int, oretype_string)) {
+		errorstream << "register_ore: unknown oretype \"" << oretype_string << "\"" << std::endl;
 		return 0;
 	}
+	enum OreType oretype = (OreType) oretype_int;
 
+	Ore *ore = oremgr->create(oretype);
 	ore->name           = getstringfield_default(L, index, "name", "");
 	ore->ore_param2     = (u8)getintfield_default(L, index, "ore_param2", 0);
 	ore->clust_scarcity = getintfield_default(L, index, "clust_scarcity", 1);

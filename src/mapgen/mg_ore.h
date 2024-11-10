@@ -173,7 +173,7 @@ public:
 		case ORE_STRATUM:
 			return new OreStratum;
 		default:
-			return nullptr;
+			return new OreScatter;
 		}
 	}
 
