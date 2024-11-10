@@ -1,9 +1,7 @@
 Luanti is a voxel-based game platform with multiplayer capabilities.
 
-The objective in the games available varies, from sandbox games where you can explore, dig and build in a very large voxel world, to arcade style games made with the engine.
+The objective of the available games varies, from sandbox games where you can explore, dig and build in a very large voxel world, to arcade-style games.
 
-There are a wide range of built-in map generators for procedually generated terrain, and voxel-based lighting that adjusts after the environment and light sources.
+There is a wide range of built-in map generators for procedurally generated terrain, and voxel-based lighting that adapts to the environment and light sources.
 
-All games and mods are written in Lua using the scripting API which is easy to use and get started with for modders.
-
-Luanti is available for Windows, macOS, GNU/Linux, FreeBSD, OpenBSD, DragonFly BSD, and Android.
+All games and mods are written in Lua with a scripting API that is easy to use and makes it easy for modders to get started.
