@@ -839,8 +839,10 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			solidness = 0;
 			visual_solidness = 1;
 		} else {
+			// FIXME: consider waving leaves setting
 			if (waving >= 1) {
 				// waving nodes must make faces so there are no gaps
+				// FIXME: don't move vertices next to solid=2 nodes, to avoid gaps
 				drawtype = NDT_ALLFACES;
 				solidness = 0;
 				visual_solidness = 1;

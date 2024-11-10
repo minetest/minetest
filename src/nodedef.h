@@ -305,8 +305,14 @@ struct ContentFeatures
 	TileSpec tiles[6];
 	// Special tiles
 	TileSpec special_tiles[CF_SPECIAL_COUNT];
-	u8 solidness; // Used when choosing which face is drawn
-	u8 visual_solidness; // When solidness=0, this tells how it looks like
+	// Used when choosing which face is drawn, and for occlusion checks
+	// 2 if node can't be seen through
+	// 1 for liquid sources
+	// 0 otherwise
+	u8 solidness;
+	// When solidness=0, this tells how it looks like
+	// 1 for full cube drawtypes (like glasslike and allfaces), 0 otherwise
+	u8 visual_solidness;
 	bool backface_culling;
 #endif
 
