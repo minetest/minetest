@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
 
 	{
 		auto exe_name = argc > 0 ? lowercase(fs::GetFilenameFromPath(argv[0])) : "";
-		if (str_starts_with(exe_name, "minetest")) {
+		if (str_starts_with(exe_name, "opalclient")) {
 #if CHECK_CLIENT_BUILD()
 			const char *new_ = PROJECT_NAME;
 #else

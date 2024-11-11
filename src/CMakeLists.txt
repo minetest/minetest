@@ -1051,7 +1051,7 @@ if(BUILD_CLIENT AND NOT ANDROID)
 		BUNDLE DESTINATION .
 	)
 	if(UNIX)
-		CreateLegacyAlias(minetest_alias "${EXECUTABLE_OUTPUT_PATH}/minetest" ${PROJECT_NAME})
+		CreateLegacyAlias(opalclient_alias "${EXECUTABLE_OUTPUT_PATH}/opalclient" ${PROJECT_NAME})
 	endif()
 
 	if(APPLE)

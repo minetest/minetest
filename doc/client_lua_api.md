@@ -1,12 +1,12 @@
 Luanti Lua Client Modding API Reference 5.11.0
 ==============================================
 
-**WARNING**: if you're looking for the `minetest` namespace (e.g. `minetest.something`),
-it's now called `core` due to the renaming of Luanti (formerly Minetest).
-`minetest` will keep existing as an alias, so that old code won't break.
+**WARNING**: if you're looking for the `opalclient` namespace (e.g. `opalclient.something`),
+it's now called `core` due to the renaming of Luanti (formerly opalclient).
+`opalclient` will keep existing as an alias, so that old code won't break.
 
-* More information at <http://www.minetest.net/>
-* Developer Wiki: <http://dev.minetest.net/>
+* More information at <http://www.opalclient.net/>
+* Developer Wiki: <http://dev.opalclient.net/>
 
 Introduction
 ------------
@@ -23,7 +23,7 @@ Transferring client-sided mods from the server to the client is planned, but not
 
 If you see a deficiency in the API, feel free to attempt to add the
 functionality in the engine and API. You can send such improvements as
-source code patches on GitHub (https://github.com/minetest/minetest).
+source code patches on GitHub (https://github.com/opalclient/opalclient).
 
 Programming in Lua
 ------------------
@@ -37,7 +37,7 @@ the `init.lua` scripts in a shared environment.
 
 In order to load client-side mods, the following conditions need to be satisfied:
 
-1) `$path_user/minetest.conf` contains the setting `enable_client_modding = true`
+1) `$path_user/opalclient.conf` contains the setting `enable_client_modding = true`
 
 2) The client-side mod located in `$path_user/clientmods/<modname>` is added to
     `$path_user/clientmods/mods.conf` as `load_mod_<modname> = true`.
@@ -52,11 +52,11 @@ Paths
     * `$path_share`: `<build directory>`
 * `RUN_IN_PLACE=0`: (Linux release)
     * `$path_share`:
-        * Linux: `/usr/share/minetest`
-        * Windows: `<install directory>/minetest-0.4.x`
+        * Linux: `/usr/share/opalclient`
+        * Windows: `<install directory>/opalclient-0.4.x`
     * `$path_user`:
-        * Linux: `$HOME/.minetest`
-        * Windows: `C:/users/<user>/AppData/minetest` (maybe)
+        * Linux: `$HOME/.opalclient`
+        * Windows: `C:/users/<user>/AppData/opalclient` (maybe)
 
 Mod load path
 -------------
@@ -67,12 +67,12 @@ Generic:
 
 In a run-in-place version (e.g. the distributed windows version):
 
-* `minetest/clientmods/` (User-installed mods)
+* `opalclient/clientmods/` (User-installed mods)
 
 On an installed version on Linux:
 
-* `/usr/share/minetest/clientmods/`
-* `$HOME/.minetest/clientmods/` (User-installed mods)
+* `/usr/share/opalclient/clientmods/`
+* `$HOME/.opalclient/clientmods/` (User-installed mods)
 
 Modpack support
 ----------------
@@ -595,7 +595,7 @@ Setting-related
 ---------------
 
 * `core.settings`: Settings object containing all of the settings from the
-  main config file (`minetest.conf`). Check lua_api.md for class reference.
+  main config file (`opalclient.conf`). Check lua_api.md for class reference.
 * `core.setting_get_pos(name)`: Loads a setting from the main settings and
   parses it as a position (in the format `(1,2,3)`). Returns a position or nil.
 
@@ -810,7 +810,7 @@ Methods:
     * Returns `true` on success, otherwise returns `nil`
 
 ### Settings
-An interface to read config files in the format of `minetest.conf`.
+An interface to read config files in the format of `opalclient.conf`.
 
 It can be created via `Settings(filename)`.
 

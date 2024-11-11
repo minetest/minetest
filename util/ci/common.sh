@@ -16,10 +16,10 @@ install_linux_deps() {
 	if [ -n "$MINETEST_POSTGRESQL_CONNECT_STRING" ]; then
 		sudo systemctl start postgresql.service
 		sudo -u postgres psql <<<"
-			CREATE USER minetest WITH PASSWORD 'minetest';
-			CREATE DATABASE minetest;
-			\c minetest
-			GRANT ALL ON SCHEMA public TO minetest;
+			CREATE USER opalclient WITH PASSWORD 'opalclient';
+			CREATE DATABASE opalclient;
+			\c opalclient
+			GRANT ALL ON SCHEMA public TO opalclient;
 		"
 	fi
 }

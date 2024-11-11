@@ -265,8 +265,3 @@ static auto tie(const PlayerPhysicsOverride &o)
 	o.speed_walk
 	);
 }
-
-bool PlayerPhysicsOverride::operator==(const PlayerPhysicsOverride &other) const
-{
-	return tie(*this) == tie(other);
-}

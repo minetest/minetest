@@ -39,7 +39,7 @@ android {
 			}
 		}
 	}
-	namespace 'net.minetest'
+	namespace 'net.opalclient'
 }
 
 // get precompiled deps

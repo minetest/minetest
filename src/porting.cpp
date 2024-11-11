@@ -66,7 +66,7 @@
 #include <atomic>
 
 #if CHECK_CLIENT_BUILD() && defined(_WIN32)
-// On Windows export some driver-specific variables to encourage Minetest to be
+// On Windows export some driver-specific variables to encourage opalclient to be
 // executed on the discrete GPU in case of systems with two. Portability is fun.
 extern "C" {
 	__declspec(dllexport) DWORD NvOptimusEnablement = 1;
@@ -442,15 +442,15 @@ bool setSystemPaths()
 		path_share += DIR_DELIM "..";
 	}
 
-	// Use %MINETEST_USER_PATH%
-	DWORD len = GetEnvironmentVariable("MINETEST_USER_PATH", buf, sizeof(buf));
-	FATAL_ERROR_IF(len > sizeof(buf), "Failed to get MINETEST_USER_PATH (too large for buffer)");
+	// Use %opalclient_USER_PATH%
+	DWORD len = GetEnvironmentVariable("opalclient_USER_PATH", buf, sizeof(buf));
+	FATAL_ERROR_IF(len > sizeof(buf), "Failed to get opalclient_USER_PATH (too large for buffer)");
 	if (len == 0) {
 		// Use "C:\Users\<user>\AppData\Roaming\<PROJECT_NAME_C>"
 		len = GetEnvironmentVariable("APPDATA", buf, sizeof(buf));
 		FATAL_ERROR_IF(len == 0 || len > sizeof(buf), "Failed to get APPDATA");
 		// TODO: Luanti with migration
-		path_user = std::string(buf) + DIR_DELIM + "Minetest";
+		path_user = std::string(buf) + DIR_DELIM + "opalclient";
 	} else {
 		path_user = std::string(buf);
 	}
@@ -511,13 +511,13 @@ bool setSystemPaths()
 		break;
 	}
 
-	const char *const minetest_user_path = getenv("MINETEST_USER_PATH");
-	if (minetest_user_path && minetest_user_path[0] != '\0') {
-		path_user = std::string(minetest_user_path);
+	const char *const opalclient_user_path = getenv("opalclient_USER_PATH");
+	if (opalclient_user_path && opalclient_user_path[0] != '\0') {
+		path_user = std::string(opalclient_user_path);
 	} else {
 		// TODO: luanti with migration
 		path_user = std::string(getHomeOrFail()) + DIR_DELIM "."
-			+ "minetest";
+			+ "opalclient";
 	}
 
 	return true;
@@ -540,14 +540,14 @@ bool setSystemPaths()
 	}
 	CFRelease(resources_url);
 
-	const char *const minetest_user_path = getenv("MINETEST_USER_PATH");
-	if (minetest_user_path && minetest_user_path[0] != '\0') {
-		path_user = std::string(minetest_user_path);
+	const char *const opalclient_user_path = getenv("opalclient_USER_PATH");
+	if (opalclient_user_path && opalclient_user_path[0] != '\0') {
+		path_user = std::string(opalclient_user_path);
 	} else {
 		// TODO: luanti with migration
 		path_user = std::string(getHomeOrFail())
 			+ "/Library/Application Support/"
-			+ "minetest";
+			+ "opalclient";
 	}
 	return true;
 }
@@ -558,13 +558,13 @@ bool setSystemPaths()
 bool setSystemPaths()
 {
 	path_share = STATIC_SHAREDIR;
-	const char *const minetest_user_path = getenv("MINETEST_USER_PATH");
-	if (minetest_user_path && minetest_user_path[0] != '\0') {
-		path_user = std::string(minetest_user_path);
+	const char *const opalclient_user_path = getenv("opalclient_USER_PATH");
+	if (opalclient_user_path && opalclient_user_path[0] != '\0') {
+		path_user = std::string(opalclient_user_path);
 	} else {
 		// TODO: luanti with migration
 		path_user  = std::string(getHomeOrFail()) + DIR_DELIM "."
-			+ "minetest";
+			+ "opalclient";
 	}
 	return true;
 }
@@ -671,12 +671,12 @@ void initializePaths()
 	const char *home_dir = getenv("HOME");
 	if (cache_dir && cache_dir[0] != '\0') {
 		// TODO: luanti with migration
-		path_cache = std::string(cache_dir) + DIR_DELIM + "minetest";
+		path_cache = std::string(cache_dir) + DIR_DELIM + "opalclient";
 	} else if (home_dir) {
 		// Then try $HOME/.cache/PROJECT_NAME
 		// TODO: luanti with migration
 		path_cache = std::string(home_dir) + DIR_DELIM + ".cache"
-			+ DIR_DELIM + "minetest";
+			+ DIR_DELIM + "opalclient";
 	} else {
 		// If neither works, use $PATH_USER/cache
 		path_cache = path_user + DIR_DELIM + "cache";

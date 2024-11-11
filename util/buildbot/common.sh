@@ -1,6 +1,6 @@
-CORE_GIT=https://github.com/minetest/minetest
+CORE_GIT=https://github.com/Python-Sargent/OpalClient
 CORE_BRANCH=master
-CORE_NAME=minetest
+CORE_NAME=opalclient
 
 ogg_version=1.3.5
 openal_version=1.23.1
@@ -38,8 +38,9 @@ download () {
 
 # sets $sourcedir
 get_sources () {
-	if [ -n "$EXISTING_MINETEST_DIR" ]; then
-		sourcedir="$( cd "$EXISTING_MINETEST_DIR" && pwd )"
+	sourcedir="$( cd "$EXISTING_OPALCLIENT_DIR" && pwd )"
+	if [ -n "$EXISTING_OPALCLIENT_DIR" ]; then
+		sourcedir="$( cd "$EXISTING_OPALCLIENT_DIR" && pwd )"
 		return
 	fi
 	cd $builddir

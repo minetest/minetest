@@ -301,10 +301,10 @@ Package - content which is downloadable from the content db, may or may not be i
 
       ```lua
       {
-          mods = "/home/user/.minetest/mods",
-          share = "/usr/share/minetest/mods", -- only provided when RUN_IN_PLACE=0
+          mods = "/home/user/.opalclient/mods",
+          share = "/usr/share/opalclient/mods", -- only provided when RUN_IN_PLACE=0
 
-          -- Custom dirs can be specified by the MINETEST_MOD_DIR env variable
+          -- Custom dirs can be specified by the opalclient_MOD_DIR env variable
           ["/path/to/custom/dir"] = "/path/to/custom/dir",
       }
       ```
@@ -386,7 +386,7 @@ Settings
 * `core.settings:save()` -> nil, save all settings to config file
 
 For a complete list of methods of the `Settings` object see
-[lua_api.md](https://github.com/minetest/minetest/blob/master/doc/lua_api.md)
+[lua_api.md](https://github.com/opalclient/opalclient/blob/master/doc/lua_api.md)
 
 
 Worlds
