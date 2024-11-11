@@ -1164,6 +1164,7 @@ void drawItemStack(
 			auto &p = imesh->buffer_colors[j];
 			p.applyOverride(c);
 
+			// TODO: could be moved to a shader
 			if (p.needColorize(c)) {
 				buf->setDirty(scene::EBT_VERTEX);
 				if (imesh->needs_shading)
