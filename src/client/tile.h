@@ -78,7 +78,7 @@ struct TileLayer
 		return !(*this == other);
 	}
 
-	// Sets everything else except the texture in the material
+	// FIXME remove
 	void applyMaterialOptions(video::SMaterial &material) const;
 
 	void applyMaterialOptionsWithShaders(video::SMaterial &material) const;

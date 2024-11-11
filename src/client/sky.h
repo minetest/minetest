@@ -173,7 +173,6 @@ private:
 	bool m_clouds_enabled = true; // Initialised to true, reset only by set_sky API
 	bool m_directional_colored_fog;
 	bool m_in_clouds = true; // Prevent duplicating bools to remember old values
-	bool m_enable_shaders = false;
 
 	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);

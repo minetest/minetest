@@ -25,10 +25,9 @@
 	MeshMakeData
 */
 
-MeshMakeData::MeshMakeData(const NodeDefManager *ndef, u16 side_length, bool use_shaders):
+MeshMakeData::MeshMakeData(const NodeDefManager *ndef, u16 side_length):
 	side_length(side_length),
-	nodedef(ndef),
-	m_use_shaders(use_shaders)
+	nodedef(ndef)
 {}
 
 void MeshMakeData::fillBlockDataBegin(const v3s16 &blockpos)
@@ -601,7 +600,6 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 
 	for (auto &m : m_mesh)
 		m = make_irr<scene::SMesh>();
-	m_enable_shaders = data->m_use_shaders;
 
 	auto mesh_grid = client->getMeshGrid();
 	v3s16 bp = data->m_blockpos;
@@ -695,30 +693,6 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 				p.layer.texture = (*p.layer.frames)[0].texture;
 			}
 
-			if (!m_enable_shaders) {
-				// Extract colors for day-night animation
-				// Dummy sunlight to handle non-sunlit areas
-				video::SColorf sunlight;
-				get_sunlight_color(&sunlight, 0);
-
-				std::map<u32, video::SColor> colors;
-				const u32 vertex_count = p.vertices.size();
-				for (u32 j = 0; j < vertex_count; j++) {
-					video::SColor *vc = &p.vertices[j].Color;
-					video::SColor copy = *vc;
-					if (vc->getAlpha() == 0) // No sunlight - no need to animate
-						final_color_blend(vc, copy, sunlight); // Finalize color
-					else // Record color to animate
-						colors[j] = copy;
-
-					// The sunlight ratio has been stored,
-					// delete alpha (for the final rendering).
-					vc->setAlpha(255);
-				}
-				if (!colors.empty())
-					m_daynight_diffs[{layer, i}] = std::move(colors);
-			}
-
 			// Create material
 			video::SMaterial material;
 			material.BackfaceCulling = true;
@@ -729,12 +703,10 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 				tex.MagFilter = video::ETMAGF_NEAREST;
 			});
 
-			if (m_enable_shaders) {
+			{
 				material.MaterialType = m_shdrsrc->getShaderInfo(
 						p.layer.shader_id).material;
 				p.layer.applyMaterialOptionsWithShaders(material);
-			} else {
-				p.layer.applyMaterialOptions(material);
 			}
 
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
@@ -842,24 +814,6 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 
 		const FrameSpec &frame = (*tile.frames)[frameno];
 		buf->getMaterial().setTexture(0, frame.texture);
-	}
-
-	// Day-night transition
-	if (!m_enable_shaders && (daynight_ratio != m_last_daynight_ratio)) {
-		video::SColorf day_color;
-		get_sunlight_color(&day_color, daynight_ratio);
-
-		for (auto &daynight_diff : m_daynight_diffs) {
-			auto *mesh = m_mesh[daynight_diff.first.first].get();
-			mesh->setDirty(scene::EBT_VERTEX); // force reload to VBO
-			scene::IMeshBuffer *buf = mesh->
-				getMeshBuffer(daynight_diff.first.second);
-			video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
-			for (const auto &j : daynight_diff.second)
-				final_color_blend(&(vertices[j.first].Color), j.second,
-						day_color);
-		}
-		m_last_daynight_ratio = daynight_ratio;
 	}
 
 	return true;

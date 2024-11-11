@@ -106,8 +106,7 @@ void ShadowRenderer::disable()
 
 void ShadowRenderer::preInit(IWritableShaderSource *shsrc)
 {
-	if (g_settings->getBool("enable_shaders") &&
-			g_settings->getBool("enable_dynamic_shadows")) {
+	if (g_settings->getBool("enable_dynamic_shadows")) {
 		shsrc->addShaderConstantSetterFactory(new ShadowConstantSetterFactory());
 	}
 }
@@ -115,15 +114,6 @@ void ShadowRenderer::preInit(IWritableShaderSource *shsrc)
 void ShadowRenderer::initialize()
 {
 	auto *gpu = m_driver->getGPUProgrammingServices();
-
-	// we need glsl
-	if (!m_shadows_supported || !gpu || !m_driver->queryFeature(video::EVDF_ARB_GLSL)) {
-		m_shadows_supported = false;
-
-		warningstream << "Shadows: GLSL Shader not supported on this system."
-			<< std::endl;
-		return;
-	}
 
 	createShaders();
 
@@ -705,14 +695,12 @@ std::string ShadowRenderer::readShaderFile(const std::string &path)
 ShadowRenderer *createShadowRenderer(IrrlichtDevice *device, Client *client)
 {
 	// disable if unsupported
-	if (g_settings->getBool("enable_dynamic_shadows") && (
-		device->getVideoDriver()->getDriverType() != video::EDT_OPENGL ||
-		!g_settings->getBool("enable_shaders"))) {
+	if (g_settings->getBool("enable_dynamic_shadows") &&
+		device->getVideoDriver()->getDriverType() != video::EDT_OPENGL) {
 		g_settings->setBool("enable_dynamic_shadows", false);
 	}
 
-	if (g_settings->getBool("enable_shaders") &&
-			g_settings->getBool("enable_dynamic_shadows")) {
+	if (g_settings->getBool("enable_dynamic_shadows")) {
 		ShadowRenderer *shadow_renderer = new ShadowRenderer(device, client);
 		shadow_renderer->initialize();
 		return shadow_renderer;

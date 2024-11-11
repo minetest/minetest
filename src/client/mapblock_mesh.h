@@ -35,9 +35,8 @@ struct MeshMakeData
 	u16 side_length;
 
 	const NodeDefManager *nodedef;
-	bool m_use_shaders;
 
-	MeshMakeData(const NodeDefManager *ndef, u16 side_length, bool use_shaders);
+	MeshMakeData(const NodeDefManager *ndef, u16 side_length);
 
 	/*
 		Copy block data manually (to allow optimizations by the caller)
@@ -235,8 +234,6 @@ private:
 	f32 m_bounding_radius;
 	v3f m_bounding_sphere_center;
 
-	bool m_enable_shaders;
-
 	// Must animate() be called before rendering?
 	bool m_has_animation;
 	int m_animation_force_timer;
@@ -252,6 +249,7 @@ private:
 	// Keys are pairs of (mesh index, buffer index in the mesh)
 	std::map<std::pair<u8, u32>, AnimationInfo> m_animation_info;
 
+	// FIXME: remove
 	// Animation info: day/night transitions
 	// Last daynight_ratio value passed to animate()
 	u32 m_last_daynight_ratio;
