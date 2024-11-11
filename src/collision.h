@@ -53,10 +53,9 @@ struct collisionMoveResult
 /// @warning For unit test use only.
 extern bool g_collision_problems_encountered;
 
-/// @brief Moves using a single iteration; speed should not exceed pos_max_d/dtime
 /// @param self (optional) ActiveObject to ignore in the collision detection.
-collisionMoveResult collisionMoveSimple(Environment *env,IGameDef *gamedef,
-		f32 pos_max_d, const aabb3f &box_0,
+collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
+		const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
 		v3f *pos_f, v3f *speed_f,
 		v3f accel_f, ActiveObject *self=NULL,
