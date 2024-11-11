@@ -13,7 +13,7 @@ import pytest
 from PIL import Image
 
 from minetest import minetest_env
-from minetest.minetest_env import INVERSE_KEY_MAP
+from minetest.minetest_env import KEY_NAME_TO_INDEX, action_noop
 
 
 @pytest.fixture
@@ -142,14 +142,11 @@ def test_minetest_basic(artifact_dir, world_dir, minetest_executable, caplog):
         nonzero_reward = False
         expected_shape = render_size + (3,)
         for i in range(5):
-            action = {
-                "keys": np.zeros(len(INVERSE_KEY_MAP), dtype=bool),
-                "mouse": np.array([0.0, 0.0]),
-            }
+            action = action_noop()
 
             if i == 3:
-                action["keys"][INVERSE_KEY_MAP["forward"]] = True
-                action["keys"][INVERSE_KEY_MAP["left"]] = True
+                action["keys"][KEY_NAME_TO_INDEX["forward"]] = True
+                action["keys"][KEY_NAME_TO_INDEX["left"]] = True
                 action["mouse"] = np.array([0.0, 1.0])
 
             obs, reward, terminated, truncated, info = env.step(action)
@@ -206,11 +203,6 @@ def test_minetest_game_dir(artifact_dir, minetest_executable, caplog):
     shutil.rmtree(artifact_dir)  # Only on success so we can inspect artifacts.
 
 
-def test_keymap_valid():
-    for key in INVERSE_KEY_MAP:
-        assert key in minetest_env.remoteclient_capnp.KeyPressType.Key.schema.enumerants
-
-
 def test_async_vector_env(artifact_dir, world_dir, minetest_executable, caplog):
     caplog.set_level(logging.DEBUG)
     num_envs = 2
@@ -243,12 +235,12 @@ def test_async_vector_env(artifact_dir, world_dir, minetest_executable, caplog):
     assert len(initial_obs["return"]) == num_envs
     for i in range(5):
         action = {
-            "keys": np.zeros((num_envs, len(INVERSE_KEY_MAP)), dtype=bool),
+            "keys": np.zeros((num_envs, len(KEY_NAME_TO_INDEX)), dtype=bool),
             "mouse": np.zeros((num_envs, 2)),
         }
         if i == 3:
-            action["keys"][:, INVERSE_KEY_MAP["forward"]] = True
-            action["keys"][:, INVERSE_KEY_MAP["left"]] = True
+            action["keys"][:, KEY_NAME_TO_INDEX["forward"]] = True
+            action["keys"][:, KEY_NAME_TO_INDEX["left"]] = True
             action["mouse"] = np.tile(np.array([0.0, 1.0]), (num_envs, 1))
         obs, reward, terminated, truncated, info = env.step(action)
         assert len(obs["image"]) == num_envs
@@ -270,3 +262,9 @@ def test_run_on_event_loop_timeout(env):
     env = env.unwrapped
     with pytest.raises(asyncio.TimeoutError):
         env._run_on_event_loop(asyncio.sleep(1), timeout=0.1)
+
+
+def test_build_action_message():
+    action_message = minetest_env.remoteclient_capnp.Action.new_message()
+    action = minetest_env.action_from_key_name("toggleHud")
+    minetest_env.serialize_action(action, action_message)

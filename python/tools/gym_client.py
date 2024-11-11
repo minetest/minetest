@@ -7,10 +7,9 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import gymnasium as gym
-import numpy as np
 import pygame
 
-from minetest.minetest_env import INVERSE_KEY_MAP, KEY_MAP
+from minetest.minetest_env import KEY_NAME_TO_INDEX, action_noop
 
 KEY_TO_KEYTYPE = {
     "W": "forward",
@@ -54,12 +53,12 @@ def handle_key_event(event):
 
 
 def get_action_from_key_cache(key_cache, mouse):
-    keys = np.zeros(len(KEY_MAP), dtype=bool)
+    action = action_noop()
     for key in key_cache:
-        keys[INVERSE_KEY_MAP[KEY_TO_KEYTYPE[key]]] = True
-
-    mouse = np.array([mouse.dx, mouse.dy])
-    return {"keys": keys, "mouse": mouse}
+        action["keys"][KEY_NAME_TO_INDEX[KEY_TO_KEYTYPE[key]]] = True
+    action["mouse"][0] = mouse.dx
+    action["mouse"][1] = mouse.dy
+    return action
 
 
 def game_loop():
@@ -116,9 +115,9 @@ if __name__ == "__main__":
         gym_make_args["executable"] = None
     else:
         original_world_dir = (
-            Path(__file__).parent / "tests" / "worlds" / "test_world_minetestenv"
+            Path(__file__).parent.parent / "tests" / "worlds" / "test_world_minetestenv"
         )
-        temp_dir = tempfile.TemporaryDirectory()
+        temp_dir = tempfile.TemporaryDirectory().name
         temp_world_dir = Path(temp_dir) / "test_world_minetestenv"
         shutil.copytree(original_world_dir, temp_world_dir)
         gym_make_args["world_dir"] = temp_world_dir

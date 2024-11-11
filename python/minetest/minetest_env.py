@@ -32,19 +32,27 @@ remoteclient_capnp = capnp.load(
     os.path.join(os.path.dirname(__file__), "proto/remoteclient.capnp")
 )
 
-# Define default keys / buttons
-KEY_MAP = [
-    "forward",
-    "left",
-    "backward",
-    "right",
-    "jump",
-    "sneak",
-    "dig",
-    "place",
-]
-
-INVERSE_KEY_MAP = {name: idx for idx, name in enumerate(KEY_MAP)}
+# See `python/minetest/proto/remoteclient.capnp`. {'forward': 0, 'backward': 1,
+# 'left': 2, 'right': 3, 'jump': 4, 'aux1': 5, 'sneak': 6, 'autoforward': 7,
+# 'dig': 8, 'place': 9, 'esc': 10, 'drop': 11, 'inventory': 12, 'chat': 13,
+# 'cmd': 14, 'cmdLocal': 15, 'console': 16, 'minimap': 17, 'freemove': 18,
+# 'pitchmove': 19, 'fastmove': 20, 'noclip': 21, 'hotbarPrev': 22, 'hotbarNext':
+# 23, 'mute': 24, 'incVolume': 25, 'decVolume': 26, 'cinematic': 27,
+# 'screenshot': 28, 'toggleBlockBounds': 29, 'toggleHud': 30, 'toggleChat': 31,
+# 'toggleFog': 32, 'toggleUpdateCamera': 33, 'toggleDebug': 34,
+# 'toggleProfiler': 35, 'cameraMode': 36, 'increaseViewingRange': 37,
+# 'decreaseViewingRange': 38, 'rangeselect': 39, 'zoom': 40, 'quicktuneNext':
+# 41, 'quicktunePrev': 42, 'quicktuneInc': 43, 'quicktuneDec': 44, 'slot1': 45,
+# 'slot2': 46, 'slot3': 47, 'slot4': 48, 'slot5': 49, 'slot6': 50, 'slot7': 51,
+# 'slot8': 52, 'slot9': 53, 'slot10': 54, 'slot11': 55, 'slot12': 56, 'slot13':
+# 57, 'slot14': 58, 'slot15': 59, 'slot16': 60, 'slot17': 61, 'slot18': 62,
+# 'slot19': 63, 'slot20': 64, 'slot21': 65, 'slot22': 66, 'slot23': 67,
+# 'slot24': 68, 'slot25': 69, 'slot26': 70, 'slot27': 71, 'slot28': 72,
+# 'slot29': 73, 'slot30': 74, 'slot31': 75, 'slot32': 76, 'middle': 77, 'ctrl':
+# 78, 'internalEnumCount': 79}
+KEY_NAMES = remoteclient_capnp.KeyPressType.Key.schema.enumerants.keys()
+KEY_INDEX_TO_NAME = {index: name for index, name in enumerate(KEY_NAMES)}
+KEY_NAME_TO_INDEX = {name: index for index, name in enumerate(KEY_NAMES)}
 
 DisplaySize = namedtuple("DisplaySize", ["height", "width"])
 
@@ -63,12 +71,17 @@ def _is_loading(obs) -> bool:
     )
 
 
-_TOGGLE_HUD_KEY = remoteclient_capnp.KeyPressType.Key.schema.enumerants["toggleHud"]
-_TOGGLE_HUD_ACTION = {
-    "keys": np.zeros(_TOGGLE_HUD_KEY + 1, dtype=bool),
-    "mouse": [0, 0],
-}
-_TOGGLE_HUD_ACTION["keys"][_TOGGLE_HUD_KEY] = True
+def action_noop():
+    return {
+        "keys": np.zeros(len(KEY_NAMES), dtype=np.bool_),
+        "mouse": np.zeros(2, dtype=np.int32),
+    }
+
+
+def action_from_key_name(name):
+    action = action_noop()
+    action["keys"][KEY_NAME_TO_INDEX[name]] = True
+    return action
 
 
 def _set_process_death_signal():
@@ -105,7 +118,7 @@ class MinetestEnv(gym.Env):
         artifact_dir: Optional[os.PathLike] = None,
         config_path: Optional[os.PathLike] = None,
         server_addr: Optional[str] = None,
-        render_size: Tuple[int, int] =  (600, 400),
+        render_size: Tuple[int, int] = (600, 400),
         display_size: Optional[Tuple[int, int]] = None,
         render_mode: str = "rgb_array",
         game_dir: Optional[os.PathLike] = None,
@@ -118,6 +131,7 @@ class MinetestEnv(gym.Env):
         log_to_stderr: bool = False,
         additional_observation_spaces: Optional[Dict[str, gym.Space]] = None,
         remote_input_handler_time_step: float = 0.125,
+        hide_hud: bool = True,
     ):
         self._prev_score = None
         if config_dict is None:
@@ -125,8 +139,11 @@ class MinetestEnv(gym.Env):
         self.unique_env_id = str(uuid.uuid4())
 
         self.render_size = DisplaySize(*(render_size))
-        self.display_size = DisplaySize(*(render_size if display_size is None else display_size))
+        self.display_size = DisplaySize(
+            *(render_size if display_size is None else display_size)
+        )
         self.remote_input_handler_time_step = remote_input_handler_time_step
+        self._hide_hud = hide_hud
         self.fov_y = fov
         self.fov_x = self.fov_y * self.render_size.width / self.render_size.height
         self.render_mode = render_mode
@@ -237,12 +254,12 @@ class MinetestEnv(gym.Env):
         self.max_mouse_move_y = self.render_size[1] // 2
         self.action_space = gym.spaces.Dict(
             {
-                "keys": gym.spaces.MultiBinary(len(KEY_MAP)),
+                "keys": gym.spaces.MultiBinary(len(KEY_NAMES)),
                 "mouse": gym.spaces.Box(
                     low=np.array([-self.max_mouse_move_x, -self.max_mouse_move_y]),
                     high=np.array([self.max_mouse_move_x, self.max_mouse_move_y]),
                     shape=(2,),
-                    dtype=int,
+                    dtype=np.int32,
                 ),
             },
         )
@@ -514,8 +531,9 @@ class MinetestEnv(gym.Env):
                     f"Received first obs: {obs['image'].shape}, Disabling HUD"
                 )
                 obs, _, _, _, _ = await self._async_step(
-                    _TOGGLE_HUD_ACTION,
-                    _key_map={_TOGGLE_HUD_KEY: "toggleHud"},
+                    action_from_key_name("toggleHud")
+                    if self._hide_hud
+                    else action_noop()
                 )
                 self.last_obs = obs
                 return obs, {}
@@ -554,7 +572,7 @@ class MinetestEnv(gym.Env):
             self._async_reset(seed=seed, options=options), timeout=10000
         )
 
-    async def _async_step(self, action: Dict[str, Any], _key_map=KEY_MAP):
+    async def _async_step(self, action: Dict[str, Any]):
         if self.minetest_process and self.minetest_process.poll() is not None:
             raise RuntimeError(
                 "Minetest terminated! Return code: "
@@ -565,7 +583,7 @@ class MinetestEnv(gym.Env):
         if isinstance(action["mouse"], np.ndarray):
             action["mouse"] = action["mouse"].tolist()
         step_request = self.capnp_client.step_request()
-        serialize_action(action, step_request.action, key_map=_key_map)
+        serialize_action(action, step_request.action)
         step_response = step_request.send()
 
         # TODO more robust check for whether minetest is alive while receiving observations
@@ -585,8 +603,8 @@ class MinetestEnv(gym.Env):
 
         return next_obs, reward, done, False, {}
 
-    def step(self, action: Dict[str, Any], _key_map=KEY_MAP):
-        return self._run_on_event_loop(self._async_step(action, _key_map=_key_map))
+    def step(self, action: Dict[str, Any]):
+        return self._run_on_event_loop(self._async_step(action))
 
     def render(self):
         if self.render_mode == "human":
@@ -702,16 +720,19 @@ def deserialize_obs(
     return obs, reward, done
 
 
-def serialize_action(action: Dict[str, Any], action_msg, key_map=KEY_MAP):
-    action_msg.mouseDx = action["mouse"][0]
-    action_msg.mouseDy = action["mouse"][1]
+def _lazy_nonzero(arr):
+    return [index for index, value in enumerate(arr) if value]
 
-    keyEvents = action_msg.init("keyEvents", action["keys"].sum())
-    setIdx = 0
-    for idx, pressed in enumerate(action["keys"]):
-        if pressed:
-            keyEvents[setIdx] = key_map[idx]
-            setIdx += 1
+
+def serialize_action(action: Dict[str, Any], action_msg) -> None:
+    mouse = np.array(action["mouse"])
+    action_msg.mouseDx = mouse[0].item()
+    action_msg.mouseDy = mouse[1].item()
+
+    num_keys_pressed = np.count_nonzero(action["keys"])
+    key_events = action_msg.init("keyEvents", num_keys_pressed)
+    for list_index, key_index in enumerate(_lazy_nonzero(action["keys"])):
+        key_events[list_index] = KEY_INDEX_TO_NAME[key_index]
 
 
 # Python impl of Minetest's config file parser in main.cpp:read_config_file
@@ -737,7 +758,13 @@ def read_config_file(file_path):
     return config
 
 
+def _value_to_config_string(value):
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    return value
+
+
 def write_config_file(file_path, config):
     with open(file_path, "w") as f:
         for key, value in config.items():
-            f.write(f"{key} = {value}\n")
+            f.write(f"{key} = {_value_to_config_string(value)}\n")
