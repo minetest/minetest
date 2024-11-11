@@ -2093,7 +2093,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial &material, const SMater
 
 		// Enable MSAA even if it's not enabled in the OpenGL context, we might
 		// be rendering to an FBO with multisampling.
-		if ((material.AntiAliasing & (EAAM_SIMPLE | EAAM_QUALITY))) {
+		if (material.AntiAliasing & (EAAM_SIMPLE | EAAM_QUALITY)) {
 			glEnable(GL_MULTISAMPLE_ARB);
 #ifdef GL_NV_multisample_filter_hint
 			if (FeatureAvailable[IRR_NV_multisample_filter_hint]) {
