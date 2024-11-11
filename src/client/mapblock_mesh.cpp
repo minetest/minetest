@@ -760,7 +760,7 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 				std::vector<video::S3DVertexTangents> vertices;
 				vertices.reserve(p.vertices.size());
 				for (video::S3DVertex &v : p.vertices)
-					vertices.push_back(video::S3DVertexTangents(v.Pos, v.Normal, v.Color, v.TCoords));
+					vertices.emplace_back(video::S3DVertexTangents(v.Pos, v.Normal, v.Color, v.TCoords));
 				buf->append(&vertices[0], vertices.size(),
 					&p.indices[0], p.indices.size());
 				buf->recalculateBoundingBox();
