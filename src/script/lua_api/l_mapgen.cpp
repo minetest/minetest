@@ -1325,18 +1325,17 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	int oretype_int;
 	std::string oretype_string = getstringfield_default(L, index, "ore_type", "nil");
 	if (!string_to_enum(es_OreType, oretype_int, oretype_string)) {
-		errorstream << "register_ore: unknown oretype \"" << oretype_string << "\"" << std::endl;
-		return 0;
+		throw LuaError("register_ore: unknown oretype \"" + oretype_string + "\"");
 	}
 	enum OreType oretype = (OreType) oretype_int;
 
-	Ore *ore = oremgr->create(oretype);
+	std::unique_ptr<Ore> ore(oremgr->create(oretype));
 	ore->name           = getstringfield_default(L, index, "name", "");
 	ore->ore_param2     = (u8)getintfield_default(L, index, "ore_param2", 0);
 	ore->clust_scarcity = getintfield_default(L, index, "clust_scarcity", 1);
 	ore->clust_num_ores = getintfield_default(L, index, "clust_num_ores", 1);
 	ore->clust_size     = getintfield_default(L, index, "clust_size", 0);
-	ore->noise          = NULL;
+	ore->noise          = nullptr;
 	ore->flags          = 0;
 
 	//// Get noise_threshold
@@ -1368,12 +1367,11 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	if (ore->clust_scarcity <= 0 || ore->clust_num_ores <= 0) {
 		errorstream << "register_ore: clust_scarcity and clust_num_ores"
 			"must be greater than 0" << std::endl;
-		delete ore;
 		return 0;
 	}
 
 	//// Get flags
-	getflagsfield(L, index, "flags", flagdesc_ore, &ore->flags, NULL);
+	getflagsfield(L, index, "flags", flagdesc_ore, &ore->flags, nullptr);
 
 	//// Get biomes associated with this decoration (if any)
 	lua_getfield(L, index, "biomes");
@@ -1394,7 +1392,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	//// Get type-specific parameters
 	switch (oretype) {
 		case ORE_SHEET: {
-			OreSheet *oresheet = (OreSheet *)ore;
+			OreSheet *oresheet = (OreSheet *)ore.get();
 
 			oresheet->column_height_min = getintfield_default(L, index,
 				"column_height_min", 1);
@@ -1406,7 +1404,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 			break;
 		}
 		case ORE_PUFF: {
-			OrePuff *orepuff = (OrePuff *)ore;
+			OrePuff *orepuff = (OrePuff *)ore.get();
 
 			lua_getfield(L, index, "np_puff_top");
 			read_noiseparams(L, -1, &orepuff->np_puff_top);
@@ -1419,7 +1417,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 			break;
 		}
 		case ORE_VEIN: {
-			OreVein *orevein = (OreVein *)ore;
+			OreVein *orevein = (OreVein *)ore.get();
 
 			orevein->random_factor = getfloatfield_default(L, index,
 				"random_factor", 1.f);
@@ -1427,7 +1425,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 			break;
 		}
 		case ORE_STRATUM: {
-			OreStratum *orestratum = (OreStratum *)ore;
+			OreStratum *orestratum = (OreStratum *)ore.get();
 
 			lua_getfield(L, index, "np_stratum_thickness");
 			if (read_noiseparams(L, -1, &orestratum->np_stratum_thickness))
@@ -1443,9 +1441,8 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 			break;
 	}
 
-	ObjDefHandle handle = oremgr->add(ore);
+	ObjDefHandle handle = oremgr->add(ore.get());
 	if (handle == OBJDEF_INVALID_HANDLE) {
-		delete ore;
 		return 0;
 	}
 
@@ -1454,7 +1451,10 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	size_t nnames = getstringlistfield(L, index, "wherein", &ore->m_nodenames);
 	ore->m_nnlistsizes.push_back(nnames);
 
-	ndef->pendNodeResolve(ore);
+	ndef->pendNodeResolve(ore.get());
+
+	// Note that oremgr is responsible for the ore object now, not the NodeResolver.
+	ore.release();
 
 	lua_pushinteger(L, handle);
 	return 1;

@@ -172,9 +172,8 @@ public:
 			return new OreVein;
 		case ORE_STRATUM:
 			return new OreStratum;
-		default:
-			return new OreScatter;
 		}
+		return nullptr;
 	}
 
 	void clear();
