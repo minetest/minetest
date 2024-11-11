@@ -111,11 +111,6 @@ vec3 screen_space_dither(highp vec2 frag_coord) {
 }
 #endif
 
-float sFunction(float x, float a) {
-	x = 2.0 * x - 1.0;
-	return 0.5 * sign(x) * pow(abs(x), a) + 0.5;
-}
-
 void main(void)
 {
 	vec2 uv = varTexCoord.st;

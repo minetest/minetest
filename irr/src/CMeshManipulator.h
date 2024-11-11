@@ -29,6 +29,12 @@ public:
 	\param smooth: Whether to use smoothed normals. */
 	void recalculateNormals(IMeshBuffer *buffer, bool smooth = false, bool angleWeighted = false) const override;
 
+	//! Recalculates tangents, requires a tangent mesh buffer
+	virtual void recalculateTangents(IMeshBuffer* buffer, bool recalculateNormals = false, bool smooth = false, bool angleWeighted = false) const _IRR_OVERRIDE_;
+
+	//! Recalculates tangents, requires a tangent mesh
+	virtual void recalculateTangents(IMesh* mesh, bool recalculateNormals = false, bool smooth = false, bool angleWeighted = false) const _IRR_OVERRIDE_;
+
 	//! Clones a static IMesh into a modifiable SMesh.
 	SMesh *createMeshCopy(scene::IMesh *mesh) const override;
 

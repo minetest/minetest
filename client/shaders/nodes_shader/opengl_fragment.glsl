@@ -44,6 +44,8 @@ uniform vec2 windowSize;
 uniform float fov;
 
 varying vec3 vNormal;
+varying vec3 vTangent;
+varying vec3 vBinormal; 
 varying vec3 vPosition;
 // World position in the visible world (i.e. relative to the cameraOffset.)
 // This can be used for many shader effects without loss of precision.
@@ -98,36 +100,6 @@ vec3 gnoise(vec3 p){
         (o4.y - o4.x) * dd.y,
         dz2.y * d.y + dz2.x * (1. - d.y)
     );
-}
-
-float snoise(vec3 p)
-{
-	vec3 a = floor(p);
-	vec3 d = p - a;
-	d = d * d * (3.0 - 2.0 * d);
-
-	vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
-	vec4 k1 = perm(b.xyxy);
-	vec4 k2 = perm(k1.xyxy + b.zzww);
-
-	vec4 c = k2 + a.zzzz;
-	vec4 k3 = perm(c);
-	vec4 k4 = perm(c + 1.0);
-
-	vec4 o1 = fract(k3 * (1.0 / 41.0));
-	vec4 o2 = fract(k4 * (1.0 / 41.0));
-
-	vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
-	vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
-
-	return o4.y * d.y + o4.x * (1.0 - d.y);
-}
-
-vec3 hnoise(vec3 p) {
-	vec3 g = gnoise(p);
-	float s = snoise(p);
-	g *= 3.0 / (1.0 + exp(-16.0 * (s - 0.5))) - 1.5;
-	return g;
 }
 
 vec2 wave_noise(vec3 p, float off) {
@@ -457,13 +429,11 @@ vec3 getBumpMap(vec2 uv) {
 	float fx0y0 = texture2D(baseTexture, uv).r;
 	float fx1y0 = texture2D(baseTexture, uv + vec2(dr.x, 0.0)).r;
 	float fx0y1 = texture2D(baseTexture, uv + vec2(0.0, dr.y)).r;
+	// We get the gradient using partial derivatives
 	vec2 gradient = 0.1 * vec2((fx1y0 - fx0y0) / dr.x, (fx0y1 - fx0y0) / dr.y) + 0.05 * gnoise(vec3(2.0 * uv / texelSize0, 0.0)).xy;
-	// Compute a set of orthonormal basis vectors representing the node's surface plane.
-	vec3 orth1 = normalize(cross(vNormal, mix(vec3(0.0, -1.0, 0.0), vec3(0.0, 0.0, -1.0), step(0.9, abs(vNormal.y)))));
-	vec3 orth2 = normalize(cross(vNormal, orth1));
-	// The normal is computed using the partial derivatives along the texture space x and y axes. 
-	// These axes in world space are assumed to be parallel to the basis vectors we defined before.
-	return orth1 * gradient.x + orth2 * gradient.y;
+	vec3 tangent_space = normalize(vec3(gradient, 1.0));
+	// Convert tangent space information to real space
+	return -vTangent * tangent_space.x + vBinormal * tangent_space.y + vNormal * tangent_space.z;
 }
 #endif
 
@@ -501,10 +471,10 @@ void main(void)
 	// When applied to all blocks, these bump maps produce irritating Moiré effects.
 	// So we hide the bump maps when close up.
 	float moire_factor = abs(dot(vNormal, viewVec));
-	bump_normal *= mtsmoothstep(0.4 * moire_factor, 0.2 * moire_factor, length(eyeVec) * fov / windowSize.x);
-	fNormal = normalize(vNormal + bump_normal);
+	moire_factor = mtsmoothstep(0.4 * moire_factor, 0.2 * moire_factor, length(eyeVec) * fov / windowSize.x);
+	fNormal = normalize(mix(fNormal, bump_normal, moire_factor));
 	float adj_cosLight = max(1e-5, dot(fNormal, -v_LightDirection));
-#else 
+#else
 	float adj_cosLight = cosLight;
 #endif
 
@@ -642,7 +612,7 @@ void main(void)
 	// Note: clarity = (1 - fogginess)
 	float clarity = clamp(fogShadingParameter
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
-		
+
 #ifdef ENABLE_TINTED_FOG
 	float fogColorMax = max(max(fogColor.r, fogColor.g), fogColor.b);
 	// Prevent zero division.

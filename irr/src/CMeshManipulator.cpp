@@ -80,6 +80,335 @@ void recalculateNormalsT(IMeshBuffer *buffer, bool smooth, bool angleWeighted)
 }
 }
 
+namespace
+{
+	void calculateTangents(
+		core::vector3df& normal,
+		core::vector3df& tangent,
+		core::vector3df& binormal,
+		const core::vector3df& vt1, const core::vector3df& vt2, const core::vector3df& vt3, // vertices
+		const core::vector2df& tc1, const core::vector2df& tc2, const core::vector2df& tc3) // texture coords
+	{
+		// choose one of them:
+		//#define USE_NVIDIA_GLH_VERSION // use version used by nvidia in glh headers
+#define USE_IRR_VERSION
+
+#ifdef USE_IRR_VERSION
+
+		core::vector3df v1 = vt1 - vt2;
+		core::vector3df v2 = vt3 - vt1;
+		normal = v2.crossProduct(v1);
+		normal.normalize();
+
+		// binormal
+
+		f32 deltaX1 = tc1.X - tc2.X;
+		f32 deltaX2 = tc3.X - tc1.X;
+		binormal = (v1 * deltaX2) - (v2 * deltaX1);
+		binormal.normalize();
+
+		// tangent
+
+		f32 deltaY1 = tc1.Y - tc2.Y;
+		f32 deltaY2 = tc3.Y - tc1.Y;
+		tangent = (v1 * deltaY2) - (v2 * deltaY1);
+		tangent.normalize();
+
+		// adjust
+
+		core::vector3df txb = tangent.crossProduct(binormal);
+		if (txb.dotProduct(normal) < 0.0f)
+		{
+			tangent *= -1.0f;
+			binormal *= -1.0f;
+		}
+
+#endif // USE_IRR_VERSION
+
+#ifdef USE_NVIDIA_GLH_VERSION
+
+		tangent.set(0, 0, 0);
+		binormal.set(0, 0, 0);
+
+		core::vector3df v1(vt2.X - vt1.X, tc2.X - tc1.X, tc2.Y - tc1.Y);
+		core::vector3df v2(vt3.X - vt1.X, tc3.X - tc1.X, tc3.Y - tc1.Y);
+
+		core::vector3df txb = v1.crossProduct(v2);
+		if (!core::iszero(txb.X))
+		{
+			tangent.X = -txb.Y / txb.X;
+			binormal.X = -txb.Z / txb.X;
+		}
+
+		v1.X = vt2.Y - vt1.Y;
+		v2.X = vt3.Y - vt1.Y;
+		txb = v1.crossProduct(v2);
+
+		if (!core::iszero(txb.X))
+		{
+			tangent.Y = -txb.Y / txb.X;
+			binormal.Y = -txb.Z / txb.X;
+		}
+
+		v1.X = vt2.Z - vt1.Z;
+		v2.X = vt3.Z - vt1.Z;
+		txb = v1.crossProduct(v2);
+
+		if (!core::iszero(txb.X))
+		{
+			tangent.Z = -txb.Y / txb.X;
+			binormal.Z = -txb.Z / txb.X;
+		}
+
+		tangent.normalize();
+		binormal.normalize();
+
+		normal = tangent.crossProduct(binormal);
+		normal.normalize();
+
+		binormal = tangent.crossProduct(normal);
+		binormal.normalize();
+
+		core::plane3d<f32> pl(vt1, vt2, vt3);
+
+		if (normal.dotProduct(pl.Normal) < 0.0f)
+			normal *= -1.0f;
+
+#endif // USE_NVIDIA_GLH_VERSION
+	}
+
+
+	//! Recalculates tangents for a tangent mesh buffer
+	template <typename T>
+	void recalculateTangentsT(IMeshBuffer* buffer, bool recalculateNormals, bool smooth, bool angleWeighted)
+	{
+		if (!buffer || (buffer->getVertexType() != video::EVT_TANGENTS))
+			return;
+
+		const u32 vtxCnt = buffer->getVertexCount();
+		const u32 idxCnt = buffer->getIndexCount();
+
+		T* idx = reinterpret_cast<T*>(buffer->getIndices());
+		video::S3DVertexTangents* v =
+			(video::S3DVertexTangents*)buffer->getVertices();
+
+		if (smooth)
+		{
+			u32 i;
+
+			for (i = 0; i != vtxCnt; ++i)
+			{
+				if (recalculateNormals)
+					v[i].Normal.set(0.f, 0.f, 0.f);
+				v[i].Tangent.set(0.f, 0.f, 0.f);
+				v[i].Binormal.set(0.f, 0.f, 0.f);
+			}
+
+			//Each vertex gets the sum of the tangents and binormals from the faces around it
+			for (i = 0; i < idxCnt; i += 3)
+			{
+				// if this triangle is degenerate, skip it!
+				if (v[idx[i + 0]].Pos == v[idx[i + 1]].Pos ||
+					v[idx[i + 0]].Pos == v[idx[i + 2]].Pos ||
+					v[idx[i + 1]].Pos == v[idx[i + 2]].Pos
+					/*||
+					v[idx[i+0]].TCoords == v[idx[i+1]].TCoords ||
+					v[idx[i+0]].TCoords == v[idx[i+2]].TCoords ||
+					v[idx[i+1]].TCoords == v[idx[i+2]].TCoords */
+					)
+					continue;
+
+				//Angle-weighted normals look better, but are slightly more CPU intensive to calculate
+				core::vector3df weight(1.f, 1.f, 1.f);
+				if (angleWeighted)
+					weight = irr::scene::getAngleWeight(v[i + 0].Pos, v[i + 1].Pos, v[i + 2].Pos);	// writing irr::scene:: necessary for borland
+				core::vector3df localNormal;
+				core::vector3df localTangent;
+				core::vector3df localBinormal;
+
+				calculateTangents(
+					localNormal,
+					localTangent,
+					localBinormal,
+					v[idx[i + 0]].Pos,
+					v[idx[i + 1]].Pos,
+					v[idx[i + 2]].Pos,
+					v[idx[i + 0]].TCoords,
+					v[idx[i + 1]].TCoords,
+					v[idx[i + 2]].TCoords);
+
+				if (recalculateNormals)
+					v[idx[i + 0]].Normal += localNormal * weight.X;
+				v[idx[i + 0]].Tangent += localTangent * weight.X;
+				v[idx[i + 0]].Binormal += localBinormal * weight.X;
+
+				calculateTangents(
+					localNormal,
+					localTangent,
+					localBinormal,
+					v[idx[i + 1]].Pos,
+					v[idx[i + 2]].Pos,
+					v[idx[i + 0]].Pos,
+					v[idx[i + 1]].TCoords,
+					v[idx[i + 2]].TCoords,
+					v[idx[i + 0]].TCoords);
+
+				if (recalculateNormals)
+					v[idx[i + 1]].Normal += localNormal * weight.Y;
+				v[idx[i + 1]].Tangent += localTangent * weight.Y;
+				v[idx[i + 1]].Binormal += localBinormal * weight.Y;
+
+				calculateTangents(
+					localNormal,
+					localTangent,
+					localBinormal,
+					v[idx[i + 2]].Pos,
+					v[idx[i + 0]].Pos,
+					v[idx[i + 1]].Pos,
+					v[idx[i + 2]].TCoords,
+					v[idx[i + 0]].TCoords,
+					v[idx[i + 1]].TCoords);
+
+				if (recalculateNormals)
+					v[idx[i + 2]].Normal += localNormal * weight.Z;
+				v[idx[i + 2]].Tangent += localTangent * weight.Z;
+				v[idx[i + 2]].Binormal += localBinormal * weight.Z;
+			}
+
+			// Normalize the tangents and binormals
+			if (recalculateNormals)
+			{
+				for (i = 0; i != vtxCnt; ++i)
+					v[i].Normal.normalize();
+			}
+			for (i = 0; i != vtxCnt; ++i)
+			{
+				v[i].Tangent.normalize();
+				v[i].Binormal.normalize();
+			}
+		}
+		else
+		{
+			core::vector3df localNormal;
+			for (u32 i = 0; i < idxCnt; i += 3)
+			{
+				calculateTangents(
+					localNormal,
+					v[idx[i + 0]].Tangent,
+					v[idx[i + 0]].Binormal,
+					v[idx[i + 0]].Pos,
+					v[idx[i + 1]].Pos,
+					v[idx[i + 2]].Pos,
+					v[idx[i + 0]].TCoords,
+					v[idx[i + 1]].TCoords,
+					v[idx[i + 2]].TCoords);
+				if (recalculateNormals)
+					v[idx[i + 0]].Normal = localNormal;
+
+				calculateTangents(
+					localNormal,
+					v[idx[i + 1]].Tangent,
+					v[idx[i + 1]].Binormal,
+					v[idx[i + 1]].Pos,
+					v[idx[i + 2]].Pos,
+					v[idx[i + 0]].Pos,
+					v[idx[i + 1]].TCoords,
+					v[idx[i + 2]].TCoords,
+					v[idx[i + 0]].TCoords);
+				if (recalculateNormals)
+					v[idx[i + 1]].Normal = localNormal;
+
+				calculateTangents(
+					localNormal,
+					v[idx[i + 2]].Tangent,
+					v[idx[i + 2]].Binormal,
+					v[idx[i + 2]].Pos,
+					v[idx[i + 0]].Pos,
+					v[idx[i + 1]].Pos,
+					v[idx[i + 2]].TCoords,
+					v[idx[i + 0]].TCoords,
+					v[idx[i + 1]].TCoords);
+				if (recalculateNormals)
+					v[idx[i + 2]].Normal = localNormal;
+			}
+		}
+	}
+}
+
+
+//! Recalculates tangents for a tangent mesh buffer
+void CMeshManipulator::recalculateTangents(IMeshBuffer* buffer, bool recalculateNormals, bool smooth, bool angleWeighted) const
+{
+	if (buffer && (buffer->getVertexType() == video::EVT_TANGENTS))
+	{
+		if (buffer->getIndexType() == video::EIT_16BIT)
+			recalculateTangentsT<u16>(buffer, recalculateNormals, smooth, angleWeighted);
+		else
+			recalculateTangentsT<u32>(buffer, recalculateNormals, smooth, angleWeighted);
+	}
+}
+
+
+//! Recalculates tangents for all tangent mesh buffers
+void CMeshManipulator::recalculateTangents(IMesh* mesh, bool recalculateNormals, bool smooth, bool angleWeighted) const
+{
+	if (!mesh)
+		return;
+
+	const u32 meshBufferCount = mesh->getMeshBufferCount();
+	for (u32 b = 0; b < meshBufferCount; ++b)
+	{
+		recalculateTangents(mesh->getMeshBuffer(b), recalculateNormals, smooth, angleWeighted);
+	}
+}
+
+
+namespace
+{
+	//! Creates a planar texture mapping on the meshbuffer
+	template<typename T>
+	void makePlanarTextureMappingT(scene::IMeshBuffer* buffer, f32 resolution)
+	{
+		u32 idxcnt = buffer->getIndexCount();
+		T* idx = reinterpret_cast<T*>(buffer->getIndices());
+
+		for (u32 i = 0; i < idxcnt; i += 3)
+		{
+			core::plane3df p(buffer->getPosition(idx[i + 0]), buffer->getPosition(idx[i + 1]), buffer->getPosition(idx[i + 2]));
+			p.Normal.X = fabsf(p.Normal.X);
+			p.Normal.Y = fabsf(p.Normal.Y);
+			p.Normal.Z = fabsf(p.Normal.Z);
+			// calculate planar mapping worldspace coordinates
+
+			if (p.Normal.X > p.Normal.Y && p.Normal.X > p.Normal.Z)
+			{
+				for (u32 o = 0; o != 3; ++o)
+				{
+					buffer->getTCoords(idx[i + o]).X = buffer->getPosition(idx[i + o]).Y * resolution;
+					buffer->getTCoords(idx[i + o]).Y = buffer->getPosition(idx[i + o]).Z * resolution;
+				}
+			}
+			else
+				if (p.Normal.Y > p.Normal.X && p.Normal.Y > p.Normal.Z)
+				{
+					for (u32 o = 0; o != 3; ++o)
+					{
+						buffer->getTCoords(idx[i + o]).X = buffer->getPosition(idx[i + o]).X * resolution;
+						buffer->getTCoords(idx[i + o]).Y = buffer->getPosition(idx[i + o]).Z * resolution;
+					}
+				}
+				else
+				{
+					for (u32 o = 0; o != 3; ++o)
+					{
+						buffer->getTCoords(idx[i + o]).X = buffer->getPosition(idx[i + o]).X * resolution;
+						buffer->getTCoords(idx[i + o]).Y = buffer->getPosition(idx[i + o]).Y * resolution;
+					}
+				}
+		}
+	}
+}
+
 //! Recalculates all normals of the mesh buffer.
 /** \param buffer: Mesh buffer on which the operation is performed. */
 void CMeshManipulator::recalculateNormals(IMeshBuffer *buffer, bool smooth, bool angleWeighted) const

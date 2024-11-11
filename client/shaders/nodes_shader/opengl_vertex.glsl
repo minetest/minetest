@@ -7,6 +7,8 @@ uniform highp vec3 cameraOffset;
 uniform float animationTimer;
 
 varying vec3 vNormal;
+varying vec3 vTangent;
+varying vec3 vBinormal; 
 varying vec3 vPosition;
 // World position in the visible world (i.e. relative to the cameraOffset.)
 // This can be used for many shader effects without loss of precision.
@@ -209,6 +211,8 @@ void main(void)
 	normalPass = normalize((inVertexNormal+1)/2);
 #endif
 	vNormal = inVertexNormal;
+	vTangent = inVertexTangent.xyz;
+	vBinormal = inVertexBinormal.xyz;
 
 	// Calculate color.
 	vec4 color = inVertexColor;

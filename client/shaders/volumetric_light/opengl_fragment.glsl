@@ -53,7 +53,7 @@ float sampleVolumetricLight(vec2 uv, vec3 lightVec, float rawDepth)
 	// We use the depth map to approximate the effect of depth on the light intensity.
 	// The exponent was chosen based on aesthetic preference.
 	// To make this phsyically accurate, the brightness here should scale linearly with depth,
-	// but this would make the godrays either too faint or too strong in many cases. 
+	// but this would make the godrays either too faint or too strong in many cases.
 	return result / samples * pow(texture2D(depthmap, uv).r, 128.0);
 #else
 	return result / samples;

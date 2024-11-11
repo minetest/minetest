@@ -68,7 +68,7 @@ struct Vignette {
  * Colors in ASL CDL follow the following equation:
  *
  * out = pow(in * slope + offset, power)
- * 
+ *
  */
 struct ColorDecisionList {
 	core::vector3df slope{1.2, 1.0, 0.8};

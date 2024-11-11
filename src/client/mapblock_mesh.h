@@ -51,8 +51,9 @@ struct MeshMakeData
 
 	const NodeDefManager *nodedef;
 	bool m_use_shaders;
+	bool m_use_tangent_vertices;
 
-	MeshMakeData(const NodeDefManager *ndef, u16 side_length, bool use_shaders);
+	MeshMakeData(const NodeDefManager *ndef, u16 side_length, bool use_shaders, bool use_tangent_vertices = false);
 
 	/*
 		Copy block data manually (to allow optimizations by the caller)
@@ -251,6 +252,7 @@ private:
 	v3f m_bounding_sphere_center;
 
 	bool m_enable_shaders;
+	bool m_use_tangent_vertices;
 
 	// Must animate() be called before rendering?
 	bool m_has_animation;
