@@ -620,7 +620,7 @@ enable_auto_exposure (Enable Automatic Exposure) bool false
 exposure_compensation (Exposure compensation) float 0.0 -1.0 1.0
 
 #   Set the post processing gamma value.
-#   Higher values give lower contrast and vice versa. 
+#   Higher values give lower contrast and vice versa.
 #   Range: from 1.0 to 5.0
 #   Default: 1.6
 #
@@ -677,7 +677,7 @@ enable_tinted_fog (Tinted fog) bool false
 enable_bumpmaps (Bump maps) bool false
 
 #   Simulate translucency when looking at foliage in the sunlight.
-#   It is recommended to use this with the leaves style set to fancy. 
+#   It is recommended to use this with the leaves style set to fancy.
 #
 #   Requires: shaders, enable_dynamic_shadows
 enable_translucent_foliage (Translucent foliage) bool false
