@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=OpalClient
+GenericName=OpalClient
+Comment=Client for the block-based multiplayer game platform Luanti
+Exec=opalclient
+Icon=opalclient
+Terminal=false
+PrefersNonDefaultGPU=true
+Type=Application
+Categories=Game;Simulation;
+StartupNotify=false
+Keywords=sandbox;world;mining;crafting;blocks;nodes;multiplayer;roleplaying;
