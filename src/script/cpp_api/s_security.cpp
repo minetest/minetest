@@ -555,7 +555,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 			// by the operating system anyways.
 			return false;
 		}
-		removed.append(component).append(removed.empty() ? "" : DIR_DELIM + removed);
+		removed = component + (removed.empty() ? "" : DIR_DELIM + removed);
 		abs_path = fs::AbsolutePath(cur_path);
 	}
 	if (abs_path.empty())

@@ -312,9 +312,7 @@ due to their space savings.
 This means that many glTF features are not supported *yet*, including:
 
 * Animations
-  * Only a single animation is supported,
-    use frame ranges within this animation.
-  * Only integer frames are supported.
+  * Only a single animation is supported, use frame ranges within this animation.
 * Cameras
 * Materials
   * Only base color textures are supported
@@ -8246,7 +8244,13 @@ child will follow movement and rotation of that bone.
     object.
 * `set_detach()`: Detaches object. No-op if object was not attached.
 * `set_bone_position([bone, position, rotation])`
-    * Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
+    * Sets absolute bone overrides, e.g. it is equivalent to
+      ```lua
+      obj:set_bone_override(bone, {
+          position = {vec = position, absolute = true},
+          rotation = {vec = rotation:apply(math.rad), absolute = true}
+      })
+      ```
     * **Note:** Rotation is in degrees, not radians.
     * **Deprecated:** Use `set_bone_override` instead.
 * `get_bone_position(bone)`: returns the previously set position and rotation of the bone
@@ -8256,15 +8260,18 @@ child will follow movement and rotation of that bone.
 * `set_bone_override(bone, override)`
     * `bone`: string
     * `override`: `{ position = property, rotation = property, scale = property }` or `nil`
-        * `property`: `{ vec = vector, interpolation = 0, absolute = false}` or `nil`;
-            * `vec` is in the same coordinate system as the model, and in degrees for rotation
-        * `property = nil` is equivalent to no override on that property
-        * `absolute`: If set to `false`, the override will be relative to the animated property:
-            * Transposition in the case of `position`;
-            * Composition in the case of `rotation`;
-            * Multiplication in the case of `scale`
-        * `interpolation`: Old and new values are interpolated over this timeframe (in seconds)
     * `override = nil` (including omission) is shorthand for `override = {}` which clears the override
+    * Each `property` is a table of the form
+      `{ vec = vector, interpolation = 0, absolute = false }` or `nil`
+        * `vec` is in the same coordinate system as the model, and in radians for rotation.
+          It defaults to `vector.zero()` for translation and rotation and `vector.new(1, 1, 1)` for scale.
+        * `interpolation`: The old and new overrides are interpolated over this timeframe (in seconds).
+        * `absolute`: If set to `false` (which is the default),
+          the override will be relative to the animated property:
+            * Translation in the case of `position`;
+            * Composition in the case of `rotation`;
+            * Per-axis multiplication in the case of `scale`
+    * `property = nil` is equivalent to no override on that property
     * **Note:** Unlike `set_bone_position`, the rotation is in radians, not degrees.
     * Compatibility note: Clients prior to 5.9.0 only support absolute position and rotation.
       All values are treated as absolute and are set immediately (no interpolation).

@@ -741,7 +741,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		});
 	} else if (m_prop.visual == "mesh") {
 		grabMatrixNode();
-		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
+		// can't cache mesh if shaders disabled, since we modify vertices
+		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, m_enable_shaders);
 		if (mesh) {
 			if (!checkMeshNormals(mesh)) {
 				infostream << "GenericCAO: recalculating normals for mesh "
@@ -917,6 +918,9 @@ void GenericCAO::setNodeLight(const video::SColor &light_color)
 			return;
 		setColorParam(node, light_color);
 	} else {
+		// TODO refactor vertex colors to be separate from the other vertex attributes
+		// instead of mutating meshes / buffers for everyone via setMeshColor.
+		// (Note: There are a couple more places here where setMeshColor is used.)
 		if (m_meshnode) {
 			setMeshColor(m_meshnode->getMesh(), light_color);
 		} else if (m_animated_meshnode) {
