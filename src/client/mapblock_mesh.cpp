@@ -266,7 +266,8 @@ u16 getSmoothLightTransparent(const v3s16 &p, const v3s16 &corner, MeshMakeData 
 	return getSmoothLightCombined(p, dirs, data);
 }
 
-void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio){
+void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio)
+{
 	f32 rg = daynight_ratio / 1000.0f - 0.04f;
 	f32 b = (0.98f * daynight_ratio) / 1000.0f + 0.078f;
 	sunlight->r = rg;
@@ -593,8 +594,7 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	m_shdrsrc(client->getShaderSource()),
 	m_bounding_sphere_center((data->side_length * 0.5f - 0.5f) * BS),
 	m_animation_force_timer(0), // force initial animation
-	m_last_crack(-1),
-	m_last_daynight_ratio((u32) -1)
+	m_last_crack(-1)
 {
 	ZoneScoped;
 
@@ -743,7 +743,6 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	// Check if animation is required for this mesh
 	m_has_animation =
 		!m_crack_materials.empty() ||
-		!m_daynight_diffs.empty() ||
 		!m_animation_info.empty();
 }
 

@@ -270,7 +270,6 @@ void TextureSettings::readSettings()
 {
 	connected_glass                = g_settings->getBool("connected_glass");
 	translucent_liquids            = g_settings->getBool("translucent_liquids");
-	bool smooth_lighting           = g_settings->getBool("smooth_lighting");
 	enable_minimap                 = g_settings->getBool("enable_minimap");
 	node_texture_size              = std::max<u16>(g_settings->getU16("texture_min_size"), 1);
 	std::string leaves_style_str   = g_settings->get("leaves_style");
@@ -352,8 +351,7 @@ void ContentFeatures::reset()
 	drawtype = NDT_NORMAL;
 	mesh.clear();
 #if CHECK_CLIENT_BUILD()
-	for (auto &i : mesh_ptr)
-		i = NULL;
+	mesh_ptr = nullptr;
 	minimap_color = video::SColor(0, 0, 0, 0);
 #endif
 	visual_scale = 1.0;
@@ -947,12 +945,12 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	if (drawtype == NDT_MESH && !mesh.empty()) {
 		// Meshnode drawtype
 		// Read the mesh and apply scale
-		mesh_ptr[0] = client->getMesh(mesh);
-		if (mesh_ptr[0]){
-			v3f scale = v3f(1.0, 1.0, 1.0) * BS * visual_scale;
-			scaleMesh(mesh_ptr[0], scale);
-			recalculateBoundingBox(mesh_ptr[0]);
-			meshmanip->recalculateNormals(mesh_ptr[0], true, false);
+		mesh_ptr = client->getMesh(mesh);
+		if (mesh_ptr) {
+			v3f scale = v3f(BS) * visual_scale;
+			scaleMesh(mesh_ptr, scale);
+			recalculateBoundingBox(mesh_ptr);
+			meshmanip->recalculateNormals(mesh_ptr, true, false);
 		}
 	}
 }
@@ -975,10 +973,8 @@ NodeDefManager::~NodeDefManager()
 {
 #if CHECK_CLIENT_BUILD()
 	for (ContentFeatures &f : m_content_features) {
-		for (auto &j : f.mesh_ptr) {
-			if (j)
-				j->drop();
-		}
+		if (f.mesh_ptr)
+			f.mesh_ptr->drop();
 	}
 #endif
 }

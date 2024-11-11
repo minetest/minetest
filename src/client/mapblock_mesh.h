@@ -249,15 +249,6 @@ private:
 	// Keys are pairs of (mesh index, buffer index in the mesh)
 	std::map<std::pair<u8, u32>, AnimationInfo> m_animation_info;
 
-	// FIXME: remove
-	// Animation info: day/night transitions
-	// Last daynight_ratio value passed to animate()
-	u32 m_last_daynight_ratio;
-	// For each mesh and mesh buffer, stores pre-baked colors
-	// of sunlit vertices
-	// Keys are pairs of (mesh index, buffer index in the mesh)
-	std::map<std::pair<u8, u32>, std::map<u32, video::SColor > > m_daynight_diffs;
-
 	// list of all semitransparent triangles in the mapblock
 	std::vector<MeshTriangle> m_transparent_triangles;
 	// Binary Space Partitioning tree for the block

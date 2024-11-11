@@ -113,8 +113,6 @@ void ShadowRenderer::preInit(IWritableShaderSource *shsrc)
 
 void ShadowRenderer::initialize()
 {
-	auto *gpu = m_driver->getGPUProgrammingServices();
-
 	createShaders();
 
 
@@ -522,7 +520,7 @@ void ShadowRenderer::mixShadowsQuad()
 
 void ShadowRenderer::createShaders()
 {
-	video::IGPUProgrammingServices *gpu = m_driver->getGPUProgrammingServices();
+	auto *gpu = m_driver->getGPUProgrammingServices();
 
 	if (depth_shader == -1) {
 		std::string depth_shader_vs = getShaderPath("shadow_shaders", "pass1_vertex.glsl");

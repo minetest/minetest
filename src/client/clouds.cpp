@@ -116,16 +116,11 @@ void Clouds::updateMesh()
 
 	// Colors with primitive shading
 
-	// FIXME const
-	video::SColorf c_top_f(m_color);
-	video::SColorf c_side_1_f(m_color);
-	video::SColorf c_side_2_f(m_color);
-	video::SColorf c_bottom_f(m_color);
-	if (true) {
-		// shader mixes the base color, set via ColorParam
-		c_top_f = c_side_1_f = c_side_2_f = c_bottom_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
-	}
-	video::SColorf shadow = m_params.color_shadow;
+	video::SColorf c_top_f(1, 1, 1, 1);
+	video::SColorf c_side_1_f(1, 1, 1, 1);
+	video::SColorf c_side_2_f(1, 1, 1, 1);
+	video::SColorf c_bottom_f(1, 1, 1, 1);
+	const video::SColorf shadow = m_params.color_shadow;
 
 	c_side_1_f.r *= shadow.r * 0.25f + 0.75f;
 	c_side_1_f.g *= shadow.g * 0.25f + 0.75f;

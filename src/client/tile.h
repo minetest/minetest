@@ -78,7 +78,6 @@ struct TileLayer
 		return !(*this == other);
 	}
 
-	// FIXME remove
 	void applyMaterialOptions(video::SMaterial &material) const;
 
 	void applyMaterialOptionsWithShaders(video::SMaterial &material) const;

@@ -533,11 +533,11 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	}
 	shaderinfo.material = shaderinfo.base_material;
 
-	// FIXME: null driver
-	//if (!m_enabled)
-	//	return shaderinfo;
-
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	// The null driver doesn't support shaders (duh), but we can pretend it does.
+	if (driver->getDriverType() == video::EDT_NULL)
+		return shaderinfo;
+
 	auto *gpu = driver->getGPUProgrammingServices();
 	if (!driver->queryFeature(video::EVDF_ARB_GLSL) || !gpu) {
 		throw ShaderException(gettext("GLSL is not supported by the driver"));

@@ -296,7 +296,6 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 	std::vector<ItemPartColor> *colors, const ContentFeatures &f)
 {
-	// FIXME: this used to say shaders=false, need to check
 	MeshMakeData mesh_make_data(client->ndef(), 1);
 	MeshCollector collector(v3f(0.0f * BS), v3f());
 	mesh_make_data.setSmoothLighting(false);
