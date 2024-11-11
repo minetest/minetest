@@ -713,7 +713,7 @@ bool CIrrDeviceSDL::run()
 
 	while (!Close && wrap_PollEvent(&SDL_event)) {
 		// os::Printer::log("event: ", core::stringc((int)SDL_event.type).c_str(),   ELL_INFORMATION);	// just for debugging
-		memset(&irrevent, 0, sizeof(irrevent));
+		irrevent = {};
 
 		switch (SDL_event.type) {
 		case SDL_MOUSEMOTION: {
