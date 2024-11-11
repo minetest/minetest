@@ -171,7 +171,6 @@ public:
 	int node_texture_size;
 	bool translucent_liquids;
 	bool connected_glass;
-	bool enable_mesh_cache;
 	bool enable_minimap;
 
 	TextureSettings() = default;
@@ -337,6 +336,7 @@ struct ContentFeatures
 	enum NodeDrawType drawtype;
 	std::string mesh;
 #if CHECK_CLIENT_BUILD()
+	// FIXME reduce size
 	scene::IMesh *mesh_ptr[24];
 	video::SColor minimap_color;
 #endif

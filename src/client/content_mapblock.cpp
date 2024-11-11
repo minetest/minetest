@@ -67,8 +67,6 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	nodedef(data->nodedef),
 	meshmanip(mm),
 	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE),
-	enable_mesh_cache(g_settings->getBool("enable_mesh_cache") &&
-			!data->m_smooth_lighting), // Mesh cache is not supported with smooth lighting
 	smooth_liquids(g_settings->getBool("enable_water_reflections"))
 {
 }
@@ -1657,10 +1655,8 @@ void MapblockMeshGenerator::drawMeshNode()
 	} else if (cur_node.f->param_type_2 == CPT2_WALLMOUNTED ||
 			cur_node.f->param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 		// Convert wallmounted to 6dfacedir.
-		// When cache enabled, it is already converted.
 		facedir = cur_node.n.getWallMounted(nodedef);
-		if (!enable_mesh_cache)
-			facedir = wallmounted_to_facedir[facedir];
+		facedir = wallmounted_to_facedir[facedir];
 	} else if (cur_node.f->param_type_2 == CPT2_DEGROTATE ||
 			cur_node.f->param_type_2 == CPT2_COLORED_DEGROTATE) {
 		degrotate = cur_node.n.getDegRotate(nodedef);

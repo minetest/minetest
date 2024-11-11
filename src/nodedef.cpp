@@ -271,16 +271,11 @@ void TextureSettings::readSettings()
 	connected_glass                = g_settings->getBool("connected_glass");
 	translucent_liquids            = g_settings->getBool("translucent_liquids");
 	bool smooth_lighting           = g_settings->getBool("smooth_lighting");
-	enable_mesh_cache              = g_settings->getBool("enable_mesh_cache");
 	enable_minimap                 = g_settings->getBool("enable_minimap");
 	node_texture_size              = std::max<u16>(g_settings->getU16("texture_min_size"), 1);
 	std::string leaves_style_str   = g_settings->get("leaves_style");
 	std::string world_aligned_mode_str = g_settings->get("world_aligned_mode");
 	std::string autoscale_mode_str = g_settings->get("autoscale_mode");
-
-	// Mesh cache is not supported in combination with smooth lighting
-	if (smooth_lighting)
-		enable_mesh_cache = false;
 
 	if (leaves_style_str == "fancy") {
 		leaves_style = LEAVES_FANCY;
@@ -959,40 +954,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			recalculateBoundingBox(mesh_ptr[0]);
 			meshmanip->recalculateNormals(mesh_ptr[0], true, false);
 		}
-	}
-
-	//Cache 6dfacedir and wallmounted rotated clones of meshes
-	if (tsettings.enable_mesh_cache && mesh_ptr[0] &&
-			(param_type_2 == CPT2_FACEDIR
-			|| param_type_2 == CPT2_COLORED_FACEDIR)) {
-		for (u16 j = 1; j < 24; j++) {
-			mesh_ptr[j] = cloneMesh(mesh_ptr[0]);
-			rotateMeshBy6dFacedir(mesh_ptr[j], j);
-			recalculateBoundingBox(mesh_ptr[j]);
-			meshmanip->recalculateNormals(mesh_ptr[j], true, false);
-		}
-	} else if (tsettings.enable_mesh_cache && mesh_ptr[0] &&
-			(param_type_2 == CPT2_4DIR
-			|| param_type_2 == CPT2_COLORED_4DIR)) {
-		for (u16 j = 1; j < 4; j++) {
-			mesh_ptr[j] = cloneMesh(mesh_ptr[0]);
-			rotateMeshBy6dFacedir(mesh_ptr[j], j);
-			recalculateBoundingBox(mesh_ptr[j]);
-			meshmanip->recalculateNormals(mesh_ptr[j], true, false);
-		}
-	} else if (tsettings.enable_mesh_cache && mesh_ptr[0]
-			&& (param_type_2 == CPT2_WALLMOUNTED ||
-			param_type_2 == CPT2_COLORED_WALLMOUNTED)) {
-		static const u8 wm_to_6d[6] = { 20, 0, 16 + 1, 12 + 3, 8, 4 + 2 };
-		for (u16 j = 1; j < 6; j++) {
-			mesh_ptr[j] = cloneMesh(mesh_ptr[0]);
-			rotateMeshBy6dFacedir(mesh_ptr[j], wm_to_6d[j]);
-			recalculateBoundingBox(mesh_ptr[j]);
-			meshmanip->recalculateNormals(mesh_ptr[j], true, false);
-		}
-		rotateMeshBy6dFacedir(mesh_ptr[0], wm_to_6d[0]);
-		recalculateBoundingBox(mesh_ptr[0]);
-		meshmanip->recalculateNormals(mesh_ptr[0], true, false);
 	}
 }
 #endif

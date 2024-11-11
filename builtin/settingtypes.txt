@@ -1846,9 +1846,6 @@ cloud_radius (Cloud radius) int 12 1 62
 #    Whether node texture animations should be desynchronized per mapblock.
 desynchronize_mapblock_texture_animation (Desynchronize block animation) bool false
 
-# FIXME remove
-enable_mesh_cache (Mesh cache) bool false
-
 #    Delay between mesh updates on the client in ms. Increasing this will slow
 #    down the rate of mesh updates, thus reducing jitter on slower clients.
 mesh_generation_interval (Mapblock mesh generation delay) int 0 0 50
