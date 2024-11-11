@@ -213,7 +213,6 @@ void TestCollision::testCollisionMoveSimple(IGameDef *gamedef)
 	for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
 		env->getMap().setNode({x, 0, z}, MapNode(t_CONTENT_STONE));
 
-	const f32 pos_max_d = 0.25f * BS; // ?
 	v3f pos, speed, accel;
 	const aabb3f box(fpos(-0.1f, 0, -0.1f), fpos(0.1f, 1.4f, 0.1f));
 	collisionMoveResult res;
@@ -222,7 +221,7 @@ void TestCollision::testCollisionMoveSimple(IGameDef *gamedef)
 	pos   = fpos(4, 1, 4);
 	speed = fpos(0, 0, 0);
 	accel = fpos(0, 1, 0);
-	res = collisionMoveSimple(env.get(), gamedef, pos_max_d, box, 0.0f, 1.0f,
+	res = collisionMoveSimple(env.get(), gamedef, box, 0.0f, 1.0f,
 		&pos, &speed, accel);
 
 	UASSERT(!res.touching_ground || !res.collides || !res.standing_on_object);
@@ -236,7 +235,7 @@ void TestCollision::testCollisionMoveSimple(IGameDef *gamedef)
 	pos   = fpos(0, 0.5f, 0);
 	speed = fpos(0, 0, 0);
 	accel = fpos(0, -9.81f, 0);
-	res = collisionMoveSimple(env.get(), gamedef, pos_max_d, box, 0.0f, 0.04f,
+	res = collisionMoveSimple(env.get(), gamedef, box, 0.0f, 0.04f,
 		&pos, &speed, accel);
 
 	UASSERT(res.collides);
@@ -256,7 +255,7 @@ void TestCollision::testCollisionMoveSimple(IGameDef *gamedef)
 	pos   = fpos(0, -100, 0);
 	speed = fpos(0, 0, 0);
 	accel = fpos(0, 0, 0);
-	res = collisionMoveSimple(env.get(), gamedef, pos_max_d, box, 0.0f, 1/60.0f,
+	res = collisionMoveSimple(env.get(), gamedef, box, 0.0f, 1/60.0f,
 		&pos, &speed, accel);
 	UASSERT(!res.collides);
 
@@ -264,7 +263,7 @@ void TestCollision::testCollisionMoveSimple(IGameDef *gamedef)
 	pos   = fpos(0, -100, 0);
 	speed = fpos(5, 0, 0);
 	accel = fpos(0, 0, 0);
-	res = collisionMoveSimple(env.get(), gamedef, pos_max_d, box, 0.0f, 1/60.0f,
+	res = collisionMoveSimple(env.get(), gamedef, box, 0.0f, 1/60.0f,
 		&pos, &speed, accel);
 	UASSERTEQ_V3F(speed, fpos(0, 0, 0));
 	UASSERT(!res.collides); // FIXME this is actually inconsistent
