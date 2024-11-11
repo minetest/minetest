@@ -70,6 +70,12 @@ public:
 		return m_stack.size();
 	}
 
+	void deleteFront()
+	{
+		m_stack.front()->setVisible(false);
+		deletingMenu(m_stack.front());
+	}
+
 	bool pausesGame()
 	{
 		for (gui::IGUIElement *i : m_stack) {
@@ -78,11 +84,6 @@ public:
 				return true;
 		}
 		return false;
-	}
-
-	void deleteFront() {
-		m_stack.front()->setVisible(false);
-		deletingMenu(m_stack.front());
 	}
 
 private:
