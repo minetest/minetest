@@ -1453,7 +1453,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 
 	ndef->pendNodeResolve(ore.get());
 
-	// Note that oremgr is responsible for the ore object now, not the NodeResolver.
+	// We passed ownership of the ore object to oremgr earlier.
 	ore.release();
 
 	lua_pushinteger(L, handle);
