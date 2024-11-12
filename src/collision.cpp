@@ -503,26 +503,12 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			dtime -= nearest_dtime;
 		}
 
-		bool is_collision = true;
-		if (nearest_info.is_unloaded)
-			is_collision = false;
-
-		CollisionInfo info;
-		if (nearest_info.isObject())
-			info.type = COLLISION_OBJECT;
-		else
-			info.type = COLLISION_NODE;
-
-		info.node_p = nearest_info.position;
-		info.object = nearest_info.obj;
-		info.new_pos = *pos_f;
-		info.old_speed = *speed_f;
+		v3f old_speed_f = *speed_f;
 
 		// Set the speed component that caused the collision to zero
 		if (step_up) {
 			// Special case: Handle stairs
 			nearest_info.is_step_up = true;
-			is_collision = false;
 		} else if (nearest_collided == COLLISION_AXIS_X) {
 			if (bounce < -1e-4 && fabsf(speed_f->X) > BS * 3) {
 				speed_f->X *= bounce;
@@ -530,7 +516,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				speed_f->X = 0;
 				accel_f.X = 0; // avoid colliding in the next interations
 			}
-			result.collides = true;
 		} else if (nearest_collided == COLLISION_AXIS_Y) {
 			if (bounce < -1e-4 && fabsf(speed_f->Y) > BS * 3) {
 				speed_f->Y *= bounce;
@@ -545,23 +530,24 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				speed_f->Y = 0;
 				accel_f.Y = 0; // avoid colliding in the next interations
 			}
-			result.collides = true;
-		} else if (nearest_collided == COLLISION_AXIS_Z) {
+		} else { /* nearest_collided == COLLISION_AXIS_Z */
 			if (bounce < -1e-4 && fabsf(speed_f->Z) > BS * 3) {
 				speed_f->Z *= bounce;
 			} else {
 				speed_f->Z = 0;
 				accel_f.Z = 0; // avoid colliding in the next interations
 			}
-			result.collides = true;
-		} else {
-			is_collision = false;
 		}
 
-		info.new_speed = *speed_f;
-
-		if (is_collision) {
+		if (!nearest_info.is_unloaded && !step_up) {
+			CollisionInfo info;
 			info.axis = nearest_collided;
+			info.type = nearest_info.isObject() ? COLLISION_OBJECT : COLLISION_NODE;
+			info.node_p = nearest_info.position;
+			info.object = nearest_info.obj;
+			info.new_pos = *pos_f;
+			info.old_speed = old_speed_f;
+			info.new_speed = *speed_f;
 			result.collisions.push_back(info);
 		}
 
@@ -609,6 +595,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		}
 	}
 
+	result.collides = !result.collisions.empty();
 	return result;
 }
 
