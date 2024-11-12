@@ -730,19 +730,18 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		shaders_header << "#define VOLUMETRIC_LIGHT 1\n";
 	}
 
-	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics
-
 	std::string common_header = shaders_header.str();
+	const char *final_header = "#line 0\n"; // reset the line counter for meaningful diagnostics
 
 	std::string vertex_shader = m_sourcecache.getOrLoad(name, "opengl_vertex.glsl");
 	std::string fragment_shader = m_sourcecache.getOrLoad(name, "opengl_fragment.glsl");
 	std::string geometry_shader = m_sourcecache.getOrLoad(name, "opengl_geometry.glsl");
 
-	vertex_shader = common_header + vertex_header + vertex_shader;
-	fragment_shader = common_header + fragment_header + fragment_shader;
+	vertex_shader = common_header + vertex_header + final_header + vertex_shader;
+	fragment_shader = common_header + fragment_header + final_header + fragment_shader;
 	const char *geometry_shader_ptr = nullptr; // optional
 	if (!geometry_shader.empty()) {
-		geometry_shader = common_header + geometry_header + geometry_shader;
+		geometry_shader = common_header + geometry_header + final_header + geometry_shader;
 		geometry_shader_ptr = geometry_shader.c_str();
 	}
 
