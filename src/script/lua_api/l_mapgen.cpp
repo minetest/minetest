@@ -374,6 +374,7 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 	b->heat_point      = getfloatfield_default(L,  index, "heat_point",      0.f);
 	b->humidity_point  = getfloatfield_default(L,  index, "humidity_point",  0.f);
 	b->vertical_blend  = getintfield_default(L,    index, "vertical_blend",  0);
+	b->weight          = getfloatfield_default(L,  index, "weight",          1.f);
 	b->flags           = 0; // reserved
 
 	b->min_pos = getv3s16field_default(
