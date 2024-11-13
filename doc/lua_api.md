@@ -487,7 +487,6 @@ stripping out the file extension:
 * e.g. `foomod_foothing`
 
 Supported texture formats are PNG (`.png`), JPEG (`.jpg`) and Targa (`.tga`).
-Since better alternatives exist, the latter two may be removed in the future.
 
 Texture modifiers
 -----------------
