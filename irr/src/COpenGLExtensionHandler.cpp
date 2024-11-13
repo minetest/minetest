@@ -130,10 +130,10 @@ void COpenGLExtensionHandler::initExtensions(video::IContextManager *cmgr, bool 
 {
 	const f32 ogl_ver = core::fast_atof(reinterpret_cast<const c8 *>(glGetString(GL_VERSION)));
 	Version = static_cast<u16>(core::floor32(ogl_ver) * 100 + core::round32(core::fract(ogl_ver) * 10.0f));
-	if (Version >= 102)
-		os::Printer::log("OpenGL driver version is 1.2 or better.", ELL_INFORMATION);
+	if (Version >= 200)
+		os::Printer::log("OpenGL driver version is 2.0 or newer.", ELL_INFORMATION);
 	else
-		os::Printer::log("OpenGL driver version is not 1.2 or better.", ELL_WARNING);
+		os::Printer::log("OpenGL driver version is older than 2.0.", ELL_WARNING);
 
 	{
 		const char *t = reinterpret_cast<const char *>(glGetString(GL_EXTENSIONS));

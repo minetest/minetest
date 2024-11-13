@@ -173,7 +173,6 @@ Minimap::Minimap(Client *client)
 	m_current_mode_index = 0;
 
 	// Initialize static settings
-	m_enable_shaders = g_settings->getBool("enable_shaders");
 	m_surface_mode_scan_height =
 		g_settings->getBool("minimap_double_scan_height") ? 256 : 128;
 
@@ -599,7 +598,7 @@ void Minimap::drawMinimap(core::rect<s32> rect)
 	material.TextureLayers[0].Texture = minimap_texture;
 	material.TextureLayers[1].Texture = data->heightmap_texture;
 
-	if (m_enable_shaders && data->mode.type == MINIMAP_TYPE_SURFACE) {
+	if (data->mode.type == MINIMAP_TYPE_SURFACE) {
 		auto sid = m_shdrsrc->getShader("minimap_shader", TILE_MATERIAL_ALPHA);
 		material.MaterialType = m_shdrsrc->getShaderInfo(sid).material;
 	} else {

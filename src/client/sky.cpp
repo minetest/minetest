@@ -53,8 +53,6 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 	m_box.MaxEdge.set(0, 0, 0);
 	m_box.MinEdge.set(0, 0, 0);
 
-	m_enable_shaders = g_settings->getBool("enable_shaders");
-
 	m_sky_params = SkyboxDefaults::getSkyDefaults();
 	m_sun_params = SkyboxDefaults::getSunDefaults();
 	m_moon_params = SkyboxDefaults::getMoonDefaults();
@@ -63,9 +61,8 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 	// Create materials
 
 	m_materials[0] = baseMaterial();
-	m_materials[0].MaterialType = m_enable_shaders ?
-			ssrc->getShaderInfo(ssrc->getShader("stars_shader", TILE_MATERIAL_ALPHA)).material :
-			video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	m_materials[0].MaterialType =
+			ssrc->getShaderInfo(ssrc->getShader("stars_shader", TILE_MATERIAL_ALPHA)).material;
 
 	m_materials[1] = baseMaterial();
 	m_materials[1].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -668,10 +665,7 @@ void Sky::draw_stars(video::IVideoDriver * driver, float wicked_time_of_day)
 	color.a *= alpha;
 	if (color.a <= 0.0f) // Stars are only drawn when not fully transparent
 		return;
-	if (m_enable_shaders)
-		m_materials[0].ColorParam = color.toSColor();
-	else
-		setMeshBufferColor(m_stars.get(), color.toSColor());
+	m_materials[0].ColorParam = color.toSColor();
 
 	auto sky_rotation = core::matrix4().setRotationAxisRadians(2.0f * M_PI * (wicked_time_of_day - 0.25f), v3f(0.0f, 0.0f, 1.0f));
 	auto world_matrix = driver->getTransform(video::ETS_WORLD);
@@ -841,8 +835,7 @@ void Sky::updateStars()
 		indices.push_back(i * 4 + 3);
 		indices.push_back(i * 4 + 0);
 	}
-	if (m_enable_shaders)
-		m_stars->setHardwareMappingHint(scene::EHM_STATIC);
+	m_stars->setHardwareMappingHint(scene::EHM_STATIC);
 }
 
 void Sky::setSkyColors(const SkyColor &sky_color)

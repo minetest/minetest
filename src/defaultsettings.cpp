@@ -102,7 +102,6 @@ void set_default_settings()
 	settings->setDefault("sound_volume_unfocused", "0.3");
 	settings->setDefault("mute_sound", "false");
 	settings->setDefault("sound_extensions_blacklist", "");
-	settings->setDefault("enable_mesh_cache", "false");
 	settings->setDefault("mesh_generation_interval", "0");
 	settings->setDefault("mesh_generation_threads", "0");
 	settings->setDefault("free_move", "false");
@@ -299,7 +298,6 @@ void set_default_settings()
 	settings->setDefault("enable_local_map_saving", "false");
 	settings->setDefault("show_entity_selectionbox", "false");
 	settings->setDefault("ambient_occlusion_gamma", "1.8");
-	settings->setDefault("enable_shaders", "true");
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
 	settings->setDefault("show_nametag_backgrounds", "true");

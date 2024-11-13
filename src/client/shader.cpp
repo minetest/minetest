@@ -307,9 +307,6 @@ public:
 
 private:
 
-	// Are shaders even enabled?
-	bool m_enabled;
-
 	// The id of the thread that is allowed to use irrlicht directly
 	std::thread::id m_main_thread;
 
@@ -348,12 +345,6 @@ ShaderSource::ShaderSource()
 	// Add a dummy ShaderInfo as the first index, named ""
 	m_shaderinfo_cache.emplace_back();
 
-	m_enabled = g_settings->getBool("enable_shaders");
-	if (!m_enabled) {
-		warningstream << "You are running " PROJECT_NAME_C " with shaders disabled, "
-			"this is not a recommended configuration." << std::endl;
-	}
-
 	// Add main global constant setter
 	addShaderConstantSetterFactory(new MainShaderConstantSetterFactory());
 }
@@ -362,11 +353,9 @@ ShaderSource::~ShaderSource()
 {
 	MutexAutoLock lock(m_shaderinfo_cache_mutex);
 
-	if (!m_enabled)
-		return;
-
 	// Delete materials
 	auto *gpu = RenderingEngine::get_video_driver()->getGPUProgrammingServices();
+	assert(gpu);
 	for (ShaderInfo &i : m_shaderinfo_cache) {
 		if (!i.name.empty())
 			gpu->deleteShaderMaterial(i.material);
@@ -495,11 +484,9 @@ void ShaderSource::rebuildShaders()
 {
 	MutexAutoLock lock(m_shaderinfo_cache_mutex);
 
-	if (!m_enabled)
-		return;
-
 	// Delete materials
 	auto *gpu = RenderingEngine::get_video_driver()->getGPUProgrammingServices();
+	assert(gpu);
 	for (ShaderInfo &i : m_shaderinfo_cache) {
 		if (!i.name.empty()) {
 			gpu->deleteShaderMaterial(i.material);
@@ -546,14 +533,14 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	}
 	shaderinfo.material = shaderinfo.base_material;
 
-	if (!m_enabled)
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	// The null driver doesn't support shaders (duh), but we can pretend it does.
+	if (driver->getDriverType() == video::EDT_NULL)
 		return shaderinfo;
 
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	auto *gpu = driver->getGPUProgrammingServices();
 	if (!driver->queryFeature(video::EVDF_ARB_GLSL) || !gpu) {
-		throw ShaderException(gettext("Shaders are enabled but GLSL is not "
-			"supported by the driver."));
+		throw ShaderException(gettext("GLSL is not supported by the driver"));
 	}
 
 	// Create shaders header
