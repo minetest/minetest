@@ -10,10 +10,9 @@ from pathlib import Path
 import gymnasium as gym
 import numpy as np
 import pytest
-from PIL import Image
-
 from minetest import minetest_env
 from minetest.minetest_env import KEY_NAME_TO_INDEX, action_noop
+from PIL import Image
 
 
 @pytest.fixture
@@ -23,10 +22,8 @@ def artifact_dir():
 
 @pytest.fixture
 def world_dir():
-    repo_root = Path(__file__).parent.parent.parent
-    original_world_dir = (
-        repo_root / "python" / "tests" / "worlds" / "test_world_minetestenv"
-    )
+    world_dir = Path(__file__).parent / "worlds"
+    original_world_dir = world_dir / "test_world_minetestenv"
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_world_dir = Path(temp_dir) / "test_world_minetestenv"
         shutil.copytree(original_world_dir, temp_world_dir)

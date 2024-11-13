@@ -32,24 +32,24 @@ remoteclient_capnp = capnp.load(
     os.path.join(os.path.dirname(__file__), "proto/remoteclient.capnp")
 )
 
-# See `python/minetest/proto/remoteclient.capnp`. {'forward': 0, 'backward': 1,
-# 'left': 2, 'right': 3, 'jump': 4, 'aux1': 5, 'sneak': 6, 'autoforward': 7,
-# 'dig': 8, 'place': 9, 'esc': 10, 'drop': 11, 'inventory': 12, 'chat': 13,
-# 'cmd': 14, 'cmdLocal': 15, 'console': 16, 'minimap': 17, 'freemove': 18,
-# 'pitchmove': 19, 'fastmove': 20, 'noclip': 21, 'hotbarPrev': 22, 'hotbarNext':
-# 23, 'mute': 24, 'incVolume': 25, 'decVolume': 26, 'cinematic': 27,
-# 'screenshot': 28, 'toggleBlockBounds': 29, 'toggleHud': 30, 'toggleChat': 31,
-# 'toggleFog': 32, 'toggleUpdateCamera': 33, 'toggleDebug': 34,
-# 'toggleProfiler': 35, 'cameraMode': 36, 'increaseViewingRange': 37,
-# 'decreaseViewingRange': 38, 'rangeselect': 39, 'zoom': 40, 'quicktuneNext':
-# 41, 'quicktunePrev': 42, 'quicktuneInc': 43, 'quicktuneDec': 44, 'slot1': 45,
-# 'slot2': 46, 'slot3': 47, 'slot4': 48, 'slot5': 49, 'slot6': 50, 'slot7': 51,
-# 'slot8': 52, 'slot9': 53, 'slot10': 54, 'slot11': 55, 'slot12': 56, 'slot13':
-# 57, 'slot14': 58, 'slot15': 59, 'slot16': 60, 'slot17': 61, 'slot18': 62,
-# 'slot19': 63, 'slot20': 64, 'slot21': 65, 'slot22': 66, 'slot23': 67,
-# 'slot24': 68, 'slot25': 69, 'slot26': 70, 'slot27': 71, 'slot28': 72,
-# 'slot29': 73, 'slot30': 74, 'slot31': 75, 'slot32': 76, 'middle': 77, 'ctrl':
-# 78, 'internalEnumCount': 79}
+# See `proto/remoteclient.capnp`. {'forward': 0, 'backward': 1, 'left': 2,
+# 'right': 3, 'jump': 4, 'aux1': 5, 'sneak': 6, 'autoforward': 7, 'dig': 8,
+# 'place': 9, 'esc': 10, 'drop': 11, 'inventory': 12, 'chat': 13, 'cmd': 14,
+# 'cmdLocal': 15, 'console': 16, 'minimap': 17, 'freemove': 18, 'pitchmove': 19,
+# 'fastmove': 20, 'noclip': 21, 'hotbarPrev': 22, 'hotbarNext': 23, 'mute': 24,
+# 'incVolume': 25, 'decVolume': 26, 'cinematic': 27, 'screenshot': 28,
+# 'toggleBlockBounds': 29, 'toggleHud': 30, 'toggleChat': 31, 'toggleFog': 32,
+# 'toggleUpdateCamera': 33, 'toggleDebug': 34, 'toggleProfiler': 35,
+# 'cameraMode': 36, 'increaseViewingRange': 37, 'decreaseViewingRange': 38,
+# 'rangeselect': 39, 'zoom': 40, 'quicktuneNext': 41, 'quicktunePrev': 42,
+# 'quicktuneInc': 43, 'quicktuneDec': 44, 'slot1': 45, 'slot2': 46, 'slot3': 47,
+# 'slot4': 48, 'slot5': 49, 'slot6': 50, 'slot7': 51, 'slot8': 52, 'slot9': 53,
+# 'slot10': 54, 'slot11': 55, 'slot12': 56, 'slot13': 57, 'slot14': 58,
+# 'slot15': 59, 'slot16': 60, 'slot17': 61, 'slot18': 62, 'slot19': 63,
+# 'slot20': 64, 'slot21': 65, 'slot22': 66, 'slot23': 67, 'slot24': 68,
+# 'slot25': 69, 'slot26': 70, 'slot27': 71, 'slot28': 72, 'slot29': 73,
+# 'slot30': 74, 'slot31': 75, 'slot32': 76, 'middle': 77, 'ctrl': 78,
+# 'internalEnumCount': 79}
 KEY_NAMES = remoteclient_capnp.KeyPressType.Key.schema.enumerants.keys()
 KEY_INDEX_TO_NAME = {index: name for index, name in enumerate(KEY_NAMES)}
 KEY_NAME_TO_INDEX = {name: index for index, name in enumerate(KEY_NAMES)}

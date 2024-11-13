@@ -31,5 +31,5 @@ cmake -B build -S . \
 	-DCMAKE_EXPORT_COMPILE_COMMANDS=1 && \
 	cmake --build build
 
-pushd python && pytest .; popd
+pushd minetest-gymnasium && pytest .; popd
 ```

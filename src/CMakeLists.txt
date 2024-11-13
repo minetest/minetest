@@ -214,7 +214,7 @@ find_package(SQLite3 REQUIRED)
 
 find_package(CapnProto CONFIG REQUIRED)
 include_directories(${CAPNP_INCLUDE_DIRS})
-configure_file(${PROJECT_SOURCE_DIR}/../python/minetest/proto/remoteclient.capnp ${CMAKE_CURRENT_BINARY_DIR}/network/proto/remoteclient.capnp COPYONLY)
+configure_file(${PROJECT_SOURCE_DIR}/../minetest-gymnasium/minetest/proto/remoteclient.capnp ${CMAKE_CURRENT_BINARY_DIR}/network/proto/remoteclient.capnp COPYONLY)
 file(GLOB PROTO_FILES ${CMAKE_CURRENT_BINARY_DIR}/network/proto/*.capnp)
 set(CAPNPC_SRC_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
 capnp_generate_cpp(CAPNP_SRCS CAPNP_HDRS ${PROTO_FILES})

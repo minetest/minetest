@@ -17,7 +17,7 @@ on:
       - 'Dockerfile'
       - '.dockerignore'
       - '.github/workflows/python.yml'
-      - 'python/**'
+      - 'minetest-gymnasium/**'
   pull_request:
     paths:
       - 'lib/**.[ch]'
@@ -31,7 +31,7 @@ on:
       - 'Dockerfile'
       - '.dockerignore'
       - '.github/workflows/linux.yml'
-      - 'python/**'
+      - 'minetest-gymnasium/**'
 
 env:
   MINETEST_POSTGRESQL_CONNECT_STRING: 'host=localhost user=minetest password=minetest dbname=minetest'
@@ -63,7 +63,7 @@ jobs:
 
       - name: Run pytest
         run: |
-          cd python
+          cd minetest-gymnasium
           set +o errexit
           timeout --signal=KILL 5m pixi run -e gym-test pytest -v
           exit_code=$?

@@ -43,7 +43,7 @@ pycapnp = ">=2,<3"
 pygame = "*"
 
 [feature.gym.pypi-dependencies]
-minetest-gymnasium = { path = "./python", editable = true }
+minetest-gymnasium = { path = "./minetest-gymnasium", editable = true }
 
 [feature.gym.host-dependencies]
 python = ">=3.11,<3.12"

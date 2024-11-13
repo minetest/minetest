@@ -10,7 +10,7 @@ source:
 
 build:
   number: 0
-  script: python -m pip install ./python -v
+  script: python -m pip install ./minetest-gymnasium -v
   noarch: python
 
 
@@ -39,12 +39,12 @@ tests:
     - mkdir ${CONDA_PREFIX}/share/minetest/games
     - ln -s -t ${CONDA_PREFIX}/share/minetest/games ${PWD}/games/devtest
     - if [[ $(minetest --gameid list) != "devtest" ]]; then exit 1; fi
-    - cd python && pytest --timeout=60 -v . || (cat /tmp/*/log/*stderr* && exit 1)
+    - cd minetest-gymnasium && pytest --timeout=60 -v . || (cat /tmp/*/log/*stderr* && exit 1)
     files:
       source:
         - games/devtest/
-        - python/tests/
-        - python/pyproject.toml
+        - minetest-gymnasium/tests/
+        - minetest-gymnasium/pyproject.toml
     requirements:
       run:
         - pillow
