@@ -359,7 +359,7 @@ local function check_requirements(name, requires)
 		if special[req_key] == nil then
 			local required_setting = get_setting_info(req_key)
 			if required_setting == nil then
-				core.log("warning", "Unknown setting " .. req_key .. " required by " .. name)
+				core.log("warning", "Unknown setting " .. req_key .. " required by " .. (name or "???"))
 			end
 			local actual_value = core.settings:get_bool(req_key,
 				required_setting and core.is_yes(required_setting.default))
