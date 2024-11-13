@@ -1014,7 +1014,7 @@ msgstr "Очень низкие"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr "Подробней"
+msgstr "Подробнее"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
