@@ -15,14 +15,6 @@ namespace video
 class CColorConverter
 {
 public:
-	//! converts a monochrome bitmap to A1R5G5B5
-	static void convert1BitTo16Bit(const u8 *in, s16 *out, s32 width, s32 height, s32 linepad = 0, bool flip = false);
-
-	//! converts a 4 bit palettized image to A1R5G5B5
-	static void convert4BitTo16Bit(const u8 *in, s16 *out, s32 width, s32 height, const s32 *palette, s32 linepad = 0, bool flip = false);
-
-	//! converts a 8 bit palettized image to A1R5G5B5
-	static void convert8BitTo16Bit(const u8 *in, s16 *out, s32 width, s32 height, const s32 *palette, s32 linepad = 0, bool flip = false);
 
 	//! converts a 8 bit palettized or non palettized image (A8) into R8G8B8
 	static void convert8BitTo24Bit(const u8 *in, u8 *out, s32 width, s32 height, const u8 *palette, s32 linepad = 0, bool flip = false);
