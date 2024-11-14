@@ -9,6 +9,8 @@
 #include <IVideoDriver.h>
 #include "IAttributes.h"
 #include "porting.h"
+#include "client/mesh.h"
+#include "settings.h"
 
 GUIScene::GUIScene(gui::IGUIEnvironment *env, scene::ISceneManager *smgr,
 		   gui::IGUIElement *parent, core::recti rect, s32 id)

@@ -60,9 +60,6 @@ private:
 
 	const v3s16 blockpos_nodes;
 
-// options
-	const bool enable_mesh_cache;
-
 // current node
 	struct {
 		v3s16 p;

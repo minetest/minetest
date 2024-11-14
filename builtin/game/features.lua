@@ -43,6 +43,7 @@ core.features = {
 	hotbar_hud_element = true,
 	bulk_lbms = true,
   abm_without_neighbors = true,
+  biome_weights = true,
 	preserve_liquid_param2 = true,
 }
 

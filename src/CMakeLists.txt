@@ -598,6 +598,14 @@ if(PRECOMPILE_HEADERS)
 	target_precompile_headers(EngineCommon PRIVATE ${PRECOMPILED_HEADERS_LIST})
 endif()
 
+if(APPLE)
+	# Configure the Info.plist file
+	configure_file(
+		"${CMAKE_SOURCE_DIR}/misc/macos/Info.plist.in"
+		"${CMAKE_BINARY_DIR}/Info.plist"
+	)
+endif()
+
 if(BUILD_CLIENT)
 	# client target
 	if(ANDROID)
@@ -605,6 +613,47 @@ if(BUILD_CLIENT)
 	else()
 		add_executable(${PROJECT_NAME})
 	endif()
+
+
+	if(CMAKE_GENERATOR STREQUAL "Xcode")
+		# File with used entitlements
+		set(XCODE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/misc/macos/entitlements/release.entitlements" CACHE FILEPATH "Path to entitlements file to be used with Xcode signing")
+
+		set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/build")
+		set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/build")
+
+		target_sources(${PROJECT_NAME} PUBLIC ${client_RESOURCES})
+
+		add_dependencies(${PROJECT_NAME} translations)
+
+		set_target_properties(${PROJECT_NAME} PROPERTIES
+			MACOSX_BUNDLE TRUE
+			MACOSX_BUNDLE_INFO_PLIST "${CMAKE_BINARY_DIR}/Info.plist"
+			RESOURCE "${client_RESOURCES}"
+			XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "org.luanti.luanti"
+			XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME "YES"
+			XCODE_ATTRIBUTE_INSTALL_PATH "/Applications"
+			XCODE_ATTRIBUTE_SKIP_INSTALL "NO"
+			XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym"
+			XCODE_ATTRIBUTE_GCC_GENERATE_DEBUGGING_SYMBOLS "YES"
+			XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "$(inherited)"
+			XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${XCODE_CODE_SIGN_ENTITLEMENTS}"
+		)
+
+		# Prinv env variables to file, for debugging purposes
+		#add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		#	COMMAND ${CMAKE_COMMAND} -E env bash ${CMAKE_SOURCE_DIR}/util/xcode/capture_env.sh ${CMAKE_BINARY_DIR}/post_env.log
+		#)
+
+		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/util/xcode/install_resources.cmake
+				-DTARGET_DIR=$<TARGET_FILE_DIR:${PROJECT_NAME}>
+				-DBINARY_DIR=${CMAKE_BINARY_DIR}
+				-DPROJECT_NAME=${PROJECT_NAME}
+			COMMENT "Checking INSTALL_ROOT and copying resources"
+		)
+	endif()
+
 	list(SORT client_SRCS)
 	target_sources(${PROJECT_NAME} PRIVATE
 		$<TARGET_OBJECTS:EngineCommon>

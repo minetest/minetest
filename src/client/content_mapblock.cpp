@@ -67,8 +67,6 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	nodedef(data->nodedef),
 	meshmanip(mm),
 	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE),
-	enable_mesh_cache(g_settings->getBool("enable_mesh_cache") &&
-			!data->m_smooth_lighting), // Mesh cache is not supported with smooth lighting
 	smooth_liquids(g_settings->getBool("enable_water_reflections"))
 {
 }
@@ -1657,31 +1655,27 @@ void MapblockMeshGenerator::drawMeshNode()
 	} else if (cur_node.f->param_type_2 == CPT2_WALLMOUNTED ||
 			cur_node.f->param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 		// Convert wallmounted to 6dfacedir.
-		// When cache enabled, it is already converted.
 		facedir = cur_node.n.getWallMounted(nodedef);
-		if (!enable_mesh_cache)
-			facedir = wallmounted_to_facedir[facedir];
+		facedir = wallmounted_to_facedir[facedir];
 	} else if (cur_node.f->param_type_2 == CPT2_DEGROTATE ||
 			cur_node.f->param_type_2 == CPT2_COLORED_DEGROTATE) {
 		degrotate = cur_node.n.getDegRotate(nodedef);
 	}
 
-	if (!data->m_smooth_lighting && cur_node.f->mesh_ptr[facedir] && !degrotate) {
-		// use cached meshes
-		private_mesh = false;
-		mesh = cur_node.f->mesh_ptr[facedir];
-	} else if (cur_node.f->mesh_ptr[0]) {
-		// no cache, clone and rotate mesh
+	if (cur_node.f->mesh_ptr) {
+		// clone and rotate mesh
 		private_mesh = true;
-		mesh = cloneMesh(cur_node.f->mesh_ptr[0]);
+		mesh = cloneMesh(cur_node.f->mesh_ptr);
 		if (facedir)
 			rotateMeshBy6dFacedir(mesh, facedir);
 		else if (degrotate)
 			rotateMeshXZby(mesh, 1.5f * degrotate);
 		recalculateBoundingBox(mesh);
 		meshmanip->recalculateNormals(mesh, true, false);
-	} else
+	} else {
+		warningstream << "drawMeshNode(): missing mesh" << std::endl;
 		return;
+	}
 
 	int mesh_buffer_count = mesh->getMeshBufferCount();
 	for (int j = 0; j < mesh_buffer_count; j++) {

@@ -54,6 +54,7 @@ public:
 	float heat_point;
 	float humidity_point;
 	s16 vertical_blend;
+	float weight;
 
 	virtual void resolveNodeNames();
 };

@@ -1405,21 +1405,6 @@ void ServerEnvironment::step(float dtime)
 	}
 
 	/*
-		Handle players
-	*/
-	{
-		ScopeProfiler sp(g_profiler, "ServerEnv: move players", SPT_AVG);
-		for (RemotePlayer *player : m_players) {
-			// Ignore disconnected players
-			if (player->getPeerId() == PEER_ID_INEXISTENT)
-				continue;
-
-			// Move
-			player->move(dtime, this, 100 * BS);
-		}
-	}
-
-	/*
 		Manage active block list
 	*/
 	if (m_active_blocks_mgmt_interval.step(dtime, m_cache_active_block_mgmt_interval / m_fast_active_block_divider)) {

@@ -12,9 +12,8 @@ on:
       - 'irr/**.cpp'
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
+      - 'po/**.po'
       - 'util/ci/**'
-      - 'Dockerfile'
-      - '.dockerignore'
       - '.github/workflows/linux.yml'
   pull_request:
     paths:
@@ -26,9 +25,8 @@ on:
       - 'irr/**.cpp'
       - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
+      - 'po/**.po'
       - 'util/ci/**'
-      - 'Dockerfile'
-      - '.dockerignore'
       - '.github/workflows/linux.yml'
 
 env:
