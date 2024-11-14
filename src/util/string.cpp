@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <array>
+#include <regex>
 #include <sstream>
 #include <iomanip>
 #include <unordered_map>
@@ -1068,14 +1069,25 @@ void safe_print_string(std::ostream &os, std::string_view str)
 	os.setf(flags);
 }
 
+const std::regex patternParenthesis(R"(^\((.*?)\)$)");
+const std::regex patternCoordinates(R"(^([\d.-]+)[,\s]\s*([\d.-]+)[,\s]\s*([\d.-]+)$)");
 
 v3f str_to_v3f(std::string_view str)
 {
-	v3f value;
-	Strfnd f(str);
-	f.next("(");
-	value.X = stof(f.next(","));
-	value.Y = stof(f.next(","));
-	value.Z = stof(f.next(")"));
-	return value;
+    v3f value;
+    std::cmatch matches;
+
+    // Strip parentheses
+    if (std::regex_search(str.data(), str.data() + str.size(), matches, patternParenthesis)) {
+        str = std::string_view(matches[1].first, matches[1].length());
+    }
+
+    // Match coordinates
+    if (std::regex_search(str.data(), str.data() + str.size(), matches, patternCoordinates)) {
+        value.X = stof(matches[1].str());
+        value.Y = stof(matches[2].str());
+        value.Z = stof(matches[3].str());
+    }
+
+    return value;
 }
