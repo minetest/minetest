@@ -1111,8 +1111,7 @@ ClientMap::getPostFxPolygons()
 	};
 
 	const std::optional<LiquidWaveParams> liquid_wave_params =
-			g_settings->getBool("enable_shaders")
-				&& g_settings->getBool("enable_waving_water") ?
+			g_settings->getBool("enable_waving_water") ?
 			LiquidWaveParams{
 				g_settings->getFloat("water_wave_height"),
 				g_settings->getFloat("water_wave_length"),
