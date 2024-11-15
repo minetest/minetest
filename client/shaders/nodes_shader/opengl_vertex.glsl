@@ -1,3 +1,8 @@
+// OpenGL < 4.3 does not support continued preprocessor lines
+#define IS_WAVING_ACTUAL_LIQUID (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC)
+#define IS_WAVING_WANNABE_LIQUID (MATERIAL_TYPE == TILE_MATERIAL_WAVING_WANNABELIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_WANNABELIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_WANNABELIQUID_BASIC)
+#define IS_LIQUID_WAVING ((IS_WAVING_ACTUAL_LIQUID || IS_WAVING_WANNABE_LIQUID) && ENABLE_WAVING_WATER)
+
 uniform mat4 mWorld;
 // Color of the light emitted by the sun.
 uniform vec3 dayLight;
@@ -108,8 +113,7 @@ float smoothTriangleWave(float x)
 	return smoothCurve(triangleWave(x)) * 2.0 - 1.0;
 }
 
-// OpenGL < 4.3 does not support continued preprocessor lines
-#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC) && ENABLE_WAVING_WATER
+#if IS_LIQUID_WAVING
 
 //
 // Simple, fast noise function.
@@ -166,8 +170,7 @@ void main(void)
 #endif
 
 	vec4 pos = inVertexPosition;
-// OpenGL < 4.3 does not support continued preprocessor lines
-#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC) && ENABLE_WAVING_WATER
+#if IS_LIQUID_WAVING
 	// Generate waves with Perlin-type noise.
 	// The constants are calibrated such that they roughly
 	// correspond to the old sine waves.
@@ -177,11 +180,16 @@ void main(void)
 	wavePos.x /= WATER_WAVE_LENGTH * 3.0;
 	wavePos.z /= WATER_WAVE_LENGTH * 2.0;
 	wavePos.z += animationTimer * WATER_WAVE_SPEED * 10.0;
+#if IS_WAVING_ACTUAL_LIQUID
 	// Flowing liquid waveheight is scaled by node height, so it doesn't wave
 	// into the floor.
 	// Also, vertices that are exactly on the border do not wave, see
 	// cur_liquid.y_offset_allow_wave in content_mapblock.h.
 	float nodecorner_height = fract(pos.y * (1.0 / BS) + 0.5 + 0.001);
+#else
+	// Wannabe liquids (e.g. waterlilies) always wave the same
+	float nodecorner_height = 1.0f;
+#endif
 	pos.y += (snoise(wavePos) - 1.0) * WATER_WAVE_HEIGHT * 5.0 * nodecorner_height;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES
 	pos.x += disp_x;
