@@ -936,9 +936,10 @@ void CNullDriver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enab
 		setTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED, false);
 	}
 
-	// set flag
-	TextureCreationFlags = (TextureCreationFlags & (~flag)) |
-						   ((((u32)!enabled) - 1) & flag);
+	if (enabled)
+		TextureCreationFlags |= flag;
+	else
+		TextureCreationFlags &= ~flag;
 }
 
 //! Returns if a texture creation flag is enabled or disabled.

@@ -4,6 +4,7 @@
 
 #include "Driver.h"
 #include <cassert>
+#include <stdexcept>
 #include "mt_opengl.h"
 
 namespace irr
@@ -18,7 +19,7 @@ E_DRIVER_TYPE COpenGL3Driver::getDriverType() const
 
 OpenGLVersion COpenGL3Driver::getVersionFromOpenGL() const
 {
-	GLint major, minor, profile;
+	GLint major = 0, minor = 0, profile = 0;
 	GL.GetIntegerv(GL_MAJOR_VERSION, &major);
 	GL.GetIntegerv(GL_MINOR_VERSION, &minor);
 	GL.GetIntegerv(GL_CONTEXT_PROFILE_MASK, &profile);
@@ -35,18 +36,21 @@ OpenGLVersion COpenGL3Driver::getVersionFromOpenGL() const
 void COpenGL3Driver::initFeatures()
 {
 	if (Version.Spec != OpenGLSpec::Compat) {
-		os::Printer::log("OpenGL 3 driver requires Compatibility Mode", ELL_ERROR);
-		throw std::exception();
+		auto msg = "OpenGL 3 driver requires Compatibility context";
+		os::Printer::log(msg, ELL_ERROR);
+		throw std::runtime_error(msg);
 	}
 	if (!isVersionAtLeast(3, 2)) {
-		os::Printer::log("OpenGL 3 driver requires OpenGL >= 3.2 ", ELL_ERROR);
-		throw std::exception();
+		auto msg = "OpenGL 3 driver requires OpenGL >= 3.2";
+		os::Printer::log(msg, ELL_ERROR);
+		throw std::runtime_error(msg);
 	}
 	initExtensions();
 
 	TextureFormats[ECF_A1R5G5B5] = {GL_RGB5_A1, GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV}; // WARNING: may not be renderable
 	TextureFormats[ECF_R5G6B5] = {GL_RGB, GL_RGB, GL_UNSIGNED_SHORT_5_6_5};              // GL_RGB565 is an extension until 4.1
 	TextureFormats[ECF_R8G8B8] = {GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE};                    // WARNING: may not be renderable
+	// FIXME: shouldn't this simply be GL_UNSIGNED_BYTE?
 	TextureFormats[ECF_A8R8G8B8] = {GL_RGBA8, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV};
 	TextureFormats[ECF_R16F] = {GL_R16F, GL_RED, GL_HALF_FLOAT};
 	TextureFormats[ECF_G16R16F] = {GL_RG16F, GL_RG, GL_HALF_FLOAT};

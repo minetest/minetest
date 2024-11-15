@@ -3,8 +3,10 @@
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
 #include "Driver.h"
+#include <stdexcept>
 #include <cassert>
-#include <CColorConverter.h>
+#include "mt_opengl.h"
+#include "CColorConverter.h"
 
 namespace irr
 {
@@ -19,7 +21,7 @@ E_DRIVER_TYPE COpenGLES2Driver::getDriverType() const
 OpenGLVersion COpenGLES2Driver::getVersionFromOpenGL() const
 {
 	auto version_string = reinterpret_cast<const char *>(GL.GetString(GL_VERSION));
-	int major, minor;
+	int major = 0, minor = 0;
 	if (sscanf(version_string, "OpenGL ES %d.%d", &major, &minor) != 2) {
 		os::Printer::log("Failed to parse OpenGL ES version string", version_string, ELL_ERROR);
 		return {OpenGLSpec::ES, 0, 0, 0};
@@ -29,8 +31,16 @@ OpenGLVersion COpenGLES2Driver::getVersionFromOpenGL() const
 
 void COpenGLES2Driver::initFeatures()
 {
-	assert(Version.Spec == OpenGLSpec::ES);
-	assert(Version.Major >= 2);
+	if (Version.Spec != OpenGLSpec::ES) {
+		auto msg = "Context isn't OpenGL ES";
+		os::Printer::log(msg, ELL_ERROR);
+		throw std::runtime_error(msg);
+	}
+	if (!isVersionAtLeast(2, 0)) {
+		auto msg = "Open GL ES 2.0 is required";
+		os::Printer::log(msg, ELL_ERROR);
+		throw std::runtime_error(msg);
+	}
 	initExtensions();
 
 	static const GLenum BGRA8_EXT = 0x93A1;
