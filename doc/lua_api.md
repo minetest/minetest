@@ -276,7 +276,7 @@ the clients (see [Translations]). Accepted characters for names are:
 
 Accepted formats are:
 
-    images: .png, .jpg, .tga, (deprecated:) .bmp
+    images: .png, .jpg, .tga
     sounds: .ogg vorbis
     models: .x, .b3d, .obj, (since version 5.10:) .gltf, .glb
 
@@ -486,9 +486,7 @@ stripping out the file extension:
 * e.g. `foomod_foothing.png`
 * e.g. `foomod_foothing`
 
-Supported texture formats are PNG (`.png`), JPEG (`.jpg`), Bitmap (`.bmp`)
-and Targa (`.tga`).
-Since better alternatives exist, the latter two may be removed in the future.
+Supported texture formats are PNG (`.png`), JPEG (`.jpg`) and Targa (`.tga`).
 
 Texture modifiers
 -----------------

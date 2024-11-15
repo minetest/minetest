@@ -22,9 +22,6 @@ namespace irr
 namespace video
 {
 
-//! creates a loader which is able to load windows bitmaps
-IImageLoader *createImageLoaderBMP();
-
 //! creates a loader which is able to load jpeg images
 IImageLoader *createImageLoaderJPG();
 
@@ -93,7 +90,6 @@ CNullDriver::CNullDriver(io::IFileSystem *io, const core::dimension2d<u32> &scre
 	SurfaceLoader.push_back(video::createImageLoaderTGA());
 	SurfaceLoader.push_back(video::createImageLoaderPNG());
 	SurfaceLoader.push_back(video::createImageLoaderJPG());
-	SurfaceLoader.push_back(video::createImageLoaderBMP());
 
 	SurfaceWriter.push_back(video::createImageWriterJPG());
 	SurfaceWriter.push_back(video::createImageWriterPNG());
