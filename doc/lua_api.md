@@ -10788,10 +10788,9 @@ See [Decoration types]. Used by `core.register_decoration`.
 
     flags = "liquid_surface, force_placement, all_floors, all_ceilings",
     -- Flags for all decoration types.
-    -- "liquid_surface": Instead of placement on the highest solid surface
-    --   in a mapchunk column, placement is on the highest liquid surface.
-    --   Placement is disabled if solid nodes are found above the liquid
-    --   surface.
+    -- "liquid_surface": Find the highest liquid (not solid) surface under
+    --   open air. Search stops and fails on the first solid node.
+    --   Cannot be used with "all_floors" or "all_ceilings" below.
     -- "force_placement": Nodes other than "air" and "ignore" are replaced
     --   by the decoration.
     -- "all_floors", "all_ceilings": Instead of placement on the highest
