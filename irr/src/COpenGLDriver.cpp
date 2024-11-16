@@ -651,6 +651,28 @@ IRenderTarget *COpenGLDriver::addRenderTarget()
 	return renderTarget;
 }
 
+void COpenGLDriver::blitRenderTarget(IRenderTarget *from, IRenderTarget *to)
+{
+	if (Version < 300) {
+		os::Printer::log("glBlitFramebuffer not supported, GL version too old.", ELL_ERROR);
+		return;
+	}
+
+	GLuint prev_fbo_id;
+	CacheHandler->getFBO(prev_fbo_id);
+
+	COpenGLRenderTarget *src = static_cast<COpenGLRenderTarget *>(from);
+	COpenGLRenderTarget *dst = static_cast<COpenGLRenderTarget *>(to);
+	GL.BindFramebuffer(GL.READ_FRAMEBUFFER, src->getBufferID());
+	GL.BindFramebuffer(GL.DRAW_FRAMEBUFFER, dst->getBufferID());
+	GL.BlitFramebuffer(
+			0, 0, src->getSize().Width, src->getSize().Height,
+			0, 0, dst->getSize().Width, dst->getSize().Height,
+			GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT, GL.NEAREST);
+
+	CacheHandler->setFBO(prev_fbo_id, true);
+}
+
 // small helper function to create vertex buffer object address offsets
 static inline const GLvoid *buffer_offset(const size_t offset)
 {

@@ -677,6 +677,12 @@ IRenderTarget *COpenGL3DriverBase::addRenderTarget()
 
 void COpenGL3DriverBase::blitRenderTarget(IRenderTarget *from, IRenderTarget *to)
 {
+	// support for glBlitFramebuffer starts at 3.0 for both OpenGL and OpenGL ES
+	if (Version.Major < 3) {
+		os::Printer::log("glBlitFramebuffer not supported, GL version too old.", ELL_ERROR);
+		return;
+	}
+
 	GLuint prev_fbo_id;
 	CacheHandler->getFBO(prev_fbo_id);
 
