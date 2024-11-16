@@ -1317,7 +1317,7 @@ void COpenGL3DriverBase::setBasicRenderStates(const SMaterial &material, const S
 		GL.LineWidth(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedLine[0], DimAliasedLine[1]));
 
 	// Anti aliasing
-	// Enable MSAA even if it's not enabled in the OpenGL context, we might be
+	// Deal with MSAA even if it's not enabled in the OpenGL context, we might be
 	// rendering to an FBO with multisampling.
 	if (resetAllRenderStates || lastmaterial.AntiAliasing != material.AntiAliasing) {
 		if (material.AntiAliasing & EAAM_ALPHA_TO_COVERAGE)
