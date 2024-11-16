@@ -294,7 +294,7 @@ public:
 		}
 	}
 
-	u32 getBufferID() const override
+	GLuint getBufferID() const
 	{
 		return BufferID;
 	}

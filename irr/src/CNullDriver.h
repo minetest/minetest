@@ -414,6 +414,8 @@ public:
 	//! Create render target.
 	IRenderTarget *addRenderTarget() override;
 
+	void blitRenderTarget(IRenderTarget *from, IRenderTarget *to) override {}
+
 	//! Remove render target.
 	void removeRenderTarget(IRenderTarget *renderTarget) override;
 

@@ -276,11 +276,6 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 
 void ResolveMSAAStep::run(PipelineContext &context)
 {
-	u32 msaa_fbo_id = msaa_fbo->getGLBufferID(context);
-	u32 target_fbo_id = target_fbo->getGLBufferID(context);
-	GL.BindFramebuffer(GL.READ_FRAMEBUFFER, msaa_fbo_id);
-	GL.BindFramebuffer(GL.DRAW_FRAMEBUFFER, target_fbo_id);
-	v2u32 size = context.target_size;
-	GL.BlitFramebuffer(0, 0, size.X, size.Y, 0, 0, size.X, size.Y,
-			GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT, GL.NEAREST);
+	context.device->getVideoDriver()->blitRenderTarget(msaa_fbo->getIrrRenderTarget(context),
+			target_fbo->getIrrRenderTarget(context));
 }

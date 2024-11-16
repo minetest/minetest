@@ -176,7 +176,7 @@ public:
 	virtual ~TextureBufferOutput() override;
 	void activate(PipelineContext &context) override;
 
-	u32 getGLBufferID(PipelineContext &context);
+	video::IRenderTarget *getIrrRenderTarget(PipelineContext &context);
 
 private:
 	static const u8 NO_DEPTH_TEXTURE = 255;

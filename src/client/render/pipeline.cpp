@@ -197,10 +197,10 @@ void TextureBufferOutput::activate(PipelineContext &context)
 	RenderTarget::activate(context);
 }
 
-u32 TextureBufferOutput::getGLBufferID(PipelineContext &context)
+video::IRenderTarget *TextureBufferOutput::getIrrRenderTarget(PipelineContext &context)
 {
 	activate(context); // Needed to make sure that render_target is set up.
-	return render_target->getBufferID();
+	return render_target;
 }
 
 u8 DynamicSource::getTextureCount()

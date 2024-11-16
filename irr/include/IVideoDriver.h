@@ -366,6 +366,10 @@ public:
 	//! Remove all render targets.
 	virtual void removeAllRenderTargets() = 0;
 
+	//! Blit contents of one render target to another one.
+	/** This is glBlitFramebuffer in OpenGL. */
+	virtual void blitRenderTarget(IRenderTarget *from, IRenderTarget *to) = 0;
+
 	//! Sets a boolean alpha channel on the texture based on a color key.
 	/** This makes the texture fully transparent at the texels where
 	this color key can be found when using for example draw2DImage

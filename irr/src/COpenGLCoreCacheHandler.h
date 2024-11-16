@@ -487,9 +487,9 @@ public:
 		frameBufferID = FrameBufferID;
 	}
 
-	void setFBO(GLuint frameBufferID)
+	void setFBO(GLuint frameBufferID, bool force=false)
 	{
-		if (FrameBufferID != frameBufferID) {
+		if (FrameBufferID != frameBufferID || force) {
 			Driver->irrGlBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
 			FrameBufferID = frameBufferID;
 		}
