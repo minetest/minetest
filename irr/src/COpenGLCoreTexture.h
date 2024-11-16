@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <stdexcept>
 #include <vector>
 #include "SMaterialLayer.h"
 #include "ITexture.h"
@@ -52,8 +51,7 @@ public:
 		_IRR_DEBUG_BREAK_IF(srcImages.empty())
 
 		DriverType = Driver->getDriverType();
-		if (Type == ETT_2D_MS)
-			throw std::logic_error("ETT_2D_MS is not supported by this constructor");
+		_IRR_DEBUG_BREAK_IF(Type == ETT_2D_MS); // not supported by this constructor
 		TextureType = TextureTypeIrrToGL(Type);
 		HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 		KeepImage = Driver->getTextureCreationFlag(ETCF_ALLOW_MEMORY_COPY);

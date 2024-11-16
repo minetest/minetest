@@ -5,7 +5,6 @@
 #pragma once
 
 #include "IRenderTarget.h"
-#include <stdexcept>
 
 #ifndef GL_FRAMEBUFFER_INCOMPLETE_FORMATS
 #define GL_FRAMEBUFFER_INCOMPLETE_FORMATS GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT
@@ -185,7 +184,7 @@ public:
 							textarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + (int)CubeSurfaces[i];
 							break;
 						default:
-							throw std::logic_error("not reachable");
+							_IRR_DEBUG_BREAK_IF(1);
 						}
 						Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, AssignedTextures[i], textarget, textureID, 0);
 						TEST_GL_ERROR(Driver);
@@ -225,7 +224,7 @@ public:
 						break;
 					default:
 						// ETT_CUBEMAP is rejected for depth/stencil by setTextures
-						throw std::logic_error("not reachable");
+						_IRR_DEBUG_BREAK_IF(1);
 					}
 
 					GLuint textureID = static_cast<TOpenGLTexture *>(DepthStencil)->getOpenGLTextureName();
