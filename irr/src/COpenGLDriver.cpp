@@ -654,7 +654,7 @@ IRenderTarget *COpenGLDriver::addRenderTarget()
 void COpenGLDriver::blitRenderTarget(IRenderTarget *from, IRenderTarget *to)
 {
 	if (Version < 300) {
-		os::Printer::log("glBlitFramebuffer not supported, GL version too old.", ELL_ERROR);
+		os::Printer::log("glBlitFramebuffer not supported by OpenGL < 3.0", ELL_ERROR);
 		return;
 	}
 
