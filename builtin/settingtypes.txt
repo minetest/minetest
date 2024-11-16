@@ -412,9 +412,13 @@ anisotropic_filter (Anisotropic filtering) bool false
 #    * FSAA - Hardware-provided full-screen antialiasing
 #             A.K.A multi-sample antialiasing (MSAA)
 #             Smoothens out block edges but does not affect the insides of textures.
-#             If Post Processing is disabled, changing this option requires a restart.
+#
+#             If Post Processing is disabled, changing FSAA requires a restart.
 #             Also, if Post Processing is disabled, FSAA will not work together with
 #             undersampling or a non-default "3d_mode" setting.
+#
+#             With the "ogles2" video driver, FSAA currently does not work if
+#             Post Processing is enabled.
 #
 #    * FXAA - Fast approximate antialiasing
 #             Applies a post-processing filter to detect and smoothen high-contrast edges.
