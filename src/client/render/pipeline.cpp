@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2022 x2048, Dmitry Kostenko <codeforsmile@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2022 x2048, Dmitry Kostenko <codeforsmile@gmail.com>
 
 #include "pipeline.h"
 #include "client/client.h"
@@ -191,13 +176,6 @@ void TextureBufferOutput::activate(PipelineContext &context)
 			size = texture->getSize();
 	}
 
-	// Use legacy call when there's single texture without depth texture
-	// This binds default depth buffer to the FBO
-	if (textures.size() == 1 && depth_stencil == NO_DEPTH_TEXTURE) {
-		driver->setRenderTarget(textures[0], m_clear, m_clear, context.clear_color);
-		return;
-	}
-
 	video::ITexture *depth_texture = nullptr;
 	if (depth_stencil != NO_DEPTH_TEXTURE)
 		depth_texture = buffer->getTexture(depth_stencil);
@@ -225,7 +203,7 @@ video::ITexture *DynamicSource::getTexture(u8 index)
 void ScreenTarget::activate(PipelineContext &context)
 {
 	auto driver = context.device->getVideoDriver();
-	driver->setRenderTarget(nullptr, m_clear, m_clear, context.clear_color);
+	driver->setRenderTargetEx(nullptr, m_clear ? video::ECBF_ALL : video::ECBF_NONE, context.clear_color);
 	driver->OnResize(size);
 	RenderTarget::activate(context);
 }

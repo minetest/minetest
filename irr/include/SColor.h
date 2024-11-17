@@ -77,6 +77,9 @@ enum ECOLOR_FORMAT
 	//! 16 bit format using 16 bits for depth.
 	ECF_D16,
 
+	//! 32 bit(?) format using 24 bits for depth.
+	ECF_D24,
+
 	//! 32 bit format using 32 bits for depth.
 	ECF_D32,
 
@@ -104,6 +107,7 @@ const c8 *const ColorFormatNames[ECF_UNKNOWN + 2] = {
 		"R16",
 		"R16G16",
 		"D16",
+		"D24",
 		"D32",
 		"D24S8",
 		"UNKNOWN",

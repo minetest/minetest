@@ -1,22 +1,7 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2020 numzero, Lobachevskiy Vitaliy <numzer0@yandex.ru>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+// Copyright (C) 2020 numzero, Lobachevskiy Vitaliy <numzer0@yandex.ru>
 
 #include <cmath>
 #include "sky.h"
@@ -31,6 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "util/numeric.h"
 #include "client/renderingengine.h"
+#include "client/texturesource.h"
 #include "settings.h"
 #include "camera.h" // CameraModes
 
@@ -67,8 +53,6 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 	m_box.MaxEdge.set(0, 0, 0);
 	m_box.MinEdge.set(0, 0, 0);
 
-	m_enable_shaders = g_settings->getBool("enable_shaders");
-
 	m_sky_params = SkyboxDefaults::getSkyDefaults();
 	m_sun_params = SkyboxDefaults::getSunDefaults();
 	m_moon_params = SkyboxDefaults::getMoonDefaults();
@@ -77,9 +61,8 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 	// Create materials
 
 	m_materials[0] = baseMaterial();
-	m_materials[0].MaterialType = m_enable_shaders ?
-			ssrc->getShaderInfo(ssrc->getShader("stars_shader", TILE_MATERIAL_ALPHA)).material :
-			video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	m_materials[0].MaterialType =
+			ssrc->getShaderInfo(ssrc->getShader("stars_shader", TILE_MATERIAL_ALPHA)).material;
 
 	m_materials[1] = baseMaterial();
 	m_materials[1].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -162,21 +145,15 @@ void Sky::render()
 		float offset = (1.0 - fabs(sin((m_time_of_day - 0.5) * irr::core::PI))) * 511;
 
 		if (m_sun_tonemap) {
-			u8 * texels = (u8 *)m_sun_tonemap->lock();
-			video::SColor* texel = (video::SColor *)(texels + (u32)offset * 4);
-			video::SColor texel_color (255, texel->getRed(),
-				texel->getGreen(), texel->getBlue());
-			m_sun_tonemap->unlock();
+			auto texel_color = m_sun_tonemap->getPixel(offset, 0);
+			texel_color.setAlpha(255);
 			// Only accessed by our code later, not used by a shader
 			m_materials[3].ColorParam = texel_color;
 		}
 
 		if (m_moon_tonemap) {
-			u8 * texels = (u8 *)m_moon_tonemap->lock();
-			video::SColor* texel = (video::SColor *)(texels + (u32)offset * 4);
-			video::SColor texel_color (255, texel->getRed(),
-				texel->getGreen(), texel->getBlue());
-			m_moon_tonemap->unlock();
+			auto texel_color = m_moon_tonemap->getPixel(offset, 0);
+			texel_color.setAlpha(255);
 			// Only accessed by our code later, not used by a shader
 			m_materials[4].ColorParam = texel_color;
 		}
@@ -682,10 +659,7 @@ void Sky::draw_stars(video::IVideoDriver * driver, float wicked_time_of_day)
 	color.a *= alpha;
 	if (color.a <= 0.0f) // Stars are only drawn when not fully transparent
 		return;
-	if (m_enable_shaders)
-		m_materials[0].ColorParam = color.toSColor();
-	else
-		setMeshBufferColor(m_stars.get(), color.toSColor());
+	m_materials[0].ColorParam = color.toSColor();
 
 	auto sky_rotation = core::matrix4().setRotationAxisRadians(2.0f * M_PI * (wicked_time_of_day - 0.25f), v3f(0.0f, 0.0f, 1.0f));
 	auto world_matrix = driver->getTransform(video::ETS_WORLD);
@@ -731,14 +705,33 @@ void Sky::place_sky_body(
 	}
 }
 
+// FIXME: stupid helper that does a pointless texture upload/download
+static void getTextureAsImage(video::IImage *&dst, const std::string &name, ITextureSource *tsrc)
+{
+	if (dst) {
+		dst->drop();
+		dst = nullptr;
+	}
+	if (tsrc->isKnownSourceImage(name)) {
+		auto *texture = tsrc->getTexture(name);
+		assert(texture);
+		auto *driver = RenderingEngine::get_video_driver();
+		dst = driver->createImageFromData(
+			texture->getColorFormat(), texture->getSize(),
+			texture->lock(video::ETLM_READ_ONLY));
+		texture->unlock();
+	}
+}
+
 void Sky::setSunTexture(const std::string &sun_texture,
 		const std::string &sun_tonemap, ITextureSource *tsrc)
 {
 	// Ignore matching textures (with modifiers) entirely,
 	// but lets at least update the tonemap before hand.
-	m_sun_params.tonemap = sun_tonemap;
-	m_sun_tonemap = tsrc->isKnownSourceImage(sun_tonemap) ?
-		tsrc->getTexture(sun_tonemap) : nullptr;
+	if (m_sun_params.tonemap != sun_tonemap) {
+		m_sun_params.tonemap = sun_tonemap;
+		getTextureAsImage(m_sun_tonemap, sun_tonemap, tsrc);
+	}
 
 	if (m_sun_params.texture == sun_texture && !m_first_update)
 		return;
@@ -778,9 +771,10 @@ void Sky::setMoonTexture(const std::string &moon_texture,
 {
 	// Ignore matching textures (with modifiers) entirely,
 	// but lets at least update the tonemap before hand.
-	m_moon_params.tonemap = moon_tonemap;
-	m_moon_tonemap = tsrc->isKnownSourceImage(moon_tonemap) ?
-		tsrc->getTexture(moon_tonemap) : nullptr;
+	if (m_moon_params.tonemap != moon_tonemap) {
+		m_moon_params.tonemap = moon_tonemap;
+		getTextureAsImage(m_moon_tonemap, moon_tonemap, tsrc);
+	}
 
 	if (m_moon_params.texture == moon_texture && !m_first_update)
 		return;
@@ -855,8 +849,7 @@ void Sky::updateStars()
 		indices.push_back(i * 4 + 3);
 		indices.push_back(i * 4 + 0);
 	}
-	if (m_enable_shaders)
-		m_stars->setHardwareMappingHint(scene::EHM_STATIC);
+	m_stars->setHardwareMappingHint(scene::EHM_STATIC);
 }
 
 void Sky::setSkyColors(const SkyColor &sky_color)

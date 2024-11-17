@@ -9,6 +9,7 @@
 #include "IAnimatedMesh.h"
 #include "IReadFile.h"
 #include "irrTypes.h"
+#include "irr_ptr.h"
 #include "matrix4.h"
 #include "path.h"
 #include "quaternion.h"
@@ -27,7 +28,6 @@
 #include <utility>
 #include <variant>
 #include <vector>
-#include <iostream>
 
 namespace irr {
 
@@ -341,40 +341,24 @@ bool SelfType::isALoadableFileExtension(
 */
 IAnimatedMesh* SelfType::createMesh(io::IReadFile* file)
 {
-	if (file->getSize() <= 0) {
-		return nullptr;
-	}
-	std::optional<tiniergltf::GlTF> model = tryParseGLTF(file);
-	if (!model.has_value()) {
-		return nullptr;
-	}
-	if (model->extensionsRequired) {
-		os::Printer::log("glTF loader",
-				"model requires extensions, but we support none", ELL_ERROR);
-		return nullptr;
-	}
-
-	if (!(model->buffers.has_value()
-			&& model->bufferViews.has_value()
-			&& model->accessors.has_value()
-			&& model->meshes.has_value()
-			&& model->nodes.has_value())) {
-		os::Printer::log("glTF loader", "missing required fields", ELL_ERROR);
-		return nullptr;
-	}
-
-	auto *mesh = new CSkinnedMesh();
-	MeshExtractor parser(std::move(model.value()), mesh);
+	const char *filename = file->getFileName().c_str();
 	try {
-		parser.load();
-	} catch (std::runtime_error &e) {
-		os::Printer::log("glTF loader", e.what(), ELL_ERROR);
-		mesh->drop();
-		return nullptr;
+		tiniergltf::GlTF model = parseGLTF(file);
+		irr_ptr<CSkinnedMesh> mesh(new CSkinnedMesh());
+		MeshExtractor extractor(std::move(model), mesh.get());
+		try {
+			extractor.load();
+			for (const auto &warning : extractor.getWarnings()) {
+				os::Printer::log(filename, warning.c_str(), ELL_WARNING);
+			}
+			return mesh.release();
+		} catch (const std::runtime_error &e) {
+			os::Printer::log("error converting gltf to irrlicht mesh", e.what(), ELL_ERROR);
+		}
+	} catch (const std::runtime_error &e) {
+		os::Printer::log("error parsing gltf", e.what(), ELL_ERROR);
 	}
-	if (model->images.has_value())
-		os::Printer::log("glTF loader", "embedded images are not supported", ELL_WARNING);
-	return mesh;
+	return nullptr;
 }
 
 static void transformVertices(std::vector<video::S3DVertex> &vertices, const core::matrix4 &transform)
@@ -685,7 +669,7 @@ void SelfType::MeshExtractor::loadAnimation(const std::size_t animIdx)
 
 		const auto &sampler = anim.samplers.at(channel.sampler);
 		if (sampler.interpolation != tiniergltf::AnimationSampler::Interpolation::LINEAR)
-			throw std::runtime_error("unsupported interpolation");
+			throw std::runtime_error("unsupported interpolation, only linear interpolation is supported");
 
 		const auto inputAccessor = Accessor<f32>::make(m_gltf_model, sampler.input);
 		const auto n_frames = inputAccessor.getCount();
@@ -730,20 +714,40 @@ void SelfType::MeshExtractor::loadAnimation(const std::size_t animIdx)
 
 void SelfType::MeshExtractor::load()
 {
-	loadNodes();
-	for (const auto &load_mesh : m_mesh_loaders) {
-		load_mesh();
+	if (m_gltf_model.extensionsRequired)
+		throw std::runtime_error("model requires extensions, but we support none");
+
+	if (!(m_gltf_model.buffers.has_value()
+			&& m_gltf_model.bufferViews.has_value()
+			&& m_gltf_model.accessors.has_value()
+			&& m_gltf_model.meshes.has_value()
+			&& m_gltf_model.nodes.has_value())) {
+		throw std::runtime_error("missing required fields");
 	}
-	loadSkins();
-	// Load the first animation, if there is one.
-	if (m_gltf_model.animations.has_value()) {
-		if (m_gltf_model.animations->size() > 1) {
-			os::Printer::log("glTF loader",
-					"multiple animations are not supported", ELL_WARNING);
+
+	if (m_gltf_model.images.has_value())
+		warn("embedded images are not supported");
+
+	try {
+		loadNodes();
+		for (const auto &load_mesh : m_mesh_loaders) {
+			load_mesh();
 		}
-		loadAnimation(0);
-		m_irr_model->setAnimationSpeed(1);
+		loadSkins();
+		// Load the first animation, if there is one.
+		if (m_gltf_model.animations.has_value()) {
+			if (m_gltf_model.animations->size() > 1)
+				warn("multiple animations are not supported");
+
+			loadAnimation(0);
+			m_irr_model->setAnimationSpeed(1);
+		}
+	} catch (const std::out_of_range &e) {
+		throw std::runtime_error(e.what());
+	} catch (const std::bad_optional_access &e) {
+		throw std::runtime_error(e.what());
 	}
+
 	m_irr_model->finalize();
 }
 
@@ -905,15 +909,18 @@ void SelfType::MeshExtractor::copyTCoords(
 /**
  * This is where the actual model's GLTF file is loaded and parsed by tiniergltf.
 */
-std::optional<tiniergltf::GlTF> SelfType::tryParseGLTF(io::IReadFile* file)
+tiniergltf::GlTF SelfType::parseGLTF(io::IReadFile* file)
 {
 	const bool isGlb = core::hasFileExtension(file->getFileName(), "glb");
 	auto size = file->getSize();
 	if (size < 0) // this can happen if `ftell` fails
-		return std::nullopt;
+		throw std::runtime_error("error reading file");
+	if (size == 0)
+		throw std::runtime_error("file is empty");
+
 	std::unique_ptr<char[]> buf(new char[size + 1]);
 	if (file->read(buf.get(), size) != static_cast<std::size_t>(size))
-		return std::nullopt;
+		throw std::runtime_error("file ended prematurely");
 	// We probably don't need this, but add it just to be sure.
 	buf[size] = '\0';
 	try {
@@ -921,12 +928,10 @@ std::optional<tiniergltf::GlTF> SelfType::tryParseGLTF(io::IReadFile* file)
 			return tiniergltf::readGlb(buf.get(), size);
 		else
 			return tiniergltf::readGlTF(buf.get(), size);
-	} catch (const std::runtime_error &e) {
-		os::Printer::log("glTF loader", e.what(), ELL_ERROR);
-		return std::nullopt;
 	} catch (const std::out_of_range &e) {
-		os::Printer::log("glTF loader", e.what(), ELL_ERROR);
-		return std::nullopt;
+		throw std::runtime_error(e.what());
+	} catch (const std::bad_optional_access &e) {
+		throw std::runtime_error(e.what());
 	}
 }
 

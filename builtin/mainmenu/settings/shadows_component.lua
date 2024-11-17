@@ -1,4 +1,4 @@
---Minetest
+--Luanti
 --Copyright (C) 2021-2 x2048
 --Copyright (C) 2022-3 rubenwardy
 --
@@ -82,7 +82,6 @@ end
 return {
 	query_text = "Shadows",
 	requires = {
-		shaders = true,
 		opengl = true,
 	},
 	get_formspec = function(self, avail_w)

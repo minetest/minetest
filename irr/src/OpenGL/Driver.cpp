@@ -144,7 +144,7 @@ void COpenGL3DriverBase::debugCb(GLenum source, GLenum type, GLuint id, GLenum s
 		ll = ELL_ERROR;
 	else if (severity == GL_DEBUG_SEVERITY_MEDIUM)
 		ll = ELL_WARNING;
-	char buf[256];
+	char buf[300];
 	snprintf_irr(buf, sizeof(buf), "%04x %04x %.*s", source, type, length, message);
 	os::Printer::log("GL", buf, ll);
 }
@@ -226,8 +226,8 @@ void COpenGL3DriverBase::initVersion()
 	printVersion();
 
 	// print renderer information
-	VendorName = GL.GetString(GL_VENDOR);
-	os::Printer::log("Vendor", VendorName.c_str(), ELL_INFORMATION);
+	VendorName = GL.GetString(GL_RENDERER);
+	os::Printer::log("Renderer", VendorName.c_str(), ELL_INFORMATION);
 
 	Version = getVersionFromOpenGL();
 }
@@ -700,15 +700,7 @@ void COpenGL3DriverBase::drawVertexPrimitiveList(const void *vertices, u32 verte
 		break;
 	}
 	case (EIT_32BIT): {
-#ifdef GL_OES_element_index_uint
-#ifndef GL_UNSIGNED_INT
-#define GL_UNSIGNED_INT 0x1405
-#endif
-		if (FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_OES_element_index_uint])
-			indexSize = GL_UNSIGNED_INT;
-		else
-#endif
-			indexSize = GL_UNSIGNED_SHORT;
+		indexSize = GL_UNSIGNED_INT;
 		break;
 	}
 	}
@@ -1683,7 +1675,7 @@ ITexture *COpenGL3DriverBase::addRenderTargetTextureCubemap(const irr::u32 sideL
 //! Returns the maximum amount of primitives
 u32 COpenGL3DriverBase::getMaximalPrimitiveCount() const
 {
-	return 65535;
+	return Version.Spec == OpenGLSpec::ES ? 65535 : 0x7fffffff;
 }
 
 bool COpenGL3DriverBase::setRenderTargetEx(IRenderTarget *target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)

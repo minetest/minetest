@@ -1,25 +1,11 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+// Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 #include <optional>
 #include <irrlicht.h>
+#include "IMeshCache.h"
 #include "fontengine.h"
 #include "client.h"
 #include "clouds.h"
@@ -27,14 +13,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiscalingfilter.h"
 #include "localplayer.h"
 #include "client/hud.h"
+#include "client/texturesource.h"
 #include "camera.h"
 #include "minimap.h"
 #include "clientmap.h"
 #include "renderingengine.h"
 #include "render/core.h"
 #include "render/factory.h"
-#include "inputhandler.h"
-#include "gettext.h"
 #include "filesys.h"
 #include "irrlicht_changes/static_text.h"
 #include "irr_ptr.h"
@@ -237,8 +222,7 @@ RenderingEngine::~RenderingEngine()
 {
 	sanity_check(s_singleton == this);
 
-	g_settings->deregisterChangedCallback("fullscreen", settingChangedCallback, this);
-	g_settings->deregisterChangedCallback("window_maximized", settingChangedCallback, this);
+	g_settings->deregisterAllChangedCallbacks(this);
 
 	core.reset();
 	m_device->closeDevice();

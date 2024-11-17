@@ -1,4 +1,4 @@
---Minetest
+--Luanti
 --Copyright (C) 2022 rubenwardy
 --
 --This program is free software; you can redistribute it and/or modify
@@ -341,18 +341,17 @@ local function check_requirements(name, requires)
 	end
 
 	local video_driver = core.get_active_driver()
-	local shaders_support = video_driver == "opengl" or video_driver == "opengl3" or video_driver == "ogles2"
+	local touch_support = core.irrlicht_device_supports_touch()
 	local touch_controls = core.settings:get("touch_controls")
 	local special = {
 		android = PLATFORM == "Android",
 		desktop = PLATFORM ~= "Android",
-		-- When touch_controls is "auto", we don't which input method will be used,
-		-- so we show settings for both.
-		touchscreen = touch_controls == "auto" or core.is_yes(touch_controls),
-		keyboard_mouse = touch_controls == "auto" or not core.is_yes(touch_controls),
-		shaders_support = shaders_support,
-		shaders = core.settings:get_bool("enable_shaders") and shaders_support,
-		opengl = video_driver == "opengl",
+		touch_support = touch_support,
+		-- When touch_controls is "auto", we don't know which input method will
+		-- be used, so we show settings for both.
+		touchscreen = touch_support and (touch_controls == "auto" or core.is_yes(touch_controls)),
+		keyboard_mouse = not touch_support or (touch_controls == "auto" or not core.is_yes(touch_controls)),
+		opengl = (video_driver == "opengl" or video_driver == "opengl3"),
 		gles = video_driver:sub(1, 5) == "ogles",
 	}
 
@@ -360,7 +359,7 @@ local function check_requirements(name, requires)
 		if special[req_key] == nil then
 			local required_setting = get_setting_info(req_key)
 			if required_setting == nil then
-				core.log("warning", "Unknown setting " .. req_key .. " required by " .. name)
+				core.log("warning", "Unknown setting " .. req_key .. " required by " .. (name or "???"))
 			end
 			local actual_value = core.settings:get_bool(req_key,
 				required_setting and core.is_yes(required_setting.default))
@@ -706,7 +705,7 @@ local function buttonhandler(this, fields)
 
 	local function after_setting_change(comp)
 		write_settings_early()
-		if comp.setting.name == "touch_controls" then
+		if comp.setting and comp.setting.name == "touch_controls" then
 			-- Changing the "touch_controls" setting may result in a different
 			-- page list.
 			regenerate_page_list(dialogdata)
@@ -734,7 +733,7 @@ end
 
 local function eventhandler(event)
 	if event == "DialogShow" then
-		-- Don't show the "MINETEST" header behind the dialog.
+		-- Don't show the header image behind the dialog.
 		mm_game_theme.set_engine(true)
 		return true
 	end

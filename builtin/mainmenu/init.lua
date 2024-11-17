@@ -1,4 +1,4 @@
---Minetest
+--Luanti
 --Copyright (C) 2014 sapier
 --
 --This program is free software; you can redistribute it and/or modify
@@ -133,4 +133,5 @@ local function init_globals()
 	check_new_version()
 end
 
+assert(os.execute == nil)
 init_globals()

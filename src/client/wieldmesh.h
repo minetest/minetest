@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2014 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2014 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
@@ -132,7 +117,6 @@ private:
 	scene::IMeshSceneNode *m_meshnode = nullptr;
 	video::E_MATERIAL_TYPE m_material_type;
 
-	bool m_enable_shaders;
 	bool m_anisotropic_filter;
 	bool m_bilinear_filter;
 	bool m_trilinear_filter;
@@ -167,6 +151,6 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename
  * be NULL to leave the original material.
  * \param colors returns the colors of the mesh buffers in the mesh.
  */
-void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f, bool use_shaders,
+void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 		bool set_material, const video::E_MATERIAL_TYPE *mattype,
 		std::vector<ItemPartColor> *colors, bool apply_scale = false);

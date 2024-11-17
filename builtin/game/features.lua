@@ -1,5 +1,3 @@
--- Minetest: builtin/features.lua
-
 core.features = {
 	glasslike_framed = true,
 	nodebox_as_selectionbox = true,
@@ -45,6 +43,7 @@ core.features = {
 	hotbar_hud_element = true,
 	bulk_lbms = true,
 	abm_without_neighbors = true,
+	biome_weights = true,
 }
 
 function core.has_feature(arg)

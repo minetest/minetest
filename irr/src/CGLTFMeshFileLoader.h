@@ -118,6 +118,9 @@ private:
 		std::size_t getPrimitiveCount(const std::size_t meshIdx) const;
 
 		void load();
+		const std::vector<std::string> &getWarnings() {
+			return warnings;
+		}
 
 	private:
 		const tiniergltf::GlTF m_gltf_model;
@@ -125,6 +128,11 @@ private:
 
 		std::vector<std::function<void()>> m_mesh_loaders;
 		std::vector<CSkinnedMesh::SJoint *> m_loaded_nodes;
+
+		std::vector<std::string> warnings;
+		void warn(const std::string &warning) {
+			warnings.push_back(warning);
+		}
 
 		void copyPositions(const std::size_t accessorIdx,
 				std::vector<video::S3DVertex>& vertices) const;
@@ -152,7 +160,7 @@ private:
 		void loadAnimation(const std::size_t animIdx);
 	};
 
-	std::optional<tiniergltf::GlTF> tryParseGLTF(io::IReadFile *file);
+	tiniergltf::GlTF parseGLTF(io::IReadFile *file);
 };
 
 } // namespace scene

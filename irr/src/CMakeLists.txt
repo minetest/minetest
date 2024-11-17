@@ -123,10 +123,10 @@ if(USE_SDL2)
 	if(NOT ANDROID)
 		set(DEFAULT_OPENGL3 TRUE)
 	endif()
-	option(ENABLE_OPENGL3 "Enable OpenGL 3+" ${DEFAULT_OPENGL3})
 else()
-	set(ENABLE_OPENGL3 FALSE)
+	set(DEFAULT_OPENGL3 FALSE)
 endif()
+option(ENABLE_OPENGL3 "Enable OpenGL 3+" ${DEFAULT_OPENGL3})
 
 if(ANDROID OR EMSCRIPTEN)
 	set(ENABLE_OPENGL FALSE)
@@ -152,9 +152,11 @@ else()
 	endif()
 endif()
 
-if(ENABLE_OPENGL)
-	add_definitions(-D_IRR_COMPILE_WITH_OPENGL_)
-	set(OPENGL_DIRECT_LINK TRUE) # driver relies on this
+if(ENABLE_OPENGL OR (ENABLE_OPENGL3 AND NOT USE_SDL2))
+	if(ENABLE_OPENGL)
+		add_definitions(-D_IRR_COMPILE_WITH_OPENGL_)
+		set(OPENGL_DIRECT_LINK TRUE) # driver relies on this
+	endif()
 	if(DEVICE STREQUAL "WINDOWS")
 		add_definitions(-D_IRR_COMPILE_WITH_WGL_MANAGER_)
 	elseif(DEVICE STREQUAL "X11")
@@ -165,7 +167,11 @@ if(ENABLE_OPENGL)
 endif()
 
 if(ENABLE_OPENGL3)
-	if (NOT USE_SDL2)
+	if(DEVICE STREQUAL "WINDOWS")
+		# supported
+	elseif(DEVICE STREQUAL "X11")
+		# supported
+	elseif (NOT USE_SDL2)
 		message(FATAL_ERROR "OpenGL 3 driver requires SDL2")
 	endif()
 endif()
@@ -219,7 +225,7 @@ if(USE_SDL2)
 	if(NOT ANDROID)
 		find_package(SDL2 REQUIRED)
 	else()
-		# provided by MinetestAndroidLibs.cmake
+		# provided by AndroidLibs.cmake
 	endif()
 	message(STATUS "Found SDL2: ${SDL2_LIBRARIES}")
 
@@ -313,21 +319,6 @@ add_library(IRRMESHOBJ OBJECT
 
 target_link_libraries(IRRMESHOBJ PUBLIC tiniergltf::tiniergltf)
 
-add_library(IRROBJ OBJECT
-	CBillboardSceneNode.cpp
-	CCameraSceneNode.cpp
-	CDummyTransformationSceneNode.cpp
-	CEmptySceneNode.cpp
-	CMeshManipulator.cpp
-	CSceneCollisionManager.cpp
-	CSceneManager.cpp
-	CMeshCache.cpp
-)
-
-# Make sure IRROBJ gets the transitive include directories for
-# tiniergltf from IRRMESHOBJ.
-target_link_libraries(IRROBJ PRIVATE IRRMESHOBJ)
-
 set(IRRDRVROBJ
 	CNullDriver.cpp
 	CGLXManager.cpp
@@ -379,7 +370,6 @@ endif()
 set(IRRIMAGEOBJ
 	CColorConverter.cpp
 	CImage.cpp
-	CImageLoaderBMP.cpp
 	CImageLoaderJPG.cpp
 	CImageLoaderPNG.cpp
 	CImageLoaderTGA.cpp
@@ -460,14 +450,29 @@ add_library(IRRGUIOBJ OBJECT
 
 # Library
 
-add_library(IrrlichtMt STATIC)
+# There have to be some sources in IrrlichtMt to workaround Cmake Xcode generator bug
+add_library(IrrlichtMt STATIC
+	CBillboardSceneNode.cpp
+	CCameraSceneNode.cpp
+	CDummyTransformationSceneNode.cpp
+	CEmptySceneNode.cpp
+	CMeshManipulator.cpp
+	CSceneCollisionManager.cpp
+	CSceneManager.cpp
+	CMeshCache.cpp
+)
 foreach(object_lib
-	IRRMESHOBJ IRROBJ IRRVIDEOOBJ
+	IRRMESHOBJ IRRVIDEOOBJ
 	IRRIOOBJ IRROTHEROBJ IRRGUIOBJ)
 	# Set include directories for object library compilation
 	target_include_directories(${object_lib} PRIVATE ${link_includes})
-	# Add objects from object library to main library
-	target_sources(IrrlichtMt PRIVATE $<TARGET_OBJECTS:${object_lib}>)
+	if(CMAKE_GENERATOR STREQUAL "Xcode")
+		# Workaround for Cmake Xcode project generator
+		target_link_libraries(IrrlichtMt PRIVATE ${object_lib})
+	else()
+		# Add objects from object library to main library
+		target_sources(IrrlichtMt PRIVATE $<TARGET_OBJECTS:${object_lib}>)
+	endif()
 
 	if(BUILD_WITH_TRACY)
 		target_link_libraries(${object_lib} PRIVATE Tracy::TracyClient)

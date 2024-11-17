@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "content_cao.h"
 #include <IBillboardSceneNode.h>
@@ -364,8 +349,6 @@ bool GenericCAO::collideWithObjects() const
 void GenericCAO::initialize(const std::string &data)
 {
 	processInitData(data);
-
-	m_enable_shaders = g_settings->getBool("enable_shaders");
 }
 
 void GenericCAO::processInitData(const std::string &data)
@@ -618,7 +601,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 	m_material_type_param = 0.5f; // May cut off alpha < 128 depending on m_material_type
 
-	if (m_enable_shaders) {
+	{
 		IShaderSource *shader_source = m_client->getShaderSource();
 		MaterialType material_type;
 
@@ -631,13 +614,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 		u32 shader_id = shader_source->getShader("object_shader", material_type, NDT_NORMAL);
 		m_material_type = shader_source->getShaderInfo(shader_id).material;
-	} else {
-		if (m_prop.use_texture_alpha) {
-			m_material_type = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-			m_material_type_param = 1.0f / 256.f; // minimal alpha for texture rendering
-		} else {
-			m_material_type = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-		}
 	}
 
 	auto grabMatrixNode = [this] {
@@ -703,9 +679,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 			// Set material
 			setMaterial(buf->getMaterial());
-			if (m_enable_shaders) {
-				buf->getMaterial().ColorParam = c;
-			}
+			buf->getMaterial().ColorParam = c;
 
 			// Add to mesh
 			mesh->addMeshBuffer(buf);
@@ -729,9 +703,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 			// Set material
 			setMaterial(buf->getMaterial());
-			if (m_enable_shaders) {
-				buf->getMaterial().ColorParam = c;
-			}
+			buf->getMaterial().ColorParam = c;
 
 			// Add to mesh
 			mesh->addMeshBuffer(buf);
@@ -809,7 +781,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 	/* Set VBO hint */
 	// wieldmesh sets its own hint, no need to handle it
-	if (m_enable_shaders && (m_meshnode || m_animated_meshnode)) {
+	if (m_meshnode || m_animated_meshnode) {
 		// sprite uses vertex animation
 		if (m_meshnode && m_prop.visual != "upright_sprite")
 			m_meshnode->getMesh()->setHardwareMappingHint(scene::EHM_STATIC);
@@ -907,10 +879,7 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 
 	// Encode light into color, adding a small boost
 	// based on the entity glow.
-	if (m_enable_shaders)
-		light = encode_light(light_at_pos, m_prop.glow);
-	else
-		final_color_blend(&light, light_at_pos, day_night_ratio);
+	light = encode_light(light_at_pos, m_prop.glow);
 
 	if (light != m_last_light) {
 		m_last_light = light;
@@ -926,19 +895,11 @@ void GenericCAO::setNodeLight(const video::SColor &light_color)
 		return;
 	}
 
-	if (m_enable_shaders) {
+	{
 		auto *node = getSceneNode();
 		if (!node)
 			return;
 		setColorParam(node, light_color);
-	} else {
-		if (m_meshnode) {
-			setMeshColor(m_meshnode->getMesh(), light_color);
-		} else if (m_animated_meshnode) {
-			setMeshColor(m_animated_meshnode->getMesh(), light_color);
-		} else if (m_spritenode) {
-			m_spritenode->setColor(light_color);
-		}
 	}
 }
 
@@ -1154,11 +1115,10 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			box.MinEdge *= BS;
 			box.MaxEdge *= BS;
 			collisionMoveResult moveresult;
-			f32 pos_max_d = BS*0.125; // Distance per iteration
 			v3f p_pos = m_position;
 			v3f p_velocity = m_velocity;
 			moveresult = collisionMoveSimple(env,env->getGameDef(),
-					pos_max_d, box, m_prop.stepheight, dtime,
+					box, m_prop.stepheight, dtime,
 					&p_pos, &p_velocity, m_acceleration,
 					this, m_prop.collideWithObjects);
 			// Apply results

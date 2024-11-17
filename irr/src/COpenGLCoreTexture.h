@@ -261,7 +261,14 @@ public:
 			if (LockImage && mode != ETLM_WRITE_ONLY) {
 				bool passed = true;
 
-#ifdef IRR_COMPILE_GL_COMMON
+#ifdef IRR_COMPILE_GL_COMMON // legacy driver
+				constexpr bool use_gl_impl = true;
+#else
+				const bool use_gl_impl = Driver->Version.Spec != OpenGLSpec::ES;
+#endif
+
+				if (use_gl_impl) {
+
 				IImage *tmpImage = LockImage; // not sure yet if the size required by glGetTexImage is always correct, if not we might have to allocate a different tmpImage and convert colors later on.
 
 				Driver->getCacheHandler()->getTextureCache().set(0, this);
@@ -296,37 +303,26 @@ public:
 
 					delete[] tmpBuffer;
 				}
-#elif defined(IRR_COMPILE_GLES2_COMMON)
-				COpenGLCoreTexture *tmpTexture = new COpenGLCoreTexture("OGL_CORE_LOCK_TEXTURE", Size, ETT_2D, ColorFormat, Driver);
+
+				} else {
 
 				GLuint tmpFBO = 0;
 				Driver->irrGlGenFramebuffers(1, &tmpFBO);
-
-				GLint prevViewportX = 0;
-				GLint prevViewportY = 0;
-				GLsizei prevViewportWidth = 0;
-				GLsizei prevViewportHeight = 0;
-				Driver->getCacheHandler()->getViewport(prevViewportX, prevViewportY, prevViewportWidth, prevViewportHeight);
-				Driver->getCacheHandler()->setViewport(0, 0, Size.Width, Size.Height);
 
 				GLuint prevFBO = 0;
 				Driver->getCacheHandler()->getFBO(prevFBO);
 				Driver->getCacheHandler()->setFBO(tmpFBO);
 
-				Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tmpTexture->getOpenGLTextureName(), 0);
-
-				GL.Clear(GL_COLOR_BUFFER_BIT);
-
-				Driver->draw2DImage(this, layer, true);
+				Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, getOpenGLTextureName(), 0);
 
 				IImage *tmpImage = Driver->createImage(ECF_A8R8G8B8, Size);
 				GL.ReadPixels(0, 0, Size.Width, Size.Height, GL_RGBA, GL_UNSIGNED_BYTE, tmpImage->getData());
 
+				Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+
 				Driver->getCacheHandler()->setFBO(prevFBO);
-				Driver->getCacheHandler()->setViewport(prevViewportX, prevViewportY, prevViewportWidth, prevViewportHeight);
 
 				Driver->irrGlDeleteFramebuffers(1, &tmpFBO);
-				delete tmpTexture;
 
 				void *src = tmpImage->getData();
 				void *dest = LockImage->getData();
@@ -349,7 +345,8 @@ public:
 					break;
 				}
 				tmpImage->drop();
-#endif
+
+				}
 
 				if (!passed) {
 					LockImage->drop();
