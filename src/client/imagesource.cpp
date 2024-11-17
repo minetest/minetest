@@ -566,7 +566,7 @@ static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 		for (u32 x = dst_pos.X; x < dst_pos.X + size.X; x++) {
 
 			if (colorize) {
-				f32 lum = dst->getPixel(x, y).getLuminance() / 255.0f;
+				f32 lum = dst->getPixel(x, y).getBrightness() / 255.0f;
 
 				if (norm_l < 0) {
 					lum *= norm_l + 1.0f;

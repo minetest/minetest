@@ -201,10 +201,10 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			status_y - status_height, status_x + status_width, status_y));
 
 		// Fade out
-		video::SColor final_color = m_statustext_initial_color;
-		final_color.setAlpha(0);
-		video::SColor fade_color = m_statustext_initial_color.getInterpolated_quadratic(
-			m_statustext_initial_color, final_color, m_statustext_time / statustext_time_max);
+		video::SColor fade_color = m_statustext_initial_color;
+		f32 d = m_statustext_time / statustext_time_max;
+		fade_color.setAlpha(static_cast<u32>(
+			fade_color.getAlpha() * (1.0f - d * d)));
 		guitext_status->setOverrideColor(fade_color);
 		guitext_status->enableOverrideColor(true);
 	}

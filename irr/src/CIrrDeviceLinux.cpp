@@ -1951,7 +1951,8 @@ Cursor CIrrDeviceLinux::TextureToMonochromeCursor(irr::video::ITexture *tex, con
 				XPutPixel(sourceImage, x, y, 0);
 			} else // color
 			{
-				if (pixelCol.getAverage() >= 127)
+				if ((pixelCol.getRed() + pixelCol.getGreen() +
+						pixelCol.getBlue()) / 3 >= 127)
 					XPutPixel(sourceImage, x, y, 1);
 				else
 					XPutPixel(sourceImage, x, y, 0);
