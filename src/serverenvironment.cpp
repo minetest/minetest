@@ -526,14 +526,14 @@ void ServerEnvironment::init()
 		warningstream << "/!\\ You are using old player file backend. "
 				<< "This backend is deprecated and will be removed in a future release /!\\"
 				<< std::endl << "Switching to SQLite3 or PostgreSQL is advised, "
-				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+				<< "please read https://wiki.luanti.org/Database_backends." << std::endl;
 	}
 
 	if (auth_backend_name == "files") {
 		warningstream << "/!\\ You are using old auth file backend. "
 				<< "This backend is deprecated and will be removed in a future release /!\\"
 				<< std::endl << "Switching to SQLite3 is advised, "
-				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+				<< "please read https://wiki.luanti.org/Database_backends." << std::endl;
 	}
 
 	m_player_database = openPlayerDatabase(player_backend_name, world_path, conf);
