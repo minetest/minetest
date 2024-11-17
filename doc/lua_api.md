@@ -11485,14 +11485,14 @@ texture = {
     -- (default) blends transparent pixels with those they are drawn atop
     -- according to the alpha channel of the source texture. useful for
     -- e.g. material objects like rocks, dirt, smoke, or node chunks
+    -- note: there will be rendering bugs when particles interact with
+    -- translucent nodes. particles are also not transparency-sorted
+    -- relative to each other.
     blend = "clip",
     -- pixels are either fully opaque or fully transparent,
     -- depending on whether alpha is greater than or less than 50%
-    -- (similar to `use_texture_alpha = "clip"` for nodes).
-    -- this fixes rendering bugs (invisibility) that occur when particles
-    -- interact with translucent nodes
-    -- (see https://github.com/minetest/minetest/issues/3761).
-    -- in the future, it may be useful for better performance.
+    -- (just like `use_texture_alpha = "clip"` for nodes).
+    -- you should prefer this if you don't need semi-transparency, as it's faster.
     blend = "add",
     -- adds the value of pixels to those underneath them, modulo the sources
     -- alpha channel. useful for e.g. bright light effects like sparks or fire
