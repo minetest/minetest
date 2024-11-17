@@ -119,16 +119,9 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 
 	// This code only deals with MSAA in combination with post-processing. MSAA without
 	// post-processing works via a flag at OpenGL context creation instead.
-
 	// To make MSAA work with post-processing, we need multisample texture support,
-	// which has a higher OpenGL version requirement:
-	// > glTexImage2DMultisample is available only if the GL version is 3.2 or greater.
-	// > ~ https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage2DMultisample.xhtml
-	// Older versions may support it via the GL_ARB_texture_multisample extension.
-
-	// Note: No support for OpenGL ES implemented. That seems to be another can of worms,
-	// different version requirements, different API functions and possibly some extensions.
-	// Another note: This is not about renderbuffer objects, but about textures,
+	// which has higher OpenGL (ES) version requirements.
+	// Note: This is not about renderbuffer objects, but about textures,
 	// since that's what we use and what Irrlicht allows us to use.
 
 	const bool msaa_available = driver->queryFeature(video::EVDF_TEXTURE_MULTISAMPLE);
