@@ -67,7 +67,7 @@ void GUITouchscreenLayout::regenerateGui(v2u32 screensize)
 			m_layout.layout.count(m_selected_btn) == 0)
 		m_selected_btn = touch_gui_button_id_END;
 
-	if (m_add_mode)
+	if (m_mode == Mode::Add)
 		regenerateGUIImagesAddMode(screensize);
 	else
 		regenerateGUIImagesRegular(screensize);
@@ -85,6 +85,8 @@ void GUITouchscreenLayout::clearGUIImages()
 
 void GUITouchscreenLayout::regenerateGUIImagesRegular(v2u32 screensize)
 {
+	assert(m_mode != Mode::Add);
+
 	auto old_gui_images = m_gui_images;
 	clearGUIImages();
 
@@ -110,6 +112,8 @@ void GUITouchscreenLayout::regenerateGUIImagesRegular(v2u32 screensize)
 
 void GUITouchscreenLayout::regenerateGUIImagesAddMode(v2u32 screensize)
 {
+	assert(m_mode == Mode::Add);
+
 	clearGUIImages();
 
 	auto missing_buttons = m_layout.getMissingButtons();
@@ -134,11 +138,11 @@ void GUITouchscreenLayout::regenerateGUIImagesAddMode(v2u32 screensize)
 
 void GUITouchscreenLayout::interpolateGUIImages()
 {
-	if (m_add_mode)
+	if (m_mode == Mode::Add)
 		return;
 
 	for (auto &[btn, gui_image] : m_gui_images) {
-		bool interpolate = !m_dragging || m_selected_btn != btn;
+		bool interpolate = m_mode != Mode::Dragging || m_selected_btn != btn;
 
 		v2s32 cur_pos_int = gui_image->getRelativePosition().UpperLeftCorner;
 		v2s32 tgt_pos_int = m_gui_images_target_pos.at(btn);
@@ -184,7 +188,7 @@ void GUITouchscreenLayout::regenerateMenu(v2u32 screensize)
 {
 	bool have_selection = m_selected_btn != touch_gui_button_id_END;
 
-	if (m_add_mode)
+	if (m_mode == Mode::Add)
 		m_gui_help_text->setText(wstrgettext("Start dragging a button to add. Tap outside to cancel.").c_str());
 	else if (!have_selection)
 		m_gui_help_text->setText(wstrgettext("Tap a button to select it. Drag a button to move it.").c_str());
@@ -194,19 +198,19 @@ void GUITouchscreenLayout::regenerateMenu(v2u32 screensize)
 	IGUIFont *font = m_gui_help_text->getActiveFont();
 	core::dimension2du dim = font->getDimension(m_gui_help_text->getText());
 	s32 height = dim.Height * 2.5f;
-	s32 pos_y = (m_add_mode || have_selection) ? 0 : screensize.Y - height;
+	s32 pos_y = (m_mode == Mode::Add || have_selection) ? 0 : screensize.Y - height;
 	m_gui_help_text->setRelativePosition(core::recti(
 			v2s32(0, pos_y),
 			core::dimension2du(screensize.X, height)));
 
-	bool no_selection_visible = !m_add_mode && !have_selection;
-	bool add_visible = no_selection_visible && !m_layout.getMissingButtons().empty();
+	bool normal_buttons_visible = m_mode != Mode::Add && !have_selection;
+	bool add_visible = normal_buttons_visible && !m_layout.getMissingButtons().empty();
 
 	m_gui_add_btn->setVisible(add_visible);
-	m_gui_reset_btn->setVisible(no_selection_visible);
-	m_gui_done_btn->setVisible(no_selection_visible);
+	m_gui_reset_btn->setVisible(normal_buttons_visible);
+	m_gui_done_btn->setVisible(normal_buttons_visible);
 
-	if (no_selection_visible) {
+	if (normal_buttons_visible) {
 		std::vector row1{m_gui_add_btn, m_gui_reset_btn, m_gui_done_btn};
 		if (add_visible) {
 			layout_menu_row(screensize, row1, row1, false);
@@ -216,7 +220,7 @@ void GUITouchscreenLayout::regenerateMenu(v2u32 screensize)
 		}
 	}
 
-	bool remove_visible = !m_add_mode && have_selection &&
+	bool remove_visible = m_mode != Mode::Add && have_selection &&
 			!ButtonLayout::isButtonRequired(m_selected_btn);
 
 	m_gui_remove_btn->setVisible(remove_visible);
@@ -248,7 +252,7 @@ void GUITouchscreenLayout::drawMenu()
 				m_gui_images.at(m_selected_btn)->getAbsolutePosition(),
 				&AbsoluteClippingRect);
 
-	if (m_dragging) {
+	if (m_mode == Mode::Dragging) {
 		for (const auto &rect : m_error_rects)
 			driver->draw2DRectangle(error_color, rect, &AbsoluteClippingRect);
 	}
@@ -258,6 +262,8 @@ void GUITouchscreenLayout::drawMenu()
 
 void GUITouchscreenLayout::updateDragState(v2u32 screensize, v2s32 mouse_movement)
 {
+	assert(m_mode == Mode::Dragging);
+
 	core::recti rect = m_layout.getRect(m_selected_btn, screensize, m_button_size, m_tsrc);
 	rect += mouse_movement;
 	rect.constrainTo(core::recti(v2s32(0, 0), core::dimension2du(screensize)));
@@ -310,16 +316,16 @@ bool GUITouchscreenLayout::OnEvent(const SEvent& event)
 				}
 			}
 
-			if (m_add_mode) {
+			if (m_mode == Mode::Add) {
 				if (m_selected_btn != touch_gui_button_id_END) {
-					m_dragging = true;
+					m_mode = Mode::Dragging;
 					m_last_good_layout = m_layout;
 					m_layout.layout[m_selected_btn] = m_add_layout.layout.at(m_selected_btn);
 					updateDragState(screensize, v2s32(0, 0));
+				} else {
+					// Clicking on nothing quits add mode without adding a button.
+					m_mode = Mode::Default;
 				}
-
-				// Clicking on nothing quits add mode without adding a button.
-				m_add_mode = false;
 			}
 
 			regenerateGui(screensize);
@@ -327,8 +333,8 @@ bool GUITouchscreenLayout::OnEvent(const SEvent& event)
 		}
 		case EMIE_MOUSE_MOVED: {
 			if (m_mouse_down && m_selected_btn != touch_gui_button_id_END) {
-				if (!m_dragging) {
-					m_dragging = true;
+				if (m_mode != Mode::Dragging) {
+					m_mode = Mode::Dragging;
 					m_last_good_layout = m_layout;
 				}
 				updateDragState(screensize, mouse_pos - m_last_mouse_pos);
@@ -342,8 +348,8 @@ bool GUITouchscreenLayout::OnEvent(const SEvent& event)
 		case EMIE_LMOUSE_LEFT_UP: {
 			m_mouse_down = false;
 
-			if (m_dragging) {
-				m_dragging = false;
+			if (m_mode == Mode::Dragging) {
+				m_mode = Mode::Default;
 				if (!m_error_rects.empty())
 					m_layout = m_last_good_layout;
 
@@ -361,7 +367,7 @@ bool GUITouchscreenLayout::OnEvent(const SEvent& event)
 		switch (event.GUIEvent.EventType) {
 		case EGET_BUTTON_CLICKED: {
 			if (event.GUIEvent.Caller == m_gui_add_btn.get()) {
-				m_add_mode = true;
+				m_mode = Mode::Add;
 				regenerateGui(screensize);
 				return true;
 			}
