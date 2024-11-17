@@ -88,15 +88,15 @@ class COpenGLCoreCacheHandler
 								// The "enable/disable texture" stuff is so legacy that
 								// it's not even allowed for multisample textures.
 								// (IRR_COMPILE_GL_COMMON is for the legacy driver.)
-								if ((prevTexture ? prevTexture : curTexture)->getType() != ETT_2D_MS)
+								if (prevTextureType != GL_TEXTURE_2D_MULTISAMPLE)
 									GL.Disable(prevTextureType);
-								if (curTexture->getType() != ETT_2D_MS)
+								if (curTextureType != GL_TEXTURE_2D_MULTISAMPLE)
 									GL.Enable(curTextureType);
 #endif
 							}
 #if defined(IRR_COMPILE_GL_COMMON)
 							else if (!prevTexture)
-								if (curTexture->getType() != ETT_2D_MS)
+								if (curTextureType != GL_TEXTURE_2D_MULTISAMPLE)
 									GL.Enable(curTextureType);
 #endif
 
@@ -116,7 +116,7 @@ class COpenGLCoreCacheHandler
 						GL.BindTexture(prevTextureType, 0);
 
 #if defined(IRR_COMPILE_GL_COMMON)
-						if (prevTexture->getType() != ETT_2D_MS)
+						if (prevTextureType != GL_TEXTURE_2D_MULTISAMPLE)
 							GL.Disable(prevTextureType);
 #endif
 					}
