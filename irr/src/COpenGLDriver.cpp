@@ -2722,7 +2722,7 @@ ITexture *COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32> &si
 	return addRenderTargetTextureMs(size, 0, name, format);
 }
 
-ITexture *COpenGLDriver::addRenderTargetTextureMs(const core::dimension2d<u32> &size, u16 msaa,
+ITexture *COpenGLDriver::addRenderTargetTextureMs(const core::dimension2d<u32> &size, u8 msaa,
 		const io::path &name, const ECOLOR_FORMAT format)
 {
 	if (IImage::isCompressedFormat(format))

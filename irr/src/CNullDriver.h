@@ -228,7 +228,7 @@ public:
 			const io::path &name, const ECOLOR_FORMAT format = ECF_UNKNOWN) override;
 
 	//! Creates a multisampled render target texture.
-	virtual ITexture *addRenderTargetTextureMs(const core::dimension2d<u32> &size, u16 msaa,
+	virtual ITexture *addRenderTargetTextureMs(const core::dimension2d<u32> &size, u8 msaa,
 			const io::path &name, const ECOLOR_FORMAT format = ECF_UNKNOWN) override;
 
 	//! Creates a render target texture for a cubemap

@@ -1678,7 +1678,7 @@ ITexture *CNullDriver::addRenderTargetTexture(const core::dimension2d<u32> &size
 	return 0;
 }
 
-ITexture *CNullDriver::addRenderTargetTextureMs(const core::dimension2d<u32> &size, u16 msaa,
+ITexture *CNullDriver::addRenderTargetTextureMs(const core::dimension2d<u32> &size, u8 msaa,
 		const io::path &name, const ECOLOR_FORMAT format)
 {
 	return 0;

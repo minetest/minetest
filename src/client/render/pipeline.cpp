@@ -26,7 +26,7 @@ video::ITexture *TextureBuffer::getTexture(u8 index)
 }
 
 
-void TextureBuffer::setTexture(u8 index, core::dimension2du size, const std::string &name, video::ECOLOR_FORMAT format, bool clear, u16 msaa)
+void TextureBuffer::setTexture(u8 index, core::dimension2du size, const std::string &name, video::ECOLOR_FORMAT format, bool clear, u8 msaa)
 {
 	assert(index != NO_DEPTH_TEXTURE);
 
@@ -44,7 +44,7 @@ void TextureBuffer::setTexture(u8 index, core::dimension2du size, const std::str
 	definition.msaa = msaa;
 }
 
-void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &name, video::ECOLOR_FORMAT format, bool clear, u16 msaa)
+void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &name, video::ECOLOR_FORMAT format, bool clear, u8 msaa)
 {
 	assert(index != NO_DEPTH_TEXTURE);
 

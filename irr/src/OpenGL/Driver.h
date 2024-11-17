@@ -211,7 +211,7 @@ public:
 	virtual ITexture *addRenderTargetTexture(const core::dimension2d<u32> &size,
 			const io::path &name, const ECOLOR_FORMAT format = ECF_UNKNOWN) override;
 
-	virtual ITexture *addRenderTargetTextureMs(const core::dimension2d<u32> &size, u16 msaa,
+	virtual ITexture *addRenderTargetTextureMs(const core::dimension2d<u32> &size, u8 msaa,
 			const io::path &name, const ECOLOR_FORMAT format = ECF_UNKNOWN) override;
 
 	//! Creates a render target texture for a cubemap

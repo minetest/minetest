@@ -1659,7 +1659,7 @@ ITexture *COpenGL3DriverBase::addRenderTargetTexture(const core::dimension2d<u32
 	return addRenderTargetTextureMs(size, 0, name, format);
 }
 
-ITexture *COpenGL3DriverBase::addRenderTargetTextureMs(const core::dimension2d<u32> &size, u16 msaa,
+ITexture *COpenGL3DriverBase::addRenderTargetTextureMs(const core::dimension2d<u32> &size, u8 msaa,
 		const io::path &name, const ECOLOR_FORMAT format)
 {
 	// disable mip-mapping

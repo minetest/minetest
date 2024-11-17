@@ -142,7 +142,7 @@ public:
 		TEST_GL_ERROR(Driver);
 	}
 
-	COpenGLCoreTexture(const io::path &name, const core::dimension2d<u32> &size, E_TEXTURE_TYPE type, ECOLOR_FORMAT format, TOpenGLDriver *driver, u16 msaa = 0) :
+	COpenGLCoreTexture(const io::path &name, const core::dimension2d<u32> &size, E_TEXTURE_TYPE type, ECOLOR_FORMAT format, TOpenGLDriver *driver, u8 msaa = 0) :
 			ITexture(name, type),
 			Driver(driver), TextureType(GL_TEXTURE_2D),
 			TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), MSAA(msaa), Converter(0), LockReadOnly(false), LockImage(0), LockLayer(0), KeepImage(false),
@@ -622,7 +622,7 @@ protected:
 	GLint InternalFormat;
 	GLenum PixelFormat;
 	GLenum PixelType;
-	u16 MSAA;
+	u8 MSAA;
 	void (*Converter)(const void *, s32, void *);
 
 	bool LockReadOnly;
