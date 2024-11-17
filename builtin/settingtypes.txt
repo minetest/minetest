@@ -417,9 +417,6 @@ anisotropic_filter (Anisotropic filtering) bool false
 #             Also, if Post Processing is disabled, FSAA will not work together with
 #             undersampling or a non-default "3d_mode" setting.
 #
-#             With the "ogles2" video driver, FSAA currently does not work if
-#             Post Processing is enabled.
-#
 #    * FXAA - Fast approximate antialiasing
 #             Applies a post-processing filter to detect and smoothen high-contrast edges.
 #             Provides balance between speed and image quality.

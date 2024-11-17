@@ -208,9 +208,24 @@ public:
 		case ETT_2D:
 			GL.TexImage2D(GL_TEXTURE_2D, 0, InternalFormat, Size.Width, Size.Height, 0, PixelFormat, PixelType, 0);
 			break;
-		case ETT_2D_MS:
-			GL.TexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, MSAA, InternalFormat, Size.Width, Size.Height, GL_TRUE);
+		case ETT_2D_MS: {
+			// glTexImage2DMultisample is supported by OpenGL 3.2+
+			// glTexStorage2DMultisample is supported by OpenGL 4.3+ and OpenGL ES 3.1+
+#ifdef IRR_COMPILE_GL_COMMON // legacy driver
+			constexpr bool use_gl_impl = true;
+#else
+			const bool use_gl_impl = Driver->Version.Spec != OpenGLSpec::ES;
+#endif
+			GLint max_samples = 0;
+			GL.GetIntegerv(GL_MAX_SAMPLES, &max_samples);
+			MSAA = std::min(MSAA, (u8)max_samples);
+
+			if (use_gl_impl)
+				GL.TexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, MSAA, InternalFormat, Size.Width, Size.Height, GL_TRUE);
+			else
+				GL.TexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, MSAA, InternalFormat, Size.Width, Size.Height, GL_TRUE);
 			break;
+		}
 		case ETT_CUBEMAP:
 			GL.TexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, InternalFormat, Size.Width, Size.Height, 0, PixelFormat, PixelType, 0);
 			GL.TexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, InternalFormat, Size.Width, Size.Height, 0, PixelFormat, PixelType, 0);
