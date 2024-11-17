@@ -94,8 +94,8 @@ const char *button_image_names[] = {
 
 v2s32 ButtonMeta::getPos(v2u32 screensize, s32 button_size) const
 {
-	return v2s32((anchor.X * screensize.X) + (offset.X * button_size),
-			(anchor.Y * screensize.Y) + (offset.Y * button_size));
+	return v2s32((position.X * screensize.X) + (offset.X * button_size),
+			(position.Y * screensize.Y) + (offset.Y * button_size));
 }
 
 void ButtonMeta::setPos(v2s32 pos, v2u32 screensize, s32 button_size)
@@ -103,21 +103,21 @@ void ButtonMeta::setPos(v2s32 pos, v2u32 screensize, s32 button_size)
 	v2s32 third(screensize.X / 3, screensize.Y / 3);
 
 	if (pos.X < third.X)
-		anchor.X = 0.0f;
+		position.X = 0.0f;
 	else if (pos.X < 2 * third.X)
-		anchor.X = 0.5f;
+		position.X = 0.5f;
 	else
-		anchor.X = 1.0f;
+		position.X = 1.0f;
 
 	if (pos.Y < third.Y)
-		anchor.Y = 0.0f;
+		position.Y = 0.0f;
 	else if (pos.Y < 2 * third.Y)
-		anchor.Y = 0.5f;
+		position.Y = 0.5f;
 	else
-		anchor.Y = 1.0f;
+		position.Y = 1.0f;
 
-	offset.X = (pos.X - (anchor.X * screensize.X)) / button_size;
-	offset.Y = (pos.Y - (anchor.Y * screensize.Y)) / button_size;
+	offset.X = (pos.X - (position.X * screensize.X)) / button_size;
+	offset.Y = (pos.Y - (position.Y * screensize.Y)) / button_size;
 }
 
 bool ButtonLayout::isButtonAllowed(touch_gui_button_id id)
@@ -239,8 +239,8 @@ void ButtonLayout::serializeJson(std::ostream &os) const
 
 	for (const auto &[id, meta] : layout) {
 		Json::Value button = Json::objectValue;
-		button["anchor_x"] = meta.anchor.X;
-		button["anchor_y"] = meta.anchor.Y;
+		button["position_x"] = meta.position.X;
+		button["position_y"] = meta.position.Y;
 		button["offset_x"] = meta.offset.X;
 		button["offset_y"] = meta.offset.Y;
 
@@ -282,10 +282,10 @@ void ButtonLayout::deserializeJson(std::istream &is)
 
 		ButtonMeta meta;
 
-		if (!value["anchor_x"].isNumeric() || !value["anchor_y"].isNumeric())
-			throw Json::RuntimeError("invalid type for anchor_x or anchor_y in button metadata");
-		meta.anchor.X = value["anchor_x"].asFloat();
-		meta.anchor.Y = value["anchor_y"].asFloat();
+		if (!value["position_x"].isNumeric() || !value["position_y"].isNumeric())
+			throw Json::RuntimeError("invalid type for position_x or position_y in button metadata");
+		meta.position.X = value["position_x"].asFloat();
+		meta.position.Y = value["position_y"].asFloat();
 
 		if (!value["offset_x"].isNumeric() || !value["offset_y"].isNumeric())
 			throw Json::RuntimeError("invalid type for offset_x or offset_y in button metadata");

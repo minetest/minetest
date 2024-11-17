@@ -48,11 +48,11 @@ extern const char *button_titles[];
 extern const char *button_image_names[];
 
 struct ButtonMeta {
-	// anchor is a position specified as a percentage of the screensize
-	// in the range [0,1].
-	v2f anchor;
-	// offset is multiplied by the global button size before it is applied.
-	// Together, anchor and offset define the position of the button's center.
+	// Position, specified as a percentage of the screensize in the range [0,1].
+	// The editor currently writes the values 0, 0.5 and 1.
+	v2f position;
+	// Offset, multiplied by the global button size before it is applied.
+	// Together, position and offset define the position of the button's center.
 	v2f offset;
 
 	// Returns the button's effective center position in pixels.
