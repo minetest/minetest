@@ -7,12 +7,14 @@
 #include "touchscreenlayout.h"
 #include "modalMenu.h"
 
-#include "IGUIImage.h"
-
 #include <memory>
 #include <unordered_map>
 
 class ISimpleTextureSource;
+namespace irr::gui
+{
+	class IGUIImage;
+}
 
 class GUITouchscreenLayout : public GUIModalMenu
 {

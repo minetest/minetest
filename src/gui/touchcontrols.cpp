@@ -15,8 +15,10 @@
 #include "client/guiscalingfilter.h"
 #include "client/keycode.h"
 #include "client/renderingengine.h"
+#include "client/texturesource.h"
 #include "util/numeric.h"
 #include "irr_gui_ptr.h"
+#include "IGUIImage.h"
 #include "IGUIStaticText.h"
 #include "IGUIFont.h"
 #include <IrrlichtDevice.h>

@@ -5,6 +5,7 @@
 #include "touchscreenlayout.h"
 #include "gettext.h"
 #include "client/renderingengine.h"
+#include "client/texturesource.h"
 #include "settings.h"
 #include "convert_json.h"
 #include <json/json.h>

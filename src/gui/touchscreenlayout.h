@@ -4,12 +4,21 @@
 
 #pragma once
 
-#include "client/texturesource.h"
 #include "irr_ptr.h"
 #include "irrlichttypes_bloated.h"
-#include "ITexture.h"
-#include "IGUIStaticText.h"
+#include "rect.h"
+#include <iostream>
 #include <unordered_map>
+
+class ISimpleTextureSource;
+namespace irr::gui
+{
+	class IGUIStaticText;
+}
+namespace irr::video
+{
+	class ITexture;
+}
 
 enum touch_gui_button_id : u8
 {

@@ -5,27 +5,33 @@
 
 #pragma once
 
-#include "IGUIStaticText.h"
 #include "irrlichttypes.h"
-#include <IEventReceiver.h>
-#include <IGUIImage.h>
-#include <IGUIEnvironment.h>
+#include "IEventReceiver.h"
 
 #include <memory>
 #include <optional>
 #include <unordered_map>
 #include <vector>
 
-#include "touchscreenlayout.h"
 #include "itemdef.h"
-#include "client/game.h"
+#include "touchscreenlayout.h"
 #include "util/basic_macros.h"
-#include "client/texturesource.h"
 
 namespace irr
 {
 	class IrrlichtDevice;
+	namespace gui
+	{
+		class IGUIEnvironment;
+		class IGUIImage;
+		class IGUIStaticText;
+	}
+	namespace video
+	{
+		class IVideoDriver;
+	}
 }
+class ISimpleTextureSource;
 
 using namespace irr::core;
 using namespace irr::gui;

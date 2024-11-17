@@ -11,6 +11,7 @@
 #include "settings.h"
 
 #include "IGUIButton.h"
+#include "IGUIImage.h"
 #include "IGUIStaticText.h"
 #include "IGUIFont.h"
 
