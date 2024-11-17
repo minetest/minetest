@@ -126,7 +126,7 @@ local function load()
 	local touchscreen_layout = {
 		query_text = "Touchscreen layout",
 		requires = {
-			touch_controls = true,
+			touchscreen = true,
 		},
 		get_formspec = function(self, avail_w)
 			local btn_w = math.min(avail_w, 6)
