@@ -22,6 +22,8 @@
 #include "settings.h"
 #include "profiler.h"
 
+using BlendMode = ParticleParamTypes::BlendMode;
+
 ClientParticleTexture::ClientParticleTexture(const ServerParticleTexture& p, ITextureSource *tsrc)
 {
 	tex = p;
@@ -909,6 +911,9 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 	if (!getNodeParticleParams(n, f, p, &ref, texpos, texsize, &color))
 		return;
 
+	p.texture.blendmode = f.alpha == ALPHAMODE_BLEND
+			? BlendMode::alpha : BlendMode::clip;
+
 	p.expirationtime = myrand_range(0, 100) / 100.0f;
 
 	// Physics
@@ -942,8 +947,6 @@ void ParticleManager::reserveParticleSpace(size_t max_estimate)
 
 	m_particles.reserve(m_particles.size() + max_estimate);
 }
-
-using BlendMode = ParticleParamTypes::BlendMode;
 
 static void setBlendMode(video::SMaterial &material, BlendMode blendmode)
 {
@@ -982,8 +985,10 @@ static void setBlendMode(video::SMaterial &material, BlendMode blendmode)
 	material.BlendOperation = blendop;
 }
 
-video::SMaterial ParticleManager::getMaterialForParticle(const ClientParticleTexRef &texture)
+video::SMaterial ParticleManager::getMaterialForParticle(const Particle *particle)
 {
+	const ClientParticleTexRef &texture = particle->getTextureRef();
+
 	video::SMaterial material;
 
 	// Texture
@@ -994,8 +999,7 @@ video::SMaterial ParticleManager::getMaterialForParticle(const ClientParticleTex
 		tex.MagFilter = video::ETMAGF_NEAREST;
 	});
 
-	const auto blendmode = texture.tex ?
-			texture.tex->blendmode : BlendMode::alpha;
+	const auto blendmode = particle->getBlendMode();
 	if (blendmode == BlendMode::clip) {
 		material.ZWriteEnable = video::EZW_ON;
 		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
@@ -1016,7 +1020,7 @@ bool ParticleManager::addParticle(std::unique_ptr<Particle> toadd)
 {
 	MutexAutoLock lock(m_particle_list_lock);
 
-	auto material = getMaterialForParticle(toadd->getTextureRef());
+	auto material = getMaterialForParticle(toadd.get());
 
 	ParticleBuffer *found = nullptr;
 	// simple shortcut when multiple particles of the same type get added
