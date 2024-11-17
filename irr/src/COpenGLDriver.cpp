@@ -670,7 +670,8 @@ void COpenGLDriver::blitRenderTarget(IRenderTarget *from, IRenderTarget *to)
 			0, 0, dst->getSize().Width, dst->getSize().Height,
 			GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT, GL.NEAREST);
 
-	CacheHandler->setFBO(prev_fbo_id, true);
+	// This resets both read and draw framebuffer. Note that we bypass CacheHandler here.
+	GL.BindFramebuffer(GL.FRAMEBUFFER, prev_fbo_id);
 }
 
 // small helper function to create vertex buffer object address offsets
