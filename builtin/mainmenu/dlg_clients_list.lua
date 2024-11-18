@@ -32,7 +32,6 @@ end
 local function clients_list_buttonhandler(this, fields)
 	if fields.quit then
         this:delete()
-        serverlistmgr.sync()
 		return true
 	end
 	return false
