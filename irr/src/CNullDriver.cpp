@@ -1678,6 +1678,12 @@ ITexture *CNullDriver::addRenderTargetTexture(const core::dimension2d<u32> &size
 	return 0;
 }
 
+ITexture *CNullDriver::addRenderTargetTextureMs(const core::dimension2d<u32> &size, u8 msaa,
+		const io::path &name, const ECOLOR_FORMAT format)
+{
+	return 0;
+}
+
 ITexture *CNullDriver::addRenderTargetTextureCubemap(const irr::u32 sideLen,
 		const io::path &name, const ECOLOR_FORMAT format)
 {

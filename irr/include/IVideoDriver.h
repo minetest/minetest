@@ -273,6 +273,14 @@ public:
 	virtual ITexture *addRenderTargetTexture(const core::dimension2d<u32> &size,
 			const io::path &name = "rt", const ECOLOR_FORMAT format = ECF_UNKNOWN) = 0;
 
+	//! Adds a multisampled render target texture to the texture cache.
+	/** \param msaa The number of samples to use, values that make sense are > 1.
+	Only works if the driver supports the EVDF_TEXTURE_MULTISAMPLE feature,
+	check via queryFeature.
+	\see addRenderTargetTexture */
+	virtual ITexture *addRenderTargetTextureMs(const core::dimension2d<u32> &size, u8 msaa,
+			const io::path &name = "rt", const ECOLOR_FORMAT format = ECF_UNKNOWN) = 0;
+
 	//! Adds a new render target texture with 6 sides for a cubemap map to the texture cache.
 	/** \param sideLen Length of one cubemap side.
 	\param name A name for the texture. Later calls of getTexture() with this name will return this texture.
@@ -357,6 +365,10 @@ public:
 
 	//! Remove all render targets.
 	virtual void removeAllRenderTargets() = 0;
+
+	//! Blit contents of one render target to another one.
+	/** This is glBlitFramebuffer in OpenGL. */
+	virtual void blitRenderTarget(IRenderTarget *from, IRenderTarget *to) = 0;
 
 	//! Sets a boolean alpha channel on the texture based on a color key.
 	/** This makes the texture fully transparent at the texels where

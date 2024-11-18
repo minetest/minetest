@@ -675,6 +675,29 @@ IRenderTarget *COpenGL3DriverBase::addRenderTarget()
 	return renderTarget;
 }
 
+void COpenGL3DriverBase::blitRenderTarget(IRenderTarget *from, IRenderTarget *to)
+{
+	if (Version.Spec == OpenGLSpec::ES && Version.Major < 3) {
+		os::Printer::log("glBlitFramebuffer not supported by OpenGL ES < 3.0", ELL_ERROR);
+		return;
+	}
+
+	GLuint prev_fbo_id;
+	CacheHandler->getFBO(prev_fbo_id);
+
+	COpenGL3RenderTarget *src = static_cast<COpenGL3RenderTarget *>(from);
+	COpenGL3RenderTarget *dst = static_cast<COpenGL3RenderTarget *>(to);
+	GL.BindFramebuffer(GL.READ_FRAMEBUFFER, src->getBufferID());
+	GL.BindFramebuffer(GL.DRAW_FRAMEBUFFER, dst->getBufferID());
+	GL.BlitFramebuffer(
+			0, 0, src->getSize().Width, src->getSize().Height,
+			0, 0, dst->getSize().Width, dst->getSize().Height,
+			GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT, GL.NEAREST);
+
+	// This resets both read and draw framebuffer. Note that we bypass CacheHandler here.
+	GL.BindFramebuffer(GL.FRAMEBUFFER, prev_fbo_id);
+}
+
 //! draws a vertex primitive list
 void COpenGL3DriverBase::drawVertexPrimitiveList(const void *vertices, u32 vertexCount,
 		const void *indexList, u32 primitiveCount,
@@ -1317,6 +1340,8 @@ void COpenGL3DriverBase::setBasicRenderStates(const SMaterial &material, const S
 		GL.LineWidth(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedLine[0], DimAliasedLine[1]));
 
 	// Anti aliasing
+	// Deal with MSAA even if it's not enabled in the OpenGL context, we might be
+	// rendering to an FBO with multisampling.
 	if (resetAllRenderStates || lastmaterial.AntiAliasing != material.AntiAliasing) {
 		if (material.AntiAliasing & EAAM_ALPHA_TO_COVERAGE)
 			GL.Enable(GL_SAMPLE_ALPHA_TO_COVERAGE);
@@ -1632,11 +1657,17 @@ IGPUProgrammingServices *COpenGL3DriverBase::getGPUProgrammingServices()
 ITexture *COpenGL3DriverBase::addRenderTargetTexture(const core::dimension2d<u32> &size,
 		const io::path &name, const ECOLOR_FORMAT format)
 {
+	return addRenderTargetTextureMs(size, 0, name, format);
+}
+
+ITexture *COpenGL3DriverBase::addRenderTargetTextureMs(const core::dimension2d<u32> &size, u8 msaa,
+		const io::path &name, const ECOLOR_FORMAT format)
+{
 	// disable mip-mapping
 	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);
 
-	COpenGL3Texture *renderTargetTexture = new COpenGL3Texture(name, size, ETT_2D, format, this);
+	COpenGL3Texture *renderTargetTexture = new COpenGL3Texture(name, size, msaa > 0 ? ETT_2D_MS : ETT_2D, format, this, msaa);
 	addTexture(renderTargetTexture);
 	renderTargetTexture->drop();
 

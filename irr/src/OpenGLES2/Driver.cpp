@@ -124,6 +124,7 @@ void COpenGLES2Driver::initFeatures()
 	const bool MRTSupported = Version.Major >= 3 || queryExtension("GL_EXT_draw_buffers");
 	AnisotropicFilterSupported = queryExtension("GL_EXT_texture_filter_anisotropic");
 	BlendMinMaxSupported = (Version.Major >= 3) || FeatureAvailable[IRR_GL_EXT_blend_minmax];
+	TextureMultisampleSupported = isVersionAtLeast(3, 1);
 	const bool TextureLODBiasSupported = queryExtension("GL_EXT_texture_lod_bias");
 
 	// COGLESCoreExtensionHandler::Feature

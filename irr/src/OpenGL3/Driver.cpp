@@ -69,6 +69,7 @@ void COpenGL3Driver::initFeatures()
 
 	AnisotropicFilterSupported = isVersionAtLeast(4, 6) || queryExtension("GL_ARB_texture_filter_anisotropic") || queryExtension("GL_EXT_texture_filter_anisotropic");
 	BlendMinMaxSupported = true;
+	TextureMultisampleSupported = true;
 
 	// COGLESCoreExtensionHandler::Feature
 	static_assert(MATERIAL_MAX_TEXTURES <= 16, "Only up to 16 textures are guaranteed");

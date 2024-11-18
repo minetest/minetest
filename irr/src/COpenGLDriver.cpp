@@ -651,6 +651,29 @@ IRenderTarget *COpenGLDriver::addRenderTarget()
 	return renderTarget;
 }
 
+void COpenGLDriver::blitRenderTarget(IRenderTarget *from, IRenderTarget *to)
+{
+	if (Version < 300) {
+		os::Printer::log("glBlitFramebuffer not supported by OpenGL < 3.0", ELL_ERROR);
+		return;
+	}
+
+	GLuint prev_fbo_id;
+	CacheHandler->getFBO(prev_fbo_id);
+
+	COpenGLRenderTarget *src = static_cast<COpenGLRenderTarget *>(from);
+	COpenGLRenderTarget *dst = static_cast<COpenGLRenderTarget *>(to);
+	GL.BindFramebuffer(GL.READ_FRAMEBUFFER, src->getBufferID());
+	GL.BindFramebuffer(GL.DRAW_FRAMEBUFFER, dst->getBufferID());
+	GL.BlitFramebuffer(
+			0, 0, src->getSize().Width, src->getSize().Height,
+			0, 0, dst->getSize().Width, dst->getSize().Height,
+			GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT, GL.NEAREST);
+
+	// This resets both read and draw framebuffer. Note that we bypass CacheHandler here.
+	GL.BindFramebuffer(GL.FRAMEBUFFER, prev_fbo_id);
+}
+
 // small helper function to create vertex buffer object address offsets
 static inline const GLvoid *buffer_offset(const size_t offset)
 {
@@ -2091,7 +2114,9 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial &material, const SMater
 		else if (lastmaterial.AntiAliasing & EAAM_ALPHA_TO_COVERAGE)
 			glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE_ARB);
 
-		if ((AntiAlias >= 2) && (material.AntiAliasing & (EAAM_SIMPLE | EAAM_QUALITY))) {
+		// Enable MSAA even if it's not enabled in the OpenGL context, we might
+		// be rendering to an FBO with multisampling.
+		if (material.AntiAliasing & (EAAM_SIMPLE | EAAM_QUALITY)) {
 			glEnable(GL_MULTISAMPLE_ARB);
 #ifdef GL_NV_multisample_filter_hint
 			if (FeatureAvailable[IRR_NV_multisample_filter_hint]) {
@@ -2695,6 +2720,12 @@ IVideoDriver *COpenGLDriver::getVideoDriver()
 ITexture *COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32> &size,
 		const io::path &name, const ECOLOR_FORMAT format)
 {
+	return addRenderTargetTextureMs(size, 0, name, format);
+}
+
+ITexture *COpenGLDriver::addRenderTargetTextureMs(const core::dimension2d<u32> &size, u8 msaa,
+		const io::path &name, const ECOLOR_FORMAT format)
+{
 	if (IImage::isCompressedFormat(format))
 		return 0;
 
@@ -2711,7 +2742,7 @@ ITexture *COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32> &si
 		destSize = destSize.getOptimalSize((size == size.getOptimalSize()), false, false);
 	}
 
-	COpenGLTexture *renderTargetTexture = new COpenGLTexture(name, destSize, ETT_2D, format, this);
+	COpenGLTexture *renderTargetTexture = new COpenGLTexture(name, destSize, msaa > 0 ? ETT_2D_MS : ETT_2D, format, this, msaa);
 	addTexture(renderTargetTexture);
 	renderTargetTexture->drop();
 
