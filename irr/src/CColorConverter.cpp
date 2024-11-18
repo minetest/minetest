@@ -7,13 +7,14 @@
 #include "os.h"
 #include "irrString.h"
 
-// FIXME much of this code does not make sense when endianness is taken into account.
-// It seems likely that the author(s) only thought in terms of big endian,
-// because then byte order and endianness order are the same:
-// The most significant byte is also the first byte.
-// Some of the conversion functions here are thus on little endian inconsistent
-// when it comes to byte order vs. endianness order,
-// that is, they also do a byte order to endianness order conversion.
+// Warning: The naming of Irrlicht color formats
+// is not consistent regarding actual component order in memory.
+// E.g. in CImage, ECF_R8G8B8 is handled per-byte and stored as [R][G][B] in memory
+// while ECF_A8R8G8B8 is handled as an u32 0xAARRGGBB so [B][G][R][A] (little endian) in memory.
+// The conversions suffer from the same inconsistencies, e.g.
+// convert_R8G8B8toA8R8G8B8 converts [R][G][B] into 0xFFRRGGBB = [B][G][R][FF] (little endian);
+// convert_A1R5G5B5toR8G8B8 converts 0bARRRRRGGGGGBBBBB into [R][G][B].
+// This also means many conversions may be broken on big endian.
 
 namespace irr
 {
