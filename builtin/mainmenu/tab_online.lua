@@ -113,28 +113,21 @@ local function get_formspec(tabview, name, tabdata)
 				core.formspec_escape(gamedata.serverdescription) .. "]"
 		end
 
-		local function shorten_table(clients_list)
-			local short_clients_list = {}
-			for i = 1, math.min(5, #clients_list) do
-				short_clients_list[i] = clients_list[i]
-			end
-			return short_clients_list
-		end
-
 		local server = tabdata.lookup[tabdata.selected]
 
 		local clients_list = server and server.clients_list
 		local can_view_clients_list = clients_list and #clients_list > 0
 		if can_view_clients_list then
 			table.sort(clients_list, function(a, b)
-				return string.lower(a) < string.lower(b)
+				return a:lower() < b:lower()
 			end)
-			local clients_string = table.concat(clients_list, "\n")
-			local clients_string_short = table.concat(shorten_table(clients_list), "\n")
-			if #clients_list >= 5 then
-				retval = retval .. "tooltip[btn_view_clients;" .. fgettext("Clients:\n$1", clients_string_short) .. "\n..." .. "]"
+			local max_clients = 5
+			if #clients_list >= max_clients then
+				retval = retval .. "tooltip[btn_view_clients;" ..
+						fgettext("Clients:\n$1", table.concat(clients_list, "\n", 1, max_clients)) .. "\n..." .. "]"
 			else
-				retval = retval .. "tooltip[btn_view_clients;" .. fgettext("Clients:\n$1", clients_string) .. "]"
+				retval = retval .. "tooltip[btn_view_clients;" ..
+						fgettext("Clients:\n$1", table.concat(clients_list, "\n")) .. "]"
 			end
 			retval = retval .. "style[btn_view_clients;padding=6]"
 			retval = retval .. "image_button[5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
