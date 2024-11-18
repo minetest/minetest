@@ -131,13 +131,13 @@ local function get_formspec(tabview, name, tabdata)
 			local clients_string = table.concat(clients_list, "\n")
 			local clients_string_short = table.concat(shorten_table(clients_list), "\n")
 			if #clients_list >= 5 then
-				retval = retval .. "tooltip[btn_print_clients;" .. fgettext("Clients:\n$1", clients_string_short) .. "\n..." .. "]"
+				retval = retval .. "tooltip[btn_view_clients;" .. fgettext("Clients:\n$1", clients_string_short) .. "\n..." .. "]"
 			else
-				retval = retval .. "tooltip[btn_print_clients;" .. fgettext("Clients:\n$1", clients_string) .. "]"
+				retval = retval .. "tooltip[btn_view_clients;" .. fgettext("Clients:\n$1", clients_string) .. "]"
 			end
-			retval = retval .. "style[btn_print_clients;padding=6]"
+			retval = retval .. "style[btn_view_clients;padding=6]"
 			retval = retval .. "image_button[5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
-				"server_view_clients.png") .. ";btn_print_clients;]"
+				"server_view_clients.png") .. ";btn_view_clients;]"
 		end
 
 		if gamedata.fav then
@@ -343,7 +343,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		return true
 	end
 
-	if fields.btn_print_clients then
+	if fields.btn_view_clients then
 		local dlg = create_clientslist_dialog(tabdata.lookup[tabdata.selected])
 		dlg:set_parent(tabview)
 		tabview:hide()
