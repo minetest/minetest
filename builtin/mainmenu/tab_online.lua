@@ -108,12 +108,6 @@ local function get_formspec(tabview, name, tabdata)
 	end
 
 	if tabdata.selected then
-		if gamedata.fav then
-			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Remove favorite") .. "]"
-			retval = retval .. "style[btn_delete_favorite;padding=6]"
-			retval = retval .. "image_button[4.5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
-				"server_favorite_delete.png") .. ";btn_delete_favorite;]"
-		end
 		if gamedata.serverdescription then
 			retval = retval .. "textarea[0.25,1.85;5.25,2.7;;;" ..
 				core.formspec_escape(gamedata.serverdescription) .. "]"
@@ -129,13 +123,14 @@ local function get_formspec(tabview, name, tabdata)
 
 		local server = tabdata.lookup[tabdata.selected]
 
-		if server and server.clients_list then
-			table.sort(server.clients_list, function(a, b)
+		local clients_list = server and server.clients_list
+		if clients_list then
+			table.sort(clients_list, function(a, b)
 				return string.lower(a) < string.lower(b)
 			end)
-			local clients_string = table.concat(server.clients_list, "\n")
-			local clients_string_short = table.concat(shorten_table(server.clients_list), "\n")
-			if #server.clients_list >= 5 then
+			local clients_string = table.concat(clients_list, "\n")
+			local clients_string_short = table.concat(shorten_table(clients_list), "\n")
+			if #clients_list >= 5 then
 				retval = retval .. "tooltip[btn_print_clients;" .. fgettext("Clients:\n$1", clients_string_short) .. "\n..." .. "]"
 			else
 				retval = retval .. "tooltip[btn_print_clients;" .. fgettext("Clients:\n$1", clients_string) .. "]"
@@ -143,11 +138,13 @@ local function get_formspec(tabview, name, tabdata)
 			retval = retval .. "style[btn_print_clients;padding=6]"
 			retval = retval .. "image_button[5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
 				"server_view_clients.png") .. ";btn_print_clients;]"
-		else
-			retval = retval .. "tooltip[btn_no_clients;" .. fgettext("Clients not available.") .. "]"
-			retval = retval .. "style[btn_no_clients;padding=6]"
-			retval = retval .. "image_button[5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
-				"server_view_clients_disabled.png") .. ";btn_no_clients;]"
+		end
+
+		if gamedata.fav then
+			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Remove favorite") .. "]"
+			retval = retval .. "style[btn_delete_favorite;padding=6]"
+			retval = retval .. "image_button[" .. (clients_list and "4.5" or "5") .. ",1.3;0.5,0.5;" ..
+				core.formspec_escape(defaulttexturedir .. "server_favorite_delete.png") .. ";btn_delete_favorite;]"
 		end
 	end
 
