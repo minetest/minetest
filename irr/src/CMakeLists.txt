@@ -132,7 +132,7 @@ else()
 	option(ENABLE_OPENGL "Enable OpenGL" TRUE)
 endif()
 
-if(APPLE)
+if(APPLE AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
 	set(ENABLE_GLES2 FALSE)
 	set(ENABLE_WEBGL1 FALSE)
 else()
@@ -269,7 +269,7 @@ endif()
 
 if(ANDROID)
 	enable_language(C)
-elseif(APPLE)
+elseif(APPLE AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
 	find_library(COCOA_LIB Cocoa REQUIRED)
 	find_library(IOKIT_LIB IOKit REQUIRED)
 
@@ -355,14 +355,14 @@ endif()
 if(ENABLE_OPENGL3)
 	set(IRRDRVROBJ
 		${IRRDRVROBJ}
-		OpenGL3/Driver.cpp
+		OpenGL3/DriverGL3.cpp
 	)
 endif()
 
 if(ENABLE_GLES2)
 	set(IRRDRVROBJ
 		${IRRDRVROBJ}
-		OpenGLES2/Driver.cpp
+		OpenGLES2/DriverGLES2.cpp
 	)
 endif()
 
@@ -496,7 +496,6 @@ target_link_libraries(IrrlichtMt PRIVATE
 	${ZLIB_LIBRARY}
 	${JPEG_LIBRARY}
 	${PNG_LIBRARY}
-	"$<$<BOOL:${USE_SDL2}>:SDL2::SDL2>"
 
 	"$<$<BOOL:${OPENGL_DIRECT_LINK}>:${OPENGL_LIBRARIES}>"
 	${EGL_LIBRARY}
@@ -510,6 +509,26 @@ target_link_libraries(IrrlichtMt PRIVATE
 	"$<$<BOOL:${USE_X11}>:${X11_X11_LIB}>"
 	"$<$<BOOL:${USE_X11}>:${X11_Xi_LIB}>"
 )
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
+	target_link_libraries(IrrlichtMt PRIVATE
+		"-framework UIKit"
+		"-framework Foundation"
+		"-framework CoreGraphics"
+		"-framework QuartzCore"
+		"-framework OpenGLES"
+		"-framework AudioToolbox"
+		"-framework AVFoundation"
+		"-framework CoreAudio"
+		"-framework CoreMotion"
+		SDL2::SDL2-static
+		SDL2::SDL2main
+	)
+else()
+	target_link_libraries(IrrlichtMt PRIVATE
+		"$<$<BOOL:${USE_SDL2}>:SDL2::SDL2>"
+	)
+endif()
 
 if(WIN32)
 	target_compile_definitions(IrrlichtMt INTERFACE _IRR_WINDOWS_API_) # used in _IRR_DEBUG_BREAK_IF definition in a public header
