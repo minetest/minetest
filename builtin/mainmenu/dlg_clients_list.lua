@@ -16,13 +16,13 @@ local function clients_list_formspec(dialogdata)
 	end
 
 	local formspec = {
-		"formspec_version[8]" ,
-		"size[6,9.5]" ,
-		"position[0.5,0.5]" ,
-		"hypertext[0,0;6,1.5;;<global margin=5 halign=center valign=middle>" ,
-		fgettext("This is the list of clients from \n$1", "<b>" ..
-		core.hypertext_escape(servername) .. "</b>") .. "]" ,
-		"textlist[0.5,1.5;5,6.8;;" .. fmt_formspec_list(clients_list) .. "]" ,
+		"formspec_version[8]",
+		"size[6,9.5]",
+		"position[0.5,0.5]",
+		"hypertext[0,0;6,1.5;;<global margin=5 halign=center valign=middle>",
+			fgettext("This is the list of clients from \n$1",
+				"<b>" .. core.hypertext_escape(servername) .. "</b>") .. "]",
+		"textlist[0.5,1.5;5,6.8;;" .. fmt_formspec_list(clients_list) .. "]",
 		"button[1.5,8.5;3,0.8;quit;OK]"
 	}
 	return table.concat(formspec, "")
