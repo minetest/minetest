@@ -55,6 +55,7 @@ dofile(menupath .. DIR_DELIM .. "dlg_register.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_rename_modpack.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_version_info.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_reinstall_mtg.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_clients_list.lua")
 
 local tabs = {
 	content  = dofile(menupath .. DIR_DELIM .. "tab_content.lua"),
