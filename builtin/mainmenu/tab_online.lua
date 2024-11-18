@@ -124,7 +124,8 @@ local function get_formspec(tabview, name, tabdata)
 		local server = tabdata.lookup[tabdata.selected]
 
 		local clients_list = server and server.clients_list
-		if clients_list then
+		local can_view_clients_list = clients_list and #clients_list > 0
+		if can_view_clients_list then
 			table.sort(clients_list, function(a, b)
 				return string.lower(a) < string.lower(b)
 			end)
@@ -143,7 +144,7 @@ local function get_formspec(tabview, name, tabdata)
 		if gamedata.fav then
 			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Remove favorite") .. "]"
 			retval = retval .. "style[btn_delete_favorite;padding=6]"
-			retval = retval .. "image_button[" .. (clients_list and "4.5" or "5") .. ",1.3;0.5,0.5;" ..
+			retval = retval .. "image_button[" .. (can_view_clients_list and "4.5" or "5") .. ",1.3;0.5,0.5;" ..
 				core.formspec_escape(defaulttexturedir .. "server_favorite_delete.png") .. ";btn_delete_favorite;]"
 		end
 	end
