@@ -22,6 +22,8 @@
 #include "settings.h"
 #include "profiler.h"
 
+using BlendMode = ParticleParamTypes::BlendMode;
+
 ClientParticleTexture::ClientParticleTexture(const ServerParticleTexture& p, ITextureSource *tsrc)
 {
 	tex = p;
@@ -603,8 +605,11 @@ video::S3DVertex *ParticleBuffer::getVertices(u16 index)
 
 void ParticleBuffer::OnRegisterSceneNode()
 {
-	if (IsVisible)
-		SceneManager->registerNodeForRendering(this, scene::ESNRP_TRANSPARENT_EFFECT);
+	if (IsVisible) {
+		SceneManager->registerNodeForRendering(this,
+				m_mesh_buffer->getMaterial().MaterialType == video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF
+				? scene::ESNRP_SOLID : scene::ESNRP_TRANSPARENT_EFFECT);
+	}
 	scene::ISceneNode::OnRegisterSceneNode();
 }
 
@@ -906,6 +911,9 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 	if (!getNodeParticleParams(n, f, p, &ref, texpos, texsize, &color))
 		return;
 
+	p.texture.blendmode = f.alpha == ALPHAMODE_BLEND
+			? BlendMode::alpha : BlendMode::clip;
+
 	p.expirationtime = myrand_range(0, 100) / 100.0f;
 
 	// Physics
@@ -940,39 +948,46 @@ void ParticleManager::reserveParticleSpace(size_t max_estimate)
 	m_particles.reserve(m_particles.size() + max_estimate);
 }
 
-video::SMaterial ParticleManager::getMaterialForParticle(const ClientParticleTexRef &texture)
+static void setBlendMode(video::SMaterial &material, BlendMode blendmode)
 {
-	// translate blend modes to GL blend functions
 	video::E_BLEND_FACTOR bfsrc, bfdst;
 	video::E_BLEND_OPERATION blendop;
-	const auto blendmode = texture.tex ? texture.tex->blendmode :
-						   ParticleParamTypes::BlendMode::alpha;
-
 	switch (blendmode) {
-		case ParticleParamTypes::BlendMode::add:
+		case BlendMode::add:
 			bfsrc = video::EBF_SRC_ALPHA;
 			bfdst = video::EBF_DST_ALPHA;
 			blendop = video::EBO_ADD;
 		break;
 
-		case ParticleParamTypes::BlendMode::sub:
+		case BlendMode::sub:
 			bfsrc = video::EBF_SRC_ALPHA;
 			bfdst = video::EBF_DST_ALPHA;
 			blendop = video::EBO_REVSUBTRACT;
 		break;
 
-		case ParticleParamTypes::BlendMode::screen:
+		case BlendMode::screen:
 			bfsrc = video::EBF_ONE;
 			bfdst = video::EBF_ONE_MINUS_SRC_COLOR;
 			blendop = video::EBO_ADD;
 		break;
 
-		default: // includes ParticleParamTypes::BlendMode::alpha
+		default: // includes BlendMode::alpha
 			bfsrc = video::EBF_SRC_ALPHA;
 			bfdst = video::EBF_ONE_MINUS_SRC_ALPHA;
 			blendop = video::EBO_ADD;
 		break;
 	}
+
+	material.MaterialTypeParam = video::pack_textureBlendFunc(
+			bfsrc, bfdst,
+			video::EMFN_MODULATE_1X,
+			video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
+	material.BlendOperation = blendop;
+}
+
+video::SMaterial ParticleManager::getMaterialForParticle(const Particle *particle)
+{
+	const ClientParticleTexRef &texture = particle->getTextureRef();
 
 	video::SMaterial material;
 
@@ -984,17 +999,18 @@ video::SMaterial ParticleManager::getMaterialForParticle(const ClientParticleTex
 		tex.MagFilter = video::ETMAGF_NEAREST;
 	});
 
-	// We don't have working transparency sorting. Disable Z-Write for
-	// correct results for clipped-alpha at least.
-	material.ZWriteEnable = video::EZW_OFF;
-
-	// enable alpha blending and set blend mode
-	material.MaterialType = video::EMT_ONETEXTURE_BLEND;
-	material.MaterialTypeParam = video::pack_textureBlendFunc(
-			bfsrc, bfdst,
-			video::EMFN_MODULATE_1X,
-			video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
-	material.BlendOperation = blendop;
+	const auto blendmode = particle->getBlendMode();
+	if (blendmode == BlendMode::clip) {
+		material.ZWriteEnable = video::EZW_ON;
+		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		material.MaterialTypeParam = 0.5f;
+	} else {
+		// We don't have working transparency sorting. Disable Z-Write for
+		// correct results for clipped-alpha at least.
+		material.ZWriteEnable = video::EZW_OFF;
+		material.MaterialType = video::EMT_ONETEXTURE_BLEND;
+		setBlendMode(material, blendmode);
+	}
 	material.setTexture(0, texture.ref);
 
 	return material;
@@ -1004,7 +1020,7 @@ bool ParticleManager::addParticle(std::unique_ptr<Particle> toadd)
 {
 	MutexAutoLock lock(m_particle_list_lock);
 
-	auto material = getMaterialForParticle(toadd->getTextureRef());
+	auto material = getMaterialForParticle(toadd.get());
 
 	ParticleBuffer *found = nullptr;
 	// simple shortcut when multiple particles of the same type get added
