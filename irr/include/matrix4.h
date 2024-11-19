@@ -856,27 +856,27 @@ inline CMatrix4<T> &CMatrix4<T>::setInverseRotationDegrees(const vector3d<T> &ro
 template <class T>
 inline CMatrix4<T> &CMatrix4<T>::setRotationRadians(const vector3d<T> &rotation)
 {
-	const f64 cr = cos(rotation.X);
-	const f64 sr = sin(rotation.X);
-	const f64 cp = cos(rotation.Y);
-	const f64 sp = sin(rotation.Y);
-	const f64 cy = cos(rotation.Z);
-	const f64 sy = sin(rotation.Z);
+	const f64 cPitch = cos(rotation.X);
+	const f64 sPitch = sin(rotation.X);
+	const f64 cYaw = cos(rotation.Y);
+	const f64 sYaw = sin(rotation.Y);
+	const f64 cRoll = cos(rotation.Z);
+	const f64 sRoll = sin(rotation.Z);
 
-	M[0] = (T)(cp * cy);
-	M[1] = (T)(cp * sy);
-	M[2] = (T)(-sp);
+	M[0] = (T)(cYaw * cRoll);
+	M[1] = (T)(cYaw * sRoll);
+	M[2] = (T)(-sYaw);
 
-	const f64 srsp = sr * sp;
-	const f64 crsp = cr * sp;
+	const f64 sPitch_sYaw = sPitch * sYaw;
+	const f64 cPitch_sYaw = cPitch * sYaw;
 
-	M[4] = (T)(srsp * cy - cr * sy);
-	M[5] = (T)(srsp * sy + cr * cy);
-	M[6] = (T)(sr * cp);
+	M[4] = (T)(sPitch_sYaw * cRoll - cPitch * sRoll);
+	M[5] = (T)(sPitch_sYaw * sRoll + cPitch * cRoll);
+	M[6] = (T)(sPitch * cYaw);
 
-	M[8] = (T)(crsp * cy + sr * sy);
-	M[9] = (T)(crsp * sy - sr * cy);
-	M[10] = (T)(cr * cp);
+	M[8] = (T)(cPitch_sYaw * cRoll + sPitch * sRoll);
+	M[9] = (T)(cPitch_sYaw * sRoll - sPitch * cRoll);
+	M[10] = (T)(cPitch * cYaw);
 #if defined(USE_MATRIX_TEST)
 	definitelyIdentityMatrix = false;
 #endif
@@ -960,27 +960,27 @@ inline core::vector3d<T> CMatrix4<T>::getRotationDegrees() const
 template <class T>
 inline CMatrix4<T> &CMatrix4<T>::setInverseRotationRadians(const vector3d<T> &rotation)
 {
-	f64 cr = cos(rotation.X);
-	f64 sr = sin(rotation.X);
-	f64 cp = cos(rotation.Y);
-	f64 sp = sin(rotation.Y);
-	f64 cy = cos(rotation.Z);
-	f64 sy = sin(rotation.Z);
+	f64 cPitch = cos(rotation.X);
+	f64 sPitch = sin(rotation.X);
+	f64 cYaw = cos(rotation.Y);
+	f64 sYaw = sin(rotation.Y);
+	f64 cRoll = cos(rotation.Z);
+	f64 sRoll = sin(rotation.Z);
 
-	M[0] = (T)(cp * cy);
-	M[4] = (T)(cp * sy);
-	M[8] = (T)(-sp);
+	M[0] = (T)(cYaw * cRoll);
+	M[4] = (T)(cYaw * sRoll);
+	M[8] = (T)(-sYaw);
 
-	f64 srsp = sr * sp;
-	f64 crsp = cr * sp;
+	f64 sPitch_sYaw = sPitch * sYaw;
+	f64 cPitch_sYaw = cPitch * sYaw;
 
-	M[1] = (T)(srsp * cy - cr * sy);
-	M[5] = (T)(srsp * sy + cr * cy);
-	M[9] = (T)(sr * cp);
+	M[1] = (T)(sPitch_sYaw * cRoll - cPitch * sRoll);
+	M[5] = (T)(sPitch_sYaw * sRoll + cPitch * cRoll);
+	M[9] = (T)(sPitch * cYaw);
 
-	M[2] = (T)(crsp * cy + sr * sy);
-	M[6] = (T)(crsp * sy - sr * cy);
-	M[10] = (T)(cr * cp);
+	M[2] = (T)(cPitch_sYaw * cRoll + sPitch * sRoll);
+	M[6] = (T)(cPitch_sYaw * sRoll - sPitch * cRoll);
+	M[10] = (T)(cPitch * cYaw);
 #if defined(USE_MATRIX_TEST)
 	definitelyIdentityMatrix = false;
 #endif
