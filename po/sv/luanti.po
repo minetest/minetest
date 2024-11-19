@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Swedish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-06-08 08:09+0000\n"
+"PO-Revision-Date: 2024-11-20 03:05+0000\n"
 "Last-Translator: ROllerozxa <rollerozxa@voxelmanip.se>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
 "minetest/sv/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -63,9 +63,8 @@ msgid "Command not available: "
 msgstr "Kommando inte tillgängligt: "
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Get help for commands (-t: output in chat)"
-msgstr "Få hjälp med kommandon"
+msgstr "Få hjälp med kommandon (-t: Skriv ut till chatten)"
 
 #: builtin/common/chatcommands.lua
 msgid ""
@@ -75,9 +74,8 @@ msgstr ""
 "visa allt."
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "[all | <cmd>] [-t]"
-msgstr "[all | <cmd>]"
+msgstr "[all | <cmd>] [-t]"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -140,13 +138,12 @@ msgid "Failed to download $1"
 msgstr "Misslyckades ladda ner $1"
 
 #: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
 msgid ""
 "Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
 "broken archive)"
 msgstr ""
-"Misslyckades med att extrahera \"$1\" (filtyp som inte stöds eller trasigt "
-"arkiv)"
+"Misslyckades med att extrahera \"$1\" (inte tillräckligt med diskutrymme, "
+"filtyp som inte stöds eller trasigt arkiv)"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
@@ -162,7 +159,7 @@ msgstr "$1 laddas ner..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All"
-msgstr ""
+msgstr "Alla"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #: builtin/mainmenu/content/dlg_package.lua
@@ -171,9 +168,8 @@ msgid "Back"
 msgstr "Tillbaka"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "ContentDB is not available when Luanti was compiled without cURL"
-msgstr "ContentDB är inte tillgänglig när Minetest är kompilerad utan cURL"
+msgstr "ContentDB är inte tillgänglig när Luanti är kompilerad utan cURL"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Downloading..."
@@ -181,7 +177,7 @@ msgstr "Laddar ner..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Featured"
-msgstr ""
+msgstr "Presenterad"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Games"
@@ -217,14 +213,12 @@ msgid "Queued"
 msgstr "Köad"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "Texture Packs"
 msgstr "Texturpaket"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "The package $1 was not found."
-msgstr "Paketet $1/$2 kunde inte hittas."
+msgstr "Paketet $1 kunde inte hittas."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Update All [$1]"
@@ -273,7 +267,7 @@ msgstr "Beroenden:"
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "Error getting dependencies for package $1"
-msgstr ""
+msgstr "Fel inträffade när beroenden för paketet $1 skulle hittas"
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "Install"
@@ -308,44 +302,40 @@ msgid "Overwrite"
 msgstr "Skriv över"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "ContentDB page"
-msgstr "ContentDB URL"
+msgstr "ContentDB-sida"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "Description"
-msgstr "Serverbeskrivning"
+msgstr "Beskrivning"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Donate"
-msgstr ""
+msgstr "Donera"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Forum Topic"
-msgstr ""
+msgstr "Forumtråd"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "Information"
-msgstr "Information:"
+msgstr "Information"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "Install [$1]"
-msgstr "Installera $1"
+msgstr "Installera [$1]"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Issue Tracker"
-msgstr ""
+msgstr "Feltracker"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Source"
-msgstr ""
+msgstr "Källkod"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Translate"
-msgstr ""
+msgstr "Översätt"
 
 #: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/tab_content.lua
 msgid "Uninstall"
@@ -356,13 +346,12 @@ msgid "Update"
 msgstr "Uppdatera"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "Website"
-msgstr "Besök hemsida"
+msgstr "Hemsida"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
-msgstr ""
+msgstr "av $1  —  $2 nerladdningar  —  +$3 / $4 / -$5"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -512,7 +501,7 @@ msgstr "Dekorationer"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Desert temples"
-msgstr ""
+msgstr "Ökentempel"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
@@ -523,6 +512,8 @@ msgid ""
 "Different dungeon variant generated in desert biomes (only if dungeons "
 "enabled)"
 msgstr ""
+"Olika fängelsehålevarianter som genereras i ökenbiomer (endast om "
+"fängelsehålor aktiveras)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -721,14 +712,12 @@ msgid "Dismiss"
 msgstr "Nej tack"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
-#, fuzzy
 msgid ""
 "For a long time, Luanti shipped with a default game called \"Minetest "
 "Game\". Since version 5.8.0, Luanti ships without a default game."
 msgstr ""
-"Under en lång period kom Minetest med det förinstallerat spelet \"Minetest "
-"Game\". Sedan Minetest 5.8.0 kommer Minetest utan ett standardspel "
-"inkluderat."
+"Under en lång period kom Luanti med det förinstallerat spelet \"Minetest "
+"Game\". Sedan 5.8.0 kommer Luanti utan ett standardspel inkluderat."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -889,19 +878,16 @@ msgid "eased"
 msgstr "lättad"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "(The game will need to enable automatic exposure as well)"
-msgstr "(Spelet behöver även aktivera skuggor för att visas)"
+msgstr "(Spelet behöver även aktivera automatisk exponering för att visas)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "(The game will need to enable bloom as well)"
-msgstr "(Spelet behöver även aktivera skuggor för att visas)"
+msgstr "(Spelet behöver även aktivera bloom för att visas)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "(The game will need to enable volumetric lighting as well)"
-msgstr "(Spelet behöver även aktivera skuggor för att visas)"
+msgstr "(Spelet behöver även aktivera volumetriskt ljus för att visas)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
@@ -909,11 +895,11 @@ msgstr "(Använd systemspråk)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Accessibility"
-msgstr ""
+msgstr "Tillgänglighet"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Auto"
-msgstr ""
+msgstr "Automatisk"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/gui/touchcontrols.cpp src/settings_translation_file.cpp
@@ -943,9 +929,8 @@ msgid "General"
 msgstr "Generellt"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Movement"
-msgstr "Snabb rörelse"
+msgstr "Rörelse"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default"
@@ -980,18 +965,16 @@ msgid "Content: Mods"
 msgstr "Innehåll: Moddar"
 
 #: builtin/mainmenu/settings/shader_warning_component.lua
-#, fuzzy
 msgid "Enable"
-msgstr "Aktiverad"
+msgstr "Aktivera"
 
 #: builtin/mainmenu/settings/shader_warning_component.lua
-#, fuzzy
 msgid "Shaders are disabled."
-msgstr "Kamerauppdatering inaktiverad"
+msgstr "Shaders är inaktiverat."
 
 #: builtin/mainmenu/settings/shader_warning_component.lua
 msgid "This is not a recommended configuration."
-msgstr ""
+msgstr "Detta är inte en rekommenderad konfiguration."
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
@@ -1079,18 +1062,16 @@ msgid "Browse online content"
 msgstr "Bläddra bland onlineinnehåll"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Browse online content [$1]"
-msgstr "Bläddra bland onlineinnehåll"
+msgstr "Bläddra bland onlineinnehåll [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
 msgstr "Innehåll"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content [$1]"
-msgstr "Innehåll"
+msgstr "Innehåll [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
@@ -1113,9 +1094,8 @@ msgid "Rename"
 msgstr "Byt namn"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Update available?"
-msgstr "<inget tillgängligt>"
+msgstr "Uppdatering tillgänglig?"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1154,15 +1134,14 @@ msgid "Install games from ContentDB"
 msgstr "Installera spel från ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Luanti doesn't come with a game by default."
-msgstr "Minetest Game är inte längre installerat som standard"
+msgstr "Luanti kommer inte med ett spel längre."
 
 #: builtin/mainmenu/tab_local.lua
 msgid ""
 "Luanti is a game-creation platform that allows you to play many different "
 "games."
-msgstr ""
+msgstr "Luanti är en spelplatform som låter dig spela många olika spel."
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -1197,9 +1176,8 @@ msgid "Start Game"
 msgstr "Starta spel"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "You need to install a game before you can create a world."
-msgstr "Du behöver installera ett spel innan du kan installera en modd"
+msgstr "Du behöver installera ett spel innan du kan skapa en värld."
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1413,7 +1391,6 @@ msgid "Continue"
 msgstr "Fortsätt"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
@@ -1428,14 +1405,14 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
-"Standardkontroller:\n"
-"Ingen meny syns:\n"
-"- dra finger: titta omkring\n"
-"- tryck en gång: placera/använd\n"
-"- tryck två gånger: gräv/slå/använd\n"
-"Meny/Förråd syns:\n"
-"- tryck två gånger (utanför):\n"
-" -->stäng\n"
+"Kontroller:\n"
+"Ingen meny öppen:\n"
+"- dra finger: Titta runt\n"
+"- tryck en gång: placera/slå/använd (standard)\n"
+"- håll inne: gräv/använd (standard)\n"
+"Meny/förråd öppen:\n"
+"- Dubbelknapp (utanför):\n"
+" --> stäng\n"
 "- rör stapel, rör låda:\n"
 " --> flytta stapel\n"
 "- tryck&dra, tryck med andra fingret\n"
@@ -1512,9 +1489,8 @@ msgid "Fog enabled"
 msgstr "Dimma aktiverat"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog enabled by game or mod"
-msgstr "Zoom är för närvarande inaktiverad av spel eller modd"
+msgstr "Dimma aktiverat av spel eller modd"
 
 #: src/client/game.cpp
 msgid "Game info:"
@@ -1752,23 +1728,20 @@ msgid "Caps Lock"
 msgstr "Caps Lock"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Clear Key"
-msgstr "Rensa"
+msgstr "Rensa tagent"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Control Key"
-msgstr "Kontroll"
+msgstr "Kontrollknapp"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Delete Key"
-msgstr "Ta bort"
+msgstr "Ta bort knapp"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
-msgstr ""
+msgstr "Nedåt pil"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1815,9 +1788,8 @@ msgid "Insert"
 msgstr "Insert"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Arrow"
-msgstr "Vänster Control"
+msgstr "Vänster pil"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1841,9 +1813,8 @@ msgstr "Vänster Windowstangent"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Menu Key"
-msgstr "Meny"
+msgstr "Menyknapp"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
@@ -1918,20 +1889,17 @@ msgid "OEM Clear"
 msgstr "Rensa OEM"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Down"
-msgstr "Sida ner"
+msgstr "Page Down"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Up"
-msgstr "Sida upp"
+msgstr "Page Up"
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Pause Key"
-msgstr "Paus"
+msgstr "Paustagent"
 
 #: src/client/keycode.cpp
 msgid "Play"
@@ -1943,14 +1911,12 @@ msgid "Print"
 msgstr "Skriv ut"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Return Key"
-msgstr "Retur"
+msgstr "Returtagent"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Arrow"
-msgstr "Höger Control"
+msgstr "Höger pil"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1982,9 +1948,8 @@ msgid "Select"
 msgstr "Välj"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Shift Key"
-msgstr "Shift"
+msgstr "Skifttagent"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
@@ -2004,7 +1969,7 @@ msgstr "Tab"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
-msgstr ""
+msgstr "Uppåt pil"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -2015,9 +1980,8 @@ msgid "X Button 2"
 msgstr "X Knapp 2"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Zoom Key"
-msgstr "Zoom"
+msgstr "Zoomknapp"
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
@@ -2038,13 +2002,13 @@ msgid "Minimap in texture mode"
 msgstr "Minimapp i texturläge"
 
 #: src/client/shader.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to compile the \"%s\" shader."
-msgstr "Misslyckades att öppna hemsida"
+msgstr "Misslyckades att kompilera \"%s\"-shadern."
 
 #: src/client/shader.cpp
 msgid "Shaders are enabled but GLSL is not supported by the driver."
-msgstr ""
+msgstr "Shaders är aktiverat men GLSL stöds inte av drivrutinen."
 
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
@@ -2241,16 +2205,15 @@ msgstr "tryck på knapp"
 
 #: src/gui/guiOpenURL.cpp
 msgid "Open"
-msgstr ""
+msgstr "Öppna"
 
 #: src/gui/guiOpenURL.cpp
 msgid "Open URL?"
-msgstr ""
+msgstr "Öppna URL?"
 
 #: src/gui/guiOpenURL.cpp
-#, fuzzy
 msgid "Unable to open URL"
-msgstr "Misslyckades att öppna hemsida"
+msgstr "Misslyckades att öppna URL:en"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
@@ -2283,22 +2246,23 @@ msgstr "Ljudvolym: %d%%"
 
 #: src/gui/touchcontrols.cpp
 msgid "Joystick"
-msgstr ""
+msgstr "Joystick"
 
 #: src/gui/touchcontrols.cpp
 msgid "Overflow menu"
-msgstr ""
+msgstr "Överflödsmeny"
 
 #: src/gui/touchcontrols.cpp
-#, fuzzy
 msgid "Toggle debug"
-msgstr "Växla dimma"
+msgstr "Växla avlusning"
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Another client is connected with this name.  If your client closed "
 "unexpectedly, try again in a minute."
 msgstr ""
+"En annan användare är ansluten med detta namn. Om din klient stängdes "
+"oväntat, försök igen om en minut."
 
 #: src/network/clientpackethandler.cpp
 msgid "Empty passwords are disallowed.  Set a password and try again."
@@ -2306,12 +2270,11 @@ msgstr ""
 
 #: src/network/clientpackethandler.cpp
 msgid "Internal server error"
-msgstr ""
+msgstr "Internt serverfel"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Invalid password"
-msgstr "Gammalt Lösenord"
+msgstr "Ogiltigt lösenord"
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
@@ -2334,46 +2297,48 @@ msgstr "Namnet är redan taget. Var snäll välj ett annat namn"
 
 #: src/network/clientpackethandler.cpp
 msgid "Player name contains disallowed characters"
-msgstr ""
+msgstr "Spelarnamn innehåller otillåtna tecken"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Player name not allowed"
-msgstr "Spelarnamn för långt."
+msgstr "Spelarnamn är inte tillåtet"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Server shutting down"
-msgstr "Stänger av..."
+msgstr "Server stängs av"
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "The server has experienced an internal error.  You will now be disconnected."
-msgstr ""
+msgstr "Servern har upplevt ett internt fel.  Du kommer nu att kopplas bort."
 
 #: src/network/clientpackethandler.cpp
 msgid "The server is running in singleplayer mode.  You cannot connect."
-msgstr ""
+msgstr "Servern körs i singleplayerläge.  Du kan inte ansluta."
 
 #: src/network/clientpackethandler.cpp
 msgid "Too many users"
-msgstr ""
+msgstr "För många spelare"
 
 #: src/network/clientpackethandler.cpp
 msgid "Unknown disconnect reason."
-msgstr ""
+msgstr "Okänd bortkopplingsorsak."
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Your client sent something the server didn't expect.  Try reconnecting or "
 "updating your client."
 msgstr ""
+"Din klient skickade något som servern inte förväntade.  Försök att "
+"återansluta eller uppdatera din klient."
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Your client's version is not supported.\n"
 "Please contact the server administrator."
 msgstr ""
+"Din klientversion stöds inte.\n"
+"Vänligen kontakta serveradministratören."
 
 #: src/server.cpp
 #, c-format
@@ -2448,7 +2413,7 @@ msgstr "2D-brus som lokaliserar floddalar och kanaler."
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -2505,7 +2470,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D-brus som bestämmer antalet fängelsehålor per mappchunk."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2614,7 +2578,7 @@ msgstr "Avancerat"
 
 #: src/settings_translation_file.cpp
 msgid "Allows liquids to be translucent."
-msgstr ""
+msgstr "Tillåter vätskor att vara genomskinliga."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2665,11 +2629,11 @@ msgstr "Kantutjämningsmetod"
 
 #: src/settings_translation_file.cpp
 msgid "Anticheat flags"
-msgstr ""
+msgstr "Anticheat-flaggor"
 
 #: src/settings_translation_file.cpp
 msgid "Anticheat movement tolerance"
-msgstr ""
+msgstr "Anticheat-rörelsetolerans"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2696,7 +2660,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Apply specular shading to nodes."
-msgstr ""
+msgstr "Applicera spekulär skuggning till noder."
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
@@ -3550,9 +3514,9 @@ msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable random mod loading (mainly used for testing)."
-msgstr "Aktivera slumpmässig användarinmatning (används endast för testning)."
+msgstr ""
+"Aktivera slumpmässig moddladdningsordning (används främst för testning)."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -4350,7 +4314,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr ""
+msgstr "Invertera mus"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse wheel (scroll) direction for item selection in hotbar."
@@ -4358,15 +4322,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
-msgstr ""
+msgstr "Invertera vertikal musrörelse."
 
 #: src/settings_translation_file.cpp
 msgid "Italic font path"
-msgstr ""
+msgstr "Kursiv typsnittssökväg"
 
 #: src/settings_translation_file.cpp
 msgid "Italic monospace font path"
-msgstr ""
+msgstr "Kursiv typsnittssökväg (monospace)"
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
@@ -4374,7 +4338,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Iterations"
-msgstr ""
+msgstr "Iterationer"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4386,15 +4350,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Joystick ID"
-msgstr ""
+msgstr "Joystick-ID"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick button repetition interval"
-msgstr ""
+msgstr "Repeteringsintervall för joystick"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick dead zone"
-msgstr ""
+msgstr "Deadzone för joystick"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
@@ -4402,7 +4366,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Joystick type"
-msgstr ""
+msgstr "Joysticktyp"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5187,11 +5151,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "OpenGL debug"
-msgstr ""
+msgstr "OpenGL-felsökning"
 
 #: src/settings_translation_file.cpp
 msgid "Optimize GUI for touchscreens"
-msgstr ""
+msgstr "Optimera GUI för pekskärmar"
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
@@ -5308,9 +5272,8 @@ msgid "Proportion of large caves that contain liquid."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Protocol version minimum"
-msgstr "Protokollversionen matchar inte. "
+msgstr "Minsta protokollversion"
 
 #: src/settings_translation_file.cpp
 msgid "Punch gesture"
@@ -6506,14 +6469,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volume when unfocused"
-msgstr "FPS när ofokuserad eller pausad"
+msgstr "Volym när ofokuserad"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volumetric lighting"
-msgstr "Nodmarkering"
+msgstr "Volumetriskt ljus"
 
 #: src/settings_translation_file.cpp
 msgid ""
