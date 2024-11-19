@@ -333,7 +333,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 		serverlistmgr.delete_favorite(server)
 		-- the server at [idx+1] will be at idx once list is refreshed
-		set_selected_server(tabdata, idx, tabdata.lookup[idx + 1])
+		set_selected_server(tabdata, idx, tabdata.lookup[idx+1])
 		return true
 	end
 
