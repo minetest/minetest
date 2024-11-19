@@ -668,6 +668,11 @@ bool CIrrDeviceSDL::run()
 		// os::Printer::log("event: ", core::stringc((int)SDL_event.type).c_str(),   ELL_INFORMATION);	// just for debugging
 		irrevent = {};
 
+		irrevent.EventType = irr::EET_SDL_EVENT;
+		irrevent.SdlEvent = &SDL_event;
+		if (postEventFromUser(irrevent))
+			continue;
+
 		switch (SDL_event.type) {
 		case SDL_MOUSEMOTION: {
 			SDL_Keymod keymod = SDL_GetModState();

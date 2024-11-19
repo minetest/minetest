@@ -12,6 +12,10 @@
 #include "client/minimap.h"
 #include "client/shadows/dynamicshadowsrender.h"
 
+#if BUILD_UI
+#include "ui/manager.h"
+#endif
+
 /// Draw3D pipeline step
 void Draw3D::run(PipelineContext &context)
 {
@@ -28,6 +32,11 @@ void Draw3D::run(PipelineContext &context)
 
 void DrawWield::run(PipelineContext &context)
 {
+#if BUILD_UI
+	ui::g_manager.preDraw();
+	ui::g_manager.drawType(ui::WindowType::BG);
+#endif
+
 	if (m_target)
 		m_target->activate(context);
 
@@ -45,11 +54,30 @@ void DrawHUD::run(PipelineContext &context)
 
 		if (context.draw_crosshair)
 			context.hud->drawCrosshair();
+	}
 
+#if BUILD_UI
+	ui::g_manager.drawType(ui::WindowType::MASK);
+#endif
+
+	if (context.show_hud) {
 		context.hud->drawLuaElements(context.client->getCamera()->getOffset());
+#if BUILD_UI
+		ui::g_manager.drawType(ui::WindowType::HUD);
+#endif
+
 		context.client->getCamera()->drawNametags();
 	}
+
+#if BUILD_UI
+	if (context.show_chat)
+		ui::g_manager.drawType(ui::WindowType::CHAT);
+#endif
+
 	context.device->getGUIEnvironment()->drawAll();
+#if BUILD_UI
+	ui::g_manager.drawType(ui::WindowType::FG);
+#endif
 }
 
 

@@ -446,16 +446,16 @@ inline v3f clampToF1000(v3f v)
 }
 
 // Creates a string with the length as the first two bytes
-std::string serializeString16(std::string_view plain);
+std::string serializeString16(std::string_view plain, bool truncate = false);
 
 // Reads a string with the length as the first two bytes
-std::string deSerializeString16(std::istream &is);
+std::string deSerializeString16(std::istream &is, bool truncate = false);
 
 // Creates a string with the length as the first four bytes
-std::string serializeString32(std::string_view plain);
+std::string serializeString32(std::string_view plain, bool truncate = false);
 
 // Reads a string with the length as the first four bytes
-std::string deSerializeString32(std::istream &is);
+std::string deSerializeString32(std::istream &is, bool truncate = false);
 
 // Creates a string encoded in JSON format (almost equivalent to a C string literal)
 std::string serializeJsonString(std::string_view plain);

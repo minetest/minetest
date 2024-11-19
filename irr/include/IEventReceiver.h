@@ -8,6 +8,8 @@
 #include "Keycodes.h"
 #include "irrString.h"
 
+union SDL_Event;
+
 namespace irr
 {
 //! Enumeration for all event types there are.
@@ -81,6 +83,10 @@ enum EEVENT_TYPE
 
 	//! Application state events like a resume, pause etc.
 	EET_APPLICATION_EVENT,
+
+	//! The raw SDL event is passed before any Irrlicht events are created.
+	//! If this event is handled, the Irrlicht event is never sent.
+	EET_SDL_EVENT,
 
 	//! This enum is never used, it only forces the compiler to
 	//! compile these enumeration values to 32 bit.
@@ -540,6 +546,7 @@ struct SEvent
 		struct SLogEvent LogEvent;
 		struct SUserEvent UserEvent;
 		struct SApplicationEvent ApplicationEvent;
+		union SDL_Event *SdlEvent;
 	};
 
 	SEvent() {
