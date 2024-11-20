@@ -302,8 +302,6 @@ bool GUITouchscreenLayout::OnEvent(const SEvent& event)
 
 		switch (event.MouseInput.Event) {
 		case EMIE_LMOUSE_PRESSED_DOWN: {
-			if (m_mouse_down)
-				return true; // This actually fixes a bug.
 			m_mouse_down = true;
 			m_last_mouse_pos = mouse_pos;
 
