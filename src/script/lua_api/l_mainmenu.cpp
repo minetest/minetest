@@ -3,7 +3,6 @@
 // Copyright (C) 2013 sapier
 
 #include "lua_api/l_mainmenu.h"
-#include "gui/touchscreeneditor.h"
 #include "lua_api/l_internal.h"
 #include "common/c_content.h"
 #include "cpp_api/s_async.h"
@@ -12,6 +11,7 @@
 #include "gui/guiMainMenu.h"
 #include "gui/guiKeyChangeMenu.h"
 #include "gui/guiPathSelectMenu.h"
+#include "gui/touchscreeneditor.h"
 #include "version.h"
 #include "porting.h"
 #include "filesys.h"

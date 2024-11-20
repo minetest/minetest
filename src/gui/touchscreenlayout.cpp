@@ -3,15 +3,15 @@
 // Copyright (C) 2024 grorp, Gregor Parzefall <grorp@posteo.de>
 
 #include "touchscreenlayout.h"
-#include "gettext.h"
 #include "client/renderingengine.h"
 #include "client/texturesource.h"
-#include "settings.h"
 #include "convert_json.h"
+#include "gettext.h"
+#include "settings.h"
 #include <json/json.h>
 
-#include "IGUIStaticText.h"
 #include "IGUIFont.h"
+#include "IGUIStaticText.h"
 
 const char *button_names[] = {
 	"jump",

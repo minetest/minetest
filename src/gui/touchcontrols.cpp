@@ -5,9 +5,9 @@
 // Copyright (C) 2024 grorp, Gregor Parzefall
 
 #include "touchcontrols.h"
+#include "touchscreenlayout.h"
 
 #include "gettime.h"
-#include "gui/touchscreenlayout.h"
 #include "irr_v2d.h"
 #include "log.h"
 #include "porting.h"

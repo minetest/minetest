@@ -3,17 +3,18 @@
 // Copyright (C) 2024 grorp, Gregor Parzefall <grorp@posteo.de>
 
 #include "touchscreeneditor.h"
-#include "touchscreenlayout.h"
 #include "touchcontrols.h"
-#include "irr_gui_ptr.h"
-#include "gettext.h"
+#include "touchscreenlayout.h"
+
 #include "client/renderingengine.h"
+#include "gettext.h"
+#include "irr_gui_ptr.h"
 #include "settings.h"
 
 #include "IGUIButton.h"
+#include "IGUIFont.h"
 #include "IGUIImage.h"
 #include "IGUIStaticText.h"
-#include "IGUIFont.h"
 
 GUITouchscreenLayout::GUITouchscreenLayout(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
