@@ -214,7 +214,7 @@ core::recti ButtonLayout::getRect(touch_gui_button_id btn,
 	v2s32 pos = meta.getPos(screensize, button_size);
 
 	v2u32 orig_size = getTexture(btn, tsrc)->getOriginalSize();
-	v2s32 size((f32)orig_size.X / (f32)orig_size.Y * button_size, button_size);
+	v2s32 size((button_size * orig_size.X) / orig_size.Y, button_size);
 
 	return core::recti(pos - size / 2, core::dimension2di(size));
 }
@@ -316,7 +316,7 @@ void layout_button_grid(v2u32 screensize, ISimpleTextureSource *tsrc,
 
 	for (touch_gui_button_id btn : buttons) {
 		v2u32 orig_size = ButtonLayout::getTexture(btn, tsrc)->getOriginalSize();
-		v2s32 size((f32)orig_size.X / (f32)orig_size.Y * button_size, button_size);
+		v2s32 size((button_size * orig_size.X) / orig_size.Y, button_size);
 
 		core::recti rect(pos - size / 2, core::dimension2di(size));
 
