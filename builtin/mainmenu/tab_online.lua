@@ -122,7 +122,7 @@ local function get_formspec(tabview, name, tabdata)
 				return a:lower() < b:lower()
 			end)
 			local max_clients = 5
-			if #clients_list >= max_clients then
+			if #clients_list > max_clients then
 				retval = retval .. "tooltip[btn_view_clients;" ..
 						fgettext("Clients:\n$1", table.concat(clients_list, "\n", 1, max_clients)) .. "\n..." .. "]"
 			else
