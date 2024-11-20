@@ -74,7 +74,6 @@ struct ButtonLayout {
 	static bool isButtonAllowed(touch_gui_button_id id);
 	static bool isButtonRequired(touch_gui_button_id id);
 	static s32 getButtonSize(v2u32 screensize);
-	static ButtonLayout getDefault();
 	static ButtonLayout loadFromSettings();
 
 	static video::ITexture *getTexture(touch_gui_button_id btn, ISimpleTextureSource *tsrc);
@@ -89,6 +88,8 @@ struct ButtonLayout {
 
 	void serializeJson(std::ostream &os) const;
 	void deserializeJson(std::istream &is);
+
+	static const ButtonLayout predefined;
 
 private:
 	static std::unordered_map<touch_gui_button_id, irr_ptr<video::ITexture>> texture_cache;

@@ -139,31 +139,28 @@ s32 ButtonLayout::getButtonSize(v2u32 screensize)
 					g_settings->getFloat("hud_scaling"));
 }
 
-ButtonLayout ButtonLayout::getDefault()
-{
-	return {{
-		{jump_id, {
-			v2f(1.0f, 1.0f),
-			v2f(-1.0f, -0.5f),
-		}},
-		{sneak_id, {
-			v2f(1.0f, 1.0f),
-			v2f(-2.5f, -0.5f),
-		}},
-		{zoom_id, {
-			v2f(1.0f, 1.0f),
-			v2f(-0.75f, -3.5f),
-		}},
-		{aux1_id, {
-			v2f(1.0f, 1.0f),
-			v2f(-0.75f, -2.0f),
-		}},
-		{overflow_id, {
-			v2f(1.0f, 1.0f),
-			v2f(-0.75f, -5.0f),
-		}},
-	}};
-}
+const ButtonLayout ButtonLayout::predefined {{
+	{jump_id, {
+		v2f(1.0f, 1.0f),
+		v2f(-1.0f, -0.5f),
+	}},
+	{sneak_id, {
+		v2f(1.0f, 1.0f),
+		v2f(-2.5f, -0.5f),
+	}},
+	{zoom_id, {
+		v2f(1.0f, 1.0f),
+		v2f(-0.75f, -3.5f),
+	}},
+	{aux1_id, {
+		v2f(1.0f, 1.0f),
+		v2f(-0.75f, -2.0f),
+	}},
+	{overflow_id, {
+		v2f(1.0f, 1.0f),
+		v2f(-0.75f, -5.0f),
+	}},
+}};
 
 ButtonLayout ButtonLayout::loadFromSettings()
 {
@@ -182,7 +179,7 @@ ButtonLayout ButtonLayout::loadFromSettings()
 	}
 
 	if (!restored)
-		return ButtonLayout::getDefault();
+		return predefined;
 
 	return layout;
 }

@@ -374,7 +374,7 @@ bool GUITouchscreenLayout::OnEvent(const SEvent& event)
 			}
 
 			if (event.GUIEvent.Caller == m_gui_reset_btn.get()) {
-				m_layout = ButtonLayout::getDefault();
+				m_layout = ButtonLayout::predefined;
 				regenerateGui(screensize);
 				return true;
 			}
