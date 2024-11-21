@@ -108,15 +108,37 @@ local function get_formspec(tabview, name, tabdata)
 	end
 
 	if tabdata.selected then
-		if gamedata.fav then
-			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Remove favorite") .. "]"
-			retval = retval .. "style[btn_delete_favorite;padding=6]"
-			retval = retval .. "image_button[5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
-				"server_favorite_delete.png") .. ";btn_delete_favorite;]"
-		end
 		if gamedata.serverdescription then
 			retval = retval .. "textarea[0.25,1.85;5.25,2.7;;;" ..
 				core.formspec_escape(gamedata.serverdescription) .. "]"
+		end
+
+		local server = tabdata.lookup[tabdata.selected]
+
+		local clients_list = server and server.clients_list
+		local can_view_clients_list = clients_list and #clients_list > 0
+		if can_view_clients_list then
+			table.sort(clients_list, function(a, b)
+				return a:lower() < b:lower()
+			end)
+			local max_clients = 5
+			if #clients_list > max_clients then
+				retval = retval .. "tooltip[btn_view_clients;" ..
+						fgettext("Clients:\n$1", table.concat(clients_list, "\n", 1, max_clients)) .. "\n..." .. "]"
+			else
+				retval = retval .. "tooltip[btn_view_clients;" ..
+						fgettext("Clients:\n$1", table.concat(clients_list, "\n")) .. "]"
+			end
+			retval = retval .. "style[btn_view_clients;padding=6]"
+			retval = retval .. "image_button[5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
+				"server_view_clients.png") .. ";btn_view_clients;]"
+		end
+
+		if gamedata.fav then
+			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Remove favorite") .. "]"
+			retval = retval .. "style[btn_delete_favorite;padding=6]"
+			retval = retval .. "image_button[" .. (can_view_clients_list and "4.5" or "5") .. ",1.3;0.5,0.5;" ..
+				core.formspec_escape(defaulttexturedir .. "server_favorite_delete.png") .. ";btn_delete_favorite;]"
 		end
 	end
 
@@ -312,6 +334,14 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		serverlistmgr.delete_favorite(server)
 		-- the server at [idx+1] will be at idx once list is refreshed
 		set_selected_server(tabdata, idx, tabdata.lookup[idx+1])
+		return true
+	end
+
+	if fields.btn_view_clients then
+		local dlg = create_clientslist_dialog(tabdata.lookup[tabdata.selected])
+		dlg:set_parent(tabview)
+		tabview:hide()
+		dlg:show()
 		return true
 	end
 
