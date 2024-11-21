@@ -76,7 +76,26 @@ void MainMenuScripting::registerLuaClasses(lua_State *L, int top)
 
 bool MainMenuScripting::mayModifyPath(const std::string &path)
 {
-	return true;
+	if (fs::PathStartsWith(path, fs::TempPath()))
+		return true;
+
+	std::string path_user = fs::RemoveRelativePathComponents(porting::path_user);
+
+	if (fs::PathStartsWith(path, path_user + DIR_DELIM "client"))
+		return true;
+	if (fs::PathStartsWith(path, path_user + DIR_DELIM "games"))
+		return true;
+	if (fs::PathStartsWith(path, path_user + DIR_DELIM "mods"))
+		return true;
+	if (fs::PathStartsWith(path, path_user + DIR_DELIM "textures"))
+		return true;
+	if (fs::PathStartsWith(path, path_user + DIR_DELIM "worlds"))
+		return true;
+
+	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_cache)))
+		return true;
+
+	return false;
 }
 
 bool MainMenuScripting::checkPathAccess(const std::string &abs_path, bool write_required,
