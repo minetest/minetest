@@ -4,6 +4,7 @@
 
 #include "client/client.h"
 
+#include "exceptions.h"
 #include "irr_v2d.h"
 #include "util/base64.h"
 #include "client/camera.h"
@@ -1007,6 +1008,8 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 	p.amount             = readU16(is);
 	p.time               = readF32(is);
+	if (p.time < 0)
+		throw SerializationError("particle spawner time < 0");
 
 	bool missing_end_values = false;
 	if (m_proto_ver >= 42) {
