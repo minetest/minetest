@@ -6699,6 +6699,9 @@ Formspec
 * `core.hypertext_escape(string)`: returns a string
     * escapes the characters "\", "<", and ">" to show text in a hypertext element.
     * not safe for use with tag attributes.
+    * this function does not do formspec escaping, you will likely need to do
+      `core.formspec_escape(core.hypertext_escape(string))` if the hypertext is
+      not already being formspec escaped.
 * `core.explode_table_event(string)`: returns a table
     * returns e.g. `{type="CHG", row=1, column=2}`
     * `type` is one of:
