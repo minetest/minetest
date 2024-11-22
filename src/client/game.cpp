@@ -411,38 +411,25 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 		"exposure_compensation",
 	};
 
-public:
-	void onSettingsChange(const std::string &name)
+	/// Set texture-related shader uniforms
+	void setMaterialConstants(video::IMaterialRendererServices *services)
 	{
-		if (name == "exposure_compensation")
-			m_user_exposure_compensation = g_settings->getFloat("exposure_compensation", -1.0f, 1.0f);
+		SamplerLayer_t tex_id;
+		tex_id = 0;
+		m_texture0.set(&tex_id, services);
+		tex_id = 1;
+		m_texture1.set(&tex_id, services);
+		tex_id = 2;
+		m_texture2.set(&tex_id, services);
+		tex_id = 3;
+		m_texture3.set(&tex_id, services);
+
+		m_texel_size0_vertex.set(m_texel_size0, services);
+		m_texel_size0_pixel.set(m_texel_size0, services);
 	}
 
-	static void settingsCallback(const std::string &name, void *userdata)
-	{
-		reinterpret_cast<GameGlobalShaderConstantSetter*>(userdata)->onSettingsChange(name);
-	}
-
-	void setSky(Sky *sky) { m_sky = sky; }
-
-	GameGlobalShaderConstantSetter(Sky *sky, Client *client) :
-		m_sky(sky),
-		m_client(client)
-	{
-		for (auto &name : SETTING_CALLBACKS)
-			g_settings->registerChangedCallback(name, settingsCallback, this);
-
-		m_user_exposure_compensation = g_settings->getFloat("exposure_compensation", -1.0f, 1.0f);
-		m_bloom_enabled = g_settings->getBool("enable_bloom");
-		m_volumetric_light_enabled = g_settings->getBool("enable_volumetric_lighting") && m_bloom_enabled;
-	}
-
-	~GameGlobalShaderConstantSetter()
-	{
-		g_settings->deregisterAllChangedCallbacks(this);
-	}
-
-	void onSetConstants(video::IMaterialRendererServices *services) override
+	/// Set shader uniforms whose values change between frames
+	void setFrameConstants(video::IMaterialRendererServices *services)
 	{
 		u32 daynight_ratio = (float)m_client->getEnv().getDayNightRatio();
 		video::SColorf sunlight;
@@ -470,19 +457,6 @@ public:
 		v3f camera_position = m_client->getCamera()->getPosition();
 		m_camera_position_pixel.set(camera_position, services);
 		m_camera_position_pixel.set(camera_position, services);
-
-		SamplerLayer_t tex_id;
-		tex_id = 0;
-		m_texture0.set(&tex_id, services);
-		tex_id = 1;
-		m_texture1.set(&tex_id, services);
-		tex_id = 2;
-		m_texture2.set(&tex_id, services);
-		tex_id = 3;
-		m_texture3.set(&tex_id, services);
-
-		m_texel_size0_vertex.set(m_texel_size0, services);
-		m_texel_size0_pixel.set(m_texel_size0, services);
 
 		const auto &lighting = m_client->getEnv().getLocalPlayer()->getLighting();
 
@@ -553,6 +527,43 @@ public:
 			float volumetric_light_strength = lighting.volumetric_light_strength;
 			m_volumetric_light_strength_pixel.set(&volumetric_light_strength, services);
 		}
+	}
+
+public:
+	void onSettingsChange(const std::string &name)
+	{
+		if (name == "exposure_compensation")
+			m_user_exposure_compensation = g_settings->getFloat("exposure_compensation", -1.0f, 1.0f);
+	}
+
+	static void settingsCallback(const std::string &name, void *userdata)
+	{
+		reinterpret_cast<GameGlobalShaderConstantSetter*>(userdata)->onSettingsChange(name);
+	}
+
+	void setSky(Sky *sky) { m_sky = sky; }
+
+	GameGlobalShaderConstantSetter(Sky *sky, Client *client) :
+		m_sky(sky),
+		m_client(client)
+	{
+		for (auto &name : SETTING_CALLBACKS)
+			g_settings->registerChangedCallback(name, settingsCallback, this);
+
+		m_user_exposure_compensation = g_settings->getFloat("exposure_compensation", -1.0f, 1.0f);
+		m_bloom_enabled = g_settings->getBool("enable_bloom");
+		m_volumetric_light_enabled = g_settings->getBool("enable_volumetric_lighting") && m_bloom_enabled;
+	}
+
+	~GameGlobalShaderConstantSetter()
+	{
+		g_settings->deregisterAllChangedCallbacks(this);
+	}
+
+	void onSetConstants(video::IMaterialRendererServices *services) override
+	{
+		setMaterialConstants(services);
+		setFrameConstants(services);
 	}
 
 	void onSetMaterial(const video::SMaterial &material) override
