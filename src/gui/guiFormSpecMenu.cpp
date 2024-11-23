@@ -3010,7 +3010,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_tabheader_upper_edge = 0;
 
 	{
-		v3f formspec_bgcolor = g_settings->getV3F("formspec_fullscreen_bg_color");
+		v3f formspec_bgcolor = g_settings->getV3F("formspec_fullscreen_bg_color").value_or(v3f());
 		m_fullscreen_bgcolor = video::SColor(
 			(u8) clamp_u8(g_settings->getS32("formspec_fullscreen_bg_opacity")),
 			clamp_u8(myround(formspec_bgcolor.X)),

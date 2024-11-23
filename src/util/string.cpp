@@ -1069,25 +1069,28 @@ void safe_print_string(std::ostream &os, std::string_view str)
 	os.setf(flags);
 }
 
-const std::regex patternParenthesis(R"(^\((.*?)\)$)");
-const std::regex patternCoordinates(R"(^([\d.-]+)[,\s]\s*([\d.-]+)[,\s]\s*([\d.-]+)$)");
-
-v3f str_to_v3f(std::string_view str)
-{
+std::optional<v3f> str_to_v3f(std::string_view str) {
     v3f value;
-    std::cmatch matches;
 
-    // Strip parentheses
-    if (std::regex_search(str.data(), str.data() + str.size(), matches, patternParenthesis)) {
-        str = std::string_view(matches[1].first, matches[1].length());
+    // Strip parentheses if they exist
+    if (str.front() == '(' && str.back() == ')') {
+        str.remove_prefix(1);
+        str.remove_suffix(1);
     }
 
-    // Match coordinates
-    if (std::regex_search(str.data(), str.data() + str.size(), matches, patternCoordinates)) {
-        value.X = stof(matches[1].str());
-        value.Y = stof(matches[2].str());
-        value.Z = stof(matches[3].str());
+    // Replace commas with spaces
+    std::string str_copy(str);
+    for (char& ch : str_copy) {
+        if (ch == ',') {
+            ch = ' ';
+        }
     }
 
-    return value;
+    // Parse coordinates
+    std::istringstream iss(str_copy);
+    if (iss >> value.X >> value.Y >> value.Z) {
+        return value;
+    }
+
+    return std::nullopt;
 }

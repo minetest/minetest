@@ -103,8 +103,17 @@ void MapgenFractalParams::readParams(const Settings *settings)
 	settings->getS16NoEx("mgfractal_dungeon_ymax",         dungeon_ymax);
 	settings->getU16NoEx("mgfractal_fractal",              fractal);
 	settings->getU16NoEx("mgfractal_iterations",           iterations);
-	settings->getV3FNoEx("mgfractal_scale",                scale);
-	settings->getV3FNoEx("mgfractal_offset",               offset);
+
+    std::optional<v3f> mgfractalScale;
+    if (settings->getV3FNoEx("mgfractal_scale", mgfractalScale) && mgfractalScale.has_value()) {
+        scale = mgfractalScale.value();
+    }
+
+    std::optional<v3f> mgfractalOffset;
+    if (settings->getV3FNoEx("mgfractal_offset", mgfractalOffset) && mgfractalOffset.has_value()) {
+        offset = mgfractalOffset.value();
+    }
+
 	settings->getFloatNoEx("mgfractal_slice_w",            slice_w);
 	settings->getFloatNoEx("mgfractal_julia_x",            julia_x);
 	settings->getFloatNoEx("mgfractal_julia_y",            julia_y);

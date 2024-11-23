@@ -20,6 +20,7 @@
 #include <cctype>
 #include <cwctype>
 #include <unordered_map>
+#include <optional>
 
 class Translations;
 
@@ -794,4 +795,4 @@ void safe_print_string(std::ostream &os, std::string_view str);
  * @param str string
  * @return float vector
  */
-v3f str_to_v3f(std::string_view str);
+std::optional<v3f> str_to_v3f(std::string_view str);
