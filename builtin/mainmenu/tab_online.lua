@@ -55,39 +55,47 @@ local function get_sorted_servers()
 	return servers
 end
 
--- The selected server is persisted in the "address" and "remote_port" settings.
-local function set_selected_server(server)
-	-- reset selection
-	if server == nil then
-		core.settings:remove("address")
-		core.settings:remove("remote_port")
-		return
-	end
+local set_selected_server, find_selected_server
+do
+	local selected
 
-	local address = server.address
-	local port    = server.port
-	gamedata.serverdescription = server.description
+	function set_selected_server(server)
+		-- reset selection
+		if server == nil then
+			selected = nil
+			core.settings:remove("address")
+			core.settings:remove("remote_port")
+			return
+		end
 
-	gamedata.fav = false
-	for _, fav in ipairs(serverlistmgr.get_favorites()) do
-		if address == fav.address and port == fav.port then
-			gamedata.fav = true
-			break
+		local address = server.address
+		local port    = server.port
+		selected = {address = address, port = port}
+		gamedata.serverdescription = server.description
+
+		gamedata.fav = false
+		for _, fav in ipairs(serverlistmgr.get_favorites()) do
+			if address == fav.address and port == fav.port then
+				gamedata.fav = true
+				break
+			end
+		end
+
+		if address and port then
+			core.settings:set("address", address)
+			core.settings:set("remote_port", port)
 		end
 	end
 
-	if address and port then
-		core.settings:set("address", address)
-		core.settings:set("remote_port", port)
-	end
-end
-
-local function find_selected_server()
-	local address = core.settings:get("address")
-	local port = tonumber(core.settings:get("remote_port"))
-	for _, server in ipairs(serverlistmgr.servers) do
-		if server.address == address and server.port == port then
-			return server
+	function find_selected_server()
+		if not selected then
+			return
+		end
+		for _, server in ipairs(serverlistmgr.servers) do
+			if server.address == selected.address and
+					server.port == selected.port then
+				return server
+			end
 		end
 	end
 end
