@@ -43,7 +43,7 @@
 #include "defaultsettings.h"
 #include "server/mods.h"
 #include "util/base64.h"
-#include "util/sha1.h"
+#include "util/hashing.h"
 #include "util/hex.h"
 #include "database/database.h"
 #include "chatmessage.h"
@@ -2547,14 +2547,11 @@ bool Server::addMediaFile(const std::string &filename,
 		return false;
 	}
 
-	SHA1 sha1;
-	sha1.addBytes(filedata);
-
-	std::string digest = sha1.getDigest();
-	std::string sha1_base64 = base64_encode(digest);
-	std::string sha1_hex = hex_encode(digest);
+	std::string sha1 = hashing::sha1(filedata);
+	std::string sha1_base64 = base64_encode(sha1);
+	std::string sha1_hex = hex_encode(sha1);
 	if (digest_to)
-		*digest_to = digest;
+		*digest_to = sha1;
 
 	// Put in list
 	m_media[filename] = MediaInfo(filepath, sha1_base64);
