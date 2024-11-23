@@ -59,8 +59,8 @@ end
 local function set_selected_server(server)
 	-- reset selection
 	if server == nil then
-		core.settings:set("address", "")
-		core.settings:set("remote_port", "30000")
+		core.settings:remove("address")
+		core.settings:remove("remote_port")
 		return
 	end
 
