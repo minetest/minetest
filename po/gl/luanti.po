@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-11-02 23:00+0000\n"
+"PO-Revision-Date: 2024-11-24 10:00+0000\n"
 "Last-Translator: ninjum <ninhum@gmx.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/minetest/"
 "minetest/gl/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -6852,15 +6852,15 @@ msgstr "Usar filtrado bilineal ao escalar texturas."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
-msgstr "Usar retículo para pantalla táctil"
+msgstr "Usar punto de mira na pantalla táctil"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Use crosshair to select object instead of whole screen.\n"
 "If enabled, a crosshair will be shown and will be used for selecting object."
 msgstr ""
-"Usar retículo para seleccionar obxectos en vez de toda a pantalla.\n"
-"Se está activado, mostrarase un retículo que se utilizará para seleccionar "
+"Usar punto de mira para escoller obxectos en troques de toda a pantalla.\n"
+"Se está activado, amosarase un punto de mira que se empregará para escoller "
 "obxectos."
 
 #: src/settings_translation_file.cpp
