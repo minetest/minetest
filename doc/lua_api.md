@@ -5659,6 +5659,8 @@ Utilities
       biome_weights = true,
       -- Particles can specify a "clip" blend mode (5.11.0)
       particle_blend_clip = true,
+      -- The `core.spawn_tree_on_vmanip` function is available (5.11.0)
+      spawn_tree_on_vmanip_function = true,
   }
   ```
 
@@ -6581,6 +6583,9 @@ Environment access
       on-the-fly
 * `core.spawn_tree (pos, {treedef})`
     * spawns L-system tree at given `pos` with definition in `treedef` table
+* `core.spawn_tree_on_vmanip(vmanip, pos, treedef)`
+    * analogous to `core.spawn_tree`, but spawns a L-system tree onto the specified
+      VoxelManip object `vmanip` instead of the map.
 * `core.transforming_liquid_add(pos)`
     * add node to liquid flow update queue
 * `core.get_node_max_level(pos)`
