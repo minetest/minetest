@@ -270,6 +270,7 @@ ParticleSpawner::ParticleSpawner(
 	}
 
 	size_t max_particles = 0; // maximum number of particles likely to be visible at any given time
+	assert(p.time >= 0);
 	if (p.time != 0) {
 		auto maxGenerations = p.time / std::min(p.exptime.start.min, p.exptime.end.min);
 		max_particles = p.amount / maxGenerations;
