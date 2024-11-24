@@ -11,6 +11,7 @@
 #include "gui/guiMainMenu.h"
 #include "gui/guiKeyChangeMenu.h"
 #include "gui/guiPathSelectMenu.h"
+#include "gui/touchscreeneditor.h"
 #include "version.h"
 #include "porting.h"
 #include "filesys.h"
@@ -532,6 +533,22 @@ int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 			engine->m_menumanager,
 			engine->m_texture_source.get());
 	kmenu->drop();
+	return 0;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_show_touchscreen_layout(lua_State *L)
+{
+	GUIEngine *engine = getGuiEngine(L);
+	sanity_check(engine != NULL);
+
+	GUITouchscreenLayout *gui = new GUITouchscreenLayout(
+			engine->m_rendering_engine->get_gui_env(),
+			engine->m_parent,
+			-1,
+			engine->m_menumanager,
+			engine->m_texture_source.get());
+	gui->drop();
 	return 0;
 }
 
@@ -1080,6 +1097,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(start);
 	API_FCT(close);
 	API_FCT(show_keys_menu);
+	API_FCT(show_touchscreen_layout);
 	API_FCT(create_world);
 	API_FCT(delete_world);
 	API_FCT(set_background);
