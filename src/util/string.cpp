@@ -1069,8 +1069,13 @@ void safe_print_string(std::ostream &os, std::string_view str)
 	os.setf(flags);
 }
 
-std::optional<v3f> str_to_v3f(std::string_view str) {
+std::optional<v3f> str_to_v3f(std::string_view str)
+{
     v3f value;
+
+    if (str.empty()) {
+        return std::nullopt;
+    }
 
     // Strip parentheses if they exist
     if (str.front() == '(' && str.back() == ')') {
