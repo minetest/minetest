@@ -57,6 +57,7 @@ end
 
 local set_selected_server, find_selected_server
 do
+	-- hide this variable so code only goes through the two functions
 	local selected
 
 	function set_selected_server(server)
