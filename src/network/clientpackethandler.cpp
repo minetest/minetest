@@ -62,7 +62,7 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 	if (pkt->getSize() < 1)
 		return;
 
-	u8 serialization_ver; // negoticated value
+	u8 serialization_ver; // negotiated value
 	u16 proto_ver;
 	u16 unused_compression_mode;
 	u32 auth_mechs;
