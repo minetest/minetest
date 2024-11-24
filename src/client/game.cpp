@@ -365,6 +365,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 {
 	Sky *m_sky;
 	Client *m_client;
+	// Used to check if the frame or only the material has changed
+	u64 m_frame_time_prev = -1u;
 	CachedVertexShaderSetting<float> m_animation_timer_vertex{"animationTimer"};
 	CachedPixelShaderSetting<float> m_animation_timer_pixel{"animationTimer"};
 	CachedVertexShaderSetting<float>
@@ -563,7 +565,11 @@ public:
 	void onSetConstants(video::IMaterialRendererServices *services) override
 	{
 		setMaterialConstants(services);
-		setFrameConstants(services);
+		u64 frame_time = m_client->getEnv().getFrameTime();
+		if (frame_time != m_frame_time_prev) {
+			m_frame_time_prev = frame_time;
+			setFrameConstants(services);
+		}
 	}
 
 	void onSetMaterial(const video::SMaterial &material) override
