@@ -3873,8 +3873,10 @@ v3f Server::findSpawnPos()
 
     std::optional<v3f> staticSpawnPoint;
 	if (g_settings->getV3FNoEx("static_spawnpoint", staticSpawnPoint) && staticSpawnPoint.has_value())
+    {
         nodeposf = staticSpawnPoint.value();
-		return nodeposf * BS;
+        return nodeposf * BS;
+    }
 
 	bool is_good = false;
 	// Limit spawn range to mapgen edges (determined by 'mapgen_limit')
