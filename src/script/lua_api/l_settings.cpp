@@ -178,17 +178,17 @@ int LuaSettings::l_get_flags(lua_State *L)
 }
 
 // get_pos(self, key) -> vector or nil
-int LuaSettings::l_get_pos(lua_State *L) {
+int LuaSettings::l_get_pos(lua_State *L)
+{
     NO_MAP_LOCK_REQUIRED;
     LuaSettings *o = checkObject<LuaSettings>(L, 1);
-    std::string key = std::string(luaL_checkstring(L, 2));
+    std::string key = luaL_checkstring(L, 2);
 
     std::optional<v3f> pos;
-    if (o->m_settings->getV3FNoEx(key, pos) && pos.has_value()) {
+    if (o->m_settings->getV3FNoEx(key, pos) && pos.has_value())
         push_v3f(L, pos.value());
-    } else {
+    else
         lua_pushnil(L);
-    }
     return 1;
 }
 

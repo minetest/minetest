@@ -9050,7 +9050,7 @@ means that no defaults will be returned for mod settings.
     * Returns `nil` if `key` is not found.
 * `get_pos(key)`:
     * Returns a `vector`
-    * Returns `nil` if no value is found of parsing failed.
+    * Returns `nil` if no value is found or parsing failed.
 * `set(key, value)`
     * Setting names can't contain whitespace or any of `="{}#`.
     * Setting values can't contain the sequence `\n"""`.
