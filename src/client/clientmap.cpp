@@ -25,19 +25,10 @@ namespace {
 	// A helper struct
 	struct MeshBufListMaps
 	{
-		struct MaterialHash
-		{
-			size_t operator()(const video::SMaterial &m) const noexcept
-			{
-				// Only hash first texture. Simple and fast.
-				return std::hash<video::ITexture *>{}(m.TextureLayers[0].Texture);
-			}
-		};
-
 		using MeshBufListMap = std::unordered_map<
 				video::SMaterial,
-				std::vector<std::pair<v3s16, scene::IMeshBuffer *>>,
-				MaterialHash>;
+				std::vector<std::pair<v3s16, scene::IMeshBuffer *>>
+				>;
 
 		std::array<MeshBufListMap, MAX_TILE_LAYERS> maps;
 

@@ -193,21 +193,21 @@ private:
 		}
 
 		DefaultNodeEntry(ISceneNode *n) :
-				Node(n), TextureValue(0)
+				Node(n)
 		{
 			if (n->getMaterialCount())
-				TextureValue = (n->getMaterial(0).getTexture(0));
+				Hash = std::hash<video::SMaterial>{}(n->getMaterial(0));
 		}
 
-		bool operator<(const DefaultNodeEntry &other) const
+		bool operator<(const DefaultNodeEntry &other) const noexcept
 		{
-			return (TextureValue < other.TextureValue);
+			return Hash < other.Hash;
 		}
 
-		ISceneNode *Node;
+		ISceneNode *Node = nullptr;
 
 	private:
-		void *TextureValue;
+		size_t Hash = 0;
 	};
 
 	//! sort on distance (center) to camera
@@ -223,42 +223,15 @@ private:
 			Distance = Node->getAbsoluteTransformation().getTranslation().getDistanceFromSQ(camera);
 		}
 
-		bool operator<(const TransparentNodeEntry &other) const
+		bool operator<(const TransparentNodeEntry &other) const noexcept
 		{
 			return Distance > other.Distance;
 		}
 
-		ISceneNode *Node;
+		ISceneNode *Node = nullptr;
 
 	private:
-		f64 Distance;
-	};
-
-	//! sort on distance (sphere) to camera
-	struct DistanceNodeEntry
-	{
-		DistanceNodeEntry(ISceneNode *n, const core::vector3df &cameraPos) :
-				Node(n)
-		{
-			setNodeAndDistanceFromPosition(n, cameraPos);
-		}
-
-		bool operator<(const DistanceNodeEntry &other) const
-		{
-			return Distance < other.Distance;
-		}
-
-		void setNodeAndDistanceFromPosition(ISceneNode *n, const core::vector3df &fromPosition)
-		{
-			Node = n;
-			Distance = Node->getAbsoluteTransformation().getTranslation().getDistanceFromSQ(fromPosition);
-			Distance -= Node->getBoundingBox().getExtent().getLengthSQ() * 0.5;
-		}
-
-		ISceneNode *Node;
-
-	private:
-		f64 Distance;
+		f32 Distance = 0;
 	};
 
 	//! video driver
