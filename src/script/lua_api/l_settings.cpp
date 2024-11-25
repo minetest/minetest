@@ -242,6 +242,22 @@ int LuaSettings::l_set_np_group(lua_State *L)
 	return 0;
 }
 
+// set_pos(self, key, value)
+int LuaSettings::l_set_pos(lua_State *L)
+{
+    NO_MAP_LOCK_REQUIRED;
+    LuaSettings *o = checkObject<LuaSettings>(L, 1);
+
+    std::string key = std::string(luaL_checkstring(L, 2));
+    v3f value = read_v3f(L, 3);
+
+    CHECK_SETTING_SECURITY(L, key);
+
+    o->m_settings->setV3F(key, value);
+
+    return 0;
+}
+
 // remove(self, key) -> success
 int LuaSettings::l_remove(lua_State* L)
 {
@@ -375,6 +391,7 @@ const luaL_Reg LuaSettings::methods[] = {
 	luamethod(LuaSettings, set),
 	luamethod(LuaSettings, set_bool),
 	luamethod(LuaSettings, set_np_group),
+    luamethod(LuaSettings, set_pos),
 	luamethod(LuaSettings, remove),
 	luamethod(LuaSettings, get_names),
 	luamethod(LuaSettings, has),

@@ -41,6 +41,9 @@ private:
 	// set_np_group(self, key, value)
 	static int l_set_np_group(lua_State *L);
 
+    // set_pos(self, key, value)
+    static int l_set_pos(lua_State *L);
+
 	// remove(self, key) -> success
 	static int l_remove(lua_State *L);
 

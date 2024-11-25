@@ -9061,6 +9061,9 @@ means that no defaults will be returned for mod settings.
 * `set_np_group(key, value)`
     * `value` is a NoiseParams table.
     * Also, see documentation for `set()` above.
+* `set_pos(key, value)`
+    * `value` is a `vector`.
+    * Also, see documentation for `set()` above.
 * `remove(key)`: returns a boolean (`true` for success)
 * `get_names()`: returns `{key1,...}`
 * `has(key)`:
