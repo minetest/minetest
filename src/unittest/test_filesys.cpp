@@ -266,31 +266,33 @@ void TestFileSys::testAbsolutePath()
 	const auto dir_path = getTestTempDirectory();
 
 	/* AbsolutePath */
+	UASSERTEQ(auto, fs::AbsolutePath(""), ""); // empty is not valid path
 	const auto cwd = fs::AbsolutePath(".");
 	UASSERTCMP(auto, !=, cwd, "");
-	const auto dir_path2 = getTestTempFile();
-	UASSERTEQ(auto, fs::AbsolutePath(dir_path2), ""); // doesn't exist
-	fs::CreateDir(dir_path2);
-	UASSERTCMP(auto, !=, fs::AbsolutePath(dir_path2), "");
-	UASSERTEQ(auto, fs::AbsolutePath(dir_path2 + DIR_DELIM ".."), fs::AbsolutePath(dir_path));
+	{
+		const auto dir_path2 = getTestTempFile();
+		UASSERTEQ(auto, fs::AbsolutePath(dir_path2), ""); // doesn't exist
+		fs::CreateDir(dir_path2);
+		UASSERTCMP(auto, !=, fs::AbsolutePath(dir_path2), "");
+		UASSERTEQ(auto, fs::AbsolutePath(dir_path2 + DIR_DELIM ".."), fs::AbsolutePath(dir_path));
+	}
 
 	/* AbsolutePathPartial */
 	// equivalent to AbsolutePath if it exists
+	UASSERTEQ(auto, fs::AbsolutePathPartial("."), cwd);
 	UASSERTEQ(auto, fs::AbsolutePathPartial(dir_path), fs::AbsolutePath(dir_path));
 	// usual usage of the function with a partially existing path
 	UASSERTEQ(auto,
 		fs::AbsolutePathPartial("does/not/exist"),
 		cwd + DIR_DELIM + p("does/not/exist"));
 
-	UASSERTEQ(auto, fs::AbsolutePathPartial("."), cwd);
-
 	// a nonsense combination as you couldn't actually access it, but allowed by function
-	UASSERTEQ(auto, fs::AbsolutePathPartial("noexist/.."), cwd);
-	UASSERTEQ(auto, fs::AbsolutePathPartial("./noexist/.."), cwd);
+	UASSERTEQ(auto, fs::AbsolutePathPartial("bla/blub/../.."), cwd);
+	UASSERTEQ(auto, fs::AbsolutePathPartial("./bla/blub/../.."), cwd);
 
-#ifndef _WIN32
+#ifdef __unix__
 	// one way to produce the error case is to remove more components than there are
-	// but only if the path does not actually exist ("/.." does exist on Unix).
+	// but only if the path does not actually exist ("/.." does exist).
 	UASSERTEQ(auto, fs::AbsolutePathPartial("/.."), "/");
 	UASSERTEQ(auto, fs::AbsolutePathPartial("/noexist/../.."), "");
 #endif
