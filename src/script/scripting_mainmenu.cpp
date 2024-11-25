@@ -76,10 +76,11 @@ void MainMenuScripting::registerLuaClasses(lua_State *L, int top)
 
 bool MainMenuScripting::mayModifyPath(const std::string &path)
 {
-	if (fs::PathStartsWith(path, fs::TempPath()))
+	std::string path_temp = fs::AbsolutePathPartial(fs::TempPath());
+	if (fs::PathStartsWith(path, path_temp))
 		return true;
 
-	std::string path_user = fs::RemoveRelativePathComponents(porting::path_user);
+	std::string path_user = fs::AbsolutePathPartial(porting::path_user);
 
 	if (fs::PathStartsWith(path, path_user + DIR_DELIM "client"))
 		return true;
@@ -92,7 +93,7 @@ bool MainMenuScripting::mayModifyPath(const std::string &path)
 	if (fs::PathStartsWith(path, path_user + DIR_DELIM "worlds"))
 		return true;
 
-	if (fs::PathStartsWith(path, fs::RemoveRelativePathComponents(porting::path_cache)))
+	if (fs::PathStartsWith(path, fs::AbsolutePathPartial(porting::path_cache)))
 		return true;
 
 	return false;

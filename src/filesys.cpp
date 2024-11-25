@@ -843,6 +843,31 @@ std::string AbsolutePath(const std::string &path)
 	return abs_path_str;
 }
 
+std::string AbsolutePathPartial(const std::string &path)
+{
+	// Try to determine absolute path
+	std::string abs_path = fs::AbsolutePath(path);
+	if (!abs_path.empty())
+		return abs_path;
+	// Remove components until it works
+	std::string cur_path = path;
+	std::string removed;
+	while (!cur_path.empty()) {
+		std::string component;
+		cur_path = RemoveLastPathComponent(cur_path, &component);
+		removed = component + (removed.empty() ? "" : DIR_DELIM + removed);
+		abs_path = fs::AbsolutePath(cur_path);
+	}
+	// Note: if no components exist we end up with cur_path == "" and abs_path == $PWD
+	// so this check won't trigger.
+	if (abs_path.empty())
+		return "";
+	// Put the two back together and resolve the remaining relative components
+	if (!removed.empty())
+		abs_path.append(DIR_DELIM).append(removed);
+	return RemoveRelativePathComponents(abs_path);
+}
+
 const char *GetFilenameFromPath(const char *path)
 {
 	const char *filename = strrchr(path, DIR_DELIM_CHAR);
