@@ -282,9 +282,9 @@ void TestFileSys::testAbsolutePath()
 	UASSERTEQ(auto, fs::AbsolutePathPartial("."), cwd);
 	UASSERTEQ(auto, fs::AbsolutePathPartial(dir_path), fs::AbsolutePath(dir_path));
 	// usual usage of the function with a partially existing path
-	UASSERTEQ(auto,
-		fs::AbsolutePathPartial("does/not/exist"),
-		cwd + DIR_DELIM + p("does/not/exist"));
+	auto expect = cwd + DIR_DELIM + p("does/not/exist");
+	UASSERTEQ(auto, fs::AbsolutePathPartial("does/not/exist"), expect);
+	UASSERTEQ(auto, fs::AbsolutePathPartial(expect), expect);
 
 	// a nonsense combination as you couldn't actually access it, but allowed by function
 	UASSERTEQ(auto, fs::AbsolutePathPartial("bla/blub/../.."), cwd);

@@ -854,13 +854,13 @@ std::string AbsolutePathPartial(const std::string &path)
 	// Remove components until it works
 	std::string cur_path = path;
 	std::string removed;
-	while (!cur_path.empty()) {
+	while (abs_path.empty() && !cur_path.empty()) {
 		std::string component;
 		cur_path = RemoveLastPathComponent(cur_path, &component);
 		removed = component + (removed.empty() ? "" : DIR_DELIM + removed);
 		abs_path = AbsolutePath(cur_path);
 	}
-	// If we had a relative path that does not exist, it need to be joined with cwd
+	// If we had a relative path that does not exist, it needs to be joined with cwd
 	if (cur_path.empty() && !IsPathAbsolute(path))
 		abs_path = AbsolutePath(".");
 	// or there's an error
