@@ -595,7 +595,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 	if (!removed.empty())
 		abs_path += DIR_DELIM + removed;
 
-	tracestream << "ScriptApiSecurity: path \"" << path << "\" resolved to \""
+	verbosestream << "ScriptApiSecurity: path \"" << path << "\" resolved to \""
 		<< abs_path << "\"" << std::endl;
 
 	// Ask the environment-specific implementation
