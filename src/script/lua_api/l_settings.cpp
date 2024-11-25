@@ -10,6 +10,7 @@
 #include "settings.h"
 #include "noise.h"
 #include "log.h"
+#include "common/c_converter.h"
 
 
 /* This protects the following from being set:
@@ -174,6 +175,21 @@ int LuaSettings::l_get_flags(lua_State *L)
 	}
 
 	return 1;
+}
+
+// get_pos(self, key) -> vector or nil
+int LuaSettings::l_get_pos(lua_State *L) {
+    NO_MAP_LOCK_REQUIRED;
+    LuaSettings *o = checkObject<LuaSettings>(L, 1);
+    std::string key = std::string(luaL_checkstring(L, 2));
+
+    std::optional<v3f> pos;
+    if (o->m_settings->getV3FNoEx(key, pos) && pos.has_value()) {
+        push_v3f(L, pos.value());
+    } else {
+        lua_pushnil(L);
+    }
+    return 1;
 }
 
 // set(self, key, value)
@@ -355,6 +371,7 @@ const luaL_Reg LuaSettings::methods[] = {
 	luamethod(LuaSettings, get_bool),
 	luamethod(LuaSettings, get_np_group),
 	luamethod(LuaSettings, get_flags),
+    luamethod(LuaSettings, get_pos),
 	luamethod(LuaSettings, set),
 	luamethod(LuaSettings, set_bool),
 	luamethod(LuaSettings, set_np_group),

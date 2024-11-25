@@ -29,6 +29,9 @@ private:
 	// get_flags(self, key) -> key/value table
 	static int l_get_flags(lua_State *L);
 
+    // get_pos(self, key) -> vector or nil
+    static int l_get_pos(lua_State *L);
+
 	// set(self, key, value)
 	static int l_set(lua_State *L);
 
