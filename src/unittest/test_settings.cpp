@@ -42,6 +42,8 @@ const char *TestSettings::config_text_before =
 	"floaty_thing = 1.1\n"
 	"stringy_thing = asd /( ¤%&(/\" BLÖÄRP\n"
 	"coord = (1, 2, 4.5)\n"
+    "coord_invalid = (1,2,3\n"
+    "coord_no_parenthesis = 1,2,3\n"
 	"      # this is just a comment\n"
 	"this is an invalid line\n"
 	"asdf = {\n"
@@ -95,6 +97,8 @@ const char *TestSettings::config_text_after =
 	"}\n"
 	"zoop = true\n"
 	"coord2 = (1,2,3.3)\n"
+    "coord_invalid = (1,2,3\n"
+    "coord_no_parenthesis = 1,2,3\n"
 	"floaty_thing_2 = 1.25\n"
 	"groupy_thing = {\n"
 	"	animals = cute\n"
@@ -152,6 +156,15 @@ void TestSettings::testAllSettings()
 	UASSERT(fabs(s.getV3F("coord2").value().X - 1.0) < 0.001);
 	UASSERT(fabs(s.getV3F("coord2").value().Y - 2.0) < 0.001);
 	UASSERT(fabs(s.getV3F("coord2").value().Z - 3.3) < 0.001);
+
+    std::optional<v3f> testNotExist;
+    UASSERT(s.getV3FNoEx("coord_not_exist", testNotExist) == false);
+    EXCEPTION_CHECK(SettingNotFoundException, s.getV3F("coord_not_exist"));
+
+    UASSERT(s.getV3F("coord_invalid").has_value() == false);
+
+    std::optional<v3f> testNoParenthesis = s.getV3F("coord_no_parenthesis");
+    UASSERT(testNoParenthesis.has_value() == true && testNoParenthesis.value() == v3f(1, 2, 3));
 
 	// Test settings groups
 	Settings *group = s.getGroup("asdf");
