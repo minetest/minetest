@@ -55,48 +55,32 @@ local function get_sorted_servers()
 	return servers
 end
 
-local set_selected_server, find_selected_server
-do
-	-- hide this variable so code only goes through the two functions
-	local selected
+-- Persists the selected server in the "address" and "remote_port" settings
+local function set_selected_server(server)
+	local address = server.address
+	local port    = server.port
+	gamedata.serverdescription = server.description
 
-	function set_selected_server(server)
-		-- reset selection
-		if server == nil then
-			selected = nil
-			core.settings:remove("address")
-			core.settings:remove("remote_port")
-			return
-		end
-
-		local address = server.address
-		local port    = server.port
-		selected = {address = address, port = port}
-		gamedata.serverdescription = server.description
-
-		gamedata.fav = false
-		for _, fav in ipairs(serverlistmgr.get_favorites()) do
-			if address == fav.address and port == fav.port then
-				gamedata.fav = true
-				break
-			end
-		end
-
-		if address and port then
-			core.settings:set("address", address)
-			core.settings:set("remote_port", port)
+	gamedata.fav = false
+	for _, fav in ipairs(serverlistmgr.get_favorites()) do
+		if address == fav.address and port == fav.port then
+			gamedata.fav = true
+			break
 		end
 	end
 
-	function find_selected_server()
-		if not selected then
-			return
-		end
-		for _, server in ipairs(serverlistmgr.servers) do
-			if server.address == selected.address and
-					server.port == selected.port then
-				return server
-			end
+	if address and port then
+		core.settings:set("address", address)
+		core.settings:set("remote_port", port)
+	end
+end
+
+local function find_selected_server()
+	local address = core.settings:get("address")
+	local port = tonumber(core.settings:get("remote_port"))
+	for _, server in ipairs(serverlistmgr.servers) do
+		if server.address == address and server.port == port then
+			return server
 		end
 	end
 end
@@ -335,8 +319,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				gamedata.serverdescription = server.description
 
 				if gamedata.address and gamedata.port then
-					core.settings:set("address", gamedata.address)
-					core.settings:set("remote_port", gamedata.port)
+					set_selected_server(server)
 					core.start()
 				end
 				return true
@@ -403,8 +386,6 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 		local idx = core.get_table_index("servers")
 		local server = idx and tabdata.lookup[idx]
-
-		set_selected_server(nil)
 
 		if server and server.address == gamedata.address and
 				server.port == gamedata.port then
