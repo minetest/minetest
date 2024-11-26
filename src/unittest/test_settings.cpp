@@ -158,13 +158,13 @@ void TestSettings::testAllSettings()
 	UASSERT(fabs(s.getV3F("coord2").value().Z - 3.3) < 0.001);
 
     std::optional<v3f> testNotExist;
-    UASSERT(s.getV3FNoEx("coord_not_exist", testNotExist) == false);
+    UASSERT(!s.getV3FNoEx("coord_not_exist", testNotExist));
     EXCEPTION_CHECK(SettingNotFoundException, s.getV3F("coord_not_exist"));
 
-    UASSERT(s.getV3F("coord_invalid").has_value() == false);
+    UASSERT(!s.getV3F("coord_invalid").has_value());
 
     std::optional<v3f> testNoParenthesis = s.getV3F("coord_no_parenthesis");
-    UASSERT(testNoParenthesis.has_value() == true && testNoParenthesis.value() == v3f(1, 2, 3));
+    UASSERT(testNoParenthesis.value() == v3f(1, 2, 3));
 
 	// Test settings groups
 	Settings *group = s.getGroup("asdf");

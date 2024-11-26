@@ -106,7 +106,7 @@ void MapgenFractalParams::readParams(const Settings *settings)
 
     std::optional<v3f> mgfractalScale;
     if (settings->getV3FNoEx("mgfractal_scale", mgfractalScale) && mgfractalScale.has_value()) {
-        scale = mgfractalScale.value();
+        scale = *mgfractalScale;
     }
 
     std::optional<v3f> mgfractalOffset;

@@ -248,7 +248,7 @@ int LuaSettings::l_set_pos(lua_State *L)
     NO_MAP_LOCK_REQUIRED;
     LuaSettings *o = checkObject<LuaSettings>(L, 1);
 
-    std::string key = std::string(luaL_checkstring(L, 2));
+    std::string key = luaL_checkstring(L, 2);
     v3f value = read_v3f(L, 3);
 
     CHECK_SETTING_SECURITY(L, key);

@@ -14,7 +14,6 @@
 
 #include <algorithm>
 #include <array>
-#include <regex>
 #include <sstream>
 #include <iomanip>
 #include <unordered_map>
