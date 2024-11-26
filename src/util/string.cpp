@@ -1070,6 +1070,8 @@ void safe_print_string(std::ostream &os, std::string_view str)
 
 std::optional<v3f> str_to_v3f(std::string_view str)
 {
+    str = trim(str);
+
     if (str.empty()) {
         return std::nullopt;
     }
