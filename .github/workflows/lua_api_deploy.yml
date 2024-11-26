@@ -1,0 +1,48 @@
+name: lua_api_deploy
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+on:
+  push:
+    paths:
+      - '.github/workflows/lua_api_deploy.yml'
+      - 'doc/lua_api.md'
+      - 'doc/mkdocs/'
+    branches:
+      - master
+
+jobs:
+  build:
+    if: github.repository == 'minetest/minetest'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install mkdocs
+        run: |
+          pip install -U -r doc/mkdocs/requirements.txt
+
+      - name: Build documentation
+        run: |
+          cd doc/mkdocs/
+          ./build.sh
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'public/'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

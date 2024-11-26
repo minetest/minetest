@@ -1,0 +1,45 @@
+name: cpp_lint
+
+# lint on c/cpp changes or workflow changes
+on:
+  push:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/ci/**'
+      - '.github/workflows/**.yml'
+  pull_request:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - 'irr/**.[ch]'
+      - 'irr/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/ci/**'
+      - '.github/workflows/**.yml'
+
+env:
+  CLANG_TIDY: clang-tidy-15
+
+jobs:
+  clang_tidy:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install deps
+      run: |
+        source ./util/ci/common.sh
+        install_linux_deps $CLANG_TIDY
+
+    - name: Run clang-tidy
+      run: |
+        ./util/ci/clang-tidy.sh
