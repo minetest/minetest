@@ -266,14 +266,14 @@ void TestFileSys::testAbsolutePath()
 	const auto dir_path = getTestTempDirectory();
 
 	/* AbsolutePath */
-	UASSERTEQ(auto, fs::AbsolutePath(""), ""); // empty is not valid path
+	UASSERTEQ(auto, fs::AbsolutePath(""), ""); // empty is a not valid path
 	const auto cwd = fs::AbsolutePath(".");
 	UASSERTCMP(auto, !=, cwd, "");
 	{
 		const auto dir_path2 = getTestTempFile();
 		UASSERTEQ(auto, fs::AbsolutePath(dir_path2), ""); // doesn't exist
 		fs::CreateDir(dir_path2);
-		UASSERTCMP(auto, !=, fs::AbsolutePath(dir_path2), "");
+		UASSERTCMP(auto, !=, fs::AbsolutePath(dir_path2), ""); // now it does
 		UASSERTEQ(auto, fs::AbsolutePath(dir_path2 + DIR_DELIM ".."), fs::AbsolutePath(dir_path));
 	}
 

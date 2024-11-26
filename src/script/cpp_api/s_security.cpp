@@ -571,7 +571,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 	// since that wouldn't normalize subpaths that *do* exist.
 	// This is required so that comparisons with other normalized paths work correctly.
 	std::string abs_path = fs::AbsolutePathPartial(path);
-	verbosestream << "ScriptApiSecurity: path \"" << path << "\" resolved to \""
+	tracestream << "ScriptApiSecurity: path \"" << path << "\" resolved to \""
 		<< abs_path << "\"" << std::endl;
 
 	if (abs_path.empty())
