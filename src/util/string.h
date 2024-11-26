@@ -790,7 +790,7 @@ std::string sanitize_untrusted(std::string_view str, bool keep_escapes = true);
 void safe_print_string(std::ostream &os, std::string_view str);
 
 /**
- * Parses a string of form `(1, 2, 3)` to a v3f
+ * Parses a string of form `(1, 2, 3)` or `1, 2, 4` to a v3f
  *
  * @param str string
  * @return float vector
