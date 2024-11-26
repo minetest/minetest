@@ -96,7 +96,7 @@ const char *TestSettings::config_text_after =
 	"	spread = (250,250,250)\n"
 	"}\n"
 	"zoop = true\n"
-	"coord2 = (1,2,3.3)\n"
+	"coord2 = (1,2,3.25)\n"
     "coord_invalid = (1,2,3\n"
     "coord_no_parenthesis = 1,2,3\n"
 	"floaty_thing_2 = 1.25\n"
@@ -144,18 +144,18 @@ void TestSettings::testAllSettings()
 	// Not sure if 1.1 is an exact value as a float, but doesn't matter
 	UASSERT(fabs(s.getFloat("floaty_thing") - 1.1) < 0.001);
 	UASSERT(s.get("stringy_thing") == u8"asd /( ¤%&(/\" BLÖÄRP");
-	UASSERT(fabs(s.getV3F("coord").value().X - 1.0) < 0.001);
-	UASSERT(fabs(s.getV3F("coord").value().Y - 2.0) < 0.001);
-	UASSERT(fabs(s.getV3F("coord").value().Z - 4.5) < 0.001);
+	UASSERT(s.getV3F("coord").value().X == 1.0);
+	UASSERT(s.getV3F("coord").value().Y == 2.0);
+	UASSERT(s.getV3F("coord").value().Z == 4.5);
 
 	// Test the setting of settings too
 	s.setFloat("floaty_thing_2", 1.25);
-	s.setV3F("coord2", v3f(1, 2, 3.3));
+	s.setV3F("coord2", v3f(1, 2, 3.25));
 	UASSERT(s.get("floaty_thing_2").substr(0,4) == "1.25");
-	UASSERT(fabs(s.getFloat("floaty_thing_2") - 1.25) < 0.001);
-	UASSERT(fabs(s.getV3F("coord2").value().X - 1.0) < 0.001);
-	UASSERT(fabs(s.getV3F("coord2").value().Y - 2.0) < 0.001);
-	UASSERT(fabs(s.getV3F("coord2").value().Z - 3.3) < 0.001);
+	UASSERT(s.getFloat("floaty_thing_2") == 1.25);
+	UASSERT(s.getV3F("coord2").value().X == 1.0);
+	UASSERT(s.getV3F("coord2").value().Y == 2.0);
+	UASSERT(s.getV3F("coord2").value().Z == 3.25);
 
     std::optional<v3f> testNotExist;
     UASSERT(!s.getV3FNoEx("coord_not_exist", testNotExist));
