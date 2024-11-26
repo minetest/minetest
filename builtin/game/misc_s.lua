@@ -36,7 +36,6 @@ end
 
 
 function core.setting_get_pos(name)
-	core.log("deprecated", "Deprecated usage of setting_get_pos, use core.settings:get_pos() instead")
     return core.settings:get_pos(name)
 end
 
