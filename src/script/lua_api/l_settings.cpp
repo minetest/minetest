@@ -249,7 +249,7 @@ int LuaSettings::l_set_pos(lua_State *L)
     LuaSettings *o = checkObject<LuaSettings>(L, 1);
 
     std::string key = luaL_checkstring(L, 2);
-    v3f value = read_v3f(L, 3);
+    v3f value = check_v3f(L, 3);
 
     CHECK_SETTING_SECURITY(L, key);
 
