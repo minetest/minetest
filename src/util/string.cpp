@@ -1070,8 +1070,6 @@ void safe_print_string(std::ostream &os, std::string_view str)
 
 std::optional<v3f> str_to_v3f(std::string_view str)
 {
-    v3f value;
-
     if (str.empty()) {
         return std::nullopt;
     }
@@ -1082,19 +1080,19 @@ std::optional<v3f> str_to_v3f(std::string_view str)
         str.remove_suffix(1);
     }
 
-    // Replace commas with spaces
-    std::string str_copy(str);
-    for (char& ch : str_copy) {
-        if (ch == ',') {
-            ch = ' ';
-        }
-    }
+    std::istringstream iss((std::string(str)));
 
-    // Parse coordinates
-    std::istringstream iss(str_copy);
-    if (iss >> value.X >> value.Y >> value.Z) {
-        return value;
-    }
+    const auto expect_delimiter = [&]() {
+        const auto c = iss.get();
+        return c == ' ' || c == ',';
+    };
 
-    return std::nullopt;
+    v3f value;
+    if (!(iss >> value.X)) return std::nullopt;
+    if (!expect_delimiter()) return std::nullopt;
+    if (!(iss >> value.Y)) return std::nullopt;
+    if (!expect_delimiter()) return std::nullopt;
+    if (!(iss >> value.Z)) return std::nullopt;
+
+    return value;
 }
