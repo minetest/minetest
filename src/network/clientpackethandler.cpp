@@ -63,7 +63,7 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 	if (pkt->getSize() < 1)
 		return;
 
-	u8 serialization_ver;
+	u8 serialization_ver; // negotiated value
 	u16 proto_ver;
 	u16 unused_compression_mode;
 	u32 auth_mechs;
@@ -80,9 +80,9 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 			<< ", proto_ver=" << proto_ver
 			<< ". Doing auth with mech " << chosen_auth_mechanism << std::endl;
 
-	if (!ser_ver_supported(serialization_ver)) {
+	if (!ser_ver_supported_read(serialization_ver)) {
 		infostream << "Client: TOCLIENT_HELLO: Server sent "
-				<< "unsupported ser_fmt_ver"<< std::endl;
+				<< "unsupported ser_fmt_ver=" << (int)serialization_ver << std::endl;
 		return;
 	}
 

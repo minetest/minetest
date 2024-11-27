@@ -21,6 +21,7 @@
 #include "filesys.h"
 #include "mapblock.h"
 #include "server/serveractiveobject.h"
+#include "serialization.h" // SER_FMT_VER_INVALID
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"

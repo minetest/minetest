@@ -1128,7 +1128,7 @@ void Client::sendInit(const std::string &playerName)
 {
 	NetworkPacket pkt(TOSERVER_INIT, 1 + 2 + 2 + (1 + playerName.size()));
 
-	pkt << (u8) SER_FMT_VER_HIGHEST_READ << (u16) 0;
+	pkt << SER_FMT_VER_HIGHEST_READ << (u16) 0 /* unused */;
 	pkt << CLIENT_PROTOCOL_VERSION_MIN << LATEST_PROTOCOL_VERSION;
 	pkt << playerName;
 
