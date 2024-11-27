@@ -3,9 +3,8 @@ msgstr ""
 "Project-Id-Version: Malay (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-10-17 02:15+0000\n"
-"Last-Translator: \"Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
-"Yasuyoshi\" <translation@mnh48.moe>\n"
+"PO-Revision-Date: 2024-11-28 13:00+0000\n"
+"Last-Translator: Muhammad Nuruddin <nuruddin6106@gmail.com>\n"
 "Language-Team: Malay <https://hosted.weblate.org/projects/minetest/minetest/"
 "ms/>\n"
 "Language: ms\n"
@@ -13,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.8-rc\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -160,7 +159,7 @@ msgstr "$1 dimuat turun..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All"
-msgstr ""
+msgstr "Semua"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #: builtin/mainmenu/content/dlg_package.lua
@@ -179,7 +178,7 @@ msgstr "Memuat turun..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Featured"
-msgstr ""
+msgstr "Diketengahkan"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Games"
@@ -317,11 +316,11 @@ msgstr "Keterangan Pelayan"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Donate"
-msgstr ""
+msgstr "Derma"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Forum Topic"
-msgstr ""
+msgstr "Topik Forum"
 
 #: builtin/mainmenu/content/dlg_package.lua
 #, fuzzy
@@ -335,15 +334,15 @@ msgstr "Pasang $1"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Issue Tracker"
-msgstr ""
+msgstr "Penjejak Isu"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Source"
-msgstr ""
+msgstr "Sumber"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Translate"
-msgstr ""
+msgstr "Terjemahkan"
 
 #: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/tab_content.lua
 msgid "Uninstall"
@@ -360,7 +359,7 @@ msgstr "Lawati laman sesawang"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
-msgstr ""
+msgstr "oleh $1  —  $2 muat turun  —  +$3 / $4 / -$5"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -914,7 +913,7 @@ msgstr "Ketercapaian"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Auto"
-msgstr ""
+msgstr "Automatik"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/gui/touchcontrols.cpp src/settings_translation_file.cpp
@@ -991,7 +990,7 @@ msgstr "Kemas kini kamera dilumpuhkan"
 
 #: builtin/mainmenu/settings/shader_warning_component.lua
 msgid "This is not a recommended configuration."
-msgstr ""
+msgstr "Ini bukan konfigurasi yang disarankan."
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
@@ -2278,7 +2277,7 @@ msgstr "ID Kayu Bedik"
 
 #: src/gui/touchcontrols.cpp
 msgid "Overflow menu"
-msgstr ""
+msgstr "Menu tambahan"
 
 #: src/gui/touchcontrols.cpp
 #, fuzzy
@@ -2290,14 +2289,18 @@ msgid ""
 "Another client is connected with this name.  If your client closed "
 "unexpectedly, try again in a minute."
 msgstr ""
+"Sebuah klien lain sedang bersambung dengan nama ini.  Jika klien anda tutup "
+"secara tiba-tiba, cuba lagi dalam beberapa minit."
 
 #: src/network/clientpackethandler.cpp
 msgid "Empty passwords are disallowed.  Set a password and try again."
 msgstr ""
+"Kata laluan kosong adalah tidak dibenarkan. Tetapkan kata laluan dan cuba "
+"lagi."
 
 #: src/network/clientpackethandler.cpp
 msgid "Internal server error"
-msgstr ""
+msgstr "Ralat dalaman pelayan"
 
 #: src/network/clientpackethandler.cpp
 #, fuzzy
@@ -2324,7 +2327,7 @@ msgstr "Nama sudah diambil. Sila pilih nama yang lain"
 
 #: src/network/clientpackethandler.cpp
 msgid "Player name contains disallowed characters"
-msgstr ""
+msgstr "Nama pemain mempunyai aksara yang tidak dibenarkan"
 
 #: src/network/clientpackethandler.cpp
 #, fuzzy
@@ -2340,30 +2343,36 @@ msgstr "Sedang menutup..."
 msgid ""
 "The server has experienced an internal error.  You will now be disconnected."
 msgstr ""
+"Pelayan telah mengalami ralat dalaman.  Anda kini akan diputuskan sambungan."
 
 #: src/network/clientpackethandler.cpp
 msgid "The server is running in singleplayer mode.  You cannot connect."
 msgstr ""
+"Pelayan sedang berjalan dalam mod ekapemain. Anda tidak boleh bersambung."
 
 #: src/network/clientpackethandler.cpp
 msgid "Too many users"
-msgstr ""
+msgstr "Terlalu banyak pengguna"
 
 #: src/network/clientpackethandler.cpp
 msgid "Unknown disconnect reason."
-msgstr ""
+msgstr "Sebab pemutusan sambungan tidak diketahui."
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Your client sent something the server didn't expect.  Try reconnecting or "
 "updating your client."
 msgstr ""
+"Klien anda telah menghantar sesuatu yang tidak dijangka oleh pelayan.  Cuba "
+"sambungkan semula atau kemas kini klien anda."
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Your client's version is not supported.\n"
 "Please contact the server administrator."
 msgstr ""
+"Versi klien anda tidak disokong.\n"
+"Sila hubungi pentadbir pelayan."
 
 #: src/server.cpp
 #, c-format
@@ -2655,11 +2664,11 @@ msgstr "Kaedah antialias"
 
 #: src/settings_translation_file.cpp
 msgid "Anticheat flags"
-msgstr ""
+msgstr "Pilihan antitipu"
 
 #: src/settings_translation_file.cpp
 msgid "Anticheat movement tolerance"
-msgstr ""
+msgstr "Toleransi pergerakan antitipu"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2694,7 +2703,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Apply specular shading to nodes."
-msgstr ""
+msgstr "Gunakan pembayangan spekular pada nod."
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
@@ -3590,7 +3599,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable updates available indicator on content tab"
-msgstr ""
+msgstr "Dayakan penunjuk tersedia kemas kini pada tab kandungan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3666,6 +3675,11 @@ msgid ""
 "\"auto\" means that the touchscreen controls will be enabled and disabled\n"
 "automatically depending on the last used input method."
 msgstr ""
+"Mendayakan kawalan skrin sentuh, membolehkan anda bermain permainan dengan "
+"skrin sentuh.\n"
+"\"auto\" bermaksud bahawa kawalan skrin sentuh akan didayakan dan "
+"dinyahdayakan\n"
+"secara automatik bergantung pada kaedah input terakhir yang digunakan."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4249,6 +4263,9 @@ msgid ""
 "ContentDB to\n"
 "check for package updates when opening the mainmenu."
 msgstr ""
+"Jika didayakan dan anda telah memasang pakej ContentDB, Luanti boleh "
+"menghubungi ContentDB untuk\n"
+"menyemak kemas kini pakej semasa membuka menu utama."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5081,6 +5098,10 @@ msgid ""
 "You generally don't need to change this, however busy servers may benefit "
 "from a higher number."
 msgstr ""
+"Bilangan maksimum paket yang dihantar setiap langkah penghantaran dalam kod "
+"rangkaian peringkat rendah.\n"
+"Anda biasanya tidak perlu menukar ini, walau bagaimanapun pelayan yang sibuk "
+"mungkin mendapat manfaat daripada bilangan yang lebih tinggi."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can be connected simultaneously."
@@ -5317,7 +5338,7 @@ msgstr "Tonjolan nod"
 
 #: src/settings_translation_file.cpp
 msgid "Node specular"
-msgstr ""
+msgstr "Spekular nod"
 
 #: src/settings_translation_file.cpp
 msgid "NodeTimer interval"
@@ -5577,6 +5598,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Radius to use when the block bounds HUD feature is set to near blocks."
 msgstr ""
+"Jejari untuk digunakan apabila ciri HUD sempadan blok ditetapkan kepada blok "
+"berhampiran."
 
 #: src/settings_translation_file.cpp
 msgid "Raises terrain to make valleys around the rivers."
@@ -5903,6 +5926,8 @@ msgid ""
 "Send names of online players to the serverlist. If disabled only the player "
 "count is revealed."
 msgstr ""
+"Hantar nama pemain dalam talian ke senarai pelayan. Jika dinyahdayakan hanya "
+"kiraan pemain didedahkan."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5935,6 +5960,9 @@ msgid ""
 "Flags are positive. Uncheck the flag to disable corresponding anticheat "
 "module."
 msgstr ""
+"Konfigurasi antielat pelayan.\n"
+"Bendera adalah positif. Nyahtanda bendera untuk menyahdayakan modul antielat "
+"yang sepadan."
 
 #: src/settings_translation_file.cpp
 msgid "Server description"
@@ -6092,6 +6120,8 @@ msgid ""
 "Shaders are a fundamental part of rendering and enable advanced visual "
 "effects."
 msgstr ""
+"Pembayang ialah bahagian asas pemaparan dan membolehkan kesan visual "
+"lanjutan."
 
 #: src/settings_translation_file.cpp
 msgid "Shadow filter quality"
@@ -6164,6 +6194,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Simulate translucency when looking at foliage in the sunlight."
 msgstr ""
+"Simulasikan lut sinar apabila melihat dedaunan di bawah cahaya matahari."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6708,6 +6739,8 @@ msgid ""
 "Tolerance of movement cheat detector.\n"
 "Increase the value if players experience stuttery movement."
 msgstr ""
+"Toleransi pengesan elat pergerakan.\n"
+"Tingkatkan nilai jika pemain mengalami pergerakan gagap."
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -6895,7 +6928,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
-msgstr ""
+msgstr "Gunakan pembayangan awan yang licin."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7104,13 +7137,17 @@ msgstr "Warna pautan sesawang"
 
 #: src/settings_translation_file.cpp
 msgid "When enabled, liquid reflections are simulated."
-msgstr ""
+msgstr "Apabila didayakan, pantulan cecair disimulasikan."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "When enabled, the GUI is optimized to be more usable on touchscreens.\n"
 "Whether this is enabled by default depends on your hardware form-factor."
 msgstr ""
+"Apabila didayakan, GUI dioptimumkan agar lebih boleh digunakan pada skrin "
+"sentuh.\n"
+"Sama ada ini didayakan secara lalai bergantung pada faktor bentuk perkakasan "
+"anda."
 
 #: src/settings_translation_file.cpp
 msgid ""
