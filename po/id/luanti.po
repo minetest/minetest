@@ -3,9 +3,8 @@ msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-10-06 05:16+0000\n"
-"Last-Translator: Muhammad Rifqi Priyo Susanto "
-"<muhammadrifqipriyosusanto@gmail.com>\n"
+"PO-Revision-Date: 2024-12-22 16:00+0000\n"
+"Last-Translator: Linerly <linerly@proton.me>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
 "minetest/id/>\n"
 "Language: id\n"
@@ -13,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.8-dev\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -139,12 +138,12 @@ msgid "Failed to download $1"
 msgstr "Gagal mengunduh $1"
 
 #: builtin/mainmenu/content/contentdb.lua
-#, fuzzy
 msgid ""
 "Failed to extract \"$1\" (insufficient disk space, unsupported file type or "
 "broken archive)"
 msgstr ""
-"Gagak mengekstrak \"$1\" (jenis berkas tidak didukung atau arsip rusak)"
+"Gagak mengekstrak \"$1\" (ruang penyimpanan tidak cukup, jenis berkas tidak "
+"didukung atau arsip rusak)"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid ""
@@ -160,7 +159,7 @@ msgstr "$1 Diunduh..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All"
-msgstr ""
+msgstr "Semua"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #: builtin/mainmenu/content/dlg_package.lua
@@ -169,9 +168,8 @@ msgid "Back"
 msgstr "Kembali"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "ContentDB is not available when Luanti was compiled without cURL"
-msgstr "ContentDB tidak tersedia saat Minetest dikompilasi tanpa cURL"
+msgstr "ContentDB tidak tersedia saat Luanti dikompilasi tanpa cURL"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Downloading..."
@@ -179,7 +177,7 @@ msgstr "Mengunduh..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Featured"
-msgstr ""
+msgstr "Unggulan"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Games"
@@ -215,9 +213,8 @@ msgid "Queued"
 msgstr "Diantrekan"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "Texture Packs"
-msgstr "Paket tekstur"
+msgstr "Paket Tekstur"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "The package $1 was not found."
@@ -269,9 +266,8 @@ msgid "Dependencies:"
 msgstr "Dependensi:"
 
 #: builtin/mainmenu/content/dlg_install.lua
-#, fuzzy
 msgid "Error getting dependencies for package $1"
-msgstr "Bermasalah dalam mengambil dependensi paket"
+msgstr "Kesalahan mengambil dependensi paket $1"
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "Install"
@@ -306,44 +302,40 @@ msgid "Overwrite"
 msgstr "Timpa"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "ContentDB page"
-msgstr "URL ContentDB"
+msgstr "Laman ContentDB"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "Description"
-msgstr "Keterangan Server"
+msgstr "Keterangan"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Donate"
-msgstr ""
+msgstr "Berdonasi"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Forum Topic"
-msgstr ""
+msgstr "Topik Forum"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "Information"
-msgstr "Informasi:"
+msgstr "Informasi"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "Install [$1]"
-msgstr "Pasang $1"
+msgstr "Pasang [$1]"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Issue Tracker"
-msgstr ""
+msgstr "Pelacak Isu"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Source"
-msgstr ""
+msgstr "Sumber"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Translate"
-msgstr ""
+msgstr "Terjemahkan"
 
 #: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/tab_content.lua
 msgid "Uninstall"
@@ -354,13 +346,12 @@ msgid "Update"
 msgstr "Perbarui"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "Website"
-msgstr "Kunjungi situs web"
+msgstr "Situs Web"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
-msgstr ""
+msgstr "oleh $1  —  $2 unduhan  —  +$3 / $4 / -$5"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -719,14 +710,12 @@ msgid "Dismiss"
 msgstr "Abaikan"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
-#, fuzzy
 msgid ""
 "For a long time, Luanti shipped with a default game called \"Minetest "
 "Game\". Since version 5.8.0, Luanti ships without a default game."
 msgstr ""
-"Sudah sejak lama mesin Minetest dirilis beserta permainan bawaan yang "
-"disebut \"Minetest Game\". Sejak Minetest 5.8.0, Minetest dirilis tanpa "
-"permainan bawaan."
+"Sudah sejak lama Luanti dirilis beserta permainan bawaan yang disebut "
+"\"Minetest Game\". Sejak versi 5.8.0, Luanti dirilis tanpa permainan bawaan."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -887,19 +876,16 @@ msgid "eased"
 msgstr "kehalusan (eased)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "(The game will need to enable automatic exposure as well)"
-msgstr "(Permainan perlu menyalakan bayangan juga)"
+msgstr "(Permainan perlu menyalakan eksposur otomatis juga)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "(The game will need to enable bloom as well)"
-msgstr "(Permainan perlu menyalakan bayangan juga)"
+msgstr "(Permainan perlu menyalakan bloom juga)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "(The game will need to enable volumetric lighting as well)"
-msgstr "(Permainan perlu menyalakan bayangan juga)"
+msgstr "(Permainan perlu menyalakan pencahayaan volumetris juga)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
@@ -911,7 +897,7 @@ msgstr "Aksesibilitas"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Auto"
-msgstr ""
+msgstr "Otomatis"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/gui/touchcontrols.cpp src/settings_translation_file.cpp
@@ -977,18 +963,16 @@ msgid "Content: Mods"
 msgstr "Konten: Mod"
 
 #: builtin/mainmenu/settings/shader_warning_component.lua
-#, fuzzy
 msgid "Enable"
-msgstr "Dinyalakan"
+msgstr "Aktifkan"
 
 #: builtin/mainmenu/settings/shader_warning_component.lua
-#, fuzzy
 msgid "Shaders are disabled."
-msgstr "Pembaruan kamera dimatikan"
+msgstr "Shader dinonaktifkan."
 
 #: builtin/mainmenu/settings/shader_warning_component.lua
 msgid "This is not a recommended configuration."
-msgstr ""
+msgstr "Ini bukan konfigurasi yang disarankan."
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
@@ -1148,17 +1132,15 @@ msgid "Install games from ContentDB"
 msgstr "Pasang permainan dari ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Luanti doesn't come with a game by default."
-msgstr "Minetest tidak berisi permainan secara bawaan."
+msgstr "Luanti tidak berisi permainan secara bawaan."
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid ""
 "Luanti is a game-creation platform that allows you to play many different "
 "games."
 msgstr ""
-"Minetest adalah platform pembuatan permainan yang membuat Anda bisa bermain "
+"Luanti adalah platform pembuatan permainan yang membuat Anda bisa bermain "
 "banyak permainan berbeda."
 
 #: builtin/mainmenu/tab_local.lua
@@ -1409,7 +1391,6 @@ msgid "Continue"
 msgstr "Lanjutkan"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
@@ -1425,17 +1406,17 @@ msgid ""
 " --> place single item to slot\n"
 msgstr ""
 "Kontrol:\n"
-"Tanpa menu yang terbuka:\n"
+"Tanpa menu terbuka:\n"
 "- geser jari: lihat sekeliling\n"
-"- ketuk: taruh/gunakan\n"
-"- ketuk ganda: gali/pukul/gunakan\n"
+"- ketuk: tempatkan/pukul/gunakan (bawaan)\n"
+"- ketuk lama: gali/gunakan (bawaan)\n"
 "Menu/inventaris terbuka:\n"
-"- ketuk ganda (di luar):\n"
+"- ketuk dua kali (luar):\n"
 " --> tutup\n"
-"- sentuh tumpukan, sentuh wadah:\n"
-" --> pindah tumpukan\n"
-"- sentuh & geser, ketuk jari kedua\n"
-" --> taruh barang tunggal ke wadah\n"
+"- sentuh tumpukan, sentuh slot:\n"
+" --> pindahkan tumpukan\n"
+"- sentuh & seret, ketuk jari ke-2\n"
+" --> tempatkan satu item ke slot\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -2265,37 +2246,37 @@ msgid "Sound Volume: %d%%"
 msgstr "Volume Suara: %d%%"
 
 #: src/gui/touchcontrols.cpp
-#, fuzzy
 msgid "Joystick"
-msgstr "ID Joystick"
+msgstr "Joystick"
 
 #: src/gui/touchcontrols.cpp
 msgid "Overflow menu"
-msgstr ""
+msgstr "Menu luap"
 
 #: src/gui/touchcontrols.cpp
-#, fuzzy
 msgid "Toggle debug"
-msgstr "Alih kabut"
+msgstr "Alih pengawakutuan"
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Another client is connected with this name.  If your client closed "
 "unexpectedly, try again in a minute."
 msgstr ""
+"Klien yang lain sedang terhubung dengan nama ini.  Jika klien Anda tutup "
+"secara tidak terduga, coba lagi dalam beberapa menit."
 
 #: src/network/clientpackethandler.cpp
 msgid "Empty passwords are disallowed.  Set a password and try again."
 msgstr ""
+"Kata sandi kosong tidak diperbolehkan.  Tetapkan kata sandi dan coba lagi."
 
 #: src/network/clientpackethandler.cpp
 msgid "Internal server error"
-msgstr ""
+msgstr "Kesalahan server internal"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Invalid password"
-msgstr "Kata Sandi Lama"
+msgstr "Kata sandi tidak valid"
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
@@ -2317,46 +2298,48 @@ msgstr "Nama sudah digunakan. Harap pilih nama lain"
 
 #: src/network/clientpackethandler.cpp
 msgid "Player name contains disallowed characters"
-msgstr ""
+msgstr "Nama pemain berisi karakter yang tidak diperbolehkan"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Player name not allowed"
-msgstr "Nama pemain terlalu panjang."
+msgstr "Nama pemain tidak diperbolehkan"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Server shutting down"
-msgstr "Mematikan..."
+msgstr "Server dimatikan"
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "The server has experienced an internal error.  You will now be disconnected."
-msgstr ""
+msgstr "Server mengalami kesalahan internal.  Anda sekarang akan diputuskan."
 
 #: src/network/clientpackethandler.cpp
 msgid "The server is running in singleplayer mode.  You cannot connect."
-msgstr ""
+msgstr "Server berjalan dalam mode pemain tunggal.  Anda tidak dapat bergabung."
 
 #: src/network/clientpackethandler.cpp
 msgid "Too many users"
-msgstr ""
+msgstr "Terlalu banyak pengguna"
 
 #: src/network/clientpackethandler.cpp
 msgid "Unknown disconnect reason."
-msgstr ""
+msgstr "Alasan pemutusan tidak diketahui."
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Your client sent something the server didn't expect.  Try reconnecting or "
 "updating your client."
 msgstr ""
+"Klien Anda mengirim sesuatu yang tidak diduga ke server.  Coba menghubungkan "
+"ulang atau memperbarui klien Anda."
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Your client's version is not supported.\n"
 "Please contact the server administrator."
 msgstr ""
+"Versi klien Anda tidak didukung.\n"
+"Silakan hubungi administrator server."
 
 #: src/server.cpp
 #, c-format
@@ -2646,11 +2629,11 @@ msgstr "Metode antialiasing"
 
 #: src/settings_translation_file.cpp
 msgid "Anticheat flags"
-msgstr ""
+msgstr "Tanda anticurang"
 
 #: src/settings_translation_file.cpp
 msgid "Anticheat movement tolerance"
-msgstr ""
+msgstr "Toleransi pergerakan anticurang"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2674,10 +2657,19 @@ msgid ""
 "With OpenGL ES, dithering only works if the shader supports high\n"
 "floating-point precision and it may have a higher performance impact."
 msgstr ""
+"Terapkan dithering untuk mengurangi artefak pita warna.\n"
+"Dithering secara signifikan meningkatkan ukuran tangkapan layar yang "
+"dikompresi tanpa kehilangan apa pun\n"
+"dan tidak berfungsi dengan benar jika tampilan atau sistem operasi\n"
+"melakukan dithering tambahan atau jika saluran warna tidak dikuantisasi\n"
+"menjadi 8 bit.\n"
+"Dengan OpenGL ES, dithering hanya berfungsi jika shader mendukung\n"
+"presisi floating-point yang tinggi dan mungkin memiliki dampak kinerja yang "
+"lebih tinggi."
 
 #: src/settings_translation_file.cpp
 msgid "Apply specular shading to nodes."
-msgstr ""
+msgstr "Terapkan pembayangan spekular ke node."
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
@@ -2696,7 +2688,6 @@ msgid "Ask to reconnect after crash"
 msgstr "Minta untuk menyambung ulang setelah mogok"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "At this distance the server will aggressively optimize which blocks are sent "
 "to\n"
@@ -2715,10 +2706,9 @@ msgstr ""
 "terkadang juga di darat).\n"
 "Nilai yang lebih besar daripada max_block_send_distance mematikan\n"
 "optimasi ini.\n"
-"Dalam satuan blok peta (16 nodus)."
+"Dalam satuan MapBlock (16 nodus)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "At this distance the server will perform a simpler and cheaper occlusion "
 "check.\n"
@@ -2735,7 +2725,7 @@ msgstr ""
 "terkadang juga di darat).\n"
 "Nilai yang lebih besar daripada max_block_send_distance mematikan\n"
 "optimasi ini.\n"
-"Dalam satuan blok peta (16 nodus)."
+"Dalam satuan MapBlock (16 nodus)."
 
 #: src/settings_translation_file.cpp
 msgid "Audio"
@@ -2798,14 +2788,12 @@ msgid "Biome noise"
 msgstr "Noise bioma"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Block bounds HUD radius"
-msgstr "Batasan blok"
+msgstr "Rasius HUD batasan blok"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Block cull optimize distance"
-msgstr "Jarak optimasi pengiriman blok"
+msgstr "Jarak optimasi cull blok"
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
@@ -3012,9 +3000,11 @@ msgid ""
 "Comma-separated list of AL and ALC extensions that should not be used.\n"
 "Useful for testing. See al_extensions.[h,cpp] for details."
 msgstr ""
+"Daftar ekstensi AL dan ALC yang dipisahkan dengan koma yang tidak boleh "
+"digunakan.\n"
+"Berguna untuk pengujian. Lihat al_extensions.[h,cpp] untuk detailnya."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Comma-separated list of flags to hide in the content repository.\n"
 "\"nonfree\" can be used to hide packages which do not qualify as 'free "
@@ -3024,14 +3014,15 @@ msgid ""
 "These flags are independent from Luanti versions,\n"
 "so see a full list at https://content.minetest.net/help/content_flags/"
 msgstr ""
-"Daftar yang dipisahkan dengan koma dari flag yang akan disembunyikan dalam "
-"gudang konten.\n"
-"\"nonfree\" dapat digunakan untuk menyembunyikan paket yang tidak tergolong\n"
-"\"perangkat lunak bebas gratis\" seperti yang ditetapkan oleh Free Software "
-"Foundation.\n"
-"Anda juga dapat menentukan sensor konten.\n"
-"Flag-flag ini tidak bergantung pada versi Minetest,\n"
-"maka lihat daftar lengkap di https://content.minetest.net/help/content_flags/"
+"Daftar bendera yang dipisahkan dengan koma untuk disembunyikan di repositori "
+"konten.\n"
+"“nonfree” dapat digunakan untuk menyembunyikan paket yang tidak memenuhi "
+"syarat sebagai ‘perangkat lunak bebas’,\n"
+"sebagaimana didefinisikan oleh Free Software Foundation.\n"
+"Anda juga dapat menentukan peringkat konten.\n"
+"Tanda-tanda ini tidak bergantung pada versi Luanti,\n"
+"jadi lihat daftar lengkapnya di https://content.minetest.net/help/"
+"content_flags/"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3235,7 +3226,6 @@ msgstr ""
 "diska Poisson, tetapi menggunakan sumber daya lebih banyak."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Define the oldest clients allowed to connect.\n"
 "Older clients are compatible in the sense that they will not crash when "
@@ -3247,10 +3237,15 @@ msgid ""
 "Luanti still enforces its own internal minimum, and enabling\n"
 "strict_protocol_version_checking will effectively override this."
 msgstr ""
-"Nyalakan untuk melarang sambungan dari klien lawas.\n"
-"Klien lawas dianggap sesuai jika mereka tidak mogok saat menyambung ke "
-"server-\n"
-"server baru, tetapi mungkin tidak mendukung semua fitur baru yang diharapkan."
+"Tentukan klien tertua yang diizinkan untuk terhubung.\n"
+"Klien yang lebih lama kompatibel dalam arti tidak akan macet saat "
+"tersambung\n"
+"ke server baru, tetapi mereka mungkin tidak mendukung semua fitur baru yang "
+"Anda harapkan.\n"
+"Hal ini memungkinkan kontrol yang lebih baik daripada pengecekan "
+"strict_protocol_version.\n"
+"Luanti masih memberlakukan minimum internalnya sendiri, dan mengaktifkan\n"
+"strict_protocol_version_checking_checking secara efektif akan menimpa ini."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -3385,14 +3380,15 @@ msgid "Display Density Scaling Factor"
 msgstr "Pengali Skala Kepadatan Tampilan"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Distance in nodes at which transparency depth sorting is enabled.\n"
 "Use this to limit the performance impact of transparency depth sorting.\n"
 "Set to 0 to disable it entirely."
 msgstr ""
-"Jarak dalam nodus yang dikenai pengurutan kedalaman transparansi\n"
-"Gunakan ini untuk membatasi dampak kinerja akibat pengurutan ini"
+"Jarak dalam node di mana pengurutan kedalaman transparansi diaktifkan.\n"
+"Gunakan ini untuk membatasi dampak kinerja pengurutan kedalaman transparansi."
+"\n"
+"Atur ke 0 untuk menonaktifkannya sepenuhnya."
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -3423,9 +3419,8 @@ msgid "Dungeon noise"
 msgstr "Noise dungeon"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Effects"
-msgstr "Efek Grafika"
+msgstr "Efek"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Automatic Exposure"
@@ -3440,9 +3435,8 @@ msgid "Enable Bloom Debug"
 msgstr "Nyalakan Awakutu Bloom"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Debanding"
-msgstr "Nyalakan Kerusakan"
+msgstr "Nyalakan Debanding"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3524,20 +3518,16 @@ msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr "Nyalakan roda tetikus (gulir) untuk memilih barang dalam hotbar."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable random mod loading (mainly used for testing)."
-msgstr "Gunakan masukan pengguna acak (hanya digunakan untuk pengujian)."
+msgstr "Aktifkan pemuatan mod acak (terutama digunakan untuk pengujian)."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
 msgstr "Gunakan masukan pengguna acak (hanya digunakan untuk pengujian)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable smooth lighting with simple ambient occlusion."
-msgstr ""
-"Gunakan pencahayaan halus dengan ambient occlusion sederhana.\n"
-"Matikan agar cepat atau untuk tampilan lain."
+msgstr "Gunakan pencahayaan halus dengan oklusi ambien sederhana."
 
 #: src/settings_translation_file.cpp
 msgid "Enable split login/register"
@@ -3558,7 +3548,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable updates available indicator on content tab"
-msgstr ""
+msgstr "Aktifkan indikator tersedia pembaruan pada tab konten"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3606,20 +3596,20 @@ msgid "Enables animation of inventory items."
 msgstr "Jalankan animasi barang inventaris."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enables caching of facedir rotated meshes.\n"
 "This is only effective with shaders disabled."
-msgstr "Gunakan tembolok untuk facedir mesh yang diputar."
+msgstr ""
+"Gunakan tembolok untuk facedir mesh yang diputar.\n"
+"Ini hanya efektif tanpa shader."
 
 #: src/settings_translation_file.cpp
 msgid "Enables debug and error-checking in the OpenGL driver."
 msgstr "Nyalakan awakutu dan pemeriksa-masalah dalam pengandar OpenGL."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enables smooth scrolling."
-msgstr "Nyalakan Pasca-Pengolahan"
+msgstr "Mengaktifkan pengguliran halus."
 
 #: src/settings_translation_file.cpp
 msgid "Enables the post processing pipeline."
@@ -3632,6 +3622,11 @@ msgid ""
 "\"auto\" means that the touchscreen controls will be enabled and disabled\n"
 "automatically depending on the last used input method."
 msgstr ""
+"Mengaktifkan kontrol layar sentuh, memungkinkan Anda untuk memainkan "
+"permainan dengan layar sentuh.\n"
+"\"auto\" berarti kontrol layar sentuh akan diaktifkan dan dinonaktifkan "
+"secara otomatis\n"
+"tergantung pada metode masukan terakhir yang digunakan."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4201,6 +4196,9 @@ msgid ""
 "ContentDB to\n"
 "check for package updates when opening the mainmenu."
 msgstr ""
+"Jika diaktifkan dan Anda memiliki paket ContentDB yang terpasang, Luanti "
+"dapat menghubungi ContentDB untuk\n"
+"memeriksa pembaruan paket ketika membuka menu utama."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4337,13 +4335,12 @@ msgid "Instrument chat commands on registration."
 msgstr "Perkakas perintah obrolan saat pendaftaran."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Instrument global callback functions on registration.\n"
 "(anything you pass to a core.register_*() function)"
 msgstr ""
 "Melengkapi fungsi panggil balik (callback) global saat didaftarkan.\n"
-"(semua yang dimasukkan ke fungsi minetest.register_*())"
+"(semua yang dimasukkan ke fungsi core.register_*())"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4545,7 +4542,6 @@ msgid "Leaves style"
 msgstr "Gaya dedaunan"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Leaves style:\n"
 "-   Fancy:  all faces visible\n"
@@ -4553,13 +4549,11 @@ msgid ""
 "-   Opaque: disable transparency"
 msgstr ""
 "Gaya daun:\n"
-"-   Fancy:  semua sisi terlihat\n"
-"-   Simple: hanya sisi terluar jika special_tiles yang didefinisikan "
-"digunakan\n"
-"-   Opaque: matikan transparansi"
+"-   Mewah:  semua sisi terlihat\n"
+"-   Sederhana: hanya sisi terluar\n"
+"-   Buram: matikan transparansi"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Length of a server tick (the interval at which everything is generally "
 "updated),\n"
@@ -4568,9 +4562,12 @@ msgid ""
 "This is a lower bound, i.e. server steps may not be shorter than this, but\n"
 "they are often longer."
 msgstr ""
-"Lama detikan server dan selang waktu bagi objek secara umum untuk "
-"diperbarui\n"
-"ke jaringan dalam detik."
+"Panjang detak server (interval saat segala sesuatu secara umum diperbarui),\n"
+"dinyatakan dalam detik.\n"
+"Tidak berlaku untuk sesi yang dihosting dari menu klien.\n"
+"Ini adalah batas bawah, yaitu langkah server tidak boleh lebih pendek dari "
+"ini, tetapi\n"
+"sering kali lebih lama."
 
 #: src/settings_translation_file.cpp
 msgid "Length of liquid waves."
@@ -4684,9 +4681,8 @@ msgid "Liquid queue purge time"
 msgstr "Waktu pembersihan antrean cairan"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Liquid reflections"
-msgstr "Keenceran cairan"
+msgstr "Refleksi cairan"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid sinking"
@@ -4792,7 +4788,6 @@ msgid "Map generation attributes specific to Mapgen v5."
 msgstr "Atribut pembuatan peta khusus untuk pembuat peta v5."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
@@ -4801,10 +4796,12 @@ msgid ""
 "The 'temples' flag disables generation of desert temples. Normal dungeons "
 "will appear instead."
 msgstr ""
-"Atribut pembuatan peta khusus untuk pembuat peta v6.\n"
-"Flag \"snowbiomes\" menyalakan sistem 5 bioma yang baru.\n"
-"Saat sistem bioma baru digunakan, hutan rimba otomatis dinyalakan dan\n"
-"flag \"jungle\" diabaikan."
+"Atribut pembuatan peta khusus untuk pembuat v6.\n"
+"Tanda 'snowbiomes' mengaktifkan sistem 5 bioma yang baru.\n"
+"Ketika tanda 'snowbiomes' diaktifkan, hutan secara otomatis diaktifkan dan\n"
+"tanda 'jungles' diabaikan.\n"
+"Tanda 'temples' menonaktifkan pembuatan kuil gurun. Sebagai gantinya, ruang "
+"bawah tanah normal akan muncul."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5023,6 +5020,10 @@ msgid ""
 "You generally don't need to change this, however busy servers may benefit "
 "from a higher number."
 msgstr ""
+"Jumlah maksimum paket yang dikirim per langkah pengiriman dalam kode "
+"jaringan tingkat rendah.\n"
+"Anda biasanya tidak perlu mengubahnya, namun server yang sibuk dapat "
+"memperoleh manfaat dari jumlah yang lebih tinggi."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can be connected simultaneously."
@@ -5253,7 +5254,7 @@ msgstr "Penyorotan nodus"
 
 #: src/settings_translation_file.cpp
 msgid "Node specular"
-msgstr ""
+msgstr "Spekular node"
 
 #: src/settings_translation_file.cpp
 msgid "NodeTimer interval"
@@ -5308,15 +5309,14 @@ msgid "Number of messages a player may send per 10 seconds."
 msgstr "Jumlah pesan yang dapat dikirim pemain per 10 detik."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Number of threads to use for mesh generation.\n"
 "Value of 0 (default) will let Luanti autodetect the number of available "
 "threads."
 msgstr ""
 "Jumlah utas untuk pembuatan mesh.\n"
-"Nilai 0 (bawaan) akan membiarkan Minetest mendeteksi otomatis jumlah utas "
-"yang tersedia."
+"Nilai 0 (bawaan) akan membiarkan Luanti mendeteksi otomatis jumlah utas yang "
+"tersedia."
 
 #: src/settings_translation_file.cpp
 msgid "Occlusion Culler"
@@ -5346,18 +5346,16 @@ msgid "OpenGL debug"
 msgstr "Awakutu OpenGL"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Optimize GUI for touchscreens"
-msgstr "Gunakan crosshair untuk layar sentuh"
+msgstr "Optimalkan GUI untuk layar sentuh"
 
 #: src/settings_translation_file.cpp
 msgid "Optional override for chat weblink color."
 msgstr "Penimpaan opsional untuk warna tautan web pada obrolan."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Other Effects"
-msgstr "Efek Grafika"
+msgstr "Efek Lainnya"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5471,7 +5469,6 @@ msgid "Prometheus listener address"
 msgstr "Alamat pendengar Prometheus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Prometheus listener address.\n"
 "If Luanti is compiled with ENABLE_PROMETHEUS option enabled,\n"
@@ -5479,7 +5476,7 @@ msgid ""
 "Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
 "Alamat pendengar Prometheus.\n"
-"Jika Minetest dikompilasi dengan pilihan ENABLE_PROMETHEUS dinyalakan,\n"
+"Jika Luanti dikompilasi dengan pilihan ENABLE_PROMETHEUS dinyalakan,\n"
 "ini menyalakan pendengar metrik untuk Prometheus pada alamat itu.\n"
 "Metrik dapat diambil pada http://127.0.0.1:30000/metrics"
 
@@ -5507,6 +5504,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Radius to use when the block bounds HUD feature is set to near blocks."
 msgstr ""
+"Radius yang digunakan ketika fitur HUD batasan blok ditetapkan dekat blok."
 
 #: src/settings_translation_file.cpp
 msgid "Raises terrain to make valleys around the rivers."
@@ -5729,7 +5727,6 @@ msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
 msgstr "Lihat https://www.sqlite.org/pragma.html#pragma_synchronous"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Select the antialiasing method to apply.\n"
 "\n"
@@ -5750,24 +5747,26 @@ msgid ""
 "Renders higher-resolution image of the scene, then scales down to reduce\n"
 "the aliasing effects. This is the slowest and the most accurate method."
 msgstr ""
-"Pilih metode antialiasing yang diterapkan.\n"
+"Pilih metode antialiasing yang akan diterapkan.\n"
 "\n"
-"* None - Tidak ada antialiasing (bawaan)\n"
+"* Tidak ada - Tidak ada antialiasing (bawaan)\n"
 "\n"
-"* FSAA - Full-screen antialiasing dari perangkat keras (tidak cocok dengan "
-"shader)\n"
-"alias multi-sample antialiasing (MSAA)\n"
-"Menghaluskan tepian blok, tetapi tidak berpengaruh terhadap isi tekstur.\n"
-"Perlu mulai ulang untuk mengganti pilihan ini.\n"
+"* FSAA - Antialiasing layar penuh yang disediakan perangkat keras\n"
+"(tidak kompatibel dengan Post Processing dan Undersampling)\n"
+"Antialiasing multi-sampel (MSAA)\n"
+"Menghaluskan tepi blok, tetapi tidak memengaruhi bagian dalam tekstur.\n"
+"Diperlukan pengaktifan ulang untuk mengubah opsi ini.\n"
 "\n"
-"* FXAA - Fast approximate antialiasing (perlu shader)\n"
-"Menerapkan filter pasca-pengolahan untuk mendeteksi dan menghaluskan tepian "
-"kontras tinggi.\n"
+"* FXAA - Antialiasing perkiraan cepat (memerlukan shader)\n"
+"Menerapkan filter pasca-pemrosesan untuk mendeteksi dan memperhalus tepi "
+"yang sangat kontras.\n"
 "Memberikan keseimbangan antara kecepatan dan kualitas gambar.\n"
 "\n"
-"* SSAA - Super-sampling antialiasing (perlu shader)\n"
-"Menggambar citra resolusi tinggi adegan, lalu diperkecil untuk mengurangi\n"
-"efek aliasing. Ini metode terlambat dan terakurat."
+"* SSAA - Antialiasing super-sampling (memerlukan shader)\n"
+"Merender gambar pemandangan dengan resolusi lebih tinggi, kemudian "
+"memperkecil skala untuk mengurangi\n"
+"mengurangi efek aliasing. Ini adalah metode yang paling lambat dan paling "
+"akurat."
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
@@ -5828,11 +5827,12 @@ msgid ""
 "Send names of online players to the serverlist. If disabled only the player "
 "count is revealed."
 msgstr ""
+"Kirim nama-nama pemain daring ke daftar server. Jika dinonaktifkan hanya "
+"jumlah pemain yang ditampilkan."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Send player names to the server list"
-msgstr "Umumkan ke daftar server ini."
+msgstr "Kirim nama-nama pemain ke daftar server"
 
 #: src/settings_translation_file.cpp
 msgid "Server"
@@ -5860,6 +5860,9 @@ msgid ""
 "Flags are positive. Uncheck the flag to disable corresponding anticheat "
 "module."
 msgstr ""
+"Konfigurasi anticheat server.\n"
+"Tanda bernilai positif. Hapus centang pada tanda untuk menonaktifkan modul "
+"anticheat yang sesuai."
 
 #: src/settings_translation_file.cpp
 msgid "Server description"
@@ -5914,13 +5917,12 @@ msgstr ""
 "Rentang: dari -1 ke 1.0"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the language. By default, the system language is used.\n"
 "A restart is required after changing this."
 msgstr ""
-"Atur bahasa. Biarkan kosong untuk menggunakan bahasa sistem.\n"
-"Diperlukan mulai ulang setelah mengganti ini."
+"Atur bahasa. Secara bawaan, bahasa sistem digunakan.\n"
+"Memerlukan pemulaian ulang setelah mengubah ini."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6013,6 +6015,8 @@ msgid ""
 "Shaders are a fundamental part of rendering and enable advanced visual "
 "effects."
 msgstr ""
+"Shader merupakan bagian penting dalam perenderan dan memungkinkan efek "
+"visual bertingkat lanjut."
 
 #: src/settings_translation_file.cpp
 msgid "Shadow filter quality"
@@ -6083,7 +6087,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Simulate translucency when looking at foliage in the sunlight."
-msgstr ""
+msgstr "Simulasikan transparansi ketika melihat dedaunan dalam sinar matahari."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6135,18 +6139,16 @@ msgid "Smooth lighting"
 msgstr "Pencahayaan halus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Smooth scrolling"
-msgstr "Pencahayaan halus"
+msgstr "Pengguliran halus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
 "cinematic mode by using the key set in Controls."
 msgstr ""
-"Menghaluskan rotasi kamera dalam modus sinema, 0 untuk mematikannya. Masuk "
-"mode sinema dengan tombol yang diatur di Ubah Tombol."
+"Menghaluskan rotasi kamera dalam mode sinema, 0 untuk mematikannya. Masuk "
+"mode sinema dengan tombol yang diatur di Kontrol."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6165,9 +6167,8 @@ msgid "Sneaking speed, in nodes per second."
 msgstr "Kelajuan menyelinap dalam nodus per detik."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Soft clouds"
-msgstr "Awan 3D"
+msgstr "Awan lembut"
 
 #: src/settings_translation_file.cpp
 msgid "Soft shadow radius"
@@ -6406,17 +6407,25 @@ msgid ""
 "Known from the classic Luanti mobile controls.\n"
 "Combat is more or less impossible."
 msgstr ""
+"Gerakan untuk meninju pemain/entitas.\n"
+"Ini dapat ditimpa oleh game dan mod.\n"
+"\n"
+"* short_tap\n"
+"Mudah digunakan dan terkenal dari game lain yang tidak akan disebutkan "
+"namanya.\n"
+"\n"
+"* long_tap\n"
+"Dikenal dari kontrol seluler Luanti klasik.\n"
+"Pertarungan kurang lebih tidak mungkin."
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
 msgstr "Identitas dari joystick yang digunakan"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The length in pixels after which a touch interaction is considered movement."
-msgstr ""
-"Jarak dalam piksel yang diperlukan untuk memulai interaksi layar sentuh."
+msgstr "Jarak dalam piksel setelah interaksi sentuhan dianggap sebagai gerakan."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6431,13 +6440,12 @@ msgstr ""
 "Bawaannya 1.0 (1/2 nodus)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The minimum time in seconds it takes between digging nodes when holding\n"
 "the dig button."
 msgstr ""
-"Jeda dalam detik antar-penaruhan berulang saat menekan \n"
-"tombol taruh."
+"Waktu minimum dalam detik antara menggali node ketika\n"
+"menekan tombol gali."
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -6469,16 +6477,14 @@ msgstr ""
 "Ini harus diatur bersama dengan active_object_range."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
 "OpenGL is the default for desktop, and OGLES2 for Android."
 msgstr ""
-"Penggambar video.\n"
-"Catatan: Mulai ulang diperlukan setelah mengganti ini!\n"
-"OpenGL bawaan untuk desktop, dan OGLES2 untuk Android.\n"
-"Shader didukung oleh OpenGL dan OGLES2 (tahap percobaan)."
+"Backend perenderan.\n"
+"Catatan: Diperlukan pemulaian ulang setelah mengubah ini!\n"
+"OpenGL merupakan bawaan untuk desktop, dan OGLES2 untuk Android."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6600,6 +6606,8 @@ msgid ""
 "Tolerance of movement cheat detector.\n"
 "Increase the value if players experience stuttery movement."
 msgstr ""
+"Toleransi pergerakan pendeteksi kecurangan.\n"
+"Tingkatkan nilai jika pemain mengalami pergerakan patah-patah."
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -6610,9 +6618,8 @@ msgid "Touchscreen"
 msgstr "Layar Sentuh"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen controls"
-msgstr "Ambang batas layar sentuh"
+msgstr "Kontrol layar sentuh"
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen sensitivity"
@@ -6627,9 +6634,8 @@ msgid "Tradeoffs for performance"
 msgstr "Pertukaran untuk kinerja"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Translucent foliage"
-msgstr "Cairan agak tembus pandang"
+msgstr "Dedaunan tembus pandanga"
 
 #: src/settings_translation_file.cpp
 msgid "Translucent liquids"
@@ -6680,13 +6686,13 @@ msgstr ""
 "Pengaturan ini seharusnya hanya diubah jika Anda mengalami masalah kinerja."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "URL to JSON file which provides information about the newest Luanti "
 "release.\n"
 "If this is empty the engine will never check for updates."
 msgstr ""
-"URL ke berkas JSON yang memberikan informasi tentang rilis Minetest terbaru"
+"URL ke berkas JSON yang memberikan informasi tentang rilis Luanti terbaru.\n"
+"Jika kosong, mesin tidak akan memeriksa pembaruan."
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
@@ -6782,7 +6788,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use smooth cloud shading."
-msgstr ""
+msgstr "Gunakan pembayangan awan mulus."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6990,13 +6996,17 @@ msgstr "Warna tautan web"
 
 #: src/settings_translation_file.cpp
 msgid "When enabled, liquid reflections are simulated."
-msgstr ""
+msgstr "Ketika diaktifkan, refleksi cairan disimulasikan."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "When enabled, the GUI is optimized to be more usable on touchscreens.\n"
 "Whether this is enabled by default depends on your hardware form-factor."
 msgstr ""
+"Ketika diaktifkan, GUI dioptimalkan supaya dapat digunakan pada layar sentuh."
+"\n"
+"Apakah ini diaktifkan secara bawaan tergantung pada faktor bentuk perangkat "
+"keras Anda."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7107,13 +7117,12 @@ msgid "Window maximized"
 msgstr "Jendela dimaksimalkan"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Windows systems only: Start Luanti with the command line window in the "
 "background.\n"
 "Contains the same information as the file debug.txt (default name)."
 msgstr ""
-"Sistem Windows saja: Mulai Minetest dengan jendela perintah baris di latar "
+"Sistem Windows saja: Mulai Luanti dengan jendela perintah baris di latar "
 "belakang.\n"
 "Memiliki informasi yang sama dengan berkas debug.txt (nama bawaan)."
 
