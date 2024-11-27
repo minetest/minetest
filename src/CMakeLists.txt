@@ -260,12 +260,11 @@ endif()
 
 # Haiku endian support
 if(HAIKU)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_BSD_SOURCE")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_BSD_SOURCE")
+	add_compile_definitions(_BSD_SOURCE)
 endif()
 
 # Use cmake_config.h
-add_definitions(-DUSE_CMAKE_CONFIG_H)
+add_compile_definitions(USE_CMAKE_CONFIG_H)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
@@ -276,11 +275,15 @@ if(WIN32)
 	if(MSVC) # MSVC Specifics
 		set(PLATFORM_LIBS dbghelp.lib ${PLATFORM_LIBS})
 		# Surpress some useless warnings
-		add_definitions ( /D "_CRT_SECURE_NO_DEPRECATE" /W1 )
-		# Get M_PI to work
-		add_definitions(/D "_USE_MATH_DEFINES")
-		# Don't define min/max macros in minwindef.h
-		add_definitions(/D "NOMINMAX")
+		add_compile_options(/W1)
+		add_compile_definitions(
+			# Suppress some useless warnings
+			_CRT_SECURE_NO_DEPRECATE
+			# Get M_PI to work
+			_USE_MATH_DEFINES
+			# Don't define min/max macros in minwindef.h
+			NOMINMAX
+		)
 	endif()
 	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib winmm.lib ${PLATFORM_LIBS})
 
@@ -871,7 +874,7 @@ endif()
 
 if(MSVC)
 	# Visual Studio
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D _WIN32_WINNT=0x0601 /D WIN32_LEAN_AND_MEAN /D _CRT_SECURE_NO_WARNINGS")
+	add_compile_definitions(_WIN32_WINNT=0x0601 WIN32_LEAN_AND_MEAN _CRT_SECURE_NO_WARNINGS)
 	# EHa enables SEH exceptions (used for catching segfaults)
 	set(CMAKE_CXX_FLAGS_RELEASE "/EHa /Ox /MD /GS- /Zi /fp:fast /D NDEBUG /D _HAS_ITERATOR_DEBUGGING=0")
 	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
@@ -915,7 +918,7 @@ else()
 		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 			set(OTHER_FLAGS "${OTHER_FLAGS} -mthreads")
 		endif()
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_WIN32_WINNT=0x0601 -DWIN32_LEAN_AND_MEAN")
+		add_compile_definitions(_WIN32_WINNT=0x0601 WIN32_LEAN_AND_MEAN)
 	endif()
 
 	# Use a safe subset of flags to speed up math calculations:
