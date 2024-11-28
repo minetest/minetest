@@ -93,11 +93,10 @@ void TestMapgen::testBiomeGen(IGameDef *gamedef)
 			const char *name;
 			s16 next_y;
 		} expected_biomes[] = {
-			{ MAX_MAP_GENERATION_LIMIT, "deciduous_forest", 1 },
-			// ^ FIXME: next_y should be 0 (min_pos.Y - 1)
+			{ MAX_MAP_GENERATION_LIMIT, "deciduous_forest", 0 },
 			{ 1, "deciduous_forest", 0 },
-			{ 0, "deciduous_forest_shore", -MAX_MAP_GENERATION_LIMIT },
-			{ -100, "deciduous_forest_shore", -MAX_MAP_GENERATION_LIMIT },
+			{    0, "deciduous_forest_shore", S16_MIN },
+			{ -100, "deciduous_forest_shore", S16_MIN },
 		};
 		for (const auto expected : expected_biomes) {
 			Biome *biome = biomegen->getBiomeAtIndex(

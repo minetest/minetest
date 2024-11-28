@@ -197,7 +197,8 @@ private:
 	Noise *noise_heat_blend;
 	Noise *noise_humidity_blend;
 
-	// ordered descending
+	/// Y values at which biomes may transition.
+	/// This array may only be used for downwards scanning!
 	std::vector<s16> m_transitions_y;
 };
 
