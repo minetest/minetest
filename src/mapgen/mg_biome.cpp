@@ -129,7 +129,10 @@ BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
 	for (size_t i = 0; i < m_bmgr->getNumObjects(); i++) {
 		Biome *b = (Biome *)m_bmgr->getRaw(i);
 		values.push_back(b->max_pos.Y);
-		values.push_back(b->min_pos.Y);
+		// We scan for biomes from high Y to low Y (top to bottom). Hence,
+		// biomes effectively transition at (min_pos.Y - 1).
+		if (b->min_pos.Y > -MAX_MAP_GENERATION_LIMIT)
+			values.push_back(b->min_pos.Y - 1);
 	}
 
 	std::sort(values.begin(), values.end(), std::greater<>());

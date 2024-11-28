@@ -644,7 +644,7 @@ void MapgenBasic::generateBiomes()
 		u16 depth_riverbed = 0;
 		u32 vi = vm->m_area.index(x, node_max.Y, z);
 
-		s16 biome_y_min = biomegen->getNextTransitionY(node_max.Y);
+		s16 biome_y_next = biomegen->getNextTransitionY(node_max.Y);
 
 		// Check node at base of mapchunk above, either a node of a previously
 		// generated mapchunk or if not, a node of overgenerated base terrain.
@@ -661,23 +661,29 @@ void MapgenBasic::generateBiomes()
 
 		for (s16 y = node_max.Y; y >= node_min.Y; y--) {
 			content_t c = vm->m_data[vi].getContent();
+			const bool biome_outdated = !biome || y <= biome_y_next;
 			// Biome is (re)calculated:
 			// 1. At the surface of stone below air or water.
 			// 2. At the surface of water below air.
 			// 3. When stone or water is detected but biome has not yet been calculated.
 			// 4. When stone or water is detected just below a biome's lower limit.
 			bool is_stone_surface = (c == c_stone) &&
-				(air_above || water_above || !biome || y < biome_y_min); // 1, 3, 4
+				(air_above || water_above || biome_outdated); // 1, 3, 4
 
 			bool is_water_surface =
 				(c == c_water_source || c == c_river_water_source) &&
-				(air_above || !biome || y < biome_y_min); // 2, 3, 4
+				(air_above || biome_outdated); // 2, 3, 4
 
 			if (is_stone_surface || is_water_surface) {
-				if (!biome || y < biome_y_min) {
+				if (biome_outdated) {
 					// (Re)calculate biome
 					biome = biomegen->getBiomeAtIndex(index, v3s16(x, y, z));
-					biome_y_min = biomegen->getNextTransitionY(y);
+					biome_y_next = biomegen->getNextTransitionY(y);
+
+					if (x == node_min.X && z == node_min.Z && false) {
+						dstream << "biomegen: biome at " << y << " is " << biome->name
+							<< ", next at " << biome_y_next << std::endl;
+					}
 				}
 
 				// Add biome to biomemap at first stone surface detected
