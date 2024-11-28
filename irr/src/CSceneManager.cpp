@@ -41,7 +41,7 @@ CSceneManager::CSceneManager(video::IVideoDriver *driver,
 		ISceneNode(0, 0),
 		Driver(driver),
 		CursorControl(cursorControl),
-		ActiveCamera(0), ShadowColor(150, 0, 0, 0), AmbientLight(0, 0, 0, 0), Parameters(0),
+		ActiveCamera(0), Parameters(0),
 		MeshCache(cache), CurrentRenderPass(ESNRP_NONE)
 {
 #ifdef _DEBUG
@@ -445,9 +445,6 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode *node, E_SCENE_NODE_RENDE
 			taken = 1;
 		}
 
-	// as of yet unused
-	case ESNRP_LIGHT:
-	case ESNRP_SHADOW:
 	case ESNRP_NONE: // ignore this one
 		break;
 	}
@@ -773,18 +770,6 @@ ISceneManager *CSceneManager::createNewSceneManager(bool cloneContent)
 		manager->cloneMembers(this, manager);
 
 	return manager;
-}
-
-//! Sets ambient color of the scene
-void CSceneManager::setAmbientLight(const video::SColorf &ambientColor)
-{
-	AmbientLight = ambientColor;
-}
-
-//! Returns ambient color of the scene
-const video::SColorf &CSceneManager::getAmbientLight() const
-{
-	return AmbientLight;
 }
 
 //! Get a skinned mesh, which is not available as header-only code

@@ -182,11 +182,6 @@ public:
 	//! driver, it would return "Direct3D8.1".
 	const char *getName() const override;
 
-	//! Sets the dynamic ambient light color. The default color is
-	//! (0,0,0,0) which means it is dark.
-	//! \param color: New color of the ambient light.
-	void setAmbientLight(const SColorf &color) override;
-
 	//! sets a viewport
 	void setViewPort(const core::rect<s32> &area) override;
 

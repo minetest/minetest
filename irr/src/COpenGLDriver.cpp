@@ -122,7 +122,6 @@ bool COpenGLDriver::genericDriverInit()
 		os::Printer::log("GLSL not available.", ELL_INFORMATION);
 	DriverAttributes->setAttribute("MaxTextures", (s32)Feature.MaxTextureUnits);
 	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Feature.MaxTextureUnits);
-	DriverAttributes->setAttribute("MaxLights", MaxLights);
 	DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
 	DriverAttributes->setAttribute("MaxAuxBuffers", MaxAuxBuffers);
 	DriverAttributes->setAttribute("MaxMultipleRenderTargets", (s32)Feature.MultipleRenderTarget);
@@ -138,13 +137,6 @@ bool COpenGLDriver::genericDriverInit()
 
 	for (i = 0; i < ETS_COUNT; ++i)
 		setTransform(static_cast<E_TRANSFORMATION_STATE>(i), core::IdentityMatrix);
-
-	setAmbientLight(SColorf(0.0f, 0.0f, 0.0f, 0.0f));
-#ifdef GL_EXT_separate_specular_color
-	if (FeatureAvailable[IRR_EXT_separate_specular_color])
-		glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
-#endif
-	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
 
 	// This is a fast replacement for NORMALIZE_NORMALS
 	//	if ((Version>101) || FeatureAvailable[IRR_EXT_rescale_normal])
@@ -2418,16 +2410,6 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 const char *COpenGLDriver::getName() const
 {
 	return Name.c_str();
-}
-
-//! Sets the dynamic ambient light color. The default color is
-//! (0,0,0,0) which means it is dark.
-//! \param color: New color of the ambient light.
-void COpenGLDriver::setAmbientLight(const SColorf &color)
-{
-	CNullDriver::setAmbientLight(color);
-	GLfloat data[4] = {color.r, color.g, color.b, color.a};
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, data);
 }
 
 // this code was sent in by Oliver Klems, thank you! (I modified the glViewport

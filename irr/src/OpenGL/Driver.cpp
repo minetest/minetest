@@ -27,36 +27,31 @@ namespace irr
 {
 namespace video
 {
+
 struct VertexAttribute
 {
-	enum class Mode
+	enum Mode : u8
 	{
 		Regular,
 		Normalized,
-		Integral,
+		Integer,
 	};
-	int Index;
-	int ComponentCount;
+	u8 Index;
+	u8 ComponentCount;
 	GLenum ComponentType;
 	Mode mode;
-	int Offset;
+	u32 Offset;
 };
 
 struct VertexType
 {
-	int VertexSize;
+	u32 VertexSize;
 	std::vector<VertexAttribute> Attributes;
+
+	// allow ranged for loops
+	inline auto begin() const { return Attributes.begin(); }
+	inline auto end() const { return Attributes.end(); }
 };
-
-static const VertexAttribute *begin(const VertexType &type)
-{
-	return type.Attributes.data();
-}
-
-static const VertexAttribute *end(const VertexType &type)
-{
-	return type.Attributes.data() + type.Attributes.size();
-}
 
 static const VertexType vtStandard = {
 		sizeof(S3DVertex),
@@ -68,6 +63,9 @@ static const VertexType vtStandard = {
 		},
 };
 
+// FIXME: this is actually UB because these vertex classes are not "standard-layout"
+// they violate the following requirement:
+// - only one class in the hierarchy has non-static data members
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
 
@@ -170,11 +168,15 @@ COpenGL3DriverBase::COpenGL3DriverBase(const SIrrlichtCreationParameters &params
 	ExposedData = ContextManager->getContext();
 	ContextManager->activateContext(ExposedData, false);
 	GL.LoadAllProcedures(ContextManager);
-	if (EnableErrorTest) {
+	if (EnableErrorTest && GL.IsExtensionPresent("GL_KHR_debug")) {
 		GL.Enable(GL_DEBUG_OUTPUT);
 		GL.DebugMessageCallback(debugCb, this);
+	} else if (EnableErrorTest) {
+		os::Printer::log("GL debug extension not available");
 	}
 	initQuadsIndices();
+
+	TEST_GL_ERROR(this);
 }
 
 COpenGL3DriverBase::~COpenGL3DriverBase()
@@ -267,7 +269,6 @@ bool COpenGL3DriverBase::genericDriverInit(const core::dimension2d<u32> &screenS
 	for (s32 i = 0; i < ETS_COUNT; ++i)
 		setTransform(static_cast<E_TRANSFORMATION_STATE>(i), core::IdentityMatrix);
 
-	setAmbientLight(SColorf(0.0f, 0.0f, 0.0f, 0.0f));
 	GL.ClearDepthf(1.0f);
 
 	GL.Hint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
@@ -760,6 +761,13 @@ void COpenGL3DriverBase::drawVertexPrimitiveList(const void *vertices, u32 verte
 	endDraw(vTypeDesc);
 }
 
+void COpenGL3DriverBase::draw2DVertexPrimitiveList(const void *vertices, u32 vertexCount,
+		const void *indexList, u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
+{
+	os::Printer::log("draw2DVertexPrimitiveList unimplemented", ELL_ERROR);
+}
+
 void COpenGL3DriverBase::draw2DImage(const video::ITexture *texture, const core::position2d<s32> &destPos,
 		const core::rect<s32> &sourceRect, const core::rect<s32> *clipRect, SColor color,
 		bool useAlphaChannelOfTexture)
@@ -1066,7 +1074,7 @@ void COpenGL3DriverBase::drawElements(GLenum primitiveType, const VertexType &ve
 
 void COpenGL3DriverBase::beginDraw(const VertexType &vertexType, uintptr_t verticesBase)
 {
-	for (auto attr : vertexType) {
+	for (auto &attr : vertexType) {
 		GL.EnableVertexAttribArray(attr.Index);
 		switch (attr.mode) {
 		case VertexAttribute::Mode::Regular:
@@ -1075,7 +1083,7 @@ void COpenGL3DriverBase::beginDraw(const VertexType &vertexType, uintptr_t verti
 		case VertexAttribute::Mode::Normalized:
 			GL.VertexAttribPointer(attr.Index, attr.ComponentCount, attr.ComponentType, GL_TRUE, vertexType.VertexSize, reinterpret_cast<void *>(verticesBase + attr.Offset));
 			break;
-		case VertexAttribute::Mode::Integral:
+		case VertexAttribute::Mode::Integer:
 			GL.VertexAttribIPointer(attr.Index, attr.ComponentCount, attr.ComponentType, vertexType.VertexSize, reinterpret_cast<void *>(verticesBase + attr.Offset));
 			break;
 		}
@@ -1084,7 +1092,7 @@ void COpenGL3DriverBase::beginDraw(const VertexType &vertexType, uintptr_t verti
 
 void COpenGL3DriverBase::endDraw(const VertexType &vertexType)
 {
-	for (auto attr : vertexType)
+	for (auto &attr : vertexType)
 		GL.DisableVertexAttribArray(attr.Index);
 }
 

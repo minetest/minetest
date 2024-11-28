@@ -201,14 +201,6 @@ public:
 	//! driver, it would return "Direct3D8.1".
 	const char *getName() const override;
 
-	//! Sets the dynamic ambient light color. The default color is
-	//! (0,0,0,0) which means it is dark.
-	//! \param color: New color of the ambient light.
-	void setAmbientLight(const SColorf &color) override;
-
-	//! Get the global ambient light currently used by the driver
-	const SColorf &getAmbientLight() const override;
-
 	//! Adds an external image loader to the engine.
 	void addExternalImageLoader(IImageLoader *loader) override;
 
@@ -559,19 +551,6 @@ public:
 	//! Used by some SceneNodes to check if a material should be rendered in the transparent render pass
 	bool needsTransparentRenderPass(const irr::video::SMaterial &material) const override;
 
-	//! Color conversion convenience function
-	/** Convert an image (as array of pixels) from source to destination
-	array, thereby converting the color format. The pixel size is
-	determined by the color formats.
-	\param sP Pointer to source
-	\param sF Color format of source
-	\param sN Number of pixels to convert, both array must be large enough
-	\param dP Pointer to destination
-	\param dF Color format of destination
-	*/
-	virtual void convertColor(const void *sP, ECOLOR_FORMAT sF, s32 sN,
-			void *dP, ECOLOR_FORMAT dF) const override;
-
 protected:
 	//! deletes all textures
 	void deleteAllTextures();
@@ -759,8 +738,6 @@ protected:
 	bool AllowZWriteOnTransparent;
 
 	bool FeatureEnabled[video::EVDF_COUNT];
-
-	SColorf AmbientLight;
 };
 
 } // end namespace video

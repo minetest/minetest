@@ -55,9 +55,6 @@ enum E_SCENE_NODE_RENDER_PASS
 	//! Camera pass. The active view is set up here. The very first pass.
 	ESNRP_CAMERA = 1,
 
-	//! In this pass, lights are transformed into camera space and added to the driver
-	ESNRP_LIGHT = 2,
-
 	//! This is used for sky boxes.
 	ESNRP_SKY_BOX = 4,
 
@@ -84,9 +81,6 @@ enum E_SCENE_NODE_RENDER_PASS
 
 	//! Transparent effect scene nodes, drawn after Transparent nodes. They are sorted from back to front and drawn in that order.
 	ESNRP_TRANSPARENT_EFFECT = 32,
-
-	//! Drawn after the solid nodes, before the transparent nodes, the time for drawing shadow volumes
-	ESNRP_SHADOW = 64,
 
 	//! Drawn after transparent effect nodes. For custom gui's. Unsorted (in order nodes registered themselves).
 	ESNRP_GUI = 128
@@ -601,12 +595,6 @@ public:
 	/** Note: You need to drop() the pointer after use again, see IReferenceCounted::drop()
 	for details. */
 	virtual ISkinnedMesh *createSkinnedMesh() = 0;
-
-	//! Sets ambient color of the scene
-	virtual void setAmbientLight(const video::SColorf &ambientColor) = 0;
-
-	//! Get ambient color of the scene
-	virtual const video::SColorf &getAmbientLight() const = 0;
 
 	//! Get current render pass.
 	virtual E_SCENE_NODE_RENDER_PASS getCurrentRenderPass() const = 0;
