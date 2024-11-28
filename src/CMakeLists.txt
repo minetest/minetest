@@ -274,7 +274,7 @@ set(PLATFORM_LIBS Threads::Threads)
 if(WIN32)
 	# Windows
 	if(MSVC) # MSVC Specifics
-		list(INSERT PLATFORM_LIBS 0 dbghelp.lib)
+		list(APPEND PLATFORM_LIBS dbghelp.lib)
 		# Surpress some useless warnings
 		add_definitions ( /D "_CRT_SECURE_NO_DEPRECATE" /W1 )
 		# Get M_PI to work
@@ -282,7 +282,7 @@ if(WIN32)
 		# Don't define min/max macros in minwindef.h
 		add_definitions(/D "NOMINMAX")
 	endif()
-	list(INSERT PLATFORM_LIBS 0 ws2_32.lib version.lib shlwapi.lib winmm.lib)
+	list(APPEND PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib winmm.lib)
 
 	set(EXTRA_DLL "" CACHE FILEPATH "Optional paths to additional DLLs that should be packaged")
 
@@ -311,11 +311,11 @@ else()
 	# Unix probably
 	list(APPEND PLATFORM_LIBS ${CMAKE_DL_LIBS})
 	if(APPLE)
-		list(INSERT PLATFORM_LIBS 0 "-framework CoreFoundation")
+		list(APPEND PLATFORM_LIBS "-framework CoreFoundation")
 	else()
 		check_library_exists(rt clock_gettime "" HAVE_LIBRT)
 		if (HAVE_LIBRT)
-			list(INSERT PLATFORM_LIBS 0 -lrt)
+			list(APPEND PLATFORM_LIBS -lrt)
 		endif(HAVE_LIBRT)
 	endif(APPLE)
 
