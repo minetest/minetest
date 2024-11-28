@@ -28,8 +28,83 @@ functionality in the engine and API, and to document it here.
 Programming in Lua
 ------------------
 
+Minetest uses Lua 5.1 for modding.
+
 If you have any difficulty in understanding this, please read
 [Programming in Lua](http://www.lua.org/pil/).
+(The online version was written for 5.0, but is for the most part applicable to 5.1.)
+
+For Lua 5.1 language details, refer to the [manual](https://www.lua.org/manual/5.1/).
+
+Lua is a very flexible language,
+so this document uses a few additional terms
+to describe the conventions of using Lua in Minetest.
+
+#### Data Structures
+
+Lua's primary "all-in-one" data structuring mechanism is the table.
+
+A *list* is a table with consecutive integer keys starting at `1`.
+For example `{1, 2, 3}` and `{[3] = 3, [1] = 1, [2] = 2}` are lists.
+Note that unless otherwise stated, a list can not have "*holes*":
+`nil` values followed by non-`nil` values.
+For example `{nil, 2}` and `{1, [3] = 3}` are not valid lists.
+
+A *set* is a table where the keys are the elements of the set.
+The values should be `true` per convention.
+For example `{spam = true, ham = true}` is a set.
+`{spam = true, ham = false}` is not a set.
+
+It is important to be precise about the structure of tables.
+One frequent mistake for example is to supply a list of textures as
+`{name = "mymod_mytexture.png", backface_culling = false}`
+rather than `{ { name = "mymod_mytexture.png", backface_culling = false } }`.
+
+The former will probably be treated like an empty list,
+while the latter will correctly be treated as a list
+containing a single texture.
+
+#### "Classes"
+
+Lua does not have classes. Instead, Lua uses metatables,
+which allows implementing prototype-based object-oriented programming.
+Minetest leverages this to implement its own form(s) of classes.
+
+Usually Minetest only uses the `__index` metatable field to set a prototype.
+A notable exception are vectors, which have overloaded arithmetic operators
+(see [Spatial Vectors] for details).
+
+A *constructor* is a function that returns an *instance* of a class.
+Examples are `VoxelManip(...)`, `VoxelArea:new(...)` or `vector.new(...)`.
+
+Instances may be either tables or opaque userdata objects.
+If an instance is a table, the fields unique to that table
+are called the *instance variables* or *instance fields*.
+
+A *method* is a function operating on instances of a class.
+Methods are usually called as `instance:method(...)`.
+This is just syntactic sugar for `instance.method(instance, ...)`.
+
+Similarly to methods, there may be *class variables* shared among all instances.
+These can typically be accessed via `class.variable` or `instance.variable`.
+
+The way metatables work, `instance.field` will resolve to `class.field`
+via the `__index` field / metamethod.
+
+This means that `instance.class_variable`
+will (usually) resolve to the very same value for different instances.
+
+If `instance.class_variable` is a reference type, this may be a source of aliasing bugs:
+Unknowingly mutating a class variable (which may look like an instance variable)
+mutates it for all instances.
+
+An example are Lua entities.
+Each Lua entity registration registers its own class to go along with it.
+The `self` Lua entities are all instances of their respective classes.
+If you do `self.initial_properties.textures = {"foo.png"}`,
+you're changing the initial properties class variable (which is a table)
+for all entities of the same type.
+
 
 Startup
 -------
