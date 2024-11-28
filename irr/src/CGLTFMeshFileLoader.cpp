@@ -313,16 +313,16 @@ std::array<f32, N> SelfType::getNormalizedValues(
 	std::array<f32, N> values;
 	if (std::holds_alternative<Accessor<std::array<u8, N>>>(accessor)) {
 		const auto u8s = std::get<Accessor<std::array<u8, N>>>(accessor).get(i);
-		for (u8 j = 0; j < N; ++j)
+		for (std::size_t j = 0; j < N; ++j)
 			values[j] = static_cast<f32>(u8s[j]) / std::numeric_limits<u8>::max();
 	} else if (std::holds_alternative<Accessor<std::array<u16, N>>>(accessor)) {
 		const auto u16s = std::get<Accessor<std::array<u16, N>>>(accessor).get(i);
-		for (u8 j = 0; j < N; ++j)
+		for (std::size_t j = 0; j < N; ++j)
 			values[j] = static_cast<f32>(u16s[j]) / std::numeric_limits<u16>::max();
 	} else {
 		values = std::get<Accessor<std::array<f32, N>>>(accessor).get(i);
 		if constexpr (validate) {
-			for (u8 j = 0; j < N; ++j) {
+			for (std::size_t j = 0; j < N; ++j) {
 				if (values[j] < 0 || values[j] > 1)
 					throw std::runtime_error("invalid normalized value");
 			}
