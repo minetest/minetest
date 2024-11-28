@@ -833,8 +833,10 @@ std::string RemoveRelativePathComponents(std::string path)
 std::string AbsolutePath(const std::string &path)
 {
 #ifdef _WIN32
-	// empty == cwd on windows, but we don't consider it valid
+	// handle behavior differences on windows
 	if (path.empty())
+		return "";
+	else if (!PathExists(path))
 		return "";
 	char *abs_path = _fullpath(NULL, path.c_str(), MAX_PATH);
 #else
