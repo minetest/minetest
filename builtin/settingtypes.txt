@@ -77,8 +77,11 @@
 # Sections are marked by a single line in the format: [Section Name]
 # Sub-section are marked by adding * in front of the section name: [*Sub-section]
 # Sub-sub-sections have two * etc.
-# There shouldn't be too much settings per category; settings that shouldn't be
-#  modified by the "average user" should be in (sub-)categories called "Advanced".
+# There shouldn't be too many settings per category.
+#
+# The top-level categories "Advanced", "Client and Server" and "Mapgen" are
+# handled specially and its contents only shown when a checkbox is checked.
+# They contain settings not intended for the "average user".
 
 
 [Controls]
@@ -471,6 +474,7 @@ performance_tradeoffs (Tradeoffs for performance) bool false
 #    Adds particles when digging a node.
 enable_particles (Digging particles) bool true
 
+
 [**Waving Nodes]
 
 #    Set to true to enable waving leaves.
@@ -534,12 +538,6 @@ shadow_map_texture_size (Shadow map texture size) int 2048 128 8192
 #    Requires: enable_dynamic_shadows, opengl
 shadow_map_texture_32bit (Shadow map texture in 32 bits) bool true
 
-#    Enable Poisson disk filtering.
-#    On true uses Poisson disk to make "soft shadows". Otherwise uses PCF filtering.
-#
-#    Requires: enable_dynamic_shadows, opengl
-shadow_poisson_filter (Poisson filtering) bool true
-
 #    Define shadow filtering quality.
 #    This simulates the soft shadows effect by applying a PCF or Poisson disk
 #    but also uses more resources.
@@ -552,14 +550,6 @@ shadow_filters (Shadow filter quality) enum 1 0,1,2
 #
 #    Requires: enable_dynamic_shadows, opengl
 shadow_map_color (Colored shadows) bool false
-
-#    Spread a complete update of shadow map over given number of frames.
-#    Higher values might make shadows laggy, lower values
-#    will consume more resources.
-#    Minimum value: 1; maximum value: 16
-#
-#    Requires: enable_dynamic_shadows, opengl
-shadow_update_frames (Map shadows update frames) int 8 1 16
 
 #    Set the soft shadow radius size.
 #    Lower values mean sharper shadows, bigger values mean softer shadows.
@@ -1830,6 +1820,9 @@ ignore_world_load_errors (Ignore world errors) bool false
 
 [**Graphics]
 
+#    Enables debug and error-checking in the OpenGL driver.
+opengl_debug (OpenGL debug) bool false
+
 #    Path to shader directory. If no path is defined, default location will be used.
 shader_path (Shader path) path
 
@@ -1901,8 +1894,26 @@ texture_min_size (Base texture size) int 64 1 32768
 #    Systems with a low-end GPU (or no GPU) would benefit from smaller values.
 client_mesh_chunk (Client Mesh Chunksize) int 1 1 16
 
-#    Enables debug and error-checking in the OpenGL driver.
-opengl_debug (OpenGL debug) bool false
+#    Decide the color depth of the texture used for the post-processing pipeline.
+#    Reducing this can improve performance, but might cause some effects (e.g. bloom)
+#    to not work.
+#
+#    Requires: enable_post_processing
+post_processing_texture_bits (Color depth for post-processing texture) enum 16 8,10,16
+
+#    Enable Poisson disk filtering.
+#    On true uses Poisson disk to make "soft shadows". Otherwise uses PCF filtering.
+#
+#    Requires: enable_dynamic_shadows, opengl
+shadow_poisson_filter (Poisson filtering) bool true
+
+#    Spread a complete update of shadow map over given number of frames.
+#    Higher values might make shadows laggy, lower values
+#    will consume more resources.
+#    Minimum value: 1; maximum value: 16
+#
+#    Requires: enable_dynamic_shadows, opengl
+shadow_update_frames (Map shadows update frames) int 8 1 16
 
 #    Set to true to render debugging breakdown of the bloom effect.
 #    In debug mode, the screen is split into 4 quadrants:
