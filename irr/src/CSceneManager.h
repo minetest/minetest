@@ -170,12 +170,6 @@ public:
 	//! Get a skinned mesh, which is not available as header-only code
 	ISkinnedMesh *createSkinnedMesh() override;
 
-	//! Sets ambient color of the scene
-	void setAmbientLight(const video::SColorf &ambientColor) override;
-
-	//! Returns ambient color of the scene
-	const video::SColorf &getAmbientLight() const override;
-
 	//! Get current render time.
 	E_SCENE_NODE_RENDER_PASS getCurrentRenderPass() const override { return CurrentRenderPass; }
 
@@ -290,9 +284,6 @@ private:
 	//! current active camera
 	ICameraSceneNode *ActiveCamera;
 	core::vector3df camWorldPos; // Position of camera for transparent nodes.
-
-	video::SColor ShadowColor;
-	video::SColorf AmbientLight;
 
 	//! String parameters
 	// NOTE: Attributes are slow and should only be used for debug-info and not in release

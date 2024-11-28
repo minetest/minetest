@@ -743,19 +743,6 @@ SFrameStats CNullDriver::getFrameStats() const
 	return FrameStats;
 }
 
-//! Sets the dynamic ambient light color. The default color is
-//! (0,0,0,0) which means it is dark.
-//! \param color: New color of the ambient light.
-void CNullDriver::setAmbientLight(const SColorf &color)
-{
-	AmbientLight = color;
-}
-
-const SColorf &CNullDriver::getAmbientLight() const
-{
-	return AmbientLight;
-}
-
 //! \return Returns the name of the video driver. Example: In case of the DIRECT3D8
 //! driver, it would return "Direct3D8".
 
@@ -1772,22 +1759,6 @@ bool CNullDriver::needsTransparentRenderPass(const irr::video::SMaterial &materi
 		return true;
 
 	return false;
-}
-
-//! Color conversion convenience function
-/** Convert an image (as array of pixels) from source to destination
-array, thereby converting the color format. The pixel size is
-determined by the color formats.
-\param sP Pointer to source
-\param sF Color format of source
-\param sN Number of pixels to convert, both array must be large enough
-\param dP Pointer to destination
-\param dF Color format of destination
-*/
-void CNullDriver::convertColor(const void *sP, ECOLOR_FORMAT sF, s32 sN,
-		void *dP, ECOLOR_FORMAT dF) const
-{
-	video::CColorConverter::convert_viaFormat(sP, sF, sN, dP, dF);
 }
 
 } // end namespace
