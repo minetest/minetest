@@ -573,8 +573,11 @@ The aspect ratio is preserved.
 * `<xN>`: X offset of insertion, negative numbers allowed
 * `<yN>`: Y offset of insertion, negative numbers allowed
 * `<wN>` (optional): Expected texture width
-   * Scales the output image if `<wN> != input texture width` to perform lossless blit.
-   * Supported since protocol version 46.
+   * If the provided texture width is (e.g. 2 times) larger than `<wN>`, it will
+     result in an output texture that is also (2 times) larger.
+   * If the provided texture width is smaller, it will be upscaled proportionally
+     to match the width `<wN>`.
+   * Supported since protocol version 47. Old clients will ignore this parameter.
 * `<file>`: texture to combine
 
 
