@@ -813,7 +813,7 @@ if(BUILD_SERVER)
 		target_link_libraries(${PROJECT_NAME}server ${SPATIAL_LIBRARY})
 	endif()
 	if (USE_OPENSSL)
-		target_link_libraries(${PROJECT_NAME} OpenSSL::Crypto)
+		target_link_libraries(${PROJECT_NAME}server OpenSSL::Crypto)
 	endif()
 	if(USE_CURL)
 		target_link_libraries(
