@@ -366,22 +366,19 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 		ModApiMapgen::es_BiomeTerrainType, BIOMETYPE_NORMAL);
 	Biome *b = BiomeManager::create(biometype);
 
-	b->name            = getstringfield_default(L, index, "name", "");
-	b->depth_top       = getintfield_default(L,    index, "depth_top",       0);
-	b->depth_filler    = getintfield_default(L,    index, "depth_filler",    -31000);
-	b->depth_water_top = getintfield_default(L,    index, "depth_water_top", 0);
-	b->depth_riverbed  = getintfield_default(L,    index, "depth_riverbed",  0);
-	b->heat_point      = getfloatfield_default(L,  index, "heat_point",      0.f);
-	b->humidity_point  = getfloatfield_default(L,  index, "humidity_point",  0.f);
-	b->vertical_blend  = getintfield_default(L,    index, "vertical_blend",  0);
-	b->weight          = getfloatfield_default(L,  index, "weight",          1.f);
-	b->flags           = 0; // reserved
+	getstringfield(L, index, "name", b->name);
+	getintfield(L,    index, "depth_top",       b->depth_top);
+	getintfield(L,    index, "depth_filler",    b->depth_filler);
+	getintfield(L,    index, "depth_water_top", b->depth_water_top);
+	getintfield(L,    index, "depth_riverbed",  b->depth_riverbed);
+	getfloatfield(L,  index, "heat_point",      b->heat_point);
+	getfloatfield(L,  index, "humidity_point",  b->humidity_point);
+	getintfield(L,    index, "vertical_blend",  b->vertical_blend);
+	getfloatfield(L,  index, "weight",          b->weight);
 
-	b->min_pos = getv3s16field_default(
-		L, index, "min_pos", v3s16(-31000, -31000, -31000));
+	b->min_pos = getv3s16field_default(L, index, "min_pos", b->min_pos);
 	getintfield(L, index, "y_min", b->min_pos.Y);
-	b->max_pos = getv3s16field_default(
-		L, index, "max_pos", v3s16(31000, 31000, 31000));
+	b->max_pos = getv3s16field_default(L, index, "max_pos", b->max_pos);
 	getintfield(L, index, "y_max", b->max_pos.Y);
 
 	std::vector<std::string> &nn = b->m_nodenames;
