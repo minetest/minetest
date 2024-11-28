@@ -169,6 +169,16 @@ local function get_formspec(tabview, name, tabdata)
 			retval = retval .. "style[btn_delete_favorite;padding=6]"
 			retval = retval .. "image_button[" .. (can_view_clients_list and "4.5" or "5") .. ",1.3;0.5,0.5;" ..
 				core.formspec_escape(defaulttexturedir .. "server_favorite_delete.png") .. ";btn_delete_favorite;]"
+		else
+			retval = retval .. "tooltip[btn_add_favorite;" .. fgettext("Add favorite") .. "]"
+			retval = retval .. "style[btn_add_favorite;padding=6]"
+			if not can_view_clients_list then
+				retval = retval .. "image_button[5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
+					"server_favorite.png") .. ";btn_add_favorite;]"
+			else
+				retval = retval .. "image_button[4.5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
+					"server_favorite.png") .. ";btn_add_favorite;]"
+			end
 		end
 	end
 
@@ -329,6 +339,14 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				return true
 			end
 		end
+	end
+
+	if fields.btn_add_favorite then
+		local server = find_selected_server()
+
+		serverlistmgr.add_favorite(server)
+		set_selected_server(server)
+		return true
 	end
 
 	if fields.btn_delete_favorite then
