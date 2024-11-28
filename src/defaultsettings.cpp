@@ -311,6 +311,7 @@ void set_default_settings()
 
 	// Effects
 	settings->setDefault("enable_post_processing", "true");
+	settings->setDefault("post_processing_texture_bits", "16");
 	settings->setDefault("directional_colored_fog", "true");
 	settings->setDefault("inventory_items_animations", "false");
 	settings->setDefault("mip_map", "false");
@@ -567,6 +568,8 @@ void set_default_settings()
 	settings->setDefault("active_block_range", "2");
 	settings->setDefault("viewing_range", "50");
 	settings->setDefault("leaves_style", "simple");
+	// Note: OpenGL ES 2.0 is not guaranteed to provide depth textures,
+	// which we would need for PP.
 	settings->setDefault("enable_post_processing", "false");
 	settings->setDefault("debanding", "false");
 	settings->setDefault("curl_verify_cert", "false");

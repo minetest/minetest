@@ -342,6 +342,8 @@ public:
 			return 16;
 		case ECF_R16G16:
 			return 32;
+		case ECF_A2R10G10B10:
+			return 32;
 		case ECF_R16F:
 			return 16;
 		case ECF_G16R16F:
