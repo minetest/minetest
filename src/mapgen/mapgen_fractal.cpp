@@ -104,14 +104,14 @@ void MapgenFractalParams::readParams(const Settings *settings)
 	settings->getU16NoEx("mgfractal_fractal",              fractal);
 	settings->getU16NoEx("mgfractal_iterations",           iterations);
 
-    std::optional<v3f> mgfractalScale;
-    if (settings->getV3FNoEx("mgfractal_scale", mgfractalScale) && mgfractalScale.has_value()) {
-        scale = *mgfractalScale;
+    std::optional<v3f> mgfractal_scale;
+    if (settings->getV3FNoEx("mgfractal_scale", mgfractal_scale) && mgfractal_scale.has_value()) {
+        scale = *mgfractal_scale;
     }
 
-    std::optional<v3f> mgfractalOffset;
-    if (settings->getV3FNoEx("mgfractal_offset", mgfractalOffset) && mgfractalOffset.has_value()) {
-        offset = mgfractalOffset.value();
+    std::optional<v3f> mgfractal_offset;
+    if (settings->getV3FNoEx("mgfractal_offset", mgfractal_offset) && mgfractal_offset.has_value()) {
+        offset = *mgfractal_offset;
     }
 
 	settings->getFloatNoEx("mgfractal_slice_w",            slice_w);
