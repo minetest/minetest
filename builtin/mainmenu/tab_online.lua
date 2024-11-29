@@ -62,17 +62,17 @@ local function is_selected_fav(server)
 	local port = tonumber(core.settings:get("remote_port"))
 
 	for _, fav in ipairs(serverlistmgr.get_favorites()) do
-			if address == fav.address and port == fav.port then
-				return true
-			end
+		if address == fav.address and port == fav.port then
+			return true
 		end
+	end
+	return false
 end
 
 local function set_selected_server(server)
 	local address = server.address
 	local port    = server.port
-
-	is_selected_fav()
+	gamedata.serverdescription = server.description
 
 	if address and port then
 		core.settings:set("address", address)
