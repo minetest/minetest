@@ -56,18 +56,23 @@ local function get_sorted_servers()
 end
 
 -- Persists the selected server in the "address" and "remote_port" settings
+
+local function is_selected_fav(server)
+	local address = core.settings:get("address")
+	local port = tonumber(core.settings:get("remote_port"))
+
+	for _, fav in ipairs(serverlistmgr.get_favorites()) do
+			if address == fav.address and port == fav.port then
+				return true
+			end
+		end
+end
+
 local function set_selected_server(server)
 	local address = server.address
 	local port    = server.port
-	gamedata.serverdescription = server.description
 
-	gamedata.fav = false
-	for _, fav in ipairs(serverlistmgr.get_favorites()) do
-		if address == fav.address and port == fav.port then
-			gamedata.fav = true
-			break
-		end
-	end
+	is_selected_fav()
 
 	if address and port then
 		core.settings:set("address", address)
@@ -164,7 +169,7 @@ local function get_formspec(tabview, name, tabdata)
 				"server_view_clients.png") .. ";btn_view_clients;]"
 		end
 
-		if gamedata.fav then
+		if is_selected_fav() then
 			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Remove favorite") .. "]"
 			retval = retval .. "style[btn_delete_favorite;padding=6]"
 			retval = retval .. "image_button[" .. (can_view_clients_list and "4.5" or "5") .. ",1.3;0.5,0.5;" ..
@@ -338,7 +343,6 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 	if fields.btn_add_favorite then
 		serverlistmgr.add_favorite(find_selected_server())
-		gamedata.fav = true
 		return true
 	end
 
