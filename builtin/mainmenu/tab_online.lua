@@ -55,8 +55,6 @@ local function get_sorted_servers()
 	return servers
 end
 
--- Persists the selected server in the "address" and "remote_port" settings
-
 local function is_selected_fav(server)
 	local address = core.settings:get("address")
 	local port = tonumber(core.settings:get("remote_port"))
@@ -68,6 +66,8 @@ local function is_selected_fav(server)
 	end
 	return false
 end
+
+-- Persists the selected server in the "address" and "remote_port" settings
 
 local function set_selected_server(server)
 	local address = server.address
