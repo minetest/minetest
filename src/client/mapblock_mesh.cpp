@@ -25,10 +25,9 @@
 	MeshMakeData
 */
 
-MeshMakeData::MeshMakeData(const NodeDefManager *ndef, u16 side_length, bool use_tangent_vertices):
+MeshMakeData::MeshMakeData(const NodeDefManager *ndef, u16 side_length):
 	side_length(side_length),
-	nodedef(ndef),
-	m_use_tangent_vertices(use_tangent_vertices)
+	nodedef(ndef)
 {}
 
 void MeshMakeData::fillBlockDataBegin(const v3s16 &blockpos)
@@ -602,8 +601,6 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 	for (auto &m : m_mesh)
 		m = make_irr<scene::SMesh>();
 
-	m_use_tangent_vertices = data->m_use_tangent_vertices;
-
 	auto mesh_grid = client->getMeshGrid();
 	v3s16 bp = data->m_blockpos;
 	// Only generate minimap mapblocks at even coordinates.
@@ -712,44 +709,27 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 				p.layer.applyMaterialOptionsWithShaders(material);
 			}
 
-			if (m_use_tangent_vertices && !p.layer.isTransparent()) {
-				scene::SMeshBufferTangents* buf = new scene::SMeshBufferTangents();
-				buf->Material = material;
-				std::vector<video::S3DVertexTangents> vertices;
-				vertices.reserve(p.vertices.size());
-				for (video::S3DVertex &v : p.vertices)
-					vertices.emplace_back(v.Pos, v.Normal, v.Color, v.TCoords);
-				buf->append(&vertices[0], vertices.size(),
-					&p.indices[0], p.indices.size());
-				buf->recalculateBoundingBox();
-				scene::IMeshManipulator* meshmanip =
-					client->getSceneManager()->getMeshManipulator();
-				meshmanip->recalculateTangents(buf);
-				mesh->addMeshBuffer(buf);
-				buf->drop();
-			} else {
-				scene::SMeshBuffer *buf = new scene::SMeshBuffer();
-				buf->Material = material;
-				if (p.layer.isTransparent()) {
-					buf->append(&p.vertices[0], p.vertices.size(), nullptr, 0);
+			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
+			buf->Material = material;
+			if (p.layer.isTransparent()) {
+				buf->append(&p.vertices[0], p.vertices.size(), nullptr, 0);
 
-					MeshTriangle t;
-					t.buffer = buf;
-					m_transparent_triangles.reserve(p.indices.size() / 3);
-					for (u32 i = 0; i < p.indices.size(); i += 3) {
-						t.p1 = p.indices[i];
-						t.p2 = p.indices[i + 1];
-						t.p3 = p.indices[i + 2];
-						t.updateAttributes();
-						m_transparent_triangles.push_back(t);
-					}
-				} else {
-					buf->append(&p.vertices[0], p.vertices.size(),
-						&p.indices[0], p.indices.size());
+				MeshTriangle t;
+				t.buffer = buf;
+				m_transparent_triangles.reserve(p.indices.size() / 3);
+				for (u32 i = 0; i < p.indices.size(); i += 3) {
+					t.p1 = p.indices[i];
+					t.p2 = p.indices[i + 1];
+					t.p3 = p.indices[i + 2];
+					t.updateAttributes();
+					m_transparent_triangles.push_back(t);
 				}
-				mesh->addMeshBuffer(buf);
-				buf->drop();
+			} else {
+				buf->append(&p.vertices[0], p.vertices.size(),
+					&p.indices[0], p.indices.size());
 			}
+			mesh->addMeshBuffer(buf);
+			buf->drop();
 		}
 
 		if (mesh) {

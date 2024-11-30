@@ -40,11 +40,11 @@ struct AutoExposure
  */
 struct Vignette {
 	/// @brief The darkest part of the vignette will be darkened/brightened by this factor.
-	float dark = 0.3f;
+	float dark = 1.0f;
 	/// @brief The brightest part of the vignette will be darkened/brightened by this factor.
-	float bright = 1.1f;
+	float bright = 1.0f;
 	/// @brief Describes the blending between dark and bright. Higher values mean darkening is more intense at the screen edges.
-	float power = 1.1f;
+	float power = 1.0f;
 };
 
 /**

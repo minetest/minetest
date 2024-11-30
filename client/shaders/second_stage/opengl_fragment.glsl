@@ -150,9 +150,7 @@ void main(void)
 #endif
 	{
 
-#ifdef ENABLE_VIGNETTE
 		color.rgb *= (vignette_bright - vignette_dark) * (1.0 - pow(length(uv - vec2(0.5)) * 1.4, vignette_power)) + vignette_dark;
-#endif
 
 #if ENABLE_TONE_MAPPING
 		color = applyToneMapping(color);

@@ -662,11 +662,6 @@ enable_volumetric_depth_attenuation (Volumetric Depth Attenuation) bool false
 #   Makes the color of light fog more saturated.
 enable_tinted_fog (Tinted fog) bool false
 
-#   Apply bump maps to nodes based on their textures. It is recommended to use a tilted sun orbit to go with this (Sky Body Orbit Tilt).
-#
-#   Requires: enable_dynamic_shadows
-enable_bumpmaps (Bump maps) bool false
-
 #   Simulate translucency when looking at foliage in the sunlight.
 #   It is recommended to use this with the leaves style set to fancy.
 #
@@ -677,11 +672,6 @@ enable_translucent_foliage (Translucent foliage) bool false
 #
 #   Requires: enable_dynamic_shadows
 enable_node_specular (Node specular) bool false
-
-#   When enabled, liquid reflections are simulated.
-#
-#   Requires: enable_waving_water, enable_dynamic_shadows
-enable_water_reflections (Liquid reflections) bool false
 
 [*Audio]
 

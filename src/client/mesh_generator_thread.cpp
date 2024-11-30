@@ -39,8 +39,6 @@ QueuedMeshUpdate::~QueuedMeshUpdate()
 MeshUpdateQueue::MeshUpdateQueue(Client *client):
 	m_client(client)
 {
-	m_cache_use_tangent_vertices = g_settings->getBool("enable_bumpmaps");
-
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
 }
 
@@ -179,8 +177,7 @@ void MeshUpdateQueue::fillDataFromMapBlocks(QueuedMeshUpdate *q)
 {
 	auto mesh_grid = m_client->getMeshGrid();
 
-	MeshMakeData *data = new MeshMakeData(m_client->ndef(), MAP_BLOCKSIZE * mesh_grid.cell_size, m_cache_use_tangent_vertices);
-
+	MeshMakeData *data = new MeshMakeData(m_client->ndef(), MAP_BLOCKSIZE * mesh_grid.cell_size);
 	q->data = data;
 
 	data->fillBlockDataBegin(q->p);

@@ -680,9 +680,6 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		if (g_settings->getBool("shadow_poisson_filter"))
 			shaders_header << "#define POISSON_FILTER 1\n";
 
-		if (g_settings->getBool("enable_bumpmaps"))
-			shaders_header << "#define ENABLE_BUMPMAPS 1\n";
-
 		if (g_settings->getBool("enable_water_reflections"))
 			shaders_header << "#define ENABLE_WATER_REFLECTIONS 1\n";
 
@@ -715,9 +712,6 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 
 	if (g_settings->getBool("enable_color_grading"))
 		shaders_header << "#define ENABLE_COLOR_GRADING 1\n";
-
-	if (g_settings->getBool("enable_vignette"))
-		shaders_header << "#define ENABLE_VIGNETTE 1\n";
 
 	if (g_settings->get("antialiasing") == "ssaa") {
 		shaders_header << "#define ENABLE_SSAA 1\n";

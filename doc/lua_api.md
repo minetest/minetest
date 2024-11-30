@@ -8828,9 +8828,9 @@ child will follow movement and rotation of that bone.
             * Setting all components to zero effectively disables tinted sunlight.
       * `vignette`: is a table that controls the vignette post-processing effect.
         * This has no effect on clients who have the "Vignette" effects disabled.
-        * `dark`: brightness of the vignette's darkest part (default: `0.3`)
-        * `bright`: brightness of the vignette's brightest part (default: `1.1`)
-        * `power`: the higher this is set, the more the vignette "retreats" to the edges of the screen (default: `1.1`)
+        * `dark`: brightness of the vignette's darkest part (default: `1.0`)
+        * `bright`: brightness of the vignette's brightest part (default: `1.0`)
+        * `power`: the higher this is set, the more the vignette "retreats" to the edges of the screen (default: `1.0`)
       * `cdl`: is a table that controls the ASL CDL color grading effect.
         * This has no effect on clients who have the "Color grading" effect disabled.
         * The output color follows the equation: `out = pow(in*slope+offset, power)`

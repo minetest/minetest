@@ -63,7 +63,7 @@ varying highp vec3 eyeVec;
 varying float nightRatio;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
-#if ((defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS)) || defined(ENABLE_BUMPMAPS))
+#if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS))
 vec4 perm(vec4 x)
 {
 	return mod(((x * 34.0) + 1.0) * x, 289.0);
@@ -420,23 +420,6 @@ float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 
 #endif
 #endif
-
-#if (defined(ENABLE_BUMPMAPS) && !defined(MATERIAL_LIQUID))
-//This is mostly a placeholder and probably should use proper textures eventually...
-vec3 getBumpMap(vec2 uv) {
-	vec2 dr = vec2(0.25) * texelSize0;
-	// Sample the texture to then compute the gradient
-	float fx0y0 = texture2D(baseTexture, uv).r;
-	float fx1y0 = texture2D(baseTexture, uv + vec2(dr.x, 0.0)).r;
-	float fx0y1 = texture2D(baseTexture, uv + vec2(0.0, dr.y)).r;
-	// We get the gradient using partial derivatives
-	vec2 gradient = 0.1 * vec2((fx1y0 - fx0y0) / dr.x, (fx0y1 - fx0y0) / dr.y) + 0.05 * gnoise(vec3(2.0 * uv / texelSize0, 0.0)).xy;
-	vec3 tangent_space = normalize(vec3(gradient, 1.0));
-	// Convert tangent space information to real space
-	return -vTangent * tangent_space.x + vBinormal * tangent_space.y + vNormal * tangent_space.z;
-}
-#endif
-
 #endif
 
 void main(void)
@@ -466,17 +449,7 @@ void main(void)
 
 	vec3 viewVec = normalize(worldPosition + cameraOffset - cameraPosition);
 
-#if ((defined(ENABLE_DYNAMIC_SHADOWS) && defined(ENABLE_BUMPMAPS)) && !defined(MATERIAL_LIQUID))
-	vec3 bump_normal = getBumpMap(uv);
-	// When applied to all blocks, these bump maps produce irritating Moiré effects.
-	// So we hide the bump maps when close up.
-	float moire_factor = abs(dot(vNormal, viewVec));
-	moire_factor = mtsmoothstep(0.4 * moire_factor, 0.2 * moire_factor, length(eyeVec) * fov / windowSize.x);
-	fNormal = normalize(mix(fNormal, bump_normal, moire_factor));
-	float adj_cosLight = max(1e-5, dot(fNormal, -v_LightDirection));
-#else
 	float adj_cosLight = cosLight;
-#endif
 
 	if (f_shadow_strength > 0.0) {
 		float shadow_int = 0.0;
@@ -556,7 +529,7 @@ void main(void)
 		wavePos.x /= WATER_WAVE_LENGTH * 3.0;
 		wavePos.z /= WATER_WAVE_LENGTH * 2.0;
 
-		// This is an analogous method to the bumpmap, except we get the gradient information directly from gnoise.
+		// We get the gradient information of the waves using gnoise.
 		vec2 gradient = wave_noise(wavePos, off);
 		fNormal = normalize(normalize(fNormal) + vec3(gradient.x, 0., gradient.y) * WATER_WAVE_HEIGHT * abs(fNormal.y) * 0.25);
 		reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.0);
@@ -572,12 +545,15 @@ void main(void)
 		// Sky reflection
 		col.rgb += reflection_color * pow(fresnel_factor, 2.0) * 0.5 * brightness_factor;
 
+		vec3 water_reflect_color = 
+			6.0 * sunTint * dayLight * fresnel_factor * f_adj_shadow_strength * max(1.0 - shadow_uncorrected, 0.0) * 
+			mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0));
+
 		// We clip the reflection color if it gets too bright
-		vec3 water_reflect_color = 6.0 * sunTint * dayLight * fresnel_factor * mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0)) * max(1.0 - shadow_uncorrected, 0.0);
-		water_reflect_color /= max(0.4 * length(water_reflect_color), 1.0);
+		water_reflect_color *= min(2.0 / max(water_reflect_color.r, max(water_reflect_color.g, water_reflect_color.b)), 1.0);
 
 		// Sun reflection
-		col.rgb += water_reflect_color * f_adj_shadow_strength * brightness_factor;
+		col.rgb += water_reflect_color * brightness_factor;
 #endif
 
 #if (defined(ENABLE_NODE_SPECULAR) && !defined(MATERIAL_WAVING_LIQUID))

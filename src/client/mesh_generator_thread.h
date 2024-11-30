@@ -70,7 +70,6 @@ private:
 	std::mutex m_mutex;
 
 	// TODO: Add callback to update these when g_settings changes
-	bool m_cache_use_tangent_vertices;
 	bool m_cache_smooth_lighting;
 
 	void fillDataFromMapBlocks(QueuedMeshUpdate *q);
