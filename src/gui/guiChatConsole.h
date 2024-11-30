@@ -10,6 +10,7 @@
 #include "config.h"
 
 class Client;
+class GUIScrollBar;
 
 class GUIChatConsole : public gui::IGUIElement
 {
@@ -76,10 +77,13 @@ private:
 	// If the selected text changed, we need to update the (X11) primary selection.
 	void updatePrimarySelection();
 
+	void updateScrollbar(bool update_size = false);
+
 private:
 	ChatBackend* m_chat_backend;
 	Client* m_client;
 	IMenuManager* m_menumgr;
+	GUIScrollBar* m_scrollbar = nullptr;
 
 	// current screen size
 	v2u32 m_screensize;
