@@ -63,7 +63,7 @@ extern struct EnumString es_TileAnimationType[];
 extern const std::array<const char *, 33> object_property_keys;
 
 void               read_content_features     (lua_State *L, ContentFeatures &f,
-                                              int index);
+                                              int index, NodeDefManager *ndef);
 void               push_content_features     (lua_State *L,
                                               const ContentFeatures &c);
 
