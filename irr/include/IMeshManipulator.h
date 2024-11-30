@@ -41,26 +41,6 @@ public:
 	virtual void recalculateNormals(IMeshBuffer *buffer,
 			bool smooth = false, bool angleWeighted = false) const = 0;
 
-	//! Recalculates tangents, requires a tangent mesh
-		/** \param mesh Mesh on which the operation is performed.
-		\param recalculateNormals If the normals shall be recalculated, otherwise original normals of the mesh are used unchanged.
-		\param smooth If the normals shall be smoothed.
-		\param angleWeighted If the normals shall be smoothed in relation to their angles. More expensive, but also higher precision.
-		*/
-	virtual void recalculateTangents(IMesh* mesh,
-		bool recalculateNormals = false, bool smooth = false,
-		bool angleWeighted = false) const = 0;
-
-	//! Recalculates tangents, requires a tangent mesh buffer
-	/** \param buffer Meshbuffer on which the operation is performed.
-	\param recalculateNormals If the normals shall be recalculated, otherwise original normals of the buffer are used unchanged.
-	\param smooth If the normals shall be smoothed.
-	\param angleWeighted If the normals shall be smoothed in relation to their angles. More expensive, but also higher precision.
-	*/
-	virtual void recalculateTangents(IMeshBuffer* buffer,
-		bool recalculateNormals = false, bool smooth = false,
-		bool angleWeighted = false) const = 0;
-
 	//! Scales the actual mesh, not a scene node.
 	/** \param mesh Mesh on which the operation is performed.
 	\param factor Scale factor for each axis. */
