@@ -120,5 +120,6 @@ void BanManager::remove(const std::string &ip_or_name)
 
 bool BanManager::isModified() const
 {
+	MutexAutoLock lock(m_mutex);
 	return m_modified;
 }
