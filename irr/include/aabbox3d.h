@@ -20,8 +20,7 @@ template <class T>
 class aabbox3d
 {
 public:
-	//! Default Constructor.
-	constexpr aabbox3d() = delete;
+	constexpr aabbox3d() {}
 	//! Constructor with min edge and max edge.
 	constexpr aabbox3d(const vector3d<T> &min, const vector3d<T> &max) :
 			MinEdge(min), MaxEdge(max) {}
@@ -373,10 +372,10 @@ public:
 	}
 
 	//! The near edge
-	vector3d<T> MinEdge;
+	vector3d<T> MinEdge{};
 
 	//! The far edge
-	vector3d<T> MaxEdge;
+	vector3d<T> MaxEdge{};
 };
 
 //! Typedef for a f32 3d bounding box.
