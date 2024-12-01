@@ -104,7 +104,7 @@ private:
 	/** Note that we can't use the real boundingbox for culling because at that point
 		the camera which is used to calculate the billboard is not yet updated. So we only
 		know the real boundingbox after rendering - which is too late for culling. */
-	core::aabbox3d<f32> BBoxSafe;
+	core::aabbox3d<f32> BBoxSafe{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
 
 	scene::SMeshBuffer *Buffer;
 };

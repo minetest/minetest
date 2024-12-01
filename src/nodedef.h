@@ -115,9 +115,9 @@ struct NodeBox
 	// NODEBOX_FIXED
 	std::vector<aabb3f> fixed;
 	// NODEBOX_WALLMOUNTED
-	aabb3f wall_top;
-	aabb3f wall_bottom;
-	aabb3f wall_side; // being at the -X side
+	aabb3f wall_top{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
+	aabb3f wall_bottom{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
+	aabb3f wall_side{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f}; // being at the -X side
 	// NODEBOX_CONNECTED
 	// (kept externally to not bloat the structure)
 	std::shared_ptr<NodeBoxConnected> connected;
@@ -809,14 +809,14 @@ private:
 	 * The union of all nodes' selection boxes.
 	 * Might be larger if big nodes are removed from the manager.
 	 */
-	aabb3f m_selection_box_union;
+	aabb3f m_selection_box_union{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
 
 	/*!
 	 * The smallest box in integer node coordinates that
 	 * contains all nodes' selection boxes.
 	 * Might be larger if big nodes are removed from the manager.
 	 */
-	core::aabbox3d<s16> m_selection_box_int_union;
+	core::aabbox3d<s16> m_selection_box_int_union{-1, -1, -1, 1, 1, 1};
 
 	/*!
 	 * NodeResolver instances to notify once node registration has finished.

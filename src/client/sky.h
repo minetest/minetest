@@ -122,7 +122,7 @@ public:
 	}
 
 private:
-	aabb3f m_box;
+	aabb3f m_box{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
 	video::SMaterial m_materials[SKY_MATERIAL_COUNT];
 	// How much sun & moon transition should affect horizon color
 	float m_horizon_blend()

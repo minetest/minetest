@@ -319,7 +319,7 @@ private:
 	// doesn't allow taking a reference to individual elements.
 	core::array<core::array<char>> Vertices_Moved;
 
-	core::aabbox3d<f32> BoundingBox;
+	core::aabbox3d<f32> BoundingBox{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
 
 	f32 EndFrame;
 	f32 FramesPerSecond;

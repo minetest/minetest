@@ -137,7 +137,7 @@ public:
 	//! Index buffer
 	SIndexBuffer *Indices;
 	//! Bounding box of this meshbuffer.
-	core::aabbox3d<f32> BoundingBox;
+	core::aabbox3d<f32> BoundingBox{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
 	//! Primitive type used for rendering (triangles, lines, ...)
 	E_PRIMITIVE_TYPE PrimitiveType;
 };

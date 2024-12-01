@@ -145,7 +145,7 @@ private:
 	void beginTransition();
 
 	core::array<video::SMaterial> Materials;
-	core::aabbox3d<f32> Box;
+	core::aabbox3d<f32> Box{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
 	IAnimatedMesh *Mesh;
 
 	f32 StartFrame;
