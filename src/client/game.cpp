@@ -548,12 +548,10 @@ public:
 		float gamma = m_gamma;
 		m_gamma_pixel.set(&gamma, services);
 
-		if (g_settings->getBool("enable_vignette")) {
-			const Vignette &vignette_params = lighting.vignette;
-			m_vignette_dark_pixel.set(&vignette_params.dark, services);
-			m_vignette_bright_pixel.set(&vignette_params.bright, services);
-			m_vignette_power_pixel.set(&vignette_params.power, services);
-		}
+		const Vignette &vignette_params = lighting.vignette;
+		m_vignette_dark_pixel.set(&vignette_params.dark, services);
+		m_vignette_bright_pixel.set(&vignette_params.bright, services);
+		m_vignette_power_pixel.set(&vignette_params.power, services);
 
 		if (g_settings->getBool("enable_color_grading")) {
 			const ColorDecisionList& cdl_params = lighting.cdl;
