@@ -545,7 +545,7 @@ void main(void)
 		// Sky reflection
 		col.rgb += reflection_color * pow(fresnel_factor, 2.0) * 0.5 * brightness_factor;
 
-		vec3 water_reflect_color = 
+		vec3 water_reflect_color =
 			6.0 * sunTint * dayLight * fresnel_factor * f_adj_shadow_strength * max(1.0 - shadow_uncorrected, 0.0) *
 			mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0));
 
