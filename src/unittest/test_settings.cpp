@@ -43,6 +43,12 @@ const char *TestSettings::config_text_before =
 	"stringy_thing = asd /( ¤%&(/\" BLÖÄRP\n"
 	"coord = (1, 2, 4.5)\n"
     "coord_invalid = (1,2,3\n"
+    "coord_invalid_2 = 1, 2, 3 test\n"
+    "coord_invalid_3 = (test, something, stupid)\n"
+    "coord_invalid_4 = (1, test, 3)\n"
+    "coord_invalid_5 = ()\n"
+    "coord_invalid_6 = (1, 2)\n"
+    "coord_invalid_7 = (1)\n"
     "coord_no_parenthesis = 1,2,3\n"
 	"      # this is just a comment\n"
 	"this is an invalid line\n"
@@ -98,6 +104,12 @@ const char *TestSettings::config_text_after =
 	"zoop = true\n"
 	"coord2 = (1,2,3.25)\n"
     "coord_invalid = (1,2,3\n"
+    "coord_invalid_2 = 1, 2, 3 test\n"
+    "coord_invalid_3 = (test, something, stupid)\n"
+    "coord_invalid_4 = (1, test, 3)\n"
+    "coord_invalid_5 = ()\n"
+    "coord_invalid_6 = (1, 2)\n"
+    "coord_invalid_7 = (1)\n"
     "coord_no_parenthesis = 1,2,3\n"
 	"floaty_thing_2 = 1.25\n"
 	"groupy_thing = {\n"
@@ -162,6 +174,12 @@ void TestSettings::testAllSettings()
     EXCEPTION_CHECK(SettingNotFoundException, s.getV3F("coord_not_exist"));
 
     UASSERT(!s.getV3F("coord_invalid").has_value());
+    UASSERT(!s.getV3F("coord_invalid_2").has_value());
+    UASSERT(!s.getV3F("coord_invalid_3").has_value());
+    UASSERT(!s.getV3F("coord_invalid_4").has_value());
+    UASSERT(!s.getV3F("coord_invalid_5").has_value());
+    UASSERT(!s.getV3F("coord_invalid_6").has_value());
+    UASSERT(!s.getV3F("coord_invalid_7").has_value());
 
     std::optional<v3f> testNoParenthesis = s.getV3F("coord_no_parenthesis");
     UASSERT(testNoParenthesis.value() == v3f(1, 2, 3));

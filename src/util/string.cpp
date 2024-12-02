@@ -1096,5 +1096,7 @@ std::optional<v3f> str_to_v3f(std::string_view str)
     if (!expect_delimiter()) return std::nullopt;
     if (!(iss >> value.Z)) return std::nullopt;
 
+    while (!iss.eof()) if (!std::isspace(iss.get())) return std::nullopt;
+
     return value;
 }
