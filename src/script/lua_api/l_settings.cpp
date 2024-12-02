@@ -186,7 +186,7 @@ int LuaSettings::l_get_pos(lua_State *L)
 
     std::optional<v3f> pos;
     if (o->m_settings->getV3FNoEx(key, pos) && pos.has_value())
-        push_v3f(L, pos.value());
+        push_v3f(L, *pos);
     else
         lua_pushnil(L);
     return 1;

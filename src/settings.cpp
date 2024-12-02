@@ -629,7 +629,7 @@ bool Settings::getNoiseParamsFromGroup(const std::string &name,
 
     std::optional<v3f> spread;
 	if (group->getV3FNoEx("spread", spread) && spread.has_value())
-        np.spread = spread.value();
+        np.spread = *spread;
 
 	group->getS32NoEx("seed",          np.seed);
 	group->getU16NoEx("octaves",       np.octaves);

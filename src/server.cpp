@@ -3874,7 +3874,7 @@ v3f Server::findSpawnPos()
     std::optional<v3f> staticSpawnPoint;
 	if (g_settings->getV3FNoEx("static_spawnpoint", staticSpawnPoint) && staticSpawnPoint.has_value())
     {
-        nodeposf = staticSpawnPoint.value();
+       return *staticSpawnPoint * BS;
         return nodeposf * BS;
     }
 
