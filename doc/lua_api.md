@@ -8827,7 +8827,7 @@ child will follow movement and rotation of that bone.
             * This may be used to create effects like differently colored sunsets on alien planets.
             * Setting all components to zero effectively disables tinted sunlight.
       * `vignette`: is a table that controls the vignette post-processing effect.
-        * This has no effect on clients who have the "Vignette" effects disabled.
+        * This has no effect on clients who have post processing disabled.
         * `dark`: brightness of the vignette's darkest part (default: `1.0`)
         * `bright`: brightness of the vignette's brightest part (default: `1.0`)
         * `power`: the higher this is set, the more the vignette "retreats" to the edges of the screen (default: `1.0`)

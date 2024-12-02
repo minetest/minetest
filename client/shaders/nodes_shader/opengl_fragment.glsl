@@ -40,12 +40,7 @@ uniform float animationTimer;
 	varying float perspective_factor;
 #endif
 
-uniform vec2 windowSize;
-uniform float fov;
-
 varying vec3 vNormal;
-varying vec3 vTangent;
-varying vec3 vBinormal;
 varying vec3 vPosition;
 // World position in the visible world (i.e. relative to the cameraOffset.)
 // This can be used for many shader effects without loss of precision.
@@ -449,8 +444,6 @@ void main(void)
 
 	vec3 viewVec = normalize(worldPosition + cameraOffset - cameraPosition);
 
-	float adj_cosLight = cosLight;
-
 	if (f_shadow_strength > 0.0) {
 		float shadow_int = 0.0;
 		vec3 shadow_color = vec3(0.0, 0.0, 0.0);
@@ -465,14 +458,14 @@ void main(void)
 
 #ifdef COLORED_SHADOWS
 			vec4 visibility;
-			if (adj_cosLight > 0.0 || f_normal_length < 1e-3)
+			if (cosLight > 0.0 || f_normal_length < 1e-3)
 				visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
 			else
 				visibility = vec4(1.0, 0.0, 0.0, 0.0);
 			shadow_int = visibility.r;
 			shadow_color = visibility.gba;
 #else
-			if (adj_cosLight > 0.0 || f_normal_length < 1e-3)
+			if (cosLight > 0.0 || f_normal_length < 1e-3)
 				shadow_int = getShadow(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
 			else
 				shadow_int = 1.0;
@@ -493,9 +486,9 @@ void main(void)
 		// Cosine of the cut-off angle.
 		const float self_shadow_cutoff_cosine = 0.035;
 
-		if (f_normal_length != 0 && adj_cosLight < self_shadow_cutoff_cosine) {
-			shadow_int = max(shadow_int, 1 - clamp(adj_cosLight, 0.0, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
-			shadow_color = mix(vec3(0.0), shadow_color, min(adj_cosLight, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
+		if (f_normal_length != 0 && cosLight < self_shadow_cutoff_cosine) {
+			shadow_int = max(shadow_int, 1 - clamp(cosLight, 0.0, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
+			shadow_color = mix(vec3(0.0), shadow_color, min(cosLight, self_shadow_cutoff_cosine)/self_shadow_cutoff_cosine);
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES || MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS)
 			// Prevents foliage from becoming insanely bright outside the shadow map.
@@ -517,12 +510,6 @@ void main(void)
 
 		// Water reflections
 #if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS))
-
-#if !ENABLE_WAVING_WATER
-#define WATER_WAVE_HEIGHT 0.5
-#define WATER_WAVE_SPEED 5.0
-#define WATER_WAVE_LENGTH 10.0
-#endif
 
 		vec3 wavePos = worldPosition * vec3(2.0, 0.0, 2.0);
 		float off = animationTimer * WATER_WAVE_SPEED * 10.0;

@@ -373,10 +373,6 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel{ "cameraOffset" };
 	CachedVertexShaderSetting<float, 3> m_camera_position_vertex{"cameraPosition"};
 	CachedPixelShaderSetting<float, 3> m_camera_position_pixel{"cameraPosition"};
-	CachedVertexShaderSetting<float, 16> m_camera_projinv_vertex{"mCameraProjInv"};
-	CachedPixelShaderSetting<float, 16> m_camera_projinv_pixel{"mCameraProjInv"};
-	CachedVertexShaderSetting<float, 16> m_camera_view_vertex{"mCameraView"};
-	CachedPixelShaderSetting<float, 16> m_camera_view_pixel{"mCameraView"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture0{"texture0"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture1{"texture1"};
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture2{"texture2"};
@@ -418,8 +414,6 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float> m_vignette_dark_pixel{"vignette_dark"};
 	CachedPixelShaderSetting<float> m_vignette_bright_pixel{"vignette_bright"};
 	CachedPixelShaderSetting<float> m_vignette_power_pixel{"vignette_power"};
-	CachedPixelShaderSetting<float> m_fov_pixel{"fov"};
-	CachedPixelShaderSetting<float, 2> m_window_size_pixel{"windowSize"};
 
 	static constexpr std::array<const char*, 1> SETTING_CALLBACKS = {
 		"exposure_compensation",
@@ -487,22 +481,6 @@ public:
 		v3f camera_position = m_client->getCamera()->getPosition();
 		m_camera_position_vertex.set(camera_position, services);
 		m_camera_position_pixel.set(camera_position, services);
-
-		core::matrix4 camera_proj = m_client->getCamera()->getCameraNode()->getProjectionMatrix();
-		core::matrix4 camera_projinv;
-		camera_proj.getInverse(camera_projinv);
-		m_camera_projinv_vertex.set(camera_projinv, services);
-		m_camera_projinv_pixel.set(camera_projinv, services);
-
-		core::matrix4 camera_view = m_client->getCamera()->getCameraNode()->getViewMatrix();
-		m_camera_view_vertex.set(camera_view, services);
-		m_camera_view_pixel.set(camera_view, services);
-
-		float fov = m_client->getCamera()->getFovMax();
-		m_fov_pixel.set(&fov, services);
-		v2u32 window_size_int = RenderingEngine::getWindowSize();
-		core::vector2df window_size = core::vector2df(window_size_int.X, window_size_int.Y);
-		m_window_size_pixel.set(window_size, services);
 
 		SamplerLayer_t tex_id;
 		tex_id = 0;

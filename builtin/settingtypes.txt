@@ -485,22 +485,19 @@ enable_waving_water (Waving liquids) bool false
 #    0.0 = Wave doesn't move at all.
 #    Default is 1.0 (1/2 node).
 #
-#    Requires: enable_waving_water
 water_wave_height (Waving liquids wave height) float 1.0 0.0 4.0
 
 #    Length of liquid waves.
 #
-#    Requires: enable_waving_water
 water_wave_length (Waving liquids wavelength) float 20.0 0.1
 
 #    How fast liquid waves will move. Higher = faster.
 #    If negative, liquid waves will move backwards.
 #
-#    Requires: enable_waving_water
 water_wave_speed (Waving liquids wave speed) float 5.0
 
 #   When enabled, crude liquid reflections are simulated.
-#   When waving liquids are enabled, the wave parameters will affect these reflections.
+#   Wave height, length and speed will affect these reflections.
 #
 #   Requires: enable_dynamic_shadows
 enable_water_reflections (Liquid reflections) bool false
