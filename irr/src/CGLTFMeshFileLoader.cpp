@@ -791,7 +791,8 @@ std::optional<std::vector<u16>> SelfType::MeshExtractor::getIndices(
 			index = std::get<Accessor<u16>>(accessor).get(elemIdx);
 			if (index == std::numeric_limits<u16>::max())
 				throw std::runtime_error("invalid index");
-		} else if (std::holds_alternative<Accessor<u32>>(accessor)) {
+		} else {
+			_IRR_DEBUG_BREAK_IF(!std::holds_alternative<Accessor<u32>>(accessor));
 			u32 indexWide = std::get<Accessor<u32>>(accessor).get(elemIdx);
 			// Use >= here for consistency.
 			if (indexWide >= std::numeric_limits<u16>::max())
