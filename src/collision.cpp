@@ -262,7 +262,7 @@ static void add_object_boxes(Environment *env,
 {
 	auto process_object = [&cinfo] (ActiveObject *object) {
 		if (object && object->collideWithObjects()) {
-			aabb3f box{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
+			aabb3f box;
 			if (object->getCollisionBox(&box))
 				cinfo.emplace_back(object, 0, box);
 		}

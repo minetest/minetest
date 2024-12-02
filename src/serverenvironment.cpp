@@ -1857,7 +1857,7 @@ void ServerEnvironment::getSelectedActiveObjects(
 	auto process = [&] (ServerActiveObject *obj) -> bool {
 		if (obj->isGone())
 			return false;
-		aabb3f selection_box{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
+		aabb3f selection_box;
 		if (!obj->getSelectionBox(&selection_box))
 			return false;
 

@@ -101,7 +101,7 @@ std::vector<DistanceSortedActiveObject> ActiveObjectMgr::getActiveSelectableObje
 		if (!obj)
 			continue;
 
-		aabb3f selection_box{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
+		aabb3f selection_box;
 		if (!obj->getSelectionBox(&selection_box))
 			continue;
 

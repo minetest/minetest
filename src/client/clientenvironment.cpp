@@ -430,7 +430,7 @@ void ClientEnvironment::getSelectedActiveObjects(
 
 	for (const auto &allObject : allObjects) {
 		ClientActiveObject *obj = allObject.obj;
-		aabb3f selection_box{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
+		aabb3f selection_box;
 		if (!obj->getSelectionBox(&selection_box))
 			continue;
 

@@ -120,7 +120,7 @@ void NodeBox::deSerialize(std::istream &is)
 		case NODEBOX_LEVELED: {
 			u16 fixed_count = readU16(is);
 			while(fixed_count--) {
-				aabb3f box{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
+				aabb3f box;
 				box.MinEdge = readV3F32(is);
 				box.MaxEdge = readV3F32(is);
 				fixed.push_back(box);
