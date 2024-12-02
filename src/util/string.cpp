@@ -1082,7 +1082,7 @@ std::optional<v3f> str_to_v3f(std::string_view str)
         str.remove_suffix(1);
     }
 
-    std::istringstream iss(std::string(str));
+    std::istringstream iss((std::string(str)));
 
     const auto expect_delimiter = [&]() {
         const auto c = iss.get();
