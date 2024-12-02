@@ -3869,13 +3869,11 @@ void Server::addShutdownError(const ModError &e)
 v3f Server::findSpawnPos()
 {
 	ServerMap &map = m_env->getServerMap();
-	v3f nodeposf;
 
     std::optional<v3f> staticSpawnPoint;
 	if (g_settings->getV3FNoEx("static_spawnpoint", staticSpawnPoint) && staticSpawnPoint.has_value())
     {
        return *staticSpawnPoint * BS;
-        return nodeposf * BS;
     }
 
 	bool is_good = false;
