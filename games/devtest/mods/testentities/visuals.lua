@@ -92,6 +92,18 @@ core.register_entity("testentities:cool_guy", {
 	end,
 })
 
+-- Unfortunately the licensing situation surrounding the heli is unclear, so this MUST NOT be merged with this change included!
+core.register_entity("testentities:heli", {
+	initial_properties = {
+		visual = "mesh",
+		mesh = "heli.x",
+		textures = {"blades.png","blades.png","heli.png","Glass.png"},
+	},
+	on_activate = function(self)
+		self.object:set_animation({x=0,y=11},30, 0)
+	end,
+})
+
 -- Advanced visual tests
 
 -- An entity for testing animated and yaw-modulated sprites
