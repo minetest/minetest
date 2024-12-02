@@ -127,7 +127,7 @@ bool CImageWriterPNG::writeImage(io::IWriteFile *file, IImage *image, u32 param)
 	}
 	std::unique_ptr<u8[]> tmpImage{new u8[img_dim.Height * lineWidth]};
 
-	u64 num_pixels = img_dim.Height * img_dim.Width;
+	auto num_pixels = img_dim.Height * img_dim.Width;
 	u8 *data = (u8 *)image->getData();
 	switch (image->getColorFormat()) {
 	case ECF_R8G8B8:
