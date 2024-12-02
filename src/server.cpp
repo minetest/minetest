@@ -3876,6 +3876,8 @@ v3f Server::findSpawnPos()
        return *staticSpawnPoint * BS;
     }
 
+    v3f nodeposf;
+
 	bool is_good = false;
 	// Limit spawn range to mapgen edges (determined by 'mapgen_limit')
 	s32 range_max = map.getMapgenParams()->getSpawnRangeMax();
