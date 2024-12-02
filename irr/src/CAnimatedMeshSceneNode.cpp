@@ -171,7 +171,7 @@ IMesh *CAnimatedMeshSceneNode::getMeshForCurrentFrame()
 
 		// Update the skinned mesh for the current joint transforms.
 		skinnedMesh->skinMesh();
-		skinnedMesh->updateBoundingBox();
+		Box = skinnedMesh->getBoundingBox();
 
 		return skinnedMesh;
 	}
@@ -210,9 +210,7 @@ void CAnimatedMeshSceneNode::render()
 
 	scene::IMesh *m = getMeshForCurrentFrame();
 
-	if (m) {
-		Box = m->getBoundingBox();
-	} else {
+	if (!m) {
 #ifdef _DEBUG
 		os::Printer::log("Animated Mesh returned no mesh to render.", Mesh->getDebugName(), ELL_WARNING);
 #endif

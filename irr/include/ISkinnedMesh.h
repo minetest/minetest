@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "aabbox3d.h"
 #include "irrArray.h"
 #include "IAnimatedMesh.h"
 #include "SSkinMeshBuffer.h"
@@ -227,12 +228,14 @@ public:
 		core::array<SJoint *> Children;
 
 		//! List of attached meshes
-		core::array<u32> AttachedMeshes;
+		std::vector<u32> AttachedMeshes;
 
 		Keys keys;
 
 		//! Skin weights
 		core::array<SWeight> Weights;
+		//! Bounding box of all affected vertices, in local space
+		core::aabbox3df LocalBoundingBox = core::vector3df();
 
 		//! Unnecessary for loaders, will be overwritten on finalize
 		core::matrix4 GlobalMatrix; // loaders may still choose to set this (temporarily) to calculate absolute vertex data.

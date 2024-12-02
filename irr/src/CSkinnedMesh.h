@@ -9,6 +9,7 @@
 #include "ISceneManager.h"
 #include "ISkinnedMesh.h"
 #include "SMeshBuffer.h"
+#include "aabbox3d.h"
 #include "quaternion.h"
 
 namespace irr
@@ -150,8 +151,6 @@ public:
 	//! Adds a new weight to the mesh, access it as last one
 	SWeight *addWeight(SJoint *joint) override;
 
-	virtual void updateBoundingBox(void);
-
 	//! Recovers the joints from the mesh
 	void recoverJointsFromMesh(core::array<IBoneSceneNode *> &jointChildSceneNodes);
 
@@ -194,7 +193,11 @@ private:
 	// doesn't allow taking a reference to individual elements.
 	core::array<core::array<char>> Vertices_Moved;
 
-	core::aabbox3d<f32> BoundingBox;
+	//! Bounding box of the static parts of the mesh
+	core::aabbox3d<f32> StaticBoundingBox = core::vector3df();
+	//! Total bounding box, taking both static and animated parts into account
+	core::aabbox3d<f32> BoundingBox = core::vector3df();
+
 
 	f32 EndFrame;
 	f32 FramesPerSecond;

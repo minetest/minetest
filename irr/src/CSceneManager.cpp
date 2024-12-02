@@ -485,6 +485,8 @@ void CSceneManager::drawAll()
 	Driver->setAllowZWriteOnTransparent(Parameters->getAttributeAsBool(ALLOW_ZWRITE_ON_TRANSPARENT));
 
 	// do animations and other stuff.
+	// Note: This happens before registering scene nodes for rendering,
+	// which does culling, which needs up to date bounding boxes
 	OnAnimate(os::Timer::getTime());
 
 	/*!

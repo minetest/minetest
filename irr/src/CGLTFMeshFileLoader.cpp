@@ -459,6 +459,9 @@ void SelfType::MeshExtractor::addPrimitive(
 
 	if (!skinIdx.has_value()) {
 		// No skin => all vertices belong entirely to their parent
+		// HACK ideally `parent->AttachedMeshes.push_back(meshbufNr);` should suffice,
+		// however that requires vertices to be in local space in the static pose
+		// which would break using the static pose of an animatable mesh
 		for (std::size_t v = 0; v < n_vertices; ++v) {
 			auto *weight = m_irr_model->addWeight(parent);
 			weight->buffer_id = meshbufNr;
