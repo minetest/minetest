@@ -16,7 +16,7 @@
 
 #include "os.h"
 
-#include "CSkinnedMesh.h"
+#include "SkinnedMesh.h"
 #include "CXMeshFileLoader.h"
 #include "COBJMeshFileLoader.h"
 #include "CB3DMeshFileLoader.h"
@@ -788,9 +788,9 @@ const video::SColorf &CSceneManager::getAmbientLight() const
 }
 
 //! Get a skinned mesh, which is not available as header-only code
-CSkinnedMesh *CSceneManager::createSkinnedMesh()
+SkinnedMesh *CSceneManager::createSkinnedMesh()
 {
-	return new CSkinnedMesh();
+	return new SkinnedMesh();
 }
 
 // creates a scenemanager

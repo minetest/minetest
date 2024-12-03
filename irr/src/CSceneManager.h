@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "CSkinnedMesh.h"
+#include "SkinnedMesh.h"
 #include "ISceneManager.h"
 #include "ISceneNode.h"
 #include "ICursorControl.h"
@@ -23,7 +23,7 @@ namespace scene
 {
 class IMeshCache;
 
-class CSkinnedMesh;
+class SkinnedMesh;
 
 /*!
 	The Scene Manager manages scene nodes, mesh resources, cameras and all the other stuff.
@@ -171,7 +171,7 @@ public:
 	ESCENE_NODE_TYPE getType() const override { return ESNT_SCENE_MANAGER; }
 
 	//! Get a skinned mesh
-	CSkinnedMesh *createSkinnedMesh() override;
+	SkinnedMesh *createSkinnedMesh() override;
 
 	//! Sets ambient color of the scene
 	void setAmbientLight(const video::SColorf &ambientColor) override;

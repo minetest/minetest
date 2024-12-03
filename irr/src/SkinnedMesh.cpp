@@ -2,7 +2,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "CSkinnedMesh.h"
+#include "SkinnedMesh.h"
 #include <optional>
 #include "CBoneSceneNode.h"
 #include "IAnimatedMeshSceneNode.h"
@@ -63,17 +63,17 @@ irr::u32 dropMiddleKeys(irr::core::array<T> &array, Cmp &cmp)
 	return d;
 }
 
-bool identicalPos(const irr::scene::CSkinnedMesh::SPositionKey &a, const irr::scene::CSkinnedMesh::SPositionKey &b)
+bool identicalPos(const irr::scene::SkinnedMesh::SPositionKey &a, const irr::scene::SkinnedMesh::SPositionKey &b)
 {
 	return a.position == b.position;
 }
 
-bool identicalScale(const irr::scene::CSkinnedMesh::SScaleKey &a, const irr::scene::CSkinnedMesh::SScaleKey &b)
+bool identicalScale(const irr::scene::SkinnedMesh::SScaleKey &a, const irr::scene::SkinnedMesh::SScaleKey &b)
 {
 	return a.scale == b.scale;
 }
 
-bool identicalRotation(const irr::scene::CSkinnedMesh::SRotationKey &a, const irr::scene::CSkinnedMesh::SRotationKey &b)
+bool identicalRotation(const irr::scene::SkinnedMesh::SRotationKey &a, const irr::scene::SkinnedMesh::SRotationKey &b)
 {
 	return a.rotation == b.rotation;
 }
@@ -85,7 +85,7 @@ namespace scene
 {
 
 //! constructor
-CSkinnedMesh::CSkinnedMesh() :
+SkinnedMesh::SkinnedMesh() :
 		SkinningBuffers(0), EndFrame(0.f), FramesPerSecond(25.f),
 		LastAnimatedFrame(-1), SkinnedLastFrame(false),
 		InterpolationMode(EIM_LINEAR),
@@ -93,14 +93,14 @@ CSkinnedMesh::CSkinnedMesh() :
 		AnimateNormals(true), HardwareSkinning(false)
 {
 #ifdef _DEBUG
-	setDebugName("CSkinnedMesh");
+	setDebugName("SkinnedMesh");
 #endif
 
 	SkinningBuffers = &LocalBuffers;
 }
 
 //! destructor
-CSkinnedMesh::~CSkinnedMesh()
+SkinnedMesh::~SkinnedMesh()
 {
 	for (u32 i = 0; i < AllJoints.size(); ++i)
 		delete AllJoints[i];
@@ -111,14 +111,14 @@ CSkinnedMesh::~CSkinnedMesh()
 	}
 }
 
-f32 CSkinnedMesh::getMaxFrameNumber() const
+f32 SkinnedMesh::getMaxFrameNumber() const
 {
 	return EndFrame;
 }
 
 //! Gets the default animation speed of the animated mesh.
 /** \return Amount of frames per second. If the amount is 0, it is a static, non animated mesh. */
-f32 CSkinnedMesh::getAnimationSpeed() const
+f32 SkinnedMesh::getAnimationSpeed() const
 {
 	return FramesPerSecond;
 }
@@ -126,13 +126,13 @@ f32 CSkinnedMesh::getAnimationSpeed() const
 //! Gets the frame count of the animated mesh.
 /** \param fps Frames per second to play the animation with. If the amount is 0, it is not animated.
 The actual speed is set in the scene node the mesh is instantiated in.*/
-void CSkinnedMesh::setAnimationSpeed(f32 fps)
+void SkinnedMesh::setAnimationSpeed(f32 fps)
 {
 	FramesPerSecond = fps;
 }
 
 //! returns the animated mesh based
-IMesh *CSkinnedMesh::getMesh(f32 frame)
+IMesh *SkinnedMesh::getMesh(f32 frame)
 {
 	// animate(frame,startFrameLoop, endFrameLoop);
 	if (frame == -1)
@@ -149,7 +149,7 @@ IMesh *CSkinnedMesh::getMesh(f32 frame)
 
 //! Animates this mesh's joints based on frame input
 //! blend: {0-old position, 1-New position}
-void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
+void SkinnedMesh::animateMesh(f32 frame, f32 blend)
 {
 	if (!HasAnimation || LastAnimatedFrame == frame)
 		return;
@@ -205,7 +205,7 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 	updateBoundingBox();
 }
 
-void CSkinnedMesh::buildAllLocalAnimatedMatrices()
+void SkinnedMesh::buildAllLocalAnimatedMatrices()
 {
 	for (u32 i = 0; i < AllJoints.size(); ++i) {
 		SJoint *joint = AllJoints[i];
@@ -270,7 +270,7 @@ void CSkinnedMesh::buildAllLocalAnimatedMatrices()
 	SkinnedLastFrame = false;
 }
 
-void CSkinnedMesh::buildAllGlobalAnimatedMatrices(SJoint *joint, SJoint *parentJoint)
+void SkinnedMesh::buildAllGlobalAnimatedMatrices(SJoint *joint, SJoint *parentJoint)
 {
 	if (!joint) {
 		for (u32 i = 0; i < RootJoints.size(); ++i)
@@ -288,7 +288,7 @@ void CSkinnedMesh::buildAllGlobalAnimatedMatrices(SJoint *joint, SJoint *parentJ
 		buildAllGlobalAnimatedMatrices(joint->Children[j], joint);
 }
 
-void CSkinnedMesh::getFrameData(f32 frame, SJoint *joint,
+void SkinnedMesh::getFrameData(f32 frame, SJoint *joint,
 		core::vector3df &position, s32 &positionHint,
 		core::vector3df &scale, s32 &scaleHint,
 		core::quaternion &rotation, s32 &rotationHint)
@@ -453,7 +453,7 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *joint,
 //--------------------------------------------------------------------------
 
 //! Preforms a software skin on this mesh based of joint positions
-void CSkinnedMesh::skinMesh()
+void SkinnedMesh::skinMesh()
 {
 	if (!HasAnimation || SkinnedLastFrame)
 		return;
@@ -491,7 +491,7 @@ void CSkinnedMesh::skinMesh()
 	updateBoundingBox();
 }
 
-void CSkinnedMesh::skinJoint(SJoint *joint, SJoint *parentJoint)
+void SkinnedMesh::skinJoint(SJoint *joint, SJoint *parentJoint)
 {
 	if (joint->Weights.size()) {
 		// Find this joints pull on vertices...
@@ -541,19 +541,19 @@ void CSkinnedMesh::skinJoint(SJoint *joint, SJoint *parentJoint)
 		skinJoint(joint->Children[j], joint);
 }
 
-E_ANIMATED_MESH_TYPE CSkinnedMesh::getMeshType() const
+E_ANIMATED_MESH_TYPE SkinnedMesh::getMeshType() const
 {
 	return EAMT_SKINNED;
 }
 
 //! Gets joint count.
-u32 CSkinnedMesh::getJointCount() const
+u32 SkinnedMesh::getJointCount() const
 {
 	return AllJoints.size();
 }
 
 //! Gets the name of a joint.
-const std::optional<std::string> &CSkinnedMesh::getJointName(u32 number) const
+const std::optional<std::string> &SkinnedMesh::getJointName(u32 number) const
 {
 	if (number >= getJointCount()) {
 		static const std::optional<std::string> nullopt;
@@ -563,7 +563,7 @@ const std::optional<std::string> &CSkinnedMesh::getJointName(u32 number) const
 }
 
 //! Gets a joint number from its name
-std::optional<u32> CSkinnedMesh::getJointNumber(const std::string &name) const
+std::optional<u32> SkinnedMesh::getJointNumber(const std::string &name) const
 {
 	for (u32 i = 0; i < AllJoints.size(); ++i) {
 		if (AllJoints[i]->Name == name)
@@ -574,13 +574,13 @@ std::optional<u32> CSkinnedMesh::getJointNumber(const std::string &name) const
 }
 
 //! returns amount of mesh buffers.
-u32 CSkinnedMesh::getMeshBufferCount() const
+u32 SkinnedMesh::getMeshBufferCount() const
 {
 	return LocalBuffers.size();
 }
 
 //! returns pointer to a mesh buffer
-IMeshBuffer *CSkinnedMesh::getMeshBuffer(u32 nr) const
+IMeshBuffer *SkinnedMesh::getMeshBuffer(u32 nr) const
 {
 	if (nr < LocalBuffers.size())
 		return LocalBuffers[nr];
@@ -589,7 +589,7 @@ IMeshBuffer *CSkinnedMesh::getMeshBuffer(u32 nr) const
 }
 
 //! Returns pointer to a mesh buffer which fits a material
-IMeshBuffer *CSkinnedMesh::getMeshBuffer(const video::SMaterial &material) const
+IMeshBuffer *SkinnedMesh::getMeshBuffer(const video::SMaterial &material) const
 {
 	for (u32 i = 0; i < LocalBuffers.size(); ++i) {
 		if (LocalBuffers[i]->getMaterial() == material)
@@ -598,29 +598,29 @@ IMeshBuffer *CSkinnedMesh::getMeshBuffer(const video::SMaterial &material) const
 	return 0;
 }
 
-u32 CSkinnedMesh::getTextureSlot(u32 meshbufNr) const
+u32 SkinnedMesh::getTextureSlot(u32 meshbufNr) const
 {
 	return TextureSlots.at(meshbufNr);
 }
 
-void CSkinnedMesh::setTextureSlot(u32 meshbufNr, u32 textureSlot) {
+void SkinnedMesh::setTextureSlot(u32 meshbufNr, u32 textureSlot) {
 	TextureSlots.at(meshbufNr) = textureSlot;
 }
 
 //! returns an axis aligned bounding box
-const core::aabbox3d<f32> &CSkinnedMesh::getBoundingBox() const
+const core::aabbox3d<f32> &SkinnedMesh::getBoundingBox() const
 {
 	return BoundingBox;
 }
 
 //! set user axis aligned bounding box
-void CSkinnedMesh::setBoundingBox(const core::aabbox3df &box)
+void SkinnedMesh::setBoundingBox(const core::aabbox3df &box)
 {
 	BoundingBox = box;
 }
 
 //! set the hardware mapping hint, for driver
-void CSkinnedMesh::setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint,
+void SkinnedMesh::setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint,
 		E_BUFFER_TYPE buffer)
 {
 	for (u32 i = 0; i < LocalBuffers.size(); ++i)
@@ -628,7 +628,7 @@ void CSkinnedMesh::setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint,
 }
 
 //! flags the meshbuffer as changed, reloads hardware buffers
-void CSkinnedMesh::setDirty(E_BUFFER_TYPE buffer)
+void SkinnedMesh::setDirty(E_BUFFER_TYPE buffer)
 {
 	for (u32 i = 0; i < LocalBuffers.size(); ++i)
 		LocalBuffers[i]->setDirty(buffer);
@@ -637,34 +637,34 @@ void CSkinnedMesh::setDirty(E_BUFFER_TYPE buffer)
 //! Update Normals when Animating
 //! False= Don't animate them, faster
 //! True= Update normals (default)
-void CSkinnedMesh::updateNormalsWhenAnimating(bool on)
+void SkinnedMesh::updateNormalsWhenAnimating(bool on)
 {
 	AnimateNormals = on;
 }
 
 //! Sets Interpolation Mode
-void CSkinnedMesh::setInterpolationMode(E_INTERPOLATION_MODE mode)
+void SkinnedMesh::setInterpolationMode(E_INTERPOLATION_MODE mode)
 {
 	InterpolationMode = mode;
 }
 
-core::array<scene::SSkinMeshBuffer *> &CSkinnedMesh::getMeshBuffers()
+core::array<scene::SSkinMeshBuffer *> &SkinnedMesh::getMeshBuffers()
 {
 	return LocalBuffers;
 }
 
-core::array<CSkinnedMesh::SJoint *> &CSkinnedMesh::getAllJoints()
+core::array<SkinnedMesh::SJoint *> &SkinnedMesh::getAllJoints()
 {
 	return AllJoints;
 }
 
-const core::array<CSkinnedMesh::SJoint *> &CSkinnedMesh::getAllJoints() const
+const core::array<SkinnedMesh::SJoint *> &SkinnedMesh::getAllJoints() const
 {
 	return AllJoints;
 }
 
 //! (This feature is not implemented in irrlicht yet)
-bool CSkinnedMesh::setHardwareSkinning(bool on)
+bool SkinnedMesh::setHardwareSkinning(bool on)
 {
 	if (HardwareSkinning != on) {
 		if (on) {
@@ -687,7 +687,7 @@ bool CSkinnedMesh::setHardwareSkinning(bool on)
 	return HardwareSkinning;
 }
 
-void CSkinnedMesh::refreshJointCache()
+void SkinnedMesh::refreshJointCache()
 {
 	// copy cache from the mesh...
 	for (u32 i = 0; i < AllJoints.size(); ++i) {
@@ -701,7 +701,7 @@ void CSkinnedMesh::refreshJointCache()
 	}
 }
 
-void CSkinnedMesh::resetAnimation()
+void SkinnedMesh::resetAnimation()
 {
 	// copy from the cache to the mesh...
 	for (u32 i = 0; i < AllJoints.size(); ++i) {
@@ -717,7 +717,7 @@ void CSkinnedMesh::resetAnimation()
 	LastAnimatedFrame = -1;
 }
 
-void CSkinnedMesh::calculateGlobalMatrices(SJoint *joint, SJoint *parentJoint)
+void SkinnedMesh::calculateGlobalMatrices(SJoint *joint, SJoint *parentJoint)
 {
 	if (!joint && parentJoint) // bit of protection from endless loops
 		return;
@@ -747,7 +747,7 @@ void CSkinnedMesh::calculateGlobalMatrices(SJoint *joint, SJoint *parentJoint)
 	SkinnedLastFrame = false;
 }
 
-void CSkinnedMesh::checkForAnimation()
+void SkinnedMesh::checkForAnimation()
 {
 	u32 i, j;
 	// Check for animation...
@@ -840,7 +840,7 @@ void CSkinnedMesh::checkForAnimation()
 }
 
 //! called by loader after populating with mesh and bone data
-void CSkinnedMesh::finalize()
+void SkinnedMesh::finalize()
 {
 	os::Printer::log("Skinned Mesh - finalize", ELL_DEBUG);
 	u32 i;
@@ -1018,7 +1018,7 @@ void CSkinnedMesh::finalize()
 	}
 }
 
-void CSkinnedMesh::updateBoundingBox(void)
+void SkinnedMesh::updateBoundingBox(void)
 {
 	if (!SkinningBuffers)
 		return;
@@ -1037,7 +1037,7 @@ void CSkinnedMesh::updateBoundingBox(void)
 	}
 }
 
-scene::SSkinMeshBuffer *CSkinnedMesh::addMeshBuffer()
+scene::SSkinMeshBuffer *SkinnedMesh::addMeshBuffer()
 {
 	scene::SSkinMeshBuffer *buffer = new scene::SSkinMeshBuffer();
 	TextureSlots.push_back(LocalBuffers.size());
@@ -1045,13 +1045,13 @@ scene::SSkinMeshBuffer *CSkinnedMesh::addMeshBuffer()
 	return buffer;
 }
 
-void CSkinnedMesh::addMeshBuffer(SSkinMeshBuffer *meshbuf)
+void SkinnedMesh::addMeshBuffer(SSkinMeshBuffer *meshbuf)
 {
 	TextureSlots.push_back(LocalBuffers.size());
 	LocalBuffers.push_back(meshbuf);
 }
 
-CSkinnedMesh::SJoint *CSkinnedMesh::addJoint(SJoint *parent)
+SkinnedMesh::SJoint *SkinnedMesh::addJoint(SJoint *parent)
 {
 	SJoint *joint = new SJoint;
 
@@ -1066,7 +1066,7 @@ CSkinnedMesh::SJoint *CSkinnedMesh::addJoint(SJoint *parent)
 	return joint;
 }
 
-CSkinnedMesh::SPositionKey *CSkinnedMesh::addPositionKey(SJoint *joint)
+SkinnedMesh::SPositionKey *SkinnedMesh::addPositionKey(SJoint *joint)
 {
 	if (!joint)
 		return 0;
@@ -1075,7 +1075,7 @@ CSkinnedMesh::SPositionKey *CSkinnedMesh::addPositionKey(SJoint *joint)
 	return &joint->PositionKeys.getLast();
 }
 
-CSkinnedMesh::SScaleKey *CSkinnedMesh::addScaleKey(SJoint *joint)
+SkinnedMesh::SScaleKey *SkinnedMesh::addScaleKey(SJoint *joint)
 {
 	if (!joint)
 		return 0;
@@ -1084,7 +1084,7 @@ CSkinnedMesh::SScaleKey *CSkinnedMesh::addScaleKey(SJoint *joint)
 	return &joint->ScaleKeys.getLast();
 }
 
-CSkinnedMesh::SRotationKey *CSkinnedMesh::addRotationKey(SJoint *joint)
+SkinnedMesh::SRotationKey *SkinnedMesh::addRotationKey(SJoint *joint)
 {
 	if (!joint)
 		return 0;
@@ -1093,7 +1093,7 @@ CSkinnedMesh::SRotationKey *CSkinnedMesh::addRotationKey(SJoint *joint)
 	return &joint->RotationKeys.getLast();
 }
 
-CSkinnedMesh::SWeight *CSkinnedMesh::addWeight(SJoint *joint)
+SkinnedMesh::SWeight *SkinnedMesh::addWeight(SJoint *joint)
 {
 	if (!joint)
 		return 0;
@@ -1102,12 +1102,12 @@ CSkinnedMesh::SWeight *CSkinnedMesh::addWeight(SJoint *joint)
 	return &joint->Weights.getLast();
 }
 
-bool CSkinnedMesh::isStatic() const
+bool SkinnedMesh::isStatic() const
 {
 	return !HasAnimation;
 }
 
-void CSkinnedMesh::normalizeWeights()
+void SkinnedMesh::normalizeWeights()
 {
 	// note: unsure if weights ids are going to be used.
 
@@ -1148,7 +1148,7 @@ void CSkinnedMesh::normalizeWeights()
 	}
 }
 
-void CSkinnedMesh::recoverJointsFromMesh(core::array<IBoneSceneNode *> &jointChildSceneNodes)
+void SkinnedMesh::recoverJointsFromMesh(core::array<IBoneSceneNode *> &jointChildSceneNodes)
 {
 	for (u32 i = 0; i < AllJoints.size(); ++i) {
 		IBoneSceneNode *node = jointChildSceneNodes[i];
@@ -1165,7 +1165,7 @@ void CSkinnedMesh::recoverJointsFromMesh(core::array<IBoneSceneNode *> &jointChi
 	}
 }
 
-void CSkinnedMesh::transferJointsToMesh(const core::array<IBoneSceneNode *> &jointChildSceneNodes)
+void SkinnedMesh::transferJointsToMesh(const core::array<IBoneSceneNode *> &jointChildSceneNodes)
 {
 	for (u32 i = 0; i < AllJoints.size(); ++i) {
 		const IBoneSceneNode *const node = jointChildSceneNodes[i];
@@ -1186,7 +1186,7 @@ void CSkinnedMesh::transferJointsToMesh(const core::array<IBoneSceneNode *> &joi
 	SkinnedLastFrame = false;
 }
 
-void CSkinnedMesh::transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode *> &jointChildSceneNodes)
+void SkinnedMesh::transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode *> &jointChildSceneNodes)
 {
 	for (u32 i = 0; i < AllJoints.size(); ++i) {
 		const IBoneSceneNode *const node = jointChildSceneNodes[i];
@@ -1199,7 +1199,7 @@ void CSkinnedMesh::transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNod
 	SkinnedLastFrame = false;
 }
 
-void CSkinnedMesh::addJoints(core::array<IBoneSceneNode *> &jointChildSceneNodes,
+void SkinnedMesh::addJoints(core::array<IBoneSceneNode *> &jointChildSceneNodes,
 		IAnimatedMeshSceneNode *node, ISceneManager *smgr)
 {
 	// Create new joints
@@ -1236,7 +1236,7 @@ void CSkinnedMesh::addJoints(core::array<IBoneSceneNode *> &jointChildSceneNodes
 	SkinnedLastFrame = false;
 }
 
-void CSkinnedMesh::convertMeshToTangents()
+void SkinnedMesh::convertMeshToTangents()
 {
 	// now calculate tangents
 	for (u32 b = 0; b < LocalBuffers.size(); ++b) {
@@ -1287,7 +1287,7 @@ void CSkinnedMesh::convertMeshToTangents()
 	}
 }
 
-void CSkinnedMesh::calculateTangents(
+void SkinnedMesh::calculateTangents(
 		core::vector3df &normal,
 		core::vector3df &tangent,
 		core::vector3df &binormal,

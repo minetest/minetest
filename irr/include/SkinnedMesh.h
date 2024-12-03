@@ -33,14 +33,14 @@ class IAnimatedMeshSceneNode;
 class IBoneSceneNode;
 class ISceneManager;
 
-class CSkinnedMesh : public IAnimatedMesh
+class SkinnedMesh : public IAnimatedMesh
 {
 public:
 	//! constructor
-	CSkinnedMesh();
+	SkinnedMesh();
 
 	//! destructor
-	virtual ~CSkinnedMesh();
+	virtual ~SkinnedMesh();
 
 	//! If the duration is 0, it is a static (=non animated) mesh.
 	f32 getMaxFrameNumber() const override;
@@ -163,8 +163,8 @@ public:
 		f32 strength;
 
 	private:
-		//! Internal members used by CSkinnedMesh
-		friend class CSkinnedMesh;
+		//! Internal members used by SkinnedMesh
+		friend class SkinnedMesh;
 		char *Moved;
 		core::vector3df StaticPos;
 		core::vector3df StaticNormal;
@@ -237,8 +237,8 @@ public:
 		// The .x and .gltf formats pre-calculate this
 		std::optional<core::matrix4> GlobalInversedMatrix;
 	private:
-		//! Internal members used by CSkinnedMesh
-		friend class CSkinnedMesh;
+		//! Internal members used by SkinnedMesh
+		friend class SkinnedMesh;
 
 		SJoint *UseAnimationFrom;
 		bool GlobalSkinningSpace;

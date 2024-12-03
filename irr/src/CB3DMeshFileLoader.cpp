@@ -51,7 +51,7 @@ IAnimatedMesh *CB3DMeshFileLoader::createMesh(io::IReadFile *file)
 		return 0;
 
 	B3DFile = file;
-	AnimatedMesh = new scene::CSkinnedMesh();
+	AnimatedMesh = new scene::SkinnedMesh();
 	ShowWarning = true; // If true a warning is issued if too many textures are used
 	VerticesStart = 0;
 
@@ -111,7 +111,7 @@ bool CB3DMeshFileLoader::load()
 			if (!readChunkBRUS())
 				return false;
 		} else if (strncmp(B3dStack.getLast().name, "NODE", 4) == 0) {
-			if (!readChunkNODE((CSkinnedMesh::SJoint *)0))
+			if (!readChunkNODE((SkinnedMesh::SJoint *)0))
 				return false;
 		} else {
 			os::Printer::log("Unknown chunk found in mesh base - skipping");
@@ -133,9 +133,9 @@ bool CB3DMeshFileLoader::load()
 	return true;
 }
 
-bool CB3DMeshFileLoader::readChunkNODE(CSkinnedMesh::SJoint *inJoint)
+bool CB3DMeshFileLoader::readChunkNODE(SkinnedMesh::SJoint *inJoint)
 {
-	CSkinnedMesh::SJoint *joint = AnimatedMesh->addJoint(inJoint);
+	SkinnedMesh::SJoint *joint = AnimatedMesh->addJoint(inJoint);
 	joint->Name = readString();
 
 #ifdef _B3D_READER_DEBUG
@@ -211,7 +211,7 @@ bool CB3DMeshFileLoader::readChunkNODE(CSkinnedMesh::SJoint *inJoint)
 	return true;
 }
 
-bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *inJoint)
+bool CB3DMeshFileLoader::readChunkMESH(SkinnedMesh::SJoint *inJoint)
 {
 #ifdef _B3D_READER_DEBUG
 	core::stringc logStr;
@@ -302,7 +302,7 @@ VRTS:
   float tex_coords[tex_coord_sets][tex_coord_set_size]	;tex coords
   }
 */
-bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *inJoint)
+bool CB3DMeshFileLoader::readChunkVRTS(SkinnedMesh::SJoint *inJoint)
 {
 #ifdef _B3D_READER_DEBUG
 	core::stringc logStr;
@@ -521,7 +521,7 @@ bool CB3DMeshFileLoader::readChunkTRIS(scene::SSkinMeshBuffer *meshBuffer, u32 m
 	return true;
 }
 
-bool CB3DMeshFileLoader::readChunkBONE(CSkinnedMesh::SJoint *inJoint)
+bool CB3DMeshFileLoader::readChunkBONE(SkinnedMesh::SJoint *inJoint)
 {
 #ifdef _B3D_READER_DEBUG
 	core::stringc logStr;
@@ -552,7 +552,7 @@ bool CB3DMeshFileLoader::readChunkBONE(CSkinnedMesh::SJoint *inJoint)
 			if (AnimatedVertices_VertexID[globalVertexID] == -1) {
 				os::Printer::log("B3dMeshLoader: Weight has bad vertex id (no link to meshbuffer index found)");
 			} else if (strength > 0) {
-				CSkinnedMesh::SWeight *weight = AnimatedMesh->addWeight(inJoint);
+				SkinnedMesh::SWeight *weight = AnimatedMesh->addWeight(inJoint);
 				weight->strength = strength;
 				// Find the meshbuffer and Vertex index from the Global Vertex ID:
 				weight->vertex_id = AnimatedVertices_VertexID[globalVertexID];
@@ -565,7 +565,7 @@ bool CB3DMeshFileLoader::readChunkBONE(CSkinnedMesh::SJoint *inJoint)
 	return true;
 }
 
-bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *inJoint)
+bool CB3DMeshFileLoader::readChunkKEYS(SkinnedMesh::SJoint *inJoint)
 {
 #ifdef _B3D_READER_DEBUG
 	// Only print first, that's just too much output otherwise
@@ -584,11 +584,11 @@ bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *inJoint)
 	flags = os::Byteswap::byteswap(flags);
 #endif
 
-	CSkinnedMesh::SPositionKey *oldPosKey = 0;
+	SkinnedMesh::SPositionKey *oldPosKey = 0;
 	core::vector3df oldPos[2];
-	CSkinnedMesh::SScaleKey *oldScaleKey = 0;
+	SkinnedMesh::SScaleKey *oldScaleKey = 0;
 	core::vector3df oldScale[2];
-	CSkinnedMesh::SRotationKey *oldRotKey = 0;
+	SkinnedMesh::SRotationKey *oldRotKey = 0;
 	core::quaternion oldRot[2];
 	bool isFirst[3] = {true, true, true};
 	while ((B3dStack.getLast().startposition + B3dStack.getLast().length) > B3DFile->getPos()) // this chunk repeats
