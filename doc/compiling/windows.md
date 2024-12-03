@@ -20,7 +20,7 @@ If you're just creating mods or games with Luanti, you do not need to compile Lu
 
 This will install the C++ compiler used in later steps. VS is also the recommended IDE for Luanti.
 
-You may notice that the C++ tools include CMake, but is should also be installed separately for compatibility with Luanti.
+You may notice that the C++ tools include CMake, but it should also be installed separately for compatibility with Luanti.
 
 ### CMake
 
