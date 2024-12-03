@@ -1,5 +1,7 @@
 # Compiling on Windows using MSVC
 
+If you're just creating mods or games with Luanti, you do not need to compile Luanti. Instead, follow Ruben Wardy's [Luanti Modding Book](https://rubenwardy.gitlab.io/minetest_modding_book) to get started modding. Compiling Luanti is only required if you plan to modify the Luanti engine itself.
+
 ## Requirements
 
 -   [Visual Studio 2015 or newer](https://visualstudio.microsoft.com) including 
@@ -78,7 +80,7 @@ There are other optional libraries, but we don't test if they can build and link
 Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-windows`.
 -->
 
-### Installing the dependencies
+## Install Luanti dependencies
 
 1. Start up the CMake GUI (Win > search "cmake-gui" > open)
 2. Select **Browse Source...** and select `path/to/luanti` (where you've cloned the repo)

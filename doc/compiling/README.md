@@ -1,5 +1,7 @@
 # Compiling Luanti
 
+If you're just creating mods or games with Luanti, you do not need to compile Luanti. Instead, follow Ruben Wardy's [Luanti Modding Book](https://rubenwardy.gitlab.io/minetest_modding_book) to get started modding. Compiling Luanti is only required if you plan to modify the Luanti engine itself.
+
 - [Compiling on GNU/Linux](linux.md)
 - [Compiling on Windows](windows.md)
 - [Compiling on MacOS](macos.md)
