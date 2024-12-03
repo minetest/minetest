@@ -89,7 +89,7 @@ Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-window
 5. Choose the right Visual Studio version and target platform. Currently, Luanti uses Visual Studio 16 2019, but newer VS versions should work as well. The VS version has to match the version of the installed dependencies.
 6. Choose **Specify toolchain file for cross-compiling**
 7. Click **Next**
-8. Select the vcpkg toolchain file e.g. `C:/vcpkg/scripts/buildsystems/vcpkg.cmake`
+8. Select the vcpkg toolchain file, e.g. `C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake`. Save this value for later.
 9. Click Finish
 10. Wait until CMake generates the cache file (this may take about 10-30 minutes, depending on your device)
 11. If there are any errors, solve them and hit **Configure**
@@ -111,7 +111,7 @@ While in the `path/to/minetest` folder, run the following script in PowerShell:
 
 ```powershell
 $vs="Visual Studio 17 2022" # or "Visual Studio 16 2019", etc., whatever matches your system
-$toolchain_file="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" # ensure this path is correct
+$toolchain_file="path/to/vcpkg/scripts/buildsystems/vcpkg.cmake" # todo vcpkg path from "Install Luanti dependencies" section
 cmake . -G $vs -DCMAKE_TOOLCHAIN_FILE=$toolchain_file -DCMAKE_BUILD_TYPE=Release -DENABLE_CURSES=OFF
 cmake --build . --config Release
 ```
