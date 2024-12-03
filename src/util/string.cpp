@@ -1072,15 +1072,16 @@ std::optional<v3f> str_to_v3f(std::string_view str)
 {
     str = trim(str);
 
-    if (str.empty()) {
+    if (str.empty())
         return std::nullopt;
-    }
 
     // Strip parentheses if they exist
     if (str.front() == '(' && str.back() == ')') {
         str.remove_prefix(1);
         str.remove_suffix(1);
     }
+
+    str = trim(str);
 
     std::istringstream iss((std::string(str)));
 
@@ -1090,13 +1091,19 @@ std::optional<v3f> str_to_v3f(std::string_view str)
     };
 
     v3f value;
-    if (!(iss >> value.X)) return std::nullopt;
-    if (!expect_delimiter()) return std::nullopt;
-    if (!(iss >> value.Y)) return std::nullopt;
-    if (!expect_delimiter()) return std::nullopt;
-    if (!(iss >> value.Z)) return std::nullopt;
+    if (!(iss >> value.X))
+        return std::nullopt;
+    if (!expect_delimiter())
+        return std::nullopt;
+    if (!(iss >> value.Y))
+        return std::nullopt;
+    if (!expect_delimiter())
+        return std::nullopt;
+    if (!(iss >> value.Z))
+        return std::nullopt;
 
-    while (!iss.eof()) if (!std::isspace(iss.get())) return std::nullopt;
+    if (!iss.eof())
+        return std::nullopt;
 
     return value;
 }
