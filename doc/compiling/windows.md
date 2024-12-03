@@ -30,7 +30,7 @@ vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo 
 
 This command takes about 10-30 minutes to complete, depending on your device.
 
--   `curl` is optional, but required to read the serverlist, `curl[winssl]` is required to use the content store.
+-   `curl` is highly recommended, as it's required to read the serverlist; `curl[winssl]` is required to use the content store.
 -   `openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
 -   `luajit` is optional, it replaces the integrated Lua interpreter with a faster just-in-time interpreter.
 -   `gmp` and `jsoncpp` are optional, otherwise the bundled versions will be compiled
