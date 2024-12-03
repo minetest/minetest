@@ -4,8 +4,7 @@ If you're just creating mods or games with Luanti, you do not need to compile Lu
 
 ## Requirements
 
--   [Visual Studio 2015 or newer](https://visualstudio.microsoft.com) including 
-"Desktop development with C++"
+-   [Visual Studio 2015 or newer](https://visualstudio.microsoft.com) including "Desktop development with C++"
 -   [CMake](https://cmake.org/download/)
 -   [vcpkg](https://github.com/Microsoft/vcpkg) (included with Visual Studio)
 -   [Git](https://git-scm.com/downloads)
@@ -16,6 +15,7 @@ If you're just creating mods or games with Luanti, you do not need to compile Lu
 1. In the VS installer, select "Desktop development with C++":
 
     ![VS installer showing desktop development with C++ selected](assets/vs-installer.png)
+
 1. Confirm the installation.
 
 This will install the C++ compiler used in later steps. VS is also the recommended IDE for Luanti.
@@ -40,7 +40,7 @@ Some optional dependencies are recommended for advanced development. You can add
 -   `gmp` and `jsoncpp` are optional, otherwise the bundled versions will be compiled
 -   `gettext` is optional, but required to use translations.
 
-### Install dependencies 
+### Install dependencies
 
 1. Start up the CMake GUI (Win > search "cmake-gui" > open)
 1. Select **Browse Source...** and select `path/to/minetest` (where you've cloned the repo)
@@ -63,7 +63,7 @@ There are two ways to compile Luanti: via Visual Studio or via CLI.
 ### Compile in Visual Studio
 
 14. Compile Luanti inside Visual Studio.
-    - If you get "Unable to start program '...\x64\Debug\ALL_BUILD'. Access is denied", try compiling via the CLI instead.
+    -   If you get "Unable to start program '...\x64\Debug\ALL_BUILD'. Access is denied", try compiling via the CLI instead.
 
 ### Compile via CLI
 
