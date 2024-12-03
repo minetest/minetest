@@ -2,16 +2,47 @@
 
 ## Requirements
 
--   [Visual Studio (VS) 2015 or newer](https://visualstudio.microsoft.com) including 
+-   [Visual Studio 2015 or newer](https://visualstudio.microsoft.com) including 
 "Desktop development with C++"
-    ![VS installer showing desktop development with C++ selected](assets/vs-installer.png)
--   [CMake](https://cmake.org/download/) (comes with VS C++)
--   [vcpkg](https://github.com/Microsoft/vcpkg) (comes with VS C++)
+-   [CMake](https://cmake.org/download/)
+-   [vcpkg](https://github.com/Microsoft/vcpkg) (included with Visual Studio)
 -   [Git](https://git-scm.com/downloads)
 
-## Compiling and installing the dependencies
+### Visual Studio with C++
 
-It is highly recommended to use vcpkg to manage dependencies, installed at a path without spaces in it for compatibility with the Luanti build configuration.
+1. Install Visual Studio (VS) from [visualstudio.microsoft.com](https://visualstudio.microsoft.com)
+1. In the VS installer, select "Desktop development with C++":
+
+    ![VS installer showing desktop development with C++ selected](assets/vs-installer.png)
+1. Confirm the installation.
+
+This will install the C++ compiler used in later steps. VS is also the recommended IDE for Luanti.
+
+You may notice that the C++ tools include CMake, but is should also be installed separately for compatibility with Luanti.
+
+### CMake
+
+Install from [cmake.org/download](https://cmake.org/download/). Once installed, you should be able to run `cmake-gui` from the start menu:
+
+![cmake-gui in Windows start menu shows app result](./assets/cmake-gui-search.png)
+
+<!-- 
+### vcpkg
+
+vcpkg is a package manager for C++.
+
+```powershell
+cd /c # Install vcpkg at any path without spaces in it, see below for details
+git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg
+./bootstrap-vcpkg.sh
+```
+
+Find `path/to/vcpkg/buildsystems/vcpkg.cmake` to confirm vcpkg is ready to use.
+
+> For more details, [follow the vcpkg installation guide](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started#1---set-up-vcpkg)
+
+It is highly recommended to install vcpkg at a path without spaces in it for compatibility with  Luanti.
 
 ```
 "C:\Program Files\vcpkg\vcpkg.exe" # bad, may have issues
@@ -23,8 +54,11 @@ If spaces are present, when trying to compile Luanti, you may see errors like:
 ```
 libtool:   error: 'Files/vcpkg/buildtrees/libiconv/x64-windows-dbg/lib/libcharset.la' is not a directory
 ```
+-->
 
 <!-- todo check if this is necessary
+## Compiling and installing the dependencies
+
 After you successfully built vcpkg you can easily install the required libraries:
 ```powershell
 vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp gettext[tools] sdl2 --triplet x64-windows
@@ -43,7 +77,7 @@ There are other optional libraries, but we don't test if they can build and link
 Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-windows`.
 -->
 
-### Setup CMake
+### Installing the dependencies
 
 1. Start up the CMake GUI (Win > search "cmake-gui" > open)
 2. Select **Browse Source...** and select `path/to/minetest` (where you've cloned the repo)
