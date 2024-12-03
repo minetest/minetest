@@ -1,18 +1,18 @@
 {
   "dependencies": [
-    "zlib",
-    "zstd",
     "curl",
-    "openal-soft",
-    "libvorbis",
-    "libogg",
-    "libjpeg-turbo",
-    "sqlite3",
     "freetype",
-    "luajit",
+    "gettext",
     "gmp",
     "jsoncpp",
-    "gettext",
-    "opengl-registry"
+    "libjpeg-turbo",
+    "libogg",
+    "libvorbis",
+    "luajit",
+    "openal-soft",
+    "opengl-registry",
+    "sqlite3",
+    "zlib",
+    "zstd"
   ]
 }
