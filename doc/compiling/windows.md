@@ -73,8 +73,8 @@ There are two ways to compile Luanti: via Visual Studio or via CLI.
 While in the `path/to/minetest` folder, run the following script in PowerShell:
 
 ```powershell
-vs="Visual Studio 16 2019" # or "Visual Studio 17 2022", whatever matches your system
-toolchain_file="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" # ensure this path is correct
+$vs="Visual Studio 16 2019" # or "Visual Studio 17 2022", whatever matches your system
+$toolchain_file="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" # ensure this path is correct
 cmake . -G $vs -DCMAKE_TOOLCHAIN_FILE=$toolchain_file -DCMAKE_BUILD_TYPE=Release -DENABLE_CURSES=OFF
 cmake --build . --config Release
 ```
