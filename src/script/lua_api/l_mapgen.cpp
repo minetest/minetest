@@ -1787,11 +1787,7 @@ int ModApiMapgen::l_spawn_tree_on_vmanip(lua_State *L)
 
 	treegen::error e = treegen::make_ltree(*vm, p0, tree_def);
 	if (e != treegen::SUCCESS) {
-		if (e == treegen::UNBALANCED_BRACKETS) {
-			luaL_error(L, "spawn_tree_on_vmanip(): closing ']' has no matching opening bracket");
-		} else {
-			luaL_error(L, "spawn_tree_on_vmanip(): unknown error");
-		}
+		throw LuaError("spawn_tree_on_vmanip(): " + treegen::error_to_string(e));
 	}
 
 	lua_pushboolean(L, true);
