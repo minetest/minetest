@@ -28,53 +28,6 @@ Install from [cmake.org/download](https://cmake.org/download/). Once installed, 
 
 ![cmake-gui in Windows start menu shows app result](./assets/cmake-gui-search.png)
 
-<!-- 
-### vcpkg
-
-vcpkg is a package manager for C++.
-
-```powershell
-cd /c # Install vcpkg at any path without spaces in it, see below for details
-git clone https://github.com/microsoft/vcpkg.git
-cd vcpkg
-./bootstrap-vcpkg.sh
-```
-
-Find `path/to/vcpkg/buildsystems/vcpkg.cmake` to confirm vcpkg is ready to use.
-
-> For more details, [follow the vcpkg installation guide](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started#1---set-up-vcpkg)
-
-It is highly recommended to install vcpkg at a path without spaces in it for compatibility with  Luanti.
-
-```
-"C:\Program Files\vcpkg\vcpkg.exe" # bad, may have issues
-"C:\vcpkg\vcpkg.exe" # good, no spaces means fewer problems
-```
-
-If spaces are present, when trying to compile Luanti, you may see errors like:
-
-```
-libtool:   error: 'Files/vcpkg/buildtrees/libiconv/x64-windows-dbg/lib/libcharset.la' is not a directory
-```
--->
-
-<!-- todo check if this is necessary
-## Compiling and installing the dependencies
-
-After you successfully built vcpkg you can easily install the required libraries:
-```powershell
-vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp gettext[tools] sdl2 --triplet x64-windows
-```
-
-This command takes about 10-30 minutes to complete, depending on your device.
-
-
-
-There are other optional libraries, but we don't test if they can build and link correctly.
-
-Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-windows`.
--->
-
 ## Install Luanti dependencies
 
 ### Optional dependencies
@@ -119,15 +72,6 @@ While in the `path/to/minetest` folder, run the following command:
 ```
 cmake --build build --config Release
 ```
-
-<!-- 
-```powershell
-$vs="Visual Studio 17 2022" # or "Visual Studio 16 2019", etc., whatever matches your system
-$toolchain_file="path/to/vcpkg/scripts/buildsystems/vcpkg.cmake" # todo vcpkg path from "Install Luanti dependencies" section
-cmake . -G "$vs" -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" -DCMAKE_BUILD_TYPE=Release -DENABLE_CURSES=OFF
-cmake --build . --config Release
-```
--->
 
 ## Running Luanti
 
