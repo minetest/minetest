@@ -1079,9 +1079,8 @@ std::optional<v3f> str_to_v3f(std::string_view str)
     if (str.front() == '(' && str.back() == ')') {
         str.remove_prefix(1);
         str.remove_suffix(1);
+        str = trim(str);
     }
-
-    str = trim(str);
 
     std::istringstream iss((std::string(str)));
 
