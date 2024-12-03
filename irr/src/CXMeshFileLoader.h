@@ -110,7 +110,7 @@ private:
 
 	bool parseDataObjectAnimation();
 
-	bool parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint);
+	bool parseDataObjectAnimationKey(CSkinnedMesh::SJoint *joint);
 
 	bool parseDataObjectTextureFilename(core::stringc &texturename);
 

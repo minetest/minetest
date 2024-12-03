@@ -63,17 +63,17 @@ irr::u32 dropMiddleKeys(irr::core::array<T> &array, Cmp &cmp)
 	return d;
 }
 
-bool identicalPos(const irr::scene::ISkinnedMesh::SPositionKey &a, const irr::scene::ISkinnedMesh::SPositionKey &b)
+bool identicalPos(const irr::scene::CSkinnedMesh::SPositionKey &a, const irr::scene::CSkinnedMesh::SPositionKey &b)
 {
 	return a.position == b.position;
 }
 
-bool identicalScale(const irr::scene::ISkinnedMesh::SScaleKey &a, const irr::scene::ISkinnedMesh::SScaleKey &b)
+bool identicalScale(const irr::scene::CSkinnedMesh::SScaleKey &a, const irr::scene::CSkinnedMesh::SScaleKey &b)
 {
 	return a.scale == b.scale;
 }
 
-bool identicalRotation(const irr::scene::ISkinnedMesh::SRotationKey &a, const irr::scene::ISkinnedMesh::SRotationKey &b)
+bool identicalRotation(const irr::scene::CSkinnedMesh::SRotationKey &a, const irr::scene::CSkinnedMesh::SRotationKey &b)
 {
 	return a.rotation == b.rotation;
 }

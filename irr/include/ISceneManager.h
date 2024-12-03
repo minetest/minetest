@@ -11,7 +11,6 @@
 #include "SColor.h"
 #include "ESceneNodeTypes.h"
 #include "SceneParameters.h" // IWYU pragma: export
-#include "ISkinnedMesh.h"
 
 namespace irr
 {
@@ -99,6 +98,7 @@ class IBillboardSceneNode;
 class ICameraSceneNode;
 class IDummyTransformationSceneNode;
 class IMesh;
+class CSkinnedMesh;
 class IMeshBuffer;
 class IMeshCache;
 class ISceneCollisionManager;
@@ -417,7 +417,7 @@ public:
 	//! Get a skinned mesh, which is not available as header-only code
 	/** Note: You need to drop() the pointer after use again, see IReferenceCounted::drop()
 	for details. */
-	virtual ISkinnedMesh *createSkinnedMesh() = 0;
+	virtual CSkinnedMesh *createSkinnedMesh() = 0;
 
 	//! Sets ambient color of the scene
 	virtual void setAmbientLight(const video::SColorf &ambientColor) = 0;

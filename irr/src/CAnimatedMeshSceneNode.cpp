@@ -299,8 +299,8 @@ void CAnimatedMeshSceneNode::render()
 			if (Mesh->getMeshType() == EAMT_SKINNED) {
 				// draw skeleton
 
-				for (u32 g = 0; g < ((ISkinnedMesh *)Mesh)->getAllJoints().size(); ++g) {
-					ISkinnedMesh::SJoint *joint = ((ISkinnedMesh *)Mesh)->getAllJoints()[g];
+				for (u32 g = 0; g < ((CSkinnedMesh *)Mesh)->getAllJoints().size(); ++g) {
+					auto *joint = ((CSkinnedMesh *)Mesh)->getAllJoints()[g];
 
 					for (u32 n = 0; n < joint->Children.size(); ++n) {
 						driver->draw3DLine(joint->GlobalAnimatedMatrix.getTranslation(),
@@ -404,7 +404,7 @@ IBoneSceneNode *CAnimatedMeshSceneNode::getJointNode(const c8 *jointName)
 
 	checkJoints();
 
-	ISkinnedMesh *skinnedMesh = (ISkinnedMesh *)Mesh;
+	auto *skinnedMesh = (CSkinnedMesh *)Mesh;
 
 	const std::optional<u32> number = skinnedMesh->getJointNumber(jointName);
 
@@ -446,7 +446,7 @@ u32 CAnimatedMeshSceneNode::getJointCount() const
 	if (!Mesh || Mesh->getMeshType() != EAMT_SKINNED)
 		return 0;
 
-	ISkinnedMesh *skinnedMesh = (ISkinnedMesh *)Mesh;
+	auto *skinnedMesh = (CSkinnedMesh *)Mesh;
 
 	return skinnedMesh->getJointCount();
 }

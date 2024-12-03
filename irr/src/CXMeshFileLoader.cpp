@@ -203,8 +203,8 @@ bool CXMeshFileLoader::load(io::IReadFile *file)
 			}
 
 			for (u32 j = 0; j < mesh->WeightJoint.size(); ++j) {
-				ISkinnedMesh::SJoint *joint = AnimatedMesh->getAllJoints()[mesh->WeightJoint[j]];
-				ISkinnedMesh::SWeight &weight = joint->Weights[mesh->WeightNum[j]];
+				CSkinnedMesh::SJoint *joint = AnimatedMesh->getAllJoints()[mesh->WeightJoint[j]];
+				CSkinnedMesh::SWeight &weight = joint->Weights[mesh->WeightNum[j]];
 
 				u32 id = weight.vertex_id;
 
@@ -219,7 +219,7 @@ bool CXMeshFileLoader::load(io::IReadFile *file)
 					weight.buffer_id = verticesLinkBuffer[id][0];
 				} else if (verticesLinkBuffer[id].size() != 0) {
 					for (u32 k = 1; k < verticesLinkBuffer[id].size(); ++k) {
-						ISkinnedMesh::SWeight *WeightClone = AnimatedMesh->addWeight(joint);
+						CSkinnedMesh::SWeight *WeightClone = AnimatedMesh->addWeight(joint);
 						WeightClone->strength = weight.strength;
 						WeightClone->vertex_id = verticesLinkIndex[id][k];
 						WeightClone->buffer_id = verticesLinkBuffer[id][k];
@@ -314,7 +314,7 @@ bool CXMeshFileLoader::load(io::IReadFile *file)
 			}
 
 			for (u32 j = 0; j < mesh->WeightJoint.size(); ++j) {
-				ISkinnedMesh::SWeight &weight = (AnimatedMesh->getAllJoints()[mesh->WeightJoint[j]]->Weights[mesh->WeightNum[j]]);
+				CSkinnedMesh::SWeight &weight = (AnimatedMesh->getAllJoints()[mesh->WeightJoint[j]]->Weights[mesh->WeightNum[j]]);
 
 				u32 id = weight.vertex_id;
 
@@ -1431,7 +1431,7 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 	return true;
 }
 
-bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
+bool CXMeshFileLoader::parseDataObjectAnimationKey(CSkinnedMesh::SJoint *joint)
 {
 #ifdef _XREADER_DEBUG
 	os::Printer::log("CXFileReader: reading animation key", ELL_DEBUG);
@@ -1488,7 +1488,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 				os::Printer::log("Line", core::stringc(Line).c_str(), ELL_WARNING);
 			}
 
-			ISkinnedMesh::SRotationKey *key = AnimatedMesh->addRotationKey(joint);
+			CSkinnedMesh::SRotationKey *key = AnimatedMesh->addRotationKey(joint);
 			key->frame = time;
 			key->rotation.set(X, Y, Z, W);
 			key->rotation.normalize();
@@ -1514,11 +1514,11 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 			}
 
 			if (keyType == 2) {
-				ISkinnedMesh::SPositionKey *key = AnimatedMesh->addPositionKey(joint);
+				CSkinnedMesh::SPositionKey *key = AnimatedMesh->addPositionKey(joint);
 				key->frame = time;
 				key->position = vector;
 			} else {
-				ISkinnedMesh::SScaleKey *key = AnimatedMesh->addScaleKey(joint);
+				CSkinnedMesh::SScaleKey *key = AnimatedMesh->addScaleKey(joint);
 				key->frame = time;
 				key->scale = vector;
 			}
@@ -1547,14 +1547,14 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 
 			// core::vector3df rotation = mat.getRotationDegrees();
 
-			ISkinnedMesh::SRotationKey *keyR = AnimatedMesh->addRotationKey(joint);
+			CSkinnedMesh::SRotationKey *keyR = AnimatedMesh->addRotationKey(joint);
 			keyR->frame = time;
 
 			// IRR_TEST_BROKEN_QUATERNION_USE: TODO - switched from mat to mat.getTransposed() for downward compatibility.
 			// Not tested so far if this was correct or wrong before quaternion fix!
 			keyR->rotation = core::quaternion(mat.getTransposed());
 
-			ISkinnedMesh::SPositionKey *keyP = AnimatedMesh->addPositionKey(joint);
+			CSkinnedMesh::SPositionKey *keyP = AnimatedMesh->addPositionKey(joint);
 			keyP->frame = time;
 			keyP->position = mat.getTranslation();
 
@@ -1567,7 +1567,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 								scale.Y=1;
 							if (scale.Z==0)
 								scale.Z=1;
-							ISkinnedMesh::SScaleKey *keyS=AnimatedMesh->addScaleKey(joint);
+							CSkinnedMesh::SScaleKey *keyS=AnimatedMesh->addScaleKey(joint);
 							keyS->frame=time;
 							keyS->scale=scale;
 			*/

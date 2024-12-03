@@ -788,7 +788,7 @@ const video::SColorf &CSceneManager::getAmbientLight() const
 }
 
 //! Get a skinned mesh, which is not available as header-only code
-ISkinnedMesh *CSceneManager::createSkinnedMesh()
+CSkinnedMesh *CSceneManager::createSkinnedMesh()
 {
 	return new CSkinnedMesh();
 }
