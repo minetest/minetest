@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #pragma once
 
@@ -36,6 +21,7 @@ public:
 	virtual void changeVolume() = 0;
 	virtual void showOpenURLDialog(const std::string &url) = 0;
 	virtual void signalKeyConfigChange() = 0;
+	virtual void touchscreenLayout() = 0;
 };
 
 extern gui::IGUIEnvironment *guienv;
@@ -85,6 +71,12 @@ public:
 		return m_stack.size();
 	}
 
+	void deleteFront()
+	{
+		m_stack.front()->setVisible(false);
+		deletingMenu(m_stack.front());
+	}
+
 	bool pausesGame()
 	{
 		for (gui::IGUIElement *i : m_stack) {
@@ -95,7 +87,7 @@ public:
 		return false;
 	}
 
-	// FIXME: why isn't this private?
+private:
 	std::list<gui::IGUIElement*> m_stack;
 };
 
@@ -142,6 +134,11 @@ public:
 		keyconfig_changed = true;
 	}
 
+	void touchscreenLayout() override
+	{
+		touchscreenlayout_requested = true;
+	}
+
 	void showOpenURLDialog(const std::string &url) override
 	{
 		show_open_url_dialog = url;
@@ -151,6 +148,7 @@ public:
 	bool changepassword_requested = false;
 	bool changevolume_requested = false;
 	bool keyconfig_requested = false;
+	bool touchscreenlayout_requested = false;
 	bool shutdown_requested = false;
 	bool keyconfig_changed = false;
 	std::string show_open_url_dialog = "";

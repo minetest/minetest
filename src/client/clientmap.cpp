@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "clientmap.h"
 #include "client.h"
@@ -88,6 +73,7 @@ static const std::string ClientMap_settings[] = {
 	"trilinear_filter",
 	"bilinear_filter",
 	"anisotropic_filter",
+	"transparency_sorting_group_by_buffers",
 	"transparency_sorting_distance",
 	"occlusion_culler",
 	"enable_raytraced_culling",
@@ -130,6 +116,9 @@ void ClientMap::onSettingChanged(std::string_view name, bool all)
 		m_cache_bilinear_filter   = g_settings->getBool("bilinear_filter");
 	if (all || name == "anisotropic_filter")
 		m_cache_anistropic_filter = g_settings->getBool("anisotropic_filter");
+	if (all || name == "transparency_sorting_group_by_buffers")
+		m_cache_transparency_sorting_group_by_buffers =
+				g_settings->getBool("transparency_sorting_group_by_buffers");
 	if (all || name == "transparency_sorting_distance")
 		m_cache_transparency_sorting_distance = g_settings->getU16("transparency_sorting_distance");
 	if (all || name == "occlusion_culler")
@@ -1352,7 +1341,8 @@ void ClientMap::updateTransparentMeshBuffers()
 			}
 
 			if (do_sort_block) {
-				blockmesh->updateTransparentBuffers(m_camera_position, block->getPos());
+				blockmesh->updateTransparentBuffers(m_camera_position, block->getPos(),
+						m_cache_transparency_sorting_group_by_buffers);
 				++sorted_blocks;
 			} else {
 				blockmesh->consolidateTransparentBuffers();

@@ -1,4 +1,4 @@
-project(minetest)
+project(luanti)
 
 INCLUDE(CheckTypeSize)
 INCLUDE(CheckIncludeFiles)
@@ -6,12 +6,12 @@ INCLUDE(CheckLibraryExists)
 
 check_type_size(int SIZEOF_INT BUILTIN_TYPES_ONLY LANGUAGE CXX)
 if(SIZEOF_INT LESS 4)
-	message(FATAL_ERROR "Minetest will not work with int less than 32 bits wide.")
+	message(FATAL_ERROR "${PROJECT_NAME_CAPITALIZED} will not work with int less than 32 bits wide.")
 endif()
 
 check_type_size(size_t SIZEOF_SIZE_T LANGUAGE CXX)
 if(SIZEOF_SIZE_T LESS 4)
-	message(FATAL_ERROR "Minetest will not work with size_t less than 32 bits wide.")
+	message(FATAL_ERROR "${PROJECT_NAME_CAPITALIZED} will not work with size_t less than 32 bits wide.")
 endif()
 
 # Add custom SemiDebug build mode
@@ -260,12 +260,11 @@ endif()
 
 # Haiku endian support
 if(HAIKU)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_BSD_SOURCE")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_BSD_SOURCE")
+	add_compile_definitions(_BSD_SOURCE)
 endif()
 
 # Use cmake_config.h
-add_definitions(-DUSE_CMAKE_CONFIG_H)
+add_compile_definitions(USE_CMAKE_CONFIG_H)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
@@ -276,11 +275,15 @@ if(WIN32)
 	if(MSVC) # MSVC Specifics
 		set(PLATFORM_LIBS dbghelp.lib ${PLATFORM_LIBS})
 		# Surpress some useless warnings
-		add_definitions ( /D "_CRT_SECURE_NO_DEPRECATE" /W1 )
-		# Get M_PI to work
-		add_definitions(/D "_USE_MATH_DEFINES")
-		# Don't define min/max macros in minwindef.h
-		add_definitions(/D "NOMINMAX")
+		add_compile_options(/W1)
+		add_compile_definitions(
+			# Suppress some useless warnings
+			_CRT_SECURE_NO_DEPRECATE
+			# Get M_PI to work
+			_USE_MATH_DEFINES
+			# Don't define min/max macros in minwindef.h
+			NOMINMAX
+		)
 	endif()
 	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib winmm.lib ${PLATFORM_LIBS})
 
@@ -488,7 +491,7 @@ endif()
 # This gives us the icon and file version information
 if(WIN32)
 	set(WINRESOURCE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../misc/winresource.rc")
-	set(MINETEST_EXE_MANIFEST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../misc/minetest.exe.manifest")
+	set(EXE_MANIFEST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../misc/luanti.exe.manifest")
 	if(MINGW)
 		if(NOT CMAKE_RC_COMPILER)
 			set(CMAKE_RC_COMPILER "windres.exe")
@@ -498,10 +501,10 @@ if(WIN32)
 			-i${WINRESOURCE_FILE}
 			-o ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			DEPENDS ${WINRESOURCE_FILE} ${MINETEST_EXE_MANIFEST_FILE})
+			DEPENDS ${WINRESOURCE_FILE} ${EXE_MANIFEST_FILE})
 		SET(extra_windows_SRCS ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o)
 	else(MINGW) # Probably MSVC
-		set(extra_windows_SRCS ${WINRESOURCE_FILE} ${MINETEST_EXE_MANIFEST_FILE})
+		set(extra_windows_SRCS ${WINRESOURCE_FILE} ${EXE_MANIFEST_FILE})
 	endif(MINGW)
 endif()
 
@@ -556,7 +559,7 @@ include_directories(SYSTEM
 	${GMP_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 	${LUA_BIT_INCLUDE_DIR}
-	# on Android, Minetest depends on SDL2 directly
+	# on Android, Luanti depends on SDL2 directly
 	# on other platforms, only IrrlichtMt depends on SDL2
 	"$<$<PLATFORM_ID:Android>:${SDL2_INCLUDE_DIRS}>"
 )
@@ -578,7 +581,7 @@ endif()
 
 
 # When cross-compiling assume the user doesn't want to run the executable anyway,
-# otherwise place it in <source dir>/bin/ since Minetest can only run from there.
+# otherwise place it in <source dir>/bin/ since Luanti can only run from there.
 if(NOT CMAKE_CROSSCOMPILING)
 	set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 endif()
@@ -598,6 +601,14 @@ if(PRECOMPILE_HEADERS)
 	target_precompile_headers(EngineCommon PRIVATE ${PRECOMPILED_HEADERS_LIST})
 endif()
 
+if(APPLE)
+	# Configure the Info.plist file
+	configure_file(
+		"${CMAKE_SOURCE_DIR}/misc/macos/Info.plist.in"
+		"${CMAKE_BINARY_DIR}/Info.plist"
+	)
+endif()
+
 if(BUILD_CLIENT)
 	# client target
 	if(ANDROID)
@@ -605,6 +616,47 @@ if(BUILD_CLIENT)
 	else()
 		add_executable(${PROJECT_NAME})
 	endif()
+
+
+	if(CMAKE_GENERATOR STREQUAL "Xcode")
+		# File with used entitlements
+		set(XCODE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/misc/macos/entitlements/release.entitlements" CACHE FILEPATH "Path to entitlements file to be used with Xcode signing")
+
+		set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/build")
+		set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/build")
+
+		target_sources(${PROJECT_NAME} PUBLIC ${client_RESOURCES})
+
+		add_dependencies(${PROJECT_NAME} translations)
+
+		set_target_properties(${PROJECT_NAME} PROPERTIES
+			MACOSX_BUNDLE TRUE
+			MACOSX_BUNDLE_INFO_PLIST "${CMAKE_BINARY_DIR}/Info.plist"
+			RESOURCE "${client_RESOURCES}"
+			XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "org.luanti.luanti"
+			XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME "YES"
+			XCODE_ATTRIBUTE_INSTALL_PATH "/Applications"
+			XCODE_ATTRIBUTE_SKIP_INSTALL "NO"
+			XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym"
+			XCODE_ATTRIBUTE_GCC_GENERATE_DEBUGGING_SYMBOLS "YES"
+			XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "$(inherited)"
+			XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${XCODE_CODE_SIGN_ENTITLEMENTS}"
+		)
+
+		# Prinv env variables to file, for debugging purposes
+		#add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		#	COMMAND ${CMAKE_COMMAND} -E env bash ${CMAKE_SOURCE_DIR}/util/xcode/capture_env.sh ${CMAKE_BINARY_DIR}/post_env.log
+		#)
+
+		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/util/xcode/install_resources.cmake
+				-DTARGET_DIR=$<TARGET_FILE_DIR:${PROJECT_NAME}>
+				-DBINARY_DIR=${CMAKE_BINARY_DIR}
+				-DPROJECT_NAME=${PROJECT_NAME}
+			COMMENT "Checking INSTALL_ROOT and copying resources"
+		)
+	endif()
+
 	list(SORT client_SRCS)
 	target_sources(${PROJECT_NAME} PRIVATE
 		$<TARGET_OBJECTS:EngineCommon>
@@ -626,7 +678,7 @@ if(BUILD_CLIENT)
 		sha256
 		${FREETYPE_LIBRARY}
 		${PLATFORM_LIBS}
-		# on Android, Minetest depends on SDL2 directly
+		# on Android, Luanti depends on SDL2 directly
 		# on other platforms, only IrrlichtMt depends on SDL2
 		"$<$<PLATFORM_ID:Android>:${SDL2_LIBRARIES}>"
 	)
@@ -812,7 +864,7 @@ elseif(NOT MSVC)
 	check_c_source_compiles("#include <lua.h>\nint main(){return sizeof(lua_atccall);}" HAVE_ATCCALL)
 	if(NOT HAVE_ATCCALL)
 		string(CONCAT explanation_msg
-			"It looks like you're trying to build Minetest using a system-wide "
+			"It looks like you're trying to build ${PROJECT_NAME_CAPITALIZED} using a system-wide "
 			"Lua installation. This is no longer supported because PUC Lua "
 			"cannot interoperate with C++ correctly. Read src/unittest/test_lua.cpp "
 			" for technical details.")
@@ -822,7 +874,7 @@ endif()
 
 if(MSVC)
 	# Visual Studio
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D _WIN32_WINNT=0x0601 /D WIN32_LEAN_AND_MEAN /D _CRT_SECURE_NO_WARNINGS")
+	add_compile_definitions(_WIN32_WINNT=0x0601 WIN32_LEAN_AND_MEAN _CRT_SECURE_NO_WARNINGS)
 	# EHa enables SEH exceptions (used for catching segfaults)
 	set(CMAKE_CXX_FLAGS_RELEASE "/EHa /Ox /MD /GS- /Zi /fp:fast /D NDEBUG /D _HAS_ITERATOR_DEBUGGING=0")
 	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
@@ -855,8 +907,7 @@ if(MSVC)
 	endif()
 else()
 	# GCC or compatible compilers such as Clang
-	set(WARNING_FLAGS "-Wall -Wextra")
-	set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-parameter")
+	set(WARNING_FLAGS "-Wall -Wextra -Wno-unused-parameter -Werror=vla")
 	if(WARN_ALL)
 		set(RELEASE_WARNING_FLAGS "${WARNING_FLAGS}")
 	else()
@@ -867,7 +918,7 @@ else()
 		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 			set(OTHER_FLAGS "${OTHER_FLAGS} -mthreads")
 		endif()
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_WIN32_WINNT=0x0601 -DWIN32_LEAN_AND_MEAN")
+		add_compile_definitions(_WIN32_WINNT=0x0601 WIN32_LEAN_AND_MEAN)
 	endif()
 
 	# Use a safe subset of flags to speed up math calculations:
@@ -986,6 +1037,14 @@ if(WIN32)
 	endif()
 endif()
 
+macro(CreateLegacyAlias _cmake_target _old_path _new_name)
+	add_custom_target("${_cmake_target}" ALL
+		COMMAND "${CMAKE_COMMAND}" -E create_symlink "${_new_name}" "${_old_path}"
+		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+	add_dependencies("${_cmake_target}" "${_new_name}")
+	install(PROGRAMS "${_old_path}" DESTINATION ${BINDIR})
+endmacro()
+
 if(BUILD_CLIENT AND NOT ANDROID)
 	install(TARGETS ${PROJECT_NAME}
 		RUNTIME DESTINATION ${BINDIR}
@@ -993,6 +1052,9 @@ if(BUILD_CLIENT AND NOT ANDROID)
 		ARCHIVE DESTINATION ${BINDIR}
 		BUNDLE DESTINATION .
 	)
+	if(UNIX)
+		CreateLegacyAlias(minetest_alias "${EXECUTABLE_OUTPUT_PATH}/minetest" ${PROJECT_NAME})
+	endif()
 
 	if(APPLE)
 		install(CODE "
@@ -1016,6 +1078,9 @@ endif()
 
 if(BUILD_SERVER)
 	install(TARGETS ${PROJECT_NAME}server DESTINATION ${BINDIR})
+	if(UNIX)
+		CreateLegacyAlias(minetestserver_alias "${EXECUTABLE_OUTPUT_PATH}/minetestserver" ${PROJECT_NAME}server)
+	endif()
 endif()
 
 if (ANDROID)

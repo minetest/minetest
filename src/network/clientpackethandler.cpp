@@ -1,24 +1,10 @@
-/*
-Minetest
-Copyright (C) 2015 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2015 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 #include "client/client.h"
 
+#include "exceptions.h"
 #include "irr_v2d.h"
 #include "util/base64.h"
 #include "client/camera.h"
@@ -77,7 +63,7 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 	if (pkt->getSize() < 1)
 		return;
 
-	u8 serialization_ver;
+	u8 serialization_ver; // negotiated value
 	u16 proto_ver;
 	u16 unused_compression_mode;
 	u32 auth_mechs;
@@ -94,9 +80,9 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 			<< ", proto_ver=" << proto_ver
 			<< ". Doing auth with mech " << chosen_auth_mechanism << std::endl;
 
-	if (!ser_ver_supported(serialization_ver)) {
+	if (!ser_ver_supported_read(serialization_ver)) {
 		infostream << "Client: TOCLIENT_HELLO: Server sent "
-				<< "unsupported ser_fmt_ver"<< std::endl;
+				<< "unsupported ser_fmt_ver=" << (int)serialization_ver << std::endl;
 		return;
 	}
 
@@ -1022,6 +1008,8 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 	p.amount             = readU16(is);
 	p.time               = readF32(is);
+	if (p.time < 0)
+		throw SerializationError("particle spawner time < 0");
 
 	bool missing_end_values = false;
 	if (m_proto_ver >= 42) {

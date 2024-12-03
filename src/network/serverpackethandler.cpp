@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2015 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2015 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 #include "chatmessage.h"
 #include "server.h"
@@ -27,6 +12,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "remoteplayer.h"
 #include "rollback_interface.h"
 #include "scripting_server.h"
+#include "serialization.h"
 #include "settings.h"
 #include "tool.h"
 #include "version.h"
@@ -98,34 +84,27 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	if (denyIfBanned(peer_id))
 		return;
 
-	// First byte after command is maximum supported
-	// serialization version
-	u8 client_max;
+	u8 max_ser_ver; // SER_FMT_VER_HIGHEST_READ (of client)
 	u16 unused;
-	u16 min_net_proto_version = 0;
+	u16 min_net_proto_version;
 	u16 max_net_proto_version;
 	std::string playerName;
 
-	*pkt >> client_max >> unused >> min_net_proto_version
-			>> max_net_proto_version >> playerName;
+	*pkt >> max_ser_ver >> unused
+			>> min_net_proto_version >> max_net_proto_version
+			>> playerName;
 
-	u8 our_max = SER_FMT_VER_HIGHEST_READ;
 	// Use the highest version supported by both
-	u8 depl_serial_v = std::min(client_max, our_max);
-	// If it's lower than the lowest supported, give up.
-#if SER_FMT_VER_LOWEST_READ > 0
-	if (depl_serial_v < SER_FMT_VER_LOWEST_READ)
-		depl_serial_v = SER_FMT_VER_INVALID;
-#endif
+	const u8 serialization_ver = std::min(max_ser_ver, SER_FMT_VER_HIGHEST_WRITE);
 
-	if (depl_serial_v == SER_FMT_VER_INVALID) {
+	if (!ser_ver_supported_write(serialization_ver)) {
 		actionstream << "Server: A mismatched client tried to connect from " <<
-			addr_s << " ser_fmt_max=" << (int)client_max << std::endl;
+			addr_s << " ser_fmt_max=" << (int)serialization_ver << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_VERSION);
 		return;
 	}
 
-	client->setPendingSerializationVersion(depl_serial_v);
+	client->setPendingSerializationVersion(serialization_ver);
 
 	/*
 		Read and check network protocol version
@@ -278,8 +257,9 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	NetworkPacket resp_pkt(TOCLIENT_HELLO, 0, peer_id);
 
-	resp_pkt << depl_serial_v << u16(0) << net_proto_version
-		<< auth_mechs << std::string_view();
+	resp_pkt << serialization_ver << u16(0) /* unused */
+		<< net_proto_version
+		<< auth_mechs << std::string_view() /* unused */;
 
 	Send(&resp_pkt);
 

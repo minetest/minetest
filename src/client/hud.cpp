@@ -1,23 +1,8 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2010-2013 blue42u, Jonathon Anderson <anderjon@umail.iu.edu>
-Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+// Copyright (C) 2010-2013 blue42u, Jonathon Anderson <anderjon@umail.iu.edu>
+// Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 #include "client/hud.h"
 #include <string>
@@ -39,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "wieldmesh.h"
 #include "client/renderingengine.h"
 #include "client/minimap.h"
+#include "client/texturesource.h"
 #include "gui/touchcontrols.h"
 #include "util/enriched_string.h"
 #include "irrlicht_changes/CGUITTFont.h"
@@ -99,15 +85,11 @@ Hud::Hud(Client *client, LocalPlayer *player,
 	}
 
 	// Initialize m_selection_material
-
-
-	if (g_settings->getBool("enable_shaders")) {
-		IShaderSource *shdrsrc = client->getShaderSource();
+	IShaderSource *shdrsrc = client->getShaderSource();
+	{
 		auto shader_id = shdrsrc->getShader(
 			m_mode == HIGHLIGHT_HALO ? "selection_shader" : "default_shader", TILE_MATERIAL_ALPHA);
 		m_selection_material.MaterialType = shdrsrc->getShaderInfo(shader_id).material;
-	} else {
-		m_selection_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	}
 
 	if (m_mode == HIGHLIGHT_BOX) {
@@ -121,12 +103,9 @@ Hud::Hud(Client *client, LocalPlayer *player,
 	}
 
 	// Initialize m_block_bounds_material
-	if (g_settings->getBool("enable_shaders")) {
-		IShaderSource *shdrsrc = client->getShaderSource();
+	{
 		auto shader_id = shdrsrc->getShader("default_shader", TILE_MATERIAL_ALPHA);
 		m_block_bounds_material.MaterialType = shdrsrc->getShaderInfo(shader_id).material;
-	} else {
-		m_block_bounds_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	}
 	m_block_bounds_material.Thickness =
 			rangelim(g_settings->getS16("selectionbox_width"), 1, 5);
@@ -1186,6 +1165,7 @@ void drawItemStack(
 			auto &p = imesh->buffer_colors[j];
 			p.applyOverride(c);
 
+			// TODO: could be moved to a shader
 			if (p.needColorize(c)) {
 				buf->setDirty(scene::EBT_VERTEX);
 				if (imesh->needs_shading)

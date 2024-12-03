@@ -1,22 +1,7 @@
-/*
-Minetest
-Copyright (C) 2014-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2014-2018 paramat
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2014-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+// Copyright (C) 2014-2018 paramat
 
 #include "mg_biome.h"
 #include "mg_decoration.h"
@@ -54,6 +39,7 @@ BiomeManager::BiomeManager(Server *server) :
 	b->heat_point      = 0.0;
 	b->humidity_point  = 0.0;
 	b->vertical_blend  = 0;
+	b->weight          = 1.0f;
 
 	b->m_nodenames.emplace_back("mapgen_stone");
 	b->m_nodenames.emplace_back("mapgen_stone");
@@ -271,7 +257,9 @@ Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 po
 
 		float d_heat = heat - b->heat_point;
 		float d_humidity = humidity - b->humidity_point;
-		float dist = (d_heat * d_heat) + (d_humidity * d_humidity);
+		float dist = ((d_heat * d_heat) + (d_humidity * d_humidity));
+		if (b->weight > 0.f)
+		       dist /= b->weight;
 
 		if (pos.Y <= b->max_pos.Y) { // Within y limits of biome b
 			if (dist < dist_min) {
@@ -336,6 +324,7 @@ ObjDef *Biome::clone() const
 	obj->heat_point = heat_point;
 	obj->humidity_point = humidity_point;
 	obj->vertical_blend = vertical_blend;
+	obj->weight = weight;
 
 	return obj;
 }

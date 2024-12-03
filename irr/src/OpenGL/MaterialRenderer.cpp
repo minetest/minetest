@@ -411,7 +411,7 @@ bool COpenGL3MaterialRenderer::setPixelShaderConstant(s32 index, const s32 *ints
 
 bool COpenGL3MaterialRenderer::setPixelShaderConstant(s32 index, const u32 *ints, int count)
 {
-	os::Printer::log("Unsigned int support needs at least GLES 3.0", ELL_WARNING);
+	os::Printer::log("Unsigned int support is unimplemented", ELL_WARNING);
 	return false;
 }
 

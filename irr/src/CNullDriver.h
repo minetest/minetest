@@ -227,6 +227,10 @@ public:
 	virtual ITexture *addRenderTargetTexture(const core::dimension2d<u32> &size,
 			const io::path &name, const ECOLOR_FORMAT format = ECF_UNKNOWN) override;
 
+	//! Creates a multisampled render target texture.
+	virtual ITexture *addRenderTargetTextureMs(const core::dimension2d<u32> &size, u8 msaa,
+			const io::path &name, const ECOLOR_FORMAT format = ECF_UNKNOWN) override;
+
 	//! Creates a render target texture for a cubemap
 	ITexture *addRenderTargetTextureCubemap(const irr::u32 sideLen,
 			const io::path &name, const ECOLOR_FORMAT format) override;
@@ -409,6 +413,8 @@ public:
 
 	//! Create render target.
 	IRenderTarget *addRenderTarget() override;
+
+	void blitRenderTarget(IRenderTarget *from, IRenderTarget *to) override {}
 
 	//! Remove render target.
 	void removeRenderTarget(IRenderTarget *renderTarget) override;

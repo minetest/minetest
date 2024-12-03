@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "game.h"
 
@@ -41,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/event_manager.h"
 #include "fontengine.h"
 #include "gui/touchcontrols.h"
+#include "gui/touchscreeneditor.h"
 #include "itemdef.h"
 #include "log.h"
 #include "log_internal.h"
@@ -156,6 +142,11 @@ struct LocalFormspecHandler : public TextDest
 
 			if (fields.find("btn_key_config") != fields.end()) {
 				g_gamecallback->keyConfig();
+				return;
+			}
+
+			if (fields.find("btn_touchscreen_layout") != fields.end()) {
+				g_gamecallback->touchscreenLayout();
 				return;
 			}
 
@@ -1234,8 +1225,7 @@ void Game::shutdown()
 
 	/* cleanup menus */
 	while (g_menumgr.menuCount() > 0) {
-		g_menumgr.m_stack.front()->setVisible(false);
-		g_menumgr.deletingMenu(g_menumgr.m_stack.front());
+		g_menumgr.deleteFront();
 	}
 
 	m_game_ui->deleteFormspec();
@@ -1858,6 +1848,12 @@ inline bool Game::handleCallbacks()
 		(void)make_irr<GUIKeyChangeMenu>(guienv, guiroot, -1,
 				      &g_menumgr, texture_src);
 		g_gamecallback->keyconfig_requested = false;
+	}
+
+	if (g_gamecallback->touchscreenlayout_requested) {
+		(new GUITouchscreenLayout(guienv, guiroot, -1,
+				     &g_menumgr, texture_src))->drop();
+		g_gamecallback->touchscreenlayout_requested = false;
 	}
 
 	if (!g_gamecallback->show_open_url_dialog.empty()) {
@@ -4526,9 +4522,14 @@ void Game::showPauseMenu()
 			<< strgettext("Sound Volume") << "]";
 	}
 #endif
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
-		<< strgettext("Controls")  << "]";
 #endif
+	if (g_touchcontrols) {
+		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_touchscreen_layout;"
+			<< strgettext("Touchscreen Layout")  << "]";
+	} else {
+		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
+			<< strgettext("Controls")  << "]";
+	}
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
 		<< strgettext("Exit to Menu") << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"

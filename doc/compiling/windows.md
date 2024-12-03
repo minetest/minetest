@@ -23,9 +23,8 @@ libtool:   error: 'Files/vcpkg/buildtrees/libiconv/x64-windows-dbg/lib/libcharse
 ```
 
 After you successfully built vcpkg you can easily install the required libraries:
-
 ```powershell
-vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp gettext[tools] opengl-registry --triplet x64-windows
+vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp gettext[tools] sdl2 --triplet x64-windows
 ```
 
 This command takes about 10-30 minutes to complete, depending on your device.

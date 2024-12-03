@@ -130,10 +130,10 @@ void COpenGLExtensionHandler::initExtensions(video::IContextManager *cmgr, bool 
 {
 	const f32 ogl_ver = core::fast_atof(reinterpret_cast<const c8 *>(glGetString(GL_VERSION)));
 	Version = static_cast<u16>(core::floor32(ogl_ver) * 100 + core::round32(core::fract(ogl_ver) * 10.0f));
-	if (Version >= 102)
-		os::Printer::log("OpenGL driver version is 1.2 or better.", ELL_INFORMATION);
+	if (Version >= 200)
+		os::Printer::log("OpenGL driver version is 2.0 or newer.", ELL_INFORMATION);
 	else
-		os::Printer::log("OpenGL driver version is not 1.2 or better.", ELL_WARNING);
+		os::Printer::log("OpenGL driver version is older than 2.0.", ELL_WARNING);
 
 	{
 		const char *t = reinterpret_cast<const char *>(glGetString(GL_EXTENSIONS));
@@ -612,6 +612,8 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return FeatureAvailable[IRR_ARB_seamless_cube_map];
 	case EVDF_DEPTH_CLAMP:
 		return FeatureAvailable[IRR_NV_depth_clamp] || FeatureAvailable[IRR_ARB_depth_clamp];
+	case EVDF_TEXTURE_MULTISAMPLE:
+		return (Version >= 302) || FeatureAvailable[IRR_ARB_texture_multisample];
 
 	default:
 		return false;

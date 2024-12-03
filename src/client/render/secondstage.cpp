@@ -1,29 +1,15 @@
-/*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2017 numzero, Lobachevskiy Vitaliy <numzer0@yandex.ru>
-Copyright (C) 2020 appgurueu, Lars Mueller <appgurulars@gmx.de>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+// Copyright (C) 2017 numzero, Lobachevskiy Vitaliy <numzer0@yandex.ru>
+// Copyright (C) 2020 appgurueu, Lars Mueller <appgurulars@gmx.de>
 
 #include "secondstage.h"
 #include "client/client.h"
 #include "client/shader.h"
 #include "client/tile.h"
 #include "settings.h"
+#include "mt_opengl.h"
 
 PostProcessingStep::PostProcessingStep(u32 _shader_id, const std::vector<u8> &_texture_map) :
 	shader_id(_shader_id), texture_map(_texture_map)
@@ -102,16 +88,12 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	auto driver = client->getSceneManager()->getVideoDriver();
 
 	// configure texture formats
-	video::ECOLOR_FORMAT color_format = video::ECF_A8R8G8B8;
-	if (driver->queryTextureFormat(video::ECF_A16B16G16R16F))
-		color_format = video::ECF_A16B16G16R16F;
+	video::ECOLOR_FORMAT color_format = selectColorFormat(driver);
+	video::ECOLOR_FORMAT depth_format = selectDepthFormat(driver);
 
-	video::ECOLOR_FORMAT depth_format = video::ECF_D16; // fallback depth format
-	if (driver->queryTextureFormat(video::ECF_D32))
-		depth_format = video::ECF_D32;
-	else if (driver->queryTextureFormat(video::ECF_D24S8))
-		depth_format = video::ECF_D24S8;
-
+	verbosestream << "addPostProcessing(): color = "
+		<< video::ColorFormatNames[color_format] << " depth = "
+		<< video::ColorFormatNames[depth_format] << std::endl;
 
 	// init post-processing buffer
 	static const u8 TEXTURE_COLOR = 0;
@@ -121,21 +103,45 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	static const u8 TEXTURE_EXPOSURE_2 = 4;
 	static const u8 TEXTURE_FXAA = 5;
 	static const u8 TEXTURE_VOLUME = 6;
+
+	static const u8 TEXTURE_MSAA_COLOR = 7;
+	static const u8 TEXTURE_MSAA_DEPTH = 8;
+
 	static const u8 TEXTURE_SCALE_DOWN = 10;
 	static const u8 TEXTURE_SCALE_UP = 20;
 
-	// Super-sampling is simply rendering into a larger texture.
-	// Downscaling is done by the final step when rendering to the screen.
-	const std::string antialiasing = g_settings->get("antialiasing");
 	const bool enable_bloom = g_settings->getBool("enable_bloom");
+	const bool enable_volumetric_light = g_settings->getBool("enable_volumetric_lighting") && enable_bloom;
 	const bool enable_auto_exposure = g_settings->getBool("enable_auto_exposure");
+
+	const std::string antialiasing = g_settings->get("antialiasing");
+	const u16 antialiasing_scale = MYMAX(2, g_settings->getU16("fsaa"));
+
+	// This code only deals with MSAA in combination with post-processing. MSAA without
+	// post-processing works via a flag at OpenGL context creation instead.
+	// To make MSAA work with post-processing, we need multisample texture support,
+	// which has higher OpenGL (ES) version requirements.
+	// Note: This is not about renderbuffer objects, but about textures,
+	// since that's what we use and what Irrlicht allows us to use.
+
+	const bool msaa_available = driver->queryFeature(video::EVDF_TEXTURE_MULTISAMPLE);
+	const bool enable_msaa = antialiasing == "fsaa" && msaa_available;
+	if (antialiasing == "fsaa" && !msaa_available)
+		warningstream << "Ignoring configured FSAA. FSAA is not supported in "
+			<< "combination with post-processing by the current video driver." << std::endl;
+
 	const bool enable_ssaa = antialiasing == "ssaa";
 	const bool enable_fxaa = antialiasing == "fxaa";
-	const bool enable_volumetric_light = g_settings->getBool("enable_volumetric_lighting") && enable_bloom;
 
+	// Super-sampling is simply rendering into a larger texture.
+	// Downscaling is done by the final step when rendering to the screen.
 	if (enable_ssaa) {
-		u16 ssaa_scale = MYMAX(2, g_settings->getU16("fsaa"));
-		scale *= ssaa_scale;
+		scale *= antialiasing_scale;
+	}
+
+	if (enable_msaa) {
+		buffer->setTexture(TEXTURE_MSAA_COLOR, scale, "3d_render_msaa", color_format, false, antialiasing_scale);
+		buffer->setTexture(TEXTURE_MSAA_DEPTH, scale, "3d_depthmap_msaa", depth_format, false, antialiasing_scale);
 	}
 
 	buffer->setTexture(TEXTURE_COLOR, scale, "3d_render", color_format);
@@ -144,7 +150,14 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	buffer->setTexture(TEXTURE_DEPTH, scale, "3d_depthmap", depth_format);
 
 	// attach buffer to the previous step
-	previousStep->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, std::vector<u8> { TEXTURE_COLOR }, TEXTURE_DEPTH));
+	if (enable_msaa) {
+		TextureBufferOutput *msaa = pipeline->createOwned<TextureBufferOutput>(buffer, std::vector<u8> { TEXTURE_MSAA_COLOR }, TEXTURE_MSAA_DEPTH);
+		previousStep->setRenderTarget(msaa);
+		TextureBufferOutput *normal = pipeline->createOwned<TextureBufferOutput>(buffer, std::vector<u8> { TEXTURE_COLOR }, TEXTURE_DEPTH);
+		pipeline->addStep<ResolveMSAAStep>(msaa, normal);
+	} else {
+		previousStep->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, std::vector<u8> { TEXTURE_COLOR }, TEXTURE_DEPTH));
+	}
 
 	// shared variables
 	u32 shader_id;
@@ -252,4 +265,10 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	}
 
 	return effect;
+}
+
+void ResolveMSAAStep::run(PipelineContext &context)
+{
+	context.device->getVideoDriver()->blitRenderTarget(msaa_fbo->getIrrRenderTarget(context),
+			target_fbo->getIrrRenderTarget(context));
 }

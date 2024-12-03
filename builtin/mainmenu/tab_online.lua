@@ -1,4 +1,4 @@
---Minetest
+--Luanti
 --Copyright (C) 2014 sapier
 --
 --This program is free software; you can redistribute it and/or modify
@@ -55,6 +55,36 @@ local function get_sorted_servers()
 	return servers
 end
 
+-- Persists the selected server in the "address" and "remote_port" settings
+local function set_selected_server(server)
+	local address = server.address
+	local port    = server.port
+	gamedata.serverdescription = server.description
+
+	gamedata.fav = false
+	for _, fav in ipairs(serverlistmgr.get_favorites()) do
+		if address == fav.address and port == fav.port then
+			gamedata.fav = true
+			break
+		end
+	end
+
+	if address and port then
+		core.settings:set("address", address)
+		core.settings:set("remote_port", port)
+	end
+end
+
+local function find_selected_server()
+	local address = core.settings:get("address")
+	local port = tonumber(core.settings:get("remote_port"))
+	for _, server in ipairs(serverlistmgr.servers) do
+		if server.address == address and server.port == port then
+			return server
+		end
+	end
+end
+
 local function get_formspec(tabview, name, tabdata)
 	-- Update the cached supported proto info,
 	-- it may have changed after a change by the settings menu.
@@ -107,16 +137,38 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval .. "button[0.25,6;2.5,0.75;btn_mp_register;" .. fgettext("Register") .. "]"
 	end
 
-	if tabdata.selected then
-		if gamedata.fav then
-			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Remove favorite") .. "]"
-			retval = retval .. "style[btn_delete_favorite;padding=6]"
-			retval = retval .. "image_button[5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
-				"server_favorite_delete.png") .. ";btn_delete_favorite;]"
-		end
+	local selected_server = find_selected_server()
+
+	if selected_server then
 		if gamedata.serverdescription then
 			retval = retval .. "textarea[0.25,1.85;5.25,2.7;;;" ..
 				core.formspec_escape(gamedata.serverdescription) .. "]"
+		end
+
+		local clients_list = selected_server.clients_list
+		local can_view_clients_list = clients_list and #clients_list > 0
+		if can_view_clients_list then
+			table.sort(clients_list, function(a, b)
+				return a:lower() < b:lower()
+			end)
+			local max_clients = 5
+			if #clients_list > max_clients then
+				retval = retval .. "tooltip[btn_view_clients;" ..
+						fgettext("Clients:\n$1", table.concat(clients_list, "\n", 1, max_clients)) .. "\n..." .. "]"
+			else
+				retval = retval .. "tooltip[btn_view_clients;" ..
+						fgettext("Clients:\n$1", table.concat(clients_list, "\n")) .. "]"
+			end
+			retval = retval .. "style[btn_view_clients;padding=6]"
+			retval = retval .. "image_button[5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
+				"server_view_clients.png") .. ";btn_view_clients;]"
+		end
+
+		if gamedata.fav then
+			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Remove favorite") .. "]"
+			retval = retval .. "style[btn_delete_favorite;padding=6]"
+			retval = retval .. "image_button[" .. (can_view_clients_list and "4.5" or "5") .. ",1.3;0.5,0.5;" ..
+				core.formspec_escape(defaulttexturedir .. "server_favorite_delete.png") .. ";btn_delete_favorite;]"
 		end
 	end
 
@@ -175,11 +227,17 @@ local function get_formspec(tabview, name, tabdata)
 
 	retval = retval .. table.concat(rows, ",")
 
-	if tabdata.selected then
-		retval = retval .. ";" .. tabdata.selected .. "]"
-	else
-		retval = retval .. ";0]"
+	local selected_row_idx = 0
+	if selected_server then
+		for i, server in pairs(tabdata.lookup) do
+			if selected_server.address == server.address and
+					selected_server.port == server.port then
+				selected_row_idx = i
+				break
+			end
+		end
 	end
+	retval = retval .. ";" .. selected_row_idx .. "]"
 
 	return retval
 end
@@ -195,8 +253,7 @@ local function search_server_list(input)
 	-- setup the keyword list
 	local keywords = {}
 	for word in input:gmatch("%S+") do
-		word = word:gsub("(%W)", "%%%1")
-		table.insert(keywords, word)
+		table.insert(keywords, word:lower())
 	end
 
 	if #keywords == 0 then
@@ -207,26 +264,17 @@ local function search_server_list(input)
 
 	-- Search the serverlist
 	local search_result = {}
-	for i = 1, #serverlistmgr.servers do
-		local server = serverlistmgr.servers[i]
-		local found = 0
-		for k = 1, #keywords do
-			local keyword = keywords[k]
-			if server.name then
-				local sername = server.name:lower()
-				local _, count = sername:gsub(keyword, keyword)
-				found = found + count * 4
-			end
-
-			if server.description then
-				local desc = server.description:lower()
-				local _, count = desc:gsub(keyword, keyword)
-				found = found + count * 2
-			end
+	for i, server in ipairs(serverlistmgr.servers) do
+		local name_matches, description_matches = true, true
+		for _, keyword in ipairs(keywords) do
+			name_matches = name_matches and not not
+					(server.name or ""):lower():find(keyword, 1, true)
+			description_matches = description_matches and not not
+					(server.description or ""):lower():find(keyword, 1, true)
 		end
-		if found > 0 then
-			local points = (#serverlistmgr.servers - i) / 5 + found
-			server.points = points
+		if name_matches or description_matches then
+			server.points = #serverlistmgr.servers - i
+					+ (name_matches and 50 or 0)
 			table.insert(search_result, server)
 		end
 	end
@@ -239,35 +287,6 @@ local function search_server_list(input)
 		return a.points > b.points
 	end)
 	menudata.search_result = search_result
-end
-
-local function set_selected_server(tabdata, idx, server)
-	-- reset selection
-	if idx == nil or server == nil then
-		tabdata.selected = nil
-
-		core.settings:set("address", "")
-		core.settings:set("remote_port", "30000")
-		return
-	end
-
-	local address = server.address
-	local port    = server.port
-	gamedata.serverdescription = server.description
-
-	gamedata.fav = false
-	for _, fav in ipairs(serverlistmgr.get_favorites()) do
-		if address == fav.address and port == fav.port then
-			gamedata.fav = true
-			break
-		end
-	end
-
-	if address and port then
-		core.settings:set("address", address)
-		core.settings:set("remote_port", port)
-	end
-	tabdata.selected = idx
 end
 
 local function main_button_handler(tabview, fields, name, tabdata)
@@ -300,14 +319,13 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				gamedata.serverdescription = server.description
 
 				if gamedata.address and gamedata.port then
-					core.settings:set("address", gamedata.address)
-					core.settings:set("remote_port", gamedata.port)
+					set_selected_server(server)
 					core.start()
 				end
 				return true
 			end
 			if event.type == "CHG" then
-				set_selected_server(tabdata, event.row, server)
+				set_selected_server(server)
 				return true
 			end
 		end
@@ -320,8 +338,15 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		if not server then return end
 
 		serverlistmgr.delete_favorite(server)
-		-- the server at [idx+1] will be at idx once list is refreshed
-		set_selected_server(tabdata, idx, tabdata.lookup[idx+1])
+		set_selected_server(server)
+		return true
+	end
+
+	if fields.btn_view_clients then
+		local dlg = create_clientslist_dialog(find_selected_server())
+		dlg:set_parent(tabview)
+		tabview:hide()
+		dlg:show()
 		return true
 	end
 
@@ -335,8 +360,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		tabdata.search_for = fields.te_search
 		search_server_list(fields.te_search:lower())
 		if menudata.search_result then
-			-- first server in row 2 due to header
-			set_selected_server(tabdata, 2, menudata.search_result[1])
+			set_selected_server(menudata.search_result[1])
 		end
 
 		return true
@@ -362,8 +386,6 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 		local idx = core.get_table_index("servers")
 		local server = idx and tabdata.lookup[idx]
-
-		set_selected_server(tabdata)
 
 		if server and server.address == gamedata.address and
 				server.port == gamedata.port then

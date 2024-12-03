@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2010-2017 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2010-2017 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include <algorithm>
 #include <stack>
@@ -541,14 +526,14 @@ void ServerEnvironment::init()
 		warningstream << "/!\\ You are using old player file backend. "
 				<< "This backend is deprecated and will be removed in a future release /!\\"
 				<< std::endl << "Switching to SQLite3 or PostgreSQL is advised, "
-				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+				<< "please read https://wiki.luanti.org/Database_backends." << std::endl;
 	}
 
 	if (auth_backend_name == "files") {
 		warningstream << "/!\\ You are using old auth file backend. "
 				<< "This backend is deprecated and will be removed in a future release /!\\"
 				<< std::endl << "Switching to SQLite3 is advised, "
-				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+				<< "please read https://wiki.luanti.org/Database_backends." << std::endl;
 	}
 
 	m_player_database = openPlayerDatabase(player_backend_name, world_path, conf);
@@ -1417,21 +1402,6 @@ void ServerEnvironment::step(float dtime)
 		u32 inc_i = (u32)m_game_time_fraction_counter;
 		m_game_time += inc_i;
 		m_game_time_fraction_counter -= (float)inc_i;
-	}
-
-	/*
-		Handle players
-	*/
-	{
-		ScopeProfiler sp(g_profiler, "ServerEnv: move players", SPT_AVG);
-		for (RemotePlayer *player : m_players) {
-			// Ignore disconnected players
-			if (player->getPeerId() == PEER_ID_INEXISTENT)
-				continue;
-
-			// Move
-			player->move(dtime, this, 100 * BS);
-		}
 	}
 
 	/*

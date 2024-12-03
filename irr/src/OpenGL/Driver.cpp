@@ -144,7 +144,7 @@ void COpenGL3DriverBase::debugCb(GLenum source, GLenum type, GLuint id, GLenum s
 		ll = ELL_ERROR;
 	else if (severity == GL_DEBUG_SEVERITY_MEDIUM)
 		ll = ELL_WARNING;
-	char buf[256];
+	char buf[300];
 	snprintf_irr(buf, sizeof(buf), "%04x %04x %.*s", source, type, length, message);
 	os::Printer::log("GL", buf, ll);
 }
@@ -226,8 +226,8 @@ void COpenGL3DriverBase::initVersion()
 	printVersion();
 
 	// print renderer information
-	VendorName = GL.GetString(GL_VENDOR);
-	os::Printer::log("Vendor", VendorName.c_str(), ELL_INFORMATION);
+	VendorName = GL.GetString(GL_RENDERER);
+	os::Printer::log("Renderer", VendorName.c_str(), ELL_INFORMATION);
 
 	Version = getVersionFromOpenGL();
 }
@@ -675,6 +675,29 @@ IRenderTarget *COpenGL3DriverBase::addRenderTarget()
 	return renderTarget;
 }
 
+void COpenGL3DriverBase::blitRenderTarget(IRenderTarget *from, IRenderTarget *to)
+{
+	if (Version.Spec == OpenGLSpec::ES && Version.Major < 3) {
+		os::Printer::log("glBlitFramebuffer not supported by OpenGL ES < 3.0", ELL_ERROR);
+		return;
+	}
+
+	GLuint prev_fbo_id;
+	CacheHandler->getFBO(prev_fbo_id);
+
+	COpenGL3RenderTarget *src = static_cast<COpenGL3RenderTarget *>(from);
+	COpenGL3RenderTarget *dst = static_cast<COpenGL3RenderTarget *>(to);
+	GL.BindFramebuffer(GL.READ_FRAMEBUFFER, src->getBufferID());
+	GL.BindFramebuffer(GL.DRAW_FRAMEBUFFER, dst->getBufferID());
+	GL.BlitFramebuffer(
+			0, 0, src->getSize().Width, src->getSize().Height,
+			0, 0, dst->getSize().Width, dst->getSize().Height,
+			GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT, GL.NEAREST);
+
+	// This resets both read and draw framebuffer. Note that we bypass CacheHandler here.
+	GL.BindFramebuffer(GL.FRAMEBUFFER, prev_fbo_id);
+}
+
 //! draws a vertex primitive list
 void COpenGL3DriverBase::drawVertexPrimitiveList(const void *vertices, u32 vertexCount,
 		const void *indexList, u32 primitiveCount,
@@ -700,15 +723,7 @@ void COpenGL3DriverBase::drawVertexPrimitiveList(const void *vertices, u32 verte
 		break;
 	}
 	case (EIT_32BIT): {
-#ifdef GL_OES_element_index_uint
-#ifndef GL_UNSIGNED_INT
-#define GL_UNSIGNED_INT 0x1405
-#endif
-		if (FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_OES_element_index_uint])
-			indexSize = GL_UNSIGNED_INT;
-		else
-#endif
-			indexSize = GL_UNSIGNED_SHORT;
+		indexSize = GL_UNSIGNED_INT;
 		break;
 	}
 	}
@@ -1325,6 +1340,8 @@ void COpenGL3DriverBase::setBasicRenderStates(const SMaterial &material, const S
 		GL.LineWidth(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedLine[0], DimAliasedLine[1]));
 
 	// Anti aliasing
+	// Deal with MSAA even if it's not enabled in the OpenGL context, we might be
+	// rendering to an FBO with multisampling.
 	if (resetAllRenderStates || lastmaterial.AntiAliasing != material.AntiAliasing) {
 		if (material.AntiAliasing & EAAM_ALPHA_TO_COVERAGE)
 			GL.Enable(GL_SAMPLE_ALPHA_TO_COVERAGE);
@@ -1640,11 +1657,17 @@ IGPUProgrammingServices *COpenGL3DriverBase::getGPUProgrammingServices()
 ITexture *COpenGL3DriverBase::addRenderTargetTexture(const core::dimension2d<u32> &size,
 		const io::path &name, const ECOLOR_FORMAT format)
 {
+	return addRenderTargetTextureMs(size, 0, name, format);
+}
+
+ITexture *COpenGL3DriverBase::addRenderTargetTextureMs(const core::dimension2d<u32> &size, u8 msaa,
+		const io::path &name, const ECOLOR_FORMAT format)
+{
 	// disable mip-mapping
 	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);
 
-	COpenGL3Texture *renderTargetTexture = new COpenGL3Texture(name, size, ETT_2D, format, this);
+	COpenGL3Texture *renderTargetTexture = new COpenGL3Texture(name, size, msaa > 0 ? ETT_2D_MS : ETT_2D, format, this, msaa);
 	addTexture(renderTargetTexture);
 	renderTargetTexture->drop();
 
@@ -1683,7 +1706,7 @@ ITexture *COpenGL3DriverBase::addRenderTargetTextureCubemap(const irr::u32 sideL
 //! Returns the maximum amount of primitives
 u32 COpenGL3DriverBase::getMaximalPrimitiveCount() const
 {
-	return 65535;
+	return Version.Spec == OpenGLSpec::ES ? 65535 : 0x7fffffff;
 }
 
 bool COpenGL3DriverBase::setRenderTargetEx(IRenderTarget *target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)

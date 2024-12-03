@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include <iostream>
 #include <algorithm>
@@ -780,7 +765,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 	std::string name;
 
 	const char *image_ext[] = {
-		".png", ".jpg", ".bmp", ".tga",
+		".png", ".jpg", ".tga",
 		NULL
 	};
 	name = removeStringEnd(filename, image_ext);
@@ -1143,7 +1128,7 @@ void Client::sendInit(const std::string &playerName)
 {
 	NetworkPacket pkt(TOSERVER_INIT, 1 + 2 + 2 + (1 + playerName.size()));
 
-	pkt << (u8) SER_FMT_VER_HIGHEST_READ << (u16) 0;
+	pkt << SER_FMT_VER_HIGHEST_READ << (u16) 0 /* unused */;
 	pkt << CLIENT_PROTOCOL_VERSION_MIN << LATEST_PROTOCOL_VERSION;
 	pkt << playerName;
 

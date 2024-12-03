@@ -13,10 +13,10 @@ local minetest_example_header = [[
 #    ../minetest.conf
 #    ../../minetest.conf
 #    Any other path can be chosen by passing the path as a parameter
-#    to the program, eg. "minetest.exe --config ../minetest.conf.example".
+#    to the program, eg. "luanti.exe --config ../minetest.conf.example".
 
 #    Further documentation:
-#    https://wiki.minetest.net/
+#    https://wiki.luanti.org/
 
 ]]
 

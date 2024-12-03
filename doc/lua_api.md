@@ -276,7 +276,7 @@ the clients (see [Translations]). Accepted characters for names are:
 
 Accepted formats are:
 
-    images: .png, .jpg, .tga, (deprecated:) .bmp
+    images: .png, .jpg, .tga
     sounds: .ogg vorbis
     models: .x, .b3d, .obj, (since version 5.10:) .gltf, .glb
 
@@ -312,9 +312,7 @@ due to their space savings.
 This means that many glTF features are not supported *yet*, including:
 
 * Animations
-  * Only a single animation is supported,
-    use frame ranges within this animation.
-  * Only integer frames are supported.
+  * Only a single animation is supported, use frame ranges within this animation.
 * Cameras
 * Materials
   * Only base color textures are supported
@@ -488,9 +486,7 @@ stripping out the file extension:
 * e.g. `foomod_foothing.png`
 * e.g. `foomod_foothing`
 
-Supported texture formats are PNG (`.png`), JPEG (`.jpg`), Bitmap (`.bmp`)
-and Targa (`.tga`).
-Since better alternatives exist, the latter two may be removed in the future.
+Supported texture formats are PNG (`.png`), JPEG (`.jpg`) and Targa (`.tga`).
 
 Texture modifiers
 -----------------
@@ -5659,6 +5655,10 @@ Utilities
       bulk_lbms = true,
       -- ABM supports field without_neighbors (5.10.0)
       abm_without_neighbors = true,
+      -- biomes have a weight parameter (5.11.0)
+      biome_weights = true,
+      -- Particles can specify a "clip" blend mode (5.11.0)
+      particle_blend_clip = true,
   }
   ```
 
@@ -6699,6 +6699,9 @@ Formspec
 * `core.hypertext_escape(string)`: returns a string
     * escapes the characters "\", "<", and ">" to show text in a hypertext element.
     * not safe for use with tag attributes.
+    * this function does not do formspec escaping, you will likely need to do
+      `core.formspec_escape(core.hypertext_escape(string))` if the hypertext is
+      not already being formspec escaped.
 * `core.explode_table_event(string)`: returns a table
     * returns e.g. `{type="CHG", row=1, column=2}`
     * `type` is one of:
@@ -6926,10 +6929,6 @@ Timing
     * `time` is a lower bound. The job is executed in the first server-step that
       started at least `time` seconds after the last time a server-step started,
       measured with globalstep dtime.
-    * In particular this can result in relatively large delays if `time` is close
-      to the server-step dtime. For example, with a target server-step of 0.09 s,
-      `core.after(0.09, ...)` often waits two steps, resulting in a delay of about
-      0.18 s.
     * If `time` is `0`, the job is executed in the next step.
 
 * `job:cancel()`
@@ -8250,7 +8249,13 @@ child will follow movement and rotation of that bone.
     object.
 * `set_detach()`: Detaches object. No-op if object was not attached.
 * `set_bone_position([bone, position, rotation])`
-    * Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
+    * Sets absolute bone overrides, e.g. it is equivalent to
+      ```lua
+      obj:set_bone_override(bone, {
+          position = {vec = position, absolute = true},
+          rotation = {vec = rotation:apply(math.rad), absolute = true}
+      })
+      ```
     * **Note:** Rotation is in degrees, not radians.
     * **Deprecated:** Use `set_bone_override` instead.
 * `get_bone_position(bone)`: returns the previously set position and rotation of the bone
@@ -8260,15 +8265,18 @@ child will follow movement and rotation of that bone.
 * `set_bone_override(bone, override)`
     * `bone`: string
     * `override`: `{ position = property, rotation = property, scale = property }` or `nil`
-        * `property`: `{ vec = vector, interpolation = 0, absolute = false}` or `nil`;
-            * `vec` is in the same coordinate system as the model, and in degrees for rotation
-        * `property = nil` is equivalent to no override on that property
-        * `absolute`: If set to `false`, the override will be relative to the animated property:
-            * Transposition in the case of `position`;
-            * Composition in the case of `rotation`;
-            * Multiplication in the case of `scale`
-        * `interpolation`: Old and new values are interpolated over this timeframe (in seconds)
     * `override = nil` (including omission) is shorthand for `override = {}` which clears the override
+    * Each `property` is a table of the form
+      `{ vec = vector, interpolation = 0, absolute = false }` or `nil`
+        * `vec` is in the same coordinate system as the model, and in radians for rotation.
+          It defaults to `vector.zero()` for translation and rotation and `vector.new(1, 1, 1)` for scale.
+        * `interpolation`: The old and new overrides are interpolated over this timeframe (in seconds).
+        * `absolute`: If set to `false` (which is the default),
+          the override will be relative to the animated property:
+            * Translation in the case of `position`;
+            * Composition in the case of `rotation`;
+            * Per-axis multiplication in the case of `scale`
+    * `property = nil` is equivalent to no override on that property
     * **Note:** Unlike `set_bone_position`, the rotation is in radians, not degrees.
     * Compatibility note: Clients prior to 5.9.0 only support absolute position and rotation.
       All values are treated as absolute and are set immediately (no interpolation).
@@ -8887,7 +8895,7 @@ For `core.get_perlin_map()`, the actual seed used is the noiseparams seed
 plus the world seed, to create world-specific noise.
 
 Format of `size` is `{x=dimx, y=dimy, z=dimz}`. The `z` component is omitted
-for 2D noise, and it must be must be larger than 1 for 3D noise (otherwise
+for 2D noise, and it must be larger than 1 for 3D noise (otherwise
 `nil` is returned).
 
 For each of the functions with an optional `buffer` parameter: If `buffer` is
@@ -9106,12 +9114,14 @@ Player properties need to be saved manually.
 ```lua
 {
     hp_max = 10,
-    -- Defines the maximum and default HP of the entity
-    -- For Lua entities the maximum is not enforced.
-    -- For players this defaults to `core.PLAYER_MAX_HP_DEFAULT`.
+    -- Defines the maximum and default HP of the object.
+    -- For Lua entities, the maximum is not enforced.
+    -- For players, this defaults to `core.PLAYER_MAX_HP_DEFAULT` (20).
+    -- For Lua entities, the default is 10.
 
     breath_max = 0,
-    -- For players only. Defaults to `core.PLAYER_MAX_BREATH_DEFAULT`.
+    -- For players only. Defines the maximum amount of "breath" for the player.
+    -- Defaults to `core.PLAYER_MAX_BREATH_DEFAULT` (10).
 
     zoom_fov = 0.0,
     -- For players only. Zoom FOV in degrees.
@@ -10704,6 +10714,10 @@ performance and computing power the practical limit is much lower.
     -- distribution of the biomes.
     -- Heat and humidity have average values of 50, vary mostly between
     -- 0 and 100 but can exceed these values.
+
+    weight = 1.0,
+    -- Relative weight of the biome in the Voronoi diagram.
+    -- A value of 0 (or less) is ignored and equivalent to 1.0.
 }
 ```
 
@@ -10777,10 +10791,9 @@ See [Decoration types]. Used by `core.register_decoration`.
 
     flags = "liquid_surface, force_placement, all_floors, all_ceilings",
     -- Flags for all decoration types.
-    -- "liquid_surface": Instead of placement on the highest solid surface
-    --   in a mapchunk column, placement is on the highest liquid surface.
-    --   Placement is disabled if solid nodes are found above the liquid
-    --   surface.
+    -- "liquid_surface": Find the highest liquid (not solid) surface under
+    --   open air. Search stops and fails on the first solid node.
+    --   Cannot be used with "all_floors" or "all_ceilings" below.
     -- "force_placement": Nodes other than "air" and "ignore" are replaced
     --   by the decoration.
     -- "all_floors", "all_ceilings": Instead of placement on the highest
@@ -11475,6 +11488,14 @@ texture = {
     -- (default) blends transparent pixels with those they are drawn atop
     -- according to the alpha channel of the source texture. useful for
     -- e.g. material objects like rocks, dirt, smoke, or node chunks
+    -- note: there will be rendering bugs when particles interact with
+    -- translucent nodes. particles are also not transparency-sorted
+    -- relative to each other.
+    blend = "clip",
+    -- pixels are either fully opaque or fully transparent,
+    -- depending on whether alpha is greater than or less than 50%
+    -- (just like `use_texture_alpha = "clip"` for nodes).
+    -- you should prefer this if you don't need semi-transparency, as it's faster.
     blend = "add",
     -- adds the value of pixels to those underneath them, modulo the sources
     -- alpha channel. useful for e.g. bright light effects like sparks or fire

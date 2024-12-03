@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 PilzAdam <pilzadam@minetest.net>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 PilzAdam <pilzadam@minetest.net>
 
 #include "lua_api/l_settings.h"
 #include "lua_api/l_internal.h"
@@ -27,11 +12,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 
-/* This protects the following from being set:
- * 'secure.*' settings
- * some security-relevant settings
+/*
+ * This protects the following from being set:
+ * - 'secure.*' settings
+ * - some security-relevant settings
  *   (better solution pending)
- * some mapgen settings
+ * - some mapgen settings
  *   (not security-criticial, just to avoid messing up user configs)
  */
 #define CHECK_SETTING_SECURITY(L, name) \
@@ -42,14 +28,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 static inline int checkSettingSecurity(lua_State* L, const std::string &name)
 {
+#if CHECK_CLIENT_BUILD()
+	// Main menu is allowed everything
+	if (ModApiBase::getGuiEngine(L) != nullptr)
+		return 0;
+#endif
+
 	if (ScriptApiSecurity::isSecure(L) && name.compare(0, 7, "secure.") == 0)
 		throw LuaError("Attempted to set secure setting.");
 
-	bool is_mainmenu = false;
-#if CHECK_CLIENT_BUILD()
-	is_mainmenu = ModApiBase::getGuiEngine(L) != nullptr;
-#endif
-	if (!is_mainmenu && (name == "mg_name" || name == "mg_flags")) {
+	if (name == "mg_name" || name == "mg_flags") {
 		errorstream << "Tried to set global setting " << name << ", ignoring. "
 			"minetest.set_mapgen_setting() should be used instead." << std::endl;
 		infostream << script_get_backtrace(L) << std::endl;
@@ -60,11 +48,9 @@ static inline int checkSettingSecurity(lua_State* L, const std::string &name)
 		"main_menu_script", "shader_path", "texture_path", "screenshot_path",
 		"serverlist_file", "serverlist_url", "map-dir", "contentdb_url",
 	};
-	if (!is_mainmenu) {
-		for (const char *name2 : disallowed) {
-			if (name == name2)
-				throw LuaError("Attempted to set disallowed setting.");
-		}
+	for (const char *name2 : disallowed) {
+		if (name == name2)
+			throw LuaError("Attempted to set disallowed setting.");
 	}
 
 	return 0;

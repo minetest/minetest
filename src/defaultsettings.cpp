@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "settings.h"
 #include "porting.h"
@@ -93,7 +78,7 @@ void set_default_settings()
 	settings->setDefault("language", "");
 	settings->setDefault("name", "");
 	settings->setDefault("bind_address", "");
-	settings->setDefault("serverlist_url", "servers.minetest.net");
+	settings->setDefault("serverlist_url", "servers.luanti.org");
 
 	// Client
 	settings->setDefault("address", "");
@@ -117,7 +102,6 @@ void set_default_settings()
 	settings->setDefault("sound_volume_unfocused", "0.3");
 	settings->setDefault("mute_sound", "false");
 	settings->setDefault("sound_extensions_blacklist", "");
-	settings->setDefault("enable_mesh_cache", "false");
 	settings->setDefault("mesh_generation_interval", "0");
 	settings->setDefault("mesh_generation_threads", "0");
 	settings->setDefault("free_move", "false");
@@ -314,11 +298,11 @@ void set_default_settings()
 	settings->setDefault("enable_local_map_saving", "false");
 	settings->setDefault("show_entity_selectionbox", "false");
 	settings->setDefault("ambient_occlusion_gamma", "1.8");
-	settings->setDefault("enable_shaders", "true");
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
 	settings->setDefault("show_nametag_backgrounds", "true");
 	settings->setDefault("show_block_bounds_radius_near", "4");
+	settings->setDefault("transparency_sorting_group_by_buffers", "true");
 	settings->setDefault("transparency_sorting_distance", "16");
 
 	settings->setDefault("enable_minimap", "true");
@@ -412,7 +396,7 @@ void set_default_settings()
 	settings->setDefault("chat_font_size", "0"); // Default "font_size"
 
 	// ContentDB
-	settings->setDefault("contentdb_url", "https://content.minetest.net");
+	settings->setDefault("contentdb_url", "https://content.luanti.org");
 	settings->setDefault("contentdb_enable_updates_indicator", "true");
 	settings->setDefault("contentdb_max_concurrent_downloads", "3");
 
@@ -559,6 +543,7 @@ void set_default_settings()
 	settings->setDefault("keymap_sneak", "KEY_SHIFT");
 #endif
 
+	settings->setDefault("touch_layout", "");
 	settings->setDefault("touchscreen_sensitivity", "0.2");
 	settings->setDefault("touchscreen_threshold", "20");
 	settings->setDefault("touch_long_tap_delay", "400");

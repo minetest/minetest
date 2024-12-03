@@ -1,21 +1,6 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+// Luanti
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_internal.h"
@@ -240,37 +225,6 @@ std::string ScriptApiBase::getCurrentModNameInsecure(lua_State *L)
 	return ret;
 }
 
-std::string ScriptApiBase::getCurrentModName(lua_State *L)
-{
-	auto script = ModApiBase::getScriptApiBase(L);
-	if (script->getType() == ScriptingType::Async ||
-		script->getType() == ScriptingType::Emerge)
-	{
-		// As a precaution never return a "secure" mod name in the async and
-		// emerge environment, because these currently do not track mod origins
-		// in a spoof-safe way (see l_register_async_dofile and l_register_mapgen_script).
-		return "";
-	}
-
-	// We have to make sure that this function is being called directly by
-	// a mod, otherwise a malicious mod could override a function and
-	// steal its return value. (e.g. request_insecure_environment)
-	lua_Debug info;
-
-	// Make sure there's only one item below this function on the stack...
-	if (lua_getstack(L, 2, &info))
-		return "";
-	FATAL_ERROR_IF(!lua_getstack(L, 1, &info), "lua_getstack() failed");
-	FATAL_ERROR_IF(!lua_getinfo(L, "S", &info), "lua_getinfo() failed");
-
-	// ...and that that item is the main file scope.
-	if (strcmp(info.what, "main") != 0)
-		return "";
-
-	// at this point we can trust this value:
-	return getCurrentModNameInsecure(L);
-}
-
 void ScriptApiBase::loadMod(const std::string &script_path,
 		const std::string &mod_name)
 {
@@ -288,7 +242,7 @@ void ScriptApiBase::loadScript(const std::string &script_path)
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	bool ok;
-	if (m_secure) {
+	if (ScriptApiSecurity::isSecure(L)) {
 		ok = ScriptApiSecurity::safeLoadFile(L, script_path.c_str());
 	} else {
 		ok = !luaL_loadfile(L, script_path.c_str());
