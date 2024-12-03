@@ -634,34 +634,6 @@ void CSkinnedMesh::setDirty(E_BUFFER_TYPE buffer)
 		LocalBuffers[i]->setDirty(buffer);
 }
 
-//! uses animation from another mesh
-bool CSkinnedMesh::useAnimationFrom(const ISkinnedMesh *mesh)
-{
-	bool unmatched = false;
-
-	for (u32 i = 0; i < AllJoints.size(); ++i) {
-		SJoint *joint = AllJoints[i];
-		joint->UseAnimationFrom = 0;
-
-		if (joint->Name == "")
-			unmatched = true;
-		else {
-			for (u32 j = 0; j < mesh->getAllJoints().size(); ++j) {
-				SJoint *otherJoint = mesh->getAllJoints()[j];
-				if (joint->Name == otherJoint->Name) {
-					joint->UseAnimationFrom = otherJoint;
-				}
-			}
-			if (!joint->UseAnimationFrom)
-				unmatched = true;
-		}
-	}
-
-	checkForAnimation();
-
-	return !unmatched;
-}
-
 //! Update Normals when Animating
 //! False= Don't animate them, faster
 //! True= Update normals (default)
@@ -1130,7 +1102,7 @@ CSkinnedMesh::SWeight *CSkinnedMesh::addWeight(SJoint *joint)
 	return &joint->Weights.getLast();
 }
 
-bool CSkinnedMesh::isStatic()
+bool CSkinnedMesh::isStatic() const
 {
 	return !HasAnimation;
 }

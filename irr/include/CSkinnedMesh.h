@@ -2,25 +2,38 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-// New skinned mesh
-
 #pragma once
 
+#include "IAnimatedMesh.h"
 #include "ISceneManager.h"
-#include "ISkinnedMesh.h"
 #include "SMeshBuffer.h"
+#include "SSkinMeshBuffer.h"
 #include "quaternion.h"
+
+#include <optional>
 
 namespace irr
 {
 namespace scene
 {
 
+enum E_INTERPOLATION_MODE
+{
+	// constant does use the current key-values without interpolation
+	EIM_CONSTANT = 0,
+
+	// linear interpolation
+	EIM_LINEAR,
+
+	//! count of all available interpolation modes
+	EIM_COUNT
+};
+
 class IAnimatedMeshSceneNode;
 class IBoneSceneNode;
 class ISceneManager;
 
-class CSkinnedMesh : public ISkinnedMesh
+class CSkinnedMesh : public IAnimatedMesh
 {
 public:
 	//! constructor
@@ -46,10 +59,10 @@ public:
 
 	//! Animates this mesh's joints based on frame input
 	//! blend: {0-old position, 1-New position}
-	void animateMesh(f32 frame, f32 blend) override;
+	void animateMesh(f32 frame, f32 blend);
 
-	//! Preforms a software skin on this mesh based of joint positions
-	void skinMesh() override;
+	//! Performs a software skin on this mesh based of joint positions
+	void skinMesh();
 
 	//! returns amount of mesh buffers.
 	u32 getMeshBufferCount() const override;
@@ -83,89 +96,191 @@ public:
 	E_ANIMATED_MESH_TYPE getMeshType() const override;
 
 	//! Gets joint count.
-	u32 getJointCount() const override;
+	u32 getJointCount() const;
 
 	//! Gets the name of a joint.
-	const std::optional<std::string> &getJointName(u32 number) const override;
+	/** \param number: Zero based index of joint.
+	\return Name of joint and null if an error happened. */
+	const std::optional<std::string> &getJointName(u32 number) const;
 
 	//! Gets a joint number from its name
-	std::optional<u32> getJointNumber(const std::string &name) const override;
-
-	//! uses animation from another mesh
-	bool useAnimationFrom(const ISkinnedMesh *mesh) override;
+	/** \param name: Name of the joint.
+	\return Number of the joint or std::nullopt if not found. */
+	std::optional<u32> getJointNumber(const std::string &name) const;
 
 	//! Update Normals when Animating
-	//! False= Don't (default)
-	//! True = Update normals, slower
-	void updateNormalsWhenAnimating(bool on) override;
+	/** \param on If false don't animate, which is faster.
+	Else update normals, which allows for proper lighting of
+	animated meshes. */
+	void updateNormalsWhenAnimating(bool on);
 
 	//! Sets Interpolation Mode
-	void setInterpolationMode(E_INTERPOLATION_MODE mode) override;
+	void setInterpolationMode(E_INTERPOLATION_MODE mode);
 
-	//! Convertes the mesh to contain tangent information
-	void convertMeshToTangents() override;
+	//! converts the vertex type of all meshbuffers to tangents.
+	/** E.g. used for bump mapping. */
+	void convertMeshToTangents();
 
 	//! Does the mesh have no animation
-	bool isStatic() override;
+	bool isStatic() const;
 
-	//! (This feature is not implemented in irrlicht yet)
-	bool setHardwareSkinning(bool on) override;
+	//! Allows to enable hardware skinning.
+	/* This feature is not implemented in Irrlicht yet */
+	bool setHardwareSkinning(bool on);
 
 	//! Refreshes vertex data cached in joints such as positions and normals
-	void refreshJointCache() override;
+	void refreshJointCache();
 
 	//! Moves the mesh into static position.
-	void resetAnimation() override;
+	void resetAnimation();
 
-	// Interface for the mesh loaders (finalize should lock these functions, and they should have some prefix like loader_
-	// these functions will use the needed arrays, set values, etc to help the loaders
-
-	//! exposed for loaders to add mesh buffers
-	core::array<SSkinMeshBuffer *> &getMeshBuffers() override;
-
-	//! alternative method for adding joints
-	core::array<SJoint *> &getAllJoints() override;
-
-	//! alternative method for adding joints
-	const core::array<SJoint *> &getAllJoints() const override;
-
-	//! loaders should call this after populating the mesh
-	void finalize() override;
-
-	//! Adds a new meshbuffer to the mesh, access it as last one
-	SSkinMeshBuffer *addMeshBuffer() override;
-
-	//! Adds a new meshbuffer to the mesh, access it as last one
-	void addMeshBuffer(SSkinMeshBuffer *meshbuf) override;
-
-	//! Adds a new joint to the mesh, access it as last one
-	SJoint *addJoint(SJoint *parent = 0) override;
-
-	//! Adds a new position key to the mesh, access it as last one
-	SPositionKey *addPositionKey(SJoint *joint) override;
-	//! Adds a new rotation key to the mesh, access it as last one
-	SRotationKey *addRotationKey(SJoint *joint) override;
-	//! Adds a new scale key to the mesh, access it as last one
-	SScaleKey *addScaleKey(SJoint *joint) override;
-
-	//! Adds a new weight to the mesh, access it as last one
-	SWeight *addWeight(SJoint *joint) override;
-
-	virtual void updateBoundingBox(void);
+	virtual void updateBoundingBox();
 
 	//! Recovers the joints from the mesh
 	void recoverJointsFromMesh(core::array<IBoneSceneNode *> &jointChildSceneNodes);
 
-	//! Tranfers the joint data to the mesh
+	//! Transfers the joint data to the mesh
 	void transferJointsToMesh(const core::array<IBoneSceneNode *> &jointChildSceneNodes);
 
-	//! Tranfers the joint hints to the mesh
+	//! Transfers the joint hints to the mesh
 	void transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode *> &jointChildSceneNodes);
 
 	//! Creates an array of joints from this mesh as children of node
 	void addJoints(core::array<IBoneSceneNode *> &jointChildSceneNodes,
 			IAnimatedMeshSceneNode *node,
 			ISceneManager *smgr);
+
+	//! A vertex weight
+	struct SWeight
+	{
+		//! Index of the mesh buffer
+		u16 buffer_id; // I doubt 32bits is needed
+
+		//! Index of the vertex
+		u32 vertex_id; // Store global ID here
+
+		//! Weight Strength/Percentage (0-1)
+		f32 strength;
+
+	private:
+		//! Internal members used by CSkinnedMesh
+		friend class CSkinnedMesh;
+		char *Moved;
+		core::vector3df StaticPos;
+		core::vector3df StaticNormal;
+	};
+
+	//! Animation keyframe which describes a new position
+	struct SPositionKey
+	{
+		f32 frame;
+		core::vector3df position;
+	};
+
+	//! Animation keyframe which describes a new scale
+	struct SScaleKey
+	{
+		f32 frame;
+		core::vector3df scale;
+	};
+
+	//! Animation keyframe which describes a new rotation
+	struct SRotationKey
+	{
+		f32 frame;
+		core::quaternion rotation;
+	};
+
+	//! Joints
+	struct SJoint
+	{
+		SJoint() :
+				UseAnimationFrom(0), GlobalSkinningSpace(false),
+				positionHint(-1), scaleHint(-1), rotationHint(-1)
+		{
+		}
+
+		//! The name of this joint
+		std::optional<std::string> Name;
+
+		//! Local matrix of this joint
+		core::matrix4 LocalMatrix;
+
+		//! List of child joints
+		core::array<SJoint *> Children;
+
+		//! List of attached meshes
+		core::array<u32> AttachedMeshes;
+
+		//! Animation keys causing translation change
+		core::array<SPositionKey> PositionKeys;
+
+		//! Animation keys causing scale change
+		core::array<SScaleKey> ScaleKeys;
+
+		//! Animation keys causing rotation change
+		core::array<SRotationKey> RotationKeys;
+
+		//! Skin weights
+		core::array<SWeight> Weights;
+
+		//! Unnecessary for loaders, will be overwritten on finalize
+		core::matrix4 GlobalMatrix; // loaders may still choose to set this (temporarily) to calculate absolute vertex data.
+		core::matrix4 GlobalAnimatedMatrix;
+		core::matrix4 LocalAnimatedMatrix;
+
+		//! These should be set by loaders.
+		core::vector3df Animatedposition;
+		core::vector3df Animatedscale;
+		core::quaternion Animatedrotation;
+
+		// The .x and .gltf formats pre-calculate this
+		std::optional<core::matrix4> GlobalInversedMatrix;
+	private:
+		//! Internal members used by CSkinnedMesh
+		friend class CSkinnedMesh;
+
+		SJoint *UseAnimationFrom;
+		bool GlobalSkinningSpace;
+
+		s32 positionHint;
+		s32 scaleHint;
+		s32 rotationHint;
+	};
+
+	// Interface for the mesh loaders (finalize should lock these functions, and they should have some prefix like loader_
+	// these functions will use the needed arrays, set values, etc to help the loaders
+
+	//! exposed for loaders to add mesh buffers
+	core::array<SSkinMeshBuffer *> &getMeshBuffers();
+
+	//! alternative method for adding joints
+	core::array<SJoint *> &getAllJoints();
+
+	//! alternative method for reading joints
+	const core::array<SJoint *> &getAllJoints() const;
+
+	//! loaders should call this after populating the mesh
+	void finalize();
+
+	//! Adds a new meshbuffer to the mesh, access it as last one
+	SSkinMeshBuffer *addMeshBuffer();
+
+	//! Adds a new meshbuffer to the mesh, access it as last one
+	void addMeshBuffer(SSkinMeshBuffer *meshbuf);
+
+	//! Adds a new joint to the mesh, access it as last one
+	SJoint *addJoint(SJoint *parent = 0);
+
+	//! Adds a new position key to the mesh, access it as last one
+	SPositionKey *addPositionKey(SJoint *joint);
+	//! Adds a new rotation key to the mesh, access it as last one
+	SRotationKey *addRotationKey(SJoint *joint);
+	//! Adds a new scale key to the mesh, access it as last one
+	SScaleKey *addScaleKey(SJoint *joint);
+
+	//! Adds a new weight to the mesh, access it as last one
+	SWeight *addWeight(SJoint *joint);
 
 private:
 	void checkForAnimation();
