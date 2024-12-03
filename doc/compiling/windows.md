@@ -9,7 +9,7 @@
 
 ## Compiling and installing the dependencies
 
-It is highly recommended to use vcpkg as package manager, installed in a location without spaces in the path for compatibility with CMake.
+It is highly recommended to use vcpkg to manage dependencies, installed at a path without spaces in it for compatibility with the Luanti build configuration.
 
 ```
 "C:\Program Filesvcpkg\vcpkg.exe" # bad, may have issues with CMake
