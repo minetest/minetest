@@ -98,7 +98,7 @@ Some optional dependencies are recommended for advanced development. You can add
 1. Choose the right Visual Studio version and target platform. Currently, Luanti uses Visual Studio 16 2019, but newer VS versions should work as well. The VS version has to match the version of the installed dependencies.
 1. Choose **Specify toolchain file for cross-compiling**
 1. Click **Next**
-1. Select the vcpkg toolchain file, e.g. `C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake`. Save this value for later.
+1. Select the vcpkg toolchain file, e.g. `C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake`.
 1. Click Finish
 1. Wait until CMake generates the cache file (this may take about 10-30 minutes, depending on your device)
 1. If there are any errors, solve them and hit **Configure**
