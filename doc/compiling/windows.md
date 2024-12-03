@@ -68,11 +68,7 @@ vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo 
 
 This command takes about 10-30 minutes to complete, depending on your device.
 
--   `curl` is highly recommended, as it's required to read the serverlist; `curl[winssl]` is required to use the content store.
--   `openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
--   `luajit` is optional, it replaces the integrated Lua interpreter with a faster just-in-time interpreter.
--   `gmp` and `jsoncpp` are optional, otherwise the bundled versions will be compiled
--   `gettext` is optional, but required to use translations.
+
 
 There are other optional libraries, but we don't test if they can build and link correctly.
 
@@ -81,19 +77,31 @@ Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-window
 
 ## Install Luanti dependencies
 
+### Optional dependencies
+
+Some optional dependencies are recommended for advanced development. You can add them to `vcpkg.json` to install them along with the required dependencies.
+
+-   `curl` is highly recommended, as it's required to read the serverlist; `curl[winssl]` is required to use the content store.
+-   `openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
+-   `luajit` is optional, it replaces the integrated Lua interpreter with a faster just-in-time interpreter.
+-   `gmp` and `jsoncpp` are optional, otherwise the bundled versions will be compiled
+-   `gettext` is optional, but required to use translations.
+
+### Install dependencies 
+
 1. Start up the CMake GUI (Win > search "cmake-gui" > open)
-2. Select **Browse Source...** and select `path/to/minetest` (where you've cloned the repo)
-3. Select **Browse Build...** and select `path/to/minetest/build` (a new folder that CMake will prompt to create)
-4. Select **Configure**
-5. Choose the right Visual Studio version and target platform. Currently, Luanti uses Visual Studio 16 2019, but newer VS versions should work as well. The VS version has to match the version of the installed dependencies.
-6. Choose **Specify toolchain file for cross-compiling**
-7. Click **Next**
-8. Select the vcpkg toolchain file, e.g. `C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake`. Save this value for later.
-9. Click Finish
-10. Wait until CMake generates the cache file (this may take about 10-30 minutes, depending on your device)
-11. If there are any errors, solve them and hit **Configure**
-12. Click **Generate**
-13. Click **Open Project**
+1. Select **Browse Source...** and select `path/to/minetest` (where you've cloned the repo)
+1. Select **Browse Build...** and select `path/to/minetest/build` (a new folder that CMake will prompt to create)
+1. Select **Configure**
+1. Choose the right Visual Studio version and target platform. Currently, Luanti uses Visual Studio 16 2019, but newer VS versions should work as well. The VS version has to match the version of the installed dependencies.
+1. Choose **Specify toolchain file for cross-compiling**
+1. Click **Next**
+1. Select the vcpkg toolchain file, e.g. `C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake`. Save this value for later.
+1. Click Finish
+1. Wait until CMake generates the cache file (this may take about 10-30 minutes, depending on your device)
+1. If there are any errors, solve them and hit **Configure**
+1. Click **Generate**
+1. Click **Open Project**
 
 ## Compile Luanti
 
