@@ -2,10 +2,11 @@
 
 ## Requirements
 
--   [Visual Studio (VS) 2015 or newer](https://visualstudio.microsoft.com)
-    > with C++ build tools for desktop (todo add image)
--   [CMake](https://cmake.org/download/) (comes with VS C++ build tools)
--   [vcpkg](https://github.com/Microsoft/vcpkg) (comes with VS C++ build tools)
+-   [Visual Studio (VS) 2015 or newer](https://visualstudio.microsoft.com) including 
+"Desktop development with C++"
+    ![VS installer showing desktop development with C++ selected](assets/vs-installer.png)
+-   [CMake](https://cmake.org/download/) (comes with VS C++)
+-   [vcpkg](https://github.com/Microsoft/vcpkg) (comes with VS C++)
 -   [Git](https://git-scm.com/downloads)
 
 ## Compiling and installing the dependencies
