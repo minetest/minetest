@@ -106,14 +106,24 @@ There are two ways to compile Luanti: via Visual Studio or via CLI.
 
 ### Compile via CLI
 
-While in the `path/to/minetest` folder, run the following script in PowerShell:
+While in the `path/to/minetest` folder, run the following command:
 
+```
+cmake --build build --config Release
+```
+
+<!-- 
 ```powershell
 $vs="Visual Studio 17 2022" # or "Visual Studio 16 2019", etc., whatever matches your system
 $toolchain_file="path/to/vcpkg/scripts/buildsystems/vcpkg.cmake" # todo vcpkg path from "Install Luanti dependencies" section
-cmake . -G $vs -DCMAKE_TOOLCHAIN_FILE=$toolchain_file -DCMAKE_BUILD_TYPE=Release -DENABLE_CURSES=OFF
+cmake . -G "$vs" -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" -DCMAKE_BUILD_TYPE=Release -DENABLE_CURSES=OFF
 cmake --build . --config Release
 ```
+-->
+
+## Running Luanti
+
+You should be able to run `path/to/minetest/bin/Release/luanti.exe` and start up the Development Test game :)
 
 ## Windows Installer using WiX Toolset
 
