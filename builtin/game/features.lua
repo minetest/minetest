@@ -45,7 +45,6 @@ core.features = {
 	abm_without_neighbors = true,
 	biome_weights = true,
 	particle_blend_clip = true,
-	spawn_tree_on_vmanip_function = true,
 }
 
 function core.has_feature(arg)

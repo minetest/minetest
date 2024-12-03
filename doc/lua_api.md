@@ -5659,8 +5659,6 @@ Utilities
       biome_weights = true,
       -- Particles can specify a "clip" blend mode (5.11.0)
       particle_blend_clip = true,
-      -- The `core.spawn_tree_on_vmanip` function is available (5.11.0)
-      spawn_tree_on_vmanip_function = true,
   }
   ```
 
