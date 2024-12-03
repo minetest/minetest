@@ -12,7 +12,7 @@
 It is highly recommended to use vcpkg to manage dependencies, installed at a path without spaces in it for compatibility with the Luanti build configuration.
 
 ```
-"C:\Program Filesvcpkg\vcpkg.exe" # bad, may have issues with CMake
+"C:\Program Filesvcpkg\vcpkg.exe" # bad, may have issues
 "C:\vcpkg\vcpkg.exe" # good, no spaces means fewer problems
 ```
 
