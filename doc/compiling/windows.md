@@ -5,6 +5,7 @@
 -   [Visual Studio 2015 or newer](https://visualstudio.microsoft.com)
 -   [CMake](https://cmake.org/download/)
 -   [vcpkg](https://github.com/Microsoft/vcpkg)
+    > [vcpkg installation guide](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started#1---set-up-vcpkg)
 -   [Git](https://git-scm.com/downloads)
 
 ## Compiling and installing the dependencies
