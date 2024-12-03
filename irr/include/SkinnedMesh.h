@@ -11,6 +11,7 @@
 #include "quaternion.h"
 
 #include <optional>
+#include <string>
 
 namespace irr
 {

@@ -3,7 +3,7 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "SkinnedMesh.h"
-#include <optional>
+#include "IBoneSceneNode.h"
 #include "CBoneSceneNode.h"
 #include "IAnimatedMeshSceneNode.h"
 #include "SSkinMeshBuffer.h"
