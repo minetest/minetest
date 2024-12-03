@@ -1,7 +1,7 @@
 set(sound_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/sound.cpp)
 
 if(USE_SOUND)
-	set(sound_SRCS ${sound_SRCS}
+	list(APPEND sound_SRCS
 		${CMAKE_CURRENT_SOURCE_DIR}/sound/al_extensions.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/sound/al_helpers.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/sound/ogg_file.cpp

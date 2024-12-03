@@ -273,7 +273,7 @@ set(PLATFORM_LIBS Threads::Threads)
 if(WIN32)
 	# Windows
 	if(MSVC) # MSVC Specifics
-		set(PLATFORM_LIBS dbghelp.lib ${PLATFORM_LIBS})
+		list(APPEND PLATFORM_LIBS dbghelp.lib)
 		# Surpress some useless warnings
 		add_compile_options(/W1)
 		add_compile_definitions(
@@ -285,7 +285,7 @@ if(WIN32)
 			NOMINMAX
 		)
 	endif()
-	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib winmm.lib ${PLATFORM_LIBS})
+	list(APPEND PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib winmm.lib)
 
 	set(EXTRA_DLL "" CACHE FILEPATH "Optional paths to additional DLLs that should be packaged")
 
@@ -312,28 +312,28 @@ if(WIN32)
 	endif()
 else()
 	# Unix probably
-	set(PLATFORM_LIBS ${PLATFORM_LIBS} ${CMAKE_DL_LIBS})
+	list(APPEND PLATFORM_LIBS ${CMAKE_DL_LIBS})
 	if(APPLE)
-		set(PLATFORM_LIBS "-framework CoreFoundation" ${PLATFORM_LIBS})
+		list(APPEND PLATFORM_LIBS "-framework CoreFoundation")
 	else()
 		check_library_exists(rt clock_gettime "" HAVE_LIBRT)
 		if (HAVE_LIBRT)
-			set(PLATFORM_LIBS -lrt ${PLATFORM_LIBS})
+			list(APPEND PLATFORM_LIBS -lrt)
 		endif(HAVE_LIBRT)
 	endif(APPLE)
 
 	find_library(ICONV_LIBRARY iconv)
 	mark_as_advanced(ICONV_LIBRARY)
 	if (ICONV_LIBRARY)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} ${ICONV_LIBRARY})
+		list(APPEND PLATFORM_LIBS ${ICONV_LIBRARY})
 	endif()
 
 	if (HAIKU)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} network)
+		list(APPEND PLATFORM_LIBS network)
 	endif()
 
 	if (ANDROID)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} android log)
+		list(APPEND PLATFORM_LIBS android log)
 	endif()
 endif()
 
@@ -347,7 +347,7 @@ if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 	check_c_source_compiles("int main(){}" HAVE_LINK_ATOMIC)
 	set(CMAKE_REQUIRED_LIBRARIES "")
 	if(HAVE_LINK_ATOMIC)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} "-latomic")
+		list(APPEND PLATFORM_LIBS "-latomic")
 	endif()
 endif()
 
@@ -471,21 +471,21 @@ set(common_SRCS
 )
 
 if(ANDROID)
-	set(common_SRCS ${common_SRCS} porting_android.cpp)
+	list(APPEND common_SRCS porting_android.cpp)
 endif()
 
 if(BUILD_UNITTESTS)
 	add_subdirectory(unittest)
-	set(common_SRCS ${common_SRCS} ${UNITTEST_SRCS})
+	list(APPEND common_SRCS ${UNITTEST_SRCS})
 endif()
 
 if(BUILD_BENCHMARKS)
 	add_subdirectory(benchmark)
-	set(common_SRCS ${common_SRCS} ${BENCHMARK_SRCS})
+	list(APPEND common_SRCS ${BENCHMARK_SRCS})
 endif()
 
 if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
-	set(common_SRCS ${common_SRCS} catch.cpp)
+	list(APPEND common_SRCS catch.cpp)
 endif()
 
 # This gives us the icon and file version information
@@ -516,8 +516,7 @@ if (BUILD_CLIENT)
 	add_subdirectory(irrlicht_changes)
 endif(BUILD_CLIENT)
 
-set(client_SRCS
-	${client_SRCS}
+list(APPEND client_SRCS
 	${common_SRCS}
 	${gui_SRCS}
 	${client_network_SRCS}
@@ -526,11 +525,11 @@ set(client_SRCS
 )
 
 if(BUILD_UNITTESTS)
-	set(client_SRCS ${client_SRCS} ${UNITTEST_CLIENT_SRCS})
+	list(APPEND client_SRCS ${UNITTEST_CLIENT_SRCS})
 endif()
 
 if(BUILD_BENCHMARKS)
-	set(client_SRCS ${client_SRCS} ${BENCHMARK_CLIENT_SRCS})
+	list(APPEND client_SRCS ${BENCHMARK_CLIENT_SRCS})
 endif()
 
 # Server sources
@@ -1106,7 +1105,7 @@ elseif (USE_GETTEXT)
 			COMMENT "mo-update [${LOCALE}]: Creating mo file."
 			)
 
-		set(MO_FILES ${MO_FILES} ${MO_FILE_PATH})
+		list(APPEND MO_FILES ${MO_FILE_PATH})
 	endforeach()
 
 	add_custom_target(translations ALL COMMENT "mo update" DEPENDS ${MO_FILES})
