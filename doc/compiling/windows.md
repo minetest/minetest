@@ -74,7 +74,7 @@ mkdir build
 cmake -S . -B build -G "$vs" -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" -DCMAKE_BUILD_TYPE=Release -DENABLE_CURSES=OFF
 ```
 
-The above program may take about 10-30 minutes, depending on your device.
+The above program may take up to 45 minutes, depending on your device.
 
 You may see several warnings and even errors. For now, you may be able to ignore those and try going to step 3 once the installation completes. If you are struggling, please open an issue on the GitHub repo.
 
@@ -89,7 +89,7 @@ To install dependencies via CMake GUI:
 1. Click **Next**
 1. Select the vcpkg toolchain file, e.g. `C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake`.
 1. Click Finish
-1. Wait until CMake generates the cache file (this may take about 10-30 minutes, depending on your device)
+1. Wait until CMake generates the cache file (this may take up to 45 minutes, depending on your device)
 1. If there are any errors, solve them and hit **Configure**
 1. Click **Generate**
 1. Click **Open Project**
