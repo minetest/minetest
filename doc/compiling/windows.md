@@ -70,10 +70,11 @@ To install dependencies via CLI, you can run this program in PowerShell:
 # Run this while in `path/to/minetest`
 $vs="Visual Studio 17 2022" # or "Visual Studio 16 2019", whatever matches your machine
 $toolchain_file="C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" # or wherever you installed vcpkg.cmake manually
-cmake build -G "$vs" -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" -DCMAKE_BUILD_TYPE=Release -DENABLE_CURSES=OFF
+mkdir build
+cmake -S . -B build -G "$vs" -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" -DCMAKE_BUILD_TYPE=Release -DENABLE_CURSES=OFF
 ```
 
-The above steps may take about 10-30 minutes, depending on your device.
+The above program may take about 10-30 minutes, depending on your device.
 
 You may see several warnings and even errors. For now, you may be able to ignore those and try going to step 3 once the installation completes. If you are struggling, please open an issue on the GitHub repo.
 
