@@ -2,17 +2,18 @@
 
 If you're just creating mods or games with Luanti, you do not need to compile Luanti. Instead, follow Ruben Wardy's [Luanti Modding Book](https://rubenwardy.gitlab.io/minetest_modding_book) to get started modding. Compiling Luanti is only required if you plan to modify the Luanti engine itself.
 
-## Requirements
+In this guide, we use `path/to/luanti` to refer to the repository.
 
--   [Visual Studio 2015 or newer](https://visualstudio.microsoft.com) including
-    "Desktop development with C++"
--   [CMake](https://cmake.org/download/)
--   [vcpkg](https://github.com/Microsoft/vcpkg) (included with Visual Studio)
+## 1. Machine requirements
+
+Luanti is compiled via Visual Studio and CMake, and version control is managed with Git.
+
+-   [Visual Studio 2015 or newer](https://visualstudio.microsoft.com) including "Desktop development with C++" (includes CMake CLI but not CMake GUI)
 -   [Git](https://git-scm.com/downloads)
 
-### Visual Studio with C++
+### 1.1. Visual Studio (VS) with C++
 
-1. Install Visual Studio (VS) from [visualstudio.microsoft.com](https://visualstudio.microsoft.com)
+1. Install VS from [visualstudio.microsoft.com](https://visualstudio.microsoft.com)
 1. In the VS installer, select "Desktop development with C++":
 
     ![VS installer showing desktop development with C++ selected](assets/vs-installer.png)
@@ -21,65 +22,35 @@ If you're just creating mods or games with Luanti, you do not need to compile Lu
 
 This will install the C++ compiler used in later steps. VS is also the recommended IDE for Luanti.
 
-You may notice that the C++ tools include CMake, but it should also be installed separately for compatibility with Luanti.
+### 1.2. CMake
 
-### CMake
+The CMake GUI is a great tool to manage first-time setup of Luanti. It's not required, but recommended for anyone unfamiliar with CMake or its CLI. CMake itself comes bundled with Visual Studio, but the CMake GUI does not, and must be installed separately.
 
 Install from [cmake.org/download](https://cmake.org/download/). Once installed, you should be able to run `cmake-gui` from the start menu:
 
 ![cmake-gui in Windows start menu shows app result](./assets/cmake-gui-search.png)
 
-<!--
-### vcpkg
+Installing CMake this way also adds it to your PATH environment variable, and you should be able to run `(Get-Command cmake).Path` in PowerShell or `which cmake` in Bash and get a result.
 
-vcpkg is a package manager for C++.
+If you don't install CMake manually, and are relying on the version that comes bundled with Visual Studio, you can follow these steps:
 
-```powershell
-cd /c # Install vcpkg at any path without spaces in it, see below for details
-git clone https://github.com/microsoft/vcpkg.git
-cd vcpkg
-./bootstrap-vcpkg.sh
-```
+1. Find the `/path/to/bin/CMake.exe`. It should be at or around `C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe`.
+1. Edit your PATH environment variable to include the `/path/to/bin` (but not `cmake.exe`).
 
-Find `path/to/vcpkg/buildsystems/vcpkg.cmake` to confirm vcpkg is ready to use.
+    1. Start menu > Search "env" > Edit the system environment variables > Environment Variables... > Path > Edit... > New > Paste the path from step 1
 
-> For more details, [follow the vcpkg installation guide](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started#1---set-up-vcpkg)
+    ![Path variable with cmake added](./assets/path.png)
 
-It is highly recommended to install vcpkg at a path without spaces in it for compatibility with  Luanti.
+    ![path ends with \bin, not \cmake.exe](./assets/path-bin.png)
 
-```
-"C:\Program Files\vcpkg\vcpkg.exe" # bad, may have issues
-"C:\vcpkg\vcpkg.exe" # good, no spaces means fewer problems
-```
+1. Restart your terminal
+1. Try `(Get-Command cmake).Path` in PowerShell or `which cmake` in Bash to ensure CMake can be executed from the terminal.
 
-If spaces are present, when trying to compile Luanti, you may see errors like:
+## 2. Install Luanti dependencies
 
-```
-libtool:   error: 'Files/vcpkg/buildtrees/libiconv/x64-windows-dbg/lib/libcharset.la' is not a directory
-```
--->
+Once VS and CMake are ready to use, you can install Luanti's dependencies. Luanti requires several C++ packages to function, which are installed by CMake and compiled by a C++ compiler bundled with VS. CMake uses a tool called vcpkg behind the scenes, which you may see referenced elsewhere in this project.
 
-<!-- todo check if this is necessary
-## Compiling and installing the dependencies
-
-After you successfully built vcpkg you can easily install the required libraries:
-
-```powershell
-vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp gettext[tools] sdl2 --triplet x64-windows
-```
-
-This command takes about 10-30 minutes to complete, depending on your device.
-
-
-
-There are other optional libraries, but we don't test if they can build and link correctly.
-
-Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-windows`.
--->
-
-## Install Luanti dependencies
-
-### Optional dependencies
+### 2.1. Optional dependencies
 
 Some optional dependencies are recommended for advanced development. You can add them to `vcpkg.json` to install them along with the required dependencies.
 
@@ -89,7 +60,24 @@ Some optional dependencies are recommended for advanced development. You can add
 -   `gmp` and `jsoncpp` are optional, otherwise the bundled versions will be compiled
 -   `gettext` is optional, but required to use translations.
 
-### Install dependencies
+### 2.2. Install dependencies
+
+You can install dependencies via CLI or via CMake GUI, whichever your prefer.
+
+To install dependencies via CLI, you can run this program in PowerShell:
+
+```powershell
+# Run this while in `path/to/minetest`
+$vs="Visual Studio 17 2022" # or "Visual Studio 16 2019", whatever matches your machine
+$toolchain_file="C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" # or wherever you installed vcpkg.cmake manually
+cmake build -G "$vs" -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" -DCMAKE_BUILD_TYPE=Release -DENABLE_CURSES=OFF
+```
+
+The above steps may take about 10-30 minutes, depending on your device.
+
+You may see several warnings and even errors. For now, you may be able to ignore those and try going to step 3 once the installation completes. If you are struggling, please open an issue on the GitHub repo.
+
+To install dependencies via CMake GUI:
 
 1. Start up the CMake GUI (Win > search "cmake-gui" > open)
 1. Select **Browse Source...** and select `path/to/luanti` (where you've cloned the repo)
@@ -105,37 +93,35 @@ Some optional dependencies are recommended for advanced development. You can add
 1. Click **Generate**
 1. Click **Open Project**
 
-## Compile Luanti
+You may see several warnings and even errors. For now, you may be able to ignore those and try going to step 3 once the installation completes. If you are struggling, please open an issue on the GitHub repo.
 
-There are two ways to compile Luanti: via Visual Studio or via CLI.
+## 3. Compile Luanti
 
-### Compile in Visual Studio
+Once the dependencies are installed, there are two ways to compile Luanti: via Visual Studio or via CLI.
 
-14. Compile Luanti inside Visual Studio.
+### 3.1. Compile in Visual Studio
+
+14. Compile Luanti inside Visual Studio using the green play button.
     -   If you get "Unable to start program '...\x64\Debug\ALL_BUILD'. Access is denied", try compiling via the CLI instead.
 
-### Compile via CLI
+### 3.2. Compile via CLI
 
-While in the `path/to/minetest` folder, run the following command:
+Run the following command:
 
-```
+```powershell
+# Run this while in `path/to/minetest`
 cmake --build build --config Release
 ```
 
-<!--
-```powershell
-$vs="Visual Studio 17 2022" # or "Visual Studio 16 2019", etc., whatever matches your system
-$toolchain_file="path/to/vcpkg/scripts/buildsystems/vcpkg.cmake" # todo vcpkg path from "Install Luanti dependencies" section
-cmake . -G "$vs" -DCMAKE_TOOLCHAIN_FILE="$toolchain_file" -DCMAKE_BUILD_TYPE=Release -DENABLE_CURSES=OFF
-cmake --build . --config Release
-```
--->
+## 4. Running Luanti
 
-## Running Luanti
+Once Luanti is compiled, you should be able to run `path/to/minetest/bin/Release/luanti.exe` and start up the Development Test game :)
 
-You should be able to run `path/to/minetest/bin/Release/luanti.exe` and start up the Development Test game :)
+## 5. Making changes
 
-## Windows Installer using WiX Toolset
+If you make changes to the C++ code, you can usually just re-compile without re-installing the dependencies. Then you can re-run Luanti to confirm that your changes were applied.
+
+## Appendix: Windows Installer using WiX Toolset
 
 Requirements:
 
