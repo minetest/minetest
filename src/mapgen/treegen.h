@@ -70,5 +70,5 @@ namespace treegen {
 	treegen::error spawn_ltree(ServerMap *map, v3s16 p0, const TreeDef &def);
 
 	// Helper to get a string from the error message
-	const std::string error_to_string(error e);
+	std::string error_to_string(error e);
 }; // namespace treegen

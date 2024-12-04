@@ -876,7 +876,8 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
 	}
 }
 
-const std::string error_to_string(error e) {
+std::string error_to_string(error e)
+{
 	switch (e) {
 		case SUCCESS:
 			return "success";
