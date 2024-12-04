@@ -6180,7 +6180,7 @@ Setting-related
 * `core.settings`: Settings object containing all of the settings from the
   main config file (`minetest.conf`). See [`Settings`].
 * `core.setting_get_pos(name)`: Loads a setting from the main settings and
-  parses it as a position (in the format `(1,2,3)`). Returns a position or nil.
+  parses it as a position (in the format `(1,2,3)`). Returns a position or nil. **Deprecated: use `core.settings:get_pos()` instead**
 
 Authentication
 --------------
@@ -9051,6 +9051,9 @@ means that no defaults will be returned for mod settings.
     * Is currently limited to mapgen flags `mg_flags` and mapgen-specific
       flags like `mgv5_spflags`.
     * Returns `nil` if `key` is not found.
+* `get_pos(key)`:
+    * Returns a `vector`
+    * Returns `nil` if no value is found or parsing failed.
 * `set(key, value)`
     * Setting names can't contain whitespace or any of `="{}#`.
     * Setting values can't contain the sequence `\n"""`.
@@ -9060,6 +9063,9 @@ means that no defaults will be returned for mod settings.
     * See documentation for `set()` above.
 * `set_np_group(key, value)`
     * `value` is a NoiseParams table.
+    * Also, see documentation for `set()` above.
+* `set_pos(key, value)`
+    * `value` is a `vector`.
     * Also, see documentation for `set()` above.
 * `remove(key)`: returns a boolean (`true` for success)
 * `get_names()`: returns `{key1,...}`
