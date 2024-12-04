@@ -165,19 +165,19 @@ local function get_formspec(tabview, name, tabdata)
 						fgettext("Clients:\n$1", table.concat(clients_list, "\n")) .. "]"
 			end
 			retval = retval .. "style[btn_view_clients;padding=6]"
-			retval = retval .. "image_button[5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
+			retval = retval .. "image_button[4.5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
 				"server_view_clients.png") .. ";btn_view_clients;]"
 		end
 
 		if is_selected_fav() then
 			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Remove favorite") .. "]"
 			retval = retval .. "style[btn_delete_favorite;padding=6]"
-			retval = retval .. "image_button[" .. (can_view_clients_list and "4.5" or "5") .. ",1.3;0.5,0.5;" ..
+			retval = retval .. "image_button[5,1.3;0.5,0.5;" ..
 				core.formspec_escape(defaulttexturedir .. "server_favorite_delete.png") .. ";btn_delete_favorite;]"
 		else
 			retval = retval .. "tooltip[btn_add_favorite;" .. fgettext("Add favorite") .. "]"
 			retval = retval .. "style[btn_add_favorite;padding=6]"
-			retval = retval .. "image_button[" .. (can_view_clients_list and "4.5" or "5") ..",1.3;0.5,0.5;" ..
+			retval = retval .. "image_button[5,1.3;0.5,0.5;" ..
 				core.formspec_escape(defaulttexturedir .. "server_favorite.png") .. ";btn_add_favorite;]"
 		end
 	end
