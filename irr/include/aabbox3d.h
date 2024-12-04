@@ -372,10 +372,10 @@ public:
 	}
 
 	//! The near edge
-	vector3d<T> MinEdge{};
+	vector3d<T> MinEdge;
 
 	//! The far edge
-	vector3d<T> MaxEdge{};
+	vector3d<T> MaxEdge;
 };
 
 //! Typedef for a f32 3d bounding box.
