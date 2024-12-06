@@ -241,10 +241,10 @@ public:
 	core::array<SSkinMeshBuffer *> &getMeshBuffers();
 
 	//! alternative method for adding joints
-	core::array<SJoint *> &getAllJoints();
+	std::vector<SJoint *> &getAllJoints();
 
 	//! alternative method for reading joints
-	const core::array<SJoint *> &getAllJoints() const;
+	const std::vector<SJoint *> &getAllJoints() const;
 
 	//! loaders should call this after populating the mesh
 	void finalize();
@@ -297,8 +297,8 @@ private:
 	//! Mapping from meshbuffer number to bindable texture slot
 	std::vector<u32> TextureSlots;
 
-	core::array<SJoint *> AllJoints;
-	core::array<SJoint *> RootJoints;
+	std::vector<SJoint *> AllJoints;
+	std::vector<SJoint *> RootJoints;
 
 	// bool can't be used here because std::vector<bool>
 	// doesn't allow taking a reference to individual elements.

@@ -299,9 +299,7 @@ void CAnimatedMeshSceneNode::render()
 			if (Mesh->getMeshType() == EAMT_SKINNED) {
 				// draw skeleton
 
-				for (u32 g = 0; g < ((SkinnedMesh *)Mesh)->getAllJoints().size(); ++g) {
-					auto *joint = ((SkinnedMesh *)Mesh)->getAllJoints()[g];
-
+				for (auto *joint : ((SkinnedMesh *)Mesh)->getAllJoints()) {
 					for (u32 n = 0; n < joint->Children.size(); ++n) {
 						driver->draw3DLine(joint->GlobalAnimatedMatrix.getTranslation(),
 								joint->Children[n]->GlobalAnimatedMatrix.getTranslation(),
