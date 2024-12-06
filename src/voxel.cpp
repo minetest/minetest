@@ -38,7 +38,7 @@ void VoxelManipulator::clear()
 void VoxelManipulator::print(std::ostream &o, const NodeDefManager *ndef,
 	VoxelPrintMode mode) const
 {
-	const v3s16 &em = m_area.getExtent();
+	auto &em = m_area.getExtent();
 	v3s16 of = m_area.MinEdge;
 	o<<"size: "<<em.X<<"x"<<em.Y<<"x"<<em.Z
 	 <<" offset: ("<<of.X<<","<<of.Y<<","<<of.Z<<")"<<std::endl;
