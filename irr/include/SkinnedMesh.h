@@ -18,18 +18,6 @@ namespace irr
 namespace scene
 {
 
-enum E_INTERPOLATION_MODE
-{
-	// constant does use the current key-values without interpolation
-	EIM_CONSTANT = 0,
-
-	// linear interpolation
-	EIM_LINEAR,
-
-	//! count of all available interpolation modes
-	EIM_COUNT
-};
-
 class IAnimatedMeshSceneNode;
 class IBoneSceneNode;
 class ISceneManager;
@@ -114,9 +102,6 @@ public:
 	Else update normals, which allows for proper lighting of
 	animated meshes. */
 	void updateNormalsWhenAnimating(bool on);
-
-	//! Sets Interpolation Mode
-	void setInterpolationMode(E_INTERPOLATION_MODE mode);
 
 	//! converts the vertex type of all meshbuffers to tangents.
 	/** E.g. used for bump mapping. */
@@ -326,8 +311,6 @@ private:
 
 	f32 LastAnimatedFrame;
 	bool SkinnedLastFrame;
-
-	E_INTERPOLATION_MODE InterpolationMode : 8;
 
 	bool HasAnimation;
 	bool PreparedForSkinning;

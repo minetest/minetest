@@ -88,7 +88,6 @@ namespace scene
 SkinnedMesh::SkinnedMesh() :
 		SkinningBuffers(0), EndFrame(0.f), FramesPerSecond(25.f),
 		LastAnimatedFrame(-1), SkinnedLastFrame(false),
-		InterpolationMode(EIM_LINEAR),
 		HasAnimation(false), PreparedForSkinning(false),
 		AnimateNormals(true), HardwareSkinning(false)
 {
@@ -333,9 +332,9 @@ void SkinnedMesh::getFrameData(f32 frame, SJoint *joint,
 
 			// Do interpolation...
 			if (foundPositionIndex != -1) {
-				if (InterpolationMode == EIM_CONSTANT || foundPositionIndex == 0) {
+				if (foundPositionIndex == 0) {
 					position = PositionKeys[foundPositionIndex].position;
-				} else if (InterpolationMode == EIM_LINEAR) {
+				} else {
 					const SPositionKey &KeyA = PositionKeys[foundPositionIndex];
 					const SPositionKey &KeyB = PositionKeys[foundPositionIndex - 1];
 
@@ -379,9 +378,9 @@ void SkinnedMesh::getFrameData(f32 frame, SJoint *joint,
 
 			// Do interpolation...
 			if (foundScaleIndex != -1) {
-				if (InterpolationMode == EIM_CONSTANT || foundScaleIndex == 0) {
+				if (foundScaleIndex == 0) {
 					scale = ScaleKeys[foundScaleIndex].scale;
-				} else if (InterpolationMode == EIM_LINEAR) {
+				} else {
 					const SScaleKey &KeyA = ScaleKeys[foundScaleIndex];
 					const SScaleKey &KeyB = ScaleKeys[foundScaleIndex - 1];
 
@@ -425,9 +424,9 @@ void SkinnedMesh::getFrameData(f32 frame, SJoint *joint,
 
 			// Do interpolation...
 			if (foundRotationIndex != -1) {
-				if (InterpolationMode == EIM_CONSTANT || foundRotationIndex == 0) {
+				if (foundRotationIndex == 0) {
 					rotation = RotationKeys[foundRotationIndex].rotation;
-				} else if (InterpolationMode == EIM_LINEAR) {
+				} else {
 					const SRotationKey &KeyA = RotationKeys[foundRotationIndex];
 					const SRotationKey &KeyB = RotationKeys[foundRotationIndex - 1];
 
@@ -640,12 +639,6 @@ void SkinnedMesh::setDirty(E_BUFFER_TYPE buffer)
 void SkinnedMesh::updateNormalsWhenAnimating(bool on)
 {
 	AnimateNormals = on;
-}
-
-//! Sets Interpolation Mode
-void SkinnedMesh::setInterpolationMode(E_INTERPOLATION_MODE mode)
-{
-	InterpolationMode = mode;
 }
 
 core::array<scene::SSkinMeshBuffer *> &SkinnedMesh::getMeshBuffers()
