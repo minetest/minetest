@@ -138,7 +138,7 @@ struct SMesh final : public IMesh
 	std::vector<u32> TextureSlots;
 
 	//! The bounding box of this mesh
-	core::aabbox3d<f32> BoundingBox{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
+	core::aabbox3d<f32> BoundingBox;
 };
 
 } // end namespace scene

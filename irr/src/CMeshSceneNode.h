@@ -72,7 +72,7 @@ protected:
 	void copyMaterials();
 
 	core::array<video::SMaterial> Materials;
-	core::aabbox3d<f32> Box{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
+	core::aabbox3d<f32> Box;
 	video::SMaterial ReadOnlyMaterial;
 
 	IMesh *Mesh;

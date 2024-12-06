@@ -60,7 +60,7 @@ private:
 
 	u32 BoneIndex;
 
-	core::aabbox3d<f32> Box{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
+	core::aabbox3d<f32> Box;
 
 	E_BONE_ANIMATION_MODE AnimationMode;
 	E_BONE_SKINNING_SPACE SkinningSpace;
