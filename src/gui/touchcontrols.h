@@ -16,6 +16,7 @@
 #include "itemdef.h"
 #include "touchscreenlayout.h"
 #include "util/basic_macros.h"
+#include "client/keycode.h"
 
 namespace irr
 {
@@ -57,7 +58,7 @@ enum class TapState
 struct button_info
 {
 	float repeat_counter;
-	EKEY_CODE keycode;
+	KeyPress keypress;
 	std::vector<size_t> pointer_ids;
 	std::shared_ptr<IGUIImage> gui_button = nullptr;
 

@@ -646,8 +646,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			event.KeyInput.Control = 0;
 
 		dev = getDeviceFromHWnd(hWnd);
-		if (dev)
+		if (dev) {
+			dev->fillScancode(event);
 			dev->postEventFromUser(event);
+		}
 
 		if (message == WM_SYSKEYDOWN || message == WM_SYSKEYUP)
 			return DefWindowProcW(hWnd, message, wParam, lParam);
