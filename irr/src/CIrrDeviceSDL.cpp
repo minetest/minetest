@@ -27,6 +27,11 @@
 
 #include "CSDLManager.h"
 
+// Since SDL doesn't have mouse keys as keycodes we create artificial entries.
+#define FAKE_MOUSEKEY_MASK ((1<<30)|(1<<29))
+#define FAKE_MOUSEKEY(x) (FAKE_MOUSEKEY_MASK | (x))
+#define IS_FAKE_MOUSEKEY(x) (((x) & FAKE_MOUSEKEY_MASK) == FAKE_MOUSEKEY_MASK)
+
 static int SDLDeviceInstances = 0;
 
 namespace irr
@@ -230,6 +235,8 @@ u32 CIrrDeviceSDL::getScancodeFromKey(const KeyCode &key) const
 				break;
 			}
 		}
+		if (IS_FAKE_MOUSEKEY(keynum))
+			return keynum;
 	} else {
 		keynum = std::get<wchar_t>(key);
 	}
@@ -238,7 +245,7 @@ u32 CIrrDeviceSDL::getScancodeFromKey(const KeyCode &key) const
 
 KeyCode CIrrDeviceSDL::getKeyFromScancode(const u32 scancode) const
 {
-	auto keycode = SDL_GetKeyFromScancode((SDL_Scancode)scancode);
+	auto keycode = IS_FAKE_MOUSEKEY(scancode) ? scancode : SDL_GetKeyFromScancode((SDL_Scancode)scancode);
 	const auto &keyentry = KeyMap.find(keycode);
 	auto irrcode = keyentry != KeyMap.end() ? keyentry->second : KEY_UNKNOWN;
 	auto keychar = findCharToPassToIrrlicht(keycode, irrcode, false);
@@ -1471,6 +1478,13 @@ void CIrrDeviceSDL::createKeyMap()
 	KeyMap.emplace(SDLK_PERIOD, KEY_PERIOD);
 
 	// some special keys missing
+
+	// fake mouse keys for SDL since these don't have scancodes or keycodes.
+	KeyMap.emplace(FAKE_MOUSEKEY(SDL_BUTTON_LEFT), KEY_LBUTTON);
+	KeyMap.emplace(FAKE_MOUSEKEY(SDL_BUTTON_MIDDLE), KEY_MBUTTON);
+	KeyMap.emplace(FAKE_MOUSEKEY(SDL_BUTTON_RIGHT), KEY_RBUTTON);
+	KeyMap.emplace(FAKE_MOUSEKEY(SDL_BUTTON_X1), KEY_XBUTTON1);
+	KeyMap.emplace(FAKE_MOUSEKEY(SDL_BUTTON_X2), KEY_XBUTTON2);
 }
 
 void CIrrDeviceSDL::CCursorControl::initCursors()
