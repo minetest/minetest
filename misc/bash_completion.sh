@@ -6,7 +6,7 @@ __gameid_list() {
 }
 
 _luanti() {
-  local cur prev opts color_values file_opts
+  local cur prev opts file_opts color_values worldlist_values
 
   COMPREPLY=()
   cur="${COMP_WORDS[COMP_CWORD]}"
@@ -15,10 +15,13 @@ _luanti() {
   opts="--address --color --config --console --debugger --gameid --go --help --info --logfile --map-dir --migrate --migrate-auth --migrate-mod-storage --migrate-players --name --password --password-file --port --quiet --random-input --recompress --run-benchmarks --run-unittests --server --terminal --test-module --trace --verbose --version --world --worldlist --worldname"
   file_opts="--config --logfile --map-dir --password-file --world"
   color_values="always auto never"
+  worldlist_values="both name path"
 
 
   if [[ "$prev" == "--color" ]]; then
     COMPREPLY=($(compgen -W "$color_values" -- "$cur"))
+  elif [[ "$prev" == "--worldlist" ]]; then
+    COMPREPLY=($(compgen -W "$worldlist_values" -- "$cur"))
   elif [[ "$prev" == "--gameid" ]]; then
     local gameid_values
     __gameid_list gameid_values
