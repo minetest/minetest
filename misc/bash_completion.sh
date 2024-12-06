@@ -5,6 +5,12 @@ __gameid_list() {
   eval "$1=(\"${output[@]}\")"
 }
 
+__worldname_list() {
+  string=$(eval "luanti --worldlist name")
+  output=$(awk 'NR>1{print $0}' <<< "$string")
+  eval "$1=(\"${output[@]}\")"
+}
+
 _luanti() {
   local cur prev opts file_opts color_values worldlist_values
 
@@ -26,6 +32,10 @@ _luanti() {
     local gameid_values
     __gameid_list gameid_values
     COMPREPLY=($(compgen -W "$gameid_values" -- "$cur"))
+  elif [[ "$prev" == "--worldname" ]]; then
+    local worldname_values
+    __worldname_list worldname_values
+    COMPREPLY=($(compgen -W "$worldname_values" -- "$cur"))
   elif [[ " ${file_opts[*]} " == *" ${prev} "* ]]; then
     _comp_compgen_filedir
   else
