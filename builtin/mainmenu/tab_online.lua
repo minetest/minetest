@@ -57,6 +57,11 @@ end
 
 -- Persists the selected server in the "address" and "remote_port" settings
 local function set_selected_server(server)
+	if server == nil then -- reset selection
+		core.settings:remove("address")
+		core.settings:remove("remote_port")
+		return
+	end
 	local address = server.address
 	local port    = server.port
 	gamedata.serverdescription = server.description
@@ -360,6 +365,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		tabdata.search_for = fields.te_search
 		search_server_list(fields.te_search:lower())
 		if menudata.search_result then
+			-- Note: This clears the selection if there are no results
 			set_selected_server(menudata.search_result[1])
 		end
 
