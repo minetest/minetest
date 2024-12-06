@@ -5,7 +5,7 @@
 
 #include "SMaterialLayer.h"
 #include "coreutil.h"
-#include "CSkinnedMesh.h"
+#include "SkinnedMesh.h"
 #include "IAnimatedMesh.h"
 #include "IReadFile.h"
 #include "irrTypes.h"
@@ -344,7 +344,7 @@ IAnimatedMesh* SelfType::createMesh(io::IReadFile* file)
 	const char *filename = file->getFileName().c_str();
 	try {
 		tiniergltf::GlTF model = parseGLTF(file);
-		irr_ptr<CSkinnedMesh> mesh(new CSkinnedMesh());
+		irr_ptr<SkinnedMesh> mesh(new SkinnedMesh());
 		MeshExtractor extractor(std::move(model), mesh.get());
 		try {
 			extractor.load();
@@ -410,7 +410,7 @@ static video::E_TEXTURE_CLAMP convertTextureWrap(const Wrap wrap) {
 void SelfType::MeshExtractor::addPrimitive(
 		const tiniergltf::MeshPrimitive &primitive,
 		const std::optional<std::size_t> skinIdx,
-		CSkinnedMesh::SJoint *parent)
+		SkinnedMesh::SJoint *parent)
 {
 	auto vertices = getVertices(primitive);
 	if (!vertices.has_value())
@@ -510,7 +510,7 @@ void SelfType::MeshExtractor::addPrimitive(
 				if (strength == 0)
 					continue;
 
-				CSkinnedMesh::SWeight *weight = m_irr_model->addWeight(m_loaded_nodes.at(skin.joints.at(jointIdx)));
+				SkinnedMesh::SWeight *weight = m_irr_model->addWeight(m_loaded_nodes.at(skin.joints.at(jointIdx)));
 				weight->buffer_id = meshbufNr;
 				weight->vertex_id = v;
 				weight->strength = strength;
@@ -527,7 +527,7 @@ void SelfType::MeshExtractor::addPrimitive(
 void SelfType::MeshExtractor::deferAddMesh(
 		const std::size_t meshIdx,
 		const std::optional<std::size_t> skinIdx,
-		CSkinnedMesh::SJoint *parent)
+		SkinnedMesh::SJoint *parent)
 {
 	m_mesh_loaders.emplace_back([=] {
 		for (std::size_t pi = 0; pi < getPrimitiveCount(meshIdx); ++pi) {
@@ -547,7 +547,7 @@ static const core::matrix4 leftToRight = core::matrix4(
 );
 static const core::matrix4 rightToLeft = leftToRight;
 
-static core::matrix4 loadTransform(const tiniergltf::Node::Matrix &m, CSkinnedMesh::SJoint *joint)
+static core::matrix4 loadTransform(const tiniergltf::Node::Matrix &m, SkinnedMesh::SJoint *joint)
 {
 	// Note: Under the hood, this casts these doubles to floats.
 	core::matrix4 mat = convertHandedness(core::matrix4(
@@ -576,7 +576,7 @@ static core::matrix4 loadTransform(const tiniergltf::Node::Matrix &m, CSkinnedMe
 	return mat;
 }
 
-static core::matrix4 loadTransform(const tiniergltf::Node::TRS &trs, CSkinnedMesh::SJoint *joint)
+static core::matrix4 loadTransform(const tiniergltf::Node::TRS &trs, SkinnedMesh::SJoint *joint)
 {
 	const auto &trans = trs.translation;
 	const auto &rot = trs.rotation;
@@ -594,7 +594,7 @@ static core::matrix4 loadTransform(const tiniergltf::Node::TRS &trs, CSkinnedMes
 }
 
 static core::matrix4 loadTransform(std::optional<std::variant<tiniergltf::Node::Matrix, tiniergltf::Node::TRS>> transform,
-		CSkinnedMesh::SJoint *joint) {
+		SkinnedMesh::SJoint *joint) {
 	if (!transform.has_value()) {
 		return core::matrix4();
 	}
@@ -603,7 +603,7 @@ static core::matrix4 loadTransform(std::optional<std::variant<tiniergltf::Node::
 
 void SelfType::MeshExtractor::loadNode(
 		const std::size_t nodeIdx,
-		CSkinnedMesh::SJoint *parent)
+		SkinnedMesh::SJoint *parent)
 {
 	const auto &node = m_gltf_model.nodes->at(nodeIdx);
 	auto *joint = m_irr_model->addJoint(parent);
@@ -626,7 +626,7 @@ void SelfType::MeshExtractor::loadNode(
 
 void SelfType::MeshExtractor::loadNodes()
 {
-	m_loaded_nodes = std::vector<CSkinnedMesh::SJoint *>(m_gltf_model.nodes->size());
+	m_loaded_nodes = std::vector<SkinnedMesh::SJoint *>(m_gltf_model.nodes->size());
 
 	std::vector<bool> isChild(m_gltf_model.nodes->size());
 	for (const auto &node : *m_gltf_model.nodes) {

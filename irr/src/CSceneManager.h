@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "SkinnedMesh.h"
 #include "ISceneManager.h"
 #include "ISceneNode.h"
 #include "ICursorControl.h"
@@ -21,6 +22,8 @@ class IFileSystem;
 namespace scene
 {
 class IMeshCache;
+
+class SkinnedMesh;
 
 /*!
 	The Scene Manager manages scene nodes, mesh resources, cameras and all the other stuff.
@@ -167,8 +170,8 @@ public:
 	//! Returns type of the scene node
 	ESCENE_NODE_TYPE getType() const override { return ESNT_SCENE_MANAGER; }
 
-	//! Get a skinned mesh, which is not available as header-only code
-	ISkinnedMesh *createSkinnedMesh() override;
+	//! Get a skinned mesh
+	SkinnedMesh *createSkinnedMesh() override;
 
 	//! Get current render time.
 	E_SCENE_NODE_RENDER_PASS getCurrentRenderPass() const override { return CurrentRenderPass; }

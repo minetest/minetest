@@ -16,7 +16,7 @@
 
 #include "os.h"
 
-#include "CSkinnedMesh.h"
+#include "SkinnedMesh.h"
 #include "CXMeshFileLoader.h"
 #include "COBJMeshFileLoader.h"
 #include "CB3DMeshFileLoader.h"
@@ -771,9 +771,9 @@ ISceneManager *CSceneManager::createNewSceneManager(bool cloneContent)
 }
 
 //! Get a skinned mesh, which is not available as header-only code
-ISkinnedMesh *CSceneManager::createSkinnedMesh()
+SkinnedMesh *CSceneManager::createSkinnedMesh()
 {
-	return new CSkinnedMesh();
+	return new SkinnedMesh();
 }
 
 // creates a scenemanager

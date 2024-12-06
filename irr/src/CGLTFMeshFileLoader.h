@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "CSkinnedMesh.h"
+#include "SkinnedMesh.h"
 #include "IMeshLoader.h"
 #include "IReadFile.h"
 #include "irrTypes.h"
@@ -100,7 +100,7 @@ private:
 	{
 	public:
 		MeshExtractor(tiniergltf::GlTF &&model,
-				CSkinnedMesh *mesh) noexcept
+				SkinnedMesh *mesh) noexcept
 			: m_gltf_model(std::move(model)), m_irr_model(mesh) {};
 
 		/* Gets indices for the given mesh/primitive.
@@ -124,10 +124,10 @@ private:
 
 	private:
 		const tiniergltf::GlTF m_gltf_model;
-		CSkinnedMesh *m_irr_model;
+		SkinnedMesh *m_irr_model;
 
 		std::vector<std::function<void()>> m_mesh_loaders;
-		std::vector<CSkinnedMesh::SJoint *> m_loaded_nodes;
+		std::vector<SkinnedMesh::SJoint *> m_loaded_nodes;
 
 		std::vector<std::string> warnings;
 		void warn(const std::string &warning) {
@@ -145,13 +145,13 @@ private:
 
 		void addPrimitive(const tiniergltf::MeshPrimitive &primitive,
 				const std::optional<std::size_t> skinIdx,
-				CSkinnedMesh::SJoint *parent);
+				SkinnedMesh::SJoint *parent);
 
 		void deferAddMesh(const std::size_t meshIdx,
 				const std::optional<std::size_t> skinIdx,
-				CSkinnedMesh::SJoint *parentJoint);
+				SkinnedMesh::SJoint *parentJoint);
 
-		void loadNode(const std::size_t nodeIdx, CSkinnedMesh::SJoint *parentJoint);
+		void loadNode(const std::size_t nodeIdx, SkinnedMesh::SJoint *parentJoint);
 
 		void loadNodes();
 
