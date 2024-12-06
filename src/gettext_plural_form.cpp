@@ -99,7 +99,7 @@ static ParserResult reduce_ltr(const size_t nplurals, const ParserResult &res, c
 {
 	if (!str_starts_with(res.second, pattern))
 		return ParserResult(nullptr, res.second);
-	auto next = Parser(nplurals, res.second.substr(std::char_traits<wchar_t>::length(pattern)));
+	auto next = Parser(nplurals, trim(res.second.substr(std::char_traits<wchar_t>::length(pattern))));
 	if (!next.first)
 		return next;
 	next.first = GettextPluralForm::Ptr(new BinaryOperation<Operator>(res.first, next.first));
