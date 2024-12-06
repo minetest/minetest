@@ -1,3 +1,10 @@
+__gameid_list() {
+  # FIXME: Why luanti --gameid list returns list into stderr?
+  output=($(eval "luanti --gameid list 2>&1"))
+  output+=("list")
+  eval "$1=(\"${output[@]}\")"
+}
+
 _luanti() {
   local cur prev opts color_values file_opts
 
@@ -12,6 +19,10 @@ _luanti() {
 
   if [[ "$prev" == "--color" ]]; then
     COMPREPLY=($(compgen -W "$color_values" -- "$cur"))
+  elif [[ "$prev" == "--gameid" ]]; then
+    local gameid_values
+    __gameid_list gameid_values
+    COMPREPLY=($(compgen -W "$gameid_values" -- "$cur"))
   elif [[ " ${file_opts[*]} " == *" ${prev} "* ]]; then
     _comp_compgen_filedir
   else
