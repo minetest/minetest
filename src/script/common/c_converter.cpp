@@ -16,6 +16,7 @@ extern "C" {
 #include "constants.h"
 #include <set>
 #include <cmath>
+#include <ostream>
 
 
 #define CHECK_TYPE(index, name, type) do { \
@@ -346,6 +347,8 @@ aabb3f read_aabb3f(lua_State *L, int index, f32 scale)
 		lua_rawgeti(L, index, 6);
 		box.MaxEdge.Z = lua_tonumber(L, -1) * scale;
 		lua_pop(L, 1);
+	} else {
+		warningstream << "read_aabb3f: not a table, returning default 2x2x2 box." << std::endl;
 	}
 	box.repair();
 	return box;
