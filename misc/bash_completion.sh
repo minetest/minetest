@@ -7,7 +7,7 @@ _luanti() {
 
   opts="--address --color --config --console --debugger --gameid --go --help --info --logfile --map-dir --migrate --migrate-auth --migrate-mod-storage --migrate-players --name --password --password-file --port --quiet --random-input --recompress --run-benchmarks --run-unittests --server --terminal --test-module --trace --verbose --version --world --worldlist --worldname"
   file_opts="--config --logfile --map-dir --password-file --world"
-  color_values="always never auto"
+  color_values="always auto never"
 
 
   if [[ "$prev" == "--color" ]]; then
