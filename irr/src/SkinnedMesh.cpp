@@ -124,7 +124,7 @@ IMesh *SkinnedMesh::getMesh(f32 frame)
 	if (frame == -1)
 		return this;
 
-	animateMesh(frame, 1.0f);
+	animateMesh(frame);
 	skinMesh();
 	return this;
 }
@@ -133,9 +133,8 @@ IMesh *SkinnedMesh::getMesh(f32 frame)
 //			Keyframe Animation
 //--------------------------------------------------------------------------
 
-//! Animates this mesh's joints based on frame input
-//! blend: {0-old position, 1-New position}
-void SkinnedMesh::animateMesh(f32 frame, f32 blend)
+//! Animates joints based on frame input
+void SkinnedMesh::animateMesh(f32 frame)
 {
 	if (!HasAnimation || LastAnimatedFrame == frame)
 		return;
@@ -143,38 +142,25 @@ void SkinnedMesh::animateMesh(f32 frame, f32 blend)
 	LastAnimatedFrame = frame;
 	SkinnedLastFrame = false;
 
-	if (blend <= 0.f)
-		return; // No need to animate
-
 	for (auto *joint : AllJoints) {
 		// The joints can be animated here with no input from their
 		// parents, but for setAnimationMode extra checks are needed
 		// to their parents
 
-		const core::vector3df oldPosition = joint->Animatedposition;
-		const core::vector3df oldScale = joint->Animatedscale;
-		const core::quaternion oldRotation = joint->Animatedrotation;
+		core::vector3df position = joint->Animatedposition;
+		core::vector3df scale = joint->Animatedscale;
+		core::quaternion rotation = joint->Animatedrotation;
 
-		core::vector3df position = oldPosition;
-		core::vector3df scale = oldScale;
-		core::quaternion rotation = oldRotation;
-
+		// Note: This interpolates as necessary.
 		getFrameData(frame, joint,
 				position, joint->positionHint,
 				scale, joint->scaleHint,
 				rotation, joint->rotationHint);
 
-		if (blend == 1.0f) {
-			// No blending needed
-			joint->Animatedposition = position;
-			joint->Animatedscale = scale;
-			joint->Animatedrotation = rotation;
-		} else {
-			// Blend animation
-			joint->Animatedposition = core::lerp(oldPosition, position, blend);
-			joint->Animatedscale = core::lerp(oldScale, scale, blend);
-			joint->Animatedrotation.slerp(oldRotation, rotation, blend);
-		}
+		// No blending needed
+		joint->Animatedposition = position;
+		joint->Animatedscale = scale;
+		joint->Animatedrotation = rotation;
 	}
 
 	// Note:
@@ -904,10 +890,6 @@ SkinnedMesh *SkinnedMeshBuilder::finalize()
 	// Needed for animation and skinning...
 
 	calculateGlobalMatrices(0, 0);
-
-	// animateMesh(0, 1);
-	// buildAllLocalAnimatedMatrices();
-	// buildAllGlobalAnimatedMatrices();
 
 	// rigid animation for non animated meshes
 	for (auto *joint : AllJoints) {

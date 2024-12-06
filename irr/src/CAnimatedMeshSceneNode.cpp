@@ -170,7 +170,7 @@ IMesh *CAnimatedMeshSceneNode::getMeshForCurrentFrame()
 		if (JointMode == EJUOR_CONTROL) // write to mesh
 			skinnedMesh->transferJointsToMesh(JointChildSceneNodes);
 		else
-			skinnedMesh->animateMesh(getFrameNr(), 1.0f);
+			skinnedMesh->animateMesh(getFrameNr());
 
 		// Update the skinned mesh for the current joint transforms.
 		skinnedMesh->skinMesh();
@@ -597,7 +597,7 @@ void CAnimatedMeshSceneNode::animateJoints(bool CalculateAbsolutePositions)
 		SkinnedMesh *skinnedMesh = static_cast<SkinnedMesh *>(Mesh);
 
 		skinnedMesh->transferOnlyJointsHintsToMesh(JointChildSceneNodes);
-		skinnedMesh->animateMesh(frame, 1.0f);
+		skinnedMesh->animateMesh(frame);
 		skinnedMesh->recoverJointsFromMesh(JointChildSceneNodes);
 
 		//-----------------------------------------
