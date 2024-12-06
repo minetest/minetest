@@ -118,7 +118,7 @@ void TestVoxelArea::test_extent()
 
 	UASSERT(VoxelArea().hasEmptyExtent());
 	UASSERT(VoxelArea({2,3,4}, {1,2,3}).hasEmptyExtent());
-	UASSERT(VoxelArea({2,3,4}, {2,2,3}).hasEmptyExtent() == false);
+	UASSERT(VoxelArea({2,3,4}, {2,2,3}).hasEmptyExtent());
 }
 
 void TestVoxelArea::test_volume()

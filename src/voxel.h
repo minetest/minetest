@@ -114,11 +114,9 @@ public:
 		return m_cache_extent;
 	}
 
-	/// @note `getVolume() == 0` and `getEmptyExtent()` are not equivalent.
 	bool hasEmptyExtent() const
 	{
-		// FIXME: shouldn't this actually be a component-wise check?
-		return m_cache_extent == v3s32(0,0,0);
+		return !m_cache_extent.X || !m_cache_extent.Y || !m_cache_extent.Z;
 	}
 
 	s32 getVolume() const
@@ -207,7 +205,7 @@ public:
 		if(a.hasEmptyExtent())
 		{
 			VoxelArea b = *this;
-			if (b.getVolume() != 0)
+			if (!b.hasEmptyExtent())
 				result.push_back(b);
 			return;
 		}
@@ -216,7 +214,7 @@ public:
 
 		const auto &take = [&result] (v3s16 min, v3s16 max) {
 			VoxelArea b(min, max);
-			if (b.getVolume() != 0)
+			if (!b.hasEmptyExtent())
 				result.push_back(b);
 		};
 
