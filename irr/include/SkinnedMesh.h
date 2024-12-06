@@ -208,7 +208,7 @@ public:
 		core::array<SRotationKey> RotationKeys;
 
 		//! Skin weights
-		core::array<SWeight> Weights;
+		std::vector<SWeight> Weights;
 
 		//! Unnecessary for loaders, will be overwritten on finalize
 		core::matrix4 GlobalMatrix; // loaders may still choose to set this (temporarily) to calculate absolute vertex data.

@@ -496,9 +496,7 @@ void SkinnedMesh::skinJoint(SJoint *joint, SJoint *parentJoint)
 		core::array<scene::SSkinMeshBuffer *> &buffersUsed = *SkinningBuffers;
 
 		// Skin Vertices Positions and Normals...
-		for (u32 i = 0; i < joint->Weights.size(); ++i) {
-			SWeight &weight = joint->Weights[i];
-
+		for (const auto &weight : joint->Weights) {
 			// Pull this vertex...
 			jointVertexPull.transformVect(thisVertexMove, weight.StaticPos);
 
@@ -658,11 +656,11 @@ bool SkinnedMesh::setHardwareSkinning(bool on)
 
 			// set mesh to static pose...
 			for (auto *joint : AllJoints) {
-				for (u32 j = 0; j < joint->Weights.size(); ++j) {
-					const u16 buffer_id = joint->Weights[j].buffer_id;
-					const u32 vertex_id = joint->Weights[j].vertex_id;
-					LocalBuffers[buffer_id]->getVertex(vertex_id)->Pos = joint->Weights[j].StaticPos;
-					LocalBuffers[buffer_id]->getVertex(vertex_id)->Normal = joint->Weights[j].StaticNormal;
+				for (const auto &weight : joint->Weights) {
+					const u16 buffer_id = weight.buffer_id;
+					const u32 vertex_id = weight.vertex_id;
+					LocalBuffers[buffer_id]->getVertex(vertex_id)->Pos = weight.StaticPos;
+					LocalBuffers[buffer_id]->getVertex(vertex_id)->Normal = weight.StaticNormal;
 					LocalBuffers[buffer_id]->boundingBoxNeedsRecalculated();
 				}
 			}
@@ -677,11 +675,11 @@ void SkinnedMesh::refreshJointCache()
 {
 	// copy cache from the mesh...
 	for (auto *joint : AllJoints) {
-		for (u32 j = 0; j < joint->Weights.size(); ++j) {
-			const u16 buffer_id = joint->Weights[j].buffer_id;
-			const u32 vertex_id = joint->Weights[j].vertex_id;
-			joint->Weights[j].StaticPos = LocalBuffers[buffer_id]->getVertex(vertex_id)->Pos;
-			joint->Weights[j].StaticNormal = LocalBuffers[buffer_id]->getVertex(vertex_id)->Normal;
+		for (auto &weight : joint->Weights) {
+			const u16 buffer_id = weight.buffer_id;
+			const u32 vertex_id = weight.vertex_id;
+			weight.StaticPos = LocalBuffers[buffer_id]->getVertex(vertex_id)->Pos;
+			weight.StaticNormal = LocalBuffers[buffer_id]->getVertex(vertex_id)->Normal;
 		}
 	}
 }
@@ -690,11 +688,11 @@ void SkinnedMesh::resetAnimation()
 {
 	// copy from the cache to the mesh...
 	for (auto *joint : AllJoints) {
-		for (u32 j = 0; j < joint->Weights.size(); ++j) {
-			const u16 buffer_id = joint->Weights[j].buffer_id;
-			const u32 vertex_id = joint->Weights[j].vertex_id;
-			LocalBuffers[buffer_id]->getVertex(vertex_id)->Pos = joint->Weights[j].StaticPos;
-			LocalBuffers[buffer_id]->getVertex(vertex_id)->Normal = joint->Weights[j].StaticNormal;
+		for (const auto &weight : joint->Weights) {
+			const u16 buffer_id = weight.buffer_id;
+			const u32 vertex_id = weight.vertex_id;
+			LocalBuffers[buffer_id]->getVertex(vertex_id)->Pos = weight.StaticPos;
+			LocalBuffers[buffer_id]->getVertex(vertex_id)->Normal = weight.StaticNormal;
 		}
 	}
 	SkinnedLastFrame = false;
@@ -778,17 +776,17 @@ void SkinnedMesh::checkForAnimation()
 
 		// check for bugs:
 		for (auto *joint : AllJoints) {
-			for (u32 j = 0; j < joint->Weights.size(); ++j) {
-				const u16 buffer_id = joint->Weights[j].buffer_id;
-				const u32 vertex_id = joint->Weights[j].vertex_id;
+			for (auto &weight : joint->Weights) {
+				const u16 buffer_id = weight.buffer_id;
+				const u32 vertex_id = weight.vertex_id;
 
 				// check for invalid ids
 				if (buffer_id >= LocalBuffers.size()) {
 					os::Printer::log("Skinned Mesh: Weight buffer id too large", ELL_WARNING);
-					joint->Weights[j].buffer_id = joint->Weights[j].vertex_id = 0;
+					weight.buffer_id = weight.vertex_id = 0;
 				} else if (vertex_id >= LocalBuffers[buffer_id]->getVertexCount()) {
 					os::Printer::log("Skinned Mesh: Weight vertex id too large", ELL_WARNING);
-					joint->Weights[j].buffer_id = joint->Weights[j].vertex_id = 0;
+					weight.buffer_id = weight.vertex_id = 0;
 				}
 			}
 		}
@@ -802,15 +800,15 @@ void SkinnedMesh::checkForAnimation()
 		// For skinning: cache weight values for speed
 
 		for (auto *joint : AllJoints) {
-			for (u32 j = 0; j < joint->Weights.size(); ++j) {
-				const u16 buffer_id = joint->Weights[j].buffer_id;
-				const u32 vertex_id = joint->Weights[j].vertex_id;
+			for (auto &weight : joint->Weights) {
+				const u16 buffer_id = weight.buffer_id;
+				const u32 vertex_id = weight.vertex_id;
 
-				joint->Weights[j].Moved = &Vertices_Moved[buffer_id][vertex_id];
-				joint->Weights[j].StaticPos = LocalBuffers[buffer_id]->getVertex(vertex_id)->Pos;
-				joint->Weights[j].StaticNormal = LocalBuffers[buffer_id]->getVertex(vertex_id)->Normal;
+				weight.Moved = &Vertices_Moved[buffer_id][vertex_id];
+				weight.StaticPos = LocalBuffers[buffer_id]->getVertex(vertex_id)->Pos;
+				weight.StaticNormal = LocalBuffers[buffer_id]->getVertex(vertex_id)->Normal;
 
-				// joint->Weights[j]._Pos=&Buffers[buffer_id]->getVertex(vertex_id)->Pos;
+				// weight._Pos=&Buffers[buffer_id]->getVertex(vertex_id)->Pos;
 			}
 		}
 
@@ -1076,10 +1074,10 @@ SkinnedMesh::SRotationKey *SkinnedMesh::addRotationKey(SJoint *joint)
 SkinnedMesh::SWeight *SkinnedMesh::addWeight(SJoint *joint)
 {
 	if (!joint)
-		return 0;
+		return nullptr;
 
-	joint->Weights.push_back(SWeight());
-	return &joint->Weights.getLast();
+	joint->Weights.emplace_back();
+	return &joint->Weights.back();
 }
 
 bool SkinnedMesh::isStatic() const
@@ -1106,21 +1104,22 @@ void SkinnedMesh::normalizeWeights()
 			verticesTotalWeight[i][j] = 0;
 
 	for (auto *joint : AllJoints) {
-		for (u32 j = 0; j < joint->Weights.size(); ++j) {
-			if (joint->Weights[j].strength <= 0) { // Check for invalid weights
-				joint->Weights.erase(j);
-				--j;
-			} else {
-				verticesTotalWeight[joint->Weights[j].buffer_id][joint->Weights[j].vertex_id] += joint->Weights[j].strength;
-			}
+		auto &weights = joint->Weights;
+
+		weights.erase(std::remove_if(weights.begin(), weights.end(), [](const auto &weight) {
+			return weight.strength <= 0;
+		}), weights.end());
+
+		for (const auto &weight : weights) {
+			verticesTotalWeight[weight.buffer_id][weight.vertex_id] += weight.strength;
 		}
 	}
 
 	for (auto *joint : AllJoints) {
-		for (u32 j = 0; j < joint->Weights.size(); ++j) {
-			const f32 total = verticesTotalWeight[joint->Weights[j].buffer_id][joint->Weights[j].vertex_id];
+		for (auto &weight : joint->Weights) {
+			const f32 total = verticesTotalWeight[weight.buffer_id][weight.vertex_id];
 			if (total != 0 && total != 1)
-				joint->Weights[j].strength /= total;
+				weight.strength /= total;
 		}
 	}
 }
