@@ -11,6 +11,8 @@ _luanti() {
 
   if [[ "$prev" == "--color" ]]; then
     COMPREPLY=($(compgen -W "$color_values" -- "$cur"))
+  elif [[ "$prev" == "--logfile" ]]; then
+    COMPREPLY=($(compgen -f "$cur"))
   else
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
   fi
