@@ -8,6 +8,7 @@
 #include "IAnimatedMeshSceneNode.h"
 #include "SSkinMeshBuffer.h"
 #include "os.h"
+#include <vector>
 
 namespace
 {
@@ -1113,7 +1114,7 @@ void SkinnedMesh::normalizeWeights()
 	}
 }
 
-void SkinnedMesh::recoverJointsFromMesh(core::array<IBoneSceneNode *> &jointChildSceneNodes)
+void SkinnedMesh::recoverJointsFromMesh(std::vector<IBoneSceneNode *> &jointChildSceneNodes)
 {
 	for (u32 i = 0; i < AllJoints.size(); ++i) {
 		IBoneSceneNode *node = jointChildSceneNodes[i];
@@ -1130,7 +1131,7 @@ void SkinnedMesh::recoverJointsFromMesh(core::array<IBoneSceneNode *> &jointChil
 	}
 }
 
-void SkinnedMesh::transferJointsToMesh(const core::array<IBoneSceneNode *> &jointChildSceneNodes)
+void SkinnedMesh::transferJointsToMesh(const std::vector<IBoneSceneNode *> &jointChildSceneNodes)
 {
 	for (u32 i = 0; i < AllJoints.size(); ++i) {
 		const IBoneSceneNode *const node = jointChildSceneNodes[i];
@@ -1151,7 +1152,7 @@ void SkinnedMesh::transferJointsToMesh(const core::array<IBoneSceneNode *> &join
 	SkinnedLastFrame = false;
 }
 
-void SkinnedMesh::transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode *> &jointChildSceneNodes)
+void SkinnedMesh::transferOnlyJointsHintsToMesh(const std::vector<IBoneSceneNode *> &jointChildSceneNodes)
 {
 	for (u32 i = 0; i < AllJoints.size(); ++i) {
 		const IBoneSceneNode *const node = jointChildSceneNodes[i];
@@ -1164,7 +1165,7 @@ void SkinnedMesh::transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode
 	SkinnedLastFrame = false;
 }
 
-void SkinnedMesh::addJoints(core::array<IBoneSceneNode *> &jointChildSceneNodes,
+void SkinnedMesh::addJoints(std::vector<IBoneSceneNode *> &jointChildSceneNodes,
 		IAnimatedMeshSceneNode *node, ISceneManager *smgr)
 {
 	// Create new joints

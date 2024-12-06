@@ -123,16 +123,16 @@ public:
 	virtual void updateBoundingBox();
 
 	//! Recovers the joints from the mesh
-	void recoverJointsFromMesh(core::array<IBoneSceneNode *> &jointChildSceneNodes);
+	void recoverJointsFromMesh(std::vector<IBoneSceneNode *> &jointChildSceneNodes);
 
 	//! Transfers the joint data to the mesh
-	void transferJointsToMesh(const core::array<IBoneSceneNode *> &jointChildSceneNodes);
+	void transferJointsToMesh(const std::vector<IBoneSceneNode *> &jointChildSceneNodes);
 
 	//! Transfers the joint hints to the mesh
-	void transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode *> &jointChildSceneNodes);
+	void transferOnlyJointsHintsToMesh(const std::vector<IBoneSceneNode *> &jointChildSceneNodes);
 
 	//! Creates an array of joints from this mesh as children of node
-	void addJoints(core::array<IBoneSceneNode *> &jointChildSceneNodes,
+	void addJoints(std::vector<IBoneSceneNode *> &jointChildSceneNodes,
 			IAnimatedMeshSceneNode *node,
 			ISceneManager *smgr);
 

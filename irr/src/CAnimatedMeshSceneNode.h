@@ -169,7 +169,7 @@ private:
 	IAnimationEndCallBack *LoopCallBack;
 	s32 PassCount;
 
-	core::array<IBoneSceneNode *> JointChildSceneNodes;
+	std::vector<IBoneSceneNode *> JointChildSceneNodes;
 	core::array<core::matrix4> PretransitingSave;
 };
 
