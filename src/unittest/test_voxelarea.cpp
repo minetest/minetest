@@ -124,16 +124,17 @@ void TestVoxelArea::test_extent()
 void TestVoxelArea::test_volume()
 {
 	VoxelArea v1(v3s16(-1337, -547, -789), v3s16(-147, 447, 669));
-	UASSERTEQ(s32, v1.getVolume(), 1728980655);
+	UASSERTEQ(u32, v1.getVolume(), 1728980655);
 
 	VoxelArea v2(v3s16(32493, -32507, 32752), v3s16(32508, -32492, 32767));
-	UASSERTEQ(s32, v2.getVolume(), 4096);
+	UASSERTEQ(u32, v2.getVolume(), 4096);
 
-	VoxelArea v3({-20000, 12, 34}, {20000, 12, 34});
-	UASSERTEQ(s32, v3.getVolume(), 40000);
+	// volume bigger than S32_MAX
+	VoxelArea v3({1, 1, 1}, {1337, 1337, 1337});
+	UASSERTEQ(u32, v3.getVolume(), 2389979753U);
 
-	UASSERTEQ(s32, VoxelArea({2,3,4}, {1,2,3}).getVolume(), 0);
-	UASSERTEQ(s32, VoxelArea({2,3,4}, {2,2,3}).getVolume(), 0);
+	UASSERTEQ(u32, VoxelArea({2,3,4}, {1,2,3}).getVolume(), 0);
+	UASSERTEQ(u32, VoxelArea({2,3,4}, {2,2,3}).getVolume(), 0);
 }
 
 void TestVoxelArea::test_contains_voxelarea()

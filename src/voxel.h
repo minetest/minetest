@@ -119,10 +119,10 @@ public:
 		return !m_cache_extent.X || !m_cache_extent.Y || !m_cache_extent.Z;
 	}
 
-	s32 getVolume() const
+	u32 getVolume() const
 	{
 		// FIXME: possible integer overflow here
-		return m_cache_extent.X * m_cache_extent.Y * m_cache_extent.Z;
+		return (u32)m_cache_extent.X * (u32)m_cache_extent.Y * (u32)m_cache_extent.Z;
 	}
 
 	bool contains(const VoxelArea &a) const
@@ -148,8 +148,9 @@ public:
 	}
 	bool contains(s32 i) const
 	{
-		return (i >= 0 && i < getVolume());
+		return i >= 0 && static_cast<u32>(i) < getVolume();
 	}
+
 	bool operator==(const VoxelArea &other) const
 	{
 		return (MinEdge == other.MinEdge
