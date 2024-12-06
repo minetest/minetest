@@ -85,20 +85,6 @@ namespace irr
 namespace scene
 {
 
-//! constructor
-SkinnedMesh::SkinnedMesh() :
-		SkinningBuffers(nullptr), EndFrame(0.f), FramesPerSecond(25.f),
-		LastAnimatedFrame(-1), SkinnedLastFrame(false),
-		HasAnimation(false), PreparedForSkinning(false),
-		AnimateNormals(true), HardwareSkinning(false)
-{
-#ifdef _DEBUG
-	setDebugName("SkinnedMesh");
-#endif
-
-	SkinningBuffers = &LocalBuffers;
-}
-
 //! destructor
 SkinnedMesh::~SkinnedMesh()
 {
@@ -530,11 +516,6 @@ void SkinnedMesh::skinJoint(SJoint *joint, SJoint *parentJoint)
 		skinJoint(childJoint, joint);
 }
 
-E_ANIMATED_MESH_TYPE SkinnedMesh::getMeshType() const
-{
-	return EAMT_SKINNED;
-}
-
 //! Gets joint count.
 u32 SkinnedMesh::getJointCount() const
 {
@@ -596,18 +577,6 @@ void SkinnedMesh::setTextureSlot(u32 meshbufNr, u32 textureSlot) {
 	TextureSlots.at(meshbufNr) = textureSlot;
 }
 
-//! returns an axis aligned bounding box
-const core::aabbox3d<f32> &SkinnedMesh::getBoundingBox() const
-{
-	return BoundingBox;
-}
-
-//! set user axis aligned bounding box
-void SkinnedMesh::setBoundingBox(const core::aabbox3df &box)
-{
-	BoundingBox = box;
-}
-
 //! set the hardware mapping hint, for driver
 void SkinnedMesh::setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint,
 		E_BUFFER_TYPE buffer)
@@ -621,24 +590,6 @@ void SkinnedMesh::setDirty(E_BUFFER_TYPE buffer)
 {
 	for (u32 i = 0; i < LocalBuffers.size(); ++i)
 		LocalBuffers[i]->setDirty(buffer);
-}
-
-//! Update Normals when Animating
-//! False= Don't animate them, faster
-//! True= Update normals (default)
-void SkinnedMesh::updateNormalsWhenAnimating(bool on)
-{
-	AnimateNormals = on;
-}
-
-std::vector<SkinnedMesh::SJoint *> &SkinnedMesh::getAllJoints()
-{
-	return AllJoints;
-}
-
-const std::vector<SkinnedMesh::SJoint *> &SkinnedMesh::getAllJoints() const
-{
-	return AllJoints;
 }
 
 //! (This feature is not implemented in irrlicht yet)
@@ -1062,11 +1013,6 @@ SkinnedMesh::SWeight *SkinnedMesh::addWeight(SJoint *joint)
 
 	joint->Weights.emplace_back();
 	return &joint->Weights.back();
-}
-
-bool SkinnedMesh::isStatic() const
-{
-	return !HasAnimation;
 }
 
 void SkinnedMesh::normalizeWeights()

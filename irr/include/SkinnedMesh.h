@@ -26,7 +26,14 @@ class SkinnedMesh : public IAnimatedMesh
 {
 public:
 	//! constructor
-	SkinnedMesh();
+	SkinnedMesh() :
+		EndFrame(0.f), FramesPerSecond(25.f),
+		LastAnimatedFrame(-1), SkinnedLastFrame(false),
+		HasAnimation(false), PreparedForSkinning(false),
+		AnimateNormals(true), HardwareSkinning(false)
+	{
+		SkinningBuffers = &LocalBuffers;
+	}
 
 	//! destructor
 	virtual ~SkinnedMesh();
@@ -70,10 +77,14 @@ public:
 	void setTextureSlot(u32 meshbufNr, u32 textureSlot);
 
 	//! returns an axis aligned bounding box
-	const core::aabbox3d<f32> &getBoundingBox() const override;
+	const core::aabbox3d<f32> &getBoundingBox() const override {
+		return BoundingBox;
+	}
 
 	//! set user axis aligned bounding box
-	void setBoundingBox(const core::aabbox3df &box) override;
+	void setBoundingBox(const core::aabbox3df &box) override {
+		BoundingBox = box;
+	}
 
 	//! set the hardware mapping hint, for driver
 	void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer = EBT_VERTEX_AND_INDEX) override;
@@ -82,7 +93,9 @@ public:
 	void setDirty(E_BUFFER_TYPE buffer = EBT_VERTEX_AND_INDEX) override;
 
 	//! Returns the type of the animated mesh.
-	E_ANIMATED_MESH_TYPE getMeshType() const override;
+	E_ANIMATED_MESH_TYPE getMeshType() const override {
+		return EAMT_SKINNED;
+	}
 
 	//! Gets joint count.
 	u32 getJointCount() const;
@@ -100,15 +113,19 @@ public:
 	//! Update Normals when Animating
 	/** \param on If false don't animate, which is faster.
 	Else update normals, which allows for proper lighting of
-	animated meshes. */
-	void updateNormalsWhenAnimating(bool on);
+	animated meshes (default). */
+	void updateNormalsWhenAnimating(bool on) {
+		AnimateNormals = on;
+	}
 
 	//! converts the vertex type of all meshbuffers to tangents.
 	/** E.g. used for bump mapping. */
 	void convertMeshToTangents();
 
 	//! Does the mesh have no animation
-	bool isStatic() const;
+	bool isStatic() const {
+		return !HasAnimation;
+	}
 
 	//! Allows to enable hardware skinning.
 	/* This feature is not implemented in Irrlicht yet */
@@ -242,10 +259,14 @@ public:
 	}
 
 	//! alternative method for adding joints
-	std::vector<SJoint *> &getAllJoints();
+	std::vector<SJoint *> &getAllJoints() {
+		return AllJoints;
+	}
 
 	//! alternative method for reading joints
-	const std::vector<SJoint *> &getAllJoints() const;
+	const std::vector<SJoint *> &getAllJoints() const {
+		return AllJoints;
+	}
 
 	//! loaders should call this after populating the mesh
 	void finalize();
