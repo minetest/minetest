@@ -253,11 +253,6 @@ public:
 	// Interface for the mesh loaders (finalize should lock these functions, and they should have some prefix like loader_
 	// these functions will use the needed arrays, set values, etc to help the loaders
 
-	//! exposed for loaders to add mesh buffers
-	std::vector<SSkinMeshBuffer *> &getMeshBuffers() {
-		return LocalBuffers;
-	}
-
 	//! alternative method for adding joints
 	std::vector<SJoint *> &getAllJoints() {
 		return AllJoints;

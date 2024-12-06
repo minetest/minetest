@@ -254,7 +254,7 @@ bool CB3DMeshFileLoader::readChunkMESH(SkinnedMesh::SJoint *inJoint)
 				meshBuffer->Material = Materials[brushID].Material;
 			}
 
-			if (readChunkTRIS(meshBuffer, AnimatedMesh->getMeshBuffers().size() - 1, VerticesStart) == false)
+			if (readChunkTRIS(meshBuffer, AnimatedMesh->getMeshBufferCount() - 1, VerticesStart) == false)
 				return false;
 
 			if (!NormalsInFile) {

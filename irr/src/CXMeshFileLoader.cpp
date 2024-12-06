@@ -124,7 +124,7 @@ bool CXMeshFileLoader::load(io::IReadFile *file)
 			if (!mesh->HasSkinning) {
 				// Set up rigid animation
 				if (mesh->AttachedJointID != -1) {
-					AnimatedMesh->getAllJoints()[mesh->AttachedJointID]->AttachedMeshes.push_back(AnimatedMesh->getMeshBuffers().size() - 1);
+					AnimatedMesh->getAllJoints()[mesh->AttachedJointID]->AttachedMeshes.push_back(AnimatedMesh->getMeshBufferCount() - 1);
 				}
 			}
 		}
