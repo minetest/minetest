@@ -300,9 +300,9 @@ void CAnimatedMeshSceneNode::render()
 				// draw skeleton
 
 				for (auto *joint : ((SkinnedMesh *)Mesh)->getAllJoints()) {
-					for (u32 n = 0; n < joint->Children.size(); ++n) {
+					for (const auto *childJoint : joint->Children) {
 						driver->draw3DLine(joint->GlobalAnimatedMatrix.getTranslation(),
-								joint->Children[n]->GlobalAnimatedMatrix.getTranslation(),
+								childJoint->GlobalAnimatedMatrix.getTranslation(),
 								video::SColor(255, 51, 66, 255));
 					}
 				}

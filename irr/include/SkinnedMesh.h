@@ -193,10 +193,10 @@ public:
 		core::matrix4 LocalMatrix;
 
 		//! List of child joints
-		core::array<SJoint *> Children;
+		std::vector<SJoint *> Children;
 
 		//! List of attached meshes
-		core::array<u32> AttachedMeshes;
+		std::vector<u32> AttachedMeshes;
 
 		//! Animation keys causing translation change
 		core::array<SPositionKey> PositionKeys;
@@ -238,7 +238,9 @@ public:
 	// these functions will use the needed arrays, set values, etc to help the loaders
 
 	//! exposed for loaders to add mesh buffers
-	core::array<SSkinMeshBuffer *> &getMeshBuffers();
+	std::vector<SSkinMeshBuffer *> &getMeshBuffers() {
+		return LocalBuffers;
+	}
 
 	//! alternative method for adding joints
 	std::vector<SJoint *> &getAllJoints();
@@ -291,9 +293,9 @@ private:
 			const core::vector3df &vt1, const core::vector3df &vt2, const core::vector3df &vt3,
 			const core::vector2df &tc1, const core::vector2df &tc2, const core::vector2df &tc3);
 
-	core::array<SSkinMeshBuffer *> *SkinningBuffers; // Meshbuffer to skin, default is to skin localBuffers
+	std::vector<SSkinMeshBuffer *> *SkinningBuffers; // Meshbuffer to skin, default is to skin localBuffers
 
-	core::array<SSkinMeshBuffer *> LocalBuffers;
+	std::vector<SSkinMeshBuffer *> LocalBuffers;
 	//! Mapping from meshbuffer number to bindable texture slot
 	std::vector<u32> TextureSlots;
 
@@ -302,7 +304,7 @@ private:
 
 	// bool can't be used here because std::vector<bool>
 	// doesn't allow taking a reference to individual elements.
-	core::array<core::array<char>> Vertices_Moved;
+	std::vector<std::vector<char>> Vertices_Moved;
 
 	core::aabbox3d<f32> BoundingBox;
 
