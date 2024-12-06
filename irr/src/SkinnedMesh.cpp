@@ -209,10 +209,10 @@ void SkinnedMesh::buildAllLocalAnimatedMatrices()
 	for (auto *joint : AllJoints) {
 		// Could be faster:
 
-		if (joint->UseAnimationFrom &&
-				(joint->UseAnimationFrom->PositionKeys.size() ||
-						joint->UseAnimationFrom->ScaleKeys.size() ||
-						joint->UseAnimationFrom->RotationKeys.size())) {
+		if (joint &&
+				(joint->PositionKeys.size() ||
+						joint->ScaleKeys.size() ||
+						joint->RotationKeys.size())) {
 			joint->GlobalSkinningSpace = false;
 
 			// IRR_TEST_BROKEN_QUATERNION_USE: TODO - switched to getMatrix_transposed instead of getMatrix for downward compatibility.
@@ -294,152 +294,150 @@ void SkinnedMesh::getFrameData(f32 frame, SJoint *joint,
 	s32 foundScaleIndex = -1;
 	s32 foundRotationIndex = -1;
 
-	if (joint->UseAnimationFrom) {
-		const core::array<SPositionKey> &PositionKeys = joint->UseAnimationFrom->PositionKeys;
-		const core::array<SScaleKey> &ScaleKeys = joint->UseAnimationFrom->ScaleKeys;
-		const core::array<SRotationKey> &RotationKeys = joint->UseAnimationFrom->RotationKeys;
+	const core::array<SPositionKey> &PositionKeys = joint->PositionKeys;
+	const core::array<SScaleKey> &ScaleKeys = joint->ScaleKeys;
+	const core::array<SRotationKey> &RotationKeys = joint->RotationKeys;
 
-		if (PositionKeys.size()) {
-			foundPositionIndex = -1;
+	if (PositionKeys.size()) {
+		foundPositionIndex = -1;
 
-			// Test the Hints...
-			if (positionHint >= 0 && (u32)positionHint < PositionKeys.size()) {
-				// check this hint
-				if (positionHint > 0 && PositionKeys[positionHint].frame >= frame && PositionKeys[positionHint - 1].frame < frame)
+		// Test the Hints...
+		if (positionHint >= 0 && (u32)positionHint < PositionKeys.size()) {
+			// check this hint
+			if (positionHint > 0 && PositionKeys[positionHint].frame >= frame && PositionKeys[positionHint - 1].frame < frame)
+				foundPositionIndex = positionHint;
+			else if (positionHint + 1 < (s32)PositionKeys.size()) {
+				// check the next index
+				if (PositionKeys[positionHint + 1].frame >= frame &&
+						PositionKeys[positionHint + 0].frame < frame) {
+					positionHint++;
 					foundPositionIndex = positionHint;
-				else if (positionHint + 1 < (s32)PositionKeys.size()) {
-					// check the next index
-					if (PositionKeys[positionHint + 1].frame >= frame &&
-							PositionKeys[positionHint + 0].frame < frame) {
-						positionHint++;
-						foundPositionIndex = positionHint;
-					}
-				}
-			}
-
-			// The hint test failed, do a full scan...
-			if (foundPositionIndex == -1) {
-				for (u32 i = 0; i < PositionKeys.size(); ++i) {
-					if (PositionKeys[i].frame >= frame) { // Keys should to be sorted by frame
-						foundPositionIndex = i;
-						positionHint = i;
-						break;
-					}
-				}
-			}
-
-			// Do interpolation...
-			if (foundPositionIndex != -1) {
-				if (foundPositionIndex == 0) {
-					position = PositionKeys[foundPositionIndex].position;
-				} else {
-					const SPositionKey &KeyA = PositionKeys[foundPositionIndex];
-					const SPositionKey &KeyB = PositionKeys[foundPositionIndex - 1];
-
-					const f32 fd1 = frame - KeyA.frame;
-					const f32 fd2 = KeyB.frame - frame;
-					position = ((KeyB.position - KeyA.position) / (fd1 + fd2)) * fd1 + KeyA.position;
 				}
 			}
 		}
 
-		//------------------------------------------------------------
+		// The hint test failed, do a full scan...
+		if (foundPositionIndex == -1) {
+			for (u32 i = 0; i < PositionKeys.size(); ++i) {
+				if (PositionKeys[i].frame >= frame) { // Keys should to be sorted by frame
+					foundPositionIndex = i;
+					positionHint = i;
+					break;
+				}
+			}
+		}
 
-		if (ScaleKeys.size()) {
-			foundScaleIndex = -1;
+		// Do interpolation...
+		if (foundPositionIndex != -1) {
+			if (foundPositionIndex == 0) {
+				position = PositionKeys[foundPositionIndex].position;
+			} else {
+				const SPositionKey &KeyA = PositionKeys[foundPositionIndex];
+				const SPositionKey &KeyB = PositionKeys[foundPositionIndex - 1];
 
-			// Test the Hints...
-			if (scaleHint >= 0 && (u32)scaleHint < ScaleKeys.size()) {
-				// check this hint
-				if (scaleHint > 0 && ScaleKeys[scaleHint].frame >= frame && ScaleKeys[scaleHint - 1].frame < frame)
+				const f32 fd1 = frame - KeyA.frame;
+				const f32 fd2 = KeyB.frame - frame;
+				position = ((KeyB.position - KeyA.position) / (fd1 + fd2)) * fd1 + KeyA.position;
+			}
+		}
+	}
+
+	//------------------------------------------------------------
+
+	if (ScaleKeys.size()) {
+		foundScaleIndex = -1;
+
+		// Test the Hints...
+		if (scaleHint >= 0 && (u32)scaleHint < ScaleKeys.size()) {
+			// check this hint
+			if (scaleHint > 0 && ScaleKeys[scaleHint].frame >= frame && ScaleKeys[scaleHint - 1].frame < frame)
+				foundScaleIndex = scaleHint;
+			else if (scaleHint + 1 < (s32)ScaleKeys.size()) {
+				// check the next index
+				if (ScaleKeys[scaleHint + 1].frame >= frame &&
+						ScaleKeys[scaleHint + 0].frame < frame) {
+					scaleHint++;
 					foundScaleIndex = scaleHint;
-				else if (scaleHint + 1 < (s32)ScaleKeys.size()) {
-					// check the next index
-					if (ScaleKeys[scaleHint + 1].frame >= frame &&
-							ScaleKeys[scaleHint + 0].frame < frame) {
-						scaleHint++;
-						foundScaleIndex = scaleHint;
-					}
-				}
-			}
-
-			// The hint test failed, do a full scan...
-			if (foundScaleIndex == -1) {
-				for (u32 i = 0; i < ScaleKeys.size(); ++i) {
-					if (ScaleKeys[i].frame >= frame) { // Keys should to be sorted by frame
-						foundScaleIndex = i;
-						scaleHint = i;
-						break;
-					}
-				}
-			}
-
-			// Do interpolation...
-			if (foundScaleIndex != -1) {
-				if (foundScaleIndex == 0) {
-					scale = ScaleKeys[foundScaleIndex].scale;
-				} else {
-					const SScaleKey &KeyA = ScaleKeys[foundScaleIndex];
-					const SScaleKey &KeyB = ScaleKeys[foundScaleIndex - 1];
-
-					const f32 fd1 = frame - KeyA.frame;
-					const f32 fd2 = KeyB.frame - frame;
-					scale = ((KeyB.scale - KeyA.scale) / (fd1 + fd2)) * fd1 + KeyA.scale;
 				}
 			}
 		}
 
-		//-------------------------------------------------------------
+		// The hint test failed, do a full scan...
+		if (foundScaleIndex == -1) {
+			for (u32 i = 0; i < ScaleKeys.size(); ++i) {
+				if (ScaleKeys[i].frame >= frame) { // Keys should to be sorted by frame
+					foundScaleIndex = i;
+					scaleHint = i;
+					break;
+				}
+			}
+		}
 
-		if (RotationKeys.size()) {
-			foundRotationIndex = -1;
+		// Do interpolation...
+		if (foundScaleIndex != -1) {
+			if (foundScaleIndex == 0) {
+				scale = ScaleKeys[foundScaleIndex].scale;
+			} else {
+				const SScaleKey &KeyA = ScaleKeys[foundScaleIndex];
+				const SScaleKey &KeyB = ScaleKeys[foundScaleIndex - 1];
 
-			// Test the Hints...
-			if (rotationHint >= 0 && (u32)rotationHint < RotationKeys.size()) {
-				// check this hint
-				if (rotationHint > 0 && RotationKeys[rotationHint].frame >= frame && RotationKeys[rotationHint - 1].frame < frame)
+				const f32 fd1 = frame - KeyA.frame;
+				const f32 fd2 = KeyB.frame - frame;
+				scale = ((KeyB.scale - KeyA.scale) / (fd1 + fd2)) * fd1 + KeyA.scale;
+			}
+		}
+	}
+
+	//-------------------------------------------------------------
+
+	if (RotationKeys.size()) {
+		foundRotationIndex = -1;
+
+		// Test the Hints...
+		if (rotationHint >= 0 && (u32)rotationHint < RotationKeys.size()) {
+			// check this hint
+			if (rotationHint > 0 && RotationKeys[rotationHint].frame >= frame && RotationKeys[rotationHint - 1].frame < frame)
+				foundRotationIndex = rotationHint;
+			else if (rotationHint + 1 < (s32)RotationKeys.size()) {
+				// check the next index
+				if (RotationKeys[rotationHint + 1].frame >= frame &&
+						RotationKeys[rotationHint + 0].frame < frame) {
+					rotationHint++;
 					foundRotationIndex = rotationHint;
-				else if (rotationHint + 1 < (s32)RotationKeys.size()) {
-					// check the next index
-					if (RotationKeys[rotationHint + 1].frame >= frame &&
-							RotationKeys[rotationHint + 0].frame < frame) {
-						rotationHint++;
-						foundRotationIndex = rotationHint;
-					}
 				}
 			}
+		}
 
-			// The hint test failed, do a full scan...
-			if (foundRotationIndex == -1) {
-				for (u32 i = 0; i < RotationKeys.size(); ++i) {
-					if (RotationKeys[i].frame >= frame) { // Keys should be sorted by frame
-						foundRotationIndex = i;
-						rotationHint = i;
-						break;
-					}
+		// The hint test failed, do a full scan...
+		if (foundRotationIndex == -1) {
+			for (u32 i = 0; i < RotationKeys.size(); ++i) {
+				if (RotationKeys[i].frame >= frame) { // Keys should be sorted by frame
+					foundRotationIndex = i;
+					rotationHint = i;
+					break;
 				}
 			}
+		}
 
-			// Do interpolation...
-			if (foundRotationIndex != -1) {
-				if (foundRotationIndex == 0) {
-					rotation = RotationKeys[foundRotationIndex].rotation;
-				} else {
-					const SRotationKey &KeyA = RotationKeys[foundRotationIndex];
-					const SRotationKey &KeyB = RotationKeys[foundRotationIndex - 1];
+		// Do interpolation...
+		if (foundRotationIndex != -1) {
+			if (foundRotationIndex == 0) {
+				rotation = RotationKeys[foundRotationIndex].rotation;
+			} else {
+				const SRotationKey &KeyA = RotationKeys[foundRotationIndex];
+				const SRotationKey &KeyB = RotationKeys[foundRotationIndex - 1];
 
-					const f32 fd1 = frame - KeyA.frame;
-					const f32 fd2 = KeyB.frame - frame;
-					const f32 t = fd1 / (fd1 + fd2);
+				const f32 fd1 = frame - KeyA.frame;
+				const f32 fd2 = KeyB.frame - frame;
+				const f32 t = fd1 / (fd1 + fd2);
 
-					/*
-					f32 t = 0;
-					if (KeyA.frame!=KeyB.frame)
-						t = (frame-KeyA.frame) / (KeyB.frame - KeyA.frame);
-					*/
+				/*
+				f32 t = 0;
+				if (KeyA.frame!=KeyB.frame)
+					t = (frame-KeyA.frame) / (KeyB.frame - KeyA.frame);
+				*/
 
-					rotation.slerp(KeyA.rotation, KeyB.rotation, t);
-				}
+				rotation.slerp(KeyA.rotation, KeyB.rotation, t);
 			}
 		}
 	}
@@ -729,20 +727,21 @@ void SkinnedMesh::checkForAnimation()
 	// Check for animation...
 	HasAnimation = false;
 	for (auto *joint : AllJoints) {
-		if (joint->UseAnimationFrom) {
-			if (joint->UseAnimationFrom->PositionKeys.size() ||
-					joint->UseAnimationFrom->ScaleKeys.size() ||
-					joint->UseAnimationFrom->RotationKeys.size()) {
-				HasAnimation = true;
-			}
+		if (joint->PositionKeys.size() ||
+				joint->ScaleKeys.size() ||
+				joint->RotationKeys.size()) {
+			HasAnimation = true;
+			break;
 		}
 	}
 
 	// meshes with weights, are still counted as animated for ragdolls, etc
 	if (!HasAnimation) {
 		for (auto *joint : AllJoints) {
-			if (joint->Weights.size())
+			if (joint->Weights.size()) {
 				HasAnimation = true;
+				break;
+			}
 		}
 	}
 
@@ -750,19 +749,17 @@ void SkinnedMesh::checkForAnimation()
 		//--- Find the length of the animation ---
 		EndFrame = 0;
 		for (auto *joint : AllJoints) {
-			if (joint->UseAnimationFrom) {
-				if (joint->UseAnimationFrom->PositionKeys.size())
-					if (joint->UseAnimationFrom->PositionKeys.getLast().frame > EndFrame)
-						EndFrame = joint->UseAnimationFrom->PositionKeys.getLast().frame;
+			if (joint->PositionKeys.size())
+				if (joint->PositionKeys.getLast().frame > EndFrame)
+					EndFrame = joint->PositionKeys.getLast().frame;
 
-				if (joint->UseAnimationFrom->ScaleKeys.size())
-					if (joint->UseAnimationFrom->ScaleKeys.getLast().frame > EndFrame)
-						EndFrame = joint->UseAnimationFrom->ScaleKeys.getLast().frame;
+			if (joint->ScaleKeys.size())
+				if (joint->ScaleKeys.getLast().frame > EndFrame)
+					EndFrame = joint->ScaleKeys.getLast().frame;
 
-				if (joint->UseAnimationFrom->RotationKeys.size())
-					if (joint->UseAnimationFrom->RotationKeys.getLast().frame > EndFrame)
-						EndFrame = joint->UseAnimationFrom->RotationKeys.getLast().frame;
-			}
+			if (joint->RotationKeys.size())
+				if (joint->RotationKeys.getLast().frame > EndFrame)
+					EndFrame = joint->RotationKeys.getLast().frame;
 		}
 	}
 
@@ -847,10 +844,6 @@ void SkinnedMesh::finalize()
 		} else {
 			AllJoints = RootJoints;
 		}
-	}
-
-	for (auto *joint : AllJoints) {
-		joint->UseAnimationFrom = joint;
 	}
 
 	// Set array sizes...

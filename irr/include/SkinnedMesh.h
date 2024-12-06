@@ -181,7 +181,7 @@ public:
 	struct SJoint
 	{
 		SJoint() :
-				UseAnimationFrom(0), GlobalSkinningSpace(false),
+				GlobalSkinningSpace(false),
 				positionHint(-1), scaleHint(-1), rotationHint(-1)
 		{
 		}
@@ -226,7 +226,6 @@ public:
 		//! Internal members used by SkinnedMesh
 		friend class SkinnedMesh;
 
-		SJoint *UseAnimationFrom;
 		bool GlobalSkinningSpace;
 
 		s32 positionHint;
