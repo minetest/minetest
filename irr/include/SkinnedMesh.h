@@ -250,42 +250,11 @@ public:
 		s32 rotationHint;
 	};
 
-	// Interface for the mesh loaders (finalize should lock these functions, and they should have some prefix like loader_
-	// these functions will use the needed arrays, set values, etc to help the loaders
-
-	//! alternative method for adding joints
-	std::vector<SJoint *> &getAllJoints() {
-		return AllJoints;
-	}
-
-	//! alternative method for reading joints
 	const std::vector<SJoint *> &getAllJoints() const {
 		return AllJoints;
 	}
 
-	//! loaders should call this after populating the mesh
-	void finalize();
-
-	//! Adds a new meshbuffer to the mesh, access it as last one
-	SSkinMeshBuffer *addMeshBuffer();
-
-	//! Adds a new meshbuffer to the mesh, access it as last one
-	void addMeshBuffer(SSkinMeshBuffer *meshbuf);
-
-	//! Adds a new joint to the mesh, access it as last one
-	SJoint *addJoint(SJoint *parent = 0);
-
-	//! Adds a new position key to the mesh, access it as last one
-	SPositionKey *addPositionKey(SJoint *joint);
-	//! Adds a new rotation key to the mesh, access it as last one
-	SRotationKey *addRotationKey(SJoint *joint);
-	//! Adds a new scale key to the mesh, access it as last one
-	SScaleKey *addScaleKey(SJoint *joint);
-
-	//! Adds a new weight to the mesh, access it as last one
-	SWeight *addWeight(SJoint *joint);
-
-private:
+protected:
 	void checkForAnimation();
 
 	void normalizeWeights();
@@ -333,6 +302,39 @@ private:
 	bool PreparedForSkinning;
 	bool AnimateNormals;
 	bool HardwareSkinning;
+};
+
+// Interface for mesh loaders
+class SkinnedMeshBuilder : public SkinnedMesh {
+public:
+	SkinnedMeshBuilder() : SkinnedMesh() {}
+
+	//! loaders should call this after populating the mesh
+	SkinnedMesh *finalize();
+
+	//! alternative method for adding joints
+	std::vector<SJoint *> &getAllJoints() {
+		return AllJoints;
+	}
+
+	//! Adds a new meshbuffer to the mesh, access it as last one
+	SSkinMeshBuffer *addMeshBuffer();
+
+	//! Adds a new meshbuffer to the mesh, access it as last one
+	void addMeshBuffer(SSkinMeshBuffer *meshbuf);
+
+	//! Adds a new joint to the mesh, access it as last one
+	SJoint *addJoint(SJoint *parent = 0);
+
+	//! Adds a new position key to the mesh, access it as last one
+	SPositionKey *addPositionKey(SJoint *joint);
+	//! Adds a new rotation key to the mesh, access it as last one
+	SRotationKey *addRotationKey(SJoint *joint);
+	//! Adds a new scale key to the mesh, access it as last one
+	SScaleKey *addScaleKey(SJoint *joint);
+
+	//! Adds a new weight to the mesh, access it as last one
+	SWeight *addWeight(SJoint *joint);
 };
 
 } // end namespace scene

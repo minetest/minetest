@@ -100,7 +100,7 @@ private:
 	{
 	public:
 		MeshExtractor(tiniergltf::GlTF &&model,
-				SkinnedMesh *mesh) noexcept
+				SkinnedMeshBuilder *mesh) noexcept
 			: m_gltf_model(std::move(model)), m_irr_model(mesh) {};
 
 		/* Gets indices for the given mesh/primitive.
@@ -124,7 +124,7 @@ private:
 
 	private:
 		const tiniergltf::GlTF m_gltf_model;
-		SkinnedMesh *m_irr_model;
+		SkinnedMeshBuilder *m_irr_model;
 
 		std::vector<std::function<void()>> m_mesh_loaders;
 		std::vector<SkinnedMesh::SJoint *> m_loaded_nodes;

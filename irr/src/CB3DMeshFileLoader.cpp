@@ -10,6 +10,7 @@
 
 #include "IVideoDriver.h"
 #include "IFileSystem.h"
+#include "SkinnedMesh.h"
 #include "coreutil.h"
 #include "os.h"
 
@@ -51,12 +52,12 @@ IAnimatedMesh *CB3DMeshFileLoader::createMesh(io::IReadFile *file)
 		return 0;
 
 	B3DFile = file;
-	AnimatedMesh = new scene::SkinnedMesh();
+	AnimatedMesh = new scene::SkinnedMeshBuilder();
 	ShowWarning = true; // If true a warning is issued if too many textures are used
 	VerticesStart = 0;
 
 	if (load()) {
-		AnimatedMesh->finalize();
+		return AnimatedMesh->finalize();
 	} else {
 		AnimatedMesh->drop();
 		AnimatedMesh = 0;

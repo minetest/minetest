@@ -762,7 +762,7 @@ void SkinnedMesh::checkForAnimation()
 }
 
 //! called by loader after populating with mesh and bone data
-void SkinnedMesh::finalize()
+SkinnedMesh *SkinnedMeshBuilder::finalize()
 {
 	os::Printer::log("Skinned Mesh - finalize", ELL_DEBUG);
 
@@ -932,6 +932,8 @@ void SkinnedMesh::finalize()
 			BoundingBox.addInternalBox(bb);
 		}
 	}
+
+	return this;
 }
 
 void SkinnedMesh::updateBoundingBox(void)
@@ -950,7 +952,7 @@ void SkinnedMesh::updateBoundingBox(void)
 	}
 }
 
-scene::SSkinMeshBuffer *SkinnedMesh::addMeshBuffer()
+scene::SSkinMeshBuffer *SkinnedMeshBuilder::addMeshBuffer()
 {
 	scene::SSkinMeshBuffer *buffer = new scene::SSkinMeshBuffer();
 	TextureSlots.push_back(LocalBuffers.size());
@@ -958,13 +960,13 @@ scene::SSkinMeshBuffer *SkinnedMesh::addMeshBuffer()
 	return buffer;
 }
 
-void SkinnedMesh::addMeshBuffer(SSkinMeshBuffer *meshbuf)
+void SkinnedMeshBuilder::addMeshBuffer(SSkinMeshBuffer *meshbuf)
 {
 	TextureSlots.push_back(LocalBuffers.size());
 	LocalBuffers.push_back(meshbuf);
 }
 
-SkinnedMesh::SJoint *SkinnedMesh::addJoint(SJoint *parent)
+SkinnedMesh::SJoint *SkinnedMeshBuilder::addJoint(SJoint *parent)
 {
 	SJoint *joint = new SJoint;
 
@@ -979,7 +981,7 @@ SkinnedMesh::SJoint *SkinnedMesh::addJoint(SJoint *parent)
 	return joint;
 }
 
-SkinnedMesh::SPositionKey *SkinnedMesh::addPositionKey(SJoint *joint)
+SkinnedMesh::SPositionKey *SkinnedMeshBuilder::addPositionKey(SJoint *joint)
 {
 	if (!joint)
 		return 0;
@@ -988,7 +990,7 @@ SkinnedMesh::SPositionKey *SkinnedMesh::addPositionKey(SJoint *joint)
 	return &joint->PositionKeys.getLast();
 }
 
-SkinnedMesh::SScaleKey *SkinnedMesh::addScaleKey(SJoint *joint)
+SkinnedMesh::SScaleKey *SkinnedMeshBuilder::addScaleKey(SJoint *joint)
 {
 	if (!joint)
 		return 0;
@@ -997,7 +999,7 @@ SkinnedMesh::SScaleKey *SkinnedMesh::addScaleKey(SJoint *joint)
 	return &joint->ScaleKeys.getLast();
 }
 
-SkinnedMesh::SRotationKey *SkinnedMesh::addRotationKey(SJoint *joint)
+SkinnedMesh::SRotationKey *SkinnedMeshBuilder::addRotationKey(SJoint *joint)
 {
 	if (!joint)
 		return 0;
@@ -1006,7 +1008,7 @@ SkinnedMesh::SRotationKey *SkinnedMesh::addRotationKey(SJoint *joint)
 	return &joint->RotationKeys.getLast();
 }
 
-SkinnedMesh::SWeight *SkinnedMesh::addWeight(SJoint *joint)
+SkinnedMesh::SWeight *SkinnedMeshBuilder::addWeight(SJoint *joint)
 {
 	if (!joint)
 		return nullptr;

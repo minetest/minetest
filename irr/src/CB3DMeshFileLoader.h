@@ -63,7 +63,7 @@ private:
 
 	core::array<video::S3DVertex2TCoords> BaseVertices;
 
-	SkinnedMesh *AnimatedMesh;
+	SkinnedMeshBuilder *AnimatedMesh;
 	io::IReadFile *B3DFile;
 
 	// B3Ds have Vertex ID's local within the mesh I don't want this

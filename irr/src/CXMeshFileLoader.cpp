@@ -3,6 +3,7 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CXMeshFileLoader.h"
+#include "SkinnedMesh.h"
 #include "os.h"
 
 #include "fast_atof.h"
@@ -57,7 +58,7 @@ IAnimatedMesh *CXMeshFileLoader::createMesh(io::IReadFile *file)
 	u32 time = os::Timer::getRealTime();
 #endif
 
-	AnimatedMesh = new SkinnedMesh();
+	AnimatedMesh = new SkinnedMeshBuilder();
 
 	if (load(file)) {
 		AnimatedMesh->finalize();
@@ -92,7 +93,7 @@ IAnimatedMesh *CXMeshFileLoader::createMesh(io::IReadFile *file)
 		delete Meshes[i];
 	Meshes.clear();
 
-	return AnimatedMesh;
+	return AnimatedMesh->finalize();
 }
 
 bool CXMeshFileLoader::load(io::IReadFile *file)

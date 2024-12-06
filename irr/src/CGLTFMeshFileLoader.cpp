@@ -346,14 +346,14 @@ IAnimatedMesh* SelfType::createMesh(io::IReadFile* file)
 	const char *filename = file->getFileName().c_str();
 	try {
 		tiniergltf::GlTF model = parseGLTF(file);
-		irr_ptr<SkinnedMesh> mesh(new SkinnedMesh());
+		irr_ptr<SkinnedMeshBuilder> mesh(new SkinnedMeshBuilder());
 		MeshExtractor extractor(std::move(model), mesh.get());
 		try {
 			extractor.load();
 			for (const auto &warning : extractor.getWarnings()) {
 				os::Printer::log(filename, warning.c_str(), ELL_WARNING);
 			}
-			return mesh.release();
+			return mesh.release()->finalize();
 		} catch (const std::runtime_error &e) {
 			os::Printer::log("error converting gltf to irrlicht mesh", e.what(), ELL_ERROR);
 		}
@@ -756,8 +756,6 @@ void SelfType::MeshExtractor::load()
 	} catch (const std::bad_optional_access &e) {
 		throw std::runtime_error(e.what());
 	}
-
-	m_irr_model->finalize();
 }
 
 /**
