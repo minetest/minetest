@@ -1,7 +1,11 @@
 __worldname_list() {
-  string=$(eval "luanti --worldlist name")
-  output=$(awk 'NR>1{print $0}' <<< "$string")
-  eval "$1=(\"${output[@]}\")"
+  local string output
+  string=$(luanti --worldlist name)
+
+  IFS=$'\n' output=($string)
+  output=("${output[@]:1}")
+  output=("${output[@]#$'\t'}")
+  printf '%s\n' "${output[@]}"
 }
 
 _luanti() {
@@ -25,9 +29,7 @@ _luanti() {
     # FIXME: Why luanti --gameid list returns list into stderr?
     COMPREPLY=($(compgen -W "list $(luanti --gameid list 2>&1)" -- "$cur"))
   elif [[ "$prev" == "--worldname" ]]; then
-    local worldname_values
-    __worldname_list worldname_values
-    COMPREPLY=($(compgen -W "$worldname_values" -- "$cur"))
+    COMPREPLY=($(compgen -W "$(__worldname_list)" -- "$cur"))
   elif [[ " ${file_opts[*]} " == *" ${prev} "* ]]; then
     _comp_compgen_filedir
   else
