@@ -10,76 +10,6 @@
 #include "os.h"
 #include <vector>
 
-namespace
-{
-// Frames must always be increasing, so we remove objects where this isn't the case
-// return number of kicked keys
-template <class T> // T = objects containing a "frame" variable
-irr::u32 dropBadKeys(irr::core::array<T> &array)
-{
-	if (array.size() < 2)
-		return 0;
-
-	irr::u32 n = 1; // new index
-	for (irr::u32 j = 1; j < array.size(); ++j) {
-		if (array[j].frame < array[n - 1].frame)
-			continue; // bad frame, unneeded and may cause problems
-		if (n != j)
-			array[n] = array[j];
-		++n;
-	}
-	irr::u32 d = array.size() - n; // remove already copied keys
-	if (d > 0) {
-		array.erase(n, d);
-	}
-	return d;
-}
-
-// drop identical middle keys - we only need the first and last
-// return number of kicked keys
-template <class T, typename Cmp> // Cmp = comparison for keys of type T
-irr::u32 dropMiddleKeys(irr::core::array<T> &array, Cmp &cmp)
-{
-	if (array.size() < 3)
-		return 0;
-
-	irr::u32 s = 0; // old index for current key
-	irr::u32 n = 1; // new index for next key
-	for (irr::u32 j = 1; j < array.size(); ++j) {
-		if (cmp(array[j], array[s]))
-			continue; // same key, handle later
-
-		if (j > s + 1)                 // had there been identical keys?
-			array[n++] = array[j - 1]; // keep the last
-		array[n++] = array[j];         // keep the new one
-		s = j;
-	}
-	if (array.size() > s + 1)                 // identical keys at the array end?
-		array[n++] = array[array.size() - 1]; // keep the last
-
-	irr::u32 d = array.size() - n; // remove already copied keys
-	if (d > 0) {
-		array.erase(n, d);
-	}
-	return d;
-}
-
-bool identicalPos(const irr::scene::SkinnedMesh::SPositionKey &a, const irr::scene::SkinnedMesh::SPositionKey &b)
-{
-	return a.position == b.position;
-}
-
-bool identicalScale(const irr::scene::SkinnedMesh::SScaleKey &a, const irr::scene::SkinnedMesh::SScaleKey &b)
-{
-	return a.scale == b.scale;
-}
-
-bool identicalRotation(const irr::scene::SkinnedMesh::SRotationKey &a, const irr::scene::SkinnedMesh::SRotationKey &b)
-{
-	return a.rotation == b.rotation;
-}
-}
-
 namespace irr
 {
 namespace scene
@@ -146,21 +76,10 @@ void SkinnedMesh::animateMesh(f32 frame)
 		// The joints can be animated here with no input from their
 		// parents, but for setAnimationMode extra checks are needed
 		// to their parents
-
-		core::vector3df position = joint->Animatedposition;
-		core::vector3df scale = joint->Animatedscale;
-		core::quaternion rotation = joint->Animatedrotation;
-
-		// Note: This interpolates as necessary.
-		getFrameData(frame, joint,
-				position, joint->positionHint,
-				scale, joint->scaleHint,
-				rotation, joint->rotationHint);
-
-		// No blending needed
-		joint->Animatedposition = position;
-		joint->Animatedscale = scale;
-		joint->Animatedrotation = rotation;
+		joint->keys.updateTransform(frame,
+				joint->Animatedposition,
+				joint->Animatedrotation,
+				joint->Animatedscale);
 	}
 
 	// Note:
@@ -181,10 +100,7 @@ void SkinnedMesh::buildAllLocalAnimatedMatrices()
 	for (auto *joint : AllJoints) {
 		// Could be faster:
 
-		if (joint &&
-				(joint->PositionKeys.size() ||
-						joint->ScaleKeys.size() ||
-						joint->RotationKeys.size())) {
+		if (!joint->keys.empty()) {
 			joint->GlobalSkinningSpace = false;
 
 			// IRR_TEST_BROKEN_QUATERNION_USE: TODO - switched to getMatrix_transposed instead of getMatrix for downward compatibility.
@@ -209,7 +125,7 @@ void SkinnedMesh::buildAllLocalAnimatedMatrices()
 			m1[14] += Pos.Z * m1[15];
 			// -----------------------------------
 
-			if (joint->ScaleKeys.size()) {
+			if (!joint->keys.scale.empty()) {
 				/*
 				core::matrix4 scaleMatrix;
 				scaleMatrix.setScale(joint->Animatedscale);
@@ -255,164 +171,6 @@ void SkinnedMesh::buildAllGlobalAnimatedMatrices(SJoint *joint, SJoint *parentJo
 
 	for (auto *childJoint : joint->Children)
 		buildAllGlobalAnimatedMatrices(childJoint, joint);
-}
-
-void SkinnedMesh::getFrameData(f32 frame, SJoint *joint,
-		core::vector3df &position, s32 &positionHint,
-		core::vector3df &scale, s32 &scaleHint,
-		core::quaternion &rotation, s32 &rotationHint)
-{
-	s32 foundPositionIndex = -1;
-	s32 foundScaleIndex = -1;
-	s32 foundRotationIndex = -1;
-
-	const core::array<SPositionKey> &PositionKeys = joint->PositionKeys;
-	const core::array<SScaleKey> &ScaleKeys = joint->ScaleKeys;
-	const core::array<SRotationKey> &RotationKeys = joint->RotationKeys;
-
-	if (PositionKeys.size()) {
-		foundPositionIndex = -1;
-
-		// Test the Hints...
-		if (positionHint >= 0 && (u32)positionHint < PositionKeys.size()) {
-			// check this hint
-			if (positionHint > 0 && PositionKeys[positionHint].frame >= frame && PositionKeys[positionHint - 1].frame < frame)
-				foundPositionIndex = positionHint;
-			else if (positionHint + 1 < (s32)PositionKeys.size()) {
-				// check the next index
-				if (PositionKeys[positionHint + 1].frame >= frame &&
-						PositionKeys[positionHint + 0].frame < frame) {
-					positionHint++;
-					foundPositionIndex = positionHint;
-				}
-			}
-		}
-
-		// The hint test failed, do a full scan...
-		if (foundPositionIndex == -1) {
-			for (u32 i = 0; i < PositionKeys.size(); ++i) {
-				if (PositionKeys[i].frame >= frame) { // Keys should to be sorted by frame
-					foundPositionIndex = i;
-					positionHint = i;
-					break;
-				}
-			}
-		}
-
-		// Do interpolation...
-		if (foundPositionIndex != -1) {
-			if (foundPositionIndex == 0) {
-				position = PositionKeys[foundPositionIndex].position;
-			} else {
-				const SPositionKey &KeyA = PositionKeys[foundPositionIndex];
-				const SPositionKey &KeyB = PositionKeys[foundPositionIndex - 1];
-
-				const f32 fd1 = frame - KeyA.frame;
-				const f32 fd2 = KeyB.frame - frame;
-				position = ((KeyB.position - KeyA.position) / (fd1 + fd2)) * fd1 + KeyA.position;
-			}
-		}
-	}
-
-	//------------------------------------------------------------
-
-	if (ScaleKeys.size()) {
-		foundScaleIndex = -1;
-
-		// Test the Hints...
-		if (scaleHint >= 0 && (u32)scaleHint < ScaleKeys.size()) {
-			// check this hint
-			if (scaleHint > 0 && ScaleKeys[scaleHint].frame >= frame && ScaleKeys[scaleHint - 1].frame < frame)
-				foundScaleIndex = scaleHint;
-			else if (scaleHint + 1 < (s32)ScaleKeys.size()) {
-				// check the next index
-				if (ScaleKeys[scaleHint + 1].frame >= frame &&
-						ScaleKeys[scaleHint + 0].frame < frame) {
-					scaleHint++;
-					foundScaleIndex = scaleHint;
-				}
-			}
-		}
-
-		// The hint test failed, do a full scan...
-		if (foundScaleIndex == -1) {
-			for (u32 i = 0; i < ScaleKeys.size(); ++i) {
-				if (ScaleKeys[i].frame >= frame) { // Keys should to be sorted by frame
-					foundScaleIndex = i;
-					scaleHint = i;
-					break;
-				}
-			}
-		}
-
-		// Do interpolation...
-		if (foundScaleIndex != -1) {
-			if (foundScaleIndex == 0) {
-				scale = ScaleKeys[foundScaleIndex].scale;
-			} else {
-				const SScaleKey &KeyA = ScaleKeys[foundScaleIndex];
-				const SScaleKey &KeyB = ScaleKeys[foundScaleIndex - 1];
-
-				const f32 fd1 = frame - KeyA.frame;
-				const f32 fd2 = KeyB.frame - frame;
-				scale = ((KeyB.scale - KeyA.scale) / (fd1 + fd2)) * fd1 + KeyA.scale;
-			}
-		}
-	}
-
-	//-------------------------------------------------------------
-
-	if (RotationKeys.size()) {
-		foundRotationIndex = -1;
-
-		// Test the Hints...
-		if (rotationHint >= 0 && (u32)rotationHint < RotationKeys.size()) {
-			// check this hint
-			if (rotationHint > 0 && RotationKeys[rotationHint].frame >= frame && RotationKeys[rotationHint - 1].frame < frame)
-				foundRotationIndex = rotationHint;
-			else if (rotationHint + 1 < (s32)RotationKeys.size()) {
-				// check the next index
-				if (RotationKeys[rotationHint + 1].frame >= frame &&
-						RotationKeys[rotationHint + 0].frame < frame) {
-					rotationHint++;
-					foundRotationIndex = rotationHint;
-				}
-			}
-		}
-
-		// The hint test failed, do a full scan...
-		if (foundRotationIndex == -1) {
-			for (u32 i = 0; i < RotationKeys.size(); ++i) {
-				if (RotationKeys[i].frame >= frame) { // Keys should be sorted by frame
-					foundRotationIndex = i;
-					rotationHint = i;
-					break;
-				}
-			}
-		}
-
-		// Do interpolation...
-		if (foundRotationIndex != -1) {
-			if (foundRotationIndex == 0) {
-				rotation = RotationKeys[foundRotationIndex].rotation;
-			} else {
-				const SRotationKey &KeyA = RotationKeys[foundRotationIndex];
-				const SRotationKey &KeyB = RotationKeys[foundRotationIndex - 1];
-
-				const f32 fd1 = frame - KeyA.frame;
-				const f32 fd2 = KeyB.frame - frame;
-				const f32 t = fd1 / (fd1 + fd2);
-
-				/*
-				f32 t = 0;
-				if (KeyA.frame!=KeyB.frame)
-					t = (frame-KeyA.frame) / (KeyB.frame - KeyA.frame);
-				*/
-
-				rotation.slerp(KeyA.rotation, KeyB.rotation, t);
-			}
-		}
-	}
 }
 
 //--------------------------------------------------------------------------
@@ -664,9 +422,7 @@ void SkinnedMesh::checkForAnimation()
 	// Check for animation...
 	HasAnimation = false;
 	for (auto *joint : AllJoints) {
-		if (joint->PositionKeys.size() ||
-				joint->ScaleKeys.size() ||
-				joint->RotationKeys.size()) {
+		if (!joint->keys.empty()) {
 			HasAnimation = true;
 			break;
 		}
@@ -683,20 +439,9 @@ void SkinnedMesh::checkForAnimation()
 	}
 
 	if (HasAnimation) {
-		//--- Find the length of the animation ---
-		EndFrame = 0;
-		for (auto *joint : AllJoints) {
-			if (joint->PositionKeys.size())
-				if (joint->PositionKeys.getLast().frame > EndFrame)
-					EndFrame = joint->PositionKeys.getLast().frame;
-
-			if (joint->ScaleKeys.size())
-				if (joint->ScaleKeys.getLast().frame > EndFrame)
-					EndFrame = joint->ScaleKeys.getLast().frame;
-
-			if (joint->RotationKeys.size())
-				if (joint->RotationKeys.getLast().frame > EndFrame)
-					EndFrame = joint->RotationKeys.getLast().frame;
+		EndFrame = 0.0f;
+		for (const auto *joint : AllJoints) {
+			EndFrame = std::max(EndFrame, joint->keys.getEndFrame());
 		}
 	}
 
@@ -792,98 +537,8 @@ SkinnedMesh *SkinnedMeshBuilder::finalize()
 	checkForAnimation();
 
 	if (HasAnimation) {
-		irr::u32 redundantPosKeys = 0;
-		irr::u32 unorderedPosKeys = 0;
-		irr::u32 redundantScaleKeys = 0;
-		irr::u32 unorderedScaleKeys = 0;
-		irr::u32 redundantRotationKeys = 0;
-		irr::u32 unorderedRotationKeys = 0;
-
-		//--- optimize and check keyframes ---
 		for (auto *joint : AllJoints) {
-			core::array<SPositionKey> &PositionKeys = joint->PositionKeys;
-			core::array<SScaleKey> &ScaleKeys = joint->ScaleKeys;
-			core::array<SRotationKey> &RotationKeys = joint->RotationKeys;
-
-			// redundant = identical middle keys - we only need the first and last frame
-			// unordered = frames which are out of order - we can't handle those
-			redundantPosKeys += dropMiddleKeys<SPositionKey>(PositionKeys, identicalPos);
-			unorderedPosKeys += dropBadKeys<SPositionKey>(PositionKeys);
-			redundantScaleKeys += dropMiddleKeys<SScaleKey>(ScaleKeys, identicalScale);
-			unorderedScaleKeys += dropBadKeys<SScaleKey>(ScaleKeys);
-			redundantRotationKeys += dropMiddleKeys<SRotationKey>(RotationKeys, identicalRotation);
-			unorderedRotationKeys += dropBadKeys<SRotationKey>(RotationKeys);
-
-			// Fill empty keyframe areas
-			if (PositionKeys.size()) {
-				SPositionKey *Key;
-				Key = &PositionKeys[0]; // getFirst
-				if (Key->frame != 0) {
-					PositionKeys.push_front(*Key);
-					Key = &PositionKeys[0]; // getFirst
-					Key->frame = 0;
-				}
-
-				Key = &PositionKeys.getLast();
-				if (Key->frame != EndFrame) {
-					PositionKeys.push_back(*Key);
-					Key = &PositionKeys.getLast();
-					Key->frame = EndFrame;
-				}
-			}
-
-			if (ScaleKeys.size()) {
-				SScaleKey *Key;
-				Key = &ScaleKeys[0]; // getFirst
-				if (Key->frame != 0) {
-					ScaleKeys.push_front(*Key);
-					Key = &ScaleKeys[0]; // getFirst
-					Key->frame = 0;
-				}
-
-				Key = &ScaleKeys.getLast();
-				if (Key->frame != EndFrame) {
-					ScaleKeys.push_back(*Key);
-					Key = &ScaleKeys.getLast();
-					Key->frame = EndFrame;
-				}
-			}
-
-			if (RotationKeys.size()) {
-				SRotationKey *Key;
-				Key = &RotationKeys[0]; // getFirst
-				if (Key->frame != 0) {
-					RotationKeys.push_front(*Key);
-					Key = &RotationKeys[0]; // getFirst
-					Key->frame = 0;
-				}
-
-				Key = &RotationKeys.getLast();
-				if (Key->frame != EndFrame) {
-					RotationKeys.push_back(*Key);
-					Key = &RotationKeys.getLast();
-					Key->frame = EndFrame;
-				}
-			}
-		}
-
-		if (redundantPosKeys > 0) {
-			os::Printer::log("Skinned Mesh - redundant position frames kicked", core::stringc(redundantPosKeys).c_str(), ELL_DEBUG);
-		}
-		if (unorderedPosKeys > 0) {
-			irr::os::Printer::log("Skinned Mesh - unsorted position frames kicked", irr::core::stringc(unorderedPosKeys).c_str(), irr::ELL_DEBUG);
-		}
-		if (redundantScaleKeys > 0) {
-			os::Printer::log("Skinned Mesh - redundant scale frames kicked", core::stringc(redundantScaleKeys).c_str(), ELL_DEBUG);
-		}
-		if (unorderedScaleKeys > 0) {
-			irr::os::Printer::log("Skinned Mesh - unsorted scale frames kicked", irr::core::stringc(unorderedScaleKeys).c_str(), irr::ELL_DEBUG);
-		}
-		if (redundantRotationKeys > 0) {
-			os::Printer::log("Skinned Mesh - redundant rotation frames kicked", core::stringc(redundantRotationKeys).c_str(), ELL_DEBUG);
-		}
-		if (unorderedRotationKeys > 0) {
-			irr::os::Printer::log("Skinned Mesh - unsorted rotation frames kicked", irr::core::stringc(unorderedRotationKeys).c_str(), irr::ELL_DEBUG);
+			joint->keys.cleanup();
 		}
 	}
 
@@ -963,31 +618,22 @@ SkinnedMesh::SJoint *SkinnedMeshBuilder::addJoint(SJoint *parent)
 	return joint;
 }
 
-SkinnedMesh::SPositionKey *SkinnedMeshBuilder::addPositionKey(SJoint *joint)
+void SkinnedMeshBuilder::addPositionKey(SJoint *joint, f32 frame, core::vector3df pos)
 {
-	if (!joint)
-		return 0;
-
-	joint->PositionKeys.push_back(SPositionKey());
-	return &joint->PositionKeys.getLast();
+	_IRR_DEBUG_BREAK_IF(!joint);
+	joint->keys.position.pushBack(frame, pos);
 }
 
-SkinnedMesh::SScaleKey *SkinnedMeshBuilder::addScaleKey(SJoint *joint)
+void SkinnedMeshBuilder::addScaleKey(SJoint *joint, f32 frame, core::vector3df scale)
 {
-	if (!joint)
-		return 0;
-
-	joint->ScaleKeys.push_back(SScaleKey());
-	return &joint->ScaleKeys.getLast();
+	_IRR_DEBUG_BREAK_IF(!joint);
+	joint->keys.scale.pushBack(frame, scale);
 }
 
-SkinnedMesh::SRotationKey *SkinnedMeshBuilder::addRotationKey(SJoint *joint)
+void SkinnedMeshBuilder::addRotationKey(SJoint *joint, f32 frame, core::quaternion rot)
 {
-	if (!joint)
-		return 0;
-
-	joint->RotationKeys.push_back(SRotationKey());
-	return &joint->RotationKeys.getLast();
+	_IRR_DEBUG_BREAK_IF(!joint);
+	joint->keys.rotation.pushBack(frame, rot);
 }
 
 SkinnedMesh::SWeight *SkinnedMeshBuilder::addWeight(SJoint *joint)
@@ -1046,10 +692,6 @@ void SkinnedMesh::recoverJointsFromMesh(std::vector<IBoneSceneNode *> &jointChil
 		node->setRotation(joint->LocalAnimatedMatrix.getRotationDegrees());
 		node->setScale(joint->LocalAnimatedMatrix.getScale());
 
-		node->positionHint = joint->positionHint;
-		node->scaleHint = joint->scaleHint;
-		node->rotationHint = joint->rotationHint;
-
 		node->updateAbsolutePosition();
 	}
 }
@@ -1064,27 +706,10 @@ void SkinnedMesh::transferJointsToMesh(const std::vector<IBoneSceneNode *> &join
 		joint->LocalAnimatedMatrix.setTranslation(node->getPosition());
 		joint->LocalAnimatedMatrix *= core::matrix4().setScale(node->getScale());
 
-		joint->positionHint = node->positionHint;
-		joint->scaleHint = node->scaleHint;
-		joint->rotationHint = node->rotationHint;
-
 		joint->GlobalSkinningSpace = (node->getSkinningSpace() == EBSS_GLOBAL);
 	}
 	// Make sure we recalc the next frame
 	LastAnimatedFrame = -1;
-	SkinnedLastFrame = false;
-}
-
-void SkinnedMesh::transferOnlyJointsHintsToMesh(const std::vector<IBoneSceneNode *> &jointChildSceneNodes)
-{
-	for (u32 i = 0; i < AllJoints.size(); ++i) {
-		const IBoneSceneNode *const node = jointChildSceneNodes[i];
-		SJoint *joint = AllJoints[i];
-
-		joint->positionHint = node->positionHint;
-		joint->scaleHint = node->scaleHint;
-		joint->rotationHint = node->rotationHint;
-	}
 	SkinnedLastFrame = false;
 }
 

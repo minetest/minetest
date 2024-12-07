@@ -1412,20 +1412,7 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 			joint->Name = FrameName.c_str();
 		}
 
-		joint->PositionKeys.reallocate(joint->PositionKeys.size() + animationDump.PositionKeys.size());
-		for (u32 n = 0; n < animationDump.PositionKeys.size(); ++n) {
-			joint->PositionKeys.push_back(animationDump.PositionKeys[n]);
-		}
-
-		joint->ScaleKeys.reallocate(joint->ScaleKeys.size() + animationDump.ScaleKeys.size());
-		for (u32 n = 0; n < animationDump.ScaleKeys.size(); ++n) {
-			joint->ScaleKeys.push_back(animationDump.ScaleKeys[n]);
-		}
-
-		joint->RotationKeys.reallocate(joint->RotationKeys.size() + animationDump.RotationKeys.size());
-		for (u32 n = 0; n < animationDump.RotationKeys.size(); ++n) {
-			joint->RotationKeys.push_back(animationDump.RotationKeys[n]);
-		}
+		joint->keys.append(animationDump.keys);
 	} else
 		os::Printer::log("joint name was never given", ELL_WARNING);
 
@@ -1489,10 +1476,9 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(SkinnedMesh::SJoint *joint)
 				os::Printer::log("Line", core::stringc(Line).c_str(), ELL_WARNING);
 			}
 
-			SkinnedMesh::SRotationKey *key = AnimatedMesh->addRotationKey(joint);
-			key->frame = time;
-			key->rotation.set(X, Y, Z, W);
-			key->rotation.normalize();
+			core::quaternion rotation(X, Y, Z, W);
+			rotation.normalize();
+			AnimatedMesh->addRotationKey(joint, time, rotation);
 		} break;
 		case 1: // scale
 		case 2: // position
@@ -1515,13 +1501,9 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(SkinnedMesh::SJoint *joint)
 			}
 
 			if (keyType == 2) {
-				SkinnedMesh::SPositionKey *key = AnimatedMesh->addPositionKey(joint);
-				key->frame = time;
-				key->position = vector;
+				AnimatedMesh->addPositionKey(joint, time, vector);
 			} else {
-				SkinnedMesh::SScaleKey *key = AnimatedMesh->addScaleKey(joint);
-				key->frame = time;
-				key->scale = vector;
+				AnimatedMesh->addScaleKey(joint, time, vector);
 			}
 		} break;
 		case 3:
@@ -1548,16 +1530,8 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(SkinnedMesh::SJoint *joint)
 
 			// core::vector3df rotation = mat.getRotationDegrees();
 
-			SkinnedMesh::SRotationKey *keyR = AnimatedMesh->addRotationKey(joint);
-			keyR->frame = time;
-
-			// IRR_TEST_BROKEN_QUATERNION_USE: TODO - switched from mat to mat.getTransposed() for downward compatibility.
-			// Not tested so far if this was correct or wrong before quaternion fix!
-			keyR->rotation = core::quaternion(mat.getTransposed());
-
-			SkinnedMesh::SPositionKey *keyP = AnimatedMesh->addPositionKey(joint);
-			keyP->frame = time;
-			keyP->position = mat.getTranslation();
+			AnimatedMesh->addRotationKey(joint, time, core::quaternion(mat.getTransposed()));
+			AnimatedMesh->addPositionKey(joint, time, mat.getTranslation());
 
 			/*
 							core::vector3df scale=mat.getScale();

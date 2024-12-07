@@ -9,6 +9,7 @@
 #include "SMeshBuffer.h"
 #include "SSkinMeshBuffer.h"
 #include "quaternion.h"
+#include "vector3d.h"
 
 #include <optional>
 #include <string>
@@ -144,9 +145,6 @@ public:
 	//! Transfers the joint data to the mesh
 	void transferJointsToMesh(const std::vector<IBoneSceneNode *> &jointChildSceneNodes);
 
-	//! Transfers the joint hints to the mesh
-	void transferOnlyJointsHintsToMesh(const std::vector<IBoneSceneNode *> &jointChildSceneNodes);
-
 	//! Creates an array of joints from this mesh as children of node
 	void addJoints(std::vector<IBoneSceneNode *> &jointChildSceneNodes,
 			IAnimatedMeshSceneNode *node,
@@ -172,35 +170,133 @@ public:
 		core::vector3df StaticNormal;
 	};
 
-	//! Animation keyframe which describes a new position
-	struct SPositionKey
-	{
-		f32 frame;
-		core::vector3df position;
+	template <class T>
+	struct Channel {
+		struct Frame {
+			f32 time;
+			T value;
+		};
+		std::vector<Frame> frames;
+		bool interpolate = true;
+
+		bool empty() const {
+			return frames.empty();
+		}
+
+		f32 getEndFrame() const {
+			return frames.empty() ? 0 : frames.back().time;
+		}
+
+		void pushBack(f32 time, const T &value) {
+			frames.push_back({time, value});
+		}
+
+		void append(const Channel<T> &other) {
+			frames.insert(frames.end(), other.frames.begin(), other.frames.end());
+		}
+
+		void cleanup() {
+			if (frames.empty())
+				return;
+
+			std::vector<Frame> ordered;
+			ordered.push_back(frames.front());
+			// Drop out-of-order frames
+			for (auto it = frames.begin() + 1; it != frames.end(); ++it) {
+				if (it->time > ordered.back().time) {
+					ordered.push_back(*it);
+				}
+			}
+			frames.clear();
+			// Drop redundant middle keys
+			frames.push_back(ordered.front());
+			for (u32 i = 1; i < ordered.size() - 1; ++i) {
+				if (ordered[i - 1].value != ordered[i].value
+						|| ordered[i + 1].value != ordered[i].value) {
+					frames.push_back(ordered[i]);
+				}
+			}
+			if (ordered.size() > 1)
+				frames.push_back(ordered.back());
+			frames.shrink_to_fit();
+		}
+
+		static core::quaternion interpolateValue(core::quaternion from, core::quaternion to, f32 time) {
+			core::quaternion result;
+			result.slerp(from, to, time, 0.001f);
+			return result;
+		}
+
+		static core::vector3df interpolateValue(core::vector3df from, core::vector3df to, f32 time) {
+			// Note: `from` and `to` are swapped here compared to quaternion slerp
+			return to.getInterpolated(from, time);
+		}
+
+		std::optional<T> get(f32 time) const {
+			if (frames.empty())
+				return std::nullopt;
+
+			const auto next = std::lower_bound(frames.begin(), frames.end(), time, [](const auto& frame, f32 time) {
+				return frame.time < time;
+			});
+			if (next == frames.begin())
+				return next->value;
+			if (next == frames.end())
+				return frames.back().value;
+
+			const auto prev = next - 1;
+			if (!interpolate)
+				return prev->value;
+
+			return interpolateValue(prev->value, next->value, (time - prev->time) / (next->time - prev->time));
+		}
 	};
 
-	//! Animation keyframe which describes a new scale
-	struct SScaleKey
-	{
-		f32 frame;
-		core::vector3df scale;
-	};
+	struct Keys {
+		Channel<core::vector3df> position;
+		Channel<core::quaternion> rotation;
+		Channel<core::vector3df> scale;
 
-	//! Animation keyframe which describes a new rotation
-	struct SRotationKey
-	{
-		f32 frame;
-		core::quaternion rotation;
+		bool empty() const {
+			return position.empty() && rotation.empty() && scale.empty();
+		}
+
+		void append(const Keys &other) {
+			position.append(other.position);
+			rotation.append(other.rotation);
+			scale.append(other.scale);
+		}
+
+		f32 getEndFrame() const {
+			return std::max({
+				position.getEndFrame(),
+				rotation.getEndFrame(),
+				scale.getEndFrame()
+			});
+		}
+
+		void updateTransform(f32 frame,
+				core::vector3df &t, core::quaternion &r, core::vector3df &s) const
+		{
+			if (auto pos = position.get(frame))
+				t = *pos;
+			if (auto rot = rotation.get(frame))
+				r = *rot;
+			if (auto scl = scale.get(frame))
+				s = *scl;
+		}
+
+		void cleanup() {
+			position.cleanup();
+			rotation.cleanup();
+			scale.cleanup();
+		}
 	};
 
 	//! Joints
 	struct SJoint
 	{
-		SJoint() :
-				GlobalSkinningSpace(false),
-				positionHint(-1), scaleHint(-1), rotationHint(-1)
-		{
-		}
+		SJoint() : GlobalSkinningSpace(false) {}
 
 		//! The name of this joint
 		std::optional<std::string> Name;
@@ -214,14 +310,8 @@ public:
 		//! List of attached meshes
 		std::vector<u32> AttachedMeshes;
 
-		//! Animation keys causing translation change
-		core::array<SPositionKey> PositionKeys;
-
-		//! Animation keys causing scale change
-		core::array<SScaleKey> ScaleKeys;
-
-		//! Animation keys causing rotation change
-		core::array<SRotationKey> RotationKeys;
+		// Animation keyframes for translation, rotation, scale
+		Keys keys;
 
 		//! Skin weights
 		std::vector<SWeight> Weights;
@@ -243,10 +333,6 @@ public:
 		friend class SkinnedMesh;
 
 		bool GlobalSkinningSpace;
-
-		s32 positionHint;
-		s32 scaleHint;
-		s32 rotationHint;
 	};
 
 	const std::vector<SJoint *> &getAllJoints() const {
@@ -261,11 +347,6 @@ protected:
 	void buildAllLocalAnimatedMatrices();
 
 	void buildAllGlobalAnimatedMatrices(SJoint *Joint = 0, SJoint *ParentJoint = 0);
-
-	void getFrameData(f32 frame, SJoint *Node,
-			core::vector3df &position, s32 &positionHint,
-			core::vector3df &scale, s32 &scaleHint,
-			core::quaternion &rotation, s32 &rotationHint);
 
 	void calculateGlobalMatrices(SJoint *Joint, SJoint *ParentJoint);
 
@@ -323,14 +404,11 @@ public:
 	void addMeshBuffer(SSkinMeshBuffer *meshbuf);
 
 	//! Adds a new joint to the mesh, access it as last one
-	SJoint *addJoint(SJoint *parent = 0);
+	SJoint *addJoint(SJoint *parent = nullptr);
 
-	//! Adds a new position key to the mesh, access it as last one
-	SPositionKey *addPositionKey(SJoint *joint);
-	//! Adds a new rotation key to the mesh, access it as last one
-	SRotationKey *addRotationKey(SJoint *joint);
-	//! Adds a new scale key to the mesh, access it as last one
-	SScaleKey *addScaleKey(SJoint *joint);
+	void addPositionKey(SJoint *joint, f32 frame, core::vector3df pos);
+	void addRotationKey(SJoint *joint, f32 frame, core::quaternion rotation);
+	void addScaleKey(SJoint *joint, f32 frame, core::vector3df scale);
 
 	//! Adds a new weight to the mesh, access it as last one
 	SWeight *addWeight(SJoint *joint);
