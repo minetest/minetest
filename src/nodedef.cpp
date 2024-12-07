@@ -943,14 +943,17 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		palette = tsrc->getPalette(palette_name);
 
 	if (drawtype == NDT_MESH && !mesh.empty()) {
-		// Meshnode drawtype
 		// Read the mesh and apply scale
 		mesh_ptr = client->getMesh(mesh);
 		if (mesh_ptr) {
 			v3f scale = v3f(BS) * visual_scale;
 			scaleMesh(mesh_ptr, scale);
 			recalculateBoundingBox(mesh_ptr);
-			meshmanip->recalculateNormals(mesh_ptr, true, false);
+			if (!checkMeshNormals(mesh_ptr)) {
+				infostream << "ContentFeatures: recalculating normals for mesh "
+					<< mesh << std::endl;
+				meshmanip->recalculateNormals(mesh_ptr, true, false);
+			}
 		}
 	}
 }
