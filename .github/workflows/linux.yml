@@ -121,6 +121,8 @@ jobs:
         env:
           CC: clang-18
           CXX: clang++-18
+          # Test fallback SHA implementations
+          CMAKE_FLAGS: '-DENABLE_OPENSSL=0'
 
       - name: Test
         run: |

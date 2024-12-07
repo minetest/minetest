@@ -28,7 +28,7 @@
 #include "script/scripting_client.h"
 #include "util/serialize.h"
 #include "util/srp.h"
-#include "util/sha1.h"
+#include "util/hashing.h"
 #include "tileanimation.h"
 #include "gettext.h"
 #include "skyparams.h"
@@ -1645,12 +1645,7 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 	if (!filedata.empty()) {
 		// LEGACY CODEPATH
 		// Compute and check checksum of data
-		std::string computed_hash;
-		{
-			SHA1 ctx;
-			ctx.addBytes(filedata);
-			computed_hash = ctx.getDigest();
-		}
+		std::string computed_hash = hashing::sha1(filedata);
 		if (raw_hash != computed_hash) {
 			verbosestream << "Hash of file data mismatches, ignoring." << std::endl;
 			return;
