@@ -318,7 +318,7 @@ Many glTF features are not supported *yet*, including:
 
 * Animations
   * Only a single animation is supported, use frame ranges within this animation.
-  * Only linear interpolation is supported.
+  * `CUBICSPLINE` interpolation is not supported.
 * Cameras
 * Materials
   * Only base color textures are supported
