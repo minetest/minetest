@@ -881,10 +881,8 @@ std::string error_to_string(error e)
 	switch (e) {
 		case SUCCESS:
 			return "success";
-			break;
 		case UNBALANCED_BRACKETS:
 			return "closing ']' has no matching opening bracket";
-			break;
 	}
 	return "unknown error";
 }
