@@ -22,7 +22,7 @@
 #include <queue>
 
 namespace {
-	// A helper struct
+	// data structure that groups by material but keeps layering intact
 	struct MeshBufListMaps
 	{
 		using MeshBufListMap = std::unordered_map<
@@ -31,6 +31,15 @@ namespace {
 				>;
 
 		std::array<MeshBufListMap, MAX_TILE_LAYERS> maps;
+
+		bool empty() const
+		{
+			for (auto &map : maps) {
+				if (!map.empty())
+					return false;
+			}
+			return true;
+		}
 
 		void clear()
 		{
@@ -48,6 +57,29 @@ namespace {
 			auto &bufs = map[m]; // default constructs if non-existent
 			bufs.emplace_back(position, buf);
 		}
+	};
+
+	// reference to a mesh buffer used when rendering the map.
+	struct DrawDescriptor {
+		v3s16 m_pos;
+		union {
+			scene::IMeshBuffer *m_buffer;
+			const PartialMeshBuffer *m_partial_buffer;
+		};
+		bool m_reuse_material:1;
+		bool m_use_partial_buffer:1;
+
+		DrawDescriptor(v3s16 pos, scene::IMeshBuffer *buffer, bool reuse_material) :
+			m_pos(pos), m_buffer(buffer), m_reuse_material(reuse_material), m_use_partial_buffer(false)
+		{}
+
+		DrawDescriptor(v3s16 pos, const PartialMeshBuffer *buffer) :
+			m_pos(pos), m_partial_buffer(buffer), m_reuse_material(false), m_use_partial_buffer(true)
+		{}
+
+		video::SMaterial &getMaterial();
+		/// @return index count
+		u32 draw(video::IVideoDriver* driver);
 	};
 }
 
@@ -725,10 +757,10 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	u32 vertex_count = 0;
 	u32 drawcall_count = 0;
+	u32 merge_saved_drawcalls = 0;
 
 	// For limiting number of mesh animations per frame
 	u32 mesh_animate_count = 0;
-	//u32 mesh_animate_count_far = 0;
 
 	/*
 		Update transparent meshes
@@ -741,6 +773,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	*/
 
 	MeshBufListMaps grouped_buffers;
+	std::vector<scene::IMeshBuffer*> buffer_trash;
 	std::vector<DrawDescriptor> draw_order;
 	video::SMaterial previous_material;
 
@@ -790,10 +823,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			// the partial buffers in the correct order
 			for (auto &buffer : block_mesh->getTransparentBuffers())
 				draw_order.emplace_back(block_pos, &buffer);
-		}
-		else {
+		} else {
 			// otherwise, group buffers across meshes
-			// using MeshBufListMaps
 			for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
 				scene::IMesh *mesh = block_mesh->getMesh(layer);
 				assert(mesh);
@@ -818,14 +849,61 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		}
 	}
 
-	// Capture draw order for all solid meshes
-	for (auto &map : grouped_buffers.maps) {
-		for (auto &list : map) {
-			// iterate in reverse to draw closest blocks first
-			for (auto it = list.second.rbegin(); it != list.second.rend(); ++it) {
-				draw_order.emplace_back(it->first, it->second, it != list.second.rbegin());
+	if (!is_transparent_pass) {
+		constexpr u32 IDEAL_MIN_VERTICES = 200;
+
+		for (auto &map : grouped_buffers.maps) {
+			for (auto &list : map) {
+				// try merging buffers
+				scene::SMeshBuffer *tmp = nullptr;
+				u32 merged_count = 0;
+				decltype(list.second) asdf;
+				for (auto &pair : list.second) {
+					if (pair.second->getVertexCount() >= IDEAL_MIN_VERTICES) {
+						asdf.push_back(pair);
+						continue;
+					}
+					if (!tmp) {
+						assert(pair.second->getPrimitiveType() == scene::EPT_TRIANGLES);
+						tmp = new scene::SMeshBuffer();
+						tmp->getMaterial() = pair.second->getMaterial();
+						buffer_trash.push_back(tmp);
+					}
+					// FIXME: better to apply camera offset here
+					v3f block_wpos = intToFloat(mesh_grid.getMeshPos(pair.first) * MAP_BLOCKSIZE, BS);
+
+					const auto vc1 = tmp->Vertices->Data.size();
+					assert(pair.second->getVertexType() == video::EVT_STANDARD);
+					const auto vp = static_cast<video::S3DVertex*>(pair.second->getVertices());
+					tmp->Vertices->Data.insert(tmp->Vertices->Data.end(),
+						vp, vp + pair.second->getVertexCount());
+					// translate vertices
+					for (size_t j = vc1; j < tmp->Vertices->Data.size(); j++)
+						tmp->Vertices->Data[j].Pos += block_wpos;
+					const auto ic1 = tmp->Indices->Data.size();
+					const auto ip = pair.second->getIndices();
+					tmp->Indices->Data.insert(tmp->Indices->Data.end(),
+						ip, ip + pair.second->getIndexCount());
+					// fixup indices
+					if (vc1 != 0) {
+						for (size_t j = ic1; j < tmp->Indices->Data.size(); j++)
+							tmp->Indices->Data[j] += vc1;
+					}
+					merged_count++;
+				}
+				if (tmp) {
+					asdf.emplace_back(v3s16(0,0,0), tmp);
+					merge_saved_drawcalls += merged_count - 1;
+				}
+
+				// iterate in reverse to draw closest blocks first
+				for (auto it = asdf.rbegin(); it != asdf.rend(); ++it) {
+					draw_order.emplace_back(it->first, it->second, it != asdf.rbegin());
+				}
 			}
 		}
+	} else {
+		assert(grouped_buffers.empty());
 	}
 
 	TimeTaker draw("Drawing mesh buffers");
@@ -876,9 +954,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	g_profiler->avg(prefix + "draw meshes [ms]", draw.stop(true));
 
-	// Log only on solid pass because values are the same
 	if (pass == scene::ESNRP_SOLID) {
 		g_profiler->avg("renderMap(): animated meshes [#]", mesh_animate_count);
+		g_profiler->avg(prefix + "saved drawcalls (merge) [#]", merge_saved_drawcalls);
 	}
 
 	if (pass == scene::ESNRP_TRANSPARENT) {
@@ -888,6 +966,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);
 	g_profiler->avg(prefix + "drawcalls [#]", drawcall_count);
 	g_profiler->avg(prefix + "material swaps [#]", material_swaps);
+
+	for (auto &x : buffer_trash)
+		x->drop();
 }
 
 static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
@@ -1347,12 +1428,12 @@ void ClientMap::updateTransparentMeshBuffers()
 	m_needs_update_transparent_meshes = false;
 }
 
-video::SMaterial &ClientMap::DrawDescriptor::getMaterial()
+video::SMaterial &DrawDescriptor::getMaterial()
 {
 	return (m_use_partial_buffer ? m_partial_buffer->getBuffer() : m_buffer)->getMaterial();
 }
 
-u32 ClientMap::DrawDescriptor::draw(video::IVideoDriver* driver)
+u32 DrawDescriptor::draw(video::IVideoDriver* driver)
 {
 	if (m_use_partial_buffer) {
 		m_partial_buffer->draw(driver);
