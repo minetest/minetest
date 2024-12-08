@@ -1773,6 +1773,27 @@ int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
 	return 1;
 }
 
+// spawn_tree_on_vmanip(vmanip, pos, treedef)
+int ModApiMapgen::l_spawn_tree_on_vmanip(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	MMVManip *vm = checkObject<LuaVoxelManip>(L, 1)->vm;
+	v3s16 p0 = read_v3s16(L, 2);
+	treegen::TreeDef tree_def;
+	const NodeDefManager *ndef = getGameDef(L)->ndef();
+	if (!read_tree_def(L, 3, ndef, tree_def))
+		return 0;
+
+	treegen::error e = treegen::make_ltree(*vm, p0, tree_def);
+	if (e != treegen::SUCCESS) {
+		throw LuaError("spawn_tree_on_vmanip(): " + treegen::error_to_string(e));
+	}
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 
 // serialize_schematic(schematic, format, options={...})
 int ModApiMapgen::l_serialize_schematic(lua_State *L)
@@ -2023,6 +2044,7 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(create_schematic);
 	API_FCT(place_schematic);
 	API_FCT(place_schematic_on_vmanip);
+	API_FCT(spawn_tree_on_vmanip);
 	API_FCT(serialize_schematic);
 	API_FCT(read_schematic);
 }
@@ -2049,6 +2071,7 @@ void ModApiMapgen::InitializeEmerge(lua_State *L, int top)
 	API_FCT(generate_ores);
 	API_FCT(generate_decorations);
 	API_FCT(place_schematic_on_vmanip);
+	API_FCT(spawn_tree_on_vmanip);
 	API_FCT(serialize_schematic);
 	API_FCT(read_schematic);
 }
