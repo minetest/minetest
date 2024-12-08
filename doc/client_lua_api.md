@@ -770,7 +770,7 @@ Methods:
         ```
 
 * `get_last_look_horizontal()`:
-    * returns last look horizontal angle
+    * returns last look horizontal angle in radians (can be lower than 0 or higher than 2*pi if the player has made whole turns on himself, increases counterclockwise and 0° is East)
 * `get_last_look_vertical()`:
     * returns last look vertical angle
 * `get_control()`:
