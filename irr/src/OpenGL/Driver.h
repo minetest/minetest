@@ -8,6 +8,7 @@
 
 #include "SIrrCreationParameters.h"
 #include "Common.h"
+#include "VBO.h"
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
 #include "EDriverFeatures.h"
@@ -49,8 +50,7 @@ public:
 		SHWBufferLink_opengl(const scene::IVertexBuffer *vb) : SHWBufferLink(vb) {}
 		SHWBufferLink_opengl(const scene::IIndexBuffer *ib) : SHWBufferLink(ib) {}
 
-		GLuint vbo_ID = 0;
-		u32 vbo_Size = 0;
+		OpenGLVBO Vbo;
 	};
 
 	bool updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
@@ -372,9 +372,8 @@ private:
 
 	bool EnableErrorTest;
 
-	unsigned QuadIndexCount;
-	GLuint QuadIndexBuffer = 0;
-	void initQuadsIndices(int max_vertex_count = 65536);
+	OpenGLVBO QuadIndexVBO;
+	void initQuadsIndices(u32 max_vertex_count = 65536);
 
 	void debugCb(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message);
 	static void APIENTRY debugCb(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
