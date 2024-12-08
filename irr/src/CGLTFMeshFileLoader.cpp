@@ -346,14 +346,14 @@ IAnimatedMesh* SelfType::createMesh(io::IReadFile* file)
 	const char *filename = file->getFileName().c_str();
 	try {
 		tiniergltf::GlTF model = parseGLTF(file);
-		irr_ptr<SkinnedMesh> mesh(new SkinnedMesh());
+		irr_ptr<SkinnedMeshBuilder> mesh(new SkinnedMeshBuilder());
 		MeshExtractor extractor(std::move(model), mesh.get());
 		try {
 			extractor.load();
 			for (const auto &warning : extractor.getWarnings()) {
 				os::Printer::log(filename, warning.c_str(), ELL_WARNING);
 			}
-			return mesh.release();
+			return mesh.release()->finalize();
 		} catch (const std::runtime_error &e) {
 			os::Printer::log("error converting gltf to irrlicht mesh", e.what(), ELL_ERROR);
 		}
@@ -691,27 +691,27 @@ void SelfType::MeshExtractor::loadAnimation(const std::size_t animIdx)
 		case tiniergltf::AnimationChannelTarget::Path::TRANSLATION: {
 			const auto outputAccessor = Accessor<core::vector3df>::make(m_gltf_model, sampler.output);
 			for (std::size_t i = 0; i < n_frames; ++i) {
-				auto *key = m_irr_model->addPositionKey(joint);
-				key->frame = inputAccessor.get(i);
-				key->position = convertHandedness(outputAccessor.get(i));
+				f32 frame = inputAccessor.get(i);
+				core::vector3df position = outputAccessor.get(i);
+				m_irr_model->addPositionKey(joint, frame, convertHandedness(position));
 			}
 			break;
 		}
 		case tiniergltf::AnimationChannelTarget::Path::ROTATION: {
 			const auto outputAccessor = Accessor<core::quaternion>::make(m_gltf_model, sampler.output);
 			for (std::size_t i = 0; i < n_frames; ++i) {
-				auto *key = m_irr_model->addRotationKey(joint);
-				key->frame = inputAccessor.get(i);
-				key->rotation = convertHandedness(outputAccessor.get(i));
+				f32 frame = inputAccessor.get(i);
+				core::quaternion rotation = outputAccessor.get(i);
+				m_irr_model->addRotationKey(joint, frame, convertHandedness(rotation));
 			}
 			break;
 		}
 		case tiniergltf::AnimationChannelTarget::Path::SCALE: {
 			const auto outputAccessor = Accessor<core::vector3df>::make(m_gltf_model, sampler.output);
 			for (std::size_t i = 0; i < n_frames; ++i) {
-				auto *key = m_irr_model->addScaleKey(joint);
-				key->frame = inputAccessor.get(i);
-				key->scale = outputAccessor.get(i);
+				f32 frame = inputAccessor.get(i);
+				core::vector3df scale = outputAccessor.get(i);
+				m_irr_model->addScaleKey(joint, frame, scale);
 			}
 			break;
 		}
@@ -756,8 +756,6 @@ void SelfType::MeshExtractor::load()
 	} catch (const std::bad_optional_access &e) {
 		throw std::runtime_error(e.what());
 	}
-
-	m_irr_model->finalize();
 }
 
 /**
