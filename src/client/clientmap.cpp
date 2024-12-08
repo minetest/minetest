@@ -849,21 +849,37 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		}
 	}
 
-	if (!is_transparent_pass) {
-		constexpr u32 IDEAL_MIN_VERTICES = 200;
+	constexpr u32 IDEAL_MIN_VERTICES = 200;
 
-		for (auto &map : grouped_buffers.maps) {
-			for (auto &list : map) {
-				// try merging buffers
+	assert(!is_transparent_pass || grouped_buffers.empty());
+	for (auto &map : grouped_buffers.maps) {
+		for (auto &list : map) {
+			// try merging buffers
+			decltype(list.second) asdf;
+			u32 mergeable_count = 0;
+			for (auto &pair : list.second) {
+				if (pair.second->getVertexCount() < IDEAL_MIN_VERTICES)
+					mergeable_count++;
+			}
+			if (mergeable_count > 1) {
 				scene::SMeshBuffer *tmp = nullptr;
 				u32 merged_count = 0;
-				decltype(list.second) asdf;
 				for (auto &pair : list.second) {
 					if (pair.second->getVertexCount() >= IDEAL_MIN_VERTICES) {
 						asdf.push_back(pair);
 						continue;
 					}
-					if (!tmp) {
+					bool new_buffer = false;
+					if (!tmp)
+						new_buffer = true;
+					else if (tmp->getVertexCount() + pair.second->getVertexCount() > U16_MAX)
+						new_buffer = true;
+					if (new_buffer) {
+						if (tmp) {
+							asdf.emplace_back(v3s16(0,0,0), tmp);
+							merge_saved_drawcalls += merged_count - 1;
+							merged_count = 0;
+						}
 						assert(pair.second->getPrimitiveType() == scene::EPT_TRIANGLES);
 						tmp = new scene::SMeshBuffer();
 						tmp->getMaterial() = pair.second->getMaterial();
@@ -895,15 +911,15 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 					asdf.emplace_back(v3s16(0,0,0), tmp);
 					merge_saved_drawcalls += merged_count - 1;
 				}
+			} else {
+				asdf = list.second;
+			}
 
-				// iterate in reverse to draw closest blocks first
-				for (auto it = asdf.rbegin(); it != asdf.rend(); ++it) {
-					draw_order.emplace_back(it->first, it->second, it != asdf.rbegin());
-				}
+			// iterate in reverse to draw closest blocks first
+			for (auto it = asdf.rbegin(); it != asdf.rend(); ++it) {
+				draw_order.emplace_back(it->first, it->second, it != asdf.rbegin());
 			}
 		}
-	} else {
-		assert(grouped_buffers.empty());
 	}
 
 	TimeTaker draw("Drawing mesh buffers");
