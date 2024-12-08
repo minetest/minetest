@@ -619,7 +619,7 @@ const core::aabbox3df &ParticleBuffer::getBoundingBox() const
 	if (!m_bounding_box_dirty)
 		return m_mesh_buffer->BoundingBox;
 
-	core::aabbox3df box;
+	core::aabbox3df box{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
 	for (u16 i = 0; i < m_count; i++) {
 		// check if this index is used
 		static_assert(quad_indices[1] != 0);
