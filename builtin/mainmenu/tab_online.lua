@@ -83,6 +83,11 @@ local function find_selected_server()
 			return server
 		end
 	end
+	for _, server in ipairs(serverlistmgr.get_favorites()) do
+		if server.address == address and server.port == port then
+			return server
+		end
+	end
 end
 
 local function get_formspec(tabview, name, tabdata)
