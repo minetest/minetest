@@ -1644,7 +1644,6 @@ void MapblockMeshGenerator::drawMeshNode()
 {
 	u8 facedir = 0;
 	scene::IMesh* mesh;
-	bool private_mesh; // as a grab/drop pair is not thread-safe
 	int degrotate = 0;
 
 	if (cur_node.f->param_type_2 == CPT2_FACEDIR ||
@@ -1664,32 +1663,35 @@ void MapblockMeshGenerator::drawMeshNode()
 
 	if (cur_node.f->mesh_ptr) {
 		// clone and rotate mesh
-		private_mesh = true;
 		mesh = cloneMesh(cur_node.f->mesh_ptr);
+		bool modified = true;
 		if (facedir)
 			rotateMeshBy6dFacedir(mesh, facedir);
 		else if (degrotate)
 			rotateMeshXZby(mesh, 1.5f * degrotate);
-		recalculateBoundingBox(mesh);
-		meshmanip->recalculateNormals(mesh, true, false);
+		else
+			modified = false;
+		if (modified) {
+			recalculateBoundingBox(mesh);
+		}
 	} else {
 		warningstream << "drawMeshNode(): missing mesh" << std::endl;
 		return;
 	}
 
-	int mesh_buffer_count = mesh->getMeshBufferCount();
-	for (int j = 0; j < mesh_buffer_count; j++) {
+	for (u32 j = 0; j < mesh->getMeshBufferCount(); j++) {
 		// Only up to 6 tiles are supported
-		const auto tile =  mesh->getTextureSlot(j);
+		const u32 tile = mesh->getTextureSlot(j);
 		useTile(MYMIN(tile, 5));
+
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
-		int vertex_count = buf->getVertexCount();
+		u32 vertex_count = buf->getVertexCount();
 
 		if (data->m_smooth_lighting) {
 			// Mesh is always private here. So the lighting is applied to each
 			// vertex right here.
-			for (int k = 0; k < vertex_count; k++) {
+			for (u32 k = 0; k < vertex_count; k++) {
 				video::S3DVertex &vertex = vertices[k];
 				vertex.Color = blendLightColor(vertex.Pos, vertex.Normal);
 				vertex.Pos += cur_node.origin;
@@ -1697,15 +1699,13 @@ void MapblockMeshGenerator::drawMeshNode()
 			collector->append(cur_node.tile, vertices, vertex_count,
 				buf->getIndices(), buf->getIndexCount());
 		} else {
-			// Don't modify the mesh, it may not be private here.
-			// Instead, let the collector process colors, etc.
+			// Let the collector process colors, etc.
 			collector->append(cur_node.tile, vertices, vertex_count,
 				buf->getIndices(), buf->getIndexCount(), cur_node.origin,
 				cur_node.color, cur_node.f->light_source);
 		}
 	}
-	if (private_mesh)
-		mesh->drop();
+	mesh->drop();
 }
 
 // also called when the drawtype is known but should have been pre-converted
