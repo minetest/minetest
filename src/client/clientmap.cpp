@@ -22,13 +22,15 @@
 #include <queue>
 
 namespace {
-	// data structure that groups by material but keeps layering intact
+	// data structure that groups block meshes by material
 	struct MeshBufListMaps
 	{
-		using MeshBufListMap = std::unordered_map<
-				video::SMaterial,
-				std::vector<std::pair<v3s16, scene::IMeshBuffer *>>
-				>;
+		// first = block pos
+		using MeshBuf = std::pair<v3s16, scene::IMeshBuffer*>;
+
+		using MeshBufList = std::vector<MeshBuf>;
+
+		using MeshBufListMap = std::unordered_map<video::SMaterial, MeshBufList>;
 
 		std::array<MeshBufListMap, MAX_TILE_LAYERS> maps;
 
@@ -57,6 +59,9 @@ namespace {
 			auto &bufs = map[m]; // default constructs if non-existent
 			bufs.emplace_back(position, buf);
 		}
+
+		void addFromBlock(v3s16 block_pos, MapBlockMesh *block_mesh,
+			video::IVideoDriver *driver);
 	};
 
 	// reference to a mesh buffer used when rendering the map.
@@ -69,7 +74,7 @@ namespace {
 		bool m_reuse_material:1;
 		bool m_use_partial_buffer:1;
 
-		DrawDescriptor(v3f pos, scene::IMeshBuffer *buffer, bool reuse_material) :
+		DrawDescriptor(v3f pos, scene::IMeshBuffer *buffer, bool reuse_material = true) :
 			m_pos(pos), m_buffer(buffer), m_reuse_material(reuse_material), m_use_partial_buffer(false)
 		{}
 
@@ -81,6 +86,31 @@ namespace {
 		/// @return number of vertices drawn
 		u32 draw(video::IVideoDriver* driver);
 	};
+
+	/// @brief Append vertices to a mesh buffer
+	/// @note does not update bounding box!
+	void appendToMeshBuffer(scene::SMeshBuffer *dst, const scene::IMeshBuffer *src, v3f translate)
+	{
+		const size_t vcount = dst->Vertices->Data.size();
+		const size_t icount = dst->Indices->Data.size();
+
+		assert(src->getVertexType() == video::EVT_STANDARD);
+		const auto vptr = static_cast<const video::S3DVertex*>(src->getVertices());
+		dst->Vertices->Data.insert(dst->Vertices->Data.end(),
+			vptr, vptr + src->getVertexCount());
+		// apply translation
+		for (size_t j = vcount; j < dst->Vertices->Data.size(); j++)
+			dst->Vertices->Data[j].Pos += translate;
+
+		const auto iptr = src->getIndices();
+		dst->Indices->Data.insert(dst->Indices->Data.end(),
+			iptr, iptr + src->getIndexCount());
+		// fixup indices
+		if (vcount != 0) {
+			for (size_t j = icount; j < dst->Indices->Data.size(); j++)
+				dst->Indices->Data[j] += vcount;
+		}
+	}
 }
 
 /*
@@ -122,8 +152,7 @@ ClientMap::ClientMap(
 	 * the class is whith a name ;) Name property cames from ISceneNode base class.
 	 */
 	Name = "ClientMap";
-	m_box = aabb3f(-BS*1000000,-BS*1000000,-BS*1000000,
-			BS*1000000,BS*1000000,BS*1000000);
+	setAutomaticCulling(scene::EAC_OFF);
 
 	for (const auto &name : ClientMap_settings)
 		g_settings->registerChangedCallback(name, on_settings_changed, this);
@@ -331,7 +360,7 @@ void ClientMap::updateDrawList()
 	}
 
 	const v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
-	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
+	m_drawlist = decltype(m_drawlist)(MapBlockComparer(camera_block));
 
 	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
 
@@ -724,6 +753,26 @@ void ClientMap::touchMapBlocks()
 	g_profiler->avg("MapBlocks loaded [#]", blocks_loaded);
 }
 
+void MeshBufListMaps::addFromBlock(v3s16 block_pos, MapBlockMesh *block_mesh,
+	video::IVideoDriver *driver)
+{
+	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
+		scene::IMesh *mesh = block_mesh->getMesh(layer);
+		assert(mesh);
+
+		u32 c = mesh->getMeshBufferCount();
+		for (u32 i = 0; i < c; i++) {
+			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+
+			auto &material = buf->getMaterial();
+			auto *rnd = driver->getMaterialRenderer(material.MaterialType);
+			bool transparent = rnd && rnd->isTransparent();
+			if (!transparent)
+				add(buf, block_pos, layer);
+		}
+	}
+}
+
 void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 {
 	ZoneScoped;
@@ -771,12 +820,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	MeshBufListMaps grouped_buffers;
 	std::vector<scene::IMeshBuffer*> buffer_trash;
 	std::vector<DrawDescriptor> draw_order;
-	video::SMaterial previous_material;
 
 	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
 
 	for (auto &i : m_drawlist) {
-		v3s16 block_pos = i.first;
+		const v3s16 block_pos = i.first;
 		MapBlock *block = i.second;
 		MapBlockMesh *block_mesh = block->mesh;
 
@@ -821,28 +869,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				draw_order.emplace_back(translate, &buffer);
 			}
 		} else {
-			// otherwise, group buffers across meshes
-			for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
-				scene::IMesh *mesh = block_mesh->getMesh(layer);
-				assert(mesh);
-
-				u32 c = mesh->getMeshBufferCount();
-				for (u32 i = 0; i < c; i++) {
-					scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
-
-					video::SMaterial& material = buf->getMaterial();
-					video::IMaterialRenderer* rnd =
-							driver->getMaterialRenderer(material.MaterialType);
-					bool transparent = (rnd && rnd->isTransparent());
-					if (!transparent) {
-						if (buf->getVertexCount() == 0)
-							errorstream << "Block [" << analyze_block(block)
-									<< "] contains an empty meshbuf" << std::endl;
-
-						grouped_buffers.add(buf, block_pos, layer);
-					}
-				}
-			}
+			// Otherwise, group them
+			grouped_buffers.addFromBlock(block_pos, block_mesh, driver);
 		}
 	}
 
@@ -850,76 +878,64 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	assert(!is_transparent_pass || grouped_buffers.empty());
 	for (auto &map : grouped_buffers.maps) {
+		MeshBufListMaps::MeshBufList unmerged;
 		for (auto &list : map) {
 			const auto draw_order_pre = draw_order.size();
 
-			// try merging buffers
-			decltype(list.second) asdf;
-			u32 mergeable_count = 0;
+			// merge buffers that are too sparse
+			u32 can_merge = 0;
 			for (auto &pair : list.second) {
 				if (pair.second->getVertexCount() < IDEAL_MIN_VERTICES)
-					mergeable_count++;
+					can_merge++;
 			}
-			if (mergeable_count < 2) {
-				asdf = list.second;
-			} else {
-				scene::SMeshBuffer *tmp = nullptr;
-				u32 merged_count = 0;
-				for (auto &pair : list.second) {
-					if (pair.second->getVertexCount() >= IDEAL_MIN_VERTICES) {
-						asdf.push_back(pair);
-						continue;
-					}
-					bool new_buffer = false;
-					if (!tmp)
-						new_buffer = true;
-					else if (tmp->getVertexCount() + pair.second->getVertexCount() > U16_MAX)
-						new_buffer = true;
-					if (new_buffer) {
-						if (tmp) {
-							draw_order.emplace_back(v3f(0), tmp, true);
-							merge_saved_drawcalls += merged_count - 1;
-							merged_count = 0;
-						}
-						assert(pair.second->getPrimitiveType() == scene::EPT_TRIANGLES);
-						tmp = new scene::SMeshBuffer();
-						tmp->getMaterial() = pair.second->getMaterial();
-						buffer_trash.push_back(tmp);
-					}
-					v3f translate = get_block_wpos(pair.first) - camera_offset;
+			unmerged.clear();
 
-					const auto vc1 = tmp->Vertices->Data.size();
-					assert(pair.second->getVertexType() == video::EVT_STANDARD);
-					const auto vp = static_cast<video::S3DVertex*>(pair.second->getVertices());
-					tmp->Vertices->Data.insert(tmp->Vertices->Data.end(),
-						vp, vp + pair.second->getVertexCount());
-					// translate vertices
-					for (size_t j = vc1; j < tmp->Vertices->Data.size(); j++)
-						tmp->Vertices->Data[j].Pos += translate;
-					const auto ic1 = tmp->Indices->Data.size();
-					const auto ip = pair.second->getIndices();
-					tmp->Indices->Data.insert(tmp->Indices->Data.end(),
-						ip, ip + pair.second->getIndexCount());
-					// fixup indices
-					if (vc1 != 0) {
-						for (size_t j = ic1; j < tmp->Indices->Data.size(); j++)
-							tmp->Indices->Data[j] += vc1;
-					}
-					merged_count++;
-				}
+			scene::SMeshBuffer *tmp = nullptr;
+			u32 merged_count = 0;
+			const auto &finish_buf = [&] () {
 				if (tmp) {
-					draw_order.emplace_back(v3f(0), tmp, true);
+					draw_order.emplace_back(v3f(0), tmp);
 					merge_saved_drawcalls += merged_count - 1;
+					merged_count = 0;
 				}
-			}
+			};
 
-			// iterate in reverse to draw closest blocks first
-			for (auto it = asdf.rbegin(); it != asdf.rend(); ++it) {
+			for (auto &pair : list.second) {
+				// note: no need to allocate anything if there isn't a second buffer to merge with
+				if (can_merge < 2 || pair.second->getVertexCount() >= IDEAL_MIN_VERTICES) {
+					unmerged.push_back(pair);
+					continue;
+				}
+				bool new_buffer = false;
+				if (!tmp)
+					new_buffer = true;
+				else if (tmp->getVertexCount() + pair.second->getVertexCount() > U16_MAX)
+					new_buffer = true;
+				if (new_buffer) {
+					finish_buf();
+					tmp = new scene::SMeshBuffer();
+					assert(tmp->getPrimitiveType() == pair.second->getPrimitiveType());
+					tmp->Material = pair.second->getMaterial();
+					buffer_trash.push_back(tmp);
+				}
+
+				v3f translate = get_block_wpos(pair.first) - camera_offset;
+				appendToMeshBuffer(tmp, pair.second, translate);
+				merged_count++;
+			}
+			finish_buf();
+
+			// future TODO: we could call glBufferSubData with the transient buffers here.
+			// in theory this gives GL opportunity to complete the upload before
+			// we actually draw. needs verification.
+
+			// add the rest in reverse to draw closest blocks first
+			for (auto it = unmerged.rbegin(); it != unmerged.rend(); ++it) {
 				v3f translate = get_block_wpos(it->first) - camera_offset;
-				draw_order.emplace_back(translate, it->second, true);
+				draw_order.emplace_back(translate, it->second);
 			}
 
-			// first draw needs to set material
+			// first call needs to set the material
 			if (draw_order.size() > draw_order_pre)
 				draw_order[draw_order_pre].m_reuse_material = false;
 		}
@@ -1244,32 +1260,14 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 				v3f translate = get_block_wpos(block_pos) - camera_offset;
 				draw_order.emplace_back(translate, &buffer);
 			}
-		}
-		else {
-			// otherwise, group buffers across meshes
-			// using MeshBufListMaps
-			MapBlockMesh *mapBlockMesh = block->mesh;
-			assert(mapBlockMesh);
-
-			for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
-				scene::IMesh *mesh = mapBlockMesh->getMesh(layer);
-				assert(mesh);
-
-				u32 c = mesh->getMeshBufferCount();
-				for (u32 i = 0; i < c; i++) {
-					scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
-
-					video::SMaterial &mat = buf->getMaterial();
-					auto rnd = driver->getMaterialRenderer(mat.MaterialType);
-					bool transparent = rnd && rnd->isTransparent();
-					if (!transparent)
-						grouped_buffers.add(buf, block_pos, layer);
-				}
-			}
+		} else {
+			// Otherwise, group them
+			grouped_buffers.addFromBlock(block_pos, block->mesh, driver);
 		}
 	}
 
 	// Capture draw order for all solid meshes
+	// TODO: we could consolidate all solid meshes here
 	for (auto &map : grouped_buffers.maps) {
 		for (auto &list : map) {
 			// iterate in reverse to draw closest blocks first
