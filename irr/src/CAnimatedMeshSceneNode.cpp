@@ -170,7 +170,7 @@ IMesh *CAnimatedMeshSceneNode::getMeshForCurrentFrame()
 		if (JointMode == EJUOR_CONTROL) // write to mesh
 			skinnedMesh->transferJointsToMesh(JointChildSceneNodes);
 		else
-			skinnedMesh->animateMesh(getFrameNr(), 1.0f);
+			skinnedMesh->animateMesh(getFrameNr());
 
 		// Update the skinned mesh for the current joint transforms.
 		skinnedMesh->skinMesh();
@@ -299,12 +299,10 @@ void CAnimatedMeshSceneNode::render()
 			if (Mesh->getMeshType() == EAMT_SKINNED) {
 				// draw skeleton
 
-				for (u32 g = 0; g < ((SkinnedMesh *)Mesh)->getAllJoints().size(); ++g) {
-					auto *joint = ((SkinnedMesh *)Mesh)->getAllJoints()[g];
-
-					for (u32 n = 0; n < joint->Children.size(); ++n) {
+				for (auto *joint : ((SkinnedMesh *)Mesh)->getAllJoints()) {
+					for (const auto *childJoint : joint->Children) {
 						driver->draw3DLine(joint->GlobalAnimatedMatrix.getTranslation(),
-								joint->Children[n]->GlobalAnimatedMatrix.getTranslation(),
+								childJoint->GlobalAnimatedMatrix.getTranslation(),
 								video::SColor(255, 51, 66, 255));
 					}
 				}
@@ -598,8 +596,7 @@ void CAnimatedMeshSceneNode::animateJoints(bool CalculateAbsolutePositions)
 
 		SkinnedMesh *skinnedMesh = static_cast<SkinnedMesh *>(Mesh);
 
-		skinnedMesh->transferOnlyJointsHintsToMesh(JointChildSceneNodes);
-		skinnedMesh->animateMesh(frame, 1.0f);
+		skinnedMesh->animateMesh(frame);
 		skinnedMesh->recoverJointsFromMesh(JointChildSceneNodes);
 
 		//-----------------------------------------
