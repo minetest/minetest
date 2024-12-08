@@ -240,7 +240,7 @@ u32 Mapgen::getBlockSeed2(v3s16 p, s32 seed)
 // Returns -MAX_MAP_GENERATION_LIMIT if not found
 s16 Mapgen::findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax)
 {
-	const v3s16 &em = vm->m_area.getExtent();
+	const v3s32 &em = vm->m_area.getExtent();
 	u32 i = vm->m_area.index(p2d.X, ymax, p2d.Y);
 	s16 y;
 
@@ -258,7 +258,7 @@ s16 Mapgen::findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax)
 // Returns -MAX_MAP_GENERATION_LIMIT if not found or if ground is found first
 s16 Mapgen::findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax)
 {
-	const v3s16 &em = vm->m_area.getExtent();
+	const v3s32 &em = vm->m_area.getExtent();
 	u32 i = vm->m_area.index(p2d.X, ymax, p2d.Y);
 	s16 y;
 
@@ -296,7 +296,7 @@ void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax)
 void Mapgen::getSurfaces(v2s16 p2d, s16 ymin, s16 ymax,
 	std::vector<s16> &floors, std::vector<s16> &ceilings)
 {
-	const v3s16 &em = vm->m_area.getExtent();
+	const v3s32 &em = vm->m_area.getExtent();
 
 	bool is_walkable = false;
 	u32 vi = vm->m_area.index(p2d.X, ymax, p2d.Y);
@@ -320,7 +320,7 @@ void Mapgen::getSurfaces(v2s16 p2d, s16 ymin, s16 ymax,
 }
 
 
-inline bool Mapgen::isLiquidHorizontallyFlowable(u32 vi, v3s16 em)
+inline bool Mapgen::isLiquidHorizontallyFlowable(u32 vi, v3s32 em)
 {
 	u32 vi_neg_x = vi;
 	VoxelArea::add_x(em, vi_neg_x, -1);
@@ -357,7 +357,7 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 {
 	bool isignored, isliquid, wasignored, wasliquid, waschecked, waspushed;
 	content_t was_n;
-	const v3s16 &em  = vm->m_area.getExtent();
+	const v3s32 &em = vm->m_area.getExtent();
 
 	isignored = true;
 	isliquid = false;
@@ -481,7 +481,7 @@ void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow)
 	//TimeTaker t("propagateSunlight");
 	VoxelArea a(nmin, nmax);
 	bool block_is_underground = (water_level >= nmax.Y);
-	const v3s16 &em = vm->m_area.getExtent();
+	const v3s32 &em = vm->m_area.getExtent();
 
 	// NOTE: Direct access to the low 4 bits of param1 is okay here because,
 	// by definition, sunlight will never be in the night lightbank.
@@ -629,7 +629,7 @@ void MapgenBasic::generateBiomes()
 	assert(biomegen);
 	assert(biomemap);
 
-	const v3s16 &em = vm->m_area.getExtent();
+	const v3s32 &em = vm->m_area.getExtent();
 	u32 index = 0;
 
 	noise_filler_depth->perlinMap2D(node_min.X, node_min.Z);
@@ -774,7 +774,7 @@ void MapgenBasic::dustTopNodes()
 	if (node_max.Y < water_level)
 		return;
 
-	const v3s16 &em = vm->m_area.getExtent();
+	const v3s32 &em = vm->m_area.getExtent();
 	u32 index = 0;
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)

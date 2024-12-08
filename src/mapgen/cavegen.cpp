@@ -64,7 +64,7 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 	noise_cave1->perlinMap3D(nmin.X, nmin.Y - 1, nmin.Z);
 	noise_cave2->perlinMap3D(nmin.X, nmin.Y - 1, nmin.Z);
 
-	const v3s16 &em = vm->m_area.getExtent();
+	const v3s32 &em = vm->m_area.getExtent();
 	u32 index2d = 0;  // Biomemap index
 
 	for (s16 z = nmin.Z; z <= nmax.Z; z++)
@@ -230,7 +230,7 @@ bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
 
 	//// Place nodes
 	bool near_cavern = false;
-	const v3s16 &em = vm->m_area.getExtent();
+	const v3s32 &em = vm->m_area.getExtent();
 	u32 index2d = 0;
 
 	for (s16 z = nmin.Z; z <= nmax.Z; z++)
