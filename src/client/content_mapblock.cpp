@@ -1673,8 +1673,6 @@ void MapblockMeshGenerator::drawMeshNode()
 			modified = false;
 		if (modified) {
 			recalculateBoundingBox(mesh);
-			// FIXME: we should rotate the normals too, instead of recalculating
-			meshmanip->recalculateNormals(mesh, true, false);
 		}
 	} else {
 		warningstream << "drawMeshNode(): missing mesh" << std::endl;
