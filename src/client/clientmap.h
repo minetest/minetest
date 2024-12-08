@@ -153,8 +153,6 @@ private:
 	std::map<v3s16, MapBlock*> m_drawlist_shadow;
 	bool m_needs_update_drawlist;
 
-	std::set<v2s16> m_last_drawn_sectors;
-
 	bool m_cache_trilinear_filter;
 	bool m_cache_bilinear_filter;
 	bool m_cache_anistropic_filter;
