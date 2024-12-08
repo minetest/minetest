@@ -8561,6 +8561,15 @@ child will follow movement and rotation of that bone.
           Does not affect players with the `debug` privilege.
         * `chat`: Modifies the client's permission to view chat on the HUD.
           The client may locally elect to not view chat. Does not affect the console.
+        * `crosshair_force_show`: Show the crosshair even if touchscreen controls
+          are enabled and the `touch_use_crosshair` setting is set to false on
+          the client.
+          * This only affects crosshair visiblity, not behavior.
+          * This is useful for items that always work based on the player's look
+            direction, commonly bows or guns.
+          * Only affects clients with protocol version >= 47. Defaults to false.
+          * This doesn't have any effect if the `crosshair` flag is set to false.
+    * All flags except `crosshair_force_show` default to true.
     * If a flag equals `nil`, the flag is not modified
 * `hud_get_flags()`: returns a table of player HUD flags with boolean values.
     * See `hud_set_flags` for a list of flags that can be toggled.
