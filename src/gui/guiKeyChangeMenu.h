@@ -6,59 +6,86 @@
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
-#include "modalMenu.h"
-#include "gettext.h"
+#include "guiFormSpecMenu.h"
+#include "mainmenumanager.h"
+#include "client/client.h"
 #include "client/keycode.h"
 #include <string>
-#include <vector>
+#include <unordered_map>
 
-class ISimpleTextureSource;
-
-struct key_setting
+class GUIKeyChangeMenu : public GUIFormSpecMenu
 {
-	int id;
-	std::wstring button_name;
-	KeyPress key;
-	std::string setting_name;
-	gui::IGUIButton *button;
-};
+	using super = GUIFormSpecMenu;
 
-class GUIKeyChangeMenu : public GUIModalMenu
-{
 public:
-	GUIKeyChangeMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
-			IMenuManager *menumgr, ISimpleTextureSource *tsrc);
-	~GUIKeyChangeMenu();
+	// We can't use Client* in the mainmenu
+	GUIKeyChangeMenu(Client * client, gui::IGUIEnvironment *guienv, JoystickController *joystick,
+			ISimpleTextureSource *tsrc, ISoundManager *sound_manager,
+			const std::string &formspec_prepend = "") :
+		super(joystick, guiroot, -1, &g_menumgr, client, guienv, tsrc,
+				sound_manager, nullptr, nullptr, formspec_prepend),
+		has_client(client != nullptr), guienv(guienv)
+		{
+			updateFormSource();
+			setFormspecHandler();
+		}
 
 	/*
 	 Remove and re-add (or reposition) stuff
 	 */
-	void regenerateGui(v2u32 screensize);
+	void regenerateGui(v2u32 screensize) {
+		super::regenerateGui(screensize);
+		if (!active_key.empty())
+			guienv->setFocus(this);
+	}
 
-	void drawMenu();
-
-	bool acceptInput();
+	void saveSettings();
 
 	bool OnEvent(const SEvent &event);
 
 	bool pausesGame() { return true; }
 
-protected:
-	std::wstring getLabelByID(s32 id) { return L""; }
-	std::string getNameByID(s32 id) { return ""; }
-
 private:
-	void init_keys();
+	class KeyChangeFormspecHandler : public TextDest
+	{
+	public:
+		const std::string formname = "MT_KEY_CHANGE_MENU";
+		KeyChangeFormspecHandler(GUIKeyChangeMenu *form) :
+			form(form) {};
+		void gotText(const StringMap &fields);
+	private:
+		GUIKeyChangeMenu *form;
+	};
 
-	bool resetMenu();
+	void updateFormSource(const std::string &message = "");
+	void setFormspecHandler()
+	{
+		// The formspec handler is deleted by guiFormSpecMenu
+		setTextDest(new KeyChangeFormspecHandler(this));
+	}
 
-	void add_key(int id, std::wstring button_name, const std::string &setting_name);
+	const KeyPress &getKeySetting(const std::string &name) const
+	{
+		const auto &found = keymap.find(name);
+		if (found != keymap.end())
+			return found->second;
+		return ::getKeySetting(name.c_str());
+	}
 
-	bool shift_down = false;
+	bool getControlOption(const std::string &name) const
+	{
+		const auto &found = control_options.find(name);
+		if (found != control_options.end())
+			return found->second;
+		return g_settings->getBool(name);
+	}
 
-	key_setting *active_key = nullptr;
-	gui::IGUIStaticText *key_used_text = nullptr;
-	std::vector<key_setting *> key_settings;
-	ISimpleTextureSource *m_tsrc;
+	std::string getTexture(const std::string &name) const;
+
+	std::unordered_map<std::string, KeyPress> keymap;
+	std::unordered_map<std::string, bool> control_options;
+	std::string active_key;
+	bool has_client;
+	gui::IGUIEnvironment *guienv;
+	float scroll_position = 0;
 };
