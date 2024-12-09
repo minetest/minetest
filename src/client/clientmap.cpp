@@ -18,6 +18,7 @@
 #include "util/basic_macros.h"
 #include "util/tracy_wrapper.h"
 #include "client/renderingengine.h"
+#include "util/quicktune.h"
 
 #include <queue>
 
@@ -791,7 +792,8 @@ static u32 transformBuffersToDrawOrder(
 	const MeshBufListMaps::MeshBufList &src, DrawDescriptorList &draw_order,
 		F get_world_pos, C &buffer_trash)
 {
-	constexpr u32 IDEAL_MIN_VERTICES = 200;
+	u32 IDEAL_MIN_VERTICES = 200;
+	QUICKTUNE_AUTONAME(QVT_FLOAT, IDEAL_MIN_VERTICES, 0, 1000);
 	const auto draw_order_pre = draw_order.size();
 
 	// check if we can even merge anything
