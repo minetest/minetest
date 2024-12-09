@@ -1175,18 +1175,24 @@ void CNullDriver::removeHardwareBuffer(const scene::IVertexBuffer *vb)
 {
 	if (!vb)
 		return;
-	SHWBufferLink *HWBuffer = reinterpret_cast<SHWBufferLink *>(vb->getHWBuffer());
+	/*SHWBufferLink *HWBuffer = reinterpret_cast<SHWBufferLink *>(vb->getHWBuffer());
 	if (HWBuffer)
-		deleteHardwareBuffer(HWBuffer);
+		deleteHardwareBuffer(HWBuffer);*/
+	auto *b = getBufferLink(vb);
+	if (b)
+		updateHardwareBuffer(b);
 }
 
 void CNullDriver::removeHardwareBuffer(const scene::IIndexBuffer *ib)
 {
 	if (!ib)
 		return;
-	SHWBufferLink *HWBuffer = reinterpret_cast<SHWBufferLink *>(ib->getHWBuffer());
+	/*SHWBufferLink *HWBuffer = reinterpret_cast<SHWBufferLink *>(ib->getHWBuffer());
 	if (HWBuffer)
-		deleteHardwareBuffer(HWBuffer);
+		deleteHardwareBuffer(HWBuffer);*/
+	auto *b = getBufferLink(ib);
+	if (b)
+		updateHardwareBuffer(b);
 }
 
 //! Remove all hardware buffers
