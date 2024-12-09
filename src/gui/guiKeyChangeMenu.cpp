@@ -66,6 +66,7 @@ enum
 	GUI_ID_CB_AUX1_DESCENDS,
 	GUI_ID_CB_DOUBLETAP_JUMP,
 	GUI_ID_CB_AUTOJUMP,
+	GUI_ID_SAVE_AS_SCANCODES,
 };
 
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
@@ -93,7 +94,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	removeAllChildren();
 	key_used_text = nullptr;
 
-	ScalingInfo info = getScalingInfo(screensize, v2u32(835, 430));
+	ScalingInfo info = getScalingInfo(screensize, v2u32(835, 455));
 	const float s = info.scale;
 	DesiredRect = info.rect;
 	recalculateAbsolutePosition(false);
@@ -178,6 +179,19 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	}
 
 	{
+		s32 option_x = offset.X;
+		s32 option_y = offset.Y + 5 * s;
+		u32 option_w = 280 * s;
+		{
+			core::rect<s32> rect(0, 0, option_w, 30 * s);
+			rect += topleft + v2s32(option_x, option_y);
+			Environment->addCheckBox(g_settings->getBool("save_keys_as_scancodes"), rect, this,
+					GUI_ID_SAVE_AS_SCANCODES, wstrgettext("Save keybindings as scancodes").c_str());
+		}
+		offset += v2s32(0, 25 * s);
+	}
+
+	{
 		core::rect<s32> rect(0, 0, 100 * s, 30 * s);
 		rect += topleft + v2s32(size.X / 2 - 105 * s, size.Y - 40 * s);
 		GUIButton::addButton(Environment, rect, m_tsrc, this, GUI_ID_BACK_BUTTON,
@@ -206,15 +220,7 @@ void GUIKeyChangeMenu::drawMenu()
 
 bool GUIKeyChangeMenu::acceptInput()
 {
-	for (key_setting *k : key_settings) {
-		std::string default_key;
-		Settings::getLayer(SL_DEFAULTS)->getNoEx(k->setting_name, default_key);
-
-		if (k->key.sym() != default_key)
-			g_settings->set(k->setting_name, k->key.sym());
-		else
-			g_settings->remove(k->setting_name);
-	}
+	bool save_as_scancodes = g_settings->getBool("save_keys_as_scancodes");
 
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUX1_DESCENDS);
@@ -230,6 +236,25 @@ bool GUIKeyChangeMenu::acceptInput()
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUTOJUMP);
 		if(e && e->getType() == gui::EGUIET_CHECK_BOX)
 			g_settings->setBool("autojump", ((gui::IGUICheckBox*)e)->isChecked());
+	}
+	{
+		const auto *e = getElementFromId(GUI_ID_SAVE_AS_SCANCODES);
+		if(e && e->getType() == gui::EGUIET_CHECK_BOX) {
+			save_as_scancodes = dynamic_cast<const gui::IGUICheckBox*>(e)->isChecked();
+			g_settings->setBool("save_keys_as_scancodes", save_as_scancodes);
+		}
+	}
+
+	for (key_setting *k : key_settings) {
+		std::string default_key;
+		Settings::getLayer(SL_DEFAULTS)->getNoEx(k->setting_name, default_key);
+
+		auto keysym = k->key.sym(save_as_scancodes);
+
+		if (keysym != default_key)
+			g_settings->set(k->setting_name, keysym);
+		else
+			g_settings->remove(k->setting_name);
 	}
 
 	clearKeyCache();
@@ -253,8 +278,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 	if (event.EventType == EET_KEY_INPUT_EVENT && active_key
 			&& event.KeyInput.PressedDown) {
 
-		bool prefer_character = shift_down;
-		KeyPress kp(event.KeyInput, prefer_character);
+		KeyPress kp(event.KeyInput);
 
 		if (event.KeyInput.Key == irr::KEY_DELETE)
 			kp = KeyPress(""); // To erase key settings
@@ -270,7 +294,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 
 		// Display Key already in use message
 		bool key_in_use = false;
-		if (strcmp(kp.sym(), "") != 0) {
+		if (kp) {
 			for (key_setting *ks : key_settings) {
 				if (ks != active_key && ks->key == kp) {
 					key_in_use = true;
