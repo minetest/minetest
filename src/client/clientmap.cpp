@@ -838,10 +838,6 @@ static u32 transformBuffersToDrawOrder(
 	}
 	finish_buf();
 
-	// future TODO: we could call glBufferSubData with the transient buffers here.
-	// in theory this gives GL opportunity to complete the upload before
-	// we actually draw, needs verification.
-
 	// first call needs to set the material
 	if (draw_order.size() > draw_order_pre)
 		draw_order[draw_order_pre].m_reuse_material = false;
