@@ -798,7 +798,7 @@ static u32 transformBuffersToDrawOrder(
 		F get_world_pos, C &buffer_trash)
 {
 	u32 IDEAL_MIN_VERTICES = 200;
-	QUICKTUNE_AUTONAME(QVT_FLOAT, IDEAL_MIN_VERTICES, 0, 1000);
+	QUICKTUNE_AUTONAME(QVT_FLOAT, IDEAL_MIN_VERTICES, 0, 3000);
 	const auto draw_order_pre = draw_order.size();
 
 	// check if we can even merge anything
@@ -821,6 +821,10 @@ static u32 transformBuffersToDrawOrder(
 			merged_count = 0;
 			total_vtx = subtract_or_zero(total_vtx, tmp->getVertexCount());
 			total_idx = subtract_or_zero(total_idx, tmp->getIndexCount());
+
+			tmp->setHardwareMappingHint(scene::EHM_STREAM);
+			RenderingEngine::get_video_driver()->removeHardwareBuffer(tmp->getVertexBuffer());
+			RenderingEngine::get_video_driver()->removeHardwareBuffer(tmp->getIndexBuffer());
 		}
 	};
 
