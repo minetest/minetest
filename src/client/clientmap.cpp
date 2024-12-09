@@ -67,25 +67,29 @@ namespace {
 	// reference to a mesh buffer used when rendering the map.
 	struct DrawDescriptor {
 		v3f m_pos; // world translation
+		bool m_reuse_material:1;
+		bool m_use_partial_buffer:1;
 		union {
 			scene::IMeshBuffer *m_buffer;
 			const PartialMeshBuffer *m_partial_buffer;
 		};
-		bool m_reuse_material:1;
-		bool m_use_partial_buffer:1;
 
 		DrawDescriptor(v3f pos, scene::IMeshBuffer *buffer, bool reuse_material = true) :
-			m_pos(pos), m_buffer(buffer), m_reuse_material(reuse_material), m_use_partial_buffer(false)
+			m_pos(pos), m_reuse_material(reuse_material), m_use_partial_buffer(false),
+			m_buffer(buffer)
 		{}
 
 		DrawDescriptor(v3f pos, const PartialMeshBuffer *buffer) :
-			m_pos(pos), m_partial_buffer(buffer), m_reuse_material(false), m_use_partial_buffer(true)
+			m_pos(pos), m_reuse_material(false), m_use_partial_buffer(true),
+			m_partial_buffer(buffer)
 		{}
 
 		video::SMaterial &getMaterial();
 		/// @return number of vertices drawn
 		u32 draw(video::IVideoDriver* driver);
 	};
+
+	using DrawDescriptorList = std::vector<DrawDescriptor>;
 
 	/// @brief Append vertices to a mesh buffer
 	/// @note does not update bounding box!
@@ -773,6 +777,78 @@ void MeshBufListMaps::addFromBlock(v3s16 block_pos, MapBlockMesh *block_mesh,
 	}
 }
 
+/**
+ * Copy a list of mesh buffers into the draw order, while potentially
+ * merging some.
+ * @param src buffer list
+ * @param dst draw order
+ * @param get_world_pos returns correct translation for a buffer
+ * @param buffer_trash output container for temporary mesh buffers
+ * @return number of drawcalls that were saved due to merging
+ */
+template <typename F, typename C>
+static u32 transformBuffersToDrawOrder(
+	const MeshBufListMaps::MeshBufList &src, DrawDescriptorList &draw_order,
+		F get_world_pos, C &buffer_trash)
+{
+	constexpr u32 IDEAL_MIN_VERTICES = 200;
+	const auto draw_order_pre = draw_order.size();
+
+	// check if we can even merge anything
+	u32 can_merge = 0;
+	for (auto &pair : src) {
+		if (pair.second->getVertexCount() < IDEAL_MIN_VERTICES)
+			can_merge++;
+	}
+
+	scene::SMeshBuffer *tmp = nullptr;
+	u32 merged_count = 0, saved_drawcalls = 0;
+	const auto &finish_buf = [&] () {
+		if (tmp) {
+			draw_order.emplace_back(v3f(0), tmp);
+			saved_drawcalls += merged_count - 1;
+			merged_count = 0;
+		}
+	};
+
+	// iterate in reverse to get draw closest blocks first
+	for (auto it = src.rbegin(); it != src.rend(); ++it) {
+		v3f translate = get_world_pos(it->first);
+		auto *buf = it->second;
+		if (can_merge < 2 || buf->getVertexCount() >= IDEAL_MIN_VERTICES) {
+			draw_order.emplace_back(translate, buf);
+			continue;
+		}
+
+		bool new_buffer = false;
+		if (!tmp)
+			new_buffer = true;
+		else if (tmp->getVertexCount() + buf->getVertexCount() > U16_MAX)
+			new_buffer = true;
+		if (new_buffer) {
+			finish_buf();
+			tmp = new scene::SMeshBuffer();
+			assert(tmp->getPrimitiveType() == buf->getPrimitiveType());
+			tmp->Material = buf->getMaterial();
+			buffer_trash.push_back(tmp);
+		}
+
+		appendToMeshBuffer(tmp, buf, translate);
+		merged_count++;
+	}
+	finish_buf();
+
+	// future TODO: we could call glBufferSubData with the transient buffers here.
+	// in theory this gives GL opportunity to complete the upload before
+	// we actually draw, needs verification.
+
+	// first call needs to set the material
+	if (draw_order.size() > draw_order_pre)
+		draw_order[draw_order_pre].m_reuse_material = false;
+
+	return saved_drawcalls;
+}
+
 void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 {
 	ZoneScoped;
@@ -783,7 +859,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	if (pass == scene::ESNRP_SOLID)
 		prefix = "renderMap(SOLID): ";
 	else
-		prefix = "renderMap(TRANSPARENT): ";
+		prefix = "renderMap(TRANS): ";
 
 	/*
 		Get animation parameters
@@ -793,12 +869,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	const u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
 
 	const v3f camera_position = m_camera_position;
-	const v3f camera_offset = intToFloat(m_camera_offset, BS);
 
 	const auto mesh_grid = m_client->getMeshGrid();
 	// Gets world position from block map position
 	const auto get_block_wpos = [&] (v3s16 pos) -> v3f {
-		return intToFloat(mesh_grid.getMeshPos(pos) * MAP_BLOCKSIZE, BS);
+		return intToFloat(mesh_grid.getMeshPos(pos) * MAP_BLOCKSIZE - m_camera_offset, BS);
 	};
 
 	u32 merge_saved_drawcalls = 0;
@@ -819,7 +894,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	MeshBufListMaps grouped_buffers;
 	std::vector<scene::IMeshBuffer*> buffer_trash;
-	std::vector<DrawDescriptor> draw_order;
+	DrawDescriptorList draw_order;
 
 	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
 
@@ -864,80 +939,19 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		if (is_transparent_pass) {
 			// In transparent pass, the mesh will give us
 			// the partial buffers in the correct order
-			for (auto &buffer : block_mesh->getTransparentBuffers()) {
-				v3f translate = get_block_wpos(block_pos) - camera_offset;
-				draw_order.emplace_back(translate, &buffer);
-			}
+			for (auto &buffer : block_mesh->getTransparentBuffers())
+				draw_order.emplace_back(get_block_wpos(block_pos), &buffer);
 		} else {
 			// Otherwise, group them
 			grouped_buffers.addFromBlock(block_pos, block_mesh, driver);
 		}
 	}
 
-	constexpr u32 IDEAL_MIN_VERTICES = 200;
-
 	assert(!is_transparent_pass || grouped_buffers.empty());
 	for (auto &map : grouped_buffers.maps) {
-		MeshBufListMaps::MeshBufList unmerged;
 		for (auto &list : map) {
-			const auto draw_order_pre = draw_order.size();
-
-			// merge buffers that are too sparse
-			u32 can_merge = 0;
-			for (auto &pair : list.second) {
-				if (pair.second->getVertexCount() < IDEAL_MIN_VERTICES)
-					can_merge++;
-			}
-			unmerged.clear();
-
-			scene::SMeshBuffer *tmp = nullptr;
-			u32 merged_count = 0;
-			const auto &finish_buf = [&] () {
-				if (tmp) {
-					draw_order.emplace_back(v3f(0), tmp);
-					merge_saved_drawcalls += merged_count - 1;
-					merged_count = 0;
-				}
-			};
-
-			for (auto &pair : list.second) {
-				// note: no need to allocate anything if there isn't a second buffer to merge with
-				if (can_merge < 2 || pair.second->getVertexCount() >= IDEAL_MIN_VERTICES) {
-					unmerged.push_back(pair);
-					continue;
-				}
-				bool new_buffer = false;
-				if (!tmp)
-					new_buffer = true;
-				else if (tmp->getVertexCount() + pair.second->getVertexCount() > U16_MAX)
-					new_buffer = true;
-				if (new_buffer) {
-					finish_buf();
-					tmp = new scene::SMeshBuffer();
-					assert(tmp->getPrimitiveType() == pair.second->getPrimitiveType());
-					tmp->Material = pair.second->getMaterial();
-					buffer_trash.push_back(tmp);
-				}
-
-				v3f translate = get_block_wpos(pair.first) - camera_offset;
-				appendToMeshBuffer(tmp, pair.second, translate);
-				merged_count++;
-			}
-			finish_buf();
-
-			// future TODO: we could call glBufferSubData with the transient buffers here.
-			// in theory this gives GL opportunity to complete the upload before
-			// we actually draw. needs verification.
-
-			// add the rest in reverse to draw closest blocks first
-			for (auto it = unmerged.rbegin(); it != unmerged.rend(); ++it) {
-				v3f translate = get_block_wpos(it->first) - camera_offset;
-				draw_order.emplace_back(translate, it->second);
-			}
-
-			// first call needs to set the material
-			if (draw_order.size() > draw_order_pre)
-				draw_order[draw_order_pre].m_reuse_material = false;
+			merge_saved_drawcalls += transformBuffersToDrawOrder(
+				list.second, draw_order, get_block_wpos, buffer_trash);
 		}
 	}
 
@@ -1214,16 +1228,15 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	else
 		prefix = "renderMap(SHADOW SOLID): ";
 
-	const v3f camera_offset = intToFloat(m_camera_offset, BS);
 	const auto mesh_grid = m_client->getMeshGrid();
 	// Gets world position from block map position
 	const auto get_block_wpos = [&] (v3s16 pos) -> v3f {
-		return intToFloat(mesh_grid.getMeshPos(pos) * MAP_BLOCKSIZE, BS);
+		return intToFloat(mesh_grid.getMeshPos(pos) * MAP_BLOCKSIZE - m_camera_offset, BS);
 	};
 
 	MeshBufListMaps grouped_buffers;
-	std::vector<DrawDescriptor> draw_order;
-
+	std::vector<scene::IMeshBuffer*> buffer_trash;
+	DrawDescriptorList draw_order;
 
 	std::size_t count = 0;
 	std::size_t meshes_per_frame = m_drawlist_shadow.size() / total_frames + 1;
@@ -1256,25 +1269,18 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		if (is_transparent_pass) {
 			// In transparent pass, the mesh will give us
 			// the partial buffers in the correct order
-			for (auto &buffer : block->mesh->getTransparentBuffers()) {
-				v3f translate = get_block_wpos(block_pos) - camera_offset;
-				draw_order.emplace_back(translate, &buffer);
-			}
+			for (auto &buffer : block->mesh->getTransparentBuffers())
+				draw_order.emplace_back(get_block_wpos(block_pos), &buffer);
 		} else {
 			// Otherwise, group them
 			grouped_buffers.addFromBlock(block_pos, block->mesh, driver);
 		}
 	}
 
-	// Capture draw order for all solid meshes
-	// TODO: we could consolidate all solid meshes here
 	for (auto &map : grouped_buffers.maps) {
 		for (auto &list : map) {
-			// iterate in reverse to draw closest blocks first
-			for (auto it = list.second.rbegin(); it != list.second.rend(); ++it) {
-				v3f translate = get_block_wpos(it->first) - camera_offset;
-				draw_order.emplace_back(translate, it->second, it != list.second.rbegin());
-			}
+			transformBuffersToDrawOrder(
+				list.second, draw_order, get_block_wpos, buffer_trash);
 		}
 	}
 
@@ -1339,6 +1345,9 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);
 	g_profiler->avg(prefix + "drawcalls [#]", drawcall_count);
 	g_profiler->avg(prefix + "material swaps [#]", material_swaps);
+
+	for (auto &x : buffer_trash)
+		x->drop();
 }
 
 /*
