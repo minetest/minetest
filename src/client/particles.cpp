@@ -620,6 +620,7 @@ const core::aabbox3df &ParticleBuffer::getBoundingBox() const
 		return m_mesh_buffer->BoundingBox;
 
 	core::aabbox3df box;
+	bool            need_first_vertex = true;
 	for (u16 i = 0; i < m_count; i++) {
 		// check if this index is used
 		static_assert(quad_indices[1] != 0);
@@ -627,7 +628,12 @@ const core::aabbox3df &ParticleBuffer::getBoundingBox() const
 			continue;
 
 		for (u16 j = 0; j < 4; j++)
-			box.addInternalPoint(m_mesh_buffer->getPosition(i * 4 + j));
+			if (need_first_vertex) {
+				box.reset(m_mesh_buffer->getPosition(i * 4 + j));
+				need_first_vertex = false;
+			} else {
+				box.addInternalPoint(m_mesh_buffer->getPosition(i * 4 + j));
+			}
 	}
 
 	m_mesh_buffer->BoundingBox = box;
