@@ -39,17 +39,19 @@
 
 enum QuicktuneValueType {
 	QVT_NONE,
-	QVT_FLOAT
+	QVT_FLOAT,
+	QVT_INT
 };
 struct QuicktuneValue
 {
 	QuicktuneValueType type = QVT_NONE;
 	union {
 		struct {
-			float current;
-			float min;
-			float max;
+			float current, min, max;
 		} value_QVT_FLOAT;
+		struct {
+			int current, min, max;
+		} value_QVT_INT;
 	};
 	bool modified = false;
 
