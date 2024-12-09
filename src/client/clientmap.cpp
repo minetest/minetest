@@ -116,6 +116,11 @@ namespace {
 				dst->Indices->Data[j] += vcount;
 		}
 	}
+
+	template <typename T>
+	inline T subtract_or_zero(T a, T b) {
+		return b >= a ? T(0) : (a - b);
+	}
 }
 
 /*
@@ -798,9 +803,13 @@ static u32 transformBuffersToDrawOrder(
 
 	// check if we can even merge anything
 	u32 can_merge = 0;
+	u32 total_vtx = 0, total_idx = 0;
 	for (auto &pair : src) {
-		if (pair.second->getVertexCount() < IDEAL_MIN_VERTICES)
+		if (pair.second->getVertexCount() < IDEAL_MIN_VERTICES) {
 			can_merge++;
+			total_vtx += pair.second->getVertexCount();
+			total_idx += pair.second->getIndexCount();
+		}
 	}
 
 	scene::SMeshBuffer *tmp = nullptr;
@@ -810,6 +819,8 @@ static u32 transformBuffersToDrawOrder(
 			draw_order.emplace_back(v3f(0), tmp);
 			saved_drawcalls += merged_count - 1;
 			merged_count = 0;
+			total_vtx = subtract_or_zero(total_vtx, tmp->getVertexCount());
+			total_idx = subtract_or_zero(total_idx, tmp->getIndexCount());
 		}
 	};
 
@@ -830,9 +841,12 @@ static u32 transformBuffersToDrawOrder(
 		if (new_buffer) {
 			finish_buf();
 			tmp = new scene::SMeshBuffer();
+			buffer_trash.push_back(tmp);
 			assert(tmp->getPrimitiveType() == buf->getPrimitiveType());
 			tmp->Material = buf->getMaterial();
-			buffer_trash.push_back(tmp);
+			// preallocate
+			tmp->Vertices->Data.reserve(total_vtx);
+			tmp->Indices->Data.reserve(total_idx);
 		}
 
 		appendToMeshBuffer(tmp, buf, translate);
