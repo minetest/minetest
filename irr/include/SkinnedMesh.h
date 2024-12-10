@@ -390,6 +390,7 @@ public:
 	SkinnedMeshBuilder() : SkinnedMesh() {}
 
 	//! loaders should call this after populating the mesh
+	// returns *this, so do not try to drop the mesh builder instance
 	SkinnedMesh *finalize();
 
 	//! alternative method for adding joints
