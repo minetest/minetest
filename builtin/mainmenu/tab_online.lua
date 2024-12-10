@@ -370,8 +370,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields.btn_server_url then
-		local url = find_selected_server().url
-		core.open_url_dialog(url)
+		core.open_url_dialog(find_selected_server().url)
 		return true
 	end
 
