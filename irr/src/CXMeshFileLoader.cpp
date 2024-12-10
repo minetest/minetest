@@ -966,7 +966,7 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 	u32 i;
 
 	const u32 jointStart = joint->Weights.size();
-	joint->Weights.reserve(jointStart + nWeights);
+	joint->Weights.resize(jointStart + nWeights);
 
 	mesh.WeightJoint.reallocate(mesh.WeightJoint.size() + nWeights);
 	mesh.WeightNum.reallocate(mesh.WeightNum.size() + nWeights);
