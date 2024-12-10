@@ -49,7 +49,7 @@ jobs:
         env:
           CC: gcc-7
           CXX: g++-7
-          # (Currently we don't have the correct ssl version here anyways.)
+          # Test fallback SHA implementations
           CMAKE_FLAGS: '-DENABLE_OPENSSL=0'
 
       - name: Test
@@ -123,8 +123,6 @@ jobs:
         env:
           CC: clang-18
           CXX: clang++-18
-          # Test fallback SHA implementations
-          CMAKE_FLAGS: '-DENABLE_OPENSSL=0'
 
       - name: Test
         run: |
