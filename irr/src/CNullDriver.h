@@ -348,6 +348,10 @@ protected:
 	virtual SHWBufferLink *createHardwareBuffer(const scene::IIndexBuffer *ib) { return 0; }
 
 public:
+	virtual void updateHardwareBuffer(const scene::IVertexBuffer *vb) override;
+
+	virtual void updateHardwareBuffer(const scene::IIndexBuffer *ib) override;
+
 	//! Remove hardware buffer
 	void removeHardwareBuffer(const scene::IVertexBuffer *vb) override;
 
