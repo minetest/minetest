@@ -1167,6 +1167,24 @@ void CNullDriver::deleteHardwareBuffer(SHWBufferLink *HWBuffer)
 	delete HWBuffer;
 }
 
+void CNullDriver::updateHardwareBuffer(const scene::IVertexBuffer *vb)
+{
+	if (!vb)
+		return;
+	auto *link = getBufferLink(vb);
+	if (link)
+		updateHardwareBuffer(link);
+}
+
+void CNullDriver::updateHardwareBuffer(const scene::IIndexBuffer *ib)
+{
+	if (!ib)
+		return;
+	auto *link = getBufferLink(ib);
+	if (link)
+		updateHardwareBuffer(link);
+}
+
 void CNullDriver::removeHardwareBuffer(const scene::IVertexBuffer *vb)
 {
 	if (!vb)
