@@ -83,10 +83,13 @@ struct TileLayer
 
 	void applyMaterialOptionsWithShaders(video::SMaterial &material) const;
 
+	/// @return is this layer semi-transparent?
 	bool isTransparent() const
 	{
+		// see also: the mapping in ShaderSource::generateShader()
 		switch (material_type) {
 		case TILE_MATERIAL_ALPHA:
+		case TILE_MATERIAL_PLAIN_ALPHA:
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
 		case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
 			return true;

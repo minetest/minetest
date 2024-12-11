@@ -16,13 +16,13 @@ void OpenGLVBO::upload(const void *data, size_t size, size_t offset,
 		GLenum usage, bool mustShrink)
 {
 	bool newBuffer = false;
+	assert(!(mustShrink && offset > 0)); // forbidden usage
 	if (!m_name) {
 		GL.GenBuffers(1, &m_name);
 		if (!m_name)
 			return;
 		newBuffer = true;
 	} else if (size > m_size || mustShrink) {
-		// note: mustShrink && offset > 0 is forbidden
 		newBuffer = size != m_size;
 	}
 

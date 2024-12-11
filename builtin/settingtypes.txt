@@ -1856,6 +1856,10 @@ mesh_generation_interval (Mapblock mesh generation delay) int 0 0 50
 #    Value of 0 (default) will let Luanti autodetect the number of available threads.
 mesh_generation_threads (Mapblock mesh generation threads) int 0 0 8
 
+#    All mesh buffers with less than this number of vertices will be merged
+#    during map rendering. This improves rendering performance.
+mesh_buffer_min_vertices (Minimum vertex count for mesh buffers) int 100 0 1000
+
 #    True = 256
 #    False = 128
 #    Usable to make minimap smoother on slower machines.
