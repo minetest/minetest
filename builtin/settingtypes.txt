@@ -810,7 +810,7 @@ server_announce (Announce server) bool false
 server_announce_send_players (Send player names to the server list) bool true
 
 #    Announce to this serverlist.
-serverlist_url (Serverlist URL) string servers.luanti.org
+serverlist_url (Serverlist URL) string https://servers.luanti.org
 
 #    Message of the day displayed to players connecting.
 motd (Message of the day) string
