@@ -791,7 +791,7 @@ void MeshBufListMaps::addFromBlock(v3s16 block_pos, MapBlockMesh *block_mesh,
  * @param dst draw order
  * @param get_world_pos returns correct translation for a buffer
  * @param dynamic_buffers
- * @return number of drawcalls that were saved due to merging
+ * @return
  */
 template <typename F>
 static u32 transformBuffersToDrawOrder(
@@ -815,12 +815,9 @@ static u32 transformBuffersToDrawOrder(
 	}
 
 	scene::SMeshBuffer *tmp = nullptr;
-	u32 merged_count = 0, saved_drawcalls = 0;
 	const auto &finish_buf = [&] () {
 		if (tmp) {
 			draw_order.emplace_back(v3f(0), tmp);
-			saved_drawcalls += merged_count - 1;
-			merged_count = 0;
 			total_vtx = subtract_or_zero(total_vtx, tmp->getVertexCount());
 			total_idx = subtract_or_zero(total_idx, tmp->getIndexCount());
 
@@ -841,7 +838,6 @@ static u32 transformBuffersToDrawOrder(
 		auto *buf = it->second;
 		if (can_merge < 2 || buf->getVertexCount() >= IDEAL_MIN_VERTICES) {
 			draw_order.emplace_back(translate, buf);
-			continue;
 		} else {
 			to_merge.emplace_back(translate, buf);
 		}
@@ -851,10 +847,11 @@ static u32 transformBuffersToDrawOrder(
 	std::sort(to_merge.begin(), to_merge.end(), [] (const auto &l, const auto &r) {
 		return l.second < r.second;
 	});
+	u32 merged_count = to_merge.size();
 	for (auto &it : to_merge) {
 		// big assumptions here
 		kkk.append(reinterpret_cast<const char*>(&it.second), sizeof(it.second));
-	}	
+	}
 
 	auto it2 = dynamic_buffers.find(kkk);
 	if (it2 != dynamic_buffers.end()) {
@@ -885,9 +882,7 @@ static u32 transformBuffersToDrawOrder(
 				tmp->Vertices->Data.reserve(total_vtx);
 				tmp->Indices->Data.reserve(total_idx);
 			}
-
 			appendToMeshBuffer(tmp, buf, translate);
-			merged_count++;
 		}
 		finish_buf();
 	}
@@ -896,7 +891,7 @@ static u32 transformBuffersToDrawOrder(
 	if (draw_order.size() > draw_order_pre)
 		draw_order[draw_order_pre].m_reuse_material = false;
 
-	return saved_drawcalls;
+	return merged_count;
 }
 
 void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
@@ -926,7 +921,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		return intToFloat(mesh_grid.getMeshPos(pos) * MAP_BLOCKSIZE - m_camera_offset, BS);
 	};
 
-	u32 merge_saved_drawcalls = 0;
+	u32 merged_count = 0;
 
 	// For limiting number of mesh animations per frame
 	u32 mesh_animate_count = 0;
@@ -999,7 +994,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	assert(!is_transparent_pass || grouped_buffers.empty());
 	for (auto &map : grouped_buffers.maps) {
 		for (auto &list : map) {
-			merge_saved_drawcalls += transformBuffersToDrawOrder(
+			merged_count += transformBuffersToDrawOrder(
 				list.second, draw_order, get_block_wpos, m_dynamic_buffers);
 		}
 	}
@@ -1056,7 +1051,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	if (pass == scene::ESNRP_SOLID) {
 		g_profiler->avg("renderMap(): animated meshes [#]", mesh_animate_count);
-		g_profiler->avg(prefix + "saved drawcalls (merge) [#]", merge_saved_drawcalls);
+		g_profiler->avg(prefix + "buf merged count [#]", merged_count);
 
 		for (auto it = m_dynamic_buffers.begin(); it != m_dynamic_buffers.end(); ) {
 			if (++it->second.age > 1) {
