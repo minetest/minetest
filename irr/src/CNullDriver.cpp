@@ -1144,6 +1144,10 @@ CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IIndexBuffer
 //! Update all hardware buffers, remove unused ones
 void CNullDriver::updateAllHardwareBuffers()
 {
+	// FIXME: this method can take a lot of time just doing the refcount
+	// checks and iteration (too much pointer chasing?) for
+	// large buffer counts (e.g. 50000)
+
 	auto it = HWBufferList.begin();
 	while (it != HWBufferList.end()) {
 		SHWBufferLink *Link = *it;

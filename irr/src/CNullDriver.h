@@ -309,7 +309,7 @@ protected:
 			}
 		}
 
-		virtual ~SHWBufferLink()
+		~SHWBufferLink()
 		{
 			if (IsVertex && VertexBuffer) {
 				VertexBuffer->setHWBuffer(nullptr);
