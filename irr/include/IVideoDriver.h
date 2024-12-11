@@ -310,6 +310,18 @@ public:
 	0 or another texture first. */
 	virtual void removeAllTextures() = 0;
 
+	//! Eagerly upload buffer to hardware
+	/** This can be a good idea if you have a newly created or modified buffer,
+	which you know you will draw in the near future (e.g. end of same frame,
+	or next frame), because it gives the GPU driver to copy the contents. */
+	virtual void updateHardwareBuffer(const scene::IVertexBuffer *vb) = 0;
+
+	//! Eagerly upload buffer to hardware
+	/** This can be a good idea if you have a newly created or modified buffer,
+	which you know you will draw in the near future (e.g. end of same frame,
+	or next frame), because it gives the GPU driver to copy the contents. */
+	virtual void updateHardwareBuffer(const scene::IIndexBuffer *ib) = 0;
+
 	//! Remove hardware buffer
 	virtual void removeHardwareBuffer(const scene::IVertexBuffer *vb) = 0;
 
