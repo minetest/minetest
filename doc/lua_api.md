@@ -4190,14 +4190,14 @@ Two functions are provided to translate strings: `core.translate` and
 
 * `core.get_translator(textdomain)` is a simple wrapper around
   `core.translate` and `core.translate_n`.
-  After `local S, NS = core.get_translator(textdomain)`, we have
+  After `local S, PS = core.get_translator(textdomain)`, we have
   `S(str, ...)` equivalent to `core.translate(textdomain, str, ...)`, and
-  `NS(str, str_plural, n, ...)` to `core.translate_n(textdomain, str, str_plural, n, ...)`.
+  `PS(str, str_plural, n, ...)` to `core.translate_n(textdomain, str, str_plural, n, ...)`.
   It is intended to be used in the following way, so that it avoids verbose
   repetitions of `core.translate`:
 
   ```lua
-  local S, NS = core.get_translator(textdomain)
+  local S, PS = core.get_translator(textdomain)
   S(str, ...)
   ```
 
@@ -4231,7 +4231,7 @@ command that shows the amount of time since the player joined. We can do the
 following:
 
 ```lua
-local S, NS = core.get_translator("hello")
+local S, PS = core.get_translator("hello")
 core.register_on_joinplayer(function(player)
     local name = player:get_player_name()
     core.chat_send_player(name, S("Hello @1, how are you today?", name))
@@ -4240,7 +4240,7 @@ core.register_chatcommand("playtime", {
     func = function(name)
         local last_login = core.get_auth_handler().get_auth(name).last_login
         local playtime = math.floor((last_login-os.time())/60)
-        return true, NS(
+        return true, PS(
             "You have been playing for @1 minute.",
             "You have been playing for @1 minutes.",
             minutes, tostring(minutes))
@@ -4287,7 +4287,7 @@ After creating the `locale` directory, a translation template for the above
 example using the following command:
 
 ```sh
-xgettext -L lua -kS -kNS:1,2 -kcore.translate:1c,2 -kcore.translate_n:1c,2,3 \
+xgettext -L lua -kS -kPS:1,2 -kcore.translate:1c,2 -kcore.translate_n:1c,2,3 \
   -d hello -o locale/hello.pot *.lua
 ```
 
