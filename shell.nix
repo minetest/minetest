@@ -6,20 +6,20 @@ pkgs.mkShell {
   env.LC_ALL = "C.UTF-8";
 
   packages = [
-    pkgs.gcc
+    pkgs.SDL2
     pkgs.cmake
+    pkgs.curl
+    pkgs.freetype
+    pkgs.gcc
+    pkgs.gettext
+    pkgs.libGL
+    pkgs.libjpeg
+    pkgs.libogg
+    pkgs.libpng
+    pkgs.libvorbis
+    pkgs.openal
+    pkgs.sqlite
     pkgs.zlib
     pkgs.zstd
-    pkgs.libjpeg
-    pkgs.libpng
-    pkgs.libGL
-    pkgs.SDL2
-    pkgs.openal
-    pkgs.curl
-    pkgs.libvorbis
-    pkgs.libogg
-    pkgs.gettext
-    pkgs.freetype
-    pkgs.sqlite
   ];
 }
