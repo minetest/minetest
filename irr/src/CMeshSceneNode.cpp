@@ -23,10 +23,6 @@ CMeshSceneNode::CMeshSceneNode(IMesh *mesh, ISceneNode *parent, ISceneManager *m
 		Mesh(0),
 		PassCount(0), ReadOnlyMaterials(false)
 {
-#ifdef _DEBUG
-	setDebugName("CMeshSceneNode");
-#endif
-
 	setMesh(mesh);
 }
 

@@ -22,9 +22,6 @@ struct SSkinMeshBuffer final : public IMeshBuffer
 			VertexType(vt), PrimitiveType(EPT_TRIANGLES),
 			BoundingBoxNeedsRecalculated(true)
 	{
-#ifdef _DEBUG
-		setDebugName("SSkinMeshBuffer");
-#endif
 		Vertices_Tangents = new SVertexBufferTangents();
 		Vertices_2TCoords = new SVertexBufferLightMap();
 		Vertices_Standard = new SVertexBuffer();

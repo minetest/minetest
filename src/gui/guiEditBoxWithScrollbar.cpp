@@ -30,10 +30,6 @@ GUIEditBoxWithScrollBar::GUIEditBoxWithScrollBar(const wchar_t* text, bool borde
 	: GUIEditBox(environment, parent, id, rectangle, border, writable),
 	m_background(true), m_bg_color_used(false), m_tsrc(tsrc)
 {
-#ifdef _DEBUG
-	setDebugName("GUIEditBoxWithScrollBar");
-#endif
-
 
 	Text = text;
 

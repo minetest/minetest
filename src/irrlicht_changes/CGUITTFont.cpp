@@ -254,9 +254,6 @@ CGUITTFont::CGUITTFont(IGUIEnvironment *env)
 batch_load_size(1), Device(0), Environment(env), Driver(0), GlobalKerningWidth(0), GlobalKerningHeight(0),
 shadow_offset(0), shadow_alpha(0), fallback(0)
 {
-	#ifdef _DEBUG
-	setDebugName("CGUITTFont");
-	#endif
 
 	if (Environment)
 	{
