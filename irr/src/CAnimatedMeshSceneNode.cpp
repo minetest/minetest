@@ -223,7 +223,7 @@ void CAnimatedMeshSceneNode::render()
 		Box = m->getBoundingBox();
 	} else {
 #ifdef _DEBUG
-		os::Printer::log("Animated Mesh returned no mesh to render.", Mesh->getDebugName(), ELL_WARNING);
+		os::Printer::log("Animated Mesh returned no mesh to render.", ELL_WARNING);
 #endif
 		return;
 	}
