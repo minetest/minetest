@@ -21,9 +21,6 @@ struct SAnimatedMesh final : public IAnimatedMesh
 	SAnimatedMesh(scene::IMesh *mesh = 0, scene::E_ANIMATED_MESH_TYPE type = scene::EAMT_UNKNOWN) :
 			IAnimatedMesh(), FramesPerSecond(25.f), Type(type)
 	{
-#ifdef _DEBUG
-		setDebugName("SAnimatedMesh");
-#endif
 		addMesh(mesh);
 		recalculateBoundingBox();
 	}

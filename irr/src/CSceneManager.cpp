@@ -44,11 +44,6 @@ CSceneManager::CSceneManager(video::IVideoDriver *driver,
 		ActiveCamera(0), Parameters(0),
 		MeshCache(cache), CurrentRenderPass(ESNRP_NONE)
 {
-#ifdef _DEBUG
-	ISceneManager::setDebugName("CSceneManager ISceneManager");
-	ISceneNode::setDebugName("CSceneManager ISceneNode");
-#endif
-
 	// root node's scene manager
 	SceneManager = this;
 

@@ -17,12 +17,7 @@ namespace scene
 struct SMesh final : public IMesh
 {
 	//! constructor
-	SMesh()
-	{
-#ifdef _DEBUG
-		setDebugName("SMesh");
-#endif
-	}
+	SMesh() {}
 
 	//! destructor
 	virtual ~SMesh()

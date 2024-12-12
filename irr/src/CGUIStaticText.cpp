@@ -27,10 +27,6 @@ CGUIStaticText::CGUIStaticText(const wchar_t *text, bool border,
 		OverrideColor(video::SColor(101, 255, 255, 255)), BGColor(video::SColor(101, 210, 210, 210)),
 		OverrideFont(0), LastBreakFont(0)
 {
-#ifdef _DEBUG
-	setDebugName("CGUIStaticText");
-#endif
-
 	Text = text;
 	if (environment && environment->getSkin()) {
 		BGColor = environment->getSkin()->getColor(gui::EGDC_3D_FACE);

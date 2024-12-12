@@ -29,11 +29,7 @@ namespace scene
 CB3DMeshFileLoader::CB3DMeshFileLoader(scene::ISceneManager *smgr) :
 		AnimatedMesh(0), B3DFile(0), VerticesStart(0), NormalsInFile(false),
 		HasVertexColors(false), ShowWarning(true)
-{
-#ifdef _DEBUG
-	setDebugName("CB3DMeshFileLoader");
-#endif
-}
+{}
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")

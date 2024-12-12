@@ -39,10 +39,6 @@ CGUIEditBox::CGUIEditBox(const wchar_t *text, bool border,
 		PasswordChar(L'*'), HAlign(EGUIA_UPPERLEFT), VAlign(EGUIA_CENTER),
 		CurrentTextRect(0, 0, 1, 1), FrameRect(rectangle)
 {
-#ifdef _DEBUG
-	setDebugName("CGUIEditBox");
-#endif
-
 	Text = text;
 
 	if (Environment)

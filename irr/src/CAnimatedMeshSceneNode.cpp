@@ -38,10 +38,6 @@ CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh *mesh,
 		Looping(true), ReadOnlyMaterials(false), RenderFromIdentity(false),
 		LoopCallBack(0), PassCount(0)
 {
-#ifdef _DEBUG
-	setDebugName("CAnimatedMeshSceneNode");
-#endif
-
 	setMesh(mesh);
 }
 

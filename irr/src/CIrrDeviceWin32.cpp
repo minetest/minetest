@@ -713,10 +713,6 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters &params) :
 		ExternalWindow(false), Win32CursorControl(0), JoyControl(0),
 		WindowMaximized(params.WindowMaximized)
 {
-#ifdef _DEBUG
-	setDebugName("CIrrDeviceWin32");
-#endif
-
 	// get windows version and create OS operator
 	core::stringc winversion;
 	getWindowsVersion(winversion);

@@ -54,11 +54,7 @@ void PNGAPI user_write_data_fcn(png_structp png_ptr, png_bytep data, png_size_t 
 }
 
 CImageWriterPNG::CImageWriterPNG()
-{
-#ifdef _DEBUG
-	setDebugName("CImageWriterPNG");
-#endif
-}
+{}
 
 bool CImageWriterPNG::isAWriteableFileExtension(const io::path &filename) const
 {

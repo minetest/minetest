@@ -169,11 +169,7 @@ IImageWriter *createImageWriterJPG()
 }
 
 CImageWriterJPG::CImageWriterJPG()
-{
-#ifdef _DEBUG
-	setDebugName("CImageWriterJPG");
-#endif
-}
+{}
 
 bool CImageWriterJPG::isAWriteableFileExtension(const io::path &filename) const
 {

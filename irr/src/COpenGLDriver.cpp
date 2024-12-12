@@ -32,11 +32,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters &params, io::IFil
 		CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), CacheHandler(0), CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 		Transformation3DChanged(true), AntiAlias(params.AntiAlias), ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE), Params(params),
 		ContextManager(contextManager)
-{
-#ifdef _DEBUG
-	setDebugName("COpenGLDriver");
-#endif
-}
+{}
 
 bool COpenGLDriver::initDriver()
 {

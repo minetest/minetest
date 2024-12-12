@@ -155,10 +155,6 @@ COpenGL3DriverBase::COpenGL3DriverBase(const SIrrlichtCreationParameters &params
 		OGLES2ShaderPath(params.OGLES2ShaderPath),
 		ColorFormat(ECF_R8G8B8), ContextManager(contextManager), EnableErrorTest(params.DriverDebug)
 {
-#ifdef _DEBUG
-	setDebugName("Driver");
-#endif
-
 	if (!ContextManager)
 		return;
 

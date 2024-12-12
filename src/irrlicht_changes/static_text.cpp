@@ -30,10 +30,6 @@ StaticText::StaticText(const EnrichedString &text, bool border,
 	RestrainTextInside(true), RightToLeft(false),
 	OverrideFont(0), LastBreakFont(0)
 {
-	#ifdef _DEBUG
-	setDebugName("StaticText");
-	#endif
-
 	setText(text);
 }
 
