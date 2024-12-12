@@ -9,6 +9,7 @@
 #include "SMeshBuffer.h"
 #include "SSkinMeshBuffer.h"
 #include "quaternion.h"
+#include "vector3d.h"
 
 #include <optional>
 #include <string>
@@ -18,18 +19,6 @@ namespace irr
 namespace scene
 {
 
-enum E_INTERPOLATION_MODE
-{
-	// constant does use the current key-values without interpolation
-	EIM_CONSTANT = 0,
-
-	// linear interpolation
-	EIM_LINEAR,
-
-	//! count of all available interpolation modes
-	EIM_COUNT
-};
-
 class IAnimatedMeshSceneNode;
 class IBoneSceneNode;
 class ISceneManager;
@@ -38,7 +27,14 @@ class SkinnedMesh : public IAnimatedMesh
 {
 public:
 	//! constructor
-	SkinnedMesh();
+	SkinnedMesh() :
+		EndFrame(0.f), FramesPerSecond(25.f),
+		LastAnimatedFrame(-1), SkinnedLastFrame(false),
+		HasAnimation(false), PreparedForSkinning(false),
+		AnimateNormals(true), HardwareSkinning(false)
+	{
+		SkinningBuffers = &LocalBuffers;
+	}
 
 	//! destructor
 	virtual ~SkinnedMesh();
@@ -58,9 +54,8 @@ public:
 	//! returns the animated mesh for the given frame
 	IMesh *getMesh(f32) override;
 
-	//! Animates this mesh's joints based on frame input
-	//! blend: {0-old position, 1-New position}
-	void animateMesh(f32 frame, f32 blend);
+	//! Animates joints based on frame input
+	void animateMesh(f32 frame);
 
 	//! Performs a software skin on this mesh based of joint positions
 	void skinMesh();
@@ -82,10 +77,14 @@ public:
 	void setTextureSlot(u32 meshbufNr, u32 textureSlot);
 
 	//! returns an axis aligned bounding box
-	const core::aabbox3d<f32> &getBoundingBox() const override;
+	const core::aabbox3d<f32> &getBoundingBox() const override {
+		return BoundingBox;
+	}
 
 	//! set user axis aligned bounding box
-	void setBoundingBox(const core::aabbox3df &box) override;
+	void setBoundingBox(const core::aabbox3df &box) override {
+		BoundingBox = box;
+	}
 
 	//! set the hardware mapping hint, for driver
 	void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer = EBT_VERTEX_AND_INDEX) override;
@@ -94,7 +93,9 @@ public:
 	void setDirty(E_BUFFER_TYPE buffer = EBT_VERTEX_AND_INDEX) override;
 
 	//! Returns the type of the animated mesh.
-	E_ANIMATED_MESH_TYPE getMeshType() const override;
+	E_ANIMATED_MESH_TYPE getMeshType() const override {
+		return EAMT_SKINNED;
+	}
 
 	//! Gets joint count.
 	u32 getJointCount() const;
@@ -112,18 +113,19 @@ public:
 	//! Update Normals when Animating
 	/** \param on If false don't animate, which is faster.
 	Else update normals, which allows for proper lighting of
-	animated meshes. */
-	void updateNormalsWhenAnimating(bool on);
-
-	//! Sets Interpolation Mode
-	void setInterpolationMode(E_INTERPOLATION_MODE mode);
+	animated meshes (default). */
+	void updateNormalsWhenAnimating(bool on) {
+		AnimateNormals = on;
+	}
 
 	//! converts the vertex type of all meshbuffers to tangents.
 	/** E.g. used for bump mapping. */
 	void convertMeshToTangents();
 
 	//! Does the mesh have no animation
-	bool isStatic() const;
+	bool isStatic() const {
+		return !HasAnimation;
+	}
 
 	//! Allows to enable hardware skinning.
 	/* This feature is not implemented in Irrlicht yet */
@@ -138,16 +140,13 @@ public:
 	virtual void updateBoundingBox();
 
 	//! Recovers the joints from the mesh
-	void recoverJointsFromMesh(core::array<IBoneSceneNode *> &jointChildSceneNodes);
+	void recoverJointsFromMesh(std::vector<IBoneSceneNode *> &jointChildSceneNodes);
 
 	//! Transfers the joint data to the mesh
-	void transferJointsToMesh(const core::array<IBoneSceneNode *> &jointChildSceneNodes);
-
-	//! Transfers the joint hints to the mesh
-	void transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode *> &jointChildSceneNodes);
+	void transferJointsToMesh(const std::vector<IBoneSceneNode *> &jointChildSceneNodes);
 
 	//! Creates an array of joints from this mesh as children of node
-	void addJoints(core::array<IBoneSceneNode *> &jointChildSceneNodes,
+	void addJoints(std::vector<IBoneSceneNode *> &jointChildSceneNodes,
 			IAnimatedMeshSceneNode *node,
 			ISceneManager *smgr);
 
@@ -171,35 +170,133 @@ public:
 		core::vector3df StaticNormal;
 	};
 
-	//! Animation keyframe which describes a new position
-	struct SPositionKey
-	{
-		f32 frame;
-		core::vector3df position;
+	template <class T>
+	struct Channel {
+		struct Frame {
+			f32 time;
+			T value;
+		};
+		std::vector<Frame> frames;
+		bool interpolate = true;
+
+		bool empty() const {
+			return frames.empty();
+		}
+
+		f32 getEndFrame() const {
+			return frames.empty() ? 0 : frames.back().time;
+		}
+
+		void pushBack(f32 time, const T &value) {
+			frames.push_back({time, value});
+		}
+
+		void append(const Channel<T> &other) {
+			frames.insert(frames.end(), other.frames.begin(), other.frames.end());
+		}
+
+		void cleanup() {
+			if (frames.empty())
+				return;
+
+			std::vector<Frame> ordered;
+			ordered.push_back(frames.front());
+			// Drop out-of-order frames
+			for (auto it = frames.begin() + 1; it != frames.end(); ++it) {
+				if (it->time > ordered.back().time) {
+					ordered.push_back(*it);
+				}
+			}
+			frames.clear();
+			// Drop redundant middle keys
+			frames.push_back(ordered.front());
+			for (u32 i = 1; i < ordered.size() - 1; ++i) {
+				if (ordered[i - 1].value != ordered[i].value
+						|| ordered[i + 1].value != ordered[i].value) {
+					frames.push_back(ordered[i]);
+				}
+			}
+			if (ordered.size() > 1)
+				frames.push_back(ordered.back());
+			frames.shrink_to_fit();
+		}
+
+		static core::quaternion interpolateValue(core::quaternion from, core::quaternion to, f32 time) {
+			core::quaternion result;
+			result.slerp(from, to, time, 0.001f);
+			return result;
+		}
+
+		static core::vector3df interpolateValue(core::vector3df from, core::vector3df to, f32 time) {
+			// Note: `from` and `to` are swapped here compared to quaternion slerp
+			return to.getInterpolated(from, time);
+		}
+
+		std::optional<T> get(f32 time) const {
+			if (frames.empty())
+				return std::nullopt;
+
+			const auto next = std::lower_bound(frames.begin(), frames.end(), time, [](const auto& frame, f32 time) {
+				return frame.time < time;
+			});
+			if (next == frames.begin())
+				return next->value;
+			if (next == frames.end())
+				return frames.back().value;
+
+			const auto prev = next - 1;
+			if (!interpolate)
+				return prev->value;
+
+			return interpolateValue(prev->value, next->value, (time - prev->time) / (next->time - prev->time));
+		}
 	};
 
-	//! Animation keyframe which describes a new scale
-	struct SScaleKey
-	{
-		f32 frame;
-		core::vector3df scale;
-	};
+	struct Keys {
+		Channel<core::vector3df> position;
+		Channel<core::quaternion> rotation;
+		Channel<core::vector3df> scale;
 
-	//! Animation keyframe which describes a new rotation
-	struct SRotationKey
-	{
-		f32 frame;
-		core::quaternion rotation;
+		bool empty() const {
+			return position.empty() && rotation.empty() && scale.empty();
+		}
+
+		void append(const Keys &other) {
+			position.append(other.position);
+			rotation.append(other.rotation);
+			scale.append(other.scale);
+		}
+
+		f32 getEndFrame() const {
+			return std::max({
+				position.getEndFrame(),
+				rotation.getEndFrame(),
+				scale.getEndFrame()
+			});
+		}
+
+		void updateTransform(f32 frame,
+				core::vector3df &t, core::quaternion &r, core::vector3df &s) const
+		{
+			if (auto pos = position.get(frame))
+				t = *pos;
+			if (auto rot = rotation.get(frame))
+				r = *rot;
+			if (auto scl = scale.get(frame))
+				s = *scl;
+		}
+
+		void cleanup() {
+			position.cleanup();
+			rotation.cleanup();
+			scale.cleanup();
+		}
 	};
 
 	//! Joints
 	struct SJoint
 	{
-		SJoint() :
-				UseAnimationFrom(0), GlobalSkinningSpace(false),
-				positionHint(-1), scaleHint(-1), rotationHint(-1)
-		{
-		}
+		SJoint() : GlobalSkinningSpace(false) {}
 
 		//! The name of this joint
 		std::optional<std::string> Name;
@@ -208,22 +305,16 @@ public:
 		core::matrix4 LocalMatrix;
 
 		//! List of child joints
-		core::array<SJoint *> Children;
+		std::vector<SJoint *> Children;
 
 		//! List of attached meshes
-		core::array<u32> AttachedMeshes;
+		std::vector<u32> AttachedMeshes;
 
-		//! Animation keys causing translation change
-		core::array<SPositionKey> PositionKeys;
-
-		//! Animation keys causing scale change
-		core::array<SScaleKey> ScaleKeys;
-
-		//! Animation keys causing rotation change
-		core::array<SRotationKey> RotationKeys;
+		// Animation keyframes for translation, rotation, scale
+		Keys keys;
 
 		//! Skin weights
-		core::array<SWeight> Weights;
+		std::vector<SWeight> Weights;
 
 		//! Unnecessary for loaders, will be overwritten on finalize
 		core::matrix4 GlobalMatrix; // loaders may still choose to set this (temporarily) to calculate absolute vertex data.
@@ -241,49 +332,14 @@ public:
 		//! Internal members used by SkinnedMesh
 		friend class SkinnedMesh;
 
-		SJoint *UseAnimationFrom;
 		bool GlobalSkinningSpace;
-
-		s32 positionHint;
-		s32 scaleHint;
-		s32 rotationHint;
 	};
 
-	// Interface for the mesh loaders (finalize should lock these functions, and they should have some prefix like loader_
-	// these functions will use the needed arrays, set values, etc to help the loaders
+	const std::vector<SJoint *> &getAllJoints() const {
+		return AllJoints;
+	}
 
-	//! exposed for loaders to add mesh buffers
-	core::array<SSkinMeshBuffer *> &getMeshBuffers();
-
-	//! alternative method for adding joints
-	core::array<SJoint *> &getAllJoints();
-
-	//! alternative method for reading joints
-	const core::array<SJoint *> &getAllJoints() const;
-
-	//! loaders should call this after populating the mesh
-	void finalize();
-
-	//! Adds a new meshbuffer to the mesh, access it as last one
-	SSkinMeshBuffer *addMeshBuffer();
-
-	//! Adds a new meshbuffer to the mesh, access it as last one
-	void addMeshBuffer(SSkinMeshBuffer *meshbuf);
-
-	//! Adds a new joint to the mesh, access it as last one
-	SJoint *addJoint(SJoint *parent = 0);
-
-	//! Adds a new position key to the mesh, access it as last one
-	SPositionKey *addPositionKey(SJoint *joint);
-	//! Adds a new rotation key to the mesh, access it as last one
-	SRotationKey *addRotationKey(SJoint *joint);
-	//! Adds a new scale key to the mesh, access it as last one
-	SScaleKey *addScaleKey(SJoint *joint);
-
-	//! Adds a new weight to the mesh, access it as last one
-	SWeight *addWeight(SJoint *joint);
-
-private:
+protected:
 	void checkForAnimation();
 
 	void normalizeWeights();
@@ -291,11 +347,6 @@ private:
 	void buildAllLocalAnimatedMatrices();
 
 	void buildAllGlobalAnimatedMatrices(SJoint *Joint = 0, SJoint *ParentJoint = 0);
-
-	void getFrameData(f32 frame, SJoint *Node,
-			core::vector3df &position, s32 &positionHint,
-			core::vector3df &scale, s32 &scaleHint,
-			core::quaternion &rotation, s32 &rotationHint);
 
 	void calculateGlobalMatrices(SJoint *Joint, SJoint *ParentJoint);
 
@@ -306,18 +357,18 @@ private:
 			const core::vector3df &vt1, const core::vector3df &vt2, const core::vector3df &vt3,
 			const core::vector2df &tc1, const core::vector2df &tc2, const core::vector2df &tc3);
 
-	core::array<SSkinMeshBuffer *> *SkinningBuffers; // Meshbuffer to skin, default is to skin localBuffers
+	std::vector<SSkinMeshBuffer *> *SkinningBuffers; // Meshbuffer to skin, default is to skin localBuffers
 
-	core::array<SSkinMeshBuffer *> LocalBuffers;
+	std::vector<SSkinMeshBuffer *> LocalBuffers;
 	//! Mapping from meshbuffer number to bindable texture slot
 	std::vector<u32> TextureSlots;
 
-	core::array<SJoint *> AllJoints;
-	core::array<SJoint *> RootJoints;
+	std::vector<SJoint *> AllJoints;
+	std::vector<SJoint *> RootJoints;
 
 	// bool can't be used here because std::vector<bool>
 	// doesn't allow taking a reference to individual elements.
-	core::array<core::array<char>> Vertices_Moved;
+	std::vector<std::vector<char>> Vertices_Moved;
 
 	core::aabbox3d<f32> BoundingBox;
 
@@ -327,12 +378,41 @@ private:
 	f32 LastAnimatedFrame;
 	bool SkinnedLastFrame;
 
-	E_INTERPOLATION_MODE InterpolationMode : 8;
-
 	bool HasAnimation;
 	bool PreparedForSkinning;
 	bool AnimateNormals;
 	bool HardwareSkinning;
+};
+
+// Interface for mesh loaders
+class SkinnedMeshBuilder : public SkinnedMesh {
+public:
+	SkinnedMeshBuilder() : SkinnedMesh() {}
+
+	//! loaders should call this after populating the mesh
+	// returns *this, so do not try to drop the mesh builder instance
+	SkinnedMesh *finalize();
+
+	//! alternative method for adding joints
+	std::vector<SJoint *> &getAllJoints() {
+		return AllJoints;
+	}
+
+	//! Adds a new meshbuffer to the mesh, access it as last one
+	SSkinMeshBuffer *addMeshBuffer();
+
+	//! Adds a new meshbuffer to the mesh, access it as last one
+	void addMeshBuffer(SSkinMeshBuffer *meshbuf);
+
+	//! Adds a new joint to the mesh, access it as last one
+	SJoint *addJoint(SJoint *parent = nullptr);
+
+	void addPositionKey(SJoint *joint, f32 frame, core::vector3df pos);
+	void addRotationKey(SJoint *joint, f32 frame, core::quaternion rotation);
+	void addScaleKey(SJoint *joint, f32 frame, core::vector3df scale);
+
+	//! Adds a new weight to the mesh, access it as last one
+	SWeight *addWeight(SJoint *joint);
 };
 
 } // end namespace scene
