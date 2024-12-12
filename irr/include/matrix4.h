@@ -178,9 +178,13 @@ public:
 	CMatrix4<T> &setInverseTranslation(const vector3d<T> &translation);
 
 	//! Make a rotation matrix from Euler angles. The 4th row and column are unmodified.
+	//! NOTE: Rotation order is ZYX. This means that vectors are
+	//! first rotated around the X, then the Y, and finally the Z axis.
+	//! NOTE: The rotation is done as per the right-hand rule.
+	//! See test_irr_matrix4.cpp if you're still unsure about the conventions used here.
 	inline CMatrix4<T> &setRotationRadians(const vector3d<T> &rotation);
 
-	//! Make a rotation matrix from Euler angles. The 4th row and column are unmodified.
+	//! Same as `setRotationRadians`, but uses degrees.
 	CMatrix4<T> &setRotationDegrees(const vector3d<T> &rotation);
 
 	//! Get the rotation, as set by setRotation() when you already know the scale used to create the matrix
@@ -234,6 +238,10 @@ public:
 
 	//! Rotate and scale a vector. Applies both rotation & scale part of the matrix.
 	[[nodiscard]] vector3d<T> rotateAndScaleVect(const vector3d<T> &vect) const;
+
+	//! Transforms the vector by this matrix
+	/** This operation is performed as if the vector was 4d with the 4th component =1 */
+	[[nodiscard]] vector3d<T> transformVect(const vector3d<T> &v) const;
 
 	//! Transforms the vector by this matrix
 	/** This operation is performed as if the vector was 4d with the 4th component =1 */
@@ -1095,6 +1103,16 @@ inline vector3d<T> CMatrix4<T>::scaleThenInvRotVect(const vector3d<T> &v) const
 		v.X * M[0] + v.Y * M[1] + v.Z * M[2],
 		v.X * M[4] + v.Y * M[5] + v.Z * M[6],
 		v.X * M[8] + v.Y * M[9] + v.Z * M[10]
+	};
+}
+
+template <class T>
+inline vector3d<T> CMatrix4<T>::transformVect(const vector3d<T> &v) const
+{
+	return {
+		v.X * M[0] + v.Y * M[4] + v.Z * M[8] + M[12],
+		v.X * M[1] + v.Y * M[5] + v.Z * M[9] + M[13],
+		v.X * M[2] + v.Y * M[6] + v.Z * M[10] + M[14],
 	};
 }
 
