@@ -571,7 +571,9 @@ void set_default_settings()
 	// Note: OpenGL ES 2.0 is not guaranteed to provide depth textures,
 	// which we would need for PP.
 	settings->setDefault("enable_post_processing", "false");
+	// still set these two settings in case someone wants to enable it
 	settings->setDefault("debanding", "false");
+	settings->setDefault("post_processing_texture_bits", "8");
 	settings->setDefault("curl_verify_cert", "false");
 
 	// Apply settings according to screen size

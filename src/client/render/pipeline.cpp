@@ -6,6 +6,7 @@
 #include "client/client.h"
 #include "client/hud.h"
 #include "IRenderTarget.h"
+#include "SColor.h"
 
 #include <vector>
 #include <memory>
@@ -122,10 +123,19 @@ bool TextureBuffer::ensureTexture(video::ITexture **texture, const TextureDefini
 	if (!modify)
 		return false;
 
-	if (*texture)
+	if (*texture) {
 		m_driver->removeTexture(*texture);
+		*texture = nullptr;
+	}
 
 	if (definition.valid) {
+		if (!m_driver->queryTextureFormat(definition.format)) {
+			errorstream << "Failed to create texture \"" << definition.name
+				<< "\": unsupported format " << video::ColorFormatNames[definition.format]
+				<< std::endl;
+			return false;
+		}
+
 		if (definition.clear) {
 			// We're not able to clear a render target texture
 			// We're not able to create a normal texture with MSAA
@@ -142,9 +152,12 @@ bool TextureBuffer::ensureTexture(video::ITexture **texture, const TextureDefini
 		} else {
 			*texture = m_driver->addRenderTargetTexture(size, definition.name.c_str(), definition.format);
 		}
-	}
-	else {
-		*texture = nullptr;
+
+		if (!*texture) {
+			errorstream << "Failed to create texture \"" << definition.name
+				<< "\"" << std::endl;
+			return false;
+		}
 	}
 
 	return true;

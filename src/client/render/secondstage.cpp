@@ -165,6 +165,9 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	// Number of mipmap levels of the bloom downsampling texture
 	const u8 MIPMAP_LEVELS = 4;
 
+	// color_format can be a normalized integer format, but bloom requires
+	// values outside of [0,1] so this needs to be a different one.
+	const auto bloom_format = video::ECF_A16B16G16R16F;
 
 	// post-processing stage
 
@@ -173,16 +176,16 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	// common downsampling step for bloom or autoexposure
 	if (enable_bloom || enable_auto_exposure) {
 
-		v2f downscale = scale * 0.5;
+		v2f downscale = scale * 0.5f;
 		for (u8 i = 0; i < MIPMAP_LEVELS; i++) {
-			buffer->setTexture(TEXTURE_SCALE_DOWN + i, downscale, std::string("downsample") + std::to_string(i), color_format);
+			buffer->setTexture(TEXTURE_SCALE_DOWN + i, downscale, std::string("downsample") + std::to_string(i), bloom_format);
 			if (enable_bloom)
-				buffer->setTexture(TEXTURE_SCALE_UP + i, downscale, std::string("upsample") + std::to_string(i), color_format);
-			downscale *= 0.5;
+				buffer->setTexture(TEXTURE_SCALE_UP + i, downscale, std::string("upsample") + std::to_string(i), bloom_format);
+			downscale *= 0.5f;
 		}
 
 		if (enable_bloom) {
-			buffer->setTexture(TEXTURE_BLOOM, scale, "bloom", color_format);
+			buffer->setTexture(TEXTURE_BLOOM, scale, "bloom", bloom_format);
 
 			// get bright spots
 			u32 shader_id = client->getShaderSource()->getShader("extract_bloom", TILE_MATERIAL_PLAIN, NDT_MESH);
