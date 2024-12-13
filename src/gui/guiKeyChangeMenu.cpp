@@ -178,6 +178,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		offset += v2s32(0, 25);
 	}
 
+#if USE_SDL2
 	{
 		s32 option_x = offset.X;
 		s32 option_y = offset.Y + 5 * s;
@@ -190,6 +191,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		}
 		offset += v2s32(0, 25 * s);
 	}
+#endif
 
 	{
 		core::rect<s32> rect(0, 0, 100 * s, 30 * s);

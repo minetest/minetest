@@ -151,14 +151,15 @@ enable_hotbar_mouse_wheel (Hotbar: Enable mouse wheel for selection) bool true
 #    Requires: keyboard_mouse
 invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
 
-#    Save key controls as scancodes (position on the keyboard) instead of keycodes (the
+#    SDL only: Save key controls as scancodes (position on the keyboard) instead of keycodes (the
 #    symbol marked on the key). This allows using the same physical keys with multiple
 #    keyboard layouts, but the new scancode-based settings can not be parsed by older clients.
 #    Note that this only affects how keybindings are saved in the settings. In particular,
-#    key controls are always matched based on scancodes regardless of this setting.
+#    key controls are always matched based on scancodes regardless of this setting if SDL is used.
+#    Key controls are matched based on keycodes for non-SDL devices.
 #
 #    Requires: !touch_controls
-save_keys_as_scancodes (Save keybindings as scancodes) bool false
+save_keys_as_scancodes (Save keybindings as scancodes) bool true
 
 [*Touchscreen]
 
