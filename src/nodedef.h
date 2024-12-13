@@ -222,6 +222,7 @@ enum NodeDrawType : u8
 	NDT_MESH,
 	// Combined plantlike-on-solid
 	NDT_PLANTLIKE_ROOTED,
+
 	// Dummy for validity check
 	NodeDrawType_END
 };
