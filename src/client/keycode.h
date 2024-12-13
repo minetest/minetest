@@ -5,6 +5,7 @@
 #pragma once
 
 #include "irrlichttypes.h"
+#include "cmake_config.h" // USE_SDL2
 #include <Keycodes.h>
 #include <IEventReceiver.h>
 #include <string>
@@ -14,12 +15,11 @@
 class KeyPress
 {
 public:
-	KeyPress() {};
+	KeyPress() = default;
 
 	KeyPress(std::string_view name);
 
-	KeyPress(const irr::SEvent::SKeyInput &in) :
-		scancode(in.SystemKeyCode) {};
+	KeyPress(const irr::SEvent::SKeyInput &in);
 
 	std::string sym() const;
 	std::string name() const;
@@ -27,25 +27,46 @@ public:
 	irr::EKEY_CODE getKeycode() const;
 	wchar_t getKeychar() const;
 
+	//TODO: drop this once we fully switch to SDL
+	u32 getScancode() const
+	{
+#if USE_SDL2
+		return scancode;
+#else
+		return 0;
+#endif
+	}
+
 	irr::SEvent toKeyEvent(bool pressedDown = false) const
 	{
 		irr::SEvent event;
 		event.EventType = EET_KEY_INPUT_EVENT;
-		event.KeyInput = {getKeychar(), getKeycode(), scancode, pressedDown, false, false};
+		event.KeyInput = {getKeychar(), getKeycode(), getScancode(), pressedDown, false, false};
 		return event;
 	}
 
-	bool operator==(const KeyPress &o) const {
+	bool operator==(const KeyPress &o) const
+	{
+#if USE_SDL2
 		return scancode == o.scancode;
+#else
+		return (Char > 0 && Char == o.Char) || (Keycode::isValid(Key) && Key == o.Key);
+#endif
 	}
 
-	operator bool() const {
+	operator bool() const
+	{
+#if USE_SDL2
 		return scancode != 0;
+#else
+		return Char > 0 || Keycode::isValid(Key);
+#endif
 	}
 
 	static const KeyPress &getSpecialKey(const std::string &name);
 
 private:
+#if USE_SDL2
 	bool loadFromScancode(std::string_view name);
 
 	inline std::string formatScancode() const
@@ -54,6 +75,10 @@ private:
 	}
 
 	u32 scancode = 0;
+#else
+	irr::EKEY_CODE Key = irr::KEY_KEY_CODES_COUNT;
+	wchar_t Char = L'\0';
+#endif
 
 	static std::unordered_map<std::string, KeyPress> specialKeyCache;
 };

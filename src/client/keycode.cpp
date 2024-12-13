@@ -243,6 +243,19 @@ static const table_key &lookup_keychar(wchar_t Char)
 	return table.emplace_back(std::move(new_key));
 }
 
+static const table_key &lookup_keykey(irr::EKEY_CODE key)
+{
+	if (!Keycode::isValid(key))
+		return invalid_key;
+
+	for (const auto &table_key : table) {
+		if (table_key.Key == key)
+			return table_key;
+	}
+
+	return invalid_key;
+}
+
 static const table_key &lookup_keyname(std::string_view name)
 {
 	if (name.empty())
@@ -259,19 +272,7 @@ static const table_key &lookup_keyname(std::string_view name)
 	return lookup_keychar(wname[0]);
 }
 
-static const table_key &lookup_keykey(irr::EKEY_CODE key)
-{
-	if (!Keycode::isValid(key))
-		return invalid_key;
-
-	for (const auto &table_key : table) {
-		if (table_key.Key == key)
-			return table_key;
-	}
-
-	return invalid_key;
-}
-
+#if USE_SDL2
 static const table_key &lookup_scancode(const u32 scancode)
 {
 	auto key = RenderingEngine::get_raw_device()->getKeyFromScancode(scancode);
@@ -279,43 +280,76 @@ static const table_key &lookup_scancode(const u32 scancode)
 		lookup_keykey(std::get<irr::EKEY_CODE>(key)) :
 		lookup_keychar(std::get<wchar_t>(key));
 }
+#endif
 
 KeyPress::KeyPress(std::string_view name)
 {
+#if USE_SDL2
 	if (loadFromScancode(name))
 		return;
 	const auto &key = lookup_keyname(name);
 	Keycode keycode(key.Key, key.Char);
 	scancode = RenderingEngine::get_raw_device()->getScancodeFromKey(keycode);
+#else
+	const auto &key = lookup_keyname(name);
+	Key = key.Key;
+	Char = key.Char;
+#endif
 }
+
+KeyPress::KeyPress(const irr::SEvent::SKeyInput &in) :
+#if USE_SDL2
+	scancode(in.SystemKeyCode) {}
+#else
+	Key(in.Key), Char(in.Char ? in.Char : lookup_keykey(in.Key).Char) {}
+#endif
 
 std::string KeyPress::sym() const
 {
-	const auto &name = lookup_scancode(scancode).Name;
-	if (!name.empty() || scancode == 0)
-		return name;
-	return formatScancode();
+#if USE_SDL2
+	if (scancode != 0)
+		return formatScancode();
+	return lookup_scancode(scancode).Name;
+#else
+	if (Keycode::isValid(Key))
+		if (const auto &sym = lookup_keykey(Key).Name; !sym.empty())
+			return sym;
+	return lookup_keychar(Char).Name;
+#endif
 }
 
 std::string KeyPress::name() const
 {
+#if USE_SDL2
 	const auto &name = lookup_scancode(scancode).LangName;
 	auto table_key = lookup_scancode(scancode);
 	if (!name.empty() || scancode == 0)
 		return name;
 	return formatScancode();
+#else
+	return (Keycode::isValid(Key) ? lookup_keykey(Key) : lookup_keychar(Char)).LangName;
+#endif
 }
 
 irr::EKEY_CODE KeyPress::getKeycode() const
 {
+#if USE_SDL2
 	return lookup_scancode(scancode).Key;
+#else
+	return Key;
+#endif
 }
 
 wchar_t KeyPress::getKeychar() const
 {
+#if USE_SDL2
 	return lookup_scancode(scancode).Char;
+#else
+	return Char;
+#endif
 }
 
+#if USE_SDL2
 bool KeyPress::loadFromScancode(std::string_view name)
 {
 	if (name.size() < 2 || name[0] != '<' || name.back() != '>')
@@ -327,6 +361,7 @@ bool KeyPress::loadFromScancode(std::string_view name)
 	scancode = code;
 	return true;
 }
+#endif
 
 std::unordered_map<std::string, KeyPress> KeyPress::specialKeyCache;
 const KeyPress &KeyPress::getSpecialKey(const std::string &name)
