@@ -60,8 +60,9 @@ IAnimatedMesh *CXMeshFileLoader::createMesh(io::IReadFile *file)
 
 	AnimatedMesh = new SkinnedMeshBuilder();
 
+	SkinnedMesh *res = nullptr;
 	if (load(file)) {
-		AnimatedMesh->finalize();
+		res = AnimatedMesh->finalize();
 	} else {
 		AnimatedMesh->drop();
 		AnimatedMesh = 0;
@@ -93,7 +94,7 @@ IAnimatedMesh *CXMeshFileLoader::createMesh(io::IReadFile *file)
 		delete Meshes[i];
 	Meshes.clear();
 
-	return AnimatedMesh->finalize();
+	return res;
 }
 
 bool CXMeshFileLoader::load(io::IReadFile *file)
