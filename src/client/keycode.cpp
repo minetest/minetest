@@ -261,7 +261,7 @@ static const table_key &lookup_keyname(std::string_view name)
 
 static const table_key &lookup_keykey(irr::EKEY_CODE key)
 {
-	if (!KeyCode::isValid(key))
+	if (!Keycode::isValid(key))
 		return invalid_key;
 
 	for (const auto &table_key : table) {
@@ -285,7 +285,7 @@ KeyPress::KeyPress(std::string_view name)
 	if (loadFromScancode(name))
 		return;
 	const auto &key = lookup_keyname(name);
-	KeyCode keycode(key.Key, key.Char);
+	Keycode keycode(key.Key, key.Char);
 	scancode = RenderingEngine::get_raw_device()->getScancodeFromKey(keycode);
 }
 
