@@ -220,7 +220,7 @@ int CIrrDeviceSDL::findCharToPassToIrrlicht(uint32_t sdlKey, EKEY_CODE irrlichtK
 	}
 }
 
-u32 CIrrDeviceSDL::getScancodeFromKey(const KeyCode &key) const
+u32 CIrrDeviceSDL::getScancodeFromKey(const Keycode &key) const
 {
 	u32 keynum = 0;
 	if (const auto *keycode = std::get_if<EKEY_CODE>(&key)) {
@@ -236,13 +236,13 @@ u32 CIrrDeviceSDL::getScancodeFromKey(const KeyCode &key) const
 	return SDL_GetScancodeFromKey(keynum);
 }
 
-KeyCode CIrrDeviceSDL::getKeyFromScancode(const u32 scancode) const
+Keycode CIrrDeviceSDL::getKeyFromScancode(const u32 scancode) const
 {
 	auto keycode = SDL_GetKeyFromScancode((SDL_Scancode)scancode);
 	const auto &keyentry = KeyMap.find(keycode);
 	auto irrcode = keyentry != KeyMap.end() ? keyentry->second : KEY_UNKNOWN;
 	auto keychar = findCharToPassToIrrlicht(keycode, irrcode, false);
-	return KeyCode(irrcode, keychar);
+	return Keycode(irrcode, keychar);
 }
 
 void CIrrDeviceSDL::resetReceiveTextInputEvents()
@@ -866,7 +866,7 @@ bool CIrrDeviceSDL::run()
 			const auto &entry = KeyMap.find(keysym);
 			auto key = entry == KeyMap.end() ? KEY_UNKNOWN : entry->second;
 
-			if (!KeyCode::isValid(key))
+			if (!Keycode::isValid(key))
 				os::Printer::log("keycode not mapped", core::stringc(keysym), ELL_DEBUG);
 
 			// Make sure to only input special characters if something is in focus, as SDL_TEXTINPUT handles normal unicode already

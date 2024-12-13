@@ -183,12 +183,12 @@ enum EKEY_CODE
 	KEY_KEY_CODES_COUNT = 0x100 // this is not a key, but the amount of keycodes there are.
 };
 
-class KeyCode : public std::variant<EKEY_CODE, wchar_t> {
+class Keycode : public std::variant<EKEY_CODE, wchar_t> {
 	using super = std::variant<EKEY_CODE, wchar_t>;
 public:
-	KeyCode() : KeyCode(KEY_KEY_CODES_COUNT, L'\0') {}
+	Keycode() : Keycode(KEY_KEY_CODES_COUNT, L'\0') {}
 
-	KeyCode(EKEY_CODE code, wchar_t ch)
+	Keycode(EKEY_CODE code, wchar_t ch)
 	{
 		emplace(code, ch);
 	}
