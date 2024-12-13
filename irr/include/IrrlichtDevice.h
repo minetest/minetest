@@ -16,6 +16,7 @@
 #include "IrrCompileConfig.h"
 #include "position2d.h"
 #include "SColor.h" // video::ECOLOR_FORMAT
+#include <variant>
 
 namespace irr
 {
@@ -346,29 +347,19 @@ public:
 		return video::isDriverSupported(driver);
 	}
 
-	// This is a trivial (near-identity) mapping for converting between scancodes and keycodes for devices that do
-	// not implement this.
-
+#if defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || USE_SDL2
 	//! Get the scancode of the corresponding keycode.
-	virtual u32 getScancodeFromKey(const Keycode &key) const
-	{
-		if (const auto *keycode = std::get_if<EKEY_CODE>(&key))
-			// treat KEY_UNKNOWN and KEY_KEY_CODES_COUNT as the same and return 0.
-			return Keycode::isValid(*keycode) ? *keycode : 0;
-		const auto keychar = std::get<wchar_t>(key);
-		return keychar == 0 ? 0 : KEY_KEY_CODES_COUNT + keychar;
+	virtual std::variant<u32, EKEY_CODE> getScancodeFromKey(const Keycode &key) const {
+		if (auto pv = std::get_if<EKEY_CODE>(&key))
+			return *pv;
+		return (u32)std::get<wchar_t>(key);
 	}
 
 	//! Get the keycode of the corresponding scancode.
-	virtual Keycode getKeyFromScancode(const u32 scancode) const
-	{
-		Keycode key;
-		if (scancode < KEY_KEY_CODES_COUNT)
-			key.emplace<EKEY_CODE>((EKEY_CODE)scancode);
-		else
-			key.emplace<wchar_t>(scancode - KEY_KEY_CODES_COUNT);
-		return key;
+	virtual Keycode getKeyFromScancode(const u32 scancode) const {
+		return Keycode(KEY_UNKNOWN, (wchar_t)scancode);
 	}
+#endif
 };
 
 } // end namespace irr

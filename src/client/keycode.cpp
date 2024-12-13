@@ -280,6 +280,13 @@ static const table_key &lookup_scancode(const u32 scancode)
 		lookup_keykey(std::get<irr::EKEY_CODE>(key)) :
 		lookup_keychar(std::get<wchar_t>(key));
 }
+
+static const table_key &lookup_scancode(const std::variant<u32, irr::EKEY_CODE> &scancode)
+{
+	return std::holds_alternative<irr::EKEY_CODE>(scancode) ?
+		lookup_keykey(std::get<irr::EKEY_CODE>(scancode)) :
+		lookup_scancode(std::get<u32>(scancode));
+}
 #endif
 
 KeyPress::KeyPress(std::string_view name)
@@ -297,19 +304,31 @@ KeyPress::KeyPress(std::string_view name)
 #endif
 }
 
-KeyPress::KeyPress(const irr::SEvent::SKeyInput &in) :
+KeyPress::KeyPress(const irr::SEvent::SKeyInput &in)
 #if USE_SDL2
-	scancode(in.SystemKeyCode) {}
+{
+	if (in.SystemKeyCode)
+		scancode.emplace<u32>(in.SystemKeyCode);
+	else
+		scancode.emplace<irr::EKEY_CODE>(in.Key);
+}
 #else
-	Key(in.Key), Char(in.Char ? in.Char : lookup_keykey(in.Key).Char) {}
+	: Key(in.Key), Char(in.Char ? in.Char : lookup_keykey(in.Key).Char) {}
+#endif
+
+#if USE_SDL2
+std::string KeyPress::formatScancode() const
+{
+	if (auto pv = std::get_if<u32>(&scancode))
+		return *pv == 0 ? "" : "<" + std::to_string(*pv) + ">";
+	return lookup_keykey(std::get<irr::EKEY_CODE>(scancode)).Name;
+}
 #endif
 
 std::string KeyPress::sym() const
 {
 #if USE_SDL2
-	if (scancode != 0)
-		return formatScancode();
-	return lookup_scancode(scancode).Name;
+	return formatScancode();
 #else
 	if (Keycode::isValid(Key))
 		if (const auto &sym = lookup_keykey(Key).Name; !sym.empty())
@@ -322,8 +341,7 @@ std::string KeyPress::name() const
 {
 #if USE_SDL2
 	const auto &name = lookup_scancode(scancode).LangName;
-	auto table_key = lookup_scancode(scancode);
-	if (!name.empty() || scancode == 0)
+	if (!name.empty())
 		return name;
 	return formatScancode();
 #else
@@ -358,7 +376,7 @@ bool KeyPress::loadFromScancode(std::string_view name)
 	const auto code = strtoul(name.data()+1, &p, 10);
 	if (p != name.data() + name.size() - 1)
 		return false;
-	scancode = code;
+	scancode.emplace<u32>(code);
 	return true;
 }
 #endif
