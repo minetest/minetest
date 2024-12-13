@@ -80,7 +80,12 @@ void TestKeycode::testCreateFromString()
 template<typename ...Args>
 static u32 toScancode(Args... args)
 {
-	return RenderingEngine::get_raw_device()->getScancodeFromKey(Keycode(args...));
+#if USE_SDL2
+	if (const auto &scancode = RenderingEngine::get_raw_device()->getScancodeFromKey(Keycode(args...));
+			const auto &pv = std::get_if<u32>(&scancode))
+		return *pv;
+#endif
+	return 0;
 }
 
 void TestKeycode::testCreateFromSKeyInput()
