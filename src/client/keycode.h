@@ -10,6 +10,7 @@
 #include <IEventReceiver.h>
 #include <string>
 #include <unordered_map>
+#include <variant>
 
 /* A key press, consisting of a scancode or a keycode */
 class KeyPress
@@ -31,10 +32,10 @@ public:
 	u32 getScancode() const
 	{
 #if USE_SDL2
-		return scancode;
-#else
-		return 0;
+		if (auto pv = std::get_if<u32>(&scancode))
+			return *pv;
 #endif
+		return 0;
 	}
 
 	irr::SEvent toKeyEvent(bool pressedDown = false) const
@@ -57,7 +58,9 @@ public:
 	operator bool() const
 	{
 #if USE_SDL2
-		return scancode != 0;
+		return std::holds_alternative<irr::EKEY_CODE>(scancode) ?
+			Keycode::isValid(std::get<irr::EKEY_CODE>(scancode)) :
+			std::get<u32>(scancode) != 0;
 #else
 		return Char > 0 || Keycode::isValid(Key);
 #endif
@@ -68,13 +71,9 @@ public:
 private:
 #if USE_SDL2
 	bool loadFromScancode(std::string_view name);
+	std::string formatScancode() const;
 
-	inline std::string formatScancode() const
-	{
-		return "<" + std::to_string(scancode) + ">";
-	}
-
-	u32 scancode = 0;
+	std::variant<u32, irr::EKEY_CODE> scancode = irr::KEY_UNKNOWN;
 #else
 	irr::EKEY_CODE Key = irr::KEY_KEY_CODES_COUNT;
 	wchar_t Char = L'\0';
