@@ -38,10 +38,6 @@ CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh *mesh,
 		Looping(true), ReadOnlyMaterials(false), RenderFromIdentity(false),
 		LoopCallBack(0), PassCount(0)
 {
-#ifdef _DEBUG
-	setDebugName("CAnimatedMeshSceneNode");
-#endif
-
 	setMesh(mesh);
 }
 
@@ -227,7 +223,7 @@ void CAnimatedMeshSceneNode::render()
 		Box = m->getBoundingBox();
 	} else {
 #ifdef _DEBUG
-		os::Printer::log("Animated Mesh returned no mesh to render.", Mesh->getDebugName(), ELL_WARNING);
+		os::Printer::log("Animated Mesh returned no mesh to render.", ELL_WARNING);
 #endif
 		return;
 	}

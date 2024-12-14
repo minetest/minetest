@@ -32,11 +32,7 @@ namespace scene
 CXMeshFileLoader::CXMeshFileLoader(scene::ISceneManager *smgr) :
 		AnimatedMesh(0), Buffer(0), P(0), End(0), BinaryNumCount(0), Line(0), ErrorState(false),
 		CurFrame(0), MajorVersion(0), MinorVersion(0), BinaryFormat(false), FloatSize(0)
-{
-#ifdef _DEBUG
-	setDebugName("CXMeshFileLoader");
-#endif
-}
+{}
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")

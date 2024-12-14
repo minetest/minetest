@@ -22,9 +22,6 @@ public:
 	CMeshBuffer() :
 			PrimitiveType(EPT_TRIANGLES)
 	{
-#ifdef _DEBUG
-		setDebugName("CMeshBuffer");
-#endif
 		Vertices = new CVertexBuffer<T>();
 		Indices = new SIndexBuffer();
 	}
