@@ -163,6 +163,8 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 			break; // About to go out of bounds
 		}
 
+		const v3s16 pos_on_ray = state->m_iterator.m_current_node_pos;
+
 		// For each untested node
 		for (s16 z = new_nodes.MinEdge.Z; z <= new_nodes.MaxEdge.Z; z++)
 		for (s16 y = new_nodes.MinEdge.Y; y <= new_nodes.MaxEdge.Y; y++)
@@ -173,6 +175,10 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 
 			n = map.getNode(np, &is_valid_position);
 			if (!is_valid_position)
+				continue;
+
+			// Optimization: Skip non-oversized selection boxes for other positions.
+			if ((pos_on_ray != np) && !nodedef->get(n).has_big_selection_box)
 				continue;
 
 			PointabilityType pointable = isPointableNode(n, nodedef,

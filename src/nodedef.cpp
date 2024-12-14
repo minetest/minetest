@@ -1257,6 +1257,15 @@ inline void NodeDefManager::fixSelectionBoxIntUnion()
 		m_selection_box_union.MaxEdge.Z / BS - 0.5f);
 }
 
+inline void NodeDefManager::calcBigSelectionBox(content_t id, const ContentFeatures &def)
+{
+	aabb3f box_union;
+	getNodeBoxUnion(def.selection_box, def, &box_union);
+	m_content_features[id].has_big_selection_box =
+			(box_union.MinEdge.X < -BS/2) || (box_union.MaxEdge.X > BS/2) ||
+			(box_union.MinEdge.Y < -BS/2) || (box_union.MaxEdge.Y > BS/2) ||
+			(box_union.MinEdge.Z < -BS/2) || (box_union.MaxEdge.Z > BS/2);
+}
 
 void NodeDefManager::eraseIdFromGroups(content_t id)
 {
@@ -1312,6 +1321,7 @@ content_t NodeDefManager::set(const std::string &name, const ContentFeatures &de
 	getNodeBoxUnion(def.selection_box, def, &m_selection_box_union);
 	fixSelectionBoxIntUnion();
 
+	calcBigSelectionBox(id, def);
 	// Add this content to the list of all groups it belongs to
 	for (const auto &group : def.groups) {
 		const std::string &group_name = group.first;
@@ -1525,6 +1535,8 @@ void NodeDefManager::deSerialize(std::istream &is, u16 protocol_version)
 
 		getNodeBoxUnion(f.selection_box, f, &m_selection_box_union);
 		fixSelectionBoxIntUnion();
+
+		calcBigSelectionBox(i, f);
 	}
 
 	// Since liquid_alternative_flowing_id and liquid_alternative_source_id
