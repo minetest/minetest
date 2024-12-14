@@ -135,7 +135,7 @@ static irr::IrrlichtDevice *createDevice(SIrrlichtCreationParameters params, std
 {
 	if (requested_driver) {
 		params.DriverType = *requested_driver;
-		verbosestream << "Trying video driver " << getVideoDriverName(params.DriverType) << std::endl;
+		infostream << "Trying video driver " << getVideoDriverName(params.DriverType) << std::endl;
 		if (auto *device = createDeviceEx(params))
 			return device;
 		errorstream << "Failed to initialize the " << getVideoDriverName(params.DriverType) << " video driver" << std::endl;
@@ -147,7 +147,7 @@ static irr::IrrlichtDevice *createDevice(SIrrlichtCreationParameters params, std
 		if (fallback_driver == video::EDT_NULL || fallback_driver == requested_driver)
 			continue;
 		params.DriverType = fallback_driver;
-		verbosestream << "Trying video driver " << getVideoDriverName(params.DriverType) << std::endl;
+		infostream << "Trying video driver " << getVideoDriverName(params.DriverType) << std::endl;
 		if (auto *device = createDeviceEx(params))
 			return device;
 	}
@@ -374,16 +374,16 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 std::vector<video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers()
 {
 	// Only check these drivers. We do not support software and D3D in any capacity.
-	// Order by preference (best first)
+	// ordered by preference (best first)
 	static const video::E_DRIVER_TYPE glDrivers[] = {
-		video::EDT_OPENGL,
 		video::EDT_OPENGL3,
+		video::EDT_OPENGL,
 		video::EDT_OGLES2,
 		video::EDT_NULL,
 	};
 	std::vector<video::E_DRIVER_TYPE> drivers;
 
-	for (video::E_DRIVER_TYPE driver: glDrivers) {
+	for (auto driver : glDrivers) {
 		if (IrrlichtDevice::isDriverSupported(driver))
 			drivers.push_back(driver);
 	}
