@@ -294,11 +294,6 @@ struct alignas(u32) MapNode
 		std::vector<aabb3f> *boxes, u8 neighbors = 0) const;
 
 	/*
-		Return true if Have big selection boxes
-	*/
-	bool haveBigSelectionBox(const NodeDefManager *nodemgr) const;
-
-	/*
 		Liquid/leveled helpers
 	*/
 	u8 getMaxLevel(const NodeDefManager *nodemgr) const;

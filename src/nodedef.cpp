@@ -1315,11 +1315,10 @@ inline void NodeDefManager::calcBigSelectionBox(content_t id, const ContentFeatu
 {
 	aabb3f box_union;
 	getNodeBoxUnion(def.selection_box, def, &box_union);
-	bool bigSelectionBox =
+	m_content_features[id].has_big_selection_box =
 			(box_union.MinEdge.X < -BS/2) || (box_union.MaxEdge.X > BS/2) ||
 			(box_union.MinEdge.Y < -BS/2) || (box_union.MaxEdge.Y > BS/2) ||
 			(box_union.MinEdge.Z < -BS/2) || (box_union.MaxEdge.Z > BS/2);
-	m_content_features[id].bigSelectionBox = bigSelectionBox;
 }
 
 void NodeDefManager::eraseIdFromGroups(content_t id)

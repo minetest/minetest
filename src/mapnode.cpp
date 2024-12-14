@@ -562,12 +562,6 @@ void MapNode::getSelectionBoxes(const NodeDefManager *nodemgr,
 	transformNodeBox(*this, f.selection_box, nodemgr, boxes, neighbors);
 }
 
-bool MapNode::haveBigSelectionBox(const NodeDefManager *nodemgr) const
-{
-	const ContentFeatures &f = nodemgr->get(*this);
-	return f.bigSelectionBox;
-}
-
 u8 MapNode::getMaxLevel(const NodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);

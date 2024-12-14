@@ -441,8 +441,8 @@ struct ContentFeatures
 	NodeBox node_box;
 	NodeBox selection_box;
 	NodeBox collision_box;
-	// if selection box is bigger then (-BS,-BS,-BS)/2 and (BS,BS,BS)/2 edges
-	bool bigSelectionBox;
+	//! Whether any selection box extent is > BS/2.
+	bool has_big_selection_box;
 
 	// --- SOUND PROPERTIES ---
 
@@ -792,9 +792,7 @@ private:
 	 */
 	void fixSelectionBoxIntUnion();
 
-	/*!
-	 * Calculate ContentFeatures bigSelectonBox value.
-	 */
+	//! Calculates ContentFeatures::&has_big_selection_box
 	void calcBigSelectionBox(content_t id, const ContentFeatures &def);
 
 	//! Features indexed by ID.
