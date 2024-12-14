@@ -967,15 +967,16 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 	u32 i;
 
 	const u32 jointStart = joint->Weights.size();
-	joint->Weights.resize(jointStart + nWeights);
+	joint->Weights.reserve(jointStart + nWeights);
 
 	mesh.WeightJoint.reallocate(mesh.WeightJoint.size() + nWeights);
 	mesh.WeightNum.reallocate(mesh.WeightNum.size() + nWeights);
 
 	for (i = 0; i < nWeights; ++i) {
 		mesh.WeightJoint.push_back(*n);
-		mesh.WeightNum.push_back(joint->Weights.size());
+		mesh.WeightNum.push_back(joint->Weights.size()); // id of weight
 
+		// Note: This adds a weight to joint->Weights
 		SkinnedMesh::SWeight *weight = AnimatedMesh->addWeight(joint);
 
 		weight->buffer_id = 0;
