@@ -178,9 +178,13 @@ public:
 	CMatrix4<T> &setInverseTranslation(const vector3d<T> &translation);
 
 	//! Make a rotation matrix from Euler angles. The 4th row and column are unmodified.
+	//! NOTE: Rotation order is ZYX. This means that vectors are
+	//! first rotated around the X, then the Y, and finally the Z axis.
+	//! NOTE: The rotation is done as per the right-hand rule.
+	//! See test_irr_matrix4.cpp if you're still unsure about the conventions used here.
 	inline CMatrix4<T> &setRotationRadians(const vector3d<T> &rotation);
 
-	//! Make a rotation matrix from Euler angles. The 4th row and column are unmodified.
+	//! Same as `setRotationRadians`, but uses degrees.
 	CMatrix4<T> &setRotationDegrees(const vector3d<T> &rotation);
 
 	//! Get the rotation, as set by setRotation() when you already know the scale used to create the matrix
@@ -236,12 +240,21 @@ public:
 	[[nodiscard]] vector3d<T> rotateAndScaleVect(const vector3d<T> &vect) const;
 
 	//! Transforms the vector by this matrix
-	/** This operation is performed as if the vector was 4d with the 4th component =1 */
-	void transformVect(vector3df &vect) const;
+	/** This operation is performed as if the vector was 4d with the 4th component = 1 */
+	[[nodiscard]] vector3d<T> transformVect(const vector3d<T> &v) const;
+
+	//! Transforms the vector by this matrix
+	/** This operation is performed as if the vector was 4d with the 4th component = 1 */
+	void transformVect(vector3d<T> &vect) const {
+		const vector3d<T> &v = vect;
+		vect = transformVect(v);
+	}
 
 	//! Transforms input vector by this matrix and stores result in output vector
-	/** This operation is performed as if the vector was 4d with the 4th component =1 */
-	void transformVect(vector3df &out, const vector3df &in) const;
+	/** This operation is performed as if the vector was 4d with the 4th component = 1 */
+	void transformVect(vector3d<T> &out, const vector3d<T> &in) const {
+		out = transformVect(in);
+	}
 
 	//! An alternate transform vector method, writing into an array of 4 floats
 	/** This operation is performed as if the vector was 4d with the 4th component =1.
@@ -1099,25 +1112,13 @@ inline vector3d<T> CMatrix4<T>::scaleThenInvRotVect(const vector3d<T> &v) const
 }
 
 template <class T>
-inline void CMatrix4<T>::transformVect(vector3df &vect) const
+inline vector3d<T> CMatrix4<T>::transformVect(const vector3d<T> &v) const
 {
-	T vector[3];
-
-	vector[0] = vect.X * M[0] + vect.Y * M[4] + vect.Z * M[8] + M[12];
-	vector[1] = vect.X * M[1] + vect.Y * M[5] + vect.Z * M[9] + M[13];
-	vector[2] = vect.X * M[2] + vect.Y * M[6] + vect.Z * M[10] + M[14];
-
-	vect.X = static_cast<f32>(vector[0]);
-	vect.Y = static_cast<f32>(vector[1]);
-	vect.Z = static_cast<f32>(vector[2]);
-}
-
-template <class T>
-inline void CMatrix4<T>::transformVect(vector3df &out, const vector3df &in) const
-{
-	out.X = in.X * M[0] + in.Y * M[4] + in.Z * M[8] + M[12];
-	out.Y = in.X * M[1] + in.Y * M[5] + in.Z * M[9] + M[13];
-	out.Z = in.X * M[2] + in.Y * M[6] + in.Z * M[10] + M[14];
+	return {
+		v.X * M[0] + v.Y * M[4] + v.Z * M[8] + M[12],
+		v.X * M[1] + v.Y * M[5] + v.Z * M[9] + M[13],
+		v.X * M[2] + v.Y * M[6] + v.Z * M[10] + M[14],
+	};
 }
 
 template <class T>
