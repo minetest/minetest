@@ -190,6 +190,8 @@ private:
 	std::unique_ptr<ISimpleTextureSource> m_texture_source;
 	/** sound manager */
 	std::unique_ptr<ISoundManager>        m_sound_manager;
+	/** joystick controller */
+	JoystickController                   *m_joystick;
 
 	/** representation of form source to be used in mainmenu formspec */
 	FormspecFormSource                   *m_formspecgui = nullptr;
