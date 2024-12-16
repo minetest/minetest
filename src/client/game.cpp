@@ -2734,7 +2734,10 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 
 	// Enable sneak lock
 	if (g_settings->getBool("sneak_lock")) {
-		control.sneak = true;
+		if (control.sneak)
+			toggleSneakLock();
+		else
+			control.sneak = true;
 	}
 
 	control.setMovementFromKeys();
