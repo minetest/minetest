@@ -228,7 +228,7 @@ public:
 	video::SMaterial Material;
 	video::E_VERTEX_TYPE VertexType;
 
-	core::aabbox3d<f32> BoundingBox;
+	core::aabbox3d<f32> BoundingBox{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
 
 	//! Primitive type used for rendering (triangles, lines, ...)
 	E_PRIMITIVE_TYPE PrimitiveType;

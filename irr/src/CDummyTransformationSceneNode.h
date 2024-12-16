@@ -48,7 +48,7 @@ private:
 	void setPosition(const core::vector3df &newpos) override;
 
 	core::matrix4 RelativeTransformationMatrix;
-	core::aabbox3d<f32> Box;
+	core::aabbox3d<f32> Box{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
 };
 
 } // end namespace scene
