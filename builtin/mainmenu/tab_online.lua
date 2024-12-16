@@ -175,7 +175,7 @@ local function get_formspec(tabview, name, tabdata)
 		end
 
 		if selected_server.url then
-			retval = retval .. "tooltip[btn_server_url;" .. fgettext("Server Website") .. "]"
+			retval = retval .. "tooltip[btn_server_url;" .. fgettext("Open server website") .. "]"
 			retval = retval .. "style[btn_server_url;padding=6]"
 			retval = retval .. "image_button[" .. (can_view_clients_list and "4" or "4.5") .. ",1.3;0.5,0.5;" ..
 				core.formspec_escape(defaulttexturedir .. "server_url.png") .. ";btn_server_url;]"
