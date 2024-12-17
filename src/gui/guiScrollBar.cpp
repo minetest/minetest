@@ -25,7 +25,7 @@ GUIScrollBar::GUIScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s3
 		dragged_by_slider(false), tray_clicked(false), scroll_pos(0),
 		draw_center(0), thumb_size(0), min_pos(0), max_pos(100), small_step(10),
 		large_step(50), drag_offset(0), page_size(100), border_size(0),
-		m_tsrc(tsrc)
+		m_tsrc(tsrc), target_pos(0.0f)
 {
 	refreshControls();
 	setNotClipped(false);
@@ -87,9 +87,9 @@ bool GUIScrollBar::OnEvent(const SEvent &event)
 			switch (event.MouseInput.Event) {
 			case EMIE_MOUSE_WHEEL:
 				if (Environment->hasFocus(this)) {
-					s8 d = event.MouseInput.Wheel < 0 ? -1 : 1;
 					s8 h = is_horizontal ? 1 : -1;
-					setPosInterpolated(getTargetPos() + (d * small_step * h));
+					
+					setPosInterpolated(getTargetPos() + (event.MouseInput.Wheel * small_step * h));
 					return true;
 				}
 				break;
@@ -183,36 +183,41 @@ void GUIScrollBar::draw()
 			slider_rect.LowerRightCorner.Y =
 					slider_rect.UpperLeftCorner.Y + thumb_size;
 		}
-		skin->draw3DButtonPaneStandard(this, slider_rect, &AbsoluteClippingRect);
+		
+		// Clip scrollbar so it doesn't show behind buttons for elastic scrolling
+		if (up_button->isVisible() || down_button->isVisible()) {
+            core::rect<s32> clip = AbsoluteClippingRect;
+            if (up_button->isVisible())
+                clip.UpperLeftCorner.Y = up_button->getAbsolutePosition().LowerRightCorner.Y;
+            if (down_button->isVisible())
+                clip.LowerRightCorner.Y = down_button->getAbsolutePosition().UpperLeftCorner.Y;
+            skin->draw3DButtonPaneStandard(this, slider_rect, &clip);
+        } else {
+            // Just clip it directly
+            skin->draw3DButtonPaneStandard(this, slider_rect, &AbsoluteClippingRect);
+        }
 	}
 	IGUIElement::draw();
 }
 
-static inline s32 interpolate_scroll(s32 from, s32 to, f32 amount)
+f32 GUIScrollBar::interpolate_scroll(f32 from, f32 to, f32 amount)
 {
-	s32 step = core::round32((to - from) * core::clamp(amount, 0.001f, 1.0f));
-	if (step == 0)
-		return to;
+	f32 step = (to - from) * (amount * (last_delta_ms / 16.667f));
 	return from + step;
 }
 
 void GUIScrollBar::interpolatePos()
 {
-	if (target_pos.has_value()) {
-		// Adjust to match 60 FPS. This also means that interpolation is
-		// effectively disabled at <= 30 FPS.
-		f32 amount = 0.5f * (last_delta_ms / 16.667f);
-		setPosRaw(interpolate_scroll(scroll_pos, *target_pos, amount));
-		if (scroll_pos == target_pos)
-			target_pos = std::nullopt;
-
-		SEvent e;
-		e.EventType = EET_GUI_EVENT;
-		e.GUIEvent.Caller = this;
-		e.GUIEvent.Element = nullptr;
-		e.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
-		Parent->OnEvent(e);
-	}
+    // Adjust to match 60 FPS. This also means that interpolation is
+    // effectively disabled at <= 30 FPS.
+    setPosRaw(interpolate_scroll(scroll_pos, target_pos, 0.2f));
+    
+    SEvent e;
+    e.EventType = EET_GUI_EVENT;
+    e.GUIEvent.Caller = this;
+    e.GUIEvent.Element = nullptr;
+    e.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
+    Parent->OnEvent(e);
 }
 
 void GUIScrollBar::OnPostRender(u32 time_ms)
@@ -266,8 +271,22 @@ void GUIScrollBar::setPosRaw(const s32 &pos)
 		thumb_size = (s32)std::fmin(S32_MAX,
 				thumb_area / (f32(page_size) / f32(thumb_area + border_size * 2)));
 
-	thumb_size = core::s32_clamp(thumb_size, thumb_min, thumb_area);
-	scroll_pos = core::s32_clamp(pos, min_pos, max_pos);
+    bool is_elastic = g_settings->getBool("elastic_smooth_scrolling");
+    int elastic_overscroll = is_elastic ? 20 : 0;
+	thumb_size = core::clamp<f32>(thumb_size, thumb_min, thumb_area);
+	scroll_pos = core::clamp<f32>(pos, min_pos-elastic_overscroll, max_pos+elastic_overscroll);
+	
+	constexpr f32 elastic_change = 0.15f;
+	if (!is_dragging)
+	{
+        // TODO support deltatime
+        if (scroll_pos < 0.0f) {
+            target_pos = is_elastic ? interpolate_scroll(target_pos, 0, elastic_change) : min_pos;
+        }
+        else if (scroll_pos > max_pos) {
+            target_pos = is_elastic ? interpolate_scroll(target_pos, max_pos, elastic_change) : max_pos;
+        }
+	}
 
 	f32 f = core::isnotzero(range()) ? (f32(thumb_area) - f32(thumb_size)) / range()
 					 : 1.0f;
@@ -278,7 +297,7 @@ void GUIScrollBar::setPosRaw(const s32 &pos)
 void GUIScrollBar::setPos(const s32 &pos)
 {
 	setPosRaw(pos);
-	target_pos = std::nullopt;
+	target_pos = pos;
 }
 
 void GUIScrollBar::setPosAndSend(const s32 &pos)
@@ -297,18 +316,14 @@ void GUIScrollBar::setPosAndSend(const s32 &pos)
 
 void GUIScrollBar::setPosInterpolated(const s32 &pos)
 {
+    bool is_elastic = g_settings->getBool("elastic_smooth_scrolling");
 	if (!g_settings->getBool("smooth_scrolling")) {
 		setPosAndSend(pos);
 		return;
 	}
-
-	s32 clamped = core::s32_clamp(pos, min_pos, max_pos);
-	if (scroll_pos != clamped) {
-		target_pos = clamped;
-		interpolatePos();
-	} else {
-		target_pos = std::nullopt;
-	}
+	
+	target_pos = is_elastic ? pos : core::s32_clamp(pos, min_pos, max_pos);
+	interpolatePos();
 }
 
 void GUIScrollBar::setSmallStep(const s32 &step)
@@ -364,11 +379,7 @@ s32 GUIScrollBar::getPos() const
 
 s32 GUIScrollBar::getTargetPos() const
 {
-	if (target_pos.has_value()) {
-		s32 clamped = core::s32_clamp(*target_pos, min_pos, max_pos);
-		return clamped;
-	}
-	return scroll_pos;
+	return target_pos;
 }
 
 void GUIScrollBar::refreshControls()
