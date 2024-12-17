@@ -22,7 +22,7 @@ struct SSCSMAnswerPollNextEvent : public ISSCSMAnswer
 
 struct SSCSMRequestPollNextEvent : public ISSCSMRequest
 {
-	SerializedSSCSMAnswer exec(SSCSMController *cntrl, Client *client) override
+	SerializedSSCSMAnswer exec(Client *client) override
 	{
 		FATAL_ERROR("SSCSMRequestPollNextEvent needs to be handled by SSCSMControler::runEvent()");
 	}
@@ -41,7 +41,7 @@ struct SSCSMRequestGetNode : public ISSCSMRequest
 
 	SSCSMRequestGetNode(v3s16 pos_) : pos(pos_) {}
 
-	SerializedSSCSMAnswer exec(SSCSMController *cntrl, Client *client) override
+	SerializedSSCSMAnswer exec(Client *client) override
 	{
 		MapNode node = client->getEnv().getMap().getNode(pos);
 

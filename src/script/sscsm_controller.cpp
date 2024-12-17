@@ -41,7 +41,7 @@ SSCSMController::~SSCSMController()
 
 SerializedSSCSMAnswer SSCSMController::handleRequest(Client *client, ISSCSMRequest *req)
 {
-	return req->exec(this, client);
+	return req->exec(client);
 }
 
 void SSCSMController::runEvent(Client *client, std::unique_ptr<ISSCSMEvent> event)

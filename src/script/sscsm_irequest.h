@@ -24,7 +24,7 @@ struct ISSCSMRequest
 {
 	virtual ~ISSCSMRequest() = default;
 
-	virtual SerializedSSCSMAnswer exec(SSCSMController *cntrl, Client *client) = 0;
+	virtual SerializedSSCSMAnswer exec(Client *client) = 0;
 };
 
 // FIXME: actually serialize, and replace this with a string
