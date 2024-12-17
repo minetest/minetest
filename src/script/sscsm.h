@@ -6,11 +6,11 @@
 #include <memory>
 #include <type_traits>
 #include "irrlichttypes.h"
-#include "client/clientenvironment.h"
 #include "map.h"
+#include "client/client.h"
 #include "threading/thread.h"
 
-struct SSCSMControler;
+struct SSCSMController;
 
 struct ISSCSMAnswer
 {
@@ -24,7 +24,7 @@ struct ISSCSMRequest
 {
 	virtual ~ISSCSMRequest() = default;
 
-	virtual SerializedSSCSMAnswer exec(SSCSMControler *cntrl) = 0;
+	virtual SerializedSSCSMAnswer exec(SSCSMController *cntrl, Client *client) = 0;
 };
 
 // FIXME: actually serialize, and replace this by a string
@@ -144,32 +144,31 @@ public:
 
 struct SSCSMEnvironment;
 
-struct SSCSMControler
+struct SSCSMController
 {
 	std::unique_ptr<SSCSMEnvironment> m_thread;
 	std::shared_ptr<StupidChannel> m_channel;
-	ClientEnvironment *m_clientenv;
 
-	SSCSMControler(std::unique_ptr<SSCSMEnvironment> thread,
-			std::shared_ptr<StupidChannel> channel,
-			ClientEnvironment *clientenv) :
-		m_thread(std::move(thread)), m_channel(std::move(channel)),
-		m_clientenv(clientenv)
+	SSCSMController(std::unique_ptr<SSCSMEnvironment> thread,
+			std::shared_ptr<StupidChannel> channel) :
+		m_thread(std::move(thread)), m_channel(std::move(channel))
 	{
 	}
 
-	static std::unique_ptr<SSCSMControler> create(ClientEnvironment *clientenv);
+	~SSCSMController();
 
-	SerializedSSCSMAnswer handleRequest(ISSCSMRequest *req)
+	static std::unique_ptr<SSCSMController> create();
+
+	SerializedSSCSMAnswer handleRequest(ISSCSMRequest *req, Client *client)
 	{
-		return req->exec(this);
+		return req->exec(this, client);
 	}
 
 	// Handles requests until the next event is polled
-	void runEvent(int event);
+	void runEvent(int event, Client *client);
 
-	void eventTearDown();
-	void eventOnStep(f32 dtime);
+	void eventTearDown(Client *client);
+	void eventOnStep(f32 dtime, Client *client);
 };
 
 struct SSCSMEnvironment : Thread
@@ -226,9 +225,9 @@ struct SSCSMRequestGetNode : public ISSCSMRequest
 
 	SSCSMRequestGetNode(v3s16 pos_) : pos(pos_) {}
 
-	virtual SerializedSSCSMAnswer exec(SSCSMControler *cntrl)
+	SerializedSSCSMAnswer exec(SSCSMController *cntrl, Client *client) override
 	{
-		MapNode node = cntrl->m_clientenv->getMap().getNode(pos);
+		MapNode node = client->getEnv().getMap().getNode(pos);
 
 		return serializeSSCSMAnswer(SSCSMAnswerGetNode{node});
 	}
@@ -243,7 +242,7 @@ struct SSCSMAnswerPollNextEvent : public ISSCSMAnswer
 
 struct SSCSMRequestPollNextEvent : public ISSCSMRequest
 {
-	virtual SerializedSSCSMAnswer exec(SSCSMControler *cntrl)
+	SerializedSSCSMAnswer exec(SSCSMController *cntrl, Client *client) override
 	{
 		FATAL_ERROR("SSCSMRequestPollNextEvent needs to be handled by SSCSMControler::runEvent()");
 	}
@@ -251,20 +250,30 @@ struct SSCSMRequestPollNextEvent : public ISSCSMRequest
 
 
 
-std::unique_ptr<SSCSMControler> SSCSMControler::create(ClientEnvironment *clientenv)
+std::unique_ptr<SSCSMController> SSCSMController::create()
 {
 	auto channel = std::make_shared<StupidChannel>();
 	auto thread = std::make_unique<SSCSMEnvironment>(channel);
+	thread->start();
 
 	// Wait for thread to finish initializing.
 	auto req0 = deserializeSSCSMRequest(channel->recvB());
 	FATAL_ERROR_IF(!dynamic_cast<SSCSMRequestPollNextEvent *>(req0.get()),
 			"First request must be pollEvent.");
 
-	return std::make_unique<SSCSMControler>(std::move(thread), channel, clientenv);
+	return std::make_unique<SSCSMController>(std::move(thread), channel);
 }
 
-void SSCSMControler::runEvent(int event)
+SSCSMController::~SSCSMController()
+{
+	// send tear-down
+	m_channel->sendB(serializeSSCSMAnswer(SSCSMAnswerPollNextEvent{0}));
+	// wait for death
+	m_thread->stop();
+	m_thread->wait();
+}
+
+void SSCSMController::runEvent(int event, Client *client)
 {
 	auto answer = serializeSSCSMAnswer(SSCSMAnswerPollNextEvent{event});
 
@@ -275,18 +284,18 @@ void SSCSMControler::runEvent(int event)
 			break;
 		}
 
-		answer = handleRequest(request.get());
+		answer = handleRequest(request.get(), client);
 	}
 }
 
-void SSCSMControler::eventTearDown()
+void SSCSMController::eventTearDown(Client *client)
 {
-	runEvent(0);
+	runEvent(0, client);
 }
 
-void SSCSMControler::eventOnStep(f32 dtime)
+void SSCSMController::eventOnStep(f32 dtime, Client *client)
 {
-	runEvent(42);
+	runEvent(42, client);
 }
 
 
