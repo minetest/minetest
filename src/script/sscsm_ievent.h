@@ -4,7 +4,7 @@
 #include <memory>
 #include <type_traits>
 
-struct SSCSMEnvironment;
+class SSCSMEnvironment;
 
 // Event triggered from the main env for the SSCSM env.
 struct ISSCSMEvent

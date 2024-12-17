@@ -55,6 +55,9 @@ struct MeshMakeData;
 struct MinimapMapblock;
 struct PlayerControl;
 struct PointedThing;
+class ClientScripting;
+class SSCSMController;
+class GameUI;
 
 namespace con {
 class IConnection;
@@ -97,10 +100,6 @@ private:
 	// command, count
 	std::map<u16, u32> m_packets;
 };
-
-class ClientScripting;
-class GameUI;
-struct SSCSMController;
 
 class Client : public con::PeerHandler, public InventoryManager, public IGameDef
 {

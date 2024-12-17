@@ -36,12 +36,12 @@ SSCSMController::~SSCSMController()
 	m_thread->wait();
 }
 
-SerializedSSCSMAnswer SSCSMController::handleRequest(ISSCSMRequest *req, Client *client)
+SerializedSSCSMAnswer SSCSMController::handleRequest(Client *client, ISSCSMRequest *req)
 {
 	return req->exec(this, client);
 }
 
-void SSCSMController::runEvent(std::unique_ptr<ISSCSMEvent> event, Client *client)
+void SSCSMController::runEvent(Client *client, std::unique_ptr<ISSCSMEvent> event)
 {
 	auto answer = serializeSSCSMAnswer(SSCSMAnswerPollNextEvent{std::move(event)});
 
@@ -52,11 +52,11 @@ void SSCSMController::runEvent(std::unique_ptr<ISSCSMEvent> event, Client *clien
 			break;
 		}
 
-		answer = handleRequest(request.get(), client);
+		answer = handleRequest(client, request.get());
 	}
 }
 
-void SSCSMController::eventOnStep(f32 dtime, Client *client)
+void SSCSMController::eventOnStep(Client *client, f32 dtime)
 {
-	runEvent(std::make_unique<SSCSMEventOnStep>(dtime), client);
+	runEvent(client, std::make_unique<SSCSMEventOnStep>(dtime));
 }

@@ -5,15 +5,19 @@
 #include "irrlichttypes.h"
 #include "sscsm_irequest.h"
 #include "sscsm_ievent.h"
+#include "util/basic_macros.h"
 
-struct SSCSMEnvironment;
+class SSCSMEnvironment;
 class StupidChannel;
 
-struct SSCSMController
+class SSCSMController
 {
 	std::unique_ptr<SSCSMEnvironment> m_thread;
 	std::shared_ptr<StupidChannel> m_channel;
 
+	SerializedSSCSMAnswer handleRequest(Client *client, ISSCSMRequest *req);
+
+public:
 	static std::unique_ptr<SSCSMController> create();
 
 	SSCSMController(std::unique_ptr<SSCSMEnvironment> thread,
@@ -21,10 +25,10 @@ struct SSCSMController
 
 	~SSCSMController();
 
-	SerializedSSCSMAnswer handleRequest(ISSCSMRequest *req, Client *client);
+	DISABLE_CLASS_COPY(SSCSMController);
 
 	// Handles requests until the next event is polled
-	void runEvent(std::unique_ptr<ISSCSMEvent> event, Client *client);
+	void runEvent(Client *client, std::unique_ptr<ISSCSMEvent> event);
 
-	void eventOnStep(f32 dtime, Client *client);
+	void eventOnStep(Client *client, f32 dtime);
 };

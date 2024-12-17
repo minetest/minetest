@@ -9,19 +9,20 @@
 
 // The thread that runs SSCSM code.
 // Meant to be replaced by a sandboxed process.
-struct SSCSMEnvironment : Thread
+class SSCSMEnvironment : public Thread
 {
 	std::shared_ptr<StupidChannel> m_channel;
 
+	void *run() override;
+
+	SerializedSSCSMAnswer exchange(SerializedSSCSMRequest req);
+
+public:
 	SSCSMEnvironment(std::shared_ptr<StupidChannel> channel) :
 		Thread("SSCSMEnvironment-thread"),
 		m_channel(std::move(channel))
 	{
 	}
-
-	void *run() override;
-
-	SerializedSSCSMAnswer exchange(SerializedSSCSMRequest req);
 
 	void runEventOnStep();
 

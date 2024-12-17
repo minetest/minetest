@@ -4,7 +4,7 @@
 #include <memory>
 #include <type_traits>
 
-struct SSCSMController;
+class SSCSMController;
 class Client;
 
 struct ISSCSMAnswer

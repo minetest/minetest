@@ -504,7 +504,7 @@ void Client::step(float dtime)
 	*/
 	LocalPlayer *player = m_env.getLocalPlayer();
 
-	m_sscsm_controller->eventOnStep(dtime, this);
+	m_sscsm_controller->eventOnStep(this, dtime);
 
 	// Step environment (also handles player controls)
 	m_env.step(dtime);
