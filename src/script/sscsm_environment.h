@@ -19,25 +19,12 @@ struct SSCSMEnvironment : Thread
 	{
 	}
 
-	void *run()
-	{
-		while (true) {
-			auto next_event = cmdPollNextEvent();
-
-			if (next_event == 0) // tear down
-				break;
-
-			if (next_event == 42)
-				runEventOnStep();
-		}
-
-		return nullptr;
-	}
+	void *run() override;
 
 	SerializedSSCSMAnswer exchange(SerializedSSCSMRequest req);
 
 	void runEventOnStep();
 
-	int cmdPollNextEvent();
+	std::unique_ptr<ISSCSMEvent> cmdPollNextEvent();
 	MapNode cmdGetNode(v3s16 pos);
 };

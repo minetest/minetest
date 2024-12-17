@@ -35,24 +35,24 @@ inline SerializedSSCSMRequest serializeSSCSMRequest(const T &request)
 }
 
 template <typename T>
-inline T deserializeSSCSMAnswer(const SerializedSSCSMAnswer &answer_serialized)
+inline T deserializeSSCSMAnswer(SerializedSSCSMAnswer answer_serialized)
 {
 	static_assert(std::is_base_of_v<ISSCSMAnswer, T>);
 
 	// dynamic cast in place of actual deserialization
-	auto ptr = dynamic_cast<const T *>(answer_serialized.get());
+	auto ptr = dynamic_cast<T *>(answer_serialized.get());
 	if (!ptr) {
 		throw 0; //TODO: serialization excpetion
 	}
-	return *ptr;
+	return std::move(*ptr);
 }
 
 template <typename T>
-inline SerializedSSCSMAnswer serializeSSCSMAnswer(const T &answer)
+inline SerializedSSCSMAnswer serializeSSCSMAnswer(T answer)
 {
 	static_assert(std::is_base_of_v<ISSCSMAnswer, T>);
 
-	return std::make_unique<T>(answer);
+	return std::make_unique<T>(std::move(answer));
 }
 
 inline std::unique_ptr<ISSCSMRequest> deserializeSSCSMRequest(SerializedSSCSMRequest request_serialized)

@@ -4,6 +4,7 @@
 #include <memory>
 #include "irrlichttypes.h"
 #include "sscsm_irequest.h"
+#include "sscsm_ievent.h"
 
 struct SSCSMEnvironment;
 class StupidChannel;
@@ -23,8 +24,7 @@ struct SSCSMController
 	SerializedSSCSMAnswer handleRequest(ISSCSMRequest *req, Client *client);
 
 	// Handles requests until the next event is polled
-	void runEvent(int event, Client *client);
+	void runEvent(std::unique_ptr<ISSCSMEvent> event, Client *client);
 
-	void eventTearDown(Client *client);
 	void eventOnStep(f32 dtime, Client *client);
 };

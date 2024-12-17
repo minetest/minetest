@@ -2,15 +2,19 @@
 #pragma once
 
 #include "sscsm_irequest.h"
+#include "sscsm_ievent.h"
 #include "mapnode.h"
 #include "map.h"
 #include "client/client.h"
 
 struct SSCSMAnswerPollNextEvent : public ISSCSMAnswer
 {
-	int next_event;
+	std::unique_ptr<ISSCSMEvent> next_event;
 
-	SSCSMAnswerPollNextEvent(int next_event_) : next_event(next_event_) {}
+	SSCSMAnswerPollNextEvent(std::unique_ptr<ISSCSMEvent> next_event_) :
+		next_event(std::move(next_event_))
+	{
+	}
 };
 
 struct SSCSMRequestPollNextEvent : public ISSCSMRequest
