@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Luanti authors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later
 
 #include "sscsm_environment.h"
 #include "sscsm_requests.h"
