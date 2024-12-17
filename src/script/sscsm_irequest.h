@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "exceptions.h"
 #include <memory>
 #include <type_traits>
 
@@ -45,7 +46,7 @@ inline T deserializeSSCSMAnswer(SerializedSSCSMAnswer answer_serialized)
 	// dynamic cast in place of actual deserialization
 	auto ptr = dynamic_cast<T *>(answer_serialized.get());
 	if (!ptr) {
-		throw 0; //TODO: serialization excpetion
+		throw SerializationError("deserializeSSCSMAnswer failed");
 	}
 	return std::move(*ptr);
 }

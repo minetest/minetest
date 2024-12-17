@@ -27,8 +27,6 @@ public:
 	{
 	}
 
-	void runEventOnStep();
-
 	std::unique_ptr<ISSCSMEvent> cmdPollNextEvent();
 	MapNode cmdGetNode(v3s16 pos);
 };
