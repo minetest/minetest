@@ -1,0 +1,63 @@
+
+#pragma once
+
+#include <memory>
+#include <type_traits>
+
+struct SSCSMController;
+class Client;
+
+struct ISSCSMAnswer
+{
+	virtual ~ISSCSMAnswer() = default;
+};
+
+// FIXME: actually serialize, and replace this with a string
+using SerializedSSCSMAnswer = std::unique_ptr<ISSCSMAnswer>;
+
+// Request made by the sscsm env to the main env.
+struct ISSCSMRequest
+{
+	virtual ~ISSCSMRequest() = default;
+
+	virtual SerializedSSCSMAnswer exec(SSCSMController *cntrl, Client *client) = 0;
+};
+
+// FIXME: actually serialize, and replace this with a string
+using SerializedSSCSMRequest = std::unique_ptr<ISSCSMRequest>;
+
+template <typename T>
+inline SerializedSSCSMRequest serializeSSCSMRequest(const T &request)
+{
+	static_assert(std::is_base_of_v<ISSCSMRequest, T>);
+
+	return std::make_unique<T>(request);
+}
+
+template <typename T>
+inline T deserializeSSCSMAnswer(const SerializedSSCSMAnswer &answer_serialized)
+{
+	static_assert(std::is_base_of_v<ISSCSMAnswer, T>);
+
+	// dynamic cast in place of actual deserialization
+	auto ptr = dynamic_cast<const T *>(answer_serialized.get());
+	if (!ptr) {
+		throw 0; //TODO: serialization excpetion
+	}
+	return *ptr;
+}
+
+template <typename T>
+inline SerializedSSCSMAnswer serializeSSCSMAnswer(const T &answer)
+{
+	static_assert(std::is_base_of_v<ISSCSMAnswer, T>);
+
+	return std::make_unique<T>(answer);
+}
+
+inline std::unique_ptr<ISSCSMRequest> deserializeSSCSMRequest(SerializedSSCSMRequest request_serialized)
+{
+	// The actual deserialization will have to use a type tag, and then choose
+	// the appropriate deserializer.
+	return request_serialized;
+}

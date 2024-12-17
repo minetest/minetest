@@ -52,7 +52,7 @@
 #include "translation.h"
 #include "content/mod_configuration.h"
 #include "mapnode.h"
-#include "script/sscsm.h"
+#include "script/sscsm_controller.h"
 
 extern gui::IGUIEnvironment* guienv;
 
