@@ -177,6 +177,8 @@ COpenGL3DriverBase::COpenGL3DriverBase(const SIrrlichtCreationParameters &params
 
 COpenGL3DriverBase::~COpenGL3DriverBase()
 {
+	QuadIndexVBO.destroy();
+
 	deleteMaterialRenders();
 
 	CacheHandler->getTextureCache().clear();
@@ -198,12 +200,16 @@ COpenGL3DriverBase::~COpenGL3DriverBase()
 	}
 }
 
-void COpenGL3DriverBase::initQuadsIndices(int max_vertex_count)
+void COpenGL3DriverBase::initQuadsIndices(u32 max_vertex_count)
 {
-	int max_quad_count = max_vertex_count / 4;
-	std::vector<GLushort> QuadsIndices;
-	QuadsIndices.reserve(6 * max_quad_count);
-	for (int k = 0; k < max_quad_count; k++) {
+	u32 max_quad_count = max_vertex_count / 4;
+	u32 indices_size = 6 * max_quad_count;
+	if (indices_size == QuadIndexVBO.getSize() * sizeof(u16))
+		return;
+	// initialize buffer contents
+	std::vector<u16> QuadsIndices;
+	QuadsIndices.reserve(indices_size);
+	for (u32 k = 0; k < max_quad_count; k++) {
 		QuadsIndices.push_back(4 * k + 0);
 		QuadsIndices.push_back(4 * k + 1);
 		QuadsIndices.push_back(4 * k + 2);
@@ -211,11 +217,8 @@ void COpenGL3DriverBase::initQuadsIndices(int max_vertex_count)
 		QuadsIndices.push_back(4 * k + 2);
 		QuadsIndices.push_back(4 * k + 3);
 	}
-	GL.GenBuffers(1, &QuadIndexBuffer);
-	GL.BindBuffer(GL_ARRAY_BUFFER, QuadIndexBuffer);
-	GL.BufferData(GL_ARRAY_BUFFER, sizeof(QuadsIndices[0]) * QuadsIndices.size(), QuadsIndices.data(), GL_STATIC_DRAW);
-	GL.BindBuffer(GL_ARRAY_BUFFER, 0);
-	QuadIndexCount = QuadsIndices.size();
+	QuadIndexVBO.upload(QuadsIndices.data(), QuadsIndices.size() * sizeof(u16),
+		0, GL_STATIC_DRAW, true);
 }
 
 void COpenGL3DriverBase::initVersion()
@@ -474,41 +477,18 @@ void COpenGL3DriverBase::setTransform(E_TRANSFORMATION_STATE state, const core::
 	Transformation3DChanged = true;
 }
 
-bool COpenGL3DriverBase::updateHardwareBuffer(SHWBufferLink_opengl *HWBuffer,
+bool COpenGL3DriverBase::uploadHardwareBuffer(OpenGLVBO &vbo,
 	const void *buffer, size_t bufferSize, scene::E_HARDWARE_MAPPING hint)
 {
-	assert(HWBuffer);
-
 	accountHWBufferUpload(bufferSize);
 
-	// get or create buffer
-	bool newBuffer = false;
-	if (!HWBuffer->vbo_ID) {
-		GL.GenBuffers(1, &HWBuffer->vbo_ID);
-		if (!HWBuffer->vbo_ID)
-			return false;
-		newBuffer = true;
-	} else if (HWBuffer->vbo_Size < bufferSize) {
-		newBuffer = true;
-	}
+	GLenum usage = GL_STATIC_DRAW;
+	if (hint == scene::EHM_STREAM)
+		usage = GL_STREAM_DRAW;
+	else if (hint == scene::EHM_DYNAMIC)
+		usage = GL_DYNAMIC_DRAW;
 
-	GL.BindBuffer(GL_ARRAY_BUFFER, HWBuffer->vbo_ID);
-
-	// copy data to graphics card
-	if (!newBuffer)
-		GL.BufferSubData(GL_ARRAY_BUFFER, 0, bufferSize, buffer);
-	else {
-		HWBuffer->vbo_Size = bufferSize;
-
-		GLenum usage = GL_STATIC_DRAW;
-		if (hint == scene::EHM_STREAM)
-			usage = GL_STREAM_DRAW;
-		else if (hint == scene::EHM_DYNAMIC)
-			usage = GL_DYNAMIC_DRAW;
-		GL.BufferData(GL_ARRAY_BUFFER, bufferSize, buffer, usage);
-	}
-
-	GL.BindBuffer(GL_ARRAY_BUFFER, 0);
+	vbo.upload(buffer, bufferSize, 0, usage);
 
 	return (!TEST_GL_ERROR(this));
 }
@@ -525,7 +505,8 @@ bool COpenGL3DriverBase::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuff
 	const u32 vertexSize = getVertexPitchFromType(vb->getType());
 	const size_t bufferSize = vertexSize * vb->getCount();
 
-	return updateHardwareBuffer(HWBuffer, vb->getData(), bufferSize, vb->getHardwareMappingHint());
+	return uploadHardwareBuffer(HWBuffer->Vbo, vb->getData(),
+		bufferSize, vb->getHardwareMappingHint());
 }
 
 bool COpenGL3DriverBase::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
@@ -551,7 +532,8 @@ bool COpenGL3DriverBase::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffe
 
 	const size_t bufferSize = ib->getCount() * indexSize;
 
-	return updateHardwareBuffer(HWBuffer, ib->getData(), bufferSize, ib->getHardwareMappingHint());
+	return uploadHardwareBuffer(HWBuffer->Vbo, ib->getData(),
+		bufferSize, ib->getHardwareMappingHint());
 }
 
 bool COpenGL3DriverBase::updateHardwareBuffer(SHWBufferLink *HWBuffer)
@@ -563,14 +545,14 @@ bool COpenGL3DriverBase::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 
 	if (b->IsVertex) {
 		assert(b->VertexBuffer);
-		if (b->ChangedID != b->VertexBuffer->getChangedID() || !b->vbo_ID) {
+		if (b->ChangedID != b->VertexBuffer->getChangedID() || !b->Vbo.exists()) {
 			if (!updateVertexHardwareBuffer(b))
 				return false;
 			b->ChangedID = b->VertexBuffer->getChangedID();
 		}
 	} else {
 		assert(b->IndexBuffer);
-		if (b->ChangedID != b->IndexBuffer->getChangedID() || !b->vbo_ID) {
+		if (b->ChangedID != b->IndexBuffer->getChangedID() || !b->Vbo.exists()) {
 			if (!updateIndexHardwareBuffer(b))
 				return false;
 			b->ChangedID = b->IndexBuffer->getChangedID();
@@ -621,10 +603,7 @@ void COpenGL3DriverBase::deleteHardwareBuffer(SHWBufferLink *HWBuffer)
 		return;
 
 	auto *b = static_cast<SHWBufferLink_opengl *>(HWBuffer);
-	if (b->vbo_ID) {
-		GL.DeleteBuffers(1, &b->vbo_ID);
-		b->vbo_ID = 0;
-	}
+	b->Vbo.destroy();
 
 	CNullDriver::deleteHardwareBuffer(HWBuffer);
 }
@@ -644,14 +623,14 @@ void COpenGL3DriverBase::drawBuffers(const scene::IVertexBuffer *vb,
 	const void *vertices = vb->getData();
 	if (hwvert) {
 		assert(hwvert->IsVertex);
-		GL.BindBuffer(GL_ARRAY_BUFFER, hwvert->vbo_ID);
+		GL.BindBuffer(GL_ARRAY_BUFFER, hwvert->Vbo.getName());
 		vertices = nullptr;
 	}
 
 	const void *indexList = ib->getData();
 	if (hwidx) {
 		assert(!hwidx->IsVertex);
-		GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, hwidx->vbo_ID);
+		GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, hwidx->Vbo.getName());
 		indexList = nullptr;
 	}
 
@@ -903,7 +882,7 @@ void COpenGL3DriverBase::draw2DImageBatch(const video::ITexture *texture,
 	}
 
 	const irr::u32 drawCount = core::min_<u32>(positions.size(), sourceRects.size());
-	assert(6 * drawCount <= QuadIndexCount); // FIXME split the batch? or let it crash?
+	assert(6 * drawCount * sizeof(u16) <= QuadIndexVBO.getSize()); // FIXME split the batch? or let it crash?
 
 	std::vector<S3DVertex> vtx;
 	vtx.reserve(drawCount * 4);
@@ -943,7 +922,7 @@ void COpenGL3DriverBase::draw2DImageBatch(const video::ITexture *texture,
 				tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
 	}
 
-	GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, QuadIndexBuffer);
+	GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, QuadIndexVBO.getName());
 	drawElements(GL_TRIANGLES, vt2DImage, vtx.data(), vtx.size(), 0, 6 * drawCount);
 	GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
