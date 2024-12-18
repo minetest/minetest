@@ -13,7 +13,6 @@
 #include "porting.h"
 #include "settings.h"
 #include "client/guiscalingfilter.h"
-#include "client/keycode.h"
 #include "client/renderingengine.h"
 #include "client/texturesource.h"
 #include "util/numeric.h"
@@ -42,15 +41,10 @@ static void load_button_texture(IGUIImage *gui_button, const std::string &path,
 void button_info::emitAction(bool action, video::IVideoDriver *driver,
 		IEventReceiver *receiver, ISimpleTextureSource *tsrc)
 {
-	if (keycode == KEY_UNKNOWN)
+	if (!keypress)
 		return;
 
-	SEvent translated{};
-	translated.EventType        = EET_KEY_INPUT_EVENT;
-	translated.KeyInput.Key     = keycode;
-	translated.KeyInput.Control = false;
-	translated.KeyInput.Shift   = false;
-	translated.KeyInput.Char    = 0;
+	SEvent translated = keypress.toKeyEvent();
 
 	if (action) {
 		translated.KeyInput.PressedDown = true;
@@ -138,12 +132,11 @@ static bool buttons_step(std::vector<button_info> &buttons, float dtime,
 	return has_pointers;
 }
 
-static EKEY_CODE id_to_keycode(touch_gui_button_id id)
+static const KeyPress &id_to_keypress(touch_gui_button_id id)
 {
-	EKEY_CODE code;
 	// ESC isn't part of the keymap.
 	if (id == exit_id)
-		return KEY_ESCAPE;
+		return EscapeKey;
 
 	std::string key = "";
 	switch (id) {
@@ -196,15 +189,7 @@ static EKEY_CODE id_to_keycode(touch_gui_button_id id)
 			break;
 	}
 	assert(!key.empty());
-	std::string resolved = g_settings->get("keymap_" + key);
-	try {
-		code = keyname_to_keycode(resolved.c_str());
-	} catch (UnknownKeycode &e) {
-		code = KEY_UNKNOWN;
-		warningstream << "TouchControls: Unknown key '" << resolved
-			      << "' for '" << key << "', hiding button." << std::endl;
-	}
-	return code;
+	return getKeySetting("keymap_" + key);
 }
 
 
@@ -330,7 +315,7 @@ bool TouchControls::mayAddButton(touch_gui_button_id id)
 		return false;
 	if (id == aux1_id && m_joystick_triggers_aux1)
 		return false;
-	if (id != overflow_id && id_to_keycode(id) == KEY_UNKNOWN)
+	if (id != overflow_id && !id_to_keypress(id))
 		return false;
 	return true;
 }
@@ -344,7 +329,7 @@ void TouchControls::addButton(std::vector<button_info> &buttons, touch_gui_butto
 			m_texturesource, m_device->getVideoDriver());
 
 	button_info &btn = buttons.emplace_back();
-	btn.keycode = id_to_keycode(id);
+	btn.keypress = id_to_keypress(id);
 	btn.gui_button = grab_gui_element<IGUIImage>(btn_gui_button);
 }
 
@@ -614,10 +599,7 @@ void TouchControls::translateEvent(const SEvent &event)
 void TouchControls::applyJoystickStatus()
 {
 	if (m_joystick_triggers_aux1) {
-		SEvent translated{};
-		translated.EventType            = EET_KEY_INPUT_EVENT;
-		translated.KeyInput.Key         = id_to_keycode(aux1_id);
-		translated.KeyInput.PressedDown = false;
+		SEvent translated = id_to_keypress(aux1_id).toKeyEvent(false);
 		m_receiver->OnEvent(translated);
 
 		if (m_joystick_status_aux1) {
