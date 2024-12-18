@@ -179,6 +179,13 @@ local function get_formspec(tabview, name, tabdata)
 				"server_view_clients.png") .. ";btn_view_clients;]"
 		end
 
+		if selected_server.url then
+			retval = retval .. "tooltip[btn_server_url;" .. fgettext("Open server website") .. "]"
+			retval = retval .. "style[btn_server_url;padding=6]"
+			retval = retval .. "image_button[" .. (can_view_clients_list and "4" or "4.5") .. ",1.3;0.5,0.5;" ..
+				core.formspec_escape(defaulttexturedir .. "server_url.png") .. ";btn_server_url;]"
+		end
+
 		if is_selected_fav() then
 			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Remove favorite") .. "]"
 			retval = retval .. "style[btn_delete_favorite;padding=6]"
@@ -364,6 +371,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 		serverlistmgr.delete_favorite(server)
 		set_selected_server(server)
+		return true
+	end
+
+	if fields.btn_server_url then
+		core.open_url_dialog(find_selected_server().url)
 		return true
 	end
 
