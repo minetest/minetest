@@ -103,8 +103,16 @@ public:
 	 * the player can reach.
 	 * The line starts at the camera and ends on the camera's far plane.
 	 * The coordinates do not contain the camera offset.
+	 *
+	 * May only be used if crosshair is disabled (see setUseCrosshair)
 	 */
-	line3d<f32> getShootline() { return m_shootline; }
+	line3d<f32> getShootline();
+	/**
+	 * Returns the same as above, but only taking projection matrix into account,
+	 * not view matrix, which means that the resulting shootline is relative to
+	 * the camera position/rotation.
+	 */
+	line3d<f32> getShootlineRel();
 
 	float getJoystickDirection() { return m_joystick_direction; }
 	float getJoystickSpeed() { return m_joystick_speed; }
@@ -144,22 +152,12 @@ private:
 	double m_camera_yaw_change = 0.0;
 	double m_camera_pitch_change = 0.0;
 
-	/**
-	 * A line starting at the camera and pointing towards the selected object.
-	 * The line ends on the camera's far plane.
-	 * The coordinates do not contain the camera offset.
-	 */
-	line3d<f32> m_shootline;
-
 	bool m_has_move_id = false;
 	size_t m_move_id;
 	bool m_move_has_really_moved = false;
 	u64 m_move_downtime = 0;
 	// m_move_pos stays valid even after m_move_id has been released.
 	v2s32 m_move_pos;
-	// This is needed so that we don't miss if m_has_move_id is true for less
-	// than one client step, i.e. press and release happen in the same step.
-	bool m_had_move_id = false;
 	bool m_move_prevent_short_tap = false;
 
 	bool m_has_joystick_id = false;

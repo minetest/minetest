@@ -89,6 +89,8 @@ public:
 	bool last_camera_inverted = false;
 	f32 last_movement_speed = 0.0f;
 	f32 last_movement_dir = 0.0f;
+	float last_point_pitch = 0.0f;
+	float last_point_yaw = 0.0f;
 
 	float camera_impact = 0.0f;
 

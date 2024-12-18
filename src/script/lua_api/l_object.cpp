@@ -1255,6 +1255,31 @@ int ObjectRef::l_get_look_dir(lua_State *L)
 	return 1;
 }
 
+// get_point_dir(self)
+int ObjectRef::l_get_point_dir(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	PlayerSAO* playersao = getplayersao(ref);
+	if (playersao == nullptr)
+		return 0;
+
+	RemotePlayer *player = playersao->getPlayer();
+	const v3f point_rot_rel = v3f(player->point_pitch, player->point_yaw, 0.0f);
+	const v3f point_dir_rel = point_rot_rel.rotationToDirection();
+
+	// "-1 * yaw" because that's how the yaw value is applied to the camera,
+	// no idea why it was chosen to be like that.
+	core::matrix4 look_rot_mat;
+	look_rot_mat.setRotationRadians(v3f(playersao->getRadLookPitch(),
+			-1.0f * playersao->getRadRotation().Y, 0.0f));
+
+	const v3f point_dir = look_rot_mat.transformVect(point_dir_rel);
+
+	push_v3f(L, point_dir);
+	return 1;
+}
+
 // DEPRECATED
 // get_look_pitch(self)
 int ObjectRef::l_get_look_pitch(lua_State *L)
@@ -2840,6 +2865,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, is_player),
 	luamethod(ObjectRef, get_player_name),
 	luamethod(ObjectRef, get_look_dir),
+	luamethod(ObjectRef, get_point_dir),
 	luamethod(ObjectRef, get_look_pitch),
 	luamethod(ObjectRef, get_look_yaw),
 	luamethod(ObjectRef, get_look_vertical),

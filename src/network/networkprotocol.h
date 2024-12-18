@@ -727,6 +727,8 @@ enum ToServerCommand : u16
 		[2+12+12+4+4+4+1+1] u8 camera_inverted (bool)
 		[2+12+12+4+4+4+1+1+1] f32 movement_speed
 		[2+12+12+4+4+4+1+1+1+4] f32 movement_direction
+		[2+12+12+4+4+4+1+1+1+4+4] f32 point_pitch
+		[2+12+12+4+4+4+1+1+1+4+4+4] f32 point_yaw
 
 	*/
 

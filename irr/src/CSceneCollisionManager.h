@@ -24,7 +24,8 @@ public:
 
 	//! Returns a 3d ray which would go through the 2d screen coordinates.
 	virtual core::line3d<f32> getRayFromScreenCoordinates(
-			const core::position2d<s32> &pos, const ICameraSceneNode *camera = 0) override;
+			const core::position2d<s32> &pos, const ICameraSceneNode *camera = 0,
+			bool relative = false) override;
 
 private:
 	ISceneManager *SceneManager;

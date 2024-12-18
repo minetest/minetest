@@ -475,6 +475,13 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 		player->control.setMovementFromKeys();
 	}
 
+	if (pkt->getRemainingBytes() >= 8) {
+		*pkt >> player->point_pitch >> player->point_yaw;
+	} else {
+		player->point_pitch = 0.0f;
+		player->point_yaw = 0.0f;
+	}
+
 	v3f position((f32)ps.X / 100.0f, (f32)ps.Y / 100.0f, (f32)ps.Z / 100.0f);
 	v3f speed((f32)ss.X / 100.0f, (f32)ss.Y / 100.0f, (f32)ss.Z / 100.0f);
 
