@@ -165,6 +165,9 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	// Number of mipmap levels of the bloom downsampling texture
 	const u8 MIPMAP_LEVELS = 4;
 
+	// color_format can be a normalized integer format, but bloom requires
+	// values outside of [0,1] so this needs to be a different one.
+	const auto bloom_format = video::ECF_A16B16G16R16F;
 
 	// post-processing stage
 
@@ -173,19 +176,19 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	// common downsampling step for bloom or autoexposure
 	if (enable_bloom || enable_auto_exposure) {
 
-		v2f downscale = scale * 0.5;
+		v2f downscale = scale * 0.5f;
 		for (u8 i = 0; i < MIPMAP_LEVELS; i++) {
-			buffer->setTexture(TEXTURE_SCALE_DOWN + i, downscale, std::string("downsample") + std::to_string(i), color_format);
+			buffer->setTexture(TEXTURE_SCALE_DOWN + i, downscale, std::string("downsample") + std::to_string(i), bloom_format);
 			if (enable_bloom)
-				buffer->setTexture(TEXTURE_SCALE_UP + i, downscale, std::string("upsample") + std::to_string(i), color_format);
-			downscale *= 0.5;
+				buffer->setTexture(TEXTURE_SCALE_UP + i, downscale, std::string("upsample") + std::to_string(i), bloom_format);
+			downscale *= 0.5f;
 		}
 
 		if (enable_bloom) {
-			buffer->setTexture(TEXTURE_BLOOM, scale, "bloom", color_format);
+			buffer->setTexture(TEXTURE_BLOOM, scale, "bloom", bloom_format);
 
 			// get bright spots
-			u32 shader_id = client->getShaderSource()->getShader("extract_bloom", TILE_MATERIAL_PLAIN, NDT_MESH);
+			u32 shader_id = client->getShaderSource()->getShaderRaw("extract_bloom");
 			RenderStep *extract_bloom = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { source, TEXTURE_EXPOSURE_1 });
 			extract_bloom->setRenderSource(buffer);
 			extract_bloom->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_BLOOM));
@@ -195,7 +198,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 		if (enable_volumetric_light) {
 			buffer->setTexture(TEXTURE_VOLUME, scale, "volume", color_format);
 
-			shader_id = client->getShaderSource()->getShader("volumetric_light", TILE_MATERIAL_PLAIN, NDT_MESH);
+			shader_id = client->getShaderSource()->getShaderRaw("volumetric_light");
 			auto volume = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { source, TEXTURE_DEPTH });
 			volume->setRenderSource(buffer);
 			volume->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_VOLUME));
@@ -203,7 +206,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 		}
 
 		// downsample
-		shader_id = client->getShaderSource()->getShader("bloom_downsample", TILE_MATERIAL_PLAIN, NDT_MESH);
+		shader_id = client->getShaderSource()->getShaderRaw("bloom_downsample");
 		for (u8 i = 0; i < MIPMAP_LEVELS; i++) {
 			auto step = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { source });
 			step->setRenderSource(buffer);
@@ -216,7 +219,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	// Bloom pt 2
 	if (enable_bloom) {
 		// upsample
-		shader_id = client->getShaderSource()->getShader("bloom_upsample", TILE_MATERIAL_PLAIN, NDT_MESH);
+		shader_id = client->getShaderSource()->getShaderRaw("bloom_upsample");
 		for (u8 i = MIPMAP_LEVELS - 1; i > 0; i--) {
 			auto step = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { u8(TEXTURE_SCALE_DOWN + i - 1), source });
 			step->setRenderSource(buffer);
@@ -229,7 +232,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 
 	// Dynamic Exposure pt2
 	if (enable_auto_exposure) {
-		shader_id = client->getShaderSource()->getShader("update_exposure", TILE_MATERIAL_PLAIN, NDT_MESH);
+		shader_id = client->getShaderSource()->getShaderRaw("update_exposure");
 		auto update_exposure = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_EXPOSURE_1, u8(TEXTURE_SCALE_DOWN + MIPMAP_LEVELS - 1) });
 		update_exposure->setBilinearFilter(1, true);
 		update_exposure->setRenderSource(buffer);
@@ -243,7 +246,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 		final_stage_source = TEXTURE_FXAA;
 
 		buffer->setTexture(TEXTURE_FXAA, scale, "fxaa", color_format);
-		shader_id = client->getShaderSource()->getShader("fxaa", TILE_MATERIAL_PLAIN);
+		shader_id = client->getShaderSource()->getShaderRaw("fxaa");
 		PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR });
 		pipeline->addStep(effect);
 		effect->setBilinearFilter(0, true);
@@ -252,7 +255,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	}
 
 	// final merge
-	shader_id = client->getShaderSource()->getShader("second_stage", TILE_MATERIAL_PLAIN, NDT_MESH);
+	shader_id = client->getShaderSource()->getShaderRaw("second_stage");
 	PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8> { final_stage_source, TEXTURE_SCALE_UP, TEXTURE_EXPOSURE_2 });
 	pipeline->addStep(effect);
 	if (enable_ssaa)

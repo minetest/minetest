@@ -66,10 +66,12 @@ void populateInterlacedPipeline(RenderPipeline *pipeline, Client *client)
 	}
 
 	pipeline->addStep<OffsetCameraStep>(0.0f);
+
 	IShaderSource *s = client->getShaderSource();
-	u32 shader = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC);
+	auto shader = s->getShaderRaw("3d_interlaced_merge");
 	video::E_MATERIAL_TYPE material = s->getShaderInfo(shader).material;
 	auto texture_map = { TEXTURE_LEFT, TEXTURE_RIGHT, TEXTURE_MASK };
+
 	auto merge = pipeline->addStep<PostProcessingStep>(material, texture_map);
 	merge->setRenderSource(buffer);
 	merge->setRenderTarget(pipeline->createOwned<ScreenTarget>());

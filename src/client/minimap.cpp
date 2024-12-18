@@ -599,7 +599,7 @@ void Minimap::drawMinimap(core::rect<s32> rect)
 	material.TextureLayers[1].Texture = data->heightmap_texture;
 
 	if (data->mode.type == MINIMAP_TYPE_SURFACE) {
-		auto sid = m_shdrsrc->getShader("minimap_shader", TILE_MATERIAL_ALPHA);
+		auto sid = m_shdrsrc->getShaderRaw("minimap_shader", true);
 		material.MaterialType = m_shdrsrc->getShaderInfo(sid).material;
 	} else {
 		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
