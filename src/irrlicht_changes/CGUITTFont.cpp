@@ -444,7 +444,7 @@ CGUITTGlyphPage* CGUITTFont::getLastGlyphPage() const
 	return page;
 }
 
-CGUITTGlyphPage* CGUITTFont::createGlyphPage(const u8& pixel_mode)
+CGUITTGlyphPage* CGUITTFont::createGlyphPage(const u8 pixel_mode)
 {
 	CGUITTGlyphPage* page = 0;
 
@@ -622,13 +622,12 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 		else if (fallback != 0)
 		{
 			// Let the fallback font draw it, this isn't super efficient but hopefully that doesn't matter
-			wchar_t l1[] = { (wchar_t) currentChar, 0 }, l2 = (wchar_t) previousChar;
+			wchar_t l1[] = { (wchar_t) currentChar, 0 };
 
 			if (visible)
 			{
 				// Apply kerning.
-				offset.X += fallback->getKerningWidth(l1, &l2);
-				offset.Y += fallback->getKerningHeight();
+				offset += fallback->getKerning(*l1, (wchar_t) previousChar);
 
 				const u32 current_color = iter - utext.begin();
 				fallback->draw(core::stringw(l1),
@@ -686,11 +685,6 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 			Driver->draw2DImageBatch(page->texture, tmp_positions, tmp_source_rects, clip, colprev, true);
 		}
 	}
-}
-
-core::dimension2d<u32> CGUITTFont::getCharDimension(const wchar_t ch) const
-{
-	return core::dimension2d<u32>(getWidthFromCharacter(ch), getHeightFromCharacter(ch));
 }
 
 core::dimension2d<u32> CGUITTFont::getDimension(const wchar_t* text) const
@@ -759,11 +753,6 @@ core::dimension2d<u32> CGUITTFont::getDimension(const std::u32string& text) cons
 	return text_dimension;
 }
 
-inline u32 CGUITTFont::getWidthFromCharacter(wchar_t c) const
-{
-	return getWidthFromCharacter((char32_t)c);
-}
-
 inline u32 CGUITTFont::getWidthFromCharacter(char32_t c) const
 {
 	// Set the size of the face.
@@ -785,11 +774,6 @@ inline u32 CGUITTFont::getWidthFromCharacter(char32_t c) const
 	if (c >= 0x2000)
 		return (font_metrics.ascender / 64);
 	else return (font_metrics.ascender / 64) / 2;
-}
-
-inline u32 CGUITTFont::getHeightFromCharacter(wchar_t c) const
-{
-	return getHeightFromCharacter((char32_t)c);
 }
 
 inline u32 CGUITTFont::getHeightFromCharacter(char32_t c) const
@@ -814,11 +798,6 @@ inline u32 CGUITTFont::getHeightFromCharacter(char32_t c) const
 	if (c >= 0x2000)
 		return (font_metrics.ascender / 64);
 	else return (font_metrics.ascender / 64) / 2;
-}
-
-u32 CGUITTFont::getGlyphIndexByChar(wchar_t c) const
-{
-	return getGlyphIndexByChar((char32_t)c);
 }
 
 u32 CGUITTFont::getGlyphIndexByChar(char32_t c) const
@@ -871,11 +850,10 @@ s32 CGUITTFont::getCharacterFromPos(const wchar_t* text, s32 pixel_x) const
 s32 CGUITTFont::getCharacterFromPos(const std::u32string& text, s32 pixel_x) const
 {
 	s32 x = 0;
-	//s32 idx = 0;
 
 	u32 character = 0;
 	char32_t previousChar = 0;
-	std::u32string::const_iterator iter = text.begin();
+	auto iter = text.begin();
 	while (iter != text.end())
 	{
 		char32_t c = *iter;
@@ -906,28 +884,6 @@ void CGUITTFont::setKerningHeight(s32 kerning)
 	GlobalKerningHeight = kerning;
 }
 
-s32 CGUITTFont::getKerningWidth(const wchar_t* thisLetter, const wchar_t* previousLetter) const
-{
-	if (tt_face == 0)
-		return GlobalKerningWidth;
-	if (thisLetter == 0 || previousLetter == 0)
-		return 0;
-
-	return getKerningWidth((char32_t)*thisLetter, (char32_t)*previousLetter);
-}
-
-s32 CGUITTFont::getKerningWidth(const char32_t thisLetter, const char32_t previousLetter) const
-{
-	// Return only the kerning width.
-	return getKerning(thisLetter, previousLetter).X;
-}
-
-s32 CGUITTFont::getKerningHeight() const
-{
-	// FreeType 2 currently doesn't return any height kerning information.
-	return GlobalKerningHeight;
-}
-
 core::vector2di CGUITTFont::getKerning(const wchar_t thisLetter, const wchar_t previousLetter) const
 {
 	return getKerning((char32_t)thisLetter, (char32_t)previousLetter);
@@ -949,11 +905,8 @@ core::vector2di CGUITTFont::getKerning(const char32_t thisLetter, const char32_t
 	// If we don't have this glyph, ask fallback font
 	if (n == 0)
 	{
-		if (fallback != 0) {
-			wchar_t l1 = (wchar_t) thisLetter, l2 = (wchar_t) previousLetter;
-			ret.X = fallback->getKerningWidth(&l1, &l2);
-			ret.Y = fallback->getKerningHeight();
-		}
+		if (fallback)
+			ret = fallback->getKerning((wchar_t) thisLetter, (wchar_t) previousLetter);
 		return ret;
 	}
 
@@ -1057,166 +1010,6 @@ void CGUITTFont::createSharedPlane()
 
 	shared_plane_ptr_ = &shared_plane_;
 	buf->drop(); //the addMeshBuffer method will grab it, so we can drop this ptr.
-}
-
-core::dimension2d<u32> CGUITTFont::getDimensionUntilEndOfLine(const wchar_t* p) const
-{
-	core::stringw s;
-	for (const wchar_t* temp = p; temp && *temp != '\0' && *temp != L'\r' && *temp != L'\n'; ++temp )
-		s.append(*temp);
-
-	return getDimension(s.c_str());
-}
-
-core::array<scene::ISceneNode*> CGUITTFont::addTextSceneNode(const wchar_t* text, scene::ISceneManager* smgr, scene::ISceneNode* parent, const video::SColor& color, bool center)
-{
-	using namespace core;
-	using namespace video;
-	using namespace scene;
-
-	array<scene::ISceneNode*> container;
-
-	if (!Driver || !smgr) return container;
-	if (!parent)
-		parent = smgr->addEmptySceneNode(smgr->getRootSceneNode(), -1);
-	// if you don't specify parent, then we add an empty node attached to the root node
-	// this is generally undesirable.
-
-	if (!shared_plane_ptr_) //this points to a static mesh that contains the plane
-		createSharedPlane(); //if it's not initialized, we create one.
-
-	dimension2d<s32> text_size(getDimension(text)); //convert from unsigned to signed.
-	vector3df start_point(0, 0, 0), offset;
-
-	/** NOTICE:
-		Because we are considering adding texts into 3D world, all Y axis vectors are inverted.
-	**/
-
-	// There's currently no "vertical center" concept when you apply text scene node to the 3D world.
-	if (center)
-	{
-		offset.X = start_point.X = -text_size.Width / 2.f;
-		offset.Y = start_point.Y = +text_size.Height/ 2.f;
-		offset.X += (text_size.Width - getDimensionUntilEndOfLine(text).Width) >> 1;
-	}
-
-	// the default font material
-	SMaterial mat;
-	mat.ZWriteEnable = video::EZW_OFF;
-	mat.MaterialType = use_transparency ? video::EMT_TRANSPARENT_ALPHA_CHANNEL : video::EMT_SOLID;
-	mat.MaterialTypeParam = 0.01f;
-
-	wchar_t current_char = 0, previous_char = 0;
-	u32 n = 0;
-
-	array<u32> glyph_indices;
-
-	while (*text)
-	{
-		current_char = *text;
-		bool line_break=false;
-		if (current_char == L'\r') // Mac or Windows breaks
-		{
-			line_break = true;
-			if (*(text + 1) == L'\n') // Windows line breaks.
-				current_char = *(++text);
-		}
-		else if (current_char == L'\n') // Unix breaks
-		{
-			line_break = true;
-		}
-
-		if (line_break)
-		{
-			previous_char = 0;
-			offset.Y -= tt_face->size->metrics.ascender / 64;
-			offset.X = start_point.X;
-			if (center)
-				offset.X += (text_size.Width - getDimensionUntilEndOfLine(text+1).Width) >> 1;
-			++text;
-		}
-		else
-		{
-			n = getGlyphIndexByChar(current_char);
-			if (n > 0)
-			{
-				glyph_indices.push_back( n );
-
-				// Store glyph size and offset informations.
-				SGUITTGlyph const& glyph = Glyphs[n-1];
-				u32 texw = glyph.source_rect.getWidth();
-				u32 texh = glyph.source_rect.getHeight();
-				s32 offx = glyph.offset.X;
-				s32 offy = (font_metrics.ascender / 64) - glyph.offset.Y;
-
-				// Apply kerning.
-				vector2di k = getKerning(current_char, previous_char);
-				offset.X += k.X;
-				offset.Y += k.Y;
-
-				vector3df current_pos(offset.X + offx, offset.Y - offy, 0);
-				dimension2d<u32> letter_size = dimension2d<u32>(texw, texh);
-
-				// Now we copy planes corresponding to the letter size.
-				IMeshManipulator* mani = smgr->getMeshManipulator();
-				IMesh* meshcopy = mani->createMeshCopy(shared_plane_ptr_);
-				mani->scale(meshcopy, vector3df((f32)letter_size.Width, (f32)letter_size.Height, 1));
-
-				ISceneNode* current_node = smgr->addMeshSceneNode(meshcopy, parent, -1, current_pos);
-				meshcopy->drop();
-
-				current_node->getMaterial(0) = mat;
-				current_node->setAutomaticCulling(EAC_OFF);
-				current_node->setIsDebugObject(true);  //so the picking won't have any effect on individual letter
-				//current_node->setDebugDataVisible(EDS_BBOX); //de-comment this when debugging
-
-				container.push_back(current_node);
-			}
-			offset.X += getWidthFromCharacter(current_char);
-			// Note that fallback font handling is missing here (Minetest never uses this)
-
-			previous_char = current_char;
-			++text;
-		}
-	}
-
-	update_glyph_pages();
-	//only after we update the textures can we use the glyph page textures.
-
-	for (u32 i = 0; i < glyph_indices.size(); ++i)
-	{
-		u32 n = glyph_indices[i];
-		SGUITTGlyph const& glyph = Glyphs[n-1];
-		ITexture* current_tex = Glyph_Pages[glyph.glyph_page]->texture;
-		f32 page_texture_size = (f32)current_tex->getSize().Width;
-		//Now we calculate the UV position according to the texture size and the source rect.
-		//
-		//  2___3
-		//  |  /|
-		//  | / |	<-- plane mesh is like this, point 2 is (0,0), point 0 is (0, -1)
-		//  |/  |	<-- the texture coords of point 2 is (0,0, point 0 is (0, 1)
-		//  0---1
-		//
-		f32 u1 = glyph.source_rect.UpperLeftCorner.X / page_texture_size;
-		f32 u2 = u1 + (glyph.source_rect.getWidth() / page_texture_size);
-		f32 v1 = glyph.source_rect.UpperLeftCorner.Y / page_texture_size;
-		f32 v2 = v1 + (glyph.source_rect.getHeight() / page_texture_size);
-
-		//we can be quite sure that this is IMeshSceneNode, because we just added them in the above loop.
-		IMeshSceneNode* node = static_cast<IMeshSceneNode*>(container[i]);
-
-		S3DVertex* pv = static_cast<S3DVertex*>(node->getMesh()->getMeshBuffer(0)->getVertices());
-		//pv[0].TCoords.Y = pv[1].TCoords.Y = (letter_size.Height - 1) / static_cast<f32>(letter_size.Height);
-		//pv[1].TCoords.X = pv[3].TCoords.X = (letter_size.Width - 1)  / static_cast<f32>(letter_size.Width);
-		pv[0].TCoords = vector2df(u1, v2);
-		pv[1].TCoords = vector2df(u2, v2);
-		pv[2].TCoords = vector2df(u1, v1);
-		pv[3].TCoords = vector2df(u2, v1);
-
-		container[i]->getMaterial(0).setTexture(0, current_tex);
-	}
-
-	return container;
 }
 
 std::u32string CGUITTFont::convertWCharToU32String(const wchar_t* const charArray) const
