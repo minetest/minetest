@@ -55,6 +55,9 @@ struct MeshMakeData;
 struct MinimapMapblock;
 struct PlayerControl;
 struct PointedThing;
+class ClientScripting;
+class SSCSMController;
+class GameUI;
 
 namespace con {
 class IConnection;
@@ -97,9 +100,6 @@ private:
 	// command, count
 	std::map<u16, u32> m_packets;
 };
-
-class ClientScripting;
-class GameUI;
 
 class Client : public con::PeerHandler, public InventoryManager, public IGameDef
 {
@@ -585,6 +585,9 @@ private:
 	float m_mod_storage_save_timer = 10.0f;
 	std::vector<ModSpec> m_mods;
 	StringMap m_mod_vfs;
+
+	// SSCSM
+	std::unique_ptr<SSCSMController> m_sscsm_controller;
 
 	bool m_shutdown = false;
 
