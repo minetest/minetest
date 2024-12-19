@@ -13,7 +13,6 @@
 #include "settings.h"
 #include <cmath>
 
-class Clouds;
 scene::ISceneManager *g_menucloudsmgr = nullptr;
 Clouds *g_menuclouds = nullptr;
 
@@ -191,19 +190,23 @@ void Clouds::updateMesh()
 
 		v2f p0 = v2f(xi,zi)*cloud_size + world_center_of_drawing_in_noise_f;
 
-		video::S3DVertex v[4] = {
-			video::S3DVertex(0,0,0, 0,0,0, c_top, 0, 1),
-			video::S3DVertex(0,0,0, 0,0,0, c_top, 1, 1),
-			video::S3DVertex(0,0,0, 0,0,0, c_top, 1, 0),
-			video::S3DVertex(0,0,0, 0,0,0, c_top, 0, 0)
-		};
-
 		const f32 rx = cloud_size / 2.0f;
 		// if clouds are flat, the top layer should be at the given height
 		const f32 ry = is3D() ? m_params.thickness * BS : 0.0f;
 		const f32 rz = cloud_size / 2;
 
 		bool soft_clouds_enabled = g_settings->getBool("soft_clouds");
+		bool shaded_clouds_enabled = soft_clouds_enabled && g_settings->getBool("enable_dynamic_shadows") && g_settings->getBool("enable_3d_clouds");
+
+		v3f pos(p0.X, m_params.height * BS, p0.Y);
+
+		video::S3DVertex v[4] = {
+		video::S3DVertex(0,0,0, 0,0,0, c_top, 0, 1),
+		video::S3DVertex(0,0,0, 0,0,0, c_top, 1, 1),
+		video::S3DVertex(0,0,0, 0,0,0, c_top, 1, 0),
+		video::S3DVertex(0,0,0, 0,0,0, c_top, 0, 0)
+		};
+
 		for (u32 i = 0; i < num_faces_to_draw; i++)
 		{
 			switch (i)
@@ -229,7 +232,8 @@ void Clouds::updateMesh()
 					}
 					v[2].Color = c_bottom;
 					v[3].Color = c_bottom;
-				} else {
+				}
+				else {
 					for (video::S3DVertex& vertex : v) {
 						vertex.Color = c_side_1;
 						vertex.Normal.set(0, 0, -1);
@@ -276,7 +280,8 @@ void Clouds::updateMesh()
 					}
 					v[2].Color = c_bottom;
 					v[3].Color = c_bottom;
-				} else {
+				}
+				else {
 					for (video::S3DVertex& vertex : v) {
 						vertex.Color = c_side_1;
 						vertex.Normal.set(0, 0, -1);
@@ -299,7 +304,8 @@ void Clouds::updateMesh()
 					}
 					v[2].Color = c_bottom;
 					v[3].Color = c_bottom;
-				} else {
+				}
+				else {
 					for (video::S3DVertex& vertex : v) {
 						vertex.Color = c_side_2;
 						vertex.Normal.set(-1, 0, 0);
@@ -322,9 +328,7 @@ void Clouds::updateMesh()
 				break;
 			}
 
-			v3f pos(p0.X, m_params.height * BS, p0.Y);
-
-			for (video::S3DVertex &vertex : v) {
+			for (video::S3DVertex& vertex : v) {
 				vertex.Pos += pos;
 				vertices.push_back(vertex);
 			}
