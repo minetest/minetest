@@ -160,6 +160,26 @@ local function get_formspec(tabview, name, tabdata)
 				core.formspec_escape(gamedata.serverdescription) .. "]"
 		end
 
+		-- Mods button
+		local mods = selected_server.mods
+		if mods and #mods > 0 then
+			local tooltip = ""
+			if selected_server.gameid then
+				tooltip = "Game: " .. selected_server.gameid .. "\n"
+			end
+			tooltip = tooltip .. "Number of mods: " .. #mods
+
+			retval = retval ..
+				"tooltip[btn_view_mods;" .. core.formspec_escape(tooltip) .. "]" ..
+				"style[btn_view_mods;padding=6]" ..
+				"image_button[4,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
+				"server_view_mods.png") .. ";btn_view_mods;]"
+		else
+			retval = retval .. "image[4.1,1.4;0.3,0.3;" .. core.formspec_escape(defaulttexturedir ..
+				"server_view_mods_unavailable.png") .. "]"
+		end
+
+		-- Clients list button
 		local clients_list = selected_server.clients_list
 		local can_view_clients_list = clients_list and #clients_list > 0
 		if can_view_clients_list then
@@ -177,8 +197,12 @@ local function get_formspec(tabview, name, tabdata)
 			retval = retval .. "style[btn_view_clients;padding=6]"
 			retval = retval .. "image_button[4.5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
 				"server_view_clients.png") .. ";btn_view_clients;]"
+		else
+			retval = retval .. "image[4.6,1.4;0.3,0.3;" .. core.formspec_escape(defaulttexturedir ..
+				"server_view_clients_unavailable.png") .. "]"
 		end
 
+		-- Favorites toggle button
 		if is_selected_fav() then
 			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Remove favorite") .. "]"
 			retval = retval .. "style[btn_delete_favorite;padding=6]"
@@ -264,19 +288,52 @@ end
 
 --------------------------------------------------------------------------------
 
+-- Separates by space characters and handles special prefixes
+-- (words with special prefixes need an exact match and none of them can contain spaces
+-- or quotation marks)
+local function parse_search_word(query, text)
+	for word in text:gmatch("%S+") do
+		if string.sub(word, 0, 4) == "mod:" then
+			table.insert(query.mods, string.sub(word, 5))
+		elseif string.sub(word, 0, 7) == "player:" then
+			table.insert(query.players, string.sub(word, 8))
+		elseif string.sub(word, 0, 5) == "game:" then
+			query.game = string.sub(word, 6)
+		else
+			table.insert(query.keywords, word:lower())
+		end
+	end
+end
+
+local function parse_search_input(input)
+	local query = {keywords = {}, mods = {}, players = {}}
+
+	-- Separate quote enclosed parts
+	-- (If the input contains a single quotation mark, the part after is ignored.)
+	parse_search_word(query, string.match(input, "^([^\"]*)"))
+	for s1, s2 in input:gmatch("\"([^\"]*)\"([^\"]*)") do
+		if #s1 > 0 then
+			table.insert(query.keywords, s1:lower()) -- quotation enclosed part keeps spaces
+		end
+		parse_search_word(query, s2)
+	end
+
+	if #query.keywords == 0 and #query.mods == 0 and #query.players == 0 and not query.game then
+		return nil
+	end
+
+	return query
+end
+
 local function search_server_list(input)
 	menudata.search_result = nil
 	if #serverlistmgr.servers < 2 then
 		return
 	end
 
-	-- setup the keyword list
-	local keywords = {}
-	for word in input:gmatch("%S+") do
-		table.insert(keywords, word:lower())
-	end
-
-	if #keywords == 0 then
+	-- setup the search query
+	local query = parse_search_input(input)
+	if not query then
 		return
 	end
 
@@ -285,14 +342,46 @@ local function search_server_list(input)
 	-- Search the serverlist
 	local search_result = {}
 	for i, server in ipairs(serverlistmgr.servers) do
-		local name_matches, description_matches = true, true
-		for _, keyword in ipairs(keywords) do
+		local name_matches, description_matches, filter_matches = true, true, true
+
+		-- Check if keyword found
+		for _, keyword in ipairs(query.keywords) do
 			name_matches = name_matches and not not
 					(server.name or ""):lower():find(keyword, 1, true)
 			description_matches = description_matches and not not
 					(server.description or ""):lower():find(keyword, 1, true)
 		end
-		if name_matches or description_matches then
+
+		-- Check if mods found
+		if server.mods then
+			for _, mod in ipairs(query.mods) do
+				if table.indexof(server.mods, mod) < 0 then
+					filter_matches = false
+					break
+				end
+			end
+		elseif #query.mods > 0 then
+			filter_matches = false
+		end
+
+		-- Check if players found
+		if server.clients_list then
+			for _, player in ipairs(query.players) do
+				if table.indexof(server.clients_list, player) < 0 then
+					filter_matches = false
+					break
+				end
+			end
+		elseif #query.players > 0 then
+			filter_matches = false
+		end
+
+		-- Check if game matches
+		if query.game and (not server.gameid or server.gameid ~= query.game) then
+			filter_matches = false
+		end
+
+		if filter_matches and (name_matches or description_matches) then
 			server.points = #serverlistmgr.servers - i
 					+ (name_matches and 50 or 0)
 			table.insert(search_result, server)
@@ -368,7 +457,15 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields.btn_view_clients then
-		local dlg = create_clientslist_dialog(find_selected_server())
+		local dlg = create_clientslist_dialog(find_selected_server(), tabdata)
+		dlg:set_parent(tabview)
+		tabview:hide()
+		dlg:show()
+		return true
+	end
+
+	if fields.btn_view_mods then
+		local dlg = create_server_list_mods_dialog(find_selected_server(), tabdata)
 		dlg:set_parent(tabview)
 		tabview:hide()
 		dlg:show()
@@ -383,7 +480,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 	if fields.btn_mp_search or fields.key_enter_field == "te_search" then
 		tabdata.search_for = fields.te_search
-		search_server_list(fields.te_search:lower())
+		search_server_list(fields.te_search)
 		if menudata.search_result then
 			-- Note: This clears the selection if there are no results
 			set_selected_server(menudata.search_result[1])
