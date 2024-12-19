@@ -54,7 +54,7 @@ Once VS and CMake are ready to use, you can install Luanti's dependencies. Luant
 
 Some optional dependencies are recommended for advanced development. You can add them to `vcpkg.json` to install them along with the required dependencies.
 
--   `curl` is highly recommended, as it's required to read the serverlist; `curl[winssl]` is required to use the content store.
+-   `curl[winssl]` is highly recommended, as it's required to use the server list and content store.
 -   `openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
 -   `luajit` is optional, it replaces the integrated Lua interpreter with a faster just-in-time interpreter.
 -   `gmp` and `jsoncpp` are optional, otherwise the bundled versions will be compiled
