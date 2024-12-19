@@ -8,6 +8,7 @@
 
 #include "guiFormSpecMenu.h"
 #include "mainmenumanager.h"
+#include "settings.h"
 #include "client/client.h"
 #include "client/keycode.h"
 #include <string>
