@@ -8,7 +8,6 @@
 #include <gettext.h>
 #include "gui/mainmenumanager.h"
 #include "gui/guiChatConsole.h"
-#include "gui/guiFormSpecMenu.h"
 #include "gui/touchcontrols.h"
 #include "util/enriched_string.h"
 #include "util/pointedthing.h"
@@ -317,17 +316,6 @@ void GameUI::toggleProfiler()
 	} else {
 		showTranslatedStatusText("Profiler hidden");
 	}
-}
-
-
-void GameUI::deleteFormspec()
-{
-	if (m_formspec) {
-		m_formspec->drop();
-		m_formspec = nullptr;
-	}
-
-	m_formname.clear();
 }
 
 void GameUI::clearText()
