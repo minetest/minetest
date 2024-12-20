@@ -86,7 +86,7 @@ bool                read_color          (lua_State *L, int index,
 bool                is_color_table      (lua_State *L, int index);
 
 /**
- * Read a floating point bounding box from a lua state.
+ * Read a floating-point bounding box from a Lua state.
  *
  * @param  L The Lua state.
  * @param  index The index of the Lua variable to read the box from. The
