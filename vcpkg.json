@@ -10,7 +10,6 @@
     "libvorbis",
     "luajit",
     "openal-soft",
-    "opengl-registry",
     "sdl2",
     "sqlite3",
     "zlib",
