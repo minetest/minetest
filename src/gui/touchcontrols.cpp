@@ -222,6 +222,10 @@ TouchControls::TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc)
 	m_screensize = m_device->getVideoDriver()->getScreenSize();
 	m_button_size = ButtonLayout::getButtonSize(m_screensize);
 	applyLayout(ButtonLayout::loadFromSettings());
+	// This means the shootline starts out in the middle of the screen instead
+	// of the upper left corner with m_draw_crosshair == false.
+	// It's not strictly necessary, but it's nicer.
+	m_move_pos = v2s32(m_screensize.X / 2, m_screensize.Y / 2);
 }
 
 void TouchControls::applyLayout(const ButtonLayout &layout)
