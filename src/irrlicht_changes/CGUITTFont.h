@@ -56,7 +56,6 @@ namespace gui
 	{
 		//! Constructor.
 		SGUITTGlyph() :
-			isLoaded(false),
 			glyph_page(0),
 			source_rect(),
 			offset(),
@@ -68,7 +67,6 @@ namespace gui
 
 		//! This class would be trivially copyable except for the reference count on `surface`.
 		SGUITTGlyph(SGUITTGlyph &&other) noexcept :
-			isLoaded(other.isLoaded),
 			glyph_page(other.glyph_page),
 			source_rect(other.source_rect),
 			offset(other.offset),
@@ -80,6 +78,11 @@ namespace gui
 
 		//! Destructor.
 		~SGUITTGlyph() { unload(); }
+
+		//! If true, the glyph has been loaded.
+		inline bool isLoaded() const {
+			return source_rect != core::recti();
+		}
 
 		//! Preload the glyph.
 		//!	The preload process occurs when the program tries to cache the glyph from FT_Library.
@@ -94,9 +97,6 @@ namespace gui
 		//! Creates the IImage object from the FT_Bitmap.
 		video::IImage* createGlyphImage(const FT_Bitmap& bits, video::IVideoDriver* driver) const;
 
-		//! If true, the glyph has been loaded.
-		bool isLoaded;
-
 		//! The page the glyph is on.
 		u32 glyph_page;
 
@@ -107,7 +107,7 @@ namespace gui
 		core::vector2di offset;
 
 		//! Glyph advance information.
-		FT_Vector advance;
+		core::vector2di advance;
 
 		//! This is just the temporary image holder.  After this glyph is paged,
 		//! it will be dropped.
@@ -180,7 +180,7 @@ namespace gui
 				for (u32 i = 0; i < glyph_to_be_paged.size(); ++i)
 				{
 					const SGUITTGlyph* glyph = glyph_to_be_paged[i];
-					if (glyph && glyph->isLoaded && glyph->surface)
+					if (glyph && glyph->surface)
 					{
 						glyph->surface->copyTo(pageholder, glyph->source_rect.UpperLeftCorner);
 						glyph->surface->drop();

@@ -144,8 +144,6 @@ video::IImage* SGUITTGlyph::createGlyphImage(const FT_Bitmap& bits, video::IVide
 
 void SGUITTGlyph::preload(u32 char_index, FT_Face face, CGUITTFont *parent, u32 font_size, const FT_Int32 loadFlags)
 {
-	if (isLoaded) return;
-
 	// Set the size of the glyph.
 	FT_Set_Pixel_Sizes(face, 0, font_size);
 
@@ -158,10 +156,10 @@ void SGUITTGlyph::preload(u32 char_index, FT_Face face, CGUITTFont *parent, u32 
 	}
 
 	FT_GlyphSlot glyph = face->glyph;
-	FT_Bitmap bits = glyph->bitmap;
+	const FT_Bitmap &bits = glyph->bitmap;
 
 	// Setup the glyph information here:
-	advance = glyph->advance;
+	advance = core::vector2di(glyph->advance.x, glyph->advance.y);
 	offset = core::vector2di(glyph->bitmap_left, glyph->bitmap_top);
 
 	// Try to get the last page with available slots.
@@ -190,9 +188,6 @@ void SGUITTGlyph::preload(u32 char_index, FT_Face face, CGUITTFont *parent, u32 
 
 	// We grab the glyph bitmap here so the data won't be removed when the next glyph is loaded.
 	surface = createGlyphImage(bits, parent->getDriver());
-
-	// Set our glyph as loaded.
-	isLoaded = true;
 }
 
 void SGUITTGlyph::unload()
@@ -202,7 +197,8 @@ void SGUITTGlyph::unload()
 		surface->drop();
 		surface = 0;
 	}
-	isLoaded = false;
+	// reset isLoaded to false
+	source_rect = core::recti();
 }
 
 //////////////////////
@@ -702,7 +698,7 @@ inline u32 CGUITTFont::getWidthFromCharacter(char32_t c) const
 	u32 n = getGlyphIndexByChar(c);
 	if (n > 0)
 	{
-		int w = Glyphs[n-1].advance.x / 64;
+		int w = Glyphs[n-1].advance.X / 64;
 		return w;
 	}
 	if (fallback != 0)
@@ -746,7 +742,7 @@ u32 CGUITTFont::getGlyphIndexByChar(char32_t c) const
 		return 0;
 
 	// If our glyph is already loaded, don't bother doing any batch loading code.
-	if (glyph != 0 && Glyphs[glyph - 1].isLoaded)
+	if (glyph != 0 && Glyphs[glyph - 1].isLoaded())
 		return glyph;
 
 	// Determine our batch loading positions.
@@ -765,7 +761,7 @@ u32 CGUITTFont::getGlyphIndexByChar(char32_t c) const
 		if (char_index)
 		{
 			SGUITTGlyph& glyph = Glyphs[char_index - 1];
-			if (!glyph.isLoaded)
+			if (!glyph.isLoaded())
 			{
 				auto *this2 = const_cast<CGUITTFont*>(this); // oh well
 				glyph.preload(char_index, tt_face, this2, size, load_flags);
