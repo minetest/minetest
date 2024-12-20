@@ -160,7 +160,7 @@ private:
 	// Was the mesh ever generated?
 	bool m_mesh_valid = false;
 
-	aabb3f m_box;
+	aabb3f m_box{{0.0f, 0.0f, 0.0f}};
 	v2f m_origin;
 	u16 m_cloud_radius_i;
 	u32 m_seed;

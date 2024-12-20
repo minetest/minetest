@@ -809,14 +809,14 @@ private:
 	 * The union of all nodes' selection boxes.
 	 * Might be larger if big nodes are removed from the manager.
 	 */
-	aabb3f m_selection_box_union;
+	aabb3f m_selection_box_union{{0.0f, 0.0f, 0.0f}};
 
 	/*!
 	 * The smallest box in integer node coordinates that
 	 * contains all nodes' selection boxes.
 	 * Might be larger if big nodes are removed from the manager.
 	 */
-	core::aabbox3d<s16> m_selection_box_int_union;
+	core::aabbox3d<s16> m_selection_box_int_union{{0, 0, 0}};
 
 	/*!
 	 * NodeResolver instances to notify once node registration has finished.
