@@ -1,7 +1,5 @@
 # Compiling on Windows using MSVC
 
-If you're just creating mods or games with Luanti, you do not need to compile Luanti. Instead, follow Ruben Wardy's [Luanti Modding Book](https://rubenwardy.gitlab.io/minetest_modding_book) to get started modding. Compiling Luanti is only required if you plan to modify the Luanti engine itself.
-
 In this guide, we use `path/to/minetest` to refer to the repository. Minetest was the old name of Luanti, and as of this writing, the repo has not been renamed.
 
 ## 1. Machine requirements
