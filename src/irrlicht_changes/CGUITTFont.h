@@ -32,17 +32,17 @@
 
 #pragma once
 
-#include <ft2build.h>
 #include <map>
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include "IGUIEnvironment.h"
 #include "IGUIFont.h"
-#include "ISceneManager.h"
 #include "IVideoDriver.h"
 #include "IrrlichtDevice.h"
 #include "SMesh.h"
 #include "util/enriched_string.h"
 #include "util/basic_macros.h"
-#include FT_FREETYPE_H
 
 namespace irr
 {
@@ -61,8 +61,7 @@ namespace gui
 			source_rect(),
 			offset(),
 			advance(),
-			surface(0),
-			parent(0)
+			surface(0)
 		{}
 
 		DISABLE_CLASS_COPY(SGUITTGlyph);
@@ -74,8 +73,7 @@ namespace gui
 			source_rect(other.source_rect),
 			offset(other.offset),
 			advance(other.advance),
-			surface(other.surface),
-			parent(other.parent)
+			surface(other.surface)
 		{
 			other.surface = 0;
 		}
@@ -88,7 +86,7 @@ namespace gui
 		//! However, it simply defines the SGUITTGlyph's properties and will only create the page
 		//! textures if necessary.  The actual creation of the textures should only occur right
 		//! before the batch draw call.
-		void preload(u32 char_index, FT_Face face, video::IVideoDriver* driver, u32 font_size, const FT_Int32 loadFlags);
+		void preload(u32 char_index, FT_Face face, CGUITTFont *parent, u32 font_size, const FT_Int32 loadFlags);
 
 		//! Unloads the glyph.
 		void unload();
@@ -114,9 +112,6 @@ namespace gui
 		//! This is just the temporary image holder.  After this glyph is paged,
 		//! it will be dropped.
 		mutable video::IImage* surface;
-
-		//! The pointer pointing to the parent (CGUITTFont)
-		CGUITTFont* parent;
 	};
 
 	//! Holds a sheet of glyphs.
@@ -130,7 +125,8 @@ namespace gui
 				{
 					if (driver)
 						driver->removeTexture(texture);
-					else texture->drop();
+					else
+						texture->drop();
 				}
 			}
 
@@ -184,19 +180,11 @@ namespace gui
 				for (u32 i = 0; i < glyph_to_be_paged.size(); ++i)
 				{
 					const SGUITTGlyph* glyph = glyph_to_be_paged[i];
-					if (glyph && glyph->isLoaded)
+					if (glyph && glyph->isLoaded && glyph->surface)
 					{
-						if (glyph->surface)
-						{
-							glyph->surface->copyTo(pageholder, glyph->source_rect.UpperLeftCorner);
-							glyph->surface->drop();
-							glyph->surface = 0;
-						}
-						else
-						{
-							; // TODO: add error message?
-							//currently, if we failed to create the image, just ignore this operation.
-						}
+						glyph->surface->copyTo(pageholder, glyph->source_rect.UpperLeftCorner);
+						glyph->surface->drop();
+						glyph->surface = 0;
 					}
 				}
 
@@ -327,6 +315,8 @@ namespace gui
 			//! \param page_index Simply return the texture handle of a given page index.
 			video::ITexture* getPageTextureByIndex(const u32& page_index) const;
 
+			inline video::IVideoDriver *getDriver() const { return Driver; }
+
 			inline s32 getAscender() const { return font_metrics.ascender; }
 
 		protected:
@@ -343,13 +333,10 @@ namespace gui
 			static FT_Library c_library;
 			static std::map<io::path, SGUITTFace*> c_faces;
 			static bool c_libraryLoaded;
-			static scene::IMesh* shared_plane_ptr_;
-			static scene::SMesh  shared_plane_;
 
 			// Helper functions for the same-named public member functions above
 			// (Since std::u32string is nicer to work with than wchar_t *)
 			core::dimension2d<u32> getDimension(const std::u32string& text) const;
-			s32 getKerningWidth(const char32_t thisLetter=0, const char32_t previousLetter=0) const;
 			s32 getCharacterFromPos(const std::u32string& text, s32 pixel_x) const;
 
 			// Helper function for the above helper functions :P
@@ -373,10 +360,6 @@ namespace gui
 			u32 getGlyphIndexByChar(char32_t c) const;
 			core::vector2di getKerning(const char32_t thisLetter, const char32_t previousLetter) const;
 
-			void createSharedPlane();
-
-			irr::IrrlichtDevice* Device;
-			gui::IGUIEnvironment* Environment;
 			video::IVideoDriver* Driver;
 			io::path filename;
 			FT_Face tt_face;
