@@ -2712,8 +2712,13 @@ void Game::updatePointDir(const CameraOrientation &cam)
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
 	if (g_touchcontrols && isTouchCrosshairDisabled()) {
-		const v3f point_dir_rel = g_touchcontrols->getShootlineRel().getVector().normalize();
+		v2s32 pointer_pos = g_touchcontrols->getPointerPos();
+		v2u32 screensize = driver->getScreenSize();
 
+		player->pointer_pos.X = (f32)pointer_pos.X / (f32)screensize.X;
+		player->pointer_pos.Y = (f32)pointer_pos.Y / (f32)screensize.Y;
+
+		const v3f point_dir_rel = g_touchcontrols->getShootlineRel().getVector().normalize();
 		// getHorizontalAngle is Irrlicht's "direction to rotation" function
 		// Roll (Z) is always 0
 		const v3f point_rot_rel = point_dir_rel.getHorizontalAngle();
@@ -2721,6 +2726,8 @@ void Game::updatePointDir(const CameraOrientation &cam)
 		player->point_pitch = point_rot_rel.X;
 		player->point_yaw = point_rot_rel.Y;
 	} else {
+		player->pointer_pos.X = 0.5f;
+		player->pointer_pos.Y = 0.5f;
 		player->point_pitch = 0.0f;
 		player->point_yaw = 0.0f;
 	}

@@ -1255,6 +1255,20 @@ int ObjectRef::l_get_look_dir(lua_State *L)
 	return 1;
 }
 
+// get_point_screen_pos(self)
+int ObjectRef::l_get_point_screen_pos(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	PlayerSAO* playersao = getplayersao(ref);
+	if (playersao == nullptr)
+		return 0;
+
+	RemotePlayer *player = playersao->getPlayer();
+	push_v2f(L, player->pointer_pos);
+	return 1;
+}
+
 // get_point_dir(self)
 int ObjectRef::l_get_point_dir(lua_State *L)
 {
@@ -2865,6 +2879,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, is_player),
 	luamethod(ObjectRef, get_player_name),
 	luamethod(ObjectRef, get_look_dir),
+	luamethod(ObjectRef, get_point_screen_pos),
 	luamethod(ObjectRef, get_point_dir),
 	luamethod(ObjectRef, get_look_pitch),
 	luamethod(ObjectRef, get_look_yaw),

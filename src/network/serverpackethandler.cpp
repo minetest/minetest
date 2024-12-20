@@ -475,9 +475,12 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 		player->control.setMovementFromKeys();
 	}
 
-	if (pkt->getRemainingBytes() >= 8) {
+	if (pkt->getRemainingBytes() >= 16) {
+		*pkt >> player->pointer_pos;
 		*pkt >> player->point_pitch >> player->point_yaw;
 	} else {
+		player->pointer_pos.X = 0.5f;
+		player->pointer_pos.Y = 0.5f;
 		player->point_pitch = 0.0f;
 		player->point_yaw = 0.0f;
 	}

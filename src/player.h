@@ -188,7 +188,12 @@ public:
 	PlayerControl control;
 	const PlayerControl& getPlayerControl() { return control; }
 
-	// point direction, represented as pitch/yaw in degrees, relative to look direction
+	// Pointer position, as screen coordinates in the range 0..1
+	// When using a crosshair, this is always (0.5, 0.5)
+	v2f pointer_pos = v2f(0.5f, 0.5f);
+	// Point direction, represented as pitch/yaw in degrees
+	// Relative to look direction
+	// When using a crosshair, these are always 0
 	f32 point_pitch = 0.0f;
 	f32 point_yaw = 0.0f;
 

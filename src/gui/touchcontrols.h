@@ -97,6 +97,13 @@ public:
 	}
 
 	/**
+	 * Returns the pointer position.
+	 *
+	 * May only be used if crosshair is disabled (see setUseCrosshair)
+	 */
+	v2s32 getPointerPos();
+
+	/**
 	 * Returns a line which describes what the player is pointing at.
 	 * The starting point and looking direction are significant,
 	 * the line should be scaled to match its length to the actual distance
@@ -108,9 +115,8 @@ public:
 	 */
 	line3d<f32> getShootline();
 	/**
-	 * Returns the same as above, but only taking projection matrix into account,
-	 * not view matrix, which means that the resulting shootline is relative to
-	 * the camera position/rotation.
+	 * This has the same purpose as getShootline, but the returned shootline
+	 * is relative to the camera.
 	 */
 	line3d<f32> getShootlineRel();
 
@@ -215,7 +221,6 @@ private:
 	// map to store the IDs and positions of currently pressed pointers
 	std::unordered_map<size_t, v2s32> m_pointer_pos;
 
-	v2s32 getPointerPos();
 	void emitMouseEvent(EMOUSE_INPUT_EVENT type);
 	TouchInteractionMode m_last_mode = TouchInteractionMode_END;
 	TapState m_tap_state = TapState::None;
