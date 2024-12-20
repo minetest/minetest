@@ -13,6 +13,7 @@
 #include "client/texturesource.h"
 #include "client/tile.h"
 #include <IMeshManipulator.h>
+#include <SkinnedMesh.h>
 #endif
 #include "log.h"
 #include "settings.h"
@@ -953,6 +954,12 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 				infostream << "ContentFeatures: recalculating normals for mesh "
 					<< mesh << std::endl;
 				meshmanip->recalculateNormals(mesh_ptr, true, false);
+			} else {
+				// Animation is not supported, but we need to reset it to
+				// default state if it is animated.
+				// Note: recalculateNormals() also does this hence the else-block
+				if (mesh_ptr->getMeshType() == scene::EAMT_SKINNED)
+					((scene::SkinnedMesh*) mesh_ptr)->resetAnimation();
 			}
 		}
 	}
