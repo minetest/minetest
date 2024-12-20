@@ -26,9 +26,7 @@ This will install the C++ compiler used in later steps. VS is also the recommend
 
 The CMake GUI is a great tool to manage first-time setup of Luanti. It's not required, but recommended for anyone unfamiliar with CMake or its CLI. CMake itself comes bundled with Visual Studio, but the CMake GUI does not, and must be installed separately.
 
-Install from [cmake.org/download](https://cmake.org/download/). Once installed, you should be able to run `cmake-gui` from the start menu:
-
-![cmake-gui in Windows start menu shows app result](./assets/cmake-gui-search.png)
+Install from [cmake.org/download](https://cmake.org/download/). Once installed, you should be able to run `cmake-gui` from the start menu.
 
 Installing CMake this way also adds it to your PATH environment variable, and you should be able to run `(Get-Command cmake).Path` in PowerShell or `which cmake` in Bash and get a result.
 
