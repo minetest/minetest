@@ -6566,7 +6566,7 @@ Environment access
     * `pointabilities`: Allows overriding the `pointable` property of
       nodes and objects. Uses the same format as the `pointabilities` property
       of item definitions. Default is `nil`.
-* `core.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)`
+* `core.find_path(pos1, pos2, searchdistance, max_jump, max_drop, algorithm)`
     * returns table containing path that can be walked on
     * returns a table of 3D points representing a path from `pos1` to `pos2` or
       `nil` on failure.
@@ -6586,7 +6586,7 @@ Environment access
       Difference between `"A*"` and `"A*_noprefetch"` is that
       `"A*"` will pre-calculate the cost-data, the other will calculate it
       on-the-fly
-* `core.spawn_tree (pos, {treedef})`
+* `core.spawn_tree(pos, treedef)`
     * spawns L-system tree at given `pos` with definition in `treedef` table
 * `core.spawn_tree_on_vmanip(vmanip, pos, treedef)`
     * analogous to `core.spawn_tree`, but spawns a L-system tree onto the specified
