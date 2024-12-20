@@ -531,10 +531,11 @@ void TouchControls::translateEvent(const SEvent &event)
 				m_move_has_really_moved    = false;
 				m_move_downtime            = porting::getTimeMs();
 				m_move_pos                 = touch_pos;
-				// DON'T reset m_tap_state here, otherwise many short taps
-				// will be ignored if you tap very fast.
 				m_had_move_id              = true;
 				m_move_prevent_short_tap   = prevent_short_tap;
+
+				// DON'T reset m_tap_state here, otherwise many short taps
+				// will be ignored if you tap very fast.
 			}
 		}
 	}
@@ -750,8 +751,6 @@ void TouchControls::show()
 
 v2s32 TouchControls::getPointerPos()
 {
-	if (m_draw_crosshair)
-		return v2s32(m_screensize.X / 2, m_screensize.Y / 2);
 	// We can't just use m_pointer_pos[m_move_id] because applyContextControls
 	// may emit release events after m_pointer_pos[m_move_id] is erased.
 	return m_move_pos;
@@ -759,7 +758,9 @@ v2s32 TouchControls::getPointerPos()
 
 void TouchControls::emitMouseEvent(EMOUSE_INPUT_EVENT type)
 {
-	v2s32 pointer_pos = getPointerPos();
+	v2s32 pointer_pos = m_draw_crosshair
+			? v2s32(m_screensize.X / 2, m_screensize.Y / 2)
+			: getPointerPos();
 
 	SEvent event{};
 	event.EventType               = EET_MOUSE_INPUT_EVENT;
