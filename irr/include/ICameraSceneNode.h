@@ -139,9 +139,6 @@ public:
 	/** \return The current view frustum. */
 	virtual const SViewFrustum *getViewFrustum() const = 0;
 
-	//! Get the view frustum, relative. Warning: calculated, not cached
-	virtual SViewFrustum getViewFrustumRel() const = 0;
-
 	//! Disables or enables the camera to get key or mouse inputs.
 	/** If this is set to true, the camera will respond to key
 	inputs otherwise not. */

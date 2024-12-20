@@ -222,10 +222,6 @@ TouchControls::TouchControls(IrrlichtDevice *device, ISimpleTextureSource *tsrc)
 	m_screensize = m_device->getVideoDriver()->getScreenSize();
 	m_button_size = ButtonLayout::getButtonSize(m_screensize);
 	applyLayout(ButtonLayout::loadFromSettings());
-	// This means the shootline starts out in the middle of the screen instead
-	// of the upper left corner with m_draw_crosshair == false.
-	// It's not strictly necessary, but it's nicer.
-	m_move_pos = v2s32(m_screensize.X / 2, m_screensize.Y / 2);
 }
 
 void TouchControls::applyLayout(const ButtonLayout &layout)
@@ -535,9 +531,11 @@ void TouchControls::translateEvent(const SEvent &event)
 				m_move_has_really_moved    = false;
 				m_move_downtime            = porting::getTimeMs();
 				m_move_pos                 = touch_pos;
+				m_had_move_id              = true;
+				m_move_prevent_short_tap   = prevent_short_tap;
+
 				// DON'T reset m_tap_state here, otherwise many short taps
 				// will be ignored if you tap very fast.
-				m_move_prevent_short_tap   = prevent_short_tap;
 			}
 		}
 	}
@@ -656,22 +654,22 @@ void TouchControls::step(float dtime)
 			m_tap_state = TapState::LongTap;
 		}
 	}
-}
 
-line3d<f32> TouchControls::getShootline()
-{
-	return m_device
-			->getSceneManager()
-			->getSceneCollisionManager()
-			->getRayFromScreenCoordinates(m_move_pos, nullptr, false);
-}
-
-line3d<f32> TouchControls::getShootlineRel()
-{
-	return m_device
-			->getSceneManager()
-			->getSceneCollisionManager()
-			->getRayFromScreenCoordinates(m_move_pos, nullptr, true);
+	// Update the shootline.
+	// Since not only the pointer position, but also the player position and
+	// thus the camera position can change, it doesn't suffice to update the
+	// shootline when a touch event occurs.
+	// Note that the shootline isn't used if touch_use_crosshair is enabled.
+	// Only updating when m_has_move_id means that the shootline will stay at
+	// it's last in-world position when the player doesn't need it.
+	if (!m_draw_crosshair && (m_has_move_id || m_had_move_id)) {
+		v2s32 pointer_pos = getPointerPos();
+		m_shootline = m_device
+				->getSceneManager()
+				->getSceneCollisionManager()
+				->getRayFromScreenCoordinates(pointer_pos);
+	}
+	m_had_move_id = false;
 }
 
 void TouchControls::resetHotbarRects()

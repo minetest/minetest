@@ -120,9 +120,6 @@ public:
 	//! Returns the view area.
 	const SViewFrustum *getViewFrustum() const override;
 
-	//! Returns the view area, relative. Warning: calculated, not cached
-	SViewFrustum getViewFrustumRel() const override;
-
 	//! Disables or enables the camera to get key or mouse inputs.
 	//! If this is set to true, the camera will respond to key inputs
 	//! otherwise not.

@@ -1246,12 +1246,7 @@ int ObjectRef::l_get_look_dir(lua_State *L)
 	if (playersao == nullptr)
 		return 0;
 
-	float pitch = playersao->getRadLookPitchDep();
-	float yaw = playersao->getRadYawDep();
-	v3f v(std::cos(pitch) * std::cos(yaw), std::sin(pitch), std::cos(pitch) *
-		std::sin(yaw));
-
-	push_v3f(L, v);
+	push_v3f(L, playersao->getLookDir());
 	return 1;
 }
 
@@ -1260,11 +1255,10 @@ int ObjectRef::l_get_point_screen_pos(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
-	PlayerSAO* playersao = getplayersao(ref);
-	if (playersao == nullptr)
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
 		return 0;
 
-	RemotePlayer *player = playersao->getPlayer();
 	push_v2f(L, player->pointer_pos);
 	return 1;
 }
@@ -1279,17 +1273,14 @@ int ObjectRef::l_get_point_dir(lua_State *L)
 		return 0;
 
 	RemotePlayer *player = playersao->getPlayer();
-	const v3f point_rot_rel = v3f(player->point_pitch, player->point_yaw, 0.0f);
-	const v3f point_dir_rel = point_rot_rel.rotationToDirection();
 
-	// "-1 * yaw" because that's how the yaw value is applied to the camera,
-	// no idea why it was chosen to be like that.
-	core::matrix4 look_rot_mat;
-	look_rot_mat.setRotationRadians(v3f(playersao->getRadLookPitch(),
-			-1.0f * playersao->getRadRotation().Y, 0.0f));
+	if (player->pointer_pos.X == 0.5f && player->pointer_pos.Y == 0.5f) {
+		push_v3f(L, playersao->getLookDir());
+		return 1;
+	}
 
-	const v3f point_dir = look_rot_mat.transformVect(point_dir_rel);
-
+	const v3f point_rot = v3f(player->point_pitch, player->point_yaw, 0.0f);
+	const v3f point_dir = point_rot.rotationToDirection();
 	push_v3f(L, point_dir);
 	return 1;
 }

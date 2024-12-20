@@ -30,8 +30,7 @@ CSceneCollisionManager::~CSceneCollisionManager()
 
 //! Returns a 3d ray which would go through the 2d screen coordinates.
 core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
-		const core::position2d<s32> &pos, const ICameraSceneNode *camera,
-		bool relative)
+		const core::position2d<s32> &pos, const ICameraSceneNode *camera)
 {
 	core::line3d<f32> ln(0, 0, 0, 0, 0, 0);
 
@@ -44,15 +43,11 @@ core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
 	if (!camera)
 		return ln;
 
-	scene::SViewFrustum f;
-	if (relative)
-		f = camera->getViewFrustumRel();
-	else
-		f = *camera->getViewFrustum();
+	const scene::SViewFrustum *f = camera->getViewFrustum();
 
-	core::vector3df farLeftUp = f.getFarLeftUp();
-	core::vector3df lefttoright = f.getFarRightUp() - farLeftUp;
-	core::vector3df uptodown = f.getFarLeftDown() - farLeftUp;
+	core::vector3df farLeftUp = f->getFarLeftUp();
+	core::vector3df lefttoright = f->getFarRightUp() - farLeftUp;
+	core::vector3df uptodown = f->getFarLeftDown() - farLeftUp;
 
 	const core::rect<s32> &viewPort = Driver->getViewPort();
 	core::dimension2d<u32> screenSize(viewPort.getWidth(), viewPort.getHeight());
@@ -61,9 +56,9 @@ core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
 	f32 dy = pos.Y / (f32)screenSize.Height;
 
 	if (camera->isOrthogonal())
-		ln.start = f.cameraPosition + (lefttoright * (dx - 0.5f)) + (uptodown * (dy - 0.5f));
+		ln.start = f->cameraPosition + (lefttoright * (dx - 0.5f)) + (uptodown * (dy - 0.5f));
 	else
-		ln.start = f.cameraPosition;
+		ln.start = f->cameraPosition;
 
 	ln.end = farLeftUp + (lefttoright * dx) + (uptodown * dy);
 
