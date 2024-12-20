@@ -240,6 +240,8 @@ core::vector2di CGUIFont::getKerning(const wchar_t thisLetter, const wchar_t pre
 		if (previousLetter)
 			ret.X += Areas[getAreaFromCharacter(previousLetter)].underhang;
 	}
+
+	return ret;
 }
 
 //! set an Pixel Offset on Drawing ( scale position on height )
