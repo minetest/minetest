@@ -8414,7 +8414,7 @@ child will follow movement and rotation of that bone.
     * If the player uses a crosshair, this always returns `{x = 0.5, y = 0.5}`
     * If the player uses the touchscreen controls without a crosshair, ...
       * ...other values may be returned.
-      * ...the player doesn't have a  well-defined pointer position when not
+      * ...the player doesn't have a well-defined pointer position when not
         touching the screen. In this case, `get_point_screen_pos` returns the
         last valid pointer position.
 * `get_look_vertical()`: pitch in radians

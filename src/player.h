@@ -197,8 +197,8 @@ public:
 	f32 point_yaw = 0.0f;
 
 	// Note: If there is no crosshair and the player is not touching the screen,
-	// pointer position and pointing direction are not well-defined, so the last
-	// valid value is kept.
+	// pointer position and pointing direction are not well-defined. In this
+	// case, the last valid values are kept.
 
 	PlayerPhysicsOverride physics_override;
 
