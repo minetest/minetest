@@ -1614,7 +1614,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 				start_data.password,
 				*draw_control, texture_src, shader_src,
 				itemdef_manager, nodedef_manager, sound_manager.get(), eventmgr,
-				m_rendering_engine, m_game_ui.get(),
+				m_rendering_engine,
 				start_data.allow_login_or_register);
 	} catch (const BaseException &e) {
 		*error_message = fmtgettext("Error creating client: %s", e.what());
