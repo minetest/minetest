@@ -14,7 +14,6 @@
 #include "network/networkpacket.h"
 #include "threading/mutex_auto_lock.h"
 #include "client/clientevent.h"
-#include "client/gameui.h"
 #include "client/renderingengine.h"
 #include "client/sound.h"
 #include "client/texturepaths.h"
@@ -94,7 +93,6 @@ Client::Client(
 		ISoundManager *sound,
 		MtEventManager *event,
 		RenderingEngine *rendering_engine,
-		GameUI *game_ui,
 		ELoginRegister allow_login_or_register
 ):
 	m_tsrc(tsrc),
@@ -117,7 +115,6 @@ Client::Client(
 	m_chosen_auth_mech(AUTH_MECHANISM_NONE),
 	m_media_downloader(new ClientMediaDownloader()),
 	m_state(LC_Created),
-	m_game_ui(game_ui),
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	// Add local player
