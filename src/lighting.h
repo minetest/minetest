@@ -56,9 +56,9 @@ struct Vignette {
  *
  */
 struct ColorDecisionList {
-	core::vector3df slope{1.2, 1.0, 0.8};
+	core::vector3df slope{1.0, 1.0, 1.0};
 	core::vector3df offset{0.0, 0.0, 0.0};
-	core::vector3df power{1.25, 1.0, 0.9};
+	core::vector3df power{1.0, 1.0, 1.0};
 };
 
 /** Describes ambient light settings for a player
@@ -71,6 +71,8 @@ struct Lighting
 	float shadow_intensity {0.0f};
 	float saturation {1.0f};
 	float volumetric_light_strength {0.0f};
+	float foliage_translucency{1.5f};
+	float specular_intensity{1.5f};
 	// These factors are calculated based on expected value of scattering factor of 1e-5
 	// for Nitrogen at 532nm (green), 2e25 molecules/m3 in atmosphere
 	core::vector3df volumetric_beta_r0{ 3.3362176e-01, 8.75378289198826e-01, 1.95342379700656 };

@@ -414,6 +414,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float> m_vignette_dark_pixel{"vignette_dark"};
 	CachedPixelShaderSetting<float> m_vignette_bright_pixel{"vignette_bright"};
 	CachedPixelShaderSetting<float> m_vignette_power_pixel{"vignette_power"};
+	CachedPixelShaderSetting<float> m_foliage_translucency_pixel{ "foliage_translucency" };
+	CachedPixelShaderSetting<float> m_specular_intensity_pixel{ "specular_intensity" };
 
 	static constexpr std::array<const char*, 1> SETTING_CALLBACKS = {
 		"exposure_compensation",
@@ -530,6 +532,9 @@ public:
 		m_vignette_dark_pixel.set(&vignette_params.dark, services);
 		m_vignette_bright_pixel.set(&vignette_params.bright, services);
 		m_vignette_power_pixel.set(&vignette_params.power, services);
+
+		m_foliage_translucency_pixel.set(&lighting.foliage_translucency, services);
+		m_specular_intensity_pixel.set(&lighting.specular_intensity, services);
 
 		if (g_settings->getBool("enable_color_grading")) {
 			const ColorDecisionList& cdl_params = lighting.cdl;

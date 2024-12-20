@@ -8786,6 +8786,10 @@ child will follow movement and rotation of that bone.
             but keeping original luma and being symmetrical in terms of saturation
             (eg. -1 and 1 is the same saturation and luma, but different hues)
         * This value has no effect on clients who have shaders or post-processing disabled.
+      * `foliage_translucency` controls the intensity of the foliage translucency effect (default: `2.0`).
+        * This has no effect when dynamic shadows are disabled and on clients who have the "Translucent foliage" effect disabled.
+      * `specular_intensity` controls the intensity of specular highlights on nodes and liquids (default: `2.0`).
+        * This has no effect when dynamic shadows are disabled and on clients who have the "Translucent foliage" effect disabled.
       * `shadows` is a table that controls ambient shadows
         * This has no effect on clients who have the "Dynamic Shadows" effect disabled.
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)

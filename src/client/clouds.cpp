@@ -196,7 +196,6 @@ void Clouds::updateMesh()
 		const f32 rz = cloud_size / 2;
 
 		bool soft_clouds_enabled = g_settings->getBool("soft_clouds");
-		bool shaded_clouds_enabled = soft_clouds_enabled && g_settings->getBool("enable_dynamic_shadows") && g_settings->getBool("enable_3d_clouds");
 
 		v3f pos(p0.X, m_params.height * BS, p0.Y);
 

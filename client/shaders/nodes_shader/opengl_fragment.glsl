@@ -32,6 +32,8 @@ uniform float animationTimer;
 	uniform float xyPerspectiveBias0;
 	uniform float xyPerspectiveBias1;
 	uniform vec3 shadow_tint;
+	uniform float foliage_translucency;
+	uniform float specular_intensity;
 
 	varying float adj_shadow_strength;
 	varying float cosLight;
@@ -533,11 +535,8 @@ void main(void)
 		col.rgb += reflection_color * pow(fresnel_factor, 2.0) * 0.5 * brightness_factor;
 
 		vec3 water_reflect_color =
-			6.0 * sunTint * dayLight * fresnel_factor * f_adj_shadow_strength * max(1.0 - shadow_uncorrected, 0.0) *
+			2.0 * specular_intensity * sunTint * dayLight * fresnel_factor * max(1.0 - shadow_uncorrected, 0.0) *
 			mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0));
-
-		// We clip the reflection color if it gets too bright
-		water_reflect_color *= min(2.0 / max(water_reflect_color.r, max(water_reflect_color.g, water_reflect_color.b)), 1.0);
 
 		// Sun reflection
 		col.rgb += water_reflect_color * brightness_factor;
@@ -547,22 +546,25 @@ void main(void)
 		// Apply specular to blocks.
 		if (dot(v_LightDirection, vNormal) < 0.0) {
 			// This intensity is a placeholder and should be replaced by proper specular maps.
-			float intensity = 4.0 * min(1.0, length(varColor.rgb * base.rgb));
+			float intensity = specular_intensity * min(1.0, length(varColor.rgb * base.rgb));
 			const float specular_exponent = 5.0;
 			const float fresnel_exponent =  4.0;
 
 			col.rgb +=
-				sunTint * intensity * dayLight * (1.0 - nightRatio) * (1.0 - shadow_uncorrected) * f_adj_shadow_strength *
+				sunTint * intensity * dayLight * (1.0 - nightRatio) * (1.0 - shadow_uncorrected) *
 				pow(max(dot(reflect_ray, viewVec), 0.0), fresnel_exponent) * pow(1.0 - abs(dot(viewVec, fNormal)), specular_exponent);
 		}
 #endif
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES) && defined(ENABLE_TRANSLUCENT_FOLIAGE)
 		// Simulate translucent foliage.
-		col.rgb += 4.0 * sunTint * dayLight * base.rgb * normalize(base.rgb * varColor.rgb * varColor.rgb) * f_adj_shadow_strength * pow(max(-dot(v_LightDirection, viewVec), 0.0), 4.0) * max(1.0 - shadow_uncorrected, 0.0);
+		col.rgb += foliage_translucency * sunTint * dayLight * base.rgb * normalize(base.rgb * varColor.rgb * varColor.rgb) * pow(max(-dot(v_LightDirection, viewVec), 0.0), 4.0) * max(1.0 - shadow_uncorrected, 0.0);
 #endif
 	}
 #endif
+
+	// We clip the color if it gets too bright
+	col *= min(2.0 / base.a / max(col.r, max(col.g, col.b)), 1.0);
 
 	// Due to a bug in some (older ?) graphics stacks (possibly in the glsl compiler ?),
 	// the fog will only be rendered correctly if the last operation before the
