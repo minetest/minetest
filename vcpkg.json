@@ -1,0 +1,18 @@
+{
+  "dependencies": [
+    "curl",
+    "freetype",
+    "gettext",
+    "gmp",
+    "jsoncpp",
+    "libjpeg-turbo",
+    "libogg",
+    "libvorbis",
+    "luajit",
+    "openal-soft",
+    "sdl2",
+    "sqlite3",
+    "zlib",
+    "zstd"
+  ]
+}
