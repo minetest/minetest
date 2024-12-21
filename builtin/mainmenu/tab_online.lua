@@ -112,6 +112,7 @@ local function get_formspec(tabview, name, tabdata)
 	local retval =
 		-- Search
 		"field[0.25,0.25;7,0.75;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
+		"tooltip[te_search;" .. fgettext("Possible filters\ngame:<name>\nmod:<name>\nplayer:<name>") .. "]" ..
 		"field_enter_after_edit[te_search;true]" ..
 		"container[7.25,0.25]" ..
 		"image_button[0,0;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "search.png") .. ";btn_mp_search;]" ..
@@ -271,19 +272,49 @@ end
 
 --------------------------------------------------------------------------------
 
+local function parse_search_input(input)
+	-- Return nil if nothing to search for
+	if not input:find("%S") then
+		return nil
+	end
+
+	local query = {keywords = {}, mods = {}, players = {}}
+
+	-- Process quotation enclosed parts
+	input = input:gsub("([^ ]?)\"([^\"]*)\"([^ ]?)", function(before, match, after)
+		if #before == 0 and #after == 0 then -- Also have be separated by spaces
+			table.insert(query.keywords, match)
+			return " "
+		end
+		return before..'"'..match..'"'..after
+	end)
+
+	-- Separate by space characters and handle special prefixes
+	-- (words with special prefixes need an exact match and none of them can contain spaces)
+	for word in input:gmatch("%S+") do
+		local mod = word:match("^mod:(.*)")
+		table.insert(query.mods, mod)
+		local player = word:match("^player:(.*)")
+		table.insert(query.players, player)
+		local game = word:match("^game:(.*)")
+		query.game = game
+		if not (mod or player or game) then
+			table.insert(query.keywords, word:lower())
+		end
+	end
+
+	return query
+end
+
 local function search_server_list(input)
 	menudata.search_result = nil
 	if #serverlistmgr.servers < 2 then
 		return
 	end
 
-	-- setup the keyword list
-	local keywords = {}
-	for word in input:gmatch("%S+") do
-		table.insert(keywords, word:lower())
-	end
-
-	if #keywords == 0 then
+	-- setup the search query
+	local query = parse_search_input(input:lower())
+	if not query then
 		return
 	end
 
@@ -292,14 +323,46 @@ local function search_server_list(input)
 	-- Search the serverlist
 	local search_result = {}
 	for i, server in ipairs(serverlistmgr.servers) do
-		local name_matches, description_matches = true, true
-		for _, keyword in ipairs(keywords) do
+		local name_matches, description_matches, filter_matches = true, true, true
+
+		-- Check if keyword found
+		for _, keyword in ipairs(query.keywords) do
 			name_matches = name_matches and not not
 					(server.name or ""):lower():find(keyword, 1, true)
 			description_matches = description_matches and not not
 					(server.description or ""):lower():find(keyword, 1, true)
 		end
-		if name_matches or description_matches then
+
+		-- Check if mods found
+		local mods_lower = {}
+		for j, mod in ipairs(server.mods or {}) do
+			mods_lower[j] = mod:lower()
+		end
+		for _, mod in ipairs(query.mods) do
+			if table.indexof(mods_lower, mod) < 0 then
+				filter_matches = false
+				break
+			end
+		end
+
+		-- Check if players found
+		local clients_list_lower = {}
+		for j, player in ipairs(server.clients_list or {}) do
+			clients_list_lower[j] = player:lower()
+		end
+		for _, player in ipairs(query.players) do
+			if table.indexof(clients_list_lower, player) < 0 then
+				filter_matches = false
+				break
+			end
+		end
+
+		-- Check if game matches
+		if query.game and query.game ~= server.gameid then
+			filter_matches = false
+		end
+
+		if filter_matches and (name_matches or description_matches) then
 			server.points = #serverlistmgr.servers - i
 					+ (name_matches and 50 or 0)
 			table.insert(search_result, server)
@@ -395,7 +458,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 	if fields.btn_mp_search or fields.key_enter_field == "te_search" then
 		tabdata.search_for = fields.te_search
-		search_server_list(fields.te_search:lower())
+		search_server_list(fields.te_search)
 		if menudata.search_result then
 			-- Note: This clears the selection if there are no results
 			set_selected_server(menudata.search_result[1])
