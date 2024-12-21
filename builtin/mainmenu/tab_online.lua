@@ -285,14 +285,14 @@ local function parse_search_input(input)
 	-- Separate by space characters and handle special prefixes
 	-- (words with special prefixes need an exact match and none of them can contain spaces)
 	for word in input:gmatch("%S+") do
-		if word:sub(0, 4) == "mod:" then
-			table.insert(query.mods, word:sub(5))
-		elseif word:sub(0, 7) == "player:" then
-			table.insert(query.players, word:sub(8))
-		elseif word:sub(0, 5) == "game:" then
-			query.game = word:sub(6)
-		else
-			table.insert(query.keywords, word)
+		local mod = word:match("^mod:(.*)")
+		table.insert(query.mods, mod)
+		local player = word:match("^player:(.*)")
+		table.insert(query.players, player)
+		local game = word:match("^game:(.*)")
+		query.game = game
+		if not (mod or player or game) then
+			table.insert(query.keywords, word:lower())
 		end
 	end
 
