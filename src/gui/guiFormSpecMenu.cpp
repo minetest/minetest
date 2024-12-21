@@ -79,7 +79,7 @@
 */
 static unsigned int font_line_height(gui::IGUIFont *font)
 {
-	return font->getDimension(L"Ay").Height + font->getKerningHeight();
+	return font->getDimension(L"Ay").Height + font->getKerning(L'A').Y;
 }
 
 inline u32 clamp_u8(s32 value)

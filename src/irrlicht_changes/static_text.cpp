@@ -74,7 +74,7 @@ void StaticText::draw()
 			updateText();
 
 		core::rect<s32> r = frameRect;
-		s32 height_line = font->getDimension(L"A").Height + font->getKerningHeight();
+		s32 height_line = font->getDimension(L"A").Height + font->getKerning(L'A').Y;
 		s32 height_total = height_line * BrokenText.size();
 		if (VAlign == EGUIA_CENTER && WordWrap)
 		{
@@ -546,7 +546,7 @@ s32 StaticText::getTextHeight() const
 		return 0;
 
 	if (WordWrap) {
-		s32 height = font->getDimension(L"A").Height + font->getKerningHeight();
+		s32 height = font->getDimension(L"A").Height + font->getKerning(L'A').Y;
 		return height * BrokenText.size();
 	}
 	// There may be intentional new lines without WordWrap

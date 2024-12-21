@@ -788,9 +788,9 @@ void CGUIEditBox::draw()
 						mbegin = font->getDimension(s.c_str()).Width;
 
 						// deal with kerning
-						mbegin += font->getKerningWidth(
-								&((*txtLine)[realmbgn - startPos]),
-								realmbgn - startPos > 0 ? &((*txtLine)[realmbgn - startPos - 1]) : 0);
+						mbegin += font->getKerning(
+								(*txtLine)[realmbgn - startPos],
+								realmbgn - startPos > 0 ? (*txtLine)[realmbgn - startPos - 1] : 0).X;
 
 						lineStartPos = realmbgn - startPos;
 					}
@@ -832,7 +832,8 @@ void CGUIEditBox::draw()
 			}
 			s = txtLine->subString(0, CursorPos - startPos);
 			charcursorpos = font->getDimension(s.c_str()).Width +
-							font->getKerningWidth(CursorChar.c_str(), CursorPos - startPos > 0 ? &((*txtLine)[CursorPos - startPos - 1]) : 0);
+							font->getKerning(CursorChar[0],
+							CursorPos - startPos > 0 ? (*txtLine)[CursorPos - startPos - 1] : 0).X;
 
 			if (focus && (CursorBlinkTime == 0 || (os::Timer::getTime() - BlinkStartTime) % (2 * CursorBlinkTime) < CursorBlinkTime)) {
 				setTextRect(cursorLine);
@@ -1194,7 +1195,7 @@ void CGUIEditBox::setTextRect(s32 line)
 		d = font->getDimension(Text.c_str());
 		d.Height = AbsoluteRect.getHeight();
 	}
-	d.Height += font->getKerningHeight();
+	d.Height += font->getKerning(L'A').Y;
 
 	// justification
 	switch (HAlign) {
@@ -1382,7 +1383,7 @@ void CGUIEditBox::calculateScrollPos()
 
 	// calculate vertical scrolling
 	if (hasBrokenText) {
-		irr::u32 lineHeight = font->getDimension(L"A").Height + font->getKerningHeight();
+		irr::u32 lineHeight = font->getDimension(L"A").Height + font->getKerning(L'A').Y;
 		// only up to 1 line fits?
 		if (lineHeight >= (irr::u32)FrameRect.getHeight()) {
 			VScrollPos = 0;
