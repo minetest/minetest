@@ -197,6 +197,7 @@ WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id):
 
 	// Disable bounding box culling for this scene node
 	// since we won't calculate the bounding box.
+	// FIXME: why not?
 	setAutomaticCulling(scene::EAC_OFF);
 
 	// Create the child scene node
