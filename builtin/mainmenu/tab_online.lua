@@ -265,38 +265,35 @@ end
 
 --------------------------------------------------------------------------------
 
--- Separates by space characters and handles special prefixes
--- (words with special prefixes need an exact match and none of them can contain spaces
--- or quotation marks)
-local function parse_search_word(query, text)
-	for word in text:gmatch("%S+") do
-		if string.sub(word, 0, 4) == "mod:" then
-			table.insert(query.mods, string.sub(word, 5))
-		elseif string.sub(word, 0, 7) == "player:" then
-			table.insert(query.players, string.sub(word, 8))
-		elseif string.sub(word, 0, 5) == "game:" then
-			query.game = string.sub(word, 6)
-		else
-			table.insert(query.keywords, word:lower())
-		end
-	end
-end
-
 local function parse_search_input(input)
+	-- Return nil if nothing to search for
+	if not input:find("%S") then
+		return nil
+	end
+
 	local query = {keywords = {}, mods = {}, players = {}}
 
-	-- Separate quote enclosed parts
-	-- (If the input contains a single quotation mark, the part after is ignored.)
-	parse_search_word(query, string.match(input, "^([^\"]*)"))
-	for s1, s2 in input:gmatch("\"([^\"]*)\"([^\"]*)") do
-		if #s1 > 0 then
-			table.insert(query.keywords, s1:lower()) -- quotation enclosed part keeps spaces
+	-- Process quotation enclosed parts
+	input = input:gsub("([^ ]?)\"([^\"]*)\"([^ ]?)", function(before, match, after)
+		if #before == 0 and #after == 0 then -- Also have be separated by spaces
+			table.insert(query.keywords, match)
+			return " "
 		end
-		parse_search_word(query, s2)
-	end
+		return before..'"'..match..'"'..after
+	end)
 
-	if #query.keywords == 0 and #query.mods == 0 and #query.players == 0 and not query.game then
-		return nil
+	-- Separate by space characters and handle special prefixes
+	-- (words with special prefixes need an exact match and none of them can contain spaces)
+	for word in input:gmatch("%S+") do
+		if word:sub(0, 4) == "mod:" then
+			table.insert(query.mods, word:sub(5))
+		elseif word:sub(0, 7) == "player:" then
+			table.insert(query.players, word:sub(8))
+		elseif word:sub(0, 5) == "game:" then
+			query.game = word:sub(6)
+		else
+			table.insert(query.keywords, word)
+		end
 	end
 
 	return query
@@ -309,7 +306,7 @@ local function search_server_list(input)
 	end
 
 	-- setup the search query
-	local query = parse_search_input(input)
+	local query = parse_search_input(input:lower())
 	if not query then
 		return
 	end
@@ -330,31 +327,31 @@ local function search_server_list(input)
 		end
 
 		-- Check if mods found
-		if server.mods then
-			for _, mod in ipairs(query.mods) do
-				if table.indexof(server.mods, mod) < 0 then
-					filter_matches = false
-					break
-				end
+		local mods_lower = {}
+		for i, mod in ipairs(server.mods or {}) do
+			mods_lower[i] = mod:lower()
+		end
+		for _, mod in ipairs(query.mods) do
+			if table.indexof(mods_lower, mod) < 0 then
+				filter_matches = false
+				break
 			end
-		elseif #query.mods > 0 then
-			filter_matches = false
 		end
 
 		-- Check if players found
-		if server.clients_list then
-			for _, player in ipairs(query.players) do
-				if table.indexof(server.clients_list, player) < 0 then
-					filter_matches = false
-					break
-				end
+		local clients_list_lower = {}
+		for i, player in ipairs(server.clients_list or {}) do
+			clients_list_lower[i] = player:lower()
+		end
+		for _, player in ipairs(query.players) do
+			if table.indexof(clients_list_lower, player) < 0 then
+				filter_matches = false
+				break
 			end
-		elseif #query.players > 0 then
-			filter_matches = false
 		end
 
 		-- Check if game matches
-		if query.game and (not server.gameid or server.gameid ~= query.game) then
+		if query.game and query.game ~= server.gameid then
 			filter_matches = false
 		end
 
