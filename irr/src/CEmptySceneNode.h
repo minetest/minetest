@@ -33,7 +33,7 @@ public:
 	ISceneNode *clone(ISceneNode *newParent = 0, ISceneManager *newManager = 0) override;
 
 private:
-	core::aabbox3d<f32> Box;
+	core::aabbox3d<f32> Box{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
 };
 
 } // end namespace scene

@@ -75,10 +75,8 @@ static aabb3f getNodeBoundingBox(const std::vector<aabb3f> &nodeboxes)
 	if (nodeboxes.empty())
 		return aabb3f(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 
-	aabb3f b_max;
-
-	std::vector<aabb3f>::const_iterator it = nodeboxes.begin();
-	b_max = aabb3f(it->MinEdge, it->MaxEdge);
+	auto it = nodeboxes.begin();
+	aabb3f b_max(it->MinEdge, it->MaxEdge);
 
 	++it;
 	for (; it != nodeboxes.end(); ++it)
