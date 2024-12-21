@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Danish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-10-06 23:41+0000\n"
-"Last-Translator: Luna <social.pvxuu@slmail.me>\n"
+"PO-Revision-Date: 2024-12-22 16:00+0000\n"
+"Last-Translator: cat <catsnote@proton.me>\n"
 "Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
 "da/>\n"
 "Language: da\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8-dev\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -168,9 +168,8 @@ msgid "Back"
 msgstr "Tilbage"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "ContentDB is not available when Luanti was compiled without cURL"
-msgstr "ContentDB er ikke tilgængelig, når Minetest blev kompileret uden cURL"
+msgstr "ContentDB er ikke tilgængelig, når Luanti blev kompileret uden cURL"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Downloading..."
@@ -214,7 +213,6 @@ msgid "Queued"
 msgstr "Sat i kø"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
-#, fuzzy
 msgid "Texture Packs"
 msgstr "Teksturpakker"
 
@@ -270,9 +268,8 @@ msgid "Dependencies:"
 msgstr "Afhængigheder:"
 
 #: builtin/mainmenu/content/dlg_install.lua
-#, fuzzy
 msgid "Error getting dependencies for package $1"
-msgstr "Fejl ved hentning af afhængigheder for pakken"
+msgstr "Fejl ved hentning af afhængigheder for pakken $1"
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "Install"
@@ -307,32 +304,28 @@ msgid "Overwrite"
 msgstr "Overskriv"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "ContentDB page"
-msgstr "Fortsæt"
+msgstr "ContentDB-side"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "Description"
-msgstr "Serverbeskrivelse"
+msgstr "Beskrivelse"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Donate"
-msgstr ""
+msgstr "Donér"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Forum Topic"
 msgstr ""
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "Information"
-msgstr "Information:"
+msgstr "Information"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "Install [$1]"
-msgstr "Installer $1"
+msgstr "Installer [$1]"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Issue Tracker"
@@ -340,11 +333,11 @@ msgstr ""
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Source"
-msgstr ""
+msgstr "Kilde"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Translate"
-msgstr ""
+msgstr "Oversæt"
 
 #: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/tab_content.lua
 msgid "Uninstall"
@@ -355,13 +348,12 @@ msgid "Update"
 msgstr "Opdater"
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "Website"
-msgstr "Besøg hjemmeside"
+msgstr "Hjemmeside"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
-msgstr ""
+msgstr "af $1  —  $2 downloads  —  +$3 / $4 / -$5"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -718,7 +710,7 @@ msgstr "Registrér"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr ""
+msgstr "Afvis"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -737,9 +729,8 @@ msgid "Minetest Game is no longer installed by default"
 msgstr ""
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
-#, fuzzy
 msgid "Reinstall Minetest Game"
-msgstr "Installér et andet spil"
+msgstr "Geninstaller Minetest Game"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -937,14 +928,12 @@ msgid "General"
 msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Movement"
-msgstr "Hurtig bevægelse"
+msgstr "Bevægelse"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Reset setting to default"
-msgstr "Gendan standard"
+msgstr "Nulstil indstilling til standard"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
@@ -975,14 +964,12 @@ msgid "Content: Mods"
 msgstr "Indhold: Mods"
 
 #: builtin/mainmenu/settings/shader_warning_component.lua
-#, fuzzy
 msgid "Enable"
-msgstr "aktiveret"
+msgstr "Aktiver"
 
 #: builtin/mainmenu/settings/shader_warning_component.lua
-#, fuzzy
 msgid "Shaders are disabled."
-msgstr "Kameraopdatering slået fra"
+msgstr "Shaders er deaktiveret."
 
 #: builtin/mainmenu/settings/shader_warning_component.lua
 msgid "This is not a recommended configuration."
@@ -1074,18 +1061,16 @@ msgid "Browse online content"
 msgstr "Gennemse online indhold"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Browse online content [$1]"
-msgstr "Gennemse online indhold"
+msgstr "Gennemse online indhold [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
 msgstr "Indhold"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content [$1]"
-msgstr "Indhold"
+msgstr "Indhold [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
@@ -1108,9 +1093,8 @@ msgid "Rename"
 msgstr "Omdøb"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Update available?"
-msgstr "<ingen tilgængelige>"
+msgstr "Opdatering tilgængelig?"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1408,7 +1392,6 @@ msgid "Continue"
 msgstr "Fortsæt"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
@@ -1423,18 +1406,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
-"Standardstyring:\n"
-"Ingen menu synlig:\n"
-"- Enkelt tryk: Aktivér knap\n"
-"- Dobbelt tryk: Placér/brug\n"
-"- Stryg finger: Kig rundt\n"
-"Menu/Medbragt synlig:\n"
-"- Dobbelt tryk (uden for):\n"
+"Styring:\n"
+"Ingen menu åben:\n"
+"- Stryg finger: kig rundt\n"
+"- Tryk: placer/slå/brug (standard)\n"
+"- Langt tryk: grav/brug (standard)\n"
+"Menu/Inventar åben:\n"
+"- Dobbelttryk (udenfor):\n"
 " --> Luk\n"
-"- Rør ved stakken, rør ved felt:\n"
-" --> Flyt stakken\n"
-"- Rør ved og træk, tryk med 2. finger\n"
-" --> Placér enkelt genstand på feltet\n"
+"- Rør ved stak, rør ved felt:\n"
+" --> Flyt stak\n"
+"- Rør og træk, tryk med 2. finger\n"
+" --> Placer enkelt genstand på felt\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1507,9 +1490,8 @@ msgid "Fog enabled"
 msgstr "Tåge aktiveret"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog enabled by game or mod"
-msgstr "Zoom er i øjeblikket slået fra af spil eller mod"
+msgstr "Tåge aktiveret af spil eller mod"
 
 #: src/client/game.cpp
 msgid "Game info:"
@@ -1635,23 +1617,21 @@ msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "Kan ikke lytte på %s fordi IPv6 er slået fra"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range disabled"
-msgstr "Slog ubegrænset sigtbarhed til"
+msgstr "Ubegrænset synsvidde deaktiveret"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range enabled"
-msgstr "Slog ubegrænset sigtbarhed til"
+msgstr "Ubegrænset synsvidde aktiveret"
 
 #: src/client/game.cpp
 msgid "Unlimited viewing range enabled, but forbidden by game or mod"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing changed to %d (the minimum)"
-msgstr "Sigtbarhed er på mininum: %d"
+msgstr "Visning ændret til %d (minimum)"
 
 #: src/client/game.cpp
 #, c-format
@@ -1664,9 +1644,9 @@ msgid "Viewing range changed to %d"
 msgstr "Synafstand ændret til %d"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d (the maximum)"
-msgstr "Synafstand ændret til %d"
+msgstr "Synsvidde ændret til %d (maksimal)"
 
 #: src/client/game.cpp
 #, c-format
@@ -1675,9 +1655,9 @@ msgid ""
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d, but limited to %d by game or mod"
-msgstr "Synafstand ændret til %d"
+msgstr "Synsvidde ændret til %d, men begrænset til %d af spil eller mod"
 
 #: src/client/game.cpp
 #, c-format
@@ -1697,9 +1677,8 @@ msgid "Zoom currently disabled by game or mod"
 msgstr "Zoom er i øjeblikket slået fra af spil eller mod"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat currently disabled by game or mod"
-msgstr "Zoom er i øjeblikket slået fra af spil eller mod"
+msgstr "Chat er i øjeblikket deaktiveret af spil eller mod"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -1745,19 +1724,16 @@ msgid "Caps Lock"
 msgstr "Caps Lock"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Clear Key"
-msgstr "Ryd"
+msgstr "Ryd-tast"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Control Key"
-msgstr "Control"
+msgstr "Control-tast"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Delete Key"
-msgstr "Slet"
+msgstr "Slet-tast"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
@@ -1808,9 +1784,8 @@ msgid "Insert"
 msgstr "Insert"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Arrow"
-msgstr "Venstre Control"
+msgstr "Venstre Pil"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1834,9 +1809,8 @@ msgstr "Venstre meta"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Menu Key"
-msgstr "Menu"
+msgstr "Menu-tast"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
@@ -1911,20 +1885,17 @@ msgid "OEM Clear"
 msgstr "OEM Ryd"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Down"
-msgstr "Side nedad"
+msgstr "Side ned"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Up"
-msgstr "Side opad"
+msgstr "Side op"
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Pause Key"
-msgstr "Pause"
+msgstr "Pause-tast"
 
 #: src/client/keycode.cpp
 msgid "Play"
@@ -1941,9 +1912,8 @@ msgid "Return Key"
 msgstr "Enter"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Arrow"
-msgstr "Højre Control"
+msgstr "Højre Pil"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1975,9 +1945,8 @@ msgid "Select"
 msgstr "Vælg"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Shift Key"
-msgstr "Shift"
+msgstr "Shift-tast"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
@@ -2008,9 +1977,8 @@ msgid "X Button 2"
 msgstr "X knap 2"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Zoom Key"
-msgstr "Zoom"
+msgstr "Zoom-tast"
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
@@ -2031,9 +1999,9 @@ msgid "Minimap in texture mode"
 msgstr "Minikort i texturtilstand"
 
 #: src/client/shader.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to compile the \"%s\" shader."
-msgstr "Kunne ikke hente hjemmesiden"
+msgstr "Kunne ikke kompilere shaderen \"%s\"."
 
 #: src/client/shader.cpp
 msgid "Shaders are enabled but GLSL is not supported by the driver."
@@ -2059,9 +2027,8 @@ msgid ""
 msgstr ""
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Nogen mods har uopfyldte påkrævede grundlag:"
+msgstr "Nogle mods har uopfyldte afhængigheder:"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2244,9 +2211,8 @@ msgid "Open URL?"
 msgstr ""
 
 #: src/gui/guiOpenURL.cpp
-#, fuzzy
 msgid "Unable to open URL"
-msgstr "Kunne ikke hente hjemmesiden"
+msgstr "Kunne ikke åbne URL"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
@@ -2286,9 +2252,8 @@ msgid "Overflow menu"
 msgstr ""
 
 #: src/gui/touchcontrols.cpp
-#, fuzzy
 msgid "Toggle debug"
-msgstr "Slå tåge til/fra"
+msgstr "Slå debug til/fra"
 
 #: src/network/clientpackethandler.cpp
 msgid ""
@@ -2305,9 +2270,8 @@ msgid "Internal server error"
 msgstr ""
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Invalid password"
-msgstr "Gammelt kodeord"
+msgstr "Ugyldig adgangskode"
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
@@ -2333,14 +2297,12 @@ msgid "Player name contains disallowed characters"
 msgstr ""
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Player name not allowed"
-msgstr "Spillerens navn er for langt."
+msgstr "Spillernavn ikke tilladt"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Server shutting down"
-msgstr "Lukker ned..."
+msgstr "Server lukker ned"
 
 #: src/network/clientpackethandler.cpp
 msgid ""
@@ -2372,9 +2334,9 @@ msgid ""
 msgstr ""
 
 #: src/server.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "%s while shutting down: "
-msgstr "Lukker ned..."
+msgstr "%s under nedlukning: "
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3003,9 +2965,8 @@ msgid "Colored fog"
 msgstr "Farvet tåge"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Colored shadows"
-msgstr "Farvet tåge"
+msgstr "Farvede skygger"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3310,9 +3271,8 @@ msgid "Deprecated Lua API handling"
 msgstr "Forældet Lua API-håndtering"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Depth below which you'll find giant caverns."
-msgstr "Dybde hvorunder du kan finde store huler."
+msgstr "Dybde, hvorunder du kan finde store huler."
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
@@ -3341,9 +3301,8 @@ msgid "Desynchronize block animation"
 msgstr "Afsynkroniser blokanimation"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Developer Options"
-msgstr "Gentagelser"
+msgstr "Udviklerindstillinger"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3396,18 +3355,16 @@ msgid "Dungeon noise"
 msgstr "Ridge støj"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Effects"
-msgstr "Grafik"
+msgstr "Effekter"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Automatic Exposure"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Bloom"
-msgstr "Aktivér alle"
+msgstr "Aktivér Bloom"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom Debug"
