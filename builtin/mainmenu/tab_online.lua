@@ -328,8 +328,8 @@ local function search_server_list(input)
 
 		-- Check if mods found
 		local mods_lower = {}
-		for i, mod in ipairs(server.mods or {}) do
-			mods_lower[i] = mod:lower()
+		for j, mod in ipairs(server.mods or {}) do
+			mods_lower[j] = mod:lower()
 		end
 		for _, mod in ipairs(query.mods) do
 			if table.indexof(mods_lower, mod) < 0 then
@@ -340,8 +340,8 @@ local function search_server_list(input)
 
 		-- Check if players found
 		local clients_list_lower = {}
-		for i, player in ipairs(server.clients_list or {}) do
-			clients_list_lower[i] = player:lower()
+		for j, player in ipairs(server.clients_list or {}) do
+			clients_list_lower[j] = player:lower()
 		end
 		for _, player in ipairs(query.players) do
 			if table.indexof(clients_list_lower, player) < 0 then
