@@ -573,7 +573,7 @@ SkinnedMesh *SkinnedMeshBuilder::finalize()
 	return this;
 }
 
-void SkinnedMesh::updateBoundingBox(void)
+void SkinnedMesh::updateBoundingBox()
 {
 	if (!SkinningBuffers)
 		return;

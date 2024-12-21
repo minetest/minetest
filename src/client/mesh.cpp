@@ -105,8 +105,7 @@ void scaleMesh(scene::IMesh *mesh, v3f scale)
 	if (mesh == NULL)
 		return;
 
-	aabb3f bbox;
-	bbox.reset(0, 0, 0);
+	aabb3f bbox{{0.0f, 0.0f, 0.0f}};
 
 	u32 mc = mesh->getMeshBufferCount();
 	for (u32 j = 0; j < mc; j++) {
@@ -134,8 +133,7 @@ void translateMesh(scene::IMesh *mesh, v3f vec)
 	if (mesh == NULL)
 		return;
 
-	aabb3f bbox;
-	bbox.reset(0, 0, 0);
+	aabb3f bbox{{0.0f, 0.0f, 0.0f}};
 
 	u32 mc = mesh->getMeshBufferCount();
 	for (u32 j = 0; j < mc; j++) {
@@ -296,8 +294,7 @@ void rotateMeshBy6dFacedir(scene::IMesh *mesh, u8 facedir)
 
 void recalculateBoundingBox(scene::IMesh *src_mesh)
 {
-	aabb3f bbox;
-	bbox.reset(0,0,0);
+	aabb3f bbox{{0.0f, 0.0f, 0.0f}};
 	for (u16 j = 0; j < src_mesh->getMeshBufferCount(); j++) {
 		scene::IMeshBuffer *buf = src_mesh->getMeshBuffer(j);
 		buf->recalculateBoundingBox();
