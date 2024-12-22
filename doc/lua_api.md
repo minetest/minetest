@@ -309,17 +309,24 @@ it unlocks no special rendering features.
 Binary glTF (`.glb`) files are supported and recommended over `.gltf` files
 due to their space savings.
 
-This means that many glTF features are not supported *yet*, including:
+Bone weights should be normalized, e.g. using ["normalize all" in Blender](https://docs.blender.org/manual/en/4.2/grease_pencil/modes/weight_paint/weights_menu.html#normalize-all).
+
+You can use the [Khronos glTF validator](https://github.com/KhronosGroup/glTF-Validator)
+to check whether a model is a valid glTF file.
+
+Many glTF features are not supported *yet*, including:
 
 * Animations
   * Only a single animation is supported, use frame ranges within this animation.
+  * Only linear interpolation is supported.
 * Cameras
 * Materials
   * Only base color textures are supported
   * Backface culling is overridden
   * Double-sided materials don't work
 * Alternative means of supplying data
-  * Embedded images
+  * Embedded images. You can use `gltfutil.py` from the
+    [modding tools](https://github.com/minetest/modtools) to strip or extract embedded images.
   * References to files via URIs
 
 Textures are supplied solely via the same means as for the other model file formats:
@@ -4183,14 +4190,14 @@ Two functions are provided to translate strings: `core.translate` and
 
 * `core.get_translator(textdomain)` is a simple wrapper around
   `core.translate` and `core.translate_n`.
-  After `local S, NS = core.get_translator(textdomain)`, we have
+  After `local S, PS = core.get_translator(textdomain)`, we have
   `S(str, ...)` equivalent to `core.translate(textdomain, str, ...)`, and
-  `NS(str, str_plural, n, ...)` to `core.translate_n(textdomain, str, str_plural, n, ...)`.
+  `PS(str, str_plural, n, ...)` to `core.translate_n(textdomain, str, str_plural, n, ...)`.
   It is intended to be used in the following way, so that it avoids verbose
   repetitions of `core.translate`:
 
   ```lua
-  local S, NS = core.get_translator(textdomain)
+  local S, PS = core.get_translator(textdomain)
   S(str, ...)
   ```
 
@@ -4224,7 +4231,7 @@ command that shows the amount of time since the player joined. We can do the
 following:
 
 ```lua
-local S, NS = core.get_translator("hello")
+local S, PS = core.get_translator("hello")
 core.register_on_joinplayer(function(player)
     local name = player:get_player_name()
     core.chat_send_player(name, S("Hello @1, how are you today?", name))
@@ -4233,7 +4240,7 @@ core.register_chatcommand("playtime", {
     func = function(name)
         local last_login = core.get_auth_handler().get_auth(name).last_login
         local playtime = math.floor((last_login-os.time())/60)
-        return true, NS(
+        return true, PS(
             "You have been playing for @1 minute.",
             "You have been playing for @1 minutes.",
             minutes, tostring(minutes))
@@ -4280,7 +4287,7 @@ After creating the `locale` directory, a translation template for the above
 example using the following command:
 
 ```sh
-xgettext -L lua -kS -kNS:1,2 -kcore.translate:1c,2 -kcore.translate_n:1c,2,3 \
+xgettext -L lua -kS -kPS:1,2 -kcore.translate:1c,2 -kcore.translate_n:1c,2,3 \
   -d hello -o locale/hello.pot *.lua
 ```
 
@@ -5657,6 +5664,8 @@ Utilities
       abm_without_neighbors = true,
       -- biomes have a weight parameter (5.11.0)
       biome_weights = true,
+      -- Particles can specify a "clip" blend mode (5.11.0)
+      particle_blend_clip = true,
   }
   ```
 
@@ -6178,7 +6187,7 @@ Setting-related
 * `core.settings`: Settings object containing all of the settings from the
   main config file (`minetest.conf`). See [`Settings`].
 * `core.setting_get_pos(name)`: Loads a setting from the main settings and
-  parses it as a position (in the format `(1,2,3)`). Returns a position or nil.
+  parses it as a position (in the format `(1,2,3)`). Returns a position or nil. **Deprecated: use `core.settings:get_pos()` instead**
 
 Authentication
 --------------
@@ -6557,7 +6566,7 @@ Environment access
     * `pointabilities`: Allows overriding the `pointable` property of
       nodes and objects. Uses the same format as the `pointabilities` property
       of item definitions. Default is `nil`.
-* `core.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)`
+* `core.find_path(pos1, pos2, searchdistance, max_jump, max_drop, algorithm)`
     * returns table containing path that can be walked on
     * returns a table of 3D points representing a path from `pos1` to `pos2` or
       `nil` on failure.
@@ -6577,8 +6586,11 @@ Environment access
       Difference between `"A*"` and `"A*_noprefetch"` is that
       `"A*"` will pre-calculate the cost-data, the other will calculate it
       on-the-fly
-* `core.spawn_tree (pos, {treedef})`
+* `core.spawn_tree(pos, treedef)`
     * spawns L-system tree at given `pos` with definition in `treedef` table
+* `core.spawn_tree_on_vmanip(vmanip, pos, treedef)`
+    * analogous to `core.spawn_tree`, but spawns a L-system tree onto the specified
+      VoxelManip object `vmanip` instead of the map.
 * `core.transforming_liquid_add(pos)`
     * add node to liquid flow update queue
 * `core.get_node_max_level(pos)`
@@ -6697,6 +6709,9 @@ Formspec
 * `core.hypertext_escape(string)`: returns a string
     * escapes the characters "\", "<", and ">" to show text in a hypertext element.
     * not safe for use with tag attributes.
+    * this function does not do formspec escaping, you will likely need to do
+      `core.formspec_escape(core.hypertext_escape(string))` if the hypertext is
+      not already being formspec escaped.
 * `core.explode_table_event(string)`: returns a table
     * returns e.g. `{type="CHG", row=1, column=2}`
     * `type` is one of:
@@ -8909,7 +8924,7 @@ For `core.get_perlin_map()`, the actual seed used is the noiseparams seed
 plus the world seed, to create world-specific noise.
 
 Format of `size` is `{x=dimx, y=dimy, z=dimz}`. The `z` component is omitted
-for 2D noise, and it must be must be larger than 1 for 3D noise (otherwise
+for 2D noise, and it must be larger than 1 for 3D noise (otherwise
 `nil` is returned).
 
 For each of the functions with an optional `buffer` parameter: If `buffer` is
@@ -9065,6 +9080,9 @@ means that no defaults will be returned for mod settings.
     * Is currently limited to mapgen flags `mg_flags` and mapgen-specific
       flags like `mgv5_spflags`.
     * Returns `nil` if `key` is not found.
+* `get_pos(key)`:
+    * Returns a `vector`
+    * Returns `nil` if no value is found or parsing failed.
 * `set(key, value)`
     * Setting names can't contain whitespace or any of `="{}#`.
     * Setting values can't contain the sequence `\n"""`.
@@ -9074,6 +9092,9 @@ means that no defaults will be returned for mod settings.
     * See documentation for `set()` above.
 * `set_np_group(key, value)`
     * `value` is a NoiseParams table.
+    * Also, see documentation for `set()` above.
+* `set_pos(key, value)`
+    * `value` is a `vector`.
     * Also, see documentation for `set()` above.
 * `remove(key)`: returns a boolean (`true` for success)
 * `get_names()`: returns `{key1,...}`
@@ -11502,6 +11523,14 @@ texture = {
     -- (default) blends transparent pixels with those they are drawn atop
     -- according to the alpha channel of the source texture. useful for
     -- e.g. material objects like rocks, dirt, smoke, or node chunks
+    -- note: there will be rendering bugs when particles interact with
+    -- translucent nodes. particles are also not transparency-sorted
+    -- relative to each other.
+    blend = "clip",
+    -- pixels are either fully opaque or fully transparent,
+    -- depending on whether alpha is greater than or less than 50%
+    -- (just like `use_texture_alpha = "clip"` for nodes).
+    -- you should prefer this if you don't need semi-transparency, as it's faster.
     blend = "add",
     -- adds the value of pixels to those underneath them, modulo the sources
     -- alpha channel. useful for e.g. bright light effects like sparks or fire

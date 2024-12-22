@@ -25,19 +25,10 @@ namespace {
 	// A helper struct
 	struct MeshBufListMaps
 	{
-		struct MaterialHash
-		{
-			size_t operator()(const video::SMaterial &m) const noexcept
-			{
-				// Only hash first texture. Simple and fast.
-				return std::hash<video::ITexture *>{}(m.TextureLayers[0].Texture);
-			}
-		};
-
 		using MeshBufListMap = std::unordered_map<
 				video::SMaterial,
-				std::vector<std::pair<v3s16, scene::IMeshBuffer *>>,
-				MaterialHash>;
+				std::vector<std::pair<v3s16, scene::IMeshBuffer *>>
+				>;
 
 		std::array<MeshBufListMap, MAX_TILE_LAYERS> maps;
 
@@ -73,6 +64,7 @@ static const std::string ClientMap_settings[] = {
 	"trilinear_filter",
 	"bilinear_filter",
 	"anisotropic_filter",
+	"transparency_sorting_group_by_buffers",
 	"transparency_sorting_distance",
 	"occlusion_culler",
 	"enable_raytraced_culling",
@@ -115,6 +107,9 @@ void ClientMap::onSettingChanged(std::string_view name, bool all)
 		m_cache_bilinear_filter   = g_settings->getBool("bilinear_filter");
 	if (all || name == "anisotropic_filter")
 		m_cache_anistropic_filter = g_settings->getBool("anisotropic_filter");
+	if (all || name == "transparency_sorting_group_by_buffers")
+		m_cache_transparency_sorting_group_by_buffers =
+				g_settings->getBool("transparency_sorting_group_by_buffers");
 	if (all || name == "transparency_sorting_distance")
 		m_cache_transparency_sorting_distance = g_settings->getU16("transparency_sorting_distance");
 	if (all || name == "occlusion_culler")
@@ -1337,7 +1332,8 @@ void ClientMap::updateTransparentMeshBuffers()
 			}
 
 			if (do_sort_block) {
-				blockmesh->updateTransparentBuffers(m_camera_position, block->getPos());
+				blockmesh->updateTransparentBuffers(m_camera_position, block->getPos(),
+						m_cache_transparency_sorting_group_by_buffers);
 				++sorted_blocks;
 			} else {
 				blockmesh->consolidateTransparentBuffers();

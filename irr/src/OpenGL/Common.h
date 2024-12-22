@@ -40,7 +40,7 @@ typedef COpenGLCoreTexture<COpenGL3DriverBase> COpenGL3Texture;
 typedef COpenGLCoreRenderTarget<COpenGL3DriverBase, COpenGL3Texture> COpenGL3RenderTarget;
 typedef COpenGLCoreCacheHandler<COpenGL3DriverBase, COpenGL3Texture> COpenGL3CacheHandler;
 
-enum class OpenGLSpec : u8
+enum OpenGLSpec : u8
 {
 	Core,
 	Compat,

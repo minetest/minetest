@@ -30,10 +30,6 @@ COpenGL3MaterialRenderer::COpenGL3MaterialRenderer(COpenGL3DriverBase *driver,
 		Driver(driver),
 		CallBack(callback), Alpha(false), Blending(false), Program(0), UserData(userData)
 {
-#ifdef _DEBUG
-	setDebugName("MaterialRenderer");
-#endif
-
 	switch (baseMaterial) {
 	case EMT_TRANSPARENT_VERTEX_ALPHA:
 	case EMT_TRANSPARENT_ALPHA_CHANNEL:

@@ -1663,11 +1663,6 @@ void GenericCAO::processMessage(const std::string &data)
 		bool is_end_position = readU8(is);
 		float update_interval = readF32(is);
 
-		// Place us a bit higher if we're physical, to not sink into
-		// the ground due to sucky collision detection...
-		if(m_prop.physical)
-			m_position += v3f(0,0.002,0);
-
 		if(getParent() != NULL) // Just in case
 			return;
 

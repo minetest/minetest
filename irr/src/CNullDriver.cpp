@@ -53,10 +53,6 @@ CNullDriver::CNullDriver(io::IFileSystem *io, const core::dimension2d<u32> &scre
 		ViewPort(0, 0, 0, 0), ScreenSize(screenSize), MinVertexCountForVBO(500),
 		TextureCreationFlags(0), OverrideMaterial2DEnabled(false), AllowZWriteOnTransparent(false)
 {
-#ifdef _DEBUG
-	setDebugName("CNullDriver");
-#endif
-
 	DriverAttributes = new io::CAttributes();
 	DriverAttributes->addInt("MaxTextures", MATERIAL_MAX_TEXTURES);
 	DriverAttributes->addInt("MaxSupportedTextures", MATERIAL_MAX_TEXTURES);
@@ -741,19 +737,6 @@ s32 CNullDriver::getFPS() const
 SFrameStats CNullDriver::getFrameStats() const
 {
 	return FrameStats;
-}
-
-//! Sets the dynamic ambient light color. The default color is
-//! (0,0,0,0) which means it is dark.
-//! \param color: New color of the ambient light.
-void CNullDriver::setAmbientLight(const SColorf &color)
-{
-	AmbientLight = color;
-}
-
-const SColorf &CNullDriver::getAmbientLight() const
-{
-	return AmbientLight;
 }
 
 //! \return Returns the name of the video driver. Example: In case of the DIRECT3D8
@@ -1678,6 +1661,12 @@ ITexture *CNullDriver::addRenderTargetTexture(const core::dimension2d<u32> &size
 	return 0;
 }
 
+ITexture *CNullDriver::addRenderTargetTextureMs(const core::dimension2d<u32> &size, u8 msaa,
+		const io::path &name, const ECOLOR_FORMAT format)
+{
+	return 0;
+}
+
 ITexture *CNullDriver::addRenderTargetTextureCubemap(const irr::u32 sideLen,
 		const io::path &name, const ECOLOR_FORMAT format)
 {
@@ -1766,22 +1755,6 @@ bool CNullDriver::needsTransparentRenderPass(const irr::video::SMaterial &materi
 		return true;
 
 	return false;
-}
-
-//! Color conversion convenience function
-/** Convert an image (as array of pixels) from source to destination
-array, thereby converting the color format. The pixel size is
-determined by the color formats.
-\param sP Pointer to source
-\param sF Color format of source
-\param sN Number of pixels to convert, both array must be large enough
-\param dP Pointer to destination
-\param dF Color format of destination
-*/
-void CNullDriver::convertColor(const void *sP, ECOLOR_FORMAT sF, s32 sN,
-		void *dP, ECOLOR_FORMAT dF) const
-{
-	video::CColorConverter::convert_viaFormat(sP, sF, sN, dP, dF);
 }
 
 } // end namespace

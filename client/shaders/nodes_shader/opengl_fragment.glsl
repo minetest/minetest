@@ -1,10 +1,3 @@
-#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT)
-#define MATERIAL_WAVING_LIQUID 1
-#define MATERIAL_LIQUID 1
-#elif (MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE)
-#define MATERIAL_LIQUID 1
-#endif
-
 uniform sampler2D baseTexture;
 uniform vec2 texelSize0;
 
@@ -60,7 +53,7 @@ varying highp vec3 eyeVec;
 varying float nightRatio;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
-#if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS))
+#if (MATERIAL_WAVING_LIQUID && defined(ENABLE_WATER_REFLECTIONS))
 vec4 perm(vec4 x)
 {
 	return mod(((x * 34.0) + 1.0) * x, 289.0);
@@ -511,8 +504,7 @@ void main(void)
 		vec3 reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.0);
 
 		// Water reflections
-#if (defined(MATERIAL_WAVING_LIQUID) && defined(ENABLE_WATER_REFLECTIONS))
-
+#if (MATERIAL_WAVING_LIQUID && defined(ENABLE_WATER_REFLECTIONS))
 		vec3 wavePos = worldPosition * vec3(2.0, 0.0, 2.0);
 		float off = animationTimer * WATER_WAVE_SPEED * 10.0;
 		wavePos.x /= WATER_WAVE_LENGTH * 3.0;
@@ -542,7 +534,7 @@ void main(void)
 		col.rgb += water_reflect_color * brightness_factor;
 #endif
 
-#if (defined(ENABLE_NODE_SPECULAR) && !defined(MATERIAL_WAVING_LIQUID))
+#if (defined(ENABLE_NODE_SPECULAR) && !MATERIAL_WAVING_LIQUID)
 		// Apply specular to blocks.
 		if (dot(v_LightDirection, vNormal) < 0.0) {
 			// This intensity is a placeholder and should be replaced by proper specular maps.

@@ -22,10 +22,6 @@ COpenGL3Renderer2D::COpenGL3Renderer2D(const c8 *vertexShaderProgram, const c8 *
 		COpenGL3MaterialRenderer(driver, 0, EMT_SOLID),
 		WithTexture(withTexture)
 {
-#ifdef _DEBUG
-	setDebugName("Renderer2D");
-#endif
-
 	int Temp = 0;
 
 	init(Temp, vertexShaderProgram, pixelShaderProgram, false);

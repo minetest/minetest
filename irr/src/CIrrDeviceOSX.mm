@@ -524,10 +524,6 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters &param) :
 {
 	struct utsname name;
 
-#ifdef _DEBUG
-	setDebugName("CIrrDeviceMacOSX");
-#endif
-
 	if (firstLaunch) {
 		firstLaunch = false;
 

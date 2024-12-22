@@ -271,7 +271,7 @@ public:
 		The id 0 points to a null shader. Its material is EMT_SOLID.
 	*/
 	u32 getShaderIdDirect(const std::string &name,
-		MaterialType material_type, NodeDrawType drawtype) override;
+		MaterialType material_type, NodeDrawType drawtype);
 
 	/*
 		If shader specified by the name pointed by the id doesn't
@@ -281,9 +281,17 @@ public:
 		and not found in cache, the call is queued to the main thread
 		for processing.
 	*/
-
 	u32 getShader(const std::string &name,
 		MaterialType material_type, NodeDrawType drawtype) override;
+
+	u32 getShaderRaw(const std::string &name, bool blendAlpha) override
+	{
+		// TODO: the shader system should be refactored to be much more generic.
+		// Just let callers pass arbitrary constants, this would also deal with
+		// runtime changes cleanly.
+		return getShader(name, blendAlpha ? TILE_MATERIAL_ALPHA : TILE_MATERIAL_BASIC,
+			NodeDrawType_END);
+	}
 
 	ShaderInfo getShaderInfo(u32 id) override;
 
@@ -607,11 +615,17 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		#define textureFlags texture2
 	)";
 
+	/* Define constants for node and object shaders */
+	const bool node_shader = drawtype != NodeDrawType_END;
+	if (node_shader) {
+
 	bool use_discard = fully_programmable;
-	// For renderers that should use discard instead of GL_ALPHA_TEST
-	const char *renderer = reinterpret_cast<const char*>(GL.GetString(GL.RENDERER));
-	if (strstr(renderer, "GC7000"))
-		use_discard = true;
+	if (!use_discard) {
+		// workaround for a certain OpenGL implementation lacking GL_ALPHA_TEST
+		const char *renderer = reinterpret_cast<const char*>(GL.GetString(GL.RENDERER));
+		if (strstr(renderer, "GC7000"))
+			use_discard = true;
+	}
 	if (use_discard) {
 		if (shaderinfo.base_material == video::EMT_TRANSPARENT_ALPHA_CHANNEL)
 			shaders_header << "#define USE_DISCARD 1\n";
@@ -660,12 +674,30 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	bool enable_waving_water = g_settings->getBool("enable_waving_water");
 	shaders_header << "#define ENABLE_WAVING_WATER " << enable_waving_water << "\n";
 
-	shaders_header << "#define WATER_WAVE_HEIGHT " << g_settings->getFloat("water_wave_height") << "\n";
-	shaders_header << "#define WATER_WAVE_LENGTH " << g_settings->getFloat("water_wave_length") << "\n";
-	shaders_header << "#define WATER_WAVE_SPEED " << g_settings->getFloat("water_wave_speed") << "\n";
+	if (enable_waving_water) {
+		shaders_header << "#define WATER_WAVE_HEIGHT " << g_settings->getFloat("water_wave_height") << "\n";
+		shaders_header << "#define WATER_WAVE_LENGTH " << g_settings->getFloat("water_wave_length") << "\n";
+		shaders_header << "#define WATER_WAVE_SPEED " << g_settings->getFloat("water_wave_speed") << "\n";
+	}
+	switch (material_type) {
+		case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
+		case TILE_MATERIAL_WAVING_LIQUID_OPAQUE:
+		case TILE_MATERIAL_WAVING_LIQUID_BASIC:
+		case TILE_MATERIAL_LIQUID_TRANSPARENT:
+			shaders_header << "#define MATERIAL_WAVING_LIQUID 1\n";
+			break;
+		default:
+			shaders_header << "#define MATERIAL_WAVING_LIQUID 0\n";
+			break;
+	}
 
 	shaders_header << "#define ENABLE_WAVING_LEAVES " << g_settings->getBool("enable_waving_leaves") << "\n";
 	shaders_header << "#define ENABLE_WAVING_PLANTS " << g_settings->getBool("enable_waving_plants") << "\n";
+
+	}
+
+	/* Other constants */
+
 	shaders_header << "#define ENABLE_TONE_MAPPING " << g_settings->getBool("tone_mapping") << "\n";
 
 	if (g_settings->getBool("enable_tinted_fog"))

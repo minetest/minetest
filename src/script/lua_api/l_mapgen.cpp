@@ -366,22 +366,19 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 		ModApiMapgen::es_BiomeTerrainType, BIOMETYPE_NORMAL);
 	Biome *b = BiomeManager::create(biometype);
 
-	b->name            = getstringfield_default(L, index, "name", "");
-	b->depth_top       = getintfield_default(L,    index, "depth_top",       0);
-	b->depth_filler    = getintfield_default(L,    index, "depth_filler",    -31000);
-	b->depth_water_top = getintfield_default(L,    index, "depth_water_top", 0);
-	b->depth_riverbed  = getintfield_default(L,    index, "depth_riverbed",  0);
-	b->heat_point      = getfloatfield_default(L,  index, "heat_point",      0.f);
-	b->humidity_point  = getfloatfield_default(L,  index, "humidity_point",  0.f);
-	b->vertical_blend  = getintfield_default(L,    index, "vertical_blend",  0);
-	b->weight          = getfloatfield_default(L,  index, "weight",          1.f);
-	b->flags           = 0; // reserved
+	getstringfield(L, index, "name", b->name);
+	getintfield(L,    index, "depth_top",       b->depth_top);
+	getintfield(L,    index, "depth_filler",    b->depth_filler);
+	getintfield(L,    index, "depth_water_top", b->depth_water_top);
+	getintfield(L,    index, "depth_riverbed",  b->depth_riverbed);
+	getfloatfield(L,  index, "heat_point",      b->heat_point);
+	getfloatfield(L,  index, "humidity_point",  b->humidity_point);
+	getintfield(L,    index, "vertical_blend",  b->vertical_blend);
+	getfloatfield(L,  index, "weight",          b->weight);
 
-	b->min_pos = getv3s16field_default(
-		L, index, "min_pos", v3s16(-31000, -31000, -31000));
+	b->min_pos = getv3s16field_default(L, index, "min_pos", b->min_pos);
 	getintfield(L, index, "y_min", b->min_pos.Y);
-	b->max_pos = getv3s16field_default(
-		L, index, "max_pos", v3s16(31000, 31000, 31000));
+	b->max_pos = getv3s16field_default(L, index, "max_pos", b->max_pos);
 	getintfield(L, index, "y_max", b->max_pos.Y);
 
 	std::vector<std::string> &nn = b->m_nodenames;
@@ -1773,6 +1770,27 @@ int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
 	return 1;
 }
 
+// spawn_tree_on_vmanip(vmanip, pos, treedef)
+int ModApiMapgen::l_spawn_tree_on_vmanip(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	MMVManip *vm = checkObject<LuaVoxelManip>(L, 1)->vm;
+	v3s16 p0 = read_v3s16(L, 2);
+	treegen::TreeDef tree_def;
+	const NodeDefManager *ndef = getGameDef(L)->ndef();
+	if (!read_tree_def(L, 3, ndef, tree_def))
+		return 0;
+
+	treegen::error e = treegen::make_ltree(*vm, p0, tree_def);
+	if (e != treegen::SUCCESS) {
+		throw LuaError("spawn_tree_on_vmanip(): " + treegen::error_to_string(e));
+	}
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 
 // serialize_schematic(schematic, format, options={...})
 int ModApiMapgen::l_serialize_schematic(lua_State *L)
@@ -2023,6 +2041,7 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(create_schematic);
 	API_FCT(place_schematic);
 	API_FCT(place_schematic_on_vmanip);
+	API_FCT(spawn_tree_on_vmanip);
 	API_FCT(serialize_schematic);
 	API_FCT(read_schematic);
 }
@@ -2049,6 +2068,7 @@ void ModApiMapgen::InitializeEmerge(lua_State *L, int top)
 	API_FCT(generate_ores);
 	API_FCT(generate_decorations);
 	API_FCT(place_schematic_on_vmanip);
+	API_FCT(spawn_tree_on_vmanip);
 	API_FCT(serialize_schematic);
 	API_FCT(read_schematic);
 }

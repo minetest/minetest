@@ -18,6 +18,7 @@
 | JsonCPP    | 1.0.0+  | Bundled JsonCPP is used if not present |
 | Curl       | 7.56.0+ | Optional   |
 | gettext    | -       | Optional   |
+| OpenSSL    | 3.0+    | Optional (only libcrypto used) |
 
 For Debian/Ubuntu users:
 
@@ -33,7 +34,7 @@ For openSUSE users:
 
 For Arch users:
 
-    sudo pacman -S --needed base-devel libcurl-gnutls cmake libpng sqlite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses zstd gettext sdl2
+    sudo pacman -S --needed base-devel libcurl-gnutls cmake libpng libjpeg-turbo sqlite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses zstd gettext sdl2
 
 For Alpine users:
 

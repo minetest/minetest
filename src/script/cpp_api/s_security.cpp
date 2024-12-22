@@ -566,37 +566,22 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 	if (write_allowed)
 		*write_allowed = false;
 
-	std::string abs_path = fs::AbsolutePath(path);
-
-	// If we couldn't find the absolute path (path doesn't exist) then
-	// try removing the last components until it works (to allow
-	// non-existent files/folders for mkdir).
-	std::string cur_path = path;
-	std::string removed;
-	while (abs_path.empty() && !cur_path.empty()) {
-		std::string component;
-		cur_path = fs::RemoveLastPathComponent(cur_path, &component);
-		if (component == "..") {
-			// Parent components can't be allowed or we could allow something like
-			// /home/user/minetest/worlds/foo/noexist/../../../../../../etc/passwd.
-			// If we have previous non-relative elements in the path we might be
-			// able to remove them so that things like worlds/foo/noexist/../auth.txt
-			// could be allowed, but those paths will be interpreted as nonexistent
-			// by the operating system anyways.
-			return false;
-		}
-		removed = component + (removed.empty() ? "" : DIR_DELIM + removed);
-		abs_path = fs::AbsolutePath(cur_path);
-	}
-	if (abs_path.empty())
-		return false;
-	// Add the removed parts back so that you can e.g. create a
-	// directory in worldmods if worldmods doesn't exist.
-	if (!removed.empty())
-		abs_path += DIR_DELIM + removed;
-
+	// We can't use AbsolutePath() here since we want to allow creating paths that
+	// do not yet exist. But RemoveRelativePathComponents() would also be incorrect
+	// since that wouldn't normalize subpaths that *do* exist.
+	// This is required so that comparisons with other normalized paths work correctly.
+	std::string abs_path = fs::AbsolutePathPartial(path);
 	tracestream << "ScriptApiSecurity: path \"" << path << "\" resolved to \""
 		<< abs_path << "\"" << std::endl;
+
+	if (abs_path.empty())
+		return false;
+
+	// Note: abs_path can be a valid path while path isn't, e.g.
+	// abs_path = "/home/user/.luanti"
+	// path = "/home/user/.luanti/noexist/.."
+	// Letting this through the sandbox isn't a concern as any actual attempts to
+	// use the path would fail.
 
 	// Ask the environment-specific implementation
 	auto *sec = ModApiBase::getScriptApi<ScriptApiSecurity>(L);
@@ -617,9 +602,11 @@ bool ScriptApiSecurity::checkPathWithGamedef(lua_State *L,
 	if (!gamedef)
 		return false;
 
-	if (!abs_path.empty()) {
+	assert(!abs_path.empty());
+
+	if (!g_settings_path.empty()) {
 		// Don't allow accessing the settings file
-		str = fs::AbsolutePath(g_settings_path);
+		str = fs::AbsolutePathPartial(g_settings_path);
 		if (str == abs_path)
 			return false;
 	}
