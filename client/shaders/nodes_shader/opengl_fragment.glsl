@@ -51,6 +51,7 @@ centroid varying vec2 varTexCoord;
 #endif
 varying highp vec3 eyeVec;
 varying float nightRatio;
+varying float nightFactor;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 #if (MATERIAL_WAVING_LIQUID && defined(ENABLE_WATER_REFLECTIONS))
@@ -448,6 +449,7 @@ void main(void)
 		if (max(abs(posLightSpace.x - 0.5), abs(posLightSpace.y - 0.5)) > 0.5)
 			distance_rate = 0.0;
 		float f_adj_shadow_strength = max(adj_shadow_strength - mtsmoothstep(0.9, 1.1, posLightSpace.z),0.0);
+		float f_shadow_factor = adj_shadow_strength / f_shadow_strength;
 
 		if (distance_rate > 1e-7) {
 
@@ -531,7 +533,7 @@ void main(void)
 			mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0));
 
 		// Sun reflection
-		col.rgb += water_reflect_color * brightness_factor;
+		col.rgb += water_reflect_color * f_shadow_factor * brightness_factor;
 #endif
 
 #if (defined(ENABLE_NODE_SPECULAR) && !MATERIAL_WAVING_LIQUID)
@@ -543,14 +545,16 @@ void main(void)
 			const float fresnel_exponent =  4.0;
 
 			col.rgb +=
-				sunTint * intensity * dayLight * (1.0 - nightRatio) * (1.0 - shadow_uncorrected) *
+				sunTint * intensity * f_shadow_factor * dayLight * (1.0 - nightRatio) * (1.0 - shadow_uncorrected) *
 				pow(max(dot(reflect_ray, viewVec), 0.0), fresnel_exponent) * pow(1.0 - abs(dot(viewVec, fNormal)), specular_exponent);
 		}
 #endif
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES) && defined(ENABLE_TRANSLUCENT_FOLIAGE)
 		// Simulate translucent foliage.
-		col.rgb += foliage_translucency * sunTint * dayLight * base.rgb * normalize(base.rgb * varColor.rgb * varColor.rgb) * pow(max(-dot(v_LightDirection, viewVec), 0.0), 4.0) * max(1.0 - shadow_uncorrected, 0.0);
+		col.rgb += 
+			foliage_translucency * nightFactor * sunTint * dayLight * base.rgb * normalize(base.rgb * varColor.rgb * varColor.rgb) * 
+			pow(max(-dot(v_LightDirection, viewVec), 0.0), 4.0) * max(1.0 - shadow_uncorrected, 0.0);
 #endif
 	}
 #endif

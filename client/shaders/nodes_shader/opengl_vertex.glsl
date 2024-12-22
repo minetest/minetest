@@ -7,8 +7,6 @@ uniform highp vec3 cameraOffset;
 uniform float animationTimer;
 
 varying vec3 vNormal;
-varying vec3 vTangent;
-varying vec3 vBinormal;
 varying vec3 vPosition;
 // World position in the visible world (i.e. relative to the cameraOffset.)
 // This can be used for many shader effects without loss of precision.
@@ -48,6 +46,7 @@ varying float area_enable_parallax;
 varying highp vec3 eyeVec;
 varying float nightRatio;
 varying vec3 sunTint;
+varying float nightFactor;
 // Color of the light emitted by the light sources.
 uniform vec3 artificialLight;
 const float e = 2.718281828459;
@@ -209,8 +208,6 @@ void main(void)
 	normalPass = normalize((inVertexNormal+1)/2);
 #endif
 	vNormal = inVertexNormal;
-	vTangent = inVertexTangent.xyz;
-	vBinormal = inVertexBinormal.xyz;
 
 	// Calculate color.
 	vec4 color = inVertexColor;
@@ -272,6 +269,7 @@ void main(void)
 		perspective_factor = pFactor;
 
 		sunTint = vec3(1.0);
+		nightFactor = 0.;
 		if (f_timeofday < 0.21) {
 			adj_shadow_strength = f_shadow_strength * 0.5 *
 				(1.0 - mtsmoothstep(0.18, 0.21, f_timeofday));
@@ -280,10 +278,11 @@ void main(void)
 				mtsmoothstep(0.793, 0.823, f_timeofday);
 		} else {
 			adj_shadow_strength = f_shadow_strength *
-				mtsmoothstep(0.21, 0.26, f_timeofday) *
-				(1.0 - mtsmoothstep(0.743, 0.793, f_timeofday));
+				mtsmoothstep(0.21, 0.24, f_timeofday) *
+				(1.0 - mtsmoothstep(0.763, 0.793, f_timeofday));
+			nightFactor = adj_shadow_strength / f_shadow_strength;
 #ifdef ENABLE_TINTED_SUNLIGHT
-			sunTint = mix(vec3(1.0), getDirectLightScatteringAtGround(v_LightDirection), min(1.0, 4.0 * adj_shadow_strength));
+			sunTint = mix(vec3(1.0), getDirectLightScatteringAtGround(v_LightDirection), adj_shadow_strength / f_shadow_strength);
 #endif
 		}
 	}

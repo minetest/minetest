@@ -182,9 +182,9 @@ void main(void)
 				mtsmoothstep(0.793, 0.823, f_timeofday);
 		} else {
 			adj_shadow_strength = f_shadow_strength *
-				mtsmoothstep(0.21, 0.26, f_timeofday) *
-				(1.0 - mtsmoothstep(0.743, 0.793, f_timeofday));
-			sunTint = mix(vec3(1.0), getDirectLightScatteringAtGround(v_LightDirection), min(1.0, 4.0 * adj_shadow_strength));
+				mtsmoothstep(0.21, 0.24, f_timeofday) *
+				(1.0 - mtsmoothstep(0.763, 0.793, f_timeofday));
+			sunTint = mix(vec3(1.0), getDirectLightScatteringAtGround(v_LightDirection), adj_shadow_strength / f_shadow_strength);
 		}
 	}
 #endif
