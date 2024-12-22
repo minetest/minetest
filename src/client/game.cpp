@@ -420,11 +420,11 @@ public:
 
 			float volumetric_light_strength = lighting.volumetric_light_strength;
 			m_volumetric_light_strength_pixel.set(&volumetric_light_strength, services);
-
-			core::vector3df beta_r0 = lighting.volumetric_beta_r0;
-			m_volumetric_beta_r0_vertex.set(beta_r0, services);
-			m_volumetric_beta_r0_pixel.set(beta_r0, services);
 		}
+
+		core::vector3df beta_r0 = lighting.volumetric_beta_r0;
+		m_volumetric_beta_r0_vertex.set(beta_r0, services);
+		m_volumetric_beta_r0_pixel.set(beta_r0, services);
 	}
 
 	void onSetMaterial(const video::SMaterial &material) override
