@@ -552,8 +552,8 @@ void main(void)
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES) && defined(ENABLE_TRANSLUCENT_FOLIAGE)
 		// Simulate translucent foliage.
-		col.rgb += 
-			foliage_translucency * nightFactor * sunTint * dayLight * base.rgb * normalize(base.rgb * varColor.rgb * varColor.rgb) * 
+		col.rgb +=
+			foliage_translucency * nightFactor * sunTint * dayLight * base.rgb * normalize(base.rgb * varColor.rgb * varColor.rgb) *
 			pow(max(-dot(v_LightDirection, viewVec), 0.0), 4.0) * max(1.0 - shadow_uncorrected, 0.0);
 #endif
 	}
