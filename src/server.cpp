@@ -21,6 +21,7 @@
 #include "filesys.h"
 #include "mapblock.h"
 #include "server/serveractiveobject.h"
+#include "serialization.h" // SER_FMT_VER_INVALID
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"
@@ -43,7 +44,7 @@
 #include "defaultsettings.h"
 #include "server/mods.h"
 #include "util/base64.h"
-#include "util/sha1.h"
+#include "util/hashing.h"
 #include "util/hex.h"
 #include "database/database.h"
 #include "chatmessage.h"
@@ -2521,7 +2522,7 @@ bool Server::addMediaFile(const std::string &filename,
 	}
 	// If name is not in a supported format, ignore it
 	const char *supported_ext[] = {
-		".png", ".jpg", ".bmp", ".tga",
+		".png", ".jpg", ".tga",
 		".ogg",
 		".x", ".b3d", ".obj", ".gltf", ".glb",
 		// Translation file formats
@@ -2547,21 +2548,11 @@ bool Server::addMediaFile(const std::string &filename,
 		return false;
 	}
 
-	const char *deprecated_ext[] = { ".bmp", nullptr };
-	if (!removeStringEnd(filename, deprecated_ext).empty())
-	{
-		warningstream << "Media file \"" << filename << "\" is using a"
-			" deprecated format and will stop working in the future." << std::endl;
-	}
-
-	SHA1 sha1;
-	sha1.addBytes(filedata);
-
-	std::string digest = sha1.getDigest();
-	std::string sha1_base64 = base64_encode(digest);
-	std::string sha1_hex = hex_encode(digest);
+	std::string sha1 = hashing::sha1(filedata);
+	std::string sha1_base64 = base64_encode(sha1);
+	std::string sha1_hex = hex_encode(sha1);
 	if (digest_to)
-		*digest_to = digest;
+		*digest_to = sha1;
 
 	// Put in list
 	m_media[filename] = MediaInfo(filepath, sha1_base64);
@@ -3869,9 +3860,14 @@ void Server::addShutdownError(const ModError &e)
 v3f Server::findSpawnPos()
 {
 	ServerMap &map = m_env->getServerMap();
-	v3f nodeposf;
-	if (g_settings->getV3FNoEx("static_spawnpoint", nodeposf))
-		return nodeposf * BS;
+
+    std::optional<v3f> staticSpawnPoint;
+	if (g_settings->getV3FNoEx("static_spawnpoint", staticSpawnPoint) && staticSpawnPoint.has_value())
+    {
+       return *staticSpawnPoint * BS;
+    }
+
+    v3f nodeposf;
 
 	bool is_good = false;
 	// Limit spawn range to mapgen edges (determined by 'mapgen_limit')
@@ -4198,7 +4194,7 @@ ModStorageDatabase *Server::openModStorageDatabase(const std::string &world_path
 		warningstream << "/!\\ You are using the old mod storage files backend. "
 			<< "This backend is deprecated and may be removed in a future release /!\\"
 			<< std::endl << "Switching to SQLite3 is advised, "
-			<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+			<< "please read https://wiki.luanti.org/Database_backends." << std::endl;
 
 	return openModStorageDatabase(backend, world_path, world_mt);
 }

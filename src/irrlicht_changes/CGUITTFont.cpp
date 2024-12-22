@@ -254,9 +254,6 @@ CGUITTFont::CGUITTFont(IGUIEnvironment *env)
 batch_load_size(1), Device(0), Environment(env), Driver(0), GlobalKerningWidth(0), GlobalKerningHeight(0),
 shadow_offset(0), shadow_alpha(0), fallback(0)
 {
-	#ifdef _DEBUG
-	setDebugName("CGUITTFont");
-	#endif
 
 	if (Environment)
 	{
@@ -1020,6 +1017,7 @@ video::IImage* CGUITTFont::createTextureFromChar(const char32_t& ch)
 	pageholder->copyTo(image, core::position2di(0, 0), glyph.source_rect);
 
 	tex->unlock();
+	pageholder->drop();
 	return image;
 }
 

@@ -74,8 +74,15 @@ public:
 
 	IRenderTarget *addRenderTarget() override;
 
+	void blitRenderTarget(IRenderTarget *from, IRenderTarget *to) override;
+
 	//! draws a vertex primitive list
 	virtual void drawVertexPrimitiveList(const void *vertices, u32 vertexCount,
+			const void *indexList, u32 primitiveCount,
+			E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType) override;
+
+	//! draws a vertex primitive list in 2d
+	virtual void draw2DVertexPrimitiveList(const void *vertices, u32 vertexCount,
 			const void *indexList, u32 primitiveCount,
 			E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType) override;
 
@@ -207,6 +214,9 @@ public:
 	u32 getMaximalPrimitiveCount() const override;
 
 	virtual ITexture *addRenderTargetTexture(const core::dimension2d<u32> &size,
+			const io::path &name, const ECOLOR_FORMAT format = ECF_UNKNOWN) override;
+
+	virtual ITexture *addRenderTargetTextureMs(const core::dimension2d<u32> &size, u8 msaa,
 			const io::path &name, const ECOLOR_FORMAT format = ECF_UNKNOWN) override;
 
 	//! Creates a render target texture for a cubemap

@@ -27,36 +27,31 @@ namespace irr
 {
 namespace video
 {
+
 struct VertexAttribute
 {
-	enum class Mode
+	enum Mode : u8
 	{
 		Regular,
 		Normalized,
-		Integral,
+		Integer,
 	};
-	int Index;
-	int ComponentCount;
+	u8 Index;
+	u8 ComponentCount;
 	GLenum ComponentType;
 	Mode mode;
-	int Offset;
+	u32 Offset;
 };
 
 struct VertexType
 {
-	int VertexSize;
+	u32 VertexSize;
 	std::vector<VertexAttribute> Attributes;
+
+	// allow ranged for loops
+	inline auto begin() const { return Attributes.begin(); }
+	inline auto end() const { return Attributes.end(); }
 };
-
-static const VertexAttribute *begin(const VertexType &type)
-{
-	return type.Attributes.data();
-}
-
-static const VertexAttribute *end(const VertexType &type)
-{
-	return type.Attributes.data() + type.Attributes.size();
-}
 
 static const VertexType vtStandard = {
 		sizeof(S3DVertex),
@@ -68,6 +63,9 @@ static const VertexType vtStandard = {
 		},
 };
 
+// FIXME: this is actually UB because these vertex classes are not "standard-layout"
+// they violate the following requirement:
+// - only one class in the hierarchy has non-static data members
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
 
@@ -144,7 +142,7 @@ void COpenGL3DriverBase::debugCb(GLenum source, GLenum type, GLuint id, GLenum s
 		ll = ELL_ERROR;
 	else if (severity == GL_DEBUG_SEVERITY_MEDIUM)
 		ll = ELL_WARNING;
-	char buf[256];
+	char buf[300];
 	snprintf_irr(buf, sizeof(buf), "%04x %04x %.*s", source, type, length, message);
 	os::Printer::log("GL", buf, ll);
 }
@@ -157,10 +155,6 @@ COpenGL3DriverBase::COpenGL3DriverBase(const SIrrlichtCreationParameters &params
 		OGLES2ShaderPath(params.OGLES2ShaderPath),
 		ColorFormat(ECF_R8G8B8), ContextManager(contextManager), EnableErrorTest(params.DriverDebug)
 {
-#ifdef _DEBUG
-	setDebugName("Driver");
-#endif
-
 	if (!ContextManager)
 		return;
 
@@ -170,11 +164,15 @@ COpenGL3DriverBase::COpenGL3DriverBase(const SIrrlichtCreationParameters &params
 	ExposedData = ContextManager->getContext();
 	ContextManager->activateContext(ExposedData, false);
 	GL.LoadAllProcedures(ContextManager);
-	if (EnableErrorTest) {
+	if (EnableErrorTest && GL.IsExtensionPresent("GL_KHR_debug")) {
 		GL.Enable(GL_DEBUG_OUTPUT);
 		GL.DebugMessageCallback(debugCb, this);
+	} else if (EnableErrorTest) {
+		os::Printer::log("GL debug extension not available");
 	}
 	initQuadsIndices();
+
+	TEST_GL_ERROR(this);
 }
 
 COpenGL3DriverBase::~COpenGL3DriverBase()
@@ -226,8 +224,8 @@ void COpenGL3DriverBase::initVersion()
 	printVersion();
 
 	// print renderer information
-	VendorName = GL.GetString(GL_VENDOR);
-	os::Printer::log("Vendor", VendorName.c_str(), ELL_INFORMATION);
+	VendorName = GL.GetString(GL_RENDERER);
+	os::Printer::log("Renderer", VendorName.c_str(), ELL_INFORMATION);
 
 	Version = getVersionFromOpenGL();
 }
@@ -267,7 +265,6 @@ bool COpenGL3DriverBase::genericDriverInit(const core::dimension2d<u32> &screenS
 	for (s32 i = 0; i < ETS_COUNT; ++i)
 		setTransform(static_cast<E_TRANSFORMATION_STATE>(i), core::IdentityMatrix);
 
-	setAmbientLight(SColorf(0.0f, 0.0f, 0.0f, 0.0f));
 	GL.ClearDepthf(1.0f);
 
 	GL.Hint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
@@ -675,6 +672,29 @@ IRenderTarget *COpenGL3DriverBase::addRenderTarget()
 	return renderTarget;
 }
 
+void COpenGL3DriverBase::blitRenderTarget(IRenderTarget *from, IRenderTarget *to)
+{
+	if (Version.Spec == OpenGLSpec::ES && Version.Major < 3) {
+		os::Printer::log("glBlitFramebuffer not supported by OpenGL ES < 3.0", ELL_ERROR);
+		return;
+	}
+
+	GLuint prev_fbo_id;
+	CacheHandler->getFBO(prev_fbo_id);
+
+	COpenGL3RenderTarget *src = static_cast<COpenGL3RenderTarget *>(from);
+	COpenGL3RenderTarget *dst = static_cast<COpenGL3RenderTarget *>(to);
+	GL.BindFramebuffer(GL.READ_FRAMEBUFFER, src->getBufferID());
+	GL.BindFramebuffer(GL.DRAW_FRAMEBUFFER, dst->getBufferID());
+	GL.BlitFramebuffer(
+			0, 0, src->getSize().Width, src->getSize().Height,
+			0, 0, dst->getSize().Width, dst->getSize().Height,
+			GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT, GL.NEAREST);
+
+	// This resets both read and draw framebuffer. Note that we bypass CacheHandler here.
+	GL.BindFramebuffer(GL.FRAMEBUFFER, prev_fbo_id);
+}
+
 //! draws a vertex primitive list
 void COpenGL3DriverBase::drawVertexPrimitiveList(const void *vertices, u32 vertexCount,
 		const void *indexList, u32 primitiveCount,
@@ -700,15 +720,7 @@ void COpenGL3DriverBase::drawVertexPrimitiveList(const void *vertices, u32 verte
 		break;
 	}
 	case (EIT_32BIT): {
-#ifdef GL_OES_element_index_uint
-#ifndef GL_UNSIGNED_INT
-#define GL_UNSIGNED_INT 0x1405
-#endif
-		if (FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_OES_element_index_uint])
-			indexSize = GL_UNSIGNED_INT;
-		else
-#endif
-			indexSize = GL_UNSIGNED_SHORT;
+		indexSize = GL_UNSIGNED_INT;
 		break;
 	}
 	}
@@ -743,6 +755,13 @@ void COpenGL3DriverBase::drawVertexPrimitiveList(const void *vertices, u32 verte
 	}
 
 	endDraw(vTypeDesc);
+}
+
+void COpenGL3DriverBase::draw2DVertexPrimitiveList(const void *vertices, u32 vertexCount,
+		const void *indexList, u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
+{
+	os::Printer::log("draw2DVertexPrimitiveList unimplemented", ELL_ERROR);
 }
 
 void COpenGL3DriverBase::draw2DImage(const video::ITexture *texture, const core::position2d<s32> &destPos,
@@ -1051,7 +1070,7 @@ void COpenGL3DriverBase::drawElements(GLenum primitiveType, const VertexType &ve
 
 void COpenGL3DriverBase::beginDraw(const VertexType &vertexType, uintptr_t verticesBase)
 {
-	for (auto attr : vertexType) {
+	for (auto &attr : vertexType) {
 		GL.EnableVertexAttribArray(attr.Index);
 		switch (attr.mode) {
 		case VertexAttribute::Mode::Regular:
@@ -1060,7 +1079,7 @@ void COpenGL3DriverBase::beginDraw(const VertexType &vertexType, uintptr_t verti
 		case VertexAttribute::Mode::Normalized:
 			GL.VertexAttribPointer(attr.Index, attr.ComponentCount, attr.ComponentType, GL_TRUE, vertexType.VertexSize, reinterpret_cast<void *>(verticesBase + attr.Offset));
 			break;
-		case VertexAttribute::Mode::Integral:
+		case VertexAttribute::Mode::Integer:
 			GL.VertexAttribIPointer(attr.Index, attr.ComponentCount, attr.ComponentType, vertexType.VertexSize, reinterpret_cast<void *>(verticesBase + attr.Offset));
 			break;
 		}
@@ -1069,7 +1088,7 @@ void COpenGL3DriverBase::beginDraw(const VertexType &vertexType, uintptr_t verti
 
 void COpenGL3DriverBase::endDraw(const VertexType &vertexType)
 {
-	for (auto attr : vertexType)
+	for (auto &attr : vertexType)
 		GL.DisableVertexAttribArray(attr.Index);
 }
 
@@ -1325,6 +1344,8 @@ void COpenGL3DriverBase::setBasicRenderStates(const SMaterial &material, const S
 		GL.LineWidth(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedLine[0], DimAliasedLine[1]));
 
 	// Anti aliasing
+	// Deal with MSAA even if it's not enabled in the OpenGL context, we might be
+	// rendering to an FBO with multisampling.
 	if (resetAllRenderStates || lastmaterial.AntiAliasing != material.AntiAliasing) {
 		if (material.AntiAliasing & EAAM_ALPHA_TO_COVERAGE)
 			GL.Enable(GL_SAMPLE_ALPHA_TO_COVERAGE);
@@ -1640,11 +1661,17 @@ IGPUProgrammingServices *COpenGL3DriverBase::getGPUProgrammingServices()
 ITexture *COpenGL3DriverBase::addRenderTargetTexture(const core::dimension2d<u32> &size,
 		const io::path &name, const ECOLOR_FORMAT format)
 {
+	return addRenderTargetTextureMs(size, 0, name, format);
+}
+
+ITexture *COpenGL3DriverBase::addRenderTargetTextureMs(const core::dimension2d<u32> &size, u8 msaa,
+		const io::path &name, const ECOLOR_FORMAT format)
+{
 	// disable mip-mapping
 	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);
 
-	COpenGL3Texture *renderTargetTexture = new COpenGL3Texture(name, size, ETT_2D, format, this);
+	COpenGL3Texture *renderTargetTexture = new COpenGL3Texture(name, size, msaa > 0 ? ETT_2D_MS : ETT_2D, format, this, msaa);
 	addTexture(renderTargetTexture);
 	renderTargetTexture->drop();
 
@@ -1683,7 +1710,7 @@ ITexture *COpenGL3DriverBase::addRenderTargetTextureCubemap(const irr::u32 sideL
 //! Returns the maximum amount of primitives
 u32 COpenGL3DriverBase::getMaximalPrimitiveCount() const
 {
-	return 65535;
+	return Version.Spec == OpenGLSpec::ES ? 65535 : 0x7fffffff;
 }
 
 bool COpenGL3DriverBase::setRenderTargetEx(IRenderTarget *target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)

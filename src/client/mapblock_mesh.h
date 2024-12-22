@@ -35,9 +35,8 @@ struct MeshMakeData
 	u16 side_length;
 
 	const NodeDefManager *nodedef;
-	bool m_use_shaders;
 
-	MeshMakeData(const NodeDefManager *ndef, u16 side_length, bool use_shaders);
+	MeshMakeData(const NodeDefManager *ndef, u16 side_length);
 
 	/*
 		Copy block data manually (to allow optimizations by the caller)
@@ -210,8 +209,14 @@ public:
 	/// Center of the bounding-sphere, in BS-space, relative to block pos.
 	v3f getBoundingSphereCenter() const { return m_bounding_sphere_center; }
 
-	/// update transparent buffers to render towards the camera
-	void updateTransparentBuffers(v3f camera_pos, v3s16 block_pos);
+	/** Update transparent buffers to render towards the camera.
+	 * @param group_by_buffers If true, triangles in the same buffer are batched
+	 *     into the same PartialMeshBuffer, resulting in fewer draw calls, but
+	 *     wrong order. Triangles within a single buffer are still ordered, and
+	 *     buffers are ordered relative to each other (with respect to their nearest
+	 *     triangle).
+	 */
+	void updateTransparentBuffers(v3f camera_pos, v3s16 block_pos, bool group_by_buffers);
 	void consolidateTransparentBuffers();
 
 	/// get the list of transparent buffers
@@ -235,8 +240,6 @@ private:
 	f32 m_bounding_radius;
 	v3f m_bounding_sphere_center;
 
-	bool m_enable_shaders;
-
 	// Must animate() be called before rendering?
 	bool m_has_animation;
 	int m_animation_force_timer;
@@ -251,14 +254,6 @@ private:
 	// Maps mesh and mesh buffer indices to TileSpecs
 	// Keys are pairs of (mesh index, buffer index in the mesh)
 	std::map<std::pair<u8, u32>, AnimationInfo> m_animation_info;
-
-	// Animation info: day/night transitions
-	// Last daynight_ratio value passed to animate()
-	u32 m_last_daynight_ratio;
-	// For each mesh and mesh buffer, stores pre-baked colors
-	// of sunlit vertices
-	// Keys are pairs of (mesh index, buffer index in the mesh)
-	std::map<std::pair<u8, u32>, std::map<u32, video::SColor > > m_daynight_diffs;
 
 	// list of all semitransparent triangles in the mapblock
 	std::vector<MeshTriangle> m_transparent_triangles;

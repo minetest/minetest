@@ -169,7 +169,7 @@ private:
 	v3s16 m_camera_offset;
 	bool m_camera_inside_cloud = false;
 
-	bool m_enable_shaders, m_enable_3d;
+	bool m_enable_3d;
 	video::SColorf m_color = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	CloudParams m_params;
 };
