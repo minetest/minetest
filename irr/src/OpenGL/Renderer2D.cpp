@@ -62,6 +62,18 @@ void COpenGL3Renderer2D::OnSetMaterial(const video::SMaterial &material,
 	f32 Thickness = (material.Thickness > 0.f) ? material.Thickness : 1.f;
 	setPixelShaderConstant(ThicknessID, &Thickness, 1);
 
+	{
+		ProjectionID = getPixelShaderConstantID("uProjection");
+
+		const core::dimension2d<u32> renderTargetSize = Driver->getCurrentRenderTargetSize();
+		core::matrix4 proj;
+		float xInv2 = 2.0f / renderTargetSize.Width;
+		float yInv2 = 2.0f / renderTargetSize.Height;
+		proj.setScale({ xInv2, -yInv2, 0.0f });
+		proj.setTranslation({ -1.0f, 1.0f, 0.0f });
+		setPixelShaderConstant(ProjectionID, proj.pointer(), 4 * 4);
+	}
+
 	if (WithTexture) {
 		s32 TextureUsage = material.TextureLayers[0].Texture ? 1 : 0;
 		setPixelShaderConstant(TextureUsageID, &TextureUsage, 1);

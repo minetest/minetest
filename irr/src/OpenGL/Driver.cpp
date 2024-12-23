@@ -710,58 +710,43 @@ void COpenGL3DriverBase::drawVertexPrimitiveList(const void *vertices, u32 verte
 
 	setRenderStates3DMode();
 
-	auto &vTypeDesc = getVertexTypeDescription(vType);
-	beginDraw(vTypeDesc, reinterpret_cast<uintptr_t>(vertices));
-	GLenum indexSize = 0;
-
-	switch (iType) {
-	case (EIT_16BIT): {
-		indexSize = GL_UNSIGNED_SHORT;
-		break;
-	}
-	case (EIT_32BIT): {
-		indexSize = GL_UNSIGNED_INT;
-		break;
-	}
-	}
-
-	switch (pType) {
-	case scene::EPT_POINTS:
-	case scene::EPT_POINT_SPRITES:
-		GL.DrawArrays(GL_POINTS, 0, primitiveCount);
-		break;
-	case scene::EPT_LINE_STRIP:
-		GL.DrawElements(GL_LINE_STRIP, primitiveCount + 1, indexSize, indexList);
-		break;
-	case scene::EPT_LINE_LOOP:
-		GL.DrawElements(GL_LINE_LOOP, primitiveCount, indexSize, indexList);
-		break;
-	case scene::EPT_LINES:
-		GL.DrawElements(GL_LINES, primitiveCount * 2, indexSize, indexList);
-		break;
-	case scene::EPT_TRIANGLE_STRIP:
-		GL.DrawElements(GL_TRIANGLE_STRIP, primitiveCount + 2, indexSize, indexList);
-		break;
-	case scene::EPT_TRIANGLE_FAN:
-		GL.DrawElements(GL_TRIANGLE_FAN, primitiveCount + 2, indexSize, indexList);
-		break;
-	case scene::EPT_TRIANGLES:
-		GL.DrawElements((LastMaterial.Wireframe) ? GL_LINES : (LastMaterial.PointCloud) ? GL_POINTS
-																						: GL_TRIANGLES,
-				primitiveCount * 3, indexSize, indexList);
-		break;
-	default:
-		break;
-	}
-
-	endDraw(vTypeDesc);
+	renderArray(vertices, indexList, primitiveCount, vType, pType, iType);
 }
 
+//! draws a vertex primitive list in 2d
 void COpenGL3DriverBase::draw2DVertexPrimitiveList(const void *vertices, u32 vertexCount,
 		const void *indexList, u32 primitiveCount,
 		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
 {
-	os::Printer::log("draw2DVertexPrimitiveList unimplemented", ELL_ERROR);
+	if (!primitiveCount || !vertexCount)
+		return;
+
+	if (!vertices)
+		return;
+
+	if (!checkPrimitiveCount(primitiveCount))
+		return;
+
+	CNullDriver::draw2DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
+
+	chooseMaterial2D();
+	setMaterialTexture(0, 0);
+
+	// draw everything
+	CacheHandler->getTextureCache().set(0, Material.getTexture(0));
+	if (Material.MaterialType == EMT_ONETEXTURE_BLEND) {
+		E_BLEND_FACTOR srcFact;
+		E_BLEND_FACTOR dstFact;
+		E_MODULATE_FUNC modulo;
+		u32 alphaSource;
+		unpack_textureBlendFunc(srcFact, dstFact, modulo, alphaSource, Material.MaterialTypeParam);
+		setRenderStates2DMode(alphaSource & video::EAS_VERTEX_COLOR, (Material.getTexture(0) != 0), (alphaSource & video::EAS_TEXTURE) != 0);
+	} else
+		setRenderStates2DMode(Material.MaterialType == EMT_TRANSPARENT_VERTEX_ALPHA, (Material.getTexture(0) != 0), Material.MaterialType == EMT_TRANSPARENT_ALPHA_CHANNEL);
+
+	setRenderStates2DMode(true, false, false);
+
+	renderArray(vertices, indexList, primitiveCount, vType, pType, iType);
 }
 
 void COpenGL3DriverBase::draw2DImage(const video::ITexture *texture, const core::position2d<s32> &destPos,
@@ -824,10 +809,10 @@ void COpenGL3DriverBase::draw2DImage(const video::ITexture *texture, const core:
 				clipRect->getWidth(), clipRect->getHeight());
 	}
 
-	f32 left = (f32)destRect.UpperLeftCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-	f32 right = (f32)destRect.LowerRightCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-	f32 down = 2.f - (f32)destRect.LowerRightCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
-	f32 top = 2.f - (f32)destRect.UpperLeftCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+	f32 left  = (f32)destRect.UpperLeftCorner.X;
+	f32 right = (f32)destRect.LowerRightCorner.X;
+	f32 down  = (f32)destRect.LowerRightCorner.Y;
+	f32 top   = (f32)destRect.UpperLeftCorner.Y;
 
 	S3DVertex vertices[4];
 	vertices[0] = S3DVertex(left, top, 0, 0, 0, 1, useColor[0], tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
@@ -924,10 +909,10 @@ void COpenGL3DriverBase::draw2DImageBatch(const video::ITexture *texture,
 
 		const core::rect<s32> poss(targetPos, sourceSize);
 
-		f32 left = (f32)poss.UpperLeftCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-		f32 right = (f32)poss.LowerRightCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-		f32 down = 2.f - (f32)poss.LowerRightCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
-		f32 top = 2.f - (f32)poss.UpperLeftCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+		f32 left  = (f32)poss.UpperLeftCorner.X;
+		f32 right = (f32)poss.LowerRightCorner.X;
+		f32 down  = (f32)poss.LowerRightCorner.Y;
+		f32 top   = (f32)poss.UpperLeftCorner.Y;
 
 		vtx.emplace_back(left, top, 0.0f,
 				0.0f, 0.0f, 0.0f, color,
@@ -956,33 +941,7 @@ void COpenGL3DriverBase::draw2DRectangle(SColor color,
 		const core::rect<s32> &position,
 		const core::rect<s32> *clip)
 {
-	chooseMaterial2D();
-	setMaterialTexture(0, 0);
-
-	setRenderStates2DMode(color.getAlpha() < 255, false, false);
-
-	core::rect<s32> pos = position;
-
-	if (clip)
-		pos.clipAgainst(*clip);
-
-	if (!pos.isValid())
-		return;
-
-	const core::dimension2d<u32> &renderTargetSize = getCurrentRenderTargetSize();
-
-	f32 left = (f32)pos.UpperLeftCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-	f32 right = (f32)pos.LowerRightCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-	f32 down = 2.f - (f32)pos.LowerRightCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
-	f32 top = 2.f - (f32)pos.UpperLeftCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
-
-	S3DVertex vertices[4];
-	vertices[0] = S3DVertex(left, top, 0, 0, 0, 1, color, 0, 0);
-	vertices[1] = S3DVertex(right, top, 0, 0, 0, 1, color, 0, 0);
-	vertices[2] = S3DVertex(right, down, 0, 0, 0, 1, color, 0, 0);
-	vertices[3] = S3DVertex(left, down, 0, 0, 0, 1, color, 0, 0);
-
-	drawQuad(vtPrimitive, vertices);
+	draw2DRectangle(position, color, color, color, color, clip);
 }
 
 //! draw an 2d rectangle
@@ -1008,18 +967,16 @@ void COpenGL3DriverBase::draw2DRectangle(const core::rect<s32> &position,
 								  colorRightDown.getAlpha() < 255,
 			false, false);
 
-	const core::dimension2d<u32> &renderTargetSize = getCurrentRenderTargetSize();
-
-	f32 left = (f32)pos.UpperLeftCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-	f32 right = (f32)pos.LowerRightCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-	f32 down = 2.f - (f32)pos.LowerRightCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
-	f32 top = 2.f - (f32)pos.UpperLeftCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+	f32 left  = (f32)pos.UpperLeftCorner.X;
+	f32 right = (f32)pos.LowerRightCorner.X;
+	f32 down  = (f32)pos.LowerRightCorner.Y;
+	f32 top   = (f32)pos.UpperLeftCorner.Y;
 
 	S3DVertex vertices[4];
-	vertices[0] = S3DVertex(left, top, 0, 0, 0, 1, colorLeftUp, 0, 0);
-	vertices[1] = S3DVertex(right, top, 0, 0, 0, 1, colorRightUp, 0, 0);
+	vertices[0] = S3DVertex(left,   top, 0, 0, 0, 1, colorLeftUp, 0, 0);
+	vertices[1] = S3DVertex(right,  top, 0, 0, 0, 1, colorRightUp, 0, 0);
 	vertices[2] = S3DVertex(right, down, 0, 0, 0, 1, colorRightDown, 0, 0);
-	vertices[3] = S3DVertex(left, down, 0, 0, 0, 1, colorLeftDown, 0, 0);
+	vertices[3] = S3DVertex(left,  down, 0, 0, 0, 1, colorLeftDown, 0, 0);
 
 	drawQuad(vtPrimitive, vertices);
 }
@@ -1034,12 +991,10 @@ void COpenGL3DriverBase::draw2DLine(const core::position2d<s32> &start,
 
 		setRenderStates2DMode(color.getAlpha() < 255, false, false);
 
-		const core::dimension2d<u32> &renderTargetSize = getCurrentRenderTargetSize();
-
-		f32 startX = (f32)start.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-		f32 endX = (f32)end.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-		f32 startY = 2.f - (f32)start.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
-		f32 endY = 2.f - (f32)end.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+		f32 startX = (f32)start.X;
+		f32 endX   = (f32)end.X;
+		f32 startY = (f32)start.Y;
+		f32 endY   = (f32)end.Y;
 
 		S3DVertex vertices[2];
 		vertices[0] = S3DVertex(startX, startY, 0, 0, 0, 1, color, 0, 0);
@@ -1066,6 +1021,57 @@ void COpenGL3DriverBase::drawElements(GLenum primitiveType, const VertexType &ve
 	beginDraw(vertexType, reinterpret_cast<uintptr_t>(vertices));
 	GL.DrawRangeElements(primitiveType, 0, vertexCount - 1, indexCount, GL_UNSIGNED_SHORT, indices);
 	endDraw(vertexType);
+}
+
+void COpenGL3DriverBase::renderArray(const void *vertices, const void *indexList,
+		u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
+{
+	auto &vTypeDesc = getVertexTypeDescription(vType);
+	beginDraw(vTypeDesc, reinterpret_cast<uintptr_t>(vertices));
+	GLenum indexSize = 0;
+
+	switch (iType) {
+	case (EIT_16BIT): {
+		indexSize = GL_UNSIGNED_SHORT;
+		break;
+	}
+	case (EIT_32BIT): {
+		indexSize = GL_UNSIGNED_INT;
+		break;
+	}
+	}
+
+	switch (pType) {
+	case scene::EPT_POINTS:
+	case scene::EPT_POINT_SPRITES:
+		GL.DrawArrays(GL_POINTS, 0, primitiveCount);
+		break;
+	case scene::EPT_LINE_STRIP:
+		GL.DrawElements(GL_LINE_STRIP, primitiveCount + 1, indexSize, indexList);
+		break;
+	case scene::EPT_LINE_LOOP:
+		GL.DrawElements(GL_LINE_LOOP, primitiveCount, indexSize, indexList);
+		break;
+	case scene::EPT_LINES:
+		GL.DrawElements(GL_LINES, primitiveCount * 2, indexSize, indexList);
+		break;
+	case scene::EPT_TRIANGLE_STRIP:
+		GL.DrawElements(GL_TRIANGLE_STRIP, primitiveCount + 2, indexSize, indexList);
+		break;
+	case scene::EPT_TRIANGLE_FAN:
+		GL.DrawElements(GL_TRIANGLE_FAN, primitiveCount + 2, indexSize, indexList);
+		break;
+	case scene::EPT_TRIANGLES:
+		GL.DrawElements((LastMaterial.Wireframe) ? GL_LINES : (LastMaterial.PointCloud) ? GL_POINTS
+																						: GL_TRIANGLES,
+				primitiveCount * 3, indexSize, indexList);
+		break;
+	default:
+		break;
+	}
+
+	endDraw(vTypeDesc);
 }
 
 void COpenGL3DriverBase::beginDraw(const VertexType &vertexType, uintptr_t verticesBase)
