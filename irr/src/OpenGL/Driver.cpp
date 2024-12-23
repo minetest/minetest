@@ -710,7 +710,7 @@ void COpenGL3DriverBase::drawVertexPrimitiveList(const void *vertices, u32 verte
 
 	setRenderStates3DMode();
 
-	renderArray(vertices, indexList, primitiveCount, vType, pType, iType);
+	drawGeneric(vertices, indexList, primitiveCount, vType, pType, iType);
 }
 
 //! draws a vertex primitive list in 2d
@@ -729,24 +729,13 @@ void COpenGL3DriverBase::draw2DVertexPrimitiveList(const void *vertices, u32 ver
 
 	CNullDriver::draw2DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
 
-	chooseMaterial2D();
-	setMaterialTexture(0, 0);
+	setRenderStates2DMode(
+		Material.MaterialType == EMT_TRANSPARENT_VERTEX_ALPHA,
+		Material.getTexture(0),
+		Material.MaterialType == EMT_TRANSPARENT_ALPHA_CHANNEL
+	);
 
-	// draw everything
-	CacheHandler->getTextureCache().set(0, Material.getTexture(0));
-	if (Material.MaterialType == EMT_ONETEXTURE_BLEND) {
-		E_BLEND_FACTOR srcFact;
-		E_BLEND_FACTOR dstFact;
-		E_MODULATE_FUNC modulo;
-		u32 alphaSource;
-		unpack_textureBlendFunc(srcFact, dstFact, modulo, alphaSource, Material.MaterialTypeParam);
-		setRenderStates2DMode(alphaSource & video::EAS_VERTEX_COLOR, (Material.getTexture(0) != 0), (alphaSource & video::EAS_TEXTURE) != 0);
-	} else
-		setRenderStates2DMode(Material.MaterialType == EMT_TRANSPARENT_VERTEX_ALPHA, (Material.getTexture(0) != 0), Material.MaterialType == EMT_TRANSPARENT_ALPHA_CHANNEL);
-
-	setRenderStates2DMode(true, false, false);
-
-	renderArray(vertices, indexList, primitiveCount, vType, pType, iType);
+	drawGeneric(vertices, indexList, primitiveCount, vType, pType, iType);
 }
 
 void COpenGL3DriverBase::draw2DImage(const video::ITexture *texture, const core::position2d<s32> &destPos,
@@ -1023,7 +1012,7 @@ void COpenGL3DriverBase::drawElements(GLenum primitiveType, const VertexType &ve
 	endDraw(vertexType);
 }
 
-void COpenGL3DriverBase::renderArray(const void *vertices, const void *indexList,
+void COpenGL3DriverBase::drawGeneric(const void *vertices, const void *indexList,
 		u32 primitiveCount,
 		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
 {
@@ -1032,14 +1021,12 @@ void COpenGL3DriverBase::renderArray(const void *vertices, const void *indexList
 	GLenum indexSize = 0;
 
 	switch (iType) {
-	case (EIT_16BIT): {
+	case EIT_16BIT:
 		indexSize = GL_UNSIGNED_SHORT;
 		break;
-	}
-	case (EIT_32BIT): {
+	case EIT_32BIT:
 		indexSize = GL_UNSIGNED_INT;
 		break;
-	}
 	}
 
 	switch (pType) {

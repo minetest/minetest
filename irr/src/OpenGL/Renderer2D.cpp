@@ -32,6 +32,7 @@ COpenGL3Renderer2D::COpenGL3Renderer2D(const c8 *vertexShaderProgram, const c8 *
 
 	// These states don't change later.
 
+	ProjectionID = getPixelShaderConstantID("uProjection");
 	ThicknessID = getPixelShaderConstantID("uThickness");
 	if (WithTexture) {
 		TextureUsageID = getPixelShaderConstantID("uTextureUsage");
@@ -63,8 +64,7 @@ void COpenGL3Renderer2D::OnSetMaterial(const video::SMaterial &material,
 	setPixelShaderConstant(ThicknessID, &Thickness, 1);
 
 	{
-		ProjectionID = getPixelShaderConstantID("uProjection");
-
+		// Update projection matrix
 		const core::dimension2d<u32> renderTargetSize = Driver->getCurrentRenderTargetSize();
 		core::matrix4 proj;
 		float xInv2 = 2.0f / renderTargetSize.Width;
