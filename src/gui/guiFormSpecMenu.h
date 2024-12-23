@@ -17,6 +17,7 @@
 #include "guiInventoryList.h"
 #include "guiScrollBar.h"
 #include "guiTable.h"
+#include "guiHyperText.h"
 #include "util/string.h"
 #include "util/enriched_string.h"
 #include "StyleSpec.h"
@@ -148,6 +149,24 @@ class GUIFormSpecMenu : public GUIModalMenu
 		std::wstring tooltip;
 		irr::video::SColor bgcolor;
 		irr::video::SColor color;
+	};
+
+	struct SuperTipSpec
+	{
+		SuperTipSpec() = default;
+		SuperTipSpec(const core::rect<s32> &a_rect, v2s32 a_stpos, s32 a_width,
+				bool a_floating) :
+			hover_rect(a_rect),
+			stpos(a_stpos),
+			width(a_width),
+			floating(a_floating)
+		{
+		}
+
+		core::rect<s32> hover_rect;
+		v2s32 stpos;
+		s32 width;
+		bool floating;
 	};
 
 public:
@@ -338,6 +357,7 @@ protected:
 	std::vector<std::pair<FieldSpec, GUITable *>> m_tables;
 	std::vector<std::pair<FieldSpec, gui::IGUICheckBox *>> m_checkboxes;
 	std::map<std::string, TooltipSpec> m_tooltips;
+	std::vector<std::pair<GUIHyperText *, SuperTipSpec>> m_supertips;
 	std::vector<std::pair<gui::IGUIElement *, TooltipSpec>> m_tooltip_rects;
 	std::vector<std::pair<FieldSpec, GUIScrollBar *>> m_scrollbars;
 	std::vector<std::pair<FieldSpec, std::vector<std::string>>> m_dropdowns;
@@ -461,6 +481,7 @@ private:
 	void parseTextArea(parserData* data,std::vector<std::string>& parts,
 			const std::string &type);
 	void parseHyperText(parserData *data, const std::string &element);
+	void parseSuperTip(parserData *data, const std::string &element);
 	void parseLabel(parserData* data, const std::string &element);
 	void parseVertLabel(parserData* data, const std::string &element);
 	void parseImageButton(parserData* data, const std::string &element);
@@ -491,6 +512,7 @@ private:
 
 	void showTooltip(const std::wstring &text, const irr::video::SColor &color,
 		const irr::video::SColor &bgcolor);
+	void showSuperTip(GUIHyperText *e, const SuperTipSpec &spec);
 
 	/**
 	 * In formspec version < 2 the elements were not ordered properly. Some element
