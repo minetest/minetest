@@ -18,6 +18,7 @@
 #include "COSOperator.h"
 #include <cstdio>
 #include <cstdlib>
+#include <unordered_map>
 #include <unordered_set>
 #include "SIrrCreationParameters.h"
 #include <SDL_video.h>
@@ -229,12 +230,30 @@ int CIrrDeviceSDL::findCharToPassToIrrlicht(uint32_t sdlKey, EKEY_CODE irrlichtK
 	}
 }
 
+// Irrlicht has some EKEY_CODE entries that only appear to make sense in a SDL-scancode-like context.
+// These keycodes are passed by (in particular) the X11 IrrlichtDevice.
+// Perform one-way conversion if we encounter them.
+std::unordered_map<EKEY_CODE, SDL_Scancode> ekey_scancodes = {
+	{KEY_OEM_1, SDL_SCANCODE_SEMICOLON},
+	{KEY_OEM_2, SDL_SCANCODE_SLASH},
+	{KEY_OEM_3, SDL_SCANCODE_GRAVE},
+	{KEY_OEM_4, SDL_SCANCODE_LEFTBRACKET},
+	{KEY_OEM_5, SDL_SCANCODE_BACKSLASH},
+	{KEY_OEM_6, SDL_SCANCODE_RIGHTBRACKET},
+	{KEY_OEM_7, SDL_SCANCODE_APOSTROPHE},
+	// KEY_OEM_8 is apparently unused -> ignored here
+	// KEY_OEM_AX does not appear to be sent by Irrlicht -> ignored here
+	{KEY_OEM_102, SDL_SCANCODE_NONUSBACKSLASH},
+};
+
 std::variant<u32, EKEY_CODE> CIrrDeviceSDL::getScancodeFromKey(const Keycode &key) const
 {
 	u32 keynum = 0;
 	if (const auto *keycode = std::get_if<EKEY_CODE>(&key)) {
 		if (is_fake_key(*keycode))
 			return *keycode;
+		if (const auto &ent = ekey_scancodes.find(*keycode); ent != ekey_scancodes.end())
+			return ent->second;
 		for (const auto &entry: KeyMap) {
 			if (entry.second == *keycode) {
 				keynum = entry.first;
