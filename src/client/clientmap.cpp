@@ -18,6 +18,8 @@
 #include "util/basic_macros.h"
 #include "util/tracy_wrapper.h"
 #include "client/renderingengine.h"
+#include "util/quicktune.h"
+#include "util/hex.h"
 
 #include <queue>
 
@@ -788,29 +790,27 @@ void MeshBufListMaps::addFromBlock(v3s16 block_pos, MapBlockMesh *block_mesh,
  * @param src buffer list
  * @param dst draw order
  * @param get_world_pos returns translation for a buffer
- * @param buffer_trash output container for temporary mesh buffers
+ * @param dynamic_buffers
  * @return number of buffers that were merged
  */
-template <typename F, typename C>
+template <typename F>
 static u32 transformBuffersToDrawOrder(
 	const MeshBufListMaps::MeshBufList &src, DrawDescriptorList &draw_order,
-		F get_world_pos, C &buffer_trash)
+		F get_world_pos, CachedMeshBuffers &dynamic_buffers)
 {
 	/**
 	 * This is a tradeoff between time spent merging buffers and time spent
 	 * due to excess drawcalls.
 	 * Testing has shown that the ideal value is in the low hundreds, as extra
-	 * CPU work quickly eats up the benefits.
+	 * CPU work quickly eats up the benefits (though alleviated by a cache).
 	 * In MTG landscape scenes this was found to save around 20-40% of drawcalls.
 	 *
 	 * NOTE: if you attempt to test this with quicktune, it won't give you valid
 	 * results since HW buffers stick around and Irrlicht handles large amounts
 	 * inefficiently.
-	 *
-	 * TODO: as a next step we should cache merged meshes, so they do not need
-	 * to be re-built *and* can be kept in GPU memory.
 	 */
-	const u32 target_min_vertices = g_settings->getU32("mesh_buffer_min_vertices");
+	u32 target_min_vertices = g_settings->getU32("mesh_buffer_min_vertices");
+	QUICKTUNE_AUTONAME(QVT_INT, target_min_vertices, 0, 2000);
 
 	const auto draw_order_pre = draw_order.size();
 	auto *driver = RenderingEngine::get_video_driver();
@@ -824,6 +824,30 @@ static u32 transformBuffersToDrawOrder(
 			total_vtx += pair.second->getVertexCount();
 			total_idx += pair.second->getIndexCount();
 		}
+	}
+
+	// iterate in reverse to get closest blocks first
+	std::vector<std::pair<v3f, scene::IMeshBuffer*>> to_merge;
+	for (auto it = src.rbegin(); it != src.rend(); ++it) {
+		v3f translate = get_world_pos(it->first);
+		auto *buf = it->second;
+		if (can_merge < 2 || buf->getVertexCount() >= target_min_vertices) {
+			draw_order.emplace_back(translate, buf);
+			continue;
+		}
+		to_merge.emplace_back(translate, buf);
+		// TEMP: workaround for updateAllHardwareBuffers() inefficiency
+		driver->removeHardwareBuffer(buf->getVertexBuffer());
+		driver->removeHardwareBuffer(buf->getIndexBuffer());
+	}
+
+	std::string kkk;
+	std::sort(to_merge.begin(), to_merge.end(), [] (const auto &l, const auto &r) {
+		return l.second < r.second;
+	});
+	for (auto &it : to_merge) {
+		// TODO?: big assumptions here
+		kkk.append(reinterpret_cast<const char*>(&it.second), sizeof(it.second));
 	}
 
 	scene::SMeshBuffer *tmp = nullptr;
@@ -842,33 +866,40 @@ static u32 transformBuffersToDrawOrder(
 		tmp = nullptr;
 	};
 
-	// iterate in reverse to get closest blocks first
-	for (auto it = src.rbegin(); it != src.rend(); ++it) {
-		v3f translate = get_world_pos(it->first);
-		auto *buf = it->second;
-		if (can_merge < 2 || buf->getVertexCount() >= target_min_vertices) {
-			draw_order.emplace_back(translate, buf);
-			continue;
-		}
+	// take from cache or run merging
+	auto it2 = dynamic_buffers.find(kkk);
+	if (it2 != dynamic_buffers.end()) {
+		g_profiler->avg("transformBuffersToDrawOrder: cache hit rate", 1);
+		for (auto *buf : it2->second.buf)
+			draw_order.emplace_back(v3f(0), buf);
+		it2->second.age = 0;
+	} else if (!kkk.empty()) {
+		g_profiler->avg("transformBuffersToDrawOrder: cache hit rate", 0);
+		auto &put_buffers = dynamic_buffers[kkk];
+		//rawstream << "new " << hex_encode(kkk) << std::endl;
+		for (auto &it : to_merge) {
+			v3f translate = it.first;
+			auto *buf = it.second;
 
-		bool new_buffer = false;
-		if (!tmp)
-			new_buffer = true;
-		else if (tmp->getVertexCount() + buf->getVertexCount() > U16_MAX)
-			new_buffer = true;
-		if (new_buffer) {
-			finish_buf();
-			tmp = new scene::SMeshBuffer();
-			buffer_trash.push_back(tmp);
-			assert(tmp->getPrimitiveType() == buf->getPrimitiveType());
-			tmp->Material = buf->getMaterial();
-			// preallocate
-			tmp->Vertices->Data.reserve(total_vtx);
-			tmp->Indices->Data.reserve(total_idx);
+			bool new_buffer = false;
+			if (!tmp)
+				new_buffer = true;
+			else if (tmp->getVertexCount() + buf->getVertexCount() > U16_MAX)
+				new_buffer = true;
+			if (new_buffer) {
+				finish_buf();
+				tmp = new scene::SMeshBuffer();
+				put_buffers.buf.push_back(tmp);
+				assert(tmp->getPrimitiveType() == buf->getPrimitiveType());
+				tmp->Material = buf->getMaterial();
+				// preallocate
+				tmp->Vertices->Data.reserve(total_vtx);
+				tmp->Indices->Data.reserve(total_idx);
+			}
+			appendToMeshBuffer(tmp, buf, translate);
 		}
-		appendToMeshBuffer(tmp, buf, translate);
+		finish_buf();
 	}
-	finish_buf();
 
 	// first call needs to set the material
 	if (draw_order.size() > draw_order_pre)
@@ -921,7 +952,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	TimeTaker tt_collect("");
 
 	MeshBufListMaps grouped_buffers;
-	std::vector<scene::IMeshBuffer*> buffer_trash;
 	DrawDescriptorList draw_order;
 
 	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
@@ -979,7 +1009,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	for (auto &map : grouped_buffers.maps) {
 		for (auto &list : map) {
 			merged_count += transformBuffersToDrawOrder(
-				list.second, draw_order, get_block_wpos, buffer_trash);
+				list.second, draw_order, get_block_wpos, m_dynamic_buffers);
 		}
 	}
 
@@ -1036,6 +1066,21 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	if (pass == scene::ESNRP_SOLID) {
 		g_profiler->avg("renderMap(): animated meshes [#]", mesh_animate_count);
 		g_profiler->avg(prefix + "merged buffers [#]", merged_count);
+
+		u32 USE_CACHE = 1;
+		QUICKTUNE_AUTONAME(QVT_INT, USE_CACHE, 0, 1);
+		u32 cached_count = 0;
+		for (auto it = m_dynamic_buffers.begin(); it != m_dynamic_buffers.end(); ) {
+			if (!USE_CACHE || ++it->second.age > 1) {
+				for (auto *buf : it->second.buf)
+					buf->drop();
+				it = m_dynamic_buffers.erase(it);
+			} else {
+				cached_count += it->second.buf.size();
+				it++;
+			}
+		}
+		g_profiler->avg(prefix + "merged buffers cached [#]", cached_count);
 	}
 
 	if (pass == scene::ESNRP_TRANSPARENT) {
@@ -1045,9 +1090,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);
 	g_profiler->avg(prefix + "drawcalls [#]", drawcall_count);
 	g_profiler->avg(prefix + "material swaps [#]", material_swaps);
-
-	for (auto &x : buffer_trash)
-		x->drop();
 }
 
 static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
@@ -1263,7 +1305,6 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	};
 
 	MeshBufListMaps grouped_buffers;
-	std::vector<scene::IMeshBuffer*> buffer_trash;
 	DrawDescriptorList draw_order;
 
 	std::size_t count = 0;
@@ -1308,7 +1349,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	for (auto &map : grouped_buffers.maps) {
 		for (auto &list : map) {
 			transformBuffersToDrawOrder(
-				list.second, draw_order, get_block_wpos, buffer_trash);
+				list.second, draw_order, get_block_wpos, m_dynamic_buffers);
 		}
 	}
 
@@ -1373,9 +1414,6 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);
 	g_profiler->avg(prefix + "drawcalls [#]", drawcall_count);
 	g_profiler->avg(prefix + "material swaps [#]", material_swaps);
-
-	for (auto &x : buffer_trash)
-		x->drop();
 }
 
 /*
