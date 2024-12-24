@@ -590,6 +590,7 @@ void Client::step(float dtime)
 						if (r.mesh->getMesh(l)->getMeshBufferCount() != 0)
 							is_empty = false;
 
+					// <- invalidate here?
 					if (is_empty)
 						delete r.mesh;
 					else {
