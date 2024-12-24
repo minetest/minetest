@@ -487,8 +487,8 @@ bool GameFormSpec::handleCallbacks()
 	}
 
 	if (g_gamecallback->keyconfig_requested) {
-		(void)make_irr<GUIKeyChangeMenu>(guienv, guiroot, -1,
-				      &g_menumgr, texture_src);
+		(void)make_irr<GUIKeyChangeMenu>(m_client, guienv, &m_input->joystick,
+				texture_src, m_client->getSoundManager(), m_client->getFormspecPrepend());
 		g_gamecallback->keyconfig_requested = false;
 	}
 
