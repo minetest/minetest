@@ -13,7 +13,6 @@
 #include "nodedef.h"
 #include "client/tile.h"
 #include "mesh.h"
-#include <IMeshManipulator.h>
 #include "client/meshgen/collector.h"
 #include "client/renderingengine.h"
 #include "client.h"
@@ -60,12 +59,10 @@ static const auto &quad_indices = quad_indices_02;
 
 const std::string MapblockMeshGenerator::raillike_groupname = "connect_to_raillike";
 
-MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output,
-		scene::IMeshManipulator *mm):
+MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output):
 	data(input),
 	collector(output),
 	nodedef(data->nodedef),
-	meshmanip(mm),
 	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE),
 	smooth_liquids(g_settings->getBool("enable_water_reflections"))
 {
