@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2022-06-27 03:16+0000\n"
-"Last-Translator: Marco Santos <enum.scima@gmail.com>\n"
+"PO-Revision-Date: 2024-12-26 19:00+0000\n"
+"Last-Translator: Kevin Hagen <de.absurdo@gmail.com>\n"
 "Language-Team: Filipino <https://hosted.weblate.org/projects/minetest/"
 "minetest/fil/>\n"
 "Language: fil\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1 && n != 2 && n != 3 && (n % 10 == 4 "
 "|| n % 10 == 6 || n % 10 == 9);\n"
-"X-Generator: Weblate 4.13.1-dev\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -322,16 +322,15 @@ msgstr "Paglalarawan sa Server"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Donate"
-msgstr ""
+msgstr "Magdonate"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Forum Topic"
 msgstr ""
 
 #: builtin/mainmenu/content/dlg_package.lua
-#, fuzzy
 msgid "Information"
-msgstr "Impormasyon:"
+msgstr "Impormasyon"
 
 #: builtin/mainmenu/content/dlg_package.lua
 #, fuzzy
@@ -519,7 +518,7 @@ msgstr "Mga dekorasyon"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Desert temples"
-msgstr ""
+msgstr "Mga Templo ng Disyerto"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -5752,7 +5751,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed"
-msgstr ""
+msgstr "Tulin ng tiyad"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
@@ -6442,7 +6441,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Weblink color"
-msgstr ""
+msgstr "Kulay ng weblink"
 
 #: src/settings_translation_file.cpp
 msgid "When enabled, liquid reflections are simulated."
