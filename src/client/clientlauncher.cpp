@@ -305,7 +305,8 @@ void ClientLauncher::init_input()
 		init_joysticks();
 }
 
-void ClientLauncher::init_joysticks() {
+void ClientLauncher::init_joysticks()
+{
 	irr::core::array<irr::SJoystickInfo> infos;
 	std::vector<irr::SJoystickInfo> joystick_infos;
 
