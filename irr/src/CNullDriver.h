@@ -588,7 +588,7 @@ protected:
 	inline void accountHWBufferUpload(u32 size)
 	{
 		FrameStats.HWBuffersUploaded++;
-		FrameStats.HWBuffersUploadedSize += size;
+		(void)size;
 	}
 
 	inline bool getWriteZBuffer(const SMaterial &material) const
