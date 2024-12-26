@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: luanti\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-28 19:57+0100\n"
-"PO-Revision-Date: 2024-11-10 17:11+0000\n"
-"Last-Translator: chocomint <silentxe1@gmail.com>\n"
+"PO-Revision-Date: 2024-12-26 19:00+0000\n"
+"Last-Translator: Hugo <urbestro@duck.com>\n"
 "Language-Team: Spanish (American) <https://hosted.weblate.org/projects/"
 "minetest/minetest/es_US/>\n"
 "Language: es_US\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
@@ -1617,31 +1617,31 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Continue"
-msgstr ""
+msgstr "Continuar"
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr ""
+msgstr "Cambiar contraseña"
 
 #: src/client/game.cpp
 msgid "Game paused"
-msgstr ""
+msgstr "Juego pausado"
 
 #: src/client/game.cpp
 msgid "Sound Volume"
-msgstr ""
+msgstr "Volumen del sonido"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Salir al menú"
 
 #: src/client/game.cpp
 msgid "Exit to OS"
-msgstr ""
+msgstr "Salir al sistema operativo"
 
 #: src/client/game.cpp
 msgid "Game info:"
-msgstr ""
+msgstr "Información del juego:"
 
 #: src/client/game.cpp
 msgid "- Mode: "
@@ -1697,15 +1697,15 @@ msgstr ""
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
-msgstr ""
+msgstr "Chat mostrado"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
-msgstr ""
+msgstr "Chat escondido"
 
 #: src/client/gameui.cpp
 msgid "Chat currently disabled by game or mod"
-msgstr ""
+msgstr "Chat actualmente desactivado por el juego o mod"
 
 #: src/client/gameui.cpp
 msgid "HUD shown"
@@ -1726,11 +1726,11 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Left Button"
-msgstr ""
+msgstr "Botón izquierdo"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
-msgstr ""
+msgstr "Botón derecho"
 
 #. ~ Usually paired with the Pause key
 #: src/client/keycode.cpp
@@ -1755,7 +1755,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Tab"
-msgstr ""
+msgstr "Pestaña"
 
 #: src/client/keycode.cpp
 msgid "Clear Key"
@@ -1789,7 +1789,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Space"
-msgstr ""
+msgstr "Espacio"
 
 #: src/client/keycode.cpp
 msgid "Page Up"
@@ -1826,7 +1826,7 @@ msgstr ""
 #. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
-msgstr ""
+msgstr "Seleccionar"
 
 #. ~ "Print screen" key
 #: src/client/keycode.cpp
@@ -1843,7 +1843,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Insert"
-msgstr ""
+msgstr "Introducir"
 
 #: src/client/keycode.cpp
 msgid "Delete Key"
@@ -1851,7 +1851,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Help"
-msgstr ""
+msgstr "Ayuda"
 
 #: src/client/keycode.cpp
 msgid "Left Windows"
