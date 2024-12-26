@@ -299,8 +299,7 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 	MeshMakeData mesh_make_data(client->ndef(), 1);
 	MeshCollector collector(v3f(0.0f * BS), v3f());
 	mesh_make_data.setSmoothLighting(false);
-	MapblockMeshGenerator gen(&mesh_make_data, &collector,
-		client->getSceneManager()->getMeshManipulator());
+	MapblockMeshGenerator gen(&mesh_make_data, &collector);
 
 	if (n.getParam2()) {
 		// keep it
