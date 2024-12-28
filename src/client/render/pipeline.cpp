@@ -101,6 +101,7 @@ void TextureBuffer::swapTextures(u8 texture_a, u8 texture_b)
 	m_textures[texture_b] = temp;
 }
 
+
 bool TextureBuffer::ensureTexture(video::ITexture **texture, const TextureDefinition& definition, PipelineContext &context)
 {
 	bool modify;

@@ -133,7 +133,6 @@ public:
 	virtual video::ITexture *getTexture(u8 index) override;
 	virtual void reset(PipelineContext &context) override;
 	void swapTextures(u8 texture_a, u8 texture_b);
-	void setTextureImage(u8 id, video::IImage* image);
 private:
 	static const u8 NO_DEPTH_TEXTURE = 255;
 
