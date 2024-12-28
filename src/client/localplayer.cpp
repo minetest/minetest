@@ -316,15 +316,12 @@ void LocalPlayer::move(f32 dtime, Environment *env,
 	if (!(is_valid_position && is_valid_position2)) {
 		is_climbing = false;
 	} else {
-		bool climbable_upper = nodemgr->get(node.getContent()).climbable;
-		bool climbable_lower = nodemgr->get(node2.getContent()).climbable;
-		is_climbing = (climbable_upper || climbable_lower) && !free_move;
+		const ContentFeatures &cf_upper = nodemgr->get(node.getContent());
+		const ContentFeatures &cf_lower = nodemgr->get(node2.getContent());
+		is_climbing = (cf_upper.climbable || cf_lower.climbable) && !free_move;
 		if (is_climbing) {
-			if (climbable_lower) {
-				node_climb_factor = nodemgr->get(node2.getContent()).climb_factor;
-			} else {
-				node_climb_factor = nodemgr->get(node.getContent()).climb_factor;
-			}
+			node_climb_factor = cf_lower.climbable
+				? cf_lower.climb_factor : cf_upper.climb_factor;
 		}
 	}
 

@@ -9842,19 +9842,19 @@ Used by `core.register_node`.
 
     climbable = false,  -- If true, can be climbed on like a ladder
 
-    move_resistance = 0,
-    -- Slows down movement of players through this node (max. 7).
-    -- If this is nil, it will be equal to liquid_viscosity.
-    -- Note: If liquid movement physics apply to the node
-    -- (see `liquid_move_physics`), the movement speed will also be
-    -- affected by the `movement_liquid_*` settings.
-
     climb_factor = 1.0,
     -- The speed at which a climbable node can be climbed up and down
     -- is multiplied by this number. Must not be negative. No effect if
     -- node isn't climbable.
     -- Note: The base climbing speed is controlled by the setting
     -- `movement_speed_climb` multiplied by the physics override `speed_climb`.
+
+    move_resistance = 0,
+    -- Slows down movement of players through this node (max. 7).
+    -- If this is nil, it will be equal to liquid_viscosity.
+    -- Note: If liquid movement physics apply to the node
+    -- (see `liquid_move_physics`), the movement speed will also be
+    -- affected by the `movement_liquid_*` settings.
 
     buildable_to = false,  -- If true, placed nodes can replace this node
 

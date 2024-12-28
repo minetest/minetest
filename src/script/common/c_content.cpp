@@ -812,6 +812,8 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	getboolfield(L, index, "diggable", f.diggable);
 	// Player can climb these
 	getboolfield(L, index, "climbable", f.climbable);
+	// Multiplies climb speed on climbable node
+	getfloatfield(L, index, "climb_factor", f.climb_factor);
 	// Player can build on these
 	getboolfield(L, index, "buildable_to", f.buildable_to);
 	// Liquids flow into and replace node
@@ -951,8 +953,6 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 		errorstream << "Field \"liquid_move_physics\": Invalid type!" << std::endl;
 	}
 	lua_pop(L, 1);
-
-	getfloatfield(L, index, "climb_factor", f.climb_factor);
 }
 
 void push_content_features(lua_State *L, const ContentFeatures &c)
