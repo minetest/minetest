@@ -2660,9 +2660,9 @@ int ObjectRef::l_set_lighting(lua_State *L)
 
 		lua_getfield(L, 2, "vignette");
 		if (lua_istable(L, -1)) {
-			lighting.vignette.dark   = getfloatfield_default(L, -1, "dark",   lighting.vignette.dark);
-			lighting.vignette.bright = getfloatfield_default(L, -1, "bright", lighting.vignette.bright);
-			lighting.vignette.power  = getfloatfield_default(L, -1, "power",  lighting.vignette.power);
+			getfloatfield(L, -1, "dark",   lighting.vignette.dark);
+			getfloatfield(L, -1, "bright", lighting.vignette.bright);
+			getfloatfield(L, -1, "power",  lighting.vignette.power);
 		}
 		lua_pop(L, 1); // vignette
 
