@@ -65,7 +65,7 @@ msgstr "Comando não disponível: "
 #: builtin/common/chatcommands.lua
 #, fuzzy
 msgid "Get help for commands (-t: output in chat)"
-msgstr "Obtenha ajuda para comandos"
+msgstr "Obtenha ajuda para comandos (-t: saída no chat)"
 
 #: builtin/common/chatcommands.lua
 msgid ""
@@ -77,11 +77,11 @@ msgstr ""
 #: builtin/common/chatcommands.lua
 #, fuzzy
 msgid "[all | <cmd>] [-t]"
-msgstr "[all| <cmd>]"
+msgstr "[all| <cmd>] [-t]"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
-msgstr "<Comando não disponível>"
+msgstr "<não disponível>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -162,13 +162,13 @@ msgstr "$1 baixando..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "All"
-msgstr ""
+msgstr "Todos"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #: builtin/mainmenu/content/dlg_package.lua
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
-msgstr "Backspace"
+msgstr "Voltar"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 #, fuzzy
@@ -181,7 +181,7 @@ msgstr "Baixando..."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Featured"
-msgstr ""
+msgstr "Destaque"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Games"
@@ -223,7 +223,7 @@ msgstr "Pacotes de texturas"
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "The package $1 was not found."
-msgstr ""
+msgstr "O pacote $1 não foi encontrado."
 
 #: builtin/mainmenu/content/dlg_contentdb.lua
 msgid "Update All [$1]"
@@ -297,7 +297,7 @@ msgstr "Verifique se o jogo base está correto."
 
 #: builtin/mainmenu/content/dlg_install.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "Você precisa instalar um jogo antes de poder instalar um mod"
 
 #: builtin/mainmenu/content/dlg_overwrite.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
@@ -310,7 +310,7 @@ msgstr "Sobrescrever"
 #: builtin/mainmenu/content/dlg_package.lua
 #, fuzzy
 msgid "ContentDB page"
-msgstr "Url do ContentDB"
+msgstr "URL do ContentDB"
 
 #: builtin/mainmenu/content/dlg_package.lua
 #, fuzzy
@@ -319,11 +319,11 @@ msgstr "Descrição do servidor"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Donate"
-msgstr ""
+msgstr "Doar"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Forum Topic"
-msgstr ""
+msgstr "Tópico do Fórum"
 
 #: builtin/mainmenu/content/dlg_package.lua
 #, fuzzy
@@ -337,15 +337,15 @@ msgstr "Instalar $1"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Issue Tracker"
-msgstr ""
+msgstr "Rastreador de Problemas"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Source"
-msgstr ""
+msgstr "Fonte"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "Translate"
-msgstr ""
+msgstr "Traduzir"
 
 #: builtin/mainmenu/content/dlg_package.lua builtin/mainmenu/tab_content.lua
 msgid "Uninstall"
@@ -362,7 +362,7 @@ msgstr "Visitar site"
 
 #: builtin/mainmenu/content/dlg_package.lua
 msgid "by $1  —  $2 downloads  —  +$3 / $4 / -$5"
-msgstr ""
+msgstr "por $1  —  $2 downloads  —  +$3 / $4 / -$5"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -378,8 +378,7 @@ msgstr "Não foi possível instalar $1 em $2"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr ""
-"Instalação: Não foi possível encontrar o nome da pasta adequado para $1"
+msgstr "Instalação: Não foi possível encontrar o nome da pasta adequado para $1"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to find a valid mod, modpack, or game"
@@ -514,7 +513,7 @@ msgstr "Decorações"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Desert temples"
-msgstr ""
+msgstr "Templos do deserto"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
@@ -525,6 +524,8 @@ msgid ""
 "Different dungeon variant generated in desert biomes (only if dungeons "
 "enabled)"
 msgstr ""
+"Variante de masmorra diferente gerada em biomas desérticos (somente se "
+"masmorras habilitadas)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -690,7 +691,7 @@ msgstr "Excluir o mundo \"$1\"?"
 
 #: builtin/mainmenu/dlg_register.lua src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr "Confirmar a senha"
+msgstr "Confirmar a Senha"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
@@ -720,23 +721,28 @@ msgstr "Registrar"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr ""
+msgstr "Descartar"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
 "For a long time, Luanti shipped with a default game called \"Minetest "
 "Game\". Since version 5.8.0, Luanti ships without a default game."
 msgstr ""
+"Por um longo tempo, o Luanti vinha com um jogo padrão chamado "Minetest "
+"Game\". Desde a versão 5.8.0, o Luanti é distribuído sem um jogo padrão."
+
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
 "If you want to continue playing in your Minetest Game worlds, you need to "
 "reinstall Minetest Game."
 msgstr ""
+"Se você quiser continuar jogando em seus mundos do Minetest Game, "
+"você precisa reinstalar o Minetest Game."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Minetest Game is no longer installed by default"
-msgstr ""
+msgstr "Minetest Game não é mais instalado por padrão"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 #, fuzzy
@@ -836,7 +842,7 @@ msgstr "Lacunaridade"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Octaves"
-msgstr "Octavos"
+msgstr "Oitavas"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 #: src/settings_translation_file.cpp
@@ -889,7 +895,7 @@ msgstr "amenizado"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(The game will need to enable automatic exposure as well)"
-msgstr ""
+msgstr "(O jogo precisará ativar a exposição automática também)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(The game will need to enable bloom as well)"
@@ -897,19 +903,19 @@ msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(The game will need to enable volumetric lighting as well)"
-msgstr ""
+msgstr "(O jogo precisará ativar o efeito bloom também)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
-msgstr ""
+msgstr "(Usar idioma do sistema)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Accessibility"
-msgstr ""
+msgstr "Acessibilidade"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Auto"
-msgstr ""
+msgstr "Automático"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/gui/touchcontrols.cpp src/settings_translation_file.cpp
@@ -950,7 +956,7 @@ msgstr "Restaurar Padrão"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
-msgstr ""
+msgstr "Reiniciar configuração para o padrão ($1)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
@@ -958,7 +964,7 @@ msgstr "Pesquisar"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
-msgstr ""
+msgstr "Mostrar configurações avançadas"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
@@ -988,15 +994,15 @@ msgstr "Atualização da camera desabilitada"
 
 #: builtin/mainmenu/settings/shader_warning_component.lua
 msgid "This is not a recommended configuration."
-msgstr ""
+msgstr "Esta não é uma configuração recomendada."
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
-msgstr ""
+msgstr "(O jogo precisará ativar as sombras também)"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Custom"
-msgstr ""
+msgstr "Personalizado"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 #: src/settings_translation_file.cpp
@@ -1045,7 +1051,7 @@ msgstr "Equipe Principal"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Irrlicht device:"
-msgstr ""
+msgstr "Dispositivo Irrlicht"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1152,13 +1158,15 @@ msgstr "Instalar jogos do ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Luanti doesn't come with a game by default."
-msgstr ""
+msgstr "O Luanti não vem com um jogo por padrão."
 
 #: builtin/mainmenu/tab_local.lua
 msgid ""
 "Luanti is a game-creation platform that allows you to play many different "
 "games."
 msgstr ""
+"Luanti é uma plataforma de criação de jogos que permite jogar muitos jogos "
+"diferentes."
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -1194,7 +1202,7 @@ msgstr "Iniciar Jogo"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "You need to install a game before you can create a world."
-msgstr ""
+msgstr "Você precisa instalar um jogo antes de poder criar um mundo."
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1650,7 +1658,7 @@ msgstr "Alcance de visualização ilimitado habilitado"
 
 #: src/client/game.cpp
 msgid "Unlimited viewing range enabled, but forbidden by game or mod"
-msgstr ""
+msgstr "Faixa de visualização ilimitada ativada, mas proibida pelo jogo ou mod"
 
 #: src/client/game.cpp
 #, fuzzy, c-format
@@ -1660,7 +1668,7 @@ msgstr "Alcance de visualização é no mínimo: %d"
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
-msgstr ""
+msgstr "Visualização alterada para %d (o mínimo), mas limitada a %d pelo jogo ou mod"
 
 #: src/client/game.cpp
 #, c-format
@@ -1677,6 +1685,7 @@ msgstr "Distancia de visualização alterado pra %d"
 msgid ""
 "Viewing range changed to %d (the maximum), but limited to %d by game or mod"
 msgstr ""
+"Faixa de visualização alterada para %d (o máximo), mas limitada a %d pelo jogo ou mod"
 
 #: src/client/game.cpp
 #, fuzzy, c-format
@@ -1755,16 +1764,16 @@ msgstr "Limpar"
 #: src/client/keycode.cpp
 #, fuzzy
 msgid "Control Key"
-msgstr "Ctrl"
+msgstr "Tecla Ctrl"
 
 #: src/client/keycode.cpp
 #, fuzzy
 msgid "Delete Key"
-msgstr "Deletar"
+msgstr "Tecla Delete"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
-msgstr ""
+msgstr "Seta para baixo"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1784,7 +1793,7 @@ msgstr "Ajuda"
 
 #: src/client/keycode.cpp
 msgid "Home"
-msgstr "Home"
+msgstr "Início"
 
 #: src/client/keycode.cpp
 msgid "IME Accept"
@@ -1839,7 +1848,7 @@ msgstr "Windows esquerdo"
 #: src/client/keycode.cpp
 #, fuzzy
 msgid "Menu Key"
-msgstr "Menu"
+msgstr "Tecla Menu"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
@@ -1847,7 +1856,7 @@ msgstr "Roda do mouse"
 
 #: src/client/keycode.cpp
 msgid "Num Lock"
-msgstr "Num Lock"
+msgstr "Tecla Numlock"
 
 #: src/client/keycode.cpp
 msgid "Numpad *"
@@ -1936,12 +1945,12 @@ msgstr "Jogar"
 #. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
-msgstr "Print Screen"
+msgstr "Captura de tela"
 
 #: src/client/keycode.cpp
 #, fuzzy
 msgid "Return Key"
-msgstr "Enter"
+msgstr "Tecla Enter"
 
 #: src/client/keycode.cpp
 #, fuzzy
@@ -1980,7 +1989,7 @@ msgstr "Tecla Select"
 #: src/client/keycode.cpp
 #, fuzzy
 msgid "Shift Key"
-msgstr "Shift"
+msgstr "Tecla Shift"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
@@ -2000,7 +2009,7 @@ msgstr "Tab"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
-msgstr ""
+msgstr "Seta para cima"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -2040,7 +2049,7 @@ msgstr "Falha ao abrir página da web"
 
 #: src/client/shader.cpp
 msgid "Shaders are enabled but GLSL is not supported by the driver."
-msgstr ""
+msgstr "Shaders estão ativados, mas o GLSL não é suportado pelo driver."
 
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
@@ -2236,11 +2245,11 @@ msgstr "pressione uma tecla"
 
 #: src/gui/guiOpenURL.cpp
 msgid "Open"
-msgstr ""
+msgstr "Abrir"
 
 #: src/gui/guiOpenURL.cpp
 msgid "Open URL?"
-msgstr ""
+msgstr "Abrir URL?"
 
 #: src/gui/guiOpenURL.cpp
 #, fuzzy
@@ -2269,7 +2278,7 @@ msgstr "Sair"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Muted"
-msgstr "Mutado"
+msgstr "Sem som"
 
 #: src/gui/guiVolumeChange.cpp
 #, c-format
@@ -2283,7 +2292,7 @@ msgstr "ID do Joystick"
 
 #: src/gui/touchcontrols.cpp
 msgid "Overflow menu"
-msgstr ""
+msgstr "Menu de transbordo"
 
 #: src/gui/touchcontrols.cpp
 #, fuzzy
@@ -2295,14 +2304,16 @@ msgid ""
 "Another client is connected with this name.  If your client closed "
 "unexpectedly, try again in a minute."
 msgstr ""
+"Outro cliente está conectado com este nome. Se o seu cliente foi fechado "
+"inesperadamente, tente novamente em um minuto."
 
 #: src/network/clientpackethandler.cpp
 msgid "Empty passwords are disallowed.  Set a password and try again."
-msgstr ""
+msgstr "Senhas em branco não são permitidas. Defina uma senha e tente novamente."
 
 #: src/network/clientpackethandler.cpp
 msgid "Internal server error"
-msgstr ""
+msgstr "Internal server error"
 
 #: src/network/clientpackethandler.cpp
 #, fuzzy
@@ -2330,7 +2341,7 @@ msgstr "Nome em uso. Favor escolher outro nome"
 
 #: src/network/clientpackethandler.cpp
 msgid "Player name contains disallowed characters"
-msgstr ""
+msgstr "O nome do jogador contém caracteres não permitidos."
 
 #: src/network/clientpackethandler.cpp
 #, fuzzy
@@ -2340,41 +2351,46 @@ msgstr "Nome de jogador muito longo."
 #: src/network/clientpackethandler.cpp
 #, fuzzy
 msgid "Server shutting down"
-msgstr "Desligando tudo..."
+msgstr "Servidor sendo desligado..."
 
 #: src/network/clientpackethandler.cpp
 msgid ""
-"The server has experienced an internal error.  You will now be disconnected."
+"The server has experienced an internal error. You will now be disconnected."
 msgstr ""
+"O servidor encontrou um erro interno. Você será desconectado agora."
 
 #: src/network/clientpackethandler.cpp
 msgid "The server is running in singleplayer mode.  You cannot connect."
-msgstr ""
+msgstr "O servidor está em modo singleplayer. Você não pode se conectar."
 
 #: src/network/clientpackethandler.cpp
 msgid "Too many users"
-msgstr ""
+msgstr "Usuários demais"
 
 #: src/network/clientpackethandler.cpp
 msgid "Unknown disconnect reason."
-msgstr ""
+msgstr "Razão desconhecida para desconexão"
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Your client sent something the server didn't expect.  Try reconnecting or "
 "updating your client."
 msgstr ""
+"Seu cliente enviou algo que o servidor não esperava. Tente reconectar ou "
+"atualizar seu cliente."
 
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Your client's version is not supported.\n"
 "Please contact the server administrator."
 msgstr ""
+"A versão do seu cliente não é suportada.\n"
+"Por favor, entre em contato com o administrador do servidor."
 
 #: src/server.cpp
 #, fuzzy, c-format
 msgid "%s while shutting down: "
-msgstr "Desligando tudo..."
+msgstr "%s ao desligar: "
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2449,7 +2465,7 @@ msgstr "Ruído 2D que localiza os vales e canais dos rios."
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -2621,7 +2637,7 @@ msgstr "Avançado"
 
 #: src/settings_translation_file.cpp
 msgid "Allows liquids to be translucent."
-msgstr ""
+msgstr "Permite que líquidos sejam translúcidos."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2674,11 +2690,11 @@ msgstr "Anti-aliasing:"
 
 #: src/settings_translation_file.cpp
 msgid "Anticheat flags"
-msgstr ""
+msgstr "Opções de anticheat"
 
 #: src/settings_translation_file.cpp
 msgid "Anticheat movement tolerance"
-msgstr ""
+msgstr "Tolerância de movimento do anticheat"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2702,10 +2718,16 @@ msgid ""
 "With OpenGL ES, dithering only works if the shader supports high\n"
 "floating-point precision and it may have a higher performance impact."
 msgstr ""
+"Aplicar dithering para reduzir artefatos de banding de cor.\n"
+"O dithering aumenta significativamente o tamanho das capturas de tela\n"
+"compactadas sem perdas e não funciona corretamente se o display ou o sistema operacional\n"
+"realizar dithering adicional ou se os canais de cor não estiverem quantizados\n"
+"para 8 bits.\n" "Com OpenGL ES, o dithering só funciona se o shader suportar alta\n"
+"precisão de ponto flutuante e pode ter um impacto maior no desempenho."
 
 #: src/settings_translation_file.cpp
 msgid "Apply specular shading to nodes."
-msgstr ""
+msgstr "Aplicar sombreamento especular aos nós"
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
@@ -2824,12 +2846,12 @@ msgstr "Filtragem bi-linear"
 
 #: src/settings_translation_file.cpp
 msgid "Bind address"
-msgstr "Endereço de bind"
+msgstr "Endereço de vinculação"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Biome API"
-msgstr "Biomas"
+msgstr "API de Biomas"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2838,7 +2860,7 @@ msgstr "Ruído do bioma"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Block bounds HUD radius"
-msgstr "Limites de bloco"
+msgstr "Raio do HUD de limites do bloco"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3052,6 +3074,8 @@ msgid ""
 "Comma-separated list of AL and ALC extensions that should not be used.\n"
 "Useful for testing. See al_extensions.[h,cpp] for details."
 msgstr ""
+Lista separada por vírgulas das extensões AL e ALC que não devem ser usadas.\n"
+"Útil para testes. Consulte al_extensions.[h,cpp] para mais detalhes."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3344,6 +3368,9 @@ msgid ""
 "methods.\n"
 "Value of 2 means taking 2x2 = 4 samples."
 msgstr ""
+"Define o tamanho da grade de amostragem para os métodos de antialiasing "
+"FSAA e SSAA.\n"
+"Um valor de 2 significa pegar 2x2 = 4 amostras."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the width of the river channel."
@@ -3455,11 +3482,11 @@ msgstr "Mostrar informações de depuração do Gerador de mapa."
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon maximum Y"
-msgstr "Y máximo da dungeon"
+msgstr "Y máximo da masmorra"
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon minimum Y"
-msgstr "Y mínimo da dungeon"
+msgstr "Y mínimo da masmorra"
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
@@ -3520,7 +3547,7 @@ msgstr "Pós-processamento"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
-msgstr ""
+msgstr "Ativar Culling com Raytracing"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3565,7 +3592,7 @@ msgstr "Habilitar Mod Security (Segurança nos mods)"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
-msgstr ""
+msgstr "Ativar roda do mouse (rolagem) para seleção de itens na barra de atalho."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3603,7 +3630,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable updates available indicator on content tab"
-msgstr ""
+msgstr "Ativar indicador de atualizações disponíveis na aba de conteúdo"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3661,7 +3688,7 @@ msgstr "Ativar armazenamento em cache de direção de face girada das malhas."
 
 #: src/settings_translation_file.cpp
 msgid "Enables debug and error-checking in the OpenGL driver."
-msgstr ""
+msgstr "Ativa o debug e a verificação de erros no driver OpenGL."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3670,7 +3697,7 @@ msgstr "Pós-processamento"
 
 #: src/settings_translation_file.cpp
 msgid "Enables the post processing pipeline."
-msgstr ""
+msgstr "Ativa o pipeline de pós-processamento."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3679,6 +3706,10 @@ msgid ""
 "\"auto\" means that the touchscreen controls will be enabled and disabled\n"
 "automatically depending on the last used input method."
 msgstr ""
+"Ativa os controles de tela sensível ao toque, permitindo que você jogue o jogo com uma" 
+"tela sensível ao toque.\n" 
+"\"auto\" significa que os controles de tela sensível ao toque serão ativados e desativados\n" 
+"automaticamente dependendo no último método de entrada utilizado."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3999,19 +4030,19 @@ msgstr "Modo tela cheia."
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "GUI"
-msgstr "GUIs"
+msgstr "Interface"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
-msgstr "Escala da GUI"
+msgstr "Escala da Interface"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter"
-msgstr "Filtro de escala da GUI"
+msgstr "Filtro de escala da Interface"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
-msgstr "Filtro txr2img de escala da GUI"
+msgstr "Filtro txr2img de escala da Interface"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads"
@@ -4185,11 +4216,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar: Enable mouse wheel for selection"
-msgstr ""
+msgstr "Barra de atalhos: Ativar roda do mouse para seleção"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar: Invert mouse wheel direction"
-msgstr ""
+msgstr "Barra de atalhos: Inverter a direção da roda do mouse"
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
