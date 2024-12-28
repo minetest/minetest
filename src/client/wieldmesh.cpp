@@ -195,9 +195,7 @@ WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id):
 	else
 		g_extrusion_mesh_cache->grab();
 
-	// Disable bounding box culling for this scene node
-	// since we won't calculate the bounding box.
-	// FIXME: why not?
+	// This class doesn't render anything, so disable culling.
 	setAutomaticCulling(scene::EAC_OFF);
 
 	// Create the child scene node
