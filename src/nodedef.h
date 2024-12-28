@@ -115,9 +115,9 @@ struct NodeBox
 	// NODEBOX_FIXED
 	std::vector<aabb3f> fixed;
 	// NODEBOX_WALLMOUNTED
-	aabb3f wall_top{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
-	aabb3f wall_bottom{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
-	aabb3f wall_side{-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f}; // being at the -X side
+	aabb3f wall_top = dummybox;
+	aabb3f wall_bottom = dummybox;
+	aabb3f wall_side = dummybox; // being at the -X side
 	// NODEBOX_CONNECTED
 	// (kept externally to not bloat the structure)
 	std::shared_ptr<NodeBoxConnected> connected;
@@ -139,6 +139,10 @@ struct NodeBox
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
+
+private:
+	/// @note the actual defaults are in reset(), see nodedef.cpp
+	static constexpr aabb3f dummybox = aabb3f({0, 0, 0});
 };
 
 struct MapNode;
