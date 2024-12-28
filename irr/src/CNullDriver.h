@@ -17,7 +17,6 @@
 #include "S3DVertex.h"
 #include "SVertexIndex.h"
 #include "SExposedVideoData.h"
-#include <list>
 
 namespace irr
 {
@@ -293,7 +292,7 @@ protected:
 	struct SHWBufferLink
 	{
 		SHWBufferLink(const scene::IVertexBuffer *vb) :
-				VertexBuffer(vb), ChangedID(0), IsVertex(true)
+				VertexBuffer(vb), IsVertex(true)
 		{
 			if (VertexBuffer) {
 				VertexBuffer->grab();
@@ -301,7 +300,7 @@ protected:
 			}
 		}
 		SHWBufferLink(const scene::IIndexBuffer *ib) :
-				IndexBuffer(ib), ChangedID(0), IsVertex(false)
+				IndexBuffer(ib), IsVertex(false)
 		{
 			if (IndexBuffer) {
 				IndexBuffer->grab();
@@ -324,9 +323,9 @@ protected:
 			const scene::IVertexBuffer *VertexBuffer;
 			const scene::IIndexBuffer *IndexBuffer;
 		};
-		u32 ChangedID;
+		size_t ListPosition = static_cast<size_t>(-1);
+		u32 ChangedID = 0;
 		bool IsVertex;
-		std::list<SHWBufferLink*>::iterator listPosition;
 	};
 
 	//! Gets hardware buffer link from a vertex buffer (may create or update buffer)
@@ -361,8 +360,8 @@ public:
 	//! Remove all hardware buffers
 	void removeAllHardwareBuffers() override;
 
-	//! Update all hardware buffers, remove unused ones
-	virtual void updateAllHardwareBuffers();
+	//! Run garbage-collection on all HW buffers
+	void expireHardwareBuffers();
 
 	//! is vbo recommended?
 	virtual bool isHardwareBufferRecommend(const scene::IVertexBuffer *mb);
@@ -582,6 +581,9 @@ protected:
 	//! deletes all material renderers
 	void deleteMaterialRenders();
 
+	// adds a created hardware buffer to the relevant data structure
+	void registerHardwareBuffer(SHWBufferLink *HWBuffer);
+
 	// prints renderer version
 	void printVersion();
 
@@ -705,7 +707,7 @@ protected:
 	core::array<video::IImageWriter *> SurfaceWriter;
 	core::array<SMaterialRenderer> MaterialRenderers;
 
-	std::list<SHWBufferLink *> HWBufferList;
+	std::vector<SHWBufferLink *> HWBufferList;
 
 	io::IFileSystem *FileSystem;
 

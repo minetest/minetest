@@ -218,7 +218,7 @@ bool CNullDriver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth, u
 bool CNullDriver::endScene()
 {
 	FPSCounter.registerFrame(os::Timer::getRealTime());
-	updateAllHardwareBuffers();
+	expireHardwareBuffers();
 	updateAllOcclusionQueries();
 	return true;
 }
@@ -1141,25 +1141,28 @@ CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IIndexBuffer
 	return createHardwareBuffer(ib); // no hardware links, and mesh wants one, create it
 }
 
-//! Update all hardware buffers, remove unused ones
-void CNullDriver::updateAllHardwareBuffers()
+void CNullDriver::registerHardwareBuffer(SHWBufferLink *HWBuffer)
 {
-	// FIXME: this method can take a lot of time just doing the refcount
-	// checks and iteration (too much pointer chasing?) for
-	// large buffer counts (e.g. 50000)
+	_IRR_DEBUG_BREAK_IF(!HWBuffer)
+	HWBuffer->ListPosition = HWBufferList.size();
+	HWBufferList.push_back(HWBuffer);
+}
 
-	auto it = HWBufferList.begin();
-	while (it != HWBufferList.end()) {
-		SHWBufferLink *Link = *it;
-		++it;
+void CNullDriver::expireHardwareBuffers()
+{
+	for (size_t i = 0; i < HWBufferList.size(); ) {
+		auto *Link = HWBufferList[i];
 
-		if (Link->IsVertex) {
-			if (!Link->VertexBuffer || Link->VertexBuffer->getReferenceCount() == 1)
-				deleteHardwareBuffer(Link);
-		} else {
-			if (!Link->IndexBuffer || Link->IndexBuffer->getReferenceCount() == 1)
-				deleteHardwareBuffer(Link);
-		}
+		bool del;
+		if (Link->IsVertex)
+			del = !Link->VertexBuffer || Link->VertexBuffer->getReferenceCount() == 1;
+		else
+			del = !Link->IndexBuffer || Link->IndexBuffer->getReferenceCount() == 1;
+		// deleting can reorder, so don't advance in list
+		if (del)
+			deleteHardwareBuffer(Link);
+		else
+			i++;
 	}
 
 	FrameStats.HWBuffersActive = HWBufferList.size();
@@ -1169,7 +1172,16 @@ void CNullDriver::deleteHardwareBuffer(SHWBufferLink *HWBuffer)
 {
 	if (!HWBuffer)
 		return;
-	HWBufferList.erase(HWBuffer->listPosition);
+	const size_t pos = HWBuffer->ListPosition;
+	_IRR_DEBUG_BREAK_IF(HWBufferList.at(pos) != HWBuffer)
+	if (HWBufferList.size() < 2 || pos == HWBufferList.size() - 1) {
+		HWBufferList.erase(HWBufferList.begin() + pos);
+	} else {
+		// swap with last
+		std::swap(HWBufferList[pos], HWBufferList.back());
+		HWBufferList.pop_back();
+		HWBufferList[pos]->ListPosition = pos;
+	}
 	delete HWBuffer;
 }
 

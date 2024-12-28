@@ -566,10 +566,8 @@ COpenGL3DriverBase::SHWBufferLink *COpenGL3DriverBase::createHardwareBuffer(cons
 	if (!vb || vb->getHardwareMappingHint() == scene::EHM_NEVER)
 		return 0;
 
-	SHWBufferLink_opengl *HWBuffer = new SHWBufferLink_opengl(vb);
-
-	// add to map
-	HWBuffer->listPosition = HWBufferList.insert(HWBufferList.end(), HWBuffer);
+	auto *HWBuffer = new SHWBufferLink_opengl(vb);
+	registerHardwareBuffer(HWBuffer);
 
 	if (!updateVertexHardwareBuffer(HWBuffer)) {
 		deleteHardwareBuffer(HWBuffer);
@@ -584,10 +582,8 @@ COpenGL3DriverBase::SHWBufferLink *COpenGL3DriverBase::createHardwareBuffer(cons
 	if (!ib || ib->getHardwareMappingHint() == scene::EHM_NEVER)
 		return 0;
 
-	SHWBufferLink_opengl *HWBuffer = new SHWBufferLink_opengl(ib);
-
-	// add to map
-	HWBuffer->listPosition = HWBufferList.insert(HWBufferList.end(), HWBuffer);
+	auto *HWBuffer = new SHWBufferLink_opengl(ib);
+	registerHardwareBuffer(HWBuffer);
 
 	if (!updateIndexHardwareBuffer(HWBuffer)) {
 		deleteHardwareBuffer(HWBuffer);
