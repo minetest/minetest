@@ -270,16 +270,17 @@ void main(void)
 
 		sunTint = vec3(1.0);
 		nightFactor = 0.;
-		if (f_timeofday < 0.21) {
+		// The sun rises at 5:00 and sets at 19:00, which corresponds to 5/24=0.208 and 19/24 = 0.792.
+		if (f_timeofday < 0.208) {
 			adj_shadow_strength = f_shadow_strength * 0.5 *
-				(1.0 - mtsmoothstep(0.18, 0.21, f_timeofday));
-		} else if (f_timeofday >= 0.793) {
+				(1.0 - mtsmoothstep(0.178, 0.208, f_timeofday));
+		} else if (f_timeofday >= 0.792) {
 			adj_shadow_strength = f_shadow_strength * 0.5 *
-				mtsmoothstep(0.793, 0.823, f_timeofday);
+				mtsmoothstep(0.792, 0.822, f_timeofday);
 		} else {
 			adj_shadow_strength = f_shadow_strength *
-				mtsmoothstep(0.21, 0.24, f_timeofday) *
-				(1.0 - mtsmoothstep(0.763, 0.793, f_timeofday));
+				mtsmoothstep(0.208, 0.238, f_timeofday) *
+				(1.0 - mtsmoothstep(0.762, 0.792, f_timeofday));
 			nightFactor = adj_shadow_strength / f_shadow_strength;
 #ifdef ENABLE_TINTED_SUNLIGHT
 			sunTint = mix(vec3(1.0), getDirectLightScatteringAtGround(v_LightDirection), adj_shadow_strength / f_shadow_strength);

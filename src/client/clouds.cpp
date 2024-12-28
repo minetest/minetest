@@ -211,7 +211,7 @@ void Clouds::updateMesh()
 			switch (i)
 			{
 			case 0:	// top
-				for (video::S3DVertex& vertex : v) {
+				for (video::S3DVertex &vertex : v) {
 					vertex.Normal.set(0, 1, 0);
 				}
 				v[0].Pos.set(-rx, ry,-rz);
@@ -226,14 +226,14 @@ void Clouds::updateMesh()
 						continue;
 				}
 				if (soft_clouds_enabled) {
-					for (video::S3DVertex& vertex : v) {
+					for (video::S3DVertex &vertex : v) {
 						vertex.Normal.set(0, 0, -1);
 					}
 					v[2].Color = c_bottom;
 					v[3].Color = c_bottom;
 				}
 				else {
-					for (video::S3DVertex& vertex : v) {
+					for (video::S3DVertex &vertex : v) {
 						vertex.Color = c_side_1;
 						vertex.Normal.set(0, 0, -1);
 					}
@@ -250,14 +250,14 @@ void Clouds::updateMesh()
 						continue;
 				}
 				if (soft_clouds_enabled) {
-					for (video::S3DVertex& vertex : v) {
+					for (video::S3DVertex &vertex : v) {
 						vertex.Normal.set(1, 0, 0);
 					}
 					v[2].Color = c_bottom;
 					v[3].Color = c_bottom;
 				}
 				else {
-					for (video::S3DVertex& vertex : v) {
+					for (video::S3DVertex &vertex : v) {
 						vertex.Color = c_side_2;
 						vertex.Normal.set(1, 0, 0);
 					}
@@ -274,14 +274,14 @@ void Clouds::updateMesh()
 						continue;
 				}
 				if (soft_clouds_enabled) {
-					for (video::S3DVertex& vertex : v) {
+					for (video::S3DVertex &vertex : v) {
 						vertex.Normal.set(0, 0, -1);
 					}
 					v[2].Color = c_bottom;
 					v[3].Color = c_bottom;
 				}
 				else {
-					for (video::S3DVertex& vertex : v) {
+					for (video::S3DVertex &vertex : v) {
 						vertex.Color = c_side_1;
 						vertex.Normal.set(0, 0, -1);
 					}
@@ -298,14 +298,14 @@ void Clouds::updateMesh()
 						continue;
 				}
 				if (soft_clouds_enabled) {
-					for (video::S3DVertex& vertex : v) {
+					for (video::S3DVertex &vertex : v) {
 						vertex.Normal.set(-1, 0, 0);
 					}
 					v[2].Color = c_bottom;
 					v[3].Color = c_bottom;
 				}
 				else {
-					for (video::S3DVertex& vertex : v) {
+					for (video::S3DVertex &vertex : v) {
 						vertex.Color = c_side_2;
 						vertex.Normal.set(-1, 0, 0);
 					}
@@ -316,7 +316,7 @@ void Clouds::updateMesh()
 				v[3].Pos.set(-rx,  0, rz);
 				break;
 			case 5: // bottom
-				for (video::S3DVertex& vertex : v) {
+				for (video::S3DVertex &vertex : v) {
 					vertex.Color = c_bottom;
 					vertex.Normal.set(0, -1, 0);
 				}
@@ -327,7 +327,7 @@ void Clouds::updateMesh()
 				break;
 			}
 
-			for (video::S3DVertex& vertex : v) {
+			for (video::S3DVertex &vertex : v) {
 				vertex.Pos += pos;
 				vertices.push_back(vertex);
 			}
